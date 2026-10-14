@@ -19,10 +19,11 @@ import { FLUXES, type FluxFunction, type FluxName } from '../scheme/flux';
 import { LIMITERS, type Limiter, type LimiterName } from '../scheme/limiters';
 import { validateGrid1DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
+import { RUNGE_KUTTA_STAGES, type TimeIntegrator } from '../solver/runge-kutta';
+import { firstNonPhysicalCell1D } from '../solver/physical';
 import { cellAverages1D } from '../solver/initial-condition';
 
 export type BoundaryCondition = 'transmissive' | 'reflective' | 'periodic';
-export type TimeIntegrator = 'forwardEuler' | 'ssprk2' | 'ssprk3';
 
 export interface Euler1DConfig {
   readonly nCells: number;
@@ -175,47 +176,26 @@ export class Euler1D {
     }
   }
 
-  /** One time step of size dt with the configured integrator. */
+  /** One time step of size dt with the configured Runge-Kutta scheme. */
   step(dt: number): void {
     const u0 = { rho: this.rho, mom: this.mom, energy: this.energy };
-    const [s1, s2] = this.stage;
-
-    switch (this.config.timeIntegrator) {
-      case 'forwardEuler':
-        this.eulerStage(u0, dt, s1);
-        copyState(s1, u0);
-        break;
-      case 'ssprk2':
-        // U1 = U0 + dt L(U0);  U = (U0 + U1 + dt L(U1)) / 2
-        this.eulerStage(u0, dt, s1);
-        this.eulerStage(s1, dt, s2);
-        combine(0.5, u0, 0.5, s2, u0);
-        break;
-      case 'ssprk3':
-        // U1 = U0 + dt L(U0)
-        // U2 = 3/4 U0 + 1/4 (U1 + dt L(U1))
-        // U  = 1/3 U0 + 2/3 (U2 + dt L(U2))
-        this.eulerStage(u0, dt, s1);
-        this.eulerStage(s1, dt, s2);
-        combine(0.75, u0, 0.25, s2, s1);
-        this.eulerStage(s1, dt, s2);
-        combine(1 / 3, u0, 2 / 3, s2, u0);
-        break;
-    }
+    const stages = RUNGE_KUTTA_STAGES[this.config.timeIntegrator];
+    let previous: Stage = u0;
+    stages.forEach(({ a, b }, n) => {
+      // The last stage writes the new solution over u0, which is safe
+      // because each cell's update reads only its own u0 and residual.
+      const out = n === stages.length - 1 ? u0 : this.stage[n % 2]!;
+      this.residual(previous, this.rhs);
+      for (let k = 0; k < out.rho.length; k++) {
+        out.rho[k] = a * u0.rho[k]! + b * (previous.rho[k]! + dt * this.rhs.rho[k]!);
+        out.mom[k] = a * u0.mom[k]! + b * (previous.mom[k]! + dt * this.rhs.mom[k]!);
+        out.energy[k] = a * u0.energy[k]! + b * (previous.energy[k]! + dt * this.rhs.energy[k]!);
+      }
+      previous = out;
+    });
     this.time += dt;
     this.steps += 1;
     this.checkPhysical(this.rho, this.mom, this.energy);
-  }
-
-  /** out = u + dt * L(u), where L is the spatial residual. */
-  private eulerStage(u: Stage, dt: number, out: Stage): void {
-    this.residual(u, this.rhs);
-    const n = u.rho.length;
-    for (let k = 0; k < n; k++) {
-      out.rho[k] = u.rho[k]! + dt * this.rhs.rho[k]!;
-      out.mom[k] = u.mom[k]! + dt * this.rhs.mom[k]!;
-      out.energy[k] = u.energy[k]! + dt * this.rhs.energy[k]!;
-    }
   }
 
   /** Spatial residual L(U) = -(F_{i+1/2} - F_{i-1/2}) / dx for every interior cell. */
@@ -310,14 +290,12 @@ export class Euler1D {
 
   private checkPhysical(rho: Float64Array, mom: Float64Array, energy: Float64Array): void {
     const { gamma, nCells } = this.config;
-    for (let k = GHOSTS; k < GHOSTS + nCells; k++) {
-      const r = rho[k]!;
-      const p = pressureFromConserved(r, mom[k]!, energy[k]!, gamma);
-      if (!(r > 0 && p > 0 && Number.isFinite(r) && Number.isFinite(p))) {
-        throw new NonPhysicalStateError(
-          `non-physical state in cell ${k - GHOSTS} at t=${this.time}: rho=${r}, p=${p}`,
-        );
-      }
+    const k = firstNonPhysicalCell1D(rho, mom, energy, gamma, GHOSTS, nCells);
+    if (k >= 0) {
+      const p = pressureFromConserved(rho[k]!, mom[k]!, energy[k]!, gamma);
+      throw new NonPhysicalStateError(
+        `non-physical state in cell ${k - GHOSTS} at t=${this.time}: rho=${rho[k]}, p=${p}`,
+      );
     }
   }
 }
@@ -326,19 +304,4 @@ export class Euler1D {
 function limitedValue(q: Float64Array, k: number, side: 1 | -1, limiter: Limiter): number {
   const centre = q[k]!;
   return centre + 0.5 * side * limiter(centre - q[k - 1]!, q[k + 1]! - centre);
-}
-
-function copyState(from: Stage, to: Stage): void {
-  to.rho.set(from.rho);
-  to.mom.set(from.mom);
-  to.energy.set(from.energy);
-}
-
-/** out = a * x + b * y, elementwise. `out` may alias x or y. */
-function combine(a: number, x: Stage, b: number, y: Stage, out: Stage): void {
-  for (let k = 0; k < x.rho.length; k++) {
-    out.rho[k] = a * x.rho[k]! + b * y.rho[k]!;
-    out.mom[k] = a * x.mom[k]! + b * y.mom[k]!;
-    out.energy[k] = a * x.energy[k]! + b * y.energy[k]!;
-  }
 }

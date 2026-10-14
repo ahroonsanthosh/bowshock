@@ -39,6 +39,27 @@ export function pressureFromConserved(
   return (gamma - 1) * (energy - (0.5 * mom * mom) / rho);
 }
 
+/** Pressure from two-dimensional conserved variables (rho, rho u, rho v, E). */
+export function pressureFromConserved2D(
+  rho: number,
+  mu: number,
+  mv: number,
+  energy: number,
+  gamma: number,
+): number {
+  return (gamma - 1) * (energy - (0.5 * (mu * mu + mv * mv)) / rho);
+}
+
+/** Primitive variables from one-dimensional conserved variables. */
+export function primitiveFromConserved(
+  rho: number,
+  mom: number,
+  energy: number,
+  gamma: number,
+): Primitive1D {
+  return { rho, u: mom / rho, p: pressureFromConserved(rho, mom, energy, gamma) };
+}
+
 /** Speed of sound a = sqrt(gamma * p / rho). */
 export function soundSpeed(rho: number, p: number, gamma: number): number {
   return Math.sqrt((gamma * p) / rho);

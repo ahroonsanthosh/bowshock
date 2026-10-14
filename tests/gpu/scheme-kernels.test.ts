@@ -1,5 +1,6 @@
 import fc from 'fast-check';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { WGSL_LIMITER_FUNCTIONS } from '../../src/engine-gpu/euler1d-gpu';
 import fluxWgsl from '../../src/engine-gpu/shaders/flux.wgsl?raw';
 import gasWgsl from '../../src/engine-gpu/shaders/gas.wgsl?raw';
 import limitersWgsl from '../../src/engine-gpu/shaders/limiters.wgsl?raw';
@@ -59,15 +60,6 @@ describe.each(GPU_FLUXES)('%s flux kernel', (_, wgslName, cpuFlux) => {
   });
 });
 
-const WGSL_LIMITERS: Record<LimiterName, string> = {
-  firstOrder: 'first_order',
-  minmod: 'minmod',
-  vanLeer: 'van_leer',
-  vanAlbada: 'van_albada',
-  monotonizedCentral: 'monotonized_central',
-  unlimitedCentral: 'unlimited_central',
-};
-
 describe('limiter kernels', () => {
   // Slopes of physically meaningful size: zero, or 1e-6 to 1e3 in magnitude.
   // Variables are nondimensional and of order one, so smaller slopes only
@@ -89,7 +81,7 @@ describe('limiter kernels', () => {
   const tiny = fc.double({ min: -1e-30, max: 1e-30, noNaN: true }).map(f32);
   const tinySlopes = fc.sample(fc.tuple(tiny, tiny), { numRuns: 500, seed: 41 });
 
-  describe.each(Object.entries(WGSL_LIMITERS) as [LimiterName, string][])(
+  describe.each(Object.entries(WGSL_LIMITER_FUNCTIONS) as [LimiterName, string][])(
     '%s',
     (name, wgslName) => {
       const run = (inputs: [number, number][]) =>

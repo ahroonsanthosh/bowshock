@@ -20,6 +20,11 @@ const PERIODIC: u32 = 2u;
 
 const WORKGROUP_SIZE: u32 = 64u;
 
+// Every time step taken is also written to dt_log, so the CPU can sum the
+// steps in double precision and check the GPU clock against that sum (see
+// advance_clock). At most DT_LOG_SIZE steps may be submitted per batch.
+const DT_LOG_SIZE: u32 = 256u;
+
 // Bit set in `status` when a cell becomes non-physical (non-positive or
 // non-finite density or pressure, or a non-finite wave speed).
 const STATUS_NON_PHYSICAL: u32 = 1u;
@@ -57,6 +62,7 @@ struct Clock {
 @group(0) @binding(2) var<storage, read_write> status: atomic<u32>;
 @group(0) @binding(3) var<storage, read_write> face_flux: array<vec4f>;
 @group(0) @binding(4) var<storage, read_write> partials: array<f32>;
+@group(0) @binding(5) var<storage, read_write> dt_log: array<f32, DT_LOG_SIZE>;
 
 @group(1) @binding(0) var<uniform> stage: StageCoefficients;
 @group(1) @binding(1) var<storage, read> u0: array<vec4f>;
@@ -96,8 +102,9 @@ fn reconstruct(prev: Primitive, centre: Primitive, next: Primitive, side: f32) -
 }
 
 fn is_physical(w: Primitive) -> bool {
-  // Comparisons with NaN are false, so NaN fails this test.
-  return w.rho > 0.0 && w.p > 0.0;
+  // Comparisons with NaN are false, so NaN fails this test; the upper
+  // bounds reject infinities.
+  return w.rho > 0.0 && w.rho < 3.0e38 && w.p > 0.0 && w.p < 3.0e38;
 }
 
 // Flux through face f, which lies between cells f - 1 and f.
@@ -143,8 +150,7 @@ fn update_cells(@builtin(global_invocation_id) id: vec3u) {
   }
 }
 
-// Fixed-order tree reduction of `scratch`; the result ends up in scratch[0].
-// Fixed order makes the result reproducible from run to run.
+// Tree reduction of `scratch` to its maximum, left in scratch[0].
 fn reduce_scratch_max(local: u32) {
   for (var stride = WORKGROUP_SIZE / 2u; stride > 0u; stride /= 2u) {
     workgroupBarrier();
@@ -205,12 +211,14 @@ fn finalize_time_step(@builtin(local_invocation_index) local: u32) {
 // Dispatched as a single invocation after the last stage of a step.
 // Adds dt to the clock with the TwoSum error-free transformation (D. E.
 // Knuth, The Art of Computer Programming, vol. 2): `sum + error` equals
-// t + dt exactly, and the error is carried in t_error. Should a compiler
-// ever simplify the error terms algebraically to zero, this degrades to
-// plain f32 accumulation rather than to anything worse.
+// t + dt exactly, and the error is carried in t_error. The WGSL
+// specification allows implementations to reassociate floating-point
+// operations, which could reduce the error terms to zero; the CPU detects
+// that by comparing the clock with its own double-precision sum of dt_log.
 @compute @workgroup_size(1)
 fn advance_clock() {
   if (clock.dt > 0.0) {
+    dt_log[clock.steps % DT_LOG_SIZE] = clock.dt;
     let sum = clock.t + clock.dt;
     let t_part = sum - clock.dt;
     let dt_part = sum - t_part;

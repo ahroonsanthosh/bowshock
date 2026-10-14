@@ -3,17 +3,23 @@
  * src/engine-cpu/euler1d.ts, running the same scheme in 32-bit floats.
  *
  * The whole time loop runs on the GPU, including the time-step reduction,
- * so the CPU only submits batches of steps and reads back the clock and a
- * status flag between batches. A non-physical state raises the flag and is
- * reported as a NonPhysicalStateError, as in the CPU engine.
+ * so the CPU only submits batches of steps and reads back the clock, a
+ * status flag and the log of time steps between batches. A non-physical
+ * state raises the flag and is reported as a NonPhysicalStateError, as in
+ * the CPU engine.
+ *
+ * The solver performs one operation at a time: await each call before
+ * making the next. Overlapping calls throw rather than corrupt state.
  */
 
 import type { BoundaryCondition, Euler1DConfig } from '../engine-cpu/euler1d';
-import type { Primitive1D } from '../scheme/gas';
+import { primitiveFromConserved, type Primitive1D } from '../scheme/gas';
 import type { LimiterName } from '../scheme/limiters';
 import { validateGrid1DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
 import { cellAverages1D } from '../solver/initial-condition';
+import { firstNonPhysicalCell1D } from '../solver/physical';
+import { RUNGE_KUTTA_STAGES } from '../solver/runge-kutta';
 import euler1dWgsl from './shaders/euler1d.wgsl?raw';
 import fluxWgsl from './shaders/flux.wgsl?raw';
 import gasWgsl from './shaders/gas.wgsl?raw';
@@ -27,7 +33,8 @@ export function isGpuFlux(name: string): name is GpuFluxName {
   return name in GPU_FLUX_FUNCTIONS;
 }
 
-const LIMITER_FUNCTIONS: Record<LimiterName, string> = {
+/** WGSL names of the limiter functions in limiters.wgsl. */
+export const WGSL_LIMITER_FUNCTIONS: Readonly<Record<LimiterName, string>> = {
   firstOrder: 'first_order',
   minmod: 'minmod',
   vanLeer: 'van_leer',
@@ -42,22 +49,20 @@ const BOUNDARY_CODES: Record<BoundaryCondition, number> = {
   periodic: 2,
 };
 
-/** Runge-Kutta stages as dst = a * u0 + b * (src + dt * L(src)); see euler1d.wgsl. */
-const STAGES = {
-  forwardEuler: [{ a: 0, b: 1 }],
-  ssprk2: [
-    { a: 0, b: 1 },
-    { a: 1 / 2, b: 1 / 2 },
-  ],
-  ssprk3: [
-    { a: 0, b: 1 },
-    { a: 3 / 4, b: 1 / 4 },
-    { a: 1 / 3, b: 2 / 3 },
-  ],
-} as const;
-
 const WORKGROUP_SIZE = 64;
 const STATUS_NON_PHYSICAL = 1;
+/** Matches DT_LOG_SIZE in euler1d.wgsl: the most steps submitted in one batch. */
+const DT_LOG_SIZE = 256;
+/** Bytes read back after each batch: clock (16), status (16), dt log. */
+const CLOCK_READBACK_BYTES = 32 + 4 * DT_LOG_SIZE;
+
+/**
+ * Whether a run asked to stop at `tEnd` has arrived. The GPU stores t_end in
+ * 32 bits, so arrival means reaching the f32 value of tEnd.
+ */
+export function hasReached(time: number, tEnd: number): boolean {
+  return time >= Math.fround(tEnd) * (1 - 1e-9);
+}
 
 export interface GpuEuler1DConfig extends Omit<Euler1DConfig, 'flux'> {
   readonly flux: GpuFluxName;
@@ -67,7 +72,7 @@ export interface GpuEuler1DConfig extends Omit<Euler1DConfig, 'flux'> {
 export function euler1dShaderSource(flux: GpuFluxName, limiter: LimiterName): string {
   const configuration = /* wgsl */ `
 fn limiter(a: f32, b: f32) -> f32 {
-  return ${LIMITER_FUNCTIONS[limiter]}(a, b);
+  return ${WGSL_LIMITER_FUNCTIONS[limiter]}(a, b);
 }
 
 fn numerical_flux(left: Primitive, right: Primitive) -> vec3f {
@@ -78,11 +83,17 @@ fn numerical_flux(left: Primitive, right: Primitive) -> vec3f {
 }
 
 export interface GpuState1D {
+  /** Simulated time: the double-precision sum of the time steps taken. */
   readonly time: number;
   readonly steps: number;
   readonly rho: Float32Array;
   readonly mom: Float32Array;
   readonly energy: Float32Array;
+}
+
+/** Primitive variables of cell i of a state read back from the GPU. */
+export function gpuPrimitive(state: GpuState1D, i: number, gamma: number): Primitive1D {
+  return primitiveFromConserved(state.rho[i]!, state.mom[i]!, state.energy[i]!, gamma);
 }
 
 /** Index of one of the three state buffers. */
@@ -104,6 +115,16 @@ interface Pipelines {
   readonly advanceClock: GPUComputePipeline;
 }
 
+interface ClockReading {
+  /** t + t_error as kept by the GPU. */
+  readonly gpuTime: number;
+  /** The most recent time step. */
+  readonly dt: number;
+  readonly steps: number;
+  readonly status: number;
+  readonly dtLog: Float32Array;
+}
+
 export class GpuEuler1D {
   readonly config: GpuEuler1DConfig;
   readonly dx: number;
@@ -115,7 +136,9 @@ export class GpuEuler1D {
   private readonly paramsBuffer: GPUBuffer;
   private readonly clockBuffer: GPUBuffer;
   private readonly statusBuffer: GPUBuffer;
-  private readonly readbackBuffer: GPUBuffer;
+  private readonly dtLogBuffer: GPUBuffer;
+  private readonly clockReadback: GPUBuffer;
+  private readonly stateReadback: GPUBuffer;
   private readonly stateBuffers: readonly [GPUBuffer, GPUBuffer, GPUBuffer];
   private readonly coefficientBuffers: GPUBuffer[];
   private readonly ownedBuffers: GPUBuffer[] = [];
@@ -123,6 +146,11 @@ export class GpuEuler1D {
   private readonly nPartials: number;
   /** Index into stateBuffers of the buffer holding the current solution. */
   private current: StateIndex = 0;
+  /** Steps whose dt has been added to `elapsed`. */
+  private loggedSteps = 0;
+  /** Simulated time: double-precision sum of every dt taken. */
+  private elapsed = 0;
+  private busy = false;
 
   /** Create a solver, compiling its shaders. Throws with the compiler's messages on failure. */
   static async create(device: GPUDevice, config: GpuEuler1DConfig): Promise<GpuEuler1D> {
@@ -139,14 +167,12 @@ export class GpuEuler1D {
       );
     }
 
+    const storage = { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } };
     const sharedLayout = device.createBindGroupLayout({
       label: 'euler1d shared',
       entries: [
         { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'uniform' } },
-        { binding: 1, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
-        { binding: 2, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
-        { binding: 3, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
-        { binding: 4, visibility: GPUShaderStage.COMPUTE, buffer: { type: 'storage' } },
+        ...[1, 2, 3, 4, 5].map((binding) => ({ ...storage, binding }) as GPUBindGroupLayoutEntry),
       ],
     });
     const stageLayout = device.createBindGroupLayout({
@@ -206,11 +232,13 @@ export class GpuEuler1D {
     this.paramsBuffer = buffer('params', 32, usage.UNIFORM | usage.COPY_DST);
     this.clockBuffer = buffer('clock', 16, usage.STORAGE | usage.COPY_DST | usage.COPY_SRC);
     this.statusBuffer = buffer('status', 16, usage.STORAGE | usage.COPY_DST | usage.COPY_SRC);
-    this.readbackBuffer = buffer(
-      'readback',
-      Math.max(32, stateBytes),
+    this.dtLogBuffer = buffer('dt log', 4 * DT_LOG_SIZE, usage.STORAGE | usage.COPY_SRC);
+    this.clockReadback = buffer(
+      'clock readback',
+      CLOCK_READBACK_BYTES,
       usage.MAP_READ | usage.COPY_DST,
     );
+    this.stateReadback = buffer('state readback', stateBytes, usage.MAP_READ | usage.COPY_DST);
     const faceFluxBuffer = buffer('face flux', 16 * (config.nCells + 1), usage.STORAGE);
     const partialsBuffer = buffer('partials', 4 * this.nPartials, usage.STORAGE);
     const stateFlags = usage.STORAGE | usage.COPY_DST | usage.COPY_SRC;
@@ -219,7 +247,7 @@ export class GpuEuler1D {
       buffer('state 1', stateBytes, stateFlags),
       buffer('state 2', stateBytes, stateFlags),
     ];
-    this.coefficientBuffers = STAGES[config.timeIntegrator].map(({ a, b }, i) => {
+    this.coefficientBuffers = RUNGE_KUTTA_STAGES[config.timeIntegrator].map(({ a, b }, i) => {
       const c = buffer(`stage ${i} coefficients`, 16, usage.UNIFORM | usage.COPY_DST);
       device.queue.writeBuffer(c, 0, new Float32Array([a, b, 0, 0]));
       return c;
@@ -229,82 +257,127 @@ export class GpuEuler1D {
       label: 'euler1d shared',
       layout: sharedLayout,
       entries: [
-        { binding: 0, resource: { buffer: this.paramsBuffer } },
-        { binding: 1, resource: { buffer: this.clockBuffer } },
-        { binding: 2, resource: { buffer: this.statusBuffer } },
-        { binding: 3, resource: { buffer: faceFluxBuffer } },
-        { binding: 4, resource: { buffer: partialsBuffer } },
-      ],
+        this.paramsBuffer,
+        this.clockBuffer,
+        this.statusBuffer,
+        faceFluxBuffer,
+        partialsBuffer,
+        this.dtLogBuffer,
+      ].map((b, binding) => ({ binding, resource: { buffer: b } })),
     });
     this.writeParams(0);
   }
 
-  /** Set the initial state to the cell averages of a primitive field and reset the clock. */
+  /**
+   * Set the initial state to the cell averages of a primitive field and
+   * reset the clock. Throws NonPhysicalStateError if the field is not
+   * physical anywhere, before anything reaches the GPU.
+   */
   setInitialCondition(field: (x: number) => Primitive1D): void {
+    this.assertIdle();
     const { xMin, nCells, gamma } = this.config;
-    const averages = cellAverages1D(field, xMin, this.dx, nCells, gamma);
+    const { rho, mom, energy } = cellAverages1D(field, xMin, this.dx, nCells, gamma);
+    const bad = firstNonPhysicalCell1D(rho, mom, energy, gamma);
+    if (bad >= 0) {
+      throw new NonPhysicalStateError(`non-physical initial state in cell ${bad}`);
+    }
     const packed = new Float32Array(4 * nCells);
     for (let i = 0; i < nCells; i++) {
-      packed[4 * i] = averages.rho[i]!;
-      packed[4 * i + 1] = averages.mom[i]!;
-      packed[4 * i + 2] = averages.energy[i]!;
+      packed[4 * i] = rho[i]!;
+      packed[4 * i + 1] = mom[i]!;
+      packed[4 * i + 2] = energy[i]!;
     }
     this.current = 0;
+    this.loggedSteps = 0;
+    this.elapsed = 0;
     this.device.queue.writeBuffer(this.stateBuffers[0], 0, packed);
     this.device.queue.writeBuffer(this.clockBuffer, 0, new Uint32Array(4));
     this.device.queue.writeBuffer(this.statusBuffer, 0, new Uint32Array(4));
   }
 
   /**
-   * Advance to `tEnd`, submitting `stepsPerBatch` steps at a time and
-   * checking the clock and status flag after each batch.
+   * Advance to `tEnd`. Steps are submitted in batches sized from the most
+   * recent time step, so short advances cost few dispatches; the clock,
+   * status flag and time-step log are checked after every batch. Throws if
+   * more than `maxSteps` steps are needed by this call.
    */
-  async advanceTo(tEnd: number, stepsPerBatch = 64, maxSteps = 1_000_000): Promise<void> {
-    this.writeParams(tEnd);
-    for (;;) {
-      this.submitSteps(stepsPerBatch);
-      const { time, steps, status } = await this.readClock();
-      if ((status & STATUS_NON_PHYSICAL) !== 0) {
-        throw new NonPhysicalStateError(
-          `non-physical state on the GPU between steps ${steps - stepsPerBatch} and ${steps}`,
-        );
+  async advanceTo(tEnd: number, maxSteps = 1_000_000): Promise<void> {
+    await this.exclusive(async () => {
+      this.writeParams(tEnd);
+      const firstStep = this.loggedSteps;
+      // The first batch is a single step: no time step is known yet.
+      let batch = 1;
+      for (;;) {
+        const before = this.loggedSteps;
+        this.submitSteps(batch);
+        const reading = await this.readClock();
+        if ((reading.status & STATUS_NON_PHYSICAL) !== 0) {
+          throw new NonPhysicalStateError(
+            `non-physical state on the GPU between steps ${before} and ${reading.steps}`,
+          );
+        }
+        this.accountForSteps(reading);
+        if (hasReached(this.elapsed, tEnd)) return;
+        if (this.loggedSteps - firstStep >= maxSteps) {
+          throw new Error(`advanceTo(${tEnd}) needed more than ${maxSteps} steps`);
+        }
+        // Enough steps to finish at the current time step, plus one.
+        const remaining = Math.ceil((tEnd - this.elapsed) / reading.dt) + 1;
+        batch = Math.min(Math.max(remaining, 1), DT_LOG_SIZE);
       }
-      if (time >= Math.fround(tEnd) * (1 - 1e-9)) return;
-      if (steps >= maxSteps) throw new Error(`exceeded ${maxSteps} steps`);
-    }
+    });
   }
 
-  /** Read the current solution back to the CPU. */
+  /** Read the current solution back to the CPU. Throws if the solution is non-physical. */
   async readState(): Promise<GpuState1D> {
-    const { nCells } = this.config;
-    const encoder = this.device.createCommandEncoder();
-    encoder.copyBufferToBuffer(
-      this.stateBuffers[this.current],
-      0,
-      this.readbackBuffer,
-      0,
-      16 * nCells,
-    );
-    this.device.queue.submit([encoder.finish()]);
-    await this.readbackBuffer.mapAsync(GPUMapMode.READ, 0, 16 * nCells);
-    const packed = new Float32Array(this.readbackBuffer.getMappedRange(0, 16 * nCells).slice(0));
-    this.readbackBuffer.unmap();
+    return this.exclusive(async () => {
+      const { nCells } = this.config;
+      const bytes = 16 * nCells;
+      const encoder = this.device.createCommandEncoder();
+      encoder.copyBufferToBuffer(this.stateBuffers[this.current], 0, this.stateReadback, 0, bytes);
+      this.device.queue.submit([encoder.finish()]);
+      await this.stateReadback.mapAsync(GPUMapMode.READ, 0, bytes);
+      const packed = new Float32Array(this.stateReadback.getMappedRange(0, bytes).slice(0));
+      this.stateReadback.unmap();
 
-    const rho = new Float32Array(nCells);
-    const mom = new Float32Array(nCells);
-    const energy = new Float32Array(nCells);
-    for (let i = 0; i < nCells; i++) {
-      rho[i] = packed[4 * i]!;
-      mom[i] = packed[4 * i + 1]!;
-      energy[i] = packed[4 * i + 2]!;
-    }
-    const { time, steps } = await this.readClock();
-    return { time, steps, rho, mom, energy };
+      const reading = await this.readClock();
+      if ((reading.status & STATUS_NON_PHYSICAL) !== 0) {
+        throw new NonPhysicalStateError('the GPU solution is non-physical');
+      }
+      const rho = new Float32Array(nCells);
+      const mom = new Float32Array(nCells);
+      const energy = new Float32Array(nCells);
+      for (let i = 0; i < nCells; i++) {
+        rho[i] = packed[4 * i]!;
+        mom[i] = packed[4 * i + 1]!;
+        energy[i] = packed[4 * i + 2]!;
+      }
+      return { time: this.elapsed, steps: this.loggedSteps, rho, mom, energy };
+    });
   }
 
   /** Release all GPU buffers. The solver cannot be used afterwards. */
   destroy(): void {
     for (const b of this.ownedBuffers) b.destroy();
+  }
+
+  /**
+   * Add the time steps of the latest batch to the double-precision sum and
+   * check the GPU clock against it. A mismatch means the GPU compiler
+   * defeated the clock's compensated summation (see advance_clock).
+   */
+  private accountForSteps(reading: ClockReading): void {
+    for (let s = this.loggedSteps; s < reading.steps; s++) {
+      this.elapsed += reading.dtLog[s % DT_LOG_SIZE]!;
+    }
+    this.loggedSteps = reading.steps;
+    const drift = Math.abs(reading.gpuTime - this.elapsed);
+    if (drift > 1e-10 * Math.max(this.elapsed, Number.MIN_VALUE)) {
+      throw new Error(
+        `GPU clock drifted from the sum of its time steps by ${drift.toExponential(2)}; ` +
+          'this GPU compiler does not preserve compensated summation',
+      );
+    }
   }
 
   private writeParams(tEnd: number): void {
@@ -354,31 +427,19 @@ export class GpuEuler1D {
   }
 
   /**
-   * Buffer roles for each stage of one step. With the current solution in
-   * buffer s and the other two buffers p and q:
-   *   forward Euler: p = step(s)
-   *   SSP-RK2:       p = step(s);  q = (s + step(p)) / 2
-   *   SSP-RK3:       p = step(s);  q = 3/4 s + 1/4 step(p);  p = 1/3 s + 2/3 step(q)
+   * Buffer roles for each Runge-Kutta stage of one step. With the current
+   * solution in buffer s, stages write alternately to the other two buffers,
+   * so a stage never writes a buffer it reads.
    */
   private stagePlan(): Stage[] {
     const s = this.current;
-    const p = ((s + 1) % 3) as StateIndex;
-    const q = ((s + 2) % 3) as StateIndex;
-    switch (this.config.timeIntegrator) {
-      case 'forwardEuler':
-        return [{ u0: s, src: s, dst: p, coefficients: 0 }];
-      case 'ssprk2':
-        return [
-          { u0: s, src: s, dst: p, coefficients: 0 },
-          { u0: s, src: p, dst: q, coefficients: 1 },
-        ];
-      case 'ssprk3':
-        return [
-          { u0: s, src: s, dst: p, coefficients: 0 },
-          { u0: s, src: p, dst: q, coefficients: 1 },
-          { u0: s, src: q, dst: p, coefficients: 2 },
-        ];
-    }
+    const others = [((s + 1) % 3) as StateIndex, ((s + 2) % 3) as StateIndex] as const;
+    return RUNGE_KUTTA_STAGES[this.config.timeIntegrator].map((_, n) => ({
+      u0: s,
+      src: n === 0 ? s : others[(n - 1) % 2]!,
+      dst: others[n % 2]!,
+      coefficients: n,
+    }));
   }
 
   private stageBindGroup(stage: Stage): GPUBindGroup {
@@ -400,18 +461,39 @@ export class GpuEuler1D {
     return group;
   }
 
-  private async readClock(): Promise<{ time: number; steps: number; status: number }> {
+  private async readClock(): Promise<ClockReading> {
     const encoder = this.device.createCommandEncoder();
-    encoder.copyBufferToBuffer(this.clockBuffer, 0, this.readbackBuffer, 0, 16);
-    encoder.copyBufferToBuffer(this.statusBuffer, 0, this.readbackBuffer, 16, 16);
+    encoder.copyBufferToBuffer(this.clockBuffer, 0, this.clockReadback, 0, 16);
+    encoder.copyBufferToBuffer(this.statusBuffer, 0, this.clockReadback, 16, 16);
+    encoder.copyBufferToBuffer(this.dtLogBuffer, 0, this.clockReadback, 32, 4 * DT_LOG_SIZE);
     this.device.queue.submit([encoder.finish()]);
-    await this.readbackBuffer.mapAsync(GPUMapMode.READ, 0, 32);
-    const bytes = this.readbackBuffer.getMappedRange(0, 32).slice(0);
-    this.readbackBuffer.unmap();
+    await this.clockReadback.mapAsync(GPUMapMode.READ);
+    const bytes = this.clockReadback.getMappedRange().slice(0);
+    this.clockReadback.unmap();
+    // Layout: clock = t, t_error, dt (f32), steps (u32); status (u32); dt log (f32).
     const asFloat = new Float32Array(bytes);
     const asUint = new Uint32Array(bytes);
-    // Clock layout: t, t_error, dt (f32), steps (u32); then the status word.
-    return { time: asFloat[0]! + asFloat[1]!, steps: asUint[3]!, status: asUint[4]! };
+    return {
+      gpuTime: asFloat[0]! + asFloat[1]!,
+      dt: asFloat[2]!,
+      steps: asUint[3]!,
+      status: asUint[4]!,
+      dtLog: asFloat.subarray(8),
+    };
+  }
+
+  private assertIdle(): void {
+    if (this.busy) throw new Error('GpuEuler1D: await the previous operation first');
+  }
+
+  private async exclusive<T>(operation: () => Promise<T>): Promise<T> {
+    this.assertIdle();
+    this.busy = true;
+    try {
+      return await operation();
+    } finally {
+      this.busy = false;
+    }
   }
 }
 

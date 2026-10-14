@@ -5,9 +5,9 @@
  */
 
 import { DEFAULT_CONFIG, Euler1D, type Euler1DConfig } from '../engine-cpu/euler1d';
-import { GpuEuler1D, isGpuFlux } from '../engine-gpu/euler1d-gpu';
+import { GpuEuler1D, gpuPrimitive, hasReached, isGpuFlux } from '../engine-gpu/euler1d-gpu';
 import { FLUXES } from '../scheme/flux';
-import { pressureFromConserved, type Primitive1D } from '../scheme/gas';
+import type { Primitive1D } from '../scheme/gas';
 import { LIMITERS } from '../scheme/limiters';
 import { exactRiemannProfile } from '../scheme/riemann-exact';
 import { TORO_TESTS, type ToroTest } from '../validation/toro-tests';
@@ -70,10 +70,7 @@ async function gpuRun(
     advanceTo: (t) => solver.advanceTo(t),
     snapshot: async () => {
       const s = await solver.readState();
-      const cells = Array.from(s.rho, (rho, i) => {
-        const mom = s.mom[i]!;
-        return { rho, u: mom / rho, p: pressureFromConserved(rho, mom, s.energy[i]!, GAMMA) };
-      });
+      const cells = Array.from(s.rho, (_, i) => gpuPrimitive(s, i, GAMMA));
       return { time: s.time, steps: s.steps, cells };
     },
     dispose: () => {
@@ -189,13 +186,16 @@ async function frame(): Promise<void> {
     if (myGeneration !== generation) return;
     snapshot = next;
   } catch (error) {
+    // A reset while this frame was in flight destroys its solver; that is
+    // not an error worth reporting.
+    if (myGeneration !== generation) return;
     running = false;
     runButton.textContent = 'Run';
     status.textContent = `Stopped: ${String(error)}`;
     return;
   }
   draw();
-  if (snapshot.time >= Math.fround(test.tEnd) * (1 - 1e-9)) {
+  if (hasReached(snapshot.time, test.tEnd)) {
     running = false;
     runButton.textContent = 'Run';
     return;
@@ -297,7 +297,7 @@ runButton.addEventListener('click', () => {
       runButton.textContent = 'Run';
       return;
     }
-    if (run === null || snapshot === null || snapshot.time >= Math.fround(test.tEnd) * (1 - 1e-9)) {
+    if (run === null || snapshot === null || hasReached(snapshot.time, test.tEnd)) {
       await reset();
     }
     running = true;

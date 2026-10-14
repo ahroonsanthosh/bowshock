@@ -16,7 +16,7 @@ fn sound_speed(w: Primitive, gamma: f32) -> f32 {
   return sqrt(gamma * w.p / w.rho);
 }
 
-// Conserved (rho, rho u, E) to primitive, using pressureFromConserved.
+// Conserved (rho, rho u, E) to primitive; equivalent to pressureFromConserved.
 fn to_primitive(c: vec3f, gamma: f32) -> Primitive {
   let u = c.y / c.x;
   return Primitive(c.x, u, (gamma - 1.0) * (c.z - 0.5 * c.y * u));
