@@ -151,6 +151,24 @@ fins), so grids are generated automatically. The user never meshes.
   32-bit emulation on the CPU (WGSL permits a few units of rounding error in
   division and square root), so GPU tests compare at tolerances, never
   bitwise.
+- **Measured in M2 (1D solver on the GPU):**
+  - Each WGSL scheme function agrees with its TypeScript twin to about
+    2e-7 relative (under 2 units in the last place of f32) over thousands of
+    random states. Slopes below about 1e-30 underflow in f32 and are flushed
+    to zero; the result stays finite and safe (locally first order).
+  - Accumulating simulated time as `t += dt` in f32 drifts from the sum of
+    the time steps actually taken by up to half a unit in the last place of
+    t per step, which became the largest error on fine grids. The clock now
+    uses compensated (TwoSum) summation and is accurate to about 1e-14.
+  - Re-storing the state in f32 every stage adds round-off of about 3e-8
+    per step, growing linearly with the number of steps. Time-accurate GPU
+    runs of N steps therefore carry noise of about N x 3e-8; steady-state
+    runs, which are the product, do not accumulate it. If a time-accurate
+    validation case ever needs more, the state can be stored as a
+    compensated float pair at twice the memory.
+  - CPU engine profiling: garbage collection is 3% of run time, so the
+    readable object-based flux API stays; CPU fallback performance is to be
+    designed with the 2D engine.
 - **Performance estimates (to be measured):** axisymmetric RANS at about
   120,000 cells should take well under a minute per Mach point on a laptop
   GPU. A 3D fin sector at 1 to 3 million cells takes minutes on a desktop

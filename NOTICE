@@ -44,3 +44,7 @@ MUSCL reconstruction and slope limiters
 Strong-stability-preserving Runge-Kutta time integration
   C.-W. Shu and S. Osher, "Efficient implementation of essentially
   non-oscillatory shock-capturing schemes", J. Comput. Phys. 77, 1988.
+
+Compensated summation of the GPU clock (TwoSum)
+  D. E. Knuth, The Art of Computer Programming, vol. 2: Seminumerical
+  Algorithms, Addison-Wesley.

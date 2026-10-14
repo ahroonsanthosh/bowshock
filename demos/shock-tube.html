@@ -85,14 +85,21 @@
     <main>
       <h1>Shock tube</h1>
       <p>
-        The bowshock 1D reference solver (dots) against the exact solution (line) for Toro's five
-        Riemann test problems.
+        The bowshock 1D solver (dots), on the CPU or the GPU, against the exact solution (line) for
+        Toro's five Riemann test problems.
         <a href="../index.html">Back to bowshock</a>
       </p>
       <div class="controls">
         <div class="field">
           <label for="problem">Problem</label>
           <select id="problem"></select>
+        </div>
+        <div class="field">
+          <label for="engine">Engine</label>
+          <select id="engine">
+            <option value="cpu">CPU (64-bit)</option>
+            <option value="gpu">GPU (WebGPU, 32-bit)</option>
+          </select>
         </div>
         <div class="field">
           <label for="flux">Flux</label>
