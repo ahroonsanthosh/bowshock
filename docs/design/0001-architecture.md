@@ -1,6 +1,7 @@
 # 0001: Overall architecture
 
-- **Status:** Proposed (awaiting owner approval; no solver code is written until this is accepted)
+- **Status:** Superseded by [0002](0002-architecture.md). Kept for the record of
+  why the inviscid-only plan was rejected.
 - **Date:** 2026-10-14
 
 This record sets out the physics model, numerical method, technology stack,
