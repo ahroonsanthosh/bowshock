@@ -3,6 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M4 28 Q16 2 28 28%27 fill=%27none%27 stroke=%27%23d1495b%27 stroke-width=%274%27/%3E%3C/svg%3E"
+    />
     <title>bowshock</title>
     <style>
       :root {
@@ -64,7 +68,16 @@
   <body>
     <main>
       <h1>bowshock</h1>
-      <p>Supersonic rocket aerodynamics in your browser. Early development: no solver yet.</p>
+      <p>
+        Supersonic rocket aerodynamics in your browser. Early development: no rocket solver yet.
+      </p>
+      <h2>Demos</h2>
+      <ul>
+        <li>
+          <a href="demos/shock-tube.html">Shock tube</a>: the 1D reference solver against exact
+          solutions.
+        </li>
+      </ul>
       <h2>Your GPU</h2>
       <div id="gpu-status">Checking for WebGPU...</div>
     </main>

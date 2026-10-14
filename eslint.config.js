@@ -15,6 +15,12 @@ export default tseslint.config(
     rules: {
       // Numerical code reads more clearly with `${x}` on numbers in messages.
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      // tsconfig enables noUncheckedIndexedAccess, so every typed-array read
+      // is `number | undefined`. Numerical loops index within bounds they
+      // compute themselves; `a[i]!` states that clearly, whereas `a[i] ?? NaN`
+      // everywhere would obscure the arithmetic. Out-of-range reads are
+      // caught by the tests and by the NaN/positivity checks in the solvers.
+      '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
   {

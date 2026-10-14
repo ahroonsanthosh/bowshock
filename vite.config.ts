@@ -6,6 +6,12 @@ export default defineConfig({
   base: './',
   build: {
     target: 'es2022',
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        shockTube: 'demos/shock-tube.html',
+      },
+    },
   },
   test: {
     include: ['tests/**/*.test.ts'],
