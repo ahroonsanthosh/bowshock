@@ -208,7 +208,12 @@ describe('exact Riemann solver', () => {
         const jump = (s: number, eps: number) => {
           const before = sampleRiemann(left, right, star, s - eps, gamma);
           const after = sampleRiemann(left, right, star, s + eps, gamma);
-          return Math.max(relDiff(before.p, after.p), relDiff(before.rho, after.rho));
+          const speedScale = Math.abs(before.u) + soundSpeed(before.rho, before.p, gamma);
+          return Math.max(
+            relDiff(before.p, after.p),
+            relDiff(before.rho, after.rho),
+            Math.abs(before.u - after.u) / speedScale,
+          );
         };
         for (const s of edges) {
           const scale = 1 + Math.abs(s);
@@ -218,6 +223,41 @@ describe('exact Riemann solver', () => {
         }
       }),
       { numRuns: 1000, seed: 13 },
+    );
+  });
+
+  it('property: inside a rarefaction fan the solution is the exact simple wave', () => {
+    // Within the left fan, the left-going characteristic through the origin
+    // has speed u - a = x/t; entropy and the right-going Riemann invariant
+    // u + 2a/(gamma-1) equal their values in the left state. Mirror images
+    // hold in the right fan. This pins down rho, u and p inside the fan
+    // independently of the sampling formulas.
+    const fraction = fc.double({ min: 0.01, max: 0.99, noNaN: true });
+    fc.assert(
+      fc.property(nonVacuumPair, fraction, ([left, right], t) => {
+        const star = solveStarRegion(left, right, gamma);
+        for (const [side, wave, dir] of [
+          [left, star.leftWave, -1],
+          [right, star.rightWave, 1],
+        ] as const) {
+          if (wave !== 'rarefaction') continue;
+          const a = soundSpeed(side.rho, side.p, gamma);
+          const aStar = a * Math.pow(star.pStar / side.p, (gamma - 1) / (2 * gamma));
+          const head = side.u + dir * a;
+          const tail = star.uStar + dir * aStar;
+          const s = head + t * (tail - head);
+          const w = sampleRiemann(left, right, star, s, gamma);
+          const aw = soundSpeed(w.rho, w.p, gamma);
+          const scale = Math.abs(side.u) + a;
+          expect(Math.abs(w.u + dir * aw - s) / scale).toBeLessThan(1e-10);
+          expect(
+            relDiff(w.p / Math.pow(w.rho, gamma), side.p / Math.pow(side.rho, gamma)),
+          ).toBeLessThan(1e-10);
+          const invariant = (x: Primitive1D, c: number) => x.u - (dir * 2 * c) / (gamma - 1);
+          expect(Math.abs(invariant(w, aw) - invariant(side, a)) / scale).toBeLessThan(1e-10);
+        }
+      }),
+      { numRuns: 2000, seed: 17 },
     );
   });
 });

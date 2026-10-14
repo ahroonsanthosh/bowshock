@@ -3,9 +3,10 @@
  * solution, so anyone can see how accurate the scheme is.
  */
 
-import { DEFAULT_CONFIG, Euler1D, type FluxName } from '../engine-cpu/euler1d';
+import { DEFAULT_CONFIG, Euler1D } from '../engine-cpu/euler1d';
+import { FLUXES } from '../scheme/flux';
 import type { Primitive1D } from '../scheme/gas';
-import type { LimiterName } from '../scheme/limiters';
+import { LIMITERS } from '../scheme/limiters';
 import { exactRiemannProfile } from '../scheme/riemann-exact';
 import { TORO_TESTS, type ToroTest } from '../validation/toro-tests';
 
@@ -28,6 +29,13 @@ function element<T extends HTMLElement>(selector: string, type: new () => T): T 
   const el = document.querySelector(selector);
   if (!(el instanceof type)) throw new Error(`expected ${type.name} at ${selector}`);
   return el;
+}
+
+/** The selected option of a <select>, checked against the keys it must name. */
+function selectedKey<K extends string>(select: HTMLSelectElement, options: Record<K, unknown>): K {
+  const value = select.value;
+  if (!(value in options)) throw new Error(`unknown option ${value} in #${select.id}`);
+  return value as K;
 }
 
 const problemSelect = element('#problem', HTMLSelectElement);
@@ -53,8 +61,8 @@ function reset(): void {
     nCells: Number(cellsSelect.value),
     xMin: 0,
     xMax: 1,
-    flux: fluxSelect.value as FluxName,
-    limiter: limiterSelect.value as LimiterName,
+    flux: selectedKey(fluxSelect, FLUXES),
+    limiter: selectedKey(limiterSelect, LIMITERS),
   });
   solver.setInitialCondition((x) => (x < test.x0 ? test.left : test.right));
   draw();

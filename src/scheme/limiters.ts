@@ -7,8 +7,13 @@
  * extrema (oscillations) near shocks; the price is that accuracy drops to
  * first order at smooth extrema.
  *
- * All limiters here return 0 when a and b have opposite signs (a local
- * extremum), which makes the reconstruction total-variation diminishing.
+ * All the TVD limiters here (everything except unlimitedCentral) return 0
+ * when a and b have opposite signs, i.e. at a local extremum, which makes
+ * the reconstruction total-variation diminishing.
+ *
+ * MUSCL reconstruction: B. van Leer, "Towards the ultimate conservative
+ * difference scheme. V. A second-order sequel to Godunov's method",
+ * J. Comput. Phys. 32, 1979.
  */
 
 export type Limiter = (a: number, b: number) => number;
@@ -22,7 +27,11 @@ export const minmod: Limiter = (a, b) => {
   return Math.abs(a) < Math.abs(b) ? a : b;
 };
 
-/** Van Leer's harmonic-mean limiter, from his "Towards the ultimate conservative difference scheme" series (1970s). */
+/**
+ * Van Leer's harmonic-mean limiter (B. van Leer, "Towards the ultimate
+ * conservative difference scheme. II. Monotonicity and conservation combined
+ * in a second-order scheme", J. Comput. Phys. 14, 1974).
+ */
 export const vanLeer: Limiter = (a, b) => {
   if (a * b <= 0) return 0;
   return (2 * a * b) / (a + b);
@@ -35,13 +44,17 @@ export const vanLeer: Limiter = (a, b) => {
  * Smooth, so it does not hinder convergence to steady state.
  */
 export const vanAlbada: Limiter = (a, b) => {
+  // After this guard a and b are non-zero with the same sign, so the
+  // denominator is positive: no epsilon is needed.
   if (a * b <= 0) return 0;
-  // A tiny epsilon only guards 0/0; it is far below any meaningful slope.
-  const eps = 1e-300;
-  return (a * (b * b + eps) + b * (a * a + eps)) / (a * a + b * b + 2 * eps);
+  return (a * b * b + b * a * a) / (a * a + b * b);
 };
 
-/** Monotonized central limiter (van Leer, same series): minmod(2a, 2b, (a + b) / 2). */
+/**
+ * Monotonized central limiter, minmod(2a, 2b, (a + b) / 2) (B. van Leer,
+ * "Towards the ultimate conservative difference scheme. IV. A new approach
+ * to numerical convection", J. Comput. Phys. 23, 1977).
+ */
 export const monotonizedCentral: Limiter = (a, b) => {
   if (a * b <= 0) return 0;
   const sign = a > 0 ? 1 : -1;

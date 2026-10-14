@@ -1,13 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import {
-  DEFAULT_CONFIG,
-  Euler1D,
-  NonPhysicalStateError,
-  type Euler1DConfig,
-} from '../../src/engine-cpu/euler1d';
+import { DEFAULT_CONFIG, Euler1D, type Euler1DConfig } from '../../src/engine-cpu/euler1d';
 import type { Primitive1D } from '../../src/scheme/gas';
 import { exactRiemannProfile } from '../../src/scheme/riemann-exact';
+import { NonPhysicalStateError } from '../../src/solver/errors';
 import { TORO_TESTS } from '../../src/validation/toro-tests';
+import { TORO_L1_BASELINE_200 } from '../support/toro-baselines';
 
 function makeSolver(overrides: Partial<Euler1DConfig> & { nCells: number }): Euler1D {
   return new Euler1D({ ...DEFAULT_CONFIG, xMin: 0, xMax: 1, ...overrides });
@@ -17,16 +14,25 @@ function densities(s: Euler1D): number[] {
   return Array.from({ length: s.config.nCells }, (_, i) => s.primitive(i).rho);
 }
 
-/** L1 density error of a Riemann problem against the exact solution at cell centres. */
-function riemannL1Error(test: (typeof TORO_TESTS)[number], nCells: number): number {
+/** L1 errors of density, velocity and pressure against the exact solution at cell centres. */
+function riemannL1Errors(
+  test: (typeof TORO_TESTS)[number],
+  nCells: number,
+): { rho: number; u: number; p: number } {
   const s = makeSolver({ nCells });
   s.setInitialCondition((x) => (x < test.x0 ? test.left : test.right));
   s.advanceTo(test.tEnd);
   const xs = Array.from({ length: nCells }, (_, i) => s.cellCentre(i));
   const exact = exactRiemannProfile(test.left, test.right, xs, test.x0, test.tEnd, 1.4);
-  let error = 0;
-  for (let i = 0; i < nCells; i++) error += Math.abs(s.primitive(i).rho - exact[i]!.rho) * s.dx;
-  return error;
+  const errors = { rho: 0, u: 0, p: 0 };
+  for (let i = 0; i < nCells; i++) {
+    const w = s.primitive(i);
+    const e = exact[i]!;
+    errors.rho += Math.abs(w.rho - e.rho) * s.dx;
+    errors.u += Math.abs(w.u - e.u) * s.dx;
+    errors.p += Math.abs(w.p - e.p) * s.dx;
+  }
+  return errors;
 }
 
 /** Density wave advected once around a periodic domain; returns L1 error vs exact cell averages. */
@@ -54,7 +60,7 @@ describe('Euler1D: accuracy on smooth flow (order of convergence)', () => {
   // Expected orders: 2 for MUSCL with a smooth slope and SSP-RK2/3; TVD
   // limiters clip slopes at extrema and approach 2 more slowly; 1 for the
   // first-order scheme. Measured on 128 -> 256 cells. Values observed when
-  // these tests were written: 2.00, 2.03, 2.04, 1.87, 0.95.
+  // these tests were written: 2.00, 2.03, 2.04, 1.87, 1.97, 0.95.
   const cases = [
     {
       name: 'unlimited, SSP-RK3',
@@ -81,6 +87,12 @@ describe('Euler1D: accuracy on smooth flow (order of convergence)', () => {
       max: 2.1,
     },
     {
+      name: 'monotonized central, SSP-RK2',
+      cfg: { limiter: 'monotonizedCentral', timeIntegrator: 'ssprk2' },
+      min: 1.9,
+      max: 2.1,
+    },
+    {
       name: 'first order, forward Euler',
       cfg: { limiter: 'firstOrder', timeIntegrator: 'forwardEuler' },
       min: 0.9,
@@ -98,31 +110,29 @@ describe('Euler1D: accuracy on smooth flow (order of convergence)', () => {
 });
 
 describe('Euler1D: Toro test problems against the exact solution', () => {
-  // L1 density error at 200 cells (HLLC, van Leer, SSP-RK2, CFL 0.5) as
-  // measured when this test was written. A regression of more than 10%
-  // fails; an improvement should be investigated and the baseline lowered.
-  const baselineAt200: Record<string, number> = {
-    'Toro test 1 (Sod)': 3.0e-3,
-    'Toro test 2 (123 problem)': 4.783e-3,
-    'Toro test 3': 8.85e-2,
-    'Toro test 4': 8.286e-2,
-    'Toro test 5': 2.548e-1,
-  };
-
   for (const test of TORO_TESTS) {
     it(`${test.name}: converges under refinement and matches its baseline`, () => {
-      const e100 = riemannL1Error(test, 100);
-      const e200 = riemannL1Error(test, 200);
-      const e400 = riemannL1Error(test, 400);
+      const e100 = riemannL1Errors(test, 100);
+      const e200 = riemannL1Errors(test, 200);
+      const e400 = riemannL1Errors(test, 400);
       // Solutions with discontinuities converge at less than first order
-      // in L1 (contacts smear as the grid is refined); require clear,
-      // consistent convergence rather than a specific rate.
-      expect(observedOrder(e100, e200)).toBeGreaterThan(0.5);
-      expect(observedOrder(e200, e400)).toBeGreaterThan(0.5);
-      const baseline = baselineAt200[test.name];
+      // in L1, because contacts smear as the grid is refined. Density must
+      // converge clearly; every variable must improve with each refinement.
+      // (Velocity in the 123 problem converges slowly, at observed orders of
+      // about 0.3 to 0.7: near vacuum u = momentum / density is
+      // ill-conditioned, a known difficulty of Godunov-type schemes.)
+      expect(observedOrder(e100.rho, e200.rho)).toBeGreaterThan(0.5);
+      expect(observedOrder(e200.rho, e400.rho)).toBeGreaterThan(0.5);
+      for (const variable of ['u', 'p'] as const) {
+        expect(observedOrder(e100[variable], e200[variable])).toBeGreaterThan(0.25);
+        expect(observedOrder(e200[variable], e400[variable])).toBeGreaterThan(0.25);
+      }
+      const baseline = TORO_L1_BASELINE_200[test.name];
       if (baseline === undefined) throw new Error(`no baseline for ${test.name}`);
-      expect(e200).toBeLessThanOrEqual(1.1 * baseline);
-      expect(e200).toBeGreaterThanOrEqual(0.9 * baseline);
+      // A regression of more than 10% fails; an improvement should be
+      // investigated and the baseline lowered.
+      expect(e200.rho).toBeLessThanOrEqual(1.1 * baseline);
+      expect(e200.rho).toBeGreaterThanOrEqual(0.9 * baseline);
     });
   }
 });

@@ -10,7 +10,8 @@
  * at the top of the Mach range.
  *
  * Conserved variables per unit volume: density rho, momentum rho*u and total
- * energy E = rho*e + rho*u^2/2.
+ * energy E = rho*e + rho*u^2/2. These scalar functions are shared by every
+ * engine; the GPU has WGSL twins in src/engine-gpu/shaders/gas.wgsl.
  */
 
 /** Ratio of specific heats for air. */
@@ -21,13 +22,6 @@ export interface Primitive1D {
   readonly rho: number;
   readonly u: number;
   readonly p: number;
-}
-
-/** One-dimensional conserved state. */
-export interface Conserved1D {
-  readonly rho: number;
-  readonly mom: number;
-  readonly energy: number;
 }
 
 /** Total energy per unit volume from primitive variables. */
@@ -48,16 +42,4 @@ export function pressureFromConserved(
 /** Speed of sound a = sqrt(gamma * p / rho). */
 export function soundSpeed(rho: number, p: number, gamma: number): number {
   return Math.sqrt((gamma * p) / rho);
-}
-
-export function toConserved(w: Primitive1D, gamma: number): Conserved1D {
-  return { rho: w.rho, mom: w.rho * w.u, energy: totalEnergy(w.rho, w.u, w.p, gamma) };
-}
-
-export function toPrimitive(c: Conserved1D, gamma: number): Primitive1D {
-  return {
-    rho: c.rho,
-    u: c.mom / c.rho,
-    p: pressureFromConserved(c.rho, c.mom, c.energy, gamma),
-  };
 }

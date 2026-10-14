@@ -4,6 +4,12 @@
  * chapter 4, with the exact star-region pressure and velocity as tabulated
  * there (gamma = 1.4).
  *
+ * Test 1 is the original shock tube problem of G. A. Sod, "A survey of
+ * several finite difference methods for systems of nonlinear hyperbolic
+ * conservation laws", J. Comput. Phys. 27, 1978 (initial velocity zero).
+ * It should not be confused with the "modified Sod" problem (left velocity
+ * 0.75) that Toro uses in later chapters to expose sonic-point errors.
+ *
  * The published star values are rounded; each tolerance is half a unit in
  * the last printed digit. They are a cross-check only: the exact solver is
  * also verified independently against the Rankine-Hugoniot and isentropic

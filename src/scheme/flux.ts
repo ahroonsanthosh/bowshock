@@ -47,17 +47,15 @@ export function rusanovFlux(
     Math.abs(left.u) + soundSpeed(left.rho, left.p, gamma),
     Math.abs(right.u) + soundSpeed(right.rho, right.p, gamma),
   );
-  const fL = scratchL;
-  const fR = scratchR;
-  physicalFlux(left, gamma, fL);
-  physicalFlux(right, gamma, fR);
-  const dRho = right.rho - left.rho;
-  const dMom = right.rho * right.u - left.rho * left.u;
-  const dEnergy =
-    totalEnergy(right.rho, right.u, right.p, gamma) - totalEnergy(left.rho, left.u, left.p, gamma);
-  out[0] = 0.5 * (fL[0]! + fR[0]!) - 0.5 * sMax * dRho;
-  out[1] = 0.5 * (fL[1]! + fR[1]!) - 0.5 * sMax * dMom;
-  out[2] = 0.5 * (fL[2]! + fR[2]!) - 0.5 * sMax * dEnergy;
+  const energyL = totalEnergy(left.rho, left.u, left.p, gamma);
+  const energyR = totalEnergy(right.rho, right.u, right.p, gamma);
+  const momL = left.rho * left.u;
+  const momR = right.rho * right.u;
+  out[0] = 0.5 * (momL + momR) - 0.5 * sMax * (right.rho - left.rho);
+  out[1] = 0.5 * (momL * left.u + left.p + momR * right.u + right.p) - 0.5 * sMax * (momR - momL);
+  out[2] =
+    0.5 * (left.u * (energyL + left.p) + right.u * (energyR + right.p)) -
+    0.5 * sMax * (energyR - energyL);
 }
 
 /**
@@ -133,10 +131,10 @@ export function hllcFlux(
     factor *
     (energyK / side.rho + (sStar - side.u) * (sStar + side.p / (side.rho * (sK - side.u))));
 
-  physicalFlux(side, gamma, out);
-  out[0] = out[0]! + sK * (starRho - side.rho);
-  out[1] = out[1]! + sK * (starMom - side.rho * side.u);
-  out[2] = out[2]! + sK * (starEnergy - energyK);
+  const mom = side.rho * side.u;
+  out[0] = mom + sK * (starRho - side.rho);
+  out[1] = mom * side.u + side.p + sK * (starMom - mom);
+  out[2] = side.u * (energyK + side.p) + sK * (starEnergy - energyK);
 }
 
 /**
@@ -155,5 +153,5 @@ export function godunovFlux(
   physicalFlux(sampleRiemann(left, right, star, 0, gamma), gamma, out);
 }
 
-const scratchL = new Float64Array(3);
-const scratchR = new Float64Array(3);
+export const FLUXES = { hllc: hllcFlux, rusanov: rusanovFlux, godunov: godunovFlux } as const;
+export type FluxName = keyof typeof FLUXES;

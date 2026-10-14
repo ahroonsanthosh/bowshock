@@ -14,12 +14,12 @@
  * against the same exact solutions, so it favours clarity over speed.
  */
 
-import { pressureFromConserved, soundSpeed, totalEnergy, type Primitive1D } from '../scheme/gas';
-import { godunovFlux, hllcFlux, rusanovFlux, type FluxFunction } from '../scheme/flux';
+import { pressureFromConserved, soundSpeed, type Primitive1D } from '../scheme/gas';
+import { FLUXES, type FluxFunction, type FluxName } from '../scheme/flux';
 import { LIMITERS, type Limiter, type LimiterName } from '../scheme/limiters';
-
-export const FLUXES = { hllc: hllcFlux, rusanov: rusanovFlux, godunov: godunovFlux } as const;
-export type FluxName = keyof typeof FLUXES;
+import { validateGrid1DConfig } from '../solver/config';
+import { NonPhysicalStateError } from '../solver/errors';
+import { cellAverages1D } from '../solver/initial-condition';
 
 export type BoundaryCondition = 'transmissive' | 'reflective' | 'periodic';
 export type TimeIntegrator = 'forwardEuler' | 'ssprk2' | 'ssprk3';
@@ -48,25 +48,14 @@ export const DEFAULT_CONFIG: Omit<Euler1DConfig, 'nCells' | 'xMin' | 'xMax'> = {
   right: 'transmissive',
 };
 
-/** Thrown when the solution becomes non-physical, instead of continuing silently. */
-export class NonPhysicalStateError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'NonPhysicalStateError';
-  }
-}
-
 /** Ghost cells on each side; MUSCL needs two. */
 const GHOSTS = 2;
 
-/** Gauss-Legendre points and weights on [-1/2, 1/2], exact for polynomials up to degree 9. */
-const GAUSS_POINTS = [
-  { x: 0, w: 128 / 225 },
-  { x: Math.sqrt(5 - 2 * Math.sqrt(10 / 7)) / 3, w: (322 + 13 * Math.sqrt(70)) / 900 },
-  { x: -Math.sqrt(5 - 2 * Math.sqrt(10 / 7)) / 3, w: (322 + 13 * Math.sqrt(70)) / 900 },
-  { x: Math.sqrt(5 + 2 * Math.sqrt(10 / 7)) / 3, w: (322 - 13 * Math.sqrt(70)) / 900 },
-  { x: -Math.sqrt(5 + 2 * Math.sqrt(10 / 7)) / 3, w: (322 - 13 * Math.sqrt(70)) / 900 },
-].map(({ x, w }) => ({ x: x / 2, w: w / 2 }));
+interface Stage {
+  rho: Float64Array;
+  mom: Float64Array;
+  energy: Float64Array;
+}
 
 export class Euler1D {
   readonly config: Euler1DConfig;
@@ -75,28 +64,21 @@ export class Euler1D {
   steps = 0;
 
   /** Conserved variables including ghost cells; cell i is at index i + GHOSTS. */
-  readonly rho: Float64Array;
-  readonly mom: Float64Array;
-  readonly energy: Float64Array;
+  private readonly rho: Float64Array;
+  private readonly mom: Float64Array;
+  private readonly energy: Float64Array;
 
   private readonly flux: FluxFunction;
   private readonly limiter: Limiter;
   // Work arrays, allocated once.
   private readonly prim: { rho: Float64Array; u: Float64Array; p: Float64Array };
   private readonly faceFlux: Float64Array;
-  private readonly stage: { rho: Float64Array; mom: Float64Array; energy: Float64Array }[];
-  private readonly rhs: { rho: Float64Array; mom: Float64Array; energy: Float64Array };
+  private readonly stage: readonly [Stage, Stage];
+  private readonly rhs: Stage;
   private readonly fluxOut = new Float64Array(3);
 
   constructor(config: Euler1DConfig) {
-    if (!(Number.isInteger(config.nCells) && config.nCells >= 4)) {
-      throw new RangeError('nCells must be an integer of at least 4');
-    }
-    if (!(config.xMax > config.xMin)) throw new RangeError('xMax must exceed xMin');
-    if (!(config.cfl > 0 && config.cfl <= 1)) throw new RangeError('cfl must be in (0, 1]');
-    if ((config.left === 'periodic') !== (config.right === 'periodic')) {
-      throw new RangeError('periodic boundaries must be used on both sides');
-    }
+    validateGrid1DConfig(config);
     this.config = config;
     this.dx = (config.xMax - config.xMin) / config.nCells;
     this.flux = FLUXES[config.flux];
@@ -123,28 +105,13 @@ export class Euler1D {
     return this.config.xMin + (i + 0.5) * this.dx;
   }
 
-  /**
-   * Set initial cell averages of the conserved variables by 5-point
-   * Gauss-Legendre quadrature of the given primitive field. Exact averages
-   * matter for accuracy-order tests; for discontinuous data the quadrature
-   * simply gives a sensible cell average.
-   */
+  /** Set the initial state to the cell averages of a primitive field. */
   setInitialCondition(field: (x: number) => Primitive1D): void {
-    const { gamma, nCells } = this.config;
-    for (let i = 0; i < nCells; i++) {
-      let rho = 0;
-      let mom = 0;
-      let energy = 0;
-      for (const { x, w } of GAUSS_POINTS) {
-        const s = field(this.cellCentre(i) + x * this.dx);
-        rho += w * s.rho;
-        mom += w * s.rho * s.u;
-        energy += w * totalEnergy(s.rho, s.u, s.p, gamma);
-      }
-      this.rho[i + GHOSTS] = rho;
-      this.mom[i + GHOSTS] = mom;
-      this.energy[i + GHOSTS] = energy;
-    }
+    const { gamma, nCells, xMin } = this.config;
+    const averages = cellAverages1D(field, xMin, this.dx, nCells, gamma);
+    this.rho.set(averages.rho, GHOSTS);
+    this.mom.set(averages.mom, GHOSTS);
+    this.energy.set(averages.energy, GHOSTS);
     this.time = 0;
     this.steps = 0;
     this.checkPhysical(this.rho, this.mom, this.energy);
@@ -152,6 +119,9 @@ export class Euler1D {
 
   /** Primitive variables of cell i (0-based, excluding ghosts). */
   primitive(i: number): Primitive1D {
+    if (!(Number.isInteger(i) && i >= 0 && i < this.config.nCells)) {
+      throw new RangeError(`cell index ${i} is outside 0..${this.config.nCells - 1}`);
+    }
     const k = i + GHOSTS;
     const rho = this.rho[k]!;
     const mom = this.mom[k]!;
@@ -188,10 +158,16 @@ export class Euler1D {
     return (cfl * this.dx) / maxSpeed;
   }
 
-  /** Advance to exactly `tEnd`, shortening the last step to land on it. */
+  /**
+   * Advance to exactly `tEnd`, shortening the last step to land on it.
+   * Throws if more than `maxSteps` steps would be needed.
+   */
   advanceTo(tEnd: number, maxSteps = 1_000_000): void {
+    const firstStep = this.steps;
     while (this.time < tEnd) {
-      if (this.steps >= maxSteps) throw new Error(`exceeded ${maxSteps} steps`);
+      if (this.steps - firstStep >= maxSteps) {
+        throw new Error(`advanceTo(${tEnd}) needed more than ${maxSteps} steps`);
+      }
       const dt = Math.min(this.stableTimeStep(), tEnd - this.time);
       this.step(dt);
       // Land exactly on tEnd despite floating-point accumulation.
@@ -202,7 +178,7 @@ export class Euler1D {
   /** One time step of size dt with the configured integrator. */
   step(dt: number): void {
     const u0 = { rho: this.rho, mom: this.mom, energy: this.energy };
-    const [s1, s2] = this.stage as [Stage, Stage];
+    const [s1, s2] = this.stage;
 
     switch (this.config.timeIntegrator) {
       case 'forwardEuler':
@@ -297,13 +273,12 @@ export class Euler1D {
 
   /** Limited linear reconstruction of cell k's primitives at its right (+1) or left (-1) face. */
   private reconstruct(k: number, side: 1 | -1): Primitive1D {
-    const lim = this.limiter;
-    const value = (q: Float64Array) => {
-      const qc = q[k]!;
-      const slope = lim(qc - q[k - 1]!, q[k + 1]! - qc);
-      return qc + 0.5 * side * slope;
+    const { rho, u, p } = this.prim;
+    return {
+      rho: limitedValue(rho, k, side, this.limiter),
+      u: limitedValue(u, k, side, this.limiter),
+      p: limitedValue(p, k, side, this.limiter),
     };
-    return { rho: value(this.prim.rho), u: value(this.prim.u), p: value(this.prim.p) };
   }
 
   private fillGhosts(u: Stage): void {
@@ -347,10 +322,10 @@ export class Euler1D {
   }
 }
 
-interface Stage {
-  rho: Float64Array;
-  mom: Float64Array;
-  energy: Float64Array;
+/** Value of q reconstructed at the right (+1) or left (-1) face of cell k. */
+function limitedValue(q: Float64Array, k: number, side: 1 | -1, limiter: Limiter): number {
+  const centre = q[k]!;
+  return centre + 0.5 * side * limiter(centre - q[k - 1]!, q[k + 1]! - centre);
 }
 
 function copyState(from: Stage, to: Stage): void {

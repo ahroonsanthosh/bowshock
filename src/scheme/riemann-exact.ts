@@ -128,16 +128,20 @@ export function solveStarRegion(left: Primitive1D, right: Primitive1D, gamma: nu
 
   const fL = waveFunction(p, left, gamma).f;
   const fR = waveFunction(p, right, gamma).f;
-  const uStar = 0.5 * (left.u + right.u) + 0.5 * (fR - fL);
-
-  return {
+  const star: StarRegion = {
     pStar: p,
-    uStar,
+    uStar: 0.5 * (left.u + right.u) + 0.5 * (fR - fL),
     rhoStarL: starDensity(p, left, gamma),
     rhoStarR: starDensity(p, right, gamma),
     leftWave: p > left.p ? 'shock' : 'rarefaction',
     rightWave: p > right.p ? 'shock' : 'rarefaction',
   };
+  // Extreme inputs (for example densities near 1e-300) can overflow the
+  // intermediate quantities; fail loudly rather than return Infinity.
+  if (![star.pStar, star.uStar, star.rhoStarL, star.rhoStarR].every(Number.isFinite)) {
+    throw new RangeError('exact Riemann solution overflowed; nondimensionalise the inputs');
+  }
+  return star;
 }
 
 /** Density behind wave K: shock (Rankine-Hugoniot) or rarefaction (isentropic). */

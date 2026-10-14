@@ -10,6 +10,10 @@ It contains no code from FluidX3D.
 Methods implemented, with references, are listed below and cited at the
 point of use in the source code.
 
+Shock tube test problem
+  G. A. Sod, "A survey of several finite difference methods for systems of
+  nonlinear hyperbolic conservation laws", J. Comput. Phys. 27, 1978.
+
 Exact Riemann solver for the Euler equations
   E. F. Toro, Riemann Solvers and Numerical Methods for Fluid Dynamics,
   3rd ed., Springer, 2009, chapter 4 (also the source of the five 1D test
@@ -26,8 +30,14 @@ Wave-speed estimates
   Anal. 25(2), 1988.
 
 MUSCL reconstruction and slope limiters
-  B. van Leer, "Towards the ultimate conservative difference scheme" series,
-  J. Comput. Phys., 1970s.
+  B. van Leer, "Towards the ultimate conservative difference scheme. II.
+  Monotonicity and conservation combined in a second-order scheme",
+  J. Comput. Phys. 14, 1974 (harmonic limiter).
+  B. van Leer, "Towards the ultimate conservative difference scheme. IV.
+  A new approach to numerical convection", J. Comput. Phys. 23, 1977
+  (monotonized central limiter).
+  B. van Leer, "Towards the ultimate conservative difference scheme. V.
+  A second-order sequel to Godunov's method", J. Comput. Phys. 32, 1979.
   G. D. van Albada, B. van Leer and W. W. Roberts, "A comparative study of
   computational methods in cosmic gas dynamics", Astron. Astrophys. 108, 1982.
 

@@ -2,20 +2,15 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { GAMMA_AIR, soundSpeed, type Primitive1D } from '../../src/scheme/gas';
 import {
+  FLUXES,
   godunovFlux,
   hllcFlux,
   physicalFlux,
-  rusanovFlux,
   type FluxFunction,
 } from '../../src/scheme/flux';
 import { solveStarRegion } from '../../src/scheme/riemann-exact';
 
 const gamma = GAMMA_AIR;
-const FLUXES: Record<string, FluxFunction> = {
-  hllc: hllcFlux,
-  rusanov: rusanovFlux,
-  godunov: godunovFlux,
-};
 
 const state = fc.record({
   rho: fc.double({ min: 1e-2, max: 1e2, noNaN: true }),
