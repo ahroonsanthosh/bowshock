@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M4 28 Q16 2 28 28%27 fill=%27none%27 stroke=%27%23d1495b%27 stroke-width=%274%27/%3E%3C/svg%3E"
+    />
+    <title>bowshock</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f7f7f5;
+        --fg: #1b1b1b;
+        --muted: #5c5c5c;
+        --ok: #1f7a3a;
+        --warn: #a15c00;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #111316;
+          --fg: #e8e8e6;
+          --muted: #a0a0a0;
+          --ok: #5fd08a;
+          --warn: #f0a640;
+        }
+      }
+      body {
+        margin: 0;
+        padding: 2rem 1rem;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+      }
+      .status {
+        font-weight: 600;
+      }
+      .ok {
+        color: var(--ok);
+      }
+      .warn {
+        color: var(--warn);
+      }
+      table {
+        border-collapse: collapse;
+        font-variant-numeric: tabular-nums;
+      }
+      th {
+        text-align: left;
+        font-weight: 400;
+        color: var(--muted);
+        padding-right: 1.5rem;
+      }
+      .features {
+        color: var(--muted);
+        font-size: 0.875rem;
+        overflow-wrap: anywhere;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>bowshock</h1>
+      <p>
+        Supersonic rocket aerodynamics in your browser. Early development: no rocket solver yet.
+      </p>
+      <h2>Demos</h2>
+      <ul>
+        <li>
+          <a href="demos/shock-tube.html">Shock tube</a>: the 1D reference solver against exact
+          solutions.
+        </li>
+      </ul>
+      <h2>Your GPU</h2>
+      <div id="gpu-status">Checking for WebGPU...</div>
+    </main>
+    <script type="module" src="/src/app/main.ts"></script>
+  </body>
+</html>

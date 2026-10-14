@@ -1,0 +1,82 @@
+# Validation sources
+
+Reference data that bowshock is, or will be, validated against. Each entry
+records how far it has been checked:
+
+- **Verified:** the source itself, its abstract or its official catalogue
+  record was read; the link is given.
+- **Partial:** the catalogue record or abstract was read, but not the full
+  text.
+- **Unverified:** known only from secondary citations. Not to be used in the
+  validation record until checked.
+
+Last reviewed 2026-10-14. NASA and NACA reports are US government works
+distributed publicly through the NASA Technical Reports Server (NTRS).
+Journal papers are copyrighted: their figures may be cited and digitised for
+comparison, but not redistributed.
+
+## Exact and inviscid solutions
+
+| Source                                                                                                                                                                                  | Use                                          | Status                                                                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| E. F. Toro, _Riemann Solvers and Numerical Methods for Fluid Dynamics_, 3rd ed., Springer, 2009, ch. 4                                                                                  | 1D Riemann test problems                     | Verified independently: the published star values are reproduced by our exact solver (see `src/validation/toro-tests.ts`) |
+| J. L. Sims, _Tables for Supersonic Flow Around Right Circular Cones at Zero Angle of Attack_, NASA SP-3004, 1964. [NTRS](https://ntrs.nasa.gov/citations/19640009035)                   | Taylor-Maccoll cone surface pressure         | Verified (record)                                                                                                         |
+| Ames Research Staff, _Equations, Tables, and Charts for Compressible Flow_, NACA Report 1135, 1953. [NTRS](https://ntrs.nasa.gov/citations/19930091059)                                 | Oblique shock, Prandtl-Meyer, cone charts    | Verified                                                                                                                  |
+| NPARC Alliance validation archive: 10° cone at Mach 2.35; 15° Prandtl-Meyer expansion at Mach 2.5; Mach 4.5 flat plate. [Archive](https://www.grc.nasa.gov/WWW/wind/valid/archive.html) | Code-to-code and experiment cases with grids | Verified (listing)                                                                                                        |
+
+## Turbulence model verification
+
+The NASA Turbulence Modeling Resource moved on 2026-02-24 to
+<https://tmbwg.github.io/turbmodels/> (AIAA Turbulence Model Benchmarking
+Working Group). Its data are "provided as-is and accuracy is not
+guaranteed"; no licence is stated.
+
+| Case                                                                                                                                                                                      | Use                                          | Status   |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | -------- |
+| 2D zero-pressure-gradient flat plate, Mach 0.2, Re 5e6, SA results from CFL3D and FUN3D on grids up to 545 x 385. [Page](https://tmbwg.github.io/turbmodels/flatplate_sa.html)            | Verifying the SA implementation              | Verified |
+| 2D bump in channel, Mach 0.2, Re 3e6. [Page](https://tmbwg.github.io/turbmodels/bump.html)                                                                                                | Verifying SA with pressure gradients         | Verified |
+| High-Mach zero-pressure-gradient flat plate, Mach 2 and 5, compared with van Driest II. [Page](https://tmbwg.github.io/turbmodels/ZPGflatplateSS_val.html)                                | Compressible skin friction                   | Verified |
+| SA model definitions: SA, SA-neg (Allmaras, Johnson and Spalart, ICCFD7-1902, 2012), compressibility and roughness variants. [Page](https://tmbwg.github.io/turbmodels/spalart.html)      | Normative model definition                   | Verified |
+| W. D. Bachalo and D. A. Johnson, axisymmetric transonic bump, Mach 0.875, _AIAA J._ 24(3), 1986, 437-443, doi:10.2514/3.9286. [Page](https://tmbwg.github.io/turbmodels/axibump_val.html) | Transonic shock and separation, axisymmetric | Verified |
+
+## Skin friction
+
+| Source                                                                                                                                                                                                     | Status                                     |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| E. J. Hopkins, _Charts for Predicting Turbulent Skin Friction from the Van Driest Method (II)_, NASA TN D-6945, 1972. [NTRS](https://ntrs.nasa.gov/citations/19730001588)                                  | Verified                                   |
+| E. J. Hopkins and M. Inouye, "An evaluation of theories for predicting turbulent skin friction and heat transfer on flat plates at supersonic and hypersonic Mach numbers", _AIAA J._ 9(6), 1971, 993-1003 | Partial (citation seen in several sources) |
+| E. R. van Driest, "Turbulent boundary layer in compressible fluids", _J. Aeronaut. Sci._ 18(3), 1951, 145-160                                                                                              | Partial                                    |
+
+## Base flow and base pressure
+
+| Source                                                                                                                                                                                                                                                                                                               | Status                           |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| J. L. Herrin and J. C. Dutton, "Supersonic base flow experiments in the near wake of a cylindrical afterbody", _AIAA J._ 32(1), 1994, 77-83, doi:10.2514/3.11953. No official digital data; figures must be digitised. Flow conditions differ slightly between papers that reuse it, so take them from the original. | Verified (citation and abstract) |
+| D. R. Chapman, _An Analysis of Base Pressure at Supersonic Velocities and Comparison with Experiment_, NACA TR 1051, 1951. [NTRS](https://ntrs.nasa.gov/citations/19930090963)                                                                                                                                       | Verified                         |
+| E. S. Love, _Base Pressure at Supersonic Speeds on Two-Dimensional Airfoils and on Bodies of Revolution with and without Fins Having Turbulent Boundary Layers_, NACA TN 3819, 1957. [NTRS](https://ntrs.nasa.gov/citations/19930084517)                                                                             | Verified                         |
+| Spahr and Dickey, _Effect of Tail Surfaces on the Base Drag of a Body of Revolution at Mach Numbers of 1.5 and 2.0_, NACA TN 2360, 1951. [NTRS](https://ntrs.nasa.gov/citations/19930083086)                                                                                                                         | Verified                         |
+
+## Bodies of revolution
+
+| Source                                                                                                                                                                                  | Status   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| J. R. Jack and L. I. Gould, cone-cylinder load distributions and base pressure at Mach 3.12, NACA RM E52C10, 1952. [NTRS](https://ntrs.nasa.gov/citations/19930087041)                  | Verified |
+| E. W. Perkins and L. H. Jorgensen, ogive-cylinder at Mach 1.98, NACA TN 3716, 1956. [NTRS](https://ntrs.nasa.gov/citations/19930084497)                                                 | Verified |
+| W. E. Stoney Jr., _Collection of Zero-Lift Drag Data on Bodies of Revolution from Free-Flight Investigations_, NASA TR R-100, 1961. [NTRS](https://ntrs.nasa.gov/citations/19630004995) | Verified |
+
+## Complete vehicles
+
+| Source                                                                                                                                                                                                    | Status                  |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| J. C. Ferris, ARCAS-type sounding rocket, Mach 0.60 to 1.20, NASA TN D-4013, 1967. [NTRS](https://ntrs.nasa.gov/citations/19670020050) (the NTRS abstract misstates the Mach range; the title is correct) | Verified                |
+| C. D. Babb and D. E. Fuller, ARCAS-type sounding rocket, Mach 1.50 to 4.63, NASA TN D-4014, 1967. [NTRS](https://ntrs.nasa.gov/citations/19670020031)                                                     | Verified                |
+| C. S. James and R. J. Carros, zero-lift drag of a fin-stabilized body of fineness ratio 10, free flight, Mach 0.6 to 10, NACA RM A53D02, 1953. [NTRS](https://ntrs.nasa.gov/citations/19930087740)        | Verified                |
+| Dupuis and Hathaway, Basic Finner range tests at Mach 1.0 to 4.5, DREV-TM-9703, 1997, DTIC ADA636861                                                                                                      | Partial (abstract only) |
+| A. Dupuis, Basic Finner range and wind-tunnel tests, DRDC Valcartier TM 2002-136, 2002                                                                                                                    | Unverified              |
+
+## Tools used for comparison
+
+| Tool                                                                                                                                | Notes                                                                                                                                                    | Status   |
+| ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| RASAero II (Rogers Aeroscience), _Users Manual_ v1.0.2.0, 2019. [PDF](https://rasaero.com/dloads/RASAero%20II%20Users%20Manual.pdf) | Free, closed source. Supersonic methods based on USAF DATCOM and Missile DATCOM (author's forum statement). No import of user drag curves.               | Verified |
+| OpenRocket 24.12 (GPLv3). [Technical documentation](https://openrocket.sourceforge.net/techdoc.pdf)                                 | Extended Barrowman; described as reasonably accurate up to Mach 1.5. No native drag-curve import; simulation extensions can override aerodynamic forces. | Verified |
