@@ -1,11 +1,13 @@
 /**
- * Shock tube demo: runs the 1D reference solver live and overlays the exact
- * solution, so anyone can see how accurate the scheme is.
+ * Shock tube demo: runs the 1D solver live, on the CPU reference engine or
+ * on the GPU, and overlays the exact solution so anyone can see how
+ * accurate the scheme is.
  */
 
-import { DEFAULT_CONFIG, Euler1D } from '../engine-cpu/euler1d';
+import { DEFAULT_CONFIG, Euler1D, type Euler1DConfig } from '../engine-cpu/euler1d';
+import { GpuEuler1D, isGpuFlux } from '../engine-gpu/euler1d-gpu';
 import { FLUXES } from '../scheme/flux';
-import type { Primitive1D } from '../scheme/gas';
+import { pressureFromConserved, type Primitive1D } from '../scheme/gas';
 import { LIMITERS } from '../scheme/limiters';
 import { exactRiemannProfile } from '../scheme/riemann-exact';
 import { TORO_TESTS, type ToroTest } from '../validation/toro-tests';
@@ -24,6 +26,62 @@ const PANELS: readonly Panel[] = [
   { label: 'Pressure', value: (w) => w.p },
 ];
 
+interface Snapshot {
+  readonly time: number;
+  readonly steps: number;
+  readonly cells: readonly Primitive1D[];
+}
+
+/** What the demo needs from a solver, whichever engine runs it. */
+interface Run {
+  advanceTo(t: number): Promise<void>;
+  snapshot(): Promise<Snapshot>;
+  dispose(): void;
+}
+
+function cpuRun(config: Euler1DConfig, field: (x: number) => Primitive1D): Run {
+  const solver = new Euler1D(config);
+  solver.setInitialCondition(field);
+  return {
+    advanceTo: (t) => {
+      solver.advanceTo(t);
+      return Promise.resolve();
+    },
+    snapshot: () =>
+      Promise.resolve({
+        time: solver.time,
+        steps: solver.steps,
+        cells: Array.from({ length: config.nCells }, (_, i) => solver.primitive(i)),
+      }),
+    dispose: () => undefined,
+  };
+}
+
+async function gpuRun(
+  device: GPUDevice,
+  config: Euler1DConfig,
+  field: (x: number) => Primitive1D,
+): Promise<Run> {
+  const { flux } = config;
+  if (!isGpuFlux(flux)) throw new Error(`the ${flux} flux is not available on the GPU`);
+  const solver = await GpuEuler1D.create(device, { ...config, flux });
+  solver.setInitialCondition(field);
+  return {
+    advanceTo: (t) => solver.advanceTo(t),
+    snapshot: async () => {
+      const s = await solver.readState();
+      const cells = Array.from(s.rho, (rho, i) => {
+        const mom = s.mom[i]!;
+        return { rho, u: mom / rho, p: pressureFromConserved(rho, mom, s.energy[i]!, GAMMA) };
+      });
+      return { time: s.time, steps: s.steps, cells };
+    },
+    dispose: () => {
+      solver.destroy();
+    },
+  };
+}
+
 /** Look up an element and check its type, failing clearly if the page and script disagree. */
 function element<T extends HTMLElement>(selector: string, type: new () => T): T {
   const el = document.querySelector(selector);
@@ -39,6 +97,7 @@ function selectedKey<K extends string>(select: HTMLSelectElement, options: Recor
 }
 
 const problemSelect = element('#problem', HTMLSelectElement);
+const engineSelect = element('#engine', HTMLSelectElement);
 const fluxSelect = element('#flux', HTMLSelectElement);
 const limiterSelect = element('#limiter', HTMLSelectElement);
 const cellsSelect = element('#cells', HTMLSelectElement);
@@ -50,56 +109,110 @@ TORO_TESTS.forEach((test, i) => {
   problemSelect.add(new Option(`${test.name}: ${test.description}`, String(i)));
 });
 
-let solver: Euler1D | null = null;
+const gpuDevice: Promise<GPUDevice | null> = (async () => {
+  // The type definitions declare navigator.gpu as always present, but it is
+  // undefined in browsers without WebGPU.
+  const gpu = navigator.gpu as GPU | undefined;
+  const adapter = await gpu?.requestAdapter();
+  return adapter ? adapter.requestDevice() : null;
+})().catch(() => null);
+
+let run: Run | null = null;
+let snapshot: Snapshot | null = null;
 let test: ToroTest = TORO_TESTS[0]!;
 let running = false;
+/** Incremented on every reset so that work from an abandoned run is discarded. */
+let generation = 0;
 
-function reset(): void {
+/** Keep the flux choice consistent with the engine: the exact Godunov flux is CPU-only. */
+function syncFluxOptions(): void {
+  const gpu = engineSelect.value === 'gpu';
+  for (const option of fluxSelect.options) {
+    option.disabled = gpu && !isGpuFlux(option.value);
+  }
+  if (fluxSelect.selectedOptions[0]?.disabled === true) fluxSelect.value = 'hllc';
+}
+
+async function reset(): Promise<void> {
+  const myGeneration = ++generation;
+  running = false;
+  runButton.textContent = 'Run';
+  run?.dispose();
+  run = null;
+  snapshot = null;
+
   test = TORO_TESTS[Number(problemSelect.value)] ?? TORO_TESTS[0]!;
-  solver = new Euler1D({
+  const config: Euler1DConfig = {
     ...DEFAULT_CONFIG,
     nCells: Number(cellsSelect.value),
     xMin: 0,
     xMax: 1,
     flux: selectedKey(fluxSelect, FLUXES),
     limiter: selectedKey(limiterSelect, LIMITERS),
-  });
-  solver.setInitialCondition((x) => (x < test.x0 ? test.left : test.right));
+  };
+  const field = (x: number) => (x < test.x0 ? test.left : test.right);
+
+  let next: Run;
+  if (engineSelect.value === 'gpu') {
+    const device = await gpuDevice;
+    if (device === null) {
+      status.textContent = 'WebGPU is not available in this browser; using the CPU engine.';
+      engineSelect.value = 'cpu';
+      syncFluxOptions();
+      next = cpuRun(config, field);
+    } else {
+      next = await gpuRun(device, config, field);
+    }
+  } else {
+    next = cpuRun(config, field);
+  }
+
+  if (myGeneration !== generation) {
+    next.dispose();
+    return;
+  }
+  run = next;
+  snapshot = await run.snapshot();
   draw();
 }
 
-function frame(): void {
-  if (!running || solver === null) return;
+async function frame(): Promise<void> {
+  const current = run;
+  const myGeneration = generation;
+  if (!running || current === null || snapshot === null) return;
   // Advance a fixed fraction of the run per frame so every problem animates
   // over about two seconds regardless of its time scale.
-  const target = Math.min(test.tEnd, solver.time + test.tEnd / 120);
+  const target = Math.min(test.tEnd, snapshot.time + test.tEnd / 120);
   try {
-    solver.advanceTo(target);
+    await current.advanceTo(target);
+    const next = await current.snapshot();
+    if (myGeneration !== generation) return;
+    snapshot = next;
   } catch (error) {
     running = false;
-    status.textContent = `Stopped: ${String(error)}`;
     runButton.textContent = 'Run';
+    status.textContent = `Stopped: ${String(error)}`;
     return;
   }
   draw();
-  if (solver.time >= test.tEnd) {
+  if (snapshot.time >= Math.fround(test.tEnd) * (1 - 1e-9)) {
     running = false;
     runButton.textContent = 'Run';
     return;
   }
-  requestAnimationFrame(frame);
+  requestAnimationFrame(() => void frame());
 }
 
 function draw(): void {
-  if (solver === null) return;
-  const s = solver;
-  const n = s.config.nCells;
-  const numeric = Array.from({ length: n }, (_, i) => s.primitive(i));
-  const xs = Array.from({ length: n }, (_, i) => s.cellCentre(i));
+  if (snapshot === null) return;
+  const { time, steps, cells } = snapshot;
+  const n = cells.length;
+  const dx = 1 / n;
+  const xs = Array.from({ length: n }, (_, i) => (i + 0.5) * dx);
   const exactXs = Array.from({ length: EXACT_SAMPLES }, (_, i) => (i + 0.5) / EXACT_SAMPLES);
   const exact =
-    s.time > 0
-      ? exactRiemannProfile(test.left, test.right, exactXs, test.x0, s.time, GAMMA)
+    time > 0
+      ? exactRiemannProfile(test.left, test.right, exactXs, test.x0, time, GAMMA)
       : exactXs.map((x) => (x < test.x0 ? test.left : test.right));
 
   const dpr = window.devicePixelRatio || 1;
@@ -156,7 +269,7 @@ function draw(): void {
     ctx.fillStyle = colour('--numeric');
     // Dot radius follows the spacing between cells so dense grids stay legible.
     const r = Math.min(2.2, Math.max(0.8, (0.35 * plotWidth) / n));
-    numeric.forEach((w, i) => {
+    cells.forEach((w, i) => {
       ctx.beginPath();
       ctx.arc(px(xs[i]!), py(panel.value(w)), r, 0, 2 * Math.PI);
       ctx.fill();
@@ -164,13 +277,13 @@ function draw(): void {
   });
 
   let l1 = 0;
-  if (s.time > 0) {
-    const exactAtCells = exactRiemannProfile(test.left, test.right, xs, test.x0, s.time, GAMMA);
-    numeric.forEach((w, i) => (l1 += Math.abs(w.rho - exactAtCells[i]!.rho) * s.dx));
+  if (time > 0) {
+    const exactAtCells = exactRiemannProfile(test.left, test.right, xs, test.x0, time, GAMMA);
+    cells.forEach((w, i) => (l1 += Math.abs(w.rho - exactAtCells[i]!.rho) * dx));
   }
   status.textContent =
-    `t = ${s.time.toPrecision(4)} of ${test.tEnd}, ${s.steps} steps` +
-    (s.time > 0 ? `, L1 density error ${l1.toExponential(2)}` : '');
+    `t = ${time.toPrecision(4)} of ${test.tEnd}, ${steps} steps` +
+    (time > 0 ? `, L1 density error ${l1.toExponential(2)}` : '');
 }
 
 function formatTick(v: number): string {
@@ -178,24 +291,33 @@ function formatTick(v: number): string {
 }
 
 runButton.addEventListener('click', () => {
-  if (running) {
-    running = false;
-    runButton.textContent = 'Run';
-    return;
-  }
-  if (solver === null || solver.time >= test.tEnd) reset();
-  running = true;
-  runButton.textContent = 'Pause';
-  requestAnimationFrame(frame);
+  void (async () => {
+    if (running) {
+      running = false;
+      runButton.textContent = 'Run';
+      return;
+    }
+    if (run === null || snapshot === null || snapshot.time >= Math.fround(test.tEnd) * (1 - 1e-9)) {
+      await reset();
+    }
+    running = true;
+    runButton.textContent = 'Pause';
+    requestAnimationFrame(() => void frame());
+  })();
 });
 
-for (const select of [problemSelect, fluxSelect, limiterSelect, cellsSelect]) {
-  select.addEventListener('change', () => {
-    running = false;
-    runButton.textContent = 'Run';
-    reset();
-  });
+engineSelect.addEventListener('change', syncFluxOptions);
+for (const select of [problemSelect, engineSelect, fluxSelect, limiterSelect, cellsSelect]) {
+  select.addEventListener('change', () => void reset());
 }
 window.addEventListener('resize', draw);
 
-reset();
+void (async () => {
+  const device = await gpuDevice;
+  const gpuOption = engineSelect.querySelector<HTMLOptionElement>('option[value="gpu"]');
+  if (device === null && gpuOption !== null) {
+    gpuOption.disabled = true;
+    gpuOption.textContent = 'GPU (WebGPU unavailable)';
+  }
+  await reset();
+})();

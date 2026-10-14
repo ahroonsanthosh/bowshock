@@ -9,6 +9,7 @@ import {
   type FluxFunction,
 } from '../../src/scheme/flux';
 import { solveStarRegion } from '../../src/scheme/riemann-exact';
+import { fluxScales, scaledError } from '../support/flux-scales';
 
 const gamma = GAMMA_AIR;
 
@@ -33,27 +34,8 @@ function evaluate(flux: FluxFunction, l: Primitive1D, r: Primitive1D): number[] 
   return [...out];
 }
 
-/**
- * Per-component scale for comparing flux vectors: the magnitude of the terms
- * any flux formula combines, |F_i(w)| + s_max |U_i(w)| over the states w.
- * Errors are then measured relative to the size of what was computed.
- */
-function fluxScales(...ws: Primitive1D[]): number[] {
-  const scales = [0, 0, 0];
-  const f = new Float64Array(3);
-  for (const w of ws) {
-    const s = Math.abs(w.u) + soundSpeed(w.rho, w.p, gamma);
-    physicalFlux(w, gamma, f);
-    const u = [w.rho, w.rho * w.u, w.p / (gamma - 1) + 0.5 * w.rho * w.u * w.u];
-    for (let i = 0; i < 3; i++) {
-      scales[i] = Math.max(scales[i]!, Math.abs(f[i]!) + s * Math.abs(u[i]!));
-    }
-  }
-  return scales;
-}
-
 function expectClose(a: number[], b: number[], scales: number[], tol = 1e-12): void {
-  for (let i = 0; i < 3; i++) expect(Math.abs(a[i]! - b[i]!) / scales[i]!).toBeLessThan(tol);
+  expect(scaledError(a, b, scales)).toBeLessThan(tol);
 }
 
 describe.each(Object.entries(FLUXES))('%s flux', (_, flux) => {
@@ -68,7 +50,7 @@ describe.each(Object.entries(FLUXES))('%s flux', (_, flux) => {
           w,
           w,
         );
-        expectClose(f, exact, fluxScales(w));
+        expectClose(f, exact, fluxScales(gamma, w));
       }),
       { numRuns: 500, seed: 1 },
     );
@@ -79,7 +61,7 @@ describe.each(Object.entries(FLUXES))('%s flux', (_, flux) => {
       fc.property(pair, ([l, r]) => {
         const f = evaluate(flux, l, r);
         const g = evaluate(flux, { ...r, u: -r.u }, { ...l, u: -l.u });
-        expectClose(f, [-g[0]!, g[1]!, -g[2]!], fluxScales(l, r));
+        expectClose(f, [-g[0]!, g[1]!, -g[2]!], fluxScales(gamma, l, r));
       }),
       { numRuns: 500, seed: 2 },
     );
@@ -107,7 +89,7 @@ describe('HLLC specifics', () => {
           const R = { rho: rhoR, u, p };
           const f = evaluate(hllcFlux, L, R);
           const exact = evaluate(godunovFlux, L, R);
-          expectClose(f, exact, fluxScales(L, R));
+          expectClose(f, exact, fluxScales(gamma, L, R));
         },
       ),
       { numRuns: 500, seed: 4 },
@@ -165,8 +147,8 @@ describe('upwinding', () => {
             w,
             w,
           );
-        if (leftmost > 0) expectClose(f, physical(L), fluxScales(L, R));
-        if (rightmost < 0) expectClose(f, physical(R), fluxScales(L, R));
+        if (leftmost > 0) expectClose(f, physical(L), fluxScales(gamma, L, R));
+        if (rightmost < 0) expectClose(f, physical(R), fluxScales(gamma, L, R));
       }),
       { numRuns: 2000, seed: 3 },
     );
@@ -202,7 +184,7 @@ describe('upwinding', () => {
           up,
           up,
         );
-        expectClose(f, upwind, fluxScales(L, R));
+        expectClose(f, upwind, fluxScales(gamma, L, R));
       }),
       { numRuns: 1000, seed: 5 },
     );

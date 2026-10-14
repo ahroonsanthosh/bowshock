@@ -193,18 +193,21 @@ describe('Euler1D: exact discrete properties', () => {
     }
   });
 
-  it('reflective wall: half domain matches the symmetric full domain', () => {
-    // Two gases collide symmetrically about x = 0.5. With a reflective wall
-    // at x = 0.5, the half domain must reproduce the left half exactly.
+  // Two gases collide symmetrically about x = 0.5. A reflective wall at
+  // x = 0.5 must reproduce either half of the full-domain solution exactly.
+  it.each([
+    { wall: 'right', xMin: 0, xMax: 0.5, offset: 0 },
+    { wall: 'left', xMin: 0.5, xMax: 1, offset: 100 },
+  ] as const)('reflective $wall wall: half domain matches the full domain', (c) => {
     const collide = (x: number) => ({ rho: 1, u: x < 0.5 ? 1 : -1, p: 1 });
     const full = new Euler1D({ ...DEFAULT_CONFIG, nCells: 200, xMin: 0, xMax: 1 });
     full.setInitialCondition(collide);
     const half = new Euler1D({
       ...DEFAULT_CONFIG,
       nCells: 100,
-      xMin: 0,
-      xMax: 0.5,
-      right: 'reflective',
+      xMin: c.xMin,
+      xMax: c.xMax,
+      [c.wall]: 'reflective',
     });
     half.setInitialCondition(collide);
     // Use identical time steps: the full domain's stable step equals the half's.
@@ -215,8 +218,11 @@ describe('Euler1D: exact discrete properties', () => {
       half.step(dt);
     }
     for (let i = 0; i < 100; i++) {
-      expect(Math.abs(full.primitive(i).rho - half.primitive(i).rho)).toBeLessThan(1e-12);
-      expect(Math.abs(full.primitive(i).p - half.primitive(i).p)).toBeLessThan(1e-12);
+      const a = full.primitive(i + c.offset);
+      const b = half.primitive(i);
+      expect(Math.abs(a.rho - b.rho)).toBeLessThan(1e-12);
+      expect(Math.abs(a.u - b.u)).toBeLessThan(1e-12);
+      expect(Math.abs(a.p - b.p)).toBeLessThan(1e-12);
     }
   });
 

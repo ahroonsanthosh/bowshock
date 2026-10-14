@@ -41,12 +41,22 @@ The GPU uses 32-bit floats and WGSL allows a few units of rounding error in
 operations such as division and square root, so GPU results are never compared
 bit for bit with the CPU. Instead:
 
-- small kernels are compared with their TypeScript twins at a tolerance of a
-  few units in the last place;
-- smooth flow problems are compared with the CPU engine at a tight relative
-  tolerance;
+- each WGSL function is compared with its TypeScript twin on thousands of
+  random inputs, measured relative to the size of the terms it combines
+  (`tests/gpu/scheme-kernels.test.ts`, using `tests/gpu/wgsl-harness.ts`);
+- smooth flow problems are compared with the CPU engine at a tight tolerance;
 - problems with shocks are checked by comparing each engine separately with
   the exact or reference solution.
+
+Every WGSL function names its TypeScript twin in a comment. Change both
+together, and add the pair to the kernel tests.
+
+## Mutation checks
+
+A test suite that has never failed proves little. When adding numerics,
+plant a deliberate bug (a wrong sign, a wrong coefficient, an off-by-one in
+an index) and confirm a test fails, then restore the code. Gaps found this
+way have already led to new tests (for example, the left-boundary wall test).
 
 ## Licence
 
