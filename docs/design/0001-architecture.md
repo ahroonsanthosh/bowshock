@@ -15,13 +15,13 @@ bowshock solves the compressible Euler equations for a body of revolution at
 zero angle of attack. Viscous drag components come from published engineering
 correlations layered on top of the flow solution.
 
-| Drag component | How it is obtained | Expected fidelity |
-|---|---|---|
-| Wave / pressure drag (nose, body, boat-tail) | **Solved** by the Euler solver | Better than hobby tools; this is the point of the project |
-| Skin friction | Compressible turbulent flat-plate correlation (e.g. van Driest II) | Same as existing hobby tools |
-| Base drag (power off) | Published empirical base-pressure correlation | Same as existing hobby tools. Inviscid base flow is physically wrong, so the solver's own base pressure is not used |
-| Fins | Supersonic thin-airfoil theory plus fin skin friction, as a labelled correction | Correlation level; fins are not simulated in v1 |
-| Motor plume (power on) | Out of scope | n/a |
+| Drag component                               | How it is obtained                                                              | Expected fidelity                                                                                                   |
+| -------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Wave / pressure drag (nose, body, boat-tail) | **Solved** by the Euler solver                                                  | Better than hobby tools; this is the point of the project                                                           |
+| Skin friction                                | Compressible turbulent flat-plate correlation (e.g. van Driest II)              | Same as existing hobby tools                                                                                        |
+| Base drag (power off)                        | Published empirical base-pressure correlation                                   | Same as existing hobby tools. Inviscid base flow is physically wrong, so the solver's own base pressure is not used |
+| Fins                                         | Supersonic thin-airfoil theory plus fin skin friction, as a labelled correction | Correlation level; fins are not simulated in v1                                                                     |
+| Motor plume (power on)                       | Out of scope                                                                    | n/a                                                                                                                 |
 
 **Why not RANS?** A turbulence model, wall treatment and the meshing it needs
 is a very large effort to build from scratch and validate to a trustworthy
@@ -45,7 +45,7 @@ components separately so users can see which is which.
   with Einfeldt/Davis wave-speed estimates. It resolves contact and shear
   waves well and is cheap. A Rusanov flux is kept as a simple, robust
   debugging fallback.
-  - *Alternatives:* AUSM+-up is equally good and better at low Mach, which we
+  - _Alternatives:_ AUSM+-up is equally good and better at low Mach, which we
     do not need. Rusanov alone is too diffusive for drag-quality pressures.
 - **Reconstruction:** MUSCL on primitive variables with a selectable limiter
   (minmod first, as it is the most robust; van Albada once validated).
@@ -92,7 +92,7 @@ change, it will be brought back to the owner either way.
   stored as separate float arrays in GPU buffers, ping-ponged between steps.
   The visualisation (schlieren, Mach number, pressure) is rendered straight
   from those buffers without copying data back to the CPU.
-- **Reference engine:** a plain TypeScript implementation of the *same*
+- **Reference engine:** a plain TypeScript implementation of the _same_
   scheme. It serves three purposes:
   1. It lets CI test the numerics without a GPU.
   2. GPU kernels are checked against it on identical inputs.
@@ -101,6 +101,7 @@ change, it will be brought back to the owner either way.
 
   Scheme constants and choices (limiter, gamma, CFL) live in one shared module
   that feeds both engines, so they cannot silently drift apart.
+
 - **No WebGL2 solver.** It would be a second GPU code base with awkward
   texture-based data handling, and WebGPU is now available in all major
   desktop browsers. Browsers without it get the CPU fallback and a clear
@@ -116,7 +117,7 @@ discontinuously near shocks. Requiring the two to agree step by step on shock
 problems would produce false failures. So:
 
 - On smooth problems, GPU and CPU must agree to a tight tolerance.
-- On shock problems, *each* engine is checked independently against the exact
+- On shock problems, _each_ engine is checked independently against the exact
   solution, with the same error tolerance.
 
 GPU tests run in a browser test page and, best effort, in headless Chromium
@@ -128,8 +129,8 @@ Each case gets a page in `validation/` with the reference, the setup, plots,
 error numbers, the tolerance and the grid used. A capability is presented as
 reliable only after its cases pass.
 
-1. **Sod shock tube** and the Toro 1D test suite (Toro, *Riemann Solvers and
-   Numerical Methods for Fluid Dynamics*, ch. 4), compared to an exact Riemann
+1. **Sod shock tube** and the Toro 1D test suite (Toro, _Riemann Solvers and
+   Numerical Methods for Fluid Dynamics_, ch. 4), compared to an exact Riemann
    solver.
 2. **Order of accuracy** on smooth 1D flow (expect 2nd order).
 3. **2D Riemann problems** (Lax and Liu 1998) and **free-stream
@@ -170,15 +171,15 @@ checked against the original document.
 
 Each milestone ends with a working demo page and passing tests.
 
-| | Milestone | Demo |
-|---|---|---|
-| M0 | Scaffold: Vite, TypeScript, Vitest, CI, licence, docs | Page that detects WebGPU and reports adapter limits |
-| M1 | 1D Euler in TypeScript (HLLC, MUSCL, SSP-RK) and exact Riemann solver; Toro tests in CI | Live Sod shock tube plot |
-| M2 | Same 1D scheme on WebGPU, checked against M1 | Sod on GPU with exact solution overlaid |
-| M3 | 2D planar Euler, CPU and GPU; live schlieren rendering | Supersonic flow over a wedge and a corner |
-| M4 | Embedded body (cut-cell), local time stepping, force integration | Wedge as an embedded body; geometry decision gate |
-| M5 | Axisymmetric source term; cone and ogive validation | First validated pressure drag numbers |
-| M6 | Rocket pipeline: profile editor, Mach sweep, corrections, export, CPU fallback | Release v0.1 |
+|     | Milestone                                                                               | Demo                                                |
+| --- | --------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| M0  | Scaffold: Vite, TypeScript, Vitest, CI, licence, docs                                   | Page that detects WebGPU and reports adapter limits |
+| M1  | 1D Euler in TypeScript (HLLC, MUSCL, SSP-RK) and exact Riemann solver; Toro tests in CI | Live Sod shock tube plot                            |
+| M2  | Same 1D scheme on WebGPU, checked against M1                                            | Sod on GPU with exact solution overlaid             |
+| M3  | 2D planar Euler, CPU and GPU; live schlieren rendering                                  | Supersonic flow over a wedge and a corner           |
+| M4  | Embedded body (cut-cell), local time stepping, force integration                        | Wedge as an embedded body; geometry decision gate   |
+| M5  | Axisymmetric source term; cone and ogive validation                                     | First validated pressure drag numbers               |
+| M6  | Rocket pipeline: profile editor, Mach sweep, corrections, export, CPU fallback          | Release v0.1                                        |
 
 Later, not promised: fins in 3D, angle of attack, transient mode, full 3D.
 

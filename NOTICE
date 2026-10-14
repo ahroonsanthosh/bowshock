@@ -1,0 +1,13 @@
+bowshock
+Copyright (C) 2026 the bowshock contributors
+
+Licensed under the GNU Affero General Public License, version 3 or (at your
+option) any later version. See LICENSE.
+
+bowshock is an independent implementation of published numerical methods.
+It contains no code from FluidX3D.
+
+Methods implemented, with references, are listed below and cited at the
+point of use in the source code.
+
+(none yet)

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>bowshock</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f7f7f5;
+        --fg: #1b1b1b;
+        --muted: #5c5c5c;
+        --ok: #1f7a3a;
+        --warn: #a15c00;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #111316;
+          --fg: #e8e8e6;
+          --muted: #a0a0a0;
+          --ok: #5fd08a;
+          --warn: #f0a640;
+        }
+      }
+      body {
+        margin: 0;
+        padding: 2rem 1rem;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+      }
+      .status {
+        font-weight: 600;
+      }
+      .ok {
+        color: var(--ok);
+      }
+      .warn {
+        color: var(--warn);
+      }
+      table {
+        border-collapse: collapse;
+        font-variant-numeric: tabular-nums;
+      }
+      th {
+        text-align: left;
+        font-weight: 400;
+        color: var(--muted);
+        padding-right: 1.5rem;
+      }
+      .features {
+        color: var(--muted);
+        font-size: 0.875rem;
+        overflow-wrap: anywhere;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>bowshock</h1>
+      <p>Supersonic rocket aerodynamics in your browser. Early development: no solver yet.</p>
+      <h2>Your GPU</h2>
+      <div id="gpu-status">Checking for WebGPU...</div>
+    </main>
+    <script type="module" src="/src/app/main.ts"></script>
+  </body>
+</html>
