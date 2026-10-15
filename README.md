@@ -44,8 +44,10 @@ Validated so far, each with its tests and recorded accuracy:
   -0.12% and -0.061% on successively halved grids, and extrapolates to
   within about 0.01%.
 - Grids generated automatically from rocket noses and bodies (sharp noses,
-  Mach 2 to 5, most shapes down to Mach 1.5): cone-cylinders within 0.3%
-  of Taylor-Maccoll on the coarsest grid. On an ogive-cylinder the result
+  Mach 1.2 to 5; a few short noses with steep tips are still refused,
+  being fixed): cone-cylinders within 0.3% of Taylor-Maccoll on the
+  coarsest grid, converging with refinement, down to Mach 1.1 on test
+  cases. On an ogive-cylinder the result
   lies within 0.022 in Cp of NACA wind-tunnel pressures, but on the forward
   nose it differs from the report's own inviscid theory by about 0.01, for
   a reason not yet established; ogives are not yet validated.

@@ -79,6 +79,10 @@ describe.each([
   // written: +0.049% (nj = 20), -0.0044% (nj = 40); outer cells within
   // 1.6e-6 of the free stream.
   { mach: 3, cone: 10, cylinder: 15, tolerance: 1e-3 },
+  // Low supersonic Mach number: the steep outer boundary gives cell angles
+  // down to 21 deg. Measured when written: +0.051% (nj = 20), +0.010%
+  // (nj = 40).
+  { mach: 1.2, cone: 5, cylinder: 4, tolerance: 1e-3 },
 ])(
   'Euler2D on a generated grid: cone-cylinder, M = $mach, $cone deg, $cylinder calibers of cylinder',
   ({ mach, cone, cylinder, tolerance }) => {

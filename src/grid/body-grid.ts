@@ -26,7 +26,9 @@ import { gridFromFunction, type StructuredGrid } from './structured';
 export interface BodyGridOptions {
   /**
    * Cells from the body to the outer boundary on the base grid of a
-   * family; the cells along the body follow from it and the geometry.
+   * family, at least: raised where the outer boundary needs more to keep
+   * the bow shock inside it (low Mach numbers). The cells along the body
+   * follow from it and the geometry.
    */
   readonly nj: number;
   /**
@@ -79,7 +81,6 @@ export function bodyGrid(body: Body, options: BodyGridOptions): BodyGrid {
   if (!(Number.isInteger(Math.log2(refinement)) && refinement >= 1)) {
     throw new RangeError('the refinement must be 1, 2, 4, 8, ...');
   }
-  const nj = options.nj * refinement;
   const tipSlope = noseTipSlope(body.nose);
   if (!Number.isFinite(tipSlope)) {
     throw new RangeError(
@@ -119,24 +120,27 @@ export function bodyGrid(body: Body, options: BodyGridOptions): BodyGrid {
   // On the convex profiles served here the bow shock weakens downstream and
   // stays below the tip's conical shock line, x tan(shock). Base-grid cells
   // between that line and the outer boundary, fewest along the body:
-  const cellsAboveShock = (angle: number) => {
+  const fractionAboveShock = (angle: number) => {
     const across = acrossFor(angle);
+    const samples = bodyBreakpoints(body).slice(1);
+    for (let k = 1; k < 1024; k++) samples.push((xEnd * k) / 1024);
     let fewest = Infinity;
-    for (let k = 1; k <= 64; k++) {
-      const x = (xEnd * k) / 64;
+    for (const x of samples) {
       const { wall, h, b } = across(x);
       const eta = Math.log1p((Math.expm1(b) * (x * Math.tan(shock) - wall)) / h) / b;
-      fewest = Math.min(fewest, options.nj * (1 - eta));
+      fewest = Math.min(fewest, 1 - eta);
     }
     return fewest;
   };
+  // Where even the steepest outer boundary leaves too few cells above the
+  // shock, the base grid gets more cells across.
+  const baseNj = Math.max(
+    options.nj,
+    Math.ceil(OUTER_CELLS_ABOVE_SHOCK / fractionAboveShock(maxOuterAngle) - 1e-9),
+  );
+  const cellsAboveShock = (angle: number) => baseNj * fractionAboveShock(angle);
   let outerAngle = Math.min(OUTER_ANGLE_FACTOR * shock, maxOuterAngle);
   if (cellsAboveShock(outerAngle) < OUTER_CELLS_ABOVE_SHOCK) {
-    if (cellsAboveShock(maxOuterAngle) < OUTER_CELLS_ABOVE_SHOCK) {
-      throw new GridQualityError(
-        `the outer boundary cannot keep the bow shock ${OUTER_CELLS_ABOVE_SHOCK} cells inside it; use more cells across`,
-      );
-    }
     // Smallest angle that keeps the margin, by bisection.
     let low = outerAngle;
     let high = maxOuterAngle;
@@ -147,6 +151,7 @@ export function bodyGrid(body: Body, options: BodyGridOptions): BodyGrid {
     }
     outerAngle = high;
   }
+  const nj = baseNj * refinement;
   const across = acrossFor(outerAngle);
   const columnSpacing = (x: number) => {
     const { h, b } = across(x);

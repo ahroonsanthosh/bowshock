@@ -63,10 +63,15 @@ base grid, so each refinement divides every base cell into exactly 2, 4,
 rockets).
 
 **Quality gates** (`src/grid/quality.ts`): positive cell areas; cell angles
-of at least 30 deg, and 60 deg in the wall layer; neighbouring cells no
+of at least 12 deg, and 60 deg in the wall layer; neighbouring cells no
 more than 1.3 times different in width (along i) or height (along j);
-aspect ratio at most 10. A grid that
-fails is refused with the reason, never returned. With the strongest
+aspect ratio at most 10. A grid that fails is refused with the reason,
+never returned. The cell-angle limit is set by measurement, not by rule of
+thumb: at low Mach numbers the steep outer boundary skews the cells near
+it, and on such grids, down to 12.3 deg, the solver keeps its accuracy
+(the low-Mach table below). Cells in the undisturbed free stream cannot
+add error whatever their shape: the solver keeps a uniform flow uniform to
+3e-15 on these grids. With the strongest
 stretching, the size-ratio gate needs about 18 cells across; 20 is the
 smallest grid used. Since vertical grid lines meet the nose at 90 deg minus
 the tip half-angle, tips steeper than 30 deg are refused with that reason.
@@ -75,10 +80,14 @@ the tip half-angle, tips steeper than 30 deg are refused with that reason.
 
 100 random rockets (tangent ogives and ogive family, cones and parabolic
 noses of 2 to 8 calibers, cylinders of 0 or 1 to 25 calibers) pass every
-gate at Mach 2 to 5 with nj = 20. Between Mach 1.5 and 2, 9 of 100 are
-refused with nj = 20 and 1 with nj = 40: the outer boundary, steepened to
-keep its margin over the shock, meets the vertical grid lines at under
-30 deg.
+gate at Mach 1.5 to 5 with nj = 20 (the property tests). Of a larger
+sample, 200 rockets per range, these are refused: at Mach 2 to 5, 1; at
+1.5 to 2, 3; at 1.2 to 1.5, 9, and 8 more whose tip shock detaches (blunt
+body flow, open). All but one of the 13 are short noses with tips of 21
+to 28 deg, whose cells either side of the tip differ in width by 1.30 to
+1.45; the other has a cell angle of 11.3 deg at Mach 1.2. Where even the
+steepest outer boundary would leave fewer than three cells above the
+shock, the base grid gets more cells across instead.
 
 Cone-cylinders, cone surface pressure over 0.5 to 0.95 of the cone length
 against Taylor-Maccoll, converged to a residual of 1e-13 or less:
@@ -89,6 +98,23 @@ against Taylor-Maccoll, converged to a residual of 1e-13 or less:
 | M 2, 15 deg cone                      | +0.030% | -0.008%  | -0.010%  |
 | M 3.12, 10 deg cone                   | +0.023% | -0.011%  | -0.012%  |
 | M 3, 10 deg cone, 15-caliber cylinder | +0.049% | -0.0044% | -0.0096% |
+
+At low Mach numbers, where the outer boundary is steep and the cells near
+it skewed (smallest cell angle in brackets), on 4-caliber cylinders:
+
+| Case                      | nj = 20 | nj = 40 | nj = 80  |
+| ------------------------- | ------- | ------- | -------- |
+| M 1.5, 15 deg cone (35.8) | +0.028% | -0.004% | -0.006%  |
+| M 1.3, 10 deg cone (28.1) | +0.043% | +0.007% | +0.0003% |
+| M 1.25, 7 deg cone (24.9) | +0.053% | +0.010% | +0.002%  |
+| M 1.2, 5 deg cone (21.1)  | +0.051% | +0.010% |          |
+| M 1.2, 12 deg cone (19.8) | -0.16%  | -0.019% |          |
+| M 1.15, 4 deg cone (17.3) | +0.049% | +0.010% |          |
+| M 1.1, 3 deg cone (12.3)  | +0.017% | +0.010% |          |
+
+On all of them the outer boundary cells stay within 4e-6 of the free
+stream and the flow leaves through the outflow plane at an axial Mach
+number of 1.09 or more.
 
 Ogive-cylinder of NACA TN 3716 (3-caliber tangent ogive, M 1.98), the
 first comparison with measurements on a generated grid:
@@ -134,10 +160,21 @@ first comparison with measurements on a generated grid:
   there and gives the stagnation pressure within 0.5% of the exact value.
   Until the steady scheme handles both shocks and stagnation regions,
   blunt noses are refused with that reason.
-- **Low supersonic Mach numbers.** As the Mach number falls the shock
-  steepens and so does the outer boundary; where it meets the vertical
-  grid lines at under 30 deg the grid is refused. Grid lines that lean to
-  meet a steep outer boundary are the next step; transonic flow needs a
-  different domain altogether.
+- **Low supersonic Mach numbers.** Below Mach 1.2 the outer boundary
+  meets the vertical grid lines at under 12 deg, the smallest angle
+  validated. Grid lines that lean to meet it were tried and set aside:
+  they tilt the outflow plane, across which the normal Mach number then
+  falls to 0.98 or less, where the outflow condition no longer holds.
+  Transonic flow needs a domain that follows the body past its base.
+- **Subsonic cone surfaces.** Where the conical flow at the tip is
+  subsonic at the surface, the shoulder can influence the cone pressure
+  upstream through it, so Taylor-Maccoll is not by itself a reference.
+  On a 26 deg cone at Mach 1.5 (conical surface Mach number 0.978) the
+  computed cone pressure differs from it by -2.4% with nj = 20 and -0.75%
+  with nj = 40: still changing with the grid, so the case is being
+  measured further before any conclusion.
+- **Size jump at steep tips.** On short noses with tips of 21 to 28 deg
+  at Mach 1.2 to 1.5 the cells either side of the tip differ in width by
+  up to 1.45. Being measured against cones with the same tips.
 - **Base and wake**, boat-tails and transitions, and wall layers for the
   viscous solver: later milestones (0002).
