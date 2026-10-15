@@ -10,7 +10,10 @@ export interface GridQuality {
   readonly minAngle: number;
   /** Smallest interior angle of the cells along jMin (the wall), radians. */
   readonly minWallAngle: number;
-  /** Largest size ratio of neighbouring cells along i and along j. */
+  /**
+   * Largest size ratio of neighbouring cells: of their widths along i and
+   * of their heights along j.
+   */
   readonly maxSizeRatio: number;
   /** Largest ratio of a cell's longer to shorter mean side length. */
   readonly maxAspectRatio: number;
@@ -85,19 +88,26 @@ export function gridQuality(grid: StructuredGrid): GridQuality {
 /** The limits a grid fails, as readable messages (empty if it passes). */
 export function qualityFailures(q: GridQuality): string[] {
   const deg = (r: number) => `${((r * 180) / Math.PI).toFixed(1)} deg`;
+  const limits = QUALITY_LIMITS;
   const failures: string[] = [];
+  // Written as !(value within limit) so that NaN, from a degenerate cell,
+  // fails rather than slipping through.
   if (!(q.minArea > 0)) failures.push('a cell has non-positive area');
-  if (q.minAngle < QUALITY_LIMITS.minAngle) {
-    failures.push(`cell angle ${deg(q.minAngle)} below 30 deg`);
+  if (!(q.minAngle >= limits.minAngle)) {
+    failures.push(`cell angle ${deg(q.minAngle)} below ${deg(limits.minAngle)}`);
   }
-  if (q.minWallAngle < QUALITY_LIMITS.minWallAngle) {
-    failures.push(`wall cell angle ${deg(q.minWallAngle)} below 60 deg`);
+  if (!(q.minWallAngle >= limits.minWallAngle)) {
+    failures.push(`wall cell angle ${deg(q.minWallAngle)} below ${deg(limits.minWallAngle)}`);
   }
-  if (q.maxSizeRatio > QUALITY_LIMITS.maxSizeRatio) {
-    failures.push(`neighbouring cells differ in size by ${q.maxSizeRatio.toFixed(2)} (limit 1.3)`);
+  if (!(q.maxSizeRatio <= limits.maxSizeRatio)) {
+    failures.push(
+      `neighbouring cells differ in size by ${q.maxSizeRatio.toFixed(2)} (limit ${limits.maxSizeRatio})`,
+    );
   }
-  if (q.maxAspectRatio > QUALITY_LIMITS.maxAspectRatio) {
-    failures.push(`cell aspect ratio ${q.maxAspectRatio.toFixed(1)} above 10`);
+  if (!(q.maxAspectRatio <= limits.maxAspectRatio)) {
+    failures.push(
+      `cell aspect ratio ${q.maxAspectRatio.toFixed(1)} above ${limits.maxAspectRatio}`,
+    );
   }
   return failures;
 }

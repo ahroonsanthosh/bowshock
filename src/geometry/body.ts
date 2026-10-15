@@ -30,36 +30,3 @@ export function bodyRadius(body: Body, x: number): number {
 export function bodyBreakpoints(body: Body): number[] {
   return body.cylinderLength > 0 ? [0, body.nose.length, bodyLength(body)] : [0, body.nose.length];
 }
-
-/**
- * Slope dr/dx of the nose at its tip, from each shape's formula: finite for
- * a sharp tip, Infinity where the profile leaves the tip vertically (the
- * tip is then blunt, and the flow ahead of it has a stagnation point).
- */
-export function noseTipSlope(nose: Nose): number {
-  const { shape, length: L, baseRadius: R } = nose;
-  switch (shape.kind) {
-    case 'conical':
-      return R / L;
-    case 'ogive': {
-      // As in noseRadius: a nose shorter than its radius is compressed along x.
-      const stretch = L < R ? R / L : 1;
-      const length = Math.max(L, R);
-      const p = shape.parameter;
-      if (p < 1e-6) return (R / length) * stretch;
-      const rho = Math.sqrt(
-        ((length * length + R * R) * (((2 - p) * length) ** 2 + (p * R) ** 2)) / (4 * (p * R) ** 2),
-      );
-      const xc = length / p;
-      // Slope of the arc at the tip: xc / sqrt(rho^2 - xc^2).
-      return (xc / Math.sqrt(rho * rho - xc * xc)) * stretch;
-    }
-    case 'parabolic':
-      return (2 * R) / ((2 - shape.parameter) * L);
-    case 'power':
-      return shape.exponent === 1 ? R / L : Infinity;
-    case 'ellipsoid':
-    case 'haack':
-      return Infinity;
-  }
-}

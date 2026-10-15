@@ -16,8 +16,9 @@ const gamma = 1.4;
 const deg = Math.PI / 180;
 const SOLVE_TIMEOUT = 120_000;
 
-function solveBody(body: Body, mach: number, nj: number) {
-  const { grid } = bodyGrid(body, { nj, mach, gamma });
+/** Solve on the grid of the given refinement of the 20-cell base grid. */
+function solveBody(body: Body, mach: number, refinement: number) {
+  const { grid } = bodyGrid(body, { nj: 20, refinement, mach, gamma });
   const free: Primitive2D = { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
   const s = new Euler2D({
     grid,
@@ -38,7 +39,7 @@ function solveBody(body: Body, mach: number, nj: number) {
   });
   s.setInitialCondition(() => free);
   const initialResidual = s.densityResidualNorm();
-  s.iterate(60 * nj);
+  s.iterate(1200 * refinement);
   return { s, initialResidual };
 }
 
@@ -83,7 +84,7 @@ describe.each([
     let s: Euler2D;
     let initialResidual: number;
     beforeAll(() => {
-      ({ s, initialResidual } = solveBody(body, mach, 20));
+      ({ s, initialResidual } = solveBody(body, mach, 1));
     }, SOLVE_TIMEOUT);
 
     it('converges, with the outer boundary undisturbed', () => {
@@ -115,8 +116,8 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
   let coarse: { s: Euler2D; initialResidual: number };
   let fine: { s: Euler2D; initialResidual: number };
   beforeAll(() => {
-    coarse = solveBody(body, mach, 20);
-    fine = solveBody(body, mach, 40);
+    coarse = solveBody(body, mach, 1);
+    fine = solveBody(body, mach, 2);
   }, SOLVE_TIMEOUT);
   const cp = (s: Euler2D, x: number) => (wallPressureAt(s, x) - 1) / q;
 
@@ -135,17 +136,17 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
     }
   });
 
-  it('matches the measured pressures within 0.025, lying below them as inviscid flow must', () => {
-    // The boundary layer of the model thickens its effective shape, which
-    // softens the expansion at the shoulder and raises the pressure on the
-    // cylinder. Inviscid solutions miss this: the report's own method of
-    // characteristics (its figure 3) also lies below the measurements, by
-    // about 0.02 at the shoulder. Measured when written: largest
-    // difference 0.022 at x/d = 2.95.
-    for (const { xOverD, cp: measured } of TN3716_ZERO_INCIDENCE) {
-      const computed = cp(fine.s, xOverD);
-      expect(Math.abs(computed - measured)).toBeLessThan(0.025);
-      if (xOverD >= 0.5) expect(computed).toBeLessThan(measured + 0.002);
+  it('stays within 0.025 of the measured pressures (a regression bound, not an accuracy claim)', () => {
+    // Measured when written, at the unambiguous stations: the solution lies
+    // below the measurements by 0.002 to 0.022, largest at the shoulder
+    // (x/d = 2.95). Aft of x/d of about 1.5 the report's own inviscid
+    // method of characteristics (its figure 3) shows a similar deficit; on
+    // the forward nose it does not, and the cause of the difference there
+    // is not yet established (docs/design/0004-grids.md). The report gives
+    // the measurement uncertainty as 0.005.
+    for (const { xOverD, cp: measured, alternative } of TN3716_ZERO_INCIDENCE) {
+      if (alternative !== undefined) continue;
+      expect(Math.abs(cp(fine.s, xOverD) - measured)).toBeLessThan(0.025);
     }
   });
 });

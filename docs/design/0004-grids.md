@@ -34,8 +34,9 @@ planes close the domain at one body radius upstream of the tip and at the
 end of the body. The tip and the shoulder lie on grid lines.
 
 **Outer boundary.** A straight line inclined at 1.2 times the angle of the
-conical shock the tip would carry (from the Taylor-Maccoll solution), half
-a body radius above the axis at the inflow plane. Following the shock in
+conical shock the tip would carry (from the Taylor-Maccoll solution), but
+never more than halfway from that angle to 90 deg, half a body radius above
+the axis at the inflow plane. Following the shock in
 this way, rather than using a flat top, halved the force error on a cone
 in the design study. Every validation case checks that the cells along the
 outer boundary are undisturbed (pressure within 1e-5 of the free stream),
@@ -47,16 +48,21 @@ towards the body by y = h (e^(b eta) - 1) / (e^b - 1), with
 b = ln(1 + h / R) capped at ln 100 (R the body radius). The columns are
 spaced at the geometric mean of the wall-cell and outer-cell heights, which
 gives both the same aspect ratio, e^(b/2), at most 10. Everything depends
-only on the geometry and the number of cells across, nj; doubling nj
-doubles the cells in both directions and refines one fixed distribution, as
-a grid-convergence study requires.
+only on the geometry and the number of cells across. A grid-convergence
+study uses a family: a base grid of nj cells across and its refinements by
+2, 4, ...; the cell counts between breakpoints are rounded once, on the
+base grid, so each refinement divides every base cell into exactly 2, 4,
+... parts and reproduces every coarser node (checked to 1e-12 on random
+rockets).
 
 **Quality gates** (`src/grid/quality.ts`): positive cell areas; cell angles
 of at least 30 deg, and 60 deg in the wall layer; neighbouring cells no
-more than 1.3 times different in size; aspect ratio at most 10. A grid that
+more than 1.3 times different in width (along i) or height (along j);
+aspect ratio at most 10. A grid that
 fails is refused with the reason, never returned. With the strongest
 stretching, the size-ratio gate needs about 18 cells across; 20 is the
-smallest grid used.
+smallest grid used. Since vertical grid lines meet the nose at 90 deg minus
+the tip half-angle, tips steeper than 30 deg are refused with that reason.
 
 ## Measurements
 
@@ -77,20 +83,28 @@ against Taylor-Maccoll, converged to a residual of 1e-13 or less:
 Ogive-cylinder of NACA TN 3716 (3-caliber tangent ogive, M 1.98), the
 first comparison with measurements on a generated grid:
 
-- Converged to round-off within 3000 iterations on 93 x 20, 187 x 40 and
-  373 x 80 cells; the three grids agree within 0.0024 in Cp (0.0004 between
-  the two finer ones), so the solution is grid-converged.
+- Converged to round-off within 3000 iterations on 93 x 20, 186 x 40 and
+  372 x 80 cells (one nested family); the three grids agree within 0.0024
+  in Cp (0.0004 between the two finer ones), so the solution is
+  grid-converged.
 - Near the tip the surface pressure passes through the Taylor-Maccoll
-  value for the tip cone (Cp 0.298); the first one or two faces overshoot,
-  as at any sharp apex, over a region that shrinks with refinement.
-- Against the measurements the computed pressure is lower everywhere
-  downstream of x/d = 0.56, by up to 0.022 at the shoulder (x/d = 2.95)
-  and about 0.01 along the cylinder. The report's own method-of-
-  characteristics solution (its figure 3), also inviscid, lies below the
-  measurements in the same way: the boundary layer of the model, absent
-  from inviscid flow, thickens its effective shape. The comparison is
-  therefore a check of consistency, with a tolerance of 0.025; it becomes
-  a check of accuracy with the viscous solver.
+  value for the tip cone (Cp 0.298); the first few faces overshoot, as at
+  any sharp apex (three faces on the 40-cell grid), over a region that
+  shrinks with refinement. On a cone with the ogive's tip angle the solver
+  holds the exact value within 0.0005 from x/d = 0.22 on, on all three
+  grids, so the tip does not disturb the solution downstream.
+- Against the measurements (stated uncertainty 0.005 in Cp) the computed
+  pressure is lower at every unambiguous station, by 0.002 to 0.022,
+  largest at the shoulder. Aft of about x/d = 1.5 the report's own inviscid
+  method of characteristics (its figure 3) lies close to our solution and
+  below the measurements in the same way. On the forward nose it does not:
+  there our solution is about 0.01 below both the measurements and the
+  report's theories. The cause is not established. The boundary layer is
+  not a sufficient explanation (the report finds Reynolds-number effects
+  negligible at zero incidence, and a laminar displacement thickness here
+  is worth about 0.002 in Cp). An independent inviscid reference for sharp
+  ogives is needed before any accuracy claim on ogives; the test keeps a
+  0.025 bound only to catch regressions.
 
 ## Open
 

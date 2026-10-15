@@ -16,24 +16,25 @@
  * of quality.ts.
  */
 
-import {
-  bodyBreakpoints,
-  bodyRadius,
-  noseTipSlope,
-  validateBody,
-  type Body,
-} from '../geometry/body';
+import { bodyBreakpoints, bodyRadius, validateBody, type Body } from '../geometry/body';
+import { noseTipSlope } from '../geometry/nose';
 import { taylorMaccoll } from '../validation/taylor-maccoll';
-import { gridQuality, qualityFailures } from './quality';
+import { QUALITY_LIMITS, gridQuality, qualityFailures } from './quality';
 import { gridFromFunction, type StructuredGrid } from './structured';
 
 export interface BodyGridOptions {
   /**
-   * Cells from the body to the outer boundary. The number of cells along
-   * the body follows from it and the geometry, so that doubling nj refines
-   * the whole grid systematically.
+   * Cells from the body to the outer boundary on the base grid of a
+   * family; the cells along the body follow from it and the geometry.
    */
   readonly nj: number;
+  /**
+   * Refinement of the base grid: 1, 2, 4, ... The grid has refinement
+   * times as many cells in each direction, and keeps every node of the
+   * coarser grids of its family, as grid-convergence studies need.
+   * Default 1.
+   */
+  readonly refinement?: number;
   readonly mach: number;
   readonly gamma: number;
 }
@@ -53,23 +54,38 @@ export class GridQualityError extends Error {
 
 /** Margin of the outer boundary over the tip's conical shock angle. */
 const OUTER_ANGLE_FACTOR = 1.2;
-/** Largest cell aspect ratio the stretching may produce (see QUALITY_LIMITS). */
-const MAX_ASPECT_RATIO = 10;
+/**
+ * Steepest tip the H topology serves: its vertical grid lines meet the
+ * nose at 90 deg minus the tip half-angle, and wall cells need at least
+ * QUALITY_LIMITS.minWallAngle.
+ */
+const MAX_TIP_HALF_ANGLE = Math.PI / 2 - QUALITY_LIMITS.minWallAngle;
 
 export function bodyGrid(body: Body, options: BodyGridOptions): BodyGrid {
   validateBody(body);
-  const { nj, mach, gamma } = options;
-  if (!(Number.isInteger(nj) && nj >= 4)) {
+  const { mach, gamma } = options;
+  const refinement = options.refinement ?? 1;
+  if (!(Number.isInteger(options.nj) && options.nj >= 4)) {
     throw new RangeError('a body grid needs at least 4 cells across');
   }
+  if (!(Number.isInteger(Math.log2(refinement)) && refinement >= 1)) {
+    throw new RangeError('the refinement must be 1, 2, 4, 8, ...');
+  }
+  const nj = options.nj * refinement;
   const tipSlope = noseTipSlope(body.nose);
   if (!Number.isFinite(tipSlope)) {
     throw new RangeError(
       'blunt noses (profile vertical at the tip) are not supported yet: they need a grid around the stagnation point',
     );
   }
+  const tipHalfAngle = Math.atan(tipSlope);
+  if (tipHalfAngle > MAX_TIP_HALF_ANGLE) {
+    throw new RangeError(
+      `tip half-angles above ${toDegrees(MAX_TIP_HALF_ANGLE)} deg are not supported yet, got ${toDegrees(tipHalfAngle)} deg`,
+    );
+  }
   // Throws if the shock on the tip would detach.
-  const shock = taylorMaccoll(mach, Math.atan(tipSlope), gamma).shockAngle;
+  const shock = taylorMaccoll(mach, tipHalfAngle, gamma).shockAngle;
   const outerAngle = Math.min(OUTER_ANGLE_FACTOR * shock, (shock + Math.PI / 2) / 2);
 
   const R = body.nose.baseRadius;
@@ -84,23 +100,27 @@ export function bodyGrid(body: Body, options: BodyGridOptions): BodyGrid {
   // near the body, graded where it is far. The cells next to the wall are
   // then e^b times flatter than those at the outer boundary; spacing the
   // columns at the geometric mean of the two gives both the same aspect
-  // ratio, e^(b / 2), at most 10 with the cap. Everything is a function of
-  // the geometry and nj only, so doubling nj refines systematically.
-  const height = (x: number) => outer(x) - bodyRadius(body, x);
-  const strength = (h: number) => Math.min(Math.log1p(h / R), Math.log(MAX_ASPECT_RATIO ** 2));
+  // ratio, e^(b / 2), at most QUALITY_LIMITS.maxAspectRatio with the cap.
+  const maxStrength = 2 * Math.log(QUALITY_LIMITS.maxAspectRatio);
+  const across = (x: number) => {
+    const wall = bodyRadius(body, x);
+    const h = outer(x) - wall;
+    return { wall, h, b: Math.min(Math.log1p(h / R), maxStrength) };
+  };
   const columnSpacing = (x: number) => {
-    const h = height(x);
-    const b = strength(h);
+    const { h, b } = across(x);
     return (h * b * Math.exp(b / 2)) / (Math.expm1(b) * nj);
   };
-  const xs = columnPositions([xStart, ...bodyBreakpoints(body)], (x) => 1 / columnSpacing(x));
+  const xs = columnPositions(
+    [xStart, ...bodyBreakpoints(body)],
+    (x) => 1 / columnSpacing(x),
+    refinement,
+  );
   const ni = xs.length - 1;
   const iTip = xs.indexOf(0);
   const grid = gridFromFunction(ni, nj, (i, j) => {
     const x = xs[i]!;
-    const wall = bodyRadius(body, x);
-    const h = outer(x) - wall;
-    const b = strength(h);
+    const { wall, h, b } = across(x);
     return [x, wall + (h * Math.expm1((b * j) / nj)) / Math.expm1(b)];
   });
   const failures = qualityFailures(gridQuality(grid));
@@ -112,28 +132,45 @@ export function bodyGrid(body: Body, options: BodyGridOptions): BodyGrid {
   return { grid, iTip, outerAngle };
 }
 
+function toDegrees(radians: number): string {
+  return ((radians * 180) / Math.PI).toFixed(1);
+}
+
 /**
  * Node positions along x for a target density of nodes per unit length:
  * within each interval between breakpoints the cumulative density is
  * divided into a whole number of equal parts, so every breakpoint lies on
  * a node and the spacing varies smoothly.
+ *
+ * The count in each interval is rounded at the base resolution and then
+ * multiplied by the refinement, and the density is tabulated at a
+ * resolution set by the base grid; a refined grid therefore divides each
+ * base interval into exactly `refinement` parts, reproducing every coarser
+ * node of its family.
  */
-function columnPositions(breakpoints: readonly number[], density: (x: number) => number): number[] {
-  const SAMPLES = 2048;
+function columnPositions(
+  breakpoints: readonly number[],
+  density: (x: number) => number,
+  refinement: number,
+): number[] {
   const xs = [breakpoints[0]!];
   for (let k = 1; k < breakpoints.length; k++) {
     const a = breakpoints[k - 1]!;
     const b = breakpoints[k]!;
+    // Tabulate at least 64 samples per node of the base grid (estimated
+    // from the density at the ends of the interval).
+    const baseNodes = (((density(a) + density(b)) / 2) * (b - a)) / refinement;
+    const samples = Math.max(2048, 64 * Math.ceil(baseNodes));
     // Cumulative density by the trapezoidal rule.
-    const at = (n: number) => a + ((b - a) * n) / SAMPLES;
+    const at = (n: number) => a + ((b - a) * n) / samples;
     const cumulative = [0];
-    for (let n = 1; n <= SAMPLES; n++) {
+    for (let n = 1; n <= samples; n++) {
       cumulative.push(
         cumulative[n - 1]! + 0.5 * (density(at(n - 1)) + density(at(n))) * (at(n) - at(n - 1)),
       );
     }
-    const total = cumulative[SAMPLES]!;
-    const count = Math.max(1, Math.round(total));
+    const total = cumulative[samples]!;
+    const count = refinement * Math.max(1, Math.round(total / refinement));
     let n = 0;
     for (let m = 1; m < count; m++) {
       const target = (total * m) / count;

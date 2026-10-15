@@ -39,8 +39,9 @@ describe('body grids (H topology, sharp noses)', () => {
   it('property: below Mach 2 a grid either passes or is refused for its corner angle', () => {
     // The outer boundary steepens as the shock angle grows; where it meets
     // the vertical grid lines at under 30 deg the H topology cannot serve,
-    // and the generator says so instead of returning the grid. Measured
-    // when written: 1 of these 100 random rockets refused at Mach 1.5 to 2.
+    // and the generator says so instead of returning the grid. When written,
+    // 1 of these 100 random rockets was refused at Mach 1.5 to 2; more
+    // would mean the generator got worse.
     let refused = 0;
     fc.assert(
       fc.property(rocket, value(1.5, 2), (body, mach) => {
@@ -55,7 +56,7 @@ describe('body grids (H topology, sharp noses)', () => {
       }),
       { seed: 123, numRuns: 100 },
     );
-    expect(refused).toBeLessThan(100);
+    expect(refused).toBeLessThanOrEqual(1);
   });
 
   it('property: the wall nodes lie on the profile, with the tip and shoulder on grid lines', () => {
@@ -77,29 +78,34 @@ describe('body grids (H topology, sharp noses)', () => {
     );
   });
 
-  it('refines systematically: doubling nj doubles the cells in both directions', () => {
+  it('property: refining keeps every node: the grids of a family are nested', () => {
+    fc.assert(
+      fc.property(rocket, value(2, 5), (body, mach) => {
+        const coarse = bodyGrid(body, { nj: 20, mach, gamma }).grid;
+        const fine = bodyGrid(body, { nj: 20, refinement: 2, mach, gamma }).grid;
+        expect(fine.ni).toBe(2 * coarse.ni);
+        for (let j = 0; j <= coarse.nj; j++) {
+          for (let i = 0; i <= coarse.ni; i++) {
+            const c = nodeIndex(coarse, i, j);
+            const f = nodeIndex(fine, 2 * i, 2 * j);
+            const scale = 1 + Math.abs(coarse.x[c]!) + Math.abs(coarse.y[c]!);
+            expect(Math.abs(fine.x[f]! - coarse.x[c]!) / scale).toBeLessThan(1e-12);
+            expect(Math.abs(fine.y[f]! - coarse.y[c]!) / scale).toBeLessThan(1e-12);
+          }
+        }
+        expect(() => computeMetrics(fine, 'axisymmetric')).not.toThrow();
+      }),
+      { seed: 124, numRuns: 20 },
+    );
+  });
+
+  it('accepts refinements 1, 2, 4, ... only', () => {
     const body: Body = {
-      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
-      cylinderLength: 7,
+      nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 },
+      cylinderLength: 3,
     };
-    const coarse = bodyGrid(body, { nj: 20, mach: 2, gamma }).grid;
-    const fine = bodyGrid(body, { nj: 40, mach: 2, gamma }).grid;
-    expect(Math.abs(fine.ni / coarse.ni - 2)).toBeLessThan(0.05);
-    // Every coarse node is close to a fine node of the same family (same
-    // distribution functions): compare the wall-normal coordinate of
-    // coarse line j with fine line 2j at the shoulder column.
-    const shoulder = (g: typeof coarse) =>
-      Array.from({ length: g.ni + 1 }, (_, i) => g.x[nodeIndex(g, i, 0)]).indexOf(3);
-    const ic = shoulder(coarse);
-    const iff = shoulder(fine);
-    for (let j = 0; j <= 20; j++) {
-      expect(fine.y[nodeIndex(fine, iff, 2 * j)]).toBeCloseTo(
-        coarse.y[nodeIndex(coarse, ic, j)]!,
-        12,
-      );
-    }
-    // And the axisymmetric metrics are valid.
-    expect(() => computeMetrics(fine, 'axisymmetric')).not.toThrow();
+    expect(() => bodyGrid(body, { nj: 20, refinement: 3, mach: 3, gamma })).toThrow(/refinement/);
+    expect(bodyGrid(body, { nj: 20, refinement: 4, mach: 3, gamma }).grid.nj).toBe(80);
   });
 
   it('refuses a grid that fails its quality checks, saying why', () => {
@@ -112,6 +118,18 @@ describe('body grids (H topology, sharp noses)', () => {
     expect(() => bodyGrid(sliver, { nj: 20, mach: 2, gamma })).toThrow(/differ in size/);
   });
 
+  it('refuses tips steeper than 30 deg half-angle, whose wall cells the H grid would skew', () => {
+    const steep: Body = {
+      nose: {
+        shape: { kind: 'conical' },
+        length: 0.5 / Math.tan((32 * Math.PI) / 180),
+        baseRadius: 0.5,
+      },
+      cylinderLength: 3,
+    };
+    expect(() => bodyGrid(steep, { nj: 20, mach: 5, gamma })).toThrow(/tip half-angles above 30/);
+  });
+
   it('refuses blunt noses, and noses whose tip shock would detach', () => {
     const blunt: Body = {
       nose: { shape: { kind: 'haack', parameter: 0 }, length: 3, baseRadius: 0.5 },
@@ -119,10 +137,14 @@ describe('body grids (H topology, sharp noses)', () => {
     };
     expect(() => bodyGrid(blunt, { nj: 20, mach: 2, gamma })).toThrow(/blunt noses/);
     const squat: Body = {
-      nose: { shape: { kind: 'conical' }, length: 0.5, baseRadius: 0.5 },
+      nose: {
+        shape: { kind: 'conical' },
+        length: 0.5 / Math.tan((28 * Math.PI) / 180),
+        baseRadius: 0.5,
+      },
       cylinderLength: 5,
     };
-    // A 45 deg cone at Mach 2 carries a detached shock.
-    expect(() => bodyGrid(squat, { nj: 20, mach: 2, gamma })).toThrow(/detaches/);
+    // A 28 deg cone at Mach 1.3 carries a detached shock.
+    expect(() => bodyGrid(squat, { nj: 20, mach: 1.3, gamma })).toThrow(/detaches/);
   });
 });

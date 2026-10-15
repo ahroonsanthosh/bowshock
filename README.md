@@ -45,9 +45,10 @@ Validated so far, each with its tests and recorded accuracy:
   within about 0.01%.
 - Grids generated automatically from rocket noses and bodies (sharp noses,
   Mach 2 to 5, most shapes down to Mach 1.5): cone-cylinders within 0.3%
-  of Taylor-Maccoll on the coarsest grid, and an ogive-cylinder consistent
-  with NACA wind-tunnel pressures to within the boundary-layer effect an
-  inviscid solver cannot capture.
+  of Taylor-Maccoll on the coarsest grid. On an ogive-cylinder the result
+  lies within 0.022 in Cp of NACA wind-tunnel pressures, but on the forward
+  nose it differs from the report's own inviscid theory by about 0.01, for
+  a reason not yet established; ogives are not yet validated.
 
 Not yet: viscous flow, blunt noses, fins and the base, and drag. Until
 those pass their own validation, bowshock does not report a drag

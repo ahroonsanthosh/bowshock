@@ -54,7 +54,8 @@ export function validateNose(nose: Nose): void {
       inRange(shape.parameter, 0, 1, 'the ogive parameter');
       break;
     case 'power':
-      // n = 0 would be a flat-faced cylinder: not a nose.
+      // OpenRocket allows n = 0, a flat face; that is a blunt body and is
+      // refused here.
       if (!(shape.exponent > 0 && shape.exponent <= 1)) {
         throw new RangeError(`the power-series exponent must lie in (0, 1], got ${shape.exponent}`);
       }
@@ -97,27 +98,62 @@ export function noseRadius(nose: Nose, x: number): number {
 }
 
 /**
- * Ogive family. With parameter p, the profile is a circular arc of radius
- * rho through the tip and the base point, whose centre lies on the line
- * x = L / p: p = 1 puts the centre level with the base, so the arc meets
- * the body tangentially. As p tends to 0 the arc becomes a straight line.
- * As in OpenRocket, a nose shorter than its radius is the ogive of length
- * R compressed along x.
+ * Ogive parameters below this give the cone, as in OpenRocket (its
+ * MINFEATURE); above it the arc differs from the cone by less than 1e-3 of
+ * the base radius.
  */
-function ogiveRadius(p: number, x: number, L: number, R: number): number {
-  if (L < R) {
-    x *= R / L;
-    L = R;
-  }
-  if (p < 1e-6) return (R * x) / L;
-  // Arc centre at (L / p, -y0), radius rho, passing through (0, 0) and (L, R).
+const OGIVE_CONE_LIMIT = 0.001;
+
+/**
+ * The circular arc of the ogive family. With parameter p the arc, of radius
+ * rho, passes through the tip and the base point with its centre at
+ * (L / p, -y0): p = 1 puts the centre level with the base, so the arc meets
+ * the body tangentially, and as p tends to 0 the arc straightens into the
+ * cone. As in OpenRocket, a nose shorter than its radius is the ogive of
+ * length R compressed along x by `stretch`.
+ */
+function ogiveArc(p: number, L: number, R: number) {
+  const stretch = L < R ? R / L : 1;
+  const length = Math.max(L, R);
   const rho = Math.sqrt(
-    ((L * L + R * R) * (((2 - p) * L) ** 2 + (p * R) ** 2)) / (4 * (p * R) ** 2),
+    ((length * length + R * R) * (((2 - p) * length) ** 2 + (p * R) ** 2)) / (4 * (p * R) ** 2),
   );
-  const xc = L / p;
-  const y0 = Math.sqrt(rho * rho - xc * xc);
-  // sqrt(rho^2 - (xc - x)^2) - y0, rearranged with rho^2 - y0^2 = xc^2 to
+  const xc = length / p;
+  return { stretch, length, rho, xc, y0: Math.sqrt(rho * rho - xc * xc) };
+}
+
+function ogiveRadius(p: number, x: number, L: number, R: number): number {
+  if (p < OGIVE_CONE_LIMIT) return (R * x) / L;
+  const { stretch, rho, xc, y0 } = ogiveArc(p, L, R);
+  const s = x * stretch;
+  // sqrt(rho^2 - (xc - s)^2) - y0, rearranged with rho^2 - y0^2 = xc^2 to
   // avoid cancellation: for small p the arc is huge and both terms nearly
   // equal, which would lose about four digits near the tip.
-  return (x * (2 * xc - x)) / (Math.sqrt(Math.max(0, rho * rho - (xc - x) ** 2)) + y0);
+  return (s * (2 * xc - s)) / (Math.sqrt(Math.max(0, rho * rho - (xc - s) ** 2)) + y0);
+}
+
+/**
+ * Slope dr/dx of the nose at its tip, from each shape's formula: finite for
+ * a sharp tip, Infinity where the profile leaves the tip vertically (the
+ * tip is then blunt, and the flow ahead of it has a stagnation point).
+ */
+export function noseTipSlope(nose: Nose): number {
+  const { shape, length: L, baseRadius: R } = nose;
+  switch (shape.kind) {
+    case 'conical':
+      return R / L;
+    case 'ogive': {
+      if (shape.parameter < OGIVE_CONE_LIMIT) return R / L;
+      // Slope of the arc at the tip, xc / y0; infinite for a quarter circle.
+      const { stretch, xc, y0 } = ogiveArc(shape.parameter, L, R);
+      return (xc / y0) * stretch;
+    }
+    case 'parabolic':
+      return (2 * R) / ((2 - shape.parameter) * L);
+    case 'power':
+      return shape.exponent === 1 ? R / L : Infinity;
+    case 'ellipsoid':
+    case 'haack':
+      return Infinity;
+  }
 }
