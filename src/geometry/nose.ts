@@ -116,5 +116,8 @@ function ogiveRadius(p: number, x: number, L: number, R: number): number {
   );
   const xc = L / p;
   const y0 = Math.sqrt(rho * rho - xc * xc);
-  return Math.sqrt(Math.max(0, rho * rho - (xc - x) ** 2)) - y0;
+  // sqrt(rho^2 - (xc - x)^2) - y0, rearranged with rho^2 - y0^2 = xc^2 to
+  // avoid cancellation: for small p the arc is huge and both terms nearly
+  // equal, which would lose about four digits near the tip.
+  return (x * (2 * xc - x)) / (Math.sqrt(Math.max(0, rho * rho - (xc - x) ** 2)) + y0);
 }
