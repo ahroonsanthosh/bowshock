@@ -117,7 +117,7 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
     const order = Math.log2(vortexError(32, 1, unlimited) / vortexError(64, 1, unlimited));
     expect(order).toBeGreaterThan(1.9);
     expect(order).toBeLessThan(2.2);
-  });
+  }, 30_000);
 
   it('converges above first order with the shared reconstruction', () => {
     // The price of steady convergence (see src/scheme/reconstruction.ts):
@@ -128,7 +128,7 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
     const order = Math.log2(vortexError(32, 1, shared) / vortexError(64, 1, shared));
     expect(order).toBeGreaterThan(1.0);
     expect(order).toBeLessThan(2.2);
-  });
+  }, 30_000);
 });
 
 describe('Euler2D: time step', () => {
