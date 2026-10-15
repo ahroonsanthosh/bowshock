@@ -9,14 +9,15 @@
  * (tip, shoulder) lie on grid lines.
  *
  * The outer boundary is a straight line inclined at 1.2 times the angle of
- * the conical shock that the nose tip would carry (Taylor-Maccoll), so the
- * bow shock stays inside it while the cells follow the growing shock layer.
+ * the conical shock that the nose tip would carry (Taylor-Maccoll), or more
+ * where needed to keep that shock several cells inside it, so the bow shock
+ * stays inside it while the cells follow the growing shock layer.
  * Blunt noses, whose profile leaves the tip vertically, need a different
  * topology and are refused, as is any grid that fails the quality checks
  * of quality.ts.
  */
 
-import { bodyBreakpoints, bodyRadius, validateBody, type Body } from '../geometry/body';
+import { bodyBreakpoints, bodyLength, bodyRadius, validateBody, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
 import { taylorMaccoll } from '../validation/taylor-maccoll';
 import { QUALITY_LIMITS, gridQuality, qualityFailures } from './quality';
@@ -52,8 +53,15 @@ export class GridQualityError extends Error {
   override readonly name = 'GridQualityError';
 }
 
-/** Margin of the outer boundary over the tip's conical shock angle. */
+/** Least margin of the outer boundary over the tip's conical shock angle. */
 const OUTER_ANGLE_FACTOR = 1.2;
+/**
+ * Least number of cells of the base grid between the tip's conical shock
+ * line and the outer boundary, anywhere along the body. A captured shock
+ * spreads over two to three cells; with fewer than three between them the
+ * outer cells, where the free stream is imposed, feel it.
+ */
+const OUTER_CELLS_ABOVE_SHOCK = 3;
 /**
  * Steepest tip the H topology serves: its vertical grid lines meet the
  * nose at 90 deg minus the tip half-angle, and wall cells need at least
@@ -86,13 +94,13 @@ export function bodyGrid(body: Body, options: BodyGridOptions): BodyGrid {
   }
   // Throws if the shock on the tip would detach.
   const shock = taylorMaccoll(mach, tipHalfAngle, gamma).shockAngle;
-  const outerAngle = Math.min(OUTER_ANGLE_FACTOR * shock, (shock + Math.PI / 2) / 2);
+  const maxOuterAngle = (shock + Math.PI / 2) / 2;
 
   const R = body.nose.baseRadius;
+  const xEnd = bodyLength(body);
   // The domain starts one body radius upstream of the tip, where the outer
   // boundary is half a radius above the axis.
   const xStart = -R;
-  const outer = (x: number) => 0.5 * R + (x - xStart) * Math.tan(outerAngle);
 
   // Stretching towards the body along each vertical line of height h:
   // y = wall + h (e^(b eta) - 1) / (e^b - 1) for eta = j / nj, with
@@ -102,11 +110,44 @@ export function bodyGrid(body: Body, options: BodyGridOptions): BodyGrid {
   // columns at the geometric mean of the two gives both the same aspect
   // ratio, e^(b / 2), at most QUALITY_LIMITS.maxAspectRatio with the cap.
   const maxStrength = 2 * Math.log(QUALITY_LIMITS.maxAspectRatio);
-  const across = (x: number) => {
+  const acrossFor = (angle: number) => (x: number) => {
     const wall = bodyRadius(body, x);
-    const h = outer(x) - wall;
+    const h = 0.5 * R + (x - xStart) * Math.tan(angle) - wall;
     return { wall, h, b: Math.min(Math.log1p(h / R), maxStrength) };
   };
+
+  // On the convex profiles served here the bow shock weakens downstream and
+  // stays below the tip's conical shock line, x tan(shock). Base-grid cells
+  // between that line and the outer boundary, fewest along the body:
+  const cellsAboveShock = (angle: number) => {
+    const across = acrossFor(angle);
+    let fewest = Infinity;
+    for (let k = 1; k <= 64; k++) {
+      const x = (xEnd * k) / 64;
+      const { wall, h, b } = across(x);
+      const eta = Math.log1p((Math.expm1(b) * (x * Math.tan(shock) - wall)) / h) / b;
+      fewest = Math.min(fewest, options.nj * (1 - eta));
+    }
+    return fewest;
+  };
+  let outerAngle = Math.min(OUTER_ANGLE_FACTOR * shock, maxOuterAngle);
+  if (cellsAboveShock(outerAngle) < OUTER_CELLS_ABOVE_SHOCK) {
+    if (cellsAboveShock(maxOuterAngle) < OUTER_CELLS_ABOVE_SHOCK) {
+      throw new GridQualityError(
+        `the outer boundary cannot keep the bow shock ${OUTER_CELLS_ABOVE_SHOCK} cells inside it; use more cells across`,
+      );
+    }
+    // Smallest angle that keeps the margin, by bisection.
+    let low = outerAngle;
+    let high = maxOuterAngle;
+    for (let k = 0; k < 50; k++) {
+      const mid = (low + high) / 2;
+      if (cellsAboveShock(mid) < OUTER_CELLS_ABOVE_SHOCK) low = mid;
+      else high = mid;
+    }
+    outerAngle = high;
+  }
+  const across = acrossFor(outerAngle);
   const columnSpacing = (x: number) => {
     const { h, b } = across(x);
     return (h * b * Math.exp(b / 2)) / (Math.expm1(b) * nj);

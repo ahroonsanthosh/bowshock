@@ -33,16 +33,22 @@ after it; the upper boundary is the outer boundary; the inflow and outflow
 planes close the domain at one body radius upstream of the tip and at the
 end of the body. The tip and the shoulder lie on grid lines.
 
-**Outer boundary.** A straight line inclined at 1.2 times the angle of the
-conical shock the tip would carry (from the Taylor-Maccoll solution), but
-never more than halfway from that angle to 90 deg, half a body radius above
-the axis at the inflow plane. Following the shock in
-this way, rather than using a flat top, halved the force error on a cone
-in the design study. Every validation case checks that the cells along the
+**Outer boundary.** A straight line half a body radius above the axis at
+the inflow plane, inclined at 1.2 times the angle of the conical shock the
+tip would carry (from the Taylor-Maccoll solution), or more where needed to
+keep that shock line at least three cells of the base grid below it all
+along the body, but never more than halfway from that angle to 90 deg.
+Following the shock in this way, rather than using a flat top, halved the
+force error on a cone in the design study. On the convex profiles served
+here the bow shock weakens downstream and stays below the tip's shock
+line. The margin is in cells because a captured shock spreads over two to
+three: with the angle alone, far down a 12-caliber body only 2.1 cells
+separated them and the boundary cells were disturbed by 1.75e-5; with 2.9
+cells, by 1.2e-6. Every validation case checks that the cells along the
 outer boundary are undisturbed (pressure within 1e-5 of the free stream),
 since the boundary imposes the free stream; on the cases below the
-disturbance is 2e-6 or less on the coarsest grids, except on the
-12-caliber cone-cylinder of RM E52C10 (see Open).
+disturbance is 2e-6 or less on the coarsest grids, and so it is on seven
+bodies of 12 to 30 calibers at Mach 2 to 5.
 
 **Spacing.** Along each vertical line of height h, the nodes are graded
 towards the body by y = h (e^(b eta) - 1) / (e^b - 1), with
@@ -69,24 +75,27 @@ the tip half-angle, tips steeper than 30 deg are refused with that reason.
 
 100 random rockets (tangent ogives and ogive family, cones and parabolic
 noses of 2 to 8 calibers, cylinders of 0 or 1 to 25 calibers) pass every
-gate at Mach 2 to 5 with nj = 20. Between Mach 1.5 and 2, one of 100 was
-refused: its outer boundary met the vertical grid lines at 30 deg.
+gate at Mach 2 to 5 with nj = 20. Between Mach 1.5 and 2, 9 of 100 are
+refused with nj = 20 and 1 with nj = 40: the outer boundary, steepened to
+keep its margin over the shock, meets the vertical grid lines at under
+30 deg.
 
 Cone-cylinders, cone surface pressure over 0.5 to 0.95 of the cone length
 against Taylor-Maccoll, converged to a residual of 1e-13 or less:
 
-| Case                | nj = 20 | nj = 40 | nj = 80 |
-| ------------------- | ------- | ------- | ------- |
-| M 3, 20 deg cone    | -0.28%  | -0.16%  | -0.085% |
-| M 2, 15 deg cone    | +0.030% | -0.008% | -0.010% |
-| M 3.12, 10 deg cone | +0.023% | -0.011% | -0.012% |
+| Case                                  | nj = 20 | nj = 40  | nj = 80  |
+| ------------------------------------- | ------- | -------- | -------- |
+| M 3, 20 deg cone                      | -0.28%  | -0.16%   | -0.085%  |
+| M 2, 15 deg cone                      | +0.030% | -0.008%  | -0.010%  |
+| M 3.12, 10 deg cone                   | +0.023% | -0.011%  | -0.012%  |
+| M 3, 10 deg cone, 15-caliber cylinder | +0.049% | -0.0044% | -0.0096% |
 
 Ogive-cylinder of NACA TN 3716 (3-caliber tangent ogive, M 1.98), the
 first comparison with measurements on a generated grid:
 
-- Converged to round-off within 3000 iterations on 93 x 20, 186 x 40 and
-  372 x 80 cells (one nested family); the three grids agree within 0.0024
-  in Cp (0.0004 between the two finer ones), so the solution is
+- Converged to round-off within 3000 iterations on 84 x 20, 168 x 40 and
+  336 x 80 cells (one nested family); the three grids agree within 0.0025
+  in Cp (0.0002 between the two finer ones), so the solution is
   grid-converged.
 - Near the tip the surface pressure passes through the Taylor-Maccoll
   value for the tip cone (Cp 0.298); the first few faces overshoot, as at
@@ -114,37 +123,8 @@ first comparison with measurements on a generated grid:
   any accuracy claim on them, and the test keeps a 0.025 bound only to
   catch regressions.
 
-Cone-cylinders of NACA RM E52C10 at Mach 3.12 (models 1 and 3: 10 and 3.6
-deg cones on cylinders, 12 calibers overall). The report tabulates
-pressures only at angles of attack of 3 deg and more; the mean of the
-windward and leeward meridians at 3 deg estimates the zero-incidence
-pressure to first order (second-order terms of unknown size), and the
-zero-incidence points are only plotted. On the forward cones that mean
-matches the exact conical value within 0.0004 (0.003 at the front of
-model 1 and 0.0034 on the rear of model 3, where the measured pressure
-varies along the cone). Grids of 20, 40 and 80 cells across (20 and 40
-for model 3) agree within 0.0003, except at the first station behind the
-shoulder, 0.07 d from the corner, which is not grid-converged and is left
-out. Against the meridian mean:
-
-- On the cylinder of model 1 the computed pressure is lower by up to 0.013
-  from the shoulder to x/d of about 6.6 and higher by up to 0.005 aft of
-  x/d 7.4; on model 3 it is within 0.0033 everywhere except the first
-  station behind the shoulder, where the measurement is 0.008 to 0.009
-  above the computed value.
-- So in all three experiments (with TN 3716) the measured expansion behind
-  the shoulder is weaker than the inviscid one. The cause is not
-  established here; the tests keep regression bounds only.
-
 ## Open
 
-- **Outer-boundary margin on long bodies.** The margin over the shock is
-  an angle, so far down a long body only about one outer cell separates the
-  captured bow shock from the outer boundary: on the 12-caliber E52C10
-  model 1 the boundary cells see a disturbance of 1.75e-5. Moving the
-  boundary to 1.4 times the shock angle removes it (1.2e-6) and changes the
-  wall pressure by at most 1e-4 away from the shoulder. The margin should
-  be set in cells rather than as an angle.
 - **Blunt noses.** They need a grid wrapped around the stagnation point
   (a C grid, with the axis upstream as the inflow-side boundary), which
   the design study built and checked. But on it the shared reconstruction

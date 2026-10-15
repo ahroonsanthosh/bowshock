@@ -1,10 +1,11 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { bodyRadius, type Body } from '../../src/geometry/body';
-import type { NoseShape } from '../../src/geometry/nose';
+import { noseTipSlope, type NoseShape } from '../../src/geometry/nose';
 import { GridQualityError, bodyGrid } from '../../src/grid/body-grid';
 import { gridQuality, qualityFailures } from '../../src/grid/quality';
 import { computeMetrics, nodeIndex } from '../../src/grid/structured';
+import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
 const gamma = 1.4;
 const value = (min: number, max: number) =>
@@ -40,8 +41,8 @@ describe('body grids (H topology, sharp noses)', () => {
     // The outer boundary steepens as the shock angle grows; where it meets
     // the vertical grid lines at under 30 deg the H topology cannot serve,
     // and the generator says so instead of returning the grid. When written,
-    // 1 of these 100 random rockets was refused at Mach 1.5 to 2; more
-    // would mean the generator got worse.
+    // 9 of these 100 random rockets were refused at Mach 1.5 to 2 (1 with
+    // 40 cells across); more would mean the generator got worse.
     let refused = 0;
     fc.assert(
       fc.property(rocket, value(1.5, 2), (body, mach) => {
@@ -56,7 +57,7 @@ describe('body grids (H topology, sharp noses)', () => {
       }),
       { seed: 123, numRuns: 100 },
     );
-    expect(refused).toBeLessThanOrEqual(1);
+    expect(refused).toBeLessThanOrEqual(9);
   });
 
   it('property: the wall nodes lie on the profile, with the tip and shoulder on grid lines', () => {
@@ -96,6 +97,29 @@ describe('body grids (H topology, sharp noses)', () => {
         expect(() => computeMetrics(fine, 'axisymmetric')).not.toThrow();
       }),
       { seed: 124, numRuns: 20 },
+    );
+  });
+
+  it('property: the tip shock line stays at least 3 cells below the outer boundary', () => {
+    // The bow shock of a convex body lies below the conical shock line of
+    // its tip; the outer boundary, which imposes the free stream, keeps
+    // whole cells clear of it all along the body.
+    fc.assert(
+      fc.property(rocket, value(2, 5), (body, mach) => {
+        const { grid, iTip } = bodyGrid(body, { nj: 20, mach, gamma });
+        const shock = taylorMaccoll(mach, Math.atan(noseTipSlope(body.nose)), gamma).shockAngle;
+        for (let i = iTip + 1; i <= grid.ni; i++) {
+          const x = grid.x[nodeIndex(grid, i, 0)]!;
+          const y = (j: number) => grid.y[nodeIndex(grid, i, j)]!;
+          const line = x * Math.tan(shock);
+          let j = 0;
+          while (y(j) < line) j++;
+          // Whole cells above the line plus the part of the one it crosses.
+          const cells = grid.nj - j + (y(j) - line) / (y(j) - y(j - 1));
+          expect(cells).toBeGreaterThan(3 - 1e-9);
+        }
+      }),
+      { seed: 125, numRuns: 50 },
     );
   });
 

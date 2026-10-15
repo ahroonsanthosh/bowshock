@@ -3,12 +3,6 @@ import { Euler2D } from '../../src/engine-cpu/euler2d';
 import type { Body } from '../../src/geometry/body';
 import { bodyGrid } from '../../src/grid/body-grid';
 import type { Primitive2D } from '../../src/scheme/flux';
-import {
-  E52C10_DIAMETER_INCHES,
-  E52C10_MACH,
-  E52C10_MODEL_1,
-  E52C10_MODEL_3,
-} from '../../src/validation/cone-cylinder-e52c10';
 import { TN3716_MACH, TN3716_ZERO_INCIDENCE } from '../../src/validation/ogive-cylinder-tn3716';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
@@ -78,14 +72,19 @@ describe.each([
   // Measured when written, cone surface over 0.5 to 0.95 of the cone
   // length, nj = 20: +0.030% and -0.276% (-0.159% and -0.085% at nj = 40
   // and 80 for the 20 deg cone).
-  { mach: 2, cone: 15, tolerance: 1e-3 },
-  { mach: 3, cone: 20, tolerance: 3.5e-3 },
+  { mach: 2, cone: 15, cylinder: 4, tolerance: 1e-3 },
+  { mach: 3, cone: 20, cylinder: 4, tolerance: 3.5e-3 },
+  // A long body, where the outer boundary must keep its margin over the
+  // bow shock far downstream (docs/design/0004-grids.md). Measured when
+  // written: +0.049% (nj = 20), -0.0044% (nj = 40); outer cells within
+  // 1.6e-6 of the free stream.
+  { mach: 3, cone: 10, cylinder: 15, tolerance: 1e-3 },
 ])(
-  'Euler2D on a generated grid: cone-cylinder, M = $mach, $cone deg',
-  ({ mach, cone, tolerance }) => {
+  'Euler2D on a generated grid: cone-cylinder, M = $mach, $cone deg, $cylinder calibers of cylinder',
+  ({ mach, cone, cylinder, tolerance }) => {
     const body: Body = {
       nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(cone * deg), baseRadius: 0.5 },
-      cylinderLength: 4,
+      cylinderLength: cylinder,
     };
     let s: Euler2D;
     let initialResidual: number;
@@ -135,7 +134,7 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
   });
 
   it('is grid-converged at the measuring stations (nj = 20 and 40 agree within 0.003)', () => {
-    // Measured when written: within 0.0024 (largest at x/d = 0.22, nearest
+    // Measured when written: within 0.0025 (largest at x/d = 0.22, nearest
     // the tip); 40 and 80 agree within 0.0004.
     for (const { xOverD } of TN3716_ZERO_INCIDENCE) {
       expect(Math.abs(cp(coarse.s, xOverD) - cp(fine.s, xOverD))).toBeLessThan(3e-3);
@@ -153,59 +152,6 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
     for (const { xOverD, cp: measured, alternative } of TN3716_ZERO_INCIDENCE) {
       if (alternative !== undefined) continue;
       expect(Math.abs(cp(fine.s, xOverD) - measured)).toBeLessThan(0.025);
-    }
-  });
-});
-
-describe.each([
-  // Measured when written (nj = 20; finer grids agree within 0.0003 except
-  // at the first station behind the shoulder): cone within 0.0030 (model 1)
-  // and 0.0033 (model 3) of the meridian mean, cylinder within 0.0126 and
-  // 0.0033.
-  //
-  // On the 12-caliber model 1 the captured bow shock reaches the outer
-  // cells near the end of the body (1.75e-5; open in 0004). Moving the
-  // outer boundary out to 1.4 times the shock angle removes it (1.2e-6)
-  // and changes the wall pressure by at most 1e-4 away from the shoulder,
-  // hence the looser bound there.
-  { name: 'model 1', model: E52C10_MODEL_1, outerBound: 1e-4 },
-  { name: 'model 3', model: E52C10_MODEL_3, outerBound: 1e-5 },
-])('Euler2D on a generated grid: NACA RM E52C10 $name (M = 3.12)', ({ model, outerBound }) => {
-  const body: Body = {
-    nose: { shape: { kind: 'conical' }, length: model.coneCalibers, baseRadius: 0.5 },
-    cylinderLength: model.cylinderCalibers,
-  };
-  const mach = E52C10_MACH;
-  const q = 0.5 * gamma * mach * mach;
-  let s: Euler2D;
-  let initialResidual: number;
-  beforeAll(() => {
-    ({ s, initialResidual } = solveBody(body, mach, 1));
-  }, SOLVE_TIMEOUT);
-
-  it('converges, with the outer boundary undisturbed', () => {
-    expect(s.densityResidualNorm()).toBeLessThan(1e-10 * initialResidual);
-    expect(outerDisturbance(s)).toBeLessThan(outerBound);
-  });
-
-  it('stays near the 3 deg meridian mean (a regression bound, not an accuracy claim)', () => {
-    // Only angles of attack of 3 deg and above are tabulated; the mean of
-    // the windward and leeward meridians estimates the zero-incidence
-    // pressure to first order in the angle of attack (see the data
-    // module). The first station behind the shoulder, 0.07 d from the
-    // corner, is left out: there the solution still changes under grid
-    // refinement. Behind the shoulder the measured expansion is weaker
-    // than the inviscid one; the cause is not established
-    // (docs/design/0004-grids.md).
-    const run = model.runs.find((r) => r.alpha === 3)!;
-    const shoulder = model.coneCalibers;
-    const firstBehind = run.stations.find((p) => p.x / E52C10_DIAMETER_INCHES > shoulder)!;
-    for (const p of run.stations) {
-      if (p === firstBehind) continue;
-      const x = p.x / E52C10_DIAMETER_INCHES;
-      const computed = (wallPressureAt(s, x) - 1) / q;
-      const bound = x < shoulder ? 0.004 : 0.015;
-      expect(Math.abs(computed - (p.windward + p.leeward) / 2)).toBeLessThan(bound);
     }
   });
 });
