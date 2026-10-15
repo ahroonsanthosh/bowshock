@@ -43,9 +43,16 @@ Validated so far, each with its tests and recorded accuracy:
   Mach 3, 20 degree cone the surface pressure error falls as -0.22%,
   -0.12% and -0.061% on successively halved grids, and extrapolates to
   within about 0.01%.
+- Grids generated automatically from rocket noses and bodies (sharp noses,
+  Mach 2 to 5, most shapes down to Mach 1.5): cone-cylinders within 0.3%
+  of Taylor-Maccoll on the coarsest grid. On an ogive-cylinder the result
+  lies within 0.022 in Cp of NACA wind-tunnel pressures, but on the forward
+  nose it differs from the report's own inviscid theory by about 0.01, for
+  a reason not yet established; ogives are not yet validated.
 
-Not yet: viscous flow, rocket geometries and drag. Until those pass their
-own validation, bowshock does not report a drag coefficient.
+Not yet: viscous flow, blunt noses, fins and the base, and drag. Until
+those pass their own validation, bowshock does not report a drag
+coefficient.
 
 Limits are stated plainly: power off, zero angle of attack, no motor plume;
 base drag is the least certain component; transonic results carry wider

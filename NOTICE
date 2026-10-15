@@ -59,3 +59,12 @@ Oblique shock, normal shock and Prandtl-Meyer relations
   Ames Research Staff, "Equations, Tables, and Charts for Compressible
   Flow", NACA Report 1135, 1953.
 
+
+Nose cone profiles (src/geometry/nose.ts)
+  Shapes and parameter conventions as defined by OpenRocket
+  (core/src/main/java/info/openrocket/core/rocketcomponent/Transition.java,
+  https://github.com/openrocket/openrocket), so that imported designs
+  match; the formulas are reimplemented, no OpenRocket code is included.
+  Haack series: W. Haack, "Geschossformen kleinsten Wellenwiderstandes",
+  Bericht 139 der Lilienthal-Gesellschaft fuer Luftfahrtforschung, 1941.
+  The tests check its defining slender-body property directly.

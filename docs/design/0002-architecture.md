@@ -1,10 +1,7 @@
 # 0002: Architecture (revised)
 
-- **Status:** Proposed. Supersedes [0001](0001-architecture.md).
-  Foundations that hold under any option here (project scaffold, CPU
-  reference engine, exact solutions, GPU test harness) are being built now.
-  The physics fidelity, grid strategy and implicit solver decisions below
-  await the owner's approval before solver work depends on them.
+- **Status:** Accepted by the owner on 2026-10-15, with the accuracy-first
+  rules of section 12. Supersedes [0001](0001-architecture.md).
 - **Date:** 2026-10-14
 - **Inputs:** an independent architecture review, a literature and data
   source survey (see [validation sources](../validation/sources.md)), a
@@ -258,3 +255,25 @@ Power off, zero angle of attack, no plume; base drag is the least certain
 component; transonic results carry wider bands; roughness and transition are
 user inputs; constant-gamma gas. The visuals must never suggest more fidelity
 than the numbers have.
+
+## 12. Accuracy first
+
+The owner accepted this architecture with one priority: accuracy comes
+before speed and convenience. Where they conflict, these rules decide.
+
+- **No Cd from a single grid.** Every reported drag coefficient comes from
+  at least two systematically refined grids, and its uncertainty band
+  includes the estimated discretisation error (Richardson extrapolation
+  where the observed order supports it, otherwise the difference between
+  the grids). A one-grid result is shown only as a preview, labelled as
+  such.
+- **Fins in 3D where feasible.** Fin drag is solved on the 3D sector rather
+  than taken from a correlation. A correlation is used only where the 3D
+  solve is not yet available or not affordable on the user's hardware, and
+  is then labelled and carries a correlation-sized band.
+- **Slower before less accurate.** Run time is reduced by better methods
+  (implicit solver, grid clustering), never by coarser grids, looser
+  convergence or skipped components. If a computer is too slow for the
+  accurate answer, bowshock says so and does not substitute a cheaper one.
+- **Convergence on the quantity reported.** Runs stop on drag converged to
+  1e-4 relative, never on a fixed iteration count or a residual alone.
