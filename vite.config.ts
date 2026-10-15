@@ -16,6 +16,7 @@ export default defineConfig({
   test: {
     include: ['tests/**/*.test.ts'],
     // GPU tests need a browser and run separately (npm run test:gpu).
-    exclude: [...configDefaults.exclude, 'tests/gpu/**'],
+    // Scratch experiments live in tests/tmp*/ and are never part of the suite.
+    exclude: [...configDefaults.exclude, 'tests/gpu/**', 'tests/tmp*/**'],
   },
 });

@@ -19,6 +19,7 @@ import {
 } from '../scheme/flux';
 import { pressureFromConserved2D, soundSpeed } from '../scheme/gas';
 import { LIMITERS, type Limiter, type LimiterName } from '../scheme/limiters';
+import { validateGrid2DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
 import { RUNGE_KUTTA_STAGES, type TimeIntegrator } from '../solver/runge-kutta';
 
@@ -93,17 +94,8 @@ export class Euler2D {
   private readonly fluxOut = new Float64Array(4);
 
   constructor(config: Euler2DConfig) {
-    const { boundaries: b, cfl, grid } = config;
-    if (!(cfl > 0 && cfl <= 1)) throw new RangeError('cfl must be in (0, 1]');
-    if (grid.ni < 2 || grid.nj < 2) throw new RangeError('the grid needs at least 2 x 2 cells');
-    for (const [low, high] of [
-      ['iMin', 'iMax'],
-      ['jMin', 'jMax'],
-    ] as const) {
-      if ((b[low].kind === 'periodic') !== (b[high].kind === 'periodic')) {
-        throw new RangeError(`periodic boundaries must be used on both ${low} and ${high}`);
-      }
-    }
+    validateGrid2DConfig(config);
+    const { grid } = config;
     this.config = config;
     this.metrics = computeMetrics(grid, config.geometry);
     this.flux = FACE_FLUXES[config.flux];
