@@ -18,7 +18,12 @@ import {
   type Primitive2D,
 } from '../scheme/flux';
 import { pressureFromConserved2D, soundSpeed } from '../scheme/gas';
-import { LIMITERS, type Limiter, type LimiterName } from '../scheme/limiters';
+import { LIMITERS, type LimiterName } from '../scheme/limiters';
+import {
+  type Reconstruction,
+  reconstructPerVariable,
+  reconstructShared,
+} from '../scheme/reconstruction';
 import { validateGrid2DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
 import { RUNGE_KUTTA_STAGES, type TimeIntegrator } from '../solver/runge-kutta';
@@ -41,6 +46,11 @@ export interface Euler2DConfig {
   readonly gamma: number;
   readonly flux: FluxName;
   readonly limiter: LimiterName;
+  /**
+   * 'perVariable' for time-accurate flows, 'shared' for steady flows with
+   * shocks; the trade-off is described in src/scheme/reconstruction.ts.
+   */
+  readonly reconstruction: Reconstruction;
   readonly timeIntegrator: TimeIntegrator;
   readonly cfl: number;
   /** Global steps are time-accurate; local steps converge steady flows faster. */
@@ -82,7 +92,13 @@ export class Euler2D {
   steps = 0;
 
   private readonly flux: FaceFrameFlux;
-  private readonly limiter: Limiter;
+  /** Reconstructs the centre cell's state at its +1 or -1 face. */
+  private readonly reconstruct: (
+    prev: Primitive2D,
+    centre: Primitive2D,
+    next: Primitive2D,
+    side: 1 | -1,
+  ) => Primitive2D;
   /** Row length of the padded arrays: ni + 2 * GHOSTS. */
   private readonly stride: number;
   private readonly state: State;
@@ -99,7 +115,11 @@ export class Euler2D {
     this.config = config;
     this.metrics = computeMetrics(grid, config.geometry);
     this.flux = FACE_FLUXES[config.flux];
-    this.limiter = LIMITERS[config.limiter];
+    const limiter = LIMITERS[config.limiter];
+    this.reconstruct =
+      config.reconstruction === 'shared'
+        ? reconstructShared
+        : (prev, centre, next, side) => reconstructPerVariable(prev, centre, next, side, limiter);
     this.stride = grid.ni + 2 * GHOSTS;
     const size = this.stride * (grid.nj + 2 * GHOSTS);
     const allocate = (): State => ({
@@ -362,8 +382,8 @@ export class Euler2D {
     const wL = this.primitiveAt(u, kLeft);
     const wR = this.primitiveAt(u, kRight);
     const wRR = this.primitiveAt(u, kRight + step);
-    const left = reconstruct(wLL, wL, wR, 1, this.limiter);
-    const right = reconstruct(wL, wR, wRR, -1, this.limiter);
+    const left = this.reconstruct(wLL, wL, wR, 1);
+    const right = this.reconstruct(wL, wR, wRR, -1);
     const ok = left.rho > 0 && left.p > 0 && right.rho > 0 && right.p > 0;
     return ok ? [left, right] : [wL, wR];
   }
@@ -475,21 +495,4 @@ export class Euler2D {
       }
     }
   }
-}
-
-/** Limited linear reconstruction of the centre cell's primitives at its +1 or -1 face. */
-function reconstruct(
-  prev: Primitive2D,
-  centre: Primitive2D,
-  next: Primitive2D,
-  side: 1 | -1,
-  limiter: Limiter,
-): Primitive2D {
-  const value = (p: number, c: number, n: number) => c + 0.5 * side * limiter(c - p, n - c);
-  return {
-    rho: value(prev.rho, centre.rho, next.rho),
-    u: value(prev.u, centre.u, next.u),
-    v: value(prev.v, centre.v, next.v),
-    p: value(prev.p, centre.p, next.p),
-  };
 }

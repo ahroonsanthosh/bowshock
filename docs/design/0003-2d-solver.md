@@ -95,15 +95,56 @@ Limiter choice: a TVD version of van Albada (zero at extrema) stalled the
 steady residual at about 2e-3; the original smooth form with
 `VAN_ALBADA_EPSILON = 1e-6` converges the expansion case to round-off.
 
-**Open issue: steady convergence with captured shocks.** With HLLC and the
-smooth van Albada limiter, the wedge residual still stalls at 7e-3 to 1e-2
-on several grid alignments, from an oscillation of the cells inside the
-captured shock. Rusanov, or first order, converges to round-off. The wall
-pressure stays accurate, but the integrated ramp force fluctuates by
-4e-5 to 4e-4 relative, which on a rocket would be up to about 1.6 drag
-counts: above the 1-count convergence target. A remedy (smoothing scaled
-with cell size, limiter freezing, or a shock-sensing flux blend) is being
-evaluated and must be settled before the steady RANS solver.
+**Steady convergence with captured shocks.** With HLLC and per-variable
+van Albada limiting, the wedge residual stalls at 7e-3 to 2e-2 on several
+grid alignments: the cells inside the captured shock fall into a limit
+cycle in which each variable's limiter switches separately. The integrated
+ramp force then fluctuates by 4e-5 to 4e-4 relative, up to about 1.6 drag
+counts on a rocket, above the 1-count convergence target. Larger limiter
+smoothing, other flux functions and wave-speed estimates, characteristic
+reconstruction and sensor-blended fluxes were tried and did not cure it
+reliably.
+
+The remedy is a shared reconstruction (`reconstruction: 'shared'`, in
+`src/scheme/reconstruction.ts`): one smooth van Albada factor per cell and
+direction, the smallest of the four variables' factors, applied to all of
+them. Every configuration states its choice: steady runs (the ramp demo and
+the steady validation) use `'shared'`, time-accurate tests use
+`'perVariable'`. Measured on the CPU engine (60 x 30 cells; 120 x 60 in
+brackets), against per-variable limiting:
+
+| Case                               | Per-variable                      | Shared                              |
+| ---------------------------------- | --------------------------------- | ----------------------------------- |
+| Wedge M 2.5, 10 deg: residual      | 7e-3 (2e-2), stalled              | 2e-14 (3e-14)                       |
+| Wedge: wall pressure error         | +0.039% (-0.017%)                 | +0.024% (+0.007%)                   |
+| Wedge: spread along the plateau    | 0.39% (0.058%)                    | 0.025% (0.004%)                     |
+| Wedge: shock angle error           | -0.07 to +0.13 deg (0.00 to 0.09) | +0.08 to +0.32 deg (+0.04 to +0.15) |
+| Strong wedge M 5, 20 deg           | not measured                      | residual 3e-13, overshoot 0.37%     |
+| Expansion M 2, 10 deg: wall press. | +0.036% (+0.021%)                 | -0.034% (-0.006%)                   |
+| Isentropic vortex, order           | 2 (unlimited slopes)              | 1.13                                |
+
+So the shared reconstruction converges and gives more accurate and more
+uniform wall pressures, at the cost of a slightly thicker captured shock and
+of smooth-flow order: wherever any variable has a smooth extremum, all
+variables drop towards first order. Body pressures, which drag depends on,
+lie in monotone regions; wakes and vortex cores will show the cost, and it
+is to be re-measured with the viscous solver. Limiter freezing (fixing the
+factors once the residual has fallen by several orders) converges anything
+but makes the answer depend on when it is frozen, by up to 7e-5 relative;
+it remains a possible safety net, not the remedy.
+
+**Open issue: the shared reconstruction in 32-bit floats.** On the GPU the
+wedge converges to the f32 floor (residual 1e-5 relative), but the
+expansion corner does not settle: cells downstream of the fan keep
+wandering by up to 2.5e-4 in density, and the pressure there differs from
+the converged CPU solution by up to 4.5e-4 (wall pressure varies by about
+1e-5). In f64 the same region carries a residual of about 1e-11, so the
+CPU result is unaffected. A product of the four factors instead of their
+minimum converges in f32 and f64 alike, but doubles the shock-angle error
+and the expansion's wall-pressure error; a 4-norm of the factor deficits
+behaves like the minimum, and a 2-norm stalls on the wedge at 120 x 60. The
+root cause is being investigated; until it is settled, the GPU expansion
+test uses per-variable reconstruction.
 
 ## Results (M3b, GPU engine and rendering)
 

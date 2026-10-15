@@ -4,15 +4,18 @@ import { WGSL_LIMITER_FUNCTIONS } from '../../src/engine-gpu/euler1d-gpu';
 import fluxWgsl from '../../src/engine-gpu/shaders/flux.wgsl?raw';
 import gasWgsl from '../../src/engine-gpu/shaders/gas.wgsl?raw';
 import limitersWgsl from '../../src/engine-gpu/shaders/limiters.wgsl?raw';
+import reconstructionWgsl from '../../src/engine-gpu/shaders/reconstruction.wgsl?raw';
 import {
   hllcFaceFlux,
   hllcFlux,
   rusanovFaceFlux,
   rusanovFlux,
   type FluxFunction,
+  type Primitive2D,
 } from '../../src/scheme/flux';
 import { GAMMA_AIR } from '../../src/scheme/gas';
 import { LIMITERS, type LimiterName } from '../../src/scheme/limiters';
+import { reconstructPerVariable, reconstructShared } from '../../src/scheme/reconstruction';
 import { fluxScales, scaledError } from '../support/flux-scales';
 import { requireDevice } from './device';
 import { evaluateWgsl } from './wgsl-harness';
@@ -143,4 +146,56 @@ describe('limiter kernels', () => {
       });
     },
   );
+});
+
+describe('reconstruction kernels', () => {
+  const reconstructionLibrary = [
+    library,
+    reconstructionWgsl,
+    'fn limiter(a: f32, b: f32) -> f32 { return van_albada(a, b); }',
+    'fn as_vec4(w: Primitive2D) -> vec4f { return vec4f(w.rho, w.u, w.v, w.p); }',
+  ].join('\n');
+  const primitive = fc.record({
+    rho: fc.double({ min: 1e-2, max: 1e2, noNaN: true }).map(f32),
+    u: fc.double({ min: -5, max: 5, noNaN: true }).map(f32),
+    v: fc.double({ min: -5, max: 5, noNaN: true }).map(f32),
+    p: fc.double({ min: 1e-2, max: 1e2, noNaN: true }).map(f32),
+  });
+  const triples = fc.sample(fc.tuple(primitive, primitive, primitive, fc.constantFrom(1, -1)), {
+    numRuns: 2000,
+    seed: 43,
+  });
+  const keys = ['rho', 'u', 'v', 'p'] as const;
+
+  it.each([
+    [
+      'reconstruct_per_variable',
+      (prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: 1 | -1) =>
+        reconstructPerVariable(prev, centre, next, side, LIMITERS.vanAlbada),
+    ],
+    ['reconstruct_shared', reconstructShared],
+  ] as const)('%s matches the TypeScript twin to f32 precision', async (wgslName, cpu) => {
+    const w = (k: number) => `Primitive2D(x[${k}], x[${k + 1}], x[${k + 2}], x[${k + 3}])`;
+    const gpu = await evaluateWgsl(
+      device,
+      reconstructionLibrary,
+      `as_vec4(${wgslName}(${w(0)}, ${w(4)}, ${w(8)}, x[12]))`,
+      triples.map(([a, b, c, side]) => [
+        ...keys.map((k) => a[k]),
+        ...keys.map((k) => b[k]),
+        ...keys.map((k) => c[k]),
+        side,
+      ]),
+    );
+    triples.forEach(([prev, centre, next, side], i) => {
+      const expected = cpu(prev, centre, next, side);
+      keys.forEach((k, m) => {
+        // Scale: the values combined in the reconstruction, with a floor of
+        // 1e-6 for these order-one variables, below which f32 values are
+        // round-off (and subnormals may be flushed to zero).
+        const scale = Math.abs(prev[k]) + Math.abs(centre[k]) + Math.abs(next[k]) + 1e-6;
+        expect(Math.abs(gpu[i]![m]! - expected[k]) / scale).toBeLessThan(1e-6);
+      });
+    });
+  });
 });

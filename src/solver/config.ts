@@ -24,6 +24,8 @@ export function validateGrid1DConfig(config: UniformGrid1DConfig): void {
 export interface Grid2DConfig {
   readonly grid: { readonly ni: number; readonly nj: number };
   readonly cfl: number;
+  readonly limiter: string;
+  readonly reconstruction: string;
   readonly boundaries: Readonly<
     Record<'iMin' | 'iMax' | 'jMin' | 'jMax', { readonly kind: string }>
   >;
@@ -34,6 +36,11 @@ export function validateGrid2DConfig(config: Grid2DConfig): void {
   const { boundaries: b, cfl, grid } = config;
   if (!(cfl > 0 && cfl <= 1)) throw new RangeError('cfl must be in (0, 1]');
   if (grid.ni < 2 || grid.nj < 2) throw new RangeError('the grid needs at least 2 x 2 cells');
+  if (config.reconstruction === 'shared' && config.limiter !== 'vanAlbada') {
+    // The shared factor is defined from van Albada; any other limiter would
+    // be silently ignored.
+    throw new RangeError("shared reconstruction requires the 'vanAlbada' limiter");
+  }
   for (const [low, high] of [
     ['iMin', 'iMax'],
     ['jMin', 'jMax'],

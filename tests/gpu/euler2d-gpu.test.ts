@@ -52,6 +52,7 @@ function config(grid: StructuredGrid, overrides: Partial<GpuEuler2DConfig>): Gpu
     gamma,
     flux: 'hllc',
     limiter: 'vanLeer',
+    reconstruction: 'perVariable',
     timeIntegrator: 'ssprk2',
     cfl: 0.5,
     timeStepping: 'global',
@@ -204,6 +205,7 @@ describe('GpuEuler2D: steady supersonic validation', () => {
       rampGrid({ ni: 60, nj: 30, xMin: -0.5, xCorner: 0, xMax: 1.5, height: 1.2, angle }),
       {
         limiter: 'vanAlbada',
+        reconstruction: 'shared',
         cfl: 0.8,
         timeStepping: 'local',
         boundaries: {
@@ -226,21 +228,38 @@ describe('GpuEuler2D: steady supersonic validation', () => {
     return values.reduce((a, b) => a + b, 0) / values.length;
   }
 
-  it('wedge: pressure behind the shock matches the oblique-shock relation within 0.3%', async () => {
+  it('wedge: converges, and matches the CPU engine and the oblique-shock relation', async () => {
+    // With the shared reconstruction the captured shock reaches a steady
+    // state, so the engines can be compared directly.
     const exact = obliqueShock(2.5, 10 * deg, gamma);
-    await withSolver(rampConfig(2.5, 10 * deg), async (s) => {
-      s.setInitialCondition(() => ({ rho: 1, u: 2.5 * Math.sqrt(gamma), v: 0, p: 1 }));
-      await s.iterate(1500);
+    const cfg = rampConfig(2.5, 10 * deg);
+    const free = { rho: 1, u: 2.5 * Math.sqrt(gamma), v: 0, p: 1 };
+    const cpu = new Euler2D(cfg);
+    cpu.setInitialCondition(() => free);
+    cpu.iterate(1600);
+    await withSolver(cfg, async (s) => {
+      s.setInitialCondition(() => free);
+      const initial = await s.densityResidualNorm();
+      await s.iterate(1600);
+      expect(await s.densityResidualNorm()).toBeLessThan(1e-5 * initial);
       const state = await s.readState();
       const p = wallCellPressure(s, state, 0.5, 1.2);
       expect(Math.abs(p / exact.pressureRatio - 1)).toBeLessThan(3e-3);
+      let worst = 0;
+      for (let c = 0; c < 60 * 30; c++) {
+        const cell = cpu.primitive(c % 60, Math.floor(c / 60));
+        worst = Math.max(worst, Math.abs(gpuPrimitive2D(state, c, gamma).p - cell.p) / cell.p);
+      }
+      expect(worst).toBeLessThan(1e-4);
     });
   });
 
   it('expansion: converges, and matches the CPU engine and isentropic theory', async () => {
     const mach2 = machFromPrandtlMeyer(prandtlMeyer(2, gamma) + 10 * deg, gamma);
     const exact = stagnationPressureRatio(2, gamma) / stagnationPressureRatio(mach2, gamma);
-    const cfg = rampConfig(2, -10 * deg);
+    // Per-variable reconstruction: in f32 the shared reconstruction does not
+    // settle downstream of this fan (open issue, docs/design/0003-2d-solver.md).
+    const cfg: GpuEuler2DConfig = { ...rampConfig(2, -10 * deg), reconstruction: 'perVariable' };
     const free = { rho: 1, u: 2 * Math.sqrt(gamma), v: 0, p: 1 };
     const cpu = new Euler2D(cfg);
     cpu.setInitialCondition(() => free);

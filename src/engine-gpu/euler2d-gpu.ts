@@ -15,6 +15,7 @@ import type { BoundaryCondition2D, Euler2DConfig, Side } from '../engine-cpu/eul
 import { computeMetrics, type GridMetrics } from '../grid/structured';
 import { pressureFromConserved2D } from '../scheme/gas';
 import type { Primitive2D } from '../scheme/flux';
+import type { Reconstruction } from '../scheme/reconstruction';
 import { validateGrid2DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
 import { RUNGE_KUTTA_STAGES } from '../solver/runge-kutta';
@@ -24,6 +25,13 @@ import euler2dWgsl from './shaders/euler2d.wgsl?raw';
 import fluxWgsl from './shaders/flux.wgsl?raw';
 import gasWgsl from './shaders/gas.wgsl?raw';
 import limitersWgsl from './shaders/limiters.wgsl?raw';
+import reconstructionWgsl from './shaders/reconstruction.wgsl?raw';
+
+/** WGSL names of the reconstruction functions in reconstruction.wgsl. */
+const WGSL_RECONSTRUCTION_FUNCTIONS: Readonly<Record<Reconstruction, string>> = {
+  perVariable: 'reconstruct_per_variable',
+  shared: 'reconstruct_shared',
+};
 
 const GPU_FACE_FLUX_FUNCTIONS: Readonly<Record<GpuFluxName, string>> = {
   hllc: 'hllc_face_flux',
@@ -55,17 +63,25 @@ export interface GpuEuler2DConfig extends Omit<Euler2DConfig, 'flux'> {
 }
 
 /** Assemble the complete WGSL source for a configuration. */
-export function euler2dShaderSource(config: Pick<GpuEuler2DConfig, 'flux' | 'limiter'>): string {
+export function euler2dShaderSource(
+  config: Pick<GpuEuler2DConfig, 'flux' | 'limiter' | 'reconstruction'>,
+): string {
   const configuration = /* wgsl */ `
 fn limiter(a: f32, b: f32) -> f32 {
   return ${WGSL_LIMITER_FUNCTIONS[config.limiter]}(a, b);
+}
+
+fn reconstruct(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: f32) -> Primitive2D {
+  return ${WGSL_RECONSTRUCTION_FUNCTIONS[config.reconstruction]}(prev, centre, next, side);
 }
 
 fn numerical_face_flux(left: FaceState, right: FaceState) -> vec4f {
   return ${GPU_FACE_FLUX_FUNCTIONS[config.flux]}(left, right, params.gamma);
 }
 `;
-  return [gasWgsl, fluxWgsl, limitersWgsl, configuration, euler2dWgsl].join('\n');
+  return [gasWgsl, fluxWgsl, limitersWgsl, reconstructionWgsl, configuration, euler2dWgsl].join(
+    '\n',
+  );
 }
 
 export interface GpuState2D {

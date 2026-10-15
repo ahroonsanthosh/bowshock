@@ -21,6 +21,7 @@ function solver(grid: StructuredGrid, overrides: Partial<Euler2DConfig>): Euler2
     gamma,
     flux: 'hllc',
     limiter: 'vanLeer',
+    reconstruction: 'perVariable',
     timeIntegrator: 'ssprk2',
     cfl: 0.5,
     timeStepping: 'global',
@@ -83,9 +84,9 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
       return [xi + bump, eta + bump];
     });
 
-  function vortexError(n: number, tEnd: number): number {
+  function vortexError(n: number, tEnd: number, scheme: Partial<Euler2DConfig>): number {
     const s = solver(wavyGrid(n), {
-      limiter: 'unlimitedCentral',
+      ...scheme,
       timeIntegrator: 'ssprk3',
       cfl: 0.4,
       boundaries: boundaries({ kind: 'periodic' }),
@@ -112,10 +113,20 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
   }
 
   it('converges at second order with unlimited slopes', () => {
-    const coarse = vortexError(32, 1);
-    const fine = vortexError(64, 1);
-    const order = Math.log2(coarse / fine);
+    const unlimited = { limiter: 'unlimitedCentral', reconstruction: 'perVariable' } as const;
+    const order = Math.log2(vortexError(32, 1, unlimited) / vortexError(64, 1, unlimited));
     expect(order).toBeGreaterThan(1.9);
+    expect(order).toBeLessThan(2.2);
+  });
+
+  it('converges above first order with the shared reconstruction', () => {
+    // The price of steady convergence (see src/scheme/reconstruction.ts):
+    // one smooth extremum in any variable flattens all of them, and the
+    // vortex has extrema everywhere along its core. Recorded so that any
+    // future improvement can be measured: 1.13 when written (32 to 64 cells).
+    const shared = { limiter: 'vanAlbada', reconstruction: 'shared' } as const;
+    const order = Math.log2(vortexError(32, 1, shared) / vortexError(64, 1, shared));
+    expect(order).toBeGreaterThan(1.0);
     expect(order).toBeLessThan(2.2);
   });
 });
@@ -183,5 +194,13 @@ describe('Euler2D: periodic boundaries', () => {
         expect(Math.abs(a.v - b.v)).toBeLessThan(1e-12);
       }
     }
+  });
+});
+
+describe('Euler2D: configuration', () => {
+  it('rejects shared reconstruction with a limiter it would ignore', () => {
+    expect(() => solver(rectangularGrid(4, 4, 0, 1, 0, 1), { reconstruction: 'shared' })).toThrow(
+      /requires the 'vanAlbada' limiter/,
+    );
   });
 });

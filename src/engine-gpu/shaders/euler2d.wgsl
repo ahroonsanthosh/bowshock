@@ -1,8 +1,10 @@
 // Two-dimensional finite-volume Euler solver on a structured grid block:
 // the WGSL twin of src/engine-cpu/euler2d.ts (method and conventions in
 // docs/design/0003-2d-solver.md). Requires gas.wgsl, flux.wgsl,
-// limiters.wgsl and two functions generated from the configuration:
+// limiters.wgsl, reconstruction.wgsl and three functions generated from the
+// configuration:
 //   fn limiter(a: f32, b: f32) -> f32
+//   fn reconstruct(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: f32) -> Primitive2D
 //   fn numerical_face_flux(left: FaceState, right: FaceState) -> vec4f
 //
 // One step: compute_time_steps, finalize_time_step, then for each
@@ -158,15 +160,6 @@ fn load_cell(i: i32, j: i32) -> vec4f {
     c = vec4f(c.x, m - 2.0 * dot(m, normal) * normal, c.w);
   }
   return c;
-}
-
-fn reconstruct(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: f32) -> Primitive2D {
-  return Primitive2D(
-    centre.rho + 0.5 * side * limiter(centre.rho - prev.rho, next.rho - centre.rho),
-    centre.u + 0.5 * side * limiter(centre.u - prev.u, next.u - centre.u),
-    centre.v + 0.5 * side * limiter(centre.v - prev.v, next.v - centre.v),
-    centre.p + 0.5 * side * limiter(centre.p - prev.p, next.p - centre.p),
-  );
 }
 
 fn is_physical(w: Primitive2D) -> bool {

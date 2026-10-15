@@ -133,6 +133,7 @@ function solverConfig(mach: number, angle: number, ni: number, nj: number): Eule
     gamma: GAMMA,
     flux: 'hllc',
     limiter: 'vanAlbada',
+    reconstruction: 'shared',
     timeIntegrator: 'ssprk2',
     cfl: 0.8,
     timeStepping: 'local',

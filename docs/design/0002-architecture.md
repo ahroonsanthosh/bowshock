@@ -123,8 +123,10 @@ fins), so grids are generated automatically. The user never meshes.
   testing: with Einfeldt wave speeds, HLLC can underestimate the speed of a
   shock produced by a strong collision of two supersonic streams; the scheme
   stays conservative, but this is noted for the flux comparison.
-- **Reconstruction:** MUSCL on primitive variables with a smooth limiter
-  (van Albada or Venkatakrishnan) that can be frozen late in convergence.
+- **Reconstruction:** MUSCL on primitive variables with a smooth limiter.
+  For steady flows one van Albada factor per cell and direction is shared
+  by all variables, which lets captured shocks converge (see 0003); limiter
+  freezing late in convergence remains a possible safety net.
 - **Steady-state solver:** implicit, using **data-parallel line relaxation
   (DPLR)**, which solves the stiff wall-normal direction exactly line by
   line and relaxes the others; designed for parallel hardware and suited to
