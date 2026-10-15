@@ -11,6 +11,8 @@ import {
   type GpuEuler2DConfig,
   type GpuState2D,
 } from '../../src/engine-gpu/euler2d-gpu';
+import type { Body } from '../../src/geometry/body';
+import { bodyGrid } from '../../src/grid/body-grid';
 import { rampGrid } from '../../src/grid/shapes';
 import { gridFromFunction, rectangularGrid, type StructuredGrid } from '../../src/grid/structured';
 import { NonPhysicalStateError } from '../../src/solver/errors';
@@ -323,6 +325,41 @@ describe('GpuEuler2D: axisymmetric validation', () => {
       expect(await s.densityResidualNorm()).toBeLessThan(1e-4 * initial);
       const state = await s.readState();
       expect(worstPressureDifference(cpu, state)).toBeLessThan(1e-4);
+    });
+  });
+});
+
+describe('GpuEuler2D: generated body grid', () => {
+  it('ogive-cylinder (M = 1.98): converges, and matches the CPU engine', async () => {
+    // The CPU engine is validated on this body against NACA TN 3716
+    // (tests/engine-cpu/body-validation.test.ts); the GPU must agree with it.
+    const body: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 7,
+    };
+    const free = { rho: 1, u: 1.98 * Math.sqrt(gamma), v: 0, p: 1 };
+    const cfg = config(bodyGrid(body, { nj: 20, mach: 1.98, gamma }).grid, {
+      geometry: 'axisymmetric',
+      limiter: 'vanAlbada',
+      reconstruction: 'shared',
+      cfl: 0.8,
+      timeStepping: 'local',
+      boundaries: {
+        iMin: { kind: 'inflow', state: free },
+        iMax: { kind: 'outflow' },
+        jMin: { kind: 'wall' },
+        jMax: { kind: 'inflow', state: free },
+      },
+    });
+    const cpu = new Euler2D(cfg);
+    cpu.setInitialCondition(() => free);
+    cpu.iterate(1200);
+    await withSolver(cfg, async (s) => {
+      s.setInitialCondition(() => free);
+      const initial = await s.densityResidualNorm();
+      await s.iterate(1200);
+      expect(await s.densityResidualNorm()).toBeLessThan(1e-4 * initial);
+      expect(worstPressureDifference(cpu, await s.readState())).toBeLessThan(1e-4);
     });
   });
 });
