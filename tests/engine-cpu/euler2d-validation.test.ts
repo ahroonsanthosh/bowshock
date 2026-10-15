@@ -14,14 +14,14 @@ import {
  * the shared reconstruction used for steady flows.
  *
  * Measured when written (60 x 30 cells; 120 x 60 in brackets):
- * - wedge, M = 2.5, 10 deg: residual 2e-14 (3e-14), wall pressure +0.024%
- *   (+0.007%), spread along the plateau 0.025% (0.004%), shock angle
- *   0.08 to 0.32 deg too large (0.04 to 0.15);
- * - expansion, M = 2, 10 deg: wall pressure -0.034% (-0.006%).
+ * - wedge, M = 2.5, 10 deg: residual 2e-14 (3e-14), wall pressure +0.015%
+ *   (+0.007%), spread along the plateau 0.004% (0.0004%), shock angle
+ *   0.07 to 0.24 deg too large (0.03 to 0.13);
+ * - expansion, M = 2, 10 deg: wall pressure +0.0015% (-0.0001%).
  * The wall-adjacent cells carry a numerical entropy layer from the corner
- * (entropy error 4e-2 in the first cell, 4e-3 three cells out), so the Mach
- * number is checked away from the wall. Pressure is continuous across the
- * layer and is unaffected.
+ * (entropy error 3e-2 in the first cell, 2e-3 to 4e-3 two cells out), so
+ * the Mach number is checked away from the wall. Pressure is continuous
+ * across the layer and is unaffected.
  */
 
 const gamma = 1.4;
@@ -94,14 +94,15 @@ describe('Euler2D validation: oblique shock on a wedge (M = 2.5, 10 deg)', () =>
     expect(s.densityResidualNorm()).toBeLessThan(1e-10 * initialResidual);
   });
 
-  it('wall pressure matches the oblique-shock relation within 0.2%', () => {
+  it('wall pressure matches the oblique-shock relation within 0.05%', () => {
     const p = wallPressure(s, 0.5, 1.2);
-    expect(Math.abs(p.mean / exact.pressureRatio - 1)).toBeLessThan(2e-3);
-    // Uniform behind the shock, as the exact solution is.
-    expect(p.spread).toBeLessThan(1e-2);
+    expect(Math.abs(p.mean / exact.pressureRatio - 1)).toBeLessThan(5e-4);
+    // Uniform behind the shock, as the exact solution is (per-variable
+    // limiting left a 0.4% spread here).
+    expect(p.spread).toBeLessThan(1e-3);
   });
 
-  it('shock angle matches the theta-beta-Mach relation within 0.4 deg', () => {
+  it('shock angle matches the theta-beta-Mach relation within 0.3 deg', () => {
     // On vertical grid lines, find where the pressure crosses the mean of
     // its two exact values; the shock leaves the corner at (0, 0).
     const pMid = 0.5 * (1 + exact.pressureRatio);
@@ -124,8 +125,8 @@ describe('Euler2D validation: oblique shock on a wedge (M = 2.5, 10 deg)', () =>
     }
     expect(angles.length).toBeGreaterThan(10);
     // The captured shock spans about three cells; its mid-pressure line was
-    // up to 0.32 deg outside the exact angle on this grid (0.15 on 120 x 60).
-    for (const beta of angles) expect(Math.abs(beta - exact.beta) / deg).toBeLessThan(0.4);
+    // up to 0.24 deg outside the exact angle on this grid (0.13 on 120 x 60).
+    for (const beta of angles) expect(Math.abs(beta - exact.beta) / deg).toBeLessThan(0.3);
   });
 
   it('downstream Mach number matches within 0.5% away from the wall', () => {
@@ -148,17 +149,17 @@ describe('Euler2D validation: Prandtl-Meyer expansion (M = 2, 10 deg)', () => {
     expect(s.densityResidualNorm()).toBeLessThan(1e-10 * initialResidual);
   });
 
-  it('wall pressure downstream of the fan matches isentropic theory within 0.2%', () => {
+  it('wall pressure downstream of the fan matches isentropic theory within 0.05%', () => {
     const p = wallPressure(s, 0.6, 1.3);
-    expect(Math.abs(p.mean / pressureRatio - 1)).toBeLessThan(2e-3);
-    expect(p.spread).toBeLessThan(1e-2);
+    expect(Math.abs(p.mean / pressureRatio - 1)).toBeLessThan(5e-4);
+    expect(p.spread).toBeLessThan(1e-3);
   });
 
   it('downstream Mach number matches within 0.5% away from the wall and the fan', () => {
     // The fan ends on the Mach line at mu(M2) - 10 deg = 14.8 deg from the
     // corner, which crosses rows 2 to 4 near x = 0.6 to 0.7; from x = 1 the
-    // rows are at least two cells downstream of it. Measured: 0.53%, 0.27%
-    // and 0.20% in rows 2, 3 and 4.
+    // rows are at least two cells downstream of it. Measured: -0.13% and
+    // -0.09% in rows 3 and 4.
     for (const j of [3, 4]) {
       expect(Math.abs(rowMach(s, j, 1.0, 1.4) / mach2 - 1)).toBeLessThan(5e-3);
     }

@@ -2,25 +2,26 @@
  * How face states are reconstructed from cell values along a grid line.
  *
  * - 'perVariable': each primitive variable has its own limited slope (the
- *   classical MUSCL scheme). Second order on smooth flows, so it is the
- *   choice for time-accurate problems. With captured shocks in steady flow
- *   it can fall into a limit cycle and stall convergence: measured on a
- *   supersonic wedge, the residual stalled at 7e-3 to 2e-2 and the
- *   integrated force fluctuated by up to 4e-4 relative.
+ *   classical MUSCL scheme). With captured shocks in steady flow it can fall
+ *   into a limit cycle and stall convergence: on a supersonic wedge the
+ *   residual stalled at 7e-3 to 2e-2 and the integrated force fluctuated by
+ *   up to 4e-4 relative.
  *
- * - 'shared': one smooth van Albada factor (so it requires the 'vanAlbada'
- *   limiter) per cell and direction, the
- *   smallest over the four primitive variables, applies to all of them, so
- *   every reconstructed state lies on the path between neighbouring
- *   states. The same wedge then converges to round-off on every grid
- *   alignment tried, with smaller wall-pressure wiggles and a more accurate
- *   ramp force. The cost: wherever any variable has a smooth extremum, all
- *   variables drop towards first order there (the isentropic vortex
- *   converges at about order 1.13 instead of 2). Body pressures, which drag
- *   depends on, lie in monotone regions; wakes and vortex cores are where
- *   the cost shows, to be re-measured when the viscous solver arrives.
+ * - 'shared': the van Albada limiter applied to the state as a vector. With
+ *   A and B the backward and forward differences of (rho, u, v, p), one
+ *   factor
+ *     f = 2 (A.B + eps) / (|A|^2 + |B|^2 + 2 eps), clipped at zero,
+ *   scales the central slope of every variable. Because all variables move
+ *   together, the cells inside a captured shock cannot cycle between
+ *   limiter states variable by variable, and steady flows with shocks
+ *   converge to round-off. A per-variable minimum of factors was tried
+ *   first: it cured the wedge, but amplified round-off where a variable
+ *   with tiny slopes owned the minimum, and cycled next to cone surfaces.
+ *   The vector factor weights the variables by their nondimensional
+ *   differences, as eps does, so it assumes variables of order one.
+ *   Requires the 'vanAlbada' limiter.
  *
- * The choice and its evidence are recorded in docs/design/0003-2d-solver.md.
+ * The evidence for both is recorded in docs/design/0003-2d-solver.md.
  */
 
 import type { Primitive2D } from './flux';
@@ -46,23 +47,22 @@ export function reconstructPerVariable(
 }
 
 /**
- * The van Albada limiter written as a factor on the central slope:
- * vanAlbada(a, b) = factor * (a + b) / 2, with
- * factor = 2 (a b + eps) / (a^2 + b^2 + 2 eps), clipped at zero.
+ * The shared limiter factor of a cell: the van Albada factor of the
+ * backward and forward difference vectors of its primitive variables.
  */
-export function vanAlbadaFactor(a: number, b: number): number {
-  const eps = VAN_ALBADA_EPSILON;
-  return Math.max(0, (2 * (a * b + eps)) / (a * a + b * b + 2 * eps));
-}
-
-/** The shared limiter factor of a cell: the smallest over its four primitive variables. */
 export function sharedFactor(prev: Primitive2D, centre: Primitive2D, next: Primitive2D): number {
-  return Math.min(
-    vanAlbadaFactor(centre.rho - prev.rho, next.rho - centre.rho),
-    vanAlbadaFactor(centre.u - prev.u, next.u - centre.u),
-    vanAlbadaFactor(centre.v - prev.v, next.v - centre.v),
-    vanAlbadaFactor(centre.p - prev.p, next.p - centre.p),
-  );
+  const a = [centre.rho - prev.rho, centre.u - prev.u, centre.v - prev.v, centre.p - prev.p];
+  const b = [next.rho - centre.rho, next.u - centre.u, next.v - centre.v, next.p - centre.p];
+  let ab = 0;
+  let aa = 0;
+  let bb = 0;
+  for (let q = 0; q < 4; q++) {
+    ab += a[q]! * b[q]!;
+    aa += a[q]! * a[q]!;
+    bb += b[q]! * b[q]!;
+  }
+  const eps = VAN_ALBADA_EPSILON;
+  return Math.max(0, (2 * (ab + eps)) / (aa + bb + 2 * eps));
 }
 
 /**

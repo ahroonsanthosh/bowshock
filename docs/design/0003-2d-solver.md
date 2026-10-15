@@ -102,52 +102,61 @@ cycle in which each variable's limiter switches separately. The integrated
 ramp force then fluctuates by 4e-5 to 4e-4 relative, up to about 1.6 drag
 counts on a rocket, above the 1-count convergence target. Larger limiter
 smoothing, other flux functions and wave-speed estimates, characteristic
-reconstruction and sensor-blended fluxes were tried and did not cure it
-reliably.
+reconstruction and sensor-blended fluxes did not cure it reliably.
 
 The remedy is a shared reconstruction (`reconstruction: 'shared'`, in
-`src/scheme/reconstruction.ts`): one smooth van Albada factor per cell and
-direction, the smallest of the four variables' factors, applied to all of
-them. Every configuration states its choice: steady runs (the ramp demo and
-the steady validation) use `'shared'`, time-accurate tests use
-`'perVariable'`. Measured on the CPU engine (60 x 30 cells; 120 x 60 in
-brackets), against per-variable limiting:
+`src/scheme/reconstruction.ts`): the van Albada limiter applied to the
+state as a vector. With A and B the backward and forward differences of
+(rho, u, v, p) across a cell, one factor
+`f = max(0, 2 (A.B + eps) / (|A|^2 + |B|^2 + 2 eps))` scales the central
+slope of every variable, so the variables cannot cycle between limiter
+states one by one. Every configuration states its choice: steady runs (the
+ramp demo, the steady validation) use `'shared'`, time-accurate tests
+`'perVariable'`.
 
-| Case                               | Per-variable                      | Shared                              |
-| ---------------------------------- | --------------------------------- | ----------------------------------- |
-| Wedge M 2.5, 10 deg: residual      | 7e-3 (2e-2), stalled              | 2e-14 (3e-14)                       |
-| Wedge: wall pressure error         | +0.039% (-0.017%)                 | +0.024% (+0.007%)                   |
-| Wedge: spread along the plateau    | 0.39% (0.058%)                    | 0.025% (0.004%)                     |
-| Wedge: shock angle error           | -0.07 to +0.13 deg (0.00 to 0.09) | +0.08 to +0.32 deg (+0.04 to +0.15) |
-| Strong wedge M 5, 20 deg           | not measured                      | residual 3e-13, overshoot 0.37%     |
-| Expansion M 2, 10 deg: wall press. | +0.036% (+0.021%)                 | -0.034% (-0.006%)                   |
-| Isentropic vortex, order           | 2 (unlimited slopes)              | 1.13                                |
+Measured on the CPU engine, 60 x 30 cells (120 x 60 in brackets):
 
-So the shared reconstruction converges and gives more accurate and more
-uniform wall pressures, at the cost of a slightly thicker captured shock and
-of smooth-flow order: wherever any variable has a smooth extremum, all
-variables drop towards first order. Body pressures, which drag depends on,
-lie in monotone regions; wakes and vortex cores will show the cost, and it
-is to be re-measured with the viscous solver. Limiter freezing (fixing the
-factors once the residual has fallen by several orders) converges anything
-but makes the answer depend on when it is frozen, by up to 7e-5 relative;
-it remains a possible safety net, not the remedy.
+| Case                                 | Per-variable                      | Shared                              |
+| ------------------------------------ | --------------------------------- | ----------------------------------- |
+| Wedge M 2.5, 10 deg: residual        | 7e-3 (2e-2), stalled              | 2e-14 (3e-14)                       |
+| Wedge: wall pressure error           | +0.039% (-0.017%)                 | +0.015% (+0.007%)                   |
+| Wedge: spread along the plateau      | 0.39% (0.058%)                    | 0.004% (0.0004%)                    |
+| Wedge: shock angle error             | -0.07 to +0.13 deg (0.00 to 0.09) | +0.07 to +0.24 deg (+0.03 to +0.13) |
+| Same wedge, domain height 1.0        | stalled at 2e-2 (3e-2)            | 2e-14 (3e-14)                       |
+| Strong wedge M 5, 20 deg             | stalled at 2e-2, overshoot 22%    | 2e-14, overshoot 0.28%, wall +0.24% |
+| Expansion M 2, 10 deg: wall pressure | +0.036% (+0.021%)                 | +0.0015% (-0.0001%)                 |
+| Expansion: residual                  | 2e-14 (3e-14)                     | 2e-14 (3e-14)                       |
+| Isentropic vortex: L1 order          | 2.04, 2.31 (32 to 128 cells)      | 2.45, 2.39                          |
 
-**Open issue: the shared reconstruction in 32-bit floats.** On the GPU the
-wedge converges to the f32 floor (residual 1e-5 relative) on 60 x 30
-cells, but on 120 x 60, the demo's default, the residual stalls at about
-2e-2, although the ramp pressure is within 0.02% of exact. The expansion
-corner does not settle even on 60 x 30: cells downstream of the fan keep
-wandering by up to 2.5e-4 in density, and the pressure there differs from
-the converged CPU solution by up to 4.5e-4 (wall pressure varies by about
-1e-5). In f64 the expansion carries a residual of about 1e-11, and the CPU
-results are unaffected. A product of the four factors instead of their
-minimum converges in f32 and f64 alike on 60 x 30, but doubles the
-shock-angle error and the expansion's wall-pressure error; a 4-norm of the
-factor deficits behaves like the minimum, and a 2-norm stalls on the wedge
-at 120 x 60. The root cause is being investigated; until it is settled, the
-GPU expansion test uses per-variable reconstruction, and GPU convergence is
-only claimed on the coarse grid.
+The shared reconstruction converges and is the more accurate of the two on
+every measure except the shock angle, where its captured shock is slightly
+thicker. On smooth flow it loses nothing: limiting fades as the vortex is
+resolved, and on 128 cells its error is within 16% of unlimited slopes.
+
+The price is in what a single factor can promise. Each variable's face
+value is no longer confined to its own neighbour range: a variable with a
+small extremum, riding on larger monotone changes of the others, can pass
+its neighbours by up to a quarter of its own differences across the cell
+(`tests/scheme/reconstruction.test.ts` states the bound). At shocks and
+contacts the variables jump together, the difference vectors oppose, and
+the factor falls to zero as it should. The factor also weights the
+variables by their nondimensional differences, as `eps` does, so it assumes
+variables of order one; a dimensional code would weight them.
+
+Two other forms were measured and rejected. The smallest of the four
+per-variable factors cured the wedge, but cut the vortex order to 1.13,
+stalled next to cone surfaces in axisymmetric flow (residual 5e-2, surface
+pressure off by 0.8%), and in 32-bit floats amplified round-off where a
+variable with tiny slopes owned the minimum (its factor was then about 700
+times as sensitive to that variable as to the others). A product of the
+four factors converged but doubled the shock-angle error. Limiter freezing
+(fixing the factors once the residual has fallen by several orders)
+converges anything but makes the answer depend on when it is frozen, by up
+to 7e-5 relative; it remains a possible safety net, not the remedy.
+
+On the GPU, in 32-bit floats, the wedge (60 x 30 and 120 x 60) and the
+expansion converge to the f32 floor, a residual of about 1e-5 of its
+initial value.
 
 ## Results (M3b, GPU engine and rendering)
 

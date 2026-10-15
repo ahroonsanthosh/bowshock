@@ -257,9 +257,7 @@ describe('GpuEuler2D: steady supersonic validation', () => {
   it('expansion: converges, and matches the CPU engine and isentropic theory', async () => {
     const mach2 = machFromPrandtlMeyer(prandtlMeyer(2, gamma) + 10 * deg, gamma);
     const exact = stagnationPressureRatio(2, gamma) / stagnationPressureRatio(mach2, gamma);
-    // Per-variable reconstruction: in f32 the shared reconstruction does not
-    // settle downstream of this fan (open issue, docs/design/0003-2d-solver.md).
-    const cfg: GpuEuler2DConfig = { ...rampConfig(2, -10 * deg), reconstruction: 'perVariable' };
+    const cfg = rampConfig(2, -10 * deg);
     const free = { rho: 1, u: 2 * Math.sqrt(gamma), v: 0, p: 1 };
     const cpu = new Euler2D(cfg);
     cpu.setInitialCondition(() => free);

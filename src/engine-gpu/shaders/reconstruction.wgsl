@@ -12,19 +12,12 @@ fn reconstruct_per_variable(prev: Primitive2D, centre: Primitive2D, next: Primit
   );
 }
 
-// The van Albada limiter as a factor on the central slope.
-fn van_albada_factor(a: f32, b: f32) -> f32 {
-  let eps = VAN_ALBADA_EPSILON;
-  return max(0.0, 2.0 * (a * b + eps) / (a * a + b * b + 2.0 * eps));
-}
-
+// The van Albada factor of the backward and forward difference vectors.
 fn shared_factor(prev: Primitive2D, centre: Primitive2D, next: Primitive2D) -> f32 {
-  return min(
-    min(van_albada_factor(centre.rho - prev.rho, next.rho - centre.rho),
-        van_albada_factor(centre.u - prev.u, next.u - centre.u)),
-    min(van_albada_factor(centre.v - prev.v, next.v - centre.v),
-        van_albada_factor(centre.p - prev.p, next.p - centre.p)),
-  );
+  let a = vec4f(centre.rho - prev.rho, centre.u - prev.u, centre.v - prev.v, centre.p - prev.p);
+  let b = vec4f(next.rho - centre.rho, next.u - centre.u, next.v - centre.v, next.p - centre.p);
+  let eps = VAN_ALBADA_EPSILON;
+  return max(0.0, 2.0 * (dot(a, b) + eps) / (dot(a, a) + dot(b, b) + 2.0 * eps));
 }
 
 fn reconstruct_shared(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: f32) -> Primitive2D {

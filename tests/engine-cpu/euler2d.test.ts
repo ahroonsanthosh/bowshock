@@ -119,15 +119,16 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
     expect(order).toBeLessThan(2.2);
   }, 30_000);
 
-  it('converges above first order with the shared reconstruction', () => {
-    // The price of steady convergence (see src/scheme/reconstruction.ts):
-    // one smooth extremum in any variable flattens all of them, and the
-    // vortex has extrema everywhere along its core. Recorded so that any
-    // future improvement can be measured: 1.13 when written (32 to 64 cells).
+  it('converges at second order with the shared reconstruction', () => {
+    // Limiting fades as the grid resolves the vortex, so the measured order
+    // exceeds two: when written, L1 errors were 2.6e-3, 4.7e-4 and 9.0e-5 on
+    // 32, 64 and 128 cells (orders 2.45 and 2.39), against 7.7e-5 unlimited
+    // on 128 cells.
     const shared = { limiter: 'vanAlbada', reconstruction: 'shared' } as const;
-    const order = Math.log2(vortexError(32, 1, shared) / vortexError(64, 1, shared));
-    expect(order).toBeGreaterThan(1.0);
-    expect(order).toBeLessThan(2.2);
+    const coarse = vortexError(32, 1, shared);
+    const fine = vortexError(64, 1, shared);
+    expect(Math.log2(coarse / fine)).toBeGreaterThan(1.9);
+    expect(fine).toBeLessThan(5e-4);
   }, 30_000);
 });
 
