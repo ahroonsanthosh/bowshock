@@ -48,7 +48,12 @@ Validated so far, each with its tests and recorded accuracy:
   of Taylor-Maccoll on the coarsest grid. On an ogive-cylinder the result
   lies within 0.022 in Cp of NACA wind-tunnel pressures, but on the forward
   nose it differs from the report's own inviscid theory by about 0.01, for
-  a reason not yet established; ogives are not yet validated.
+  a reason not yet established; ogives are not yet validated. Behind the
+  shoulders of two NACA cone-cylinders at Mach 3.12 the measured expansion
+  is weaker than the computed (inviscid) one, as on the ogive; the cause is
+  not yet established either.
+- The Taylor-Maccoll solution itself reproduces the cone tables of NASA
+  SP-3004 within 3e-5 in Cp.
 
 Not yet: viscous flow, blunt noses, fins and the base, and drag. Until
 those pass their own validation, bowshock does not report a drag

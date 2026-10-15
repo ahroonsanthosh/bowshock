@@ -41,7 +41,8 @@ this way, rather than using a flat top, halved the force error on a cone
 in the design study. Every validation case checks that the cells along the
 outer boundary are undisturbed (pressure within 1e-5 of the free stream),
 since the boundary imposes the free stream; on the cases below the
-disturbance is 2e-6 or less on the coarsest grids.
+disturbance is 2e-6 or less on the coarsest grids, except on the
+12-caliber cone-cylinder of RM E52C10 (see Open).
 
 **Spacing.** Along each vertical line of height h, the nodes are graded
 towards the body by y = h (e^(b eta) - 1) / (e^b - 1), with
@@ -113,8 +114,37 @@ first comparison with measurements on a generated grid:
   any accuracy claim on them, and the test keeps a 0.025 bound only to
   catch regressions.
 
+Cone-cylinders of NACA RM E52C10 at Mach 3.12 (models 1 and 3: 10 and 3.6
+deg cones on cylinders, 12 calibers overall). The report tabulates
+pressures only at angles of attack of 3 deg and more; the mean of the
+windward and leeward meridians at 3 deg estimates the zero-incidence
+pressure to first order (second-order terms of unknown size), and the
+zero-incidence points are only plotted. On the forward cones that mean
+matches the exact conical value within 0.0004 (0.003 at the front of
+model 1 and 0.0034 on the rear of model 3, where the measured pressure
+varies along the cone). Grids of 20, 40 and 80 cells across (20 and 40
+for model 3) agree within 0.0003, except at the first station behind the
+shoulder, 0.07 d from the corner, which is not grid-converged and is left
+out. Against the meridian mean:
+
+- On the cylinder of model 1 the computed pressure is lower by up to 0.013
+  from the shoulder to x/d of about 6.6 and higher by up to 0.005 aft of
+  x/d 7.4; on model 3 it is within 0.0033 everywhere except the first
+  station behind the shoulder, where the measurement is 0.008 to 0.009
+  above the computed value.
+- So in all three experiments (with TN 3716) the measured expansion behind
+  the shoulder is weaker than the inviscid one. The cause is not
+  established here; the tests keep regression bounds only.
+
 ## Open
 
+- **Outer-boundary margin on long bodies.** The margin over the shock is
+  an angle, so far down a long body only about one outer cell separates the
+  captured bow shock from the outer boundary: on the 12-caliber E52C10
+  model 1 the boundary cells see a disturbance of 1.75e-5. Moving the
+  boundary to 1.4 times the shock angle removes it (1.2e-6) and changes the
+  wall pressure by at most 1e-4 away from the shoulder. The margin should
+  be set in cells rather than as an angle.
 - **Blunt noses.** They need a grid wrapped around the stagnation point
   (a C grid, with the axis upstream as the inflow-side boundary), which
   the design study built and checked. But on it the shared reconstruction
