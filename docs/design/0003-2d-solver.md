@@ -134,17 +134,20 @@ but makes the answer depend on when it is frozen, by up to 7e-5 relative;
 it remains a possible safety net, not the remedy.
 
 **Open issue: the shared reconstruction in 32-bit floats.** On the GPU the
-wedge converges to the f32 floor (residual 1e-5 relative), but the
-expansion corner does not settle: cells downstream of the fan keep
+wedge converges to the f32 floor (residual 1e-5 relative) on 60 x 30
+cells, but on 120 x 60, the demo's default, the residual stalls at about
+2e-2, although the ramp pressure is within 0.02% of exact. The expansion
+corner does not settle even on 60 x 30: cells downstream of the fan keep
 wandering by up to 2.5e-4 in density, and the pressure there differs from
 the converged CPU solution by up to 4.5e-4 (wall pressure varies by about
-1e-5). In f64 the same region carries a residual of about 1e-11, so the
-CPU result is unaffected. A product of the four factors instead of their
-minimum converges in f32 and f64 alike, but doubles the shock-angle error
-and the expansion's wall-pressure error; a 4-norm of the factor deficits
-behaves like the minimum, and a 2-norm stalls on the wedge at 120 x 60. The
-root cause is being investigated; until it is settled, the GPU expansion
-test uses per-variable reconstruction.
+1e-5). In f64 the expansion carries a residual of about 1e-11, and the CPU
+results are unaffected. A product of the four factors instead of their
+minimum converges in f32 and f64 alike on 60 x 30, but doubles the
+shock-angle error and the expansion's wall-pressure error; a 4-norm of the
+factor deficits behaves like the minimum, and a 2-norm stalls on the wedge
+at 120 x 60. The root cause is being investigated; until it is settled, the
+GPU expansion test uses per-variable reconstruction, and GPU convergence is
+only claimed on the coarse grid.
 
 ## Results (M3b, GPU engine and rendering)
 

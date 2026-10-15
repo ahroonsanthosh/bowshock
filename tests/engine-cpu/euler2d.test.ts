@@ -204,3 +204,54 @@ describe('Euler2D: configuration', () => {
     );
   });
 });
+
+describe('Euler2D: boundary fluxes', () => {
+  const SIDES = ['iMin', 'iMax', 'jMin', 'jMax'] as const;
+
+  it('gives outward normals, face areas and midpoints, and wall pressure, on a distorted box', () => {
+    // Gas at rest in a closed box: the only flux through each wall is the
+    // pressure, p n per unit area, and the forces on the walls balance.
+    const grid = distortedGrid(12, 10, 0, 2, 0, 1.5);
+    const s = solver(grid, { boundaries: boundaries({ kind: 'wall' }) });
+    const p = 0.8;
+    s.setInitialCondition(() => ({ rho: 1.1, u: 0, v: 0, p }));
+    let perimeter = 0;
+    let forceX = 0;
+    let forceY = 0;
+    for (const side of SIDES) {
+      for (const f of s.boundaryFluxes(side)) {
+        // The box is the rectangle [0, 2] x [0, 1.5]; its edges are straight.
+        const onEdge = Math.min(
+          Math.abs(f.x),
+          Math.abs(f.x - 2),
+          Math.abs(f.y),
+          Math.abs(f.y - 1.5),
+        );
+        expect(onEdge).toBeLessThan(1e-12);
+        expect(f.nx * (f.x - 1) + f.ny * (f.y - 0.75)).toBeGreaterThan(0);
+        expect(Math.abs(f.flux[0])).toBe(0); // -0 and +0 are both exact
+        expect(f.flux[1]).toBeCloseTo(p * f.nx, 12);
+        expect(f.flux[2]).toBeCloseTo(p * f.ny, 12);
+        perimeter += f.area;
+        forceX += f.flux[1] * f.area;
+        forceY += f.flux[2] * f.area;
+      }
+    }
+    expect(perimeter).toBeCloseTo(7, 12);
+    expect(Math.abs(forceX)).toBeLessThan(1e-12);
+    expect(Math.abs(forceY)).toBeLessThan(1e-12);
+  });
+
+  it('gives the area per radian in axisymmetric geometry', () => {
+    // An annular duct between radii 0.5 and 1.5: the outer wall's area per
+    // radian is its length times its radius.
+    const s = solver(rectangularGrid(8, 4, 0, 2, 0.5, 1.5), {
+      geometry: 'axisymmetric',
+      boundaries: boundaries({ kind: 'wall' }),
+    });
+    s.setInitialCondition(() => ({ rho: 1, u: 0, v: 0, p: 1 }));
+    const outer = s.boundaryFluxes('jMax');
+    expect(outer.reduce((sum, f) => sum + f.area, 0)).toBeCloseTo(2 * 1.5, 12);
+    for (const f of outer) expect(f.ny).toBe(1);
+  });
+});

@@ -2,7 +2,6 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
   FACE_FLUXES,
-  FLUXES,
   faceFlux2D,
   hllcFaceFlux,
   godunovFaceFlux,
@@ -87,18 +86,22 @@ describe.each(Object.keys(FACE_FLUXES) as (keyof typeof FACE_FLUXES)[])('%s 2D f
     );
   });
 
-  it('reduces exactly to the 1D flux for zero tangential velocity and n = (1, 0)', () => {
+  it('property: Galilean invariance along the face', () => {
+    // Adding the same tangential velocity V to both states moves the frame
+    // along the face: the mass and normal momentum fluxes are unchanged,
+    // and the others change as the physical flux does,
+    //   F_t' = F_t + V F_mass,   F_E' = F_E + V F_t + V^2 / 2 F_mass.
+    // With n = (1, 0) the tangential direction is y.
+    const shift = fc.double({ min: -5, max: 5, noNaN: true });
     fc.assert(
-      fc.property(pair2D, ([l, r]) => {
-        const L = { ...l, v: 0 };
-        const R = { ...r, v: 0 };
-        const out1 = new Float64Array(3);
-        FLUXES[name]({ rho: L.rho, u: L.u, p: L.p }, { rho: R.rho, u: R.u, p: R.p }, gamma, out1);
-        const f = flux(name, L, R, 0);
-        expect([f[0], f[1], f[3]]).toEqual([...out1]);
-        expect(Math.abs(f[2]!)).toBe(0); // -0 and +0 are both exact
+      fc.property(pair2D, shift, ([l, r], V) => {
+        const f = flux(name, l, r, 0);
+        const g = flux(name, { ...l, v: l.v + V }, { ...r, v: r.v + V }, 0);
+        const expected = [f[0]!, f[1]!, f[2]! + V * f[0]!, f[3]! + V * f[2]! + 0.5 * V * V * f[0]!];
+        const shifted = scale(l, r, { ...l, v: l.v + V }, { ...r, v: r.v + V });
+        expectClose(g, expected, shifted, 1e-11);
       }),
-      { numRuns: 300, seed: 53 },
+      { numRuns: 500, seed: 53 },
     );
   });
 });

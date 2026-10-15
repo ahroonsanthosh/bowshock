@@ -49,6 +49,9 @@ export class CopyPresenter implements Presenter {
   private texture: GPUTexture | null = null;
   private readback: GPUBuffer | null = null;
   private readonly context: CanvasRenderingContext2D;
+  /** Frames being copied to the page; their buffers must outlive a resize. */
+  private inFlight = 0;
+  private retired: { destroy(): void }[] = [];
 
   constructor(
     private readonly device: GPUDevice,
@@ -62,8 +65,9 @@ export class CopyPresenter implements Presenter {
   frameTexture(): GPUTexture {
     const { width, height } = this.canvas;
     if (this.texture?.width !== width || this.texture.height !== height) {
-      this.texture?.destroy();
-      this.readback?.destroy();
+      // A frame still being copied keeps using the old texture and buffer.
+      this.retire(this.texture);
+      this.retire(this.readback);
       this.texture = this.device.createTexture({
         size: [width, height],
         format: this.format,
@@ -83,25 +87,45 @@ export class CopyPresenter implements Presenter {
     if (texture === null || readback === null) return;
     const { width, height } = texture;
     const stride = bytesPerRow(width);
-    const encoder = this.device.createCommandEncoder();
-    encoder.copyTextureToBuffer({ texture }, { buffer: readback, bytesPerRow: stride }, [
-      width,
-      height,
-    ]);
-    this.device.queue.submit([encoder.finish()]);
-    await readback.mapAsync(GPUMapMode.READ);
-    const rows = new Uint8Array(readback.getMappedRange());
-    const image = this.context.createImageData(width, height);
-    for (let y = 0; y < height; y++) {
-      image.data.set(rows.subarray(y * stride, y * stride + 4 * width), 4 * width * y);
+    this.inFlight += 1;
+    try {
+      const encoder = this.device.createCommandEncoder();
+      encoder.copyTextureToBuffer({ texture }, { buffer: readback, bytesPerRow: stride }, [
+        width,
+        height,
+      ]);
+      this.device.queue.submit([encoder.finish()]);
+      await readback.mapAsync(GPUMapMode.READ);
+      const rows = new Uint8Array(readback.getMappedRange());
+      const image = this.context.createImageData(width, height);
+      for (let y = 0; y < height; y++) {
+        image.data.set(rows.subarray(y * stride, y * stride + 4 * width), 4 * width * y);
+      }
+      readback.unmap();
+      this.context.putImageData(image, 0, 0);
+    } finally {
+      this.inFlight -= 1;
+      if (this.inFlight === 0) this.destroyRetired();
     }
-    readback.unmap();
-    this.context.putImageData(image, 0, 0);
   }
 
   destroy(): void {
-    this.texture?.destroy();
-    this.readback?.destroy();
+    this.retire(this.texture);
+    this.retire(this.readback);
+    this.texture = null;
+    this.readback = null;
+    if (this.inFlight === 0) this.destroyRetired();
+  }
+
+  private retire(resource: { destroy(): void } | null): void {
+    if (resource === null) return;
+    this.retired.push(resource);
+    if (this.inFlight === 0) this.destroyRetired();
+  }
+
+  private destroyRetired(): void {
+    for (const resource of this.retired) resource.destroy();
+    this.retired = [];
   }
 }
 

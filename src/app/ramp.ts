@@ -359,9 +359,12 @@ async function setUpGpu(presentation: Presentation): Promise<GpuSetup | null> {
       ? new CanvasPresenter(device, canvas)
       : new CopyPresenter(device, canvas);
   void device.lost.then((info) => {
+    // Destroyed on purpose when the page switches engine.
     if (info.reason === 'destroyed') return;
-    engineNote.textContent = `The GPU device was lost (${info.message}).`;
-    void switchEngine(presentation === 'canvas' ? 'copy' : 'cpu');
+    void switchEngine(
+      presentation === 'canvas' ? 'copy' : 'cpu',
+      `The GPU device was lost (${info.message}).`,
+    );
   });
   return { device, presenter };
 }
@@ -371,17 +374,24 @@ let run: Run | null = null;
 let generation = 0;
 let exactPressure: number | null = null;
 
-async function switchEngine(next: Presentation | 'cpu'): Promise<void> {
+/** Release a GPU setup; destroying the device does not trigger the fallback. */
+function releaseGpu(setup: GpuSetup): void {
+  setup.presenter.destroy();
+  setup.device.destroy();
+}
+
+async function switchEngine(next: Presentation | 'cpu', reason: string): Promise<void> {
   generation += 1;
   run?.dispose();
   run = null;
+  if (gpu !== null) releaseGpu(gpu);
+  gpu = null;
   replaceCanvas();
   gpu = next === 'cpu' ? null : await setUpGpu(next).catch(() => null);
-  engineNote.textContent += gpu
-    ? next === 'copy'
-      ? ' Continuing on the GPU, copying each frame to the page (slower).'
-      : ''
-    : ' Continuing on the CPU engine, on a coarser grid.';
+  const continuation = gpu
+    ? 'Continuing on the GPU, copying each frame to the page (slower).'
+    : 'Continuing on the CPU engine, on a coarser grid.';
+  engineNote.textContent = `${reason} ${continuation}`;
   await restart();
 }
 
@@ -417,7 +427,15 @@ async function restart(): Promise<void> {
   // The CPU fallback runs a coarser grid to stay interactive.
   const scale = gpu ? 1 : 0.5;
   const config = solverConfig(mach, angle * DEG, Math.round(ni * scale), Math.round(nj * scale));
-  const next = gpu ? await gpuRun(gpu.device, gpu.presenter, config) : cpuRun(config);
+  let next: Run;
+  try {
+    next = gpu ? await gpuRun(gpu.device, gpu.presenter, config) : cpuRun(config);
+  } catch (error) {
+    // A run being set up on a device that was replaced meanwhile may fail;
+    // only a failure of the current run is news.
+    if (myGeneration === generation) status.textContent = `Could not start: ${String(error)}`;
+    return;
+  }
   if (myGeneration !== generation) {
     next.dispose();
     return;
@@ -427,18 +445,25 @@ async function restart(): Promise<void> {
 }
 
 let drawing: Promise<void> | null = null;
+let redrawRequested = false;
 
 /**
- * Draw the current run, unless a frame is already being drawn (that frame
- * shows the latest state anyway). Errors from a run that has since been
- * replaced are ignored; others are reported.
+ * Draw the current run. A request made while a frame is being drawn is
+ * kept, and drawn once that frame is done, so a change of field or size is
+ * never lost (even after the run has converged and the loop has stopped).
+ * Errors from a run that has since been replaced are ignored; others are
+ * reported.
  */
 function redraw(): Promise<void> {
+  if (drawing !== null) {
+    redrawRequested = true;
+    return drawing;
+  }
   const current = run;
   if (current === null) return Promise.resolve();
   const myGeneration = generation;
   const field = selectedField();
-  drawing ??= current
+  drawing = current
     .draw(field)
     .then((range) => {
       if (myGeneration === generation) showLegend(field, range);
@@ -448,6 +473,10 @@ function redraw(): Promise<void> {
     })
     .finally(() => {
       drawing = null;
+      if (redrawRequested) {
+        redrawRequested = false;
+        void redraw();
+      }
     });
   return drawing;
 }

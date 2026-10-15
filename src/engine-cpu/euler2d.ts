@@ -59,9 +59,17 @@ export interface Euler2DConfig {
 }
 
 export interface BoundaryFaceFlux {
+  /** Midpoint of the face. */
+  readonly x: number;
+  readonly y: number;
   /** Outward unit normal of the face. */
   readonly nx: number;
   readonly ny: number;
+  /**
+   * Face area: length in planar geometry; length times midpoint radius in
+   * axisymmetric geometry (the area per radian of revolution).
+   */
+  readonly area: number;
   /** Flux per unit area along the outward normal: [mass, x mom., y mom., energy]. */
   readonly flux: readonly [number, number, number, number];
 }
@@ -71,6 +79,9 @@ interface BoundaryFace {
   readonly j: number;
   readonly nx: number;
   readonly ny: number;
+  readonly area: number;
+  /** Grid nodes at the two ends of the face. */
+  readonly nodes: readonly [number, number];
   readonly outward: 1 | -1;
 }
 
@@ -193,13 +204,17 @@ export class Euler2D {
     const along = direction === 'i' ? this.metrics.nj : this.metrics.ni;
     const result: BoundaryFaceFlux[] = [];
     for (let t = 0; t < along; t++) {
-      const { i, j, nx, ny, outward } = this.boundaryFace(side, t);
+      const { i, j, nx, ny, area, nodes, outward } = this.boundaryFace(side, t);
       const [left, right] = this.faceStates(this.state, direction, i, j);
       faceFlux2D(this.flux, left, right, nx, ny, this.config.gamma, this.fluxOut);
       const f = this.fluxOut;
+      const { x, y } = this.config.grid;
       result.push({
+        x: 0.5 * (x[nodes[0]]! + x[nodes[1]]!),
+        y: 0.5 * (y[nodes[0]]! + y[nodes[1]]!),
         nx: outward * nx,
         ny: outward * ny,
+        area,
         flux: [outward * f[0]!, outward * f[1]!, outward * f[2]!, outward * f[3]!],
       });
     }
@@ -470,14 +485,35 @@ export class Euler2D {
         const i = side === 'iMin' ? 0 : ni;
         const f = i + t * (ni + 1);
         const outward = side === 'iMin' ? -1 : 1;
-        return { i, j: t, nx: iFaces.nx[f]!, ny: iFaces.ny[f]!, outward };
+        // Face (i, t) joins nodes (i, t) and (i, t + 1).
+        const nodes = [f, f + ni + 1] as const;
+        return {
+          i,
+          j: t,
+          nx: iFaces.nx[f]!,
+          ny: iFaces.ny[f]!,
+          area: iFaces.area[f]!,
+          nodes,
+          outward,
+        };
       }
       case 'jMin':
       case 'jMax': {
         const j = side === 'jMin' ? 0 : nj;
         const f = t + j * ni;
         const outward = side === 'jMin' ? -1 : 1;
-        return { i: t, j, nx: jFaces.nx[f]!, ny: jFaces.ny[f]!, outward };
+        // Face (t, j) joins nodes (t, j) and (t + 1, j).
+        const node = t + j * (ni + 1);
+        const nodes = [node, node + 1] as const;
+        return {
+          i: t,
+          j,
+          nx: jFaces.nx[f]!,
+          ny: jFaces.ny[f]!,
+          area: jFaces.area[f]!,
+          nodes,
+          outward,
+        };
       }
     }
   }

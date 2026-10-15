@@ -220,4 +220,41 @@ describe('copy presentation', () => {
       presenter.destroy();
     }
   });
+
+  it('survives a resize while a frame is being copied', async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 40;
+    canvas.height = 30;
+    const presenter = new CopyPresenter(device, canvas);
+    const grid = rectangularGrid(8, 4, 0, 2, 0, 1);
+    const renderer = await FieldRenderer.create(device, presenter.format, grid);
+    const { buffer } = stateBuffer(8, 4, () => [1, 2, 0, 1]);
+    const draw = () => {
+      renderer.render(
+        presenter.frameTexture(),
+        buffer,
+        { field: 'schlieren', gamma, schlierenContrast: 12 },
+        { r: 1, g: 0, b: 1, a: 1 },
+      );
+    };
+    try {
+      draw();
+      const first = presenter.present();
+      // Resize and draw again before the first copy has finished: the first
+      // frame's buffers must stay alive until it completes.
+      canvas.width = 50;
+      canvas.height = 36;
+      draw();
+      await first;
+      await presenter.present();
+      const ctx = canvas.getContext('2d')!;
+      // The background shows above the domain at the new size.
+      expect([...ctx.getImageData(25, 1, 1, 1).data]).toEqual([255, 0, 255, 255]);
+      expect([...ctx.getImageData(25, 18, 1, 1).data]).toEqual([255, 255, 255, 255]);
+    } finally {
+      buffer.destroy();
+      renderer.destroy();
+      presenter.destroy();
+    }
+  });
 });
