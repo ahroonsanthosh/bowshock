@@ -198,6 +198,16 @@ describe('GpuEuler2D: smooth flow', () => {
   });
 });
 
+/** Mean pressure of the wall-adjacent cells with centroid x in (x0, x1). */
+function wallCellPressure(s: GpuEuler2D, state: GpuState2D, x0: number, x1: number): number {
+  const values: number[] = [];
+  for (let i = 0; i < s.metrics.ni; i++) {
+    const x = s.metrics.centroidX[i]!;
+    if (x > x0 && x < x1) values.push(gpuPrimitive2D(state, i, gamma).p);
+  }
+  return values.reduce((a, b) => a + b, 0) / values.length;
+}
+
 describe('GpuEuler2D: steady supersonic validation', () => {
   function rampConfig(mach: number, angle: number): GpuEuler2DConfig {
     const free = { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
@@ -216,16 +226,6 @@ describe('GpuEuler2D: steady supersonic validation', () => {
         },
       },
     );
-  }
-
-  /** Mean pressure of the wall-adjacent cells with centroid x in (x0, x1). */
-  function wallCellPressure(s: GpuEuler2D, state: GpuState2D, x0: number, x1: number): number {
-    const values: number[] = [];
-    for (let i = 0; i < s.metrics.ni; i++) {
-      const x = s.metrics.centroidX[i]!;
-      if (x > x0 && x < x1) values.push(gpuPrimitive2D(state, i, gamma).p);
-    }
-    return values.reduce((a, b) => a + b, 0) / values.length;
   }
 
   it('wedge: converges, and matches the CPU engine and the oblique-shock relation', async () => {
@@ -279,6 +279,46 @@ describe('GpuEuler2D: steady supersonic validation', () => {
         const j = Math.floor(c / 60);
         expect(Math.abs(state.rho[c]! - cpu.primitive(i, j).rho)).toBeLessThan(1e-4);
       }
+    });
+  });
+});
+
+describe('GpuEuler2D: axisymmetric validation', () => {
+  it('cone (M = 2.35, 10 deg): converges, and matches the CPU engine', async () => {
+    // The CPU engine is validated on this cone against Taylor-Maccoll
+    // (tests/engine-cpu/euler2d-cone.test.ts); the GPU must agree with it.
+    const free = { rho: 1, u: 2.35 * Math.sqrt(gamma), v: 0, p: 1 };
+    const cfg = config(
+      rampGrid({ ni: 60, nj: 30, xMin: -0.5, xCorner: 0, xMax: 1.5, height: 1.2, angle: 10 * deg }),
+      {
+        geometry: 'axisymmetric',
+        limiter: 'vanAlbada',
+        reconstruction: 'shared',
+        cfl: 0.8,
+        timeStepping: 'local',
+        boundaries: {
+          iMin: { kind: 'inflow', state: free },
+          iMax: { kind: 'outflow' },
+          jMin: { kind: 'wall' },
+          jMax: { kind: 'outflow' },
+        },
+      },
+    );
+    const cpu = new Euler2D(cfg);
+    cpu.setInitialCondition(() => free);
+    cpu.iterate(2000);
+    await withSolver(cfg, async (s) => {
+      s.setInitialCondition(() => free);
+      const initial = await s.densityResidualNorm();
+      await s.iterate(2000);
+      expect(await s.densityResidualNorm()).toBeLessThan(1e-4 * initial);
+      const state = await s.readState();
+      let worst = 0;
+      for (let c = 0; c < 60 * 30; c++) {
+        const cell = cpu.primitive(c % 60, Math.floor(c / 60));
+        worst = Math.max(worst, Math.abs(gpuPrimitive2D(state, c, gamma).p - cell.p) / cell.p);
+      }
+      expect(worst).toBeLessThan(1e-4);
     });
   });
 });
