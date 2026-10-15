@@ -10,6 +10,7 @@ export default defineConfig({
       input: {
         main: 'index.html',
         shockTube: 'demos/shock-tube.html',
+        supersonicRamp: 'demos/supersonic-ramp.html',
       },
     },
   },

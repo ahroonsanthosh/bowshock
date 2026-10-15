@@ -104,3 +104,23 @@ pressure stays accurate, but the integrated ramp force fluctuates by
 counts: above the 1-count convergence target. A remedy (smoothing scaled
 with cell size, limiter freezing, or a shock-sensing flux blend) is being
 evaluated and must be settled before the steady RANS solver.
+
+## Results (M3b, GPU engine and rendering)
+
+- The GPU engine runs the same scheme in f32 with buffers packed to fit
+  WebGPU's default limit of 8 storage buffers per shader stage. It matches
+  the CPU engine on the vortex and on the converged expansion, iteration by
+  iteration under local time stepping on uneven cells, and the exact
+  solutions as the CPU engine does. In the live demo the ramp pressure is
+  within about 0.1% of exact theory at 120 x 60 cells.
+- Display fields (schlieren, Mach number, pressure, density) are computed
+  on grid nodes on the GPU, matching a TypeScript reference to 1e-5, and
+  drawn as smoothly shaded triangles straight from the solver's buffers.
+  Schlieren uses exp(-k |grad rho| / max |grad rho|) with k = 12; colours
+  use bowshock's own colour map, interpolated in Oklab.
+- Graceful degradation: if presenting WebGPU frames to a canvas loses the
+  device, the page continues on a fresh device, rendering offscreen and
+  copying frames to a 2D canvas; if that also fails, it continues on the
+  CPU engine at reduced resolution. Each step is reported on the page.
+  Headless Chromium on software WebGPU (as in CI) is one such environment:
+  compute works, canvas presentation does not.

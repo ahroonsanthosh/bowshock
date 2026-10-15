@@ -9,10 +9,11 @@ professional CFD software. Open the page, describe or import your rocket,
 watch the shock waves form, and export drag coefficient versus Mach number
 with an honest uncertainty band.
 
-> **Status: early development.** A verified 1D solver runs on both the CPU
-> and the GPU (WebGPU), with its test suite; the rocket solver does not
-> exist yet. Nothing here should be used for flight decisions yet. The plan
-> is in [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
+> **Status: early development.** Verified 1D and 2D (planar and
+> axisymmetric) Euler solvers run on both the CPU and the GPU (WebGPU), with
+> their test suites and live demos; the rocket solver does not exist yet.
+> Nothing here should be used for flight decisions yet. The plan is in
+> [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
 
 ## What it will do
 
@@ -44,8 +45,14 @@ npm ci
 npm run dev
 ```
 
-Then open the shock tube demo, which runs the 1D solver live, on the CPU or
-the GPU, against the exact solution of Toro's five Riemann problems.
+Then open the demos:
+
+- **Supersonic ramp:** oblique shocks and Prandtl-Meyer expansion fans,
+  solved live on your GPU and drawn as numerical schlieren or colour-mapped
+  fields, with the ramp pressure compared against exact theory as the run
+  converges.
+- **Shock tube:** the 1D solver, on the CPU or the GPU, against the exact
+  solution of Toro's five Riemann problems.
 
 ## Development
 
