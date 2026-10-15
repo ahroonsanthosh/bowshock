@@ -484,8 +484,19 @@ function redraw(): Promise<void> {
 /** Iterations after which the run stops even if not converged, to spare the user's battery. */
 const MAX_ITERATIONS = 20_000;
 
+/**
+ * Convergence: the residual has fallen by four orders, and the ramp
+ * pressure changed by less than 1e-5 relative over the last measurement
+ * interval. The GPU runs in 32-bit floats, whose round-off holds the
+ * residual near 1e-5 of its initial value, so a residual threshold alone
+ * could never be met there.
+ */
+const RESIDUAL_DROP = 1e-4;
+const PRESSURE_STEADY = 1e-5;
+
 async function loop(myGeneration: number): Promise<void> {
   let frame = 0;
+  let previousPressure = NaN;
   while (myGeneration === generation && run !== null) {
     const current = run;
     try {
@@ -496,7 +507,9 @@ async function loop(myGeneration: number): Promise<void> {
         const m = await current.measure();
         if (myGeneration !== generation) return;
         report(m);
-        if (m.residual < 1e-6 && m.steps > 200) {
+        const change = Math.abs(m.rampPressure / previousPressure - 1);
+        previousPressure = m.rampPressure;
+        if (m.residual < RESIDUAL_DROP && change < PRESSURE_STEADY) {
           status.textContent += ' Converged.';
           return;
         }
