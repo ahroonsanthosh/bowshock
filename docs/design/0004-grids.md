@@ -99,12 +99,19 @@ first comparison with measurements on a generated grid:
   method of characteristics (its figure 3) lies close to our solution and
   below the measurements in the same way. On the forward nose it does not:
   there our solution is about 0.01 below both the measurements and the
-  report's theories. The cause is not established. The boundary layer is
+  report's theories. That curve is not an exact solution: it comes from
+  V. J. Rossow, NACA TN 2399 (1951), whose method adds an approximate
+  correction for rotation to hand-computed characteristics solutions
+  that ignored it, and agrees with a full solution "within the accuracy
+  of a characteristic solution"; only plots are published. The cause of
+  the difference is not established. The boundary layer is
   not a sufficient explanation (the report finds Reynolds-number effects
   negligible at zero incidence, and a laminar displacement thickness here
-  is worth about 0.002 in Cp). An independent inviscid reference for sharp
-  ogives is needed before any accuracy claim on ogives; the test keeps a
-  0.025 bound only to catch regressions.
+  is worth about 0.002 in Cp). The solver's discretisation of smooth
+  axisymmetric flow is verified separately by a manufactured solution
+  (0003); an exact inviscid reference for ogives is still needed before
+  any accuracy claim on them, and the test keeps a 0.025 bound only to
+  catch regressions.
 
 ## Open
 

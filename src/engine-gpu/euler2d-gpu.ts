@@ -158,6 +158,9 @@ export class GpuEuler2D {
     validateGrid2DConfig(config);
     const flux: string = config.flux;
     if (!isGpuFlux(flux)) throw new RangeError(`flux ${flux} is not available on the GPU`);
+    if (config.source !== undefined) {
+      throw new RangeError('manufactured-solution sources are only supported by the CPU engine');
+    }
 
     const module = await compileShader(device, 'euler2d', euler2dShaderSource(config));
     const storage = (binding: number, type: GPUBufferBindingType): GPUBindGroupLayoutEntry => ({
