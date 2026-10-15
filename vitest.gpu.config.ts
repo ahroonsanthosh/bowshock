@@ -15,6 +15,7 @@ const executablePath = process.env.CHROMIUM_PATH;
 export default defineConfig({
   test: {
     include: ['tests/gpu/**/*.test.ts'],
+    exclude: ['tests/gpu/tmp*'],
     testTimeout: 60_000,
     browser: {
       enabled: true,

@@ -5,7 +5,8 @@
  */
 
 import { DEFAULT_CONFIG, Euler1D, type Euler1DConfig } from '../engine-cpu/euler1d';
-import { GpuEuler1D, gpuPrimitive, hasReached, isGpuFlux } from '../engine-gpu/euler1d-gpu';
+import { GpuEuler1D, gpuPrimitive, isGpuFlux } from '../engine-gpu/euler1d-gpu';
+import { hasReached } from '../engine-gpu/time-loop';
 import { FLUXES } from '../scheme/flux';
 import type { Primitive1D } from '../scheme/gas';
 import { LIMITERS } from '../scheme/limiters';

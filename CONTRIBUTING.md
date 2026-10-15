@@ -48,6 +48,12 @@ bit for bit with the CPU. Instead:
 - problems with shocks are checked by comparing each engine separately with
   the exact or reference solution.
 
+Headless Chromium on software WebGPU runs compute and offscreen rendering,
+but loses the device when presenting to a WebGPU canvas, and cannot then
+show canvases in screenshots. Test rendering offscreen, as
+`tests/gpu/render.test.ts` does, and inspect demo canvases with
+`toDataURL` rather than screenshots.
+
 Every WGSL function names its TypeScript twin in a comment. Change both
 together, and add the pair to the kernel tests.
 

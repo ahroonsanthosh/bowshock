@@ -5,7 +5,7 @@ import {
   type Euler2DConfig,
   type Side,
 } from '../../src/engine-cpu/euler2d';
-import { gridFromFunction, type StructuredGrid } from '../../src/grid/structured';
+import { gridFromFunction, rectangularGrid, type StructuredGrid } from '../../src/grid/structured';
 import { isentropicVortex } from '../../src/validation/isentropic-vortex';
 
 const gamma = 1.4;
@@ -21,6 +21,7 @@ function solver(grid: StructuredGrid, overrides: Partial<Euler2DConfig>): Euler2
     gamma,
     flux: 'hllc',
     limiter: 'vanLeer',
+    reconstruction: 'perVariable',
     timeIntegrator: 'ssprk2',
     cfl: 0.5,
     timeStepping: 'global',
@@ -83,9 +84,9 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
       return [xi + bump, eta + bump];
     });
 
-  function vortexError(n: number, tEnd: number): number {
+  function vortexError(n: number, tEnd: number, scheme: Partial<Euler2DConfig>): number {
     const s = solver(wavyGrid(n), {
-      limiter: 'unlimitedCentral',
+      ...scheme,
       timeIntegrator: 'ssprk3',
       cfl: 0.4,
       boundaries: boundaries({ kind: 'periodic' }),
@@ -112,10 +113,148 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
   }
 
   it('converges at second order with unlimited slopes', () => {
-    const coarse = vortexError(32, 1);
-    const fine = vortexError(64, 1);
-    const order = Math.log2(coarse / fine);
+    const unlimited = { limiter: 'unlimitedCentral', reconstruction: 'perVariable' } as const;
+    const order = Math.log2(vortexError(32, 1, unlimited) / vortexError(64, 1, unlimited));
     expect(order).toBeGreaterThan(1.9);
     expect(order).toBeLessThan(2.2);
+  }, 30_000);
+
+  it('converges at second order with the shared reconstruction', () => {
+    // Limiting fades as the grid resolves the vortex, so the measured order
+    // exceeds two: when written, L1 errors were 2.6e-3, 4.7e-4 and 9.0e-5 on
+    // 32, 64 and 128 cells (orders 2.45 and 2.39), against 7.7e-5 unlimited
+    // on 128 cells.
+    const shared = { limiter: 'vanAlbada', reconstruction: 'shared' } as const;
+    const unlimited = { limiter: 'unlimitedCentral', reconstruction: 'perVariable' } as const;
+    const coarse = vortexError(32, 1, shared);
+    const fine = vortexError(64, 1, shared);
+    expect(Math.log2(coarse / fine)).toBeGreaterThan(1.9);
+    // Limiting costs little: 1.47 times the unlimited error on 64 cells.
+    expect(fine).toBeLessThan(1.6 * vortexError(64, 1, unlimited));
+  }, 30_000);
+});
+
+describe('Euler2D: time step', () => {
+  it('equals CFL * V / ((|u| + a) S_i + (|v| + a) S_j) on a stretched uniform grid', () => {
+    // Cells 0.1 wide and 0.01 tall: the j direction limits the step.
+    const w = { rho: 1.3, u: 0.4, v: -0.7, p: 0.9 };
+    const s = solver(rectangularGrid(10, 100, 0, 1, 0, 1), { cfl: 0.8 });
+    s.setInitialCondition(() => w);
+    const a = Math.sqrt((gamma * w.p) / w.rho);
+    const dx = 0.1;
+    const dy = 0.01;
+    const expected = (0.8 * dx * dy) / ((Math.abs(w.u) + a) * dy + (Math.abs(w.v) + a) * dx);
+    expect(s.stableTimeStep()).toBeCloseTo(expected, 15);
+  });
+
+  it('stays stable on thin cells when the flow runs along the short direction', () => {
+    // A density pulse carried in y across cells ten times thinner than
+    // wide. Too large a step in that direction makes the run blow up.
+    const pulse = (_x: number, y: number) => ({
+      rho: 1 + 0.2 * Math.exp(-100 * (y - 0.5) ** 2),
+      u: 0,
+      v: 1,
+      p: 1,
+    });
+    const s = solver(rectangularGrid(10, 100, 0, 1, 0, 1), {
+      cfl: 0.9,
+      boundaries: boundaries({ kind: 'periodic' }),
+    });
+    s.setInitialCondition(pulse);
+    s.advanceTo(0.25);
+    for (let j = 0; j < 100; j++) {
+      const exact = pulse(0, ((j + 0.5) / 100 - 0.25 + 1) % 1);
+      expect(Math.abs(s.primitive(5, j).rho - exact.rho)).toBeLessThan(1e-2);
+    }
+  });
+});
+
+describe('Euler2D: periodic boundaries', () => {
+  it('give a translation-invariant solution across all four boundaries', () => {
+    // The same vortex, centred mid-domain and centred on the domain's corner
+    // (where it straddles all four periodic boundaries), on a uniform grid
+    // whose spacing is exact in binary. The second solution must be the
+    // first shifted by half the domain in each direction.
+    const n = 40;
+    const L = 10;
+    const run = (x0: number, y0: number) => {
+      const s = solver(rectangularGrid(n, n, 0, L, 0, L), {
+        boundaries: boundaries({ kind: 'periodic' }),
+      });
+      const vortex = { strength: 5, x0, y0, u0: 1, v0: 0.5, period: L };
+      s.setInitialCondition((x, y) => isentropicVortex(vortex, x, y, 0, gamma));
+      s.advanceTo(1);
+      return s;
+    };
+    const centred = run(5, 5);
+    const corner = run(0, 0);
+    for (let j = 0; j < n; j++) {
+      for (let i = 0; i < n; i++) {
+        const a = centred.primitive(i, j);
+        const b = corner.primitive((i + n / 2) % n, (j + n / 2) % n);
+        expect(Math.abs(a.rho - b.rho)).toBeLessThan(1e-12);
+        expect(Math.abs(a.u - b.u)).toBeLessThan(1e-12);
+        expect(Math.abs(a.v - b.v)).toBeLessThan(1e-12);
+      }
+    }
+  });
+});
+
+describe('Euler2D: configuration', () => {
+  it('rejects shared reconstruction with a limiter it would ignore', () => {
+    expect(() => solver(rectangularGrid(4, 4, 0, 1, 0, 1), { reconstruction: 'shared' })).toThrow(
+      /requires the 'vanAlbada' limiter/,
+    );
+  });
+});
+
+describe('Euler2D: boundary fluxes', () => {
+  const SIDES = ['iMin', 'iMax', 'jMin', 'jMax'] as const;
+
+  it('gives outward normals, face areas and midpoints, and wall pressure, on a distorted box', () => {
+    // Gas at rest in a closed box: the only flux through each wall is the
+    // pressure, p n per unit area, and the forces on the walls balance.
+    const grid = distortedGrid(12, 10, 0, 2, 0, 1.5);
+    const s = solver(grid, { boundaries: boundaries({ kind: 'wall' }) });
+    const p = 0.8;
+    s.setInitialCondition(() => ({ rho: 1.1, u: 0, v: 0, p }));
+    let perimeter = 0;
+    let forceX = 0;
+    let forceY = 0;
+    for (const side of SIDES) {
+      for (const f of s.boundaryFluxes(side)) {
+        // The box is the rectangle [0, 2] x [0, 1.5]; its edges are straight.
+        const onEdge = Math.min(
+          Math.abs(f.x),
+          Math.abs(f.x - 2),
+          Math.abs(f.y),
+          Math.abs(f.y - 1.5),
+        );
+        expect(onEdge).toBeLessThan(1e-12);
+        expect(f.nx * (f.x - 1) + f.ny * (f.y - 0.75)).toBeGreaterThan(0);
+        expect(Math.abs(f.flux[0])).toBe(0); // -0 and +0 are both exact
+        expect(f.flux[1]).toBeCloseTo(p * f.nx, 12);
+        expect(f.flux[2]).toBeCloseTo(p * f.ny, 12);
+        perimeter += f.area;
+        forceX += f.flux[1] * f.area;
+        forceY += f.flux[2] * f.area;
+      }
+    }
+    expect(perimeter).toBeCloseTo(7, 12);
+    expect(Math.abs(forceX)).toBeLessThan(1e-12);
+    expect(Math.abs(forceY)).toBeLessThan(1e-12);
+  });
+
+  it('gives the area per radian in axisymmetric geometry', () => {
+    // An annular duct between radii 0.5 and 1.5: the outer wall's area per
+    // radian is its length times its radius.
+    const s = solver(rectangularGrid(8, 4, 0, 2, 0.5, 1.5), {
+      geometry: 'axisymmetric',
+      boundaries: boundaries({ kind: 'wall' }),
+    });
+    s.setInitialCondition(() => ({ rho: 1, u: 0, v: 0, p: 1 }));
+    const outer = s.boundaryFluxes('jMax');
+    expect(outer.reduce((sum, f) => sum + f.area, 0)).toBeCloseTo(2 * 1.5, 12);
+    for (const f of outer) expect(f.ny).toBe(1);
   });
 });

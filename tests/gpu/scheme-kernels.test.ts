@@ -4,9 +4,18 @@ import { WGSL_LIMITER_FUNCTIONS } from '../../src/engine-gpu/euler1d-gpu';
 import fluxWgsl from '../../src/engine-gpu/shaders/flux.wgsl?raw';
 import gasWgsl from '../../src/engine-gpu/shaders/gas.wgsl?raw';
 import limitersWgsl from '../../src/engine-gpu/shaders/limiters.wgsl?raw';
-import { hllcFlux, rusanovFlux, type FluxFunction } from '../../src/scheme/flux';
+import reconstructionWgsl from '../../src/engine-gpu/shaders/reconstruction.wgsl?raw';
+import {
+  hllcFaceFlux,
+  hllcFlux,
+  rusanovFaceFlux,
+  rusanovFlux,
+  type FluxFunction,
+  type Primitive2D,
+} from '../../src/scheme/flux';
 import { GAMMA_AIR } from '../../src/scheme/gas';
 import { LIMITERS, type LimiterName } from '../../src/scheme/limiters';
+import { reconstructPerVariable, reconstructShared } from '../../src/scheme/reconstruction';
 import { fluxScales, scaledError } from '../support/flux-scales';
 import { requireDevice } from './device';
 import { evaluateWgsl } from './wgsl-harness';
@@ -60,6 +69,38 @@ describe.each(GPU_FLUXES)('%s flux kernel', (_, wgslName, cpuFlux) => {
   });
 });
 
+describe.each([
+  ['hllc', 'hllc_face_flux', hllcFaceFlux],
+  ['rusanov', 'rusanov_face_flux', rusanovFaceFlux],
+] as const)('%s face-frame flux kernel (with tangential velocity)', (_, wgslName, cpuFlux) => {
+  const faceState = fc.record({
+    rho: fc.double({ min: 1e-2, max: 1e2, noNaN: true }).map(f32),
+    un: fc.double({ min: -5, max: 5, noNaN: true }).map(f32),
+    ut: fc.double({ min: -5, max: 5, noNaN: true }).map(f32),
+    p: fc.double({ min: 1e-2, max: 1e2, noNaN: true }).map(f32),
+  });
+  const facePairs = fc.sample(fc.tuple(faceState, faceState), { numRuns: 4000, seed: 33 });
+
+  it('matches the TypeScript twin to f32 precision', async () => {
+    const gpu = await evaluateWgsl(
+      device,
+      library,
+      `${wgslName}(FaceState(x[0], x[1], x[2], x[3]), FaceState(x[4], x[5], x[6], x[7]), ${gamma})`,
+      facePairs.map(([l, r]) => [l.rho, l.un, l.ut, l.p, r.rho, r.un, r.ut, r.p]),
+    );
+    const cpu = new Float64Array(4);
+    facePairs.forEach(([l, r], i) => {
+      cpuFlux(l, r, gamma, cpu);
+      // Scale: the size of the terms combined, as for the 1D kernels, with
+      // the tangential momentum flux scaled like the normal one.
+      const toPrimitive = (w: typeof l) => ({ rho: w.rho, u: Math.hypot(w.un, w.ut), p: w.p });
+      const [mass, momentum, energy] = fluxScales(gamma, toPrimitive(l), toPrimitive(r));
+      const scales = [mass!, momentum!, momentum!, energy!];
+      expect(scaledError(gpu[i]!, cpu, scales)).toBeLessThan(1e-6);
+    });
+  });
+});
+
 describe('limiter kernels', () => {
   // Slopes of physically meaningful size: zero, or 1e-6 to 1e3 in magnitude.
   // Variables are nondimensional and of order one, so smaller slopes only
@@ -105,4 +146,56 @@ describe('limiter kernels', () => {
       });
     },
   );
+});
+
+describe('reconstruction kernels', () => {
+  const reconstructionLibrary = [
+    library,
+    reconstructionWgsl,
+    'fn limiter(a: f32, b: f32) -> f32 { return van_albada(a, b); }',
+    'fn as_vec4(w: Primitive2D) -> vec4f { return vec4f(w.rho, w.u, w.v, w.p); }',
+  ].join('\n');
+  const primitive = fc.record({
+    rho: fc.double({ min: 1e-2, max: 1e2, noNaN: true }).map(f32),
+    u: fc.double({ min: -5, max: 5, noNaN: true }).map(f32),
+    v: fc.double({ min: -5, max: 5, noNaN: true }).map(f32),
+    p: fc.double({ min: 1e-2, max: 1e2, noNaN: true }).map(f32),
+  });
+  const triples = fc.sample(fc.tuple(primitive, primitive, primitive, fc.constantFrom(1, -1)), {
+    numRuns: 2000,
+    seed: 43,
+  });
+  const keys = ['rho', 'u', 'v', 'p'] as const;
+
+  it.each([
+    [
+      'reconstruct_per_variable',
+      (prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: 1 | -1) =>
+        reconstructPerVariable(prev, centre, next, side, LIMITERS.vanAlbada),
+    ],
+    ['reconstruct_shared', reconstructShared],
+  ] as const)('%s matches the TypeScript twin to f32 precision', async (wgslName, cpu) => {
+    const w = (k: number) => `Primitive2D(x[${k}], x[${k + 1}], x[${k + 2}], x[${k + 3}])`;
+    const gpu = await evaluateWgsl(
+      device,
+      reconstructionLibrary,
+      `as_vec4(${wgslName}(${w(0)}, ${w(4)}, ${w(8)}, x[12]))`,
+      triples.map(([a, b, c, side]) => [
+        ...keys.map((k) => a[k]),
+        ...keys.map((k) => b[k]),
+        ...keys.map((k) => c[k]),
+        side,
+      ]),
+    );
+    triples.forEach(([prev, centre, next, side], i) => {
+      const expected = cpu(prev, centre, next, side);
+      keys.forEach((k, m) => {
+        // Scale: the values combined in the reconstruction, with a floor of
+        // 1e-6 for these order-one variables, below which f32 values are
+        // round-off (and subnormals may be flushed to zero).
+        const scale = Math.abs(prev[k]) + Math.abs(centre[k]) + Math.abs(next[k]) + 1e-6;
+        expect(Math.abs(gpu[i]![m]! - expected[k]) / scale).toBeLessThan(1e-6);
+      });
+    });
+  });
 });

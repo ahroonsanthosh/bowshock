@@ -19,13 +19,12 @@ fn van_leer(a: f32, b: f32) -> f32 {
   return 2.0 * a * b / (a + b);
 }
 
+// The smooth form; see vanAlbada and VAN_ALBADA_EPSILON in limiters.ts.
+const VAN_ALBADA_EPSILON: f32 = 1e-6;
+
 fn van_albada(a: f32, b: f32) -> f32 {
-  // After this guard a and b are non-zero with the same sign, so the
-  // denominator is positive.
-  if (a * b <= 0.0) {
-    return 0.0;
-  }
-  return (a * b * b + b * a * a) / (a * a + b * b);
+  let eps = VAN_ALBADA_EPSILON;
+  return (a * (b * b + eps) + b * (a * a + eps)) / (a * a + b * b + 2.0 * eps);
 }
 
 fn monotonized_central(a: f32, b: f32) -> f32 {

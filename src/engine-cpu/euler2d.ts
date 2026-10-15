@@ -18,7 +18,13 @@ import {
   type Primitive2D,
 } from '../scheme/flux';
 import { pressureFromConserved2D, soundSpeed } from '../scheme/gas';
-import { LIMITERS, type Limiter, type LimiterName } from '../scheme/limiters';
+import { LIMITERS, type LimiterName } from '../scheme/limiters';
+import {
+  type Reconstruction,
+  reconstructPerVariable,
+  reconstructShared,
+} from '../scheme/reconstruction';
+import { validateGrid2DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
 import { RUNGE_KUTTA_STAGES, type TimeIntegrator } from '../solver/runge-kutta';
 
@@ -40,6 +46,11 @@ export interface Euler2DConfig {
   readonly gamma: number;
   readonly flux: FluxName;
   readonly limiter: LimiterName;
+  /**
+   * 'perVariable' for time-accurate flows, 'shared' for steady flows with
+   * shocks; the trade-off is described in src/scheme/reconstruction.ts.
+   */
+  readonly reconstruction: Reconstruction;
   readonly timeIntegrator: TimeIntegrator;
   readonly cfl: number;
   /** Global steps are time-accurate; local steps converge steady flows faster. */
@@ -48,9 +59,17 @@ export interface Euler2DConfig {
 }
 
 export interface BoundaryFaceFlux {
+  /** Midpoint of the face. */
+  readonly x: number;
+  readonly y: number;
   /** Outward unit normal of the face. */
   readonly nx: number;
   readonly ny: number;
+  /**
+   * Face area: length in planar geometry; length times midpoint radius in
+   * axisymmetric geometry (the area per radian of revolution).
+   */
+  readonly area: number;
   /** Flux per unit area along the outward normal: [mass, x mom., y mom., energy]. */
   readonly flux: readonly [number, number, number, number];
 }
@@ -60,6 +79,9 @@ interface BoundaryFace {
   readonly j: number;
   readonly nx: number;
   readonly ny: number;
+  readonly area: number;
+  /** Grid nodes at the two ends of the face. */
+  readonly nodes: readonly [number, number];
   readonly outward: 1 | -1;
 }
 
@@ -81,7 +103,13 @@ export class Euler2D {
   steps = 0;
 
   private readonly flux: FaceFrameFlux;
-  private readonly limiter: Limiter;
+  /** Reconstructs the centre cell's state at its +1 or -1 face. */
+  private readonly reconstruct: (
+    prev: Primitive2D,
+    centre: Primitive2D,
+    next: Primitive2D,
+    side: 1 | -1,
+  ) => Primitive2D;
   /** Row length of the padded arrays: ni + 2 * GHOSTS. */
   private readonly stride: number;
   private readonly state: State;
@@ -93,21 +121,16 @@ export class Euler2D {
   private readonly fluxOut = new Float64Array(4);
 
   constructor(config: Euler2DConfig) {
-    const { boundaries: b, cfl, grid } = config;
-    if (!(cfl > 0 && cfl <= 1)) throw new RangeError('cfl must be in (0, 1]');
-    if (grid.ni < 2 || grid.nj < 2) throw new RangeError('the grid needs at least 2 x 2 cells');
-    for (const [low, high] of [
-      ['iMin', 'iMax'],
-      ['jMin', 'jMax'],
-    ] as const) {
-      if ((b[low].kind === 'periodic') !== (b[high].kind === 'periodic')) {
-        throw new RangeError(`periodic boundaries must be used on both ${low} and ${high}`);
-      }
-    }
+    validateGrid2DConfig(config);
+    const { grid } = config;
     this.config = config;
     this.metrics = computeMetrics(grid, config.geometry);
     this.flux = FACE_FLUXES[config.flux];
-    this.limiter = LIMITERS[config.limiter];
+    const limiter = LIMITERS[config.limiter];
+    this.reconstruct =
+      config.reconstruction === 'shared'
+        ? reconstructShared
+        : (prev, centre, next, side) => reconstructPerVariable(prev, centre, next, side, limiter);
     this.stride = grid.ni + 2 * GHOSTS;
     const size = this.stride * (grid.nj + 2 * GHOSTS);
     const allocate = (): State => ({
@@ -181,17 +204,29 @@ export class Euler2D {
     const along = direction === 'i' ? this.metrics.nj : this.metrics.ni;
     const result: BoundaryFaceFlux[] = [];
     for (let t = 0; t < along; t++) {
-      const { i, j, nx, ny, outward } = this.boundaryFace(side, t);
+      const { i, j, nx, ny, area, nodes, outward } = this.boundaryFace(side, t);
       const [left, right] = this.faceStates(this.state, direction, i, j);
       faceFlux2D(this.flux, left, right, nx, ny, this.config.gamma, this.fluxOut);
       const f = this.fluxOut;
+      const { x, y } = this.config.grid;
       result.push({
+        x: 0.5 * (x[nodes[0]]! + x[nodes[1]]!),
+        y: 0.5 * (y[nodes[0]]! + y[nodes[1]]!),
         nx: outward * nx,
         ny: outward * ny,
+        area,
         flux: [outward * f[0]!, outward * f[1]!, outward * f[2]!, outward * f[3]!],
       });
     }
     return result;
+  }
+
+  /** Largest stable global time step for the current state (the smallest cell time step). */
+  stableTimeStep(): number {
+    this.computeTimeSteps(Infinity);
+    let smallest = Infinity;
+    for (const dt of this.dt) smallest = Math.min(smallest, dt);
+    return smallest;
   }
 
   /** Advance to exactly `tEnd` with global time steps. */
@@ -362,8 +397,8 @@ export class Euler2D {
     const wL = this.primitiveAt(u, kLeft);
     const wR = this.primitiveAt(u, kRight);
     const wRR = this.primitiveAt(u, kRight + step);
-    const left = reconstruct(wLL, wL, wR, 1, this.limiter);
-    const right = reconstruct(wL, wR, wRR, -1, this.limiter);
+    const left = this.reconstruct(wLL, wL, wR, 1);
+    const right = this.reconstruct(wL, wR, wRR, -1);
     const ok = left.rho > 0 && left.p > 0 && right.rho > 0 && right.p > 0;
     return ok ? [left, right] : [wL, wR];
   }
@@ -450,14 +485,35 @@ export class Euler2D {
         const i = side === 'iMin' ? 0 : ni;
         const f = i + t * (ni + 1);
         const outward = side === 'iMin' ? -1 : 1;
-        return { i, j: t, nx: iFaces.nx[f]!, ny: iFaces.ny[f]!, outward };
+        // Face (i, t) joins nodes (i, t) and (i, t + 1).
+        const nodes = [f, f + ni + 1] as const;
+        return {
+          i,
+          j: t,
+          nx: iFaces.nx[f]!,
+          ny: iFaces.ny[f]!,
+          area: iFaces.area[f]!,
+          nodes,
+          outward,
+        };
       }
       case 'jMin':
       case 'jMax': {
         const j = side === 'jMin' ? 0 : nj;
         const f = t + j * ni;
         const outward = side === 'jMin' ? -1 : 1;
-        return { i: t, j, nx: jFaces.nx[f]!, ny: jFaces.ny[f]!, outward };
+        // Face (t, j) joins nodes (t, j) and (t + 1, j).
+        const node = t + j * (ni + 1);
+        const nodes = [node, node + 1] as const;
+        return {
+          i: t,
+          j,
+          nx: jFaces.nx[f]!,
+          ny: jFaces.ny[f]!,
+          area: jFaces.area[f]!,
+          nodes,
+          outward,
+        };
       }
     }
   }
@@ -475,21 +531,4 @@ export class Euler2D {
       }
     }
   }
-}
-
-/** Limited linear reconstruction of the centre cell's primitives at its +1 or -1 face. */
-function reconstruct(
-  prev: Primitive2D,
-  centre: Primitive2D,
-  next: Primitive2D,
-  side: 1 | -1,
-  limiter: Limiter,
-): Primitive2D {
-  const value = (p: number, c: number, n: number) => c + 0.5 * side * limiter(c - p, n - c);
-  return {
-    rho: value(prev.rho, centre.rho, next.rho),
-    u: value(prev.u, centre.u, next.u),
-    v: value(prev.v, centre.v, next.v),
-    p: value(prev.p, centre.p, next.p),
-  };
 }

@@ -48,3 +48,14 @@ Strong-stability-preserving Runge-Kutta time integration
 Compensated summation of the GPU clock (TwoSum)
   D. E. Knuth, The Art of Computer Programming, vol. 2: Seminumerical
   Algorithms, Addison-Wesley.
+
+Isentropic vortex verification case
+  C.-W. Shu, "Essentially non-oscillatory and weighted essentially
+  non-oscillatory schemes for hyperbolic conservation laws", in Advanced
+  Numerical Approximation of Nonlinear Hyperbolic Equations, Lecture Notes
+  in Mathematics 1697, Springer, 1998.
+
+Oblique shock, normal shock and Prandtl-Meyer relations
+  Ames Research Staff, "Equations, Tables, and Charts for Compressible
+  Flow", NACA Report 1135, 1953.
+
