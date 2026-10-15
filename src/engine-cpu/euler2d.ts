@@ -56,6 +56,13 @@ export interface Euler2DConfig {
   /** Global steps are time-accurate; local steps converge steady flows faster. */
   readonly timeStepping: 'global' | 'local';
   readonly boundaries: Readonly<Record<Side, BoundaryCondition2D>>;
+  /**
+   * Steady source of mass, x and y momentum and energy integrated over each
+   * cell (per radian in axisymmetric geometry), four values per cell, cell
+   * (i, j) at 4 (i + j ni). For code verification by manufactured
+   * solutions (src/validation/manufactured.ts); physical flows have none.
+   */
+  readonly source?: Float64Array;
 }
 
 export interface BoundaryFaceFlux {
@@ -119,6 +126,8 @@ export class Euler2D {
   /** Time step of each interior cell (all equal for global stepping). */
   private readonly dt: Float64Array;
   private readonly fluxOut = new Float64Array(4);
+  /** The source integrated over each interior cell, four values per cell, or null. */
+  private readonly cellSource: Float64Array | null;
 
   constructor(config: Euler2DConfig) {
     validateGrid2DConfig(config);
@@ -143,6 +152,10 @@ export class Euler2D {
     this.stages = [allocate(), allocate()];
     this.residual = allocate();
     this.dt = new Float64Array(grid.ni * grid.nj);
+    if (config.source !== undefined && config.source.length !== 4 * grid.ni * grid.nj) {
+      throw new RangeError('the source needs four values per cell');
+    }
+    this.cellSource = config.source ?? null;
   }
 
   /** Index of cell (i, j) in the padded arrays; i and j may be ghost indices (-2..n+1). */
@@ -363,6 +376,20 @@ export class Euler2D {
         const [left, right] = this.faceStates(u, 'j', i, j);
         faceFlux2D(this.flux, left, right, jFaces.nx[f]!, jFaces.ny[f]!, gamma, this.fluxOut);
         accumulate(this.index(i, j - 1), this.index(i, j), jFaces.area[f]!);
+      }
+    }
+
+    if (this.cellSource !== null) {
+      const q = this.cellSource;
+      for (let j = 0; j < nj; j++) {
+        for (let i = 0; i < ni; i++) {
+          const k = this.index(i, j);
+          const c = 4 * (i + j * ni);
+          r.rho[k] = r.rho[k]! + q[c]!;
+          r.mu[k] = r.mu[k]! + q[c + 1]!;
+          r.mv[k] = r.mv[k]! + q[c + 2]!;
+          r.energy[k] = r.energy[k]! + q[c + 3]!;
+        }
       }
     }
 

@@ -160,6 +160,27 @@ On the GPU, in 32-bit floats, the wedge (60 x 30 and 120 x 60) and the
 expansion converge to the f32 floor, a residual of about 1e-5 of its
 initial value.
 
+## Code verification by a manufactured solution
+
+A manufactured solution (`src/validation/manufactured.ts`) verifies the
+discretisation of smooth flow as a whole: fluxes, reconstruction, metrics
+on curved grids, the axisymmetric source and the wall condition. Smooth
+fields are chosen in advance (supersonic flow, Mach number about 2.5, in a
+channel between walls, an annulus in axisymmetric geometry, on a smoothly
+distorted grid) and made exact by source terms, integrated over each cell
+as the outward flux of the exact solution through its faces. On 16, 32, 64
+and 128 cells the residual converges to 1e-12 and the L1 error falls at
+order 2.09, 2.04, 2.04 with the shared reconstruction and 1.99, 2.02, 2.00
+with per-variable van Leer, identically in both geometries. Scaling the
+axisymmetric pressure term by 0.99 fails the test.
+
+Two first attempts failed instructively. In a closed domain (periodic, with
+walls) no steady state exists unless the sources of mass, momentum and
+energy sum to exactly zero; sampling a pointwise source at centroids left
+an O(h^2) imbalance that drifted until the solution broke down. Integrating
+the source face by face makes the sum zero, but a closed domain still gives
+transients nowhere to go; the open supersonic channel converges cleanly.
+
 ## Results: axisymmetric flow over cones
 
 A ramp grid in axisymmetric geometry is a sharp cone at zero angle of

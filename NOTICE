@@ -68,3 +68,7 @@ Nose cone profiles (src/geometry/nose.ts)
   Haack series: W. Haack, "Geschossformen kleinsten Wellenwiderstandes",
   Bericht 139 der Lilienthal-Gesellschaft fuer Luftfahrtforschung, 1941.
   The tests check its defining slender-body property directly.
+
+Method of manufactured solutions (src/validation/manufactured.ts)
+  P. J. Roache, "Code verification by the method of manufactured
+  solutions", J. Fluids Eng. 124(1), 2002.

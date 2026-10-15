@@ -72,14 +72,23 @@ describe.each([
   // Measured when written, cone surface over 0.5 to 0.95 of the cone
   // length, nj = 20: +0.030% and -0.276% (-0.159% and -0.085% at nj = 40
   // and 80 for the 20 deg cone).
-  { mach: 2, cone: 15, tolerance: 1e-3 },
-  { mach: 3, cone: 20, tolerance: 3.5e-3 },
+  { mach: 2, cone: 15, cylinder: 4, tolerance: 1e-3 },
+  { mach: 3, cone: 20, cylinder: 4, tolerance: 3.5e-3 },
+  // A long body, where the outer boundary must keep its margin over the
+  // bow shock far downstream (docs/design/0004-grids.md). Measured when
+  // written: +0.049% (nj = 20), -0.0044% (nj = 40); outer cells within
+  // 1.6e-6 of the free stream.
+  { mach: 3, cone: 10, cylinder: 15, tolerance: 1e-3 },
+  // Low supersonic Mach number: the steep outer boundary gives cell angles
+  // down to 21 deg. Measured when written: +0.051% (nj = 20), +0.010%
+  // (nj = 40).
+  { mach: 1.2, cone: 5, cylinder: 4, tolerance: 1e-3 },
 ])(
-  'Euler2D on a generated grid: cone-cylinder, M = $mach, $cone deg',
-  ({ mach, cone, tolerance }) => {
+  'Euler2D on a generated grid: cone-cylinder, M = $mach, $cone deg, $cylinder calibers of cylinder',
+  ({ mach, cone, cylinder, tolerance }) => {
     const body: Body = {
       nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(cone * deg), baseRadius: 0.5 },
-      cylinderLength: 4,
+      cylinderLength: cylinder,
     };
     let s: Euler2D;
     let initialResidual: number;
@@ -129,7 +138,7 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
   });
 
   it('is grid-converged at the measuring stations (nj = 20 and 40 agree within 0.003)', () => {
-    // Measured when written: within 0.0024 (largest at x/d = 0.22, nearest
+    // Measured when written: within 0.0025 (largest at x/d = 0.22, nearest
     // the tip); 40 and 80 agree within 0.0004.
     for (const { xOverD } of TN3716_ZERO_INCIDENCE) {
       expect(Math.abs(cp(coarse.s, xOverD) - cp(fine.s, xOverD))).toBeLessThan(3e-3);

@@ -22,7 +22,12 @@ export interface GridQuality {
 }
 
 export const QUALITY_LIMITS = {
-  minAngle: (30 * Math.PI) / 180,
+  // The smallest cell angle at which the solver has been shown to keep its
+  // accuracy: on cone-cylinders at Mach 1.1 to 1.5, whose steep outer
+  // boundaries give angles down to 12.3 deg, the cone pressure matches
+  // Taylor-Maccoll within 0.16% on the coarsest grids, 0.02% on the next,
+  // and converges with refinement (docs/design/0004-grids.md).
+  minAngle: (12 * Math.PI) / 180,
   minWallAngle: (60 * Math.PI) / 180,
   maxSizeRatio: 1.3,
   maxAspectRatio: 10,
