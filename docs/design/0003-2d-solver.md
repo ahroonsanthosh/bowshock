@@ -158,6 +158,45 @@ On the GPU, in 32-bit floats, the wedge (60 x 30 and 120 x 60) and the
 expansion converge to the f32 floor, a residual of about 1e-5 of its
 initial value.
 
+## Results: axisymmetric flow over cones
+
+A ramp grid in axisymmetric geometry is a sharp cone at zero angle of
+attack: the lower boundary is the axis upstream of the apex (faces of zero
+area) and the cone surface after it. The Taylor-Maccoll solution
+(`src/validation/taylor-maccoll.ts`) is the reference. The flow is conical,
+so the exact surface pressure is uniform; the computed one approaches it
+downstream of the apex, where the grid resolves the shock layer.
+
+Shared reconstruction, 60 x 30 cells, 2000 iterations
+(`tests/engine-cpu/euler2d-cone.test.ts`):
+
+| Cone                | Residual | Surface pressure, x = 1.0 to 1.4 | Shock position     |
+| ------------------- | -------- | -------------------------------- | ------------------ |
+| M 2.35, 10 deg half | 2e-14    | +0.03%                           | 0.14 to 0.24 cells |
+| M 2, 15 deg half    | 1e-14    | -0.03%                           | 0.08 to 0.15 cells |
+| M 3, 20 deg half    | 1e-14    | -0.25%                           | 0.10 to 0.19 cells |
+
+The M 3, 20 deg cone has the thinnest shock layer (shock at 29.6 deg) and
+converges with the grid at about first order, as the under-resolved apex
+region is carried along the surface. Surface pressure error at x = 1.3:
+
+| Grid      | Error   |
+| --------- | ------- |
+| 60 x 30   | -0.22%  |
+| 120 x 60  | -0.12%  |
+| 240 x 120 | -0.061% |
+
+The observed order is 0.9, and Richardson extrapolation gives +0.002%: the
+solver converges to the Taylor-Maccoll solution. Grids that cluster cells
+at the nose, planned for the M4 grid generator, are the remedy on coarse
+grids.
+
+The per-smallest-factor form of the shared reconstruction, tried first,
+stalled on all three cones (residual 5e-2). Per-variable reconstruction is
+about as accurate as shared on the cones and converges on the two milder
+ones, but on the M 3, 20 deg cone its residual was still 5e-7 after 3000
+iterations.
+
 ## Results (M3b, GPU engine and rendering)
 
 - The GPU engine runs the same scheme in f32 with buffers packed to fit

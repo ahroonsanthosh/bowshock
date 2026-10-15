@@ -34,6 +34,18 @@ exact solutions or published data, with fixed tolerances recorded in the
 repository. The sources used, and how far each has been checked, are listed
 in [docs/validation/sources.md](docs/validation/sources.md).
 
+Validated so far, each with its tests and recorded accuracy:
+
+- 1D: exact Riemann problems (Toro's five tests), on the CPU and the GPU.
+- 2D: oblique shocks and Prandtl-Meyer expansions against exact theory,
+  converged to round-off; second-order accuracy on curved grids.
+- Axisymmetric: sharp cones against the Taylor-Maccoll solution; on grid
+  refinement the surface pressure converges to it (within 0.002% after
+  extrapolation, for a Mach 3, 20 degree cone).
+
+Not yet: viscous flow, rocket geometries and drag. Until those pass their
+own validation, bowshock does not report a drag coefficient.
+
 Limits are stated plainly: power off, zero angle of attack, no motor plume;
 base drag is the least certain component; transonic results carry wider
 bands.
