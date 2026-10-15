@@ -5,6 +5,37 @@ import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 const gamma = 1.4;
 const deg = Math.PI / 180;
 
+describe('Taylor-Maccoll solution against the tables of NASA SP-3004', () => {
+  // J. L. Sims, Tables for Supersonic Flow Around Right Circular Cones at
+  // Zero Angle of Attack, NASA SP-3004, 1964 (Taylor-Maccoll, gamma = 1.4,
+  // the free-stream Mach number met to six or more significant figures):
+  // table 11 (shock angle, radians), table 7 (surface Mach number) and
+  // table 9 (surface pressure coefficient), read from the NTRS scan.
+  // Measured when written: shock angles within 2e-6 rad, surface Mach
+  // numbers 5 to 16 ppm below the tables, Cp within 2.2e-5 (the Mach
+  // difference, amplified for thin cones whose surface pressure barely
+  // exceeds the free stream's).
+  const rows: [number, number, number, number, number][] = [
+    // cone (deg), Mach, shock angle, surface Mach, Cp
+    [2.5, 1.5, 0.72979225, 1.4866884, 0.0123382],
+    [2.5, 2.0, 0.5236989, 1.9808615, 0.0107862],
+    [2.5, 3.0, 0.34011057, 2.96276, 0.00913541],
+    [5, 1.5, 0.73078309, 1.4579318, 0.0396615],
+    [5, 3.0, 0.34409993, 2.8913832, 0.02824024],
+    [10, 1.5, 0.74466072, 1.3748579, 0.1237983],
+    [10, 2.0, 0.54464827, 1.8340453, 0.1044583],
+    [10, 3.0, 0.37899374, 2.7101402, 0.08747518],
+    [10, 5.0, 0.27241579, 4.2921847, 0.07475691],
+    [12.5, 3.0, 0.40760084, 2.6103929, 0.1270239],
+  ];
+  it.each(rows)('%s deg cone at Mach %s', (cone, mach, shockAngle, surfaceMach, cp) => {
+    const flow = taylorMaccoll(mach, cone * deg, gamma);
+    expect(Math.abs(flow.shockAngle - shockAngle)).toBeLessThan(5e-6);
+    expect(Math.abs(flow.surfaceMach / surfaceMach - 1)).toBeLessThan(3e-5);
+    expect(Math.abs(flow.surfacePressureCoefficient - cp)).toBeLessThan(3e-5);
+  });
+});
+
 describe('Taylor-Maccoll cone flow', () => {
   it('reproduces the NPARC/WIND validation case: 10 deg cone at Mach 2.35', () => {
     // NASA Glenn NPARC Alliance validation archive, "Conical Shock on a 10
