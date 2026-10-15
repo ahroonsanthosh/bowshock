@@ -1,7 +1,8 @@
 // Face-state reconstruction. WGSL twins of src/scheme/reconstruction.ts,
 // where the two choices and their trade-off are described. Requires
-// gas.wgsl and limiters.wgsl, and for the per-variable form a generated
+// gas.wgsl, limiters.wgsl and a generated
 //   fn limiter(a: f32, b: f32) -> f32
+// (used by the per-variable form).
 
 fn reconstruct_per_variable(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: f32) -> Primitive2D {
   return Primitive2D(
@@ -12,7 +13,7 @@ fn reconstruct_per_variable(prev: Primitive2D, centre: Primitive2D, next: Primit
   );
 }
 
-// The van Albada factor of the backward and forward difference vectors.
+// The clipped van Albada factor of the backward and forward difference vectors.
 fn shared_factor(prev: Primitive2D, centre: Primitive2D, next: Primitive2D) -> f32 {
   let a = vec4f(centre.rho - prev.rho, centre.u - prev.u, centre.v - prev.v, centre.p - prev.p);
   let b = vec4f(next.rho - centre.rho, next.u - centre.u, next.v - centre.v, next.p - centre.p);

@@ -137,3 +137,30 @@ export class StepLedger {
     this.steps = reading.steps;
   }
 }
+
+/**
+ * Advance a GPU time loop to `tEnd` with global time steps: submit batches
+ * of steps sized from the latest time step (one step first, as none is
+ * known yet), account for each batch, and stop on arrival. Throws if more
+ * than `maxSteps` steps are needed.
+ */
+export async function advanceInBatches(
+  tEnd: number,
+  maxSteps: number,
+  ledger: StepLedger,
+  submitSteps: (count: number) => void,
+  readControl: () => Promise<ControlReading>,
+): Promise<void> {
+  const firstStep = ledger.steps;
+  let batch = 1;
+  for (;;) {
+    submitSteps(batch);
+    const reading = await readControl();
+    ledger.account(reading, true);
+    if (hasReached(ledger.elapsed, tEnd)) return;
+    if (ledger.steps - firstStep >= maxSteps) {
+      throw new Error(`advanceTo(${tEnd}) needed more than ${maxSteps} steps`);
+    }
+    batch = nextBatchSize(tEnd, ledger.elapsed, reading.dt);
+  }
+}

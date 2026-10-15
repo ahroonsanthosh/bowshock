@@ -75,7 +75,8 @@ against consistency conditions, so no tabulated numbers need to be copied.
 
 ## Results (M3a, CPU engine)
 
-Measured when the tests were written:
+Measured when the tests were written, with per-variable reconstruction
+(the steady cases were rerun with the shared reconstruction; see below):
 
 - Uniform flow is preserved to round-off on randomly distorted grids, in
   planar and axisymmetric geometry.
@@ -99,8 +100,9 @@ steady residual at about 2e-3; the original smooth form with
 van Albada limiting, the wedge residual stalls at 7e-3 to 2e-2 on several
 grid alignments: the cells inside the captured shock fall into a limit
 cycle in which each variable's limiter switches separately. The integrated
-ramp force then fluctuates by 4e-5 to 4e-4 relative, up to about 1.6 drag
-counts on a rocket, above the 1-count convergence target. Larger limiter
+ramp force then fluctuates by 4e-5 to 4e-4 relative: for a rocket with a
+drag coefficient of about 0.4, up to 1.6 drag counts, above the 1-count
+convergence target. Larger limiter
 smoothing, other flux functions and wave-speed estimates, characteristic
 reconstruction and sensor-blended fluxes did not cure it reliably.
 
@@ -116,22 +118,22 @@ ramp demo, the steady validation) use `'shared'`, time-accurate tests
 
 Measured on the CPU engine, 60 x 30 cells (120 x 60 in brackets):
 
-| Case                                 | Per-variable                      | Shared                              |
-| ------------------------------------ | --------------------------------- | ----------------------------------- |
-| Wedge M 2.5, 10 deg: residual        | 7e-3 (2e-2), stalled              | 2e-14 (3e-14)                       |
-| Wedge: wall pressure error           | +0.039% (-0.017%)                 | +0.015% (+0.007%)                   |
-| Wedge: spread along the plateau      | 0.39% (0.058%)                    | 0.004% (0.0004%)                    |
-| Wedge: shock angle error             | -0.07 to +0.13 deg (0.00 to 0.09) | +0.07 to +0.24 deg (+0.03 to +0.13) |
-| Same wedge, domain height 1.0        | stalled at 2e-2 (3e-2)            | 2e-14 (3e-14)                       |
-| Strong wedge M 5, 20 deg             | stalled at 2e-2, overshoot 22%    | 2e-14, overshoot 0.28%, wall +0.24% |
-| Expansion M 2, 10 deg: wall pressure | +0.036% (+0.021%)                 | +0.0015% (-0.0001%)                 |
-| Expansion: residual                  | 2e-14 (3e-14)                     | 2e-14 (3e-14)                       |
-| Isentropic vortex: L1 order          | 2.04, 2.31 (32 to 128 cells)      | 2.45, 2.39                          |
+| Case                                     | Per-variable                      | Shared                              |
+| ---------------------------------------- | --------------------------------- | ----------------------------------- |
+| Wedge M 2.5, 10 deg: residual            | 7e-3 (2e-2), stalled              | 2e-14 (3e-14)                       |
+| Wedge: wall pressure error               | +0.039% (-0.017%)                 | +0.015% (+0.007%)                   |
+| Wedge: spread along the plateau          | 0.39% (0.058%)                    | 0.004% (0.0004%)                    |
+| Wedge: shock angle error                 | -0.07 to +0.13 deg (0.00 to 0.09) | +0.07 to +0.24 deg (+0.03 to +0.13) |
+| Same wedge, domain height 1.0            | stalled at 2e-2 (3e-2)            | 2e-14 (3e-14)                       |
+| Strong wedge M 5, 20 deg                 | stalled at 2e-2, overshoot 22%    | 2e-14, overshoot 0.28%, wall +0.24% |
+| Expansion M 2, 10 deg: wall pressure     | +0.036% (+0.021%)                 | +0.0015% (-0.0001%)                 |
+| Expansion: residual                      | 2e-14 (3e-14)                     | 2e-14 (3e-14)                       |
+| Isentropic vortex: L1 order (van Albada) | 2.04, 2.31 (32 to 128 cells)      | 2.45, 2.39                          |
 
 The shared reconstruction converges and is the more accurate of the two on
 every measure except the shock angle, where its captured shock is slightly
 thicker. On smooth flow it loses nothing: limiting fades as the vortex is
-resolved, and on 128 cells its error is within 16% of unlimited slopes.
+resolved, and on 128 cells its error is within 17% of unlimited slopes.
 
 The price is in what a single factor can promise. Each variable's face
 value is no longer confined to its own neighbour range: a variable with a
@@ -180,14 +182,18 @@ The M 3, 20 deg cone has the thinnest shock layer (shock at 29.6 deg) and
 converges with the grid at about first order, as the under-resolved apex
 region is carried along the surface. Surface pressure error at x = 1.3:
 
-| Grid      | Error   |
-| --------- | ------- |
-| 60 x 30   | -0.22%  |
-| 120 x 60  | -0.12%  |
-| 240 x 120 | -0.061% |
+| Grid      | Iterations | Error   |
+| --------- | ---------- | ------- |
+| 60 x 30   | 3000       | -0.22%  |
+| 120 x 60  | 6000       | -0.12%  |
+| 240 x 120 | 12000      | -0.061% |
 
-The observed order is 0.9, and Richardson extrapolation gives +0.002%: the
-solver converges to the Taylor-Maccoll solution. Grids that cluster cells
+Each run converged to a residual of 1e-14 to 3e-14. Taking Taylor-Maccoll
+as exact, the error halves at order 0.91 from the coarse pair and 0.94 from
+the fine pair; without that assumption the three grids give order 0.87. The
+asymptotic range is therefore not firmly established, and Richardson
+extrapolation with orders from 0.87 to 1 gives -0.005% to +0.006%: the
+solver converges to the Taylor-Maccoll solution to within about 0.01%. Grids that cluster cells
 at the nose, planned for the M4 grid generator, are the remedy on coarse
 grids.
 

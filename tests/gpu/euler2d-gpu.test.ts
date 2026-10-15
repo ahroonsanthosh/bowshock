@@ -198,6 +198,17 @@ describe('GpuEuler2D: smooth flow', () => {
   });
 });
 
+/** Largest relative difference in pressure between the CPU and GPU solutions. */
+function worstPressureDifference(cpu: Euler2D, state: GpuState2D): number {
+  const { ni, nj } = cpu.metrics;
+  let worst = 0;
+  for (let c = 0; c < ni * nj; c++) {
+    const p = cpu.primitive(c % ni, Math.floor(c / ni)).p;
+    worst = Math.max(worst, Math.abs(gpuPrimitive2D(state, c, gamma).p - p) / p);
+  }
+  return worst;
+}
+
 /** Mean pressure of the wall-adjacent cells with centroid x in (x0, x1). */
 function wallCellPressure(s: GpuEuler2D, state: GpuState2D, x0: number, x1: number): number {
   const values: number[] = [];
@@ -241,16 +252,14 @@ describe('GpuEuler2D: steady supersonic validation', () => {
       s.setInitialCondition(() => free);
       const initial = await s.densityResidualNorm();
       await s.iterate(1600);
-      expect(await s.densityResidualNorm()).toBeLessThan(1e-5 * initial);
+      // f32 round-off holds the residual near 1e-5 of its initial value
+      // (measured 8e-6 to 1e-5 on SwiftShader), far below the per-variable
+      // stall at 7e-3.
+      expect(await s.densityResidualNorm()).toBeLessThan(3e-5 * initial);
       const state = await s.readState();
       const p = wallCellPressure(s, state, 0.5, 1.2);
       expect(Math.abs(p / exact.pressureRatio - 1)).toBeLessThan(3e-3);
-      let worst = 0;
-      for (let c = 0; c < 60 * 30; c++) {
-        const cell = cpu.primitive(c % 60, Math.floor(c / 60));
-        worst = Math.max(worst, Math.abs(gpuPrimitive2D(state, c, gamma).p - cell.p) / cell.p);
-      }
-      expect(worst).toBeLessThan(1e-4);
+      expect(worstPressureDifference(cpu, state)).toBeLessThan(1e-4);
     });
   });
 
@@ -270,7 +279,7 @@ describe('GpuEuler2D: steady supersonic validation', () => {
       expect(Math.abs(initial / cpuInitialResidual - 1)).toBeLessThan(1e-4);
       await s.iterate(600);
       // f32 round-off limits the residual well above the CPU's 1e-14.
-      expect(await s.densityResidualNorm()).toBeLessThan(1e-5 * initial);
+      expect(await s.densityResidualNorm()).toBeLessThan(3e-5 * initial);
       const state = await s.readState();
       const p = wallCellPressure(s, state, 0.6, 1.3);
       expect(Math.abs(p / exact - 1)).toBeLessThan(3e-3);
@@ -313,12 +322,7 @@ describe('GpuEuler2D: axisymmetric validation', () => {
       await s.iterate(2000);
       expect(await s.densityResidualNorm()).toBeLessThan(1e-4 * initial);
       const state = await s.readState();
-      let worst = 0;
-      for (let c = 0; c < 60 * 30; c++) {
-        const cell = cpu.primitive(c % 60, Math.floor(c / 60));
-        worst = Math.max(worst, Math.abs(gpuPrimitive2D(state, c, gamma).p - cell.p) / cell.p);
-      }
-      expect(worst).toBeLessThan(1e-4);
+      expect(worstPressureDifference(cpu, state)).toBeLessThan(1e-4);
     });
   });
 });

@@ -145,7 +145,7 @@ describe('Euler2D validation: Prandtl-Meyer expansion (M = 2, 10 deg)', () => {
     ({ s, initialResidual } = rampFlow(2, -10 * deg, 500));
   }, SOLVE_TIMEOUT);
 
-  it('converges: the residual falls by more than ten orders of magnitude', () => {
+  it('converges: the residual falls to round-off', () => {
     expect(s.densityResidualNorm()).toBeLessThan(1e-10 * initialResidual);
   });
 

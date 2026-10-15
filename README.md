@@ -39,9 +39,10 @@ Validated so far, each with its tests and recorded accuracy:
 - 1D: exact Riemann problems (Toro's five tests), on the CPU and the GPU.
 - 2D: oblique shocks and Prandtl-Meyer expansions against exact theory,
   converged to round-off; second-order accuracy on curved grids.
-- Axisymmetric: sharp cones against the Taylor-Maccoll solution; on grid
-  refinement the surface pressure converges to it (within 0.002% after
-  extrapolation, for a Mach 3, 20 degree cone).
+- Axisymmetric: sharp cones against the Taylor-Maccoll solution. For a
+  Mach 3, 20 degree cone the surface pressure error falls as -0.22%,
+  -0.12% and -0.061% on successively halved grids, and extrapolates to
+  within about 0.01%.
 
 Not yet: viscous flow, rocket geometries and drag. Until those pass their
 own validation, bowshock does not report a drag coefficient.

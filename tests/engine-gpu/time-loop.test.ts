@@ -5,6 +5,7 @@ import {
   DT_LOG_SIZE,
   STATUS_NON_PHYSICAL,
   StepLedger,
+  advanceInBatches,
   nextBatchSize,
   stagePlan,
   type StateIndex,
@@ -82,5 +83,45 @@ describe('nextBatchSize', () => {
     expect(nextBatchSize(1, 0.5, 0.1)).toBe(6);
     expect(nextBatchSize(1, 0, 1e-6)).toBe(DT_LOG_SIZE);
     expect(nextBatchSize(1, 1, 0.1)).toBe(1);
+  });
+});
+
+describe('advanceInBatches', () => {
+  /** A simulated GPU taking steps of a fixed size, stopping exactly at t_end. */
+  function simulatedGpu(dt: number, tEnd: number) {
+    const dtLog = new Float32Array(DT_LOG_SIZE);
+    let time = 0;
+    let steps = 0;
+    const batches: number[] = [];
+    return {
+      batches,
+      submit: (count: number) => {
+        batches.push(count);
+        for (let k = 0; k < count && time < tEnd; k++) {
+          // The log holds f32 values; the clock sums exactly those.
+          const step = Math.fround(Math.min(dt, tEnd - time));
+          dtLog[steps % DT_LOG_SIZE] = step;
+          time += step;
+          steps += 1;
+        }
+      },
+      read: () => Promise.resolve({ gpuTime: time, dt, steps, status: 0, dtLog }),
+    };
+  }
+
+  it('starts with one step, then sizes batches to finish, and stops on arrival', async () => {
+    const gpu = simulatedGpu(0.125, 1);
+    const ledger = new StepLedger();
+    await advanceInBatches(1, 1000, ledger, gpu.submit, gpu.read);
+    expect(ledger.elapsed).toBe(1);
+    expect(ledger.steps).toBe(8);
+    expect(gpu.batches).toEqual([1, 8]);
+  });
+
+  it('throws when more than maxSteps steps would be needed', async () => {
+    const gpu = simulatedGpu(1e-3, 1);
+    await expect(advanceInBatches(1, 300, new StepLedger(), gpu.submit, gpu.read)).rejects.toThrow(
+      /needed more than 300 steps/,
+    );
   });
 });

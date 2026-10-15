@@ -7,11 +7,15 @@
  *   residual stalled at 7e-3 to 2e-2 and the integrated force fluctuated by
  *   up to 4e-4 relative.
  *
- * - 'shared': the van Albada limiter applied to the state as a vector. With
- *   A and B the backward and forward differences of (rho, u, v, p), one
- *   factor
- *     f = 2 (A.B + eps) / (|A|^2 + |B|^2 + 2 eps), clipped at zero,
- *   scales the central slope of every variable. Because all variables move
+ * - 'shared': the van Albada limiter applied to the state as a vector and
+ *   clipped at zero. With A and B the backward and forward differences of
+ *   (rho, u, v, p), one factor
+ *     f = max(0, 2 (A.B + eps) / (|A|^2 + |B|^2 + 2 eps))
+ *   scales the central slope of every variable. Where the differences
+ *   oppose, the unclipped factor would turn negative and steepen the
+ *   extremum; the clip is a switch (continuous, with a kink) of the kind
+ *   the smooth limiter otherwise avoids, and is kept because convergence,
+ *   measured on every steady case, does not suffer from it. Because all variables move
  *   together, the cells inside a captured shock cannot cycle between
  *   limiter states variable by variable, and steady flows with shocks
  *   converge to round-off. A per-variable minimum of factors was tried
@@ -47,20 +51,21 @@ export function reconstructPerVariable(
 }
 
 /**
- * The shared limiter factor of a cell: the van Albada factor of the
- * backward and forward difference vectors of its primitive variables.
+ * The shared limiter factor of a cell: the clipped van Albada factor of
+ * the backward and forward difference vectors of its primitive variables.
  */
 export function sharedFactor(prev: Primitive2D, centre: Primitive2D, next: Primitive2D): number {
-  const a = [centre.rho - prev.rho, centre.u - prev.u, centre.v - prev.v, centre.p - prev.p];
-  const b = [next.rho - centre.rho, next.u - centre.u, next.v - centre.v, next.p - centre.p];
-  let ab = 0;
-  let aa = 0;
-  let bb = 0;
-  for (let q = 0; q < 4; q++) {
-    ab += a[q]! * b[q]!;
-    aa += a[q]! * a[q]!;
-    bb += b[q]! * b[q]!;
-  }
+  const aRho = centre.rho - prev.rho;
+  const aU = centre.u - prev.u;
+  const aV = centre.v - prev.v;
+  const aP = centre.p - prev.p;
+  const bRho = next.rho - centre.rho;
+  const bU = next.u - centre.u;
+  const bV = next.v - centre.v;
+  const bP = next.p - centre.p;
+  const ab = aRho * bRho + aU * bU + aV * bV + aP * bP;
+  const aa = aRho * aRho + aU * aU + aV * aV + aP * aP;
+  const bb = bRho * bRho + bU * bU + bV * bV + bP * bP;
   const eps = VAN_ALBADA_EPSILON;
   return Math.max(0, (2 * (ab + eps)) / (aa + bb + 2 * eps));
 }

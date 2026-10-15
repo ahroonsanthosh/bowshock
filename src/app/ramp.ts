@@ -146,6 +146,15 @@ function solverConfig(mach: number, angle: number, ni: number, nj: number): Eule
   };
 }
 
+/**
+ * The residual relative to its initial value. A run that starts from its
+ * own steady solution (a flat wall, angle 0) has no initial residual, and
+ * counts as converged from the start.
+ */
+function relativeResidual(residual: number, initial: number): number {
+  return initial > 0 ? residual / initial : 0;
+}
+
 function freestream(config: Euler2DConfig): Primitive2D {
   const bc = config.boundaries.iMin;
   if (bc.kind !== 'inflow') throw new Error('the ramp demo needs an inflow boundary');
@@ -184,7 +193,7 @@ async function gpuRun(
     grid: config.grid,
     iterate: (count) => solver.iterate(count),
     measure: async () => {
-      const residual = (await solver.densityResidualNorm()) / initialResidual;
+      const residual = relativeResidual(await solver.densityResidualNorm(), initialResidual);
       const state = await solver.readState();
       const rampPressure = plateauPressure(
         config.grid,
@@ -230,7 +239,7 @@ function cpuRun(config: Euler2DConfig): Run {
           solver.metrics.centroidX,
           (i) => solver.primitive(i, 0).p,
         ),
-        residual: solver.densityResidualNorm() / initialResidual,
+        residual: relativeResidual(solver.densityResidualNorm(), initialResidual),
       }),
     draw: (field) => {
       // Canvas 2D fallback: each cell filled with the mean of its node values.
@@ -373,6 +382,8 @@ let gpu: GpuSetup | null = null;
 let run: Run | null = null;
 let generation = 0;
 let exactPressure: number | null = null;
+/** Settles once an engine switch has a device (or has fallen back to the CPU). */
+let engineReady: Promise<void> = Promise.resolve();
 
 /** Release a GPU setup; destroying the device does not trigger the fallback. */
 function releaseGpu(setup: GpuSetup): void {
@@ -387,11 +398,15 @@ async function switchEngine(next: Presentation | 'cpu', reason: string): Promise
   if (gpu !== null) releaseGpu(gpu);
   gpu = null;
   replaceCanvas();
-  gpu = next === 'cpu' ? null : await setUpGpu(next).catch(() => null);
-  const continuation = gpu
-    ? 'Continuing on the GPU, copying each frame to the page (slower).'
-    : 'Continuing on the CPU engine, on a coarser grid.';
-  engineNote.textContent = `${reason} ${continuation}`;
+  // Runs started while the new device is being set up (a slider moved
+  // meanwhile) wait for it rather than starting on the CPU.
+  engineReady = (async () => {
+    gpu = next === 'cpu' ? null : await setUpGpu(next).catch(() => null);
+    const continuation = gpu
+      ? 'Continuing on the GPU, copying each frame to the page (slower).'
+      : 'Continuing on the CPU engine, on a coarser grid.';
+    engineNote.textContent = `${reason} ${continuation}`;
+  })();
   await restart();
 }
 
@@ -418,6 +433,7 @@ function sizeCanvas(): void {
 }
 
 async function restart(): Promise<void> {
+  await engineReady;
   const myGeneration = ++generation;
   run?.dispose();
   run = null;
@@ -529,16 +545,21 @@ async function loop(myGeneration: number): Promise<void> {
 }
 
 function report(m: { steps: number; rampPressure: number; residual: number }): void {
-  status.textContent = `Iteration ${m.steps}. Residual ${m.residual.toExponential(1)} of its initial value.`;
+  status.textContent =
+    m.residual === 0
+      ? `Iteration ${m.steps}. The free stream is already the steady solution.`
+      : `Iteration ${m.steps}. Residual ${m.residual.toExponential(1)} of its initial value.`;
   if (exactPressure === null) {
     comparison.textContent = '';
     return;
   }
-  const error = (m.rampPressure / exactPressure - 1) * 100;
+  const error = ((m.rampPressure / exactPressure - 1) * 100).toFixed(2);
+  // toFixed keeps the sign of tiny negative errors ("-0.00").
+  const signed = Number(error) > 0 ? `+${error}` : Number(error) < 0 ? error : '0.00';
   comparison.textContent =
     `Ramp pressure (wall cells, x from ${PLATEAU.x0} to ${PLATEAU.x1}): ` +
     `computed ${m.rampPressure.toFixed(4)}, exact ${exactPressure.toFixed(4)} ` +
-    `(${error >= 0 ? '+' : ''}${error.toFixed(2)}%), in units of the free-stream pressure.`;
+    `(${signed}%), in units of the free-stream pressure.`;
 }
 
 legendBar.style.background = legendGradient();

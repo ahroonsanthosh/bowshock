@@ -13,8 +13,8 @@ import { taylorMaccoll, type ConeFlow } from '../../src/validation/taylor-maccol
  * cone; the computed pressure approaches it downstream of the apex, where
  * the grid resolves the shock layer. It is compared over x = 1.0 to 1.4.
  * Grid convergence, M = 3, 20 deg, at x = 1.3: -0.22%, -0.12%, -0.061% on
- * 60 x 30, 120 x 60 and 240 x 120 cells (observed order 0.9; Richardson
- * extrapolation +0.002%). See docs/design/0003-2d-solver.md.
+ * 60 x 30, 120 x 60 and 240 x 120 cells, extrapolating to within about
+ * 0.01% (docs/design/0003-2d-solver.md).
  */
 
 const gamma = 1.4;

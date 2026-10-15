@@ -125,10 +125,12 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
     // 32, 64 and 128 cells (orders 2.45 and 2.39), against 7.7e-5 unlimited
     // on 128 cells.
     const shared = { limiter: 'vanAlbada', reconstruction: 'shared' } as const;
+    const unlimited = { limiter: 'unlimitedCentral', reconstruction: 'perVariable' } as const;
     const coarse = vortexError(32, 1, shared);
     const fine = vortexError(64, 1, shared);
     expect(Math.log2(coarse / fine)).toBeGreaterThan(1.9);
-    expect(fine).toBeLessThan(5e-4);
+    // Limiting costs little: 1.47 times the unlimited error on 64 cells.
+    expect(fine).toBeLessThan(1.6 * vortexError(64, 1, unlimited));
   }, 30_000);
 });
 

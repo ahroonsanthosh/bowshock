@@ -30,8 +30,7 @@ import {
   STATUS_NON_PHYSICAL,
   StageBindGroups,
   StepLedger,
-  hasReached,
-  nextBatchSize,
+  advanceInBatches,
   stagePlan,
   type ControlReading,
   type StateIndex,
@@ -277,19 +276,15 @@ export class GpuEuler1D {
   async advanceTo(tEnd: number, maxSteps = 1_000_000): Promise<void> {
     await this.exclusive.run(async () => {
       this.writeParams(tEnd);
-      const firstStep = this.ledger.steps;
-      // The first batch is a single step: no time step is known yet.
-      let batch = 1;
-      for (;;) {
-        this.submitSteps(batch);
-        const reading = await this.readClock();
-        this.ledger.account(reading, true);
-        if (hasReached(this.ledger.elapsed, tEnd)) return;
-        if (this.ledger.steps - firstStep >= maxSteps) {
-          throw new Error(`advanceTo(${tEnd}) needed more than ${maxSteps} steps`);
-        }
-        batch = nextBatchSize(tEnd, this.ledger.elapsed, reading.dt);
-      }
+      await advanceInBatches(
+        tEnd,
+        maxSteps,
+        this.ledger,
+        (count) => {
+          this.submitSteps(count);
+        },
+        () => this.readClock(),
+      );
     });
   }
 
