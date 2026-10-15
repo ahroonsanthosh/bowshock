@@ -72,3 +72,35 @@ are computed once, in double precision, from the node coordinates:
 The oblique-shock and Prandtl-Meyer reference values are computed from the
 analytic relations (in `src/validation`), which are themselves tested
 against consistency conditions, so no tabulated numbers need to be copied.
+
+## Results (M3a, CPU engine)
+
+Measured when the tests were written:
+
+- Uniform flow is preserved to round-off on randomly distorted grids, in
+  planar and axisymmetric geometry.
+- The isentropic vortex converges at second order on a sinusoidally
+  distorted periodic grid.
+- Wedge (M = 2.5, 10 deg): wall pressure within 0.04% of the oblique-shock
+  value on 60 x 30 cells and 0.02% on 120 x 60; shock angle within 0.1 deg.
+- Expansion corner (M = 2, 10 deg): wall pressure within 0.07% (60 x 30)
+  and 0.01% (120 x 60).
+- The first cell layer along the walls carries a numerical entropy layer
+  from the corner (entropy error about 2e-2, falling to 1e-3 two cells out),
+  about one cell thick at any resolution. Pressure is unaffected; the Mach
+  number is within 0.2% away from the wall. This is a known behaviour of
+  inviscid wall boundaries and does not affect integrated pressure forces.
+
+Limiter choice: a TVD version of van Albada (zero at extrema) stalled the
+steady residual at about 2e-3; the original smooth form with
+`VAN_ALBADA_EPSILON = 1e-6` converges the expansion case to round-off.
+
+**Open issue: steady convergence with captured shocks.** With HLLC and the
+smooth van Albada limiter, the wedge residual still stalls at 7e-3 to 1e-2
+on several grid alignments, from an oscillation of the cells inside the
+captured shock. Rusanov, or first order, converges to round-off. The wall
+pressure stays accurate, but the integrated ramp force fluctuates by
+4e-5 to 4e-4 relative, which on a rocket would be up to about 1.6 drag
+counts: above the 1-count convergence target. A remedy (smoothing scaled
+with cell size, limiter freezing, or a shock-sensing flux blend) is being
+evaluated and must be settled before the steady RANS solver.

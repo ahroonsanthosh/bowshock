@@ -194,6 +194,14 @@ export class Euler2D {
     return result;
   }
 
+  /** Largest stable global time step for the current state (the smallest cell time step). */
+  stableTimeStep(): number {
+    this.computeTimeSteps(Infinity);
+    let smallest = Infinity;
+    for (const dt of this.dt) smallest = Math.min(smallest, dt);
+    return smallest;
+  }
+
   /** Advance to exactly `tEnd` with global time steps. */
   advanceTo(tEnd: number, maxSteps = 1_000_000): void {
     if (this.config.timeStepping !== 'global') {

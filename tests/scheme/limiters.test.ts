@@ -1,8 +1,10 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { LIMITERS, unlimitedCentral } from '../../src/scheme/limiters';
+import { LIMITERS, unlimitedCentral, vanAlbada } from '../../src/scheme/limiters';
 
-const TVD_LIMITERS = Object.entries(LIMITERS).filter(([, limiter]) => limiter !== unlimitedCentral);
+const TVD_LIMITERS = Object.entries(LIMITERS).filter(
+  ([, limiter]) => limiter !== unlimitedCentral && limiter !== vanAlbada,
+);
 
 const slope = fc.double({ min: -1e3, max: 1e3, noNaN: true });
 
@@ -51,4 +53,54 @@ describe.each(TVD_LIMITERS)('%s limiter', (name, limiter) => {
       );
     });
   }
+});
+
+describe('smooth van Albada limiter', () => {
+  it('is symmetric and exact on linear data', () => {
+    fc.assert(
+      fc.property(slope, slope, (a, b) => {
+        expect(vanAlbada(a, b)).toBeCloseTo(vanAlbada(b, a), 12);
+        expect(vanAlbada(a, a)).toBeCloseTo(a, 10);
+      }),
+      { seed: 25 },
+    );
+  });
+
+  it('never exceeds the larger one-sided slope', () => {
+    fc.assert(
+      fc.property(slope, slope, (a, b) => {
+        expect(Math.abs(vanAlbada(a, b))).toBeLessThanOrEqual(
+          Math.max(Math.abs(a), Math.abs(b)) * (1 + 1e-12),
+        );
+      }),
+      { seed: 26 },
+    );
+  });
+
+  it('is zero at a symmetric extremum and small at any extremum', () => {
+    expect(vanAlbada(0.3, -0.3)).toBe(0);
+    // At an extremum it returns at most the mean slope (a + b) / 2 in size,
+    // much smaller than either one-sided slope when they nearly cancel.
+    fc.assert(
+      fc.property(slope, slope, (a, b) => {
+        if (a * b < 0) {
+          expect(Math.abs(vanAlbada(a, b))).toBeLessThanOrEqual(
+            Math.abs(a + b) * (1 + 1e-12) + 1e-9,
+          );
+        }
+      }),
+      { seed: 27 },
+    );
+  });
+
+  it('is smooth: no jump anywhere, including where the slopes change sign', () => {
+    // A switch, such as zeroing at extrema, shows up as a jump between
+    // neighbouring arguments; the smooth form changes by O(h).
+    for (const b of [-1, -0.01, 0, 0.01, 1]) {
+      for (let a = -1; a <= 1; a += 0.01) {
+        const h = 1e-7;
+        expect(Math.abs(vanAlbada(a + h, b) - vanAlbada(a, b))).toBeLessThan(1e-3);
+      }
+    }
+  });
 });

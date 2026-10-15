@@ -5,7 +5,7 @@ import {
   type Euler2DConfig,
   type Side,
 } from '../../src/engine-cpu/euler2d';
-import { gridFromFunction, type StructuredGrid } from '../../src/grid/structured';
+import { gridFromFunction, rectangularGrid, type StructuredGrid } from '../../src/grid/structured';
 import { isentropicVortex } from '../../src/validation/isentropic-vortex';
 
 const gamma = 1.4;
@@ -117,5 +117,71 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
     const order = Math.log2(coarse / fine);
     expect(order).toBeGreaterThan(1.9);
     expect(order).toBeLessThan(2.2);
+  });
+});
+
+describe('Euler2D: time step', () => {
+  it('equals CFL * V / ((|u| + a) S_i + (|v| + a) S_j) on a stretched uniform grid', () => {
+    // Cells 0.1 wide and 0.01 tall: the j direction limits the step.
+    const w = { rho: 1.3, u: 0.4, v: -0.7, p: 0.9 };
+    const s = solver(rectangularGrid(10, 100, 0, 1, 0, 1), { cfl: 0.8 });
+    s.setInitialCondition(() => w);
+    const a = Math.sqrt((gamma * w.p) / w.rho);
+    const dx = 0.1;
+    const dy = 0.01;
+    const expected = (0.8 * dx * dy) / ((Math.abs(w.u) + a) * dy + (Math.abs(w.v) + a) * dx);
+    expect(s.stableTimeStep()).toBeCloseTo(expected, 15);
+  });
+
+  it('stays stable on thin cells when the flow runs along the short direction', () => {
+    // A density pulse carried in y across cells ten times thinner than
+    // wide. Too large a step in that direction makes the run blow up.
+    const pulse = (_x: number, y: number) => ({
+      rho: 1 + 0.2 * Math.exp(-100 * (y - 0.5) ** 2),
+      u: 0,
+      v: 1,
+      p: 1,
+    });
+    const s = solver(rectangularGrid(10, 100, 0, 1, 0, 1), {
+      cfl: 0.9,
+      boundaries: boundaries({ kind: 'periodic' }),
+    });
+    s.setInitialCondition(pulse);
+    s.advanceTo(0.25);
+    for (let j = 0; j < 100; j++) {
+      const exact = pulse(0, ((j + 0.5) / 100 - 0.25 + 1) % 1);
+      expect(Math.abs(s.primitive(5, j).rho - exact.rho)).toBeLessThan(1e-2);
+    }
+  });
+});
+
+describe('Euler2D: periodic boundaries', () => {
+  it('give a translation-invariant solution across all four boundaries', () => {
+    // The same vortex, centred mid-domain and centred on the domain's corner
+    // (where it straddles all four periodic boundaries), on a uniform grid
+    // whose spacing is exact in binary. The second solution must be the
+    // first shifted by half the domain in each direction.
+    const n = 40;
+    const L = 10;
+    const run = (x0: number, y0: number) => {
+      const s = solver(rectangularGrid(n, n, 0, L, 0, L), {
+        boundaries: boundaries({ kind: 'periodic' }),
+      });
+      const vortex = { strength: 5, x0, y0, u0: 1, v0: 0.5, period: L };
+      s.setInitialCondition((x, y) => isentropicVortex(vortex, x, y, 0, gamma));
+      s.advanceTo(1);
+      return s;
+    };
+    const centred = run(5, 5);
+    const corner = run(0, 0);
+    for (let j = 0; j < n; j++) {
+      for (let i = 0; i < n; i++) {
+        const a = centred.primitive(i, j);
+        const b = corner.primitive((i + n / 2) % n, (j + n / 2) % n);
+        expect(Math.abs(a.rho - b.rho)).toBeLessThan(1e-12);
+        expect(Math.abs(a.u - b.u)).toBeLessThan(1e-12);
+        expect(Math.abs(a.v - b.v)).toBeLessThan(1e-12);
+      }
+    }
   });
 });
