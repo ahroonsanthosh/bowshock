@@ -159,16 +159,27 @@ first comparison with measurements on a generated grid:
 
 ## Open
 
-- **Entropy layer from the apex.** On cones the surface pressure converges
-  at about first order. On the M 3, 20 deg cone the cells along the wall
-  carry spurious entropy made at the sharp apex and carried down the wall
-  streamline: 6.8% above the conical value near the tip, falling to 1.7%
-  (nj = 20) and 1.0% (nj = 40) at the shoulder, and 0.4% (0.2%) in the
-  second row. The wall cells' pressure is off by -0.66% (-0.33%) from the
-  exact value at their centroids; the wall pressure taken from the wall
-  flux, -0.28% (-0.16%), is better. So the first-order error is mostly in
-  the state next to the wall, not in the wall flux, and the remedy belongs
-  at the apex.
+- **First-order surface pressure on cones.** On cones the surface
+  pressure converges at about first order; its cause is not yet
+  identified. Measured on the M 3, 20 deg cone (nj = 20 and 40), mean over
+  0.5 to 0.95 of the cone length:
+
+  | Reconstruction | Wall-cell entropy at x/L = 0.95 | Wall-cell p vs exact at centroid | Wall p from the wall flux |
+  | -------------- | ------------------------------- | -------------------------------- | ------------------------- |
+  | Shared         | +1.7% / +1.0%                   | -0.66% / -0.33%                  | -0.28% / -0.16%           |
+  | Per-variable   | +0.62% / +0.52%                 | -0.50% / -0.23%                  | -0.40% / -0.20%           |
+
+  The wall cells carry spurious entropy (6.8% near the tip with the shared
+  reconstruction), and the excess entropy flux through the wall layer
+  grows along the cone and halves with refinement, so it is made along the
+  wall rather than only at the apex. But per-variable reconstruction
+  removes about two thirds of it while the pressure error stays the same
+  size, so the entropy layer is not what drives the pressure error. Nor is
+  the wall flux formula: the wall cells' own pressure is off at first
+  order. Both have been ruled out as the main cause; the next suspects are
+  the wall-adjacent reconstruction of the normal velocity and the cell
+  average of the axisymmetric pressure source. This limits efficiency,
+  not correctness: each result's error is measured on nested grids (0005).
 
 - **Blunt noses.** They need a grid wrapped around the stagnation point
   (a C grid, with the axis upstream as the inflow-side boundary), which
