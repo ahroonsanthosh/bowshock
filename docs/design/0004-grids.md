@@ -276,13 +276,30 @@ first comparison with measurements on a generated grid:
   and the unit-invariant shared reconstruction (0003) converges on it to
   round-off where the unscaled one stalled at 2e-2. But the stagnation
   pressure, against the exact value behind a normal shock (Rayleigh
-  pitot), is off by -0.4% to +9.7% and does not converge regularly
-  (Mach 3: +6.5% on nj = 20, +0.19% on nj = 40; Mach 2: +9.7%, +7.8%),
-  the behaviour of a scheme error at a strong shock normal to the grid,
-  not of grid resolution. Choosing a flux and limiter that pass the
-  stagnation checks (pitot pressure, wall entropy equal to that behind a
-  normal shock) is the next step; until then blunt bodies are not offered
-  for results, and the sharp-nose generator still refuses them.
+  pitot), depends on where the captured bow shock sits in its cell. On the
+  hemisphere-cylinder at Mach 2, grids of nj = 20, 21, 22 and 23 give:
+
+  | Flux                    | nj = 20 | nj = 21 | nj = 22 | nj = 23 | Residual |
+  | ----------------------- | ------- | ------- | ------- | ------- | -------- |
+  | HLLC                    | +9.7%   | -0.56%  | +4.1%   | -0.25%  | 1e-14    |
+  | Rotated HLL/HLLC hybrid | +0.47%  | -0.57%  | -0.18%  | -0.25%  | 2e-3     |
+  | HLL                     | +0.56%  | -0.55%  | -0.05%  | -0.23%  | 1e-14    |
+  | Rusanov                 | -0.97%  | -0.93%  | -0.90%  | -0.86%  | 1e-14    |
+
+  With HLLC the entropy behind the shock on the stagnation line jumps to
+  a wrong, sometimes sub-normal-shock, constant that depends on the
+  shock's position in its cell, and is carried to the wall unchanged.
+  The rotated hybrid of Nishikawa and Kitamura (`rotatedHybrid` in
+  `src/scheme/flux.ts`) removes most of it but does not converge: its
+  split direction, taken from small velocity jumps near the stagnation
+  point, keeps switching. HLL converges and is smaller but still changes
+  sign from grid to grid; only Rusanov changes smoothly, with the largest
+  error. So no flux choice makes these results verifiable: the error of a
+  captured shock on the stagnation line has to be removed at its source,
+  by fitting the bow shock (or aligning a grid face with it), which is the
+  next step. Until then blunt bodies are not offered for results, and the
+  sharp-nose generator still refuses them.
+
 - **Haack-series and other noses with unbounded tip curvature** (see the
   C grid's refusals above).
 - **Low supersonic Mach numbers.** Below Mach 1.2 the outer boundary
