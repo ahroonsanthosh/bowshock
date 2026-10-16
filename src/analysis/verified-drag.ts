@@ -66,6 +66,20 @@ export type VerifiedDrag =
   | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] }
   | { readonly kind: 'invalid'; readonly refinement: number; readonly reason: string };
 
+/**
+ * Noise of the GPU engine's drag, relative: its 32-bit solutions give
+ * forebody drag within 1.1e-6 of the CPU engine's on cones
+ * (docs/design/0005-solution-verification.md).
+ */
+export const GPU_NOISE = 1e-6;
+/** Noise of the CPU engine's drag, converged to residuals of 1e-13. */
+export const CPU_NOISE = 1e-12;
+/**
+ * Agreement required between the observed orders of the two finest
+ * triples of grids, set on the measured cone families (0005).
+ */
+export const ORDER_TOLERANCE = 0.5;
+
 /** Base grid cells across, as validated (docs/design/0004-grids.md). */
 const BASE_NJ = 20;
 /** Steps per convergence check on the base grid; scaled with the refinement. */
