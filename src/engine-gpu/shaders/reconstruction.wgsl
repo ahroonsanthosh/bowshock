@@ -30,3 +30,24 @@ fn reconstruct_shared(prev: Primitive2D, centre: Primitive2D, next: Primitive2D,
     centre.p + k * (next.p - prev.p),
   );
 }
+
+// The shared factor of differences made dimensionless by the centre cell's
+// density, sound speed a and rho a^2.
+fn shared_scaled_factor(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, gamma: f32) -> f32 {
+  let rho_a2 = gamma * centre.p;
+  let s = vec4f(1.0 / centre.rho, sqrt(centre.rho / rho_a2), sqrt(centre.rho / rho_a2), 1.0 / rho_a2);
+  let a = s * vec4f(centre.rho - prev.rho, centre.u - prev.u, centre.v - prev.v, centre.p - prev.p);
+  let b = s * vec4f(next.rho - centre.rho, next.u - centre.u, next.v - centre.v, next.p - centre.p);
+  let eps = VAN_ALBADA_EPSILON;
+  return max(0.0, 2.0 * (dot(a, b) + eps) / (dot(a, a) + dot(b, b) + 2.0 * eps));
+}
+
+fn reconstruct_shared_scaled(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: f32, gamma: f32) -> Primitive2D {
+  let k = 0.25 * side * shared_scaled_factor(prev, centre, next, gamma);
+  return Primitive2D(
+    centre.rho + k * (next.rho - prev.rho),
+    centre.u + k * (next.u - prev.u),
+    centre.v + k * (next.v - prev.v),
+    centre.p + k * (next.p - prev.p),
+  );
+}

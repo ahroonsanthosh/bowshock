@@ -23,6 +23,7 @@ import {
   type Reconstruction,
   reconstructPerVariable,
   reconstructShared,
+  reconstructSharedScaled,
 } from '../scheme/reconstruction';
 import { validateGrid2DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
@@ -136,10 +137,13 @@ export class Euler2D {
     this.metrics = computeMetrics(grid, config.geometry);
     this.flux = FACE_FLUXES[config.flux];
     const limiter = LIMITERS[config.limiter];
+    const gamma = config.gamma;
     this.reconstruct =
       config.reconstruction === 'shared'
         ? reconstructShared
-        : (prev, centre, next, side) => reconstructPerVariable(prev, centre, next, side, limiter);
+        : config.reconstruction === 'sharedScaled'
+          ? (prev, centre, next, side) => reconstructSharedScaled(prev, centre, next, side, gamma)
+          : (prev, centre, next, side) => reconstructPerVariable(prev, centre, next, side, limiter);
     this.stride = grid.ni + 2 * GHOSTS;
     const size = this.stride * (grid.nj + 2 * GHOSTS);
     const allocate = (): State => ({

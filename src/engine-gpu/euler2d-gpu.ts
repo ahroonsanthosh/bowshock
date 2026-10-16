@@ -42,6 +42,7 @@ import reconstructionWgsl from './shaders/reconstruction.wgsl?raw';
 const WGSL_RECONSTRUCTION_FUNCTIONS: Readonly<Record<Reconstruction, string>> = {
   perVariable: 'reconstruct_per_variable',
   shared: 'reconstruct_shared',
+  sharedScaled: 'reconstruct_shared_scaled',
 };
 
 const GPU_FACE_FLUX_FUNCTIONS: Readonly<Record<GpuFluxName, string>> = {
@@ -80,7 +81,7 @@ fn limiter(a: f32, b: f32) -> f32 {
 }
 
 fn reconstruct(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, side: f32) -> Primitive2D {
-  return ${WGSL_RECONSTRUCTION_FUNCTIONS[config.reconstruction]}(prev, centre, next, side);
+  return ${WGSL_RECONSTRUCTION_FUNCTIONS[config.reconstruction]}(prev, centre, next, side${config.reconstruction === 'sharedScaled' ? ', params.gamma' : ''});
 }
 
 fn numerical_face_flux(left: FaceState, right: FaceState) -> vec4f {

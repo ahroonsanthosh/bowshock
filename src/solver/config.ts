@@ -36,7 +36,10 @@ export function validateGrid2DConfig(config: Grid2DConfig): void {
   const { boundaries: b, cfl, grid } = config;
   if (!(cfl > 0 && cfl <= 1)) throw new RangeError('cfl must be in (0, 1]');
   if (grid.ni < 2 || grid.nj < 2) throw new RangeError('the grid needs at least 2 x 2 cells');
-  if (config.reconstruction === 'shared' && config.limiter !== 'vanAlbada') {
+  if (
+    (config.reconstruction === 'shared' || config.reconstruction === 'sharedScaled') &&
+    config.limiter !== 'vanAlbada'
+  ) {
     // The shared factor is defined from van Albada; any other limiter would
     // be silently ignored.
     throw new RangeError("shared reconstruction requires the 'vanAlbada' limiter");

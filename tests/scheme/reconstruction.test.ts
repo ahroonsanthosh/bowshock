@@ -2,7 +2,12 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import type { Primitive2D } from '../../src/scheme/flux';
 import { VAN_ALBADA_EPSILON, vanAlbada } from '../../src/scheme/limiters';
-import { reconstructShared, sharedFactor } from '../../src/scheme/reconstruction';
+import {
+  reconstructShared,
+  reconstructSharedScaled,
+  sharedFactor,
+  sharedScaledFactor,
+} from '../../src/scheme/reconstruction';
 
 const KEYS = ['rho', 'u', 'v', 'p'] as const;
 
@@ -116,5 +121,53 @@ describe('shared reconstruction', () => {
     const face = reconstructShared(prev, centre, next, 1);
     expect(face.u).toBeGreaterThan(centre.u);
     expect(face.u - centre.u).toBeLessThanOrEqual(0.25 * (next.u - prev.u));
+  });
+});
+
+describe('scaled shared reconstruction', () => {
+  const gamma = 1.4;
+  const state = (rho: number, u: number, v: number, p: number): Primitive2D => ({ rho, u, v, p });
+  // The same flow in other units: density and pressure k times larger; the
+  // velocities, whose square has the units of p / rho, unchanged.
+  const inUnits = (w: Primitive2D, k: number): Primitive2D => ({
+    ...w,
+    rho: k * w.rho,
+    p: k * w.p,
+  });
+  const prev = state(1.1, 2.3, 0.2, 1.4);
+  const centre = state(1.3, 2.1, 0.35, 1.9);
+  const next = state(1.4, 1.95, 0.4, 2.6);
+
+  it('does not depend on the units', () => {
+    const f = sharedScaledFactor(prev, centre, next, gamma);
+    for (const k of [1e-3, 0.1, 10, 1e4]) {
+      expect(
+        sharedScaledFactor(inUnits(prev, k), inUnits(centre, k), inUnits(next, k), gamma),
+      ).toBeCloseTo(f, 12);
+    }
+    // The unscaled factor does: it weights the variables by their size.
+    expect(
+      Math.abs(
+        sharedFactor(inUnits(prev, 10), inUnits(centre, 10), inUnits(next, 10)) -
+          sharedFactor(prev, centre, next),
+      ),
+    ).toBeGreaterThan(1e-3);
+  });
+
+  it('is 1 where the profile is linear and 0 at an extremum', () => {
+    const lin = (t: number) => state(1 + 0.1 * t, 2 - 0.05 * t, 0.3 + 0.02 * t, 1.5 + 0.2 * t);
+    expect(sharedScaledFactor(lin(-1), lin(0), lin(1), gamma)).toBeCloseTo(1, 6);
+    expect(
+      sharedScaledFactor(state(1, 2, 0, 1), state(1.2, 2.1, 0.1, 1.3), state(1, 2, 0, 1), gamma),
+    ).toBe(0);
+  });
+
+  it('reconstructs a linear profile exactly', () => {
+    const lin = (t: number) => state(1 + 0.1 * t, 2 - 0.05 * t, 0.3 + 0.02 * t, 1.5 + 0.2 * t);
+    const face = reconstructSharedScaled(lin(-1), lin(0), lin(1), 1, gamma);
+    const exact = lin(0.5);
+    // Up to the factor's departure from 1 through eps.
+    expect(face.rho).toBeCloseTo(exact.rho, 5);
+    expect(face.p).toBeCloseTo(exact.p, 5);
   });
 });
