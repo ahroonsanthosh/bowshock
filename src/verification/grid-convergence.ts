@@ -44,11 +44,10 @@ const SAFETY_FACTOR = 1.25;
 /** Refinement ratio between successive grids of a family. */
 const RATIO = 2;
 /**
- * Relative size below which a change between grids is not measurable: the
- * steady solutions are converged to residuals of 1e-13 or less, leaving
- * values uncertain far below this.
+ * A change between grids carries an order only if it is this many times the
+ * values' own uncertainty from iterative convergence and precision.
  */
-const NOISE = 1e-10;
+const MEASURABLE = 10;
 
 export interface ConvergenceEstimateOptions {
   /**
@@ -56,6 +55,13 @@ export interface ConvergenceEstimateOptions {
    * triples of grids for the finest grids to count as asymptotic.
    */
   readonly orderTolerance: number;
+  /**
+   * Uncertainty of each value from iterative convergence and arithmetic,
+   * relative to the value: about 1e-12 for the CPU engine converged to
+   * residuals of 1e-13; for the GPU engine, whose 32-bit solutions give
+   * forebody drag within 1.1e-6 of the CPU's on cones, 1e-6.
+   */
+  readonly noise: number;
 }
 
 export type ConvergenceEstimate =
@@ -98,11 +104,11 @@ export function gridConvergence(
     return { kind: 'unresolved', value, reason: 'four grids are needed to confirm the order' };
   }
   const finest = values.slice(n - 3);
-  const fine = observedOrder(finest[0]!, finest[1]!, value);
+  const fine = observedOrder(finest[0]!, finest[1]!, value, options.noise);
   if (fine === OSCILLATES) {
     return { kind: 'oscillatory', value, uncertainty: Math.max(...finest) - Math.min(...finest) };
   }
-  const coarse = observedOrder(values[n - 4]!, values[n - 3]!, values[n - 2]!);
+  const coarse = observedOrder(values[n - 4]!, values[n - 3]!, values[n - 2]!, options.noise);
   for (const triple of [fine, coarse]) {
     if (typeof triple === 'string') return { kind: 'unresolved', value, reason: triple };
   }
@@ -129,13 +135,18 @@ export function gridConvergence(
 const OSCILLATES = 'the values oscillate under refinement';
 
 /** Observed order of three successive values, or why it has none. */
-function observedOrder(coarse: number, medium: number, fine: number): number | string {
+function observedOrder(
+  coarse: number,
+  medium: number,
+  fine: number,
+  relativeNoise: number,
+): number | string {
   const e21 = medium - fine;
   const e32 = coarse - medium;
-  // Changes no larger than the iteration error of a converged steady
-  // solution carry no order (Celik et al., step 3: the procedure fails when
-  // a change is close to zero).
-  const noise = NOISE * Math.max(Math.abs(coarse), Math.abs(medium), Math.abs(fine));
+  // Changes close to the values' own uncertainty carry no order (Celik et
+  // al., step 3: the procedure fails when a change is close to zero).
+  const noise =
+    MEASURABLE * relativeNoise * Math.max(Math.abs(coarse), Math.abs(medium), Math.abs(fine));
   if (Math.abs(e21) <= noise || Math.abs(e32) <= noise) {
     return 'the changes between grids are too small to measure';
   }

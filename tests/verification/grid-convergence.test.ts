@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { gridConvergence, refineUntilVerified } from '../../src/verification/grid-convergence';
 
-const options = { orderTolerance: 0.3 };
+const options = { orderTolerance: 0.3, noise: 1e-12 };
 /** Values phi(h) on grids of cell size h = 1, 1/2, 1/4, ... (coarsest first). */
 const family = (phi: (h: number) => number, grids = 4) =>
   Array.from({ length: grids }, (_, k) => phi(2 ** -k));
@@ -93,6 +93,7 @@ describe('the error band on measured cone-cylinder families', () => {
     async (_, exact, values) => {
       const result = await refineUntilVerified((r) => values[Math.log2(r)]!, {
         orderTolerance: 0.5,
+        noise: 1e-12,
         floor: 2e-4,
         tolerance: Infinity,
         maxRefinement: 8,
@@ -103,6 +104,31 @@ describe('the error band on measured cone-cylinder families', () => {
     },
   );
 
+  it('with 32-bit noise on every value, bands are still given only where they hold', async () => {
+    // The GPU engine's values differ from the CPU's by up to 1.1e-6
+    // relative; perturb each value by up to that, in many patterns.
+    let seed = 1;
+    const random = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    for (const [, exact, values] of families) {
+      for (let trial = 0; trial < 50; trial++) {
+        const noisy = values.map((v) => v * (1 + 1.1e-6 * (2 * random() - 1)));
+        const result = await refineUntilVerified((r) => noisy[Math.log2(r)]!, {
+          orderTolerance: 0.5,
+          noise: 1e-6,
+          floor: 2e-4,
+          tolerance: Infinity,
+          maxRefinement: 8,
+        });
+        if (result.uncertainty !== undefined) {
+          expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
+        }
+      }
+    }
+  });
+
   it('gives bands for the two families that converge cleanly, none for the others', async () => {
     const kinds = await Promise.all(
       families.map(
@@ -110,6 +136,7 @@ describe('the error band on measured cone-cylinder families', () => {
           (
             await refineUntilVerified((r) => values[Math.log2(r)]!, {
               orderTolerance: 0.5,
+              noise: 1e-12,
               floor: 2e-4,
               tolerance: Infinity,
               maxRefinement: 8,
