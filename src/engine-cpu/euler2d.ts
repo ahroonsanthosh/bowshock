@@ -182,6 +182,29 @@ export class Euler2D {
     this.checkPhysical(this.state);
   }
 
+  /**
+   * Set every interior cell from its indices, for example to evaluate wall
+   * fluxes, in double precision, of a state computed elsewhere (the GPU
+   * engine). The time and step count restart from zero.
+   */
+  setCellPrimitives(cell: (i: number, j: number) => Primitive2D): void {
+    const { ni, nj } = this.metrics;
+    const gamma = this.config.gamma;
+    for (let j = 0; j < nj; j++) {
+      for (let i = 0; i < ni; i++) {
+        const w = cell(i, j);
+        const k = this.index(i, j);
+        this.state.rho[k] = w.rho;
+        this.state.mu[k] = w.rho * w.u;
+        this.state.mv[k] = w.rho * w.v;
+        this.state.energy[k] = w.p / (gamma - 1) + 0.5 * w.rho * (w.u * w.u + w.v * w.v);
+      }
+    }
+    this.time = 0;
+    this.steps = 0;
+    this.checkPhysical(this.state);
+  }
+
   /** Primitive variables of interior cell (i, j). */
   primitive(i: number, j: number): Primitive2D {
     const { ni, nj } = this.metrics;
