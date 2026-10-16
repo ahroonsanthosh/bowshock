@@ -13,8 +13,8 @@ import type { EngineFactory } from './verified-drag';
 export function gpuEngine(device: GPUDevice): EngineFactory {
   return async (config, freeStream) => {
     const { flux, source, ...rest } = config;
-    if (flux === 'godunov' || source !== undefined) {
-      throw new RangeError('the GPU engine has no exact Godunov flux and no source terms');
+    if (!(flux === 'hllc' || flux === 'rusanov') || source !== undefined) {
+      throw new RangeError(`the GPU engine has no ${flux} flux and no source terms`);
     }
     const gpu = await GpuEuler2D.create(device, { ...rest, flux });
     gpu.setInitialCondition(() => freeStream);

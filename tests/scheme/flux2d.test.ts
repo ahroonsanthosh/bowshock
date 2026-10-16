@@ -4,7 +4,9 @@ import {
   FACE_FLUXES,
   faceFlux2D,
   hllcFaceFlux,
+  hllFaceFlux,
   godunovFaceFlux,
+  rotatedHybridFaceFlux,
   type Primitive2D,
 } from '../../src/scheme/flux';
 import { GAMMA_AIR, soundSpeed, totalEnergy } from '../../src/scheme/gas';
@@ -86,7 +88,10 @@ describe.each(Object.keys(FACE_FLUXES) as (keyof typeof FACE_FLUXES)[])('%s 2D f
     );
   });
 
-  it('property: Galilean invariance along the face', () => {
+  // Not the rotated hybrid: a velocity added along the face is, in the
+  // frames it solves in, partly a shift of the normal velocity, which no
+  // upwind flux at a fixed face is invariant under.
+  it.skipIf(name === 'rotatedHybrid')('property: Galilean invariance along the face', () => {
     // Adding the same tangential velocity V to both states moves the frame
     // along the face: the mass and normal momentum fluxes are unchanged,
     // and the others change as the physical flux does,
@@ -142,5 +147,58 @@ describe('HLLC in two dimensions', () => {
       ),
       { numRuns: 500, seed: 54 },
     );
+  });
+});
+
+describe('rotated HLL/HLLC hybrid', () => {
+  it('property: with the velocity jump along the face (a shear layer) it is HLLC', () => {
+    fc.assert(
+      fc.property(pair2D, ([l, r]) => {
+        // Same normal velocity on both sides: n1 is the face tangent.
+        const L = { rho: l.rho, un: l.u, ut: l.v, p: l.p };
+        const R = { rho: r.rho, un: l.u, ut: r.v, p: r.p };
+        const a = new Float64Array(4);
+        const b = new Float64Array(4);
+        rotatedHybridFaceFlux(L, R, gamma, a);
+        hllcFaceFlux(L, R, gamma, b);
+        const s = scale(
+          { rho: l.rho, u: l.u, v: l.v, p: l.p },
+          { rho: r.rho, u: l.u, v: r.v, p: r.p },
+        );
+        expectClose([...a], [...b], s);
+      }),
+      { numRuns: 500, seed: 61 },
+    );
+  });
+
+  it('property: with the velocity jump normal to the face (a normal shock) it is HLL', () => {
+    fc.assert(
+      fc.property(pair2D, ([l, r]) => {
+        // Same tangential velocity, different normal velocity: n1 = n.
+        fc.pre(Math.abs(r.u - l.u) > 1e-6);
+        const L = { rho: l.rho, un: l.u, ut: l.v, p: l.p };
+        const R = { rho: r.rho, un: r.u, ut: l.v, p: r.p };
+        const a = new Float64Array(4);
+        const b = new Float64Array(4);
+        rotatedHybridFaceFlux(L, R, gamma, a);
+        hllFaceFlux(L, R, gamma, b);
+        const s = scale(
+          { rho: l.rho, u: l.u, v: l.v, p: l.p },
+          { rho: r.rho, u: r.u, v: l.v, p: r.p },
+        );
+        expectClose([...a], [...b], s);
+      }),
+      { numRuns: 500, seed: 62 },
+    );
+  });
+
+  it('without any jump in velocity it is HLLC (contacts stay exact)', () => {
+    const L = { rho: 1, un: 0.3, ut: 0.2, p: 1 };
+    const R = { rho: 0.2, un: 0.3, ut: 0.2, p: 1 };
+    const a = new Float64Array(4);
+    const b = new Float64Array(4);
+    rotatedHybridFaceFlux(L, R, gamma, a);
+    hllcFaceFlux(L, R, gamma, b);
+    expect([...a]).toEqual([...b]);
   });
 });

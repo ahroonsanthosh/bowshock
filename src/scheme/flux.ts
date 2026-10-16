@@ -78,6 +78,75 @@ export function rusanovFaceFlux(
 }
 
 /**
+ * Einfeldt's wave-speed estimates S_L and S_R: the extreme of each state's
+ * own characteristic speed and the Roe-averaged one (B. Einfeldt, "On
+ * Godunov-type methods for gas dynamics", SIAM J. Numer. Anal. 25(2),
+ * 1988). The Roe-averaged sound speed uses the full kinetic energy,
+ * tangential part included.
+ */
+function einfeldtSpeeds(
+  left: FaceState,
+  right: FaceState,
+  gamma: number,
+): { sL: number; sR: number } {
+  const aL = soundSpeed(left.rho, left.p, gamma);
+  const aR = soundSpeed(right.rho, right.p, gamma);
+  // Roe averages, weighted by the square root of density.
+  const wL = Math.sqrt(left.rho);
+  const wR = Math.sqrt(right.rho);
+  const unRoe = (wL * left.un + wR * right.un) / (wL + wR);
+  const utRoe = (wL * left.ut + wR * right.ut) / (wL + wR);
+  const hL = (energyOf(left, gamma) + left.p) / left.rho;
+  const hR = (energyOf(right, gamma) + right.p) / right.rho;
+  const hRoe = (wL * hL + wR * hR) / (wL + wR);
+  const aRoe = Math.sqrt(Math.max((gamma - 1) * (hRoe - 0.5 * (unRoe * unRoe + utRoe * utRoe)), 0));
+  return {
+    sL: Math.min(left.un - aL, unRoe - aRoe),
+    sR: Math.max(right.un + aR, unRoe + aRoe),
+  };
+}
+
+/**
+ * HLL approximate Riemann solver with Einfeldt's wave speeds (HLLE; Toro's
+ * book, 3rd ed., section 10.3): one intermediate state between S_L and S_R,
+ * F = (S_R F_L - S_L F_R + S_L S_R (U_R - U_L)) / (S_R - S_L). It smears
+ * contacts and shear layers but carries none of the shock instabilities of
+ * HLLC; the rotated hybrid below uses it across shocks only.
+ */
+export function hllFaceFlux(
+  left: FaceState,
+  right: FaceState,
+  gamma: number,
+  out: Float64Array,
+): void {
+  const { sL, sR } = einfeldtSpeeds(left, right, gamma);
+  if (sL >= 0) {
+    physicalFaceFlux(left, gamma, out);
+    return;
+  }
+  if (sR <= 0) {
+    physicalFaceFlux(right, gamma, out);
+    return;
+  }
+  const energyL = energyOf(left, gamma);
+  const energyR = energyOf(right, gamma);
+  const massL = left.rho * left.un;
+  const massR = right.rho * right.un;
+  const fluxL = [massL, massL * left.un + left.p, massL * left.ut, left.un * (energyL + left.p)];
+  const fluxR = [
+    massR,
+    massR * right.un + right.p,
+    massR * right.ut,
+    right.un * (energyR + right.p),
+  ];
+  const stateL = [left.rho, massL, left.rho * left.ut, energyL];
+  const stateR = [right.rho, massR, right.rho * right.ut, energyR];
+  for (let k = 0; k < 4; k++) {
+    out[k] = (sR * fluxL[k]! - sL * fluxR[k]! + sL * sR * (stateR[k]! - stateL[k]!)) / (sR - sL);
+  }
+}
+
+/**
  * HLLC approximate Riemann solver (E. F. Toro, M. Spruce and W. Speares,
  * "Restoration of the contact surface in the HLL-Riemann solver", Shock
  * Waves 4, 1994; also Toro's book, 3rd ed., chapter 10). The contact speed
@@ -90,10 +159,7 @@ export function rusanovFaceFlux(
  * exactly (the tangential velocity jumps only across the contact), which
  * matters for boundary layers and wakes.
  *
- * S_L and S_R follow B. Einfeldt, "On Godunov-type methods for gas
- * dynamics", SIAM J. Numer. Anal. 25(2), 1988: the extreme of each state's
- * own characteristic speed and the Roe-averaged one. The Roe-averaged sound
- * speed uses the full kinetic energy, tangential part included.
+ * S_L and S_R are Einfeldt's (see einfeldtSpeeds).
  */
 export function hllcFaceFlux(
   left: FaceState,
@@ -101,22 +167,9 @@ export function hllcFaceFlux(
   gamma: number,
   out: Float64Array,
 ): void {
-  const aL = soundSpeed(left.rho, left.p, gamma);
-  const aR = soundSpeed(right.rho, right.p, gamma);
   const energyL = energyOf(left, gamma);
   const energyR = energyOf(right, gamma);
-
-  // Roe averages, weighted by the square root of density.
-  const wL = Math.sqrt(left.rho);
-  const wR = Math.sqrt(right.rho);
-  const unRoe = (wL * left.un + wR * right.un) / (wL + wR);
-  const utRoe = (wL * left.ut + wR * right.ut) / (wL + wR);
-  const hL = (energyL + left.p) / left.rho;
-  const hR = (energyR + right.p) / right.rho;
-  const hRoe = (wL * hL + wR * hR) / (wL + wR);
-  const aRoe = Math.sqrt(Math.max((gamma - 1) * (hRoe - 0.5 * (unRoe * unRoe + utRoe * utRoe)), 0));
-  const sL = Math.min(left.un - aL, unRoe - aRoe);
-  const sR = Math.max(right.un + aR, unRoe + aRoe);
+  const { sL, sR } = einfeldtSpeeds(left, right, gamma);
 
   if (sL >= 0) {
     physicalFaceFlux(left, gamma, out);
@@ -172,8 +225,103 @@ export function godunovFaceFlux(
   physicalFaceFlux({ rho: w.rho, un: w.u, ut, p: w.p }, gamma, out);
 }
 
+/**
+ * Rotated hybrid of HLL and HLLC (H. Nishikawa and K. Kitamura, "Very
+ * simple, carbuncle-free, boundary-layer-resolving, rotated-hybrid Riemann
+ * solvers", J. Comput. Phys. 227 (2008) 2560-2581, there with Roe and HLL;
+ * the HLL/HLLC form as given by H. G. Steggles, M. G. Hoare and J. M.
+ * Pittard, MNRAS 466 (2016) 4573, appendix B). The face normal n is split
+ * into n1, along the jump in velocity between the two states, and n2
+ * perpendicular to it, and
+ *
+ *   F = (n . n1) F_HLL(n1) + (n . n2) F_HLLC(n2),
+ *
+ * each flux solved in its own rotated frame. Across a shock the velocity
+ * jumps normal to it, so HLL acts there; across a shear layer it jumps
+ * along the layer, so HLLC keeps it sharp. With no jump in velocity the
+ * flux is HLLC's. It is rotationally invariant but, unlike its parts, not
+ * Galilean invariant along the face: a velocity added along the face is,
+ * in the rotated frames, partly a normal one. HLLC alone, at a strong
+ * shock aligned with the grid,
+ * leaves an error behind it that depends on where the shock sits in its
+ * cell (docs/design/0004-grids.md).
+ */
+export function rotatedHybridFaceFlux(
+  left: FaceState,
+  right: FaceState,
+  gamma: number,
+  out: Float64Array,
+): void {
+  // In the face frame n = (1, 0); the jump (dun, dut) gives n1, turned so
+  // that n . n1 >= 0, and n2 is the perpendicular with n . n2 >= 0.
+  let dx = right.un - left.un;
+  let dy = right.ut - left.ut;
+  const jump = Math.hypot(dx, dy);
+  const scale = soundSpeed(left.rho, left.p, gamma) + soundSpeed(right.rho, right.p, gamma);
+  if (!(jump > ROTATION_THRESHOLD * scale)) {
+    hllcFaceFlux(left, right, gamma, out);
+    return;
+  }
+  dx /= jump;
+  dy /= jump;
+  if (dx < 0) {
+    dx = -dx;
+    dy = -dy;
+  }
+  const alpha1 = dx;
+  const alpha2 = Math.abs(dy);
+  rotatedFlux(hllFaceFlux, left, right, dx, dy, gamma, rotatedScratch);
+  for (let k = 0; k < 4; k++) out[k] = alpha1 * rotatedScratch[k]!;
+  // n2 = (|dy|, -sign(dy) dx): perpendicular to n1, with n . n2 = |dy|.
+  const sign = dy >= 0 ? 1 : -1;
+  rotatedFlux(hllcFaceFlux, left, right, alpha2, -sign * dx, gamma, rotatedScratch);
+  for (let k = 0; k < 4; k++) out[k] = out[k]! + alpha2 * rotatedScratch[k]!;
+}
+
+/**
+ * Velocity jumps below this fraction of the sum of the two sound speeds
+ * have no meaningful direction; the hybrid is then plain HLLC. Just above
+ * it the direction is set by round-off, and where the density also jumps
+ * (a contact) HLL and HLLC differ by that jump: the hybrid is not
+ * continuous there.
+ */
+const ROTATION_THRESHOLD = 1e-12;
+const rotatedScratch = new Float64Array(4);
+
+/**
+ * A face-frame flux solved along the unit direction (cx, cy) of the face
+ * frame, returned in the face frame.
+ */
+function rotatedFlux(
+  flux: FaceFrameFlux,
+  left: FaceState,
+  right: FaceState,
+  cx: number,
+  cy: number,
+  gamma: number,
+  out: Float64Array,
+): void {
+  flux(
+    { rho: left.rho, un: left.un * cx + left.ut * cy, ut: -left.un * cy + left.ut * cx, p: left.p },
+    {
+      rho: right.rho,
+      un: right.un * cx + right.ut * cy,
+      ut: -right.un * cy + right.ut * cx,
+      p: right.p,
+    },
+    gamma,
+    out,
+  );
+  const normal = out[1]!;
+  const tangential = out[2]!;
+  out[1] = normal * cx - tangential * cy;
+  out[2] = normal * cy + tangential * cx;
+}
+
 export const FACE_FLUXES = {
   hllc: hllcFaceFlux,
+  hll: hllFaceFlux,
+  rotatedHybrid: rotatedHybridFaceFlux,
   rusanov: rusanovFaceFlux,
   godunov: godunovFaceFlux,
 } as const satisfies Record<string, FaceFrameFlux>;
@@ -255,9 +403,14 @@ export function physicalFlux(w: Primitive1D, gamma: number, out: Float64Array): 
 export const hllcFlux = oneDimensional(hllcFaceFlux);
 export const rusanovFlux = oneDimensional(rusanovFaceFlux);
 export const godunovFlux = oneDimensional(godunovFaceFlux);
+export const hllFlux = oneDimensional(hllFaceFlux);
+/** In one dimension every velocity jump is normal: the hybrid is HLL. */
+export const rotatedHybridFlux = oneDimensional(rotatedHybridFaceFlux);
 
 export const FLUXES = {
   hllc: hllcFlux,
+  hll: hllFlux,
+  rotatedHybrid: rotatedHybridFlux,
   rusanov: rusanovFlux,
   godunov: godunovFlux,
 } as const satisfies Record<FluxName, FluxFunction>;
