@@ -87,11 +87,25 @@ double precision) is within 1.1e-6 of the CPU's; its noise is taken as
 fifty patterns each, bands are still given only where they contain the
 true error (`tests/verification/grid-convergence.test.ts`).
 
+## Forebody drag (`src/analysis/verified-drag.ts`)
+
+For a rocket body the quantity is the forebody pressure drag coefficient.
+Each grid of the family is solved until the drag itself stops changing
+by more than the engine's noise over a batch of steps; a grid that never
+settles is reported as not converged, never as a value. After it settles
+the flow at the outflow plane must leave supersonic, where the
+zero-gradient outflow condition holds; otherwise the case is reported as
+invalid, with the reason. No tolerance is offered: every run refines to
+the finest grid allowed and reports the value with its measured band, or
+says that no band could be measured. The same procedure runs on the CPU
+engine and on the GPU engine, whose wall fluxes are evaluated from its
+32-bit state in double precision; on a cone each grid's drag agrees with
+the CPU engine's within 2e-6.
+
 ## Open
 
-- Wire the driver into the app on the GPU engine, with progress shown as
-  the grids are refined, and report the drag with its band once drag is
-  validated.
+- The app page for verified forebody drag, once the floor for drag is
+  measured on drag itself (four-grid drag families, being run).
 - The origin of the floor of up to 1.2e-4 in cone surface pressure.
 - More measured families for the order tolerance and the floor, including
   integrated forces once they are computed.
