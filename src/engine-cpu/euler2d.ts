@@ -23,6 +23,7 @@ import {
   type Reconstruction,
   reconstructPerVariable,
   reconstructShared,
+  reconstructSharedScaled,
 } from '../scheme/reconstruction';
 import { validateGrid2DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
@@ -136,10 +137,13 @@ export class Euler2D {
     this.metrics = computeMetrics(grid, config.geometry);
     this.flux = FACE_FLUXES[config.flux];
     const limiter = LIMITERS[config.limiter];
+    const gamma = config.gamma;
     this.reconstruct =
       config.reconstruction === 'shared'
         ? reconstructShared
-        : (prev, centre, next, side) => reconstructPerVariable(prev, centre, next, side, limiter);
+        : config.reconstruction === 'sharedScaled'
+          ? (prev, centre, next, side) => reconstructSharedScaled(prev, centre, next, side, gamma)
+          : (prev, centre, next, side) => reconstructPerVariable(prev, centre, next, side, limiter);
     this.stride = grid.ni + 2 * GHOSTS;
     const size = this.stride * (grid.nj + 2 * GHOSTS);
     const allocate = (): State => ({
@@ -170,6 +174,29 @@ export class Euler2D {
     for (let j = 0; j < nj; j++) {
       for (let i = 0; i < ni; i++) {
         const w = field(centroidX[i + j * ni]!, centroidY[i + j * ni]!);
+        const k = this.index(i, j);
+        this.state.rho[k] = w.rho;
+        this.state.mu[k] = w.rho * w.u;
+        this.state.mv[k] = w.rho * w.v;
+        this.state.energy[k] = w.p / (gamma - 1) + 0.5 * w.rho * (w.u * w.u + w.v * w.v);
+      }
+    }
+    this.time = 0;
+    this.steps = 0;
+    this.checkPhysical(this.state);
+  }
+
+  /**
+   * Set every interior cell from its indices, for example to evaluate wall
+   * fluxes, in double precision, of a state computed elsewhere (the GPU
+   * engine). The time and step count restart from zero.
+   */
+  setCellPrimitives(cell: (i: number, j: number) => Primitive2D): void {
+    const { ni, nj } = this.metrics;
+    const gamma = this.config.gamma;
+    for (let j = 0; j < nj; j++) {
+      for (let i = 0; i < ni; i++) {
+        const w = cell(i, j);
         const k = this.index(i, j);
         this.state.rho[k] = w.rho;
         this.state.mu[k] = w.rho * w.u;
@@ -218,7 +245,12 @@ export class Euler2D {
     const result: BoundaryFaceFlux[] = [];
     for (let t = 0; t < along; t++) {
       const { i, j, nx, ny, area, nodes, outward } = this.boundaryFace(side, t);
-      const [left, right] = this.faceStates(this.state, direction, i, j);
+      const [left, right] = this.wallMirrored(
+        this.faceStates(this.state, direction, i, j),
+        side,
+        nx,
+        ny,
+      );
       faceFlux2D(this.flux, left, right, nx, ny, this.config.gamma, this.fluxOut);
       const f = this.fluxOut;
       const { x, y } = this.config.grid;
@@ -364,7 +396,12 @@ export class Euler2D {
     for (let j = 0; j < nj; j++) {
       for (let i = 0; i <= ni; i++) {
         const f = i + j * (ni + 1);
-        const [left, right] = this.faceStates(u, 'i', i, j);
+        const [left, right] = this.wallMirrored(
+          this.faceStates(u, 'i', i, j),
+          i === 0 ? 'iMin' : i === ni ? 'iMax' : null,
+          iFaces.nx[f]!,
+          iFaces.ny[f]!,
+        );
         faceFlux2D(this.flux, left, right, iFaces.nx[f]!, iFaces.ny[f]!, gamma, this.fluxOut);
         accumulate(this.index(i - 1, j), this.index(i, j), iFaces.area[f]!);
       }
@@ -373,7 +410,12 @@ export class Euler2D {
     for (let j = 0; j <= nj; j++) {
       for (let i = 0; i < ni; i++) {
         const f = i + j * ni;
-        const [left, right] = this.faceStates(u, 'j', i, j);
+        const [left, right] = this.wallMirrored(
+          this.faceStates(u, 'j', i, j),
+          j === 0 ? 'jMin' : j === nj ? 'jMax' : null,
+          jFaces.nx[f]!,
+          jFaces.ny[f]!,
+        );
         faceFlux2D(this.flux, left, right, jFaces.nx[f]!, jFaces.ny[f]!, gamma, this.fluxOut);
         accumulate(this.index(i, j - 1), this.index(i, j), jFaces.area[f]!);
       }
@@ -428,6 +470,32 @@ export class Euler2D {
     const right = this.reconstruct(wL, wR, wRR, -1);
     const ok = left.rho > 0 && left.p > 0 && right.rho > 0 && right.p > 0;
     return ok ? [left, right] : [wL, wR];
+  }
+
+  /**
+   * At a wall face, the state outside the wall becomes the exact mirror of
+   * the state reconstructed inside it, its velocity reflected about the
+   * face normal (nx, ny), so that the face carries no mass whatever the
+   * reconstruction. (Reconstructing both sides from the mirrored ghost
+   * cells gives the same for the shared reconstruction, whose limiter
+   * factor is mirror-invariant, but not for the per-variable one, whose
+   * componentwise limiting of u and v is not invariant under a reflection
+   * about a wall that is not aligned with x or y.)
+   */
+  private wallMirrored(
+    states: [Primitive2D, Primitive2D],
+    side: Side | null,
+    nx: number,
+    ny: number,
+  ): [Primitive2D, Primitive2D] {
+    if (side === null || this.config.boundaries[side].kind !== 'wall') return states;
+    const mirror = (w: Primitive2D): Primitive2D => {
+      const un = w.u * nx + w.v * ny;
+      return { rho: w.rho, u: w.u - 2 * un * nx, v: w.v - 2 * un * ny, p: w.p };
+    };
+    // On a minimum side the cell inside lies to the right of the face.
+    const inside = side === 'iMin' || side === 'jMin' ? states[1] : states[0];
+    return side === 'iMin' || side === 'jMin' ? [mirror(inside), inside] : [inside, mirror(inside)];
   }
 
   private primitiveAt(u: State, k: number): Primitive2D {

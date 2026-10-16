@@ -170,7 +170,11 @@ fn is_physical(w: Primitive2D) -> bool {
 
 // Flux times area through the face between cells `left_cell` and
 // `right_cell`, whose neighbours further out are `far_left` and `far_right`.
-fn face_flux_between(far_left: vec4f, left_cell: vec4f, right_cell: vec4f, far_right: vec4f, face: vec4f) -> vec4f {
+// `wall` is -1 for a wall face on a minimum side (the cell inside to the
+// right), 1 on a maximum side, 0 elsewhere: there the outside state becomes
+// the exact mirror of the inside one, as in the CPU engine, so the wall
+// carries no mass whatever the reconstruction.
+fn face_flux_between(far_left: vec4f, left_cell: vec4f, right_cell: vec4f, far_right: vec4f, face: vec4f, wall: i32) -> vec4f {
   let g = params.gamma;
   let w_ll = to_primitive_2d(far_left, g);
   let w_l = to_primitive_2d(left_cell, g);
@@ -185,12 +189,27 @@ fn face_flux_between(far_left: vec4f, left_cell: vec4f, right_cell: vec4f, far_r
   }
   // Rotate into the face frame (tangent (-ny, nx)), and the flux back.
   let n = face.xy;
-  let f = numerical_face_flux(
-    FaceState(left.rho, left.u * n.x + left.v * n.y, -left.u * n.y + left.v * n.x, left.p),
-    FaceState(right.rho, right.u * n.x + right.v * n.y, -right.u * n.y + right.v * n.x, right.p),
-  );
+  var l = FaceState(left.rho, left.u * n.x + left.v * n.y, -left.u * n.y + left.v * n.x, left.p);
+  var r = FaceState(right.rho, right.u * n.x + right.v * n.y, -right.u * n.y + right.v * n.x, right.p);
+  if (wall < 0) {
+    l = FaceState(r.rho, -r.un, r.ut, r.p);
+  } else if (wall > 0) {
+    r = FaceState(l.rho, -l.un, l.ut, l.p);
+  }
+  let f = numerical_face_flux(l, r);
   let flux = vec4f(f.x, f.y * n.x - f.z * n.y, f.y * n.y + f.z * n.x, f.w);
   return flux * face.z;
+}
+
+// -1 or 1 if the face is a wall face on the minimum or maximum side, else 0.
+fn wall_side(at_min: bool, at_max: bool, min_side: u32, max_side: u32) -> i32 {
+  if (at_min && params.bc[min_side] == WALL) {
+    return -1;
+  }
+  if (at_max && params.bc[max_side] == WALL) {
+    return 1;
+  }
+  return 0;
 }
 
 // i-face (i, j) lies between cells (i - 1, j) and (i, j).
@@ -208,6 +227,7 @@ fn compute_i_fluxes(@builtin(global_invocation_id) id: vec3u) {
     load_cell(i, j),
     load_cell(i + 1, j),
     geometry[f],
+    wall_side(i == 0, i == i32(params.ni), I_MIN, I_MAX),
   );
 }
 
@@ -226,6 +246,7 @@ fn compute_j_fluxes(@builtin(global_invocation_id) id: vec3u) {
     load_cell(i, j),
     load_cell(i, j + 1),
     geometry[n_i_faces() + f],
+    wall_side(j == 0, j == i32(params.nj), J_MIN, J_MAX),
   );
 }
 

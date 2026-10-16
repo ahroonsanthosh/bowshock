@@ -119,19 +119,23 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
     expect(order).toBeLessThan(2.2);
   }, 30_000);
 
-  it('converges at second order with the shared reconstruction', () => {
-    // Limiting fades as the grid resolves the vortex, so the measured order
-    // exceeds two: when written, L1 errors were 2.6e-3, 4.7e-4 and 9.0e-5 on
-    // 32, 64 and 128 cells (orders 2.45 and 2.39), against 7.7e-5 unlimited
-    // on 128 cells.
-    const shared = { limiter: 'vanAlbada', reconstruction: 'shared' } as const;
-    const unlimited = { limiter: 'unlimitedCentral', reconstruction: 'perVariable' } as const;
-    const coarse = vortexError(32, 1, shared);
-    const fine = vortexError(64, 1, shared);
-    expect(Math.log2(coarse / fine)).toBeGreaterThan(1.9);
-    // Limiting costs little: 1.47 times the unlimited error on 64 cells.
-    expect(fine).toBeLessThan(1.6 * vortexError(64, 1, unlimited));
-  }, 30_000);
+  it.each(['shared', 'sharedScaled'] as const)(
+    'converges at second order with the %s reconstruction',
+    (reconstruction) => {
+      // Limiting fades as the grid resolves the vortex, so the measured order
+      // exceeds two: when written, L1 errors were 2.6e-3, 4.7e-4 and 9.0e-5 on
+      // 32, 64 and 128 cells (orders 2.45 and 2.39), against 7.7e-5 unlimited
+      // on 128 cells.
+      const shared = { limiter: 'vanAlbada', reconstruction } as const;
+      const unlimited = { limiter: 'unlimitedCentral', reconstruction: 'perVariable' } as const;
+      const coarse = vortexError(32, 1, shared);
+      const fine = vortexError(64, 1, shared);
+      expect(Math.log2(coarse / fine)).toBeGreaterThan(1.9);
+      // Limiting costs little: 1.47 times the unlimited error on 64 cells.
+      expect(fine).toBeLessThan(1.6 * vortexError(64, 1, unlimited));
+    },
+    30_000,
+  );
 });
 
 describe('Euler2D: time step', () => {
@@ -201,15 +205,54 @@ describe('Euler2D: periodic boundaries', () => {
 });
 
 describe('Euler2D: configuration', () => {
-  it('rejects shared reconstruction with a limiter it would ignore', () => {
-    expect(() => solver(rectangularGrid(4, 4, 0, 1, 0, 1), { reconstruction: 'shared' })).toThrow(
-      /requires the 'vanAlbada' limiter/,
-    );
-  });
+  it.each(['shared', 'sharedScaled'] as const)(
+    'rejects %s reconstruction with a limiter it would ignore',
+    (reconstruction) => {
+      expect(() => solver(rectangularGrid(4, 4, 0, 1, 0, 1), { reconstruction })).toThrow(
+        /requires the 'vanAlbada' limiter/,
+      );
+    },
+  );
 });
 
 describe('Euler2D: boundary fluxes', () => {
   const SIDES = ['iMin', 'iMax', 'jMin', 'jMax'] as const;
+
+  it.each([
+    ['shared', 'vanAlbada'],
+    ['sharedScaled', 'vanAlbada'],
+    ['perVariable', 'vanLeer'],
+    ['perVariable', 'minmod'],
+  ] as const)(
+    'carry no mass through a wall at an angle, in moving flow (%s, %s)',
+    (reconstruction, limiter) => {
+      // A lower wall sloping at 20 deg and a flow varying in every variable.
+      // Componentwise limiting is not invariant under the reflection about
+      // such a wall; the outside state is therefore mirrored from the inside
+      // one at the face itself. Measured before that change: 4.4e-3 with
+      // the per-variable reconstruction (van Leer).
+      const slope = Math.tan((20 * Math.PI) / 180);
+      const grid = gridFromFunction(16, 12, (i, j) => {
+        const x = i / 16;
+        return [x, x * slope + ((1 + 0.2 * x) * j) / 12];
+      });
+      for (const geometry of ['planar', 'axisymmetric'] as const) {
+        const s = solver(grid, {
+          geometry,
+          reconstruction,
+          limiter,
+          boundaries: { ...boundaries({ kind: 'outflow' }), jMin: { kind: 'wall' } },
+        });
+        s.setInitialCondition((x, y) => ({
+          rho: 1 + 0.3 * Math.sin(3 * x + 2 * y),
+          u: 2 + 0.4 * Math.cos(2 * x - y),
+          v: 0.5 + 0.3 * Math.sin(x + 3 * y),
+          p: 1 + 0.2 * Math.cos(4 * x + y),
+        }));
+        for (const f of s.boundaryFluxes('jMin')) expect(Math.abs(f.flux[0])).toBeLessThan(1e-14);
+      }
+    },
+  );
 
   it('gives outward normals, face areas and midpoints, and wall pressure, on a distorted box', () => {
     // Gas at rest in a closed box: the only flux through each wall is the
