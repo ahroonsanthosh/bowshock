@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M4 28 Q16 2 28 28%27 fill=%27none%27 stroke=%27%23d1495b%27 stroke-width=%274%27/%3E%3C/svg%3E"
+    />
+    <title>Nose wave drag</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f7f7f5;
+        --fg: #1b1b1b;
+        --muted: #5c5c5c;
+        --line: #d8d8d4;
+        --accent: #d1495b;
+        --ok: #1f7a3a;
+        --warn: #a15c00;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #111316;
+          --fg: #e8e8e6;
+          --muted: #a0a0a0;
+          --line: #2c3038;
+          --accent: #ff7a8a;
+          --ok: #5fd08a;
+          --warn: #f0a640;
+        }
+      }
+      body {
+        margin: 0;
+        padding: 1.5rem 1rem;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 48rem;
+        margin: 0 auto;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.5rem;
+        align-items: end;
+        margin-bottom: 1rem;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .field[hidden] {
+        display: none;
+      }
+      label {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      input[type='number'] {
+        width: 6rem;
+        font: inherit;
+      }
+      select,
+      button {
+        font: inherit;
+      }
+      button {
+        padding: 0.3rem 1rem;
+      }
+      #result {
+        font-size: 1.25rem;
+        font-variant-numeric: tabular-nums;
+        margin: 1rem 0 0.25rem;
+      }
+      .ok {
+        color: var(--ok);
+      }
+      .warn {
+        color: var(--warn);
+      }
+      #status,
+      .scope {
+        color: var(--muted);
+        margin: 0.4rem 0;
+      }
+      table {
+        border-collapse: collapse;
+        font-variant-numeric: tabular-nums;
+        margin-top: 0.5rem;
+      }
+      th,
+      td {
+        text-align: right;
+        padding: 0.15rem 0.9rem 0.15rem 0;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        font-weight: 400;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Nose wave drag</h1>
+      <p>
+        The pressure drag of a rocket's nose and body ahead of the base, in supersonic flow at zero
+        incidence, with its numerical error measured: each case is solved on a family of
+        successively finer grids, up to the finest, and the error band is measured from them.
+        <a href="../index.html">Back to bowshock</a>
+      </p>
+      <form class="controls" id="form">
+        <div class="field">
+          <label for="shape">Nose</label>
+          <select id="shape">
+            <option value="ogive">Tangent ogive</option>
+            <option value="secant">Ogive family</option>
+            <option value="conical">Cone</option>
+            <option value="parabolic">Parabolic series</option>
+          </select>
+        </div>
+        <div class="field" id="parameter-field" hidden>
+          <label for="parameter">Shape parameter (0 to 1)</label>
+          <input id="parameter" type="number" min="0" max="1" step="any" value="0.5" />
+        </div>
+        <div class="field">
+          <label for="nose-length">Nose length (calibers)</label>
+          <input id="nose-length" type="number" min="1" max="10" step="any" value="3" />
+        </div>
+        <div class="field">
+          <label for="body-length">Body length behind it (calibers)</label>
+          <input id="body-length" type="number" min="0" max="30" step="any" value="7" />
+        </div>
+        <div class="field">
+          <label for="mach">Mach number</label>
+          <input id="mach" type="number" min="1.2" max="5" step="any" value="2" />
+        </div>
+        <div class="field">
+          <label for="finest">Finest grid</label>
+          <select id="finest">
+            <option value="8" selected>160 or more cells across</option>
+            <option value="16">320 or more cells across</option>
+          </select>
+        </div>
+        <button id="run" type="submit">Run</button>
+        <button id="stop" type="button" disabled>Stop</button>
+      </form>
+      <p id="result"></p>
+      <p id="status"></p>
+      <table id="levels" hidden>
+        <thead>
+          <tr>
+            <th>Cells</th>
+            <th>Iterations</th>
+            <th>Cd</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="scope">
+        What this is: the inviscid pressure (wave) drag coefficient of the nose and the body ahead
+        of the base, on the body's cross-sectional area, for sharp noses with an attached shock. It
+        excludes skin friction, base drag and fins, so it is not a rocket's total drag. Validated
+        against exact solutions on cones (Taylor-Maccoll) and on a tangent ogive (method of
+        characteristics); the error band also contains a measured allowance for an error the grid
+        family cannot show.
+      </p>
+    </main>
+    <script type="module" src="/src/app/nose-drag.ts"></script>
+  </body>
+</html>

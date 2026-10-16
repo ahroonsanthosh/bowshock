@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DRAG_FLOOR, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
 import { gridConvergence, refineUntilVerified } from '../../src/verification/grid-convergence';
 
 const options = { orderTolerance: 0.3, noise: 1e-12 };
@@ -146,6 +147,49 @@ describe('the error band on measured cone-cylinder families', () => {
     );
     expect(kinds).toEqual(['monotone', 'oscillatory', 'unresolved', 'unresolved']);
   });
+});
+
+describe('the error band on measured forebody drag families', () => {
+  // Forebody pressure drag coefficient on nj = 20, 40, 80 and 160 (CPU,
+  // unit-invariant shared reconstruction) and the exact value, measured
+  // when written (docs/design/0005-solution-verification.md).
+  const families: [string, number, number[]][] = [
+    // Taylor-Maccoll: on a cone-cylinder the forebody drag is the cone's Cp.
+    [
+      'M 2, 15 deg cone',
+      0.202247528211,
+      [0.202624275335, 0.202253760075, 0.202200780129, 0.202210320794],
+    ],
+    [
+      'M 3, 20 deg cone',
+      0.284269766415,
+      [0.283146976102, 0.283533123407, 0.283840108049, 0.284038574914],
+    ],
+    // Method of characteristics (src/validation/characteristics.ts).
+    [
+      'M 3, TN 3716 ogive',
+      0.098803,
+      [0.0999981153572, 0.0989748823391, 0.0987781854786, 0.0987617126849],
+    ],
+  ];
+
+  it.each(families)(
+    '%s: a band, with the floor, contains the true error',
+    async (_, exact, values) => {
+      for (const noise of [1e-12, 1e-6]) {
+        const result = await refineUntilVerified((r) => values[Math.log2(r)]!, {
+          orderTolerance: ORDER_TOLERANCE,
+          noise,
+          floor: DRAG_FLOOR,
+          tolerance: Infinity,
+          maxRefinement: 8,
+        });
+        if (result.uncertainty !== undefined) {
+          expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
+        }
+      }
+    },
+  );
 });
 
 describe('refining until the value is verified', () => {

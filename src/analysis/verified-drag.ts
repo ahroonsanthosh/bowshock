@@ -78,6 +78,15 @@ export const GPU_NOISE = 1e-6;
 /** Noise of the CPU engine's drag, converged to residuals of 1e-13. */
 export const CPU_NOISE = 1e-12;
 /**
+ * Systematic error of the forebody drag that refinement does not remove,
+ * relative: on the three drag families measured against exact solutions
+ * (cones at Mach 2 and 3 against Taylor-Maccoll, the TN 3716 ogive at
+ * Mach 3 against the method of characteristics, nj = 20 to 160), the
+ * converged values settle up to 4.6e-4 from the exact ones; the floor is
+ * about twice that (docs/design/0005-solution-verification.md).
+ */
+export const DRAG_FLOOR = 1e-3;
+/**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).
  */
