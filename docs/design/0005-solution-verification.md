@@ -1,7 +1,8 @@
 # 0005: Every result carries its measured discretisation error
 
-- **Status:** Estimator and refinement driver implemented
-  (`src/verification/grid-convergence.ts`); not yet wired into the app.
+- **Status:** Implemented (`src/verification/grid-convergence.ts`,
+  `src/analysis/verified-drag.ts`) and used by the nose wave drag page
+  (`demos/nose-drag.html`) for sharp-nosed bodies.
 - **Date:** 2026-10-16
 - **Inputs:** the measurements below; the procedures of Celik et al. and
   Stern et al. (sources in `docs/validation/sources.md`).
@@ -46,8 +47,9 @@ or the finest grid allowed has been solved.
 
 ## Measurements
 
-Measured with the unscaled shared reconstruction, before the
-unit-invariant one became the default (0003); being re-measured.
+Surface pressure measured with the unscaled shared reconstruction,
+before the unit-invariant one became the default (0003); the drag families
+below use the default.
 
 Mean cone surface pressure over 0.5 to 0.95 of the cone length, on
 cone-cylinders, against Taylor-Maccoll; error of each grid relative to the
@@ -77,6 +79,28 @@ asymptotic. These four are kept in
 `tests/verification/grid-convergence.test.ts`, which checks that a band is
 given only where it contains the true error.
 
+### Forebody drag
+
+Measured with the unit-invariant shared reconstruction (the default).
+Forebody pressure drag coefficient, error of each grid against the exact
+value (Taylor-Maccoll for the cones, the method of characteristics for the
+ogive of NACA TN 3716, 3 calibers at Mach 3):
+
+| Case         | nj = 20 | nj = 40 | nj = 80 | nj = 160 | Outcome                        |
+| ------------ | ------- | ------- | ------- | -------- | ------------------------------ |
+| M 2, 15 deg  | +0.186% | +0.003% | -0.023% | -0.018%  | oscillatory, band 5.3e-5       |
+| M 3, 20 deg  | -0.395% | -0.259% | -0.151% | -0.081%  | monotone, orders 0.33 and 0.63 |
+| M 3, TN 3716 | +1.210% | +0.174% | -0.025% | -0.042%  | unresolved: orders 2.38, 3.58  |
+
+The cone bands contain the true errors (5.3e-5 against 3.7e-5, 4.5e-4
+against 2.3e-4). The ogive's values converge fast, but to a limit about
+4.4e-4 below the exact one, and on the Mach 3 cone the extrapolated value
+is 4.6e-4 off: drag too has an error that does not shrink with the grid,
+larger than for surface pressure. The drag floor is set at twice that,
+1e-3 of the value (`DRAG_FLOOR`); three families are thin evidence for
+it, and it is kept as a regression check that every band, floor
+included, contains the true error (`tests/verification/grid-convergence.test.ts`).
+
 ## Precision
 
 Each value carries an uncertainty from iterative convergence and
@@ -97,8 +121,12 @@ Each grid of the family is solved until the drag itself stops changing
 by more than the engine's noise over a batch of steps; a grid that never
 settles is reported as not converged, never as a value. After it settles
 the flow at the outflow plane must leave supersonic, where the
-zero-gradient outflow condition holds; otherwise the case is reported as
-invalid, with the reason. No tolerance is offered: every run refines to
+zero-gradient outflow condition holds, and the cells along the outer
+boundary must still hold the free stream it imposes (density, pressure and
+velocity within 1e-5): on the validated sharp-nose cases they differ from
+it by 3.5e-6 or less on the coarsest grids, by 1e-7 or less on the next,
+while a bow shock reaching the boundary disturbs them by order one.
+Otherwise the case is reported as invalid, with the reason. No tolerance is offered: every run refines to
 the finest grid allowed and reports the value with its measured band, or
 says that no band could be measured. The same procedure runs on the CPU
 engine and on the GPU engine, whose wall fluxes are evaluated from its
@@ -107,8 +135,7 @@ the CPU engine's within 2e-6.
 
 ## Open
 
-- The app page for verified forebody drag, once the floor for drag is
-  measured on drag itself (four-grid drag families, being run).
-- The origin of the floor of up to 1.2e-4 in cone surface pressure.
+- The origin of the floors: up to 1.2e-4 in cone surface pressure, up to
+  4.6e-4 in forebody drag.
 - More measured families for the order tolerance and the floor, including
   integrated forces once they are computed.

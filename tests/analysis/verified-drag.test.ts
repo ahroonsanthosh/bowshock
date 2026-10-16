@@ -13,6 +13,7 @@ const cone: Body = {
   nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
   cylinderLength: 2,
 };
+const freeStream = { rho: 1, u: 3 * Math.sqrt(gamma), v: 0, p: 1 };
 const options = {
   mach: 3,
   gamma,
@@ -34,7 +35,7 @@ describe('verified forebody drag', () => {
         wallFluxes: () => [
           { x: 1, y: 0.5, nx: 0.3, ny: -0.95, area: 0.5, flux: [0, 1 + calls * 1e-3, 0, 0] },
         ],
-        outflowMach: () => 2,
+        cells: () => () => freeStream,
       });
     const result = await verifiedForebodyDrag(cone, { ...options, maxRefinement: 8 }, drifting);
     expect(result.kind).toBe('not-converged');
@@ -46,11 +47,25 @@ describe('verified forebody drag', () => {
       Promise.resolve({
         iterate: () => undefined,
         wallFluxes: () => [{ x: 1, y: 0.5, nx: 0.3, ny: -0.95, area: 0.5, flux: [0, 1.2, 0, 0] }],
-        outflowMach: () => 0.93,
+        cells: () => () => ({ ...freeStream, u: 0.93 * Math.sqrt(gamma) }),
       });
     const result = await verifiedForebodyDrag(cone, { ...options, maxRefinement: 8 }, subsonic);
     expect(result.kind).toBe('invalid');
     if (result.kind === 'invalid') expect(result.reason).toMatch(/outflow condition does not hold/);
+  });
+
+  it('refuses a converged grid whose bow shock reaches the outer boundary', async () => {
+    const crossed: EngineFactory = (config) =>
+      Promise.resolve({
+        iterate: () => undefined,
+        wallFluxes: () => [{ x: 1, y: 0.5, nx: 0.3, ny: -0.95, area: 0.5, flux: [0, 1.2, 0, 0] }],
+        // Behind a shock in one cell of the outer row.
+        cells: () => (i: number, j: number) =>
+          i === 7 && j === config.grid.nj - 1 ? { ...freeStream, p: 1.3, rho: 1.2 } : freeStream,
+      });
+    const result = await verifiedForebodyDrag(cone, { ...options, maxRefinement: 8 }, crossed);
+    expect(result.kind).toBe('invalid');
+    if (result.kind === 'invalid') expect(result.reason).toMatch(/bow shock reaches it/);
   });
 
   it('solves each grid to iterative convergence of the drag, which on a cone is the pressure coefficient', async () => {

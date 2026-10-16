@@ -8,13 +8,13 @@
 
 import { Euler2D } from '../engine-cpu/euler2d';
 import { GpuEuler2D, gpuPrimitive2D } from '../engine-gpu/euler2d-gpu';
-import { outflowMach, type EngineFactory } from './verified-drag';
+import type { EngineFactory } from './verified-drag';
 
 export function gpuEngine(device: GPUDevice): EngineFactory {
   return async (config, freeStream) => {
     const { flux, source, ...rest } = config;
-    if (flux === 'godunov' || source !== undefined) {
-      throw new RangeError('the GPU engine has no exact Godunov flux and no source terms');
+    if (!(flux === 'hllc' || flux === 'rusanov') || source !== undefined) {
+      throw new RangeError(`the GPU engine has no ${flux} flux and no source terms`);
     }
     const gpu = await GpuEuler2D.create(device, { ...rest, flux });
     gpu.setInitialCondition(() => freeStream);
@@ -27,9 +27,9 @@ export function gpuEngine(device: GPUDevice): EngineFactory {
         evaluator.setCellPrimitives((i, j) => gpuPrimitive2D(state, i + j * ni, config.gamma));
         return evaluator.boundaryFluxes('jMin');
       },
-      outflowMach: async () => {
+      cells: async () => {
         const state = await gpu.readState();
-        return outflowMach(config, (i, j) => gpuPrimitive2D(state, i + j * ni, config.gamma));
+        return (i, j) => gpuPrimitive2D(state, i + j * ni, config.gamma);
       },
       destroy: () => {
         gpu.destroy();

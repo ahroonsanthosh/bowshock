@@ -54,10 +54,17 @@ Validated so far, each with its tests and recorded accuracy:
   reason not yet established.
 - The Taylor-Maccoll solution itself reproduces the cone tables of NASA
   SP-3004 within 3e-5 in Cp.
+- Forebody pressure (wave) drag of sharp-nosed bodies, inviscid, on the
+  [nose wave drag page](demos/nose-drag.html): each result is solved on
+  nested grids up to 160 or more cells across and reported with its
+  measured error band, plus a floor of 0.1% for the error refinement does
+  not remove; where no band can be measured the value is shown as not
+  verified. On the drag families checked against exact solutions (cones
+  at Mach 2 and 3, an ogive at Mach 3) every band contains the true error.
 
-Not yet: viscous flow, blunt noses, fins and the base, and drag. Until
-those pass their own validation, bowshock does not report a drag
-coefficient.
+Not yet: viscous flow, blunt noses (a grid exists; the scheme near the
+stagnation point is being fixed), fins and the base. Until those pass
+their own validation, bowshock reports no total drag coefficient.
 
 Limits are stated plainly: power off, zero angle of attack, no motor plume;
 base drag is the least certain component; transonic results carry wider

@@ -22,10 +22,13 @@ export interface SteadyEngine {
   iterate(steps: number): void | Promise<void>;
   /** Wall-face fluxes along the body (jMin) of the current state, in double precision. */
   wallFluxes(): readonly BoundaryFaceFlux[] | Promise<readonly BoundaryFaceFlux[]>;
-  /** Smallest axial Mach number u / a in the cells next to the outflow plane. */
-  outflowMach(): number | Promise<number>;
+  /** The cell averages of the current state, in double precision. */
+  cells(): CellState | Promise<CellState>;
   destroy?(): void;
 }
+
+/** Primitive state of cell (i, j). */
+export type CellState = (i: number, j: number) => Primitive2D;
 
 export type EngineFactory = (
   config: Euler2DConfig,
@@ -75,10 +78,27 @@ export const GPU_NOISE = 1e-6;
 /** Noise of the CPU engine's drag, converged to residuals of 1e-13. */
 export const CPU_NOISE = 1e-12;
 /**
+ * Systematic error of the forebody drag that refinement does not remove,
+ * relative: on the three drag families measured against exact solutions
+ * (cones at Mach 2 and 3 against Taylor-Maccoll, the TN 3716 ogive at
+ * Mach 3 against the method of characteristics, nj = 20 to 160), the
+ * converged values settle up to 4.6e-4 from the exact ones; the floor is
+ * about twice that (docs/design/0005-solution-verification.md).
+ */
+export const DRAG_FLOOR = 1e-3;
+/**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).
  */
 export const ORDER_TOLERANCE = 0.5;
+
+/**
+ * Largest deviation from the free stream allowed in the cells along the
+ * outer boundary (density and pressure relative, velocity over the speed
+ * of sound): ahead of the bow shock the flow is undisturbed, to the
+ * engines' precision.
+ */
+export const OUTER_TOLERANCE = 1e-5;
 
 /** Base grid cells across, as validated (docs/design/0004-grids.md). */
 const BASE_NJ = 20;
@@ -88,8 +108,13 @@ const BATCH = 500;
 const MAX_BATCHES = 60;
 
 class IterationStalled extends Error {}
-/** The outflow condition (zero gradient) holds only where the flow leaves supersonic. */
-class SubsonicOutflow extends Error {}
+/**
+ * The case is outside what the boundary conditions represent: the
+ * zero-gradient outflow holds only where the flow leaves supersonic, and
+ * the free stream imposed on the outer boundary only where the bow shock
+ * stays inside it.
+ */
+class InvalidCase extends Error {}
 class Cancelled extends Error {}
 
 export async function verifiedForebodyDrag(
@@ -146,10 +171,17 @@ export async function verifiedForebodyDrag(
           change <= options.noise * Math.abs(drag) &&
           (change === 0 || remaining <= options.noise * Math.abs(drag));
         if (settled) {
-          const outflow = await engine.outflowMach();
+          const cells = await engine.cells();
+          const outflow = outflowMach(config, cells);
           if (!(outflow > 1)) {
-            throw new SubsonicOutflow(
+            throw new InvalidCase(
               `the flow leaves the grid at an axial Mach number of ${outflow.toFixed(3)}, where the outflow condition does not hold`,
+            );
+          }
+          const outer = outerDeviation(config, freeStream, cells);
+          if (!(outer <= OUTER_TOLERANCE)) {
+            throw new InvalidCase(
+              `the flow along the outer boundary differs from the free stream by ${outer.toExponential(1)}: the bow shock reaches it`,
             );
           }
           const report = {
@@ -183,7 +215,7 @@ export async function verifiedForebodyDrag(
       return { kind: 'not-converged', refinement: lastRefinement, reason: error.message };
     }
     if (error instanceof Cancelled) return { kind: 'cancelled', reports };
-    if (error instanceof SubsonicOutflow) {
+    if (error instanceof InvalidCase) {
       return { kind: 'invalid', refinement: lastRefinement, reason: error.message };
     }
     throw error;
@@ -199,15 +231,12 @@ export const cpuEngine: EngineFactory = (config, freeStream) => {
       solver.iterate(steps);
     },
     wallFluxes: () => solver.boundaryFluxes('jMin'),
-    outflowMach: () => outflowMach(config, (i, j) => solver.primitive(i, j)),
+    cells: () => (i, j) => solver.primitive(i, j),
   });
 };
 
 /** Smallest u / a over the column of cells next to the outflow plane (iMax). */
-export function outflowMach(
-  config: Euler2DConfig,
-  cell: (i: number, j: number) => Primitive2D,
-): number {
+export function outflowMach(config: Euler2DConfig, cell: CellState): number {
   const { ni, nj } = config.grid;
   let smallest = Infinity;
   for (let j = 0; j < nj; j++) {
@@ -215,4 +244,30 @@ export function outflowMach(
     smallest = Math.min(smallest, w.u / Math.sqrt((config.gamma * w.p) / w.rho));
   }
   return smallest;
+}
+
+/**
+ * Largest deviation from the free stream over the row of cells along the
+ * outer boundary (jMax): of density and pressure relative to the free
+ * stream's, of the velocity components over its speed of sound.
+ */
+export function outerDeviation(
+  config: Euler2DConfig,
+  freeStream: Primitive2D,
+  cell: CellState,
+): number {
+  const { ni, nj } = config.grid;
+  const a = Math.sqrt((config.gamma * freeStream.p) / freeStream.rho);
+  let largest = 0;
+  for (let i = 0; i < ni; i++) {
+    const w = cell(i, nj - 1);
+    largest = Math.max(
+      largest,
+      Math.abs(w.rho / freeStream.rho - 1),
+      Math.abs(w.p / freeStream.p - 1),
+      Math.abs(w.u - freeStream.u) / a,
+      Math.abs(w.v - freeStream.v) / a,
+    );
+  }
+  return largest;
 }
