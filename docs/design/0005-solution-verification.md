@@ -11,8 +11,9 @@
 No fixed grid is fine enough everywhere. At Mach 2 to 5 the default grid
 of 20 cells across gives cone pressures within 0.3% of the exact value,
 but on a 24 deg cone at Mach 1.41, whose conical flow is just subsonic at
-the surface, the cells next to the shoulder carry errors of several
-percent that only halve with each refinement (0004). So results are not
+the surface, the pressure ahead of the shoulder differs from the conical
+value by several percent on the default grid, by an amount that only
+halves with each refinement (0004). So results are not
 taken from one grid: each is computed on a nested family of grids and
 reported with the error measured from it, or not reported as verified.
 
@@ -31,11 +32,13 @@ Values on grids refined by 2 (nj = 20, 40, 80, ...), coarsest first:
 - **Otherwise** (changes growing, too small to measure, orders that
   disagree, fewer than four grids): no error band; refine further.
 
-Neither estimate can see an error that does not shrink with the grid. The
-cone families below converge to a small offset from the exact value, up to
-1.2e-4 of the pressure, whose origin is not established (the reference is
-converged to 1e-13). Each band therefore adds a floor measured for the
-quantity against exact solutions: 2e-4 of the value for surface pressure.
+Neither estimate can see an error that does not shrink with the grid. On
+the cone families below the pressure settles up to 1.2e-4 from the exact
+value on the grids measured (up to nj = 160). Whether that is an offset
+that never vanishes or convergence too slow to show is not established;
+the reference is converged to 1e-13 but agrees with NASA SP-3004 only to
+3e-5 in Cp. Each band therefore adds a floor measured for the quantity
+against exact solutions: 2e-4 of the value for surface pressure.
 
 A result is **verified** when its total band, estimate plus floor, is
 known and within the tolerance asked for; the driver refines until it is
@@ -63,7 +66,11 @@ exact value:
 - M 1.41, 24 deg: no band; this case needs finer grids.
 
 The order tolerance of 0.5 is the value that separates the first and third
-cases; more families are being measured to test it. These four are kept in
+cases, and the floor was set from the same families, so the test that keeps
+them is a regression check, not independent evidence; more families are
+being measured to test both. Note also that a rising order (0.56 then 0.90
+on the first case) passes the check while the grids are clearly not yet
+asymptotic. These four are kept in
 `tests/verification/grid-convergence.test.ts`, which checks that a band is
 given only where it contains the true error.
 

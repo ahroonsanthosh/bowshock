@@ -159,3 +159,57 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
     }
   });
 });
+
+describe('Euler2D on a generated grid: free-stream preservation', () => {
+  const ogive: Body = {
+    nose: { shape: { kind: 'ogive', parameter: 1 }, length: 4, baseRadius: 0.5 },
+    cylinderLength: 6,
+  };
+  // At Mach 1.1 a slender cone, which keeps its shock attached; its outer
+  // boundary is the steepest of the low-Mach validation cases (cell angles
+  // down to 12.3 deg).
+  const slenderCone: Body = {
+    nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(3 * deg), baseRadius: 0.5 },
+    cylinderLength: 4,
+  };
+  it.each([
+    { mach: 1.1, body: slenderCone },
+    { mach: 1.3, body: ogive },
+    { mach: 3, body: ogive },
+  ])(
+    'keeps a uniform stream uniform to round-off at M = $mach, skewed cells included',
+    ({ mach, body }) => {
+      const { grid } = bodyGrid(body, { nj: 20, mach, gamma });
+      const free: Primitive2D = { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
+      // Every boundary imposes the free stream, the body included, so the
+      // exact solution is the uniform stream on every cell.
+      const s = new Euler2D({
+        grid,
+        geometry: 'axisymmetric',
+        gamma,
+        flux: 'hllc',
+        limiter: 'vanAlbada',
+        reconstruction: 'shared',
+        timeIntegrator: 'ssprk2',
+        cfl: 0.8,
+        timeStepping: 'local',
+        boundaries: {
+          iMin: { kind: 'inflow', state: free },
+          iMax: { kind: 'outflow' },
+          jMin: { kind: 'inflow', state: free },
+          jMax: { kind: 'inflow', state: free },
+        },
+      });
+      s.setInitialCondition(() => free);
+      s.iterate(50);
+      let worst = 0;
+      for (let j = 0; j < s.metrics.nj; j++) {
+        for (let i = 0; i < s.metrics.ni; i++) {
+          const w = s.primitive(i, j);
+          worst = Math.max(worst, Math.abs(w.p - 1), Math.abs(w.rho - 1), Math.abs(w.v));
+        }
+      }
+      expect(worst).toBeLessThan(1e-13);
+    },
+  );
+});

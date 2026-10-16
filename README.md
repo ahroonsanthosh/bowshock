@@ -41,13 +41,13 @@ Validated so far, each with its tests and recorded accuracy:
   converged to round-off; second-order accuracy on curved grids.
 - Axisymmetric: sharp cones against the Taylor-Maccoll solution. For a
   Mach 3, 20 degree cone the surface pressure error falls as -0.22%,
-  -0.12% and -0.061% on successively halved grids, and extrapolates to
-  within about 0.01%.
+  -0.12% and -0.061% on successively halved grids, converging at about
+  first order.
 - Grids generated automatically from rocket noses and bodies (sharp noses,
   Mach 1.2 to 5; a few short noses with steep tips are still refused,
   being fixed): cone-cylinders within 0.3% of Taylor-Maccoll on the
-  coarsest grid, converging with refinement, down to Mach 1.1 on test
-  cases. On an ogive-cylinder the result
+  coarsest grid, converging with refinement (measured at Mach 1.1 and
+  1.15 on two grids only). On an ogive-cylinder the result
   lies within 0.022 in Cp of NACA wind-tunnel pressures, but on the forward
   nose it differs from the report's own inviscid theory by about 0.01, for
   a reason not yet established; ogives are not yet validated.

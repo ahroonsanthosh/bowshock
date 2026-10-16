@@ -83,7 +83,8 @@ Measured when the tests were written, with per-variable reconstruction
 - The isentropic vortex converges at second order on a sinusoidally
   distorted periodic grid.
 - Wedge (M = 2.5, 10 deg): wall pressure within 0.04% of the oblique-shock
-  value on 60 x 30 cells and 0.02% on 120 x 60; shock angle within 0.1 deg.
+  value on 60 x 30 cells and 0.02% on 120 x 60; shock angle within 0.1 deg
+  (per-variable reconstruction; the shared one, below, is within 0.24 deg).
 - Expansion corner (M = 2, 10 deg): wall pressure within 0.07% (60 x 30)
   and 0.01% (120 x 60).
 - The first cell layer along the walls carries a numerical entropy layer

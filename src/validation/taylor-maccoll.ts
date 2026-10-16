@@ -80,6 +80,7 @@ function integrateToCone(
   beta: number,
   gamma: number,
   tolerance: number,
+  record?: (theta: number, vr: number, vt: number) => void,
 ): { coneAngle: number; surfaceSpeed: number } | null {
   // State behind the shock from the oblique-shock relations: the normal
   // component is processed by a normal shock, the tangential one is kept.
@@ -102,6 +103,7 @@ function integrateToCone(
   // `tolerance`.
   let theta = beta;
   let h = -1e-4 * beta;
+  record?.(theta, vr, vt);
   while (theta > 1e-12) {
     h = Math.max(h, -0.5 * theta);
     const full = rk4Step(theta, vr, vt, h, gamma);
@@ -126,11 +128,15 @@ function integrateToCone(
         continue;
       }
       const f = vt / (vt - nextT);
-      return { coneAngle: theta + f * h, surfaceSpeed: vr + f * (nextR - vr) };
+      const coneAngle = theta + f * h;
+      const surfaceSpeed = vr + f * (nextR - vr);
+      record?.(coneAngle, surfaceSpeed, 0);
+      return { coneAngle, surfaceSpeed };
     }
     theta += h;
     vr = nextR;
     vt = nextT;
+    record?.(theta, vr, vt);
     // Grow the step when the error is comfortably small.
     h *= Math.min(2, 0.9 * (tolerance / Math.max(error, 1e-300)) ** 0.2);
   }
@@ -202,4 +208,60 @@ export function taylorMaccoll(
     surfacePressureRatio,
     surfacePressureCoefficient: (surfacePressureRatio - 1) / (0.5 * gamma * mach * mach),
   };
+}
+
+/** State of the conical flow on one ray between the shock and the cone. */
+export interface ConicalState {
+  /** Speed over the maximum (stagnation) speed. */
+  readonly speed: number;
+  /** Angle of the velocity to the axis, radians. */
+  readonly flowAngle: number;
+}
+
+/**
+ * The Taylor-Maccoll flow field: the solution of `taylorMaccoll`, and the
+ * state on any ray between the shock and the cone (polar angle from the
+ * axis, radians), by cubic Hermite interpolation of V_r between the
+ * integration steps (V_theta is its derivative).
+ */
+export function coneFlowField(
+  mach: number,
+  coneAngle: number,
+  gamma: number,
+  tolerance = 1e-13,
+): { readonly flow: ConeFlow; readonly at: (polar: number) => ConicalState } {
+  const flow = taylorMaccoll(mach, coneAngle, gamma, tolerance);
+  const thetas: number[] = [];
+  const vrs: number[] = [];
+  const vts: number[] = [];
+  const result = integrateToCone(mach, flow.shockAngle, gamma, tolerance, (theta, vr, vt) => {
+    thetas.push(theta);
+    vrs.push(vr);
+    vts.push(vt);
+  });
+  if (result === null) throw new Error('integration failed to reach the cone');
+  // Second derivative of V_r at each sample, for the Hermite interpolant of
+  // V_theta; on the cone surface itself V_theta = 0 and the equation gives
+  // it directly.
+  const vtts = thetas.map((theta, k) => derivatives(theta, vrs[k]!, vts[k]!, gamma)[1]);
+  const at = (polar: number): ConicalState => {
+    const n = thetas.length;
+    if (!(polar <= thetas[0]! + 1e-15 && polar >= thetas[n - 1]! - 1e-15)) {
+      throw new RangeError('the ray lies outside the conical flow');
+    }
+    // Samples run from the shock (largest angle) to the cone.
+    let k = 0;
+    while (k < n - 2 && thetas[k + 1]! > polar) k++;
+    const h = thetas[k + 1]! - thetas[k]!;
+    const t = (polar - thetas[k]!) / h;
+    const hermite = (f0: number, f1: number, d0: number, d1: number) =>
+      (2 * t ** 3 - 3 * t ** 2 + 1) * f0 +
+      (t ** 3 - 2 * t ** 2 + t) * h * d0 +
+      (-2 * t ** 3 + 3 * t ** 2) * f1 +
+      (t ** 3 - t ** 2) * h * d1;
+    const vr = hermite(vrs[k]!, vrs[k + 1]!, vts[k]!, vts[k + 1]!);
+    const vt = hermite(vts[k]!, vts[k + 1]!, vtts[k]!, vtts[k + 1]!);
+    return { speed: Math.hypot(vr, vt), flowAngle: polar + Math.atan2(vt, vr) };
+  };
+  return { flow, at };
 }

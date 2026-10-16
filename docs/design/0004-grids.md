@@ -71,7 +71,8 @@ thumb: at low Mach numbers the steep outer boundary skews the cells near
 it, and on such grids, down to 12.3 deg, the solver keeps its accuracy
 (the low-Mach table below). Cells in the undisturbed free stream cannot
 add error whatever their shape: the solver keeps a uniform flow uniform to
-3e-15 on these grids. With the strongest
+round-off on such grids, down to Mach 1.1 (tested in
+`tests/engine-cpu/body-validation.test.ts`). With the strongest
 stretching, the size-ratio gate needs about 18 cells across; 20 is the
 smallest grid used. Since vertical grid lines meet the nose at 90 deg minus
 the tip half-angle, tips steeper than 30 deg are refused with that reason.
@@ -150,6 +151,17 @@ first comparison with measurements on a generated grid:
   catch regressions.
 
 ## Open
+
+- **Entropy layer from the apex.** On cones the surface pressure converges
+  at about first order. On the M 3, 20 deg cone the cells along the wall
+  carry spurious entropy made at the sharp apex and carried down the wall
+  streamline: 6.8% above the conical value near the tip, falling to 1.7%
+  (nj = 20) and 1.0% (nj = 40) at the shoulder, and 0.4% (0.2%) in the
+  second row. The wall cells' pressure is off by -0.66% (-0.33%) from the
+  exact value at their centroids; the wall pressure taken from the wall
+  flux, -0.28% (-0.16%), is better. So the first-order error is mostly in
+  the state next to the wall, not in the wall flux, and the remedy belongs
+  at the apex.
 
 - **Blunt noses.** They need a grid wrapped around the stagnation point
   (a C grid, with the axis upstream as the inflow-side boundary), which

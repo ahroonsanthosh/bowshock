@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { machAngle, stagnationPressureRatio } from '../../src/validation/gas-dynamics';
-import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
+import {
+  deflectionAngle,
+  machAngle,
+  stagnationPressureRatio,
+} from '../../src/validation/gas-dynamics';
+import { coneFlowField, taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
 const gamma = 1.4;
 const deg = Math.PI / 180;
@@ -112,5 +116,32 @@ describe('Taylor-Maccoll cone flow', () => {
 
   it('refuses cones beyond shock detachment', () => {
     expect(() => taylorMaccoll(1.5, 40 * deg, gamma)).toThrow(RangeError);
+  });
+});
+
+describe('the Taylor-Maccoll flow field', () => {
+  it('meets the shock and the cone with the states both give', () => {
+    const mach = 3;
+    const cone = 20 * deg;
+    const { flow, at } = coneFlowField(mach, cone, gamma);
+    // Behind the shock the flow is deflected by the oblique-shock angle.
+    const behind = at(flow.shockAngle);
+    expect(behind.flowAngle).toBeCloseTo(deflectionAngle(mach, flow.shockAngle, gamma), 12);
+    // On the cone the flow is tangent, at the surface Mach number.
+    const surface = at(cone);
+    expect(surface.flowAngle).toBeCloseTo(cone, 12);
+    const speed = 1 / Math.sqrt(1 + 2 / ((gamma - 1) * flow.surfaceMach ** 2));
+    expect(surface.speed).toBeCloseTo(speed, 12);
+  });
+
+  it('interpolates smoothly: the flow angle rises monotonically from the shock to the cone', () => {
+    const { flow, at } = coneFlowField(2, 15 * deg, gamma);
+    let previous = -Infinity;
+    for (let k = 0; k <= 400; k++) {
+      const polar = flow.shockAngle + ((15 * deg - flow.shockAngle) * k) / 400;
+      const angle = at(polar).flowAngle;
+      expect(angle).toBeGreaterThan(previous);
+      previous = angle;
+    }
   });
 });

@@ -138,8 +138,8 @@ fins), so grids are generated automatically. The user never meshes.
 
 - **WebGPU compute (WGSL)** is the primary engine. WGSL has no 64-bit
   floats, and there is no plan in the standard to add them, so the GPU works
-  in 32-bit with nondimensional variables, double-precision metrics from the
-  CPU, deterministic fixed-order reductions, and force integration in double
+  in 32-bit with nondimensional variables, metrics computed in double
+  precision on the CPU and stored in 32-bit, deterministic fixed-order reductions, and force integration in double
   precision on the CPU.
 - **TypeScript CPU reference engine** (double precision) implements the same
   scheme. It is the oracle for tests and the fallback for browsers without
