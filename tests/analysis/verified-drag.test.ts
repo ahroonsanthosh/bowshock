@@ -34,10 +34,23 @@ describe('verified forebody drag', () => {
         wallFluxes: () => [
           { x: 1, y: 0.5, nx: 0.3, ny: -0.95, area: 0.5, flux: [0, 1 + calls * 1e-3, 0, 0] },
         ],
+        outflowMach: () => 2,
       });
     const result = await verifiedForebodyDrag(cone, { ...options, maxRefinement: 8 }, drifting);
     expect(result.kind).toBe('not-converged');
     if (result.kind === 'not-converged') expect(result.reason).toMatch(/still changes/);
+  });
+
+  it('refuses a converged grid whose flow leaves subsonic, where the outflow condition fails', async () => {
+    const subsonic: EngineFactory = () =>
+      Promise.resolve({
+        iterate: () => undefined,
+        wallFluxes: () => [{ x: 1, y: 0.5, nx: 0.3, ny: -0.95, area: 0.5, flux: [0, 1.2, 0, 0] }],
+        outflowMach: () => 0.93,
+      });
+    const result = await verifiedForebodyDrag(cone, { ...options, maxRefinement: 8 }, subsonic);
+    expect(result.kind).toBe('invalid');
+    if (result.kind === 'invalid') expect(result.reason).toMatch(/outflow condition does not hold/);
   });
 
   it('solves each grid to iterative convergence of the drag, which on a cone is the pressure coefficient', async () => {

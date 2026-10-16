@@ -22,6 +22,8 @@ export interface SteadyEngine {
   iterate(steps: number): void | Promise<void>;
   /** Wall-face fluxes along the body (jMin) of the current state, in double precision. */
   wallFluxes(): readonly BoundaryFaceFlux[] | Promise<readonly BoundaryFaceFlux[]>;
+  /** Smallest axial Mach number u / a in the cells next to the outflow plane. */
+  outflowMach(): number | Promise<number>;
   destroy?(): void;
 }
 
@@ -61,7 +63,8 @@ export interface LevelReport {
 export type VerifiedDrag =
   | (VerifiedValue & { readonly kind: 'solved'; readonly reports: readonly LevelReport[] })
   | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string }
-  | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] };
+  | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] }
+  | { readonly kind: 'invalid'; readonly refinement: number; readonly reason: string };
 
 /** Base grid cells across, as validated (docs/design/0004-grids.md). */
 const BASE_NJ = 20;
@@ -71,6 +74,8 @@ const BATCH = 500;
 const MAX_BATCHES = 60;
 
 class IterationStalled extends Error {}
+/** The outflow condition (zero gradient) holds only where the flow leaves supersonic. */
+class SubsonicOutflow extends Error {}
 class Cancelled extends Error {}
 
 export async function verifiedForebodyDrag(
@@ -114,6 +119,12 @@ export async function verifiedForebodyDrag(
         options.onProgress?.(refinement, batch * BATCH * refinement, drag);
         if (!Number.isFinite(drag)) throw new IterationStalled('the solution is not finite');
         if (Math.abs(drag - previous) <= options.noise * Math.abs(drag)) {
+          const outflow = await engine.outflowMach();
+          if (!(outflow > 1)) {
+            throw new SubsonicOutflow(
+              `the flow leaves the grid at an axial Mach number of ${outflow.toFixed(3)}, where the outflow condition does not hold`,
+            );
+          }
           const report = {
             refinement,
             cells: { ni: grid.ni, nj: grid.nj },
@@ -146,6 +157,9 @@ export async function verifiedForebodyDrag(
       return { kind: 'not-converged', refinement: lastRefinement, reason: error.message };
     }
     if (error instanceof Cancelled) return { kind: 'cancelled', reports };
+    if (error instanceof SubsonicOutflow) {
+      return { kind: 'invalid', refinement: lastRefinement, reason: error.message };
+    }
     throw error;
   }
 }
@@ -159,5 +173,20 @@ export const cpuEngine: EngineFactory = (config, freeStream) => {
       solver.iterate(steps);
     },
     wallFluxes: () => solver.boundaryFluxes('jMin'),
+    outflowMach: () => outflowMach(config, (i, j) => solver.primitive(i, j)),
   });
 };
+
+/** Smallest u / a over the column of cells next to the outflow plane (iMax). */
+export function outflowMach(
+  config: Euler2DConfig,
+  cell: (i: number, j: number) => Primitive2D,
+): number {
+  const { ni, nj } = config.grid;
+  let smallest = Infinity;
+  for (let j = 0; j < nj; j++) {
+    const w = cell(ni - 1, j);
+    smallest = Math.min(smallest, w.u / Math.sqrt((config.gamma * w.p) / w.rho));
+  }
+  return smallest;
+}
