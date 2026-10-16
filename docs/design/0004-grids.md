@@ -130,25 +130,32 @@ first comparison with measurements on a generated grid:
   shrinks with refinement. On a cone with the ogive's tip angle the solver
   holds the exact value within 0.0005 from x/d = 0.22 on, on all three
   grids, so the tip does not disturb the solution downstream.
-- Against the measurements (stated uncertainty 0.005 in Cp) the computed
-  pressure is lower at every unambiguous station, by 0.002 to 0.022,
-  largest at the shoulder. Aft of about x/d = 1.5 the report's own inviscid
-  method of characteristics (its figure 3) lies close to our solution and
-  below the measurements in the same way. On the forward nose it does not:
-  there our solution is about 0.01 below both the measurements and the
-  report's theories. That curve is not an exact solution: it comes from
-  V. J. Rossow, NACA TN 2399 (1951), whose method adds an approximate
-  correction for rotation to hand-computed characteristics solutions
-  that ignored it, and agrees with a full solution "within the accuracy
-  of a characteristic solution"; only plots are published. The cause of
-  the difference is not established. The boundary layer is
-  not a sufficient explanation (the report finds Reynolds-number effects
-  negligible at zero incidence, and a laminar displacement thickness here
-  is worth about 0.002 in Cp). The solver's discretisation of smooth
-  axisymmetric flow is verified separately by a manufactured solution
-  (0003); an exact inviscid reference for ogives is still needed before
-  any accuracy claim on them, and the test keeps a 0.025 bound only to
-  catch regressions.
+- Against the exact inviscid solution, from an independent method of
+  characteristics (`src/validation/characteristics.ts`, proven on cones
+  against Taylor-Maccoll at second order, converged here to 2e-5 in Cp):
+  within 3e-4 at every station on the 40-cell grid; on the 80-cell grid
+  within 4e-4 at x/d = 0.22, nearest the tip, and 1e-4 elsewhere. The
+  solver is accurate on this ogive.
+
+  | x/d                    | 0.22   | 0.89   | 1.61   | 2.95    | 4.06    | 6.28    | 8.06    |
+  | ---------------------- | ------ | ------ | ------ | ------- | ------- | ------- | ------- |
+  | Characteristics, exact | 0.2595 | 0.1555 | 0.0646 | -0.0575 | -0.0320 | -0.0112 | -0.0059 |
+  | Euler, nj = 80         | 0.2591 | 0.1555 | 0.0647 | -0.0576 | -0.0320 | -0.0111 | -0.0059 |
+  | Measured (TN 3716)     | 0.26   | 0.165  | 0.074  | -0.036  | -0.017  | -0.001  | 0.006   |
+
+- So the differences from the measurements (stated uncertainty 0.005),
+  lower at every unambiguous station by 0.002 to 0.022 and largest at the
+  shoulder, are not numerical errors of the inviscid solution: the exact
+  solution has them too. Their physical cause is not established. The
+  boundary layer alone is not a sufficient explanation (the report finds
+  Reynolds-number effects negligible at zero incidence, and a laminar
+  displacement thickness here is worth about 0.002 in Cp); a slightly
+  blunted model tip and the tunnel's Mach-number tolerance are untested
+  candidates. The report's own theory curve on the forward nose, about
+  0.01 above the exact solution, comes from V. J. Rossow, NACA TN 2399
+  (1951), whose method adds an approximate correction for rotation to
+  characteristics solutions that ignored it: the exact solution shows that
+  approximation, not this solver, to be the one that differs.
 
 ## Open
 

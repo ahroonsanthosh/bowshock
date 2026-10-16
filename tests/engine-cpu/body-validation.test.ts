@@ -3,6 +3,7 @@ import { Euler2D } from '../../src/engine-cpu/euler2d';
 import type { Body } from '../../src/geometry/body';
 import { bodyGrid } from '../../src/grid/body-grid';
 import type { Primitive2D } from '../../src/scheme/flux';
+import { characteristics } from '../../src/validation/characteristics';
 import { TN3716_MACH, TN3716_ZERO_INCIDENCE } from '../../src/validation/ogive-cylinder-tn3716';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
@@ -145,14 +146,31 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
     }
   });
 
+  it('matches the exact inviscid solution (method of characteristics) within 5e-4 in Cp', () => {
+    // Measured when written, nj = 40: within 3e-4 at every station; nj = 80:
+    // within 4e-4 at x/d = 0.22, nearest the tip, and 1e-4 elsewhere. The
+    // reference, independent of this solver, is converged to 2e-5
+    // (tests/validation/characteristics.test.ts).
+    const wall = characteristics(body, { mach, gamma, intervals: 320, start: 1e-3 }).wall;
+    const exact = (x: number) => {
+      let k = 0;
+      while (k < wall.length - 2 && wall[k + 1]!.x < x) k++;
+      const a = wall[k]!;
+      const b = wall[k + 1]!;
+      return (a.p + ((b.p - a.p) * (x - a.x)) / (b.x - a.x) - 1) / q;
+    };
+    for (const { xOverD } of TN3716_ZERO_INCIDENCE) {
+      expect(Math.abs(cp(fine.s, xOverD) - exact(xOverD))).toBeLessThan(5e-4);
+    }
+  });
+
   it('stays within 0.025 of the measured pressures (a regression bound, not an accuracy claim)', () => {
     // Measured when written, at the unambiguous stations: the solution lies
     // below the measurements by 0.002 to 0.022, largest at the shoulder
-    // (x/d = 2.95). Aft of x/d of about 1.5 the report's own inviscid
-    // method of characteristics (its figure 3) shows a similar deficit; on
-    // the forward nose it does not, and the cause of the difference there
-    // is not yet established (docs/design/0004-grids.md). The report gives
-    // the measurement uncertainty as 0.005.
+    // (x/d = 2.95). The exact inviscid solution does the same (test above),
+    // so the difference is not a numerical error of this solver; its
+    // physical cause is not established (docs/design/0004-grids.md). The
+    // report gives the measurement uncertainty as 0.005.
     for (const { xOverD, cp: measured, alternative } of TN3716_ZERO_INCIDENCE) {
       if (alternative !== undefined) continue;
       expect(Math.abs(cp(fine.s, xOverD) - measured)).toBeLessThan(0.025);

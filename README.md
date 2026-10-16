@@ -47,10 +47,11 @@ Validated so far, each with its tests and recorded accuracy:
   Mach 1.2 to 5; a few short noses with steep tips are still refused,
   being fixed): cone-cylinders within 0.3% of Taylor-Maccoll on the
   coarsest grid, converging with refinement (measured at Mach 1.1 and
-  1.15 on two grids only). On an ogive-cylinder the result
-  lies within 0.022 in Cp of NACA wind-tunnel pressures, but on the forward
-  nose it differs from the report's own inviscid theory by about 0.01, for
-  a reason not yet established; ogives are not yet validated.
+  1.15 on two grids only). On a tangent-ogive cylinder at Mach 1.98 the
+  surface pressure matches an independent exact inviscid solution (method
+  of characteristics, itself proven on cones) within 4e-4 in Cp; the NACA
+  wind-tunnel pressures lie above both by up to 0.022, for a physical
+  reason not yet established.
 - The Taylor-Maccoll solution itself reproduces the cone tables of NASA
   SP-3004 within 3e-5 in Cp.
 
