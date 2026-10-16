@@ -97,8 +97,12 @@ Each grid of the family is solved until the drag itself stops changing
 by more than the engine's noise over a batch of steps; a grid that never
 settles is reported as not converged, never as a value. After it settles
 the flow at the outflow plane must leave supersonic, where the
-zero-gradient outflow condition holds; otherwise the case is reported as
-invalid, with the reason. No tolerance is offered: every run refines to
+zero-gradient outflow condition holds, and the cells along the outer
+boundary must still hold the free stream it imposes (density, pressure and
+velocity within 1e-5): on the validated sharp-nose cases they differ from
+it by 3.5e-6 or less on the coarsest grids, by 1e-7 or less on the next,
+while a bow shock reaching the boundary disturbs them by order one.
+Otherwise the case is reported as invalid, with the reason. No tolerance is offered: every run refines to
 the finest grid allowed and reports the value with its measured band, or
 says that no band could be measured. The same procedure runs on the CPU
 engine and on the GPU engine, whose wall fluxes are evaluated from its

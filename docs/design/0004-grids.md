@@ -1,7 +1,9 @@
 # 0004: Grids generated from body profiles
 
-- **Status:** Implemented for sharp noses (v1). Blunt noses and low
-  supersonic Mach numbers are open; see the end.
+- **Status:** Implemented for sharp noses (H grid) and for smooth blunt
+  noses meeting the body tangentially (C grid, `src/grid/blunt-grid.ts`).
+  The scheme near the stagnation point of blunt noses is not yet accurate
+  enough for results on them; see the end.
 - **Date:** 2026-10-15
 - **Inputs:** an independent design study with experiments (topologies,
   outer boundaries, stretching, quality limits), and the measurements
@@ -83,6 +85,77 @@ round-off on such grids, down to Mach 1.1 (tested in
 stretching, the size-ratio gate needs about 18 cells across; 20 is the
 smallest grid used. Since vertical grid lines meet the nose at 90 deg minus
 the tip half-angle, tips steeper than 30 deg are refused with that reason.
+
+## Topology (v2): C grid for blunt noses
+
+A blunt nose has a stagnation point and a bow shock standing off ahead of
+it, which vertical grid lines cannot follow. Grid lines of constant i
+leave the body close to normal: they fan out from the nose and are
+vertical along the cylinder. The lower boundary is the body from the tip
+to its end, the upper the outer boundary, iMin the axis ahead of the tip
+(the stagnation streamline, a line of symmetry treated as a wall) and iMax
+the vertical outflow plane at the end of the body. Wall nodes lie exactly
+on the profile (to 1e-12).
+
+**Line directions.** Exact normals fan out abruptly where the curvature
+jumps (the shoulder of a hemisphere-cylinder, from 1/R to 0), and there
+neighbouring outer cells would differ in width by sqrt(1 + kappa h): 1.84
+at Mach 1.5. So each line follows the normal averaged over a window along
+the body of half-width a quarter of its distance to the outer boundary.
+The window is symmetric about the tip, keeping the first line on the
+axis, and closes at the end of the body, keeping the last one vertical.
+Its half-width may change by at most half the distance moved along the
+body, so both ends of the window only move downstream and the averaged
+angle, like the normal's on a convex body, only increases: without that
+limit, at Mach 1.5 the window grew faster than the columns advanced and
+the lines turned back towards each other. The lines then meet the wall at
+82 deg or more on the grids tested.
+
+**Outer boundary.** An arc of radius twice the nose's length scale (its
+radius of curvature at the tip, and at least the body radius), two
+standoffs ahead of the tip by the correlation of F. S. Billig (1967),
+continued by a straight line at its tangent, halfway between the normal
+shock and the Mach angle. Both choices are measured, not derived. The bow
+shock of a blunt nose stays far above the Mach angle for many body radii
+(on a hemisphere-cylinder at Mach 3, still 14 deg above it 8 radii behind
+the tip), so a boundary at the Mach angle plus 6 deg was crossed by the
+shock just behind the nose at every Mach number; and the shock flattens
+away from the nose, so an arc concentric with it came within one or two
+cells. Nothing in the generator proves the shock lies inside: every
+verified result checks that the cells along the outer boundary are still
+the free stream (0005), and is reported invalid otherwise.
+
+Measured on the hemisphere-cylinder (4 calibers of cylinder, HLLC,
+unit-invariant shared reconstruction), coarsest grid (nj = 20) and the
+next:
+
+| Mach | Grid   | Residual | Outer row, deviation | Free cells above the shock | Standoff / R (Billig) |
+| ---- | ------ | -------- | -------------------- | -------------------------- | --------------------- |
+| 1.5  | 54x20  | 2e-15    | 1.8e-6               | 3                          | 0.613 (0.604)         |
+| 2    | 79x20  | 3e-15    | 5.1e-8               | 4                          | 0.349 (0.321)         |
+| 3    | 103x20 | 8e-15    | 1.0e-7               | 5                          | 0.216 (0.205)         |
+| 5    | 120x20 | 6e-15    | 7.6e-11              | 7                          | 0.160 (0.163)         |
+| 1.5  | 108x40 | 2e-14    | 3.8e-9               | 7                          | 0.613                 |
+| 3    | 206x40 | 5e-15    | 1.6e-11              | 11                         | 0.217                 |
+| 5    | 240x40 | 3e-14    | 1.1e-14              | 14                         | 0.159                 |
+
+The margin doubles with each refinement, as it should for a shock fixed in
+space. The standoffs agree with Billig's correlation within 1.5 to 8.5%;
+it is a fit to experiments, used here only to place the boundary.
+
+**Spacing and gates.** Across: as on the H grid, along each line. Along
+the body: the wall cells are as long as the geometric mean of their height
+and of the outer cells' height, allowing for the lines spreading by
+1 + h d(angle)/ds. The same quality gates apply. Served and tested
+(`tests/grid/blunt-grid.test.ts`): hemispheres and prolate ellipsoids
+(length 1 to 3 radii) with 2 to 15 calibers of cylinder, Mach 1.5 to 5.
+Refused, with the reason: noses meeting the body at an angle (power series
+with exponent below 1); nearly flat tips (radius of curvature above 10
+body radii); and, by the gates, bodies too short for the lines to turn
+vertical by their end at low Mach numbers (a hemisphere with less than 2
+calibers of cylinder at Mach 1.5) and noses whose curvature grows without
+bound at the tip, such as the Haack series (r ~ x^(3/4) there), whose
+averaged lines leave the wall at 43 to 52 deg.
 
 ## Measurements
 
@@ -199,15 +272,19 @@ first comparison with measurements on a generated grid:
   first-order scheme. Fitting the bow shock as the outer boundary would
   remove the error at its source; it is a larger change, not yet made.
 
-- **Blunt noses.** They need a grid wrapped around the stagnation point
-  (a C grid, with the axis upstream as the inflow-side boundary), which
-  the design study built and checked. But on it the shared reconstruction
-  stalls at a residual of 2e-2 to 4e-2 in the subsonic region behind the
-  bow shock, where pressure is about 12 times the free stream: the shared
-  factor assumes variables of order one. Per-variable minmod converges
-  there and gives the stagnation pressure within 0.5% of the exact value.
-  Until the steady scheme handles both shocks and stagnation regions,
-  blunt noses are refused with that reason.
+- **Blunt noses: the stagnation region.** The C grid above is in place,
+  and the unit-invariant shared reconstruction (0003) converges on it to
+  round-off where the unscaled one stalled at 2e-2. But the stagnation
+  pressure, against the exact value behind a normal shock (Rayleigh
+  pitot), is off by -0.4% to +9.7% and does not converge regularly
+  (Mach 3: +6.5% on nj = 20, +0.19% on nj = 40; Mach 2: +9.7%, +7.8%),
+  the behaviour of a scheme error at a strong shock normal to the grid,
+  not of grid resolution. Choosing a flux and limiter that pass the
+  stagnation checks (pitot pressure, wall entropy equal to that behind a
+  normal shock) is the next step; until then blunt bodies are not offered
+  for results, and the sharp-nose generator still refuses them.
+- **Haack-series and other noses with unbounded tip curvature** (see the
+  C grid's refusals above).
 - **Low supersonic Mach numbers.** Below Mach 1.2 the outer boundary
   meets the vertical grid lines at under 12 deg, the smallest angle
   validated. Grid lines that lean to meet it were tried and set aside:

@@ -8,7 +8,7 @@
 
 import { Euler2D } from '../engine-cpu/euler2d';
 import { GpuEuler2D, gpuPrimitive2D } from '../engine-gpu/euler2d-gpu';
-import { outflowMach, type EngineFactory } from './verified-drag';
+import type { EngineFactory } from './verified-drag';
 
 export function gpuEngine(device: GPUDevice): EngineFactory {
   return async (config, freeStream) => {
@@ -27,9 +27,9 @@ export function gpuEngine(device: GPUDevice): EngineFactory {
         evaluator.setCellPrimitives((i, j) => gpuPrimitive2D(state, i + j * ni, config.gamma));
         return evaluator.boundaryFluxes('jMin');
       },
-      outflowMach: async () => {
+      cells: async () => {
         const state = await gpu.readState();
-        return outflowMach(config, (i, j) => gpuPrimitive2D(state, i + j * ni, config.gamma));
+        return (i, j) => gpuPrimitive2D(state, i + j * ni, config.gamma);
       },
       destroy: () => {
         gpu.destroy();
