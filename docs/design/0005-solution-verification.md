@@ -46,6 +46,9 @@ or the finest grid allowed has been solved.
 
 ## Measurements
 
+Measured with the unscaled shared reconstruction, before the
+unit-invariant one became the default (0003); being re-measured.
+
 Mean cone surface pressure over 0.5 to 0.95 of the cone length, on
 cone-cylinders, against Taylor-Maccoll; error of each grid relative to the
 exact value:

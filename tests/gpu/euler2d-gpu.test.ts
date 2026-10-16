@@ -140,7 +140,7 @@ describe('GpuEuler2D: free-stream preservation on generated body grids', () => {
       config(grid, {
         geometry: 'axisymmetric',
         limiter: 'vanAlbada',
-        reconstruction: 'shared',
+        reconstruction: 'sharedScaled',
         cfl: 0.8,
         timeStepping: 'local',
         boundaries: {
@@ -279,7 +279,7 @@ describe('GpuEuler2D: steady supersonic validation', () => {
       rampGrid({ ni: 60, nj: 30, xMin: -0.5, xCorner: 0, xMax: 1.5, height: 1.2, angle }),
       {
         limiter: 'vanAlbada',
-        reconstruction: 'shared',
+        reconstruction: 'sharedScaled',
         cfl: 0.8,
         timeStepping: 'local',
         boundaries: {
@@ -355,7 +355,7 @@ describe('GpuEuler2D: axisymmetric validation', () => {
       {
         geometry: 'axisymmetric',
         limiter: 'vanAlbada',
-        reconstruction: 'shared',
+        reconstruction: 'sharedScaled',
         cfl: 0.8,
         timeStepping: 'local',
         boundaries: {
@@ -392,7 +392,7 @@ describe('GpuEuler2D: generated body grid', () => {
     const cfg = config(bodyGrid(body, { nj: 20, mach: 1.98, gamma }).grid, {
       geometry: 'axisymmetric',
       limiter: 'vanAlbada',
-      reconstruction: 'shared',
+      reconstruction: 'sharedScaled',
       cfl: 0.8,
       timeStepping: 'local',
       boundaries: {

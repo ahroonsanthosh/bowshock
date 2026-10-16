@@ -31,11 +31,12 @@ fn reconstruct_shared(prev: Primitive2D, centre: Primitive2D, next: Primitive2D,
   );
 }
 
-// The shared factor of differences made dimensionless by the centre cell's
-// density, sound speed a and rho a^2.
+// The shared factor of differences made dimensionless by the smallest
+// density and pressure of the three cells, a from them and rho a^2.
 fn shared_scaled_factor(prev: Primitive2D, centre: Primitive2D, next: Primitive2D, gamma: f32) -> f32 {
-  let rho_a2 = gamma * centre.p;
-  let s = vec4f(1.0 / centre.rho, sqrt(centre.rho / rho_a2), sqrt(centre.rho / rho_a2), 1.0 / rho_a2);
+  let rho = min(prev.rho, min(centre.rho, next.rho));
+  let rho_a2 = gamma * min(prev.p, min(centre.p, next.p));
+  let s = vec4f(1.0 / rho, sqrt(rho / rho_a2), sqrt(rho / rho_a2), 1.0 / rho_a2);
   let a = s * vec4f(centre.rho - prev.rho, centre.u - prev.u, centre.v - prev.v, centre.p - prev.p);
   let b = s * vec4f(next.rho - centre.rho, next.u - centre.u, next.v - centre.v, next.p - centre.p);
   let eps = VAN_ALBADA_EPSILON;

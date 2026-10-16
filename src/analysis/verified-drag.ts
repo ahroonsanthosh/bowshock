@@ -110,7 +110,7 @@ export async function verifiedForebodyDrag(
       gamma,
       flux: 'hllc',
       limiter: 'vanAlbada',
-      reconstruction: 'shared',
+      reconstruction: 'sharedScaled',
       timeIntegrator: 'ssprk2',
       cfl: 0.8,
       timeStepping: 'local',
@@ -126,13 +126,26 @@ export async function verifiedForebodyDrag(
       // Iterate until the drag itself stops changing by more than its own
       // noise over a whole batch of steps.
       let previous = Number.NaN;
+      let previousChange = Number.NaN;
       for (let batch = 1; batch <= MAX_BATCHES; batch++) {
         if (options.signal?.aborted === true) throw new Cancelled();
         await engine.iterate(BATCH * refinement);
         const drag = forebodyPressureDrag(await engine.wallFluxes(), free, body.nose.baseRadius);
         options.onProgress?.(refinement, batch * BATCH * refinement, drag);
         if (!Number.isFinite(drag)) throw new IterationStalled('the solution is not finite');
-        if (Math.abs(drag - previous) <= options.noise * Math.abs(drag)) {
+        // The drag approaches its limit geometrically; two successive changes
+        // give the rate and the remaining error, change * rate / (1 - rate).
+        // A small change alone is not enough: slow convergence can pair a
+        // small change with a large remaining error.
+        const change = Math.abs(drag - previous);
+        const rate = change / previousChange;
+        const remaining = rate < 1 ? (change * rate) / (1 - rate) : Infinity;
+        previousChange = change;
+        previous = drag;
+        const settled =
+          change <= options.noise * Math.abs(drag) &&
+          (change === 0 || remaining <= options.noise * Math.abs(drag));
+        if (settled) {
           const outflow = await engine.outflowMach();
           if (!(outflow > 1)) {
             throw new SubsonicOutflow(
@@ -149,7 +162,6 @@ export async function verifiedForebodyDrag(
           options.onLevel?.(report);
           return drag;
         }
-        previous = drag;
       }
       throw new IterationStalled(
         `the drag still changes by more than ${options.noise} of its value after ${MAX_BATCHES * BATCH * refinement} iterations`,

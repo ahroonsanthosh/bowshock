@@ -26,9 +26,13 @@
  *   Requires the 'vanAlbada' limiter.
  *
  * - 'sharedScaled': the shared factor of differences made dimensionless by
- *   the centre cell's own scales, (d rho / rho, d u / a, d v / a,
- *   d p / (rho a^2)), so that it is independent of the units and does not
- *   assume variables of order one. With the unscaled factor, steady
+ *   local scales, (d rho / rho, d u / a, d v / a, d p / (rho a^2)) with rho
+ *   and p the smallest of the three cells' and a from them, so that it is
+ *   independent of the units and does not assume variables of order one.
+ *   Scales from the low side of a shock make its jump count fully: on a
+ *   Mach 5, 20 deg wedge the pressure overshoot behind the shock is 0.29%
+ *   with them, 0.91% with the stencil's mean and 1.76% with the centre
+ *   cell's (0.28% unscaled). With the unscaled factor, steady
  *   iterations stalled in the subsonic region behind a detached bow shock,
  *   where the pressure is about 12 times the free stream's
  *   (docs/design/0004-grids.md). Requires the 'vanAlbada' limiter.
@@ -98,8 +102,9 @@ export function reconstructShared(
 }
 
 /**
- * The shared factor of differences made dimensionless by the centre cell's
- * density, sound speed a and rho a^2 (see 'sharedScaled' above).
+ * The shared factor of differences made dimensionless by the smallest
+ * density and pressure of the three cells, the sound speed a from them and
+ * rho a^2 (see 'sharedScaled' above).
  */
 export function sharedScaledFactor(
   prev: Primitive2D,
@@ -107,9 +112,10 @@ export function sharedScaledFactor(
   next: Primitive2D,
   gamma: number,
 ): number {
-  const sRho = 1 / centre.rho;
-  const rhoA2 = gamma * centre.p;
-  const sU = Math.sqrt(centre.rho / rhoA2);
+  const rho = Math.min(prev.rho, centre.rho, next.rho);
+  const sRho = 1 / rho;
+  const rhoA2 = gamma * Math.min(prev.p, centre.p, next.p);
+  const sU = Math.sqrt(rho / rhoA2);
   const sP = 1 / rhoA2;
   const aRho = (centre.rho - prev.rho) * sRho;
   const aU = (centre.u - prev.u) * sU;

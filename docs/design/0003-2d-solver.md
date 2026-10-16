@@ -161,6 +161,38 @@ On the GPU, in 32-bit floats, the wedge (60 x 30 and 120 x 60) and the
 expansion converge to the f32 floor, a residual of about 1e-5 of its
 initial value.
 
+## The unit-invariant shared reconstruction (default since 2026-10-16)
+
+The shared factor weighted the differences of (rho, u, v, p) by their
+size, so it assumed variables of order one: the same flow in other units
+gave a wall pressure differing by 8.7e-6 on a wedge, and behind a detached
+bow shock, where the pressure is about 12 times the free stream's, the
+steady iteration stalled at a residual of 2e-2 (0004). 'sharedScaled'
+makes the differences dimensionless (d rho / rho, d u / a, d v / a,
+d p / (rho a^2)) with rho and p the smallest of the three cells' and a from
+them. The scales matter at strong shocks; on the M 5, 20 deg wedge
+(60 x 30), the overshoot behind the shock and, on the design study's
+hemisphere-cylinder grid at M 3, the residual after 4000 iterations:
+
+| Scales from           | Wedge overshoot | Hemisphere residual |
+| --------------------- | --------------- | ------------------- |
+| none (shared)         | 0.28%           | stalled at 2e-2     |
+| the centre cell       | 1.76%           | 1.6e-15             |
+| the stencil's mean    | 0.91%           | 1.6e-15             |
+| the stencil's minimum | 0.29%           | 1.5e-15             |
+
+Against the unscaled factor on the validated cases (CPU, nj = 20 and 40):
+cone surface pressure M 3, 20 deg -0.267% and -0.157% (unscaled -0.276%,
+-0.159%), M 2, 15 deg +0.028%, -0.0084% (+0.030%, -0.0080%), M 3.12,
+10 deg +0.019%, -0.0118% (+0.023%, -0.0114%); TN 3716 ogive against the
+method of characteristics within 3.3e-4 at nj = 40 (3.05e-4); manufactured
+solution orders 2.09 and 2.04 (the same); every case converged to
+round-off; the wedge in two sets of units agrees to 8.9e-16 (8.7e-6).
+Those cone and wedge numbers were measured with the centre-cell scales,
+before the minimum was chosen; the test suite passes with the minimum.
+Tables elsewhere in 0003, 0004 and 0005 were measured with the unscaled
+factor unless stated.
+
 ## Code verification by a manufactured solution
 
 A manufactured solution (`src/validation/manufactured.ts`) verifies the

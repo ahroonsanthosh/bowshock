@@ -23,7 +23,7 @@ describe('verified forebody drag on the GPU engine', () => {
       cylinderLength: 4,
     };
     // CPU engine on the same grids, measured when written.
-    const cpu = [0.283263704066, 0.283554287806];
+    const cpu = [0.283146976102, 0.283533123407];
     const result = await verifiedForebodyDrag(
       cone,
       {

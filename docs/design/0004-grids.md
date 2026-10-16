@@ -86,6 +86,9 @@ the tip half-angle, tips steeper than 30 deg are refused with that reason.
 
 ## Measurements
 
+Measured with the unscaled shared reconstruction, before the
+unit-invariant one became the default (0003); being re-measured.
+
 100 random rockets (tangent ogives and ogive family, cones and parabolic
 noses of 2 to 8 calibers, cylinders of 0 or 1 to 25 calibers) pass every
 gate at Mach 1.5 to 5 with nj = 20 (the property tests). Of a larger
