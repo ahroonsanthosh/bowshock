@@ -37,7 +37,7 @@ function coneFlow(mach: number, coneAngle: number): { s: Euler2D; initialResidua
     gamma,
     flux: 'hllc',
     limiter: 'vanAlbada',
-    reconstruction: 'shared',
+    reconstruction: 'sharedScaled',
     timeIntegrator: 'ssprk2',
     cfl: 0.8,
     timeStepping: 'local',

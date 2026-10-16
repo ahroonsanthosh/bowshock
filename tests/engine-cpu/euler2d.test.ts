@@ -119,19 +119,23 @@ describe('Euler2D: second-order accuracy on a curvilinear grid', () => {
     expect(order).toBeLessThan(2.2);
   }, 30_000);
 
-  it('converges at second order with the shared reconstruction', () => {
-    // Limiting fades as the grid resolves the vortex, so the measured order
-    // exceeds two: when written, L1 errors were 2.6e-3, 4.7e-4 and 9.0e-5 on
-    // 32, 64 and 128 cells (orders 2.45 and 2.39), against 7.7e-5 unlimited
-    // on 128 cells.
-    const shared = { limiter: 'vanAlbada', reconstruction: 'shared' } as const;
-    const unlimited = { limiter: 'unlimitedCentral', reconstruction: 'perVariable' } as const;
-    const coarse = vortexError(32, 1, shared);
-    const fine = vortexError(64, 1, shared);
-    expect(Math.log2(coarse / fine)).toBeGreaterThan(1.9);
-    // Limiting costs little: 1.47 times the unlimited error on 64 cells.
-    expect(fine).toBeLessThan(1.6 * vortexError(64, 1, unlimited));
-  }, 30_000);
+  it.each(['shared', 'sharedScaled'] as const)(
+    'converges at second order with the %s reconstruction',
+    (reconstruction) => {
+      // Limiting fades as the grid resolves the vortex, so the measured order
+      // exceeds two: when written, L1 errors were 2.6e-3, 4.7e-4 and 9.0e-5 on
+      // 32, 64 and 128 cells (orders 2.45 and 2.39), against 7.7e-5 unlimited
+      // on 128 cells.
+      const shared = { limiter: 'vanAlbada', reconstruction } as const;
+      const unlimited = { limiter: 'unlimitedCentral', reconstruction: 'perVariable' } as const;
+      const coarse = vortexError(32, 1, shared);
+      const fine = vortexError(64, 1, shared);
+      expect(Math.log2(coarse / fine)).toBeGreaterThan(1.9);
+      // Limiting costs little: 1.47 times the unlimited error on 64 cells.
+      expect(fine).toBeLessThan(1.6 * vortexError(64, 1, unlimited));
+    },
+    30_000,
+  );
 });
 
 describe('Euler2D: time step', () => {
@@ -201,11 +205,14 @@ describe('Euler2D: periodic boundaries', () => {
 });
 
 describe('Euler2D: configuration', () => {
-  it('rejects shared reconstruction with a limiter it would ignore', () => {
-    expect(() => solver(rectangularGrid(4, 4, 0, 1, 0, 1), { reconstruction: 'shared' })).toThrow(
-      /requires the 'vanAlbada' limiter/,
-    );
-  });
+  it.each(['shared', 'sharedScaled'] as const)(
+    'rejects %s reconstruction with a limiter it would ignore',
+    (reconstruction) => {
+      expect(() => solver(rectangularGrid(4, 4, 0, 1, 0, 1), { reconstruction })).toThrow(
+        /requires the 'vanAlbada' limiter/,
+      );
+    },
+  );
 });
 
 describe('Euler2D: boundary fluxes', () => {
@@ -213,6 +220,7 @@ describe('Euler2D: boundary fluxes', () => {
 
   it.each([
     ['shared', 'vanAlbada'],
+    ['sharedScaled', 'vanAlbada'],
     ['perVariable', 'vanLeer'],
     ['perVariable', 'minmod'],
   ] as const)(

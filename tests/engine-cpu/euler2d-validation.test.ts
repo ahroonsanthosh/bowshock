@@ -42,7 +42,7 @@ function rampFlow(
     gamma,
     flux: 'hllc',
     limiter: 'vanAlbada',
-    reconstruction: 'shared',
+    reconstruction: 'sharedScaled',
     timeIntegrator: 'ssprk2',
     cfl: 0.8,
     timeStepping: 'local',
