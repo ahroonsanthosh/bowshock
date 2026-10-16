@@ -241,7 +241,12 @@ export class Euler2D {
     const result: BoundaryFaceFlux[] = [];
     for (let t = 0; t < along; t++) {
       const { i, j, nx, ny, area, nodes, outward } = this.boundaryFace(side, t);
-      const [left, right] = this.faceStates(this.state, direction, i, j);
+      const [left, right] = this.wallMirrored(
+        this.faceStates(this.state, direction, i, j),
+        side,
+        nx,
+        ny,
+      );
       faceFlux2D(this.flux, left, right, nx, ny, this.config.gamma, this.fluxOut);
       const f = this.fluxOut;
       const { x, y } = this.config.grid;
@@ -387,7 +392,12 @@ export class Euler2D {
     for (let j = 0; j < nj; j++) {
       for (let i = 0; i <= ni; i++) {
         const f = i + j * (ni + 1);
-        const [left, right] = this.faceStates(u, 'i', i, j);
+        const [left, right] = this.wallMirrored(
+          this.faceStates(u, 'i', i, j),
+          i === 0 ? 'iMin' : i === ni ? 'iMax' : null,
+          iFaces.nx[f]!,
+          iFaces.ny[f]!,
+        );
         faceFlux2D(this.flux, left, right, iFaces.nx[f]!, iFaces.ny[f]!, gamma, this.fluxOut);
         accumulate(this.index(i - 1, j), this.index(i, j), iFaces.area[f]!);
       }
@@ -396,7 +406,12 @@ export class Euler2D {
     for (let j = 0; j <= nj; j++) {
       for (let i = 0; i < ni; i++) {
         const f = i + j * ni;
-        const [left, right] = this.faceStates(u, 'j', i, j);
+        const [left, right] = this.wallMirrored(
+          this.faceStates(u, 'j', i, j),
+          j === 0 ? 'jMin' : j === nj ? 'jMax' : null,
+          jFaces.nx[f]!,
+          jFaces.ny[f]!,
+        );
         faceFlux2D(this.flux, left, right, jFaces.nx[f]!, jFaces.ny[f]!, gamma, this.fluxOut);
         accumulate(this.index(i, j - 1), this.index(i, j), jFaces.area[f]!);
       }
@@ -451,6 +466,32 @@ export class Euler2D {
     const right = this.reconstruct(wL, wR, wRR, -1);
     const ok = left.rho > 0 && left.p > 0 && right.rho > 0 && right.p > 0;
     return ok ? [left, right] : [wL, wR];
+  }
+
+  /**
+   * At a wall face, the state outside the wall becomes the exact mirror of
+   * the state reconstructed inside it, its velocity reflected about the
+   * face normal (nx, ny), so that the face carries no mass whatever the
+   * reconstruction. (Reconstructing both sides from the mirrored ghost
+   * cells gives the same for the shared reconstruction, whose limiter
+   * factor is mirror-invariant, but not for the per-variable one, whose
+   * componentwise limiting of u and v is not invariant under a reflection
+   * about a wall that is not aligned with x or y.)
+   */
+  private wallMirrored(
+    states: [Primitive2D, Primitive2D],
+    side: Side | null,
+    nx: number,
+    ny: number,
+  ): [Primitive2D, Primitive2D] {
+    if (side === null || this.config.boundaries[side].kind !== 'wall') return states;
+    const mirror = (w: Primitive2D): Primitive2D => {
+      const un = w.u * nx + w.v * ny;
+      return { rho: w.rho, u: w.u - 2 * un * nx, v: w.v - 2 * un * ny, p: w.p };
+    };
+    // On a minimum side the cell inside lies to the right of the face.
+    const inside = side === 'iMin' || side === 'jMin' ? states[1] : states[0];
+    return side === 'iMin' || side === 'jMin' ? [mirror(inside), inside] : [inside, mirror(inside)];
   }
 
   private primitiveAt(u: State, k: number): Primitive2D {

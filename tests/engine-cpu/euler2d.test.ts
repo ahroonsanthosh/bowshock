@@ -211,6 +211,41 @@ describe('Euler2D: configuration', () => {
 describe('Euler2D: boundary fluxes', () => {
   const SIDES = ['iMin', 'iMax', 'jMin', 'jMax'] as const;
 
+  it.each([
+    ['shared', 'vanAlbada'],
+    ['perVariable', 'vanLeer'],
+    ['perVariable', 'minmod'],
+  ] as const)(
+    'carry no mass through a wall at an angle, in moving flow (%s, %s)',
+    (reconstruction, limiter) => {
+      // A lower wall sloping at 20 deg and a flow varying in every variable.
+      // Componentwise limiting is not invariant under the reflection about
+      // such a wall; the outside state is therefore mirrored from the inside
+      // one at the face itself. Measured before that change: 4.4e-3 with
+      // the per-variable reconstruction (van Leer).
+      const slope = Math.tan((20 * Math.PI) / 180);
+      const grid = gridFromFunction(16, 12, (i, j) => {
+        const x = i / 16;
+        return [x, x * slope + ((1 + 0.2 * x) * j) / 12];
+      });
+      for (const geometry of ['planar', 'axisymmetric'] as const) {
+        const s = solver(grid, {
+          geometry,
+          reconstruction,
+          limiter,
+          boundaries: { ...boundaries({ kind: 'outflow' }), jMin: { kind: 'wall' } },
+        });
+        s.setInitialCondition((x, y) => ({
+          rho: 1 + 0.3 * Math.sin(3 * x + 2 * y),
+          u: 2 + 0.4 * Math.cos(2 * x - y),
+          v: 0.5 + 0.3 * Math.sin(x + 3 * y),
+          p: 1 + 0.2 * Math.cos(4 * x + y),
+        }));
+        for (const f of s.boundaryFluxes('jMin')) expect(Math.abs(f.flux[0])).toBeLessThan(1e-14);
+      }
+    },
+  );
+
   it('gives outward normals, face areas and midpoints, and wall pressure, on a distorted box', () => {
     // Gas at rest in a closed box: the only flux through each wall is the
     // pressure, p n per unit area, and the forces on the walls balance.
