@@ -114,6 +114,57 @@ describe('GpuEuler2D: uniform flow is preserved on distorted grids', () => {
   });
 });
 
+describe('GpuEuler2D: free-stream preservation on generated body grids', () => {
+  // Every boundary, the body included, imposes the free stream, so the exact
+  // solution is the uniform stream on every cell, the skewed cells near the
+  // steep outer boundary at low Mach numbers included.
+  it.each([
+    {
+      mach: 1.1,
+      body: {
+        nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(3 * deg), baseRadius: 0.5 },
+        cylinderLength: 4,
+      } satisfies Body,
+    },
+    {
+      mach: 3,
+      body: {
+        nose: { shape: { kind: 'ogive', parameter: 1 }, length: 4, baseRadius: 0.5 },
+        cylinderLength: 6,
+      } satisfies Body,
+    },
+  ])('at M = $mach, to f32 round-off', async ({ mach, body }) => {
+    const { grid } = bodyGrid(body, { nj: 20, mach, gamma });
+    const free = { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
+    const state = await withSolver(
+      config(grid, {
+        geometry: 'axisymmetric',
+        limiter: 'vanAlbada',
+        reconstruction: 'shared',
+        cfl: 0.8,
+        timeStepping: 'local',
+        boundaries: {
+          iMin: { kind: 'inflow', state: free },
+          iMax: { kind: 'outflow' },
+          jMin: { kind: 'inflow', state: free },
+          jMax: { kind: 'inflow', state: free },
+        },
+      }),
+      async (s) => {
+        s.setInitialCondition(() => free);
+        await s.iterate(50);
+        return s.readState();
+      },
+    );
+    for (let c = 0; c < grid.ni * grid.nj; c++) {
+      const w = gpuPrimitive2D(state, c, gamma);
+      expect(Math.abs(w.rho - 1)).toBeLessThan(1e-5);
+      expect(Math.abs(w.p - 1)).toBeLessThan(1e-5);
+      expect(Math.abs(w.v)).toBeLessThan(1e-5 * free.u);
+    }
+  });
+});
+
 describe('GpuEuler2D: smooth flow', () => {
   const L = 10;
   const vortex = { strength: 5, x0: 5, y0: 5, u0: 1, v0: 1, period: L };
