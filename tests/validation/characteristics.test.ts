@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { Body } from '../../src/geometry/body';
+import { pressureDragFromProfile } from '../../src/analysis/forces';
+import { bodyRadius, type Body } from '../../src/geometry/body';
+import { noseTipSlope } from '../../src/geometry/nose';
 import { characteristics } from '../../src/validation/characteristics';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
@@ -83,4 +85,23 @@ describe('method of characteristics on the TN 3716 ogive (M = 1.98)', () => {
       expect(Math.abs(cpAt(nearer, x) - cpAt(fine, x))).toBeLessThan(5e-5);
     }
   }, 60_000);
+
+  it('gives the forebody pressure drag, converged to 1e-6: Cd = 0.098803', () => {
+    // An exact reference for drag on a curved nose. Measured when written:
+    // 0.0988018 (160 intervals), 0.0988029 (320), 0.0988032 (640).
+    const tip = taylorMaccoll(1.98, Math.atan(noseTipSlope(ogive.nose)), gamma);
+    const drag = (n: number) => {
+      const wall = characteristics(ogive, { mach: 1.98, gamma, intervals: n, start: 1e-3 }).wall;
+      return pressureDragFromProfile(
+        wall.filter((w) => w.x <= ogive.nose.length),
+        (x) => bodyRadius(ogive, x),
+        { pressure: 1, dynamicPressure: q },
+        0.5,
+        tip.surfacePressureRatio,
+      );
+    };
+    const fine = drag(640);
+    expect(Math.abs(drag(320) - fine)).toBeLessThan(1e-6);
+    expect(fine).toBeCloseTo(0.098803, 5);
+  }, 120_000);
 });
