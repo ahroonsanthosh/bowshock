@@ -68,8 +68,15 @@ more than 1.3 times different in width (along i) or height (along j);
 aspect ratio at most 10. A grid that fails is refused with the reason,
 never returned. The cell-angle limit is set by measurement, not by rule of
 thumb: at low Mach numbers the steep outer boundary skews the cells near
-it, and on such grids, down to 12.3 deg, the solver keeps its accuracy
-(the low-Mach table below). Cells in the undisturbed free stream cannot
+it, and on such grids, down to 12.3 deg, the cone pressure stays accurate
+(the low-Mach table below). That is not a general property of skewed
+cells. On a manufactured solution in a uniformly sheared channel (L1
+error at 16 to 128 cells, axisymmetric) square cells converge at order
+2.03, cells of 30 deg at 1.84, and cells of 12 deg at about 1 (orders
+0.90, 1.02, 0.66), with 13 times the error of square cells at 128 cells.
+So skewed cells are tolerable where they are on these grids, near the
+outer boundary, but cost accuracy where the flow varies; results are
+verified on nested grids (0005), which measures that cost. Cells in the undisturbed free stream cannot
 add error whatever their shape: the solver keeps a uniform flow uniform to
 round-off on such grids, down to Mach 1.1 (tested in
 `tests/engine-cpu/body-validation.test.ts`). With the strongest
