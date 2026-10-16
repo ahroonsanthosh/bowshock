@@ -22,11 +22,15 @@ export interface GridQuality {
 }
 
 export const QUALITY_LIMITS = {
-  // The smallest cell angle at which the solver has been shown to keep its
-  // accuracy: on cone-cylinders at Mach 1.1 to 1.5, whose steep outer
-  // boundaries give angles down to 12.3 deg, the cone pressure matches
-  // Taylor-Maccoll within 0.16% on the coarsest grids, 0.02% on the next,
-  // and converges with refinement (docs/design/0004-grids.md).
+  // Set by measurement on generated grids, whose skewed cells lie near the
+  // steep outer boundary at low Mach numbers: on cone-cylinders at Mach 1.1
+  // to 1.5, with angles down to 12.3 deg, the cone pressure matches
+  // Taylor-Maccoll within 0.16% on the coarsest grids, 0.02% on the next.
+  // It is not a general accuracy limit: through smooth gradients, uniformly
+  // skewed cells of 12 deg drop the scheme to about first order (a
+  // manufactured solution: 13 times the error of square cells on 128 cells;
+  // 30 deg keeps order 1.84). Each result's error is measured on nested
+  // grids regardless (docs/design/0005-solution-verification.md).
   minAngle: (12 * Math.PI) / 180,
   minWallAngle: (60 * Math.PI) / 180,
   maxSizeRatio: 1.3,

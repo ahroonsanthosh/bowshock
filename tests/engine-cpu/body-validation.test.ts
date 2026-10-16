@@ -3,6 +3,7 @@ import { Euler2D } from '../../src/engine-cpu/euler2d';
 import type { Body } from '../../src/geometry/body';
 import { bodyGrid } from '../../src/grid/body-grid';
 import type { Primitive2D } from '../../src/scheme/flux';
+import { characteristics } from '../../src/validation/characteristics';
 import { TN3716_MACH, TN3716_ZERO_INCIDENCE } from '../../src/validation/ogive-cylinder-tn3716';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
@@ -145,17 +146,88 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
     }
   });
 
+  it('matches the exact inviscid solution (method of characteristics) within 5e-4 in Cp', () => {
+    // Measured when written, nj = 40: within 3e-4 at every station; nj = 80:
+    // within 4e-4 at x/d = 0.22, nearest the tip, and 1e-4 elsewhere. The
+    // reference, independent of this solver, is converged to 2e-5
+    // (tests/validation/characteristics.test.ts).
+    const wall = characteristics(body, { mach, gamma, intervals: 320, start: 1e-3 }).wall;
+    const exact = (x: number) => {
+      let k = 0;
+      while (k < wall.length - 2 && wall[k + 1]!.x < x) k++;
+      const a = wall[k]!;
+      const b = wall[k + 1]!;
+      return (a.p + ((b.p - a.p) * (x - a.x)) / (b.x - a.x) - 1) / q;
+    };
+    for (const { xOverD } of TN3716_ZERO_INCIDENCE) {
+      expect(Math.abs(cp(fine.s, xOverD) - exact(xOverD))).toBeLessThan(5e-4);
+    }
+  });
+
   it('stays within 0.025 of the measured pressures (a regression bound, not an accuracy claim)', () => {
     // Measured when written, at the unambiguous stations: the solution lies
     // below the measurements by 0.002 to 0.022, largest at the shoulder
-    // (x/d = 2.95). Aft of x/d of about 1.5 the report's own inviscid
-    // method of characteristics (its figure 3) shows a similar deficit; on
-    // the forward nose it does not, and the cause of the difference there
-    // is not yet established (docs/design/0004-grids.md). The report gives
-    // the measurement uncertainty as 0.005.
+    // (x/d = 2.95). The exact inviscid solution does the same (test above),
+    // so the difference is not a numerical error of this solver; its
+    // physical cause is not established (docs/design/0004-grids.md). The
+    // report gives the measurement uncertainty as 0.005.
     for (const { xOverD, cp: measured, alternative } of TN3716_ZERO_INCIDENCE) {
       if (alternative !== undefined) continue;
       expect(Math.abs(cp(fine.s, xOverD) - measured)).toBeLessThan(0.025);
     }
   });
+});
+
+describe('Euler2D on a generated grid: free-stream preservation', () => {
+  const ogive: Body = {
+    nose: { shape: { kind: 'ogive', parameter: 1 }, length: 4, baseRadius: 0.5 },
+    cylinderLength: 6,
+  };
+  // At Mach 1.1 a slender cone, which keeps its shock attached; its outer
+  // boundary is the steepest of the low-Mach validation cases (cell angles
+  // down to 12.3 deg).
+  const slenderCone: Body = {
+    nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(3 * deg), baseRadius: 0.5 },
+    cylinderLength: 4,
+  };
+  it.each([
+    { mach: 1.1, body: slenderCone },
+    { mach: 1.3, body: ogive },
+    { mach: 3, body: ogive },
+  ])(
+    'keeps a uniform stream uniform to round-off at M = $mach, skewed cells included',
+    ({ mach, body }) => {
+      const { grid } = bodyGrid(body, { nj: 20, mach, gamma });
+      const free: Primitive2D = { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
+      // Every boundary imposes the free stream, the body included, so the
+      // exact solution is the uniform stream on every cell.
+      const s = new Euler2D({
+        grid,
+        geometry: 'axisymmetric',
+        gamma,
+        flux: 'hllc',
+        limiter: 'vanAlbada',
+        reconstruction: 'shared',
+        timeIntegrator: 'ssprk2',
+        cfl: 0.8,
+        timeStepping: 'local',
+        boundaries: {
+          iMin: { kind: 'inflow', state: free },
+          iMax: { kind: 'outflow' },
+          jMin: { kind: 'inflow', state: free },
+          jMax: { kind: 'inflow', state: free },
+        },
+      });
+      s.setInitialCondition(() => free);
+      s.iterate(50);
+      let worst = 0;
+      for (let j = 0; j < s.metrics.nj; j++) {
+        for (let i = 0; i < s.metrics.ni; i++) {
+          const w = s.primitive(i, j);
+          worst = Math.max(worst, Math.abs(w.p - 1), Math.abs(w.rho - 1), Math.abs(w.v));
+        }
+      }
+      expect(worst).toBeLessThan(1e-13);
+    },
+  );
 });

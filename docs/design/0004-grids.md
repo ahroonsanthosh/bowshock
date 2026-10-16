@@ -68,10 +68,18 @@ more than 1.3 times different in width (along i) or height (along j);
 aspect ratio at most 10. A grid that fails is refused with the reason,
 never returned. The cell-angle limit is set by measurement, not by rule of
 thumb: at low Mach numbers the steep outer boundary skews the cells near
-it, and on such grids, down to 12.3 deg, the solver keeps its accuracy
-(the low-Mach table below). Cells in the undisturbed free stream cannot
+it, and on such grids, down to 12.3 deg, the cone pressure stays accurate
+(the low-Mach table below). That is not a general property of skewed
+cells. On a manufactured solution in a uniformly sheared channel (L1
+error at 16 to 128 cells, axisymmetric) square cells converge at order
+2.03, cells of 30 deg at 1.84, and cells of 12 deg at about 1 (orders
+0.90, 1.02, 0.66), with 13 times the error of square cells at 128 cells.
+So skewed cells are tolerable where they are on these grids, near the
+outer boundary, but cost accuracy where the flow varies; results are
+verified on nested grids (0005), which measures that cost. Cells in the undisturbed free stream cannot
 add error whatever their shape: the solver keeps a uniform flow uniform to
-3e-15 on these grids. With the strongest
+round-off on such grids, down to Mach 1.1 (tested in
+`tests/engine-cpu/body-validation.test.ts`). With the strongest
 stretching, the size-ratio gate needs about 18 cells across; 20 is the
 smallest grid used. Since vertical grid lines meet the nose at 90 deg minus
 the tip half-angle, tips steeper than 30 deg are refused with that reason.
@@ -129,27 +137,56 @@ first comparison with measurements on a generated grid:
   shrinks with refinement. On a cone with the ogive's tip angle the solver
   holds the exact value within 0.0005 from x/d = 0.22 on, on all three
   grids, so the tip does not disturb the solution downstream.
-- Against the measurements (stated uncertainty 0.005 in Cp) the computed
-  pressure is lower at every unambiguous station, by 0.002 to 0.022,
-  largest at the shoulder. Aft of about x/d = 1.5 the report's own inviscid
-  method of characteristics (its figure 3) lies close to our solution and
-  below the measurements in the same way. On the forward nose it does not:
-  there our solution is about 0.01 below both the measurements and the
-  report's theories. That curve is not an exact solution: it comes from
-  V. J. Rossow, NACA TN 2399 (1951), whose method adds an approximate
-  correction for rotation to hand-computed characteristics solutions
-  that ignored it, and agrees with a full solution "within the accuracy
-  of a characteristic solution"; only plots are published. The cause of
-  the difference is not established. The boundary layer is
-  not a sufficient explanation (the report finds Reynolds-number effects
-  negligible at zero incidence, and a laminar displacement thickness here
-  is worth about 0.002 in Cp). The solver's discretisation of smooth
-  axisymmetric flow is verified separately by a manufactured solution
-  (0003); an exact inviscid reference for ogives is still needed before
-  any accuracy claim on them, and the test keeps a 0.025 bound only to
-  catch regressions.
+- Against the exact inviscid solution, from an independent method of
+  characteristics (`src/validation/characteristics.ts`, proven on cones
+  against Taylor-Maccoll at second order, converged here to 2e-5 in Cp):
+  within 3e-4 at every station on the 40-cell grid; on the 80-cell grid
+  within 4e-4 at x/d = 0.22, nearest the tip, and 1e-4 elsewhere. The
+  solver is accurate on this ogive.
+
+  | x/d                    | 0.22   | 0.89   | 1.61   | 2.95    | 4.06    | 6.28    | 8.06    |
+  | ---------------------- | ------ | ------ | ------ | ------- | ------- | ------- | ------- |
+  | Characteristics, exact | 0.2595 | 0.1555 | 0.0646 | -0.0575 | -0.0320 | -0.0112 | -0.0059 |
+  | Euler, nj = 80         | 0.2591 | 0.1555 | 0.0647 | -0.0576 | -0.0320 | -0.0111 | -0.0059 |
+  | Measured (TN 3716)     | 0.26   | 0.165  | 0.074  | -0.036  | -0.017  | -0.001  | 0.006   |
+
+- So the differences from the measurements (stated uncertainty 0.005),
+  lower at every unambiguous station by 0.002 to 0.022 and largest at the
+  shoulder, are not numerical errors of the inviscid solution: the exact
+  solution has them too. Their physical cause is not established. The
+  boundary layer alone is not a sufficient explanation (the report finds
+  Reynolds-number effects negligible at zero incidence, and a laminar
+  displacement thickness here is worth about 0.002 in Cp); a slightly
+  blunted model tip and the tunnel's Mach-number tolerance are untested
+  candidates. The report's own theory curve on the forward nose, about
+  0.01 above the exact solution, comes from V. J. Rossow, NACA TN 2399
+  (1951), whose method adds an approximate correction for rotation to
+  characteristics solutions that ignored it: the exact solution shows that
+  approximation, not this solver, to be the one that differs.
 
 ## Open
+
+- **First-order surface pressure on cones.** On cones the surface
+  pressure converges at about first order; its cause is not yet
+  identified. Measured on the M 3, 20 deg cone (nj = 20 and 40), mean over
+  0.5 to 0.95 of the cone length:
+
+  | Reconstruction | Wall-cell entropy at x/L = 0.95 | Wall-cell p vs exact at centroid | Wall p from the wall flux |
+  | -------------- | ------------------------------- | -------------------------------- | ------------------------- |
+  | Shared         | +1.7% / +1.0%                   | -0.66% / -0.33%                  | -0.28% / -0.16%           |
+  | Per-variable   | +0.62% / +0.52%                 | -0.50% / -0.23%                  | -0.40% / -0.20%           |
+
+  The wall cells carry spurious entropy (6.8% near the tip with the shared
+  reconstruction), and the excess entropy flux through the wall layer
+  grows along the cone and halves with refinement, so it is made along the
+  wall rather than only at the apex. But per-variable reconstruction
+  removes about two thirds of it while the pressure error stays the same
+  size, so the entropy layer is not what drives the pressure error. Nor is
+  the wall flux formula: the wall cells' own pressure is off at first
+  order. Both have been ruled out as the main cause; the next suspects are
+  the wall-adjacent reconstruction of the normal velocity and the cell
+  average of the axisymmetric pressure source. This limits efficiency,
+  not correctness: each result's error is measured on nested grids (0005).
 
 - **Blunt noses.** They need a grid wrapped around the stagnation point
   (a C grid, with the axis upstream as the inflow-side boundary), which
