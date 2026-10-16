@@ -166,27 +166,35 @@ first comparison with measurements on a generated grid:
 
 ## Open
 
-- **First-order surface pressure on cones.** On cones the surface
-  pressure converges at about first order; its cause is not yet
-  identified. Measured on the M 3, 20 deg cone (nj = 20 and 40), mean over
-  0.5 to 0.95 of the cone length:
+- **First-order surface pressure on cones: the captured bow shock.** On
+  cones the surface pressure converges at about first order, and the
+  measurements point to the bow shock. A captured shock's position is
+  uncertain by a fraction of a cell, and where the flow behind it varies
+  that error is carried downstream at first order whatever the design
+  order of the scheme: M. H. Carpenter and J. H. Casper, "Accuracy of
+  shock capturing in two spatial dimensions", AIAA J. 37 (1999) 1072-1079,
+  and N. K. Yamaleev and M. H. Carpenter, NASA/TM-2002-211415 (2002), who
+  also find that for a second-order scheme adapting the grid to the shock
+  does not improve the accuracy. It fits every case here: the wedge, whose
+  flow behind its straight shock is uniform, converges to round-off; the
+  cones, whose flow behind the conical shock varies, at about first order;
+  weak shocks on slender low-Mach cones faster. The causes ruled out by
+  measurement (M 3, 20 deg cone, nj = 20 and 40, mean over 0.5 to 0.95 L):
 
   | Reconstruction | Wall-cell entropy at x/L = 0.95 | Wall-cell p vs exact at centroid | Wall p from the wall flux |
   | -------------- | ------------------------------- | -------------------------------- | ------------------------- |
   | Shared         | +1.7% / +1.0%                   | -0.66% / -0.33%                  | -0.28% / -0.16%           |
   | Per-variable   | +0.62% / +0.52%                 | -0.50% / -0.23%                  | -0.40% / -0.20%           |
 
-  The wall cells carry spurious entropy (6.8% near the tip with the shared
-  reconstruction), and the excess entropy flux through the wall layer
-  grows along the cone and halves with refinement, so it is made along the
-  wall rather than only at the apex. But per-variable reconstruction
-  removes about two thirds of it while the pressure error stays the same
-  size, so the entropy layer is not what drives the pressure error. Nor is
-  the wall flux formula: the wall cells' own pressure is off at first
-  order. Both have been ruled out as the main cause; the next suspects are
-  the wall-adjacent reconstruction of the normal velocity and the cell
-  average of the axisymmetric pressure source. This limits efficiency,
-  not correctness: each result's error is measured on nested grids (0005).
+  The spurious wall entropy is real but not the driver (per-variable
+  reconstruction removes two thirds of it, the pressure error stays); the
+  wall flux is not (the wall cells' own pressure is off); nor is grid
+  stretching (a manufactured solution on the body grid's strongest
+  grading, cells growing 100 times across, still converges at order 2.02).
+  Accuracy therefore comes from refinement and extrapolation on verified
+  nested grids (0005), as in published cone verification with a
+  first-order scheme. Fitting the bow shock as the outer boundary would
+  remove the error at its source; it is a larger change, not yet made.
 
 - **Blunt noses.** They need a grid wrapped around the stagnation point
   (a C grid, with the axis upstream as the inflow-side boundary), which
