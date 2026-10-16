@@ -45,6 +45,10 @@ export interface VerifiedDragOptions {
   readonly orderTolerance: number;
   /** Called after each grid is solved. */
   readonly onLevel?: (level: LevelReport) => void;
+  /** Called after each convergence check, with the grid's refinement and the drag so far. */
+  readonly onProgress?: (refinement: number, iterations: number, drag: number) => void;
+  /** Stops the run between convergence checks. */
+  readonly signal?: AbortSignal;
 }
 
 export interface LevelReport {
@@ -56,7 +60,8 @@ export interface LevelReport {
 
 export type VerifiedDrag =
   | (VerifiedValue & { readonly kind: 'solved'; readonly reports: readonly LevelReport[] })
-  | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string };
+  | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string }
+  | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] };
 
 /** Base grid cells across, as validated (docs/design/0004-grids.md). */
 const BASE_NJ = 20;
@@ -66,6 +71,7 @@ const BATCH = 500;
 const MAX_BATCHES = 60;
 
 class IterationStalled extends Error {}
+class Cancelled extends Error {}
 
 export async function verifiedForebodyDrag(
   body: Body,
@@ -102,8 +108,10 @@ export async function verifiedForebodyDrag(
       // noise over a whole batch of steps.
       let previous = Number.NaN;
       for (let batch = 1; batch <= MAX_BATCHES; batch++) {
+        if (options.signal?.aborted === true) throw new Cancelled();
         await engine.iterate(BATCH * refinement);
         const drag = forebodyPressureDrag(await engine.wallFluxes(), free, body.nose.baseRadius);
+        options.onProgress?.(refinement, batch * BATCH * refinement, drag);
         if (!Number.isFinite(drag)) throw new IterationStalled('the solution is not finite');
         if (Math.abs(drag - previous) <= options.noise * Math.abs(drag)) {
           const report = {
@@ -137,6 +145,7 @@ export async function verifiedForebodyDrag(
     if (error instanceof IterationStalled) {
       return { kind: 'not-converged', refinement: lastRefinement, reason: error.message };
     }
+    if (error instanceof Cancelled) return { kind: 'cancelled', reports };
     throw error;
   }
 }

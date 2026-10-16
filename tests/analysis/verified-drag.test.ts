@@ -58,3 +58,16 @@ describe('verified forebody drag', () => {
     expect(Math.abs(result.reports[0]!.drag / cp - 1)).toBeLessThan(4e-3);
   }, 120_000);
 });
+
+describe('verified forebody drag: cancellation', () => {
+  it('stops between convergence checks and keeps the grids already solved', async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const result = await verifiedForebodyDrag(
+      cone,
+      { ...options, maxRefinement: 8, signal: controller.signal },
+      cpuEngine,
+    );
+    expect(result.kind).toBe('cancelled');
+  });
+});
