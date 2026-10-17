@@ -88,7 +88,8 @@ describe('method of characteristics on the TN 3716 ogive (M = 1.98)', () => {
 
   it('gives the forebody pressure drag, converged to 1e-6: Cd = 0.098803', () => {
     // An exact reference for drag on a curved nose. Measured when written:
-    // 0.0988018 (160 intervals), 0.0988029 (320), 0.0988032 (640).
+    // 0.09880314 (160 intervals), 0.09880335 (320), 0.09880339 (640),
+    // 0.09880340 (1280).
     const tip = taylorMaccoll(1.98, Math.atan(noseTipSlope(ogive.nose)), gamma);
     const drag = (n: number) => {
       const wall = characteristics(ogive, { mach: 1.98, gamma, intervals: n, start: 1e-3 }).wall;
@@ -104,4 +105,30 @@ describe('method of characteristics on the TN 3716 ogive (M = 1.98)', () => {
     expect(Math.abs(drag(320) - fine)).toBeLessThan(1e-6);
     expect(fine).toBeCloseTo(0.098803, 5);
   }, 120_000);
+
+  it.each([
+    { mach: 3.5, half: 25 },
+    { mach: 4, half: 20 },
+    { mach: 4, half: 25 },
+    { mach: 5, half: 30 },
+  ])(
+    'M = $mach, $half deg, where C- lines run near parallel to the axis: still second order',
+    ({ mach, half }) => {
+      // The axisymmetric term's 1 / sin(theta - mu) is singular where
+      // theta = mu; it is integrated as sin(theta) / M along the arc
+      // length. Measured when written: worst wall-pressure errors 1e-6 to
+      // 5.5e-6 on 40 intervals, falling by 4 on 80.
+      const exact = taylorMaccoll(mach, half * deg, gamma).surfacePressureRatio;
+      const worst = (n: number) =>
+        Math.max(
+          ...characteristics(cone(half), { mach, gamma, intervals: n, start: 1e-3 }).wall.map((w) =>
+            Math.abs(w.p / exact - 1),
+          ),
+        );
+      const coarse = worst(40);
+      const fine = worst(80);
+      expect(coarse).toBeLessThan(1e-5);
+      expect(Math.log2(coarse / fine)).toBeGreaterThan(1.8);
+    },
+  );
 });
