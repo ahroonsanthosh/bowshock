@@ -84,9 +84,10 @@ function engineConfig(
  * behind the nose. A zero-gradient outflow at the nose's base perturbs the
  * cells next to it: on a bare 10 degree cone at Mach 2 (nj = 20) the drag
  * moves by 6.6e-5 of its value, against 1.2e-7 between one and four
- * calibers of cylinder. In supersonic flow nothing behind the base reaches
- * the nose, and a cylinder adds no pressure drag, so the drag is that of
- * the body asked for.
+ * calibers of cylinder. Where the flow leaves the end of the body asked
+ * for supersonically, nothing behind it reaches the body, and a cylinder
+ * adds no pressure drag, so the drag is that of the body asked for; where
+ * it does not, the case is refused (`baseMach`).
  */
 function solvedBody(body: Body): Body {
   const cylinder = SOLVED_CYLINDER * 2 * body.nose.baseRadius;
@@ -112,6 +113,37 @@ export interface FitProblem {
   readonly firstNode: 'symmetry' | 'fixed';
   /** The forebody pressure drag coefficient from the fluxes through the wall. */
   readonly drag: (wall: readonly BoundaryFaceFlux[]) => number;
+  /**
+   * Axial position of the end of the body asked for, where the solved one
+   * may go on (solvedBody): the flow must leave it supersonically for the
+   * part beyond not to reach back (`baseMach`).
+   */
+  readonly askedEnd: number;
+}
+
+/**
+ * Smallest axial Mach number in the column of cells just ahead of the end
+ * of the body asked for, or Infinity if the domain ends there (the
+ * outflow check covers it). Only where it exceeds 1 does nothing behind
+ * the end reach the body: on a 26.6 deg cone at Mach 1.5, whose conical
+ * surface flow is subsonic, the drag with 2 calibers of cylinder behind
+ * it is 3.3% below the Taylor-Maccoll value of an endless cone.
+ */
+export function baseMach(
+  problem: FitProblem,
+  grid: StructuredGrid,
+  cell: (i: number, j: number) => Primitive2D,
+): number {
+  const { lines, gamma } = problem;
+  let end = 0;
+  while (end + 1 < lines.length && lines[end + 1]!.x <= problem.askedEnd * (1 + 1e-12)) end++;
+  if (end >= lines.length - 1) return Infinity;
+  let smallest = Infinity;
+  for (let j = 0; j < grid.nj; j++) {
+    const w = cell(end - 1, j);
+    smallest = Math.min(smallest, w.u / Math.sqrt((gamma * w.p) / w.rho));
+  }
+  return smallest;
 }
 
 export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
@@ -129,8 +161,18 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
   const free = freeStreamAt(mach, gamma).state;
   const tipAngle = Math.atan(noseTipSlope(body.nose));
   if (!Number.isFinite(tipAngle)) throw new RangeError('the nose is blunt: use bluntFitProblem');
-  // Throws if the conical shock at the tip would detach.
-  const cone = coneFlowField(mach, tipAngle, gamma);
+  const cone = (() => {
+    try {
+      return coneFlowField(mach, tipAngle, gamma);
+    } catch (error) {
+      if (!(error instanceof RangeError && /detaches/.test(error.message))) throw error;
+      const degrees = ((tipAngle * 180) / Math.PI).toFixed(1);
+      throw new RangeError(
+        `at Mach ${mach} the bow shock cannot stay attached to a tip of ${degrees} deg half-angle; this needs a sharper or longer nose, or a higher Mach number`,
+        { cause: error },
+      );
+    }
+  })();
   const beta = cone.flow.shockAngle;
 
   // The conical flow on a ray: the free stream's total enthalpy, and the
@@ -211,6 +253,7 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     },
     firstNode: 'fixed',
     drag: (wall) => forebodyDrag(wall, mach, gamma, R) + tipDrag,
+    askedEnd: bodyLength(asked),
   };
 }
 
@@ -261,6 +304,7 @@ export function bluntFitProblem(asked: Body, options: FitProblemOptions): FitPro
     initial: (i, j) => captured.primitive(i, j),
     firstNode: 'symmetry',
     drag: (wall) => forebodyDrag(wall, mach, gamma, R),
+    askedEnd: bodyLength(asked),
   };
 }
 

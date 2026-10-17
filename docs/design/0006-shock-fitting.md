@@ -236,9 +236,16 @@ zero-gradient outflow at the base of a bare nose, the cells next to it
 are perturbed: the drag of a bare 10 degree cone at Mach 2 (nj = 20)
 moves by 6.6e-5 of its value, and bare secant-ogive and parabolic noses
 at Mach 2.5 by 1.0e-4, against 1.2e-7 between one and four calibers of
-cylinder. In supersonic flow nothing behind the base reaches the nose,
-and a cylinder adds no pressure drag, so the fit always solves at least
-one caliber of cylinder (`sharpFitProblem`, `bluntFitProblem`).
+cylinder. Where the flow leaves the end of the body asked for
+supersonically (axial Mach number above 1 in the column of cells ahead
+of it), nothing behind it reaches the body, and a cylinder adds no
+pressure drag, so the fit always solves at least one caliber of cylinder
+(`sharpFitProblem`, `bluntFitProblem`) and checks that column
+(`baseMach`); where the flow there is subsonic the case is refused. A
+robustness scan found such a case: on a 26.6 deg cone at Mach 1.5 the
+conical surface flow is subsonic (Mach 0.96), and with 2 calibers of
+cylinder behind it the drag is 3.3% below the Taylor-Maccoll value of an
+endless cone, since the expansion at the shoulder reaches upstream.
 
 ## Open
 

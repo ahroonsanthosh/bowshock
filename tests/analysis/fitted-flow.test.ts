@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  baseMach,
   bluntFittedFlow,
+  fittedFlow,
+  sharpFitProblem,
   sharpFittedFlow,
   verifiedFittedDrag,
 } from '../../src/analysis/fitted-flow';
@@ -39,6 +42,34 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     const p = face.flux[1] * face.nx + face.flux[2] * face.ny;
     expect(Math.abs(p / pitot - 1)).toBeLessThan(1e-4);
   }, 600_000);
+
+  it('a bare nose is solved with a cylinder behind it only where the flow leaves its base supersonically', () => {
+    // A 26.6 deg cone at Mach 1.5: the conical surface flow is subsonic
+    // (Mach 0.96), and what lies behind the base reaches the nose. A 20 deg
+    // cone at Mach 3 leaves its base at Mach 2.
+    const bare = (angle: number): Body => ({
+      nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(angle * deg), baseRadius: 0.5 },
+      cylinderLength: 0,
+    });
+    const measure = (angle: number, mach: number) => {
+      const problem = sharpFitProblem(bare(angle), { gamma, nj: 20, refinement: 1, mach });
+      const { fit } = fittedFlow(problem, 20_000);
+      expect(fit.converged).toBe(true);
+      return baseMach(problem, fit.grid, (i, j) => fit.solver.primitive(i, j));
+    };
+    expect(measure(Math.atan(0.5) / deg, 1.5)).toBeLessThan(1);
+    expect(measure(20, 3)).toBeGreaterThan(1);
+  }, 600_000);
+
+  it('a tip too blunt for an attached shock is refused with its angle and what to change', () => {
+    const cone: Body = {
+      nose: { shape: { kind: 'conical' }, length: 0.5, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    expect(() => sharpFitProblem(cone, { gamma, nj: 20, refinement: 1, mach: 1.2 })).toThrow(
+      /at Mach 1.2 the bow shock cannot stay attached to a tip of 45.0 deg half-angle; this needs a sharper or longer nose/,
+    );
+  });
 
   it('verified fitted drag: a grid that does not converge gives no value, only the reason', async () => {
     const cone: Body = {

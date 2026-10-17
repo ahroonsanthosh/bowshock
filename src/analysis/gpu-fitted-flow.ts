@@ -14,7 +14,7 @@ import { noseTipSlope } from '../geometry/nose';
 import { gridQuality, qualityFailures } from '../grid/quality';
 import type { StructuredGrid } from '../grid/structured';
 import { refineUntilVerified } from '../verification/grid-convergence';
-import { bluntFitProblem, sharpFitProblem, type FitProblem } from './fitted-flow';
+import { baseMach, bluntFitProblem, sharpFitProblem, type FitProblem } from './fitted-flow';
 import {
   GPU_NOISE,
   outflowMach,
@@ -145,7 +145,13 @@ export async function verifiedFittedDragGpu(
     const outflow = outflowMach(problem.configFor(fit.grid, []), fit.cell);
     if (!(outflow > 1)) {
       throw new InvalidCase(
-        `the flow leaves the grid at an axial Mach number of ${outflow.toFixed(3)}, where the outflow condition does not hold`,
+        `the flow leaves the grid at an axial Mach number of ${outflow.toFixed(3)}, where the outflow condition does not hold; a longer body behind the nose, or a higher Mach number, is needed`,
+      );
+    }
+    const base = baseMach(problem, fit.grid, fit.cell);
+    if (!(base > 1)) {
+      throw new InvalidCase(
+        `the flow at the end of the body is subsonic (axial Mach number ${base.toFixed(3)}), so what lies behind the base would reach the nose, and the base is not modelled; a longer body behind the nose, or a higher Mach number, is needed`,
       );
     }
     const report = {
