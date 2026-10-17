@@ -7,14 +7,16 @@
  *
  * Changes near the noise say little about the rate: a noisy small change
  * after a larger one gives a small rate, and a small estimate of what
- * remains, however slowly the value converges. So the rate is taken from
- * the last two successive changes both ten times the noise or more (from
- * the latest two only while there is no such pair or it does not show
- * convergence), and the test must pass on two successive checks.
- * Simulated with every value off by up to half the noise, geometric
- * convergence settles within 0.01 of the noise of its limit at a rate of
- * 0.1 per check (the fitted solver's), within 0.6 at 0.5 and 1.3 at 0.7;
- * no test on the values can do much better for slower convergence.
+ * remains, however slowly the value converges. So the rate is taken only
+ * from two successive changes both ten times the noise or more, the last
+ * such pair; while there is none (or it shows no convergence) no rate is
+ * known, and only the change itself is tested. Either way the test must
+ * pass on two successive checks. Simulated with every value off by up to
+ * half the noise, geometric convergence settles within 0.01 of the noise
+ * of its limit at a rate of 0.1 per check (the fitted solver's), within
+ * 0.6 at 0.5 and 1.3 at 0.7; a value that starts at its limit settles on
+ * the second check. No test on the values can do much better for slower
+ * convergence (within 4 times the noise at 0.9 when it starts within 5).
  */
 export class SettlingValue {
   private previous = Number.NaN;
@@ -33,11 +35,11 @@ export class SettlingValue {
     if (change > MEASURABLE * allowed && this.previousChange > MEASURABLE * allowed) {
       this.measuredRate = change / this.previousChange;
     }
-    const rate = this.measuredRate < 1 ? this.measuredRate : change / this.previousChange;
-    const remaining = rate < 1 ? (change * rate) / (1 - rate) : Infinity;
+    const rate = this.measuredRate;
+    const remaining = rate < 1 ? (change * rate) / (1 - rate) : 0;
     this.previousChange = change;
     this.previous = value;
-    const passed = change <= allowed && (change === 0 || remaining <= allowed);
+    const passed = change <= allowed && remaining <= allowed;
     this.passes = passed ? this.passes + 1 : 0;
     return this.passes >= 2;
   }
