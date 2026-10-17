@@ -266,11 +266,19 @@ supersonically (axial Mach number above 1 in the column of cells ahead
 of it), nothing behind it reaches the body, and a cylinder adds no
 pressure drag, so the fit always solves at least one caliber of cylinder
 (`sharpFitProblem`, `bluntFitProblem`) and checks that column
-(`baseMach`); where the flow there is subsonic the case is refused. A
-robustness scan found such a case: on a 26.6 deg cone at Mach 1.5 the
-conical surface flow is subsonic (Mach 0.96), and with 2 calibers of
-cylinder behind it the drag is 3.3% below the Taylor-Maccoll value of an
-endless cone, since the expansion at the shoulder reaches upstream.
+(`baseMach`); where the flow there is subsonic the case is refused.
+
+**The flow behind the tip must be supersonic.** The inflow plane at x0
+imposes all four states of the tip cone's conical flow, which holds only
+where the flow crosses it supersonically. A robustness scan of the
+page's inputs found tips where it does not: on a 3-caliber tangent ogive
+at Mach 1.2 (18.9 deg) the conical surface flow is at Mach 0.85, and on
+a 26.6 deg cone at Mach 1.5 at 0.96, where the drag with 2 calibers of
+cylinder came out 3.3% below the Taylor-Maccoll value of an endless
+cone, the shoulder reaching upstream. Such tips are now refused
+(`sharpFitProblem`), as the method of characteristics refuses them. On
+the convex noses of the page the flow speeds up along the body, so the
+check at the end of the body is a guard behind this one.
 
 ## Open
 

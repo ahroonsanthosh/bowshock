@@ -65,25 +65,21 @@ describe('fitted shock on the GPU', () => {
     expect(difference, `GPU ${drag}, CPU ${cpu.drag}`).toBeLessThan(GPU_NOISE);
   }, 900_000);
 
-  it('the page refuses a bare nose whose base flow is subsonic, keeping the reason', async () => {
-    // A 26.6 deg cone at Mach 1.5: subsonic conical surface flow, so the
-    // cylinder solved behind it would reach the nose.
+  it('the page refuses a tip whose flow is subsonic near the surface, with the reason', async () => {
+    // A 26.6 deg cone at Mach 1.5: subsonic conical surface flow.
     const cone: Body = {
       nose: { shape: { kind: 'conical' }, length: 1, baseRadius: 0.5 },
       cylinderLength: 0,
     };
-    const result = await verifiedFittedDragGpu(device, cone, {
-      mach: 1.5,
-      gamma,
-      tolerance: 0,
-      maxRefinement: 1,
-      floor: FITTED_DRAG_FLOOR,
-      orderTolerance: ORDER_TOLERANCE,
-    });
-    expect(result.kind).toBe('invalid');
-    if (result.kind === 'invalid') {
-      expect(result.refinement).toBe(1);
-      expect(result.reason).toMatch(/the flow at the end of the body is subsonic/);
-    }
+    await expect(
+      verifiedFittedDragGpu(device, cone, {
+        mach: 1.5,
+        gamma,
+        tolerance: 0,
+        maxRefinement: 1,
+        floor: FITTED_DRAG_FLOOR,
+        orderTolerance: ORDER_TOLERANCE,
+      }),
+    ).rejects.toThrow(/is subsonic near the surface/);
   }, 900_000);
 });

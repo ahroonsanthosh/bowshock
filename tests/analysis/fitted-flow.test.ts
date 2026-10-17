@@ -45,21 +45,18 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
   }, 600_000);
 
   it('a bare nose is solved with a cylinder behind it only where the flow leaves its base supersonically', () => {
-    // A 26.6 deg cone at Mach 1.5: the conical surface flow is subsonic
-    // (Mach 0.96), and what lies behind the base reaches the nose. A 20 deg
-    // cone at Mach 3 leaves its base at Mach 2.
-    const bare = (angle: number): Body => ({
-      nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(angle * deg), baseRadius: 0.5 },
+    // A 20 deg cone at Mach 3 leaves its base at Mach 2; the same grid
+    // with the flow slowed to Mach 0.42 everywhere is refused.
+    const cone: Body = {
+      nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
       cylinderLength: 0,
-    });
-    const measure = (angle: number, mach: number) => {
-      const problem = sharpFitProblem(bare(angle), { gamma, nj: 20, refinement: 1, mach });
-      const { fit } = fittedFlow(problem, 20_000);
-      expect(fit.converged).toBe(true);
-      return baseMach(problem, fit.grid, (i, j) => fit.solver.primitive(i, j));
     };
-    expect(measure(Math.atan(0.5) / deg, 1.5)).toBeLessThan(1);
-    expect(measure(20, 3)).toBeGreaterThan(1);
+    const problem = sharpFitProblem(cone, { gamma, nj: 20, refinement: 1, mach: 3 });
+    const { fit } = fittedFlow(problem, 20_000);
+    expect(fit.converged).toBe(true);
+    expect(baseMach(problem, fit.grid, (i, j) => fit.solver.primitive(i, j))).toBeGreaterThan(1);
+    const slow = { rho: 1, u: 0.5, v: 0, p: 1 };
+    expect(baseMach(problem, fit.grid, () => slow)).toBeLessThan(1);
   }, 600_000);
 
   it('the drag from the rows of cells at the wall alone is the drag from the whole grid', () => {
@@ -83,6 +80,20 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     expect(() => sharpFitProblem(cone, { gamma, nj: 20, refinement: 1, mach: 1.2 })).toThrow(
       /at Mach 1.2 the bow shock cannot stay attached to a tip of 45.0 deg half-angle; this needs a sharper or longer nose/,
     );
+  });
+
+  it('a tip whose conical flow is subsonic near the surface is refused', () => {
+    // The 3-caliber tangent ogive at Mach 1.2: an 18.9 deg tip cone, its
+    // surface flow at Mach 0.85.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    expect(() => sharpFitProblem(ogive, { gamma, nj: 20, refinement: 1, mach: 1.2 })).toThrow(
+      /at Mach 1.2 the flow over a tip of 18.9 deg half-angle is subsonic near the surface/,
+    );
+    // At Mach 1.5 it is supersonic, and the problem is built.
+    expect(() => sharpFitProblem(ogive, { gamma, nj: 20, refinement: 1, mach: 1.5 })).not.toThrow();
   });
 
   it('verified fitted drag: a grid that does not converge gives no value, only the reason', async () => {

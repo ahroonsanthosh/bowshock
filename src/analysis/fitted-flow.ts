@@ -259,6 +259,17 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     const [x, y] = midpoint([nodeIndex(first, 0, j), nodeIndex(first, 0, j + 1)]);
     return conical(Math.atan2(y!, x!));
   });
+  // The inflow plane imposes all four states, which holds only where the
+  // flow crosses it supersonically: near the surface of a blunt tip cone
+  // at a low Mach number it does not, and the downstream body would reach
+  // the tip (the method of characteristics refuses these cases too).
+  const slowest = Math.min(...inflow.map((w) => w.u / Math.sqrt((gamma * w.p) / w.rho)));
+  if (!(slowest > 1)) {
+    const degrees = ((tipAngle * 180) / Math.PI).toFixed(1);
+    throw new RangeError(
+      `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic near the surface (axial Mach number ${slowest.toFixed(2)}), which this solver does not handle; this needs a sharper or longer nose, or a higher Mach number`,
+    );
+  }
   // Ahead of x0 the nose is the tip cone, within (x0 / L)^2.
   const tipDrag =
     taylorMaccoll(mach, tipAngle, gamma).surfacePressureCoefficient *
