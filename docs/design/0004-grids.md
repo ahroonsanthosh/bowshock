@@ -49,7 +49,7 @@ separated them and the boundary cells were disturbed by 1.75e-5; with 2.9
 cells, by 1.2e-6. Every validation case checks that the cells along the
 outer boundary are undisturbed (pressure within 1e-5 of the free stream),
 since the boundary imposes the free stream; on the cases below the
-disturbance is 2e-6 or less on the coarsest grids, and so it is on seven
+disturbance is 4e-6 or less on the coarsest grids, and so it is on seven
 bodies of 12 to 30 calibers at Mach 2 to 5.
 
 **Spacing.** Along each vertical line of height h, the nodes are graded
@@ -213,18 +213,19 @@ first comparison with measurements on a generated grid:
   shrinks with refinement. On a cone with the ogive's tip angle the solver
   holds the exact value within 0.0005 from x/d = 0.22 on, on all three
   grids, so the tip does not disturb the solution downstream.
-- Against the exact inviscid solution, from an independent method of
-  characteristics (`src/validation/characteristics.ts`, proven on cones
-  against Taylor-Maccoll at second order, converged here to 2e-5 in Cp):
+- Against an independent inviscid reference solution, a method of
+  characteristics (`src/validation/characteristics.ts`, checked on cones
+  against Taylor-Maccoll, converging at second order, converged here to
+  2e-5 in Cp):
   within 3e-4 at every station on the 40-cell grid; on the 80-cell grid
   within 4e-4 at x/d = 0.22, nearest the tip, and 1e-4 elsewhere. The
   solver is accurate on this ogive.
 
-  | x/d                    | 0.22   | 0.89   | 1.61   | 2.95    | 4.06    | 6.28    | 8.06    |
-  | ---------------------- | ------ | ------ | ------ | ------- | ------- | ------- | ------- |
-  | Characteristics, exact | 0.2595 | 0.1555 | 0.0646 | -0.0575 | -0.0320 | -0.0112 | -0.0059 |
-  | Euler, nj = 80         | 0.2591 | 0.1555 | 0.0647 | -0.0576 | -0.0320 | -0.0111 | -0.0059 |
-  | Measured (TN 3716)     | 0.26   | 0.165  | 0.074  | -0.036  | -0.017  | -0.001  | 0.006   |
+  | x/d                | 0.22   | 0.89   | 1.61   | 2.95    | 4.06    | 6.28    | 8.06    |
+  | ------------------ | ------ | ------ | ------ | ------- | ------- | ------- | ------- |
+  | Characteristics    | 0.2595 | 0.1555 | 0.0646 | -0.0575 | -0.0320 | -0.0112 | -0.0059 |
+  | Euler, nj = 80     | 0.2591 | 0.1555 | 0.0647 | -0.0576 | -0.0320 | -0.0111 | -0.0059 |
+  | Measured (TN 3716) | 0.26   | 0.165  | 0.074  | -0.036  | -0.017  | -0.001  | 0.006   |
 
 - So the differences from the measurements (stated uncertainty 0.005),
   lower at every unambiguous station by 0.002 to 0.022 and largest at the
@@ -270,7 +271,8 @@ first comparison with measurements on a generated grid:
   Accuracy therefore comes from refinement and extrapolation on verified
   nested grids (0005), as in published cone verification with a
   first-order scheme. Fitting the bow shock as the outer boundary would
-  remove the error at its source; it is a larger change, not yet made.
+  remove the error at its source; it is a larger change, since done
+  (0006).
 
 - **Blunt noses: the stagnation region.** The C grid above is in place,
   and the unit-invariant shared reconstruction (0003) converges on it to
@@ -297,8 +299,9 @@ first comparison with measurements on a generated grid:
   error. So no flux choice makes these results verifiable: the error of a
   captured shock on the stagnation line has to be removed at its source,
   by fitting the bow shock (or aligning a grid face with it), which is the
-  next step. Until then blunt bodies are not offered for results, and the
-  sharp-nose generator still refuses them.
+  next step (since done: 0006, which brings the stagnation pressure within
+  0.008% of the pitot value on nj = 20). Blunt bodies are not yet offered
+  on the drag page, and the sharp-nose generator refuses them.
 
 - **Haack-series and other noses with unbounded tip curvature** (see the
   C grid's refusals above).

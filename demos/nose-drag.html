@@ -110,10 +110,10 @@
     <main>
       <h1>Nose wave drag</h1>
       <p>
-        The pressure drag of a rocket's nose and body ahead of the base, in supersonic flow at zero
-        incidence, with its numerical error measured: each case is solved on successively finer
-        grids, and the error band is measured from how the drag changes between them. Needs a
-        browser with WebGPU.
+        The inviscid pressure (wave) drag of a rocket's nose and body ahead of the base, in
+        supersonic flow at zero incidence: not the rocket's total drag, which also has skin
+        friction, base drag and fins. Each case is solved on successively finer grids, and its error
+        band is measured from how the drag changes between them. Needs a browser with WebGPU.
         <a href="../index.html">Back to bowshock</a>
       </p>
       <form class="controls" id="form">
@@ -145,8 +145,8 @@
         <div class="field">
           <label for="finest">Finest grid</label>
           <select id="finest">
-            <option value="8" selected>160 or more cells across</option>
-            <option value="16">320 or more cells across</option>
+            <option value="8" selected>160 cells across</option>
+            <option value="16">320 cells across</option>
           </select>
         </div>
         <button id="run" type="submit">Run</button>
@@ -163,7 +163,7 @@
           <tr>
             <th>Cells</th>
             <th>Iterations</th>
-            <th>Cd</th>
+            <th>Wave Cd (this grid)</th>
             <th>Time</th>
           </tr>
         </thead>
@@ -171,13 +171,21 @@
       </table>
       <p class="scope">
         What this is: the inviscid pressure (wave) drag coefficient of the nose and the body ahead
-        of the base, on the body's cross-sectional area, for sharp noses with an attached shock. It
-        excludes skin friction, base drag and fins, so it is not a rocket's total drag. The bow
-        shock is fitted: it is the outer boundary of the grid, with the exact jump conditions across
-        it, so the error falls as the square of the cell size. Validated against exact solutions on
-        cones (Taylor-Maccoll) and ogives (method of characteristics): extrapolated from three grids
-        the drag lies within 4e-5 of the exact value. The error band also contains an allowance of
-        7e-5 of the value for an error the grid family cannot show.
+        of the base, on the body's cross-sectional area, at zero incidence. It excludes skin
+        friction, base drag and fins, so it is not a rocket's total drag. The bow shock is fitted:
+        it is the outer boundary of the grid, with the exact jump conditions across it, and the
+        error falls at close to second order in the cell size (observed orders 1.6 to 2.4). The
+        value shown is the finest grid's; its band is measured from the grids and includes an
+        allowance of 7e-5 of the value for an error the grid family cannot show. Checked against
+        exact or converged reference solutions on families of cones (Taylor-Maccoll) and ogives (a
+        method of characteristics) at Mach 1.3 to 5: there every band measured contains the error of
+        the value shown, and the value extrapolated from three grids lies within 3.4e-5 of the
+        reference (design record 0006 in the repository). Other shapes, lengths and Mach numbers are
+        computed the same way but have not been compared with a reference. Sharp noses only for now.
+        Refused, with the reason: tips whose shock detaches; tips whose flow crosses the solver's
+        starting plane, just behind the tip, at an axial Mach number below 1 (at Mach 1.2 to 1.3,
+        most noses of 3 calibers or shorter); tips steeper than 30 deg (a limit of the present
+        grids, under review); bodies whose flow at their end is subsonic.
       </p>
     </main>
     <script type="module" src="/src/app/nose-drag.ts"></script>

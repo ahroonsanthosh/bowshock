@@ -28,8 +28,10 @@ inside is smooth.
 
 ## Method
 
-After G. Moretti and M. J. Abbett, AIAA J. 4 (1966) 2136, in a finite-volume
-form (M. D. Salas, AIAA J. 14 (1976) 583):
+After the shock-fitting method of G. Moretti and M. J. Abbett, AIAA J. 4
+(1966) 2136, and M. D. Salas, AIAA J. 14 (1976) 583 (the citations
+confirmed, the papers not read: docs/validation/sources.md), here in a
+finite-volume form:
 
 - The shock is a curve of nodes, each on a fixed straight grid line from
   the body (`gridOnLines`, `src/grid/blunt-grid.ts`).
@@ -47,9 +49,10 @@ form (M. D. Salas, AIAA J. 14 (1976) 583):
   it. After each move the grid is rebuilt and the flow interpolated
   along the lines.
 
-At convergence W = 0 on every face (here to 1e-12 of the free-stream
-sound speed) and the motion terms vanish, so the steady state does not
-depend on the path to it.
+At convergence W = 0 on every face (to 1e-12 of the free-stream sound
+speed on the CPU; on the GPU, whose arithmetic is 32-bit, to 3e-5, with
+the drag settled to the GPU's noise) and the motion terms vanish, so the
+steady state does not depend on the path to it.
 
 Three errors in the first implementation, each found by measurement and
 review, are worth recording:
@@ -80,7 +83,7 @@ pitot value, every grid converged to round-off:
 | 3    | +0.0044% |          |          |          | +0.0008% |
 
 Against capture on the same grids (+9.7%, -0.56%, +4.1%, -0.25% at
-Mach 2), the error is over a thousand times smaller and changes smoothly
+Mach 2), the error is 50 to 1300 times smaller and changes smoothly
 with the grid: the dependence on the shock's position in its cell is
 gone. The standoff converges with it: 0.34955 and 0.34937 body radii at
 Mach 2 (nj = 20 and 40), 0.21504 and 0.21495 at Mach 3.
@@ -170,7 +173,8 @@ in 32-bit, with the shock moved every step:
   check the heights are read back and become the new base.
 - After each move the flow is interpolated along the columns as on the
   CPU (`remapAlongLines`), within 2.0e-7 of the CPU's remap.
-- At each check (every 500 steps on the base grid) the drag is evaluated
+- At each check (every 250 steps on the base grid, times the
+  refinement; the measurements below used 500) the drag is evaluated
   from the flow in double precision; the fit has converged when the drag
   has settled to the GPU's noise (2e-6) and no face of the shock moves
   faster than 3e-5 of the sound speed.
@@ -204,6 +208,51 @@ TN 3716 ogive at Mach 1.98 on the GPU, the grids of 20 and 40 cells
 across converge after 1750 and 2000 steps, against 2500 and 4000 started
 afresh and checked every 500, and the drag of the finer grid is within
 3.9e-7 of the fresh start's, inside the GPU's noise.
+
+The grids of a blunt nose nest the same way (`bluntFitFamily` in
+`src/analysis/fitted-flow.ts`): every grid of the family starts from one
+captured solution on the base grid, and each line takes the node
+fractions of that solution's shock height, interpolated along the body
+between the base grid's lines. Taking each grid's fractions from its
+own captured solution, as before, gave fractions that differ from grid
+to grid, so the grids did not nest and each needed a captured start of
+its own, 3000 steps times the refinement on the CPU. The page's solver
+(`verifiedFittedDragGpu`; the page's form offers no blunt nose yet)
+computes the one captured start on the CPU in double precision, in
+chunks that return to the browser (`bluntStartInChunks`, the same start
+however it is chunked), so its problems are exactly the CPU's.
+
+A grid started from the converged one before may begin so close to its
+limit that its drag never changes by ten times the noise, and so shows
+no rate of convergence of its own; the stopping test (`SettlingValue`,
+`src/verification/iterative-convergence.ts`) then tested the change
+alone, and a review simulated a start 100 times the GPU's noise away,
+converging at 0.97 per check, being accepted 45 times the noise from its
+limit, biased towards the coarser grid's value. Each grid now takes the
+rate measured on the grids before it (the checks scale with the grid, so
+the rate per check carries over), the largest rate measured from pairs
+of changes is used rather than the last, and what remains is estimated
+from the change over the checks in which the error halves. Simulated,
+fresh and warm starts at rates from 0.1 to 0.97 per check then settle
+within 1.7 times the noise of their limits, or not at all within the 120
+checks; at the fitted solver's usual rate, about 0.1, nothing changes.
+
+Two failures of the GPU raise no exception in WebGPU: a dispatch of more
+workgroups than the device allows in one dimension (65535 for most; at
+64 cells or faces each, grids of more than 4.19 million faces, which
+the 320-cell setting reaches on long bodies at Mach 5), and a buffer the
+device cannot allocate. In both none of the work runs, and the flow read
+back is the one uploaded: unchanged between checks, so it would read as
+converged. Grids too large for one dispatch are now refused before any
+work, with the advice to choose a coarser finest grid; allocation errors
+are caught as the engines are created; and every batch of steps is
+checked to have run (the GPU counts its steps), so any work the GPU did
+not do stops the run. A finer grid that is too large for the GPU, or
+whose fit does not converge, leaves the result of the grids before it,
+with the reason shown: the result a coarser finest grid would have
+given. A case refused on any grid (the quality gates, a subsonic
+outflow or base) stays refused, since it puts the coarser grids in doubt
+too.
 
 ## The floor for fitted drag
 
@@ -290,17 +339,27 @@ pressure drag, so the fit always solves at least one caliber of cylinder
 (`sharpFitProblem`, `bluntFitProblem`) and checks that column
 (`baseMach`); where the flow there is subsonic the case is refused.
 
-**The flow behind the tip must be supersonic.** The inflow plane at x0
-imposes all four states of the tip cone's conical flow, which holds only
-where the flow crosses it supersonically. A robustness scan of the
-page's inputs found tips where it does not: on a 3-caliber tangent ogive
-at Mach 1.2 (18.9 deg) the conical surface flow is at Mach 0.85, and on
-a 26.6 deg cone at Mach 1.5 at 0.96, where the drag with 2 calibers of
-cylinder came out 3.3% below the Taylor-Maccoll value of an endless
-cone, the shoulder reaching upstream. Such tips are now refused
-(`sharpFitProblem`), as the method of characteristics refuses them. On
-the convex noses of the page the flow speeds up along the body, so the
-check at the end of the body is a guard behind this one.
+**The flow behind the tip must cross the starting plane supersonically.**
+The inflow plane at x0, normal to the axis, imposes all four states of
+the tip cone's conical flow, which holds only where the flow crosses it
+supersonically: where its axial Mach number exceeds 1. A robustness scan
+of the page's inputs found tips where it does not: on a 3-caliber
+tangent ogive at Mach 1.2 (18.9 deg) the conical surface flow is at Mach
+0.85, and on a 26.6 deg cone at Mach 1.5 at 0.96, where the drag with 2
+calibers of cylinder came out 3.3% below the Taylor-Maccoll value of an
+endless cone, the shoulder reaching upstream. Such tips are refused
+(`sharpFitProblem`), with the axial Mach number tested on the tip cone's
+surface, where it is least, so that the test does not depend on the
+grid (it was first tested at the inflow faces' midpoints, which let a
+cone whose surface value is 0.999 through on the coarser grids and
+refused it on the finest). The test also refuses tips whose surface
+flow is supersonic but whose axial component is not, such as a 24 deg
+cone at Mach 1.5 (surface Mach 1.04, axial 0.95); the message says
+which. The method of characteristics refuses only the subset whose
+surface flow is subsonic. On the convex noses of the page the flow
+speeds up along the body, so the check at the end of the body is a
+guard behind this one. Serving these tips, measured against references
+on their own families, is in progress.
 
 ## Open
 

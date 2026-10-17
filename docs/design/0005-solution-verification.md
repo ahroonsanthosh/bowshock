@@ -9,7 +9,8 @@
 
 ## Why
 
-No fixed grid is fine enough everywhere. At Mach 2 to 5 the default grid
+No fixed grid is fine enough everywhere. At Mach 2 to 3.12 (the cases
+measured) the default grid
 of 20 cells across gives cone pressures within 0.3% of the exact value,
 but on a 24 deg cone at Mach 1.41, whose conical flow is just subsonic at
 the surface, the pressure ahead of the shoulder differs from the conical
@@ -135,10 +136,10 @@ An audit agent ran the whole procedure (CPU, captured shock, nj = 20 to
 seven cases got a band, and on the ogive at Mach 4 the finest error is
 larger than the floor: had its values happened to look converged, a band
 would have missed. With the shock captured, most of the page's inputs
-would end "not verified"; this is why the page moves to the fitted shock
-(0006), whose families measured so far converge at second order and
-extrapolate to within 2.4e-6 of the exact values (cones at low Mach
-numbers are still being measured).
+would end "not verified"; this is why the page moved to the fitted
+shock (0006), whose families converge at observed orders of 1.6 to 2.4
+and, extrapolated at second order at most, lie within 3.4e-5 of their
+exact or reference values.
 
 ## Precision
 
@@ -159,6 +160,12 @@ bands are still given only where they contain the true error
 
 ## Forebody drag (`src/analysis/verified-drag.ts`)
 
+This was the drag page's procedure, with the shock captured, until
+2026-10-17; the page now runs `verifiedFittedDragGpu`, with the shock
+fitted (0006), which checks each fit's convergence, the quality gates on
+the fitted grid, and the axial Mach number at the outflow and at the end
+of the body asked for, and has no outer boundary to check.
+
 For a rocket body the quantity is the forebody pressure drag coefficient.
 Each grid of the family is solved until the drag itself stops changing
 by more than the engine's noise over a batch of steps; a grid that never
@@ -167,7 +174,7 @@ the flow at the outflow plane must leave supersonic, where the
 zero-gradient outflow condition holds, and the cells along the outer
 boundary must still hold the free stream it imposes (density, pressure and
 velocity within 1e-5): on the validated sharp-nose cases they differ from
-it by 3.5e-6 or less on the coarsest grids, by 1e-7 or less on the next,
+it by 4e-6 or less on the coarsest grids, by 1e-7 or less on the next,
 while a bow shock reaching the boundary disturbs them by order one.
 Otherwise the case is reported as invalid, with the reason. The nose wave
 drag page asks for no tolerance: every run refines to the finest grid
