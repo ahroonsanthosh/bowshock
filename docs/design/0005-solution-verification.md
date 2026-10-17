@@ -84,13 +84,13 @@ given only where it contains the true error.
 Measured with the unit-invariant shared reconstruction (the default).
 Forebody pressure drag coefficient, error of each grid against the exact
 value (Taylor-Maccoll for the cones, the method of characteristics for the
-ogive of NACA TN 3716, 3 calibers at Mach 3):
+ogive of NACA TN 3716, 3 calibers at Mach 1.98):
 
-| Case         | nj = 20 | nj = 40 | nj = 80 | nj = 160 | Outcome                        |
-| ------------ | ------- | ------- | ------- | -------- | ------------------------------ |
-| M 2, 15 deg  | +0.186% | +0.003% | -0.023% | -0.018%  | oscillatory, band 5.3e-5       |
-| M 3, 20 deg  | -0.395% | -0.259% | -0.151% | -0.081%  | monotone, orders 0.33 and 0.63 |
-| M 3, TN 3716 | +1.210% | +0.174% | -0.025% | -0.042%  | unresolved: orders 2.38, 3.58  |
+| Case            | nj = 20 | nj = 40 | nj = 80 | nj = 160 | Outcome                        |
+| --------------- | ------- | ------- | ------- | -------- | ------------------------------ |
+| M 2, 15 deg     | +0.186% | +0.003% | -0.023% | -0.018%  | oscillatory, band 5.3e-5       |
+| M 3, 20 deg     | -0.395% | -0.259% | -0.151% | -0.081%  | monotone, orders 0.33 and 0.63 |
+| M 1.98, TN 3716 | +1.210% | +0.174% | -0.025% | -0.042%  | unresolved: orders 2.38, 3.58  |
 
 The cone bands contain the true errors (5.3e-5 against 3.7e-5, 4.5e-4
 against 2.3e-4). The ogive's values converge fast, but to a limit about

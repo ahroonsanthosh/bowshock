@@ -60,7 +60,7 @@ Validated so far, each with its tests and recorded accuracy:
   measured error band, plus a floor of 0.1% for the error refinement does
   not remove; where no band can be measured the value is shown as not
   verified. On the drag families checked against exact solutions (cones
-  at Mach 2 and 3, an ogive at Mach 3) every band contains the true error.
+  at Mach 2 and 3, an ogive at Mach 1.98) every band contains the true error.
 
 Not yet: viscous flow, blunt noses (a grid exists; the scheme near the
 stagnation point is being fixed), fins and the base. Until those pass
