@@ -84,7 +84,9 @@ round-off on such grids, down to Mach 1.1 (tested in
 `tests/engine-cpu/body-validation.test.ts`). With the strongest
 stretching, the size-ratio gate needs about 18 cells across; 20 is the
 smallest grid used. Since vertical grid lines meet the nose at 90 deg minus
-the tip half-angle, tips steeper than 30 deg are refused with that reason.
+the tip half-angle, tips steeper than 30 deg are refused with that reason
+(on the grids of the fitted shock, measured separately, the limit is
+50 deg and tips up to about 40 deg are served: 0006).
 
 ## Topology (v2): C grid for blunt noses
 
