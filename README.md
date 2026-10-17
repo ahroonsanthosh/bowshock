@@ -74,11 +74,11 @@ Validated so far, each with its tests and recorded accuracy:
   [nose wave drag page](demos/nose-drag.html): each result is solved
   with the bow shock fitted on nested grids up to 160 or more cells
   across and reported with its measured error band, plus a floor of
-  5e-5 of the value for the error that refinement does not remove; where
+  7e-5 of the value for the error that refinement does not remove; where
   no band can be measured the value is shown as not verified. On the
   families measured against exact solutions (cones at Mach 1.5 to 5,
   ogives at Mach 1.5 to 4) the error falls as the square of the cell
-  size, and extrapolated from three grids it lies within 2e-5 of the
+  size, and extrapolated from three grids it lies within 4e-5 of the
   exact value; a cone at Mach 1.3 is still being measured.
 
 Not yet: viscous flow, blunt noses on the drag page (solved with the

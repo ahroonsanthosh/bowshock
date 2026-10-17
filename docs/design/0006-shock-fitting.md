@@ -218,12 +218,18 @@ ogive at Mach 1.5 on three grids gives +0.415%, +0.098%, +0.023%, order
 second order. Every finest-grid band measured contains its error.
 
 The procedure's band extrapolates at second order at most, so the error
-it can miss is the second-order extrapolation's: at most 2.0e-5 of the
-value on the families that have settled, against 4.6e-4 with the shock
-captured. The floor for fitted drag (`FITTED_DRAG_FLOOR`) is set at 5e-5,
-about twice that. The cone at Mach 1.3, 5 deg, whose order has not
-settled on nj = 80, is being measured on nj = 160; if it settles more
-than 2.5e-5 from the exact value the floor must rise.
+it can miss is that of its own extrapolation, at an order capped at 2.
+On the families that have settled it lies at most 3.4e-5 of the value
+from the exact one, against 4.6e-4 with the shock captured: on the
+5-caliber tangent ogive at Mach 2 (+0.541%, +0.125%, +0.0287% of the
+exact drag on nj = 20, 40, 80, observed order 2.11), whose extrapolation
+at its observed order is within 2.5e-6. The other ogives on three grids:
+3 calibers at Mach 2, +0.269%, +0.0646%, +0.0154% (order 2.05, capped
+extrapolation 9.7e-6 off), and at Mach 3, +0.128%, +0.0316%, +0.0076%
+(order 2.02, 3.3e-6). The floor for fitted drag (`FITTED_DRAG_FLOOR`) is
+set at 7e-5, about twice the largest. The cone at Mach 1.3, 5 deg, whose
+order has not settled on nj = 80, is being measured on nj = 160; if it
+settles farther from the exact value the floor must rise.
 
 **The domain extends at least one caliber past the nose.** With the
 zero-gradient outflow at the base of a bare nose, the cells next to it
