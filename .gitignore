@@ -8,3 +8,5 @@ test-results/
 # Scratch experiments (never committed)
 tests/tmp*/
 tests/gpu/tmp*
+# Agent worktrees (local only)
+.claude/worktrees/
