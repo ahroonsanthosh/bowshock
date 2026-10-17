@@ -59,7 +59,7 @@ export interface ConvergenceEstimateOptions {
    * Uncertainty of each value from iterative convergence and arithmetic,
    * relative to the value: about 1e-12 for the CPU engine converged to
    * residuals of 1e-13; for the GPU engine, whose 32-bit solutions give
-   * forebody drag within 1.1e-6 of the CPU's on cones, 1e-6.
+   * forebody drag within about 1.3e-6 of the CPU's up to Mach 5, 2e-6.
    */
   readonly noise: number;
 }

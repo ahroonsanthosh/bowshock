@@ -39,6 +39,12 @@ export interface GridLine {
   readonly dy: number;
   /** Distance along the line from the body to the outer boundary. */
   readonly h: number;
+  /**
+   * Fractions of the height at which the nodes lie, 0 to 1 (nj + 1 of
+   * them), if fixed (see withFixedFractions); otherwise the stretching is
+   * recomputed for each height.
+   */
+  readonly fractions?: readonly number[];
 }
 
 export interface BluntGrid {
@@ -304,6 +310,32 @@ function lineStrength(h: number, radius: number): number {
   return Math.min(Math.log1p(h / radius), 2 * Math.log(QUALITY_LIMITS.maxAspectRatio));
 }
 
+/** Fraction of the height of node j of nj along a line of stretching strength b. */
+function stretchedFraction(b: number, j: number, nj: number): number {
+  return Math.expm1((b * j) / nj) / Math.expm1(b);
+}
+
+/**
+ * The lines with their node fractions fixed at those of their current
+ * heights: as the outer boundary moves, each node keeps its fraction of
+ * the line's height. A fitted shock moves the boundary in small steps;
+ * with fixed fractions every metric difference splits into differences
+ * fixed once and small changes of height (docs/design/0006-shock-fitting.md).
+ */
+export function withFixedFractions(
+  lines: readonly GridLine[],
+  nj: number,
+  baseRadius: number,
+): GridLine[] {
+  return lines.map((l) => {
+    const b = lineStrength(l.h, baseRadius);
+    return {
+      ...l,
+      fractions: Array.from({ length: nj + 1 }, (_, j) => stretchedFraction(b, j, nj)),
+    };
+  });
+}
+
 /**
  * The grid of nj cells across on the given lines, each cut at its own
  * height (the distance to the outer boundary): the nodes of the C grid for
@@ -322,8 +354,7 @@ export function gridOnLines(
   const grid = gridFromFunction(lines.length - 1, nj, (i, j) => {
     const l = lines[i]!;
     const h = heights[i]!;
-    const b = lineStrength(h, baseRadius);
-    const d = (h * Math.expm1((b * j) / nj)) / Math.expm1(b);
+    const d = h * (l.fractions?.[j] ?? stretchedFraction(lineStrength(h, baseRadius), j, nj));
     return [l.x + d * l.dx, l.y + d * l.dy];
   });
   const failures = gated ? qualityFailures(gridQuality(grid)) : [];

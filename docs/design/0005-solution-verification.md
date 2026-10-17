@@ -108,12 +108,16 @@ Each value carries an uncertainty from iterative convergence and
 arithmetic, and a change between grids gives an order only when it is ten
 times that. For the CPU engine, converged to residuals of 1e-13, it is
 about 1e-12 of the value. The GPU engine computes in 32-bit and converges
-only to about 1e-5 of the initial residual, yet its forebody drag on cones
-(Mach 1.3 to 3, nj = 20 and 40, wall fluxes evaluated from its state in
-double precision) is within 1.1e-6 of the CPU's; its noise is taken as
-1e-6. With every value of the four families perturbed by up to 1.1e-6, in
-fifty patterns each, bands are still given only where they contain the
-true error (`tests/verification/grid-convergence.test.ts`).
+only to about 1e-5 of the initial residual, yet its forebody drag (cones
+and ogives at Mach 1.3 to 5, nj = 20 and 40, wall fluxes evaluated from
+its state in double precision) is within 1.1e-6 of the CPU's. At Mach 5
+it wanders between convergence checks by up to 1.3e-6: pressure is
+recovered from a total energy that kinetic energy dominates (8 times the
+internal energy at Mach 5), so its 32-bit rounding grows with M^2. The
+noise is taken as 2e-6, the bound the GPU test enforces. With every value
+of the four families perturbed by up to 2e-6, in fifty patterns each,
+bands are still given only where they contain the true error
+(`tests/verification/grid-convergence.test.ts`).
 
 ## Forebody drag (`src/analysis/verified-drag.ts`)
 

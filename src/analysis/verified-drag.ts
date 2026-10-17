@@ -71,10 +71,13 @@ export type VerifiedDrag =
 
 /**
  * Noise of the GPU engine's drag, relative: its 32-bit solutions give
- * forebody drag within 1.1e-6 of the CPU engine's on cones
- * (docs/design/0005-solution-verification.md).
+ * forebody drag within 1.1e-6 of the CPU engine's on cones and ogives at
+ * Mach 1.3 to 5, but at Mach 5 the drag wanders between convergence
+ * checks by up to 1.3e-6, from the rounding of pressure recovered from a
+ * total energy dominated by kinetic energy (growing with M^2); 2e-6 covers
+ * the page's range (docs/design/0005-solution-verification.md).
  */
-export const GPU_NOISE = 1e-6;
+export const GPU_NOISE = 2e-6;
 /** Noise of the CPU engine's drag, converged to residuals of 1e-13. */
 export const CPU_NOISE = 1e-12;
 /**
