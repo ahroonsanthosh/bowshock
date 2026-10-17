@@ -141,6 +141,15 @@ export interface ShockFitOptions {
    */
   readonly residualTolerance: number;
   readonly maxIterations: number;
+  /**
+   * Flow steps between moves of the shock (default 1). The shock boundary
+   * is updated at every step, but the shock moves one step's worth, W dt,
+   * only once per this many steps, so it settles that many times slower;
+   * the converged state does not depend on it (the shock stops moving
+   * there), and the grid is rebuilt less often. Moving it by the steps'
+   * sum instead, or holding the boundary between moves, is unstable.
+   */
+  readonly stepsPerMove?: number;
   /** Called every so often with the progress. */
   readonly onProgress?: (iterations: number, maxSpeed: number, residual: number) => void;
 }
@@ -165,6 +174,7 @@ export function fitShock(options: ShockFitOptions): ShockFit {
   const gamma = options.configFor(options.gridFor(options.heights, false), []).gamma;
   const aFree = Math.sqrt((gamma * free.p) / free.rho);
   const ni = lines.length - 1;
+  const stepsPerMove = options.stepsPerMove ?? 1;
 
   const along = (g: StructuredGrid, i: number, j: number) => {
     const l = lines[i]!;
@@ -261,9 +271,16 @@ export function fitShock(options: ShockFitOptions): ShockFit {
   let converged = false;
 
   while (iterations < options.maxIterations) {
-    const { states, speeds, metrics } = applyBoundary(solver);
+    // The shock boundary follows the flow at every step; the shock itself
+    // moves once every stepsPerMove steps, by the last step's speed.
+    let boundary = applyBoundary(solver);
+    for (let step = 1; step < stepsPerMove; step++) {
+      solver.iterate(1);
+      boundary = applyBoundary(solver);
+    }
+    const { states, speeds, metrics } = boundary;
     solver.iterate(1);
-    iterations += 1;
+    iterations += stepsPerMove;
 
     maxSpeed = 0;
     const next = [...heights];
@@ -302,7 +319,7 @@ export function fitShock(options: ShockFitOptions): ShockFit {
     moved.setCellPrimitives(remap(solver, oldGrid, grid));
     solver = moved;
 
-    if (iterations % CHECK_EVERY === 0 || maxSpeed < options.speedTolerance) {
+    if (iterations % CHECK_EVERY < stepsPerMove || maxSpeed < options.speedTolerance) {
       applyBoundary(solver);
       residual = solver.densityResidualNorm() / initialResidual;
       options.onProgress?.(iterations, maxSpeed, residual);

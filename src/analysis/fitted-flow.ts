@@ -19,7 +19,9 @@ import type { Primitive2D } from '../scheme/flux';
 import { capturedShockHeights, fitShock, type ShockFit } from '../solver/shock-fitting';
 import { normalShock } from '../validation/gas-dynamics';
 import { coneFlowField, taylorMaccoll } from '../validation/taylor-maccoll';
+import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
 import { forebodyPressureDrag } from './forces';
+import { CPU_NOISE, ORDER_TOLERANCE } from './verified-drag';
 
 export interface FittedFlowOptions {
   readonly mach: number;
@@ -234,3 +236,83 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
 
 /** Steps of the captured solution that places the first shock, per refinement. */
 const CAPTURED_START_STEPS = 3000;
+
+export interface VerifiedFittedDragOptions {
+  readonly mach: number;
+  readonly gamma: number;
+  /** Finest refinement of the 20-cell base grid (1, 2, 4, ...). */
+  readonly maxRefinement: number;
+  /** Systematic error that does not shrink with the grid, relative (measured: 0006). */
+  readonly floor: number;
+  /** Largest acceptable band, absolute; 0 refines to the finest grid. */
+  readonly tolerance: number;
+  /** Fit iterations allowed per grid, times its refinement. */
+  readonly iterationsPerRefinement: number;
+  readonly onLevel?: (refinement: number, drag: number, fit: ShockFit) => void;
+}
+
+export type VerifiedFittedDrag =
+  | (VerifiedValue & { readonly kind: 'solved' })
+  | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string };
+
+/** Base grid cells across, as for the captured-shock grids. */
+const FITTED_BASE_NJ = 20;
+
+/**
+ * The forebody pressure drag with the bow shock fitted, on grids refined
+ * by 2 up to the finest allowed, with its measured error band: the
+ * procedure of src/analysis/verified-drag.ts with the CPU fitted-shock
+ * solver. A grid whose fit does not converge stops the run without a value.
+ */
+export async function verifiedFittedDrag(
+  body: Body,
+  options: VerifiedFittedDragOptions,
+): Promise<VerifiedFittedDrag> {
+  const blunt = !Number.isFinite(noseTipSlope(body.nose));
+  try {
+    const result = await refineUntilVerified(
+      (refinement) => {
+        const flowOptions = {
+          mach: options.mach,
+          gamma: options.gamma,
+          nj: FITTED_BASE_NJ,
+          refinement,
+          maxIterations: options.iterationsPerRefinement * refinement,
+        };
+        const { fit, drag } = blunt
+          ? bluntFittedFlow(body, flowOptions)
+          : sharpFittedFlow(body, flowOptions);
+        if (!fit.converged) {
+          throw new FitNotConverged(
+            refinement,
+            `the fit stopped after ${fit.iterations} iterations with the shock moving at ${fit.maxSpeed.toExponential(1)} of the sound speed and a residual of ${fit.residual.toExponential(1)}`,
+          );
+        }
+        options.onLevel?.(refinement, drag, fit);
+        return drag;
+      },
+      {
+        orderTolerance: ORDER_TOLERANCE,
+        noise: CPU_NOISE,
+        floor: options.floor,
+        tolerance: options.tolerance,
+        maxRefinement: options.maxRefinement,
+      },
+    );
+    return { ...result, kind: 'solved' };
+  } catch (error) {
+    if (error instanceof FitNotConverged) {
+      return { kind: 'not-converged', refinement: error.refinement, reason: error.message };
+    }
+    throw error;
+  }
+}
+
+class FitNotConverged extends Error {
+  constructor(
+    readonly refinement: number,
+    reason: string,
+  ) {
+    super(reason);
+  }
+}

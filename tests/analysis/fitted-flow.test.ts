@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { bluntFittedFlow, sharpFittedFlow } from '../../src/analysis/fitted-flow';
+import {
+  bluntFittedFlow,
+  sharpFittedFlow,
+  verifiedFittedDrag,
+} from '../../src/analysis/fitted-flow';
 import type { Body } from '../../src/geometry/body';
 import { normalShock, stagnationPressureRatio } from '../../src/validation/gas-dynamics';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
@@ -34,5 +38,25 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     const face = fit.solver.boundaryFluxes('jMin')[0]!;
     const p = face.flux[1] * face.nx + face.flux[2] * face.ny;
     expect(Math.abs(p / pitot - 1)).toBeLessThan(1e-4);
+  }, 600_000);
+
+  it('verified fitted drag: a grid that does not converge gives no value, only the reason', async () => {
+    const cone: Body = {
+      nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const result = await verifiedFittedDrag(cone, {
+      mach: 3,
+      gamma,
+      maxRefinement: 8,
+      floor: 0,
+      tolerance: 0,
+      iterationsPerRefinement: 10,
+    });
+    expect(result.kind).toBe('not-converged');
+    if (result.kind === 'not-converged') {
+      expect(result.refinement).toBe(1);
+      expect(result.reason).toMatch(/the fit stopped after 10 iterations/);
+    }
   }, 600_000);
 });
