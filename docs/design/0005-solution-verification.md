@@ -99,7 +99,8 @@ is 4.6e-4 off: drag too has an error that does not shrink with the grid,
 larger than for surface pressure. The drag floor is set at twice that,
 1e-3 of the value (`DRAG_FLOOR`); three families are thin evidence for
 it, and it is kept as a regression check that every band, floor
-included, contains the true error (`tests/verification/grid-convergence.test.ts`).
+included, contains the true error
+(`tests/verification/grid-convergence.test.ts`).
 
 ## Precision
 
@@ -126,9 +127,10 @@ boundary must still hold the free stream it imposes (density, pressure and
 velocity within 1e-5): on the validated sharp-nose cases they differ from
 it by 3.5e-6 or less on the coarsest grids, by 1e-7 or less on the next,
 while a bow shock reaching the boundary disturbs them by order one.
-Otherwise the case is reported as invalid, with the reason. No tolerance is offered: every run refines to
-the finest grid allowed and reports the value with its measured band, or
-says that no band could be measured. The same procedure runs on the CPU
+Otherwise the case is reported as invalid, with the reason. The nose wave
+drag page asks for no tolerance: every run refines to the finest grid
+allowed and reports the value with its measured band, or says that no
+band could be measured. The same procedure runs on the CPU
 engine and on the GPU engine, whose wall fluxes are evaluated from its
 32-bit state in double precision; on a cone each grid's drag agrees with
 the CPU engine's within 2e-6.
