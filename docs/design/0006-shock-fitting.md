@@ -207,29 +207,41 @@ cylinder, against Taylor-Maccoll:
 | M 1.5, 20 deg | +0.0449% | +0.0150% | +0.0053% | 1.63  | +2.0e-5                  |
 | M 1.3, 5 deg  | +0.5398% | +0.1106% | +0.0287% | 2.39  | +1.4e-5 (not settled)    |
 
-On two grids the cones at Mach 2 to 5 (10 to 30 deg) fall by 3.93 to
-4.07 per refinement and extrapolate to within 3.4e-6 of the exact
-values. Ogives against the method of characteristics (1 caliber of
-cylinder): on nj = 20 and 40 all seven cases (tangent ogives of 3
-calibers at Mach 1.5 to 4 and of 5 calibers at Mach 2, a secant ogive
-and a parabolic nose at Mach 2.5) fall by 4.04 to 4.33; the 3-caliber
-ogive at Mach 1.5 on three grids gives +0.415%, +0.098%, +0.023%, order
-2.09, extrapolated within 7.5e-7 at its observed order and 2.0e-5 at
-second order. Every finest-grid band measured contains its error.
+Further cones on three grids: Mach 2, 20 deg, +0.0529%, +0.0135%,
++0.0034% (order 1.97, capped extrapolation 3.1e-7 off) and Mach 3, 30
+deg, +0.0174%, +0.0043%, +0.0011% (order 2.00, 1.6e-7); on two grids the
+cones at Mach 3 and 5 fall by 4.03 to 4.07 per refinement and
+extrapolate to within 1.5e-6.
+
+Ogives on 1 caliber of cylinder (the secant ogive and the parabolic nose
+meet it at a corner), against the method of characteristics on 1280
+intervals:
+
+| Case                           | nj = 20  | nj = 40  | nj = 80  | Order | Extrapolated (capped) |
+| ------------------------------ | -------- | -------- | -------- | ----- | --------------------- |
+| Tangent, 3 calibers, M 1.5     | +0.415%  | +0.0975% | +0.0229% | 2.09  | -2.0e-5               |
+| Tangent, 3 calibers, M 2       | +0.269%  | +0.0646% | +0.0154% | 2.05  | -9.7e-6               |
+| Tangent, 3 calibers, M 3       | +0.128%  | +0.0316% | +0.0076% | 2.02  | -3.3e-6               |
+| Tangent, 3 calibers, M 4       | +0.0733% | +0.0181% | +0.0044% | 2.01  | -1.2e-6               |
+| Tangent, 5 calibers, M 2       | +0.541%  | +0.125%  | +0.0287% | 2.11  | -3.4e-5               |
+| Secant (0.5), 3 cal., M 2.5    | +0.212%  | +0.0525% | +0.0127% | 2.01  | -5.9e-6               |
+| Parabolic (0.5), 3 cal., M 2.5 | +0.210%  | +0.0519% | +0.0126% | 2.01  | -5.7e-6               |
+
+At their observed orders all seven extrapolate to within 5.3e-6 of the
+exact values. Every finest-grid band measured, on cones and ogives,
+contains its error.
 
 The procedure's band extrapolates at second order at most, so the error
 it can miss is that of its own extrapolation, at an order capped at 2.
 On the families that have settled it lies at most 3.4e-5 of the value
-from the exact one, against 4.6e-4 with the shock captured: on the
-5-caliber tangent ogive at Mach 2 (+0.541%, +0.125%, +0.0287% of the
-exact drag on nj = 20, 40, 80, observed order 2.11), whose extrapolation
-at its observed order is within 2.5e-6. The other ogives on three grids:
-3 calibers at Mach 2, +0.269%, +0.0646%, +0.0154% (order 2.05, capped
-extrapolation 9.7e-6 off), and at Mach 3, +0.128%, +0.0316%, +0.0076%
-(order 2.02, 3.3e-6). The floor for fitted drag (`FITTED_DRAG_FLOOR`) is
-set at 7e-5, about twice the largest. The cone at Mach 1.3, 5 deg, whose
-order has not settled on nj = 80, is being measured on nj = 160; if it
-settles farther from the exact value the floor must rise.
+from the exact one (the 5-caliber ogive, whose order settles at 2.11),
+against 4.6e-4 with the shock captured. The floor for fitted drag
+(`FITTED_DRAG_FLOOR`) is set at 7e-5, about twice that. The cone at Mach
+1.3, 5 deg, whose order has not settled on nj = 80, is being measured on
+nj = 160; if it settles farther from the exact value the floor must
+rise. Grids that fail the quality gates (wall cells at under 60 deg on
+steep tips, aspect ratios above 10 on long bodies) and slender noses at
+low Mach numbers are being measured before the gates are reconsidered.
 
 **The domain extends at least one caliber past the nose.** With the
 zero-gradient outflow at the base of a bare nose, the cells next to it
