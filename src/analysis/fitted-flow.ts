@@ -54,7 +54,6 @@ const SPEED_TOLERANCE = 1e-12;
 /** ... and residual, relative to the free stream's on the first grid. */
 const RESIDUAL_TOLERANCE = 1e-12;
 
-
 function engineConfig(
   grid: StructuredGrid,
   gamma: number,
