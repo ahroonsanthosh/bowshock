@@ -30,8 +30,24 @@ Values on grids refined by 2 (nj = 20, 40, 80, ...), coarsest first:
   0.5, which needs four grids.
 - **Oscillatory convergence** (the finest triple changes direction): the
   range of the three finest values, twice the half-range of Stern et al.
-- **Otherwise** (changes growing, too small to measure, orders that
-  disagree, fewer than four grids): no error band; refine further.
+- **Converged to within the noise** (the finest change too small to
+  measure against the values' noise, see Precision, while the coarser
+  triple has an order): that order predicts the finest change, and if the
+  measured change agrees with the prediction to within what can be
+  measured, the band is the index above with the change bounded by the
+  larger of the measured and predicted changes plus twice the noise. The
+  shock-fitted solver (0006) converges at second order to errors near the
+  GPU's noise: on the Mach 3, 20 degree cone its errors on 20 and 40
+  cells across (2.5e-4 and 6.2e-5 of the value), falling at second order,
+  put the change between 80 and 160 cells at about 1.2e-5 of the value,
+  below the 2e-5 that can be measured on the GPU, so without this the
+  most accurate results would get no band at all.
+  With every value of a second-order family perturbed by up to the noise,
+  in 200 patterns, the band is always given and always holds.
+- **Otherwise** (changes growing, too small to measure on the coarser
+  grids too, a finest change that stops short of the predicted one,
+  orders that disagree, fewer than four grids): no error band; refine
+  further.
 
 Neither estimate can see an error that does not shrink with the grid. On
 the cone families below the pressure settles up to 1.2e-4 from the exact

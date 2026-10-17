@@ -63,6 +63,47 @@ describe('grid convergence index (Celik et al., ratio 2)', () => {
     if (estimate.kind === 'oscillatory') expect(estimate.uncertainty).toBeCloseTo(0.05, 12);
   });
 
+  it('bounds a finest change below the noise by the order of the coarser grids', () => {
+    // Second order, with the finest change (4.7e-6) under ten times the
+    // noise (1e-5) and the coarser changes above it.
+    const noise = 1e-6;
+    const exact = family((h) => 1 + 1e-4 * h * h);
+    const estimate = gridConvergence(exact, { orderTolerance: 0.3, noise });
+    expect(estimate.kind).toBe('monotone');
+    if (estimate.kind !== 'monotone') return;
+    expect(estimate.order).toBeCloseTo(2, 6);
+    // (4.7e-6 + 2e-6) * 1.25 / 3, against a true error of 1.6e-6.
+    expect(estimate.uncertainty).toBeCloseTo(
+      (1.25 * (1e-4 * (0.25 ** 2 - 0.125 ** 2) + 2e-6)) / 3,
+      9,
+    );
+    // With every value perturbed by up to the noise, a band is still given
+    // and still holds.
+    let seed = 3;
+    const random = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    for (let trial = 0; trial < 200; trial++) {
+      const noisy = exact.map((v) => v * (1 + noise * (2 * random() - 1)));
+      const result = gridConvergence(noisy, { orderTolerance: 0.3, noise });
+      expect(result.kind).toBe('monotone');
+      if (result.kind === 'monotone') {
+        expect(Math.abs(result.value - 1)).toBeLessThanOrEqual(result.uncertainty);
+      }
+    }
+  });
+
+  it('gives no band when the finest change is below the noise but the coarser grids predict more', () => {
+    // Second order on the coarser grids, predicting a finest change of
+    // 2.5e-5, above what the noise hides; the values stop changing instead.
+    const estimate = gridConvergence([1.0005, 1.0001, 1, 1], { orderTolerance: 0.3, noise: 1e-6 });
+    expect(estimate.kind).toBe('unresolved');
+    if (estimate.kind === 'unresolved') {
+      expect(estimate.reason).toMatch(/below the noise but not the one the coarser grids predict/);
+    }
+  });
+
   it('gives no band for growth, unmeasurable changes or too few grids', () => {
     const cases: [number[], RegExp][] = [
       [[1, 1.001, 1.003, 1.007], /do not shrink/],

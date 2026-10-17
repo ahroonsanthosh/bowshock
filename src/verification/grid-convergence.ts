@@ -25,6 +25,16 @@
  *   asymptotic range can otherwise give an observed order, and an error
  *   band, that the finer grids contradict.
  *
+ * - Values carry noise from iterative convergence and arithmetic. When the
+ *   finest change is too small to measure against it but the coarser
+ *   triple has an order, that order predicts the finest change; if the
+ *   measured change agrees with the prediction to within what can be
+ *   measured, the finest grid is taken as converged to within the noise,
+ *   and the band is the index above with the change bounded by the larger
+ *   of the measured and predicted changes plus the noise of both values.
+ *   An accurate solution then gets a band of a few times its noise
+ *   instead of none.
+ *
  * Oscillatory convergence: F. Stern, R. V. Wilson, H. W. Coleman and E. G.
  * Paterson, "Comprehensive approach to verification and validation of CFD
  * simulations, part 1", J. Fluids Eng. 123 (2001) 793-802 (reference 9 of
@@ -71,7 +81,10 @@ export type ConvergenceEstimate =
       readonly value: number;
       /** Richardson extrapolation to zero cell size. */
       readonly extrapolated: number;
-      /** Observed order of the finest triple, before the cap. */
+      /**
+       * Observed order of the finest triple, before the cap; of the coarser
+       * triple when the finest change is within the noise.
+       */
       readonly order: number;
       /** Grid convergence index of the finest value, absolute. */
       readonly uncertainty: number;
@@ -109,6 +122,9 @@ export function gridConvergence(
     return { kind: 'oscillatory', value, uncertainty: Math.max(...finest) - Math.min(...finest) };
   }
   const coarse = observedOrder(values[n - 4]!, values[n - 3]!, values[n - 2]!, options.noise);
+  if (fine === TOO_SMALL && typeof coarse === 'number') {
+    return withinNoise(values.slice(n - 4), coarse, options.noise);
+  }
   for (const triple of [fine, coarse]) {
     if (typeof triple === 'string') return { kind: 'unresolved', value, reason: triple };
   }
@@ -133,6 +149,45 @@ export function gridConvergence(
 }
 
 const OSCILLATES = 'the values oscillate under refinement';
+const TOO_SMALL = 'the changes between grids are too small to measure';
+
+/** The largest change between grids that cannot be measured against the values' noise. */
+function unmeasurable(values: readonly number[], relativeNoise: number): number {
+  return MEASURABLE * relativeNoise * Math.max(...values.map(Math.abs));
+}
+
+/**
+ * The four finest values, whose finest change is too small to measure
+ * while the coarser triple has the given order: the band if the finest
+ * change agrees with the one that order predicts.
+ */
+function withinNoise(
+  values: readonly number[],
+  coarseOrder: number,
+  relativeNoise: number,
+): ConvergenceEstimate {
+  const value = values[3]!;
+  const e21 = values[2]! - value;
+  const predicted = (values[1]! - values[2]!) / RATIO ** coarseOrder;
+  if (!(Math.abs(e21 - predicted) <= unmeasurable(values, relativeNoise))) {
+    return {
+      kind: 'unresolved',
+      value,
+      reason: `the finest change (${e21.toExponential(2)}) is below the noise but not the one the coarser grids predict (${predicted.toExponential(2)})`,
+    };
+  }
+  const gain = RATIO ** Math.min(coarseOrder, FORMAL_ORDER) - 1;
+  // Each value is uncertain by its noise, so a change by twice that.
+  const noise = relativeNoise * Math.max(...values.map(Math.abs));
+  const bound = Math.max(Math.abs(e21), Math.abs(predicted)) + 2 * noise;
+  return {
+    kind: 'monotone',
+    value,
+    extrapolated: value - predicted / gain,
+    order: coarseOrder,
+    uncertainty: (SAFETY_FACTOR * bound) / gain,
+  };
+}
 
 /** Observed order of three successive values, or why it has none. */
 function observedOrder(
@@ -145,11 +200,8 @@ function observedOrder(
   const e32 = coarse - medium;
   // Changes close to the values' own uncertainty carry no order (Celik et
   // al., step 3: the procedure fails when a change is close to zero).
-  const noise =
-    MEASURABLE * relativeNoise * Math.max(Math.abs(coarse), Math.abs(medium), Math.abs(fine));
-  if (Math.abs(e21) <= noise || Math.abs(e32) <= noise) {
-    return 'the changes between grids are too small to measure';
-  }
+  const noise = unmeasurable([coarse, medium, fine], relativeNoise);
+  if (Math.abs(e21) <= noise || Math.abs(e32) <= noise) return TOO_SMALL;
   if (e32 / e21 < 0) return OSCILLATES;
   if (Math.abs(e32 / e21) <= 1) return 'the changes do not shrink under refinement';
   return Math.log(Math.abs(e32 / e21)) / Math.log(RATIO);

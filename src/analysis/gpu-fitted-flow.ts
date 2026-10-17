@@ -87,10 +87,12 @@ const CHECK_EVERY = 500;
 const MAX_CHECKS = 60;
 /**
  * Largest shock speed at convergence, over the free stream's sound speed:
- * ten times the 32-bit noise at which the speeds settle (measured: 4e-7
- * to 1e-6 on the Mach 2 hemisphere-cylinder, nj = 20).
+ * several times the 32-bit noise at which the speeds settle, which grows
+ * with the Mach number (measured at nj = 20: up to 1.2e-6 on the Mach 2
+ * hemisphere-cylinder, 4e-6 on a 20 degree cone at Mach 5). The drag's
+ * own settling is the main test.
  */
-const FITTED_SPEED_TOLERANCE = 1e-5;
+const FITTED_SPEED_TOLERANCE = 3e-5;
 
 class FitNotConverged extends Error {}
 class InvalidCase extends Error {}
