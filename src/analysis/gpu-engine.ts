@@ -2,7 +2,8 @@
  * The GPU engine as a steady engine for verified drag: the steps run on
  * the GPU in 32-bit; at each convergence check the state is read back and
  * the wall fluxes are evaluated from it in double precision by the CPU
- * engine's scheme (on cones within 1.1e-6 of a CPU solution's drag;
+ * engine's scheme (within 1.1e-6 of a CPU solution's drag on cones and
+ * ogives at Mach 1.3 to 5, wandering by up to 1.3e-6 at Mach 5;
  * docs/design/0005-solution-verification.md).
  */
 

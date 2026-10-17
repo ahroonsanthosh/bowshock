@@ -2,7 +2,12 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { bodyLength, bodyRadius, type Body } from '../../src/geometry/body';
 import { GridQualityError } from '../../src/grid/body-grid';
-import { billigStandoff, bluntBodyGrid } from '../../src/grid/blunt-grid';
+import {
+  billigStandoff,
+  bluntBodyGrid,
+  gridOnLines,
+  withFixedFractions,
+} from '../../src/grid/blunt-grid';
 import { gridQuality, qualityFailures } from '../../src/grid/quality';
 import { nodeIndex } from '../../src/grid/structured';
 
@@ -94,5 +99,33 @@ describe('body grids (C topology, blunt noses)', () => {
     // vertical by the end of the body, too fast for the gates.
     const stub: Body = { ...hemisphereCylinder, cylinderLength: 0 };
     expect(() => bluntBodyGrid(stub, { nj: 20, mach: 1.5 })).toThrow(GridQualityError);
+  });
+
+  it('fixed node fractions reproduce the grid at the reference heights and scale with new ones', () => {
+    const { grid, lines } = bluntBodyGrid(hemisphereCylinder, { nj: 20, mach: 3 });
+    const fixed = withFixedFractions(lines, 20, 0.5);
+    const same = gridOnLines(
+      fixed,
+      fixed.map((l) => l.h),
+      20,
+      0.5,
+    );
+    expect([...same.x]).toEqual([...grid.x]);
+    expect([...same.y]).toEqual([...grid.y]);
+    const taller = gridOnLines(
+      fixed,
+      fixed.map((l) => 1.1 * l.h),
+      20,
+      0.5,
+      false,
+    );
+    for (const i of [0, 40, fixed.length - 1]) {
+      for (const j of [5, 20]) {
+        const l = fixed[i]!;
+        const k = nodeIndex(taller, i, j);
+        const d = (taller.x[k]! - l.x) * l.dx + (taller.y[k]! - l.y) * l.dy;
+        expect(d / (1.1 * l.h)).toBeCloseTo(l.fractions![j]!, 13);
+      }
+    }
   });
 });

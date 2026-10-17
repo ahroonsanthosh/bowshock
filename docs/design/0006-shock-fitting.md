@@ -1,8 +1,8 @@
 # 0006: The bow shock fitted, not captured
 
-- **Status:** Implemented on the CPU engine (`src/solver/shock-fitting.ts`),
-  measured on blunt and sharp noses; not yet used by the drag page or on
-  the GPU.
+- **Status:** Implemented on the CPU engine (`src/solver/shock-fitting.ts`)
+  and the GPU engine (`src/engine-gpu/shock-fitting-gpu.ts`), measured on
+  blunt and sharp noses; not yet used by the drag page.
 - **Date:** 2026-10-17
 - **Inputs:** the measurements below; the method of Moretti and Abbett
   and of Salas (sources in `docs/validation/sources.md`).
@@ -88,50 +88,105 @@ Mach 2 (nj = 20 and 40), 0.21504 and 0.21495 at Mach 3.
 Cone-cylinder, Mach 3, 20 deg, forebody pressure drag against
 Taylor-Maccoll (the exact value, Cp = 0.284270):
 
-| Shock    | nj = 20  | nj = 40  | nj = 80 | nj = 160 |
-| -------- | -------- | -------- | ------- | -------- |
-| Captured | -0.395%  | -0.259%  | -0.151% | -0.081%  |
-| Fitted   | +0.0248% | +0.0062% |         |          |
+| Shock    | nj = 20  | nj = 40  | nj = 80   | nj = 160 |
+| -------- | -------- | -------- | --------- | -------- |
+| Captured | -0.395%  | -0.259%  | -0.151%   | -0.081%  |
+| Fitted   | +0.0248% | +0.0062% | +0.00154% |          |
 
-The fitted error falls by 4.0 per refinement: second order, where
-capture gave about first. On 40 cells across it is already 13 times
-smaller than capture on 160.
+The fitted error falls by 4.0 per refinement (observed order 1.998),
+second order where capture gave about first; on 40 cells across it is
+already 13 times smaller than capture on 160. Extrapolated from the
+three grids the drag is 1.2e-7 of its value below the exact one, and the
+band of the finest grid (1.9e-5) contains its actual error (1.5e-5).
 
 Tangent ogive of NACA TN 3716 (3 calibers, 7 calibers of cylinder),
 Mach 1.98, forebody pressure drag against the method of characteristics
-(Cd = 0.0988034, converged to 1e-8 on 640 and 1280 intervals):
+(Cd = 0.0988034: 0.09880328 and 0.09880338 on 640 and 1280 intervals,
+converging at second order):
 
-| Shock               | nj = 20  | nj = 40  | nj = 80 | nj = 160 |
-| ------------------- | -------- | -------- | ------- | -------- |
-| Captured            | +1.210%  | +0.174%  | -0.025% | -0.042%  |
-| Fitted, x0 = 1e-3 L | +0.2822% | +0.0684% |         |          |
-| Fitted, x0 = 1e-4 L | +0.2819% | +0.0684% |         |          |
+| Shock               | nj = 20  | nj = 40  | nj = 80  | nj = 160 |
+| ------------------- | -------- | -------- | -------- | -------- |
+| Captured            | +1.210%  | +0.174%  | -0.025%  | -0.042%  |
+| Fitted, x0 = 1e-3 L | +0.2818% | +0.0680% | +0.0163% |          |
+| Fitted, x0 = 1e-4 L | +0.2815% | +0.0680% |          |          |
 
-Second order again (4.1 per refinement); the start x0 changes the drag by
-3e-6 of its value or less. Extrapolated at second order from the two
-grids the drag is 0.098800, 3e-5 below the exact value, where the
-captured shock's values converge to 4.4e-4 below it.
+The fitted drags (0.0990818, 0.0988706, 0.0988195) fall by 4.13 per
+refinement, an observed order of 2.05; the start x0 changes the drag by
+3e-6 of its value or less. Extrapolated from the three grids the drag is
+0.09880317, 2.4e-6 of its value below the exact one, and the error band
+of the finest grid (GCI, 0005) is 0.021%, against an actual error of
+0.016%. The captured shock's values converge to 4.4e-4 below the exact
+value: fitting removes the floor that capture leaves, to within the
+method of characteristics' own accuracy.
+
+Hemisphere-cylinder at Mach 2, fitted, forebody pressure drag on nj = 20,
+40 and 80: 0.7909688, 0.7894762, 0.7890787, falling by 3.75 per
+refinement (order 1.91), extrapolated 0.788934 with a band of 0.023% on
+the finest grid. The standoff (0.349552, 0.349374, 0.349330 body radii)
+converges at order 2.02 and the stagnation pressure's error (+0.0074%,
++0.0013%, +0.00024%) by 5.5 per refinement.
+
+Hemisphere-cylinder at Mach 3: 0.8502328, 0.8495647, 0.8493855 on nj =
+20, 40 and 80 (order 1.90, extrapolated 0.849320, band 0.010%); the
+standoff (0.215038, 0.214954, 0.214934 body radii) at order 2.07, the
+stagnation pressure's error +0.0044%, +0.00084%, +0.00016%.
+
+These grids moved each node's fraction of its line with the line's
+height; the drivers now keep each line's starting fractions
+(withFixedFractions), as the GPU fit must, which changes the grids
+slightly: the values above are being measured again on those grids.
+
+## On the GPU
+
+The fit runs entirely on the GPU (`src/engine-gpu/shock-fitting-gpu.ts`),
+in 32-bit, with the shock moved every step:
+
+- The shock must move one step's worth (W dt) at a time: moving it every
+  20 flow steps by one step's worth converges to the same state to all ten
+  digits printed (Mach 2 hemisphere, nj = 20), but moving it by the 5 or
+  20 steps' sum diverges even with the boundary updated every step. So
+  the moves number in the thousands, too many to rebuild the geometry on
+  the CPU or to read the shock back for each.
+- Each line keeps the fractions of its height at which its nodes lie,
+  set once in double precision (`withFixedFractions`), so every
+  difference the metrics need (along a line, between neighbouring lines)
+  is a sum of differences computed once in double precision and of
+  heights and their differences, without the cancellation of
+  single-precision absolute coordinates (`src/engine-gpu/line-grid.ts`).
+  Measured against the CPU's double-precision metrics of the same grids:
+  normals within 1.3e-7, areas 2.6e-7, volumes 4.5e-7.
+- Each line's height is a base from the CPU in double precision plus a
+  32-bit displacement, the sum of its moves since. Adding moves to the
+  height itself would round away every move below half its last bit, and
+  the relaxation would stall about 200 times that far from its fixed
+  point (the shock's speed decays by about 0.5% a step: from 1e-2 to
+  4e-5 of the sound speed over 1000 steps on the hemisphere); the
+  displacement stays small, so its rounding does too. At each convergence
+  check the heights are read back and become the new base.
+- After each move the flow is interpolated along the columns as on the
+  CPU (`remapAlongLines`), within 2.0e-7 of the CPU's remap.
+- At each check (every 500 steps on the base grid) the drag is evaluated
+  from the flow in double precision; the fit has converged when the drag
+  has settled to the GPU's noise (2e-6) and no face of the shock moves
+  faster than 3e-5 of the sound speed.
+
+Measured against the CPU's fit of the same problem on the same grids
+(nj = 20), iterated on to 8000 steps or more past convergence:
+
+| Case                        | Drag wanders from the CPU's by | Shock speeds settle at |
+| --------------------------- | ------------------------------ | ---------------------- |
+| Hemisphere-cylinder, Mach 2 | 2.4e-7 at most                 | 4e-7 to 1.2e-6         |
+| 20 degree cone, Mach 5      | 1.8e-7 at most                 | 3.6e-6 to 4.8e-6       |
+| TN 3716 ogive, Mach 1.98    | 7.8e-7 at most                 | 7e-7 to 1.0e-6         |
+
+(shock speeds over the free stream's sound speed), well within the 2e-6
+assumed for the GPU's noise. The hemisphere-cylinder's fit converges
+after 2500 steps, the CPU's needing 4747 to reach 1e-12.
 
 ## Open
 
-- Third grids on the cone and the ogive, to confirm the order and set the
-  floor for fitted results.
+- The families again on grids with fixed fractions, and more cases, to
+  set the floor for fitted results (in progress).
 - The drag page: the fitted solver on the GPU, families and their bands.
-  Measured so far for the design: the shock must move one step's worth
-  (W dt) at a time. Moving it every 20 flow steps by one step's worth
-  converges to the same state to all ten digits printed (Mach 2
-  hemisphere, nj = 20: Cd 0.7909688137, 4205 moves in 84100 steps, against
-  4791 steps moving every step), but moving it by the 5 or 20 steps' sum
-  diverges even with the boundary updated every step. So the number of
-  moves stays in the thousands, and rebuilding the double-precision
-  geometry on the CPU at each one would cost too much on fine grids. The
-  geometry will be rebuilt on the GPU, in single precision, from the
-  heights: each line keeps the fractions of its height at which its nodes
-  lie, set once in double precision, so that every difference the metrics
-  need (along a line, between neighbouring lines) is a sum of differences
-  computed once in double precision and of small changes in height,
-  without the cancellation of single-precision absolute coordinates.
-  Each cell then also keeps its fraction along its line, which makes the
-  remap a short interpolation along each column.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.

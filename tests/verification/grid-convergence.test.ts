@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DRAG_FLOOR, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
+import { DRAG_FLOOR, GPU_NOISE, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
 import { gridConvergence, refineUntilVerified } from '../../src/verification/grid-convergence';
 
 const options = { orderTolerance: 0.3, noise: 1e-12 };
@@ -63,6 +63,47 @@ describe('grid convergence index (Celik et al., ratio 2)', () => {
     if (estimate.kind === 'oscillatory') expect(estimate.uncertainty).toBeCloseTo(0.05, 12);
   });
 
+  it('bounds a finest change below the noise by the order of the coarser grids', () => {
+    // Second order, with the finest change (4.7e-6) under ten times the
+    // noise (1e-5) and the coarser changes above it.
+    const noise = 1e-6;
+    const exact = family((h) => 1 + 1e-4 * h * h);
+    const estimate = gridConvergence(exact, { orderTolerance: 0.3, noise });
+    expect(estimate.kind).toBe('monotone');
+    if (estimate.kind !== 'monotone') return;
+    expect(estimate.order).toBeCloseTo(2, 6);
+    // (4.7e-6 + 2e-6) * 1.25 / 3, against a true error of 1.6e-6.
+    expect(estimate.uncertainty).toBeCloseTo(
+      (1.25 * (1e-4 * (0.25 ** 2 - 0.125 ** 2) + 2e-6)) / 3,
+      9,
+    );
+    // With every value perturbed by up to the noise, a band is still given
+    // and still holds.
+    let seed = 3;
+    const random = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    for (let trial = 0; trial < 200; trial++) {
+      const noisy = exact.map((v) => v * (1 + noise * (2 * random() - 1)));
+      const result = gridConvergence(noisy, { orderTolerance: 0.3, noise });
+      expect(result.kind).toBe('monotone');
+      if (result.kind === 'monotone') {
+        expect(Math.abs(result.value - 1)).toBeLessThanOrEqual(result.uncertainty);
+      }
+    }
+  });
+
+  it('gives no band when the finest change is below the noise but the coarser grids predict more', () => {
+    // Second order on the coarser grids, predicting a finest change of
+    // 2.5e-5, above what the noise hides; the values stop changing instead.
+    const estimate = gridConvergence([1.0005, 1.0001, 1, 1], { orderTolerance: 0.3, noise: 1e-6 });
+    expect(estimate.kind).toBe('unresolved');
+    if (estimate.kind === 'unresolved') {
+      expect(estimate.reason).toMatch(/below the noise but not the one the coarser grids predict/);
+    }
+  });
+
   it('gives no band for growth, unmeasurable changes or too few grids', () => {
     const cases: [number[], RegExp][] = [
       [[1, 1.001, 1.003, 1.007], /do not shrink/],
@@ -106,8 +147,9 @@ describe('the error band on measured cone-cylinder families', () => {
   );
 
   it('with 32-bit noise on every value, bands are still given only where they hold', async () => {
-    // The GPU engine's values differ from the CPU's by up to 1.1e-6
-    // relative; perturb each value by up to that, in many patterns.
+    // The GPU engine's values differ from the CPU's by up to about 1.3e-6
+    // relative (Mach 5); perturb each value by up to 2e-6, the noise the
+    // GPU pipeline assumes, in many patterns.
     let seed = 1;
     const random = () => {
       seed = (seed * 16807) % 2147483647;
@@ -115,10 +157,10 @@ describe('the error band on measured cone-cylinder families', () => {
     };
     for (const [, exact, values] of families) {
       for (let trial = 0; trial < 50; trial++) {
-        const noisy = values.map((v) => v * (1 + 1.1e-6 * (2 * random() - 1)));
+        const noisy = values.map((v) => v * (1 + GPU_NOISE * (2 * random() - 1)));
         const result = await refineUntilVerified((r) => noisy[Math.log2(r)]!, {
           orderTolerance: 0.5,
-          noise: 1e-6,
+          noise: GPU_NOISE,
           floor: 2e-4,
           tolerance: Infinity,
           maxRefinement: 8,
@@ -176,7 +218,7 @@ describe('the error band on measured forebody drag families', () => {
   it.each(families)(
     '%s: a band, with the floor, contains the true error',
     async (_, exact, values) => {
-      for (const noise of [1e-12, 1e-6]) {
+      for (const noise of [1e-12, GPU_NOISE]) {
         const result = await refineUntilVerified((r) => values[Math.log2(r)]!, {
           orderTolerance: ORDER_TOLERANCE,
           noise,
@@ -190,6 +232,29 @@ describe('the error band on measured forebody drag families', () => {
       }
     },
   );
+
+  it('with the GPU noise on every value, bands with the floor still contain the true error', async () => {
+    let seed = 7;
+    const random = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    for (const [, exact, values] of families) {
+      for (let trial = 0; trial < 50; trial++) {
+        const noisy = values.map((v) => v * (1 + GPU_NOISE * (2 * random() - 1)));
+        const result = await refineUntilVerified((r) => noisy[Math.log2(r)]!, {
+          orderTolerance: ORDER_TOLERANCE,
+          noise: GPU_NOISE,
+          floor: DRAG_FLOOR,
+          tolerance: Infinity,
+          maxRefinement: 8,
+        });
+        if (result.uncertainty !== undefined) {
+          expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
+        }
+      }
+    }
+  });
 });
 
 describe('refining until the value is verified', () => {

@@ -176,33 +176,8 @@ export function fitShock(options: ShockFitOptions): ShockFit {
   const ni = lines.length - 1;
   const stepsPerMove = options.stepsPerMove ?? 1;
 
-  const along = (g: StructuredGrid, i: number, j: number) => {
-    const l = lines[i]!;
-    const k = nodeIndex(g, i, j);
-    return (g.x[k]! - l.x) * l.dx + (g.y[k]! - l.y) * l.dy;
-  };
-  // Distance along the two lines bounding cell column i, at node row j.
-  const columnAlong = (g: StructuredGrid, i: number, j: number) =>
-    0.5 * (along(g, i, j) + along(g, i + 1, j));
-  /** The flow of `old` on `oldGrid`, interpolated along the lines to the cells of `newGrid`. */
-  const remap =
-    (old: Euler2D, oldGrid: StructuredGrid, newGrid: StructuredGrid) =>
-    (i: number, j: number): Primitive2D => {
-      const d = 0.5 * (columnAlong(newGrid, i, j) + columnAlong(newGrid, i, j + 1));
-      const centre = (jj: number) =>
-        0.5 * (columnAlong(oldGrid, i, jj) + columnAlong(oldGrid, i, jj + 1));
-      let jj = 0;
-      while (jj < nj - 2 && centre(jj + 1) < d) jj++;
-      const t = Math.min(Math.max((d - centre(jj)) / (centre(jj + 1) - centre(jj)), 0), 1);
-      const a = old.primitive(i, jj);
-      const b = old.primitive(i, jj + 1);
-      return {
-        rho: a.rho + t * (b.rho - a.rho),
-        u: a.u + t * (b.u - a.u),
-        v: a.v + t * (b.v - a.v),
-        p: a.p + t * (b.p - a.p),
-      };
-    };
+  const remap = (old: Euler2D, oldGrid: StructuredGrid, newGrid: StructuredGrid) =>
+    remapAlongLines(lines, nj, (i, j) => old.primitive(i, j), oldGrid, newGrid);
 
   /** The shock on every jMax face for the current flow, and the flux through it. */
   const shockBoundary = (s: Euler2D) => {
@@ -331,6 +306,46 @@ export function fitShock(options: ShockFitOptions): ShockFit {
   }
   applyBoundary(solver);
   return { solver, grid, heights, maxSpeed, residual, iterations, converged };
+}
+
+/**
+ * The flow `old` on `oldGrid`, interpolated along the lines to the cells of
+ * `newGrid` (both grids on `lines`, with nj cells along each): linear in
+ * the primitive variables between the old cell centres of each column,
+ * held at the end cells beyond them. Distances along a column are the mean
+ * of its two lines'.
+ */
+export function remapAlongLines(
+  lines: readonly GridLine[],
+  nj: number,
+  old: (i: number, j: number) => Primitive2D,
+  oldGrid: StructuredGrid,
+  newGrid: StructuredGrid,
+): (i: number, j: number) => Primitive2D {
+  const along = (g: StructuredGrid, i: number, j: number) => {
+    const l = lines[i]!;
+    const k = nodeIndex(g, i, j);
+    return (g.x[k]! - l.x) * l.dx + (g.y[k]! - l.y) * l.dy;
+  };
+  // Distance along the two lines bounding cell column i, at node row j.
+  const columnAlong = (g: StructuredGrid, i: number, j: number) =>
+    0.5 * (along(g, i, j) + along(g, i + 1, j));
+  return (i, j) => {
+    const d = 0.5 * (columnAlong(newGrid, i, j) + columnAlong(newGrid, i, j + 1));
+    const centre = (jj: number) =>
+      0.5 * (columnAlong(oldGrid, i, jj) + columnAlong(oldGrid, i, jj + 1));
+    let jj = 0;
+    while (jj < nj - 2 && centre(jj + 1) < d) jj++;
+    const t = Math.min(Math.max((d - centre(jj)) / (centre(jj + 1) - centre(jj)), 0), 1);
+    const a = old(i, jj);
+    const b = old(i, jj + 1);
+    return {
+      rho: a.rho + t * (b.rho - a.rho),
+      u: a.u + t * (b.u - a.u),
+      v: a.v + t * (b.v - a.v),
+      p: a.p + t * (b.p - a.p),
+    };
+  };
 }
 
 /**

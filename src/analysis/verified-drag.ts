@@ -15,6 +15,7 @@ import type { Body } from '../geometry/body';
 import { bodyGrid } from '../grid/body-grid';
 import type { Primitive2D } from '../scheme/flux';
 import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
+import { SettlingValue } from '../verification/iterative-convergence';
 import { forebodyPressureDrag } from './forces';
 
 /** A steady solver for one grid, started from the free stream. */
@@ -71,10 +72,13 @@ export type VerifiedDrag =
 
 /**
  * Noise of the GPU engine's drag, relative: its 32-bit solutions give
- * forebody drag within 1.1e-6 of the CPU engine's on cones
- * (docs/design/0005-solution-verification.md).
+ * forebody drag within 1.1e-6 of the CPU engine's on cones and ogives at
+ * Mach 1.3 to 5, but at Mach 5 the drag wanders between convergence
+ * checks by up to 1.3e-6, from the rounding of pressure recovered from a
+ * total energy dominated by kinetic energy (growing with M^2); 2e-6 covers
+ * the page's range (docs/design/0005-solution-verification.md).
  */
-export const GPU_NOISE = 1e-6;
+export const GPU_NOISE = 2e-6;
 /** Noise of the CPU engine's drag, converged to residuals of 1e-13. */
 export const CPU_NOISE = 1e-12;
 /**
@@ -117,14 +121,31 @@ class IterationStalled extends Error {}
 class InvalidCase extends Error {}
 class Cancelled extends Error {}
 
+export interface FreeStream {
+  readonly state: Primitive2D;
+  readonly pressure: number;
+  readonly dynamicPressure: number;
+}
+
+/**
+ * The free stream of a case at Mach `mach`, with unit density and
+ * pressure. Its speed is rounded to the nearest 32-bit value, so that the
+ * GPU engine, which stores it in 32 bits, solves the same case as the CPU
+ * engine, and the drag is normalised by its own dynamic pressure; the Mach
+ * number then differs from `mach` by under 6e-8 of it.
+ */
+export function freeStreamAt(mach: number, gamma: number): FreeStream {
+  const u = Math.fround(mach * Math.sqrt(gamma));
+  return { state: { rho: 1, u, v: 0, p: 1 }, pressure: 1, dynamicPressure: 0.5 * u * u };
+}
+
 export async function verifiedForebodyDrag(
   body: Body,
   options: VerifiedDragOptions,
   engineFor: EngineFactory,
 ): Promise<VerifiedDrag> {
   const { mach, gamma } = options;
-  const freeStream: Primitive2D = { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
-  const free = { pressure: 1, dynamicPressure: 0.5 * gamma * mach * mach };
+  const { state: freeStream, ...free } = freeStreamAt(mach, gamma);
   const reports: LevelReport[] = [];
 
   const solveAt = async (refinement: number): Promise<number> => {
@@ -150,27 +171,14 @@ export async function verifiedForebodyDrag(
     try {
       // Iterate until the drag itself stops changing by more than its own
       // noise over a whole batch of steps.
-      let previous = Number.NaN;
-      let previousChange = Number.NaN;
+      const settling = new SettlingValue(options.noise);
       for (let batch = 1; batch <= MAX_BATCHES; batch++) {
         if (options.signal?.aborted === true) throw new Cancelled();
         await engine.iterate(BATCH * refinement);
         const drag = forebodyPressureDrag(await engine.wallFluxes(), free, body.nose.baseRadius);
         options.onProgress?.(refinement, batch * BATCH * refinement, drag);
         if (!Number.isFinite(drag)) throw new IterationStalled('the solution is not finite');
-        // The drag approaches its limit geometrically; two successive changes
-        // give the rate and the remaining error, change * rate / (1 - rate).
-        // A small change alone is not enough: slow convergence can pair a
-        // small change with a large remaining error.
-        const change = Math.abs(drag - previous);
-        const rate = change / previousChange;
-        const remaining = rate < 1 ? (change * rate) / (1 - rate) : Infinity;
-        previousChange = change;
-        previous = drag;
-        const settled =
-          change <= options.noise * Math.abs(drag) &&
-          (change === 0 || remaining <= options.noise * Math.abs(drag));
-        if (settled) {
+        if (settling.add(drag)) {
           const cells = await engine.cells();
           const outflow = outflowMach(config, cells);
           if (!(outflow > 1)) {

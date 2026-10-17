@@ -30,8 +30,24 @@ Values on grids refined by 2 (nj = 20, 40, 80, ...), coarsest first:
   0.5, which needs four grids.
 - **Oscillatory convergence** (the finest triple changes direction): the
   range of the three finest values, twice the half-range of Stern et al.
-- **Otherwise** (changes growing, too small to measure, orders that
-  disagree, fewer than four grids): no error band; refine further.
+- **Converged to within the noise** (the finest change too small to
+  measure against the values' noise, see Precision, while the coarser
+  triple has an order): that order predicts the finest change, and if the
+  measured change agrees with the prediction to within what can be
+  measured, the band is the index above with the change bounded by the
+  larger of the measured and predicted changes plus twice the noise. The
+  shock-fitted solver (0006) converges at second order to errors near the
+  GPU's noise: on the Mach 3, 20 degree cone its errors on 20 and 40
+  cells across (2.5e-4 and 6.2e-5 of the value), falling at second order,
+  put the change between 80 and 160 cells at about 1.2e-5 of the value,
+  below the 2e-5 that can be measured on the GPU, so without this the
+  most accurate results would get no band at all.
+  With every value of a second-order family perturbed by up to the noise,
+  in 200 patterns, the band is always given and always holds.
+- **Otherwise** (changes growing, too small to measure on the coarser
+  grids too, a finest change that stops short of the predicted one,
+  orders that disagree, fewer than four grids): no error band; refine
+  further.
 
 Neither estimate can see an error that does not shrink with the grid. On
 the cone families below the pressure settles up to 1.2e-4 from the exact
@@ -108,12 +124,16 @@ Each value carries an uncertainty from iterative convergence and
 arithmetic, and a change between grids gives an order only when it is ten
 times that. For the CPU engine, converged to residuals of 1e-13, it is
 about 1e-12 of the value. The GPU engine computes in 32-bit and converges
-only to about 1e-5 of the initial residual, yet its forebody drag on cones
-(Mach 1.3 to 3, nj = 20 and 40, wall fluxes evaluated from its state in
-double precision) is within 1.1e-6 of the CPU's; its noise is taken as
-1e-6. With every value of the four families perturbed by up to 1.1e-6, in
-fifty patterns each, bands are still given only where they contain the
-true error (`tests/verification/grid-convergence.test.ts`).
+only to about 1e-5 of the initial residual, yet its forebody drag (cones
+and ogives at Mach 1.3 to 5, nj = 20 and 40, wall fluxes evaluated from
+its state in double precision) is within 1.1e-6 of the CPU's. At Mach 5
+it wanders between convergence checks by up to 1.3e-6: pressure is
+recovered from a total energy that kinetic energy dominates (8 times the
+internal energy at Mach 5), so its 32-bit rounding grows with M^2. The
+noise is taken as 2e-6, the bound the GPU test enforces. With every value
+of the four families perturbed by up to 2e-6, in fifty patterns each,
+bands are still given only where they contain the true error
+(`tests/verification/grid-convergence.test.ts`).
 
 ## Forebody drag (`src/analysis/verified-drag.ts`)
 
