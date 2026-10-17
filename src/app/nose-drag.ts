@@ -1,18 +1,12 @@
 /**
  * Nose wave drag: the verified forebody pressure drag of a rocket body,
- * solved on the GPU on a nested family of grids up to the finest allowed,
- * with its error band measured from them
- * (docs/design/0005-solution-verification.md).
+ * solved on the GPU with the bow shock fitted (docs/design/0006-shock-fitting.md)
+ * on a nested family of grids up to the finest allowed, with its error
+ * band measured from them (docs/design/0005-solution-verification.md).
  */
 
-import { gpuEngine } from '../analysis/gpu-engine';
-import {
-  DRAG_FLOOR,
-  GPU_NOISE,
-  ORDER_TOLERANCE,
-  verifiedForebodyDrag,
-  type LevelReport,
-} from '../analysis/verified-drag';
+import { verifiedFittedDragGpu } from '../analysis/gpu-fitted-flow';
+import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE, type LevelReport } from '../analysis/verified-drag';
 import type { Body } from '../geometry/body';
 import type { NoseShape } from '../geometry/nose';
 
@@ -120,28 +114,23 @@ async function run(gpu: GPUDevice): Promise<void> {
   controller = new AbortController();
   let started = performance.now();
   try {
-    const outcome = await verifiedForebodyDrag(
-      body,
-      {
-        mach,
-        gamma: GAMMA,
-        // No early stop: always refine to the finest grid allowed.
-        tolerance: 0,
-        maxRefinement: Number(finestSelect.value),
-        noise: GPU_NOISE,
-        floor: DRAG_FLOOR,
-        orderTolerance: ORDER_TOLERANCE,
-        signal: controller.signal,
-        onProgress: (refinement, iterations, drag) => {
-          status.textContent = `Grid at refinement ${refinement}: ${iterations} iterations, Cd ${drag.toFixed(6)}`;
-        },
-        onLevel: (report) => {
-          addLevel(report, (performance.now() - started) / 1000);
-          started = performance.now();
-        },
+    const outcome = await verifiedFittedDragGpu(gpu, body, {
+      mach,
+      gamma: GAMMA,
+      // No early stop: always refine to the finest grid allowed.
+      tolerance: 0,
+      maxRefinement: Number(finestSelect.value),
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      signal: controller.signal,
+      onProgress: (refinement, iterations, drag) => {
+        status.textContent = `Grid at refinement ${refinement}: ${iterations} iterations, Cd ${drag.toFixed(6)}`;
       },
-      gpuEngine(gpu),
-    );
+      onLevel: (report) => {
+        addLevel(report, (performance.now() - started) / 1000);
+        started = performance.now();
+      },
+    });
     status.textContent = '';
     switch (outcome.kind) {
       case 'cancelled':

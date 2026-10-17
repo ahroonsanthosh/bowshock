@@ -168,10 +168,12 @@
       <p class="scope">
         What this is: the inviscid pressure (wave) drag coefficient of the nose and the body ahead
         of the base, on the body's cross-sectional area, for sharp noses with an attached shock. It
-        excludes skin friction, base drag and fins, so it is not a rocket's total drag. Validated
-        against exact solutions on cones (Taylor-Maccoll) and on a tangent ogive (method of
-        characteristics); the error band also contains a measured allowance for an error the grid
-        family cannot show.
+        excludes skin friction, base drag and fins, so it is not a rocket's total drag. The bow
+        shock is fitted: it is the outer boundary of the grid, with the exact jump conditions across
+        it, so the error falls as the square of the cell size. Validated against exact solutions on
+        cones (Taylor-Maccoll) and ogives (method of characteristics): extrapolated from three grids
+        the drag lies within 2e-5 of the exact value. The error band also contains an allowance of
+        5e-5 of the value for an error the grid family cannot show.
       </p>
     </main>
     <script type="module" src="/src/app/nose-drag.ts"></script>

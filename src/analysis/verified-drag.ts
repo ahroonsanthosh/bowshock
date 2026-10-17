@@ -91,6 +91,18 @@ export const CPU_NOISE = 1e-12;
  */
 export const DRAG_FLOOR = 1e-3;
 /**
+ * The same for the forebody drag with the bow shock fitted
+ * (docs/design/0006-shock-fitting.md). On the families measured against
+ * exact values on nj = 20, 40 and 80 (cones at Mach 1.5 and 2 against
+ * Taylor-Maccoll, ogives at Mach 1.5 and 1.98 against the method of
+ * characteristics), the second-order extrapolation of a family whose order
+ * has settled lies at most 2.0e-5 of the value from the exact one (Mach
+ * 1.5, both shapes); the floor is about twice that. Two-grid estimates on
+ * cones at Mach 2 to 5 lie within 3.4e-6. A cone at Mach 1.3, 5 deg, not yet
+ * settled on nj = 80, is being measured on nj = 160.
+ */
+export const FITTED_DRAG_FLOOR = 5e-5;
+/**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).
  */

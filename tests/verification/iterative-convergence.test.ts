@@ -45,7 +45,16 @@ describe('settling of an iterated value', () => {
   });
 
   it('a value that starts converged settles once two changes are within the noise', () => {
-    const { check } = settle(() => 2, 2, 1e-6);
-    expect(check).toBe(2);
+    expect(settle(() => 2, 2, 1e-6).check).toBe(2);
+    // So does one that only wanders by its noise.
+    let seed = 5;
+    const random = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    for (let trial = 0; trial < 100; trial++) {
+      const { check } = settle(() => 2 * (1 + 0.5e-6 * (2 * random() - 1)), 2, 1e-6);
+      expect(check).toBe(2);
+    }
   });
 });
