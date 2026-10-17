@@ -308,15 +308,72 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
  * grid, started from a captured solution (on the CPU).
  */
 export function bluntFitProblem(asked: Body, options: FitProblemOptions): FitProblem {
+  return bluntFitFamily(asked, options)(options.refinement);
+}
+
+/** What starts a family of blunt problems: a captured solution on its base grid. */
+export interface BluntStart {
+  /** The base grid's lines. */
+  readonly lines: readonly GridLine[];
+  /** The captured shock's heights along them (capturedShockHeights). */
+  readonly heights: readonly number[];
+  /** The captured solution in each cell of the base grid. */
+  readonly cell: (i: number, j: number) => Primitive2D;
+}
+
+/**
+ * The captured solution that starts a blunt family, on the CPU engine:
+ * CAPTURED_START_STEPS steps from the free stream on the base grid.
+ */
+export function bluntStart(asked: Body, options: BluntFamilyOptions): BluntStart {
+  const { solver, start } = bluntCapture(asked, options);
+  solver.iterate(CAPTURED_START_STEPS);
+  return start();
+}
+
+/**
+ * bluntStart in chunks of `chunk` steps, awaiting `pause` after each (a
+ * page stays responsive, and can stop it); the same solution, since each
+ * step depends only on the state before it. Stops with the signal's
+ * reason once it is aborted.
+ */
+export async function bluntStartInChunks(
+  asked: Body,
+  options: BluntFamilyOptions,
+  run: {
+    readonly chunk: number;
+    readonly pause: () => Promise<void>;
+    readonly signal?: AbortSignal | undefined;
+    readonly onProgress?: ((steps: number, total: number) => void) | undefined;
+  },
+): Promise<BluntStart> {
+  const { solver, start } = bluntCapture(asked, options);
+  for (let done = 0; done < CAPTURED_START_STEPS;) {
+    run.signal?.throwIfAborted();
+    const steps = Math.min(run.chunk, CAPTURED_START_STEPS - done);
+    solver.iterate(steps);
+    done += steps;
+    run.onProgress?.(done, CAPTURED_START_STEPS);
+    await run.pause();
+  }
+  run.signal?.throwIfAborted();
+  return start();
+}
+
+export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'>;
+
+/** The captured-shock problem on a blunt family's base grid, from the free stream. */
+function bluntCapture(
+  asked: Body,
+  options: BluntFamilyOptions,
+): { solver: Euler2D; start: () => BluntStart } {
   const body = solvedBody(asked);
-  const { mach, gamma, nj: baseNj, refinement } = options;
-  const R = body.nose.baseRadius;
+  const { mach, gamma, nj } = options;
   const free = freeStreamAt(mach, gamma).state;
-  const start = bluntBodyGrid(body, { nj: baseNj, refinement, mach });
-  const nj = baseNj * refinement;
+  const base = bluntBodyGrid(body, { nj, mach });
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
-  const captured = new Euler2D({
-    ...engineConfig(start.grid, gamma, axis, []),
+  const solver = new Euler2D({
+    ...engineConfig(base.grid, gamma, axis, []),
     boundaries: {
       iMin: axis,
       iMax: { kind: 'outflow' },
@@ -324,34 +381,107 @@ export function bluntFitProblem(asked: Body, options: FitProblemOptions): FitPro
       jMax: { kind: 'inflow', state: free },
     },
   });
-  captured.setInitialCondition(() => free);
-  captured.iterate(CAPTURED_START_STEPS * refinement);
-  const heights = capturedShockHeights(captured, start.grid, start.lines, free);
-  // Each line keeps the node fractions of the captured shock's height.
-  const lines = withFixedFractions(
-    start.lines.map((l, i) => ({ ...l, h: heights[i]! })),
-    nj,
-    R,
-  );
+  solver.setInitialCondition(() => free);
   return {
-    lines,
-    heights,
-    nj,
-    baseRadius: R,
-    gamma,
-    freeStream: free,
-    configFor: (g, states) =>
-      engineConfig(
-        g,
-        gamma,
-        axis,
-        states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
-      ),
-    initial: (i, j) => captured.primitive(i, j),
-    firstNode: 'symmetry',
-    drag: (wall) => forebodyDrag(wall, mach, gamma, R),
-    askedEnd: bodyLength(asked),
+    solver,
+    start: () => ({
+      lines: base.lines,
+      heights: capturedShockHeights(solver, base.grid, base.lines, free),
+      cell: (i, j) => solver.primitive(i, j),
+    }),
   };
+}
+
+/**
+ * The blunt problems of a family of grids (refinement 1, 2, 4, ...), all
+ * started from one captured solution on the base grid (bluntStart): each
+ * line takes the node fractions of that solution's shock height,
+ * interpolated along the body between the base grid's lines, so every
+ * coarser line and node fraction is one of the finer grid's (the nesting
+ * startedFrom needs to start each grid from the converged one before).
+ */
+export function bluntFitFamily(
+  asked: Body,
+  options: BluntFamilyOptions,
+  start: BluntStart = bluntStart(asked, options),
+): (refinement: number) => FitProblem {
+  const body = solvedBody(asked);
+  const { mach, gamma, nj: baseNj } = options;
+  const R = body.nose.baseRadius;
+  const free = freeStreamAt(mach, gamma).state;
+  const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
+  return (refinement) => {
+    const fine =
+      refinement === 1 ? start.lines : bluntBodyGrid(body, { nj: baseNj, refinement, mach }).lines;
+    const heights = nestedHeights(start.lines, start.heights, fine, refinement);
+    const nj = baseNj * refinement;
+    // Each line keeps the node fractions of the captured shock's height.
+    const lines = withFixedFractions(
+      fine.map((l, i) => ({ ...l, h: heights[i]! })),
+      nj,
+      R,
+    );
+    return {
+      lines,
+      heights,
+      nj,
+      baseRadius: R,
+      gamma,
+      freeStream: free,
+      configFor: (g, states) =>
+        engineConfig(
+          g,
+          gamma,
+          axis,
+          states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
+        ),
+      initial: (i, j) => start.cell(Math.floor(i / refinement), Math.floor(j / refinement)),
+      firstNode: 'symmetry',
+      drag: (wall) => forebodyDrag(wall, mach, gamma, R),
+      askedEnd: bodyLength(asked),
+    };
+  };
+}
+
+/**
+ * Heights on the lines of a grid refined by `refinement` from those on
+ * the base grid's lines: the same on the base lines (every refinement-th
+ * line), linear in the distance along the body between them.
+ */
+function nestedHeights(
+  base: readonly GridLine[],
+  baseHeights: readonly number[],
+  fine: readonly GridLine[],
+  refinement: number,
+): number[] {
+  const n = base.length - 1;
+  if (fine.length - 1 !== refinement * n) {
+    throw new RangeError('the refined grid does not have the lines of its base grid');
+  }
+  const scale = Math.hypot(base[n]!.x - base[0]!.x, base[n]!.y - base[0]!.y);
+  for (let k = 0; k <= n; k++) {
+    const a = base[k]!;
+    const b = fine[refinement * k]!;
+    if (!(Math.hypot(a.x - b.x, a.y - b.y) <= 1e-12 * scale)) {
+      throw new RangeError('the refined grid does not have the lines of its base grid');
+    }
+  }
+  const heights: number[] = [];
+  for (let k = 0; k < n; k++) {
+    // Distance along the body over the fine lines between base lines k and k + 1.
+    const along = [0];
+    for (let m = 1; m <= refinement; m++) {
+      const p = fine[refinement * k + m - 1]!;
+      const q = fine[refinement * k + m]!;
+      along.push(along[m - 1]! + Math.hypot(q.x - p.x, q.y - p.y));
+    }
+    for (let m = 0; m < refinement; m++) {
+      const t = along[m]! / along[refinement]!;
+      heights.push(baseHeights[k]! * (1 - t) + baseHeights[k + 1]! * t);
+    }
+  }
+  heights.push(baseHeights[n]!);
+  return heights;
 }
 
 function forebodyDrag(
@@ -392,7 +522,7 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
   return fittedFlow(bluntFitProblem(body, options), options.maxIterations);
 }
 
-/** Steps of the captured solution that places the first shock, per refinement. */
+/** Steps of the captured solution on the base grid that places the first shock. */
 const CAPTURED_START_STEPS = 3000;
 
 export interface VerifiedFittedDragOptions {
@@ -426,7 +556,9 @@ export async function verifiedFittedDrag(
   body: Body,
   options: VerifiedFittedDragOptions,
 ): Promise<VerifiedFittedDrag> {
-  const blunt = !Number.isFinite(noseTipSlope(body.nose));
+  const blunt = !Number.isFinite(noseTipSlope(body.nose))
+    ? bluntFitFamily(body, { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ })
+    : null;
   try {
     const result = await refineUntilVerified(
       (refinement) => {
@@ -438,7 +570,7 @@ export async function verifiedFittedDrag(
           maxIterations: options.iterationsPerRefinement * refinement,
         };
         const { fit, drag } = blunt
-          ? bluntFittedFlow(body, flowOptions)
+          ? fittedFlow(blunt(refinement), flowOptions.maxIterations)
           : sharpFittedFlow(body, flowOptions);
         if (!fit.converged) {
           throw new FitNotConverged(

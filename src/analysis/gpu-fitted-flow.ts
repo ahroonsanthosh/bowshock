@@ -15,7 +15,8 @@ import type { StructuredGrid } from '../grid/structured';
 import { refineUntilVerified } from '../verification/grid-convergence';
 import {
   baseMach,
-  bluntFitProblem,
+  bluntFitFamily,
+  bluntStartInChunks,
   sharpFitProblem,
   wallDrag,
   type FitProblem,
@@ -141,6 +142,17 @@ const MAX_CHECKS = 120;
  */
 const FITTED_SPEED_TOLERANCE = 3e-5;
 
+/**
+ * Steps of a blunt nose's captured start (on the CPU) between returns to
+ * the browser's event loop: about a tenth of a second on the base grid.
+ */
+const START_CHUNK = 50;
+
+/** Resolves on a later task of the event loop, after pending input and rendering. */
+function nextTask(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 class FitNotConverged extends Error {}
 class InvalidCase extends Error {}
 
@@ -155,7 +167,8 @@ export async function verifiedFittedDragGpu(
   body: Body,
   options: Omit<VerifiedDragOptions, 'noise'>,
 ): Promise<VerifiedDrag> {
-  const blunt = !Number.isFinite(noseTipSlope(body.nose));
+  // Blunt noses: the family of problems, once its captured start is computed.
+  let blunt: ((refinement: number) => FitProblem) | null = null;
   const reports: LevelReport[] = [];
   let lastRefinement = 1;
   // The last grid's problem and converged fit, to start the next from.
@@ -163,9 +176,7 @@ export async function verifiedFittedDragGpu(
   const solveAt = async (refinement: number): Promise<number> => {
     lastRefinement = refinement;
     const problemOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ, refinement };
-    const fresh = blunt
-      ? bluntFitProblem(body, problemOptions)
-      : sharpFitProblem(body, problemOptions);
+    const fresh = blunt ? blunt(refinement) : sharpFitProblem(body, problemOptions);
     const problem = (previous && startedFrom(fresh, previous.problem, previous.fit)) ?? fresh;
     const checkEvery = CHECK_EVERY * refinement;
     const { fit, drag } = await gpuFittedFlow(device, problem, {
@@ -215,6 +226,16 @@ export async function verifiedFittedDragGpu(
     return drag;
   };
   try {
+    if (!Number.isFinite(noseTipSlope(body.nose))) {
+      const familyOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ };
+      const start = await bluntStartInChunks(body, familyOptions, {
+        chunk: START_CHUNK,
+        pause: nextTask,
+        signal: options.signal,
+        onProgress: options.onStart,
+      });
+      blunt = bluntFitFamily(body, familyOptions, start);
+    }
     const result = await refineUntilVerified(solveAt, { ...options, noise: GPU_NOISE });
     return { ...result, kind: 'solved', reports };
   } catch (error) {

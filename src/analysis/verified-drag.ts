@@ -53,6 +53,11 @@ export interface VerifiedDragOptions {
   readonly onLevel?: (level: LevelReport) => void;
   /** Called after each convergence check, with the grid's refinement and the drag so far. */
   readonly onProgress?: (refinement: number, iterations: number, drag: number) => void;
+  /**
+   * Called as the captured solution that starts a blunt nose's fit is
+   * computed (on the CPU), with its steps so far and in all.
+   */
+  readonly onStart?: (steps: number, total: number) => void;
   /** Stops the run between convergence checks. */
   readonly signal?: AbortSignal;
 }

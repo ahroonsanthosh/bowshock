@@ -136,6 +136,9 @@ async function run(gpu: GPUDevice): Promise<void> {
       floor: FITTED_DRAG_FLOOR,
       orderTolerance: ORDER_TOLERANCE,
       signal: controller.signal,
+      onStart: (steps, total) => {
+        status.textContent = `Starting from a captured solution on the CPU: ${steps} of ${total} steps`;
+      },
       onProgress: (refinement, iterations, drag) => {
         status.textContent = `Grid at refinement ${refinement}: ${iterations} iterations, Cd ${drag.toFixed(6)}`;
       },

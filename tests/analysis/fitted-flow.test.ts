@@ -1,13 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
   baseMach,
+  bluntFitFamily,
+  bluntFitProblem,
   bluntFittedFlow,
+  bluntStart,
+  bluntStartInChunks,
   fittedFlow,
   sharpFitProblem,
   sharpFittedFlow,
   verifiedFittedDrag,
   wallDrag,
 } from '../../src/analysis/fitted-flow';
+import { startedFrom } from '../../src/analysis/gpu-fitted-flow';
+import type { GpuShockFit } from '../../src/engine-gpu/shock-fitting-gpu';
 import type { Body } from '../../src/geometry/body';
 import { normalShock, stagnationPressureRatio } from '../../src/validation/gas-dynamics';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
@@ -42,6 +48,64 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     const face = fit.solver.boundaryFluxes('jMin')[0]!;
     const p = face.flux[1] * face.nx + face.flux[2] * face.ny;
     expect(Math.abs(p / pitot - 1)).toBeLessThan(1e-4);
+  }, 600_000);
+
+  it('blunt grid families nest: the finer grid has every line and node fraction of the coarser', () => {
+    // What starting each grid from the converged one before needs
+    // (startedFrom); the base problem is that of bluntFitProblem.
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const family = bluntFitFamily(body, { mach: 2, gamma, nj: 20 });
+    const coarse = family(1);
+    const fine = family(2);
+    const alone = bluntFitProblem(body, { mach: 2, gamma, nj: 20, refinement: 1 });
+    expect(alone.heights).toEqual(coarse.heights);
+    expect(alone.lines).toEqual(coarse.lines);
+    expect(fine.lines.length - 1).toBe(2 * (coarse.lines.length - 1));
+    expect(fine.nj).toBe(2 * coarse.nj);
+    coarse.lines.forEach((a, k) => {
+      const b = fine.lines[2 * k]!;
+      expect(Math.hypot(b.x - a.x, b.y - a.y)).toBeLessThan(1e-13);
+      expect(fine.heights[2 * k]).toBe(coarse.heights[k]);
+      a.fractions!.forEach((f, j) => {
+        expect(Math.abs(b.fractions![2 * j]! - f)).toBeLessThan(1e-14);
+      });
+    });
+    // The page starts the finer grid from the coarser one's fit.
+    const fit = { heights: coarse.heights, cell: coarse.initial } as unknown as GpuShockFit;
+    const warm = startedFrom(fine, coarse, fit);
+    expect(warm).not.toBeNull();
+    expect(warm!.heights[2]).toBe(coarse.heights[1]);
+  }, 600_000);
+
+  it('a blunt start computed in chunks is the same start, and stops when aborted', async () => {
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const familyOptions = { mach: 3, gamma, nj: 20 };
+    const whole = bluntStart(body, familyOptions);
+    const seen: number[] = [];
+    const chunked = await bluntStartInChunks(body, familyOptions, {
+      chunk: 7,
+      pause: () => Promise.resolve(),
+      onProgress: (steps) => seen.push(steps),
+    });
+    expect(chunked.heights).toEqual(whole.heights);
+    expect(chunked.cell(5, 3)).toEqual(whole.cell(5, 3));
+    expect(seen.at(-1)).toBe(3000);
+    const controller = new AbortController();
+    const stopped = bluntStartInChunks(body, familyOptions, {
+      chunk: 50,
+      pause: () => Promise.resolve(),
+      signal: controller.signal,
+      onProgress: (steps) => {
+        if (steps >= 100) controller.abort();
+      },
+    });
+    await expect(stopped).rejects.toThrow();
   }, 600_000);
 
   it('a bare nose is solved with a cylinder behind it only where the flow leaves its base supersonically', () => {
