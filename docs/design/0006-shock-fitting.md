@@ -188,6 +188,12 @@ Measured against the CPU's fit of the same problem on the same grids
 assumed for the GPU's noise. The hemisphere-cylinder's fit converges
 after 2500 steps, the CPU's needing 4747 to reach 1e-12.
 
+On the GPU too, a bare 20 degree cone at Mach 3 on nj = 20, 40 and 80
+(`verifiedFittedDragGpu`, before the domain was extended past the base):
++2.52e-4, +6.22e-5, +1.53e-5 of the exact drag, falling by 4.05 (order
+2.02) and extrapolating to within 5.7e-8 at that order, 3.2e-7 at second
+order; the finest band, 2.0e-5, contains the actual error.
+
 ## The floor for fitted drag
 
 Measured by audit agents on grids with fixed fractions (CPU, nj = 20,
