@@ -90,11 +90,14 @@ describe('body grids (C topology, blunt noses)', () => {
       nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 },
     };
     expect(() => bluntBodyGrid(sharp, { nj: 20, mach: 3 })).toThrow(/sharp/);
+    // A paraboloid half as long as its radius meets the cylinder at 26.6 deg.
     const power: Body = {
       ...hemisphereCylinder,
-      nose: { shape: { kind: 'power', exponent: 0.5 }, length: 1, baseRadius: 0.5 },
+      nose: { shape: { kind: 'power', exponent: 0.5 }, length: 0.5, baseRadius: 0.5 },
     };
-    expect(() => bluntBodyGrid(power, { nj: 20, mach: 3 })).toThrow(/tangentially/);
+    expect(() => bluntBodyGrid(power, { nj: 20, mach: 3 })).toThrow(
+      /meeting the body at more than/,
+    );
     // A hemisphere with no cylinder at Mach 1.5: the lines must turn
     // vertical by the end of the body, too fast for the gates.
     const stub: Body = { ...hemisphereCylinder, cylinderLength: 0 };

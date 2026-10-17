@@ -15,7 +15,14 @@
 import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
-import { bluntBodyGrid, gridOnLines, withFixedFractions, type GridLine } from '../grid/blunt-grid';
+import {
+  bluntBodyGrid,
+  gridOnLines,
+  outerCellHeight,
+  withFixedFractions,
+  type BluntGrid,
+  type GridLine,
+} from '../grid/blunt-grid';
 import { columnPositions } from '../grid/spacing';
 import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
@@ -312,27 +319,15 @@ export function bluntFitProblem(asked: Body, options: FitProblemOptions): FitPro
   const { mach, gamma, nj: baseNj, refinement } = options;
   const R = body.nose.baseRadius;
   const free = freeStreamAt(mach, gamma).state;
-  const start = bluntBodyGrid(body, { nj: baseNj, refinement, mach });
+  const { start, captured, heights } = bluntStart(body, options);
   const nj = baseNj * refinement;
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
-  const captured = new Euler2D({
-    ...engineConfig(start.grid, gamma, axis, []),
-    boundaries: {
-      iMin: axis,
-      iMax: { kind: 'outflow' },
-      jMin: { kind: 'wall' },
-      jMax: { kind: 'inflow', state: free },
-    },
-  });
-  captured.setInitialCondition(() => free);
-  captured.iterate(CAPTURED_START_STEPS * refinement);
-  const heights = capturedShockHeights(captured, start.grid, start.lines, free);
-  // Each line keeps the node fractions of the captured shock's height.
-  const lines = withFixedFractions(
-    start.lines.map((l, i) => ({ ...l, h: heights[i]! })),
-    nj,
-    R,
-  );
+  // Each line keeps the node fractions of its height to the generator's
+  // outer boundary, a function of the line's body point alone, so that on
+  // a grid refined by 2 the fractions of line 2k are those of line k on
+  // the base grid (the nesting that starting each grid from the one before
+  // needs, `startedFrom`); the shock itself starts at the captured height.
+  const lines = withFixedFractions(start.lines, nj, R).map((l, i) => ({ ...l, h: heights[i]! }));
   return {
     lines,
     heights,
@@ -394,6 +389,76 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
 
 /** Steps of the captured solution that places the first shock, per refinement. */
 const CAPTURED_START_STEPS = 3000;
+/**
+ * Margin of the fit's outer boundary over the shock captured on the
+ * generator's own grid, as a fraction of the shock's height along each
+ * line. The generator's boundary is generous on two-scale noses (on a
+ * 3-caliber Haack nose at Mach 2 the shock lies at a tenth of its height
+ * at the tip and 0.42 along the nose), and the lines' spacing and node
+ * fractions are sized from it, so a second grid is built on the captured
+ * shock pushed out by this margin. The captured shock then lies about
+ * two thirds of the way up each line, with at least three cells above it.
+ */
+const BOUNDARY_MARGIN = 0.5;
+/** ... and at least this many cells of the base grid above the captured shock. */
+const BOUNDARY_CELLS = 3;
+
+export interface BluntStart {
+  /** The grid the fit starts on, its outer boundary following the first captured shock. */
+  readonly start: BluntGrid;
+  /** The captured solution on that grid. */
+  readonly captured: Euler2D;
+  /** The captured shock's heights along its lines. */
+  readonly heights: number[];
+  /** The generator's own grid of the base family (refinement 1) and the shock captured on it. */
+  readonly first: { readonly grid: BluntGrid; readonly heights: number[] };
+}
+
+/**
+ * The captured start of a blunt nose's fit: the shock captured on the
+ * generator's own base grid (ungated: it only has to contain the shock)
+ * places the outer boundary of the grid the fit starts on, at every
+ * refinement, so the family stays nested; the shock captured on that grid
+ * is the fit's first guess.
+ */
+export function bluntStart(body: Body, options: FitProblemOptions): BluntStart {
+  const { mach, gamma, nj: baseNj, refinement } = options;
+  const free = freeStreamAt(mach, gamma).state;
+  const capture = (grid: StructuredGrid, steps: number) => {
+    const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
+    const solver = new Euler2D({
+      ...engineConfig(grid, gamma, axis, []),
+      boundaries: {
+        iMin: axis,
+        iMax: { kind: 'outflow' },
+        jMin: { kind: 'wall' },
+        jMax: { kind: 'inflow', state: free },
+      },
+    });
+    solver.setInitialCondition(() => free);
+    solver.iterate(steps);
+    return solver;
+  };
+  const first = bluntBodyGrid(body, { nj: baseNj, refinement: 1, mach, gated: false });
+  const firstCaptured = capture(first.grid, CAPTURED_START_STEPS);
+  const firstHeights = capturedShockHeights(firstCaptured, first.grid, first.lines, free);
+  const R = body.nose.baseRadius;
+  const outerBoundary = first.lines.map((l, i) => {
+    const shock = firstHeights[i]!;
+    // The margin, or three cells of the base grid along the line, whichever
+    // is larger: along the cylinder, where the lines are long and their
+    // outer cells stretched, the fraction alone leaves two.
+    let d = (1 + BOUNDARY_MARGIN) * shock;
+    for (let k = 0; k < 20; k++) {
+      d = Math.max(d, shock + BOUNDARY_CELLS * outerCellHeight(d, baseNj, R));
+    }
+    return { x: l.x + d * l.dx, y: l.y + d * l.dy };
+  });
+  const start = bluntBodyGrid(body, { nj: baseNj, refinement, mach, outerBoundary });
+  const captured = capture(start.grid, CAPTURED_START_STEPS * refinement);
+  const heights = capturedShockHeights(captured, start.grid, start.lines, free);
+  return { start, captured, heights, first: { grid: first, heights: firstHeights } };
+}
 
 export interface VerifiedFittedDragOptions {
   readonly mach: number;
