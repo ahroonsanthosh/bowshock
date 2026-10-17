@@ -118,6 +118,28 @@ it, and it is kept as a regression check that every band, floor
 included, contains the true error
 (`tests/verification/grid-convergence.test.ts`).
 
+An audit agent ran the whole procedure (CPU, captured shock, nj = 20 to
+160, 2 calibers of cylinder) on seven more families against exact values:
+
+| Case                  | nj = 160 error | Outcome                            |
+| --------------------- | -------------- | ---------------------------------- |
+| Cone M 1.5, 10 deg    | +3.9e-5        | band 1.3e-4 (floor included)       |
+| Cone M 4, 12 deg      | -6.2e-4        | none: changes do not shrink        |
+| Cone M 2.5, 25 deg    | -8.6e-4        | none: orders 0.13 and 0.69         |
+| Cone M 5, 8 deg       | -4.4e-4        | none: the coarse triple oscillates |
+| Tangent ogive 3, M 2  | -4.0e-4        | none: orders 3.85 and 2.41         |
+| Tangent ogive 3, M 4  | -1.3e-3        | none: changes do not shrink        |
+| Parabolic 0.5, 3, M 3 | -3.4e-4        | none: orders 7.54 and 2.48         |
+
+(errors relative). No band failed to contain its error, but only one of
+seven cases got a band, and on the ogive at Mach 4 the finest error is
+larger than the floor: had its values happened to look converged, a band
+would have missed. With the shock captured, most of the page's inputs
+would end "not verified"; this is why the page moves to the fitted shock
+(0006), whose families measured so far converge at second order and
+extrapolate to within 2.4e-6 of the exact values (cones at low Mach
+numbers are still being measured).
+
 ## Precision
 
 Each value carries an uncertainty from iterative convergence and
