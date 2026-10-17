@@ -117,5 +117,21 @@ captured shock's values converge to 4.4e-4 below it.
 - Third grids on the cone and the ogive, to confirm the order and set the
   floor for fitted results.
 - The drag page: the fitted solver on the GPU, families and their bands.
+  Measured so far for the design: the shock must move one step's worth
+  (W dt) at a time. Moving it every 20 flow steps by one step's worth
+  converges to the same state to all ten digits printed (Mach 2
+  hemisphere, nj = 20: Cd 0.7909688137, 4205 moves in 84100 steps, against
+  4791 steps moving every step), but moving it by the 5 or 20 steps' sum
+  diverges even with the boundary updated every step. So the number of
+  moves stays in the thousands, and rebuilding the double-precision
+  geometry on the CPU at each one would cost too much on fine grids. The
+  geometry will be rebuilt on the GPU, in single precision, from the
+  heights: each line keeps the fractions of its height at which its nodes
+  lie, set once in double precision, so that every difference the metrics
+  need (along a line, between neighbouring lines) is a sum of differences
+  computed once in double precision and of small changes in height,
+  without the cancellation of single-precision absolute coordinates.
+  Each cell then also keeps its fraction along its line, which makes the
+  remap a short interpolation along each column.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.
