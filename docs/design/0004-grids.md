@@ -149,13 +149,46 @@ and of the outer cells' height, allowing for the lines spreading by
 1 + h d(angle)/ds. The same quality gates apply. Served and tested
 (`tests/grid/blunt-grid.test.ts`): hemispheres and prolate ellipsoids
 (length 1 to 3 radii) with 2 to 15 calibers of cylinder, Mach 1.5 to 5.
-Refused, with the reason: noses meeting the body at an angle (power series
-with exponent below 1); nearly flat tips (radius of curvature above 10
-body radii); and, by the gates, bodies too short for the lines to turn
-vertical by their end at low Mach numbers (a hemisphere with less than 2
-calibers of cylinder at Mach 1.5) and noses whose curvature grows without
-bound at the tip, such as the Haack series (r ~ x^(3/4) there), whose
-averaged lines leave the wall at 43 to 52 deg.
+Refused, with the reason: noses meeting the body at more than 15 deg
+(power series of exponent 1/2 shorter than two radii); nearly flat tips
+(radius of curvature above 10 body radii); and, by the gates, bodies too
+short for the lines to turn vertical by their end at low Mach numbers (a
+hemisphere with less than 2 calibers of cylinder at Mach 1.5).
+
+**Two-scale noses (Haack and power series).** The Haack series leaves
+the tip as r = c x^(3/4): vertical, with unbounded curvature, and blunt
+only within the length l = c^4 at which the profile crosses the line
+r = x from the tip (the radius of a sphere, 0.6 of the base radius on a
+3:1 ellipsoid): 2.88 (1 + 1.5 C)^2 R^4 / L^3, which for R = 0.5 is
+6.7e-3 at L = 3 and 1.4e-3 at L = 5, a hundredth to a thousandth of the
+body. The captured shock stands 0.1 l ahead of the tip at Mach 2 (0.03 l
+at Mach 3, 0.4 l at Mach 1.5), a third of a sphere's of radius l. With
+the boundary at the body scale, the window averaged the normal over the
+whole region in which its angle rises past 80 deg, so the lines left the
+wall at 43 to 52 deg, and the tip fell inside one cell. The boundary's
+length scale is now the larger of the tip radius and the smaller of the
+base radius and two tip scales (`tipScaleFactor`): unchanged on spheres
+and ellipsoids up to 3.7:1, the tip scale on Haack noses. The window
+follows it, and near the cusp turns the lines into a fan, their angle
+rising linearly with s at a few radians per layer height, which keeps
+the outer cells of equal width at the price of wall angles below the
+right angle over the first cells: 72 to 80 deg on the Haack noses
+measured (3 and 5 calibers, Mach 1.5 to 3), 78 deg on the fit's grid of
+the 3-caliber nose at Mach 2. The spacing along the body follows the
+layer height, so the tip region of that nose (5 l) holds 53 of the 248
+lines of the base grid, and grows by at most 1.12 between neighbours.
+The generator's boundary is generous at the body scale, where it keeps
+the angle blunt bodies need (the captured shock lies at a tenth of its
+height at the tip and 0.42 along the nose), so the fitted solver builds
+the grid it starts on from the shock captured on this one (0006). The
+half-width and density tables are clustered at the tip (s proportional
+to the square of the sample index), the density of lines tabulated so
+that `columnPositions`, which samples it millions of times on a dense
+tip, stays cheap. Noses meeting the cylinder at an angle (the power
+series) are accepted up to 15 deg: the window averages the jump in the
+normal as it averages jumps in the curvature, and a 3-caliber nose of
+exponent 3/4 (7 deg) passes the gates with the same margins as the
+Haack noses.
 
 ## Measurements
 
@@ -303,8 +336,10 @@ first comparison with measurements on a generated grid:
   0.008% of the pitot value on nj = 20). Blunt bodies are not yet offered
   on the drag page, and the sharp-nose generator refuses them.
 
-- **Haack-series and other noses with unbounded tip curvature** (see the
-  C grid's refusals above).
+- **Haack-series and other noses with unbounded tip curvature**: the
+  two-scale grids above, measured with the fitted shock in 0006; the
+  stagnation pressure on them converges at first order only (the
+  curvature is singular at the tip), the drag at second.
 - **Low supersonic Mach numbers.** Near Mach 1 the outer boundary meets
   the vertical grid lines at ever smaller angles; slender cones pass the
   12 deg gate down to Mach 1.1 (the table above: 12.3 and 17.3 deg), but

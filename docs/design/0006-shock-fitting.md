@@ -66,7 +66,16 @@ review, are worth recording:
   standoff free: it depended on the relaxation.
 
 **Blunt noses** start from a captured solution: on each line the outer
-edge of the captured shock, smoothed. **Sharp noses** start just behind
+edge of the captured shock, smoothed. On a two-scale nose (Haack and
+power series, `BluntGrid.twoScale` in 0004) the capture runs twice: the
+shock captured on the generator's own base grid, pushed out by half its
+height along each line and at least three base cells, is the outer
+boundary of the family's grids at every refinement, and the shock
+captured on the base grid built on it is the start (`secondCapture`).
+The generator's boundary is 8 times too far at the tip and 2.4 times
+along the nose, and the lines' spacing and node fractions are sized from
+it, so the fit on it would leave outer cells 10 times wider than tall
+at the tip. **Sharp noses** start just behind
 the tip, at x0 = 1e-3 of the nose length, with the conical flow of the
 tip's half-angle (Taylor-Maccoll) as the inflow there and the tip's
 conical shock as the first guess; the part ahead of x0 adds the tip
@@ -389,7 +398,6 @@ on their own families, is in progress.
   grids on evidence (in progress); cones at Mach 5 on nj = 80.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.
-- Blunt noses on the drag page: grids for Von Karman (Haack) and
-  power-series noses, which a design study is prototyping, and
-  validation of blunt-nose drag (the captured start runs on the CPU, in
-  chunks, so a GPU start is not needed).
+- Blunt noses on the drag page: validation of blunt-nose drag (the
+  captured start runs on the CPU, in chunks, so a GPU start is not
+  needed); the Haack and power-series families below on the GPU.
