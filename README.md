@@ -54,7 +54,11 @@ Validated so far, each with its tests and recorded accuracy:
   1.98 the surface pressure matches an independent exact inviscid solution
   (method of characteristics, itself proven on cones) within 4e-4 in Cp;
   the NACA wind-tunnel pressures lie above both by up to 0.022, for a physical
-  reason not yet established.
+  reason not yet established. Integrated into nose drag, two wind-tunnel
+  data sets at Mach 1.98 bracket the exact inviscid value: 3% below (NACA
+  RM A53E01, whose report traces it to its model's shape) and 8 to 9% above
+  (TN 3716). Measured data of this kind (+-0.005 in Cp) confirm the
+  inviscid wave drag to about 10%, not to the precision of the error bands.
 - The Taylor-Maccoll solution itself reproduces the cone tables of NASA
   SP-3004 within 3e-5 in Cp.
 - Forebody pressure (wave) drag of sharp-nosed bodies, inviscid, on the
