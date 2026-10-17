@@ -167,7 +167,7 @@ describe('the error band on measured forebody drag families', () => {
     ],
     // Method of characteristics (src/validation/characteristics.ts).
     [
-      'M 3, TN 3716 ogive',
+      'M 1.98, TN 3716 ogive',
       0.098803,
       [0.0999981153572, 0.0989748823391, 0.0987781854786, 0.0987617126849],
     ],

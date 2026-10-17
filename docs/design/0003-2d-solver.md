@@ -1,15 +1,15 @@
 # 0003: Two-dimensional solver on structured grids
 
-- **Status:** Accepted for implementation (milestone M3). It follows from
-  [0002](0002-architecture.md) and is needed by every physics option there.
+- **Status:** Implemented (milestone M3, CPU and GPU engines). It follows
+  from [0002](0002-architecture.md) and is needed by every physics option
+  there.
 - **Date:** 2026-10-14
 
 ## Scope
 
 Compressible Euler equations on a single structured, curvilinear grid
 block, in planar or axisymmetric geometry, on the CPU (reference) and the
-GPU. Multiblock grids, local time stepping for steady problems, and the
-viscous terms build on this.
+GPU. Multiblock grids and the viscous terms build on this.
 
 ## Grid and metrics
 
@@ -40,7 +40,8 @@ are computed once, in double precision, from the node coordinates:
   velocity takes the role of the 1D velocity; the tangential velocity is
   carried with the contact wave (HLLC) or by the Rusanov average. The
   Roe-averaged sound speed in the Einfeldt estimate includes the
-  tangential kinetic energy.
+  tangential kinetic energy. HLL and a rotated HLL/HLLC hybrid were added
+  later for the blunt-nose study (0004).
 - **Reconstruction:** MUSCL on primitive variables, dimension by dimension
   along grid lines, with index-based slopes. This is second order on smooth
   grids, the standard choice for structured codes.
@@ -247,9 +248,9 @@ as exact, the error halves at order 0.91 from the coarse pair and 0.94 from
 the fine pair; without that assumption the three grids give order 0.87. The
 asymptotic range is therefore not firmly established, and Richardson
 extrapolation with orders from 0.87 to 1 gives -0.005% to +0.006%: the
-solver converges to the Taylor-Maccoll solution to within about 0.01%. Grids that cluster cells
-at the nose, planned for the M4 grid generator, are the remedy on coarse
-grids.
+solver converges to the Taylor-Maccoll solution to within about 0.01%.
+Grids that cluster cells at the nose, as the generated grids of 0004 do,
+are the remedy on coarse grids.
 
 The per-smallest-factor form of the shared reconstruction, tried first,
 stalled on all three cones (residual 5e-2). Per-variable reconstruction is

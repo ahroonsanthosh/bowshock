@@ -133,7 +133,7 @@ async function run(gpu: GPUDevice): Promise<void> {
         orderTolerance: ORDER_TOLERANCE,
         signal: controller.signal,
         onProgress: (refinement, iterations, drag) => {
-          status.textContent = `Grid refined ${refinement} times: ${iterations} iterations, Cd ${drag.toFixed(6)}`;
+          status.textContent = `Grid at refinement ${refinement}: ${iterations} iterations, Cd ${drag.toFixed(6)}`;
         },
         onLevel: (report) => {
           addLevel(report, (performance.now() - started) / 1000);
@@ -149,13 +149,13 @@ async function run(gpu: GPUDevice): Promise<void> {
         break;
       case 'invalid':
         show(
-          `No result: on the grid refined ${outcome.refinement} times ${outcome.reason}.`,
+          `No result: on the grid at refinement ${outcome.refinement}, ${outcome.reason}.`,
           'warn',
         );
         break;
       case 'not-converged':
         show(
-          `No result: the grid refined ${outcome.refinement} times did not converge (${outcome.reason}).`,
+          `No result: the grid at refinement ${outcome.refinement} did not converge (${outcome.reason}).`,
           'warn',
         );
         break;

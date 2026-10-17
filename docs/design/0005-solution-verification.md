@@ -84,13 +84,13 @@ given only where it contains the true error.
 Measured with the unit-invariant shared reconstruction (the default).
 Forebody pressure drag coefficient, error of each grid against the exact
 value (Taylor-Maccoll for the cones, the method of characteristics for the
-ogive of NACA TN 3716, 3 calibers at Mach 3):
+ogive of NACA TN 3716, 3 calibers at Mach 1.98):
 
-| Case         | nj = 20 | nj = 40 | nj = 80 | nj = 160 | Outcome                        |
-| ------------ | ------- | ------- | ------- | -------- | ------------------------------ |
-| M 2, 15 deg  | +0.186% | +0.003% | -0.023% | -0.018%  | oscillatory, band 5.3e-5       |
-| M 3, 20 deg  | -0.395% | -0.259% | -0.151% | -0.081%  | monotone, orders 0.33 and 0.63 |
-| M 3, TN 3716 | +1.210% | +0.174% | -0.025% | -0.042%  | unresolved: orders 2.38, 3.58  |
+| Case            | nj = 20 | nj = 40 | nj = 80 | nj = 160 | Outcome                        |
+| --------------- | ------- | ------- | ------- | -------- | ------------------------------ |
+| M 2, 15 deg     | +0.186% | +0.003% | -0.023% | -0.018%  | oscillatory, band 5.3e-5       |
+| M 3, 20 deg     | -0.395% | -0.259% | -0.151% | -0.081%  | monotone, orders 0.33 and 0.63 |
+| M 1.98, TN 3716 | +1.210% | +0.174% | -0.025% | -0.042%  | unresolved: orders 2.38, 3.58  |
 
 The cone bands contain the true errors (5.3e-5 against 3.7e-5, 4.5e-4
 against 2.3e-4). The ogive's values converge fast, but to a limit about
@@ -99,7 +99,8 @@ is 4.6e-4 off: drag too has an error that does not shrink with the grid,
 larger than for surface pressure. The drag floor is set at twice that,
 1e-3 of the value (`DRAG_FLOOR`); three families are thin evidence for
 it, and it is kept as a regression check that every band, floor
-included, contains the true error (`tests/verification/grid-convergence.test.ts`).
+included, contains the true error
+(`tests/verification/grid-convergence.test.ts`).
 
 ## Precision
 
@@ -126,9 +127,10 @@ boundary must still hold the free stream it imposes (density, pressure and
 velocity within 1e-5): on the validated sharp-nose cases they differ from
 it by 3.5e-6 or less on the coarsest grids, by 1e-7 or less on the next,
 while a bow shock reaching the boundary disturbs them by order one.
-Otherwise the case is reported as invalid, with the reason. No tolerance is offered: every run refines to
-the finest grid allowed and reports the value with its measured band, or
-says that no band could be measured. The same procedure runs on the CPU
+Otherwise the case is reported as invalid, with the reason. The nose wave
+drag page asks for no tolerance: every run refines to the finest grid
+allowed and reports the value with its measured band, or says that no
+band could be measured. The same procedure runs on the CPU
 engine and on the GPU engine, whose wall fluxes are evaluated from its
 32-bit state in double precision; on a cone each grid's drag agrees with
 the CPU engine's within 2e-6.

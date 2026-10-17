@@ -350,7 +350,10 @@ type Presentation = 'canvas' | 'copy';
 /** Give the page a fresh canvas: one canvas cannot hold both a WebGPU and a 2D context. */
 function replaceCanvas(): void {
   const fresh = document.createElement('canvas');
-  fresh.id = canvas.id;
+  for (const name of ['id', 'role', 'aria-label']) {
+    const value = canvas.getAttribute(name);
+    if (value !== null) fresh.setAttribute(name, value);
+  }
   canvas.replaceWith(fresh);
   canvas = fresh;
   sizeCanvas();

@@ -302,9 +302,11 @@ first comparison with measurements on a generated grid:
 
 - **Haack-series and other noses with unbounded tip curvature** (see the
   C grid's refusals above).
-- **Low supersonic Mach numbers.** Below Mach 1.2 the outer boundary
-  meets the vertical grid lines at under 12 deg, the smallest angle
-  validated. Grid lines that lean to meet it were tried and set aside:
+- **Low supersonic Mach numbers.** Near Mach 1 the outer boundary meets
+  the vertical grid lines at ever smaller angles; slender cones pass the
+  12 deg gate down to Mach 1.1 (the table above: 12.3 and 17.3 deg), but
+  blunter bodies are refused there. Grid lines that lean to meet it were
+  tried and set aside:
   they tilt the outflow plane, across which the normal Mach number then
   falls to 0.98 or less, where the outflow condition no longer holds.
   Transonic flow needs a domain that follows the body past its base.

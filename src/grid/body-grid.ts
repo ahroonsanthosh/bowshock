@@ -10,8 +10,9 @@
  *
  * The outer boundary is a straight line inclined at 1.2 times the angle of
  * the conical shock that the nose tip would carry (Taylor-Maccoll), or more
- * where needed to keep that shock several cells inside it, so the bow shock
- * stays inside it while the cells follow the growing shock layer.
+ * where needed to keep that shock at least three cells of the base grid
+ * inside it, so the bow shock stays inside it while the cells follow the
+ * growing shock layer.
  * Blunt noses, whose profile leaves the tip vertically, need a different
  * topology and are refused, as is any grid that fails the quality checks
  * of quality.ts.

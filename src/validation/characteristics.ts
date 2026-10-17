@@ -36,8 +36,10 @@
  * expansion fan) and subsonic flow are refused. Shock points are not spaced
  * by control: where the shock weakens towards a Mach wave the C+ lines meet
  * it at a shallow angle and the network stretches downstream, so results
- * are used only where refinement shows them converged. Tested from Mach
- * 1.5 up; at Mach 1.3 on a 7 deg cone the march fails on the meshes tried.
+ * are used only where refinement shows them converged. Tested on cones at
+ * Mach 1.5 to 5 and half-angles up to 30 deg, including cases whose C-
+ * lines run parallel to the axis; at Mach 1.3 on a 7 deg cone the march
+ * fails on the meshes tried.
  */
 
 import { bodyBreakpoints, bodyLength, bodyRadius, type Body } from '../geometry/body';
@@ -101,12 +103,18 @@ export function characteristics(
     if (!(m > 1)) throw new RangeError('the flow is not supersonic: no characteristics solution');
     return { rho, v: Math.sqrt(v2), m, mu: Math.asin(1 / m) };
   };
-  /** Compatibility coefficients: Q dp +- d(theta) = -R dy / y. */
+  /**
+   * Compatibility coefficients: Q dp +- d(theta) = -R dy / y, written with
+   * R dy = S dl, S = sin(theta) / M and dl the length along the
+   * characteristic (dy = sin(theta +- mu) dl): R itself is singular where
+   * the characteristic runs parallel to the axis, theta = -+ mu, while S dl
+   * stays finite there.
+   */
   const coefficients = (pt: Point, sign: 1 | -1) => {
     const d = derived(pt);
     return {
       q: 1 / (Math.tan(d.mu) * d.rho * d.v * d.v),
-      r: Math.sin(pt.theta) / (d.m * Math.sin(pt.theta + sign * d.mu)),
+      s: Math.sin(pt.theta) / d.m,
       angle: pt.theta + sign * d.mu,
       rho: d.rho,
       v: d.v,
@@ -241,9 +249,8 @@ export function characteristics(
       c = { ...c, x, y: s.y + ls * (x - s.x) };
       const cc2 = coefficients(c, 1);
       const q = 0.5 * (cb.q + cc2.q);
-      const r = 0.5 * (cb.r + cc2.r);
-      const residual =
-        q * (c.p - b.p) + (c.theta - b.theta) + (r * (c.y - b.y)) / (0.5 * (c.y + b.y));
+      const r = 0.5 * (cb.s + cc2.s) * Math.hypot(c.x - b.x, c.y - b.y);
+      const residual = q * (c.p - b.p) + (c.theta - b.theta) + r / (0.5 * (c.y + b.y));
       return { c, residual };
     };
     // Secant iteration on the wave angle.
@@ -275,9 +282,9 @@ export function characteristics(
       const x = (b.y - a.y + lm * a.x - lp * b.x) / (lm - lp);
       const y = a.y + lm * (x - a.x);
       const qm = 0.5 * (ca.q + cm.q);
-      const rm = (0.5 * (ca.r + cm.r) * (y - a.y)) / (0.5 * (y + a.y));
+      const rm = (0.5 * (ca.s + cm.s) * Math.hypot(x - a.x, y - a.y)) / (0.5 * (y + a.y));
       const qp = 0.5 * (cb.q + cpl.q);
-      const rp = (0.5 * (cb.r + cpl.r) * (y - b.y)) / (0.5 * (y + b.y));
+      const rp = (0.5 * (cb.s + cpl.s) * Math.hypot(x - b.x, y - b.y)) / (0.5 * (y + b.y));
       // qm (p - pa) - (theta - theta_a) = -rm;  qp (p - pb) + (theta - theta_b) = -rp.
       const p = (qm * a.p - a.theta + qp * b.p + b.theta - rm - rp) / (qm + qp);
       const theta = qp * (b.p - p) + b.theta - rp;
@@ -307,7 +314,13 @@ export function characteristics(
       const f = (x: number) => a.y + lm * (x - a.x) - radius(x);
       let lo = a.x;
       let hi = a.x + Math.max(a.y - radius(a.x), 1e-12) / Math.max(-lm, 1e-3) + 1e-12;
-      while (f(hi) > 0) hi += hi - lo;
+      // A C- line that has not met the body by twice the remaining length
+      // never meets it before the end.
+      while (f(hi) > 0 && hi < xEnd + (xEnd - a.x)) hi += hi - lo;
+      if (f(hi) > 0) {
+        end.beyond = true;
+        return 0;
+      }
       for (let it = 0; it < 200 && hi - lo > 1e-15 * (1 + hi); it++) {
         const mid = 0.5 * (lo + hi);
         if (f(mid) > 0) lo = mid;
@@ -321,7 +334,7 @@ export function characteristics(
       const y = radius(x);
       const theta = slope(x);
       const qm = 0.5 * (ca.q + cm.q);
-      const rm = (0.5 * (ca.r + cm.r) * (y - a.y)) / (0.5 * (y + a.y));
+      const rm = (0.5 * (ca.s + cm.s) * Math.hypot(x - a.x, y - a.y)) / (0.5 * (y + a.y));
       const p = a.p + (theta - a.theta - rm) / qm;
       const change = Math.max(Math.abs(x - c.x), Math.abs(p - c.p), Math.abs(theta - c.theta));
       Object.assign(c, { x, y, p, theta });

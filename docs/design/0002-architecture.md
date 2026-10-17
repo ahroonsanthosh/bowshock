@@ -139,8 +139,8 @@ fins), so grids are generated automatically. The user never meshes.
 - **WebGPU compute (WGSL)** is the primary engine. WGSL has no 64-bit
   floats, and there is no plan in the standard to add them, so the GPU works
   in 32-bit with nondimensional variables, metrics computed in double
-  precision on the CPU and stored in 32-bit, deterministic fixed-order reductions, and force integration in double
-  precision on the CPU.
+  precision on the CPU and stored in 32-bit, deterministic fixed-order
+  reductions, and force integration in double precision on the CPU.
 - **TypeScript CPU reference engine** (double precision) implements the same
   scheme. It is the oracle for tests and the fallback for browsers without
   WebGPU (Firefox on Linux and Android, at the time of writing).
@@ -243,6 +243,10 @@ bugs to confirm tests catch them) are used throughout.
 | M10 | 3D sector Euler with fins                                     | Fin wave drag against supersonic thin-airfoil theory                                               |
 | M11 | 3D RANS sector; Basic Finner                                  | Within 5% at Mach 1.5 to 3. **Gate: cost on laptops**                                              |
 | M12 | Transition option, flux decision, full validation report      | Release 1.0                                                                                        |
+
+Progress (2026-10-17): M0 to M3 are done, M3 on single grid blocks; the
+checks of M4 pass for sharp noses (0004, with every result verified on
+nested grids, 0005), while blunt noses remain open.
 
 Spikes to run early: DPLR convergence in 32-bit on stretched grids; the fin
 grid on 50 real fin planforms; a literature survey of RANS base-pressure
