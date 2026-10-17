@@ -126,6 +126,8 @@ The design records, in order:
 - [0004](docs/design/0004-grids.md): grids generated from body profiles.
 - [0005](docs/design/0005-solution-verification.md): every result
   carries its measured discretisation error.
+- [0006](docs/design/0006-shock-fitting.md): the bow shock fitted as the
+  outer boundary instead of captured.
 
 Validation data and how far each source has been checked:
 [docs/validation/sources.md](docs/validation/sources.md).

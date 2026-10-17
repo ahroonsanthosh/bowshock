@@ -5,7 +5,7 @@
  * cells, whose error depends on where it falls within a cell (design:
  * docs/design/0004-grids.md).
  *
- * The method is that of G. Moretti and M. Abbett, "A time-dependent
+ * The method is that of G. Moretti and M. J. Abbett, "A time-dependent
  * computational method for blunt body flows", AIAA J. 4 (1966) 2136, in a
  * finite-volume form (M. D. Salas, "Shock fitting method for complicated
  * two-dimensional supersonic flows", AIAA J. 14 (1976) 583):
