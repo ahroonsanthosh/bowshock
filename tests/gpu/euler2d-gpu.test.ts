@@ -377,7 +377,9 @@ describe('GpuEuler2D: axisymmetric validation', () => {
       const state = await s.readState();
       expect(worstPressureDifference(cpu, state)).toBeLessThan(1e-4);
     });
-  });
+    // A CPU solve and a GPU solve of 2000 steps each: over the default
+    // minute when the machine is loaded.
+  }, 600_000);
 });
 
 describe('GpuEuler2D: generated body grid', () => {

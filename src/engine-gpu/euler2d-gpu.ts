@@ -114,6 +114,9 @@ export interface GpuState2D {
   readonly energy: Float32Array;
 }
 
+/** A grid too large for the device's buffer limits. */
+export class GpuMemoryLimitError extends RangeError {}
+
 /**
  * Primitive variables of cell c of a state read back from the GPU. The GPU
  * solves with gamma rounded to 32 bits, so its pressure is recovered with
@@ -176,9 +179,22 @@ export class GpuEuler2D {
   /** Index into stateBuffers of the buffer holding the current solution. */
   private current: StateIndex = 0;
 
-  /** Create a solver, compiling its shaders. Throws with the compiler's messages on failure. */
+  /**
+   * Create a solver, compiling its shaders. Throws with the compiler's
+   * messages on failure, and GpuMemoryLimitError if the grid's buffers
+   * exceed the device's limits.
+   */
   static async create(device: GPUDevice, config: GpuEuler2DConfig): Promise<GpuEuler2D> {
     validateGrid2DConfig(config);
+    const { ni, nj } = config.grid;
+    // The largest buffer: the geometry, one vec4 per face and cell.
+    const largest = 16 * ((ni + 1) * nj + ni * (nj + 1) + ni * nj);
+    const limit = Math.min(device.limits.maxStorageBufferBindingSize, device.limits.maxBufferSize);
+    if (largest > limit) {
+      throw new GpuMemoryLimitError(
+        `a grid of ${ni} x ${nj} cells needs a buffer of ${(largest / 2 ** 20).toFixed(0)} MiB, more than this GPU allows (${(limit / 2 ** 20).toFixed(0)} MiB)`,
+      );
+    }
     const flux: string = config.flux;
     if (!isGpuFlux(flux)) throw new RangeError(`flux ${flux} is not available on the GPU`);
     if (config.source !== undefined) {

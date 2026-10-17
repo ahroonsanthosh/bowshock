@@ -17,7 +17,7 @@ import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
 import { bluntBodyGrid, gridOnLines, withFixedFractions, type GridLine } from '../grid/blunt-grid';
 import { columnPositions } from '../grid/spacing';
-import { nodeIndex, type StructuredGrid } from '../grid/structured';
+import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
 import { capturedShockHeights, fitShock, type ShockFit } from '../solver/shock-fitting';
 import { normalShock } from '../validation/gas-dynamics';
@@ -119,6 +119,41 @@ export interface FitProblem {
    * part beyond not to reach back (`baseMach`).
    */
   readonly askedEnd: number;
+}
+
+/** Rows of cells next to the wall that hold the stencil of the wall's fluxes, with a margin. */
+const WALL_ROWS = 4;
+
+/**
+ * The problem's drag from a flow on a grid, evaluated in double precision
+ * by the CPU engine on the rows of cells next to the wall alone: the wall's
+ * fluxes depend on nothing else, and the finest grids have millions of
+ * cells.
+ */
+export function wallDrag(
+  problem: FitProblem,
+  grid: StructuredGrid,
+  cell: (i: number, j: number) => Primitive2D,
+): number {
+  const rows = Math.min(WALL_ROWS, grid.nj);
+  const strip = gridFromFunction(grid.ni, rows, (i, j) => {
+    const k = nodeIndex(grid, i, j);
+    return [grid.x[k]!, grid.y[k]!];
+  });
+  const config = problem.configFor(
+    strip,
+    Array.from({ length: grid.ni }, () => problem.freeStream),
+  );
+  const { iMin } = config.boundaries;
+  const evaluator = new Euler2D({
+    ...config,
+    boundaries: {
+      ...config.boundaries,
+      iMin: iMin.kind === 'faceStates' ? { ...iMin, states: iMin.states.slice(0, rows) } : iMin,
+    },
+  });
+  evaluator.setCellPrimitives(cell);
+  return problem.drag(evaluator.boundaryFluxes('jMin'));
 }
 
 /**

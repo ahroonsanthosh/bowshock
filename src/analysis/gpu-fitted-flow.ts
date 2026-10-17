@@ -5,16 +5,21 @@
  * settled to the GPU's noise and the shock has stopped moving.
  */
 
-import { Euler2D } from '../engine-cpu/euler2d';
 import { isGpuFlux } from '../engine-gpu/euler1d-gpu';
-import type { GpuEuler2DConfig } from '../engine-gpu/euler2d-gpu';
+import { GpuMemoryLimitError, type GpuEuler2DConfig } from '../engine-gpu/euler2d-gpu';
 import { fitShockGpu, type GpuShockFit } from '../engine-gpu/shock-fitting-gpu';
 import type { Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
 import { gridQuality, qualityFailures } from '../grid/quality';
 import type { StructuredGrid } from '../grid/structured';
 import { refineUntilVerified } from '../verification/grid-convergence';
-import { baseMach, bluntFitProblem, sharpFitProblem, type FitProblem } from './fitted-flow';
+import {
+  baseMach,
+  bluntFitProblem,
+  sharpFitProblem,
+  wallDrag,
+  type FitProblem,
+} from './fitted-flow';
 import {
   GPU_NOISE,
   outflowMach,
@@ -66,11 +71,7 @@ export async function gpuFittedFlow(
     stepsPerMove: options.stepsPerMove,
     checkEvery: options.checkEvery,
     // The wall's fluxes in double precision, by the CPU engine's scheme.
-    monitor: (grid, cell) => {
-      const evaluator = new Euler2D(problem.configFor(grid, free));
-      evaluator.setCellPrimitives(cell);
-      return problem.drag(evaluator.boundaryFluxes('jMin'));
-    },
+    monitor: (grid, cell) => wallDrag(problem, grid, cell),
     noise: GPU_NOISE,
     speedTolerance: options.speedTolerance,
     maxIterations: options.maxIterations,
@@ -174,6 +175,13 @@ export async function verifiedFittedDragGpu(
     }
     if (error instanceof InvalidCase) {
       return { kind: 'invalid', refinement: lastRefinement, reason: error.message };
+    }
+    if (error instanceof GpuMemoryLimitError) {
+      return {
+        kind: 'invalid',
+        refinement: lastRefinement,
+        reason: `${error.message}; choose a coarser finest grid or a shorter body`,
+      };
     }
     throw error;
   }

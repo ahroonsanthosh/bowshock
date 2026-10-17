@@ -77,11 +77,21 @@ function withBand(value: number, band: number): string {
 let controller: AbortController | null = null;
 stopButton.addEventListener('click', () => controller?.abort());
 
-/** A GPU device, or null without WebGPU (navigator.gpu is then undefined despite its type). */
+/**
+ * A GPU device, or null without WebGPU (navigator.gpu is then undefined
+ * despite its type), with the adapter's largest buffers: the finest grids
+ * of long bodies need more than the default 128 MiB.
+ */
 async function requestDevice(): Promise<GPUDevice | null> {
   const gpu = navigator.gpu as GPU | undefined;
   const adapter = await gpu?.requestAdapter();
-  return adapter ? adapter.requestDevice() : null;
+  if (!adapter) return null;
+  return adapter.requestDevice({
+    requiredLimits: {
+      maxBufferSize: adapter.limits.maxBufferSize,
+      maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
+    },
+  });
 }
 
 // The form never submits natively; Run stays disabled until the GPU is ready.

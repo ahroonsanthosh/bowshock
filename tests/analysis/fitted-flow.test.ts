@@ -6,6 +6,7 @@ import {
   sharpFitProblem,
   sharpFittedFlow,
   verifiedFittedDrag,
+  wallDrag,
 } from '../../src/analysis/fitted-flow';
 import type { Body } from '../../src/geometry/body';
 import { normalShock, stagnationPressureRatio } from '../../src/validation/gas-dynamics';
@@ -59,6 +60,19 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     };
     expect(measure(Math.atan(0.5) / deg, 1.5)).toBeLessThan(1);
     expect(measure(20, 3)).toBeGreaterThan(1);
+  }, 600_000);
+
+  it('the drag from the rows of cells at the wall alone is the drag from the whole grid', () => {
+    // The page evaluates it on a strip, the finest grids having millions of cells.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const problem = sharpFitProblem(ogive, { gamma, nj: 20, refinement: 1, mach: 2 });
+    const { fit, drag } = fittedFlow(problem, 20_000);
+    expect(fit.converged).toBe(true);
+    const strip = wallDrag(problem, fit.grid, (i, j) => fit.solver.primitive(i, j));
+    expect(Math.abs(strip / drag - 1)).toBeLessThan(1e-14);
   }, 600_000);
 
   it('a tip too blunt for an attached shock is refused with its angle and what to change', () => {
