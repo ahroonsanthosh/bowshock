@@ -88,14 +88,16 @@ Mach 2 (nj = 20 and 40), 0.21504 and 0.21495 at Mach 3.
 Cone-cylinder, Mach 3, 20 deg, forebody pressure drag against
 Taylor-Maccoll (the exact value, Cp = 0.284270):
 
-| Shock    | nj = 20  | nj = 40  | nj = 80 | nj = 160 |
-| -------- | -------- | -------- | ------- | -------- |
-| Captured | -0.395%  | -0.259%  | -0.151% | -0.081%  |
-| Fitted   | +0.0248% | +0.0062% |         |          |
+| Shock    | nj = 20  | nj = 40  | nj = 80   | nj = 160 |
+| -------- | -------- | -------- | --------- | -------- |
+| Captured | -0.395%  | -0.259%  | -0.151%   | -0.081%  |
+| Fitted   | +0.0248% | +0.0062% | +0.00154% |          |
 
-The fitted error falls by 4.0 per refinement: second order, where
-capture gave about first. On 40 cells across it is already 13 times
-smaller than capture on 160.
+The fitted error falls by 4.0 per refinement (observed order 1.998),
+second order where capture gave about first; on 40 cells across it is
+already 13 times smaller than capture on 160. Extrapolated from the
+three grids the drag is 1.2e-7 of its value below the exact one, and the
+band of the finest grid (1.9e-5) contains its actual error (1.5e-5).
 
 Tangent ogive of NACA TN 3716 (3 calibers, 7 calibers of cylinder),
 Mach 1.98, forebody pressure drag against the method of characteristics
@@ -123,6 +125,11 @@ refinement (order 1.91), extrapolated 0.788934 with a band of 0.023% on
 the finest grid. The standoff (0.349552, 0.349374, 0.349330 body radii)
 converges at order 2.02 and the stagnation pressure's error (+0.0074%,
 +0.0013%, +0.00024%) by 5.5 per refinement.
+
+Hemisphere-cylinder at Mach 3: 0.8502328, 0.8495647, 0.8493855 on nj =
+20, 40 and 80 (order 1.90, extrapolated 0.849320, band 0.010%); the
+standoff (0.215038, 0.214954, 0.214934 body radii) at order 2.07, the
+stagnation pressure's error +0.0044%, +0.00084%, +0.00016%.
 
 These grids moved each node's fraction of its line with the line's
 height; the drivers now keep each line's starting fractions
@@ -178,8 +185,8 @@ after 2500 steps, the CPU's needing 4747 to reach 1e-12.
 
 ## Open
 
-- A third grid on the cone, and the families again on grids with fixed
-  fractions, to set the floor for fitted results.
+- The families again on grids with fixed fractions, and more cases, to
+  set the floor for fitted results (in progress).
 - The drag page: the fitted solver on the GPU, families and their bands.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.
