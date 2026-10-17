@@ -111,8 +111,9 @@
       <h1>Nose wave drag</h1>
       <p>
         The pressure drag of a rocket's nose and body ahead of the base, in supersonic flow at zero
-        incidence, with its numerical error measured: each case is solved on a family of
-        successively finer grids, up to the finest, and the error band is measured from them.
+        incidence, with its numerical error measured: each case is solved on successively finer
+        grids, and the error band is measured from how the drag changes between them. Needs a
+        browser with WebGPU.
         <a href="../index.html">Back to bowshock</a>
       </p>
       <form class="controls" id="form">
@@ -151,9 +152,9 @@
         <button id="run" type="submit">Run</button>
         <button id="stop" type="button" disabled>Stop</button>
       </form>
-      <p id="result"></p>
+      <p id="result" aria-live="polite"></p>
       <p id="status"></p>
-      <table id="levels" hidden>
+      <table id="levels" aria-label="Grids solved" hidden>
         <thead>
           <tr>
             <th>Cells</th>

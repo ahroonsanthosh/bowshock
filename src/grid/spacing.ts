@@ -2,9 +2,10 @@
 
 /**
  * Node positions along a line (x, or arc length along a curve) for a
- * target density of nodes per unit length: within each interval between breakpoints the cumulative density is
- * divided into a whole number of equal parts, so every breakpoint lies on
- * a node and the spacing varies smoothly.
+ * target density of nodes per unit length: within each interval between
+ * breakpoints the cumulative density is divided into a whole number of
+ * equal parts, so every breakpoint lies on a node and the spacing varies
+ * smoothly.
  *
  * The count in each interval is rounded at the base resolution and then
  * multiplied by the refinement, and the density is tabulated at a

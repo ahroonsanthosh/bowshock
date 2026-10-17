@@ -241,10 +241,10 @@ export function godunovFaceFlux(
  * along the layer, so HLLC keeps it sharp. With no jump in velocity the
  * flux is HLLC's. It is rotationally invariant but, unlike its parts, not
  * Galilean invariant along the face: a velocity added along the face is,
- * in the rotated frames, partly a normal one. HLLC alone, at a strong
- * shock aligned with the grid,
- * leaves an error behind it that depends on where the shock sits in its
- * cell (docs/design/0004-grids.md).
+ * in the rotated frames, partly a normal one. It is here because HLLC
+ * alone, at a strong shock aligned with the grid, leaves an error behind
+ * it that depends on where the shock sits in its cell
+ * (docs/design/0004-grids.md).
  */
 export function rotatedHybridFaceFlux(
   left: FaceState,
