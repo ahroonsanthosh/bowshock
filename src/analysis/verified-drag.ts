@@ -121,14 +121,31 @@ class IterationStalled extends Error {}
 class InvalidCase extends Error {}
 class Cancelled extends Error {}
 
+export interface FreeStream {
+  readonly state: Primitive2D;
+  readonly pressure: number;
+  readonly dynamicPressure: number;
+}
+
+/**
+ * The free stream of a case at Mach `mach`, with unit density and
+ * pressure. Its speed is rounded to the nearest 32-bit value, so that the
+ * GPU engine, which stores it in 32 bits, solves the same case as the CPU
+ * engine, and the drag is normalised by its own dynamic pressure; the Mach
+ * number then differs from `mach` by under 6e-8 of it.
+ */
+export function freeStreamAt(mach: number, gamma: number): FreeStream {
+  const u = Math.fround(mach * Math.sqrt(gamma));
+  return { state: { rho: 1, u, v: 0, p: 1 }, pressure: 1, dynamicPressure: 0.5 * u * u };
+}
+
 export async function verifiedForebodyDrag(
   body: Body,
   options: VerifiedDragOptions,
   engineFor: EngineFactory,
 ): Promise<VerifiedDrag> {
   const { mach, gamma } = options;
-  const freeStream: Primitive2D = { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
-  const free = { pressure: 1, dynamicPressure: 0.5 * gamma * mach * mach };
+  const { state: freeStream, ...free } = freeStreamAt(mach, gamma);
   const reports: LevelReport[] = [];
 
   const solveAt = async (refinement: number): Promise<number> => {

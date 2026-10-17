@@ -263,7 +263,10 @@ fn shock_face(i: u32) -> vec4f {
 
 // The move of shock node k >= 1 along its line, as fitShock in
 // src/solver/shock-fitting.ts: by the speed of the face on its axis side
-// over a pseudo-time step of half its cell's height per signal speed.
+// over a pseudo-time step of half its cell's height per signal speed. The
+// signal speed is that of the cell at the start of the step, where the
+// CPU takes it after the step: the path differs, not the fixed point,
+// where every move vanishes.
 fn node_move(k: u32) -> f32 {
   let f = k - 1u;
   // The face's outward normal, on the right of node k -> node k - 1.

@@ -24,7 +24,7 @@ import { normalShock } from '../validation/gas-dynamics';
 import { coneFlowField, taylorMaccoll } from '../validation/taylor-maccoll';
 import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
 import { forebodyPressureDrag } from './forces';
-import { CPU_NOISE, ORDER_TOLERANCE } from './verified-drag';
+import { CPU_NOISE, ORDER_TOLERANCE, freeStreamAt } from './verified-drag';
 
 export interface FittedFlowOptions {
   readonly mach: number;
@@ -54,9 +54,6 @@ const SPEED_TOLERANCE = 1e-12;
 /** ... and residual, relative to the free stream's on the first grid. */
 const RESIDUAL_TOLERANCE = 1e-12;
 
-function freeStreamOf(mach: number, gamma: number): Primitive2D {
-  return { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
-}
 
 function engineConfig(
   grid: StructuredGrid,
@@ -112,7 +109,7 @@ export function sharpFitProblem(body: Body, options: FitProblemOptions): FitProb
   const R = body.nose.baseRadius;
   const L = body.nose.length;
   const xEnd = bodyLength(body);
-  const free = freeStreamOf(mach, gamma);
+  const free = freeStreamAt(mach, gamma).state;
   const tipAngle = Math.atan(noseTipSlope(body.nose));
   if (!Number.isFinite(tipAngle)) throw new RangeError('the nose is blunt: use bluntFitProblem');
   // Throws if the conical shock at the tip would detach.
@@ -207,7 +204,7 @@ export function sharpFitProblem(body: Body, options: FitProblemOptions): FitProb
 export function bluntFitProblem(body: Body, options: FitProblemOptions): FitProblem {
   const { mach, gamma, nj: baseNj, refinement } = options;
   const R = body.nose.baseRadius;
-  const free = freeStreamOf(mach, gamma);
+  const free = freeStreamAt(mach, gamma).state;
   const start = bluntBodyGrid(body, { nj: baseNj, refinement, mach });
   const nj = baseNj * refinement;
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
@@ -255,11 +252,7 @@ function forebodyDrag(
   gamma: number,
   baseRadius: number,
 ): number {
-  return forebodyPressureDrag(
-    wall,
-    { pressure: 1, dynamicPressure: 0.5 * gamma * mach * mach },
-    baseRadius,
-  );
+  return forebodyPressureDrag(wall, freeStreamAt(mach, gamma), baseRadius);
 }
 
 /** The fit of a problem on the CPU engine, and its drag. */

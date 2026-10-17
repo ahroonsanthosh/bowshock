@@ -114,7 +114,13 @@ export interface GpuState2D {
   readonly energy: Float32Array;
 }
 
-/** Primitive variables of cell c of a state read back from the GPU. */
+/**
+ * Primitive variables of cell c of a state read back from the GPU. The GPU
+ * solves with gamma rounded to 32 bits, so its pressure is recovered with
+ * the same value: with the unrounded one every pressure would be off by
+ * (gamma - 1) / (fround(gamma) - 1) - 1, 6e-8 for gamma = 1.4, and the drag
+ * by up to about 1e-6 of its value on bodies of small drag.
+ */
 export function gpuPrimitive2D(state: GpuState2D, c: number, gamma: number): Primitive2D {
   const rho = state.rho[c]!;
   const mu = state.mu[c]!;
@@ -123,7 +129,7 @@ export function gpuPrimitive2D(state: GpuState2D, c: number, gamma: number): Pri
     rho,
     u: mu / rho,
     v: mv / rho,
-    p: pressureFromConserved2D(rho, mu, mv, state.energy[c]!, gamma),
+    p: pressureFromConserved2D(rho, mu, mv, state.energy[c]!, Math.fround(gamma)),
   };
 }
 
