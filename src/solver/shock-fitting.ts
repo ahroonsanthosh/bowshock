@@ -33,7 +33,7 @@
 
 import { Euler2D, type Euler2DConfig } from '../engine-cpu/euler2d';
 import { type GridLine } from '../grid/blunt-grid';
-import { computeMetrics, nodeIndex, type StructuredGrid } from '../grid/structured';
+import { nodeIndex, type StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
 
 /** The state behind a normal shock moving along n, and its speed. */
@@ -135,7 +135,10 @@ export interface ShockFitOptions {
   readonly firstNode: 'symmetry' | 'fixed';
   /** Stop when every shock face moves slower than this times the free-stream sound speed. */
   readonly speedTolerance: number;
-  /** ... and the density residual has fallen below this, relative to the start. */
+  /**
+   * ... and the density residual has fallen below this, relative to the
+   * larger of the starting flow's and the free stream's on the first grid.
+   */
   readonly residualTolerance: number;
   readonly maxIterations: number;
   /** Called every so often with the progress. */
@@ -148,7 +151,7 @@ export interface ShockFit {
   readonly heights: readonly number[];
   /** Largest |W| / a over the shock faces at the end. */
   readonly maxSpeed: number;
-  /** Density residual at the end, relative to the start. */
+  /** Density residual at the end, relative to the reference (see residualTolerance). */
   readonly residual: number;
   readonly iterations: number;
   readonly converged: boolean;
@@ -192,8 +195,8 @@ export function fitShock(options: ShockFitOptions): ShockFit {
     };
 
   /** The shock on every jMax face for the current flow, and the flux through it. */
-  const shockBoundary = (s: Euler2D, g: StructuredGrid) => {
-    const m = computeMetrics(g, 'axisymmetric');
+  const shockBoundary = (s: Euler2D) => {
+    const m = s.metrics;
     const states: Primitive2D[] = [];
     const speeds: number[] = [];
     const fluxes = new Float64Array(4 * ni);
@@ -223,8 +226,8 @@ export function fitShock(options: ShockFitOptions): ShockFit {
     }
     return { states, speeds, fluxes, metrics: m };
   };
-  const applyBoundary = (s: Euler2D, g: StructuredGrid) => {
-    const b = shockBoundary(s, g);
+  const applyBoundary = (s: Euler2D) => {
+    const b = shockBoundary(s);
     s.setFaceStates('jMax', b.states);
     s.setFaceFluxes('jMax', b.fluxes);
     return b;
@@ -239,15 +242,26 @@ export function fitShock(options: ShockFitOptions): ShockFit {
     ),
   );
   solver.setCellPrimitives(options.initial);
-  applyBoundary(solver, grid);
-  const initialResidual = solver.densityResidualNorm();
+  applyBoundary(solver);
+  // The residual is measured against that of the free stream on the first
+  // grid, a scale fixed by the problem: the starting flow's own residual
+  // can be tiny when it is already close to the answer.
+  const reference = new Euler2D(
+    options.configFor(
+      grid,
+      Array.from({ length: ni }, () => free),
+    ),
+  );
+  reference.setInitialCondition(() => free);
+  applyBoundary(reference);
+  const initialResidual = Math.max(solver.densityResidualNorm(), reference.densityResidualNorm());
   let maxSpeed = Infinity;
   let residual = Infinity;
   let iterations = 0;
   let converged = false;
 
   while (iterations < options.maxIterations) {
-    const { states, speeds, metrics } = applyBoundary(solver, grid);
+    const { states, speeds, metrics } = applyBoundary(solver);
     solver.iterate(1);
     iterations += 1;
 
@@ -289,7 +303,7 @@ export function fitShock(options: ShockFitOptions): ShockFit {
     solver = moved;
 
     if (iterations % CHECK_EVERY === 0 || maxSpeed < options.speedTolerance) {
-      applyBoundary(solver, grid);
+      applyBoundary(solver);
       residual = solver.densityResidualNorm() / initialResidual;
       options.onProgress?.(iterations, maxSpeed, residual);
       if (maxSpeed < options.speedTolerance && residual < options.residualTolerance) {
@@ -298,7 +312,7 @@ export function fitShock(options: ShockFitOptions): ShockFit {
       }
     }
   }
-  applyBoundary(solver, grid);
+  applyBoundary(solver);
   return { solver, grid, heights, maxSpeed, residual, iterations, converged };
 }
 
