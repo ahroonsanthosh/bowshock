@@ -28,6 +28,9 @@ const INFLOW: u32 = 0u;
 const OUTFLOW: u32 = 1u;
 const WALL: u32 = 2u;
 const PERIODIC: u32 = 3u;
+// A state per face, from the boundary buffer: the post-shock state of a
+// fitted shock, or a given inflow profile.
+const FACE_STATES: u32 = 4u;
 
 // Sides, in the order of Params.bc and Params.inflow.
 const I_MIN: u32 = 0u;
@@ -52,6 +55,12 @@ struct Params {
   cfl: f32,
   t_end: f32,
   n_partials: u32,
+  // 1 on each FACE_STATES side whose face fluxes are imposed from the
+  // boundary buffer instead of solved for.
+  imposed: vec4u,
+  // 1 if compute_shock_boundary sets the jMax faces: a fitted shock, with
+  // the free stream ahead of it in inflow[J_MAX].
+  fitted_shock: u32,
 }
 
 struct StageCoefficients {
@@ -81,6 +90,10 @@ struct Control {
 @group(0) @binding(3) var<storage, read_write> face_flux: array<vec4f>;
 // Cell time steps (ni * nj), then partial reductions (n_partials).
 @group(0) @binding(4) var<storage, read_write> scratch: array<f32>;
+// Per-face boundary data: conserved states outside the faces of each
+// FACE_STATES side, then imposed fluxes per unit area, in side order (see
+// side_offset), then the fitted shock's speed and Mach number per jMax face.
+@group(0) @binding(5) var<storage, read_write> boundary: array<vec4f>;
 
 @group(1) @binding(0) var<uniform> stage: StageCoefficients;
 @group(1) @binding(1) var<storage, read> u0: array<vec4f>;
@@ -103,6 +116,30 @@ fn i_face(i: u32, j: u32) -> vec4f {
 
 fn j_face(i: u32, j: u32) -> vec4f {
   return geometry[n_i_faces() + i + j * params.ni];
+}
+
+// Offset of a side's faces in each part of the boundary buffer.
+fn side_offset(side: u32) -> u32 {
+  if (side == I_MIN) {
+    return 0u;
+  }
+  if (side == I_MAX) {
+    return params.nj;
+  }
+  if (side == J_MIN) {
+    return 2u * params.nj;
+  }
+  return 2u * params.nj + params.ni;
+}
+
+// Faces in one part of the boundary buffer.
+fn boundary_part() -> u32 {
+  return 2u * (params.ni + params.nj);
+}
+
+// The imposed flux through boundary face t of a side, times its area.
+fn imposed_flux(side: u32, t: u32, face: vec4f) -> vec4f {
+  return boundary[boundary_part() + side_offset(side) + t] * face.z;
 }
 
 fn cell_geometry(c: u32) -> vec4f {
@@ -146,6 +183,10 @@ fn load_cell(i: i32, j: i32) -> vec4f {
     return src[u32(i + j * ni)];
   }
   let kind = params.bc[side];
+  if (kind == FACE_STATES) {
+    let along = select(u32(i), u32(j), side == I_MIN || side == I_MAX);
+    return boundary[side_offset(side) + along];
+  }
   if (kind == INFLOW) {
     let w = params.inflow[side];
     return to_conserved_2d(Primitive2D(w.x, w.y, w.z, w.w), params.gamma);
@@ -221,6 +262,14 @@ fn compute_i_fluxes(@builtin(global_invocation_id) id: vec3u) {
   }
   let i = i32(f % (params.ni + 1u));
   let j = i32(f / (params.ni + 1u));
+  if (i == 0 && params.imposed[I_MIN] == 1u) {
+    face_flux[f] = imposed_flux(I_MIN, u32(j), geometry[f]);
+    return;
+  }
+  if (i == i32(params.ni) && params.imposed[I_MAX] == 1u) {
+    face_flux[f] = imposed_flux(I_MAX, u32(j), geometry[f]);
+    return;
+  }
   face_flux[f] = face_flux_between(
     load_cell(i - 2, j),
     load_cell(i - 1, j),
@@ -240,6 +289,14 @@ fn compute_j_fluxes(@builtin(global_invocation_id) id: vec3u) {
   }
   let i = i32(f % params.ni);
   let j = i32(f / params.ni);
+  if (j == 0 && params.imposed[J_MIN] == 1u) {
+    face_flux[n_i_faces() + f] = imposed_flux(J_MIN, u32(i), geometry[n_i_faces() + f]);
+    return;
+  }
+  if (j == i32(params.nj) && params.imposed[J_MAX] == 1u) {
+    face_flux[n_i_faces() + f] = imposed_flux(J_MAX, u32(i), geometry[n_i_faces() + f]);
+    return;
+  }
   face_flux[n_i_faces() + f] = face_flux_between(
     load_cell(i, j - 2),
     load_cell(i, j - 1),
@@ -248,6 +305,91 @@ fn compute_j_fluxes(@builtin(global_invocation_id) id: vec3u) {
     geometry[n_i_faces() + f],
     wall_side(j == 0, j == i32(params.nj), J_MIN, J_MAX),
   );
+}
+
+// The fitted shock (src/solver/shock-fitting.ts, shockState and
+// compatibleShock): the state behind a shock of outward normal n that the
+// free stream meets at relative normal Mach number m, and the shock's speed
+// along n and the post-shock normal velocity.
+struct ShockState {
+  w: Primitive2D,
+  speed: f32,
+  normal_velocity: f32,
+}
+
+fn shock_state(m: f32, n: vec2f) -> ShockState {
+  let g = params.gamma;
+  let free = params.inflow[J_MAX];
+  let a = sqrt(g * free.w / free.x);
+  let vn = free.y * n.x + free.z * n.y;
+  let speed = m * a + vn;
+  let m2 = m * m;
+  let density_ratio = (g + 1.0) * m2 / ((g - 1.0) * m2 + 2.0);
+  let pressure_ratio = 1.0 + 2.0 * g / (g + 1.0) * (m2 - 1.0);
+  let normal_velocity = speed - m * a / density_ratio;
+  let w = Primitive2D(
+    free.x * density_ratio,
+    free.y + (normal_velocity - vn) * n.x,
+    free.z + (normal_velocity - vn) * n.y,
+    free.w * pressure_ratio,
+  );
+  return ShockState(w, speed, normal_velocity);
+}
+
+// One thread per jMax face: the shock consistent with the u_n + a
+// characteristic from the two cells below the face, its post-shock state
+// (the ghost cells), the physical flux of that state (the face flux) and
+// its speed, from `src`, the solution at the start of the step.
+@compute @workgroup_size(WORKGROUP_SIZE)
+fn compute_shock_boundary(@builtin(global_invocation_id) id: vec3u) {
+  let i = id.x;
+  if (i >= params.ni || params.fitted_shock != 1u) {
+    return;
+  }
+  let g = params.gamma;
+  let n = j_face(i, params.nj).xy;
+  let c1 = to_primitive_2d(src[i + (params.nj - 1u) * params.ni], g);
+  let c2 = to_primitive_2d(src[i + (params.nj - 2u) * params.ni], g);
+  let impedance = c1.rho * sqrt(g * c1.p / c1.rho);
+  let p_face = 1.5 * c1.p - 0.5 * c2.p;
+  let un_face = 1.5 * (c1.u * n.x + c1.v * n.y) - 0.5 * (c2.u * n.x + c2.v * n.y);
+  let goal = p_face + impedance * un_face;
+  var m = 1.0;
+  let at_one = shock_state(1.0, n);
+  if (at_one.w.p + impedance * at_one.normal_velocity - goal < 0.0) {
+    var low = 1.0;
+    var high = 2.0;
+    for (var k = 0; k < 40; k++) {
+      let s = shock_state(high, n);
+      if (s.w.p + impedance * s.normal_velocity - goal >= 0.0) {
+        break;
+      }
+      high *= 2.0;
+    }
+    for (var k = 0; k < 60; k++) {
+      let mid = 0.5 * (low + high);
+      let s = shock_state(mid, n);
+      if (s.w.p + impedance * s.normal_velocity - goal < 0.0) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+    m = 0.5 * (low + high);
+  }
+  let shock = shock_state(m, n);
+  let w = shock.w;
+  let u = to_conserved_2d(w, g);
+  let un = w.u * n.x + w.v * n.y;
+  let offset = side_offset(J_MAX) + i;
+  boundary[offset] = u;
+  boundary[boundary_part() + offset] = vec4f(
+    w.rho * un,
+    w.rho * w.u * un + w.p * n.x,
+    w.rho * w.v * un + w.p * n.y,
+    un * (u.w + w.p),
+  );
+  boundary[2u * boundary_part() + i] = vec4f(shock.speed, m, 0.0, 0.0);
 }
 
 // Net inflow of each conserved quantity into cell c, plus the axisymmetric

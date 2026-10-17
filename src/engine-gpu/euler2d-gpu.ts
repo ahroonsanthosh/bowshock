@@ -51,13 +51,13 @@ const GPU_FACE_FLUX_FUNCTIONS: Readonly<Record<GpuFluxName, string>> = {
 };
 
 /** Boundary condition kinds as coded in euler2d.wgsl. */
-const BOUNDARY_KINDS: Readonly<Record<Exclude<BoundaryCondition2D['kind'], 'faceStates'>, number>> =
-  {
-    inflow: 0,
-    outflow: 1,
-    wall: 2,
-    periodic: 3,
-  };
+const BOUNDARY_KINDS: Readonly<Record<BoundaryCondition2D['kind'], number>> = {
+  inflow: 0,
+  outflow: 1,
+  wall: 2,
+  periodic: 3,
+  faceStates: 4,
+};
 
 /** Sides in the order euler2d.wgsl expects them. */
 const SIDES: readonly Side[] = ['iMin', 'iMax', 'jMin', 'jMax'];
@@ -66,10 +66,18 @@ const WORKGROUP_SIZE = 64;
 /** Size of the Control struct in euler2d.wgsl: six 4-byte words and the dt log. */
 const CONTROL_BYTES = 24 + 4 * DT_LOG_SIZE;
 /** Size of the Params struct in euler2d.wgsl. */
-const PARAMS_BYTES = 112;
+const PARAMS_BYTES = 144;
 
 export interface GpuEuler2DConfig extends Omit<Euler2DConfig, 'flux'> {
   readonly flux: GpuFluxName;
+  /**
+   * The jMax boundary is a fitted shock with this free stream ahead of it:
+   * at the start of every step the GPU sets its post-shock states and
+   * fluxes from the flow below it, as src/solver/shock-fitting.ts does on
+   * the CPU, and records the shock's speed on each face. jMax must be a
+   * 'faceStates' boundary.
+   */
+  readonly fittedShock?: { readonly freeStream: Primitive2D };
 }
 
 /** Assemble the complete WGSL source for a configuration. */
@@ -127,6 +135,7 @@ const ENTRY_POINTS = [
   'advance_clock',
   'residual_norm_partials',
   'finalize_residual_norm',
+  'compute_shock_boundary',
 ] as const;
 type EntryPoint = (typeof ENTRY_POINTS)[number];
 
@@ -152,6 +161,10 @@ export class GpuEuler2D {
   private readonly ledger = new StepLedger();
   private readonly nCells: number;
   private readonly nPartials: number;
+  private readonly boundaryBuffer: GPUBuffer;
+  private readonly boundaryReadback: GPUBuffer;
+  /** Sides whose face fluxes are imposed from the boundary buffer. */
+  private readonly imposed = new Set<Side>();
   /** Index into stateBuffers of the buffer holding the current solution. */
   private current: StateIndex = 0;
 
@@ -163,8 +176,8 @@ export class GpuEuler2D {
     if (config.source !== undefined) {
       throw new RangeError('manufactured-solution sources are only supported by the CPU engine');
     }
-    if (SIDES.some((side) => config.boundaries[side].kind === 'faceStates')) {
-      throw new RangeError('per-face boundary states are only supported by the CPU engine');
+    if (config.fittedShock !== undefined && config.boundaries.jMax.kind !== 'faceStates') {
+      throw new RangeError("a fitted shock needs a 'faceStates' jMax boundary");
     }
 
     const module = await compileShader(device, 'euler2d', euler2dShaderSource(config));
@@ -181,6 +194,7 @@ export class GpuEuler2D {
         storage(2, 'storage'),
         storage(3, 'storage'),
         storage(4, 'storage'),
+        storage(5, 'storage'),
       ],
     });
     const stageLayout = device.createBindGroupLayout({
@@ -240,6 +254,14 @@ export class GpuEuler2D {
       usage.STORAGE,
     );
     const scratchBuffer = b.create('scratch', 4 * (this.nCells + this.nPartials), usage.STORAGE);
+    // States and imposed fluxes for every boundary face, then the fitted
+    // shock's speed per jMax face (layout in euler2d.wgsl).
+    this.boundaryBuffer = b.create(
+      'boundary',
+      16 * (4 * (ni + nj) + ni),
+      usage.STORAGE | usage.COPY_DST | usage.COPY_SRC,
+    );
+    this.boundaryReadback = b.create('boundary readback', 16 * ni, usage.MAP_READ | usage.COPY_DST);
     this.controlReadback = b.create(
       'control readback',
       CONTROL_BYTES,
@@ -271,8 +293,13 @@ export class GpuEuler2D {
         this.controlBuffer,
         faceFluxBuffer,
         scratchBuffer,
+        this.boundaryBuffer,
       ].map((buffer, binding) => ({ binding, resource: { buffer } })),
     });
+    for (const side of SIDES) {
+      const bc = config.boundaries[side];
+      if (bc.kind === 'faceStates') this.setFaceStates(side, bc.states);
+    }
     this.writeParams(0);
   }
 
@@ -295,6 +322,32 @@ export class GpuEuler2D {
       const w = field(centroidX[c]!, centroidY[c]!);
       if (!(w.rho > 0 && w.p > 0 && Number.isFinite(w.u) && Number.isFinite(w.v))) {
         throw new NonPhysicalStateError(`non-physical initial state in cell ${c}`);
+      }
+      packed[4 * c] = w.rho;
+      packed[4 * c + 1] = w.rho * w.u;
+      packed[4 * c + 2] = w.rho * w.v;
+      packed[4 * c + 3] = w.p / (gamma - 1) + 0.5 * w.rho * (w.u * w.u + w.v * w.v);
+    }
+    this.current = 0;
+    this.ledger.reset();
+    this.device.queue.writeBuffer(this.stateBuffers[0], 0, packed);
+    this.device.queue.writeBuffer(this.controlBuffer, 0, new Uint32Array(CONTROL_BYTES / 4));
+  }
+
+  /**
+   * Set every cell (i, j) to the given state, as Euler2D.setCellPrimitives,
+   * and reset the clock: for continuing a solution from another engine or
+   * grid. Throws NonPhysicalStateError if a state is not physical.
+   */
+  setCellPrimitives(cell: (i: number, j: number) => Primitive2D): void {
+    this.exclusive.assertIdle();
+    const { gamma } = this.config;
+    const { ni } = this.metrics;
+    const packed = new Float32Array(4 * this.nCells);
+    for (let c = 0; c < this.nCells; c++) {
+      const w = cell(c % ni, Math.floor(c / ni));
+      if (!(w.rho > 0 && w.p > 0 && Number.isFinite(w.u) && Number.isFinite(w.v))) {
+        throw new NonPhysicalStateError(`non-physical state for cell ${c}`);
       }
       packed[4 * c] = w.rho;
       packed[4 * c + 1] = w.rho * w.u;
@@ -347,6 +400,7 @@ export class GpuEuler2D {
       const pass = encoder.beginComputePass();
       pass.setBindGroup(0, this.sharedBindGroup);
       pass.setBindGroup(1, this.stageBindGroups.get(this.stagePlan()[0]!));
+      this.dispatchShockBoundary(pass);
       this.dispatchFluxes(pass);
       pass.setPipeline(this.pipelines.residual_norm_partials);
       pass.dispatchWorkgroups(this.nPartials);
@@ -384,9 +438,101 @@ export class GpuEuler2D {
     });
   }
 
+  /** Replace the states outside the faces of a 'faceStates' side (as Euler2D.setFaceStates). */
+  setFaceStates(side: Side, states: readonly Primitive2D[]): void {
+    this.exclusive.assertIdle();
+    if (this.config.boundaries[side].kind !== 'faceStates') {
+      throw new RangeError(`the ${side} boundary does not take face states`);
+    }
+    const along = this.alongSide(side);
+    if (states.length !== along) {
+      throw new RangeError(`the ${side} boundary needs ${along} face states`);
+    }
+    const { gamma } = this.config;
+    const packed = new Float32Array(4 * along);
+    states.forEach((w, t) => {
+      packed.set(
+        [
+          w.rho,
+          w.rho * w.u,
+          w.rho * w.v,
+          w.p / (gamma - 1) + 0.5 * w.rho * (w.u * w.u + w.v * w.v),
+        ],
+        4 * t,
+      );
+    });
+    this.device.queue.writeBuffer(this.boundaryBuffer, 16 * this.sideOffset(side), packed);
+  }
+
+  /**
+   * Impose the flux through each face of a 'faceStates' side, four values
+   * per face per unit area along the face normal (as Euler2D.setFaceFluxes),
+   * or go back to the Riemann flux with null.
+   */
+  setFaceFluxes(side: Side, fluxes: Float64Array | null): void {
+    this.exclusive.assertIdle();
+    if (this.config.boundaries[side].kind !== 'faceStates') {
+      throw new RangeError(`the ${side} boundary does not take face fluxes`);
+    }
+    const along = this.alongSide(side);
+    if (fluxes === null) {
+      this.imposed.delete(side);
+    } else {
+      if (fluxes.length !== 4 * along) {
+        throw new RangeError(`the ${side} boundary needs ${4 * along} flux values`);
+      }
+      const { ni, nj } = this.metrics;
+      this.device.queue.writeBuffer(
+        this.boundaryBuffer,
+        16 * (2 * (ni + nj) + this.sideOffset(side)),
+        Float32Array.from(fluxes),
+      );
+      this.imposed.add(side);
+    }
+    this.writeParams(Infinity);
+  }
+
+  /**
+   * The fitted shock's speed along each jMax face's outward normal, as set
+   * at the start of the last step, and its relative normal Mach number.
+   */
+  async readShock(): Promise<{ speed: Float32Array; mach: Float32Array }> {
+    if (this.config.fittedShock === undefined) throw new Error('there is no fitted shock');
+    return this.exclusive.run(async () => {
+      const { ni, nj } = this.metrics;
+      const encoder = this.device.createCommandEncoder();
+      encoder.copyBufferToBuffer(
+        this.boundaryBuffer,
+        16 * 4 * (ni + nj),
+        this.boundaryReadback,
+        0,
+        16 * ni,
+      );
+      this.device.queue.submit([encoder.finish()]);
+      await this.boundaryReadback.mapAsync(GPUMapMode.READ, 0, 16 * ni);
+      const data = new Float32Array(this.boundaryReadback.getMappedRange(0, 16 * ni).slice(0));
+      this.boundaryReadback.unmap();
+      return {
+        speed: Float32Array.from({ length: ni }, (_, i) => data[4 * i]!),
+        mach: Float32Array.from({ length: ni }, (_, i) => data[4 * i + 1]!),
+      };
+    });
+  }
+
   /** Release all GPU buffers. The solver cannot be used afterwards. */
   destroy(): void {
     this.buffers.destroyAll();
+  }
+
+  /** Faces along a side. */
+  private alongSide(side: Side): number {
+    return side === 'iMin' || side === 'iMax' ? this.metrics.nj : this.metrics.ni;
+  }
+
+  /** Offset of a side's faces in each part of the boundary buffer (side_offset in euler2d.wgsl). */
+  private sideOffset(side: Side): number {
+    const { ni, nj } = this.metrics;
+    return { iMin: 0, iMax: nj, jMin: 2 * nj, jMax: 2 * nj + ni }[side];
   }
 
   /** Whether time steps are global, so that the clock is meaningful. */
@@ -402,11 +548,7 @@ export class GpuEuler2D {
     const floats = new Float32Array(data);
     words.set([ni, nj, geometry === 'axisymmetric' ? 1 : 0, timeStepping === 'local' ? 1 : 0]);
     words.set(
-      SIDES.map((side) => {
-        const kind = boundaries[side].kind;
-        if (kind === 'faceStates') throw new RangeError('unreachable: refused in create');
-        return BOUNDARY_KINDS[kind];
-      }),
+      SIDES.map((side) => BOUNDARY_KINDS[boundaries[side].kind]),
       4,
     );
     SIDES.forEach((side, k) => {
@@ -414,9 +556,28 @@ export class GpuEuler2D {
       if (bc.kind === 'inflow')
         floats.set([bc.state.rho, bc.state.u, bc.state.v, bc.state.p], 8 + 4 * k);
     });
+    const shock = this.config.fittedShock;
+    if (shock !== undefined) {
+      const w = shock.freeStream;
+      floats.set([w.rho, w.u, w.v, w.p], 8 + 4 * SIDES.indexOf('jMax'));
+    }
     floats.set([gamma, cfl, Math.min(tEnd, 3e38)], 24);
     words[27] = this.nPartials;
+    words.set(
+      SIDES.map((side) =>
+        this.imposed.has(side) || (side === 'jMax' && shock !== undefined) ? 1 : 0,
+      ),
+      28,
+    );
+    words[32] = shock === undefined ? 0 : 1;
     this.device.queue.writeBuffer(this.paramsBuffer, 0, data);
+  }
+
+  /** With a fitted shock, set its faces from the solution in the bound `src`. */
+  private dispatchShockBoundary(pass: GPUComputePassEncoder): void {
+    if (this.config.fittedShock === undefined) return;
+    pass.setPipeline(this.pipelines.compute_shock_boundary);
+    pass.dispatchWorkgroups(Math.ceil(this.metrics.ni / WORKGROUP_SIZE));
   }
 
   private dispatchFluxes(pass: GPUComputePassEncoder): void {
@@ -436,6 +597,7 @@ export class GpuEuler2D {
       // The first stage reads the current solution as `src`, so its bind
       // group also serves the time-step computation.
       pass.setBindGroup(1, this.stageBindGroups.get(plan[0]!));
+      this.dispatchShockBoundary(pass);
       pass.setPipeline(this.pipelines.compute_time_steps);
       pass.dispatchWorkgroups(this.nPartials);
       pass.setPipeline(this.pipelines.finalize_time_step);
