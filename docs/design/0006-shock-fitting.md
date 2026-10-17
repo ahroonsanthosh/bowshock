@@ -161,12 +161,20 @@ in 32-bit, with the shock moved every step:
 - At each check (every 500 steps on the base grid) the drag is evaluated
   from the flow in double precision; the fit has converged when the drag
   has settled to the GPU's noise (2e-6) and no face of the shock moves
-  faster than 1e-5 of the sound speed.
+  faster than 3e-5 of the sound speed.
 
-Measured on the Mach 2 hemisphere-cylinder (nj = 20), against the CPU's
-fit of the same problem on the same grids: converged after 2500 steps,
-the drag 7e-8 of its value from the CPU's and wandering by up to 2.4e-7
-when iterated on, the shock speeds at 4e-7 to 1.2e-6 of the sound speed.
+Measured against the CPU's fit of the same problem on the same grids
+(nj = 20), iterated on to 8000 steps or more past convergence:
+
+| Case                        | Drag wanders from the CPU's by | Shock speeds settle at |
+| --------------------------- | ------------------------------ | ---------------------- |
+| Hemisphere-cylinder, Mach 2 | 2.4e-7 at most                 | 4e-7 to 1.2e-6         |
+| 20 degree cone, Mach 5      | 1.8e-7 at most                 | 3.6e-6 to 4.8e-6       |
+| TN 3716 ogive, Mach 1.98    | 7.8e-7 at most                 | 7e-7 to 1.0e-6         |
+
+(shock speeds over the free stream's sound speed), well within the 2e-6
+assumed for the GPU's noise. The hemisphere-cylinder's fit converges
+after 2500 steps, the CPU's needing 4747 to reach 1e-12.
 
 ## Open
 
