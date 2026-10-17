@@ -6,39 +6,48 @@
  * enough: slow convergence can pair a small change with a large
  * remaining error.
  *
- * Changes near the noise say little about the rate, so a rate is taken
- * only from two successive changes both ten times the noise or more, and
- * the largest such rate is used: the last pair, nearest the noise, can
- * read a slow rate as a fast one. While none is known, only the change
- * itself is tested. The window k is the number of checks over which the
- * error halves (one check at rates up to 0.5), so that the value's noise
- * enters what remains about once, however slow the convergence. Either
- * way the test must pass on two successive checks.
+ * Changes near the noise say little about the rate, so the rate is
+ * measured only on changes of ten times the noise or more: the slope of
+ * a least-squares line through the logarithms of the last eight such
+ * changes against their checks. A single pair of changes near the noise
+ * can read a slow rate as a fast one, and an early slow transient (a
+ * start that drifts before it converges) would, kept as the largest rate,
+ * stop a fast iteration from ever settling; the line averages the noise
+ * and forgets old changes. While no rate is known, only the change itself
+ * is tested. The window k is the number of checks over which the error
+ * halves (one check at rates up to 0.5), so that the value's noise enters
+ * what remains about once, however slow the convergence. Either way the
+ * test must pass on two successive checks.
  *
  * An iteration started close to its limit (a grid started from the
  * converged one before) may never change by ten times the noise, and so
  * shows no rate of its own, though it converges as slowly as the one
  * before. So a rate known from before can be given, the rate of the same
  * iteration on a coarser grid of the family (per check, with the checks
- * scaled with the grid), and the larger of it and the rate measured is
- * used.
+ * scaled with the grid); the test uses the larger of it and the rate
+ * measured, and passes on the rate measured if there is one, else the
+ * known one (rateToPassOn), so that no grid inflates the next one's.
  *
- * Simulated with every value off by up to half the noise (300 trials
- * each; tests/verification/iterative-convergence.test.ts): a start 1e4
- * times the noise from its limit settles within 0.01, 0.61, 0.94, 0.85
- * and 0.15 times the noise of it at rates of 0.1, 0.5, 0.7, 0.9 and 0.97
- * per check (the fitted solver's is about 0.1); a start 100 times the
- * noise away at 0.95 per check, with that rate known, within 1.6 (the
- * change alone tested: 26); a value that starts at its limit settles on
- * the second check. No test on the values can catch a slow component
- * that never changes by ten times the noise while a faster one dominates
- * (two components, 1e4 times the noise at 0.2 and 200 at 0.9: within 6).
+ * Simulated with every value off by up to half the noise, 300 or 400
+ * trials each (tests/verification/iterative-convergence.test.ts, measured
+ * when written): a start 1e4 times the noise from its limit settles
+ * within 0.01, 0.61, 0.94, 1.3 and 1.6 times the noise of it at rates of
+ * 0.1, 0.5, 0.7, 0.85 and 0.9 per check, all within 100 checks; at 0.97
+ * within 1.6, after about 300. A start 100 times the noise away at 0.95
+ * per check, with that rate known, within 1.7 (the change alone tested:
+ * 25); at 0.97 it does not settle within 120 checks (the change alone: 44
+ * from its limit). An early drift (two changes falling by 0.995) before
+ * convergence at 0.1 per check settles by the twelfth check, and a damped
+ * oscillation (0.3 per check, period 5) within 0.06. The test cannot do
+ * better than its knowledge of the rate: a known rate faster than the
+ * true one (0.9 for 0.97) leaves up to 7.5 times the noise, and a slow
+ * component that never changes by ten times the noise while a faster one
+ * dominates (1e4 times the noise at 0.2 with 200 at 0.9) up to 12.
  */
 export class SettlingValue {
   private readonly values: number[] = [];
-  private previousChange = Number.NaN;
-  /** The largest rate from two successive changes well above the noise. */
-  private measuredRate = Number.NaN;
+  /** Check index and logarithm of each change of ten times the noise or more. */
+  private readonly measurable: [number, number][] = [];
   private passes = 0;
 
   /**
@@ -50,6 +59,21 @@ export class SettlingValue {
     private readonly knownRate = Number.NaN,
   ) {}
 
+  /** The rate per check measured on this iteration's changes; NaN if none. */
+  get measuredRate(): number {
+    const points = this.measurable.slice(-RATE_POINTS);
+    if (points.length < 2) return Number.NaN;
+    const meanX = points.reduce((s, [x]) => s + x, 0) / points.length;
+    const meanY = points.reduce((s, [, y]) => s + y, 0) / points.length;
+    let sxy = 0;
+    let sxx = 0;
+    for (const [x, y] of points) {
+      sxy += (x - meanX) * (y - meanY);
+      sxx += (x - meanX) ** 2;
+    }
+    return Math.exp(sxy / sxx);
+  }
+
   /**
    * The rate per check the test uses: the larger of the rate measured and
    * the rate known from before, of those below 1; NaN if neither.
@@ -59,17 +83,19 @@ export class SettlingValue {
     return usable.length > 0 ? Math.max(...usable) : Number.NaN;
   }
 
+  /** The rate for the next iteration of the family: measured here, else known. */
+  get rateToPassOn(): number {
+    const measured = this.measuredRate;
+    return measured < 1 ? measured : this.knownRate;
+  }
+
   /** Record the value after the next batch of iterations; true once it has settled. */
   add(value: number): boolean {
     const n = this.values.length;
     const change = Math.abs(value - (this.values[n - 1] ?? Number.NaN));
     this.values.push(value);
     const allowed = this.noise * Math.abs(value);
-    if (change > MEASURABLE * allowed && this.previousChange > MEASURABLE * allowed) {
-      const r = change / this.previousChange;
-      if (r < 1) this.measuredRate = r < this.measuredRate ? this.measuredRate : r;
-    }
-    this.previousChange = change;
+    if (change > MEASURABLE * allowed) this.measurable.push([n, Math.log(change)]);
     const rate = this.rate;
     let remaining = 0;
     if (rate < 1) {
@@ -89,3 +115,5 @@ export class SettlingValue {
 
 /** A change gives the rate only if it is this many times the noise. */
 const MEASURABLE = 10;
+/** The rate is measured on this many of the last such changes. */
+const RATE_POINTS = 8;

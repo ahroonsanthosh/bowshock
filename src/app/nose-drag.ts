@@ -104,6 +104,12 @@ form.addEventListener('submit', (event) => {
 status.textContent = 'Starting the GPU...';
 device = await requestDevice();
 status.textContent = '';
+// A lost device makes the next read of the GPU fail with an error of its
+// own; the reason is kept to report it as the GPU's failure.
+let lost: string | null = null;
+void device?.lost.then((info) => {
+  lost = info.message === '' ? info.reason : info.message;
+});
 if (device === null) {
   show('This page needs WebGPU, which this browser does not provide.', 'warn');
 } else {
@@ -171,7 +177,7 @@ async function run(gpu: GPUDevice): Promise<void> {
             : ` The grid at refinement ${outcome.stopped.refinement} was not solved: ${outcome.stopped.reason}; the result is from the grids before it.`;
         if (outcome.uncertainty !== undefined) {
           show(
-            `Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of 7e-5 of the value.${stopped}`,
+            `Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`,
             'ok',
           );
         } else {
@@ -196,9 +202,11 @@ async function run(gpu: GPUDevice): Promise<void> {
     status.textContent = '';
     const reason = error instanceof Error ? error.message : String(error);
     show(
-      error instanceof GpuExecutionError
-        ? `The GPU failed: ${reason}.`
-        : `Cannot solve this case: ${reason}.`,
+      lost !== null
+        ? `The GPU was lost (${lost}); reload the page to start it again.`
+        : error instanceof GpuExecutionError
+          ? `The GPU failed: ${reason}.`
+          : `Cannot solve this case: ${reason}.`,
       'warn',
     );
   } finally {

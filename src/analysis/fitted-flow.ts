@@ -158,13 +158,14 @@ export function wallDrag(
 
 /**
  * Smallest axial Mach number at the end of the body asked for, across
- * the layer: in each row, interpolated in x between the centres of the
- * columns of cells either side of the end (where the domain goes on past
- * it); Infinity if the domain ends there (the outflow check covers it).
- * Only where it exceeds 1 does nothing behind the end reach the body: on
- * a 26.6 deg cone at Mach 1.5, whose conical surface flow is subsonic,
- * the drag with 2 calibers of cylinder behind it is 3.3% below the
- * Taylor-Maccoll value of an endless cone.
+ * the layer, or Infinity if the domain ends there (the outflow check
+ * covers it): where the end is a grid line (the corner at the base of a
+ * bare nose, or a cylinder's end), in the column of cells just ahead of
+ * it; elsewhere, in each row, interpolated in x between the centres of
+ * the columns either side of it. Only where it exceeds 1 does nothing
+ * behind the end reach the body: on a 26.6 deg cone at Mach 1.5, whose
+ * conical surface flow is subsonic, the drag with 2 calibers of cylinder
+ * behind it is 3.3% below the Taylor-Maccoll value of an endless cone.
  */
 export function baseMach(
   problem: FitProblem,
@@ -173,20 +174,23 @@ export function baseMach(
 ): number {
   const { lines, gamma, askedEnd } = problem;
   const n = lines.length - 1;
-  if (!(lines[n]!.x > askedEnd * (1 + 1e-12))) return Infinity;
+  const tolerance = 1e-12 * Math.abs(askedEnd);
+  if (!(lines[n]!.x > askedEnd + tolerance)) return Infinity;
+  const axialMach = (w: Primitive2D) => w.u / Math.sqrt((gamma * w.p) / w.rho);
+  const across = (mach: (j: number) => number) => {
+    let smallest = Infinity;
+    for (let j = 0; j < grid.nj; j++) smallest = Math.min(smallest, mach(j));
+    return smallest;
+  };
+  const line = lines.findIndex((l) => Math.abs(l.x - askedEnd) <= tolerance);
+  if (line > 0) return across((j) => axialMach(cell(line - 1, j)));
   const centre = (i: number) => 0.5 * (lines[i]!.x + lines[i + 1]!.x);
   // The columns a and a + 1 whose centres enclose the end (or the first
   // two, if the end lies ahead of the first centre).
   let a = 0;
   while (a + 2 < n && centre(a + 1) <= askedEnd) a++;
   const t = Math.min(Math.max((askedEnd - centre(a)) / (centre(a + 1) - centre(a)), 0), 1);
-  const axialMach = (w: Primitive2D) => w.u / Math.sqrt((gamma * w.p) / w.rho);
-  let smallest = Infinity;
-  for (let j = 0; j < grid.nj; j++) {
-    const m = (1 - t) * axialMach(cell(a, j)) + t * axialMach(cell(a + 1, j));
-    smallest = Math.min(smallest, m);
-  }
-  return smallest;
+  return across((j) => (1 - t) * axialMach(cell(a, j)) + t * axialMach(cell(a + 1, j)));
 }
 
 export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
@@ -461,7 +465,10 @@ export function bluntFitFamily(
 /**
  * Heights on the lines of a grid refined by `refinement` from those on
  * the base grid's lines: the same on the base lines (every refinement-th
- * line), linear in the distance along the body between them.
+ * line), linear in the line's index between them. The weights m /
+ * refinement are exact in binary, so the heights, and the node fractions
+ * taken from them, of a grid refined by r are those of the grid refined
+ * by 2r on its even lines: every grid of the family nests in the next.
  */
 function nestedHeights(
   base: readonly GridLine[],
@@ -483,15 +490,8 @@ function nestedHeights(
   }
   const heights: number[] = [];
   for (let k = 0; k < n; k++) {
-    // Distance along the body over the fine lines between base lines k and k + 1.
-    const along = [0];
-    for (let m = 1; m <= refinement; m++) {
-      const p = fine[refinement * k + m - 1]!;
-      const q = fine[refinement * k + m]!;
-      along.push(along[m - 1]! + Math.hypot(q.x - p.x, q.y - p.y));
-    }
     for (let m = 0; m < refinement; m++) {
-      const t = along[m]! / along[refinement]!;
+      const t = m / refinement;
       heights.push(baseHeights[k]! * (1 - t) + baseHeights[k + 1]! * t);
     }
   }

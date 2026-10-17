@@ -33,26 +33,26 @@ export function checkDispatchSize(
 /**
  * Runs `create` and turns the device errors raised during it (out of
  * memory, validation), which WebGPU reports only through error scopes,
- * into exceptions, destroying what was created. Nothing else may use the
- * device meanwhile, or its errors would be caught here too.
+ * into exceptions, destroying what was created. `create` is synchronous
+ * and both scopes are popped before anything is awaited, so no other
+ * work on the device can run inside them.
  */
 export async function withDeviceErrors<T>(
   device: GPUDevice,
   what: string,
-  create: () => T | Promise<T>,
+  create: () => T,
   destroy: (created: T) => void,
 ): Promise<T> {
   device.pushErrorScope('out-of-memory');
   device.pushErrorScope('validation');
+  let popped: Promise<[GPUError | null, GPUError | null]>;
   let created: T;
-  let invalid: GPUError | null;
-  let memory: GPUError | null;
   try {
-    created = await create();
+    created = create();
   } finally {
-    invalid = await device.popErrorScope();
-    memory = await device.popErrorScope();
+    popped = Promise.all([device.popErrorScope(), device.popErrorScope()]);
   }
+  const [invalid, memory] = await popped;
   if (memory !== null) {
     destroy(created);
     throw new GpuMemoryLimitError(`${what}: the GPU ran out of memory (${memory.message})`);

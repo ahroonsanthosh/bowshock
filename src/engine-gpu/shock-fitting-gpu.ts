@@ -63,7 +63,10 @@ export interface GpuShockFit {
   readonly maxSpeed: number;
   readonly iterations: number;
   readonly converged: boolean;
-  /** The rate per check the stopping test used: measured, or known from before; NaN if none. */
+  /**
+   * The drag's rate of convergence per check, for the next grid: measured
+   * on this fit, else the one known from before; NaN if none.
+   */
   readonly rate: number;
 }
 
@@ -131,7 +134,7 @@ export async function fitShockGpu(options: GpuShockFitOptions): Promise<GpuShock
       maxSpeed,
       iterations,
       converged,
-      rate: settling.rate,
+      rate: settling.rateToPassOn,
     };
   } finally {
     lineGrid.destroy();

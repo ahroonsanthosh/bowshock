@@ -74,11 +74,20 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
         expect(Math.abs(b.fractions![2 * j]! - f)).toBeLessThan(1e-14);
       });
     });
-    // The page starts the finer grid from the coarser one's fit.
+    // The page starts the finer grid from the coarser one's fit, at every
+    // level of the family.
     const fit = { heights: coarse.heights, cell: coarse.initial } as unknown as GpuShockFit;
     const warm = startedFrom(fine, coarse, fit);
     expect(warm).not.toBeNull();
     expect(warm!.heights[2]).toBe(coarse.heights[1]);
+    const finer = family(4);
+    const fineFit = { heights: fine.heights, cell: fine.initial } as unknown as GpuShockFit;
+    expect(startedFrom(finer, fine, fineFit)).not.toBeNull();
+    fine.lines.forEach((a, k) => {
+      a.fractions!.forEach((f, j) => {
+        expect(finer.lines[2 * k]!.fractions![2 * j]).toBe(f);
+      });
+    });
   }, 600_000);
 
   it('a blunt start computed in chunks is the same start, and stops when aborted', async () => {
@@ -129,6 +138,21 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
       p: 1,
     });
     expect(baseMach(problem, grid, flow)).toBeCloseTo(mach(end), 12);
+    // A bare nose ends at the corner, a grid line: the column just ahead
+    // of it is tested, not one in the expansion behind.
+    const bare: Body = { ...cone, cylinderLength: 0 };
+    const p0 = sharpFitProblem(bare, { gamma, nj: 20, refinement: 1, mach: 3 });
+    const g0 = gridOnLines(p0.lines, p0.heights, p0.nj, 0.5, false);
+    const corner = p0.lines.findIndex((l) => l.x === bare.nose.length);
+    expect(corner).toBeGreaterThan(0);
+    const flow0 = (i: number) => ({
+      rho: 1,
+      u: Math.sqrt(gamma) * mach(0.5 * (p0.lines[i]!.x + p0.lines[i + 1]!.x)),
+      v: 0,
+      p: 1,
+    });
+    const ahead = mach(0.5 * (p0.lines[corner - 1]!.x + p0.lines[corner]!.x));
+    expect(baseMach(p0, g0, flow0)).toBeCloseTo(ahead, 12);
   });
 
   it('a bare nose is solved with a cylinder behind it only where the flow leaves its base supersonically', () => {

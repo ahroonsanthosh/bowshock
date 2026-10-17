@@ -51,7 +51,8 @@ them; the fitted-drag families are recorded in
   at about first order.
 - Grids generated automatically from rocket noses and bodies, first with
   the shock captured (sharp noses): cone-cylinders at Mach 1.1 to 3.12
-  within 0.3% of Taylor-Maccoll on the coarsest grid, converging with
+  whose conical surface flow is supersonic within 0.3% of Taylor-Maccoll
+  on the coarsest grid, converging with
   refinement (the slender cones at Mach 1.1 to 1.2 measured on two grids
   only). On a tangent-ogive cylinder at Mach 1.98 the surface pressure
   matches an independent inviscid reference solution (a method of
@@ -75,7 +76,8 @@ them; the fitted-drag families are recorded in
   families measured): with the drag page's GPU solver, extrapolated at
   second order from 20, 40 and 80 cells across, it lies within 3.2e-7 of
   its value from Taylor-Maccoll on a bare Mach 3, 20 degree cone and
-  within 3e-7 from the method of characteristics on the TN 3716 ogive.
+  within 9.4e-6 from the method of characteristics on the TN 3716 ogive
+  (within 3e-7 at its observed order, 2.06).
   On a hemisphere-cylinder the stagnation pressure is within 0.008% of
   its exact value on 20 cells across (capture: up to 9.7%). The GPU's
   fitted drag is within 8e-7 of the CPU's on the same grids.
@@ -99,8 +101,9 @@ them; the fitted-drag families are recorded in
   shapes, lengths and Mach numbers are computed the same way but have
   not been compared with a reference. Refused, with the reason: tips
   whose shock detaches; tips whose flow crosses the solver's starting
-  plane, just behind the tip, at an axial Mach number below 1 (at Mach
-  1.2, every nose of 3 calibers or shorter tried); tips steeper than 30
+  plane, just behind the tip, at an axial Mach number below 1 (of 40
+  noses of 1 to 3 calibers tried at Mach 1.2, 19 detach their shock and
+  13 are refused by this test); tips steeper than 30
   deg (a limit of the present grids, under review); bodies whose flow at
   their end is subsonic; grids failing the other quality gates, as on
   some long bodies.
