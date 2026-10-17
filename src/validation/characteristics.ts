@@ -32,14 +32,16 @@
  *
  * The march starts on a C- line of the Taylor-Maccoll flow of the cone
  * tangent at the tip, close to the tip, where the nose differs from that
- * cone by the square of the distance. Corners in the profile (which need an
- * expansion fan) and subsonic flow are refused. Shock points are not spaced
- * by control: where the shock weakens towards a Mach wave the C+ lines meet
- * it at a shallow angle and the network stretches downstream, so results
- * are used only where refinement shows them converged. Tested on cones at
- * Mach 1.5 to 5 and half-angles up to 30 deg, including cases whose C-
- * lines run parallel to the axis; at Mach 1.3 on a 7 deg cone the march
- * fails on the meshes tried.
+ * cone by the square of the distance. Its points are spaced so that each
+ * line starts the same ratio farther along the shock, however close the
+ * C+ lines behind a weak shock run to it. Corners in the profile (which
+ * need an expansion fan) and subsonic flow are refused. Further shock
+ * points are not spaced by control: where the shock weakens along a curved
+ * nose the C+ lines meet it at a shallower angle and the network stretches
+ * downstream, so results are used only where refinement shows them
+ * converged. Tested on cones at Mach 1.2 to 5 and half-angles from 2.9 to
+ * 30 deg, including cases whose C- lines run parallel to the axis and
+ * cases whose shock lies within 0.01 deg of the C+ lines behind it.
  */
 
 import { bodyBreakpoints, bodyLength, bodyRadius, type Body } from '../geometry/body';
@@ -185,34 +187,72 @@ export function characteristics(
     const rho = (h / (cp * k0)) ** (1 / (gamma - 1));
     return { theta: c.flowAngle, p: k0 * rho ** gamma };
   };
-  // In polar coordinates (r, phi) a C- line, direction alpha = theta - mu,
-  // satisfies dr/dphi = r cot(alpha - phi); march from the shock ray to the
-  // cone in equal steps of phi, with substeps.
+  // In polar coordinates (r, phi) a characteristic of direction alpha
+  // satisfies dr/dphi = r cot(alpha - phi): the starting C- line (alpha =
+  // theta - mu) runs from the shock ray to the cone, and the C+ line (alpha
+  // = theta + mu) from each of its points to the shock. The points are
+  // spaced uniformly in A = ln r + B, B being the gain in ln r along the
+  // point's C+ line up to the shock: A is the log radius at which that C+
+  // line meets the shock, so each line of the march starts the same ratio
+  // farther along the shock, as in the self-similar network of the conical
+  // flow that the march settles into after n lines anyway. Equal steps in
+  // phi fail near a weak shock: the C+ lines behind it run within the small
+  // angle chi = delta + mu2 - beta of it, so the first point below the
+  // shock sends its C+ line out about 1 + dphi / chi times farther, and
+  // where (beta - cone) / chi exceeds the number of intervals (up to some
+  // 7000 on the noses of the nose-drag page) the network folds within a few
+  // lines, or ends the march short of the body's end.
   const startRadius = options.start * L;
   let line: Point[] = [];
   {
-    const dLogR = (phi: number) => {
+    const slopes = (phi: number) => {
       const s = conicalState(phi);
       const { mu } = derived({ p: s.p, k: k0 });
-      return 1 / Math.tan(s.theta - mu - phi);
+      return { minus: 1 / Math.tan(s.theta - mu - phi), plus: 1 / Math.tan(s.theta + mu - phi) };
     };
-    let logR = Math.log(startRadius);
-    const sub = 16;
-    const dphi = (tipAngle - beta0) / (n * sub);
+    // ln r on the C- line and A on a fine grid in phi, by Simpson's rule.
+    const fine = 64 * n;
+    const phis = [beta0];
+    const logRs = [Math.log(startRadius)];
+    let previous = slopes(beta0);
+    const dLogRs = [previous.minus];
+    const arrivals = [logRs[0]!];
+    let gain = 0;
+    for (let j = 1; j <= fine; j++) {
+      const phi = j === fine ? tipAngle : beta0 + ((tipAngle - beta0) * j) / fine;
+      const h = phi - phis[j - 1]!;
+      const mid = slopes(phis[j - 1]! + h / 2);
+      const next = slopes(phi);
+      const logR = logRs[j - 1]! + (h / 6) * (previous.minus + 4 * mid.minus + next.minus);
+      // B grows towards the cone, where phi decreases.
+      gain -= (h / 6) * (previous.plus + 4 * mid.plus + next.plus);
+      phis.push(phi);
+      logRs.push(logR);
+      dLogRs.push(next.minus);
+      arrivals.push(logR + gain);
+      previous = next;
+    }
+    // A increases strictly from the shock to the cone: the C+ lines of
+    // neighbouring points do not cross. Invert it for equal steps, with
+    // cubic Hermite interpolation of ln r between the fine points.
+    const spread = arrivals[fine]! - arrivals[0]!;
+    let j = 0;
     for (let i = 0; i <= n; i++) {
-      const phi = beta0 + i * sub * dphi;
-      if (i > 0) {
-        for (let s = 0; s < sub; s++) {
-          const f = beta0 + ((i - 1) * sub + s) * dphi;
-          // Classical fourth-order Runge-Kutta in phi for ln r.
-          const k1 = dLogR(f);
-          const k2 = dLogR(f + dphi / 2);
-          const k4 = dLogR(Math.max(f + dphi, tipAngle));
-          logR += (dphi / 6) * (k1 + 4 * k2 + k4);
-        }
-      }
-      const r = Math.exp(logR);
-      const s = conicalState(Math.max(phi, tipAngle));
+      const target = arrivals[0]! + (spread * i) / n;
+      while (j < fine - 1 && arrivals[j + 1]! < target) j++;
+      const t =
+        i === n
+          ? 1
+          : Math.min(Math.max((target - arrivals[j]!) / (arrivals[j + 1]! - arrivals[j]!), 0), 1);
+      const h = phis[j + 1]! - phis[j]!;
+      const phi = i === n ? tipAngle : phis[j]! + t * h;
+      const r = Math.exp(
+        (2 * t ** 3 - 3 * t ** 2 + 1) * logRs[j]! +
+          (t ** 3 - 2 * t ** 2 + t) * h * dLogRs[j]! +
+          (-2 * t ** 3 + 3 * t ** 2) * logRs[j + 1]! +
+          (t ** 3 - t ** 2) * h * dLogRs[j + 1]!,
+      );
+      const s = conicalState(phi);
       line.push({
         x: r * Math.cos(phi),
         y: r * Math.sin(phi),

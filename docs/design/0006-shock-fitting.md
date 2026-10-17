@@ -99,7 +99,8 @@ smaller than capture on 160.
 
 Tangent ogive of NACA TN 3716 (3 calibers, 7 calibers of cylinder),
 Mach 1.98, forebody pressure drag against the method of characteristics
-(Cd = 0.0988034, converged to 1e-8 on 640 and 1280 intervals):
+(Cd = 0.0988034: 0.09880328 and 0.09880338 on 640 and 1280 intervals,
+converging at second order):
 
 | Shock               | nj = 20  | nj = 40  | nj = 80  | nj = 160 |
 | ------------------- | -------- | -------- | -------- | -------- |

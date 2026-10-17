@@ -144,4 +144,21 @@ describe('the Taylor-Maccoll flow field', () => {
       previous = angle;
     }
   });
+
+  it('gives the state on the cone itself, at every Mach number', () => {
+    // The samples end on the cone found from the bisected shock angle, a
+    // few 1e-15 rad off the requested one: before rays down to the
+    // requested cone were accepted, its own ray was refused at 26 of these
+    // 101 Mach numbers. The cone is the tip of the 5.75-caliber tangent
+    // ogive of NACA RM A53E01 (arc radius 33.3 calibers), 9.94 deg.
+    const cone = Math.atan(5.75 / 32.8125);
+    for (let k = 0; k <= 100; k++) {
+      const mach = 1.9 + 0.002 * k;
+      const { flow, at } = coneFlowField(mach, cone, gamma);
+      const surface = at(cone);
+      expect(Math.abs(surface.flowAngle - cone)).toBeLessThan(1e-12);
+      const speed = 1 / Math.sqrt(1 + 2 / ((gamma - 1) * flow.surfaceMach ** 2));
+      expect(surface.speed).toBeCloseTo(speed, 12);
+    }
+  });
 });
