@@ -97,10 +97,25 @@ The fitted error falls by 4.0 per refinement: second order, where
 capture gave about first. On 40 cells across it is already 13 times
 smaller than capture on 160.
 
+Tangent ogive of NACA TN 3716 (3 calibers, 7 calibers of cylinder),
+Mach 1.98, forebody pressure drag against the method of characteristics
+(Cd = 0.0988034, converged to 1e-8 on 640 and 1280 intervals):
+
+| Shock               | nj = 20  | nj = 40  | nj = 80 | nj = 160 |
+| ------------------- | -------- | -------- | ------- | -------- |
+| Captured            | +1.210%  | +0.174%  | -0.025% | -0.042%  |
+| Fitted, x0 = 1e-3 L | +0.2822% | +0.0684% |         |          |
+| Fitted, x0 = 1e-4 L | +0.2819% | +0.0684% |         |          |
+
+Second order again (4.1 per refinement); the start x0 changes the drag by
+3e-6 of its value or less. Extrapolated at second order from the two
+grids the drag is 0.098800, 3e-5 below the exact value, where the
+captured shock's values converge to 4.4e-4 below it.
+
 ## Open
 
-- The third grid on the cone, the tangent ogive against the method of
-  characteristics, and the effect of x0.
+- Third grids on the cone and the ogive, to confirm the order and set the
+  floor for fitted results.
 - The drag page: the fitted solver on the GPU, families and their bands.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.
