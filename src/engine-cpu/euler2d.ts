@@ -137,6 +137,8 @@ export class Euler2D {
   private readonly cellSource: Float64Array | null;
   /** States outside the faces of each 'faceStates' side. */
   private readonly boundaryStates = new Map<Side, readonly Primitive2D[]>();
+  /** Fluxes imposed on the faces of a 'faceStates' side, if any (see setFaceFluxes). */
+  private readonly boundaryFluxOverrides = new Map<Side, Float64Array>();
 
   constructor(config: Euler2DConfig) {
     validateGrid2DConfig(config);
@@ -184,6 +186,38 @@ export class Euler2D {
       throw new RangeError(`the ${side} boundary needs ${along} face states`);
     }
     this.boundaryStates.set(side, [...states]);
+  }
+
+  /**
+   * Impose the flux through each face of a 'faceStates' side instead of
+   * solving a Riemann problem there: four values per face (mass, x and y
+   * momentum, energy per unit area, along the stored face normal), such as
+   * the flux through a fitted shock. The face states still fill the ghost
+   * cells used by the reconstruction. Pass null to go back to the Riemann
+   * flux.
+   */
+  setFaceFluxes(side: Side, fluxes: Float64Array | null): void {
+    if (this.config.boundaries[side].kind !== 'faceStates') {
+      throw new RangeError(`the ${side} boundary does not take face fluxes`);
+    }
+    const along = side === 'iMin' || side === 'iMax' ? this.metrics.nj : this.metrics.ni;
+    if (fluxes === null) {
+      this.boundaryFluxOverrides.delete(side);
+      return;
+    }
+    if (fluxes.length !== 4 * along) {
+      throw new RangeError(`the ${side} boundary needs ${4 * along} flux values`);
+    }
+    this.boundaryFluxOverrides.set(side, Float64Array.from(fluxes));
+  }
+
+  /** Copy an imposed flux for boundary face t of a side into fluxOut; false if none. */
+  private imposedFlux(side: Side | null, t: number): boolean {
+    if (side === null) return false;
+    const fluxes = this.boundaryFluxOverrides.get(side);
+    if (fluxes === undefined) return false;
+    for (let k = 0; k < 4; k++) this.fluxOut[k] = fluxes[4 * t + k]!;
+    return true;
   }
 
   /** Index of cell (i, j) in the padded arrays; i and j may be ghost indices (-2..n+1). */
@@ -420,13 +454,16 @@ export class Euler2D {
     for (let j = 0; j < nj; j++) {
       for (let i = 0; i <= ni; i++) {
         const f = i + j * (ni + 1);
-        const [left, right] = this.wallMirrored(
-          this.faceStates(u, 'i', i, j),
-          i === 0 ? 'iMin' : i === ni ? 'iMax' : null,
-          iFaces.nx[f]!,
-          iFaces.ny[f]!,
-        );
-        faceFlux2D(this.flux, left, right, iFaces.nx[f]!, iFaces.ny[f]!, gamma, this.fluxOut);
+        const side = i === 0 ? 'iMin' : i === ni ? 'iMax' : null;
+        if (!this.imposedFlux(side, j)) {
+          const [left, right] = this.wallMirrored(
+            this.faceStates(u, 'i', i, j),
+            side,
+            iFaces.nx[f]!,
+            iFaces.ny[f]!,
+          );
+          faceFlux2D(this.flux, left, right, iFaces.nx[f]!, iFaces.ny[f]!, gamma, this.fluxOut);
+        }
         accumulate(this.index(i - 1, j), this.index(i, j), iFaces.area[f]!);
       }
     }
@@ -434,13 +471,16 @@ export class Euler2D {
     for (let j = 0; j <= nj; j++) {
       for (let i = 0; i < ni; i++) {
         const f = i + j * ni;
-        const [left, right] = this.wallMirrored(
-          this.faceStates(u, 'j', i, j),
-          j === 0 ? 'jMin' : j === nj ? 'jMax' : null,
-          jFaces.nx[f]!,
-          jFaces.ny[f]!,
-        );
-        faceFlux2D(this.flux, left, right, jFaces.nx[f]!, jFaces.ny[f]!, gamma, this.fluxOut);
+        const side = j === 0 ? 'jMin' : j === nj ? 'jMax' : null;
+        if (!this.imposedFlux(side, i)) {
+          const [left, right] = this.wallMirrored(
+            this.faceStates(u, 'j', i, j),
+            side,
+            jFaces.nx[f]!,
+            jFaces.ny[f]!,
+          );
+          faceFlux2D(this.flux, left, right, jFaces.nx[f]!, jFaces.ny[f]!, gamma, this.fluxOut);
+        }
         accumulate(this.index(i, j - 1), this.index(i, j), jFaces.area[f]!);
       }
     }

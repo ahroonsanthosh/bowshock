@@ -358,4 +358,49 @@ describe('Euler2D: per-face boundary states', () => {
       s.setFaceStates('iMin', states);
     }).toThrow(/does not take face states/);
   });
+
+  it('take imposed face fluxes: the free-stream flux keeps a uniform flow uniform', () => {
+    const states = Array.from({ length: 16 }, () => free);
+    const s = new Euler2D({
+      ...config({ kind: 'faceStates', states }),
+      boundaries: {
+        iMin: { kind: 'inflow', state: free },
+        iMax: { kind: 'outflow' },
+        jMin: { kind: 'inflow', state: free },
+        jMax: { kind: 'faceStates', states },
+      },
+    });
+    const metrics = s.metrics;
+    const fluxes = new Float64Array(64);
+    const energy = free.p / (gamma - 1) + 0.5 * free.rho * (free.u ** 2 + free.v ** 2);
+    for (let i = 0; i < 16; i++) {
+      const f = i + 8 * 16;
+      const nx = metrics.jFaces.nx[f]!;
+      const ny = metrics.jFaces.ny[f]!;
+      const un = free.u * nx + free.v * ny;
+      fluxes.set(
+        [
+          free.rho * un,
+          free.rho * free.u * un + free.p * nx,
+          free.rho * free.v * un + free.p * ny,
+          un * (energy + free.p),
+        ],
+        4 * i,
+      );
+    }
+    s.setFaceFluxes('jMax', fluxes);
+    s.setInitialCondition(() => free);
+    s.iterate(50);
+    for (let j = 0; j < 8; j++) {
+      for (let i = 0; i < 16; i++) {
+        const w = s.primitive(i, j);
+        expect(Math.abs(w.p - free.p)).toBeLessThan(1e-12);
+        expect(Math.abs(w.v - free.v)).toBeLessThan(1e-12);
+      }
+    }
+    expect(() => {
+      s.setFaceFluxes('jMax', fluxes.subarray(4));
+    }).toThrow(/64 flux values/);
+    s.setFaceFluxes('jMax', null);
+  });
 });
