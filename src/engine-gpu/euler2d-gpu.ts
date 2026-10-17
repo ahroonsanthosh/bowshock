@@ -21,6 +21,7 @@ import { NonPhysicalStateError } from '../solver/errors';
 import { RUNGE_KUTTA_STAGES } from '../solver/runge-kutta';
 import { WGSL_LIMITER_FUNCTIONS, isGpuFlux, type GpuFluxName } from './euler1d-gpu';
 import { BufferSet, ExclusiveRunner, compileShader, readBuffer } from './gpu-common';
+import type { GpuLineGrid } from './line-grid';
 import {
   DT_LOG_SIZE,
   STATUS_NON_PHYSICAL,
@@ -161,6 +162,7 @@ export class GpuEuler2D {
   private readonly ledger = new StepLedger();
   private readonly nCells: number;
   private readonly nPartials: number;
+  private readonly geometry: GPUBuffer;
   private readonly boundaryBuffer: GPUBuffer;
   private readonly boundaryReadback: GPUBuffer;
   /** Sides whose face fluxes are imposed from the boundary buffer. */
@@ -242,7 +244,7 @@ export class GpuEuler2D {
     const b = this.buffers;
     const stateBytes = 16 * this.nCells;
     this.paramsBuffer = b.create('params', PARAMS_BYTES, usage.UNIFORM | usage.COPY_DST);
-    const geometryBuffer = b.createWith('geometry', packGeometry(this.metrics), usage.STORAGE);
+    this.geometry = b.createWith('geometry', packGeometry(this.metrics), usage.STORAGE);
     this.controlBuffer = b.create(
       'control',
       CONTROL_BYTES,
@@ -289,7 +291,7 @@ export class GpuEuler2D {
       layout: sharedLayout,
       entries: [
         this.paramsBuffer,
-        geometryBuffer,
+        this.geometry,
         this.controlBuffer,
         faceFluxBuffer,
         scratchBuffer,
@@ -306,6 +308,26 @@ export class GpuEuler2D {
   /** The GPU buffer holding the current solution, as (rho, rho u, rho v, E) per cell, for rendering. */
   get stateBuffer(): GPUBuffer {
     return this.stateBuffers[this.current];
+  }
+
+  /**
+   * The GPU buffer of the grid's metrics (layout in euler2d.wgsl), for a
+   * GpuLineGrid to write as the grid moves.
+   */
+  get geometryBuffer(): GPUBuffer {
+    return this.geometry;
+  }
+
+  /**
+   * Move the grid's lines to these heights with `lineGrid` (made on this
+   * solver's lines and geometry buffer), remapping the current solution
+   * onto the moved cells. `metrics` still describes the grid as created.
+   */
+  moveGrid(lineGrid: GpuLineGrid, heights: readonly number[]): void {
+    this.exclusive.assertIdle();
+    const spare = this.current === 0 ? 1 : 0;
+    lineGrid.moveTo(heights, this.stateBuffers[this.current], this.stateBuffers[spare]);
+    this.current = spare;
   }
 
   /**

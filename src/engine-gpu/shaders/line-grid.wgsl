@@ -17,7 +17,14 @@ struct LineGridParams {
   nj: u32,
   // 1 for axisymmetric geometry (y is the radius), 0 for planar.
   axisymmetric: u32,
-  pad: u32,
+  gamma: f32,
+}
+
+struct Primitive {
+  rho: f32,
+  u: f32,
+  v: f32,
+  p: f32,
 }
 
 @group(0) @binding(0) var<uniform> params: LineGridParams;
@@ -29,9 +36,13 @@ struct LineGridParams {
 // eta_{i,j+1} - eta_ij at (ni + 1)(nj + 1) + i + j (ni + 1); then across
 // lines, eta_{i+1,j} - eta_ij at (ni + 1)(2 nj + 1) + i + j ni.
 @group(0) @binding(3) var<storage, read> fractions: array<f32>;
-// h_i (ni + 1), then h_{i+1} - h_i (ni).
+// h_i (ni + 1), then h_{i+1} - h_i (ni), then the last move of each line,
+// h_i - h_i before it (ni + 1).
 @group(0) @binding(4) var<storage, read> heights: array<f32>;
 @group(0) @binding(5) var<storage, read_write> geometry: array<vec4f>;
+// The flow before and after a move (conserved, as in euler2d.wgsl).
+@group(0) @binding(6) var<storage, read> before: array<vec4f>;
+@group(0) @binding(7) var<storage, read_write> after: array<vec4f>;
 
 fn eta(i: u32, j: u32) -> f32 {
   return fractions[i + j * (params.ni + 1u)];
@@ -51,6 +62,10 @@ fn height(i: u32) -> f32 {
 
 fn height_step(i: u32) -> f32 {
   return heights[params.ni + 1u + i];
+}
+
+fn height_move(i: u32) -> f32 {
+  return heights[2u * params.ni + 1u + i];
 }
 
 // Node (i, j) relative to its line's body point.
@@ -149,4 +164,71 @@ fn line_grid_cells(@builtin(global_invocation_id) id: vec3u) {
   }
   let base = (params.ni + 1u) * params.nj + params.ni * (params.nj + 1u);
   geometry[base + c] = vec4f(volume, area, centroid);
+}
+
+fn to_primitive(c: vec4f) -> Primitive {
+  let u = c.y / c.x;
+  let v = c.z / c.x;
+  return Primitive(c.x, u, v, (params.gamma - 1.0) * (c.w - 0.5 * c.x * (u * u + v * v)));
+}
+
+fn to_conserved(w: Primitive) -> vec4f {
+  return vec4f(
+    w.rho,
+    w.rho * w.u,
+    w.rho * w.v,
+    w.p / (params.gamma - 1.0) + 0.5 * w.rho * (w.u * w.u + w.v * w.v),
+  );
+}
+
+fn mix_primitive(a: Primitive, b: Primitive, t: f32) -> Primitive {
+  return Primitive(
+    a.rho + t * (b.rho - a.rho),
+    a.u + t * (b.u - a.u),
+    a.v + t * (b.v - a.v),
+    a.p + t * (b.p - a.p),
+  );
+}
+
+// Distance from the centre of cell (i, j) to the centre of cell (i, j + 1)
+// along its column, before the move.
+fn centre_spacing(i: u32, j: u32) -> f32 {
+  var sum = 0.0;
+  for (var k = i; k <= i + 1u; k++) {
+    let h = height(k) - height_move(k);
+    sum += h * 0.5 * (eta_along(k, j) + eta_along(k, j + 1u));
+  }
+  return 0.5 * sum;
+}
+
+// The flow after a move of the lines, interpolated along each column as
+// src/solver/shock-fitting.ts does (linear in the primitive variables,
+// held at the end cells). The column's distance is the mean of its two
+// lines'; a move shifts the centre of cell (i, j) by the mean of the lines'
+// moves times its fraction, computed from the moves themselves. A move is
+// below half a cell, so the new centre lies between the old centres of
+// (i, j) and one neighbour.
+@compute @workgroup_size(WORKGROUP_SIZE)
+fn line_grid_remap(@builtin(global_invocation_id) id: vec3u) {
+  let c = id.x;
+  if (c >= params.ni * params.nj) {
+    return;
+  }
+  let i = c % params.ni;
+  let j = c / params.ni;
+  var shift = 0.0;
+  for (var k = i; k <= i + 1u; k++) {
+    shift += height_move(k) * 0.5 * (eta(k, j) + eta(k, j + 1u));
+  }
+  shift *= 0.5;
+  let here = to_primitive(before[c]);
+  var w = here;
+  if (shift > 0.0 && j + 1u < params.nj) {
+    let t = min(shift / centre_spacing(i, j), 1.0);
+    w = mix_primitive(here, to_primitive(before[c + params.ni]), t);
+  } else if (shift < 0.0 && j > 0u) {
+    let t = min(-shift / centre_spacing(i, j - 1u), 1.0);
+    w = mix_primitive(here, to_primitive(before[c - params.ni]), t);
+  }
+  after[c] = to_conserved(w);
 }
