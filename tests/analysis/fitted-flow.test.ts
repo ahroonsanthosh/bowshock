@@ -16,6 +16,7 @@ import { startedFrom } from '../../src/analysis/gpu-fitted-flow';
 import type { GpuShockFit } from '../../src/engine-gpu/shock-fitting-gpu';
 import type { Body } from '../../src/geometry/body';
 import { gridOnLines } from '../../src/grid/blunt-grid';
+import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../../src/grid/quality';
 import { normalShock, stagnationPressureRatio } from '../../src/validation/gas-dynamics';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
@@ -153,6 +154,21 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     });
     const ahead = mach(0.5 * (p0.lines[corner - 1]!.x + p0.lines[corner]!.x));
     expect(baseMach(p0, g0, flow0)).toBeCloseTo(ahead, 12);
+  });
+
+  it('a 36 deg tip passes the quality gates of fitted grids, set on its measured family (0006)', () => {
+    // The secant ogive (0.5) of 1 caliber at Mach 3: wall cells at 53.4 deg,
+    // which the generated grids' gate (60 deg) refuses.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 0.5 }, length: 1, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const problem = sharpFitProblem(ogive, { gamma, nj: 20, refinement: 1, mach: 3 });
+    const quality = gridQuality(
+      gridOnLines(problem.lines, problem.heights, problem.nj, 0.5, false),
+    );
+    expect(qualityFailures(quality).join()).toMatch(/wall cell angle/);
+    expect(qualityFailures(quality, FITTED_QUALITY_LIMITS)).toEqual([]);
   });
 
   it('a bare nose is solved with a cylinder behind it only where the flow leaves its base supersonically', () => {

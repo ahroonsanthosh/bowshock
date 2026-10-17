@@ -37,6 +37,33 @@ export const QUALITY_LIMITS = {
   maxAspectRatio: 10,
 } as const;
 
+export interface QualityLimits {
+  readonly minAngle: number;
+  readonly minWallAngle: number;
+  readonly maxSizeRatio: number;
+  readonly maxAspectRatio: number;
+}
+
+/**
+ * The limits for the grids of the fitted bow shock, whose lines end on
+ * the shock (docs/design/0006-shock-fitting.md, "The quality gates on
+ * fitted grids"). Measured against exact or converged reference drags on
+ * nj = 20, 40 and 80: a secant ogive at Mach 3 with wall cells at 53.4 to
+ * 53.8 deg (a 36 deg tip) converges at order 1.93 and extrapolates within
+ * 1.6e-6, its band containing its error; a parabolic nose at Mach 5 with
+ * wall cells at 44.5 deg and aspect ratios of 16 to 17 is within 2.3e-6
+ * of its reference on nj = 40 and 80, though not yet at a steady order.
+ * Aspect ratios of 10.6 to 11.9 (long bodies, a slender nose at Mach 1.2)
+ * converge as the families below 10 do. The wall angle is set between the
+ * two families' angles, the aspect ratio just above the largest measured
+ * at a steady order.
+ */
+export const FITTED_QUALITY_LIMITS: QualityLimits = {
+  ...QUALITY_LIMITS,
+  minWallAngle: (50 * Math.PI) / 180,
+  maxAspectRatio: 12,
+};
+
 export function gridQuality(grid: StructuredGrid): GridQuality {
   const { ni, nj, x, y } = grid;
   const node = (i: number, j: number) => {
@@ -95,9 +122,8 @@ export function gridQuality(grid: StructuredGrid): GridQuality {
 }
 
 /** The limits a grid fails, as readable messages (empty if it passes). */
-export function qualityFailures(q: GridQuality): string[] {
+export function qualityFailures(q: GridQuality, limits: QualityLimits = QUALITY_LIMITS): string[] {
   const deg = (r: number) => `${((r * 180) / Math.PI).toFixed(1)} deg`;
-  const limits = QUALITY_LIMITS;
   const failures: string[] = [];
   // Written as !(value within limit) so that NaN, from a degenerate cell,
   // fails rather than slipping through.
