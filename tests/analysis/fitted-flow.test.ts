@@ -14,7 +14,7 @@ const options = { gamma, nj: 20, refinement: 1, maxIterations: 20_000 };
 
 describe('flow with the bow shock fitted (design record 0006)', () => {
   it('Mach 3, 20 deg cone: converged, drag within 0.03% of Taylor-Maccoll on the coarsest grid', () => {
-    // Measured when written: +0.0248% (nj = 20); with the captured shock -0.395%.
+    // Measured when written: +0.0251% (nj = 20); with the captured shock -0.395%.
     const cone: Body = {
       nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
       cylinderLength: 4,
@@ -26,7 +26,7 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
   }, 600_000);
 
   it('Mach 2 hemisphere-cylinder: converged, stagnation pressure within 0.01% of the pitot value', () => {
-    // Measured when written: +0.0074% (nj = 20); with the captured shock +9.7%.
+    // Measured when written: +0.0076% (nj = 20); with the captured shock +9.7%.
     const body: Body = {
       nose: { shape: { kind: 'ellipsoid' }, length: 0.5, baseRadius: 0.5 },
       cylinderLength: 4,
