@@ -263,8 +263,9 @@ endless cone, since the expansion at the shoulder reaches upstream.
 
 ## Open
 
-- The cone at Mach 1.3 on nj = 160, and the cones at Mach 3 to 5 on
-  nj = 80, to confirm the floor.
+- The floor on grids the quality gates refuse (steep tips, long bodies)
+  and on slender noses at low Mach numbers, to set the gates for fitted
+  grids on evidence (in progress); cones at Mach 5 on nj = 80.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.
 - Blunt noses on the drag page: a captured start on the GPU, and grids
