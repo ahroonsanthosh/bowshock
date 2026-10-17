@@ -100,7 +100,7 @@ export const DRAG_FLOOR = 1e-3;
  * lies at most 3.4e-5 of the value from the exact one (the 5-caliber
  * ogive at Mach 2, observed order 2.11; extrapolated at that order it is
  * within 2.5e-6); the floor is about twice that. A cone at Mach 1.3,
- * 5 deg, not yet settled on nj = 80, is being measured on nj = 160.
+ * 5 deg, not settled on nj = 80, settles on nj = 160 within 7.2e-6.
  */
 export const FITTED_DRAG_FLOOR = 7e-5;
 /**

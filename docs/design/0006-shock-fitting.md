@@ -205,7 +205,7 @@ cylinder, against Taylor-Maccoll:
 | M 2, 10 deg   | +0.1399% | +0.0347% | +0.0086% | 2.01  | -1.2e-6                  |
 | M 1.5, 10 deg | +0.1938% | +0.0514% | +0.0139% | 1.92  | +1.3e-5                  |
 | M 1.5, 20 deg | +0.0449% | +0.0150% | +0.0053% | 1.63  | +2.0e-5                  |
-| M 1.3, 5 deg  | +0.5398% | +0.1106% | +0.0287% | 2.39  | +1.4e-5 (not settled)    |
+| M 1.3, 5 deg  | +0.5398% | +0.1106% | +0.0287% | 2.39  | +1.4e-5 (see below)      |
 
 Further cones on three grids: Mach 2, 20 deg, +0.0529%, +0.0135%,
 +0.0034% (order 1.97, capped extrapolation 3.1e-7 off) and Mach 3, 30
@@ -237,9 +237,11 @@ On the families that have settled it lies at most 3.4e-5 of the value
 from the exact one (the 5-caliber ogive, whose order settles at 2.11),
 against 4.6e-4 with the shock captured. The floor for fitted drag
 (`FITTED_DRAG_FLOOR`) is set at 7e-5, about twice that. The cone at Mach
-1.3, 5 deg, whose order has not settled on nj = 80, is being measured on
-nj = 160; if it settles farther from the exact value the floor must
-rise. Grids that fail the quality gates (wall cells at under 60 deg on
+1.3, 5 deg, whose order had not settled on nj = 80, settles on nj = 160:
++0.00784% there, the finest triple at order 1.98, extrapolated within
+7.2e-6 of the exact value, and its band (8.9e-5) contains its error; the
+orders of its two triples (2.39 and 1.98) agree within the procedure's
+0.5, so it would be given a band. Grids that fail the quality gates (wall cells at under 60 deg on
 steep tips, aspect ratios above 10 on long bodies) and slender noses at
 low Mach numbers are being measured before the gates are reconsidered.
 
