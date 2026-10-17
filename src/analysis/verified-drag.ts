@@ -96,16 +96,19 @@ export const CPU_NOISE = 1e-12;
  */
 export const DRAG_FLOOR = 1e-3;
 /**
- * The same for the forebody drag with the bow shock fitted
- * (docs/design/0006-shock-fitting.md). On the families measured against
- * exact values on nj = 20, 40 and 80 (cones at Mach 1.5 and 2 against
- * Taylor-Maccoll, tangent ogives of 3 and 5 calibers at Mach 1.5 to 3
+ * The allowance for the forebody drag with the bow shock fitted
+ * (docs/design/0006-shock-fitting.md), relative: an error the grid family
+ * cannot show, since the procedure extrapolates at second order at most.
+ * On the families measured against exact or converged reference values on
+ * nj = 20, 40 and 80 (cones of 5 to 30 deg at Mach 1.3 to 3 against
+ * Taylor-Maccoll; tangent ogives of 3 calibers at Mach 1.5 to 4 and of 5
+ * at Mach 2, and 3-caliber secant-ogive and parabolic noses at Mach 2.5,
  * against the method of characteristics), the procedure's own
  * extrapolation (order capped at 2) of a family whose order has settled
- * lies at most 3.4e-5 of the value from the exact one (the 5-caliber
- * ogive at Mach 2, observed order 2.11; extrapolated at that order it is
- * within 2.5e-6); the floor is about twice that. A cone at Mach 1.3,
- * 5 deg, not settled on nj = 80, settles on nj = 160 within 7.2e-6.
+ * lies at most 3.4e-5 of the value from the reference (the 5-caliber
+ * ogive at Mach 2, observed order 2.11); the allowance is about twice
+ * that. The cone at Mach 1.3, 5 deg, not settled on nj = 80, settles on
+ * nj = 160 within 7.2e-6.
  */
 export const FITTED_DRAG_FLOOR = 7e-5;
 /**

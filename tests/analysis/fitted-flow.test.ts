@@ -15,6 +15,7 @@ import {
 import { startedFrom } from '../../src/analysis/gpu-fitted-flow';
 import type { GpuShockFit } from '../../src/engine-gpu/shock-fitting-gpu';
 import type { Body } from '../../src/geometry/body';
+import { gridOnLines } from '../../src/grid/blunt-grid';
 import { normalShock, stagnationPressureRatio } from '../../src/validation/gas-dynamics';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
@@ -108,6 +109,28 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     await expect(stopped).rejects.toThrow();
   }, 600_000);
 
+  it('tests the base flow at the end of the body asked for, between grid columns', () => {
+    // A cylinder shorter than the one caliber always solved, whose end
+    // lies inside a column; a flow whose axial Mach number is linear in x.
+    const cone: Body = {
+      nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
+      cylinderLength: 0.3,
+    };
+    const problem = sharpFitProblem(cone, { gamma, nj: 20, refinement: 1, mach: 3 });
+    const grid = gridOnLines(problem.lines, problem.heights, problem.nj, 0.5, false);
+    const { lines } = problem;
+    const end = cone.nose.length + 0.3;
+    expect(lines.some((l) => Math.abs(l.x - end) < 1e-9)).toBe(false);
+    const mach = (x: number) => 0.5 + 0.2 * x;
+    const flow = (i: number) => ({
+      rho: 1,
+      u: Math.sqrt(gamma) * mach(0.5 * (lines[i]!.x + lines[i + 1]!.x)),
+      v: 0,
+      p: 1,
+    });
+    expect(baseMach(problem, grid, flow)).toBeCloseTo(mach(end), 12);
+  });
+
   it('a bare nose is solved with a cylinder behind it only where the flow leaves its base supersonically', () => {
     // A 20 deg cone at Mach 3 leaves its base at Mach 2; the same grid
     // with the flow slowed to Mach 0.42 everywhere is refused.
@@ -146,7 +169,7 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     );
   });
 
-  it('a tip whose conical flow is subsonic near the surface is refused', () => {
+  it('a tip whose conical flow crosses the starting plane subsonically is refused, with the reason', () => {
     // The 3-caliber tangent ogive at Mach 1.2: an 18.9 deg tip cone, its
     // surface flow at Mach 0.85.
     const ogive: Body = {
@@ -154,10 +177,22 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
       cylinderLength: 2,
     };
     expect(() => sharpFitProblem(ogive, { gamma, nj: 20, refinement: 1, mach: 1.2 })).toThrow(
-      /at Mach 1.2 the flow over a tip of 18.9 deg half-angle is subsonic near the surface/,
+      /at Mach 1.2 the flow over a tip of 18.9 deg half-angle is subsonic at the surface \(Mach 0.85\)/,
     );
     // At Mach 1.5 it is supersonic, and the problem is built.
     expect(() => sharpFitProblem(ogive, { gamma, nj: 20, refinement: 1, mach: 1.5 })).not.toThrow();
+    // A 24 deg cone at Mach 1.5: supersonic surface flow (Mach 1.04), whose
+    // axial component (0.95) crosses the plane normal to the axis
+    // subsonically; on every grid.
+    const cone: Body = {
+      nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(24 * deg), baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    for (const refinement of [1, 8]) {
+      expect(() => sharpFitProblem(cone, { gamma, nj: 20, refinement, mach: 1.5 })).toThrow(
+        /crosses the solver's starting plane, normal to the axis, at an axial Mach number of 0.95/,
+      );
+    }
   });
 
   it('verified fitted drag: a grid that does not converge gives no value, only the reason', async () => {

@@ -151,6 +151,34 @@ describe('the error band on measured cone-cylinder families', () => {
     },
   );
 
+  it('a finer grid that cannot be solved leaves the result of the grids before it, where allowed', async () => {
+    // Second-order values; the grid of refinement 8 fails.
+    const values = [1.04, 1.01, 1.0025];
+    const solveAt = (r: number) => {
+      if (r === 8) throw new RangeError('too large for this GPU');
+      return values[Math.log2(r)]!;
+    };
+    const options = { orderTolerance: 0.5, noise: 1e-12, floor: 0, tolerance: 0, maxRefinement: 8 };
+    const coarser = await refineUntilVerified(solveAt, { ...options, maxRefinement: 4 });
+    const stopped = await refineUntilVerified(solveAt, {
+      ...options,
+      stopOn: (error) => (error instanceof RangeError ? error.message : undefined),
+    });
+    expect(stopped.stopped).toEqual({ refinement: 8, reason: 'too large for this GPU' });
+    expect(stopped.levels).toEqual(coarser.levels);
+    expect(stopped.uncertainty).toBe(coarser.uncertainty);
+    // Without a reason to stop, or on the first grid, the failure stands.
+    await expect(refineUntilVerified(solveAt, options)).rejects.toThrow('too large');
+    await expect(
+      refineUntilVerified(
+        () => {
+          throw new RangeError('refused');
+        },
+        { ...options, stopOn: () => 'any' },
+      ),
+    ).rejects.toThrow('refused');
+  });
+
   it('with 32-bit noise on every value, bands are still given only where they hold', async () => {
     // The GPU engine's values differ from the CPU's by up to about 1.3e-6
     // relative (Mach 5); perturb each value by up to 2e-6, the noise the

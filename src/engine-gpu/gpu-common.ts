@@ -3,6 +3,67 @@
  * errors, buffer ownership, and the one-operation-at-a-time guard.
  */
 
+/** A grid too large for the device's limits: buffer sizes, or workgroups in one dispatch. */
+export class GpuMemoryLimitError extends RangeError {}
+
+/** Work the GPU did not do: rejected by validation, out of memory, or the device lost. */
+export class GpuExecutionError extends Error {}
+
+/**
+ * Throws GpuMemoryLimitError if one invocation per item, in workgroups of
+ * `size` along one dimension, needs more workgroups than the device
+ * allows: such a dispatch fails validation, which throws nothing in
+ * JavaScript, and none of the work in its command buffer runs.
+ */
+export function checkDispatchSize(
+  device: GPUDevice,
+  items: number,
+  size: number,
+  what: string,
+): void {
+  const groups = Math.ceil(items / size);
+  const limit = device.limits.maxComputeWorkgroupsPerDimension;
+  if (groups > limit) {
+    throw new GpuMemoryLimitError(
+      `${what} needs ${groups} workgroups in one dispatch, more than this GPU allows (${limit})`,
+    );
+  }
+}
+
+/**
+ * Runs `create` and turns the device errors raised during it (out of
+ * memory, validation), which WebGPU reports only through error scopes,
+ * into exceptions, destroying what was created. Nothing else may use the
+ * device meanwhile, or its errors would be caught here too.
+ */
+export async function withDeviceErrors<T>(
+  device: GPUDevice,
+  what: string,
+  create: () => T | Promise<T>,
+  destroy: (created: T) => void,
+): Promise<T> {
+  device.pushErrorScope('out-of-memory');
+  device.pushErrorScope('validation');
+  let created: T;
+  let invalid: GPUError | null;
+  let memory: GPUError | null;
+  try {
+    created = await create();
+  } finally {
+    invalid = await device.popErrorScope();
+    memory = await device.popErrorScope();
+  }
+  if (memory !== null) {
+    destroy(created);
+    throw new GpuMemoryLimitError(`${what}: the GPU ran out of memory (${memory.message})`);
+  }
+  if (invalid !== null) {
+    destroy(created);
+    throw new GpuExecutionError(`${what}: ${invalid.message}`);
+  }
+  return created;
+}
+
 /** Compile WGSL, throwing with the compiler's messages if it fails. */
 export async function compileShader(
   device: GPUDevice,

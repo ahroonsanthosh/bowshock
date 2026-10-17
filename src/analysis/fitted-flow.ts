@@ -157,26 +157,34 @@ export function wallDrag(
 }
 
 /**
- * Smallest axial Mach number in the column of cells just ahead of the end
- * of the body asked for, or Infinity if the domain ends there (the
- * outflow check covers it). Only where it exceeds 1 does nothing behind
- * the end reach the body: on a 26.6 deg cone at Mach 1.5, whose conical
- * surface flow is subsonic, the drag with 2 calibers of cylinder behind
- * it is 3.3% below the Taylor-Maccoll value of an endless cone.
+ * Smallest axial Mach number at the end of the body asked for, across
+ * the layer: in each row, interpolated in x between the centres of the
+ * columns of cells either side of the end (where the domain goes on past
+ * it); Infinity if the domain ends there (the outflow check covers it).
+ * Only where it exceeds 1 does nothing behind the end reach the body: on
+ * a 26.6 deg cone at Mach 1.5, whose conical surface flow is subsonic,
+ * the drag with 2 calibers of cylinder behind it is 3.3% below the
+ * Taylor-Maccoll value of an endless cone.
  */
 export function baseMach(
   problem: FitProblem,
   grid: StructuredGrid,
   cell: (i: number, j: number) => Primitive2D,
 ): number {
-  const { lines, gamma } = problem;
-  let end = 0;
-  while (end + 1 < lines.length && lines[end + 1]!.x <= problem.askedEnd * (1 + 1e-12)) end++;
-  if (end >= lines.length - 1) return Infinity;
+  const { lines, gamma, askedEnd } = problem;
+  const n = lines.length - 1;
+  if (!(lines[n]!.x > askedEnd * (1 + 1e-12))) return Infinity;
+  const centre = (i: number) => 0.5 * (lines[i]!.x + lines[i + 1]!.x);
+  // The columns a and a + 1 whose centres enclose the end (or the first
+  // two, if the end lies ahead of the first centre).
+  let a = 0;
+  while (a + 2 < n && centre(a + 1) <= askedEnd) a++;
+  const t = Math.min(Math.max((askedEnd - centre(a)) / (centre(a + 1) - centre(a)), 0), 1);
+  const axialMach = (w: Primitive2D) => w.u / Math.sqrt((gamma * w.p) / w.rho);
   let smallest = Infinity;
   for (let j = 0; j < grid.nj; j++) {
-    const w = cell(end - 1, j);
-    smallest = Math.min(smallest, w.u / Math.sqrt((gamma * w.p) / w.rho));
+    const m = (1 - t) * axialMach(cell(a, j)) + t * axialMach(cell(a + 1, j));
+    smallest = Math.min(smallest, m);
   }
   return smallest;
 }
@@ -259,15 +267,22 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     const [x, y] = midpoint([nodeIndex(first, 0, j), nodeIndex(first, 0, j + 1)]);
     return conical(Math.atan2(y!, x!));
   });
-  // The inflow plane imposes all four states, which holds only where the
-  // flow crosses it supersonically: near the surface of a blunt tip cone
-  // at a low Mach number it does not, and the downstream body would reach
-  // the tip (the method of characteristics refuses these cases too).
-  const slowest = Math.min(...inflow.map((w) => w.u / Math.sqrt((gamma * w.p) / w.rho)));
-  if (!(slowest > 1)) {
+  // The inflow plane, normal to the axis, imposes all four states, which
+  // holds only where the flow crosses it supersonically. The axial Mach
+  // number of the conical flow is least on the surface: tested there, on
+  // the tip cone itself, so the test does not depend on the grid. Where
+  // the surface flow is subsonic the body behind the tip also reaches it
+  // (the method of characteristics refuses those cases).
+  const surface = conical(tipAngle);
+  const surfaceSound = Math.sqrt((gamma * surface.p) / surface.rho);
+  const surfaceMach = Math.hypot(surface.u, surface.v) / surfaceSound;
+  const axialMach = surface.u / surfaceSound;
+  if (!(axialMach > 1)) {
     const degrees = ((tipAngle * 180) / Math.PI).toFixed(1);
     throw new RangeError(
-      `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic near the surface (axial Mach number ${slowest.toFixed(2)}), which this solver does not handle; this needs a sharper or longer nose, or a higher Mach number`,
+      surfaceMach > 1
+        ? `at Mach ${mach} the flow behind a tip of ${degrees} deg half-angle crosses the solver's starting plane, normal to the axis, at an axial Mach number of ${axialMach.toFixed(2)} at the surface, below 1, where that plane cannot impose the tip's conical flow; this needs a sharper or longer nose, or a higher Mach number`
+        : `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic at the surface (Mach ${surfaceMach.toFixed(2)}), so the body behind the tip reaches it, which this solver does not handle yet; this needs a sharper or longer nose, or a higher Mach number`,
     );
   }
   // Ahead of x0 the nose is the tip cone, within (x0 / L)^2.
