@@ -82,8 +82,8 @@ Validated so far, each with its tests and recorded accuracy:
   observed orders disagree).
 
 Not yet: viscous flow, blunt noses on the drag page (solved with the
-shock fitted, but Von Karman and power-series noses are still refused
-by the grid), fins and the base. Until those pass their own validation,
+shock fitted, but Von Karman noses longer than a caliber and
+power-series noses are still refused by the grid), fins and the base. Until those pass their own validation,
 bowshock reports no total drag coefficient.
 
 Limits are stated plainly: power off, zero angle of attack, no motor plume;
