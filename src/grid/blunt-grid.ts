@@ -31,8 +31,20 @@ export interface BluntGridOptions {
   readonly mach: number;
 }
 
+/** A straight grid line from the body: its body point, direction and length. */
+export interface GridLine {
+  readonly x: number;
+  readonly y: number;
+  readonly dx: number;
+  readonly dy: number;
+  /** Distance along the line from the body to the outer boundary. */
+  readonly h: number;
+}
+
 export interface BluntGrid {
   readonly grid: StructuredGrid;
+  /** The lines of constant i, from iMin to iMax; for refitting the outer boundary. */
+  readonly lines: readonly GridLine[];
   /** Distance of the outer boundary ahead of the tip, along the axis. */
   readonly outerStandoff: number;
   /** Angle of the straight part of the outer boundary to the axis, radians. */
@@ -254,11 +266,7 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     return { dx, dy, h: lengthAlong(s, dx, dy) };
   };
 
-  // Stretching towards the body along each line of length h, as on the
-  // grids for sharp noses: eta = (e^(b xi) - 1) / (e^b - 1), with
-  // b = ln(1 + h / R) capped by the aspect-ratio limit.
-  const maxStrength = 2 * Math.log(QUALITY_LIMITS.maxAspectRatio);
-  const strength = (h: number) => Math.min(Math.log1p(h / R), maxStrength);
+  const strength = (h: number) => lineStrength(h, R);
 
   const nj = options.nj * refinement;
   // Spacing along the body: the cells next to the wall are as long as the
@@ -274,21 +282,55 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   };
   const breakpoints = body.cylinderLength > 0 ? [0, sNose, sEnd] : [0, sNose];
   const ss = columnPositions(breakpoints, (s) => 1 / spacing(s), refinement);
-  const columns = ss.map((s) => {
+  const lines = ss.map((s) => {
     const p = surface(s);
-    const l = line(s);
-    return { x: p.x, y: p.y, ...l, b: strength(l.h) };
+    return { x: p.x, y: p.y, ...line(s) };
   });
-  const grid = gridFromFunction(ss.length - 1, nj, (i, j) => {
-    const c = columns[i]!;
-    const d = (c.h * Math.expm1((c.b * j) / nj)) / Math.expm1(c.b);
-    return [c.x + d * c.dx, c.y + d * c.dy];
+  const grid = gridOnLines(
+    lines,
+    lines.map((l) => l.h),
+    nj,
+    R,
+  );
+  return { grid, lines, outerStandoff, outerAngle };
+}
+
+/**
+ * Stretching towards the body along a line of length h, as on the grids
+ * for sharp noses: eta = (e^(b xi) - 1) / (e^b - 1), with b = ln(1 + h / R)
+ * capped by the aspect-ratio limit (R the body radius).
+ */
+function lineStrength(h: number, radius: number): number {
+  return Math.min(Math.log1p(h / radius), 2 * Math.log(QUALITY_LIMITS.maxAspectRatio));
+}
+
+/**
+ * The grid of nj cells across on the given lines, each cut at its own
+ * height (the distance to the outer boundary): the nodes of the C grid for
+ * a given outer boundary, such as a fitted shock. Refused if it fails the
+ * quality gates.
+ */
+export function gridOnLines(
+  lines: readonly GridLine[],
+  heights: readonly number[],
+  nj: number,
+  baseRadius: number,
+  /** Apply the quality gates (off for the intermediate grids of a shock fit). */
+  gated = true,
+): StructuredGrid {
+  if (heights.length !== lines.length) throw new RangeError('one height per line is needed');
+  const grid = gridFromFunction(lines.length - 1, nj, (i, j) => {
+    const l = lines[i]!;
+    const h = heights[i]!;
+    const b = lineStrength(h, baseRadius);
+    const d = (h * Math.expm1((b * j) / nj)) / Math.expm1(b);
+    return [l.x + d * l.dx, l.y + d * l.dy];
   });
-  const failures = qualityFailures(gridQuality(grid));
+  const failures = gated ? qualityFailures(gridQuality(grid)) : [];
   if (failures.length > 0) {
     throw new GridQualityError(
       `the generated grid fails its quality checks: ${failures.join('; ')}`,
     );
   }
-  return { grid, outerStandoff, outerAngle };
+  return grid;
 }

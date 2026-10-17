@@ -51,12 +51,13 @@ const GPU_FACE_FLUX_FUNCTIONS: Readonly<Record<GpuFluxName, string>> = {
 };
 
 /** Boundary condition kinds as coded in euler2d.wgsl. */
-const BOUNDARY_KINDS: Readonly<Record<BoundaryCondition2D['kind'], number>> = {
-  inflow: 0,
-  outflow: 1,
-  wall: 2,
-  periodic: 3,
-};
+const BOUNDARY_KINDS: Readonly<Record<Exclude<BoundaryCondition2D['kind'], 'faceStates'>, number>> =
+  {
+    inflow: 0,
+    outflow: 1,
+    wall: 2,
+    periodic: 3,
+  };
 
 /** Sides in the order euler2d.wgsl expects them. */
 const SIDES: readonly Side[] = ['iMin', 'iMax', 'jMin', 'jMax'];
@@ -161,6 +162,9 @@ export class GpuEuler2D {
     if (!isGpuFlux(flux)) throw new RangeError(`flux ${flux} is not available on the GPU`);
     if (config.source !== undefined) {
       throw new RangeError('manufactured-solution sources are only supported by the CPU engine');
+    }
+    if (SIDES.some((side) => config.boundaries[side].kind === 'faceStates')) {
+      throw new RangeError('per-face boundary states are only supported by the CPU engine');
     }
 
     const module = await compileShader(device, 'euler2d', euler2dShaderSource(config));
@@ -398,7 +402,11 @@ export class GpuEuler2D {
     const floats = new Float32Array(data);
     words.set([ni, nj, geometry === 'axisymmetric' ? 1 : 0, timeStepping === 'local' ? 1 : 0]);
     words.set(
-      SIDES.map((side) => BOUNDARY_KINDS[boundaries[side].kind]),
+      SIDES.map((side) => {
+        const kind = boundaries[side].kind;
+        if (kind === 'faceStates') throw new RangeError('unreachable: refused in create');
+        return BOUNDARY_KINDS[kind];
+      }),
       4,
     );
     SIDES.forEach((side, k) => {

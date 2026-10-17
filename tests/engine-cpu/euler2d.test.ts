@@ -301,3 +301,61 @@ describe('Euler2D: boundary fluxes', () => {
     for (const f of outer) expect(f.ny).toBe(1);
   });
 });
+
+describe('Euler2D: per-face boundary states', () => {
+  // A supersonic ramp-like box: inflow on the left and top, outflow right,
+  // wall below; states along the top set per face.
+  const grid = gridFromFunction(16, 8, (i, j) => [i / 16, (j / 8) * (0.5 + 0.02 * i)]);
+  const free = { rho: 1, u: 2.5, v: 0.1, p: 0.8 };
+  const config = (jMax: BoundaryCondition2D): Euler2DConfig => ({
+    grid,
+    geometry: 'planar',
+    gamma,
+    flux: 'hllc',
+    limiter: 'vanAlbada',
+    reconstruction: 'sharedScaled',
+    timeIntegrator: 'ssprk2',
+    cfl: 0.5,
+    timeStepping: 'local',
+    boundaries: {
+      iMin: { kind: 'inflow', state: free },
+      iMax: { kind: 'outflow' },
+      jMin: { kind: 'wall' },
+      jMax,
+    },
+  });
+
+  it('with the same state on every face, reproduce the inflow boundary exactly', () => {
+    const a = new Euler2D(config({ kind: 'inflow', state: free }));
+    const b = new Euler2D(
+      config({ kind: 'faceStates', states: Array.from({ length: 16 }, () => free) }),
+    );
+    for (const s of [a, b]) {
+      s.setInitialCondition(() => free);
+      s.iterate(200);
+    }
+    for (let j = 0; j < 8; j++) {
+      for (let i = 0; i < 16; i++) expect(b.primitive(i, j)).toEqual(a.primitive(i, j));
+    }
+  });
+
+  it('take a different state on each face, replaceable, and refuse a wrong count', () => {
+    const states = Array.from({ length: 16 }, (_, i) => ({ ...free, p: 0.8 + 0.01 * i }));
+    const s = new Euler2D(config({ kind: 'faceStates', states }));
+    s.setInitialCondition(() => free);
+    s.iterate(50);
+    const before = s.primitive(10, 7).p;
+    s.setFaceStates(
+      'jMax',
+      states.map((w) => ({ ...w, p: 2 * w.p })),
+    );
+    s.iterate(50);
+    expect(s.primitive(10, 7).p).not.toBe(before);
+    expect(() => {
+      s.setFaceStates('jMax', states.slice(1));
+    }).toThrow(/16 face states/);
+    expect(() => {
+      s.setFaceStates('iMin', states);
+    }).toThrow(/does not take face states/);
+  });
+});
