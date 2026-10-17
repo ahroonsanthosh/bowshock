@@ -256,6 +256,28 @@ orders of its two triples (2.39 and 1.98) agree within the procedure's
 steep tips, aspect ratios above 10 on long bodies) and slender noses at
 low Mach numbers are being measured before the gates are reconsidered.
 
+**Why the order dips at low Mach numbers on cone-cylinders** (found by
+an audit agent on Mach 1.5, 20 deg). The error is two errors of opposite
+sign: the regular one, spread over the cone and falling by 4.1 per
+refinement (+9.1e-4, +2.2e-4 of the drag on nj = 20 and 40 up to 0.86 of
+the cone's length), and one in the last cells before the corner with
+the cylinder (-4.6e-4, -7.1e-5), falling faster than second order. The
+flux there is fully upwind, but the reconstruction of the last cone cell
+reaches across the corner into the expansion, and the nearly sonic
+axial flow at the wall (Mach 1.085 at this case) amplifies the face's
+error. As the corner part shrinks faster it cancels less, and the
+total's ratio falls (3.00, then 2.85). Neither the start x0, the
+cylinder's length, the flux (HLL as HLLC) nor the shock's boundary
+changes it. Reconstructing the cells beside the corner from their own
+side only gives clean second order (4.07, then 4.05; extrapolated within
+1.2e-6), but removes the cancellation, so the finest-grid errors of
+every cone grow (by 1.97 times at this case, 1.04 at Mach 2, 10 deg) and
+the bands with them. The present scheme is kept: on every family
+measured its bands contain the error, and with the floor the margin on
+this case is 2.4 times. The patch (`docs/design/patches/0006-corner-one-sided.diff`) is kept for a later
+choice between narrower bands and cleaner convergence; on the GPU it
+would need the same change in euler2d.wgsl.
+
 **The domain extends at least one caliber past the nose.** With the
 zero-gradient outflow at the base of a bare nose, the cells next to it
 are perturbed: the drag of a bare 10 degree cone at Mach 2 (nj = 20)
@@ -282,6 +304,9 @@ check at the end of the body is a guard behind this one.
 
 ## Open
 
+- One-sided reconstruction at a nose's corner with the cylinder: cleaner
+  second order on cone-cylinders at low Mach numbers, at the cost of
+  wider bands (see above).
 - The floor on grids the quality gates refuse (steep tips, long bodies)
   and on slender noses at low Mach numbers, to set the gates for fitted
   grids on evidence (in progress); cones at Mach 5 on nj = 80.

@@ -1,0 +1,161 @@
+--- a/src/engine-cpu/euler2d.ts
++++ b/src/engine-cpu/euler2d.ts
+@@ -70,6 +70,15 @@
+    * solutions (src/validation/manufactured.ts); physical flows have none.
+    */
+   readonly source?: Float64Array;
++  /**
++   * i-node lines at which the wall's slope breaks, such as the shoulder of
++   * a cone-cylinder. The cells on either side of one are reconstructed in i
++   * from their own side only, with the one-sided difference: across the
++   * corner the flow is not smooth (a centred expansion), and in supersonic
++   * flow nothing from it reaches the cells ahead of it, but a stencil
++   * across it would carry it there (docs/design/0006-shock-fitting.md).
++   */
++  readonly iSlopeBreaks?: readonly number[];
+ }
+ 
+ export interface BoundaryFaceFlux {
+@@ -99,6 +108,23 @@
+   readonly outward: 1 | -1;
+ }
+ 
++const NO_BREAKS: ReadonlySet<number> = new Set();
++
++/**
++ * The value of cell c at a face, from its neighbour o on the same side of
++ * a slope break: c + s (c - o) / 2, with s = 1 when o lies behind the face
++ * and -1 when it lies beyond it (the one-sided difference, unlimited).
++ */
++function oneSided(c: Primitive2D, o: Primitive2D, s: 1 | -1): Primitive2D {
++  const k = 0.5 * s;
++  return {
++    rho: c.rho + k * (c.rho - o.rho),
++    u: c.u + k * (c.u - o.u),
++    v: c.v + k * (c.v - o.v),
++    p: c.p + k * (c.p - o.p),
++  };
++}
++
+ /** Ghost layers on each side; MUSCL needs two. */
+ const GHOSTS = 2;
+ 
+@@ -139,6 +165,8 @@
+   private readonly boundaryStates = new Map<Side, readonly Primitive2D[]>();
+   /** Fluxes imposed on the faces of a 'faceStates' side, if any (see setFaceFluxes). */
+   private readonly boundaryFluxOverrides = new Map<Side, Float64Array>();
++  /** i-node lines at which the wall's slope breaks (Euler2DConfig.iSlopeBreaks). */
++  private readonly iSlopeBreaks: ReadonlySet<number>;
+ 
+   constructor(config: Euler2DConfig) {
+     validateGrid2DConfig(config);
+@@ -170,6 +198,7 @@
+       throw new RangeError('the source needs four values per cell');
+     }
+     this.cellSource = config.source ?? null;
++    this.iSlopeBreaks = new Set(config.iSlopeBreaks ?? []);
+     for (const side of ['iMin', 'iMax', 'jMin', 'jMax'] as const) {
+       const bc = config.boundaries[side];
+       if (bc.kind === 'faceStates') this.setFaceStates(side, bc.states);
+@@ -530,8 +559,19 @@
+     const wL = this.primitiveAt(u, kLeft);
+     const wR = this.primitiveAt(u, kRight);
+     const wRR = this.primitiveAt(u, kRight + step);
+-    const left = this.reconstruct(wLL, wL, wR, 1);
+-    const right = this.reconstruct(wL, wR, wRR, -1);
++    // Face i lies between cells i - 1 and i; node line b separates cells
++    // b - 1 and b.
++    const breaks = direction === 'i' ? this.iSlopeBreaks : NO_BREAKS;
++    const left = breaks.has(i)
++      ? oneSided(wL, wLL, 1)
++      : breaks.has(i - 1)
++        ? oneSided(wL, wR, -1)
++        : this.reconstruct(wLL, wL, wR, 1);
++    const right = breaks.has(i + 1)
++      ? oneSided(wR, wL, -1)
++      : breaks.has(i)
++        ? oneSided(wR, wRR, 1)
++        : this.reconstruct(wL, wR, wRR, -1);
+     const ok = left.rho > 0 && left.p > 0 && right.rho > 0 && right.p > 0;
+     return ok ? [left, right] : [wL, wR];
+   }
+--- a/src/analysis/fitted-flow.ts
++++ b/src/analysis/fitted-flow.ts
+@@ -14,7 +14,7 @@
+ 
+ import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
+ import { bodyLength, bodyRadius, type Body } from '../geometry/body';
+-import { noseTipSlope } from '../geometry/nose';
++import { noseBaseSlope, noseTipSlope } from '../geometry/nose';
+ import { bluntBodyGrid, gridOnLines, withFixedFractions, type GridLine } from '../grid/blunt-grid';
+ import { columnPositions } from '../grid/spacing';
+ import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
+@@ -59,9 +59,11 @@
+   gamma: number,
+   iMin: Euler2DConfig['boundaries']['iMin'],
+   shockStates: readonly Primitive2D[],
++  iSlopeBreaks: readonly number[] = [],
+ ): Euler2DConfig {
+   return {
+     grid,
++    iSlopeBreaks,
+     geometry: 'axisymmetric',
+     gamma,
+     flux: 'hllc',
+@@ -250,6 +252,14 @@
+     R,
+   );
+   const heights = lines.map((l) => l.h);
++  // The shoulder, where a nose that does not meet the cylinder
++  // tangentially turns the flow at a corner: measured on Mach 1.5 cones,
++  // a stencil across it pulled the pressure on the last cells of the nose
++  // down, against the conical value the exact flow keeps up to the corner,
++  // by an error with the opposite sign to the rest of the nose's that
++  // shrank faster under refinement, so that the drag converged at an order
++  // of 1.6 (0006).
++  const corner = body.cylinderLength > 0 && noseBaseSlope(body.nose) > 0 ? [xs.indexOf(L)] : [];
+   const first = gridOnLines(lines, heights, nj, R, false);
+   const midpoint = (k: number[]) => [
+     k.reduce((s, q) => s + first.x[q]!, 0) / k.length,
+@@ -276,6 +286,7 @@
+         gamma,
+         { kind: 'faceStates', states: inflow },
+         states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
++        corner,
+       ),
+     initial: (i, j) => {
+       const [x, y] = midpoint([
+--- a/src/geometry/nose.ts
++++ b/src/geometry/nose.ts
+@@ -157,3 +157,31 @@
+       return Infinity;
+   }
+ }
++
++/**
++ * Slope dr/dx of the nose at its base, from each shape's formula: 0 where
++ * the nose meets a cylinder tangentially (the tangent ogive, the parabola
++ * of parameter 1, the Haack series, the ellipsoid), positive where the
++ * junction is a corner.
++ */
++export function noseBaseSlope(nose: Nose): number {
++  const { shape, length: L, baseRadius: R } = nose;
++  switch (shape.kind) {
++    case 'conical':
++      return R / L;
++    case 'ogive': {
++      if (shape.parameter < OGIVE_CONE_LIMIT) return R / L;
++      // Slope of the arc at the base, (xc - s) / sqrt(rho^2 - (xc - s)^2).
++      const { stretch, length, rho, xc } = ogiveArc(shape.parameter, L, R);
++      const d = xc - length;
++      return (d / Math.sqrt(rho * rho - d * d)) * stretch;
++    }
++    case 'parabolic':
++      return (2 * R * (1 - shape.parameter)) / ((2 - shape.parameter) * L);
++    case 'power':
++      return (shape.exponent * R) / L;
++    case 'ellipsoid':
++    case 'haack':
++      return 0;
++  }
++}
