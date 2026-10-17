@@ -101,21 +101,37 @@ Tangent ogive of NACA TN 3716 (3 calibers, 7 calibers of cylinder),
 Mach 1.98, forebody pressure drag against the method of characteristics
 (Cd = 0.0988034, converged to 1e-8 on 640 and 1280 intervals):
 
-| Shock               | nj = 20  | nj = 40  | nj = 80 | nj = 160 |
-| ------------------- | -------- | -------- | ------- | -------- |
-| Captured            | +1.210%  | +0.174%  | -0.025% | -0.042%  |
-| Fitted, x0 = 1e-3 L | +0.2822% | +0.0684% |         |          |
-| Fitted, x0 = 1e-4 L | +0.2819% | +0.0684% |         |          |
+| Shock               | nj = 20  | nj = 40  | nj = 80  | nj = 160 |
+| ------------------- | -------- | -------- | -------- | -------- |
+| Captured            | +1.210%  | +0.174%  | -0.025%  | -0.042%  |
+| Fitted, x0 = 1e-3 L | +0.2818% | +0.0680% | +0.0163% |          |
+| Fitted, x0 = 1e-4 L | +0.2815% | +0.0680% |          |          |
 
-Second order again (4.1 per refinement); the start x0 changes the drag by
-3e-6 of its value or less. Extrapolated at second order from the two
-grids the drag is 0.098800, 3e-5 below the exact value, where the
-captured shock's values converge to 4.4e-4 below it.
+The fitted drags (0.0990818, 0.0988706, 0.0988195) fall by 4.13 per
+refinement, an observed order of 2.05; the start x0 changes the drag by
+3e-6 of its value or less. Extrapolated from the three grids the drag is
+0.09880317, 2.4e-6 of its value below the exact one, and the error band
+of the finest grid (GCI, 0005) is 0.021%, against an actual error of
+0.016%. The captured shock's values converge to 4.4e-4 below the exact
+value: fitting removes the floor that capture leaves, to within the
+method of characteristics' own accuracy.
+
+Hemisphere-cylinder at Mach 2, fitted, forebody pressure drag on nj = 20,
+40 and 80: 0.7909688, 0.7894762, 0.7890787, falling by 3.75 per
+refinement (order 1.91), extrapolated 0.788934 with a band of 0.023% on
+the finest grid. The standoff (0.349552, 0.349374, 0.349330 body radii)
+converges at order 2.02 and the stagnation pressure's error (+0.0074%,
++0.0013%, +0.00024%) by 5.5 per refinement.
+
+These grids moved each node's fraction of its line with the line's
+height; the drivers now keep each line's starting fractions
+(withFixedFractions), as the GPU fit must, which changes the grids
+slightly: the values above are being measured again on those grids.
 
 ## Open
 
-- Third grids on the cone and the ogive, to confirm the order and set the
-  floor for fitted results.
+- A third grid on the cone, and the families again on grids with fixed
+  fractions, to set the floor for fitted results.
 - The drag page: the fitted solver on the GPU, families and their bands.
   Measured so far for the design: the shock must move one step's worth
   (W dt) at a time. Moving it every 20 flow steps by one step's worth
