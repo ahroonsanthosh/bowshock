@@ -127,6 +127,12 @@ export interface ShockFitOptions {
   /** Initial flow on the first grid. */
   readonly initial: (i: number, j: number) => Primitive2D;
   readonly freeStream: Primitive2D;
+  /**
+   * The first shock node: on the axis ahead of a blunt nose the shock is
+   * normal to the axis ('symmetry'); at the start of the domain behind a
+   * sharp tip it is held where the inflow data put it ('fixed').
+   */
+  readonly firstNode: 'symmetry' | 'fixed';
   /** Stop when every shock face moves slower than this times the free-stream sound speed. */
   readonly speedTolerance: number;
   /** ... and the density residual has fallen below this, relative to the start. */
@@ -267,7 +273,7 @@ export function fitShock(options: ShockFitOptions): ShockFit {
     maxSpeed = Math.max(maxSpeed, Math.abs(speeds[0]!) / aFree);
     // The axis: the shock is normal to it, on the parabola x = x0 + c y^2
     // through the next two nodes.
-    {
+    if (options.firstNode === 'symmetry') {
       const node = (k: number) =>
         [lines[k]!.x + next[k]! * lines[k]!.dx, lines[k]!.y + next[k]! * lines[k]!.dy] as const;
       const [x1, y1] = node(1);
