@@ -1,8 +1,8 @@
 # 0006: The bow shock fitted, not captured
 
-- **Status:** Implemented on the CPU engine (`src/solver/shock-fitting.ts`),
-  measured on blunt and sharp noses; not yet used by the drag page or on
-  the GPU.
+- **Status:** Implemented on the CPU engine (`src/solver/shock-fitting.ts`)
+  and the GPU engine (`src/engine-gpu/shock-fitting-gpu.ts`), measured on
+  blunt and sharp noses; not yet used by the drag page.
 - **Date:** 2026-10-17
 - **Inputs:** the measurements below; the method of Moretti and Abbett
   and of Salas (sources in `docs/validation/sources.md`).
@@ -128,26 +128,49 @@ height; the drivers now keep each line's starting fractions
 (withFixedFractions), as the GPU fit must, which changes the grids
 slightly: the values above are being measured again on those grids.
 
+## On the GPU
+
+The fit runs entirely on the GPU (`src/engine-gpu/shock-fitting-gpu.ts`),
+in 32-bit, with the shock moved every step:
+
+- The shock must move one step's worth (W dt) at a time: moving it every
+  20 flow steps by one step's worth converges to the same state to all ten
+  digits printed (Mach 2 hemisphere, nj = 20), but moving it by the 5 or
+  20 steps' sum diverges even with the boundary updated every step. So
+  the moves number in the thousands, too many to rebuild the geometry on
+  the CPU or to read the shock back for each.
+- Each line keeps the fractions of its height at which its nodes lie,
+  set once in double precision (`withFixedFractions`), so every
+  difference the metrics need (along a line, between neighbouring lines)
+  is a sum of differences computed once in double precision and of
+  heights and their differences, without the cancellation of
+  single-precision absolute coordinates (`src/engine-gpu/line-grid.ts`).
+  Measured against the CPU's double-precision metrics of the same grids:
+  normals within 1.3e-7, areas 2.6e-7, volumes 4.5e-7.
+- Each line's height is a base from the CPU in double precision plus a
+  32-bit displacement, the sum of its moves since. Adding moves to the
+  height itself would round away every move below half its last bit, and
+  the relaxation would stall about 200 times that far from its fixed
+  point (the shock's speed decays by about 0.5% a step: from 1e-2 to
+  4e-5 of the sound speed over 1000 steps on the hemisphere); the
+  displacement stays small, so its rounding does too. At each convergence
+  check the heights are read back and become the new base.
+- After each move the flow is interpolated along the columns as on the
+  CPU (`remapAlongLines`), within 2.0e-7 of the CPU's remap.
+- At each check (every 500 steps on the base grid) the drag is evaluated
+  from the flow in double precision; the fit has converged when the drag
+  has settled to the GPU's noise (2e-6) and no face of the shock moves
+  faster than 1e-5 of the sound speed.
+
+Measured on the Mach 2 hemisphere-cylinder (nj = 20), against the CPU's
+fit of the same problem on the same grids: converged after 2500 steps,
+the drag 7e-8 of its value from the CPU's and wandering by up to 2.4e-7
+when iterated on, the shock speeds at 4e-7 to 1.2e-6 of the sound speed.
+
 ## Open
 
 - A third grid on the cone, and the families again on grids with fixed
   fractions, to set the floor for fitted results.
 - The drag page: the fitted solver on the GPU, families and their bands.
-  Measured so far for the design: the shock must move one step's worth
-  (W dt) at a time. Moving it every 20 flow steps by one step's worth
-  converges to the same state to all ten digits printed (Mach 2
-  hemisphere, nj = 20: Cd 0.7909688137, 4205 moves in 84100 steps, against
-  4791 steps moving every step), but moving it by the 5 or 20 steps' sum
-  diverges even with the boundary updated every step. So the number of
-  moves stays in the thousands, and rebuilding the double-precision
-  geometry on the CPU at each one would cost too much on fine grids. The
-  geometry will be rebuilt on the GPU, in single precision, from the
-  heights: each line keeps the fractions of its height at which its nodes
-  lie, set once in double precision, so that every difference the metrics
-  need (along a line, between neighbouring lines) is a sum of differences
-  computed once in double precision and of small changes in height,
-  without the cancellation of single-precision absolute coordinates.
-  Each cell then also keeps its fraction along its line, which makes the
-  remap a short interpolation along each column.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.

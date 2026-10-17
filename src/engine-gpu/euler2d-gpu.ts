@@ -163,7 +163,7 @@ export class GpuEuler2D {
   private readonly nCells: number;
   private readonly nPartials: number;
   private readonly geometry: GPUBuffer;
-  private readonly boundaryBuffer: GPUBuffer;
+  private readonly boundary: GPUBuffer;
   private readonly boundaryReadback: GPUBuffer;
   /** Sides whose face fluxes are imposed from the boundary buffer. */
   private readonly imposed = new Set<Side>();
@@ -258,7 +258,7 @@ export class GpuEuler2D {
     const scratchBuffer = b.create('scratch', 4 * (this.nCells + this.nPartials), usage.STORAGE);
     // States and imposed fluxes for every boundary face, then the fitted
     // shock's speed per jMax face (layout in euler2d.wgsl).
-    this.boundaryBuffer = b.create(
+    this.boundary = b.create(
       'boundary',
       16 * (4 * (ni + nj) + ni),
       usage.STORAGE | usage.COPY_DST | usage.COPY_SRC,
@@ -295,7 +295,7 @@ export class GpuEuler2D {
         this.controlBuffer,
         faceFluxBuffer,
         scratchBuffer,
-        this.boundaryBuffer,
+        this.boundary,
       ].map((buffer, binding) => ({ binding, resource: { buffer } })),
     });
     for (const side of SIDES) {
@@ -316,6 +316,14 @@ export class GpuEuler2D {
    */
   get geometryBuffer(): GPUBuffer {
     return this.geometry;
+  }
+
+  /**
+   * The GPU buffer of per-face boundary data (layout in euler2d.wgsl),
+   * holding the fitted shock's speeds for a GpuLineGrid to move it by.
+   */
+  get boundaryBuffer(): GPUBuffer {
+    return this.boundary;
   }
 
   /**
@@ -390,6 +398,41 @@ export class GpuEuler2D {
       while (remaining > 0) {
         const batch = Math.min(remaining, DT_LOG_SIZE);
         this.submitSteps(batch);
+        this.ledger.account(await this.readControl(), this.timeAccurate);
+        remaining -= batch;
+      }
+    });
+  }
+
+  /**
+   * Take `moves` times `stepsPerMove` steps towards a steady state with the
+   * fitted shock moved by `lineGrid` (made on this solver's lines, geometry
+   * and boundary buffers) after every `stepsPerMove`, the solution remapped
+   * onto the moved grid each time (GpuLineGrid.encodeShockMove).
+   */
+  async iterateFitted(lineGrid: GpuLineGrid, moves: number, stepsPerMove: number): Promise<void> {
+    if (this.config.fittedShock === undefined) throw new Error('there is no fitted shock');
+    if (!(Number.isInteger(stepsPerMove) && stepsPerMove >= 1 && stepsPerMove <= DT_LOG_SIZE)) {
+      throw new RangeError(`steps per move must be an integer from 1 to ${DT_LOG_SIZE}`);
+    }
+    await this.exclusive.run(async () => {
+      this.writeParams(Infinity);
+      const perBatch = Math.floor(DT_LOG_SIZE / stepsPerMove);
+      let remaining = moves;
+      while (remaining > 0) {
+        const batch = Math.min(remaining, perBatch);
+        const encoder = this.device.createCommandEncoder();
+        for (let move = 0; move < batch; move++) {
+          this.encodeSteps(encoder, stepsPerMove);
+          const spare = ((this.current + 1) % 3) as StateIndex;
+          lineGrid.encodeShockMove(
+            encoder,
+            this.stateBuffers[this.current],
+            this.stateBuffers[spare],
+          );
+          this.current = spare;
+        }
+        this.device.queue.submit([encoder.finish()]);
         this.ledger.account(await this.readControl(), this.timeAccurate);
         remaining -= batch;
       }
@@ -483,7 +526,7 @@ export class GpuEuler2D {
         4 * t,
       );
     });
-    this.device.queue.writeBuffer(this.boundaryBuffer, 16 * this.sideOffset(side), packed);
+    this.device.queue.writeBuffer(this.boundary, 16 * this.sideOffset(side), packed);
   }
 
   /**
@@ -505,7 +548,7 @@ export class GpuEuler2D {
       }
       const { ni, nj } = this.metrics;
       this.device.queue.writeBuffer(
-        this.boundaryBuffer,
+        this.boundary,
         16 * (2 * (ni + nj) + this.sideOffset(side)),
         Float32Array.from(fluxes),
       );
@@ -516,15 +559,16 @@ export class GpuEuler2D {
 
   /**
    * The fitted shock's speed along each jMax face's outward normal, as set
-   * at the start of the last step, and its relative normal Mach number.
+   * at the start of the last step, its relative normal Mach number, and the
+   * fastest signal speed (|u| + a) in the face's cell then.
    */
-  async readShock(): Promise<{ speed: Float32Array; mach: Float32Array }> {
+  async readShock(): Promise<{ speed: Float32Array; mach: Float32Array; signal: Float32Array }> {
     if (this.config.fittedShock === undefined) throw new Error('there is no fitted shock');
     return this.exclusive.run(async () => {
       const { ni, nj } = this.metrics;
       const encoder = this.device.createCommandEncoder();
       encoder.copyBufferToBuffer(
-        this.boundaryBuffer,
+        this.boundary,
         16 * 4 * (ni + nj),
         this.boundaryReadback,
         0,
@@ -537,6 +581,7 @@ export class GpuEuler2D {
       return {
         speed: Float32Array.from({ length: ni }, (_, i) => data[4 * i]!),
         mach: Float32Array.from({ length: ni }, (_, i) => data[4 * i + 1]!),
+        signal: Float32Array.from({ length: ni }, (_, i) => data[4 * i + 2]!),
       };
     });
   }
@@ -612,6 +657,11 @@ export class GpuEuler2D {
 
   private submitSteps(count: number): void {
     const encoder = this.device.createCommandEncoder();
+    this.encodeSteps(encoder, count);
+    this.device.queue.submit([encoder.finish()]);
+  }
+
+  private encodeSteps(encoder: GPUCommandEncoder, count: number): void {
     const pass = encoder.beginComputePass();
     pass.setBindGroup(0, this.sharedBindGroup);
     for (let step = 0; step < count; step++) {
@@ -635,7 +685,6 @@ export class GpuEuler2D {
       this.current = plan[plan.length - 1]!.dst;
     }
     pass.end();
-    this.device.queue.submit([encoder.finish()]);
   }
 
   private stagePlan(): Stage[] {

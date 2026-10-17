@@ -15,6 +15,7 @@ import type { Body } from '../geometry/body';
 import { bodyGrid } from '../grid/body-grid';
 import type { Primitive2D } from '../scheme/flux';
 import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
+import { SettlingValue } from '../verification/iterative-convergence';
 import { forebodyPressureDrag } from './forces';
 
 /** A steady solver for one grid, started from the free stream. */
@@ -153,27 +154,14 @@ export async function verifiedForebodyDrag(
     try {
       // Iterate until the drag itself stops changing by more than its own
       // noise over a whole batch of steps.
-      let previous = Number.NaN;
-      let previousChange = Number.NaN;
+      const settling = new SettlingValue(options.noise);
       for (let batch = 1; batch <= MAX_BATCHES; batch++) {
         if (options.signal?.aborted === true) throw new Cancelled();
         await engine.iterate(BATCH * refinement);
         const drag = forebodyPressureDrag(await engine.wallFluxes(), free, body.nose.baseRadius);
         options.onProgress?.(refinement, batch * BATCH * refinement, drag);
         if (!Number.isFinite(drag)) throw new IterationStalled('the solution is not finite');
-        // The drag approaches its limit geometrically; two successive changes
-        // give the rate and the remaining error, change * rate / (1 - rate).
-        // A small change alone is not enough: slow convergence can pair a
-        // small change with a large remaining error.
-        const change = Math.abs(drag - previous);
-        const rate = change / previousChange;
-        const remaining = rate < 1 ? (change * rate) / (1 - rate) : Infinity;
-        previousChange = change;
-        previous = drag;
-        const settled =
-          change <= options.noise * Math.abs(drag) &&
-          (change === 0 || remaining <= options.noise * Math.abs(drag));
-        if (settled) {
+        if (settling.add(drag)) {
           const cells = await engine.cells();
           const outflow = outflowMach(config, cells);
           if (!(outflow > 1)) {

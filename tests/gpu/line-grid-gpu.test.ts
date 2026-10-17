@@ -54,7 +54,11 @@ function geometrySize(ni: number, nj: number): number {
 async function gpuMetrics(lines: readonly GridLine[], heights: number[], nj: number) {
   const size = geometrySize(lines.length - 1, nj);
   const target = storage(size, GPUBufferUsage.COPY_SRC);
-  const grid = await GpuLineGrid.create(device, lines, nj, 'axisymmetric', gamma, target);
+  const grid = await GpuLineGrid.create(device, lines, nj, {
+    geometry: 'axisymmetric',
+    gamma,
+    target,
+  });
   grid.setHeights(heights);
   const data = await read(target, size);
   grid.destroy();
@@ -179,7 +183,11 @@ describe('flow remapped on the GPU as the lines move', () => {
     const after = storage(flow.byteLength, GPUBufferUsage.COPY_SRC);
     const size = geometrySize(ni, nj);
     const target = storage(size, GPUBufferUsage.COPY_SRC);
-    const grid = await GpuLineGrid.create(device, fixed, nj, 'axisymmetric', gamma, target);
+    const grid = await GpuLineGrid.create(device, fixed, nj, {
+      geometry: 'axisymmetric',
+      gamma,
+      target,
+    });
     grid.setHeights(start);
     grid.moveTo(moved, before, after);
     const remapped = await read(after, flow.byteLength);

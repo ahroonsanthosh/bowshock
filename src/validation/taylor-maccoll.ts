@@ -244,11 +244,19 @@ export function coneFlowField(
   // V_theta; on the cone surface itself V_theta = 0 and the equation gives
   // it directly.
   const vtts = thetas.map((theta, k) => derivatives(theta, vrs[k]!, vts[k]!, gamma)[1]);
-  const at = (polar: number): ConicalState => {
+  // The samples end on the cone found from the shock angle that
+  // `taylorMaccoll` bisected for, which differs from the requested cone by
+  // the bisection's bracket of 1e-15 times dcone/dbeta, with the noise of
+  // the adaptive steps: measured up to 4e-15 rad near 10 deg and 2e-13 on
+  // thin cones. Rays down to the requested cone are accepted, and rays
+  // beyond the samples take the state at their end.
+  const lowest = Math.min(thetas[thetas.length - 1]!, coneAngle);
+  const at = (ray: number): ConicalState => {
     const n = thetas.length;
-    if (!(polar <= thetas[0]! + 1e-15 && polar >= thetas[n - 1]! - 1e-15)) {
+    if (!(ray <= thetas[0]! + 1e-15 && ray >= lowest - 1e-15)) {
       throw new RangeError('the ray lies outside the conical flow');
     }
+    const polar = Math.min(Math.max(ray, thetas[n - 1]!), thetas[0]!);
     // Samples run from the shock (largest angle) to the cone.
     let k = 0;
     while (k < n - 2 && thetas[k + 1]! > polar) k++;

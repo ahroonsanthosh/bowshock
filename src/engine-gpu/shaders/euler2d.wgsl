@@ -92,7 +92,8 @@ struct Control {
 @group(0) @binding(4) var<storage, read_write> scratch: array<f32>;
 // Per-face boundary data: conserved states outside the faces of each
 // FACE_STATES side, then imposed fluxes per unit area, in side order (see
-// side_offset), then the fitted shock's speed and Mach number per jMax face.
+// side_offset), then per jMax face the fitted shock's speed and Mach
+// number and the fastest signal speed in the face's cell.
 @group(0) @binding(5) var<storage, read_write> boundary: array<vec4f>;
 
 @group(1) @binding(0) var<uniform> stage: StageCoefficients;
@@ -389,7 +390,9 @@ fn compute_shock_boundary(@builtin(global_invocation_id) id: vec3u) {
     w.rho * w.v * un + w.p * n.y,
     un * (u.w + w.p),
   );
-  boundary[2u * boundary_part() + i] = vec4f(shock.speed, m, 0.0, 0.0);
+  // The fastest signal in the face's cell, for the CPU's step of the shock.
+  let signal = sqrt(c1.u * c1.u + c1.v * c1.v) + sqrt(g * c1.p / c1.rho);
+  boundary[2u * boundary_part() + i] = vec4f(shock.speed, m, signal, 0.0);
 }
 
 // Net inflow of each conserved quantity into cell c, plus the axisymmetric

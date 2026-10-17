@@ -1,6 +1,7 @@
 // Grid metrics on straight lines from the body with fixed node fractions,
-// for a given height of each line (src/engine-gpu/line-grid.ts; design:
-// docs/design/0006-shock-fitting.md). Node (i, j) lies at
+// for a given height of each line, the moves of a fitted shock along the
+// lines, and the flow remapped after each move (src/engine-gpu/line-grid.ts;
+// design: docs/design/0006-shock-fitting.md). Node (i, j) lies at
 //   P_i + h_i eta_ij d_i,
 // P_i the line's body point, d_i its direction, h_i its height and eta_ij
 // fixed fractions. Every difference the metrics need is assembled from
@@ -18,6 +19,11 @@ struct LineGridParams {
   // 1 for axisymmetric geometry (y is the radius), 0 for planar.
   axisymmetric: u32,
   gamma: f32,
+  // 1 if the shock's first node keeps it normal to the axis, 0 if fixed.
+  symmetry: u32,
+  pad0: u32,
+  pad1: u32,
+  pad2: u32,
 }
 
 struct Primitive {
@@ -36,13 +42,19 @@ struct Primitive {
 // eta_{i,j+1} - eta_ij at (ni + 1)(nj + 1) + i + j (ni + 1); then across
 // lines, eta_{i+1,j} - eta_ij at (ni + 1)(2 nj + 1) + i + j ni.
 @group(0) @binding(3) var<storage, read> fractions: array<f32>;
-// h_i (ni + 1), then h_{i+1} - h_i (ni), then the last move of each line,
-// h_i - h_i before it (ni + 1).
-@group(0) @binding(4) var<storage, read> heights: array<f32>;
+// Heights from the CPU in double precision, rounded: base heights b_i
+// (ni + 1) and their differences b_{i+1} - b_i (ni); then the last move of
+// each line (ni + 1); then each line's displacement from its base height,
+// the sum of its moves since (ni + 1). A line's height is b_i plus its
+// displacement, which stays small, so that adding moves to it keeps their
+// precision.
+@group(0) @binding(4) var<storage, read_write> heights: array<f32>;
 @group(0) @binding(5) var<storage, read_write> geometry: array<vec4f>;
 // The flow before and after a move (conserved, as in euler2d.wgsl).
 @group(0) @binding(6) var<storage, read> before: array<vec4f>;
 @group(0) @binding(7) var<storage, read_write> after: array<vec4f>;
+// The boundary buffer of euler2d.wgsl, for the shock speeds.
+@group(0) @binding(8) var<storage, read> boundary: array<vec4f>;
 
 fn eta(i: u32, j: u32) -> f32 {
   return fractions[i + j * (params.ni + 1u)];
@@ -56,16 +68,25 @@ fn eta_across(i: u32, j: u32) -> f32 {
   return fractions[(params.ni + 1u) * (2u * params.nj + 1u) + i + j * params.ni];
 }
 
+fn displacement_index(i: u32) -> u32 {
+  return 3u * params.ni + 2u + i;
+}
+
+fn move_index(i: u32) -> u32 {
+  return 2u * params.ni + 1u + i;
+}
+
 fn height(i: u32) -> f32 {
-  return heights[i];
+  return heights[i] + heights[displacement_index(i)];
 }
 
 fn height_step(i: u32) -> f32 {
-  return heights[params.ni + 1u + i];
+  let moved = heights[displacement_index(i + 1u)] - heights[displacement_index(i)];
+  return heights[params.ni + 1u + i] + moved;
 }
 
 fn height_move(i: u32) -> f32 {
-  return heights[2u * params.ni + 1u + i];
+  return heights[move_index(i)];
 }
 
 // Node (i, j) relative to its line's body point.
@@ -231,4 +252,64 @@ fn line_grid_remap(@builtin(global_invocation_id) id: vec3u) {
     w = mix_primitive(here, to_primitive(before[c - params.ni]), t);
   }
   after[c] = to_conserved(w);
+}
+
+// The fitted shock on jMax face i, from compute_shock_boundary in
+// euler2d.wgsl at the start of the last step: (speed along the outward
+// normal, normal Mach number, fastest signal speed in the cell below, 0).
+fn shock_face(i: u32) -> vec4f {
+  return boundary[4u * (params.ni + params.nj) + i];
+}
+
+// The move of shock node k >= 1 along its line, as fitShock in
+// src/solver/shock-fitting.ts: by the speed of the face on its axis side
+// over a pseudo-time step of half its cell's height per signal speed.
+fn node_move(k: u32) -> f32 {
+  let f = k - 1u;
+  // The face's outward normal, on the right of node k -> node k - 1.
+  let v = -across(f, params.nj);
+  let n = vec2f(v.y, -v.x) / sqrt(dot(v, v));
+  let d = lines[k].zw;
+  let size = height(k) * eta_along(k, params.nj - 1u) * sqrt(dot(d, d));
+  let dt = 0.5 * size / shock_face(min(k, params.ni - 1u)).z;
+  return shock_face(f).x * dt / dot(d, n);
+}
+
+// The moves of every shock node, into the move part of the heights. Ahead
+// of a blunt nose the first node goes where the shock is normal to the
+// axis, on the parabola x = x0 + c y^2 through the moved nodes 1 and 2.
+@compute @workgroup_size(WORKGROUP_SIZE)
+fn line_grid_shock_moves(@builtin(global_invocation_id) id: vec3u) {
+  let k = id.x;
+  if (k > params.ni) {
+    return;
+  }
+  var m = 0.0;
+  if (k > 0u) {
+    m = node_move(k);
+  } else if (params.symmetry == 1u) {
+    let nj = params.nj;
+    let m1 = node_move(1u);
+    let m2 = node_move(2u);
+    let d1 = lines[1].zw * eta(1u, nj);
+    let d2 = lines[2].zw * eta(2u, nj);
+    // Moved node 1 from line 0's body point, and moved node 2 from node 1.
+    let p1 = pairs[0].xy + (height(1u) + m1) * d1;
+    let step = across(1u, nj) + m2 * d2 - m1 * d1;
+    let y1 = lines[0].y + p1.y;
+    let c = step.x / (step.y * (2.0 * y1 + step.y));
+    let d0 = lines[0].zw * eta(0u, nj);
+    m = (p1.x - c * y1 * y1) / d0.x - height(0u);
+  }
+  heights[move_index(k)] = m;
+}
+
+// Each line's displacement after its move.
+@compute @workgroup_size(WORKGROUP_SIZE)
+fn line_grid_apply_moves(@builtin(global_invocation_id) id: vec3u) {
+  let k = id.x;
+  if (k > params.ni) {
+    return;
+  }
+  heights[displacement_index(k)] += heights[move_index(k)];
 }

@@ -6,13 +6,16 @@
  * Sharp noses: the domain starts just behind the tip, at x0, where the
  * flow is that of the cone tangent at the tip (Taylor-Maccoll), and the
  * grid lines are vertical. Blunt noses: the C grid of
- * src/grid/blunt-grid.ts, started from a captured solution.
+ * src/grid/blunt-grid.ts, started from a captured solution. On both, each
+ * line keeps the node fractions of its starting height as the shock
+ * moves, so that the grids are those of the GPU fit
+ * (src/engine-gpu/shock-fitting-gpu.ts).
  */
 
-import { Euler2D, type Euler2DConfig } from '../engine-cpu/euler2d';
+import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
-import { bluntBodyGrid, gridOnLines, type GridLine } from '../grid/blunt-grid';
+import { bluntBodyGrid, gridOnLines, withFixedFractions, type GridLine } from '../grid/blunt-grid';
 import { columnPositions } from '../grid/spacing';
 import { nodeIndex, type StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
@@ -80,15 +83,38 @@ function engineConfig(
   };
 }
 
-/** Sharp noses: the flow between the body and the fitted shock, from x0 to the end. */
-export function sharpFittedFlow(body: Body, options: FittedFlowOptions): FittedFlow {
+/** A fitted-shock problem on a body: what the fit needs, on either engine. */
+export interface FitProblem {
+  /** The grid's lines, with their node fractions fixed (withFixedFractions). */
+  readonly lines: readonly GridLine[];
+  /** Starting shock heights along the lines. */
+  readonly heights: readonly number[];
+  readonly nj: number;
+  readonly baseRadius: number;
+  readonly gamma: number;
+  readonly freeStream: Primitive2D;
+  /** The engine on a grid, with these post-shock states on jMax (the free stream if none). */
+  readonly configFor: (grid: StructuredGrid, shockStates: readonly Primitive2D[]) => Euler2DConfig;
+  readonly initial: (i: number, j: number) => Primitive2D;
+  readonly firstNode: 'symmetry' | 'fixed';
+  /** The forebody pressure drag coefficient from the fluxes through the wall. */
+  readonly drag: (wall: readonly BoundaryFaceFlux[]) => number;
+}
+
+export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
+
+/**
+ * Sharp noses: the flow between the body and the fitted shock, from x0 to
+ * the end, started from the conical flow of the tip.
+ */
+export function sharpFitProblem(body: Body, options: FitProblemOptions): FitProblem {
   const { mach, gamma, nj: baseNj, refinement } = options;
   const R = body.nose.baseRadius;
   const L = body.nose.length;
   const xEnd = bodyLength(body);
   const free = freeStreamOf(mach, gamma);
   const tipAngle = Math.atan(noseTipSlope(body.nose));
-  if (!Number.isFinite(tipAngle)) throw new RangeError('the nose is blunt: use bluntFittedFlow');
+  if (!Number.isFinite(tipAngle)) throw new RangeError('the nose is blunt: use bluntFitProblem');
   // Throws if the conical shock at the tip would detach.
   const cone = coneFlowField(mach, tipAngle, gamma);
   const beta = cone.flow.shockAngle;
@@ -126,19 +152,14 @@ export function sharpFittedFlow(body: Body, options: FittedFlowOptions): FittedF
   };
   const breakpoints = body.cylinderLength > 0 ? [x0, L, xEnd] : [x0, L];
   const xs = columnPositions(breakpoints, (x) => 1 / spacing(x), refinement);
-  const lines: GridLine[] = xs.map((x) => ({
-    x,
-    y: bodyRadius(body, x),
-    dx: 0,
-    dy: 1,
-    h: guess(x),
-  }));
-  const gridFor = (heights: readonly number[], gated: boolean) =>
-    gridOnLines(lines, heights, nj, R, gated);
-  const first = gridFor(
-    lines.map((l) => l.h),
-    false,
+  // Each line keeps the node fractions of its first guess as the shock moves.
+  const lines = withFixedFractions(
+    xs.map((x) => ({ x, y: bodyRadius(body, x), dx: 0, dy: 1, h: guess(x) })),
+    nj,
+    R,
   );
+  const heights = lines.map((l) => l.h);
+  const first = gridOnLines(lines, heights, nj, R, false);
   const midpoint = (k: number[]) => [
     k.reduce((s, q) => s + first.x[q]!, 0) / k.length,
     k.reduce((s, q) => s + first.y[q]!, 0) / k.length,
@@ -147,11 +168,17 @@ export function sharpFittedFlow(body: Body, options: FittedFlowOptions): FittedF
     const [x, y] = midpoint([nodeIndex(first, 0, j), nodeIndex(first, 0, j + 1)]);
     return conical(Math.atan2(y!, x!));
   });
-  const fit = fitShock({
+  // Ahead of x0 the nose is the tip cone, within (x0 / L)^2.
+  const tipDrag =
+    taylorMaccoll(mach, tipAngle, gamma).surfacePressureCoefficient *
+    (bodyRadius(body, x0) / R) ** 2;
+  return {
     lines,
-    heights: lines.map((l) => l.h),
+    heights,
     nj,
-    gridFor,
+    baseRadius: R,
+    gamma,
+    freeStream: free,
     configFor: (g, states) =>
       engineConfig(
         g,
@@ -168,26 +195,16 @@ export function sharpFittedFlow(body: Body, options: FittedFlowOptions): FittedF
       ]);
       return conical(Math.atan2(y!, x!));
     },
-    freeStream: free,
     firstNode: 'fixed',
-    speedTolerance: SPEED_TOLERANCE,
-    residualTolerance: RESIDUAL_TOLERANCE,
-    maxIterations: options.maxIterations,
-  });
-  // Ahead of x0 the nose is the tip cone, within (x0 / L)^2.
-  const tip = taylorMaccoll(mach, tipAngle, gamma).surfacePressureCoefficient;
-  const drag =
-    forebodyPressureDrag(
-      fit.solver.boundaryFluxes('jMin'),
-      { pressure: free.p, dynamicPressure: 0.5 * gamma * mach * mach },
-      R,
-    ) +
-    tip * (bodyRadius(body, x0) / R) ** 2;
-  return { fit, drag };
+    drag: (wall) => forebodyDrag(wall, mach, gamma, R) + tipDrag,
+  };
 }
 
-/** Blunt noses: the flow between the body and the fitted shock on the C grid. */
-export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedFlow {
+/**
+ * Blunt noses: the flow between the body and the fitted shock on the C
+ * grid, started from a captured solution (on the CPU).
+ */
+export function bluntFitProblem(body: Body, options: FitProblemOptions): FitProblem {
   const { mach, gamma, nj: baseNj, refinement } = options;
   const R = body.nose.baseRadius;
   const free = freeStreamOf(mach, gamma);
@@ -205,13 +222,20 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
   });
   captured.setInitialCondition(() => free);
   captured.iterate(CAPTURED_START_STEPS * refinement);
-  const lines = start.lines;
-  const heights = capturedShockHeights(captured, start.grid, lines, free);
-  const fit = fitShock({
+  const heights = capturedShockHeights(captured, start.grid, start.lines, free);
+  // Each line keeps the node fractions of the captured shock's height.
+  const lines = withFixedFractions(
+    start.lines.map((l, i) => ({ ...l, h: heights[i]! })),
+    nj,
+    R,
+  );
+  return {
     lines,
     heights,
     nj,
-    gridFor: (h, gated) => gridOnLines(lines, h, nj, R, gated),
+    baseRadius: R,
+    gamma,
+    freeStream: free,
     configFor: (g, states) =>
       engineConfig(
         g,
@@ -220,18 +244,51 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
         states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
       ),
     initial: (i, j) => captured.primitive(i, j),
-    freeStream: free,
     firstNode: 'symmetry',
+    drag: (wall) => forebodyDrag(wall, mach, gamma, R),
+  };
+}
+
+function forebodyDrag(
+  wall: readonly BoundaryFaceFlux[],
+  mach: number,
+  gamma: number,
+  baseRadius: number,
+): number {
+  return forebodyPressureDrag(
+    wall,
+    { pressure: 1, dynamicPressure: 0.5 * gamma * mach * mach },
+    baseRadius,
+  );
+}
+
+/** The fit of a problem on the CPU engine, and its drag. */
+export function fittedFlow(problem: FitProblem, maxIterations: number): FittedFlow {
+  const { lines, nj, baseRadius } = problem;
+  const fit = fitShock({
+    lines,
+    heights: problem.heights,
+    nj,
+    gridFor: (h, gated) => gridOnLines(lines, h, nj, baseRadius, gated),
+    configFor: problem.configFor,
+    initial: problem.initial,
+    freeStream: problem.freeStream,
+    firstNode: problem.firstNode,
     speedTolerance: SPEED_TOLERANCE,
     residualTolerance: RESIDUAL_TOLERANCE,
-    maxIterations: options.maxIterations,
+    maxIterations,
   });
-  const drag = forebodyPressureDrag(
-    fit.solver.boundaryFluxes('jMin'),
-    { pressure: free.p, dynamicPressure: 0.5 * gamma * mach * mach },
-    R,
-  );
-  return { fit, drag };
+  return { fit, drag: problem.drag(fit.solver.boundaryFluxes('jMin')) };
+}
+
+/** Sharp noses on the CPU engine (sharpFitProblem). */
+export function sharpFittedFlow(body: Body, options: FittedFlowOptions): FittedFlow {
+  return fittedFlow(sharpFitProblem(body, options), options.maxIterations);
+}
+
+/** Blunt noses on the CPU engine (bluntFitProblem). */
+export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedFlow {
+  return fittedFlow(bluntFitProblem(body, options), options.maxIterations);
 }
 
 /** Steps of the captured solution that places the first shock, per refinement. */
