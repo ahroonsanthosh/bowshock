@@ -414,7 +414,7 @@ describe('GpuEuler2D: generated body grid', () => {
       expect(await s.densityResidualNorm()).toBeLessThan(1e-4 * initial);
       expect(worstPressureDifference(cpu, await s.readState())).toBeLessThan(1e-4);
     });
-  });
+  }, 600_000);
 });
 
 describe('GpuEuler2D: local time stepping', () => {

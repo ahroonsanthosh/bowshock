@@ -245,8 +245,9 @@ bugs to confirm tests catch them) are used throughout.
 | M12 | Transition option, flux decision, full validation report      | Release 1.0                                                                                        |
 
 Progress (2026-10-17): M0 to M3 are done, M3 on single grid blocks; the
-checks of M4 pass for sharp noses (0004, with every result verified on
-nested grids, 0005), while blunt noses remain open.
+checks of M4 pass for sharp noses (0004, with every result reported with
+its measured band from nested grids or marked not verified, 0005), while
+blunt noses remain open.
 
 Spikes to run early: DPLR convergence in 32-bit on stretched grids; the fin
 grid on 50 real fin planforms; a literature survey of RANS base-pressure

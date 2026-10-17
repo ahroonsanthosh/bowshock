@@ -37,58 +37,87 @@ exact solutions or published data, with fixed tolerances recorded in the
 repository. The sources used, and how far each has been checked, are listed
 in [docs/validation/sources.md](docs/validation/sources.md).
 
-Validated so far, each with its tests and recorded accuracy:
+Validated so far, each with its recorded accuracy (tests guard most of
+them; the fitted-drag families are recorded in
+[0006](docs/design/0006-shock-fitting.md)):
 
 - 1D: exact Riemann problems (Toro's five tests), on the CPU and the GPU.
 - 2D: oblique shocks and Prandtl-Meyer expansions against exact theory,
-  converged to round-off; second-order accuracy on curved grids.
+  iterated to round-off residuals, with the wall pressure within 0.05% of
+  exact theory; second-order accuracy on curved grids.
 - Axisymmetric: sharp cones against the Taylor-Maccoll solution. For a
   Mach 3, 20 degree cone the surface pressure error at one station falls
   as -0.22%, -0.12% and -0.061% on successively halved grids, converging
   at about first order.
-- Grids generated automatically from rocket noses and bodies (sharp noses,
-  Mach 1.2 to 5; a few short noses with steep tips are still refused,
-  being fixed): cone-cylinders within 0.3% of Taylor-Maccoll on the
-  coarsest grid, converging with refinement (the slender cones at Mach 1.1
-  to 1.2 measured on two grids only). On a tangent-ogive cylinder at Mach
-  1.98 the surface pressure matches an independent exact inviscid solution
-  (method of characteristics, itself proven on cones) within 4e-4 in Cp;
-  the NACA wind-tunnel pressures lie above both by up to 0.022, for a physical
-  reason not yet established. Integrated into nose drag, two wind-tunnel
-  data sets at Mach 1.98 bracket the exact inviscid value: 3% below (NACA
-  RM A53E01, whose report traces it to its model's shape) and 8 to 9% above
-  (TN 3716). Measured data of this kind (+-0.005 in Cp) confirm the
-  inviscid wave drag to about 10%, not to the precision of the error bands.
+- Grids generated automatically from rocket noses and bodies, first with
+  the shock captured (sharp noses): cone-cylinders at Mach 1.1 to 3.12
+  whose conical surface flow is supersonic within 0.3% of Taylor-Maccoll
+  on the coarsest grid, converging with
+  refinement (the slender cones at Mach 1.1 to 1.2 measured on two grids
+  only). On a tangent-ogive cylinder at Mach 1.98 the surface pressure
+  matches an independent inviscid reference solution (a method of
+  characteristics, converged to about 1e-6 in drag and checked against
+  Taylor-Maccoll on cones) within 4e-4 in Cp; the NACA wind-tunnel
+  pressures lie above both by up to 0.022, for a physical reason not yet
+  established. Integrated into nose drag, wind-tunnel pressures at Mach
+  1.98 on two tangent ogives fall on either side of the inviscid value
+  computed for each: 3% below on the 5.75-caliber ogive of NACA RM A53E01
+  (whose report attributes its low forward pressures to the model's nose
+  angle and surface slope errors) and 8 to 9% above on the 3-caliber ogive
+  of TN 3716 (not explained). Pressures measured to +-0.004 to 0.005 in Cp
+  test the wave drag only to about 10%, not to the precision of the error
+  bands.
 - The Taylor-Maccoll solution itself reproduces the cone tables of NASA
   SP-3004 within 3e-5 in Cp.
 - The bow shock fitted as the grid's outer boundary, with the exact jump
   conditions across it, on the CPU and the GPU
   ([0006](docs/design/0006-shock-fitting.md)). Forebody drag then
-  converges at second order: extrapolated from 20, 40 and 80 cells
-  across it lies within 1.2e-7 of Taylor-Maccoll on a Mach 3 cone and
-  within 2.4e-6 of the method of characteristics on the TN 3716 ogive.
+  converges at close to second order (observed orders 1.6 to 2.4 on the
+  families measured): with the drag page's GPU solver, extrapolated at
+  second order from 20, 40 and 80 cells across, it lies within 3.2e-7 of
+  its value from Taylor-Maccoll on a bare Mach 3, 20 degree cone and
+  within 9.4e-6 from the method of characteristics on the TN 3716 ogive
+  (within 3e-7 at its observed order, 2.06).
   On a hemisphere-cylinder the stagnation pressure is within 0.008% of
   its exact value on 20 cells across (capture: up to 9.7%). The GPU's
   fitted drag is within 8e-7 of the CPU's on the same grids.
-- Forebody pressure (wave) drag of sharp-nosed bodies, inviscid, on the
-  [nose wave drag page](demos/nose-drag.html): each result is solved
-  with the bow shock fitted on nested grids up to 160 or more cells
-  across and reported with its measured error band, plus a floor of
-  7e-5 of the value for the error that refinement does not remove; where
-  no band can be measured the value is shown as not verified. On the
-  families measured against exact solutions (cones at Mach 1.3 to 5,
-  ogives at Mach 1.5 to 4) the error falls as the square of the cell
-  size, and extrapolated from three grids it lies within 4e-5 of the
-  exact value.
+- Forebody pressure (wave) drag of sharp-nosed bodies, inviscid, at zero
+  incidence, on the [nose wave drag page](demos/nose-drag.html): each
+  result is solved on your GPU with the bow shock fitted, on nested grids
+  of 20 to 160 (or 320) cells across, and reported as the finest grid's
+  value with its error band, measured from the grids and including an
+  allowance of 7e-5 of the value for an error the grid family cannot
+  show (about twice the largest error measured of the procedure's own
+  extrapolation); where no band can be measured the value is shown as
+  not verified. On the families measured against exact or converged
+  reference solutions (on the CPU, which the GPU matches within 8e-7:
+  cones of 5 to 30 deg at Mach 1.3 to 3 on three grids, and at Mach 3
+  and 5 on two; 3-caliber tangent ogives at Mach 1.5 to 4, a 5-caliber
+  one at Mach 2, and 3-caliber secant-ogive and parabolic noses at Mach
+  2.5), the value extrapolated from three grids lies within 3.4e-5 of
+  the reference, relative, and every band measured contains the error of
+  the value shown (7.8e-5 on 160 cells across for a Mach 1.3, 5 degree
+  cone). Other
+  shapes, lengths and Mach numbers are computed the same way but have
+  not been compared with a reference. Refused, with the reason: tips
+  whose shock detaches; tips whose flow crosses the solver's starting
+  plane, just behind the tip, at an axial Mach number below 1 (of 40
+  noses of 1 to 3 calibers tried at Mach 1.2, 19 detach their shock and
+  13 are refused by this test); tips steeper than 30
+  deg (a limit of the present grids, under review); bodies whose flow at
+  their end is subsonic; grids failing the other quality gates, as on
+  some long bodies.
 
-Not yet: viscous flow, blunt noses on the drag page (solved with the
-shock fitted, but Von Karman noses longer than a caliber and
-power-series noses are still refused by the grid), fins and the base. Until those pass their own validation,
-bowshock reports no total drag coefficient.
+Not yet: viscous flow, blunt noses on the drag page (it offers sharp
+noses only; with the shock fitted, hemisphere-cylinders are solved on
+the CPU and the GPU, but the blunt-nose grid refuses power-series noses
+and Von Karman noses longer than about a caliber), fins and the base.
+Until those pass their own validation, bowshock reports no total drag
+coefficient.
 
-Limits are stated plainly: power off, zero angle of attack, no motor plume;
-base drag is the least certain component; transonic results carry wider
-bands.
+Limits: power off, zero angle of attack, no motor plume. When they
+exist, base drag will be the least certain component and transonic
+results will carry wider bands.
 
 ## Try it
 
@@ -101,9 +130,11 @@ Then open the page Vite prints (usually http://localhost:5173/) and pick a
 demo. They need a browser with WebGPU (recent Chrome or Edge, for
 example); the ramp and the shock tube fall back to the CPU without it.
 
-- **Nose wave drag:** the forebody pressure (wave) drag coefficient of a
-  sharp-nosed body of your choice, refined on nested grids on your GPU and
-  reported with its measured error band, or as not verified.
+- **Nose wave drag:** the inviscid forebody pressure (wave) drag
+  coefficient of a cone, tangent or secant ogive, or parabolic-series
+  nose and its body, not the rocket's total drag, refined on nested
+  grids on your GPU and reported with its measured error band, or as not
+  verified.
 - **Supersonic ramp:** oblique shocks and Prandtl-Meyer expansion fans,
   solved live on your GPU and drawn as numerical schlieren or colour-mapped
   fields, with the ramp pressure compared against exact theory as the run
@@ -123,6 +154,8 @@ on a static host.
 | `src/engine-gpu/`    | The WebGPU engines and their WGSL shaders, twins of the CPU engines           |
 | `src/geometry/`      | Nose and body profiles                                                        |
 | `src/grid/`          | Structured grids, the generators for rocket bodies, quality checks            |
+| `src/gpu/`           | WebGPU detection                                                              |
+| `src/solver/`        | Solver pieces shared by the engines, and the CPU shock fitting                |
 | `src/analysis/`      | Integrated forces and the verified forebody drag                              |
 | `src/verification/`  | Discretisation error from nested grids                                        |
 | `src/validation/`    | Exact and reference solutions, and digitised wind-tunnel data                 |

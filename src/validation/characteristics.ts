@@ -1,7 +1,8 @@
 /**
  * Steady supersonic flow over a pointed body of revolution at zero
- * incidence by the method of characteristics: an exact inviscid reference,
- * independent of the finite-volume solver, for noses other than cones.
+ * incidence by the method of characteristics: an inviscid reference,
+ * independent of the finite-volume solver and converged far below its
+ * errors (to about 1e-6 in drag), for noses other than cones.
  *
  * Along the Mach lines dy/dx = tan(theta +- mu) the Euler equations of
  * rotational axisymmetric flow reduce to

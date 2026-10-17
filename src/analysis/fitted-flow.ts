@@ -16,11 +16,13 @@ import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cp
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
 import {
+  assertGridQuality,
   bluntBodyGrid,
   gridOnLines,
   outerCellHeight,
   withFixedFractions,
   type BluntGrid,
+  type BluntGridOptions,
   type GridLine,
 } from '../grid/blunt-grid';
 import { columnPositions } from '../grid/spacing';
@@ -164,28 +166,40 @@ export function wallDrag(
 }
 
 /**
- * Smallest axial Mach number in the column of cells just ahead of the end
- * of the body asked for, or Infinity if the domain ends there (the
- * outflow check covers it). Only where it exceeds 1 does nothing behind
- * the end reach the body: on a 26.6 deg cone at Mach 1.5, whose conical
- * surface flow is subsonic, the drag with 2 calibers of cylinder behind
- * it is 3.3% below the Taylor-Maccoll value of an endless cone.
+ * Smallest axial Mach number at the end of the body asked for, across
+ * the layer, or Infinity if the domain ends there (the outflow check
+ * covers it): where the end is a grid line (the corner at the base of a
+ * bare nose, or a cylinder's end), in the column of cells just ahead of
+ * it; elsewhere, in each row, interpolated in x between the centres of
+ * the columns either side of it. Only where it exceeds 1 does nothing
+ * behind the end reach the body: on a 26.6 deg cone at Mach 1.5, whose
+ * conical surface flow is subsonic, the drag with 2 calibers of cylinder
+ * behind it is 3.3% below the Taylor-Maccoll value of an endless cone.
  */
 export function baseMach(
   problem: FitProblem,
   grid: StructuredGrid,
   cell: (i: number, j: number) => Primitive2D,
 ): number {
-  const { lines, gamma } = problem;
-  let end = 0;
-  while (end + 1 < lines.length && lines[end + 1]!.x <= problem.askedEnd * (1 + 1e-12)) end++;
-  if (end >= lines.length - 1) return Infinity;
-  let smallest = Infinity;
-  for (let j = 0; j < grid.nj; j++) {
-    const w = cell(end - 1, j);
-    smallest = Math.min(smallest, w.u / Math.sqrt((gamma * w.p) / w.rho));
-  }
-  return smallest;
+  const { lines, gamma, askedEnd } = problem;
+  const n = lines.length - 1;
+  const tolerance = 1e-12 * Math.abs(askedEnd);
+  if (!(lines[n]!.x > askedEnd + tolerance)) return Infinity;
+  const axialMach = (w: Primitive2D) => w.u / Math.sqrt((gamma * w.p) / w.rho);
+  const across = (mach: (j: number) => number) => {
+    let smallest = Infinity;
+    for (let j = 0; j < grid.nj; j++) smallest = Math.min(smallest, mach(j));
+    return smallest;
+  };
+  const line = lines.findIndex((l) => Math.abs(l.x - askedEnd) <= tolerance);
+  if (line > 0) return across((j) => axialMach(cell(line - 1, j)));
+  const centre = (i: number) => 0.5 * (lines[i]!.x + lines[i + 1]!.x);
+  // The columns a and a + 1 whose centres enclose the end (or the first
+  // two, if the end lies ahead of the first centre).
+  let a = 0;
+  while (a + 2 < n && centre(a + 1) <= askedEnd) a++;
+  const t = Math.min(Math.max((askedEnd - centre(a)) / (centre(a + 1) - centre(a)), 0), 1);
+  return across((j) => (1 - t) * axialMach(cell(a, j)) + t * axialMach(cell(a + 1, j)));
 }
 
 export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
@@ -266,15 +280,22 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     const [x, y] = midpoint([nodeIndex(first, 0, j), nodeIndex(first, 0, j + 1)]);
     return conical(Math.atan2(y!, x!));
   });
-  // The inflow plane imposes all four states, which holds only where the
-  // flow crosses it supersonically: near the surface of a blunt tip cone
-  // at a low Mach number it does not, and the downstream body would reach
-  // the tip (the method of characteristics refuses these cases too).
-  const slowest = Math.min(...inflow.map((w) => w.u / Math.sqrt((gamma * w.p) / w.rho)));
-  if (!(slowest > 1)) {
+  // The inflow plane, normal to the axis, imposes all four states, which
+  // holds only where the flow crosses it supersonically. The axial Mach
+  // number of the conical flow is least on the surface: tested there, on
+  // the tip cone itself, so the test does not depend on the grid. Where
+  // the surface flow is subsonic the body behind the tip also reaches it
+  // (the method of characteristics refuses those cases).
+  const surface = conical(tipAngle);
+  const surfaceSound = Math.sqrt((gamma * surface.p) / surface.rho);
+  const surfaceMach = Math.hypot(surface.u, surface.v) / surfaceSound;
+  const axialMach = surface.u / surfaceSound;
+  if (!(axialMach > 1)) {
     const degrees = ((tipAngle * 180) / Math.PI).toFixed(1);
     throw new RangeError(
-      `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic near the surface (axial Mach number ${slowest.toFixed(2)}), which this solver does not handle; this needs a sharper or longer nose, or a higher Mach number`,
+      surfaceMach > 1
+        ? `at Mach ${mach} the flow behind a tip of ${degrees} deg half-angle crosses the solver's starting plane, normal to the axis, at an axial Mach number of ${axialMach.toFixed(2)} at the surface, below 1, where that plane cannot impose the tip's conical flow; this needs a sharper or longer nose, or a higher Mach number`
+        : `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic at the surface (Mach ${surfaceMach.toFixed(2)}), so the body behind the tip reaches it, which this solver does not handle yet; this needs a sharper or longer nose, or a higher Mach number`,
     );
   }
   // Ahead of x0 the nose is the tip cone, within (x0 / L)^2.
@@ -315,38 +336,261 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
  * grid, started from a captured solution (on the CPU).
  */
 export function bluntFitProblem(asked: Body, options: FitProblemOptions): FitProblem {
+  return bluntFitFamily(asked, options)(options.refinement);
+}
+
+/** What starts a family of blunt problems: a captured solution on its base grid. */
+export interface BluntStart {
+  /** The base grid's lines. */
+  readonly lines: readonly GridLine[];
+  /** The captured shock's heights along them (capturedShockHeights). */
+  readonly heights: readonly number[];
+  /** The captured solution in each cell of the base grid. */
+  readonly cell: (i: number, j: number) => Primitive2D;
+  /**
+   * The outer boundary of the family's grids where it is not the
+   * generator's own: on a two-scale nose, the shock captured on the
+   * generator's grid pushed out by a margin (secondCapture).
+   */
+  readonly outerBoundary?: OuterBoundary;
+}
+
+type OuterBoundary = NonNullable<BluntGridOptions['outerBoundary']>;
+
+/**
+ * The captured solution that starts a blunt family, on the CPU engine:
+ * CAPTURED_START_STEPS steps from the free stream on the base grid; on a
+ * two-scale nose, again on the base grid built on that shock.
+ */
+export function bluntStart(asked: Body, options: BluntFamilyOptions): BluntStart {
+  let stage = bluntCapture(asked, options);
+  stage.solver.iterate(CAPTURED_START_STEPS);
+  const second = secondCapture(asked, options, stage);
+  if (second) {
+    second.solver.iterate(CAPTURED_START_STEPS);
+    stage = second;
+  }
+  return stage.start();
+}
+
+/**
+ * bluntStart in chunks of `chunk` steps, awaiting `pause` after each (a
+ * page stays responsive, and can stop it); the same solution, since each
+ * step depends only on the state before it. Stops with the signal's
+ * reason once it is aborted.
+ */
+export async function bluntStartInChunks(
+  asked: Body,
+  options: BluntFamilyOptions,
+  run: {
+    readonly chunk: number;
+    readonly pause: () => Promise<void>;
+    readonly signal?: AbortSignal | undefined;
+    readonly onProgress?: ((steps: number, total: number) => void) | undefined;
+  },
+): Promise<BluntStart> {
+  let stage = bluntCapture(asked, options);
+  const total = (stage.grid.twoScale ? 2 : 1) * CAPTURED_START_STEPS;
+  let done = 0;
+  const capture = async (s: CaptureStage) => {
+    for (let steps = 0; steps < CAPTURED_START_STEPS;) {
+      run.signal?.throwIfAborted();
+      const n = Math.min(run.chunk, CAPTURED_START_STEPS - steps);
+      s.solver.iterate(n);
+      steps += n;
+      done += n;
+      run.onProgress?.(done, total);
+      await run.pause();
+    }
+  };
+  await capture(stage);
+  const second = secondCapture(asked, options, stage);
+  if (second) {
+    await capture(second);
+    stage = second;
+  }
+  run.signal?.throwIfAborted();
+  return stage.start();
+}
+
+export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'>;
+
+/** A captured-shock problem on a blunt family's base grid, and the start it gives. */
+interface CaptureStage {
+  readonly grid: BluntGrid;
+  readonly solver: Euler2D;
+  readonly start: () => BluntStart;
+}
+
+/**
+ * The captured-shock problem on a blunt family's base grid, from the free
+ * stream: on the generator's own grid, or on the grid built on the given
+ * outer boundary. The generator's grid of a two-scale nose only has to
+ * contain the shock (a second stage follows), so the quality gates apply
+ * to the grid the family starts on.
+ */
+function bluntCapture(
+  asked: Body,
+  options: BluntFamilyOptions,
+  outerBoundary?: OuterBoundary,
+): CaptureStage {
   const body = solvedBody(asked);
-  const { mach, gamma, nj: baseNj, refinement } = options;
+  const { mach, gamma, nj } = options;
+  const free = freeStreamAt(mach, gamma).state;
+  const base = bluntBodyGrid(body, { nj, mach, outerBoundary, gated: false });
+  if (outerBoundary || !base.twoScale) assertGridQuality(base.grid);
+  const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
+  const solver = new Euler2D({
+    ...engineConfig(base.grid, gamma, axis, []),
+    boundaries: {
+      iMin: axis,
+      iMax: { kind: 'outflow' },
+      jMin: { kind: 'wall' },
+      jMax: { kind: 'inflow', state: free },
+    },
+  });
+  solver.setInitialCondition(() => free);
+  return {
+    grid: base,
+    solver,
+    start: () => ({
+      lines: base.lines,
+      heights: capturedShockHeights(solver, base.grid, base.lines, free),
+      cell: (i, j) => solver.primitive(i, j),
+      ...(outerBoundary ? { outerBoundary } : {}),
+    }),
+  };
+}
+
+/**
+ * The second stage of a two-scale nose's start, or null on a nose whose
+ * generator's boundary is at the body scale (spheres, the ellipsoids
+ * served). The generator's boundary is placed at the scale of the tip's
+ * blunt part, so that the lines near the tip are sized for it, but is
+ * generous at the body scale, where it keeps the angle the blunt bodies
+ * need: on a 3-caliber Haack nose at Mach 2 the captured shock lies at a
+ * tenth of its height at the tip and 0.42 along the nose, and the lines'
+ * spacing and node fractions are sized from the boundary. So the grid the
+ * family starts on is built on that captured shock, pushed out by
+ * BOUNDARY_MARGIN of its height along each line and at least
+ * BOUNDARY_CELLS cells of the base grid (along the cylinder, where the
+ * lines are long and their outer cells stretched, the fraction alone
+ * leaves two), and the shock captured on it is the family's start.
+ */
+function secondCapture(
+  asked: Body,
+  options: BluntFamilyOptions,
+  first: CaptureStage,
+): CaptureStage | null {
+  if (!first.grid.twoScale) return null;
+  const body = solvedBody(asked);
+  const R = body.nose.baseRadius;
+  const free = freeStreamAt(options.mach, options.gamma).state;
+  const heights = capturedShockHeights(first.solver, first.grid.grid, first.grid.lines, free);
+  const outerBoundary = first.grid.lines.map((l, i) => {
+    const shock = heights[i]!;
+    let d = (1 + BOUNDARY_MARGIN) * shock;
+    for (let k = 0; k < 20; k++) {
+      d = Math.max(d, shock + BOUNDARY_CELLS * outerCellHeight(d, options.nj, R));
+    }
+    return { x: l.x + d * l.dx, y: l.y + d * l.dy };
+  });
+  return bluntCapture(asked, options, outerBoundary);
+}
+
+/**
+ * The blunt problems of a family of grids (refinement 1, 2, 4, ...), all
+ * started from one captured solution on the base grid (bluntStart): each
+ * line takes the node fractions of that solution's shock height,
+ * interpolated along the body between the base grid's lines, so every
+ * coarser line and node fraction is one of the finer grid's (the nesting
+ * startedFrom needs to start each grid from the converged one before).
+ */
+export function bluntFitFamily(
+  asked: Body,
+  options: BluntFamilyOptions,
+  start: BluntStart = bluntStart(asked, options),
+): (refinement: number) => FitProblem {
+  const body = solvedBody(asked);
+  const { mach, gamma, nj: baseNj } = options;
   const R = body.nose.baseRadius;
   const free = freeStreamAt(mach, gamma).state;
-  const { start, captured, heights } = bluntStart(body, options);
-  const nj = baseNj * refinement;
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
-  // Each line keeps the node fractions of its height to the generator's
-  // outer boundary, a function of the line's body point alone, so that on
-  // a grid refined by 2 the fractions of line 2k are those of line k on
-  // the base grid (the nesting that starting each grid from the one before
-  // needs, `startedFrom`); the shock itself starts at the captured height.
-  const lines = withFixedFractions(start.lines, nj, R).map((l, i) => ({ ...l, h: heights[i]! }));
-  return {
-    lines,
-    heights,
-    nj,
-    baseRadius: R,
-    gamma,
-    freeStream: free,
-    configFor: (g, states) =>
-      engineConfig(
-        g,
-        gamma,
-        axis,
-        states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
-      ),
-    initial: (i, j) => captured.primitive(i, j),
-    firstNode: 'symmetry',
-    drag: (wall) => forebodyDrag(wall, mach, gamma, R),
-    askedEnd: bodyLength(asked),
+  return (refinement) => {
+    const fine =
+      refinement === 1
+        ? start.lines
+        : bluntBodyGrid(body, {
+            nj: baseNj,
+            refinement,
+            mach,
+            outerBoundary: start.outerBoundary,
+          }).lines;
+    const heights = nestedHeights(start.lines, start.heights, fine, refinement);
+    const nj = baseNj * refinement;
+    // Each line keeps the node fractions of the captured shock's height.
+    const lines = withFixedFractions(
+      fine.map((l, i) => ({ ...l, h: heights[i]! })),
+      nj,
+      R,
+    );
+    return {
+      lines,
+      heights,
+      nj,
+      baseRadius: R,
+      gamma,
+      freeStream: free,
+      configFor: (g, states) =>
+        engineConfig(
+          g,
+          gamma,
+          axis,
+          states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
+        ),
+      initial: (i, j) => start.cell(Math.floor(i / refinement), Math.floor(j / refinement)),
+      firstNode: 'symmetry',
+      drag: (wall) => forebodyDrag(wall, mach, gamma, R),
+      askedEnd: bodyLength(asked),
+    };
   };
+}
+
+/**
+ * Heights on the lines of a grid refined by `refinement` from those on
+ * the base grid's lines: the same on the base lines (every refinement-th
+ * line), linear in the line's index between them. The weights m /
+ * refinement are exact in binary, so the heights, and the node fractions
+ * taken from them, of a grid refined by r are those of the grid refined
+ * by 2r on its even lines: every grid of the family nests in the next.
+ */
+function nestedHeights(
+  base: readonly GridLine[],
+  baseHeights: readonly number[],
+  fine: readonly GridLine[],
+  refinement: number,
+): number[] {
+  const n = base.length - 1;
+  if (fine.length - 1 !== refinement * n) {
+    throw new RangeError('the refined grid does not have the lines of its base grid');
+  }
+  const scale = Math.hypot(base[n]!.x - base[0]!.x, base[n]!.y - base[0]!.y);
+  for (let k = 0; k <= n; k++) {
+    const a = base[k]!;
+    const b = fine[refinement * k]!;
+    if (!(Math.hypot(a.x - b.x, a.y - b.y) <= 1e-12 * scale)) {
+      throw new RangeError('the refined grid does not have the lines of its base grid');
+    }
+  }
+  const heights: number[] = [];
+  for (let k = 0; k < n; k++) {
+    for (let m = 0; m < refinement; m++) {
+      const t = m / refinement;
+      heights.push(baseHeights[k]! * (1 - t) + baseHeights[k + 1]! * t);
+    }
+  }
+  heights.push(baseHeights[n]!);
+  return heights;
 }
 
 function forebodyDrag(
@@ -387,78 +631,17 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
   return fittedFlow(bluntFitProblem(body, options), options.maxIterations);
 }
 
-/** Steps of the captured solution that places the first shock, per refinement. */
+/** Steps of the captured solution on the base grid that places the first shock. */
 const CAPTURED_START_STEPS = 3000;
 /**
- * Margin of the fit's outer boundary over the shock captured on the
- * generator's own grid, as a fraction of the shock's height along each
- * line. The generator's boundary is generous on two-scale noses (on a
- * 3-caliber Haack nose at Mach 2 the shock lies at a tenth of its height
- * at the tip and 0.42 along the nose), and the lines' spacing and node
- * fractions are sized from it, so a second grid is built on the captured
- * shock pushed out by this margin. The captured shock then lies about
- * two thirds of the way up each line, with at least three cells above it.
+ * Margin of a two-scale nose's outer boundary over the shock captured on
+ * the generator's grid, as a fraction of the shock's height along each
+ * line (secondCapture). The captured shock then lies about two thirds of
+ * the way up each line.
  */
 const BOUNDARY_MARGIN = 0.5;
 /** ... and at least this many cells of the base grid above the captured shock. */
 const BOUNDARY_CELLS = 3;
-
-export interface BluntStart {
-  /** The grid the fit starts on, its outer boundary following the first captured shock. */
-  readonly start: BluntGrid;
-  /** The captured solution on that grid. */
-  readonly captured: Euler2D;
-  /** The captured shock's heights along its lines. */
-  readonly heights: number[];
-  /** The generator's own grid of the base family (refinement 1) and the shock captured on it. */
-  readonly first: { readonly grid: BluntGrid; readonly heights: number[] };
-}
-
-/**
- * The captured start of a blunt nose's fit: the shock captured on the
- * generator's own base grid (ungated: it only has to contain the shock)
- * places the outer boundary of the grid the fit starts on, at every
- * refinement, so the family stays nested; the shock captured on that grid
- * is the fit's first guess.
- */
-export function bluntStart(body: Body, options: FitProblemOptions): BluntStart {
-  const { mach, gamma, nj: baseNj, refinement } = options;
-  const free = freeStreamAt(mach, gamma).state;
-  const capture = (grid: StructuredGrid, steps: number) => {
-    const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
-    const solver = new Euler2D({
-      ...engineConfig(grid, gamma, axis, []),
-      boundaries: {
-        iMin: axis,
-        iMax: { kind: 'outflow' },
-        jMin: { kind: 'wall' },
-        jMax: { kind: 'inflow', state: free },
-      },
-    });
-    solver.setInitialCondition(() => free);
-    solver.iterate(steps);
-    return solver;
-  };
-  const first = bluntBodyGrid(body, { nj: baseNj, refinement: 1, mach, gated: false });
-  const firstCaptured = capture(first.grid, CAPTURED_START_STEPS);
-  const firstHeights = capturedShockHeights(firstCaptured, first.grid, first.lines, free);
-  const R = body.nose.baseRadius;
-  const outerBoundary = first.lines.map((l, i) => {
-    const shock = firstHeights[i]!;
-    // The margin, or three cells of the base grid along the line, whichever
-    // is larger: along the cylinder, where the lines are long and their
-    // outer cells stretched, the fraction alone leaves two.
-    let d = (1 + BOUNDARY_MARGIN) * shock;
-    for (let k = 0; k < 20; k++) {
-      d = Math.max(d, shock + BOUNDARY_CELLS * outerCellHeight(d, baseNj, R));
-    }
-    return { x: l.x + d * l.dx, y: l.y + d * l.dy };
-  });
-  const start = bluntBodyGrid(body, { nj: baseNj, refinement, mach, outerBoundary });
-  const captured = capture(start.grid, CAPTURED_START_STEPS * refinement);
-  const heights = capturedShockHeights(captured, start.grid, start.lines, free);
-  return { start, captured, heights, first: { grid: first, heights: firstHeights } };
-}
 
 export interface VerifiedFittedDragOptions {
   readonly mach: number;
@@ -491,7 +674,9 @@ export async function verifiedFittedDrag(
   body: Body,
   options: VerifiedFittedDragOptions,
 ): Promise<VerifiedFittedDrag> {
-  const blunt = !Number.isFinite(noseTipSlope(body.nose));
+  const blunt = !Number.isFinite(noseTipSlope(body.nose))
+    ? bluntFitFamily(body, { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ })
+    : null;
   try {
     const result = await refineUntilVerified(
       (refinement) => {
@@ -503,7 +688,7 @@ export async function verifiedFittedDrag(
           maxIterations: options.iterationsPerRefinement * refinement,
         };
         const { fit, drag } = blunt
-          ? bluntFittedFlow(body, flowOptions)
+          ? fittedFlow(blunt(refinement), flowOptions.maxIterations)
           : sharpFittedFlow(body, flowOptions);
         if (!fit.converged) {
           throw new FitNotConverged(

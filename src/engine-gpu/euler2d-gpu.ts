@@ -20,7 +20,15 @@ import { validateGrid2DConfig } from '../solver/config';
 import { NonPhysicalStateError } from '../solver/errors';
 import { RUNGE_KUTTA_STAGES } from '../solver/runge-kutta';
 import { WGSL_LIMITER_FUNCTIONS, isGpuFlux, type GpuFluxName } from './euler1d-gpu';
-import { BufferSet, ExclusiveRunner, compileShader, readBuffer } from './gpu-common';
+import {
+  BufferSet,
+  ExclusiveRunner,
+  GpuMemoryLimitError,
+  checkDispatchSize,
+  compileShader,
+  readBuffer,
+  withDeviceErrors,
+} from './gpu-common';
 import type { GpuLineGrid } from './line-grid';
 import {
   DT_LOG_SIZE,
@@ -114,8 +122,7 @@ export interface GpuState2D {
   readonly energy: Float32Array;
 }
 
-/** A grid too large for the device's buffer limits. */
-export class GpuMemoryLimitError extends RangeError {}
+export { GpuExecutionError, GpuMemoryLimitError } from './gpu-common';
 
 /**
  * Primitive variables of cell c of a state read back from the GPU. The GPU
@@ -195,6 +202,13 @@ export class GpuEuler2D {
         `a grid of ${ni} x ${nj} cells needs a buffer of ${(largest / 2 ** 20).toFixed(0)} MiB, more than this GPU allows (${(limit / 2 ** 20).toFixed(0)} MiB)`,
       );
     }
+    // The largest dispatch: one invocation per face of either family.
+    checkDispatchSize(
+      device,
+      Math.max((ni + 1) * nj, ni * (nj + 1)),
+      WORKGROUP_SIZE,
+      `a grid of ${ni} x ${nj} cells`,
+    );
     const flux: string = config.flux;
     if (!isGpuFlux(flux)) throw new RangeError(`flux ${flux} is not available on the GPU`);
     if (config.source !== undefined) {
@@ -243,7 +257,14 @@ export class GpuEuler2D {
     const pipelines = Object.fromEntries(
       ENTRY_POINTS.map((name, k) => [name, compiled[k]!]),
     ) as Record<EntryPoint, GPUComputePipeline>;
-    return new GpuEuler2D(device, config, sharedLayout, stageLayout, pipelines);
+    return withDeviceErrors(
+      device,
+      `a grid of ${ni} x ${nj} cells`,
+      () => new GpuEuler2D(device, config, sharedLayout, stageLayout, pipelines),
+      (engine) => {
+        engine.destroy();
+      },
+    );
   }
 
   private constructor(
@@ -367,7 +388,8 @@ export class GpuEuler2D {
    */
   setInitialCondition(field: (x: number, y: number) => Primitive2D): void {
     this.exclusive.assertIdle();
-    const { gamma } = this.config;
+    // The energy the GPU reads back with its 32-bit gamma (gpuPrimitive2D).
+    const gamma = Math.fround(this.config.gamma);
     const { centroidX, centroidY } = this.metrics;
     const packed = new Float32Array(4 * this.nCells);
     for (let c = 0; c < this.nCells; c++) {
@@ -393,7 +415,8 @@ export class GpuEuler2D {
    */
   setCellPrimitives(cell: (i: number, j: number) => Primitive2D): void {
     this.exclusive.assertIdle();
-    const { gamma } = this.config;
+    // The energy the GPU reads back with its 32-bit gamma (gpuPrimitive2D).
+    const gamma = Math.fround(this.config.gamma);
     const { ni } = this.metrics;
     const packed = new Float32Array(4 * this.nCells);
     for (let c = 0; c < this.nCells; c++) {
@@ -420,7 +443,7 @@ export class GpuEuler2D {
       while (remaining > 0) {
         const batch = Math.min(remaining, DT_LOG_SIZE);
         this.submitSteps(batch);
-        this.ledger.account(await this.readControl(), this.timeAccurate);
+        this.ledger.account(await this.readControl(), this.timeAccurate, batch);
         remaining -= batch;
       }
     });
@@ -455,7 +478,7 @@ export class GpuEuler2D {
           this.current = spare;
         }
         this.device.queue.submit([encoder.finish()]);
-        this.ledger.account(await this.readControl(), this.timeAccurate);
+        this.ledger.account(await this.readControl(), this.timeAccurate, batch * stepsPerMove);
         remaining -= batch;
       }
     });
@@ -535,7 +558,8 @@ export class GpuEuler2D {
     if (states.length !== along) {
       throw new RangeError(`the ${side} boundary needs ${along} face states`);
     }
-    const { gamma } = this.config;
+    // The energy the GPU reads back with its 32-bit gamma (gpuPrimitive2D).
+    const gamma = Math.fround(this.config.gamma);
     const packed = new Float32Array(4 * along);
     states.forEach((w, t) => {
       packed.set(

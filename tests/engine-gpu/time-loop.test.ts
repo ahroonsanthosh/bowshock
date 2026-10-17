@@ -2,6 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { RUNGE_KUTTA_STAGES, type TimeIntegrator } from '../../src/solver/runge-kutta';
 import { NonPhysicalStateError } from '../../src/solver/errors';
 import {
+  GpuExecutionError,
+  GpuMemoryLimitError,
+  checkDispatchSize,
+  withDeviceErrors,
+} from '../../src/engine-gpu/gpu-common';
+import {
   DT_LOG_SIZE,
   STATUS_NON_PHYSICAL,
   StepLedger,
@@ -75,6 +81,61 @@ describe('StepLedger', () => {
     expect(() => {
       ledger.account(reading, false);
     }).toThrow(/between steps 0 and 7/);
+  });
+
+  it('with the steps submitted, refuses a batch the GPU did not run in full', () => {
+    // Work the GPU rejects or cannot run raises nothing; its step count
+    // does not advance.
+    const ledger = new StepLedger();
+    const reading = (steps: number) => ({ gpuTime: 0, dt: 1, steps, status: 0, dtLog: log([]) });
+    ledger.account(reading(250), false, 250);
+    expect(ledger.steps).toBe(250);
+    expect(() => {
+      ledger.account(reading(250), false, 250);
+    }).toThrow(GpuExecutionError);
+    expect(() => {
+      ledger.account(reading(400), false, 250);
+    }).toThrow(/ran 150 of the 250 steps submitted/);
+  });
+});
+
+/** A device with the limits and error scopes these checks use. */
+function fakeDevice(errors: { validation?: string; memory?: string } = {}) {
+  const scopes: GPUErrorFilter[] = [];
+  return {
+    limits: { maxComputeWorkgroupsPerDimension: 65535 },
+    pushErrorScope: (filter: GPUErrorFilter) => scopes.push(filter),
+    popErrorScope: () => {
+      const filter = scopes.pop();
+      const message = filter === 'validation' ? errors.validation : errors.memory;
+      return Promise.resolve(message === undefined ? null : { message });
+    },
+  } as unknown as GPUDevice;
+}
+
+describe('device limits and errors', () => {
+  it('refuses a dispatch of more workgroups than the device allows in one dimension', () => {
+    expect(() => {
+      checkDispatchSize(fakeDevice(), 65535 * 64, 64, 'a grid');
+    }).not.toThrow();
+    expect(() => {
+      checkDispatchSize(fakeDevice(), 65535 * 64 + 1, 64, 'a grid');
+    }).toThrow(GpuMemoryLimitError);
+  });
+
+  it('turns errors raised while creating into exceptions, destroying what was created', async () => {
+    const destroyed: string[] = [];
+    const destroy = (x: string) => destroyed.push(x);
+    await expect(withDeviceErrors(fakeDevice(), 'a grid', () => 'engine', destroy)).resolves.toBe(
+      'engine',
+    );
+    await expect(
+      withDeviceErrors(fakeDevice({ memory: 'no memory' }), 'a grid', () => 'big', destroy),
+    ).rejects.toThrow(GpuMemoryLimitError);
+    await expect(
+      withDeviceErrors(fakeDevice({ validation: 'bad layout' }), 'a grid', () => 'odd', destroy),
+    ).rejects.toThrow(/a grid: bad layout/);
+    expect(destroyed).toEqual(['big', 'odd']);
   });
 });
 

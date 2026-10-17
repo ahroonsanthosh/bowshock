@@ -39,7 +39,7 @@ export interface BluntGridOptions {
    * generator's arc and line: for example the bow shock captured on a first
    * grid, pushed out by a margin (src/analysis/fitted-flow.ts).
    */
-  readonly outerBoundary?: readonly { readonly x: number; readonly y: number }[];
+  readonly outerBoundary?: readonly { readonly x: number; readonly y: number }[] | undefined;
   /** Apply the quality gates (default); off for measuring grids that fail them. */
   readonly gated?: boolean;
   /** Overrides of the placement constants, for measurement only. */
@@ -74,6 +74,13 @@ export interface BluntGrid {
   readonly tipScale: number;
   /** Length scale that places the outer boundary ahead of the tip. */
   readonly scale: number;
+  /**
+   * Whether that scale lies below the base radius: the tip's blunt part is
+   * far smaller than the body (the Haack series, the power series, long
+   * ellipsoids), and the boundary, at the tip's scale ahead of the tip, is
+   * generous at the body scale.
+   */
+  readonly twoScale: boolean;
 }
 
 /**
@@ -437,7 +444,7 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     R,
     options.gated ?? true,
   );
-  return { grid, lines, outerStandoff, outerAngle, tipScale, scale };
+  return { grid, lines, outerStandoff, outerAngle, tipScale, scale, twoScale: scale < R };
 }
 
 /**
@@ -501,11 +508,16 @@ export function gridOnLines(
     const d = h * (l.fractions?.[j] ?? stretchedFraction(lineStrength(h, baseRadius), j, nj));
     return [l.x + d * l.dx, l.y + d * l.dy];
   });
-  const failures = gated ? qualityFailures(gridQuality(grid)) : [];
+  if (gated) assertGridQuality(grid);
+  return grid;
+}
+
+/** Throws a GridQualityError naming the quality gates the grid fails, if any. */
+export function assertGridQuality(grid: StructuredGrid): void {
+  const failures = qualityFailures(gridQuality(grid));
   if (failures.length > 0) {
     throw new GridQualityError(
       `the generated grid fails its quality checks: ${failures.join('; ')}`,
     );
   }
-  return grid;
 }

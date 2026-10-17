@@ -38,6 +38,12 @@ export interface GpuShockFitOptions {
   readonly monitor: (grid: StructuredGrid, cell: (i: number, j: number) => Primitive2D) => number;
   /** Change of the monitored result, relative, that counts as none. */
   readonly noise: number;
+  /**
+   * The drag's rate of convergence per check known from before (the fit of
+   * the coarser grid this one starts from), for the stopping test
+   * (SettlingValue); NaN or undefined if none.
+   */
+  readonly knownRate?: number | undefined;
   /** Largest shock speed over the free stream's sound speed at convergence. */
   readonly speedTolerance: number;
   readonly maxIterations: number;
@@ -57,6 +63,11 @@ export interface GpuShockFit {
   readonly maxSpeed: number;
   readonly iterations: number;
   readonly converged: boolean;
+  /**
+   * The drag's rate of convergence per check, for the next grid: measured
+   * on this fit, else the one known from before; NaN if none.
+   */
+  readonly rate: number;
 }
 
 export async function fitShockGpu(options: GpuShockFitOptions): Promise<GpuShockFit> {
@@ -71,18 +82,24 @@ export async function fitShockGpu(options: GpuShockFitOptions): Promise<GpuShock
   const aFree = Math.sqrt((gamma * free.p) / free.rho);
 
   const gpu = await GpuEuler2D.create(device, config);
-  const lineGrid = await GpuLineGrid.create(device, lines, nj, {
-    geometry: config.geometry,
-    gamma,
-    target: gpu.geometryBuffer,
-    boundary: gpu.boundaryBuffer,
-    firstNode: options.firstNode,
-  });
+  let lineGrid: GpuLineGrid;
+  try {
+    lineGrid = await GpuLineGrid.create(device, lines, nj, {
+      geometry: config.geometry,
+      gamma,
+      target: gpu.geometryBuffer,
+      boundary: gpu.boundaryBuffer,
+      firstNode: options.firstNode,
+    });
+  } catch (error) {
+    gpu.destroy();
+    throw error;
+  }
   try {
     // From here on the engine's metrics are those computed on the GPU.
     lineGrid.setHeights(heights);
     gpu.setCellPrimitives(options.initial);
-    const settling = new SettlingValue(options.noise);
+    const settling = new SettlingValue(options.noise, options.knownRate ?? Number.NaN);
     const movesPerCheck = Math.max(1, Math.round(options.checkEvery / options.stepsPerMove));
     let cell = options.initial;
     let value = Number.NaN;
@@ -117,6 +134,7 @@ export async function fitShockGpu(options: GpuShockFitOptions): Promise<GpuShock
       maxSpeed,
       iterations,
       converged,
+      rate: settling.rateToPassOn,
     };
   } finally {
     lineGrid.destroy();
