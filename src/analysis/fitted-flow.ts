@@ -1,0 +1,236 @@
+/**
+ * The flow around a rocket nose and body with the bow shock fitted as the
+ * outer boundary (design: docs/design/0006-shock-fitting.md), on the CPU
+ * engine, and its forebody pressure drag.
+ *
+ * Sharp noses: the domain starts just behind the tip, at x0, where the
+ * flow is that of the cone tangent at the tip (Taylor-Maccoll), and the
+ * grid lines are vertical. Blunt noses: the C grid of
+ * src/grid/blunt-grid.ts, started from a captured solution.
+ */
+
+import { Euler2D, type Euler2DConfig } from '../engine-cpu/euler2d';
+import { bodyLength, bodyRadius, type Body } from '../geometry/body';
+import { noseTipSlope } from '../geometry/nose';
+import { bluntBodyGrid, gridOnLines, type GridLine } from '../grid/blunt-grid';
+import { columnPositions } from '../grid/spacing';
+import { nodeIndex, type StructuredGrid } from '../grid/structured';
+import type { Primitive2D } from '../scheme/flux';
+import { capturedShockHeights, fitShock, type ShockFit } from '../solver/shock-fitting';
+import { normalShock } from '../validation/gas-dynamics';
+import { coneFlowField, taylorMaccoll } from '../validation/taylor-maccoll';
+import { forebodyPressureDrag } from './forces';
+
+export interface FittedFlowOptions {
+  readonly mach: number;
+  readonly gamma: number;
+  /** Cells from the body to the shock on the base grid. */
+  readonly nj: number;
+  /** Refinement of the base grid: 1, 2, 4, ... */
+  readonly refinement: number;
+  readonly maxIterations: number;
+}
+
+export interface FittedFlow {
+  readonly fit: ShockFit;
+  /** Forebody pressure drag coefficient on the body's cross-section. */
+  readonly drag: number;
+}
+
+/** Start of the domain behind a sharp tip, in nose lengths. */
+const SHARP_START = 1e-3;
+/**
+ * Cells along the body on sharp noses are this many times the across
+ * spacing (at most; the quality gates allow 10).
+ */
+const SHARP_ASPECT = 2;
+/** Stopping test of the fit: shock speeds over the free-stream sound speed. */
+const SPEED_TOLERANCE = 1e-12;
+/** ... and residual, relative to the free stream's on the first grid. */
+const RESIDUAL_TOLERANCE = 1e-12;
+
+function freeStreamOf(mach: number, gamma: number): Primitive2D {
+  return { rho: 1, u: mach * Math.sqrt(gamma), v: 0, p: 1 };
+}
+
+function engineConfig(
+  grid: StructuredGrid,
+  gamma: number,
+  iMin: Euler2DConfig['boundaries']['iMin'],
+  shockStates: readonly Primitive2D[],
+): Euler2DConfig {
+  return {
+    grid,
+    geometry: 'axisymmetric',
+    gamma,
+    flux: 'hllc',
+    limiter: 'vanAlbada',
+    reconstruction: 'sharedScaled',
+    timeIntegrator: 'ssprk2',
+    cfl: 0.8,
+    timeStepping: 'local',
+    boundaries: {
+      iMin,
+      iMax: { kind: 'outflow' },
+      jMin: { kind: 'wall' },
+      jMax: { kind: 'faceStates', states: shockStates },
+    },
+  };
+}
+
+/** Sharp noses: the flow between the body and the fitted shock, from x0 to the end. */
+export function sharpFittedFlow(body: Body, options: FittedFlowOptions): FittedFlow {
+  const { mach, gamma, nj: baseNj, refinement } = options;
+  const R = body.nose.baseRadius;
+  const L = body.nose.length;
+  const xEnd = bodyLength(body);
+  const free = freeStreamOf(mach, gamma);
+  const tipAngle = Math.atan(noseTipSlope(body.nose));
+  if (!Number.isFinite(tipAngle)) throw new RangeError('the nose is blunt: use bluntFittedFlow');
+  // Throws if the conical shock at the tip would detach.
+  const cone = coneFlowField(mach, tipAngle, gamma);
+  const beta = cone.flow.shockAngle;
+
+  // The conical flow on a ray: the free stream's total enthalpy, and the
+  // entropy behind the conical shock.
+  const enthalpy = gamma / (gamma - 1) + 0.5 * free.u * free.u;
+  const vMax = Math.sqrt(2 * enthalpy);
+  const jump = normalShock(mach * Math.sin(beta), gamma);
+  const entropy = jump.pressureRatio / jump.densityRatio ** gamma;
+  const conical = (polar: number): Primitive2D => {
+    const c = cone.at(Math.min(Math.max(polar, tipAngle), beta));
+    const v = c.speed * vMax;
+    const a2 = (gamma - 1) * (enthalpy - 0.5 * v * v);
+    const rho = (a2 / gamma / entropy) ** (1 / (gamma - 1));
+    return {
+      rho,
+      u: v * Math.cos(c.flowAngle),
+      v: v * Math.sin(c.flowAngle),
+      p: entropy * rho ** gamma,
+    };
+  };
+
+  const nj = baseNj * refinement;
+  const x0 = SHARP_START * L;
+  // First guess: the tip's conical shock line.
+  const guess = (x: number) => Math.max(x * Math.tan(beta) - bodyRadius(body, x), 1e-12 * L);
+  const strength = (h: number) => Math.min(Math.log1p(h / R), 2 * Math.log(10));
+  // Spacing along the body: SHARP_ASPECT times the geometric mean of the
+  // wall and outer cell heights (as on the other grids).
+  const spacing = (x: number) => {
+    const h = guess(x);
+    const b = strength(h);
+    return (SHARP_ASPECT * h * b * Math.exp(b / 2)) / (Math.expm1(b) * nj);
+  };
+  const breakpoints = body.cylinderLength > 0 ? [x0, L, xEnd] : [x0, L];
+  const xs = columnPositions(breakpoints, (x) => 1 / spacing(x), refinement);
+  const lines: GridLine[] = xs.map((x) => ({
+    x,
+    y: bodyRadius(body, x),
+    dx: 0,
+    dy: 1,
+    h: guess(x),
+  }));
+  const gridFor = (heights: readonly number[], gated: boolean) =>
+    gridOnLines(lines, heights, nj, R, gated);
+  const first = gridFor(
+    lines.map((l) => l.h),
+    false,
+  );
+  const midpoint = (k: number[]) => [
+    k.reduce((s, q) => s + first.x[q]!, 0) / k.length,
+    k.reduce((s, q) => s + first.y[q]!, 0) / k.length,
+  ];
+  const inflow = Array.from({ length: nj }, (_, j) => {
+    const [x, y] = midpoint([nodeIndex(first, 0, j), nodeIndex(first, 0, j + 1)]);
+    return conical(Math.atan2(y!, x!));
+  });
+  const fit = fitShock({
+    lines,
+    heights: lines.map((l) => l.h),
+    nj,
+    gridFor,
+    configFor: (g, states) =>
+      engineConfig(
+        g,
+        gamma,
+        { kind: 'faceStates', states: inflow },
+        states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
+      ),
+    initial: (i, j) => {
+      const [x, y] = midpoint([
+        nodeIndex(first, i, j),
+        nodeIndex(first, i + 1, j),
+        nodeIndex(first, i, j + 1),
+        nodeIndex(first, i + 1, j + 1),
+      ]);
+      return conical(Math.atan2(y!, x!));
+    },
+    freeStream: free,
+    firstNode: 'fixed',
+    speedTolerance: SPEED_TOLERANCE,
+    residualTolerance: RESIDUAL_TOLERANCE,
+    maxIterations: options.maxIterations,
+  });
+  // Ahead of x0 the nose is the tip cone, within (x0 / L)^2.
+  const tip = taylorMaccoll(mach, tipAngle, gamma).surfacePressureCoefficient;
+  const drag =
+    forebodyPressureDrag(
+      fit.solver.boundaryFluxes('jMin'),
+      { pressure: free.p, dynamicPressure: 0.5 * gamma * mach * mach },
+      R,
+    ) +
+    tip * (bodyRadius(body, x0) / R) ** 2;
+  return { fit, drag };
+}
+
+/** Blunt noses: the flow between the body and the fitted shock on the C grid. */
+export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedFlow {
+  const { mach, gamma, nj: baseNj, refinement } = options;
+  const R = body.nose.baseRadius;
+  const free = freeStreamOf(mach, gamma);
+  const start = bluntBodyGrid(body, { nj: baseNj, refinement, mach });
+  const nj = baseNj * refinement;
+  const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
+  const captured = new Euler2D({
+    ...engineConfig(start.grid, gamma, axis, []),
+    boundaries: {
+      iMin: axis,
+      iMax: { kind: 'outflow' },
+      jMin: { kind: 'wall' },
+      jMax: { kind: 'inflow', state: free },
+    },
+  });
+  captured.setInitialCondition(() => free);
+  captured.iterate(CAPTURED_START_STEPS * refinement);
+  const lines = start.lines;
+  const heights = capturedShockHeights(captured, start.grid, lines, free);
+  const fit = fitShock({
+    lines,
+    heights,
+    nj,
+    gridFor: (h, gated) => gridOnLines(lines, h, nj, R, gated),
+    configFor: (g, states) =>
+      engineConfig(
+        g,
+        gamma,
+        axis,
+        states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
+      ),
+    initial: (i, j) => captured.primitive(i, j),
+    freeStream: free,
+    firstNode: 'symmetry',
+    speedTolerance: SPEED_TOLERANCE,
+    residualTolerance: RESIDUAL_TOLERANCE,
+    maxIterations: options.maxIterations,
+  });
+  const drag = forebodyPressureDrag(
+    fit.solver.boundaryFluxes('jMin'),
+    { pressure: free.p, dynamicPressure: 0.5 * gamma * mach * mach },
+    R,
+  );
+  return { fit, drag };
+}
+
+/** Steps of the captured solution that places the first shock, per refinement. */
+const CAPTURED_START_STEPS = 3000;
