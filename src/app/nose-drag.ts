@@ -29,6 +29,7 @@ const finestSelect = element('#finest', HTMLSelectElement);
 const runButton = element('#run', HTMLButtonElement);
 const stopButton = element('#stop', HTMLButtonElement);
 const result = element('#result', HTMLElement);
+const note = element('#note', HTMLElement);
 const status = element('#status', HTMLElement);
 const levels = element('#levels', HTMLTableElement);
 
@@ -53,6 +54,8 @@ shapeSelect.addEventListener('change', () => {
 function show(text: string, kind: 'ok' | 'warn' | '' = ''): void {
   result.textContent = text;
   result.className = kind;
+  // What a value means goes with every value shown.
+  note.hidden = kind !== 'ok';
 }
 
 function addLevel(report: LevelReport, seconds: number): void {
@@ -167,9 +170,10 @@ async function run(gpu: GPUDevice): Promise<void> {
           );
         } else {
           show(
-            `No error band: ${e.kind === 'unresolved' ? e.reason : 'none measured'}. The finest value, ${e.value.toFixed(5)}, is not verified.`,
+            `No error band: ${e.kind === 'unresolved' ? e.reason : 'none measured'}. The finest value, ${e.value.toFixed(5)}, is not verified; a finer finest grid may verify it.`,
             'warn',
           );
+          note.hidden = false;
         }
         break;
       }
