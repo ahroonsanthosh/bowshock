@@ -12,6 +12,7 @@ import {
 } from '../../src/validation/characteristics';
 import { deflectionAngle, normalShock } from '../../src/validation/gas-dynamics';
 import { coneFlowField, taylorMaccoll } from '../../src/validation/taylor-maccoll';
+import { ELLIPSOID_START_LINE } from '../support/ellipsoid-start-line';
 
 const gamma = 1.4;
 const deg = Math.PI / 180;
@@ -492,4 +493,42 @@ describe('method of characteristics from given data on a line behind the tip', (
     expect(run(haack)).toThrow(/begin on the body/);
     expect(run({ ...cone(20), cylinderLength: 2 })).toThrow(/corners in the profile/);
   });
+});
+
+describe('method of characteristics from the fitted flow behind a blunt nose', () => {
+  it('3:1 ellipsoid at Mach 2, from its fitted flow on the line at x = 0.133: second order, and where the fitted drags converge', () => {
+    // The data (nj = 80, tests/support/ellipsoid-start-line.ts) carry the
+    // entropy layer of the blunt tip; 53% of the nose's drag lies
+    // downstream of the line. The fitted solver's own drag downstream of
+    // it on nj = 20, 40, 80 differs from the march from each grid's data
+    // by 3.57e-3, 8.57e-4 and 2.02e-4 of it, falling by 4.2 per
+    // refinement. Measured when written: the march on 640 intervals
+    // within 4.3e-7 of its extrapolated value (5.3e-6 of it), and the
+    // fitted drags, extrapolated at second order, within 2.5e-5 of it.
+    const fitted = [0.08156460685053118, 0.08138950539346877, 0.0813475604206323];
+    const s = ELLIPSOID_START_LINE;
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const start: StartingLine = {
+      points: s.x.map((x, k) => ({
+        x,
+        y: s.y[k]!,
+        rho: s.rho[k]!,
+        u: s.u[k]!,
+        v: s.v[k]!,
+        p: s.p[k]!,
+      })),
+      shockAngle: s.shockAngle,
+    };
+    const drags = [160, 320, 640].map((n) => {
+      const sol = characteristicsFrom(body, start, { mach: s.mach, gamma, intervals: n });
+      expect(sol.penetration).toBe(0);
+      return downstreamDrag(body, s.mach, sol.wall);
+    });
+    expect((drags[0]! - drags[1]!) / (drags[1]! - drags[2]!)).toBeGreaterThan(3.5);
+    const extrapolated = fitted[2]! + (fitted[2]! - fitted[1]!) / 3;
+    expect(Math.abs(extrapolated / drags[2]! - 1)).toBeLessThan(3e-5);
+  }, 120_000);
 });
