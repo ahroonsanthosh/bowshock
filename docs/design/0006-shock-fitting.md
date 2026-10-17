@@ -194,6 +194,17 @@ On the GPU too, a bare 20 degree cone at Mach 3 on nj = 20, 40 and 80
 2.02) and extrapolating to within 5.7e-8 at that order, 3.2e-7 at second
 order; the finest band, 2.0e-5, contains the actual error.
 
+**Each grid starts from the one before** (`startedFrom` in
+`src/analysis/gpu-fitted-flow.ts`). The sharp-nose grids are nested:
+every coarser line and node fraction is one of the finer grid's, so each
+finer cell lies inside one coarser cell, whose converged state it takes,
+and the shock's heights are interpolated along the body. The drag is
+checked every 250 steps on the base grid (times the refinement). On the
+TN 3716 ogive at Mach 1.98 on the GPU, the grids of 20 and 40 cells
+across converge after 1750 and 2000 steps, against 2500 and 4000 started
+afresh and checked every 500, and the drag of the finer grid is within
+3.9e-7 of the fresh start's, inside the GPU's noise.
+
 ## The floor for fitted drag
 
 Measured by audit agents on grids with fixed fractions (CPU, nj = 20,
