@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { bluntFitProblem, fittedFlow } from '../../src/analysis/fitted-flow';
-import { gpuFittedFlow } from '../../src/analysis/gpu-fitted-flow';
-import { GPU_NOISE } from '../../src/analysis/verified-drag';
+import { bluntFitProblem, fittedFlow, sharpFitProblem } from '../../src/analysis/fitted-flow';
+import { gpuFittedFlow, verifiedFittedDragGpu } from '../../src/analysis/gpu-fitted-flow';
+import { FITTED_DRAG_FLOOR, GPU_NOISE, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
 import type { Body } from '../../src/geometry/body';
 import { requireDevice } from './device';
 
@@ -12,6 +12,7 @@ import { requireDevice } from './device';
  */
 
 const gamma = 1.4;
+const deg = Math.PI / 180;
 let device: GPUDevice;
 beforeAll(async () => {
   device = await requireDevice();
@@ -42,5 +43,47 @@ describe('fitted shock on the GPU', () => {
     // the sound speed.
     const difference = Math.abs(drag / cpu.drag - 1);
     expect(difference, `GPU ${drag}, CPU ${cpu.drag}`).toBeLessThan(GPU_NOISE);
+  }, 900_000);
+
+  it('Mach 3, 20 deg bare cone: the CPU fit drag to within the GPU noise', async () => {
+    const cone: Body = {
+      nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
+      cylinderLength: 0,
+    };
+    const problem = sharpFitProblem(cone, { mach: 3, gamma, nj: 20, refinement: 1 });
+    const cpu = fittedFlow(problem, 20_000);
+    expect(cpu.fit.converged).toBe(true);
+    const { fit, drag } = await gpuFittedFlow(device, problem, {
+      maxIterations: 20_000,
+      stepsPerMove: 1,
+      checkEvery: 500,
+      speedTolerance: 3e-5,
+    });
+    expect(fit.converged).toBe(true);
+    // Measured when written on a 20 deg cone at Mach 5: within 1.8e-7.
+    const difference = Math.abs(drag / cpu.drag - 1);
+    expect(difference, `GPU ${drag}, CPU ${cpu.drag}`).toBeLessThan(GPU_NOISE);
+  }, 900_000);
+
+  it('the page refuses a bare nose whose base flow is subsonic, keeping the reason', async () => {
+    // A 26.6 deg cone at Mach 1.5: subsonic conical surface flow, so the
+    // cylinder solved behind it would reach the nose.
+    const cone: Body = {
+      nose: { shape: { kind: 'conical' }, length: 1, baseRadius: 0.5 },
+      cylinderLength: 0,
+    };
+    const result = await verifiedFittedDragGpu(device, cone, {
+      mach: 1.5,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+    });
+    expect(result.kind).toBe('invalid');
+    if (result.kind === 'invalid') {
+      expect(result.refinement).toBe(1);
+      expect(result.reason).toMatch(/the flow at the end of the body is subsonic/);
+    }
   }, 900_000);
 });
