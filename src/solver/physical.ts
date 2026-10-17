@@ -1,3 +1,5 @@
+/** Checks that a state is physical: positive, finite density and pressure. */
+
 import { pressureFromConserved } from '../scheme/gas';
 
 /**

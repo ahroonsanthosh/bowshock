@@ -15,8 +15,9 @@
  *   oppose, the unclipped factor would turn negative and steepen the
  *   extremum; the clip is a switch (continuous, with a kink) of the kind
  *   the smooth limiter otherwise avoids, and is kept because convergence,
- *   measured on every steady case, does not suffer from it. Because all variables move
- *   together, the cells inside a captured shock cannot cycle between
+ *   measured on every steady case, does not suffer from it. Because all
+ *   variables move together, the cells inside a captured shock cannot
+ *   cycle between
  *   limiter states variable by variable, and steady flows with shocks
  *   converge to round-off. A per-variable minimum of factors was tried
  *   first: it cured the wedge, but amplified round-off where a variable

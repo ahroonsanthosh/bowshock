@@ -1,3 +1,8 @@
+/**
+ * The front page: reports whether this browser offers WebGPU and, if so,
+ * the adapter and the limits that size the solver grids.
+ */
+
 import { detectGpu, type GpuSupport } from '../gpu/detect';
 
 function formatBytes(bytes: number): string {
