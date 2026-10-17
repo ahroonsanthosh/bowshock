@@ -6,5 +6,5 @@ test-results/
 .DS_Store
 .vitest/
 # Scratch experiments (never committed)
-tests/tmp*/
+tests/tmp*
 tests/gpu/tmp*
