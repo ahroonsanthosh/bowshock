@@ -14,7 +14,7 @@
 
 import type { Geometry } from '../grid/structured';
 import type { GridLine } from '../grid/blunt-grid';
-import { BufferSet, compileShader } from './gpu-common';
+import { BufferSet, checkDispatchSize, compileShader, withDeviceErrors } from './gpu-common';
 import lineGridWgsl from './shaders/line-grid.wgsl?raw';
 
 const WORKGROUP_SIZE = 64;
@@ -68,6 +68,13 @@ export class GpuLineGrid {
     nj: number,
     options: GpuLineGridOptions,
   ): Promise<GpuLineGrid> {
+    const ni = lines.length - 1;
+    checkDispatchSize(
+      device,
+      Math.max((ni + 1) * nj, ni * (nj + 1)),
+      WORKGROUP_SIZE,
+      `a grid of ${ni} x ${nj} cells`,
+    );
     const module = await compileShader(device, 'line grid', lineGridWgsl);
     // One layout for all the entry points, which each use only some of the
     // bindings (an automatic layout would differ between them).
@@ -100,7 +107,14 @@ export class GpuLineGrid {
         }),
       ),
     );
-    return new GpuLineGrid(device, lines, nj, options, pipelines, bindGroupLayout);
+    return withDeviceErrors(
+      device,
+      `the moving grid of ${ni} x ${nj} cells`,
+      () => new GpuLineGrid(device, lines, nj, options, pipelines, bindGroupLayout),
+      (grid) => {
+        grid.destroy();
+      },
+    );
   }
 
   private constructor(

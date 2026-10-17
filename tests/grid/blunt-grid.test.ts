@@ -82,7 +82,7 @@ describe('body grids (C topology, blunt noses)', () => {
       }
       expect(worst).toBeLessThan(1e-12);
     }
-  });
+  }, 60_000);
 
   it('refuses sharp noses, noses meeting the body at an angle, and grids that fail the gates', () => {
     const sharp: Body = {

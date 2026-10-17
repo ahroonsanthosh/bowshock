@@ -6,6 +6,7 @@
  */
 
 import { NonPhysicalStateError } from '../solver/errors';
+import { GpuExecutionError } from './gpu-common';
 import { RUNGE_KUTTA_STAGES, type TimeIntegrator } from '../solver/runge-kutta';
 
 /** The most steps submitted in one batch; matches DT_LOG_SIZE in the shaders. */
@@ -114,12 +115,20 @@ export class StepLedger {
    * Account for the steps of the latest batch. Throws NonPhysicalStateError
    * if the status flag is set. With `timeAccurate`, adds the logged time
    * steps and checks the GPU clock against their sum: a mismatch means the
-   * GPU compiler defeated the clock's compensated summation.
+   * GPU compiler defeated the clock's compensated summation. With
+   * `submitted`, every one of that many steps must have run: work the GPU
+   * rejects, or cannot run, raises no exception, and would otherwise read
+   * back as a flow that has stopped changing.
    */
-  account(reading: ControlReading, timeAccurate: boolean): void {
+  account(reading: ControlReading, timeAccurate: boolean, submitted?: number): void {
     if ((reading.status & STATUS_NON_PHYSICAL) !== 0) {
       throw new NonPhysicalStateError(
         `non-physical state on the GPU between steps ${this.steps} and ${reading.steps}`,
+      );
+    }
+    if (submitted !== undefined && reading.steps !== this.steps + submitted) {
+      throw new GpuExecutionError(
+        `the GPU ran ${reading.steps - this.steps} of the ${submitted} steps submitted: it rejected the work, ran out of memory or lost the device`,
       );
     }
     if (timeAccurate) {

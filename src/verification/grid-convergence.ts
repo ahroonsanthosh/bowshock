@@ -219,6 +219,11 @@ export interface VerifiedValue {
   readonly verified: boolean;
   /** Values on the grids solved, coarsest first, with their refinements. */
   readonly levels: readonly { readonly refinement: number; readonly value: number }[];
+  /**
+   * The finer grid that could not be solved, and why, when refinement
+   * stopped short of the finest allowed (RefinementOptions.stopOn).
+   */
+  readonly stopped?: { readonly refinement: number; readonly reason: string };
 }
 
 export interface RefinementOptions extends ConvergenceEstimateOptions {
@@ -231,6 +236,12 @@ export interface RefinementOptions extends ConvergenceEstimateOptions {
   readonly floor: number;
   /** Finest refinement to try (1, 2, 4, ...). */
   readonly maxRefinement: number;
+  /**
+   * For a failure to solve a grid finer than the first, the reason to stop
+   * refining there and report the grids solved before it (the result a
+   * coarser finest refinement would have given), or undefined to fail.
+   */
+  readonly stopOn?: (error: unknown) => string | undefined;
 }
 
 /**
@@ -246,7 +257,15 @@ export async function refineUntilVerified(
   const levels: { refinement: number; value: number }[] = [];
   let result: VerifiedValue | undefined;
   for (let refinement = 1; refinement <= options.maxRefinement; refinement *= 2) {
-    levels.push({ refinement, value: await solveAt(refinement) });
+    let value: number;
+    try {
+      value = await solveAt(refinement);
+    } catch (error) {
+      const reason = result === undefined ? undefined : options.stopOn?.(error);
+      if (result === undefined || reason === undefined) throw error;
+      return { ...result, stopped: { refinement, reason } };
+    }
+    levels.push({ refinement, value });
     const estimate = gridConvergence(
       levels.map((l) => l.value),
       options,

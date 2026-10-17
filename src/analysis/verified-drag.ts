@@ -53,6 +53,11 @@ export interface VerifiedDragOptions {
   readonly onLevel?: (level: LevelReport) => void;
   /** Called after each convergence check, with the grid's refinement and the drag so far. */
   readonly onProgress?: (refinement: number, iterations: number, drag: number) => void;
+  /**
+   * Called as the captured solution that starts a blunt nose's fit is
+   * computed (on the CPU), with its steps so far and in all.
+   */
+  readonly onStart?: (steps: number, total: number) => void;
   /** Stops the run between convergence checks. */
   readonly signal?: AbortSignal;
 }
@@ -91,17 +96,21 @@ export const CPU_NOISE = 1e-12;
  */
 export const DRAG_FLOOR = 1e-3;
 /**
- * The same for the forebody drag with the bow shock fitted
- * (docs/design/0006-shock-fitting.md). On the families measured against
- * exact values on nj = 20, 40 and 80 (cones at Mach 1.5 and 2 against
- * Taylor-Maccoll, ogives at Mach 1.5 and 1.98 against the method of
- * characteristics), the second-order extrapolation of a family whose order
- * has settled lies at most 2.0e-5 of the value from the exact one (Mach
- * 1.5, both shapes); the floor is about twice that. Two-grid estimates on
- * cones at Mach 2 to 5 lie within 3.4e-6. A cone at Mach 1.3, 5 deg, not yet
- * settled on nj = 80, is being measured on nj = 160.
+ * The allowance for the forebody drag with the bow shock fitted
+ * (docs/design/0006-shock-fitting.md), relative: an error the grid family
+ * cannot show, since the procedure extrapolates at second order at most.
+ * On the families measured against exact or converged reference values on
+ * nj = 20, 40 and 80 (cones of 5 to 30 deg at Mach 1.3 to 3 against
+ * Taylor-Maccoll; tangent ogives of 3 calibers at Mach 1.5 to 4 and of 5
+ * at Mach 2, and 3-caliber secant-ogive and parabolic noses at Mach 2.5,
+ * against the method of characteristics), the procedure's own
+ * extrapolation (order capped at 2) of a family whose order has settled
+ * lies at most 3.4e-5 of the value from the reference (the 5-caliber
+ * ogive at Mach 2, observed order 2.11); the allowance is about twice
+ * that. The cone at Mach 1.3, 5 deg, not settled on nj = 80, settles on
+ * nj = 160 within 7.2e-6.
  */
-export const FITTED_DRAG_FLOOR = 5e-5;
+export const FITTED_DRAG_FLOOR = 7e-5;
 /**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).

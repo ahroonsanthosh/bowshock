@@ -32,9 +32,6 @@ jobs:
   gpu:
     name: GPU kernel tests (headless Chromium, software WebGPU)
     runs-on: ubuntu-latest
-    # Software WebGPU in CI is new to this project. Keep the job informative
-    # but non-blocking until it has proven reliable.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

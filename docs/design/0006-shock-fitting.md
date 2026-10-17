@@ -28,8 +28,10 @@ inside is smooth.
 
 ## Method
 
-After G. Moretti and M. J. Abbett, AIAA J. 4 (1966) 2136, in a finite-volume
-form (M. D. Salas, AIAA J. 14 (1976) 583):
+After the shock-fitting method of G. Moretti and M. J. Abbett, AIAA J. 4
+(1966) 2136, and M. D. Salas, AIAA J. 14 (1976) 583 (the citations
+confirmed, the papers not read: docs/validation/sources.md), here in a
+finite-volume form:
 
 - The shock is a curve of nodes, each on a fixed straight grid line from
   the body (`gridOnLines`, `src/grid/blunt-grid.ts`).
@@ -47,9 +49,10 @@ form (M. D. Salas, AIAA J. 14 (1976) 583):
   it. After each move the grid is rebuilt and the flow interpolated
   along the lines.
 
-At convergence W = 0 on every face (here to 1e-12 of the free-stream
-sound speed) and the motion terms vanish, so the steady state does not
-depend on the path to it.
+At convergence W = 0 on every face (to 1e-12 of the free-stream sound
+speed on the CPU; on the GPU, whose arithmetic is 32-bit, to 3e-5, with
+the drag settled to the GPU's noise) and the motion terms vanish, so the
+steady state does not depend on the path to it.
 
 Three errors in the first implementation, each found by measurement and
 review, are worth recording:
@@ -80,7 +83,7 @@ pitot value, every grid converged to round-off:
 | 3    | +0.0044% |          |          |          | +0.0008% |
 
 Against capture on the same grids (+9.7%, -0.56%, +4.1%, -0.25% at
-Mach 2), the error is over a thousand times smaller and changes smoothly
+Mach 2), the error is 50 to 1300 times smaller and changes smoothly
 with the grid: the dependence on the shock's position in its cell is
 gone. The standoff converges with it: 0.34955 and 0.34937 body radii at
 Mach 2 (nj = 20 and 40), 0.21504 and 0.21495 at Mach 3.
@@ -113,15 +116,17 @@ converging at second order):
 
 The fitted drags (0.0990818, 0.0988706, 0.0988195) fall by 4.13 per
 refinement, an observed order of 2.05; the start x0 changes the drag by
-3e-6 of its value or less. Extrapolated from the three grids the drag is
-0.09880317, 2.4e-6 of its value below the exact one, and the error band
-of the finest grid (GCI, 0005) is 0.021%, against an actual error of
-0.016%. The captured shock's values converge to 4.4e-4 below the exact
+3e-6 of its value or less. Extrapolated from the three grids at the
+observed order the drag is 0.09880317, 2.4e-6 of its value below the
+reference (at second order, 9.4e-6 below), and the error band of the
+finest grid (GCI, 0005) is 0.021%, against an actual error of 0.016%.
+The captured shock's values converge to 4.4e-4 below the reference
 value: fitting removes the floor that capture leaves, to within the
 method of characteristics' own accuracy. On the GPU, on grids with fixed
 fractions (the drag page's solver, `verifiedFittedDragGpu`), the drags
 0.0990735, 0.0988682, 0.0988189 fall by 4.16 (order 2.06) and
-extrapolate to 0.09880337, 3e-7 below the exact value; the finest band,
+extrapolate at that order to 0.09880337, 3e-7 below the reference value
+(at second order, 9.4e-6 below); the finest band,
 2.1e-4, contains the actual error, 1.6e-4.
 
 Hemisphere-cylinder at Mach 2, fitted, forebody pressure drag on nj = 20,
@@ -170,7 +175,8 @@ in 32-bit, with the shock moved every step:
   check the heights are read back and become the new base.
 - After each move the flow is interpolated along the columns as on the
   CPU (`remapAlongLines`), within 2.0e-7 of the CPU's remap.
-- At each check (every 500 steps on the base grid) the drag is evaluated
+- At each check (every 250 steps on the base grid, times the
+  refinement; the measurements below used 500) the drag is evaluated
   from the flow in double precision; the fit has converged when the drag
   has settled to the GPU's noise (2e-6) and no face of the shock moves
   faster than 3e-5 of the sound speed.
@@ -188,10 +194,84 @@ Measured against the CPU's fit of the same problem on the same grids
 assumed for the GPU's noise. The hemisphere-cylinder's fit converges
 after 2500 steps, the CPU's needing 4747 to reach 1e-12.
 
+On the GPU too, a bare 20 degree cone at Mach 3 on nj = 20, 40 and 80
+(`verifiedFittedDragGpu`, before the domain was extended past the base):
++2.52e-4, +6.22e-5, +1.53e-5 of the exact drag, falling by 4.05 (order
+2.02) and extrapolating to within 5.7e-8 at that order, 3.2e-7 at second
+order; the finest band, 2.0e-5, contains the actual error.
+
+**Each grid starts from the one before** (`startedFrom` in
+`src/analysis/gpu-fitted-flow.ts`). The sharp-nose grids are nested:
+every coarser line and node fraction is one of the finer grid's, so each
+finer cell lies inside one coarser cell, whose converged state it takes,
+and the shock's heights are interpolated along the body. The drag is
+checked every 250 steps on the base grid (times the refinement). On the
+TN 3716 ogive at Mach 1.98 on the GPU, the grids of 20 and 40 cells
+across converge after 1750 and 2000 steps, against 2500 and 4000 started
+afresh and checked every 500, and the drag of the finer grid is within
+3.9e-7 of the fresh start's, inside the GPU's noise.
+
+The grids of a blunt nose nest the same way (`bluntFitFamily` in
+`src/analysis/fitted-flow.ts`): every grid of the family starts from one
+captured solution on the base grid, and each line takes the node
+fractions of that solution's shock height, interpolated along the body
+between the base grid's lines. Taking each grid's fractions from its
+own captured solution, as before, gave fractions that differ from grid
+to grid, so the grids did not nest and each needed a captured start of
+its own, 3000 steps times the refinement on the CPU. The page's solver
+(`verifiedFittedDragGpu`; the page's form offers no blunt nose yet)
+computes the one captured start on the CPU in double precision, in
+chunks that return to the browser (`bluntStartInChunks`, the same start
+however it is chunked), so its problems are exactly the CPU's.
+
+A grid started from the converged one before may begin so close to its
+limit that its drag never changes by ten times the noise, and so shows
+no rate of convergence of its own; the stopping test (`SettlingValue`,
+`src/verification/iterative-convergence.ts`) then tested the change
+alone, and a review simulated a start 100 times the GPU's noise away,
+converging at 0.97 per check, being accepted 45 times the noise from its
+limit, biased towards the coarser grid's value. Each grid now takes the
+rate measured on the grids before it (the checks scale with the grid, so
+the rate per check carries over); the rate is measured as the slope of a
+least-squares line through the logarithms of the last eight changes of
+ten times the noise or more, which averages the noise of single pairs
+of changes and forgets an early transient (a second review found that
+keeping the largest rate of any pair let a start that drifts before it
+converges stop the fit from ever settling); and what remains is
+estimated from the change over the checks in which the error halves.
+Simulated with the real stopping test, fresh starts at rates from 0.1 to
+0.9 per check settle within 1.6 times the noise of their limits within
+100 checks, and a warm start 100 times the noise away at 0.95 per check
+within 1.7; slower ones do not settle within the 120 checks. Replayed
+on four recorded drag histories of the fitted solver (the page's
+default ogive and a hemisphere-cylinder at Mach 2, cones at Mach 1.5 and
+5; rates of 0.05 to 0.26 per check, or too fast to measure), it settles
+at the same checks as the earlier test, with the same errors, and at
+most one check later with the GPU's noise added.
+
+Two failures of the GPU raise no exception in WebGPU: a dispatch of more
+workgroups than the device allows in one dimension (65535 for most; at
+64 cells or faces each, grids of more than 4.19 million faces, which
+the 320-cell setting reaches on long bodies at Mach 5), and a buffer the
+device cannot allocate. In both none of the work runs, and the flow read
+back is the one uploaded: unchanged between checks, so it would read as
+converged. Grids too large for one dispatch are now refused before any
+work, with the advice to choose a coarser finest grid; allocation errors
+are caught as the engines are created; and every batch of steps is
+checked to have run (the GPU counts its steps), so any work the GPU did
+not do stops the run. A finer grid that is too large for the GPU, or
+whose fit does not converge, leaves the result of the grids before it,
+with the reason shown: the result a coarser finest grid would have
+given. A case refused on any grid (the quality gates, a subsonic
+outflow or base) stays refused, since it puts the coarser grids in doubt
+too.
+
 ## The floor for fitted drag
 
 Measured by audit agents on grids with fixed fractions (CPU, nj = 20,
-40 and 80), forebody drag against exact values. Cones on 4 calibers of
+40 and 80), forebody drag against exact values (Taylor-Maccoll) or
+converged reference values (the method of characteristics). Cones on 4
+calibers of
 cylinder, against Taylor-Maccoll:
 
 | Case          | nj = 20  | nj = 40  | nj = 80  | Order | Extrapolated (2nd order) |
@@ -199,40 +279,117 @@ cylinder, against Taylor-Maccoll:
 | M 2, 10 deg   | +0.1399% | +0.0347% | +0.0086% | 2.01  | -1.2e-6                  |
 | M 1.5, 10 deg | +0.1938% | +0.0514% | +0.0139% | 1.92  | +1.3e-5                  |
 | M 1.5, 20 deg | +0.0449% | +0.0150% | +0.0053% | 1.63  | +2.0e-5                  |
-| M 1.3, 5 deg  | +0.5398% | +0.1106% | +0.0287% | 2.39  | +1.4e-5 (not settled)    |
+| M 1.3, 5 deg  | +0.5398% | +0.1106% | +0.0287% | 2.39  | +1.4e-5 (see below)      |
 
-On two grids the cones at Mach 2 to 5 (10 to 30 deg) fall by 3.93 to
-4.07 per refinement and extrapolate to within 3.4e-6 of the exact
-values. Ogives against the method of characteristics (1 caliber of
-cylinder): on nj = 20 and 40 all seven cases (tangent ogives of 3
-calibers at Mach 1.5 to 4 and of 5 calibers at Mach 2, a secant ogive
-and a parabolic nose at Mach 2.5) fall by 4.04 to 4.33; the 3-caliber
-ogive at Mach 1.5 on three grids gives +0.415%, +0.098%, +0.023%, order
-2.09, extrapolated within 7.5e-7 at its observed order and 2.0e-5 at
-second order. Every finest-grid band measured contains its error.
+Further cones on three grids: Mach 2, 20 deg, +0.0529%, +0.0135%,
++0.0034% (order 1.97, capped extrapolation 3.1e-7 off) and Mach 3, 30
+deg, +0.0174%, +0.0043%, +0.0011% (order 2.00, 1.6e-7); on two grids the
+cones at Mach 3 and 5 fall by 4.03 to 4.07 per refinement and
+extrapolate to within 1.5e-6.
+
+Ogives on 1 caliber of cylinder (the secant ogive and the parabolic nose
+meet it at a corner), against the method of characteristics on 1280
+intervals:
+
+| Case                           | nj = 20  | nj = 40  | nj = 80  | Order | Extrapolated (capped) |
+| ------------------------------ | -------- | -------- | -------- | ----- | --------------------- |
+| Tangent, 3 calibers, M 1.5     | +0.415%  | +0.0975% | +0.0229% | 2.09  | -2.0e-5               |
+| Tangent, 3 calibers, M 2       | +0.269%  | +0.0646% | +0.0154% | 2.05  | -9.7e-6               |
+| Tangent, 3 calibers, M 3       | +0.128%  | +0.0316% | +0.0076% | 2.02  | -3.3e-6               |
+| Tangent, 3 calibers, M 4       | +0.0733% | +0.0181% | +0.0044% | 2.01  | -1.2e-6               |
+| Tangent, 5 calibers, M 2       | +0.541%  | +0.125%  | +0.0287% | 2.11  | -3.4e-5               |
+| Secant (0.5), 3 cal., M 2.5    | +0.212%  | +0.0525% | +0.0127% | 2.01  | -5.9e-6               |
+| Parabolic (0.5), 3 cal., M 2.5 | +0.210%  | +0.0519% | +0.0126% | 2.01  | -5.7e-6               |
+
+At their observed orders all seven extrapolate to within 5.3e-6 of the
+reference values. Every finest-grid band measured, on cones and ogives,
+contains its error.
 
 The procedure's band extrapolates at second order at most, so the error
-it can miss is the second-order extrapolation's: at most 2.0e-5 of the
-value on the families that have settled, against 4.6e-4 with the shock
-captured. The floor for fitted drag (`FITTED_DRAG_FLOOR`) is set at 5e-5,
-about twice that. The cone at Mach 1.3, 5 deg, whose order has not
-settled on nj = 80, is being measured on nj = 160; if it settles more
-than 2.5e-5 from the exact value the floor must rise.
+it can miss is that of its own extrapolation, at an order capped at 2.
+On the families that have settled it lies at most 3.4e-5 of the value
+from the exact or reference one (the 5-caliber ogive, whose order
+settles at 2.11),
+against 4.6e-4 with the shock captured. The floor for fitted drag
+(`FITTED_DRAG_FLOOR`) is set at 7e-5, about twice that. The cone at Mach
+1.3, 5 deg, whose order had not settled on nj = 80, settles on nj = 160:
++0.00784% there, the finest triple at order 1.98, extrapolated within
+7.2e-6 of the exact value, and its band (8.9e-5) contains its error; the
+orders of its two triples (2.39 and 1.98) agree within the procedure's
+0.5, so it would be given a band. Grids that fail the quality gates (wall cells at under 60 deg on
+steep tips, aspect ratios above 10 on long bodies) and slender noses at
+low Mach numbers are being measured before the gates are reconsidered.
+
+**Why the order dips at low Mach numbers on cone-cylinders** (found by
+an audit agent on Mach 1.5, 20 deg). The error is two errors of opposite
+sign: the regular one, spread over the cone and falling by 4.1 per
+refinement (+9.1e-4, +2.2e-4 of the drag on nj = 20 and 40 up to 0.86 of
+the cone's length), and one in the last cells before the corner with
+the cylinder (-4.6e-4, -7.1e-5), falling faster than second order. The
+flux there is fully upwind, but the reconstruction of the last cone cell
+reaches across the corner into the expansion, and the nearly sonic
+axial flow at the wall (Mach 1.085 at this case) amplifies the face's
+error. As the corner part shrinks faster it cancels less, and the
+total's ratio falls (3.00, then 2.85). Neither the start x0, the
+cylinder's length, the flux (HLL as HLLC) nor the shock's boundary
+changes it. Reconstructing the cells beside the corner from their own
+side only gives clean second order (4.07, then 4.05; extrapolated within
+1.2e-6), but removes the cancellation, so the finest-grid errors of
+every cone grow (by 1.97 times at this case, 1.04 at Mach 2, 10 deg) and
+the bands with them. The present scheme is kept: on every family
+measured its bands contain the error, and with the floor the margin on
+this case is 2.4 times. The patch (`docs/design/patches/0006-corner-one-sided.diff`) is kept for a later
+choice between narrower bands and cleaner convergence; on the GPU it
+would need the same change in euler2d.wgsl.
 
 **The domain extends at least one caliber past the nose.** With the
 zero-gradient outflow at the base of a bare nose, the cells next to it
 are perturbed: the drag of a bare 10 degree cone at Mach 2 (nj = 20)
 moves by 6.6e-5 of its value, and bare secant-ogive and parabolic noses
 at Mach 2.5 by 1.0e-4, against 1.2e-7 between one and four calibers of
-cylinder. In supersonic flow nothing behind the base reaches the nose,
-and a cylinder adds no pressure drag, so the fit always solves at least
-one caliber of cylinder (`sharpFitProblem`, `bluntFitProblem`).
+cylinder. Where the flow leaves the end of the body asked for
+supersonically (axial Mach number above 1 there), nothing behind it
+reaches the body, and a cylinder adds no pressure drag, so the fit
+always solves at least one caliber of cylinder (`sharpFitProblem`,
+`bluntFitProblem`) and checks the flow at that end (`baseMach`: in the
+column of cells just ahead of it where the end is a grid line, as at the
+base of a bare nose, and otherwise interpolated between the columns
+either side of it); where the flow there is subsonic the case is
+refused.
+
+**The flow behind the tip must cross the starting plane supersonically.**
+The inflow plane at x0, normal to the axis, imposes all four states of
+the tip cone's conical flow, which holds only where the flow crosses it
+supersonically: where its axial Mach number exceeds 1. A robustness scan
+of the page's inputs found tips where it does not: on a 3-caliber
+tangent ogive at Mach 1.2 (18.9 deg) the conical surface flow is at Mach
+0.85, and on a 26.6 deg cone at Mach 1.5 at 0.96, where the drag with 2
+calibers of cylinder came out 3.3% below the Taylor-Maccoll value of an
+endless cone, the shoulder reaching upstream. Such tips are refused
+(`sharpFitProblem`), with the axial Mach number tested on the tip cone's
+surface, where it is least, so that the test does not depend on the
+grid (it was first tested at the inflow faces' midpoints, which let a
+cone whose surface value is 0.999 through on the coarser grids and
+refused it on the finest). The test also refuses tips whose surface
+flow is supersonic but whose axial component is not, such as a 24 deg
+cone at Mach 1.5 (surface Mach 1.04, axial 0.95); the message says
+which. The method of characteristics refuses only the subset whose
+surface flow is subsonic. On the convex noses of the page the flow
+speeds up along the body, so the check at the end of the body is a
+guard behind this one. Serving these tips, measured against references
+on their own families, is in progress.
 
 ## Open
 
-- The cone at Mach 1.3 on nj = 160, and the cones at Mach 3 to 5 on
-  nj = 80, to confirm the floor.
+- One-sided reconstruction at a nose's corner with the cylinder: cleaner
+  second order on cone-cylinders at low Mach numbers, at the cost of
+  wider bands (see above).
+- The floor on grids the quality gates refuse (steep tips, long bodies)
+  and on slender noses at low Mach numbers, to set the gates for fitted
+  grids on evidence (in progress); cones at Mach 5 on nj = 80.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.
-- Blunt noses on the drag page: a captured start on the GPU, and grids
-  for Von Karman (Haack) and power-series noses.
+- Blunt noses on the drag page: grids for Von Karman (Haack) and
+  power-series noses, which a design study is prototyping, and
+  validation of blunt-nose drag (the captured start runs on the CPU, in
+  chunks, so a GPU start is not needed).

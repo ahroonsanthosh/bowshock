@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { DRAG_FLOOR, GPU_NOISE, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
+import {
+  DRAG_FLOOR,
+  FITTED_DRAG_FLOOR,
+  GPU_NOISE,
+  ORDER_TOLERANCE,
+} from '../../src/analysis/verified-drag';
 import { gridConvergence, refineUntilVerified } from '../../src/verification/grid-convergence';
 
 const options = { orderTolerance: 0.3, noise: 1e-12 };
@@ -146,6 +151,34 @@ describe('the error band on measured cone-cylinder families', () => {
     },
   );
 
+  it('a finer grid that cannot be solved leaves the result of the grids before it, where allowed', async () => {
+    // Second-order values; the grid of refinement 8 fails.
+    const values = [1.04, 1.01, 1.0025];
+    const solveAt = (r: number) => {
+      if (r === 8) throw new RangeError('too large for this GPU');
+      return values[Math.log2(r)]!;
+    };
+    const options = { orderTolerance: 0.5, noise: 1e-12, floor: 0, tolerance: 0, maxRefinement: 8 };
+    const coarser = await refineUntilVerified(solveAt, { ...options, maxRefinement: 4 });
+    const stopped = await refineUntilVerified(solveAt, {
+      ...options,
+      stopOn: (error) => (error instanceof RangeError ? error.message : undefined),
+    });
+    expect(stopped.stopped).toEqual({ refinement: 8, reason: 'too large for this GPU' });
+    expect(stopped.levels).toEqual(coarser.levels);
+    expect(stopped.uncertainty).toBe(coarser.uncertainty);
+    // Without a reason to stop, or on the first grid, the failure stands.
+    await expect(refineUntilVerified(solveAt, options)).rejects.toThrow('too large');
+    await expect(
+      refineUntilVerified(
+        () => {
+          throw new RangeError('refused');
+        },
+        { ...options, stopOn: () => 'any' },
+      ),
+    ).rejects.toThrow('refused');
+  });
+
   it('with 32-bit noise on every value, bands are still given only where they hold', async () => {
     // The GPU engine's values differ from the CPU's by up to about 1.3e-6
     // relative (Mach 5); perturb each value by up to 2e-6, the noise the
@@ -252,6 +285,48 @@ describe('the error band on measured forebody drag families', () => {
         if (result.uncertainty !== undefined) {
           expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
         }
+      }
+    }
+  });
+});
+
+describe('the error band on a measured fitted-shock drag family', () => {
+  // Forebody drag of a 5 deg cone-cylinder at Mach 1.3 with the bow shock
+  // fitted, nj = 20 to 160 (CPU), and the Taylor-Maccoll value, measured
+  // when written (docs/design/0006-shock-fitting.md): the one fitted
+  // family on four grids, whose coarse triple had not settled.
+  const exact = 0.0438339392;
+  const values = [
+    0.044070549346629566, 0.04388242259870105, 0.043846510789887654, 0.04383737369708205,
+  ];
+  const verify = (vs: readonly number[]) =>
+    refineUntilVerified((r) => vs[Math.log2(r)]!, {
+      orderTolerance: ORDER_TOLERANCE,
+      noise: GPU_NOISE,
+      floor: FITTED_DRAG_FLOOR,
+      tolerance: Infinity,
+      maxRefinement: 8,
+    });
+
+  it('gives a band, with the floor, that contains the true error', async () => {
+    const result = await verify(values);
+    expect(result.estimate.kind).toBe('monotone');
+    expect(result.uncertainty).toBeDefined();
+    // Measured when written: band 7.0e-6 against an error of 3.4e-6.
+    expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty!);
+  });
+
+  it('with the GPU noise on every value, every band given still contains it', async () => {
+    let seed = 13;
+    const random = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    for (let trial = 0; trial < 200; trial++) {
+      const noisy = values.map((v) => v * (1 + GPU_NOISE * (2 * random() - 1)));
+      const result = await verify(noisy);
+      if (result.uncertainty !== undefined) {
+        expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
       }
     }
   });
