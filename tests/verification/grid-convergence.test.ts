@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { DRAG_FLOOR, GPU_NOISE, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
+import {
+  DRAG_FLOOR,
+  FITTED_DRAG_FLOOR,
+  GPU_NOISE,
+  ORDER_TOLERANCE,
+} from '../../src/analysis/verified-drag';
 import { gridConvergence, refineUntilVerified } from '../../src/verification/grid-convergence';
 
 const options = { orderTolerance: 0.3, noise: 1e-12 };
@@ -252,6 +257,48 @@ describe('the error band on measured forebody drag families', () => {
         if (result.uncertainty !== undefined) {
           expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
         }
+      }
+    }
+  });
+});
+
+describe('the error band on a measured fitted-shock drag family', () => {
+  // Forebody drag of a 5 deg cone-cylinder at Mach 1.3 with the bow shock
+  // fitted, nj = 20 to 160 (CPU), and the Taylor-Maccoll value, measured
+  // when written (docs/design/0006-shock-fitting.md): the one fitted
+  // family on four grids, whose coarse triple had not settled.
+  const exact = 0.0438339392;
+  const values = [
+    0.044070549346629566, 0.04388242259870105, 0.043846510789887654, 0.04383737369708205,
+  ];
+  const verify = (vs: readonly number[]) =>
+    refineUntilVerified((r) => vs[Math.log2(r)]!, {
+      orderTolerance: ORDER_TOLERANCE,
+      noise: GPU_NOISE,
+      floor: FITTED_DRAG_FLOOR,
+      tolerance: Infinity,
+      maxRefinement: 8,
+    });
+
+  it('gives a band, with the floor, that contains the true error', async () => {
+    const result = await verify(values);
+    expect(result.estimate.kind).toBe('monotone');
+    expect(result.uncertainty).toBeDefined();
+    // Measured when written: band 7.0e-6 against an error of 3.4e-6.
+    expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty!);
+  });
+
+  it('with the GPU noise on every value, every band given still contains it', async () => {
+    let seed = 13;
+    const random = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+    for (let trial = 0; trial < 200; trial++) {
+      const noisy = values.map((v) => v * (1 + GPU_NOISE * (2 * random() - 1)));
+      const result = await verify(noisy);
+      if (result.uncertainty !== undefined) {
+        expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
       }
     }
   });
