@@ -109,6 +109,7 @@ converging at second order):
 | Captured            | +1.210%  | +0.174%  | -0.025%  | -0.042%  |
 | Fitted, x0 = 1e-3 L | +0.2818% | +0.0680% | +0.0163% |          |
 | Fitted, x0 = 1e-4 L | +0.2815% | +0.0680% |          |          |
+| Fitted on the GPU   | +0.2733% | +0.0656% | +0.0157% |          |
 
 The fitted drags (0.0990818, 0.0988706, 0.0988195) fall by 4.13 per
 refinement, an observed order of 2.05; the start x0 changes the drag by
@@ -117,7 +118,11 @@ refinement, an observed order of 2.05; the start x0 changes the drag by
 of the finest grid (GCI, 0005) is 0.021%, against an actual error of
 0.016%. The captured shock's values converge to 4.4e-4 below the exact
 value: fitting removes the floor that capture leaves, to within the
-method of characteristics' own accuracy.
+method of characteristics' own accuracy. On the GPU, on grids with fixed
+fractions (the drag page's solver, `verifiedFittedDragGpu`), the drags
+0.0990735, 0.0988682, 0.0988189 fall by 4.16 (order 2.06) and
+extrapolate to 0.09880337, 3e-7 below the exact value; the finest band,
+2.1e-4, contains the actual error, 1.6e-4.
 
 Hemisphere-cylinder at Mach 2, fitted, forebody pressure drag on nj = 20,
 40 and 80: 0.7909688, 0.7894762, 0.7890787, falling by 3.75 per
