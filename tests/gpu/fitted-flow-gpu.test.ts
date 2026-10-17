@@ -1,7 +1,17 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { bluntFitProblem, fittedFlow, sharpFitProblem } from '../../src/analysis/fitted-flow';
+import {
+  bluntFitFamily,
+  bluntFitProblem,
+  fittedFlow,
+  sharpFitProblem,
+} from '../../src/analysis/fitted-flow';
 import { gpuFittedFlow, verifiedFittedDragGpu } from '../../src/analysis/gpu-fitted-flow';
-import { FITTED_DRAG_FLOOR, GPU_NOISE, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
+import {
+  FITTED_DRAG_FLOOR,
+  GPU_NOISE,
+  ORDER_TOLERANCE,
+  type LevelReport,
+} from '../../src/analysis/verified-drag';
 import type { Body } from '../../src/geometry/body';
 import { requireDevice } from './device';
 
@@ -64,6 +74,40 @@ describe('fitted shock on the GPU', () => {
     const difference = Math.abs(drag / cpu.drag - 1);
     expect(difference, `GPU ${drag}, CPU ${cpu.drag}`).toBeLessThan(GPU_NOISE);
   }, 900_000);
+
+  it('the page path on a blunt nose: the CPU fits of the same problems within the GPU noise', async () => {
+    // One captured start, in chunks, then refinement 2 started from the
+    // converged refinement 1.
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 0.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const levels: LevelReport[] = [];
+    const steps: number[] = [];
+    const result = await verifiedFittedDragGpu(device, body, {
+      mach: 3,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 2,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      onLevel: (report) => levels.push(report),
+      onStart: (done) => steps.push(done),
+    });
+    expect(result.kind).toBe('solved');
+    expect(steps.at(-1)).toBe(3000);
+    expect(levels.map((l) => l.refinement)).toEqual([1, 2]);
+    const family = bluntFitFamily(body, { mach: 3, gamma, nj: 20 });
+    for (const level of levels) {
+      const cpu = fittedFlow(family(level.refinement), 40_000 * level.refinement);
+      expect(cpu.fit.converged).toBe(true);
+      const difference = Math.abs(level.drag / cpu.drag - 1);
+      expect(
+        difference,
+        `refinement ${level.refinement}: GPU ${level.drag}, CPU ${cpu.drag}`,
+      ).toBeLessThan(GPU_NOISE);
+    }
+  }, 1_800_000);
 
   it('the page refuses a tip whose flow is subsonic at the surface, with the reason', async () => {
     // A 26.6 deg cone at Mach 1.5: subsonic conical surface flow.
