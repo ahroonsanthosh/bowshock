@@ -79,6 +79,23 @@ function engineConfig(
   };
 }
 
+/**
+ * The body the fit solves: at least SOLVED_CYLINDER calibers of cylinder
+ * behind the nose. A zero-gradient outflow at the nose's base perturbs the
+ * cells next to it: on a bare 10 degree cone at Mach 2 (nj = 20) the drag
+ * moves by 6.6e-5 of its value, against 1.2e-7 between one and four
+ * calibers of cylinder. In supersonic flow nothing behind the base reaches
+ * the nose, and a cylinder adds no pressure drag, so the drag is that of
+ * the body asked for.
+ */
+function solvedBody(body: Body): Body {
+  const cylinder = SOLVED_CYLINDER * 2 * body.nose.baseRadius;
+  return { ...body, cylinderLength: Math.max(body.cylinderLength, cylinder) };
+}
+
+/** Shortest cylinder solved behind a nose, in calibers. */
+const SOLVED_CYLINDER = 1;
+
 /** A fitted-shock problem on a body: what the fit needs, on either engine. */
 export interface FitProblem {
   /** The grid's lines, with their node fractions fixed (withFixedFractions). */
@@ -103,7 +120,8 @@ export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
  * Sharp noses: the flow between the body and the fitted shock, from x0 to
  * the end, started from the conical flow of the tip.
  */
-export function sharpFitProblem(body: Body, options: FitProblemOptions): FitProblem {
+export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitProblem {
+  const body = solvedBody(asked);
   const { mach, gamma, nj: baseNj, refinement } = options;
   const R = body.nose.baseRadius;
   const L = body.nose.length;
@@ -200,7 +218,8 @@ export function sharpFitProblem(body: Body, options: FitProblemOptions): FitProb
  * Blunt noses: the flow between the body and the fitted shock on the C
  * grid, started from a captured solution (on the CPU).
  */
-export function bluntFitProblem(body: Body, options: FitProblemOptions): FitProblem {
+export function bluntFitProblem(asked: Body, options: FitProblemOptions): FitProblem {
+  const body = solvedBody(asked);
   const { mach, gamma, nj: baseNj, refinement } = options;
   const R = body.nose.baseRadius;
   const free = freeStreamAt(mach, gamma).state;

@@ -2,7 +2,7 @@
 
 - **Status:** Implemented on the CPU engine (`src/solver/shock-fitting.ts`)
   and the GPU engine (`src/engine-gpu/shock-fitting-gpu.ts`), measured on
-  blunt and sharp noses; not yet used by the drag page.
+  blunt and sharp noses; the drag page's solver for sharp noses.
 - **Date:** 2026-10-17
 - **Inputs:** the measurements below; the method of Moretti and Abbett
   and of Salas (sources in `docs/validation/sources.md`).
@@ -188,10 +188,51 @@ Measured against the CPU's fit of the same problem on the same grids
 assumed for the GPU's noise. The hemisphere-cylinder's fit converges
 after 2500 steps, the CPU's needing 4747 to reach 1e-12.
 
+## The floor for fitted drag
+
+Measured by audit agents on grids with fixed fractions (CPU, nj = 20,
+40 and 80), forebody drag against exact values. Cones on 4 calibers of
+cylinder, against Taylor-Maccoll:
+
+| Case          | nj = 20  | nj = 40  | nj = 80  | Order | Extrapolated (2nd order) |
+| ------------- | -------- | -------- | -------- | ----- | ------------------------ |
+| M 2, 10 deg   | +0.1399% | +0.0347% | +0.0086% | 2.01  | -1.2e-6                  |
+| M 1.5, 10 deg | +0.1938% | +0.0514% | +0.0139% | 1.92  | +1.3e-5                  |
+| M 1.5, 20 deg | +0.0449% | +0.0150% | +0.0053% | 1.63  | +2.0e-5                  |
+| M 1.3, 5 deg  | +0.5398% | +0.1106% | +0.0287% | 2.39  | +1.4e-5 (not settled)    |
+
+On two grids the cones at Mach 2 to 5 (10 to 30 deg) fall by 3.93 to
+4.07 per refinement and extrapolate to within 3.4e-6 of the exact
+values. Ogives against the method of characteristics (1 caliber of
+cylinder): on nj = 20 and 40 all seven cases (tangent ogives of 3
+calibers at Mach 1.5 to 4 and of 5 calibers at Mach 2, a secant ogive
+and a parabolic nose at Mach 2.5) fall by 4.04 to 4.33; the 3-caliber
+ogive at Mach 1.5 on three grids gives +0.415%, +0.098%, +0.023%, order
+2.09, extrapolated within 7.5e-7 at its observed order and 2.0e-5 at
+second order. Every finest-grid band measured contains its error.
+
+The procedure's band extrapolates at second order at most, so the error
+it can miss is the second-order extrapolation's: at most 2.0e-5 of the
+value on the families that have settled, against 4.6e-4 with the shock
+captured. The floor for fitted drag (`FITTED_DRAG_FLOOR`) is set at 5e-5,
+about twice that. The cone at Mach 1.3, 5 deg, whose order has not
+settled on nj = 80, is being measured on nj = 160; if it settles more
+than 2.5e-5 from the exact value the floor must rise.
+
+**The domain extends at least one caliber past the nose.** With the
+zero-gradient outflow at the base of a bare nose, the cells next to it
+are perturbed: the drag of a bare 10 degree cone at Mach 2 (nj = 20)
+moves by 6.6e-5 of its value, and bare secant-ogive and parabolic noses
+at Mach 2.5 by 1.0e-4, against 1.2e-7 between one and four calibers of
+cylinder. In supersonic flow nothing behind the base reaches the nose,
+and a cylinder adds no pressure drag, so the fit always solves at least
+one caliber of cylinder (`sharpFitProblem`, `bluntFitProblem`).
+
 ## Open
 
-- The families again on grids with fixed fractions, and more cases, to
-  set the floor for fitted results (in progress).
-- The drag page: the fitted solver on the GPU, families and their bands.
+- The cone at Mach 1.3 on nj = 160, and the cones at Mach 3 to 5 on
+  nj = 80, to confirm the floor.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.
+- Blunt noses on the drag page: a captured start on the GPU, and grids
+  for Von Karman (Haack) and power-series noses.
