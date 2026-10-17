@@ -61,6 +61,16 @@ Validated so far, each with its tests and recorded accuracy:
   inviscid wave drag to about 10%, not to the precision of the error bands.
 - The Taylor-Maccoll solution itself reproduces the cone tables of NASA
   SP-3004 within 3e-5 in Cp.
+- The bow shock fitted as the grid's outer boundary, with the exact jump
+  conditions across it, on the CPU and the GPU
+  ([0006](docs/design/0006-shock-fitting.md)). Forebody drag then
+  converges at second order: extrapolated from 20, 40 and 80 cells
+  across it lies within 1.2e-7 of Taylor-Maccoll on a Mach 3 cone and
+  within 2.4e-6 of the method of characteristics on the TN 3716 ogive.
+  On a hemisphere-cylinder the stagnation pressure is within 0.008% of
+  its exact value on 20 cells across (capture: up to 9.7%). The GPU's
+  fitted drag is within 8e-7 of the CPU's on the same grids. Not yet
+  used by the drag page.
 - Forebody pressure (wave) drag of sharp-nosed bodies, inviscid, on the
   [nose wave drag page](demos/nose-drag.html): each result is solved on
   nested grids up to 160 or more cells across and reported with its
@@ -71,9 +81,10 @@ Validated so far, each with its tests and recorded accuracy:
   given contains the true error; the ogive's grids give no band yet (their
   observed orders disagree).
 
-Not yet: viscous flow, blunt noses (a grid exists; the scheme near the
-stagnation point is being fixed), fins and the base. Until those pass
-their own validation, bowshock reports no total drag coefficient.
+Not yet: viscous flow, blunt noses on the drag page (solved with the
+shock fitted, but Von Karman and power-series noses are still refused
+by the grid), fins and the base. Until those pass their own validation,
+bowshock reports no total drag coefficient.
 
 Limits are stated plainly: power off, zero angle of attack, no motor plume;
 base drag is the least certain component; transonic results carry wider
