@@ -131,7 +131,11 @@
         <button id="run" type="button">Run</button>
       </div>
       <p class="legend"><span class="numeric">● bowshock</span><span>line: exact</span></p>
-      <canvas id="plot"></canvas>
+      <canvas
+        id="plot"
+        role="img"
+        aria-label="Density, velocity and pressure along the tube: bowshock against the exact solution"
+      ></canvas>
       <p id="status"></p>
     </main>
     <script type="module" src="/src/app/shock-tube.ts"></script>
