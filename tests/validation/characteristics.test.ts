@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { pressureDragFromProfile } from '../../src/analysis/forces';
 import { bodyRadius, type Body } from '../../src/geometry/body';
 import { noseTipSlope } from '../../src/geometry/nose';
-import { characteristics } from '../../src/validation/characteristics';
+import {
+  characteristics,
+  type CharacteristicsSolution,
+} from '../../src/validation/characteristics';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
 const gamma = 1.4;
@@ -64,8 +67,8 @@ describe('method of characteristics on cones: it stays conical', () => {
   );
 
   it('converges at second order, mass balance included', () => {
-    // Measured when written: both fall by 3.8 and 3.9 from 20 to 40 to 80
-    // intervals.
+    // Measured when written: from 20 to 40 to 80 intervals the pressure
+    // error falls by 3.8 and 3.9, the mass balance by 4.1 and 4.1.
     const exact = taylorMaccoll(3, 20 * deg, gamma);
     const errors = [20, 40, 80].map((n) => {
       const sol = characteristics(cone(20), { mach: 3, gamma, intervals: n, start: 1e-3 });
@@ -115,6 +118,17 @@ describe('method of characteristics on the TN 3716 ogive (M = 1.98)', () => {
     cylinderLength: 7,
   };
   const q = 0.5 * gamma * 1.98 ** 2;
+  // Marches shared between the tests below.
+  const solutions = new Map<string, CharacteristicsSolution>();
+  const solve = (intervals: number, start: number) => {
+    const key = `${intervals} ${start}`;
+    let sol = solutions.get(key);
+    if (!sol) {
+      sol = characteristics(ogive, { mach: 1.98, gamma, intervals, start });
+      solutions.set(key, sol);
+    }
+    return sol;
+  };
   const cpAt = (wall: readonly { x: number; p: number }[], x: number) => {
     let k = 0;
     while (k < wall.length - 2 && wall[k + 1]!.x < x) k++;
@@ -130,14 +144,9 @@ describe('method of characteristics on the TN 3716 ogive (M = 1.98)', () => {
     // nearly parallel to the C+ lines behind it, the wall points spread to
     // 0.24 apart on 160 intervals.
     const stations = [0.22, 0.89, 1.61, 2.95, 3.62, 4.06, 6.28, 8.06];
-    const coarse = characteristics(ogive, { mach: 1.98, gamma, intervals: 160, start: 1e-3 }).wall;
-    const fine = characteristics(ogive, { mach: 1.98, gamma, intervals: 320, start: 1e-3 }).wall;
-    const nearer = characteristics(ogive, {
-      mach: 1.98,
-      gamma,
-      intervals: 320,
-      start: 2.5e-4,
-    }).wall;
+    const coarse = solve(160, 1e-3).wall;
+    const fine = solve(320, 1e-3).wall;
+    const nearer = solve(320, 2.5e-4).wall;
     for (const x of stations) {
       expect(Math.abs(cpAt(coarse, x) - cpAt(fine, x))).toBeLessThan(5e-5);
       expect(Math.abs(cpAt(nearer, x) - cpAt(fine, x))).toBeLessThan(5e-5);
@@ -148,16 +157,30 @@ describe('method of characteristics on the TN 3716 ogive (M = 1.98)', () => {
     // An exact reference for drag on a curved nose. Measured when written:
     // 0.09880130 (160 intervals), 0.09880289 (320), 0.09880328 (640),
     // 0.09880338 (1280), converging at second order to 0.0988034.
-    const drag = (n: number) =>
-      noseDrag(
-        ogive,
-        1.98,
-        characteristics(ogive, { mach: 1.98, gamma, intervals: n, start: 1e-3 }).wall,
-      );
+    const drag = (n: number) => noseDrag(ogive, 1.98, solve(n, 1e-3).wall);
     const fine = drag(640);
     expect(Math.abs(drag(320) - fine)).toBeLessThan(1e-6);
     expect(fine).toBeCloseTo(0.098803, 5);
   }, 120_000);
+
+  it('balances the mass of its march, apart from the starting line defect of order start', () => {
+    // The conical starting data end on the tip cone, inside which the body
+    // lies, so psi at the body end of the starting line is not zero, and
+    // every later line carries that defect. Measured when written: 7.915e-4
+    // of the mass inside the shock on 160 intervals, 7.950e-4 on 320 and
+    // 1.985e-4 with the starting line four times nearer. Measured from the
+    // starting line, the balance of the march is 1.75e-5 on 160 intervals,
+    // 5.6e-6 on 320 and 1.1e-6 on 640; measured from zero, as it once was,
+    // it stayed at the defect (1.75e-3 on 320 and 640 intervals at Mach 3,
+    // the same nose on a 1-caliber cylinder).
+    const coarse = solve(160, 1e-3);
+    const fine = solve(320, 1e-3);
+    const nearer = solve(320, 2.5e-4);
+    expect(Math.abs(coarse.startMassDefect / fine.startMassDefect - 1)).toBeLessThan(0.01);
+    expect(Math.abs(fine.startMassDefect / (4 * nearer.startMassDefect) - 1)).toBeLessThan(0.01);
+    expect(fine.massBalance).toBeLessThan(1e-5);
+    expect(coarse.massBalance / fine.massBalance).toBeGreaterThan(2.5);
+  }, 60_000);
 
   it.each([
     { mach: 3.5, half: 25 },

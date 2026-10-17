@@ -28,7 +28,16 @@
  * y carries psi = rho V y^2 / 2 (per radian), so the shock history gives
  * K(psi), and psi is integrated along each new line from the shock. The
  * stream function at the body, which should vanish, measures the mass
- * balance of the solution.
+ * balance. On the starting line it is a fixed defect of that line on any
+ * nose but a cone (1.8e-3 of the mass inside the shock on a 3-caliber
+ * tangent ogive at Mach 3 with start 1e-3, proportional to start), which
+ * the march then carries unchanged; so the balance of the march is the
+ * change of psi at the body from the starting line. On a curved nose
+ * K - K(0) grows as the square root of psi at the body, the shock angle
+ * changing linearly from the tip, and the order falls: on that ogive at
+ * Mach 3 and 4 the body pressure converges at order 1.3 to 1.8 and the
+ * drag (integrated at high order) at 1.6 to 1.7, against 2 at Mach 1.5
+ * and with K held constant, and the mass balance at 1.5.
  *
  * The march starts on a C- line of the Taylor-Maccoll flow of the cone
  * tangent at the tip, close to the tip, where the nose differs from that
@@ -63,8 +72,19 @@ export interface CharacteristicsSolution {
   readonly wall: readonly { readonly x: number; readonly p: number }[];
   /** Shock points: x, y and wave angle (radians). */
   readonly shock: readonly { readonly x: number; readonly y: number; readonly angle: number }[];
-  /** Largest |psi| at the body over the free-stream mass flux inside the shock. */
+  /**
+   * Mass balance of the march: the largest change of psi at the body from
+   * its value on the starting line, over the free-stream mass flux inside
+   * the shock. It vanishes under refinement.
+   */
   readonly massBalance: number;
+  /**
+   * |psi| at the body end of the starting line over the free-stream mass
+   * flux inside its shock point: on a cone the quadrature error of that
+   * line, on any other nose of order `start` whatever the mesh, the conical
+   * data ending on the tip cone while the body lies inside it.
+   */
+  readonly startMassDefect: number;
   /**
    * Deepest that a mesh point falls inside the body, over the width of the
    * shock layer: zero for a resolved mesh, vanishing under refinement.
@@ -271,6 +291,9 @@ export function characteristics(
     for (let i = 1; i <= n; i++) line[i]!.psi = line[i - 1]!.psi - massFlux(line[i]!, line[i - 1]!);
     entropy.push({ psi: 0, k: k0 }, { psi: line[0]!.psi, k: k0 });
   }
+  // The starting line's own defect, which every later line carries.
+  const startPsi = line[n]!.psi;
+  const startMassDefect = Math.abs(startPsi) / line[0]!.psi;
 
   const converge = (step: () => number) => {
     for (let it = 0; it < 50; it++) if (step() < 1e-13) return;
@@ -405,10 +428,10 @@ export function characteristics(
     // The body ends at xEnd: the march stops at the last line ending on it.
     if (w === null) break;
     next.push(w);
-    massBalance = Math.max(massBalance, Math.abs(w.psi) / s.point.psi);
+    massBalance = Math.max(massBalance, Math.abs(w.psi - startPsi) / s.point.psi);
     wall.push({ x: w.x, p: w.p });
     shock.push({ x: s.point.x, y: s.point.y, angle: beta });
     line = next;
   }
-  return { wall, shock, massBalance, penetration };
+  return { wall, shock, massBalance, startMassDefect, penetration };
 }
