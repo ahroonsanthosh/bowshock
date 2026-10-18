@@ -52,6 +52,36 @@ guaranteed"; no licence is stated.
 | E. J. Hopkins and M. Inouye, "An evaluation of theories for predicting turbulent skin friction and heat transfer on flat plates at supersonic and hypersonic Mach numbers", _AIAA J._ 9(6), 1971, 993-1003 | Partial (citation seen in several sources) |
 | E. R. van Driest, "Turbulent boundary layer in compressible fluids", _J. Aeronaut. Sci._ 18(3), 1951, 145-160                                                                                              | Partial                                    |
 
+Used by the skin-friction library (`src/friction/`, design record 0007):
+
+- D. R. Chapman and R. H. Kester, _Turbulent Boundary-Layer and
+  Skin-Friction Measurements in Axial Flow Along Cylinders at Mach Numbers
+  Between 0.5 and 3.6_, NACA TN 3097, 1954.
+  [NTRS](https://ntrs.nasa.gov/citations/19930083801). Verified: text,
+  table III (p. 33) and figs. 11, 15 to 17, 19 read from the scan; table
+  III in `src/validation/skin-friction-tn3097.ts`. The stagnation
+  temperature is not stated in it.
+- J. D. Loposer and C. B. Rumsey, _Flight Measurements of Average
+  Skin-Friction Coefficients on a Parabolic Body of Revolution (NACA RM-10)
+  at Mach Numbers from 1.0 to 3.7_, NACA RM L54G14, 1954.
+  [NTRS](https://ntrs.nasa.gov/citations/20030068110). Verified: pages read
+  as images (no text layer); fig. 10 digitised in
+  `src/validation/skin-friction-rm-l54g14.ts`.
+- E. R. van Driest, _Investigation of Laminar Boundary Layer in
+  Compressible Fluids Using the Crocco Method_, NACA TN 2597, 1952.
+  [NTRS](https://ntrs.nasa.gov/citations/19930083425). Verified: pp. 18 to
+  22 and fig. 3 read; fig. 3 digitised in `src/validation/laminar-tn2597.ts`.
+- TMR van Driest II tabulation, `cf_vandriestII.dat`, from the high-Mach
+  flat-plate page above. Verified: downloaded 2026-10-18 into
+  `tests/friction/data/` (source and checksum in its README); the page's
+  equations read from its images.
+- K. E. Schoenherr, Trans. SNAME 40, 1932, 279-313 (the Karman-Schoenherr
+  law, cited by the TMR) and E. R. van Driest, "Problem of aerodynamic
+  heating", Aeron. Eng. Rev. 15(10), 1956, 26-41 (cited by NASA TN D-6945,
+  ref. 2, which calls it "the Van Driest method (II)", p. 1). Partial: the
+  papers not read. The forms used are those TN 3097, RM L54G14 and the TMR
+  page state.
+
 ## Base flow and base pressure
 
 | Source                                                                                                                                                                                                                                                                                                               | Status                           |
