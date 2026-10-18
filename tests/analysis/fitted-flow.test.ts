@@ -28,9 +28,10 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
   it('Mach 3, 20 deg cone: drag within 0.03% of Taylor-Maccoll on the coarsest grid, at second order', () => {
     // The page's claim rests on the order: a regression that kept the
     // coarsest grid within 3e-4 would show in the ratio. Measured when
-    // written: +0.1017% on 10 cells across, +0.0251% on 20 (the page's
-    // coarsest grid; with the captured shock -0.395%), falling by 4.05, and
-    // extrapolated at second order to within 4.3e-6 of the exact drag.
+    // written: +0.1017% on 10 cells across, +0.0251% on that grid refined
+    // twice (with the captured shock, -0.395% on 20 cells across), falling
+    // by 4.05, and extrapolated at second order to within 4.3e-6 of the
+    // exact drag.
     const cone: Body = {
       nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
       cylinderLength: 4,

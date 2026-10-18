@@ -12,7 +12,8 @@ number with an honest uncertainty band.
 > **Status: early development.** Verified 1D and 2D (planar and
 > axisymmetric) Euler solvers run on both the CPU and the GPU (WebGPU), with
 > their test suites and live demos, and the inviscid forebody wave drag of
-> sharp-nosed bodies is computed with a measured error band. The full
+> sharp-nosed bodies and ellipsoid noses is computed with a measured error
+> band. The full
 > rocket solver (viscous flow, base and fins) does not exist yet, so
 > bowshock gives no total drag coefficient. Nothing here should be used for
 > flight decisions yet. The plan is in
