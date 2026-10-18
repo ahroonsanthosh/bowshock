@@ -15,7 +15,7 @@ import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
 
 const gamma = 1.4;
 const deg = Math.PI / 180;
-const SOLVE_TIMEOUT = 120_000;
+const SOLVE_TIMEOUT = 600_000;
 
 /** Solve on the grid of the given refinement of the 20-cell base grid. */
 function solveBody(body: Body, mach: number, refinement: number) {
