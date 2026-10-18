@@ -166,7 +166,8 @@ export function wallDrag(
  * the columns either side of it. Only where it exceeds 1 does nothing
  * behind the end reach the body: on a 26.6 deg cone at Mach 1.5, whose
  * conical surface flow is subsonic, the drag with 2 calibers of cylinder
- * behind it is 3.3% below the Taylor-Maccoll value of an endless cone.
+ * behind it is 3.3% below the Taylor-Maccoll value of an endless cone on
+ * 20 cells across, 1.7% on 80, still changing.
  */
 export function baseMach(
   problem: FitProblem,

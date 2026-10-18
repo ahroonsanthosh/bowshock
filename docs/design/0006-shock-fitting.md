@@ -435,7 +435,8 @@ of the page's inputs found tips where it does not: on a 3-caliber
 tangent ogive at Mach 1.2 (18.9 deg) the conical surface flow is at Mach
 0.85, and on a 26.6 deg cone at Mach 1.5 at 0.96, where the drag with 2
 calibers of cylinder came out 3.3% below the Taylor-Maccoll value of an
-endless cone, the shoulder reaching upstream. Such tips are refused
+endless cone on nj = 20 (2.4% on nj = 40, 1.7% on nj = 80, still
+changing), the shoulder reaching upstream. Such tips are refused
 (`sharpFitProblem`), with the axial Mach number tested on the tip cone's
 surface, where it is least, so that the test does not depend on the
 grid (it was first tested at the inflow faces' midpoints, which let a
@@ -446,8 +447,38 @@ cone at Mach 1.5 (surface Mach 1.04, axial 0.95); the message says
 which. The method of characteristics refuses only the subset whose
 surface flow is subsonic. On the convex noses of the page the flow
 speeds up along the body, so the check at the end of the body is a
-guard behind this one. Serving these tips, measured against references
-on their own families, is in progress.
+guard behind this one.
+
+**What serving these tips would need** (measured by an agent with the
+refusal removed in a copy of the code; CPU, x0 = 1e-3 of the nose's
+length unless stated, 2 calibers of cylinder, fits to 1e-12). The
+inflow plane is not the obstacle: moved from 1e-4 to 1e-2 of the nose's
+length with the columns behind 1e-2 held fixed, the drag at x0 = 1e-3
+differs from that at 1e-4 by at most 1.3e-6 (a 3-caliber tangent ogive
+at Mach 1.2) and 1e-8 (cones), falling as x0 squared or faster; the
+conical state imposed there, about 1% off the true flow on that ogive,
+is forgotten within ten x0. Moving x0 without holding the columns moves
+the whole column layout, which changed the drag by up to 3.2e-4 on the
+cones: the grid, not the inflow plane. The shoulder is the obstacle. On
+cone-cylinders the drag converges at observed orders of 0.35 to 0.39 on
+nj = 20, 40 and 80, whether the surface flow is subsonic (26.6 deg at
+Mach 1.5, 18 deg at Mach 1.2) or supersonic with a subsonic axial
+component (26.6 deg at Mach 1.6, whose forebody drag is exactly
+Taylor-Maccoll's: errors -0.64%, -0.41%, -0.24%). There the wall
+pressure converges at second order to within 5e-6 of Taylor-Maccoll up
+to 0.8 of the cone's length, and the whole change lies in the last tenth
+before the corner; the one-sided corner patch above reduces the error by
+a quarter without restoring the order. On tangent ogives, which meet the
+cylinder without a corner, the drag converges at orders 2.69 (3
+calibers, Mach 1.2) and 2.15 (Mach 1.35), and the extrapolations lie
+inside the captured-shock solver's bands on nj = 20 to 160; but those
+bands, 2.9e-3 and 2.3e-3 of the value with its floor of 1e-3, are no
+reference at the fitted solver's precision. So cone-cylinders with such
+tips stay refused, and tangent ogives need a fourth grid (nj = 160) and
+a check at their own precision (for example a second, differently laid
+out family converging to the same value) before they are served. The
+fits are slow here: 4149 to 9867 steps on nj = 20, against a median of
+2300, doubling with each refinement.
 
 ## Blunt noses against the method of characteristics
 
