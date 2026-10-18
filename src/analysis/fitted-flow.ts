@@ -15,7 +15,13 @@
 import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
-import { bluntBodyGrid, gridOnLines, withFixedFractions, type GridLine } from '../grid/blunt-grid';
+import {
+  bluntBodyGrid,
+  gridOnLines,
+  withFixedFractions,
+  type BluntGrid,
+  type GridLine,
+} from '../grid/blunt-grid';
 import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
 import { columnPositions } from '../grid/spacing';
 import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
@@ -97,6 +103,60 @@ function solvedBody(body: Body): Body {
 
 /** Shortest cylinder solved behind a nose, in calibers. */
 const SOLVED_CYLINDER = 1;
+
+/** A blunt nose's solved body (solvedBluntBody), and its start grid. */
+export interface SolvedBluntBody {
+  readonly body: Body;
+  /** The base grid of the family (the captured start's), on the captured outer boundary. */
+  readonly base: BluntGrid;
+}
+
+/**
+ * The body a blunt nose's fit solves: solvedBody's, its cylinder
+ * lengthened a caliber at a time, by at most MAX_BLUNT_EXTENSION calibers,
+ * until the start grid's neighbouring cells differ in size by no more
+ * than the fitted grids' gate allows. The C grid's lines average the body
+ * normal over a window that closes at the end of the body (keeping the
+ * outflow plane vertical); on a short cylinder at low Mach numbers, where
+ * the outer boundary lies far out, they turn vertical over the last few
+ * cells, which then fan out (docs/design/0006-shock-fitting.md,
+ * "Ellipsoids at low Mach numbers"). If no length passes, the shortest is
+ * solved, and the fitted grid's gates decide. As for solvedBody, the drag
+ * is that of the body asked for wherever the flow leaves its end
+ * supersonically (baseMach).
+ */
+export function solvedBluntBody(asked: Body, options: BluntFamilyOptions): SolvedBluntBody {
+  const steps = solvedBluntSteps(asked, options);
+  for (;;) {
+    const step = steps.next();
+    if (step.done === true) return step.value;
+  }
+}
+
+/** Calibers of cylinder solvedBluntBody may add to solvedBody's. */
+const MAX_BLUNT_EXTENSION = 7;
+
+/** solvedBluntBody, yielding after each length it refuses (a page can return to its event loop). */
+function* solvedBluntSteps(
+  asked: Body,
+  options: BluntFamilyOptions,
+): Generator<void, SolvedBluntBody> {
+  const shortest = solvedBody(asked);
+  const caliber = 2 * asked.nose.baseRadius;
+  let first: SolvedBluntBody | undefined;
+  for (let extra = 0; ; extra++) {
+    const body = { ...shortest, cylinderLength: shortest.cylinderLength + extra * caliber };
+    // Not gated: only the start, the grids solved for the drag are (as
+    // bluntFitFamily's lines).
+    const base = bluntBodyGrid(body, { nj: options.nj, mach: options.mach, gated: false });
+    if (gridQuality(base.grid).maxSizeRatio <= FITTED_QUALITY_LIMITS.maxSizeRatio) {
+      return { body, base };
+    }
+    first ??= { body, base };
+    if (extra === MAX_BLUNT_EXTENSION) return first;
+    yield;
+  }
+}
 
 /** A fitted-shock problem on a body: what the fit needs, on either engine. */
 export interface FitProblem {
@@ -361,6 +421,8 @@ export function bluntFitProblem(asked: Body, options: FitProblemOptions): FitPro
 
 /** What starts a family of blunt problems: a captured solution on its base grid. */
 export interface BluntStart {
+  /** The body solved (solvedBluntBody). */
+  readonly body: Body;
   /** The base grid's lines. */
   readonly lines: readonly GridLine[];
   /** The captured shock's heights along them (capturedShockHeights). */
@@ -376,7 +438,7 @@ export interface BluntStart {
  * CAPTURED_START_STEPS steps from the free stream on the base grid.
  */
 export function bluntStart(asked: Body, options: BluntFamilyOptions): BluntStart {
-  const { solver, start } = bluntCapture(asked, options);
+  const { solver, start } = bluntCapture(solvedBluntBody(asked, options), options);
   solver.iterate(CAPTURED_START_STEPS);
   return start();
 }
@@ -397,7 +459,14 @@ export async function bluntStartInChunks(
     readonly onProgress?: ((steps: number, total: number) => void) | undefined;
   },
 ): Promise<BluntStart> {
-  const { solver, start } = bluntCapture(asked, options);
+  const steps = solvedBluntSteps(asked, options);
+  let step = steps.next();
+  while (step.done !== true) {
+    run.signal?.throwIfAborted();
+    await run.pause();
+    step = steps.next();
+  }
+  const { solver, start } = bluntCapture(step.value, options);
   for (let done = 0; done < CAPTURED_START_STEPS;) {
     run.signal?.throwIfAborted();
     const steps = Math.min(run.chunk, CAPTURED_START_STEPS - done);
@@ -414,15 +483,11 @@ export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'>;
 
 /** The captured-shock problem on a blunt family's base grid, from the free stream. */
 function bluntCapture(
-  asked: Body,
+  { body, base }: SolvedBluntBody,
   options: BluntFamilyOptions,
 ): { solver: Euler2D; start: () => BluntStart } {
-  const body = solvedBody(asked);
-  const { mach, gamma, nj } = options;
+  const { mach, gamma } = options;
   const free = freeStreamAt(mach, gamma).state;
-  // Not gated: only the start, the grids solved for the drag are (as
-  // bluntFitFamily's lines).
-  const base = bluntBodyGrid(body, { nj, mach, gated: false });
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   const solver = new Euler2D({
     ...engineConfig(base.grid, gamma, axis, []),
@@ -437,6 +502,7 @@ function bluntCapture(
   return {
     solver,
     start: () => ({
+      body,
       lines: base.lines,
       heights: capturedShockHeights(solver, base.grid, base.lines, free),
       grid: base.grid,
@@ -458,7 +524,7 @@ export function bluntFitFamily(
   options: BluntFamilyOptions,
   start: BluntStart = bluntStart(asked, options),
 ): (refinement: number) => FitProblem {
-  const body = solvedBody(asked);
+  const { body } = start;
   const { mach, gamma, nj: baseNj } = options;
   const R = body.nose.baseRadius;
   const free = freeStreamAt(mach, gamma).state;
