@@ -196,12 +196,12 @@ At Mach 1.2 the 7 deg cone's conical surface flow is supersonic (Mach
 cone-cylinder is exactly the cone's Taylor-Maccoll pressure coefficient,
 0.0830113.
 
-| r | Cells   | Drag      | vs Taylor-Maccoll | Steps | Wall time |
-| - | ------- | --------- | ----------------- | ----- | --------- |
-| 1 | 3,540   | 0.0832184 | +2.49e-3          | 700   | 11 s      |
-| 2 | 14,160  | 0.0830547 | +5.23e-4          | 700   | 48 s      |
-| 4 | 56,640  | 0.0830206 | +1.12e-4          | 1,400 | 500 s     |
-| 8 | 226,560 | 0.0830132 | +2.3e-5           | 2,800 | 3,500 s   |
+| r   | Cells   | Drag      | vs Taylor-Maccoll | Steps | Wall time |
+| --- | ------- | --------- | ----------------- | ----- | --------- |
+| 1   | 3,540   | 0.0832184 | +2.49e-3          | 700   | 11 s      |
+| 2   | 14,160  | 0.0830547 | +5.23e-4          | 700   | 48 s      |
+| 4   | 56,640  | 0.0830206 | +1.12e-4          | 1,400 | 500 s     |
+| 8   | 226,560 | 0.0830132 | +2.3e-5           | 2,800 | 3,500 s   |
 
 (errors relative). The changes fall by 4.80 and 4.62 (observed orders
 2.26 and 2.21, agreeing within the procedure's 0.5); extrapolated at
@@ -224,11 +224,11 @@ At Mach 1.1 the cone's conical surface flow is still supersonic (Mach
 1.037, axial 1.029), so its drag is again exactly Taylor-Maccoll's,
 0.0944976, and the fitted solver accepts the case.
 
-| r | Cells  | Drag      | vs Taylor-Maccoll | Steps | Wall time |
-| - | ------ | --------- | ----------------- | ----- | --------- |
-| 1 | 3,540  | 0.0944683 | -3.10e-4          | 950   | 17 s      |
-| 2 | 14,160 | 0.0944644 | -3.51e-4          | 1,600 | 120 s     |
-| 4 | 56,640 | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s   |
+| r   | Cells  | Drag      | vs Taylor-Maccoll | Steps | Wall time |
+| --- | ------ | --------- | ----------------- | ----- | --------- |
+| 1   | 3,540  | 0.0944683 | -3.10e-4          | 950   | 17 s      |
+| 2   | 14,160 | 0.0944644 | -3.51e-4          | 1,600 | 120 s     |
+| 4   | 56,640 | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s   |
 
 The changes (-3.9e-6, +1.77e-5) change sign: oscillatory, all three
 within 3.5e-4 of the exact value. (r = 8: see below.)
@@ -294,18 +294,21 @@ grid unless stated:
   oscillated near 0.5; with a quarter of the scalar dissipation added as
   well it is stable but converges at 0.996 per step against the scalar
   scheme's 0.9972, at 1.8 times the cost of a step. No gain.
-- **Multigrid** (`src/solver/multigrid.ts`, FAS with LU-SGS smoothing on
-  the family's own coarser grids): with piecewise-constant prolongation of
-  the corrections it made convergence worse; with bilinear prolongation
-  and V(1,2) cycles it converges at 0.989 per cycle on two levels (r = 2
-  over r = 1), no faster per unit of work than single-grid steps. The
-  slow mode is as slow on the base grid, the coarsest the family has, so
-  the coarse level cannot remove it.
+- **Multigrid** (FAS with LU-SGS smoothing on the family's own coarser
+  grids; removed, kept as `docs/design/patches/0007-fas-multigrid.diff`):
+  with piecewise-constant prolongation of the corrections it made
+  convergence worse; with bilinear prolongation and V(1,2) cycles it
+  converges at 0.989 per cycle on two levels (r = 2 over r = 1), no
+  faster per unit of work than single-grid steps. The slow mode is as
+  slow on the base grid, the coarsest the family has, so the coarse level
+  cannot remove it.
 - **Anderson acceleration at Mach 1**: the accelerated iteration wandered
   (the drag between 0.0897 and 0.0954 over 20,000 steps, the residual
   stuck near 2e-5) where plain LU-SGS steps converged in 17,850 steps to
-  0.0917153; the accelerated result, settled later on a longer cylinder,
-  agreed with it within 1.4e-5. Mach 1 runs use plain steps.
+  0.0917153. On 40 calibers of cylinder the accelerated steps did settle,
+  after 25,450 steps (492 s) against the plain steps' 14,650 (191 s), at
+  0.0917288, within 7e-7 of the plain steps' 0.0917281: the same steady
+  state, reached more slowly. Mach 1 runs use plain steps.
 - **Two earlier grids**: vertical lines all the way out (cells up to 350
   times taller than wide above the body) and a wall spacing growing
   upstream along the axis (each line's own stretching, which skewed the

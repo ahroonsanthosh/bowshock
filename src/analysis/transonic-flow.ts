@@ -22,7 +22,6 @@ import type { Body } from '../geometry/body';
 import { transonicGrid, type TransonicGrid, type TransonicSpacing } from '../grid/transonic-grid';
 import { AndersonMixing } from '../solver/anderson';
 import { NonPhysicalStateError } from '../solver/errors';
-import { FasMultigrid, type CycleOptions } from '../solver/multigrid';
 import { SettlingValue } from '../verification/iterative-convergence';
 import { forebodyPressureDrag } from './forces';
 import { freeStreamAt, type FreeStream } from './verified-drag';
@@ -92,12 +91,6 @@ export interface SolveOptions {
   readonly plainSteps: number;
   /** Rate per check known from the coarser grid (SettlingValue). */
   readonly knownRate?: number;
-  /**
-   * Multigrid cycles over the coarser grids of the family (refinement
-   * halved down to 1) instead of single-grid steps: checkEvery then
-   * counts cycles, and depth and plainSteps are not used.
-   */
-  readonly multigrid?: Omit<CycleOptions, 'cfl'>;
   readonly onCheck?: (check: SolveCheck) => void;
 }
 
@@ -153,18 +146,8 @@ export function solveTransonic(
   let best = Infinity;
   let steps = 0;
   let drag = problem.drag(solver);
-  const multigrid =
-    options.multigrid !== undefined && problem.options.refinement > 1
-      ? multigridFor(problem, solver)
-      : null;
   while (steps < options.maxSteps) {
     for (let m = 0; m < options.checkEvery; m++) {
-      if (multigrid !== null) {
-        multigrid.cycle({ ...options.multigrid!, cfl });
-        steps++;
-        cfl = Math.min(options.cfl, cfl * 1.2);
-        continue;
-      }
       if (anderson === null || steps < options.plainSteps) {
         solver.iterateImplicit(1, cfl);
       } else {
@@ -220,17 +203,4 @@ export function solveTransonic(
     restarts,
     rate: settling.rateToPassOn,
   };
-}
-
-/** The multigrid of a problem's family below it: its coarser grids, down to the base grid. */
-function multigridFor(problem: TransonicProblem, solver: Euler2D): FasMultigrid {
-  const levels = [{ solver, forcing: null as Float64Array | null }];
-  for (let r = problem.options.refinement / 2; r >= 1; r /= 2) {
-    const coarse = transonicProblem(problem.body, { ...problem.options, refinement: r });
-    const forcing = new Float64Array(4 * coarse.config.grid.ni * coarse.config.grid.nj);
-    const coarseSolver = new Euler2D({ ...coarse.config, source: forcing });
-    coarseSolver.setInitialCondition(() => problem.freeStream.state);
-    levels.push({ solver: coarseSolver, forcing });
-  }
-  return new FasMultigrid(levels);
 }

@@ -620,7 +620,8 @@ export class Euler2D {
     const lambda = new Float64Array(4);
     const right = new Float64Array(16);
     const left = new Float64Array(16);
-    const decompose = (c: number, nx: number, ny: number, sign: 1 | -1) => { splitEigensystem(
+    const decompose = (c: number, nx: number, ny: number, sign: 1 | -1) => {
+      splitEigensystem(
         prim[6 * c + 1]!,
         prim[6 * c + 2]!,
         prim[6 * c + 4]!,
@@ -633,7 +634,8 @@ export class Euler2D {
         lambda,
         right,
         left,
-      ); };
+      );
+    };
 
     // Diagonal blocks: V / dt + sum over faces of A A+(Q_c, n_out), less
     // the pressure source's Jacobian, and their inverses.
@@ -1009,33 +1011,10 @@ export class Euler2D {
   }
 
   /**
-   * The residual of the current state: rate of change of the conserved
-   * variables times the cell volume, the configured source included, four
-   * values per cell, cell (i, j) at 4 (i + j ni). Zero at a steady state.
-   */
-  residualVector(): Float64Array {
-    const { ni, nj } = this.metrics;
-    this.computeResidual(this.state);
-    const r = new Float64Array(4 * ni * nj);
-    for (let j = 0; j < nj; j++) {
-      for (let i = 0; i < ni; i++) {
-        const k = this.index(i, j);
-        const c = 4 * (i + j * ni);
-        r[c] = this.residual.rho[k]!;
-        r[c + 1] = this.residual.mu[k]!;
-        r[c + 2] = this.residual.mv[k]!;
-        r[c + 3] = this.residual.energy[k]!;
-      }
-    }
-    return r;
-  }
-
-  /**
    * Set the interior cells' conserved variables (as conserved() gives
-   * them), counting one step unless told otherwise; throws if a state is
-   * not physical.
+   * them), counting one step; throws if a state is not physical.
    */
-  setConserved(q: Float64Array, countStep = true): void {
+  setConserved(q: Float64Array): void {
     const { ni, nj } = this.metrics;
     if (q.length !== 4 * ni * nj) throw new RangeError('four values per cell are needed');
     for (let j = 0; j < nj; j++) {
@@ -1048,7 +1027,7 @@ export class Euler2D {
         this.state.energy[k] = q[c + 3]!;
       }
     }
-    if (countStep) this.steps += 1;
+    this.steps += 1;
     this.checkPhysical(this.state);
   }
 
