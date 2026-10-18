@@ -16,11 +16,12 @@ tip's conical flow and ends one caliber past the nose, where the flow must
 leave supersonically. Below about Mach 1.2 each of its assumptions fails
 in turn, on the noses rockets carry:
 
-- the tip's conical flow turns subsonic at the surface (a 15 deg cone at
-  Mach 1.2, a 3-caliber tangent ogive's 18.9 deg tip at Mach 1.2, a
-  5-caliber one's 11.4 deg tip at Mach 1.15), so the shoulder reaches the
-  tip through the subsonic layer and Taylor-Maccoll is no longer the flow
-  there;
+- the tip's conical flow turns subsonic at the surface, or its axial
+  component does (the fitted solver's tests, `sharpFitProblem`: a 15 deg
+  cone and a 3-caliber tangent ogive's 18.9 deg tip are refused at Mach
+  1.2, a 5-caliber ogive's 11.4 deg tip at Mach 1.15, the 7 deg cone at
+  Mach 1.06), so the shoulder reaches the tip through the subsonic
+  layer and Taylor-Maccoll is no longer the flow there;
 - the bow shock detaches (the 3-caliber ogive below Mach 1.15) and stands
   ahead of the tip, further as the Mach number falls; at Mach 1 it is at
   infinity, so it cannot be the grid's boundary;
@@ -175,7 +176,95 @@ What was tried and did not help is listed at the end.
 
 ## Measurements
 
-(to be completed)
+CPU engine, HLLC, unit-invariant shared reconstruction (as the supersonic
+solvers), each grid converged to a drag settled within 1e-7 of its value.
+Wall times are of one job on a 4-core machine shared with other long
+runs: until 14:53 UTC with the cores oversubscribed two to three times,
+after it with a core to itself (about three times faster); they are given
+as measured, as a guide to cost only.
+
+Bodies, in body radii R = 1: the cone of NACA TN 4233 (6 deg 59 min,
+nose length 8.169) and a 5-caliber tangent ogive (nose length 10, tip
+11.4 deg), each followed by the solved cylinder; far boundaries at 100.6
+radii and 10 calibers of cylinder unless stated. Refinement r = 1, 2, 4,
+8 has 30 r cells across and 118 r (cone) columns.
+
+### Mach 1.2: against Taylor-Maccoll and the fitted solver
+
+At Mach 1.2 the 7 deg cone's conical surface flow is supersonic (Mach
+1.137), so the shoulder cannot reach the cone and the drag of the
+cone-cylinder is exactly the cone's Taylor-Maccoll pressure coefficient,
+0.0830113.
+
+| r | Cells   | Drag      | vs Taylor-Maccoll | Steps | Wall time |
+| - | ------- | --------- | ----------------- | ----- | --------- |
+| 1 | 3,540   | 0.0832184 | +2.49e-3          | 700   | 11 s      |
+| 2 | 14,160  | 0.0830547 | +5.23e-4          | 700   | 48 s      |
+| 4 | 56,640  | 0.0830206 | +1.12e-4          | 1,400 | 500 s     |
+| 8 | 226,560 | 0.0830132 | +2.3e-5           | 2,800 | 3,500 s   |
+
+(errors relative). The changes fall by 4.80 and 4.62 (observed orders
+2.26 and 2.21, agreeing within the procedure's 0.5); extrapolated at
+second order the drag is 0.0830108, 6e-6 of its value below the exact
+one, and the procedure's band on the finest grid (before any allowance),
+3.1e-6 (3.7e-5 of the value), contains the finest grid's error (1.9e-6).
+With the shock captured and the far boundaries characteristic, the
+transonic domain does here what the fitted solver does for supersonic
+cones.
+
+The fitted solver (0006, CPU, nj = 20, 40, 80, with 2 calibers of
+cylinder) on the same cone: 0.0831060, 0.0830076, 0.0830154 (+1.14e-3,
+-4.4e-5, +4.9e-5): oscillatory, the band of the three (the range,
+9.8e-5) containing its error. The two solvers' finest values agree within
+2.2e-6 (2.7e-5 of the value), inside both bands.
+
+### Mach 1.1: against Taylor-Maccoll; the fitted solver struggles
+
+At Mach 1.1 the cone's conical surface flow is still supersonic (Mach
+1.037, axial 1.029), so its drag is again exactly Taylor-Maccoll's,
+0.0944976, and the fitted solver accepts the case.
+
+| r | Cells  | Drag      | vs Taylor-Maccoll | Steps | Wall time |
+| - | ------ | --------- | ----------------- | ----- | --------- |
+| 1 | 3,540  | 0.0944683 | -3.10e-4          | 950   | 17 s      |
+| 2 | 14,160 | 0.0944644 | -3.51e-4          | 1,600 | 120 s     |
+| 4 | 56,640 | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s   |
+
+The changes (-3.9e-6, +1.77e-5) change sign: oscillatory, all three
+within 3.5e-4 of the exact value. (r = 8: see below.)
+
+The fitted solver on the same cone: 0.0938653 (nj = 20) and 0.0940974
+(nj = 40), -6.69e-3 and -4.24e-3 of the exact value, ten to twenty times
+the transonic domain's errors, and falling at less than first order
+(nj = 80: see below). Near the sonic limit of its starting plane (axial
+Mach number 1.029 at the tip cone's surface) its error is far larger
+than on the supersonic families of 0006.
+
+### Mach 1.0: the far boundaries' distance dominates
+
+At Mach 1 the bow shock is at infinity and the subsonic region ahead of
+the sonic line from the shoulder reaches the far boundaries, so their
+distance changes the cone's pressure everywhere (by a nearly uniform
+amount, as a change of the free-stream Mach number would; within a finite
+domain a sonic surface stands upstream, at 57 radii on the 100-radius
+domain). Base grid, 10 calibers of cylinder, plain LU-SGS steps:
+
+| Far radius | Cells across | Drag      | Change    | Steps  | Wall time |
+| ---------- | ------------ | --------- | --------- | ------ | --------- |
+| 55.1       | 27           | 0.0898342 |           | 12,750 | 89 s      |
+| 100.6      | 30           | 0.0917153 | +1.881e-3 | 17,850 | 192 s     |
+| 224.2      | 34           | 0.0927916 | +1.076e-3 | 32,250 | 268 s     |
+| 408.7      | 37           | 0.0930989 | +3.07e-4  | 46,700 | 654 s     |
+
+A power law C(D) = C_inf - k D^-q through each three successive radii
+gives q = 1.23 and 1.35 and C_inf = 0.093434 and 0.093346 (within 8.8e-5
+of each other): the drag on 100.6 radii is about 1.7e-3 (1.8% of it)
+below its value for boundaries at infinity, and on 408.7 radii 2.5e-4 to
+3.4e-4. At 800 radii the implicit steps went unstable (the residual rose
+from 1e-5 to 2 between steps 5,000 and 8,000, with cells 160 radii
+across at the far boundaries) and the case was dropped. The cylinder's
+length matters far less: 40 calibers instead of 10 changes the drag by
++1.28e-5 (0.0917281, 100.6 radii).
 
 ## References and how close the solver gets
 
@@ -187,7 +276,42 @@ What was tried and did not help is listed at the end.
 
 ## What did not work
 
-(to be completed)
+Measured on the 7 deg cone at Mach 1.05 (and 1.0 where stated), base
+grid unless stated:
+
+- **Explicit steps alone**: see above; on the finest grids they would
+  need weeks of CPU time.
+- **LU-SGS with omega = 1**, or without the axis term: the cells next to
+  the axis upstream of the tip diverged (residual from 4e-4 to 4e-2 at
+  CFL 100 without the term; to 1.5 with omega = 1).
+- **Block LU-SGS with Steger-Warming split Jacobians**
+  (`Euler2D.iterateBlockImplicit`, kept for later work): on the Mach 2
+  cone of the tests it converges to 4e-13 in 80 steps. Here the flat
+  cells next to the axis far upstream (aspect ratios near 300), whose
+  entropy and shear waves get almost no damping from the small faces
+  along the axis, diverged whether the pressure source's Jacobian was in
+  the diagonal block or not; with A_p (|v| + a) added the residual
+  oscillated near 0.5; with a quarter of the scalar dissipation added as
+  well it is stable but converges at 0.996 per step against the scalar
+  scheme's 0.9972, at 1.8 times the cost of a step. No gain.
+- **Multigrid** (`src/solver/multigrid.ts`, FAS with LU-SGS smoothing on
+  the family's own coarser grids): with piecewise-constant prolongation of
+  the corrections it made convergence worse; with bilinear prolongation
+  and V(1,2) cycles it converges at 0.989 per cycle on two levels (r = 2
+  over r = 1), no faster per unit of work than single-grid steps. The
+  slow mode is as slow on the base grid, the coarsest the family has, so
+  the coarse level cannot remove it.
+- **Anderson acceleration at Mach 1**: the accelerated iteration wandered
+  (the drag between 0.0897 and 0.0954 over 20,000 steps, the residual
+  stuck near 2e-5) where plain LU-SGS steps converged in 17,850 steps to
+  0.0917153; the accelerated result, settled later on a longer cylinder,
+  agreed with it within 1.4e-5. Mach 1 runs use plain steps.
+- **Two earlier grids**: vertical lines all the way out (cells up to 350
+  times taller than wide above the body) and a wall spacing growing
+  upstream along the axis (each line's own stretching, which skewed the
+  far cells: neighbours 7.5 times different in width).
+- **The 3-caliber ogive data of NASA TN D-3516** were not digitised (see
+  sources.md), so the ogive has no wind-tunnel comparison here.
 
 ## Open
 
