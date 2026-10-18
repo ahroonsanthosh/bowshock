@@ -14,15 +14,15 @@ with Gauss-Legendre points. Drag (both faces) is integrated over the fin with
 clustered Gauss points. "Strip" means 2D Ackeret, 4 <lambda^2> / beta, applied
 to streamwise strips of the same fin.
 
-Validation (fin_validation_output.txt, and runs logged in the session):
+Validation (fin_validation_output.txt for checks 1 and 2, fin_validate2_output.txt for checks 3 and 5, fin_tipcone_output.txt for check 4; scripts fin_validate.py, fin_validate2.py, fin_tipcone.py):
 
 | Check | Result |
 | --- | --- |
 | Unswept, span 50 chords, section at mid span, against 4 (t/c)^2/beta, M 1.2 to 3 | ratio 1.000000 |
 | Infinite swept wing with supersonic edges against 4 (t/c)^2 cos L / sqrt(M^2 cos^2 L - 1): (M 2, 30 deg), (M 3, 45 deg), (M 1.5, 20 deg) | ratio 1.000000 |
 | Infinite swept wing with subsonic edges (M 1.5, 60 deg; M 2, 70 deg), far from the root: zero wave drag expected | 0.00000 to -0.00001 of the 2D value |
-| Tip Mach cone of an unswept constant-slope sheet: Cp/Cp_2D = 1/2 + asin(beta (s - y)/x)/pi (derived for this check), 12 points at M 1.5, 2, 3 | agreement to 6 digits |
-| Integrated drag, 16 to 40 points per direction, subsonic and near-sonic leading edges | changes of 0.2% or less |
+| Tip Mach cone of an unswept constant-slope sheet: Cp/Cp_2D = 1/2 + asin(beta (s - y)/x)/pi (derived for this check), 20 points at M 1.3, 1.5, 2, 3 | largest difference 5.1e-12 |
+| Integrated drag, 12, 20 and 32 points per direction: unit rectangle and 45 deg clipped delta at M 1.5 and 2 | rectangle 1.00220, 0.99992, 1.00007 (M 1.5); clipped delta 1.09487, 1.09568, 1.09473 (M 1.5): changes of 0.2% or less |
 
 Results, CD_3D / CD_strip, double wedge (ridge at mid chord unless stated),
 t/c-independent in linear theory. In brackets: beta cot(LE sweep); above 1 the

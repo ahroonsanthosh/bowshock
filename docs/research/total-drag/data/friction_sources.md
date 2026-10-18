@@ -73,8 +73,8 @@ Results (pp. 7, 9 to 11; summary): measured values are "approximately 7
 percent higher" than Van Driest's flat-plate theory (his North American
 Aviation report AL-997, 1950). "The band drawn +-5 percent about the faired
 line includes 66 percent of the points"; the variation is between models, not
-random within one (p. 7). A laminar run to station 20 would lower the average
-by only 1.5% (p. 7). Data of the two earliest flight models (ref. 1) lie up to
+random within one (p. 7). A laminar run back to station 20 would lower the average
+(measured ahead of the rake at station 125, models 1 to 5) by only 1.5% (p. 7). Data of the two earliest flight models (ref. 1) lie up to
 25% above the faired line, unexplained (p. 10). Against tunnel data on RM-10
 models: within 8% for fixed transition at the lower tunnel Reynolds numbers,
 within 4% (Lewis 8 x 6 ft), 5 to 13% below (Langley 9 in) (p. 9); conclusion 2
@@ -143,7 +143,8 @@ adiabatic flat plate. Full table: friction_study_output.txt. Summary:
 
 | Effect | Range over the 18 cases |
 | --- | --- |
-| OpenRocket smooth correlation / VDII | 0.956 to 0.989 |
+| OpenRocket smooth correlation / VDII (Cf law only) | 0.956 to 0.989 |
+| Same, with OpenRocket's body wetted-area factor 1 + 1/(2 fB), fB = 25 (eq. 3.85; or_body_factor_output.txt) | 0.975 to 1.009 |
 | Transition at Re_T = 5e5 (RASAero default), CF / fully turbulent | 0.979 to 0.999 |
 | Transition at Re_T = 1.6e6 (observed in RM A53D02) | 0.922 to 0.995 |
 | Transition at Re_T = 3e6 | 0.845 to 0.990 |

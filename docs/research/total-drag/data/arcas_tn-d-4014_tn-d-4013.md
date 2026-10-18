@@ -37,8 +37,15 @@ cylinder continuing over the first part and a boat-tail ending in a reflexed
 lip (detail A): base outer diameter 1.470 (3.734), lip radius 0.060 (0.152),
 0.030 (0.076) radius, 15 deg and 90 deg angles, 0.031 (0.079), 0.053 (0.135)
 reference, 0.654 (1.661) radius reference. Rear view shows a 1.250 (3.175)
-diameter. The exact boat-tail profile needs a second reading of detail A
-before it is modelled (not done).
+diameter, most likely the balance-chamber opening (not labelled; it is the
+area needed to turn fig. 4's chamber coefficient into a base force). The
+exact boat-tail profile needs a second reading of detail A before it is
+modelled (not done).
+
+Items on fig. 1 not in the first transcription (audit L8, read by the
+audit; not re-read here): a fin root cut-out near the trailing edge, 0.375
+(0.952) with a 15 deg line and a 0.120 (0.305) radius; the trip line drawn
+0.500 (1.270) aft of the fin leading edge.
 
 Fins (fig. 1(b)), four, trapezoidal, double wedge:
 
@@ -93,69 +100,102 @@ base diameter: 2.54/3.734 = 0.68 (computed).
 TN D-4014: CA is axial force on the maximum cross-sectional area, "not
 corrected to free-stream conditions at the model base" (p. 4): it is the total
 axial force including the base and balance-chamber pressure. The chamber
-axial-force coefficient is in fig. 4 (not digitised, see below). At alpha = 0,
+axial-force coefficient is in fig. 4 (first reading below). At alpha = 0,
 CA is the drag coefficient of the model on its sting.
 
 TN D-4013: summary figures 11 (short) and 12 (long) give, at alpha about 0 and
 roll 0, CA,corr (axial force corrected for base axial force, i.e. forebody
 including fins) and CA,b (base axial force), as faired curves.
 
-## Digitised CA at alpha = 0, TN D-4014 figs. 5(a), 5(b), 6(a), 6(b)
+## CA at alpha = 0, TN D-4014 figs. 5(a), 5(b), 6(a), 6(b): resolved readings
 
-Procedure: PDF pages rendered at the scan's native 300 dpi. Axes calibrated on
-two printed major gridlines bracketing the data (page 25: CA 0.4 at y = 1304
-px and 0.1 at 1724 px, 1400 px per unit, alpha 0 at x = 787 px; page 28: 0.5 at
-1216, 0.2 at 1642.5, 1421.7 px per unit, alpha 0 at x = 914; page 34: 0.4 at
-1457.6, 0.1 at 1803, 1151.3 px per unit, alpha 0 at x = 938.7; page 37: 0.5 at
-1331, 0.2 at 1669, 1126.7 px per unit, alpha 0 at x = 847.8). Grid lines
-removed (pixels in straight runs of 18 to 22 px or longer) and each symbol's
-outer top and bottom rows read from a printout of the cleaned pixels; the
-value is the centre of the symbol's bounding box. Symbols lie at alpha from
--0.5 to +1.1 deg (flow-angularity corrections); where two symbols bracket
-alpha = 0 they agree within 0.0025. Reading uncertainty: +-0.002 for circles,
-squares and diamonds; +-0.003 for triangles (M 2.96), whose bounding-box
-centre and centroid differ by 0.002 and whose apex is partly hidden by grid
-remnants on page 34. Add the report's +-0.004.
+Three readings exist: the first (symbol bounding-box centres, one global
+calibration per page), the audit's (faired curve, local grid lines) and this
+revision's (faired curve; every grid line fitted as a straight line,
+`scripts/d4014_grid.py`, `scripts/d4014_curve.py`, overlays in `img/d4014/`).
+All values and notes: `d4014/tn-d-4014_CA_alpha0_resolved.csv`.
 
-| Config | Fins | M | CA (alpha ~ 0) | Read at alpha, deg | Figure, PDF page |
+Reading rule (used for every figure in the draft): where the authors drew a
+faired curve through the symbols, read the curve; otherwise read the
+symbol's centroid (bounding-box centre for circles, squares and diamonds,
+one third of the height above the base for triangles).
+
+Resolved per point:
+
+- Page 37, fig. 6(b), config 2 fins on: the first reading used the 0.5 and
+  0.2 grid lines at their heights near x 1400; the lines tilt about 6.5 px per
+  1000 px, and at alpha 0 the 0.5 line is at 1334.8 px. Re-read: 0.5080
+  (M 1.80) and 0.4120 (M 2.30), with the audit's 0.5088 and 0.4128. The first
+  reading's 0.505 and 0.4097 are rejected (calibration).
+- Triangles (M 2.96), all four pages: the faired curve runs through the
+  triangles' base corners, 1.5 to 2.5 px below the centroid and 4 to 7 px
+  below the box centre; circles, squares and diamonds sit on the curve within
+  1 to 3 px. By the rule the curve is used (0.2390, 0.3048, 0.2651, 0.3322);
+  the box-centre values of the first reading (0.2424, 0.3083, 0.269, 0.335)
+  are kept in the file, and triangles carry an extra one-sided +0.004.
+- Page 28 M 2.30: curve 0.3801 (audit 0.3798, this revision 0.3803) against
+  the diamond centre 0.382: the curve is used.
+- Page 34 M 2.30: the curve lies on the 0.325 grid line at alpha 0 (pixel
+  map: dark band 1544 to 1547 px between the diamonds); 0.3245 (this
+  revision) and 0.3256 (audit) are within their combined error: 0.3250.
+- Pages 25 and 28, circles and squares: first reading 0.0013 to 0.0016 above
+  the curve readings (symbol centre against curve), inside the combined
+  error; curve used.
+
+Adopted (mean of the two curve readings; they agree within 0.0011 at every
+point):
+
+| Config | Fins | M | CA (alpha 0) | Reading error | Figure, PDF page |
 | --- | --- | --- | --- | --- | --- |
-| 1 | off | 1.50 | 0.3475 | +0.10 | 5(a), p. 25 |
-| 1 | off | 1.80 | 0.3334 | +0.10 | 5(a), p. 25 |
-| 1 | off | 2.30 | 0.2900 | 0.0 | 5(a), p. 25 |
-| 1 | off | 2.96 | 0.242 | -0.3 and +0.9 | 5(a), p. 25 |
-| 1 | on, 0 deg cant | 1.50 | 0.5355 | -0.28 and +0.86 | 5(b), p. 28 |
-| 1 | on, 0 deg cant | 1.80 | 0.4707 | -0.1 and +1.1 | 5(b), p. 28 |
-| 1 | on, 0 deg cant | 2.30 | 0.382 | -0.2 and +0.9 | 5(b), p. 28 |
-| 1 | on, 0 deg cant | 2.96 | 0.308 | -0.47 and +0.70 | 5(b), p. 28 |
-| 2 | off | 1.80 | 0.369 (0.3701 at -1.0, 0.3677 at +0.66, interpolated) | | 6(a), p. 34 |
-| 2 | off | 2.30 | 0.3245 | -0.06 | 6(a), p. 34 |
-| 2 | off | 2.96 | 0.269 (0.268 to 0.270) | | 6(a), p. 34 |
-| 2 | on, 0 deg cant | 1.80 | 0.505 (0.5051 at -0.13, 0.5075 at +1.0) | | 6(b), p. 37 |
-| 2 | on, 0 deg cant | 2.30 | 0.4097 | -0.17 and +0.9 | 6(b), p. 37 |
-| 2 | on, 0 deg cant | 2.96 | 0.335 | -0.4 and +1.1 | 6(b), p. 37 |
+| 1 | off | 1.50 | 0.3460 | 0.0020 | 5(a), p. 25 |
+| 1 | off | 1.80 | 0.3320 | 0.0020 | 5(a), p. 25 |
+| 1 | off | 2.30 | 0.2897 | 0.0020 | 5(a), p. 25 |
+| 1 | off | 2.96 | 0.2390 | 0.0022, +0.004 | 5(a), p. 25 |
+| 1 | on, 0 deg cant | 1.50 | 0.5343 | 0.0015 | 5(b), p. 28 |
+| 1 | on, 0 deg cant | 1.80 | 0.4690 | 0.0015 | 5(b), p. 28 |
+| 1 | on, 0 deg cant | 2.30 | 0.3801 | 0.0025 | 5(b), p. 28 |
+| 1 | on, 0 deg cant | 2.96 | 0.3048 | 0.0015, +0.004 | 5(b), p. 28 |
+| 2 | off | 1.80 | 0.3683 | 0.0015 | 6(a), p. 34 |
+| 2 | off | 2.30 | 0.3250 | 0.0015 | 6(a), p. 34 |
+| 2 | off | 2.96 | 0.2651 | 0.0015, +0.004 | 6(a), p. 34 |
+| 2 | on, 0 deg cant | 1.80 | 0.5084 | 0.0015 | 6(b), p. 37 |
+| 2 | on, 0 deg cant | 2.30 | 0.4124 | 0.0018 | 6(b), p. 37 |
+| 2 | on, 0 deg cant | 2.96 | 0.3322 | 0.0015, +0.004 | 6(b), p. 37 |
 
-Configuration 2 has no M 1.50 data in figs. 6(a) and 6(b). M 3.96 and 4.63
-were not read (outside the range served).
+Add the report's +-0.004. Configuration 2 has no M 1.50 data in figs. 6(a)
+and 6(b). Fig. 6(c)'s caption reads "dF = -2 deg" while the list of figures
+says 2 deg (not used here).
 
-Measured fin increment (fins on minus fins off, computed from the table):
+Measured fin increment (fins on minus fins off; reading error +-0.003 each,
+`arcas_fin_check_v2_output.txt`):
 
 | M | Config 1 | Config 2 |
 | --- | --- | --- |
 | 1.50 | 0.188 | |
-| 1.80 | 0.137 | 0.136 |
-| 2.30 | 0.092 | 0.085 |
-| 2.96 | 0.066 | 0.066 |
+| 1.80 | 0.137 | 0.140 |
+| 2.30 | 0.090 | 0.087 |
+| 2.96 | 0.066 | 0.067 |
 
-The report notes (p. 6) that the chamber axial force of configuration 1 is low
-at M 1.50 and 1.80 near alpha = 0, "particularly for the fin-off condition",
-attributed to the reflexed lip, whose effect is masked "when separation occurs
-over the afterbody boattail at the higher Mach numbers or the boundary layer is
-thickened by the addition of the fins". So part of the fin increment is a
-change of base force.
+## Chamber axial force, TN D-4014 fig. 4 (first reading; second pending)
 
-Not digitised: fig. 4 (chamber axial-force coefficient). Its symbols overlap
-heavily on a 0 to 0.12 scale with 0.04 labels; a reading better than about
-+-0.005 on values of 0.01 to 0.05 was not achieved in the time available.
+`d4014/tn-d-4014_fig4_chamber.csv` (method in its header). Near alpha 0:
+
+| Config | M | Fins off | Fins on, dF 0 | Change |
+| --- | --- | --- | --- | --- |
+| 1 | 1.50 | 0.0055 (+-0.0015) | 0.033 (+-0.006) | +0.028 (+-0.006) |
+| 1 | 1.80 | 0.012 (+-0.003) | 0.033 (+-0.006) | +0.021 (+-0.007) |
+| 1 | 2.30 | 0.031 (+-0.002) | 0.033 (+-0.006) | +0.002 (+-0.006) |
+| 1 | 2.96 | 0.0265 (+-0.003) | 0.033 (+-0.006) | +0.0065 (+-0.007) |
+| 2 | 1.80 | 0.030 (+-0.002) | 0.039 (+-0.002) | +0.009 (+-0.004) |
+| 2 | 2.30 | 0.0235 (+-0.003) | 0.029 (+-0.003) | +0.0055 (+-0.005) |
+| 2 | 2.96 | 0.0215 (+-0.003) | 0.022 (+-0.003) | +0.0005 (+-0.005) |
+
+In the config 1 fins-on panel the four Mach numbers overlap in one band
+(0.027 to 0.040) and cannot be told apart in the 1-bit scan, so each carries
+the band. The chamber coefficient is on the body cross-section; if the
+chamber pressure acts on the whole 1.470 in base (the 1.250 in rear-view
+diameter taken as the chamber), the base change is up to (1.470/1.250)^2 =
+1.38 times the chamber change (computed).
 
 ## Digitised TN D-4013 summary curves (alpha about 0, roll 0)
 

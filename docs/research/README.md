@@ -12,18 +12,24 @@ as their authors wrote them.
 ## `total-drag/`: research for Phase B (total drag)
 
 - `draft.md`: a draft design record for total drag (skin friction, base
-  drag, fins, and the validation data for the total). It calls itself 0007;
-  0007 is now [the skin-friction record](../design/0007-skin-friction.md),
-  so it will be 0008 once accepted. **Status: under revision.** An
-  independent audit (`audit/audit.md`) confirmed its scripts and nearly all
-  of its citations, and found errors that the draft does not yet correct:
-  misread curves of NACA TN 3819 fig. 18, a calibration error and an
-  unstated symbol convention in NASA TN D-4014 figs. 5 and 6, and three
-  conclusions its sources do not support (that the fin shortfall on the
-  ARCAS models points to the base; a symmetric base-drag band, where the
-  evidence suggests the correlation is biased high; and a "could claim"
-  list that no validation case in the draft matches). Read the audit with
-  the draft.
+  drag, fins, and the validation data for the total), titled 0008, the
+  number it will take once accepted. **Status: revised after an
+  independent audit (`audit/audit.md`), whose corrections it adopts; a
+  check of the revision is in progress.** The audit confirmed the
+  scripts and nearly all citations, and found misread curves of NACA TN
+  3819 fig. 18, a calibration error and an unstated symbol convention in
+  NASA TN D-4014 figs. 5 and 6, and three conclusions their sources did not
+  support. The revision resolves the readings (a third, independent
+  reading of TN D-4014 agrees with the audit's within 0.0011), states one
+  reading rule for symbols, takes the friction band from
+  [0007](../design/0007-skin-friction.md), restates the base band as
+  asymmetric and the band sum as a minimum, derives the fin band, and
+  adds a rule that no gate reuses data that set a band. Its validation
+  search found one total-drag set matching a simple finned rocket, the
+  Basic Finner in free flight (fins ending at the base), so a first
+  release could claim only that configuration class, and only if that
+  gate passes. Its "Changes from the first draft" list ends the file.
+  Several new transcriptions have one reading so far (marked as such).
 - `data/`: transcriptions (ARCAS, RM A53D02, TN 3097, TN 3819 fig. 18) and
   the outputs of the scripts.
 - `scripts/`: the computations and digitising aids (Python 3, numpy and
@@ -35,6 +41,9 @@ as their authors wrote them.
   independent re-implementations (van Driest II, the exact double wedge,
   linear 3D fin drag by the supersonic area rule), and two overlays of TN
   3819 fig. 18 showing where the disputed curve readings fall.
+- `overlays/d4014/`: the revision's overlays of its TN D-4014 readings.
+  Several scripts read page images rendered from the reports, which are
+  not copied here (see below).
 
 The source reports themselves (NACA and NASA, from the NASA Technical
 Reports Server) are not copied here; each file cites its report by its NTRS
