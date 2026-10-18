@@ -108,7 +108,10 @@ export const DRAG_FLOOR = 1e-3;
  * lies at most 3.4e-5 of the value from the reference (the 5-caliber
  * ogive at Mach 2, observed order 2.11); the allowance is about twice
  * that. The cone at Mach 1.3, 5 deg, not settled on nj = 80, settles on
- * nj = 160 within 7.2e-6.
+ * nj = 160 within 7.2e-6. Not covered by it: 10-caliber noses at Mach 1.2
+ * and 1.5, which converge faster than second order, so that the capped
+ * extrapolation misses by 1.3e-4 to 6.0e-4; their bands, placed on the
+ * finest grid's value, still contain its error (by 1.56 to 2.05 times).
  */
 export const FITTED_DRAG_FLOOR = 7e-5;
 /**

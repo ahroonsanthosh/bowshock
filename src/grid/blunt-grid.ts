@@ -29,6 +29,13 @@ export interface BluntGridOptions {
   /** Refinement of the base grid: 1, 2, 4, ...; every coarser node is kept. Default 1. */
   readonly refinement?: number;
   readonly mach: number;
+  /**
+   * Apply the generated grids' quality gates (default true). Off where the
+   * grid is not the one solved for the answer: the captured start of a
+   * shock fit, and the lines of its finer grids, whose own grids are
+   * gated once the shock has settled (FITTED_QUALITY_LIMITS).
+   */
+  readonly gated?: boolean;
 }
 
 /** A straight grid line from the body: its body point, direction and length. */
@@ -297,6 +304,7 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     lines.map((l) => l.h),
     nj,
     R,
+    options.gated ?? true,
   );
   return { grid, lines, outerStandoff, outerAngle };
 }

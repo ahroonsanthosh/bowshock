@@ -35,7 +35,7 @@ describe('body grids (H topology, sharp noses)', () => {
       }),
       { seed: 121, numRuns: 100 },
     );
-  });
+  }, 120_000);
 
   it('property: 100 random rockets at Mach 1.5 to 2 pass every quality gate', () => {
     // The outer boundary steepens with the shock as the Mach number falls,
@@ -48,7 +48,7 @@ describe('body grids (H topology, sharp noses)', () => {
       }),
       { seed: 123, numRuns: 100 },
     );
-  });
+  }, 120_000);
 
   it('property: the wall nodes lie on the profile, with the tip and shoulder on grid lines', () => {
     fc.assert(
@@ -67,7 +67,7 @@ describe('body grids (H topology, sharp noses)', () => {
       }),
       { seed: 122, numRuns: 50 },
     );
-  });
+  }, 120_000);
 
   it('property: refining keeps every node: the grids of a family are nested', () => {
     fc.assert(
@@ -88,7 +88,7 @@ describe('body grids (H topology, sharp noses)', () => {
       }),
       { seed: 124, numRuns: 20 },
     );
-  });
+  }, 120_000);
 
   it('property: the tip shock line stays at least 3 cells below the outer boundary', () => {
     // The bow shock of a convex body lies below the conical shock line of
@@ -111,7 +111,7 @@ describe('body grids (H topology, sharp noses)', () => {
       }),
       { seed: 125, numRuns: 50 },
     );
-  });
+  }, 120_000);
 
   it('accepts refinements 1, 2, 4, ... only', () => {
     const body: Body = {

@@ -42,7 +42,14 @@
  * better than its knowledge of the rate: a known rate faster than the
  * true one (0.9 for 0.97) leaves up to 7.5 times the noise, and a slow
  * component that never changes by ten times the noise while a faster one
- * dominates (1e4 times the noise at 0.2 with 200 at 0.9) up to 12.
+ * dominates (1e4 times the noise at 0.2 with 200 at 0.9) up to 12. A
+ * transient whose changes grow and then stop at once gives a measured
+ * rate of 1 or more, which is not used, so the change alone is tested:
+ * with a slow component of 40 times the noise at 0.98 per check hidden
+ * behind it, 32 times the noise was left (an independent review's
+ * reproduction). Refusing to settle on such a rate would not help: a
+ * transient that stopped at once leaves no later change to measure, so
+ * an iteration that has truly converged would never settle either.
  */
 export class SettlingValue {
   private readonly values: number[] = [];
