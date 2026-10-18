@@ -198,7 +198,10 @@ On the GPU too, a bare 20 degree cone at Mach 3 on nj = 20, 40 and 80
 (`verifiedFittedDragGpu`, before the domain was extended past the base):
 +2.52e-4, +6.22e-5, +1.53e-5 of the exact drag, falling by 4.05 (order
 2.02) and extrapolating to within 5.7e-8 at that order, 3.2e-7 at second
-order; the finest band, 2.0e-5, contains the actual error.
+order; the finest band, 2.0e-5, contains the actual error. Re-measured on
+the CPU with the domain past the base (review of 2026-10-18, commit
+e2ec73f): +2.510e-4 and +6.222e-5 on nj = 20 and 40, the same to three
+figures, falling by 4.03.
 
 **Each grid starts from the one before** (`startedFrom` in
 `src/analysis/gpu-fitted-flow.ts`). The sharp-nose grids are nested:

@@ -159,14 +159,21 @@ describe('method of characteristics on the TN 3716 ogive (M = 1.98)', () => {
     }
   }, 60_000);
 
-  it('gives the forebody pressure drag, converged to 1e-6: Cd = 0.098803', () => {
-    // An exact reference for drag on a curved nose. Measured when written:
-    // 0.09880130 (160 intervals), 0.09880289 (320), 0.09880328 (640),
-    // 0.09880338 (1280), converging at second order to 0.0988034.
+  it('gives the forebody pressure drag at second order, extrapolating to Cd = 0.0988034', () => {
+    // A converged reference for drag on a curved nose, which the fitted
+    // solver is held to within 1e-5 of its value and less (0006), so it is
+    // held here to well below that. Measured when written: 0.09880130 (160
+    // intervals), 0.09880289 (320), 0.09880328 (640), 0.09880338 (1280):
+    // the differences fall by 4.08, and the second-order extrapolation from
+    // 320 and 640 is 0.09880341.
     const drag = (n: number) => noseDrag(ogive, 1.98, solve(n, 1e-3).wall);
-    const fine = drag(640);
-    expect(Math.abs(drag(320) - fine)).toBeLessThan(1e-6);
-    expect(fine).toBeCloseTo(0.098803, 5);
+    const [d160, d320, d640] = [drag(160), drag(320), drag(640)];
+    const ratio = (d320 - d160) / (d640 - d320);
+    expect(ratio).toBeGreaterThan(3.5);
+    expect(ratio).toBeLessThan(4.6);
+    expect(Math.abs(d640 - d320)).toBeLessThan(6e-7);
+    const extrapolated = d640 + (d640 - d320) / 3;
+    expect(Math.abs(extrapolated - 0.0988034)).toBeLessThan(5e-8);
   }, 120_000);
 
   it('balances the mass of its march, apart from the starting line defect of order start', () => {

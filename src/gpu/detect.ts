@@ -50,7 +50,7 @@ export async function detectGpu(gpu: GpuEntryPoint | undefined): Promise<GpuSupp
     return {
       kind: 'unavailable',
       reason:
-        'This browser does not provide WebGPU. bowshock will use the slower CPU engine at reduced resolution.',
+        'This browser does not provide WebGPU. The shock tube and the supersonic ramp run on the slower CPU engine instead; the nose drag page needs WebGPU.',
     };
   }
 

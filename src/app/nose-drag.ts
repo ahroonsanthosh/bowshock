@@ -53,7 +53,17 @@ function shape(): NoseShape {
 
 shapeSelect.addEventListener('change', () => {
   parameterField.hidden = !(shapeSelect.value === 'secant' || shapeSelect.value === 'parabolic');
+  // A hidden field is not asked for: disabled, it is left out of the
+  // form's validation, which refuses an empty number (it would read as 0).
+  parameterInput.disabled = parameterField.hidden;
 });
+
+/** The case as asked, repeated with its result. */
+function caseText(): string {
+  const name = shapeSelect.selectedOptions[0]?.textContent ?? shapeSelect.value;
+  const parameter = parameterField.hidden ? '' : ` (parameter ${parameterInput.value})`;
+  return `${name}${parameter}, nose length ${noseLengthInput.value} and body length ${bodyLengthInput.value} calibers, Mach ${machInput.value}`;
+}
 
 function show(text: string, kind: 'ok' | 'warn' | '' = ''): void {
   result.textContent = text;
@@ -124,6 +134,7 @@ async function run(gpu: GPUDevice): Promise<void> {
     cylinderLength: Number(bodyLengthInput.value),
   };
   const mach = Number(machInput.value);
+  const asked = caseText();
   levels.tBodies[0]!.replaceChildren();
   levels.hidden = true;
   note.hidden = true;
@@ -161,13 +172,13 @@ async function run(gpu: GPUDevice): Promise<void> {
         break;
       case 'invalid':
         show(
-          `No result: on the grid at refinement ${outcome.refinement}, ${outcome.reason}.`,
+          `${asked}. No result: on the grid at refinement ${outcome.refinement}, ${outcome.reason}.`,
           'warn',
         );
         break;
       case 'not-converged':
         show(
-          `No result: the grid at refinement ${outcome.refinement} did not converge (${outcome.reason}).`,
+          `${asked}. No result: the grid at refinement ${outcome.refinement} did not converge (${outcome.reason}).`,
           'warn',
         );
         break;
@@ -179,7 +190,7 @@ async function run(gpu: GPUDevice): Promise<void> {
             : ` The grid at refinement ${outcome.stopped.refinement} was not solved: ${outcome.stopped.reason}; the result is from the grids before it.`;
         if (outcome.uncertainty !== undefined) {
           show(
-            `Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`,
+            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`,
             'ok',
           );
         } else {
@@ -190,7 +201,7 @@ async function run(gpu: GPUDevice): Promise<void> {
                 ? 'no finer grid is offered'
                 : 'choosing 320 cells across may verify it';
           show(
-            `No error band: ${e.kind === 'unresolved' ? e.reason : 'none measured'}. The finest grid's wave Cd, ${e.value.toFixed(5)}, is not verified; ${finer}.${stopped}`,
+            `${asked}. No error band: ${e.kind === 'unresolved' ? e.reason : 'none measured'}. The finest grid's wave Cd, ${e.value.toFixed(5)}, is not verified; ${finer}.${stopped}`,
             'warn',
           );
           note.hidden = false;
@@ -208,7 +219,7 @@ async function run(gpu: GPUDevice): Promise<void> {
         ? `The GPU was lost (${lost}); reload the page to start it again.`
         : error instanceof GpuExecutionError
           ? `The GPU failed: ${reason}.`
-          : `Cannot solve this case: ${reason}.`,
+          : `${asked}. Cannot solve this case: ${reason}.`,
       'warn',
     );
   } finally {

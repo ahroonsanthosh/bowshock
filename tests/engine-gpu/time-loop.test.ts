@@ -12,6 +12,7 @@ import {
   STATUS_NON_PHYSICAL,
   StepLedger,
   advanceInBatches,
+  hasReached,
   nextBatchSize,
   stagePlan,
   type StateIndex,
@@ -33,6 +34,21 @@ describe('stagePlan', () => {
         expect(stage.coefficients).toBe(n);
       });
     }
+  });
+});
+
+describe('hasReached', () => {
+  it('arrives at tEnd on the CPU and at its f32 value on the GPU, whichever is lower', () => {
+    // f32 rounds the end times of Toro's tests 2 to 5 up (0.15, 0.012 and
+    // 0.035, by 4.0e-8, 8.7e-9 and 4.3e-9 relative), 0.7 and 0.13 down (by
+    // 1.7e-8 and 3.7e-8); 0.25 is exact. The CPU engines land on tEnd
+    // exactly, the GPU on its f32 value.
+    for (const tEnd of [0.15, 0.012, 0.035, 0.7, 0.13, 0.25]) {
+      expect(hasReached(tEnd, tEnd), `CPU at ${tEnd}`).toBe(true);
+      expect(hasReached(Math.fround(tEnd), tEnd), `GPU at ${tEnd}`).toBe(true);
+      expect(hasReached(Math.min(tEnd, Math.fround(tEnd)) * (1 - 1e-8), tEnd)).toBe(false);
+    }
+    expect(Math.fround(0.15)).toBeGreaterThan(0.15 * (1 + 1e-9));
   });
 });
 

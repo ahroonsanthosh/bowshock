@@ -91,9 +91,12 @@ export interface GpuState1D {
   readonly energy: Float32Array;
 }
 
-/** Primitive variables of cell i of a state read back from the GPU. */
+/**
+ * Primitive variables of cell i of a state read back from the GPU, with
+ * gamma rounded to 32 bits as the GPU solves with it (gpuPrimitive2D).
+ */
 export function gpuPrimitive(state: GpuState1D, i: number, gamma: number): Primitive1D {
-  return primitiveFromConserved(state.rho[i]!, state.mom[i]!, state.energy[i]!, gamma);
+  return primitiveFromConserved(state.rho[i]!, state.mom[i]!, state.energy[i]!, Math.fround(gamma));
 }
 
 interface Pipelines {
