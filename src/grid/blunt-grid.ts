@@ -111,6 +111,8 @@ export interface BluntGridTuning {
    * normal, in multiples of the distance to the outer boundary.
    */
   readonly smoothing: number;
+  /** The same at a sharp tip, where the normal jumps; the window widens from there at the slope limit. */
+  readonly tipSmoothing: number;
   /** Largest rate of change of that half-width along the body. */
   readonly maxWidthSlope: number;
 }
@@ -120,6 +122,7 @@ export const DEFAULT_TUNING: BluntGridTuning = {
   arcRadiusFactor: 2,
   tipScaleFactor: 2,
   smoothing: 0.25,
+  tipSmoothing: 0.05,
   maxWidthSlope: 0.5,
 };
 
@@ -154,9 +157,10 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   }
   if (!(mach > 1)) throw new RangeError('blunt-body grids are for supersonic free streams');
   const { nose } = body;
-  if (Number.isFinite(noseTipSlope(nose))) {
-    throw new RangeError('the nose is sharp: use the grid for sharp noses');
-  }
+  // A sharp tip is served too, for the Mach numbers at which its bow
+  // shock detaches: the limit of a two-scale nose, whose normal turns at
+  // the tip instead of over the length of a blunt part.
+  const sharp = Number.isFinite(noseTipSlope(nose));
   const L = nose.length;
   const R = nose.baseRadius;
 
@@ -232,6 +236,7 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     throw new RangeError('noses that are nearly flat at the tip are not supported yet');
   }
   const tipScale = (() => {
+    if (sharp) return 0;
     if (noseRadius(nose, L) > L) return L;
     let low = 0;
     let high = L;
@@ -242,7 +247,10 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     }
     return 0.5 * (low + high);
   })();
-  const scale = Math.max(tipRadius, Math.min(R, tuning.tipScaleFactor * tipScale));
+  // A sharp tip has no blunt part: its detached shock stands off at a
+  // distance set by the body and the Mach number, which the captured
+  // start measures, so the generator's own boundary is at the body scale.
+  const scale = sharp ? R : Math.max(tipRadius, Math.min(R, tuning.tipScaleFactor * tipScale));
 
   // Outer boundary: an arc of arcRadiusFactor times the length scale,
   // standoffFactor Billig standoffs ahead of the tip, until its tangent
@@ -349,6 +357,14 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     const p = surface(s);
     widths[k] = Math.min(tuning.smoothing * lengthAlong(s, p.nx, p.ny), sEnd - s);
   }
+  // At a sharp tip the normal jumps, and the window spreads the jump into
+  // a fan linear in s over its width, which leaves the first wall cells
+  // at 90 deg less most of the jump (on a 37 deg tip, 42 deg). A window
+  // that starts narrow at the tip and widens at the slope limit fans the
+  // lines geometrically instead, most in the first cell (0.23 of the jump,
+  // the most the size-ratio gate allows): the first cell then meets the
+  // wall at 90 deg less 0.77 of the jump.
+  if (sharp) widths[0] = Math.min(widths[0]!, tuning.tipSmoothing * lengthAlong(0, -1, 0));
   for (let k = 1; k <= WIDTH_SAMPLES; k++) {
     widths[k] = Math.min(
       widths[k]!,
@@ -444,7 +460,7 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     R,
     options.gated ?? true,
   );
-  return { grid, lines, outerStandoff, outerAngle, tipScale, scale, twoScale: scale < R };
+  return { grid, lines, outerStandoff, outerAngle, tipScale, scale, twoScale: sharp || scale < R };
 }
 
 /**

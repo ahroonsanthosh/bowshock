@@ -89,7 +89,10 @@ describe('body grids (C topology, blunt noses)', () => {
       ...hemisphereCylinder,
       nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 },
     };
-    expect(() => bluntBodyGrid(sharp, { nj: 20, mach: 3 })).toThrow(/sharp/);
+    // A sharp tip is served as the limit of a two-scale nose (its shock
+    // detaches at low Mach numbers): the generator's own grid only has to
+    // contain the shock, and the family's grid is built on it (0006).
+    expect(bluntBodyGrid(sharp, { nj: 20, mach: 3, gated: false }).twoScale).toBe(true);
     // A paraboloid half as long as its radius meets the cylinder at 26.6 deg.
     const power: Body = {
       ...hemisphereCylinder,

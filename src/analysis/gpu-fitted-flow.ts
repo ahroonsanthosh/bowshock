@@ -9,7 +9,6 @@ import { isGpuFlux } from '../engine-gpu/euler1d-gpu';
 import { GpuMemoryLimitError, type GpuEuler2DConfig } from '../engine-gpu/euler2d-gpu';
 import { fitShockGpu, type GpuShockFit } from '../engine-gpu/shock-fitting-gpu';
 import type { Body } from '../geometry/body';
-import { noseTipSlope } from '../geometry/nose';
 import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
 import type { StructuredGrid } from '../grid/structured';
 import { refineUntilVerified } from '../verification/grid-convergence';
@@ -18,6 +17,7 @@ import {
   bluntFitFamily,
   bluntStartInChunks,
   sharpFitProblem,
+  usesBluntFamily,
   wallDrag,
   type FitProblem,
 } from './fitted-flow';
@@ -232,7 +232,7 @@ export async function verifiedFittedDragGpu(
     return drag;
   };
   try {
-    if (!Number.isFinite(noseTipSlope(body.nose))) {
+    if (usesBluntFamily(body, options.mach, options.gamma)) {
       const familyOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ };
       const start = await bluntStartInChunks(body, familyOptions, {
         chunk: START_CHUNK,

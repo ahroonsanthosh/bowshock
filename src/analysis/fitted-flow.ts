@@ -639,6 +639,24 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
   return fittedFlow(bluntFitProblem(body, options), options.maxIterations);
 }
 
+/**
+ * Whether a body is solved as a blunt family (the C grid round the tip,
+ * the bow shock fitted from a captured start): blunt noses, and sharp
+ * tips whose bow shock detaches at this Mach number, which the sharp
+ * problem's inflow plane cannot serve.
+ */
+export function usesBluntFamily(body: Body, mach: number, gamma: number): boolean {
+  const slope = noseTipSlope(body.nose);
+  if (!Number.isFinite(slope)) return true;
+  try {
+    taylorMaccoll(mach, Math.atan(slope), gamma);
+    return false;
+  } catch (error) {
+    if (error instanceof RangeError && /detaches/.test(error.message)) return true;
+    throw error;
+  }
+}
+
 /** Steps of the captured solution on the base grid that places the first shock. */
 const CAPTURED_START_STEPS = 3000;
 /**
@@ -682,7 +700,7 @@ export async function verifiedFittedDrag(
   body: Body,
   options: VerifiedFittedDragOptions,
 ): Promise<VerifiedFittedDrag> {
-  const blunt = !Number.isFinite(noseTipSlope(body.nose))
+  const blunt = usesBluntFamily(body, options.mach, options.gamma)
     ? bluntFitFamily(body, { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ })
     : null;
   try {
