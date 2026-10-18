@@ -325,9 +325,53 @@ against 4.6e-4 with the shock captured. The floor for fitted drag
 +0.00784% there, the finest triple at order 1.98, extrapolated within
 7.2e-6 of the exact value, and its band (8.9e-5) contains its error; the
 orders of its two triples (2.39 and 1.98) agree within the procedure's
-0.5, so it would be given a band. Grids that fail the quality gates (wall cells at under 60 deg on
-steep tips, aspect ratios above 10 on long bodies) and slender noses at
-low Mach numbers are being measured before the gates are reconsidered.
+0.5, so it would be given a band. Grids that fail the generated grids'
+quality gates, and slender noses at low Mach numbers, are measured in
+the next section.
+
+## The quality gates on fitted grids
+
+The page refuses a fitted grid that fails its quality gates
+(`FITTED_QUALITY_LIMITS`, `src/grid/quality.ts`). The gates of the
+generated grids (0004: wall cells at 60 deg or more, aspect ratios of 10
+or less) were set for captured shocks; on fitted grids they were
+measured by an audit agent on families the old gates refuse, against
+exact or converged reference drags (CPU, nj = 20, 40 and 80; MOC on 1280
+intervals, its own error 2e-7 to 1e-5):
+
+| Family                                 | Wall angle | Aspect    | nj = 20  | nj = 40  | nj = 80  | Order |
+| -------------------------------------- | ---------- | --------- | -------- | -------- | -------- | ----- |
+| Secant ogive (0.5), 1 cal., M 3        | 53.4-53.8  | 8.8-9.3   | +4.85e-4 | +1.26e-4 | +3.20e-5 | 1.93  |
+| Parabolic (1), 1 cal., M 5             | 44.5-44.9  | 16.3-17.4 | -7.2e-5  | -2.3e-7  | +1.8e-6  | none  |
+| Cone (26.6 deg), 10 cal. cylinder, M 3 | 62.9-63.2  | 11.4-11.9 | +1.88e-4 | +4.69e-5 |          | 2.01  |
+| Tangent ogive, 10 cal., M 1.2          | 80.4-83.3  | 10.6-11.6 | +3.74e-2 | +7.03e-3 | +1.31e-3 | 2.41  |
+
+The secant ogive converges cleanly with its wall cells at 53.4 deg: its
+extrapolation is 1.6e-6 off and its band contains its error. The
+parabolic nose, at 44.5 deg and aspect ratios of 17, is within 2.3e-6 of
+its reference on the finer grids, but its error crosses zero, so no
+order is measured and only the allowance of 7e-5 covers it (the page,
+with the GPU's noise, would find its last change too small to measure,
+and give no band). The aspect ratios of 10.6 to 11.9 show no effect: the
+10-caliber ogive at Mach 1.2 converges as the same nose at Mach 1.5, at
+aspect ratios below 9, does. So on fitted grids the wall cells must be at
+50 deg or more, between the two noses, which serves tips up to about 40
+deg (the wall cell's angle is about 90 deg less the tip's half-angle),
+and the aspect ratio at most 12, just above the largest measured at a
+steady order. The measurements of the finer grids still running (the
+cone on nj = 80, the slender noses on nj = 160) are to be added.
+
+**Slender noses at low Mach numbers.** The 10-caliber noses at Mach 1.2
+and 1.5 (a tangent ogive and a cone) are 1.2% to 3.7% off on nj = 20,
+five to ten times the errors of the shorter noses above, and converge
+faster than second order (orders 2.32 to 2.41 through nj = 80). The
+procedure's extrapolation, capped at second order, then misses the
+reference by 1.3e-4 to 6.0e-4, two to nine times the allowance; but the
+band is placed on the finest grid's value, and with the order above 2 it
+overestimates that value's error: on nj = 80 every band contains its
+error, by 1.56 to 1.82 times, before the allowance is added. Whether the
+page's four grids (to nj = 160) give these noses a band is measured
+next.
 
 **Why the order dips at low Mach numbers on cone-cylinders** (found by
 an audit agent on Mach 1.5, 20 deg). The error is two errors of opposite
@@ -393,9 +437,8 @@ on their own families, is in progress.
 - One-sided reconstruction at a nose's corner with the cylinder: cleaner
   second order on cone-cylinders at low Mach numbers, at the cost of
   wider bands (see above).
-- The floor on grids the quality gates refuse (steep tips, long bodies)
-  and on slender noses at low Mach numbers, to set the gates for fitted
-  grids on evidence (in progress); cones at Mach 5 on nj = 80.
+- The finer grids of the gate and slender-nose families (in progress);
+  cones at Mach 5 on nj = 80.
 - Noses whose bow shock is attached at the tip but detaches downstream,
   and the fitted shock past the base.
 - Blunt noses on the drag page: validation of blunt-nose drag (the

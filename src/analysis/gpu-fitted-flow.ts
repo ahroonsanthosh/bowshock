@@ -10,7 +10,7 @@ import { GpuMemoryLimitError, type GpuEuler2DConfig } from '../engine-gpu/euler2
 import { fitShockGpu, type GpuShockFit } from '../engine-gpu/shock-fitting-gpu';
 import type { Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
-import { gridQuality, qualityFailures } from '../grid/quality';
+import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
 import type { StructuredGrid } from '../grid/structured';
 import { refineUntilVerified } from '../verification/grid-convergence';
 import {
@@ -200,12 +200,12 @@ export async function verifiedFittedDragGpu(
         `the fit stopped after ${fit.iterations} iterations with the shock moving at ${fit.maxSpeed.toExponential(1)} of the sound speed or the drag still changing`,
       );
     }
-    // The grid the shock settled on must meet the quality gates of every
-    // generated grid (docs/design/0004-grids.md).
-    const failures = qualityFailures(gridQuality(fit.grid));
+    // The grid the shock settled on must meet the quality gates set for
+    // fitted grids on measurement (FITTED_QUALITY_LIMITS).
+    const failures = qualityFailures(gridQuality(fit.grid), FITTED_QUALITY_LIMITS);
     if (failures.length > 0) {
       throw new InvalidCase(
-        `the grid on the fitted shock fails its quality checks (${failures.join('; ')}): a limit of the present grids, under review, met by steep tips and some long bodies`,
+        `the grid on the fitted shock fails its quality checks (${failures.join('; ')}): a limit of the present grids, met by tips steeper than about 40 deg and some long bodies`,
       );
     }
     const outflow = outflowMach(problem.configFor(fit.grid, []), fit.cell);

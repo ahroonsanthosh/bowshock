@@ -103,8 +103,8 @@ them; the fitted-drag families are recorded in
   whose shock detaches; tips whose flow crosses the solver's starting
   plane, just behind the tip, at an axial Mach number below 1 (of 40
   noses of 1 to 3 calibers tried at Mach 1.2, 19 detach their shock and
-  13 are refused by this test); tips steeper than 30
-  deg (a limit of the present grids, under review); bodies whose flow at
+  13 are refused by this test); tips steeper than about 40 deg (a limit
+  of the present grids, set on measurement); bodies whose flow at
   their end is subsonic; grids failing the other quality gates, as on
   some long bodies.
 

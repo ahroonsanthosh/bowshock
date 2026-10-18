@@ -25,6 +25,7 @@ import {
   type BluntGridOptions,
   type GridLine,
 } from '../grid/blunt-grid';
+import { FITTED_QUALITY_LIMITS } from '../grid/quality';
 import { columnPositions } from '../grid/spacing';
 import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
@@ -438,7 +439,10 @@ function bluntCapture(
   const { mach, gamma, nj } = options;
   const free = freeStreamAt(mach, gamma).state;
   const base = bluntBodyGrid(body, { nj, mach, outerBoundary, gated: false });
-  if (outerBoundary || !base.twoScale) assertGridQuality(base.grid);
+  // The grid on a captured shock is a fitted grid, gated as one; the
+  // generator's own grid as every generated grid.
+  if (outerBoundary) assertGridQuality(base.grid, FITTED_QUALITY_LIMITS);
+  else if (!base.twoScale) assertGridQuality(base.grid);
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   const solver = new Euler2D({
     ...engineConfig(base.grid, gamma, axis, []),
@@ -517,15 +521,19 @@ export function bluntFitFamily(
   const free = freeStreamAt(mach, gamma).state;
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   return (refinement) => {
-    const fine =
-      refinement === 1
-        ? start.lines
-        : bluntBodyGrid(body, {
-            nj: baseNj,
-            refinement,
-            mach,
-            outerBoundary: start.outerBoundary,
-          }).lines;
+    const fine = (() => {
+      if (refinement === 1) return start.lines;
+      const { outerBoundary } = start;
+      const refined = bluntBodyGrid(body, {
+        nj: baseNj,
+        refinement,
+        mach,
+        outerBoundary,
+        gated: !outerBoundary,
+      });
+      if (outerBoundary) assertGridQuality(refined.grid, FITTED_QUALITY_LIMITS);
+      return refined.lines;
+    })();
     const heights = nestedHeights(start.lines, start.heights, fine, refinement);
     const nj = baseNj * refinement;
     // Each line keeps the node fractions of the captured shock's height.

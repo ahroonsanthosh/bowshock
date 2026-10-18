@@ -21,7 +21,7 @@
 
 import { validateBody, type Body } from '../geometry/body';
 import { noseRadius, noseTipSlope } from '../geometry/nose';
-import { QUALITY_LIMITS, gridQuality, qualityFailures } from './quality';
+import { QUALITY_LIMITS, gridQuality, qualityFailures, type QualityLimits } from './quality';
 import { GridQualityError } from './body-grid';
 import { columnPositions } from './spacing';
 import { gridFromFunction, type StructuredGrid } from './structured';
@@ -513,8 +513,11 @@ export function gridOnLines(
 }
 
 /** Throws a GridQualityError naming the quality gates the grid fails, if any. */
-export function assertGridQuality(grid: StructuredGrid): void {
-  const failures = qualityFailures(gridQuality(grid));
+export function assertGridQuality(
+  grid: StructuredGrid,
+  limits: QualityLimits = QUALITY_LIMITS,
+): void {
+  const failures = qualityFailures(gridQuality(grid), limits);
   if (failures.length > 0) {
     throw new GridQualityError(
       `the generated grid fails its quality checks: ${failures.join('; ')}`,
