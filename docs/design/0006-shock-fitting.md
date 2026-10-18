@@ -75,7 +75,14 @@ captured on the base grid built on it is the start (`secondCapture`).
 The generator's boundary is 8 times too far at the tip and 2.4 times
 along the nose, and the lines' spacing and node fractions are sized from
 it, so the fit on it would leave outer cells 10 times wider than tall
-at the tip. **Sharp noses** start just behind
+at the tip. That boundary continues its last segment to the last line
+(the captured shock's last height is its last column's) and is
+smoothed by 50 passes of 1-2-1, which the start is not: at Mach 1.2 a
+captured shock 7 to 10 radii out is stepped enough after the start's 20
+passes to jump the outer cells by 1.4. A sharp tip whose bow shock
+detaches at the Mach number asked for (`usesBluntFamily`) is solved as
+a blunt family on the same grids (0004), since the sharp problem's
+inflow plane cannot serve it. **Sharp noses** start just behind
 the tip, at x0 = 1e-3 of the nose length, with the conical flow of the
 tip's half-angle (Taylor-Maccoll) as the inflow there and the tip's
 conical shock as the first guess; the part ahead of x0 adds the tip

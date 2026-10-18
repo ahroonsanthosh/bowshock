@@ -155,7 +155,8 @@ Refused, with the reason: noses meeting the body at more than 15 deg
 (power series of exponent 1/2 shorter than two radii); nearly flat tips
 (radius of curvature above 10 body radii); and, by the gates, bodies too
 short for the lines to turn vertical by their end at low Mach numbers (a
-hemisphere with less than 2 calibers of cylinder at Mach 1.5).
+hemisphere with less than 2 calibers of cylinder at Mach 1.5, a sharp
+tip with less than 5 at Mach 1.2).
 
 **Two-scale noses (Haack and power series).** The Haack series leaves
 the tip as r = c x^(3/4): vertical, with unbounded curvature, and blunt
@@ -191,6 +192,34 @@ series) are accepted up to 15 deg: the window averages the jump in the
 normal as it averages jumps in the curvature, and a 3-caliber nose of
 exponent 3/4 (7 deg) passes the gates with the same margins as the
 Haack noses.
+
+**Sharp tips whose bow shock detaches** (at Mach 1.2, 19 of 40 noses of
+1 to 3 calibers) are the limit of a two-scale nose: the normal jumps at
+the tip instead of turning over a blunt part, and only a grid wrapped
+round the tip, with the detached shock fitted from a captured start
+(0006), can serve them. The generator accepts them: their blunt part
+has no scale, so its own boundary is at the body scale, and the
+family's grid is built on the captured shock. The window would spread
+the jump into a fan linear in s and end it where it stops straddling
+the tip, where the outer cells jumped in width by 1.9 to 2.5; so the
+jump is taken out of the normal before the window averages it, and the
+lines fan through it as jump (1 - exp(-s / scale)), decaying by
+`fanRatio` (1.25) per wall cell at the tip. No fan within the
+size-ratio gate can put more than 0.23 of the jump into the first cell
+(its outer width can only shrink by 1.3 per cell), so the first wall
+cell meets the wall at 90 deg less 0.77 of the jump: a tip of
+half-angle delta gives about 21 + 0.77 delta deg, 50 deg (the fitted
+gate) at 38 deg. Measured on the family's grids (nj = 20, the grid the
+shock settled on): a 1-caliber tangent ogive (53 deg tip) at Mach 1.5,
+wall cells at 58.6 deg, size ratio 1.16, aspect 3.8; a 1-caliber
+parabolic nose (45 deg) at Mach 1.2, 52.4 deg, 1.24, 7.9; a 1.5-caliber
+tangent ogive (37 deg) at Mach 1.2, 45.4 deg and 1.30, refused by the
+fitted gates. At Mach 1.2 the shock stands 7 to 10 radii out along the
+cylinder, and the window, which closes at the end of the body, turns
+the lines vertical over the last two or three cells of a 2-caliber
+cylinder, where the wall widths jump by 1.6 to 1.7: those cases need 5
+calibers of cylinder, over which the turn is resolved (the same limit
+as the hemisphere's 2 calibers at Mach 1.5, further out).
 
 ## Measurements
 
