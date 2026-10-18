@@ -334,7 +334,7 @@ intervals, its own error 2e-7 to 1e-5):
 | -------------------------------------- | ---------- | --------- | -------- | -------- | -------- | ----- |
 | Secant ogive (0.5), 1 cal., M 3        | 53.4-53.8  | 8.8-9.3   | +4.85e-4 | +1.26e-4 | +3.20e-5 | 1.93  |
 | Parabolic (1), 1 cal., M 5             | 44.5-44.9  | 16.3-17.4 | -7.2e-5  | -2.3e-7  | +1.8e-6  | none  |
-| Cone (26.6 deg), 10 cal. cylinder, M 3 | 62.9-63.2  | 11.4-11.9 | +1.88e-4 | +4.69e-5 |          | 2.01  |
+| Cone (26.6 deg), 10 cal. cylinder, M 3 | 62.9-63.3  | 11.4-12.1 | +1.88e-4 | +4.69e-5 | +1.16e-5 | 2.00  |
 | Tangent ogive, 10 cal., M 1.2          | 80.4-83.3  | 10.6-11.6 | +3.74e-2 | +7.03e-3 | +1.31e-3 | 2.41  |
 
 The secant ogive converges cleanly with its wall cells at 53.4 deg: its
@@ -345,12 +345,15 @@ order is measured and only the allowance of 7e-5 covers it (the page,
 with the GPU's noise, would find its last change too small to measure,
 and give no band). The aspect ratios of 10.6 to 11.9 show no effect: the
 10-caliber ogive at Mach 1.2 converges as the same nose at Mach 1.5, at
-aspect ratios below 9, does. So on fitted grids the wall cells must be at
-50 deg or more, between the two noses, which serves tips up to about 40
-deg (the wall cell's angle is about 90 deg less the tip's half-angle),
-and the aspect ratio at most 12, just above the largest measured at a
-steady order. The measurements of the finer grids still running (the
-cone on nj = 80, the slender noses on nj = 160) are to be added.
+aspect ratios below 9, does, and the cone with 10 calibers of cylinder,
+at 11.4 to 12.1, converges at order 2.003 and extrapolates within 1.5e-7
+of its exact drag, its band containing its error. A grid's aspect ratio
+grows slowly with refinement (the cone's by 0.5 and then 0.25) towards
+the limit its generator's spacing sets. So on fitted grids the wall cells
+must be at 50 deg or more, between the two noses, which serves tips up
+to about 40 deg (the wall cell's angle is about 90 deg less the tip's
+half-angle), and the aspect ratio at most 13, above the largest measured
+at a steady order and below the parabolic nose's 17.
 
 **Slender noses at low Mach numbers.** The 10-caliber noses at Mach 1.2
 and 1.5 (a tangent ogive and a cone) are 1.2% to 3.7% off on nj = 20,
@@ -360,9 +363,11 @@ procedure's extrapolation, capped at second order, then misses the
 reference by 1.3e-4 to 6.0e-4, two to nine times the allowance; but the
 band is placed on the finest grid's value, and with the order above 2 it
 overestimates that value's error: on nj = 80 every band contains its
-error, by 1.56 to 1.82 times, before the allowance is added. Whether the
-page's four grids (to nj = 160) give these noses a band is measured
-next.
+error, by 1.56 to 1.82 times, before the allowance is added. On the
+cone at Mach 1.5 the page's procedure, on four grids to nj = 160
+(+1.15e-4 there; the two triples at orders 2.32 and 2.27, agreeing),
+gives a band of 2.35e-4 of the value, which contains the error by 2.05
+times. The 160-cell grids of the two ogives are running.
 
 **Why the order dips at low Mach numbers on cone-cylinders** (found by
 an audit agent on Mach 1.5, 20 deg). The error is two errors of opposite

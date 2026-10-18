@@ -241,7 +241,7 @@ bugs to confirm tests catch them) are used throughout.
 | M8  | Axisymmetric RANS rocket body and base                        | Body drag within 3% of data. **Gate: RANS or correlation for base**                                |
 | M9  | Mach sweeps, uncertainty bands, export, imports, CPU fallback | Release 0.1 (axisymmetric; fins by labelled correlation)                                           |
 | M10 | 3D sector Euler with fins                                     | Fin wave drag against supersonic thin-airfoil theory                                               |
-| M11 | 3D RANS sector; Basic Finner                                  | Within 5% at Mach 1.5 to 3. **Gate: cost on laptops**                                              |
+| M11 | 3D RANS sector; Basic Finner                                  | Within 5% at Mach 1 to 3. **Gate: cost on laptops**                                                |
 | M12 | Transition option, flux decision, full validation report      | Release 1.0                                                                                        |
 
 Progress (2026-10-17): M0 to M3 are done, M3 on single grid blocks; the
@@ -260,6 +260,15 @@ Power off, zero angle of attack, no plume; base drag is the least certain
 component; transonic results carry wider bands; roughness and transition are
 user inputs; constant-gamma gas. The visuals must never suggest more fidelity
 than the numbers have.
+
+The range to serve is Mach 1 to 3 (decided 2026-10-18), transonic included:
+from Mach 1 to about 1.2 the bow shock stands far ahead of the nose (at
+Mach 1 it is at infinity), the flow over the body is partly subsonic, so the
+base and the wake reach the forebody and the domain must follow the body
+past its base, with far-field boundaries whose distance is itself a
+measured error. The drag rise there is where tools disagree most; its band
+is measured on validation data (the ARCAS tests above reach Mach 0.6), not
+assumed from the supersonic cases.
 
 ## 12. Accuracy first
 
