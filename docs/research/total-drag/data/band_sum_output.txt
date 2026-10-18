@@ -1,0 +1,10 @@
+fins, own drag only: fin band 1.18 to 2.03; total data/model - 1: -8.6% to +27.3% (linear sum)
+   friction share 0.50  contributes -6.0% to +9.5%
+   base     share 0.30  contributes -5.3% to +2.3%
+   fins     share 0.15  contributes +2.7% to +15.5%
+   nose     share 0.05  contributes -0.0% to +0.0%
+fins, own drag plus measured chamber change: fin band 1.01 to 1.59; total data/model - 1: -11.1% to +20.7% (linear sum)
+   friction share 0.50  contributes -6.0% to +9.5%
+   base     share 0.30  contributes -5.3% to +2.3%
+   fins     share 0.15  contributes +0.2% to +8.8%
+   nose     share 0.05  contributes -0.0% to +0.0%

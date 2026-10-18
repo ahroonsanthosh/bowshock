@@ -1,0 +1,1 @@
+check vs TMR M=2 file, 1e3<Re_theta<2e4: max |rel diff| = 2.41e-07 (n=1901)

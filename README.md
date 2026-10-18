@@ -124,10 +124,23 @@ them; the fitted-drag families are recorded in
   subsonic and no independent reference exists, the drag rests on the
   grids' convergence and the exact stagnation pressure.
 
-Not yet: viscous flow, Von Karman (Haack) and power-series noses (their
-tips need grids being designed), Mach numbers below 1.2, fins and the
-base. Until those pass their own validation, bowshock reports no total
-drag coefficient.
+- Skin friction, as a library not yet on the drag page
+  ([0007](docs/design/0007-skin-friction.md), `src/friction/`): van
+  Driest II for turbulent flow, the compressible laminar similarity
+  solution, transition at a given Reynolds number, and the friction drag
+  of a body of revolution. The implementation reproduces the NASA
+  Turbulence Modeling Resource's van Driest II tabulation within 5e-7 and
+  van Driest's laminar results (NACA TN 2597) within 0.84%. Against
+  measurements, turbulent friction on wind-tunnel cylinders (NACA TN 3097)
+  and on the RM-10 body in flight (NACA RM L54G14) lay between 0.88 and
+  1.19 times the model in all 23 comparisons: that, -12% to +19%, is the
+  band the evidence supports for smooth, adiabatic turbulent layers at
+  Mach 1 to 3.6.
+
+Not yet: viscous flow in the solver, friction on the drag page, Von
+Karman (Haack) and power-series noses (their tips need grids being
+designed), Mach numbers below 1.2, fins and the base. Until those pass
+their own validation, bowshock reports no total drag coefficient.
 
 Limits: power off, zero angle of attack, no motor plume. When they
 exist, base drag will be the least certain component and transonic
@@ -171,12 +184,14 @@ on a static host.
 | `src/gpu/`           | WebGPU detection                                                              |
 | `src/solver/`        | Solver pieces shared by the engines, and the CPU shock fitting                |
 | `src/analysis/`      | Integrated forces and the verified forebody drag                              |
+| `src/friction/`      | Skin friction: van Driest II, laminar similarity, transition, bodies          |
 | `src/verification/`  | Discretisation error from nested grids                                        |
 | `src/validation/`    | Exact and reference solutions, and digitised wind-tunnel data                 |
 | `src/render/`        | Display fields, colour map and WebGPU rendering                               |
 | `src/app/`, `demos/` | The demo pages                                                                |
 | `tests/`             | Unit and validation tests (`tests/gpu/` runs in headless Chromium)            |
 | `docs/design/`       | Design records: what was decided, why, and the measurements behind each claim |
+| `docs/research/`     | Research records and work in progress, not used by the solver                 |
 
 The design records, in order:
 
@@ -190,6 +205,12 @@ The design records, in order:
   carries its measured discretisation error.
 - [0006](docs/design/0006-shock-fitting.md): the bow shock fitted as the
   outer boundary instead of captured.
+- [0007](docs/design/0007-skin-friction.md): skin friction (draft), the
+  first component of total drag, measured against wind-tunnel and flight
+  data.
+
+Research records and unfinished work behind them (not used by the solver,
+not accepted designs): [docs/research](docs/research/README.md).
 
 Validation data and how far each source has been checked:
 [docs/validation/sources.md](docs/validation/sources.md).

@@ -294,7 +294,12 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     return (wallHeight * Math.exp(b / 2)) / Math.sqrt(1 + turnRate(s) * h);
   };
   const breakpoints = body.cylinderLength > 0 ? [0, sNose, sEnd] : [0, sNose];
-  const ss = columnPositions(breakpoints, (s) => 1 / spacing(s), refinement);
+  // The spacing's slope limited (src/grid/spacing.ts): where the lines
+  // stop turning, at the shoulder at low Mach numbers, it would otherwise
+  // grow by up to 1.9 times from one cell to the next.
+  const ss = columnPositions(breakpoints, (s) => 1 / spacing(s), refinement, {
+    maxSpacingSlope: 0.15,
+  });
   const lines = ss.map((s) => {
     const p = surface(s);
     return { x: p.x, y: p.y, ...line(s) };

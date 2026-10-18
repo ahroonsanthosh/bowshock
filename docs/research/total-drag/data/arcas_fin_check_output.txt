@@ -1,0 +1,5 @@
+S_fin = 5.831 in^2 each, Aref = 3.976 in^2, t/c = 0.0444
+M=1.50 linear3D fin wave cd=0.00748 (3D/strip 1.056)  dCA_wave=0.0439  CF=0.00416 dCA_fric=0.0488  sum=0.0927  measured dCA (cfg1, cfg2) = 0.188
+M=1.80 linear3D fin wave cd=0.00550 (3D/strip 1.040)  dCA_wave=0.0323  CF=0.00398 dCA_fric=0.0467  sum=0.0789  measured dCA (cfg1, cfg2) = 0.137, 0.136
+M=2.30 linear3D fin wave cd=0.00391 (3D/strip 1.022)  dCA_wave=0.0229  CF=0.00368 dCA_fric=0.0431  sum=0.0661  measured dCA (cfg1, cfg2) = 0.092, 0.085
+M=2.96 linear3D fin wave cd=0.00288 (3D/strip 1.012)  dCA_wave=0.0169  CF=0.00332 dCA_fric=0.0390  sum=0.0559  measured dCA (cfg1, cfg2) = 0.066, 0.066

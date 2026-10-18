@@ -1,0 +1,978 @@
+# Base: 6185a47caca51479e1ee5c0c0750dbdf8efedb2a. Head: b774a412dcbc7ac4eec4d7c7f83b3b416b4d1ad5 (branch haack-grid). Apply with git apply from the base.
+diff --git a/docs/design/0004-grids.md b/docs/design/0004-grids.md
+index 524ded4..c859fd9 100644
+--- a/docs/design/0004-grids.md
++++ b/docs/design/0004-grids.md
+@@ -151,13 +151,81 @@ and of the outer cells' height, allowing for the lines spreading by
+ 1 + h d(angle)/ds. The same quality gates apply. Served and tested
+ (`tests/grid/blunt-grid.test.ts`): hemispheres and prolate ellipsoids
+ (length 1 to 3 radii) with 2 to 15 calibers of cylinder, Mach 1.5 to 5.
+-Refused, with the reason: noses meeting the body at an angle (power series
+-with exponent below 1); nearly flat tips (radius of curvature above 10
+-body radii); and, by the gates, bodies too short for the lines to turn
+-vertical by their end at low Mach numbers (a hemisphere with less than 2
+-calibers of cylinder at Mach 1.5) and noses whose curvature grows without
+-bound at the tip, such as the Haack series (r ~ x^(3/4) there), whose
+-averaged lines leave the wall at 43 to 52 deg.
++Refused, with the reason: noses meeting the body at more than 15 deg
++(power series of exponent 1/2 shorter than two radii); nearly flat tips
++(radius of curvature above 10 body radii); and, by the gates, bodies too
++short for the lines to turn vertical by their end at low Mach numbers (a
++hemisphere with less than 2 calibers of cylinder at Mach 1.5, a sharp
++tip with less than 5 at Mach 1.2).
++
++**Two-scale noses (Haack and power series).** The Haack series leaves
++the tip as r = c x^(3/4): vertical, with unbounded curvature, and blunt
++only within the length l = c^4 at which the profile crosses the line
++r = x from the tip (the radius of a sphere, 0.6 of the base radius on a
++3:1 ellipsoid): 2.88 (1 + 1.5 C)^2 R^4 / L^3, which for R = 0.5 is
++6.7e-3 at L = 3 and 1.4e-3 at L = 5, a hundredth to a thousandth of the
++body. The captured shock stands 0.1 l ahead of the tip at Mach 2 (0.03 l
++at Mach 3, 0.4 l at Mach 1.5), a third of a sphere's of radius l. With
++the boundary at the body scale, the window averaged the normal over the
++whole region in which its angle rises past 80 deg, so the lines left the
++wall at 43 to 52 deg, and the tip fell inside one cell. The boundary's
++length scale is now the larger of the tip radius and the smaller of the
++base radius and two tip scales (`tipScaleFactor`): unchanged on spheres
++and ellipsoids up to 3.7:1, the tip scale on Haack noses. The window
++follows it, and near the cusp turns the lines into a fan, their angle
++rising linearly with s at a few radians per layer height, which keeps
++the outer cells of equal width at the price of wall angles below the
++right angle over the first cells: 72 to 80 deg on the Haack noses
++measured (3 and 5 calibers, Mach 1.5 to 3), 78 deg on the fit's grid of
++the 3-caliber nose at Mach 2. The spacing along the body follows the
++layer height, so the tip region of that nose (5 l) holds 53 of the 248
++lines of the base grid, and grows by at most 1.12 between neighbours.
++The generator's boundary is generous at the body scale, where it keeps
++the angle blunt bodies need (the captured shock lies at a tenth of its
++height at the tip and 0.42 along the nose), so the fitted solver builds
++the grid it starts on from the shock captured on this one (0006). The
++half-width and density tables are clustered at the tip (s proportional
++to the square of the sample index), the density of lines tabulated so
++that `columnPositions`, which samples it millions of times on a dense
++tip, stays cheap. Noses meeting the cylinder at an angle (the power
++series) are accepted up to 15 deg: the window averages the jump in the
++normal as it averages jumps in the curvature, and a 3-caliber nose of
++exponent 3/4 (7 deg) passes the gates with the same margins as the
++Haack noses.
++
++**Sharp tips whose bow shock detaches** (at Mach 1.2, 19 of 40 noses of
++1 to 3 calibers) are the limit of a two-scale nose: the normal jumps at
++the tip instead of turning over a blunt part, and only a grid wrapped
++round the tip, with the detached shock fitted from a captured start
++(0006), can serve them. The generator accepts them: their blunt part
++has no scale, so its own boundary is at the body scale, and the
++family's grid is built on the captured shock. The window would spread
++the jump into a fan linear in s and end it where it stops straddling
++the tip, where the outer cells jumped in width by 1.9 to 2.5; so the
++jump is taken out of the normal before the window averages it, and the
++lines fan through it as jump (1 - exp(-s / scale)), decaying by
++`fanRatio` (1.25) per wall cell at the tip. No fan within the
++size-ratio gate can put more than 0.23 of the jump into the first cell
++(its outer width can only shrink by 1.3 per cell), so the first wall
++cell meets the wall at 90 deg less 0.77 of the jump: a tip of
++half-angle delta gives about 21 + 0.77 delta deg on the base grid, 50
++deg (the fitted gate) at 38 deg. The fan's scale is set on the base
++grid, as nesting requires, so on each refinement the first cell takes a
++smaller part of the jump and its angle falls towards the tip's
++half-angle: a 45 deg tip gives 52.4 deg on nj = 20 and 49.8 on nj = 40.
++Under the 50 deg gate the C grid therefore serves detached tips of 50
++deg or more at every refinement, and of 38 deg or more on the base
++grid only. Measured on the family's grids (nj = 20, the grid the shock
++settled on): a 1-caliber tangent ogive (53 deg tip) at Mach 1.5, wall
++cells at 58.6 deg (56.1 on nj = 40), size ratio 1.16, aspect 3.8; a
++1-caliber parabolic nose (45 deg) at Mach 1.2, 52.4 deg, 1.24, 7.9; a
++1.5-caliber tangent ogive (37 deg) at Mach 1.2, 45.4 deg and 1.30,
++refused by the fitted gates. At Mach 1.2 the shock stands 7 to 10 radii out along the
++cylinder, and the window, which closes at the end of the body, turns
++the lines vertical over the last two or three cells of a 2-caliber
++cylinder, where the wall widths jump by 1.6 to 1.7: those cases need 5
++calibers of cylinder, over which the turn is resolved (the same limit
++as the hemisphere's 2 calibers at Mach 1.5, further out).
+ 
+ ## Measurements
+ 
+@@ -305,8 +373,10 @@ first comparison with measurements on a generated grid:
+   0.008% of the pitot value on nj = 20). Blunt bodies are not yet offered
+   on the drag page, and the sharp-nose generator refuses them.
+ 
+-- **Haack-series and other noses with unbounded tip curvature** (see the
+-  C grid's refusals above).
++- **Haack-series and other noses with unbounded tip curvature**: the
++  two-scale grids above, measured with the fitted shock in 0006; the
++  stagnation pressure on them converges at first order only (the
++  curvature is singular at the tip), the drag at second.
+ - **Low supersonic Mach numbers.** Near Mach 1 the outer boundary meets
+   the vertical grid lines at ever smaller angles; slender cones pass the
+   12 deg gate down to Mach 1.1 (the table above: 12.3 and 17.3 deg), but
+diff --git a/docs/design/0006-shock-fitting.md b/docs/design/0006-shock-fitting.md
+index 6a36fd5..bd0500c 100644
+--- a/docs/design/0006-shock-fitting.md
++++ b/docs/design/0006-shock-fitting.md
+@@ -66,7 +66,23 @@ review, are worth recording:
+   standoff free: it depended on the relaxation.
+ 
+ **Blunt noses** start from a captured solution: on each line the outer
+-edge of the captured shock, smoothed. **Sharp noses** start just behind
++edge of the captured shock, smoothed. On a two-scale nose (Haack and
++power series, `BluntGrid.twoScale` in 0004) the capture runs twice: the
++shock captured on the generator's own base grid, pushed out by half its
++height along each line and at least three base cells, is the outer
++boundary of the family's grids at every refinement, and the shock
++captured on the base grid built on it is the start (`secondCapture`).
++The generator's boundary is 8 times too far at the tip and 2.4 times
++along the nose, and the lines' spacing and node fractions are sized from
++it, so the fit on it would leave outer cells 10 times wider than tall
++at the tip. That boundary continues its last segment to the last line
++(the captured shock's last height is its last column's) and is
++smoothed by 50 passes of 1-2-1, which the start is not: at Mach 1.2 a
++captured shock 7 to 10 radii out is stepped enough after the start's 20
++passes to jump the outer cells by 1.4. A sharp tip whose bow shock
++detaches at the Mach number asked for (`usesBluntFamily`) is solved as
++a blunt family on the same grids (0004), since the sharp problem's
++inflow plane cannot serve it. **Sharp noses** start just behind
+ the tip, at x0 = 1e-3 of the nose length, with the conical flow of the
+ tip's half-angle (Taylor-Maccoll) as the inflow there and the tip's
+ conical shock as the first guess; the part ahead of x0 adds the tip
+@@ -648,10 +664,10 @@ balance falls only by 2.4 to 3.1 per refinement on this nose (2e-6 to
+   cones at Mach 5 on nj = 80.
+ - Noses whose bow shock is attached at the tip but detaches downstream,
+   and the fitted shock past the base.
+-- Blunt noses on the drag page: grids for Von Karman (Haack) and
+-  power-series noses, which a design study is prototyping, and
+-  validation of blunt-nose drag (the captured start runs on the CPU, in
+-  chunks, so a GPU start is not needed). The march from a starting line
+-  (above) validates the drag downstream of the sonic region; the part
+-  ahead of it (40% of the 3:1 ellipsoid's at Mach 2) still has only the
+-  fitted family's own convergence, and the stagnation-point checks.
++- Blunt noses on the drag page: validation of blunt-nose drag (the
++  captured start runs on the CPU, in chunks, so a GPU start is not
++  needed); the Haack, power-series and detached-tip families (0004) on
++  the GPU. The march from a starting line (above) validates the drag
++  downstream of the sonic region; the part ahead of it (40% of the 3:1
++  ellipsoid's at Mach 2) still has only the fitted family's own
++  convergence, and the stagnation-point checks.
+diff --git a/src/analysis/fitted-flow.ts b/src/analysis/fitted-flow.ts
+index 928e901..14ba6f7 100644
+--- a/src/analysis/fitted-flow.ts
++++ b/src/analysis/fitted-flow.ts
+@@ -15,7 +15,17 @@
+ import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
+ import { bodyLength, bodyRadius, type Body } from '../geometry/body';
+ import { noseTipSlope } from '../geometry/nose';
+-import { bluntBodyGrid, gridOnLines, withFixedFractions, type GridLine } from '../grid/blunt-grid';
++import {
++  assertGridQuality,
++  bluntBodyGrid,
++  gridOnLines,
++  outerCellHeight,
++  withFixedFractions,
++  type BluntGrid,
++  type BluntGridOptions,
++  type GridLine,
++} from '../grid/blunt-grid';
++import { FITTED_QUALITY_LIMITS } from '../grid/quality';
+ import { columnPositions } from '../grid/spacing';
+ import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
+ import type { Primitive2D } from '../scheme/flux';
+@@ -338,16 +348,30 @@ export interface BluntStart {
+   readonly heights: readonly number[];
+   /** The captured solution in each cell of the base grid. */
+   readonly cell: (i: number, j: number) => Primitive2D;
++  /**
++   * The outer boundary of the family's grids where it is not the
++   * generator's own: on a two-scale nose, the shock captured on the
++   * generator's grid pushed out by a margin (secondCapture).
++   */
++  readonly outerBoundary?: OuterBoundary;
+ }
+ 
++type OuterBoundary = NonNullable<BluntGridOptions['outerBoundary']>;
++
+ /**
+  * The captured solution that starts a blunt family, on the CPU engine:
+- * CAPTURED_START_STEPS steps from the free stream on the base grid.
++ * CAPTURED_START_STEPS steps from the free stream on the base grid; on a
++ * two-scale nose, again on the base grid built on that shock.
+  */
+ export function bluntStart(asked: Body, options: BluntFamilyOptions): BluntStart {
+-  const { solver, start } = bluntCapture(asked, options);
+-  solver.iterate(CAPTURED_START_STEPS);
+-  return start();
++  let stage = bluntCapture(asked, options);
++  stage.solver.iterate(CAPTURED_START_STEPS);
++  const second = secondCapture(asked, options, stage);
++  if (second) {
++    second.solver.iterate(CAPTURED_START_STEPS);
++    stage = second;
++  }
++  return stage.start();
+ }
+ 
+ /**
+@@ -366,30 +390,64 @@ export async function bluntStartInChunks(
+     readonly onProgress?: ((steps: number, total: number) => void) | undefined;
+   },
+ ): Promise<BluntStart> {
+-  const { solver, start } = bluntCapture(asked, options);
+-  for (let done = 0; done < CAPTURED_START_STEPS;) {
+-    run.signal?.throwIfAborted();
+-    const steps = Math.min(run.chunk, CAPTURED_START_STEPS - done);
+-    solver.iterate(steps);
+-    done += steps;
+-    run.onProgress?.(done, CAPTURED_START_STEPS);
+-    await run.pause();
++  let stage = bluntCapture(asked, options);
++  const total = (stage.grid.twoScale ? 2 : 1) * CAPTURED_START_STEPS;
++  let done = 0;
++  const capture = async (s: CaptureStage) => {
++    for (let steps = 0; steps < CAPTURED_START_STEPS;) {
++      run.signal?.throwIfAborted();
++      const n = Math.min(run.chunk, CAPTURED_START_STEPS - steps);
++      s.solver.iterate(n);
++      steps += n;
++      done += n;
++      run.onProgress?.(done, total);
++      await run.pause();
++    }
++  };
++  await capture(stage);
++  const second = secondCapture(asked, options, stage);
++  if (second) {
++    await capture(second);
++    stage = second;
+   }
+   run.signal?.throwIfAborted();
+-  return start();
++  return stage.start();
+ }
+ 
+-export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'>;
++export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'> & {
++  /** Apply the quality gates to the family's grids (default); off for measuring grids that fail them. */
++  readonly gated?: boolean;
++};
++
++/** A captured-shock problem on a blunt family's base grid, and the start it gives. */
++interface CaptureStage {
++  readonly grid: BluntGrid;
++  readonly solver: Euler2D;
++  readonly start: () => BluntStart;
++}
+ 
+-/** The captured-shock problem on a blunt family's base grid, from the free stream. */
++/**
++ * The captured-shock problem on a blunt family's base grid, from the free
++ * stream: on the generator's own grid, or on the grid built on the given
++ * outer boundary. The generator's grid of a two-scale nose only has to
++ * contain the shock (a second stage follows), so the quality gates apply
++ * to the grid the family starts on.
++ */
+ function bluntCapture(
+   asked: Body,
+   options: BluntFamilyOptions,
+-): { solver: Euler2D; start: () => BluntStart } {
++  outerBoundary?: OuterBoundary,
++): CaptureStage {
+   const body = solvedBody(asked);
+   const { mach, gamma, nj } = options;
+   const free = freeStreamAt(mach, gamma).state;
+-  const base = bluntBodyGrid(body, { nj, mach });
++  const base = bluntBodyGrid(body, { nj, mach, outerBoundary, gated: false });
++  // The grid on a captured shock is a fitted grid, gated as one; the
++  // generator's own grid as every generated grid.
++  if (options.gated ?? true) {
++    if (outerBoundary) assertGridQuality(base.grid, FITTED_QUALITY_LIMITS);
++    else if (!base.twoScale) assertGridQuality(base.grid);
++  }
+   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
+   const solver = new Euler2D({
+     ...engineConfig(base.grid, gamma, axis, []),
+@@ -402,15 +460,81 @@ function bluntCapture(
+   });
+   solver.setInitialCondition(() => free);
+   return {
++    grid: base,
+     solver,
+     start: () => ({
+       lines: base.lines,
+       heights: capturedShockHeights(solver, base.grid, base.lines, free),
+       cell: (i, j) => solver.primitive(i, j),
++      ...(outerBoundary ? { outerBoundary } : {}),
+     }),
+   };
+ }
+ 
++/**
++ * The second stage of a two-scale nose's start, or null on a nose whose
++ * generator's boundary is at the body scale (spheres, the ellipsoids
++ * served). The generator's boundary is placed at the scale of the tip's
++ * blunt part, so that the lines near the tip are sized for it, but is
++ * generous at the body scale, where it keeps the angle the blunt bodies
++ * need: on a 3-caliber Haack nose at Mach 2 the captured shock lies at a
++ * tenth of its height at the tip and 0.42 along the nose, and the lines'
++ * spacing and node fractions are sized from the boundary. So the grid the
++ * family starts on is built on that captured shock, pushed out by
++ * BOUNDARY_MARGIN of its height along each line and at least
++ * BOUNDARY_CELLS cells of the base grid (along the cylinder, where the
++ * lines are long and their outer cells stretched, the fraction alone
++ * leaves two), and the shock captured on it is the family's start.
++ */
++function secondCapture(
++  asked: Body,
++  options: BluntFamilyOptions,
++  first: CaptureStage,
++): CaptureStage | null {
++  if (!first.grid.twoScale) return null;
++  const body = solvedBody(asked);
++  const R = body.nose.baseRadius;
++  const free = freeStreamAt(options.mach, options.gamma).state;
++  const heights = capturedShockHeights(first.solver, first.grid.grid, first.grid.lines, free);
++  const distances = heights.map((shock) => {
++    let d = (1 + BOUNDARY_MARGIN) * shock;
++    for (let k = 0; k < 20; k++) {
++      d = Math.max(d, shock + BOUNDARY_CELLS * outerCellHeight(d, options.nj, R));
++    }
++    return d;
++  });
++  // The boundary only has to contain the shock, so it is smoothed further
++  // than the start is (BOUNDARY_SMOOTHING passes of 1-2-1, mirrored at the
++  // axis): a captured shock far from the body, as at Mach 1.2, is stepped
++  // enough after the start's smoothing to bend the outer cells.
++  for (let pass = 0; pass < BOUNDARY_SMOOTHING; pass++) {
++    const copy = [...distances];
++    const n = copy.length - 1;
++    distances[0] = 0.5 * (copy[0]! + copy[1]!);
++    for (let i = 1; i < n; i++) {
++      distances[i] = 0.25 * copy[i - 1]! + 0.5 * copy[i]! + 0.25 * copy[i + 1]!;
++    }
++    distances[n] = 0.5 * (copy[n]! + copy[n - 1]!);
++  }
++  const outerBoundary = first.grid.lines.map((l, i) => {
++    const d = distances[i]!;
++    return { x: l.x + d * l.dx, y: l.y + d * l.dy };
++  });
++  // The captured shock's last height is its last column's, so the
++  // boundary's last segment would bend flat where the shock still rises
++  // (at Mach 1.2 by 30 deg, which jumps the last outer cells' widths by
++  // 1.6): the last point continues the segment before it to the last line.
++  const n = outerBoundary.length - 1;
++  if (n >= 2) {
++    const a = outerBoundary[n - 2]!;
++    const b = outerBoundary[n - 1]!;
++    const last = first.grid.lines[n]!;
++    const y = b.y + ((last.x - b.x) * (b.y - a.y)) / (b.x - a.x);
++    if (y > b.y) outerBoundary[n] = { x: last.x, y };
++  }
++  return bluntCapture(asked, options, outerBoundary);
++}
++
+ /**
+  * The blunt problems of a family of grids (refinement 1, 2, 4, ...), all
+  * started from one captured solution on the base grid (bluntStart): each
+@@ -430,8 +554,21 @@ export function bluntFitFamily(
+   const free = freeStreamAt(mach, gamma).state;
+   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
+   return (refinement) => {
+-    const fine =
+-      refinement === 1 ? start.lines : bluntBodyGrid(body, { nj: baseNj, refinement, mach }).lines;
++    const fine = (() => {
++      if (refinement === 1) return start.lines;
++      const { outerBoundary } = start;
++      const refined = bluntBodyGrid(body, {
++        nj: baseNj,
++        refinement,
++        mach,
++        outerBoundary,
++        gated: !outerBoundary && (options.gated ?? true),
++      });
++      if (outerBoundary && (options.gated ?? true)) {
++        assertGridQuality(refined.grid, FITTED_QUALITY_LIMITS);
++      }
++      return refined.lines;
++    })();
+     const heights = nestedHeights(start.lines, start.heights, fine, refinement);
+     const nj = baseNj * refinement;
+     // Each line keeps the node fractions of the captured shock's height.
+@@ -537,8 +674,37 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
+   return fittedFlow(bluntFitProblem(body, options), options.maxIterations);
+ }
+ 
++/**
++ * Whether a body is solved as a blunt family (the C grid round the tip,
++ * the bow shock fitted from a captured start): blunt noses, and sharp
++ * tips whose bow shock detaches at this Mach number, which the sharp
++ * problem's inflow plane cannot serve.
++ */
++export function usesBluntFamily(body: Body, mach: number, gamma: number): boolean {
++  const slope = noseTipSlope(body.nose);
++  if (!Number.isFinite(slope)) return true;
++  try {
++    taylorMaccoll(mach, Math.atan(slope), gamma);
++    return false;
++  } catch (error) {
++    if (error instanceof RangeError && /detaches/.test(error.message)) return true;
++    throw error;
++  }
++}
++
+ /** Steps of the captured solution on the base grid that places the first shock. */
+ const CAPTURED_START_STEPS = 3000;
++/**
++ * Margin of a two-scale nose's outer boundary over the shock captured on
++ * the generator's grid, as a fraction of the shock's height along each
++ * line (secondCapture). The captured shock then lies about two thirds of
++ * the way up each line.
++ */
++const BOUNDARY_MARGIN = 0.5;
++/** ... and at least this many cells of the base grid above the captured shock. */
++const BOUNDARY_CELLS = 3;
++/** Passes of 1-2-1 smoothing of that boundary's distances along the lines. */
++const BOUNDARY_SMOOTHING = 50;
+ 
+ export interface VerifiedFittedDragOptions {
+   readonly mach: number;
+@@ -571,7 +737,7 @@ export async function verifiedFittedDrag(
+   body: Body,
+   options: VerifiedFittedDragOptions,
+ ): Promise<VerifiedFittedDrag> {
+-  const blunt = !Number.isFinite(noseTipSlope(body.nose))
++  const blunt = usesBluntFamily(body, options.mach, options.gamma)
+     ? bluntFitFamily(body, { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ })
+     : null;
+   try {
+diff --git a/src/analysis/gpu-fitted-flow.ts b/src/analysis/gpu-fitted-flow.ts
+index 01ed000..49ab0d0 100644
+--- a/src/analysis/gpu-fitted-flow.ts
++++ b/src/analysis/gpu-fitted-flow.ts
+@@ -9,7 +9,6 @@ import { isGpuFlux } from '../engine-gpu/euler1d-gpu';
+ import { GpuMemoryLimitError, type GpuEuler2DConfig } from '../engine-gpu/euler2d-gpu';
+ import { fitShockGpu, type GpuShockFit } from '../engine-gpu/shock-fitting-gpu';
+ import type { Body } from '../geometry/body';
+-import { noseTipSlope } from '../geometry/nose';
+ import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
+ import type { StructuredGrid } from '../grid/structured';
+ import { refineUntilVerified } from '../verification/grid-convergence';
+@@ -18,6 +17,7 @@ import {
+   bluntFitFamily,
+   bluntStartInChunks,
+   sharpFitProblem,
++  usesBluntFamily,
+   wallDrag,
+   type FitProblem,
+ } from './fitted-flow';
+@@ -232,7 +232,7 @@ export async function verifiedFittedDragGpu(
+     return drag;
+   };
+   try {
+-    if (!Number.isFinite(noseTipSlope(body.nose))) {
++    if (usesBluntFamily(body, options.mach, options.gamma)) {
+       const familyOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ };
+       const start = await bluntStartInChunks(body, familyOptions, {
+         chunk: START_CHUNK,
+diff --git a/src/grid/blunt-grid.ts b/src/grid/blunt-grid.ts
+index b665deb..91340f4 100644
+--- a/src/grid/blunt-grid.ts
++++ b/src/grid/blunt-grid.ts
+@@ -3,22 +3,25 @@
+  * profile leaves the tip vertically and whose bow shock stands off ahead
+  * of it (design: docs/design/0004-grids.md).
+  *
+- * Topology (C): grid lines of constant i are straight normals to the body,
+- * so the cells meet the wall at right angles; they fan out from the nose
+- * and are vertical along the cylinder. The lower boundary (jMin) is the
+- * body from the tip to its end, the upper boundary (jMax) the outer
++ * Topology (C): grid lines of constant i are straight lines from the body,
++ * close to its normals where the normal varies slowly; they fan out from
++ * the nose and are vertical along the cylinder. The lower boundary (jMin)
++ * is the body from the tip to its end, the upper boundary (jMax) the outer
+  * boundary, iMin the axis ahead of the tip (the stagnation streamline) and
+  * iMax the outflow plane at the end of the body.
+  *
+- * The outer boundary is a circular arc ahead of the nose continued by a
+- * straight line, placed by rules measured on solutions (see the constants
+- * below). Nothing in the generator proves the bow shock lies inside it;
+- * callers check that the cells along it are still at the free stream.
++ * The outer boundary is a circular arc ahead of the nose, at the scale of
++ * the tip's blunt part, continued by a straight line, placed by rules
++ * measured on solutions (see the constants below); or a curve the caller
++ * gives, such as a captured bow shock pushed out by a margin. Nothing in
++ * the generator proves the bow shock lies inside it; callers check that
++ * the cells along it are still at the free stream, or fit the shock from a
++ * captured start.
+  */
+ 
+ import { validateBody, type Body } from '../geometry/body';
+ import { noseRadius, noseTipSlope } from '../geometry/nose';
+-import { QUALITY_LIMITS, gridQuality, qualityFailures } from './quality';
++import { QUALITY_LIMITS, gridQuality, qualityFailures, type QualityLimits } from './quality';
+ import { GridQualityError } from './body-grid';
+ import { columnPositions } from './spacing';
+ import { gridFromFunction, type StructuredGrid } from './structured';
+@@ -29,6 +32,18 @@ export interface BluntGridOptions {
+   /** Refinement of the base grid: 1, 2, 4, ...; every coarser node is kept. Default 1. */
+   readonly refinement?: number;
+   readonly mach: number;
++  /**
++   * The outer boundary as a curve of points ordered outwards from the axis
++   * (the first on it, ahead of the tip), followed by straight segments and
++   * continued beyond the last point along the last segment, in place of the
++   * generator's arc and line: for example the bow shock captured on a first
++   * grid, pushed out by a margin (src/analysis/fitted-flow.ts).
++   */
++  readonly outerBoundary?: readonly { readonly x: number; readonly y: number }[] | undefined;
++  /** Apply the quality gates (default); off for measuring grids that fail them. */
++  readonly gated?: boolean;
++  /** Overrides of the placement constants, for measurement only. */
++  readonly tuning?: Partial<BluntGridTuning>;
+ }
+ 
+ /** A straight grid line from the body: its body point, direction and length. */
+@@ -53,8 +68,19 @@ export interface BluntGrid {
+   readonly lines: readonly GridLine[];
+   /** Distance of the outer boundary ahead of the tip, along the axis. */
+   readonly outerStandoff: number;
+-  /** Angle of the straight part of the outer boundary to the axis, radians. */
++  /** Angle of the straight part of the generator's outer boundary to the axis, radians. */
+   readonly outerAngle: number;
++  /** Length scale of the tip's blunt part: the x at which the profile crosses r = x. */
++  readonly tipScale: number;
++  /** Length scale that places the outer boundary ahead of the tip. */
++  readonly scale: number;
++  /**
++   * Whether that scale lies below the base radius: the tip's blunt part is
++   * far smaller than the body (the Haack series, the power series, long
++   * ellipsoids), and the boundary, at the tip's scale ahead of the tip, is
++   * generous at the body scale.
++   */
++  readonly twoScale: boolean;
+ }
+ 
+ /**
+@@ -68,21 +94,55 @@ export function billigStandoff(mach: number, radius: number): number {
+   return 0.143 * Math.exp(3.24 / (mach * mach)) * radius;
+ }
+ 
+-/** Outer boundary ahead of the tip, in multiples of the Billig standoff. */
+-const OUTER_STANDOFF_FACTOR = 2;
+-/** Radius of the outer boundary's arc, in multiples of the nose's length scale. */
+-const OUTER_ARC_RADIUS = 2;
++export interface BluntGridTuning {
++  /** Outer boundary ahead of the tip, in multiples of the Billig standoff. */
++  readonly standoffFactor: number;
++  /** Radius of the outer boundary's arc, in multiples of the nose's length scale. */
++  readonly arcRadiusFactor: number;
++  /**
++   * The length scale of the outer boundary is at most this many times the
++   * tip scale (the x at which the profile crosses r = x: the radius of a
++   * sphere, 0.6 of the base radius on a 3:1 ellipsoid, and far below the
++   * base radius on a Haack nose, whose r ~ x^(3/4) tip is a cusp).
++   */
++  readonly tipScaleFactor: number;
++  /**
++   * Half-width of the window over which the grid lines average the body
++   * normal, in multiples of the distance to the outer boundary.
++   */
++  readonly smoothing: number;
++  /**
++   * Largest ratio of neighbouring cells the fan at a sharp tip is sized
++   * for, below the size-ratio gate: the fan's angle decays by this factor
++   * per wall cell.
++   */
++  readonly fanRatio: number;
++  /** Largest rate of change of that half-width along the body. */
++  readonly maxWidthSlope: number;
++}
++
++export const DEFAULT_TUNING: BluntGridTuning = {
++  standoffFactor: 2,
++  arcRadiusFactor: 2,
++  tipScaleFactor: 2,
++  smoothing: 0.25,
++  fanRatio: 1.25,
++  maxWidthSlope: 0.5,
++};
++
+ /** Noses blunter than a sphere of this many base radii are refused (near-flat faces). */
+ const MAX_NOSE_RADIUS = 10;
+ /**
+- * Half-width of the window over which the grid lines average the body
+- * normal, in multiples of the distance to the outer boundary.
++ * Largest angle at which a nose may meet the cylinder, radians: the lines
++ * turn through it over the smoothing window, and the cells either side of
++ * the window's edge differ in width by about 1 + 2 angle (measured below
++ * the gate's 1.3 at 7 deg, a 3-caliber power-series nose of exponent 3/4).
+  */
+-const SMOOTHING = 0.25;
+-/** Largest rate of change of that half-width along the body. */
+-const MAX_WIDTH_SLOPE = 0.5;
+-/** Samples of the half-width along the body. */
+-const WIDTH_SAMPLES = 1024;
++const MAX_SHOULDER_ANGLE = (15 * Math.PI) / 180;
++/** Samples of the half-width along the body (clustered at the tip). */
++const WIDTH_SAMPLES = 4096;
++/** Samples of the density of lines along the body (clustered at the tip). */
++const SPACING_SAMPLES = 8192;
+ /** Samples of the normal across that window. */
+ const WINDOW_SAMPLES = 64;
+ /** Samples of the nose profile for its arc length. */
+@@ -92,6 +152,7 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid
+   validateBody(body);
+   const { mach } = options;
+   const refinement = options.refinement ?? 1;
++  const tuning = { ...DEFAULT_TUNING, ...options.tuning };
+   if (!(Number.isInteger(options.nj) && options.nj >= 4)) {
+     throw new RangeError('a body grid needs at least 4 cells across');
+   }
+@@ -100,9 +161,10 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid
+   }
+   if (!(mach > 1)) throw new RangeError('blunt-body grids are for supersonic free streams');
+   const { nose } = body;
+-  if (Number.isFinite(noseTipSlope(nose))) {
+-    throw new RangeError('the nose is sharp: use the grid for sharp noses');
+-  }
++  // A sharp tip is served too, for the Mach numbers at which its bow
++  // shock detaches: the limit of a two-scale nose, whose normal turns at
++  // the tip instead of over the length of a blunt part.
++  const sharp = Number.isFinite(noseTipSlope(nose));
+   const L = nose.length;
+   const R = nose.baseRadius;
+ 
+@@ -150,44 +212,103 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid
+     const t = Math.hypot(tx, ty);
+     return { x, y, nx: -ty / t, ny: tx / t };
+   };
+-  // A nose meeting the cylinder at an angle would fan the normals out of a
+-  // corner, and the outflow plane would not be vertical.
++  // A nose meeting the cylinder at an angle (the power series) fans the
++  // normals out of a corner; the window below averages the jump in the
++  // normal as it averages jumps in the curvature, so the lines turn through
++  // it over the window's width, which the size-ratio gate allows up to
++  // MAX_SHOULDER_ANGLE. The last line is vertical whatever the corner.
+   const shoulder = surface(sNose * (1 - 1e-9));
+-  if (!(Math.abs(shoulder.nx) < 1e-3)) {
++  const shoulderAngle = Math.atan2(-shoulder.nx, shoulder.ny);
++  if (!(shoulderAngle <= MAX_SHOULDER_ANGLE)) {
+     throw new RangeError(
+-      'blunt noses that do not meet the body tangentially are not supported yet',
++      `blunt noses meeting the body at more than ${((MAX_SHOULDER_ANGLE * 180) / Math.PI).toFixed(0)} deg are not supported yet, got ${((shoulderAngle * 180) / Math.PI).toFixed(1)} deg`,
+     );
+   }
+ 
+-  // Length scale of the nose: the radius of curvature at the tip, r^2 / 2x
+-  // in the limit, and at least the base radius.
++  // Length scales of the nose. The radius of curvature at the tip, r^2 / 2x
++  // in the limit, sizes a rounded tip; the tip scale, the x at which the
++  // profile crosses the line r = x from the tip (the radius of a sphere),
++  // sizes the blunt part of a tip whose curvature is unbounded, such as
++  // the Haack series' (r ~ x^(3/4) there, its blunt part a thousandth of
++  // the body on a 5-caliber nose). The outer boundary is placed at the
++  // larger of the tip radius and the smaller of the base radius and a few
++  // tip scales: the base radius on spheres and the ellipsoids served, the
++  // tip scale where it is far smaller.
+   const xSmall = 1e-6 * L;
+   const tipRadius = noseRadius(nose, xSmall) ** 2 / (2 * xSmall);
+   if (!(tipRadius <= MAX_NOSE_RADIUS * R)) {
+     throw new RangeError('noses that are nearly flat at the tip are not supported yet');
+   }
+-  const scale = Math.max(tipRadius, R);
++  const tipScale = (() => {
++    if (sharp) return 0;
++    if (noseRadius(nose, L) > L) return L;
++    let low = 0;
++    let high = L;
++    for (let k = 0; k < 200; k++) {
++      const mid = 0.5 * (low + high);
++      if (noseRadius(nose, mid) > mid) low = mid;
++      else high = mid;
++    }
++    return 0.5 * (low + high);
++  })();
++  // A sharp tip has no blunt part: its detached shock stands off at a
++  // distance set by the body and the Mach number, which the captured
++  // start measures, so the generator's own boundary is at the body scale.
++  const scale = sharp ? R : Math.max(tipRadius, Math.min(R, tuning.tipScaleFactor * tipScale));
+ 
+-  // Outer boundary: an arc of radius OUTER_ARC_RADIUS times the nose's
+-  // length scale, OUTER_STANDOFF_FACTOR Billig standoffs ahead of the tip,
+-  // until its tangent reaches the outer angle; then a straight line at that
+-  // angle, halfway between the normal shock and the Mach angle (the
+-  // steepest outer boundary of the grids for sharp noses). The bow shock of
+-  // a blunt nose stays well above the Mach angle for many body radii: on a
++  // Outer boundary: an arc of arcRadiusFactor times the length scale,
++  // standoffFactor Billig standoffs ahead of the tip, until its tangent
++  // reaches the outer angle; then a straight line at that angle, halfway
++  // between the normal shock and the Mach angle (the steepest outer
++  // boundary of the grids for sharp noses). The bow shock of a blunt nose
++  // stays well above the Mach angle for many body radii: on a
+   // hemisphere-cylinder at Mach 3 still 14 deg above it 8 radii behind the
+   // tip. And it flattens away from the nose, so the arc is wider than the
+-  // nose (docs/design/0004-grids.md).
+-  const outerStandoff = OUTER_STANDOFF_FACTOR * billigStandoff(mach, scale);
++  // nose's blunt part (docs/design/0004-grids.md). On a two-scale nose this
++  // boundary is generous at the body scale (on a 3-caliber Haack nose at
++  // Mach 2 the captured shock lies at 0.42 of its height along the nose),
++  // so the fitted solver uses it only for a first captured solution and
++  // passes the shock it finds back as `outerBoundary`.
+   const outerAngle = (Math.PI / 2 + Math.asin(1 / mach)) / 2;
+-  const arcRadius = OUTER_ARC_RADIUS * scale;
++  const arcRadius = tuning.arcRadiusFactor * scale;
++  const custom = options.outerBoundary;
++  const outerStandoff = custom
++    ? -custom[0]!.x
++    : tuning.standoffFactor * billigStandoff(mach, scale);
+   const centre = arcRadius - outerStandoff;
+   const yJoin = arcRadius * Math.cos(outerAngle);
+   const xJoin = centre - arcRadius * Math.sin(outerAngle);
++  if (custom) {
++    if (custom.length < 2 || custom[0]!.y !== 0) {
++      throw new RangeError('the outer boundary needs at least two points, the first on the axis');
++    }
++    for (let k = 1; k < custom.length; k++) {
++      if (!(custom[k]!.y > custom[k - 1]!.y)) {
++        throw new RangeError('the outer boundary must be ordered outwards from the axis');
++      }
++    }
++  }
+   /** Axial position of the outer boundary at height y (increasing in y). */
+-  const outerX = (y: number) =>
+-    y <= yJoin
+-      ? centre - Math.sqrt(arcRadius * arcRadius - y * y)
+-      : xJoin + (y - yJoin) / Math.tan(outerAngle);
++  const outerX = (y: number): number => {
++    if (!custom) {
++      return y <= yJoin
++        ? centre - Math.sqrt(arcRadius * arcRadius - y * y)
++        : xJoin + (y - yJoin) / Math.tan(outerAngle);
++    }
++    let low = 0;
++    let high = custom.length - 1;
++    if (y >= custom[high]!.y) low = high - 1;
++    else {
++      while (high - low > 1) {
++        const mid = (low + high) >> 1;
++        if (custom[mid]!.y <= y) low = mid;
++        else high = mid;
++      }
++    }
++    const a = custom[low]!;
++    const b = custom[low + 1]!;
++    return a.x + ((y - a.y) / (b.y - a.y)) * (b.x - a.x);
++  };
+ 
+   /** Distance from the body point at s to the outer boundary along the direction (dx, dy). */
+   const lengthAlong = (s: number, dx: number, dy: number) => {
+@@ -217,34 +338,73 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid
+     return Math.atan2(p.ny, -p.nx);
+   };
+   // The grid lines follow the normal averaged over a window along the body
+-  // of half-width SMOOTHING times the distance to the outer boundary: where
+-  // the curvature jumps (the shoulder of a hemisphere-cylinder) or grows
+-  // without bound (a tip with r ~ x^n, n > 1/2), exact normals would fan
+-  // out abruptly and neighbouring outer cells would jump in size. The
++  // of half-width `smoothing` times the distance to the outer boundary:
++  // where the curvature jumps (the shoulder of a hemisphere-cylinder) or
++  // grows without bound (a tip with r ~ x^n, n > 1/2), exact normals would
++  // fan out abruptly and neighbouring outer cells would jump in size. The
+   // window is symmetric about the tip, keeping the first line on the axis,
+-  // and closes at the end of the body, keeping the last one vertical.
+-  // Its half-width is tabulated and limited to change by at most
+-  // MAX_WIDTH_SLOPE per unit length, so both ends of the window only move
++  // and closes at the end of the body, keeping the last one vertical. Its
++  // half-width is tabulated (clustered at the tip, where the layer is thin
++  // and the window with it) and limited to change by at most
++  // `maxWidthSlope` per unit length, so both ends of the window only move
+   // downstream: the average of the normal's angle, which increases along
+   // a convex body, then increases too, and no two lines turn towards each
+-  // other.
++  // other. Near a cusp-like tip the window turns the lines into a fan
++  // (their angle rising linearly with s, at a rate of a few per layer
++  // height), which keeps the outer cells of equal width, at the price of
++  // wall angles below the right angle over the first few cells.
++  const widthS = new Float64Array(WIDTH_SAMPLES + 1);
+   const widths = new Float64Array(WIDTH_SAMPLES + 1);
+-  const step = sEnd / WIDTH_SAMPLES;
+   for (let k = 0; k <= WIDTH_SAMPLES; k++) {
+-    const p = surface(k * step);
+-    widths[k] = Math.min(SMOOTHING * lengthAlong(k * step, p.nx, p.ny), sEnd - k * step);
++    const s = (sEnd * k * k) / (WIDTH_SAMPLES * WIDTH_SAMPLES);
++    widthS[k] = s;
++    const p = surface(s);
++    widths[k] = Math.min(tuning.smoothing * lengthAlong(s, p.nx, p.ny), sEnd - s);
+   }
+   for (let k = 1; k <= WIDTH_SAMPLES; k++) {
+-    widths[k] = Math.min(widths[k]!, widths[k - 1]! + MAX_WIDTH_SLOPE * step);
++    widths[k] = Math.min(
++      widths[k]!,
++      widths[k - 1]! + tuning.maxWidthSlope * (widthS[k]! - widthS[k - 1]!),
++    );
+   }
+   for (let k = WIDTH_SAMPLES - 1; k >= 0; k--) {
+-    widths[k] = Math.min(widths[k]!, widths[k + 1]! + MAX_WIDTH_SLOPE * step);
++    widths[k] = Math.min(
++      widths[k]!,
++      widths[k + 1]! + tuning.maxWidthSlope * (widthS[k + 1]! - widthS[k]!),
++    );
+   }
+   const halfWidth = (s: number) => {
+-    const t = Math.min(Math.max(s / step, 0), WIDTH_SAMPLES);
++    const t = Math.min(
++      Math.max(Math.sqrt(Math.max(s, 0) / sEnd) * WIDTH_SAMPLES, 0),
++      WIDTH_SAMPLES,
++    );
+     const k = Math.min(Math.floor(t), WIDTH_SAMPLES - 1);
+-    return widths[k]! + (t - k) * (widths[k + 1]! - widths[k]!);
++    const f = (Math.min(Math.max(s, 0), sEnd) - widthS[k]!) / (widthS[k + 1]! - widthS[k]!);
++    return widths[k]! + Math.min(Math.max(f, 0), 1) * (widths[k + 1]! - widths[k]!);
+   };
++  // At a sharp tip the normal jumps by tipJump, from the axis to the
++  // tip's normal. The window would spread the jump into a fan linear in
++  // s over its width, and end it abruptly where it stops straddling the
++  // tip, where the outer cells then jump in width (by 1.9 to 2.5 on the
++  // tips measured). The jump is taken out of the normal before the
++  // window averages it, and the lines fan through it as
++  // tipJump (1 - exp(-s / fanScale)): their angle decays geometrically,
++  // by fanRatio per wall cell at the tip, as the size-ratio gate allows,
++  // and most of it is in the first cell (0.22 of the jump at 1.25, the
++  // most any fan within the gate can give), which meets the wall at
++  // 90 deg less the rest: on a 37 deg tip 48 deg, on a 45 deg tip 55 deg.
++  // The wall cells at the tip are the geometric mean of the cell heights
++  // along the line and across the fan (the spacing rule below), so the
++  // scale that gives that decay solves fanScale = c h / (nj sqrt(1 + K))
++  // with K = tipJump h / fanScale and c = 1 / ln(fanRatio).
++  const tipJump = sharp ? normalAngle(sNose * 1e-9) : 0;
++  const fanScale = (() => {
++    if (!sharp) return Infinity;
++    const h = lengthAlong(0, -1, 0);
++    const c = 1 / Math.log(tuning.fanRatio) / options.nj;
++    return (h * (-tipJump + Math.sqrt(tipJump * tipJump + 4 * c * c))) / 2;
++  })();
++  const fan = (s: number) => tipJump * -Math.expm1(-s / fanScale);
+   /** Angle of the grid line from the body point at s, odd about the tip. */
+   const lineAngle = (s: number): number => {
+     // The window about the tip averages an odd function: exactly zero.
+@@ -254,15 +414,20 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid
+     const w = halfWidth(s);
+     let sum = 0;
+     for (let k = 0; k < WINDOW_SAMPLES; k++) {
+-      sum += normalAngle(s - w + (2 * w * (k + 0.5)) / WINDOW_SAMPLES);
++      const t = s - w + (2 * w * (k + 0.5)) / WINDOW_SAMPLES;
++      sum += normalAngle(t) - Math.sign(t) * tipJump;
+     }
+-    return sum / WINDOW_SAMPLES;
++    return sum / WINDOW_SAMPLES + fan(s);
+   };
+   /** Rate at which the grid lines turn along the body. */
+   const turnRate = (s: number) => {
+     // Over a quarter of the window: the tabulated half-width has corners,
+     // where a shorter difference would see the angle's slope jump.
+-    const e = Math.max(halfWidth(s) / 4, sEnd / PROFILE_SAMPLES);
++    // ... and within the fan at a sharp tip, over a quarter of its scale.
++    const e = Math.max(
++      Math.min(halfWidth(s) / 4, Math.max(fanScale / 4, s / 8)),
++      sEnd / PROFILE_SAMPLES,
++    );
+     return (lineAngle(s + e) - lineAngle(s - e)) / (2 * e);
+   };
+   const line = (s: number) => {
+@@ -286,8 +451,28 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid
+     const wallHeight = (h * b) / (Math.expm1(b) * nj);
+     return (wallHeight * Math.exp(b / 2)) / Math.sqrt(1 + turnRate(s) * h);
+   };
++  // The density of lines, 1 / spacing, tabulated (clustered at the tip
++  // like the window's half-width): the column positions sample it at
++  // sixty-four points per line of the base grid, estimated from the ends,
++  // where the dense tip of a two-scale nose makes that millions of
++  // evaluations of the window average.
++  const densityS = new Float64Array(SPACING_SAMPLES + 1);
++  const densities = new Float64Array(SPACING_SAMPLES + 1);
++  for (let k = 0; k <= SPACING_SAMPLES; k++) {
++    densityS[k] = (sEnd * k * k) / (SPACING_SAMPLES * SPACING_SAMPLES);
++    densities[k] = 1 / spacing(densityS[k]!);
++  }
++  const density = (s: number) => {
++    const t = Math.min(
++      Math.max(Math.sqrt(Math.max(s, 0) / sEnd) * SPACING_SAMPLES, 0),
++      SPACING_SAMPLES,
++    );
++    const k = Math.min(Math.floor(t), SPACING_SAMPLES - 1);
++    const f = (Math.min(Math.max(s, 0), sEnd) - densityS[k]!) / (densityS[k + 1]! - densityS[k]!);
++    return densities[k]! + Math.min(Math.max(f, 0), 1) * (densities[k + 1]! - densities[k]!);
++  };
+   const breakpoints = body.cylinderLength > 0 ? [0, sNose, sEnd] : [0, sNose];
+-  const ss = columnPositions(breakpoints, (s) => 1 / spacing(s), refinement);
++  const ss = columnPositions(breakpoints, density, refinement);
+   const lines = ss.map((s) => {
+     const p = surface(s);
+     return { x: p.x, y: p.y, ...line(s) };
+@@ -297,8 +482,9 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid
+     lines.map((l) => l.h),
+     nj,
+     R,
++    options.gated ?? true,
+   );
+-  return { grid, lines, outerStandoff, outerAngle };
++  return { grid, lines, outerStandoff, outerAngle, tipScale, scale, twoScale: sharp || scale < R };
+ }
+ 
+ /**
+@@ -315,6 +501,11 @@ function stretchedFraction(b: number, j: number, nj: number): number {
+   return Math.expm1((b * j) / nj) / Math.expm1(b);
+ }
+ 
++/** Height of the outermost of nj cells along a line of height h, with the stretching of the generator. */
++export function outerCellHeight(h: number, nj: number, baseRadius: number): number {
++  return h * (1 - stretchedFraction(lineStrength(h, baseRadius), nj - 1, nj));
++}
++
+ /**
+  * The lines with their node fractions fixed at those of their current
+  * heights: as the outer boundary moves, each node keeps its fraction of
+@@ -357,11 +548,19 @@ export function gridOnLines(
+     const d = h * (l.fractions?.[j] ?? stretchedFraction(lineStrength(h, baseRadius), j, nj));
+     return [l.x + d * l.dx, l.y + d * l.dy];
+   });
+-  const failures = gated ? qualityFailures(gridQuality(grid)) : [];
++  if (gated) assertGridQuality(grid);
++  return grid;
++}
++
++/** Throws a GridQualityError naming the quality gates the grid fails, if any. */
++export function assertGridQuality(
++  grid: StructuredGrid,
++  limits: QualityLimits = QUALITY_LIMITS,
++): void {
++  const failures = qualityFailures(gridQuality(grid), limits);
+   if (failures.length > 0) {
+     throw new GridQualityError(
+       `the generated grid fails its quality checks: ${failures.join('; ')}`,
+     );
+   }
+-  return grid;
+ }
+diff --git a/tests/grid/blunt-grid.test.ts b/tests/grid/blunt-grid.test.ts
+index a74859f..195c50b 100644
+--- a/tests/grid/blunt-grid.test.ts
++++ b/tests/grid/blunt-grid.test.ts
+@@ -89,12 +89,18 @@ describe('body grids (C topology, blunt noses)', () => {
+       ...hemisphereCylinder,
+       nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 },
+     };
+-    expect(() => bluntBodyGrid(sharp, { nj: 20, mach: 3 })).toThrow(/sharp/);
++    // A sharp tip is served as the limit of a two-scale nose (its shock
++    // detaches at low Mach numbers): the generator's own grid only has to
++    // contain the shock, and the family's grid is built on it (0006).
++    expect(bluntBodyGrid(sharp, { nj: 20, mach: 3, gated: false }).twoScale).toBe(true);
++    // A paraboloid half as long as its radius meets the cylinder at 26.6 deg.
+     const power: Body = {
+       ...hemisphereCylinder,
+-      nose: { shape: { kind: 'power', exponent: 0.5 }, length: 1, baseRadius: 0.5 },
++      nose: { shape: { kind: 'power', exponent: 0.5 }, length: 0.5, baseRadius: 0.5 },
+     };
+-    expect(() => bluntBodyGrid(power, { nj: 20, mach: 3 })).toThrow(/tangentially/);
++    expect(() => bluntBodyGrid(power, { nj: 20, mach: 3 })).toThrow(
++      /meeting the body at more than/,
++    );
+     // A hemisphere with no cylinder at Mach 1.5: the lines must turn
+     // vertical by the end of the body, too fast for the gates.
+     const stub: Body = { ...hemisphereCylinder, cylinderLength: 0 };

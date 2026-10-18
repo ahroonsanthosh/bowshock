@@ -1,0 +1,16 @@
+Test 1: unswept, very long span, section at mid span vs 2D Ackeret 4 tc^2 / beta
+  M=1.2 n=16 cd=1.507557e-02 exact=1.507557e-02 ratio=1.000000
+  M=1.2 n=32 cd=1.507557e-02 exact=1.507557e-02 ratio=1.000000
+  M=1.5 n=16 cd=8.944272e-03 exact=8.944272e-03 ratio=1.000000
+  M=1.5 n=32 cd=8.944272e-03 exact=8.944272e-03 ratio=1.000000
+  M=2.0 n=16 cd=5.773502e-03 exact=5.773503e-03 ratio=1.000000
+  M=2.0 n=32 cd=5.773503e-03 exact=5.773503e-03 ratio=1.000000
+  M=3.0 n=16 cd=3.535534e-03 exact=3.535534e-03 ratio=1.000000
+  M=3.0 n=32 cd=3.535534e-03 exact=3.535534e-03 ratio=1.000000
+Test 2: infinite swept wing, supersonic edges, section far from root: 4 tc^2 cosL / sqrt(M^2 cos^2 L - 1)
+  M=2.0 L=30 n=16 cd=6.123724e-03 exact=6.123724e-03 ratio=1.000000
+  M=2.0 L=30 n=32 cd=6.123724e-03 exact=6.123724e-03 ratio=1.000000
+  M=3.0 L=45 n=16 cd=3.779645e-03 exact=3.779645e-03 ratio=1.000000
+  M=3.0 L=45 n=32 cd=3.779645e-03 exact=3.779645e-03 ratio=1.000000
+  M=1.5 L=20 n=16 cd=9.459567e-03 exact=9.459567e-03 ratio=1.000000
+  M=1.5 L=20 n=32 cd=9.459567e-03 exact=9.459567e-03 ratio=1.000000

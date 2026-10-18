@@ -84,6 +84,47 @@ describe('body grids (C topology, blunt noses)', () => {
     }
   }, 60_000);
 
+  it('limits the growth of the cells along the body where the lines stop turning (Mach 1.2)', () => {
+    // A 1.5-caliber ellipsoid with a caliber of cylinder: the cells along
+    // the body grew from 0.238 to 0.355 across the shoulder (1.49), where
+    // the turn of the lines, which shrinks the spacing, stops; with the
+    // spacing's slope limited, measured when written: 1.1605.
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const { lines } = bluntBodyGrid(body, { nj: 20, mach: 1.2, gated: false });
+    const ds = lines.slice(1).map((l, i) => Math.hypot(l.x - lines[i]!.x, l.y - lines[i]!.y));
+    let worst = 1;
+    for (let i = 1; i < ds.length; i++) {
+      worst = Math.max(worst, ds[i]! / ds[i - 1]!, ds[i - 1]! / ds[i]!);
+    }
+    expect(worst).toBeLessThan(1.17);
+    // The shoulder is still a node.
+    expect(lines.some((l) => l.x === body.nose.length)).toBe(true);
+  });
+
+  it('keeps every node of its coarser grids exactly at refinements 2, 4 and 8 with the slope limited', () => {
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const coarse = bluntBodyGrid(body, { nj: 20, mach: 1.2, gated: false }).grid;
+    for (const refinement of [2, 4, 8]) {
+      const fine = bluntBodyGrid(body, { nj: 20, refinement, mach: 1.2, gated: false }).grid;
+      expect(fine.ni).toBe(refinement * coarse.ni);
+      expect(fine.nj).toBe(refinement * coarse.nj);
+      for (let j = 0; j <= coarse.nj; j++) {
+        for (let i = 0; i <= coarse.ni; i++) {
+          const c = nodeIndex(coarse, i, j);
+          const f = nodeIndex(fine, refinement * i, refinement * j);
+          expect(fine.x[f]).toBe(coarse.x[c]);
+          expect(fine.y[f]).toBe(coarse.y[c]);
+        }
+      }
+    }
+  }, 120_000);
+
   it('refuses sharp noses, noses meeting the body at an angle, and grids that fail the gates', () => {
     const sharp: Body = {
       ...hemisphereCylinder,

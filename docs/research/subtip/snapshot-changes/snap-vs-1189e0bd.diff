@@ -1,0 +1,136 @@
+diff -ru src/analysis/fitted-flow.ts /home/user/bowshock/tests/tmp-subtip/snap/src/analysis/fitted-flow.ts
+--- src/analysis/fitted-flow.ts	2026-10-17 13:42:25.000000000 +0000
++++ /home/user/bowshock/tests/tmp-subtip/snap/src/analysis/fitted-flow.ts	2026-10-17 13:51:34.987585787 +0000
+@@ -119,6 +119,10 @@
+    * part beyond not to reach back (`baseMach`).
+    */
+   readonly askedEnd: number;
++  /** SNAPSHOT ONLY: diagnostics of sharp problems. */
++  readonly inflowSlowestMach?: number;
++  readonly x0?: number;
++  readonly tipDrag?: number;
+ }
+ 
+ /** Rows of cells next to the wall that hold the stencil of the wall's fluxes, with a margin. */
+@@ -181,7 +185,16 @@
+   return smallest;
+ }
+ 
+-export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
++export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'> & {
++  /** SNAPSHOT ONLY: start of the domain behind a sharp tip, in nose lengths (default SHARP_START). */
++  readonly start?: number;
++  /**
++   * SNAPSHOT ONLY: an extra column breakpoint at this many nose lengths when
++   * the start lies ahead of it, so that the columns behind it do not depend
++   * on the start (nested-column x0 study).
++   */
++  readonly anchor?: number;
++};
+ 
+ /**
+  * Sharp noses: the flow between the body and the fitted shock, from x0 to
+@@ -230,7 +243,7 @@
+   };
+ 
+   const nj = baseNj * refinement;
+-  const x0 = SHARP_START * L;
++  const x0 = (options.start ?? SHARP_START) * L;
+   // First guess: the tip's conical shock line.
+   const guess = (x: number) => Math.max(x * Math.tan(beta) - bodyRadius(body, x), 1e-12 * L);
+   const strength = (h: number) => Math.min(Math.log1p(h / R), 2 * Math.log(10));
+@@ -241,7 +254,9 @@
+     const b = strength(h);
+     return (SHARP_ASPECT * h * b * Math.exp(b / 2)) / (Math.expm1(b) * nj);
+   };
+-  const breakpoints = body.cylinderLength > 0 ? [x0, L, xEnd] : [x0, L];
++  const anchor = options.anchor !== undefined ? options.anchor * L : undefined;
++  const head = anchor !== undefined && anchor > x0 * (1 + 1e-9) ? [x0, anchor] : [x0];
++  const breakpoints = body.cylinderLength > 0 ? [...head, L, xEnd] : [...head, L];
+   const xs = columnPositions(breakpoints, (x) => 1 / spacing(x), refinement);
+   // Each line keeps the node fractions of its first guess as the shock moves.
+   const lines = withFixedFractions(
+@@ -263,13 +278,9 @@
+   // flow crosses it supersonically: near the surface of a blunt tip cone
+   // at a low Mach number it does not, and the downstream body would reach
+   // the tip (the method of characteristics refuses these cases too).
++  // SNAPSHOT ONLY: the subsonic-tip refusal is removed; the slowest axial
++  // Mach number on the inflow plane is reported instead.
+   const slowest = Math.min(...inflow.map((w) => w.u / Math.sqrt((gamma * w.p) / w.rho)));
+-  if (!(slowest > 1)) {
+-    const degrees = ((tipAngle * 180) / Math.PI).toFixed(1);
+-    throw new RangeError(
+-      `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic near the surface (axial Mach number ${slowest.toFixed(2)}), which this solver does not handle; this needs a sharper or longer nose, or a higher Mach number`,
+-    );
+-  }
+   // Ahead of x0 the nose is the tip cone, within (x0 / L)^2.
+   const tipDrag =
+     taylorMaccoll(mach, tipAngle, gamma).surfacePressureCoefficient *
+@@ -300,6 +311,9 @@
+     firstNode: 'fixed',
+     drag: (wall) => forebodyDrag(wall, mach, gamma, R) + tipDrag,
+     askedEnd: bodyLength(asked),
++    inflowSlowestMach: slowest,
++    x0,
++    tipDrag,
+   };
+ }
+ 
+@@ -364,7 +378,11 @@
+ }
+ 
+ /** The fit of a problem on the CPU engine, and its drag. */
+-export function fittedFlow(problem: FitProblem, maxIterations: number): FittedFlow {
++export function fittedFlow(
++  problem: FitProblem,
++  maxIterations: number,
++  onProgress?: (iterations: number, maxSpeed: number, residual: number, solver: Euler2D) => void,
++): FittedFlow {
+   const { lines, nj, baseRadius } = problem;
+   const fit = fitShock({
+     lines,
+@@ -378,6 +396,7 @@
+     speedTolerance: SPEED_TOLERANCE,
+     residualTolerance: RESIDUAL_TOLERANCE,
+     maxIterations,
++    onProgress,
+   });
+   return { fit, drag: problem.drag(fit.solver.boundaryFluxes('jMin')) };
+ }
+diff -ru src/grid/body-grid.ts /home/user/bowshock/tests/tmp-subtip/snap/src/grid/body-grid.ts
+--- src/grid/body-grid.ts	2026-10-17 13:42:25.000000000 +0000
++++ /home/user/bowshock/tests/tmp-subtip/snap/src/grid/body-grid.ts	2026-10-17 16:00:18.417888665 +0000
+@@ -172,7 +172,11 @@
+     return [x, wall + (h * Math.expm1((b * j) / nj)) / Math.expm1(b)];
+   });
+   const failures = qualityFailures(gridQuality(grid));
+-  if (failures.length > 0) {
++  // SNAPSHOT ONLY: the gate can be bypassed for a cross-check, its failures recorded.
++  const bypass = (globalThis as { SUBTIP_GATE_FAILURES?: string[][] }).SUBTIP_GATE_FAILURES;
++  if (bypass !== undefined) {
++    bypass.push(failures);
++  } else if (failures.length > 0) {
+     throw new GridQualityError(
+       `the generated grid fails its quality checks: ${failures.join('; ')}`,
+     );
+diff -ru src/solver/shock-fitting.ts /home/user/bowshock/tests/tmp-subtip/snap/src/solver/shock-fitting.ts
+--- src/solver/shock-fitting.ts	2026-10-17 13:42:25.000000000 +0000
++++ /home/user/bowshock/tests/tmp-subtip/snap/src/solver/shock-fitting.ts	2026-10-17 13:46:10.823109213 +0000
+@@ -151,7 +151,7 @@
+    */
+   readonly stepsPerMove?: number;
+   /** Called every so often with the progress. */
+-  readonly onProgress?: (iterations: number, maxSpeed: number, residual: number) => void;
++  readonly onProgress?: (iterations: number, maxSpeed: number, residual: number, solver: Euler2D) => void;
+ }
+ 
+ export interface ShockFit {
+@@ -297,7 +297,7 @@
+     if (iterations % CHECK_EVERY < stepsPerMove || maxSpeed < options.speedTolerance) {
+       applyBoundary(solver);
+       residual = solver.densityResidualNorm() / initialResidual;
+-      options.onProgress?.(iterations, maxSpeed, residual);
++      options.onProgress?.(iterations, maxSpeed, residual, solver); // SNAPSHOT ONLY: solver passed for diagnostics
+       if (maxSpeed < options.speedTolerance && residual < options.residualTolerance) {
+         converged = true;
+         break;

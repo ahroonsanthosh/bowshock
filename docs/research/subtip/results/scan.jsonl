@@ -1,0 +1,102 @@
+{"name":"cone 20.00","mach":1.2,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 20.00","deg":20,"mach":1.25,"surfaceMach":0.8923590079300296,"axialMach":0.8385431748436828,"cp":0.4951718031858121}
+{"name":"cone 20.00","deg":20,"mach":1.3,"surfaceMach":0.9548653322698973,"axialMach":0.8972799065783071,"cp":0.4557964408548302}
+{"name":"cone 20.00","deg":20,"mach":1.35,"surfaceMach":1.0083122240666968,"axialMach":0.9475035564037025,"cp":0.431131764353411}
+{"name":"cone 20.00","deg":20,"mach":1.4,"surfaceMach":1.057800471012576,"axialMach":0.9940072968743758,"cp":0.4130286869521894}
+{"name":"cone 20.00","deg":20,"mach":1.45,"surfaceMach":1.1049883434556655,"axialMach":1.0383493923997338,"cp":0.3987484865887966}
+{"name":"cone 20.00","deg":20,"mach":1.5,"surfaceMach":1.15063514872829,"axialMach":1.0812433584768704,"cp":0.3869967898263113}
+{"name":"cone 20.00","deg":20,"mach":1.55,"surfaceMach":1.1951518219259973,"axialMach":1.1230753477826938,"cp":0.37705012378130875}
+{"name":"cone 20.00","deg":20,"mach":1.6,"surfaceMach":1.2387845919371723,"axialMach":1.1640767397866436,"cp":0.36846012889831814}
+{"name":"cone 20.00","deg":20,"mach":1.65,"surfaceMach":1.2816915274141945,"axialMach":1.2043960704349383,"cp":0.360928531676628}
+{"name":"cone 20.00","deg":20,"mach":1.7,"surfaceMach":1.323979279473589,"axialMach":1.2441335589947755,"cp":0.3542463077823223}
+{"name":"cone 20.00","deg":20,"mach":1.75,"surfaceMach":1.3657225554660923,"axialMach":1.2833594074123604,"cp":0.34826100477062494}
+{"name":"cone 20.00","deg":20,"mach":1.8,"surfaceMach":1.4069752313772512,"axialMach":1.3221242425537492,"cp":0.34285784646661976}
+{"name":"cone 20.00","deg":20,"mach":1.85,"surfaceMach":1.4477770676774657,"axialMach":1.3604654270395753,"cp":0.33794816054297083}
+{"name":"cone 20.00","deg":20,"mach":1.9,"surfaceMach":1.4881579592223642,"axialMach":1.3984110528450724,"cp":0.33346195634575354}
+{"name":"cone 20.00","deg":20,"mach":1.95,"surfaceMach":1.5281407281378,"axialMach":1.4359825657534957,"cp":0.32934298025464837}
+{"name":"cone 20.00","deg":20,"mach":2,"surfaceMach":1.5677430180428233,"axialMach":1.4731965453434703,"cp":0.3255453148972456}
+{"name":"cone 22.00","mach":1.2,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 22.00","mach":1.25,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.3,"surfaceMach":0.8881275526839918,"axialMach":0.8234575276445111,"cp":0.552505105944472}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.35,"surfaceMach":0.9494748423870062,"axialMach":0.8803377441785774,"cp":0.5139454884542878}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.4,"surfaceMach":1.002284341473799,"axialMach":0.9293018590996112,"cp":0.48883377608803863}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.45,"surfaceMach":1.0511146886239737,"axialMach":0.9745765685901445,"cp":0.4700932066984805}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.5,"surfaceMach":1.0975563193355968,"axialMach":1.0176364987657145,"cp":0.4551716129290321}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.55,"surfaceMach":1.1423625314873955,"axialMach":1.0591800952571564,"cp":0.4428209800328945}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.6,"surfaceMach":1.1859499602818366,"axialMach":1.0995936554974417,"cp":0.43232829997823674}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.65,"surfaceMach":1.2285722449978416,"axialMach":1.1391123497308702,"cp":0.42324464943041656}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.7,"surfaceMach":1.2703942726317574,"axialMach":1.177889058518283,"cp":0.41526772165311043}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.75,"surfaceMach":1.3115284816999924,"axialMach":1.2160280330367252,"cp":0.40818359630984535}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.8,"surfaceMach":1.3520543830072822,"axialMach":1.2536029944206115,"cp":0.40183500498274044}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.85,"surfaceMach":1.392029830229105,"axialMach":1.2906675836637722,"cp":0.39610276189602767}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.9,"surfaceMach":1.4314978984290139,"axialMach":1.3272617392696686,"cp":0.3908942772869668}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":1.95,"surfaceMach":1.4704912733833382,"axialMach":1.363415766962387,"cp":0.3861361266884183}
+{"name":"cone 22.00","deg":21.999999999999996,"mach":2,"surfaceMach":1.5090351569419962,"axialMach":1.399153033490277,"cp":0.3817690632308318}
+{"name":"cone 25.00","mach":1.2,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 25.00","mach":1.25,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 25.00","mach":1.3,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 25.00","deg":25,"mach":1.35,"surfaceMach":0.831814260484146,"axialMach":0.7538797416449138,"cp":0.6801440608219481}
+{"name":"cone 25.00","deg":25,"mach":1.4,"surfaceMach":0.9042367304422801,"axialMach":0.8195167901243987,"cp":0.6243665384364127}
+{"name":"cone 25.00","deg":25,"mach":1.45,"surfaceMach":0.9601562613334347,"axialMach":0.8701970964184885,"cp":0.5926821922306418}
+{"name":"cone 25.00","deg":25,"mach":1.5,"surfaceMach":1.0100543842722294,"axialMach":0.9154201537964303,"cp":0.5700103902866215}
+{"name":"cone 25.00","deg":25,"mach":1.55,"surfaceMach":1.0566211194414377,"axialMach":0.9576239484971572,"cp":0.5523390944565333}
+{"name":"cone 25.00","deg":25,"mach":1.6,"surfaceMach":1.1010006802503811,"axialMach":0.9978454900435691,"cp":0.5379058477846608}
+{"name":"cone 25.00","deg":25,"mach":1.65,"surfaceMach":1.1437917572725653,"axialMach":1.0366273763644598,"cp":0.5257586995435823}
+{"name":"cone 25.00","deg":25,"mach":1.7,"surfaceMach":1.1853470733057148,"axialMach":1.074289282878072,"cp":0.5153184810435556}
+{"name":"cone 25.00","deg":25,"mach":1.75,"surfaceMach":1.2258912851687518,"axialMach":1.111034817808806,"cp":0.5062040022894976}
+{"name":"cone 25.00","deg":25,"mach":1.8,"surfaceMach":1.2655756432868353,"axialMach":1.1470010605947762,"cp":0.49814987066918276}
+{"name":"cone 25.00","deg":25,"mach":1.85,"surfaceMach":1.30450631188371,"axialMach":1.182284228698667,"cp":0.49096332214137883}
+{"name":"cone 25.00","deg":25,"mach":1.9,"surfaceMach":1.3427602819266125,"axialMach":1.2169540996336163,"cp":0.4844996309981162}
+{"name":"cone 25.00","deg":25,"mach":1.95,"surfaceMach":1.3803948847943055,"axialMach":1.2510626332746384,"cp":0.47864720477034345}
+{"name":"cone 25.00","deg":25,"mach":2,"surfaceMach":1.4174537662622226,"axialMach":1.2846493861278798,"cp":0.47331809309942996}
+{"name":"cone 26.57","mach":1.2,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 26.57","mach":1.25,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 26.57","mach":1.3,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 26.57","mach":1.35,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.4,"surfaceMach":0.8354749010691526,"axialMach":0.7472714689142147,"cp":0.7188217095105143}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.45,"surfaceMach":0.9040948358760933,"axialMach":0.8086470044501841,"cp":0.6684698153154102}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.5,"surfaceMach":0.9586389211906002,"axialMach":0.8574327174636983,"cp":0.638066016328703}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.55,"surfaceMach":1.0074940297480512,"axialMach":0.9011300549767352,"cp":0.6158795236395168}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.6,"surfaceMach":1.0530800737274473,"axialMach":0.941903452242025,"cp":0.5984059618373814}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.65,"surfaceMach":1.0964699179075514,"axialMach":0.9807125086899595,"cp":0.5840414194644072}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.7,"surfaceMach":1.1382385916501123,"axialMach":1.0180715462173102,"cp":0.5718989297272326}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.75,"surfaceMach":1.1787306217230114,"axialMach":1.0542887189332975,"cp":0.5614301670072848}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.8,"surfaceMach":1.2181683428082655,"axialMach":1.0895628890230193,"cp":0.5522699531414218}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.85,"surfaceMach":1.256703112037876,"axialMach":1.1240294344208899,"cp":0.5441616969342271}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.9,"surfaceMach":1.2944422369106257,"axialMach":1.1577843338716185,"cp":0.5369176461891869}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":1.95,"surfaceMach":1.3314642814509858,"axialMach":1.1908978571749267,"cp":0.5303959804423422}
+{"name":"cone 26.57","deg":26.565051177077997,"mach":2,"surfaceMach":1.3678283034520418,"axialMach":1.2234228272267902,"cp":0.5244867923897512}
+{"name":"cone 28.00","mach":1.2,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 28.00","mach":1.25,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 28.00","mach":1.3,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 28.00","mach":1.35,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 28.00","mach":1.4,"error":"RangeError: the shock detaches: no attached conical solution"}
+{"name":"cone 28.00","deg":28,"mach":1.45,"surfaceMach":0.8401965857877771,"axialMach":0.7418495529496067,"cp":0.753971954279729}
+{"name":"cone 28.00","deg":28,"mach":1.5,"surfaceMach":0.9053252695385594,"axialMach":0.7993547674934303,"cp":0.7084186255635382}
+{"name":"cone 28.00","deg":28,"mach":1.55,"surfaceMach":0.9583590516441928,"axialMach":0.846180817743804,"cp":0.6794956819545714}
+{"name":"cone 28.00","deg":28,"mach":1.6,"surfaceMach":1.006058017827869,"axialMach":0.8882965051175404,"cp":0.6580057335726681}
+{"name":"cone 28.00","deg":28,"mach":1.65,"surfaceMach":1.0505795833809362,"axialMach":0.927606714252932,"cp":0.6409132832183162}
+{"name":"cone 28.00","deg":28,"mach":1.7,"surfaceMach":1.0929190255222567,"axialMach":0.9649902227746008,"cp":0.6267735716948489}
+{"name":"cone 28.00","deg":28,"mach":1.75,"surfaceMach":1.1336225459439435,"axialMach":1.0009292981518132,"cp":0.614769166380764}
+{"name":"cone 28.00","deg":28,"mach":1.8,"surfaceMach":1.173022907280128,"axialMach":1.0357177523513692,"cp":0.6043868027832883}
+{"name":"cone 28.00","deg":28,"mach":1.85,"surfaceMach":1.2113376878387705,"axialMach":1.0695476956165406,"cp":0.5952807007599139}
+{"name":"cone 28.00","deg":28,"mach":1.9,"surfaceMach":1.2487166675208907,"axialMach":1.1025513757503915,"cp":0.5872057197629298}
+{"name":"cone 28.00","deg":28,"mach":1.95,"surfaceMach":1.2852671115042695,"axialMach":1.134823502283441,"cp":0.5799811954747568}
+{"name":"cone 28.00","deg":28,"mach":2,"surfaceMach":1.3210683083292933,"axialMach":1.1664340828415642,"cp":0.5734698549861336}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.2,"surfaceMach":0.8515229463372255,"axialMach":0.8054946789676457,"cp":0.5033934394252185}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.25,"surfaceMach":0.928651836041591,"axialMach":0.8784544394988023,"cp":0.4412584605586387}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.3,"surfaceMach":0.9857629950003038,"axialMach":0.9324785087840712,"cp":0.4113583383282701}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.35,"surfaceMach":1.0371688310340965,"axialMach":0.9811056509781994,"cp":0.39098627256995044}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.4,"surfaceMach":1.0856816796938522,"axialMach":1.0269961834941845,"cp":0.3755082078305989}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.45,"surfaceMach":1.1323984832460963,"axialMach":1.071187754421983,"cp":0.3630581460130355}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.5,"surfaceMach":1.1778636103426499,"axialMach":1.114195307080885,"cp":0.35268031798504196}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.55,"surfaceMach":1.2223856046367716,"axialMach":1.156310707088838,"cp":0.34381496463036815}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.6,"surfaceMach":1.2661549502160014,"axialMach":1.1977141420962176,"cp":0.3361043541600286}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.65,"surfaceMach":1.309296481742934,"axialMach":1.2385236989460187,"cp":0.3293052497908206}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.7,"surfaceMach":1.351895685871738,"axialMach":1.2788202433921845,"cp":0.3232443873005813}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.75,"surfaceMach":1.3940130978137997,"axialMach":1.3186610384725133,"cp":0.3177937789329488}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.8,"surfaceMach":1.4356927199283231,"axialMach":1.3580877080403058,"cp":0.3128560795045328}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.85,"surfaceMach":1.4769672081246257,"axialMach":1.397131142820592,"cp":0.30835545020634847}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.9,"surfaceMach":1.5178612050025657,"axialMach":1.4358146533808054,"cp":0.30423160748261546}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":1.95,"surfaceMach":1.5583935582770192,"axialMach":1.4741560686404236,"cp":0.3004358075488412}
+{"name":"tangent ogive L3","deg":18.924644416051237,"mach":2,"surfaceMach":1.5985788414637598,"axialMach":1.5121691743576107,"cp":0.29692805504113357}
