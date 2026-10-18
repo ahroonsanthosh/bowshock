@@ -63,7 +63,13 @@ export function transonicProblem(body: Body, options: TransonicOptions): Transon
     timeIntegrator: 'ssprk2',
     cfl: 0.8,
     timeStepping: 'local',
-    boundaries: { iMin: far, iMax: far, jMin: { kind: 'wall' }, jMax: far },
+    // On the C grid of a blunt nose iMin is the axis ahead of it.
+    boundaries: {
+      iMin: grid.topology === 'H' ? far : { kind: 'wall' },
+      iMax: far,
+      jMin: { kind: 'wall' },
+      jMax: far,
+    },
   };
   const R = body.nose.baseRadius;
   return {

@@ -80,13 +80,77 @@ describe('transonic grids (design record 0007)', () => {
     }
   });
 
-  it('refuse blunt noses and far boundaries too close to the nose', () => {
-    const blunt: Body = {
-      nose: { shape: { kind: 'ellipsoid' }, length: 1, baseRadius: 1 },
+  it.each([1, 2, 3])(
+    'blunt noses (ellipsoid %d:1): a C grid from the axis ahead to the end of the cylinder',
+    (L) => {
+      const body: Body = {
+        nose: { shape: { kind: 'ellipsoid' }, length: L, baseRadius: 1 },
+        cylinderLength: 0,
+      };
+      const g = transonicGrid(body, { refinement: 1, farField: 100, cylinder: 10 });
+      const { grid } = g;
+      expect(g.topology).toBe('C');
+      expect(g.iTip).toBe(0);
+      expect(grid.x[nodeIndex(grid, g.iShoulder, 0)]).toBeCloseTo(L, 12);
+      // jMin on the body, jMax on the far boundary (a quarter circle about
+      // the stagnation point, then the far radius), iMin on the axis ahead
+      // and iMax the plane at the end of the cylinder.
+      for (let i = 0; i <= grid.ni; i++) {
+        const x = grid.x[nodeIndex(grid, i, 0)]!;
+        expect(grid.y[nodeIndex(grid, i, 0)]).toBeCloseTo(bodyRadius(body, x), 9);
+        const xf = grid.x[nodeIndex(grid, i, grid.nj)]!;
+        const yf = grid.y[nodeIndex(grid, i, grid.nj)]!;
+        expect(xf <= 0 ? Math.hypot(xf, yf) : yf).toBeCloseTo(g.farRadius, 9);
+      }
+      for (let j = 0; j <= grid.nj; j++) {
+        expect(grid.y[nodeIndex(grid, 0, j)]).toBe(0);
+        expect(grid.x[nodeIndex(grid, 0, j)]).toBeLessThanOrEqual(0);
+        expect(grid.x[nodeIndex(grid, grid.ni, j)]).toBeCloseTo(g.xEnd, 12);
+      }
+      expect(grid.x[nodeIndex(grid, 0, grid.nj)]).toBeCloseTo(-g.farRadius, 9);
+      // Measured when written: wall cells at 85.3 deg or more, every corner
+      // at 51 deg or more, neighbours within 1.92 in size on the hemisphere
+      // and 1.43 on the ellipsoids (the largest jumps in the far field above
+      // the start of the cylinder, where the lines from the nose fan out).
+      computeMetrics(grid, 'axisymmetric');
+      const q = gridQuality(grid);
+      expect(q.minWallAngle).toBeGreaterThan(80 * deg);
+      expect(q.minAngle).toBeGreaterThan(45 * deg);
+      expect(q.maxSizeRatio).toBeLessThan(L === 1 ? 2 : 1.5);
+    },
+  );
+
+  it('blunt noses: the C grids nest', () => {
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 2, baseRadius: 1 },
       cylinderLength: 0,
     };
-    expect(() => transonicGrid(blunt, { refinement: 1, farField: 100, cylinder: 10 })).toThrow(
-      /blunt/,
+    const coarse = transonicGrid(body, { refinement: 1, farField: 100, cylinder: 10 }).grid;
+    const fine = transonicGrid(body, { refinement: 2, farField: 100, cylinder: 10 }).grid;
+    expect(fine.ni).toBe(2 * coarse.ni);
+    expect(fine.nj).toBe(2 * coarse.nj);
+    let worst = 0;
+    for (let j = 0; j <= coarse.nj; j++) {
+      for (let i = 0; i <= coarse.ni; i++) {
+        const c = nodeIndex(coarse, i, j);
+        const f = nodeIndex(fine, 2 * i, 2 * j);
+        worst = Math.max(
+          worst,
+          Math.abs(coarse.x[c]! - fine.x[f]!),
+          Math.abs(coarse.y[c]! - fine.y[f]!),
+        );
+      }
+    }
+    expect(worst).toBeLessThan(1e-9);
+  });
+
+  it('refuse blunt noses meeting the cylinder at an angle and far boundaries too close', () => {
+    const corner: Body = {
+      nose: { shape: { kind: 'power', exponent: 0.5 }, length: 2, baseRadius: 1 },
+      cylinderLength: 0,
+    };
+    expect(() => transonicGrid(corner, { refinement: 1, farField: 100, cylinder: 10 })).toThrow(
+      /tangentially/,
     );
     expect(() => transonicGrid(cone, { refinement: 1, farField: 20, cylinder: 10 })).toThrow(
       /far boundaries/,

@@ -212,7 +212,7 @@ With the shock captured and the far boundaries characteristic, the
 transonic domain does here what the fitted solver does for supersonic
 cones.
 
-The fitted solver (0006, CPU, nj = 20, 40, 80, with 2 calibers of
+The fitted solver (0006, CPU, nj = 20, 40, 80, with 1 caliber of
 cylinder) on the same cone: 0.0831060, 0.0830076, 0.0830154 (+1.14e-3,
 -4.4e-5, +4.9e-5): oscillatory, the band of the three (the range,
 9.8e-5) containing its error. The two solvers' finest values agree within
@@ -268,7 +268,36 @@ length matters far less: 40 calibers instead of 10 changes the drag by
 
 ## References and how close the solver gets
 
-(to be completed)
+**Exact inviscid solutions** test the solver's own error, and are used
+above: Taylor-Maccoll for the cone at Mach 1.2 and 1.1, the method of
+characteristics (`src/validation/characteristics.ts`) for the ogive at
+Mach 1.2. Below Mach 1.1 there is none; the measurements there rest on
+grid, domain and cylinder studies.
+
+**NACA TN 4233** (W. A. Page, 1958; sources.md,
+`src/validation/cone-cylinder-tn4233.ts`): surface pressures on the same
+7 deg cone-cylinder, sting-mounted, in two ventilated tunnels. Where the
+inviscid cone pressure is exact (Taylor-Maccoll, indicated Mach 1.078 and
+above), the mean of the ten cone orifices ahead of x / l = 0.95 lies
+below it by 0.0030 (14-foot tunnel, 1.078), 0.0007 (14-foot, 1.100),
+0.0004 (2-foot, 1.100), 0.0017 (2-foot, 1.151) and 0.0028 (2-foot,
+1.200), with a scatter along the cone of up to 0.005 (the stated
+uncertainty is 0.002). The data therefore test the computed pressures to
+about 0.003 to 0.005, 3 to 5% of the cone's pressure coefficient: they
+check the model (inviscid flow, the sting in place of the base), not the
+solver's numerical error, which the exact solutions and the grid studies
+measure far more finely. The orifice at x / l = 0.994, 0.6% of the cone
+length ahead of the shoulder, has already fallen into the shoulder's
+expansion (by 0.04 at Mach 1.2 to 0.09 at Mach 1), which the boundary
+layer carries upstream and inviscid flow cannot (at Mach 1.1 and 1.2 the
+cone's flow is supersonic); it is left out.
+
+Computed wall pressure coefficients at the orifices against the data
+(measured minus computed; cone: orifices 1 to 10, x / l 0.08 to 0.94;
+cylinder: orifices 12 to 15, 0.18 to 1.63 calibers behind the
+shoulder):
+
+(table to be completed)
 
 ## What accuracy the evidence supports
 
