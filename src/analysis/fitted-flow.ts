@@ -491,14 +491,42 @@ function secondCapture(
   const R = body.nose.baseRadius;
   const free = freeStreamAt(options.mach, options.gamma).state;
   const heights = capturedShockHeights(first.solver, first.grid.grid, first.grid.lines, free);
-  const outerBoundary = first.grid.lines.map((l, i) => {
-    const shock = heights[i]!;
+  const distances = heights.map((shock) => {
     let d = (1 + BOUNDARY_MARGIN) * shock;
     for (let k = 0; k < 20; k++) {
       d = Math.max(d, shock + BOUNDARY_CELLS * outerCellHeight(d, options.nj, R));
     }
+    return d;
+  });
+  // The boundary only has to contain the shock, so it is smoothed further
+  // than the start is (BOUNDARY_SMOOTHING passes of 1-2-1, mirrored at the
+  // axis): a captured shock far from the body, as at Mach 1.2, is stepped
+  // enough after the start's smoothing to bend the outer cells.
+  for (let pass = 0; pass < BOUNDARY_SMOOTHING; pass++) {
+    const copy = [...distances];
+    const n = copy.length - 1;
+    distances[0] = 0.5 * (copy[0]! + copy[1]!);
+    for (let i = 1; i < n; i++) {
+      distances[i] = 0.25 * copy[i - 1]! + 0.5 * copy[i]! + 0.25 * copy[i + 1]!;
+    }
+    distances[n] = 0.5 * (copy[n]! + copy[n - 1]!);
+  }
+  const outerBoundary = first.grid.lines.map((l, i) => {
+    const d = distances[i]!;
     return { x: l.x + d * l.dx, y: l.y + d * l.dy };
   });
+  // The captured shock's last height is its last column's, so the
+  // boundary's last segment would bend flat where the shock still rises
+  // (at Mach 1.2 by 30 deg, which jumps the last outer cells' widths by
+  // 1.6): the last point continues the segment before it to the last line.
+  const n = outerBoundary.length - 1;
+  if (n >= 2) {
+    const a = outerBoundary[n - 2]!;
+    const b = outerBoundary[n - 1]!;
+    const last = first.grid.lines[n]!;
+    const y = b.y + ((last.x - b.x) * (b.y - a.y)) / (b.x - a.x);
+    if (y > b.y) outerBoundary[n] = { x: last.x, y };
+  }
   return bluntCapture(asked, options, outerBoundary);
 }
 
@@ -668,6 +696,8 @@ const CAPTURED_START_STEPS = 3000;
 const BOUNDARY_MARGIN = 0.5;
 /** ... and at least this many cells of the base grid above the captured shock. */
 const BOUNDARY_CELLS = 3;
+/** Passes of 1-2-1 smoothing of that boundary's distances along the lines. */
+const BOUNDARY_SMOOTHING = 50;
 
 export interface VerifiedFittedDragOptions {
   readonly mach: number;

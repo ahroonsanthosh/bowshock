@@ -111,8 +111,12 @@ export interface BluntGridTuning {
    * normal, in multiples of the distance to the outer boundary.
    */
   readonly smoothing: number;
-  /** The same at a sharp tip, where the normal jumps; the window widens from there at the slope limit. */
-  readonly tipSmoothing: number;
+  /**
+   * Largest ratio of neighbouring cells the fan at a sharp tip is sized
+   * for, below the size-ratio gate: the fan's angle decays by this factor
+   * per wall cell.
+   */
+  readonly fanRatio: number;
   /** Largest rate of change of that half-width along the body. */
   readonly maxWidthSlope: number;
 }
@@ -122,7 +126,7 @@ export const DEFAULT_TUNING: BluntGridTuning = {
   arcRadiusFactor: 2,
   tipScaleFactor: 2,
   smoothing: 0.25,
-  tipSmoothing: 0.05,
+  fanRatio: 1.25,
   maxWidthSlope: 0.5,
 };
 
@@ -357,14 +361,6 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     const p = surface(s);
     widths[k] = Math.min(tuning.smoothing * lengthAlong(s, p.nx, p.ny), sEnd - s);
   }
-  // At a sharp tip the normal jumps, and the window spreads the jump into
-  // a fan linear in s over its width, which leaves the first wall cells
-  // at 90 deg less most of the jump (on a 37 deg tip, 42 deg). A window
-  // that starts narrow at the tip and widens at the slope limit fans the
-  // lines geometrically instead, most in the first cell (0.23 of the jump,
-  // the most the size-ratio gate allows): the first cell then meets the
-  // wall at 90 deg less 0.77 of the jump.
-  if (sharp) widths[0] = Math.min(widths[0]!, tuning.tipSmoothing * lengthAlong(0, -1, 0));
   for (let k = 1; k <= WIDTH_SAMPLES; k++) {
     widths[k] = Math.min(
       widths[k]!,
@@ -386,6 +382,29 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     const f = (Math.min(Math.max(s, 0), sEnd) - widthS[k]!) / (widthS[k + 1]! - widthS[k]!);
     return widths[k]! + Math.min(Math.max(f, 0), 1) * (widths[k + 1]! - widths[k]!);
   };
+  // At a sharp tip the normal jumps by tipJump, from the axis to the
+  // tip's normal. The window would spread the jump into a fan linear in
+  // s over its width, and end it abruptly where it stops straddling the
+  // tip, where the outer cells then jump in width (by 1.9 to 2.5 on the
+  // tips measured). The jump is taken out of the normal before the
+  // window averages it, and the lines fan through it as
+  // tipJump (1 - exp(-s / fanScale)): their angle decays geometrically,
+  // by fanRatio per wall cell at the tip, as the size-ratio gate allows,
+  // and most of it is in the first cell (0.22 of the jump at 1.25, the
+  // most any fan within the gate can give), which meets the wall at
+  // 90 deg less the rest: on a 37 deg tip 48 deg, on a 45 deg tip 55 deg.
+  // The wall cells at the tip are the geometric mean of the cell heights
+  // along the line and across the fan (the spacing rule below), so the
+  // scale that gives that decay solves fanScale = c h / (nj sqrt(1 + K))
+  // with K = tipJump h / fanScale and c = 1 / ln(fanRatio).
+  const tipJump = sharp ? normalAngle(sNose * 1e-9) : 0;
+  const fanScale = (() => {
+    if (!sharp) return Infinity;
+    const h = lengthAlong(0, -1, 0);
+    const c = 1 / Math.log(tuning.fanRatio) / options.nj;
+    return (h * (-tipJump + Math.sqrt(tipJump * tipJump + 4 * c * c))) / 2;
+  })();
+  const fan = (s: number) => tipJump * -Math.expm1(-s / fanScale);
   /** Angle of the grid line from the body point at s, odd about the tip. */
   const lineAngle = (s: number): number => {
     // The window about the tip averages an odd function: exactly zero.
@@ -395,15 +414,20 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     const w = halfWidth(s);
     let sum = 0;
     for (let k = 0; k < WINDOW_SAMPLES; k++) {
-      sum += normalAngle(s - w + (2 * w * (k + 0.5)) / WINDOW_SAMPLES);
+      const t = s - w + (2 * w * (k + 0.5)) / WINDOW_SAMPLES;
+      sum += normalAngle(t) - Math.sign(t) * tipJump;
     }
-    return sum / WINDOW_SAMPLES;
+    return sum / WINDOW_SAMPLES + fan(s);
   };
   /** Rate at which the grid lines turn along the body. */
   const turnRate = (s: number) => {
     // Over a quarter of the window: the tabulated half-width has corners,
     // where a shorter difference would see the angle's slope jump.
-    const e = Math.max(halfWidth(s) / 4, sEnd / PROFILE_SAMPLES);
+    // ... and within the fan at a sharp tip, over a quarter of its scale.
+    const e = Math.max(
+      Math.min(halfWidth(s) / 4, Math.max(fanScale / 4, s / 8)),
+      sEnd / PROFILE_SAMPLES,
+    );
     return (lineAngle(s + e) - lineAngle(s - e)) / (2 * e);
   };
   const line = (s: number) => {
