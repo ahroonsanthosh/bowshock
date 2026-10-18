@@ -414,7 +414,10 @@ export async function bluntStartInChunks(
   return stage.start();
 }
 
-export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'>;
+export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'> & {
+  /** Apply the quality gates to the family's grids (default); off for measuring grids that fail them. */
+  readonly gated?: boolean;
+};
 
 /** A captured-shock problem on a blunt family's base grid, and the start it gives. */
 interface CaptureStage {
@@ -441,8 +444,10 @@ function bluntCapture(
   const base = bluntBodyGrid(body, { nj, mach, outerBoundary, gated: false });
   // The grid on a captured shock is a fitted grid, gated as one; the
   // generator's own grid as every generated grid.
-  if (outerBoundary) assertGridQuality(base.grid, FITTED_QUALITY_LIMITS);
-  else if (!base.twoScale) assertGridQuality(base.grid);
+  if (options.gated ?? true) {
+    if (outerBoundary) assertGridQuality(base.grid, FITTED_QUALITY_LIMITS);
+    else if (!base.twoScale) assertGridQuality(base.grid);
+  }
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   const solver = new Euler2D({
     ...engineConfig(base.grid, gamma, axis, []),
@@ -557,9 +562,11 @@ export function bluntFitFamily(
         refinement,
         mach,
         outerBoundary,
-        gated: !outerBoundary,
+        gated: !outerBoundary && (options.gated ?? true),
       });
-      if (outerBoundary) assertGridQuality(refined.grid, FITTED_QUALITY_LIMITS);
+      if (outerBoundary && (options.gated ?? true)) {
+        assertGridQuality(refined.grid, FITTED_QUALITY_LIMITS);
+      }
       return refined.lines;
     })();
     const heights = nestedHeights(start.lines, start.heights, fine, refinement);
