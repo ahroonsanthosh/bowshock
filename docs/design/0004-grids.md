@@ -208,13 +208,19 @@ lines fan through it as jump (1 - exp(-s / scale)), decaying by
 size-ratio gate can put more than 0.23 of the jump into the first cell
 (its outer width can only shrink by 1.3 per cell), so the first wall
 cell meets the wall at 90 deg less 0.77 of the jump: a tip of
-half-angle delta gives about 21 + 0.77 delta deg, 50 deg (the fitted
-gate) at 38 deg. Measured on the family's grids (nj = 20, the grid the
-shock settled on): a 1-caliber tangent ogive (53 deg tip) at Mach 1.5,
-wall cells at 58.6 deg, size ratio 1.16, aspect 3.8; a 1-caliber
-parabolic nose (45 deg) at Mach 1.2, 52.4 deg, 1.24, 7.9; a 1.5-caliber
-tangent ogive (37 deg) at Mach 1.2, 45.4 deg and 1.30, refused by the
-fitted gates. At Mach 1.2 the shock stands 7 to 10 radii out along the
+half-angle delta gives about 21 + 0.77 delta deg on the base grid, 50
+deg (the fitted gate) at 38 deg. The fan's scale is set on the base
+grid, as nesting requires, so on each refinement the first cell takes a
+smaller part of the jump and its angle falls towards the tip's
+half-angle: a 45 deg tip gives 52.4 deg on nj = 20 and 49.8 on nj = 40.
+Under the 50 deg gate the C grid therefore serves detached tips of 50
+deg or more at every refinement, and of 38 deg or more on the base
+grid only. Measured on the family's grids (nj = 20, the grid the shock
+settled on): a 1-caliber tangent ogive (53 deg tip) at Mach 1.5, wall
+cells at 58.6 deg (56.1 on nj = 40), size ratio 1.16, aspect 3.8; a
+1-caliber parabolic nose (45 deg) at Mach 1.2, 52.4 deg, 1.24, 7.9; a
+1.5-caliber tangent ogive (37 deg) at Mach 1.2, 45.4 deg and 1.30,
+refused by the fitted gates. At Mach 1.2 the shock stands 7 to 10 radii out along the
 cylinder, and the window, which closes at the end of the body, turns
 the lines vertical over the last two or three cells of a 2-caliber
 cylinder, where the wall widths jump by 1.6 to 1.7: those cases need 5
