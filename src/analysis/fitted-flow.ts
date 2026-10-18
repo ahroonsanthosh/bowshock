@@ -16,6 +16,7 @@ import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cp
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
 import { bluntBodyGrid, gridOnLines, withFixedFractions, type GridLine } from '../grid/blunt-grid';
+import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
 import { columnPositions } from '../grid/spacing';
 import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
@@ -24,7 +25,7 @@ import { normalShock } from '../validation/gas-dynamics';
 import { coneFlowField, taylorMaccoll } from '../validation/taylor-maccoll';
 import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
 import { forebodyPressureDrag } from './forces';
-import { CPU_NOISE, ORDER_TOLERANCE, freeStreamAt } from './verified-drag';
+import { CPU_NOISE, ORDER_TOLERANCE, freeStreamAt, outflowMach } from './verified-drag';
 
 export interface FittedFlowOptions {
   readonly mach: number;
@@ -193,6 +194,34 @@ export function baseMach(
   return across((j) => (1 - t) * axialMach(cell(a, j)) + t * axialMach(cell(a + 1, j)));
 }
 
+/**
+ * Why the converged flow of a problem is not served, or undefined if it
+ * is: the grid the shock settled on must meet the gates set for fitted
+ * grids on measurement (FITTED_QUALITY_LIMITS), the flow must leave the
+ * grid supersonic, where the outflow condition holds, and nothing behind
+ * the end of the body asked for may reach the body (baseMach). The same
+ * checks on the CPU and the GPU.
+ */
+export function fittedCaseFailure(
+  problem: FitProblem,
+  grid: StructuredGrid,
+  cell: (i: number, j: number) => Primitive2D,
+): string | undefined {
+  const failures = qualityFailures(gridQuality(grid), FITTED_QUALITY_LIMITS);
+  if (failures.length > 0) {
+    return `the grid on the fitted shock fails its quality checks (${failures.join('; ')}): a limit of the present grids, not of the flow`;
+  }
+  const outflow = outflowMach(problem.configFor(grid, []), cell);
+  if (!(outflow > 1)) {
+    return `the flow leaves the grid at an axial Mach number of ${outflow.toFixed(3)}, where the outflow condition does not hold; a longer body behind the nose, or a higher Mach number, is needed`;
+  }
+  const base = baseMach(problem, grid, cell);
+  if (!(base > 1)) {
+    return `the flow at the end of the body is subsonic (axial Mach number ${base.toFixed(3)}), so what lies behind the base could reach the body ahead of it, and the base is not modelled; a longer body behind the nose, or a higher Mach number, is needed`;
+  }
+  return undefined;
+}
+
 export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
 
 /**
@@ -336,6 +365,8 @@ export interface BluntStart {
   readonly lines: readonly GridLine[];
   /** The captured shock's heights along them (capturedShockHeights). */
   readonly heights: readonly number[];
+  /** The captured grid, reaching past the shock to the outer boundary. */
+  readonly grid: StructuredGrid;
   /** The captured solution in each cell of the base grid. */
   readonly cell: (i: number, j: number) => Primitive2D;
 }
@@ -389,7 +420,9 @@ function bluntCapture(
   const body = solvedBody(asked);
   const { mach, gamma, nj } = options;
   const free = freeStreamAt(mach, gamma).state;
-  const base = bluntBodyGrid(body, { nj, mach });
+  // Not gated: only the start, the grids solved for the drag are (as
+  // bluntFitFamily's lines).
+  const base = bluntBodyGrid(body, { nj, mach, gated: false });
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   const solver = new Euler2D({
     ...engineConfig(base.grid, gamma, axis, []),
@@ -406,6 +439,7 @@ function bluntCapture(
     start: () => ({
       lines: base.lines,
       heights: capturedShockHeights(solver, base.grid, base.lines, free),
+      grid: base.grid,
       cell: (i, j) => solver.primitive(i, j),
     }),
   };
@@ -431,7 +465,9 @@ export function bluntFitFamily(
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   return (refinement) => {
     const fine =
-      refinement === 1 ? start.lines : bluntBodyGrid(body, { nj: baseNj, refinement, mach }).lines;
+      refinement === 1
+        ? start.lines
+        : bluntBodyGrid(body, { nj: baseNj, refinement, mach, gated: false }).lines;
     const heights = nestedHeights(start.lines, start.heights, fine, refinement);
     const nj = baseNj * refinement;
     // Each line keeps the node fractions of the captured shock's height.
@@ -454,10 +490,52 @@ export function bluntFitFamily(
           axis,
           states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
         ),
-      initial: (i, j) => start.cell(Math.floor(i / refinement), Math.floor(j / refinement)),
+      initial: shockLayerStart(start, lines, refinement),
       firstNode: 'symmetry',
       drag: (wall) => forebodyDrag(wall, mach, gamma, R),
       askedEnd: bodyLength(asked),
+    };
+  };
+}
+
+/**
+ * The captured start in each cell of a fitted grid on `lines`, refined by
+ * `refinement` from the base grid: on the base grid's column, at the same
+ * fraction of the shock layer, linear between the captured cells either
+ * side. The fitted grid ends at the shock and the captured one far beyond
+ * it, so the cell of the same index would lie 1.5 to 1.7 times farther
+ * out, and the outer part of the layer would start in the free stream.
+ */
+function shockLayerStart(
+  start: BluntStart,
+  lines: readonly GridLine[],
+  refinement: number,
+): (i: number, j: number) => Primitive2D {
+  const { grid } = start;
+  // Fraction of the captured shock's height at node (i, j) of the captured grid.
+  const fraction = (i: number, j: number) => {
+    const l = start.lines[i]!;
+    const k = nodeIndex(grid, i, j);
+    return ((grid.x[k]! - l.x) * l.dx + (grid.y[k]! - l.y) * l.dy) / start.heights[i]!;
+  };
+  const centre = (i: number, j: number) =>
+    0.25 * (fraction(i, j) + fraction(i + 1, j) + fraction(i, j + 1) + fraction(i + 1, j + 1));
+  return (i, j) => {
+    const a = lines[i]!.fractions!;
+    const b = lines[i + 1]!.fractions!;
+    const s = 0.25 * (a[j]! + a[j + 1]! + b[j]! + b[j + 1]!);
+    const column = Math.floor(i / refinement);
+    let jj = 0;
+    while (jj < grid.nj - 2 && centre(column, jj + 1) < s) jj++;
+    const c0 = centre(column, jj);
+    const t = Math.min(Math.max((s - c0) / (centre(column, jj + 1) - c0), 0), 1);
+    const p = start.cell(column, jj);
+    const q = start.cell(column, jj + 1);
+    return {
+      rho: p.rho + t * (q.rho - p.rho),
+      u: p.u + t * (q.u - p.u),
+      v: p.v + t * (q.v - p.v),
+      p: p.p + t * (q.p - p.p),
     };
   };
 }
@@ -556,7 +634,11 @@ export interface VerifiedFittedDragOptions {
 
 export type VerifiedFittedDrag =
   | (VerifiedValue & { readonly kind: 'solved' })
-  | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string };
+  | {
+      readonly kind: 'not-converged' | 'invalid';
+      readonly refinement: number;
+      readonly reason: string;
+    };
 
 /** Base grid cells across, as for the captured-shock grids. */
 const FITTED_BASE_NJ = 20;
@@ -565,7 +647,8 @@ const FITTED_BASE_NJ = 20;
  * The forebody pressure drag with the bow shock fitted, on grids refined
  * by 2 up to the finest allowed, with its measured error band: the
  * procedure of src/analysis/verified-drag.ts with the CPU fitted-shock
- * solver. A grid whose fit does not converge stops the run without a value.
+ * solver. A grid whose fit does not converge, or whose flow the page's
+ * checks refuse (fittedCaseFailure), stops the run without a value.
  */
 export async function verifiedFittedDrag(
   body: Body,
@@ -584,15 +667,16 @@ export async function verifiedFittedDrag(
           refinement,
           maxIterations: options.iterationsPerRefinement * refinement,
         };
-        const { fit, drag } = blunt
-          ? fittedFlow(blunt(refinement), flowOptions.maxIterations)
-          : sharpFittedFlow(body, flowOptions);
+        const problem = blunt ? blunt(refinement) : sharpFitProblem(body, flowOptions);
+        const { fit, drag } = fittedFlow(problem, flowOptions.maxIterations);
         if (!fit.converged) {
           throw new FitNotConverged(
             refinement,
             `the fit stopped after ${fit.iterations} iterations with the shock moving at ${fit.maxSpeed.toExponential(1)} of the sound speed and a residual of ${fit.residual.toExponential(1)}`,
           );
         }
+        const failure = fittedCaseFailure(problem, fit.grid, (i, j) => fit.solver.primitive(i, j));
+        if (failure !== undefined) throw new FitRefused(refinement, failure);
         options.onLevel?.(refinement, drag, fit);
         return drag;
       },
@@ -609,6 +693,9 @@ export async function verifiedFittedDrag(
     if (error instanceof FitNotConverged) {
       return { kind: 'not-converged', refinement: error.refinement, reason: error.message };
     }
+    if (error instanceof FitRefused) {
+      return { kind: 'invalid', refinement: error.refinement, reason: error.message };
+    }
     throw error;
   }
 }
@@ -621,3 +708,5 @@ class FitNotConverged extends Error {
     super(reason);
   }
 }
+
+class FitRefused extends FitNotConverged {}

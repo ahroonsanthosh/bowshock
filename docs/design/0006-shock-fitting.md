@@ -222,10 +222,28 @@ between the base grid's lines. Taking each grid's fractions from its
 own captured solution, as before, gave fractions that differ from grid
 to grid, so the grids did not nest and each needed a captured start of
 its own, 3000 steps times the refinement on the CPU. The page's solver
-(`verifiedFittedDragGpu`; the page's form offers no blunt nose yet)
-computes the one captured start on the CPU in double precision, in
-chunks that return to the browser (`bluntStartInChunks`, the same start
-however it is chunked), so its problems are exactly the CPU's.
+(`verifiedFittedDragGpu`) computes the one captured start on the CPU in
+double precision, in chunks that return to the browser
+(`bluntStartInChunks`, the same start however it is chunked), so its
+problems are exactly the CPU's.
+
+The captured grid reaches well beyond the shock, to an outer boundary
+at twice Billig's standoff, and the fitted grid only to the shock. So
+each cell of a fitted grid starts from the captured solution at the same
+fraction of the shock layer, on the base grid's column
+(`shockLayerStart`), not from the captured cell of the same index, which
+lies 1.5 to 1.7 times farther out and left the outer 6 of 20 rows in the
+free stream (found by an independent review). The converged flow does
+not depend on the start, only the steps to reach it: on three
+ellipsoids at nj = 20 (the hemisphere at Mach 3, the 1.5- and 3-caliber
+noses at Mach 2) the fit converges in 4736, 4760 and 4948 steps against
+5515, 5573 and 5823 from the cells of the same index, to the same drag
+to ten figures. The captured grid
+is only a start, so it is not gated: the generated grids' gates refused
+every ellipsoid with a caliber of cylinder at Mach 1.2 on the start
+grid alone (the review, on 50 inputs). The grid each value is solved on
+is gated once its shock has settled (`fittedCaseFailure`, the same
+checks on the CPU's `verifiedFittedDrag` as on the page).
 
 A grid started from the converged one before may begin so close to its
 limit that its drag never changes by ten times the noise, and so shows

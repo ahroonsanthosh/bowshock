@@ -25,16 +25,28 @@ const deg = Math.PI / 180;
 const options = { gamma, nj: 20, refinement: 1, maxIterations: 20_000 };
 
 describe('flow with the bow shock fitted (design record 0006)', () => {
-  it('Mach 3, 20 deg cone: converged, drag within 0.03% of Taylor-Maccoll on the coarsest grid', () => {
-    // Measured when written: +0.0251% (nj = 20); with the captured shock -0.395%.
+  it('Mach 3, 20 deg cone: drag within 0.03% of Taylor-Maccoll on the coarsest grid, at second order', () => {
+    // The page's claim rests on the order: a regression that kept the
+    // coarsest grid within 3e-4 would show in the ratio. Measured when
+    // written: +0.1017% on 10 cells across, +0.0251% on 20 (the page's
+    // coarsest grid; with the captured shock -0.395%), falling by 4.05, and
+    // extrapolated at second order to within 4.3e-6 of the exact drag.
     const cone: Body = {
       nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
       cylinderLength: 4,
     };
-    const { fit, drag } = sharpFittedFlow(cone, { ...options, mach: 3 });
-    expect(fit.converged).toBe(true);
     const exact = taylorMaccoll(3, 20 * deg, gamma).surfacePressureCoefficient;
-    expect(Math.abs(drag / exact - 1)).toBeLessThan(3e-4);
+    const error = (refinement: number) => {
+      const { fit, drag } = sharpFittedFlow(cone, { ...options, nj: 10, refinement, mach: 3 });
+      expect(fit.converged).toBe(true);
+      return drag / exact - 1;
+    };
+    const coarse = error(1);
+    const fine = error(2);
+    expect(Math.abs(fine)).toBeLessThan(3e-4);
+    expect(coarse / fine).toBeGreaterThan(3.9);
+    expect(coarse / fine).toBeLessThan(4.1);
+    expect(Math.abs(fine - (coarse - fine) / 3)).toBeLessThan(1e-5);
   }, 600_000);
 
   it('Mach 2 hemisphere-cylinder: converged, stagnation pressure within 0.01% of the pitot value', () => {

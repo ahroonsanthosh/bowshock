@@ -10,20 +10,18 @@ import { GpuMemoryLimitError, type GpuEuler2DConfig } from '../engine-gpu/euler2
 import { fitShockGpu, type GpuShockFit } from '../engine-gpu/shock-fitting-gpu';
 import type { Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
-import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
 import type { StructuredGrid } from '../grid/structured';
 import { refineUntilVerified } from '../verification/grid-convergence';
 import {
-  baseMach,
   bluntFitFamily,
   bluntStartInChunks,
+  fittedCaseFailure,
   sharpFitProblem,
   wallDrag,
   type FitProblem,
 } from './fitted-flow';
 import {
   GPU_NOISE,
-  outflowMach,
   type LevelReport,
   type VerifiedDrag,
   type VerifiedDragOptions,
@@ -200,26 +198,8 @@ export async function verifiedFittedDragGpu(
         `the fit stopped after ${fit.iterations} iterations with the shock moving at ${fit.maxSpeed.toExponential(1)} of the sound speed or the drag still changing`,
       );
     }
-    // The grid the shock settled on must meet the quality gates set for
-    // fitted grids on measurement (FITTED_QUALITY_LIMITS).
-    const failures = qualityFailures(gridQuality(fit.grid), FITTED_QUALITY_LIMITS);
-    if (failures.length > 0) {
-      throw new InvalidCase(
-        `the grid on the fitted shock fails its quality checks (${failures.join('; ')}): a limit of the present grids, met by tips steeper than about 40 deg and some long bodies`,
-      );
-    }
-    const outflow = outflowMach(problem.configFor(fit.grid, []), fit.cell);
-    if (!(outflow > 1)) {
-      throw new InvalidCase(
-        `the flow leaves the grid at an axial Mach number of ${outflow.toFixed(3)}, where the outflow condition does not hold; a longer body behind the nose, or a higher Mach number, is needed`,
-      );
-    }
-    const base = baseMach(problem, fit.grid, fit.cell);
-    if (!(base > 1)) {
-      throw new InvalidCase(
-        `the flow at the end of the body is subsonic (axial Mach number ${base.toFixed(3)}), so what lies behind the base could reach the body ahead of it, and the base is not modelled; a longer body behind the nose, or a higher Mach number, is needed`,
-      );
-    }
+    const failure = fittedCaseFailure(problem, fit.grid, fit.cell);
+    if (failure !== undefined) throw new InvalidCase(failure);
     previous = { problem, fit };
     const report = {
       refinement,
