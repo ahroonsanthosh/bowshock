@@ -1,0 +1,31 @@
+# NACA TN 3819 (Love 1957) fig. 18, PDF p. 49: base pressure coefficient P_B, cylindrical afterbodies, no fins, turbulent, M0 ~ Minf
+# Digitised (300 dpi): M = 1 + (x-397)/298.4 ; P_B = -(1804.6-y)/3008 ; check on vacuum curve +-0.0015 ; reading +-0.003
+# kind: data = tunnel symbol (reference not assigned); curve = Chapman compilation and Love basic curve (range of the two)
+kind,mach,PB_low,PB_high
+data,1.52,-0.178,-0.178
+data,1.52,-0.152,-0.152
+data,1.63,-0.165,-0.165
+data,1.63,-0.152,-0.152
+data,1.94,-0.150,-0.150
+data,1.94,-0.143,-0.143
+data,2.00,-0.139,-0.139
+data,2.42,-0.118,-0.118
+data,2.42,-0.115,-0.115
+data,2.68,-0.102,-0.102
+data,3.26,-0.095,-0.095
+data,3.51,-0.083,-0.083
+curve,1.50,-0.177,-0.173
+curve,2.00,-0.145,-0.139
+curve,2.50,-0.118,-0.116
+curve,3.00,-0.101,-0.096
+# Curve ranges read by pixel columns at the data Mach numbers (two close curves; +-0.002):
+curve,1.52,-0.177,-0.170
+curve,1.63,-0.170,-0.162
+curve,1.94,-0.145,-0.142
+curve,2.42,-0.123,-0.117
+curve,2.68,-0.112,-0.108
+curve,3.26,-0.091,-0.088
+curve,3.51,-0.085,-0.082
+# Data / curve (ratio of base drag): M1.52: 1.006..1.047 and 0.859..0.894; M1.63: 0.97..1.02 and 0.894..0.938;
+# M1.94: 1.034..1.056 and 0.986..1.007; M2.00: 0.959..1.007; M2.42: 0.959..1.009 and 0.935..0.983;
+# M2.68: 0.911..0.944; M3.26: 1.055..1.09; M3.51: 0.976..1.012

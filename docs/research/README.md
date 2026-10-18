@@ -1,0 +1,73 @@
+# Research records and work in progress
+
+Nothing in this folder is used by the solver or the pages, and nothing here
+is an accepted design. It keeps the evidence and the unfinished work behind
+the design records in [`docs/design`](../design), so that it can be checked
+and is not lost. Accepted results move into a design record, with tests,
+before anything is served.
+
+Linting, formatting and type checking skip this folder: the files are kept
+as their authors wrote them.
+
+## `total-drag/`: research for Phase B (total drag)
+
+- `draft.md`: a draft design record for total drag (skin friction, base
+  drag, fins, and the validation data for the total). It calls itself 0007;
+  0007 is now [the skin-friction record](../design/0007-skin-friction.md),
+  so it will be 0008 once accepted. **Status: under revision.** An
+  independent audit (`audit/audit.md`) confirmed its scripts and nearly all
+  of its citations, and found errors that the draft does not yet correct:
+  misread curves of NACA TN 3819 fig. 18, a calibration error and an
+  unstated symbol convention in NASA TN D-4014 figs. 5 and 6, and three
+  conclusions its sources do not support (that the fin shortfall on the
+  ARCAS models points to the base; a symmetric base-drag band, where the
+  evidence suggests the correlation is biased high; and a "could claim"
+  list that no validation case in the draft matches). Read the audit with
+  the draft.
+- `data/`: transcriptions (ARCAS, RM A53D02, TN 3097, TN 3819 fig. 18) and
+  the outputs of the scripts.
+- `scripts/`: the computations and digitising aids (Python 3, numpy and
+  Pillow).
+- `reference-files/`: the Turbulence Modeling Resource's SA flat-plate
+  file used by `scripts/sa_vs_vd.py` (its van Driest II file is in
+  `tests/friction/data/`).
+- `audit/`: the audit, its own figure readings with their methods, its
+  independent re-implementations (van Driest II, the exact double wedge,
+  linear 3D fin drag by the supersonic area rule), and two overlays of TN
+  3819 fig. 18 showing where the disputed curve readings fall.
+
+The source reports themselves (NACA and NASA, from the NASA Technical
+Reports Server) are not copied here; each file cites its report by its NTRS
+number.
+
+## `subtip/`: noses whose tip flow is axially subsonic
+
+The measurements behind "What serving these tips would need" in
+[0006](../design/0006-shock-fitting.md): the fitted and captured runs
+(`results/*.jsonl`), the scripts that analysed them (`analysis/`), the
+runners (`runners/`, which ran from `tests/tmp-subtip/` against a copy of
+the code), and that copy's changes from the commit it was taken at
+(`snapshot-changes/`: the tip refusal removed, x0 as a parameter, a column
+anchor, a progress callback; `snap2` adds the corner patch of
+`docs/design/patches/0006-corner-one-sided.diff`).
+
+## `wip/`: code in progress, not yet validated
+
+Diffs of work on branches that exist only locally, kept here so that it
+survives. None of it is merged into the solver; each is merged only once
+its own validation passes.
+
+- `haack-grid.diff` (commits in `haack-grid.log`): the two-scale C grid for
+  Von Karman (Haack) and power-series noses, and sharp tips whose bow shock
+  stands off ahead of them. Measured on two grids so far; the third is
+  running.
+- `transonic.diff` (commits in `transonic.log`) and
+  `transonic-uncommitted.diff`: the transonic prototype for Mach 1 to 1.2 (far field, the body followed
+  past its base). Its design notes call themselves 0007 and will be
+  renumbered.
+- `low-mach-blunt.diff`: uncommitted changes for blunt noses at Mach 1.2 to
+  1.5, whose fitted grids fail the size-ratio gate where column counts are
+  rounded per interval along the body.
+
+Each diff names its base commit in its first line, and applies there with
+`git apply`.
