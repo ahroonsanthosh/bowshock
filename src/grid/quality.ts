@@ -53,15 +53,18 @@ export interface QualityLimits {
  * 1.6e-6, its band containing its error; a parabolic nose at Mach 5 with
  * wall cells at 44.5 deg and aspect ratios of 16 to 17 is within 2.3e-6
  * of its reference on nj = 40 and 80, though not yet at a steady order.
- * Aspect ratios of 10.6 to 11.9 (long bodies, a slender nose at Mach 1.2)
- * converge as the families below 10 do. The wall angle is set between the
- * two families' angles, the aspect ratio just above the largest measured
- * at a steady order.
+ * Aspect ratios of 10.6 to 12.1 (a cone with 10 calibers of cylinder, at
+ * order 2.003 and within 1.5e-7 of its exact drag on nj = 80; a slender
+ * nose at Mach 1.2) converge as the families below 10 do. A grid's aspect
+ * ratio grows slowly with refinement towards its generator's limit (the
+ * cone's: 11.4, 11.9, 12.1 on nj = 20, 40, 80). The wall angle is set
+ * between the two families' angles, the aspect ratio above the largest
+ * measured at a steady order and below the parabolic nose's.
  */
 export const FITTED_QUALITY_LIMITS: QualityLimits = {
   ...QUALITY_LIMITS,
   minWallAngle: (50 * Math.PI) / 180,
-  maxAspectRatio: 12,
+  maxAspectRatio: 13,
 };
 
 export function gridQuality(grid: StructuredGrid): GridQuality {

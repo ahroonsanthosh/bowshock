@@ -214,7 +214,10 @@ On the GPU too, a bare 20 degree cone at Mach 3 on nj = 20, 40 and 80
 (`verifiedFittedDragGpu`, before the domain was extended past the base):
 +2.52e-4, +6.22e-5, +1.53e-5 of the exact drag, falling by 4.05 (order
 2.02) and extrapolating to within 5.7e-8 at that order, 3.2e-7 at second
-order; the finest band, 2.0e-5, contains the actual error.
+order; the finest band, 2.0e-5, contains the actual error. Re-measured on
+the CPU with the domain past the base (review of 2026-10-18, commit
+e2ec73f): +2.510e-4 and +6.222e-5 on nj = 20 and 40, the same to three
+figures, falling by 4.03.
 
 **Each grid starts from the one before** (`startedFrom` in
 `src/analysis/gpu-fitted-flow.ts`). The sharp-nose grids are nested:
@@ -350,7 +353,7 @@ intervals, its own error 2e-7 to 1e-5):
 | -------------------------------------- | ---------- | --------- | -------- | -------- | -------- | ----- |
 | Secant ogive (0.5), 1 cal., M 3        | 53.4-53.8  | 8.8-9.3   | +4.85e-4 | +1.26e-4 | +3.20e-5 | 1.93  |
 | Parabolic (1), 1 cal., M 5             | 44.5-44.9  | 16.3-17.4 | -7.2e-5  | -2.3e-7  | +1.8e-6  | none  |
-| Cone (26.6 deg), 10 cal. cylinder, M 3 | 62.9-63.2  | 11.4-11.9 | +1.88e-4 | +4.69e-5 |          | 2.01  |
+| Cone (26.6 deg), 10 cal. cylinder, M 3 | 62.9-63.3  | 11.4-12.1 | +1.88e-4 | +4.69e-5 | +1.16e-5 | 2.00  |
 | Tangent ogive, 10 cal., M 1.2          | 80.4-83.3  | 10.6-11.6 | +3.74e-2 | +7.03e-3 | +1.31e-3 | 2.41  |
 
 The secant ogive converges cleanly with its wall cells at 53.4 deg: its
@@ -361,12 +364,15 @@ order is measured and only the allowance of 7e-5 covers it (the page,
 with the GPU's noise, would find its last change too small to measure,
 and give no band). The aspect ratios of 10.6 to 11.9 show no effect: the
 10-caliber ogive at Mach 1.2 converges as the same nose at Mach 1.5, at
-aspect ratios below 9, does. So on fitted grids the wall cells must be at
-50 deg or more, between the two noses, which serves tips up to about 40
-deg (the wall cell's angle is about 90 deg less the tip's half-angle),
-and the aspect ratio at most 12, just above the largest measured at a
-steady order. The measurements of the finer grids still running (the
-cone on nj = 80, the slender noses on nj = 160) are to be added.
+aspect ratios below 9, does, and the cone with 10 calibers of cylinder,
+at 11.4 to 12.1, converges at order 2.003 and extrapolates within 1.5e-7
+of its exact drag, its band containing its error. A grid's aspect ratio
+grows slowly with refinement (the cone's by 0.5 and then 0.25) towards
+the limit its generator's spacing sets. So on fitted grids the wall cells
+must be at 50 deg or more, between the two noses, which serves tips up
+to about 40 deg (the wall cell's angle is about 90 deg less the tip's
+half-angle), and the aspect ratio at most 13, above the largest measured
+at a steady order and below the parabolic nose's 17.
 
 **Slender noses at low Mach numbers.** The 10-caliber noses at Mach 1.2
 and 1.5 (a tangent ogive and a cone) are 1.2% to 3.7% off on nj = 20,
@@ -376,9 +382,11 @@ procedure's extrapolation, capped at second order, then misses the
 reference by 1.3e-4 to 6.0e-4, two to nine times the allowance; but the
 band is placed on the finest grid's value, and with the order above 2 it
 overestimates that value's error: on nj = 80 every band contains its
-error, by 1.56 to 1.82 times, before the allowance is added. Whether the
-page's four grids (to nj = 160) give these noses a band is measured
-next.
+error, by 1.56 to 1.82 times, before the allowance is added. On the
+cone at Mach 1.5 the page's procedure, on four grids to nj = 160
+(+1.15e-4 there; the two triples at orders 2.32 and 2.27, agreeing),
+gives a band of 2.35e-4 of the value, which contains the error by 2.05
+times. The 160-cell grids of the two ogives are running.
 
 **Why the order dips at low Mach numbers on cone-cylinders** (found by
 an audit agent on Mach 1.5, 20 deg). The error is two errors of opposite
@@ -439,6 +447,214 @@ speeds up along the body, so the check at the end of the body is a
 guard behind this one. Serving these tips, measured against references
 on their own families, is in progress.
 
+## Blunt noses against the method of characteristics
+
+Behind the sonic line of a blunt nose the flow is supersonic, and from
+the flow on a line from the body to the shock the method of
+characteristics determines the rest of the shock layer, the shock and
+the surface pressure to the end of the body, independently of the
+finite-volume discretization (`characteristicsFrom`,
+`src/validation/characteristics.ts`). Started from the fitted solution
+on a grid line where the Mach number exceeds 1 along all of it, it gives
+a reference for the drag downstream of that line (the wall faces' drag
+from that line's body point on, on the base area) whose only input from
+the fitted solver is the flow on the line.
+
+**The march from given data.** The data are interpolated (cubic in arc
+length) onto m + 1 points of the line; on the body the flow is turned to
+the body's slope, and on the shock it is the oblique-shock state at the
+shock's angle there. Their entropy gives K(psi) inside the line's shock
+point, the shock history outside it. The C- lines from the line's
+points, each meeting the C+ lines from the points below it and those
+reflected from the body, fill the triangle of the data's dependence and
+reach the body one after another; the last, from the shock point, has
+2m intervals and starts the march of `characteristics`, whose unit
+processes are shared (its results are bit-identical to those before).
+Checked against the march from the tip:
+
+- Mach 3, 20 deg cone, from Taylor-Maccoll data on lines at 0.3 of its
+  length (vertical, normal to the surface, and at 70 deg): wall pressure
+  and shock angle within 4.4e-7 to 7.4e-7 on 160 intervals, falling by
+  4.0 per refinement; the drag downstream of the line within 5.1e-8,
+  1.3e-8, 3.5e-9 and 8e-10 of the exact Cp (1 - (r0 / R)^2) on 320 to
+  2560 intervals. From the march from the tip's own flow on the line,
+  within 4.5e-9 of that march's drag downstream on 320 intervals, 2.9e-10
+  on 1280.
+- TN 3716 ogive (3 calibers, Mach 1.98), from the march from the tip on
+  1280 intervals, its flow sampled on the line (cubic along each C- line
+  that crosses it), the drag downstream of the line:
+
+| Line          | From the tip, extrapolated | From the data on 320, 640, 1280, 2560 | Order      | Extrapolated, difference |
+| ------------- | -------------------------- | ------------------------------------- | ---------- | ------------------------ |
+| x = 0.1 L     | 0.0888497213               | -4.41e-6, -1.23e-6, -2.93e-7, -5.1e-8 | 1.77, 1.95 | -3.1e-9                  |
+| x = L / 3     | 0.0371585371               | -3.61e-6, -8.64e-7, -1.89e-7, -2.2e-8 | 2.02, 2.01 | -1.9e-9                  |
+| L / 3, normal | 0.0371585371               | -3.21e-6, -7.66e-7, -1.68e-7, -1.6e-8 | 2.03, 1.98 | -1.2e-9                  |
+| x = 2 L / 3   | -0.0016540873              | -1.44e-7, -3.0e-9, +3.09e-8, +3.92e-8 | 2.06, 2.02 | +8e-10                   |
+
+(differences from the march from the tip on 1280 intervals, whose own
+order is 1.97 to 1.98 and whose value there lies 3.3e-8 to 4.1e-8 from
+its extrapolation; the last column against that extrapolation). At equal
+intervals the march from data carries about five times the error of the
+march from the tip; both converge at second order, and their
+extrapolations agree within 3.2e-9, 3.2e-8 of the nose's drag.
+
+**From the fitted solution.** The flow on grid line i: on each row of
+cells, cubic interpolation across the line through the centroids of the
+four nearest cells (in their signed distance from it); the row next to
+the wall left out, the wall pressure that of the wall faces (cubic in
+x), the wall entropy extrapolated (cubic) from the next four rows; the
+shock node, its angle from the three nodes about it, the state behind
+it the oblique-shock state at that angle. The march runs at the solver's
+Mach number, its free-stream speed being rounded to 32 bits (2.00000003
+for 2). The row next to the wall carries the scheme's wall error: on the
+3:1 ellipsoid at Mach 2 (nj = 20, x = 0.31) its pressure lies 0.9% below
+the profile of the rows above, whose gradient it exceeds 1.7 times. Kept,
+with the wall state extrapolated from it, the march from the line at x =
+0.10, where the Mach number falls to 1.13, folds (mesh points inside the
+body, the mass balance 6e-4 and not falling, as on the 2:1 ellipsoid at
+Mach 1.14): the data's compression near the wall steepens into a shock
+the method does not fit. Left out, every line measured converges at
+second order. Where both run, they extrapolate over the grids to the
+same value: on the 3:1 ellipsoid within 1.1e-6 of the drag downstream
+of the lines from x = 0.117 to 0.309 (the table below), 4.7e-6 at 0.44,
+the row kept giving the larger error on each grid (5.9e-5 against
+4.7e-5 at x = 0.133 on nj = 80).
+
+**Calibration on a sharp nose**, where the exact drag downstream of a
+line is known: the TN 3716 ogive fitted on nj = 20 and 40 (at 1189e0b;
+the sharp problem is the same at 68701d2 but for its refusal of subsonic
+tips), the march from its vertical
+grid lines, against the march from the tip (extrapolated), relative to
+the drag downstream of the line:
+
+| Line      | Share | Fitted, nj = 20 | nj = 40  | From the fitted data, nj = 20 | nj = 40 |
+| --------- | ----- | --------------- | -------- | ----------------------------- | ------- |
+| x = 0.099 | 98.7% | +2.76e-3        | +6.62e-4 | -6.7e-6                       | -1.6e-6 |
+| x = 0.30  | 89.9% | +2.94e-3        | +7.07e-4 | -6.5e-5                       | -1.9e-5 |
+| x = 0.49  | 77.3% | +3.26e-3        | +7.82e-4 | -1.62e-4                      | -4.1e-5 |
+| x = 0.96  | 40.7% | +4.86e-3        | +1.15e-3 | -7.5e-4                       | -1.9e-4 |
+
+The march from the fitted flow is 6 to 400 times more accurate than the
+fitted solver's own drag downstream on the same grid: the line's flow
+carries the solver's error only up to the line, while the solver's drag
+carries what it accumulates along the body. The fitted errors fall by
+4.2 per refinement, those of the march from its data by 3.4 to 4.2. On
+a blunt nose, then, the difference between the two measures the fitted
+solver's error downstream of the line, within a part of it that falls
+with the grid, and both extrapolate to the same value.
+
+**Blunt noses**, fitted on the CPU (bluntFitFamily at d50c2b3,
+unchanged at 68701d2; each finer grid started from the converged
+coarser one, which on the 3:1 ellipsoid at nj = 40, before the families
+nested, changed the drag by 8e-13), the march from each grid's data on
+640 and 1280 intervals extrapolated (second order; with 2560 the
+extrapolation moves by 1e-8 at most). The reference is the
+march extrapolated over the data's grids (nj = 40 and 80, second order);
+the other columns are relative to it.
+
+3:1 ellipsoid (length 3, 2 calibers of cylinder), Mach 2; its fitted
+drag 0.1528860, 0.1526254, 0.1525630 on nj = 20, 40, 80 (order 2.06),
+extrapolated 0.1525421; sonic on the body near x = 0.07:
+
+| x     | Min M | Share | Reference   | Fitted: 20, 40, 80           | Fitted, ext. | Order | March from 20, 40, 80        | Order |
+| ----- | ----- | ----- | ----------- | ---------------------------- | ------------ | ----- | ---------------------------- | ----- |
+| 0.103 | 1.12  | 59.7% | 0.09112939  | +2.69e-3, +6.41e-4, +1.49e-4 | -1.53e-5     | 2.06  | -6.03e-4, -1.51e-4, -3.78e-5 | 1.99  |
+| 0.117 | 1.16  | 56.5% | 0.08621360  | +2.75e-3, +6.55e-4, +1.52e-4 | -1.59e-5     | 2.06  | -6.71e-4, -1.68e-4, -4.21e-5 | 1.99  |
+| 0.133 | 1.20  | 53.3% | 0.08133494  | +2.82e-3, +6.71e-4, +1.55e-4 | -1.67e-5     | 2.06  | -7.39e-4, -1.86e-4, -4.65e-5 | 1.99  |
+| 0.209 | 1.34  | 41.0% | 0.06247283  | +3.21e-3, +7.57e-4, +1.73e-4 | -2.15e-5     | 2.07  | -1.04e-3, -2.59e-4, -6.47e-5 | 2.01  |
+| 0.309 | 1.44  | 29.6% | 0.04519750  | +3.80e-3, +8.93e-4, +2.01e-4 | -3.00e-5     | 2.07  | -1.46e-3, -3.54e-4, -8.84e-5 | 2.06  |
+| 0.440 | 1.53  | 19.7% | 0.02998849  | +4.72e-3, +1.10e-3, +2.39e-4 | -4.67e-5     | 2.08  | -2.21e-3, -5.18e-4, -1.29e-4 | 2.13  |
+| 0.710 | 1.64  | 7.7%  | 0.01180024  | +7.67e-3, +1.73e-3, +3.37e-4 | -1.26e-4     | 2.10  | -5.54e-3, -1.23e-3, -3.08e-4 | 2.22  |
+| 1.023 | 1.71  | 1.1%  | 0.001661317 | +2.81e-2, +5.85e-3, +8.04e-4 | -8.77e-4     | 2.14  | -3.37e-2, -7.24e-3, -1.81e-3 | 2.28  |
+
+(x of the line's body point; Min M the least Mach number on the line, nj
+= 80; Share the fitted drag downstream of the line over the nose's.)
+The fitted drag downstream and the march from the fitted flow approach
+each other from either side, their difference falling by 4.15 to 4.72
+and then 4.25 to 5.01 per refinement. On each grid the march's error is
+3.3 to 4.5 times smaller than the fitted solver's own from the lines
+nearest the sonic line (x = 0.10 to 0.13), 1.8 to 2.6 times at x = 0.31
+to 0.44, and from x = 0.71 on of the same size or larger, the fitted
+flow on the line having accumulated its error along the body. At
+second order the extrapolations differ by 1.3e-6 to 1.5e-6 on every
+line, the same absolute amount (9e-6 of the nose's drag) whatever the
+line's position, as orders of 2.06 to 2.28 rather than 2 leave; at the
+observed orders they differ by 3.5e-7 to 6.6e-7 (2.3e-6 to 4.3e-6 of
+the nose's drag). From the line at x = 0.103, 60% of the drag, the
+reference agrees with the fitted family's extrapolation to 1.5e-5 of
+the part it covers.
+
+2:1 ellipsoid (length 1, 2 calibers of cylinder), Mach 2; its fitted
+drag 0.4979858, 0.4973716, 0.4972173 (order 1.99), extrapolated
+0.4971658; sonic on the body near x = 0.17, so the lines with a margin
+cover a fifth of the drag:
+
+| x     | Min M | Share | Reference  | Fitted: 20, 40, 80           | Fitted, ext. | Order | March from 20, 40, 80        | Order |
+| ----- | ----- | ----- | ---------- | ---------------------------- | ------------ | ----- | ---------------------------- | ----- |
+| 0.230 | 1.14  | 23.4% | 0.1161524  | +1.75e-3, +4.28e-4, +1.05e-4 | -2.55e-6     | 2.04  | -1.19e-3, -3.07e-4, -7.67e-5 | 1.95  |
+| 0.248 | 1.17  | 20.8% | 0.1033690  | +1.68e-3, +4.09e-4, +1.00e-4 | -2.97e-6     | 2.04  | -1.22e-3, -3.14e-4, -7.85e-5 | 1.95  |
+| 0.286 | 1.22  | 16.0% | 0.07962349 | +1.51e-3, +3.62e-4, +8.77e-5 | -3.74e-6     | 2.06  | -1.25e-3, -3.21e-4, -8.03e-5 | 1.95  |
+| 0.350 | 1.29  | 9.9%  | 0.04902338 | +1.07e-3, +2.47e-4, +5.86e-5 | -4.07e-6     | 2.12  | -1.13e-3, -2.92e-4, -7.30e-5 | 1.94  |
+| 0.455 | 1.37  | 3.8%  | 0.01877311 | -8.23e-4, -2.43e-4, -6.82e-5 | -9.82e-6     | 1.73  | +5.69e-4, +1.25e-4, +3.14e-5 | 2.24  |
+
+Their difference falls by 4.01 to 4.08 and then 4.04 to 4.09 per
+refinement (3.77 and 3.70 on the last line), and here the two errors
+are of a size, the fitted solver's 0.8 to 1.5 times the march's (2.2 on
+the last line). The extrapolations differ by 1.8e-7 to 3.1e-7 at
+second order, 2.9e-8 to 3.2e-7 at the observed orders: within 6.2e-7 of
+the nose's drag.
+
+3:1 ellipsoid, Mach 3; its fitted drag 0.1524657, 0.1523882,
+0.1523715 (order 2.21), extrapolated 0.1523659; sonic on the body near
+x = 0.05:
+
+| x     | Min M | Share | Reference  | Fitted: 20, 40, 80           | Fitted, ext. | Order | March from 20, 40, 80        | Order |
+| ----- | ----- | ----- | ---------- | ---------------------------- | ------------ | ----- | ---------------------------- | ----- |
+| 0.074 | 1.17  | 67.0% | 0.1020757  | +5.48e-4, +1.09e-4, +2.24e-5 | -6.64e-6     | 2.33  | -2.22e-4, -5.59e-5, -1.40e-5 | 1.99  |
+| 0.094 | 1.26  | 61.7% | 0.09406130 | +5.37e-4, +1.05e-4, +2.10e-5 | -7.01e-6     | 2.36  | -2.56e-4, -6.45e-5, -1.61e-5 | 1.98  |
+| 0.144 | 1.43  | 51.5% | 0.07839488 | +5.39e-4, +1.02e-4, +1.94e-5 | -8.14e-6     | 2.41  | -3.10e-4, -7.81e-5, -1.95e-5 | 1.99  |
+| 0.247 | 1.63  | 37.4% | 0.05699656 | +5.83e-4, +1.05e-4, +1.80e-5 | -1.10e-5     | 2.46  | -3.97e-4, -9.62e-5, -2.40e-5 | 2.06  |
+| 0.388 | 1.80  | 25.4% | 0.03868481 | +6.40e-4, +1.06e-4, +1.43e-5 | -1.60e-5     | 2.55  | -5.36e-4, -1.19e-4, -2.98e-5 | 2.22  |
+| 0.655 | 1.97  | 12.5% | 0.01912186 | +5.94e-4, +5.63e-5, -1.22e-5 | -3.50e-5     | 2.97  | -1.07e-3, -1.98e-4, -4.95e-5 | 2.56  |
+
+Here the fitted drag downstream converges faster than second order
+(orders 2.33 to 2.97), the march from its data at 1.98 to 2.56, their
+difference falling by 4.55 to 6.81 per refinement. At second order the
+extrapolations differ by 6.2e-7 to 6.8e-7, again the same on every
+line (4.5e-6 of the nose's drag); at the observed orders by 7e-8 at
+most (4.4e-7 of it). The fitted solver's error is 1.6 to 2.5 times the
+march's on the line nearest the sonic line (x = 0.074), and from 1.7
+down to 0.2 times it further downstream.
+
+LD-Haack nose (length 1, 2 calibers of cylinder), Mach 2: only nj = 20
+can be measured on these families, the grid of nj = 40 being refused
+by the generator's gates (neighbouring cells differ in size by 1.30,
+the limit). Its fitted drag 0.4288960; the flow on the body is sonic
+near x = 0.19, a fifth of the nose (the tip region of a Haack nose
+scales as R^4 / L^3), and the fitted wall entropy lies 1.3% to 2.6%
+below the normal-shock value on the lines below (on the 3:1 ellipsoid
+at Mach 2 and nj = 20, 0.15% at x = 0.31 and 1.0% at 0.71). The march,
+on 640, 1280 and 2560 intervals (its body's shoulder, where the slope
+falls as the square root of the distance, is no corner), extrapolated
+from the two finest:
+
+| x     | Min M | Share | Fitted, nj = 20 | March from it | Interval ratio | Fitted - march |
+| ----- | ----- | ----- | --------------- | ------------- | -------------- | -------------- |
+| 0.298 | 1.13  | 54.2% | 0.2325814       | 0.2323133     | 3.89           | +1.15e-3       |
+| 0.321 | 1.16  | 50.6% | 0.2170300       | 0.2167801     | 3.93           | +1.15e-3       |
+| 0.371 | 1.20  | 43.2% | 0.1853037       | 0.1850954     | 4.10           | +1.13e-3       |
+| 0.424 | 1.25  | 35.7% | 0.1532130       | 0.1530559     | 3.98           | +1.03e-3       |
+| 0.513 | 1.33  | 24.7% | 0.1059399       | 0.1058816     | 1.65           | +5.51e-4       |
+| 0.613 | 1.41  | 14.6% | 0.06257544      | 0.06265270    | 4.04           | -1.23e-3       |
+
+(Interval ratio: the change from 640 to 1280 intervals over that from
+1280 to 2560.) The difference, 1.1e-3 of the drag downstream on the
+lines carrying 36% to 54% of it, is smaller than on the ellipsoids at
+the same grid (2.2e-3 to 7e-3 at Mach 2), but with one grid it cannot be
+split into the fitted solver's error and the data's. The march's mass
+balance falls only by 2.4 to 3.1 per refinement on this nose (2e-6 to
+1.2e-5 on 2560 intervals), against 3.1 to 4.1 on the ellipsoids.
+
 ## Open
 
 - One-sided reconstruction at a nose's corner with the cylinder: cleaner
@@ -450,4 +666,8 @@ on their own families, is in progress.
   and the fitted shock past the base.
 - Blunt noses on the drag page: validation of blunt-nose drag (the
   captured start runs on the CPU, in chunks, so a GPU start is not
-  needed); the Haack and power-series families below on the GPU.
+  needed); the Haack, power-series and detached-tip families (0004) on
+  the GPU. The march from a starting line (above) validates the drag
+  downstream of the sonic region; the part ahead of it (40% of the 3:1
+  ellipsoid's at Mach 2) still has only the fitted family's own
+  convergence, and the stagnation-point checks.

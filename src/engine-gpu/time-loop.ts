@@ -16,10 +16,12 @@ export const STATUS_NON_PHYSICAL = 1;
 
 /**
  * Whether a run asked to stop at `tEnd` has arrived. The GPU stores t_end in
- * 32 bits, so arrival means reaching the f32 value of tEnd.
+ * 32 bits and stops at its f32 value; the CPU engines stop at tEnd itself.
+ * Either may be the larger (f32 rounding of 0.15 is 4e-8 above it), so
+ * arrival means reaching the lower of the two.
  */
 export function hasReached(time: number, tEnd: number): boolean {
-  return time >= Math.fround(tEnd) * (1 - 1e-9);
+  return time >= Math.min(tEnd, Math.fround(tEnd)) * (1 - 1e-9);
 }
 
 /** Steps for the next batch towards `tEnd`: enough at time step `dt`, plus one. */
