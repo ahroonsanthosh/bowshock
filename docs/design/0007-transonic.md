@@ -94,6 +94,35 @@ and the cylinder solved behind the nose by `cylinder` (in calibers).
   so the wall spacing, not the columns', sets it. The errors are of both
   signs, so the base grid's value benefits from cancellation that finer
   grids lose; the families below show it.
+- **Blunt noses** (ellipsoids and other noses leaving the axis
+  vertically and meeting the cylinder tangentially) get a C grid on the
+  same spacings and far boundaries: jMin the body from the stagnation
+  point to the end of the cylinder (columns by arc length, 0.05 at the
+  stagnation point), iMin the axis ahead of it, jMax one far boundary (a
+  quarter circle of the far radius about the stagnation point, then the
+  line at the far radius) and iMax the plane ending the cylinder. Each
+  line leaves its body point P along the body normal and bends towards
+  its point Q on the far boundary, the points spaced evenly along it:
+  node = P + d (f (1 - f) n + f^2 u), d = |Q - P|, u = (Q - P) / d. With
+  the exact normals the lines fan out from the nose and stay parallel
+  along the cylinder, and the cells at the shoulder jumped in width by
+  4.7 times (hemisphere); at a distance h from the wall n is therefore
+  the normal averaged over the body within 0.25 h of the line's foot (as
+  the supersonic blunt grids, 0004), the window closing smoothly towards
+  the end of the body so the last line stays vertical. Measured on
+  ellipsoids of 1:1 to 3:1 (tested): wall cells at 85 deg or more, corners
+  at 51 deg or more, neighbours within 1.92 in size on the hemisphere and
+  1.43 on the others, the largest jumps in the far field above the start
+  of the cylinder; the families nest. These are the bodies the
+  supersonic C grid serves poorly near Mach 1.2: its lines end on the bow
+  shock, 7 to 10 radii out there, and turn vertical over the last cells
+  at the end of a short cylinder (found in the supersonic work); measured
+  here, its size-ratio gate (`bluntBodyGrid`, nj = 20) refuses the
+  hemisphere with 2 calibers of cylinder below Mach 1.4 (1.72 at Mach
+  1.2, limit 1.3) and the 2:1 ellipsoid with 2 calibers below 1.5, and
+  accepts the 2:1 ellipsoid with 4 calibers at 1.2. Their base can also be
+  subsonic there. On the transonic C grid the body continues to the
+  sting's end and the lines need not turn.
 
 ## Far-field boundaries
 
@@ -240,6 +269,35 @@ the transonic domain's errors, and falling at less than first order
 Mach number 1.029 at the tip cone's surface) its error is far larger
 than on the supersonic families of 0006.
 
+### Mach 1.05: first order, from the level of the whole cone's pressure
+
+At Mach 1.05 the cone's conical flow would be subsonic at the surface
+(Taylor-Maccoll's surface Mach number is 0.998 already at 1.064), the
+shoulder reaches the whole cone, and there is no exact solution; the
+fitted solver refuses the case.
+
+| r   | Cells  | Drag      | Change    | Steps  | Wall time |
+| --- | ------ | --------- | --------- | ------ | --------- |
+| 1   | 3,540  | 0.1065105 |           | 5,050  | 81 s      |
+| 2   | 14,160 | 0.1068662 | +3.557e-4 | 8,300  | 735 s     |
+| 4   | 56,640 | 0.1070376 | +1.714e-4 | 14,200 | 4,309 s   |
+
+The changes fall by 2.08: observed order 1.05, first order. Extrapolated
+at that order the drag is 0.107197 (at order 1, 0.107209), 1.6e-4 (1.5e-3
+of the value) above the finest grid; the procedure needs a fourth grid to
+confirm the order before it gives a band (r = 8: see Open). The change
+from r = 2 to 4 is not local: integrated along the cone it is a nearly
+uniform rise of the pressure coefficient by 1.6e-4 to 2.1e-4 from x / l =
+0.2 to 0.99 (1.73e-4 of the 1.71e-4 change), with -2.9e-5 from the tip's
+first 20% and +2.3e-5 from the last 1% before the shoulder. A uniform
+shift is what a change in the flow's global, subsonic adjustment does
+(as the far boundaries' distance does at Mach 1, below). The subsonic
+region lies between the bow shock, captured far ahead where the cells
+are large, and the sonic line from the shoulder; behind the shoulder the
+flow expands to Mach 1.31 and decelerates without a shock to 1.05 along
+the cylinder (r = 2). First order is consistent with the captured bow
+shock setting the level, though this was not isolated.
+
 ### Mach 1.0: the far boundaries' distance dominates
 
 At Mach 1 the bow shock is at infinity and the subsonic region ahead of
@@ -266,6 +324,115 @@ across at the far boundaries) and the case was dropped. The cylinder's
 length matters far less: 40 calibers instead of 10 changes the drag by
 +1.28e-5 (0.0917281, 100.6 radii).
 
+The grid, on 100.6 radii: r = 2 (14,160 cells) gives 0.0916001, 1.15e-4
+(1.3e-3 of the value) below the base grid, after 51,700 plain steps
+(1,475 s of CPU; the residual 4.4e-10). One change does not give an
+order; if the grid error falls at first order, as at Mach 1.05, the
+finer grids would remove another 1.2e-4, at second order 4e-5. Adding
+the far boundaries' correction measured on the base grid (+1.63e-3 to
++1.72e-3 for boundaries at infinity) to r = 2, and the grid's remaining
+change, the drag at Mach 1 is 0.0931 to 0.0933: 0.0932 within about
+2e-4 (0.2%), on the assumption, not yet measured, that the far
+boundaries' correction is the same on finer grids (r = 2 on 408.7 radii:
+see Open). On the 100.6-radius domain alone, without the correction, the
+error is 1.8%.
+
+### Far boundaries and cylinder length at every Mach number
+
+Base grid of the 7 deg cone, drag on far boundaries at 55.1, 100.6 and
+224.2 radii (10 calibers of cylinder) and on 5, 10 and 20 calibers of
+cylinder (100.6 radii):
+
+| Mach | 55.1      | 100.6     | 224.2     | 5 cal     | 10 cal    | 20 cal              |
+| ---- | --------- | --------- | --------- | --------- | --------- | ------------------- |
+| 1.2  | 0.0832146 | 0.0832184 | 0.0832239 | 0.0832174 | 0.0832184 | 0.0832215           |
+| 1.1  | 0.0944590 | 0.0944683 | 0.0944881 | 0.0944648 | 0.0944683 | 0.0944797           |
+| 1.05 | 0.1064669 | 0.1065105 | 0.1065235 | 0.1065138 | 0.1065105 | 0.1065171           |
+| 1.0  | 0.0898342 | 0.0917153 | 0.0927916 |           | 0.0917153 | (40 cal: 0.0917281) |
+
+At Mach 1.2 and 1.1 the cone's drag is physically independent of both
+(its surface flow is supersonic, so it is Taylor-Maccoll's whatever lies
+behind or around), and the changes measured there, 6e-6 at Mach 1.2 and
+up to 2e-5 at Mach 1.1, are the grid's: the grids differ with the
+domain (the far boundary's share of the stretching changes the first
+rows by a few percent, and the leaning lines move), on base grids whose
+own error is 2.5e-3 and 3.1e-4. They are the noise floor of this test.
+At Mach 1.05 the far boundaries matter above it from 55 to 100 radii
+(+4.4e-5) and at it beyond (+1.3e-5 from 100.6 to 224.2), so on 100.6
+radii the domain error is no more than about 2e-5 (2e-4 of the value),
+not separable from the noise; the cylinder's length is within the noise
+(changes of -3e-6 and +7e-6). At Mach 1 the far boundaries dominate
+everything (above).
+
+### The 5-caliber ogive at Mach 1.2: against characteristics and the fitted solver
+
+The tangent ogive's 11.4 deg tip has supersonic conical flow at Mach 1.2
+(the fitted solver accepts it; it refuses it at 1.15), and the flow over
+it stays supersonic, so the method of characteristics
+(`src/validation/characteristics.ts`, tested on ogives down to Mach 1.5)
+gives the inviscid drag: 0.0433392, 0.0433372, 0.0433367 and 0.0433365 on
+160, 320, 640 and 1280 intervals, and 0.0433367 and 0.0433366 with its
+starting line at 5e-4 and 2e-3 of the nose length instead of 1e-3 (640
+intervals): 0.0433365, converged to about 2e-7.
+
+| r   | Cells  | Drag      | vs characteristics | Steps | CPU time |
+| --- | ------ | --------- | ------------------ | ----- | -------- |
+| 1   | 3,810  | 0.0437833 | +1.03e-2           | 750   | 9 s      |
+| 2   | 15,240 | 0.0433724 | +8.3e-4            | 1,300 | 64 s     |
+| 4   | 60,960 | 0.0433244 | -2.8e-4            | 2,200 | 480 s    |
+
+The changes (-4.11e-4, -4.80e-5) fall by 8.6, an observed order of 3.1,
+above the second order of the scheme: not yet in the asymptotic range.
+The finest grid lies 1.2e-5 below the reference; extrapolated at second
+order the drag would be 0.0433084, 6.5e-4 below it, so on this evidence
+the grid error at r = 4 is not resolved better than a few 1e-4 (r = 8:
+see Open).
+
+The fitted solver on the same ogive (1 caliber of cylinder): 0.0439700
+(nj = 20) and 0.0434608 (nj = 40), +1.46e-2 and +2.87e-3 of the
+reference, approaching it from above (nj = 80: see Open); the transonic
+domain's r = 2 and 4 grids are closer to it than the fitted nj = 40,
+crossing it between r = 2 and 4.
+
+### Blunt noses: against the fitted solver and the pitot pressure
+
+The C grid above, same far boundaries (100.6 radii) and 10 calibers of
+cylinder. Two references: the supersonic fitted solver (0006, CPU,
+`bluntFittedFlow`) where its grid accepts the body, the 2:1 ellipsoid at
+Mach 1.2 with 4 calibers of cylinder and the hemisphere at Mach 1.5 with
+2; and the pitot pressure, which the stagnation point must reach (normal
+shock, then isentropic), against the pressure on the first wall face
+(0.025, 0.0125 and 0.00625 of the arc from the stagnation point on r =
+1, 2, 4, where the pressure lies below the stagnation value by 1e-4 of it
+or less).
+
+| Body, Mach         | r = 1     | r = 2     | r = 4     | Extrapolated | Fitted nj = 20 | nj = 40   |
+| ------------------ | --------- | --------- | --------- | ------------ | -------------- | --------- |
+| 2:1 ellipsoid, 1.2 | 0.3482049 | 0.3433539 | 0.3425969 | 0.3423446    | 0.3472957      | 0.3437625 |
+| hemisphere, 1.5    | 0.6994860 | 0.6885561 | 0.6863477 | 0.6856117    | 0.6904222      | 0.6872292 |
+| hemisphere, 1.2    | 0.5546180 | 0.5431759 | 0.5404303 | 0.5395151    | refused        |           |
+
+(extrapolated at second order from r = 2 and 4; observed orders 2.68,
+2.31 and 2.06). The transonic families converge at about second order
+from above, as the fitted ones do; extrapolating the fitted pairs at
+second order gives 0.3425848 and 0.6861649, within 2.4e-4 (7e-4 of the
+value) and 5.5e-4 (8e-4) of the transonic extrapolations (nj = 80: see
+Open). The drags of r = 4 lie 2.5e-4 and 7.4e-4 above the transonic
+extrapolations (7e-4 and 1.1e-3 of the value), and 9.2e-4 (1.7e-3) on
+the hemisphere at Mach 1.2.
+
+Stagnation pressure, first wall face over the pitot value (2.40750 at
+Mach 1.2, 3.41327 at 1.5), r = 1, 2, 4: on the 2:1 ellipsoid at Mach 1.2
++0.80%, +0.43%, +0.32%; on the hemisphere at 1.2 +0.42%, +0.29%, +0.25%;
+on the hemisphere at 1.5 +2.0%, +0.28%, -0.13%. At Mach 1.2 the captured
+bow shock loses too little total pressure on the axis: 0.47% on r = 4
+against the normal shock's 0.72%, and the change from r = 2 to 4 (0.03%)
+suggests it converges to about 0.48%, not to 0.72%. This is the captured
+shock's known defect on the stagnation streamline (the supersonic C grid
+with the shock captured instead of fitted was 9.7% high at Mach 2, 0006);
+it was not isolated further here. Its effect on the drag is bounded by
+the agreement with the fitted solver above.
+
 ## References and how close the solver gets
 
 **Exact inviscid solutions** test the solver's own error, and are used
@@ -288,7 +455,8 @@ check the model (inviscid flow, the sting in place of the base), not the
 solver's numerical error, which the exact solutions and the grid studies
 measure far more finely. The orifice at x / l = 0.994, 0.6% of the cone
 length ahead of the shoulder, has already fallen into the shoulder's
-expansion (by 0.04 at Mach 1.2 to 0.09 at Mach 1), which the boundary
+expansion (below the computed pressure by 0.04 at Mach 1.2, 0.08 at 1.1
+and 0.09 to 0.11 at 1.05 and 1), which the boundary
 layer carries upstream and inviscid flow cannot (at Mach 1.1 and 1.2 the
 cone's flow is supersonic); it is left out.
 
@@ -297,7 +465,54 @@ Computed wall pressure coefficients at the orifices against the data
 cylinder: orifices 12 to 15, 0.18 to 1.63 calibers behind the
 shoulder):
 
-(table to be completed)
+| Computed (grid)               | Data (tunnel, indicated Mach) | Cone: mean | Cone: largest | Cylinder: largest |
+| ----------------------------- | ----------------------------- | ---------- | ------------- | ----------------- |
+| Mach 1.2 (r = 4)              | 2-foot, 1.200                 | -0.0028    | 0.0050        | 0.0040            |
+| Mach 1.1 (r = 4)              | 14-foot, 1.100                | -0.0007    | 0.0045        | 0.0061            |
+| Mach 1.1 (r = 4)              | 2-foot, 1.100                 | -0.0004    | 0.0055        | 0.0081            |
+| Mach 1.05 (r = 4)             | 14-foot, 1.050                | -0.0043    | 0.0163        | 0.0139            |
+| Mach 1.05 (r = 4)             | 14-foot, 1.041                | -0.0023    | 0.0163        | 0.0064            |
+| Mach 1.0 (r = 1, 408.7 radii) | 14-foot, 1.001                | -0.0003    | 0.0122        | 0.0184            |
+| Mach 1.0 (r = 1, 408.7 radii) | 14-foot, 1.008                | +0.0100    | 0.0139        | 0.0344            |
+
+At Mach 1.2 and 1.1 the computed pressures, cone and cylinder (the
+shoulder's expansion and the recompression behind it), agree with both
+tunnels within 0.0045 to 0.0081 at the worst orifice and 0.0004 to
+0.0028 on the cone's mean, as closely as the data agree with the exact
+cone pressure. At Mach 1.05 and 1 the largest cone differences are at x / l
+= 0.89 and 0.94, where the measured pressure falls 0.012 to 0.016 below
+the computed one: the shoulder's expansion reaches further upstream in
+the tunnel than in inviscid flow, as at 0.994. Ahead of x / l = 0.8 the
+computed Mach 1.05 pressures agree with the 14-foot row at indicated
+1.041 within 0.003 (and differ from the row at 1.050 by up to 0.008, of
+both signs), and
+the computed Mach 1 pressures with the row at indicated 1.001 within
+0.003 (0.008 to 0.014 below the row at 1.008). Page's appendix finds
+wall interference in both tunnels between indicated Mach 0.99 and 1.05
+and puts free air at Mach 1 at indicated 1.0066 in the 14-foot tunnel;
+the stated Mach uncertainty there is 0.004, and the measured cone
+pressure rises by 0.007 to 0.013 between indicated 1.001 and 1.008. So
+near Mach 1 the data cannot test the computed pressures to better than
+about 0.01 (10%), and within that they agree; whether free-air Mach 1
+corresponds to indicated 1.001 or 1.0066 is beyond what they settle.
+
+**Transonic slender-body theory at Mach 1** (J. R. Spreiter and A. Y.
+Alksne, NASA TR R-2, 1959; sources.md): for a cone-cylinder of tau =
+tan(semiapex angle), here 0.1225, CD = -tau^2 (C + 4 ln tau), with C =
+1.08965 from their local linearization (eq. 81: 0.1097), 1.55 from H.
+Yoshihara's relaxation solution of the small-disturbance equation
+carried over by the similarity rule (eq. 82: 0.1028) and 0.091 after
+Miles (eq. 83: 0.1246); their figure 20 shows Page's 14-foot tunnel at
+about 0.089 as measured and 0.099 corrected for wall interference (read
+from the plot). The computed 0.0932 corresponds to C = 2.19: 9% below
+Yoshihara's value, 15% below eq. 81 and 6% below Page's corrected
+point. The theories are first order in the slenderness and differ among
+themselves by more than that (C from 0.09 to 1.55); the computation lies
+outside their spread, below it, and between the measured (0.089) and
+corrected (0.099) tunnel values, where eq. 82 lies above both. This is the
+weakest comparison of the set: neither the theory nor the corrected
+measurement is accurate to better than several percent, so it confirms
+the level, not the solver's 0.2%.
 
 ## What accuracy the evidence supports
 
