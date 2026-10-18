@@ -124,6 +124,7 @@
             <option value="secant">Ogive family</option>
             <option value="conical">Cone</option>
             <option value="parabolic">Parabolic series</option>
+            <option value="ellipsoid">Ellipsoid</option>
           </select>
         </div>
         <div class="field" id="parameter-field" hidden>
@@ -132,7 +133,7 @@
         </div>
         <div class="field">
           <label for="nose-length">Nose length (calibers)</label>
-          <input id="nose-length" type="number" min="1" max="10" step="any" value="3" />
+          <input id="nose-length" type="number" min="0.5" max="10" step="any" value="3" />
         </div>
         <div class="field">
           <label for="body-length">Body length behind it (calibers)</label>
@@ -181,12 +182,17 @@
         method of characteristics) at Mach 1.3 to 5: there every band measured contains the error of
         the value shown, and the value extrapolated from three grids lies within 3.4e-5 of the
         reference (design record 0006 in the repository). Other shapes, lengths and Mach numbers are
-        computed the same way but have not been compared with a reference. Sharp noses only for now.
-        Refused, with the reason: tips whose shock detaches; tips whose flow crosses the solver's
-        starting plane, just behind the tip, at an axial Mach number below 1 (of 40 noses of 1 to 3
-        calibers tried at Mach 1.2, 19 detach their shock and 13 are refused by this test); tips
-        steeper than about 40 deg (a limit of the present grids, set on measurement); bodies whose
-        flow at their end is subsonic.
+        computed the same way but have not been compared with a reference. Ellipsoid noses, whose
+        tip is blunt, stand the shock off ahead of the tip, on a grid wrapped round the nose: behind
+        the sonic line their drag is checked against a method of characteristics started from the
+        solution (within 1e-5 of the nose's drag on three noses at Mach 2 and 3); ahead of it, where
+        the flow is subsonic and no independent reference exists, by the grids' convergence and the
+        exact stagnation pressure. Other blunt noses (Von Karman and the other Haack noses, the
+        power series) are not served yet. Refused, with the reason: tips whose shock detaches; tips
+        whose flow crosses the solver's starting plane, just behind the tip, at an axial Mach number
+        below 1 (of 40 noses of 1 to 3 calibers tried at Mach 1.2, 19 detach their shock and 13 are
+        refused by this test); tips steeper than about 40 deg (a limit of the present grids, set on
+        measurement); bodies whose flow at their end is subsonic.
       </p>
     </main>
     <script type="module" src="/src/app/nose-drag.ts"></script>

@@ -107,13 +107,19 @@ them; the fitted-drag families are recorded in
   of the present grids, set on measurement); bodies whose flow at
   their end is subsonic; grids failing the other quality gates, as on
   some long bodies.
+- Ellipsoid noses (blunt) on the drag page, the shock standing off ahead
+  of the tip on a grid wrapped round the nose: their fitted drag
+  converges at observed orders of 1.99 to 2.21, and behind the sonic line
+  it agrees with a method of characteristics started from the solution
+  within 1e-5 of the nose's drag (3:1 and 2:1 ellipsoids at Mach 2, the
+  3:1 at Mach 3; 0006). Ahead of the sonic line, where the flow is
+  subsonic and no independent reference exists, the drag rests on the
+  grids' convergence and the exact stagnation pressure.
 
-Not yet: viscous flow, blunt noses on the drag page (it offers sharp
-noses only; with the shock fitted, hemisphere-cylinders are solved on
-the CPU and the GPU, but the blunt-nose grid refuses power-series noses
-and Von Karman noses longer than about a caliber), fins and the base.
-Until those pass their own validation, bowshock reports no total drag
-coefficient.
+Not yet: viscous flow, Von Karman (Haack) and power-series noses (their
+tips need grids being designed), Mach numbers below 1.2, fins and the
+base. Until those pass their own validation, bowshock reports no total
+drag coefficient.
 
 Limits: power off, zero angle of attack, no motor plume. When they
 exist, base drag will be the least certain component and transonic
@@ -131,8 +137,8 @@ demo. They need a browser with WebGPU (recent Chrome or Edge, for
 example); the ramp and the shock tube fall back to the CPU without it.
 
 - **Nose wave drag:** the inviscid forebody pressure (wave) drag
-  coefficient of a cone, tangent or secant ogive, or parabolic-series
-  nose and its body, not the rocket's total drag, refined on nested
+  coefficient of a cone, tangent or secant ogive, parabolic-series or
+  ellipsoid nose and its body, not the rocket's total drag, refined on nested
   grids on your GPU and reported with its measured error band, or as not
   verified.
 - **Supersonic ramp:** oblique shocks and Prandtl-Meyer expansion fans,

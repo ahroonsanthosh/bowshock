@@ -44,6 +44,8 @@ function shape(): NoseShape {
       return { kind: 'ogive', parameter };
     case 'parabolic':
       return { kind: 'parabolic', parameter };
+    case 'ellipsoid':
+      return { kind: 'ellipsoid' };
     default:
       return { kind: 'ogive', parameter: 1 };
   }
