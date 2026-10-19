@@ -655,6 +655,66 @@ split into the fitted solver's error and the data's. The march's mass
 balance falls only by 2.4 to 3.1 per refinement on this nose (2e-6 to
 1.2e-5 on 2560 intervals), against 3.1 to 4.1 on the ellipsoids.
 
+## Two-scale noses: Haack, power series, detached tips
+
+Measured on the grids of 0004's two-scale design (the family's
+boundary on the first captured shock, smoothed; the fit from a second
+capture), on the CPU, cylinder 2 calibers, nj = 20, 40 and 80 (240,
+480 and 960 lines). The fits stop once the drag's remaining iterative
+error, estimated geometrically from its changes per chunk of
+iterations (as SettlingValue, noise 1e-10 relative), is below 1e-9 of
+the drag on two successive chunks and every shock face moves slower
+than 1e-9 of the sound speed; the estimate is recorded with each value
+(2.5e-12 and 3.3e-12 on the two coarser grids, which had run on to
+shock speeds of 7e-11). The 3-caliber LD-Haack nose at Mach 2:
+
+| nj  | Drag         | Change    | Tip region (x < 5.1 l) | Stagnation p vs pitot | Standoff / l | Wall cells, aspect |
+| --- | ------------ | --------- | ---------------------- | --------------------- | ------------ | ------------------ |
+| 20  | 0.0806584338 |           | 1.74991e-4 (0.217%)    | -0.123%               | 0.09850      | 77.3 deg, 3.7      |
+| 40  | 0.0804716502 | -1.868e-4 | 1.74912e-4             | -0.056%               | 0.09846      | 77.5 deg, 3.8      |
+| 80  | 0.0804049623 | -6.669e-5 |                        |                       |              |                    |
+
+The changes fall by 2.80 per refinement: an observed order of 1.49,
+not the second order of the cones, ogives and the hemisphere (1.9 to
+2.1). At that order the procedure's extrapolation lies 4.6e-4 of the
+drag below the finest value (0.0803679) and its band is 5.8e-4 of the
+drag, eight times the allowance of 7e-5; whether the extrapolation is
+that close to the true value no reference says yet (the march of
+characteristics from a starting line, above, is the candidate). The
+tip region ahead of 5 tip scales carries 0.22% of the drag and its
+drag changes by 1e-6 of the total between grids: the tip is resolved,
+and the order is set along the body. The stagnation pressure converges
+at first order (the curvature is singular at the cusp). The wall
+cells' entropy equals the normal-shock value within 8e-6 at 0.07 l
+from the tip and falls below it along the body, by 11% at the end of
+the cylinder on every grid: the entropy layer there is about 1e-5
+thick (the mass that crossed the strong part of the shock, within 0.3 l
+of the axis, spread over the body), which no cell resolves, and near
+the tip the deficit halves with refinement. That unresolved layer at
+the wall, absent on cones and thick on the hemisphere, is the likely
+source of the first-order part of the error; it is not measured yet.
+
+The other families (nj = 20 and 40; their third grids are not run):
+see the table below, to be completed.
+
+**Sharp tips whose bow shock detaches**, on the same grids (0004), with
+5 calibers of cylinder at Mach 1.2:
+
+| Case                                    | nj = 20      | nj = 40      | Change  | First face p vs pitot | Standoff           | First wall cell |
+| --------------------------------------- | ------------ | ------------ | ------- | --------------------- | ------------------ | --------------- |
+| Tangent ogive, 1 cal. (53 deg), M 1.5   | 0.4772137012 | 0.4759762450 | -2.6e-3 | -0.40%, -0.49%        | 0.087618, 0.087569 | 58.6, 56.1 deg  |
+| Parabolic, 1 cal. (45 deg), M 1.2       | 0.4045023927 | 0.4021745254 | -5.8e-3 | -1.56%, -1.63%        | 0.292412, 0.292267 | 52.4, 49.0 deg  |
+| Tangent ogive, 1.5 cal. (37 deg), M 1.2 | 0.2771170110 | 0.2757099379 | -5.1e-3 | -5.0%, -4.8%          | 0.141297, 0.141242 | 45.4, 41.4 deg  |
+
+The first face's pressure sits below the pitot value and does not move
+towards it: the flow at a sharp corner is singular, and the pressure on
+the first face is its average over the cell, not the stagnation value.
+The standoff converges. The drags change by 2.6e-3 to 5.8e-3 of their
+values between the two grids; their orders need the third grid (the
+Mach 1.5 ogive's is queued). The parabolic nose on nj = 40 and the
+37 deg ogive on both grids fail the 50 deg wall-cell gate (measured
+ungated), as 0004 predicts.
+
 ## Open
 
 - One-sided reconstruction at a nose's corner with the cylinder: cleaner
