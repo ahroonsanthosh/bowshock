@@ -1,0 +1,25 @@
+double wedge t/c 0.02: M1.2 1.0073  M1.3 1.0023  M1.5 1.0006  M2 1.0002  M2.5 1.0003  M3 1.0005  M4 1.0010
+double wedge t/c 0.03: M1.2 1.0175  M1.3 1.0052  M1.5 1.0013  M2 1.0004  M2.5 1.0006  M3 1.0011  M4 1.0022
+double wedge t/c 0.05: M1.2 1.0609  M1.3 1.0155  M1.5 1.0036  M2 1.0011  M2.5 1.0017  M3 1.0029  M4 1.0060
+double wedge t/c 0.08: M1.2 det  M1.3 1.0480  M1.5 1.0096  M2 1.0028  M2.5 1.0043  M3 1.0071  M4 1.0148
+double wedge t/c 0.12: M1.2 det  M1.3 det  M1.5 1.0242  M2 1.0063  M2.5 1.0092  M3 1.0152  M4 1.0316
+double wedge, ridge 0.3 t/c 0.02: M1.2 1.0740  M1.3 1.0398  M1.5 1.0256  M2 1.0246  M2.5 1.0294  M3 1.0351  M4 1.0475
+double wedge, ridge 0.3 t/c 0.03: M1.2 1.1452  M1.3 1.0657  M1.5 1.0396  M2 1.0371  M2.5 1.0444  M3 1.0533  M4 1.0725
+double wedge, ridge 0.3 t/c 0.05: M1.2 det  M1.3 1.1436  M1.5 1.0705  M2 1.0626  M2.5 1.0750  M3 1.0906  M4 1.1248
+double wedge, ridge 0.3 t/c 0.08: M1.2 det  M1.3 det  M1.5 1.1297  M2 1.1017  M2.5 1.1217  M3 1.1480  M4 1.2071
+double wedge, ridge 0.3 t/c 0.12: M1.2 det  M1.3 det  M1.5 R@0.60(1.2986)  M2 1.1556  M2.5 1.1840  M3 1.2253  M4 1.3202
+hexagon, 30% bevels t/c 0.02: M1.2 1.0221  M1.3 1.0065  M1.5 1.0016  M2 1.0005  M2.5 1.0008  M3 1.0013  M4 1.0027
+hexagon, 30% bevels t/c 0.03: M1.2 1.0609  M1.3 1.0155  M1.5 1.0036  M2 1.0011  M2.5 1.0017  M3 1.0029  M4 1.0060
+hexagon, 30% bevels t/c 0.05: M1.2 det  M1.3 1.0537  M1.5 1.0105  M2 1.0031  M2.5 1.0046  M3 1.0077  M4 1.0159
+hexagon, 30% bevels t/c 0.08: M1.2 det  M1.3 det  M1.5 1.0315  M2 1.0078  M2.5 1.0112  M3 1.0185  M4 1.0383
+hexagon, 30% bevels t/c 0.12: M1.2 det  M1.3 det  M1.5 R@0.58(1.1247)  M2 1.0178  M2.5 1.0238  M3 1.0385  M4 1.0796
+hexagon, 15% bevels t/c 0.02: M1.2 subsonic-behind-shock  M1.3 1.0301  M1.5 1.0065  M2 1.0020  M2.5 1.0030  M3 1.0050  M4 1.0104
+hexagon, 15% bevels t/c 0.03: M1.2 det  M1.3 R@0.43(1.0972)  M1.5 1.0157  M2 1.0044  M2.5 1.0065  M3 1.0108  M4 1.0225
+hexagon, 15% bevels t/c 0.05: M1.2 det  M1.3 det  M1.5 R@0.60(1.0595)  M2 1.0122  M2.5 1.0170  M3 1.0278  M4 R@0.89(1.0575)
+hexagon, 15% bevels t/c 0.08: M1.2 det  M1.3 det  M1.5 det  M2 R@0.70(1.0339)  M2.5 R@0.73(1.0401)  M3 R@0.70(1.0637)  M4 R@0.62(1.1299)
+hexagon, 15% bevels t/c 0.12: M1.2 det  M1.3 det  M1.5 det  M2 R@0.35(1.1255)  M2.5 R@0.51(1.0844)  M3 R@0.51(1.1229)  M4 R@0.48(1.2407)
+hexagon, 5% bevels t/c 0.02: M1.2 det  M1.3 det  M1.5 R@0.10(1.1247)  M2 R@0.31(1.0178)  M2.5 R@0.31(1.0238)  M3 R@0.29(1.0385)  M4 R@0.25(1.0796)
+hexagon, 5% bevels t/c 0.03: M1.2 det  M1.3 det  M1.5 det  M2 R@0.20(1.0455)  M2.5 R@0.22(1.0496)  M3 R@0.21(1.0776)  M4 R@0.19(1.1571)
+hexagon, 5% bevels t/c 0.05: M1.2 det  M1.3 det  M1.5 det  M2 det  M2.5 R@0.13(1.1380)  M3 R@0.14(1.1721)  M4 R@0.14(1.3198)
+hexagon, 5% bevels t/c 0.08: M1.2 det  M1.3 det  M1.5 det  M2 det  M2.5 det  M3 det  M4 R@0.06(1.6098)
+hexagon, 5% bevels t/c 0.12: M1.2 det  M1.3 det  M1.5 det  M2 det  M2.5 det  M3 det  M4 det

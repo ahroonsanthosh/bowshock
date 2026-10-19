@@ -1,0 +1,8 @@
+C2 M1.3 (4.3002): d 0.001: shock 3.40e-3 exp -3.30e-3  d 0.002: shock 6.83e-3 exp -6.55e-3
+C2 M2 (1.4667): d 0.001: shock 6.93e-4 exp -6.36e-4  d 0.002: shock 1.39e-3 exp -1.27e-3
+C2 M3.5 (1.2450): d 0.001: shock 9.88e-4 exp -1.05e-3  d 0.002: shock 1.98e-3 exp -2.10e-3
+research table vs now: worst 2.18e-3; changed at 3 decimals: B M1.5: 1.0961 -> 1.0949; B M3: 1.0325 -> 1.0324; C M1.2: 1.1005 -> 1.1005; C M3: 1.0085 -> 1.0085; C-hex M2: 1.0234 -> 1.0241; C-hex M2.5: 1.0146 -> 1.0138; C-hex M3: 1.0084 -> 1.0091; E M1.5: 1.1954 -> 1.1962; F M1.5: 0.6249 -> 0.6235; F M2: 0.8936 -> 0.8931; G M1.2: 1.1025 -> 1.1014; G M2: 1.0435 -> 1.0433
+ARCAS M1.5: exact/Ackeret 0.9945, ratio 1.0561 (+-2.1e-7), fin wave cd 0.00744, first reflection 5.77
+ARCAS M1.8: exact/Ackeret 0.9932, ratio 1.0405 (+-2.1e-7), fin wave cd 0.00547, first reflection 6.99
+ARCAS M2.3: exact/Ackeret 0.9921, ratio 1.0219 (+-2.0e-7), fin wave cd 0.00388, first reflection 7.13
+ARCAS M2.96: exact/Ackeret 0.9909, ratio 1.0124 (+-9.7e-7), fin wave cd 0.00285, first reflection 6.45

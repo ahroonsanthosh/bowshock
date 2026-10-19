@@ -198,6 +198,7 @@ on a static host.
 | `src/solver/`        | Solver pieces shared by the engines, and the CPU shock fitting                |
 | `src/analysis/`      | Integrated forces and the verified forebody drag                              |
 | `src/friction/`      | Skin friction: van Driest II, laminar similarity, transition, bodies          |
+| `src/fins/`          | Fin wave drag: exact sharp sections, linear 3D drag of the planform           |
 | `src/verification/`  | Discretisation error from nested grids                                        |
 | `src/validation/`    | Exact and reference solutions, and digitised wind-tunnel data                 |
 | `src/render/`        | Display fields, colour map and WebGPU rendering                               |
@@ -225,6 +226,9 @@ The design records, in order:
   and measured band of each component, and the one validation set found
   that matches a simple finned rocket (the Basic Finner in free flight,
   Mach 1.8 to 3.0), audited twice.
+- [0009](docs/design/0009-fin-wave-drag.md): fin wave drag (draft), a
+  library not yet on the drag page: exact section drag of sharp fins and
+  the linear 3D drag of the planform, with the limits of each measured.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).

@@ -36,6 +36,16 @@ The source reports themselves (NACA and NASA, from the NASA Technical
 Reports Server) are not copied here; each file cites its report by its NTRS
 number.
 
+## `fin-wave-drag/`: measurements behind 0009
+
+The runners and outputs of the measurements quoted in
+[0009](../design/0009-fin-wave-drag.md) (the fin wave-drag library,
+`src/fins/`) that are not committed tests: the research's and the audit's
+fin scripts re-run, a resolution study of the audit's area-rule code, the
+throwaway vitest runs (quadrature convergence, the strip-theory table, the
+planar Euler sections), and `compare.py`, which derives the summaries the
+record quotes. Its README says how to re-run each.
+
 ## `subtip/`: noses whose tip flow is axially subsonic
 
 The measurements behind "What serving these tips would need" in
@@ -57,10 +67,18 @@ its own validation passes.
   Von Karman (Haack) and power-series noses, and sharp tips whose bow shock
   stands off ahead of them. Measured on two grids so far; the third is
   running.
-- `transonic.diff` (commits in `transonic.log`) and
-  `transonic-uncommitted.diff`: the transonic prototype for Mach 1 to 1.2 (far field, the body followed
-  past its base). Its design notes call themselves 0007 and will be
-  renumbered.
+- `transonic.diff` (commits in `transonic.log`): the transonic solver for
+  Mach 1 to 1.2 (the body followed past its base as a long cylinder, far
+  boundaries about 100 body radii out with a characteristic condition,
+  the shock captured, implicit LU-SGS steps; H grids for sharp noses and C
+  grids for ellipsoids). Its record calls itself 0007 and will be
+  renumbered. Measured so far: cones at Mach 1.2 to the supersonic
+  standard (2.3e-5 of the exact value on the finest grid, the band
+  containing it), at 1.1 within 3.5e-4 without a settled order, at 1.05 at
+  first order; at Mach 1 the drag depends on the far boundary (1.8% low at
+  100 radii on a cone, 10% on an ogive), so it rests on an extrapolation
+  in that distance; on blunt noses at Mach 1.2 the stagnation pressure
+  error does not converge. Not served.
 - `low-mach-blunt.diff`: uncommitted changes for blunt noses at Mach 1.2 to
   1.5, whose fitted grids fail the size-ratio gate where column counts are
   rounded per interval along the body.
