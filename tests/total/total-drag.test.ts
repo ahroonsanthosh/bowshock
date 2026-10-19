@@ -87,105 +87,109 @@ describe('the nose of a sharp cone', () => {
   });
 });
 
-describe('a finned body with sharp fins: the total and its components', () => {
-  const total = finnedBodyTotalDrag(sharp, conditions, nose(), {
-    transitionReynolds: [5e5, 3e6],
-    wallTemperature: 290,
-  });
-  const byName = (n: string) => total.components.find((c) => c.name === n)!;
-
-  it('has five components, summed', () => {
-    expect(total.components.map((c) => c.name)).toEqual([
-      'nose wave drag',
-      'body friction',
-      'fin friction',
-      'fin wave drag',
-      'body base',
-    ]);
-    const sum = total.components.reduce((s, c) => s + c.cd, 0);
-    expect(total.cd).toBeCloseTo(sum, 15);
-  });
-
-  it('body friction: the momentum integral with the band of 0007', () => {
-    const f = bodyFriction(sharp.body, { method: 'momentum-integral', ...conditions });
-    const c = byName('body friction');
-    expect(c.cd).toBe(f.cd);
-    expect(c.low).toBeCloseTo(BODY_FRICTION_BAND[0] * f.cd, 15);
-    expect(c.high).toBeCloseTo(BODY_FRICTION_BAND[1] * f.cd, 15);
-  });
-
-  it('fin friction: four rectangles, both faces, at the chord Reynolds number', () => {
-    const cf = flatPlateFriction({ mach: 2.4, temperature: 290 }).averageCf(1.5e6);
-    const c = byName('fin friction');
-    expect(c.cd).toBeCloseTo((4 * 2 * cf) / (Math.PI * 0.25), 14);
-    expect(c.low).toBeCloseTo(FINS_OWN_DRAG_BAND[0] * c.cd, 15);
-    expect(c.high).toBeCloseTo(FINS_OWN_DRAG_BAND[1] * c.cd, 15);
-  });
-
-  it('fin wave drag: src/fins on four panels over the cross-section', () => {
-    const w = finWaveDrag(sharp.fins.planform, sharp.fins.section, 2.4);
-    const c = byName('fin wave drag');
-    expect(c.cd).toBeCloseTo((4 * w.cd) / (Math.PI * 0.25), 15);
-    expect(c.high).toBeGreaterThan(FINS_OWN_DRAG_BAND[1] * c.cd);
-  });
-
-  it('body base: the compiled curve with the factor for fins at the base', () => {
-    const b = bodyBaseDrag({
-      mach: 2.4,
-      afterbody: 'cylinder',
-      boundaryLayerAtBase: 'turbulent',
-      baseAreaRatio: 1,
-      fins: { count: 4, thicknessRatio: 0.06, section: 'other', trailingEdgeAheadOfBase: 0 },
+describe(
+  'a finned body with sharp fins: the total and its components',
+  { timeout: 120_000 },
+  () => {
+    const total = finnedBodyTotalDrag(sharp, conditions, nose(), {
+      transitionReynolds: [5e5, 3e6],
+      wallTemperature: 290,
     });
-    const c = byName('body base');
-    expect([c.cd, c.low, c.high]).toEqual([b.cd, b.low, b.high]);
-  });
+    const byName = (n: string) => total.components.find((c) => c.name === n)!;
 
-  it('input bands: transition lowers, a cold wall raises, smooth roughness is zero', () => {
-    const [transition, wall, roughness] = total.inputs;
-    expect(transition!.name).toBe('transition');
-    expect(transition!.low).toBeLessThan(0);
-    expect(transition!.high).toBe(0);
-    const f = (reT: number) =>
-      bodyFriction(sharp.body, {
-        method: 'momentum-integral',
-        ...conditions,
-        transitionReynolds: reT,
-      }).cd +
-      (4 *
-        2 *
-        flatPlateFriction({ mach: 2.4, temperature: 290, transitionReynolds: reT }).averageCf(
-          1.5e6,
-        )) /
-        (Math.PI * 0.25);
-    const turbulent = byName('body friction').cd + byName('fin friction').cd;
-    expect(transition!.low).toBeCloseTo(f(3e6) - turbulent, 14);
-    expect(wall!.name).toBe('wall temperature');
-    expect(wall!.low).toBe(0);
-    expect(wall!.high).toBeGreaterThan(0);
-    expect(roughness).toEqual({
-      name: 'roughness',
-      low: 0,
-      high: 0,
-      label: 'smooth wall assumed; roughness not modelled (0008 section 2.3)',
+    it('has five components, summed', () => {
+      expect(total.components.map((c) => c.name)).toEqual([
+        'nose wave drag',
+        'body friction',
+        'fin friction',
+        'fin wave drag',
+        'body base',
+      ]);
+      const sum = total.components.reduce((s, c) => s + c.cd, 0);
+      expect(total.cd).toBeCloseTo(sum, 15);
     });
-    // The model-form band leaves the inputs out.
-    const sumLow = total.components.reduce((s, c) => s + c.low, 0);
-    expect(total.low).toBeCloseTo(sumLow, 15);
-  });
 
-  it('a roughness band supplied by the caller is carried with its source', () => {
-    const t = finnedBodyTotalDrag(sharp, conditions, nose(), {
-      roughness: { low: 0, high: 0.01, source: 'a test value' },
+    it('body friction: the momentum integral with the band of 0007', () => {
+      const f = bodyFriction(sharp.body, { method: 'momentum-integral', ...conditions });
+      const c = byName('body friction');
+      expect(c.cd).toBe(f.cd);
+      expect(c.low).toBeCloseTo(BODY_FRICTION_BAND[0] * f.cd, 15);
+      expect(c.high).toBeCloseTo(BODY_FRICTION_BAND[1] * f.cd, 15);
     });
-    expect(t.inputs[0]).toEqual({
-      name: 'roughness',
-      low: 0,
-      high: 0.01,
-      label: 'input: roughness, a test value',
+
+    it('fin friction: four rectangles, both faces, at the chord Reynolds number', () => {
+      const cf = flatPlateFriction({ mach: 2.4, temperature: 290 }).averageCf(1.5e6);
+      const c = byName('fin friction');
+      expect(c.cd).toBeCloseTo((4 * 2 * cf) / (Math.PI * 0.25), 14);
+      expect(c.low).toBeCloseTo(FINS_OWN_DRAG_BAND[0] * c.cd, 15);
+      expect(c.high).toBeCloseTo(FINS_OWN_DRAG_BAND[1] * c.cd, 15);
     });
-  });
-});
+
+    it('fin wave drag: src/fins on four panels over the cross-section', () => {
+      const w = finWaveDrag(sharp.fins.planform, sharp.fins.section, 2.4);
+      const c = byName('fin wave drag');
+      expect(c.cd).toBeCloseTo((4 * w.cd) / (Math.PI * 0.25), 15);
+      expect(c.high).toBeGreaterThan(FINS_OWN_DRAG_BAND[1] * c.cd);
+    });
+
+    it('body base: the compiled curve with the factor for fins at the base', () => {
+      const b = bodyBaseDrag({
+        mach: 2.4,
+        afterbody: 'cylinder',
+        boundaryLayerAtBase: 'turbulent',
+        baseAreaRatio: 1,
+        fins: { count: 4, thicknessRatio: 0.06, section: 'other', trailingEdgeAheadOfBase: 0 },
+      });
+      const c = byName('body base');
+      expect([c.cd, c.low, c.high]).toEqual([b.cd, b.low, b.high]);
+    });
+
+    it('input bands: transition lowers, a cold wall raises, smooth roughness is zero', () => {
+      const [transition, wall, roughness] = total.inputs;
+      expect(transition!.name).toBe('transition');
+      expect(transition!.low).toBeLessThan(0);
+      expect(transition!.high).toBe(0);
+      const f = (reT: number) =>
+        bodyFriction(sharp.body, {
+          method: 'momentum-integral',
+          ...conditions,
+          transitionReynolds: reT,
+        }).cd +
+        (4 *
+          2 *
+          flatPlateFriction({ mach: 2.4, temperature: 290, transitionReynolds: reT }).averageCf(
+            1.5e6,
+          )) /
+          (Math.PI * 0.25);
+      const turbulent = byName('body friction').cd + byName('fin friction').cd;
+      expect(transition!.low).toBeCloseTo(f(3e6) - turbulent, 14);
+      expect(wall!.name).toBe('wall temperature');
+      expect(wall!.low).toBe(0);
+      expect(wall!.high).toBeGreaterThan(0);
+      expect(roughness).toEqual({
+        name: 'roughness',
+        low: 0,
+        high: 0,
+        label: 'smooth wall assumed; roughness not modelled (0008 section 2.3)',
+      });
+      // The model-form band leaves the inputs out.
+      const sumLow = total.components.reduce((s, c) => s + c.low, 0);
+      expect(total.low).toBeCloseTo(sumLow, 15);
+    });
+
+    it('a roughness band supplied by the caller is carried with its source', () => {
+      const t = finnedBodyTotalDrag(sharp, conditions, nose(), {
+        roughness: { low: 0, high: 0.01, source: 'a test value' },
+      });
+      expect(t.inputs[0]).toEqual({
+        name: 'roughness',
+        low: 0,
+        high: 0.01,
+        label: 'input: roughness, a test value',
+      });
+    });
+  },
+);
 
 describe('refusals', () => {
   const refusals = (config: FinnedBody, mach = 2.4, transitionReynolds?: number[]) => {

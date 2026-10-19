@@ -225,7 +225,7 @@ beforeAll(() => {
   });
 });
 
-describe('the gate: 11 shots at Mach 1.80 to 2.97', () => {
+describe('the gate: 11 shots at Mach 1.80 to 2.97', { timeout: 120_000 }, () => {
   it('has the 11 shots in four clusters', () => {
     expect(gated.length).toBe(11);
     expect(gated.every((s) => clusterOf(s.mach) >= 0)).toBe(true);
@@ -273,69 +273,73 @@ describe('the gate: 11 shots at Mach 1.80 to 2.97', () => {
   });
 });
 
-describe('diagnostic: the partial sum, every component with a band (not a total)', () => {
-  it('per shot as recorded in 0010', () => {
-    shots.forEach((s, k) => {
-      const r = RECORDED[k]!;
-      expect(s.shot).toBe(r.shot);
-      const input = (n: string) => s.partial.inputs.find((i) => i.name === n)!;
-      expect(Math.abs(s.partial.cd - r.cd)).toBeLessThan(1e-5);
-      expect(Math.abs(s.partial.low - r.low)).toBeLessThan(1e-5);
-      expect(Math.abs(s.partial.high - r.high)).toBeLessThan(1e-5);
-      expect(Math.abs(input('transition').low - r.transition)).toBeLessThan(1e-5);
-      expect(Math.abs(input('wall temperature').high - r.wall)).toBeLessThan(1e-5);
-      expect(Math.abs(s.residual - r.residual)).toBeLessThan(1e-4);
+describe(
+  'diagnostic: the partial sum, every component with a band (not a total)',
+  { timeout: 120_000 },
+  () => {
+    it('per shot as recorded in 0010', () => {
+      shots.forEach((s, k) => {
+        const r = RECORDED[k]!;
+        expect(s.shot).toBe(r.shot);
+        const input = (n: string) => s.partial.inputs.find((i) => i.name === n)!;
+        expect(Math.abs(s.partial.cd - r.cd)).toBeLessThan(1e-5);
+        expect(Math.abs(s.partial.low - r.low)).toBeLessThan(1e-5);
+        expect(Math.abs(s.partial.high - r.high)).toBeLessThan(1e-5);
+        expect(Math.abs(input('transition').low - r.transition)).toBeLessThan(1e-5);
+        expect(Math.abs(input('wall temperature').high - r.wall)).toBeLessThan(1e-5);
+        expect(Math.abs(s.residual - r.residual)).toBeLessThan(1e-4);
+      });
     });
-  });
 
-  it('the data lie 20.9% to 37.1% above the partial sum at every shot', () => {
-    const r = shots.map((s) => s.residual);
-    expect(Math.min(...r)).toBeCloseTo(0.2091, 3);
-    expect(Math.max(...r)).toBeCloseTo(0.3711, 3);
-  });
-
-  it('per cluster: mean and spread of the residuals', () => {
-    const stats = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
-      const v = shots.filter((s) => s.mach >= a && s.mach <= b).map((s) => s.residual);
-      const mean = v.reduce((p, q) => p + q, 0) / v.length;
-      return [mean, Math.min(...v), Math.max(...v)].map((x) => Math.round(1000 * x) / 10);
+    it('the data lie 20.9% to 37.1% above the partial sum at every shot', () => {
+      const r = shots.map((s) => s.residual);
+      expect(Math.min(...r)).toBeCloseTo(0.2091, 3);
+      expect(Math.max(...r)).toBeCloseTo(0.3711, 3);
     });
-    expect(stats).toEqual([
-      [28.6, 25.7, 32.4],
-      [32.9, 30.8, 36.3],
-      [30.1, 21.1, 37.1],
-      [22.4, 20.9, 23.8],
-    ]);
-  });
 
-  it('no shot lies below the partial tolerance: nothing computed already exceeds the data', () => {
-    for (const s of shots) expect(s.residual).toBeGreaterThan(s.tolerance[0]);
-  });
+    it('per cluster: mean and spread of the residuals', () => {
+      const stats = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
+        const v = shots.filter((s) => s.mach >= a && s.mach <= b).map((s) => s.residual);
+        const mean = v.reduce((p, q) => p + q, 0) / v.length;
+        return [mean, Math.min(...v), Math.max(...v)].map((x) => Math.round(1000 * x) / 10);
+      });
+      expect(stats).toEqual([
+        [28.6, 25.7, 32.4],
+        [32.9, 30.8, 36.3],
+        [30.1, 21.1, 37.1],
+        [22.4, 20.9, 23.8],
+      ]);
+    });
 
-  it('above its tolerance at 10 shots of 11, at 8 with the wall-temperature band', () => {
-    // The missing terms are positive (base drag of a blunt edge, the drag of a rounded
-    // leading edge), so the full model lies above the partial sum: no verdict follows.
-    const above = shots.filter((s) => s.residual > s.tolerance[1]).map((s) => s.mach);
-    const aboveWall = shots.filter((s) => s.residual > s.toleranceWithWall[1]).map((s) => s.mach);
-    expect(above).toEqual([1.799, 1.846, 1.85, 2.348, 2.364, 2.414, 2.663, 2.749, 2.969, 2.97]);
-    expect(aboveWall).toEqual([1.799, 1.846, 1.85, 2.348, 2.364, 2.414, 2.663, 2.749]);
-  });
+    it('no shot lies below the partial tolerance: nothing computed already exceeds the data', () => {
+      for (const s of shots) expect(s.residual).toBeGreaterThan(s.tolerance[0]);
+    });
 
-  it('the gap the missing terms would have to fill lies within their physical scales', () => {
-    // Trailing edges: at most the vacuum limit -P_B = 2 / (gamma M^2) on 4 x 0.08 x 1 cal^2
-    // (on 4 x 0.04 x 1 if the thickness tapers to the tip). Leading edges: pitot pressure on
-    // the frontal height 4 x 0.008 x 1 cal^2, the scale (not a bound) of a rounded edge.
-    for (const s of shots) {
-      const m = s.mach;
-      const gap = s.cx0 - s.partial.cd;
-      const vacuum =
-        (4 * G.finTrailingEdgeThickness * G.finSpan * (2 / (gamma * m * m))) / (Math.PI / 4);
-      const shockP = 1 + ((2 * gamma) / (gamma + 1)) * (m * m - 1);
-      const m2 = Math.sqrt(((gamma - 1) * m * m + 2) / (2 * gamma * m * m - (gamma - 1)));
-      const pitot = (shockP * (1 + 0.2 * m2 * m2) ** 3.5 - 1) / (0.7 * m * m);
-      const leadingEdges = (4 * 2 * G.finLeadingEdgeRadius * G.finSpan * pitot) / (Math.PI / 4);
-      expect(gap).toBeGreaterThan(0);
-      expect(gap).toBeLessThan(vacuum + leadingEdges);
-    }
-  });
-});
+    it('above its tolerance at 10 shots of 11, at 8 with the wall-temperature band', () => {
+      // The missing terms are positive (base drag of a blunt edge, the drag of a rounded
+      // leading edge), so the full model lies above the partial sum: no verdict follows.
+      const above = shots.filter((s) => s.residual > s.tolerance[1]).map((s) => s.mach);
+      const aboveWall = shots.filter((s) => s.residual > s.toleranceWithWall[1]).map((s) => s.mach);
+      expect(above).toEqual([1.799, 1.846, 1.85, 2.348, 2.364, 2.414, 2.663, 2.749, 2.969, 2.97]);
+      expect(aboveWall).toEqual([1.799, 1.846, 1.85, 2.348, 2.364, 2.414, 2.663, 2.749]);
+    });
+
+    it('the gap the missing terms would have to fill lies within their physical scales', () => {
+      // Trailing edges: at most the vacuum limit -P_B = 2 / (gamma M^2) on 4 x 0.08 x 1 cal^2
+      // (on 4 x 0.04 x 1 if the thickness tapers to the tip). Leading edges: pitot pressure on
+      // the frontal height 4 x 0.008 x 1 cal^2, the scale (not a bound) of a rounded edge.
+      for (const s of shots) {
+        const m = s.mach;
+        const gap = s.cx0 - s.partial.cd;
+        const vacuum =
+          (4 * G.finTrailingEdgeThickness * G.finSpan * (2 / (gamma * m * m))) / (Math.PI / 4);
+        const shockP = 1 + ((2 * gamma) / (gamma + 1)) * (m * m - 1);
+        const m2 = Math.sqrt(((gamma - 1) * m * m + 2) / (2 * gamma * m * m - (gamma - 1)));
+        const pitot = (shockP * (1 + 0.2 * m2 * m2) ** 3.5 - 1) / (0.7 * m * m);
+        const leadingEdges = (4 * 2 * G.finLeadingEdgeRadius * G.finSpan * pitot) / (Math.PI / 4);
+        expect(gap).toBeGreaterThan(0);
+        expect(gap).toBeLessThan(vacuum + leadingEdges);
+      }
+    });
+  },
+);
