@@ -442,22 +442,68 @@ The stagnation streamline: total pressure of the cells along the axis
 behind the bow shock, over the free stream's, against the normal shock's
 (0.99280 at Mach 1.2, 0.92979 at 1.5), on r = 1, 2, 4. Hemisphere at Mach
 1.5: 0.94610, 0.93195, 0.92856 (losses 5.39%, 6.81%, 7.14% against
-7.02%), converging. At Mach 1.2, hemisphere: 0.99506, 0.99531, 0.99524
-(losses 0.49%, 0.47%, 0.48% against 0.72%); 2:1 ellipsoid: 0.99226,
-0.99502, 0.99542 (0.77%, 0.50%, 0.46%): not converging to the normal
-shock's loss. On the hemisphere's r = 4 the captured shock on the axis
-has one intermediate cell, and the cell behind it has the
-Rankine-Hugoniot pressure within 0.11% but a total pressure 0.21% too
-high; the cause was not found. At Mach 1, with no shock, the axis cells
-keep the free stream's total pressure within 5e-4 (hemisphere, r = 1).
-The pressure on the first wall face is no measure of this: the wall's
-Riemann flux adds the cell's inflow into the wall, 0.23% above the
-total pressure at Mach 1 (r = 1). On the 2:1 ellipsoid the drag still
-agrees with the fitted solver's to 7e-4 (extrapolated), so there the
-error's weight in the drag is below that; on the hemisphere at Mach 1.2
-and below, which the supersonic grid refuses (also with 4 to 12 calibers
-of cylinder: size ratio 1.31 to 1.32), its effect on the drag is not
-measured, and the blunt results there carry this open error.
+7.02%). At Mach 1.2, hemisphere: 0.99506, 0.99531, 0.99524 (losses 0.49%,
+0.47%, 0.48% against 0.72%); 2:1 ellipsoid: 0.99226, 0.99502, 0.99542
+(0.77%, 0.50%, 0.46%): not converging to the normal shock's loss. At
+Mach 1, with no shock, the axis cells keep the free stream's total
+pressure within 5e-4 (hemisphere, r = 1). The pressure on the first wall
+face is no measure of this: the wall's Riemann flux adds the cell's
+inflow into the wall, 0.23% above the total pressure at Mach 1 (r = 1).
+
+**The cause, measured: the captured shock's pointwise error.** Along the
+bow shock (shock radius below 1.5), the total pressure two cells behind
+the captured shock against the exact oblique-shock value for the local
+angle of a smooth fit of the shock (x = a + b r^2 + c r^4):
+
+| Body, Mach         | Grid | Mean (weighted by r) | rms   | Range           | Axis   |
+| ------------------ | ---- | -------------------- | ----- | --------------- | ------ |
+| hemisphere, 1.2    | 1    | +0.41%               | 0.36% | +0.17 to +0.55% | +0.19% |
+| hemisphere, 1.2    | 2    | +0.17%               | 0.28% | -0.22 to +0.39% | +0.23% |
+| hemisphere, 1.2    | 4    | +0.05%               | 0.19% | -0.30 to +0.44% | +0.24% |
+| 2:1 ellipsoid, 1.2 | 1    | +0.36%               | 0.34% | +0.07 to +0.52% | +0.33% |
+| 2:1 ellipsoid, 1.2 | 2    | +0.14%               | 0.26% | -0.20 to +0.43% | +0.32% |
+| 2:1 ellipsoid, 1.2 | 4    | +0.03%               | 0.17% | -0.24 to +0.39% | +0.28% |
+| hemisphere, 1.5    | 1    | -0.13%               | 1.11% | -1.35 to +1.53% | +1.53% |
+| hemisphere, 1.5    | 2    | -0.27%               | 0.61% | -1.12 to +1.38% | +0.17% |
+| hemisphere, 1.5    | 4    | -0.16%               | 0.56% | -1.24 to +1.28% | -0.17% |
+
+The average along the shock converges (at Mach 1.2 by 2.4 to 4.1 per
+halving of the cells); the pointwise error does not: its range stays
++-0.3 to 0.4% at Mach 1.2 and +-1.2 to 1.4% at 1.5 on every grid, and it
+correlates (coefficients +0.14 to +0.47) with where the shock lies within
+its cell. The axis is one sample of it. At Mach 1.2 the shock near the
+axis runs along a row of cells over several lines and the sample sits
+near +0.25% on every grid; at Mach 1.5 it happened to fall near zero on
+r = 2 and 4, which looked like convergence and is not. So the stagnation
+line's total pressure carries the captured shock's pointwise error, of
+the size of that scatter on every grid, not a discretization error that
+refinement removes; only a shock fitted (or aligned with the cells) on
+the axis would remove it.
+
+**The 2:1 ellipsoid's gap to the fitted solver, localized.** The drag
+accumulated from the stagnation point, C(r^2) = sum of Cp times the
+faces' change of r^2, extrapolated pointwise at second order from r = 2
+and 4 (transonic) and nj = 20 and 40 (fitted; their sums reproduce the
+drags exactly): transonic minus fitted is +2.3e-4 by r^2 = 0.05, falls to
+about +7e-5 by r^2 = 0.3 to 0.5, and ends at -2.4e-4 (the fitted
+extrapolation from nj = 40 and 80 is 2.8e-5 higher, giving the 2.7e-4 of
+the table). Near the stagnation point the transonic wall pressure is
+higher by about 0.006 in Cp (1.3939 against 1.3876 at x = 0.002), as the
+axis's +0.28% predicts: that is the stagnation line's error, and it
+raises the transonic drag. Over the middle of the nose (x = 0.2 to 1, r^2
+= 0.19 to 0.75) the transonic pressure coefficient is lower than the
+fitted solver's extrapolation by 0.0004 to 0.0009, which lowers it by
+about 4e-4. Its cause is not found; measured and excluded: the far
+boundaries (r = 1 drag on 55, 100.6, 224 and 408.7 radii within 2.1e-5),
+the cylinder (4 and 10 calibers extrapolate to 0.3423540 and 0.3423446,
+and behind the shoulder the flow is supersonic everywhere), and the
+shock's total pressure there (+0.06 to +0.11% on r = 4, which would raise
+the pressure). The wall cells lose total pressure along the body at
+first order (0.25% by x = 1 on r = 4, 0.55% on r = 2), an entropy layer
+that should not set the wall pressure. Using the observed order (2.68)
+instead of 2 for the transonic extrapolation moves it by +1.1e-4, so the
+gap is 1.5e-4 to 2.7e-4, of the size of the families' own remaining
+change; r = 8 is queued.
 
 ### The ogive and the hemisphere from Mach 1.1 to 1
 
@@ -506,6 +552,56 @@ boundaries at infinity). Slender-body theory gives dCD/dM = 4 / (gamma +
      underestimate the
      slope at Mach 1, and the three-point estimate lies within 6 to 9% of
      the theory.
+
+### Mach 1 without the extrapolation: what would serve it
+
+What the far boundary does at Mach 1, measured on the cone (base grid):
+
+- **Near the body it shifts the pressure level.** From 224.2 to 408.7
+  radii the pressure coefficient of the cells between 5 and 80 radii from
+  the axis rises by +0.0006 to +0.0007 on average, rms 0.0008: a nearly
+  uniform shift, as the drag's change suggested.
+- **The far field decays slowly.** On 408.7 radii, the pressure
+  coefficient on the line above the shoulder is 0.0178, 0.0150, 0.0120,
+  0.0091 and 0.0060 at 6, 19, 34, 62 and 112 radii: local decay exponents
+  0.39 to 0.47 between 19 and 62 radii. A free-stream condition at a
+  distance D is wrong by a perturbation of that order, and the drag's
+  error falls as D^-1.06 (ogive) to D^-1.35 (cone).
+
+Three routes, with what the evidence says about each:
+
+- **A far-field condition carrying the sonic far field** (as transonic
+  small-disturbance codes do). In that theory the far field at Mach 1 is
+  a similarity solution, potential r^n F(x / r^m) with n = 3m - 2 from the
+  equation's scaling (derived here); m is fixed by what the body sheds:
+  2/3 for a drag-carrying far field (perturbation velocity ~ r^-2/3), 1/2
+  for the mass displaced by the sting (~ r^-1), and the closed-body
+  eigen-solution of R. Barish and K. G. Guderley (1953, not read; see
+  sources.md) otherwise. Against it, so far: the decay measured between
+  19 and 62 radii (exponents 0.39 to 0.47) is slower than any of these,
+  and the computed field between 5 and 40 radii does not collapse onto
+  r^(n - m) F(x / r^m) for any m from 0.4 to 1 (binned scatter 0.51 to
+  0.61 of the rms, no minimum), so the asymptotic regime is not reached
+  within 40 radii and such a condition would have to sit beyond about 100
+  radii, in a form to be verified against the sources first. Not tried.
+- **A larger domain**, where the measured power law makes the error
+  small (about 5e-5 at 1,600 radii) at little cost in cells (3.5 more
+  across per doubling) but more steps (17,850, 32,250 and 46,700 on 100.6,
+  224.2 and 408.7 radii). Blocked at present: on 800 radii the implicit
+  steps diverge after about 5,000 steps. Measured: it is not the CFL
+  number (100 and 1000 diverge at the same step, the drag at 0.0935
+  rising), nor the far-field boundary's sharp switch where the normal
+  velocity is sonic (blending it smoothly over 5% of the sound speed,
+  `docs/design/patches/0007-farfield-blend.diff`, changes nothing). The
+  growing change lies in the cells next to the axis upstream of the tip
+  and along the cone's first radius (Mach 0.91 to 0.998, x from -6.6 to
+  +0.9 radii), cells 0.05 radii high whose columns, far upstream on this
+  domain, grow to 160 radii long. Making those cells hold (thicker axis
+  cells far upstream, or a treatment of near-sonic axis cells in the
+  implicit steps) is the first step of this route.
+- **The extrapolation in the distance**, as now, made part of the
+  procedure: three domains on each grid, and the test, running, that the
+  correction measured on the base grid holds on r = 2 (408.7 radii).
 
 ## References and how close the solver gets
 
@@ -664,6 +760,12 @@ grid unless stated:
   after 25,450 steps (492 s) against the plain steps' 14,650 (191 s), at
   0.0917288, within 7e-7 of the plain steps' 0.0917281: the same steady
   state, reached more slowly. Mach 1 runs use plain steps.
+- **800 radii at Mach 1**: the implicit steps diverge after about 5,000
+  steps with the CFL number capped at 1000 or at 100, and with the
+  far-field boundary's characteristic switch blended smoothly
+  (`docs/design/patches/0007-farfield-blend.diff`); the growing change
+  lies in the near-sonic cells next to the axis upstream of the tip (see
+  "Mach 1 without the extrapolation").
 - **Two earlier grids**: vertical lines all the way out (cells up to 350
   times taller than wide above the body) and a wall spacing growing
   upstream along the axis (each line's own stretching, which skewed the
@@ -686,10 +788,11 @@ grid unless stated:
 - **The stagnation line on blunt noses at Mach 1.2**: 0.46% to 0.50% of
   total-pressure loss against the normal shock's 0.72% on r = 2 and 4,
   not converging; converging at Mach 1.5.
-- **The far boundaries at Mach 1**: a far-field condition carrying the
-  sonic far field's slow decay, instead of the free stream, would replace
-  the extrapolation; not tried. At 800 radii the implicit steps went
-  unstable.
+- **The far boundaries at Mach 1**: see "Mach 1 without the
+  extrapolation": the large-domain route needs the near-sonic axis cells
+  upstream of the tip to hold at 800 radii; the far-field-condition route
+  needs the sonic far field's form verified and a domain beyond about 100
+  radii.
 - **First order at Mach 1.05** on the cone: consistent with the captured
   bow shock setting the pressure level, not isolated.
 - **GPU**: the far-field boundary kind, and so the transonic domain, is on
