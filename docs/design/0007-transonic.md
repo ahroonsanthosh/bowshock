@@ -1,10 +1,12 @@
 # 0007: Transonic forebody drag, Mach 1 to 1.2
 
 - **Status:** Prototype on the CPU engine (`src/analysis/transonic-flow.ts`,
-  `src/grid/transonic-grid.ts`, the far-field boundary and the implicit
-  steps of `src/engine-cpu/euler2d.ts`), measured below; not on the drag
-  page, and not on the GPU engine.
-- **Date:** 2026-10-18
+  `src/grid/transonic-grid.ts` with H grids for sharp noses and C grids
+  for blunt ones, the far-field boundary and the implicit steps of
+  `src/engine-cpu/euler2d.ts`, Anderson acceleration in
+  `src/solver/anderson.ts`), measured below; not on the drag page, and
+  not on the GPU engine.
+- **Date:** 2026-10-18 and 19
 - **Inputs:** [0002](0002-architecture.md) section 11 (the range to serve
   is Mach 1 to 3), the measurements below, and the references in
   [docs/validation/sources.md](../validation/sources.md).
@@ -412,20 +414,29 @@ Mach 1.2 with 4 calibers of cylinder and the hemisphere at Mach 1.5 with
 2; and the total pressure on the stagnation streamline, which must be the
 normal shock's (the pitot pressure at the stagnation point).
 
-| Body, Mach         | r = 1     | r = 2     | r = 4     | Extrapolated | Fitted nj = 20 | nj = 40   |
-| ------------------ | --------- | --------- | --------- | ------------ | -------------- | --------- |
-| 2:1 ellipsoid, 1.2 | 0.3482049 | 0.3433539 | 0.3425969 | 0.3423446    | 0.3472957      | 0.3437625 |
-| hemisphere, 1.5    | 0.6994860 | 0.6885561 | 0.6863477 | 0.6856117    | 0.6904222      | 0.6872292 |
-| hemisphere, 1.2    | 0.5546180 | 0.5431759 | 0.5404303 | 0.5395151    | refused        |           |
+| Body, Mach         | r = 1     | r = 2     | r = 4     | Extrapolated | Fitted nj = 20 | nj = 40   | nj = 80   |
+| ------------------ | --------- | --------- | --------- | ------------ | -------------- | --------- | --------- |
+| 2:1 ellipsoid, 1.2 | 0.3482049 | 0.3433539 | 0.3425969 | 0.3423446    | 0.3472957      | 0.3437625 | 0.3429002 |
+| hemisphere, 1.5    | 0.6994860 | 0.6885561 | 0.6863477 | 0.6856117    | 0.6904222      | 0.6872292 |           |
+| hemisphere, 1.2    | 0.5546180 | 0.5431759 | 0.5404303 | 0.5395151    | refused        |           |           |
 
-(extrapolated at second order from r = 2 and 4; observed orders 2.68,
-2.31 and 2.06). The transonic families converge at about second order
-from above, as the fitted ones do; extrapolating the fitted pairs at
-second order gives 0.3425848 and 0.6861649, within 2.4e-4 (7e-4 of the
-value) and 5.5e-4 (8e-4) of the transonic extrapolations (nj = 80: see
-Open). The drags of r = 4 lie 2.5e-4 and 7.4e-4 above the transonic
-extrapolations (7e-4 and 1.1e-3 of the value), and 9.2e-4 (1.7e-3) on
-the hemisphere at Mach 1.2.
+(transonic extrapolated at second order from r = 2 and 4; observed orders
+2.68, 2.31 and 2.06). The transonic families converge at about second
+order from above, as the fitted ones do (on the ellipsoid at order 2.03,
+nj = 80 stopped with the drag settled, its remaining iterative change
+estimated at 2.8e-10, and the outflow supersonic, axial Mach number 1.14
+or more). Extrapolated at second order the fitted families give 0.3426128
+(ellipsoid, from nj = 40 and 80) and 0.6861649 (hemisphere, from nj = 20
+and 40): 2.7e-4 (7.8e-4 of the value) and 5.5e-4 (8.1e-4) above the
+transonic extrapolations, while the finest grids differ by 3.0e-4
+(8.8e-4) on the ellipsoid. The two solvers thus agree on blunt noses to
+about 8e-4 of the value, the transonic domain's value the lower, and on
+the ellipsoid the gap between the extrapolations does not close from the
+finest grids to the extrapolations; its cause is not known (the
+stagnation line below would push the transonic drag up, not down). The
+drags of r = 4 lie 2.5e-4 and 7.4e-4 above the transonic extrapolations
+(7e-4 and 1.1e-3 of the value), and 9.2e-4 (1.7e-3) on the hemisphere at
+Mach 1.2.
 
 The stagnation streamline: total pressure of the cells along the axis
 behind the bow shock, over the free stream's, against the normal shock's
@@ -587,10 +598,10 @@ on the CPU engine:
   containing the error. Ogive: r = 4 within 2.8e-4 of the method of
   characteristics, the family not yet asymptotic, and the fitted solver
   within 8.5e-4 (finest grids) and 4.5e-4 (extrapolations): about 1e-3
-  on r = 4. 2:1 ellipsoid: r = 4 within 7e-4 of its extrapolation, which
-  agrees with the fitted solver's within 7e-4: about 1e-3. Hemisphere:
-  second-order convergence but no reference, and the stagnation line's
-  open error. Far boundaries and cylinder: below 1e-4. The transonic
+  on r = 4. 2:1 ellipsoid: r = 4 within 7e-4 of its extrapolation,
+  which lies 7.8e-4 below the fitted solver's (nj = 20 to 80): about
+  1e-3. Hemisphere: second-order convergence but no reference, and the
+  stagnation line's open error. Far boundaries and cylinder: below 1e-4. The transonic
   domain and the supersonic fitted solver agree where both apply, within
   2.7e-5 on the cone and 1e-3 on the ogive and the ellipsoid: the two
   definitions meet at Mach 1.2.
@@ -668,7 +679,7 @@ grid unless stated:
   r = 4 on 100.6 radii (4 h) and r = 2 on 408.7 radii (3 h, to test that
   the far boundaries' correction holds on a finer grid); the ogive at
   Mach 1 on r = 2; the ogive's r = 4 at Mach 1.1
-  and 1.05; the fitted solver's nj = 80 on the 2:1 ellipsoid, the
+  and 1.05; the fitted solver's nj = 80 on the
   hemisphere at Mach 1.5 and the cone at Mach 1.1. The job scripts now
   save their state every 10 minutes and resume from it, so each survives
   the container's restarts.
