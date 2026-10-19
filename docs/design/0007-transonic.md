@@ -471,8 +471,13 @@ about second order where measured (Mach 1.2 and 1.5, above). At Mach 1
 the far boundaries' distance acts on the ogive as on the cone, by about
 the same amount (+1.50e-3 from 100.6 to 408.7 radii, against the cone's
 +1.38e-3), which is 8.7% of the ogive's much smaller drag; on the
-hemisphere it is -1.1e-4, 3e-4 of its drag. A third distance and finer
-grids at Mach 1 were not run for these two (see Open).
+hemisphere it is -1.1e-4, 3e-4 of its drag. With the ogive on a third
+distance (0.0182824 on 224.2 radii), the power law gives q = 1.06 and,
+for boundaries at infinity, 0.019109 (with the cone's q = 1.35 instead,
+0.018985): on 100.6 radii the ogive's drag is about 10% low, on 408.7
+radii 1.7% to 2.3% low, and on the base grid its Mach 1 drag is 0.0190
+within about 0.7%; its grid error at Mach 1 is not measured (r = 2: see
+Open).
 
 ### Near Mach 1: the slope of the drag
 
@@ -600,9 +605,10 @@ on the CPU engine:
 - **Mach 1.0.** Cone: 0.0932 within about 0.2% with the far boundaries
   extrapolated to infinity, on the assumption that the extrapolation
   measured on the base grid holds on finer ones; on 100.6 radii alone
-  1.8% low, on 408.7 radii about 0.3% low. Ogive: the far boundaries
-  move its drag by 8.7% from 100.6 to 408.7 radii, not yet extrapolated:
-  not established. Hemisphere: far boundaries 3e-4. The wind tunnel and
+  1.8% low, on 408.7 radii about 0.3% low. Ogive: on the base grid
+  0.0190 within about 0.7% after the same extrapolation (10% low on
+  100.6 radii, 2% on 408.7), its grid error not measured. Hemisphere: far
+  boundaries 3e-4, grid error not measured at Mach 1. The wind tunnel and
   slender-body theory confirm the cone's level to 5 to 10%, no better.
 
 So the evidence supports the transonic domain at Mach 1.2 to the
@@ -661,7 +667,7 @@ grid unless stated:
   procedure's band there; the ogive's r = 8 at Mach 1.2 (2 h); at Mach 1,
   r = 4 on 100.6 radii (4 h) and r = 2 on 408.7 radii (3 h, to test that
   the far boundaries' correction holds on a finer grid); the ogive at
-  Mach 1 on r = 2 and on a third distance; the ogive's r = 4 at Mach 1.1
+  Mach 1 on r = 2; the ogive's r = 4 at Mach 1.1
   and 1.05; the fitted solver's nj = 80 on the 2:1 ellipsoid, the
   hemisphere at Mach 1.5 and the cone at Mach 1.1. The job scripts now
   save their state every 10 minutes and resume from it, so each survives
