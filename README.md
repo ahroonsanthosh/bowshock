@@ -13,8 +13,13 @@ number with an honest uncertainty band.
 > axisymmetric) Euler solvers run on both the CPU and the GPU (WebGPU), with
 > their test suites and live demos, and the inviscid forebody wave drag of
 > sharp-nosed bodies and ellipsoid noses is computed with a measured error
-> band. The full
-> rocket solver (viscous flow, base and fins) does not exist yet, so
+> band. Skin friction, fin wave drag and base drag exist as libraries, each
+> measured against wind-tunnel or flight data
+> ([0007](docs/design/0007-skin-friction.md),
+> [0009](docs/design/0009-fin-wave-drag.md),
+> [0010](docs/design/0010-base-drag-and-total.md)), but they are not on the
+> drag page, and no total drag has yet passed its validation test (the
+> Basic Finner in free flight, [0008](docs/design/0008-total-drag.md)), so
 > bowshock gives no total drag coefficient. Nothing here should be used for
 > flight decisions yet. The plan is in
 > [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
@@ -160,10 +165,10 @@ them; the fitted-drag families are recorded in
   trailing edges and rounded leading edges have no method with a measured
   band, so bowshock refuses that configuration.
 
-Not yet: viscous flow in the solver, friction on the drag page, Von
-Karman (Haack) and power-series noses (their tips need grids being
-designed), Mach numbers below 1.2, fins and the base. Until those pass
-their own validation, bowshock reports no total drag coefficient.
+Not yet: viscous flow in the solver; friction, fins and the base on the
+drag page; Von Karman (Haack) and power-series noses (their tips need
+grids being designed); Mach numbers below 1.2. Until the total passes its
+validation test, bowshock reports no total drag coefficient.
 
 Limits: power off, zero angle of attack, no motor plume. When they
 exist, base drag will be the least certain component and transonic
