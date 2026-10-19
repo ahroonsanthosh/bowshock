@@ -31,7 +31,10 @@ as their authors wrote them.
   readings of TN 3819 fig. 35 (the fins-on-base factor: it and its band
   agree with 0008 section 3.4 within 0.015) and of the fig. 18 values read
   once (agreeing within 0.0013; the same reader as round 1, by another
-  method).
+  method); and `audit/round4/`, the second readings of the blunt-edge data
+  (TR 1109, RM A51J25, TN 3819 fig. 5, TN D-1056, TN 2960: every band
+  holds) and the Basic Finner's fin trailing-edge area, 0.32 cal^2, decided
+  from its measured mass properties without any drag value.
 - `overlays/d4014/`: the revision's overlays of its TN D-4014 readings.
   Several scripts read page images rendered from the reports, which are
   not copied here (see below).

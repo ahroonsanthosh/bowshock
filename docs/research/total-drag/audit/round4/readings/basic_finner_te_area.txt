@@ -1,0 +1,9 @@
+A constant spanwise thickness: TE base 0.32 cal^2, fins 33.9 g, nose density 17.64 g/cc, CG 5.528 cal, Ix 1.911 kg cm^2, Iy 98.33 kg cm^2
+B tapered to zero at the tip: TE base 0.16 cal^2, fins 17.0 g, nose density 18.49 g/cc, CG 5.447 cal, Ix 1.706 kg cm^2, Iy 97.32 kg cm^2
+measured: Ix 1.92 (table I), 1.91 to 1.93 (table II); Iy 97.85 (table I), 97.7 to 98.2 (table II); CG 5.50 (I), 5.50 to 5.54 (II)
+A: upper bound on Ix for any solid body of uniform-in-radius density (steel fins): 2.070 kg cm^2
+B: upper bound on Ix for any solid body of uniform-in-radius density (steel fins): 1.873 kg cm^2
+sensitivity A brass body: nose 12.73 g/cc, CG 5.796, Ix 1.955, Iy 91.31
+sensitivity B brass body: nose 13.57 g/cc, CG 5.715, Ix 1.750, Iy 90.92
+sensitivity B tungsten fins (19.3): nose 17.26 g/cc, CG 5.565, Ix 1.856, Iy 98.66
+sensitivity A aluminium fins (2.8): nose 18.73 g/cc, CG 5.424, Ix 1.713, Iy 97.03

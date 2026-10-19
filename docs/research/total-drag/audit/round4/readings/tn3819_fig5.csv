@@ -1,0 +1,31 @@
+# Second (independent) reading, NACA TN 3819 (Love 1957; NTRS 19930084517) fig. 5, PDF p. 36, 300 dpi: two-dimensional base pressure coefficient P_B against M.
+# Legend (work/v5leg.png): experimental compilations Chapman (long dash, short dash), ref. 25 (hatch strokes); present estimates from Pr (solid), from Pr + 0.06 (dashed).
+# Calibration (scripts/p5.py, sheared grid): verticals M 1.0 to 4.0 every 0.2 (16 lines, x 459 to 2019 top, 457 to 2017 bottom);
+# horizontals P_B -0.80 to 0.00 every 0.04 (21 lines, y 485.5 to 2562 left, 488.5 to 2565.5 right). 1 px = 0.0019 in M, 0.00038 in P_B.
+# Method: dense column scan every 2 px off gridlines (scripts/raw5.py -> work/raw5_all.txt), line following by linear prediction (scripts/follow5.py),
+# line style identified on 4x zooms with a P_B ruler (work/z5_*.png). Solid line: 657 points M 1.02 to 3.99, local fit sd 0.0001 to 0.0002.
+# Reading error: solid +-0.0015; dashed and Chapman +-0.003 above M 2.2; below M 2.0 the two run within 0.005 of each other and are not separated (pair given).
+# The fourth line near M 4 (P_B -0.090 at 3.99) is the vacuum line -1/(0.7 M^2), not used.
+M,PB_solid_Pr,PB_dashed_Pr_plus_0.06,PB_Chapman,note
+1.10,-0.4269,,,
+1.20,-0.3956,-0.418,-0.418,dashed and Chapman merged
+1.30,-0.3633,-0.389,-0.389,merged
+1.40,-0.3336,-0.361,-0.361,merged
+1.50,-0.3075,-0.3355,-0.3408,"pair -0.3355 and -0.3408 at M 1.50, order not resolved"
+1.60,-0.2834,-0.312,-0.312,merged
+1.70,-0.2621,-0.289,-0.289,merged
+1.80,-0.2423,-0.267,-0.267,merged
+1.90,-0.2240,-0.247,-0.247,merged
+2.00,-0.2076,-0.230,-0.234,"pair -0.230 and -0.234, order not resolved"
+2.20,-0.1798,-0.1943,,
+2.40,-0.1570,-0.1663,-0.1743,
+2.50,-0.1475,-0.1556,-0.1639,
+2.60,-0.1386,-0.1464,-0.1547,
+2.80,-0.1221,-0.1281,-0.1367,
+3.00,-0.1074,-0.1124,,
+3.20,-0.0930,-0.1001,-0.1080,
+3.40,-0.0816,-0.0897,-0.0965,
+3.50,-0.0766,-0.0853,-0.0915,
+3.60,-0.0720,,-0.0869,
+3.80,-0.0636,-0.0737,,
+3.95,-0.0586,,-0.0742,
