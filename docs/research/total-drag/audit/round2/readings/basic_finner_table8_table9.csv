@@ -1,0 +1,39 @@
+# Second (independent) transcription, DREV TM 9703 (DTIC ADA636861, archive.org copy pdfs/ia/DTIC_ADA636861.pdf), read from page images at 150 dpi
+# Table VIII (PDF pp. 44-47) single 6DOF fits; Table V (PDF p. 41) Reynolds number on length; CX = zero-yaw axial force coefficient Cxo (nomenclature, PDF p. 12), on cross-section area
+# DBSQ = mean squared yaw (deg^2), ABARM = mean angle of attack (deg); CX2 marked (*) = fixed, not fitted, in every single fit; CX probable error printed "( 0.%)" (under 0.5%) except where noted
+table,shots,mach,DBSQ_deg2,CX0,ABARM_deg,CX2,CX0_prob_err,Re_length,note
+VIII,DA95022010,1.056,0.4,0.868,1.3,6.500,0%,6.99e6,
+VIII,DA95022219,1.058,2.0,0.868,2.7,6.500,0%,7.04e6,
+VIII,DA95022230,1.116,0.1,0.854,0.7,6.500,0%,7.42e6,
+VIII,DA95030613,1.254,2.3,0.760,2.2,6.500,0%,8.36e6,
+VIII,DA95022009,1.332,0.8,0.701,2.0,6.500,0%,8.89e6,
+VIII,DA95030622,1.377,15.8,0.708,8.9,6.500,0%,9.20e6,"DA22: excluded from multiple fits (text p. 10); large yaw"
+VIII,DA95021318,1.799,0.6,0.594,1.6,4.300,0%,11.9e6,
+VIII,DA95021529,1.846,0.6,0.598,1.5,4.300,0%,12.4e6,
+VIII,DA95021308,1.850,1.0,0.567,2.0,4.300,0%,12.3e6,
+VIII,DA95021328,2.348,0.4,0.500,1.1,3.300,0%,15.6e6,
+VIII,DA95020907,2.364,0.5,0.478,1.4,3.300,0%,15.5e6,
+VIII,DA95021317,2.414,2.1,0.473,2.6,3.300,0%,16.1e6,
+VIII,DA95020927,2.663,3.7,0.446,3.4,2.900,0%,17.4e6,
+VIII,DA95020906,2.741,2.1,0.400,2.5,2.900,0%,18.0e6,"10% below neighbours at M 2.66 and 2.75"
+VIII,DA95020916,2.749,0.0,0.452,0.3,2.900,0%,18.0e6,
+VIII,DA95030603,2.969,0.1,0.385,0.6,2.500,0%,19.8e6,
+VIII,DA95022205,2.970,1.7,0.376,2.3,2.500,0%,19.7e6,
+VIII,DA95022215,3.312,3.0,0.350,2.9,2.500,0%,22.0e6,
+VIII,DA95022726,3.338,0.4,0.376,1.0,2.500,0%,22.7e6,
+VIII,DA95022702,3.682,8.5,0.310,4.9,2.000,0%,25.0e6,
+VIII,DA95030121,3.745,17.6,0.309,7.3,2.000,0%,25.1e6,
+VIII,DA95022712,3.775,5.0,0.308,3.7,2.000,0%,25.6e6,
+VIII,DA95031523,4.127,2.7,0.285,2.5,2.000,0%,27.6e6,
+VIII,DA95030101,4.425,46.6,0.268,11.2,1.766,4%,29.6e6,"DA01: resonance, slight fin ablation; CX2 fitted (50%); excluded from multiple fits"
+VIII,DA95030111,4.473,17.7,0.257,7.0,2.000,0%,29.9e6,"DA11: indications of slight fin ablation (text p. 6)"
+# Table IX (PDF pp. 48-49) multiple fits; CXM = dCxo/dM. Text p. 10: "Unique Cxo were solved for the multiple-shot groups at Mach number of 1.832, 2.375, 2.718 and 3.147";
+# for those four groups the CX entry carries (*) and is not a common fitted value (it is close to the mean of the single fits).
+IX,"DA95022230 DA95022010 DA95022219",1.077,0.9,0.863,2.7,6.500,0%,,CXM -0.24 (3%)
+IX,"DA95022009 DA95030613",1.293,1.5,0.731,2.1,6.500,0%,,CXM -0.75 (1%)
+IX,"DA95021318 DA95021529 DA95021308",1.832,0.7,0.585,2.0,4.300,(*),,"CXM -0.29 (*); unique Cxo per shot; single-fit mean 0.586"
+IX,"DA95021328 DA95020907 DA95021317",2.375,1.0,0.484,2.6,3.300,(*),,"CXM -0.16 (*); unique Cxo per shot; single-fit mean 0.484"
+IX,"DA95020916 DA95020906 DA95020927",2.718,1.9,0.435,3.3,2.900,(*),,"CXM -0.15 (*); unique Cxo per shot; single-fit mean 0.433"
+IX,"DA95030603 DA95022726 DA95022205 DA95022215",3.147,1.3,0.373,2.9,2.500,(*),,"CXM -0.04 (*); unique Cxo per shot; single-fit mean 0.372"
+IX,"DA95022702 DA95022712 DA95030121",3.734,10.1,0.309,7.2,2.129 (9%),0%,,CXM -0.02 (33%)
+IX,"DA95031523 DA95030111",4.300,10.2,0.271,7.0,2.000,0%,,CXM -0.08 (3%)

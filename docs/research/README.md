@@ -14,8 +14,13 @@ as their authors wrote them.
 - `draft.md`: a draft design record for total drag (skin friction, base
   drag, fins, and the validation data for the total), titled 0008, the
   number it will take once accepted. **Status: revised after an
-  independent audit (`audit/audit.md`), whose corrections it adopts; a
-  check of the revision is in progress.** The audit confirmed the
+  independent audit (`audit/audit.md`), whose corrections it adopts. A
+  second audit of the revision (`audit/round2/audit_round2.md`) found it
+  fit to become a design record (status draft) after seven corrections,
+  three of which narrow the claim (the Basic Finner gate covers Mach 1.8
+  to 3.0, not 1.5 to 3; the fins-on-base increment the claim needs has no
+  derived band above Mach 2; a failed gate must refuse, not widen a
+  band); those corrections are in progress.** The audit confirmed the
   scripts and nearly all citations, and found misread curves of NACA TN
   3819 fig. 18, a calibration error and an unstated symbol convention in
   NASA TN D-4014 figs. 5 and 6, and three conclusions their sources did not
