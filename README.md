@@ -9,6 +9,9 @@ professional CFD software. The aim: open the page, describe or import your
 rocket, watch the shock waves form, and export drag coefficient versus Mach
 number with an honest uncertainty band.
 
+**Try it in your browser: <https://ahroonsanthosh.github.io/bowshock/>**
+(needs WebGPU: a recent Chrome or Edge, for example).
+
 > **Status: early development.** Verified 1D and 2D (planar and
 > axisymmetric) Euler solvers run on both the CPU and the GPU (WebGPU), with
 > their test suites and live demos, and the inviscid forebody wave drag of
@@ -179,6 +182,9 @@ component bands are the fins' own drag (measured over model 1.01 to 1.59)
 and the base (0.82 to 1.08); transonic results will carry wider bands.
 
 ## Try it
+
+Online at <https://ahroonsanthosh.github.io/bowshock/>, built from this
+branch on every push. Or locally:
 
 ```sh
 npm ci
