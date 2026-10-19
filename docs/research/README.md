@@ -40,6 +40,16 @@ The source reports themselves (NACA and NASA, from the NASA Technical
 Reports Server) are not copied here; each file cites its report by its NTRS
 number.
 
+## `fin-wave-drag/`: measurements behind 0009
+
+The runners and outputs of the measurements quoted in
+[0009](../design/0009-fin-wave-drag.md) (the fin wave-drag library,
+`src/fins/`) that are not committed tests: the research's and the audit's
+fin scripts re-run, a resolution study of the audit's area-rule code, the
+throwaway vitest runs (quadrature convergence, the strip-theory table, the
+planar Euler sections), and `compare.py`, which derives the summaries the
+record quotes. Its README says how to re-run each.
+
 ## `subtip/`: noses whose tip flow is axially subsonic
 
 The measurements behind "What serving these tips would need" in
