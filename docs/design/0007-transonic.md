@@ -201,7 +201,12 @@ the explicit scheme's drag within 1e-12 on a Mach 2 cone,
   drag has settled (`SettlingValue`, noise 1e-7 of the value: the change
   over a check and what the measured rate of convergence predicts for the
   steps not taken both below 1e-7 of the drag, on two checks running;
-  checks every 50 steps times the refinement).
+  checks every 50 steps times the refinement), or, for the runs from
+  2026-10-19 on, once the drag's remaining change estimated
+  geometrically from its last three values is below 1e-9 of it on two
+  checks running (the rule allowed for the reference fits; the test that
+  stopped and the estimate are recorded). A run saves its state every 10
+  minutes and resumes from it after a restart.
 
 What was tried and did not help is listed at the end.
 
@@ -379,31 +384,35 @@ gives the inviscid drag: 0.0433392, 0.0433372, 0.0433367 and 0.0433365 on
 starting line at 5e-4 and 2e-3 of the nose length instead of 1e-3 (640
 intervals): 0.0433365, converged to about 2e-7.
 
-| r   | Cells  | Drag      | vs characteristics | Steps | CPU time |
-| --- | ------ | --------- | ------------------ | ----- | -------- |
-| 1   | 3,810  | 0.0437833 | +1.03e-2           | 750   | 9 s      |
-| 2   | 15,240 | 0.0433724 | +8.3e-4            | 1,300 | 64 s     |
-| 4   | 60,960 | 0.0433244 | -2.8e-4            | 2,200 | 480 s    |
+| r   | Cells   | Drag      | vs characteristics | Steps  | CPU time |
+| --- | ------- | --------- | ------------------ | ------ | -------- |
+| 1   | 3,810   | 0.0437833 | +1.03e-2           | 750    | 9 s      |
+| 2   | 15,240  | 0.0433724 | +8.3e-4            | 1,300  | 64 s     |
+| 4   | 60,960  | 0.0433244 | -2.8e-4            | 2,200  | 480 s    |
+| 8   | 243,840 | 0.0433268 | -2.2e-4            | 13,600 | 9,390 s  |
 
-The changes (-4.11e-4, -4.80e-5) fall by 8.6, an observed order of 3.1,
-above the second order of the scheme: not yet in the asymptotic range.
-The finest grid lies 1.2e-5 below the reference; extrapolated at second
-order the drag would be 0.0433084, 6.5e-4 below it, so on this evidence
-the grid error at r = 4 is not resolved better than a few 1e-4 (r = 8:
-see Open).
+The changes (-4.11e-4, -4.80e-5, +2.32e-6) change sign at the last
+step: oscillatory, the procedure's band the largest of the last changes,
+4.8e-5 (1.1e-3 of the value), which contains the finest grid's error
+(9.7e-6). The finest grid lies 2.2e-4 of the value below the reference.
+(r = 8 took 13,600 steps because the settling test, after a transient
+whose changes grew before they fell, waited with a rate near 1 while the
+drag stayed fixed to 1e-12 for 8,000 steps; the driver now also stops on
+the geometric estimate, see "Solving to a steady state".)
 
 The fitted solver on the same ogive (1 caliber of cylinder): 0.0439700,
 0.0434608 and 0.0433612 on nj = 20, 40 and 80 (+1.46e-2, +2.87e-3 and
 +5.7e-4 of the reference; 12,826 iterations and 2,481 s of CPU on nj =
 80), changes falling by 5.1 (order 2.35), extrapolated at second order
-0.0433280, 2.0e-4 below the reference. The two solvers' finest grids
-differ by 3.7e-5 (8.5e-4 of the value), their extrapolations by 2.0e-5
-(4.5e-4), and both extrapolations lie below the characteristics' value,
-by 2.0e-4 and 6.5e-4 of it. Either the reference is high by about 2e-4
-of its value at this Mach number (its tests reach down to Mach 1.5
-only), or both families are still short of their asymptotic range; the
-evidence does not separate the two. At the meeting point the solvers
-agree to within 1e-3 of the value on the ogive.
+0.0433280, 2.0e-4 below the reference. The transonic r = 8 and the
+fitted nj = 80 differ by 3.4e-5 (7.9e-4 of the value); the transonic r =
+8 and the fitted extrapolation by 1.2e-6 (3e-5), and both lie about 2e-4
+of the value below the characteristics' value. Either that reference is
+high by about 2e-4 at this Mach number (its tests reach down to Mach 1.5
+only), or both families still carry about that much; the evidence does
+not separate the two. At the meeting point the solvers agree on the
+ogive to 3e-5 (transonic finest against fitted extrapolation) to 8e-4
+(finest grids).
 
 ### Blunt noses: against the fitted solver and the pitot pressure
 
