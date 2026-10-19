@@ -105,7 +105,8 @@ reflected wave can land no nearer than x/c = 1.32, at t/c 0.05 and Mach
 1.2; t/c 0.08 at Mach 1.2 is detached, as the research found;
 `runs/claims.test.ts`). Hexagons with short bevels are mostly refused: the
 bevel angle, not t/c, sets the leading-edge shock. The size of the
-neglected reflections is measured for one case in section 2.4.
+neglected reflections was looked at on one case in section 2.4 (under about
+half a percent there if the grid convergence is monotone; sign unresolved).
 
 ### 2.2 Verification
 
@@ -157,19 +158,24 @@ Every solve ran until the density residual was below 1e-11 of its start
 and the drag changed by less than 1e-11 between checks; one solve at a
 time (`runs/euler.test.ts`, summary by `compare.py`).
 
-| Section                                                                 | 60 x 28 | 120 x 56 | 240 x 112 | Extrapolated: observed order, order 1, order 2 |
-| ----------------------------------------------------------------------- | ------- | -------- | --------- | ---------------------------------------------- |
-| Double wedge, t/c 0.08, Mach 1.5 (exact; Ackeret -0.950%)               | -0.768% | -0.337%  | -0.156%   | -0.025% (1.25), +0.025%, -0.095%               |
-| Hexagon, 15% bevels, t/c 0.08, Mach 2 (refused, R 0.70; Ackeret -3.28%) | -3.934% | -1.704%  | -0.983%   | -0.638% (1.63), -0.261%, -0.742%               |
+| Section                                                                 | 60 x 28 | 120 x 56 | 240 x 112 | 480 x 224 | Extrapolated from the last three: observed order, order 1, order 2 |
+| ----------------------------------------------------------------------- | ------- | -------- | --------- | --------- | ------------------------------------------------------------------ |
+| Double wedge, t/c 0.08, Mach 1.5 (exact; Ackeret -0.950%)               | -0.768% | -0.337%  | -0.156%   | not run   | -0.025% (1.25), +0.025%, -0.095%                                   |
+| Hexagon, 15% bevels, t/c 0.08, Mach 2 (refused, R 0.70; Ackeret -3.28%) | -3.934% | -1.704%  | -0.983%   | -0.528%   | +0.245% (0.67), -0.074%, -0.377%                                   |
 
 Differences are from the shock-expansion value (for the hexagon, with the
 reflections neglected). On the double wedge the Euler drag converges to
 shock-expansion theory, within 0.1% whatever order is assumed and 0.95%
 away from Ackeret's: the engine and the section method agree where the
-method claims to be exact. On the hexagon the extrapolations lie 0.26% to
-0.74% below the shock-expansion value: the reflected waves appear to lower
-the drag by a few tenths of a percent there, but three grids do not settle
-the order of convergence, so this is an indication, not a band.
+method claims to be exact. On the hexagon the observed order falls from
+1.63 (the first three grids) to 0.67 (the last three): the solutions are
+not yet in their asymptotic range, the finest is still changing by 0.45%
+per halving, and the extrapolations span 0.38% below to 0.25% above the
+shock-expansion value. So on this section the neglected reflections
+change the drag by less than about half a percent if the convergence is
+monotone at orders between 0.67 and 2, and their sign is not resolved. That
+is not a band; the hexagons stay refused. (The double wedge's fourth grid
+was not run: under the machine's load the hexagon's took 28 minutes.)
 
 ## 3. The planform in three dimensions
 
@@ -353,7 +359,7 @@ bound.
   measured, and strip theory errs most there (section 4).
 - **Sections the shock-expansion method refuses**: hexagons with short
   bevels (section 2.1), concave sections. The neglected reflections were
-  measured for one case only (section 2.4).
+  looked at on one case only, without resolving them (section 2.4).
 - **Friction.** `src/friction` gives flat-plate friction (van Driest II,
   laminar, transition); applying it to fins (as plates of local chord, with
   the trip and the root's boundary layer) is not done here.
@@ -367,7 +373,8 @@ bound.
   inviscid solution of a fin on a wall (the plan's 3D sector, M10 and M11)
   or against fin data with the base effects separated.
 - The size of the reflected waves for the refused hexagons over the range
-  of bevels and Mach numbers, by planar Euler on nested grids or a
+  of bevels and Mach numbers, by planar Euler on grids finer than 480 x 224
+  (four did not reach the asymptotic range on 15% bevels) or a
   characteristics solution, before any of them is served.
 - TN D-4014 fig. 4 (the ARCAS chamber force), to be digitised, as the audit
   asked, before the ARCAS increments are used to set a fin band.
