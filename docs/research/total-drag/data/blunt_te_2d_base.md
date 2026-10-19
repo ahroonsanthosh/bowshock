@@ -362,12 +362,26 @@ Where a fin of c/h 12.5 at Re_c 1.19e6 to 1.98e6 sits on these correlations
 - These are geometry and Reynolds number only, the Basic Finner's as 0010
   sections 4.1 and 4.3 state them; no drag data were used.
 
-## 7. Second readings pending
+## 7. Second readings (round 4)
 
-- TR 1109 figs. 29(a) and (b), and 8.
-- RM A51J25 fig. 7.
-- TN 3819 fig. 5.
-- TN D-1056 table II (typed once from the image).
+Every item this note lists was read a second time by an independent reader
+(`../audit/round4/audit_round4.md`, readings in `../audit/round4/readings/`):
+TR 1109 figs. 29(a) and (b) and 8, RM A51J25 fig. 7, TN 3819 fig. 5 and TN
+D-1056 table II (retyped in full). This note's first readings are kept as
+read. What the second readings change (0010 section 8.3, and
+`src/base/blunt-te-2d.ts`, which holds both):
 
-The fig. 8 and fig. 7 readings are by eye. The column readings are scripted
-and can be rerun.
+- the fig. 8 point at M 3.1, X 2.0, 0.275 does not exist (a filled square
+  at 0.291 and a circle at 0.300, both above the curve); it set no band end;
+- the first reading of fig. 8's M 3.1 panel is about 0.007 low, symbols and
+  curve alike, so the band hardly moves;
+- two RM A51J25 fig. 7 symbol abscissas were read low: the diamond near M'
+  1.95 is at 1.961, the Ames square at 1.492; the curve below M' 1.50 lies
+  under the PARD symbols and cannot be checked;
+- the X-15 set of section 5 has 18 power-off rows at M 1.52 to 3.24, not 19;
+- section 6's band: the envelope of both readings is 0.933 to 1.204, and
+  the band adopted is **0.93 to 1.21**, rounded outward (0.94 to 1.07 below
+  M 2.5 on the second reading);
+- TR 1109 fig. 29(a) at M 3.1 lies within 4.0% of its lowest-abscissa
+  value up to X 1.0 when read from X 0.45, where its curves start (1.8%
+  from X 0.75 on the first reading).

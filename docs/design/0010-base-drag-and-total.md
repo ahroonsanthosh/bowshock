@@ -708,7 +708,7 @@ claim class opens, and no more:
   validation**, on their own; they are tested only through this total.
 - Nothing is on the drag page; showing a total there is a separate step.
 
-## 8. Corrections proposed to 0008
+## 8. Corrections to 0008
 
 ### 8.1 After the first run
 
@@ -730,6 +730,11 @@ The eight corrections listed after the first run were made in 0008 at
 7. Transition's effect on base pressure carried by no band.
 8. Small items (the base band's ends, the M 1.799 shot, the single-read
    fig. 18 rows).
+
+The eleven corrections of sections 8.2 and 8.3 are made in 0008 (its
+"Changes after the second Basic Finner gate run"), with the second readings
+recorded in the two data notes (`blunt_te_2d_base.md`, `le_bluntness.md`,
+section 7 of each).
 
 ### 8.2 With the fin-edge terms
 
@@ -784,9 +789,6 @@ The eight corrections listed after the first run were made in 0008 at
 - A second hold-out for the Basic Finner's class: this one is used, so
   any change to the terms it tested is "estimated on the Basic Finner, not
   validated" until another set tests it.
-- The round-4 files (`audit_round4.md`, `readings/`, `scripts/`) are to be
-  kept with rounds 2 and 3 in `docs/research/total-drag/audit/`; the check
-  of section 5 read them where the reader delivered them.
 - RM A51J25 fig. 7's curve below M' 1.50 (read once; under the PARD
   symbols, not checkable); the band's domain starts at M 1.5.
 - The Basic Finner report's refs. 3 to 5 (BRL Reports 934 and 799, BuOrd
