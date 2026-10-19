@@ -730,9 +730,9 @@ on the CPU engine:
   within the noise: about 2e-3 on r = 4, if the first order holds (the
   band needs r = 8). Ogive and hemisphere: r = 1 and 2 only.
 - **Mach 1.0.** Cone: 0.0932 within about 0.2% with the far boundaries
-  extrapolated to infinity, on the assumption that the extrapolation
-  measured on the base grid holds on finer ones; on 100.6 radii alone
-  1.8% low, on 408.7 radii about 0.3% low. Ogive: on the base grid
+  extrapolated to infinity (the correction measured on the base grid
+  holds on r = 2 within 6e-6; the grid's order beyond r = 2 waits for r =
+  4); on 100.6 radii alone 1.8% low, on 408.7 radii about 0.3% low. Ogive: on the base grid
   0.0190 within about 0.7% after the same extrapolation (10% low on
   100.6 radii, 2% on 408.7), its grid error not measured. Hemisphere: far
   boundaries 3e-4, grid error not measured at Mach 1. The wind tunnel and
