@@ -24,11 +24,12 @@ Every number below is asserted by a committed test named with it, or
 printed by a run kept in
 [`docs/research/base-and-total/`](../research/base-and-total/README.md).
 
-**Result in one line.** Pending: the second gate run (section 4.2), with
-the independent reader's report applied (sections 4.1 and 5). The first
-run was refused at all 11 shots for the two fin-edge terms (section 6);
-both are now implemented, with the choices of section 5 fixed before the
-second run.
+**Result in one line.** The Basic Finner gate passes at all 11 shots
+(second run, section 4.2): residuals -7.7% to +4.5% of the modelled total
+(mean -1.9%; -6.5% at the two shots at M 2.97), inside tolerances of
+-19.5% to -26.2% and +26.5% to +31.4%. The fin-edge terms were implemented
+with the choices of section 5, fixed before the run; the first run was
+refused for their absence (section 6).
 
 ## 1. B3: base drag (`src/base/`)
 
@@ -294,10 +295,98 @@ configuration (0008 section 6.1).
 
 ### 4.2 The second run
 
-**Pending.** The independent reader's report (round 4: the trailing-edge
-area and the second readings of the edge data) is applied in sections 4.1
-and 5. The run is made once, after this is written, and reported here as
-it comes out, pass or fail.
+Made once, on 2026-10-19, after sections 4.1 and 5 were written and
+committed with the reader's report applied (commit f4791ad), with the
+runner kept as
+[`runs/gate-second-run.test.ts`](../research/base-and-total/README.md) and
+its output `runs/gate-second-run.out`; `tests/validation/basic-finner.test.ts`
+holds every value below. Reported as it came out; nothing was changed
+after it.
+
+**Verdict: pass.** Every one of the 11 gated shots lies inside its
+tolerance.
+
+| Shot       | M     | CX0   | Modelled C_D (model-form band) | Residual | Tolerance (high end without the wall) | Verdict |
+| ---------- | ----- | ----- | ------------------------------ | -------- | ------------------------------------- | ------- |
+| DA95021318 | 1.799 | 0.594 | 0.6123 (0.5311 to 0.7261)      | -3.0%    | -24.2% to +26.5% (+24.0%)             | pass    |
+| DA95021529 | 1.846 | 0.598 | 0.5955 (0.5181 to 0.7053)      | +0.4%    | -23.8% to +26.7% (+24.0%)             | pass    |
+| DA95021308 | 1.850 | 0.567 | 0.5944 (0.5172 to 0.7039)      | -4.6%    | -23.8% to +26.6% (+23.9%)             | pass    |
+| DA95021328 | 2.348 | 0.500 | 0.4846 (0.4250 to 0.5720)      | +3.2%    | -21.3% to +29.7% (+25.5%)             | pass    |
+| DA95020907 | 2.364 | 0.478 | 0.4824 (0.4234 to 0.5690)      | -0.9%    | -21.3% to +29.6% (+25.3%)             | pass    |
+| DA95021317 | 2.414 | 0.473 | 0.4745 (0.4174 to 0.5587)      | -0.3%    | -21.0% to +29.6% (+25.2%)             | pass    |
+| DA95020927 | 2.663 | 0.446 | 0.4428 (0.3892 to 0.5210)      | +0.7%    | -26.2% to +31.2% (+26.1%)             | pass    |
+| DA95020906 | 2.741 | 0.400 | 0.4332 (0.3808 to 0.5097)      | -7.7%    | -26.1% to +31.4% (+26.1%)             | pass    |
+| DA95020916 | 2.749 | 0.452 | 0.4323 (0.3800 to 0.5086)      | +4.5%    | -26.1% to +31.4% (+26.1%)             | pass    |
+| DA95030603 | 2.969 | 0.385 | 0.4072 (0.3580 to 0.4786)      | -5.4%    | -19.5% to +28.6% (+22.7%)             | pass    |
+| DA95022205 | 2.970 | 0.376 | 0.4071 (0.3579 to 0.4786)      | -7.6%    | -19.5% to +28.6% (+22.7%)             | pass    |
+
+The residual is CX0 / modelled - 1. The tolerance is section 4.1's: the
+model-form band (-12.0% to -13.3% and +17.5% to +18.6% of the modelled
+total), the input bands (transition on friction -0.0187 to -0.0301 in
+C_D; the trailing edges' laminar band, from -0.0066 to +0.0163 at M 2.97
+to -0.0165 to +0.0207 at M 1.80; the wall at the air temperature, +0.0155
+to +0.0241) and the cluster's shot spread.
+
+Per cluster:
+
+| Cluster        | Shots | Mean residual | Range          | Standard deviation | CX0 spread about its mean |
+| -------------- | ----- | ------------- | -------------- | ------------------ | ------------------------- |
+| M 1.80 to 1.85 | 3     | -2.4%         | -4.6% to +0.4% | 2.6%               | -3.3% to +2.0%            |
+| M 2.35 to 2.41 | 3     | +0.7%         | -0.9% to +3.2% | 2.2%               | -2.2% to +3.4%            |
+| M 2.66 to 2.75 | 3     | -0.8%         | -7.7% to +4.5% | 6.3%               | -7.6% to +4.5%            |
+| M 2.97         | 2     | -6.5%         | -7.6% to -5.4% | 1.6%               | -1.2% to +1.2%            |
+
+Over the 11 shots the mean residual is -1.9%.
+
+The components (C_D on the body's cross-section):
+
+| Shot       | M     | Nose wave drag | Body friction | Fin friction | Fin leading edges | Fin wave drag | Body base | Fin trailing-edge base |
+| ---------- | ----- | -------------- | ------------- | ------------ | ----------------- | ------------- | --------- | ---------------------- |
+| DA95021318 | 1.799 | 0.1105         | 0.0804        | 0.0360       | 0.0439            | 0.0165        | 0.2177    | 0.1072                 |
+| DA95021529 | 1.846 | 0.1090         | 0.0791        | 0.0355       | 0.0442            | 0.0160        | 0.2085    | 0.1033                 |
+| DA95021308 | 1.850 | 0.1088         | 0.0792        | 0.0355       | 0.0442            | 0.0160        | 0.2077    | 0.1030                 |
+| DA95021328 | 2.348 | 0.0968         | 0.0688        | 0.0309       | 0.0463            | 0.0121        | 0.1554    | 0.0742                 |
+| DA95020907 | 2.364 | 0.0965         | 0.0686        | 0.0308       | 0.0464            | 0.0121        | 0.1545    | 0.0735                 |
+| DA95021317 | 2.414 | 0.0956         | 0.0675        | 0.0303       | 0.0465            | 0.0118        | 0.1516    | 0.0712                 |
+| DA95020927 | 2.663 | 0.0917         | 0.0632        | 0.0285       | 0.0471            | 0.0106        | 0.1408    | 0.0609                 |
+| DA95020906 | 2.741 | 0.0906         | 0.0618        | 0.0278       | 0.0473            | 0.0103        | 0.1373    | 0.0581                 |
+| DA95020916 | 2.749 | 0.0905         | 0.0617        | 0.0278       | 0.0473            | 0.0103        | 0.1369    | 0.0578                 |
+| DA95030603 | 2.969 | 0.0878         | 0.0580        | 0.0261       | 0.0476            | 0.0095        | 0.1272    | 0.0508                 |
+| DA95022205 | 2.970 | 0.0878         | 0.0580        | 0.0262       | 0.0476            | 0.0095        | 0.1272    | 0.0508                 |
+
+As shares of the modelled total: the body base 31% to 36%, the nose 18%
+to 22%, the fins' trailing-edge base 12% to 18%, body friction 13% to 14%,
+the leading edges 7% to 12%, fin friction 6%, fin wave drag 2% to 3%. The
+two fin-edge terms, both labelled analogies, carry 24% to 25% of the total,
+and the body base carries the fins-on-base factor, itself an analogy
+from circular-arc fins. The leading edges are labelled "extrapolated in
+Reynolds number" at the six shots at M 1.80 to 2.41 and covered by RM
+A55H31 at the five at M 2.66 to 2.97 (section 5.2). The trailing edges'
+laminar band is flagged as extrapolated at the eight shots above M 2.3
+(section 5.1). The five shots at M 1.06 to 1.33 are refused (the leading
+edges below M 1.49, the base below M 1.5, the fin sections' detached
+shocks below M 1.2), as 0008 has them: reported, not gated.
+
+**What the result says, and what it does not.**
+
+- Every residual, -7.7% to +4.5%, lies inside the model-form band alone,
+  before the input bands and the shot spread are added.
+- The tolerance is wide, -19.5% to -26.2% and +26.5% to +31.4%. 0008
+  section 6.3 warns that a pass at such a width says little by itself;
+  the residuals are the finding.
+- At M 1.80 to 2.75 the cluster means lie within 2.4% of zero, and each
+  cluster's residuals spread about as its CX0 does (the model changes by
+  at most 3.0% within a cluster, so the residuals' spread is mostly the
+  data's).
+- At M 2.97 both shots lie below the model, by 5.4% and 7.6% (mean
+  -6.5%), beyond that cluster's own spread of +-1.2%. That is a systematic
+  offset inside the tolerance, which 0008 section 6.3 counts as a finding.
+  Two shots cannot separate it from scatter of the size seen at M 2.74
+  (-7.7%). Nothing was changed for it: the configuration is not retuned
+  on its own hold-out (0008 section 6.1).
+- The Basic Finner is now used. Any later change to the terms it tested,
+  or any band checked against these residuals, is "estimated on the Basic
+  Finner, not validated", and needs another hold-out (0008 section 6.4).
 
 ## 5. The fin-edge terms: the choices made before the second run
 
@@ -587,14 +676,37 @@ and the configuration then has no hold-out.
 
 ## 7. What may and may not be claimed
 
-Pending the second run (section 4.2); restated once it is made. Until
-then, as after the first run:
+The gate has passed at every shot (section 4.2), so 0008 section 6.4's
+claim class opens, and no more:
 
-- B3 implements 0008 section 3, with the fins' trailing-edge base now
-  included (section 5.1), and B4's rounded-edge term exists (section 5.2):
-  correlations and analogies with bands estimated on component data,
-  **band estimation, not validation**, tested only through a total.
-- No total Cd may be claimed for any configuration until a gate passes.
+- **May be claimed:** total zero-incidence, power-off C_D at **Mach 1.8 to
+  3.0** for the Basic Finner's class (a sharp-nosed cylindrical-afterbody
+  body of L/d 10; four rectangular fins of 1 cal chord and span ending at
+  the base; a single-wedge section with a blunt trailing edge 0.08 cal
+  thick across the span and a 0.004 cal leading-edge radius; Reynolds
+  number 1.2e7 to 2.0e7 on length; free flight), with the model-form band,
+  the transition and wall-temperature bands shown separately, and the
+  per-shot residuals of section 4.2 published. Labels: the fins-on-base
+  term "measured on circular-arc fins, applied by analogy"; both fin-edge
+  terms "an analogy, not a measurement", the leading edges "extrapolated
+  in Reynolds number" below M 2.48; outside the class, "not validated".
+- **May be claimed:** the breakdown into the nose wave drag (exact, band of
+  order 1e-4), friction (0007's band, validated on component data), and
+  the base and fin terms (bands estimated on component data, each
+  "estimated, tested only in the total").
+- **May be claimed:** agreement with the Basic Finner's free-flight drag
+  within the tolerance, residuals -7.7% to +4.5%, on a set that took no
+  part in setting any band; with the M 2.97 offset (-6.5% on two shots)
+  stated beside it.
+- **May not be claimed:** anything outside that class (0008 section 6.4):
+  sharp-edged fins at the base, Mach 1.5 to 1.8 (no shot), Mach 1 to 1.5
+  (reported, refused here), fins clear of the base, other fin sections,
+  thicknesses or planforms, other noses, fineness ratios or Reynolds
+  numbers. Nor a tolerance narrower than the gate's: the pass was at -19.5%
+  to -26.2% and +26.5% to +31.4%.
+- B3 and B4's rounded-edge term remain **band estimation, not
+  validation**, on their own; they are tested only through this total.
+- Nothing is on the drag page; showing a total there is a separate step.
 
 ## 8. Corrections proposed to 0008
 
@@ -667,6 +779,14 @@ The eight corrections listed after the first run were made in 0008 at
 
 ## 9. Open
 
+- The offset at M 2.97 (both shots 5.4% and 7.6% below the model, section
+  4.2): to be checked on another set near Mach 3, not fitted on this one.
+- A second hold-out for the Basic Finner's class: this one is used, so
+  any change to the terms it tested is "estimated on the Basic Finner, not
+  validated" until another set tests it.
+- The round-4 files (`audit_round4.md`, `readings/`, `scripts/`) are to be
+  kept with rounds 2 and 3 in `docs/research/total-drag/audit/`; the check
+  of section 5 read them where the reader delivered them.
 - RM A51J25 fig. 7's curve below M' 1.50 (read once; under the PARD
   symbols, not checkable); the band's domain starts at M 1.5.
 - The Basic Finner report's refs. 3 to 5 (BRL Reports 934 and 799, BuOrd

@@ -55,8 +55,9 @@ record quotes. Its README says how to re-run each.
 The throwaway vitest runs behind [0010](../design/0010-base-drag-and-total.md)
 (the base-drag and total-drag libraries, `src/base/` and `src/total/`):
 the compiled curve's band and interpolation bound, the fins-on-base rows,
-and the Basic Finner partial sum per shot. Its README says how to re-run
-each.
+the Basic Finner partial sum per shot (the first gate run), the check of
+the round-4 second readings, the laminar trailing-edge band per shot and
+the second gate run. Its README says how to re-run each.
 
 ## `subtip/`: noses whose tip flow is axially subsonic
 
