@@ -97,6 +97,14 @@ export interface SolveOptions {
   readonly plainSteps: number;
   /** Rate per check known from the coarser grid (SettlingValue). */
   readonly knownRate?: number;
+  /**
+   * Also stop once the drag's remaining change, estimated geometrically
+   * from its last three values at checks, is below this times the drag on
+   * two checks running (a change at round-off, below 1e-12 of the drag,
+   * counts as its own estimate). SettlingValue can wait long after a
+   * transient whose changes grew before they fell; this test does not.
+   */
+  readonly geometricNoise?: number;
   readonly onCheck?: (check: SolveCheck) => void;
 }
 
@@ -118,6 +126,10 @@ export interface TransonicSolution {
   /** Times the acceleration had to start over (a rejected step). */
   readonly restarts: number;
   readonly rate: number;
+  /** Which test stopped the iteration. */
+  readonly stoppedBy: 'settling' | 'geometric' | 'steps';
+  /** The geometric estimate of the drag's remaining change at the end. */
+  readonly remainingEstimate: number;
 }
 
 /**
@@ -154,6 +166,9 @@ export function solveTransonic(
   let best = Infinity;
   let steps = 0;
   let drag = problem.drag(solver);
+  const recent: number[] = [];
+  let estimate = Infinity;
+  let geometricPasses = 0;
   while (steps < options.maxSteps) {
     for (let m = 0; m < options.checkEvery; m++) {
       if (anderson === null || steps < options.plainSteps) {
@@ -191,7 +206,14 @@ export function solveTransonic(
       seconds: (performance.now() - t0) / 1000,
       solver,
     });
-    if (settling.add(drag)) {
+    recent.push(drag);
+    if (recent.length > 3) recent.shift();
+    estimate = geometricRemaining(recent);
+    const limit = options.geometricNoise;
+    geometricPasses =
+      limit !== undefined && estimate <= limit * Math.abs(drag) ? geometricPasses + 1 : 0;
+    const settled = settling.add(drag);
+    if (settled || geometricPasses >= 2) {
       return {
         solver,
         drag,
@@ -200,6 +222,8 @@ export function solveTransonic(
         seconds: (performance.now() - t0) / 1000,
         restarts,
         rate: settling.rateToPassOn,
+        stoppedBy: settled ? 'settling' : 'geometric',
+        remainingEstimate: estimate,
       };
     }
   }
@@ -211,5 +235,24 @@ export function solveTransonic(
     seconds: (performance.now() - t0) / 1000,
     restarts,
     rate: settling.rateToPassOn,
+    stoppedBy: 'steps',
+    remainingEstimate: estimate,
   };
+}
+
+/**
+ * Remaining change of a geometrically converging sequence from its last
+ * three values, d2 r / (1 - r) with r the ratio of the last two changes;
+ * a last change at round-off (below 1e-12 of the value) is its own
+ * estimate; Infinity if the changes do not fall.
+ */
+function geometricRemaining(values: readonly number[]): number {
+  if (values.length < 3) return Infinity;
+  const [a, b, c] = values.slice(-3) as [number, number, number];
+  const d1 = b - a;
+  const d2 = c - b;
+  if (Math.abs(d2) <= 1e-12 * Math.abs(c)) return Math.abs(d2);
+  if (d1 === 0) return Infinity;
+  const r = Math.abs(d2 / d1);
+  return r < 1 ? (Math.abs(d2) * r) / (1 - r) : Infinity;
 }
