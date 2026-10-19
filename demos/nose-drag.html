@@ -104,16 +104,79 @@
         font-weight: 400;
         color: var(--muted);
       }
+      #total {
+        margin-top: 2rem;
+        border-top: 1px solid var(--line);
+      }
+      fieldset {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+        align-items: end;
+        border: 1px solid var(--line);
+        padding: 0.5rem 0.75rem 0.75rem;
+        margin: 0;
+      }
+      legend {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      input[type='text'] {
+        width: 8rem;
+        font: inherit;
+      }
+      #transition,
+      #rough-source {
+        width: 12rem;
+      }
+      output {
+        font-variant-numeric: tabular-nums;
+      }
+      .result {
+        font-size: 1.15rem;
+        font-variant-numeric: tabular-nums;
+        margin: 1rem 0 0.5rem;
+      }
+      .claim {
+        border-left: 3px solid var(--ok);
+        padding-left: 0.75rem;
+      }
+      .claim.estimate {
+        border-left-color: var(--warn);
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      #total-output table,
+      #gate table {
+        font-size: 0.85rem;
+      }
+      #total-output th,
+      #total-output td,
+      #gate th,
+      #gate td {
+        text-align: left;
+        vertical-align: top;
+      }
+      td.num {
+        white-space: nowrap;
+      }
+      caption {
+        text-align: left;
+        color: var(--muted);
+        padding-bottom: 0.25rem;
+      }
     </style>
   </head>
   <body>
     <main>
-      <h1>Nose wave drag</h1>
+      <h1>Nose wave drag and total drag</h1>
       <p>
         The inviscid pressure (wave) drag of a rocket's nose and body ahead of the base, in
         supersonic flow at zero incidence: not the rocket's total drag, which also has skin
         friction, base drag and fins. Each case is solved on successively finer grids, and its error
-        band is measured from how the drag changes between them. Needs a browser with WebGPU.
+        band is measured from how the drag changes between them. The total drag, below, adds the
+        other components to that solve. Needs a browser with WebGPU.
         <a href="../index.html">Back to bowshock</a>
       </p>
       <form class="controls" id="form">
@@ -122,7 +185,7 @@
           <select id="shape">
             <option value="ogive">Tangent ogive</option>
             <option value="secant">Ogive family</option>
-            <option value="conical">Cone</option>
+            <option value="conical" selected>Cone</option>
             <option value="parabolic">Parabolic series</option>
             <option value="ellipsoid">Ellipsoid</option>
           </select>
@@ -142,11 +205,27 @@
         </div>
         <div class="field">
           <label for="nose-length">Nose length (calibers)</label>
-          <input id="nose-length" type="number" min="0.5" max="10" step="any" value="3" required />
+          <input
+            id="nose-length"
+            type="number"
+            min="0.5"
+            max="10"
+            step="any"
+            value="2.836"
+            required
+          />
         </div>
         <div class="field">
-          <label for="body-length">Body length behind it (calibers)</label>
-          <input id="body-length" type="number" min="0" max="30" step="any" value="7" required />
+          <label for="body-length">Body behind it, to a flat base (calibers)</label>
+          <input
+            id="body-length"
+            type="number"
+            min="0"
+            max="30"
+            step="any"
+            value="7.164"
+            required
+          />
         </div>
         <div class="field">
           <label for="mach">Mach number</label>
@@ -165,7 +244,8 @@
       <p id="result" aria-live="polite"></p>
       <p id="note" class="scope" hidden>
         This is the inviscid pressure (wave) drag of the nose and body only: not the rocket's total
-        drag coefficient, which also has skin friction, base drag and fins.
+        drag coefficient, which also has skin friction, base drag and fins (the total drag section
+        below).
       </p>
       <p id="status"></p>
       <table id="levels" aria-label="Grids solved" hidden>
@@ -215,6 +295,152 @@
         for the present grids (of ellipsoids of 0.5 to 6 calibers with 1, 2 or 5 calibers of body at
         Mach 1.2, 1.3 and 1.5, the only ones refused on the coarsest grid).
       </p>
+      <section id="total" aria-labelledby="total-heading">
+        <h2 id="total-heading">Total drag</h2>
+        <p class="scope">
+          The rocket's total zero-incidence, power-off drag coefficient on the body's cross-section:
+          the nose wave drag solved above, with its band, plus the body's skin friction, whose band
+          is validated on wind-tunnel and flight data, and the fins' friction, wave drag and edges
+          and the base, whose bands are estimated on data of each component and tested only in the
+          total (design records 0007 to 0010; each component's label says what it is). The bands add
+          linearly. One class of rocket has passed a test of the total against free-flight data, the
+          Basic Finner's, at Mach 1.8 to 3.0, and its tolerance was wide: -19.5% to -26.2% and
+          +26.5% to +31.4% of the modelled total, so a pass says little by itself. Inside that class
+          the total is labelled validated; outside it, an estimate, not validated. Where a
+          component's method does not cover the case, the total is refused, with every reason, and
+          no number is given. The defaults are the Basic Finner.
+        </p>
+        <form class="controls" id="total-form">
+          <fieldset>
+            <legend>Fins (lengths in calibers)</legend>
+            <div class="field">
+              <label for="fin-count">Number of fins</label>
+              <input id="fin-count" type="number" min="1" max="8" step="1" value="4" />
+            </div>
+            <div class="field">
+              <label for="planform">Planform</label>
+              <select id="planform">
+                <option value="rectangular" selected>Rectangular</option>
+                <option value="trapezoidal">Trapezoidal (swept)</option>
+                <option value="clipped-delta">Clipped delta</option>
+              </select>
+            </div>
+            <div class="field" id="sweep-fields" hidden>
+              <label for="le-sweep">Leading-edge sweep (deg)</label>
+              <input id="le-sweep" type="number" min="0" max="80" step="any" value="0" />
+            </div>
+            <div class="field" id="te-sweep-field" hidden>
+              <label for="te-sweep">Trailing-edge sweep (deg)</label>
+              <input id="te-sweep" type="number" min="-80" max="80" step="any" value="0" />
+            </div>
+            <div class="field" id="taper-field" hidden>
+              <label for="taper">Taper ratio (tip over root chord)</label>
+              <input id="taper" type="number" min="0" max="1" step="any" value="0.5" />
+            </div>
+            <div class="field">
+              <label for="root-chord">Root chord</label>
+              <input id="root-chord" type="number" min="0" step="any" value="1" />
+            </div>
+            <div class="field">
+              <label for="span">Span (from the body)</label>
+              <input id="span" type="number" min="0" step="any" value="1" />
+            </div>
+            <div class="field">
+              <label for="section">Section</label>
+              <select id="section">
+                <option value="single-wedge" selected>Single wedge, blunt trailing edge</option>
+                <option value="double-wedge">Double wedge (sharp)</option>
+                <option value="hexagonal">Hexagonal (sharp)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="thickness" id="thickness-label">Trailing-edge thickness</label>
+              <input id="thickness" type="number" min="0" step="any" value="0.08" />
+            </div>
+            <div class="field" id="ridge-field" hidden>
+              <label for="ridge">Ridge (fraction of chord)</label>
+              <input id="ridge" type="number" min="0" max="1" step="any" value="0.5" />
+            </div>
+            <div class="field" id="bevel-fields" hidden>
+              <label for="front-bevel">Bevels, front and rear (fractions of chord)</label>
+              <span>
+                <input id="front-bevel" type="number" min="0" max="1" step="any" value="0.25" />
+                <input id="rear-bevel" type="number" min="0" max="1" step="any" value="0.25" />
+              </span>
+            </div>
+            <div class="field">
+              <label for="le-radius">Leading-edge radius (0: sharp)</label>
+              <input id="le-radius" type="number" min="0" step="any" value="0.004" />
+            </div>
+            <div class="field">
+              <label for="te-ahead">Trailing edge ahead of the base</label>
+              <input id="te-ahead" type="number" min="0" step="any" value="0" />
+            </div>
+            <div class="field">
+              <span class="scope">Overall length, to the flat base</span>
+              <output id="overall-length"></output>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Flight condition (the Mach number is the solve's, above)</legend>
+            <div class="field">
+              <span class="scope">Mach number</span>
+              <output id="total-mach"></output>
+            </div>
+            <div class="field">
+              <label for="reynolds">Reynolds number on the overall length</label>
+              <input id="reynolds" type="text" inputmode="decimal" value="1.32e7" />
+            </div>
+            <div class="field">
+              <label for="temperature">Static temperature (K)</label>
+              <input id="temperature" type="number" min="0" step="any" value="293.95" />
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>
+              Inputs, each shown as its own band (the total stays fully turbulent, adiabatic and
+              smooth)
+            </legend>
+            <div class="field">
+              <label for="transition">Transition Reynolds numbers (none: fully turbulent)</label>
+              <input
+                id="transition"
+                type="text"
+                inputmode="decimal"
+                placeholder="5e5, 1.6e6, 3e6"
+              />
+            </div>
+            <div class="field">
+              <label for="wall-temperature">Wall temperature (K; none: adiabatic)</label>
+              <input id="wall-temperature" type="number" min="0" step="any" placeholder="293.95" />
+            </div>
+            <div class="field">
+              <label for="rough-low">Roughness band, C_D low and high (none: smooth)</label>
+              <span>
+                <input id="rough-low" type="number" step="any" placeholder="0" />
+                <input id="rough-high" type="number" step="any" placeholder="0" />
+              </span>
+            </div>
+            <div class="field">
+              <label for="rough-source">Source of the roughness band</label>
+              <input id="rough-source" type="text" />
+            </div>
+          </fieldset>
+          <button id="basic-finner" type="button">Basic Finner at this Mach number</button>
+        </form>
+        <p class="scope">
+          Reynolds number: the free stream's speed times the overall length over its kinematic
+          viscosity. The Basic Finner's range gave about 6.6e6 times the Mach number. The gate's
+          inputs (placeholders above): a laminar run to Re_T 5e5, 1.6e6 and 3e6 from the tip and
+          from each fin's leading edge, and the wall at the air temperature. No roughness model is
+          validated: a roughness band is yours, shown with the source you give.
+        </p>
+        <div id="total-output" aria-live="polite"></div>
+        <details id="gate">
+          <summary>The validated class, and the Basic Finner's 11 free-flight shots</summary>
+          <div id="gate-body"></div>
+        </details>
+      </section>
     </main>
     <script type="module" src="/src/app/nose-drag.ts"></script>
   </body>
