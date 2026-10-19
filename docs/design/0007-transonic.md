@@ -702,10 +702,10 @@ on the CPU engine:
 
 - **Mach 1.2.** Cone: verified against the exact value, 1.1e-4 of it on
   r = 4 (57,000 cells, 500 s) and 2.3e-5 on r = 8, the procedure's band
-  containing the error. Ogive: r = 4 within 2.8e-4 of the method of
-  characteristics, the family not yet asymptotic, and the fitted solver
-  within 8.5e-4 (finest grids) and 4.5e-4 (extrapolations): about 1e-3
-  on r = 4. 2:1 ellipsoid: r = 4 within 7e-4 of its extrapolation,
+  containing the error. Ogive: r = 8 within 2.2e-4 of the method of
+  characteristics, the family oscillatory, its band (1.1e-3) containing
+  the error, and the fitted solver within 7.9e-4 (finest grids): about
+  2e-4 on r = 8 and 3e-4 on r = 4. 2:1 ellipsoid: r = 4 within 7e-4 of its extrapolation,
   which lies 7.8e-4 below the fitted solver's (nj = 20 to 80): about
   1e-3. Hemisphere: second-order convergence but no reference, and the
   stagnation line's open error. Far boundaries and cylinder: below 1e-4. The transonic
@@ -730,8 +730,8 @@ on the CPU engine:
   slender-body theory confirm the cone's level to 5 to 10%, no better.
 
 So the evidence supports the transonic domain at Mach 1.2 to the
-supersonic solvers' standard on cones, and to about 1e-3 on curved and
-blunt noses; at Mach 1.1 to 3.5e-4 on cones; at 1.05 to about 2e-3 on
+supersonic solvers' standard on cones and on the ogive (four grids, the
+band containing the error), and to about 1e-3 on blunt noses; at Mach 1.1 to 3.5e-4 on cones; at 1.05 to about 2e-3 on
 cones; and at Mach 1 to about 0.2% on cones only with the far-boundary
 extrapolation. Nothing below Mach 1.2 has the procedure's four-grid band
 yet.
@@ -789,7 +789,7 @@ grid unless stated:
 
 - **Runs not done** (wall time on this shared machine, roughly): the
   cone's r = 8 at Mach 1.05 and 1.1 (4 to 6 h each), which give the
-  procedure's band there; the ogive's r = 8 at Mach 1.2 (2 h); at Mach 1,
+  procedure's band there; at Mach 1,
   r = 4 on 100.6 radii (4 h) and r = 2 on 408.7 radii (3 h, to test that
   the far boundaries' correction holds on a finer grid); the ogive at
   Mach 1 on r = 2; the ogive's r = 4 at Mach 1.1
