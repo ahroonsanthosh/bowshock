@@ -2,7 +2,8 @@
 
 The runners and outputs of the measurements quoted in
 [0010](../../design/0010-base-drag-and-total.md) that are not committed
-tests. The libraries are `src/base/` and `src/total/`; their tests are
+tests. The libraries are `src/base/`, `src/total/` and the fin-edge terms
+in `src/fins/`; their tests are
 `tests/base/`, `tests/total/` and `tests/validation/basic-finner.test.ts`,
 which hold every number of 0010 that these outputs also print.
 
@@ -45,3 +46,13 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   gated Basic Finner shot, from the shot's Reynolds number alone (no drag
   value), on both readings, made before the second gate run (0010 section
   5.1).
+- `gate-second-run.test.ts`: the second Basic Finner gate run, made once
+  (0010 section 4.2), after the fin-edge choices and the reader's report
+  were committed (f4791ad): per shot the components and their bands, the
+  input bands, the residual, the tolerance with and without the wall
+  input, pass or fail, the leading-edge regime and the trailing-edge
+  laminar band's label; the clusters' statistics; the refusals at the five
+  shots below Mach 1.4. `gate-second-run.out` is the output as it came out
+  (run as `gate2.test.ts`, written as `gate2.out` and `gate2.json`, copied
+  here unchanged); `gate-second-run.json` is the per-shot record from
+  which `tests/validation/basic-finner.test.ts` holds its values.

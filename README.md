@@ -159,11 +159,14 @@ them; the fitted-drag families are recorded in
   ([0010](docs/design/0010-base-drag-and-total.md), `src/base/`,
   `src/total/`): the compiled base-pressure correlation of NACA TN 3819
   with its band (measured over correlation 0.82 to 1.08), the factor for
-  fins ending at the base, and the sum of the components with their bands
-  added linearly. Its one hold-out test, the Basic Finner in free flight,
-  does not pass: the total is refused there, because its fins' blunt
-  trailing edges and rounded leading edges have no method with a measured
-  band, so bowshock refuses that configuration.
+  fins ending at the base, the base drag of blunt fin trailing edges and
+  the drag of rounded fin leading edges (both analogies, with bands set
+  from component data read twice), and the sum of the components with
+  their bands added linearly. Its one hold-out test, the Basic Finner in
+  free flight at Mach 1.8 to 3.0, passes at all 11 shots: measured over
+  modelled -7.7% to +4.5% (mean -1.9%), inside a tolerance of -19.5% to
+  -26.2% and +26.5% to +31.4%, which is wide; the two shots at Mach 2.97
+  lie 5.4% and 7.6% below the model.
 
 Not yet: viscous flow in the solver; friction, fins and the base on the
 drag page; Von Karman (Haack) and power-series noses (their tips need
@@ -248,7 +251,8 @@ The design records, in order:
   the linear 3D drag of the planform, with the limits of each measured.
 - [0010](docs/design/0010-base-drag-and-total.md): base drag and the total
   (draft), libraries not on the drag page, and the Basic Finner gate,
-  which the total does not pass (refused).
+  which the total passes at all 11 shots (the second run; the first was
+  refused).
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
