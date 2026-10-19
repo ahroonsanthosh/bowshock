@@ -7,7 +7,10 @@
  * result estimates its quadrature error.
  *
  * The fin's symmetric section (./section.ts, SymmetricSection) keeps its
- * shape and thickness ratio along the span, so each segment k between
+ * shape and thickness ratio along the span (a section with a declared
+ * blunt trailing edge is accepted: the source sheet ends at the trailing
+ * edge, whose line influences only the flow behind it, and the drag is
+ * that of the faces, without the base), so each segment k between
  * chordwise breakpoints has a constant surface slope lambda_k and its
  * boundary lines are straight, x_k(y) = a_k + b_k |y|. The body is a plane
  * wall at y = 0, represented by the fin's image in it: the fin occupies

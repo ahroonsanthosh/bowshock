@@ -26,6 +26,9 @@ a script is a test now. Differences are relative unless stated.
   leading edge (0, 0) to the trailing edge (1, 0), or symmetric ones by
   their half-thickness at chordwise breakpoints; the double wedge (any ridge
   position) and the wedge-flat-wedge (hexagonal) section with any bevels.
+  Added for [0010](0010-base-drag-and-total.md) (its section 2): a section
+  may declare a blunt trailing edge (the single wedge), whose faces' wave
+  drag alone is computed by both methods.
 - `section-drag.ts`: the exact inviscid 2D wave drag of a sharp convex
   section by shock-expansion theory (oblique shock or Prandtl-Meyer
   expansion at the leading edge, Prandtl-Meyer at each corner), built on
@@ -347,7 +350,9 @@ bound.
 - **The fins' effect on the base**: only what section 5 measures, that the
   fins' own drag leaves 14.5% to 51% of the ARCAS increments unexplained.
 - **Rounded or blunt edges** are refused (sharp leading and trailing edges
-  only). For scale, measured elsewhere: a blunt leading edge raised the
+  only; a blunt trailing edge declared by the section is accepted for its
+  faces' drag, the base left to a base-pressure model, 0010). For scale,
+  measured elsewhere: a blunt leading edge raised the
   total CD of the RM A53D02 model by about 0.02 below Mach 5, about its fin wave drag
   (RM A53D02 p. 15, as read by the research and checked by the audit); the
   pitot-pressure bound on a square leading edge is 4.6 to 41 times the sharp
