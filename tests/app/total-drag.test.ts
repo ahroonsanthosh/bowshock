@@ -1,0 +1,528 @@
+/**
+ * The total drag on the drag page (src/app/total-drag.ts): the class rule
+ * of docs/design/0011-total-drag-on-the-page.md section 3, the glue
+ * between the page's inputs and src/total, and the claims. On the Basic
+ * Finner's 11 gated shots the page's numbers are the gate's
+ * (tests/validation/basic-finner.test.ts, 0010 section 4.2), with the nose
+ * given as the gate gave it.
+ */
+
+import { beforeAll, describe, expect, it } from 'vitest';
+import { trapezoidalPlanform } from '../../src/fins/planform';
+import { singleWedge } from '../../src/fins/section';
+import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
+import { exactConeNoseWaveDrag } from '../../src/total/nose';
+import { combineComponents, type TotalDrag } from '../../src/total/total-drag';
+import {
+  BASIC_FINNER_CLUSTERS,
+  BASIC_FINNER_GEOMETRY as G,
+  BASIC_FINNER_SHOTS,
+} from '../../src/validation/basic-finner';
+import {
+  BASIC_FINNER_CLASS,
+  BASIC_FINNER_TEMPERATURE,
+  basicFinnerClass,
+  basicFinnerForm,
+  configurationOf,
+  ESTIMATE_CLAIM,
+  GATE_TRANSITION_REYNOLDS,
+  noseComponentOf,
+  OFFSET_CAVEAT,
+  PUBLISHED_GATE,
+  totalDragView,
+  VALIDATED_CLAIM,
+  type NoseState,
+  type TotalDragForm,
+  type TotalDragView,
+} from '../../src/app/total-drag';
+
+const gated = BASIC_FINNER_SHOTS.filter((s) => s.use === 'gate');
+const reported = BASIC_FINNER_SHOTS.filter((s) => s.use === 'reported');
+
+/** The nose as the gate gave it: Taylor-Maccoll with the fitted solver's floor. */
+const exactNose = (form: TotalDragForm): NoseState => {
+  const n = form.body.nose;
+  return {
+    kind: 'solved',
+    component: exactConeNoseWaveDrag(form.mach, Math.atan(n.baseRadius / n.length)),
+  };
+};
+const gateForm = (s: (typeof gated)[number]): TotalDragForm => ({
+  ...basicFinnerForm(s.mach, s.reynolds),
+  transitionReynolds: GATE_TRANSITION_REYNOLDS,
+  wallTemperature: BASIC_FINNER_TEMPERATURE,
+});
+const totalOf = (view: TotalDragView): TotalDrag => {
+  if (view.kind !== 'total') throw new Error(`expected a total, got ${view.kind}`);
+  return view.total;
+};
+const reasons = (view: TotalDragView) =>
+  view.kind === 'refused' ? view.refusals.map((r) => `${r.component}: ${r.reason}`) : [];
+
+describe('the class rule', () => {
+  it('the Basic Finner at its gated shots, and the default at Mach 2, are inside', () => {
+    for (const s of gated)
+      expect(basicFinnerClass(gateForm(s))).toEqual({ inside: true, outside: [] });
+    expect(basicFinnerClass(basicFinnerForm()).inside).toBe(true);
+  });
+
+  it("fig. 2's printed cone length, 2.84 cal, with the body to 10.00, is inside", () => {
+    const f = basicFinnerForm();
+    const form = {
+      ...f,
+      body: { ...f.body, nose: { ...f.body.nose, length: 2.84 }, cylinderLength: 7.16 },
+    };
+    expect(basicFinnerClass(form).inside).toBe(true);
+  });
+
+  it('each dimension: inside within 0.5%, outside beyond it, with one reason', () => {
+    const f = basicFinnerForm();
+    const c = BASIC_FINNER_CLASS;
+    const variants: [string, number, (x: number) => TotalDragForm][] = [
+      [
+        'nose',
+        c.noseLength,
+        (x) => ({
+          ...f,
+          body: { nose: { ...f.body.nose, length: x }, cylinderLength: c.length - x },
+        }),
+      ],
+      [
+        'length',
+        c.length,
+        (x) => ({ ...f, body: { ...f.body, cylinderLength: x - c.noseLength } }),
+      ],
+      ['chord', c.rootChord, (x) => ({ ...f, rootChord: x })],
+      ['span', c.span, (x) => ({ ...f, span: x })],
+      [
+        'trailing edge',
+        c.trailingEdgeThickness,
+        (x) => ({ ...f, section: { kind: 'single-wedge', trailingEdgeThickness: x } }),
+      ],
+      ['leading edge', c.leadingEdgeRadius, (x) => ({ ...f, leadingEdgeRadius: x })],
+    ];
+    for (const [, v, make] of variants) {
+      for (const k of [0.996, 1.004]) expect(basicFinnerClass(make(v * k)).inside).toBe(true);
+      for (const k of [0.994, 1.006]) {
+        const check = basicFinnerClass(make(v * k));
+        expect(check.inside).toBe(false);
+        expect(check.outside.length).toBe(1);
+      }
+    }
+  });
+
+  it('other noses, fin counts, planforms, positions and sections are outside', () => {
+    const f = basicFinnerForm();
+    const outside = (form: TotalDragForm) => basicFinnerClass(form).outside;
+    expect(
+      outside({
+        ...f,
+        body: { ...f.body, nose: { ...f.body.nose, shape: { kind: 'ogive', parameter: 1 } } },
+      }),
+    ).toEqual(["the nose is not a cone (the Basic Finner's is a 20 deg cone)"]);
+    expect(outside({ ...f, finCount: 3 })).toEqual(['3 fins, not 4']);
+    expect(
+      outside({
+        ...f,
+        planform: { kind: 'trapezoidal', leadingEdgeSweepDegrees: 10, trailingEdgeSweepDegrees: 0 },
+      }),
+    ).toEqual(['the fins are not rectangular (unswept, of constant chord)']);
+    expect(
+      basicFinnerClass({
+        ...f,
+        planform: { kind: 'trapezoidal', leadingEdgeSweepDegrees: 0, trailingEdgeSweepDegrees: 0 },
+      }).inside,
+    ).toBe(true);
+    expect(outside({ ...f, planform: { kind: 'clipped-delta', taperRatio: 0.5 } }).length).toBe(1);
+    expect(outside({ ...f, trailingEdgeAheadOfBase: 1 })).toEqual([
+      'the fins end 1 cal ahead of the base, not at it',
+    ]);
+    expect(
+      outside({ ...f, section: { kind: 'double-wedge', thickness: 0.08, ridge: 0.5 } }),
+    ).toEqual(['the fin section is not a single wedge with a blunt trailing edge']);
+    expect(outside({ ...f, leadingEdgeRadius: 0 }).length).toBe(1);
+  });
+
+  it('Mach 1.799 to 3.0, Reynolds number 1.19e7 to 2.0e7 on length, 293 to 295 K', () => {
+    const f = basicFinnerForm();
+    const at = (mach: number, re: number, t = BASIC_FINNER_TEMPERATURE) =>
+      basicFinnerClass({ ...f, mach, reynoldsOnLength: re, temperature: t }).inside;
+    expect(BASIC_FINNER_CLASS.mach).toEqual([1.799, 3.0]);
+    expect(BASIC_FINNER_CLASS.reynoldsOnLength).toEqual([1.19e7, 2.0e7]);
+    expect(at(1.799, 1.19e7)).toBe(true);
+    expect(at(3.0, 2.0e7)).toBe(true);
+    expect(at(1.798, 1.5e7)).toBe(false);
+    expect(at(3.001, 1.5e7)).toBe(false);
+    expect(at(2.4, 1.189e7)).toBe(false);
+    expect(at(2.4, 2.001e7)).toBe(false);
+    expect(at(2.4, 1.6e7, 293)).toBe(true);
+    expect(at(2.4, 1.6e7, 295)).toBe(true);
+    expect(at(2.4, 1.6e7, 288.15)).toBe(false);
+    for (const s of reported) expect(at(s.mach, s.reynolds)).toBe(false);
+    // The range's air from Table V's speed of sound, 343.4 to 344.0 m/s.
+    const t = (a: number) => a ** 2 / (1.4 * 287.05);
+    expect(t(343.4)).toBeGreaterThan(293);
+    expect(t(344.0)).toBeLessThan(295);
+  });
+
+  it(
+    'what the tolerances allow: each dimension at +-0.5% moves the total by under 0.2%',
+    { timeout: 120_000 },
+    () => {
+      const c = BASIC_FINNER_CLASS;
+      for (const mach of [1.8, 2.4, 3.0]) {
+        const base = basicFinnerForm(mach, 6.63e6 * mach);
+        const ref = totalOf(totalDragView(base, exactNose(base))).cd;
+        const moved = (form: TotalDragForm) =>
+          Math.abs(totalOf(totalDragView(form, exactNose(form))).cd / ref - 1);
+        let largest = 0;
+        for (const k of [1 - c.dimensionTolerance, 1 + c.dimensionTolerance]) {
+          for (const form of [
+            {
+              ...base,
+              body: {
+                nose: { ...base.body.nose, length: c.noseLength * k },
+                cylinderLength: c.length - c.noseLength * k,
+              },
+            },
+            { ...base, body: { ...base.body, cylinderLength: c.length * k - c.noseLength } },
+            { ...base, rootChord: k },
+            { ...base, span: k },
+            {
+              ...base,
+              section: { kind: 'single-wedge', trailingEdgeThickness: c.trailingEdgeThickness * k },
+            } as const,
+            { ...base, leadingEdgeRadius: c.leadingEdgeRadius * k },
+            { ...base, temperature: k > 1 ? 295 : 293 },
+          ]) {
+            expect(basicFinnerClass(form).inside).toBe(true);
+            largest = Math.max(largest, moved(form));
+          }
+        }
+        expect(largest).toBeLessThan(0.002);
+      }
+    },
+  );
+
+  it(
+    "the box's corners: Mach 1.8 at 2.0e7 and Mach 3.0 at 1.19e7 lie 1.7% and 2.1% from the shots' line",
+    { timeout: 60_000 },
+    () => {
+      // The shots lie near Re = 6.6e6 M on length (one range, one air);
+      // the box of 0010 section 7 takes its corners too.
+      const cd = (mach: number, re: number) => {
+        const form = basicFinnerForm(mach, re);
+        return totalOf(totalDragView(form, exactNose(form))).cd;
+      };
+      const low = cd(1.8, 2.0e7) / cd(1.8, 6.63e6 * 1.8) - 1;
+      const high = cd(3.0, 1.19e7) / cd(3.0, 6.63e6 * 3.0) - 1;
+      expect(low).toBeGreaterThan(-0.017);
+      expect(low).toBeLessThan(-0.015);
+      expect(high).toBeGreaterThan(0.019);
+      expect(high).toBeLessThan(0.021);
+      const ratios = gated.map((s) => s.reynolds / s.mach);
+      expect(Math.min(...ratios)).toBeGreaterThan(6.5e6);
+      expect(Math.max(...ratios)).toBeLessThan(6.75e6);
+    },
+  );
+});
+
+describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => {
+  const half = (G.coneHalfAngleDegrees * Math.PI) / 180;
+  const noseLength = G.length / 20 / Math.tan(half);
+  // The gate's configuration, built as tests/validation/basic-finner.test.ts builds it.
+  const asTranscribed: FinnedBody = {
+    body: {
+      nose: { shape: { kind: 'conical' }, length: noseLength, baseRadius: 0.5 },
+      cylinderLength: G.length - noseLength,
+    },
+    afterbody: 'cylinder',
+    fins: {
+      count: G.finCount,
+      planform: trapezoidalPlanform({
+        rootChord: G.finChord,
+        span: G.finSpan,
+        leadingEdgeSweep: 0,
+      }),
+      section: singleWedge(G.finTrailingEdgeThickness / G.finChord),
+      sectionFamily: 'other',
+      leadingEdgeRadius: G.finLeadingEdgeRadius,
+      trailingEdgeAheadOfBase: 0,
+    },
+  };
+  const temperature = 343.7 ** 2 / (1.4 * 287.05);
+  let views: TotalDragView[] = [];
+  let gate: TotalDrag[] = [];
+  beforeAll(() => {
+    views = gated.map((s) => totalDragView(gateForm(s), exactNose(gateForm(s))));
+    gate = gated.map((s) => {
+      const parts = finnedBodyComponents(
+        asTranscribed,
+        { mach: s.mach, temperature, reynoldsPerLength: s.reynolds / G.length },
+        exactConeNoseWaveDrag(s.mach, half),
+        { transitionReynolds: [5e5, 1.6e6, 3e6], wallTemperature: temperature },
+      );
+      return combineComponents(parts.components, parts.inputs);
+    });
+  });
+
+  it("every number the page shows is the gate's: the total, each band, each component", () => {
+    views.forEach((v, k) => {
+      const t = totalOf(v);
+      const g = gate[k]!;
+      for (const [a, b] of [
+        [t.cd, g.cd],
+        [t.low, g.low],
+        [t.high, g.high],
+      ] as const) {
+        expect(Math.abs(a - b)).toBeLessThan(1e-12);
+      }
+      expect(t.components.map((c) => c.name)).toEqual(g.components.map((c) => c.name));
+      t.components.forEach((c, j) => {
+        const d = g.components[j]!;
+        expect(
+          Math.abs(c.cd - d.cd) + Math.abs(c.low - d.low) + Math.abs(c.high - d.high),
+        ).toBeLessThan(1e-12);
+        expect(c.label).toBe(d.label);
+      });
+      expect(t.inputs.map((i) => i.name)).toEqual(g.inputs.map((i) => i.name));
+      t.inputs.forEach((i, j) => {
+        expect(
+          Math.abs(i.low - g.inputs[j]!.low) + Math.abs(i.high - g.inputs[j]!.high),
+        ).toBeLessThan(1e-12);
+      });
+    });
+  });
+
+  it('the table the page publishes is 0010 section 4.2, held to the library', () => {
+    const cx0 = (m: number) => gated.find((s) => s.mach === m)!.cx0;
+    const spread = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
+      const v = gated.filter((s) => s.mach >= a && s.mach <= b).map((s) => s.cx0);
+      const mean = v.reduce((p, q) => p + q, 0) / v.length;
+      return { lo: Math.min(...v) / mean - 1, hi: Math.max(...v) / mean - 1 };
+    });
+    expect(PUBLISHED_GATE.map((p) => p.shot)).toEqual(gated.map((s) => s.shot));
+    PUBLISHED_GATE.forEach((p, k) => {
+      const t = totalOf(views[k]!);
+      expect(p.mach).toBe(gated[k]!.mach);
+      expect(p.cx0).toBe(cx0(p.mach));
+      expect([p.cd, p.low, p.high]).toEqual(
+        [t.cd, t.low, t.high].map((x) => Math.round(1e4 * x) / 1e4),
+      );
+      expect(p.residual).toBe(Math.round(1000 * (p.cx0 / t.cd - 1)) / 10);
+      const inLow = t.inputs.reduce((a, i) => a + i.low, 0);
+      const inHigh = t.inputs.reduce((a, i) => a + i.high, 0);
+      const s = spread[BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => p.mach >= a && p.mach <= b)]!;
+      expect(p.tolerance).toEqual(
+        [(t.low + inLow) / t.cd - 1 + s.lo, (t.high + inHigh) / t.cd - 1 + s.hi].map(
+          (x) => Math.round(1000 * x) / 10,
+        ),
+      );
+    });
+  });
+
+  it('every shot is labelled validated, the two at M 2.97 nearest the offset', () => {
+    views.forEach((v, k) => {
+      if (v.kind !== 'total') throw new Error('expected a total');
+      expect(v.claim.kind).toBe('validated');
+      if (v.claim.kind !== 'validated') return;
+      expect(v.claim.text).toBe(VALIDATED_CLAIM);
+      expect(v.claim.caveats).toContain(OFFSET_CAVEAT);
+      expect(v.claim.nearMach3).toBe(gated[k]!.mach > 2.9);
+    });
+  });
+
+  it('the five shots at Mach 1.06 to 1.33 are refused, with every reason and no number', () => {
+    for (const s of reported) {
+      const form = { ...gateForm(gated[0]!), mach: s.mach, reynoldsOnLength: s.reynolds };
+      const v = totalDragView(form, exactNose(form));
+      expect(v.kind).toBe('refused');
+      const r = reasons(v);
+      expect(r).toContain('fin leading edges: leading-edge-range');
+      expect(r).toContain('body base: mach-range');
+      if (s.mach < 1.2) expect(r).toContain('fin wave drag: detached-shock');
+    }
+  });
+});
+
+describe('the nose term and the states of the solve', () => {
+  it("is the page's solved value and band, unchanged", () => {
+    const c = noseComponentOf({ value: 0.0968, uncertainty: 1.2e-5, grids: 4 });
+    expect(c.name).toBe('nose wave drag');
+    expect([c.cd, c.low, c.high]).toEqual([0.0968, 0.0968 - 1.2e-5, 0.0968 + 1.2e-5]);
+    expect(c.label).toContain('solved on this page');
+    expect(c.label).toContain('4 grids');
+  });
+
+  it('before the solve: the other components are checked, no number is given', () => {
+    const v = totalDragView(basicFinnerForm(), { kind: 'pending' });
+    expect(v).toEqual({ kind: 'pending', check: { inside: true, outside: [] } });
+  });
+
+  it('a nose without a band refuses the total, with any other reason beside it', () => {
+    const f = basicFinnerForm();
+    const no = {
+      kind: 'refused',
+      message: 'the nose wave drag has no measured error band',
+    } as const;
+    expect(reasons(totalDragView(f, no))).toEqual(['nose wave drag: not-verified']);
+    expect(reasons(totalDragView({ ...f, mach: 1.6 }, no))).toEqual([
+      'nose wave drag: not-verified',
+      'body base: mach-range',
+    ]);
+  });
+
+  it('the page solve feeds the total as given: the total moves by the nose term alone', () => {
+    const f = basicFinnerForm(2.4, 1.6e7);
+    const exact = exactNose(f);
+    if (exact.kind !== 'solved') throw new Error('unreachable');
+    const solved = noseComponentOf({
+      value: exact.component.cd * (1 + 3e-5),
+      uncertainty: 1e-5,
+      grids: 4,
+    });
+    const a = totalOf(totalDragView(f, exact));
+    const b = totalOf(totalDragView(f, { kind: 'solved', component: solved }));
+    expect(b.cd - a.cd).toBeCloseTo(solved.cd - exact.component.cd, 14);
+    expect(b.components[0]).toBe(solved);
+    expect(b.high - b.low - (a.high - a.low)).toBeCloseTo(
+      2e-5 - (exact.component.high - exact.component.low),
+      14,
+    );
+  });
+});
+
+describe(
+  'outside the class: an estimate, not validated, with every reason',
+  { timeout: 60_000 },
+  () => {
+    const f = basicFinnerForm(2.4, 1.6e7);
+    const estimate = (form: TotalDragForm) => {
+      const nose = noseComponentOf({ value: 0.09, uncertainty: 1e-5, grids: 4 });
+      const v = totalDragView(form, { kind: 'solved', component: nose });
+      if (v.kind !== 'total')
+        throw new Error(`expected a total, got ${v.kind}: ${reasons(v).join(', ')}`);
+      return v;
+    };
+
+    it('a tangent ogive nose, at a Reynolds number outside the class', () => {
+      const v = estimate({
+        ...f,
+        body: { ...f.body, nose: { ...f.body.nose, shape: { kind: 'ogive', parameter: 1 } } },
+        reynoldsOnLength: 4e7,
+      });
+      expect(v.claim.kind).toBe('estimate');
+      if (v.claim.kind !== 'estimate') return;
+      expect(v.claim.text).toBe(ESTIMATE_CLAIM);
+      expect(v.claim.reasons).toEqual([
+        "the nose is not a cone (the Basic Finner's is a 20 deg cone)",
+        'the Reynolds number on length, 4.00e7, is outside 1.19e7 to 2.0e7',
+      ]);
+    });
+
+    it('sharp double-wedge fins one chord ahead of the base', () => {
+      const v = estimate({
+        ...f,
+        section: { kind: 'double-wedge', thickness: 0.06, ridge: 0.5 },
+        leadingEdgeRadius: 0,
+        trailingEdgeAheadOfBase: 1,
+      });
+      expect(v.claim.kind).toBe('estimate');
+      expect(v.total.components.map((c) => c.name)).toEqual([
+        'nose wave drag',
+        'body friction',
+        'fin friction',
+        'fin wave drag',
+        'body base',
+      ]);
+      const base = v.total.components.find((c) => c.name === 'body base')!;
+      expect(base.label).toContain('not validated with fins');
+      if (v.claim.kind === 'estimate') expect(v.claim.reasons.length).toBe(3);
+    });
+  },
+);
+
+describe('refusals: every reason, no number', () => {
+  const f = basicFinnerForm(2.4, 1.6e7);
+  const nose = exactNose(f);
+
+  it('below Mach 1.8 with fins at the base; swept fins; a laminar base', () => {
+    expect(reasons(totalDragView({ ...f, mach: 1.6 }, exactNose({ ...f, mach: 1.6 })))).toEqual([
+      'body base: mach-range',
+    ]);
+    expect(
+      reasons(
+        totalDragView(
+          {
+            ...f,
+            planform: {
+              kind: 'trapezoidal',
+              leadingEdgeSweepDegrees: 10,
+              trailingEdgeSweepDegrees: 10,
+            },
+          },
+          nose,
+        ),
+      ),
+    ).toEqual([
+      'fin leading edges: swept-leading-edge',
+      'fin trailing-edge base: swept-trailing-edge',
+    ]);
+    expect(reasons(totalDragView({ ...f, transitionReynolds: [2e7] }, nose))).toEqual([
+      'body base: laminar-base',
+    ]);
+    expect(reasons(totalDragView({ ...f, finCount: 3 }, nose))).toEqual(['body base: fin-count']);
+  });
+
+  it('a rounded leading edge on a double wedge; a clipped delta with a blunt trailing edge', () => {
+    expect(
+      reasons(
+        totalDragView(
+          { ...f, section: { kind: 'double-wedge', thickness: 0.06, ridge: 0.5 } },
+          nose,
+        ),
+      ),
+    ).toEqual(['fin leading edges: leading-edge-geometry']);
+    const r = reasons(
+      totalDragView({ ...f, planform: { kind: 'clipped-delta', taperRatio: 0.5 } }, nose),
+    );
+    expect(r).toContain('fin leading edges: leading-edge-geometry');
+    expect(r).toContain('fin trailing-edge base: input');
+  });
+
+  it('inputs the page cannot take, all listed', () => {
+    const v = totalDragView(
+      {
+        ...f,
+        span: -1,
+        rootChord: 8,
+        reynoldsOnLength: Number.NaN,
+        transitionReynolds: [0],
+        roughness: { low: 0, high: 0.01, source: ' ' },
+      },
+      nose,
+    );
+    expect(v.kind).toBe('refused');
+    if (v.kind !== 'refused') return;
+    const messages = v.refusals.map((r) => r.message);
+    expect(messages).toContain('the Reynolds number on length must be a positive number');
+    expect(messages).toContain('the span must be a positive number');
+    expect(messages).toContain('a transition Reynolds number (0) must be a positive number');
+    expect(messages).toContain('a roughness band needs its source');
+    expect(messages.some((m) => m.startsWith('the fins must lie on the cylinder'))).toBe(true);
+    expect(messages.some((m) => m.includes('root chord and span must be positive'))).toBe(true);
+  });
+
+  it('a roughness band with its source is carried as an input band, labelled as supplied here', () => {
+    const v = totalDragView(
+      { ...f, roughness: { low: 0, high: 0.01, source: 'my estimate' } },
+      nose,
+    );
+    const r = totalOf(v).inputs.find((i) => i.name === 'roughness')!;
+    expect([r.low, r.high]).toEqual([0, 0.01]);
+    expect(r.label).toBe('input: roughness, supplied on this page: my estimate');
+    expect(configurationOf({ ...f, roughness: { low: 0.01, high: 0.02, source: 'x' } }).kind).toBe(
+      'refused',
+    );
+  });
+});
