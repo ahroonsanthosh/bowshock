@@ -1,0 +1,15 @@
+# Second reading (round 3) of the TN 3819 fig. 18 curve values that 0008 lists as read once.
+# Same reader as round 1 (the auditor), different method: global bilinear calibration fitted by least squares to all
+# 64 gridline crossings (rms residual 0.73 px in x, 0.31 px in y; scripts/fig18_affine.py) instead of round 1's
+# piecewise interpolation; new column scans (scripts/scan18b.py) at columns chosen clear of symbols and gridlines,
+# interpolated to the target Mach number; line identity checked on new 6x to 7x zooms.
+# more/less = more and less negative of the two compiled curves (Chapman, Love basic); bundle = the three lines
+# (two compiled curves and Gabeaud) merged within the line width, not separable.
+M,more_negative,less_negative,gabeaud,err,round1_more,round1_less,note
+1.500,-0.1774,-0.1730,,0.0012,-0.1775,-0.1733,"more-negative curve passes under the circle symbol at M 1.503; value from columns at 1.42-1.46 and 1.555-1.585 and the direct column"
+1.935,-0.1536,-0.1483,,0.0012,-0.1539,-0.1486,"columns at 1.80-1.90 and 1.98-2.10 (arch and D symbols cover 1.92-1.96)"
+1.939,-0.1534,-0.1481,,0.0012,-0.1536,-0.1484,
+2.000,-0.1494,-0.1444,,0.0008,-0.1496,-0.1447,"columns at 1.98 and 2.02"
+3.000,-0.0974,-0.0962,-0.1005,0.0012,-0.0978,-0.0964,"columns at 2.94-3.02; Gabeaud separate above"
+3.243,-0.0898,-0.0886,,0.0015,-0.0885,-0.0881,"bundle -0.0898 to -0.0886 (three lines within one stroke width; ticked-triangle symbol at this column); round 1 Gabeaud -0.0893"
+3.497,-0.0805,-0.0805,,0.0015,-0.0803,-0.0803,"bundle lies on the -0.08 gridline; from columns at 3.42 and 3.55"

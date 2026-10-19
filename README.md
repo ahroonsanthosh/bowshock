@@ -150,6 +150,16 @@ them; the fitted-drag families are recorded in
   band the evidence supports for smooth, adiabatic turbulent layers at
   Mach 1 to 3.6.
 
+- Base drag and the total, as libraries not on the drag page
+  ([0010](docs/design/0010-base-drag-and-total.md), `src/base/`,
+  `src/total/`): the compiled base-pressure correlation of NACA TN 3819
+  with its band (measured over correlation 0.82 to 1.08), the factor for
+  fins ending at the base, and the sum of the components with their bands
+  added linearly. Its one hold-out test, the Basic Finner in free flight,
+  does not pass: the total is refused there, because its fins' blunt
+  trailing edges and rounded leading edges have no method with a measured
+  band, so bowshock refuses that configuration.
+
 Not yet: viscous flow in the solver, friction on the drag page, Von
 Karman (Haack) and power-series noses (their tips need grids being
 designed), Mach numbers below 1.2, fins and the base. Until those pass
@@ -199,6 +209,8 @@ on a static host.
 | `src/analysis/`      | Integrated forces and the verified forebody drag                              |
 | `src/friction/`      | Skin friction: van Driest II, laminar similarity, transition, bodies          |
 | `src/fins/`          | Fin wave drag: exact sharp sections, linear 3D drag of the planform           |
+| `src/base/`          | Base drag: the compiled base-pressure curve, the fins-on-base factor          |
+| `src/total/`         | Total drag from its components, the bands combined linearly                   |
 | `src/verification/`  | Discretisation error from nested grids                                        |
 | `src/validation/`    | Exact and reference solutions, and digitised wind-tunnel data                 |
 | `src/render/`        | Display fields, colour map and WebGPU rendering                               |
@@ -229,6 +241,9 @@ The design records, in order:
 - [0009](docs/design/0009-fin-wave-drag.md): fin wave drag (draft), a
   library not yet on the drag page: exact section drag of sharp fins and
   the linear 3D drag of the planform, with the limits of each measured.
+- [0010](docs/design/0010-base-drag-and-total.md): base drag and the total
+  (draft), libraries not on the drag page, and the Basic Finner gate,
+  which the total does not pass (refused).
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).

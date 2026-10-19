@@ -1,7 +1,10 @@
 # Data transcriptions and computation outputs for draft 0008 (total drag)
 
 Research material behind docs/design/0008-total-drag.md. Revised after the
-audit (`../audit/audit.md`) and its second round (`../audit/round2/`).
+audit (`../audit/audit.md`) and its second round (`../audit/round2/`), and
+after the first Basic Finner gate run (docs/design/0010-base-drag-and-total.md
+section 6): the files marked (0010) were added then, all first readings with
+the second pending, none using Basic Finner drag data.
 
 | File | Content |
 | --- | --- |
@@ -28,6 +31,13 @@ audit (`../audit/audit.md`) and its second round (`../audit/round2/`).
 | arcas_fin_check_output.txt, arcas_fin_check_v2_output.txt | ARCAS fins' own drag against the measured increment (v2: resolved readings and chamber change) |
 | or_body_factor_output.txt | OpenRocket body friction with its wetted-area factor against VDII |
 | band_sum_output.txt | Illustrative linear band combination |
+| blunt_te_2d_base.md, blunt_te_2d_base.csv, blunt_te_2d_output.txt (0010) | Two-dimensional base pressure of blunt trailing edges at M 1.5 to 3: TR 1109 figs. 7, 8, 9, 29; RM A51J25 fig. 7; TN 3819 fig. 5; X-15 fin in flight (TN D-1056 table II); the band each would support |
+| tr1109_fig29_runs_output.txt, tr1109_fig29b_cols_output.txt, tr1109_fig29a_grid.json, tr1109_fig29b_grid.json, love_fig5_runs_output.txt, love_fig5_cols_output.txt, a51j25_fig7_curve_output.txt (0010) | Column readings behind blunt_te_2d_base.md |
+| le_bluntness.md, le_bluntness.csv, le_bluntness_output.txt (0010) | Rounded and blunt leading edges at M 1.5 to 3: TN 2960 figs. 5(c), 7; RM A55H31 eq. (14); RM A53D02 fig. 17; RM L55G28a; the band each would support |
+| tn2960_fig7_first_reading.txt, tn2960_fig5c_integration_output.txt, a53d02_fig17_curve_output.txt (0010) | Readings and integration behind le_bluntness.md |
+| base_band_ends_output.txt (0010) | The ends of the base band: tunnel envelope inside M 1.5 to 3.0, Herrin and Dutton low end at the audit's reading |
+| bf_gate_width_v2_output.txt (0010) | Basic Finner gate sizing corrected (F on the less negative curve, fin friction once, 0010's F band, wall input); reproduces 0010's tolerances |
+| band_sum_v2_output.txt (0010) | The illustrative band combination with 0010's fins-on-base half-width (12.2%) |
 | *_output.txt (others) | Raw outputs of the scripts below |
 
 Scripts (in `../scripts/`, Python 3, numpy and Pillow only):
@@ -48,13 +58,23 @@ Scripts (in `../scripts/`, Python 3, numpy and Pillow only):
 | f4_ruler.py, f4_clean.py, f4_circles.py | TN D-4014 fig. 4 calibration, declutter view, circle template |
 | love18_trace.py, love18_ransac.py, love18_ff.py, love18_twice.py | TN 3819 fig. 18 grid model, robust curve fits, free-flight curve, read-twice count |
 | love35_cal.py, love35_read.py, love35_cols.py, love35_track.py, love35_symbols.py, love35_factor.py | TN 3819 fig. 35 calibration, readings, fins-on-base factor |
-| bf_gate_width.py, bf_gate_sum.py | Expected width of the Basic Finner gate |
+| bf_gate_width.py, bf_gate_sum.py | Expected width of the Basic Finner gate, first version, kept as the record of its errors (F_high paired with the more negative curve; fin friction counted twice; no wall input) |
+| bf_gate_width_v2.py, band_sum_v2.py | The corrected sizing and illustration (0010) |
+| base_band_ends.py | Base band ends (0010) |
+| tr1109_fig29.py, tr1109_fig29b_cols.py, tr1109_fig8_ruler.py, tr1109_fig8_zoom.py | TR 1109 figs. 29 and 8: calibration, column readings, ruler zooms (0010) |
+| a51j25_fig7.py | RM A51J25 fig. 7: calibration, curve runs, ruler zoom (0010) |
+| love5_cal.py, love5_read.py, love5_cols.py | TN 3819 fig. 5: calibration and column readings (0010) |
+| blunt_te_2d.py | Conversions, comparisons and the X-15 check behind blunt_te_2d_base.md; writes its csv (0010) |
+| tn2960_fig7.py, tn2960_fig5c.py | TN 2960 figs. 7 and 5(c): calibration, readings, integration (0010) |
+| a53d02_fig17.py | RM A53D02 fig. 17: calibration and ruler zooms (0010) |
+| le_bluntness.py | Computations behind le_bluntness.md; writes its csv (0010) |
 | chap23b_read.py | TR 1051 fig. 23(b) local grid |
 | tn3320_fig9.py, l55_fig5.py | First readings of TN 3320 fig. 9 and RM L55G28a fig. 5 |
 | ntrs.sh, ntrs2.py | NTRS search |
 | clean.py, ascii.py, cleanruler.py, xyruler.py, ruler.py, calib.py, near.py, refine_dot.py, dots.py, crop.py | Digitising aids of the first draft |
 
 In the research scratchpad, downloaded PDFs are in `../pdfs/` (`../pdfs/new/` for TN 3320, TN 3372, RM
-L55G28a and NTRS 19930086750; `../pdfs/ia/` for the Basic Finner), web pages
+L55G28a and NTRS 19930086750; `../pdfs/ia/` for the Basic Finner; `../pdfs/r3/` for TR 1109, TN 2960, RM A52C20,
+RM A55H31 and RM A51J25; `../pdfs/r4/` for TN D-1056), web pages
 and TMR files in `../web/`, tool manuals in `../tools/`, rendered images in
 `../img/` (`../img/d4014/` for the TN D-4014 overlays).

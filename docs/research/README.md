@@ -27,7 +27,11 @@ as their authors wrote them.
   linear 3D fin drag by the supersonic area rule), and two overlays of TN
   3819 fig. 18 showing where the disputed curve readings fall; and
   `audit/round2/`, the second audit, of the revision, with its second
-  readings of the new transcriptions.
+  readings of the new transcriptions; and `audit/round3/`, the second
+  readings of TN 3819 fig. 35 (the fins-on-base factor: it and its band
+  agree with 0008 section 3.4 within 0.015) and of the fig. 18 values read
+  once (agreeing within 0.0013; the same reader as round 1, by another
+  method).
 - `overlays/d4014/`: the revision's overlays of its TN D-4014 readings.
   Several scripts read page images rendered from the reports, which are
   not copied here (see below).
@@ -45,6 +49,14 @@ fin scripts re-run, a resolution study of the audit's area-rule code, the
 throwaway vitest runs (quadrature convergence, the strip-theory table, the
 planar Euler sections), and `compare.py`, which derives the summaries the
 record quotes. Its README says how to re-run each.
+
+## `base-and-total/`: measurements behind 0010
+
+The throwaway vitest runs behind [0010](../design/0010-base-drag-and-total.md)
+(the base-drag and total-drag libraries, `src/base/` and `src/total/`):
+the compiled curve's band and interpolation bound, the fins-on-base rows,
+and the Basic Finner partial sum per shot. Its README says how to re-run
+each.
 
 ## `subtip/`: noses whose tip flow is axially subsonic
 

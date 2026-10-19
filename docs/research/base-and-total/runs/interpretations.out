@@ -1,0 +1,4 @@
+M 1.799: cone Cp 10 deg 0.110539, atan(0.5/2.84) = 9.9850 deg 0.110270, change -2.69e-4 (-0.24%); meplat at pitot over the cone 9.65e-5; recovery T 463.3 K
+M 2.414: cone Cp 10 deg 0.095582, atan(0.5/2.84) = 9.9850 deg 0.095348, change -2.34e-4 (-0.25%); meplat at pitot over the cone 1.03e-4; recovery T 598.9 K
+M 2.97: cone Cp 10 deg 0.087814, atan(0.5/2.84) = 9.9850 deg 0.087595, change -2.19e-4 (-0.25%); meplat at pitot over the cone 1.07e-4; recovery T 755.5 K
+T 293.950 K; nose length 2.8356; body wetted area 27.030 cal^2; fin roots 0.16 cal^2 = 0.59%; body friction at M 2.4 0.06775, times that share 4.01e-4

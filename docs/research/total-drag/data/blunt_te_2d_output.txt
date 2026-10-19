@@ -1,0 +1,108 @@
+=== A. TR 1109 fig. 29(a), turbulent, faired curves (Ames 1 by 3 ft No. 1 and 2, 12 wings of the thickness group, t/c 0.05 to 0.10, h/t 0.25 to 1.0, AR 3, chord 3 in; average of two orifice positions)
+  (2.0 at abscissa 2.5 and 3.1 at 0.5 not read: the line lies on a grid line / starts there)
+  c/[h Re^(1/5)]  M 1.5: p_b/p_inf  P_B  M 2.0: p_b/p_inf  P_B  M 3.1: p_b/p_inf  P_B
+  0.50            0.492  -0.3225      0.358  -0.2293        -        -   
+  0.75            0.492  -0.3225      0.362  -0.2279      0.209  -0.1176
+  1.00            0.494  -0.3213      0.367  -0.2261      0.223  -0.1155
+  1.50            0.498  -0.3187      0.379  -0.2218      0.255  -0.1107
+  2.00            0.503  -0.3156      0.391  -0.2175      0.286  -0.1061
+  2.50            0.508  -0.3124        -        -         0.317  -0.1015
+  3.00            0.515  -0.3079      0.416  -0.2086      0.347  -0.0971
+  3.50            0.528  -0.2997      0.430  -0.2036      0.380  -0.0922
+  4.00            0.539  -0.2927      0.442  -0.1993      0.411  -0.0876
+  4.50            0.552  -0.2844      0.454  -0.1950      0.441  -0.0831
+  M 1.5: P_B from -0.3225 (abscissa 0.50) to -0.2844 (4.50): base drag at the high end 0.88 of the low end
+  M 2.0: P_B from -0.2293 (abscissa 0.50) to -0.1950 (4.50): base drag at the high end 0.85 of the low end
+  M 3.1: P_B from -0.1176 (abscissa 0.75) to -0.0831 (4.50): base drag at the high end 0.71 of the low end
+
+=== B. TR 1109 fig. 29(b), laminar, faired curves (same wings, smooth surfaces)
+  (0.050 and 0.060: M 1.5 and 2.0 merged in one run, the value given to both; 0.016 to 0.022: merged or on a grid line, not used; M 3.1 ends near 0.065)
+  M 1.5: 0.010: 0.358 (P_B -0.4076); 0.014: 0.460 (P_B -0.3429); 0.026: 0.636 (P_B -0.2311); 0.030: 0.664 (P_B -0.2133); 0.034: 0.688 (P_B -0.1981); 0.038: 0.706 (P_B -0.1867); 0.044: 0.727 (P_B -0.1733); 0.050: 0.740 (P_B -0.1651); 0.060: 0.764 (P_B -0.1498); 0.075: 0.792 (P_B -0.1321); 0.092: 0.811 (P_B -0.1200); 0.104: 0.822 (P_B -0.1130); 0.124: 0.834 (P_B -0.1054); 0.150: 0.844 (P_B -0.0990); 0.175: 0.847 (P_B -0.0971); 0.185: 0.847 (P_B -0.0971)
+  M 2.0: 0.010: 0.442 (P_B -0.1993); 0.014: 0.490 (P_B -0.1821); 0.026: 0.615 (P_B -0.1375); 0.030: 0.644 (P_B -0.1271); 0.034: 0.672 (P_B -0.1171); 0.038: 0.693 (P_B -0.1096); 0.044: 0.717 (P_B -0.1011); 0.050: 0.740 (P_B -0.0929); 0.060: 0.764 (P_B -0.0843); 0.075: 0.782 (P_B -0.0779); 0.092: 0.794 (P_B -0.0736); 0.124: 0.807 (P_B -0.0689); 0.150: 0.816 (P_B -0.0657); 0.175: 0.818 (P_B -0.0650); 0.190: 0.817 (P_B -0.0654)
+  M 3.1: 0.006: 0.190 (P_B -0.1204); 0.010: 0.253 (P_B -0.1110); 0.014: 0.307 (P_B -0.1030); 0.018: 0.356 (P_B -0.0957); 0.026: 0.437 (P_B -0.0837); 0.030: 0.474 (P_B -0.0782); 0.034: 0.506 (P_B -0.0734); 0.038: 0.539 (P_B -0.0685); 0.044: 0.586 (P_B -0.0615); 0.050: 0.628 (P_B -0.0553); 0.058: 0.683 (P_B -0.0471); 0.062: 0.709 (P_B -0.0433)
+
+=== C. TR 1109 fig. 8, turbulent, symbols about the faired curve (Delta p_b/p_inf, by eye)
+  (the two filled squares at 2.25 for M 2.0 overlap; read as 0.343 and 0.362)
+  M 1.5: 12 symbols, Delta p_b/p_inf -0.023 to +0.016, Delta P_B -0.0146 to +0.0102; base drag over curve 0.969 to 1.045
+  M 2.0: 12 symbols, Delta p_b/p_inf -0.050 to +0.019, Delta P_B -0.0179 to +0.0068; base drag over curve 0.970 to 1.082
+  M 3.1: 9 symbols, Delta p_b/p_inf -0.013 to +0.018, Delta P_B -0.0019 to +0.0027; base drag over curve 0.977 to 1.017
+  fig. 8 curves against fig. 29(a) (orifice-position average) at the same abscissa, M 1.5: fig. 8 0.497 at 0.55 and 0.520 at 4.5 against fig. 29 0.492 and 0.552:
+    M 1.5 at 0.55: base drag fig. 29 over fig. 8 1.010
+    M 1.5 at 4.50: base drag fig. 29 over fig. 8 0.933
+    M 2.0 at 0.55: base drag fig. 29 over fig. 8 0.998
+    M 2.0 at 4.50: base drag fig. 29 over fig. 8 0.984
+    M 3.1 at 0.75: base drag fig. 29 over fig. 8 0.984
+    M 3.1 at 4.20: base drag fig. 29 over fig. 8 0.978
+    (fig. 29 M 3.1 at 4.2 interpolated: 0.423)
+
+=== D. RM A51J25 fig. 7: airfoils, p_b/p' against M', thin turbulent layers, five facilities incl. free flight
+  curve (M', p_b/p'): 1.17 0.588, 1.29 0.545, 1.40 0.517, 1.50 0.474, 1.60 0.446, 1.70 0.420, 1.83 0.399, 2.00 0.359, 2.10 0.337, 2.25 0.311, 2.50 0.275, 2.75 0.249, 2.90 0.236, 3.00 0.228, 3.10 0.220, 3.25 0.214, 3.50 0.206, 3.75 0.200, 3.90 0.199, 4.00 0.199
+  Langley 9x12 delta (tagged square)   M' 1.230: 0.498 against curve 0.567 (-0.069), base drag over curve 1.159
+  Ames (triangle-like)                 M' 1.385: 0.532 against curve 0.521 (+0.011), base drag over curve 0.977
+  Langley 9x12 rect (diamond)          M' 1.400: 0.464 against curve 0.517 (-0.053), base drag over curve 1.110
+  Ames (square)                        M' 1.475: 0.505 against curve 0.485 (+0.020), base drag over curve 0.961
+  tagged                               M' 1.600: 0.464 against curve 0.446 (+0.018), base drag over curve 0.968
+  Langley 9x12 rect (diamond)          M' 1.600: 0.424 against curve 0.446 (-0.022), base drag over curve 1.040
+  NPL two-dim                          M' 1.830: 0.407 against curve 0.399 (+0.008), base drag over curve 0.987
+  Ames (square)                        M' 1.980: 0.374 against curve 0.364 (+0.010), base drag over curve 0.984
+  Langley 9x12 rect (diamond)          M' 1.940: 0.331 against curve 0.373 (-0.042), base drag over curve 1.067
+  tagged                               M' 1.940: 0.346 against curve 0.373 (-0.027), base drag over curve 1.043
+  Ames (square)                        M' 2.470: 0.276 against curve 0.279 (-0.003), base drag over curve 1.005
+  Ames (inverted triangle)             M' 2.880: 0.253 against curve 0.238 (+0.015), base drag over curve 0.980
+  Ames (square)                        M' 3.100: 0.232 against curve 0.220 (+0.012), base drag over curve 0.985
+  Ames (inverted triangle)             M' 3.100: 0.204 against curve 0.220 (-0.016), base drag over curve 1.021
+  Langley 9 in two-dim                 M' 4.000: 0.222 against curve 0.199 (+0.023), base drag over curve 0.971
+  Langley 9 in two-dim                 M' 4.000: 0.191 against curve 0.199 (-0.008), base drag over curve 1.010
+  Langley PARD free-flight points (filled, M' 1.17 to 1.55): on the curve within about +-0.01 by eye
+  M' 1.45 to 3.2: base drag over curve 0.961 to 1.067 (11 symbols)
+
+=== E. TN 3819 fig. 5 against fig. 7 of RM A51J25 (M' = M for flat-sided sections)
+  M 1.5: line A -0.340, line B (dashed) -0.335, solid (Love from P_r) -0.307; RM A51J25 curve as P_B -0.3340; A over it 1.018, solid over it 0.919
+  M 2.0: line A -0.229, line B (dashed) -0.226, solid (Love from P_r) -0.208; RM A51J25 curve as P_B -0.2289; A over it 1.000, solid over it 0.909
+  M 2.5: line A -0.164, line B (dashed) -0.156, solid (Love from P_r) -0.148; RM A51J25 curve as P_B -0.1657; A over it 0.990, solid over it 0.893
+  M 3.0: line A -0.121, line B (dashed) -0.112, solid (Love from P_r) -0.107; RM A51J25 curve as P_B -0.1225; A over it 0.987, solid over it 0.873
+  TR 1109 fig. 29(a) at its lowest abscissa, as P_B: M 1.5 -0.3225 (0.5), M 2.0 -0.2293 (0.5), M 3.1 -0.1176 (0.75)
+  RM A51J25 curve at M 3.1 as P_B: -0.1160
+
+=== F. X-15 upper movable vertical fin, free flight, power off (TN D-1056 table II; 10 deg single wedge,
+    mean chord 8.46 ft, mean TE thickness 1.55 ft, b/2h 3.2, turbulent; Cp error +-0.02, M +-0.02 to +-0.03)
+  check of the orifice assignment: flight A at M 1.15 Cp2 -0.443 and flight B at M 1.09 mean(1,2,3) -0.406 against fig. 6(a) (by eye -0.44 and -0.41)
+  flt  t      M     Cp(mean)  flat-sided model  ratio | wedge (5 deg face): M'   p'/p    model Cp  ratio
+  A  366.0  3.24  -0.120     -0.1069  1.122 | 2.966  1.492  -0.0892  1.345
+  A  369.0  3.16  -0.127     -0.1119  1.135 | 2.894  1.479  -0.0930  1.365
+  A  371.0  3.11  -0.134     -0.1153  1.163 | 2.849  1.471  -0.0955  1.404
+  A  380.5  2.80  -0.150     -0.1376  1.090 | 2.568  1.424  -0.1127  1.331
+  A  401.5  2.45  -0.173     -0.1708  1.013 | 2.245  1.373  -0.1361  1.271
+  A  409.5  2.15  -0.201     -0.2076  0.968 | 1.964  1.333  -0.1576  1.275
+  A  435.5  1.80  -0.247     -0.2629  0.940 | 1.628  1.295  -0.1905  1.297
+  A  435.9  1.80  -0.251     -0.2629  0.955 | 1.628  1.295  -0.1905  1.318
+  A  436.2  1.79  -0.249     -0.2651  0.939 | 1.618  1.294  -0.1913  1.301
+  A  456.5  1.68  -0.289     -0.2909  0.993 | 1.509  1.285  -0.1996  1.448
+  A  465.0  1.52  -0.307     -0.3287  0.934 | 1.346  1.278  -0.1985  1.547
+  A  474.0  1.35  -0.324     -0.3681  0.880 |    -
+  A  479.6  1.23  -0.406     -0.4090  0.993 |    -
+  A  483.0  1.15  -0.443        -      -   |    -
+  B  404.0  3.17  -0.134     -0.1113  1.201 | 2.903  1.481  -0.0925  1.444
+  B  418.5  2.95  -0.148     -0.1261  1.171 | 2.704  1.446  -0.1039  1.421
+  B  441.0  2.66  -0.174     -0.1497  1.162 | 2.439  1.403  -0.1215  1.432
+  B  448.0  2.56  -0.178     -0.1594  1.119 | 2.347  1.388  -0.1281  1.392
+  B  467.2  2.30  -0.189     -0.1880  1.005 | 2.105  1.353  -0.1473  1.283
+  B  483.0  1.97  -0.243     -0.2334  1.041 | 1.793  1.312  -0.1725  1.409
+  B  508.0  1.52  -0.341     -0.3287  1.036 | 1.346  1.278  -0.1985  1.716
+  B  522.4  1.31  -0.369     -0.3821  0.966 |    -
+  B  533.0  1.09  -0.406        -      -   |    -
+  M 1.5 to 3.24: base drag over model, flat-sided 0.934 to 1.201; with the 5 deg face (Chapman's p', M') 1.271 to 1.716
+  the stated Cp error +-0.02 is 6% to 17% of |Cp| over the same points
+
+=== G. Where a fin of c/h 12.5 with Re_c 1.19e6 to 1.98e6 sits on the correlations (geometry and Reynolds number only: the Basic Finner's fins as 0010 sections 4.1 and 4.3 state them; no drag data used)
+  Re_c 1.19e+06: c/[h Re^(1/5)] = 0.762 (TR 1109 turbulent range 0.5 to 4.5); c/[h Re^(1/2)] = 0.0115 (laminar range about 0.006 to 0.19)
+  Re_c 1.98e+06: c/[h Re^(1/5)] = 0.688 (TR 1109 turbulent range 0.5 to 4.5); c/[h Re^(1/2)] = 0.0089 (laminar range about 0.006 to 0.19)
+  M 1.5: turbulent P_B at 0.75 -0.3225; laminar at 0.010 -0.4076; laminar over turbulent (base drag) 1.26
+  M 2.0: turbulent P_B at 0.75 -0.2279; laminar at 0.010 -0.1993; laminar over turbulent (base drag) 0.87
+  M 3.1: turbulent P_B at 0.75 -0.1176; laminar at 0.010 -0.1110; laminar over turbulent (base drag) 0.94
+
+=== H. Summary: base drag measured over the curve: TR 1109 fig. 8 over its own faired curves; RM A51J25 fig. 7 over its mean curve; the X-15 fin over the RM A51J25 curve used at the free-stream Mach number (M' = M)
+  TR 1109 fig. 8 (one facility, 33 symbols, M 1.5, 2.0, 3.1): 0.969 to 1.082
+  RM A51J25 fig. 7 (five facilities, 11 symbols at M' 1.45 to 3.2): 0.961 to 1.067
+  X-15 upper fin, free flight (19 points at M 1.52 to 3.24): 0.934 to 1.201
+wrote data/blunt_te_2d_base.csv

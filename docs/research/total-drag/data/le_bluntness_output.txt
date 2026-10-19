@@ -1,0 +1,32 @@
+=== A. TN 2960, 1 in circular cylinder normal to the stream (Ames 1 by 3 ft tunnels; supersonic Re 1e5 to 1e6 on diameter, "no effects of Reynolds number" found, summary p. 1)
+  fig. 7 (total pressure drag), first reading: M 1.483 CD 1.487, M 1.951 CD 1.424, M 2.897 CD 1.346 (merged symbol clusters, centres of the boxes; text p. 1: "about 1.34 at a Mach number of 2.9")
+  M 1.49: fig. 5(c) integrated: front 1.014, rear 0.454, total 1.468; modified Newtonian front (2/3)Cp_pitot 1.019 (Cp_pitot 1.529); front measured over modelled 0.995; Newtonian 4/3 over the front 1.315
+  M 1.98: fig. 5(c) integrated: front 1.156, rear 0.269, total 1.425; modified Newtonian front (2/3)Cp_pitot 1.103 (Cp_pitot 1.654); front measured over modelled 1.049; Newtonian 4/3 over the front 1.153
+  M 2.90: fig. 5(c) integrated: front 1.232, rear 0.093, total 1.325; modified Newtonian front (2/3)Cp_pitot 1.167 (Cp_pitot 1.750); front measured over modelled 1.056; Newtonian 4/3 over the front 1.082
+
+=== B. RM A55H31 eq. (14): front-side pressure drag of a yawed (swept) cylinder over the unyawed value
+  M 3.9, sweep 44 deg: ratio 0.381 (normal Mach 2.81); text: 40% at 45 deg (p. 15), 60% reduction at 44 deg (summary)
+  M 3.9, sweep 45 deg: ratio 0.362 (normal Mach 2.76); text: 40% at 45 deg (p. 15), 60% reduction at 44 deg (summary)
+  cos^3 at 45 deg (the stated high-Mach limit): 0.354
+  theory only at M 1.5 to 3 (not measured there; * marks a subsonic normal Mach number, where eq. (14) is extrapolated with the isentropic stagnation pressure):
+  sweep:       0     15     30     45     60     72
+  M 1.5:   1.000  0.912  0.688  0.421  0.213* 0.108*
+  M 2.0:   1.000  0.907  0.670  0.389  0.168  0.073*
+  M 2.5:   1.000  0.905  0.662  0.375  0.150  0.056*
+  M 3.0:   1.000  0.904  0.658  0.368  0.142  0.047*
+  M 3.9:   1.000  0.903  0.655  0.362  0.134  0.039 
+
+=== C. RM A53D02 fig. 17, free flight, natural transition (R_T about 1.6e6), total CD on the base area
+  (the basic line at M 0.97 rises almost vertically, so no increment is read there)
+  M 0.97: blunt 0.427
+  M 2.33: blunt 0.428, basic line 0.4005, increment +0.027 (+7% of the basic CD); swept-face scale 0.0261 (normal Mach 0.74)
+  M 2.98: blunt 0.349, basic line 0.3220, increment +0.027 (+8% of the basic CD); swept-face scale 0.0283 (normal Mach 0.94)
+  M 2.98: blunt 0.338, basic line 0.3220, increment +0.016 (+5% of the basic CD); swept-face scale 0.0283 (normal Mach 0.94)
+  M 2.98: blunt 0.324, basic line 0.3220, increment +0.002 (+1% of the basic CD); swept-face scale 0.0283 (normal Mach 0.94)
+  M 3.44: blunt 0.319, basic line 0.2785, increment +0.040 (+15% of the basic CD); swept-face scale 0.0303 (normal Mach 1.09)
+  M 3.76: blunt 0.256, basic line 0.2510, increment +0.005 (+2% of the basic CD); swept-face scale 0.0317 (normal Mach 1.19)
+  M 4.01: blunt 0.259, basic line 0.2330, increment +0.026 (+11% of the basic CD); swept-face scale 0.0327 (normal Mach 1.27)
+  M 4.11: blunt 0.260, basic line 0.2255, increment +0.035 (+15% of the basic CD); swept-face scale 0.0330 (normal Mach 1.30)
+  M 5.00: blunt 0.186, basic line 0.1750, increment +0.011 (+6% of the basic CD); swept-face scale 0.0356 (normal Mach 1.58)
+  M 1.5 to 3.0: increments +0.002 to +0.027 (4 points); frontal-area ratio of the four faces 0.229
+wrote data/le_bluntness.csv
