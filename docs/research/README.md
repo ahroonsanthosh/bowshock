@@ -95,9 +95,7 @@ its own validation passes.
   100 radii on a cone, 10% on an ogive), so it rests on an extrapolation
   in that distance; on blunt noses at Mach 1.2 the stagnation pressure
   error does not converge. Not served.
-- `low-mach-blunt.diff`: uncommitted changes for blunt noses at Mach 1.2 to
-  1.5, whose fitted grids fail the size-ratio gate where column counts are
-  rounded per interval along the body.
 
 Each diff names its base commit in its first line, and applies there with
-`git apply`.
+`git apply`. A diff whose work is merged is removed from here (the changes
+for blunt noses at Mach 1.2 to 1.5 were merged in eeaa537).
