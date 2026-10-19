@@ -7,16 +7,17 @@
 
 import { describe, expect, it } from 'vitest';
 import { bodyBaseDrag } from '../../src/base/base-drag';
+import { finTrailingEdgeBaseDrag } from '../../src/base/fin-trailing-edge';
 import { FITTED_DRAG_FLOOR } from '../../src/analysis/verified-drag';
 import { finWaveDrag } from '../../src/fins/fin-wave-drag';
 import { trapezoidalPlanform } from '../../src/fins/planform';
+import { roundedLeadingEdgeDrag, roundedWedge } from '../../src/fins/rounded-leading-edge';
 import { doubleWedge, singleWedge } from '../../src/fins/section';
 import { bodyFriction } from '../../src/friction/body-friction';
 import { flatPlateFriction } from '../../src/friction/flat-plate';
 import {
   BODY_FRICTION_BAND,
   FINS_OWN_DRAG_BAND,
-  finnedBodyComponents,
   finnedBodyTotalDrag,
   type FinnedBody,
 } from '../../src/total/finned-body';
@@ -191,6 +192,83 @@ describe(
   },
 );
 
+const blunt: FinnedBody = {
+  ...sharp,
+  fins: { ...sharp.fins, section: singleWedge(0.06), leadingEdgeRadius: 0.003 },
+};
+
+describe(
+  'a finned body with blunt-edged single-wedge fins: the edge terms',
+  { timeout: 120_000 },
+  () => {
+    const total = finnedBodyTotalDrag(blunt, conditions, nose(), {
+      transitionReynolds: [5e5, 3e6],
+    });
+    const byName = (n: string) => total.components.find((c) => c.name === n)!;
+    const area = Math.PI * 0.25;
+
+    it('has seven components, summed', () => {
+      expect(total.components.map((c) => c.name)).toEqual([
+        'nose wave drag',
+        'body friction',
+        'fin friction',
+        'fin leading edges',
+        'fin wave drag',
+        'body base',
+        'fin trailing-edge base',
+      ]);
+      expect(total.cd).toBeCloseTo(
+        total.components.reduce((a, c) => a + c.cd, 0),
+        15,
+      );
+    });
+
+    it('the leading edges: the nose term of the tangent geometry on four spans', () => {
+      const g = roundedWedge(0.03, 0.003, 1);
+      const t = roundedLeadingEdgeDrag({
+        mach: 2.4,
+        radius: 0.003,
+        faceAngle: g.faceAngle,
+        tanLeadingEdgeSweep: 0,
+        reynoldsOnDiameter: 1.5e6 * 0.006,
+      });
+      expect(t.regime).toBe('extrapolated in Reynolds number');
+      const c = byName('fin leading edges');
+      expect(c.cd).toBeCloseTo((4 * t.dragPerSpan) / area, 15);
+      expect(c.low).toBeCloseTo(t.band.low * c.cd, 15);
+      expect(c.high).toBeCloseTo(t.band.high * c.cd, 15);
+    });
+
+    it('the faces: the wedge at the tangent angle, on their own rise', () => {
+      const g = roundedWedge(0.03, 0.003, 1);
+      const w = finWaveDrag(blunt.fins.planform, singleWedge(2 * Math.tan(g.faceAngle)), 2.4);
+      const c = byName('fin wave drag');
+      expect(c.cd).toBeCloseTo((4 * w.cd * g.faceRise) / Math.tan(g.faceAngle) / area, 15);
+    });
+
+    it('the trailing edges: src/base with the edges in the base plane, and the laminar input', () => {
+      const t = finTrailingEdgeBaseDrag({
+        mach: 2.4,
+        count: 4,
+        thickness: 0.06,
+        span: 1,
+        chord: 1,
+        tanSweep: 0,
+        inBasePlane: true,
+        layer: 'turbulent',
+        reynoldsPerLength: 1.5e6,
+        transitionReynolds: [5e5, 3e6],
+        referenceArea: area,
+      });
+      const c = byName('fin trailing-edge base');
+      expect([c.cd, c.low, c.high]).toEqual([t.cd, t.low, t.high]);
+      expect(c.label.startsWith('an analogy, not a measurement')).toBe(true);
+      const input = total.inputs.find((i) => i.name === 'transition at the fin trailing edges')!;
+      expect([input.low, input.high]).toEqual([t.laminarInput.low, t.laminarInput.high]);
+    });
+  },
+);
+
 describe('refusals', () => {
   const refusals = (config: FinnedBody, mach = 2.4, transitionReynolds?: number[]) => {
     try {
@@ -207,23 +285,28 @@ describe('refusals', () => {
     return [];
   };
 
-  it('blunt fin trailing edges', () => {
-    expect(refusals({ ...sharp, fins: { ...sharp.fins, section: singleWedge(0.08) } })).toEqual([
-      'fin trailing-edge base: fin-trailing-edge-base',
+  it('swept blunt trailing edges and swept rounded leading edges', () => {
+    const swept = trapezoidalPlanform({
+      rootChord: 1,
+      span: 1,
+      leadingEdgeSweep: 10 * deg,
+      trailingEdgeSweep: 10 * deg,
+    });
+    expect(
+      refusals({
+        ...sharp,
+        fins: { ...blunt.fins, planform: swept },
+      }),
+    ).toEqual([
+      'fin leading edges: swept-leading-edge',
+      'fin trailing-edge base: swept-trailing-edge',
     ]);
   });
 
-  it('a fin leading-edge radius, with the scale of what it would add', () => {
+  it('a rounded leading edge on a section other than a single wedge', () => {
     expect(refusals({ ...sharp, fins: { ...sharp.fins, leadingEdgeRadius: 0.004 } })).toEqual([
-      'fin leading edges: blunt-leading-edge',
+      'fin leading edges: leading-edge-geometry',
     ]);
-    const r = finnedBodyComponents(
-      { ...sharp, fins: { ...sharp.fins, leadingEdgeRadius: 0.004 } },
-      conditions,
-      nose(),
-    );
-    // Pitot pressure coefficient at Mach 2.4 is 1.7105: 4 x 0.008 x 1 x 1.7105 / (pi / 4).
-    expect(r.refusals[0]!.message).toMatch(/would be 0\.0697 in C_D/);
   });
 
   it('boat-tails; the fins-on-base factor below M 1.8; a laminar base', () => {

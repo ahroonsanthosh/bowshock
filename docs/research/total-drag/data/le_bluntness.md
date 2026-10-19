@@ -223,8 +223,22 @@ What none of them measures:
   numbers. RM A55H31's p. 13 statement covers the front-side pressure ratio
   down to 6.7e3, but only at M 2.48 to 6.86.
 
-## 7. Second readings pending
+## 7. Second readings
 
-- TN 2960 figs. 5(c) and 7.
-- RM A53D02 fig. 17.
+TN 2960 figs. 5(c) and 7 were read a second time by an independent reader
+(`../audit/round4/audit_round4.md`). This note's first readings are kept as
+read. What the second readings change (0010 section 8.3, and
+`src/fins/tn2960.ts`, which holds both):
+
+- fig. 5(c) at M 1.98 and 45 deg is 0.884, not 0.918 (a check made after
+  the first reading was opened, so not blind), so that Mach number's front
+  ratio is 1.043, not 1.049;
+- fig. 7 at M 2.9 is 1.336, not 1.346 (the report's text supports 1.333 to
+  1.34); fig. 7 is used only to check the integration;
+- the band, 0.99 to 1.06, stands: the envelope of both readings is 0.995
+  to 1.056.
+
+Still pending:
+
+- RM A53D02 fig. 17 (read once).
 - RM A55H31 fig. 12 (not yet read once).

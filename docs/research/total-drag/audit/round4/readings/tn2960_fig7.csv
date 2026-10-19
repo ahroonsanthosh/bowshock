@@ -1,0 +1,14 @@
+# Second (independent) reading, NACA TN 2960 (Gowen and Perkins 1953) fig. 7 "The effect of Mach number on circular-cylinder drag coefficients", PDF p. 24, 300 dpi, rotated (work/f7r.png).
+# Calibration: Cd gridlines every 0.2, x = 1856 at Cd 0 and 128 px per 0.2 (lines found at 448.5, 576, 705.5, 834.5, 962.5, 1090, ..., 1856; labels 0 to 2.4);
+# Mach gridlines every 0.2, y = 2447 at M 0 to 396 at M 3.2 (128.2 px per 0.2). 1 px = 0.0016 in Cd and in M.
+# Method: symbol centres on 5x zooms (work/z7a.png, z7b.png, z7c.png), cross-checked with connected-component centres (scripts/blobs.py).
+# Reading error: +-0.005 in Cd for an isolated symbol (M 2.9); +-0.010 for the overlapping groups at M 1.5 and 2.0. Diamonds = 1-inch dia., 1- by 3-foot supersonic tunnel (this report).
+M,Cd,note
+1.487,1.511,diamond (group of three overlapping)
+1.469,1.502,diamond
+1.489,1.474,diamond
+1.978,1.482,diamond (group of three)
+1.978,1.470,diamond
+1.978,1.422,diamond
+2.896,1.336,diamond (isolated; component centre gives 1.332)
+,1.333,"Newtonian theory (M -> infinity) line, 4/3"

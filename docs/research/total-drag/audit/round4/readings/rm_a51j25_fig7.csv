@@ -1,0 +1,37 @@
+# Second (independent) reading, NACA RM A51J25 (Chapman 1951; NTRS 20030067332) fig. 7 "Airfoils, base pressure versus Mach number", PDF p. 14, 300 dpi.
+# Ordinate p_b/p' (p' = static pressure just ahead of the base), abscissa M' (Mach number just ahead of the base). Faired curve only.
+# Calibration: axis ticks from the page (scripts/p7.py): M' 1, 2, 3, 4 at x 672, 942.5, 1217, 1490.5; p_b/p' 1.0, 0.8, 0.6, 0.4, 0.2, 0 at y 598.5, 732, 862.5, 994.5, 1126.5, 1256.5
+# (tick spacing uneven by up to 3 px, so piecewise-linear between ticks). 1 px = 0.0015 in p_b/p', 0.0037 in M'.
+# Method: column scans (scripts/scan7.py), curve run separated from symbols by width and continuity, symbol clusters checked on 4x zooms (work/v7a.png, v7b.png).
+# Reading error: +-0.004 where the curve is clear; +-0.010 where it runs under symbols (M' below 1.55, 2.5, 2.9, 3.1, 4.0).
+# Below M' 1.50 the curve is buried under the filled circles (Langley, PARD) and is not read.
+# CORRECTION after the comparison with the first reading (disclosed): the values first written here at M' 1.55 (0.470) and 1.60 (0.460)
+# were the lower edge of the symbol band and the bottom of the tagged square, not the line. A pixel trace (work/fig7_trace.txt) puts the line
+# at y 945.5 (M' 1.50), 956 (1.55) and 963 (1.60): values below. The re-read was prompted by the first reading, so these three are not blind.
+Mprime,pb_over_pprime,note
+1.50,0.474,"line centre from the lower edge of the PARD band, +-0.006 (re-read, not blind)"
+1.55,0.463,"+-0.006 (re-read, not blind)"
+1.60,0.447,"line just below the tagged square, +-0.004 (re-read, not blind)"
+1.70,0.425,
+1.80,0.403,
+1.90,0.380,
+2.00,0.360,interpolated 1.95 (0.370) and 2.05 (0.350); squares at 2.0 overlap
+2.10,0.341,
+2.20,0.324,
+2.30,0.307,
+2.40,0.291,
+2.50,0.277,circle symbol on the curve
+2.60,0.266,
+2.70,0.255,
+2.80,0.247,
+2.90,0.239,interpolated; triangle on the curve
+3.00,0.230,
+3.20,0.217,
+3.30,0.214,
+3.40,0.209,
+3.50,0.208,
+3.60,0.205,
+3.70,0.203,
+3.80,0.2015,
+3.90,0.200,
+4.00,0.199,curve end among symbols

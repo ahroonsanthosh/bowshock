@@ -1,31 +1,35 @@
 # 0010: Base drag and the total, and the Basic Finner gate (draft)
 
-- **Status:** Draft. Libraries with tests (`src/base/`, `src/total/`, and an
-  addition to `src/fins/`); nothing on the drag page. Steps B3 and B5 of
-  [0008](0008-total-drag.md), whose rules (section 6.1) govern everything
-  here.
+- **Status:** Draft. Libraries with tests (`src/base/`, `src/total/`, and
+  additions to `src/fins/`); nothing on the drag page. Steps B3, B4's
+  rounded-edge term and B5 of [0008](0008-total-drag.md), whose rules
+  (section 6.1) govern everything here.
 - **Date:** 2026-10-19
-- **Inputs:** 0008 sections 3, 6.1 to 6.4 and its data files
+- **Inputs:** 0008 sections 3, 4.1, 6.1 to 6.4 and its data files
   (`docs/research/total-drag/data/`: `love_tn3819_fig18.csv`,
   `love_fig35_tn3819.csv`, `love_fig35_factor.csv`,
   `basic_finner_ada636861.md` and `.csv`, `base_sources.md`,
-  `validation_candidates.md`); the round-1 audit's fig. 18 table
+  `validation_candidates.md`, `blunt_te_2d_base.md` and `.csv`,
+  `le_bluntness.md` and `.csv`); the round-1 audit's fig. 18 table
   (`audit/readings/tn3819_fig18.csv`); the round-3 second readings of TN 3819
-  figs. 35 and 18 (`drag-audit/round3/`, outside the repository, quoted
-  below where used); [0007](0007-skin-friction.md) and `src/friction/`;
-  [0009](0009-fin-wave-drag.md) and `src/fins/`; [0006](0006-shock-fitting.md)
-  for the nose band; [0002](0002-architecture.md) section 12.
+  figs. 35 and 18 (`audit/round3/`); the round-4 second readings of the
+  fin-edge data and the Basic Finner's trailing-edge area
+  (`audit_round4.md`, its `readings/` and `scripts/compare_round4.py`,
+  `te_area_massprops.py`); [0007](0007-skin-friction.md) and
+  `src/friction/`; [0009](0009-fin-wave-drag.md) and `src/fins/`;
+  [0006](0006-shock-fitting.md) for the nose band;
+  [0002](0002-architecture.md) section 12.
 
 Every number below is asserted by a committed test named with it, or
 printed by a run kept in
 [`docs/research/base-and-total/`](../research/base-and-total/README.md).
 
-**Result in one line.** The Basic Finner gate does not pass: the total is
-refused at all 11 shots, because two components have no method with a
-measured band (the base of the blunt fin trailing edges, and the fin
-leading-edge radius), so under 0008 section 6.1 the configuration is
-refused. Every component that has a band sums to 73% to 83% of the
-measured CX0 (section 4).
+**Result in one line.** The Basic Finner gate passes at all 11 shots
+(second run, section 4.2): residuals -7.7% to +4.5% of the modelled total
+(mean -1.9%; -6.5% at the two shots at M 2.97), inside tolerances of
+-19.5% to -26.2% and +26.5% to +31.4%. The fin-edge terms were implemented
+with the choices of section 5, fixed before the run; the first run was
+refused for their absence (section 6).
 
 ## 1. B3: base drag (`src/base/`)
 
@@ -157,14 +161,11 @@ layer at the base, and the fins' conditions of 1.3.
 
 ### 1.5 The fins' trailing-edge base
 
-0008 names the method (section 6.2, B3: "blunt fin trailing edges:
-two-dimensional base pressure (Love), labelled") but not its data: Love's
-two-dimensional base pressures are not transcribed (B1; sections 3.4 and
-7), so no measured band exists, and under section 6.1 the component is
-refused. `finTrailingEdgeBaseDrag` returns zero for sharp edges and
-refuses blunt ones, citing this. The area is also open: 0.32 cal^2 if the
-Basic Finner's 0.08 cal thickness runs across the span (41% of the body
-base), 0.16 if it tapers to the tip (0008 section 5).
+The two-dimensional base pressure of blunt trailing edges, 0008's method
+for this term (section 3.4, B3), is now transcribed once and implemented
+(`src/base/blunt-te-2d.ts`, `src/base/fin-trailing-edge.ts`). Its model,
+band, refusals and input band, and the choices behind them, are in
+section 5.1. The first gate run refused the term (section 6).
 
 ## 2. Single wedges in `src/fins/`
 
@@ -173,7 +174,8 @@ blunt trailing edge, which `src/fins/` refused. A section may now declare a
 blunt trailing edge (`singleWedge`, `bluntTrailingEdge: true`); its wave
 drag is that of the faces alone (in supersonic flow nothing behind the
 trailing edge reaches them), the base being 1.5's term. Undeclared
-thickness at x = 1 and blunt leading edges stay refused.
+thickness at x = 1 stays refused, and a rounded leading edge is the
+separate term of section 5.2.
 (`blunt-trailing-edge.test.ts`; the existing fin tests pass unchanged.)
 
 - 2D: the exact face drag equals the oblique-shock pressure on both faces
@@ -197,77 +199,396 @@ stay apart from it. A refused component refuses the total
 the components of a body with a nose, a cylinder to a flat base and a set
 of fins, all on the cylinder's cross-section:
 
-| Component      | Model                                                    | Band                                                       |
-| -------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
-| Nose wave drag | given; `nose.ts` for a sharp cone: Taylor-Maccoll, exact | given; for the cone the fitted solver's floor, 7e-5 (0006) |
-| Body friction  | van Driest II, momentum integral, adiabatic (0007)       | 0.88 to 1.19 (0007)                                        |
-| Fin friction   | van Driest II plates of the local chord, both faces      | fins' own drag, 1.01 to 1.59 (0008 section 4.3)            |
-| Fin wave drag  | exact section drag times the linear 3D ratio (0009)      | the same, plus the quadrature error                        |
-| Body base      | compiled curve times the fins-on-base factor (section 1) | 0.82 to 1.08, interpolation, fins-on-base band             |
-| Fin TE base    | refused when blunt (1.5)                                 |                                                            |
+| Component              | Model                                                                                                 | Band                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Nose wave drag         | given; `nose.ts` for a sharp cone: Taylor-Maccoll, exact                                              | given; for the cone the fitted solver's floor, 7e-5 (0006)               |
+| Body friction          | van Driest II, momentum integral, adiabatic (0007)                                                    | 0.88 to 1.19 (0007)                                                      |
+| Fin friction           | van Driest II plates of the local chord, both faces                                                   | fins' own drag, 1.01 to 1.59 (0008 section 4.3)                          |
+| Fin leading edges      | rounded and unswept: the nose of the tangent geometry at modified-Newtonian pressure (section 5.2)    | 0.99 to 1.06 (TN 2960), widened by +-0.03 where extrapolated in Reynolds |
+| Fin wave drag          | exact section drag times the linear 3D ratio (0009); with a rounded edge, the faces on their own rise | the fins' own drag band, plus the quadrature error                       |
+| Body base              | compiled curve times the fins-on-base factor (section 1)                                              | 0.82 to 1.08, interpolation, fins-on-base band                           |
+| Fin trailing-edge base | blunt, unswept, turbulent: thin-layer two-dimensional base pressure at M_inf (section 5.1)            | 0.93 to 1.21                                                             |
 
 Fin friction carries B4's band only and body friction 0007's, so each is
 counted once. Input bands: transition (a laminar run to each Re_T given,
 from the tip and from each fin's leading edge, against fully turbulent; a
-laminar layer at the base refuses the base), wall temperature (from
-adiabatic to the temperature given: 0007's band is measured on adiabatic
-walls only, so this change is van Driest II's and the laminar solution's
-prediction, not validated), roughness (smooth by default, no band;
-otherwise a band the caller supplies with its source, since no roughness
-model is validated in bowshock). Refused besides src/base's and
-src/fins's refusals: a fin leading-edge radius other than zero (0008 B4
-refuses blunt leading edges until planar fitting exists; the message
-gives the pitot pressure on the edges' frontal height as the scale of the
-term missed). Not represented: the fin roots' share of the body's wetted
-area (0.59% of it on the Basic Finner, 4e-4 in C_D), fin-body
-interference, the Mach number ahead of the base (the free stream's, fig.
-18's abscissa for cylindrical afterbodies), fin cant and roll, nose-tip
-bluntness. Tests: `tests/total/total-drag.test.ts` (each component against
-an independent computation, the arithmetic, the inputs, the refusals).
+laminar layer at the base refuses the base; where a fin is laminar at its
+blunt trailing edge, the trailing-edge term's laminar-against-turbulent
+change is a further band, section 5.1), wall temperature (from adiabatic to
+the temperature given: 0007's band is measured on adiabatic walls only, so
+this change is van Driest II's and the laminar solution's prediction, not
+validated), roughness (smooth by default, no band; otherwise a band the
+caller supplies with its source, since no roughness model is validated in
+bowshock). Refused besides src/base's and src/fins's refusals: a rounded
+leading edge on anything but a single-wedge fin of constant chord, and a
+blunt trailing edge on a fin of varying chord. Not represented: the fin
+roots' share of the body's wetted area (0.59% of it on the Basic Finner,
+4e-4 in C_D), fin-body interference, the Mach number ahead of the base (the
+free stream's, fig. 18's abscissa for cylindrical afterbodies), fin cant
+and roll, nose-tip bluntness, and the rounded edge's effect on the fin
+faces (section 5.2). Tests: `tests/total/total-drag.test.ts` (each
+component against an independent computation, the arithmetic, the inputs,
+the refusals).
 
 ## 4. B5: the Basic Finner gate
 
+The gate has been run twice. The first run (section 6, kept as history)
+was refused, because the two fin-edge terms had no method with a measured
+band. This section is the second run, made once, after both terms were
+implemented with the choices of section 5, written and ruled on before
+it.
+
 ### 4.1 The configuration and its interpretations
 
-As transcribed (`src/validation/basic-finner.ts`): a 20 deg cone, half-angle
-10 deg, its length 0.5 / tan(10 deg) = 2.836 cal (fig. 2 prints 2.84; the
-half-angle atan(0.5 / 2.84) = 9.985 deg would lower the cone's drag by
-0.24% to 0.25%, 2.2e-4 to 2.7e-4 in C_D); a cylinder to 10.0 cal; four
-rectangular fins, 1 cal chord and span, trailing edges at the base, single
-wedges to a trailing edge 0.08 cal thick across the span (the reading of
-"conical in shape" that fig. 2's side view suggests; a taper to the tip
-cannot be represented, as `src/fins/` keeps the section along the span);
-the fins' leading-edge radius 0.004 cal, as the report states ("very sharp
-with a radius 0.004 cal", p. 3); the 0.004 cal meplat of the nose
-neglected (at pitot pressure it would add 1.0e-4 in C_D). Fin cant (0, 2
-and 4 deg) is not modelled; the report finds no effect on CX0.
+As transcribed (`src/validation/basic-finner.ts`):
+
+- a 20 deg cone, half-angle 10 deg, its length 0.5 / tan(10 deg) = 2.836 cal
+  (fig. 2 prints 2.84; the half-angle atan(0.5 / 2.84) = 9.985 deg would
+  lower the cone's drag by 0.24% to 0.25%, 2.2e-4 to 2.7e-4 in C_D);
+- a cylinder to 10.0 cal;
+- four rectangular fins, 1 cal chord and span, trailing edges at the base;
+- single wedges with the leading edge rounded to the report's 0.004 cal
+  ("very sharp with a radius 0.004 cal", p. 3), in the tangent geometry of
+  section 5.2, to a blunt trailing edge 0.08 cal thick;
+- the trailing edge's area, **0.32 cal^2**: four edges 0.08 cal thick over
+  the full 1 cal span (constant spanwise thickness), as the independent
+  reader decided it from the report's measured mass properties (round 4,
+  section 4; no drag value used). Fig. 2 shows no spanwise section, so the
+  text's "thickness of 0.08 cal at the base" allows constant thickness
+  (0.32 cal^2) or a taper to zero at the tip (0.16). With steel fins and
+  body and the nose density solved for the measured 1.58 kg, constant
+  thickness gives a roll inertia Ix of 1.911 kg cm^2 against 1.92 measured
+  (table I; 1.91 to 1.93 over the nine rounds of table II) and the CG at
+  5.528 cal against 5.50 to 5.54; the taper gives 1.706, 11% below every
+  round, and no plausible body raises it to the measured value (at most
+  1.873 with a weightless nose; 1.856 with tungsten fins). Iy does not
+  separate them (both within 0.6%);
+- the 0.004 cal meplat of the nose neglected (at pitot pressure it would
+  add 1.0e-4 in C_D);
+- fin cant (0, 2 and 4 deg) not modelled; the report finds no effect on
+  CX0.
 
 Conditions: per shot, the Mach number and the Reynolds number on 0.300 m
 (Table V), so 1/10 of it per caliber; the static temperature 293.95 K from
 the range's speed of sound, 343.7 m/s (Table V gives 343.4 to 344.0, which
-changes no value at the fourth decimal). The nose drag is the exact
-Taylor-Maccoll value with the fitted solver's floor as its band (the
-fitted solver was not run). Transition: 0008's input, a laminar run to
-Re_T = 5e5, 1.6e6 and 3e6 against fully turbulent (at 3e6 the fins, Re_c
-1.19e6 to 1.98e6, are laminar throughout). Wall temperature: not stated
-by the report. A model launched at the range's air temperature can only
-be heated by the flow, toward the recovery temperature (463 K at M 1.80,
-756 K at M 2.97), so its wall lies between the two unless the gun heated
-it, which the report does not discuss. The wall is taken adiabatic
-(0007's condition) with an input band to the air temperature, the cold
-end. The gate's
-tolerance is 0008's: the model-form band, the transition band and the
-shot-to-shot spread of the Mach cluster (-3.3% to +2.0%, -2.2% to +3.4%,
--7.6% to +4.5%, -1.2% to +1.2%); with the wall-temperature band added on
-the high side where stated.
+changed no value at the fourth decimal in the first run). The nose drag is
+the exact Taylor-Maccoll value with the fitted solver's floor as its band
+(the fitted solver was not run). Transition: 0008's input, a laminar run
+to Re_T = 5e5, 1.6e6 and 3e6 against fully turbulent (at 3e6 the fins, Re_c
+1.19e6 to 1.98e6, are laminar throughout, so the trailing-edge laminar
+band applies at every shot). Wall temperature: not stated by the report. A
+model launched at the range's air temperature can only be heated by the
+flow, toward the recovery temperature (463 K at M 1.80, 756 K at M 2.97),
+so its wall lies between the two unless the gun heated it, which the
+report does not discuss. The wall is taken adiabatic (0007's condition)
+with an input band to the air temperature, the cold end.
 
-### 4.2 The verdict
+The gate's tolerance is 0008's (sections 6.2 B5 and 6.3), on the residual
+CX0 / modelled - 1: the linear sum, over the modelled total, of every
+component's model-form band (the fins-on-base and fin-edge bands
+included), the input bands for the unknown transition (friction, low side;
+the trailing edges' laminar band, both sides) and wall temperature (high
+side), and the shot-to-shot spread of the shot's Mach cluster (-3.3% to
++2.0%, -2.2% to +3.4%, -7.6% to +4.5%, -1.2% to +1.2%). A shot passes
+when its residual lies inside its tolerance; a failed shot refuses the
+configuration (0008 section 6.1).
+
+### 4.2 The second run
+
+Made once, on 2026-10-19, after sections 4.1 and 5 were written and
+committed with the reader's report applied (commit f4791ad), with the
+runner kept as
+[`runs/gate-second-run.test.ts`](../research/base-and-total/README.md) and
+its output `runs/gate-second-run.out`; `tests/validation/basic-finner.test.ts`
+holds every value below. Reported as it came out; nothing was changed
+after it.
+
+**Verdict: pass.** Every one of the 11 gated shots lies inside its
+tolerance.
+
+| Shot       | M     | CX0   | Modelled C_D (model-form band) | Residual | Tolerance (high end without the wall) | Verdict |
+| ---------- | ----- | ----- | ------------------------------ | -------- | ------------------------------------- | ------- |
+| DA95021318 | 1.799 | 0.594 | 0.6123 (0.5311 to 0.7261)      | -3.0%    | -24.2% to +26.5% (+24.0%)             | pass    |
+| DA95021529 | 1.846 | 0.598 | 0.5955 (0.5181 to 0.7053)      | +0.4%    | -23.8% to +26.7% (+24.0%)             | pass    |
+| DA95021308 | 1.850 | 0.567 | 0.5944 (0.5172 to 0.7039)      | -4.6%    | -23.8% to +26.6% (+23.9%)             | pass    |
+| DA95021328 | 2.348 | 0.500 | 0.4846 (0.4250 to 0.5720)      | +3.2%    | -21.3% to +29.7% (+25.5%)             | pass    |
+| DA95020907 | 2.364 | 0.478 | 0.4824 (0.4234 to 0.5690)      | -0.9%    | -21.3% to +29.6% (+25.3%)             | pass    |
+| DA95021317 | 2.414 | 0.473 | 0.4745 (0.4174 to 0.5587)      | -0.3%    | -21.0% to +29.6% (+25.2%)             | pass    |
+| DA95020927 | 2.663 | 0.446 | 0.4428 (0.3892 to 0.5210)      | +0.7%    | -26.2% to +31.2% (+26.1%)             | pass    |
+| DA95020906 | 2.741 | 0.400 | 0.4332 (0.3808 to 0.5097)      | -7.7%    | -26.1% to +31.4% (+26.1%)             | pass    |
+| DA95020916 | 2.749 | 0.452 | 0.4323 (0.3800 to 0.5086)      | +4.5%    | -26.1% to +31.4% (+26.1%)             | pass    |
+| DA95030603 | 2.969 | 0.385 | 0.4072 (0.3580 to 0.4786)      | -5.4%    | -19.5% to +28.6% (+22.7%)             | pass    |
+| DA95022205 | 2.970 | 0.376 | 0.4071 (0.3579 to 0.4786)      | -7.6%    | -19.5% to +28.6% (+22.7%)             | pass    |
+
+The residual is CX0 / modelled - 1. The tolerance is section 4.1's: the
+model-form band (-12.0% to -13.3% and +17.5% to +18.6% of the modelled
+total), the input bands (transition on friction -0.0187 to -0.0301 in
+C_D; the trailing edges' laminar band, from -0.0066 to +0.0163 at M 2.97
+to -0.0165 to +0.0207 at M 1.80; the wall at the air temperature, +0.0155
+to +0.0241) and the cluster's shot spread.
+
+Per cluster:
+
+| Cluster        | Shots | Mean residual | Range          | Standard deviation | CX0 spread about its mean |
+| -------------- | ----- | ------------- | -------------- | ------------------ | ------------------------- |
+| M 1.80 to 1.85 | 3     | -2.4%         | -4.6% to +0.4% | 2.6%               | -3.3% to +2.0%            |
+| M 2.35 to 2.41 | 3     | +0.7%         | -0.9% to +3.2% | 2.2%               | -2.2% to +3.4%            |
+| M 2.66 to 2.75 | 3     | -0.8%         | -7.7% to +4.5% | 6.3%               | -7.6% to +4.5%            |
+| M 2.97         | 2     | -6.5%         | -7.6% to -5.4% | 1.6%               | -1.2% to +1.2%            |
+
+Over the 11 shots the mean residual is -1.9%.
+
+The components (C_D on the body's cross-section):
+
+| Shot       | M     | Nose wave drag | Body friction | Fin friction | Fin leading edges | Fin wave drag | Body base | Fin trailing-edge base |
+| ---------- | ----- | -------------- | ------------- | ------------ | ----------------- | ------------- | --------- | ---------------------- |
+| DA95021318 | 1.799 | 0.1105         | 0.0804        | 0.0360       | 0.0439            | 0.0165        | 0.2177    | 0.1072                 |
+| DA95021529 | 1.846 | 0.1090         | 0.0791        | 0.0355       | 0.0442            | 0.0160        | 0.2085    | 0.1033                 |
+| DA95021308 | 1.850 | 0.1088         | 0.0792        | 0.0355       | 0.0442            | 0.0160        | 0.2077    | 0.1030                 |
+| DA95021328 | 2.348 | 0.0968         | 0.0688        | 0.0309       | 0.0463            | 0.0121        | 0.1554    | 0.0742                 |
+| DA95020907 | 2.364 | 0.0965         | 0.0686        | 0.0308       | 0.0464            | 0.0121        | 0.1545    | 0.0735                 |
+| DA95021317 | 2.414 | 0.0956         | 0.0675        | 0.0303       | 0.0465            | 0.0118        | 0.1516    | 0.0712                 |
+| DA95020927 | 2.663 | 0.0917         | 0.0632        | 0.0285       | 0.0471            | 0.0106        | 0.1408    | 0.0609                 |
+| DA95020906 | 2.741 | 0.0906         | 0.0618        | 0.0278       | 0.0473            | 0.0103        | 0.1373    | 0.0581                 |
+| DA95020916 | 2.749 | 0.0905         | 0.0617        | 0.0278       | 0.0473            | 0.0103        | 0.1369    | 0.0578                 |
+| DA95030603 | 2.969 | 0.0878         | 0.0580        | 0.0261       | 0.0476            | 0.0095        | 0.1272    | 0.0508                 |
+| DA95022205 | 2.970 | 0.0878         | 0.0580        | 0.0262       | 0.0476            | 0.0095        | 0.1272    | 0.0508                 |
+
+As shares of the modelled total: the body base 31% to 36%, the nose 18%
+to 22%, the fins' trailing-edge base 12% to 18%, body friction 13% to 14%,
+the leading edges 7% to 12%, fin friction 6%, fin wave drag 2% to 3%. The
+two fin-edge terms, both labelled analogies, carry 24% to 25% of the total,
+and the body base carries the fins-on-base factor, itself an analogy
+from circular-arc fins. The leading edges are labelled "extrapolated in
+Reynolds number" at the six shots at M 1.80 to 2.41 and covered by RM
+A55H31 at the five at M 2.66 to 2.97 (section 5.2). The trailing edges'
+laminar band is flagged as extrapolated at the eight shots above M 2.3
+(section 5.1). The five shots at M 1.06 to 1.33 are refused (the leading
+edges below M 1.49, the base below M 1.5, the fin sections' detached
+shocks below M 1.2), as 0008 has them: reported, not gated.
+
+**What the result says, and what it does not.**
+
+- Every residual, -7.7% to +4.5%, lies inside the model-form band alone,
+  before the input bands and the shot spread are added.
+- The tolerance is wide, -19.5% to -26.2% and +26.5% to +31.4%. 0008
+  section 6.3 warns that a pass at such a width says little by itself;
+  the residuals are the finding.
+- At M 1.80 to 2.75 the cluster means lie within 2.4% of zero, and each
+  cluster's residuals spread about as its CX0 does (the model changes by
+  at most 3.0% within a cluster, so the residuals' spread is mostly the
+  data's).
+- At M 2.97 both shots lie below the model, by 5.4% and 7.6% (mean
+  -6.5%), beyond that cluster's own spread of +-1.2%. That is a systematic
+  offset inside the tolerance, which 0008 section 6.3 counts as a finding.
+  Two shots cannot separate it from scatter of the size seen at M 2.74
+  (-7.7%). Nothing was changed for it: the configuration is not retuned
+  on its own hold-out (0008 section 6.1).
+- The Basic Finner is now used. Any later change to the terms it tested,
+  or any band checked against these residuals, is "estimated on the Basic
+  Finner, not validated", and needs another hold-out (0008 section 6.4).
+
+## 5. The fin-edge terms: the choices made before the second run
+
+Every choice below was made from geometry, physics and the component data
+alone, written here and ruled on by the coordinator (2026-10-19) before the
+second gate run, and is not revisited after it. The Basic Finner's drag
+was used for none of them; its geometry, mass properties and Reynolds
+numbers were used where stated.
+
+The independent reader's second readings (round 4) are applied as the
+coordinator ruled: each table's second reading is held beside the first,
+and **every band is the envelope of both readings** (the conservative
+rule). The second readings were made before the first was opened, except
+three items the reader marks "not blind": RM A51J25 fig. 7's symbols, its
+curve at M' 1.50 to 1.60 (re-read after the comparison), and the TN 2960
+fig. 5(c) faired-curve check at 45 deg. Every second-reading value was
+checked against the reader's files when transcribed
+([`runs/second-readings.test.ts`](../research/base-and-total/README.md)).
+
+### 5.1 The trailing edges (`src/base/fin-trailing-edge.ts`)
+
+Data: `src/base/blunt-te-2d.ts`. The first readings are transcribed from
+`docs/research/total-drag/data/blunt_te_2d_base.csv` and held to it by
+`tests/base/fin-trailing-edge.test.ts`; the second readings (round 4) stand
+beside them: TR 1109 fig. 29(a) and (b) (the comparison set of
+`compare_round4.py`, which holds every fig. 29(a) value of the reader's csv;
+of fig. 29(b) it leaves out the csv's points at 0.060 to 0.185 on the M 1.5
+and 2.0 pair, whose identity the csv calls uncertain to the left and whose
+0.786 at 0.080 lies on the first reading's M 2.0 curve, 0.012 below its M
+1.5 curve, far from the fins' 0.0089 to 0.0115), fig. 8's 32 symbols and
+its faired curves, RM A51J25 fig. 7's curve (M' 1.50 to 4.00; under the
+PARD symbols below 1.50) and its symbols. Corrections from the second
+reading: the first reading's fig. 8 point at M 3.1, X 2.0, 0.275 does not
+exist and is dropped (it set no band end: 1.007 against its curve). TN
+D-1056 table II was retyped in full and equals the first typing in every
+row used.
+
+- **Nominal.** C_D = -P_B(M) n h s / A_ref, P_B the thin-layer
+  two-dimensional curve, RM A51J25 fig. 7's mean curve (first reading) at
+  M' = M_inf (flat-sided sections), linear in M. This is 0008's method
+  (section 3.4, B3). The second reading of the curve agrees within -0.005
+  to +0.003 in p_b / p' at M' 1.50 to 4.00 (base drag 0.995 to 1.009), and
+  enters through the band. No interpolation band is added: the band's
+  evidence (the X-15 points, RM A51J25's symbols) was formed against the
+  interpolated curves at each point's own Mach number. TN 3819 fig. 5's
+  line A reproduces the curve within 0.987 to 1.018, a reading check (0.992
+  to 1.024 on the second readings, the reader's figure).
+- **Band, 0.93 to 1.21** on the term, measured over modelled: the
+  envelope, over both readings, of the evidence 0008 lists (each item
+  asserted by the test):
+
+  | Evidence                                                            | First reading  | Second reading                                                                            |
+  | ------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------- |
+  | TR 1109 fig. 8, 32 symbols over their own faired curve              | 0.969 to 1.082 | 0.953 to 1.072                                                                            |
+  | TR 1109 fig. 29(a) over fig. 8 (orifice position), 6 abscissas      | 0.933 to 1.010 | 0.946 to 1.011                                                                            |
+  | RM A51J25 fig. 7, 11 symbols at M' 1.45 to 3.2, over the mean curve | 0.961 to 1.067 | 0.935 to 1.057 (second symbols, second curve); crossed: 0.941 to 1.065 and 0.942 to 1.057 |
+  | X-15 fin, 18 points at M 1.52 to 3.24, over the mean curve          | 0.934 to 1.201 | 0.936 to 1.204 (second curve)                                                             |
+
+  The RM A51J25 symbols are taken over each reading of the curve, each
+  reading of the symbols, all four pairs; the second curve starts at M'
+  1.50, so for the Ames square at 1.475 (first) or 1.492 (second) it is
+  the one-interval envelope of its end value and its 1.50 to 1.55
+  extrapolation, and both ends count (0.935 is the end value; the reader's
+  0.939 is the extrapolation). The envelope is 0.933 to 1.204; rounded
+  outward, **0.93 to 1.21**, as before the second reading (0008's "about
+  0.93 to 1.20" would be narrower than the X-15's own points). The X-15
+  count is 18 power-off rows at M 1.52 to 3.24 (the research note says
+  19). Domain M 1.5 to 3.2.
+
+- **Label.** For edges in the body's base plane, as on fins at the base:
+  "an analogy, not a measurement", since no opened source measures such
+  an edge (0008 section 3.4).
+- **Refused:** swept trailing edges (base pressure 20% to 50% higher at M
+  1.41 and 1.96 with 45 deg of sweep, RM A51J25 p. 17); a laminar layer at
+  the trailing edge as the nominal state; and thick layers, with c / [h
+  Re_c^(1/5)] above 1.0. Up to 1.0, TR 1109 fig. 29(a)'s base drag lies
+  within 0.4%, 1.4% and 1.8% of its lowest-abscissa value at M 1.5, 2.0
+  and 3.1 in the first reading (from X 0.5, 0.5 and 0.75) and within 0.2%,
+  1.5% and 4.0% in the second (from X 0.45, where its curves start); by
+  4.5 it has fallen 11.8%, 15.0% and 29.3% (11.4%, 15.1%, 30.9%), which
+  the thin-layer curve does not carry. The second reading's 4.0% at M 3.1
+  comes from the part of the curve, X 0.45 to 0.75, that the first did not
+  read; the limit stays 1.0 as ruled, and the Basic Finner's fins sit at
+  0.69 to 0.76 (c / h 12.5, Re_c 1.19e6 to 1.98e6), where the second
+  reading's base drag at M 3.1 is 1.5% to 2.2% below its value at 0.45.
+- **Laminar input band**, in place of 0008's fixed -13% to +26%, which was
+  computed at two read points (0.75 and 0.010) for the whole range of
+  Reynolds numbers and is superseded. When a transition input leaves a fin
+  laminar at its trailing edge (Re_T at least Re_c), the term changes by
+  the laminar over turbulent base drag of TR 1109 fig. 29: laminar (29(b))
+  at c / [h Re_c^(1/2)] over turbulent (29(a)) at c / [h Re_c^(1/5)], for
+  the shot's own Re_c, at each of M 1.5, 2.0 and 3.1, and the band is the
+  envelope over the three (the ratio changes sign between them, 1.26,
+  0.87, 0.94 at the read points, 1.265, 0.878, 0.945 on the second
+  reading, so it is not interpolated in Mach number) and over both
+  readings of each curve. Where an abscissa lies beyond a curve's read
+  range by at most one read interval, the value is the envelope of the end
+  value and the end interval's linear extrapolation, flagged; further out,
+  in either reading, the input is refused. For the Basic Finner the
+  laminar abscissa is 0.0089 to 0.0115, below the first read point (0.010)
+  at M 1.5 and 2.0 for Re_c above 1.56e6, and the turbulent one 0.688 to
+  0.762, below M 3.1's first point in the first reading (0.75) for Re_c
+  above 1.29e6; those shots are flagged.
+- **The laminar band per shot, against the reader's.** Computed from each
+  gated shot's Reynolds number alone, before the run
+  ([`runs/laminar-band.test.ts`](../research/base-and-total/README.md)):
+  -15.4% to +19.4%, -15.0% to +20.5% and -15.1% to +20.3% at the three
+  shots at M 1.80 to 1.85 (Re_c 1.19e6 to 1.24e6, within the read range);
+  -12.9% to +26.4% and +26.3% at M 2.348 and 2.364 (flagged for the
+  turbulent curve only); -12.9% to +27.2%, +29.0%, +29.8% and +29.8% at M
+  2.41 to 2.75; -13.0% to +32.0% and +31.9% at M 2.969 and 2.97 (Re_c
+  1.98e6 and 1.97e6, laminar abscissa 0.0089, extrapolated below the M 1.5
+  laminar curve's first read point). Over the shots, -15.4% to +32.0%. The
+  reader's figure over the fins' range is about -15% to +29%, or +32%
+  extrapolated at the lowest abscissa: the same ends (its -15% is the M
+  2.0 ratio 0.846 at 0.0115, here 0.8457; its +32% is the M 1.5 ratio
+  1.319 extrapolated to 0.0089, here 1.3198; the report does not derive
+  its +29%, and the M 2.66 shot, at 0.00948 near the M 1.5 laminar curve's
+  drawn start, about 0.0095, gives +29.0%). The two agree; above +26.5%
+  (the value at 0.010) every figure is extrapolated.
+- **Area.** The library holds a trailing-edge thickness uniform along the
+  span; the Basic Finner's is 0.32 cal^2, as section 4.1 records. A taper
+  would put a thick layer near the tip and change the fins' section along
+  the span, which `src/fins/` does not represent, and would be refused
+  there.
+
+### 5.2 The leading edges (`src/fins/rounded-leading-edge.ts`)
+
+Data: `src/fins/tn2960.ts`. The first reading (faired curves) is from
+`le_bluntness.csv`, held to it by `tests/fins/rounded-leading-edge.test.ts`,
+with one correction: fig. 5(c) at M 1.98 and 45 deg is 0.884, not 0.918
+(the reader's column scans of the faired curve at 42.0 and 48.6 deg, a
+check made after the first reading was opened, so not blind). The second
+reading (round 4) stands beside it: fig. 5(c)'s symbols at 15 deg steps,
+and fig. 7's diamonds one by one.
+
+- **Geometry.** The faces are tangent to the leading-edge circle (radius
+  r, its front at x = 0) and pass through the trailing-edge corners (c,
+  +-h): h cos(delta) - (c - r) sin(delta) = r. For the Basic Finner (r =
+  0.004, h = 0.04, c = 1) delta = 2.070 deg, against 2.291 deg for a sharp
+  wedge through the same corners; the faces start at x = 0.0039 and rise
+  0.0360 each. **A consequence of the geometry: the faces' exact wave drag
+  falls by 19.1% to 19.2% at M 1.8 to 3.0** against the sharp wedge
+  (0.808 to 0.810 of it; Ackeret's slope squared alone gives 0.816).
+- **The nose term.** The circle's front side up to the tangent points at
+  modified-Newtonian pressure, Cp_pitot cos^2(phi): per unit span Cp_pitot
+  r 2 (cos(delta) - cos^3(delta) / 3), which is (2/3) Cp_pitot (2r) to
+  within 1e-6. Band **0.99 to 1.06**: TN 2960's front side (fig. 5(c), 0 to
+  90 deg, trapezoid rule) over (2/3) Cp_pitot at M 1.49, 1.98, 2.90, the
+  envelope of both readings, rounded outward: 0.995, 1.043, 1.056 on the
+  first (1.049 at M 1.98 before the correction) and 1.002, 1.049, 1.052 on
+  the second (the reader's Simpson rule gives 1.000, 1.046, 1.053), so
+  0.995 to 1.056. As a check on the integration, the first reading's
+  totals are 0.987, 0.996 and 0.985 of fig. 7's first reading; the second
+  reading's are 0.980, 0.976 and 0.994 of the mean of fig. 7's diamonds
+  (0.960 to 1.000 of single diamonds; at M 1.49 and 1.98 the integral lies
+  at the low edge of the diamonds' scatter, 1.474 to 1.511 and 1.422 to
+  1.482).
+- **The faces.** Their wave drag is the exact two-dimensional drag of a
+  wedge at delta on their own rise, times the linear 3D ratio of the
+  planform (0009; the faces' sheet is taken from x = 0, a 0.4% shift of
+  the chord). They keep the fins' own-drag band.
+- **What is not modelled, the analogy.** The nose's effect on the faces:
+  its entropy layer and the overexpansion behind the shoulder, where the
+  cylinder has a separated wake and the fin has its faces. No opened
+  source measures it; the term is labelled "an analogy, not a
+  measurement".
+- **Domain.** TN 2960 covers M 1.49 to 2.90 and Re_D 1e5 to 1e6 (no
+  Reynolds-number effect found there). Accepted beyond it, on RM A55H31's
+  statement (pp. 13 to 14) that the front-half pressure distribution, as a
+  ratio to the impact pressure, is a unique function of azimuth over Re
+  6.7e3 to 1.4e5 and M 2.48 to 6.86: M up to 3.0, and Re_D down to 6.7e3 at
+  M 2.48 and above, with the same band. Below M 2.48 no measurement covers
+  Re_D near 1e4: there the band is widened by **+-3% of the term**, an
+  allowance for an unmeasured regime set from the boundary-layer
+  displacement scale (about 1% to 2% of D at Re_D 1e4, doubled), not from
+  data, and the term is labelled "extrapolated in Reynolds number". The
+  Basic Finner's edges have Re_D 0.95e4 to 1.58e4 (Table V's Reynolds
+  numbers, D = 0.008 cal): its six shots at M 1.80 to 2.41 are
+  extrapolated in Reynolds number, its five at M 2.66 to 2.97 covered by
+  RM A55H31.
+- **Refused:** swept leading edges (no swept-cylinder data at M 1.5 to 3;
+  RM A55H31's eq. (14) would be an untested theory there), M below 1.49
+  or above 3.0, Re_D below 6.7e3, and sections other than a single wedge
+  of constant chord.
+
+## 6. History: the first run (refused)
+
+The first run, made before the fin-edge terms existed, is kept as it was
+reported (its numbers are held by the first version of
+`tests/validation/basic-finner.test.ts`, commit 3d9978a, and its runner by
+`docs/research/base-and-total/runs/gate-table.test.ts`). Its leading edges
+were modelled as sharp in the components (a sharp wedge through the
+trailing-edge corners); section 5.2 replaces that.
+
+### 6.1 The verdict
 
 The total is refused at every gated shot, for two components
 (`basic-finner.test.ts`):
 
 - the fins' trailing-edge base: no two-dimensional base pressures
-  transcribed (1.5);
+  transcribed then;
 - the fins' leading edges: a radius of 0.004 cal, refused as blunt (0008
   B4); with the leading edges taken as sharp, as 0008 describes them, the
   total is still refused for the trailing edges.
@@ -278,7 +599,7 @@ shots at M 1.06 to 1.33 (reported, not gated) are refused as well: the
 base correlation stops at M 1.5, the fins-on-base factor at 1.8, and
 below M 1.2 the fins' shock detaches.
 
-### 4.3 Diagnostic: the partial sum
+### 6.2 Diagnostic: the partial sum
 
 Not a total and not a result to serve: the sum of every component that
 has a band, with each shot's residual against it, CX0 / partial - 1, so
@@ -353,100 +674,129 @@ without reference to the gaps above; a band chosen or checked against
 them is "estimated on the Basic Finner, not validated" (0008 section 6.1),
 and the configuration then has no hold-out.
 
-## 5. What may and may not be claimed
+## 7. What may and may not be claimed
 
-May be claimed, each with its test:
+The gate has passed at every shot (section 4.2), so 0008 section 6.4's
+claim class opens, and no more:
 
-- B3 implements 0008 section 3: the compiled curve as transcribed, served
-  as Love's basic curve, with 0008's band 0.82 to 1.08 recomputed from the
-  data, an interpolation bound below 3.2e-4 in P_B carried in it, and the
-  fins-on-base factor with its band (0008's construction, with the two
-  changes of 1.3), labelled as 0008 requires, and refusals where 0008
-  refuses. These are correlations and estimates, **band estimation, not
-  validation**: every base data set opened was used to set the bands, and
-  their only test, the total, is refused.
-- The total library combines components as 0008 section 6.3 requires,
-  each component checked against an independent computation.
-- On the Basic Finner: the gate was run as specified and **failed by
-  refusal**; the configuration is refused. The diagnostic of 4.3, as a
-  diagnostic: the components with bands sum to 73% to 83% of CX0, and the
-  gap lies within the physical scales of the two missing terms.
+- **May be claimed:** total zero-incidence, power-off C_D at **Mach 1.8 to
+  3.0** for the Basic Finner's class (a sharp-nosed cylindrical-afterbody
+  body of L/d 10; four rectangular fins of 1 cal chord and span ending at
+  the base; a single-wedge section with a blunt trailing edge 0.08 cal
+  thick across the span and a 0.004 cal leading-edge radius; Reynolds
+  number 1.2e7 to 2.0e7 on length; free flight), with the model-form band,
+  the transition and wall-temperature bands shown separately, and the
+  per-shot residuals of section 4.2 published. Labels: the fins-on-base
+  term "measured on circular-arc fins, applied by analogy"; both fin-edge
+  terms "an analogy, not a measurement", the leading edges "extrapolated
+  in Reynolds number" below M 2.48; outside the class, "not validated".
+- **May be claimed:** the breakdown into the nose wave drag (exact, band of
+  order 1e-4), friction (0007's band, validated on component data), and
+  the base and fin terms (bands estimated on component data, each
+  "estimated, tested only in the total").
+- **May be claimed:** agreement with the Basic Finner's free-flight drag
+  within the tolerance, residuals -7.7% to +4.5%, on a set that took no
+  part in setting any band; with the M 2.97 offset (-6.5% on two shots)
+  stated beside it.
+- **May not be claimed:** anything outside that class (0008 section 6.4):
+  sharp-edged fins at the base, Mach 1.5 to 1.8 (no shot), Mach 1 to 1.5
+  (reported, refused here), fins clear of the base, other fin sections,
+  thicknesses or planforms, other noses, fineness ratios or Reynolds
+  numbers. Nor a tolerance narrower than the gate's: the pass was at -19.5%
+  to -26.2% and +26.5% to +31.4%.
+- B3 and B4's rounded-edge term remain **band estimation, not
+  validation**, on their own; they are tested only through this total.
+- Nothing is on the drag page; showing a total there is a separate step.
 
-May not be claimed:
+## 8. Corrections to 0008
 
-- Any total Cd, at any Mach number, for any finned configuration: no
-  configuration has passed a gate. The claim class of 0008 section 6.4
-  (sharp-edged fins at the base, M 1.8 to 3.0) has no hold-out that tests
-  it, since the Basic Finner's fins are blunt-edged in the model's sense.
-- Agreement or disagreement with the Basic Finner data: the partial sum
-  is not the model.
-- The base correlation or the fins-on-base factor as validated, or the
-  factor on wedge fins as a measurement (it is an analogy).
-- Anything about blunt fin trailing edges, rounded leading edges, cold-wall
-  friction (the wall band is a prediction, not validated), roughness,
-  boat-tails, fins near but not at the base, or Mach numbers outside 1.8
-  to 3.0 with fins at the base (1.5 to 3.0 without).
+### 8.1 After the first run
 
-## 6. Corrections proposed to 0008
+The eight corrections listed after the first run were made in 0008 at
+2b538da (its "Changes after the first Basic Finner gate run"):
 
-Listed here, not made in 0008:
+1. The Basic Finner's fin leading edges are blunt by 0008's own
+   classification (pitot scale 0.066 to 0.072 in C_D, 11% to 19% of CX0).
+2. B5 was blocked on B1 and on a leading-edge method, not on a band to
+   add.
+3. Wall temperature is an input of the Basic Finner (+0.0155 to +0.0241 in
+   C_D with the wall at the air temperature, `magnitudes.out`).
+4. The nose share on the Basic Finner is 18% to 23% of CX0, not the
+   scoping 5%.
+5. The fins-on-base band of section 1.3 (tunnel excess carried beyond M
+   2.41, identity-swap error, half-width at most 12.2%; F on the less
+   negative curve only; the sizing script's pairing error).
+6. Fin friction counted once.
+7. Transition's effect on base pressure carried by no band.
+8. Small items (the base band's ends, the M 1.799 shot, the single-read
+   fig. 18 rows).
 
-1. **The Basic Finner's fin leading edges are blunt by 0008's own
-   classification.** 0008 calls them sharp (sections 5 and 6.4) with a
-   radius of 0.004 cal, yet classes RM L55G28a's 0.03 in on a 7.0 in body
-   (0.0043 cal) as blunt, with 0.0416 of leading-edge drag in that report's
-   own estimate (12% of its total). On the Basic Finner the pitot scale of
-   the term is 0.066 to 0.072 in C_D, 11% to 19% of CX0, against the fins'
-   own wave drag of 0.012 to 0.020. Under B4 (blunt leading edges refused)
-   the Basic Finner cannot be gated until a leading-edge method with a
-   measured band exists, or 0008 shows the term negligible.
-2. **B5 is blocked on B1, not a band to add.** 0008 sizes the gate "before
-   ... the fin trailing-edge terms" (section 6.3) as if they were a band on
-   a known term. The trailing-edge base is a component of up to 0.18 in
-   C_D (the vacuum bound at M 1.8, 30% of CX0) with no transcribed data;
-   the gap of 4.3 shows the two fin-edge terms together must be 17% to 27%
-   of CX0. 0008 should state that B5 cannot run until Love's
-   two-dimensional base pressures are transcribed (twice) and the 0.32 or
-   0.16 cal^2 area is decided.
-3. **Wall temperature is an input of the Basic Finner.** 0007's band holds
-   for adiabatic walls; a range projectile's wall is near the air
-   temperature. Van Driest II gives 12% to 30% more friction with the wall
-   at the air temperature (`magnitudes.out`), +0.0155 to +0.0241 in C_D,
-   2.6% to 6.4% of CX0, a term 0008's sizing (`bf_gate_width.py`, adiabatic)
-   leaves out. 0008 should list it as an input band beside transition, or
-   find a validated cold-wall friction band.
-4. **The nose share.** On the Basic Finner the cone's wave drag is 0.088
-   to 0.111, 19% to 23% of CX0, not the 5% of the scoping shares used in
-   section 6.3's illustration.
-5. **The fins-on-base band** (section 3.4): the high end beyond M 2.41
-   carries the tunnel excess (1.411 to 1.465 at M 2.5 to 3.0, against 1.288
-   to 1.343), the reading error at M 1.75 to 2.35 is +-0.005 to cover a
-   swap of the free-flight line and estimate B, and the half-width is at
-   most 12.2%, not 11% (round 3; 1.3 above). F applies to the less negative
-   curve only; `bf_gate_width.py` paired F_high with the more negative
-   curve, which is inconsistent with F's definition.
-6. **Counting fin friction once.** Section 6.3's gate sizing put fin
-   friction in the friction share (0007's band) and also in the fins' own
-   drag (B4's band). Here it carries B4's only.
-7. **Transition and the base.** Section 2.3 records that transition moves
-   base pressure (Love: 5% to 10%), but no band carries it; the transition
-   input here moves friction only.
-8. **Small items.** The base band's high end (1.078) comes from the symbol
-   at M 3.243, outside the range it is stated for; its low end rests on a
-   single slide reading whose +-0.01 (about +-0.02 in the ratio) is not in
-   the band. The fins-on-base factor starts at M 1.80 and the first gated
-   shot is at 1.799 (admitted here within the figure's 0.002 abscissa
-   error). Both curves of fig. 18 are now read twice at the ratio Mach
-   numbers (round 3), but the round values the band and the factor
-   interpolate through (1.8, 2.2, 2.4, 2.6, 2.8) still have one reading.
+The eleven corrections of sections 8.2 and 8.3 are made in 0008 (its
+"Changes after the second Basic Finner gate run"), with the second readings
+recorded in the two data notes (`blunt_te_2d_base.md`, `le_bluntness.md`,
+section 7 of each).
 
-## 7. Open
+### 8.2 With the fin-edge terms
 
-- B1: Love's two-dimensional base pressures (TN 3819), read twice, and the
-  Basic Finner's trailing-edge area (fig. 2 at higher resolution, or the
-  earlier range reports, its refs. 3 to 5).
-- A leading-edge bluntness method with a band (planar shock fitting, 0008
-  B4), or evidence that a 0.004 cal radius can be neglected.
+1. **The laminar trailing-edge band** (0008 sections 2.3 and 3.4): 0008's
+   fixed -13% to +26% used two read points of TR 1109 fig. 29 for the whole
+   range of Reynolds numbers; it is superseded by the per-shot computation
+   of section 5.1.
+2. **The trailing-edge band's high end** is 1.21 rounded outward, not
+   "about 1.20" (the X-15's highest point is 1.201).
+3. **The X-15 count**: `blunt_te_2d_base.md` gives 19 points at M 1.52 to
+   3.24; TN D-1056 table II has 18 power-off rows there (its script's own
+   filter gives 18).
+4. **The leading-edge domain** goes beyond TN 2960's measured Mach and
+   Reynolds numbers, on RM A55H31's statement and, below M 2.48, with a
+   stated +-3% allowance (section 5.2); 0008 section 4.1 should say so.
+5. **The faces of a rounded wedge.** With the tangent geometry the faces'
+   wave drag on the Basic Finner falls by 19.1% to 19.2% from the sharp
+   wedge 0008 sized (section 5.2).
+
+### 8.3 From the second readings (round 4)
+
+6. **The trailing-edge area** (0008 sections 3.4, 5 and 6.2 B1 and B5):
+   0.32 cal^2, decided by the measured mass properties (section 4.1); the
+   20% (0.16 cal^2) alternative can be dropped.
+7. **`blunt_te_2d_base.md` and `.csv`**: the fig. 8 point at M 3.1, X 2.0,
+   0.275 does not exist (no band end moves); the first reading of fig. 8's
+   panel (c) is about 0.007 low, symbols and curve alike; two RM A51J25
+   fig. 7 symbol abscissas are read 0.02 low (the diamond near M' 1.95 is
+   at 1.961, the Ames square at 1.492); the curve below M' 1.50 is under
+   the PARD symbols and cannot be checked.
+8. **`le_bluntness.md` and `.csv`**: fig. 5(c) at M 1.98 and 45 deg is
+   0.884, not 0.918, so that Mach number's front ratio is 1.043, not
+   1.049; fig. 7 at M 2.9 is 1.336, not 1.346 (the reader's; this record
+   keeps the first reading as read and holds the second beside it).
+9. **The bands stand on both readings:** the trailing-edge band 0.93 to
+   1.21 (envelope 0.933 to 1.204) and the leading-edge band 0.99 to 1.06
+   (envelope 0.995 to 1.056); 0008 section 3.4's "about 0.93 to 1.20" and
+   its single-reading notes should say so.
+10. **The laminar trailing-edge band** over the Basic Finner's range is
+    -15.4% to +32.0% (section 5.1), the reader's -15% to +29% (+32%
+    extrapolated); above +26.5% it rests on extrapolation below the M 1.5
+    laminar curve's first read point.
+11. **The thin-layer support**: read from X 0.45 (second reading), TR 1109
+    fig. 29(a) at M 3.1 lies within 4.0% of its lowest-abscissa value up to
+    X 1.0, not 1.8%; at the Basic Finner's 0.69 to 0.76 it is 1.5% to 2.2%
+    below that value.
+
+## 9. Open
+
+- The offset at M 2.97 (both shots 5.4% and 7.6% below the model, section
+  4.2): to be checked on another set near Mach 3, not fitted on this one.
+- A second hold-out for the Basic Finner's class: this one is used, so
+  any change to the terms it tested is "estimated on the Basic Finner, not
+  validated" until another set tests it.
+- RM A51J25 fig. 7's curve below M' 1.50 (read once; under the PARD
+  symbols, not checkable); the band's domain starts at M 1.5.
+- The Basic Finner report's refs. 3 to 5 (BRL Reports 934 and 799, BuOrd
+  Ballistic Technical Note 5), not reached by the reader.
+- The rounded edge's effect on the fin faces (entropy layer,
+  overexpansion), the analogy's gap: planar shock fitting (0008 B4).
+- A measurement of a cylinder's front side near Re_D 1e4 at M 1.5 to 2.5.
+- A blunt trailing edge in a body's base plane (no source opened).
 - A validated cold-wall friction band (Hopkins and Inouye 1971, not
   opened).
 - A third reader for figs. 18 and 35 (round 3 is the round-1 reader for

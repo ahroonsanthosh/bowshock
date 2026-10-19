@@ -8,11 +8,7 @@
 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import {
-  bodyBaseDrag,
-  COMPILED_CURVE_LABEL,
-  finTrailingEdgeBaseDrag,
-} from '../../src/base/base-drag';
+import { bodyBaseDrag, COMPILED_CURVE_LABEL } from '../../src/base/base-drag';
 import {
   COMPILED_CURVE_BAND,
   COMPILED_CURVE_CURVATURE_BOUND,
@@ -281,16 +277,5 @@ describe('refusals', () => {
         }),
       );
     }
-  });
-
-  it('blunt fin trailing edges; sharp ones add nothing', () => {
-    expect(finTrailingEdgeBaseDrag({ count: 4, thickness: 0, span: 1 })).toEqual({
-      cd: 0,
-      low: 0,
-      high: 0,
-    });
-    refusedWith('fin-trailing-edge-base', () =>
-      finTrailingEdgeBaseDrag({ count: 4, thickness: 0.08, span: 1 }),
-    );
   });
 });

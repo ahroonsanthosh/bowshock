@@ -9,15 +9,24 @@ professional CFD software. The aim: open the page, describe or import your
 rocket, watch the shock waves form, and export drag coefficient versus Mach
 number with an honest uncertainty band.
 
+**Try it in your browser: <https://ahroonsanthosh.github.io/bowshock/>**
+(needs WebGPU: a recent Chrome or Edge, for example).
+
 > **Status: early development.** Verified 1D and 2D (planar and
 > axisymmetric) Euler solvers run on both the CPU and the GPU (WebGPU), with
 > their test suites and live demos, and the inviscid forebody wave drag of
 > sharp-nosed bodies and ellipsoid noses is computed with a measured error
-> band. The full
-> rocket solver (viscous flow, base and fins) does not exist yet, so
-> bowshock gives no total drag coefficient. Nothing here should be used for
-> flight decisions yet. The plan is in
-> [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
+> band. Skin friction, fin wave drag and base drag exist as libraries, each
+> measured against wind-tunnel or flight data
+> ([0007](docs/design/0007-skin-friction.md),
+> [0009](docs/design/0009-fin-wave-drag.md),
+> [0010](docs/design/0010-base-drag-and-total.md)), and their sum, the
+> total drag, has passed its one validation test: the Basic Finner in free
+> flight, 11 shots at Mach 1.8 to 3.0, measured drag within -7.7% to +4.5%
+> of the model, inside a tolerance that is wide (about -20% to +31%). That
+> claim covers that class of rocket only, and the total is not yet on the
+> drag page. Nothing here should be used for flight decisions yet. The plan
+> is in [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
 
 ## What it will do
 
@@ -154,22 +163,28 @@ them; the fitted-drag families are recorded in
   ([0010](docs/design/0010-base-drag-and-total.md), `src/base/`,
   `src/total/`): the compiled base-pressure correlation of NACA TN 3819
   with its band (measured over correlation 0.82 to 1.08), the factor for
-  fins ending at the base, and the sum of the components with their bands
-  added linearly. Its one hold-out test, the Basic Finner in free flight,
-  does not pass: the total is refused there, because its fins' blunt
-  trailing edges and rounded leading edges have no method with a measured
-  band, so bowshock refuses that configuration.
+  fins ending at the base, the base drag of blunt fin trailing edges and
+  the drag of rounded fin leading edges (both analogies, with bands set
+  from component data read twice), and the sum of the components with
+  their bands added linearly. Its one hold-out test, the Basic Finner in
+  free flight at Mach 1.8 to 3.0, passes at all 11 shots: measured over
+  modelled -7.7% to +4.5% (mean -1.9%), inside a tolerance of -19.5% to
+  -26.2% and +26.5% to +31.4%, which is wide; the two shots at Mach 2.97
+  lie 5.4% and 7.6% below the model.
 
-Not yet: viscous flow in the solver, friction on the drag page, Von
-Karman (Haack) and power-series noses (their tips need grids being
-designed), Mach numbers below 1.2, fins and the base. Until those pass
-their own validation, bowshock reports no total drag coefficient.
+Not yet: viscous flow in the solver; friction, fins and the base on the
+drag page; Von Karman (Haack) and power-series noses (their tips need
+grids being designed); Mach numbers below 1.2; the total drag on the page
+(in progress), and a total validated outside the Basic Finner's class.
 
-Limits: power off, zero angle of attack, no motor plume. When they
-exist, base drag will be the least certain component and transonic
-results will carry wider bands.
+Limits: power off, zero angle of attack, no motor plume. The widest
+component bands are the fins' own drag (measured over model 1.01 to 1.59)
+and the base (0.82 to 1.08); transonic results will carry wider bands.
 
 ## Try it
+
+Online at <https://ahroonsanthosh.github.io/bowshock/>, built from this
+branch on every push. Or locally:
 
 ```sh
 npm ci
@@ -243,7 +258,8 @@ The design records, in order:
   the linear 3D drag of the planform, with the limits of each measured.
 - [0010](docs/design/0010-base-drag-and-total.md): base drag and the total
   (draft), libraries not on the drag page, and the Basic Finner gate,
-  which the total does not pass (refused).
+  which the total passes at all 11 shots (the second run; the first was
+  refused).
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
