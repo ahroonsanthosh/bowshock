@@ -1,0 +1,70 @@
+name: Pages
+
+# Builds the demos and publishes them with GitHub Pages, on every push to the
+# default branch. Nothing is published until Pages is switched on for the
+# repository (Settings > Pages > Source: GitHub Actions); until then the
+# check below finds no Pages site and the build and deploy jobs are skipped.
+
+on:
+  push:
+    branches: ['claude/eloquent-dirac-ek9hcf']
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Is Pages switched on?
+    runs-on: ubuntu-latest
+    permissions:
+      pages: read
+    outputs:
+      enabled: ${{ steps.pages.outputs.enabled }}
+    steps:
+      - id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" --jq .build_type > build_type.txt 2>/dev/null \
+            && [ "$(cat build_type.txt)" = "workflow" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Pages is not switched on with GitHub Actions as its source; nothing is published."
+          fi
+
+  build:
+    name: Build the demos
+    needs: check
+    if: needs.check.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
