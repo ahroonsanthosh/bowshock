@@ -1,0 +1,5 @@
+S = 5.8314 in^2, Aref = 3.9761 in^2, cbar = 2.7729 in
+M 1.5: wave 0.0436 (section exact true), CF 0.00416, friction 0.0488, sum 0.0925; own/measured, research readings 0.492; audit readings 0.492
+M 1.8: wave 0.0321 (section exact true), CF 0.00398, friction 0.0467, sum 0.0787; own/measured, research readings 0.573, 0.579; audit readings 0.574, 0.560
+M 2.3: wave 0.0227 (section exact true), CF 0.00368, friction 0.0431, sum 0.0659; own/measured, research readings 0.716, 0.773; audit readings 0.733, 0.756
+M 2.96: wave 0.0167 (section exact true), CF 0.00332, friction 0.0390, sum 0.0557; own/measured, research readings 0.845, 0.844; audit readings 0.855, 0.840
