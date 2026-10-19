@@ -16,13 +16,17 @@
  * evidence was formed against this same interpolated curve at each data
  * point's own Mach number.
  *
+ * The nominal curve is the first reading; the second reading of the
+ * curve agrees within -0.005 to +0.003 in p_b / p' at M' 1.50 to 4.00.
+ *
  * Band, measured over modelled, the envelope of the evidence 0008 lists,
- * rounded outward to two decimals: TR 1109 fig. 8's symbols about their
- * faired curves and fig. 29(a) against fig. 8 (orifice position), RM
- * A51J25 fig. 7's symbols at M' 1.45 to 3.2, and the X-15 fin in flight at
- * M 1.52 to 3.24 against the curve: 0.933 to 1.201, so **0.93 to 1.21**
- * (0008's "about 0.93 to 1.20"; 1.20 would be narrower than the X-15's own
- * point). Estimated on all of these, so it is tested only in a total.
+ * on both readings, rounded outward to two decimals: TR 1109 fig. 8's
+ * symbols about their faired curves and fig. 29(a) against fig. 8
+ * (orifice position), RM A51J25 fig. 7's symbols at M' 1.45 to 3.2, and
+ * the X-15 fin in flight at M 1.52 to 3.24 against the curve: 0.933 to
+ * 1.204, so **0.93 to 1.21** (0008's "about 0.93 to 1.20"; 1.20 would be
+ * narrower than the X-15's own points). Estimated on all of these, so it
+ * is tested only in a total.
  *
  * Labels: for edges ending in the body's base plane (fins at the base),
  * "an analogy, not a measurement": no opened source measures such an
@@ -37,8 +41,10 @@
  *   strongly on Reynolds number, TR 1109 p. 1);
  * - thick layers, c / [h Re_c^(1/5)] > 1.0: up to 1.0 TR 1109 fig. 29(a)'s
  *   base drag lies within 0.4%, 1.4% and 1.8% of its value at its lowest
- *   read abscissa at M 1.5, 2.0 and 3.1; beyond, it falls by up to 12% to
- *   29% (at 4.5), which the thin-layer curve does not carry.
+ *   read abscissa at M 1.5, 2.0 and 3.1 in the first reading (from X 0.5,
+ *   0.5 and 0.75), within 0.2%, 1.5% and 4.0% in the second (from X 0.45);
+ *   beyond, it falls by up to 12% to 29% at 4.5 (11% to 31% in the second
+ *   reading), which the thin-layer curve does not carry.
  *
  * Input band, laminar against turbulent: when a transition input leaves
  * the fin's layer laminar at its trailing edge (Re_T at least the chord
@@ -46,22 +52,29 @@
  * drag of TR 1109 fig. 29, laminar (29(b)) at c / [h Re_c^(1/2)] over
  * turbulent (29(a)) at c / [h Re_c^(1/5)], at each of M 1.5, 2.0 and 3.1;
  * the band is the envelope over the three (the ratio changes sign between
- * them, so it is not interpolated in M). Where an abscissa lies beyond a
- * curve's read range by at most one read interval, the value is the
- * envelope of the end value and the linear extrapolation of the end
- * interval (flagged); further out the input is refused. This replaces
- * 0008's fixed -13% to +26%, computed at two read points for the whole
- * Reynolds-number range.
+ * them, so it is not interpolated in M) and over both readings of each
+ * curve. Where an abscissa lies beyond a curve's read range by at most one
+ * read interval, the value is the envelope of the end value and the
+ * linear extrapolation of the end interval (flagged); further out, in
+ * either reading, the input is refused. This replaces 0008's fixed -13%
+ * to +26%, computed at two read points for the whole Reynolds-number
+ * range.
  */
 
 import {
   RM_A51J25_FIG7_CURVE,
+  RM_A51J25_FIG7_CURVE_SECOND,
   RM_A51J25_FIG7_SYMBOLS,
+  RM_A51J25_FIG7_SYMBOLS_SECOND,
   TN_D1056_TABLE_II,
   TR1109_FIG29A_AGAINST_FIG8,
   TR1109_FIG29A_TURBULENT,
+  TR1109_FIG29A_TURBULENT_SECOND,
   TR1109_FIG29B_LAMINAR,
+  TR1109_FIG29B_LAMINAR_SECOND,
+  TR1109_FIG8_CURVES_SECOND,
   TR1109_FIG8_SYMBOLS,
+  TR1109_FIG8_SYMBOLS_SECOND,
   type Tr1109Curve,
 } from './blunt-te-2d';
 import { BaseRefusal } from './refusal';
@@ -93,62 +106,21 @@ export function thinLayerBasePressure(mach: number): number {
   return ((thinLayerPressureRatio(mach) - 1) * 2) / (GAMMA * mach * mach);
 }
 
-export interface TrailingEdgeBandEvidence {
-  readonly tr1109Fig8: { readonly min: number; readonly max: number };
-  readonly tr1109Fig29aOverFig8: { readonly min: number; readonly max: number };
-  readonly rmA51j25: { readonly min: number; readonly max: number; readonly count: number };
-  readonly x15: { readonly min: number; readonly max: number; readonly count: number };
-  readonly min: number;
-  readonly max: number;
-}
-
-const range = (v: readonly number[]) => ({ min: Math.min(...v), max: Math.max(...v) });
-
-/** The evidence of 0008 section 3.4, as base drag measured over modelled. */
-export function finTrailingEdgeBandEvidence(): TrailingEdgeBandEvidence {
-  const drag = (pressureRatio: number) => 1 - pressureRatio;
-  const fig8 = TR1109_FIG8_SYMBOLS.map((s) => drag(s.ratio) / drag(s.curve));
-  const orifice = TR1109_FIG29A_AGAINST_FIG8.map((s) => drag(s.fig29a) / drag(s.fig8));
-  const a51 = RM_A51J25_FIG7_SYMBOLS.filter((s) => s.mach >= 1.45 && s.mach <= 3.2).map(
-    (s) => drag(s.ratio) / drag(thinLayerPressureRatio(s.mach)),
-  );
-  const x15 = TN_D1056_TABLE_II.filter((r) => r.mach >= 1.45 && r.mach <= 3.25).map(
-    (r) => r.cp / thinLayerBasePressure(r.mach),
-  );
-  const all = [...fig8, ...orifice, ...a51, ...x15];
-  return {
-    tr1109Fig8: range(fig8),
-    tr1109Fig29aOverFig8: range(orifice),
-    rmA51j25: { ...range(a51), count: a51.length },
-    x15: { ...range(x15), count: x15.length },
-    min: Math.min(...all),
-    max: Math.max(...all),
-  };
-}
-
-/** The band on the term, measured over modelled: the evidence rounded outward. */
-export const FIN_TRAILING_EDGE_BAND = (() => {
-  const e = finTrailingEdgeBandEvidence();
-  return {
-    low: Math.floor(e.min * 100 + 1e-9) / 100,
-    high: Math.ceil(e.max * 100 - 1e-9) / 100,
-  };
-})();
-
-/** A TR 1109 curve's p_b / p_inf at abscissa x: a range, wider than a point only when extrapolated. */
+/** A read curve's value at an abscissa: a range, wider than a point only when extrapolated. */
 export interface CurveValue {
   readonly low: number;
   readonly high: number;
   readonly extrapolated: boolean;
 }
 
+type Points = readonly { readonly x: number; readonly ratio: number }[];
+
 /**
  * Linear interpolation within the read range; beyond it by at most one
  * read interval, the envelope of the end value and the end interval's
  * linear extrapolation; undefined further out.
  */
-export function tr1109CurveValue(curve: Tr1109Curve, x: number): CurveValue | undefined {
-  const p = curve.points;
+function pointsValue(p: Points, x: number): CurveValue | undefined {
   const n = p.length;
   const first = p[0]!;
   const last = p[n - 1]!;
@@ -171,8 +143,149 @@ export function tr1109CurveValue(curve: Tr1109Curve, x: number): CurveValue | un
   };
 }
 
+/** A TR 1109 curve's p_b / p_inf at abscissa x (the rule of `pointsValue`). */
+export function tr1109CurveValue(curve: Tr1109Curve, x: number): CurveValue | undefined {
+  return pointsValue(curve.points, x);
+}
+
+/** One reading of a curve's value; throws if beyond one read interval. */
+function mustValue(p: Points, x: number, what: string): CurveValue {
+  const v = pointsValue(p, x);
+  if (v === undefined) throw new RangeError(`${what} is not read at ${x}`);
+  return v;
+}
+
+const curveAt = (curves: readonly Tr1109Curve[], mach: number): Points => {
+  const c = curves.find((k) => k.mach === mach);
+  if (c === undefined) throw new RangeError(`no curve at M ${mach}`);
+  return c.points;
+};
+
+/** RM A51J25 fig. 7's mean curve, each reading, as points. */
+const FIG7_READINGS: readonly { readonly reading: string; readonly points: Points }[] = [
+  { reading: 'first', points: RM_A51J25_FIG7_CURVE.map((p) => ({ x: p.mach, ratio: p.ratio })) },
+  {
+    reading: 'second',
+    points: RM_A51J25_FIG7_CURVE_SECOND.map((p) => ({ x: p.mach, ratio: p.ratio })),
+  },
+];
+
+/** One item of the band's evidence, base drag measured over modelled. */
+export interface EvidenceItem {
+  readonly item:
+    'TR 1109 fig. 8' | 'TR 1109 fig. 29(a) over fig. 8' | 'RM A51J25 fig. 7 symbols' | 'X-15 fin';
+  /** The readings it is formed on. */
+  readonly reading: string;
+  readonly min: number;
+  readonly max: number;
+  /** Data points (symbols, comparisons or flight points). */
+  readonly count: number;
+}
+
+export interface TrailingEdgeBandEvidence {
+  readonly items: readonly EvidenceItem[];
+  /** The envelope of every item. */
+  readonly min: number;
+  readonly max: number;
+}
+
+/**
+ * The evidence of 0008 section 3.4, as base drag measured over modelled,
+ * on both readings: TR 1109 fig. 8's symbols over their faired curves and
+ * fig. 29(a) over fig. 8, each reading on its own; RM A51J25 fig. 7's
+ * symbols at M' 1.45 to 3.2 over the mean curve, each reading of the
+ * symbols over each reading of the curve; and the X-15 fin at M 1.45 to
+ * 3.25 over each reading of the curve. Where a symbol lies below a
+ * curve's read range (the second reading of fig. 7 starts at M' 1.50),
+ * the curve's one-interval envelope is used and both of its ends count.
+ */
+export function finTrailingEdgeBandEvidence(): TrailingEdgeBandEvidence {
+  const drag = (pressureRatio: number) => 1 - pressureRatio;
+  const items: EvidenceItem[] = [];
+  const add = (item: EvidenceItem['item'], reading: string, values: number[], count: number) => {
+    items.push({ item, reading, min: Math.min(...values), max: Math.max(...values), count });
+  };
+  const over = (measured: number, curve: CurveValue) => [
+    drag(measured) / drag(curve.low),
+    drag(measured) / drag(curve.high),
+  ];
+
+  add(
+    'TR 1109 fig. 8',
+    'first',
+    TR1109_FIG8_SYMBOLS.map((s) => drag(s.ratio) / drag(s.curve)),
+    TR1109_FIG8_SYMBOLS.length,
+  );
+  add(
+    'TR 1109 fig. 8',
+    'second',
+    TR1109_FIG8_SYMBOLS_SECOND.flatMap((s) =>
+      over(s.ratio, mustValue(curveAt(TR1109_FIG8_CURVES_SECOND, s.mach), s.x, 'fig. 8')),
+    ),
+    TR1109_FIG8_SYMBOLS_SECOND.length,
+  );
+  add(
+    'TR 1109 fig. 29(a) over fig. 8',
+    'first',
+    TR1109_FIG29A_AGAINST_FIG8.map((s) => drag(s.fig29a) / drag(s.fig8)),
+    TR1109_FIG29A_AGAINST_FIG8.length,
+  );
+  add(
+    'TR 1109 fig. 29(a) over fig. 8',
+    'second',
+    TR1109_FIG29A_AGAINST_FIG8.flatMap((s) => {
+      const fig29a = mustValue(curveAt(TR1109_FIG29A_TURBULENT_SECOND, s.mach), s.x, '29(a)');
+      const fig8 = mustValue(curveAt(TR1109_FIG8_CURVES_SECOND, s.mach), s.x, 'fig. 8');
+      return [drag(fig29a.low) / drag(fig8.high), drag(fig29a.high) / drag(fig8.low)];
+    }),
+    TR1109_FIG29A_AGAINST_FIG8.length,
+  );
+  const inRange = (m: number) => m >= 1.45 && m <= 3.2;
+  for (const [symbolReading, symbols] of [
+    ['first', RM_A51J25_FIG7_SYMBOLS],
+    ['second', RM_A51J25_FIG7_SYMBOLS_SECOND],
+  ] as const) {
+    const used = symbols.filter((s) => inRange(s.mach));
+    for (const curve of FIG7_READINGS) {
+      add(
+        'RM A51J25 fig. 7 symbols',
+        `symbols ${symbolReading}, curve ${curve.reading}`,
+        used.flatMap((s) => over(s.ratio, mustValue(curve.points, s.mach, 'fig. 7'))),
+        used.length,
+      );
+    }
+  }
+  const flight = TN_D1056_TABLE_II.filter((r) => r.mach >= 1.45 && r.mach <= 3.25);
+  for (const curve of FIG7_READINGS) {
+    add(
+      'X-15 fin',
+      `curve ${curve.reading}`,
+      flight.flatMap((r) => {
+        const v = mustValue(curve.points, r.mach, 'fig. 7');
+        const pB = (ratio: number) => ((ratio - 1) * 2) / (GAMMA * r.mach * r.mach);
+        return [r.cp / pB(v.low), r.cp / pB(v.high)];
+      }),
+      flight.length,
+    );
+  }
+  return {
+    items,
+    min: Math.min(...items.map((i) => i.min)),
+    max: Math.max(...items.map((i) => i.max)),
+  };
+}
+
+/** The band on the term, measured over modelled: the evidence of both readings rounded outward. */
+export const FIN_TRAILING_EDGE_BAND = (() => {
+  const e = finTrailingEdgeBandEvidence();
+  return {
+    low: Math.floor(e.min * 100 + 1e-9) / 100,
+    high: Math.ceil(e.max * 100 - 1e-9) / 100,
+  };
+})();
+
 export interface LaminarRatio {
-  /** Laminar over turbulent base drag: the envelope over M 1.5, 2.0 and 3.1. */
+  /** Laminar over turbulent base drag: the envelope over M 1.5, 2.0 and 3.1 and both readings. */
   readonly low: number;
   readonly high: number;
   readonly byMach: readonly {
@@ -187,28 +300,48 @@ export interface LaminarRatio {
   readonly turbulentAbscissa: number;
 }
 
+/** The two readings of TR 1109 fig. 29: (a) turbulent and (b) laminar. */
+const FIG29_READINGS = [
+  { turbulent: TR1109_FIG29A_TURBULENT, laminar: TR1109_FIG29B_LAMINAR },
+  { turbulent: TR1109_FIG29A_TURBULENT_SECOND, laminar: TR1109_FIG29B_LAMINAR_SECOND },
+] as const;
+
 /**
  * Laminar over turbulent base drag of a blunt trailing edge of chord over
- * thickness c / h at chord Reynolds number Re_c (TR 1109 fig. 29); throws
- * BaseRefusal when an abscissa lies beyond one read interval of a curve.
+ * thickness c / h at chord Reynolds number Re_c (TR 1109 fig. 29), the
+ * envelope over both readings of each curve; throws BaseRefusal when an
+ * abscissa lies beyond one read interval of a curve in either reading.
  */
 export function laminarOverTurbulent(chordOverThickness: number, reChord: number): LaminarRatio {
   const xl = chordOverThickness / Math.sqrt(reChord);
   const xt = chordOverThickness / reChord ** 0.2;
-  const byMach = TR1109_FIG29A_TURBULENT.map((turbulentCurve) => {
-    const laminarCurve = TR1109_FIG29B_LAMINAR.find((c) => c.mach === turbulentCurve.mach)!;
-    const lam = tr1109CurveValue(laminarCurve, xl);
-    const tur = tr1109CurveValue(turbulentCurve, xt);
-    if (lam === undefined || tur === undefined) {
+  const envelope = (values: readonly (CurveValue | undefined)[], mach: number): CurveValue => {
+    const read = values.filter((v): v is CurveValue => v !== undefined);
+    if (read.length !== values.length) {
       throw new BaseRefusal(
         'beyond-read-range',
         `the laminar trailing-edge input needs TR 1109 fig. 29 at c/[h Re^(1/2)] = ${xl.toFixed(4)} ` +
-          `and c/[h Re^(1/5)] = ${xt.toFixed(3)} at M ${turbulentCurve.mach}, more than one read ` +
+          `and c/[h Re^(1/5)] = ${xt.toFixed(3)} at M ${mach}, more than one read ` +
           'interval beyond the curves',
       );
     }
     return {
-      mach: turbulentCurve.mach,
+      low: Math.min(...read.map((c) => c.low)),
+      high: Math.max(...read.map((c) => c.high)),
+      extrapolated: read.some((c) => c.extrapolated),
+    };
+  };
+  const byMach = TR1109_FIG29A_TURBULENT.map(({ mach }) => {
+    const lam = envelope(
+      FIG29_READINGS.map((r) => pointsValue(curveAt(r.laminar, mach), xl)),
+      mach,
+    );
+    const tur = envelope(
+      FIG29_READINGS.map((r) => pointsValue(curveAt(r.turbulent, mach), xt)),
+      mach,
+    );
+    return {
+      mach,
       low: (1 - lam.high) / (1 - tur.low),
       high: (1 - lam.low) / (1 - tur.high),
       extrapolated: lam.extrapolated || tur.extrapolated,

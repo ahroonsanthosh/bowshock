@@ -32,3 +32,16 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   residuals with the wall adiabatic and at the air temperature, the
   tolerance, the gap and the scales of the missing terms, the clusters'
   statistics, and the refusals at the five shots below Mach 1.4.
+  The first run's table (0010 section 6).
+- `second-readings.test.ts`: the round-4 second-reading tables of
+  `src/base/blunt-te-2d.ts` and `src/fins/tn2960.ts` against the
+  independent reader's own files (`readings/*.csv` and the comparison set
+  of `scripts/compare_round4.py`), value by value, including the "not
+  blind" flags. The reader's folder is given by `ROUND4` (default
+  `docs/research/total-drag/audit/round4/`, beside rounds 2 and 3); the
+  recorded output was made on the reader's files as delivered, before they
+  were committed.
+- `laminar-band.test.ts`: the trailing-edge laminar input band at each
+  gated Basic Finner shot, from the shot's Reynolds number alone (no drag
+  value), on both readings, made before the second gate run (0010 section
+  5.1).
