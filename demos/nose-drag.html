@@ -200,12 +200,20 @@
         their drag is checked against a method of characteristics started from the solution (within
         1e-5 of the nose's drag on three noses at Mach 2 and 3); ahead of it, where the flow is
         subsonic and no independent reference exists, by the grids' convergence and the exact
-        stagnation pressure. Other blunt noses (Von Karman and the other Haack noses, the power
-        series) are not served yet. Refused, with the reason: tips whose shock detaches; tips whose
-        flow crosses the solver's starting plane, just behind the tip, at an axial Mach number below
-        1 (of 40 noses of 1 to 3 calibers tried at Mach 1.2, 19 detach their shock and 13 are
-        refused by this test); tips steeper than about 40 deg (a limit of the present grids, set on
-        measurement); bodies whose flow at their end is subsonic.
+        stagnation pressure. At Mach 1.2 to 1.5, where the shock stands far off, a short body behind
+        an ellipsoid is solved longer than asked, to keep the grid's cells even (the drag is still
+        that of the body asked for, whose flow leaves its end supersonically); four such noses
+        converge on three grids at observed orders 1.91 to 2.17, and behind the sonic line the
+        method of characteristics agrees within 3.2e-6 of the nose's drag at Mach 1.5 and within
+        6.3e-5 at Mach 1.2, where the flow it starts from is barely supersonic. Other blunt noses
+        (Von Karman and the other Haack noses, the power series) are not served yet. Refused, with
+        the reason: tips whose shock detaches; tips whose flow crosses the solver's starting plane,
+        just behind the tip, at an axial Mach number below 1 (of 40 noses of 1 to 3 calibers tried
+        at Mach 1.2, 19 detach their shock and 13 are refused by this test); tips steeper than about
+        40 deg (a limit of the present grids, set on measurement); bodies whose flow at their end is
+        subsonic; the 6-caliber ellipsoid at Mach 1.2, whose wall cells near the tip are too skewed
+        for the present grids (of ellipsoids of 0.5 to 6 calibers with 1, 2 or 5 calibers of body at
+        Mach 1.2, 1.3 and 1.5, the only ones refused on the coarsest grid).
       </p>
     </main>
     <script type="module" src="/src/app/nose-drag.ts"></script>

@@ -119,7 +119,18 @@ them; the fitted-drag families are recorded in
   converges at observed orders of 1.99 to 2.21, and behind the sonic line
   it agrees with a method of characteristics started from the solution
   within 1e-5 of the nose's drag (3:1 and 2:1 ellipsoids at Mach 2, the
-  3:1 at Mach 3; 0006). Ahead of the sonic line, where the flow is
+  3:1 at Mach 3; 0006). At Mach 1.2 to 1.5, where the shock stands far
+  off, a short body behind the nose is solved longer than asked, to keep
+  the grid's cells even (the drag is still that of the body asked for,
+  whose flow leaves its end supersonically): of ellipsoids of 0.5 to 6
+  calibers with 1, 2 or 5 calibers of body at Mach 1.2, 1.3 and 1.5, all
+  pass the page's checks on the coarsest grid but the 6-caliber nose at
+  Mach 1.2 (its wall cells near the tip too skewed for the present
+  grids); four of them converge on three
+  grids at observed orders 1.91 to 2.17, and behind the sonic line the
+  method of characteristics agrees within 3.2e-6 of the nose's drag at
+  Mach 1.5 and within 6.3e-5 at Mach 1.2, where the flow it starts from
+  is barely supersonic. Ahead of the sonic line, where the flow is
   subsonic and no independent reference exists, the drag rests on the
   grids' convergence and the exact stagnation pressure.
 
