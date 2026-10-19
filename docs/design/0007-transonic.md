@@ -208,15 +208,17 @@ What was tried and did not help is listed at the end.
 CPU engine, HLLC, unit-invariant shared reconstruction (as the supersonic
 solvers), each grid converged to a drag settled within 1e-7 of its value.
 Wall times are of one job on a 4-core machine shared with other long
-runs: until 14:53 UTC with the cores oversubscribed two to three times,
-after it with a core to itself (about three times faster); they are given
-as measured, as a guide to cost only.
+runs, the cores oversubscribed one to three times; they are given as
+measured, as a guide to cost only, and CPU times (of the job's process)
+where they were recorded.
 
 Bodies, in body radii R = 1: the cone of NACA TN 4233 (6 deg 59 min,
-nose length 8.169) and a 5-caliber tangent ogive (nose length 10, tip
-11.4 deg), each followed by the solved cylinder; far boundaries at 100.6
-radii and 10 calibers of cylinder unless stated. Refinement r = 1, 2, 4,
-8 has 30 r cells across and 118 r (cone) columns.
+nose length 8.169), a 5-caliber tangent ogive (nose length 10, tip 11.4
+deg), a hemisphere and a 2:1 ellipsoid (nose lengths 1 and 2), each
+followed by the solved cylinder; far boundaries at 100.6 radii and 10
+calibers of cylinder unless stated. Refinement r = 1, 2, 4, 8 has 30 r
+cells across and 118 r columns (cone; ogive 127 r, hemisphere 53 r, 2:1
+ellipsoid 59 r).
 
 ### Mach 1.2: against Taylor-Maccoll and the fitted solver
 
@@ -388,11 +390,18 @@ order the drag would be 0.0433084, 6.5e-4 below it, so on this evidence
 the grid error at r = 4 is not resolved better than a few 1e-4 (r = 8:
 see Open).
 
-The fitted solver on the same ogive (1 caliber of cylinder): 0.0439700
-(nj = 20) and 0.0434608 (nj = 40), +1.46e-2 and +2.87e-3 of the
-reference, approaching it from above (nj = 80: see Open); the transonic
-domain's r = 2 and 4 grids are closer to it than the fitted nj = 40,
-crossing it between r = 2 and 4.
+The fitted solver on the same ogive (1 caliber of cylinder): 0.0439700,
+0.0434608 and 0.0433612 on nj = 20, 40 and 80 (+1.46e-2, +2.87e-3 and
++5.7e-4 of the reference; 12,826 iterations and 2,481 s of CPU on nj =
+80), changes falling by 5.1 (order 2.35), extrapolated at second order
+0.0433280, 2.0e-4 below the reference. The two solvers' finest grids
+differ by 3.7e-5 (8.5e-4 of the value), their extrapolations by 2.0e-5
+(4.5e-4), and both extrapolations lie below the characteristics' value,
+by 2.0e-4 and 6.5e-4 of it. Either the reference is high by about 2e-4
+of its value at this Mach number (its tests reach down to Mach 1.5
+only), or both families are still short of their asymptotic range; the
+evidence does not separate the two. At the meeting point the solvers
+agree to within 1e-3 of the value on the ogive.
 
 ### Blunt noses: against the fitted solver and the pitot pressure
 
@@ -400,11 +409,8 @@ The C grid above, same far boundaries (100.6 radii) and 10 calibers of
 cylinder. Two references: the supersonic fitted solver (0006, CPU,
 `bluntFittedFlow`) where its grid accepts the body, the 2:1 ellipsoid at
 Mach 1.2 with 4 calibers of cylinder and the hemisphere at Mach 1.5 with
-2; and the pitot pressure, which the stagnation point must reach (normal
-shock, then isentropic), against the pressure on the first wall face
-(0.025, 0.0125 and 0.00625 of the arc from the stagnation point on r =
-1, 2, 4, where the pressure lies below the stagnation value by 1e-4 of it
-or less).
+2; and the total pressure on the stagnation streamline, which must be the
+normal shock's (the pitot pressure at the stagnation point).
 
 | Body, Mach         | r = 1     | r = 2     | r = 4     | Extrapolated | Fitted nj = 20 | nj = 40   |
 | ------------------ | --------- | --------- | --------- | ------------ | -------------- | --------- |
@@ -421,17 +427,69 @@ Open). The drags of r = 4 lie 2.5e-4 and 7.4e-4 above the transonic
 extrapolations (7e-4 and 1.1e-3 of the value), and 9.2e-4 (1.7e-3) on
 the hemisphere at Mach 1.2.
 
-Stagnation pressure, first wall face over the pitot value (2.40750 at
-Mach 1.2, 3.41327 at 1.5), r = 1, 2, 4: on the 2:1 ellipsoid at Mach 1.2
-+0.80%, +0.43%, +0.32%; on the hemisphere at 1.2 +0.42%, +0.29%, +0.25%;
-on the hemisphere at 1.5 +2.0%, +0.28%, -0.13%. At Mach 1.2 the captured
-bow shock loses too little total pressure on the axis: 0.47% on r = 4
-against the normal shock's 0.72%, and the change from r = 2 to 4 (0.03%)
-suggests it converges to about 0.48%, not to 0.72%. This is the captured
-shock's known defect on the stagnation streamline (the supersonic C grid
-with the shock captured instead of fitted was 9.7% high at Mach 2, 0006);
-it was not isolated further here. Its effect on the drag is bounded by
-the agreement with the fitted solver above.
+The stagnation streamline: total pressure of the cells along the axis
+behind the bow shock, over the free stream's, against the normal shock's
+(0.99280 at Mach 1.2, 0.92979 at 1.5), on r = 1, 2, 4. Hemisphere at Mach
+1.5: 0.94610, 0.93195, 0.92856 (losses 5.39%, 6.81%, 7.14% against
+7.02%), converging. At Mach 1.2, hemisphere: 0.99506, 0.99531, 0.99524
+(losses 0.49%, 0.47%, 0.48% against 0.72%); 2:1 ellipsoid: 0.99226,
+0.99502, 0.99542 (0.77%, 0.50%, 0.46%): not converging to the normal
+shock's loss. On the hemisphere's r = 4 the captured shock on the axis
+has one intermediate cell, and the cell behind it has the
+Rankine-Hugoniot pressure within 0.11% but a total pressure 0.21% too
+high; the cause was not found. At Mach 1, with no shock, the axis cells
+keep the free stream's total pressure within 5e-4 (hemisphere, r = 1).
+The pressure on the first wall face is no measure of this: the wall's
+Riemann flux adds the cell's inflow into the wall, 0.23% above the
+total pressure at Mach 1 (r = 1). On the 2:1 ellipsoid the drag still
+agrees with the fitted solver's to 7e-4 (extrapolated), so there the
+error's weight in the drag is below that; on the hemisphere at Mach 1.2
+and below, which the supersonic grid refuses (also with 4 to 12 calibers
+of cylinder: size ratio 1.31 to 1.32), its effect on the drag is not
+measured, and the blunt results there carry this open error.
+
+### The ogive and the hemisphere from Mach 1.1 to 1
+
+No reference below Mach 1.2 for these; drag on r = 1 and 2 (100.6
+radii, 10 calibers) and, at Mach 1, on 408.7 radii:
+
+| Body       | Mach | r = 1     | r = 2     | Change    | 408.7 radii, r = 1 |
+| ---------- | ---- | --------- | --------- | --------- | ------------------ |
+| ogive      | 1.2  | 0.0437833 | 0.0433724 | -4.11e-4  |                    |
+| ogive      | 1.1  | 0.0435202 | 0.0433484 | -1.72e-4  |                    |
+| ogive      | 1.05 | 0.0418288 | 0.0417434 | -8.5e-5   |                    |
+| ogive      | 1.0  | 0.0171707 |           |           | 0.0186725          |
+| hemisphere | 1.2  | 0.5546180 | 0.5431759 | -1.144e-2 |                    |
+| hemisphere | 1.1  | 0.4704390 | 0.4610574 | -9.38e-3  |                    |
+| hemisphere | 1.05 | 0.4181985 | 0.4092866 | -8.91e-3  |                    |
+| hemisphere | 1.0  | 0.3595713 |           |           | 0.3594575          |
+
+The base grid's error, judged from the change to r = 2, falls with the
+Mach number on the ogive (from 9.4e-3 of the value at 1.2 to 2.0e-3 at
+1.05) and stays near 2% on the hemisphere, whose families converge at
+about second order where measured (Mach 1.2 and 1.5, above). At Mach 1
+the far boundaries' distance acts on the ogive as on the cone, by about
+the same amount (+1.50e-3 from 100.6 to 408.7 radii, against the cone's
++1.38e-3), which is 8.7% of the ogive's much smaller drag; on the
+hemisphere it is -1.1e-4, 3e-4 of its drag. A third distance and finer
+grids at Mach 1 were not run for these two (see Open).
+
+### Near Mach 1: the slope of the drag
+
+On 408.7 radii (base grid) the cone's drag is 0.0930989, 0.1049432 and
+0.1097163 at Mach 1, 1.01 and 1.02 (on 100.6 radii: 0.0917153, 0.1026103,
+0.1098008; at Mach 1.01 the far boundaries' distance moves the drag by
++2.3e-3, more than at Mach 1, and at 1.02 by -8e-5). The secant slope
+from Mach 1 to 1.01 is 1.18 per unit Mach number, the one-sided
+three-point estimate at Mach 1 1.54 (1.49 with Mach 1 corrected to
+boundaries at infinity). Slender-body theory gives dCD/dM = 4 / (gamma +
+
+1. - 2 tau^2 = 1.64 at Mach 1 (Spreiter and Alksne's eq. 80); the drag
+     curve bends over within a few hundredths of Mach 1 (its maximum, at
+     least 0.1097, lies between Mach 1.01 and 1.05), so differences over 0.01
+     underestimate the
+     slope at Mach 1, and the three-point estimate lies within 6 to 9% of
+     the theory.
 
 ## References and how close the solver gets
 
@@ -516,7 +574,43 @@ the level, not the solver's 0.2%.
 
 ## What accuracy the evidence supports
 
-(to be completed)
+For the nose's pressure (wave) drag with the body continued as a sting,
+on the CPU engine:
+
+- **Mach 1.2.** Cone: verified against the exact value, 1.1e-4 of it on
+  r = 4 (57,000 cells, 500 s) and 2.3e-5 on r = 8, the procedure's band
+  containing the error. Ogive: r = 4 within 2.8e-4 of the method of
+  characteristics, the family not yet asymptotic, and the fitted solver
+  within 8.5e-4 (finest grids) and 4.5e-4 (extrapolations): about 1e-3
+  on r = 4. 2:1 ellipsoid: r = 4 within 7e-4 of its extrapolation, which
+  agrees with the fitted solver's within 7e-4: about 1e-3. Hemisphere:
+  second-order convergence but no reference, and the stagnation line's
+  open error. Far boundaries and cylinder: below 1e-4. The transonic
+  domain and the supersonic fitted solver agree where both apply, within
+  2.7e-5 on the cone and 1e-3 on the ogive and the ellipsoid: the two
+  definitions meet at Mach 1.2.
+- **Mach 1.1.** Cone: every grid within 3.5e-4 of the exact value,
+  oscillating (no order, so no band from the procedure); the fitted
+  solver is 4e-3 to 7e-3 off here. Ogive and hemisphere: r = 1 and 2 only
+  (changes of 4e-3 and 2% of the value): not established.
+- **Mach 1.05.** Cone: no exact value; first order, r = 4 within about
+  1.5e-3 of its extrapolation, far boundaries at most 2e-4, cylinder
+  within the noise: about 2e-3 on r = 4, if the first order holds (the
+  band needs r = 8). Ogive and hemisphere: r = 1 and 2 only.
+- **Mach 1.0.** Cone: 0.0932 within about 0.2% with the far boundaries
+  extrapolated to infinity, on the assumption that the extrapolation
+  measured on the base grid holds on finer ones; on 100.6 radii alone
+  1.8% low, on 408.7 radii about 0.3% low. Ogive: the far boundaries
+  move its drag by 8.7% from 100.6 to 408.7 radii, not yet extrapolated:
+  not established. Hemisphere: far boundaries 3e-4. The wind tunnel and
+  slender-body theory confirm the cone's level to 5 to 10%, no better.
+
+So the evidence supports the transonic domain at Mach 1.2 to the
+supersonic solvers' standard on cones, and to about 1e-3 on curved and
+blunt noses; at Mach 1.1 to 3.5e-4 on cones; at 1.05 to about 2e-3 on
+cones; and at Mach 1 to about 0.2% on cones only with the far-boundary
+extrapolation. Nothing below Mach 1.2 has the procedure's four-grid band
+yet.
 
 ## What did not work
 
@@ -562,4 +656,35 @@ grid unless stated:
 
 ## Open
 
-(to be completed)
+- **Runs not done** (wall time on this shared machine, roughly): the
+  cone's r = 8 at Mach 1.05 and 1.1 (4 to 6 h each), which give the
+  procedure's band there; the ogive's r = 8 at Mach 1.2 (2 h); at Mach 1,
+  r = 4 on 100.6 radii (4 h) and r = 2 on 408.7 radii (3 h, to test that
+  the far boundaries' correction holds on a finer grid); the ogive at
+  Mach 1 on r = 2 and on a third distance; the ogive's r = 4 at Mach 1.1
+  and 1.05; the fitted solver's nj = 80 on the 2:1 ellipsoid, the
+  hemisphere at Mach 1.5 and the cone at Mach 1.1. The job scripts now
+  save their state every 10 minutes and resume from it, so each survives
+  the container's restarts.
+- **The stagnation line on blunt noses at Mach 1.2**: 0.46% to 0.50% of
+  total-pressure loss against the normal shock's 0.72% on r = 2 and 4,
+  not converging; converging at Mach 1.5.
+- **The far boundaries at Mach 1**: a far-field condition carrying the
+  sonic far field's slow decay, instead of the free stream, would replace
+  the extrapolation; not tried. At 800 radii the implicit steps went
+  unstable.
+- **First order at Mach 1.05** on the cone: consistent with the captured
+  bow shock setting the pressure level, not isolated.
+- **GPU**: the far-field boundary kind, and so the transonic domain, is on
+  the CPU engine only.
+- **Blunt noses meeting the cylinder at an angle** (blunted cones) are
+  refused by the C grid; the sharp H grid takes cones and ogives.
+- **The base**: the sting stands for whatever lies behind the nose; a
+  subsonic base (blunt noses with short cylinders near Mach 1.2) belongs
+  to the total-drag work, and the quantity here does not depend on it.
+- **Serving**: not on the drag page. It needs the procedure's band at
+  every Mach number served (four grids each), the far-boundary
+  extrapolation at Mach 1 made part of the procedure, the stagnation-line
+  error resolved or bounded for blunt noses, and a cost the page can
+  afford (Mach 1 needs 17,850 plain steps on the base grid and 51,700 on
+  r = 2).

@@ -105,6 +105,8 @@ export interface SolveCheck {
   readonly drag: number;
   readonly residual: number;
   readonly seconds: number;
+  /** The solver at the check, for saving its state (a restarted run resumes from it as a start). */
+  readonly solver: Euler2D;
 }
 
 export interface TransonicSolution {
@@ -187,6 +189,7 @@ export function solveTransonic(
       drag,
       residual: solver.densityResidualNorm(),
       seconds: (performance.now() - t0) / 1000,
+      solver,
     });
     if (settling.add(drag)) {
       return {
