@@ -10,7 +10,13 @@ export type FinRefusalReason =
   | 'compression-corner'
   | 'expansion-limit'
   | 'reflected-wave'
-  | 'planform';
+  | 'planform'
+  /** A rounded leading edge on a swept edge (no data at M 1.5 to 3). */
+  | 'swept-leading-edge'
+  /** A rounded leading edge outside the Mach or Reynolds numbers its band covers. */
+  | 'leading-edge-range'
+  /** A rounded leading edge on a section the model does not represent. */
+  | 'leading-edge-geometry';
 
 export class FinRefusal extends RangeError {
   readonly reason: FinRefusalReason;
