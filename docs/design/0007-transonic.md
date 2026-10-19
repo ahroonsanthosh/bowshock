@@ -596,9 +596,11 @@ Three routes, with what the evidence says about each:
   growing change lies in the cells next to the axis upstream of the tip
   and along the cone's first radius (Mach 0.91 to 0.998, x from -6.6 to
   +0.9 radii), cells 0.05 radii high whose columns, far upstream on this
-  domain, grow to 160 radii long. Making those cells hold (thicker axis
-  cells far upstream, or a treatment of near-sonic axis cells in the
-  implicit steps) is the first step of this route.
+  domain, grow to 160 radii long. Their length alone is not the cause:
+  with the upstream columns capped at 20 radii (more, shorter cells
+  there) the steps diverged sooner, after about 2,000. Making the
+  near-sonic axis cells hold in the implicit steps is the first step of
+  this route; how is open.
 - **The extrapolation in the distance**, as now, made part of the
   procedure: three domains on each grid, and the test, running, that the
   correction measured on the base grid holds on r = 2 (408.7 radii).
@@ -763,9 +765,10 @@ grid unless stated:
 - **800 radii at Mach 1**: the implicit steps diverge after about 5,000
   steps with the CFL number capped at 1000 or at 100, and with the
   far-field boundary's characteristic switch blended smoothly
-  (`docs/design/patches/0007-farfield-blend.diff`); the growing change
-  lies in the near-sonic cells next to the axis upstream of the tip (see
-  "Mach 1 without the extrapolation").
+  (`docs/design/patches/0007-farfield-blend.diff`), and sooner (about
+  2,000 steps) with the upstream columns capped at 20 radii; the growing
+  change lies in the near-sonic cells next to the axis upstream of the
+  tip (see "Mach 1 without the extrapolation").
 - **Two earlier grids**: vertical lines all the way out (cells up to 350
   times taller than wide above the body) and a wall spacing growing
   upstream along the axis (each line's own stretching, which skewed the
