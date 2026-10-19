@@ -17,12 +17,13 @@ number with an honest uncertainty band.
 > measured against wind-tunnel or flight data
 > ([0007](docs/design/0007-skin-friction.md),
 > [0009](docs/design/0009-fin-wave-drag.md),
-> [0010](docs/design/0010-base-drag-and-total.md)), but they are not on the
-> drag page, and no total drag has yet passed its validation test (the
-> Basic Finner in free flight, [0008](docs/design/0008-total-drag.md)), so
-> bowshock gives no total drag coefficient. Nothing here should be used for
-> flight decisions yet. The plan is in
-> [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
+> [0010](docs/design/0010-base-drag-and-total.md)), and their sum, the
+> total drag, has passed its one validation test: the Basic Finner in free
+> flight, 11 shots at Mach 1.8 to 3.0, measured drag within -7.7% to +4.5%
+> of the model, inside a tolerance that is wide (about -20% to +31%). That
+> claim covers that class of rocket only, and the total is not yet on the
+> drag page. Nothing here should be used for flight decisions yet. The plan
+> is in [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
 
 ## What it will do
 
@@ -170,12 +171,12 @@ them; the fitted-drag families are recorded in
 
 Not yet: viscous flow in the solver; friction, fins and the base on the
 drag page; Von Karman (Haack) and power-series noses (their tips need
-grids being designed); Mach numbers below 1.2. Until the total passes its
-validation test, bowshock reports no total drag coefficient.
+grids being designed); Mach numbers below 1.2; the total drag on the page
+(in progress), and a total validated outside the Basic Finner's class.
 
-Limits: power off, zero angle of attack, no motor plume. When they
-exist, base drag will be the least certain component and transonic
-results will carry wider bands.
+Limits: power off, zero angle of attack, no motor plume. The widest
+component bands are the fins' own drag (measured over model 1.01 to 1.59)
+and the base (0.82 to 1.08); transonic results will carry wider bands.
 
 ## Try it
 
