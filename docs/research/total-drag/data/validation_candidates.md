@@ -48,11 +48,24 @@ at M 2.75, T0 the free-stream static temperature, table I). Mach number
 within +-0.01, Reynolds number +-2%, "maximum probable error in CD is within
 +-7 percent" for model 1 (p. 9).
 
-Measured total CD (fig. 5, PDF p. 22, telemeter circles; first reading,
-second pending; `rm-l55g28a_fig5_first_reading.txt`, script
-`scripts/l55_fig5.py`, calibration in its header): 0.387 at M 2.50, 0.371 at
-2.65, 0.368 at 2.75, 0.365 at 2.85, 0.361 at 2.92 (ring-template centres;
-lower-score detections in the file are other symbols).
+Measured total CD (fig. 5, PDF p. 22, telemeter circles). Two readings:
+
+| M | First (`rm-l55g28a_fig5_first_reading.txt`, `scripts/l55_fig5.py`) | Second (round-2 audit, cluster centres, +-0.003) |
+| --- | --- | --- |
+| 2.46 to 2.50 | 0.387 (M 2.50) | 0.390 (M 2.46) |
+| 2.55 | | 0.383 |
+| 2.65 | 0.371 | 0.376 |
+| 2.75 | 0.368 | 0.368 |
+| 2.85 | 0.365 | |
+| 2.92 | 0.361 | 0.363 |
+
+They agree within 0.005 (at M 2.65, about the combined error). Cautions from
+the second reading: three detections in the first reading's raw file are not
+data (0.409 at M 2.85 is the "Model 1" leader arrow; 0.330 and 0.326 at M 2.95
+to 3.03 are the dashed fairing); the radar squares sit about 0.01 to 0.015
+below the telemeter circles, and the values here are telemeter only. The
+second reading also reads the report's estimate symbol at M 2.74 as 0.353
+against 0.3511 in table I, a calibration check.
 
 The report's own component estimate at M 2.75 (table I, PDF p. 15, read on
 the page image): fin friction 0.0473, fin base 0.0197, fin leading edge
@@ -96,7 +109,12 @@ reading, second pending; `tn3320_fig9_first_reading.txt`, script
 -0.097 at M 1.10 to 1.28, -0.104 at 1.36 to 1.43, -0.106 at 1.52 to 1.62,
 -0.109 to -0.112 at 1.72 to 2.25, -0.109 at 2.36, -0.106 at 2.45 to 2.56
 (ring-template centres with score at least 0.74; the lower-score rows in the
-file are half-scale symbols). Times 0.367: base drag on the frontal area
+file are half-scale symbols). The round-2 audit read all 64 symbols by shape:
+its full-scale circles agree with the 20 true matches here within 0.001 in
+P_B and 0.003 in M, and it finds that 7 rows of the first reading's file are
+not full-scale circles (a half-scale square at M 1.526, a phantom at 0.980,
+low-score hits at 0.982, 1.009, 2.219 and 2.419) and that the circles at M
+0.966, 1.035 (the peak, -0.138) and 1.161 were missed. Not used by the draft. Times 0.367: base drag on the frontal area
 0.038 to 0.041 at M 1.4 to 2.6 (computed), consistent with the report's "average value
 of approximately 0.04" (p. 7).
 

@@ -21,11 +21,19 @@ data,2.681,-0.102,-0.1011,thin diamond (Ref 23)
 data,3.243,-0.095,-0.0926,triangle with tick (Ref 5?)
 data,3.497,-0.083,-0.0819,diamond (Ref 24)
 # Curves: the two near-coincident compiled curves (Chapman's compilation, Love's basic curve), more negative and
-# less negative, at the symbol Mach numbers and round values. Adopted: the audit's table, reproduced by an
-# independent method in this revision (scripts/love18_trace.py grid model: 25 horizontal lines, max residual
-# 1.43 px; 39 vertical lines; vacuum-curve residuals +0.0007, -0.0003, -0.0006 at M 3.5, 4.0, 4.5; and
-# scripts/love18_ransac.py robust local fits, data/love18_ransac.json) within 0.0004. Gabeaud's line where it is
-# near the curves.
+# less negative, at the symbol Mach numbers and round values. Adopted: the audit's table (first reading by the
+# audit). Second reading (this revision): grid model scripts/love18_trace.py (25 horizontal lines, max residual
+# 1.43 px; 39 vertical lines; vacuum-curve residuals +0.0007, -0.0003, -0.0006 at M 3.5, 4.0, 4.5; its curve
+# tracer followed Gabeaud's line above M 2.4 and is not used for values) and robust local fits
+# scripts/love18_ransac.py (data/love18_ransac.json). Which of the 20 values at the ten ratio Mach numbers were
+# read twice (scripts/love18_twice.py, data/love18_twice_output.txt; a fit within 0.0004 counts):
+#   read twice: the less negative curve at M 1.5, 1.63, 1.935, 2.0, 2.414, 2.5, 2.681, 3.0; the more negative
+#   curve at M 1.63, 2.414, 2.5, 2.681; at M 3.243 one fitted line lies within 0.0004 of both curves, which are
+#   only 0.0004 apart (counted once): 13 values.
+#   one reading only: the more negative curve at M 1.5, 1.935, 2.0, 3.0 (the fits found only the less negative
+#   curve there), both curves at M 3.497 (nearest fit 0.0012 away), and one of the pair at M 3.243.
+# The more negative curve sets the low end of each point's ratio, so the low ends at M 1.5, 1.94 and 2.0 rest on
+# one reading. Gabeaud's line where it is near the curves.
 kind,mach,PB_more_negative,PB_less_negative,gabeaud
 curve,1.000,-0.1896,-0.1849,
 curve,1.200,-0.1870,-0.1836,

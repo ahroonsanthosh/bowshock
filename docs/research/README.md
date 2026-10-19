@@ -11,30 +11,10 @@ as their authors wrote them.
 
 ## `total-drag/`: research for Phase B (total drag)
 
-- `draft.md`: a draft design record for total drag (skin friction, base
-  drag, fins, and the validation data for the total), titled 0008, the
-  number it will take once accepted. **Status: revised after an
-  independent audit (`audit/audit.md`), whose corrections it adopts. A
-  second audit of the revision (`audit/round2/audit_round2.md`) found it
-  fit to become a design record (status draft) after seven corrections,
-  three of which narrow the claim (the Basic Finner gate covers Mach 1.8
-  to 3.0, not 1.5 to 3; the fins-on-base increment the claim needs has no
-  derived band above Mach 2; a failed gate must refuse, not widen a
-  band); those corrections are in progress.** The audit confirmed the
-  scripts and nearly all citations, and found misread curves of NACA TN
-  3819 fig. 18, a calibration error and an unstated symbol convention in
-  NASA TN D-4014 figs. 5 and 6, and three conclusions their sources did not
-  support. The revision resolves the readings (a third, independent
-  reading of TN D-4014 agrees with the audit's within 0.0011), states one
-  reading rule for symbols, takes the friction band from
-  [0007](../design/0007-skin-friction.md), restates the base band as
-  asymmetric and the band sum as a minimum, derives the fin band, and
-  adds a rule that no gate reuses data that set a band. Its validation
-  search found one total-drag set matching a simple finned rocket, the
-  Basic Finner in free flight (fins ending at the base), so a first
-  release could claim only that configuration class, and only if that
-  gate passes. Its "Changes from the first draft" list ends the file.
-  Several new transcriptions have one reading so far (marked as such).
+- The draft design record for total drag that these files support is now
+  [0008](../design/0008-total-drag.md) (status draft), revised after two
+  independent audits (`audit/audit.md`, `audit/round2/audit_round2.md`);
+  its earlier versions are in this folder's history (`draft.md`).
 - `data/`: transcriptions (ARCAS, RM A53D02, TN 3097, TN 3819 fig. 18) and
   the outputs of the scripts.
 - `scripts/`: the computations and digitising aids (Python 3, numpy and
@@ -42,10 +22,12 @@ as their authors wrote them.
 - `reference-files/`: the Turbulence Modeling Resource's SA flat-plate
   file used by `scripts/sa_vs_vd.py` (its van Driest II file is in
   `tests/friction/data/`).
-- `audit/`: the audit, its own figure readings with their methods, its
+- `audit/`: the first audit, its own figure readings with their methods, its
   independent re-implementations (van Driest II, the exact double wedge,
   linear 3D fin drag by the supersonic area rule), and two overlays of TN
-  3819 fig. 18 showing where the disputed curve readings fall.
+  3819 fig. 18 showing where the disputed curve readings fall; and
+  `audit/round2/`, the second audit, of the revision, with its second
+  readings of the new transcriptions.
 - `overlays/d4014/`: the revision's overlays of its TN D-4014 readings.
   Several scripts read page images rendered from the reports, which are
   not copied here (see below).

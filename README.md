@@ -219,6 +219,10 @@ The design records, in order:
 - [0007](docs/design/0007-skin-friction.md): skin friction (draft), the
   first component of total drag, measured against wind-tunnel and flight
   data.
+- [0008](docs/design/0008-total-drag.md): total drag (draft): the method
+  and measured band of each component, and the one validation set found
+  that matches a simple finned rocket (the Basic Finner in free flight,
+  Mach 1.8 to 3.0), audited twice.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
