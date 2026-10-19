@@ -501,27 +501,29 @@ the axis would remove it.
 **The 2:1 ellipsoid's gap to the fitted solver, localized.** The drag
 accumulated from the stagnation point, C(r^2) = sum of Cp times the
 faces' change of r^2, extrapolated pointwise at second order from r = 2
-and 4 (transonic) and nj = 20 and 40 (fitted; their sums reproduce the
-drags exactly): transonic minus fitted is +2.3e-4 by r^2 = 0.05, falls to
-about +7e-5 by r^2 = 0.3 to 0.5, and ends at -2.4e-4 (the fitted
-extrapolation from nj = 40 and 80 is 2.8e-5 higher, giving the 2.7e-4 of
-the table). Near the stagnation point the transonic wall pressure is
-higher by about 0.006 in Cp (1.3939 against 1.3876 at x = 0.002), as the
-axis's +0.28% predicts: that is the stagnation line's error, and it
-raises the transonic drag. Over the middle of the nose (x = 0.2 to 1, r^2
-= 0.19 to 0.75) the transonic pressure coefficient is lower than the
-fitted solver's extrapolation by 0.0004 to 0.0009, which lowers it by
-about 4e-4. Its cause is not found; measured and excluded: the far
-boundaries (r = 1 drag on 55, 100.6, 224 and 408.7 radii within 2.1e-5),
-the cylinder (4 and 10 calibers extrapolate to 0.3423540 and 0.3423446,
-and behind the shoulder the flow is supersonic everywhere), and the
-shock's total pressure there (+0.06 to +0.11% on r = 4, which would raise
-the pressure). The wall cells lose total pressure along the body at
-first order (0.25% by x = 1 on r = 4, 0.55% on r = 2), an entropy layer
-that should not set the wall pressure. Using the observed order (2.68)
-instead of 2 for the transonic extrapolation moves it by +1.1e-4, so the
-gap is 1.5e-4 to 2.7e-4, of the size of the families' own remaining
-change; r = 8 is queued.
+and 4 (transonic) and nj = 40 and 80 (fitted; their sums reproduce the
+drags exactly): transonic minus fitted is +1.9e-4 by r^2 = 0.05 to 0.1,
+back to +1e-5 to +4e-5 by r^2 = 0.3 to 0.5, then falls to -2.3e-4 by r^2
+= 0.8 and ends at -2.7e-4. Pointwise, the extrapolated wall pressure
+coefficients differ by +0.0063 at x = 0.002 and +0.0038 at x = 0.02 (the
+stagnation region: the axis's +0.28% total-pressure error predicts
++0.006), and by -0.0004 to -0.0010 everywhere from x = 0.1 to 1.4, in
+the subsonic part ahead of the sonic point (x about 0.55) and in the
+supersonic part behind it alike: a nearly uniform deficit of 0.04% to
+0.07% of the local pressure over the rest of the nose. Its cause is not
+found. Measured and excluded: the far boundaries (r = 1 drag on 55,
+100.6, 224 and 408.7 radii within 2.1e-5), the cylinder (4 and 10
+calibers extrapolate to 0.3423540 and 0.3423446, and behind the shoulder
+the flow is supersonic everywhere), and the mean total pressure just
+behind the shock (+0.03% on r = 4 below a shock radius of 1.5, which
+would raise the pressure). Along the shock layer the total pressure
+carries the captured shock's scatter (0.9926 to 0.9971 of the free
+stream's across the layer at x = 0.1 on r = 4), and the wall cells lose
+total pressure along the body at first order (0.25% by x = 1 on r = 4,
+0.55% on r = 2); either could set a level of this size, neither was
+isolated. Using the observed order (2.68) instead of 2 for the transonic
+extrapolation moves it by +1.1e-4, so the gap is 1.5e-4 to 2.7e-4, of
+the size of the families' own remaining change; r = 8 is queued.
 
 ### The ogive and the hemisphere from Mach 1.1 to 1
 
