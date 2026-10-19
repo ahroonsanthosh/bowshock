@@ -50,6 +50,14 @@ throwaway vitest runs (quadrature convergence, the strip-theory table, the
 planar Euler sections), and `compare.py`, which derives the summaries the
 record quotes. Its README says how to re-run each.
 
+## `base-and-total/`: measurements behind 0010
+
+The throwaway vitest runs behind [0010](../design/0010-base-drag-and-total.md)
+(the base-drag and total-drag libraries, `src/base/` and `src/total/`):
+the compiled curve's band and interpolation bound, the fins-on-base rows,
+and the Basic Finner partial sum per shot. Its README says how to re-run
+each.
+
 ## `subtip/`: noses whose tip flow is axially subsonic
 
 The measurements behind "What serving these tips would need" in
