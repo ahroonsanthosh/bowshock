@@ -23,10 +23,7 @@
  * not validated with fins (0008 section 6.4: no total-drag case with fins
  * clear of the base was found); in between, refused (no data transcribed).
  *
- * Blunt fin trailing edges are a further base. 0008 assigns them
- * two-dimensional base pressure (Love, TN 3819; section 6.2, B3) but its
- * data are not transcribed (B1; sections 3.4, 7), so `finTrailingEdgeBaseDrag`
- * refuses them: no measured band exists (0008 section 6.1).
+ * Blunt fin trailing edges are a further base, ./fin-trailing-edge.ts.
  */
 
 import {
@@ -143,36 +140,4 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     parts: { curveBand, interpolation, finsOnBase: finsBand },
     labels,
   };
-}
-
-export interface FinTrailingEdges {
-  readonly count: number;
-  /** Trailing-edge thickness (the base height of one fin), in the reference length's unit. */
-  readonly thickness: number;
-  /** Span of the trailing edge, same unit. */
-  readonly span: number;
-}
-
-/**
- * Base drag of the fins' trailing edges: zero for sharp edges; blunt
- * edges are refused, since the two-dimensional base pressures 0008
- * assigns to them (Love, TN 3819) are not transcribed and no measured band
- * exists.
- */
-export function finTrailingEdgeBaseDrag(edges: FinTrailingEdges): {
-  cd: number;
-  low: number;
-  high: number;
-} {
-  if (!(edges.thickness >= 0 && Number.isFinite(edges.thickness))) {
-    throw new BaseRefusal('input', 'the trailing-edge thickness must be zero or positive');
-  }
-  if (edges.thickness === 0) return { cd: 0, low: 0, high: 0 };
-  throw new BaseRefusal(
-    'fin-trailing-edge-base',
-    `blunt fin trailing edges (${edges.count} of thickness ${edges.thickness} over a span of ` +
-      `${edges.span}): their base drag needs the two-dimensional base pressures of TN 3819, which ` +
-      '0008 names (section 6.2, B3) but which are not yet transcribed (B1, sections 3.4 and 7), ' +
-      'so no measured band exists and the component is refused (0008 section 6.1)',
-  );
 }

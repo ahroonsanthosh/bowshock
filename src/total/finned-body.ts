@@ -9,9 +9,10 @@
  * | nose wave drag | given (the page's verified solve, or ./nose.ts for a sharp cone) | given | given |
  * | body friction | van Driest II, axisymmetric momentum integral (src/friction, 0007) | measured over modelled 0.88 to 1.19 (0007) | correlation, validated on component data |
  * | fin friction | van Driest II flat plates of the local chord, both faces | fins' own drag, 1.01 to 1.59 (0008 section 4.3) | estimated on ARCAS, tested only in the total |
- * | fin wave drag | exact 2D section drag times the linear 3D ratio (src/fins, 0009) | the same, plus the quadrature error | as above |
+ * | fin wave drag | exact 2D section drag times the linear 3D ratio (src/fins, 0009); with a rounded leading edge, the faces of the tangent geometry on their own rise | the same, plus the quadrature error | as above |
+ * | fin leading edges | rounded, unswept: modified-Newtonian front side (src/fins/rounded-leading-edge.ts) | 0.99 to 1.06 (TN 2960), +-3% more where extrapolated in Reynolds number | an analogy, not a measurement |
  * | body base | compiled curve times the fins-on-base factor (src/base) | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the factor measured on circular-arc fins, an analogy for others |
- * | fin trailing-edge base | refused when blunt (no two-dimensional base pressures transcribed) | | |
+ * | fin trailing-edge base | blunt, unswept, turbulent: two-dimensional base pressure at the free-stream Mach number (src/base/fin-trailing-edge.ts) | 0.93 to 1.21 | an analogy, not a measurement, for edges in the base plane |
  *
  * Friction is at free-stream edge conditions, turbulent from the tip and
  * from each fin's leading edge by default, on an adiabatic wall (the
@@ -21,6 +22,9 @@
  * - transition: a laminar run to each Reynolds number given (on the
  *   surface distance from the tip, and from each fin's leading edge),
  *   against fully turbulent; a laminar layer at the base refuses the base;
+ *   where it leaves a fin laminar at its blunt trailing edge, the
+ *   trailing-edge term's laminar-against-turbulent change is a further
+ *   input band;
  * - wall temperature: the change from the adiabatic wall to the
  *   temperature given (0007's band is measured on adiabatic walls only;
  *   the change is van Driest II's and the laminar solution's, not
@@ -30,29 +34,36 @@
  *   bowshock: 0008 section 2.3).
  *
  * Refused, each listed with its reason (the total is refused if any is):
- * whatever src/base and src/fins refuse, a fin leading-edge radius other
- * than zero (0008 B4: blunt leading edges refused until planar shock
- * fitting exists; the message gives the scale of the term missed), and a
- * transition input that leaves the boundary layer laminar at the base.
+ * whatever src/base and src/fins refuse (among them swept rounded leading
+ * edges and swept, laminar or thick-layer blunt trailing edges), a rounded
+ * leading edge on anything but a single-wedge fin of constant chord, a
+ * blunt trailing edge on a fin of varying chord, and a transition input
+ * that leaves the boundary layer laminar at the base.
  *
  * Not represented, with their sizes where known (0010): the fins' roots
  * do not remove body wetted area; fin-body interference and the body's
  * boundary layer at the fin roots; the Mach number and pressure ahead of
  * the base are the free stream's (fig. 18's abscissa for cylindrical
- * afterbodies); fin cant and roll; a nose-tip bluntness.
+ * afterbodies); fin cant and roll; a nose-tip bluntness; the rounded
+ * leading edge's effect on the fin faces (the analogy's stated gap).
  */
 
-import { bodyBaseDrag, finTrailingEdgeBaseDrag, type BodyBaseDrag } from '../base/base-drag';
+import { bodyBaseDrag, type BodyBaseDrag } from '../base/base-drag';
+import { FIN_TRAILING_EDGE_BAND, finTrailingEdgeBaseDrag } from '../base/fin-trailing-edge';
 import { BaseRefusal } from '../base/refusal';
 import { finWaveDrag } from '../fins/fin-wave-drag';
 import { chordAt, planformArea, type Planform } from '../fins/planform';
 import { gaussLegendre } from '../fins/quadrature';
 import { FinRefusal } from '../fins/refusal';
-import { symmetricThicknessRatio, type SymmetricSection } from '../fins/section';
+import {
+  roundedLeadingEdgeDrag,
+  roundedWedge,
+  type RoundedWedge,
+} from '../fins/rounded-leading-edge';
+import { singleWedge, symmetricThicknessRatio, type SymmetricSection } from '../fins/section';
 import { bodyFriction } from '../friction/body-friction';
 import { flatPlateFriction } from '../friction/flat-plate';
 import type { Body } from '../geometry/body';
-import { normalShock, stagnationPressureRatio } from '../validation/gas-dynamics';
 import {
   combineComponents,
   componentWithRatioBand,
@@ -80,7 +91,7 @@ export interface FinSet {
   readonly section: SymmetricSection;
   /** 'circular-arc' for the section of TN 3819 fig. 35's fins, else 'other'. */
   readonly sectionFamily: 'circular-arc' | 'other';
-  /** Leading-edge radius in the body's length unit; only 0 (sharp) is accepted. */
+  /** Leading-edge radius in the body's length unit; 0 is sharp. */
   readonly leadingEdgeRadius: number;
   /** Distance of the root trailing edge ahead of the base, in the body's length unit. */
   readonly trailingEdgeAheadOfBase: number;
@@ -211,28 +222,49 @@ export function finnedBodyComponents(
     ),
   );
 
-  // Fin wave drag.
+  // Fin wave drag, and the nose of a rounded leading edge.
+  const constantChord = fins.planform.tanTrailingEdge === fins.planform.tanLeadingEdge;
+  let rounded: RoundedWedge | undefined;
   if (fins.leadingEdgeRadius !== 0) {
-    const r = fins.leadingEdgeRadius;
-    const m = conditions.mach;
-    const gamma = 1.4;
-    const shock = normalShock(m, gamma);
-    const pitot =
-      (shock.pressureRatio * stagnationPressureRatio(shock.downstreamMach, gamma) - 1) /
-      (0.5 * gamma * m * m);
-    const scale = (fins.count * 2 * r * fins.planform.span * pitot) / area;
-    refusals.push({
-      component: 'fin leading edges',
-      reason: 'blunt-leading-edge',
-      message:
-        `a leading-edge radius of ${r} is not modelled (0008 B4: blunt leading edges are refused ` +
-        `until planar shock fitting exists); pitot pressure on the edges' frontal height would ` +
-        `be ${scale.toFixed(4)} in C_D, the scale of the term missed`,
-    });
+    const s = fins.section;
+    try {
+      if (!(s.bluntTrailingEdge === true && s.x.length === 2 && constantChord)) {
+        throw new FinRefusal(
+          'leading-edge-geometry',
+          'the rounded leading-edge model is for single-wedge fins of constant chord (0010 ' +
+            'section 5); this section or planform is not represented',
+        );
+      }
+      const c = fins.planform.rootChord;
+      rounded = roundedWedge(s.halfThickness[1]!, fins.leadingEdgeRadius / c, 1);
+      const nose = roundedLeadingEdgeDrag({
+        mach: conditions.mach,
+        radius: fins.leadingEdgeRadius,
+        faceAngle: rounded.faceAngle,
+        tanLeadingEdgeSweep: fins.planform.tanLeadingEdge,
+        reynoldsOnDiameter: conditions.reynoldsPerLength * 2 * fins.leadingEdgeRadius,
+      });
+      const cd = (fins.count * nose.dragPerSpan * fins.planform.span) / area;
+      components.push({
+        name: 'fin leading edges',
+        cd,
+        low: nose.band.low * cd,
+        high: nose.band.high * cd,
+        label: nose.label,
+        band: `TN 2960, front side over modified Newtonian, ${nose.band.low.toFixed(2)} to ${nose.band.high.toFixed(2)} (${nose.regime})`,
+      });
+    } catch (e) {
+      refusals.push(refusalOf('fin leading edges', e));
+    }
   }
   try {
-    const w = finWaveDrag(fins.planform, fins.section, conditions.mach);
-    const scale = (fins.count * planformArea(fins.planform)) / area;
+    // With a rounded edge the faces are a wedge at the tangent geometry's
+    // angle, on their own rise (src/fins/rounded-leading-edge.ts).
+    const section =
+      rounded === undefined ? fins.section : singleWedge(2 * Math.tan(rounded.faceAngle));
+    const rise = rounded === undefined ? 1 : rounded.faceRise / Math.tan(rounded.faceAngle);
+    const w = finWaveDrag(fins.planform, section, conditions.mach);
+    const scale = (fins.count * planformArea(fins.planform) * rise) / area;
     const cd = w.cd * scale;
     const q = w.quadratureError * scale;
     components.push({
@@ -240,7 +272,10 @@ export function finnedBodyComponents(
       cd,
       low: FINS_OWN_DRAG_BAND[0] * cd - q,
       high: FINS_OWN_DRAG_BAND[1] * cd + q,
-      label: `exact section drag times the linear 3D ratio (0009); ${finsLabel}`,
+      label:
+        `exact section drag times the linear 3D ratio (0009)` +
+        (rounded === undefined ? '' : ', the faces of the rounded wedge') +
+        `; ${finsLabel}`,
       band: `${finsBand}, and the quadrature error`,
     });
   } catch (e) {
@@ -326,16 +361,50 @@ export function finnedBodyComponents(
     refusals.push(refusalOf('body base', e));
   }
 
-  // Fin trailing-edge base: none for sharp trailing edges; blunt ones are
-  // refused by src/base (no two-dimensional base pressures transcribed).
+  // Fin trailing-edge base: none for sharp trailing edges.
   if (fins.section.bluntTrailingEdge === true) {
     const h = fins.section.halfThickness;
     try {
-      finTrailingEdgeBaseDrag({
+      if (!constantChord) {
+        throw new BaseRefusal(
+          'input',
+          'the trailing-edge base term is implemented for fins of constant chord (c / h and the ' +
+            'chord Reynolds number then hold along the span)',
+        );
+      }
+      const te = finTrailingEdgeBaseDrag({
+        mach: conditions.mach,
         count: fins.count,
         thickness: 2 * h[h.length - 1]! * fins.planform.rootChord,
         span: fins.planform.span,
+        chord: fins.planform.rootChord,
+        tanSweep: fins.planform.tanTrailingEdge,
+        inBasePlane: fins.trailingEdgeAheadOfBase === 0,
+        layer: 'turbulent',
+        reynoldsPerLength: conditions.reynoldsPerLength,
+        transitionReynolds: transitions,
+        referenceArea: area,
       });
+      components.push({
+        name: 'fin trailing-edge base',
+        cd: te.cd,
+        low: te.low,
+        high: te.high,
+        label: te.label,
+        band: `two-dimensional base pressure, ${FIN_TRAILING_EDGE_BAND.low} to ${FIN_TRAILING_EDGE_BAND.high} (0008 section 3.4, 0010 section 5)`,
+      });
+      if (te.laminar !== undefined) {
+        inputBands.push({
+          name: 'transition at the fin trailing edges',
+          low: te.laminarInput.low,
+          high: te.laminarInput.high,
+          label:
+            'input: laminar against turbulent trailing-edge base drag (TR 1109 fig. 29, ' +
+            `${te.laminar.low.toFixed(3)} to ${te.laminar.high.toFixed(3)} at c/[h Re^(1/2)] ` +
+            `${te.laminar.laminarAbscissa.toFixed(4)})` +
+            (te.laminar.extrapolated ? ', extrapolated within one read interval' : ''),
+        });
+      }
     } catch (e) {
       refusals.push(refusalOf('fin trailing-edge base', e));
     }
