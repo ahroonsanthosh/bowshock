@@ -25,7 +25,11 @@
  * The oblique-shock and Prandtl-Meyer relations are those of
  * src/validation/gas-dynamics.ts. Pressures are referred to the free stream;
  * cd is the drag of both surfaces over the chord, cd = sum over faces of
- * Cp dy (upper) and -Cp dy (lower).
+ * Cp dy (upper) and -Cp dy (lower). For a section with a blunt trailing
+ * edge (./section.ts) that is the faces' drag alone, the base's drag
+ * (its pressure on its height) being left to a base-pressure model; the
+ * faces are exact as above, since in supersonic flow nothing downstream of
+ * the trailing edge reaches them.
  *
  * The thin-section theories, in the surface slopes delta (positive into the
  * stream: dy/dx on the upper surface, -dy/dx on the lower):

@@ -7,6 +7,17 @@
  * thickness, finite wedge angle). Blunt or rounded edges are not sections
  * of this kind and are refused by `validateSection`.
  *
+ * One exception, declared by the section itself: a blunt trailing edge
+ * (`bluntTrailingEdge: true`), where the surfaces end at x = 1 apart, so
+ * that the section ends in a flat base normal to the stream (the single
+ * wedge of `singleWedge`, as on the Basic Finner's fins). The wave drag
+ * computed for such a section by ./section-drag.ts and
+ * ./linear-wave-drag.ts is that of its faces alone: in supersonic flow the
+ * faces do not feel the base, and the base's own drag is a base-pressure
+ * term, not modelled here (src/base refuses it until two-dimensional base
+ * pressures are transcribed; docs/design/0010-base-drag-and-total.md).
+ * Blunt or rounded leading edges stay refused.
+ *
  * A symmetric section is given by its half-thickness at breakpoints along
  * the chord (the form the linear planform method of ./linear-wave-drag.ts
  * takes); `symmetricPolygon` turns it into the two surfaces.
@@ -17,20 +28,39 @@ export interface Point {
   readonly y: number;
 }
 
-/** A sharp section: two polylines from (0, 0) to (1, 0), x strictly increasing. */
+/**
+ * A sharp section: two polylines from (0, 0) to (1, 0), x strictly
+ * increasing; with `bluntTrailingEdge`, to x = 1 with the upper surface
+ * above the lower there.
+ */
 export interface Section {
   readonly upper: readonly Point[];
   readonly lower: readonly Point[];
+  readonly bluntTrailingEdge?: boolean;
 }
 
 /**
  * A symmetric sharp section: half-thickness over chord at chordwise
  * breakpoints x (chord fractions, 0 to 1, strictly increasing), zero at
- * both ends and positive between.
+ * both ends and positive between; with `bluntTrailingEdge`, positive at
+ * x = 1 too (a base of thickness twice the last half-thickness), and two
+ * breakpoints suffice.
  */
 export interface SymmetricSection {
   readonly x: readonly number[];
   readonly halfThickness: readonly number[];
+  readonly bluntTrailingEdge?: boolean;
+}
+
+/**
+ * A single wedge from a sharp leading edge to a blunt trailing edge of
+ * thickness ratio t/c (the trailing edge's thickness over the chord).
+ */
+export function singleWedge(trailingEdgeThicknessRatio: number): SymmetricSection {
+  if (!(trailingEdgeThicknessRatio > 0)) {
+    throw new RangeError('the trailing-edge thickness ratio must be positive');
+  }
+  return { x: [0, 1], halfThickness: [0, trailingEdgeThicknessRatio / 2], bluntTrailingEdge: true };
 }
 
 /** Symmetric double wedge of thickness ratio t/c with its ridge at the chord fraction given. */
@@ -62,9 +92,12 @@ export function hexagonal(
 export function validateSymmetricSection(section: SymmetricSection): void {
   const { x, halfThickness: g } = section;
   const n = x.length;
-  if (n < 3 || g.length !== n) {
+  const blunt = section.bluntTrailingEdge === true;
+  if (n < (blunt ? 2 : 3) || g.length !== n) {
     throw new RangeError(
-      'a symmetric section needs at least three breakpoints and one thickness each',
+      blunt
+        ? 'a section with a blunt trailing edge needs at least two breakpoints and one thickness each'
+        : 'a symmetric section needs at least three breakpoints and one thickness each',
     );
   }
   if (x[0] !== 0 || x[n - 1] !== 1) throw new RangeError('the breakpoints must run from 0 to 1');
@@ -76,9 +109,19 @@ export function validateSymmetricSection(section: SymmetricSection): void {
       throw new RangeError('the breakpoints must increase strictly');
     }
   }
-  if (g[0] !== 0 || g[n - 1] !== 0) {
+  if (g[0] !== 0) {
     throw new RangeError(
-      'a sharp section has zero thickness at both edges (blunt edges are refused)',
+      'a sharp section has zero thickness at the leading edge (blunt edges are refused)',
+    );
+  }
+  if (blunt) {
+    if (!(g[n - 1]! > 0)) {
+      throw new RangeError('a blunt trailing edge needs a positive thickness at x = 1');
+    }
+  } else if (g[n - 1] !== 0) {
+    throw new RangeError(
+      'a sharp section has zero thickness at both edges (blunt edges are refused unless the ' +
+        'section declares a blunt trailing edge)',
     );
   }
   for (let k = 1; k < n - 1; k++) {
@@ -91,7 +134,9 @@ export function symmetricPolygon(section: SymmetricSection): Section {
   validateSymmetricSection(section);
   const upper = section.x.map((x, k) => ({ x, y: section.halfThickness[k]! }));
   const lower = section.x.map((x, k) => ({ x, y: -section.halfThickness[k]! }));
-  return { upper, lower };
+  return section.bluntTrailingEdge === true
+    ? { upper, lower, bluntTrailingEdge: true }
+    : { upper, lower };
 }
 
 /** Thickness ratio t/c of a symmetric section: twice its largest half-thickness. */
@@ -110,6 +155,7 @@ function surfaceHeight(surface: readonly Point[], x: number): number {
 
 /** Checks a section; throws RangeError with the reason. */
 export function validateSection(section: Section): void {
+  const blunt = section.bluntTrailingEdge === true;
   for (const [name, s] of [
     ['upper', section.upper],
     ['lower', section.lower],
@@ -118,9 +164,11 @@ export function validateSection(section: Section): void {
     if (n < 2) throw new RangeError(`the ${name} surface needs at least two points`);
     const first = s[0]!;
     const last = s[n - 1]!;
-    if (first.x !== 0 || first.y !== 0 || last.x !== 1 || last.y !== 0) {
+    if (first.x !== 0 || first.y !== 0 || last.x !== 1 || (!blunt && last.y !== 0)) {
       throw new RangeError(
-        `the ${name} surface must run from the leading edge (0, 0) to the trailing edge (1, 0)`,
+        blunt
+          ? `the ${name} surface must run from the leading edge (0, 0) to the trailing edge at x = 1`
+          : `the ${name} surface must run from the leading edge (0, 0) to the trailing edge (1, 0)`,
       );
     }
     for (let k = 0; k < n; k++) {
@@ -133,9 +181,12 @@ export function validateSection(section: Section): void {
       }
     }
   }
-  // Positive thickness inside the chord: both surfaces are piecewise
-  // linear, so checking at every vertex of either suffices.
-  const xs = [...section.upper, ...section.lower].map((p) => p.x).filter((x) => x > 0 && x < 1);
+  // Positive thickness inside the chord (and at a blunt trailing edge):
+  // both surfaces are piecewise linear, so checking at every vertex of
+  // either suffices.
+  const xs = [...section.upper, ...section.lower]
+    .map((p) => p.x)
+    .filter((x) => x > 0 && (x < 1 || blunt));
   if (xs.length === 0)
     throw new RangeError('a section needs thickness: add a vertex inside the chord');
   for (const x of xs) {

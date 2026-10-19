@@ -41,6 +41,12 @@ export interface StripTheoryRatio {
  *   has ratios 0.654, 0.865 and 0.981 at Mach 1.2, 1.5 and 2.
  * - The rectangle of span equal to the chord: 1 at every Mach number, the
  *   tip effects cancelling in the total (not station by station).
+ * - Sections with a blunt trailing edge (./section.ts) do not cancel so: a
+ *   single wedge on a rectangle of chord c and span s has the ratio
+ *   1 - c / (2 pi beta s) while the tip's Mach cone stays on the panel
+ *   (beta s >= c), from the tip-cone pressure (tested in
+ *   tests/fins/blunt-trailing-edge.test.ts). The drag is the faces'; the
+ *   base is not included.
  *
  * These are statements about the planforms measured, not a law. The ratio
  * is linear theory's: how well linear theory itself predicts the 3D wave
