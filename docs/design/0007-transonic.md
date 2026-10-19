@@ -341,10 +341,19 @@ finer grids would remove another 1.2e-4, at second order 4e-5. Adding
 the far boundaries' correction measured on the base grid (+1.63e-3 to
 +1.72e-3 for boundaries at infinity) to r = 2, and the grid's remaining
 change, the drag at Mach 1 is 0.0931 to 0.0933: 0.0932 within about
-2e-4 (0.2%), on the assumption, not yet measured, that the far
-boundaries' correction is the same on finer grids (r = 2 on 408.7 radii:
-see Open). On the 100.6-radius domain alone, without the correction, the
-error is 1.8%.
+2e-4 (0.2%). On the 100.6-radius domain alone, without the correction,
+the error is 1.8%.
+
+The correction holds on the finer grid. On 408.7 radii r = 2 ran to its
+limit of 120,000 steps (4,940 s of CPU) without the settling test
+passing: the drag oscillates slowly (a period of about 30,000 steps)
+with a falling amplitude, 0.092990 within 1.5e-6 over the last 18,000
+steps (residual 2.9e-9). From 100.6 to 408.7 radii the drag rises by
+1.3899e-3 on r = 2 against 1.3836e-3 on r = 1: the far boundaries'
+effect is the same on both grids within 6e-6, 0.5% of itself, so the
+correction measured on the base grid applies to r = 2. (The Mach 1 runs
+all converge this way, in damped oscillations: the settled values on
+100.6 radii lie within about 1e-6 of the oscillation's centre.)
 
 ### Far boundaries and cylinder length at every Mach number
 
@@ -787,19 +796,16 @@ grid unless stated:
 
 ## Open
 
-- **Runs not done** (wall time on this shared machine, roughly): the
-  cone's r = 8 at Mach 1.05 and 1.1 (4 to 6 h each), which give the
-  procedure's band there; at Mach 1,
-  r = 4 on 100.6 radii (4 h) and r = 2 on 408.7 radii (3 h, to test that
-  the far boundaries' correction holds on a finer grid); the ogive at
-  Mach 1 on r = 2; the ogive's r = 4 at Mach 1.1
-  and 1.05; the fitted solver's nj = 80 on the
-  hemisphere at Mach 1.5 and the cone at Mach 1.1. The job scripts now
-  save their state every 10 minutes and resume from it, so each survives
-  the container's restarts.
-- **The stagnation line on blunt noses at Mach 1.2**: 0.46% to 0.50% of
-  total-pressure loss against the normal shock's 0.72% on r = 2 and 4,
-  not converging; converging at Mach 1.5.
+- **Runs queued, not yet done** (in this order): at Mach 1 r = 4 on
+  100.6 radii; the cone's r = 8 at Mach 1.1 and 1.05, which give the
+  procedure's band there; the ogive at Mach 1 on r = 2; the fitted
+  solver's nj = 80 on the hemisphere at Mach 1.5 and the cone at Mach
+  1.1; the ogive's r = 4 at Mach 1.1 and 1.05; the 2:1 ellipsoid's r = 8
+  at Mach 1.2. The job scripts save their state every 10 minutes and
+  resume from it, so each survives the container's restarts.
+- **The stagnation line on blunt noses**: the captured shock's
+  pointwise total-pressure error (above); removing it needs the shock
+  fitted or aligned with the cells on the axis.
 - **The far boundaries at Mach 1**: see "Mach 1 without the
   extrapolation": the large-domain route needs the near-sonic axis cells
   upstream of the tip to hold at 800 radii; the far-field-condition route
