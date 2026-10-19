@@ -1,0 +1,22 @@
+# Second (independent) reading, NASA TN D-4014 fig. 4 (chamber axial-force coefficient CA,c), PDF pp. 23 (4(a), configuration 1) and 24 (4(b), configuration 2), 300 dpi native 1-bit scans
+# Calibration from local gridlines near alpha 0 (lines tilt about 3 px across the plot):
+#  4(a) fins off: CA,c 0 at y 833.7 px, 0.04 at 678.7, 38.75 px per 0.01; 4(a) dF 0: 0.08 at 1298.0, 0 at 1608.5
+#  4(b) fins off: 0 at 854.0, 0.06 at 615.5 (39.7 px per 0.01); 4(b) dF 0: 0 at 1491.5, 0.06 at 1251.5 (40.0 px per 0.01)
+# Symbols at the columns nearest alpha 0 (alpha about -0.4 and +0.5 deg on 4(a); about 0 on 4(b)); the four Mach numbers overlap within 2 to 5 px at alpha 0 on the fins-on panels,
+# so symbol identity, not calibration, sets the error there. Values: bounding-box centre of the symbol (triangle: bounding box; centroid is 0.0007 lower).
+figure,config,fins,M,CA_c,err,note
+4(a),1,off,1.50,0.0054,0.0015,circle clear of others
+4(a),1,off,1.80,0.0118,0.0015,square clear of others
+4(a),1,off,2.30,0.031,0.002,diamond overlaps triangle
+4(a),1,off,2.96,0.028,0.002,triangle under diamond
+4(a),1,dF 0,1.50,0.035,0.004,"circle inside the diamond/square cluster (y 1460 to 1482 px); identity uncertain"
+4(a),1,dF 0,1.80,0.031,0.003,square y about 1478 to 1500 px
+4(a),1,dF 0,2.30,0.036,0.002,diamond top 1456 to 1459 px
+4(a),1,dF 0,2.96,0.029,0.003,triangle base 1503 to 1505 px
+4(b),2,off,1.80,0.030,0.002,square 730 to 742 px
+4(b),2,off,2.30,0.024,0.002,diamond 746 to 773 px
+4(b),2,off,2.96,0.020,0.002,triangle apex 765 base 778 px
+4(b),2,dF 0,1.80,0.040,0.002,square 1322 to 1344 px
+4(b),2,dF 0,2.30,0.028,0.003,diamond 1364 to 1394 px
+4(b),2,dF 0,2.96,0.023,0.003,triangle about 1385 to 1408 px
+# Fin-induced change in CA,c (dF 0 minus off): config 1: M1.50 +0.030, 1.80 +0.019, 2.30 +0.005, 2.96 +0.001 (each +-0.004); config 2: 1.80 +0.010, 2.30 +0.004, 2.96 +0.003

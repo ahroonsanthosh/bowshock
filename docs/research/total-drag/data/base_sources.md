@@ -21,12 +21,14 @@ Readings (revised): `love_tn3819_fig18.csv`.
 - Symbols: two independent readings agree within 0.003 in P_B at all twelve
   points; Mach numbers from the audit's shear-corrected grid, +-0.02.
 - Curves: the first reading was wrong at M 1.63, 1.94, 2.0, 2.42, 3.0 and 3.5
-  (symbol outlines and Gabeaud's line, by 0.004 to 0.009). Re-read with a
-  grid model (every grid line fitted as a straight line; vacuum-curve check
-  residuals within 0.0007) and robust local fits; the result reproduces the
-  audit's curve table within 0.0004, which is adopted: -0.1733 to -0.1775 at
-  M 1.5, -0.1447 to -0.1496 at 2.0, -0.1172 to -0.1196 at 2.5, -0.0964 to
-  -0.0978 at 3.0 (Gabeaud -0.1002).
+  (symbol outlines and Gabeaud's line, by 0.004 to 0.009). The audit's curve
+  table is adopted: -0.1733 to -0.1775 at M 1.5, -0.1447 to -0.1496 at 2.0,
+  -0.1172 to -0.1196 at 2.5, -0.0964 to -0.0978 at 3.0 (Gabeaud -0.1002).
+  The second reading (grid model and robust local fits) confirms 13 of the
+  20 curve values at the ten ratio Mach numbers within 0.0004: the less
+  negative curve at M 1.5 to 3.0 and both curves at M 1.63 and 2.41 to 2.68.
+  The more negative curve at M 1.5, 1.94, 2.0 and 3.0 and both at M 3.24 to
+  3.50 rest on one reading (`love18_twice_output.txt`).
 - Free-flight curve: peak -0.207 at M 1.06, -0.193 at M 1.15, -0.198 at M
   1.21 (`love18_ff_output.txt`).
 
@@ -91,6 +93,25 @@ at M 2.0; one chord fore or aft reduced the increment to nearly zero;
 increments for 10%-thick fins about twice those for 5%; a cruciform tail less
 than twice a plane tail. The superposition estimate predicted trends but
 "quantitative agreement at most tail locations was poor".
+
+## 3a. Love, TN 3819 fig. 35: fins at the base, M 1.5 to 3.0 (first reading)
+
+Fig. 35 (PDF p. 66) gives, for the cylindrical body with four 10%-thick
+circular-arc rectangular fins whose trailing edges are at the base, the
+free-flight base pressure (ref. 12, R 10e6 to 120e6) against Mach number,
+tunnel pairs with and without fins (ref. 26 at M 1.50 and 2.00, Langley 9 in
+at 2.41), Love's two estimates and the no-fin estimate, which reproduces the
+fig. 18 basic curve within 0.001. Readings: `love_fig35_tn3819.csv`; factor:
+`love_fig35_factor.csv`.
+
+Fins-on-base factor F = P_B with fins over P_B without (computed):
+free flight 1.51 at M 1.8, 1.32 at 2.0, 1.24 at 2.2, 1.26 at 2.4, 1.28 at
+2.6, 1.31 at 2.8 (1.32 at 2.97 extrapolated); tunnel pairs 1.68 at M 1.50,
+1.39 at 2.00, 1.37 at 2.41. TN 3819: "All the wind-tunnel base pressures for
+the body with fins are lower than the free-flight results" and the fin
+effects decrease as Mach number increases (p. 23). Thickness: TN 2360's
+5%-thick fins gave about half the increments of 10% (summary); fig. 33
+(not transcribed) plots P_B against fin thickness at M 1.50, 2.00 and 2.41.
 
 ## 4. Herrin and Dutton (1994) case, as reported by Tucker (NASA MSFC, 1993)
 

@@ -81,7 +81,9 @@ export type VerifiedDrag =
  * Mach 1.3 to 5, but at Mach 5 the drag wanders between convergence
  * checks by up to 1.3e-6, from the rounding of pressure recovered from a
  * total energy dominated by kinetic energy (growing with M^2); 2e-6 covers
- * the page's range (docs/design/0005-solution-verification.md).
+ * that range (docs/design/0005-solution-verification.md). Where the
+ * page's fit stops on ellipsoids at Mach 1.2, its drag is up to 3.8e-6 from
+ * the CPU's converged value (0006), a twentieth of FITTED_DRAG_FLOOR.
  */
 export const GPU_NOISE = 2e-6;
 /** Noise of the CPU engine's drag, converged to residuals of 1e-13. */

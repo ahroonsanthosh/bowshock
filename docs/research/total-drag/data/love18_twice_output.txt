@@ -1,0 +1,11 @@
+M 1.500  more negative -0.1775: nearest fit -0.1731 (+0.0044) ONE reading | less negative -0.1733: nearest fit -0.1731 (+0.0002) twice
+M 1.630  more negative -0.1717: nearest fit -0.1717 (-0.0000) twice | less negative -0.1667: nearest fit -0.1667 (-0.0000) twice
+M 1.935  more negative -0.1539: nearest fit -0.1486 (+0.0053) ONE reading | less negative -0.1486: nearest fit -0.1486 (+0.0000) twice
+M 2.000  more negative -0.1496: nearest fit -0.1447 (+0.0049) ONE reading | less negative -0.1447: nearest fit -0.1447 (+0.0000) twice
+M 2.414  more negative -0.1243: nearest fit -0.1242 (+0.0001) twice | less negative -0.1216: nearest fit -0.1215 (+0.0001) twice
+M 2.500  more negative -0.1196: nearest fit -0.1196 (+0.0000) twice | less negative -0.1172: nearest fit -0.1172 (+0.0000) twice
+M 2.681  more negative -0.1107: nearest fit -0.1108 (-0.0001) twice | less negative -0.1088: nearest fit -0.1089 (-0.0001) twice
+M 3.000  more negative -0.0978: nearest fit -0.0966 (+0.0012) ONE reading | less negative -0.0964: nearest fit -0.0966 (-0.0002) twice
+M 3.243  more negative -0.0885: nearest fit -0.0882 (+0.0003) twice | less negative -0.0881: nearest fit -0.0882 (-0.0001) twice
+M 3.497  more negative -0.0803: nearest fit -0.0791 (+0.0012) ONE reading | less negative -0.0803: nearest fit -0.0791 (+0.0012) ONE reading
+curve values confirmed by the robust fits: 14 of 20

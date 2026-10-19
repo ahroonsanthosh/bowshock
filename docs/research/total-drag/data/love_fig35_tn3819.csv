@@ -1,0 +1,42 @@
+# NACA TN 3819 (Love 1957) fig. 35, PDF p. 66 (report p. 64): "Fin effects upon base pressure with varying Mach
+# number. t/c = 0.10; x/c = 0; zero sweepback." Configuration (text pp. 20 to 22): cylindrical body, ogival nose,
+# four 10%-thick circular-arc rectangular fins, fin span to body diameter 3.5, fin thickness to body diameter 0.15,
+# fin trailing edges at the base. Free-flight curve: ref. 12, R = 10e6 to 120e6 (legend).
+# FIRST READING; a second, independent reading is pending.
+# Calibration: scripts/love35_cal.py (grid lines fitted as straight lines, data/love_fins_grid66.json; the first
+# vertical line found is M 1.1, checked against the symbols at the test Mach numbers). Check: the figure's
+# "present estimate, no fins" reproduces the less negative compiled curve of fig. 18 within 0.001 at M 1.85 to
+# 2.95 (data/love_fig35_cols_output.txt against data/love_tn3819_fig18.csv).
+# Curves: scripts/love35_track.py (continuity tracking, grid columns skipped; data/love_fig35_track_output.txt),
+# lines identified on img/love_fins/f35_hiM.png, f35_vlo.png, f35_loM.png: the free-flight curve is the dash-dot
+# line, the upper fin line at M 2.4 to 2.85; estimate A the lower long line; estimate B the line ending near M 2.56
+# (the text, p. 23: A agrees better at the higher Mach numbers, B at the lower). At M 1.8 to 2.1 the free-flight
+# line and estimate B run within 0.005 and cannot be told apart: reading error +-0.005 there, +-0.002 elsewhere.
+# Symbols: centres read by eye on img/love_fins/f35_symbols.png (ruler 0.001 in P_B, 0.005 in M), +-0.001.
+kind,M,PB,err,note
+free_flight_finned,1.80,-0.2362,0.005,ambiguous with estimate B
+free_flight_finned,1.90,-0.2108,0.005,ambiguous with estimate B
+free_flight_finned,2.00,-0.1905,0.005,ambiguous with estimate B
+free_flight_finned,2.10,-0.1746,0.005,ambiguous with estimate B
+free_flight_finned,2.20,-0.1649,0.002,
+free_flight_finned,2.30,-0.1587,0.002,
+free_flight_finned,2.40,-0.1538,0.002,
+free_flight_finned,2.50,-0.1490,0.002,
+free_flight_finned,2.60,-0.1445,0.002,
+free_flight_finned,2.70,-0.1401,0.002,
+free_flight_finned,2.80,-0.1359,0.002,
+free_flight_finned,2.85,-0.1338,0.002,last column read (love35_cols); the line ends at M 3.0 (not read beyond 2.85)
+estimate_A,2.50,-0.1402,0.002,
+estimate_A,2.80,-0.1264,0.002,
+estimate_B,2.50,-0.1353,0.002,ends near M 2.56
+no_fins_estimate,1.85,-0.1536,0.002,equals fig. 18 less negative curve
+no_fins_estimate,2.05,-0.1414,0.002,
+no_fins_estimate,2.45,-0.1189,0.002,
+no_fins_estimate,2.85,-0.1018,0.002,
+tunnel_with_fins_ref26_circle,1.50,-0.325,0.001,
+tunnel_no_fins_ref26_flagged_circle,1.50,-0.194,0.001,
+tunnel_with_fins_ref26_square,2.00,-0.208,0.001,
+tunnel_no_fins_ref26_flagged_square,2.00,-0.150,0.001,
+tunnel_with_fins_langley9in_diamond,2.41,-0.164,0.001,
+tunnel_no_fins_langley9in_flagged_diamond,2.41,-0.120,0.001,
+# Fins-on-base factor and the band applied to the Basic Finner: data/love_fig35_factor.csv (scripts/love35_factor.py).

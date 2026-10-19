@@ -1,0 +1,13 @@
+# Second (independent) reading, NACA RM L55G28a fig. 5 (total CD against M, fin-stabilised cone-cylinder, free flight), PDF p. 22 of NTRS 19930088905,
+# 300 dpi native 1-bit scan, rotated to landscape. Calibration: M gridlines every 0.1 (major every 1: M 1 at x 708.0, 2 at 995.0, 3 at 1282.5, 4 at 1568.0, 5 at 1855.0, 8 at 2716.0 px; 287.3 px per unit),
+# CD gridlines every 0.02 (0.8 at y 331, 0.6 at 614, 0.4 at 897, 0.2 at 1179, 0 at 1462; 141.5 px per 0.1). Symbols heavily overlapped (radar squares and telemeter circles drawn on top of each other),
+# so values are cluster centres and edges read on 4x to 5x zooms; reading error +-0.005 CD, +-0.02 M for individual symbols, +-0.003 for cluster means.
+kind,M,CD,note
+data_cluster_start,2.46,0.390,"leftmost symbols of the model 1 group (x 1130, y 910)"
+data_cluster,2.55,0.383,
+data_cluster,2.65,0.376,
+data_cluster,2.75,0.368,"telemeter circles"
+data_cluster_end,2.92,0.363,"right end of the model 1 group, circles 0.362 to 0.365, a square at 0.351"
+estimated,2.74,0.353,"filled triangle (component estimate, table I)"
+data_cluster,3.49 to 3.91,0.276,"model 2 group: symbol centres 0.270 to 0.282 over M 3.5 to 3.9, nearly flat"
+estimated,3.74,0.284,"filled triangle"

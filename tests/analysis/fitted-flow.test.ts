@@ -198,6 +198,36 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     await expect(stopped).rejects.toThrow();
   }, 600_000);
 
+  it('a chunked blunt start returns to the caller between the cylinder lengths it tries', async () => {
+    // The 1.5-caliber ellipsoid at Mach 1.2 tries one, two and three
+    // calibers: a pause after each refused length, before the capture,
+    // where a page can stop it.
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const controller = new AbortController();
+    let pauses = 0;
+    const started = bluntStartInChunks(
+      body,
+      { mach: 1.2, gamma, nj: 20 },
+      {
+        chunk: 50,
+        pause: () => {
+          pauses++;
+          controller.abort();
+          return Promise.resolve();
+        },
+        signal: controller.signal,
+        onProgress: () => {
+          throw new Error('the capture should not start');
+        },
+      },
+    );
+    await expect(started).rejects.toThrow(/aborted/);
+    expect(pauses).toBe(1);
+  }, 120_000);
+
   it('tests the base flow at the end of the body asked for, between grid columns', () => {
     // A cylinder shorter than the one caliber always solved, whose end
     // lies inside a column; a flow whose axial Mach number is linear in x.

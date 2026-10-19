@@ -176,19 +176,24 @@ Measured fin increment (fins on minus fins off; reading error +-0.003 each,
 | 2.30 | 0.090 | 0.087 |
 | 2.96 | 0.066 | 0.067 |
 
-## Chamber axial force, TN D-4014 fig. 4 (first reading; second pending)
+## Chamber axial force, TN D-4014 fig. 4 (two readings)
 
-`d4014/tn-d-4014_fig4_chamber.csv` (method in its header). Near alpha 0:
+`d4014/tn-d-4014_fig4_chamber.csv` (method in its header; second reading by
+the round-2 audit). Near alpha 0, this reading / the audit's:
 
 | Config | M | Fins off | Fins on, dF 0 | Change |
 | --- | --- | --- | --- | --- |
-| 1 | 1.50 | 0.0055 (+-0.0015) | 0.033 (+-0.006) | +0.028 (+-0.006) |
-| 1 | 1.80 | 0.012 (+-0.003) | 0.033 (+-0.006) | +0.021 (+-0.007) |
-| 1 | 2.30 | 0.031 (+-0.002) | 0.033 (+-0.006) | +0.002 (+-0.006) |
-| 1 | 2.96 | 0.0265 (+-0.003) | 0.033 (+-0.006) | +0.0065 (+-0.007) |
-| 2 | 1.80 | 0.030 (+-0.002) | 0.039 (+-0.002) | +0.009 (+-0.004) |
-| 2 | 2.30 | 0.0235 (+-0.003) | 0.029 (+-0.003) | +0.0055 (+-0.005) |
-| 2 | 2.96 | 0.0215 (+-0.003) | 0.022 (+-0.003) | +0.0005 (+-0.005) |
+| 1 | 1.50 | 0.0055 / 0.0054 | 0.033 / 0.035 | +0.028 / +0.030 |
+| 1 | 1.80 | 0.012 / 0.0118 | 0.033 / 0.031 | +0.021 / +0.019 |
+| 1 | 2.30 | 0.031 / 0.031 | 0.033 / 0.036 | +0.002 / +0.005 |
+| 1 | 2.96 | 0.0265 / 0.028 | 0.033 / 0.029 | +0.0065 / +0.001 |
+| 2 | 1.80 | 0.030 / 0.030 | 0.039 / 0.040 | +0.009 / +0.010 |
+| 2 | 2.30 | 0.0235 / 0.024 | 0.029 / 0.028 | +0.0055 / +0.004 |
+| 2 | 2.96 | 0.0215 / 0.020 | 0.022 / 0.023 | +0.0005 / +0.003 |
+
+Errors of the changes: +-0.004 to +-0.007 (this reading), +-0.004 (audit).
+All pairs agree within the combined error. Where a band uses a change, the
+reading that widens the band is used (config 1 at M 2.96: +0.0065).
 
 In the config 1 fins-on panel the four Mach numbers overlap in one band
 (0.027 to 0.040) and cannot be told apart in the 1-bit scan, so each carries

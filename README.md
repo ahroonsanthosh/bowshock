@@ -83,8 +83,10 @@ them; the fitted-drag families are recorded in
   (within 3e-7 at its observed order, 2.06).
   On a hemisphere-cylinder the stagnation pressure is within 0.008% of
   its exact value on 20 cells across (capture: up to 9.7%). The GPU's
-  fitted drag is within 8e-7 of the CPU's on the same grids (compared on
-  20 cells across, and 40 on a blunt nose).
+  fitted drag is within 8e-7 of the CPU's on the same grids for cones,
+  ogives and hemispheres at Mach 1.98 to 5 (compared on 20 cells across,
+  and 40 on a blunt nose), and within 3.8e-6 on ellipsoids at Mach 1.2,
+  where the page's fit stops (a twentieth of its allowance of 7e-5).
 - Forebody pressure (wave) drag of sharp-nosed bodies, inviscid, at zero
   incidence, on the [nose wave drag page](demos/nose-drag.html): each
   result is solved on your GPU with the bow shock fitted, on nested grids
@@ -95,7 +97,7 @@ them; the fitted-drag families are recorded in
   extrapolation); where no band can be measured the value is shown as
   not verified. On the families measured against exact or converged
   reference solutions (on the CPU, which the GPU matches within 8e-7 on
-  20 cells across:
+  these families on 20 cells across:
   cones of 5 to 30 deg at Mach 1.3 to 3 on three grids, and at Mach 3
   and 5 on two; 3-caliber tangent ogives at Mach 1.5 to 4, a 5-caliber
   one at Mach 2, and 3-caliber secant-ogive and parabolic noses at Mach
@@ -120,7 +122,18 @@ them; the fitted-drag families are recorded in
   converges at observed orders of 1.99 to 2.21, and behind the sonic line
   it agrees with a method of characteristics started from the solution
   within 1e-5 of the nose's drag (3:1 and 2:1 ellipsoids at Mach 2, the
-  3:1 at Mach 3; 0006). Ahead of the sonic line, where the flow is
+  3:1 at Mach 3; 0006). At Mach 1.2 to 1.5, where the shock stands far
+  off, a short body behind the nose is solved longer than asked, to keep
+  the grid's cells even (the drag is still that of the body asked for,
+  whose flow leaves its end supersonically): of ellipsoids of 0.5 to 6
+  calibers with 1, 2 or 5 calibers of body at Mach 1.2, 1.3 and 1.5, all
+  pass the page's checks on the coarsest grid but the 6-caliber nose at
+  Mach 1.2 (its wall cells near the tip too skewed for the present
+  grids); four of them converge on three
+  grids at observed orders 1.91 to 2.17, and behind the sonic line the
+  method of characteristics agrees within 3.2e-6 of the nose's drag at
+  Mach 1.5 and within 6.3e-5 at Mach 1.2, where the flow it starts from
+  is barely supersonic. Ahead of the sonic line, where the flow is
   subsonic and no independent reference exists, the drag rests on the
   grids' convergence and the exact stagnation pressure.
 
@@ -208,6 +221,10 @@ The design records, in order:
 - [0007](docs/design/0007-skin-friction.md): skin friction (draft), the
   first component of total drag, measured against wind-tunnel and flight
   data.
+- [0008](docs/design/0008-total-drag.md): total drag (draft): the method
+  and measured band of each component, and the one validation set found
+  that matches a simple finned rocket (the Basic Finner in free flight,
+  Mach 1.8 to 3.0), audited twice.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
