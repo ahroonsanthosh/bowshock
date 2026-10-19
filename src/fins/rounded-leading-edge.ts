@@ -24,8 +24,10 @@
  * which is (2/3) Cp_pitot (2 r) to within 1e-6 at these angles, Cp_pitot
  * from Rayleigh's pitot formula. Band, measured over modelled: TN 2960's
  * cylinder normal to the stream, front side (0 to 90 deg of fig. 5(c),
- * trapezoid rule) over (2/3) Cp_pitot, 0.995, 1.049 and 1.056 at M 1.49,
- * 1.98 and 2.90, rounded outward: **0.99 to 1.06** (./tn2960.ts).
+ * trapezoid rule) over (2/3) Cp_pitot, at M 1.49, 1.98 and 2.90: 0.995,
+ * 1.043 and 1.056 on the first reading (with its corrected value at M 1.98
+ * and 45 deg), 1.002, 1.049 and 1.052 on the second; the envelope of both,
+ * 0.995 to 1.056, rounded outward: **0.99 to 1.06** (./tn2960.ts).
  * Labelled "an analogy, not a measurement": behind a fin's edge are the
  * fin's faces, not the cylinder's separated wake, and the nose's effect on
  * the faces (its entropy layer, the overexpansion behind the shoulder) is
@@ -49,7 +51,7 @@
 
 import { normalShock, stagnationPressureRatio } from '../validation/gas-dynamics';
 import { FinRefusal } from './refusal';
-import { TN2960_FIG5C } from './tn2960';
+import { TN2960_FIG5C, TN2960_FIG5C_SECOND } from './tn2960';
 
 const GAMMA = 1.4;
 const DEG = Math.PI / 180;
@@ -61,14 +63,17 @@ export function pitotPressureCoefficient(mach: number, gamma = GAMMA): number {
   return (p02 - 1) / (0.5 * gamma * mach * mach);
 }
 
-/** TN 2960 fig. 5(c) integrated by the trapezoid rule: front (0 to 90 deg), rear, total, on D. */
-export function tn2960Integrated(): {
+/**
+ * TN 2960 fig. 5(c) integrated by the trapezoid rule: front (0 to 90
+ * deg), rear, total, on D; the first reading unless another is given.
+ */
+export function tn2960Integrated(reading: typeof TN2960_FIG5C = TN2960_FIG5C): {
   readonly mach: number;
   readonly front: number;
   readonly rear: number;
   readonly frontOverModifiedNewtonian: number;
 }[] {
-  return TN2960_FIG5C.map((c) => {
+  return reading.map((c) => {
     let front = 0;
     let rear = 0;
     for (let k = 0; k + 1 < c.points.length; k++) {
@@ -91,9 +96,11 @@ export function tn2960Integrated(): {
   });
 }
 
-/** The nose term's band, measured over modelled: TN 2960's ratios rounded outward. */
+/** The nose term's band, measured over modelled: TN 2960's ratios, both readings, rounded outward. */
 export const ROUNDED_EDGE_BAND = (() => {
-  const r = tn2960Integrated().map((x) => x.frontOverModifiedNewtonian);
+  const r = [TN2960_FIG5C, TN2960_FIG5C_SECOND].flatMap((reading) =>
+    tn2960Integrated(reading).map((x) => x.frontOverModifiedNewtonian),
+  );
   return {
     low: Math.floor(Math.min(...r) * 100 + 1e-9) / 100,
     high: Math.ceil(Math.max(...r) * 100 - 1e-9) / 100,

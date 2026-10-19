@@ -12,7 +12,10 @@
   `validation_candidates.md`, `blunt_te_2d_base.md` and `.csv`,
   `le_bluntness.md` and `.csv`); the round-1 audit's fig. 18 table
   (`audit/readings/tn3819_fig18.csv`); the round-3 second readings of TN 3819
-  figs. 35 and 18 (`audit/round3/`); [0007](0007-skin-friction.md) and
+  figs. 35 and 18 (`audit/round3/`); the round-4 second readings of the
+  fin-edge data and the Basic Finner's trailing-edge area
+  (`audit_round4.md`, its `readings/` and `scripts/compare_round4.py`,
+  `te_area_massprops.py`); [0007](0007-skin-friction.md) and
   `src/friction/`; [0009](0009-fin-wave-drag.md) and `src/fins/`;
   [0006](0006-shock-fitting.md) for the nose band;
   [0002](0002-architecture.md) section 12.
@@ -21,10 +24,11 @@ Every number below is asserted by a committed test named with it, or
 printed by a run kept in
 [`docs/research/base-and-total/`](../research/base-and-total/README.md).
 
-**Result in one line.** Pending: the second gate run (section 4.2) waits
-for the independent reader's report. The first run was refused at all 11
-shots for the two fin-edge terms (section 6); both are now implemented,
-with the choices of section 5 fixed before the second run.
+**Result in one line.** Pending: the second gate run (section 4.2), with
+the independent reader's report applied (sections 4.1 and 5). The first
+run was refused at all 11 shots for the two fin-edge terms (section 6);
+both are now implemented, with the choices of section 5 fixed before the
+second run.
 
 ## 1. B3: base drag (`src/base/`)
 
@@ -245,9 +249,19 @@ As transcribed (`src/validation/basic-finner.ts`):
 - single wedges with the leading edge rounded to the report's 0.004 cal
   ("very sharp with a radius 0.004 cal", p. 3), in the tangent geometry of
   section 5.2, to a blunt trailing edge 0.08 cal thick;
-- the trailing edge's spanwise thickness, and so its area (0.32 or 0.16
-  cal^2, "conical in shape", p. 3): as decided by the independent reader
-  from the report's geometry (section 5.1);
+- the trailing edge's area, **0.32 cal^2**: four edges 0.08 cal thick over
+  the full 1 cal span (constant spanwise thickness), as the independent
+  reader decided it from the report's measured mass properties (round 4,
+  section 4; no drag value used). Fig. 2 shows no spanwise section, so the
+  text's "thickness of 0.08 cal at the base" allows constant thickness
+  (0.32 cal^2) or a taper to zero at the tip (0.16). With steel fins and
+  body and the nose density solved for the measured 1.58 kg, constant
+  thickness gives a roll inertia Ix of 1.911 kg cm^2 against 1.92 measured
+  (table I; 1.91 to 1.93 over the nine rounds of table II) and the CG at
+  5.528 cal against 5.50 to 5.54; the taper gives 1.706, 11% below every
+  round, and no plausible body raises it to the measured value (at most
+  1.873 with a weightless nose; 1.856 with tungsten fins). Iy does not
+  separate them (both within 0.6%);
 - the 0.004 cal meplat of the nose neglected (at pitot pressure it would
   add 1.0e-4 in C_D);
 - fin cant (0, 2 and 4 deg) not modelled; the report finds no effect on
@@ -280,53 +294,95 @@ configuration (0008 section 6.1).
 
 ### 4.2 The second run
 
-**Pending.** The run waits for the independent reader's report (the
-trailing-edge area and the second readings of the edge data); it will be
-made once and reported here as it comes out, pass or fail.
+**Pending.** The independent reader's report (round 4: the trailing-edge
+area and the second readings of the edge data) is applied in sections 4.1
+and 5. The run is made once, after this is written, and reported here as
+it comes out, pass or fail.
 
 ## 5. The fin-edge terms: the choices made before the second run
 
 Every choice below was made from geometry, physics and the component data
 alone, written here and ruled on by the coordinator (2026-10-19) before the
 second gate run, and is not revisited after it. The Basic Finner's drag
-was used for none of them; its geometry and Reynolds numbers were used
-where stated.
+was used for none of them; its geometry, mass properties and Reynolds
+numbers were used where stated.
+
+The independent reader's second readings (round 4) are applied as the
+coordinator ruled: each table's second reading is held beside the first,
+and **every band is the envelope of both readings** (the conservative
+rule). The second readings were made before the first was opened, except
+three items the reader marks "not blind": RM A51J25 fig. 7's symbols, its
+curve at M' 1.50 to 1.60 (re-read after the comparison), and the TN 2960
+fig. 5(c) faired-curve check at 45 deg. Every second-reading value was
+checked against the reader's files when transcribed
+([`runs/second-readings.test.ts`](../research/base-and-total/README.md)).
 
 ### 5.1 The trailing edges (`src/base/fin-trailing-edge.ts`)
 
-Data: `src/base/blunt-te-2d.ts`, transcribed from
+Data: `src/base/blunt-te-2d.ts`. The first readings are transcribed from
 `docs/research/total-drag/data/blunt_te_2d_base.csv` and held to it by
-`tests/base/fin-trailing-edge.test.ts`. **Every value has one reading**
-(TN D-1056 table II typed once); the second readings are the independent
-reader's.
+`tests/base/fin-trailing-edge.test.ts`; the second readings (round 4) stand
+beside them: TR 1109 fig. 29(a) and (b) (the comparison set of
+`compare_round4.py`, which holds every fig. 29(a) value of the reader's csv;
+of fig. 29(b) it leaves out the csv's points at 0.060 to 0.185 on the M 1.5
+and 2.0 pair, whose identity the csv calls uncertain to the left and whose
+0.786 at 0.080 lies on the first reading's M 2.0 curve, 0.012 below its M
+1.5 curve, far from the fins' 0.0089 to 0.0115), fig. 8's 32 symbols and
+its faired curves, RM A51J25 fig. 7's curve (M' 1.50 to 4.00; under the
+PARD symbols below 1.50) and its symbols. Corrections from the second
+reading: the first reading's fig. 8 point at M 3.1, X 2.0, 0.275 does not
+exist and is dropped (it set no band end: 1.007 against its curve). TN
+D-1056 table II was retyped in full and equals the first typing in every
+row used.
 
 - **Nominal.** C_D = -P_B(M) n h s / A_ref, P_B the thin-layer
-  two-dimensional curve, RM A51J25 fig. 7's mean curve at M' = M_inf
-  (flat-sided sections), linear in M. This is 0008's method (section 3.4,
-  B3). No interpolation band is added: the band's evidence (the X-15
-  points, RM A51J25's symbols) was formed against this same interpolated
-  curve at each point's own Mach number. TN 3819 fig. 5's line A
-  reproduces the curve within 0.987 to 1.018, a reading check.
+  two-dimensional curve, RM A51J25 fig. 7's mean curve (first reading) at
+  M' = M_inf (flat-sided sections), linear in M. This is 0008's method
+  (section 3.4, B3). The second reading of the curve agrees within -0.005
+  to +0.003 in p_b / p' at M' 1.50 to 4.00 (base drag 0.995 to 1.009), and
+  enters through the band. No interpolation band is added: the band's
+  evidence (the X-15 points, RM A51J25's symbols) was formed against the
+  interpolated curves at each point's own Mach number. TN 3819 fig. 5's
+  line A reproduces the curve within 0.987 to 1.018, a reading check (0.992
+  to 1.024 on the second readings, the reader's figure).
 - **Band, 0.93 to 1.21** on the term, measured over modelled: the
-  envelope of the evidence 0008 lists, recomputed from the tables: TR 1109
-  fig. 8's symbols about their curves 0.969 to 1.082, fig. 29(a) against
-  fig. 8 (orifice position) 0.933 to 1.010, RM A51J25 fig. 7's 11 symbols
-  at M' 1.45 to 3.2 0.961 to 1.067, and the X-15 fin's 18 points at M 1.52
-  to 3.24 0.934 to 1.201 (the research note counts 19; table II has 18
-  power-off rows there). Rounded outward, the high end is 1.21: 0008's
-  "about 1.20" would be narrower than the X-15's own point. Domain M 1.5
-  to 3.2.
+  envelope, over both readings, of the evidence 0008 lists (each item
+  asserted by the test):
+
+  | Evidence                                                            | First reading  | Second reading                                                                            |
+  | ------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------- |
+  | TR 1109 fig. 8, 32 symbols over their own faired curve              | 0.969 to 1.082 | 0.953 to 1.072                                                                            |
+  | TR 1109 fig. 29(a) over fig. 8 (orifice position), 6 abscissas      | 0.933 to 1.010 | 0.946 to 1.011                                                                            |
+  | RM A51J25 fig. 7, 11 symbols at M' 1.45 to 3.2, over the mean curve | 0.961 to 1.067 | 0.935 to 1.057 (second symbols, second curve); crossed: 0.941 to 1.065 and 0.942 to 1.057 |
+  | X-15 fin, 18 points at M 1.52 to 3.24, over the mean curve          | 0.934 to 1.201 | 0.936 to 1.204 (second curve)                                                             |
+
+  The RM A51J25 symbols are taken over each reading of the curve, each
+  reading of the symbols, all four pairs; the second curve starts at M'
+  1.50, so for the Ames square at 1.475 (first) or 1.492 (second) it is
+  the one-interval envelope of its end value and its 1.50 to 1.55
+  extrapolation, and both ends count (0.935 is the end value; the reader's
+  0.939 is the extrapolation). The envelope is 0.933 to 1.204; rounded
+  outward, **0.93 to 1.21**, as before the second reading (0008's "about
+  0.93 to 1.20" would be narrower than the X-15's own points). The X-15
+  count is 18 power-off rows at M 1.52 to 3.24 (the research note says
+  19). Domain M 1.5 to 3.2.
+
 - **Label.** For edges in the body's base plane, as on fins at the base:
   "an analogy, not a measurement", since no opened source measures such
   an edge (0008 section 3.4).
 - **Refused:** swept trailing edges (base pressure 20% to 50% higher at M
   1.41 and 1.96 with 45 deg of sweep, RM A51J25 p. 17); a laminar layer at
-  the trailing edge as the nominal state; thick layers, c / [h Re_c^(1/5)]
-  > 1.0, because up to 1.0 TR 1109 fig. 29(a)'s base drag lies within
-  > 0.4%, 1.4% and 1.8% of its lowest-abscissa value at M 1.5, 2.0 and 3.1,
-  > while by 4.5 it has fallen 11.8%, 15.0% and 29.3%, which the thin-layer
-  > curve does not carry. The Basic Finner's fins sit at 0.69 to 0.76 (c / h
-  > 12.5, Re_c 1.19e6 to 1.98e6).
+  the trailing edge as the nominal state; and thick layers, with c / [h
+  Re_c^(1/5)] above 1.0. Up to 1.0, TR 1109 fig. 29(a)'s base drag lies
+  within 0.4%, 1.4% and 1.8% of its lowest-abscissa value at M 1.5, 2.0
+  and 3.1 in the first reading (from X 0.5, 0.5 and 0.75) and within 0.2%,
+  1.5% and 4.0% in the second (from X 0.45, where its curves start); by
+  4.5 it has fallen 11.8%, 15.0% and 29.3% (11.4%, 15.1%, 30.9%), which
+  the thin-layer curve does not carry. The second reading's 4.0% at M 3.1
+  comes from the part of the curve, X 0.45 to 0.75, that the first did not
+  read; the limit stays 1.0 as ruled, and the Basic Finner's fins sit at
+  0.69 to 0.76 (c / h 12.5, Re_c 1.19e6 to 1.98e6), where the second
+  reading's base drag at M 3.1 is 1.5% to 2.2% below its value at 0.45.
 - **Laminar input band**, in place of 0008's fixed -13% to +26%, which was
   computed at two read points (0.75 and 0.010) for the whole range of
   Reynolds numbers and is superseded. When a transition input leaves a fin
@@ -335,25 +391,48 @@ reader's.
   at c / [h Re_c^(1/2)] over turbulent (29(a)) at c / [h Re_c^(1/5)], for
   the shot's own Re_c, at each of M 1.5, 2.0 and 3.1, and the band is the
   envelope over the three (the ratio changes sign between them, 1.26,
-  0.87, 0.94 at the read points, so it is not interpolated in Mach number).
-  Where an abscissa lies beyond a curve's read range by at most one read
-  interval, the value is the envelope of the end value and the end
-  interval's linear extrapolation, flagged; further out the input is
-  refused. For the Basic Finner the laminar abscissa is 0.0089 to 0.0115,
-  below the first read point (0.010) at M 1.5 and 2.0 for Re_c above
-  1.56e6, and the turbulent one 0.688 to 0.762, below M 3.1's first point
-  (0.75) for Re_c above 1.29e6; those shots are flagged.
-- **Area.** The trailing edge's thickness along the span, so its area,
-  0.32 cal^2 (0.08 cal across the span) or 0.16 (tapering to the tip), is
-  taken as the independent reader decides it from the report's geometry.
-  The library holds a uniform thickness along the span; a taper would put a
-  thick layer near the tip and change the fins' section along the span,
-  which `src/fins/` does not represent, and would be refused there.
+  0.87, 0.94 at the read points, 1.265, 0.878, 0.945 on the second
+  reading, so it is not interpolated in Mach number) and over both
+  readings of each curve. Where an abscissa lies beyond a curve's read
+  range by at most one read interval, the value is the envelope of the end
+  value and the end interval's linear extrapolation, flagged; further out,
+  in either reading, the input is refused. For the Basic Finner the
+  laminar abscissa is 0.0089 to 0.0115, below the first read point (0.010)
+  at M 1.5 and 2.0 for Re_c above 1.56e6, and the turbulent one 0.688 to
+  0.762, below M 3.1's first point in the first reading (0.75) for Re_c
+  above 1.29e6; those shots are flagged.
+- **The laminar band per shot, against the reader's.** Computed from each
+  gated shot's Reynolds number alone, before the run
+  ([`runs/laminar-band.test.ts`](../research/base-and-total/README.md)):
+  -15.4% to +19.4%, -15.0% to +20.5% and -15.1% to +20.3% at the three
+  shots at M 1.80 to 1.85 (Re_c 1.19e6 to 1.24e6, within the read range);
+  -12.9% to +26.4% and +26.3% at M 2.348 and 2.364 (flagged for the
+  turbulent curve only); -12.9% to +27.2%, +29.0%, +29.8% and +29.8% at M
+  2.41 to 2.75; -13.0% to +32.0% and +31.9% at M 2.969 and 2.97 (Re_c
+  1.98e6 and 1.97e6, laminar abscissa 0.0089, extrapolated below the M 1.5
+  laminar curve's first read point). Over the shots, -15.4% to +32.0%. The
+  reader's figure over the fins' range is about -15% to +29%, or +32%
+  extrapolated at the lowest abscissa: the same ends (its -15% is the M
+  2.0 ratio 0.846 at 0.0115, here 0.8457; its +32% is the M 1.5 ratio
+  1.319 extrapolated to 0.0089, here 1.3198; the report does not derive
+  its +29%, and the M 2.66 shot, at 0.00948 near the M 1.5 laminar curve's
+  drawn start, about 0.0095, gives +29.0%). The two agree; above +26.5%
+  (the value at 0.010) every figure is extrapolated.
+- **Area.** The library holds a trailing-edge thickness uniform along the
+  span; the Basic Finner's is 0.32 cal^2, as section 4.1 records. A taper
+  would put a thick layer near the tip and change the fins' section along
+  the span, which `src/fins/` does not represent, and would be refused
+  there.
 
 ### 5.2 The leading edges (`src/fins/rounded-leading-edge.ts`)
 
-Data: `src/fins/tn2960.ts`, from `le_bluntness.csv`, **one reading** (the
-second is the independent reader's).
+Data: `src/fins/tn2960.ts`. The first reading (faired curves) is from
+`le_bluntness.csv`, held to it by `tests/fins/rounded-leading-edge.test.ts`,
+with one correction: fig. 5(c) at M 1.98 and 45 deg is 0.884, not 0.918
+(the reader's column scans of the faired curve at 42.0 and 48.6 deg, a
+check made after the first reading was opened, so not blind). The second
+reading (round 4) stands beside it: fig. 5(c)'s symbols at 15 deg steps,
+and fig. 7's diamonds one by one.
 
 - **Geometry.** The faces are tangent to the leading-edge circle (radius
   r, its front at x = 0) and pass through the trailing-edge corners (c,
@@ -367,9 +446,16 @@ second is the independent reader's).
   modified-Newtonian pressure, Cp_pitot cos^2(phi): per unit span Cp_pitot
   r 2 (cos(delta) - cos^3(delta) / 3), which is (2/3) Cp_pitot (2r) to
   within 1e-6. Band **0.99 to 1.06**: TN 2960's front side (fig. 5(c), 0 to
-  90 deg, trapezoid rule) over (2/3) Cp_pitot, 0.995, 1.049, 1.056 at M
-  1.49, 1.98, 2.90 (the integrals reproduce fig. 7's totals within 0.985
-  to 1.001), rounded outward.
+  90 deg, trapezoid rule) over (2/3) Cp_pitot at M 1.49, 1.98, 2.90, the
+  envelope of both readings, rounded outward: 0.995, 1.043, 1.056 on the
+  first (1.049 at M 1.98 before the correction) and 1.002, 1.049, 1.052 on
+  the second (the reader's Simpson rule gives 1.000, 1.046, 1.053), so
+  0.995 to 1.056. As a check on the integration, the first reading's
+  totals are 0.987, 0.996 and 0.985 of fig. 7's first reading; the second
+  reading's are 0.980, 0.976 and 0.994 of the mean of fig. 7's diamonds
+  (0.960 to 1.000 of single diamonds; at M 1.49 and 1.98 the integral lies
+  at the low edge of the diamonds' scatter, 1.474 to 1.511 and 1.422 to
+  1.482).
 - **The faces.** Their wave drag is the exact two-dimensional drag of a
   wedge at delta on their own rise, times the linear 3D ratio of the
   planform (0009; the faces' sheet is taken from x = 0, a 0.4% shift of
@@ -551,12 +637,40 @@ The eight corrections listed after the first run were made in 0008 at
    wave drag on the Basic Finner falls by 19.1% to 19.2% from the sharp
    wedge 0008 sized (section 5.2).
 
+### 8.3 From the second readings (round 4)
+
+6. **The trailing-edge area** (0008 sections 3.4, 5 and 6.2 B1 and B5):
+   0.32 cal^2, decided by the measured mass properties (section 4.1); the
+   20% (0.16 cal^2) alternative can be dropped.
+7. **`blunt_te_2d_base.md` and `.csv`**: the fig. 8 point at M 3.1, X 2.0,
+   0.275 does not exist (no band end moves); the first reading of fig. 8's
+   panel (c) is about 0.007 low, symbols and curve alike; two RM A51J25
+   fig. 7 symbol abscissas are read 0.02 low (the diamond near M' 1.95 is
+   at 1.961, the Ames square at 1.492); the curve below M' 1.50 is under
+   the PARD symbols and cannot be checked.
+8. **`le_bluntness.md` and `.csv`**: fig. 5(c) at M 1.98 and 45 deg is
+   0.884, not 0.918, so that Mach number's front ratio is 1.043, not
+   1.049; fig. 7 at M 2.9 is 1.336, not 1.346 (the reader's; this record
+   keeps the first reading as read and holds the second beside it).
+9. **The bands stand on both readings:** the trailing-edge band 0.93 to
+   1.21 (envelope 0.933 to 1.204) and the leading-edge band 0.99 to 1.06
+   (envelope 0.995 to 1.056); 0008 section 3.4's "about 0.93 to 1.20" and
+   its single-reading notes should say so.
+10. **The laminar trailing-edge band** over the Basic Finner's range is
+    -15.4% to +32.0% (section 5.1), the reader's -15% to +29% (+32%
+    extrapolated); above +26.5% it rests on extrapolation below the M 1.5
+    laminar curve's first read point.
+11. **The thin-layer support**: read from X 0.45 (second reading), TR 1109
+    fig. 29(a) at M 3.1 lies within 4.0% of its lowest-abscissa value up to
+    X 1.0, not 1.8%; at the Basic Finner's 0.69 to 0.76 it is 1.5% to 2.2%
+    below that value.
+
 ## 9. Open
 
-- The second readings of the edge data (TR 1109 figs. 8 and 29, RM A51J25
-  fig. 7, TN D-1056 table II, TN 2960 figs. 5(c) and 7): the independent
-  reader's.
-- The Basic Finner's trailing-edge area (the independent reader's).
+- RM A51J25 fig. 7's curve below M' 1.50 (read once; under the PARD
+  symbols, not checkable); the band's domain starts at M 1.5.
+- The Basic Finner report's refs. 3 to 5 (BRL Reports 934 and 799, BuOrd
+  Ballistic Technical Note 5), not reached by the reader.
 - The rounded edge's effect on the fin faces (entropy layer,
   overexpansion), the analogy's gap: planar shock fitting (0008 B4).
 - A measurement of a cylinder's front side near Re_D 1e4 at M 1.5 to 2.5.

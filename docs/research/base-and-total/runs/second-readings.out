@@ -1,0 +1,11 @@
+reader's files: /tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/drag-audit/round4/
+TR 1109 fig. 8 symbols (tr1109_fig8_symbols.csv): 32 equal
+RM A51J25 fig. 7 curve (rm_a51j25_fig7.csv): 26 equal, not-blind flags too
+RM A51J25 fig. 7 symbols (rm_a51j25_fig7_symbols.csv): 16 equal
+TR 1109 fig. 29(a) (tr1109_fig29.csv): all 33 csv values present and equal
+TR 1109 fig. 29(b) (tr1109_fig29.csv): 12 csv values present and equal; not taken: M 1.5 X 0.060 0.765; M 1.5 X 0.080 0.786; M 1.5 X 0.120 0.833; M 1.5 X 0.140 0.843; M 1.5 X 0.160 0.847; M 2 X 0.120 0.803; M 2 X 0.140 0.815; M 2 X 0.160 0.818; M 2 X 0.185 0.819
+compare_round4.py S29: 39 values equal
+compare_round4.py S29b: 33 values equal
+compare_round4.py C8: 60 values equal
+TN 2960 fig. 5(c) (tn2960_fig5c.csv, the means): 39 equal
+TN 2960 fig. 7 (tn2960_fig7.csv): 7 equal

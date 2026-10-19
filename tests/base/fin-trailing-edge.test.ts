@@ -1,18 +1,21 @@
 /**
  * Blunt fin trailing edges (src/base/fin-trailing-edge.ts): the
  * transcription against 0008's data file, the band recomputed from its
- * evidence, the thin-layer limit, the laminar input band and its
- * extrapolation rule, the term's arithmetic and the refusals. Recorded in
- * docs/design/0010-base-drag-and-total.md, section 5.
+ * evidence on both readings, the thin-layer limit, the laminar input band
+ * and its extrapolation rule, the term's arithmetic and the refusals.
+ * Recorded in docs/design/0010-base-drag-and-total.md, section 5.1.
  */
 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   RM_A51J25_FIG7_CURVE,
+  RM_A51J25_FIG7_CURVE_SECOND,
   TN_D1056_TABLE_II,
   TR1109_FIG29A_TURBULENT,
+  TR1109_FIG29A_TURBULENT_SECOND,
   TR1109_FIG29B_LAMINAR,
+  TR1109_FIG29B_LAMINAR_SECOND,
   TR1109_FIG8_SYMBOLS,
 } from '../../src/base/blunt-te-2d';
 import {
@@ -63,7 +66,10 @@ describe('the transcription, against 0008 data file (first readings)', () => {
     };
     check('29(a)', TR1109_FIG29A_TURBULENT);
     check('29(b)', TR1109_FIG29B_LAMINAR);
-    const f8 = rows.filter((x) => x[0] === 'TR 1109' && x[1] === '8');
+    const all8 = rows.filter((x) => x[0] === 'TR 1109' && x[1] === '8');
+    // The first reading's point at M 3.1, X 2.0, 0.275 does not exist (round 4): dropped.
+    const f8 = all8.filter((x) => !(x[3] === '3.1' && x[5] === '2.00' && x[7] === '0.275'));
+    expect(all8.length - f8.length).toBe(1);
     expect(f8.map((x) => [Number(x[3]), Number(x[5]), Number(x[7])])).toEqual(
       TR1109_FIG8_SYMBOLS.map((s) => [s.mach, s.x, s.ratio]),
     );
@@ -89,40 +95,91 @@ describe('the transcription, against 0008 data file (first readings)', () => {
   });
 });
 
-describe('the band, recomputed from its evidence', () => {
-  it('reproduces 0008: TR 1109 0.969 to 1.082 and 0.933 to 1.010, RM A51J25 0.961 to 1.067, X-15 0.934 to 1.201', () => {
-    const e = finTrailingEdgeBandEvidence();
-    expect(e.tr1109Fig8.min).toBeCloseTo(0.969, 3);
-    expect(e.tr1109Fig8.max).toBeCloseTo(1.082, 3);
-    expect(e.tr1109Fig29aOverFig8.min).toBeCloseTo(0.933, 3);
-    expect(e.tr1109Fig29aOverFig8.max).toBeCloseTo(1.01, 3);
-    expect(e.rmA51j25).toMatchObject({ count: 11 });
-    expect(e.rmA51j25.min).toBeCloseTo(0.961, 3);
-    expect(e.rmA51j25.max).toBeCloseTo(1.067, 3);
-    // blunt_te_2d_base.md says 19 points; table II has 18 power-off rows at M 1.52 to 3.24.
-    expect(e.x15).toMatchObject({ count: 18 });
-    expect(e.x15.min).toBeCloseTo(0.934, 3);
-    expect(e.x15.max).toBeCloseTo(1.201, 3);
+describe('the band, recomputed from its evidence on both readings', () => {
+  const e = finTrailingEdgeBandEvidence();
+  const rounded = e.items.map((i) => [
+    i.item,
+    i.reading,
+    i.count,
+    Math.round(1000 * i.min) / 1000,
+    Math.round(1000 * i.max) / 1000,
+  ]);
+  const firstOnly = new Set(['first', 'curve first', 'symbols first, curve first']);
+
+  it('the first reading reproduces 0008: TR 1109 0.969 to 1.082 and 0.933 to 1.010, RM A51J25 0.961 to 1.067, X-15 0.934 to 1.201', () => {
+    // blunt_te_2d_base.md says 19 X-15 points; table II has 18 power-off rows at M 1.52 to 3.24.
+    expect(rounded.filter((r) => firstOnly.has(r[1] as string))).toEqual([
+      ['TR 1109 fig. 8', 'first', 32, 0.969, 1.082],
+      ['TR 1109 fig. 29(a) over fig. 8', 'first', 6, 0.933, 1.01],
+      ['RM A51J25 fig. 7 symbols', 'symbols first, curve first', 11, 0.961, 1.067],
+      ['X-15 fin', 'curve first', 18, 0.934, 1.201],
+    ]);
   });
 
-  it('rounded outward: 0.93 to 1.21', () => {
+  it("the second reading reproduces the reader's 0.953 to 1.072, 0.946 to 1.011, 0.939 to 1.057 (0.935 at the curve's end value), 0.936 to 1.204", () => {
+    expect(rounded.filter((r) => !firstOnly.has(r[1] as string))).toEqual([
+      ['TR 1109 fig. 8', 'second', 32, 0.953, 1.072],
+      ['TR 1109 fig. 29(a) over fig. 8', 'second', 6, 0.946, 1.011],
+      ['RM A51J25 fig. 7 symbols', 'symbols first, curve second', 11, 0.941, 1.065],
+      ['RM A51J25 fig. 7 symbols', 'symbols second, curve first', 11, 0.942, 1.057],
+      ['RM A51J25 fig. 7 symbols', 'symbols second, curve second', 11, 0.935, 1.057],
+      ['X-15 fin', 'curve second', 18, 0.936, 1.204],
+    ]);
+  });
+
+  it('the envelope, 0.933 to 1.204, rounded outward: 0.93 to 1.21', () => {
+    expect(e.min).toBeCloseTo(0.9333, 4);
+    expect(e.max).toBeCloseTo(1.2038, 4);
     expect(FIN_TRAILING_EDGE_BAND).toEqual({ low: 0.93, high: 1.21 });
+  });
+
+  it("the nominal curve is the first reading; the second agrees within -0.005 to +0.003 at M' 1.50 to 4.00", () => {
+    const s = RM_A51J25_FIG7_CURVE_SECOND;
+    const d = RM_A51J25_FIG7_CURVE.filter((p) => p.mach >= 1.5).map((p) => {
+      let k = 0;
+      while (k + 2 < s.length && p.mach > s[k + 1]!.mach) k++;
+      const a = s[k]!;
+      const b = s[k + 1]!;
+      return p.ratio - (a.ratio + ((p.mach - a.mach) / (b.mach - a.mach)) * (b.ratio - a.ratio));
+    });
+    expect(Math.min(...d)).toBeGreaterThan(-0.0055);
+    expect(Math.max(...d)).toBeLessThan(0.0035);
+    expect(s.filter((p) => !p.blind).map((p) => p.mach)).toEqual([1.5, 1.55, 1.6]);
   });
 });
 
 describe('the thin-layer limit', () => {
-  it('fig. 29(a) at 1.0 lies within 0.4%, 1.4%, 1.8% of its lowest-abscissa value; at 4.5 it has fallen 12%, 15%, 29%', () => {
-    const drop = TR1109_FIG29A_TURBULENT.map((c) => {
+  const drop = (curves: typeof TR1109_FIG29A_TURBULENT) =>
+    curves.map((c) => {
       const first = 1 - c.points[0]!.ratio;
       const at = (x: number) => 1 - c.points.find((p) => p.x === x)!.ratio;
       return [1 - at(1.0) / first, 1 - at(4.5) / first].map((v) => Math.round(1000 * v) / 10);
     });
-    expect(drop).toEqual([
+
+  it('fig. 29(a) at 1.0 lies within 0.4%, 1.4%, 1.8% of its lowest-abscissa value; at 4.5 it has fallen 12%, 15%, 29%', () => {
+    expect(drop(TR1109_FIG29A_TURBULENT)).toEqual([
       [0.4, 11.8],
       [1.4, 15.0],
       [1.8, 29.3],
     ]);
     expect(THIN_LAYER_LIMIT).toBe(1.0);
+  });
+
+  it('second reading, from X 0.45: within 0.2%, 1.5%, 4.0% at 1.0; fallen 11%, 15%, 31% at 4.5', () => {
+    expect(TR1109_FIG29A_TURBULENT_SECOND.map((c) => c.points[0]!.x)).toEqual([0.45, 0.45, 0.45]);
+    expect(drop(TR1109_FIG29A_TURBULENT_SECOND)).toEqual([
+      [0.2, 11.4],
+      [1.5, 15.1],
+      [4.0, 30.9],
+    ]);
+  });
+
+  it("at the Basic Finner fins' 0.688 to 0.762, the second reading's M 3.1 base drag is 1.5% to 2.2% below its value at 0.45", () => {
+    const c = TR1109_FIG29A_TURBULENT_SECOND[2]!;
+    expect(c.mach).toBe(3.1);
+    const d = (x: number) => 1 - tr1109CurveValue(c, x)!.low;
+    expect(Math.round(1000 * (1 - d(0.688) / d(0.45))) / 10).toBe(1.5);
+    expect(Math.round(1000 * (1 - d(0.762) / d(0.45))) / 10).toBe(2.2);
   });
 });
 
@@ -133,6 +190,14 @@ describe('the laminar input band', () => {
       return (1 - tr1109CurveValue(l, 0.01)!.low) / (1 - tr1109CurveValue(t, 0.75)!.low);
     });
     expect(r.map((x) => Math.round(100 * x) / 100)).toEqual([1.26, 0.87, 0.94]);
+  });
+
+  it("the second reading gives the reader's 1.265, 0.878, 0.945 there", () => {
+    const r = TR1109_FIG29A_TURBULENT_SECOND.map((t) => {
+      const l = TR1109_FIG29B_LAMINAR_SECOND.find((c) => c.mach === t.mach)!;
+      return (1 - tr1109CurveValue(l, 0.01)!.low) / (1 - tr1109CurveValue(t, 0.75)!.low);
+    });
+    expect(r.map((x) => Math.round(1000 * x) / 1000)).toEqual([1.265, 0.878, 0.945]);
   });
 
   it('interpolates within the read range, envelopes the end value and the extrapolation within one interval, refuses beyond', () => {
@@ -162,6 +227,22 @@ describe('the laminar input band', () => {
     const outside = laminarOverTurbulent(12.5, 1.98e6);
     expect(outside.byMach.map((m) => m.extrapolated)).toEqual([true, true, true]);
     expect(outside.high).toBeGreaterThan(inside.high);
+  });
+
+  it("over the Basic Finner fins' Re_c 1.19e6 to 1.98e6: -15.4% to +32.0% (+26.5% at the read range's end), against the reader's -15% to +29% (+32% extrapolated)", () => {
+    const at = (re: number) => laminarOverTurbulent(12.5, re);
+    expect(at(1.19e6).low).toBeCloseTo(0.8457, 4);
+    expect(at(1.19e6).high).toBeCloseTo(1.1936, 4);
+    expect(at(1.98e6).high).toBeCloseTo(1.3198, 4);
+    expect(at(1.98e6).extrapolated).toBe(true);
+    // c/[h Re^(1/2)] = 0.010: the M 1.5 laminar curve's first read point in both readings.
+    const end = at((12.5 / 0.01) ** 2);
+    expect(end.byMach[0]!.extrapolated).toBe(false);
+    expect(end.high).toBeCloseTo(1.2648, 4);
+    for (const re of [1.3e6, 1.5e6, 1.6e6, 1.8e6]) {
+      expect(at(re).low).toBeGreaterThan(at(1.19e6).low);
+      expect(at(re).high).toBeLessThan(at(1.98e6).high);
+    }
   });
 });
 
