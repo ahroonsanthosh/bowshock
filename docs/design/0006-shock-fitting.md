@@ -425,7 +425,8 @@ always solves at least one caliber of cylinder (`sharpFitProblem`,
 column of cells just ahead of it where the end is a grid line, as at the
 base of a bare nose, and otherwise interpolated between the columns
 either side of it); where the flow there is subsonic the case is
-refused.
+refused. A blunt nose's fit may solve a longer cylinder still
+(`solvedBluntBody`; see "Ellipsoids at low Mach numbers" below).
 
 **The flow behind the tip must cross the starting plane supersonically.**
 The inflow plane at x0, normal to the axis, imposes all four states of
@@ -688,6 +689,230 @@ split into the fitted solver's error and the data's. The march's mass
 balance falls only by 2.4 to 3.1 per refinement on this nose (2e-6 to
 1.2e-5 on 2560 intervals), against 3.1 to 4.1 on the ellipsoids.
 
+## Ellipsoids at low Mach numbers
+
+At Mach 1.2 every ellipsoid with a caliber of cylinder was refused by
+the fitted grids' size-ratio gate (neighbouring cells may differ in size
+by at most 1.3). Measured on the start grids (CPU, nj = 20, the captured
+grid, whose lines and wall cells the fitted grid keeps), at main 6185a47
+with cf9297b:
+
+| Nose (calibers) | Wall cells, largest ratio | The spacing's own ratio over a cell | Cylinder's cells, rounded |
+| --------------- | ------------------------- | ----------------------------------- | ------------------------- |
+| 0.5             | 1.805                     | 1.902, on the cylinder              | 5.96 to 6                 |
+| 1               | 1.528                     | 1.551, on the cylinder              | 3.86 to 4                 |
+| 1.5             | 1.492                     | 1.368, past the shoulder            | 3.08 to 3                 |
+| 3               | 1.342                     | 1.310, past the shoulder            | 2.13 to 2                 |
+| 6               | 1.695                     | 1.238, near the tip                 | 1.43 to 1                 |
+
+**The spacing along the body.** Where the lines fan out, the C grid's
+spacing along the body is divided by sqrt(1 + h d(angle)/ds) (h the
+distance to the outer boundary, the angle the line's, s the arc length),
+so the outer cells keep the wall cells' aspect ratio. At low Mach
+numbers the outer boundary lies far out (on the 1.5-caliber nose at Mach
+1.2, h = 8.3 at the shoulder), and where the lines stop turning, past
+the shoulder, the spacing itself grows by up to 1.9 times over one cell
+(the third column: the spacing at one cell's length on over the spacing
+here). On the 1.5-caliber nose the cells grow from 0.238 to 0.355
+between the first two of the cylinder, while its cylinder's 3.08 cells
+are rounded to 3, a rescaling of 2.8%. The rounding of each interval
+between breakpoints to a whole number of cells is the main cause only on
+the shortest cylinder, the 6-caliber nose's, whose 1.43 cells become 1.
+
+So `columnPositions` (`src/grid/spacing.ts`) can limit the spacing's
+slope (`maxSpacingSlope`, opt-in, 0.15 on the blunt grids): the spacing
+is replaced by the largest function below it whose slope is at most
+0.15, across the breakpoints, so that a base grid's cells grow by at
+most e^0.15 = 1.16 from one to the next, apart from the rounding (on
+finer grids by less). It is applied to the base grid's spacing, the
+density divided by the refinement (exact for a power of 2), so every
+grid of a family gets the same limited spacing, scaled, and the families
+nest exactly (tested at refinements 2, 4 and 8, node for node). Where
+the spacing already changes more slowly the density is left exactly as
+given: on the measured families of this record (the 3:1 and 2:1
+ellipsoids at Mach 2, the 3:1 at Mach 3, the hemisphere at Mach 2 and 3,
+the 1.5-caliber nose at Mach 2) the spacing's slope is at most 0.1252,
+and their lines and nodes are bit-identical to those before at
+refinements 1, 2, 4 and 8; refitted at nj = 20 they give the recorded
+drags to ten figures (0.1528860052, 0.4979858367, 0.1524656811). The H
+grids of sharp noses do not take the option, and their positions come
+from the same arithmetic as before. With the slope limited, the wall
+cells of the five noses above differ by at most 1.169, 1.233, 1.161,
+1.350 and 1.709; those of the 1-, 3- and 6-caliber noses at the
+shoulder, where the nose's and the cylinder's cells are rounded to whole
+numbers apart (the 6-caliber nose's cylinder is one cell, 1.71 times the
+nose's last).
+
+**The end of a short cylinder.** The lines average the body normal over
+a window that closes at the end of the body, keeping the outflow plane
+vertical. On a short cylinder at low Mach numbers they turn vertical
+over its last cells, and the outer cells there fan out. The start grids
+at Mach 1.2, the slope limited, by the length of cylinder:
+
+| Nose | 1 caliber | 2    | 3    | 4    | 5    | 6    | 8    |
+| ---- | --------- | ---- | ---- | ---- | ---- | ---- | ---- |
+| 0.5  | 2.06      | 2.20 | 1.49 | 1.23 | 1.21 | 1.22 | 1.23 |
+| 1    | 1.71      | 1.63 | 1.45 | 1.20 | 1.21 | 1.22 | 1.23 |
+| 1.5  | 1.35      | 1.38 | 1.24 | 1.24 | 1.22 | 1.22 | 1.24 |
+| 3    | 1.35      | 1.24 | 1.23 | 1.26 | 1.23 | 1.23 | 1.24 |
+| 6    | 1.71      | 1.23 | 1.23 | 1.24 | 1.24 | 1.25 | 1.26 |
+
+(the largest size ratio of neighbouring cells; on one and two calibers
+of the 0.5- to 1.5-caliber noses in the outer row near the end, on one
+caliber of the 3- and 6-caliber noses at the shoulder). So a blunt
+nose's fit solves a longer cylinder where it needs one
+(`solvedBluntBody`, `src/analysis/fitted-flow.ts`): solvedBody's,
+lengthened a caliber at a time, by at most 7, until the start grid meets
+the size-ratio gate; if no length does, the shortest is solved and the
+fitted grid's gates decide. As before, the drag is that of the body
+asked for wherever the flow leaves its end supersonically (`baseMach`).
+The measured families keep their cylinders. On the page the lengths are
+tried between returns to the browser (`bluntStartInChunks`).
+
+**Which cases pass**, on the CPU at nj = 20, with the page's checks
+(`fittedCaseFailure`, run on every grid the page solves) at the end of
+the body asked for; each entry the cylinder solved (calibers), the
+fitted grid's largest size ratio, and the axial Mach number at the end
+asked for (end: the end of the grid, where the outflow check holds;
+the 5-caliber column was fitted on the cylinder given, which
+`solvedBluntBody` keeps, its start grids passing):
+
+| Mach | Nose | 1 caliber                                       | 2 calibers                                    | 5 calibers                                    |
+| ---- | ---- | ----------------------------------------------- | --------------------------------------------- | --------------------------------------------- |
+| 1.2  | 0.5  | 4; 1.19; 1.090                                  | 4; 1.19; 1.115                                | 5; 1.16; end                                  |
+| 1.2  | 1    | 4; 1.16; 1.108                                  | 4; 1.16; 1.128                                | 5; 1.17; end                                  |
+| 1.2  | 1.5  | 3; 1.20; 1.125                                  | 3; 1.20; 1.140                                | 5; 1.19; end                                  |
+| 1.2  | 3    | 2; 1.19; 1.156                                  | 2; 1.19; end                                  | 5; 1.18; end                                  |
+| 1.2  | 6    | 2; 1.20; 1.181; refused: wall cells at 49.6 deg | 2; 1.20; end; refused: wall cells at 49.6 deg | 5; 1.20; end; refused: wall cells at 49.5 deg |
+| 1.3  | 0.5  | 3; 1.16; 1.152                                  | 3; 1.16; 1.188                                | 5; 1.16; end                                  |
+| 1.3  | 1    | 3; 1.19; 1.181                                  | 3; 1.19; 1.208                                | 5; 1.17; end                                  |
+| 1.3  | 1.5  | 1; 1.23; end                                    | 3; 1.15; 1.224                                | 5; 1.16; end                                  |
+| 1.3  | 3    | 1; 1.14; end                                    | 2; 1.15; end                                  | 5; 1.17; end                                  |
+| 1.3  | 6    | 1; 1.16; end                                    | 2; 1.20; end                                  | 5; 1.19; end                                  |
+| 1.5  | 0.5  | 2; 1.17; 1.287                                  | 2; 1.17; end                                  | 5; 1.16; end                                  |
+| 1.5  | 1    | 1; 1.20; end                                    | 2; 1.16; end                                  | 5; 1.14; end                                  |
+| 1.5  | 1.5  | 1; 1.18; end                                    | 2; 1.17; end                                  | 5; 1.14; end                                  |
+| 1.5  | 3    | 1; 1.23; end                                    | 2; 1.13; end                                  | 5; 1.15; end                                  |
+| 1.5  | 6    | 1; 1.15; end                                    | 2; 1.15; end                                  | 5; 1.16; end                                  |
+
+Every fit converged (shock speeds below 1e-12 of the sound speed,
+residual below 1e-12). Before (at main, on the start grids, the fitted
+gates), 16 of these 45 failed the size-ratio gate: at Mach 1.2 the 0.5-
+to 1.5-caliber noses with one and two calibers, the hemisphere with
+five, and the 3- and 6-caliber noses with one; at Mach 1.3 the 0.5- to
+1.5-caliber noses with one and two; at Mach 1.5 the hemisphere with one.
+Now all pass it; no base is subsonic at these lengths (the least axial
+Mach number at an end asked for is 1.090, the hemisphere with a caliber
+at Mach 1.2). One case is still refused: the 6-caliber nose at Mach 1.2,
+whose wall cells near the tip are at 49.6 deg (gate 50). There, at x =
+0.046, the line leaves the body at 16.5 deg to the axis where the body's
+normal is at 56 deg: the window over which the lines average the normal
+(of half-width 0.34 there, a quarter of the distance to the outer
+boundary) is eight times the tip's radius of curvature (R^2 / L =
+0.042), a limit of the generator's lines, not of the spacing. At Mach
+1.3 the same nose's wall cells are at 54.9 deg.
+
+**Families** of cases the page now serves, on nj = 20, 40 and 80 (CPU,
+each finer grid started from the converged coarser one; on nj = 80 the
+fit stopped once the drag's remaining iterative error, estimated
+geometrically from its changes over 500 steps, was below 1e-9 of the
+drag on two successive checks, the estimate in the last column):
+
+| Nose, Mach        | Solved | nj = 20      | nj = 40      | nj = 80      | Order | Extrapolated | nj = 80 off it | Band    | Iterative, nj = 80 |
+| ----------------- | ------ | ------------ | ------------ | ------------ | ----- | ------------ | -------------- | ------- | ------------------ |
+| 1.5 calibers, 1.2 | 3      | 0.2474069016 | 0.2449467960 | 0.2443610023 | 2.07  | 0.2441657    | +8.0e-4        | 1.07e-3 | 3.4e-10            |
+| 3 calibers, 1.2   | 2      | 0.1189100808 | 0.1177205505 | 0.1174564675 | 2.17  | 0.1173684    | +7.5e-4        | 1.01e-3 | 3.7e-10            |
+| 0.5 caliber, 1.3  | 3      | 0.6075667281 | 0.6026884945 | 0.6013882165 | 1.91  | 0.6009157    | +7.9e-4        | 1.05e-3 | 2.7e-10            |
+| 1 caliber, 1.5    | 1      | 0.4450351473 | 0.4435658209 | 0.4431993851 | 2.00  | 0.4430772    | +2.8e-4        | 4.1e-4  | 3.5e-10            |
+
+(Each with a caliber of cylinder asked; Solved: the cylinder solved,
+calibers; nj = 80 off it: the finest value against the extrapolation,
+relative; Band: the page's band from the finest triple, 1.25 |e21| /
+(2^p - 1) with the observed order p capped at 2, plus the floor of 7e-5
+of the value, relative to it; the page itself needs a fourth grid to
+confirm the order. Iterative: the remaining iterative error estimated at
+the stop, relative; on nj = 20 and 40 the fits converged to the usual
+tests, shock speeds and residual below 1e-12.) Every grid passes the
+gates (neighbouring cells within 1.04 to 1.21, wall cells at 61.4 deg or
+more, aspect ratios 8.1 or less), and the end asked for is crossed at
+axial Mach numbers of 1.122 to 1.156 (on the 1-caliber nose at Mach 1.5
+it is the end of the grid). Their nj = 20 values lie 0.44% to 1.33%
+above their extrapolations, more than at Mach 2 and 3 (0.23% on the 3:1
+ellipsoid at Mach 2).
+
+**Behind the sonic line.** At these Mach numbers the sonic line reaches
+the shock far back: on the nj = 20 grids the lines are supersonic across
+from x = 0.62 on the 1.5-caliber nose at Mach 1.2, from x = 0.50 on the
+3-caliber one, from x = 0.31 on the 1-caliber nose at Mach 1.5, and only
+from x = 0.44 on the hemisphere at Mach 1.3, whose nose ends at 0.5, so
+that it has no line to march from. The flow behind the sonic line is
+barely supersonic (least Mach numbers 1.02 to 1.22 on the lines marched
+from), and much of the nose behind it pulls forward. The march from each
+grid's flow (as above: 640 and 1280 intervals extrapolated, the
+reference extrapolated over nj = 40 and 80, the row next to the wall
+left out), with the differences here relative to the nose's drag
+(extrapolated at second order), since the drag behind the lines is small
+and of either sign:
+
+1.5-caliber nose, Mach 1.2 (nose's drag 0.2441657):
+
+| x     | Min M | Share  | Reference    | Fitted: 20, 40, 80           | Fitted, ext. | March from 20, 40, 80        | Mass   | Fold   |
+| ----- | ----- | ------ | ------------ | ---------------------------- | ------------ | ---------------------------- | ------ | ------ |
+| 0.700 | 1.02  | -11.1% | -0.02721215  | +6.39e-4, +7.03e-5, +5.64e-6 | -1.59e-5     | -1.52e-3, -4.41e-4, -1.10e-4 | 2.6e-5 | 1.0e-3 |
+| 0.792 | 1.04  | -10.5% | -0.02568975  | +2.27e-4, -2.59e-5, -1.88e-5 | -1.64e-5     | -6.72e-4, -1.79e-4, -4.47e-5 | 3.5e-7 | none   |
+| 1.018 | 1.06  | -6.7%  | -0.01627658  | -2.24e-4, -1.18e-4, -3.69e-5 | -1.00e-5     | +5.17e-5, -4.16e-6, -1.04e-6 | 2.4e-7 | none   |
+| 1.156 | 1.07  | -3.9%  | -0.009464562 | -2.33e-4, -1.07e-4, -3.32e-5 | -8.65e-6     | +2.75e-5, +1.25e-5, +3.12e-6 | 2.6e-7 | none   |
+| 1.316 | 1.08  | -1.3%  | -0.003079773 | +6.85e-5, -5.56e-5, -2.08e-5 | -9.24e-6     | +1.31e-4, +2.10e-6, +5.24e-7 | 2.9e-7 | none   |
+
+3-caliber nose, Mach 1.2 (0.1173684):
+
+| x     | Min M | Share  | Reference    | Fitted: 20, 40, 80           | Fitted, ext. | March from 20, 40, 80        | Mass   | Fold   |
+| ----- | ----- | ------ | ------------ | ---------------------------- | ------------ | ---------------------------- | ------ | ------ |
+| 0.563 | 1.03  | -2.8%  | -0.003372618 | +4.37e-3, +1.23e-3, +5.68e-4 | +3.47e-4     | -7.15e-3, -2.47e-3, -6.18e-4 | 4.2e-5 | 1.6e-3 |
+| 0.839 | 1.07  | -11.3% | -0.01326091  | +2.54e-3, +4.85e-4, +7.39e-5 | -6.32e-5     | -2.93e-3, -7.20e-4, -1.80e-4 | 4.5e-7 | none   |
+| 1.265 | 1.10  | -13.5% | -0.01589123  | +1.25e-3, +2.07e-4, +2.11e-5 | -4.08e-5     | -1.86e-3, -4.66e-4, -1.17e-4 | 6.1e-7 | none   |
+| 1.862 | 1.12  | -8.5%  | -0.009947763 | +4.05e-4, +3.78e-5, -1.04e-6 | -1.40e-5     | -3.75e-4, -7.34e-5, -1.83e-5 | 3.1e-7 | none   |
+| 2.666 | 1.14  | -1.0%  | -0.001126085 | +4.60e-4, +1.61e-5, -8.03e-6 | -1.61e-5     | +1.88e-4, -2.04e-5, -5.10e-6 | 9.5e-9 | none   |
+
+1-caliber nose, Mach 1.5 (0.4430772):
+
+| x     | Min M | Share | Reference    | Fitted: 20, 40, 80           | Fitted, ext. | March from 20, 40, 80        | Mass   | Fold   |
+| ----- | ----- | ----- | ------------ | ---------------------------- | ------------ | ---------------------------- | ------ | ------ |
+| 0.337 | 1.03  | 6.5%  | 0.02894345   | +6.67e-4, +1.73e-4, +6.10e-5 | +2.37e-5     | -1.21e-3, -3.84e-4, -9.60e-5 | 5.7e-5 | 1.0e-3 |
+| 0.408 | 1.08  | 1.9%  | 0.008423769  | +2.98e-4, +6.25e-5, +1.32e-5 | -3.20e-6     | -4.19e-4, -1.10e-4, -2.74e-5 | 2.6e-7 | none   |
+| 0.535 | 1.13  | -1.9% | -0.008574967 | -7.21e-5, -2.46e-5, -7.32e-6 | -1.57e-6     | -8.54e-6, -5.59e-6, -1.40e-6 | 3.2e-8 | none   |
+| 0.697 | 1.19  | -2.2% | -0.009724871 | -2.29e-4, -5.99e-5, -1.53e-5 | -4.89e-7     | +9.74e-5, +2.28e-5, +5.70e-6 | 5.8e-8 | none   |
+| 0.835 | 1.22  | -0.9% | -0.004161943 | -1.80e-4, -4.50e-5, -1.12e-5 | +6.94e-8     | +5.48e-5, +1.43e-5, +3.57e-6 | 1.1e-7 | none   |
+
+(Share: the fitted drag downstream of the line over the nose's, nj = 80;
+Mass: the march's mass balance on 1280 intervals from nj = 80; Fold: the
+march's largest penetration of the body, where it folds.) From the line
+nearest the sonic line on each nose (least Mach number 1.02 to 1.03) the
+march folds, its mass balance not falling with the intervals, as from
+near-sonic data at Mach 2 (above). From the others its mass balance
+falls by 2.4 to 5.2 times per doubling of the intervals.
+
+- At Mach 1.5 the two converge as at Mach 2 and 3 (the fitted drag
+  downstream at orders 1.92 to 2.26, the march at 1.91 to 2.13, but on
+  the line at x = 0.53), and their second-order extrapolations differ by
+  7e-8 to 3.2e-6 of the nose's drag.
+- On the 3-caliber nose at Mach 1.2 the march converges at second order
+  (2.03, 2.00, 2.46) and the fitted drag downstream faster (2.32 to
+  4.20), as on the slender noses at low Mach numbers (above); at second
+  order the extrapolations differ by 1.4e-5 to 6.3e-5 of the nose's
+  drag, at the observed orders by 4e-7 to 2.4e-5 (x = 0.84 to 1.86).
+- On the 1.5-caliber nose at Mach 1.2, behind whose lines lies -10.5% to
+  -1.3% of its drag, neither converges at a steady order on these grids
+  (the fitted part's error changes sign at x = 0.79 and 1.32), and the
+  second-order extrapolations differ by 0.9e-5 to 1.6e-5 of the nose's
+  drag.
+
+Every difference lies well inside the bands (4.1e-4 to 1.1e-3 of the
+values on nj = 80), but at Mach 1.2 the check is weaker than at Mach 2
+and 3: the data it starts from are within a few percent of sonic. Ahead
+of the sonic line, as at higher Mach numbers, the drag rests on the
+family's own convergence.
+
 ## Open
 
 - One-sided reconstruction at a nose's corner with the cylinder: cleaner
@@ -704,3 +929,7 @@ balance falls only by 2.4 to 3.1 per refinement on this nose (2e-6 to
   (above) validates the drag downstream of the sonic region; the part
   ahead of it (40% of the 3:1 ellipsoid's at Mach 2) still has only the
   fitted family's own convergence, and the stagnation-point checks.
+- The blunt grid's lines near a slender tip at low Mach numbers: on the
+  6-caliber ellipsoid at Mach 1.2 they leave the body 40 deg off its
+  normal near the tip, and the wall cells there fail the 50 deg gate
+  (see "Ellipsoids at low Mach numbers").
