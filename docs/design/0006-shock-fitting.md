@@ -194,6 +194,17 @@ Measured against the CPU's fit of the same problem on the same grids
 assumed for the GPU's noise. The hemisphere-cylinder's fit converges
 after 2500 steps, the CPU's needing 4747 to reach 1e-12.
 
+Where the page's fit stops (its test settles the drag to within the
+noise), on the ellipsoids at low Mach numbers below (nj = 20, the page's
+path on the GPU against the CPU fully converged on the same problem):
+-1.8e-7 (1 caliber, Mach 1.5), -2.6e-7 (0.5 caliber, Mach 1.3), +2.8e-6
+and -3.8e-6 (1.5 and 3 calibers, Mach 1.2). The two at Mach 1.2 exceed
+the 2e-6 assumed for the noise by up to 1.9 times; how much of that is
+where the fit stops and how much the 32-bit arithmetic was not
+separated. Both are a twentieth of the floor of 7e-5 and far below these
+cases' bands (about 1e-3), so they change no result; a test holds the
+1.5-caliber case to 5e-6.
+
 On the GPU too, a bare 20 degree cone at Mach 3 on nj = 20, 40 and 80
 (`verifiedFittedDragGpu`, before the domain was extended past the base):
 +2.52e-4, +6.22e-5, +1.53e-5 of the exact drag, falling by 4.05 (order
