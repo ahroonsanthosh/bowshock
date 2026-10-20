@@ -44,9 +44,9 @@ TN 3819 fig. 35,no_fins_estimate,2.8,-0.1040,0.0003,curve; n=15
 TN 3819 fig. 35,no_fins_estimate,3,-0.0965,0.0003,curve; n=16
 TN 3819 fig. 35,no_fins_estimate,3.2,-0.0898,0.0003,curve; n=16
 TN 3819 fig. 35,no_fins_estimate,3.4,-0.0835,0.0003,curve; n=13
-TN 3819 fig. 35,ref26_circle_with_fins,1.4968,-0.3254,0.0003,symbol circle 34x41 px; x err 0.0013
-TN 3819 fig. 35,ref26_circle_no_fins_flagged,1.4992,-0.1940,0.0003,symbol circle 37x41 px; x err 0.0013; flag excluded by the template
-TN 3819 fig. 35,ref26_square_with_fins,2.0014,-0.2076,0.0003,symbol square 40x41 px; x err 0.0013
-TN 3819 fig. 35,ref26_square_no_fins_flagged,2.0012,-0.1501,0.0003,symbol square 41x41 px; x err 0.0013; flag excluded by the template
-TN 3819 fig. 35,9in_diamond_with_fins,2.4043,-0.1643,0.0003,symbol diamond 51x51 px; x err 0.0013
-TN 3819 fig. 35,9in_diamond_no_fins_flagged,2.4113,-0.1205,0.0003,symbol diamond 52x50 px; x err 0.0016; on the no-fins curve; flag excluded
+TN 3819 fig. 35,ref26_circle_with_fins,1.5008,-0.3251,0.0003,symbol circle 43 px (score 0.88); x err 0.0013
+TN 3819 fig. 35,ref26_circle_no_fins_flagged,1.5018,-0.1940,0.0003,symbol circle 43 px (score 0.93); x err 0.0013; flag excluded by the template
+TN 3819 fig. 35,ref26_square_with_fins,2.0015,-0.2076,0.0003,symbol square 39 px (score 0.91); x err 0.0013
+TN 3819 fig. 35,ref26_square_no_fins_flagged,2.0012,-0.1502,0.0003,symbol square 39 px (score 0.84); x err 0.0013; flag excluded by the template
+TN 3819 fig. 35,9in_diamond_with_fins,2.4046,-0.1647,0.0003,symbol diamond 55 px (score 0.78); x err 0.0013
+TN 3819 fig. 35,9in_diamond_no_fins_flagged,2.4108,-0.1202,0.0003,symbol diamond 55 px (score 0.93); x err 0.0016; on the no-fins curve; flag excluded

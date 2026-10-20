@@ -29,8 +29,8 @@
   {"name": "tri_xc1.0_lower", "at": [818, 3648], "r": 17, "shape": "triangle", "search": 25},
   {"name": "tri_xc0.8", "at": [1073, 3026], "r": 17, "shape": "triangle", "search": 25},
   {"name": "tri_xc0.6", "at": [1329, 3045], "r": 17, "shape": "triangle", "search": 25},
-  {"name": "tri_xc0.4", "at": [1584, 2950], "r": 17, "shape": "triangle", "search": 25},
-  {"name": "tri_xc0.2", "at": [1840, 2990], "r": 17, "shape": "triangle", "search": 25},
-  {"name": "tri_xc0.0", "at": [2095, 2994], "r": 17, "shape": "triangle", "search": 25}
+  {"name": "tri_xc0.4", "at": [1584, 2950], "r": 17, "shape": "triangle", "search": 25, "extra": 0.002, "note": "plain and flagged triangles overlap"},
+  {"name": "tri_xc0.2", "at": [1840, 2990], "r": 17, "shape": "triangle", "search": 25, "extra": 0.003, "note": "plain and flagged triangles overlap"},
+  {"name": "tri_xc0.0", "at": [2095, 2994], "r": 17, "shape": "triangle", "search": 25, "extra": 0.002, "note": "plain and flagged triangles overlap"}
  ],
  "scale": 0.3}

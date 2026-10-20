@@ -23,13 +23,14 @@ import dig  # noqa: E402
 
 class Fig:
     def __init__(self, pdf, page, work, box, xsel, xvals, ysel, yvals, xlog=False, ylog=False,
-                 frac_v=0.5, frac_h=0.5, thr=0.55, half=6, extra_v=(), extra_h=(), name=""):
+                 frac_v=0.5, frac_h=0.5, thr=0.55, half=6, extra_v=(), extra_h=(), name="", grid_thr=0.55, longruns=False, skews=(None, None)):
         self.name = name
         self.png = dig.render(pdf, page, work)
         self.box = box
         self.a = dig.load(self.png, box)
         self.m = dig.dark(self.a, thr)
-        self.vf, self.hf = dig.grid_from_box(dig.dark(self.a, 0.55), frac_v, frac_h, half=half)
+        self.vf, self.hf = dig.grid_from_box(dig.dark(self.a, grid_thr), frac_v, frac_h, half=half,
+                                           longruns=longruns, skews=skews)
         self.vf += [tuple(v) for v in extra_v]
         self.hf += [tuple(h) for h in extra_h]
         vsort = sorted(self.vf, key=lambda L: L[0])
@@ -50,7 +51,7 @@ class Fig:
         self.xline_rms = [vsort[i][2] for i in xsel]
         self.yline_rms = [hsort[i][2] for i in ysel]
         self.thick = float(np.nanmedian([L[3] for L in vsort + hsort])) if (vsort or hsort) else 4.0
-        self.clean = dig.remove_lines(self.m, vsort, hsort)
+        self.clean = dig.remove_lines(self.m, [vsort[i] for i in xsel], [hsort[i] for i in ysel])
 
     # -------- coordinates (local = box pixels)
     def data(self, X, Y):
@@ -129,7 +130,8 @@ class Fig:
     # -------- symbols
     def symbol(self, X0, Y0, r, shape="circle", search=20, stroke=None, mask=None):
         """Locate a symbol near local (X0, Y0) by outline-template correlation,
-        trying half-sizes r-7..r+7 px and keeping the best; the centre is the
+        trying half-sizes r-4..r+4 px and keeping the largest that scores at
+        least 0.92 of the best; the centre is the
         template's (sub-pixel) peak, which for these symmetric outlines is
         the bounding-box centre (circles, squares, diamonds) and, for the
         triangle template, the point one third of the height above the base.
@@ -147,8 +149,8 @@ class Fig:
         else:
             tpl = dig.ring_template(r, t, shape)
         cy, cx = int(Y0) - y0, int(X0) - x0
-        best = None
-        for rr in np.arange(max(4.0, r - 7), r + 7.5, 1.0):
+        cands = []
+        for rr in np.arange(max(4.0, r - 4), r + 4.5, 1.0):
             if shape in ("triangle", "triangle_down"):
                 tpl = tri_template(rr, t, down=(shape == "triangle_down"))
             else:
@@ -159,9 +161,11 @@ class Fig:
             win[ys0:cy + search + 1, xs0:cx + search + 1] = sc[ys0:cy + search + 1, xs0:cx + search + 1]
             iy, ix = np.unravel_index(np.argmax(win), win.shape)
             score = float(win[iy, ix])
-            if best is None or score > best[0] + 0.02:
-                best = (score, rr, iy, ix, sc)
-        score, rr, iy, ix, sc = best
+            cands.append((score, rr, iy, ix, sc))
+        top = max(c[0] for c in cands)
+        # the largest size that fits nearly as well as the best: the outer
+        # outline rather than a smaller figure inside a thick stroke
+        score, rr, iy, ix, sc = max((c for c in cands if c[0] >= 0.92 * top), key=lambda c: c[1])
         # sub-pixel peak (parabola through the neighbours on each axis)
         def para(a, b, c):
             d = a - 2 * b + c
@@ -206,7 +210,9 @@ def from_spec(spec):
     return Fig(spec["pdf"], spec["page"], spec["work"], tuple(bx), spec["xsel"], spec["xvals"], spec["ysel"],
                spec["yvals"], xlog=spec.get("xlog", False), ylog=spec.get("ylog", False),
                frac_v=spec.get("frac_v", 0.5), frac_h=spec.get("frac_h", 0.5), thr=spec.get("thr", 0.55),
-               name=spec.get("name", ""))
+               name=spec.get("name", ""), grid_thr=spec.get("grid_thr", 0.55),
+               longruns=spec.get("longruns", False),
+               skews=(spec.get("skew_v"), spec.get("skew_h")))
 
 
 def dilate(b, k):

@@ -28,6 +28,7 @@ import numpy as np  # noqa: E402
 from fig import from_spec, write_csv  # noqa: E402
 from stroke import trace2d  # noqa: E402
 import dig  # noqa: E402
+import dots  # noqa: E402
 
 COL = [(255, 0, 0), (0, 160, 0), (0, 0, 255), (200, 0, 200), (0, 160, 160), (220, 120, 0), (120, 60, 0)]
 
@@ -110,6 +111,88 @@ def main():
         marks.append((X, Yc, (255, 120, 0), 7))
     done = {(r[1], r[2]) for r in rows if r[-1].startswith("column read")}
     rows = [r for r in rows if not (r[-1] == "not traced" and (r[1], r[2]) in done)]
+    if "dots" in spec:
+        D = spec["dots"]
+        R = D.get("R", 40)
+        full = dig.dark(dig.load(f.png), spec.get("thr", 0.55))
+        tpls = []
+        offs = {}
+        for L in D["legend"]:
+            X, Y = L["at"]
+            reg = (X - 30, Y - 30, X + 31, Y + 31)
+            if L.get("nodot"):
+                # a legend glyph drawn without its dot: centre it on its outline's
+                # bounding box (circles and squares)
+                cc, _ = dig.components(full[Y - 45:Y + 46, X - 45:X + 46], min_px=50)
+                q = max(cc, key=lambda c: c["n"])
+                bl = [(X - 45 + 0.5 * (q["bbox"][0] + q["bbox"][2]), Y - 45 + 0.5 * (q["bbox"][1] + q["bbox"][3]),
+                       0, 0, 0)]
+            else:
+                bl = dots.dot_blobs(full, reg, D.get("dot_min", 3), D.get("dot_max", 16))
+            if not bl:
+                raise SystemExit(f"legend dot not found for {L['series']}")
+            bx_, by_, w_, h_, n_ = min(bl, key=lambda q: (q[0] - X) ** 2 + (q[1] - Y) ** 2)
+            gl = dots.glyph(full, bx_, by_, R, max(w_, h_) / 2 + 2)
+            tpls.append((L["series"], gl))
+            offs[L["series"]] = dots.rule_offset(gl, R, L.get("rule", "bbox"))[:2]
+        rg = D.get("region")
+        dm = f.m if D.get("mask") == "raw" else f.clean
+        found = [] if rg is None else dots.dot_blobs(
+            dm, (rg[0] - bx[0], rg[1] - bx[1], rg[2] - bx[0], rg[3] - bx[1]),
+            D.get("dot_min", 3), D.get("dot_max", 16))
+        for cx, cy, w_, h_, n_ in sorted(found):
+            Rp = D.get("R_plot", R)
+            g = dots.glyph(dm, cx, cy, Rp, max(w_, h_) / 2 + 2)
+            scales = D.get("scales", [1.0])
+            scores = sorted(((*dots.match_scaled(g, t, scales, D.get("shift", 2)), name) for name, t in tpls),
+                            reverse=True)
+            (s1, sc1, n1), (s2, sc2, n2) = scores[0], scores[1]
+            if s1 < D.get("min_score", 0.5):
+                continue
+            xd, yd = f.data(cx, cy)
+            dx_, dy_ = offs[n1][0] * sc1, offs[n1][1] * sc1
+            xv, yv = f.data(cx + dx_, cy + dy_)
+            ex = np.hypot(1.0 * ux, calx)
+            ey = np.hypot(1.0 * uy, caly)
+            if spec.get("xlog"):
+                ex = xv * np.log(10) * ex
+            rows.append([spec.get("figure", ""), n1, f"{xv:.4g}", f"{yv:.4f}", f"{ey:.4f}",
+                         f"rule centroid from the centre dot (dot at {xd:.4g}, {yd:.4f}); match {s1:.2f}"
+                         f" at scale {sc1:g} (next {n2} {s2:.2f}); x err {ex:.3g}"
+                         + ("; LOW MARGIN" if s1 - s2 < 0.1 else "")])
+            marks.append((cx, cy, (255, 0, 255), 12))
+        # symbols whose dot is lost (merged with a curve, hidden): the legend
+        # glyph itself as the template, its dot position as the centre
+        tdict = dict(tpls)
+        for gs in D.get("glyph_at", []):
+            Xa, Ya = gs["at"][0] - bx[0], gs["at"][1] - bx[1]
+            S = gs.get("search", 20)
+            best = None
+            for scl in gs.get("scales", D.get("glyph_scales", [1.0])):
+                t = dots.scaled(tdict[gs["series"]], scl, int(R * scl) + 2)
+                Rt = t.shape[0] // 2
+                y0_, x0_ = int(Ya) - Rt - S, int(Xa) - Rt - S
+                n_ = 2 * (Rt + S) + 1
+                sub = np.zeros((n_, n_), dtype=bool)
+                ya, xa = max(0, y0_), max(0, x0_)
+                yb, xb = min(f.clean.shape[0], y0_ + n_), min(f.clean.shape[1], x0_ + n_)
+                sub[ya - y0_:yb - y0_, xa - x0_:xb - x0_] = f.clean[ya:yb, xa:xb]
+                sc = dig.correlate(dots.dilate(sub, 1), t)
+                c0 = Rt + S
+                w_ = sc[c0 - S:c0 + S + 1, c0 - S:c0 + S + 1]
+                iy, ix = np.unravel_index(np.argmax(w_), w_.shape)
+                val = float(w_[iy, ix])
+                if best is None or val > best[0]:
+                    best = (val, scl, ix + c0 - S + x0_, iy + c0 - S + y0_)
+            val, scl, cx, cy = best
+            dx_, dy_ = (v * scl for v in offs[gs["series"]])
+            xv, yv = f.data(cx + dx_, cy + dy_)
+            ey = float(np.hypot(np.hypot(2.0 * uy, caly), gs.get("extra", 0.0)))
+            ex = np.hypot(2.0 * ux, calx)
+            rows.append([spec.get("figure", ""), gs["series"], f"{xv:.4g}", f"{yv:.4f}", f"{ey:.4f}",
+                         f"legend-glyph template at scale {scl:g}; match {val:.2f}; x err {ex:.3g}"
+                         + ("; " + gs["note"] if gs.get("note") else "")])
+            marks.append((cx, cy, (0, 200, 255), 14))
     for s in spec.get("symbols", []):
         r = f.symbol(s["at"][0] - bx[0], s["at"][1] - bx[1], s["r"], s.get("shape", "circle"),
                      search=s.get("search", 20))
@@ -127,6 +210,7 @@ def main():
             ex = xv * np.log(10) * ex
         if spec.get("ylog"):
             ey = yv * np.log(10) * ey
+        ey = float(np.hypot(ey, s.get("extra", 0.0)))
         rows.append([spec.get("figure", ""), s["name"], f"{xv:.4f}", f"{yv:.4f}", f"{ey:.4f}",
                      f"symbol {s.get('shape', 'circle')} {r['w']} px (score {r['score']:.2f}), x err {ex:.4f}"
                      + (", " + s["note"] if s.get("note") else "")])

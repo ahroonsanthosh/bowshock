@@ -91,6 +91,27 @@ def _peaks(profile, frac, min_sep):
     return merged
 
 
+def long_runs(m, axis, L=40):
+    """Pixels of m that belong to runs of at least L px along the line
+    direction (axis 'v': vertical runs, 'h': horizontal runs)."""
+    a = m if axis == "v" else m.T
+    H, W = a.shape
+    b = np.zeros((H + 2, W), dtype=np.int8)
+    b[1:-1] = a
+    d = np.diff(b, axis=0)
+    sr, sc = np.nonzero(d == 1)
+    er, ec = np.nonzero(d == -1)
+    o1 = np.lexsort((sr, sc))
+    o2 = np.lexsort((er, ec))
+    sr, sc, er = sr[o1], sc[o1], er[o2]
+    keep = (er - sr) >= L
+    acc = np.zeros((H + 1, W), dtype=np.int32)
+    np.add.at(acc, (sr[keep], sc[keep]), 1)
+    np.add.at(acc, (er[keep], sc[keep]), -1)
+    out = np.cumsum(acc, axis=0)[:H] > 0
+    return out if axis == "v" else out.T
+
+
 def find_skew(m, axis, bmax=0.03, nb=121, sub=3):
     """Skew b (px per px) that makes lines of this axis most peaked:
     vertical lines x = c + b*y ('v'), horizontal y = c + b*x ('h')."""
@@ -239,12 +260,14 @@ class Axis:
         return float(np.sqrt(np.mean(r ** 2))), float(np.max(np.abs(r)))
 
 
-def grid_from_box(m, frac_v=0.5, frac_h=0.5, min_sep=8, half=6, nslab=8):
+def grid_from_box(m, frac_v=0.5, frac_h=0.5, min_sep=8, half=6, nslab=8, longruns=False, skews=(None, None)):
     """Detect and fit all vertical and horizontal gridlines in mask m (box crop)."""
-    bv = find_skew(m, "v")
-    bh = find_skew(m, "h")
-    vs = find_lines(m, "v", frac_v, min_sep, skew=bv)
-    hs = find_lines(m, "h", frac_h, min_sep, skew=bh)
+    lv = long_runs(m, "v", 40) if longruns else m
+    lh = long_runs(m, "h", 40) if longruns else m
+    bv = find_skew(lv, "v") if skews[0] is None else skews[0]
+    bh = find_skew(lh, "h") if skews[1] is None else skews[1]
+    vs = find_lines(lv, "v", frac_v, min_sep, skew=bv)
+    hs = find_lines(lh, "h", frac_h, min_sep, skew=bh)
     vf = [fit_line(m, "v", c, half=half, nslab=nslab, frac=frac_v * 0.6, skew=bv) for c, w in vs]
     hf = [fit_line(m, "h", c, half=half, nslab=nslab, frac=frac_h * 0.6, skew=bh) for c, w in hs]
     return dedupe(vf, m.shape[0]), dedupe(hf, m.shape[1])

@@ -21,7 +21,7 @@ def main():
     view = sys.argv[10] if len(sys.argv) > 10 else None
     png = dig.render(pdf, page, work)
     a = dig.load(png, box)
-    m = dig.dark(a)
+    m = dig.dark(a, float(sys.argv[11]) if len(sys.argv) > 11 else 0.55)
     vf, hf = dig.grid_from_box(m, fv, fh)
     H, W = m.shape
     print("vertical lines (x at mid-height, page px):")

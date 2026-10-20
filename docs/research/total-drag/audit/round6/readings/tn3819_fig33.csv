@@ -24,10 +24,10 @@ TN 3819 fig. 33,M2.41_9in_curve,7,-0.1528,0.0002,curve; n=8
 TN 3819 fig. 33,M2.41_9in_curve,8,-0.1567,0.0002,curve; n=8
 TN 3819 fig. 33,M2.41_9in_curve,9,-0.1602,0.0002,curve; n=5
 TN 3819 fig. 33,M1.50_circle_tc0,0.0335,-0.1947,0.0002,symbol circle 48 px (score 0.90); x err 0.0221
-TN 3819 fig. 33,M1.50_circle_tc5,4.9722,-0.2700,0.0002,symbol circle 52 px (score 0.69); x err 0.0221
-TN 3819 fig. 33,M1.50_circle_tc10,9.9708,-0.3252,0.0002,symbol circle 50 px (score 0.71); x err 0.0221
-TN 3819 fig. 33,M2.00_square_tc0,0.0698,-0.1505,0.0002,symbol square 46 px (score 0.78); x err 0.0221
-TN 3819 fig. 33,M2.00_square_tc5,4.9929,-0.1850,0.0002,symbol square 46 px (score 0.82); x err 0.0221
+TN 3819 fig. 33,M1.50_circle_tc5,4.9639,-0.2698,0.0002,symbol circle 48 px (score 0.54); x err 0.0221
+TN 3819 fig. 33,M1.50_circle_tc10,9.9763,-0.3251,0.0002,symbol circle 48 px (score 0.61); x err 0.0221
+TN 3819 fig. 33,M2.00_square_tc0,0.0718,-0.1505,0.0002,symbol square 48 px (score 0.75); x err 0.0221
+TN 3819 fig. 33,M2.00_square_tc5,4.9919,-0.1850,0.0002,symbol square 48 px (score 0.81); x err 0.0221
 TN 3819 fig. 33,M2.00_square_tc10,9.9668,-0.2091,0.0002,symbol square 48 px (score 0.77); x err 0.0221
-TN 3819 fig. 33,M2.41_diamond_tc0,0.0505,-0.1211,0.0003,symbol diamond 62 px (score 0.97); x err 0.0304; on the frame corner
-TN 3819 fig. 33,M2.41_diamond_tc10,10.0212,-0.1649,0.0002,symbol diamond 62 px (score 0.77); x err 0.0221
+TN 3819 fig. 33,M2.41_diamond_tc0,0.0274,-0.1213,0.0003,symbol diamond 56 px (score 0.70); x err 0.0304; on the frame corner
+TN 3819 fig. 33,M2.41_diamond_tc10,9.9506,-0.1649,0.0002,symbol diamond 54 px (score 0.63); x err 0.0221
