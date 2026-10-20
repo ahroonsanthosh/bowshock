@@ -2,7 +2,7 @@
  * Thickness wave drag of a fin: the exact 2D section drag
  * (./section-drag.ts) times the ratio of linear 3D to strip-theory drag of
  * the planform (./linear-wave-drag.ts), the method of step B4 of the
- * total-drag plan. Nothing here is served yet; see
+ * total-drag plan. Served only as part of the total drag (src/total); see
  * docs/design/0009-fin-wave-drag.md for what is verified and what is not.
  */
 
