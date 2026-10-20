@@ -1,23 +1,29 @@
 /**
  * The drag page (demos/nose-drag.html) in the browser: its total-drag
  * section before any nose solve (the solve itself takes far too long on
- * software WebGPU to run here), and the section's rendering of a total
- * computed with the nose given as the Basic Finner gate gave it. The
- * numbers are those of tests/app/total-drag.test.ts; this checks that the
- * page shows them, with their labels, and refuses with every reason.
+ * software WebGPU to run here), and the layout of a total computed with
+ * the nose given as the Basic Finner gate gave it. What is shown is tested
+ * in tests/app/total-drag.test.ts and tests/app/total-drag-display.test.ts;
+ * this checks that the page reads its fields, shows exactly the display's
+ * blocks, and refuses with every reason.
  */
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   basicFinnerForm,
-  BREAKDOWN_NOTE,
-  FINS_BAND_NOTE,
   GATE_TRANSITION_REYNOLDS,
   OFFSET_CAVEAT,
   totalDragView,
   VALIDATED_CLAIM,
 } from '../../src/app/total-drag';
-import { renderTotalDrag } from '../../src/app/total-drag-render';
+import {
+  displayText,
+  formOf,
+  gateDisplay,
+  totalDragDisplay,
+  type TotalDragFields,
+} from '../../src/app/total-drag-display';
+import { renderBlocks } from '../../src/app/total-drag-render';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 
 async function until(test: () => boolean, what: string, ms = 30_000): Promise<void> {
@@ -71,14 +77,49 @@ afterAll(() => {
   frame.remove();
 });
 
+/** The page's fields as they stand, read from its elements. */
+function pageFields(): TotalDragFields {
+  const value = (id: string) => (doc.querySelector(id) as HTMLInputElement).value;
+  return {
+    finCount: value('#fin-count'),
+    planform: value('#planform'),
+    leadingEdgeSweep: value('#le-sweep'),
+    trailingEdgeSweep: value('#te-sweep'),
+    taperRatio: value('#taper'),
+    rootChord: value('#root-chord'),
+    span: value('#span'),
+    section: value('#section'),
+    thickness: value('#thickness'),
+    ridge: value('#ridge'),
+    frontBevel: value('#front-bevel'),
+    rearBevel: value('#rear-bevel'),
+    leadingEdgeRadius: value('#le-radius'),
+    trailingEdgeAheadOfBase: value('#te-ahead'),
+    reynoldsOnLength: value('#reynolds'),
+    temperature: value('#temperature'),
+    transitionReynolds: value('#transition'),
+    wallTemperature: value('#wall-temperature'),
+    roughnessLow: value('#rough-low'),
+    roughnessHigh: value('#rough-high'),
+    roughnessSource: value('#rough-source'),
+  };
+}
+
 describe('the drag page: total drag before a nose solve', () => {
-  it('opens on the Basic Finner, inside the class, with no number', () => {
+  it('opens on the Basic Finner, inside the class, with no number, laid out as the display says', () => {
     expect(text('#overall-length')).toBe('10 calibers');
     expect(text('#total-mach')).toBe('2');
     const out = text('#total-output');
     expect(out).toContain('No total yet: run the solve above');
     expect(out).toContain('inside the class tested by the Basic Finner');
     expect(out).not.toContain('C_D =');
+    const body = {
+      nose: { shape: { kind: 'conical' }, length: 2.836, baseRadius: 0.5 },
+      cylinderLength: 7.164,
+    } as const;
+    const form = formOf(body, 2, pageFields());
+    expect(out).toBe(displayText(totalDragDisplay(totalDragView(form, { kind: 'pending' }))));
+    expect(text('#gate-body')).toBe(displayText(gateDisplay()));
     expect(doc.querySelectorAll('#gate-body tbody tr').length).toBe(11);
   });
 
@@ -124,8 +165,8 @@ describe('the drag page: total drag before a nose solve', () => {
   });
 });
 
-describe('the total as the page renders it', { timeout: 60_000 }, () => {
-  it('shows the total, its band rounded outward, every input band and every component with its label', () => {
+describe('the total as the page lays it out', { timeout: 60_000 }, () => {
+  it('every block of the display, in order, with the claim set apart and the numbers unwrapped', () => {
     const mach = 2.97;
     const form = {
       ...basicFinnerForm(mach, 1.97e7),
@@ -137,25 +178,23 @@ describe('the total as the page renders it', { timeout: 60_000 }, () => {
       component: exactConeNoseWaveDrag(mach, Math.atan(0.5 / form.body.nose.length)),
     });
     if (view.kind !== 'total') throw new Error(view.kind);
+    const blocks = totalDragDisplay(view);
     const target = document.createElement('div');
     document.body.append(target);
-    renderTotalDrag(target, view);
-    const shown = target.textContent;
+    renderBlocks(target, blocks);
+    expect(target.textContent).toBe(displayText(blocks));
     // The gate's shot DA95022205 (0010 section 4.2): 0.4071 (0.3579 to 0.4786).
-    expect(shown).toContain('Total C_D = 0.4071, model-form band 0.3579 to 0.4786');
-    expect(shown).toContain(VALIDATED_CLAIM);
-    expect(shown).toContain(OFFSET_CAVEAT);
-    expect(shown).toContain('than any other gated shot');
-    expect(shown).toContain(BREAKDOWN_NOTE);
-    expect(shown).toContain(FINS_BAND_NOTE);
-    for (const c of view.total.components) {
-      expect(shown).toContain(c.name);
-      expect(shown).toContain(c.label);
-    }
-    for (const i of view.total.inputs) {
-      expect(shown).toContain(i.name);
-      expect(shown).toContain(i.label);
-    }
+    expect(target.querySelector('p.result.ok')?.textContent).toBe(
+      'Total C_D = 0.4071, model-form band 0.3579 to 0.4786 (-12.1% to +17.6%)',
+    );
+    expect(target.querySelector('.claim.claim-ok')?.textContent).toContain(VALIDATED_CLAIM);
+    expect(target.querySelector('.claim .warn')?.textContent).toBe(OFFSET_CAVEAT);
+    expect(target.querySelectorAll('tbody tr').length).toBe(
+      view.total.inputs.length + view.total.components.length,
+    );
+    expect(target.querySelectorAll('td.num').length).toBe(
+      view.total.inputs.length + 3 * view.total.components.length,
+    );
     target.remove();
   });
 });

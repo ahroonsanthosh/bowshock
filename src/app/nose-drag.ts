@@ -13,23 +13,26 @@
 import { verifiedFittedDragGpu } from '../analysis/gpu-fitted-flow';
 import { GpuExecutionError } from '../engine-gpu/gpu-common';
 import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE, type LevelReport } from '../analysis/verified-drag';
-import { bodyLength, type Body } from '../geometry/body';
+import type { Body } from '../geometry/body';
 import type { NoseShape } from '../geometry/nose';
 import { withBand } from './band';
+import { parseNumber, totalDragView, type NoseState } from './total-drag';
 import {
-  BASIC_FINNER_CLASS,
-  BASIC_FINNER_REYNOLDS_PER_MACH,
-  BASIC_FINNER_TEMPERATURE,
-  noseComponentOf,
-  parseNumber,
-  parseNumberList,
-  totalDragView,
-  type NoseState,
-  type PlanformInput,
-  type SectionInput,
-  type TotalDragForm,
-} from './total-drag';
-import { renderGate, renderTotalDrag } from './total-drag-render';
+  BASIC_FINNER_NOSE_FIELDS,
+  basicFinnerFields,
+  failureDisplay,
+  fieldsShown,
+  formOf,
+  gateDisplay,
+  NO_WEBGPU,
+  noseKeyOf,
+  noseStateOf,
+  overallLengthText,
+  totalDragDisplay,
+  type DisplayBlock,
+  type TotalDragFields,
+} from './total-drag-display';
+import { renderBlocks } from './total-drag-render';
 
 const GAMMA = 1.4;
 
@@ -55,38 +58,51 @@ const status = element('#status', HTMLElement);
 const levels = element('#levels', HTMLTableElement);
 
 const totalForm = element('#total-form', HTMLFormElement);
-const finCountInput = element('#fin-count', HTMLInputElement);
-const planformSelect = element('#planform', HTMLSelectElement);
 const sweepFields = element('#sweep-fields', HTMLElement);
 const teSweepField = element('#te-sweep-field', HTMLElement);
 const taperField = element('#taper-field', HTMLElement);
-const leSweepInput = element('#le-sweep', HTMLInputElement);
-const teSweepInput = element('#te-sweep', HTMLInputElement);
-const taperInput = element('#taper', HTMLInputElement);
-const rootChordInput = element('#root-chord', HTMLInputElement);
-const spanInput = element('#span', HTMLInputElement);
-const sectionSelect = element('#section', HTMLSelectElement);
 const thicknessLabel = element('#thickness-label', HTMLLabelElement);
-const thicknessInput = element('#thickness', HTMLInputElement);
 const ridgeField = element('#ridge-field', HTMLElement);
-const ridgeInput = element('#ridge', HTMLInputElement);
 const bevelFields = element('#bevel-fields', HTMLElement);
-const frontBevelInput = element('#front-bevel', HTMLInputElement);
-const rearBevelInput = element('#rear-bevel', HTMLInputElement);
-const leRadiusInput = element('#le-radius', HTMLInputElement);
-const teAheadInput = element('#te-ahead', HTMLInputElement);
 const overallLength = element('#overall-length', HTMLOutputElement);
 const totalMach = element('#total-mach', HTMLOutputElement);
-const reynoldsInput = element('#reynolds', HTMLInputElement);
-const temperatureInput = element('#temperature', HTMLInputElement);
-const transitionInput = element('#transition', HTMLInputElement);
-const wallTemperatureInput = element('#wall-temperature', HTMLInputElement);
-const roughLowInput = element('#rough-low', HTMLInputElement);
-const roughHighInput = element('#rough-high', HTMLInputElement);
-const roughSourceInput = element('#rough-source', HTMLInputElement);
 const basicFinnerButton = element('#basic-finner', HTMLButtonElement);
 const totalOutput = element('#total-output', HTMLElement);
 const gateBody = element('#gate-body', HTMLElement);
+
+/** The page's element for each total-drag field. */
+const FIELD_IDS: Record<keyof TotalDragFields, string> = {
+  finCount: '#fin-count',
+  planform: '#planform',
+  leadingEdgeSweep: '#le-sweep',
+  trailingEdgeSweep: '#te-sweep',
+  taperRatio: '#taper',
+  rootChord: '#root-chord',
+  span: '#span',
+  section: '#section',
+  thickness: '#thickness',
+  ridge: '#ridge',
+  frontBevel: '#front-bevel',
+  rearBevel: '#rear-bevel',
+  leadingEdgeRadius: '#le-radius',
+  trailingEdgeAheadOfBase: '#te-ahead',
+  reynoldsOnLength: '#reynolds',
+  temperature: '#temperature',
+  transitionReynolds: '#transition',
+  wallTemperature: '#wall-temperature',
+  roughnessLow: '#rough-low',
+  roughnessHigh: '#rough-high',
+  roughnessSource: '#rough-source',
+};
+const fieldElements = Object.fromEntries(
+  Object.entries(FIELD_IDS).map(([name, id]) => {
+    const el = document.querySelector(id);
+    if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) {
+      throw new Error(`expected an input or select at ${id}`);
+    }
+    return [name, el];
+  }),
+) as Record<keyof TotalDragFields, HTMLInputElement | HTMLSelectElement>;
 
 function shape(): NoseShape {
   const parameter = Number(parameterInput.value);
@@ -122,7 +138,7 @@ function bodyAsked(): Body {
 
 /** What a nose solve is for: its body and Mach number. */
 function noseKey(): string {
-  return JSON.stringify([bodyAsked(), parseNumber(machInput.value)]);
+  return noseKeyOf(bodyAsked(), parseNumber(machInput.value));
 }
 
 /** The case as asked, repeated with its result. */
@@ -175,111 +191,47 @@ async function requestDevice(): Promise<GPUDevice | null> {
 
 // ------------------------------------------------------------ total drag
 
+// Everything shown here comes from ./total-drag-display.ts; this only
+// reads the fields and lays the blocks out.
+
 /** The last nose solve: what it was for, and what it gave the total. */
 let noseSolve: { readonly key: string; readonly state: NoseState } | null = null;
 /** Set when this browser has no WebGPU, so that no nose can be solved here. */
 let noGpu = false;
 
 function noseState(): NoseState {
-  if (noGpu) {
-    return {
-      kind: 'refused',
-      message: 'the nose wave drag is solved on the GPU, and this browser provides no WebGPU',
-    };
-  }
+  if (noGpu) return NO_WEBGPU;
   return noseSolve !== null && noseSolve.key === noseKey() ? noseSolve.state : { kind: 'pending' };
 }
 
-function planformAsked(): PlanformInput {
-  switch (planformSelect.value) {
-    case 'trapezoidal':
-      return {
-        kind: 'trapezoidal',
-        leadingEdgeSweepDegrees: parseNumber(leSweepInput.value),
-        trailingEdgeSweepDegrees: parseNumber(teSweepInput.value),
-      };
-    case 'clipped-delta':
-      return { kind: 'clipped-delta', taperRatio: parseNumber(taperInput.value) };
-    default:
-      return { kind: 'rectangular' };
-  }
-}
-
-function sectionAsked(): SectionInput {
-  const thickness = parseNumber(thicknessInput.value);
-  switch (sectionSelect.value) {
-    case 'double-wedge':
-      return { kind: 'double-wedge', thickness, ridge: parseNumber(ridgeInput.value) };
-    case 'hexagonal':
-      return {
-        kind: 'hexagonal',
-        thickness,
-        frontBevel: parseNumber(frontBevelInput.value),
-        rearBevel: parseNumber(rearBevelInput.value),
-      };
-    default:
-      return { kind: 'single-wedge', trailingEdgeThickness: thickness };
-  }
-}
-
-/** An optional number: empty is none. */
-function optional(text: string): number | undefined {
-  return text.trim() === '' ? undefined : parseNumber(text);
-}
-
-function totalAsked(): TotalDragForm {
-  const roughGiven = [roughLowInput, roughHighInput, roughSourceInput].some(
-    (i) => i.value.trim() !== '',
-  );
-  return {
-    body: bodyAsked(),
-    mach: parseNumber(machInput.value),
-    finCount: parseNumber(finCountInput.value),
-    planform: planformAsked(),
-    rootChord: parseNumber(rootChordInput.value),
-    span: parseNumber(spanInput.value),
-    section: sectionAsked(),
-    leadingEdgeRadius: parseNumber(leRadiusInput.value),
-    trailingEdgeAheadOfBase: parseNumber(teAheadInput.value),
-    reynoldsOnLength: parseNumber(reynoldsInput.value),
-    temperature: parseNumber(temperatureInput.value),
-    transitionReynolds: parseNumberList(transitionInput.value),
-    wallTemperature: optional(wallTemperatureInput.value),
-    // A one-sided band leaves the other end empty: zero.
-    roughness: roughGiven
-      ? {
-          low: optional(roughLowInput.value) ?? 0,
-          high: optional(roughHighInput.value) ?? 0,
-          source: roughSourceInput.value,
-        }
-      : undefined,
-  };
+function fieldsAsked(): TotalDragFields {
+  return Object.fromEntries(
+    Object.entries(fieldElements).map(([name, el]) => [name, el.value]),
+  ) as unknown as TotalDragFields;
 }
 
 function showFinFields(): void {
-  sweepFields.hidden = planformSelect.value !== 'trapezoidal';
-  teSweepField.hidden = planformSelect.value !== 'trapezoidal';
-  taperField.hidden = planformSelect.value !== 'clipped-delta';
-  ridgeField.hidden = sectionSelect.value !== 'double-wedge';
-  bevelFields.hidden = sectionSelect.value !== 'hexagonal';
-  thicknessLabel.textContent =
-    sectionSelect.value === 'single-wedge' ? 'Trailing-edge thickness' : 'Largest thickness';
+  const shown = fieldsShown(fieldsAsked());
+  sweepFields.hidden = !shown.sweeps;
+  teSweepField.hidden = !shown.sweeps;
+  taperField.hidden = !shown.taperRatio;
+  ridgeField.hidden = !shown.ridge;
+  bevelFields.hidden = !shown.bevels;
+  thicknessLabel.textContent = shown.thicknessLabel;
 }
 
 function updateTotal(): void {
-  const form = totalAsked();
-  const length = bodyLength(form.body);
-  overallLength.value = Number.isFinite(length) ? `${Number(length.toFixed(4))} calibers` : '';
+  const body = bodyAsked();
+  overallLength.value = overallLengthText(body);
   totalMach.value = machInput.value;
+  const form = formOf(body, parseNumber(machInput.value), fieldsAsked());
+  let blocks: DisplayBlock[];
   try {
-    renderTotalDrag(totalOutput, totalDragView(form, noseState()));
+    blocks = totalDragDisplay(totalDragView(form, noseState()));
   } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    const p = document.createElement('p');
-    p.className = 'warn result';
-    p.textContent = `The total could not be computed: ${reason}. No number is given.`;
-    totalOutput.replaceChildren(p);
+    blocks = failureDisplay(error instanceof Error ? error.message : String(error));
   }
+  renderBlocks(totalOutput, blocks);
 }
 
 // Each total takes a fraction of a second: computed once typing pauses.
@@ -291,30 +243,19 @@ function scheduleTotal(): void {
 
 /** The Basic Finner's nose, fins and range conditions at the Mach number asked. */
 function setBasicFinner(): void {
-  const bf = BASIC_FINNER_CLASS;
-  const mach = parseNumber(machInput.value);
-  shapeSelect.value = 'conical';
+  shapeSelect.value = BASIC_FINNER_NOSE_FIELDS.shape;
   showParameter();
-  noseLengthInput.value = bf.noseLength.toFixed(3);
-  bodyLengthInput.value = (bf.length - Number(noseLengthInput.value)).toFixed(3);
-  finCountInput.value = String(bf.finCount);
-  planformSelect.value = 'rectangular';
-  rootChordInput.value = String(bf.rootChord);
-  spanInput.value = String(bf.span);
-  sectionSelect.value = 'single-wedge';
-  thicknessInput.value = String(bf.trailingEdgeThickness);
-  leRadiusInput.value = String(bf.leadingEdgeRadius);
-  teAheadInput.value = '0';
-  if (Number.isFinite(mach)) {
-    reynoldsInput.value = (BASIC_FINNER_REYNOLDS_PER_MACH * mach).toPrecision(3);
+  noseLengthInput.value = BASIC_FINNER_NOSE_FIELDS.noseLength;
+  bodyLengthInput.value = BASIC_FINNER_NOSE_FIELDS.bodyLength;
+  const fields = basicFinnerFields(parseNumber(machInput.value), fieldsAsked());
+  for (const [name, el] of Object.entries(fieldElements)) {
+    el.value = fields[name as keyof TotalDragFields];
   }
-  temperatureInput.value = BASIC_FINNER_TEMPERATURE.toFixed(2);
   showFinFields();
   scheduleTotal();
 }
 
-planformSelect.addEventListener('change', showFinFields);
-sectionSelect.addEventListener('change', showFinFields);
+totalForm.addEventListener('change', showFinFields);
 totalForm.addEventListener('submit', (event) => {
   event.preventDefault();
 });
@@ -324,7 +265,7 @@ for (const f of [form, totalForm]) {
 }
 basicFinnerButton.addEventListener('click', setBasicFinner);
 showFinFields();
-renderGate(gateBody);
+renderBlocks(gateBody, gateDisplay());
 updateTotal();
 
 // The form never submits natively; Run stays disabled until the GPU is ready.
@@ -357,8 +298,8 @@ async function run(gpu: GPUDevice): Promise<void> {
   const asked = caseText();
   // The total takes this solve's result only while its case is still the one asked.
   const key = noseKey();
-  const result = (state: NoseState) => {
-    noseSolve = { key, state };
+  const result = (state: NoseState | null) => {
+    noseSolve = state === null ? null : { key, state };
   };
   noseSolve = null;
   updateTotal();
@@ -402,20 +343,12 @@ async function run(gpu: GPUDevice): Promise<void> {
           `${asked}. No result: on the grid at refinement ${outcome.refinement}, ${outcome.reason}.`,
           'warn',
         );
-        result({
-          kind: 'refused',
-          message: `the nose wave drag was not solved: on the grid at refinement ${outcome.refinement}, ${outcome.reason}`,
-        });
         break;
       case 'not-converged':
         show(
           `${asked}. No result: the grid at refinement ${outcome.refinement} did not converge (${outcome.reason}).`,
           'warn',
         );
-        result({
-          kind: 'refused',
-          message: `the nose wave drag was not solved: the grid at refinement ${outcome.refinement} did not converge`,
-        });
         break;
       case 'solved': {
         const e = outcome.estimate;
@@ -428,14 +361,6 @@ async function run(gpu: GPUDevice): Promise<void> {
             `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`,
             'ok',
           );
-          result({
-            kind: 'solved',
-            component: noseComponentOf({
-              value: e.value,
-              uncertainty: outcome.uncertainty,
-              grids: outcome.levels.length,
-            }),
-          });
         } else {
           const finer =
             outcome.stopped !== undefined
@@ -448,16 +373,11 @@ async function run(gpu: GPUDevice): Promise<void> {
             'warn',
           );
           note.hidden = false;
-          result({
-            kind: 'refused',
-            message:
-              'the nose wave drag has no measured error band (not verified), and the total ' +
-              'needs one',
-          });
         }
         break;
       }
     }
+    result(noseStateOf(outcome));
   } catch (error) {
     // Bodies the solver does not serve yet (detached shocks, subsonic tip
     // flow) are refused with the reason; a failure of the GPU says so.
@@ -473,9 +393,7 @@ async function run(gpu: GPUDevice): Promise<void> {
       'warn',
     );
     // A case the solver refuses refuses the total; a failed GPU leaves it unsolved.
-    if (!gpuFailed) {
-      result({ kind: 'refused', message: `the nose wave drag cannot be solved here: ${reason}` });
-    }
+    result(noseStateOf({ kind: 'error', message: reason, gpuFailed }));
   } finally {
     runButton.disabled = false;
     stopButton.disabled = true;
