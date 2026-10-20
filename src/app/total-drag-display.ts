@@ -300,8 +300,8 @@ export const PENDING_TEXT =
 export const NEAR_MACH_3_TEXT =
   'This Mach number lies nearer those two shots, at Mach 2.97, than any other gated shot.';
 export const ESTIMATE_TOLERANCE_TEXT =
-  'Even inside the class the test is wide: its tolerance was -19.5% to -26.2% and +26.5% to ' +
-  '+31.4% of the modelled total.';
+  'Even inside the class the test is wide: its tolerance was -19.5% to -26.2% and +23.1% to ' +
+  '+27.4% of the modelled total.';
 
 /** The total-drag output for a view. */
 export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
@@ -412,8 +412,9 @@ export function gateDisplay(): DisplayBlock[] {
     {
       kind: 'table',
       caption:
-        'The Basic Finner gate, second run, as published in design record 0010 section 4.2 ' +
-        '(residual: measured CX0 over modelled, minus 1; values to the nearest last digit shown)',
+        'The Basic Finner gate, second run, as published in design record 0010 section 4.2, ' +
+        'with the tolerances re-derived after an independent audit (its section 10; residual: ' +
+        'measured CX0 over modelled, minus 1; values to the nearest last digit shown)',
       head: ['Shot', 'Mach', 'CX0 measured', 'Modelled C_D (band)', 'Residual', 'Tolerance'],
       rows: PUBLISHED_GATE.map((s) => [
         s.shot,

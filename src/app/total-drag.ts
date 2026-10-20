@@ -280,7 +280,8 @@ export const VALIDATED_CLAIM =
   'total drag has passed a hold-out test, the Basic Finner in free flight (DREV TM 9703: 11 shots ' +
   'at Mach 1.80 to 2.97, Reynolds numbers 1.19e7 to 1.98e7 on length; design record 0010, section ' +
   '4.2). Measured over modelled, the 11 residuals were -7.7% to +4.5% (mean -1.9%), inside a ' +
-  'tolerance of -19.5% to -26.2% and +26.5% to +31.4% of the modelled total.';
+  'tolerance of -19.5% to -26.2% and +23.1% to +27.4% of the modelled total (as re-derived ' +
+  'after an independent audit, section 10).';
 export const TOLERANCE_CAVEAT =
   'That tolerance is wide: a pass at such a width says little by itself, and the residuals are ' +
   'the finding. The two fin-edge terms, both analogies, carry 24% to 25% of the Basic ' +
@@ -672,7 +673,11 @@ export interface PublishedShot {
   readonly tolerance: readonly [number, number];
 }
 
-/** The second gate run, as published in 0010 section 4.2 (held to the library by the tests). */
+/**
+ * The second gate run, as published in 0010 section 4.2, with the tolerances as re-derived
+ * after the round 5 audit (0010 section 10; the second run's high ends were +26.5% to
+ * +31.4%), held to the library by the tests.
+ */
 export const PUBLISHED_GATE: readonly PublishedShot[] = [
   {
     shot: 'DA95021318',
@@ -682,7 +687,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.5311,
     high: 0.7261,
     residual: -3.0,
-    tolerance: [-24.2, 26.5],
+    tolerance: [-24.2, 23.1],
   },
   {
     shot: 'DA95021529',
@@ -692,7 +697,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.5181,
     high: 0.7053,
     residual: 0.4,
-    tolerance: [-23.8, 26.7],
+    tolerance: [-23.8, 23.1],
   },
   {
     shot: 'DA95021308',
@@ -702,7 +707,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.5172,
     high: 0.7039,
     residual: -4.6,
-    tolerance: [-23.8, 26.6],
+    tolerance: [-23.8, 23.1],
   },
   {
     shot: 'DA95021328',
@@ -712,7 +717,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.425,
     high: 0.572,
     residual: 3.2,
-    tolerance: [-21.3, 29.7],
+    tolerance: [-21.3, 25.6],
   },
   {
     shot: 'DA95020907',
@@ -722,7 +727,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.4234,
     high: 0.569,
     residual: -0.9,
-    tolerance: [-21.3, 29.6],
+    tolerance: [-21.3, 25.6],
   },
   {
     shot: 'DA95021317',
@@ -732,7 +737,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.4174,
     high: 0.5587,
     residual: -0.3,
-    tolerance: [-21.0, 29.6],
+    tolerance: [-21.0, 25.5],
   },
   {
     shot: 'DA95020927',
@@ -742,7 +747,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.3892,
     high: 0.521,
     residual: 0.7,
-    tolerance: [-26.2, 31.2],
+    tolerance: [-26.2, 27.2],
   },
   {
     shot: 'DA95020906',
@@ -752,7 +757,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.3808,
     high: 0.5097,
     residual: -7.7,
-    tolerance: [-26.1, 31.4],
+    tolerance: [-26.1, 27.4],
   },
   {
     shot: 'DA95020916',
@@ -762,7 +767,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.38,
     high: 0.5086,
     residual: 4.5,
-    tolerance: [-26.1, 31.4],
+    tolerance: [-26.1, 27.4],
   },
   {
     shot: 'DA95030603',
@@ -772,7 +777,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.358,
     high: 0.4786,
     residual: -5.4,
-    tolerance: [-19.5, 28.6],
+    tolerance: [-19.5, 24.6],
   },
   {
     shot: 'DA95022205',
@@ -782,6 +787,6 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     low: 0.3579,
     high: 0.4786,
     residual: -7.6,
-    tolerance: [-19.5, 28.6],
+    tolerance: [-19.5, 24.7],
   },
 ];

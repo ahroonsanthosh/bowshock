@@ -323,7 +323,9 @@ describe('the display', { timeout: 60_000 }, () => {
       view.total.inputs.map((i) => [i.name, i.label]),
     );
     expect(inputs!.rows.find((r) => r[0] === 'roughness')![1]).toBe('none');
-    expect(inputs!.rows.find((r) => r[0] === 'transition')![1]).toBe('-0.0188 to 0.0000');
+    // The transition as states of the boundary layer (0010 section 10): the run to 3e6 with
+    // the fins and their trailing edges laminar together, -0.02534, rounded outward.
+    expect(inputs!.rows.find((r) => r[0] === 'transition')![1]).toBe('-0.0254 to 0.0000');
     expect(components!.rows.map((r) => [r[0], r[4], r[5]])).toEqual(
       view.total.components.map((c) => [c.name, c.label, c.band]),
     );
@@ -365,7 +367,7 @@ describe('the display', { timeout: 60_000 }, () => {
         'the leading-edge radius is 0 cal, not 0.004 within 0.5%',
       ],
     });
-    expect(displayText(box.blocks)).toContain('-19.5% to -26.2% and +26.5% to +31.4%');
+    expect(displayText(box.blocks)).toContain('-19.5% to -26.2% and +23.1% to +27.4%');
   });
 
   it('a failure of the computation itself: no number', () => {
@@ -385,7 +387,7 @@ describe('the display', { timeout: 60_000 }, () => {
       '0.594',
       '0.6123 (0.5311 to 0.7261)',
       '-3.0%',
-      '-24.2% to +26.5%',
+      '-24.2% to +23.1%',
     ]);
     expect(gate!.rows.map((r) => r[0])).toEqual(PUBLISHED_GATE.map((s) => s.shot));
     expect(gate!.rows.map((r) => r[4])).toEqual([

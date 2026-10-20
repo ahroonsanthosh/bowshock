@@ -634,8 +634,8 @@ describe('found in the libraries (0011 section 6)', { timeout: 60_000 }, () => {
     expect(base(0.1)).toEqual(base(1));
   });
 
-  it("a rounded leading edge is 'measured' above TN 2960's Reynolds numbers too (1e5 to 1e6)", () => {
-    const at = (reynoldsOnDiameter: number) =>
+  it("a rounded leading edge above TN 2960's Reynolds numbers (1e5 to 1e6) is refused, no longer 'measured' (0010 section 10, finding 11)", () => {
+    const at = (reynoldsOnDiameter: number) => () =>
       roundedLeadingEdgeDrag({
         mach: 2,
         radius: 0.004,
@@ -644,7 +644,18 @@ describe('found in the libraries (0011 section 6)', { timeout: 60_000 }, () => {
         reynoldsOnDiameter,
       }).regime;
     expect(TN2960_RANGE.reynolds).toEqual([1e5, 1e6]);
-    expect(at(5e5)).toBe('measured');
-    expect(at(5e6)).toBe('measured');
+    expect(at(5e5)()).toBe('measured');
+    expect(at(5e6)).toThrow(/above 1000000, the highest at which a front-side pressure/);
+  });
+
+  it("the leading-edge and trailing-edge labels say 'tested only in the total' (0010 section 7)", () => {
+    const form = basicFinnerForm(2.4);
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'total') throw new Error(v.kind);
+    for (const name of ['fin leading edges', 'fin trailing-edge base']) {
+      const label = v.total.components.find((c) => c.name === name)!.label;
+      expect(label.startsWith('an analogy, not a measurement')).toBe(true);
+      expect(label).toContain('tested only in the total');
+    }
   });
 });

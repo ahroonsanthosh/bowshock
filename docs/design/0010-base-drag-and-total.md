@@ -585,7 +585,8 @@ row used.
 
 - **Label.** For edges in the body's base plane, as on fins at the base:
   "an analogy, not a measurement", since no opened source measures such
-  an edge (0008 section 3.4).
+  an edge (0008 section 3.4), with its band "tested only in the total"
+  (section 7; added after round 5, as 0011 section 6 found it missing).
 - **Refused:** swept trailing edges (base pressure 20% to 50% higher at M
   1.41 and 1.96 with 45 deg of sweep, RM A51J25 p. 17); a laminar layer at
   the trailing edge as the nominal state; and thick layers, with c / [h
@@ -687,7 +688,8 @@ and fig. 7's diamonds one by one.
   its entropy layer and the overexpansion behind the shoulder, where the
   cylinder has a separated wake and the fin has its faces. No opened
   source measures it; the term is labelled "an analogy, not a
-  measurement".
+  measurement", with its band "tested only in the total" (section 7;
+  added after round 5, as 0011 section 6 found it missing).
 - **Domain.** TN 2960 covers M 1.49 to 2.90 and Re_D 1e5 to 1e6 (no
   Reynolds-number effect found there). Accepted beyond it, on RM A55H31's
   statement (pp. 13 to 14) that the front-half pressure distribution, as a
@@ -1109,6 +1111,12 @@ laminar high end (unclamped) over the total, 3.4 to 4.1 points: the test
 reproduces the second run's tolerances from the present code by adding
 that term back (`basic-finner.test.ts`), and `gate-round5.out` prints
 both. The audit's own figures were +23.1% to +27.4%.
+
+**With 0011 (the total on the drag page).** 0011 section 6 found the
+leading-edge and trailing-edge labels without "tested only in the total",
+which section 7 asks of the base and fin terms; both now say it. Its other
+label finding is finding 11. The page quotes the re-derived tolerances
+(`src/app/total-drag.ts`, held to the library by `tests/app/`).
 
 **Also noted, not changed.** Found while acting on finding 11: between M
 2.90 and 3.0 at Re_D 1.4e5 to 1e6 the rounded edge is labelled "covered by

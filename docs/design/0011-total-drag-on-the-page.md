@@ -10,9 +10,11 @@
   `src/app/nose-drag.ts`. A redesigned page reads its fields, calls the
   two modules and lays out the blocks; nothing it shows is decided
   elsewhere.
-- **Date:** 2026-10-20
+- **Date:** 2026-10-20; the gate's tolerances and the edge labels updated
+  the same day for the round 5 audit (0010 section 10)
 - **Inputs:** [0010](0010-base-drag-and-total.md) section 7 (what may be
-  claimed) and section 4.2 (the gate), [0008](0008-total-drag.md) sections
+  claimed), section 4.2 (the gate) and section 10 (the round 5 audit),
+  [0008](0008-total-drag.md) sections
   6.3 and 6.4, [0007](0007-skin-friction.md),
   [0006](0006-shock-fitting.md) for the nose solve, `src/total/` as it
   stands.
@@ -136,7 +138,7 @@ radius 0.06%, the chord 0.01%, the temperature at 293 or 295 K under
 0.005%), all of them together at most 0.7% (the sum), against residuals
 that spread with standard deviations of 1.6% to 6.3% within a cluster
 (`tests/validation/basic-finner.test.ts`) and a tolerance of about -20% to
-+31%. Discrete features are exact: a cone, four fins, no sweep, the
++27%. Discrete features are exact: a cone, four fins, no sweep, the
 trailing edges at the base, a single wedge.
 
 **The Mach number and Reynolds number** are 0010 section 7's ranges,
@@ -173,7 +175,12 @@ nose term lies within its own band of the gate's, of order 1e-5 in C_D
   Mach 1.80 to 2.97, Reynolds numbers 1.19e7 to 1.98e7 on length; design
   record 0010, section 4.2). Measured over modelled, the 11 residuals were
   -7.7% to +4.5% (mean -1.9%), inside a tolerance of -19.5% to -26.2% and
-  +26.5% to +31.4% of the modelled total." Beside it, always: that the
+  +23.1% to +27.4% of the modelled total (as re-derived after an
+  independent audit, section 10)." The tolerance is 0010's as re-derived
+  after the round 5 audit, which changed the band arithmetic after the
+  hold-out was used (the second run's high end was +26.5% to +31.4%; the
+  residuals did not change); the published gate table on the page carries
+  the re-derived tolerances. Beside it, always: that the
   tolerance is wide and a pass at that width says little by itself, the
   residuals being the finding; that the two fin-edge terms, both analogies,
   carry 24% to 25% of the Basic Finner's total and the body base carries
@@ -198,15 +205,20 @@ nose term lies within its own band of the gate's, of order 1e-5 in C_D
   fin wave drag "estimated on the ARCAS increments (TN D-4014), tested only
   in the total"; the leading edges "an analogy, not a measurement", with
   "extrapolated in Reynolds number" below M 2.48 where no measurement
-  covers the edge's Reynolds number, or "covered by RM A55H31's statement";
+  covers the edge's Reynolds number, or "covered by RM A55H31's statement",
+  and "tested only in the total";
   the body base "correlation: compiled base-pressure curve of TN 3819 fig.
   18 (Love) ... tested only in the total" and, for fins at the base, "an
   analogy, not a measurement: the fins-on-base factor measured on
   circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins",
   or for fins a chord or more ahead "not validated with fins"; the fins'
   trailing-edge base "an analogy, not a measurement" in the base plane, or
-  a correlation for free edges. The input bands keep `src/total`'s labels;
-  the trailing edges' laminar band says when it is extrapolated.
+  a correlation for free edges, both "tested only in the total". The input
+  bands keep `src/total`'s labels. Since the round 5 audit the transition
+  band carries the trailing edges' laminar base together with the fins'
+  laminar friction, as states of the boundary layer (0010 section 10), and
+  its label says when the trailing edges' laminar ratio is extrapolated or
+  clamped at the vacuum bound.
 
 ## 5. The Basic Finner on the page
 
@@ -240,12 +252,15 @@ five shots at Mach 1.06 to 1.33 are refused, as in the gate.
   total with such fins is outside the class, so labelled an estimate, and
   the page says the factor does not depend on them; the factor's band
   carries nothing for it.
-- The leading-edge and trailing-edge labels say "an analogy, not a
+- The leading-edge and trailing-edge labels said "an analogy, not a
   measurement" but not "tested only in the total", which 0010 section 7
   asks of the base and fin terms; the page states it once for all of them
-  (the breakdown note).
-- The rounded leading edge's regime is "measured" for any Reynolds number
-  on its diameter from 1e5 up, though TN 2960 covers 1e5 to 1e6.
+  (the breakdown note). Fixed with the round 5 audit: both labels now say
+  it (`src/fins/rounded-leading-edge.ts`, `src/base/fin-trailing-edge.ts`).
+- The rounded leading edge's regime was "measured" for any Reynolds number
+  on its diameter from 1e5 up, though TN 2960 covers 1e5 to 1e6 (round 5's
+  finding 11 too). Fixed: above Re_D 1e6 the edge is refused (0010
+  section 5.2), so the page refuses the total there with that reason.
 
 ## 7. Tests
 
