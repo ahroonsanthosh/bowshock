@@ -1,5 +1,17 @@
 figure,series,x,y,err_y,how
 TN 2960 fig. 5(d) M=1.98,faired curve (all three R),5,1.6522,0.0025,guided column read; n=7
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),25,1.3870,0.0134,guided column read; n=7
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),45,0.8233,0.0026,guided column read; n=7
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),55,0.6535,0.0027,guided column read; n=3
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),65,0.3895,0.0025,guided column read; n=7
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),75,0.0877,0.0024,guided column read; n=7
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),85,-0.0263,0.0036,guided column read; n=7
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),95,-0.1603,0.0026,guided column read; n=7
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),105,-0.2413,0.0103,guided column read; n=7; extra 0.01
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),115,-0.2737,0.0124,guided column read; n=7; extra 0.01
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),125,-0.2724,0.0111,guided column read; n=7; extra 0.01
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),145,-0.2794,0.0110,guided column read; n=7; extra 0.01
+TN 2960 fig. 5(d) M=1.98,faired curve (all three R),155,-0.2849,0.0103,guided column read; n=7; extra 0.01
 TN 2960 fig. 5(d) M=1.98,R=13.2e5 (circle),2.552,1.6590,0.0014,outline template (circle) score 0.89; flag ink 0.19; x err 0.12
 TN 2960 fig. 5(d) M=1.98,R=5.5e5 (square),8.225,1.6269,0.0014,outline template (square) score 0.77; flag ink 0.25; x err 0.12
 TN 2960 fig. 5(d) M=1.98,R=13.2e5 (circle) flagged -theta,11.58,1.6069,0.0014,outline template (circle) score 0.85; flag ink 0.46; x err 0.12

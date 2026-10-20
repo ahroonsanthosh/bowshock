@@ -63,6 +63,20 @@ left 20 of about 36, right 20 of 36; R 5.12e6 left 16 of 18, right 8 of 18;
 R 8.06e6 left 10 of 18, right 6 of 18. The flag test and the shape test are
 unreliable inside stacks. Treat fig. 8 as partly read.
 
+Added for fig. 8 (`scripts/stacks.py`, rows "stack top/bottom/single
+symbol"): the envelope of each stack at each test Mach number. Rows of the
+station column with outline ink on both sides at X +- r (r 16 px, +-5 px)
+are inside a symbol; contiguous groups are stacks; the top and bottom
+symbol centres are the group's ends moved in by 0.9 r (about +-3 px, 0.0005
+in P_B, between a circle's and a square's geometry), a group shorter than
+2 r is one symbol at its middle. Words of the page's text layer (the
+"boattail base" labels and the like) are blanked first. The series in a
+stack are not identified: a stack row gives the extreme values of the
+noses (and, at R 2.91e6, transition states) for that base, R and M, so a
+band, not a member. Diamonds wider than the station test, and symbols
+drawn off the station column, can be missed by the envelope; the named
+symbol rows above cover some of them.
+
 ## Not read or not reachable
 
 Fig. 38 except panel (a) at M 1.62; the faired curves of figs. 8 and 31 to

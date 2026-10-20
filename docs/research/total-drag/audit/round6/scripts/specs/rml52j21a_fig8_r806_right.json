@@ -104,5 +104,29 @@
    2.41
   ],
   "station_half": 40
+ },
+ "stacks": {
+  "stations": [
+   1.62,
+   1.93,
+   2.41
+  ],
+  "r": 16,
+  "tol": 5,
+  "gap": 6,
+  "ylo": 4020,
+  "yhi": 5280,
+  "bands": [
+   [
+    -0.3,
+    -0.09,
+    "cylindrical base"
+   ],
+   [
+    -0.09,
+    0.0,
+    "conical base"
+   ]
+  ]
  }
 }

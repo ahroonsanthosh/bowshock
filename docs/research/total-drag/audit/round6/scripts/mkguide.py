@@ -23,11 +23,12 @@ def main():
     pairs = [p.split("::", 1) for p in a[2:i]]
     x0, x1, st = (float(v) for v in a[i + 1:i + 4])
     hw = float(a[a.index("--halfwin") + 1]) if "--halfwin" in a else 8
+    MINSC = float(a[a.index("--minscore") + 1]) if "--minscore" in a else 0.85
     spec = json.load(open(sp))
     f = from_spec(dict(spec))
     bx = spec["box"]
     rows = [r for r in csv.DictReader(open(cv)) if r["y"] and r["x"] and "score" in r["how"]
-            and float(r["how"].split("score ")[1].split(";")[0]) >= 0.85]
+            and float(r["how"].split("score ")[1].split(";")[0]) >= MINSC]
     g = []
     for pre, name in pairs:
         pts = sorted((float(r["x"]), float(r["y"])) for r in rows if r["series"].startswith(pre))
