@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#07090c" />
     <meta
       name="description"
-      content="Supersonic rocket aerodynamics in your browser, on your own GPU: the wave drag of a rocket's nose with its measured error band."
+      content="Supersonic airflow around model rockets, simulated in your browser on your own GPU."
     />
     <link
       rel="icon"
@@ -19,16 +19,18 @@
     <main class="doc__main">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero__text">
-          <p class="eyebrow">Supersonic rocket aerodynamics</p>
-          <h1 id="hero-title">Shock waves around your rocket, solved on your own GPU.</h1>
+          <p class="eyebrow">Open-source CFD for rocketry</p>
+          <h1 id="hero-title">
+            Supersonic airflow around model rockets, simulated in your browser on your own GPU.
+          </h1>
           <p class="lead">
-            bowshock is an open-source flow solver that runs in your browser. It is in early
-            development: today it computes the inviscid forebody wave drag of sharp and ellipsoid
-            noses, not a rocket's total drag, with its measured error band.
+            Early development: the inviscid forebody wave drag of sharp and ellipsoid noses, with
+            its measured error band, and from it a finned rocket's total drag, validated for one
+            class of rocket only.
           </p>
           <div class="hero__actions">
             <a class="button button--primary" href="demos/nose-drag.html"
-              >Compute a nose's wave drag</a
+              >Compute a rocket's drag</a
             >
             <a class="button" href="demos/supersonic-ramp.html">Watch shocks form</a>
           </div>
@@ -92,10 +94,11 @@
       <section class="cards" aria-label="Pages">
         <a class="card" href="demos/nose-drag.html">
           <span class="card__kicker">Rocket</span>
-          <span class="card__title">Nose wave drag</span>
+          <span class="card__title">Nose wave drag and total drag</span>
           <span class="card__text"
-            >The inviscid pressure (wave) drag of a sharp or ellipsoid nose and the body behind it,
-            not the rocket's total drag, with its error band or marked not verified.</span
+            >The wave drag of a nose and its body, with its error band, and the rocket's total drag
+            with fins and base: validated on the Basic Finner inside that rocket's class, an
+            estimate, not validated, outside it, or refused with the reasons.</span
           >
         </a>
         <a class="card" href="demos/supersonic-ramp.html">

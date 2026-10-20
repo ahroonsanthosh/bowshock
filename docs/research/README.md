@@ -34,7 +34,10 @@ as their authors wrote them.
   method); and `audit/round4/`, the second readings of the blunt-edge data
   (TR 1109, RM A51J25, TN 3819 fig. 5, TN D-1056, TN 2960: every band
   holds) and the Basic Finner's fin trailing-edge area, 0.32 cal^2, decided
-  from its measured mass properties without any drag value.
+  from its measured mass properties without any drag value; and
+  `audit/round5/`, the Basic Finner's total re-implemented blind from the
+  records and compared with the second gate run (no bug in the code; the
+  findings on the records and two bands are acted on in 0010 section 10).
 - `overlays/d4014/`: the revision's overlays of its TN D-4014 readings.
   Several scripts read page images rendered from the reports, which are
   not copied here (see below).
@@ -59,8 +62,9 @@ The throwaway vitest runs behind [0010](../design/0010-base-drag-and-total.md)
 (the base-drag and total-drag libraries, `src/base/` and `src/total/`):
 the compiled curve's band and interpolation bound, the fins-on-base rows,
 the Basic Finner partial sum per shot (the first gate run), the check of
-the round-4 second readings, the laminar trailing-edge band per shot and
-the second gate run. Its README says how to re-run each.
+the round-4 second readings, the laminar trailing-edge band per shot,
+the second gate run and its tolerances re-derived after the round 5
+audit. Its README says how to re-run each.
 
 ## `subtip/`: noses whose tip flow is axially subsonic
 

@@ -14,7 +14,7 @@
 
 import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
-import { noseTipSlope } from '../geometry/nose';
+import { noseBaseSlope, noseTipSlope } from '../geometry/nose';
 import {
   bluntBodyGrid,
   gridOnLines,
@@ -41,7 +41,25 @@ export interface FittedFlowOptions {
   /** Refinement of the base grid: 1, 2, 4, ... */
   readonly refinement: number;
   readonly maxIterations: number;
+  /**
+   * Sharp noses: the density of the columns along the body, times the
+   * usual layout's (default 1). FALLBACK_COLUMN_DENSITY lays out the
+   * family solved where the usual one fails the fitted grids' gates.
+   */
+  readonly columnDensity?: number;
 }
+
+/**
+ * Column density of the family a sharp nose is solved on again where its
+ * usual family fails the fitted grids' gates (fittedGridFailure): the
+ * wall cells at the end of a long solved cylinder at low Mach numbers,
+ * flattened under a far shock, exceed the aspect limit of 13 (13.7 and
+ * 14.1 on a 3-caliber tangent ogive at Mach 1.2, nj = 40 and 80) and
+ * reach 8.5 at this density. A family at this density gives the usual
+ * family's value to 1.5e-5 on a 3-caliber tangent ogive at Mach 1.35
+ * (docs/design/0006-shock-fitting.md).
+ */
+export const FALLBACK_COLUMN_DENSITY = 1.5;
 
 export interface FittedFlow {
   readonly fit: ShockFit;
@@ -256,6 +274,18 @@ export function baseMach(
 }
 
 /**
+ * Why the grid a fitted shock settled on is not served, or undefined if it
+ * is: the gates set for fitted grids on measurement (FITTED_QUALITY_LIMITS),
+ * a limit of the grids rather than of the flow.
+ */
+export function fittedGridFailure(grid: StructuredGrid): string | undefined {
+  const failures = qualityFailures(gridQuality(grid), FITTED_QUALITY_LIMITS);
+  return failures.length > 0
+    ? `the grid on the fitted shock fails its quality checks (${failures.join('; ')}): a limit of the present grids, not of the flow`
+    : undefined;
+}
+
+/**
  * Why the converged flow of a problem is not served, or undefined if it
  * is: the grid the shock settled on must meet the gates set for fitted
  * grids on measurement (FITTED_QUALITY_LIMITS), the flow must leave the
@@ -268,10 +298,8 @@ export function fittedCaseFailure(
   grid: StructuredGrid,
   cell: (i: number, j: number) => Primitive2D,
 ): string | undefined {
-  const failures = qualityFailures(gridQuality(grid), FITTED_QUALITY_LIMITS);
-  if (failures.length > 0) {
-    return `the grid on the fitted shock fails its quality checks (${failures.join('; ')}): a limit of the present grids, not of the flow`;
-  }
+  const gridFailure = fittedGridFailure(grid);
+  if (gridFailure !== undefined) return gridFailure;
   const outflow = outflowMach(problem.configFor(grid, []), cell);
   if (!(outflow > 1)) {
     return `the flow leaves the grid at an axial Mach number of ${outflow.toFixed(3)}, where the outflow condition does not hold; a longer body behind the nose, or a higher Mach number, is needed`;
@@ -344,7 +372,8 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     return (SHARP_ASPECT * h * b * Math.exp(b / 2)) / (Math.expm1(b) * nj);
   };
   const breakpoints = body.cylinderLength > 0 ? [x0, L, xEnd] : [x0, L];
-  const xs = columnPositions(breakpoints, (x) => 1 / spacing(x), refinement);
+  const density = options.columnDensity ?? 1;
+  const xs = columnPositions(breakpoints, (x) => density / spacing(x), refinement);
   // Each line keeps the node fractions of its first guess as the shock moves.
   const lines = withFixedFractions(
     xs.map((x) => ({ x, y: bodyRadius(body, x), dx: 0, dy: 1, h: guess(x) })),
@@ -361,21 +390,27 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     const [x, y] = midpoint([nodeIndex(first, 0, j), nodeIndex(first, 0, j + 1)]);
     return conical(Math.atan2(y!, x!));
   });
-  // The inflow plane, normal to the axis, imposes all four states, which
-  // holds only where the flow crosses it supersonically. The axial Mach
-  // number of the conical flow is least on the surface: tested there, on
-  // the tip cone itself, so the test does not depend on the grid. Where
-  // the surface flow is subsonic the body behind the tip also reaches it
-  // (the method of characteristics refuses those cases).
+  // The inflow plane, normal to the axis, imposes all four states of the
+  // tip cone's conical flow. The axial Mach number of that flow is least on
+  // the surface: tested there, on the tip cone itself, so the test does not
+  // depend on the grid. Where it exceeds 1 the flow crosses the plane
+  // supersonically. Where it does not, but the surface flow is supersonic
+  // and the nose meets the body tangentially, the drag still converges at
+  // second order, to a value that moving the plane does not change, and a
+  // second, differently laid out family converges to the same value
+  // (measured on a 3-caliber tangent ogive at Mach 1.35, 0006). At a corner
+  // the cells ahead of it converge at an order of about 0.35, and where the
+  // surface flow is subsonic the body behind the tip reaches it, with no
+  // such reference measured yet: both refused.
   const surface = conical(tipAngle);
   const surfaceSound = Math.sqrt((gamma * surface.p) / surface.rho);
   const surfaceMach = Math.hypot(surface.u, surface.v) / surfaceSound;
   const axialMach = surface.u / surfaceSound;
-  if (!(axialMach > 1)) {
+  if (!(axialMach > 1) && (!(surfaceMach > 1) || noseBaseSlope(body.nose) > 0)) {
     const degrees = ((tipAngle * 180) / Math.PI).toFixed(1);
     throw new RangeError(
       surfaceMach > 1
-        ? `at Mach ${mach} the flow behind a tip of ${degrees} deg half-angle crosses the solver's starting plane, normal to the axis, at an axial Mach number of ${axialMach.toFixed(2)} at the surface, below 1, where that plane cannot impose the tip's conical flow; this needs a sharper or longer nose, or a higher Mach number`
+        ? `at Mach ${mach} the flow behind a tip of ${degrees} deg half-angle crosses the solver's starting plane, normal to the axis, at an axial Mach number of ${axialMach.toFixed(2)} at the surface, below 1, which this solver handles only where the nose meets the body without a corner: at a corner the drag converges too slowly to be verified; this needs a sharper or longer nose, a nose tangent to the body, or a higher Mach number`
         : `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic at the surface (Mach ${surfaceMach.toFixed(2)}), so the body behind the tip reaches it, which this solver does not handle yet; this needs a sharper or longer nose, or a higher Mach number`,
     );
   }
@@ -697,10 +732,16 @@ export interface VerifiedFittedDragOptions {
   /** Fit iterations allowed per grid, times its refinement. */
   readonly iterationsPerRefinement: number;
   readonly onLevel?: (refinement: number, drag: number, fit: ShockFit) => void;
+  /** As VerifiedDragOptions.onFallback (src/analysis/verified-drag.ts). */
+  readonly onFallback?: (refinement: number, reason: string) => void;
 }
 
 export type VerifiedFittedDrag =
-  | (VerifiedValue & { readonly kind: 'solved' })
+  | (VerifiedValue & {
+      readonly kind: 'solved';
+      /** The column density of the family solved, where not the usual layout's. */
+      readonly columnDensity?: number;
+    })
   | {
       readonly kind: 'not-converged' | 'invalid';
       readonly refinement: number;
@@ -715,7 +756,10 @@ const FITTED_BASE_NJ = 20;
  * by 2 up to the finest allowed, with its measured error band: the
  * procedure of src/analysis/verified-drag.ts with the CPU fitted-shock
  * solver. A grid whose fit does not converge, or whose flow the page's
- * checks refuse (fittedCaseFailure), stops the run without a value.
+ * checks refuse (fittedCaseFailure), stops the run without a value, but
+ * for a sharp nose whose grid fails only the quality gates: its whole
+ * family is then solved again with FALLBACK_COLUMN_DENSITY times as many
+ * columns, and refused only if that family is too.
  */
 export async function verifiedFittedDrag(
   body: Body,
@@ -724,8 +768,8 @@ export async function verifiedFittedDrag(
   const blunt = !Number.isFinite(noseTipSlope(body.nose))
     ? bluntFitFamily(body, { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ })
     : null;
-  try {
-    const result = await refineUntilVerified(
+  const family = (columnDensity?: number) =>
+    refineUntilVerified(
       (refinement) => {
         const flowOptions = {
           mach: options.mach,
@@ -733,6 +777,7 @@ export async function verifiedFittedDrag(
           nj: FITTED_BASE_NJ,
           refinement,
           maxIterations: options.iterationsPerRefinement * refinement,
+          ...(columnDensity === undefined ? {} : { columnDensity }),
         };
         const problem = blunt ? blunt(refinement) : sharpFitProblem(body, flowOptions);
         const { fit, drag } = fittedFlow(problem, flowOptions.maxIterations);
@@ -742,6 +787,8 @@ export async function verifiedFittedDrag(
             `the fit stopped after ${fit.iterations} iterations with the shock moving at ${fit.maxSpeed.toExponential(1)} of the sound speed and a residual of ${fit.residual.toExponential(1)}`,
           );
         }
+        const gridFailure = fittedGridFailure(fit.grid);
+        if (gridFailure !== undefined) throw new GridRefused(refinement, gridFailure);
         const failure = fittedCaseFailure(problem, fit.grid, (i, j) => fit.solver.primitive(i, j));
         if (failure !== undefined) throw new FitRefused(refinement, failure);
         options.onLevel?.(refinement, drag, fit);
@@ -755,13 +802,30 @@ export async function verifiedFittedDrag(
         maxRefinement: options.maxRefinement,
       },
     );
-    return { ...result, kind: 'solved' };
-  } catch (error) {
-    if (error instanceof FitNotConverged) {
-      return { kind: 'not-converged', refinement: error.refinement, reason: error.message };
+  try {
+    try {
+      return { ...(await family()), kind: 'solved' };
+    } catch (error) {
+      if (blunt !== null || !(error instanceof GridRefused)) throw error;
+      options.onFallback?.(error.refinement, error.message);
+      try {
+        const result = await family(FALLBACK_COLUMN_DENSITY);
+        return { ...result, kind: 'solved', columnDensity: FALLBACK_COLUMN_DENSITY };
+      } catch (fallbackError) {
+        if (!(fallbackError instanceof FitRefused)) throw fallbackError;
+        throw new FitRefused(
+          fallbackError.refinement,
+          `${fallbackError.message} (with ${FALLBACK_COLUMN_DENSITY} times as many columns, solved because the usual grid at refinement ${error.refinement} fails its quality checks)`,
+        );
+      }
     }
+  } catch (error) {
+    // FitRefused extends FitNotConverged: tested first.
     if (error instanceof FitRefused) {
       return { kind: 'invalid', refinement: error.refinement, reason: error.message };
+    }
+    if (error instanceof FitNotConverged) {
+      return { kind: 'not-converged', refinement: error.refinement, reason: error.message };
     }
     throw error;
   }
@@ -777,3 +841,6 @@ class FitNotConverged extends Error {
 }
 
 class FitRefused extends FitNotConverged {}
+
+/** A grid that fails only the fitted grids' quality gates (fittedGridFailure). */
+class GridRefused extends FitRefused {}
