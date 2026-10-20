@@ -320,9 +320,11 @@ def main():
                                       S.get("thr", 0.62), S.get("nms", 9), S.get("stroke", 5.0),
                                       S.get("need_dot", False), S.get("ann_max", 0.2))
         else:
-          found = symscan.scan(f.m, f.clean, S["shapes"], (rg[0] - bx[0], rg[1] - bx[1], rg[2] - bx[0], rg[3] - bx[1]),
-                               S.get("thr", 0.62), S.get("nms", 9), S.get("stroke", 5.0),
-                               S.get("need_dot", False), S.get("ann_max", 0.2))
+          found = []
+          for rg in S.get("regions", [rg]):
+            found += symscan.scan(f.m, f.clean, S["shapes"], (rg[0] - bx[0], rg[1] - bx[1], rg[2] - bx[0], rg[3] - bx[1]),
+                                  S.get("thr", 0.62), S.get("nms", 9), S.get("stroke", 5.0),
+                                  S.get("need_dot", False), S.get("ann_max", 0.2))
         excl = [(e[0] - bx[0], e[1] - bx[1]) for e in S.get("exclude", [])]
         for c in sorted(found, key=lambda c: (c["x"], c["y"])):
             if any((c["x"] - e[0]) ** 2 + (c["y"] - e[1]) ** 2 <= 15 ** 2 for e in excl):

@@ -1,0 +1,134 @@
+{
+ "figure": "TN 2960 fig. 5(d) M=1.98",
+ "ntrs": "19930084018",
+ "page": 21,
+ "box": [
+  850,
+  740,
+  4030,
+  4600
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.2,
+ "frac_h": 0.2,
+ "xsel": [
+  0,
+  1,
+  2,
+  4,
+  5,
+  6,
+  7
+ ],
+ "xvals": [
+  0,
+  20,
+  40,
+  60,
+  80,
+  100,
+  140
+ ],
+ "ysel": "all",
+ "yvals": [
+  2.4,
+  2.0,
+  1.6,
+  1.2,
+  0.8,
+  0.4,
+  -0.0,
+  -0.4,
+  -0.8,
+  -1.2,
+  -1.6
+ ],
+ "symscan": {
+  "shapes": [
+   {
+    "name": "R=13.2e5 (circle)",
+    "shape": "circle",
+    "r": 27,
+    "flag": {
+     "angle": -40,
+     "name": "R=13.2e5 (circle) flagged -theta",
+     "thr": 0.35
+    }
+   },
+   {
+    "name": "R=5.5e5 (square)",
+    "shape": "square",
+    "r": 24,
+    "flag": {
+     "angle": -40,
+     "name": "R=5.5e5 (square) flagged -theta",
+     "thr": 0.35
+    }
+   },
+   {
+    "name": "R=1.3e5 (diamond)",
+    "shape": "diamond",
+    "r": 32,
+    "flag": {
+     "angle": -30,
+     "name": "R=1.3e5 (diamond) flagged -theta",
+     "thr": 0.35
+    }
+   }
+  ],
+  "region": [
+   900,
+   780,
+   4000,
+   4200
+  ],
+  "regions": [
+   [
+    900,
+    780,
+    2200,
+    4200
+   ],
+   [
+    2200,
+    1900,
+    4000,
+    4200
+   ]
+  ],
+  "thr": 0.62,
+  "nms": 14,
+  "stroke": 5.0,
+  "need_dot": true,
+  "ann_max": 0.25,
+  "exclude": [
+   [
+    3621,
+    4054
+   ]
+  ]
+ },
+ "scale": 0.35,
+ "guided": [
+  {
+   "series": "faired curve (all three R)",
+   "path": [
+    [
+     2.552,
+     1398.0
+    ],
+    [
+     11.58,
+     1445.0
+    ]
+   ],
+   "xs": [
+    5.0
+   ],
+   "halfwin": 18.0,
+   "max_run": 60
+  }
+ ]
+}
