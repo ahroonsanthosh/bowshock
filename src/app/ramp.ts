@@ -799,7 +799,9 @@ async function loop(myGeneration: number): Promise<void> {
       if (myGeneration !== generation) return;
       await current.iterate(10);
       if (myGeneration !== generation) return;
-      await redraw();
+      // The numbers before the picture, so that a result shows a frame
+      // sooner; drawing reads the state and changes nothing measured.
+      let ended: [string, ReadoutKind] | null = null;
       if (frame % 15 === 0) {
         const m = await current.measure();
         if (myGeneration !== generation) return;
@@ -807,13 +809,15 @@ async function loop(myGeneration: number): Promise<void> {
         const change = Math.abs(m.rampPressure / previousPressure - 1);
         previousPressure = m.rampPressure;
         if (m.residual < RESIDUAL_DROP && change < PRESSURE_STEADY) {
-          showState('Converged', 'ok');
-          return;
+          ended = ['Converged', 'ok'];
+        } else if (m.steps >= MAX_ITERATIONS) {
+          ended = ['Stopped at the iteration limit', 'warn'];
         }
-        if (m.steps >= MAX_ITERATIONS) {
-          showState('Stopped at the iteration limit', 'warn');
-          return;
-        }
+      }
+      await redraw();
+      if (ended !== null) {
+        if (myGeneration === generation) showState(...ended);
+        return;
       }
     } catch (error) {
       if (myGeneration !== generation) return;

@@ -42,7 +42,11 @@ function census() {
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
     const parent = node.parentElement;
-    if (parent === null || parent.closest('select, script, style, svg, dialog:not([open])')) {
+    // Text for screen readers only (visually hidden) is not seen.
+    if (
+      parent === null ||
+      parent.closest('select, script, style, svg, dialog:not([open]), .visually-hidden')
+    ) {
       continue;
     }
     if (!shown(parent)) continue;
@@ -119,9 +123,13 @@ const PAGES = {
       mach: [{ fill: ['#mach', '3'] }],
       help: [{ key: 'h' }],
     }),
-    // The new result: the ramp pressure and the exact one, both changed
-    // (before the shell, one line holding both).
-    machResult: { selector: '#computed, #exact', fallback: '#comparison', pattern: '\\d\\.\\d{4}' },
+    // The new result: the ramp pressure, the exact one and the phone's
+    // pinned line, each changed (before the shell, one line holding both).
+    machResult: {
+      selector: '#computed, #exact, .pinned',
+      fallback: '#comparison',
+      pattern: '\\d\\.\\d{4}',
+    },
     // The ramp's band is its difference from the exact pressure; its status, converged.
     band: { selector: '#difference, #comparison, .pinned', pattern: '\\d%' },
     status: { selector: '.readout, #status, .pinned', pattern: 'Converged' },

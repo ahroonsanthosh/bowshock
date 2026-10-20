@@ -770,13 +770,15 @@ body.app {
   z-index: 10;
   max-width: calc(100vw - 2 * var(--panel-width) - 6 * var(--inset));
   margin: 0;
-  /* A backing, so the text keeps its contrast over the brightest flow. */
+  /*
+   * A backing, so the text keeps its contrast over the brightest flow.
+   * Not blurred: over a flow that changes every frame a blur is redrawn
+   * every frame, which software rendering pays for in solver time.
+   */
   padding: 4px 10px;
   background: var(--panel);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
-  backdrop-filter: blur(var(--panel-blur));
-  -webkit-backdrop-filter: blur(var(--panel-blur));
   color: var(--text);
   font-family: var(--font-mono);
   font-size: 12px;

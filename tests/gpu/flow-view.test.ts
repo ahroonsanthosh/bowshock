@@ -292,7 +292,9 @@ describe('the flow view of a fit as it runs', () => {
   }, 900_000);
 
   it("changes no number on the page's own path: the verified drag to 80 cells across, checked every 1000 steps there, watched, drawn and paused", async () => {
-    // As the flow page asks it (src/app/flow-view.ts), with the finest grid 80 cells across.
+    // As the flow page asks it (src/app/flow-view.ts), with the finest grid
+    // 80 cells across: two solves of three grids, an hour or more on
+    // software WebGPU.
     const options = {
       mach: 2,
       gamma,
@@ -301,7 +303,9 @@ describe('the flow view of a fit as it runs', () => {
       floor: FITTED_DRAG_FLOOR,
       orderTolerance: ORDER_TOLERANCE,
     };
+    const started = performance.now();
     const plain = await verifiedFittedDragGpu(device, cone, options);
+    const plainSeconds = (performance.now() - started) / 1000;
     const renderer = await FlowRenderer.create(device, 'rgba8unorm');
     const target = device.createTexture({
       size: [64, 64],
@@ -337,7 +341,7 @@ describe('the flow view of a fit as it runs', () => {
     console.log(
       'page path:',
       JSON.stringify(plain.kind === 'solved' ? plain.levels : plain),
-      `${pauses} pauses`,
+      `${pauses} pauses; ${plainSeconds.toFixed(0)} s unwatched, ${((performance.now() - started) / 1000 - plainSeconds).toFixed(0)} s watched`,
     );
     // Checked every 250 steps on the first grid, 500 on the second, 1000 on the third.
     const finest = checks.filter((c) => c.refinement === 4);
@@ -345,5 +349,5 @@ describe('the flow view of a fit as it runs', () => {
     expect(finest.every((c) => c.iterations % 1000 === 0)).toBe(true);
     expect(plain.kind).toBe('solved');
     expect(watched).toEqual(plain);
-  }, 3_600_000);
+  }, 7_200_000);
 });

@@ -6,7 +6,7 @@
     "controls": 10,
     "longestParagraph": 32,
     "height": 881,
-    "firstResult": 1.017,
+    "firstResult": 0.375,
     "converged": null,
     "actions": {
       "result": 0,
@@ -21,7 +21,7 @@
     "controls": 12,
     "longestParagraph": 32,
     "height": 900,
-    "firstResult": 0.214,
+    "firstResult": 0.185,
     "converged": null,
     "actions": {
       "result": 0,
@@ -32,12 +32,12 @@
   {
     "page": "ramp",
     "width": 390,
-    "words": 43,
+    "words": 41,
     "controls": 16,
     "longestParagraph": 0,
     "height": 844,
-    "firstResult": 8.491,
-    "converged": 47.48,
+    "firstResult": 6.458,
+    "converged": 68.634,
     "actions": {
       "result": 0,
       "bandAndStatus": 0,
@@ -49,12 +49,12 @@
   {
     "page": "ramp",
     "width": 1440,
-    "words": 107,
+    "words": 105,
     "controls": 20,
     "longestParagraph": 21,
     "height": 900,
-    "firstResult": 8.988,
-    "converged": 59.284,
+    "firstResult": 6.992,
+    "converged": 98.732,
     "actions": {
       "result": 0,
       "bandAndStatus": 0,
@@ -66,11 +66,11 @@
   {
     "page": "shock-tube",
     "width": 390,
-    "words": 49,
+    "words": 47,
     "controls": 14,
     "longestParagraph": 0,
     "height": 844,
-    "firstResult": 2.345,
+    "firstResult": 2.48,
     "converged": null,
     "actions": {
       "result": 1,
@@ -82,11 +82,11 @@
   {
     "page": "shock-tube",
     "width": 1440,
-    "words": 61,
+    "words": 59,
     "controls": 16,
     "longestParagraph": 7,
     "height": 900,
-    "firstResult": 2.263,
+    "firstResult": 2.175,
     "converged": null,
     "actions": {
       "result": 1,
@@ -98,11 +98,11 @@
   {
     "page": "flow",
     "width": 390,
-    "words": 108,
+    "words": 104,
     "controls": 16,
     "longestParagraph": 28,
     "height": 844,
-    "firstResult": 11.147,
+    "firstResult": 16.139,
     "converged": null,
     "actions": {
       "result": 0,
@@ -115,11 +115,11 @@
   {
     "page": "flow",
     "width": 1440,
-    "words": 137,
+    "words": 133,
     "controls": 22,
     "longestParagraph": 28,
     "height": 900,
-    "firstResult": 16.152,
+    "firstResult": 21.027,
     "converged": null,
     "actions": {
       "result": 0,

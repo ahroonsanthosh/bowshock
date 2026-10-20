@@ -12,8 +12,9 @@
  * engine, compared at every iteration both builds reported. The shock
  * tube: the time, the steps and the L1 error it ends with. The wave drag:
  * the first grid's drag on the drag page with the old preset typed (2.836
- * and 7.164), with its new one (2.835641 and 7.164359), and on the live
- * flow page (the exact body), all from the `after` build. Chromium:
+ * and 7.164), with its new one (2.835641 and 7.164359), with the exact
+ * body typed in full, and on the live flow page (the exact body), all from
+ * the `after` build. Chromium:
  * CHROMIUM_PATH, or Playwright's own.
  */
 
@@ -201,13 +202,18 @@ const CASES = {
   'wave-drag': async (_b, a) => {
     const oldPreset = await dragPage(a, '2.836', '7.164');
     const newPreset = await dragPage(a);
+    // The exact body typed in full (String of the double, which reads back the same double).
+    const nose = 0.5 / Math.tan(10 * (Math.PI / 180));
+    const exact = await dragPage(a, String(nose), String(10 - nose));
     const flow = await firstGridDrag(`${a}/demos/flow-view.html?finest=1`, async () => {});
     return {
       what: "the first grid's wave drag of the Basic Finner's body at Mach 2, all from the after build",
       dragPageOldPreset: oldPreset,
       dragPageNewPreset: newPreset,
+      dragPageExactBody: exact,
       flowPage: flow,
-      sameOnBothPages: newPreset.drag === flow.drag && newPreset.iterations === flow.iterations,
+      sameDragOnBothPages: newPreset.drag === flow.drag,
+      sameStepsOnBothPages: newPreset.iterations === flow.iterations,
     };
   },
 };

@@ -205,5 +205,8 @@ steps.
 
 Measured by `scripts/usability.mjs` before and after, at 390 and 1440 px,
 with the reasons where a measure got worse:
-`docs/research/interface/usability.md`. Every page now fits its window;
-no visible paragraph is over 32 words; help is one key away on every page.
+`docs/research/interface/usability.md`. The ramp, the shock tube and the
+live flow fit the window; the landing is shorter (881 px at 390 px wide,
+from 1212) but still scrolls by 37 px in an 844 px window; no visible
+paragraph is over 32 words; help is one key away on every page in the
+shell (the drag page joins it in U2).
