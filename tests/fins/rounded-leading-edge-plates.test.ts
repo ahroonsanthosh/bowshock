@@ -23,7 +23,7 @@ import {
   sweepChecks,
   tn2960FrontSides,
 } from '../../src/fins/rounded-leading-edge';
-import { TN2960_FRONT_SIDES } from '../../src/fins/tn2960';
+import { TN2960_FRONT_SIDES, TN2960_FRONT_SIDES_SECOND } from '../../src/fins/tn2960';
 
 const deg = Math.PI / 180;
 /** A csv line's fields, a quoted field taken whole. */
@@ -114,6 +114,43 @@ describe("TN 2960's other front sides (0016 section 2)", () => {
     // Rising with Mach number at fig. 5(b)'s four: 0.15, 0.18, 0.28, 0.39.
     const b = r.filter((x) => x.figure === '5(b)').sort((p, q) => p.mach - q.mach);
     expect(b.map((x) => Math.round(100 * x.ratio) / 100)).toEqual([0.15, 0.18, 0.28, 0.39]);
+  });
+
+  it('with the second readings (0016 section 13): 0.10 to 0.41 below the critical Reynolds number, -0.43 to -0.40 above', () => {
+    const second = TN2960_FRONT_SIDES_SECOND;
+    // Every set but fig. 5(d)'s diamonds has a second reading.
+    expect(second.length).toBe(13);
+    for (const s of second)
+      expect(r.some((x) => x.figure === s.figure && x.item === s.item)).toBe(true);
+    const both = (f: (x: { readonly item: string; readonly mach: number }) => boolean) => [
+      ...r.filter(f).map((x) => x.ratio),
+      ...second
+        .filter((s) =>
+          f({
+            item: s.item,
+            mach: r.find((x) => x.item === s.item && x.figure === s.figure)!.mach,
+          }),
+        )
+        .map((s) => s.ratio),
+    ];
+    const below = both((x) => x.mach < 1 && !x.item.includes('above'));
+    expect([Math.min(...below), Math.max(...below)].map((v) => Math.round(100 * v) / 100)).toEqual([
+      0.1, 0.41,
+    ]);
+    const above = both((x) => x.mach < 1 && x.item.includes('above'));
+    expect([Math.min(...above), Math.max(...above)].map((v) => Math.round(100 * v) / 100)).toEqual([
+      -0.43, -0.4,
+    ]);
+    // Supersonic: fig. 5(d)'s inside the band on both; fig. 5(e)'s M 1.49 symbols (the second
+    // read symbols only, which sit 0.015 below the fairing on average) at 0.982.
+    const sup = second.filter(
+      (s) => r.find((x) => x.item === s.item && x.figure === s.figure)!.mach > 1,
+    );
+    for (const s of sup.filter((s) => s.figure === '5(d)')) {
+      expect(s.ratio).toBeGreaterThanOrEqual(ROUNDED_EDGE_BAND.low);
+      expect(s.ratio).toBeLessThanOrEqual(ROUNDED_EDGE_BAND.high);
+    }
+    expect(sup.find((s) => s.item.startsWith('M 1.49'))!.ratio).toBe(0.982);
   });
 
   it('the stagnation coefficient: isentropic below Mach 1, continuous with Rayleigh at 1', () => {
@@ -231,7 +268,9 @@ describe('the nose term on flat and swept fins', () => {
     );
     expect(e.reason).toBe('leading-edge-range');
     expect(e.message).toMatch(/normal to the edge, M cos\(sweep\), 0\.919 is below 1\.0/);
-    expect(e.message).toMatch(/0\.10 to 0\.39 of the modified-Newtonian value at M 0\.05 to 0\.70/);
+    expect(e.message).toMatch(
+      /0\.10 to 0\.41 of the modified-Newtonian value at\s+M 0\.05 to 0\.70/,
+    );
   });
 
   it('refuses sweeps beyond 60 deg; takes 60 itself', () => {

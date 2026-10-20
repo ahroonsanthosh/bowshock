@@ -247,7 +247,7 @@ describe('refusals', () => {
     expect(e.reason).toBe('leading-edge-range');
     expect(e.message).toMatch(/normal to the edge, M cos\(sweep\), 0\.919 is below 1\.0/);
     expect(e.message).toMatch(/RM L53L24a, NASA TP 2204, NASA TN D-3634/);
-    expect(e.message).toMatch(/0\.10 to 0\.39 of the modified-Newtonian value/);
+    expect(e.message).toMatch(/both readings: 0\.10 to 0\.41 of the modified-Newtonian value/);
     expect(plate(1.0).normalMach).toBe(1);
   });
 

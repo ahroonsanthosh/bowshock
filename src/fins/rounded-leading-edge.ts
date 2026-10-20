@@ -95,7 +95,7 @@
  * to twice its measured deviation from 1 (0.98 to 1.14).
  *
  * **Normal Mach numbers below 1.0** stay refused (0016, W4(d)): below Mach 1 a cylinder's front side is set by its
- * separation and wake (TN 2960 figs. 5(a), 5(b), 5(e): 0.10 to 0.39 of the
+ * separation and wake (TN 2960 figs. 5(a), 5(b), 5(e): 0.10 to 0.41 of the
  * modified-Newtonian value at M 0.05 to 0.70, and a thrust above the
  * critical Reynolds number), which a plate's edge, followed by its faces,
  * does not have, and the normal flow is subsonic, so the faces are felt at
@@ -548,7 +548,8 @@ export function roundedLeadingEdgeDrag(input: {
         "lowest at which a cylinder's front side is measured with the normal flow sonic or faster " +
         '(NASA CR-149372): below it the normal flow is subsonic and the faces behind a rounded ' +
         "edge are felt at its nose, which a cylinder's separation and wake replace (TN 2960 " +
-        'figs. 5(a), 5(b), 5(e): 0.10 to 0.39 of the modified-Newtonian value at M 0.05 to 0.70); ' +
+        'figs. 5(a), 5(b), 5(e), both readings: 0.10 to 0.41 of the modified-Newtonian value at ' +
+        'M 0.05 to 0.70); ' +
         'no source measures a rounded nose followed by flat faces there, and the leading-edge ' +
         'bluntness series at subsonic leading edges (RM L53L24a, NASA TP 2204, NASA TN D-3634) ' +
         'are of airfoil noses, of radius about a tenth of the thickness or less or faired into ' +

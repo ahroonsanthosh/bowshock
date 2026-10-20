@@ -164,8 +164,9 @@ export const TN2960_FIG7_SECOND: readonly { readonly mach: number; readonly cd: 
  * scans (+-0.02), fig. 5(d)'s symbols by eye (+-0.01). theta = 0 is the
  * stagnation coefficient (Rayleigh's, or isentropic below Mach 1) where a
  * set has no value there (`stagnation: true`). The second readings are
- * pending. Used for the refusal of normal Mach numbers below 1.49 and as
- * checks of the band, not to set it.
+ * held as front sides in `TN2960_FRONT_SIDES_SECOND`. Used for the refusal
+ * of normal Mach numbers below 1.0 (below 1.49 before 0016 section 11) and
+ * as checks of the band, not to set it.
  */
 export const TN2960_FRONT_SIDES: readonly {
   readonly figure: '5(a)' | '5(b)' | '5(d)' | '5(e)';
@@ -503,3 +504,46 @@ export const TN2960_FRONT_SIDES: readonly {
   stagnation,
   points: pts.map(([theta, p]) => ({ theta, p })),
 }));
+
+/**
+ * The independent reader's blind second readings of the same sets (audit
+ * round 6, commit 402c412: `docs/research/total-drag/audit/round6/readings/
+ * tn2960_fig5{a,b,d,e}.csv`), as front sides over (2/3) Cp_0, paired by
+ * `docs/research/total-drag/scripts/w34_pair_tn2960.py` (0016 section 13):
+ * like against like (the second's faired-curve points where the first read
+ * a curve, its symbols where the first read symbols or where it read only
+ * symbols, fig. 5(e)); the first reading's front side plus the integral of
+ * the difference, interpolated between the second's points, so that its
+ * gaps take the first's curvature. `covers` is the span of the second
+ * reading's points. Fig. 5(d)'s diamonds (R 1.3e5) were not read.
+ */
+export const TN2960_FRONT_SIDES_SECOND: readonly {
+  readonly figure: '5(a)' | '5(b)' | '5(d)' | '5(e)';
+  readonly item: string;
+  readonly ratio: number;
+  readonly covers: readonly [number, number];
+}[] = [
+  {
+    figure: '5(a)',
+    item: 'circles, R 3.14e5, below the critical range',
+    ratio: 0.1,
+    covers: [5, 65],
+  },
+  {
+    figure: '5(a)',
+    item: 'squares, R 4.26e5, above the critical range',
+    ratio: -0.402,
+    covers: [65, 85],
+  },
+  { figure: '5(b)', item: 'M 0.7', ratio: 0.41, covers: [5, 85] },
+  { figure: '5(b)', item: 'M 0.6', ratio: 0.29, covers: [5, 85] },
+  { figure: '5(b)', item: 'M 0.5', ratio: 0.194, covers: [5, 85] },
+  { figure: '5(b)', item: 'M 0.3', ratio: 0.133, covers: [5, 85] },
+  { figure: '5(e)', item: 'M 0.06, R above critical', ratio: -0.398, covers: [0, 90] },
+  { figure: '5(e)', item: 'M 0.70', ratio: 0.391, covers: [0, 90] },
+  { figure: '5(e)', item: 'M 1.49, between the symbols', ratio: 0.982, covers: [0, 90] },
+  { figure: '5(e)', item: 'M 2.90, between the symbols', ratio: 1.037, covers: [0, 90] },
+  { figure: '5(d)', item: 'M 1.98, faired curve', ratio: 1.033, covers: [5, 85] },
+  { figure: '5(d)', item: 'M 1.98, R 13.2e5 (circles)', ratio: 1.042, covers: [3, 87] },
+  { figure: '5(d)', item: 'M 1.98, R 5.5e5 (squares)', ratio: 1.035, covers: [8, 90] },
+];

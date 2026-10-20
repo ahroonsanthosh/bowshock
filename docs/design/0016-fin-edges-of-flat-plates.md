@@ -6,8 +6,9 @@
   bands rest on first readings where a figure was read for this record
   (RM A55H31 figs. 11 and 12; NASA CR-149372 figs. 8b and 5, section
   11); the independent reader's blind second readings (round 6) are
-  pending, and each band becomes the envelope of both when they are held
-  beside the first (section 8).
+  paired for TN 2960 (section 13) and pending for the rest, and each band
+  becomes the envelope of both when they are held beside the first
+  (section 8).
 - **Date:** 2026-10-20
 - **Inputs:** [0014](0014-refusals.md) W3, W4, W11 and section 10 (what
   sets bands, what is held back, "bounded, not measured", the readings
@@ -205,7 +206,8 @@ represented.
 subsonic Mach numbers (figs. 5(a), 5(b), 5(e), read for this record) are
 0.10 to 0.39 of the modified-Newtonian value at M 0.05 to 0.70 below the
 critical Reynolds number, and change sign above it (-0.40 and -0.43, a
-thrust near potential flow's -1/3 on the diameter). The front half's
+thrust near potential flow's -1/3 on the diameter); with the second
+readings, 0.10 to 0.41 and -0.43 to -0.40 (section 13). The front half's
 pressures from about 50 deg on are set by where the layer separates and by
 the wake, which a plate's edge, followed by its faces, does not have: in
 subsonic flow the downstream shape is felt upstream. No source among those
@@ -306,13 +308,13 @@ unchanged.
 
 ## 8. Readings, and what the second readings change
 
-| Figure                               | Readings now | Used for                                                 |
-| ------------------------------------ | ------------ | -------------------------------------------------------- |
-| TR 1109 fig. 29(a)                   | two (0010)   | W3(a)'s K and band                                       |
-| RM A55H31 figs. 11, 12               | one          | W4(c)'s sweep allowance                                  |
-| TN 2960 figs. 5(a), 5(b), 5(d), 5(e) | one          | checks of the band and the reasons of W4(d); set nothing |
-| RM L52D21 fig. 11                    | one          | the reason W3(c) stays refused                           |
-| NASA CR-149372 figs. 8b, 5           | one          | W4(e)'s kappa nodes and their spread (section 11)        |
+| Figure                               | Readings now     | Used for                                                 |
+| ------------------------------------ | ---------------- | -------------------------------------------------------- |
+| TR 1109 fig. 29(a)                   | two (0010)       | W3(a)'s K and band                                       |
+| RM A55H31 figs. 11, 12               | one              | W4(c)'s sweep allowance                                  |
+| TN 2960 figs. 5(a), 5(b), 5(d), 5(e) | two (section 13) | checks of the band and the reasons of W4(d); set nothing |
+| RM L52D21 fig. 11                    | one              | the reason W3(c) stays refused                           |
+| NASA CR-149372 figs. 8b, 5           | one              | W4(e)'s kappa nodes and their spread (section 11)        |
 
 When the second readings of RM A55H31 figs. 11 and 12 arrive they are held
 beside the first in `src/fins/rm-a55h31.ts`, the allowance becomes the
@@ -564,3 +566,80 @@ plates (its bevelled and double-wedge sections are sharp), and the re-run
 line, so it is not kept. The gain is for wedge fins with rounded edges
 entered on the page (the "Single wedge, blunt trailing edge" section with
 a radius) at M_n 1.0 to 1.49.
+
+## 13. The second readings of TN 2960 (audit round 6)
+
+The independent reader's blind second readings of TN 2960 figs. 5(a) to
+5(e), 6 and 7 (commit 402c412 on the reader's branch,
+`docs/research/total-drag/audit/round6/readings/tn2960_*.csv` and
+`method_tn2960_figs5-7.md`), paired with this record's first readings of
+figs. 5(a), 5(b), 5(d) and 5(e) by
+`docs/research/total-drag/scripts/w34_pair_tn2960.py`; the reader's
+branch was read with `git show`, not changed.
+
+**Method.** Like against like: where the first reading is of a faired
+curve and the second read that curve, the second's curve points; where
+the first read symbols (fig. 5(d)'s Reynolds numbers), the second's
+symbols, either side; fig. 5(e), where the second read only the symbols
+of curves the first read, the symbols, which then carry the data's own
+scatter about the fairing. Each point at 0 to 90 deg against the first
+reading interpolated there, with the combined reading error: both
+readings' stated errors in P plus the local slope times both readings'
+errors in angle (0.5 deg on the first, the second's stated x error). The
+second reading's front side is the first's plus the integral of the
+difference, interpolated between the second's points, so that its gaps
+(up to 20 deg where the ink is crowded or dashed) take the first
+reading's curvature rather than a chord.
+
+| Set                             | Second's points  | Mean difference | Largest          | Combined error | Within it | Front over (2/3) Cp_0, first | Second | Envelope            |
+| ------------------------------- | ---------------- | --------------- | ---------------- | -------------- | --------- | ---------------------------- | ------ | ------------------- |
+| 5(a) circles, M 0.05, R 3.14e5  | 5 (5 to 65 deg)  | -0.004          | -0.025 at 15 deg | 0.046          | 5 of 5    | 0.102                        | 0.100  | 0.100 to 0.102      |
+| 5(a) squares, M 0.065, R 4.26e5 | 3 (65 to 85 deg) | +0.030          | +0.063 at 75 deg | 0.048          | 2 of 3    | -0.434                       | -0.402 | -0.434 to -0.402    |
+| 5(b) M 0.7                      | 7 (5 to 85 deg)  | +0.010          | +0.022 at 75 deg | 0.034          | 7 of 7    | 0.395                        | 0.410  | 0.395 to 0.410      |
+| 5(b) M 0.6                      | 6 (5 to 85 deg)  | -0.007          | -0.066 at 75 deg | 0.033          | 5 of 6    | 0.279                        | 0.290  | 0.279 to 0.290      |
+| 5(b) M 0.5                      | 8 (5 to 85 deg)  | +0.007          | +0.056 at 85 deg | 0.035          | 6 of 8    | 0.184                        | 0.194  | 0.184 to 0.194      |
+| 5(b) M 0.3                      | 6 (5 to 85 deg)  | -0.025          | -0.058 at 65 deg | 0.034          | 3 of 6    | 0.152                        | 0.133  | 0.133 to 0.152      |
+| 5(d) faired curve, M 1.98       | 7 (5 to 85 deg)  | -0.005          | -0.058 at 75 deg | 0.034          | 4 of 7    | 1.040                        | 1.033  | 1.033 to 1.040      |
+| 5(d) circles, R 13.2e5          | 16 (3 to 87 deg) | +0.007          | +0.054 at 60 deg | 0.025          | 12 of 16  | 1.035                        | 1.042  | 1.035 to 1.042      |
+| 5(d) squares, R 5.5e5           | 10 (8 to 90 deg) | -0.007          | -0.087 at 45 deg | 0.023          | 6 of 10   | 1.035                        | 1.035  | 1.035               |
+| 5(d) diamonds, R 1.3e5          | not read         |                 |                  |                |           | 1.056                        |        | 1.056 (one reading) |
+| 5(e) M 0.06, R above critical   | 13 symbols       | -0.014          | -0.043 at 83 deg | 0.036          | 9 of 13   | -0.401                       | -0.398 | -0.401 to -0.398    |
+| 5(e) M 0.70                     | 9 symbols        | -0.004          | -0.044 at 70 deg | 0.037          | 8 of 9    | 0.392                        | 0.391  | 0.391 to 0.392      |
+| 5(e) M 1.49                     | 7 symbols        | -0.015          | -0.039 at 60 deg | 0.032          | 6 of 7    | 0.994                        | 0.982  | 0.982 to 0.994      |
+| 5(e) M 2.90                     | 7 symbols        | -0.021          | -0.049 at 85 deg | 0.031          | 5 of 7    | 1.049                        | 1.037  | 1.037 to 1.049      |
+
+The mean differences, -0.025 to +0.030, are inside the combined error in
+every set; 78 of 104 points lie within it. Most of the points outside it are in the
+steepest stretches (45 to 85 deg, where the slope is up to 0.05 per deg)
+and, in fig. 5(e), are symbols against a fairing. Fig. 5(a)'s squares
+were read by the second reader only from 65 deg (the curve is under the
+symbols ahead of it), so their second front side rests on three points.
+
+**What changes.**
+
+- These sets set no band: they are checks of the band and the reasons
+  of W4(d). The reasons' ranges become the envelope of both readings: 0.10
+  to 0.41 of modified Newtonian below the critical Reynolds number (was
+  0.10 to 0.39), -0.43 to -0.40 above it. The refusal text says "both
+  readings: 0.10 to 0.41". The held second readings are
+  `TN2960_FRONT_SIDES_SECOND` in `src/fins/tn2960.ts`, and
+  `tests/fins/rounded-leading-edge-plates.test.ts` checks the envelopes.
+- The supersonic checks: fig. 5(d)'s lie inside the band 0.99 to 1.06 on
+  both readings. Fig. 5(e)'s M 1.49 symbols give 0.982, 0.8% below the
+  band's low end: the second read only the symbols, which sit 0.015 below
+  the fairing on average (the data's scatter, not a disagreement of the
+  readers); the first reading's fairing gives 0.994. The band is set on
+  fig. 5(c)'s faired curves, not on 5(e), and is not moved by this check.
+- Fig. 5(c), which sets the band (0010, read twice: 0.995 to 1.056), the
+  reader read a third time. Paired the same way, curve against curve, with
+  0010's first reading: 1.023 at M 1.49, 1.043 at 1.98, 1.049 at 2.90,
+  inside 0.99 to 1.06. **The band stands, 0.99 to 1.06**, and with it
+  every term on it: the Basic Finner's, the plates' and W4(e)'s node at
+  1.49. (Its M 2.90 curve has no ink from 40 to 95 deg; the paired value
+  rests on 5 to 40 deg.) The third reading is not added to
+  `src/fins/tn2960.ts`, whose two readings 0010 holds.
+- Figs. 6 and 7: no term of this record uses them (fig. 7 is 0010's, read
+  twice), so they are not paired here.
+- No label changes: no TN 2960 term carried "read once". The terms still
+  marked "read once" are those on RM A55H31 figs. 11 and 12 and NASA
+  CR-149372 figs. 8b and 5, next in the reader's queue.
