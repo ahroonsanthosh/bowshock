@@ -124,12 +124,15 @@ them; the fitted-drag families are recorded in
   shapes, lengths and Mach numbers are computed the same way but have
   not been compared with a reference. Refused, with the reason: tips
   whose shock detaches; tips whose flow crosses the solver's starting
-  plane, just behind the tip, at an axial Mach number below 1 (of 40
-  noses of 1 to 3 calibers tried at Mach 1.2, 19 detach their shock and
-  13 are refused by this test); tips steeper than about 40 deg (a limit
-  of the present grids, set on measurement); bodies whose flow at
-  their end is subsonic; grids failing the other quality gates, as on
-  some long bodies.
+  plane, just behind the tip, at an axial Mach number below 1, except
+  where the flow on the tip's surface is supersonic and the nose meets
+  the body without a corner (measured on a 3-caliber tangent ogive at
+  Mach 1.35: two differently laid out grid families agree within 1.5e-5);
+  of 40 noses of 1 to 3 calibers tried at Mach 1.2 before that exception,
+  19 detach their shock and 13 were refused by this test; tips steeper
+  than about 40 deg (a limit of the present grids, set on measurement);
+  bodies whose flow at their end is subsonic; grids failing the other
+  quality gates, as on some long bodies.
 - Ellipsoid noses (blunt) on the drag page, the shock standing off ahead
   of the tip on a grid wrapped round the nose: their fitted drag
   converges at observed orders of 1.99 to 2.21, and behind the sonic line

@@ -133,6 +133,31 @@ describe('fitted shock on the GPU', () => {
     expect(Math.abs(levels[0]!.drag / 0.2474069016 - 1)).toBeLessThan(5e-6);
   }, 1_800_000);
 
+  it('the page path on a tangent ogive whose tip flow is axially subsonic: the CPU fit within the GPU noise', async () => {
+    // A 3-caliber tangent ogive at Mach 1.35: supersonic surface flow
+    // (Mach 1.04) with a subsonic axial component (0.98), served since the
+    // ogive meets the cylinder without a corner (0006). The CPU's fit of
+    // the page's base grid, converged to 1e-12, gives 0.1081856017.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const levels: LevelReport[] = [];
+    const result = await verifiedFittedDragGpu(device, ogive, {
+      mach: 1.35,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      onLevel: (report) => levels.push(report),
+    });
+    expect(result.kind).toBe('solved');
+    expect(levels).toHaveLength(1);
+    const difference = Math.abs(levels[0]!.drag / 0.1081856017 - 1);
+    expect(difference, `GPU ${levels[0]!.drag}`).toBeLessThan(GPU_NOISE);
+  }, 1_800_000);
+
   it('the page refuses a tip whose flow is subsonic at the surface, with the reason', async () => {
     // A 26.6 deg cone at Mach 1.5: subsonic conical surface flow.
     const cone: Body = {

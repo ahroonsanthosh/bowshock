@@ -14,7 +14,7 @@
 
 import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
-import { noseTipSlope } from '../geometry/nose';
+import { noseBaseSlope, noseTipSlope } from '../geometry/nose';
 import {
   bluntBodyGrid,
   gridOnLines,
@@ -361,21 +361,27 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     const [x, y] = midpoint([nodeIndex(first, 0, j), nodeIndex(first, 0, j + 1)]);
     return conical(Math.atan2(y!, x!));
   });
-  // The inflow plane, normal to the axis, imposes all four states, which
-  // holds only where the flow crosses it supersonically. The axial Mach
-  // number of the conical flow is least on the surface: tested there, on
-  // the tip cone itself, so the test does not depend on the grid. Where
-  // the surface flow is subsonic the body behind the tip also reaches it
-  // (the method of characteristics refuses those cases).
+  // The inflow plane, normal to the axis, imposes all four states of the
+  // tip cone's conical flow. The axial Mach number of that flow is least on
+  // the surface: tested there, on the tip cone itself, so the test does not
+  // depend on the grid. Where it exceeds 1 the flow crosses the plane
+  // supersonically. Where it does not, but the surface flow is supersonic
+  // and the nose meets the body tangentially, the drag still converges at
+  // second order, to a value that moving the plane does not change, and a
+  // second, differently laid out family converges to the same value
+  // (measured on a 3-caliber tangent ogive at Mach 1.35, 0006). At a corner
+  // the cells ahead of it converge at an order of about 0.35, and where the
+  // surface flow is subsonic the body behind the tip reaches it, with no
+  // such reference measured yet: both refused.
   const surface = conical(tipAngle);
   const surfaceSound = Math.sqrt((gamma * surface.p) / surface.rho);
   const surfaceMach = Math.hypot(surface.u, surface.v) / surfaceSound;
   const axialMach = surface.u / surfaceSound;
-  if (!(axialMach > 1)) {
+  if (!(axialMach > 1) && (!(surfaceMach > 1) || noseBaseSlope(body.nose) > 0)) {
     const degrees = ((tipAngle * 180) / Math.PI).toFixed(1);
     throw new RangeError(
       surfaceMach > 1
-        ? `at Mach ${mach} the flow behind a tip of ${degrees} deg half-angle crosses the solver's starting plane, normal to the axis, at an axial Mach number of ${axialMach.toFixed(2)} at the surface, below 1, where that plane cannot impose the tip's conical flow; this needs a sharper or longer nose, or a higher Mach number`
+        ? `at Mach ${mach} the flow behind a tip of ${degrees} deg half-angle crosses the solver's starting plane, normal to the axis, at an axial Mach number of ${axialMach.toFixed(2)} at the surface, below 1, which this solver handles only where the nose meets the body without a corner: at a corner the drag converges too slowly to be verified; this needs a sharper or longer nose, a nose tangent to the body, or a higher Mach number`
         : `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic at the surface (Mach ${surfaceMach.toFixed(2)}), so the body behind the tip reaches it, which this solver does not handle yet; this needs a sharper or longer nose, or a higher Mach number`,
     );
   }
