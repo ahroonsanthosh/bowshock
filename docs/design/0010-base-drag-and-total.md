@@ -205,6 +205,15 @@ a Mach number below 1.80 by no more than the figure's abscissa reading
 error (0.002, round 3) takes the 1.80 row, flagged; this admits the gated
 shot at M 1.799.
 
+**Beside it, the rebuilt factor** ([0015](0015-fins-at-the-base.md),
+W1 of 0014). This factor and its labels are unchanged, and it is used
+wherever it serves, so the Basic Finner's validated total keeps it (0014
+section 10.3). Where it refuses (fins other than four, thinner than 5%,
+Mach 1.5 to 1.8, fins within a chord of the base), `base-drag.ts` asks
+the rebuilt factor (`src/base/fins-on-base-w1.ts`), which brackets the
+fins between measured circular-arc families, and labels it so. This holds
+until the owner decides otherwise after BRL 934's run.
+
 ### 1.4 Body base drag and refusals
 
 `base-drag.ts`: C_D = -P_B F (A_base / A_ref), its band the linear sum of
@@ -212,8 +221,9 @@ the curve's band on the term, the interpolation bound, and the
 fins-on-base band, (F_low - F) and (F_high - F) times -P_B (0008 section
 6.3). Fins with trailing edges at the base take the factor; fins one root
 chord or more ahead take the plain curve, labelled not validated with fins
-(0008 section 6.4); in between they are refused (TN 2360's variation not
-transcribed). Refused with a message (`BaseRefusal`, with a reason): Mach
+(0008 section 6.4); in between they were refused (TN 2360's variation not
+transcribed) and are now served by the rebuilt factor at Mach 1.5 to 2.0,
+where that variation is read (0015 section 3.3). Refused with a message (`BaseRefusal`, with a reason): Mach
 numbers outside 1.5 to 3.0, afterbodies other than cylinders, a laminar
 layer at the base, and the fins' conditions of 1.3.
 

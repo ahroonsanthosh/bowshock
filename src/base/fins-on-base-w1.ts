@@ -1,0 +1,678 @@
+/**
+ * The rebuilt fins-on-base factor: work item W1 of
+ * docs/design/0014-refusals.md, recorded in
+ * docs/design/0015-fins-at-the-base.md. F = P_B with fins near the base
+ * over P_B without, as in ./fins-on-base.ts, but over the fins the data
+ * cover, not one family: two to four fins, sharp trailing edges up to the
+ * 10% circular arc's, swept or not, at the base or up to a chord ahead.
+ *
+ * Routing (0014 section 10.3; ./base-drag.ts): the present factor
+ * (./fins-on-base.ts) is kept for every case it serves, the Basic Finner's
+ * validated total among them, and this factor is used only where the
+ * present one refuses, until the owner decides otherwise after BRL 934's
+ * run.
+ *
+ * The family members, all measured on rectangular, unswept fins of
+ * circular-arc section on a cylindrical afterbody with a turbulent layer
+ * (./fins-on-base-w1-data.ts, ./tn3819-fig35.ts):
+ *
+ * - the reference, four fins t/c 0.10 at x/c = 0, M 1.5 to 3.0: low end
+ *   the free-flight line of TN 3819 fig. 35 less its reading error (every
+ *   reading), high end the larger of the line plus its error and the
+ *   tunnel factor (fig. 35's pairs, fig. 33, TN 2360 fig. 6, each reading
+ *   with its error; linear between M 1.50, 2.00 and 2.41, and beyond 2.41
+ *   the line plus the largest tunnel excess, as the present factor);
+ * - the others, t/c 0.05 and 0.10, two and four fins, x/c = 0 to 1.0
+ *   (TN 2360 fig. 6, and fig. 33 for four fins t/c 0.05 at x/c = 0), at M
+ *   1.5 and 2.0 only: each as a ratio of its increment to the reference's
+ *   in the same tunnel (the range over every reading and run, each with
+ *   its error; between M 1.5 and 2.0 the envelope of both ranges), times
+ *   the reference's increment band, so the tunnel's ratio is carried to
+ *   free flight and the band holds both;
+ * - the zero member, no fins or fins with no pressure field: F from 1 down
+ *   to the largest relief measured with fins near the base and a turbulent
+ *   layer at M 1.5 or above (RM L52J21a fig. 38(c) over fig. 8's
+ *   cylindrical base: 0.951), at every M.
+ *
+ * A case is bracketed between a lower member it dominates and an upper
+ * member that dominates it, in each variable the sources show moves F:
+ *
+ * - the section's thickness near the trailing edge: by TN 2360's
+ *   superposition argument (pp. 6, 10) the increment grows with the
+ *   section's half-thickness at each station; so a sharp-edged section of
+ *   half-thickness h(s) lies between the circular arcs 2 tau s (1 - s) with
+ *   tau = tauLow = min h / (2 s (1 - s)) and tau = tauEq = max of it
+ *   (sectionBracket). Circular arcs are their own members;
+ * - the count: two between zero and four where TN 2360's plane tail is not
+ *   measured, three between two and four (TN 2360 p. 10: the increment
+ *   grows with count, less than in proportion);
+ * - the position: between the two stations of TN 2360 fig. 6 that bracket
+ *   x/c, each member's own (M 1.5 to 2.0 only);
+ * - sweep: only where measured, the leading edge swept 45 to 60 deg (RM
+ *   L52J21a's 45 deg fins, fig. 38; the RM-10's 60 deg, TN 3819 fig. 34)
+ *   and the trailing edge no more: between the zero member and the
+ *   unswept member that dominates the section, since both measured swept
+ *   sets lie there, below the unswept member at their Mach numbers (and
+ *   TN 3819 p. 22). Sweeps between 0 and 45 deg are refused: no
+ *   measurement, and for supersonic edges linear theory gives larger
+ *   surface pressures with sweep at a fixed streamwise section, so the
+ *   ordering is not shown there (0015 section 3.4).
+ *
+ * Fins with flat faces at a square trailing edge (flat plates) are
+ * "bounded, not measured" (0014 section 10.2): between the lowest relief
+ * measured with such fins at the base (RM L52E06 fig. 7, M 1.06 to 1.10:
+ * W1_FLAT_RELIEF_LOW) and the unswept circular-arc member at least as
+ * thick, the ordering argued in 0015 section 4 from TN 2360 (the increment
+ * follows the slope of the faces near the trailing edge, zero on a flat
+ * face; "a blunt-trailing-edge section" among "the most favorable", p. 11)
+ * and RM L52E06 (relief, where circular-arc fins at the same Mach number
+ * raise the base drag by half). The band is the whole gap.
+ *
+ * Where a member is not measured at the case's Mach number, the bracket
+ * widens to the next member outward (t/c 0.05 to 0.10 above, to the zero
+ * member below; two fins to zero). The band is the envelope of the lower
+ * and upper members' bands; the nominal its midpoint (0008 section 6.3).
+ *
+ * Refused, each with its reason: fewer than two or more than four fins;
+ * rounded, diverging (thickest at the edge) and converging blunt trailing
+ * edges; sections not dominated by the 10% circular arc; sweeps other than
+ * those measured; Mach numbers outside 1.5 to 3.0; fins ending ahead of the
+ * base where no position is measured (above M 2.0).
+ */
+
+import { compiledCurveValue } from './compiled-curve';
+import {
+  L52E06_FIG7,
+  L52J21A_FIG38C,
+  L52J21A_FIG8,
+  TN2360_FIG6,
+  TN3819_FIG33,
+  TN3819_FIG35_W1,
+  type Tn2360Fig6Point,
+} from './fins-on-base-w1-data';
+import { BaseRefusal } from './refusal';
+import { FIG35_IDENTITY_SWAP, TN3819_FIG35_FREE_FLIGHT, TN3819_FIG35_TUNNEL } from './tn3819-fig35';
+import type { SymmetricSection } from '../fins/section';
+
+/** The Mach numbers the rebuilt factor serves. */
+export const W1_MACH_RANGE = [1.5, 3.0] as const;
+/** TN 2360's two Mach numbers: the only ones where t/c 0.05, two fins and x/c > 0 are measured. */
+export const W1_TUNNEL_MACHS = [1.5, 2.0] as const;
+/** The measured thickness ratios (circular arcs) and counts. */
+export const W1_THICKNESSES = [0.05, 0.1] as const;
+/** TN 2360 fig. 6's stations, x/c (trailing edge ahead of the base, in chords). */
+export const W1_STATIONS = [0, 0.2, 0.4, 0.6, 0.8, 1.0] as const;
+
+export type Thickness = 0 | 0.05 | 0.1;
+export type Count = 0 | 2 | 4;
+
+export interface Band {
+  readonly low: number;
+  readonly high: number;
+}
+
+/** Linear interpolation on ascending points (by mach), or undefined outside them. */
+function interp<T extends { mach: number }>(
+  pts: readonly T[],
+  mach: number,
+  f: (p: T) => number,
+): { value: number; a: T; b: T } | undefined {
+  for (let k = 0; k < pts.length; k++) {
+    const p = pts[k]!;
+    if (Math.abs(p.mach - mach) <= 1e-12) return { value: f(p), a: p, b: p };
+    const q = pts[k + 1];
+    if (q !== undefined && mach > p.mach && mach < q.mach) {
+      const t = (mach - p.mach) / (q.mach - p.mach);
+      return { value: f(p) + t * (f(q) - f(p)), a: p, b: q };
+    }
+  }
+  return undefined;
+}
+
+// ------------------------------------------------------------ the zero member
+
+/**
+ * The largest relief measured at M 1.5 or above with fins near the base and
+ * a turbulent layer: RM L52J21a fig. 38(c)'s most positive dPb at each Mach
+ * number (both bases, which the scan cannot separate, so the cylindrical
+ * base's relief is at most this), over fig. 8's least negative cylindrical
+ * base P_B, each with its reading error toward more relief.
+ */
+export function reliefFactors(): { mach: number; factor: number }[] {
+  return L52J21A_FIG38C.map((p) => {
+    const cyl = L52J21A_FIG8.filter(
+      (q) => q.base === 'cylindrical' && Math.abs(q.mach - p.mach) < 1e-9,
+    );
+    const finned = Math.min(...cyl.map((q) => Math.abs(q.leastNegative) - q.error));
+    const relief = Math.max(0, p.mostPositive + p.error);
+    return { mach: p.mach, factor: finned / (finned + relief) };
+  });
+}
+
+/** The zero member's low end: the smallest relief factor, carried to every Mach number served. */
+export const W1_RELIEF_LOW = Math.min(...reliefFactors().map((r) => r.factor));
+export const ZERO_MEMBER: Band = { low: W1_RELIEF_LOW, high: 1 };
+
+// ------------------------------------------------------ the reference member
+
+interface FreeFlight {
+  readonly reading: string;
+  readonly factor: number;
+  readonly error: number;
+  readonly extrapolated: boolean;
+}
+
+/** Every reading of fig. 35's free-flight line at M, as a factor on Love's basic curve. */
+export function freeFlightFactors(mach: number): FreeFlight[] {
+  const noFins = Math.abs(compiledCurveValue(mach, 'lessNegative'));
+  const out: FreeFlight[] = [];
+  const readings = [
+    ...TN3819_FIG35_FREE_FLIGHT.map((r) => ({ reading: r.reading, points: r.points })),
+    ...TN3819_FIG35_W1.map((r) => ({ reading: r.reading, points: r.points })),
+  ];
+  for (const r of readings) {
+    const v = interp(r.points, mach, (p) => p.pB);
+    if (v === undefined) continue;
+    let error = Math.max(v.a.error, v.b.error);
+    if (mach >= FIG35_IDENTITY_SWAP.from && mach <= FIG35_IDENTITY_SWAP.to) {
+      error = Math.max(error, FIG35_IDENTITY_SWAP.error);
+    }
+    const ext = (p: object) => 'extrapolated' in p && p.extrapolated === true;
+    out.push({
+      reading: r.reading,
+      factor: Math.abs(v.value) / noFins,
+      error: error / noFins,
+      extrapolated: ext(v.a) || ext(v.b),
+    });
+  }
+  return out;
+}
+
+/** The tunnel factors of four t/c 0.10 fins at x/c = 0, each reading with its error, at M 1.50, 2.00, 2.41. */
+export function tunnelReferenceFactors(): { mach: number; source: string; factor: number }[] {
+  const out: { mach: number; source: string; factor: number }[] = [];
+  const ratioHigh = (fins: number, eFins: number, none: number, eNone: number) =>
+    (Math.abs(fins) + eFins) / (Math.abs(none) - eNone);
+  for (const p of TN3819_FIG35_TUNNEL) {
+    // Reading errors of the pairs: +-0.001 (first), +-0.0009 at most (round 3).
+    const e = 0.001;
+    out.push({
+      mach: p.mach,
+      source: `TN 3819 fig. 35 pair (${p.source}, ${p.reading})`,
+      factor: ratioHigh(p.withFins, e, p.withoutFins, e),
+    });
+  }
+  for (const m of [1.5, 2.0, 2.41]) {
+    const at = TN3819_FIG33.filter((q) => Math.abs(q.mach - m) < 1e-9);
+    const nones = at.filter((q) => q.thicknessRatio === 0);
+    // Each reading's t/c 0.10 point over the same reading's body alone.
+    for (const none of nones) {
+      const ten = at.find((q) => q.thicknessRatio === 0.1 && q.reading === none.reading);
+      if (ten === undefined) continue;
+      out.push({
+        mach: m,
+        source: `TN 3819 fig. 33 (${ten.reading})`,
+        factor: ratioHigh(ten.pB, ten.error, none.pB, none.error),
+      });
+    }
+    // TN 2360 fig. 6's runs over every reading of fig. 33's body alone.
+    for (const q of TN2360_FIG6) {
+      if (q.mach !== m || q.count !== 4 || q.thicknessRatio !== 0.1 || q.xc !== 0) continue;
+      for (const none of nones) {
+        out.push({
+          mach: m,
+          source: `TN 2360 fig. 6 (${q.reading}) over fig. 33's body alone (${none.reading})`,
+          factor: 1 + (Math.abs(q.dPb) + q.error) / (Math.abs(none.pB) - none.error),
+        });
+      }
+    }
+  }
+  return out;
+}
+
+const TUNNEL_MACHS_REF = [1.5, 2.0, 2.41] as const;
+
+function tunnelMax(): { mach: number; factor: number }[] {
+  const all = tunnelReferenceFactors();
+  return TUNNEL_MACHS_REF.map((m) => ({
+    mach: m,
+    factor: Math.max(...all.filter((t) => Math.abs(t.mach - m) < 1e-9).map((t) => t.factor)),
+  }));
+}
+
+/** The tunnel's largest excess over the free-flight line (its least reading) at a tunnel Mach number. */
+export function largestTunnelExcess(): number {
+  return Math.max(
+    ...tunnelMax().map(
+      (t) => t.factor - Math.min(...freeFlightFactors(t.mach).map((f) => f.factor)),
+    ),
+  );
+}
+const EXCESS = largestTunnelExcess();
+
+export interface ReferenceBand extends Band {
+  readonly freeFlight: readonly FreeFlight[];
+  /** The tunnel factor at M (interpolated), where the tunnels reach (M 2.41 at most). */
+  readonly tunnel: number | undefined;
+  /** Beyond M 2.41: the free-flight factor plus the largest tunnel excess. */
+  readonly carried: number | undefined;
+}
+
+/** Four fins t/c 0.10 at x/c = 0: the reference member, M 1.5 to 3.0. */
+export function referenceBand(mach: number): ReferenceBand {
+  const ff = freeFlightFactors(mach);
+  if (ff.length === 0) throw new RangeError(`no reading of fig. 35's line at M ${mach}`);
+  const t = interp(tunnelMax(), mach, (p) => p.factor);
+  const maxFf = Math.max(...ff.map((f) => f.factor));
+  const carried = mach > 2.41 + 1e-12 ? maxFf + EXCESS : undefined;
+  return {
+    low: Math.min(...ff.map((f) => f.factor - f.error)),
+    high: Math.max(
+      ...ff.map((f) => f.factor + f.error),
+      t?.value ?? -Infinity,
+      carried ?? -Infinity,
+    ),
+    freeFlight: ff,
+    tunnel: t?.value,
+    carried,
+  };
+}
+
+// --------------------------------------------------------- the ratio members
+
+/**
+ * The range of a member's increment over the reference's, in TN 2360's
+ * tunnel at one of its Mach numbers: every reading and run of the member
+ * against every one of the reference (fig. 6 at x/c = 0, four fins, t/c
+ * 0.10, and fig. 33), each end moved by its reading error so as to widen
+ * the range. Undefined if the member was not measured there.
+ */
+export function memberRatio(
+  thickness: 0.05 | 0.1,
+  count: 2 | 4,
+  station: number,
+  tunnelMach: 1.5 | 2.0,
+): Band | undefined {
+  const sel = (p: Tn2360Fig6Point, t: number, n: number, s: number) =>
+    p.mach === tunnelMach && p.thicknessRatio === t && p.count === n && Math.abs(p.xc - s) < 1e-9;
+  const val = (dPb: number, e: number) => ({ lo: dPb - e, hi: dPb + e });
+  const members = TN2360_FIG6.filter((p) => sel(p, thickness, count, station)).map((p) =>
+    val(p.dPb, p.error),
+  );
+  const refs = TN2360_FIG6.filter((p) => sel(p, 0.1, 4, 0)).map((p) => val(p.dPb, p.error));
+  const at33 = TN3819_FIG33.filter((q) => Math.abs(q.mach - tunnelMach) < 1e-9);
+  // Fig. 33's increments, each reading's points against the same reading's body alone.
+  for (const p0 of at33.filter((q) => q.thicknessRatio === 0)) {
+    const same = at33.filter((q) => q.reading === p0.reading);
+    const p10 = same.find((q) => q.thicknessRatio === 0.1);
+    const p5 = same.find((q) => q.thicknessRatio === 0.05);
+    if (p10 !== undefined) refs.push(val(p10.pB - p0.pB, p10.error + p0.error));
+    if (thickness === 0.05 && count === 4 && station === 0 && p5 !== undefined) {
+      members.push(val(p5.pB - p0.pB, p5.error + p0.error));
+    }
+  }
+  if (members.length === 0 || refs.length === 0) return undefined;
+  const ratios: number[] = [];
+  for (const m of members) {
+    for (const r of refs) {
+      // The reference increment is negative (more suction) by a margin; the member's may have either sign.
+      for (const a of [m.lo, m.hi]) for (const b of [r.lo, r.hi]) ratios.push(a / b);
+    }
+  }
+  return { low: Math.min(...ratios), high: Math.max(...ratios) };
+}
+
+function ratioAt(
+  thickness: 0.05 | 0.1,
+  count: 2 | 4,
+  station: number,
+  mach: number,
+): Band | undefined {
+  const [m0, m1] = W1_TUNNEL_MACHS;
+  const r0 = memberRatio(thickness, count, station, m0);
+  const r1 = memberRatio(thickness, count, station, m1);
+  if (Math.abs(mach - m0) < 1e-12) return r0;
+  if (Math.abs(mach - m1) < 1e-12) return r1;
+  if (r0 === undefined || r1 === undefined || !(mach > m0 && mach < m1)) return undefined;
+  // Between the two Mach numbers, the envelope of both ranges: no assumption on how the ratio varies.
+  return { low: Math.min(r0.low, r1.low), high: Math.max(r0.high, r1.high) };
+}
+
+/** The stations of TN 2360 fig. 6 at which a member is measured at this Mach number. */
+function stationsOf(thickness: 0.05 | 0.1, count: 2 | 4, mach: number): number[] {
+  return W1_STATIONS.filter((s) =>
+    thickness === 0.1 && count === 4 && s === 0
+      ? true
+      : ratioAt(thickness, count, s, mach) !== undefined,
+  );
+}
+
+/**
+ * A member's band at M and x/c: the envelope over the two of its stations
+ * that bracket x/c; undefined where it is not measured.
+ */
+export function memberBand(
+  thickness: Thickness,
+  count: Count,
+  xc: number,
+  mach: number,
+): Band | undefined {
+  if (thickness === 0 || count === 0) return ZERO_MEMBER;
+  if (!(mach >= W1_MACH_RANGE[0] - 1e-12 && mach <= W1_MACH_RANGE[1] + 1e-12)) return undefined;
+  const ref = referenceBand(mach);
+  if (thickness === 0.1 && count === 4 && xc === 0) return { low: ref.low, high: ref.high };
+  const st = stationsOf(thickness, count, mach);
+  const below = st.filter((s) => s <= xc + 1e-12);
+  const above = st.filter((s) => s >= xc - 1e-12);
+  if (below.length === 0 || above.length === 0) return undefined;
+  const used = [...new Set([Math.max(...below), Math.min(...above)])];
+  let low = Infinity;
+  let high = -Infinity;
+  const L = ref.low - 1;
+  const H = ref.high - 1;
+  for (const s of used) {
+    let b: Band;
+    if (thickness === 0.1 && count === 4 && s === 0) {
+      b = { low: L, high: H };
+    } else {
+      const r = ratioAt(thickness, count, s, mach);
+      if (r === undefined) return undefined;
+      const p = [r.low * L, r.low * H, r.high * L, r.high * H];
+      b = { low: Math.min(...p), high: Math.max(...p) };
+    }
+    low = Math.min(low, 1 + b.low);
+    high = Math.max(high, 1 + b.high);
+  }
+  return { low, high };
+}
+
+// ----------------------------------------------------------- the case's bracket
+
+/**
+ * The circular arcs between which a symmetric section lies, by its
+ * half-thickness at every station (chord units): tauLow the thickest arc it
+ * dominates, tauEq the thinnest that dominates it, the arcs taken as
+ * 2 tau s (1 - s). Only for sections with a sharp trailing edge.
+ */
+export function sectionBracket(section: SymmetricSection): { tauLow: number; tauEq: number } {
+  const { x, halfThickness: h } = section;
+  let lo = Infinity;
+  let hi = 0;
+  const n = 4000;
+  for (let k = 1; k < n; k++) {
+    const s = k / n;
+    let j = 0;
+    while (j + 2 < x.length && s > x[j + 1]!) j++;
+    const hs = h[j]! + ((h[j + 1]! - h[j]!) * (s - x[j]!)) / (x[j + 1]! - x[j]!);
+    const r = hs / (2 * s * (1 - s));
+    lo = Math.min(lo, r);
+    hi = Math.max(hi, r);
+  }
+  // The limits at the edges: the half-slopes there.
+  const slopeLe = (h[1]! - h[0]!) / (x[1]! - x[0]!);
+  const m = x.length - 1;
+  const slopeTe = (h[m - 1]! - h[m]!) / (x[m]! - x[m - 1]!);
+  lo = Math.min(lo, slopeLe / 2, slopeTe / 2);
+  hi = Math.max(hi, slopeLe / 2, slopeTe / 2);
+  return { tauLow: lo, tauEq: hi };
+}
+
+export type TrailingEdgeShape = 'sharp' | 'flat' | 'diverging' | 'converging-blunt';
+
+/** The trailing edge of a symmetric section: sharp, or blunt with flat, diverging or converging faces. */
+export function trailingEdgeShape(section: SymmetricSection): TrailingEdgeShape {
+  const h = section.halfThickness;
+  const m = h.length - 1;
+  if (section.bluntTrailingEdge !== true) return 'sharp';
+  const d = h[m]! - h[m - 1]!;
+  if (Math.abs(d) <= 1e-12 * Math.max(1, Math.abs(h[m]!))) return 'flat';
+  return d > 0 ? 'diverging' : 'converging-blunt';
+}
+
+/** The fins, as the rebuilt factor needs them. */
+export interface FinsNearBase {
+  readonly count: number;
+  /** The section in chord units (src/fins), the same along the span. */
+  readonly section: SymmetricSection;
+  /** 'circular-arc' when the section is one (its own member); else bracketed. */
+  readonly sectionFamily: 'circular-arc' | 'other';
+  /** Tangents of the leading- and trailing-edge sweep angles. */
+  readonly tanLeadingEdgeSweep: number;
+  readonly tanTrailingEdgeSweep: number;
+  /** The root trailing edge ahead of the base, in root chords: 0 at the base, up to 1. */
+  readonly trailingEdgeAheadOfBase: number;
+}
+
+export interface MemberUsed {
+  readonly thickness: Thickness;
+  readonly count: Count;
+  readonly band: Band;
+  /** What the member is, for the label. */
+  readonly name: string;
+}
+
+export interface FinsOnBaseFactorW1 {
+  readonly mach: number;
+  readonly nominal: number;
+  readonly low: number;
+  readonly high: number;
+  readonly label: string;
+  /** True unless the case is a member itself (circular arcs, unswept, measured count and station). */
+  readonly analogy: boolean;
+  /**
+   * "Bounded, not measured" (0014 section 10.2): fins with flat faces at a square trailing edge, between
+   * the lowest relief measured with such fins (RM L52E06) and the circular-arc member at least as thick.
+   */
+  readonly bounded: boolean;
+  /** Fewer than two readings of fig. 35's line at M, not counting extrapolations. */
+  readonly singleReading: boolean;
+  /** The reference rests on an extrapolated value at M (M above 2.99). */
+  readonly extrapolated: boolean;
+  /** Always false: kept for the shape of ./fins-on-base.ts's factor. */
+  readonly atRangeEnd: false;
+  readonly lower: MemberUsed;
+  readonly upper: MemberUsed;
+  /** The section's bracket (circular arcs: tauLow = tauEq = t/c; flat faces: tauEq = t/c). */
+  readonly tauLow: number;
+  readonly tauEq: number;
+  readonly swept: boolean;
+  /** No second, independent reading of the W1 data is in yet (0014 section 10.4). */
+  readonly secondReadingPending: boolean;
+}
+
+/**
+ * The swept fins measured at the base (leading-edge sweep): RM L52J21a's 45 deg (fig. 38) and the RM-10's
+ * 60 deg (TN 3819 fig. 34). Sweeps between 0 and 45 deg are not measured and are refused (0015 section
+ * 3.4).
+ */
+export const W1_SWEPT_RANGE = [(45 * Math.PI) / 180, (60 * Math.PI) / 180] as const;
+
+/**
+ * The lowest relief measured with fins at the base: RM L52E06 fig. 7, four flat-plate fins with square
+ * trailing edges, M 1.06 to 1.10, the rim and centre pressures with and without fins, each with its
+ * reading error toward more relief. The lower bound of the bounded value for flat-faced fins.
+ */
+export function flatPlateReliefs(): { mach: number; where: 'rim' | 'centre'; factor: number }[] {
+  const out: { mach: number; where: 'rim' | 'centre'; factor: number }[] = [];
+  for (const p of L52E06_FIG7) {
+    const f = (fins: number, none: number) =>
+      (Math.abs(fins) - p.error) / (Math.abs(none) + p.error);
+    out.push({ mach: p.mach, where: 'rim', factor: f(p.rimFins, p.rimNoFins) });
+    if (p.centreFins !== undefined && p.centreNoFins !== undefined) {
+      out.push({ mach: p.mach, where: 'centre', factor: f(p.centreFins, p.centreNoFins) });
+    }
+  }
+  return out;
+}
+export const W1_FLAT_RELIEF_LOW = Math.min(...flatPlateReliefs().map((r) => r.factor));
+
+const ZERO_NAME =
+  `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, ` +
+  'RM L52J21a fig. 38)';
+const memberName = (t: Thickness, n: Count, xc: number) =>
+  t === 0 || n === 0
+    ? ZERO_NAME
+    : `${n} unswept circular-arc fins t/c ${t.toFixed(2)} at x/c ${xc.toFixed(2)}`;
+
+export const W1_LABEL_PREFIX =
+  'estimated on component data: the rebuilt fins-on-base factor (0015), between ';
+export const W1_BOUNDED_PREFIX =
+  'bounded, not measured: the rebuilt fins-on-base factor (0015), between ';
+
+export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBaseFactorW1 {
+  const { count, section } = fins;
+  if (!(Number.isInteger(count) && count >= 2 && count <= 4)) {
+    throw new BaseRefusal(
+      'fin-count',
+      `the rebuilt fins-on-base factor is measured with two and four fins (TN 2360) and brackets ` +
+        `three between them; ${count} fins are not covered`,
+    );
+  }
+  const te = trailingEdgeShape(section);
+  if (te !== 'sharp' && te !== 'flat') {
+    throw new BaseRefusal(
+      'fin-trailing-edge',
+      (te === 'diverging'
+        ? 'faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic ' +
+          "Finner's wedges)"
+        : 'faces that converge to a blunt trailing edge') +
+        ' at the base: no band-setting source measures their effect on the body base, and the ' +
+        'ordering of 0015 section 4 does not reach them',
+    );
+  }
+  const bounded = te === 'flat';
+  const le = Math.abs(Math.atan(fins.tanLeadingEdgeSweep));
+  const tes = Math.abs(Math.atan(fins.tanTrailingEdgeSweep));
+  const swept = le > 1e-9 || tes > 1e-9;
+  if (
+    swept &&
+    !(le >= W1_SWEPT_RANGE[0] - 1e-9 && le <= W1_SWEPT_RANGE[1] + 1e-9 && tes <= le + 1e-9)
+  ) {
+    throw new BaseRefusal(
+      'fin-sweep',
+      `fins with a leading edge swept ${((le * 180) / Math.PI).toFixed(1)} deg and a trailing edge ` +
+        `${((tes * 180) / Math.PI).toFixed(1)} deg: fins at the base are measured unswept and with the ` +
+        'leading edge swept 45 deg (RM L52J21a) and 60 deg (the RM-10, TN 3819 fig. 34), the trailing ' +
+        'edge swept no more than the leading edge (0015 section 3.4)',
+    );
+  }
+  const xc = fins.trailingEdgeAheadOfBase;
+  if (!(xc >= 0 && xc <= 1 && Number.isFinite(xc))) {
+    throw new BaseRefusal(
+      'input',
+      `the rebuilt factor takes fins ending 0 to 1 chord ahead of the base, got ${xc}`,
+    );
+  }
+  if (!(mach >= W1_MACH_RANGE[0] && mach <= W1_MACH_RANGE[1])) {
+    throw new BaseRefusal(
+      'mach-range',
+      `the rebuilt fins-on-base factor is measured at Mach ${W1_MACH_RANGE[0]} to ` +
+        `${W1_MACH_RANGE[1]} (TN 3819 fig. 35, TN 2360), asked Mach ${mach}`,
+    );
+  }
+  const thickness = Math.max(...section.halfThickness) * 2;
+  const tr =
+    fins.sectionFamily === 'circular-arc'
+      ? { tauLow: thickness, tauEq: thickness }
+      : bounded
+        ? { tauLow: 0, tauEq: thickness }
+        : sectionBracket(section);
+  if (tr.tauEq > 0.1 + 1e-9) {
+    throw new BaseRefusal(
+      'fin-thickness',
+      bounded
+        ? `flat-faced fins t/c ${thickness.toFixed(3)}: the circular-arc members that bound them reach ` +
+            't/c 0.10 (TN 2360, TN 3819 fig. 33)'
+        : `this section is not inside the 10%-thick circular arc near its edges (it would need an ` +
+            `arc of t/c ${tr.tauEq.toFixed(3)}); thicker fins at the base are not measured (TN 2360, ` +
+            'TN 3819 fig. 33)',
+    );
+  }
+  const taus: Thickness[] = [0, 0.05, 0.1];
+  const lowT =
+    swept || bounded ? [0 as Thickness] : taus.filter((t) => t <= tr.tauLow + 1e-9).reverse();
+  const highT = taus.filter((t) => t >= tr.tauEq - 1e-9);
+  const lowN: Count[] = count === 4 ? [4] : [2, 0];
+  const highN: Count[] = count === 2 ? [2, 4] : [4];
+  const pick = (ts: Thickness[], ns: Count[]): MemberUsed | undefined => {
+    for (const t of ts) {
+      for (const n of ns) {
+        const b = memberBand(t, n, xc, mach);
+        if (b !== undefined) return { thickness: t, count: n, band: b, name: memberName(t, n, xc) };
+      }
+    }
+    return undefined;
+  };
+  const upper = pick(highT, highN);
+  const lower: MemberUsed | undefined = bounded
+    ? {
+        thickness: 0,
+        count: 4,
+        band: { low: W1_FLAT_RELIEF_LOW, high: 1 },
+        name:
+          `the lowest relief measured with flat-faced fins at the base (F ${W1_FLAT_RELIEF_LOW.toFixed(3)}, ` +
+          'RM L52E06 fig. 7 at M 1.06)',
+      }
+    : pick(lowT, lowN);
+  if (lower === undefined || upper === undefined) {
+    throw new BaseRefusal(
+      'fins-near-base',
+      `fins ending ${xc} chords ahead of the base at M ${mach}: TN 2360 measures positions ahead of ` +
+        'the base at M 1.5 and 2.0 only (0015 section 3.3)',
+    );
+  }
+  const low = Math.min(lower.band.low, upper.band.low);
+  const high = Math.max(lower.band.high, upper.band.high);
+  const member =
+    !swept &&
+    !bounded &&
+    fins.sectionFamily === 'circular-arc' &&
+    lower.thickness === upper.thickness &&
+    lower.count === upper.count &&
+    lower.count === count;
+  const ff = referenceBand(mach).freeFlight;
+  const reasons: string[] = [];
+  if (bounded) {
+    reasons.push(
+      "flat faces at a square trailing edge: not measured above M 1.10; the ordering is TN 2360's " +
+        "(the increment follows the faces' slope near the trailing edge, zero here) and RM L52E06's " +
+        '(relief with these fins), 0015 section 4',
+    );
+  } else if (fins.sectionFamily !== 'circular-arc') {
+    reasons.push(
+      `the section bracketed by its thickness near the edges (arcs t/c ${tr.tauLow.toFixed(3)} to ` +
+        `${tr.tauEq.toFixed(3)}), not measured on this section`,
+    );
+  }
+  if (swept) {
+    reasons.push(
+      'swept fins bracketed between the zero member and unswept fins, as the measured swept fins lie ' +
+        '(RM L52J21a, the RM-10)',
+    );
+  }
+  if (count === 3) reasons.push('three fins bracketed between two (or none) and four');
+  if (xc > 0) reasons.push('the position bracketed between the stations of TN 2360 fig. 6');
+  const label = member
+    ? `estimated on component data: the rebuilt fins-on-base factor (0015), measured on ${lower.name} ` +
+      '(TN 2360 fig. 6, TN 3819 figs. 33 and 35), tested only in the total'
+    : `${bounded ? W1_BOUNDED_PREFIX : W1_LABEL_PREFIX}${lower.name} and ${upper.name}; ` +
+      `${reasons.join('; ')}; not measured on these fins, tested only in the total`;
+  return {
+    mach,
+    nominal: 0.5 * (low + high),
+    low,
+    high,
+    label,
+    analogy: !member,
+    bounded,
+    singleReading: ff.filter((f) => !f.extrapolated).length < 2,
+    extrapolated: ff.some((f) => f.extrapolated),
+    atRangeEnd: false,
+    lower,
+    upper,
+    tauLow: tr.tauLow,
+    tauEq: tr.tauEq,
+    swept,
+    secondReadingPending: !TN2360_FIG6.some((p) => p.reading === 'w1 second'),
+  };
+}

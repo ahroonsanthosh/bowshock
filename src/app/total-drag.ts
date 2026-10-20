@@ -597,12 +597,30 @@ export const FINS_ON_BASE_NOTE =
   'section (TN 3819 fig. 35; its band reaches down to 5% thick on TN 2360), and src/base ' +
   'applies it as it is to any four fins ending at the base, 5% to 10% thick.';
 
+/** The rebuilt factor, where it stands in for the present one (src/base/fins-on-base-w1.ts, 0015). */
+export const FINS_ON_BASE_W1_NOTE =
+  'Fins-on-base factor: the present factor does not cover these fins, so the rebuilt factor ' +
+  '(design record 0015) is used: a band between measured families of circular-arc fins that ' +
+  "bracket these fins' section, count, sweep and position (TN 2360, TN 3819, RM L52J21a, RM " +
+  'L52E06), wider than a measurement on these fins would give. The second, independent reading of ' +
+  'its data is pending.';
+
 /** What the components' labels do not carry. */
 function notesOf(base: BodyBaseDrag | undefined): string[] {
   const notes = [FINS_BAND_NOTE];
   // Flags of the fins-on-base factor (0010 section 1.3).
   const f = base?.finsOnBase;
   if (f === undefined) return notes;
+  if (base?.finsOnBaseSource === 'rebuilt') {
+    notes.push(FINS_ON_BASE_W1_NOTE);
+    if (f.singleReading) {
+      notes.push(
+        'Fins-on-base factor: at this Mach number its reference rests on fewer than two readings ' +
+          'of the free-flight line of TN 3819 fig. 35 (0015 section 3.1).',
+      );
+    }
+    return notes;
+  }
   notes.push(FINS_ON_BASE_NOTE);
   if (f.atRangeEnd) {
     notes.push(

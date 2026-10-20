@@ -363,8 +363,11 @@ describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
       'Total drag refused: no number is given. Every reason:' +
         'nose wave drag (not-verified): the nose wave drag is solved on the GPU, and this ' +
         'browser provides no WebGPU.' +
-        'body base (mach-range): the fins-on-base factor is read at Mach 1.8 to 3 (TN 3819 ' +
-        'fig. 35), asked Mach 1.6.',
+        'body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at ' +
+        "the edge, as the Basic Finner's wedges) at the base: no band-setting source measures " +
+        'their effect on the body base, and the ordering of 0015 section 4 does not reach them; ' +
+        'the present factor (0010 section 1.3) refuses it too: the fins-on-base factor is read at ' +
+        'Mach 1.8 to 3 (TN 3819 fig. 35), asked Mach 1.6.',
     );
   });
 });

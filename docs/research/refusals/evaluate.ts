@@ -17,6 +17,8 @@
  */
 
 import { sharpFitProblem } from '../../../src/analysis/fitted-flow';
+import { bodyBaseDrag } from '../../../src/base/base-drag';
+import { BaseRefusal } from '../../../src/base/refusal';
 import { FinRefusal } from '../../../src/fins/refusal';
 import { exactSectionDrag } from '../../../src/fins/section-drag';
 import { doubleWedge, hexagonal, singleWedge, type SymmetricSection } from '../../../src/fins/section';
@@ -58,6 +60,11 @@ export const REASONS = {
   finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10',
   finsAtBaseMach: 'base: fins at the base, Mach 1.5 to 1.8 (outside 1.8 to 3.0)',
   finsAtBaseLowMach: 'base: fins at the base, Mach below 1.5 (outside 1.8 to 3.0)',
+  // The rebuilt factor's refusals (src/base/fins-on-base-w1.ts, 0015), where the present one refuses.
+  finsW1Count: 'base (rebuilt factor): fins at the base, not two to four',
+  finsW1Thickness: 'base (rebuilt factor): a section outside the 10% circular arc (steep bevels)',
+  finsW1TrailingEdge: 'base (rebuilt factor): a rounded or diverging blunt trailing edge',
+  finsW1Sweep: 'base (rebuilt factor): sweep not measured (leading edge 0 to 45 or above 60 deg, or trailing edge beyond it)',
   // Fin trailing-edge base.
   teTaper: 'te: blunt trailing edge on fins of varying chord',
   teSwept: 'te: swept blunt trailing edge',
@@ -209,15 +216,17 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     }
   }
 
-  // Body base (src/base/base-drag.ts, fins-on-base.ts).
+  // Body base (src/base/base-drag.ts, fins-on-base.ts, fins-on-base-w1.ts): the present factor where
+  // it serves, the rebuilt one where it refuses (0015 section 5), decided by the library itself.
   if (!(mach >= 1.5 && mach <= 3.0)) out.push('baseMach');
   if (r.boatTail) out.push('boatTail');
   const x = r.trailingEdgeAheadChords;
-  if (x > 0 && x < 1) out.push('finsNearBase');
-  if (x === 0) {
-    if (r.finCount !== 4) out.push('finsAtBaseCount');
-    if (!(tc >= 0.05 && tc <= 0.1)) out.push('finsAtBaseThickness');
-    if (!(mach >= 1.8 - 0.002 && mach <= 3.0)) out.push(mach >= 1.5 ? 'finsAtBaseMach' : 'finsAtBaseLowMach');
+  if (x >= 0 && x < 1) {
+    if (mach < 1.5) out.push(x === 0 ? 'finsAtBaseLowMach' : 'finsNearBase');
+    else if (mach <= 3.0) {
+      const k = finsOnBaseReason(r, mach);
+      if (k !== undefined) out.push(k);
+    }
   }
 
   // Blunt fin trailing edges (src/base/fin-trailing-edge.ts, src/total).
@@ -229,6 +238,66 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     if (r.rootChord / (r.thickness * reC ** 0.2) > 1) out.push('teThick');
   }
   return out;
+}
+
+/** The section of the fins as the body base sees it: the physical section, flat plates as plates. */
+function baseSection(r: Rocket): SymmetricSection | 'rounded-te' {
+  const tc = r.thickness / r.rootChord;
+  switch (r.section) {
+    case 'bevel-both':
+    case 'double-wedge':
+    case 'bevel-le-square-te':
+      return librarySection(r)!;
+    case 'rounded-le-square-te':
+    case 'square-both':
+      // Flat faces to a square trailing edge; the leading edge does not enter the base factor.
+      return { x: [0, 1e-3, 1], halfThickness: [0, tc / 2, tc / 2], bluntTrailingEdge: true };
+    case 'rounded-both':
+      return 'rounded-te';
+  }
+}
+
+/** The fins-on-base factor's refusal at M 1.5 to 3.0, by the library (src/base/base-drag.ts); undefined if served. */
+export function finsOnBaseReason(r: Rocket, mach: number): ReasonKey | undefined {
+  const section = baseSection(r);
+  if (section === 'rounded-te') return 'finsW1TrailingEdge';
+  try {
+    bodyBaseDrag({
+      mach,
+      afterbody: 'cylinder',
+      boundaryLayerAtBase: 'turbulent',
+      baseAreaRatio: 1,
+      fins: {
+        count: r.finCount,
+        thicknessRatio: r.thickness / r.rootChord,
+        section: 'other',
+        trailingEdgeAheadOfBase: r.trailingEdgeAheadChords,
+        nearBase: {
+          section,
+          sectionFamily: 'other',
+          tanLeadingEdgeSweep: Math.tan(r.leadingEdgeSweepDeg * DEG),
+          tanTrailingEdgeSweep: Math.tan(r.trailingEdgeSweepDeg * DEG),
+        },
+      },
+    });
+    return undefined;
+  } catch (e) {
+    if (!(e instanceof BaseRefusal)) throw e;
+    switch (e.reason) {
+      case 'fin-count':
+        return 'finsW1Count';
+      case 'fin-thickness':
+        return 'finsW1Thickness';
+      case 'fin-trailing-edge':
+        return 'finsW1TrailingEdge';
+      case 'fin-sweep':
+        return 'finsW1Sweep';
+      case 'fins-near-base':
+        return 'finsNearBase';
+      default:
+        throw e;
+    }
+  }
 }
 
 const DUMMY_NOSE: DragComponent = { name: 'nose wave drag', cd: 0, low: 0, high: 0, label: '', band: '' };

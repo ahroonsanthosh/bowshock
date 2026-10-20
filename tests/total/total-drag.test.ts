@@ -369,7 +369,20 @@ describe('refusals', { timeout: 60_000 }, () => {
 
   it('boat-tails; the fins-on-base factor below M 1.8; a laminar base', () => {
     expect(refusals({ ...sharp, afterbody: 'boat-tail' })).toEqual(['body base: afterbody']);
-    expect(refusals(sharp, 1.6)).toEqual(['body base: mach-range']);
+    // Below M 1.8 the present factor refuses and the rebuilt one (0015) serves these sharp fins;
+    // below M 1.5 the body base itself is refused.
+    expect(refusals(sharp, 1.6)).toEqual([]);
+    const at16 = finnedBodyComponents(
+      sharp,
+      { ...conditions, mach: 1.6 },
+      exactConeNoseWaveDrag(1.6, 10 * deg),
+    );
+    expect(at16.base?.finsOnBaseSource).toBe('rebuilt');
+    expect(at16.base?.presentRefusal?.reason).toBe('mach-range');
+    expect(refusals(sharp, 1.45)).toEqual(['body base: mach-range']);
+    expect(
+      refusals({ ...sharp, fins: { ...sharp.fins, section: singleWedge(0.08) } }, 1.6),
+    ).toEqual(['body base: fin-trailing-edge']);
     expect(refusals(sharp, 2.4, [2e7])).toEqual(['body base: laminar-base']);
   });
 

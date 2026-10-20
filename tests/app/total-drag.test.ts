@@ -516,7 +516,7 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
     expect(reasons(totalDragView(f, no))).toEqual(['nose wave drag: not-verified']);
     expect(reasons(totalDragView({ ...f, mach: 1.6 }, no))).toEqual([
       'nose wave drag: not-verified',
-      'body base: mach-range',
+      'body base: fin-trailing-edge',
     ]);
   });
 
@@ -595,9 +595,11 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
   const nose = exactNose(f);
 
   it('below Mach 1.8 with fins at the base; swept fins; a laminar base', () => {
-    expect(reasons(totalDragView({ ...f, mach: 1.6 }, exactNose({ ...f, mach: 1.6 })))).toEqual([
-      'body base: mach-range',
-    ]);
+    // The present factor refuses M 1.6; the rebuilt factor (0015) refuses the Basic Finner's wedges,
+    // thickest at their blunt trailing edge, and says the present factor refuses too.
+    const v = totalDragView({ ...f, mach: 1.6 }, exactNose({ ...f, mach: 1.6 }));
+    expect(reasons(v)).toEqual(['body base: fin-trailing-edge']);
+    expect(JSON.stringify(v)).toContain('the present factor (0010 section 1.3) refuses it too');
     expect(
       reasons(
         totalDragView(
@@ -619,7 +621,11 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
     expect(reasons(totalDragView({ ...f, transitionReynolds: [2e7] }, nose))).toEqual([
       'body base: laminar-base',
     ]);
-    expect(reasons(totalDragView({ ...f, finCount: 3 }, nose))).toEqual(['body base: fin-count']);
+    // Three fins: the present factor refuses the count; the rebuilt factor (0015) is tried and
+    // refuses the Basic Finner's single wedges, thickest at their blunt trailing edge.
+    expect(reasons(totalDragView({ ...f, finCount: 3 }, nose))).toEqual([
+      'body base: fin-trailing-edge',
+    ]);
   });
 
   it('a rounded leading edge on a double wedge; a clipped delta with a blunt trailing edge', () => {

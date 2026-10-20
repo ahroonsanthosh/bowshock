@@ -1,8 +1,8 @@
 {
  "baseline": {
   "all bands": {
-   "total": 9,
-   "nose only": 1462,
+   "total": 56,
+   "nose only": 1415,
    "nothing": 6529
   },
   "M 1.0-1.2": {
@@ -16,21 +16,21 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 4,
-   "nose only": 493,
+   "total": 28,
+   "nose only": 469,
    "nothing": 1503
   },
   "M 1.8-3.0": {
-   "total": 5,
-   "nose only": 492,
+   "total": 28,
+   "nose only": 469,
    "nothing": 1503
   }
  },
  "order": [
-  "W1 fins at the base for hobby fins (3 and 4 fins, thin, any trailing edge, M 1.5 to 3.0) and within a chord",
+  "W5 Haack and power-series noses (in progress)",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)",
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W6 blunted nose tips",
-  "W5 Haack and power-series noses (in progress)",
   "W2 base below Mach 1.5, with and without fins at the base",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress)",
   "W10 boat-tails",
@@ -42,8 +42,8 @@
  ],
  "lenientTip": {
   "all bands": {
-   "total": 9,
-   "nose only": 2827,
+   "total": 93,
+   "nose only": 2743,
    "nothing": 5164
   },
   "M 1.0-1.2": {
@@ -57,20 +57,20 @@
    "nothing": 1082
   },
   "M 1.5-1.8": {
-   "total": 4,
-   "nose only": 955,
+   "total": 47,
+   "nose only": 912,
    "nothing": 1041
   },
   "M 1.8-3.0": {
-   "total": 5,
-   "nose only": 954,
+   "total": 46,
+   "nose only": 913,
    "nothing": 1041
   }
  },
  "altitude0": {
   "all bands": {
-   "total": 9,
-   "nose only": 1462,
+   "total": 56,
+   "nose only": 1415,
    "nothing": 6529
   },
   "M 1.0-1.2": {
@@ -84,20 +84,20 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 4,
-   "nose only": 493,
+   "total": 28,
+   "nose only": 469,
    "nothing": 1503
   },
   "M 1.8-3.0": {
-   "total": 5,
-   "nose only": 492,
+   "total": 28,
+   "nose only": 469,
    "nothing": 1503
   }
  },
  "altitude20": {
   "all bands": {
-   "total": 9,
-   "nose only": 1462,
+   "total": 56,
+   "nose only": 1415,
    "nothing": 6529
   },
   "M 1.0-1.2": {
@@ -111,20 +111,20 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 4,
-   "nose only": 493,
+   "total": 28,
+   "nose only": 469,
    "nothing": 1503
   },
   "M 1.8-3.0": {
-   "total": 5,
-   "nose only": 492,
+   "total": 28,
+   "nose only": 469,
    "nothing": 1503
   }
  },
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%)": {
   "all bands": {
-   "total": 17,
-   "nose only": 1454,
+   "total": 125,
+   "nose only": 1346,
    "nothing": 6529
   },
   "M 1.0-1.2": {
@@ -138,20 +138,20 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 8,
-   "nose only": 489,
+   "total": 65,
+   "nose only": 432,
    "nothing": 1503
   },
   "M 1.8-3.0": {
-   "total": 9,
-   "nose only": 488,
+   "total": 60,
+   "nose only": 437,
    "nothing": 1503
   }
  },
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%) order": [
-  "W1 fins at the base for hobby fins (3 and 4 fins, thin, any trailing edge, M 1.5 to 3.0) and within a chord",
-  "W9 sharp sections: reflected waves and detached bevel shocks",
   "W5 Haack and power-series noses (in progress)",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)",
+  "W9 sharp sections: reflected waves and detached bevel shocks",
   "W6 blunted nose tips",
   "W2 base below Mach 1.5, with and without fins at the base",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress)",
@@ -164,8 +164,8 @@
  ],
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%)": {
   "all bands": {
-   "total": 14,
-   "nose only": 3390,
+   "total": 112,
+   "nose only": 3292,
    "nothing": 4596
   },
   "M 1.0-1.2": {
@@ -179,18 +179,18 @@
    "nothing": 902
   },
   "M 1.5-1.8": {
-   "total": 7,
-   "nose only": 1146,
+   "total": 57,
+   "nose only": 1096,
    "nothing": 847
   },
   "M 1.8-3.0": {
-   "total": 7,
-   "nose only": 1146,
+   "total": 55,
+   "nose only": 1098,
    "nothing": 847
   }
  },
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%) order": [
-  "W1 fins at the base for hobby fins (3 and 4 fins, thin, any trailing edge, M 1.5 to 3.0) and within a chord",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)",
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W2 base below Mach 1.5, with and without fins at the base",
   "W5 Haack and power-series noses (in progress)",

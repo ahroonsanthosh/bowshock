@@ -18,6 +18,10 @@ export type BaseRefusalReason =
   | 'fin-count'
   /** Fins at the base thinner or thicker than the data bracket. */
   | 'fin-thickness'
+  /** Fins near the base whose trailing edge the data do not cover (blunt, rounded). */
+  | 'fin-trailing-edge'
+  /** Fins near the base swept beyond the data. */
+  | 'fin-sweep'
   /** Swept blunt trailing edges. */
   | 'swept-trailing-edge'
   /** A laminar layer at a blunt trailing edge. */

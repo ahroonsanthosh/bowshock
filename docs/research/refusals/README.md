@@ -14,7 +14,8 @@ by the solver or the page.
 | `impact.test.ts` | The run: outcome per Mach band, rate per refusal, sole blockers, the work packages (the share each is needed for, the greedy order, totals after each step of 0014's order), the altitude ends, two sensitivity variants, the cross-check against `src/total` |
 | `edges.test.ts` | The parameters the fin-edge packages turn on, over the same cases: the trailing edges' thin-layer parameter, the leading edges' normal Mach and Reynolds numbers, the trailing-edge angle of fins at the base |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
-| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables, as 0014 quotes them |
+| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables; since W1 ([0015](../../design/0015-fins-at-the-base.md)), `impact.out` and `.json` are the run with the rebuilt fins-on-base factor, which `evaluate.ts` asks through `bodyBaseDrag` itself |
+| `out/impact-before-w1.out`, `out/impact-before-w1.json` | The run as 0014 quotes it, before the rebuilt factor (kept unchanged) |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |

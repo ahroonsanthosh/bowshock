@@ -42,10 +42,13 @@ const CROSS_CHECK = Number(process.env.CROSS_CHECK ?? 300);
  * since lifting one alone unlocks nothing.
  */
 export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
-  'W1 fins at the base for hobby fins (3 and 4 fins, thin, any trailing edge, M 1.5 to 3.0) and within a chord': [
-    'finsAtBaseThickness',
-    'finsAtBaseCount',
-    'finsAtBaseMach',
+  // Since W1 (0015): what the rebuilt fins-on-base factor still refuses at M 1.5 to 3.0 (the present
+  // factor's refusals no longer arise there; below M 1.5 they belong to W2).
+  'W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)': [
+    'finsW1Sweep',
+    'finsW1Thickness',
+    'finsW1TrailingEdge',
+    'finsW1Count',
     'finsNearBase',
   ],
   'W2 base below Mach 1.5, with and without fins at the base': ['baseMach', 'finsAtBaseLowMach'],

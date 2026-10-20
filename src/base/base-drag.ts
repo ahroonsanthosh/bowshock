@@ -19,9 +19,18 @@
  *
  * Fins: with their trailing edges at the base, the factor applies; ending
  * one root chord or more ahead of it, the plain curve (TN 2360 found the
- * increment nearly zero one chord fore or aft, not quantified), labelled
- * not validated with fins (0008 section 6.4: no total-drag case with fins
- * clear of the base was found); in between, refused (no data transcribed).
+ * increment nearly zero one chord fore or aft), labelled not validated
+ * with fins (0008 section 6.4: no total-drag case with fins clear of the
+ * base was found).
+ *
+ * Which factor (0014 section 10.3, docs/design/0015-fins-at-the-base.md
+ * section 5): the present factor (./fins-on-base.ts) wherever it serves,
+ * so the Basic Finner's validated total keeps it; the rebuilt factor
+ * (./fins-on-base-w1.ts) only where the present factor refuses (fins other
+ * than four, thinner than 5%, at Mach 1.5 to 1.8, or ending within a chord
+ * ahead of the base), and only when the fins' section and sweeps are given
+ * (`nearBase`); otherwise the present refusal stands. This routing holds
+ * until the owner decides otherwise after BRL 934's run.
  *
  * The vacuum bound (./vacuum.ts): the term and its band's ends are each at
  * most 2 / (gamma M^2) times the area ratio, clamped there (`vacuumClamped`
@@ -38,6 +47,7 @@ import {
   type CompiledCurveBasePressure,
 } from './compiled-curve';
 import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins-on-base';
+import { finsOnBaseFactorW1, type FinsNearBase, type FinsOnBaseFactorW1 } from './fins-on-base-w1';
 import { BaseRefusal } from './refusal';
 import { vacuumBaseDrag } from './vacuum';
 
@@ -49,7 +59,20 @@ export const COMPILED_CURVE_LABEL =
 export interface BaseFins extends FinsAtBase {
   /** Distance of the fins' trailing edges ahead of the base, in root chords (0: at the base). */
   readonly trailingEdgeAheadOfBase: number;
+  /**
+   * The fins' section and sweeps, for the rebuilt factor (./fins-on-base-w1.ts) where the present one
+   * refuses; without them the present factor's refusal stands.
+   */
+  readonly nearBase?: Omit<FinsNearBase, 'count' | 'trailingEdgeAheadOfBase'>;
 }
+
+/** Which fins-on-base factor a body base used: the present one (0010 section 1.3) or the rebuilt one (0015). */
+export type FinsOnBaseSource = 'present' | 'rebuilt';
+
+/** The label added to the rebuilt factor's, saying why it, not the present factor, is used. */
+export const FINS_ON_BASE_ROUTING_LABEL =
+  'the rebuilt factor is used because the present factor (0010 section 1.3), which the Basic ' +
+  "Finner's validated total keeps, does not cover these fins";
 
 export interface BodyBaseInput {
   /** Free-stream Mach number. */
@@ -67,8 +90,12 @@ export interface BodyBaseDrag {
   readonly low: number;
   readonly high: number;
   readonly curve: CompiledCurveBasePressure;
-  /** The fins-on-base factor, when fins end at the base. */
-  readonly finsOnBase: FinsOnBaseFactor | undefined;
+  /** The fins-on-base factor, when fins end at the base or within a chord of it. */
+  readonly finsOnBase: FinsOnBaseFactor | FinsOnBaseFactorW1 | undefined;
+  /** Which factor that is (undefined without one). */
+  readonly finsOnBaseSource: FinsOnBaseSource | undefined;
+  /** Where the rebuilt factor is used: the present factor's refusal it stands in for (x/c within a chord: none). */
+  readonly presentRefusal: BaseRefusal | undefined;
   /** The band's parts, in C_D: [below, above] the nominal. */
   readonly parts: {
     readonly curveBand: readonly [number, number];
@@ -103,21 +130,62 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
   }
   const curve = compiledCurveBasePressure(mach);
   const labels = [COMPILED_CURVE_LABEL];
-  let factor: FinsOnBaseFactor | undefined;
+  // 0014 section 10.2: a bounded component states its gap's size in C_D beside it.
+  const gapOf = (f: FinsOnBaseFactorW1) =>
+    f.bounded
+      ? `; the gap between the bounds is ${((f.high - f.low) * -curve.pB * baseAreaRatio).toFixed(4)} ` +
+        'in C_D'
+      : '';
+  let factor: FinsOnBaseFactor | FinsOnBaseFactorW1 | undefined;
+  let source: FinsOnBaseSource | undefined;
+  let presentRefusal: BaseRefusal | undefined;
   if (fins !== undefined) {
     const x = fins.trailingEdgeAheadOfBase;
     if (!(x >= 0 && Number.isFinite(x))) {
       throw new BaseRefusal('input', `the fins' trailing edges must lie at or ahead of the base`);
     }
+    const rebuilt = (): FinsOnBaseFactorW1 => {
+      const near = fins.nearBase;
+      if (near === undefined) {
+        throw (
+          presentRefusal ??
+          new BaseRefusal(
+            'fins-near-base',
+            `fins ending ${x} root chords ahead of the base: the present fins-on-base factor is ` +
+              "measured with the trailing edges at the base, and the fins' section and sweeps, which " +
+              'the rebuilt factor (0015) needs, are not given',
+          )
+        );
+      }
+      try {
+        return finsOnBaseFactorW1(mach, { ...near, count: fins.count, trailingEdgeAheadOfBase: x });
+      } catch (e) {
+        if (!(e instanceof BaseRefusal) || presentRefusal === undefined) throw e;
+        throw new BaseRefusal(
+          e.reason,
+          `${e.message}; the present factor (0010 section 1.3) refuses it too: ${presentRefusal.message}`,
+        );
+      }
+    };
     if (x === 0) {
-      factor = finsOnBaseFactor(mach, fins);
-      labels.push(factor.label);
+      try {
+        factor = finsOnBaseFactor(mach, fins);
+        source = 'present';
+        labels.push(factor.label);
+      } catch (e) {
+        if (!(e instanceof BaseRefusal)) throw e;
+        presentRefusal = e;
+        const w1 = rebuilt();
+        factor = w1;
+        source = 'rebuilt';
+        labels.push(`${w1.label}${gapOf(w1)}; ${FINS_ON_BASE_ROUTING_LABEL} (${e.message})`);
+      }
     } else if (x < 1) {
-      throw new BaseRefusal(
-        'fins-near-base',
-        `fins ending ${x} root chords ahead of the base: the fins-on-base factor is measured with ` +
-          'the trailing edges at the base, and the variation to one chord ahead (TN 2360) is not ' +
-          'transcribed',
+      const w1 = rebuilt();
+      factor = w1;
+      source = 'rebuilt';
+      labels.push(
+        `${w1.label}${gapOf(w1)}; ${FINS_ON_BASE_ROUTING_LABEL} (it takes fins at the base only)`,
       );
     } else {
       labels.push(
@@ -155,6 +223,8 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     high: atMostVacuum(cd + curveBand[1] + interpolation[1] + finsBand[1], 'band high end'),
     curve,
     finsOnBase: factor,
+    finsOnBaseSource: source,
+    presentRefusal,
     parts: { curveBand, interpolation, finsOnBase: finsBand },
     labels,
     vacuum,
