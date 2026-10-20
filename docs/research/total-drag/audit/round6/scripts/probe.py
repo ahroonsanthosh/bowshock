@@ -21,12 +21,15 @@ def main():
         i = args.index("--dots")
         dl = [int(v) for v in args[i + 1:]]
         args = args[:i]
-    nid, page = args[0], int(args[1])
+    nid = args[0]
+    pg = args[1]
+    rot = int(pg.split('r')[1]) if 'r' in pg else 0
+    page = int(pg.split('r')[0])
     bx = [int(v) for v in args[2:6]]
     gt = float(args[6]) if len(args) > 6 else 0.6
     fv = float(args[7]) if len(args) > 7 else 0.15
     fh = float(args[8]) if len(args) > 8 else 0.15
-    png = dig.render(f"{SCRATCH}/dl/{nid}/{nid}.pdf", page, f"{SCRATCH}/work/{nid}")
+    png = dig.render(f"{SCRATCH}/dl/{nid}/{nid}.pdf", page, f"{SCRATCH}/work/{nid}", rotate=rot)
     a = dig.load(png, tuple(bx))
     vf, hf = dig.grid_from_box(a < gt, fv, fh, longruns=True)
     H, W = a.shape

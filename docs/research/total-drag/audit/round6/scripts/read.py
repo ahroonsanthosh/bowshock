@@ -29,6 +29,7 @@ from fig import from_spec, write_csv  # noqa: E402
 from stroke import trace2d  # noqa: E402
 import dig  # noqa: E402
 import dots  # noqa: E402
+import symscan  # noqa: E402
 
 COL = [(255, 0, 0), (0, 160, 0), (0, 0, 255), (200, 0, 200), (0, 160, 160), (220, 120, 0), (120, 60, 0)]
 
@@ -181,6 +182,54 @@ def main():
         for cx, cy, w_, h_, n_ in sorted(found):
             Rp = D.get("R_plot", R)
             g = dots.glyph(dm, cx, cy, Rp, max(w_, h_) / 2 + 2)
+            if D.get("classify") == "rings":
+                # shape from outline templates centred near the dot; the
+                # template's centre is the reading (bounding-box centre);
+                # a flag is ink in a short sector just outside the outline
+                gd = dots.dilate(g, 1)
+                best = None
+                for sh in D["shapes"]:
+                    for rr in np.arange(sh["r"] - 3, sh["r"] + 3.5, 1.0):
+                        t = dig.ring_template(rr, D.get("stroke", 4.0), sh["shape"])
+                        Rt = t.shape[0] // 2
+                        for ddy in range(-3, 4):
+                            for ddx in range(-3, 4):
+                                y0 = Rp + ddy - Rt
+                                x0 = Rp + ddx - Rt
+                                if y0 < 0 or x0 < 0 or y0 + t.shape[0] > gd.shape[0] or x0 + t.shape[1] > gd.shape[1]:
+                                    continue
+                                sc_ = float((gd[y0:y0 + t.shape[0], x0:x0 + t.shape[1]] & t).sum() / t.sum())
+                                if best is None or sc_ > best[0]:
+                                    best = (sc_, sh, rr, ddx, ddy)
+                sc_, sh, rr, ddx, ddy = best
+                name = sh["name"]
+                fl = sh.get("flag")
+                fr = 0.0
+                if fl:
+                    a0 = np.deg2rad(fl["angle"])
+                    hits = tot = 0
+                    for da in np.deg2rad(np.arange(-15, 16, 5)):
+                        for rad in np.arange(rr * 1.15, rr * 1.75, 2.0):
+                            yy_ = int(round(cy + ddy + rad * np.sin(a0 + da)))
+                            xx_ = int(round(cx + ddx + rad * np.cos(a0 + da)))
+                            if 0 <= yy_ < f.clean.shape[0] and 0 <= xx_ < f.clean.shape[1]:
+                                tot += 1
+                                hits += int(f.clean[yy_, xx_])
+                    fr = hits / max(1, tot)
+                    if fr >= fl.get("thr", 0.12):
+                        name = fl["name"]
+                xv, yv = f.data(cx + ddx, cy + ddy)
+                xd, yd = f.data(cx, cy)
+                for y0b, y1b, lab in D.get("bands", []):
+                    if min(y0b, y1b) <= yv <= max(y0b, y1b):
+                        name = f"{name}, {lab}"
+                ex = np.hypot(1.0 * ux, calx)
+                ey = float(np.hypot(np.hypot(1.0 * uy, caly), D.get("extra_all", 0.0)))
+                rows.append([spec.get("figure", ""), name, f"{xv:.4g}", f"{yv:.4f}", f"{ey:.4f}",
+                             f"outline centre (dot at {xd:.4g}, {yd:.4f}); {sh['shape']} r {rr:g} score {sc_:.2f}"
+                             + (f"; flag ink {fr:.2f}" if fl else "") + f"; x err {ex:.3g}"])
+                marks.append((cx + ddx, cy + ddy, (255, 0, 255), 12))
+                continue
             scales = D.get("scales", [1.0])
             scores = sorted(((*dots.match_scaled(g, t, scales, D.get("shift", 2)), name) for name, t in tpls),
                             reverse=True)
@@ -259,6 +308,36 @@ def main():
                          f"legend-glyph template at scale {scl:g}; match {val:.2f}; x err {ex:.3g}"
                          + ("; " + gs["note"] if gs.get("note") else "")])
             marks.append((cx, cy, (0, 200, 255), 14))
+    if "symscan" in spec:
+        S = spec["symscan"]
+        rg = S["region"]
+        if "stations" in S:
+            found = []
+            for st in S["stations"]:
+                Xs = f.ax.pixel(st, 0.5 * (rg[1] + rg[3]) - bx[1]) + bx[0]
+                hw = S.get("station_half", 40)
+                found += symscan.scan(f.m, f.clean, S["shapes"], (int(Xs - hw) - bx[0], rg[1] - bx[1], int(Xs + hw) - bx[0], rg[3] - bx[1]),
+                                      S.get("thr", 0.62), S.get("nms", 9), S.get("stroke", 5.0),
+                                      S.get("need_dot", False), S.get("ann_max", 0.2))
+        else:
+          found = symscan.scan(f.m, f.clean, S["shapes"], (rg[0] - bx[0], rg[1] - bx[1], rg[2] - bx[0], rg[3] - bx[1]),
+                               S.get("thr", 0.62), S.get("nms", 9), S.get("stroke", 5.0),
+                               S.get("need_dot", False), S.get("ann_max", 0.2))
+        excl = [(e[0] - bx[0], e[1] - bx[1]) for e in S.get("exclude", [])]
+        for c in sorted(found, key=lambda c: (c["x"], c["y"])):
+            if any((c["x"] - e[0]) ** 2 + (c["y"] - e[1]) ** 2 <= 15 ** 2 for e in excl):
+                continue
+            xv, yv = f.data(c["x"], c["y"])
+            name = c["name"]
+            for y0b, y1b, lab in S.get("bands", []):
+                if min(y0b, y1b) <= yv <= max(y0b, y1b):
+                    name = f"{name} / {lab}"
+            ex = np.hypot(1.0 * ux, calx)
+            ey = float(np.hypot(np.hypot(1.0 * uy, caly), S.get("extra_all", 0.0)))
+            rows.append([spec.get("figure", ""), name, f"{xv:.4g}", f"{yv:.4f}", f"{ey:.4f}",
+                         f"outline template ({c['sh']['shape']}) score {c['score']:.2f}"
+                         + (f"; flag ink {c['flag']:.2f}" if c["flag"] is not None else "") + f"; x err {ex:.3g}"])
+            marks.append((c["x"], c["y"], (255, 0, 255), 10))
     for s in spec.get("symbols", []):
         r = f.symbol(s["at"][0] - bx[0], s["at"][1] - bx[1], s["r"], s.get("shape", "circle"),
                      search=s.get("search", 20))

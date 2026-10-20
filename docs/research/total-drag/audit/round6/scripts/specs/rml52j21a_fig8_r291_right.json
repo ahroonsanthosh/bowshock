@@ -1,0 +1,109 @@
+{
+ "figure": "RM L52J21a fig. 8 R=2.91e6 cylindrical and conical bases",
+ "ntrs": "19930087533",
+ "page": 28,
+ "box": [
+  2340,
+  1040,
+  3700,
+  2340
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.2,
+ "frac_h": 0.2,
+ "xsel": "all",
+ "xvals": [
+  1.5,
+  1.6,
+  1.7,
+  1.8,
+  1.9,
+  2.0,
+  2.1,
+  2.2,
+  2.3,
+  2.4,
+  2.5
+ ],
+ "ysel": "all",
+ "yvals": [
+  -0.2,
+  -0.18,
+  -0.16,
+  -0.14,
+  -0.12,
+  -0.1,
+  -0.08,
+  -0.06,
+  -0.04,
+  -0.02,
+  0.0
+ ],
+ "scale": 0.5,
+ "symscan": {
+  "shapes": [
+   {
+    "name": "conical nose",
+    "shape": "circle",
+    "r": 16,
+    "flag": {
+     "angle": -40,
+     "name": "conical nose (flagged: fixed transition)",
+     "thr": 0.15
+    }
+   },
+   {
+    "name": "ogive nose",
+    "shape": "square",
+    "r": 15,
+    "flag": {
+     "angle": -40,
+     "name": "ogive nose (flagged: fixed transition)",
+     "thr": 0.15
+    }
+   },
+   {
+    "name": "radome nose",
+    "shape": "diamond",
+    "r": 20,
+    "flag": {
+     "angle": -40,
+     "name": "radome nose (flagged: fixed transition)",
+     "thr": 0.15
+    }
+   }
+  ],
+  "region": [
+   2360,
+   1050,
+   3690,
+   2330
+  ],
+  "thr": 0.66,
+  "nms": 9,
+  "stroke": 5.0,
+  "bands": [
+   [
+    -0.3,
+    -0.095,
+    "cylindrical base"
+   ],
+   [
+    -0.095,
+    0.0,
+    "conical base"
+   ]
+  ],
+  "exclude": [],
+  "need_dot": false,
+  "ann_max": 0.2,
+  "stations": [
+   1.62,
+   1.93,
+   2.41
+  ],
+  "station_half": 40
+ }
+}

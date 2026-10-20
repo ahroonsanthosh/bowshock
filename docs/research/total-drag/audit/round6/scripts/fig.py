@@ -23,9 +23,9 @@ import dig  # noqa: E402
 
 class Fig:
     def __init__(self, pdf, page, work, box, xsel, xvals, ysel, yvals, xlog=False, ylog=False,
-                 frac_v=0.5, frac_h=0.5, thr=0.55, half=6, extra_v=(), extra_h=(), name="", grid_thr=0.55, longruns=False, skews=(None, None)):
+                 frac_v=0.5, frac_h=0.5, thr=0.55, half=6, extra_v=(), extra_h=(), name="", grid_thr=0.55, longruns=False, skews=(None, None), rotate=0):
         self.name = name
-        self.png = dig.render(pdf, page, work)
+        self.png = dig.render(pdf, page, work, rotate=rotate)
         self.box = box
         self.a = dig.load(self.png, box)
         self.m = dig.dark(self.a, thr)
@@ -212,7 +212,7 @@ def from_spec(spec):
                frac_v=spec.get("frac_v", 0.5), frac_h=spec.get("frac_h", 0.5), thr=spec.get("thr", 0.55),
                name=spec.get("name", ""), grid_thr=spec.get("grid_thr", 0.55),
                longruns=spec.get("longruns", False),
-               skews=(spec.get("skew_v"), spec.get("skew_h")))
+               skews=(spec.get("skew_v"), spec.get("skew_h")), rotate=spec.get("rotate", 0))
 
 
 def dilate(b, k):

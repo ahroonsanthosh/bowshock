@@ -22,8 +22,17 @@ from PIL import Image, ImageDraw
 WORK = os.environ.get("R6WORK", "")
 
 
-def render(pdf, page, out_dir, dpi=600):
-    """Render one page to an 8-bit grey PNG (cached)."""
+def render(pdf, page, out_dir, dpi=600, rotate=0):
+    """Render one page to an 8-bit grey PNG (cached); rotate: 90 or 270 gives
+    a copy turned so that a landscape figure on a portrait page reads upright
+    (90 = counter-clockwise)."""
+    if rotate:
+        base = render(pdf, page, out_dir, dpi)
+        out = base.replace('.png', f'_r{rotate}.png')
+        if not os.path.exists(out):
+            im = Image.open(base)
+            im.transpose(Image.ROTATE_90 if rotate == 90 else Image.ROTATE_270).save(out)
+        return out
     os.makedirs(out_dir, exist_ok=True)
     stem = os.path.join(out_dir, f"p{page:03d}_{dpi}")
     png = stem + ".png"

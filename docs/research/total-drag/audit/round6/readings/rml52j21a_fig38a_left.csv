@@ -1,0 +1,7 @@
+figure,series,x,y,err_y,how
+RM L52J21a fig. 38 R=2.91e6 boattail/cusp bases,radome nose, boattail base,1.6221,-0.0132,0.0003,symbol diamond 75 px (score 0.90); x err 0.0014
+RM L52J21a fig. 38 R=2.91e6 boattail/cusp bases,ogive nose, boattail base,1.6193,-0.0011,0.0003,symbol square 55 px (score 0.83); x err 0.0014; on the 0 gridline
+RM L52J21a fig. 38 R=2.91e6 boattail/cusp bases,conical nose, cusp base (flagged),1.6207,0.0164,0.0003,symbol circle 61 px (score 0.89); x err 0.0014
+RM L52J21a fig. 38 R=2.91e6 boattail/cusp bases,conical nose, boattail base,1.6202,0.0274,0.0003,symbol circle 61 px (score 0.83); x err 0.0014
+RM L52J21a fig. 38 R=2.91e6 boattail/cusp bases,ogive nose, cusp base (flagged),1.6214,0.0433,0.0003,symbol square 53 px (score 0.92); x err 0.0014
+RM L52J21a fig. 38 R=2.91e6 boattail/cusp bases,radome nose, cusp base (flagged),1.6204,0.0792,0.0003,symbol diamond 75 px (score 0.95); x err 0.0014; on the 0.08 frame line
