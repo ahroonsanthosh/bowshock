@@ -66,8 +66,8 @@
    1840,
    5290
   ],
-  "thr": 0.66,
-  "nms": 9,
+  "thr": 0.62,
+  "nms": 12,
   "stroke": 5.0,
   "bands": [
    [
@@ -82,8 +82,8 @@
    ]
   ],
   "exclude": [],
-  "need_dot": false,
-  "ann_max": 0.2,
+  "need_dot": true,
+  "ann_max": 0.25,
   "stations": [
    1.62,
    1.93,

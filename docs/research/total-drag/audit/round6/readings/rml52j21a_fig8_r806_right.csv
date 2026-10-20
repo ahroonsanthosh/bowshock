@@ -1,0 +1,7 @@
+figure,series,x,y,err_y,how
+RM L52J21a fig. 8 R=8.06e6 cylindrical and conical bases,ogive nose / cylindrical base,1.617,-0.1485,0.0002,outline template (square) score 0.82; x err 0.000941
+RM L52J21a fig. 8 R=8.06e6 cylindrical and conical bases,ogive nose / cylindrical base,1.623,-0.1618,0.0002,outline template (square) score 0.74; x err 0.000941
+RM L52J21a fig. 8 R=8.06e6 cylindrical and conical bases,conical nose / cylindrical base,1.911,-0.1454,0.0002,outline template (circle) score 0.71; x err 0.000941
+RM L52J21a fig. 8 R=8.06e6 cylindrical and conical bases,radome nose / cylindrical base,1.924,-0.1448,0.0002,outline template (diamond) score 0.62; x err 0.000941
+RM L52J21a fig. 8 R=8.06e6 cylindrical and conical bases,ogive nose / cylindrical base,1.928,-0.1515,0.0002,outline template (square) score 0.82; x err 0.000941
+RM L52J21a fig. 8 R=8.06e6 cylindrical and conical bases,ogive nose / conical base,2.41,-0.0687,0.0002,outline template (square) score 1.00; x err 0.000941
