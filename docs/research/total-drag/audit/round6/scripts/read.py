@@ -207,17 +207,25 @@ def main():
                     s1, s2 = 0.6, 0.55  # ambiguous: keep the template's choice, flagged
             if s1 < D.get("min_score", 0.5):
                 continue
+            for rx_, ry_, rname in D.get("rename", []):
+                if (cx - (rx_ - bx[0])) ** 2 + (cy - (ry_ - bx[1])) ** 2 <= 15 ** 2:
+                    n1, s1, s2, n2, sc1 = rname, 1.0, 0.0, "(named by eye)", 1.0
             xd, yd = f.data(cx, cy)
             dx_, dy_ = offs[n1][0] * sc1, offs[n1][1] * sc1
             xv, yv = f.data(cx + dx_, cy + dy_)
             ex = np.hypot(1.0 * ux, calx)
             ey = np.hypot(1.0 * uy, caly)
+            xnote = ""
+            for b0, b1, b2, b3, ee, why in D.get("extra_box", []):
+                if b0 <= cx + bx[0] <= b2 and b1 <= cy + bx[1] <= b3:
+                    ey = float(np.hypot(ey, ee))
+                    xnote = "; " + why
             if spec.get("xlog"):
                 ex = xv * np.log(10) * ex
             rows.append([spec.get("figure", ""), n1, f"{xv:.4g}", f"{yv:.4f}", f"{ey:.4f}",
                          f"rule centroid from the centre dot (dot at {xd:.4g}, {yd:.4f}); match {s1:.2f}"
                          f" at scale {sc1:g} (next {n2} {s2:.2f}); x err {ex:.3g}"
-                         + ("; LOW MARGIN" if s1 - s2 < 0.1 else "")])
+                         + ("; LOW MARGIN" if s1 - s2 < 0.1 else "") + xnote])
             marks.append((cx, cy, (255, 0, 255), 12))
         # symbols whose dot is lost (merged with a curve, hidden): the legend
         # glyph itself as the template, its dot position as the centre
