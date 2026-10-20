@@ -15,7 +15,7 @@ const ogive: Body = {
   cylinderLength: 0,
 };
 
-describe('transonic grids (design record 0007)', () => {
+describe('transonic grids (design record 0013)', () => {
   it.each([
     ['cone', cone],
     ['ogive', ogive],

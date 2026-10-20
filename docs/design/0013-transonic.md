@@ -1,4 +1,4 @@
-# 0007: Transonic forebody drag, Mach 1 to 1.2
+# 0013: Transonic forebody drag, Mach 1 to 1.2
 
 - **Status:** Prototype on the CPU engine (`src/analysis/transonic-flow.ts`,
   `src/grid/transonic-grid.ts` with H grids for sharp noses and C grids
@@ -620,7 +620,7 @@ Three routes, with what the evidence says about each:
   number (100 and 1000 diverge at the same step, the drag at 0.0935
   rising), nor the far-field boundary's sharp switch where the normal
   velocity is sonic (blending it smoothly over 5% of the sound speed,
-  `docs/design/patches/0007-farfield-blend.diff`, changes nothing). The
+  `docs/design/patches/0013-farfield-blend.diff`, changes nothing). The
   growing change lies in the cells next to the axis upstream of the tip
   and along the cone's first radius (Mach 0.91 to 0.998, x from -6.6 to
   +0.9 radii), cells 0.05 radii high whose columns, far upstream on this
@@ -779,7 +779,7 @@ grid unless stated:
   well it is stable but converges at 0.996 per step against the scalar
   scheme's 0.9972, at 1.8 times the cost of a step. No gain.
 - **Multigrid** (FAS with LU-SGS smoothing on the family's own coarser
-  grids; removed, kept as `docs/design/patches/0007-fas-multigrid.diff`):
+  grids; removed, kept as `docs/design/patches/0013-fas-multigrid.diff`):
   with piecewise-constant prolongation of the corrections it made
   convergence worse; with bilinear prolongation and V(1,2) cycles it
   converges at 0.989 per cycle on two levels (r = 2 over r = 1), no
@@ -796,7 +796,7 @@ grid unless stated:
 - **800 radii at Mach 1**: the implicit steps diverge after about 5,000
   steps with the CFL number capped at 1000 or at 100, and with the
   far-field boundary's characteristic switch blended smoothly
-  (`docs/design/patches/0007-farfield-blend.diff`), and sooner (about
+  (`docs/design/patches/0013-farfield-blend.diff`), and sooner (about
   2,000 steps) with the upstream columns capped at 20 radii; the growing
   change lies in the near-sonic cells next to the axis upstream of the
   tip (see "Mach 1 without the extrapolation").

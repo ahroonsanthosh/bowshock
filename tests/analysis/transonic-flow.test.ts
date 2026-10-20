@@ -10,12 +10,12 @@ const cone: Body = {
   cylinderLength: 0,
 };
 
-describe('transonic forebody drag (design record 0007)', () => {
+describe('transonic forebody drag (design record 0013)', () => {
   it('Mach 1.2, the 7 deg cone of NACA TN 4233: the base grid within 0.3% of Taylor-Maccoll', () => {
     // At Mach 1.2 the cone's surface flow is supersonic (Mach 1.14), so
     // the drag of the cone-cylinder is the conical value. Measured when
     // written: 0.0832184 on the base grid (+0.25%), 0.0830547 and
-    // 0.0830207 on the next two (0007).
+    // 0.0830207 on the next two (0013).
     const problem = transonicProblem(cone, {
       mach: 1.2,
       gamma,

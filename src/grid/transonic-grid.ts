@@ -4,7 +4,7 @@
  * sting: the domain reaches far upstream, sideways and downstream, since
  * the bow shock stands far ahead of the nose (at Mach 1 at infinity) and
  * the flow over the body is partly subsonic (design:
- * docs/design/0007-transonic.md).
+ * docs/design/0013-transonic.md).
  *
  * Topology, sharp noses (H, as body-grid.ts): grid lines of constant i
  * are vertical; jMin is the axis ahead of the tip and the body behind it,

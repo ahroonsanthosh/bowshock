@@ -2,7 +2,7 @@
  * Transonic flow (Mach 1 to about 1.2) around a sharp nose followed by a
  * long cylinder standing for a wind-tunnel sting, with the bow shock
  * captured and far-field boundaries, on the CPU engine, and its forebody
- * pressure (wave) drag (design: docs/design/0007-transonic.md).
+ * pressure (wave) drag (design: docs/design/0013-transonic.md).
  *
  * The drag is that of the supersonic solvers: the pressure drag of the
  * body ahead of the end of the body asked for, on the body's
