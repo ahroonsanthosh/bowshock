@@ -835,6 +835,21 @@ added to the band if above a quarter of it.
   errors against Taylor-Maccoll and the characteristics. That test only
   shows the rule does no harm where the far boundaries hardly matter;
   no case with a known answer has a large far-boundary effect.
+  **Result of the test (run after this plan was committed): the rule
+  fails it.** At Mach 1.2 on the base grid the drag on 100.6, 224.2 and
+  408.7 radii is 0.0832184, 0.0832239 and 0.0832267 (cone) and 0.0437833,
+  0.0437719 and 0.0437681 (ogive). The rule reads these changes, which
+  are the grid's (the grid changes with the domain, and at Mach 1.2 the
+  cone's drag cannot depend on it), as a correction: +1.54e-5 with an
+  uncertainty of 7.1e-6 on the cone, -1.93e-5 with 4.1e-6 on the ogive.
+  Added to the r = 8 values, the cone's error against Taylor-Maccoll
+  grows from +1.9e-6 to +1.73e-5, outside the combined band (1.01e-5);
+  the ogive's from -9.7e-6 to -2.9e-5, inside its wider band (5.2e-5).
+  So the rule as written is refuted, and Mach 1 cannot be certified with
+  it. A replacement would have to separate the domain's physical effect
+  from the grid noise that comes with changing the domain (for example
+  a grid whose near-body part is identical node for node whatever the
+  far distance), be written down first, and be tested again.
 - _The grid, at D1._ The procedure needs a fourth grid, r = 8 at Mach 1.
   r = 4 had not settled after 89,200 steps (its value is a fitted
   estimate); the steps grow about 2 to 3 times per refinement, on 4 times
