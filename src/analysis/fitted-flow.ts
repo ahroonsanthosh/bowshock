@@ -14,8 +14,15 @@
 
 import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
-import { noseTipSlope } from '../geometry/nose';
-import { bluntBodyGrid, gridOnLines, withFixedFractions, type GridLine } from '../grid/blunt-grid';
+import { noseBaseSlope, noseTipSlope } from '../geometry/nose';
+import {
+  bluntBodyGrid,
+  gridOnLines,
+  withFixedFractions,
+  type BluntGrid,
+  type GridLine,
+} from '../grid/blunt-grid';
+import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
 import { columnPositions } from '../grid/spacing';
 import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
@@ -24,7 +31,7 @@ import { normalShock } from '../validation/gas-dynamics';
 import { coneFlowField, taylorMaccoll } from '../validation/taylor-maccoll';
 import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
 import { forebodyPressureDrag } from './forces';
-import { CPU_NOISE, ORDER_TOLERANCE, freeStreamAt } from './verified-drag';
+import { CPU_NOISE, ORDER_TOLERANCE, freeStreamAt, outflowMach } from './verified-drag';
 
 export interface FittedFlowOptions {
   readonly mach: number;
@@ -34,7 +41,25 @@ export interface FittedFlowOptions {
   /** Refinement of the base grid: 1, 2, 4, ... */
   readonly refinement: number;
   readonly maxIterations: number;
+  /**
+   * Sharp noses: the density of the columns along the body, times the
+   * usual layout's (default 1). FALLBACK_COLUMN_DENSITY lays out the
+   * family solved where the usual one fails the fitted grids' gates.
+   */
+  readonly columnDensity?: number;
 }
+
+/**
+ * Column density of the family a sharp nose is solved on again where its
+ * usual family fails the fitted grids' gates (fittedGridFailure): the
+ * wall cells at the end of a long solved cylinder at low Mach numbers,
+ * flattened under a far shock, exceed the aspect limit of 13 (13.7 and
+ * 14.1 on a 3-caliber tangent ogive at Mach 1.2, nj = 40 and 80) and
+ * reach 8.5 at this density. A family at this density gives the usual
+ * family's value to 1.5e-5 on a 3-caliber tangent ogive at Mach 1.35
+ * (docs/design/0006-shock-fitting.md).
+ */
+export const FALLBACK_COLUMN_DENSITY = 1.5;
 
 export interface FittedFlow {
   readonly fit: ShockFit;
@@ -96,6 +121,60 @@ function solvedBody(body: Body): Body {
 
 /** Shortest cylinder solved behind a nose, in calibers. */
 const SOLVED_CYLINDER = 1;
+
+/** A blunt nose's solved body (solvedBluntBody), and its start grid. */
+export interface SolvedBluntBody {
+  readonly body: Body;
+  /** The base grid of the family (the captured start's), on the captured outer boundary. */
+  readonly base: BluntGrid;
+}
+
+/**
+ * The body a blunt nose's fit solves: solvedBody's, its cylinder
+ * lengthened a caliber at a time, by at most MAX_BLUNT_EXTENSION calibers,
+ * until the start grid's neighbouring cells differ in size by no more
+ * than the fitted grids' gate allows. The C grid's lines average the body
+ * normal over a window that closes at the end of the body (keeping the
+ * outflow plane vertical); on a short cylinder at low Mach numbers, where
+ * the outer boundary lies far out, they turn vertical over the last few
+ * cells, which then fan out (docs/design/0006-shock-fitting.md,
+ * "Ellipsoids at low Mach numbers"). If no length passes, the shortest is
+ * solved, and the fitted grid's gates decide. As for solvedBody, the drag
+ * is that of the body asked for wherever the flow leaves its end
+ * supersonically (baseMach).
+ */
+export function solvedBluntBody(asked: Body, options: BluntFamilyOptions): SolvedBluntBody {
+  const steps = solvedBluntSteps(asked, options);
+  for (;;) {
+    const step = steps.next();
+    if (step.done === true) return step.value;
+  }
+}
+
+/** Calibers of cylinder solvedBluntBody may add to solvedBody's. */
+const MAX_BLUNT_EXTENSION = 7;
+
+/** solvedBluntBody, yielding after each length it refuses (a page can return to its event loop). */
+function* solvedBluntSteps(
+  asked: Body,
+  options: BluntFamilyOptions,
+): Generator<void, SolvedBluntBody> {
+  const shortest = solvedBody(asked);
+  const caliber = 2 * asked.nose.baseRadius;
+  let first: SolvedBluntBody | undefined;
+  for (let extra = 0; ; extra++) {
+    const body = { ...shortest, cylinderLength: shortest.cylinderLength + extra * caliber };
+    // Not gated: only the start, the grids solved for the drag are (as
+    // bluntFitFamily's lines).
+    const base = bluntBodyGrid(body, { nj: options.nj, mach: options.mach, gated: false });
+    if (gridQuality(base.grid).maxSizeRatio <= FITTED_QUALITY_LIMITS.maxSizeRatio) {
+      return { body, base };
+    }
+    first ??= { body, base };
+    if (extra === MAX_BLUNT_EXTENSION) return first;
+    yield;
+  }
+}
 
 /** A fitted-shock problem on a body: what the fit needs, on either engine. */
 export interface FitProblem {
@@ -165,7 +244,8 @@ export function wallDrag(
  * the columns either side of it. Only where it exceeds 1 does nothing
  * behind the end reach the body: on a 26.6 deg cone at Mach 1.5, whose
  * conical surface flow is subsonic, the drag with 2 calibers of cylinder
- * behind it is 3.3% below the Taylor-Maccoll value of an endless cone.
+ * behind it is 3.3% below the Taylor-Maccoll value of an endless cone on
+ * 20 cells across, 1.7% on 80, still changing.
  */
 export function baseMach(
   problem: FitProblem,
@@ -191,6 +271,44 @@ export function baseMach(
   while (a + 2 < n && centre(a + 1) <= askedEnd) a++;
   const t = Math.min(Math.max((askedEnd - centre(a)) / (centre(a + 1) - centre(a)), 0), 1);
   return across((j) => (1 - t) * axialMach(cell(a, j)) + t * axialMach(cell(a + 1, j)));
+}
+
+/**
+ * Why the grid a fitted shock settled on is not served, or undefined if it
+ * is: the gates set for fitted grids on measurement (FITTED_QUALITY_LIMITS),
+ * a limit of the grids rather than of the flow.
+ */
+export function fittedGridFailure(grid: StructuredGrid): string | undefined {
+  const failures = qualityFailures(gridQuality(grid), FITTED_QUALITY_LIMITS);
+  return failures.length > 0
+    ? `the grid on the fitted shock fails its quality checks (${failures.join('; ')}): a limit of the present grids, not of the flow`
+    : undefined;
+}
+
+/**
+ * Why the converged flow of a problem is not served, or undefined if it
+ * is: the grid the shock settled on must meet the gates set for fitted
+ * grids on measurement (FITTED_QUALITY_LIMITS), the flow must leave the
+ * grid supersonic, where the outflow condition holds, and nothing behind
+ * the end of the body asked for may reach the body (baseMach). The same
+ * checks on the CPU and the GPU.
+ */
+export function fittedCaseFailure(
+  problem: FitProblem,
+  grid: StructuredGrid,
+  cell: (i: number, j: number) => Primitive2D,
+): string | undefined {
+  const gridFailure = fittedGridFailure(grid);
+  if (gridFailure !== undefined) return gridFailure;
+  const outflow = outflowMach(problem.configFor(grid, []), cell);
+  if (!(outflow > 1)) {
+    return `the flow leaves the grid at an axial Mach number of ${outflow.toFixed(3)}, where the outflow condition does not hold; a longer body behind the nose, or a higher Mach number, is needed`;
+  }
+  const base = baseMach(problem, grid, cell);
+  if (!(base > 1)) {
+    return `the flow at the end of the body is subsonic (axial Mach number ${base.toFixed(3)}), so what lies behind the base could reach the body ahead of it, and the base is not modelled; a longer body behind the nose, or a higher Mach number, is needed`;
+  }
+  return undefined;
 }
 
 export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
@@ -254,7 +372,8 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     return (SHARP_ASPECT * h * b * Math.exp(b / 2)) / (Math.expm1(b) * nj);
   };
   const breakpoints = body.cylinderLength > 0 ? [x0, L, xEnd] : [x0, L];
-  const xs = columnPositions(breakpoints, (x) => 1 / spacing(x), refinement);
+  const density = options.columnDensity ?? 1;
+  const xs = columnPositions(breakpoints, (x) => density / spacing(x), refinement);
   // Each line keeps the node fractions of its first guess as the shock moves.
   const lines = withFixedFractions(
     xs.map((x) => ({ x, y: bodyRadius(body, x), dx: 0, dy: 1, h: guess(x) })),
@@ -271,21 +390,27 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     const [x, y] = midpoint([nodeIndex(first, 0, j), nodeIndex(first, 0, j + 1)]);
     return conical(Math.atan2(y!, x!));
   });
-  // The inflow plane, normal to the axis, imposes all four states, which
-  // holds only where the flow crosses it supersonically. The axial Mach
-  // number of the conical flow is least on the surface: tested there, on
-  // the tip cone itself, so the test does not depend on the grid. Where
-  // the surface flow is subsonic the body behind the tip also reaches it
-  // (the method of characteristics refuses those cases).
+  // The inflow plane, normal to the axis, imposes all four states of the
+  // tip cone's conical flow. The axial Mach number of that flow is least on
+  // the surface: tested there, on the tip cone itself, so the test does not
+  // depend on the grid. Where it exceeds 1 the flow crosses the plane
+  // supersonically. Where it does not, but the surface flow is supersonic
+  // and the nose meets the body tangentially, the drag still converges at
+  // second order, to a value that moving the plane does not change, and a
+  // second, differently laid out family converges to the same value
+  // (measured on a 3-caliber tangent ogive at Mach 1.35, 0006). At a corner
+  // the cells ahead of it converge at an order of about 0.35, and where the
+  // surface flow is subsonic the body behind the tip reaches it, with no
+  // such reference measured yet: both refused.
   const surface = conical(tipAngle);
   const surfaceSound = Math.sqrt((gamma * surface.p) / surface.rho);
   const surfaceMach = Math.hypot(surface.u, surface.v) / surfaceSound;
   const axialMach = surface.u / surfaceSound;
-  if (!(axialMach > 1)) {
+  if (!(axialMach > 1) && (!(surfaceMach > 1) || noseBaseSlope(body.nose) > 0)) {
     const degrees = ((tipAngle * 180) / Math.PI).toFixed(1);
     throw new RangeError(
       surfaceMach > 1
-        ? `at Mach ${mach} the flow behind a tip of ${degrees} deg half-angle crosses the solver's starting plane, normal to the axis, at an axial Mach number of ${axialMach.toFixed(2)} at the surface, below 1, where that plane cannot impose the tip's conical flow; this needs a sharper or longer nose, or a higher Mach number`
+        ? `at Mach ${mach} the flow behind a tip of ${degrees} deg half-angle crosses the solver's starting plane, normal to the axis, at an axial Mach number of ${axialMach.toFixed(2)} at the surface, below 1, which this solver handles only where the nose meets the body without a corner: at a corner the drag converges too slowly to be verified; this needs a sharper or longer nose, a nose tangent to the body, or a higher Mach number`
         : `at Mach ${mach} the flow over a tip of ${degrees} deg half-angle is subsonic at the surface (Mach ${surfaceMach.toFixed(2)}), so the body behind the tip reaches it, which this solver does not handle yet; this needs a sharper or longer nose, or a higher Mach number`,
     );
   }
@@ -332,10 +457,14 @@ export function bluntFitProblem(asked: Body, options: FitProblemOptions): FitPro
 
 /** What starts a family of blunt problems: a captured solution on its base grid. */
 export interface BluntStart {
+  /** The body solved (solvedBluntBody). */
+  readonly body: Body;
   /** The base grid's lines. */
   readonly lines: readonly GridLine[];
   /** The captured shock's heights along them (capturedShockHeights). */
   readonly heights: readonly number[];
+  /** The captured grid, reaching past the shock to the outer boundary. */
+  readonly grid: StructuredGrid;
   /** The captured solution in each cell of the base grid. */
   readonly cell: (i: number, j: number) => Primitive2D;
 }
@@ -345,7 +474,7 @@ export interface BluntStart {
  * CAPTURED_START_STEPS steps from the free stream on the base grid.
  */
 export function bluntStart(asked: Body, options: BluntFamilyOptions): BluntStart {
-  const { solver, start } = bluntCapture(asked, options);
+  const { solver, start } = bluntCapture(solvedBluntBody(asked, options), options);
   solver.iterate(CAPTURED_START_STEPS);
   return start();
 }
@@ -366,7 +495,14 @@ export async function bluntStartInChunks(
     readonly onProgress?: ((steps: number, total: number) => void) | undefined;
   },
 ): Promise<BluntStart> {
-  const { solver, start } = bluntCapture(asked, options);
+  const steps = solvedBluntSteps(asked, options);
+  let step = steps.next();
+  while (step.done !== true) {
+    run.signal?.throwIfAborted();
+    await run.pause();
+    step = steps.next();
+  }
+  const { solver, start } = bluntCapture(step.value, options);
   for (let done = 0; done < CAPTURED_START_STEPS;) {
     run.signal?.throwIfAborted();
     const steps = Math.min(run.chunk, CAPTURED_START_STEPS - done);
@@ -383,13 +519,11 @@ export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'>;
 
 /** The captured-shock problem on a blunt family's base grid, from the free stream. */
 function bluntCapture(
-  asked: Body,
+  { body, base }: SolvedBluntBody,
   options: BluntFamilyOptions,
 ): { solver: Euler2D; start: () => BluntStart } {
-  const body = solvedBody(asked);
-  const { mach, gamma, nj } = options;
+  const { mach, gamma } = options;
   const free = freeStreamAt(mach, gamma).state;
-  const base = bluntBodyGrid(body, { nj, mach });
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   const solver = new Euler2D({
     ...engineConfig(base.grid, gamma, axis, []),
@@ -404,8 +538,10 @@ function bluntCapture(
   return {
     solver,
     start: () => ({
+      body,
       lines: base.lines,
       heights: capturedShockHeights(solver, base.grid, base.lines, free),
+      grid: base.grid,
       cell: (i, j) => solver.primitive(i, j),
     }),
   };
@@ -424,14 +560,16 @@ export function bluntFitFamily(
   options: BluntFamilyOptions,
   start: BluntStart = bluntStart(asked, options),
 ): (refinement: number) => FitProblem {
-  const body = solvedBody(asked);
+  const { body } = start;
   const { mach, gamma, nj: baseNj } = options;
   const R = body.nose.baseRadius;
   const free = freeStreamAt(mach, gamma).state;
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   return (refinement) => {
     const fine =
-      refinement === 1 ? start.lines : bluntBodyGrid(body, { nj: baseNj, refinement, mach }).lines;
+      refinement === 1
+        ? start.lines
+        : bluntBodyGrid(body, { nj: baseNj, refinement, mach, gated: false }).lines;
     const heights = nestedHeights(start.lines, start.heights, fine, refinement);
     const nj = baseNj * refinement;
     // Each line keeps the node fractions of the captured shock's height.
@@ -454,10 +592,52 @@ export function bluntFitFamily(
           axis,
           states.length > 0 ? states : Array.from({ length: g.ni }, () => free),
         ),
-      initial: (i, j) => start.cell(Math.floor(i / refinement), Math.floor(j / refinement)),
+      initial: shockLayerStart(start, lines, refinement),
       firstNode: 'symmetry',
       drag: (wall) => forebodyDrag(wall, mach, gamma, R),
       askedEnd: bodyLength(asked),
+    };
+  };
+}
+
+/**
+ * The captured start in each cell of a fitted grid on `lines`, refined by
+ * `refinement` from the base grid: on the base grid's column, at the same
+ * fraction of the shock layer, linear between the captured cells either
+ * side. The fitted grid ends at the shock and the captured one far beyond
+ * it, so the cell of the same index would lie 1.5 to 1.7 times farther
+ * out, and the outer part of the layer would start in the free stream.
+ */
+function shockLayerStart(
+  start: BluntStart,
+  lines: readonly GridLine[],
+  refinement: number,
+): (i: number, j: number) => Primitive2D {
+  const { grid } = start;
+  // Fraction of the captured shock's height at node (i, j) of the captured grid.
+  const fraction = (i: number, j: number) => {
+    const l = start.lines[i]!;
+    const k = nodeIndex(grid, i, j);
+    return ((grid.x[k]! - l.x) * l.dx + (grid.y[k]! - l.y) * l.dy) / start.heights[i]!;
+  };
+  const centre = (i: number, j: number) =>
+    0.25 * (fraction(i, j) + fraction(i + 1, j) + fraction(i, j + 1) + fraction(i + 1, j + 1));
+  return (i, j) => {
+    const a = lines[i]!.fractions!;
+    const b = lines[i + 1]!.fractions!;
+    const s = 0.25 * (a[j]! + a[j + 1]! + b[j]! + b[j + 1]!);
+    const column = Math.floor(i / refinement);
+    let jj = 0;
+    while (jj < grid.nj - 2 && centre(column, jj + 1) < s) jj++;
+    const c0 = centre(column, jj);
+    const t = Math.min(Math.max((s - c0) / (centre(column, jj + 1) - c0), 0), 1);
+    const p = start.cell(column, jj);
+    const q = start.cell(column, jj + 1);
+    return {
+      rho: p.rho + t * (q.rho - p.rho),
+      u: p.u + t * (q.u - p.u),
+      v: p.v + t * (q.v - p.v),
+      p: p.p + t * (q.p - p.p),
     };
   };
 }
@@ -552,11 +732,21 @@ export interface VerifiedFittedDragOptions {
   /** Fit iterations allowed per grid, times its refinement. */
   readonly iterationsPerRefinement: number;
   readonly onLevel?: (refinement: number, drag: number, fit: ShockFit) => void;
+  /** As VerifiedDragOptions.onFallback (src/analysis/verified-drag.ts). */
+  readonly onFallback?: (refinement: number, reason: string) => void;
 }
 
 export type VerifiedFittedDrag =
-  | (VerifiedValue & { readonly kind: 'solved' })
-  | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string };
+  | (VerifiedValue & {
+      readonly kind: 'solved';
+      /** The column density of the family solved, where not the usual layout's. */
+      readonly columnDensity?: number;
+    })
+  | {
+      readonly kind: 'not-converged' | 'invalid';
+      readonly refinement: number;
+      readonly reason: string;
+    };
 
 /** Base grid cells across, as for the captured-shock grids. */
 const FITTED_BASE_NJ = 20;
@@ -565,7 +755,11 @@ const FITTED_BASE_NJ = 20;
  * The forebody pressure drag with the bow shock fitted, on grids refined
  * by 2 up to the finest allowed, with its measured error band: the
  * procedure of src/analysis/verified-drag.ts with the CPU fitted-shock
- * solver. A grid whose fit does not converge stops the run without a value.
+ * solver. A grid whose fit does not converge, or whose flow the page's
+ * checks refuse (fittedCaseFailure), stops the run without a value, but
+ * for a sharp nose whose grid fails only the quality gates: its whole
+ * family is then solved again with FALLBACK_COLUMN_DENSITY times as many
+ * columns, and refused only if that family is too.
  */
 export async function verifiedFittedDrag(
   body: Body,
@@ -574,8 +768,8 @@ export async function verifiedFittedDrag(
   const blunt = !Number.isFinite(noseTipSlope(body.nose))
     ? bluntFitFamily(body, { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ })
     : null;
-  try {
-    const result = await refineUntilVerified(
+  const family = (columnDensity?: number) =>
+    refineUntilVerified(
       (refinement) => {
         const flowOptions = {
           mach: options.mach,
@@ -583,16 +777,20 @@ export async function verifiedFittedDrag(
           nj: FITTED_BASE_NJ,
           refinement,
           maxIterations: options.iterationsPerRefinement * refinement,
+          ...(columnDensity === undefined ? {} : { columnDensity }),
         };
-        const { fit, drag } = blunt
-          ? fittedFlow(blunt(refinement), flowOptions.maxIterations)
-          : sharpFittedFlow(body, flowOptions);
+        const problem = blunt ? blunt(refinement) : sharpFitProblem(body, flowOptions);
+        const { fit, drag } = fittedFlow(problem, flowOptions.maxIterations);
         if (!fit.converged) {
           throw new FitNotConverged(
             refinement,
             `the fit stopped after ${fit.iterations} iterations with the shock moving at ${fit.maxSpeed.toExponential(1)} of the sound speed and a residual of ${fit.residual.toExponential(1)}`,
           );
         }
+        const gridFailure = fittedGridFailure(fit.grid);
+        if (gridFailure !== undefined) throw new GridRefused(refinement, gridFailure);
+        const failure = fittedCaseFailure(problem, fit.grid, (i, j) => fit.solver.primitive(i, j));
+        if (failure !== undefined) throw new FitRefused(refinement, failure);
         options.onLevel?.(refinement, drag, fit);
         return drag;
       },
@@ -604,8 +802,28 @@ export async function verifiedFittedDrag(
         maxRefinement: options.maxRefinement,
       },
     );
-    return { ...result, kind: 'solved' };
+  try {
+    try {
+      return { ...(await family()), kind: 'solved' };
+    } catch (error) {
+      if (blunt !== null || !(error instanceof GridRefused)) throw error;
+      options.onFallback?.(error.refinement, error.message);
+      try {
+        const result = await family(FALLBACK_COLUMN_DENSITY);
+        return { ...result, kind: 'solved', columnDensity: FALLBACK_COLUMN_DENSITY };
+      } catch (fallbackError) {
+        if (!(fallbackError instanceof FitRefused)) throw fallbackError;
+        throw new FitRefused(
+          fallbackError.refinement,
+          `${fallbackError.message} (with ${FALLBACK_COLUMN_DENSITY} times as many columns, solved because the usual grid at refinement ${error.refinement} fails its quality checks)`,
+        );
+      }
+    }
   } catch (error) {
+    // FitRefused extends FitNotConverged: tested first.
+    if (error instanceof FitRefused) {
+      return { kind: 'invalid', refinement: error.refinement, reason: error.message };
+    }
     if (error instanceof FitNotConverged) {
       return { kind: 'not-converged', refinement: error.refinement, reason: error.message };
     }
@@ -621,3 +839,8 @@ class FitNotConverged extends Error {
     super(reason);
   }
 }
+
+class FitRefused extends FitNotConverged {}
+
+/** A grid that fails only the fitted grids' quality gates (fittedGridFailure). */
+class GridRefused extends FitRefused {}

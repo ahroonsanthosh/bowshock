@@ -1,0 +1,8 @@
+friction      share 0.50  band 0.880 to 1.190  contributes -6.0% to +9.5%
+base          share 0.30  band 0.824 to 1.078  contributes -5.3% to +2.3%
+fins-on-base  share 0.30  band 0.891 to 1.109  contributes -3.3% to +3.3%
+fins own      share 0.15  band 1.010 to 1.587  contributes +0.2% to +8.8%
+nose          share 0.05  band 0.999 to 1.001  contributes -0.0% to +0.0%
+fins-on-base relative half-width (largest over M 1.8 to 3.0): 0.109
+total, measured over modelled - 1, linear sum: -14.4% to +23.9%
+(the fins-on-base term applies only when fins end within a chord of the base; without it: -11.1% to +20.7%)

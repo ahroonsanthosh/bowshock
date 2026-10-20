@@ -1,0 +1,57 @@
+# NACA TN 3819 (Love 1957) fig. 18, PDF p. 49: base pressure coefficient P_B, cylindrical afterbodies, no fins,
+# turbulent, M0 ~ Minf. Revised for draft 0008 (the first reading's curve values were wrong at several Mach numbers:
+# they had picked up symbol outlines and Gabeaud's line; see drag-audit/audit.md H3).
+# Symbols: two independent readings. first = first reading (eye on ruler overlay, +-0.003 in P_B; its Mach numbers
+# came from one linear formula that ignored the 15 px lean of the vertical grid lines, so M is taken from the audit);
+# audit = drag-audit/readings/tn3819_fig18.csv (shear-corrected grid; error per point in that file). They agree
+# within 0.003 in P_B (inside the combined error) at all twelve points. Symbol shape and provisional reference from
+# the audit (assignment by shape, not checked against the legend by this draft).
+# Mach error of the symbols: +-0.02 (largest difference between readings).
+kind,mach,PB_first,PB_audit,shape_provisional
+data,1.503,-0.178,-0.1807,circle (Ref 9)
+data,1.500,-0.152,-0.1522,teardrop (Ref 2)
+data,1.630,-0.165,-0.1630,D (Langley 9 in SST)
+data,1.630,-0.152,-0.1526,arch (Ref 15)
+data,1.935,-0.150,-0.1492,arch (Ref 15)
+data,1.939,-0.143,-0.1410,D (Langley 9 in SST)
+data,2.009,-0.139,-0.1380,teardrop (Ref 2)
+data,2.418,-0.118,-0.1169,D or arch
+data,2.414,-0.115,-0.1135,arch or box
+data,2.681,-0.102,-0.1011,thin diamond (Ref 23)
+data,3.243,-0.095,-0.0926,triangle with tick (Ref 5?)
+data,3.497,-0.083,-0.0819,diamond (Ref 24)
+# Curves: the two near-coincident compiled curves (Chapman's compilation, Love's basic curve), more negative and
+# less negative, at the symbol Mach numbers and round values. Adopted: the audit's table (first reading by the
+# audit). Second reading (this revision): grid model scripts/love18_trace.py (25 horizontal lines, max residual
+# 1.43 px; 39 vertical lines; vacuum-curve residuals +0.0007, -0.0003, -0.0006 at M 3.5, 4.0, 4.5; its curve
+# tracer followed Gabeaud's line above M 2.4 and is not used for values) and robust local fits
+# scripts/love18_ransac.py (data/love18_ransac.json). Which of the 20 values at the ten ratio Mach numbers were
+# read twice (scripts/love18_twice.py, data/love18_twice_output.txt; a fit within 0.0004 counts):
+#   read twice: the less negative curve at M 1.5, 1.63, 1.935, 2.0, 2.414, 2.5, 2.681, 3.0; the more negative
+#   curve at M 1.63, 2.414, 2.5, 2.681; at M 3.243 one fitted line lies within 0.0004 of both curves, which are
+#   only 0.0004 apart (counted once): 13 values.
+#   one reading only: the more negative curve at M 1.5, 1.935, 2.0, 3.0 (the fits found only the less negative
+#   curve there), both curves at M 3.497 (nearest fit 0.0012 away), and one of the pair at M 3.243.
+# The more negative curve sets the low end of each point's ratio, so the low ends at M 1.5, 1.94 and 2.0 rest on
+# one reading. Gabeaud's line where it is near the curves.
+kind,mach,PB_more_negative,PB_less_negative,gabeaud
+curve,1.000,-0.1896,-0.1849,
+curve,1.200,-0.1870,-0.1836,
+curve,1.500,-0.1775,-0.1733,
+curve,1.503,-0.1774,-0.1732,
+curve,1.630,-0.1717,-0.1667,
+curve,1.935,-0.1539,-0.1486,
+curve,1.939,-0.1536,-0.1484,
+curve,2.000,-0.1496,-0.1447,
+curve,2.009,-0.1490,-0.1442,
+curve,2.414,-0.1243,-0.1216,
+curve,2.418,-0.1241,-0.1214,
+curve,2.500,-0.1196,-0.1172,-0.1317
+curve,2.681,-0.1107,-0.1088,-0.1189
+curve,3.000,-0.0978,-0.0964,-0.1002
+curve,3.243,-0.0885,-0.0881,-0.0893
+curve,3.497,-0.0803,-0.0803,-0.0792
+# Free-flight curve (Langley, R 30e6 to 35e6), scripts/love18_ff.py, data/love18_ff_output.txt: peak -0.2070 at
+# M 1.057; -0.1928 to -0.1934 at M 1.15 to 1.16; -0.1976 at M 1.21 to 1.22 (leader line excluded).
+# Data over curve (ratio of base drag), envelope of both readings against both curves: scripts/base_ratios_v3.py,
+# data/base_ratios_v3_output.txt.

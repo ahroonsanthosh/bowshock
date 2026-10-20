@@ -1,0 +1,37 @@
+# ARCAS half-scale models, axial force coefficient at alpha ~ 0 on max cross-section (d = 2.250 in)
+# Sources: NASA TN D-4014 figs 5(a),5(b),6(a),6(b) (PDF pp 25,28,34,37); NASA TN D-4013 figs 11,12 (PDF pp 62,63)
+# All values digitised from scanned plots; see arcas_tn-d-4014_tn-d-4013.md for calibration and procedure.
+# TN D-4014 rows revised for draft 0008: adopted faired-curve values, d4014/tn-d-4014_CA_alpha0_resolved.csv.
+# reading_unc: digitising uncertainty; report_unc: stated accuracy of CA (+-0.004 both reports)
+# quantity: CA_total = axial force incl. base/chamber (TN D-4014); CA_corr = forebody, CA_b = base (TN D-4013)
+report,config,fins,mach,quantity,value,reading_unc,report_unc,re_per_m,transition
+TN D-4014,1,off,1.50,CA_total,0.3460,0.002,0.004,9.84e6,tripped
+TN D-4014,1,off,1.80,CA_total,0.3320,0.002,0.004,9.84e6,tripped
+TN D-4014,1,off,2.30,CA_total,0.2897,0.002,0.004,9.84e6,tripped
+TN D-4014,1,off,2.96,CA_total,0.2390,0.0022 (+0.004 one-sided),0.004,9.84e6,tripped
+TN D-4014,1,on0,1.50,CA_total,0.5343,0.0015,0.004,9.84e6,tripped
+TN D-4014,1,on0,1.80,CA_total,0.4690,0.0015,0.004,9.84e6,tripped
+TN D-4014,1,on0,2.30,CA_total,0.3801,0.0025,0.004,9.84e6,tripped
+TN D-4014,1,on0,2.96,CA_total,0.3048,0.0015 (+0.004 one-sided),0.004,9.84e6,tripped
+TN D-4014,2,off,1.80,CA_total,0.3683,0.0015,0.004,9.84e6,tripped
+TN D-4014,2,off,2.30,CA_total,0.3250,0.0015,0.004,9.84e6,tripped
+TN D-4014,2,off,2.96,CA_total,0.2651,0.0015 (+0.004 one-sided),0.004,9.84e6,tripped
+TN D-4014,2,on0,1.80,CA_total,0.5084,0.0015,0.004,9.84e6,tripped
+TN D-4014,2,on0,2.30,CA_total,0.4124,0.0018,0.004,9.84e6,tripped
+TN D-4014,2,on0,2.96,CA_total,0.3322,0.0015 (+0.004 one-sided),0.004,9.84e6,tripped
+TN D-4013,1,on0,1.00,CA_corr,0.685,0.005,0.004,9.8e6,tripped
+TN D-4013,1,on0,1.00,CA_b,0.015,0.004,0.004,9.8e6,tripped
+TN D-4013,1,off_anchors_on,1.00,CA_corr,0.421,0.008,0.004,9.8e6,tripped
+TN D-4013,1,off_anchors_on,1.00,CA_b,-0.023,0.004,0.004,9.8e6,tripped
+TN D-4013,1,on0,1.20,CA_corr,0.592,0.005,0.004,9.8e6,tripped
+TN D-4013,1,on0,1.20,CA_b,0.043,0.004,0.004,9.8e6,tripped
+TN D-4013,1,off_anchors_on,1.20,CA_corr,0.430,0.005,0.004,9.8e6,tripped
+TN D-4013,1,off_anchors_on,1.20,CA_b,0.026,0.004,0.004,9.8e6,tripped
+TN D-4013,2,on0,1.00,CA_corr,0.728,0.003,0.004,9.8e6,tripped
+TN D-4013,2,on0,1.00,CA_b,0.012,0.003,0.004,9.8e6,tripped
+TN D-4013,2,off_slots_faired,1.00,CA_corr,0.372,0.006,0.004,9.8e6,tripped
+TN D-4013,2,off_slots_faired,1.00,CA_b,-0.029,0.003,0.004,9.8e6,tripped
+TN D-4013,2,on0,1.20,CA_corr,0.624,0.003,0.004,9.8e6,tripped
+TN D-4013,2,on0,1.20,CA_b,0.026,0.003,0.004,9.8e6,tripped
+TN D-4013,2,off_slots_faired,1.20,CA_corr,0.422,0.003,0.004,9.8e6,tripped
+TN D-4013,2,off_slots_faired,1.20,CA_b,-0.043,0.003,0.004,9.8e6,tripped

@@ -58,6 +58,13 @@ export interface VerifiedDragOptions {
    * computed (on the CPU), with its steps so far and in all.
    */
   readonly onStart?: (steps: number, total: number) => void;
+  /**
+   * Called where a sharp nose's usual family of fitted grids fails their
+   * quality gates and the family is solved again with FALLBACK_COLUMN_DENSITY
+   * times as many columns (src/analysis/fitted-flow.ts), with the grid that
+   * failed and why; the levels reported after it are the new family's.
+   */
+  readonly onFallback?: (refinement: number, reason: string) => void;
   /** Stops the run between convergence checks. */
   readonly signal?: AbortSignal;
 }
@@ -70,7 +77,12 @@ export interface LevelReport {
 }
 
 export type VerifiedDrag =
-  | (VerifiedValue & { readonly kind: 'solved'; readonly reports: readonly LevelReport[] })
+  | (VerifiedValue & {
+      readonly kind: 'solved';
+      readonly reports: readonly LevelReport[];
+      /** The column density of the family solved, where not the usual layout's (onFallback). */
+      readonly columnDensity?: number;
+    })
   | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string }
   | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] }
   | { readonly kind: 'invalid'; readonly refinement: number; readonly reason: string };
@@ -81,7 +93,9 @@ export type VerifiedDrag =
  * Mach 1.3 to 5, but at Mach 5 the drag wanders between convergence
  * checks by up to 1.3e-6, from the rounding of pressure recovered from a
  * total energy dominated by kinetic energy (growing with M^2); 2e-6 covers
- * the page's range (docs/design/0005-solution-verification.md).
+ * that range (docs/design/0005-solution-verification.md). Where the
+ * page's fit stops on ellipsoids at Mach 1.2, its drag is up to 3.8e-6 from
+ * the CPU's converged value (0006), a twentieth of FITTED_DRAG_FLOOR.
  */
 export const GPU_NOISE = 2e-6;
 /** Noise of the CPU engine's drag, converged to residuals of 1e-13. */
@@ -108,7 +122,10 @@ export const DRAG_FLOOR = 1e-3;
  * lies at most 3.4e-5 of the value from the reference (the 5-caliber
  * ogive at Mach 2, observed order 2.11); the allowance is about twice
  * that. The cone at Mach 1.3, 5 deg, not settled on nj = 80, settles on
- * nj = 160 within 7.2e-6.
+ * nj = 160 within 7.2e-6. Not covered by it: 10-caliber noses at Mach 1.2
+ * and 1.5, which converge faster than second order, so that the capped
+ * extrapolation misses by 1.3e-4 to 6.0e-4; their bands, placed on the
+ * finest grid's value, still contain its error (by 1.56 to 2.05 times).
  */
 export const FITTED_DRAG_FLOOR = 7e-5;
 /**

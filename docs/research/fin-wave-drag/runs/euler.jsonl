@@ -1,0 +1,12 @@
+{"case":"dw","mach":1.5,"shockExpansion":0.023116991117750195,"exact":true,"firstReflection":2.648560647564706,"ackeret":0.022897336089597847}
+{"case":"dw","level":0,"ni":60,"nj":28,"iterations":1200,"residual":5.856895210900859e-13,"change":1.1102230246251565e-15,"cd":0.022939356888135077,"overSE":-0.007684141448612847,"seconds":9}
+{"case":"dw","mach":1.5,"shockExpansion":0.023116991117750195,"exact":true,"firstReflection":2.648560647564706,"ackeret":0.022897336089597847}
+{"case":"dw","level":1,"ni":120,"nj":56,"iterations":1800,"residual":3.3720568242186594e-13,"change":6.661338147750939e-16,"cd":0.023039170368125073,"overSE":-0.0033663874865343946,"seconds":49}
+{"case":"dw","level":2,"ni":240,"nj":112,"iterations":2800,"residual":1.204922132937289e-13,"change":2.220446049250313e-15,"cd":0.023081013375196094,"overSE":-0.00155633327758109,"seconds":375}
+{"case":"hex","mach":2,"shockExpansion":0.05093649642198832,"exact":false,"firstReflection":0.6977898300454458,"ackeret":0.04926722297084807}
+{"case":"hex","level":0,"ni":60,"nj":28,"iterations":600,"residual":3.6811747143518567e-14,"change":2.4202861936828413e-14,"cd":0.04893286759994591,"overSE":-0.039335819359131996,"seconds":6}
+{"case":"hex","level":1,"ni":120,"nj":56,"iterations":1000,"residual":5.124997029424398e-14,"change":2.220446049250313e-16,"cd":0.05006873937849465,"overSE":-0.01703605674612263,"seconds":41}
+{"case":"hex","level":2,"ni":240,"nj":112,"iterations":1600,"residual":3.6171650513516556e-13,"change":4.5130565951012613e-13,"cd":0.050436024727988624,"overSE":-0.009825404752095368,"seconds":241}
+{"case":"hex","mach":2,"shockExpansion":0.05093649642198832,"exact":false,"firstReflection":0.6977898300454458,"ackeret":0.04926722297084807}
+{"case":"hex","mach":2,"shockExpansion":0.05093649642198832,"exact":false,"firstReflection":0.6977898300454458,"ackeret":0.04926722297084807}
+{"case":"hex","level":3,"ni":480,"nj":224,"iterations":3200,"residual":1.1587134769035392e-13,"change":4.440892098500626e-16,"cd":0.05066741119547916,"overSE":-0.005282758835234547,"seconds":1707}

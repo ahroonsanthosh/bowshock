@@ -2,7 +2,18 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/', 'node_modules/', 'coverage/', 'tests/tmp*/', 'tests/gpu/tmp*'] },
+  {
+    ignores: [
+      'dist/',
+      'node_modules/',
+      'coverage/',
+      'tests/tmp*/',
+      'tests/gpu/tmp*',
+      'docs/research/',
+      // Local agent worktrees (gitignored; ESLint does not read .gitignore).
+      '.claude/',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   {

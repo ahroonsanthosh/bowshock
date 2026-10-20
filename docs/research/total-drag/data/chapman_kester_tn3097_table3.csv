@@ -1,0 +1,10 @@
+# NACA TN 3097 (Chapman and Kester 1954) table III, report p. 33 (PDF p. 34): CF/(CF_i)exp on cylinders, direct force, adiabatic, tripped, Re 4e6-32e6
+# Columns a, b: from data of figs 17(a) and 17(b). Typed from the text layer and checked against the page image.
+mach,ratio_a,ratio_b
+0.51,0.985,0.994
+0.81,0.929,0.924
+1.99,0.745,0.757
+2.49,0.671,0.672
+2.95,0.623,0.630
+3.36,0.578,0.571
+3.60,0.551,0.552

@@ -227,30 +227,35 @@ describe('the error band on measured cone-cylinder families', () => {
 describe('the error band on measured forebody drag families', () => {
   // Forebody pressure drag coefficient on nj = 20, 40, 80 and 160 (CPU,
   // unit-invariant shared reconstruction) and the exact value, measured
-  // when written (docs/design/0005-solution-verification.md).
-  const families: [string, number, number[]][] = [
+  // when written (docs/design/0005-solution-verification.md), and whether
+  // 0005 records a band: on the cones, not on the ogive (orders 2.38 and
+  // 3.58).
+  const families: [string, number, number[], boolean][] = [
     // Taylor-Maccoll: on a cone-cylinder the forebody drag is the cone's Cp.
     [
       'M 2, 15 deg cone',
       0.202247528211,
       [0.202624275335, 0.202253760075, 0.202200780129, 0.202210320794],
+      true,
     ],
     [
       'M 3, 20 deg cone',
       0.284269766415,
       [0.283146976102, 0.283533123407, 0.283840108049, 0.284038574914],
+      true,
     ],
     // Method of characteristics (src/validation/characteristics.ts).
     [
       'M 1.98, TN 3716 ogive',
       0.098803,
       [0.0999981153572, 0.0989748823391, 0.0987781854786, 0.0987617126849],
+      false,
     ],
   ];
 
   it.each(families)(
-    '%s: a band, with the floor, contains the true error',
-    async (_, exact, values) => {
+    '%s: a band where 0005 records one, and with the floor it contains the true error',
+    async (_, exact, values, banded) => {
       for (const noise of [1e-12, GPU_NOISE]) {
         const result = await refineUntilVerified((r) => values[Math.log2(r)]!, {
           orderTolerance: ORDER_TOLERANCE,
@@ -259,6 +264,7 @@ describe('the error band on measured forebody drag families', () => {
           tolerance: Infinity,
           maxRefinement: 8,
         });
+        expect(result.uncertainty !== undefined, `band at noise ${noise}`).toBe(banded);
         if (result.uncertainty !== undefined) {
           expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
         }
@@ -272,7 +278,10 @@ describe('the error band on measured forebody drag families', () => {
       seed = (seed * 16807) % 2147483647;
       return (seed - 1) / 2147483646;
     };
-    for (const [, exact, values] of families) {
+    for (const [name, exact, values, banded] of families) {
+      // Measured when written: every trial of the cones given a band, none
+      // of the ogive.
+      let given = 0;
       for (let trial = 0; trial < 50; trial++) {
         const noisy = values.map((v) => v * (1 + GPU_NOISE * (2 * random() - 1)));
         const result = await refineUntilVerified((r) => noisy[Math.log2(r)]!, {
@@ -283,9 +292,11 @@ describe('the error band on measured forebody drag families', () => {
           maxRefinement: 8,
         });
         if (result.uncertainty !== undefined) {
+          given++;
           expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
         }
       }
+      expect(given, name).toBe(banded ? 50 : 0);
     }
   });
 });
@@ -322,13 +333,17 @@ describe('the error band on a measured fitted-shock drag family', () => {
       seed = (seed * 16807) % 2147483647;
       return (seed - 1) / 2147483646;
     };
+    // Measured when written: all 200 given a band.
+    let given = 0;
     for (let trial = 0; trial < 200; trial++) {
       const noisy = values.map((v) => v * (1 + GPU_NOISE * (2 * random() - 1)));
       const result = await verify(noisy);
       if (result.uncertainty !== undefined) {
+        given++;
         expect(Math.abs(result.estimate.value - exact)).toBeLessThanOrEqual(result.uncertainty);
       }
     }
+    expect(given).toBe(200);
   });
 });
 

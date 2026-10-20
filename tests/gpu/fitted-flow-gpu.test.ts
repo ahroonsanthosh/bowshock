@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
+  FALLBACK_COLUMN_DENSITY,
   bluntFitFamily,
   bluntFitProblem,
   fittedFlow,
@@ -107,6 +108,85 @@ describe('fitted shock on the GPU', () => {
         `refinement ${level.refinement}: GPU ${level.drag}, CPU ${cpu.drag}`,
       ).toBeLessThan(GPU_NOISE);
     }
+  }, 1_800_000);
+
+  it('the page path on an ellipsoid at Mach 1.2: where its fit stops, within 5e-6 of the CPU', async () => {
+    // 1.5 calibers with 1 of body asked (solved with 3: solvedBluntBody).
+    // The CPU's fit of the same problem converged to 1e-12 gives
+    // 0.2474069016; measured when written, the GPU's 0.2474075928 (+2.8e-6),
+    // above the 2e-6 assumed for its noise elsewhere (0006).
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const levels: LevelReport[] = [];
+    const result = await verifiedFittedDragGpu(device, body, {
+      mach: 1.2,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      onLevel: (report) => levels.push(report),
+    });
+    expect(result.kind).toBe('solved');
+    expect(levels).toHaveLength(1);
+    expect(Math.abs(levels[0]!.drag / 0.2474069016 - 1)).toBeLessThan(5e-6);
+  }, 1_800_000);
+
+  it('the page path on a tangent ogive whose tip flow is axially subsonic: the CPU fit within the GPU noise', async () => {
+    // A 3-caliber tangent ogive at Mach 1.35: supersonic surface flow
+    // (Mach 1.04) with a subsonic axial component (0.98), served since the
+    // ogive meets the cylinder without a corner (0006). The CPU's fit of
+    // the page's base grid, converged to 1e-12, gives 0.1081856017.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const levels: LevelReport[] = [];
+    const result = await verifiedFittedDragGpu(device, ogive, {
+      mach: 1.35,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      onLevel: (report) => levels.push(report),
+    });
+    expect(result.kind).toBe('solved');
+    expect(levels).toHaveLength(1);
+    const difference = Math.abs(levels[0]!.drag / 0.1081856017 - 1);
+    expect(difference, `GPU ${levels[0]!.drag}`).toBeLessThan(GPU_NOISE);
+  }, 1_800_000);
+
+  it('the page path solves again with more columns where the usual grid fails the quality gates', async () => {
+    // As on the CPU (tests/analysis/fitted-flow.test.ts): a 3-caliber
+    // tangent ogive with 30 calibers of cylinder at Mach 1.5, whose usual
+    // grid's wall cells at the end of the cylinder are too flat. The CPU's
+    // fit of the grid with 1.5 times the columns, converged to 1e-12,
+    // gives 0.10583491196235459.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 30,
+    };
+    const levels: LevelReport[] = [];
+    const fallbacks: number[] = [];
+    const result = await verifiedFittedDragGpu(device, ogive, {
+      mach: 1.5,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      onLevel: (report) => levels.push(report),
+      onFallback: (refinement) => fallbacks.push(refinement),
+    });
+    expect(fallbacks).toEqual([1]);
+    expect(result.kind).toBe('solved');
+    if (result.kind === 'solved') expect(result.columnDensity).toBe(FALLBACK_COLUMN_DENSITY);
+    expect(levels).toHaveLength(1);
+    const difference = Math.abs(levels[0]!.drag / 0.10583491196235459 - 1);
+    expect(difference, `GPU ${levels[0]!.drag}`).toBeLessThan(GPU_NOISE);
   }, 1_800_000);
 
   it('the page refuses a tip whose flow is subsonic at the surface, with the reason', async () => {
