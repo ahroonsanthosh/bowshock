@@ -14,7 +14,8 @@ the second pending, none using Basic Finner drag data.
 | d4014/grid*.json, curve*.json | Grid-line fits and curve readings behind the two files above |
 | basic_finner_ada636861.md, .csv | Basic Finner in free flight (DREV range): geometry, conditions, accuracy, CX0 per shot (hold-out set) |
 | basic_finner_stats_output.txt | Scatter between Basic Finner shots; 6DOF against linear-theory values |
-| validation_candidates.md | Other candidates opened: RM L55G28a, TN 3320 (RM-10 flight base pressure), TR R-100 survey, TN 3372; sting-free base data |
+| validation_candidates.md | Other candidates opened: RM L55G28a, TN 3320 (RM-10 flight base pressure), TR R-100 survey, TN 3372; sting-free base data; the second hold-out search (ranked candidates, sources not reached) |
+| basic_finner_brl934.md, .csv, basic_finner_brl934_graph2.csv, basic_finner_brl934_output.txt | Basic Finner in free flight (BRL range, BRL Report 934): geometry, launch, the report's boundary-layer statement, Tables I to III per round (read twice), Graph II (read twice), Graph I symbols (read once), Reynolds estimates and domain checks; a candidate second hold-out, no model run |
 | rm-l55g28a_fig5_first_reading.txt | RM L55G28a fig. 5, model 1 CD at M 2.5 to 2.9 (first reading) |
 | tn3320_fig9_first_reading.txt | TN 3320 fig. 9, base-pressure coefficient of the full-scale RM-10 (first reading) |
 | rm-a53d02.md, rm-a53d02_cd.csv | Fin-stabilised L/d 10 body in free flight: geometry, table I, CD digitised (M 1.04 to 3.3) |
@@ -71,6 +72,9 @@ Scripts (in `../scripts/`, Python 3, numpy and Pillow only):
 | chap23b_read.py | TR 1051 fig. 23(b) local grid |
 | tn3320_fig9.py, l55_fig5.py | First readings of TN 3320 fig. 9 and RM L55G28a fig. 5 |
 | ntrs.sh, ntrs2.py | NTRS search |
+| ia_search.py | Internet Archive advanced search (the DTIC mirror) |
+| brl934.py | BRL 934: the two Graph II readings compared, yaw-corrected CD per round, Reynolds number estimates, domain checks; writes basic_finner_brl934_output.txt |
+| brl934_grid_skew.py, brl934_degrid.py, brl934_ruler_crop.py, brl934_graph2_second.py, brl934_f3_measure.py | BRL 934: grid skew, grid-line removal, ruler crops, Graph II second reading, fig. 3 diameter |
 | clean.py, ascii.py, cleanruler.py, xyruler.py, ruler.py, calib.py, near.py, refine_dot.py, dots.py, crop.py | Digitising aids of the first draft |
 
 In the research scratchpad, downloaded PDFs are in `../pdfs/` (`../pdfs/new/` for TN 3320, TN 3372, RM
