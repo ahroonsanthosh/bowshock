@@ -621,17 +621,9 @@ The three decisions this section first asked for (the partition of the
 hobby-class sets, bounded estimates, the Basic Finner's factor) were made
 by the owner on 2026-10-20 and are registered in section 10.
 
-Proposed here, not registered (for the owner):
-
-- A held-back set whose cases need methods committed at different times
-  (the PARD body's totals below Mach 1.2 need W7) could be run once per
-  Mach range fixed in advance (1.0 to 1.2, and 1.2 and above), each range
-  once; under section 10.1 as registered it is run once, when every method
-  all its cases need is committed.
-- BRL 934's one run could also report the present model at the rounds
-  inside its domain (Mach 1.798 to 2.47), beside the rebuilt one, making
-  it a second hold-out of the present class as well; a failure there
-  would refuse that class's claim (0008 section 6.1).
+Two proposals this section then made (runs per Mach range; BRL 934's run
+also testing the present model) were accepted by the coordinator with
+conditions, and are registered in sections 10.5 and 10.6.
 
 For the work:
 
@@ -657,17 +649,19 @@ it concerns are run.
 **Rules.**
 
 1. The free-flight total-drag sets of the table below (the owner's three,
-   and TN 3320 added by this record) are held back as independent tests.
-   No figure, table or value in them sets or
-   shapes a band, chooses a method, or decides between interpretations.
+   and TN 3320, added by this record and accepted by the coordinator) are
+   held back as independent tests. No figure, table or value in them sets
+   or shapes a band, chooses a method, or decides between interpretations.
 2. Component and tunnel data set the bands: the second table, by figure
    or table. A figure not named there sets nothing until a later record
    names it, before it is used.
-3. Each held-back set is run once, after every method its cases need and
-   each method's band are committed. Its result is recorded whatever it
-   is: residuals, passes, failures and refusals alike. It is not run again
-   for the same cases. A failure refuses the configuration it tests and
-   does not widen a band or retune a method (0008 section 6.1).
+3. Each held-back set is run once in each of its Mach ranges (section
+   10.5, fixed now), after every method that range's cases need and each
+   method's band are committed. Its result is recorded whatever it is:
+   residuals, passes, failures and refusals alike. No range is run again
+   for the same cases, and no range is redrawn. A failure refuses the
+   configuration it tests and does not widen a band or retune a method
+   (0008 section 6.1).
 4. A pass is 0010's: every case's measured over modelled within its
    tolerance, built from the model-form band, the input bands and the
    set's own spread as 0010 sections 6.2 and 10.3 build it.
@@ -676,12 +670,12 @@ it concerns are run.
 
 **Held back: the tests.**
 
-| Set                                                                                | Held back (every drag value in these)                                                                                                                                                             | Not held back                                                                                                                                                                                                                                                         |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The Langley PARD standard body                                                     | TN 3697 fig. 5 (six models, Mach 1.0 to 2.1); TN 3650 fig. 4 (the wingless body, Mach 0.7 to 1.6); RM L52E06 figs. 9 to 12 (its totals, the fin-drag increments derived from them, the fore drag) | RM L52E06 figs. 6 to 8 and TN 3372 figs. 7 to 12 (base pressures: band-setting, below); the geometry (TN 3697 figs. 1, 2; RM L52E06 fig. 1 and table I; TN 3372 fig. 1), used only to describe the body; the winged totals of TN 3697 and TN 3650, which are not used |
-| BRL Report 934 (DTIC AD068959)                                                     | Table III, Graphs I and II                                                                                                                                                                        | Table I and the text's geometry, used to describe the models. Transcribed (`docs/research/total-drag/data/basic_finner_brl934.md`), its scatter computed; no model run on it                                                                                          |
-| The Eglin "4-Fin Circular" set (AFRL-MN-EG-TR-2001-7082, DTIC ADA395037)           | Table D-3                                                                                                                                                                                         | fig. 4 (geometry). Opened, not transcribed                                                                                                                                                                                                                            |
-| Added by this record: TN 3320 (the RM-10 in flight, boat-tailed, fins at the base) | every figure: its totals and its base pressures                                                                                                                                                   | Held back whole for W10, so that none of its base pressures sets a term its totals would test. Not one of the owner's three; listed so that it is not used for a band                                                                                                 |
+| Set                                                                                                             | Held back (every drag value in these)                                                                                                                                                             | Not held back                                                                                                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The Langley PARD standard body                                                                                  | TN 3697 fig. 5 (six models, Mach 1.0 to 2.1); TN 3650 fig. 4 (the wingless body, Mach 0.7 to 1.6); RM L52E06 figs. 9 to 12 (its totals, the fin-drag increments derived from them, the fore drag) | RM L52E06 figs. 6 to 8 and TN 3372 figs. 7 to 12 (base pressures: band-setting, below); the geometry (TN 3697 figs. 1, 2; RM L52E06 fig. 1 and table I; TN 3372 fig. 1), used only to describe the body; the winged totals of TN 3697 and TN 3650, which are not used |
+| BRL Report 934 (DTIC AD068959)                                                                                  | Table III, Graphs I and II                                                                                                                                                                        | Table I and the text's geometry, used to describe the models. Transcribed (`docs/research/total-drag/data/basic_finner_brl934.md`), its scatter computed; no model run on it                                                                                          |
+| The Eglin "4-Fin Circular" set (AFRL-MN-EG-TR-2001-7082, DTIC ADA395037)                                        | Table D-3                                                                                                                                                                                         | fig. 4 (geometry). Opened, not transcribed                                                                                                                                                                                                                            |
+| TN 3320 (the RM-10 in flight, boat-tailed, fins at the base): added by this record, accepted by the coordinator | every figure: its totals and its base pressures                                                                                                                                                   | Held back whole for W10, so that none of its base pressures sets a term its totals would test. Not one of the owner's three: added by this record, its holding back accepted by the coordinator on 2026-10-20                                                         |
 
 Where one body appears on both sides: RM L52E06's and TN 3372's base
 pressures (the PARD body, finless and finned, Mach 0.7 to 1.3) set the
@@ -759,6 +753,12 @@ for square-cut leading edges and rounded trailing edges. Defined:
 - Outside the class the rebuilt factor is served once committed, as every
   component is: with its band, labelled estimated on component data, the
   total "an estimate, not validated" until a hold-out of its class passes.
+- BRL 934's run in its range A (sections 10.5, 10.6) also reports the
+  present model at its rounds at Mach 1.798 to 2.47, beside the rebuilt
+  one: a second test of the present claim. If the present model fails
+  there by rule 4 of 10.1, the Basic Finner's validated claim is
+  withdrawn. Accepted by the coordinator on 2026-10-20, on the condition
+  that the inputs BRL 934 does not state are decided first (10.6).
 
 ### 10.4 Readings still owed
 
@@ -776,3 +776,103 @@ Before any of these sets a band or tests anything, each is read twice:
   5(a), 5(b), 5(d), 5(e) and 6; RM A55H31 figs. 9 to 12; TN 3861 figs. 15
   and 16; TN 3548; TR 1386; RM E51F26. And of the held-back sets: TN 3650
   fig. 4, RM L52E06 figs. 9 to 12, the Eglin Table D-3.
+
+### 10.5 Each held-back set's Mach ranges, fixed now
+
+Accepted by the coordinator on 2026-10-20: a held-back set is run once
+in each of the ranges below, each when the methods listed for it are
+committed, so that the partition cannot depend on any result. A case
+belongs to the range that contains its Mach number, the lower end
+included. A range is run when its methods are committed, whatever the
+state of the set's other ranges, and never again.
+
+| Set                                                                              | Range                                      | Run once when these are committed (with their bands)                                                                                                                                                                                 |
+| -------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| The PARD standard body (TN 3697 fig. 5, TN 3650 fig. 4, RM L52E06 figs. 9 to 12) | A: Mach 1.2 and above (the data reach 2.1) | the body's nose solved from its coordinate table (RM L52E06 table I, TN 3697 fig. 1(a)) or refused; W1 (flat plates, swept, at the base); W2 (the base at 1.2 to 1.5); W3 (square trailing edges); W4 (rounded leading edges, swept) |
+|                                                                                  | B: Mach 1.0 to 1.2                         | in addition W7 and the fin terms at Mach 1.0 to 1.2 (W3(d), W4 at subsonic normal Mach numbers, the linear 3D theory near Mach 1). Values below Mach 1.0 are not used                                                                |
+| BRL Report 934                                                                   | A: Mach 1.5 to 2.47                        | W1; the run also reports the present model at 1.798 to 2.47 (10.3, 10.6)                                                                                                                                                             |
+|                                                                                  | B: Mach 1.2 to 1.5                         | W2, with W1's part below Mach 1.5                                                                                                                                                                                                    |
+|                                                                                  | C: Mach 0.98 to 1.2                        | W7 and the components at Mach 1.0 to 1.2                                                                                                                                                                                             |
+| The Eglin "4-Fin Circular" set                                                   | A: Mach 1.5 to 3.0 (shots at 2.25 to 2.34) | W1, and the methods its fins' edges need, those edges decided from evidence without its drag and registered before the run (its fig. 4 does not draw them)                                                                           |
+|                                                                                  | B: Mach 1.2 to 1.5 (shots at 1.42 to 1.47) | W2                                                                                                                                                                                                                                   |
+|                                                                                  | C: above Mach 3.0 (3.08 to 3.42)           | only if a later record extends the bases above Mach 3.0                                                                                                                                                                              |
+| TN 3320 (the RM-10)                                                              | A: Mach 1.2 to 3.0                         | W10; W1 (60 deg swept circular-arc fins at the base)                                                                                                                                                                                 |
+|                                                                                  | B: Mach 1.0 to 1.2                         | W7 and the components at Mach 1.0 to 1.2. Values below Mach 1.0 are not used                                                                                                                                                         |
+|                                                                                  | C: above Mach 3.0 (to 3.3)                 | only if a later record extends the bases above Mach 3.0                                                                                                                                                                              |
+
+### 10.6 BRL Report 934: the inputs it does not state, decided before its run
+
+Accepted by the coordinator on 2026-10-20, on this condition: every input
+the run needs that BRL 934 does not state is decided here from evidence
+other than its drag, each with the rule that would change it before the
+run. The evidence is the transcription
+(`docs/research/total-drag/data/basic_finner_brl934.md`, sections 2, 8
+and 9); its measured drag values were transcribed and their scatter
+computed, but no model value has been computed or looked at, and none of
+the decisions below uses a drag value.
+
+1. **Model diameter: 0.78 to 0.82 in, an input range.** Evidence: Graph
+   IV's legend (centre-of-gravity groups in calibres) against Table I (the
+   same in inches): 0.781 to 0.816 in per calibre over the five groups,
+   rounded outward to 0.01 in. Fig. 3's photograph (0.72 to 0.81 in, with
+   an unknown perspective) does not set it. Both ends are run; the
+   Reynolds-number difference they make is an input band. Rule: a BRL or
+   BuOrd source stating the models' diameter, reached before the run,
+   replaces the range.
+2. **Range air: 288 to 298 K at 1 atm, an input range.** The report prints
+   no air conditions; this is an assumption for an enclosed gallery,
+   stated as one. The Mach numbers are measured, so the air moves only the
+   Reynolds number and the cold-wall input's temperature. Both ends are
+   run, as an input band with the diameter's. Rule: a BRL record of the
+   range air for rounds 2588 to 3264, reached before the run, replaces it.
+3. **Fin leading-edge radius: sharp (no rounded-edge term).** Evidence:
+   the period drawings of the Basic Finner opened, Kermeen (DTIC AD146516
+   fig. 1, PDF p. 11: a sharp wedge "0.080" thick at the base) and NAVORD
+   6652 fig. 1 (NOL's tunnel model, no radius drawn). DREV's 0.004 cal
+   (TM 9703 p. 3) is stated for DREV's own models, not BRL's; on BRL's
+   models of about 20 mm it would be 0.08 mm, below what the shadowgraphs
+   of figs. 7 and 8 resolve, so they cannot decide it. The run reports,
+   beside the verdict, the values with DREV's 0.004 cal edge where the
+   library serves it, as a stated sensitivity; the verdict is the
+   nominal's. Rule: a drawing or statement of BRL's own models (BuOrd
+   Ballistic Technical Note 5, BRL Report 799), reached before the run,
+   decides instead.
+4. **Trailing-edge area: constant thickness, 0.32 cal^2** (0.08 cal over
+   the 1 cal span, each of four fins). Evidence: the same design as DREV's,
+   whose 0.32 cal^2 was decided on DREV's measured mass properties (0010
+   section 4.1); BRL's Table I cannot separate the fins' share of the
+   inertia, its models' construction not being described. The tapered
+   alternative (0.16 cal^2), which the library refuses, is reported beside
+   the verdict as the trailing-edge term halved, a bound by hand, not a
+   verdict. Rule: a drawing of BRL's models, reached before the run,
+   decides instead.
+5. **The transcription's other choices** (its section 9), adopted as
+   proposed there, with its open points decided by these rules, none of
+   which uses a drag value:
+   - _Rounds:_ those in the range's Mach numbers whose mean squared yaw is
+     printed and at most 5 deg^2, and which neither reading of Graph I
+     marks laminar. So 3255 (yaw not printed) is out; 2598 (5.6 deg^2)
+     and 3256 (6.6 deg^2) are out; 3249 is out if both readings mark it
+     laminar; 3264 is used at Table III's values (the primary record),
+     once the independent reading of Table III agrees.
+   - _Zero-yaw value:_ CD0 from Graph II's curve; the text's rounded C_D'
+     reported beside it.
+   - _Transition:_ fully turbulent nominal (the report's own observation
+     for the admitted rounds), with 0008's transition input band and the
+     fins' trailing-edge laminar input as for DREV.
+   - _Wall:_ adiabatic nominal, the cold-wall input at the range air's
+     temperature.
+   - _Nose:_ a sharp 10 deg cone (Taylor-Maccoll).
+   - _Tolerance:_ rule 4 of 10.1, the spread per Mach cluster from the
+     admitted rounds, the diameter and air ranges as input bands.
+   - _Readings:_ the independent reader's second reading of Table III's
+     drag columns, Table II's yaw and Graph I's symbols (the transcription's
+     section 10) is done before the run.
+6. **What the present model's test covers.** BRL's Reynolds numbers
+   (about 0.7 times DREV's: below, or at the top of the diameter and air
+   ranges near, the page's class floor of 1.19e7 on length) and, with
+   sharp edges, its leading-edge radius lie outside the class as the page
+   decides it (0011 section 3). The run therefore tests
+   the claim's configuration at BRL's conditions; by the decision
+   registered in 10.3, a failure of the present model there withdraws the
+   claim all the same.
