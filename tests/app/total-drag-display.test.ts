@@ -20,7 +20,6 @@ import {
   formOf,
   gateDisplay,
   impliedConditionText,
-  NEAR_MACH_3_TEXT,
   NO_WEBGPU,
   noseKeyOf,
   noseStateOf,
@@ -31,6 +30,7 @@ import {
   type TotalDragFields,
 } from '../../src/app/total-drag-display';
 import {
+  ABOVE_THE_CLASS,
   BAND_CAVEAT,
   basicFinnerClass,
   basicFinnerForm,
@@ -115,10 +115,14 @@ describe('the fields as typed', { timeout: 60_000 }, () => {
     expect(overallLengthText(BODY)).toBe('10 calibers');
     // So are the range's Reynolds number and temperature given directly.
     expect(basicFinnerClass(formOf(BODY, 2, DIRECT_FIELDS))).toEqual({ inside: true, outside: [] });
-    // At sea level, 30 mm across, the class's Reynolds numbers hold from Mach 1.799 to 2.86;
-    // above, the Reynolds number leaves it.
-    expect(basicFinnerClass(formOf(BODY, 2.86, DEFAULT_FIELDS)).inside).toBe(true);
+    // At sea level, 30 mm across, the case lies inside the class from Mach 1.799 to 2.15;
+    // above, the Mach number leaves it, and from 2.87 the Reynolds number too.
+    expect(basicFinnerClass(formOf(BODY, 2.15, DEFAULT_FIELDS)).inside).toBe(true);
+    expect(basicFinnerClass(formOf(BODY, 2.86, DEFAULT_FIELDS)).outside).toEqual([
+      `Mach 2.86 is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+    ]);
     expect(basicFinnerClass(formOf(BODY, 2.87, DEFAULT_FIELDS)).outside).toEqual([
+      `Mach 2.87 is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
       'the Reynolds number on length, 2.01e7, is outside 1.19e7 to 2.0e7',
     ]);
   });
@@ -283,16 +287,17 @@ describe('the fields as typed', { timeout: 60_000 }, () => {
       temperature: '250',
       transitionReynolds: '1e6',
     };
-    const fields = basicFinnerFields(2.9, typed);
+    const fields = basicFinnerFields(2.1, typed);
     // The range's air was no standard atmosphere: its conditions are given directly.
     expect(fields.conditionMode).toBe('reynolds');
     expect(fields.diameter).toBe('30');
     expect(fields.altitude).toBe('1500');
-    expect(fields.reynoldsOnLength).toBe('1.92e7');
+    expect(fields.reynoldsOnLength).toBe('1.39e7');
     expect(basicFinnerFields(2, typed).reynoldsOnLength).toBe(DEFAULT_FIELDS.reynoldsOnLength);
+    expect(basicFinnerFields(2.9, typed).reynoldsOnLength).toBe('1.92e7');
     expect(fields.temperature).toBe('293.95');
     expect(fields.transitionReynolds).toBe('1e6');
-    const form = formOf(BODY, 2.9, fields);
+    const form = formOf(BODY, 2.1, fields);
     expect(basicFinnerClass(form)).toEqual({ inside: true, outside: [] });
   });
 });
@@ -398,17 +403,17 @@ describe('the display', { timeout: 60_000 }, () => {
 
   it('a validated total: the headline rounded outward, the claim, every label, the notes', () => {
     const form: TotalDragForm = {
-      ...basicFinnerForm(2.97, 1.97e7),
+      ...basicFinnerForm(1.85, 1.23e7),
       transitionReynolds: GATE_TRANSITION_REYNOLDS,
       wallTemperature: 343.7 ** 2 / (1.4 * 287.05),
     };
     const view = totalDragView(form, exactNose(form));
     if (view.kind !== 'total') throw new Error(view.kind);
     const blocks = totalDragDisplay(view);
-    // The gate's shot DA95022205 (0010 section 4.2): 0.4071 (0.3579 to 0.4786).
+    // The gate's shot DA95021308 (0010 section 4.2): 0.5944 (0.5172 to 0.7039).
     expect(blocks[0]).toEqual({
       kind: 'paragraph',
-      text: 'Total C_D = 0.4071, model-form band 0.3579 to 0.4786 (-12.1% to +17.6%)',
+      text: 'Total C_D = 0.5944, model-form band 0.5172 to 0.7039 (-13.0% to +18.5%)',
       tone: 'ok',
       headline: true,
     });
@@ -424,41 +429,43 @@ describe('the display', { timeout: 60_000 }, () => {
     ]) {
       expect(said.map((b) => b.text)).toContain(text);
     }
-    // Near Mach 3 the offset is set apart.
-    expect(said.find((b) => b.text === OFFSET_CAVEAT)?.tone).toBe('warn');
-    expect(said.find((b) => b.text === NEAR_MACH_3_TEXT)?.tone).toBe('warn');
+    // The offset at Mach 2.97 is stated beside the claim, not set apart: the class stops at
+    // Mach 2.15, below those shots.
+    expect(said.find((b) => b.text === OFFSET_CAVEAT)?.tone).toBe('plain');
     const [inputs, components] = tables(blocks);
     expect(inputs!.rows.map((r) => [r[0], r[2]])).toEqual(
       view.total.inputs.map((i) => [i.name, i.label]),
     );
     expect(inputs!.rows.find((r) => r[0] === 'roughness')![1]).toBe('none');
     // The transition as states of the boundary layer (0010 section 10): the run to 3e6 with
-    // the fins and their trailing edges laminar together, -0.02534, rounded outward.
-    expect(inputs!.rows.find((r) => r[0] === 'transition')![1]).toBe('-0.0254 to 0.0000');
+    // the fins and their trailing edges laminar together, rounded outward.
+    expect(inputs!.rows.find((r) => r[0] === 'transition')![1]).toBe('-0.0448 to 0.0000');
     expect(components!.rows.map((r) => [r[0], r[4], r[5]])).toEqual(
       view.total.components.map((c) => [c.name, c.label, c.band]),
     );
     expect(components!.rows.find((r) => r[0] === 'body base')!.slice(1, 4)).toEqual([
-      '0.1272',
-      '0.0886 to 0.1531',
-      '31%',
+      '0.2077',
+      '0.1484 to 0.2462',
+      '35%',
     ]);
-    expect(blocks).toContainEqual({
-      kind: 'list',
-      items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE, expect.stringContaining('one reading') as string],
-    });
+    expect(blocks).toContainEqual({ kind: 'list', items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE] });
   });
 
-  it('away from Mach 3 the offset is stated, not set apart', () => {
-    const form = basicFinnerForm(2.4);
-    const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
-    const said = paragraphs(blocks).flatMap((b) => (b.kind === 'paragraph' ? [b] : []));
-    expect(said.find((b) => b.text === OFFSET_CAVEAT)?.tone).toBe('plain');
-    expect(said.some((b) => b.text === NEAR_MACH_3_TEXT)).toBe(false);
+  it('inside the class the offset is stated, not set apart: nothing in the claim is', () => {
+    for (const mach of [1.799, 2.0, 2.15]) {
+      const form = basicFinnerForm(mach);
+      const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
+      const box = blocks[1]!;
+      if (box.kind !== 'box') throw new Error('expected the claim');
+      expect(box.tone).toBe('ok');
+      const said = paragraphs(box.blocks).flatMap((b) => (b.kind === 'paragraph' ? [b] : []));
+      expect(said.find((b) => b.text === OFFSET_CAVEAT)?.tone).toBe('plain');
+      expect(said.every((b) => b.tone === 'plain')).toBe(true);
+    }
   });
 
   it('an estimate: said in the headline and the box, with every reason and the tolerance', () => {
-    const form = { ...basicFinnerForm(2.4), trailingEdgeAheadOfBase: 1, leadingEdgeRadius: 0 };
+    const form = { ...basicFinnerForm(2.0), trailingEdgeAheadOfBase: 1, leadingEdgeRadius: 0 };
     const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
     const head = blocks[0]!;
     expect(head.kind === 'paragraph' && head.text.endsWith(': an estimate, not validated')).toBe(
