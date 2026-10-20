@@ -9,6 +9,7 @@
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import { trapezoidalPlanform } from '../../src/fins/planform';
+import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
 import { singleWedge } from '../../src/fins/section';
 import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
@@ -18,13 +19,17 @@ import {
   BASIC_FINNER_GEOMETRY as G,
   BASIC_FINNER_SHOTS,
 } from '../../src/validation/basic-finner';
+import { outward, outwardPercent } from '../../src/app/band';
 import {
   BASIC_FINNER_CLASS,
+  BASIC_FINNER_REYNOLDS_PER_MACH,
   BASIC_FINNER_TEMPERATURE,
   basicFinnerClass,
   basicFinnerForm,
   configurationOf,
   ESTIMATE_CLAIM,
+  FINS_BAND_NOTE,
+  FINS_ON_BASE_NOTE,
   GATE_TRANSITION_REYNOLDS,
   noseComponentOf,
   OFFSET_CAVEAT,
@@ -166,46 +171,71 @@ describe('the class rule', () => {
   });
 
   it(
-    'what the tolerances allow: each dimension at +-0.5% moves the total by under 0.2%',
+    'what the tolerances allow: each dimension at +-0.5% moves the total by under 0.2%, all together under 0.7%',
     { timeout: 120_000 },
     () => {
       const c = BASIC_FINNER_CLASS;
+      // The largest change of the total over the Mach numbers, per dimension.
+      const largest = new Map<string, number>();
       for (const mach of [1.8, 2.4, 3.0]) {
-        const base = basicFinnerForm(mach, 6.63e6 * mach);
+        const base = basicFinnerForm(mach);
         const ref = totalOf(totalDragView(base, exactNose(base))).cd;
         const moved = (form: TotalDragForm) =>
           Math.abs(totalOf(totalDragView(form, exactNose(form))).cd / ref - 1);
-        let largest = 0;
         for (const k of [1 - c.dimensionTolerance, 1 + c.dimensionTolerance]) {
-          for (const form of [
-            {
-              ...base,
-              body: {
-                nose: { ...base.body.nose, length: c.noseLength * k },
-                cylinderLength: c.length - c.noseLength * k,
+          const forms: [string, TotalDragForm][] = [
+            [
+              'cone length',
+              {
+                ...base,
+                body: {
+                  nose: { ...base.body.nose, length: c.noseLength * k },
+                  cylinderLength: c.length - c.noseLength * k,
+                },
               },
-            },
-            { ...base, body: { ...base.body, cylinderLength: c.length * k - c.noseLength } },
-            { ...base, rootChord: k },
-            { ...base, span: k },
-            {
-              ...base,
-              section: { kind: 'single-wedge', trailingEdgeThickness: c.trailingEdgeThickness * k },
-            } as const,
-            { ...base, leadingEdgeRadius: c.leadingEdgeRadius * k },
-            { ...base, temperature: k > 1 ? 295 : 293 },
-          ]) {
+            ],
+            [
+              'overall length',
+              { ...base, body: { ...base.body, cylinderLength: c.length * k - c.noseLength } },
+            ],
+            ['root chord', { ...base, rootChord: k }],
+            ['span', { ...base, span: k }],
+            [
+              'trailing-edge thickness',
+              {
+                ...base,
+                section: {
+                  kind: 'single-wedge',
+                  trailingEdgeThickness: c.trailingEdgeThickness * k,
+                },
+              },
+            ],
+            ['leading-edge radius', { ...base, leadingEdgeRadius: c.leadingEdgeRadius * k }],
+            ['temperature', { ...base, temperature: k > 1 ? 295 : 293 }],
+          ];
+          for (const [name, form] of forms) {
             expect(basicFinnerClass(form).inside).toBe(true);
-            largest = Math.max(largest, moved(form));
+            largest.set(name, Math.max(largest.get(name) ?? 0, moved(form)));
           }
         }
-        expect(largest).toBeLessThan(0.002);
       }
+      const r = (x: number) => Math.round(1e4 * x) / 100;
+      expect(Object.fromEntries([...largest].map(([n, x]) => [n, r(x)]))).toEqual({
+        'cone length': 0.19,
+        'overall length': 0.09,
+        'root chord': 0.01,
+        span: 0.17,
+        'trailing-edge thickness': 0.12,
+        'leading-edge radius': 0.06,
+        temperature: 0,
+      });
+      const sum = [...largest.values()].reduce((a, x) => a + x, 0);
+      expect(sum).toBeLessThan(0.007);
     },
   );
 
   it(
-    "the box's corners: Mach 1.8 at 2.0e7 and Mach 3.0 at 1.19e7 lie 1.7% and 2.1% from the shots' line",
+    "the box's corners: at Mach 1.8 and 2.0e7, and Mach 3.0 and 1.19e7, the model lies 1.6% below and 2.1% above the shots' line",
     { timeout: 60_000 },
     () => {
       // The shots lie near Re = 6.6e6 M on length (one range, one air);
@@ -214,17 +244,80 @@ describe('the class rule', () => {
         const form = basicFinnerForm(mach, re);
         return totalOf(totalDragView(form, exactNose(form))).cd;
       };
-      const low = cd(1.8, 2.0e7) / cd(1.8, 6.63e6 * 1.8) - 1;
-      const high = cd(3.0, 1.19e7) / cd(3.0, 6.63e6 * 3.0) - 1;
-      expect(low).toBeGreaterThan(-0.017);
-      expect(low).toBeLessThan(-0.015);
-      expect(high).toBeGreaterThan(0.019);
-      expect(high).toBeLessThan(0.021);
+      const k = BASIC_FINNER_REYNOLDS_PER_MACH;
+      const low = cd(1.8, 2.0e7) / cd(1.8, k * 1.8) - 1;
+      const high = cd(3.0, 1.19e7) / cd(3.0, k * 3.0) - 1;
+      expect(low).toBeGreaterThan(-0.0165);
+      expect(low).toBeLessThan(-0.0155);
+      expect(high).toBeGreaterThan(0.0195);
+      expect(high).toBeLessThan(0.0215);
       const ratios = gated.map((s) => s.reynolds / s.mach);
-      expect(Math.min(...ratios)).toBeGreaterThan(6.5e6);
-      expect(Math.max(...ratios)).toBeLessThan(6.75e6);
+      expect(Math.min(...ratios)).toBeGreaterThan(6.53e6);
+      expect(Math.max(...ratios)).toBeLessThan(6.72e6);
+      expect(k).toBeCloseTo(6.618e6, -3);
     },
   );
+
+  it(
+    'the air temperature, outside the class from 293 to 295 K: over 216.65 to 320 K the total moves by under 0.2%',
+    { timeout: 60_000 },
+    () => {
+      for (const mach of [1.8, 3.0]) {
+        const base = basicFinnerForm(mach);
+        const ref = totalOf(totalDragView(base, exactNose(base))).cd;
+        for (const temperature of [216.65, 320]) {
+          const form = { ...base, temperature };
+          expect(basicFinnerClass(form).inside).toBe(false);
+          const cd = totalOf(totalDragView(form, exactNose(form))).cd;
+          expect(Math.abs(cd / ref - 1)).toBeLessThan(0.002);
+        }
+      }
+    },
+  );
+});
+
+describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, () => {
+  it('at Mach 1.8 to 3.0, the range Reynolds number, no inputs: validated, its band rounded outward', () => {
+    const shown = [1.8, 2.0, 2.4, 2.75, 2.97, 3.0].map((mach) => {
+      const form = basicFinnerForm(mach);
+      const v = totalDragView(form, exactNose(form));
+      if (v.kind !== 'total') throw new Error(v.kind);
+      expect(v.claim.kind).toBe('validated');
+      const t = v.total;
+      return [
+        t.cd.toFixed(4),
+        outward(t.low, t.high, 4).join(' to '),
+        outwardPercent(t.low / t.cd - 1, t.high / t.cd - 1),
+      ];
+    });
+    expect(shown).toEqual([
+      ['0.6121', '0.5309 to 0.7259', '-13.3% to +18.6%'],
+      ['0.5501', '0.4823 to 0.6493', '-12.4% to +18.1%'],
+      ['0.4768', '0.4193 to 0.5615', '-12.1% to +17.8%'],
+      ['0.4320', '0.3797 to 0.5083', '-12.1% to +17.7%'],
+      ['0.4072', '0.3579 to 0.4786', '-12.1% to +17.6%'],
+      ['0.4040', '0.3554 to 0.4746', '-12.1% to +17.5%'],
+    ]);
+  });
+
+  it('carries the notes the labels do not: the fins one-sided band, the fins-on-base factor', () => {
+    const at = (mach: number) => {
+      const form = basicFinnerForm(mach);
+      const v = totalDragView(form, exactNose(form));
+      if (v.kind !== 'total') throw new Error(v.kind);
+      return v.notes;
+    };
+    expect(at(2.4)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE]);
+    expect(at(1.799).some((n) => n.includes('the M 1.80 row is taken'))).toBe(true);
+    expect(at(2.85).some((n) => n.includes('one reading'))).toBe(false);
+    expect(at(2.88).some((n) => n.includes('one reading'))).toBe(true);
+    expect(at(2.99).some((n) => n.includes('extrapolated'))).toBe(true);
+    // Fins clear of the base take no factor, and no note on it.
+    const clear = { ...basicFinnerForm(2.4), trailingEdgeAheadOfBase: 1 };
+    const v = totalDragView(clear, exactNose(clear));
+    if (v.kind !== 'total') throw new Error(v.kind);
+    expect(v.notes).toEqual([FINS_BAND_NOTE]);
+  });
 });
 
 describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => {
@@ -264,7 +357,8 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       );
       return combineComponents(parts.components, parts.inputs);
     });
-  });
+    // 22 totals with their inputs: seconds each under load.
+  }, 300_000);
 
   it("every number the page shows is the gate's: the total, each band, each component", () => {
     views.forEach((v, k) => {
@@ -524,5 +618,33 @@ describe('refusals: every reason, no number', () => {
     expect(configurationOf({ ...f, roughness: { low: 0.01, high: 0.02, source: 'x' } }).kind).toBe(
       'refused',
     );
+  });
+});
+
+describe('found in the libraries (0011 section 6)', { timeout: 60_000 }, () => {
+  it("the fins-on-base factor does not depend on the fins' size: 0.1 cal of span as 1 cal", () => {
+    const base = (span: number) => {
+      const form = { ...basicFinnerForm(2.4), span };
+      const v = totalDragView(form, exactNose(form));
+      if (v.kind !== 'total') throw new Error(v.kind);
+      expect(v.claim.kind).toBe(span === 1 ? 'validated' : 'estimate');
+      const b = v.total.components.find((c) => c.name === 'body base')!;
+      return [b.cd, b.low, b.high];
+    };
+    expect(base(0.1)).toEqual(base(1));
+  });
+
+  it("a rounded leading edge is 'measured' above TN 2960's Reynolds numbers too (1e5 to 1e6)", () => {
+    const at = (reynoldsOnDiameter: number) =>
+      roundedLeadingEdgeDrag({
+        mach: 2,
+        radius: 0.004,
+        faceAngle: 0.036,
+        tanLeadingEdgeSweep: 0,
+        reynoldsOnDiameter,
+      }).regime;
+    expect(TN2960_RANGE.reynolds).toEqual([1e5, 1e6]);
+    expect(at(5e5)).toBe('measured');
+    expect(at(5e6)).toBe('measured');
   });
 });
