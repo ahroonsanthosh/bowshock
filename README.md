@@ -191,7 +191,8 @@ them; the fitted-drag families are recorded in
   (rectangular, trapezoidal or clipped-delta; single-wedge, double-wedge or
   hexagonal sections). Inside the Basic Finner's class (that rocket as
   transcribed, each dimension within 0.5%, at Mach 1.799 to 3.0, Reynolds
-  number 1.19e7 to 2.0e7 on length, the range's air temperature) the total
+  number 1.19e7 to 2.0e7 on length, static temperature 216.65 to 320 K,
+  over which the modelled total moves by at most 0.21%) the total
   is labelled validated on it, with the tolerance and the offset at Mach
   2.97 beside it; outside it, an estimate, not validated, with every
   reason; where a component's method does not reach (the base outside
@@ -205,9 +206,9 @@ them; the fitted-drag families are recorded in
   (`src/atmosphere/`), whose own tables of temperature, pressure,
   density, speed of sound and viscosity it reproduces at 22 altitudes
   within a unit of their last printed digit (relative differences up to
-  6.9e-5); or as the Reynolds number directly. The Basic Finner's range
-  air (293.95 K) is warmer than the standard atmosphere at or above sea
-  level, so a total asked at such an altitude lies outside its class.
+  6.9e-5); or as the Reynolds number directly. The page opens on the
+  Basic Finner's shape, 30 mm across, at sea level, inside its class from
+  Mach 1.8 to 2.86 (above, its Reynolds number leaves it).
 
 Not yet: viscous flow in the solver; Von Karman (Haack) and power-series
 noses (their tips need grids being designed); Mach numbers below 1.2; a

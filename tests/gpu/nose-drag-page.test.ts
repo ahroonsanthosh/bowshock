@@ -118,7 +118,7 @@ const BODY = {
 } as const;
 
 describe('the drag page: total drag before a nose solve', () => {
-  it("opens on the Basic Finner's shape at sea level, outside the class by its air, with no number", () => {
+  it("opens on the Basic Finner's shape at sea level, inside the class, with no number", () => {
     expect(text('#overall-length')).toBe('10 calibers');
     expect(text('#total-mach')).toBe('2');
     // Asked as altitude and diameter; the Reynolds number and temperature shown, not asked.
@@ -129,8 +129,7 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(text('#implied-temperature')).toBe('288.15 K');
     const out = text('#total-output');
     expect(out).toContain('No total yet: run the solve above');
-    expect(out).toContain('outside the class tested by the Basic Finner');
-    expect(out).toContain("the static temperature, 288.1 K, is outside the range's 293 to 295 K");
+    expect(out).toContain('inside the class tested by the Basic Finner');
     expect(out).not.toContain('C_D =');
     const form = formOf(BODY, 2, pageFields());
     expect(out).toBe(displayText(totalDragDisplay(totalDragView(form, { kind: 'pending' }))));
@@ -168,12 +167,12 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(hidden('#altitude-field') || hidden('#implied-reynolds-field')).toBe(true);
     expect(hidden('#reynolds-field') || hidden('#temperature-field')).toBe(false);
     expect(out).toContain('inside the class tested by the Basic Finner');
-    // Back to meters, as the page opened.
+    // Back to meters, as the page opened: inside the class again, the same words.
     set('#condition-mode', 'altitude-m');
     set('#altitude', '0');
     set('#diameter', '30');
-    await settled(out);
-    expect(text('#implied-reynolds')).toBe('1.40e7');
+    await until(() => text('#implied-reynolds') === '1.40e7', 'the condition shown', 10_000);
+    expect(text('#total-output')).toBe(out);
   });
 
   it('below Mach 1.8 it is refused, with the reason, and no number', async () => {

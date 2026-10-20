@@ -157,9 +157,9 @@ export function parseNumberList(text: string): number[] {
  * The class of 0010 section 7 as the page decides it (0011 section 3):
  * the Basic Finner as transcribed, each dimension within
  * `dimensionTolerance` of its value, at the Mach and Reynolds numbers of
- * 0010 section 7 (widened only to take in the gated shots themselves) and
- * the range's air temperature. Conservative by design: what the gate did
- * not test is outside.
+ * 0010 section 7 (widened only to take in the gated shots themselves), at
+ * static temperatures over which the model's sensitivity is measured.
+ * Conservative by design: what the gate did not test is outside.
  */
 export const BASIC_FINNER_CLASS = {
   /** Relative tolerance on every dimension. */
@@ -176,10 +176,13 @@ export const BASIC_FINNER_CLASS = {
   /** From the lowest gated shot's Reynolds number (1.19e7) to 0010 section 7's 2.0e7. */
   reynoldsOnLength: [Math.min(...gated.map((s) => s.reynolds)), 2.0e7] as const,
   /**
-   * The range's air: Table V's speed of sound, 343.4 to 344.0 m/s, is
-   * 293.4 to 294.5 K; rounded outward to whole kelvin.
+   * 0010 section 7 does not name a static temperature. The shots flew in
+   * the range's air (Table V's speed of sound, 343.4 to 344.0 m/s, is
+   * 293.4 to 294.5 K); from 216.65 K (the standard atmosphere's coldest,
+   * 11 to 20 km') to 320 K the modelled total moves from its value there
+   * by at most `TEMPERATURE_SENSITIVITY` (0011 section 3).
    */
-  temperature: [293, 295] as const,
+  temperature: [216.65, 320] as const,
 } as const;
 
 export interface ClassCheck {
@@ -260,14 +263,26 @@ export function basicFinnerClass(form: TotalDragForm): ClassCheck {
     );
   }
   const t = form.temperature;
-  if (!(t >= c.temperature[0] && t <= c.temperature[1])) {
+  // A relative 1e-12 for the rounding of a temperature computed to an end: the standard
+  // atmosphere's 216.65 K is carried up from sea level as 216.64999999999998.
+  if (!(t >= c.temperature[0] * (1 - 1e-12) && t <= c.temperature[1] * (1 + 1e-12))) {
     out.push(
-      `the static temperature, ${fmt(t)} K, is outside the range's ${c.temperature[0]} to ` +
+      `the static temperature, ${fmt(t)} K, is outside ${c.temperature[0]} to ` +
         `${c.temperature[1]} K`,
     );
   }
   return { inside: out.length === 0, outside: out };
 }
+
+/**
+ * The largest change of the modelled total over the class's static
+ * temperatures, from its value at the range's air, as a fraction: at the
+ * class's Mach numbers 1.8, 2.4 and 3.0 and Reynolds numbers 1.19e7, 1.6e7
+ * and 2.0e7, the largest at Mach 3.0, Re 1.19e7 and 216.65 K
+ * (tests/app/total-drag.test.ts; 0011 section 3).
+ */
+export const TEMPERATURE_SENSITIVITY = 0.0021;
+const sensitivity = `${(100 * TEMPERATURE_SENSITIVITY).toFixed(2)}%`;
 
 /** The class in words, for the page. */
 export const CLASS_DESCRIPTION =
@@ -275,8 +290,9 @@ export const CLASS_DESCRIPTION =
   '20 deg cone (2.836 cal) on a cylinder to a flat base, 10.0 cal overall; four rectangular fins ' +
   'of 1.0 cal root chord and span, their trailing edges at the base; single-wedge sections from a ' +
   '0.004 cal leading-edge radius to a blunt trailing edge 0.08 cal thick; every dimension within ' +
-  '0.5%; Mach 1.799 to 3.0; Reynolds number 1.19e7 to 2.0e7 on length; static temperature 293 ' +
-  'to 295 K; zero incidence, power off.';
+  '0.5%; Mach 1.799 to 3.0; Reynolds number 1.19e7 to 2.0e7 on length; static temperature ' +
+  `216.65 to 320 K (the shots flew at about 294 K; across this span the modelled total moves by ` +
+  `at most ${sensitivity}); zero incidence, power off.`;
 
 // ------------------------------------------------------------- the claims
 
@@ -287,7 +303,9 @@ export const VALIDATED_CLAIM =
   'at Mach 1.80 to 2.97, Reynolds numbers 1.19e7 to 1.98e7 on length; design record 0010, section ' +
   '4.2). Measured over modelled, the 11 residuals were -7.7% to +4.5% (mean -1.9%), inside a ' +
   'tolerance of -19.5% to -26.2% and +23.1% to +27.4% of the modelled total (as re-derived ' +
-  'after an independent audit, section 10).';
+  "after an independent audit, section 10). The shots flew in the range's air, about 294 K; " +
+  'across static temperatures of 216.65 to 320 K the modelled total moves from its value there ' +
+  `by at most ${sensitivity} (design record 0011, section 3).`;
 export const TOLERANCE_CAVEAT =
   'That tolerance is wide: a pass at such a width says little by itself, and the residuals are ' +
   'the finding. The two fin-edge terms, both analogies, carry 24% to 25% of the Basic ' +

@@ -103,21 +103,24 @@ const tables = (blocks: readonly DisplayBlock[]) =>
   blocks.flatMap((b) => (b.kind === 'table' ? [b] : []));
 
 describe('the fields as typed', { timeout: 60_000 }, () => {
-  it("the page opens on the Basic Finner's shape at sea level: outside the class by its air alone", () => {
+  it("the page opens on the Basic Finner's shape, 30 mm across, at sea level: inside the class", () => {
     const form = formOf(BODY, 2, DEFAULT_FIELDS);
-    // The standard atmosphere at sea level is 288.15 K; the range's air was 293.95 K.
+    // The standard atmosphere at sea level: 288.15 K; Re 1.40e7, inside 1.19e7 to 2.0e7.
     expect(form.temperature).toBe(288.15);
     expect(form.reynoldsOnLength).toBeCloseTo(1.3978e7, -3);
-    expect(basicFinnerClass(form)).toEqual({
-      inside: false,
-      outside: ["the static temperature, 288.1 K, is outside the range's 293 to 295 K"],
-    });
+    expect(basicFinnerClass(form)).toEqual({ inside: true, outside: [] });
     expect(form.transitionReynolds).toEqual([]);
     expect(form.wallTemperature).toBeUndefined();
     expect(form.roughness).toBeUndefined();
     expect(overallLengthText(BODY)).toBe('10 calibers');
-    // Given directly, the range's Reynolds number and temperature are inside it.
+    // So are the range's Reynolds number and temperature given directly.
     expect(basicFinnerClass(formOf(BODY, 2, DIRECT_FIELDS))).toEqual({ inside: true, outside: [] });
+    // At sea level, 30 mm across, the class's Reynolds numbers hold from Mach 1.799 to 2.86;
+    // above, the Reynolds number leaves it.
+    expect(basicFinnerClass(formOf(BODY, 2.86, DEFAULT_FIELDS)).inside).toBe(true);
+    expect(basicFinnerClass(formOf(BODY, 2.87, DEFAULT_FIELDS)).outside).toEqual([
+      'the Reynolds number on length, 2.01e7, is outside 1.19e7 to 2.0e7',
+    ]);
   });
 
   it('the flight condition from the altitude, Mach number and diameter, shown read-only beside them', () => {

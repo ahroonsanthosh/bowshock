@@ -15,7 +15,8 @@
   section 9).
 - **Date:** 2026-10-20; the gate's tolerances and the edge labels updated
   the same day for the round 5 audit (0010 section 10), and the flight
-  condition from altitude added (section 9)
+  condition from altitude added and the class's static temperature
+  widened to 216.65 to 320 K (sections 9 and 3)
 - **Inputs:** [0010](0010-base-drag-and-total.md) section 7 (what may be
   claimed), section 4.2 (the gate) and section 10 (the round 5 audit),
   [0008](0008-total-drag.md) sections
@@ -117,28 +118,28 @@ transcribed (`src/validation/basic-finner.ts`), at the conditions the gate
 covered. What the gate did not test is outside. Every condition is listed
 on the page when it fails.
 
-| Condition                 | Inside                                | Why                                                                                                 |
-| ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Nose                      | a cone, 2.836 cal long, within 0.5%   | the 20 deg cone, 0.5 / tan(10 deg); fig. 2's printed 2.84 lies 0.15% from it                        |
-| Overall length            | 10.0 cal, within 0.5%                 | L/d 10                                                                                              |
-| Fins                      | four                                  | 0010 section 7                                                                                      |
-| Planform                  | rectangular: unswept, constant chord  | sweeps zero, or a taper ratio of 1                                                                  |
-| Root chord, span          | 1.0 cal each, within 0.5%             |                                                                                                     |
-| Position                  | trailing edges at the base, exactly   | fins clear of the base may not be claimed                                                           |
-| Section                   | single wedge to a blunt trailing edge | other sections may not be claimed                                                                   |
-| Trailing-edge thickness   | 0.08 cal, within 0.5%                 |                                                                                                     |
-| Leading-edge radius       | 0.004 cal, within 0.5%                | sharp-edged fins may not be claimed                                                                 |
-| Mach number               | 1.799 to 3.0                          | 0010's 1.8 to 3.0, its low end at the lowest gated shot                                             |
-| Reynolds number on length | 1.19e7 to 2.0e7                       | 0010's 1.2e7 to 2.0e7, its low end at the lowest gated shot                                         |
-| Static temperature        | 293 to 295 K                          | the range's air: Table V's speed of sound, 343.4 to 344.0 m/s, is 293.4 to 294.5 K; rounded outward |
+| Condition                 | Inside                                | Why                                                                                                                |
+| ------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Nose                      | a cone, 2.836 cal long, within 0.5%   | the 20 deg cone, 0.5 / tan(10 deg); fig. 2's printed 2.84 lies 0.15% from it                                       |
+| Overall length            | 10.0 cal, within 0.5%                 | L/d 10                                                                                                             |
+| Fins                      | four                                  | 0010 section 7                                                                                                     |
+| Planform                  | rectangular: unswept, constant chord  | sweeps zero, or a taper ratio of 1                                                                                 |
+| Root chord, span          | 1.0 cal each, within 0.5%             |                                                                                                                    |
+| Position                  | trailing edges at the base, exactly   | fins clear of the base may not be claimed                                                                          |
+| Section                   | single wedge to a blunt trailing edge | other sections may not be claimed                                                                                  |
+| Trailing-edge thickness   | 0.08 cal, within 0.5%                 |                                                                                                                    |
+| Leading-edge radius       | 0.004 cal, within 0.5%                | sharp-edged fins may not be claimed                                                                                |
+| Mach number               | 1.799 to 3.0                          | 0010's 1.8 to 3.0, its low end at the lowest gated shot                                                            |
+| Reynolds number on length | 1.19e7 to 2.0e7                       | 0010's 1.2e7 to 2.0e7, its low end at the lowest gated shot                                                        |
+| Static temperature        | 216.65 to 320 K                       | the shots flew at the range's air, about 294 K; across this span the modelled total moves by at most 0.21% (below) |
 
 **The tolerance on dimensions, 0.5%,** is there for typing (2.84 for
 2.836), not for other rockets. What it lets through is measured: at Mach
 1.8, 2.4 and 3.0, each dimension moved to its tolerance moves the modelled
 total by under 0.2% (at most: the cone's length 0.19%, the span 0.17%, the
 trailing-edge thickness 0.12%, the overall length 0.09%, the leading-edge
-radius 0.06%, the chord 0.01%, the temperature at 293 or 295 K under
-0.005%), all of them together at most 0.7% (the sum), against residuals
+radius 0.06%, the chord 0.01%), all of them together at most 0.7% (the
+sum), against residuals
 that spread with standard deviations of 1.6% to 6.3% within a cluster
 (`tests/validation/basic-finner.test.ts`) and a tolerance of about -20% to
 +27%. Discrete features are exact: a cone, four fins, no sweep, the
@@ -154,13 +155,27 @@ class, and the corners are recorded here. Between M 2.97 and 3.0 no shot
 was flown, and there the fins-on-base factor rests on readings
 extrapolated past the drawn line (a note on the page).
 
-**The static temperature** is not in 0010's statement of the class; the
-gate ran at the range's air, and this rule keeps to it. The restriction is
-conservative, not needed by the model: from 216.65 to 320 K the modelled
-total moves by under 0.2% at Mach 1.8 and 3.0. The standard atmosphere is
-inside 293 to 295 K only 746 to 1,054 m below sea level, so a total whose
-condition is asked as an altitude at or above sea level is always outside
-the class, by this condition (section 9).
+**The static temperature** runs from 216.65 to 320 K. The gate's shots
+flew in the range's air, about 294 K (Table V's speed of sound, 343.4 to
+344.0 m/s, is 293.4 to 294.5 K), and this rule first kept to it, 293 to
+295 K. It was widened on 2026-10-20, when the flight condition came to be
+asked as an altitude (section 9), for three reasons. 0010 section 7's
+claim names the Mach number, the geometry and the Reynolds number, not
+the static temperature; the 293 to 295 K limit was this page's own
+conservative addition. And the model's sensitivity to it is measured and
+small: swept from 216.65 K (the standard atmosphere's coldest, 11 to 20
+km') to 320 K in steps of 10 K at Mach 1.8, 2.4 and 3.0, with the
+Reynolds number held at 1.19e7, 1.6e7 and 2.0e7, the modelled total moves
+from its value at the range's air, 293.95 K, by at most 0.21% (at Mach
+3.0, Re 1.19e7 and 216.65 K; 0.19% with Re held at 1.6e7;
+`tests/app/total-drag.test.ts`). It moves monotonically, more at higher
+Mach number and lower Reynolds number: at a given Reynolds number only
+the friction terms read the temperature. Against the residuals, -7.7% to +4.5%, and the
+tolerance, about -20% to +27%, that is small. The claim says so beside
+the label (section 4). The Reynolds number remains the real constraint:
+its limits are unchanged. In the standard atmosphere every altitude from
+4,896 m below sea level to the top served, 51 km', lies inside these
+temperatures.
 
 **Not part of the rule:** the inputs (transition, wall temperature,
 roughness), which move no nominal value and are shown apart; and the
@@ -182,7 +197,10 @@ nose term lies within its own band of the gate's, of order 1e-5 in C_D
   record 0010, section 4.2). Measured over modelled, the 11 residuals were
   -7.7% to +4.5% (mean -1.9%), inside a tolerance of -19.5% to -26.2% and
   +23.1% to +27.4% of the modelled total (as re-derived after an
-  independent audit, section 10)." The tolerance is 0010's as re-derived
+  independent audit, section 10). The shots flew in the range's air,
+  about 294 K; across static temperatures of 216.65 to 320 K the modelled
+  total moves from its value there by at most 0.21% (design record 0011,
+  section 3)." The tolerance is 0010's as re-derived
   after the round 5 audit, which changed the band arithmetic after the
   hold-out was used (the second run's high end was +26.5% to +31.4%; the
   residuals did not change); the published gate table on the page carries
@@ -295,16 +313,17 @@ five shots at Mach 1.06 to 1.33 are refused, as in the gate.
   `tests/app/flight-condition.test.ts`: the standard atmosphere against
   its tables and the flight condition from altitude (section 9); in
   `tests/app/total-drag-display.test.ts`, the page's default (the Basic
-  Finner's shape at sea level, outside the class by its temperature
-  alone), the condition and the values shown beside it, its refusals said
-  once each, the change of unit, and the Basic Finner button giving the
-  range's conditions directly; in `tests/app/total-drag.test.ts`, where
-  the standard atmosphere lies inside the class.
+  Finner's shape at sea level, inside the class to Mach 2.86), the
+  condition and the values shown beside it, its refusals said once each,
+  the change of unit, and the Basic Finner button giving the range's
+  conditions directly; in `tests/app/total-drag.test.ts`, the sweep of the
+  static temperature over the class (section 3) and where the standard
+  atmosphere lies inside it.
 - `tests/gpu/nose-drag-page.test.ts` (headless Chromium, run by
   `npm run test:gpu`): the page opens on the Basic Finner's shape at sea
   level, asked as altitude and diameter, with the Reynolds number and
-  temperature shown, outside the class by its temperature, with no number,
-  and shows exactly the display's blocks for its fields; the altitude in
+  temperature shown, inside the class, with no number, and shows exactly
+  the display's blocks for its fields; the altitude in
   feet, converted, out of range refused, and the Reynolds number directly;
   below Mach 1.8 it is refused with the reason; another nose is outside
   the class with the reason; swept fins are refused with both reasons; the
@@ -315,10 +334,6 @@ five shots at Mach 1.06 to 1.33 are refused, as in the gate.
 
 ## 8. Open
 
-- Whether the class's temperature condition (section 3) should take in
-  the standard atmosphere's air: as written, no total asked as an altitude
-  at or above sea level is labelled validated (section 9). A decision on
-  the claim, not made here.
 - A day off the standard one (a temperature offset, humidity), and
   altitudes above 51 km: for now asked through the Reynolds number
   directly.
@@ -411,18 +426,17 @@ number agree with the tables' own temperature, speed of sound and
 kinematic viscosity within their printing (the Reynolds number within
 6e-5).
 
-**The class.** The Basic Finner's range air was 293.95 K (from its speed
-of sound, 0010 section 4.1), and the class keeps to 293 to 295 K (section
-3). The standard atmosphere is that warm only 746 to 1,054 m below sea
-level (293.95 K at about 890 m below), so a total asked as an altitude at
-or above sea level is always outside the class, its reason the
-temperature, and is labelled an estimate. At sea level the Basic Finner's
-30 mm body gives 6.99e6 per unit Mach number, 5.6% above the range's
-6.62e6. The Basic Finner button therefore gives the range's conditions
-directly, as before: it switches to "Reynolds number directly" with 6.62e6
-times the Mach number (to three figures) and 293.95 K, and sets the
-diameter to 30 mm. The gate's equality tests (section 5) build their
-forms directly and are unchanged. Whether the temperature condition should
-admit the standard atmosphere's air, given that from 216.65 to 320 K the
-modelled total moves by under 0.2% (section 3), is a decision on the
-claim, left open (section 8).
+**The class.** The class takes static temperatures of 216.65 to 320 K
+(section 3, widened from 293 to 295 K when this section was added): in the
+standard atmosphere, every altitude from 4,896 m below sea level to 51 km'.
+Its Reynolds numbers, 1.19e7 to 2.0e7, are unchanged, and are what limits
+a case asked by altitude. At sea level the Basic Finner's 30 mm body gives
+6.99e6 per unit Mach number (5.6% above the range's 6.62e6, its air
+warmer, 293.95 K): inside the class from Mach 1.799 to
+2.86, where its Reynolds number reaches 2.0e7 (at Mach 2.87, 2.01e7).
+So the page opens labelled inside the class at Mach 2 (Re 1.40e7, 288.15
+K). The Basic Finner button gives the range's conditions directly, as
+before: it switches to "Reynolds number directly" with 6.62e6 times the
+Mach number (to three figures) and 293.95 K, and sets the diameter to 30
+mm. The gate's equality tests (section 5) build their forms directly and
+are unchanged.
