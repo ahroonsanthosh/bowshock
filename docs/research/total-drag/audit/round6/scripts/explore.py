@@ -11,7 +11,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from fig import Fig  # noqa: E402
+from fig import from_spec  # noqa: E402
 
 COL = [(255, 0, 0), (0, 160, 0), (0, 0, 255), (200, 0, 200), (0, 160, 160), (220, 120, 0)]
 
@@ -20,9 +20,7 @@ def main():
     spec = json.load(open(sys.argv[1]))
     out = sys.argv[2]
     bx = spec["box"]
-    f = Fig(spec["pdf"], spec["page"], spec["work"], tuple(bx), spec["xsel"], spec["xvals"], spec["ysel"],
-            spec["yvals"], xlog=spec.get("xlog", False), ylog=spec.get("ylog", False),
-            frac_v=spec.get("frac_v", 0.5), frac_h=spec.get("frac_h", 0.5))
+    f = from_spec(spec)
     print("cal", f.cal_report())
     curves = []
     marks = []

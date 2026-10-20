@@ -10,7 +10,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from fig import Fig  # noqa: E402
+from fig import from_spec  # noqa: E402
 import dig  # noqa: E402
 
 
@@ -19,9 +19,7 @@ def main():
     mode = sys.argv[2]
     a, b, st, lo, hi = (int(v) for v in sys.argv[3:8])
     bx = spec["box"]
-    f = Fig(spec["pdf"], spec["page"], spec["work"], tuple(bx), spec["xsel"], spec["xvals"], spec["ysel"],
-            spec["yvals"], xlog=spec.get("xlog", False), ylog=spec.get("ylog", False),
-            frac_v=spec.get("frac_v", 0.5), frac_h=spec.get("frac_h", 0.5))
+    f = from_spec(spec)
     for v in range(a, b + 1, st):
         if mode == "cols":
             X = v - bx[0]

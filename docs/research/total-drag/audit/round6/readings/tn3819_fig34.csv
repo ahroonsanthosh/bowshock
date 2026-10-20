@@ -1,0 +1,25 @@
+figure,series,x,y,err_y,how
+TN 3819 fig. 34,with_fins_curve,1.52,-0.1118,0.0002,curve; n=8
+TN 3819 fig. 34,with_fins_curve,1.55,-0.1109,0.0002,curve; n=8
+TN 3819 fig. 34,with_fins_curve,1.65,-0.1088,0.0002,curve; n=8
+TN 3819 fig. 34,with_fins_curve,1.7,-0.1079,0.0002,curve; n=8
+TN 3819 fig. 34,with_fins_curve,1.75,-0.1074,0.0002,curve; n=7
+TN 3819 fig. 34,with_fins_curve,1.85,-0.1067,0.0002,curve; n=16
+TN 3819 fig. 34,with_fins_curve,1.9,-0.1065,0.0002,curve; n=16
+TN 3819 fig. 34,with_fins_curve,1.95,-0.1063,0.0002,curve; n=16
+TN 3819 fig. 34,without_fins_curve,1.52,-0.0939,0.0002,curve; n=24
+TN 3819 fig. 34,without_fins_curve,1.55,-0.0951,0.0002,curve; n=24
+TN 3819 fig. 34,without_fins_curve,1.65,-0.0963,0.0002,curve; n=23
+TN 3819 fig. 34,without_fins_curve,1.7,-0.0955,0.0002,curve; n=24
+TN 3819 fig. 34,without_fins_curve,1.75,-0.0943,0.0002,curve; n=24
+TN 3819 fig. 34,without_fins_curve,1.85,-0.0930,0.0002,curve; n=24
+TN 3819 fig. 34,without_fins_curve,1.9,-0.0928,0.0002,curve; n=24
+TN 3819 fig. 34,without_fins_curve,1.95,-0.0928,0.0002,curve; n=24
+TN 3819 fig. 34,with_fins_circle_1,1.4907,-0.1131,0.0002,symbol circle 51 px (score 0.81); x err 0.0011
+TN 3819 fig. 34,with_fins_circle_2,1.5911,-0.1093,0.0002,symbol circle 51 px (score 0.90); x err 0.0011
+TN 3819 fig. 34,with_fins_circle_3,1.7805,-0.1083,0.0002,symbol circle 51 px (score 0.85); x err 0.0011
+TN 3819 fig. 34,with_fins_circle_4,1.9803,-0.1066,0.0002,symbol circle 47 px (score 0.78); x err 0.0011
+TN 3819 fig. 34,without_fins_square_1,1.4878,-0.0919,0.0002,symbol square 47 px (score 0.87); x err 0.0011
+TN 3819 fig. 34,without_fins_square_2,1.5892,-0.0961,0.0002,symbol square 47 px (score 0.81); x err 0.0011
+TN 3819 fig. 34,without_fins_square_3,1.7784,-0.0926,0.0002,symbol square 47 px (score 0.94); x err 0.0011
+TN 3819 fig. 34,without_fins_square_4,1.9801,-0.0932,0.0002,symbol square 43 px (score 0.60); x err 0.0011

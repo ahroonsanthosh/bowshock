@@ -1,0 +1,33 @@
+figure,series,x,y,err_y,how
+TN 3819 fig. 33,M1.50_ref26_curve,1,,,not traced
+TN 3819 fig. 33,M1.50_ref26_curve,2,-0.2298,0.0002,curve; n=4
+TN 3819 fig. 33,M1.50_ref26_curve,3,-0.2435,0.0003,curve; n=13
+TN 3819 fig. 33,M1.50_ref26_curve,4,-0.2565,0.0002,curve; n=5
+TN 3819 fig. 33,M1.50_ref26_curve,6,-0.2826,0.0004,curve; n=11
+TN 3819 fig. 33,M1.50_ref26_curve,7,-0.2939,0.0002,curve; n=12
+TN 3819 fig. 33,M1.50_ref26_curve,8,-0.3052,0.0004,curve; n=11
+TN 3819 fig. 33,M1.50_ref26_curve,9,-0.3158,0.0002,curve; n=11
+TN 3819 fig. 33,M2.00_ref26_curve,1,-0.1572,0.0002,curve; n=10
+TN 3819 fig. 33,M2.00_ref26_curve,2,-0.1646,0.0003,curve; n=9
+TN 3819 fig. 33,M2.00_ref26_curve,3,-0.1716,0.0002,curve; n=9
+TN 3819 fig. 33,M2.00_ref26_curve,4,-0.1783,0.0003,curve; n=9
+TN 3819 fig. 33,M2.00_ref26_curve,6,-0.1905,0.0002,curve; n=9
+TN 3819 fig. 33,M2.00_ref26_curve,7,-0.1962,0.0002,curve; n=9
+TN 3819 fig. 33,M2.00_ref26_curve,8,-0.2013,0.0003,curve; n=9
+TN 3819 fig. 33,M2.00_ref26_curve,9,-0.2060,0.0002,curve; n=9
+TN 3819 fig. 33,M2.41_9in_curve,1,-0.1252,0.0002,curve; n=9
+TN 3819 fig. 33,M2.41_9in_curve,2,-0.1302,0.0002,curve; n=9
+TN 3819 fig. 33,M2.41_9in_curve,3,-0.1353,0.0002,curve; n=9
+TN 3819 fig. 33,M2.41_9in_curve,4,-0.1400,0.0002,curve; n=5
+TN 3819 fig. 33,M2.41_9in_curve,6,-0.1488,0.0002,curve; n=8
+TN 3819 fig. 33,M2.41_9in_curve,7,-0.1528,0.0002,curve; n=8
+TN 3819 fig. 33,M2.41_9in_curve,8,-0.1567,0.0002,curve; n=8
+TN 3819 fig. 33,M2.41_9in_curve,9,-0.1602,0.0002,curve; n=5
+TN 3819 fig. 33,M1.50_circle_tc0,0.0335,-0.1947,0.0002,symbol circle 48 px (score 0.90); x err 0.0221
+TN 3819 fig. 33,M1.50_circle_tc5,4.9722,-0.2700,0.0002,symbol circle 52 px (score 0.69); x err 0.0221
+TN 3819 fig. 33,M1.50_circle_tc10,9.9708,-0.3252,0.0002,symbol circle 50 px (score 0.71); x err 0.0221
+TN 3819 fig. 33,M2.00_square_tc0,0.0698,-0.1505,0.0002,symbol square 46 px (score 0.78); x err 0.0221
+TN 3819 fig. 33,M2.00_square_tc5,4.9929,-0.1850,0.0002,symbol square 46 px (score 0.82); x err 0.0221
+TN 3819 fig. 33,M2.00_square_tc10,9.9668,-0.2091,0.0002,symbol square 48 px (score 0.77); x err 0.0221
+TN 3819 fig. 33,M2.41_diamond_tc0,0.0505,-0.1211,0.0003,symbol diamond 62 px (score 0.97); x err 0.0304; on the frame corner
+TN 3819 fig. 33,M2.41_diamond_tc10,10.0212,-0.1649,0.0002,symbol diamond 62 px (score 0.77); x err 0.0221

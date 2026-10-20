@@ -1,0 +1,24 @@
+{"figure": "TN 3819 fig. 35", "ntrs": "19930084517", "page": 66,
+ "box": [1040, 640, 4920, 3580], "thr": 0.7,
+ "xsel": "all", "xvals": [1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4],
+ "ysel": "all", "yvals": [-0.36,-0.34,-0.32,-0.30,-0.28,-0.26,-0.24,-0.22,-0.20,-0.18,-0.16,-0.14,-0.12,-0.10,-0.08,-0.06,-0.04,-0.02,0.0],
+ "curves": [
+  {"name": "free_flight",
+   "segs": [{"seed": [1190, 1233], "lo": 1084, "hi": 2200, "xmax": 1.72},
+            {"orient": "rows", "seed": [2306, 1600], "lo": 1470, "hi": 2080, "xmin": 1.72, "xmax": 2.04, "max_jump": 4},
+            {"seed": [2700, 2068], "lo": 2680, "hi": 3330, "xmin": 2.04, "xmax": 2.40, "max_jump": 3, "gap_slack": 0.05},
+            {"seed": [3650, 2492], "lo": 3300, "hi": 4250, "xmin": 2.40}],
+   "at": [1.0,1.05,1.1,1.15,1.2,1.25,1.3,1.35,1.4,1.45,1.5,1.55,1.6,1.65,1.7,1.75,1.8,1.85,1.9,1.95,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0],
+   "extra": [[1.64, 1.76, 0.002], [2.04, 2.4, 0.003]]},
+  {"name": "no_fins_estimate", "segs": [{"seed": [3650, 2672], "lo": 1084, "hi": 4880}],
+   "at": [1.0,1.2,1.4,1.5,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2,3.4]}
+ ],
+ "symbols": [
+  {"name": "ref26_circle_with_fins", "at": [1888, 960], "r": 17, "shape": "circle"},
+  {"name": "ref26_circle_no_fins_flagged", "at": [1880, 1992], "r": 17, "shape": "circle", "note": "flag excluded by the template"},
+  {"name": "ref26_square_with_fins", "at": [2664, 1896], "r": 17, "shape": "square"},
+  {"name": "ref26_square_no_fins_flagged", "at": [2656, 2348], "r": 17, "shape": "square", "note": "flag excluded by the template"},
+  {"name": "9in_diamond_with_fins", "at": [3296, 2244], "r": 22, "shape": "diamond"},
+  {"name": "9in_diamond_no_fins_flagged", "at": [3304, 2592], "r": 22, "shape": "diamond", "touch": true, "note": "on the no-fins curve; flag excluded"}
+ ],
+ "scale": 0.3}

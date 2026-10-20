@@ -247,7 +247,19 @@ def grid_from_box(m, frac_v=0.5, frac_h=0.5, min_sep=8, half=6, nslab=8):
     hs = find_lines(m, "h", frac_h, min_sep, skew=bh)
     vf = [fit_line(m, "v", c, half=half, nslab=nslab, frac=frac_v * 0.6, skew=bv) for c, w in vs]
     hf = [fit_line(m, "h", c, half=half, nslab=nslab, frac=frac_h * 0.6, skew=bh) for c, w in hs]
-    return vf, hf
+    return dedupe(vf, m.shape[0]), dedupe(hf, m.shape[1])
+
+
+def dedupe(lines, L, tol=6.0):
+    """Drop fitted lines that coincide (within tol px at mid-extent) with a
+    better-fitting one (a thick line can be found twice)."""
+    mid = L / 2.0
+    keep = []
+    for ln in sorted(lines, key=lambda q: (q[2] if np.isfinite(q[2]) else 1e9)):
+        p = ln[0] + ln[1] * mid
+        if all(abs(p - (k[0] + k[1] * mid)) > tol for k in keep):
+            keep.append(ln)
+    return sorted(keep, key=lambda q: q[0])
 
 
 def remove_lines(m, vf, hf, thick=None, slack=1.5):

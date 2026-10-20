@@ -29,7 +29,7 @@ class Fig:
         self.box = box
         self.a = dig.load(self.png, box)
         self.m = dig.dark(self.a, thr)
-        self.vf, self.hf = dig.grid_from_box(self.m, frac_v, frac_h, half=half)
+        self.vf, self.hf = dig.grid_from_box(dig.dark(self.a, 0.55), frac_v, frac_h, half=half)
         self.vf += [tuple(v) for v in extra_v]
         self.hf += [tuple(h) for h in extra_h]
         vsort = sorted(self.vf, key=lambda L: L[0])
@@ -128,8 +128,11 @@ class Fig:
 
     # -------- symbols
     def symbol(self, X0, Y0, r, shape="circle", search=20, stroke=None, mask=None):
-        """Locate a symbol of half-size r (px) near local (X0, Y0) by template
-        correlation, then take its bounding box within the template's extent.
+        """Locate a symbol near local (X0, Y0) by outline-template correlation,
+        trying half-sizes r-7..r+7 px and keeping the best; the centre is the
+        template's (sub-pixel) peak, which for these symmetric outlines is
+        the bounding-box centre (circles, squares, diamonds) and, for the
+        triangle template, the point one third of the height above the base.
         shape: circle, square, diamond (bbox centre), triangle (apex up) or
         triangle_down: centre at one third of the height from the base.
         Returns dict with X, Y (local px), x, y (data), bbox, score."""
@@ -143,41 +146,33 @@ class Fig:
             tpl = tri_template(r, t, down=(shape == "triangle_down"))
         else:
             tpl = dig.ring_template(r, t, shape)
-        sc = dig.correlate(sub, tpl)
-        # restrict to the search window
         cy, cx = int(Y0) - y0, int(X0) - x0
-        win = np.zeros_like(sc, dtype=bool)
-        win[max(0, cy - search):cy + search + 1, max(0, cx - search):cx + search + 1] = True
-        sc2 = np.where(win, sc, -1)
-        iy, ix = np.unravel_index(np.argmax(sc2), sc2.shape)
-        score = float(sc2[iy, ix])
-        # refine: bounding box of dark pixels on the template ring (dilated)
-        Rt = tpl.shape[0] // 2
-        yy, xx = np.mgrid[-Rt:Rt + 1, -Rt:Rt + 1]
-        ring = dilate(tpl, 2)
-        py0, px0 = iy - Rt, ix - Rt
-        ok = []
-        for (dy, dx) in zip(yy[ring], xx[ring]):
-            Y = iy + dy
-            X = ix + dx
-            if 0 <= Y < sub.shape[0] and 0 <= X < sub.shape[1] and sub[Y, X]:
-                ok.append((Y, X))
-        if not ok:
-            return None
-        oy = np.array([o[0] for o in ok])
-        ox = np.array([o[1] for o in ok])
-        bx0, bx1 = ox.min(), ox.max()
-        by0, by1 = oy.min(), oy.max()
-        Xc = 0.5 * (bx0 + bx1) + x0
-        if shape == "triangle":
-            Yc = by1 - (by1 - by0) / 3.0 + y0
-        elif shape == "triangle_down":
-            Yc = by0 + (by1 - by0) / 3.0 + y0
-        else:
-            Yc = 0.5 * (by0 + by1) + y0
+        best = None
+        for rr in np.arange(max(4.0, r - 7), r + 7.5, 1.0):
+            if shape in ("triangle", "triangle_down"):
+                tpl = tri_template(rr, t, down=(shape == "triangle_down"))
+            else:
+                tpl = dig.ring_template(rr, t, shape)
+            sc = dig.correlate(sub, tpl)
+            win = np.full(sc.shape, -1.0)
+            ys0, xs0 = max(0, cy - search), max(0, cx - search)
+            win[ys0:cy + search + 1, xs0:cx + search + 1] = sc[ys0:cy + search + 1, xs0:cx + search + 1]
+            iy, ix = np.unravel_index(np.argmax(win), win.shape)
+            score = float(win[iy, ix])
+            if best is None or score > best[0] + 0.02:
+                best = (score, rr, iy, ix, sc)
+        score, rr, iy, ix, sc = best
+        # sub-pixel peak (parabola through the neighbours on each axis)
+        def para(a, b, c):
+            d = a - 2 * b + c
+            return 0.0 if d >= 0 else 0.5 * (a - c) / d
+        fx = para(sc[iy, ix - 1], sc[iy, ix], sc[iy, ix + 1]) if 0 < ix < sc.shape[1] - 1 else 0.0
+        fy = para(sc[iy - 1, ix], sc[iy, ix], sc[iy + 1, ix]) if 0 < iy < sc.shape[0] - 1 else 0.0
+        Xc = ix + fx + x0
+        Yc = iy + fy + y0
         x, y = self.data(Xc, Yc)
-        return dict(X=float(Xc), Y=float(Yc), x=x, y=y, w=int(bx1 - bx0 + 1), h=int(by1 - by0 + 1),
-                    tx=float(ix + x0), ty=float(iy + y0), score=score)
+        size = int(round(2 * rr + t))
+        return dict(X=float(Xc), Y=float(Yc), x=x, y=y, w=size, h=size, r=float(rr), score=score)
 
     def overlay(self, path, marks=(), scale=0.35, box=None, curves=()):
         """marks: (X, Y, colour, radius) local px; curves: list of (pts, colour)."""
@@ -193,6 +188,25 @@ class Fig:
                 if abs(q[0] - p[0]) <= 3:
                     ls.append(((p[0] - ox, p[1] - oy, q[0] - ox, q[1] - oy), c))
         return dig.save_view(a, path, scale=scale, marks=ms, lines=ls)
+
+
+SCRATCH = "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/r6b"
+
+
+def from_spec(spec):
+    """spec["ntrs"]: NTRS citation id; the PDF is read from <dl>/<id>/<id>.pdf
+    and pages rendered into <work>/<id> (R6_DL, R6_WORK, defaulting to the
+    reader's scratch directories)."""
+    bx = spec["box"]
+    if "ntrs" in spec:
+        dl = os.environ.get("R6_DL", SCRATCH + "/dl")
+        wk = os.environ.get("R6_WORK", SCRATCH + "/work")
+        spec["pdf"] = f"{dl}/{spec['ntrs']}/{spec['ntrs']}.pdf"
+        spec["work"] = f"{wk}/{spec['ntrs']}"
+    return Fig(spec["pdf"], spec["page"], spec["work"], tuple(bx), spec["xsel"], spec["xvals"], spec["ysel"],
+               spec["yvals"], xlog=spec.get("xlog", False), ylog=spec.get("ylog", False),
+               frac_v=spec.get("frac_v", 0.5), frac_h=spec.get("frac_h", 0.5), thr=spec.get("thr", 0.55),
+               name=spec.get("name", ""))
 
 
 def dilate(b, k):
