@@ -12,8 +12,11 @@ on the cases of 0014's population run.
 ## The rules this work followed
 
 - No held-back set was opened (TN 3697 fig. 5, TN 3650 fig. 4, RM L52E06
-  figs. 9 to 12, BRL Report 934, the Eglin set, TN 3320), and nothing in
-  `docs/research/total-drag/audit/round6/` was looked for or opened.
+  figs. 9 to 12, BRL Report 934, the Eglin set, TN 3320). Nothing in
+  `docs/research/total-drag/audit/round6/` was opened until the
+  coordinator released its readings for pairing with W1 (after this
+  note's first version, 10beeff); round 6's values quoted in section 2
+  (RM L52E06 fig. 8, TN 3819 fig. 35) were added then.
   For RM L52E06's fin geometry a keyword search of the text of its first
   six PDF pages was made; it showed the opening line of the drag section
   (which figure holds which data, no values), where reading stopped. Its
@@ -219,10 +222,10 @@ W3, W4 and W5 are done. Nothing changes from M 1.5 to 1.8 or below.
 | TN 3819 fig. 18, the compiled curves        | Love's basic curve at M 1.0, 1.2, 1.4: -0.1849, -0.1836, -0.1796 (one reading, `src/base/tn3819-fig18.ts`); Chapman's within 0.005                                                                                                                                            |
 | TN 3819 fig. 18, the free-flight curve      | Langley, R 30e6 to 35e6, M 1.0 to 1.26: 1.03 to 1.12 times the basic curve (0008's reading, `love18_ff_output.txt`)                                                                                                                                                           |
 | TN 3819 fig. 18, tunnel symbols             | none below M 1.50 (the twelve run from 1.50 to 3.50); at M 1.50, 0.88 and 1.04 times the curve                                                                                                                                                                                |
-| RM L52E06 fig. 8 (finless body A, free flight) | C_DB about 0.24 at M 1.045 (1.30 times the curve) and 0.224 at M 1.1 to 1.28 (1.22 to 1.23); by eye from a 300 dpi render                                                                                                                                                 |
+| RM L52E06 fig. 8 (finless body A, free flight) | C_DB 0.2396 at M 1.05 (1.298 times the curve), 0.2260 at 1.1, 0.2197 to 0.2228 at 1.15 to 1.28 (1.21 to 1.23), +-0.0005: round 6's blind reading (5531c84), the only one; by eye here 0.24 and 0.224, agreeing                                                                                                                                                 |
 | RM L52E06 fig. 6                            | A rear sting cuts the rim suction by about 40% below M 1.0 and has little effect above 1.15: tunnel points near M 1.0 read low                                                                                                                                                |
 | RM L52E06 fig. 7                            | rim and centre of A, and of C (the same body with four flat plates at the base, leading edges swept 45 deg, 0.091 in thick): C over A 0.852 to 0.882 at the rim and 0.982 at the centre, M 1.06 to 1.10 (W1's reading), the lowest relief 0.838 with its errors                 |
-| TN 3819 fig. 35, the free-flight line       | four unswept 10% arcs at the base: P_B -0.2844, -0.2751, -0.2705, -0.2678, -0.2661 at M 1.1 to 1.5 (round 3; one reading below 1.4), so F over the basic curve 1.544, 1.498, 1.490, 1.491, 1.536                                                                             |
+| TN 3819 fig. 35, the free-flight line       | four unswept 10% arcs at the base: P_B -0.2844, -0.2751, -0.2705, -0.2678, -0.2661 at M 1.1 to 1.5 (round 3) and -0.2840, -0.2750, -0.2703, -0.2675, -0.2659 (round 6, blind, from M 1.0), so F over the basic curve 1.544, 1.498, 1.490, 1.491, 1.536 and within 0.004 of those                                                                             |
 | TN 3372 figs. 7 to 12                       | the finned PARD bodies (flat plates; closed base A, rocket chambers B and C, boat-tail D for W10), M 0.65 to 1.15: the same flights as RM L52E06's C for A; no finless body                                                                                                 |
 
 Not used: TR R-100 (totals only); BRL 934 (range B is W2's hold-out, not
@@ -238,21 +241,21 @@ base, M 1.0 to 1.5:
 
 - **Value:** Love's basic curve continued (the rows at M 1.0, 1.2, 1.4
   and 1.5), linear in M as above 1.5, so the term is continuous at M 1.5.
-- **Band on the term: 0.82 to 1.33 times the curve** at M 1.0 to 1.5.
+- **Band on the term: 0.82 to 1.31 times the curve** at M 1.0 to 1.5.
   High end: the largest free-flight datum over the curve below M 1.5 (RM
-  L52E06's A at M 1.045, about 1.30) plus its reading error, to be fixed
-  by the two readings; carried across M 1.3 to 1.5, where no free-flight
+  L52E06's A at M 1.05, 1.298 on round 6's reading) plus its reading
+  error, 1.301, rounded outward; to be fixed by the second reading; carried across M 1.3 to 1.5, where no free-flight
   data were found, as the envelope of both sides (0014's W2 item). Low
   end: no finless datum below the curve was found under M 1.5 (the tunnel
   symbols at M 1.50 reach 0.88); 0.82, the band-setting low end of M 1.5
-  to 3.0, is carried down. The band steps at M 1.5 from 1.33 to 1.08 at
+  to 3.0, is carried down. The band steps at M 1.5 from 1.31 to 1.08 at
   its high end: below, free-flight data set it; above, none were found.
 - **Nominal:** the curve, as 0008 serves it. Every free-flight datum below
   M 1.5 lies above it (1.03 to 1.30), so the band is lopsided; serving the
   band's midpoint (1.075 times the curve) instead is the owner's choice,
   and would make the term step at M 1.5.
 - **Label:** "correlation: compiled base-pressure curve of TN 3819 fig. 18
-  (Love) continued below Mach 1.5, band 0.82 to 1.33 set on free-flight
+  (Love) continued below Mach 1.5, band 0.82 to 1.31 set on free-flight
   data at Mach 1.0 to 1.3 (TN 3819 fig. 18, RM L52E06), carried to 1.5".
   The half-width, about +-25% of the term, is of the order 0014 planned
   (0.85 to 1.3).
@@ -261,8 +264,8 @@ base, M 1.0 to 1.5:
 
 - **Reference member** (four fins t/c 0.10 at the base): fig. 35's
   free-flight line over the basic curve, low end the line less its error,
-  high end the line plus 0.193, the largest tunnel excess over the line
-  (TN 2360 at M 1.5), carried as W1 carries it beyond M 2.41: F about 1.48
+  high end the line plus 0.194, the largest tunnel excess over the line
+  (W1's, after round 6), carried as W1 carries it beyond M 2.41: F about 1.48
   to 1.74 at M 1.1 to 1.5. The line starts at M 1.1 as read (round 3); M
   1.0 to 1.1 stays refused.
 - **Zero member:** from 1 down to 0.838, the lowest relief measured with
@@ -279,14 +282,14 @@ base, M 1.0 to 1.5:
   Proposed (2b): unswept fins, and swept flat plates (45 to 60 deg as
   above M 1.5); swept fins of other sections refused. (2c), not
   recommended: every section at 45 to 60 deg, citing the RM-10 at M 1.49.
-- **Band on the term:** the factor's band and the curve's 0.82 to 1.33
+- **Band on the term:** the factor's band and the curve's 0.82 to 1.31
   add linearly, as above M 1.5 (0010 section 1.4). For fins at the base
   this counts the free-flight excess twice, since fig. 35's line is
   itself a free-flight measurement over the curve; it is the conservative
   reading of the present composition, and narrowing it is a method change
   for the owner. Example: a 2.4% flat plate, four fins, at M 1.2: F 0.838
   to 1.692, nominal 1.265, the term 0.232 with a band of about 0.11 to
-  0.39 in C_D on the base area.
+  0.38 in C_D on the base area.
 
 ### 2.4 Coverage (`out/w1b-w2-probe.out`)
 
@@ -315,5 +318,5 @@ after W1 to W5 and W2 with every base refusal lifted; (2b) reaches 6.3%,
 | NSWCDD/TR-92/509 Table 2, alpha 0 rows                             | this transcription                                   | a blind second transcription; registration first |
 | TN 3819 fig. 18, rows at M 1.0, 1.2, 1.4                           | one (round 1)                                        | a second (0014 section 10.4) |
 | TN 3819 fig. 18, the free-flight curve                             | one (0008)                                           | a second |
-| RM L52E06 fig. 8, body A (and fig. 7's A, for the rim and centre)  | none (by eye here)                                   | two |
-| TN 3819 fig. 35's free-flight line, M 1.1 to 1.4                   | one (round 3)                                        | a second (the round-6 reader may hold it: not looked at) |
+| RM L52E06 fig. 8, body A (and fig. 7's A, for the rim and centre)  | one (round 6, blind; fig. 7's A has two, W1's and round 6's) | a second of fig. 8 |
+| TN 3819 fig. 35's free-flight line, M 1.1 to 1.4                   | two (round 3, round 6), agreeing within 0.0004       | none |
