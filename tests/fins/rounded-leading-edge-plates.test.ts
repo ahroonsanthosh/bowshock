@@ -4,7 +4,9 @@
  * W4): the new readings held to their data file, TN 2960's other front
  * sides and what they show, the yawed-cylinder checks and the sweep
  * allowance recomputed from them, the plate's nose, the swept term and its
- * band, and the refusal of normal Mach numbers below 1.49 with its reasons.
+ * band, and the refusal of normal Mach numbers below 1.49 with its reasons
+ * where the plate flag is not passed (plates from M_n 1.0:
+ * rounded-leading-edge-transonic.test.ts).
  */
 
 import { readFileSync } from 'node:fs';
@@ -218,7 +220,7 @@ describe('the nose term on flat and swept fins', () => {
     expect(t.band).toEqual({ low: 0.95, high: 1.17 });
   });
 
-  it('refuses a normal Mach number below 1.49, with the subsonic and transonic reasons', () => {
+  it('without the plate flag (a rounded wedge), refuses a normal Mach number below 1.49 (plates: section 11)', () => {
     const e = failure(() =>
       roundedLeadingEdgeDrag({
         mach: 2.0,

@@ -19,7 +19,7 @@ import { combineComponents } from '../../src/total/total-drag';
 
 const half = Math.atan(0.5 / 3);
 const planform = clippedDeltaPlanform({ rootChord: 1.5, span: 1, taperRatio: 0.4 });
-const config = (p = flatPlate(0.05, 'rounded', 'square')): FinnedBody => ({
+const config = (p = flatPlate(0.05, 'rounded', 'square'), plan = planform): FinnedBody => ({
   body: {
     nose: { shape: { kind: 'conical' }, length: 3, baseRadius: 0.5 },
     cylinderLength: 9,
@@ -28,7 +28,7 @@ const config = (p = flatPlate(0.05, 'rounded', 'square')): FinnedBody => ({
   // Ahead of the base by more than a root chord, so the body base is the plain curve.
   fins: {
     count: 3,
-    planform,
+    planform: plan,
     section: p,
     sectionFamily: 'other',
     leadingEdgeRadius: 0,
@@ -125,8 +125,37 @@ describe('refusals of flat plates', () => {
     expect(m).toMatch(/1\.35 and 1\.16 times a square base/);
   });
 
-  it('a normal Mach number below 1.49 (M 2.0 at 42 deg: 1.486)', () => {
-    expect(reasons(config(), 2.0)).toEqual(['fin leading edges: leading-edge-range']);
+  it('a normal Mach number below 1.0 (M 1.6 at 59.7 deg: 0.81)', () => {
+    const steep = clippedDeltaPlanform({ rootChord: 1.5, span: 0.7, taperRatio: 0.2 });
+    expect(reasons(config(undefined, steep), 1.6)).toEqual([
+      'fin leading edges: leading-edge-range',
+    ]);
+    const m = parts(config(undefined, steep), 1.6).refusals[0]!.message;
+    expect(m).toMatch(/is below 1\.0/);
+    expect(m).toMatch(/RM L53L24a, NASA TP 2204, NASA TN D-3634/);
+  });
+});
+
+describe('a normal Mach number of 1.0 to 1.49 (0016 section 11): M 2.0 at 42 deg, 1.486', () => {
+  const r = parts(config(), 2.0);
+
+  it('is served, the plate flag passed: kappa, CR-149372 in the band, the sweep allowance widened', () => {
+    expect(r.refusals).toEqual([]);
+    const n = roundedLeadingEdgeDrag({
+      mach: 2.0,
+      radius: 0.025,
+      faceAngle: 0,
+      tanLeadingEdgeSweep: planform.tanLeadingEdge,
+      reynoldsOnDiameter: 2e6 * 0.05,
+      plate: true,
+    });
+    expect(n.transonic).toBeDefined();
+    const c = named(r, 'fin leading edges');
+    expect(c.cd).toBeCloseTo((3 * n.dragPerSpan * 1) / area, 15);
+    expect([c.low, c.high]).toEqual([n.band.low * c.cd, n.band.high * c.cd]);
+    expect(c.band).toMatch(/^NASA CR-149372 and TN 2960, front side over modified Newtonian/);
+    expect(c.label).toMatch(/interpolated across an unmeasured Mach range/);
+    expect(c.label).toMatch(/sweep allowance extrapolated in normal Mach number/);
   });
 });
 

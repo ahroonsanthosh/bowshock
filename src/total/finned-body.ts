@@ -570,6 +570,7 @@ function platePart(
       faceAngle: 0,
       tanLeadingEdgeSweep: fins.planform.tanLeadingEdge,
       reynoldsOnDiameter: conditions.reynoldsPerLength * plate.thickness,
+      plate: true,
     });
     const cd = (fins.count * nose.dragPerSpan * fins.planform.span) / area;
     components.push({
@@ -579,8 +580,9 @@ function platePart(
       high: nose.band.high * cd,
       label: `${nose.label}; on a flat plate, a semicircular nose (0016)`,
       band:
-        `TN 2960, front side over modified Newtonian, ${nose.band.low.toFixed(2)} to ` +
-        `${nose.band.high.toFixed(2)} (${nose.regime}${nose.sweepDegrees > 0 ? ', swept' : ''})`,
+        `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified ` +
+        `Newtonian, ${nose.band.low.toFixed(2)} to ${nose.band.high.toFixed(2)} ` +
+        `(${nose.regime}${nose.sweepDegrees > 0 ? ', swept' : ''})`,
     });
   } catch (e) {
     refusals.push(refusalOf('fin leading edges', e));

@@ -4,9 +4,10 @@
   `src/fins/rounded-leading-edge.ts`, `src/fins/section.ts`,
   `src/total/finned-body.ts`) and the drag page's section input. The new
   bands rest on first readings where a figure was read for this record
-  (RM A55H31 figs. 11 and 12); the independent reader's blind second
-  readings (round 6) are pending, and each band becomes the envelope of
-  both when they are held beside the first (section 8).
+  (RM A55H31 figs. 11 and 12; NASA CR-149372 figs. 8b and 5, section
+  11); the independent reader's blind second readings (round 6) are
+  pending, and each band becomes the envelope of both when they are held
+  beside the first (section 8).
 - **Date:** 2026-10-20
 - **Inputs:** [0014](0014-refusals.md) W3, W4, W11 and section 10 (what
   sets bands, what is held back, "bounded, not measured", the readings
@@ -17,6 +18,11 @@
   (`src/base/blunt-te-2d.ts`); the population of
   [`docs/research/refusals/`](../research/refusals/README.md).
 
+Section 11 (W4(e), flat plates at normal Mach numbers 1.0 to 1.49) was
+added after the research item of section 6 and approved by the
+coordinator with conditions (2026-10-20), its 0014 amendment committed
+first.
+
 No held-back set was opened or used for anything here (0014 section 10.1):
 not the PARD body's totals (TN 3697 fig. 5, TN 3650 fig. 4, RM L52E06
 figs. 9 to 12), not BRL Report 934, not the Eglin set, not TN 3320.
@@ -26,21 +32,23 @@ square trailing edge, tapered and swept, are now served where the data
 cover them: the trailing edge's thick-layer limit is lifted from
 c / [h Re_c^(1/5)] = 1.0 to 4.5, tapered fins are integrated along the
 span, and rounded leading edges are served on plates of any planform,
-swept to 60 deg, at normal Mach numbers of 1.49 to 3.0. Refused, with the
-reasons of section 6: normal Mach numbers below 1.49 (where most hobby
-edges run), swept trailing edges, the trailing edges below Mach 1.5,
+swept to 60 deg, at normal Mach numbers of 1.49 to 3.0, and since
+section 11 from 1.0. Refused, with the reasons of sections 6 and 11:
+normal Mach numbers below 1.0 (below 1.49 on a rounded wedge), swept
+trailing edges, the trailing edges below Mach 1.5,
 square-cut leading edges and rounded trailing edges. The Basic Finner's
 numbers are unchanged, bit for bit.
 
 ## 1. What is served, and on what
 
-| Item                | Method                                                                                          | Band on the term                                            | Domain                           | Data                                                        |
-| ------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------- |
-| W3(a) thick layers  | thin-layer term times K(M, X) = D(X) / D(1.0) on TR 1109 fig. 29(a)                             | 0.93 x K_low to 1.21 x K_high (section 2)                   | X 1.0 to 4.5 at M 1.5 to 3.1     | TR 1109 fig. 29(a), both readings                           |
-| W3(b) varying chord | the term integrated along the span (unswept trailing edge)                                      | as W3(a), station by station                                | as the term                      |                                                             |
-| W4(a) flat plates   | the rounded wedge's limit, face angle 0: (2/3) Cp_pitot (2r) per span                           | 0.99 to 1.06, as now                                        | as now                           | TN 2960 fig. 5(c) both readings; figs. 5(d), 5(e) as checks |
-| W4(b) any planform  | the nose term per unit span times the span (a plate's radius is the same at every station)      | as W4(a)                                                    |                                  |                                                             |
-| W4(c) swept         | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure | 0.98 to 1.14 (0.95 to 1.17 extrapolated in Reynolds number) | sweep to 60 deg, M_n 1.49 to 3.0 | RM A55H31 figs. 11, 12 (one reading)                        |
+| Item                  | Method                                                                                            | Band on the term                                                    | Domain                           | Data                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------- |
+| W3(a) thick layers    | thin-layer term times K(M, X) = D(X) / D(1.0) on TR 1109 fig. 29(a)                               | 0.93 x K_low to 1.21 x K_high (section 2)                           | X 1.0 to 4.5 at M 1.5 to 3.1     | TR 1109 fig. 29(a), both readings                           |
+| W3(b) varying chord   | the term integrated along the span (unswept trailing edge)                                        | as W3(a), station by station                                        | as the term                      |                                                             |
+| W4(a) flat plates     | the rounded wedge's limit, face angle 0: (2/3) Cp_pitot (2r) per span                             | 0.99 to 1.06, as now                                                | as now                           | TN 2960 fig. 5(c) both readings; figs. 5(d), 5(e) as checks |
+| W4(b) any planform    | the nose term per unit span times the span (a plate's radius is the same at every station)        | as W4(a)                                                            |                                  |                                                             |
+| W4(c) swept           | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure   | 0.98 to 1.14 (0.95 to 1.17 extrapolated in Reynolds number)         | sweep to 60 deg, M_n 1.49 to 3.0 | RM A55H31 figs. 11, 12 (one reading)                        |
+| W4(e) M_n 1.0 to 1.49 | plates: the term times kappa(M_n), the cylinder's front side over modified Newtonian (section 11) | the bracketing nodes' range (section 11); swept, times 0.98 to 1.14 | plates, M_n 1.0 to 1.49          | NASA CR-149372 figs. 8b, 5 (one reading); TN 2960 at 1.49   |
 
 ## 2. W3(a): blunt trailing edges with thick layers
 
@@ -210,6 +218,8 @@ rounded edges below Mach 1.8, 36% at 1.8 to 3.0 (`out/edges.out`). It is
 the next research item: band-setting data of attached, airfoil-like
 rounded edges at subsonic normal Mach numbers (swept and delta wings with
 subsonic leading edges, bluntness series, leading-edge thrust).
+_Since section 11:_ on flat plates, M_n 1.0 to 1.49 is served; below 1.0
+it stays refused, with the reasons given there.
 
 **W3(c): swept trailing edges.** RM L52D21 fig. 11 (alpha 0, h/t = 1.0):
 base drag measured over the unswept thin-layer curve at the free-stream
@@ -271,6 +281,11 @@ them.
   plate's thickness; the plate's t/c at the root for the body base); blunt
   trailing edges on fins of varying chord; the refusals of section 6;
   transition states on the part of the span they reach.
+- Section 11: `src/fins/macha.ts` (CR-149372's readings);
+  `machaFrontSides`, `machaBlockageSpread`, `TRANSONIC_NODES`,
+  `transonicFrontSide`, `SWEEP_ALLOWANCE_EXTRAPOLATED` and the `plate`
+  input in `src/fins/rounded-leading-edge.ts`, which `platePart` passes;
+  `tests/fins/rounded-leading-edge-transonic.test.ts`.
 - Tests: `tests/base/fin-trailing-edge-thick.test.ts`,
   `tests/fins/rounded-leading-edge-plates.test.ts` (the readings held to
   their csv), `tests/total/flat-plates.test.ts`, additions to
@@ -296,11 +311,15 @@ unchanged.
 | RM A55H31 figs. 11, 12               | one          | W4(c)'s sweep allowance                                  |
 | TN 2960 figs. 5(a), 5(b), 5(d), 5(e) | one          | checks of the band and the reasons of W4(d); set nothing |
 | RM L52D21 fig. 11                    | one          | the reason W3(c) stays refused                           |
+| NASA CR-149372 figs. 8b, 5           | one          | W4(e)'s kappa nodes and their spread (section 11)        |
 
 When the second readings of RM A55H31 figs. 11 and 12 arrive they are held
 beside the first in `src/fins/rm-a55h31.ts`, the allowance becomes the
 envelope of r over both, and the label drops "read once". If the envelope
-moves the allowance, the band moves with it; no total has tested it.
+moves the allowance, the band moves with it; no total has tested it. The
+same for CR-149372: the second readings join `MACHA_FIG8B` (and fig. 5's
+points) in `src/fins/macha.ts`, each node's nominal becomes the mean and
+its range the envelope of both, widened as now.
 
 ## 9. Coverage
 
@@ -346,3 +365,163 @@ Extended only to describe these fins, in the existing controls:
   edges and rounded trailing edges are refused (design record 0016)." No
   other control, field or text changes; the plates' refusals reach the
   page with their reasons, as every refusal does.
+
+## 11. W4(e): flat plates at normal Mach numbers 1.0 to 1.49
+
+The research item of section 6. Approved by the coordinator on 2026-10-20
+with conditions: (a) the 1.2 to 1.49 gap bridged by the bracketing-node
+band, recorded first as an amendment to 0014 W4(d) and committed before
+any hold-out run; (b) the sweep allowance widened below M_n 1.49. Both
+are followed below.
+
+**What was looked for, and found.** Band-setting measurements of the
+zero-lift drag or the leading-edge pressures of thin wings or fins with
+rounded leading edges at normal Mach numbers below about 1.4, at
+free-stream Mach 1.2 to 2. None measures a semicircular nose followed by
+flat faces (a plate's rounded edge) at a subsonic normal Mach number.
+Every bluntness series found is of airfoil noses:
+
+| Source                                                                              | What it measures                                                                                                     | Why it sets no band here                                                                                                 |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| RM L53L24a (Sandahl and Stoney), 60 deg delta, free flight, M 0.8 to 1.9            | zero-lift drag, LE radius 0 to 3 times the NACA 000X-X3 section's (M_n to 0.95): "no measurable effect", CD +-0.0007 | an airfoil nose; the increment within the error                                                                          |
+| NASA TP 2204 (Wood and Miller), M 1.6 to 2.36                                       | 65A004 with r/c 0 to 0.004: bluntness "does not affect the zero-lift drag"                                           | r about a tenth of the thickness at most                                                                                 |
+| NASA TN D-3634 (Kyle and Feryn), 67 deg slab wing, M 1.5 to 4.63 (M_n 0.59 to 1.81) | sharp, rounded and 6x-radius extensions: bluntness raises CD_min, CD +-0.0003                                        | the blunt nose has r about 0.57 of the half-thickness, faired over four half-thicknesses; not a semicircle on flat faces |
+| RM L53I23 (Ulmann and Bertram); Welsh, Wallskog and Sandahl; TR 1238 (Love)         | 0003-63 and 2-006 noses against sharp sections                                                                       | airfoil noses                                                                                                            |
+| TN 4204 (Lindsey and Landrum)                                                       | flow attachment at incidence, schlieren                                                                              | no drag                                                                                                                  |
+| RM L52D29 (Hopko and Sandahl), model 2                                              | a constant-thickness 60 deg delta plate                                                                              | its edges are bevelled, not rounded                                                                                      |
+
+No yawed-cylinder pressures were found at M_n 1.0 to 1.5 either (the
+lowest used in section 5 are at 3.37 and 3.44). None of the held-back
+sets was opened.
+
+**The source that sets the band: NASA CR-149372** (Macha, Texas A&M
+report 3318-76-01, 1976; `fin_edges_w34.md` section 9). Cylinder pressure
+distributions in the Ames 2 by 2 ft transonic tunnel at M 0.6 to 1.2, Re_d
+1e5 to 1e6, on four diameters (blockage 3.1% to 8.4%). Fig. 8b gives the
+front side at M 1.0, 1.1 and 1.2; fig. 5 the four blockages at M 1.0. When
+the normal flow is sonic or faster, the surface flow is supersonic from
+the sonic point (about 50 deg at M 1.0, Cp = Cp* = 0 there) to 90 deg, so
+the body behind 90 deg (a cylinder's continued curve and wake, a plate's
+flat faces) is not felt ahead of it, except through the boundary layer:
+the cylinder's front half and the plate's nose see the same flow, the
+argument of section 4 carried down to M_n 1.0. Fig. 5 shows it: the four
+cylinders' front sides coincide from 44 to about 78 deg while their
+separation and aft pressures move with blockage. Below M_n 1.0 the
+argument fails: the normal flow is subsonic and the faces are felt at the
+nose.
+
+**Method.** On a flat plate at 1.0 <= M_n < 1.49 the term of sections 4
+and 5 times kappa(M_n), the cylinder's front side over modified Newtonian:
+
+    D / (q s) = kappa(M_n) (2/3) Cp_pitot(M_n) cos^2(sweep) 2r
+
+per unit span. Kappa's nodes (first reading; trapezoid rule over symbols
+and faired curve, 0 to 90 deg):
+
+| M_n  | kappa              | Range          | From                                                  |
+| ---- | ------------------ | -------------- | ----------------------------------------------------- |
+| 1.0  | 0.762              | 0.751 to 0.770 | CR-149372 fig. 8b                                     |
+| 1.1  | 0.831              | 0.818 to 0.839 | CR-149372 fig. 8b                                     |
+| 1.2  | 0.897              | 0.883 to 0.906 | CR-149372 fig. 8b                                     |
+| 1.49 | 1 (the term above) | 0.99 to 1.06   | TN 2960's band (its readings at 1.49: 0.994 to 1.002) |
+
+Each CR-149372 node's range is its readings' lowest and highest widened by
+a 1% reading error (the calibration's +-1 px moves the front side by 0.5%
+in angle and 0.2% in Cp, rounded up) and by fig. 5's spread at M 1.0,
+-0.56% to 0% (another run of the same model at Re_d 2.8e5 against 1.9e5,
+and the larger blockages), applied at all three. Kappa is nominal linear
+in M_n between the nodes. **Band:** at a node, its range; between two
+nodes, from the lower node's lowest to the upper node's highest, over the
+nominal. It rests on kappa rising at every pair of nodes (0.762, 0.831,
+0.897, then TN 2960's 0.994 to 1.002 at 1.49, 1.035 to 1.056 at 1.98,
+1.049 to 1.056 at 2.90) and on its physical approach to modified
+Newtonian as the normal Mach number rises, the same rule as section 2's K.
+On the term:
+
+| M_n                   | Nominal kappa       | Band (unswept, measured Reynolds number) |
+| --------------------- | ------------------- | ---------------------------------------- |
+| 1.0, 1.1, 1.2 (nodes) | 0.762, 0.831, 0.897 | 0.985 to 1.010                           |
+| 1.05                  | 0.796               | 0.942 to 1.053                           |
+| 1.15                  | 0.864               | 0.947 to 1.049                           |
+| 1.3                   | 0.932               | 0.947 to 1.137                           |
+| 1.45                  | 0.986               | 0.896 to 1.075                           |
+
+**Across 1.2 to 1.49 nothing is measured.** The ratios either side (0.90,
+0.99) do not agree, so 0014 W4(d)'s condition for a bridge fails; the gap
+is bridged by the bracketing-node band instead, by the amendment to 0014
+W4(d) committed before this section, and the term there is labelled "an
+analogy, interpolated across an unmeasured Mach range". From 1.0 to 1.2
+it is "an analogy, not a measurement", like the term above.
+
+**Reynolds number**, on the normal component, as above: 1e5 to 1e6
+"measured" (TN 2960 shows no Reynolds-number effect on front sides at M
+1.49 and 1.98 over 1.3e5 to 1.3e6; CR-149372's fig. 11 shows none on the
+aft pressures at M 1.2 between 1.2e5 and 2.5e5, its fig. 12 none of
+roughness at M 1.0 and above, and its fig. 5 run at 2.8e5 is inside the
+spread); 6.7e3 to 1e5 "extrapolated in Reynolds number", +-3% of the term;
+outside, refused.
+
+**Sweep.** The independence principle as in section 5, at the normal
+Mach number. Its checks reach down to M_n 3.37 only, so below 1.49 the
+allowance is extrapolated in normal Mach number and widened to twice its
+measured deviation from 1: **0.98 to 1.14** in place of 0.99 to 1.07,
+labelled "the sweep allowance extrapolated in normal Mach number". (At
+M_n just above 1 the bow shock stands far off a cylinder, so the root and
+the tip reach further along a finite edge; that is the analogy's gap of
+section 5, not represented.) The hobby example's fins (three 3 mm plates,
+root 120 mm, tip 48 mm, span 80 mm, 42 deg, on a 54 mm body at sea
+level), refused at M 1.8 before, now give 0.161 (0.141 to 0.212) at M 1.8
+(M_n 1.34) and 0.131 (0.121 to 0.166) at M 1.5 (M_n 1.11), both
+extrapolated in Reynolds number.
+
+**Refused.** A flat plate below M_n 1.0: "below it the normal flow is
+subsonic and the faces behind a rounded edge are felt at its nose, which a
+cylinder's separation and wake replace (TN 2960 figs. 5(a), 5(b), 5(e)
+...); no source measures a rounded nose followed by flat faces there, and
+the leading-edge bluntness series at subsonic leading edges (RM L53L24a,
+NASA TP 2204, NASA TN D-3634) are of airfoil noses, of radius about a
+tenth of the thickness or less or faired into the section, their
+increments within their errors". Rounded wedges (0010's term, the Basic
+Finner's) keep the 1.49 floor: the analogy would serve them too, but
+extending it changes the Basic Finner's reported shots' refusal lists,
+which is that record's to decide; offered as a follow-up.
+
+**The Basic Finner is unchanged.** Its wedges do not pass the plate flag:
+over the 16 shots every number, band, label and refusal equals the base
+commit's (5245241) bit for bit (1116 values, largest difference 0), and
+`tests/validation/` passes unchanged.
+
+**Readings.** CR-149372 figs. 8b and 5 are read once; the round-6 reader
+reads them blind. Until the second readings are held beside these, the
+term's label says "read once, the second reading pending" (section 8).
+
+**Coverage** (the same population and run as section 9, `out/impact-w4e.out`;
+`evaluate.ts` mirrors the code, `EDGES=w4e` by default, `EDGES=w34` the
+code of sections 1 to 10; its cross-check against `src/total` passes):
+
+| Share of cases                               | M 1.0 to 1.2 | 1.2 to 1.5 | 1.5 to 1.8 | 1.8 to 3.0 | All   |
+| -------------------------------------------- | ------------ | ---------- | ---------- | ---------- | ----- |
+| Normal Mach refusal, sections 1 to 10 (1.49) | 40.8%        | 40.7%      | 37.0%      | 12.7%      | 32.8% |
+| Normal Mach refusal, now (1.0 on a plate)    | 37.0%        | 22.8%      | 9.7%       | 0.5%       | 17.5% |
+| W4 needed, sections 1 to 10                  | 43.9%        | 43.7%      | 40.0%      | 15.7%      | 35.8% |
+| W4 needed, now                               | 40.1%        | 26.1%      | 13.0%      | 3.7%       | 20.7% |
+| Totals once W1 is done, sections 1 to 10     | 0%           | 0%         | 3.3%       | 6.0%       | 2.3%  |
+| Totals once W1 is done, now                  | 0%           | 0%         | 6.5%       | 7.2%       | 3.4%  |
+| Totals today, sections 1 to 10               | 0.0%         | 0.0%       | 0.2%       | 0.3%       | 0.1%  |
+| Totals today, now                            | 0.0%         | 0.0%       | 0.3%       | 0.5%       | 0.2%  |
+
+The leading edges now block a case mostly below Mach 1.5 (where the base
+and the trailing edges are refused anyway); from Mach 1.5 they block 13.0%
+and 3.7%, the rest being sweeps beyond 60 deg (3.0%) and Reynolds numbers
+outside the domain. With W1 done, the totals at M 1.5 to 1.8 would double
+again (3.3% to 6.5%).
+
+**The page.** Before (section 10): the collapsed "What the total
+includes" says "A flat plate's rounded edge is a full radius, half its
+thickness; square-cut leading edges and rounded trailing edges are
+refused (design record 0016)." After: "A flat plate's rounded edge is a
+full radius, half its thickness, served where the Mach number normal to
+it, M cos(sweep), is 1.0 or more (1.49 on a wedge); square-cut leading
+edges and rounded trailing edges are refused (design record 0016)." No
+control, field or other text changes; the term's label and the refusal's
+reason reach the page as every component's do.

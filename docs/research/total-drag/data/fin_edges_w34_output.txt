@@ -42,3 +42,20 @@
 - M 1.49: cylinder rear side 0.454 on D; square base at the thin-layer curve 0.336; ratio 1.35
 - M 1.98: cylinder rear side 0.269 on D; square base at the thin-layer curve 0.232; ratio 1.16
 - M 2.9: cylinder rear side 0.093 on D; square base at the thin-layer curve 0.130; ratio 0.72
+## NASA CR-149372 fig. 8b: front side over modified Newtonian, (2/3) Cp_pitot (kappa)
+- M 1.0: Cp at 0 deg 1.283 against Rayleigh 1.2756 (+0.58%); front 0.6483 on D, kappa 0.7624 (symbols alone 0.6566, 0.7721)
+- M 1.1: Cp at 0 deg 1.329 against Rayleigh 1.3375 (-0.63%); front 0.7406 on D, kappa 0.8306 (symbols alone 0.7462, 0.8369)
+- M 1.2: Cp at 0 deg 1.387 against Rayleigh 1.3963 (-0.67%); front 0.8347 on D, kappa 0.8967 (symbols alone 0.8441, 0.9068)
+
+## NASA CR-149372 fig. 5 (M 1.0): each cylinder over fig. 8b, fig. 8b below 44 deg
+- 1.91 and 2.54 cm (curve): front 0.6447, -0.56% of fig. 8b
+- 3.81 cm: front 0.6456, -0.43% of fig. 8b
+- 5.08 cm: front 0.6476, -0.12% of fig. 8b
+- spread -0.56% to +0.00%
+
+## kappa nodes (reading error 1%, the spread above), and the term at 1.49 (TN 2960 band)
+- M 1.0: 0.7624, range 0.7506 to 0.7700
+- M 1.1: 0.8306, range 0.8177 to 0.8389
+- M 1.2: 0.8967, range 0.8828 to 0.9057
+- M 1.49: 1, range 0.99 to 1.06 (TN 2960 fig. 5(c) at 1.49: 0.995, 1.002; fig. 5(e): 0.994)
+

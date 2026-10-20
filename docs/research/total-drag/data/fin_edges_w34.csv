@@ -236,3 +236,174 @@ RM L52D21,11,"sweep 0 deg, h/t 1.0, alpha 0",1.62,h/t,1.0,P_b'/P_bv,0.57,first,c
 RM L52D21,11,"sweep 45 deg, h/t 1.0, alpha 0",1.62,h/t,1.0,P_b'/P_bv,0.548,first,column scan at h/t 0.95 to 0.99,0.005
 RM L52D21,11,"sweep 0 deg, h/t 1.0, alpha 0",1.96,h/t,1.0,P_b'/P_bv,0.663,first,column scan at h/t 0.95 to 0.99,0.005
 RM L52D21,11,"sweep 45 deg, h/t 1.0, alpha 0",1.96,h/t,1.0,P_b'/P_bv,0.575,first,column scan at h/t 0.95 to 0.99,0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,0,Cp,1.283,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,2.9,Cp,1.278,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,9.5,Cp,1.232,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,19.0,Cp,1.108,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,27.9,Cp,0.892,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,37.2,Cp,0.6,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,49.2,Cp,0.221,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,61.7,Cp,-0.177,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,73.1,Cp,-0.603,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,80.0,Cp,-0.751,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,86.3,Cp,-0.888,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, symbols",1.0,theta deg,95.4,Cp,-1.064,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,6.0,Cp,1.256,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,7.5,Cp,1.247,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,12.0,Cp,1.206,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,13.5,Cp,1.179,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,15.0,Cp,1.157,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,16.5,Cp,1.133,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,21.0,Cp,1.058,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,22.5,Cp,1.023,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,24.0,Cp,0.981,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,25.5,Cp,0.946,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,30.0,Cp,0.825,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,31.5,Cp,0.782,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,33.0,Cp,0.736,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,34.5,Cp,0.69,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,40.5,Cp,0.497,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,42.0,Cp,0.45,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,43.5,Cp,0.407,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,45.0,Cp,0.354,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,46.5,Cp,0.306,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,52.5,Cp,0.116,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,54.0,Cp,0.064,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,55.5,Cp,0.017,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,57.0,Cp,-0.027,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,58.5,Cp,-0.077,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,64.5,Cp,-0.3,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,66.0,Cp,-0.359,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,67.5,Cp,-0.409,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,69.0,Cp,-0.455,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,70.5,Cp,-0.502,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,76.5,Cp,-0.679,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,78.0,Cp,-0.712,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,82.5,Cp,-0.816,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,84.0,Cp,-0.848,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,88.5,Cp,-0.929,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,90.0,Cp,-0.958,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.0, 1.91 cm, faired curve",1.0,theta deg,91.5,Cp,-0.984,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,0,Cp,1.329,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,6.7,Cp,1.31,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,15.3,Cp,1.216,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,24.8,Cp,1.051,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,36.1,Cp,0.732,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,46.7,Cp,0.447,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,55.1,Cp,0.14,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,67.1,Cp,-0.247,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,77.0,Cp,-0.481,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,86.1,Cp,-0.708,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,92.0,Cp,-0.817,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, symbols",1.1,theta deg,95.9,Cp,-0.895,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,3.0,Cp,1.325,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,4.5,Cp,1.315,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,9.0,Cp,1.286,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,10.5,Cp,1.274,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,12.0,Cp,1.255,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,18.0,Cp,1.171,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,19.5,Cp,1.149,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,21.0,Cp,1.119,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,22.5,Cp,1.093,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,27.0,Cp,0.99,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,28.5,Cp,0.954,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,30.0,Cp,0.902,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,31.5,Cp,0.876,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,33.0,Cp,0.84,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,39.0,Cp,0.655,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,40.5,Cp,0.613,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,42.0,Cp,0.573,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,43.5,Cp,0.528,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,49.5,Cp,0.335,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,51.0,Cp,0.29,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,52.5,Cp,0.234,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,58.5,Cp,0.032,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,60.0,Cp,-0.016,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,61.5,Cp,-0.072,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,63.0,Cp,-0.126,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,64.5,Cp,-0.172,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,70.5,Cp,-0.347,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,72.0,Cp,-0.374,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,73.5,Cp,-0.415,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,75.0,Cp,-0.454,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,79.5,Cp,-0.561,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,81.0,Cp,-0.596,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,82.5,Cp,-0.625,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,84.0,Cp,-0.659,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,88.5,Cp,-0.758,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.1, 1.91 cm, faired curve",1.1,theta deg,90.0,Cp,-0.784,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,0,Cp,1.387,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,6.9,Cp,1.371,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,13.1,Cp,1.322,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,21.9,Cp,1.186,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,34.0,Cp,0.908,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,43.1,Cp,0.623,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,55.1,Cp,0.274,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,69.7,Cp,-0.161,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,83.4,Cp,-0.483,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,89.7,Cp,-0.605,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, symbols",1.2,theta deg,95.9,Cp,-0.695,first,"eye, symbol centre on 2x ruler crop",0.003
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,16.5,Cp,1.274,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,18.0,Cp,1.251,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,25.5,Cp,1.101,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,27.0,Cp,1.066,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,28.5,Cp,1.031,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,30.0,Cp,1.001,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,37.5,Cp,0.793,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,39.0,Cp,0.751,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,46.5,Cp,0.529,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,48.0,Cp,0.486,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,49.5,Cp,0.442,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,51.0,Cp,0.391,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,58.5,Cp,0.169,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,60.0,Cp,0.132,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,61.5,Cp,0.083,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,63.0,Cp,0.04,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,64.5,Cp,-0.01,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,66.0,Cp,-0.054,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,73.5,Cp,-0.257,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,75.0,Cp,-0.301,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,76.5,Cp,-0.337,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,78.0,Cp,-0.371,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,8b,"M 1.2, 1.91 cm, faired curve",1.2,theta deg,79.5,Cp,-0.411,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,44.0,Cp,0.373,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,45.0,Cp,0.343,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,46.0,Cp,0.309,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,47.0,Cp,0.268,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,50.5,Cp,0.167,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,51.5,Cp,0.135,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,52.5,Cp,0.097,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,56.0,Cp,-0.007,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,57.0,Cp,-0.043,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,58.0,Cp,-0.09,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,62.0,Cp,-0.212,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,65.0,Cp,-0.306,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,71.0,Cp,-0.502,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,74.0,Cp,-0.597,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve",1.0,theta deg,78.0,Cp,-0.723,first,"column scan, +-0.3 deg, median",0.005
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,48.8,Cp,0.205,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,54.0,Cp,0.05,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,58.8,Cp,-0.12,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,60.5,Cp,-0.18,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,63.5,Cp,-0.25,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,66.2,Cp,-0.345,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,67.3,Cp,-0.416,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,69.9,Cp,-0.474,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,72.3,Cp,-0.561,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,75.3,Cp,-0.625,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, shared curve, symbols",1.0,theta deg,77.2,Cp,-0.686,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, 1.91 and 2.54 cm (curve)",1.0,theta deg,80.0,Cp,-0.783,first,column scan,0.005
+NASA CR-149372,5,"M 1.0, 1.91 and 2.54 cm (curve)",1.0,theta deg,83.0,Cp,-0.82,first,column scan,0.005
+NASA CR-149372,5,"M 1.0, 1.91 and 2.54 cm (curve)",1.0,theta deg,84.0,Cp,-0.87,first,column scan,0.005
+NASA CR-149372,5,"M 1.0, 1.91 and 2.54 cm (curve)",1.0,theta deg,85.0,Cp,-0.895,first,column scan,0.005
+NASA CR-149372,5,"M 1.0, 1.91 and 2.54 cm (curve)",1.0,theta deg,86.0,Cp,-0.914,first,column scan,0.005
+NASA CR-149372,5,"M 1.0, 1.91 and 2.54 cm (curve)",1.0,theta deg,87.0,Cp,-0.939,first,column scan,0.005
+NASA CR-149372,5,"M 1.0, 1.91 and 2.54 cm (curve)",1.0,theta deg,89.0,Cp,-0.982,first,column scan,0.005
+NASA CR-149372,5,"M 1.0, 1.91 and 2.54 cm (curve)",1.0,theta deg,90.0,Cp,-0.998,first,column scan,0.005
+NASA CR-149372,5,"M 1.0, 3.81 cm",1.0,theta deg,82.0,Cp,-0.8,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, 3.81 cm",1.0,theta deg,87.0,Cp,-0.82,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, 3.81 cm",1.0,theta deg,91.3,Cp,-0.76,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, 5.08 cm",1.0,theta deg,81.3,Cp,-0.69,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, 5.08 cm",1.0,theta deg,85.0,Cp,-0.655,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, 5.08 cm",1.0,theta deg,86.7,Cp,-0.645,first,"eye, symbol centre on 2x ruler crop",0.01
+NASA CR-149372,5,"M 1.0, 5.08 cm",1.0,theta deg,91.3,Cp,-0.64,first,"eye, symbol centre on 2x ruler crop",0.01

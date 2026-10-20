@@ -17,7 +17,10 @@ Values, readings and computations:
 - `fin_edges_w34.csv` (every value read, with its figure, method and reading
   error) and `fin_edges_w34_output.txt`, both from
   `scripts/w34_fin_edges.py`;
-- the digitising tools, `scripts/w34_grid.py` (grid lines from darkness
+- the digitising tools, `scripts/w34_pwruler.py` and `w34_pwscan.py`
+  (ruler crops and column scans placed between a figure's own grid lines,
+  piecewise linear, for scans whose grid spacing is uneven; section 9),
+  `scripts/w34_grid.py` (grid lines from darkness
   profiles), `w34_deskew.py` (rotation from one long grid line),
   `w34_colscan.py` and `w34_guided.py` (column scans of faired curves; the
   guided scan takes, in each column within +-0.6 deg of the abscissa, the
@@ -38,6 +41,7 @@ scratchpad (`w34/img/`), each download in its own directory
 | Penland, NACA TN 3861, 1957 | 19930084664 | 5(a) p. 20 calibrated | Not used for a number (section 4). Figs. 15, 16 viewed |
 | Goin, NACA RM L52D21, 1952 | 19930087183 | 11 p. 46 (alpha 0, h/t 1.0) | Read (section 5). Fig. 12 p. 47 viewed; fig. 1 p. 22 text layer |
 | Morrow and Katz, NACA TN 3548, 1955 | 19930084307 | none | Opened, text read (section 6); fig. 6 not read |
+| Macha, NASA CR-149372 (Texas A&M report 3318-76-01), 1976 | 19770008057 | 8b p. 26, 5 p. 22 | Read (section 9). Figs. 8a (p. 25), 10 (p. 30), 11 (p. 31), 12 (p. 32) viewed, not digitised |
 
 ## 2. TN 2960: the cylinder's front side at subsonic Mach numbers, and checks
 
@@ -273,3 +277,96 @@ nearest measurement in hand at M 1.5 to 2.
 
 Pending, by the independent reader. To be held beside these in the code,
 and every band to be the envelope of both.
+
+## 9. NASA CR-149372 (Macha): the cylinder's front side at M 1.0 to 1.2
+
+Added for 0016 section 11 (W4(e), approved by the coordinator on
+2026-10-20). Not a held-back set; no total drag in it was used.
+
+**What the report says** (pp. 1 to 7). The Ames 2 by 2 ft transonic
+tunnel, closed return, variable density, with the slotted side walls
+replaced by solid ones through whose windows the models' ends were mounted;
+floor and ceiling slotted. Cylinders of 1.91, 2.54, 3.81 and 5.08 cm
+(solid blockage 3.1%, 4.2%, 6.2% and 8.4%), stainless steel, roughness
+1.6e-4 cm; nine orifices 40 deg apart, staggered over the centre four
+inches, the model rotated in 3 deg steps; transducers, digitised. M 0.6 to
+1.2, Re_d 1e5 to 1e6. Blockage: no effect to M 0.6, the measured drag too
+high from 0.6 to 0.9, "extreme" at M 1.0 and moderate above, where it
+lowers the drag; fig. 5 shows that at M 1.0 it moves the separation and
+the aft pressures. Roughness (0.005 cm spheres, fig. 12): "At Mach 1.0 and
+higher the pressure distributions are unaffected." Reynolds number (fig.
+11): at M 1.2, 1.2e5 and 2.5e5 give the same aft pressures. The report
+states no accuracy.
+
+**Fig. 8b** (PDF p. 26, 300 ppi; tilt 0.035 deg from the -0.8 grid line,
+under a pixel over the plot, not corrected). Cp against theta, M 1.0, 1.1
+and 1.2 on the 1.91 cm cylinder at Re_d 1.9e5. Calibration: the grid
+lines' own positions, which are unevenly spaced on the scan (221.5 to 229
+px per 30 deg, 292 to 298.5 px per 0.4), piecewise linear between them:
+x 825.5, 1049.0, 1278.0, 1499.5, 1718.5, 1939.0, 2166.5 px at 0 to 180
+deg; y 892, 1190.5, 1482.5, 1775, 2072.5, 2366, 2661.5, 2953.5 px at Cp
+1.6 to -1.2 (`w34_grid.py`). Method: symbol centres by eye on 2x ruler
+crops with lines every 2 deg and 0.02 placed between the grid lines
+(`w34_pwruler.py`), +-0.003 in Cp and +-0.3 deg; the faired curves by
+column scans every 1.5 deg (`w34_pwscan.py`: the dark run nearest a guess
+interpolated from the symbols, within 0.035, in each column within +-0.3
+deg, the median), kept where at least 2 deg from a symbol (3 deg from the
+triangles, which are wider), +-0.005. The stagnation symbols are drawn up
+to 1 deg left of the 0 deg line; read as 0 deg.
+
+| M | Cp at 0 deg | Rayleigh | Front side on D | kappa = front / ((2/3) Cp_pitot) | Symbols alone |
+| --- | --- | --- | --- | --- | --- |
+| 1.0 | 1.283 | 1.2756 (+0.6%) | 0.6483 | **0.762** | 0.772 |
+| 1.1 | 1.329 | 1.3375 (-0.6%) | 0.7406 | **0.831** | 0.837 |
+| 1.2 | 1.387 | 1.3963 (-0.7%) | 0.8347 | **0.897** | 0.907 |
+
+The front side is the trapezoid rule over symbols and curve together, 0
+to 90 deg, interpolated at 90 deg. The symbols alone, 6 to 12 deg apart,
+read 0.8% to 1.3% higher: the curve is concave between them where the
+flow expands, so they are not used alone. Kappa rises with M at every pair
+of nodes and onward to TN 2960's 0.994 to 1.002 at 1.49, 1.035 to 1.056 at
+1.98 and 1.049 to 1.056 at 2.90 (section 2; 0010).
+
+**Fig. 5** (PDF p. 22, 300 ppi). Cp against theta at M 1.0 on all four
+cylinders (Re_d 2.8e5 on the 1.91 cm, 3.3e5 on the others); the plot
+starts at Cp 0.4, about 44 deg. Calibration as fig. 8b, from its own grid
+lines: x 900.0, 1121.0, 1343.0, 1566.0, 1785.5, 2004.5, 2228.0 px at 0 to
+180 deg; y 1462.5, 1761.5, 2053, 2348 px at Cp 0.4 to -0.8. Legend: circle
+1.91 cm, square 2.54, octagonal circle 3.81, triangle 5.08. The four share
+one faired curve to about 78 deg (column scans, and the symbols on it by
+eye, +-0.01 and +-0.5 deg); there they part, the 5.08 cm levelling at about
+-0.65 from 81 deg, the 3.81 cm at about -0.78 to -0.82 from 82 deg, the
+1.91 and 2.54 cm continuing to -1.0 at 90 deg (column scans).
+
+Each cylinder's front side, fig. 8b's M 1.0 points below 44 deg and fig.
+5's from there, against fig. 8b's own (0.6483):
+
+| Fig. 5 | Front side on D | Against fig. 8b |
+| --- | --- | --- |
+| 1.91 and 2.54 cm (one curve) | 0.6447 | -0.56% |
+| 3.81 cm | 0.6456 | -0.43% |
+| 5.08 cm | 0.6476 | -0.12% |
+
+Fig. 5's shared curve lies 0.01 to 0.03 below fig. 8b's between 45 and 62
+deg (another run of the same 1.91 cm model at Re_d 2.8e5 against 1.9e5),
+and the larger blockages raise the last 10 deg a little; together, -0.56%
+to 0% of the front side. Fig. 5 is clipped above Cp 0.4, so its
+stagnation region is not seen; fig. 8b's stagnation values agree with
+Rayleigh's to 0.7%.
+
+**The nodes** (0016 section 11): kappa at each Mach number, its range the
+reading's widened by a 1% reading error (the calibration's +-1 px, 0.13
+deg and 0.0014 in Cp, moves the front side by 0.5% and 0.2%; the scans'
+scatter averages out; rounded up) and by fig. 5's spread, applied at all
+three (the report says blockage effects lessen above M 1.0):
+
+| M | kappa | Range |
+| --- | --- | --- |
+| 1.0 | 0.7624 | 0.7506 to 0.7700 |
+| 1.1 | 0.8306 | 0.8177 to 0.8389 |
+| 1.2 | 0.8967 | 0.8828 to 0.9057 |
+| 1.49 | 1 (the term above) | 0.99 to 1.06 (TN 2960's band) |
+
+Second readings: figs. 8b and 5 are on the round-6 reader's list; until
+they are held beside these, the term says "read once, the second reading
+pending".

@@ -147,6 +147,71 @@ def a51(m):
     raise ValueError(m)
 
 
+# --------------------------------------------------------------------------
+# NASA CR-149372 (Macha 1976, TAMU report 3318-76-01, NTRS 19770008057).
+# Pages are PDF pages; calibrations in data/fin_edges_w34.md section 9.
+# fig. 8b, p. 26: Cp against theta, M 1.0, 1.1, 1.2, the 1.91 cm cylinder,
+# Re_d 1.9e5. Symbols: centres by eye on 2x ruler crops placed between the
+# figure's own grid lines (w34_pwruler.py), +-0.003 in Cp, +-0.3 deg. Curve:
+# column scans of the faired line (w34_pwscan.py, +-0.3 deg of columns, the
+# median), kept at least 2 deg (3 deg for the triangles) from a symbol.
+M8B_SYMBOLS = {
+    1.0: [(0, 1.283), (2.9, 1.278), (9.5, 1.232), (19.0, 1.108), (27.9, 0.892), (37.2, 0.600),
+          (49.2, 0.221), (61.7, -0.177), (73.1, -0.603), (80.0, -0.751), (86.3, -0.888), (95.4, -1.064)],
+    1.1: [(0, 1.329), (6.7, 1.310), (15.3, 1.216), (24.8, 1.051), (36.1, 0.732), (46.7, 0.447),
+          (55.1, 0.140), (67.1, -0.247), (77.0, -0.481), (86.1, -0.708), (92.0, -0.817), (95.9, -0.895)],
+    1.2: [(0, 1.387), (6.9, 1.371), (13.1, 1.322), (21.9, 1.186), (34.0, 0.908), (43.1, 0.623),
+          (55.1, 0.274), (69.7, -0.161), (83.4, -0.483), (89.7, -0.605), (95.9, -0.695)],
+}
+M8B_CURVE = {
+    1.0: [(6.0, 1.256), (7.5, 1.247), (12.0, 1.206), (13.5, 1.179), (15.0, 1.157), (16.5, 1.133),
+          (21.0, 1.058), (22.5, 1.023), (24.0, 0.981), (25.5, 0.946), (30.0, 0.825), (31.5, 0.782),
+          (33.0, 0.736), (34.5, 0.690), (40.5, 0.497), (42.0, 0.450), (43.5, 0.407), (45.0, 0.354),
+          (46.5, 0.306), (52.5, 0.116), (54.0, 0.064), (55.5, 0.017), (57.0, -0.027), (58.5, -0.077),
+          (64.5, -0.300), (66.0, -0.359), (67.5, -0.409), (69.0, -0.455), (70.5, -0.502), (76.5, -0.679),
+          (78.0, -0.712), (82.5, -0.816), (84.0, -0.848), (88.5, -0.929), (90.0, -0.958), (91.5, -0.984)],
+    1.1: [(3.0, 1.325), (4.5, 1.315), (9.0, 1.286), (10.5, 1.274), (12.0, 1.255), (18.0, 1.171),
+          (19.5, 1.149), (21.0, 1.119), (22.5, 1.093), (27.0, 0.990), (28.5, 0.954), (30.0, 0.902),
+          (31.5, 0.876), (33.0, 0.840), (39.0, 0.655), (40.5, 0.613), (42.0, 0.573), (43.5, 0.528),
+          (49.5, 0.335), (51.0, 0.290), (52.5, 0.234), (58.5, 0.032), (60.0, -0.016), (61.5, -0.072),
+          (63.0, -0.126), (64.5, -0.172), (70.5, -0.347), (72.0, -0.374), (73.5, -0.415), (75.0, -0.454),
+          (79.5, -0.561), (81.0, -0.596), (82.5, -0.625), (84.0, -0.659), (88.5, -0.758), (90.0, -0.784)],
+    1.2: [(16.5, 1.274), (18.0, 1.251), (25.5, 1.101), (27.0, 1.066), (28.5, 1.031), (30.0, 1.001),
+          (37.5, 0.793), (39.0, 0.751), (46.5, 0.529), (48.0, 0.486), (49.5, 0.442), (51.0, 0.391),
+          (58.5, 0.169), (60.0, 0.132), (61.5, 0.083), (63.0, 0.040), (64.5, -0.010), (66.0, -0.054),
+          (73.5, -0.257), (75.0, -0.301), (76.5, -0.337), (78.0, -0.371), (79.5, -0.411)],
+}
+# fig. 5, p. 22: M 1.0, the four cylinders; the plot starts at Cp 0.4 (about 44 deg).
+# The faired curve the four share to about 78 deg (column scans; symbols by eye,
+# +-0.01, +-0.5 deg), then each cylinder's own points.
+M5_COMMON_CURVE = [(44.0, 0.373), (45.0, 0.343), (46.0, 0.309), (47.0, 0.268), (50.5, 0.167),
+                   (51.5, 0.135), (52.5, 0.097), (56.0, -0.007), (57.0, -0.043), (58.0, -0.090),
+                   (62.0, -0.212), (65.0, -0.306), (71.0, -0.502), (74.0, -0.597), (78.0, -0.723)]
+M5_COMMON_SYMBOLS = [(48.8, 0.205), (54.0, 0.050), (58.8, -0.120), (60.5, -0.180), (63.5, -0.250),
+                     (66.2, -0.345), (67.3, -0.416), (69.9, -0.474), (72.3, -0.561), (75.3, -0.625),
+                     (77.2, -0.686)]
+M5_BRANCHES = {
+    '1.91 and 2.54 cm (curve)': [(80.0, -0.783), (83.0, -0.820), (84.0, -0.870), (85.0, -0.895),
+                                 (86.0, -0.914), (87.0, -0.939), (89.0, -0.982), (90.0, -0.998)],
+    '3.81 cm': [(82.0, -0.800), (87.0, -0.820), (91.3, -0.760)],
+    '5.08 cm': [(81.3, -0.690), (85.0, -0.655), (86.7, -0.645), (91.3, -0.640)],
+}
+
+
+def front90(points):
+    """front() of points in any order, cut at 90 deg and interpolated there."""
+    pts = sorted(points)
+    out = []
+    for (a, pa), (b, pb) in zip(pts, pts[1:]):
+        out.append((a, pa))
+        if b > 90:
+            out.append((90, pa + (pb - pa) * (90 - a) / (b - a)))
+            break
+    else:
+        out.append(pts[-1])
+    return front(out)
+
+
 def main():
     rows = []
     out = []
@@ -225,6 +290,52 @@ def main():
         say(f'- M {m}: cylinder rear side {r:.3f} on D; square base at the thin-layer curve {sq:.3f}; '
             f'ratio {r / sq:.2f}')
 
+
+    say('## NASA CR-149372 fig. 8b: front side over modified Newtonian, (2/3) Cp_pitot (kappa)')
+    kappa = {}
+    for m in (1.0, 1.1, 1.2):
+        for t, p in M8B_SYMBOLS[m]:
+            rows.append(['NASA CR-149372', '8b', f'M {m}, 1.91 cm, symbols', m, 'theta deg', t, 'Cp', p,
+                         'first', 'eye, symbol centre on 2x ruler crop', 0.003])
+        for t, p in M8B_CURVE[m]:
+            rows.append(['NASA CR-149372', '8b', f'M {m}, 1.91 cm, faired curve', m, 'theta deg', t, 'Cp', p,
+                         'first', 'column scan, +-0.3 deg, median', 0.005])
+        both = front90(M8B_SYMBOLS[m] + M8B_CURVE[m])
+        sym = front90(M8B_SYMBOLS[m])
+        mn = 2 / 3 * cp0(m)
+        kappa[m] = both / mn
+        say(f'- M {m}: Cp at 0 deg {M8B_SYMBOLS[m][0][1]:.3f} against Rayleigh {cp0(m):.4f} '
+            f'({M8B_SYMBOLS[m][0][1] / cp0(m) - 1:+.2%}); front {both:.4f} on D, kappa {kappa[m]:.4f} '
+            f'(symbols alone {sym:.4f}, {sym / mn:.4f})')
+    say('')
+    say('## NASA CR-149372 fig. 5 (M 1.0): each cylinder over fig. 8b, fig. 8b below 44 deg')
+    for t, p in M5_COMMON_CURVE:
+        rows.append(['NASA CR-149372', '5', 'M 1.0, shared curve', 1.0, 'theta deg', t, 'Cp', p,
+                     'first', 'column scan, +-0.3 deg, median', 0.005])
+    for t, p in M5_COMMON_SYMBOLS:
+        rows.append(['NASA CR-149372', '5', 'M 1.0, shared curve, symbols', 1.0, 'theta deg', t, 'Cp', p,
+                     'first', 'eye, symbol centre on 2x ruler crop', 0.01])
+    for name, pts in M5_BRANCHES.items():
+        for t, p in pts:
+            rows.append(['NASA CR-149372', '5', f'M 1.0, {name}', 1.0, 'theta deg', t, 'Cp', p, 'first',
+                         'column scan' if 'curve' in name else 'eye, symbol centre on 2x ruler crop',
+                         0.005 if 'curve' in name else 0.01])
+    own = front90(M8B_SYMBOLS[1.0] + M8B_CURVE[1.0])
+    below = [q for q in M8B_SYMBOLS[1.0] + M8B_CURVE[1.0] if q[0] < 44.0]
+    common = [q for q in M5_COMMON_CURVE + M5_COMMON_SYMBOLS if q[0] <= 78]
+    changes = []
+    for name, pts in M5_BRANCHES.items():
+        c = front90(below + common + pts) / own - 1
+        changes.append(c)
+        say(f'- {name}: front {front90(below + common + pts):.4f}, {c:+.2%} of fig. 8b')
+    lo, hi = min(0.0, *changes), max(0.0, *changes)
+    say(f'- spread {lo:+.2%} to {hi:+.2%}')
+    say('')
+    say('## kappa nodes (reading error 1%, the spread above), and the term at 1.49 (TN 2960 band)')
+    for m in (1.0, 1.1, 1.2):
+        say(f'- M {m}: {kappa[m]:.4f}, range {kappa[m] * 0.99 * (1 + lo):.4f} to {kappa[m] * 1.01 * (1 + hi):.4f}')
+    say('- M 1.49: 1, range 0.99 to 1.06 (TN 2960 fig. 5(c) at 1.49: 0.995, 1.002; fig. 5(e): 0.994)')
+    say('')
     with open(os.path.join(DATA, 'fin_edges_w34.csv'), 'w', newline='') as fh:
         w = csv.writer(fh)
         fh.write('# Fin edges of flat plates: first readings (second readings by an independent reader, pending).\n')

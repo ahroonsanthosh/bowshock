@@ -31,14 +31,19 @@ import { atmosphere, type NoseKind, type Rocket } from './population';
 const DEG = Math.PI / 180;
 
 /**
- * The code these refusals mirror. 'w34' (the default since
- * docs/design/0016-fin-edges-of-flat-plates.md): flat plates served, rounded
- * leading edges on any planform swept to 60 deg at normal Mach numbers 1.49
- * to 3.0 (normal-component Reynolds number), blunt trailing edges on fins of
- * varying chord and with layers to c/[h Re_c^(1/5)] 4.5 (to 1.0 above M 3.1).
- * 'before': the code 0014 measured (EDGES=before).
+ * The code these refusals mirror. 'w4e' (the default since
+ * docs/design/0016-fin-edges-of-flat-plates.md section 11): as 'w34', and a
+ * flat plate's rounded leading edge from normal Mach number 1.0. 'w34'
+ * (0016 sections 1 to 10, EDGES=w34): flat plates served, rounded leading
+ * edges on any planform swept to 60 deg at normal Mach numbers 1.49 to 3.0
+ * (normal-component Reynolds number), blunt trailing edges on fins of
+ * varying chord and with layers to c/[h Re_c^(1/5)] 4.5 (to 1.0 above M
+ * 3.1). 'before': the code 0014 measured (EDGES=before).
  */
-export const EDGES: 'w34' | 'before' = process.env.EDGES === 'before' ? 'before' : 'w34';
+export const EDGES: 'w4e' | 'w34' | 'before' =
+  process.env.EDGES === 'before' ? 'before' : process.env.EDGES === 'w34' ? 'w34' : 'w4e';
+/** The lowest normal Mach number served on a plate's rounded leading edge. */
+const LE_NORMAL_MACH_FLOOR = EDGES === 'w4e' ? 1.0 : 1.49;
 
 export const REASONS = {
   // Nose (the page's solve).
@@ -51,29 +56,31 @@ export const REASONS = {
   noseEllipsoid: 'nose: ellipsoid outside the measured domain',
   // Fin sections and leading edges.
   squareLe:
-    EDGES === 'w34'
+    EDGES !== 'before'
       ? 'fins: square-cut (blunt) leading edge (bounded; the ordering not shown, 0016)'
       : 'fins: square-cut (blunt) leading edge not represented',
   roundedTe:
-    EDGES === 'w34'
+    EDGES !== 'before'
       ? 'fins: rounded trailing edge (bounded; the ordering not shown, 0016)'
       : 'fins: rounded trailing edge not represented',
   flatPlateLe:
-    EDGES === 'w34'
+    EDGES !== 'before'
       ? 'fins: rounded leading edge on a flat plate (lifted by 0016)'
       : 'fins: rounded leading edge on a flat plate (the model needs a wedge, h > r)',
   roundedLeTaper:
-    EDGES === 'w34'
+    EDGES !== 'before'
       ? 'fins: rounded leading edge on fins of varying chord (lifted by 0016)'
       : 'fins: rounded leading edge on fins of varying chord',
   roundedLeSwept:
-    EDGES === 'w34' ? 'fins: rounded leading edge swept beyond 60 deg' : 'fins: swept rounded leading edge',
+    EDGES !== 'before' ? 'fins: rounded leading edge swept beyond 60 deg' : 'fins: swept rounded leading edge',
   roundedLeMach:
-    EDGES === 'w34'
-      ? 'fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.49 to 3.0'
-      : 'fins: rounded leading edge outside M 1.49 to 3.0',
+    EDGES === 'w4e'
+      ? 'fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.0 to 3.0 (on a flat plate, 0016)'
+      : EDGES === 'w34'
+        ? 'fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.49 to 3.0'
+        : 'fins: rounded leading edge outside M 1.49 to 3.0',
   roundedLeReynolds:
-    EDGES === 'w34'
+    EDGES !== 'before'
       ? 'fins: rounded leading edge outside Re_D 6.7e3 to 1e6 (normal component)'
       : 'fins: rounded leading edge outside Re_D 6.7e3 to 1e6',
   sectionDetached: 'fins: sharp section, leading-edge shock detached or subsonic behind it',
@@ -89,13 +96,13 @@ export const REASONS = {
   finsAtBaseLowMach: 'base: fins at the base, Mach below 1.5 (outside 1.8 to 3.0)',
   // Fin trailing-edge base.
   teTaper:
-    EDGES === 'w34'
+    EDGES !== 'before'
       ? 'te: blunt trailing edge on fins of varying chord (lifted by 0016)'
       : 'te: blunt trailing edge on fins of varying chord',
   teSwept: 'te: swept blunt trailing edge',
   teMach: 'te: Mach outside 1.5 to 3.2',
   teThick:
-    EDGES === 'w34'
+    EDGES !== 'before'
       ? 'te: thick boundary layer, c/[h Re_c^(1/5)] > 4.5 anywhere along the span (> 1 above M 3.1)'
       : 'te: thick boundary layer, c/[h Re_c^(1/5)] > 1',
 } as const;
@@ -236,7 +243,7 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     const cos = Math.cos(r.leadingEdgeSweepDeg * DEG);
     if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('roundedLeSwept');
     else {
-      if (!(mach * cos >= 1.49 && mach * cos <= 3.0)) out.push('roundedLeMach');
+      if (!(mach * cos >= LE_NORMAL_MACH_FLOOR && mach * cos <= 3.0)) out.push('roundedLeMach');
       const reN = rePerMetre * r.thickness * cos;
       if (!(reN >= 6.7e3 && reN <= 1e6)) out.push('roundedLeReynolds');
     }
@@ -293,8 +300,8 @@ const DUMMY_NOSE: DragComponent = { name: 'nose wave drag', cd: 0, low: 0, high:
  * has no section for it.
  */
 export function libraryRefused(r: Rocket, c: Condition): boolean | undefined {
-  // The library is the present code: no cross-check of the code 0014 measured.
-  if (EDGES === 'before') return undefined;
+  // The library is the present code: no cross-check of the code 0014 or 0016's sections 1 to 10 measured.
+  if (EDGES !== 'w4e') return undefined;
   const section = librarySection(r);
   if (section === undefined) return undefined;
   const air = atmosphere(c.altitudeKm);
