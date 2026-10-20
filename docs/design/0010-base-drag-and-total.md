@@ -1,7 +1,8 @@
 # 0010: Base drag and the total, and the Basic Finner gate (draft)
 
 - **Status:** Draft. Libraries with tests (`src/base/`, `src/total/`, and
-  additions to `src/fins/`); nothing on the drag page. Steps B3, B4's
+  additions to `src/fins/`); the total is on the drag page since
+  [0011](0011-total-drag-on-the-page.md), labelled by section 7. Steps B3, B4's
   rounded-edge term and B5 of [0008](0008-total-drag.md), whose rules
   (section 6.1) govern everything here.
 - **Date:** 2026-10-19
@@ -707,6 +708,8 @@ claim class opens, and no more:
 - B3 and B4's rounded-edge term remain **band estimation, not
   validation**, on their own; they are tested only through this total.
 - Nothing is on the drag page; showing a total there is a separate step.
+  (Taken in [0011](0011-total-drag-on-the-page.md), which decides the
+  class in code and labels the page by this section.)
 
 ## 8. Corrections to 0008
 
