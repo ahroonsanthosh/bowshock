@@ -318,7 +318,7 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     );
   });
 
-  it('a tip whose conical flow crosses the starting plane subsonically is refused, with the reason', () => {
+  it('a tip whose conical flow crosses the starting plane subsonically is refused, but for a tangent nose with supersonic surface flow', () => {
     // The 3-caliber tangent ogive at Mach 1.2: an 18.9 deg tip cone, its
     // surface flow at Mach 0.85.
     const ogive: Body = {
@@ -330,19 +330,53 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     );
     // At Mach 1.5 it is supersonic, and the problem is built.
     expect(() => sharpFitProblem(ogive, { gamma, nj: 20, refinement: 1, mach: 1.5 })).not.toThrow();
+    // At Mach 1.35 its surface flow is supersonic (Mach 1.04) but its axial
+    // component (0.98) is not: served, since the ogive meets the cylinder
+    // without a corner (measured in 0006); on every grid.
+    for (const refinement of [1, 8]) {
+      expect(() => sharpFitProblem(ogive, { gamma, nj: 20, refinement, mach: 1.35 })).not.toThrow();
+    }
     // A 24 deg cone at Mach 1.5: supersonic surface flow (Mach 1.04), whose
     // axial component (0.95) crosses the plane normal to the axis
-    // subsonically; on every grid.
+    // subsonically, and a corner at the cylinder: refused, on every grid.
     const cone: Body = {
       nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(24 * deg), baseRadius: 0.5 },
       cylinderLength: 2,
     };
     for (const refinement of [1, 8]) {
       expect(() => sharpFitProblem(cone, { gamma, nj: 20, refinement, mach: 1.5 })).toThrow(
-        /crosses the solver's starting plane, normal to the axis, at an axial Mach number of 0.95/,
+        /crosses the solver's starting plane, normal to the axis, at an axial Mach number of 0.95 at the surface, below 1, which this solver handles only where the nose meets the body without a corner/,
       );
     }
   });
+
+  it('Mach 1.35, 3-caliber tangent ogive, axially subsonic tip: second order towards the measured value', () => {
+    // Measured in 0006 on the page's family (nj = 20 to 160, each grid
+    // converged to 1e-10 of its drag): 0.1081856017, 0.1077785038,
+    // 0.1076868609, 0.1076656809, at orders 2.15 and 2.11, extrapolated
+    // to 0.1076586209 (band 8.8e-6, 1.6e-5 with the floor); a family laid
+    // out at 1.5 times the column density extrapolates to 1.5e-5 of it.
+    // Measured when written on the coarser family of 10 cells across:
+    // +2.075e-2 and +4.730e-3 of that value, falling by 4.39.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const reference = 0.1076586209;
+    const drag = (nj: number, refinement: number) => {
+      const flow = sharpFittedFlow(ogive, { ...options, nj, refinement, mach: 1.35 });
+      expect(flow.fit.converged).toBe(true);
+      return flow.drag;
+    };
+    const coarse = drag(10, 1) / reference - 1;
+    const fine = drag(10, 2) / reference - 1;
+    expect(fine).toBeGreaterThan(0);
+    expect(fine).toBeLessThan(5e-3);
+    expect(coarse / fine).toBeGreaterThan(4.1);
+    expect(coarse / fine).toBeLessThan(4.7);
+    // The page's base grid, as in the family above.
+    expect(Math.abs(drag(20, 1) / 0.1081856017 - 1)).toBeLessThan(1e-9);
+  }, 900_000);
 
   it('verified fitted drag: a grid that does not converge gives no value, only the reason', async () => {
     const cone: Body = {

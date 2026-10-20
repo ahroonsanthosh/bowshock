@@ -208,12 +208,15 @@
         6.3e-5 at Mach 1.2, where the flow it starts from is barely supersonic. Other blunt noses
         (Von Karman and the other Haack noses, the power series) are not served yet. Refused, with
         the reason: tips whose shock detaches; tips whose flow crosses the solver's starting plane,
-        just behind the tip, at an axial Mach number below 1 (of 40 noses of 1 to 3 calibers tried
-        at Mach 1.2, 19 detach their shock and 13 are refused by this test); tips steeper than about
-        40 deg (a limit of the present grids, set on measurement); bodies whose flow at their end is
-        subsonic; the 6-caliber ellipsoid at Mach 1.2, whose wall cells near the tip are too skewed
-        for the present grids (of ellipsoids of 0.5 to 6 calibers with 1, 2 or 5 calibers of body at
-        Mach 1.2, 1.3 and 1.5, the only ones refused on the coarsest grid).
+        just behind the tip, at an axial Mach number below 1, except where the flow on the tip's
+        surface is supersonic and the nose meets the body without a corner (measured on a 3-caliber
+        tangent ogive at Mach 1.35: two differently laid out grid families agree within 1.5e-5); of
+        40 noses of 1 to 3 calibers tried at Mach 1.2 before that exception, 19 detach their shock
+        and 13 were refused by this test; tips steeper than about 40 deg (a limit of the present
+        grids, set on measurement); bodies whose flow at their end is subsonic; the 6-caliber
+        ellipsoid at Mach 1.2, whose wall cells near the tip are too skewed for the present grids
+        (of ellipsoids of 0.5 to 6 calibers with 1, 2 or 5 calibers of body at Mach 1.2, 1.3 and
+        1.5, the only ones refused on the coarsest grid).
       </p>
     </main>
     <script type="module" src="/src/app/nose-drag.ts"></script>
