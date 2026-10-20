@@ -92,7 +92,10 @@ export class Panel {
  */
 export class Sheet {
   readonly element: HTMLElement;
-  /** The line kept in view above the tabs. */
+  /**
+   * The line kept in view above the tabs. Not a live region: it changes
+   * with every check of a run; pages announce outcomes (Shell.announce).
+   */
   readonly pinned: HTMLElement;
   private readonly tablist: HTMLElement;
   private readonly tabs: HTMLButtonElement[];
@@ -101,7 +104,7 @@ export class Sheet {
   private readonly listeners: (() => void)[] = [];
 
   constructor(private readonly panels: readonly Panel[]) {
-    this.pinned = h('div', { className: 'pinned', attrs: { 'aria-live': 'polite' } });
+    this.pinned = h('div', { className: 'pinned' });
     this.tabs = panels.map((panel, k) => {
       const tab = h('button', {
         className: 'sheet__tab',
@@ -160,12 +163,6 @@ export class Sheet {
   select(index: number): void {
     this.active = index;
     this.apply();
-  }
-
-  /** Show the tab of this panel (on phones). */
-  show(panel: Panel): void {
-    const index = this.panels.indexOf(panel);
-    if (index >= 0) this.select(index);
   }
 
   /** Called when the layout changes between phone and wider screens. */

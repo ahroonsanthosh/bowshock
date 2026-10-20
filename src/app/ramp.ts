@@ -220,6 +220,12 @@ function showState(text: string, kind: ReadoutKind = ''): void {
     badge.textContent = text;
     badge.className = `badge${kind === '' ? '' : ` badge--${kind}`}`;
   }
+  // An outcome (not every step) is said once: the readout and the pinned line are not live.
+  if (kind === 'bad') shell.announce(text);
+  else if (kind !== '') {
+    const exact = exactText.textContent === '' ? '' : `, exact ${exactText.textContent}`;
+    shell.announce(`${text}: ramp pressure ${computedText.textContent}${exact}.`);
+  }
 }
 
 /** Show the colour scale of the field just drawn. */

@@ -23,7 +23,7 @@ import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import type { FlowField } from '../render/flow-fields';
 import { liveFitSource } from '../render/flow-source';
 import { presentationFor } from '../render/presenter';
-import { BASIC_FINNER_GEOMETRY } from '../validation/basic-finner';
+import { basicFinnerBody } from '../validation/basic-finner';
 import { withBand } from './band';
 import { element, h } from '../ui/dom';
 import { FlowView, type FlowScale } from '../ui/flow-view';
@@ -36,17 +36,6 @@ import { Readout, type ReadoutKind } from '../ui/readout';
 import { Shell } from '../ui/shell';
 
 const GAMMA = 1.4;
-const DEG = Math.PI / 180;
-
-/** The Basic Finner without its fins: its 20 deg cone (10 deg half-angle) on its cylinder. */
-function basicFinnerBody(): Body {
-  const g = BASIC_FINNER_GEOMETRY;
-  const noseLength = 0.5 / Math.tan(g.coneHalfAngleDegrees * DEG);
-  return {
-    nose: { shape: { kind: 'conical' }, length: noseLength, baseRadius: 0.5 },
-    cylinderLength: g.length - noseLength,
-  };
-}
 
 /** The body's outline (x, r) from the tip to the base, and down the base to the axis. */
 function outline(body: Body): [number, number][] {
@@ -223,7 +212,7 @@ const readout = new Readout([
   [
     { id: 'step', label: 'step' },
     { id: 'shock', label: 'shock speed' },
-    { id: 'cd', label: 'Cd' },
+    { id: 'cd', label: 'wave Cd, this grid' },
   ],
   [{ id: 'rate' }, { id: 'gpu' }],
   [{ id: 'state' }],
@@ -353,11 +342,21 @@ function showScale(scale: FlowScale): void {
   });
 }
 
+/** What the PNG says it shows: the case, the grid, and the value with its status. */
+function caption(): string[] {
+  const mach = formatFixed(Number(machSelect.value), 2);
+  const value =
+    outcomeShown || lastDrag === null
+      ? `wave Cd ${dragText.textContent} (${statusBadge.textContent})`
+      : `wave Cd on this grid ${lastDrag.toFixed(5)} (solving, not verified)`;
+  return [`bowshock: the Basic Finner, M ${mach}, α 0°, grid ${shownGrid}`, value];
+}
+
 async function savePng(): Promise<void> {
   if (view === null) return;
   const name = `bowshock-basic-finner-M${machSelect.value}-${view.shown.split ? 'split' : view.shown.field}.png`;
   try {
-    await view.savePng(name);
+    await view.savePng(name, caption());
     shell.toasts.show(`Saved ${name}`);
   } catch (error) {
     shell.toasts.show(`Could not save the PNG: ${String(error)}`, 'bad');
@@ -370,6 +369,14 @@ let paused = false;
 let resume: (() => void) | null = null;
 let controller: AbortController | null = null;
 let generation = 0;
+/** The run on the GPU; settled once it has released its grids. */
+let running: Promise<void> = Promise.resolve();
+/** Why the GPU was lost, once it has been. */
+let lost: string | null = null;
+/** The grid drawn, the latest check's drag on it, and whether an outcome is shown. */
+let shownGrid = '';
+let lastDrag: number | null = null;
+let outcomeShown = false;
 
 /** Resolves when the run is not paused (or has been stopped). */
 function gate(): Promise<void> {
@@ -379,17 +386,24 @@ function gate(): Promise<void> {
   });
 }
 
-function togglePause(): void {
-  paused = !paused;
+function setPaused(value: boolean): void {
+  paused = value;
   pauseButton.textContent = paused ? 'Resume' : 'Pause';
   if (!paused) {
     resume?.();
     resume = null;
   }
-  if (controller !== null) showState(paused ? 'Paused' : 'Solving', '');
-  view?.setLive(!paused && controller !== null);
 }
 
+/** Pause or resume the run (nothing to do without one). */
+function togglePause(): void {
+  if (controller === null) return;
+  setPaused(!paused);
+  showState(paused ? 'Paused' : 'Solving', '');
+  view?.setLive(!paused);
+}
+
+pauseButton.disabled = true;
 pauseButton.addEventListener('click', togglePause);
 againButton.addEventListener('click', () => void start());
 machSelect.addEventListener('change', () => void start());
@@ -405,7 +419,7 @@ function badge(text: string, kind: ReadoutKind): void {
   pin();
 }
 
-/** The phone's pinned line: the value and its status, always in view. */
+/** The phone's pinned line: the value and its status, always in view (not a live region). */
 function pin(value = dragText.textContent): void {
   const copy = statusBadge.cloneNode(true) as HTMLElement;
   copy.removeAttribute('id');
@@ -435,38 +449,72 @@ function addLevel(report: LevelReport): void {
   );
 }
 
-/** The outcome in words and in the panel, a band and a status with every value. */
-function showOutcome(outcome: VerifiedDrag): void {
-  switch (outcome.kind) {
-    case 'cancelled':
-      badge('Stopped', '');
-      resultText.textContent = 'Stopped before the finest grid.';
-      return;
-    case 'invalid':
-    case 'not-converged': {
-      badge('Refused', 'bad');
-      dragText.textContent = 'none';
-      resultText.textContent = `No result: on the grid at refinement ${outcome.refinement}, ${outcome.reason}.`;
-      return;
-    }
-    case 'solved': {
-      const e = outcome.estimate;
-      const stopped =
-        outcome.stopped === undefined
-          ? ''
-          : ` The grid at refinement ${outcome.stopped.refinement} was not solved: ${outcome.stopped.reason}; the result is from the grids before it.`;
-      if (outcome.uncertainty !== undefined) {
-        dragText.textContent = withBand(e.value, outcome.uncertainty);
-        badge('Verified', 'ok');
-        resultText.textContent = `The band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`;
-      } else {
-        dragText.textContent = e.value.toFixed(5);
-        badge('Not verified', 'warn');
-        resultText.textContent = `No error band: ${e.kind === 'unresolved' ? e.reason : 'none measured'}; the finest grid’s value is shown, not verified. A finer finest grid may verify it.${stopped}`;
-      }
-      return;
-    }
+/**
+ * An end of a run: the value (or none), the status in words and colour in
+ * the badge and the readout, the reason in the panel, and all of it said
+ * once to screen readers. Green only for a measured band.
+ */
+function settle(value: string, status: string, kind: ReadoutKind, reason: string): void {
+  outcomeShown = true;
+  dragText.textContent = value;
+  resultText.textContent = reason;
+  badge(status, kind);
+  showState(status, kind);
+  shell.announce(`Wave drag coefficient ${value}: ${status}. ${reason}`);
+}
+
+/** The outcome of a run that was not stopped. */
+function showOutcome(
+  outcome: Exclude<VerifiedDrag, { kind: 'cancelled' }>,
+  fallback: number | null,
+): void {
+  if (outcome.kind !== 'solved') {
+    settle(
+      'none',
+      'Refused',
+      'bad',
+      `No result: on the grid at refinement ${outcome.refinement}, ${outcome.reason}.`,
+    );
+    return;
   }
+  const e = outcome.estimate;
+  const notes =
+    (outcome.stopped === undefined
+      ? ''
+      : ` The grid at refinement ${outcome.stopped.refinement} was not solved: ${outcome.stopped.reason}; the result is from the grids before it.`) +
+    (outcome.columnDensity === undefined || fallback === null
+      ? ''
+      : ` The grids have ${outcome.columnDensity} times the usual columns along the body: the usual grid at refinement ${fallback} fails the quality checks of fitted grids.`);
+  if (outcome.uncertainty !== undefined) {
+    settle(
+      withBand(e.value, outcome.uncertainty),
+      'Verified',
+      'ok',
+      `The band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${notes}`,
+    );
+    return;
+  }
+  const finest = finestSelect.selectedIndex === finestSelect.options.length - 1;
+  const finer =
+    outcome.stopped !== undefined
+      ? 'no finer grid could be solved here'
+      : finest
+        ? 'no finer grid is offered here'
+        : 'a finer finest grid may verify it';
+  settle(
+    e.value.toFixed(5),
+    'Not verified',
+    'warn',
+    `No error band: ${e.kind === 'unresolved' ? e.reason : 'none measured'}. The finest grid’s value is shown, not verified; ${finer}.${notes}`,
+  );
+}
+
+const lostText = (reason: string) =>
+  `The GPU was lost (${reason}); reload the page to start it again.`;
+
+/** The GPU failed or was lost: no value. */
+function showGpuFailure(reason: string): void {
+  settle('none', 'GPU failed', 'bad', reason);
 }
 
 /** Steps per second, from the checks of the grid being solved. */
@@ -482,13 +530,18 @@ async function run(device: GPUDevice, myGeneration: number): Promise<void> {
   for (const id of ['grid', 'step', 'shock', 'cd', 'rate']) readout.set(id, null);
   levels.tBodies[0]!.replaceChildren();
   levels.hidden = true;
+  outcomeShown = false;
+  lastDrag = null;
   dragText.textContent = '…';
   resultText.textContent = '';
   badge(`Solving, finest grid ${20 * finest} cells across`, '');
   showState('Solving', '');
   controller = new AbortController();
+  pauseButton.disabled = false;
   view?.setLive(!paused);
-  let cells = 0;
+  // Where the usual grids fail the quality checks of fitted grids and the
+  // family is solved again with more columns: the grid that failed.
+  let fallback: number | null = null;
   try {
     const outcome = await verifiedFittedDragGpu(device, body, {
       mach,
@@ -506,13 +559,14 @@ async function run(device: GPUDevice, myGeneration: number): Promise<void> {
           view?.freeze();
           return;
         }
-        cells = live.ni * live.nj;
-        rate = { refinement, time: performance.now(), iterations: 0, cells };
-        readout.set('grid', formatGrid(live.ni, live.nj));
+        rate = { refinement, time: performance.now(), iterations: 0, cells: live.ni * live.nj };
+        shownGrid = formatGrid(live.ni, live.nj);
+        readout.set('grid', shownGrid);
         view?.setSource(liveFitSource(live));
       },
       onCheck: (refinement, iterations, speed, drag) => {
         if (myGeneration !== generation) return;
+        lastDrag = drag;
         readout.set('step', formatCount(iterations));
         readout.set('shock', formatExponent(speed, 1));
         readout.set('cd', drag.toFixed(5));
@@ -523,31 +577,32 @@ async function run(device: GPUDevice, myGeneration: number): Promise<void> {
             ((iterations - rate.iterations) * rate.cells * 1000) / (now - rate.time);
           readout.set('rate', formatRate(perSecond, 'cell'));
         }
-        rate = { refinement, time: now, iterations, cells };
+        rate = { refinement, time: now, iterations, cells: rate?.cells ?? 0 };
       },
       onLevel: (report) => {
         if (myGeneration === generation) addLevel(report);
       },
+      onFallback: (refinement) => {
+        if (myGeneration !== generation) return;
+        fallback = refinement;
+        levels.tBodies[0]!.replaceChildren();
+        levels.hidden = true;
+        resultText.textContent = `The grid at refinement ${refinement} fails the quality checks of fitted grids: solving every grid again with more columns along the body.`;
+      },
     });
-    if (myGeneration !== generation) return;
-    showOutcome(outcome);
-    pin();
-    showState(
-      outcome.kind === 'solved' ? 'Done' : outcome.kind === 'cancelled' ? 'Stopped' : 'Refused',
-      outcome.kind === 'solved' ? 'ok' : outcome.kind === 'cancelled' ? '' : 'bad',
-    );
+    // A run stopped by a new one shows nothing: the new one shows its own.
+    if (myGeneration !== generation || outcome.kind === 'cancelled') return;
+    showOutcome(outcome, fallback);
   } catch (error) {
     if (myGeneration !== generation) return;
     const reason = error instanceof Error ? error.message : String(error);
-    badge('Refused', 'bad');
-    resultText.textContent =
-      error instanceof GpuExecutionError
-        ? `The GPU failed: ${reason}.`
-        : `Cannot solve this case: ${reason}.`;
-    showState('Refused', 'bad');
+    if (lost !== null) showGpuFailure(lostText(lost));
+    else if (error instanceof GpuExecutionError) showGpuFailure(`The GPU failed: ${reason}.`);
+    else settle('none', 'Refused', 'bad', `Cannot solve this case: ${reason}.`);
   } finally {
     if (myGeneration === generation) {
       controller = null;
+      pauseButton.disabled = true;
       view?.setLive(false);
     }
   }
@@ -559,47 +614,70 @@ async function start(): Promise<void> {
   const myGeneration = ++generation;
   // The run being stopped may release its grid at any moment from now:
   // the view keeps a copy of the flow it shows, and ignores that run.
-  if (controller !== null) view?.freeze();
+  if (controller !== null) {
+    view?.freeze();
+    showState('Stopping the run before', '');
+  }
   controller?.abort();
   controller = null;
-  if (paused) togglePause();
-  resume?.();
-  resume = null;
-  if (device === null || view === null) return;
-  // Let the run being stopped release its grid first.
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  setPaused(false);
+  if (device === null || view === null || lost !== null) return;
+  // Two solves never share the GPU: wait until the run stopped has released its grids.
+  await running;
   if (myGeneration !== generation) return;
-  await run(device, myGeneration);
+  running = run(device, myGeneration);
+  await running;
 }
 
-showState('Starting the GPU', '');
-const gpu = navigator.gpu as GPU | undefined;
-const adapter = await gpu?.requestAdapter();
-if (!adapter) {
-  showState('No WebGPU', 'bad');
-  badge('No WebGPU', 'bad');
-  resultText.textContent =
-    'This page needs WebGPU, which this browser does not provide: try a recent Chrome or Edge.';
-} else {
-  device = await adapter.requestDevice({
-    requiredLimits: {
-      maxBufferSize: adapter.limits.maxBufferSize,
-      maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
-    },
-  });
-  void device.lost.then((info) => {
-    if (info.reason === 'destroyed') return;
-    showState('GPU lost', 'bad');
-    shell.toasts.show(
-      `The GPU was lost (${info.message || info.reason}); reload the page.`,
+/** Nothing can run (no WebGPU, or the GPU failed or was lost). */
+function disableRuns(): void {
+  for (const control of [againButton, pauseButton, machSelect, finestSelect]) {
+    control.disabled = true;
+  }
+}
+
+async function startGpu(): Promise<void> {
+  showState('Starting the GPU', '');
+  const gpu = navigator.gpu as GPU | undefined;
+  const adapter = await gpu?.requestAdapter().catch(() => null);
+  if (!adapter) {
+    disableRuns();
+    settle(
+      'none',
+      'No WebGPU',
       'bad',
-      8,
+      'This page needs WebGPU, which this browser does not provide: try a recent Chrome or Edge.',
     );
+    return;
+  }
+  let gpuDevice: GPUDevice;
+  try {
+    gpuDevice = await adapter.requestDevice({
+      requiredLimits: {
+        maxBufferSize: adapter.limits.maxBufferSize,
+        maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
+      },
+    });
+  } catch (error) {
+    disableRuns();
+    showGpuFailure(`The GPU could not be started: ${String(error)}.`);
+    return;
+  }
+  device = gpuDevice;
+  void gpuDevice.lost.then((info) => {
+    if (info.reason === 'destroyed') return;
+    const reason = info.message === '' ? info.reason : info.message;
+    lost = reason;
+    disableRuns();
+    view?.setLive(false);
+    showGpuFailure(lostText(reason));
+    shell.toasts.show(lostText(reason), 'bad', 8);
   });
   readout.set('gpu', adapter.info.description || adapter.info.architecture || adapter.info.vendor);
-  view = await FlowView.create(device, canvas, {
+  view = await FlowView.create(gpuDevice, canvas, {
     presentation: presentationFor(adapter.info),
-    fitRect: () => shell.viewRect(),
+    // Clear of the readout, the panels and the bottom row.
+    fitRect: (aspect) => shell.drawingRect(aspect),
     onScale: showScale,
   });
   view.onChange(showViewState);
@@ -610,3 +688,5 @@ if (!adapter) {
   });
   await start();
 }
+
+await startGpu();

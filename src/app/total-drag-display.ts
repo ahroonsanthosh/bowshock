@@ -10,7 +10,7 @@
 
 import type { VerifiedDrag } from '../analysis/verified-drag';
 import { bodyLength, type Body } from '../geometry/body';
-import { BASIC_FINNER_GEOMETRY } from '../validation/basic-finner';
+import { BASIC_FINNER_GEOMETRY, basicFinnerBody } from '../validation/basic-finner';
 import { outward, outwardPercent } from './band';
 import { FOOT, flightConditionOf, type AltitudeUnit } from './flight-condition';
 import {
@@ -218,13 +218,17 @@ export function formOf(body: Body, mach: number, f: TotalDragFields): TotalDragF
   };
 }
 
-/** The nose solve's fields for the Basic Finner: its cone, and the cylinder to 10 cal overall. */
+const BASIC_FINNER_BODY = basicFinnerBody();
+/**
+ * The nose solve's fields for the Basic Finner (basicFinnerBody): its cone
+ * and the cylinder to 10 cal overall, to six decimals: 2.835641 and
+ * 7.164359, within 5e-7 of it. At three decimals (2.836) the wave drag
+ * moved by 2e-4 at Mach 2, three times the band's allowance of 7e-5.
+ */
 export const BASIC_FINNER_NOSE_FIELDS = {
   shape: 'conical',
-  noseLength: BASIC_FINNER_CLASS.noseLength.toFixed(3),
-  bodyLength: (
-    BASIC_FINNER_CLASS.length - Number(BASIC_FINNER_CLASS.noseLength.toFixed(3))
-  ).toFixed(3),
+  noseLength: BASIC_FINNER_BODY.nose.length.toFixed(6),
+  bodyLength: BASIC_FINNER_BODY.cylinderLength.toFixed(6),
 } as const;
 
 /**

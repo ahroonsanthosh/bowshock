@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   formatCount,
   formatDegrees,
-  formatDuration,
   formatExponent,
   formatFixed,
   formatGrid,
@@ -63,14 +62,10 @@ describe('numbers as the interface shows them', () => {
     expect(formatScaleValue(123456)).toBe('1.23e5');
   });
 
-  it('writes grids, angles and durations', () => {
+  it('writes grids and angles', () => {
     expect(formatGrid(640, 80)).toBe('640×80');
     expect(formatDegrees(10, true)).toBe('+10°');
     expect(formatDegrees(0, true)).toBe('0°');
     expect(formatDegrees(-12, true)).toBe(`${MINUS}12°`);
-    expect(formatDuration(0.84)).toBe('0.8 s');
-    expect(formatDuration(42.4)).toBe('42 s');
-    expect(formatDuration(59.7)).toBe('1 min 00 s');
-    expect(formatDuration(185)).toBe('3 min 05 s');
   });
 });

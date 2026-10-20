@@ -14,8 +14,15 @@
 
 import { FlowRenderer, type FlowDrawOptions, type FlowSource } from '../render/flow-renderer';
 import type { FlowField } from '../render/flow-fields';
-import { hexToRgb } from '../render/colormap';
-import { CanvasPresenter, CopyPresenter, type Presenter } from '../render/presenter';
+import { colormapTable, hexToRgb } from '../render/colormap';
+import {
+  bytesPerRow,
+  CanvasPresenter,
+  CopyPresenter,
+  readPixels,
+  type Presenter,
+} from '../render/presenter';
+import { formatScaleValue } from './format';
 import { fitView, panBy, zoomAbout, type Bounds, type PixelRect, type View } from '../render/view';
 import type { Rect } from './shell';
 
@@ -56,6 +63,13 @@ const SCHLIEREN_CONTRAST = 3;
 const GRID_SPACING = 5;
 /** How often the legend's range is read back, milliseconds. */
 const RANGE_INTERVAL = 250;
+/** The colour fields as a PNG's caption names them. */
+const FIELD_NAMES: Readonly<Record<FlowField, string>> = {
+  schlieren: 'Schlieren',
+  mach: 'Mach number',
+  cp: 'Pressure coefficient Cp',
+  density: 'Density ρ/ρ∞',
+};
 
 export class FlowView {
   private renderer: FlowRenderer;
@@ -74,7 +88,10 @@ export class FlowView {
   private readonly pointers = new Map<number, { x: number; y: number }>();
   private readonly listeners: (() => void)[] = [];
   private lastScale = '';
+  /** The colour scale last given to onScale, for the PNG's legend. */
+  private scale: FlowScale | null = null;
   private destroyed = false;
+  private lost = false;
   private frames = 0;
 
   static async create(
@@ -109,6 +126,12 @@ export class FlowView {
       this.invalidate();
     }).observe(canvas);
     this.attachPointer();
+    // A lost device draws nothing more: the last frame stays on the canvas.
+    void device.lost.then(() => {
+      this.lost = true;
+      if (this.frame !== null) cancelAnimationFrame(this.frame);
+      this.frame = null;
+    });
   }
 
   /** Frames of the flow drawn so far (for measuring what drawing costs). */
@@ -234,9 +257,9 @@ export class FlowView {
     return this.renderer.probe(points, { ...this.drawOptions(), field, split });
   }
 
-  /** Save the view as a PNG file (K). */
-  async savePng(name: string): Promise<void> {
-    const blob = await this.pngBlob();
+  /** Save the view as a PNG file (K), with the case's caption and the colour scale. */
+  async savePng(name: string, caption: readonly string[] = []): Promise<void> {
+    const blob = await this.pngBlob(caption);
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = name;
@@ -246,36 +269,35 @@ export class FlowView {
     }, 10_000);
   }
 
-  /** The view as a PNG image, drawn afresh at the canvas's size. */
-  async pngBlob(): Promise<Blob> {
+  /**
+   * The view as a PNG image, drawn afresh at the canvas's size, with the
+   * caption's lines and the colour scale (if a colour field is shown) at
+   * its bottom left, so that the image says what it shows.
+   */
+  async pngBlob(caption: readonly string[] = []): Promise<Blob> {
     const { width, height } = this.canvas;
     const texture = this.device.createTexture({
       size: [width, height],
       format: 'rgba8unorm',
       usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC,
     });
-    const stride = Math.ceil((4 * width) / 256) * 256;
     const buffer = this.device.createBuffer({
-      size: stride * height,
+      size: bytesPerRow(width) * height,
       usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
     });
     try {
       const view = this.currentView();
       if (view !== null) this.renderer.draw(texture, { ...this.drawOptions(), view });
-      const encoder = this.device.createCommandEncoder();
-      encoder.copyTextureToBuffer({ texture }, { buffer, bytesPerRow: stride }, [width, height]);
-      this.device.queue.submit([encoder.finish()]);
-      await buffer.mapAsync(GPUMapMode.READ);
-      const rows = new Uint8Array(buffer.getMappedRange());
       const image = new ImageData(width, height);
-      for (let y = 0; y < height; y++) {
-        image.data.set(rows.subarray(y * stride, y * stride + 4 * width), 4 * width * y);
-      }
-      buffer.unmap();
+      await readPixels(this.device, texture, buffer, image);
       const canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
-      canvas.getContext('2d')?.putImageData(image, 0, 0);
+      const context = canvas.getContext('2d');
+      if (context !== null) {
+        context.putImageData(image, 0, 0);
+        this.drawCaption(context, caption);
+      }
       return await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob((blob) => {
           if (blob === null) reject(new Error('the browser could not make a PNG'));
@@ -285,6 +307,47 @@ export class FlowView {
     } finally {
       texture.destroy();
       buffer.destroy();
+    }
+  }
+
+  /** The caption and the colour scale, bottom left on a backing. */
+  private drawCaption(context: CanvasRenderingContext2D, caption: readonly string[]): void {
+    const dpr = window.devicePixelRatio || 1;
+    const scale = this.scale;
+    const colour = scale !== null && (scale.field !== 'schlieren' || scale.split) ? scale : null;
+    const lines = [...caption];
+    if (colour !== null) {
+      const ends = `${formatScaleValue(colour.min)} to ${formatScaleValue(colour.max)}`;
+      lines.push(`${FIELD_NAMES[colour.field]}${colour.split ? ' below the axis' : ''}: ${ends}`);
+    }
+    if (lines.length === 0) return;
+    const size = Math.round(12 * dpr);
+    const line = Math.round(1.5 * size);
+    const pad = Math.round(8 * dpr);
+    const barHeight = colour === null ? 0 : Math.round(8 * dpr);
+    context.font = `${size}px 'JetBrains Mono', monospace`;
+    const textWidth = Math.max(...lines.map((l) => context.measureText(l).width));
+    const boxWidth = Math.ceil(textWidth) + 2 * pad;
+    const boxHeight = lines.length * line + (barHeight > 0 ? barHeight + pad : 0) + 2 * pad;
+    const x = pad;
+    const y = context.canvas.height - boxHeight - pad;
+    context.fillStyle = 'rgb(17 21 28 / 0.9)';
+    context.fillRect(x, y, boxWidth, boxHeight);
+    context.fillStyle = '#e6e8eb';
+    context.textBaseline = 'top';
+    lines.forEach((text, k) => {
+      context.fillText(text, x + pad, y + pad + k * line + (line - size) / 2);
+    });
+    if (colour !== null) {
+      const top = y + pad + lines.length * line;
+      const table = colormapTable(64);
+      const gradient = context.createLinearGradient(x + pad, 0, x + boxWidth - pad, 0);
+      for (let k = 0; k < 64; k++) {
+        const [r, g, b] = [0, 1, 2].map((c) => Math.round(255 * table[4 * k + c]!));
+        gradient.addColorStop(k / 63, `rgb(${r} ${g} ${b})`);
+      }
+      context.fillStyle = gradient;
+      context.fillRect(x + pad, top, boxWidth - 2 * pad, barHeight);
     }
   }
 
@@ -312,7 +375,7 @@ export class FlowView {
   }
 
   private schedule(): void {
-    if (this.frame !== null || this.destroyed) return;
+    if (this.frame !== null || this.destroyed || this.lost) return;
     this.frame = requestAnimationFrame((time) => {
       this.frame = null;
       this.tick(time);
@@ -329,9 +392,14 @@ export class FlowView {
       this.lastFrame = time;
       this.dirty = false;
       const frame = this.renderer.source === null ? this.drawEmpty() : this.drawFrame(time, asked);
-      this.drawing = frame.finally(() => {
-        this.drawing = null;
-      });
+      this.drawing = frame
+        // A frame in flight when the device is lost fails: that is expected.
+        .catch((error: unknown) => {
+          if (!this.lost) throw error;
+        })
+        .finally(() => {
+          this.drawing = null;
+        });
     }
     if (this.live || this.dirty) this.schedule();
   }
@@ -349,7 +417,9 @@ export class FlowView {
     // RANGE_INTERVAL while live.
     if (asked || time - this.lastRange >= RANGE_INTERVAL || this.lastScale === '') {
       this.lastRange = time;
-      void this.readScale();
+      void this.readScale().catch((error: unknown) => {
+        if (!this.lost) throw error;
+      });
     }
   }
 
@@ -383,7 +453,8 @@ export class FlowView {
     const key = `${field} ${split} ${range.min} ${range.max}`;
     if (key === this.lastScale) return;
     this.lastScale = key;
-    this.options.onScale({ field, split, min: range.min, max: range.max });
+    this.scale = { field, split, min: range.min, max: range.max };
+    this.options.onScale(this.scale);
   }
 
   private drawOptions(): Omit<FlowDrawOptions, 'view'> {

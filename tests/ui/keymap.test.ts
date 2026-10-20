@@ -50,7 +50,6 @@ describe('the key map', () => {
       { tagName: 'INPUT', type: '' },
       { tagName: 'input', type: 'SEARCH' },
       { tagName: 'TEXTAREA' },
-      { tagName: 'SELECT' },
       { tagName: 'DIV', isContentEditable: true },
     ];
     for (const target of textFields) {
@@ -78,6 +77,19 @@ describe('the key map', () => {
     const checkbox: FocusTarget = { tagName: 'INPUT', type: 'checkbox' };
     expect(resolveKey(BINDINGS, press(' '), checkbox)).toBeNull();
     expect(resolveKey(BINDINGS, press('ArrowLeft'), checkbox)?.action).toBe('pan-left');
+
+    // A select keeps what moves through and opens its list; a digit is the
+    // page's, or it would pick an option and change the case.
+    const select: FocusTarget = { tagName: 'SELECT' };
+    expect(isTextEntry(select)).toBe(false);
+    for (const key of ['ArrowUp', 'ArrowDown', 'Home', 'End', 'PageDown', ' ', 'Enter', 'Escape']) {
+      expect(usedByControl(select, key)).toBe(true);
+    }
+    expect(resolveKey(BINDINGS, press('ArrowLeft'), select)).toBeNull();
+    expect(resolveKey(BINDINGS, press(' '), select)).toBeNull();
+    expect(resolveKey(BINDINGS, press('1'), select)?.action).toBe('schlieren');
+    expect(resolveKey(BINDINGS, press('g'), select)?.action).toBe('grid');
+    expect(resolveKey(BINDINGS, press('?'), select)?.action).toBe('help');
 
     const link: FocusTarget = { tagName: 'A' };
     expect(resolveKey(BINDINGS, press('Enter'), link)).toBeNull();

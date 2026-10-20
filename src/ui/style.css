@@ -53,7 +53,7 @@
   /* Ground and panels. */
   --ground: #07090c;
   --ground-raised: #0d1117;
-  --panel: rgb(17 21 28 / 0.74);
+  --panel: rgb(17 21 28 / 0.9);
   --panel-solid: #11151c;
   --panel-border: rgb(255 255 255 / 0.08);
   --panel-border-strong: rgb(255 255 255 / 0.14);
@@ -770,14 +770,22 @@ body.app {
   z-index: 10;
   max-width: calc(100vw - 2 * var(--panel-width) - 6 * var(--inset));
   margin: 0;
-  padding: 0;
+  /* A backing, so the text keeps its contrast over the brightest flow. */
+  padding: 4px 10px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(var(--panel-blur));
+  -webkit-backdrop-filter: blur(var(--panel-blur));
   color: var(--text);
   font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.7;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.8);
   pointer-events: none;
+}
+.readout:not(:has(.readout__item:not([hidden]))) {
+  display: none;
 }
 .readout__line {
   display: flex;
@@ -916,7 +924,9 @@ body.app {
 }
 .mode-button[aria-pressed='true'] {
   color: var(--text);
-  background: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.12);
+  /* Pressed shows by more than a shade: the accent's bar below the label. */
+  box-shadow: inset 0 -2px 0 var(--accent);
 }
 .mode-button[aria-pressed='true'] kbd {
   border-color: var(--accent);

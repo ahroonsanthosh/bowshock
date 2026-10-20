@@ -55,9 +55,4 @@ export class Readout {
     else entry.value.setAttribute('data-kind', kind);
     entry.value.classList.toggle('readout__state', kind !== '');
   }
-
-  /** The text of an item, for tests. */
-  get(id: string): string {
-    return this.values.get(id)?.value.textContent ?? '';
-  }
 }

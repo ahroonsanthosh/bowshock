@@ -4,7 +4,7 @@
  * numerals, so these never pad with spaces to align.
  */
 
-/** A thin space between groups of three digits (0012: "step 4 120"). */
+/** A thin space between groups of three digits: 41 200. */
 const GROUP = ' ';
 /** The minus sign, not the hyphen. */
 const MINUS = '−';
@@ -14,7 +14,7 @@ function minus(text: string): string {
   return text.startsWith('-') ? MINUS + text.slice(1) : text;
 }
 
-/** An integer with its digits grouped in threes: 4120 as "4 120" (a thin space). */
+/** An integer with its digits grouped in threes past four digits: 4120, and 41200 as "41 200" (a thin space). */
 export function formatCount(n: number): string {
   if (!Number.isFinite(n)) return String(n);
   const digits = Math.abs(Math.round(n)).toString();
@@ -73,7 +73,7 @@ export function formatScaleValue(x: number): string {
   return minus(x.toPrecision(3));
 }
 
-/** Grid size as "640 × 80". */
+/** Grid size as "640×80" (no spaces, so that it never breaks). */
 export function formatGrid(ni: number, nj: number): string {
   return `${formatCount(ni)}×${formatCount(nj)}`;
 }
@@ -84,14 +84,4 @@ export function formatDegrees(degrees: number, signed = false, decimals = 0): st
   const value = Number(text);
   const sign = signed && value > 0 ? '+' : '';
   return `${sign}${minus(text)}°`;
-}
-
-/** Seconds as "0.8 s", "42 s", "3 min 05 s". */
-export function formatDuration(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return '';
-  if (seconds < 10) return `${seconds.toFixed(1)} s`;
-  if (seconds < 59.5) return `${Math.round(seconds)} s`;
-  const total = Math.round(seconds);
-  const minutes = Math.floor(total / 60);
-  return `${minutes} min ${String(total % 60).padStart(2, '0')} s`;
 }

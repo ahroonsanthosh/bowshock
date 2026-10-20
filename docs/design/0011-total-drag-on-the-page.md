@@ -145,6 +145,15 @@ that spread with standard deviations of 1.6% to 6.3% within a cluster
 +27%. Discrete features are exact: a cone, four fins, no sweep, the
 trailing edges at the base, a single wedge.
 
+**The page's own Basic Finner** is the exact body
+(`basicFinnerBody` in `src/validation/basic-finner.ts`, which the live
+flow page solves too): the page opens on, and the Basic Finner button
+fills, a cone 2.835641 cal long on a 7.164359 cal cylinder. These were
+2.836 and 7.164 until the interface's review (0012) found that the
+rounding moved the solved wave drag by 2e-4 at Mach 2 (on the grid 20
+cells across), three times the band's allowance of 7e-5; the class rule
+and the gate's comparisons, which take the exact body, are unchanged.
+
 **The Mach number and Reynolds number** are 0010 section 7's ranges,
 widened only to take in the gated shots themselves (M 1.799, Re 1.19e7).
 The box has corners no shot flew: the shots lie along Re = 6.6e6 M on

@@ -6,8 +6,8 @@
 
 import { detectGpu, type GpuSupport } from '../gpu/detect';
 import { h } from '../ui/dom';
-import { bandSection, colourScaleSection, Help } from '../ui/help';
-import { KeyMap, type KeyBinding } from '../ui/keymap';
+import { bandSection, colourScaleSection, Help, HELP_BINDING } from '../ui/help';
+import { KeyMap } from '../ui/keymap';
 import { siteMenus } from '../ui/site';
 import { TopBar } from '../ui/topbar';
 
@@ -36,19 +36,14 @@ function render(support: GpuSupport): HTMLElement[] {
   ];
 }
 
-const HELP: KeyBinding<'help'> = {
-  keys: ['h', '?'],
-  action: 'help',
-  description: 'Show or hide this help',
-};
 const help = new Help({
   title: 'Keys and help',
-  bindings: [HELP],
+  bindings: [HELP_BINDING],
   sections: [
     {
       title: 'The pages',
       body: [
-        'Each page draws its flow full window on a dark ground and is run from the keyboard as well as by its buttons: open a page and press H there for its keys.',
+        'The live flow, ramp and shock tube pages are run from the keyboard as well as by their buttons: press H on one of them for its keys.',
       ],
     },
     colourScaleSection(),
@@ -65,7 +60,7 @@ const topBar = new TopBar({
 document.body.prepend(topBar.element);
 document.body.append(help.element);
 new KeyMap(
-  [HELP],
+  [HELP_BINDING],
   () => {
     help.toggle();
   },

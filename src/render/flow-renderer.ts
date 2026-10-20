@@ -8,14 +8,13 @@
  * mirrored about the axis, the body as a solid, with grid lines and the
  * fitted shock as a line on request.
  *
- * The grid is either fixed (a StructuredGrid, uploaded once) or the
- * moving grid of a fitted shock, whose nodes are placed on the GPU each
- * frame from the line grid's own buffers (src/engine-gpu/line-grid.ts).
+ * The grid is the moving grid of a fitted shock: its nodes are placed on
+ * the GPU each frame from the line grid's own buffers
+ * (src/engine-gpu/line-grid.ts).
  */
 
 import gasWgsl from '../engine-gpu/shaders/gas.wgsl?raw';
 import { BufferSet, compileShader } from '../engine-gpu/gpu-common';
-import type { StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
 import { colormapTable, hexToRgb, SCHLIEREN_DARK, SCHLIEREN_LIGHT } from './colormap';
 import { FLOW_FIELD_CODES, type FlowField } from './flow-fields';
@@ -32,7 +31,6 @@ const NOTHING_DRAWN = -3e38;
 
 /** Where the grid's nodes come from. */
 export type FlowNodes =
-  | { readonly kind: 'grid'; readonly grid: StructuredGrid }
   /** Already placed in a GPU buffer, as vec2f, node (i, j) at i + j (ni + 1). */
   | { readonly kind: 'placed'; readonly buffer: GPUBuffer }
   | {
@@ -272,16 +270,11 @@ export class FlowRenderer {
   private readonly bodyBuffers: BufferSet;
   private mapping = false;
 
-  /** A renderer able to draw into textures of `format` (others can be prepared later). */
+  /** A renderer able to draw into textures of `format`, and of rgba8unorm (for PNGs). */
   static async create(device: GPUDevice, format: GPUTextureFormat): Promise<FlowRenderer> {
     const pipelines = await FlowPipelines.create(device);
     await Promise.all([pipelines.prepare(format), pipelines.prepare('rgba8unorm')]);
     return new FlowRenderer(device, pipelines);
-  }
-
-  /** Make ready to draw into textures of another format. */
-  async prepare(format: GPUTextureFormat): Promise<void> {
-    await this.pipelines.prepare(format);
   }
 
   private constructor(
@@ -558,15 +551,9 @@ export class FlowRenderer {
     const nPartials = Math.ceil(nCells / WORKGROUP_SIZE);
     const kind = source.nodes.kind;
     const nodes =
-      kind === 'grid'
-        ? buffers.createWith(
-            'flow nodes',
-            packNodes(source.nodes.grid),
-            usage.STORAGE | usage.COPY_SRC,
-          )
-        : kind === 'placed'
-          ? source.nodes.buffer
-          : buffers.create('flow nodes', 8 * nNodes, usage.STORAGE | usage.COPY_SRC);
+      kind === 'placed'
+        ? source.nodes.buffer
+        : buffers.create('flow nodes', 8 * nNodes, usage.STORAGE | usage.COPY_SRC);
     const values = buffers.create('flow values', 4 * 2 * nCells, usage.STORAGE | usage.COPY_SRC);
     const range = buffers.create(
       'flow range',
@@ -714,8 +701,3 @@ export class FlowRenderer {
 }
 
 /** Node positions as vec2f, node (i, j) at index i + j * (ni + 1). */
-function packNodes(grid: StructuredGrid): Float32Array<ArrayBuffer> {
-  const data = new Float32Array(2 * grid.x.length);
-  for (let n = 0; n < grid.x.length; n++) data.set([grid.x[n]!, grid.y[n]!], 2 * n);
-  return data;
-}

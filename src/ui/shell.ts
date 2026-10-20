@@ -8,7 +8,7 @@
  */
 
 import { h } from './dom';
-import { Help, type HelpSection } from './help';
+import { Help, HELP_BINDING, type HelpSection } from './help';
 import { KeyMap, type KeyBinding } from './keymap';
 import { Panel, Sheet } from './panel';
 import { siteMenus, type MenuGroup, type MenuItem, type PageId } from './site';
@@ -55,12 +55,6 @@ export interface ShellOptions<A extends string> {
 /** Space kept between the drawing and what floats over it, in CSS pixels. */
 const MARGIN = 16;
 
-const HELP_BINDING: KeyBinding<'help'> = {
-  keys: ['h', '?'],
-  action: 'help',
-  description: 'Show or hide this help',
-};
-
 export class Shell<A extends string> {
   readonly topBar: TopBar;
   readonly help: Help;
@@ -72,6 +66,11 @@ export class Shell<A extends string> {
   readonly bottom: HTMLElement;
   readonly viewport: HTMLElement;
   private readonly layoutListeners: (() => void)[] = [];
+  /** Where outcomes are said to screen readers, once each. */
+  private readonly announcer = h('div', {
+    className: 'visually-hidden',
+    attrs: { role: 'status' },
+  });
 
   constructor(options: ShellOptions<A>) {
     const viewport = document.querySelector<HTMLElement>('.viewport');
@@ -135,7 +134,7 @@ export class Shell<A extends string> {
     document.body.prepend(this.topBar.element);
     main.after(this.bottom);
     this.bottom.after(this.sheet.element);
-    main.append(this.toasts.element);
+    main.append(this.toasts.element, this.announcer);
     document.body.append(this.help.element);
 
     new ResizeObserver(() => {
@@ -148,6 +147,19 @@ export class Shell<A extends string> {
     const panel = this.panels.find((p) => p.element.id === id);
     if (panel === undefined) throw new Error(`no panel #${id}`);
     return panel;
+  }
+
+  /**
+   * Say an outcome (a result and its status, a failure) to screen readers.
+   * The readout and the pinned line change with every check of a run and
+   * are not live regions: pages announce what a run ends with.
+   */
+  announce(text: string): void {
+    // Emptied first, so that the same words said twice are said again.
+    this.announcer.textContent = '';
+    window.setTimeout(() => {
+      this.announcer.textContent = text;
+    }, 50);
   }
 
   /** Called when the part of the viewport left uncovered may have changed. */

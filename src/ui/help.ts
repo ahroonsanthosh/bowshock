@@ -2,13 +2,20 @@
  * The help overlay (docs/design/0012-interface.md section 4): opened with
  * H or ?, it lists the page's keys (from its key map, so the two never
  * disagree) and explains the colour scale and the band. It is a modal
- * dialog: focus stays inside it, Esc closes it, and focus returns to where
- * it was.
+ * dialog: focus stays inside it, Esc (or H or ? again) closes it, and focus
+ * returns to where it was.
  */
 
 import { h, icon } from './dom';
-import { bindingLabels, type KeyBinding } from './keymap';
+import { bindingLabels, normalizeKey, type KeyBinding } from './keymap';
 import { colormapGradient, schlierenGradient } from './legend';
+
+/** The key that opens and closes help, on every page. */
+export const HELP_BINDING: KeyBinding<'help'> = {
+  keys: ['h', '?'],
+  action: 'help',
+  description: 'Show or hide this help',
+};
 
 export interface HelpSection {
   readonly title: string;
@@ -63,9 +70,10 @@ export class Help {
       h('caption', { className: 'visually-hidden', text: 'Keys and what they do' }),
       tbody,
     );
+    // Focusable, so that its text scrolls by keyboard too.
     const body = h(
       'div',
-      { className: 'help__body' },
+      { className: 'help__body', attrs: { tabindex: '0', 'aria-label': 'Help text' } },
       h('section', { className: 'help__section' }, h('h3', { text: 'Keys' }), keys),
       ...options.sections.map((section) =>
         h(
@@ -98,6 +106,16 @@ export class Help {
     });
     this.element.addEventListener('keydown', (event) => {
       if (event.key === 'Tab') this.trapFocus(event);
+      else if (
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        HELP_BINDING.keys.includes(normalizeKey(event.key))
+      ) {
+        // The key that opened help closes it.
+        event.preventDefault();
+        this.close();
+      }
     });
   }
 

@@ -267,12 +267,17 @@ async function frame(): Promise<void> {
     running = false;
     runButton.textContent = 'Run';
     status.textContent = `Stopped: ${String(error)}`;
+    shell.announce(status.textContent);
     return;
   }
   draw();
   if (hasReached(snapshot.time, test.tEnd)) {
     running = false;
     runButton.textContent = 'Run';
+    // The outcome, said once (the readout changes every frame and is not live).
+    shell.announce(
+      `Done: L1 density error ${l1Text.textContent} at t = ${snapshot.time.toPrecision(4)}.`,
+    );
     return;
   }
   requestAnimationFrame(() => void frame());

@@ -1,9 +1,11 @@
 /**
  * The keyboard: which key does what on a page (docs/design/0012-interface.md
  * section 4). Keys are ignored while a text field has focus, and a key a
- * focused control uses itself (Space on a button, arrows on a slider) is
- * left to that control, so the keyboard never fights the form. Keys with
- * Ctrl, Alt or Meta are the browser's.
+ * focused control uses itself (Space on a button, arrows on a slider or a
+ * select) is left to that control, so the keyboard never fights the form.
+ * Other keys on a select are the page's: a digit would otherwise pick the
+ * option it starts with and change the case. Keys with Ctrl, Alt or Meta
+ * are the browser's.
  *
  * The decisions are pure functions of plain values, tested without a
  * browser; KeyMap attaches them to a page.
@@ -60,7 +62,7 @@ export function isTextEntry(target: FocusTarget | null): boolean {
   if (target === null) return false;
   if (target.isContentEditable === true) return true;
   const tag = (target.tagName ?? '').toUpperCase();
-  if (tag === 'TEXTAREA' || tag === 'SELECT') return true;
+  if (tag === 'TEXTAREA') return true;
   if (tag === 'INPUT') return TEXT_INPUT_TYPES.has((target.type ?? '').toLowerCase());
   return false;
 }
@@ -84,6 +86,8 @@ export function usedByControl(target: FocusTarget | null, key: string): boolean 
   const type = (target.type ?? '').toLowerCase();
   const activates = key === ' ' || key === 'Enter';
   if (tag === 'BUTTON' || tag === 'A' || tag === 'SUMMARY') return activates;
+  // A select keeps the keys that move through and open its list, and Esc that closes it.
+  if (tag === 'SELECT') return ARROWS_AND_PAGING.has(key) || activates || key === 'Escape';
   if (tag === 'INPUT') {
     if (type === 'range' || type === 'radio') return ARROWS_AND_PAGING.has(key) || activates;
     if (type === 'checkbox' || type === 'button' || type === 'submit' || type === 'reset') {
