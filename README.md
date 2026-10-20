@@ -301,6 +301,9 @@ The design records, in order:
 - [0012](docs/design/0012-interface.md): the interface (draft): a
   full-window, dark, visualization-first layout inspired by FluidX3D's,
   with the drag, its band and its status always on screen.
+- [0014](docs/design/0014-refusals.md): refusals (draft): every refusal,
+  what it costs on a population of supersonic amateur rockets, and the
+  ranked work to lift them with measured bands.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
