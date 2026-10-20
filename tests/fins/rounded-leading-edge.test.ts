@@ -218,4 +218,18 @@ describe('the nose term', () => {
       reason(() => roundedLeadingEdgeDrag({ ...base, mach: 2.6, reynoldsOnDiameter: 6e3 })),
     ).toBe('leading-edge-range');
   });
+
+  it("refuses Re_D above 1e6, TN 2960's highest (round 5, finding 11); 1e6 itself is measured", () => {
+    expect(roundedLeadingEdgeDrag({ ...base, mach: 2.0, reynoldsOnDiameter: 1e6 }).regime).toBe(
+      'measured',
+    );
+    for (const mach of [1.6, 2.0, 2.6, 2.95]) {
+      expect(
+        reason(() => roundedLeadingEdgeDrag({ ...base, mach, reynoldsOnDiameter: 1.01e6 })),
+      ).toBe('leading-edge-range');
+    }
+    expect(
+      reason(() => roundedLeadingEdgeDrag({ ...base, mach: 2.0, reynoldsOnDiameter: 5e6 })),
+    ).toBe('leading-edge-range');
+  });
 });

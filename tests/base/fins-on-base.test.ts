@@ -194,6 +194,89 @@ describe('the factor', () => {
     expect(f.nominal).toBeCloseTo(0.5 * (f.low + f.high), 15);
   });
 
+  it("between rows the ends are interpolated, not the rule applied at the shot's M: at M 2.414 the high end 1.3728, not 1.3997 (round 5, findings 2, 3)", () => {
+    // The rows are every Mach number of either reading of the free-flight line in M 1.80
+    // to 3.00; the rule of 0010 section 1.3 evaluated at a Mach number is a row there.
+    expect(FINS_ON_BASE_ROWS.map((r) => r.mach)).toEqual([
+      1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.41, 2.5, 2.6, 2.7, 2.8, 2.85, 2.9, 2.97, 3.0,
+    ]);
+    // The rule steps at M 2.41, where the tunnel pairs stop and the carried excess begins.
+    const at241 = row(FINS_ON_BASE_ROWS, 2.41)!;
+    const above = finsOnBaseRows({ machs: [2.41 + 1e-9] })[0]!;
+    expect(at241.high).toBeCloseTo(1.371, 3);
+    expect(at241.high).toBe(at241.tunnel);
+    expect(above.high - at241.high).toBeCloseTo(0.0279, 4);
+    // At each gated shot of the Basic Finner: the body base (area ratio 1) by the rule
+    // at the shot's M, minus the code's, in C_D.
+    const shots = [1.846, 1.85, 2.348, 2.364, 2.414, 2.663, 2.741, 2.749, 2.969, 2.97];
+    const differences = shots.map((m) => {
+      const code = finsOnBaseFactor(m, wedge);
+      const rule = finsOnBaseRows({ machs: [m] })[0]!;
+      const q = -compiledCurveValue(m, 'lessNegative');
+      return Math.round(1e5 * (0.5 * (rule.low + rule.high) - code.nominal) * q) / 1e5 + 0;
+    });
+    expect(differences).toEqual([
+      -0.00033, -0.00037, -0.00037, -0.00023, 0.00164, 0.00003, -0.00001, -0.00001, 0, 0,
+    ]);
+    const code = finsOnBaseFactor(2.414, wedge);
+    const rule = finsOnBaseRows({ machs: [2.414] })[0]!;
+    expect(code.high).toBeCloseTo(1.3728, 4);
+    expect(rule.high).toBeCloseTo(1.3997, 4);
+    expect(0.5 * (rule.low + rule.high)).toBeCloseTo(1.2605, 4);
+    expect(code.nominal).toBeCloseTo(1.2471, 4);
+    // The body base's band high end: (F_high - F) q plus the curve band's 0.08 F q.
+    const q = -compiledCurveValue(2.414, 'lessNegative');
+    const dF = 0.5 * (rule.low + rule.high) - code.nominal;
+    expect((rule.high - code.high + 0.08 * dF) * q).toBeCloseTo(0.0034, 4);
+  });
+
+  it("round 3's tunnel pairs at the tunnels' M 1.50, 2.00, 2.41, not its read 1.502, 2.003, 2.405: the M 2.41 row's high end is the tunnel factor 1.3710, else the first reading's 1.3667; the body base at M 2.414 0.00025 higher (round 5, finding 6)", () => {
+    const read: Record<number, number> = { 1.5: 1.502, 2.0: 2.003, 2.41: 2.405 };
+    const moved = TN3819_FIG35_TUNNEL.map((t) =>
+      t.reading === 'round 3' ? { ...t, mach: read[t.mach]! } : t,
+    );
+    const rows = finsOnBaseRows({ tunnel: moved });
+    expect(row(FINS_ON_BASE_ROWS, 2.41)!.high).toBeCloseTo(1.371, 3);
+    expect(row(rows, 2.41)!.high).toBeCloseTo(1.3667, 4);
+    // The factor at the shot, as the code builds it, from either set of rows.
+    const factorAt = (r: readonly { mach: number; low: number; high: number }[], m: number) => {
+      let k = 0;
+      while (k + 2 < r.length && m > r[k + 1]!.mach) k++;
+      const t = (m - r[k]!.mach) / (r[k + 1]!.mach - r[k]!.mach);
+      const lo = r[k]!.low + t * (r[k + 1]!.low - r[k]!.low);
+      const hi = r[k]!.high + t * (r[k + 1]!.high - r[k]!.high);
+      return 0.5 * (lo + hi);
+    };
+    expect(factorAt(FINS_ON_BASE_ROWS, 2.414)).toBeCloseTo(
+      finsOnBaseFactor(2.414, wedge).nominal,
+      14,
+    );
+    const q = -compiledCurveValue(2.414, 'lessNegative');
+    const d = (factorAt(FINS_ON_BASE_ROWS, 2.414) - factorAt(rows, 2.414)) * q;
+    expect(Math.round(1e5 * d) / 1e5).toBe(0.00025);
+  });
+
+  it("round 3's reading error at M 2.97 and 3.00 is +-0.003 (its factor script), not its method note's +-0.002: the rows' low ends 1.146 and 1.147, else 1.150 and 1.151; the body base at M 2.97 0.00019 lower (round 5, finding 5)", () => {
+    const r3 = round3[0]!;
+    expect(r3.points.filter((p) => p.mach >= 2.97).map((p) => [p.mach, p.pB, p.error])).toEqual([
+      [2.97, -0.129, 0.003],
+      [3.0, -0.1278, 0.003],
+    ]);
+    const at002 = TN3819_FIG35_FREE_FLIGHT.map((r) =>
+      r.reading === 'round 3'
+        ? { ...r, points: r.points.map((p) => (p.mach >= 2.97 ? { ...p, error: 0.002 } : p)) }
+        : r,
+    );
+    const rows = finsOnBaseRows({ readings: at002, machs: [2.97, 3.0] });
+    expect(rows.map((r) => Math.round(1000 * r.low) / 1000)).toEqual([1.15, 1.151]);
+    expect(
+      [2.97, 3.0].map((m) => Math.round(1000 * row(FINS_ON_BASE_ROWS, m)!.low) / 1000),
+    ).toEqual([1.146, 1.147]);
+    const q = -compiledCurveValue(2.97, 'lessNegative');
+    const d = (0.5 * (rows[0]!.low + rows[0]!.high) - finsOnBaseFactor(2.97, wedge).nominal) * q;
+    expect(Math.round(1e5 * d) / 1e5).toBe(0.00019);
+  });
+
   it('is labelled a correlation on circular-arc fins and an analogy on any other section', () => {
     expect(finsOnBaseFactor(2, { ...wedge, section: 'circular-arc' }).label).toBe(
       FINS_ON_BASE_LABEL_MEASURED,

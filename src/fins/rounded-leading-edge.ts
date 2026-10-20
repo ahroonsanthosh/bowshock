@@ -44,9 +44,13 @@
  *   set from the boundary-layer displacement scale (about 1% to 2% of D at
  *   Re_D 1e4, doubled), not from data; labelled "extrapolated in Reynolds
  *   number".
- * Refused: M below 1.49 or above 3.0, Re_D below 6.7e3, swept leading
- * edges (no data at M 1.5 to 3; RM A55H31's eq. (14) would be an untested
- * theory there), and sections other than a single wedge.
+ * Refused: M below 1.49 or above 3.0, Re_D below 6.7e3 or above 1e6 (TN
+ * 2960's highest; no opened source measures the front side above it, and
+ * the +-3% allowance, set from the displacement scale at low Reynolds
+ * number, says nothing about a cylinder whose layer may turn turbulent
+ * before separation; round 5, finding 11), swept leading edges (no data at
+ * M 1.5 to 3; RM A55H31's eq. (14) would be an untested theory there), and
+ * sections other than a single wedge.
  */
 
 import { normalShock, stagnationPressureRatio } from '../validation/gas-dynamics';
@@ -204,6 +208,14 @@ export function roundedLeadingEdgeDrag(input: {
       `Reynolds number ${re.toPrecision(3)} on the edge's diameter is below ` +
         `${RM_A55H31_RANGE.reynolds[0]}, the lowest at which a front-side pressure measurement ` +
         'shows no Reynolds-number effect (RM A55H31)',
+    );
+  }
+  if (!(re <= TN2960_RANGE.reynolds[1])) {
+    throw new FinRefusal(
+      'leading-edge-range',
+      `Reynolds number ${re.toPrecision(3)} on the edge's diameter is above ` +
+        `${TN2960_RANGE.reynolds[1]}, the highest at which a front-side pressure measurement ` +
+        'was opened (TN 2960)',
     );
   }
   let regime: RoundedEdgeRegime;

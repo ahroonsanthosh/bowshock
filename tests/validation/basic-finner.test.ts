@@ -26,21 +26,40 @@
  *
  * Tolerance on the residual CX0 / modelled - 1 (0008 sections 6.2 B5 and
  * 6.3): the model-form band (every component's), plus the input bands
- * (transition on friction, low side; the trailing edges' laminar band,
- * both sides; the wall temperature, high side), plus the shot-to-shot
+ * (transition; the wall temperature, high side), plus the shot-to-shot
  * spread of the shot's Mach cluster, all over the modelled total.
  *
  * Verdict: every one of the 11 shots lies inside its tolerance, so the
  * gate passes.
+ *
+ * Round 5 (2026-10-20, 0010 section 10): the band arithmetic was changed
+ * after the hold-out was used, on the independent audit's findings 7 and
+ * 8. The transition input is now evaluated as states of the boundary
+ * layer: each transition Reynolds number moves the friction and, where it
+ * leaves the fins laminar at their trailing edges, the trailing edges'
+ * base together, where the second run added the trailing edges' laminar
+ * band on both sides independently of the friction (its high end needs
+ * laminar trailing edges on turbulent fins, a state no boundary layer
+ * reaches). No base term or band end exceeds the vacuum bound. The
+ * components, the model-form band and the residuals are unchanged; the
+ * tolerance's high end narrows from +26.5% to +31.4% to +23.1% to +27.4%
+ * (its low end is unchanged), and every shot still passes. RECORDED holds
+ * the re-derived values (docs/research/base-and-total/runs/gate-round5.out)
+ * with the second run's beside them.
  */
 
 import { beforeAll, describe, expect, it } from 'vitest';
+import {
+  finTrailingEdgeBaseDrag,
+  type FinTrailingEdgeBase,
+} from '../../src/base/fin-trailing-edge';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { singleWedge } from '../../src/fins/section';
 import {
   finnedBodyComponents,
   finnedBodyTotalDrag,
   type FinnedBody,
+  type FinnedBodyComponents,
 } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents, type TotalDrag } from '../../src/total/total-drag';
@@ -90,8 +109,11 @@ const COMPONENTS = [
 
 /**
  * The second run as it came out (0010 section 4.2): the modelled total, its
- * model-form band, the sums of the input bands, the residual, the
- * tolerance, and the components in the order of COMPONENTS.
+ * model-form band, the residual and the components in the order of
+ * COMPONENTS, unchanged by round 5; the sums of the input bands and the
+ * tolerance as re-derived after round 5 (gate-round5.out), with the second
+ * run's input high end and tolerance high end in `secondRun`
+ * (gate-second-run.out). The low ends did not change.
  */
 const RECORDED = [
   {
@@ -100,9 +122,10 @@ const RECORDED = [
     low: 0.53113,
     high: 0.72612,
     inputLow: -0.04664,
-    inputHigh: 0.03625,
+    inputHigh: 0.01551,
     residual: -0.0299,
-    tolerance: [-0.2417, 0.265],
+    tolerance: [-0.2417, 0.2311],
+    secondRun: { inputHigh: 0.03625, toleranceHigh: 0.265 },
     components: [0.11054, 0.08038, 0.03604, 0.04394, 0.01655, 0.21768, 0.10719],
   },
   {
@@ -111,9 +134,10 @@ const RECORDED = [
     low: 0.51805,
     high: 0.70528,
     inputLow: -0.04467,
-    inputHigh: 0.03713,
+    inputHigh: 0.01596,
     residual: 0.0041,
-    tolerance: [-0.2381, 0.2665],
+    tolerance: [-0.2381, 0.231],
+    secondRun: { inputHigh: 0.03713, toleranceHigh: 0.2665 },
     components: [0.10897, 0.07911, 0.03546, 0.04422, 0.01602, 0.20846, 0.1033],
   },
   {
@@ -122,9 +146,10 @@ const RECORDED = [
     low: 0.51721,
     high: 0.70387,
     inputLow: -0.0448,
-    inputHigh: 0.0369,
+    inputHigh: 0.01601,
     residual: -0.0461,
-    tolerance: [-0.2382, 0.2661],
+    tolerance: [-0.2382, 0.231],
+    secondRun: { inputHigh: 0.0369, toleranceHigh: 0.2661 },
     components: [0.10885, 0.07916, 0.03549, 0.04424, 0.01598, 0.20768, 0.10301],
   },
   {
@@ -133,9 +158,10 @@ const RECORDED = [
     low: 0.42498,
     high: 0.57198,
     inputLow: -0.03302,
-    inputHigh: 0.04005,
+    inputHigh: 0.02042,
     residual: 0.0318,
-    tolerance: [-0.2132, 0.2968],
+    tolerance: [-0.2132, 0.2563],
+    secondRun: { inputHigh: 0.04005, toleranceHigh: 0.2968 },
     components: [0.09677, 0.06878, 0.03089, 0.04631, 0.01215, 0.15545, 0.07423],
   },
   {
@@ -144,9 +170,10 @@ const RECORDED = [
     low: 0.4234,
     high: 0.56903,
     inputLow: -0.03292,
-    inputHigh: 0.03988,
+    inputHigh: 0.02057,
     residual: -0.0091,
-    tolerance: [-0.2126, 0.2961],
+    tolerance: [-0.2126, 0.2561],
+    secondRun: { inputHigh: 0.03988, toleranceHigh: 0.2961 },
     components: [0.09647, 0.06863, 0.03083, 0.04636, 0.01206, 0.15454, 0.07347],
   },
   {
@@ -155,9 +182,10 @@ const RECORDED = [
     low: 0.41738,
     high: 0.55872,
     inputLow: -0.03201,
-    inputHigh: 0.04026,
+    inputHigh: 0.0209,
     residual: -0.0031,
-    tolerance: [-0.2099, 0.2961],
+    tolerance: [-0.2099, 0.2553],
+    secondRun: { inputHigh: 0.04026, toleranceHigh: 0.2961 },
     components: [0.09558, 0.06749, 0.03031, 0.0465, 0.01179, 0.15164, 0.07118],
   },
   {
@@ -166,9 +194,10 @@ const RECORDED = [
     low: 0.3892,
     high: 0.52099,
     inputLow: -0.02881,
-    inputHigh: 0.04027,
+    inputHigh: 0.02259,
     residual: 0.0073,
-    tolerance: [-0.2615, 0.3123],
+    tolerance: [-0.2615, 0.2724],
+    secondRun: { inputHigh: 0.04027, toleranceHigh: 0.3123 },
     components: [0.09168, 0.06321, 0.02845, 0.0471, 0.01064, 0.14078, 0.0609],
   },
   {
@@ -177,9 +206,10 @@ const RECORDED = [
     low: 0.38081,
     high: 0.50965,
     inputLow: -0.02786,
-    inputHigh: 0.04035,
+    inputHigh: 0.02303,
     residual: -0.0767,
-    tolerance: [-0.2608, 0.3142],
+    tolerance: [-0.2608, 0.2742],
+    secondRun: { inputHigh: 0.04035, toleranceHigh: 0.3142 },
     components: [0.09061, 0.06183, 0.02784, 0.04725, 0.01033, 0.13727, 0.05811],
   },
   {
@@ -188,9 +218,10 @@ const RECORDED = [
     low: 0.38003,
     high: 0.50858,
     inputLow: -0.02778,
-    inputHigh: 0.04032,
+    inputHigh: 0.02308,
     residual: 0.0455,
-    tolerance: [-0.2607, 0.3143],
+    tolerance: [-0.2607, 0.2744],
+    secondRun: { inputHigh: 0.04032, toleranceHigh: 0.3143 },
     components: [0.0905, 0.06172, 0.02779, 0.04727, 0.0103, 0.13691, 0.05784],
   },
   {
@@ -199,9 +230,10 @@ const RECORDED = [
     low: 0.35796,
     high: 0.47858,
     inputLow: -0.02533,
-    inputHigh: 0.04036,
+    inputHigh: 0.02411,
     residual: -0.0544,
-    tolerance: [-0.1949, 0.2864],
+    tolerance: [-0.1949, 0.2465],
+    secondRun: { inputHigh: 0.04036, toleranceHigh: 0.2864 },
     components: [0.08783, 0.05797, 0.02613, 0.04764, 0.00953, 0.12724, 0.05081],
   },
   {
@@ -210,9 +242,10 @@ const RECORDED = [
     low: 0.35795,
     high: 0.47855,
     inputLow: -0.02534,
-    inputHigh: 0.04032,
+    inputHigh: 0.02413,
     residual: -0.0765,
-    tolerance: [-0.1949, 0.2863],
+    tolerance: [-0.1949, 0.2465],
+    secondRun: { inputHigh: 0.04032, toleranceHigh: 0.2863 },
     components: [0.08781, 0.05801, 0.02615, 0.04764, 0.00953, 0.1272, 0.05078],
   },
 ];
@@ -227,6 +260,9 @@ interface Shot {
   readonly tolerance: readonly [number, number];
   /** The high end without the wall-temperature input. */
   readonly highWithoutWall: number;
+  readonly states: FinnedBodyComponents['transitionStates'];
+  /** The trailing-edge term as src/base gives it, with its laminar band beside it. */
+  readonly te: FinTrailingEdgeBase;
 }
 
 const clusterSpread = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
@@ -264,9 +300,24 @@ beforeAll(() => {
         (total.high + inputHigh) / total.cd - 1 + spread.hi,
       ],
       highWithoutWall: (total.high + inputHigh - wall.high) / total.cd - 1 + spread.hi,
+      states: parts.transitionStates,
+      te: finTrailingEdgeBaseDrag({
+        mach: s.mach,
+        count: G.finCount,
+        thickness: G.finTrailingEdgeThickness,
+        span: G.finSpan,
+        chord: G.finChord,
+        tanSweep: 0,
+        inBasePlane: true,
+        layer: 'turbulent',
+        reynoldsPerLength: s.reynolds / G.length,
+        transitionReynolds,
+        referenceArea: Math.PI / 4,
+      }),
     };
   });
-});
+  // The 11 totals take about 5 s on an idle machine; the default hook timeout is 10 s.
+}, 120_000);
 
 describe('the gate, second run: 11 shots at Mach 1.80 to 2.97', { timeout: 120_000 }, () => {
   it('has the 11 shots in four clusters, with the cluster spreads of 0008', () => {
@@ -280,14 +331,13 @@ describe('the gate, second run: 11 shots at Mach 1.80 to 2.97', { timeout: 120_0
     ]);
   });
 
-  it('the total computes at every shot, with the seven components and four inputs', () => {
+  it('the total computes at every shot, with the seven components and three inputs', () => {
     for (const s of shots) {
       expect(s.total.components.map((c) => c.name)).toEqual(COMPONENTS);
       expect(s.total.inputs.map((i) => i.name)).toEqual([
         'transition',
         'wall temperature',
         'roughness',
-        'transition at the fin trailing edges',
       ]);
     }
     const s = gated[0]!;
@@ -327,15 +377,36 @@ describe('the gate, second run: 11 shots at Mach 1.80 to 2.97', { timeout: 120_0
     expect(Math.round(1000 * mean) / 10).toBe(-1.9);
   });
 
-  it('the tolerances: -19.5% to -26.2% and +26.5% to +31.4% (+22.7% to +26.1% without the wall)', () => {
+  it('the tolerances after round 5: -19.5% to -26.2% and +23.1% to +27.4% (+18.7% to +22.1% without the wall)', () => {
     const lo = shots.map((s) => s.tolerance[0]);
     const hi = shots.map((s) => s.tolerance[1]);
     const noWall = shots.map((s) => s.highWithoutWall);
     const r = (v: number[]) =>
       [Math.min(...v), Math.max(...v)].map((x) => Math.round(1000 * x) / 10);
     expect(r(lo)).toEqual([-26.2, -19.5]);
-    expect(r(hi)).toEqual([26.5, 31.4]);
-    expect(r(noWall)).toEqual([22.7, 26.1]);
+    expect(r(hi)).toEqual([23.1, 27.4]);
+    expect(r(noWall)).toEqual([18.7, 22.1]);
+  });
+
+  it("the second run's arithmetic reproduced: the trailing edges' laminar band added on its own gave +26.5% to +31.4%; that term is all that moved", () => {
+    shots.forEach((s, k) => {
+      const r = RECORDED[k]!;
+      const transition = s.total.inputs.find((i) => i.name === 'transition')!;
+      // The second run: friction alone (high end 0) plus the laminar band's high end, unclamped.
+      const added = Math.max(0, (s.te.laminar!.high - 1) * s.te.cd);
+      expect(transition.high).toBe(0);
+      expect(Math.abs(s.inputHigh + added - r.secondRun.inputHigh)).toBeLessThan(1e-5);
+      expect(
+        Math.abs(s.tolerance[1] + added / s.total.cd - r.secondRun.toleranceHigh),
+      ).toBeLessThan(1e-4);
+      // 3.4 to 4.1 points of the modelled total, as the audit computed.
+      expect(added / s.total.cd).toBeGreaterThan(0.0338);
+      expect(added / s.total.cd).toBeLessThan(0.0409);
+    });
+    const old = RECORDED.map((r) => r.secondRun.toleranceHigh);
+    expect([Math.min(...old), Math.max(...old)].map((x) => Math.round(1000 * x) / 10)).toEqual([
+      26.5, 31.4,
+    ]);
   });
 
   it('every shot lies inside its tolerance: the gate passes', () => {
@@ -418,26 +489,80 @@ describe('the gate, second run: 11 shots at Mach 1.80 to 2.97', { timeout: 120_0
     expect(Math.round(1000 * Math.max(...changes)) / 10).toBe(3.0);
   });
 
-  it('the input bands: transition -0.0187 to -0.0301, wall +0.0155 to +0.0241, the trailing edges -0.0066/+0.0163 to -0.0165/+0.0207, extrapolated above M 2.3', () => {
+  it('the input bands: transition -0.0253 to -0.0466 and 0, as states; wall +0.0155 to +0.0241', () => {
     const input = (s: Shot, n: string) => s.total.inputs.find((i) => i.name === n)!;
     const r4 = (v: number[]) =>
       [Math.min(...v), Math.max(...v)].map((x) => Math.round(1e4 * x) / 1e4);
-    expect(r4(shots.map((s) => input(s, 'transition').low))).toEqual([-0.0301, -0.0187]);
+    expect(r4(shots.map((s) => input(s, 'transition').low))).toEqual([-0.0466, -0.0253]);
     expect(shots.every((s) => input(s, 'transition').high === 0)).toBe(true);
     expect(r4(shots.map((s) => input(s, 'wall temperature').high))).toEqual([0.0155, 0.0241]);
-    const te = shots.map((s) => input(s, 'transition at the fin trailing edges'));
+    for (const s of shots) {
+      // Two states per Re_T (the body with the run, or turbulent); every state lies below
+      // the turbulent nominal, so the high end is the nominal: the laminar fins' friction
+      // falls by more than their laminar base can rise.
+      expect(s.states.length).toBe(6);
+      expect(Math.max(...s.states.map((x) => x.high))).toBeLessThan(0);
+      // The low end: the run to 3e6 on the body and the fins, the trailing edges laminar.
+      const lowest = s.states.find((x) => x.low === input(s, 'transition').low)!;
+      expect([lowest.reynolds, lowest.bodyTurbulent, lowest.laminarTrailingEdge]).toEqual([
+        3e6,
+        false,
+        true,
+      ]);
+      // Re_T 3e6 leaves the fins laminar at every shot (Re_c 1.19e6 to 1.98e6), 1.6e6 at
+      // the six shots up to M 2.364 (Re_c up to 1.56e6), 5e5 at none.
+      const laminarAt = (reT: number) =>
+        s.states.find((x) => x.reynolds === reT)!.laminarTrailingEdge;
+      expect([laminarAt(5e5), laminarAt(1.6e6), laminarAt(3e6)]).toEqual([
+        false,
+        s.mach <= 2.364,
+        true,
+      ]);
+    }
+  });
+
+  it("the trailing edges' laminar band beside the term: -0.0165/+0.0207 at M 1.80 to -0.0066/+0.0152 at M 2.97 (the high end at the vacuum bound there), extrapolated above M 2.3", () => {
+    const r4 = (v: number[]) =>
+      [Math.min(...v), Math.max(...v)].map((x) => Math.round(1e4 * x) / 1e4);
+    const te = shots.map((s) => s.te.laminarInput);
     expect(r4(te.map((i) => i.low))).toEqual([-0.0165, -0.0066]);
-    expect(r4(te.map((i) => i.high))).toEqual([0.0162, 0.0212]);
+    expect(r4(te.map((i) => i.high))).toEqual([0.0152, 0.0212]);
     expect([te[0]!.low, te[0]!.high].map((x) => Math.round(1e4 * x) / 1e4)).toEqual([
       -0.0165, 0.0207,
     ]);
     expect([te[9]!.low, te[9]!.high].map((x) => Math.round(1e4 * x) / 1e4)).toEqual([
-      -0.0066, 0.0163,
+      -0.0066, 0.0152,
     ]);
-    expect(
-      shots.filter((_, k) => te[k]!.label.includes('extrapolated')).map((s) => s.mach),
-    ).toEqual(shots.filter((s) => s.mach > 2.3).map((s) => s.mach));
+    expect(shots.filter((s) => s.te.laminar!.extrapolated).map((s) => s.mach)).toEqual(
+      shots.filter((s) => s.mach > 2.3).map((s) => s.mach),
+    );
     expect(shots.filter((s) => s.mach > 2.3).length).toBe(8);
+    expect(
+      shots
+        .filter((s) => s.total.inputs[0]!.label.includes('clamped at the vacuum bound'))
+        .map((s) => s.mach),
+    ).toEqual([2.969, 2.97]);
+  });
+
+  it("the vacuum bound: no base term or band end exceeds it; at the tolerance's high end the trailing edges sit at 0.72 to 0.93 of it", () => {
+    for (const s of shots) {
+      const base = s.total.components.find((c) => c.name === 'body base')!;
+      const vacuumBase = 2 / (gamma * s.mach * s.mach);
+      expect(base.high).toBeLessThan(vacuumBase);
+      const te = s.total.components.find((c) => c.name === 'fin trailing-edge base')!;
+      expect([te.cd, te.low, te.high]).toEqual([s.te.cd, s.te.low, s.te.high]);
+      expect(te.high).toBeLessThan(s.te.vacuum);
+      expect(s.te.laminarTerm!.high).toBeLessThanOrEqual(s.te.vacuum);
+    }
+    // The transition input's high end is the turbulent nominal, so the trailing edges'
+    // value at the tolerance's high end is their model-form high end.
+    const r = shots.map(
+      (s) =>
+        s.total.components.find((c) => c.name === 'fin trailing-edge base')!.high / s.te.vacuum,
+    );
+    expect([Math.min(...r), Math.max(...r)].map((x) => Math.round(1000 * x) / 1000)).toEqual([
+      0.721, 0.931,
+    ]);
   });
 
   it('the five shots at Mach 1.06 to 1.33 are refused (reported, not gated)', () => {
