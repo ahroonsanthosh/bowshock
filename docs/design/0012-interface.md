@@ -210,3 +210,58 @@ live flow fit the window; the landing is shorter (881 px at 390 px wide,
 from 1212) but still scrolls by 37 px in an 844 px window; no visible
 paragraph is over 32 words; help is one key away on every page in the
 shell (the drag page joins it in U2).
+
+### Review fixes
+
+An independent review of U0 and U1 before merging found, and these fix:
+
+- **One Basic Finner.** The flow page built its body exactly (the cone
+  0.5 / tan 10 deg = 2.8356409 cal); the drag page from its fields,
+  rounded to 2.836 and 7.164; their wave drags differed by 2.0e-4 of the
+  value at Mach 2 on the first grid, three times the band's allowance of
+  7e-5 of the value.
+  Both now take `basicFinnerBody` (`src/validation/basic-finner.ts`), and
+  the drag page's fields carry it to six decimals (2.835641 and 7.164359;
+  0011 section 3). On the first grid, 20 cells across, the drag page now
+  gives the flow page's wave drag, 0.104617 (it gave 0.104596 with
+  2.836); its fit's convergence check lands at 750 steps rather than the
+  exact body's 1000, and typed in full the drag page matches the flow
+  page in both (`docs/research/interface/numbers.json`).
+- **No value reads as more than it is.** The readout's running value is
+  "wave Cd, this grid"; the end of a run is coloured by its outcome
+  (green only for a measured band, amber for a value not verified, red
+  for a refusal or a failed GPU) and said once to screen readers (the
+  pinned line, which changes at every check, is not a live region). A
+  lost or failed GPU is reported as that, not as a refusal, and disables
+  the runs; the grids solved again with more columns are reported as the
+  drag page reports them; "a finer finest grid may verify it" is said
+  only where one is offered.
+- **Two solves never share the GPU.** A new run waits until the one it
+  stops has released its grids.
+- **Keys.** A focused select keeps only the arrows, paging, Space, Enter
+  and Esc; a digit there is the page's (it picked an option and changed
+  the case). H and ? close help as they open it; help's text takes
+  focus, so that it scrolls by keyboard.
+- **Contrast.** The readout has a backing (its text measured 1.0:1 over
+  the top of the Mach colour map), unblurred, so that software rendering
+  does not redraw a blur at every frame; panels are 0.9 opaque; the
+  pressed mode shows an accent bar.
+- **The flow is fitted clear** of the readout, the panels and the bottom
+  row, and fitted again when a panel grows (it was drawn under the
+  legend at 390 px and under the right panel at 768 px).
+- **The PNG** carries the case, the value with its status, and the
+  colour scale.
+- **The ramp measures before it draws** each batch's frame: the same
+  steps and the same state measured, so the same numbers, and its first
+  result shows a frame sooner.
+- **Tests that test what they claim.** The interface checks press a
+  digit in a focused select, close help by its key and by Esc and check
+  that focus returns, run at 390 px as at 1440, and run axe-core in every
+  field of the flow page; the screenshots are kept as the browser takes
+  them. The usability tasks count only once what they are for is in view
+  (the band and the status both; the new result, changed). The numbers
+  on fixed cases before and after are data (`scripts/numbers-check.mjs`,
+  `docs/research/interface/numbers.json`): the ramp on the GPU and the
+  CPU (also at -10 deg) and the shock tube's Toro tests 1 and 3 on the
+  CPU and test 1 on the GPU are identical at every reading compared.
+  PAGE_PATH_LINE

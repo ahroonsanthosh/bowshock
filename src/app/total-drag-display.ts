@@ -223,7 +223,8 @@ const BASIC_FINNER_BODY = basicFinnerBody();
  * The nose solve's fields for the Basic Finner (basicFinnerBody): its cone
  * and the cylinder to 10 cal overall, to six decimals: 2.835641 and
  * 7.164359, within 5e-7 of it. At three decimals (2.836) the wave drag
- * moved by 2e-4 at Mach 2, three times the band's allowance of 7e-5.
+ * moved by 2.0e-4 of its value at Mach 2, three times the band's
+ * allowance of 7e-5 of the value.
  */
 export const BASIC_FINNER_NOSE_FIELDS = {
   shape: 'conical',

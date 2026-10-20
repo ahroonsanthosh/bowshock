@@ -150,8 +150,9 @@ trailing edges at the base, a single wedge.
 flow page solves too): the page opens on, and the Basic Finner button
 fills, a cone 2.835641 cal long on a 7.164359 cal cylinder. These were
 2.836 and 7.164 until the interface's review (0012) found that the
-rounding moved the solved wave drag by 2e-4 at Mach 2 (on the grid 20
-cells across), three times the band's allowance of 7e-5; the class rule
+rounding moved the solved wave drag by 2.0e-4 of its value at Mach 2
+(0.104596 for 0.104617 on the grid 20 cells across), three times the
+band's allowance of 7e-5 of the value; the class rule
 and the gate's comparisons, which take the exact body, are unchanged.
 
 **The Mach number and Reynolds number** are 0010 section 7's ranges,
