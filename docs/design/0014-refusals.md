@@ -2,7 +2,10 @@
 
 - **Status:** Draft. Research and planning only: nothing in `src/` changes
   with this record. The measurements are in
-  [`docs/research/refusals/`](../research/refusals/README.md).
+  [`docs/research/refusals/`](../research/refusals/README.md). Section 10
+  registers the owner's decisions of 2026-10-20 (the hold-outs and the
+  data that set bands, the "bounded, not measured" label, the Basic
+  Finner's factor), committed before any method work starts.
 - **Date:** 2026-10-20
 - **Inputs:** the code as it stands (the refusals in `src/analysis`,
   `src/grid`, `src/fins`, `src/base`, `src/total`, `src/app` and the drag
@@ -286,9 +289,9 @@ With BRL 934 (the Basic Finner class, Mach 0.98 to 2.47, already
 transcribed) and the Eglin "4-Fin Circular" (flat plates t/c 0.025 at the
 base, Mach 1.42 to 3.42, opened earlier;
 `docs/research/total-drag/data/validation_candidates.md`), there are
-three free-flight sets covering the fins rockets fly. The partition, which
-data set a band and which gate it, must be registered before any of them
-is used (section 9).
+three free-flight sets covering the fins rockets fly. All three are held
+back as tests, and the data that set the bands are named figure by
+figure, in section 10.
 
 **5.3 Hobby leading edges run mostly at subsonic normal Mach numbers.**
 For the rounded edges of the population, M cos(sweep) is below 1 in 59%
@@ -327,21 +330,21 @@ to other branches and are ranked only for completeness. Effort: small
 then code), large (several sources, a model and its band, and grid or
 solver work).
 
-| Rank | Item                                                         | Needed by                 | Effort                                                      | Expected band where served                                                    |
-| ---- | ------------------------------------------------------------ | ------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| 0    | V: register the hobby-class hold-outs and their partition    | all claims                | small                                                       |                                                                               |
-| 1    | W1 fins at the base, rebuilt for the fins rockets fly        | 96%                       | large                                                       | about +-10% to +-20% of the body base term (3% to 8% of the total)            |
-| 2    | W3 blunt trailing edges of thin fins                         | 53%                       | small (thick layer, taper), medium (sweep, Mach 1.0 to 1.5) | about +-15% of the term (a term of 5% to 15% of the total)                    |
-| 2    | W4 rounded leading edges on flat, tapered, swept fins        | 44%                       | medium                                                      | +-5% to +-10% of the term, plus the faces' stated gap                         |
-| 3    | W5 Haack and power-series noses (in progress, `haack-merge`) | 52%                       | large                                                       | the fitted band (5.8e-4 of the nose drag on the 3-calibre LD-Haack at Mach 2) |
-| 4    | W2 the base below Mach 1.5                                   | 50% (all of M 1.0 to 1.5) | medium                                                      | about 0.85 to 1.3 on the term, to be measured                                 |
-| 5    | W6 blunted nose tips                                         | 50%                       | medium to large                                             | as for ellipsoids: the grids' band and the allowance                          |
-| 6    | W9 sharp sections: reflected waves, detached bevel shocks    | 31%                       | medium (CPU)                                                | a measured allowance under the fins' own band                                 |
-| 7    | W11 square-cut leading edges, rounded trailing edges         | 31%                       | small                                                       | bounded: the whole difference between the bounds                              |
-| 8    | W7 Mach 1.0 to 1.2 nose solve (in progress, 0013)            | 25%                       | large                                                       | as 0013 measures                                                              |
-| 9    | W10 boat-tails                                               | 16%                       | large                                                       | about +-20% on the boat-tail and base terms, to be measured                   |
-| 10   | W8 steep, detached and subsonic sharp tips                   | 9%                        | with W5 and W7                                              |                                                                               |
-| 11   | W12 the page's missing wedge-flat section                    | 9%                        | small                                                       | the library's                                                                 |
+| Rank | Item                                                            | Needed by                 | Effort                                                      | Expected band where served                                                    |
+| ---- | --------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 0    | V: the hold-outs and band-setting data, registered (section 10) | all claims                | done                                                        |                                                                               |
+| 1    | W1 fins at the base, rebuilt for the fins rockets fly           | 96%                       | large                                                       | about +-10% to +-20% of the body base term (3% to 8% of the total)            |
+| 2    | W3 blunt trailing edges of thin fins                            | 53%                       | small (thick layer, taper), medium (sweep, Mach 1.0 to 1.5) | about +-15% of the term (a term of 5% to 15% of the total)                    |
+| 2    | W4 rounded leading edges on flat, tapered, swept fins           | 44%                       | medium                                                      | +-5% to +-10% of the term, plus the faces' stated gap                         |
+| 3    | W5 Haack and power-series noses (in progress, `haack-merge`)    | 52%                       | large                                                       | the fitted band (5.8e-4 of the nose drag on the 3-calibre LD-Haack at Mach 2) |
+| 4    | W2 the base below Mach 1.5                                      | 50% (all of M 1.0 to 1.5) | medium                                                      | about 0.85 to 1.3 on the term, to be measured                                 |
+| 5    | W6 blunted nose tips                                            | 50%                       | medium to large                                             | as for ellipsoids: the grids' band and the allowance                          |
+| 6    | W9 sharp sections: reflected waves, detached bevel shocks       | 31%                       | medium (CPU)                                                | a measured allowance under the fins' own band                                 |
+| 7    | W11 square-cut leading edges, rounded trailing edges            | 31%                       | small                                                       | bounded: the whole difference between the bounds                              |
+| 8    | W7 Mach 1.0 to 1.2 nose solve (in progress, 0013)               | 25%                       | large                                                       | as 0013 measures                                                              |
+| 9    | W10 boat-tails                                                  | 16%                       | large                                                       | about +-20% on the boat-tail and base terms, to be measured                   |
+| 10   | W8 steep, detached and subsonic sharp tips                      | 9%                        | with W5 and W7                                              |                                                                               |
+| 11   | W12 the page's missing wedge-flat section                       | 9%                        | small                                                       | the library's                                                                 |
 
 ### 6.1 Totals as the work is done
 
@@ -369,15 +372,8 @@ shape: 25% to 29% after the first five, 89% to 91% after all but W12.
 
 ### 6.2 The items
 
-**V. Register the hold-outs first.** Before any band of W1 to W4 is set,
-record which sets set bands and which gate them, as 0008 section 6.1's
-hold-out rule requires: BRL 934 (Mach 0.98 to 2.47; for W1 and W2 its
-rounds at 1.5 to 1.8 and below 1.5), the PARD standard body's totals
-(TN 3697 fig. 5, TN 3650 fig. 4, RM L52E06 E and G), the Eglin "4-Fin
-Circular" set. If RM L52E06's base pressures set the flat-plate factor at
-Mach 1.0 to 1.3, the PARD totals there no longer test the base, and only
-TN 3697's Mach 1.3 to 2.1 remain a gate for it. Effort small: a section
-in this record, no data read.
+**V. Register the hold-outs first.** Done: section 10, by the owner's
+decisions of 2026-10-20, committed before any method work.
 
 **W1. Fins at the base, rebuilt for the fins rockets fly.** Lifts B4 to
 B7.
@@ -386,9 +382,9 @@ B7.
   a function of what the data show moves it, interpolated only inside
   measured families: the trailing-edge half-angle (circular arcs at t/c
   0, 0.05, 0.10: TN 3819 fig. 33, TN 2360 fig. 6, the free-flight line of
-  fig. 35; square-edged plates: RM L52E06 figs. 7 and 8, TN 3372), the
-  sweep (45 deg: RM L52J21a; 60 deg: TN 3819 fig. 34 from RM E50D28, and
-  TN 3320 in flight), the count (two and four fins, TN 2360 fig. 6; three
+  fig. 35; square-edged plates: RM L52E06 figs. 6 to 8, TN 3372 figs. 7
+  to 12), the sweep (45 deg: RM L52J21a figs. 8, 31 to 33, 38, 39; 60 deg:
+  TN 3819 fig. 34 from RM E50D28), the count (two and four fins, TN 2360 fig. 6; three
   bracketed between them, since the increment grows with count but less
   than in proportion), the position (x/c from -1 to +1: TN 2360 fig. 6,
   TN 3819 fig. 32), and Mach 1.5 to 1.8 (fig. 35's line, read from Mach
@@ -403,11 +399,12 @@ B7.
   thicknesses beyond the measured (a 10% circular arc, about 11 deg);
   sweeps beyond 60 deg; x/c beyond +-1 (a chord or more ahead keeps the
   plain curve, labelled, as now); Mach outside each family's range.
-- _Hold-out._ As V: BRL 934 first.
+- _Hold-out._ Section 10: BRL 934 first, then the PARD standard body's
+  and the Eglin set's totals.
 - _Effort._ Large: TN 2360 fig. 6, TN 3819 figs. 32 to 34, the second
-  reading of fig. 35 below 1.8, RM L52E06 figs. 7 and 8 and RM L52J21a's
-  finned base pressures, each read twice; the model, its tests, a record
-  section; about the size of 0010 section 1.3.
+  reading of fig. 35 below 1.8, RM L52E06 figs. 6 to 8, TN 3372 figs. 7
+  to 12 and RM L52J21a's finned base pressures, each read twice; the
+  model, its tests, a record section; about the size of 0010 section 1.3.
 
 **W3. Blunt trailing edges of thin fins.** Lifts T1 to T4.
 
@@ -458,13 +455,12 @@ to F7.
   wedges, until a planar blunt solve measures it (0008 B4).
 - _Stays refused._ The transonic normal-Mach gap unless bridged; Re_D
   outside 6.7e3 to 1e6.
-- _Hold-out._ The PARD standard body's fins are exactly this edge; RM
-  L52E06 fig. 11 (their drag increments at Mach 0.7 to 1.3) is component
-  data and could set or check the swept term at low normal Mach numbers:
-  a choice for V.
-- _Effort._ Medium: TN 2960 figs. 5(a) and 5(b), RM A55H31 fig. 12 (not
-  yet read, 0008 B1) and TN 3861 figs. 15 and 16, each read twice; a small
-  code change; tests.
+- _Hold-out._ The PARD standard body's totals, whose fins are exactly
+  this edge (section 10). RM L52E06 fig. 11, their drag increments, is
+  derived from held-back totals and sets nothing.
+- _Effort._ Medium: TN 2960 figs. 5(a) and 5(b), RM A55H31 figs. 9 to 12
+  (fig. 12 not yet read, 0008 B1) and TN 3861 figs. 15 and 16, each read
+  twice; a small code change; tests.
 
 **W5. Haack and power-series noses** (in progress on `haack-merge`). The
 two-scale C grid is measured on the CPU: the 3-calibre LD-Haack at Mach 2
@@ -482,9 +478,9 @@ fins at the base there.
 - _Method._ The compiled curve continued below 1.5 (fig. 18's rows at
   Mach 1.0, 1.2 and 1.4 are read once: a second reading), with a band set
   on free-flight data: fig. 18's free-flight curve (Mach 1.06 to 1.21),
-  RM L52E06's finless body (Mach 0.7 to 1.3, +-0.013 in P_B at 1.25).
-  TR R-100's helium-gun bodies (fins at the base, totals only, to about
-  Mach 1.3 to 1.4) are a further hold-out, not band data. Fins at the base below 1.5:
+  RM L52E06's finless body (Mach 0.7 to 1.3, +-0.013 in P_B at 1.25;
+  figs. 6 to 8). TR R-100's helium-gun bodies (fins at the base, totals
+  only, to about Mach 1.3 to 1.4) set no band. Fins at the base below 1.5:
   fig. 35's free-flight line (round 3, from Mach 1.1) and the flat plates
   of RM L52E06 and TN 3372. Mach 1.3 to 1.5, where no free-flight data
   were found, interpolated with the band of both sides.
@@ -523,13 +519,12 @@ larger unknown and stays labelled. Effort medium, and CPU-heavy (one
 hexagon's fourth grid took 28 minutes).
 
 **W11. Square-cut leading edges and rounded trailing edges.** No opened
-source isolates either at these conditions. Bounded estimates are
-possible: a square-cut edge between the rounded edge's term and pitot
-pressure on the whole face (RM A53D02 fig. 17, square-cut edges on 71.6
-deg fins, read once, as a check); a rounded trailing edge between no base
-drag and the square edge's term. The band is the whole difference.
-Whether such a bounded number may be served is the owner's decision
-(section 9); without it these 31% stay refused.
+source isolates either at these conditions. The owner has allowed them
+as "bounded, not measured" (section 10.2): a square-cut edge between the
+rounded edge's term and pitot pressure on the whole face; a rounded
+trailing edge between no base drag and the square edge's term; the band
+the whole gap. RM A53D02 fig. 17 (square-cut edges on 71.6 deg fins, read
+once in 0008) is a check of the first, not a bound.
 
 **W7. Mach 1.0 to 1.2** (in progress, 0013 on `transonic-mach1`; as its
 latest commits state): cones meet the supersonic standard at Mach 1.2; at
@@ -545,11 +540,12 @@ supersonic flow), with a viscous allowance measured on RM E51F26 (5.6);
 the base pressure by Love's method (TN 3819 figs. 19 to 26) or Cortright's
 semi-empirical coefficient, fed the Mach number and pressure ahead of the
 base from the solve; band set on RM E51F26, TN 3819 fig. 25 (Kurzweg,
-Mach 3.24), RM L52J21a's base shapes (with fins), RM A52E20 (Reller and
-Hamaker, Mach 2.73 to 4.98; not opened); hold-out TN 3320 (the RM-10 in
-flight, boat-tailed with fins at the base, Mach 0.9 to 3.3) and TN 3372
-configuration D. Fins ending ahead of the boat-tail come from W1's x/c.
-Effort large.
+Mach 3.24), RM L52J21a's base shapes (with fins, fig. 8), TN 3372's
+configuration D (a converging afterbody in flight, Mach 0.7 to 1.2), RM
+A52E20 (Reller and Hamaker, Mach 2.73 to 4.98; not opened); hold-out TN
+3320 (the RM-10 in flight, boat-tailed with fins at the base, Mach 0.9 to
+3.3; held back whole, section 10). Fins ending ahead of the boat-tail
+come from W1's x/c. Effort large.
 
 **W8. Steep, detached and subsonic sharp tips.** 35% of cases at Mach
 1.0 to 1.2, 2% at 1.2 to 1.5: the two-scale grids (W5's branch, detached
@@ -621,16 +617,21 @@ searched). The earlier hold-out search's "not reached" list stands
 
 ## 9. Open
 
-Decisions for the owner:
+The three decisions this section first asked for (the partition of the
+hobby-class sets, bounded estimates, the Basic Finner's factor) were made
+by the owner on 2026-10-20 and are registered in section 10.
 
-- The partition of the hobby-class sets (V): which of RM L52E06's and TN
-  3372's base pressures set W1's and W2's bands, and which totals (TN
-  3697, TN 3650, RM L52E06, the Eglin set, BRL 934) are kept to gate them.
-- Bounded estimates (W11): may a number be served whose band is the
-  whole difference between two measured bounds, or do square-cut leading
-  edges and rounded trailing edges stay refused?
-- The Basic Finner's fins-on-base analogy (5.1): kept, labelled, until
-  the rebuilt factor has been tested on BRL 934.
+Proposed here, not registered (for the owner):
+
+- A held-back set whose cases need methods committed at different times
+  (the PARD body's totals below Mach 1.2 need W7) could be run once per
+  Mach range fixed in advance (1.0 to 1.2, and 1.2 and above), each range
+  once; under section 10.1 as registered it is run once, when every method
+  all its cases need is committed.
+- BRL 934's one run could also report the present model at the rounds
+  inside its domain (Mach 1.798 to 2.47), beside the rebuilt one, making
+  it a second hold-out of the present class as well; a failure there
+  would refuse that class's claim (0008 section 6.1).
 
 For the work:
 
@@ -643,4 +644,135 @@ For the work:
   solving the population's noses on the GPU; until then the nose figures
   are upper bounds.
 - Every figure read by eye in section 5 is one reading; each needs two
-  before it sets or tests a band.
+  before it sets or tests a band (section 10.4).
+
+## 10. Registration: the owner's decisions of 2026-10-20
+
+Registered before any work on W1 to W12 starts, and committed as such.
+Nothing below changes except by a recorded decision made before the data
+it concerns are run.
+
+### 10.1 What sets bands, and what tests them
+
+**Rules.**
+
+1. The free-flight total-drag sets of the table below (the owner's three,
+   and TN 3320 added by this record) are held back as independent tests.
+   No figure, table or value in them sets or
+   shapes a band, chooses a method, or decides between interpretations.
+2. Component and tunnel data set the bands: the second table, by figure
+   or table. A figure not named there sets nothing until a later record
+   names it, before it is used.
+3. Each held-back set is run once, after every method its cases need and
+   each method's band are committed. Its result is recorded whatever it
+   is: residuals, passes, failures and refusals alike. It is not run again
+   for the same cases. A failure refuses the configuration it tests and
+   does not widen a band or retune a method (0008 section 6.1).
+4. A pass is 0010's: every case's measured over modelled within its
+   tolerance, built from the model-form band, the input bands and the
+   set's own spread as 0010 sections 6.2 and 10.3 build it.
+5. Before a set is run, and before a figure sets a band, it is read twice
+   (0008's reading rule; section 10.4 lists what has one reading or none).
+
+**Held back: the tests.**
+
+| Set                                                                                | Held back (every drag value in these)                                                                                                                                                             | Not held back                                                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The Langley PARD standard body                                                     | TN 3697 fig. 5 (six models, Mach 1.0 to 2.1); TN 3650 fig. 4 (the wingless body, Mach 0.7 to 1.6); RM L52E06 figs. 9 to 12 (its totals, the fin-drag increments derived from them, the fore drag) | RM L52E06 figs. 6 to 8 and TN 3372 figs. 7 to 12 (base pressures: band-setting, below); the geometry (TN 3697 figs. 1, 2; RM L52E06 fig. 1 and table I; TN 3372 fig. 1), used only to describe the body; the winged totals of TN 3697 and TN 3650, which are not used |
+| BRL Report 934 (DTIC AD068959)                                                     | Table III, Graphs I and II                                                                                                                                                                        | Table I and the text's geometry, used to describe the models. Transcribed (`docs/research/total-drag/data/basic_finner_brl934.md`), its scatter computed; no model run on it                                                                                          |
+| The Eglin "4-Fin Circular" set (AFRL-MN-EG-TR-2001-7082, DTIC ADA395037)           | Table D-3                                                                                                                                                                                         | fig. 4 (geometry). Opened, not transcribed                                                                                                                                                                                                                            |
+| Added by this record: TN 3320 (the RM-10 in flight, boat-tailed, fins at the base) | every figure: its totals and its base pressures                                                                                                                                                   | Held back whole for W10, so that none of its base pressures sets a term its totals would test. Not one of the owner's three; listed so that it is not used for a band                                                                                                 |
+
+Where one body appears on both sides: RM L52E06's and TN 3372's base
+pressures (the PARD body, finless and finned, Mach 0.7 to 1.3) set the
+flat-plate fins-on-base factor and the base below Mach 1.5, while the same
+body's totals are held back. The totals come from other flights, so the
+test is independent data, but at Mach 1.0 to 1.3 it tests a total whose
+base term was set on that body; the run's record says so. Above Mach 1.3
+no PARD data sets any band.
+
+**Band-setting: component and tunnel data.**
+
+| Source                            | Sets bands with                                                                                                                                                        | Not used to set bands                       |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| TN 3819 (Love)                    | figs. 32 to 35 (fins at the base: location, thickness, sweep, Mach; fig. 35's free-flight line is base pressure, component data); fig. 18 as now; figs. 19 to 26 (W10) | the rest                                    |
+| TN 2360 (Spahr and Dickey)        | figs. 5 to 7 (base pressure with tails: Reynolds number, location, count, thickness, Mach)                                                                             | fig. 1 (a compilation of other reports)     |
+| RM L52J21a (Love and O'Donnell)   | fig. 8 (the finned body's base pressures), figs. 31 to 33 (unfinned, against Reynolds number), figs. 38, 39 (fin effects)                                              | the rest, unless a later record names them  |
+| RM L52E06 (Hart)                  | figs. 6 to 8 (base pressures: the sting's effect, rim and centre with and without fins, base drag of A and C)                                                          | figs. 9 to 12, held back                    |
+| TN 3372 (Peck)                    | figs. 7 to 12 (base pressures of configurations A to D, D for W10)                                                                                                     | it has no total drag                        |
+| TR 1109, RM A51J25, TN D-1056     | as now (figs. 8 and 29; fig. 7; table II)                                                                                                                              |                                             |
+| RM L52D21 (Goin)                  | figs. 3, 4 and 7 to 16 (base pressures of blunt trailing edges, unswept and swept)                                                                                     | figs. 1, 2, 5, 6 (models, photographs)      |
+| TN 3548 (Morrow and Katz)         | its base pressures on the blunt trailing-edge airfoil (figures named when it is opened)                                                                                | its diamond and circular-arc airfoils' drag |
+| TN 2960 (Gowen and Perkins)       | figs. 5(a) to 5(e) (pressure distributions), 6, 7 (drag against Reynolds and Mach numbers; figs. 5(c) and 7 as now)                                                    | figs. 8, 9                                  |
+| RM A55H31 (Goodwin et al.)        | figs. 9 to 12 (pressure ratios on the yawed cylinder, pressure drag against yaw)                                                                                       | the heat-transfer figures                   |
+| TN 3861 (Penland)                 | figs. 15, 16 (crossflow results) and the pressure distributions behind them                                                                                            | the rest                                    |
+| By the same rule, for W5, W6, W10 | TR 1386 (nose pressures and foredrags: a check of the nose solve, as 0006 uses TN 3716, not a total); RM E51F26 (boat-tail side and base pressures, no jet)            | RM E51F26's jet-on data                     |
+
+RM A53D02 fig. 17 (square-cut leading edges, a total-drag increment, read
+once in 0008 and so not blind) sets no bound of W11; it may check the
+square-edge bounds once they are committed.
+
+### 10.2 "Bounded, not measured"
+
+The owner allows a number whose band is the whole gap between two bounds,
+for square-cut leading edges and rounded trailing edges. Defined:
+
+- **When it applies.** No measurement covers the component at the case's
+  conditions, but it lies between a lower and an upper bound, each either
+  a measured term with its own band or a physical limit (the pitot
+  pressure, the vacuum bound, zero area), and that it lies between them
+  (the ordering) is shown by a measurement or by a physical argument
+  written in the record before the number is served. Without the
+  ordering shown, the case stays refused.
+- **What is served.** The midpoint of the bounds, with a band from the
+  lower bound's low end to the upper bound's high end: the whole gap, the
+  bounds' own bands included, nothing narrowing it. It enters the total's
+  band linearly, as every component's does.
+- **The label.** "bounded, not measured: between <lower bound> (<its
+  source>) and <upper bound> (<its source>)", with the gap's size in C_D
+  beside the component. A total that contains one is at best "an
+  estimate, not validated", whatever its class, and its claim names the
+  bounded component.
+- **Where.** Square-cut leading edges: lower, the rounded edge of the same
+  thickness (W4's term at its band's low end; TN 2960); upper, pitot
+  pressure over the whole face (a physical limit); the ordering to show,
+  that a flat face carries at least a half-cylinder's front-side drag.
+  Rounded trailing edges: lower, no base drag; upper, the square-cut edge
+  of the same thickness (W3's term at its band's high end; TR 1109, RM
+  A51J25, TN D-1056); the ordering to show, that the rounded edge carries
+  neither thrust nor more than the square edge's base drag. Anywhere else
+  only by a recorded decision, and never where a measured method covers
+  the case.
+
+### 10.3 The Basic Finner's factor
+
+- The validated total of the Basic Finner's class keeps the present
+  fins-on-base factor (0010 section 1.3, `src/base/fins-on-base.ts`) and
+  its labels unchanged, for every case inside the class, even where the
+  rebuilt factor (W1) would also cover it.
+- The rebuilt factor replaces it inside the class only after the rebuilt
+  factor passes its own hold-out, BRL 934 first, and then only by a
+  recorded decision. Once replaced, the class's validated claim rests on
+  the hold-out the rebuilt factor passed: the DREV gate tested the
+  present factor, and a changed term is not validated by it (0008
+  section 6.1).
+- Outside the class the rebuilt factor is served once committed, as every
+  component is: with its band, labelled estimated on component data, the
+  total "an estimate, not validated" until a hold-out of its class passes.
+
+### 10.4 Readings still owed
+
+Before any of these sets a band or tests anything, each is read twice:
+
+- **One reading, by eye, in this record** (section 5): TN 3697 fig. 5; RM
+  L52E06 figs. 7 and 8; TN 3819 figs. 33 and 34. They are quoted only to
+  plan the work.
+- **One reading:** TN 3819 fig. 35 below Mach 1.8 (round 3 only); TN 3819
+  fig. 18's rows at Mach 1.0, 1.2 and 1.4; BRL 934's Graph I (its tables
+  were read twice by the same reader; a second reader is pending, 0010
+  section 9).
+- **Not read:** TN 3819 fig. 32; TN 2360 figs. 5 to 7; RM L52E06 fig. 6;
+  TN 3372 figs. 7 to 12; RM L52J21a's figures; RM L52D21's; TN 2960 figs.
+  5(a), 5(b), 5(d), 5(e) and 6; RM A55H31 figs. 9 to 12; TN 3861 figs. 15
+  and 16; TN 3548; TR 1386; RM E51F26. And of the held-back sets: TN 3650
+  fig. 4, RM L52E06 figs. 9 to 12, the Eglin Table D-3.
