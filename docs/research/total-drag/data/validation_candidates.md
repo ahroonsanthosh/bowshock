@@ -156,3 +156,56 @@ range, with large scatter: not transcribed.
 So at Mach 1.5 to 3 the only candidate sting-free point on a cylindrical
 afterbody without fins is Herrin and Dutton, at one Mach number, and its
 support is not verified.
+
+## Second hold-out search (2026-10-19, after the Basic Finner gate)
+
+Asked for (0010 section 9): a second hold-out of the Basic Finner class, data
+at M 1.5 to 1.8, and anything near M 3 that tests the offset at M 2.97. No
+model was run on any set below and no model value was looked at. Each
+candidate was opened unless marked otherwise.
+
+### Ranked
+
+| Rank | Set | Support | Geometry against the class | M (in 1.5 to 3.0) | Libraries | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | BRL Report 934 (MacAllister 1955), DTIC AD068959; the Basic Finner report's ref. 3 | free flight, BRL spark range, non-rolling | the Basic Finner: 10 deg cone, L/d 10, four 1 x 1 cal rectangular fins at the base, 8% single wedge; d about 0.79 in (not stated); LE radius and TE span distribution not stated | 16 rounds at 1.506 to 2.468 (nothing at 2.5 to 3.0) | 11 rounds at M 1.798 to 2.468 accepted with a sharp LE; the 5 at 1.506 to 1.788 refused by the fins-on-base factor's range (from M 1.80); with the DREV 0.004 cal LE radius the M 1.8 rounds straddle the rounded-edge limit Re_D 6.7e3 | **transcribed**: `basic_finner_brl934.md`, `.csv`, `_graph2.csv`, `_output.txt`; tables read twice (same reader), Graph II twice, Graph I once |
+| 2 | AFRL-MN-EG-TR-2001-7082 (Hathaway et al. 2001), DTIC ADA395037, "4-Fin Circular" model | free flight, Eglin ARF, range air 22 +-1 C | 2.2 cal tangent ogive, L/d 8.09, d 17 mm, four rectangular fins 20 mm chord, 10 mm span, at the base, flat plates 0.5 mm thick (t/c 0.025), edges not drawn (fig. 4, PDF p. 22) | single fits at 1.42 to 1.47 (3), 2.25 to 2.34 (3), and 3.075, 3.195, 3.422 (Table D-3, PDF p. 59) | refused: t/c 0.025 is outside the fins-on-base factor's 0.05 to 0.10; square plate edges would be blunt LE and TE of a non-wedge section; the shots at M 3.08 and above are beyond the base correlation's 3.0 | opened; geometry and Table D-3's Mach coverage read; not transcribed |
+| 3 | NACA RM L55G28a model 1 (already reported above) | rocket free flight | blunt LE (0.03 in radius) on a 10 deg cone-cylinder, L/d 21.4 | 2.5 to 3.0 | see 0008 section 5 | reported, not a gate (unchanged) |
+| 4 | DRDC Valcartier TM 2002-136 (Dupuis 2002), Basic Finner range and tunnel, M 0.5 to 4.5 (cited by ARL-TR-6725 and the Albisser thesis) | range (fins canted 2 deg) and DRDC tunnel (sting; Re 1.4e6 to 2.9e6 on length, ARL-TR-6725 p. 10) | the Basic Finner | range shots at supersonic speed probably the 1997 set (not checked); tunnel CA0 at 0.5 to 4.5 | tunnel: sting-mounted, outside the free-flight class | **not reached**; ARL-TR-6725 (DTIC ADA592550) fig. 5 (PDF p. 25) shows its free-flight and tunnel CX0, not digitised |
+| 5 | DRDC TM 2002-008 (Dupuis and Hathaway), Air Force Finner; AFATL-TR-81-87 (West 1981), the same shape in the Eglin range | free flight | 2.5 cal tangent ogive, L/d 10, clipped-delta fins swept 53 deg, sharp edges, 0.047 cal thick (ARL-TR-6725 fig. 3, PDF p. 19) | 0.5 to 2.5 | refused: thickness ratio about 0.035 is below the fins-on-base factor's 0.05 | not reached; geometry from ARL-TR-6725 |
+| 6 | ISL open-range Basic Finner, instrumented (Albisser thesis, Lorraine 2015, theses.fr/2015LORR0083) | free flight, Doppler radar and magnetometers, fins canted 2 deg | Basic Finner, 28 mm | 1.52 to 2.6 | a polynomial CD(M, alpha) identified from four flights, figure only (thesis section 4.2.3.1) | opened (thesis PDF); not a per-shot measurement; not transcribed |
+| 7 | BRL Report 711 (Bolz and Nicolaides 1949), DTIC ADB202855 | free flight, rolling | cone-cylinder, rectangular fins, 16% single wedge | four rounds near 1.7 | refused: t/c 0.16 outside 0.05 to 0.10 | text layer read |
+| 8 | NACA RM L8H26 (Watson 1949), Deacon rocket | rocket coasting flight | steel head 6.75 in on a 6.25 in case (a step down behind the head), rocket nozzle in the base | 1.1 to 3.6 | refused (afterbody not a cylinder of the reference diameter; nozzle in the base) | text read |
+| 9 | NACA RM E53I04 (Messing et al. 1953) | air-launched rocket | 20 deg cone-cylinder, L/d 8.6, flat steel plate fins | coasting data only at 3.5 to 5.2 | outside M 3.0 | text read |
+
+Set aside after opening: NAVORD 4516 (Shantz and Groves 1960, DTIC AD245560;
+NOL tunnel stability only, compared with BRL 934 and NOL range results, no
+drag); NAVORD 6652 (Regan 1964, roll damping; its fig. 1 gives the NOL tunnel
+model, d = 0.75 in); BRL Report 858 (Nicolaides 1953, DTIC AD026405; two
+asymmetric models, no drag); DTIC AD146516 (Kermeen 1957, water tunnel); RM
+L51E18 (boat-tailed parabolic and cone-cylinder bodies, three fins, M 0.95 to
+1.7); NASA TM X-653 (tunnel, drag without base drag). Titles or abstracts only,
+outside the class: NASA TM X-2831 (tunnel stability), RM L9I30 and RM L8A05
+(parabolic bodies), NASA Memo 12-2-58L (six fins).
+
+Near M 3: nothing found that the libraries accept. BRL 934 stops at 2.47;
+the Eglin four-fin set has shots at 3.08 to 3.42 but is refused for its fins;
+RM L55G28a (2.5 to 3.0) stays reported for its blunt leading edges.
+
+M 1.5 to 1.8: BRL 934 has one round at 1.506 and four at 1.733 to 1.788 (two
+of them at 36 and 53 deg^2 of yaw); all five are refused by the fins-on-base
+factor, whose range starts at M 1.80. The gap is a library range as well as a
+data gap.
+
+### Not reached
+
+| Source | Tried | Result |
+| --- | --- | --- |
+| BRL Report 799 (Nicolaides and Bolz 1952; TM 9703 ref. 4; published as J. Aero. Sci. 20(3), 1953) | Internet Archive DTIC collection, title and author search | not in the mirror; the journal version is behind AIAA's paywall |
+| BuOrd Ballistic Technical Note 5 (Nicolaides and MacAllister 1954; TM 9703 ref. 5) | Internet Archive DTIC collection; web search | not found |
+| DRDC Valcartier TM 2002-136 (Dupuis 2002) | Internet Archive search; publications.gc.ca search page (built by JavaScript, no results in the fetched page); web searches | not found |
+| DRDC Valcartier TM 2002-008 (Air Force Finner) | Internet Archive search | not found |
+| AFATL-TR-81-87 (West 1981) | Internet Archive search | not found |
+| apps.dtic.mil, any PDF (tried /sti/pdfs/AD0852114.pdf) | curl through the proxy | HTTP 403 |
+| AEDC tunnel reports on the Basic Finner (Uselton and Jenke, ADA027027, ADA009865) | not opened (sting- or strut-mounted damping and axial force at high angle of attack) | not pursued |
+| NOL range Basic Finner drag (mentioned by NAVORD 4516) | no report number found | not located |
