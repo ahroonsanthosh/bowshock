@@ -23,7 +23,7 @@ number with an honest uncertainty band.
 > [0010](docs/design/0010-base-drag-and-total.md)), and their sum, the
 > total drag, has passed its one validation test: the Basic Finner in free
 > flight, 11 shots at Mach 1.80 to 2.97, measured drag within -7.7% to
-> +4.5% of the model, inside a tolerance that is wide (about -20% to +31%).
+> +4.5% of the model, inside a tolerance that is wide (about -20% to +27%).
 > That claim covers that class of rocket only. The drag page shows the
 > total ([0011](docs/design/0011-total-drag-on-the-page.md)): labelled
 > validated inside the Basic Finner's class, an estimate, not validated,
@@ -173,8 +173,11 @@ them; the fitted-drag families are recorded in
   their bands added linearly. Its one hold-out test, the Basic Finner in
   free flight at Mach 1.80 to 2.97, passes at all 11 shots: measured over
   modelled -7.7% to +4.5% (mean -1.9%), inside a tolerance of -19.5% to
-  -26.2% and +26.5% to +31.4%, which is wide; the two shots at Mach 2.97
-  lie 5.4% and 7.6% below the model.
+  -26.2% and +23.1% to +27.4%, which is wide; the two shots at Mach 2.97
+  lie 5.4% and 7.6% below the model. An independent audit narrowed the
+  tolerance's high end from +26.5% to +31.4% after the test (a change to
+  how the bands combine, made after the hold-out was used; the measured
+  differences did not change, and every shot still passes).
 
 - The total drag on the [drag page](demos/nose-drag.html)
   ([0011](docs/design/0011-total-drag-on-the-page.md)): the nose wave drag
