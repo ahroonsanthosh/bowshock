@@ -109,6 +109,42 @@ def main():
         rows.append([spec.get("figure", ""), c["series"], f"{c['x']:g}", f"{yv:.4f}", f"{err:.4f}",
                      "column read" + (f", extra {ex:g}" if ex else "") + (", " + c["note"] if c.get("note") else "")])
         marks.append((X, Yc, (255, 120, 0), 7))
+    # guided column reads: for each abscissa, the ink run nearest a path
+    # drawn by hand through the curve (data x, page y), averaged over +-3
+    # columns; the path only picks the run, the run's centre is the reading
+    for g in spec.get("guided", []):
+        px_ = np.array([p[0] for p in g["path"]], float)
+        py_ = np.array([p[1] for p in g["path"]], float)
+        hw = g.get("halfwin", 8)
+        for xq in g["xs"]:
+            yp = float(np.interp(xq, px_, py_)) - bx[1]
+            X = f.ax.pixel(xq, yp)
+            cs = []
+            gl = [L[0] + L[1] * yp for L in f.vsort]
+            near = any(abs(X - g_) < 6 for g_ in gl)
+            cols_ = (list(range(int(round(X)) - 14, int(round(X)) - 5)) + list(range(int(round(X)) + 6, int(round(X)) + 15))
+                     if near else range(int(round(X)) - 3, int(round(X)) + 4))
+            for Xi in cols_:
+                rs = dig.column_runs(f.clean, Xi, int(yp - hw), int(yp + hw) + 1)
+                rs = [(0.5 * (s + e), e - s + 1) for s, e in rs if e - s + 1 <= g.get("max_run", 24)]
+                if rs:
+                    c = min(rs, key=lambda q: abs(q[0] - yp))
+                    cs.append((Xi, c[0]))
+            ex = 0.0
+            for x0, x1, ee in g.get("extra", []):
+                if x0 <= xq <= x1:
+                    ex = max(ex, ee)
+            if len(cs) < 3:
+                rows.append([spec.get("figure", ""), g["series"], f"{xq:g}", "", "", "guided read: no ink"])
+                continue
+            k = np.polyfit([c[0] for c in cs], [c[1] for c in cs], 1)
+            Yc = float(np.polyval(k, X))
+            sc_ = float(np.std([c[1] - np.polyval(k, c[0]) for c in cs]))
+            xv, yv = f.data(X, Yc)
+            err = float(np.sqrt(floor ** 2 + caly ** 2 + (sc_ * uy) ** 2 + (k[0] * uy / ux * calx) ** 2 + ex ** 2))
+            rows.append([spec.get("figure", ""), g["series"], f"{xq:g}", f"{yv:.4f}", f"{err:.4f}",
+                         f"guided column read; n={len(cs)}" + (f"; extra {ex:g}" if ex else "")])
+            marks.append((X, Yc, (0, 120, 255), 7))
     done = {(r[1], r[2]) for r in rows if r[-1].startswith("column read")}
     rows = [r for r in rows if not (r[-1] == "not traced" and (r[1], r[2]) in done)]
     if "dots" in spec:

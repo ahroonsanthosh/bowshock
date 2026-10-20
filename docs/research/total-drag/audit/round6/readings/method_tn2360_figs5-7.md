@@ -55,9 +55,9 @@ Fig. 6(b)'s legend glyphs have no dots; they were centred on their outline
 boxes. The simplified-analysis lines (calculations) were not read; nor the
 faired curves, which pass through the symbols. In the 6(b) cruciform
 panel the circle/square naming is marked "LOW MARGIN" for most symbols:
-the two glyphs differ little at this size; the naming there was checked by
-eye against which faired curve each symbol lies on (squares on the upper
-curve), and the coordinator should compare by position as well as name.
+the two glyphs differ little at this size and the symbols stack two or
+three deep at x/c 0.2 and 0. The naming there is not certain (the symbol at
+x/c 0, -0.050 may be a circle); compare by position as well as by name.
 
 ## Fig. 7: P_B against M, with and without tail
 
