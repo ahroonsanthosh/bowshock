@@ -2,8 +2,9 @@
  * Blunt fin trailing edges (src/base/fin-trailing-edge.ts): the
  * transcription against 0008's data file, the band recomputed from its
  * evidence on both readings, the thin-layer limit, the laminar input band
- * and its extrapolation rule, the term's arithmetic and the refusals.
- * Recorded in docs/design/0010-base-drag-and-total.md, section 5.1.
+ * and its extrapolation rule, the term's arithmetic, the vacuum bound
+ * (round 5) and the refusals. Recorded in
+ * docs/design/0010-base-drag-and-total.md, sections 5.1 and 10.
  */
 
 import { readFileSync } from 'node:fs';
@@ -30,6 +31,8 @@ import {
   tr1109CurveValue,
 } from '../../src/base/fin-trailing-edge';
 import { BaseRefusal } from '../../src/base/refusal';
+import { vacuumBaseDrag } from '../../src/base/vacuum';
+import { BASIC_FINNER_GEOMETRY, BASIC_FINNER_SHOTS } from '../../src/validation/basic-finner';
 
 const rows = readFileSync('docs/research/total-drag/data/blunt_te_2d_base.csv', 'utf8')
   .split('\n')
@@ -275,13 +278,25 @@ describe('the term', () => {
   });
 
   it('carries the laminar input only when a transition input reaches the trailing edge', () => {
-    expect(
-      finTrailingEdgeBaseDrag({ ...edges, transitionReynolds: [1e6] }).laminar,
-    ).toBeUndefined();
+    const turbulent = finTrailingEdgeBaseDrag({ ...edges, transitionReynolds: [1e6] });
+    expect(turbulent.laminar).toBeUndefined();
+    expect(turbulent.laminarTerm).toBeUndefined();
+    expect(turbulent.chordReynolds).toBe(1.5e6);
     const t = finTrailingEdgeBaseDrag({ ...edges, transitionReynolds: [1e6, 3e6] });
     expect(t.laminar).toBeDefined();
+    // At M 2.4 the laminar ends lie inside the vacuum bound: nothing clamped.
+    expect(t.vacuumClamped).toEqual([]);
+    expect(t.laminarTerm!.low).toBeCloseTo(t.laminar!.low * t.cd, 15);
+    expect(t.laminarTerm!.high).toBeCloseTo(t.laminar!.high * t.cd, 15);
     expect(t.laminarInput.low).toBeCloseTo(Math.min(0, (t.laminar!.low - 1) * t.cd), 15);
     expect(t.laminarInput.high).toBeCloseTo(Math.max(0, (t.laminar!.high - 1) * t.cd), 15);
+  });
+
+  it("the vacuum bound is 2 / (gamma M^2) on the edges' area", () => {
+    const t = finTrailingEdgeBaseDrag(edges);
+    expect(t.vacuum).toBeCloseTo((vacuumBaseDrag(2.4) * 4 * 0.06) / (Math.PI / 4), 15);
+    expect(vacuumBaseDrag(2.4)).toBeCloseTo(2 / (1.4 * 2.4 * 2.4), 15);
+    expect(t.high).toBeLessThan(t.vacuum);
   });
 
   it('is zero for sharp trailing edges', () => {
@@ -301,5 +316,61 @@ describe('the term', () => {
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, thickness: 0.01 }))).toBe(
       'thick-layer',
     );
+  });
+});
+
+describe("the vacuum bound at the Basic Finner's 11 gated shots (round 5)", () => {
+  // The Basic Finner's edges: four, 0.08 cal thick over the 1 cal span, chord 1 cal, on
+  // the cylinder's cross-section; Re_c from Table V's Reynolds number on the 10 cal length.
+  const G = BASIC_FINNER_GEOMETRY;
+  const shots = BASIC_FINNER_SHOTS.filter((s) => s.use === 'gate').map((s) => ({
+    mach: s.mach,
+    t: finTrailingEdgeBaseDrag({
+      mach: s.mach,
+      count: G.finCount,
+      thickness: G.finTrailingEdgeThickness,
+      span: G.finSpan,
+      chord: G.finChord,
+      tanSweep: 0,
+      inBasePlane: true,
+      layer: 'turbulent',
+      reynoldsPerLength: s.reynolds / G.length,
+      transitionReynolds: [5e5, 1.6e6, 3e6],
+      referenceArea: Math.PI / 4,
+    }),
+  }));
+
+  it('the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it', () => {
+    for (const { mach, t } of shots) {
+      expect(t.vacuum).toBeCloseTo((2 / (1.4 * mach * mach)) * (0.32 / (Math.PI / 4)), 12);
+      expect(t.cd).toBeLessThan(t.vacuum);
+      expect(t.high).toBeLessThan(t.vacuum);
+    }
+    const r = shots.map(({ t }) => t.high / t.vacuum);
+    expect(Math.round(1000 * Math.min(...r)) / 1000).toBe(0.721);
+    expect(Math.round(1000 * Math.max(...r)) / 1000).toBe(0.931);
+  });
+
+  it("the laminar band's high end is clamped at M 2.969 and 2.970 only: 1.320 and 1.319 of the term would mean p_b < 0; at the bound 1.2995 and 1.2994", () => {
+    const clamped = shots.filter(({ t }) => t.vacuumClamped.length > 0);
+    expect(clamped.map(({ mach }) => mach)).toEqual([2.969, 2.97]);
+    for (const { t } of clamped) {
+      expect(t.vacuumClamped).toEqual(['laminar high end']);
+      expect(t.laminarTerm!.high).toBe(t.vacuum);
+      expect(t.laminar!.high * t.cd).toBeGreaterThan(t.vacuum);
+      // The laminar ratio's high end implies p_b / p_inf = 1 - ratio (1 - p_b,turbulent / p_inf) < 0.
+    }
+    expect(clamped.map(({ t }) => Math.round(1000 * t.laminar!.high) / 1000)).toEqual([
+      1.32, 1.319,
+    ]);
+    expect(clamped.map(({ t }) => Math.round(1e4 * (t.vacuum / t.cd)) / 1e4)).toEqual([
+      1.2995, 1.2994,
+    ]);
+    // Elsewhere the laminar high end lies below the bound (at most 0.975 of it, M 2.749).
+    const free = shots.filter(({ t }) => t.vacuumClamped.length === 0);
+    for (const { t } of free) expect(t.laminarTerm!.high).toBeLessThan(t.vacuum);
+    expect(
+      Math.round(1000 * Math.max(...free.map(({ t }) => t.laminarTerm!.high / t.vacuum))) / 1000,
+    ).toBe(0.975);
   });
 });

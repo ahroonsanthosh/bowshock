@@ -34,7 +34,10 @@ as their authors wrote them.
   method); and `audit/round4/`, the second readings of the blunt-edge data
   (TR 1109, RM A51J25, TN 3819 fig. 5, TN D-1056, TN 2960: every band
   holds) and the Basic Finner's fin trailing-edge area, 0.32 cal^2, decided
-  from its measured mass properties without any drag value.
+  from its measured mass properties without any drag value; and
+  `audit/round5/`, the Basic Finner's total re-implemented blind from the
+  records and compared with the second gate run (no bug in the code; the
+  findings on the records and two bands are acted on in 0010 section 10).
 - `overlays/d4014/`: the revision's overlays of its TN D-4014 readings.
   Several scripts read page images rendered from the reports, which are
   not copied here (see below).
@@ -59,8 +62,9 @@ The throwaway vitest runs behind [0010](../design/0010-base-drag-and-total.md)
 (the base-drag and total-drag libraries, `src/base/` and `src/total/`):
 the compiled curve's band and interpolation bound, the fins-on-base rows,
 the Basic Finner partial sum per shot (the first gate run), the check of
-the round-4 second readings, the laminar trailing-edge band per shot and
-the second gate run. Its README says how to re-run each.
+the round-4 second readings, the laminar trailing-edge band per shot,
+the second gate run and its tolerances re-derived after the round 5
+audit. Its README says how to re-run each.
 
 ## `subtip/`: noses whose tip flow is axially subsonic
 
@@ -73,6 +77,25 @@ the code), and that copy's changes from the commit it was taken at
 anchor, a progress callback; `snap2` adds the corner patch of
 `docs/design/patches/0006-corner-one-sided.diff`).
 
+## `refusals/`: the refusal audit behind 0014
+
+The population of supersonic amateur and student rockets, the run that
+puts it through every refusal of the page and its libraries, its outputs,
+and the survey and download helpers behind
+[0014](../design/0014-refusals.md). Its README says how to re-run each.
+
+## `interface/`: screenshots of the interface's phase checks
+
+Every page at 390, 768 and 1440 px wide, as `scripts/interface-check.mjs`
+takes them for the phase checks of
+[0012](../design/0012-interface.md) section 8 (headless Chromium on
+software WebGPU, so a flow is shown as far as it has converged in the time
+allowed), unprocessed, kept for review and taken again at each phase.
+With them, as data: the usability measured before and after
+(`usability-*.json`, `scripts/usability.mjs`, the table in
+`usability.md`) and the numbers the pages report on fixed cases before
+and after (`numbers.json`, `scripts/numbers-check.mjs`).
+
 ## `wip/`: code in progress, not yet validated
 
 Diffs of work on branches that exist only locally, kept here so that it
@@ -83,19 +106,9 @@ its own validation passes.
   Von Karman (Haack) and power-series noses, and sharp tips whose bow shock
   stands off ahead of them. Measured on two grids so far; the third is
   running.
-- `transonic.diff` (commits in `transonic.log`): the transonic solver for
-  Mach 1 to 1.2 (the body followed past its base as a long cylinder, far
-  boundaries about 100 body radii out with a characteristic condition,
-  the shock captured, implicit LU-SGS steps; H grids for sharp noses and C
-  grids for ellipsoids). Its record calls itself 0007 and will be
-  renumbered. Measured so far: cones at Mach 1.2 to the supersonic
-  standard (2.3e-5 of the exact value on the finest grid, the band
-  containing it), at 1.1 within 3.5e-4 without a settled order, at 1.05 at
-  first order; at Mach 1 the drag depends on the far boundary (1.8% low at
-  100 radii on a cone, 10% on an ogive), so it rests on an extrapolation
-  in that distance; on blunt noses at Mach 1.2 the stagnation pressure
-  error does not converge. Not served.
 
 Each diff names its base commit in its first line, and applies there with
 `git apply`. A diff whose work is merged is removed from here (the changes
-for blunt noses at Mach 1.2 to 1.5 were merged in eeaa537).
+for blunt noses at Mach 1.2 to 1.5 were merged in eeaa537; the transonic
+prototype, unserved, with its record
+[0013](../design/0013-transonic.md)).

@@ -157,3 +157,35 @@ export function noseTipSlope(nose: Nose): number {
       return Infinity;
   }
 }
+
+/**
+ * Slope dr/dx of the nose at its base, from each shape's formula: exactly
+ * 0 where the nose meets a cylinder tangentially (the tangent ogive, the
+ * parabola of parameter 1, the Haack series, the ellipsoid), positive
+ * where the junction is a corner. The fitted-shock solver serves an
+ * axially subsonic tip only on a tangent junction
+ * (docs/design/0006-shock-fitting.md).
+ */
+export function noseBaseSlope(nose: Nose): number {
+  const { shape, length: L, baseRadius: R } = nose;
+  switch (shape.kind) {
+    case 'conical':
+      return R / L;
+    case 'ogive': {
+      if (shape.parameter < OGIVE_CONE_LIMIT) return R / L;
+      // Slope of the arc at the base, (xc - s) / sqrt(rho^2 - (xc - s)^2),
+      // with s the base's position along the arc: 0 for parameter 1, where
+      // the arc's centre lies abreast of the base.
+      const { stretch, length, rho, xc } = ogiveArc(shape.parameter, L, R);
+      const d = xc - length;
+      return (d / Math.sqrt(rho * rho - d * d)) * stretch;
+    }
+    case 'parabolic':
+      return (2 * R * (1 - shape.parameter)) / ((2 - shape.parameter) * L);
+    case 'power':
+      return (shape.exponent * R) / L;
+    case 'ellipsoid':
+    case 'haack':
+      return 0;
+  }
+}

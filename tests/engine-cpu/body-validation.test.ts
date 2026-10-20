@@ -146,23 +146,29 @@ describe('Euler2D on a generated grid: ogive-cylinder against NACA TN 3716', () 
     }
   });
 
-  it('matches the exact inviscid solution (method of characteristics) within 5e-4 in Cp', () => {
-    // Measured when written, nj = 40: within 3e-4 at every station; nj = 80:
-    // within 4e-4 at x/d = 0.22, nearest the tip, and 1e-4 elsewhere. The
-    // reference, independent of this solver, is converged to 2e-5
-    // (tests/validation/characteristics.test.ts).
-    const wall = characteristics(body, { mach, gamma, intervals: 320, start: 1e-3 }).wall;
-    const exact = (x: number) => {
-      let k = 0;
-      while (k < wall.length - 2 && wall[k + 1]!.x < x) k++;
-      const a = wall[k]!;
-      const b = wall[k + 1]!;
-      return (a.p + ((b.p - a.p) * (x - a.x)) / (b.x - a.x) - 1) / q;
-    };
-    for (const { xOverD } of TN3716_ZERO_INCIDENCE) {
-      expect(Math.abs(cp(fine.s, xOverD) - exact(xOverD))).toBeLessThan(5e-4);
-    }
-  });
+  it(
+    'matches the exact inviscid solution (method of characteristics) within 5e-4 in Cp',
+    () => {
+      // Measured when written, nj = 40: within 3e-4 at every station; nj = 80:
+      // within 4e-4 at x/d = 0.22, nearest the tip, and 1e-4 elsewhere. The
+      // reference, independent of this solver, is converged to 2e-5
+      // (tests/validation/characteristics.test.ts).
+      const wall = characteristics(body, { mach, gamma, intervals: 320, start: 1e-3 }).wall;
+      const exact = (x: number) => {
+        let k = 0;
+        while (k < wall.length - 2 && wall[k + 1]!.x < x) k++;
+        const a = wall[k]!;
+        const b = wall[k + 1]!;
+        return (a.p + ((b.p - a.p) * (x - a.x)) / (b.x - a.x) - 1) / q;
+      };
+      for (const { xOverD } of TN3716_ZERO_INCIDENCE) {
+        expect(Math.abs(cp(fine.s, xOverD) - exact(xOverD))).toBeLessThan(5e-4);
+      }
+      // The reference march takes seconds, longer than the default limit on a
+      // loaded machine.
+    },
+    SOLVE_TIMEOUT,
+  );
 
   it('stays within 0.025 of the measured pressures (a regression bound, not an accuracy claim)', () => {
     // Measured when written, at the unambiguous stations: the solution lies

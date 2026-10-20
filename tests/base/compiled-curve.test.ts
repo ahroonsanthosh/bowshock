@@ -17,6 +17,7 @@ import {
   compiledCurveBasePressure,
   compiledCurveValue,
   interpolationErrorBound,
+  twiceReadNodes,
 } from '../../src/base/compiled-curve';
 import { BaseRefusal } from '../../src/base/refusal';
 import {
@@ -130,8 +131,22 @@ describe('interpolation', () => {
     }
   });
 
-  it('the curvature bound from the twice-read values is 0.0634', () => {
+  it('the curvature bound from the twice-read values is 0.0634, over both curves; the served curve alone gives 0.039', () => {
     expect(COMPILED_CURVE_CURVATURE_BOUND).toBeCloseTo(0.0634, 4);
+    // Round 5, finding 10: the more negative curve sets the bound, so it is
+    // conservative on the served (less negative) curve by a factor of 1.6.
+    const curvature = (curve: 'lessNegative' | 'moreNegative') => {
+      const n = twiceReadNodes(curve);
+      let k = 0;
+      for (let i = 1; i + 1 < n.length; i++) {
+        const s1 = (n[i]!.value - n[i - 1]!.value) / (n[i]!.mach - n[i - 1]!.mach);
+        const s2 = (n[i + 1]!.value - n[i]!.value) / (n[i + 1]!.mach - n[i]!.mach);
+        k = Math.max(k, Math.abs((2 * (s2 - s1)) / (n[i + 1]!.mach - n[i - 1]!.mach)));
+      }
+      return k;
+    };
+    expect(curvature('moreNegative')).toBe(COMPILED_CURVE_CURVATURE_BOUND);
+    expect(curvature('lessNegative')).toBeCloseTo(0.039, 3);
   });
 
   it('each single-read value in M 1.5 to 3.0 lies within the bound of the line through its neighbours', () => {
@@ -228,6 +243,39 @@ describe('body base drag: the arithmetic', () => {
     expect(r.low).toBeCloseTo(r.cd - 0.18 * r.cd + (f.low - f.nominal) * q, 15);
     expect(r.high).toBeCloseTo(r.cd + 0.08 * r.cd + (f.high - f.nominal) * q, 15);
     expect(r.labels[1]).toMatch(/^an analogy, not a measurement/);
+  });
+
+  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9535 of it (M 3.0, fins at the base), 0.656 without fins', () => {
+    const fins = {
+      count: 4,
+      thicknessRatio: 0.08,
+      section: 'other' as const,
+      trailingEdgeAheadOfBase: 0,
+    };
+    const at = (mach: number, withFins: boolean) =>
+      bodyBaseDrag({
+        mach,
+        afterbody: 'cylinder',
+        boundaryLayerAtBase: 'turbulent',
+        baseAreaRatio: 0.9,
+        ...(withFins ? { fins } : {}),
+      });
+    let withFins = 0;
+    let without = 0;
+    for (let m = 1.5; m <= 3.0 + 1e-9; m += 0.001) {
+      const plain = at(m, false);
+      expect(plain.vacuum).toBeCloseTo((0.9 * 2) / (1.4 * m * m), 14);
+      expect(plain.vacuumClamped).toEqual([]);
+      without = Math.max(without, plain.high / plain.vacuum);
+      if (m >= 1.8) {
+        const r = at(m, true);
+        expect(r.vacuumClamped).toEqual([]);
+        withFins = Math.max(withFins, r.high / r.vacuum);
+      }
+    }
+    withFins = Math.max(withFins, at(3.0, true).high / at(3.0, true).vacuum);
+    expect(withFins).toBeCloseTo(0.9535, 4);
+    expect(Math.round(1000 * without) / 1000).toBe(0.656);
   });
 
   it('fins a chord or more ahead: the plain curve, labelled not validated with fins', () => {

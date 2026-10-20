@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
+  noseBaseSlope,
   noseRadius,
   noseTipSlope,
   validateNose,
@@ -213,6 +214,57 @@ describe('nose profiles', () => {
       }),
       { seed: 111 },
     );
+  });
+
+  // Base slope: the junction with the body, a corner where it is positive.
+  it('property: the base slope of every nose matches its profile', () => {
+    fc.assert(
+      fc.property(shape, value(0.2, 10), value(0.05, 2), (shape, length, baseRadius) => {
+        // The Haack series reaches its zero base slope as the square root
+        // of the distance from the base (tested below), too slowly for a
+        // difference to resolve.
+        fc.pre(shape.kind !== 'haack');
+        const nose: Nose = { shape, length, baseRadius };
+        // Second-order one-sided difference at the base, error O(h^2).
+        const h = 1e-5 * length;
+        const r = (x: number) => noseRadius(nose, x);
+        const numerical = (3 * r(length) - 4 * r(length - h) + r(length - 2 * h)) / (2 * h);
+        expect(Math.abs(noseBaseSlope(nose) - numerical)).toBeLessThan(
+          1e-6 * (1 + baseRadius / length),
+        );
+      }),
+      { seed: 112 },
+    );
+  });
+
+  it('the tangent ogive and the parabola of parameter 1 meet the body without a corner', () => {
+    for (const length of [0.6, 1, 3, 10]) {
+      const tangent: Nose = { shape: { kind: 'ogive', parameter: 1 }, length, baseRadius: 0.5 };
+      const parabola: Nose = {
+        shape: { kind: 'parabolic', parameter: 1 },
+        length,
+        baseRadius: 0.5,
+      };
+      expect(noseBaseSlope(tangent)).toBe(0);
+      expect(noseBaseSlope(parabola)).toBe(0);
+      // Their secant and partial siblings meet it at a corner.
+      expect(
+        noseBaseSlope({ ...tangent, shape: { kind: 'ogive', parameter: 0.5 } }),
+      ).toBeGreaterThan(0);
+      expect(
+        noseBaseSlope({ ...parabola, shape: { kind: 'parabolic', parameter: 0.5 } }),
+      ).toBeGreaterThan(0);
+      expect(noseBaseSlope({ ...tangent, shape: { kind: 'conical' } })).toBe(0.5 / length);
+    }
+  });
+
+  it('the Haack series meets the body without a corner, its slope falling as the square root', () => {
+    for (const parameter of [0, 1 / 3]) {
+      const haack: Nose = { shape: { kind: 'haack', parameter }, length: 3, baseRadius: 0.5 };
+      expect(noseBaseSlope(haack)).toBe(0);
+      const secant = (h: number) => (noseRadius(haack, 3) - noseRadius(haack, 3 - h)) / h;
+      expect(secant(1e-6) / secant(4e-6)).toBeCloseTo(0.5, 3);
+    }
   });
 
   it('a tangent ogive no longer than its radius is a quarter circle: blunt', () => {

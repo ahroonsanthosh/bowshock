@@ -12,6 +12,7 @@ export default defineConfig({
         shockTube: 'demos/shock-tube.html',
         supersonicRamp: 'demos/supersonic-ramp.html',
         noseDrag: 'demos/nose-drag.html',
+        flowView: 'demos/flow-view.html',
       },
     },
   },

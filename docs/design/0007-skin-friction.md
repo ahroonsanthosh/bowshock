@@ -1,7 +1,7 @@
 # 0007: Skin friction
 
-- **Status:** Draft. A library with tests (`src/friction/`); nothing on the
-  drag page.
+- **Status:** Draft. A library with tests (`src/friction/`); on the drag
+  page only as part of the total drag ([0011](0011-total-drag-on-the-page.md)).
 - **Date:** 2026-10-18
 - **Inputs:** NACA TN 3097, NACA RM L54G14, NACA TN 2597, NACA RM A53D02
   (method only) and the Turbulence Modeling Resource (TMR) van Driest II

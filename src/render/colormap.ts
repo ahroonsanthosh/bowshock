@@ -7,9 +7,18 @@
 
 const CONTROL_COLOURS = ['#0b1a3a', '#1d4e89', '#1f8a8a', '#7cc47f', '#f4e9a6'] as const;
 
+/**
+ * Numerical schlieren drawn light on dark (docs/design/0012-interface.md,
+ * decision 2): uniform flow in the dark shade, the steepest density
+ * gradients (shocks) in the light one, linearly between them.
+ */
+export const SCHLIEREN_DARK = '#0b0e13';
+export const SCHLIEREN_LIGHT = '#f2f4f7';
+
 type Rgb = readonly [number, number, number];
 
-function hexToRgb(hex: string): Rgb {
+/** A colour #rrggbb as red, green and blue from 0 to 1. */
+export function hexToRgb(hex: string): Rgb {
   const n = parseInt(hex.slice(1), 16);
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }

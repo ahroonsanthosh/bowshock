@@ -14,9 +14,10 @@
  * computed for such a section by ./section-drag.ts and
  * ./linear-wave-drag.ts is that of its faces alone: in supersonic flow the
  * faces do not feel the base, and the base's own drag is a base-pressure
- * term, not modelled here (src/base refuses it until two-dimensional base
- * pressures are transcribed; docs/design/0010-base-drag-and-total.md).
- * Blunt or rounded leading edges stay refused.
+ * term, not modelled here (src/base/fin-trailing-edge.ts;
+ * docs/design/0010-base-drag-and-total.md section 5.1). Blunt or rounded
+ * leading edges are not sections of this kind (a rounded edge is the
+ * separate term of ./rounded-leading-edge.ts).
  *
  * A symmetric section is given by its half-thickness at breakpoints along
  * the chord (the form the linear planform method of ./linear-wave-drag.ts

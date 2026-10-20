@@ -1,0 +1,60 @@
+nose | 3D printable nose cone and fins.ork | ogive | 1 | 0.1 | 0.0124 | 4.034
+fins | 3D printable nose cone and fins.ork | trapezoidfinset | 3 | rounded | 0.002 | 0.0508 | 0.0508 | 0.03 | 40.25 | 0.03937
+nose | A simple model rocket.ork | ogive | 1 | 0.1 | 0.0125 | 4
+fins | A simple model rocket.ork | trapezoidfinset | 3 | rounded | 0.002 | 0.0508 | 0.0508 | 0.03 | 40.25 | 0.03937
+nose | ARC payload rocket.ork | ogive | 1 | 0.1778 | 0.02816 | 3.157
+fins | ARC payload rocket.ork | trapezoidfinset | 1 | square | 0.003 | 0.0754 | 0.0246 | 0.0554 | 24.29 | 0.03979
+fins | ARC payload rocket.ork | trapezoidfinset | 1 | square | 0.003 | 0.0754 | 0.0246 | 0.0554 | 24.29 | 0.03979
+fins | ARC payload rocket.ork | trapezoidfinset | 1 | square | 0.003 | 0.0754 | 0.0246 | 0.0554 | 24.29 | 0.03979
+nose | Airstart timing.ork | ogive | 1 | 0.5334 | 0.09743 | 2.737
+fins | Airstart timing.ork | trapezoidfinset | 3 | square | 0.003 | 0.3404 | 0.146 | 0.1219 | 58 | 0.008814
+nose | Chute release.ork | ogive | 1 | 0.2476 | 0.03175 | 3.9
+fins | Chute release.ork | trapezoidfinset | 3 | rounded | 0.004762 | 0.1342 | 0.1342 | 0.07925 | 40.25 | 0.03549
+nose | Clustered motors.ork | ellipsoid | None | 0.1 | 0.0275 | 1.818
+fins | Clustered motors.ork | ellipticalfinset | 3 | square | 0.003 | 0.06 | None | 0.06 | None | 0.05
+nose | Deployable payload.ork | ogive | 1 | 0.1 | 0.0125 | 4
+fins | Deployable payload.ork | trapezoidfinset | 3 | rounded | 0.002 | 0.0508 | 0.0127 | 0.03 | 40.25 | 0.03937
+nose | Dual parachute deployment.ork | ogive | 1 | 0.2832 | 0.02832 | 5
+fins | Dual parachute deployment.ork | trapezoidfinset | 3 | square | 0.002362 | 0.1524 | 0.0889 | 0.0762 | 30 | 0.0155
+nose | Parallel booster staging.ork | ogive | 1 | 0.2794 | 0.0287 | 4.867
+nose | Parallel booster staging.ork | conical | None | 0.04445 | 0.01683 | 1.321
+fins | Parallel booster staging.ork | trapezoidfinset | 1 | square | 0.00635 | 0.0762 | 0.05 | 0.0508 | 26.2 | 0.08333
+fins | Parallel booster staging.ork | trapezoidfinset | 1 | square | 0.00635 | 0.0762 | 0.05 | 0.0508 | 26.2 | 0.08333
+fins | Parallel booster staging.ork | trapezoidfinset | 4 | square | 0.00635 | 0.0762 | 0.05 | 0.0508 | 26.2 | 0.08333
+nose | Pods--airframes and winglets.ork | ogive | 1 | 0.1365 | 0.01683 | 4.057
+fins | Pods--airframes and winglets.ork | freeformfinset | 1 | square | 0.006985 | None | None | None | None | None
+fins | Pods--airframes and winglets.ork | freeformfinset | 2 | rounded | 0.002362 | None | None | None | None | None
+nose | Pods--airframes and winglets.ork | ogive | 1 | 0.0254 | 0.006871 | 1.848
+nose | Pods--airframes and winglets.ork | ellipsoid | None | 0.0127 | 0.006871 | 0.9242
+fins | Pods--airframes and winglets.ork | trapezoidfinset | 1 | square | 0.002362 | 0.0508 | 0.0254 | 0.03175 | 38.22 | 0.0465
+fins | Pods--airframes and winglets.ork | trapezoidfinset | 2 | square | 0.002362 | 0.02794 | 0.0127 | 0.01905 | 33.69 | 0.08455
+fins | Pods--airframes and winglets.ork | trapezoidfinset | 1 | square | 0.002362 | 0.0762 | 0.0381 | 0.01588 | 63.43 | 0.031
+fins | Pods--airframes and winglets.ork | trapezoidfinset | 1 | square | 0.002362 | 0.0762 | 0.0381 | 0.01588 | 63.43 | 0.031
+nose | Pods--powered with recovery deployment.ork | ogive | 1 | 0.1048 | 0.0124 | 4.226
+nose | Pods--powered with recovery deployment.ork | ogive | 1 | 0.06731 | 0.009347 | 3.601
+fins | Pods--powered with recovery deployment.ork | trapezoidfinset | 1 | square | 0.003 | 0.04 | 0.04 | 0.06 | 22.62 | 0.075
+fins | Pods--powered with recovery deployment.ork | trapezoidfinset | 1 | square | 0.003 | 0.04 | 0.04 | 0.06 | 22.62 | 0.075
+nose | Simulation extensions.ork | ogive | 1 | 0.53 | 0.07 | 3.786
+fins | Simulation extensions.ork | trapezoidfinset | 2 | airfoil | 0.008 | 0.05 | 0.05 | 0.1 | 0 | 0.16
+fins | Simulation extensions.ork | trapezoidfinset | 1 | square | 0.005 | 0.495 | 0.1 | 0.185 | 58.34 | 0.0101
+fins | Simulation extensions.ork | trapezoidfinset | 1 | square | 0.005 | 0.495 | 0.1 | 0.185 | 58.34 | 0.0101
+fins | Simulation extensions.ork | trapezoidfinset | 1 | square | 0.005 | 0.495 | 0.1 | 0.185 | 58.34 | 0.0101
+nose | Simulation scripting.ork | ogive | 1 | 0.53 | 0.07 | 3.786
+fins | Simulation scripting.ork | trapezoidfinset | 2 | airfoil | 0.008 | 0.05 | 0.05 | 0.1 | 0 | 0.16
+fins | Simulation scripting.ork | trapezoidfinset | 1 | square | 0.005 | 0.495 | 0.1 | 0.185 | 58.34 | 0.0101
+fins | Simulation scripting.ork | trapezoidfinset | 1 | square | 0.005 | 0.495 | 0.1 | 0.185 | 58.34 | 0.0101
+fins | Simulation scripting.ork | trapezoidfinset | 1 | square | 0.005 | 0.495 | 0.1 | 0.185 | 58.34 | 0.0101
+nose | Three stage low power rocket.ork | ogive | 1 | 0.1 | 0.0125 | 4
+fins | Three stage low power rocket.ork | trapezoidfinset | 3 | rounded | 0.002 | 0.05 | 0.05 | 0.03 | 39.81 | 0.04
+fins | Three stage low power rocket.ork | freeformfinset | 3 | rounded | 0.002 | None | None | None | None | None
+fins | Three stage low power rocket.ork | trapezoidfinset | 3 | rounded | 0.002 | 0.08 | 0.03 | 0.04 | 32.01 | 0.025
+nose | Tube fin rocket.ork | ogive | 1 | 0.1199 | 0.0124 | 4.836
+nose | Two stage high power rocket.ork | ogive | 1 | 0.3238 | 0.0508 | 3.188
+fins | Two stage high power rocket.ork | trapezoidfinset | 3 | square | 0.003175 | 0.146 | 0.0762 | 0.1524 | 14.04 | 0.02174
+fins | Two stage high power rocket.ork | trapezoidfinset | 3 | square | 0.003 | 0.146 | 0.0762 | 0.1651 | 12.99 | 0.02054
+# presets: nose cones 397
+# presets with OD in [0, 38) mm: 257 {'PARABOLIC': 16, 'CONICAL': 42, 'OGIVE': 132, 'ELLIPSOID': 63, 'POWER': 1, 'HAACK': 3}
+#   L/D at the 10, 25, 50, 75 and 90th percentiles ['1.47', '2.28', '3.18', '4.09', '4.91']
+# presets with OD in [38, 200) mm: 138 {'PARABOLIC': 6, 'OGIVE': 76, 'ELLIPSOID': 46, 'CONICAL': 8, 'HAACK': 2}
+#   L/D at the 10, 25, 50, 75 and 90th percentiles ['1.62', '1.92', '2.95', '3.98', '4.40']
+# example fin sets 34 counts {3.0: 12, 1.0: 17, 4.0: 1, 2.0: 4} cross-sections {'rounded': 8, 'square': 24, 'airfoil': 2}

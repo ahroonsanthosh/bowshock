@@ -7,7 +7,7 @@
 
 import { isGpuFlux } from '../engine-gpu/euler1d-gpu';
 import { GpuMemoryLimitError, type GpuEuler2DConfig } from '../engine-gpu/euler2d-gpu';
-import { fitShockGpu, type GpuShockFit } from '../engine-gpu/shock-fitting-gpu';
+import { fitShockGpu, type GpuShockFit, type LiveFit } from '../engine-gpu/shock-fitting-gpu';
 import type { Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
 import type { StructuredGrid } from '../grid/structured';
@@ -15,7 +15,9 @@ import { refineUntilVerified } from '../verification/grid-convergence';
 import {
   bluntFitFamily,
   bluntStartInChunks,
+  FALLBACK_COLUMN_DENSITY,
   fittedCaseFailure,
+  fittedGridFailure,
   sharpFitProblem,
   wallDrag,
   type FitProblem,
@@ -39,6 +41,21 @@ export interface GpuFittedFlowOptions {
   readonly knownRate?: number | undefined;
   readonly signal?: AbortSignal | undefined;
   readonly onProgress?: ((iterations: number, maxSpeed: number, drag: number) => void) | undefined;
+  /** The fit as it runs, for drawing it (fitShockGpu's onLive). */
+  readonly onLive?: ((live: LiveFit | null) => void) | undefined;
+  /** Awaited between batches of steps, to pause (fitShockGpu's gate). */
+  readonly gate?: (() => Promise<void>) | undefined;
+}
+
+/** What a page may add to watch and pause the verified drag's fits; neither changes a number. */
+export interface GpuFitWatch {
+  /** Each grid's fit as it runs, with its refinement, and null once it is released. */
+  readonly onLive?: ((live: LiveFit | null, refinement: number) => void) | undefined;
+  /** Awaited between batches of steps (and of the blunt start's steps): hold it to pause. */
+  readonly gate?: (() => Promise<void>) | undefined;
+  /** After each convergence check: the steps so far, the shock's fastest speed over the sound speed, the drag. */
+  readonly onCheck?:
+    ((refinement: number, iterations: number, maxSpeed: number, drag: number) => void) | undefined;
 }
 
 export interface GpuFittedFlow {
@@ -79,6 +96,8 @@ export async function gpuFittedFlow(
     maxIterations: options.maxIterations,
     signal: options.signal,
     onProgress: options.onProgress,
+    onLive: options.onLive,
+    gate: options.gate,
   });
   return { fit, drag: fit.value };
 }
@@ -156,6 +175,15 @@ function nextTask(): Promise<void> {
 
 class FitNotConverged extends Error {}
 class InvalidCase extends Error {}
+/** A grid that fails only the fitted grids' quality gates (fittedGridFailure). */
+class GridRefused extends InvalidCase {
+  constructor(
+    readonly refinement: number,
+    reason: string,
+  ) {
+    super(reason);
+  }
+}
 
 /**
  * The forebody pressure drag with the bow shock fitted, on the GPU, on
@@ -166,17 +194,25 @@ class InvalidCase extends Error {}
 export async function verifiedFittedDragGpu(
   device: GPUDevice,
   body: Body,
-  options: Omit<VerifiedDragOptions, 'noise'>,
+  options: Omit<VerifiedDragOptions, 'noise'> & GpuFitWatch,
 ): Promise<VerifiedDrag> {
   // Blunt noses: the family of problems, once its captured start is computed.
   let blunt: ((refinement: number) => FitProblem) | null = null;
-  const reports: LevelReport[] = [];
+  let reports: LevelReport[] = [];
   let lastRefinement = 1;
   // The last grid's problem and converged fit, to start the next from.
   let previous: { problem: FitProblem; fit: GpuShockFit } | null = null;
+  // The sharp grids' column density: the usual layout's, or the fallback's.
+  let columnDensity: number | undefined;
   const solveAt = async (refinement: number): Promise<number> => {
     lastRefinement = refinement;
-    const problemOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ, refinement };
+    const problemOptions = {
+      mach: options.mach,
+      gamma: options.gamma,
+      nj: BASE_NJ,
+      refinement,
+      ...(columnDensity === undefined ? {} : { columnDensity }),
+    };
     const fresh = blunt ? blunt(refinement) : sharpFitProblem(body, problemOptions);
     const problem = (previous && startedFrom(fresh, previous.problem, previous.fit)) ?? fresh;
     const checkEvery = CHECK_EVERY * refinement;
@@ -189,15 +225,25 @@ export async function verifiedFittedDragGpu(
       // limit to show its own rate of convergence: it takes that grid's.
       knownRate: previous?.fit.rate,
       signal: options.signal,
-      onProgress: (iterations, _speed, value) => {
+      onProgress: (iterations, speed, value) => {
+        options.onCheck?.(refinement, iterations, speed, value);
         options.onProgress?.(refinement, iterations, value);
       },
+      onLive:
+        options.onLive === undefined
+          ? undefined
+          : (live) => {
+              options.onLive?.(live, refinement);
+            },
+      gate: options.gate,
     });
     if (!fit.converged) {
       throw new FitNotConverged(
         `the fit stopped after ${fit.iterations} iterations with the shock moving at ${fit.maxSpeed.toExponential(1)} of the sound speed or the drag still changing`,
       );
     }
+    const gridFailure = fittedGridFailure(fit.grid);
+    if (gridFailure !== undefined) throw new GridRefused(refinement, gridFailure);
     const failure = fittedCaseFailure(problem, fit.grid, fit.cell);
     if (failure !== undefined) throw new InvalidCase(failure);
     previous = { problem, fit };
@@ -214,29 +260,56 @@ export async function verifiedFittedDragGpu(
   try {
     if (!Number.isFinite(noseTipSlope(body.nose))) {
       const familyOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ };
+      const gate = options.gate;
       const start = await bluntStartInChunks(body, familyOptions, {
         chunk: START_CHUNK,
-        pause: nextTask,
+        pause:
+          gate === undefined
+            ? nextTask
+            : async () => {
+                await nextTask();
+                await gate();
+              },
         signal: options.signal,
         onProgress: options.onStart,
       });
       blunt = bluntFitFamily(body, familyOptions, start);
     }
-    const result = await refineUntilVerified(solveAt, {
-      ...options,
-      noise: GPU_NOISE,
-      // A finer grid too large for this GPU, or whose fit does not
-      // converge, leaves the band of the grids before it, as if a coarser
-      // finest grid had been chosen; a case refused on any grid stays
-      // refused.
-      stopOn: (error) =>
-        error instanceof GpuMemoryLimitError
-          ? error.message
-          : error instanceof FitNotConverged
-            ? `its fit did not converge (${error.message})`
-            : undefined,
-    });
-    return { ...result, kind: 'solved', reports };
+    const verified = () =>
+      refineUntilVerified(solveAt, {
+        ...options,
+        noise: GPU_NOISE,
+        // A finer grid too large for this GPU, or whose fit does not
+        // converge, leaves the band of the grids before it, as if a coarser
+        // finest grid had been chosen; a case refused on any grid stays
+        // refused.
+        stopOn: (error) =>
+          error instanceof GpuMemoryLimitError
+            ? error.message
+            : error instanceof FitNotConverged
+              ? `its fit did not converge (${error.message})`
+              : undefined,
+      });
+    try {
+      return { ...(await verified()), kind: 'solved', reports };
+    } catch (error) {
+      // A sharp nose whose grid fails only the quality gates: its whole
+      // family again, with more columns; refused only if that one is too.
+      if (blunt !== null || !(error instanceof GridRefused)) throw error;
+      options.onFallback?.(error.refinement, error.message);
+      columnDensity = FALLBACK_COLUMN_DENSITY;
+      previous = null;
+      reports = [];
+      try {
+        const result = await verified();
+        return { ...result, kind: 'solved', reports, columnDensity };
+      } catch (fallbackError) {
+        if (!(fallbackError instanceof InvalidCase)) throw fallbackError;
+        throw new InvalidCase(
+          `${fallbackError.message} (with ${FALLBACK_COLUMN_DENSITY} times as many columns, solved because the usual grid at refinement ${error.refinement} fails its quality checks)`,
+        );
+      }
+    }
   } catch (error) {
     if (options.signal?.aborted === true) return { kind: 'cancelled', reports };
     if (error instanceof FitNotConverged) {

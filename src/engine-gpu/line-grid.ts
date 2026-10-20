@@ -276,6 +276,20 @@ export class GpuLineGrid {
     return this.base.map((h, i) => h + data[3 * ni + 2 + i]!);
   }
 
+  /**
+   * The buffers that place the nodes (layouts in line-grid.wgsl): the
+   * lines, their node fractions, and the heights with the displacements
+   * the shock's moves have added. For drawing the moving grid as it is,
+   * without reading it back (src/render/flow-renderer.ts).
+   */
+  get nodeBuffers(): { lines: GPUBuffer; fractions: GPUBuffer; heights: GPUBuffer } {
+    return {
+      lines: this.fixedBuffers[1]!,
+      fractions: this.fixedBuffers[3]!,
+      heights: this.heightsBuffer,
+    };
+  }
+
   /** Release this object's buffers (not the target, the boundary or the flow). */
   destroy(): void {
     this.buffers.destroyAll();

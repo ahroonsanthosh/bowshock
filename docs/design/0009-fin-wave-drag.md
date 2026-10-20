@@ -1,7 +1,8 @@
 # 0009: Fin wave drag
 
-- **Status:** Draft. A library with tests (`src/fins/`); nothing on the
-  drag page. (0008 is reserved for the total-drag record.)
+- **Status:** Draft. A library with tests (`src/fins/`); on the drag page
+  only as part of the total drag ([0011](0011-total-drag-on-the-page.md)).
+  (0008 is reserved for the total-drag record.)
 - **Date:** 2026-10-19
 - **Inputs:** section 4 and step B4 of the total-drag research draft, its fin
   computations and scripts (`docs/research/total-drag/`: `draft.md`,

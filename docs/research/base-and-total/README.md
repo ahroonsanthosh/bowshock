@@ -55,4 +55,19 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   shots below Mach 1.4. `gate-second-run.out` is the output as it came out
   (run as `gate2.test.ts`, written as `gate2.out` and `gate2.json`, copied
   here unchanged); `gate-second-run.json` is the per-shot record from
-  which `tests/validation/basic-finner.test.ts` holds its values.
+  which `tests/validation/basic-finner.test.ts` held its values until
+  round 5, and still holds the components and residuals.
+- `gate-round5.test.ts`: the second run's configuration re-run
+  (2026-10-20) after the round 5 audit changed the band arithmetic (0010
+  section 10): the transition input as states of the boundary layer and
+  the vacuum bound. Per shot the same columns as the second run, plus the
+  tolerance's high end under the second run's arithmetic (which
+  reproduces `gate-second-run.out`; also with the vacuum bound alone), the
+  states that set the transition input's ends, the trailing edges' high
+  end against the vacuum bound and their laminar band beside the term,
+  and the tolerance under the flagged nearest-Mach alternative of 0010
+  section 10.2. `gate-round5.out` is the output as it came out (run in
+  `tests/tmp-total/` under the same name, copied here unchanged);
+  `gate-round5.json` is the per-shot record from which
+  `tests/validation/basic-finner.test.ts` holds the re-derived input bands
+  and tolerances. The second run's files are kept unchanged beside it.

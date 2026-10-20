@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { gridFromFunction, rectangularGrid } from '../../src/grid/structured';
-import { colormapTable } from '../../src/render/colormap';
-import { FieldRenderer } from '../../src/render/field-renderer';
+import { colormapTable, hexToRgb, SCHLIEREN_DARK } from '../../src/render/colormap';
+import { FieldRenderer, type RenderOptions } from '../../src/render/field-renderer';
 import { CopyPresenter } from '../../src/render/presenter';
 import { displayField, type DisplayField } from '../../src/render/fields';
 import { requireDevice } from './device';
@@ -125,6 +125,7 @@ describe('rendering', () => {
   async function renderPixels(
     field: DisplayField,
     state: (i: number, j: number) => [number, number, number, number],
+    style: Partial<RenderOptions> = {},
   ) {
     // A 2 x 1 domain drawn into a 64 x 64 texture: it fills the width and
     // half the height, centred, so the top and bottom quarters show the
@@ -141,7 +142,7 @@ describe('rendering', () => {
       renderer.render(
         target,
         buffer,
-        { field, gamma, schlierenContrast: 12 },
+        { field, gamma, schlierenContrast: 12, ...style },
         { r: 1, g: 0, b: 1, a: 1 },
       );
       const readback = device.createBuffer({
@@ -171,6 +172,16 @@ describe('rendering', () => {
     expect(pixel(32, 32)).toEqual([255, 255, 255, 255]);
     expect(pixel(32, 4)).toEqual([255, 0, 255, 255]);
     expect(pixel(32, 60)).toEqual([255, 0, 255, 255]);
+  });
+
+  it('draws schlieren light on dark when asked: uniform flow in the dark shade', async () => {
+    const pixel = await renderPixels('schlieren', () => [1, 2, 0, 1], {
+      schlierenStyle: 'light-on-dark',
+      schlierenExponent: 2,
+    });
+    const dark = hexToRgb(SCHLIEREN_DARK).map((c) => Math.round(255 * c));
+    expect(pixel(32, 32).slice(0, 3)).toEqual(dark);
+    expect(pixel(32, 4)).toEqual([255, 0, 255, 255]);
   });
 
   it('colours a field through the colour map, low values at the start', async () => {

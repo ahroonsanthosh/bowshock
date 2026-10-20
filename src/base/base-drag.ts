@@ -1,8 +1,8 @@
 /**
  * Base drag of a body of revolution with a cylindrical afterbody, power
  * off, zero incidence, turbulent boundary layer at the base: step B3 of
- * docs/design/0008-total-drag.md (section 3). A library: nothing is
- * served on the page.
+ * docs/design/0008-total-drag.md (section 3). A library, served only as
+ * part of the total drag (src/total).
  *
  *   body base:  C_D = -P_B(M) F (A_base / A_ref)
  *
@@ -23,6 +23,12 @@
  * not validated with fins (0008 section 6.4: no total-drag case with fins
  * clear of the base was found); in between, refused (no data transcribed).
  *
+ * The vacuum bound (./vacuum.ts): the term and its band's ends are each at
+ * most 2 / (gamma M^2) times the area ratio, clamped there (`vacuumClamped`
+ * lists what was; the parts are reported unclamped). Over M 1.5 to 3.0 no
+ * value reaches it (the band's high end is at most 0.9535 of it, at M 3.0
+ * with fins at the base; 0.656 without fins); the clamp is a guard.
+ *
  * Blunt fin trailing edges are a further base, ./fin-trailing-edge.ts.
  */
 
@@ -33,6 +39,7 @@ import {
 } from './compiled-curve';
 import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins-on-base';
 import { BaseRefusal } from './refusal';
+import { vacuumBaseDrag } from './vacuum';
 
 export const COMPILED_CURVE_LABEL =
   'correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 ' +
@@ -69,6 +76,10 @@ export interface BodyBaseDrag {
     readonly finsOnBase: readonly [number, number];
   };
   readonly labels: readonly string[];
+  /** The vacuum bound on the term, C_D: 2 / (gamma M^2) times the area ratio. No value here exceeds it. */
+  readonly vacuum: number;
+  /** The values the vacuum bound clamped, by name ('term', 'band high end'). */
+  readonly vacuumClamped: readonly string[];
 }
 
 export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
@@ -117,7 +128,14 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
   }
   const q = -curve.pB;
   const f = factor?.nominal ?? 1;
-  const cd = q * f * baseAreaRatio;
+  const vacuum = vacuumBaseDrag(mach) * baseAreaRatio;
+  const vacuumClamped: string[] = [];
+  const atMostVacuum = (value: number, what: string) => {
+    if (value <= vacuum) return value;
+    vacuumClamped.push(what);
+    return vacuum;
+  };
+  const cd = atMostVacuum(q * f * baseAreaRatio, 'term');
   const curveBand = [
     (COMPILED_CURVE_BAND.low - 1) * cd,
     (COMPILED_CURVE_BAND.high - 1) * cd,
@@ -133,11 +151,13 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
         ] as const);
   return {
     cd,
-    low: cd + curveBand[0] + interpolation[0] + finsBand[0],
-    high: cd + curveBand[1] + interpolation[1] + finsBand[1],
+    low: atMostVacuum(cd + curveBand[0] + interpolation[0] + finsBand[0], 'band low end'),
+    high: atMostVacuum(cd + curveBand[1] + interpolation[1] + finsBand[1], 'band high end'),
     curve,
     finsOnBase: factor,
     parts: { curveBand, interpolation, finsOnBase: finsBand },
     labels,
+    vacuum,
+    vacuumClamped,
   };
 }

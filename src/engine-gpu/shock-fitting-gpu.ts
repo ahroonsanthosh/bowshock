@@ -10,11 +10,31 @@
  */
 
 import { gridOnLines, type GridLine } from '../grid/blunt-grid';
-import type { StructuredGrid } from '../grid/structured';
+import type { Geometry, StructuredGrid } from '../grid/structured';
 import type { Primitive2D } from '../scheme/flux';
 import { SettlingValue } from '../verification/iterative-convergence';
 import { GpuEuler2D, gpuPrimitive2D, type GpuEuler2DConfig } from './euler2d-gpu';
 import { GpuLineGrid } from './line-grid';
+import { DT_LOG_SIZE } from './time-loop';
+
+/**
+ * A fit as it runs, for drawing it as it converges straight from the GPU's
+ * buffers (src/render/flow-renderer.ts): nothing here reads the GPU.
+ */
+export interface LiveFit {
+  readonly ni: number;
+  readonly nj: number;
+  readonly gamma: number;
+  readonly geometry: Geometry;
+  readonly freeStream: Primitive2D;
+  readonly lines: readonly GridLine[];
+  /** The buffer holding the current solution (it changes with every step). */
+  state(): GPUBuffer;
+  /** The buffers that place the moving grid's nodes (GpuLineGrid.nodeBuffers). */
+  readonly nodeBuffers: { lines: GPUBuffer; fractions: GPUBuffer; heights: GPUBuffer };
+  /** The heights at the last check, in double precision. */
+  heights(): readonly number[];
+}
 
 export interface GpuShockFitOptions {
   readonly device: GPUDevice;
@@ -50,6 +70,18 @@ export interface GpuShockFitOptions {
   /** Stops the fit at its next check, which then throws the signal's reason. */
   readonly signal?: AbortSignal | undefined;
   readonly onProgress?: ((iterations: number, maxSpeed: number, value: number) => void) | undefined;
+  /**
+   * Called with the fit once its solver is set up, and with null before
+   * the solver's buffers are released: for drawing the flow as it
+   * converges.
+   */
+  readonly onLive?: ((live: LiveFit | null) => void) | undefined;
+  /**
+   * Awaited before each batch of steps (at most DT_LOG_SIZE): a page holds
+   * it to pause the fit. The steps are the same with it or without, in
+   * the same batches: only when the CPU submits them changes.
+   */
+  readonly gate?: (() => Promise<void>) | undefined;
 }
 
 export interface GpuShockFit {
@@ -99,6 +131,17 @@ export async function fitShockGpu(options: GpuShockFitOptions): Promise<GpuShock
     // From here on the engine's metrics are those computed on the GPU.
     lineGrid.setHeights(heights);
     gpu.setCellPrimitives(options.initial);
+    options.onLive?.({
+      ni,
+      nj,
+      gamma,
+      geometry: config.geometry,
+      freeStream: free,
+      lines,
+      state: () => gpu.stateBuffer,
+      nodeBuffers: lineGrid.nodeBuffers,
+      heights: () => heights,
+    });
     const settling = new SettlingValue(options.noise, options.knownRate ?? Number.NaN);
     const movesPerCheck = Math.max(1, Math.round(options.checkEvery / options.stepsPerMove));
     let cell = options.initial;
@@ -109,7 +152,18 @@ export async function fitShockGpu(options: GpuShockFitOptions): Promise<GpuShock
 
     while (iterations < options.maxIterations) {
       options.signal?.throwIfAborted();
-      await gpu.iterateFitted(lineGrid, movesPerCheck, options.stepsPerMove);
+      if (options.gate === undefined) {
+        await gpu.iterateFitted(lineGrid, movesPerCheck, options.stepsPerMove);
+      } else {
+        // The batches iterateFitted makes of the moves, with the gate before each.
+        const perBatch = Math.max(1, Math.floor(DT_LOG_SIZE / options.stepsPerMove));
+        for (let done = 0; done < movesPerCheck; done += perBatch) {
+          await options.gate();
+          options.signal?.throwIfAborted();
+          const moves = Math.min(perBatch, movesPerCheck - done);
+          await gpu.iterateFitted(lineGrid, moves, options.stepsPerMove);
+        }
+      }
       iterations += movesPerCheck * options.stepsPerMove;
       // The speeds of the last move.
       const { speed } = await gpu.readShock();
@@ -137,6 +191,7 @@ export async function fitShockGpu(options: GpuShockFitOptions): Promise<GpuShock
       rate: settling.rateToPassOn,
     };
   } finally {
+    options.onLive?.(null);
     lineGrid.destroy();
     gpu.destroy();
   }

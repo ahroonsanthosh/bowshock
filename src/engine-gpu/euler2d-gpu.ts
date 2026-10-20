@@ -59,8 +59,8 @@ const GPU_FACE_FLUX_FUNCTIONS: Readonly<Record<GpuFluxName, string>> = {
   rusanov: 'rusanov_face_flux',
 };
 
-/** Boundary condition kinds as coded in euler2d.wgsl. */
-const BOUNDARY_KINDS: Readonly<Record<BoundaryCondition2D['kind'], number>> = {
+/** Boundary condition kinds as coded in euler2d.wgsl (the far field is CPU only, for now). */
+const BOUNDARY_KINDS: Readonly<Record<Exclude<BoundaryCondition2D['kind'], 'farField'>, number>> = {
   inflow: 0,
   outflow: 1,
   wall: 2,
@@ -216,6 +216,11 @@ export class GpuEuler2D {
     }
     if (config.fittedShock !== undefined && config.boundaries.jMax.kind !== 'faceStates') {
       throw new RangeError("a fitted shock needs a 'faceStates' jMax boundary");
+    }
+    for (const side of SIDES) {
+      if (config.boundaries[side].kind === 'farField') {
+        throw new RangeError('far-field boundaries are only supported by the CPU engine so far');
+      }
     }
 
     const module = await compileShader(device, 'euler2d', euler2dShaderSource(config));
@@ -661,7 +666,11 @@ export class GpuEuler2D {
     const floats = new Float32Array(data);
     words.set([ni, nj, geometry === 'axisymmetric' ? 1 : 0, timeStepping === 'local' ? 1 : 0]);
     words.set(
-      SIDES.map((side) => BOUNDARY_KINDS[boundaries[side].kind]),
+      SIDES.map((side) => {
+        const kind = boundaries[side].kind;
+        if (kind === 'farField') throw new RangeError('far-field boundaries need the CPU engine');
+        return BOUNDARY_KINDS[kind];
+      }),
       4,
     );
     SIDES.forEach((side, k) => {
