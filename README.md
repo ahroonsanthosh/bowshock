@@ -317,6 +317,9 @@ The design records, in order:
   and the plan that must certify each Mach number before it is served
   (Mach 1.2 meets the supersonic standard on sharp noses; Mach 1.1 and
   1.05 are being certified on finer grids; Mach 1 is not yet certifiable).
+- [0014](docs/design/0014-refusals.md): refusals (draft): every refusal,
+  what it costs on a population of supersonic amateur rockets, and the
+  ranked work to lift them with measured bands.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
