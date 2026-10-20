@@ -58,6 +58,13 @@ export interface VerifiedDragOptions {
    * computed (on the CPU), with its steps so far and in all.
    */
   readonly onStart?: (steps: number, total: number) => void;
+  /**
+   * Called where a sharp nose's usual family of fitted grids fails their
+   * quality gates and the family is solved again with FALLBACK_COLUMN_DENSITY
+   * times as many columns (src/analysis/fitted-flow.ts), with the grid that
+   * failed and why; the levels reported after it are the new family's.
+   */
+  readonly onFallback?: (refinement: number, reason: string) => void;
   /** Stops the run between convergence checks. */
   readonly signal?: AbortSignal;
 }
@@ -70,7 +77,12 @@ export interface LevelReport {
 }
 
 export type VerifiedDrag =
-  | (VerifiedValue & { readonly kind: 'solved'; readonly reports: readonly LevelReport[] })
+  | (VerifiedValue & {
+      readonly kind: 'solved';
+      readonly reports: readonly LevelReport[];
+      /** The column density of the family solved, where not the usual layout's (onFallback). */
+      readonly columnDensity?: number;
+    })
   | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string }
   | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] }
   | { readonly kind: 'invalid'; readonly refinement: number; readonly reason: string };

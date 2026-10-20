@@ -538,6 +538,32 @@ fail the aspect-ratio gate, 13.7 and 14.1 against 13, in the wall cells
 at the end of the solved cylinder, where those at 1.5 times the column
 density reach 8.5).
 
+**Where the usual grids fail the gates: the family again with more
+columns.** A sharp nose's family whose grid fails only the fitted grids'
+quality gates (`fittedGridFailure`) is solved again from its coarsest
+grid with 1.5 times the columns along the body
+(`FALLBACK_COLUMN_DENSITY`), on the page (`verifiedFittedDragGpu`) and on
+the CPU (`verifiedFittedDrag`), and served only if every grid of that
+family passes and the procedure verifies it; the reason the first family
+was refused is shown with the result. The fallback runs only where the
+usual family is refused, so every case served before it is solved as
+before, to the last bit (tested on the 3-caliber tangent ogive at Mach
+1.35, whose base grid gives 0.1081856016981207 either way). Its basis:
+the two families of that ogive agree to 1.5e-5 (above). On a 3-caliber
+tangent ogive with 30 calibers of cylinder at Mach 1.5 the usual grid of
+20 cells across reaches an aspect ratio of 18.0 in the wall cells at the
+end of the cylinder, under a far shock, and is refused; the grid with
+1.5 times the columns passes, and gives 0.1058349120 (the GPU within its
+noise of it). On the 3-caliber tangent ogive at Mach 1.2, whose surface
+flow is subsonic and which is still refused for that, the usual family
+gives 0.1094433219, 0.1090150597 and 0.1089485314 on nj = 20, 40 and 80
+(its grids on nj = 40 and 80 failing the aspect-ratio gate, 13.7 and
+14.1), and the family with 1.5 times the columns 0.1097464924,
+0.1091136911 and 0.1089778395 (every grid passing, 8.5 at most); the
+first three extrapolate to 0.1089263550 (order 2.69, capped at 2) and
+the second to 0.1089325560 (order 2.22), 5.7e-5 apart; the usual
+family's grid on nj = 160 is running.
+
 ## Blunt noses against the method of characteristics
 
 Behind the sonic line of a blunt nose the flow is supersonic, and from

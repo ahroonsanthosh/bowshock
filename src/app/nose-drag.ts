@@ -143,6 +143,9 @@ async function run(gpu: GPUDevice): Promise<void> {
   stopButton.disabled = false;
   controller = new AbortController();
   let started = performance.now();
+  // Where the usual grids fail the quality checks and the family is solved
+  // again with more columns: the grid that failed.
+  let fallback: { refinement: number } | null = null;
   try {
     const outcome = await verifiedFittedDragGpu(gpu, body, {
       mach,
@@ -162,6 +165,12 @@ async function run(gpu: GPUDevice): Promise<void> {
       },
       onLevel: (report) => {
         addLevel(report, (performance.now() - started) / 1000);
+        started = performance.now();
+      },
+      onFallback: (refinement) => {
+        fallback = { refinement };
+        levels.tBodies[0]!.replaceChildren();
+        status.textContent = `The grid at refinement ${refinement} fails the quality checks of fitted grids: solving every grid again with more columns along the body`;
         started = performance.now();
       },
     });
@@ -184,10 +193,14 @@ async function run(gpu: GPUDevice): Promise<void> {
         break;
       case 'solved': {
         const e = outcome.estimate;
+        const failed = fallback as { refinement: number } | null;
         const stopped =
-          outcome.stopped === undefined
+          (outcome.stopped === undefined
             ? ''
-            : ` The grid at refinement ${outcome.stopped.refinement} was not solved: ${outcome.stopped.reason}; the result is from the grids before it.`;
+            : ` The grid at refinement ${outcome.stopped.refinement} was not solved: ${outcome.stopped.reason}; the result is from the grids before it.`) +
+          (outcome.columnDensity === undefined || failed === null
+            ? ''
+            : ` The grids have ${outcome.columnDensity} times the usual columns along the body: the usual grid at refinement ${failed.refinement} fails the quality checks of fitted grids.`);
         if (outcome.uncertainty !== undefined) {
           show(
             `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`,
