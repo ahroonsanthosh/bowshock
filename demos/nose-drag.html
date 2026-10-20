@@ -329,8 +329,10 @@
             tolerance was wide: -19.5% to -26.2% and +23.1% to +27.4% of the modelled total, so a
             pass says little by itself. Inside that class the total is labelled validated; outside
             it, an estimate, not validated. Where a component's method does not cover the case, the
-            total is refused, with every reason, and no number is given. The defaults are the Basic
-            Finner's shape, 30 mm across, at sea level; its button sets the range's conditions.
+            total is refused, with every reason, and no number is given. A flat plate's rounded edge
+            is a full radius, half its thickness; square-cut leading edges and rounded trailing
+            edges are refused (design record 0016). The defaults are the Basic Finner's shape, 30 mm
+            across, at sea level; its button sets the range's conditions.
           </p>
         </details>
         <form class="controls" id="total-form">
@@ -374,6 +376,11 @@
                 <option value="single-wedge" selected>Single wedge, blunt trailing edge</option>
                 <option value="double-wedge">Double wedge (sharp)</option>
                 <option value="hexagonal">Hexagonal (sharp)</option>
+                <option value="plate-rounded-square">
+                  Flat plate, rounded leading edge, square trailing edge
+                </option>
+                <option value="plate-square-square">Flat plate, square edges</option>
+                <option value="plate-rounded-rounded">Flat plate, rounded edges</option>
               </select>
             </div>
             <div class="field">
@@ -391,7 +398,7 @@
                 <input id="rear-bevel" type="number" min="0" max="1" step="any" value="0.25" />
               </span>
             </div>
-            <div class="field">
+            <div class="field" id="le-radius-field">
               <label for="le-radius">Leading-edge radius (0: sharp)</label>
               <input id="le-radius" type="number" min="0" step="any" value="0.004" />
             </div>

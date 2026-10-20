@@ -14,7 +14,8 @@ by the solver or the page.
 | `impact.test.ts` | The run: outcome per Mach band, rate per refusal, sole blockers, the work packages (the share each is needed for, the greedy order, totals after each step of 0014's order), the altitude ends, two sensitivity variants, the cross-check against `src/total` |
 | `edges.test.ts` | The parameters the fin-edge packages turn on, over the same cases: the trailing edges' thin-layer parameter, the leading edges' normal Mach and Reynolds numbers, the trailing-edge angle of fins at the base |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
-| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables, as 0014 quotes them |
+| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables, as 0014 quotes them (the code of 5245241) |
+| `out/impact-w34.out`, `out/impact-w34.json` | The same run after the fin edges of flat plates (design record 0016): `evaluate.ts` mirrors the code it was run with (`EDGES`, default `w34`) |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
@@ -30,7 +31,12 @@ nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
 
 `N_ROCKETS` (default 2000, the quoted run) and `CROSS_CHECK` (rockets
 whose cases are checked against `src/total`, default 300) set the size.
-It writes `out/impact.out` and `out/impact.json`. On a loaded four-core
+It writes `out/impact.out` and `out/impact.json`; `OUT_NAME=impact-w34`
+writes `out/impact-w34.out` and `.json` instead (0016's run).
+`evaluate.ts` mirrors the refusals of the code since 0016 (flat plates,
+swept rounded edges on the normal components, thick layers and tapered
+trailing edges); `EDGES=before` gives the decomposition 0014 measured,
+without the cross-check, which needs that commit's code. On a loaded four-core
 machine it takes about five minutes; the slow part is the fitted
 solver's tip test (`sharpFitProblem`, 0.3 s a call), called only where
 the tip cone's Taylor-Maccoll solution does not already decide it, and

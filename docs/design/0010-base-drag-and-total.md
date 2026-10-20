@@ -587,6 +587,11 @@ row used.
   "an analogy, not a measurement", since no opened source measures such
   an edge (0008 section 3.4), with its band "tested only in the total"
   (section 7; added after round 5, as 0011 section 6 found it missing).
+- **Since [0016](0016-fin-edges-of-flat-plates.md):** thick layers are
+  served to c / [h Re_c^(1/5)] = 4.5 (TR 1109 fig. 29(a)'s fall from 1.0
+  as a factor, with its two readings in the band) and fins of varying chord
+  are integrated along the span; the limit at 1.0 below stays the
+  thin-layer term's, so nothing at the Basic Finner's 0.69 to 0.76 changes.
 - **Refused:** swept trailing edges (base pressure 20% to 50% higher at M
   1.41 and 1.96 with 45 deg of sweep, RM A51J25 p. 17); a laminar layer at
   the trailing edge as the nominal state; and thick layers, with c / [h
@@ -704,6 +709,11 @@ and fig. 7's diamonds one by one.
   numbers, D = 0.008 cal): its six shots at M 1.80 to 2.41 are
   extrapolated in Reynolds number, its five at M 2.66 to 2.97 covered by
   RM A55H31.
+- **Since [0016](0016-fin-edges-of-flat-plates.md):** flat plates (the
+  limit at face angle zero) on any planform, and swept edges to 60 deg by
+  the independence principle at normal Mach numbers 1.49 to 3.0, its
+  error measured on RM A55H31's yawed cylinders; unswept single wedges are
+  unchanged.
 - **Refused:** swept leading edges (no swept-cylinder data at M 1.5 to 3;
   RM A55H31's eq. (14) would be an untested theory there), M below 1.49
   or above 3.0, Re_D below 6.7e3 or above 1e6, and sections other than a

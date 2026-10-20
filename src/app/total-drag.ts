@@ -20,7 +20,14 @@
 import { FITTED_DRAG_FLOOR } from '../analysis/verified-drag';
 import type { BodyBaseDrag } from '../base/base-drag';
 import { clippedDeltaPlanform, trapezoidalPlanform, type Planform } from '../fins/planform';
-import { doubleWedge, hexagonal, singleWedge, type SymmetricSection } from '../fins/section';
+import {
+  doubleWedge,
+  flatPlate,
+  hexagonal,
+  singleWedge,
+  type FlatPlate,
+  type SymmetricSection,
+} from '../fins/section';
 import { bodyLength, validateBody, type Body } from '../geometry/body';
 import {
   finnedBodyComponents,
@@ -57,6 +64,13 @@ export type SectionInput =
       readonly thickness: number;
       readonly frontBevel: number;
       readonly rearBevel: number;
+    }
+  /** A flat plate of uniform thickness (sheet stock), its edges rounded (a full radius) or square-cut. */
+  | {
+      readonly kind: 'flat-plate';
+      readonly thickness: number;
+      readonly leadingEdge: 'rounded' | 'square';
+      readonly trailingEdge: 'square' | 'rounded';
     };
 
 /** The page's inputs for the total, lengths in calibres. */
@@ -70,7 +84,7 @@ export interface TotalDragForm {
   /** Exposed span, from the body's surface. */
   readonly span: number;
   readonly section: SectionInput;
-  /** 0 is sharp. */
+  /** 0 is sharp. Not used for a flat plate, whose rounded edge is a full radius. */
   readonly leadingEdgeRadius: number;
   /** Distance of the root trailing edge ahead of the base. */
   readonly trailingEdgeAheadOfBase: number;
@@ -415,7 +429,9 @@ export function configurationOf(form: TotalDragForm):
   }
   positive('fins', 'the root chord', form.rootChord);
   positive('fins', 'the span', form.span);
-  nonNegative('fins', 'the leading-edge radius', form.leadingEdgeRadius);
+  if (form.section.kind !== 'flat-plate') {
+    nonNegative('fins', 'the leading-edge radius', form.leadingEdgeRadius);
+  }
   nonNegative(
     'fins',
     "the distance of the fins' trailing edges ahead of the base",
@@ -480,7 +496,7 @@ export function configurationOf(form: TotalDragForm):
     if (!(e instanceof RangeError)) throw e;
     bad.push(refusal('fin planform', e.message));
   }
-  let section: SymmetricSection | undefined;
+  let section: SymmetricSection | FlatPlate | undefined;
   try {
     const s = form.section;
     const c = form.rootChord;
@@ -489,7 +505,9 @@ export function configurationOf(form: TotalDragForm):
         ? singleWedge(s.trailingEdgeThickness / c)
         : s.kind === 'double-wedge'
           ? doubleWedge(s.thickness / c, s.ridge)
-          : hexagonal(s.thickness / c, s.frontBevel, s.rearBevel);
+          : s.kind === 'hexagonal'
+            ? hexagonal(s.thickness / c, s.frontBevel, s.rearBevel)
+            : flatPlate(s.thickness, s.leadingEdge, s.trailingEdge);
   } catch (e) {
     if (!(e instanceof RangeError)) throw e;
     bad.push(refusal('fin section', e.message));
@@ -510,7 +528,7 @@ export function configurationOf(form: TotalDragForm):
           // src/fins has no circular-arc section, so the fins-on-base factor
           // is always carried by analogy (0010 section 1.3).
           sectionFamily: 'other',
-          leadingEdgeRadius: form.leadingEdgeRadius,
+          leadingEdgeRadius: form.section.kind === 'flat-plate' ? 0 : form.leadingEdgeRadius,
           trailingEdgeAheadOfBase: form.trailingEdgeAheadOfBase,
         },
       },

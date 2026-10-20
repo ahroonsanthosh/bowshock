@@ -13,7 +13,7 @@ import { FITTED_DRAG_FLOOR } from '../../src/analysis/verified-drag';
 import { finWaveDrag } from '../../src/fins/fin-wave-drag';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, roundedWedge } from '../../src/fins/rounded-leading-edge';
-import { doubleWedge, singleWedge } from '../../src/fins/section';
+import { doubleWedge, singleWedge, type SymmetricSection } from '../../src/fins/section';
 import { bodyFriction } from '../../src/friction/body-friction';
 import { flatPlateFriction } from '../../src/friction/flat-plate';
 import {
@@ -129,7 +129,7 @@ describe(
     });
 
     it('fin wave drag: src/fins on four panels over the cross-section', () => {
-      const w = finWaveDrag(sharp.fins.planform, sharp.fins.section, 2.4);
+      const w = finWaveDrag(sharp.fins.planform, sharp.fins.section as SymmetricSection, 2.4);
       const c = byName('fin wave drag');
       expect(c.cd).toBeCloseTo((4 * w.cd) / (Math.PI * 0.25), 15);
       expect(c.high).toBeGreaterThan(FINS_OWN_DRAG_BAND[1] * c.cd);
@@ -343,7 +343,7 @@ describe('refusals', { timeout: 60_000 }, () => {
     return [];
   };
 
-  it('swept blunt trailing edges and swept rounded leading edges', () => {
+  it('swept blunt trailing edges (a swept rounded leading edge is served since 0016)', () => {
     const swept = trapezoidalPlanform({
       rootChord: 1,
       span: 1,
@@ -355,10 +355,7 @@ describe('refusals', { timeout: 60_000 }, () => {
         ...sharp,
         fins: { ...blunt.fins, planform: swept },
       }),
-    ).toEqual([
-      'fin leading edges: swept-leading-edge',
-      'fin trailing-edge base: swept-trailing-edge',
-    ]);
+    ).toEqual(['fin trailing-edge base: swept-trailing-edge']);
   });
 
   it('a rounded leading edge on a section other than a single wedge', () => {

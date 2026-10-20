@@ -245,6 +245,7 @@ describe('the fields as typed', { timeout: 60_000 }, () => {
       taperRatio: false,
       ridge: false,
       bevels: false,
+      leadingEdgeRadius: true,
       thicknessLabel: 'Trailing-edge thickness',
       altitude: true,
       altitudeLabel: 'Altitude (m)',
@@ -257,6 +258,7 @@ describe('the fields as typed', { timeout: 60_000 }, () => {
       taperRatio: false,
       ridge: false,
       bevels: true,
+      leadingEdgeRadius: true,
       thicknessLabel: 'Largest thickness',
       altitude: false,
       altitudeLabel: 'Altitude (m)',
@@ -265,6 +267,22 @@ describe('the fields as typed', { timeout: 60_000 }, () => {
     expect(fieldsShown({ ...DEFAULT_FIELDS, conditionMode: 'altitude-ft' }).altitudeLabel).toBe(
       'Altitude (ft)',
     );
+    // Flat plates (0016): the plate's thickness; rounded edges are a full radius, so no radius asked.
+    for (const [section, leadingEdge, trailingEdge] of [
+      ['plate-rounded-square', 'rounded', 'square'],
+      ['plate-square-square', 'square', 'square'],
+      ['plate-rounded-rounded', 'rounded', 'rounded'],
+    ] as const) {
+      expect(formOf(BODY, 2, { ...DEFAULT_FIELDS, section, thickness: '0.05' }).section).toEqual({
+        kind: 'flat-plate',
+        thickness: 0.05,
+        leadingEdge,
+        trailingEdge,
+      });
+      const shown = fieldsShown({ ...DEFAULT_FIELDS, section });
+      expect(shown.leadingEdgeRadius).toBe(false);
+      expect(shown.thicknessLabel).toBe('Plate thickness');
+    }
   });
 
   it('the Basic Finner button: its nose, fins and range conditions given directly, the inputs kept', () => {

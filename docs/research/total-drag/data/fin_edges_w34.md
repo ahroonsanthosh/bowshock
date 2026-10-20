@@ -92,7 +92,7 @@ the diameter; (2/3) Cp_0 with Cp_0 Rayleigh's pitot coefficient above Mach
 | 5(b) M 0.3 | +0.104 | 0.682 | +0.15 |
 | 5(b) M 0.5 | +0.130 | 0.709 | +0.18 |
 | 5(b) M 0.6 | +0.204 | 0.729 | +0.28 |
-| 5(b) M 0.7 | +0.297 | 0.752 | +0.40 |
+| 5(b) M 0.7 | +0.297 | 0.752 | +0.39 |
 | 5(e) M 0.70 | +0.295 | 0.752 | +0.39 |
 | 5(e) M 1.49 (check of 5(c)) | +1.013 | 1.019 | 0.994 |
 | 5(d) M 1.98, faired curve | +1.146 | 1.103 | 1.040 |
@@ -109,7 +109,7 @@ What these show:
   inside 0.99 to 1.06 (0010 section 5.2's envelope 0.995 to 1.056), and
   fig. 5(d) shows no Reynolds-number trend over R 1.3e5 to 13.2e5.
 - **At subsonic Mach numbers the front side is not a stagnation-region
-  quantity.** It is 0.10 to 0.40 of the modified-Newtonian value at M 0.05 to
+  quantity.** It is 0.10 to 0.39 of the modified-Newtonian value at M 0.05 to
   0.70 below the critical Reynolds number, and changes sign above it (-0.40,
   -0.43: a thrust on the front half, near potential flow's -1/3 on D). The
   front half's pressures from about 50 deg on are set by where the layer
@@ -165,8 +165,9 @@ nose drag is the gauge integral, so each point is converted: gauge = ratio
 x [1 - 1 / (S I_g)] / [1 - 1 / (S_0 I_g)], with S = (p_x=0 / p_t2)(p_t2 /
 p_inf) from fig. 11 and Rayleigh, S_0 = p_t2 / p_inf, and I_g = 0.721, the
 unyawed shape integral of table II at yaw 0 (the data of fig. 9's
-present-test symbols). The conversion moves each ratio by 0% to 2% below
-60 deg of yaw.
+present-test symbols). The conversion lowers the unflagged ratios by 0.1%
+to 7.1%, the most at 59.9 deg of yaw, where the stagnation pressure is
+lowest against the free stream's.
 
 **The independence model.** On the normal component, per unit length of the
 cylinder: cos^3(L) Cp_pitot(M cos L) / Cp_pitot(M), the modified-Newtonian

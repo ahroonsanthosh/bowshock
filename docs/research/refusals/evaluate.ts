@@ -19,7 +19,7 @@
 import { sharpFitProblem } from '../../../src/analysis/fitted-flow';
 import { FinRefusal } from '../../../src/fins/refusal';
 import { exactSectionDrag } from '../../../src/fins/section-drag';
-import { doubleWedge, hexagonal, singleWedge, type SymmetricSection } from '../../../src/fins/section';
+import { doubleWedge, flatPlate, hexagonal, type FlatPlate, type SymmetricSection } from '../../../src/fins/section';
 import { trapezoidalPlanform } from '../../../src/fins/planform';
 import type { Body } from '../../../src/geometry/body';
 import { noseTipSlope, type NoseShape } from '../../../src/geometry/nose';
@@ -29,6 +29,16 @@ import { taylorMaccoll } from '../../../src/validation/taylor-maccoll';
 import { atmosphere, type NoseKind, type Rocket } from './population';
 
 const DEG = Math.PI / 180;
+
+/**
+ * The code these refusals mirror. 'w34' (the default since
+ * docs/design/0016-fin-edges-of-flat-plates.md): flat plates served, rounded
+ * leading edges on any planform swept to 60 deg at normal Mach numbers 1.49
+ * to 3.0 (normal-component Reynolds number), blunt trailing edges on fins of
+ * varying chord and with layers to c/[h Re_c^(1/5)] 4.5 (to 1.0 above M 3.1).
+ * 'before': the code 0014 measured (EDGES=before).
+ */
+export const EDGES: 'w34' | 'before' = process.env.EDGES === 'before' ? 'before' : 'w34';
 
 export const REASONS = {
   // Nose (the page's solve).
@@ -40,13 +50,32 @@ export const REASONS = {
   noseSteep: 'nose: tip steeper than 40 deg (fitted grids wall gate)',
   noseEllipsoid: 'nose: ellipsoid outside the measured domain',
   // Fin sections and leading edges.
-  squareLe: 'fins: square-cut (blunt) leading edge not represented',
-  roundedTe: 'fins: rounded trailing edge not represented',
-  flatPlateLe: 'fins: rounded leading edge on a flat plate (the model needs a wedge, h > r)',
-  roundedLeTaper: 'fins: rounded leading edge on fins of varying chord',
-  roundedLeSwept: 'fins: swept rounded leading edge',
-  roundedLeMach: 'fins: rounded leading edge outside M 1.49 to 3.0',
-  roundedLeReynolds: 'fins: rounded leading edge outside Re_D 6.7e3 to 1e6',
+  squareLe:
+    EDGES === 'w34'
+      ? 'fins: square-cut (blunt) leading edge (bounded; the ordering not shown, 0016)'
+      : 'fins: square-cut (blunt) leading edge not represented',
+  roundedTe:
+    EDGES === 'w34'
+      ? 'fins: rounded trailing edge (bounded; the ordering not shown, 0016)'
+      : 'fins: rounded trailing edge not represented',
+  flatPlateLe:
+    EDGES === 'w34'
+      ? 'fins: rounded leading edge on a flat plate (lifted by 0016)'
+      : 'fins: rounded leading edge on a flat plate (the model needs a wedge, h > r)',
+  roundedLeTaper:
+    EDGES === 'w34'
+      ? 'fins: rounded leading edge on fins of varying chord (lifted by 0016)'
+      : 'fins: rounded leading edge on fins of varying chord',
+  roundedLeSwept:
+    EDGES === 'w34' ? 'fins: rounded leading edge swept beyond 60 deg' : 'fins: swept rounded leading edge',
+  roundedLeMach:
+    EDGES === 'w34'
+      ? 'fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.49 to 3.0'
+      : 'fins: rounded leading edge outside M 1.49 to 3.0',
+  roundedLeReynolds:
+    EDGES === 'w34'
+      ? 'fins: rounded leading edge outside Re_D 6.7e3 to 1e6 (normal component)'
+      : 'fins: rounded leading edge outside Re_D 6.7e3 to 1e6',
   sectionDetached: 'fins: sharp section, leading-edge shock detached or subsonic behind it',
   sectionReflected: 'fins: sharp section, a wave reflected from the leading-edge shock reaches the surface',
   pageSection: 'page: section not offered (wedge-flat with a blunt trailing edge; the library takes it)',
@@ -59,10 +88,16 @@ export const REASONS = {
   finsAtBaseMach: 'base: fins at the base, Mach 1.5 to 1.8 (outside 1.8 to 3.0)',
   finsAtBaseLowMach: 'base: fins at the base, Mach below 1.5 (outside 1.8 to 3.0)',
   // Fin trailing-edge base.
-  teTaper: 'te: blunt trailing edge on fins of varying chord',
+  teTaper:
+    EDGES === 'w34'
+      ? 'te: blunt trailing edge on fins of varying chord (lifted by 0016)'
+      : 'te: blunt trailing edge on fins of varying chord',
   teSwept: 'te: swept blunt trailing edge',
   teMach: 'te: Mach outside 1.5 to 3.2',
-  teThick: 'te: thick boundary layer, c/[h Re_c^(1/5)] > 1',
+  teThick:
+    EDGES === 'w34'
+      ? 'te: thick boundary layer, c/[h Re_c^(1/5)] > 4.5 anywhere along the span (> 1 above M 3.1)'
+      : 'te: thick boundary layer, c/[h Re_c^(1/5)] > 1',
 } as const;
 
 export type ReasonKey = keyof typeof REASONS;
@@ -151,8 +186,8 @@ export interface Condition {
   readonly altitudeKm: number;
 }
 
-/** The section in chord units the library would take, or undefined where it has none. */
-export function librarySection(r: Rocket): SymmetricSection | undefined {
+/** The section the library would take, or undefined where it has none. */
+export function librarySection(r: Rocket): SymmetricSection | FlatPlate | undefined {
   const tc = r.thickness / r.rootChord;
   const bevel = r.thickness / 2 / Math.tan(r.bevelDeg * DEG) / r.rootChord;
   switch (r.section) {
@@ -163,13 +198,11 @@ export function librarySection(r: Rocket): SymmetricSection | undefined {
     case 'double-wedge':
       return doubleWedge(tc, 0.5);
     case 'rounded-le-square-te':
-      // The page's only form for a rounded edge: a single wedge to a blunt
-      // trailing edge as thick as the plate, with the plate's radius; the
-      // library refuses it (h = r).
-      return singleWedge(tc);
+      return flatPlate(r.thickness, 'rounded', 'square');
     case 'rounded-both':
+      return flatPlate(r.thickness, 'rounded', 'rounded');
     case 'square-both':
-      return undefined;
+      return flatPlate(r.thickness, 'square', 'square');
   }
 }
 
@@ -191,13 +224,22 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   // Sections and edges.
   if (r.section === 'square-both') out.push('squareLe');
   if (r.section === 'rounded-both') out.push('roundedTe');
-  if (roundedLeadingEdge(r)) {
+  if (roundedLeadingEdge(r) && EDGES === 'before') {
     out.push('flatPlateLe');
     if (!constantChord) out.push('roundedLeTaper');
     if (tanLe !== 0) out.push('roundedLeSwept');
     if (!(mach >= 1.49 && mach <= 3.0)) out.push('roundedLeMach');
     const reD = rePerMetre * r.thickness;
     if (!(reD >= 6.7e3 && reD <= 1e6)) out.push('roundedLeReynolds');
+  } else if (roundedLeadingEdge(r)) {
+    // 0016: on the normal components, to 60 deg of sweep.
+    const cos = Math.cos(r.leadingEdgeSweepDeg * DEG);
+    if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('roundedLeSwept');
+    else {
+      if (!(mach * cos >= 1.49 && mach * cos <= 3.0)) out.push('roundedLeMach');
+      const reN = rePerMetre * r.thickness * cos;
+      if (!(reN >= 6.7e3 && reN <= 1e6)) out.push('roundedLeReynolds');
+    }
   }
   if (r.section === 'bevel-le-square-te') out.push('pageSection');
   if (r.section === 'bevel-both' || r.section === 'bevel-le-square-te' || r.section === 'double-wedge') {
@@ -221,12 +263,24 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   }
 
   // Blunt fin trailing edges (src/base/fin-trailing-edge.ts, src/total).
-  if (bluntTrailingEdge(r)) {
+  if (bluntTrailingEdge(r) && EDGES === 'before') {
     if (!constantChord) out.push('teTaper');
     if (tanTe !== 0) out.push('teSwept');
     if (!(mach >= 1.5 && mach <= 3.2)) out.push('teMach');
     const reC = rePerMetre * r.rootChord;
     if (r.rootChord / (r.thickness * reC ** 0.2) > 1) out.push('teThick');
+  } else if (bluntTrailingEdge(r)) {
+    // 0016: integrated along the span; a plate's thickness the same at every station, the
+    // bevelled section's (in chord units, as the library holds it) scaled with the chord.
+    if (tanTe !== 0) out.push('teSwept');
+    if (!(mach >= 1.5 && mach <= 3.2)) out.push('teMach');
+    const tip = r.rootChord + r.span * (tanTe - tanLe);
+    const x = (c: number) => {
+      const h = r.section === 'bevel-le-square-te' ? (r.thickness * c) / r.rootChord : r.thickness;
+      return c / (h * (rePerMetre * c) ** 0.2);
+    };
+    const xMax = Math.max(x(r.rootChord), x(tip));
+    if (xMax > 4.5 || (xMax > 1 && mach > 3.1)) out.push('teThick');
   }
   return out;
 }
@@ -239,6 +293,8 @@ const DUMMY_NOSE: DragComponent = { name: 'nose wave drag', cd: 0, low: 0, high:
  * has no section for it.
  */
 export function libraryRefused(r: Rocket, c: Condition): boolean | undefined {
+  // The library is the present code: no cross-check of the code 0014 measured.
+  if (EDGES === 'before') return undefined;
   const section = librarySection(r);
   if (section === undefined) return undefined;
   const air = atmosphere(c.altitudeKm);

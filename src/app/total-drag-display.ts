@@ -110,10 +110,19 @@ function sectionOf(f: TotalDragFields): SectionInput {
         frontBevel: parseNumber(f.frontBevel),
         rearBevel: parseNumber(f.rearBevel),
       };
+    case 'plate-rounded-square':
+      return { kind: 'flat-plate', thickness, leadingEdge: 'rounded', trailingEdge: 'square' };
+    case 'plate-square-square':
+      return { kind: 'flat-plate', thickness, leadingEdge: 'square', trailingEdge: 'square' };
+    case 'plate-rounded-rounded':
+      return { kind: 'flat-plate', thickness, leadingEdge: 'rounded', trailingEdge: 'rounded' };
     default:
       return { kind: 'single-wedge', trailingEdgeThickness: thickness };
   }
 }
+
+/** The section values that are flat plates (sheet stock). */
+const isPlate = (section: string) => section.startsWith('plate-');
 
 /** The unit of the altitude asked, or null when the Reynolds number is asked directly. */
 export function altitudeUnitOf(conditionMode: string): AltitudeUnit | null {
@@ -261,6 +270,8 @@ export function fieldsShown(f: Pick<TotalDragFields, 'planform' | 'section' | 'c
   readonly taperRatio: boolean;
   readonly ridge: boolean;
   readonly bevels: boolean;
+  /** Not for a flat plate, whose rounded edges are a full radius. */
+  readonly leadingEdgeRadius: boolean;
   readonly thicknessLabel: string;
   /** The altitude and diameter, and the Reynolds number and temperature they imply. */
   readonly altitude: boolean;
@@ -274,7 +285,13 @@ export function fieldsShown(f: Pick<TotalDragFields, 'planform' | 'section' | 'c
     taperRatio: f.planform === 'clipped-delta',
     ridge: f.section === 'double-wedge',
     bevels: f.section === 'hexagonal',
-    thicknessLabel: f.section === 'single-wedge' ? 'Trailing-edge thickness' : 'Largest thickness',
+    leadingEdgeRadius: !isPlate(f.section),
+    thicknessLabel:
+      f.section === 'single-wedge'
+        ? 'Trailing-edge thickness'
+        : isPlate(f.section)
+          ? 'Plate thickness'
+          : 'Largest thickness',
     altitude: unit !== null,
     altitudeLabel: `Altitude (${unit ?? 'm'})`,
     reynolds: unit === null,

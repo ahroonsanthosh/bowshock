@@ -40,12 +40,30 @@
  *   1.96 with 45 deg of sweep, RM A51J25 p. 17);
  * - a laminar layer at the trailing edge (base pressure then depends
  *   strongly on Reynolds number, TR 1109 p. 1);
- * - thick layers, c / [h Re_c^(1/5)] > 1.0: up to 1.0 TR 1109 fig. 29(a)'s
- *   base drag lies within 0.4%, 1.4% and 1.8% of its value at its lowest
- *   read abscissa at M 1.5, 2.0 and 3.1 in the first reading (from X 0.5,
- *   0.5 and 0.75), within 0.2%, 1.5% and 4.0% in the second (from X 0.45);
- *   beyond, it falls by up to 12% to 29% at 4.5 (11% to 31% in the second
- *   reading), which the thin-layer curve does not carry.
+ * - layers thicker than TR 1109 fig. 29(a) is read, c / [h Re_c^(1/5)] > 4.5,
+ *   and any layer thicker than 1.0 above M 3.1 (its highest curve).
+ *
+ * Thick layers (docs/design/0016-fin-edges-of-flat-plates.md, W3(a)). Up to
+ * X = c / [h Re_c^(1/5)] = 1.0 the thin-layer curve is taken as it is: TR
+ * 1109 fig. 29(a)'s base drag lies within 0.4%, 1.4% and 1.8% of its value
+ * at its lowest read abscissa at M 1.5, 2.0 and 3.1 in the first reading
+ * (within 0.2%, 1.5% and 4.0% in the second, from X 0.45). From 1.0 to 4.5,
+ * where it falls by up to 12% to 31%, the term is the thin-layer term times
+ *
+ *   K(M, X) = D(M, X) / D(M, 1.0),   D = 1 - p_b / p_inf on fig. 29(a),
+ *
+ * the first reading's K interpolated linearly in M between the curves at M
+ * 1.5, 2.0 and 3.1. Its band: the term's band (0.93 to 1.21) times the
+ * lowest and the highest K over both readings and the curves that bracket
+ * the Mach number (at a curve's own Mach number, that curve), since K falls
+ * with M at every abscissa read. K = 1 at X = 1, so the term is continuous
+ * there and unchanged below it.
+ *
+ * Fins of varying chord (0016, W3(b)): with an unswept trailing edge the
+ * term is integrated along the span with the local chord, thickness and
+ * Reynolds number (Gauss-Legendre); a transition input leaves laminar the
+ * part of the span whose chord Reynolds number it reaches, and that part's
+ * laminar change is integrated on its own interval.
  *
  * Input band, laminar against turbulent: when a transition input leaves
  * the fin's layer laminar at its trailing edge (Re_T at least the chord
@@ -91,6 +109,7 @@ import {
   TR1109_FIG8_SYMBOLS_SECOND,
   type Tr1109Curve,
 } from './blunt-te-2d';
+import { gaussLegendre } from '../fins/quadrature';
 import { BaseRefusal } from './refusal';
 import { vacuumBaseDrag } from './vacuum';
 
@@ -100,6 +119,10 @@ const GAMMA = 1.4;
 export const FIN_TRAILING_EDGE_MACH_RANGE = [1.5, 3.2] as const;
 /** Largest c / [h Re_c^(1/5)] counted a thin layer (TR 1109 fig. 29(a)). */
 export const THIN_LAYER_LIMIT = 1.0;
+/** Largest c / [h Re_c^(1/5)] served: the end of TR 1109 fig. 29(a)'s readings. */
+export const THICK_LAYER_LIMIT = 4.5;
+/** The Mach numbers of fig. 29(a)'s turbulent curves, between which K is interpolated. */
+export const THICK_LAYER_MACH_RANGE = [1.5, 3.1] as const;
 
 /** RM A51J25 fig. 7's p_b / p' at M', linearly interpolated (within the table). */
 export function thinLayerPressureRatio(mach: number): number {
@@ -175,6 +198,65 @@ const curveAt = (curves: readonly Tr1109Curve[], mach: number): Points => {
   if (c === undefined) throw new RangeError(`no curve at M ${mach}`);
   return c.points;
 };
+
+/** The thick-layer factor on the thin-layer term, and its band's ends. */
+export interface ThickLayerFactor {
+  readonly nominal: number;
+  readonly low: number;
+  readonly high: number;
+  /** The fig. 29(a) Mach numbers whose curves bracket the Mach number. */
+  readonly machNodes: readonly number[];
+}
+
+const NO_THICK_LAYER: ThickLayerFactor = { nominal: 1, low: 1, high: 1, machNodes: [] };
+
+/**
+ * K(M, X) = D(M, X) / D(M, 1.0) on TR 1109 fig. 29(a), D = 1 - p_b / p_inf
+ * (0016, W3(a)); 1 for X up to 1.0. Nominal: the first reading, linear in M
+ * between the bracketing curves; low and high: the extremes over both
+ * readings and the bracketing curves. Throws BaseRefusal beyond X = 4.5, or
+ * for X above 1.0 outside M 1.5 to 3.1.
+ */
+export function thickLayerFactor(mach: number, x: number): ThickLayerFactor {
+  if (!(x > THIN_LAYER_LIMIT)) return NO_THICK_LAYER;
+  if (!(x <= THICK_LAYER_LIMIT * (1 + 1e-12))) {
+    throw new BaseRefusal(
+      'thick-layer',
+      `c/[h Re_c^(1/5)] = ${x.toFixed(3)} exceeds ${THICK_LAYER_LIMIT}, the end of TR 1109 ` +
+        "fig. 29(a)'s readings: the boundary layer is thicker against the edge than any base " +
+        'pressure measured',
+    );
+  }
+  const [lo, hi] = THICK_LAYER_MACH_RANGE;
+  if (!(mach >= lo && mach <= hi)) {
+    throw new BaseRefusal(
+      'thick-layer',
+      `c/[h Re_c^(1/5)] = ${x.toFixed(3)} is a thick layer, whose effect TR 1109 fig. 29(a) ` +
+        `measures at Mach ${lo}, 2.0 and ${hi} only, asked Mach ${mach}`,
+    );
+  }
+  const nodes = TR1109_FIG29A_TURBULENT.map((c) => c.mach);
+  let k = 0;
+  while (k + 2 < nodes.length && mach > nodes[k + 1]!) k++;
+  const a = nodes[k]!;
+  const b = nodes[k + 1]!;
+  const bracket = mach === a ? [a] : mach === b ? [b] : [a, b];
+  const factor = (curves: readonly Tr1109Curve[], m: number) => {
+    const p = curveAt(curves, m);
+    return (1 - mustValue(p, x, 'fig. 29(a)').low) / (1 - mustValue(p, 1.0, 'fig. 29(a)').low);
+  };
+  const ka = factor(TR1109_FIG29A_TURBULENT, a);
+  const kb = factor(TR1109_FIG29A_TURBULENT, b);
+  const all = [TR1109_FIG29A_TURBULENT, TR1109_FIG29A_TURBULENT_SECOND].flatMap((r) =>
+    bracket.map((m) => factor(r, m)),
+  );
+  return {
+    nominal: ka + ((mach - a) / (b - a)) * (kb - ka),
+    low: Math.min(...all),
+    high: Math.max(...all),
+    machNodes: bracket,
+  };
+}
 
 /** RM A51J25 fig. 7's mean curve, each reading, as points. */
 const FIG7_READINGS: readonly { readonly reading: string; readonly points: Points }[] = [
@@ -391,6 +473,22 @@ export interface FinTrailingEdgeInput {
   /** Transition Reynolds numbers of the transition input (from each fin's leading edge). */
   readonly transitionReynolds?: readonly number[];
   readonly referenceArea: number;
+  /**
+   * Fins of varying chord (unswept trailing edge): the chord and the
+   * trailing-edge thickness at the tip, each varying linearly along the
+   * span from `chord` and `thickness` at the root. Omitted: as at the root.
+   */
+  readonly tipChord?: number;
+  readonly tipThickness?: number;
+}
+
+/** One state of a transition input on fins of varying chord: the term's change, C_D. */
+export interface LaminarState {
+  readonly reynolds: number;
+  /** The part of the span left laminar at its trailing edge, from 0 to 1. */
+  readonly laminarSpanFraction: number;
+  readonly low: number;
+  readonly high: number;
 }
 
 export interface FinTrailingEdgeBase {
@@ -417,6 +515,13 @@ export interface FinTrailingEdgeBase {
   readonly laminar: LaminarRatio | undefined;
   /** The values the vacuum bound clamped, by name ('term', 'band high end', 'laminar high end', ...). */
   readonly vacuumClamped: readonly string[];
+  /** The thick-layer factor (at the root on fins of varying chord); 1 for thin layers. */
+  readonly thickLayer: ThickLayerFactor;
+  /**
+   * Fins of varying chord: the term's change in each transition state, in
+   * the order of the input (`laminarTerm` and `laminar` are then undefined).
+   */
+  readonly laminarStates: readonly LaminarState[] | undefined;
 }
 
 export const FIN_TRAILING_EDGE_LABEL_ANALOGY =
@@ -429,18 +534,27 @@ export const FIN_TRAILING_EDGE_LABEL_FREE =
   'free-stream Mach number), band estimated on TR 1109, RM A51J25 and the X-15 fin, tested ' +
   'only in the total';
 
+const thickLabel = (x: number) =>
+  `; a thick layer, c/[h Re_c^(1/5)] ${x.toFixed(2)}: the thin-layer term times TR 1109 fig. ` +
+  "29(a)'s fall in base drag from 1.0, its two readings and bracketing Mach numbers in the " +
+  'band (0016)';
+
 export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailingEdgeBase {
   const { mach, count, thickness, span, chord, reynoldsPerLength, referenceArea } = input;
+  const tipChord = input.tipChord ?? chord;
+  const tipThickness = input.tipThickness ?? thickness;
   for (const [name, v] of [
     ['thickness', thickness],
     ['span', span],
     ['chord', chord],
     ['reynoldsPerLength', reynoldsPerLength],
     ['referenceArea', referenceArea],
+    ['tipChord', tipChord],
+    ['tipThickness', tipThickness],
   ] as const) {
     if (!(v >= 0 && Number.isFinite(v))) throw new BaseRefusal('input', `bad ${name} ${v}`);
   }
-  if (thickness === 0) {
+  if (thickness === 0 && tipThickness === 0) {
     return {
       cd: 0,
       low: 0,
@@ -454,6 +568,8 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
       laminarInput: { low: 0, high: 0 },
       laminar: undefined,
       vacuumClamped: [],
+      thickLayer: NO_THICK_LAYER,
+      laminarStates: undefined,
     };
   }
   const [lo, hi] = FIN_TRAILING_EDGE_MACH_RANGE;
@@ -478,16 +594,12 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
         'Reynolds number (TR 1109), and the band is set on turbulent layers',
     );
   }
+  if (tipChord !== chord || tipThickness !== thickness) {
+    return varyingChordTrailingEdge(input, tipChord, tipThickness);
+  }
   const reChord = reynoldsPerLength * chord;
   const thin = chord / (thickness * reChord ** 0.2);
-  if (thin > THIN_LAYER_LIMIT) {
-    throw new BaseRefusal(
-      'thick-layer',
-      `c/[h Re_c^(1/5)] = ${thin.toFixed(3)} exceeds ${THIN_LAYER_LIMIT}: the boundary layer is ` +
-        "thick against the edge, where TR 1109 fig. 29(a)'s base drag falls by up to 12% to 29%, " +
-        'which the thin-layer curve does not carry',
-    );
-  }
+  const k = thickLayerFactor(mach, thin);
   const pB = thinLayerBasePressure(mach);
   const area = (count * thickness * span) / referenceArea;
   const vacuum = vacuumBaseDrag(mach, GAMMA) * area;
@@ -497,7 +609,7 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
     vacuumClamped.push(what);
     return vacuum;
   };
-  const cd = atMostVacuum(-pB * area, 'term');
+  const cd = atMostVacuum(-pB * area * k.nominal, 'term');
   const reaches = (input.transitionReynolds ?? []).some((reT) => reT >= reChord);
   const laminar = reaches ? laminarOverTurbulent(chord / thickness, reChord) : undefined;
   const laminarTerm =
@@ -507,12 +619,13 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
           low: atMostVacuum(laminar.low * cd, 'laminar low end'),
           high: atMostVacuum(laminar.high * cd, 'laminar high end'),
         };
+  const base = input.inBasePlane ? FIN_TRAILING_EDGE_LABEL_ANALOGY : FIN_TRAILING_EDGE_LABEL_FREE;
   return {
     cd,
-    low: atMostVacuum(FIN_TRAILING_EDGE_BAND.low * cd, 'band low end'),
-    high: atMostVacuum(FIN_TRAILING_EDGE_BAND.high * cd, 'band high end'),
+    low: atMostVacuum(FIN_TRAILING_EDGE_BAND.low * cd * (k.low / k.nominal), 'band low end'),
+    high: atMostVacuum(FIN_TRAILING_EDGE_BAND.high * cd * (k.high / k.nominal), 'band high end'),
     pB,
-    label: input.inBasePlane ? FIN_TRAILING_EDGE_LABEL_ANALOGY : FIN_TRAILING_EDGE_LABEL_FREE,
+    label: thin > THIN_LAYER_LIMIT ? base + thickLabel(thin) : base,
     thinLayerParameter: thin,
     chordReynolds: reChord,
     vacuum,
@@ -523,5 +636,123 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
         : { low: Math.min(0, laminarTerm.low - cd), high: Math.max(0, laminarTerm.high - cd) },
     laminar,
     vacuumClamped,
+    thickLayer: k,
+    laminarStates: undefined,
   };
 }
+
+/**
+ * The term on fins of varying chord with an unswept trailing edge (0016,
+ * W3(b)): chord and thickness linear along the span, integrated by
+ * Gauss-Legendre with the local thin-layer parameter and thick-layer factor.
+ * A transition state leaves laminar the stations whose chord Reynolds number
+ * it reaches; their laminar change (TR 1109 fig. 29 at each station) is
+ * integrated over that interval of the span alone. Each band end and each
+ * state's term is at most the vacuum bound.
+ */
+function varyingChordTrailingEdge(
+  input: FinTrailingEdgeInput,
+  tipChord: number,
+  tipThickness: number,
+): FinTrailingEdgeBase {
+  const { mach, count, thickness, span, chord, reynoldsPerLength, referenceArea } = input;
+  const chordAt = (y: number) => chord + ((tipChord - chord) * y) / span;
+  const thicknessAt = (y: number) => thickness + ((tipThickness - thickness) * y) / span;
+  const parameter = (y: number) => {
+    const c = chordAt(y);
+    return c / (thicknessAt(y) * (reynoldsPerLength * c) ** 0.2);
+  };
+  if (!(Math.min(thickness, tipThickness) > 0 && Math.min(chord, tipChord) > 0)) {
+    throw new BaseRefusal('input', 'a blunt trailing edge needs a positive thickness and chord');
+  }
+  const pB = thinLayerBasePressure(mach);
+  const rule = gaussLegendre(VARYING_CHORD_NODES);
+  const scale = count / referenceArea;
+  // Every station's parameter is checked, the ends included (the refusals of thickLayerFactor).
+  const stations = [0, ...Array.from(rule.nodes, (n) => 0.5 * span * (n + 1)), span];
+  const factors = stations.map((y) => thickLayerFactor(mach, parameter(y)));
+  let cd = 0;
+  let lowSum = 0;
+  let highSum = 0;
+  rule.weights.forEach((w, i) => {
+    const y = stations[i + 1]!;
+    const k = factors[i + 1]!;
+    const d = 0.5 * span * w * -pB * thicknessAt(y) * scale;
+    cd += d * k.nominal;
+    lowSum += d * k.low;
+    highSum += d * k.high;
+  });
+  const vacuum = vacuumBaseDrag(mach, GAMMA) * scale * 0.5 * span * (thickness + tipThickness);
+  const vacuumClamped: string[] = [];
+  const atMostVacuum = (value: number, what: string) => {
+    if (value <= vacuum) return value;
+    vacuumClamped.push(what);
+    return vacuum;
+  };
+  cd = atMostVacuum(cd, 'term');
+  const sub = gaussLegendre(LAMINAR_NODES);
+  const laminarStates = (input.transitionReynolds ?? []).map((reT): LaminarState => {
+    // The stations laminar at their trailing edge: Re' c(y) <= Re_T, an interval of the span.
+    const cT = reT / reynoldsPerLength;
+    let y0 = 0;
+    let y1 = span;
+    if (tipChord === chord) {
+      if (cT < chord) y1 = 0;
+    } else {
+      const yT = ((cT - chord) * span) / (tipChord - chord);
+      if (tipChord < chord) y0 = Math.min(span, Math.max(0, yT));
+      else y1 = Math.min(span, Math.max(0, yT));
+    }
+    if (!(y1 > y0)) return { reynolds: reT, laminarSpanFraction: 0, low: 0, high: 0 };
+    let low = 0;
+    let high = 0;
+    sub.weights.forEach((w, i) => {
+      const y = y0 + 0.5 * (y1 - y0) * (sub.nodes[i]! + 1);
+      const c = chordAt(y);
+      const h = thicknessAt(y);
+      const ratio = laminarOverTurbulent(c / h, reynoldsPerLength * c);
+      const term =
+        0.5 * (y1 - y0) * w * -pB * h * scale * thickLayerFactor(mach, parameter(y)).nominal;
+      low += (ratio.low - 1) * term;
+      high += (ratio.high - 1) * term;
+    });
+    const lowTerm = atMostVacuum(cd + low, 'laminar low end');
+    const highTerm = atMostVacuum(cd + high, 'laminar high end');
+    return {
+      reynolds: reT,
+      laminarSpanFraction: (y1 - y0) / span,
+      low: lowTerm - cd,
+      high: highTerm - cd,
+    };
+  });
+  const xRoot = parameter(0);
+  const xMax = Math.max(...stations.map(parameter));
+  const base = input.inBasePlane ? FIN_TRAILING_EDGE_LABEL_ANALOGY : FIN_TRAILING_EDGE_LABEL_FREE;
+  return {
+    cd,
+    low: atMostVacuum(FIN_TRAILING_EDGE_BAND.low * lowSum, 'band low end'),
+    high: atMostVacuum(FIN_TRAILING_EDGE_BAND.high * highSum, 'band high end'),
+    pB,
+    label:
+      base +
+      '; on fins of varying chord, integrated along the span with the local chord (0016)' +
+      (xMax > THIN_LAYER_LIMIT ? thickLabel(xMax).replace('c/[h', 'largest c/[h') : ''),
+    thinLayerParameter: xRoot,
+    chordReynolds: reynoldsPerLength * chord,
+    vacuum,
+    laminarTerm: undefined,
+    laminarInput: {
+      low: Math.min(0, ...laminarStates.map((l) => l.low)),
+      high: Math.max(0, ...laminarStates.map((l) => l.high)),
+    },
+    laminar: undefined,
+    vacuumClamped,
+    thickLayer: factors[0]!,
+    laminarStates,
+  };
+}
+
+/** Gauss-Legendre nodes along the span for fins of varying chord. */
+const VARYING_CHORD_NODES = 32;
+/** Gauss-Legendre nodes over the laminar part of the span in a transition state. */
+const LAMINAR_NODES = 64;
