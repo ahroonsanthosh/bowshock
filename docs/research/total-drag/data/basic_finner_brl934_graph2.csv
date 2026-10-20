@@ -1,0 +1,67 @@
+# BRL Report 934, Graph II (PDF p. 25, report p. 23): "Yaw drag coefficient vs. Mach number", C_D' per rad^2,
+#   so that CD = CD0 + C_D' * dbar2 (dbar2 in rad^2). Two readings, both by the same reader (not blind), of the faired dashed curve.
+# Page rendered at 400 dpi (pdftoppm -r 400 -gray -f 25 -l 25) and rotated 90 deg clockwise (PIL rotate(-90, expand=True)),
+#   4011 x 3371 px. Calibration, from the grid (scripts/brl934_grid_skew.py) and the axis labels:
+#   heavy vertical lines every 0.05 M, M 1.40 at x 1429.5 px when y = 1450 px, 63.5 px per 0.05 M, vertical-line skew
+#   dx/dy = -0.0243 (checked on the labels 1.4, 2.2 and 2.6, within 2 to 8 px); zero line y = 2528 + 0.031 (x - 700) px,
+#   64.1 px per unit (heavy lines every 2 units at x 1350: 2550, 2421.5, 2294, 2166, 2038, 1909, 1782.5; labels 0 and 20 within 2 px).
+# reading 1: the curve centre read by eye on a 1:1 crop with a 25 px ruler after grid-line removal (scripts/brl934_degrid.py,
+#   brl934_ruler_crop.py), converted with the calibration above (skew included; the conversion is in scripts/brl934_graph2_second.py).
+# reading 2: scripted, at each heavy vertical line, median centre of the curve's dark runs 6 to 16 px either side of the line
+#   (scripts/brl934_graph2_second.py); n_cols = columns used, iqr_px = interquartile spread of the centres.
+# Reading error (both): +-3 px in y on the curve centre, +-0.05 in C_D', plus the calibration's +-2 px; +-0.01 in M.
+# Text, report p. 8: "The yaw drag coefficient decreases from about 15.0 per radian squared to 8.9 from a Mach number of 1.4 to 2.4."
+#   The readings give 15.73 (2) and 15.93 (1, interpolated) at M 1.40 and 9.29 and 9.27 at M 2.40: the curve lies above the
+#   text's rounded figures by 0.7 to 0.9 at M 1.4 and 0.4 at M 2.4 (kept as found; see the .md and brl934.py's output).
+reading,M,CDprime_per_rad2,x_px,y_px,n_cols,iqr_px
+1,1.277,17.80,1275,1405,,
+1,1.297,17.58,1300,1420,,
+1,1.338,16.94,1350,1462,,
+1,1.378,16.30,1400,1505,,
+1,1.418,15.62,1450,1550,,
+1,1.458,15.13,1500,1583,,
+1,1.498,14.65,1550,1615,,
+1,1.578,13.74,1650,1677,,
+1,1.618,13.37,1700,1702,,
+1,1.658,13.08,1750,1722,,
+1,1.697,12.75,1800,1745,,
+1,1.737,12.38,1850,1770,,
+1,1.777,12.09,1900,1790,,
+1,1.817,11.88,1950,1805,,
+1,1.856,11.60,2000,1825,,
+1,1.896,11.39,2050,1840,,
+1,1.983,10.85,2160,1878,,
+1,2.015,10.57,2200,1897,,
+1,2.055,10.36,2250,1912,,
+1,2.094,10.23,2300,1922,,
+1,2.134,9.97,2350,1940,,
+1,2.190,9.77,2420,1955,,
+1,2.249,9.62,2495,1967,,
+1,2.324,9.39,2590,1985,,
+1,2.411,9.25,2700,1997,,
+1,2.517,9.18,2835,2006,,
+2,1.30,17.48,1303,1426.5,22,22.5
+2,1.35,16.57,1366,1486.2,22,22.9
+2,1.40,15.73,1428,1542.0,11,2.2
+2,1.45,15.17,1490,1580.2,22,18.2
+2,1.50,14.63,1553,1616.5,22,11.5
+2,1.55,13.92,1615,1664.0,11,2.8
+2,1.60,13.61,1678,1686.0,16,12.5
+2,1.65,13.09,1741,1721.0,20,10.2
+2,1.70,12.66,1803,1750.5,18,5.5
+2,1.75,12.26,1866,1778.0,21,10.5
+2,1.80,11.95,1929,1800.0,19,11.5
+2,1.85,11.51,1992,1830.2,16,9.0
+2,1.90,11.26,2055,1848.0,14,0.9
+2,1.95,10.86,2118,1876.0,7,0.5
+2,2.00,10.75,2181,1885.0,17,13.0
+2,2.05,10.48,2244,1904.0,11,0.2
+2,2.10,10.29,2307,1918.2,18,1.5
+2,2.15,10.06,2370,1934.8,20,1.0
+2,2.20,9.87,2433,1949.0,16,1.0
+2,2.25,9.67,2496,1963.8,14,3.6
+2,2.30,9.50,2560,1977.0,4,4.0
+2,2.35,9.49,2623,1979.5,19,5.5
+2,2.40,9.29,2686,1994.0,14,30.8
+2,2.45,9.24,2750,1999.5,8,1.8
+2,2.50,9.16,2813,2006.5,19,35.0
