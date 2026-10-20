@@ -333,16 +333,24 @@ across at the far boundaries) and the case was dropped. The cylinder's
 length matters far less: 40 calibers instead of 10 changes the drag by
 +1.28e-5 (0.0917281, 100.6 radii).
 
-The grid, on 100.6 radii: r = 2 (14,160 cells) gives 0.0916001, 1.15e-4
-(1.3e-3 of the value) below the base grid, after 51,700 plain steps
-(1,475 s of CPU; the residual 4.4e-10). One change does not give an
-order; if the grid error falls at first order, as at Mach 1.05, the
-finer grids would remove another 1.2e-4, at second order 4e-5. Adding
-the far boundaries' correction measured on the base grid (+1.63e-3 to
-+1.72e-3 for boundaries at infinity) to r = 2, and the grid's remaining
-change, the drag at Mach 1 is 0.0931 to 0.0933: 0.0932 within about
-2e-4 (0.2%). On the 100.6-radius domain alone, without the correction,
-the error is 1.8%.
+The grid, on 100.6 radii: r = 1, 2, 4 give 0.0917153, 0.0916001 and
+0.0915486 (17,850, 51,700 and 89,200 plain steps; 1,475 s of CPU on r =
+2, 6,000 s on r = 4 up to its checkpoint at 83,200). r = 4 had not
+settled when a container restart stopped it: the drag was in a damped
+oscillation (period 22,600 steps, decay time 25,400 steps, amplitude 6.7e-6
+at the end), and its converged value is the oscillation's centre fitted
+to the history from step 50,000, 0.0915486 (the fit's rms misfit 3e-8;
+from step 30,000 the same centre to 1e-9). The same fit on r = 2's
+history up to step 30,000 only gave 0.0915982 against the settled
+0.0916001, within 1.9e-6, with a misfit 400 times larger. The changes
+(-1.152e-4, -5.15e-5) fall by 2.24: observed order 1.16, first order as
+at Mach 1.05. Extrapolated at that order the drag on 100.6 radii is
+0.091507 (0.091497 at order 1), 4e-5 to 5e-5 below r = 4; three grids
+give no band from the procedure. With the far boundaries' correction
+(+1.63e-3 to +1.72e-3 for boundaries at infinity, below), the drag at
+Mach 1 is 0.09314 to 0.09323: **0.0932 within about 1e-4 (0.1%)**. On
+the 100.6-radius domain alone, without the correction, the error is
+1.8%.
 
 The correction holds on the finer grid. On 408.7 radii r = 2 ran to its
 limit of 120,000 steps (4,940 s of CPU) without the settling test
@@ -731,10 +739,13 @@ on the CPU engine:
   1.5e-3 of its extrapolation, far boundaries at most 2e-4, cylinder
   within the noise: about 2e-3 on r = 4, if the first order holds (the
   band needs r = 8). Ogive and hemisphere: r = 1 and 2 only.
-- **Mach 1.0.** Cone: 0.0932 within about 0.2% with the far boundaries
-  extrapolated to infinity (the correction measured on the base grid
-  holds on r = 2 within 6e-6; the grid's order beyond r = 2 waits for r =
-  4); on 100.6 radii alone 1.8% low, on 408.7 radii about 0.3% low. Ogive: on the base grid
+- **Mach 1.0.** Cone: 0.0932 within about 0.1%: three grids converging
+  at first order (1.16), extrapolated, plus the far boundaries'
+  correction (measured on the base grid, holding on r = 2 within 6e-6);
+  on 100.6 radii alone 1.8% low, on 408.7 radii about 0.3% low; no band
+  from the procedure, which needs a fourth grid (at Mach 1 the steps
+  grew 2.9 times from r = 1 to 2 and r = 4 had not settled after 1.7
+  times r = 2's, each grid with 4 times the cells). Ogive: on the base grid
   0.0190 within about 0.7% after the same extrapolation (10% low on
   100.6 radii, 2% on 408.7), its grid error not measured. Hemisphere: far
   boundaries 3e-4, grid error not measured at Mach 1. The wind tunnel and
@@ -743,8 +754,8 @@ on the CPU engine:
 So the evidence supports the transonic domain at Mach 1.2 to the
 supersonic solvers' standard on cones and on the ogive (four grids, the
 band containing the error), and to about 1e-3 on blunt noses; at Mach 1.1 to 3.5e-4 on cones; at 1.05 to about 2e-3 on
-cones; and at Mach 1 to about 0.2% on cones only with the far-boundary
-extrapolation. Nothing below Mach 1.2 has the procedure's four-grid band
+cones; and at Mach 1 to about 0.1% on cones only with the far-boundary
+extrapolation and three grids. Nothing below Mach 1.2 has the procedure's four-grid band
 yet.
 
 ## What did not work
