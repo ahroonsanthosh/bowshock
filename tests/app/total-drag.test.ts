@@ -8,6 +8,8 @@
  */
 
 import { beforeAll, describe, expect, it } from 'vitest';
+import { standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
+import { flightConditionOf } from '../../src/app/flight-condition';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
 import { singleWedge } from '../../src/fins/section';
@@ -168,6 +170,33 @@ describe('the class rule', { timeout: 60_000 }, () => {
     const t = (a: number) => a ** 2 / (1.4 * 287.05);
     expect(t(343.4)).toBeGreaterThan(293);
     expect(t(344.0)).toBeLessThan(295);
+  });
+
+  it("a standard atmosphere's air lies in the class (293 to 295 K) only 746 to 1,054 m below sea level", () => {
+    const f = basicFinnerForm(2.4, 1.6e7);
+    const inside = (z: number) =>
+      basicFinnerClass({ ...f, temperature: standardAtmosphere(z).temperature }).inside;
+    expect([0, -746.0, -746.1, -1053.6, -1053.7].map(inside)).toEqual([
+      false,
+      false,
+      true,
+      true,
+      false,
+    ]);
+    // The range's 293.95 K about 890 m below sea level.
+    expect(standardAtmosphere(-892).temperature).toBeCloseTo(293.95, 2);
+    // At sea level the Basic Finner's 30 mm body gives 6.99e6 per unit Mach number, 5.6% above
+    // the range's 6.62e6 (its air warmer, 293.95 K).
+    const c = flightConditionOf({
+      altitude: 0,
+      altitudeUnit: 'm',
+      mach: 1,
+      diameterMm: 1000 * G.caliberMetres,
+      lengthCalibers: G.length,
+    });
+    if (c.kind !== 'ok') throw new Error('expected a condition');
+    expect(c.value.reynoldsOnLength).toBeCloseTo(6.99e6, -4);
+    expect(c.value.reynoldsOnLength / BASIC_FINNER_REYNOLDS_PER_MACH - 1).toBeCloseTo(0.056, 3);
   });
 
   it(

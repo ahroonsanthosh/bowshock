@@ -10,7 +10,9 @@
 
 import type { VerifiedDrag } from '../analysis/verified-drag';
 import { bodyLength, type Body } from '../geometry/body';
+import { BASIC_FINNER_GEOMETRY } from '../validation/basic-finner';
 import { outward, outwardPercent } from './band';
+import { FOOT, flightConditionOf, type AltitudeUnit } from './flight-condition';
 import {
   BAND_CAVEAT,
   BASIC_FINNER_CLASS,
@@ -53,6 +55,17 @@ export interface TotalDragFields {
   readonly rearBevel: string;
   readonly leadingEdgeRadius: string;
   readonly trailingEdgeAheadOfBase: string;
+  /**
+   * How the flight condition is given: 'altitude-m' or 'altitude-ft' (an
+   * altitude in that unit and the diameter, in the standard atmosphere),
+   * or 'reynolds' (the Reynolds number and temperature directly).
+   */
+  readonly conditionMode: string;
+  /** Above mean sea level, in the unit of `conditionMode`. */
+  readonly altitude: string;
+  /** The body's diameter, mm. */
+  readonly diameter: string;
+  /** Asked directly ('reynolds'); otherwise implied by the altitude and diameter. */
   readonly reynoldsOnLength: string;
   readonly temperature: string;
   /** Numbers separated by commas or spaces; empty is fully turbulent only. */
@@ -102,11 +115,84 @@ function sectionOf(f: TotalDragFields): SectionInput {
   }
 }
 
+/** The unit of the altitude asked, or null when the Reynolds number is asked directly. */
+export function altitudeUnitOf(conditionMode: string): AltitudeUnit | null {
+  return conditionMode === 'reynolds' ? null : conditionMode === 'altitude-ft' ? 'ft' : 'm';
+}
+
+/**
+ * The Reynolds number on length and the static temperature the total
+ * takes: as typed in the direct mode; otherwise from the altitude, the
+ * Mach number and the diameter in the standard atmosphere
+ * (./flight-condition.ts), with every reason when they give none.
+ */
+export function conditionOf(
+  body: Body,
+  mach: number,
+  f: TotalDragFields,
+): {
+  readonly reynoldsOnLength: number;
+  readonly temperature: number;
+  /** Empty when the condition is given. */
+  readonly refusals: readonly string[];
+} {
+  const unit = altitudeUnitOf(f.conditionMode);
+  if (unit === null) {
+    return {
+      reynoldsOnLength: parseNumber(f.reynoldsOnLength),
+      temperature: parseNumber(f.temperature),
+      refusals: [],
+    };
+  }
+  const c = flightConditionOf({
+    altitude: parseNumber(f.altitude),
+    altitudeUnit: unit,
+    mach,
+    diameterMm: parseNumber(f.diameter),
+    lengthCalibers: bodyLength(body),
+  });
+  return c.kind === 'ok'
+    ? { reynoldsOnLength: c.value.reynoldsOnLength, temperature: c.value.temperature, refusals: [] }
+    : { reynoldsOnLength: Number.NaN, temperature: Number.NaN, refusals: c.reasons };
+}
+
+/** 1.40e7, not 1.40e+7. */
+const sci = (x: number, digits: number) => x.toExponential(digits).replace('e+', 'e');
+
+/**
+ * What the page shows read-only beside an altitude, Mach number and
+ * diameter: the Reynolds number on length and the static temperature they
+ * imply ('none' when they imply none; the reasons are in the total).
+ */
+export function impliedConditionText(
+  body: Body,
+  mach: number,
+  f: TotalDragFields,
+): { readonly reynolds: string; readonly temperature: string } {
+  const c = conditionOf(body, mach, f);
+  return c.refusals.length > 0
+    ? { reynolds: 'none', temperature: 'none' }
+    : { reynolds: sci(c.reynoldsOnLength, 2), temperature: `${c.temperature.toFixed(2)} K` };
+}
+
+/**
+ * The altitude typed, said in another unit when the unit asked changes
+ * (to the centimeter or the tenth of a foot); as typed if it is not a number.
+ */
+export function altitudeInUnit(text: string, from: AltitudeUnit, to: AltitudeUnit): string {
+  const x = parseNumber(text);
+  if (from === to || !Number.isFinite(x)) return text;
+  return to === 'ft'
+    ? String(Number((x / FOOT).toFixed(1)))
+    : String(Number((x * FOOT).toFixed(2)));
+}
+
 /** The inputs of ./total-drag.ts from the nose solve's body and Mach number and the fields. */
 export function formOf(body: Body, mach: number, f: TotalDragFields): TotalDragForm {
   const roughGiven = [f.roughnessLow, f.roughnessHigh, f.roughnessSource].some(
     (t) => t.trim() !== '',
   );
+  const condition = conditionOf(body, mach, f);
   return {
     body,
     mach,
@@ -117,8 +203,9 @@ export function formOf(body: Body, mach: number, f: TotalDragFields): TotalDragF
     section: sectionOf(f),
     leadingEdgeRadius: parseNumber(f.leadingEdgeRadius),
     trailingEdgeAheadOfBase: parseNumber(f.trailingEdgeAheadOfBase),
-    reynoldsOnLength: parseNumber(f.reynoldsOnLength),
-    temperature: parseNumber(f.temperature),
+    reynoldsOnLength: condition.reynoldsOnLength,
+    temperature: condition.temperature,
+    ...(condition.refusals.length > 0 ? { conditionRefusals: condition.refusals } : {}),
     transitionReynolds: parseNumberList(f.transitionReynolds),
     wallTemperature: optional(f.wallTemperature),
     roughness: roughGiven
@@ -141,9 +228,11 @@ export const BASIC_FINNER_NOSE_FIELDS = {
 } as const;
 
 /**
- * The Basic Finner's fins and range conditions at a Mach number (its
- * Reynolds number about 6.6e6 times the Mach number), keeping the inputs
- * (transition, wall temperature, roughness) of `current`.
+ * The Basic Finner's fins and range conditions at a Mach number, keeping
+ * the inputs (transition, wall temperature, roughness) and the altitude of
+ * `current`. The range's air (293.95 K) was not a standard atmosphere, so
+ * its Reynolds number (about 6.6e6 times the Mach number) and temperature
+ * are given directly; the diameter is its 30.0 mm.
  */
 export function basicFinnerFields(mach: number, current: TotalDragFields): TotalDragFields {
   const c = BASIC_FINNER_CLASS;
@@ -157,27 +246,38 @@ export function basicFinnerFields(mach: number, current: TotalDragFields): Total
     thickness: String(c.trailingEdgeThickness),
     leadingEdgeRadius: String(c.leadingEdgeRadius),
     trailingEdgeAheadOfBase: '0',
+    conditionMode: 'reynolds',
+    diameter: String(1000 * BASIC_FINNER_GEOMETRY.caliberMetres),
     reynoldsOnLength: Number.isFinite(mach)
-      ? (BASIC_FINNER_REYNOLDS_PER_MACH * mach).toExponential(2).replace('e+', 'e')
+      ? sci(BASIC_FINNER_REYNOLDS_PER_MACH * mach, 2)
       : current.reynoldsOnLength,
     temperature: BASIC_FINNER_TEMPERATURE.toFixed(2),
   };
 }
 
-/** Which of the fields that depend on the planform and section are asked, and the thickness's name. */
-export function fieldsShown(f: Pick<TotalDragFields, 'planform' | 'section'>): {
+/** Which of the fields that depend on other fields are asked, and the names that change. */
+export function fieldsShown(f: Pick<TotalDragFields, 'planform' | 'section' | 'conditionMode'>): {
   readonly sweeps: boolean;
   readonly taperRatio: boolean;
   readonly ridge: boolean;
   readonly bevels: boolean;
   readonly thicknessLabel: string;
+  /** The altitude and diameter, and the Reynolds number and temperature they imply. */
+  readonly altitude: boolean;
+  readonly altitudeLabel: string;
+  /** The Reynolds number and temperature, typed. */
+  readonly reynolds: boolean;
 } {
+  const unit = altitudeUnitOf(f.conditionMode);
   return {
     sweeps: f.planform === 'trapezoidal',
     taperRatio: f.planform === 'clipped-delta',
     ridge: f.section === 'double-wedge',
     bevels: f.section === 'hexagonal',
     thicknessLabel: f.section === 'single-wedge' ? 'Trailing-edge thickness' : 'Largest thickness',
+    altitude: unit !== null,
+    altitudeLabel: `Altitude (${unit ?? 'm'})`,
+    reynolds: unit === null,
   };
 }
 

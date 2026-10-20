@@ -5,7 +5,9 @@
  * the nose given as the Basic Finner gate gave it. What is shown is tested
  * in tests/app/total-drag.test.ts and tests/app/total-drag-display.test.ts;
  * this checks that the page reads its fields, shows exactly the display's
- * blocks, and refuses with every reason.
+ * blocks, and refuses with every reason; and that the flight condition is
+ * asked as altitude and diameter, with the Reynolds number directly as
+ * the alternative.
  */
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -20,6 +22,7 @@ import {
   displayText,
   formOf,
   gateDisplay,
+  impliedConditionText,
   totalDragDisplay,
   type TotalDragFields,
 } from '../../src/app/total-drag-display';
@@ -37,6 +40,7 @@ async function until(test: () => boolean, what: string, ms = 30_000): Promise<vo
 let frame: HTMLIFrameElement;
 let doc: Document;
 const text = (selector: string) => doc.querySelector(selector)?.textContent ?? '';
+const hidden = (selector: string) => (doc.querySelector(selector) as HTMLElement).hidden;
 
 /** Sets an input or select and fires the events the page listens to. */
 function set(selector: string, value: string): void {
@@ -95,6 +99,9 @@ function pageFields(): TotalDragFields {
     rearBevel: value('#rear-bevel'),
     leadingEdgeRadius: value('#le-radius'),
     trailingEdgeAheadOfBase: value('#te-ahead'),
+    conditionMode: value('#condition-mode'),
+    altitude: value('#altitude'),
+    diameter: value('#diameter'),
     reynoldsOnLength: value('#reynolds'),
     temperature: value('#temperature'),
     transitionReynolds: value('#transition'),
@@ -105,22 +112,68 @@ function pageFields(): TotalDragFields {
   };
 }
 
+const BODY = {
+  nose: { shape: { kind: 'conical' }, length: 2.836, baseRadius: 0.5 },
+  cylinderLength: 7.164,
+} as const;
+
 describe('the drag page: total drag before a nose solve', () => {
-  it('opens on the Basic Finner, inside the class, with no number, laid out as the display says', () => {
+  it("opens on the Basic Finner's shape at sea level, outside the class by its air, with no number", () => {
     expect(text('#overall-length')).toBe('10 calibers');
     expect(text('#total-mach')).toBe('2');
+    // Asked as altitude and diameter; the Reynolds number and temperature shown, not asked.
+    expect(pageFields().conditionMode).toBe('altitude-m');
+    expect(hidden('#altitude-field') || hidden('#diameter-field')).toBe(false);
+    expect(hidden('#reynolds-field') || hidden('#temperature-field')).toBe(true);
+    expect(text('#implied-reynolds')).toBe('1.40e7');
+    expect(text('#implied-temperature')).toBe('288.15 K');
     const out = text('#total-output');
     expect(out).toContain('No total yet: run the solve above');
-    expect(out).toContain('inside the class tested by the Basic Finner');
+    expect(out).toContain('outside the class tested by the Basic Finner');
+    expect(out).toContain("the static temperature, 288.1 K, is outside the range's 293 to 295 K");
     expect(out).not.toContain('C_D =');
-    const body = {
-      nose: { shape: { kind: 'conical' }, length: 2.836, baseRadius: 0.5 },
-      cylinderLength: 7.164,
-    } as const;
-    const form = formOf(body, 2, pageFields());
+    const form = formOf(BODY, 2, pageFields());
     expect(out).toBe(displayText(totalDragDisplay(totalDragView(form, { kind: 'pending' }))));
     expect(text('#gate-body')).toBe(displayText(gateDisplay()));
     expect(doc.querySelectorAll('#gate-body tbody tr').length).toBe(11);
+  });
+
+  it('the altitude in feet, converted; the Reynolds number directly as the alternative', async () => {
+    let before = text('#total-output');
+    set('#altitude', '3048');
+    let out = await settled(before);
+    expect(text('#implied-temperature')).toBe('268.35 K');
+    set('#condition-mode', 'altitude-ft');
+    expect(text('#altitude-label')).toBe('Altitude (ft)');
+    expect(pageFields().altitude).toBe('10000');
+    before = out;
+    set('#diameter', '60');
+    out = await settled(before);
+    expect(text('#implied-reynolds')).toBe(impliedConditionText(BODY, 2, pageFields()).reynolds);
+    expect(out).toBe(
+      displayText(
+        totalDragDisplay(totalDragView(formOf(BODY, 2, pageFields()), { kind: 'pending' })),
+      ),
+    );
+    // Out of range: no number, and the reason.
+    before = out;
+    set('#altitude', '200000');
+    out = await settled(before);
+    expect(text('#implied-reynolds')).toBe('none');
+    expect(out).toContain('the altitude must lie within -16,404 to 168,676 ft above sea level');
+    // Directly: the Basic Finner's range, inside the class.
+    before = out;
+    set('#condition-mode', 'reynolds');
+    out = await settled(before);
+    expect(hidden('#altitude-field') || hidden('#implied-reynolds-field')).toBe(true);
+    expect(hidden('#reynolds-field') || hidden('#temperature-field')).toBe(false);
+    expect(out).toContain('inside the class tested by the Basic Finner');
+    // Back to meters, as the page opened.
+    set('#condition-mode', 'altitude-m');
+    set('#altitude', '0');
+    set('#diameter', '30');
+    await settled(out);
+    expect(text('#implied-reynolds')).toBe('1.40e7');
   });
 
   it('below Mach 1.8 it is refused, with the reason, and no number', async () => {
@@ -160,6 +213,11 @@ describe('the drag page: total drag before a nose solve', () => {
     before = out;
     (doc.querySelector('#basic-finner') as HTMLButtonElement).click();
     out = await settled(before);
+    // The range's conditions, given directly: the gate's class.
+    expect(pageFields().conditionMode).toBe('reynolds');
+    expect(hidden('#reynolds-field')).toBe(false);
+    expect(pageFields().reynoldsOnLength).toBe('1.32e7');
+    expect(pageFields().temperature).toBe('293.95');
     expect(out).toContain('inside the class tested by the Basic Finner');
     expect(text('#overall-length')).toBe('10 calibers');
   });

@@ -78,6 +78,12 @@ export interface TotalDragForm {
   readonly reynoldsOnLength: number;
   /** Free-stream static temperature, kelvin. */
   readonly temperature: number;
+  /**
+   * Why a flight condition asked as altitude, Mach number and diameter
+   * gives no Reynolds number and temperature (./flight-condition.ts);
+   * absent or empty when it gives them, or when they are asked directly.
+   */
+  readonly conditionRefusals?: readonly string[];
   /** Transition Reynolds numbers bounding the transition band (empty: none). */
   readonly transitionReynolds: readonly number[];
   /** A wall temperature, kelvin, bounding the wall band (undefined: none). */
@@ -376,8 +382,16 @@ export function configurationOf(form: TotalDragForm):
     bad.push(refusal('body', e.message));
   }
   positive('flight condition', 'the Mach number', form.mach);
-  positive('flight condition', 'the Reynolds number on length', form.reynoldsOnLength);
-  positive('flight condition', 'the static temperature', form.temperature);
+  const conditionRefusals = form.conditionRefusals ?? [];
+  if (conditionRefusals.length > 0) {
+    // The reasons of the altitude, Mach number and diameter asked, each once.
+    for (const message of conditionRefusals) {
+      if (!bad.some((b) => b.message === message)) bad.push(refusal('flight condition', message));
+    }
+  } else {
+    positive('flight condition', 'the Reynolds number on length', form.reynoldsOnLength);
+    positive('flight condition', 'the static temperature', form.temperature);
+  }
   if (!(Number.isInteger(form.finCount) && form.finCount >= 1)) {
     bad.push(refusal('fins', 'the fin count must be a whole number, at least 1'));
   }

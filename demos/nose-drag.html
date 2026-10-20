@@ -330,7 +330,7 @@
             pass says little by itself. Inside that class the total is labelled validated; outside
             it, an estimate, not validated. Where a component's method does not cover the case, the
             total is refused, with every reason, and no number is given. The defaults are the Basic
-            Finner.
+            Finner's shape, 30 mm across, at sea level; its button sets the range's conditions.
           </p>
         </details>
         <form class="controls" id="total-form">
@@ -411,10 +411,34 @@
               <output id="total-mach"></output>
             </div>
             <div class="field">
+              <label for="condition-mode">Given as</label>
+              <select id="condition-mode">
+                <option value="altitude-m" selected>Altitude (m) and diameter</option>
+                <option value="altitude-ft">Altitude (ft) and diameter</option>
+                <option value="reynolds">Reynolds number directly</option>
+              </select>
+            </div>
+            <div class="field" id="altitude-field">
+              <label for="altitude" id="altitude-label">Altitude (m)</label>
+              <input id="altitude" type="number" step="any" value="0" />
+            </div>
+            <div class="field" id="diameter-field">
+              <label for="diameter">Diameter (mm)</label>
+              <input id="diameter" type="number" min="0" step="any" value="30" />
+            </div>
+            <div class="field" id="implied-reynolds-field">
+              <span class="scope">Reynolds number on length</span>
+              <output id="implied-reynolds"></output>
+            </div>
+            <div class="field" id="implied-temperature-field">
+              <span class="scope">Static temperature</span>
+              <output id="implied-temperature"></output>
+            </div>
+            <div class="field" id="reynolds-field" hidden>
               <label for="reynolds">Reynolds number on the overall length</label>
               <input id="reynolds" type="text" inputmode="decimal" value="1.32e7" />
             </div>
-            <div class="field">
+            <div class="field" id="temperature-field" hidden>
               <label for="temperature">Static temperature (K)</label>
               <input id="temperature" type="number" min="0" step="any" value="293.95" />
             </div>
@@ -461,13 +485,28 @@
           <button id="basic-finner" type="button">Basic Finner at this Mach number</button>
         </form>
         <details class="explain">
-          <summary>The Reynolds number, and the Basic Finner test's inputs</summary>
+          <summary>
+            The flight condition, the standard atmosphere, and the Basic Finner's inputs
+          </summary>
           <p class="scope">
-            Reynolds number: the free stream's speed times the overall length over its kinematic
-            viscosity. The Basic Finner's range gave about 6.6e6 times the Mach number. The gate's
-            inputs (placeholders above): a laminar run to Re_T 5e5, 1.6e6 and 3e6 from the tip and
-            from each fin's leading edge, and the wall at the air temperature. No roughness model is
-            validated: a roughness band is yours, shown with the source you give.
+            The altitude is above mean sea level, in the U.S. Standard Atmosphere, 1976 (NOAA-S/T
+            76-1562, NASA-TM-X-74335), served from 5,000 m below sea level to 51,412 m, the top of
+            the stratopause, and tested against the document's own tables (design record 0011,
+            section 9). It gives the air's temperature, speed of sound and viscosity. The speed is
+            the Mach number times the speed of sound; the Reynolds number is that speed times the
+            overall length (its calibers times the diameter) over the kinematic viscosity. Real air
+            departs from the standard one (a hot day is warmer): when you know the Reynolds number
+            and temperature, give them directly.
+          </p>
+          <p class="scope">
+            The Basic Finner's range air was 293.95 K, as warm as the standard atmosphere only about
+            890 m below sea level, so its button gives the range's Reynolds number (about 6.6e6
+            times the Mach number) and temperature directly. The validated class keeps to that air
+            (293 to 295 K, which the standard atmosphere reaches only 746 to 1,054 m below sea
+            level), so a total from an altitude at or above sea level is labelled an estimate. The
+            gate's inputs (placeholders above): a laminar run to Re_T 5e5, 1.6e6 and 3e6 from the
+            tip and from each fin's leading edge, and the wall at the air temperature. No roughness
+            model is validated: a roughness band is yours, shown with the source you give.
           </p>
         </details>
         <div id="total-output" aria-live="polite"></div>

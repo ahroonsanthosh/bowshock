@@ -9,9 +9,13 @@
   total-drag section of `demos/nose-drag.html` and its wiring in
   `src/app/nose-drag.ts`. A redesigned page reads its fields, calls the
   two modules and lays out the blocks; nothing it shows is decided
-  elsewhere.
+  elsewhere. The flight condition is asked by default as altitude, Mach
+  number and diameter, in the U.S. Standard Atmosphere, 1976
+  (`src/atmosphere/us-standard-1976.ts`, `src/app/flight-condition.ts`;
+  section 9).
 - **Date:** 2026-10-20; the gate's tolerances and the edge labels updated
-  the same day for the round 5 audit (0010 section 10)
+  the same day for the round 5 audit (0010 section 10), and the flight
+  condition from altitude added (section 9)
 - **Inputs:** [0010](0010-base-drag-and-total.md) section 7 (what may be
   claimed), section 4.2 (the gate) and section 10 (the round 5 audit),
   [0008](0008-total-drag.md) sections
@@ -44,20 +48,19 @@ total, with the reason.
 
 **The inputs**, lengths in calibres (the body's diameter):
 
-| Input               | Choices                                                                                                                                                             |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Body                | the nose solve's: nose shape and length, the cylinder behind it to the flat base; the overall length is shown                                                       |
-| Fins                | count; planform rectangular, trapezoidal (leading- and trailing-edge sweep) or clipped delta (taper ratio), `src/fins/planform.ts`; root chord; span from the body  |
-| Section             | single wedge to a blunt trailing edge (its thickness), double wedge (thickness, ridge) or hexagonal (thickness, bevels), `src/fins/section.ts`; leading-edge radius |
-| Position            | distance of the root trailing edge ahead of the base                                                                                                                |
-| Flight condition    | the solve's Mach number; the free-stream Reynolds number on the overall length (per calibre, that over the length); the static temperature                          |
-| Inputs (bands only) | transition Reynolds numbers (none: fully turbulent); a wall temperature (none: adiabatic); a roughness band in C_D with its source (none: smooth)                   |
+| Input               | Choices                                                                                                                                                                                                                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Body                | the nose solve's: nose shape and length, the cylinder behind it to the flat base; the overall length is shown                                                                                                                                                                              |
+| Fins                | count; planform rectangular, trapezoidal (leading- and trailing-edge sweep) or clipped delta (taper ratio), `src/fins/planform.ts`; root chord; span from the body                                                                                                                         |
+| Section             | single wedge to a blunt trailing edge (its thickness), double wedge (thickness, ridge) or hexagonal (thickness, bevels), `src/fins/section.ts`; leading-edge radius                                                                                                                        |
+| Position            | distance of the root trailing edge ahead of the base                                                                                                                                                                                                                                       |
+| Flight condition    | the solve's Mach number; by default an altitude (m or ft) and the body's diameter (mm), which give the next two in the standard atmosphere (section 9); or, directly, the free-stream Reynolds number on the overall length (per calibre, that over the length) and the static temperature |
+| Inputs (bands only) | transition Reynolds numbers (none: fully turbulent); a wall temperature (none: adiabatic); a roughness band in C_D with its source (none: smooth)                                                                                                                                          |
 
 `src/fins` has no circular-arc section, so the fins-on-base factor is
-always carried by analogy (`sectionFamily: 'other'`, 0010 section 1.3). No
-standard atmosphere is offered: none exists in the repository with a cited
-source and a test against its tables, so the Reynolds number is asked
-directly.
+always carried by analogy (`sectionFamily: 'other'`, 0010 section 1.3).
+The Reynolds number and temperature come by default from an altitude and
+a diameter in the U.S. Standard Atmosphere, 1976 (section 9).
 
 The fields are read as typed (`formOf`): an empty number is refused, not
 read as zero; transition Reynolds numbers are separated by commas or
@@ -154,7 +157,10 @@ extrapolated past the drawn line (a note on the page).
 **The static temperature** is not in 0010's statement of the class; the
 gate ran at the range's air, and this rule keeps to it. The restriction is
 conservative, not needed by the model: from 216.65 to 320 K the modelled
-total moves by under 0.2% at Mach 1.8 and 3.0.
+total moves by under 0.2% at Mach 1.8 and 3.0. The standard atmosphere is
+inside 293 to 295 K only 746 to 1,054 m below sea level, so a total whose
+condition is asked as an altitude at or above sea level is always outside
+the class, by this condition (section 9).
 
 **Not part of the rule:** the inputs (transition, wall temperature,
 roughness), which move no nominal value and are shown apart; and the
@@ -224,7 +230,8 @@ nose term lies within its own band of the gate's, of order 1e-5 in C_D
 
 With the nose as the gate gave it (on the page it is the solve's, which
 agrees within its band), the range's Reynolds number (6.62e6 times the
-Mach number, the gated shots' mean) and no inputs, the page shows, labelled
+Mach number, the gated shots' mean, and 293.95 K, which the Basic Finner
+button gives directly, section 9) and no inputs, the page shows, labelled
 validated on the Basic Finner:
 
 | M    | C_D    | Model-form band  | As percentages   |
@@ -284,20 +291,138 @@ five shots at Mach 1.06 to 1.33 are refused, as in the gate.
   estimate said in the headline and the claim, with its reasons); the gate
   as published.
 - `tests/app/band.test.ts`: intervals rounded outward, never inward.
+- `tests/atmosphere/us-standard-1976.test.ts` and
+  `tests/app/flight-condition.test.ts`: the standard atmosphere against
+  its tables and the flight condition from altitude (section 9); in
+  `tests/app/total-drag-display.test.ts`, the page's default (the Basic
+  Finner's shape at sea level, outside the class by its temperature
+  alone), the condition and the values shown beside it, its refusals said
+  once each, the change of unit, and the Basic Finner button giving the
+  range's conditions directly; in `tests/app/total-drag.test.ts`, where
+  the standard atmosphere lies inside the class.
 - `tests/gpu/nose-drag-page.test.ts` (headless Chromium, run by
-  `npm run test:gpu`): the page opens on the Basic Finner inside the class
-  with no number, and shows exactly the display's blocks for its fields;
+  `npm run test:gpu`): the page opens on the Basic Finner's shape at sea
+  level, asked as altitude and diameter, with the Reynolds number and
+  temperature shown, outside the class by its temperature, with no number,
+  and shows exactly the display's blocks for its fields; the altitude in
+  feet, converted, out of range refused, and the Reynolds number directly;
   below Mach 1.8 it is refused with the reason; another nose is outside
   the class with the reason; swept fins are refused with both reasons; the
-  Basic Finner button restores the class; and the layout of a total shows
-  every block in order, the claim set apart. The nose solve itself is not
-  run there: on software WebGPU it takes far longer than a test can wait.
+  Basic Finner button gives the range's conditions directly and restores
+  the class; and the layout of a total shows every block in order, the
+  claim set apart. The nose solve itself is not run there: on software
+  WebGPU it takes far longer than a test can wait.
 
 ## 8. Open
 
-- A standard atmosphere, with its source cited and a test against its
-  tables, so that altitude and speed can be asked instead of the Reynolds
-  number.
+- Whether the class's temperature condition (section 3) should take in
+  the standard atmosphere's air: as written, no total asked as an altitude
+  at or above sea level is labelled validated (section 9). A decision on
+  the claim, not made here.
+- A day off the standard one (a temperature offset, humidity), and
+  altitudes above 51 km: for now asked through the Reynolds number
+  directly.
 - The export of C_D against Mach number (0002), with the same labels.
 - A second hold-out for the Basic Finner's class, and any other class
   (0010 section 9).
+
+## 9. The flight condition from altitude, Mach number and diameter
+
+Most teams know their altitude, Mach number and diameter, not their
+Reynolds number. The page asks those by default ("Given as: Altitude (m)
+and diameter", or in feet) and shows, read-only beside them, the Reynolds
+number on the overall length and the static temperature they imply; the
+total takes them unrounded. "Reynolds number directly" remains the
+alternative, with the two fields as before. A change of unit converts the
+altitude typed. The page opens on the Basic Finner's shape, 30 mm across
+(its model's caliber, `src/validation/basic-finner.ts`), at sea level:
+Re = 1.40e7 at Mach 2 and 288.15 K.
+
+**The atmosphere** (`src/atmosphere/us-standard-1976.ts`) is the U.S.
+Standard Atmosphere, 1976 (NOAA, NASA and USAF, Washington, D.C., 1976;
+NOAA-S/T 76-1562, NASA-TM-X-74335; read on the NTRS scan,
+<https://ntrs.nasa.gov/citations/19770009539>), implemented from its
+defining constants and equations, from 5 km below sea level (where its
+tables begin) to 51 km' geopotential, 51.41 km geometric, the top of the
+stratopause: the layers b = 0 to 4 of its Table 4 (p. 3), H_b = 0, 11,
+20, 32 and 47 km' with L_M,b = -6.5, 0, +1.0, +2.8 and 0 K/km'. Pages are
+the document's printed ones.
+
+| Quantity              | Equation                                                               | Constants                                                       |
+| --------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Geopotential altitude | (18) and (19), p. 8: H = r0 Z / (r0 + Z)                               | r0 = 6356.766 km (p. 4)                                         |
+| Temperature           | (23), p. 10: T_M = T_M,b + L_M,b (H - H_b); T = T_M below 80 km (p. 9) | T0 = 288.15 K (Table 2)                                         |
+| Pressure              | (33a) for L_M,b not 0 and (33b) for 0, p. 12                           | P0 = 101325 N/m^2; g0' = 9.80665 m^2/(s^2 m') (Table 2, p. 3)   |
+| Density               | (42), p. 15: rho = P M0 / (R* T_M)                                     | M0 = 28.9644 kg/kmol (p. 9); R* = 8.31432e3 N m/(kmol K) (p. 3) |
+| Speed of sound        | (50), p. 18: C_s = (gamma R* T_M / M0)^(1/2)                           | gamma = 1.40 (Table 2, p. 4)                                    |
+| Dynamic viscosity     | (51), p. 19: mu = beta T^(3/2) / (T + S), Sutherland's law             | beta = 1.458e-6 kg/(s m K^1/2), S = 110.4 K (p. 19)             |
+| Kinematic viscosity   | (52), p. 19: eta = mu / rho                                            |                                                                 |
+
+The base temperature and pressure of each layer are carried up from sea
+level by (23) and (33), as the document does. Table 2 (p. 2) misprints
+three of these constants: R* a factor 1e6 small, r0 a factor 1e3 large in
+the km it states, and S as 110 K, which p. 4 repeats. The values used are
+those of the text; for S, the 110.4 K that the text of eq. (51) gives as
+"used for computation of the tables" (p. 19), which the tables confirm
+(with 110 K they are missed). An errata sheet appended to the NTRS scan
+(a reader's letter to the NASA STI desk, 2015) says the same of all
+three.
+
+**Tested against the document's own tables**
+(`tests/atmosphere/us-standard-1976.test.ts`; the values typed from the
+page images, each with its pages, in
+`tests/atmosphere/us-standard-1976-tables.ts`): Table I (temperature,
+pressure, density) and Table III (speed of sound, dynamic and kinematic
+viscosity) at 17 geometric altitudes from -1 to 50 km (sea level, points
+inside each layer, the rows next to each layer base, inside the
+stratopause; pp. 53 to 65 and 101 to 113) and at 5 geopotential ones, the
+layer bases 11, 20, 32 and 47 km' and the top, 51 km' (pp. 58 to 64 and
+106 to 112): 132 values, each compared in units of its last printed
+digit.
+
+- The pressure column is printed truncated, not rounded: at all 22
+  altitudes the computed pressure lies at or above the printed one, by 0
+  to 0.96 of a unit (read as rounded, 6 of the 22 would miss by more than
+  half a unit). The test holds each within [0, 1) of a unit.
+- Every other value rounds to the printed one, within half a unit, except
+  three of 110, which lie 0.51 to 0.52 of a unit away: the speed of sound
+  at 5.5 km, the density at 46 km and the kinematic viscosity at 40 km.
+  Of the 22 altitudes paired in the tables with their other altitude, two
+  lie 0.52 m from the printed meter (46 km geometric is 45669.52 m',
+  printed 45669; 51 km' is 51412.48 m, printed 51413). The five were read
+  again on the scans: they are as printed. These excesses, 0.02 of a unit
+  (about 1e-6 relative), point to small differences in the document's own
+  computation, not resolved here; each is listed in the test.
+- The largest relative differences from the printed values: temperature
+  2.2e-6, pressure 6.9e-5 (the truncation), density 3.0e-5, speed of
+  sound 1.6e-5, dynamic viscosity 2.4e-5, kinematic viscosity 3.6e-5.
+- The tests fail with the gas constant's modern value, 8.314462618e3 (1e-5
+  relative), with r0 = 6371 km, or with S = 110 K.
+
+**The conversion** (`src/app/flight-condition.ts`): the altitude, in
+meters or in feet (0.3048 m exactly, Table 1), is geometric, above mean
+sea level. The speed is V = M C_s, the length L is the body's overall
+length in calibers times the diameter, and Re_L = V L / eta. An altitude
+outside the range served, or a diameter, Mach number or length that is not
+a positive number, is refused with every reason, and the total with it;
+each reason is said once. Tested in `tests/app/flight-condition.test.ts`:
+at all 17 geometric altitudes the temperature, the speed and the Reynolds
+number agree with the tables' own temperature, speed of sound and
+kinematic viscosity within their printing (the Reynolds number within
+6e-5).
+
+**The class.** The Basic Finner's range air was 293.95 K (from its speed
+of sound, 0010 section 4.1), and the class keeps to 293 to 295 K (section
+3). The standard atmosphere is that warm only 746 to 1,054 m below sea
+level (293.95 K at about 890 m below), so a total asked as an altitude at
+or above sea level is always outside the class, its reason the
+temperature, and is labelled an estimate. At sea level the Basic Finner's
+30 mm body gives 6.99e6 per unit Mach number, 5.6% above the range's
+6.62e6. The Basic Finner button therefore gives the range's conditions
+directly, as before: it switches to "Reynolds number directly" with 6.62e6
+times the Mach number (to three figures) and 293.95 K, and sets the
+diameter to 30 mm. The gate's equality tests (section 5) build their
+forms directly and are unchanged. Whether the temperature condition should
+admit the standard atmosphere's air, given that from 216.65 to 320 K the
+modelled total moves by under 0.2% (section 3), is a decision on the
+claim, left open (section 8).
