@@ -312,8 +312,9 @@ export const BREAKDOWN_NOTE =
 export const NOT_REPRESENTED =
   "Not represented: the fin roots' share of the body's wetted area (4e-4 in C_D on the Basic " +
   "Finner), fin-body interference, the Mach number ahead of the base (the free stream's is " +
-  "used), fin cant and roll, nose-tip bluntness, the rounded leading edge's effect on the fin " +
-  'faces; friction is at free-stream edge conditions. Zero incidence, power off, no plume.';
+  "used), fin cant and roll, a tip bluntness the nose asked does not have (the Basic Finner's " +
+  "0.004 cal meplat, 1.0e-4 in C_D at pitot pressure), the rounded leading edge's effect on the " +
+  'fin faces; friction is at free-stream edge conditions. Zero incidence, power off, no plume.';
 
 export type Claim =
   | {
@@ -556,12 +557,20 @@ export const FINS_BAND_NOTE =
   'quadrature error), above the value, since on those data the model was never above the ' +
   'measurement (0008 section 4.3).';
 
+/** What src/base's fins-on-base factor does not depend on (src/base/fins-on-base.ts). */
+export const FINS_ON_BASE_NOTE =
+  "Fins-on-base factor: it does not depend here on the fins' span, chord or planform. It is " +
+  'measured on one family of fins, four rectangular, unswept, 10% thick, of circular-arc ' +
+  'section (TN 3819 fig. 35; its band reaches down to 5% thick on TN 2360), and src/base ' +
+  'applies it as it is to any four fins ending at the base, 5% to 10% thick.';
+
 /** What the components' labels do not carry. */
 function notesOf(base: BodyBaseDrag | undefined): string[] {
   const notes = [FINS_BAND_NOTE];
   // Flags of the fins-on-base factor (0010 section 1.3).
   const f = base?.finsOnBase;
   if (f === undefined) return notes;
+  notes.push(FINS_ON_BASE_NOTE);
   if (f.atRangeEnd) {
     notes.push(
       'Fins-on-base factor: this Mach number lies below M 1.80 by no more than the reading error ' +
