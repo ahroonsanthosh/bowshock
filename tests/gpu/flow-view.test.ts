@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { sharpFitProblem } from '../../src/analysis/fitted-flow';
-import { gpuFittedFlow } from '../../src/analysis/gpu-fitted-flow';
+import { gpuFittedFlow, verifiedFittedDragGpu } from '../../src/analysis/gpu-fitted-flow';
+import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
 import type { LiveFit } from '../../src/engine-gpu/shock-fitting-gpu';
 import type { Body } from '../../src/geometry/body';
 import { gridOnLines } from '../../src/grid/blunt-grid';
@@ -289,4 +290,60 @@ describe('the flow view of a fit as it runs', () => {
     expect(watched.drag).toBe(plain.drag);
     expect(watched.fit.heights).toEqual(plain.fit.heights);
   }, 900_000);
+
+  it("changes no number on the page's own path: the verified drag to 80 cells across, checked every 1000 steps there, watched, drawn and paused", async () => {
+    // As the flow page asks it (src/app/flow-view.ts), with the finest grid 80 cells across.
+    const options = {
+      mach: 2,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 4,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+    };
+    const plain = await verifiedFittedDragGpu(device, cone, options);
+    const renderer = await FlowRenderer.create(device, 'rgba8unorm');
+    const target = device.createTexture({
+      size: [64, 64],
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+    const checks: { refinement: number; iterations: number }[] = [];
+    let pauses = 0;
+    const watched = await verifiedFittedDragGpu(device, cone, {
+      ...options,
+      onLive: (fit) => {
+        if (fit === null) renderer.freeze();
+        else renderer.setSource(liveFitSource(fit));
+      },
+      onCheck: (refinement, iterations) => {
+        checks.push({ refinement, iterations });
+      },
+      // As the page's gate: a frame drawn between batches, and a pause now and then.
+      gate: async () => {
+        pauses += 1;
+        renderer.draw(target, {
+          ...OPTIONS,
+          field: 'schlieren',
+          split: true,
+          view: { cx: 2, cy: 0, ppu: 10 },
+          background: { r: 0, g: 0, b: 0, a: 1 },
+        });
+        await new Promise((resolve) => setTimeout(resolve, pauses % 5 === 0 ? 200 : 0));
+      },
+    });
+    target.destroy();
+    renderer.destroy();
+    console.log(
+      'page path:',
+      JSON.stringify(plain.kind === 'solved' ? plain.levels : plain),
+      `${pauses} pauses`,
+    );
+    // Checked every 250 steps on the first grid, 500 on the second, 1000 on the third.
+    const finest = checks.filter((c) => c.refinement === 4);
+    expect(finest.length).toBeGreaterThan(0);
+    expect(finest.every((c) => c.iterations % 1000 === 0)).toBe(true);
+    expect(plain.kind).toBe('solved');
+    expect(watched).toEqual(plain);
+  }, 3_600_000);
 });

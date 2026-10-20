@@ -77,6 +77,8 @@ export class FlowView {
   private view: View | null = null;
   /** Whether the user has moved the view (then a new grid does not refit it). */
   private moved = false;
+  /** The rectangle the view was fitted to; fitted again when it changes. */
+  private fittedTo = '';
   private live = false;
   private dirty = true;
   private frame: number | null = null;
@@ -514,8 +516,12 @@ export class FlowView {
   private fittedView(): View | null {
     const bounds = this.bounds();
     if (bounds === null) return null;
-    const aspect = (bounds.xMax - bounds.xMin) / Math.max(bounds.yMax - bounds.yMin, 1e-12);
-    return fitView(bounds, this.fitRectPixels(aspect), this.canvas.width, this.canvas.height);
+    return fitView(
+      bounds,
+      this.fitRectPixels(this.boundsAspect()),
+      this.canvas.width,
+      this.canvas.height,
+    );
   }
 
   private fittedScale(): number {
@@ -523,8 +529,25 @@ export class FlowView {
   }
 
   private currentView(): View | null {
-    this.view ??= this.fittedView();
+    // Fitted again when the space it may take changes (a panel grows, the
+    // window turns), unless the user has moved it.
+    if (!this.moved && this.view !== null && this.fitKey() !== this.fittedTo) this.view = null;
+    if (this.view === null) {
+      this.view = this.fittedView();
+      this.fittedTo = this.fitKey();
+    }
     return this.view;
+  }
+
+  /** The rectangle a fitted view takes now, as a key. */
+  private fitKey(): string {
+    const r = this.fitRectPixels(this.boundsAspect());
+    return `${r.x} ${r.y} ${r.width} ${r.height} ${this.canvas.width} ${this.canvas.height}`;
+  }
+
+  private boundsAspect(): number {
+    const b = this.bounds();
+    return b === null ? 1 : (b.xMax - b.xMin) / Math.max(b.yMax - b.yMin, 1e-12);
   }
 
   private setView(view: View): void {

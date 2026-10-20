@@ -137,9 +137,14 @@ export class Shell<A extends string> {
     main.append(this.toasts.element, this.announcer);
     document.body.append(this.help.element);
 
-    new ResizeObserver(() => {
+    // The view, and what floats over it: a panel growing (a table of
+    // results filling in) changes the room a drawing has.
+    const resized = new ResizeObserver(() => {
       this.layoutChanged();
-    }).observe(this.viewport);
+    });
+    for (const el of [this.viewport, this.bottom, ...this.panels.map((p) => p.element)]) {
+      resized.observe(el);
+    }
   }
 
   /** The panel with this id. */

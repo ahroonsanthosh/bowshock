@@ -5,7 +5,9 @@
  * visible paragraph, the page's height, the time to the first result on
  * the default case, and the actions the core tasks take (see the result;
  * change the Mach number and see the new result; find the band and the
- * status; open help), each task performed here to check its count.
+ * status; open help), each task performed here to check its count: a
+ * task counts only once what it is for is in view (the band and the
+ * status both; the new result, changed from the one before).
  *
  *   node scripts/usability.mjs --url http://localhost:4173 --out after.json
  *   node scripts/usability.mjs --compare before.json after.json --md docs/research/interface/usability.md
@@ -117,19 +119,33 @@ const PAGES = {
       mach: [{ fill: ['#mach', '3'] }],
       help: [{ key: 'h' }],
     }),
-    bandTarget: { selector: '#difference, #comparison, .pinned', pattern: '%' },
+    // The new result: the ramp pressure and the exact one, both changed
+    // (before the shell, one line holding both).
+    machResult: { selector: '#computed, #exact', fallback: '#comparison', pattern: '\\d\\.\\d{4}' },
+    // The ramp's band is its difference from the exact pressure; its status, converged.
+    band: { selector: '#difference, #comparison, .pinned', pattern: '\\d%' },
+    status: { selector: '.readout, #status, .pinned', pattern: 'Converged' },
   },
   'shock-tube': {
     path: 'demos/shock-tube.html',
     run: [{ click: '#run' }],
     result: { selector: '#l1, #status, .pinned', pattern: 'e-\\d|error' },
-    bandTarget: { selector: '#l1, #status, .pinned', pattern: 'e-\\d' },
+    // The shock tube's band is its L1 error against the exact solution, at the end time.
+    band: { selector: '#l1, #status, .pinned', pattern: 'e-\\d' },
+    status: { selector: '.readout, #status, .pinned', pattern: 'of 0\\.|t = ' },
     tasks: () => ({ help: [{ key: 'h' }] }),
   },
   flow: {
-    path: 'demos/flow-view.html',
+    // The fixed case: the finest grid 20 cells across, which software
+    // WebGPU here finishes in minutes. A band needs four grids (160
+    // across), so here the outcome is its value marked not verified.
+    path: 'demos/flow-view.html?finest=1',
     result: { selector: '.readout [data-id="cd"]', pattern: '\\d\\.\\d' },
-    bandTarget: { selector: '#status, .pinned', pattern: 'Solving|erified|Refused' },
+    // The new result: the drag on the first grid at the new Mach number.
+    machResult: { selector: '.readout [data-id="cd"]', pattern: '\\d\\.\\d{5}' },
+    // The value with its band (or, unmeasured, the value), and its status.
+    band: { selector: '#drag, .pinned', pattern: '\\d\\.\\d{5}( ± \\d)?' },
+    status: { selector: '#status, .pinned', pattern: 'Verified|Not verified|Refused' },
     tasks: () => ({ mach: [{ select: ['#mach', '3'] }], help: [{ key: 'h' }] }),
   },
 };
@@ -183,22 +199,51 @@ async function measure(browser, base, id, spec, size) {
     converged = t === null ? null : (Date.now() - t0) / 1000;
   }
   const counts = await page.evaluate(census);
-  // The band and the status: in view now, or how many actions away.
-  if (spec.bandTarget !== undefined) {
-    const { selector, pattern } = spec.bandTarget;
-    if (await inView(page, selector, pattern)) actions.bandAndStatus = 0;
+  // The band and the status: once the run has its outcome, both in view
+  // now, or how many actions away.
+  if (spec.band !== undefined) {
+    const both = async () =>
+      (await inView(page, spec.band.selector, spec.band.pattern)) &&
+      (await inView(page, spec.status.selector, spec.status.pattern));
+    const outcome = await until(
+      async () =>
+        (await onPage(page, spec.band.selector, spec.band.pattern)) &&
+        (await onPage(page, spec.status.selector, spec.status.pattern)),
+      900,
+    );
+    if (outcome === null) actions.bandAndStatus = null;
+    else if (await both()) actions.bandAndStatus = 0;
     else {
-      // One scroll to it, if it is on the page at all.
+      // One scroll to the band, if it is on the page at all.
       await page.evaluate((selector) => {
         document.querySelector(selector)?.scrollIntoView();
-      }, selector);
-      actions.bandAndStatus = (await inView(page, selector, pattern)) ? 1 : null;
+      }, spec.band.selector);
+      actions.bandAndStatus = (await both()) ? 1 : null;
     }
   }
   const tasks = spec.tasks();
   if (tasks.mach !== undefined) {
+    // Counted once the new result is in view: each of its parts changed
+    // from the one before.
+    const { fallback, pattern } = spec.machResult;
+    const selector =
+      (await page.$(spec.machResult.selector)) === null ? fallback : spec.machResult.selector;
+    const texts = () =>
+      page.evaluate(
+        (selector) => Array.from(document.querySelectorAll(selector), (el) => el.textContent),
+        selector,
+      );
+    const old = await texts();
     await act(page, tasks.mach);
-    actions.changeMach = tasks.mach.length;
+    const seen = await until(async () => {
+      const now = await texts();
+      return (
+        now.length > 0 &&
+        now.every((t, k) => t !== old[k]) &&
+        (await inView(page, selector, pattern))
+      );
+    }, 600);
+    actions.changeMach = seen === null ? null : tasks.mach.length;
   }
   if (tasks.help !== undefined) {
     await act(page, tasks.help);

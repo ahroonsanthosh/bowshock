@@ -685,8 +685,11 @@ function sizeCanvas(): void {
     [canvas, dpr * copied],
     [overlay, dpr],
   ] as const) {
-    c.width = Math.max(1, Math.round(c.clientWidth * scale));
-    c.height = Math.max(1, Math.round(c.clientHeight * scale));
+    // Set only when changed: setting a canvas's size clears it.
+    const width = Math.max(1, Math.round(c.clientWidth * scale));
+    const height = Math.max(1, Math.round(c.clientHeight * scale));
+    if (c.width !== width) c.width = width;
+    if (c.height !== height) c.height = height;
   }
 }
 

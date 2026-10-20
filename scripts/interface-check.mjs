@@ -1,8 +1,11 @@
 /**
  * The phase checks of docs/design/0012-interface.md section 8, for every
- * page: screenshots at 390, 768 and 1440 px wide, no console errors, the
- * keyboard alone operating the page, and no serious or critical
- * accessibility violations (axe-core).
+ * page: screenshots at 390, 768 and 1440 px wide (as the browser takes
+ * them, unprocessed), no console errors, the keyboard alone operating the
+ * page at 390 and 1440 px (each key, the tab order, a digit pressed in a
+ * focused select, help opened and closed by its key and by Esc with focus
+ * returned), and no serious or critical accessibility violations
+ * (axe-core), in each field the flow page shows.
  *
  *   npm run build
  *   node scripts/interface-check.mjs [--out docs/research/interface] [--pages ramp,shock-tube]
@@ -73,6 +76,8 @@ const PAGES = [
       { press: ' ', expect: { text: ['#pause', 'Pause'] } },
       { press: 'h', expect: 'dialog-open' },
     ],
+    // A digit in the focused grid select switches the field, and leaves the grid.
+    select: { focus: '#resolution', press: '2', pressed: 'Mach' },
   },
   {
     id: 'shock-tube',
@@ -100,7 +105,11 @@ const PAGES = [
     // The coarsest grid only: software WebGPU solves the finer ones slowly.
     path: 'demos/flow-view.html?finest=1',
     ready: (page) =>
-      until(page, async () => /Done|Refused/.test(await readoutValue(page, 'state')), 900),
+      until(
+        page,
+        async () => /erified|Refused|GPU failed/.test(await readoutValue(page, 'state')),
+        900,
+      ),
     // Each field and view, after the default (schlieren).
     shots: [
       ['mach', ['2']],
@@ -118,6 +127,8 @@ const PAGES = [
       { press: 's', expect: { pressed: 'Shock' } },
       { press: 'h', expect: 'dialog-open' },
     ],
+    // 3 in the focused Mach select shows Cp, and leaves the Mach number.
+    select: { focus: '#mach', press: '3', pressed: 'Cp' },
   },
 ];
 
@@ -192,34 +203,98 @@ async function tabOrder(page) {
   return { stops: stops.map((s) => s.label), problems };
 }
 
-/** Press each key and check its effect; then the help dialog: focus inside, Tab kept in, Esc back. */
+/** Whether the mode bar's button named `label` is pressed ('true' or 'false'). */
+const modePressed = (page, label) =>
+  page.evaluate(
+    (label) =>
+      Array.from(document.querySelectorAll('.modebar button'))
+        .find((b) => b.textContent.includes(label))
+        ?.getAttribute('aria-pressed'),
+    label,
+  );
+
+/**
+ * Help by keyboard: opened by its key from a focused control, Tab kept
+ * inside, closed by the same key and by Esc, focus back on that control.
+ */
+async function helpByKeyboard(page, key) {
+  const problems = [];
+  const isOpen = () => page.evaluate(() => document.querySelector('dialog')?.open === true);
+  const focusBack = () =>
+    page.evaluate(() => document.activeElement?.hasAttribute('data-check-focus') === true);
+  const marked = await page.evaluate(() => {
+    const control = Array.from(
+      document.querySelectorAll('.modebar button, .topbar a, .topbar button'),
+    ).find((el) => el.getClientRects().length > 0);
+    if (control === undefined) return false;
+    control.setAttribute('data-check-focus', '');
+    control.focus();
+    return true;
+  });
+  if (!marked) return ['no control to start help from'];
+  for (const [open, close] of [
+    [key, key],
+    ['?', 'Escape'],
+  ]) {
+    await page.keyboard.press(open);
+    await page.waitForTimeout(300);
+    if (!(await isOpen())) problems.push(`${open} did not open the help`);
+    for (let k = 0; k < 8; k++) await page.keyboard.press('Tab');
+    const inside = await page.evaluate(() =>
+      document.querySelector('dialog')?.contains(document.activeElement),
+    );
+    if (!inside) problems.push('Tab left the help dialog');
+    await page.keyboard.press(close);
+    await page.waitForTimeout(300);
+    if (await isOpen()) problems.push(`${close} did not close the help`);
+    if (!(await focusBack())) problems.push(`focus did not return after ${close} closed the help`);
+  }
+  await page.evaluate(() =>
+    document.querySelector('[data-check-focus]')?.removeAttribute('data-check-focus'),
+  );
+  return problems;
+}
+
+/** A digit pressed in a focused select: the page's key acts, the select keeps its value. */
+async function selectKeys(page, spec) {
+  const value = await page.evaluate((selector) => {
+    const select = document.querySelector(selector);
+    if (select === null || select.getClientRects().length === 0) return null;
+    select.focus();
+    return select.value;
+  }, spec.focus);
+  if (value === null) return { skipped: true, problems: [] };
+  await page.keyboard.press(spec.press);
+  await page.waitForTimeout(500);
+  const problems = [];
+  const after = await page.evaluate(
+    (selector) => document.querySelector(selector).value,
+    spec.focus,
+  );
+  if (after !== value) {
+    problems.push(`${spec.press} in ${spec.focus} changed it from ${value} to ${after}`);
+  }
+  if ((await modePressed(page, spec.pressed)) !== 'true') {
+    problems.push(`${spec.press} in ${spec.focus} did not show ${spec.pressed}`);
+  }
+  await page.evaluate(() => document.activeElement?.blur());
+  return { skipped: false, problems };
+}
+
+/** Press each key and check its effect; then the help dialog by keyboard. */
 async function keyboard(page, keys) {
   const problems = [];
   await page.evaluate(() => document.activeElement?.blur());
   for (const { press, expect } of keys) {
+    if (expect === 'dialog-open') {
+      problems.push(...(await helpByKeyboard(page, press)));
+      continue;
+    }
     await page.keyboard.press(press === ' ' ? 'Space' : press);
     await page.waitForTimeout(300);
-    if (expect === 'dialog-open') {
-      const open = await page.evaluate(() => document.querySelector('dialog')?.open === true);
-      if (!open) problems.push(`${press} did not open the help`);
-      for (let k = 0; k < 8; k++) await page.keyboard.press('Tab');
-      const inside = await page.evaluate(() =>
-        document.querySelector('dialog')?.contains(document.activeElement),
-      );
-      if (!inside) problems.push('Tab left the help dialog');
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(200);
-      const closed = await page.evaluate(() => document.querySelector('dialog')?.open === false);
-      if (!closed) problems.push('Esc did not close the help');
-    } else if (expect.pressed !== undefined || expect.notPressed !== undefined) {
+    if (expect.pressed !== undefined || expect.notPressed !== undefined) {
       const label = expect.pressed ?? expect.notPressed;
-      const pressed = await page.evaluate(
-        (label) =>
-          Array.from(document.querySelectorAll('.modebar button'))
-            .find((b) => b.textContent.includes(label))
-            ?.getAttribute('aria-pressed'),
-        label,
-      );
+      const pressed = await modePressed(page, label);
       const want = expect.pressed !== undefined ? 'true' : 'false';
       if (pressed !== want)
         problems.push(`${press}: ${label} aria-pressed ${pressed}, expected ${want}`);
@@ -263,19 +338,28 @@ try {
       const ready = await spec.ready(page);
       const file = path.join(out, `${spec.id}-${size.width}.png`);
       await page.screenshot({ path: file });
+      // Accessibility in the view as it opens, and in each field and view shot.
+      const violations = (await accessibility(page)).map((v) => `default: ${v}`);
       for (const [name, keys] of spec.shots ?? []) {
         for (const key of keys) await page.keyboard.press(key);
         await page.waitForTimeout(1500);
         await page.screenshot({ path: path.join(out, `${spec.id}-${name}-${size.width}.png`) });
+        violations.push(...(await accessibility(page)).map((v) => `${name}: ${v}`));
       }
-      const violations = await accessibility(page);
       const lines = [
         `${spec.id} at ${size.width} px: ${file}${ready ? '' : ' (not ready in time)'}`,
       ];
-      if (size.width === 1440) {
+      if (size.width !== 768) {
         const tabs = await tabOrder(page);
         lines.push(`  tab order (${tabs.stops.length} stops): ${tabs.stops.join(', ')}`);
         const problems = [...tabs.problems, ...(await keyboard(page, spec.keys))];
+        if (spec.select !== undefined) {
+          const result = await selectKeys(page, spec.select);
+          problems.push(...result.problems);
+          lines.push(
+            `  ${spec.select.press} in a focused ${spec.select.focus}: ${result.skipped ? 'not shown at this width' : result.problems.length === 0 ? `shows ${spec.select.pressed}, the select unchanged` : 'failed'}`,
+          );
+        }
         lines.push(
           `  keyboard: ${problems.length === 0 ? 'every key and stop works' : problems.join('; ')}`,
         );

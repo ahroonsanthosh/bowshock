@@ -616,7 +616,7 @@ async function start(): Promise<void> {
   // the view keeps a copy of the flow it shows, and ignores that run.
   if (controller !== null) {
     view?.freeze();
-    showState('Stopping the run before', '');
+    showState('Stopping the last run', '');
   }
   controller?.abort();
   controller = null;

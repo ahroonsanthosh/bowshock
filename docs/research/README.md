@@ -90,7 +90,11 @@ Every page at 390, 768 and 1440 px wide, as `scripts/interface-check.mjs`
 takes them for the phase checks of
 [0012](../design/0012-interface.md) section 8 (headless Chromium on
 software WebGPU, so a flow is shown as far as it has converged in the time
-allowed), kept for review and taken again at each phase.
+allowed), unprocessed, kept for review and taken again at each phase.
+With them, as data: the usability measured before and after
+(`usability-*.json`, `scripts/usability.mjs`, the table in
+`usability.md`) and the numbers the pages report on fixed cases before
+and after (`numbers.json`, `scripts/numbers-check.mjs`).
 
 ## `wip/`: code in progress, not yet validated
 
