@@ -312,6 +312,11 @@ The design records, in order:
 - [0012](docs/design/0012-interface.md): the interface (draft): a
   full-window, dark, visualization-first layout inspired by FluidX3D's,
   with the drag, its band and its status always on screen.
+- [0013](docs/design/0013-transonic.md): transonic forebody drag, Mach 1
+  to 1.2 (draft): a prototype in the repository but not on the drag page,
+  and the plan that must certify each Mach number before it is served
+  (Mach 1.2 meets the supersonic standard on sharp noses; Mach 1.1 and
+  1.05 are being certified on finer grids; Mach 1 is not yet certifiable).
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
