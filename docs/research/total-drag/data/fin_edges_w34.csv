@@ -1,0 +1,238 @@
+# Fin edges of flat plates: first readings (second readings by an independent reader, pending).
+# Written by scripts/w34_fin_edges.py; sources, calibrations and limits in data/fin_edges_w34.md.
+source,figure,item,M,x_name,x,quantity,value,reading,method,error
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,0,P,1.0,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,5,P,0.97,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,10,P,0.9,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,15,P,0.8,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,20,P,0.65,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,25,P,0.45,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,30,P,0.2,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,35,P,-0.03,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,40,P,-0.27,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,45,P,-0.55,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,50,P,-0.8,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,55,P,-0.97,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,60,P,-1.06,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,65,P,-1.1,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,70,P,-1.07,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,75,P,-0.97,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,80,P,-0.91,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,85,P,-0.9,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,90,P,-0.89,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,0,P,1.0,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,5,P,0.95,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,10,P,0.88,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,15,P,0.72,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,20,P,0.52,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,25,P,0.27,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,30,P,0.0,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,35,P,-0.3,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,40,P,-0.62,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,45,P,-0.95,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,50,P,-1.3,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,55,P,-1.62,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,60,P,-1.88,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,65,P,-2.12,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,70,P,-2.3,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,75,P,-2.42,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,80,P,-2.5,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,85,P,-2.52,first,"eye, faired curve",0.03
+TN 2960,5(a),"5(a) squares, M 0.06 to 0.07, R 4.26e5",0.065,theta deg,90,P,-2.51,first,"eye, faired curve",0.03
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,0,P,1.12,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,5,P,1.103,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,15,P,0.959,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,25,P,0.706,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,35,P,0.337,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,45,P,-0.12,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,55,P,-0.649,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,65,P,-0.967,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,75,P,-1.17,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,85,P,-1.159,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.7,0.7,theta deg,90,P,-1.18,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,0,P,1.1,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,5,P,1.064,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,15,P,0.915,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,25,P,0.639,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,35,P,0.235,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,45,P,-0.273,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,50,P,-0.549,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,55,P,-0.827,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,60,P,-0.996,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,65,P,-1.128,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,70,P,-1.176,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,80,P,-1.226,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,85,P,-1.185,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.6,0.6,theta deg,90,P,-1.139,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,0,P,1.06,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,5,P,1.03,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,15,P,0.872,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,25,P,0.528,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,35,P,0.104,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,40,P,-0.142,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,45,P,-0.385,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,50,P,-0.653,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,55,P,-0.919,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,60,P,-1.013,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,65,P,-1.148,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,70,P,-1.171,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,80,P,-1.216,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,85,P,-1.22,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.5,0.5,theta deg,90,P,-1.13,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,0,P,1.03,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,5,P,0.994,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,15,P,0.84,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,25,P,0.474,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,35,P,0.043,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,40,P,-0.218,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,45,P,-0.443,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,50,P,-0.666,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,60,P,-1.019,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,70,P,-1.17,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,80,P,-1.17,first,guided column scan,0.02
+TN 2960,5(b),5(b) M 0.3,0.3,theta deg,90,P,-1.05,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,0,P,1.67,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,5,P,1.646,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,10,P,1.63,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,15,P,1.6,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,20,P,1.484,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,25,P,1.391,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,30,P,1.284,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,35,P,1.17,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,40,P,1.008,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,45,P,0.86,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,50,P,0.766,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,55,P,0.638,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,60,P,0.483,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,65,P,0.387,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,70,P,0.284,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,75,P,0.146,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,80,P,0.077,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,85,P,-0.068,first,guided column scan,0.02
+TN 2960,5(d),"5(d) faired curve, M 1.98",1.98,theta deg,90,P,-0.101,first,guided column scan,0.02
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,0,P,1.6538,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,2,P,1.67,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,11,P,1.61,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,17,P,1.52,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,26,P,1.38,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,32,P,1.21,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,41,P,1.0,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,47,P,0.8,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,57,P,0.64,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,62,P,0.41,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,72,P,0.24,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,78,P,0.08,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,87,P,-0.03,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) circles, R 13.2e5",1.98,theta deg,92,P,-0.16,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) squares, R 5.5e5",1.98,theta deg,0,P,1.6538,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) squares, R 5.5e5",1.98,theta deg,14,P,1.57,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) squares, R 5.5e5",1.98,theta deg,29,P,1.33,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) squares, R 5.5e5",1.98,theta deg,44,P,0.95,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) squares, R 5.5e5",1.98,theta deg,59,P,0.46,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) squares, R 5.5e5",1.98,theta deg,74,P,0.12,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) squares, R 5.5e5",1.98,theta deg,89,P,-0.11,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) squares, R 5.5e5",1.98,theta deg,92,P,-0.13,first,"eye, symbols",0.01
+TN 2960,5(d),"5(d) diamonds, R 1.3e5",1.98,theta deg,0,P,1.6538,first,"eye, symbols (pairs averaged at 44 and 89 deg)",0.01
+TN 2960,5(d),"5(d) diamonds, R 1.3e5",1.98,theta deg,15,P,1.58,first,"eye, symbols (pairs averaged at 44 and 89 deg)",0.01
+TN 2960,5(d),"5(d) diamonds, R 1.3e5",1.98,theta deg,29,P,1.35,first,"eye, symbols (pairs averaged at 44 and 89 deg)",0.01
+TN 2960,5(d),"5(d) diamonds, R 1.3e5",1.98,theta deg,44,P,0.92,first,"eye, symbols (pairs averaged at 44 and 89 deg)",0.01
+TN 2960,5(d),"5(d) diamonds, R 1.3e5",1.98,theta deg,59,P,0.56,first,"eye, symbols (pairs averaged at 44 and 89 deg)",0.01
+TN 2960,5(d),"5(d) diamonds, R 1.3e5",1.98,theta deg,75,P,0.18,first,"eye, symbols (pairs averaged at 44 and 89 deg)",0.01
+TN 2960,5(d),"5(d) diamonds, R 1.3e5",1.98,theta deg,89,P,-0.12,first,"eye, symbols (pairs averaged at 44 and 89 deg)",0.01
+TN 2960,5(d),"5(d) diamonds, R 1.3e5",1.98,theta deg,92,P,-0.14,first,"eye, symbols (pairs averaged at 44 and 89 deg)",0.01
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,0,P,1.0,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,5,P,0.939,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,15,P,0.686,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,25,P,0.275,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,30,P,0.029,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,35,P,-0.265,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,45,P,-0.923,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,55,P,-1.535,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,65,P,-2.038,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,75,P,-2.409,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,85,P,-2.534,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.06 (R above critical),0.06,theta deg,90,P,-2.532,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,0,P,1.15,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,5,P,1.119,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,15,P,0.971,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,25,P,0.7,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,35,P,0.326,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,45,P,-0.144,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,55,P,-0.641,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,65,P,-0.995,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,75,P,-1.178,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,85,P,-1.214,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 0.70,0.7,theta deg,90,P,-1.21,first,guided column scan,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,0,P,1.5286,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,3,P,1.525,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,9,P,1.488,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,11,P,1.473,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,20,P,1.363,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,22,P,1.329,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,24,P,1.295,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,26,P,1.259,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,34,P,1.087,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,36,P,1.039,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,38,P,0.987,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,40,P,0.926,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,49,P,0.676,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,51,P,0.612,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,53,P,0.544,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,56,P,0.437,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,64,P,0.213,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,66,P,0.162,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,68,P,0.114,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,70,P,0.066,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,79,P,-0.131,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,81,P,-0.171,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,83,P,-0.209,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,86,P,-0.26,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 1.49,1.49,theta deg,90,P,-0.3,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,0,P,1.75,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,3,P,1.746,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,6,P,1.718,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,9,P,1.686,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,11,P,1.664,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,20,P,1.559,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,22,P,1.526,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,24,P,1.484,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,26,P,1.452,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,34,P,1.286,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,36,P,1.24,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,38,P,1.197,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,40,P,1.144,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,49,P,0.879,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,51,P,0.808,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,53,P,0.767,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,56,P,0.683,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,64,P,0.437,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,66,P,0.393,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,68,P,0.35,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,70,P,0.308,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,79,P,0.154,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,81,P,0.128,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,83,P,0.103,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,86,P,0.074,first,guided column scan between symbols,0.02
+TN 2960,5(e),5(e) M 2.90,2.9,theta deg,90,P,0.03,first,guided column scan between symbols,0.02
+RM A55H31,12,"present tests, M 3.9",3.9,yaw deg,30.1,"CD front, yawed over unyawed",0.7,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,12,"present tests, M 3.9",3.9,yaw deg,45.1,"CD front, yawed over unyawed",0.41,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,12,"present tests, M 3.9",3.9,yaw deg,60.1,"CD front, yawed over unyawed",0.17,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,12,"ref. 1, M 6.9",6.86,yaw deg,14.4,"CD front, yawed over unyawed",0.907,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,12,"ref. 1, M 6.9",6.86,yaw deg,29.6,"CD front, yawed over unyawed",0.665,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,12,"ref. 1, M 6.9",6.86,yaw deg,45.2,"CD front, yawed over unyawed",0.367,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,12,"ref. 1, M 6.9",6.86,yaw deg,59.9,"CD front, yawed over unyawed",0.131,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,12,"ref. 1, M 6.9",6.86,yaw deg,75.5,"CD front, yawed over unyawed",0.023,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,11,"present tests, M 3.9",3.9,yaw deg,30,p_x=0 / p_t2,0.769,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,11,"present tests, M 3.9",3.9,yaw deg,45,p_x=0 / p_t2,0.53,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,11,"present tests, M 3.9",3.9,yaw deg,60,p_x=0 / p_t2,0.295,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,11,"ref. 1, M 6.9",6.86,yaw deg,14.3,p_x=0 / p_t2,0.972,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,11,"ref. 1, M 6.9",6.86,yaw deg,29.6,p_x=0 / p_t2,0.75,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,11,"ref. 1, M 6.9",6.86,yaw deg,45.1,p_x=0 / p_t2,0.5,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,11,"ref. 1, M 6.9",6.86,yaw deg,59.8,p_x=0 / p_t2,0.246,first,"eye, symbol centre on 2x ruler crop",0.004
+RM A55H31,11,"ref. 1, M 6.9",6.86,yaw deg,75.2,p_x=0 / p_t2,0.046,first,"eye, symbol centre on 2x ruler crop",0.004
+RM L52D21,11,"sweep 0 deg, h/t 1.0, alpha 0",1.41,h/t,1.0,P_b'/P_bv,0.534,first,column scan at h/t 0.95 to 0.99,0.005
+RM L52D21,11,"sweep 45 deg, h/t 1.0, alpha 0",1.41,h/t,1.0,P_b'/P_bv,0.488,first,column scan at h/t 0.95 to 0.99,0.005
+RM L52D21,11,"sweep 0 deg, h/t 1.0, alpha 0",1.62,h/t,1.0,P_b'/P_bv,0.57,first,column scan at h/t 0.95 to 0.99,0.005
+RM L52D21,11,"sweep 45 deg, h/t 1.0, alpha 0",1.62,h/t,1.0,P_b'/P_bv,0.548,first,column scan at h/t 0.95 to 0.99,0.005
+RM L52D21,11,"sweep 0 deg, h/t 1.0, alpha 0",1.96,h/t,1.0,P_b'/P_bv,0.663,first,column scan at h/t 0.95 to 0.99,0.005
+RM L52D21,11,"sweep 45 deg, h/t 1.0, alpha 0",1.96,h/t,1.0,P_b'/P_bv,0.575,first,column scan at h/t 0.95 to 0.99,0.005

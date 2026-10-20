@@ -1,0 +1,44 @@
+# Fin edges of flat plates: first readings and computations (w34_fin_edges.py)
+
+## TN 2960: front side over modified Newtonian, (2/3) Cp_0
+- 5(a) circles, M 0.05, R 3.14e5: front +0.068 on D; (2/3) Cp_0 0.667 (Cp_0 1.001); ratio +0.102
+- 5(a) squares, M 0.06 to 0.07, R 4.26e5: front -0.290 on D; (2/3) Cp_0 0.667 (Cp_0 1.001); ratio -0.434
+- 5(b) M 0.7: front +0.297 on D; (2/3) Cp_0 0.752 (Cp_0 1.129); ratio +0.395
+- 5(b) M 0.6: front +0.204 on D; (2/3) Cp_0 0.729 (Cp_0 1.093); ratio +0.279
+- 5(b) M 0.5: front +0.130 on D; (2/3) Cp_0 0.709 (Cp_0 1.064); ratio +0.184
+- 5(b) M 0.3: front +0.104 on D; (2/3) Cp_0 0.682 (Cp_0 1.023); ratio +0.152
+- 5(d) faired curve, M 1.98: front +1.146 on D; (2/3) Cp_0 1.103 (Cp_0 1.654); ratio +1.040
+- 5(d) circles, R 13.2e5: front +1.141 on D; (2/3) Cp_0 1.103 (Cp_0 1.654); ratio +1.035
+- 5(d) squares, R 5.5e5: front +1.141 on D; (2/3) Cp_0 1.103 (Cp_0 1.654); ratio +1.035
+- 5(d) diamonds, R 1.3e5: front +1.165 on D; (2/3) Cp_0 1.103 (Cp_0 1.654); ratio +1.056
+- 5(e) M 0.06 (R above critical): front -0.267 on D; (2/3) Cp_0 0.667 (Cp_0 1.001); ratio -0.401
+- 5(e) M 0.70: front +0.295 on D; (2/3) Cp_0 0.752 (Cp_0 1.129); ratio +0.392
+- 5(e) M 1.49: front +1.013 on D; (2/3) Cp_0 1.019 (Cp_0 1.529); ratio +0.994
+- 5(e) M 2.90: front +1.224 on D; (2/3) Cp_0 1.167 (Cp_0 1.750); ratio +1.049
+
+## RM A55H31: the yawed front side against the independence principle
+- unyawed shape integral I_g = int (p/p_x=0) cos(phi) dphi, table II at 0 deg: 0.7211
+- fig. 12 (absolute-pressure basis, as eq. (14)) converted to gauge pressure with fig. 11 and I_g;
+  r = gauge ratio over cos^3(L) Cp_pitot(M cos L) / Cp_pitot(M):
+  - present tests, M 3.9, yaw 30.1 (M_n 3.37): fig. 11 0.769 against Rayleigh at M_n 0.754; fig. 12 0.700, gauge 0.6844; model 0.6416; r 1.067
+  - present tests, M 3.9, yaw 45.1 (M_n 2.75): fig. 11 0.530 against Rayleigh at M_n 0.510; fig. 12 0.410, gauge 0.3830; model 0.3421; r 1.120
+  - present tests, M 3.9, yaw 60.1 (M_n 1.94): fig. 11 0.295 against Rayleigh at M_n 0.267; fig. 12 0.170, gauge 0.1398; model 0.1140; r 1.226
+  - ref. 1, M 6.9, yaw 14.4 (M_n 6.64): fig. 11 0.972 against Rayleigh at M_n 0.939; fig. 12 0.907, gauge 0.9064; model 0.9081; r 0.998
+  - ref. 1, M 6.9, yaw 29.6 (M_n 5.96): fig. 11 0.750 against Rayleigh at M_n 0.758; fig. 12 0.665, gauge 0.6598; model 0.6555; r 1.007
+  - ref. 1, M 6.9, yaw 45.2 (M_n 4.83): fig. 11 0.500 against Rayleigh at M_n 0.500; fig. 12 0.367, gauge 0.3585; model 0.3467; r 1.034
+  - ref. 1, M 6.9, yaw 59.9 (M_n 3.44): fig. 11 0.246 against Rayleigh at M_n 0.257; fig. 12 0.131, gauge 0.1217; model 0.1228; r 0.990
+  - ref. 1, M 6.9, yaw 75.5 (M_n 1.72): fig. 11 0.046 against Rayleigh at M_n 0.070; fig. 12 0.023, gauge 0.0119; model 0.0138; r 0.866
+- table II directly (gauge, trapezoid at 15 deg), rho = front on q_n over (2/3) Cp_pitot(M_n):
+  - yaw  0, M 3.94, M_n 3.940: stagnation p/p_inf 20.50 (Rayleigh 20.45); front on q_n 1.2690; rho 1.0632; over yaw 0 1.0000
+  - yaw 30, M 3.9, M_n 3.377: stagnation p/p_inf 15.88 (Rayleigh 15.16); front on q_n 1.2936; rho 1.0944; over yaw 0 1.0294
+  - yaw 45, M 3.8, M_n 2.687: stagnation p/p_inf 10.50 (Rayleigh 9.77); front on q_n 1.3567; rho 1.1724; over yaw 0 1.1027
+
+## RM L52D21 fig. 11 (alpha 0, h/t 1.0) over the thin-layer curve at the free-stream Mach number
+- M 1.41: model 1 - p_b/p_inf 0.487; sweep 0 0.534 (1.096); sweep 45 0.488 (1.001)
+- M 1.62: model 1 - p_b/p_inf 0.559; sweep 0 0.570 (1.019); sweep 45 0.548 (0.980)
+- M 1.96: model 1 - p_b/p_inf 0.632; sweep 0 0.663 (1.050); sweep 45 0.575 (0.910)
+
+## TN 2960 fig. 5(c): rear side against a square base of the same height (first readings, 0010)
+- M 1.49: cylinder rear side 0.454 on D; square base at the thin-layer curve 0.336; ratio 1.35
+- M 1.98: cylinder rear side 0.269 on D; square base at the thin-layer curve 0.232; ratio 1.16
+- M 2.9: cylinder rear side 0.093 on D; square base at the thin-layer curve 0.130; ratio 0.72
