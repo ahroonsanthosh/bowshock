@@ -777,6 +777,74 @@ extrapolation (0.0932 within about 0.1%, r = 4 a fitted estimate).
 Nothing below Mach 1.2 is served; whether Mach 1 to 1.2 is shown at all,
 and how it is labelled, is the owner's decision.
 
+## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
+
+The owner's decision: nothing below Mach 1.2 is shown until the
+procedure as it stands (`gridConvergence`, the supersonic page's rule)
+certifies a band there, or until a change to the procedure is written
+down and justified before the runs that would test it. Blunt noses stay
+unserved below Mach 1.5 (the stagnation line's pointwise error, above).
+This section is that plan; the runs it names are made after it is
+committed, and their results are judged by it as written.
+
+**What certifies a case.** The procedure applied to the four finest
+grids of a family (it uses only those) returns a band (`monotone` or
+`oscillatory`); at a Mach number with an exact reference the band must
+also contain the finest grid's error against it, on every reference
+case run. The far boundaries' and the cylinder's errors are not in the
+band: they must be measured at that Mach number (base grid, 55.1 to
+224.2 radii, 5 to 20 calibers) and be below a quarter of the band, or
+else be added to it (their largest measured change, once). An
+`unresolved` result is a refusal, and the case stays unserved.
+
+**Mach 1.1.**
+
+- The 7 deg cone, reference Taylor-Maccoll (0.0944976): r = 16 (906,240
+  cells), so that the four finest grids are r = 2, 4, 8, 16. If the
+  procedure returns `unresolved` again, Mach 1.1 stays refused.
+- A curved nose: the 5-caliber ogive has no reference here (the method
+  of characteristics refuses it at Mach 1.1: the flow at its 11.4 deg tip
+  is not supersonic). A 10-caliber tangent ogive (5.7 deg tip) has one:
+  0.0114666, 0.0114565, 0.0114541 and 0.0114534 on 160 to 1280 intervals,
+  converging at second order to 0.011453 (start line at 1e-3). Its family
+  r = 1 to 16 at Mach 1.1, certified as the cone. (The characteristics
+  refuse it at Mach 1.05.)
+- First the cost of r = 16 is measured on its first steps (time per step
+  and memory) and reported before the runs are committed.
+
+**Mach 1.05.** The cone's r = 8 and r = 16, certified by the procedure
+alone (no exact reference exists for any nose here: Taylor-Maccoll's
+conical flow is subsonic at the cone's surface, and the characteristics
+refuse the ogives). The far boundaries' change from 100.6 to 224.2
+radii on the base grid (+1.3e-5) and the cylinder's (up to 7e-6) are
+added to the band if above a quarter of it.
+
+**Mach 1.** Two parts, both needed:
+
+- _The far boundaries, as a written rule._ On the base grid, the drag on
+  far boundaries at D1 = 100.6, D2 = 224.2 and D3 = 408.7 radii; the
+  power law C(D) = C_inf - k D^-q through the three (q solved); the
+  correction C_inf - C(D1) is added to the grid family's value at D1,
+  with an uncertainty equal to C_inf - C(D3) (all of the extrapolation
+  beyond the largest domain solved). The rule holds only if the
+  correction from D1 to D3 on r = 2 agrees with the base grid's within a
+  tenth of that uncertainty (measured: 6e-6 against 2.5e-4 to 3.4e-4, so
+  it holds for the cone). Its test where the answer is known: the same
+  rule applied at Mach 1.2 to the cone and the 5-caliber ogive (D1 to D3
+  on the base grid) must leave their certified bands containing their
+  errors against Taylor-Maccoll and the characteristics. That test only
+  shows the rule does no harm where the far boundaries hardly matter;
+  no case with a known answer has a large far-boundary effect.
+- _The grid, at D1._ The procedure needs a fourth grid, r = 8 at Mach 1.
+  r = 4 had not settled after 89,200 steps (its value is a fitted
+  estimate); the steps grow about 2 to 3 times per refinement, on 4 times
+  the cells, so r = 8 would need several hundred thousand steps of about
+  2 s each on this machine: weeks. It is not run unless the Mach 1
+  iteration is made faster first (its slow mode is a damped oscillation
+  of period about 22,600 steps on r = 4); until then Mach 1 stays
+  refused. Option B (a domain large enough to need no rule) waits on the
+  divergence near the axis at 800 radii.
+
 ## What did not work
 
 Measured on the 7 deg cone at Mach 1.05 (and 1.0 where stated), base
