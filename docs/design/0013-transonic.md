@@ -262,14 +262,21 @@ At Mach 1.1 the cone's conical surface flow is still supersonic (Mach
 1.037, axial 1.029), so its drag is again exactly Taylor-Maccoll's,
 0.0944976, and the fitted solver accepts the case.
 
-| r   | Cells  | Drag      | vs Taylor-Maccoll | Steps | Wall time |
-| --- | ------ | --------- | ----------------- | ----- | --------- |
-| 1   | 3,540  | 0.0944683 | -3.10e-4          | 950   | 17 s      |
-| 2   | 14,160 | 0.0944644 | -3.51e-4          | 1,600 | 120 s     |
-| 4   | 56,640 | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s   |
+| r   | Cells   | Drag      | vs Taylor-Maccoll | Steps | Time           |
+| --- | ------- | --------- | ----------------- | ----- | -------------- |
+| 1   | 3,540   | 0.0944683 | -3.10e-4          | 950   | 17 s           |
+| 2   | 14,160  | 0.0944644 | -3.51e-4          | 1,600 | 120 s          |
+| 4   | 56,640  | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s        |
+| 8   | 226,560 | 0.0944913 | -6.7e-5           | 5,600 | 4,110 s of CPU |
 
-The changes (-3.9e-6, +1.77e-5) change sign: oscillatory, all three
-within 3.5e-4 of the exact value. (r = 8: see below.)
+The changes (-3.9e-6, +1.77e-5, +9.1e-6) change sign at the first step
+and then fall at first order (0.95 on the finest triple, extrapolated
+0.0945010, 3.6e-5 of the value above the exact one). The procedure
+(`gridConvergence`, four grids) returns no band here: its coarser
+triple oscillates ("unresolved"). So at Mach 1.1 the four grids are
+within 3.5e-4 of the exact value and r = 8 within 6.7e-5, but the
+procedure as it stands refuses the case; a band would need a fifth grid
+(r = 16, 900,000 cells), so that both triples are the monotone ones.
 
 The fitted solver on the same cone: 0.0938653 (nj = 20) and 0.0940974
 (nj = 40), -6.69e-3 and -4.24e-3 of the exact value, ten to twenty times
@@ -731,9 +738,9 @@ on the CPU engine:
   domain and the supersonic fitted solver agree where both apply, within
   2.7e-5 on the cone and 1e-3 on the ogive and the ellipsoid: the two
   definitions meet at Mach 1.2.
-- **Mach 1.1.** Cone: every grid within 3.5e-4 of the exact value,
-  oscillating (no order, so no band from the procedure); the fitted
-  solver is 4e-3 to 7e-3 off here. Ogive and hemisphere: r = 1 and 2 only
+- **Mach 1.1.** Cone: four grids within 3.5e-4 of the exact value, r =
+  8 within 6.7e-5; the procedure refuses a band (its coarser triple
+  oscillates); the fitted solver is 4e-3 to 7e-3 off here. Ogive and hemisphere: r = 1 and 2 only
   (changes of 4e-3 and 2% of the value): not established.
 - **Mach 1.05.** Cone: no exact value; first order, r = 4 within about
   1.5e-3 of its extrapolation, far boundaries at most 2e-4, cylinder
@@ -753,10 +760,14 @@ on the CPU engine:
 
 So the evidence supports the transonic domain at Mach 1.2 to the
 supersonic solvers' standard on cones and on the ogive (four grids, the
-band containing the error), and to about 1e-3 on blunt noses; at Mach 1.1 to 3.5e-4 on cones; at 1.05 to about 2e-3 on
-cones; and at Mach 1 to about 0.1% on cones only with the far-boundary
-extrapolation and three grids. Nothing below Mach 1.2 has the procedure's four-grid band
-yet.
+procedure's band containing the error against exact references), and to
+about 1e-3 on blunt noses (three grids each, against the fitted solver).
+Below Mach 1.2 the procedure gives no band yet: at Mach 1.1 it refuses
+the cone's four grids (the coarser triple oscillates) although r = 8 is
+within 6.7e-5 of the exact value; at Mach 1.05 the cone's r = 8 is
+running (r = 4 is about 1.5e-3 from its extrapolation); at Mach 1 there
+are three grids and the far-boundary extrapolation (0.0932 within about
+0.1%). Nothing below Mach 1.2 can be served under the standard yet.
 
 ## What did not work
 
@@ -809,9 +820,8 @@ grid unless stated:
 
 ## Open
 
-- **Runs queued, not yet done** (in this order): at Mach 1 r = 4 on
-  100.6 radii; the cone's r = 8 at Mach 1.1 and 1.05, which give the
-  procedure's band there; the ogive at Mach 1 on r = 2; the fitted
+- **Runs queued, not yet done** (in this order): the cone's r = 8 at
+  Mach 1.05; the ogive at Mach 1 on r = 2; the fitted
   solver's nj = 80 on the hemisphere at Mach 1.5 and the cone at Mach
   1.1; the ogive's r = 4 at Mach 1.1 and 1.05; the 2:1 ellipsoid's r = 8
   at Mach 1.2. The job scripts save their state every 10 minutes and
