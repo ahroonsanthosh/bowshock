@@ -176,6 +176,8 @@ def main():
         found = [] if rg is None else dots.dot_blobs(
             dm, (rg[0] - bx[0], rg[1] - bx[1], rg[2] - bx[0], rg[3] - bx[1]),
             D.get("dot_min", 3), D.get("dot_max", 16))
+        excl = [(e[0] - bx[0], e[1] - bx[1]) for e in D.get("exclude", [])]
+        found = [q for q in found if all((q[0] - e[0]) ** 2 + (q[1] - e[1]) ** 2 > 15 ** 2 for e in excl)]
         for cx, cy, w_, h_, n_ in sorted(found):
             Rp = D.get("R_plot", R)
             g = dots.glyph(dm, cx, cy, Rp, max(w_, h_) / 2 + 2)
@@ -183,6 +185,26 @@ def main():
             scores = sorted(((*dots.match_scaled(g, t, scales, D.get("shift", 2)), name) for name, t in tpls),
                             reverse=True)
             (s1, sc1, n1), (s2, sc2, n2) = scores[0], scores[1]
+            if D.get("classify") == "corners" and s1 - s2 < 0.1:
+                # square or circle: distance from the dot to the outline along
+                # the diagonals over that along the axes (a square's corners
+                # lie sqrt(2) further out; a circle's ratio is 1)
+                def first_ink(ddx, ddy):
+                    for rr in range(8, 56):
+                        yy_ = int(round(cy + ddy * rr / np.hypot(ddx, ddy)))
+                        xx_ = int(round(cx + ddx * rr / np.hypot(ddx, ddy)))
+                        if f.clean[max(0, yy_ - 1):yy_ + 2, max(0, xx_ - 1):xx_ + 2].any():
+                            return rr
+                    return np.nan
+                dd_ = np.nanmedian([first_ink(a_, b_) for a_, b_ in ((1, 1), (1, -1), (-1, 1), (-1, -1))])
+                da_ = np.nanmedian([first_ink(a_, b_) for a_, b_ in ((1, 0), (-1, 0), (0, 1), (0, -1))])
+                rat = dd_ / da_ if da_ else np.nan
+                if rat > 1.22:
+                    n1, s1, s2, n2, sc1 = D["square"], 1.0, 0.0, D["circle"], 1.0
+                elif rat < 1.12:
+                    n1, s1, s2, n2, sc1 = D["circle"], 1.0, 0.0, D["square"], 1.0
+                else:
+                    s1, s2 = 0.6, 0.55  # ambiguous: keep the template's choice, flagged
             if s1 < D.get("min_score", 0.5):
                 continue
             xd, yd = f.data(cx, cy)
