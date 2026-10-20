@@ -5,8 +5,8 @@
  * front-side ratio kappa at its nodes and its monotone rise, fig. 5's
  * spread, the bracketing-node band (across the unmeasured 1.2 to 1.49
  * too), the sweep allowance widened below 1.49, the labels, and the
- * refusals: plates below 1.0 with the airfoil series cited, rounded wedges
- * below 1.49 as before.
+ * refusals below 1.0 with the airfoil series cited; and rounded wedges on
+ * the same term (0016 section 12).
  */
 
 import { readFileSync } from 'node:fs';
@@ -67,7 +67,6 @@ const plate = (mach: number, sweepDeg = 0, reynoldsOnDiameter = 2e5) =>
     faceAngle: 0,
     tanLeadingEdgeSweep: Math.tan(sweepDeg * deg),
     reynoldsOnDiameter,
-    plate: true,
   });
 
 describe('NASA CR-149372, against the data file (first readings)', () => {
@@ -252,10 +251,10 @@ describe('refusals', () => {
     expect(plate(1.0).normalMach).toBe(1);
   });
 
-  it('a rounded wedge (not a plate) below M_n 1.49, as before', () => {
+  it('a rounded wedge below M_n 1.0, the same reasons', () => {
     const e = failure(() =>
       roundedLeadingEdgeDrag({
-        mach: 1.3,
+        mach: 0.95,
         radius: 0.0015,
         faceAngle: 0.036,
         tanLeadingEdgeSweep: 0,
@@ -263,6 +262,29 @@ describe('refusals', () => {
       }),
     );
     expect(e.reason).toBe('leading-edge-range');
-    expect(e.message).toMatch(/1\.300 is below 1\.49, TN 2960's lowest supersonic one/);
+    expect(e.message).toMatch(/0\.950 is below 1\.0/);
+  });
+});
+
+describe('a rounded wedge at M_n 1.0 to 1.49 (the follow-up of 0016 section 11)', () => {
+  it('kappa times its nose up to the tangent points, the same nodes, band and label as a plate', () => {
+    const delta = 0.036;
+    const w = roundedLeadingEdgeDrag({
+      mach: 1.15,
+      radius: 0.0015,
+      faceAngle: delta,
+      tanLeadingEdgeSweep: 0,
+      reynoldsOnDiameter: 2e5,
+    });
+    const k = transonicFrontSide(1.15);
+    const c = Math.cos(delta);
+    expect(w.dragPerSpan).toBeCloseTo(
+      k.nominal * pitotPressureCoefficient(1.15) * 0.0015 * 2 * (c - c ** 3 / 3),
+      16,
+    );
+    const p = plate(1.15);
+    expect(w.band).toEqual(p.band);
+    expect(w.label).toBe(p.label);
+    expect(w.transonic).toEqual(p.transonic);
   });
 });

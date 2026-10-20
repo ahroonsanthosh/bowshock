@@ -4,9 +4,8 @@
  * W4): the new readings held to their data file, TN 2960's other front
  * sides and what they show, the yawed-cylinder checks and the sweep
  * allowance recomputed from them, the plate's nose, the swept term and its
- * band, and the refusal of normal Mach numbers below 1.49 with its reasons
- * where the plate flag is not passed (plates from M_n 1.0:
- * rounded-leading-edge-transonic.test.ts).
+ * band, and the refusal of normal Mach numbers below 1.0 with its reasons
+ * (1.0 to 1.49: rounded-leading-edge-transonic.test.ts).
  */
 
 import { readFileSync } from 'node:fs';
@@ -220,10 +219,10 @@ describe('the nose term on flat and swept fins', () => {
     expect(t.band).toEqual({ low: 0.95, high: 1.17 });
   });
 
-  it('without the plate flag (a rounded wedge), refuses a normal Mach number below 1.49 (plates: section 11)', () => {
+  it('refuses a normal Mach number below 1.0 (1.0 to 1.49: section 11), with the subsonic reasons', () => {
     const e = failure(() =>
       roundedLeadingEdgeDrag({
-        mach: 2.0,
+        mach: 1.3,
         radius: 0.0015,
         faceAngle: 0,
         tanLeadingEdgeSweep: Math.tan(45 * deg),
@@ -231,9 +230,8 @@ describe('the nose term on flat and swept fins', () => {
       }),
     );
     expect(e.reason).toBe('leading-edge-range');
-    expect(e.message).toMatch(/normal to the edge, M cos\(sweep\), 1\.414 is below 1\.49/);
+    expect(e.message).toMatch(/normal to the edge, M cos\(sweep\), 0\.919 is below 1\.0/);
     expect(e.message).toMatch(/0\.10 to 0\.39 of the modified-Newtonian value at M 0\.05 to 0\.70/);
-    expect(e.message).toMatch(/between M 0\.7 and 1\.49 TN 2960 has no pressure distribution/);
   });
 
   it('refuses sweeps beyond 60 deg; takes 60 itself', () => {

@@ -486,7 +486,9 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       const v = totalDragView(form, exactNose(form));
       expect(v.kind).toBe('refused');
       const r = reasons(v);
-      expect(r).toContain('fin leading edges: leading-edge-range');
+      // The leading edges' Reynolds number refuses them to M 1.25; at 1.33 they are served (0016 section 11).
+      if (s.mach < 1.3) expect(r).toContain('fin leading edges: leading-edge-range');
+      else expect(r).not.toContain('fin leading edges: leading-edge-range');
       expect(r).toContain('body base: mach-range');
       if (s.mach < 1.2) expect(r).toContain('fin wave drag: detached-shock');
     }

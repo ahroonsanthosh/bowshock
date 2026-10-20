@@ -34,10 +34,11 @@ c / [h Re_c^(1/5)] = 1.0 to 4.5, tapered fins are integrated along the
 span, and rounded leading edges are served on plates of any planform,
 swept to 60 deg, at normal Mach numbers of 1.49 to 3.0, and since
 section 11 from 1.0. Refused, with the reasons of sections 6 and 11:
-normal Mach numbers below 1.0 (below 1.49 on a rounded wedge), swept
+normal Mach numbers below 1.0 (on rounded wedges too since section 12), swept
 trailing edges, the trailing edges below Mach 1.5,
 square-cut leading edges and rounded trailing edges. The Basic Finner's
-numbers are unchanged, bit for bit.
+gated numbers are unchanged, bit for bit; its reported shots, still
+refused, change only their reasons (section 12).
 
 ## 1. What is served, and on what
 
@@ -283,8 +284,8 @@ them.
   transition states on the part of the span they reach.
 - Section 11: `src/fins/macha.ts` (CR-149372's readings);
   `machaFrontSides`, `machaBlockageSpread`, `TRANSONIC_NODES`,
-  `transonicFrontSide`, `SWEEP_ALLOWANCE_EXTRAPOLATED` and the `plate`
-  input in `src/fins/rounded-leading-edge.ts`, which `platePart` passes;
+  `transonicFrontSide` and `SWEEP_ALLOWANCE_EXTRAPOLATED` in
+  `src/fins/rounded-leading-edge.ts`;
   `tests/fins/rounded-leading-edge-transonic.test.ts`.
 - Tests: `tests/base/fin-trailing-edge-thick.test.ts`,
   `tests/fins/rounded-leading-edge-plates.test.ts` (the readings held to
@@ -481,15 +482,10 @@ cylinder's separation and wake replace (TN 2960 figs. 5(a), 5(b), 5(e)
 the leading-edge bluntness series at subsonic leading edges (RM L53L24a,
 NASA TP 2204, NASA TN D-3634) are of airfoil noses, of radius about a
 tenth of the thickness or less or faired into the section, their
-increments within their errors". Rounded wedges (0010's term, the Basic
-Finner's) keep the 1.49 floor: the analogy would serve them too, but
-extending it changes the Basic Finner's reported shots' refusal lists,
-which is that record's to decide; offered as a follow-up.
-
-**The Basic Finner is unchanged.** Its wedges do not pass the plate flag:
-over the 16 shots every number, band, label and refusal equals the base
-commit's (5245241) bit for bit (1116 values, largest difference 0), and
-`tests/validation/` passes unchanged.
+increments within their errors". As first committed, rounded wedges
+(0010's term, the Basic Finner's) kept the 1.49 floor, and the Basic
+Finner's 16 shots were bit for bit the base commit's (1116 values); since
+section 12 the wedges take this term too.
 
 **Readings.** CR-149372 figs. 8b and 5 are read once; the round-6 reader
 reads them blind. Until the second readings are held beside these, the
@@ -519,9 +515,52 @@ again (3.3% to 6.5%).
 **The page.** Before (section 10): the collapsed "What the total
 includes" says "A flat plate's rounded edge is a full radius, half its
 thickness; square-cut leading edges and rounded trailing edges are
-refused (design record 0016)." After: "A flat plate's rounded edge is a
-full radius, half its thickness, served where the Mach number normal to
-it, M cos(sweep), is 1.0 or more (1.49 on a wedge); square-cut leading
-edges and rounded trailing edges are refused (design record 0016)." No
+refused (design record 0016)." After (with section 12): "A flat plate's
+rounded edge is a full radius, half its thickness; a rounded edge is
+served where the Mach number normal to it, M cos(sweep), is 1.0 or more;
+square-cut leading edges and rounded trailing edges are refused (design
+record 0016)." No
 control, field or other text changes; the term's label and the refusal's
 reason reach the page as every component's do.
+
+## 12. W4(e) on rounded wedges
+
+A follow-up approved by the coordinator on 2026-10-20, with conditions:
+the Basic Finner's 11 gated shots stay bit for bit; its five reported
+shots at M 1.06 to 1.33 may change only their refusal reasons, not become
+served.
+
+**Method.** 0010's rounded wedge takes section 11's term: its nose up to
+the tangent points, Cp_pitot(M_n) cos^2(sweep) r 2 (cos(delta) -
+cos^3(delta) / 3) per unit span, times kappa(M_n) on the same nodes, with
+the same band, sweep allowance and labels as a plate. The argument is
+section 11's: with the normal flow sonic or faster, the surface flow is
+supersonic from the sonic point to the tangent points (90 deg - delta, 88
+deg on the Basic Finner), so the faces behind them are not felt ahead of
+them. Below M_n 1.0 a wedge is refused with the plate's reasons. The
+`plate` input of section 11 is gone: the domain no longer depends on the
+section.
+
+**The Basic Finner.** The 11 gated shots (M 1.80 to 2.97, unswept, M_n
+at least 1.8) are bit for bit the base commit's (5245241): 693 values,
+largest difference 0. The five reported shots stay refused; their reasons:
+
+| Shot       | M     | Before                                                                                                             | Now                                                                                |
+| ---------- | ----- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| DA95022010 | 1.056 | leading edges (normal Mach below 1.49), fin wave drag (detached shock), body base, trailing-edge base (Mach range) | leading edges (Re_D 5.59e3, below 6.7e3), the other three as before                |
+| DA95022219 | 1.058 | as above                                                                                                           | leading edges (Re_D 5.63e3), the other three as before                             |
+| DA95022230 | 1.116 | as above                                                                                                           | leading edges (Re_D 5.94e3), the other three as before                             |
+| DA95030613 | 1.254 | leading edges (normal Mach), body base, trailing-edge base                                                         | leading edges (Re_D 6.69e3), body base, trailing-edge base                         |
+| DA95022009 | 1.332 | as at 1.254                                                                                                        | body base, trailing-edge base; the leading edges served, 0.0375 (0.0340 to 0.0433) |
+
+(The high-yaw shot at M 1.377, not reported, is like the 1.332 one.) The
+reported shots' tests in `tests/validation/basic-finner.test.ts` and
+`tests/app/total-drag.test.ts` now assert these reasons; nothing else in
+`tests/validation/` changes.
+
+**Coverage.** No gain: the population's rounded edges are all on flat
+plates (its bevelled and double-wedge sections are sharp), and the re-run
+(`OUT_NAME=impact-w4e-wedges`) reproduces `out/impact-w4e.out` line for
+line, so it is not kept. The gain is for wedge fins with rounded edges
+entered on the page (the "Single wedge, blunt trailing edge" section with
+a radius) at M_n 1.0 to 1.49.

@@ -305,7 +305,7 @@ export function finnedBodyComponents(
         low: nose.band.low * cd,
         high: nose.band.high * cd,
         label: nose.label,
-        band: `TN 2960, front side over modified Newtonian, ${nose.band.low.toFixed(2)} to ${nose.band.high.toFixed(2)} (${nose.regime})`,
+        band: `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified Newtonian, ${nose.band.low.toFixed(2)} to ${nose.band.high.toFixed(2)} (${nose.regime})`,
       });
     } catch (e) {
       refusals.push(refusalOf('fin leading edges', e));
@@ -570,7 +570,6 @@ function platePart(
       faceAngle: 0,
       tanLeadingEdgeSweep: fins.planform.tanLeadingEdge,
       reynoldsOnDiameter: conditions.reynoldsPerLength * plate.thickness,
-      plate: true,
     });
     const cd = (fins.count * nose.dragPerSpan * fins.planform.span) / area;
     components.push({

@@ -77,10 +77,11 @@
  * Swept edges are served to 60 deg (the checks reach 59.9 deg; at 75 deg
  * the only point has an end effect).
  *
- * **Normal Mach numbers 1.0 to 1.49 on flat plates** (0016 section 11,
- * W4(e)): the same analogy, the normal flow sonic or faster, so the surface
- * flow is supersonic from the sonic point (about 50 deg) to 90 deg and the
- * plate's nose and the cylinder's front half see the same flow. The term is
+ * **Normal Mach numbers 1.0 to 1.49** (0016 section 11, W4(e), on flat
+ * plates and rounded wedges): the same analogy, the normal flow sonic or
+ * faster, so the surface flow is supersonic from the sonic point (about 50
+ * deg) to 90 deg and the edge's nose, up to its tangent points, and the
+ * cylinder's front half see the same flow. The term is
  * the modified-Newtonian one times kappa(M_n), the cylinder's front side
  * over modified Newtonian, measured at M 1.0, 1.1 and 1.2 (NASA CR-149372
  * fig. 8b, ./macha.ts: 0.762, 0.831, 0.898 on the first reading) and taken
@@ -91,11 +92,9 @@
  * across 1.2 to 1.49, where nothing is measured, the band spans both sides
  * (0014 W4(d) as amended by 0016). Swept, the sweep allowance is
  * extrapolated from M_n 3.4 down to these normal Mach numbers and widened
- * to twice its measured deviation from 1 (0.98 to 1.14). Rounded wedges
- * (0010's term) keep the 1.49 floor.
+ * to twice its measured deviation from 1 (0.98 to 1.14).
  *
- * **Normal Mach numbers below 1.0** (below 1.49 for rounded wedges) stay
- * refused (0016, W4(d)): below Mach 1 a cylinder's front side is set by its
+ * **Normal Mach numbers below 1.0** stay refused (0016, W4(d)): below Mach 1 a cylinder's front side is set by its
  * separation and wake (TN 2960 figs. 5(a), 5(b), 5(e): 0.10 to 0.39 of the
  * modified-Newtonian value at M 0.05 to 0.70, and a thrust above the
  * critical Reynolds number), which a plate's edge, followed by its faces,
@@ -305,7 +304,7 @@ export const ROUNDED_EDGE_BAND = (() => {
   };
 })();
 
-/** The domain served (on flat plates, from M_n 1.0: `TRANSONIC_NODES`). */
+/** The domain of the term without kappa (from M_n 1.0 to 1.49 with it: `TRANSONIC_NODES`). */
 export const ROUNDED_EDGE_MACH_RANGE = [1.49, 3.0] as const;
 
 /**
@@ -503,7 +502,7 @@ export interface RoundedLeadingEdge {
   readonly normalMach: number;
   /** The leading edge's sweep, degrees. */
   readonly sweepDegrees: number;
-  /** On a flat plate at M_n 1.0 to 1.49: kappa, the front side over modified Newtonian (0016 section 11). */
+  /** At M_n 1.0 to 1.49: kappa, the front side over modified Newtonian (0016 section 11). */
   readonly transonic?: TransonicFrontSide;
 }
 
@@ -519,8 +518,6 @@ export function roundedLeadingEdgeDrag(input: {
   readonly faceAngle: number;
   readonly tanLeadingEdgeSweep: number;
   readonly reynoldsOnDiameter: number;
-  /** A flat plate's semicircular nose (face angle 0): served from M_n 1.0 (0016 section 11). */
-  readonly plate?: boolean;
 }): RoundedLeadingEdge {
   const { radius, faceAngle } = input;
   const tanSweep = input.tanLeadingEdgeSweep;
@@ -543,9 +540,8 @@ export function roundedLeadingEdgeDrag(input: {
   const swept = tanSweep !== 0;
   const normal = swept ? ' normal to the edge, M cos(sweep),' : '';
   const [mLo, mHi] = ROUNDED_EDGE_MACH_RANGE;
-  const plate = input.plate === true;
   const transonicFloor = TRANSONIC_NODES[0]!.mach;
-  if (plate && mach < transonicFloor) {
+  if (mach < transonicFloor) {
     throw new FinRefusal(
       'leading-edge-range',
       `the Mach number${normal} ${mach.toFixed(3)} is below ${transonicFloor.toFixed(1)}, the ` +
@@ -559,18 +555,7 @@ export function roundedLeadingEdgeDrag(input: {
         'the section, their increments within their errors (0016)',
     );
   }
-  const transonic = plate && mach < mLo ? transonicFrontSide(mach) : undefined;
-  if (mach < mLo && !transonic) {
-    throw new FinRefusal(
-      'leading-edge-range',
-      `the Mach number${normal} ${mach.toFixed(3)} is below ${mLo}, TN 2960's lowest supersonic ` +
-        "one: below Mach 1 a cylinder's front side is set by its separation and wake (0.10 to " +
-        '0.39 of the modified-Newtonian value at M 0.05 to 0.70, and a thrust above the critical ' +
-        "Reynolds number, TN 2960 figs. 5(a), 5(b), 5(e)), which a fin's rounded edge followed by " +
-        'its faces does not have, and between M 0.7 and 1.49 TN 2960 has no pressure distribution ' +
-        '(0016)',
-    );
-  }
+  const transonic = mach < mLo ? transonicFrontSide(mach) : undefined;
   if (!(mach <= mHi)) {
     throw new FinRefusal(
       'leading-edge-range',
@@ -618,13 +603,13 @@ export function roundedLeadingEdgeDrag(input: {
       ? 'an analogy, not a measurement: the front side of a cylinder normal to the stream at the ' +
         'normal Mach number, measured over modified Newtonian at Mach 1.0, 1.1 and 1.2 (NASA ' +
         `CR-149372 figs. 8b and 5${once}) and interpolated between them (kappa ` +
-        `${transonic.nominal.toFixed(3)}), carried to a plate's edge whose faces replace the ` +
+        `${transonic.nominal.toFixed(3)}), carried to a fin edge whose faces replace the ` +
         "cylinder's wake; tested only in the total"
       : 'an analogy, interpolated across an unmeasured Mach range: the front side of a cylinder ' +
         'normal to the stream over modified Newtonian, between NASA CR-149372 at Mach 1.2 ' +
         `(fig. 8b${once}) and TN 2960 at 1.49 (kappa ${transonic.nominal.toFixed(3)}), the band ` +
-        "from the lower node's lowest reading to the upper node's highest; carried to a plate's " +
-        "edge whose faces replace the cylinder's wake; tested only in the total";
+        "from the lower node's lowest reading to the upper node's highest; carried to a fin edge " +
+        "whose faces replace the cylinder's wake; tested only in the total";
   const label =
     regime === 'measured'
       ? base

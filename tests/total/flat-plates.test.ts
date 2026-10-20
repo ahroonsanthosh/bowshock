@@ -147,7 +147,6 @@ describe('a normal Mach number of 1.0 to 1.49 (0016 section 11): M 2.0 at 42 deg
       faceAngle: 0,
       tanLeadingEdgeSweep: planform.tanLeadingEdge,
       reynoldsOnDiameter: 2e6 * 0.05,
-      plate: true,
     });
     expect(n.transonic).toBeDefined();
     const c = named(r, 'fin leading edges');
