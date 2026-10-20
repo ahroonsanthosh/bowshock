@@ -31,7 +31,8 @@
  * Labels: for edges ending in the body's base plane (fins at the base),
  * "an analogy, not a measurement": no opened source measures such an
  * edge, whose wake meets the body's base flow; for free edges, a
- * correlation.
+ * correlation. Both say the band is "tested only in the total" (0010
+ * section 7).
  *
  * Refused (`BaseRefusal`):
  * - Mach numbers outside 1.5 to 3.2 (the evidence's range);
@@ -421,7 +422,8 @@ export interface FinTrailingEdgeBase {
 export const FIN_TRAILING_EDGE_LABEL_ANALOGY =
   'an analogy, not a measurement: the two-dimensional base pressure of free, unswept, blunt ' +
   'trailing edges (RM A51J25 fig. 7 at the free-stream Mach number), carried to edges ending ' +
-  "in the body's base plane, which no opened source measures (0008 section 3.4)";
+  "in the body's base plane, which no opened source measures (0008 section 3.4); band " +
+  'estimated on TR 1109, RM A51J25 and the X-15 fin, tested only in the total';
 export const FIN_TRAILING_EDGE_LABEL_FREE =
   'correlation: two-dimensional base pressure of blunt trailing edges (RM A51J25 fig. 7 at the ' +
   'free-stream Mach number), band estimated on TR 1109, RM A51J25 and the X-15 fin, tested ' +

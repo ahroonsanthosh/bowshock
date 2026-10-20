@@ -1,8 +1,8 @@
 /**
  * Base drag of a body of revolution with a cylindrical afterbody, power
  * off, zero incidence, turbulent boundary layer at the base: step B3 of
- * docs/design/0008-total-drag.md (section 3). A library: nothing is
- * served on the page.
+ * docs/design/0008-total-drag.md (section 3). A library, served only as
+ * part of the total drag (src/total).
  *
  *   body base:  C_D = -P_B(M) F (A_base / A_ref)
  *

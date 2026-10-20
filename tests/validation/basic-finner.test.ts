@@ -316,8 +316,9 @@ beforeAll(() => {
       }),
     };
   });
-  // The 11 totals take about 5 s on an idle machine; the default hook timeout is 10 s.
-}, 120_000);
+  // Eleven totals with their inputs: beyond the default 10 s when other
+  // test files compute beside it.
+}, 300_000);
 
 describe('the gate, second run: 11 shots at Mach 1.80 to 2.97', { timeout: 120_000 }, () => {
   it('has the 11 shots in four clusters, with the cluster spreads of 0008', () => {

@@ -1,7 +1,8 @@
 # 0008: Total drag (draft)
 
 - **Status:** Draft. The plan and its evidence; the steps it plans are
-  implemented as libraries, not on the drag page:
+  implemented as libraries, and the total is on the drag page
+  ([0011](0011-total-drag-on-the-page.md)):
   [0007](0007-skin-friction.md) (friction, `src/friction/`),
   [0009](0009-fin-wave-drag.md) (fins, `src/fins/`) and
   [0010](0010-base-drag-and-total.md) (base, total and the Basic Finner

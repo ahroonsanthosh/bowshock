@@ -326,7 +326,8 @@ describe(
   },
 );
 
-describe('refusals', () => {
+// Each refusal still computes the other components: seconds under load.
+describe('refusals', { timeout: 60_000 }, () => {
   const refusals = (config: FinnedBody, mach = 2.4, transitionReynolds?: number[]) => {
     try {
       finnedBodyTotalDrag(

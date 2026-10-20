@@ -28,10 +28,11 @@
  * 1.043 and 1.056 on the first reading (with its corrected value at M 1.98
  * and 45 deg), 1.002, 1.049 and 1.052 on the second; the envelope of both,
  * 0.995 to 1.056, rounded outward: **0.99 to 1.06** (./tn2960.ts).
- * Labelled "an analogy, not a measurement": behind a fin's edge are the
- * fin's faces, not the cylinder's separated wake, and the nose's effect on
- * the faces (its entropy layer, the overexpansion behind the shoulder) is
- * not modelled; no opened source measures it.
+ * Labelled "an analogy, not a measurement" and "tested only in the total"
+ * (0010 section 7): behind a fin's edge are the fin's faces, not the
+ * cylinder's separated wake, and the nose's effect on the faces (its
+ * entropy layer, the overexpansion behind the shoulder) is not modelled;
+ * no opened source measures it.
  *
  * **Domain** (0010 section 5, ruled on before the gate). TN 2960 covers
  * M 1.49 to 2.90 and Re_D 1e5 to 1e6. Beyond it:
@@ -228,7 +229,7 @@ export function roundedLeadingEdgeDrag(input: {
   const base =
     'an analogy, not a measurement: the modified-Newtonian front side of a cylinder normal to ' +
     'the stream (band 0.99 to 1.06 on TN 2960), carried to a fin edge whose faces replace the ' +
-    "cylinder's wake";
+    "cylinder's wake; band estimated on TN 2960, tested only in the total";
   const label =
     regime === 'measured'
       ? base

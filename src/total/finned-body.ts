@@ -1,8 +1,10 @@
 /**
  * Total drag of a finned body of revolution (a nose, a cylinder to a flat
  * base, a set of identical fins on the cylinder) at zero incidence, power
- * off: step B5 of docs/design/0008-total-drag.md as a library. Nothing is
- * served on the page. Every component is on the cylinder's cross-section.
+ * off: step B5 of docs/design/0008-total-drag.md as a library, served on
+ * the drag page through src/app/total-drag.ts
+ * (docs/design/0011-total-drag-on-the-page.md). Every component is on the
+ * cylinder's cross-section.
  *
  * | Component | Model | Band | Label |
  * | --- | --- | --- | --- |
