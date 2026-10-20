@@ -77,6 +77,13 @@ the code), and that copy's changes from the commit it was taken at
 anchor, a progress callback; `snap2` adds the corner patch of
 `docs/design/patches/0006-corner-one-sided.diff`).
 
+## `refusals/`: the refusal audit behind 0014
+
+The population of supersonic amateur and student rockets, the run that
+puts it through every refusal of the page and its libraries, its outputs,
+and the survey and download helpers behind
+[0014](../design/0014-refusals.md). Its README says how to re-run each.
+
 ## `wip/`: code in progress, not yet validated
 
 Diffs of work on branches that exist only locally, kept here so that it
