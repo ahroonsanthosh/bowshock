@@ -5,8 +5,10 @@
   for blunt ones, the far-field boundary and the implicit steps of
   `src/engine-cpu/euler2d.ts`, Anderson acceleration in
   `src/solver/anderson.ts`), measured below; not on the drag page, and
-  not on the GPU engine.
-- **Date:** 2026-10-18 and 19
+  not on the GPU engine. Nothing below Mach 1.2 is served (see "What
+  accuracy the evidence supports"); whether it is shown at all is the
+  owner's decision.
+- **Date:** 2026-10-18 to 20
 - **Inputs:** [0002](0002-architecture.md) section 11 (the range to serve
   is Mach 1 to 3), the measurements below, and the references in
   [docs/validation/sources.md](../validation/sources.md).
@@ -343,13 +345,15 @@ length matters far less: 40 calibers instead of 10 changes the drag by
 The grid, on 100.6 radii: r = 1, 2, 4 give 0.0917153, 0.0916001 and
 0.0915486 (17,850, 51,700 and 89,200 plain steps; 1,475 s of CPU on r =
 2, 6,000 s on r = 4 up to its checkpoint at 83,200). r = 4 had not
-settled when a container restart stopped it: the drag was in a damped
-oscillation (period 22,600 steps, decay time 25,400 steps, amplitude 6.7e-6
-at the end), and its converged value is the oscillation's centre fitted
-to the history from step 50,000, 0.0915486 (the fit's rms misfit 3e-8;
-from step 30,000 the same centre to 1e-9). The same fit on r = 2's
-history up to step 30,000 only gave 0.0915982 against the settled
-0.0916001, within 1.9e-6, with a misfit 400 times larger. The changes
+settled when a container restart stopped it, and its value here is a
+fitted estimate, not a settled solve: the drag was in a damped
+oscillation (period 22,600 steps, decay time 25,400 steps, amplitude
+6.7e-6 at the end), and 0.0915486 is the oscillation's centre fitted to
+the history from step 50,000 (the fit's rms misfit 3e-8; from step
+30,000 the same centre to 1e-9). The method's check: the same fit on r =
+2's history up to step 30,000 only gave 0.0915982 against the settled
+0.0916001, within 1.9e-6, with a misfit 400 times larger. The checkpoint
+at step 83,200 is kept, to settle it later. The changes
 (-1.152e-4, -5.15e-5) fall by 2.24: observed order 1.16, first order as
 at Mach 1.05. Extrapolated at that order the drag on 100.6 radii is
 0.091507 (0.091497 at order 1), 4e-5 to 5e-5 below r = 4; three grids
@@ -760,14 +764,18 @@ on the CPU engine:
 
 So the evidence supports the transonic domain at Mach 1.2 to the
 supersonic solvers' standard on cones and on the ogive (four grids, the
-procedure's band containing the error against exact references), and to
-about 1e-3 on blunt noses (three grids each, against the fitted solver).
-Below Mach 1.2 the procedure gives no band yet: at Mach 1.1 it refuses
-the cone's four grids (the coarser triple oscillates) although r = 8 is
-within 6.7e-5 of the exact value; at Mach 1.05 the cone's r = 8 is
-running (r = 4 is about 1.5e-3 from its extrapolation); at Mach 1 there
-are three grids and the far-boundary extrapolation (0.0932 within about
-0.1%). Nothing below Mach 1.2 can be served under the standard yet.
+procedure's band containing the error against exact references). Blunt
+noses reach about 1e-3 (three grids each, against the fitted solver),
+which does not meet the standard: they stay unserved. Below Mach 1.2 the
+procedure gives no band: at Mach 1.1 it refuses the cone's four grids
+(the coarser triple oscillates) although r = 8 is within 6.7e-5 of the
+exact value, and the rule is not changed after seeing the result; at
+Mach 1.05 the cone's r = 8 is the last queued run (r = 4 is about 1.5e-3
+from its extrapolation, and with no exact reference r = 8 can only show
+self-consistency); at Mach 1 there are three grids and the far-boundary
+extrapolation (0.0932 within about 0.1%, r = 4 a fitted estimate).
+Nothing below Mach 1.2 is served; whether Mach 1 to 1.2 is shown at all,
+and how it is labelled, is the owner's decision.
 
 ## What did not work
 
