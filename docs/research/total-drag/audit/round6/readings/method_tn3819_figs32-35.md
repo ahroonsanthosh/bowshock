@@ -51,27 +51,46 @@ Axes: M 1.0 to 3.4 (25 lines, 0.1 apart), P_B 0 to -0.36 (19 lines, 0.02
 apart). Calibration: 6.3e-4 in M and 1.27e-4 in P_B per render px;
 straight-line residual of the gridlines 0.0011 in M (rms), 9e-5 in P_B.
 
-Which line is the free-flight one. The legend draws it long dash, short
-dash. Below M 1.65 only one such line exists (from M 1.0 at P_B -0.300).
-At M 1.65 to 1.75 it merges with the dashed line coming down from M 1.52
-(read as estimate B, which the text, p. 24, says is the better estimate at
-the lower Mach numbers). Below the knee three lines descend; their dash
-patterns were measured (`scripts/dashes.py`): the line with the largest
--P_B at a given M (long solid stretches, then a short dash) continues the
-free-flight line; the middle one is evenly dashed (estimate B); the lowest
-(estimate A) ends at M 2.56. They cross near M 2.2; above M 2.4 the
-free-flight line is the middle of the three (long-short pattern: 231 px
-ink, 20 to 27 px dashes, 456 px ink), the evenly dashed line lies above it
-(dashes 53 to 80 px, gaps 16 to 38 px) and ends at M 3.0, and the free-flight
-line ends at M 3.0 at -0.118. This assignment agrees with the text (p. 24):
-estimate A closer to experiment at the higher Mach numbers, B at the
-lower.
+Which line is the free-flight one (revised, round 6 re-check). The first
+version of this reading followed the middle of the three with-fins lines
+above M 2.3, to M 3.0; that line is estimate A, and those readings above
+M 2.2 were wrong. The coordinator passed on an independent identification
+(free-flight curve: long dash, one short dash, long dash; ends near M 2.56
+as the least negative with-fins line; the middle line estimate A; the most
+negative estimate B). It was checked against this reader's own scan, with
+dash profiles measured along each line (`scripts/dashprof.py`: ink within
++-2 to 3 px of a polyline through the line's column runs):
 
-Read: the free-flight line at M 1.0 to 2.0 every 0.05 and 2.0 to 3.0
-every 0.1; the no-fins estimate (the fig. 18 curve) at 1.0 to 3.4; the six
-tunnel symbols. Extra error 0.002 at M 1.64 to 1.76 (the merge with
-estimate B) and 0.003 at M 2.04 to 2.4 (three lines within 0.002 to 0.005
-of each other). Estimates A and B were not read (calculations, not data).
+- The legend's free-flight sample: long 96 px, short 20, long 80 (one short
+  dash between longs). The free-flight line at M 1.0 to 1.65 (the only line
+  there): longs of 249 to 365 px with single shorts of 24 to 32 px.
+- Above M 2.4 the least negative with-fins line (ending at M 2.563, P_B
+  -0.132): long 74, gap 28, short 26, gap 35, long 146, long 186: one short
+  between longs, the free-flight style.
+- The middle line (to M 3.0): long 236, then three shorts (19, 27, 28 px,
+  gaps 18 to 22), long 161: a long-and-three-short style. The same style is
+  found at M 1.75 to 1.9 on the line traced back to estimate A's labelled
+  start (M 1.5, P_B -0.255): the middle line is estimate A.
+- The most negative line (to M 3.0): regular dashes of 55 to 82 px, gaps 26
+  to 37, as on estimate B's labelled start (dashes 22 to 71, gaps 13 to 20).
+
+So the identification is confirmed; this reader does not disagree on which
+line is which. Detail added: the free-flight line rounds the knee at M 1.68
+to 1.75 together with estimate B (merged within the line width), descends
+with single short dashes near M 1.9 and 2.15 (x 2655 and 2892 px), and
+crosses estimate A near M 2.15 to 2.25 (x 2900 to 3000 px), running below
+it (less negative) from there to its end. A 2-D tracer started on the
+right-hand lines swaps lines in that crossing; the dash pattern, not
+continuity, decides.
+
+Read (revised): the free-flight line by column tracking at M 1.0 to 1.70
+every 0.05 (unchanged), and from M 1.72 to 2.55 by guided column reads
+along the identified path, every 0.05 ("guided column read" in `how`); it
+ends at M 2.563. The no-fins estimate (the fig. 18 curve) at 1.0 to 3.4 and
+the six tunnel symbols as before. Extra error 0.002 at M 1.64 to 1.76 (the
+merge with estimate B) and 0.003 at M 2.0 to 2.25 (three lines within 0.002
+to 0.005 of each other, the crossing with estimate A). Estimates A and B
+were not read (calculations, not data).
 
 ## Fig. 32 (P_B against fin location x/c, several Mach numbers)
 
