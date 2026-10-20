@@ -261,6 +261,10 @@ The design records, in order:
   which the total passes at all 11 shots (the second run; the first was
   refused).
 
+- [0012](docs/design/0012-interface.md): the interface (draft): a
+  full-window, dark, visualization-first layout inspired by FluidX3D's,
+  with the drag, its band and its status always on screen.
+
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
 

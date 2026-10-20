@@ -1,0 +1,50 @@
+# Basic Finner in free flight, BRL Free Flight Aerodynamics Range: L. C. MacAllister, "The Aerodynamic Properties of a Simple Non Rolling
+#   Finned Cone-Cylinder Configuration Between Mach Numbers 1.0 and 2.5", BRL Report No. 934, May 1955 (DTIC AD068959).
+#   Copy opened: archive.org/download/DTIC_AD0068959/DTIC_AD0068959.pdf (47 PDF pages). Tables typed from the page images
+#   (300 and 600 dpi first reading, 250 dpi autocontrast second reading); the text layer was not used for any value.
+# Tables: I (PDF p. 39, report p. 37), II (PDF p. 40, p. 38), III "Reduction values" (PDF p. 41, p. 39).
+# M_T3, dbar2_deg2, CD: Table III (Mach number, mean squared yaw in deg^2, drag coefficient at that yaw; reference area = body
+#   cross-section, "S - reference area", symbols PDF p. 6, report p. 4, by the range's convention). No probable error is printed for CD (Table III prints them for the other
+#   coefficients only). CD is the round value at its yaw: Graph I (PDF p. 24) plots these as "+ round value" and separately the
+#   values "corrected for yaw" and "corrected for yaw and full turbulent B.L.".
+# M_T1, mass_g, A_g_in2 (axial inertia), B_g_in2 (transverse inertia), cg_in_from_base: Table I.
+# M_T2, ave_yaw_deg, launch: Table II ("Ave Yaw" in degrees; launch = Shear Pin (phase 1) or Electro-Magnetic Yaw Inducer (phase 2)).
+# CMa_T3: Table III "-C_Ma (per rad)" (about the round's own c.g.), kept as a check of the c.g. groups only.
+# graph1: single reading of Graph I symbols at this round's Mach number (M >= 1.4 only; see the .md): plus = round value seen,
+#   dot = yaw-corrected value seen, circle = "corrected for yaw and full turbulent B.L." (a laminar round), consol = the
+#   phase-1 consolidation symbol, nr = not resolved, - = not read (M < 1.4).
+# flags: d2blank = no mean squared yaw printed; demag = "Model Magnet demagnetized" (Table II remark; no induced yaw);
+#   lam = report's Graph I marks the round as corrected to a full turbulent layer (a laminar round); yaw5 = dbar2 > 5 deg^2;
+#   fob = below the fins-on-base factor's Mach range (M < 1.798) in src/base; sub15 = below M 1.5 (base correlation refuses);
+#   smudge = a digit is smudged in Table I or III (value taken from the other table where they agree); faint = faint print;
+#   g1mismatch = Graph I symbol at this Mach number does not match the Table III value (see the .md); A? = Table I axial
+#   inertia out of family (28.18 against 19.8 to 20.4 for the 227 g models), kept as printed.
+# Second reading (same reader, fresh 250 dpi render, typed before comparison): every value of every column below agrees.
+round,phase,M_T3,dbar2_deg2,CD,M_T1,mass_g,A_g_in2,B_g_in2,cg_in_from_base,M_T2,ave_yaw_deg,launch,CMa_T3,graph1,flags
+2588,1,1.802,0.4,0.616,1.802,147.65,13.47,551.46,3.112,1.80,0.7,shear pin,22.61,consol,smudge
+2589,1,1.827,0.7,0.614,1.827,147.73,13.52,552.53,3.114,1.83,0.9,shear pin,21.95,consol,smudge
+2590,1,1.803,0.1,0.644,1.803,147.68,13.51,552.06,3.112,1.80,0.3,shear pin,,consol,smudge
+2595,1,1.784,0.6,0.624,1.784,147.77,13.71,552.73,3.109,1.78,0.8,shear pin,22.27,consol,fob
+2596,1,1.814,1.5,0.629,1.814,255.95,26.69,864.84,2.252,1.81,1.2,shear pin,9.12,consol,
+2598,1,1.798,5.6,0.621,1.798,255.95,25.88,859.61,2.258,1.80,2.4,shear pin,9.81,consol,yaw5
+2599,1,1.788,1.5,0.662,1.788,254.65,27.02,864.46,2.250,1.79,1.2,shear pin,9.56,consol,fob;smudge
+2591,1,1.801,0.2,0.604,1.801,255.39,19.80,896.31,4.002,1.80,0.5,shear pin,36.58,consol,
+2593,1,1.733,53.4,0.873,1.733,249.48,19.87,896.67,3.999,1.73,7.4,shear pin,39.69,consol,fob;yaw5
+2594,1,1.745,36.2,0.777,1.745,249.60,19.94,897.99,4.001,1.74,6.0,shear pin,39.29,consol,fob;yaw5
+3246,2,1.398,17.8,0.789,1.398,227.02,20.02,813.57,3.045,1.40,4.2,EM yaw inducer,34.9,plus;dot,sub15;fob;yaw5
+3247,2,1.264,6.2,0.753,1.264,227.15,19.78,811.52,3.056,1.26,2.5,EM yaw inducer,41.1,-,sub15;fob;yaw5
+3248,2,1.077,0.2,0.895,1.077,228.18,20.43,816.14,3.035,1.08,0.5,EM yaw inducer,40.0,-,sub15;fob
+3249,2,2.050,5.0,0.526,2.050,227.14,19.99,813.72,3.051,2.05,2.3,EM yaw inducer,16.8,circle;dot,lam
+3252,2,1.011,0.2,0.889,1.011,227.38,20.04,811.11,3.044,1.01,0.5,EM yaw inducer,37.7,-,sub15;fob
+3253,2,1.047,0.3,0.883,1.047,227.57,28.18,812.44,3.043,1.05,0.6,EM yaw inducer,38.0,-,sub15;fob;A?
+3254,2,1.506,3.7,0.710,1.506,313.82,28.60,1053.2,2.592,1.51,1.9,EM yaw inducer,21.8,plus;dot,fob
+3255,2,2.032,,0.568,2.032,313.11,28.90,1054.5,2.588,2.03,0,EM yaw inducer,,plus,d2blank;demag
+3256,2,1.993,6.6,0.584,1.993,312.03,28.45,1049.2,2.588,1.99,2.6,EM yaw inducer,10.8,plus;dot,yaw5
+3257,2,1.390,0.5,0.706,1.390,312.46,28.33,1050.3,2.598,1.39,0.7,EM yaw inducer,25.9,nr,sub15;fob
+3258,2,1.139,5.4,0.850,1.139,311.95,28.09,1050.3,2.599,1.14,2.3,EM yaw inducer,27.8,-,sub15;fob;yaw5
+3259,2,1.084,,0.884,1.084,313.00,28.49,1050.8,2.590,1.08,0,EM yaw inducer,26.9,-,sub15;fob;d2blank;demag
+3260,2,1.017,0.0,0.900,1.017,313.38,28.49,1059.2,2.597,1.02,0,EM yaw inducer,27.8,-,sub15;fob;demag
+3261,2,0.975,18.4,0.893,0.975,311.41,28.21,1045.0,2.595,0.98,4.3,EM yaw inducer,32.6,-,sub15;fob;yaw5
+3262,2,1.044,0.1,0.905,1.044,312.38,28.41,1047.7,2.590,1.04,0.3,EM yaw inducer,30.1,-,sub15;fob
+3263,2,2.423,2.9,0.478,2.423,311.56,28.28,1044.8,2.595,2.42,1.7,EM yaw inducer,6.5,plus;dot,faint
+3264,2,2.468,0.2,0.449,2.468,227.26,19.91,819.02,3.076,2.47,0.5,EM yaw inducer,11.7,dot,g1mismatch
