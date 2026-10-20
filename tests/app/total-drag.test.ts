@@ -8,6 +8,8 @@
  */
 
 import { beforeAll, describe, expect, it } from 'vitest';
+import { ALTITUDE_RANGE, standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
+import { flightConditionOf } from '../../src/app/flight-condition';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
 import { singleWedge } from '../../src/fins/section';
@@ -24,6 +26,7 @@ import {
   BASIC_FINNER_CLASS,
   BASIC_FINNER_REYNOLDS_PER_MACH,
   BASIC_FINNER_TEMPERATURE,
+  TEMPERATURE_SENSITIVITY,
   basicFinnerClass,
   basicFinnerForm,
   configurationOf,
@@ -148,7 +151,7 @@ describe('the class rule', { timeout: 60_000 }, () => {
     expect(outside({ ...f, leadingEdgeRadius: 0 }).length).toBe(1);
   });
 
-  it('Mach 1.799 to 3.0, Reynolds number 1.19e7 to 2.0e7 on length, 293 to 295 K', () => {
+  it('Mach 1.799 to 3.0, Reynolds number 1.19e7 to 2.0e7 on length, 216.65 to 320 K', () => {
     const f = basicFinnerForm();
     const at = (mach: number, re: number, t = BASIC_FINNER_TEMPERATURE) =>
       basicFinnerClass({ ...f, mach, reynoldsOnLength: re, temperature: t }).inside;
@@ -160,14 +163,50 @@ describe('the class rule', { timeout: 60_000 }, () => {
     expect(at(3.001, 1.5e7)).toBe(false);
     expect(at(2.4, 1.189e7)).toBe(false);
     expect(at(2.4, 2.001e7)).toBe(false);
-    expect(at(2.4, 1.6e7, 293)).toBe(true);
-    expect(at(2.4, 1.6e7, 295)).toBe(true);
-    expect(at(2.4, 1.6e7, 288.15)).toBe(false);
+    expect(BASIC_FINNER_CLASS.temperature).toEqual([216.65, 320]);
+    expect(at(2.4, 1.6e7, 216.65)).toBe(true);
+    expect(at(2.4, 1.6e7, 320)).toBe(true);
+    expect(at(2.4, 1.6e7, 288.15)).toBe(true);
+    expect(at(2.4, 1.6e7, 216.6)).toBe(false);
+    expect(at(2.4, 1.6e7, 320.1)).toBe(false);
+    expect(
+      basicFinnerClass({ ...f, mach: 2.4, reynoldsOnLength: 1.6e7, temperature: 330 }).outside,
+    ).toEqual(['the static temperature, 330 K, is outside 216.65 to 320 K']);
     for (const s of reported) expect(at(s.mach, s.reynolds)).toBe(false);
-    // The range's air from Table V's speed of sound, 343.4 to 344.0 m/s.
+    // The range's air from Table V's speed of sound, 343.4 to 344.0 m/s: about 294 K.
     const t = (a: number) => a ** 2 / (1.4 * 287.05);
-    expect(t(343.4)).toBeGreaterThan(293);
-    expect(t(344.0)).toBeLessThan(295);
+    expect([t(343.4), t(344.0)].map((x) => Math.round(10 * x) / 10)).toEqual([293.4, 294.5]);
+  });
+
+  it("a standard atmosphere's air lies in the class's temperatures from 4,896 m below sea level to 51 km", () => {
+    const f = basicFinnerForm(2.4, 1.6e7);
+    const inside = (z: number) =>
+      basicFinnerClass({ ...f, temperature: standardAtmosphere(z).temperature }).inside;
+    expect([-4897, -4896, 0, 11000, 20000, 47000, ALTITUDE_RANGE[1]].map(inside)).toEqual([
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]);
+    // Its coldest, 216.65 K, from 11 to 20 km' (Table 4), the class's low end.
+    expect(standardAtmosphere(15000).temperature).toBeCloseTo(216.65, 12);
+    // The range's 293.95 K about 890 m below sea level.
+    expect(standardAtmosphere(-892).temperature).toBeCloseTo(293.95, 2);
+    // At sea level the Basic Finner's 30 mm body gives 6.99e6 per unit Mach number, 5.6% above
+    // the range's 6.62e6 (its air warmer, 293.95 K).
+    const c = flightConditionOf({
+      altitude: 0,
+      altitudeUnit: 'm',
+      mach: 1,
+      diameterMm: 1000 * G.caliberMetres,
+      lengthCalibers: G.length,
+    });
+    if (c.kind !== 'ok') throw new Error('expected a condition');
+    expect(c.value.reynoldsOnLength).toBeCloseTo(6.99e6, -4);
+    expect(c.value.reynoldsOnLength / BASIC_FINNER_REYNOLDS_PER_MACH - 1).toBeCloseTo(0.056, 3);
   });
 
   it(
@@ -211,7 +250,6 @@ describe('the class rule', { timeout: 60_000 }, () => {
               },
             ],
             ['leading-edge radius', { ...base, leadingEdgeRadius: c.leadingEdgeRadius * k }],
-            ['temperature', { ...base, temperature: k > 1 ? 295 : 293 }],
           ];
           for (const [name, form] of forms) {
             expect(basicFinnerClass(form).inside).toBe(true);
@@ -227,7 +265,6 @@ describe('the class rule', { timeout: 60_000 }, () => {
         span: 0.17,
         'trailing-edge thickness': 0.12,
         'leading-edge radius': 0.06,
-        temperature: 0,
       });
       const sum = [...largest.values()].reduce((a, x) => a + x, 0);
       expect(sum).toBeLessThan(0.007);
@@ -259,19 +296,36 @@ describe('the class rule', { timeout: 60_000 }, () => {
   );
 
   it(
-    'the air temperature, outside the class from 293 to 295 K: over 216.65 to 320 K the total moves by under 0.2%',
-    { timeout: 60_000 },
+    "the static temperature over the class, 216.65 to 320 K: the total moves from its value at the range's air by at most 0.21%",
+    { timeout: 300_000 },
     () => {
-      for (const mach of [1.8, 3.0]) {
-        const base = basicFinnerForm(mach);
-        const ref = totalOf(totalDragView(base, exactNose(base))).cd;
-        for (const temperature of [216.65, 320]) {
-          const form = { ...base, temperature };
-          expect(basicFinnerClass(form).inside).toBe(false);
-          const cd = totalOf(totalDragView(form, exactNose(form))).cd;
-          expect(Math.abs(cd / ref - 1)).toBeLessThan(0.002);
+      // Swept at the class's Mach numbers 1.8, 2.4 and 3.0, with the Reynolds number held at
+      // each of its ends and inside, 1.6e7; the reference is the range's air, 293.95 K.
+      const temperatures = [216.65, ...Array.from({ length: 11 }, (_, k) => 220 + 10 * k)];
+      expect(temperatures.at(-1)).toBe(320);
+      let largest = { change: 0, at: '' };
+      for (const mach of [1.8, 2.4, 3.0]) {
+        for (const reynoldsOnLength of [1.19e7, 1.6e7, 2.0e7]) {
+          const base = { ...basicFinnerForm(mach, reynoldsOnLength) };
+          const cd = (temperature: number) => {
+            const form = { ...base, temperature };
+            expect(basicFinnerClass(form).inside).toBe(true);
+            return totalOf(totalDragView(form, exactNose(form))).cd;
+          };
+          const ref = cd(BASIC_FINNER_TEMPERATURE);
+          for (const t of temperatures) {
+            const change = Math.abs(cd(t) / ref - 1);
+            if (change > largest.change)
+              largest = { change, at: `M ${mach}, Re ${reynoldsOnLength}, ${t} K` };
+          }
         }
       }
+      // 0.206%, at the class's corner of highest Mach and lowest Reynolds number, coldest air.
+      expect(largest.at).toBe('M 3, Re 11900000, 216.65 K');
+      expect(Math.round(1e4 * largest.change) / 1e4).toBe(TEMPERATURE_SENSITIVITY);
+      expect(TEMPERATURE_SENSITIVITY).toBe(0.0021);
+      // Against the residuals, -7.7% to +4.5%, and the tolerance, about -20% to +27%: small.
+      expect(VALIDATED_CLAIM).toContain('by at most 0.21%');
     },
   );
 });

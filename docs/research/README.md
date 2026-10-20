@@ -77,6 +77,13 @@ the code), and that copy's changes from the commit it was taken at
 anchor, a progress callback; `snap2` adds the corner patch of
 `docs/design/patches/0006-corner-one-sided.diff`).
 
+## `refusals/`: the refusal audit behind 0014
+
+The population of supersonic amateur and student rockets, the run that
+puts it through every refusal of the page and its libraries, its outputs,
+and the survey and download helpers behind
+[0014](../design/0014-refusals.md). Its README says how to re-run each.
+
 ## `interface/`: screenshots of the interface's phase checks
 
 Every page at 390, 768 and 1440 px wide, as `scripts/interface-check.mjs`
@@ -95,19 +102,9 @@ its own validation passes.
   Von Karman (Haack) and power-series noses, and sharp tips whose bow shock
   stands off ahead of them. Measured on two grids so far; the third is
   running.
-- `transonic.diff` (commits in `transonic.log`): the transonic solver for
-  Mach 1 to 1.2 (the body followed past its base as a long cylinder, far
-  boundaries about 100 body radii out with a characteristic condition,
-  the shock captured, implicit LU-SGS steps; H grids for sharp noses and C
-  grids for ellipsoids). Its record calls itself 0007 and will be
-  renumbered. Measured so far: cones at Mach 1.2 to the supersonic
-  standard (2.3e-5 of the exact value on the finest grid, the band
-  containing it), at 1.1 within 3.5e-4 without a settled order, at 1.05 at
-  first order; at Mach 1 the drag depends on the far boundary (1.8% low at
-  100 radii on a cone, 10% on an ogive), so it rests on an extrapolation
-  in that distance; on blunt noses at Mach 1.2 the stagnation pressure
-  error does not converge. Not served.
 
 Each diff names its base commit in its first line, and applies there with
 `git apply`. A diff whose work is merged is removed from here (the changes
-for blunt noses at Mach 1.2 to 1.5 were merged in eeaa537).
+for blunt noses at Mach 1.2 to 1.5 were merged in eeaa537; the transonic
+prototype, unserved, with its record
+[0013](../design/0013-transonic.md)).

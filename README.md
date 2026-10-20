@@ -191,7 +191,8 @@ them; the fitted-drag families are recorded in
   (rectangular, trapezoidal or clipped-delta; single-wedge, double-wedge or
   hexagonal sections). Inside the Basic Finner's class (that rocket as
   transcribed, each dimension within 0.5%, at Mach 1.799 to 3.0, Reynolds
-  number 1.19e7 to 2.0e7 on length, the range's air temperature) the total
+  number 1.19e7 to 2.0e7 on length, static temperature 216.65 to 320 K,
+  over which the modelled total moves by at most 0.21%) the total
   is labelled validated on it, with the tolerance and the offset at Mach
   2.97 beside it; outside it, an estimate, not validated, with every
   reason; where a component's method does not reach (the base outside
@@ -200,12 +201,19 @@ them; the fitted-drag families are recorded in
   and no number. The model-form
   band and each input band (transition, wall temperature, roughness) are
   shown apart, rounded outward, with every component's band and label.
+  The flight condition is asked as altitude (meters or feet), Mach number
+  and diameter, in the U.S. Standard Atmosphere, 1976 to 51 km
+  (`src/atmosphere/`), whose own tables of temperature, pressure,
+  density, speed of sound and viscosity it reproduces at 22 altitudes
+  within a unit of their last printed digit (relative differences up to
+  6.9e-5); or as the Reynolds number directly. The page opens on the
+  Basic Finner's shape, 30 mm across, at sea level, inside its class from
+  Mach 1.8 to 2.86 (above, its Reynolds number leaves it).
 
 Not yet: viscous flow in the solver; Von Karman (Haack) and power-series
 noses (their tips need grids being designed); Mach numbers below 1.2; a
-total validated outside the Basic Finner's class; altitude and speed as
-inputs (no standard atmosphere is implemented, so the page asks for the
-Reynolds number).
+total validated outside the Basic Finner's class; altitudes above 51 km
+and days off the standard atmosphere (give the Reynolds number directly).
 
 Limits: power off, zero angle of attack, no motor plume. The widest
 component bands are the fins' own drag (measured over model 1.01 to 1.59),
@@ -231,10 +239,10 @@ example); the ramp and the shock tube fall back to the CPU without it.
   drag coefficient of a cone, tangent or secant ogive, parabolic-series or
   ellipsoid nose and its body, refined on nested grids on your GPU and
   reported with its measured error band, or as not verified; and, from that
-  solve, the rocket's total drag with fins and base, with its bands, its
-  components and their labels: validated on the Basic Finner inside that
-  rocket's class, an estimate, not validated, outside it, or refused with
-  the reasons.
+  solve, the rocket's total drag with fins and base at the altitude and
+  diameter you give, with its bands, its components and their labels:
+  validated on the Basic Finner inside that rocket's class, an estimate,
+  not validated, outside it, or refused with the reasons.
 - **Live flow:** the flow around the Basic Finner's nose cone and body,
   solved on your GPU as the drag page solves it and drawn from the GPU's
   memory as it converges: schlieren, Mach number, pressure coefficient or
@@ -265,6 +273,7 @@ on a static host.
 | `src/fins/`          | Fin wave drag: exact sharp sections, linear 3D drag of the planform           |
 | `src/base/`          | Base drag: the compiled base-pressure curve, the fins-on-base factor          |
 | `src/total/`         | Total drag from its components, the bands combined linearly                   |
+| `src/atmosphere/`    | The U.S. Standard Atmosphere, 1976, to 51 km                                  |
 | `src/verification/`  | Discretisation error from nested grids                                        |
 | `src/validation/`    | Exact and reference solutions, and digitised wind-tunnel data                 |
 | `src/render/`        | Display fields, colour map, WebGPU rendering and the flow view's renderer     |
@@ -303,10 +312,20 @@ The design records, in order:
   shots (the second run; the first was refused).
 - [0011](docs/design/0011-total-drag-on-the-page.md): the total drag on
   the drag page (draft): the nose term from the page's solve, the class
-  rule that decides "validated on the Basic Finner", and the labels.
+  rule that decides "validated on the Basic Finner", the labels, and the
+  flight condition from altitude, Mach number and diameter in the 1976
+  standard atmosphere.
 - [0012](docs/design/0012-interface.md): the interface (draft): a
   full-window, dark, visualization-first layout inspired by FluidX3D's,
   with the drag, its band and its status always on screen.
+- [0013](docs/design/0013-transonic.md): transonic forebody drag, Mach 1
+  to 1.2 (draft): a prototype in the repository but not on the drag page,
+  and the plan that must certify each Mach number before it is served
+  (Mach 1.2 meets the supersonic standard on sharp noses; Mach 1.1 and
+  1.05 are being certified on finer grids; Mach 1 is not yet certifiable).
+- [0014](docs/design/0014-refusals.md): refusals (draft): every refusal,
+  what it costs on a population of supersonic amateur rockets, and the
+  ranked work to lift them with measured bands.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).

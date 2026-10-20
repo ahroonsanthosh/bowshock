@@ -109,6 +109,11 @@ Shock standoff of a sphere, to place blunt-body grid boundaries
 Oklab colour space for the colour map (src/render/colormap.ts)
   B. Ottosson, "A perceptual color space for image processing", 2020.
 
+Standard atmosphere (src/atmosphere/us-standard-1976.ts)
+  U.S. Standard Atmosphere, 1976, NOAA, NASA and USAF, Washington, D.C.,
+  1976 (NOAA-S/T 76-1562, NASA-TM-X-74335), Part 1: defining constants
+  and equations; tested against its Tables I and III.
+
 Typefaces of the interface (src/ui/fonts/), self-hosted: the Latin and
 Greek subsets that Google Fonts serves, as served:
   Inter 4.001, Copyright 2016 The Inter Project Authors
