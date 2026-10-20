@@ -68,6 +68,12 @@ def scan(mask, clean, shapes, region, thr=0.62, nms=9, stroke=5.0, need_dot=Fals
             best = sc if best is None else np.maximum(best, sc)
         for py, px, v in peaks(best, thr, nms):
             X, Y = px + x0, py + y0
+            if "xmax" in sh and X > sh["xmax"]:
+                continue
+            if "ymax" in sh and Y > sh["ymax"]:
+                continue
+            if "ymin" in sh and Y < sh["ymin"]:
+                continue
             if need_dot:
                 # an open symbol with a centre dot: ink within 3 px of the
                 # centre, little ink between 0.45 r and 0.75 r
