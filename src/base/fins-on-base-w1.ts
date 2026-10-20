@@ -87,6 +87,7 @@ import {
   L52J21A_FIG8,
   TN2360_FIG6,
   TN3819_FIG33,
+  TN3819_FIG35_TUNNEL_W1,
   TN3819_FIG35_W1,
   type Tn2360Fig6Point,
 } from './fins-on-base-w1-data';
@@ -200,6 +201,13 @@ export function tunnelReferenceFactors(): { mach: number; source: string; factor
       mach: p.mach,
       source: `TN 3819 fig. 35 pair (${p.source}, ${p.reading})`,
       factor: ratioHigh(p.withFins, e, p.withoutFins, e),
+    });
+  }
+  for (const p of TN3819_FIG35_TUNNEL_W1) {
+    out.push({
+      mach: p.mach,
+      source: `TN 3819 fig. 35 pair (${p.source}, ${p.reading})`,
+      factor: ratioHigh(p.withFins, p.error, p.withoutFins, p.error),
     });
   }
   for (const m of [1.5, 2.0, 2.41]) {
@@ -476,7 +484,10 @@ export interface FinsOnBaseFactorW1 {
   readonly tauLow: number;
   readonly tauEq: number;
   readonly swept: boolean;
-  /** No second, independent reading of the W1 data is in yet (0014 section 10.4). */
+  /**
+   * A band-setting figure still lacks its second reading: RM L52J21a fig. 8 (the zero member's
+   * denominator; fig. 38(c), its numerator, cannot be read a second time from the scan, 0015 section 7).
+   */
   readonly secondReadingPending: boolean;
 }
 
@@ -673,6 +684,6 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     tauLow: tr.tauLow,
     tauEq: tr.tauEq,
     swept,
-    secondReadingPending: !TN2360_FIG6.some((p) => p.reading === 'w1 second'),
+    secondReadingPending: !L52J21A_FIG8.some((p) => p.reading === 'w1 second'),
   };
 }

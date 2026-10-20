@@ -1,7 +1,8 @@
 # W1 (docs/design/0015-fins-at-the-base.md): FIRST READINGS of the band-setting figures for the rebuilt
 # fins-on-base factor. The method of each reading (page, calibration, error) is in fins_at_base_w1.md; the scripts
-# are in ../scripts/w1/ and their outputs are the w1_*_output.txt files beside this one. A second, blind reading
-# is pending (0014 section 10.4); the band is the envelope of both.
+# are in ../scripts/w1/ and their outputs are the w1_*_output.txt files beside this one. The second, blind
+# reading is fins_at_base_w1_second.csv (round 6), compared in w1_compare_round6_output.txt; the band is the
+# envelope of both.
 # Columns: source, figure, series, M, abscissa (x/c, t/c in percent, or M), value, quantity, error, note.
 # dPb = P_B with tail minus P_B without (TN 2360's Delta P_b); PB = (p_b - p_inf) / q_inf.
 source,figure,series,M,abscissa,value,quantity,error,note

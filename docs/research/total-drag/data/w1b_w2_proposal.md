@@ -106,17 +106,19 @@ trailing-edge slope, tau per side, is that of the arc tau / 2.
 | 2.0 | t/c 0.05               | 1.072      | 0.951 to 1.328 (four fins t/c 0.05)          | between zero and t/c 0.05 (1.128 to 1.328)     |
 | 2.0 | t/c 0.10               | 1.145      | 0.951 to 1.441 (the reference)               | t/c 0.05: 1.128 to 1.328                       |
 | 2.0 | t/c 0.15               | 1.210      | refused (tauEq 0.15)                         | between t/c 0.05 and 0.10: 1.128 to 1.441      |
-| 2.5 | t/c 0.05               | 1.094      | 0.951 to 1.465 (the reference)               | not measured at M 2.5                          |
-| 2.5 | t/c 0.10               | 1.198      | 0.951 to 1.465                               | not measured at M 2.5                          |
-| 3.0 | t/c 0.05               | 1.111      | 0.951 to 1.519                               | not measured at M 3.0                          |
-| 3.0 | t/c 0.10               | 1.200      | 0.951 to 1.519                               | not measured at M 3.0                          |
+| 2.5 | t/c 0.05               | 1.094      | 0.951 to 1.466 (the reference)               | not measured at M 2.5                          |
+| 2.5 | t/c 0.10               | 1.198      | 0.951 to 1.466                               | not measured at M 2.5                          |
+| 3.0 | t/c 0.05               | 1.111      | 0.951 to 1.520                               | not measured at M 3.0                          |
+| 3.0 | t/c 0.10               | 1.200      | 0.951 to 1.520                               | not measured at M 3.0                          |
 
 - **Inside the bracket, with margin.** Every value at the base lies inside
   the bracket at M 2.0, 2.5 and 3.0, with its +-5% too (lowest 0.970,
-  highest 1.326), and every nominal value lies below the low end of the
-  unswept member that bounds it (1.128 at M 2.0 for 5%; 1.281, 1.254,
-  1.295 for the reference). The 15% fins, which the factor refuses, lie
-  below the reference too (1.210, 1.283, 1.267).
+  highest 1.326), and every nominal value but one lies below the low end
+  of the unswept member that bounds it (1.128 at M 2.0 for 5%; 1.281,
+  1.193, 1.223 for the reference, its low end after round 6's reading of
+  fig. 35, 0015 section 7); the 10% wedge at M 2.5 lies 0.005 above it.
+  The 15% fins, which the factor refuses, lie below the reference at M 2.0
+  (1.210) and inside it at 2.5 and 3.0 (1.283, 1.267).
 - **With the trailing-edge slope matched, the swept fins sit at or a little
   below the unswept ones.** At M 2.0 the 10% wedge (slope 0.10 per side,
   the 5% arc's) gives 1.145 against the 5% arc member's 1.128 to 1.328;
@@ -163,7 +165,7 @@ trailing-edge slope, tau per side, is that of the arc tau / 2.
 
 The band is the swept bracket's (0015 section 3.6): for example a 2.4%
 double wedge, three fins, 30 deg leading edge, unswept trailing edge, at M
-2.5: zero member to the reference, F 0.951 to 1.465, half-width 21%, as
+2.5: zero member to the reference, F 0.951 to 1.466, half-width 21%, as
 the same fins at 45 deg are served today.
 
 **Registration (rule 2 of 0014 section 10.1), proposed:** NSWCDD/TR-92/509

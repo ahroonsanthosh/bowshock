@@ -16,6 +16,7 @@ import {
   TN2360_FIG6,
   TN3819_FIG33,
   TN3819_FIG34,
+  TN3819_FIG35_TUNNEL_W1,
   TN3819_FIG35_W1,
 } from '../../src/base/fins-on-base-w1-data';
 import {
@@ -38,52 +39,86 @@ import { BaseRefusal } from '../../src/base/refusal';
 import { TN3819_FIG35_FREE_FLIGHT } from '../../src/base/tn3819-fig35';
 import { doubleWedge, hexagonal, singleWedge, type SymmetricSection } from '../../src/fins/section';
 
-const csv = readFileSync('docs/research/total-drag/data/fins_at_base_w1.csv', 'utf8')
-  .split('\n')
-  .filter((l) => l !== '' && !l.startsWith('#') && !l.startsWith('source,'))
-  .map((l) => l.split(','));
+const load = (path: string) =>
+  readFileSync(path, 'utf8')
+    .split('\n')
+    .filter((l) => l !== '' && !l.startsWith('#') && !l.startsWith('source,'))
+    // The notes are free text (the second reading's may hold commas): only the first eight columns are used.
+    .map((l) => l.split(','));
+const csv = load('docs/research/total-drag/data/fins_at_base_w1.csv');
+const csv2 = load('docs/research/total-drag/data/fins_at_base_w1_second.csv');
 const rows = (source: string, figure: string) =>
   csv.filter((r) => r[0] === source && r[1] === figure);
+const rows2 = (source: string, figure: string) =>
+  csv2.filter((r) => r[0] === source && r[1] === figure);
+const of = <T extends { reading: string }>(xs: readonly T[], reading: string) =>
+  xs.filter((x) => x.reading === reading);
 
-describe('the readings, held to the first-reading record', () => {
-  it('TN 2360 fig. 6: every symbol, in order', () => {
-    const r = [...rows('TN 2360', '6(a)'), ...rows('TN 2360', '6(b)')];
-    expect(r.length).toBe(TN2360_FIG6.length);
-    r.forEach((x, k) => {
-      const p = TN2360_FIG6[k]!;
-      const [kind, , tc] = x[2]!.split(' ');
-      expect([p.mach, p.count, p.thicknessRatio, p.xc, p.dPb, p.error]).toEqual([
-        Number(x[3]),
-        kind === 'plane' ? 2 : 4,
-        Number(tc),
-        Number(x[4]),
-        Number(x[5]),
-        Number(x[7]),
-      ]);
-      expect(p.reading).toBe('w1 first');
-    });
+describe('the readings, held to the first- and second-reading records', () => {
+  it('TN 2360 fig. 6: every symbol of each reading, in order', () => {
+    for (const [reading, from] of [
+      ['w1 first', rows],
+      ['w1 second', rows2],
+    ] as const) {
+      const r = [...from('TN 2360', '6(a)'), ...from('TN 2360', '6(b)')];
+      const held = of(TN2360_FIG6, reading);
+      expect(r.length).toBe(held.length);
+      r.forEach((x, k) => {
+        const p = held[k]!;
+        const [kind, , tc] = x[2]!.split(' ');
+        expect([p.mach, p.count, p.thicknessRatio, p.xc, p.dPb, p.error]).toEqual([
+          Number(x[3]),
+          kind === 'plane' ? 2 : 4,
+          Number(tc),
+          Number(x[4]),
+          Number(x[5]),
+          Number(x[7]),
+        ]);
+      });
+    }
+    expect(TN2360_FIG6.length).toBe(40 + 40);
   });
 
   it('TN 3819 figs. 33, 34 and 35', () => {
-    const r33 = rows('TN 3819', '33');
-    expect(r33.map((x) => [Number(x[3]), Number(x[4]) / 100, Number(x[5]), Number(x[7])])).toEqual(
-      TN3819_FIG33.map((p) => [p.mach, p.thicknessRatio, p.pB, p.error]),
-    );
-    const r34 = rows('TN 3819', '34');
-    const w = r34.filter((x) => x[2]!.includes('with fins'));
-    const wo = r34.filter((x) => x[2]!.includes('without fins'));
-    expect(w.map((x) => Number(x[5]))).toEqual(TN3819_FIG34.map((p) => p.withFins));
-    expect(wo.map((x) => Number(x[5]))).toEqual(TN3819_FIG34.map((p) => p.withoutFins));
-    // The symbols' read abscissas: within 0.01 of the test Mach numbers held in the code.
-    TN3819_FIG34.forEach((p, k) => {
-      expect(Math.abs(Number(w[k]![3]) - p.mach)).toBeLessThan(0.011);
-      expect(Math.abs(Number(wo[k]![3]) - p.mach)).toBeLessThan(0.011);
-    });
-    const r35 = rows('TN 3819', '35');
-    expect(r35.map((x) => [Number(x[3]), Number(x[5]), Number(x[7])])).toEqual(
-      TN3819_FIG35_W1[0]!.points.map((p) => [p.mach, p.pB, p.error]),
-    );
-    expect(r35.every((x) => /not blind/i.test(x[8]!))).toBe(true);
+    for (const [reading, from] of [
+      ['w1 first', rows],
+      ['w1 second', rows2],
+    ] as const) {
+      const r33 = from('TN 3819', '33');
+      expect(
+        r33.map((x) => [Number(x[3]), Number(x[4]) / 100, Number(x[5]), Number(x[7])]),
+      ).toEqual(of(TN3819_FIG33, reading).map((p) => [p.mach, p.thicknessRatio, p.pB, p.error]));
+      const r34 = from('TN 3819', '34');
+      const w = r34.filter((x) => x[2]!.includes('with fins'));
+      const wo = r34.filter((x) => x[2]!.includes('without fins'));
+      const held34 = of(TN3819_FIG34, reading);
+      expect(w.map((x) => Number(x[5]))).toEqual(held34.map((p) => p.withFins));
+      expect(wo.map((x) => Number(x[5]))).toEqual(held34.map((p) => p.withoutFins));
+      // The symbols' read abscissas: within 0.01 of the test Mach numbers held in the code.
+      held34.forEach((p, k) => {
+        expect(Math.abs(Number(w[k]![3]) - p.mach)).toBeLessThan(0.011);
+        expect(Math.abs(Number(wo[k]![3]) - p.mach)).toBeLessThan(0.011);
+        expect(p.error).toBe(Number(w[k]![7]));
+      });
+      const r35 = from('TN 3819', '35').filter((x) => x[2]!.startsWith('free-flight'));
+      expect(r35.map((x) => [Number(x[3]), Number(x[5]), Number(x[7])])).toEqual(
+        TN3819_FIG35_W1.find((r) => r.reading === reading)!.points.map((p) => [
+          p.mach,
+          p.pB,
+          p.error,
+        ]),
+      );
+    }
+    expect(rows('TN 3819', '35').every((x) => /not blind/i.test(x[8]!))).toBe(true);
+    expect(rows2('TN 3819', '35').some((x) => /not blind/i.test(x[8]!))).toBe(false);
+    // Fig. 35's tunnel pairs, the second reading.
+    const t = rows2('TN 3819', '35').filter((x) => x[2]!.startsWith('tunnel'));
+    for (const p of TN3819_FIG35_TUNNEL_W1) {
+      const at = t.filter((x) => Number(x[3]) === p.mach && x[2]!.includes(p.source));
+      expect(Number(at.find((x) => x[2]!.endsWith(' with fins'))![5])).toBe(p.withFins);
+      expect(Number(at.find((x) => x[2]!.endsWith('without fins'))![5])).toBe(p.withoutFins);
+      expect(Number(at[0]![7])).toBe(p.error);
+    }
   });
 
   it('RM L52J21a figs. 38(c) and 8, and RM L52E06 fig. 7', () => {
@@ -100,17 +135,81 @@ describe('the readings, held to the first-reading record', () => {
       )!;
       expect([Number(x[5]), Number(x[7])]).toEqual([p.leastNegative, p.error]);
     }
-    const r7 = rows('RM L52E06', '7');
-    const v = (m: number, s: string) => {
-      const x = r7.find((y) => Number(y[3]) === m && y[2] === s);
-      return x === undefined ? undefined : Number(x[5]);
-    };
+    expect(L52E06_FIG7.length).toBe(5);
     for (const p of L52E06_FIG7) {
+      const r7 = p.reading === 'w1 first' ? rows('RM L52E06', '7') : rows2('RM L52E06', '7');
+      const v = (m: number, s: string) => {
+        const x = r7.find((y) => Number(y[3]) === m && y[2] === s);
+        return x === undefined ? undefined : Number(x[5]);
+      };
       expect(v(p.mach, 'A (no fins) rim')).toBe(p.rimNoFins);
       expect(v(p.mach, 'C (fins at the base) rim')).toBe(p.rimFins);
       expect(v(p.mach, 'A (no fins) centre')).toBe(p.centreNoFins);
       expect(v(p.mach, 'C (fins at the base) centre')).toBe(p.centreFins);
     }
+  });
+
+  it('first and second agree within their combined errors, except where 0015 section 7 flags them', () => {
+    // Figs. 33 and 34: every symbol.
+    for (const p of of(TN3819_FIG33, 'w1 first')) {
+      const q = of(TN3819_FIG33, 'w1 second').find(
+        (x) => x.mach === p.mach && x.thicknessRatio === p.thicknessRatio,
+      )!;
+      expect(Math.abs(p.pB - q.pB)).toBeLessThanOrEqual(p.error + q.error);
+    }
+    const s34 = of(TN3819_FIG34, 'w1 second');
+    of(TN3819_FIG34, 'w1 first').forEach((p, k) => {
+      expect(Math.abs(p.withFins - s34[k]!.withFins)).toBeLessThanOrEqual(p.error + s34[k]!.error);
+      expect(Math.abs(p.withoutFins - s34[k]!.withoutFins)).toBeLessThanOrEqual(
+        p.error + s34[k]!.error,
+      );
+    });
+    // Fig. 35's line: this work's (M 1.40 to 1.80) and round 3's to M 2.3 agree with round 6; at M 2.4
+    // to 2.9 round 6 identifies another line, 0.007 to 0.010 less negative (flagged, both kept).
+    const second = TN3819_FIG35_W1.find((r) => r.reading === 'w1 second')!.points;
+    const r3 = TN3819_FIG35_FREE_FLIGHT.find((r) => r.reading === 'round 3')!.points;
+    for (const p of [...TN3819_FIG35_W1[0]!.points, ...r3]) {
+      const q = second.find((x) => Math.abs(x.mach - p.mach) < 1e-9);
+      if (q === undefined || ('extrapolated' in p && p.extrapolated === true)) continue;
+      const swap = p.mach >= 1.75 && p.mach <= 2.35 ? 0.005 : 0;
+      const d = p.pB - q.pB;
+      if (p.mach <= 2.3 + 1e-9) {
+        expect(Math.abs(d)).toBeLessThanOrEqual(Math.max(p.error, swap) + Math.max(q.error, swap));
+      } else {
+        expect(d).toBeGreaterThan(-0.0105);
+        expect(d).toBeLessThan(-0.007);
+      }
+    }
+    // RM L52E06 fig. 7 at M 1.10, read by both.
+    const a = L52E06_FIG7.find((p) => p.reading === 'w1 first' && p.mach === 1.1)!;
+    const b = L52E06_FIG7.find((p) => p.reading === 'w1 second' && p.mach === 1.1)!;
+    for (const k of ['rimNoFins', 'rimFins', 'centreNoFins', 'centreFins'] as const) {
+      expect(Math.abs(a[k]! - b[k]!)).toBeLessThanOrEqual(a.error + b.error);
+    }
+    // TN 2360 fig. 6: every station's symbols, paired by value within a station. One pair beyond the
+    // combined error (fig. 6(b), cruciform t/c 0.05 at x/c 1.0: 0.0024 against 0.0022), and four symbols
+    // found by one reader only (two by each).
+    let beyond = 0;
+    let unmatched = 0;
+    const key = (p: (typeof TN2360_FIG6)[number]) =>
+      `${p.mach} ${p.count} ${p.thicknessRatio} ${p.xc}`;
+    for (const k of new Set(TN2360_FIG6.map(key))) {
+      const f = of(TN2360_FIG6, 'w1 first').filter((p) => key(p) === k);
+      const s = of(TN2360_FIG6, 'w1 second').filter((p) => key(p) === k);
+      while (f.length > 0 && s.length > 0) {
+        let best = [0, 0];
+        for (let i = 0; i < f.length; i++)
+          for (let j = 0; j < s.length; j++)
+            if (Math.abs(f[i]!.dPb - s[j]!.dPb) < Math.abs(f[best[0]!]!.dPb - s[best[1]!]!.dPb))
+              best = [i, j];
+        const [p] = f.splice(best[0]!, 1);
+        const [q] = s.splice(best[1]!, 1);
+        if (Math.abs(p!.dPb - q!.dPb) > p!.error + q!.error + 1e-12) beyond++;
+      }
+      unmatched += f.length + s.length;
+    }
+    expect(beyond).toBe(1);
+    expect(unmatched).toBe(4);
   });
 
   it('agree with the readings already held where they overlap (checks, not used to set anything)', () => {
@@ -162,11 +261,21 @@ describe('the members', () => {
     expect(r.carried).toBeUndefined();
   });
 
-  it('the reference beyond M 2.41 carries the largest tunnel excess (at M 1.5)', () => {
-    const noFins = Math.abs(compiledCurveValue(1.5, 'lessNegative'));
-    const leastLine = Math.min(0.2661, 0.266) / noFins;
-    const tunnel15 = 1 + (0.1391 + 0.002) / (0.1948 - 0.001);
-    expect(largestTunnelExcess()).toBeCloseTo(tunnel15 - leastLine, 12);
+  it('the reference beyond M 2.41 carries the largest tunnel excess (at M 2.41, with round 6)', () => {
+    // M 1.5: TN 2360's largest run (first -0.1391 +-0.002; round 6 -0.1390 +-0.0021, a tie) over fig.
+    // 33's body alone (first, -0.1948 +-0.001), against the least reading of the line (round 6, -0.2659).
+    const at15 =
+      1 +
+      (0.1391 + 0.002) / (0.1948 - 0.001) -
+      0.2659 / Math.abs(compiledCurveValue(1.5, 'lessNegative'));
+    // M 2.41: round 3's Langley pair (-0.1648 and -0.1202, +-0.001) against round 6's line, -0.1464 at
+    // M 2.4 and -0.1401 at 2.5, interpolated (round 6 reads the line less negative there, 0015 section 7).
+    const line241 = 0.1464 - 0.1 * (0.1464 - 0.1401);
+    const at241 =
+      (0.1648 + 0.001) / (0.1202 - 0.001) -
+      line241 / Math.abs(compiledCurveValue(2.41, 'lessNegative'));
+    expect(at241).toBeGreaterThan(at15);
+    expect(largestTunnelExcess()).toBeCloseTo(at241, 12);
     const r = referenceBand(2.8);
     const ffMax = Math.max(...r.freeFlight.map((f) => f.factor));
     expect(r.carried).toBeCloseTo(ffMax + largestTunnelExcess(), 12);
@@ -285,8 +394,8 @@ describe('the bands (0015 section 3.6)', () => {
     [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.2115, 1.4723],
     [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.1822, 1.4137],
     [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.1394, 1.3282],
-    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.2076, 1.4645],
-    [3.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.2348, 1.5189],
+    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.2082, 1.4658],
+    [3.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.2354, 1.5201],
     [
       1.8,
       'double wedge 2.4%, four fins, unswept',
@@ -316,8 +425,8 @@ describe('the bands (0015 section 3.6)', () => {
       'flat plate 2.4%, three fins, 45 deg (bounded)',
       fins({ section: plate(0.024) }),
       0.8379,
-      1.1512,
-      1.4645,
+      1.1518,
+      1.4658,
     ],
     [
       1.8,
@@ -399,7 +508,7 @@ describe('the bands (0015 section 3.6)', () => {
 describe('flat faces at a square trailing edge: bounded, not measured (0015 section 4)', () => {
   it("the lower bound: RM L52E06's lowest relief, rim at M 1.06, with its reading errors", () => {
     expect(W1_FLAT_RELIEF_LOW).toBeCloseTo((0.2181 - 0.002) / (0.2559 + 0.002), 12);
-    expect(flatPlateReliefs().length).toBe(5);
+    expect(flatPlateReliefs().length).toBe(9);
     // Below the zero member's low end: RM L52E06's reduction is contained.
     expect(W1_FLAT_RELIEF_LOW).toBeLessThan(W1_RELIEF_LOW);
   });

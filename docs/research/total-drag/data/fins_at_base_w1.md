@@ -8,10 +8,10 @@ numpy and Pillow, run with `python3 -I` on page renders kept outside the
 repository); their outputs are the `w1_*_output.txt` files beside this
 one.
 
-**These are first readings.** An independent reader is making blind
-second readings of the same figures (0014 section 10.4); this reader has
-not opened them. The band of 0015 is the envelope of both readings once
-the second is in.
+**These are first readings.** The independent blind second readings
+(round 6) were not opened before these were made; they are now paired
+with them (`fins_at_base_w1_second.csv`, `w1_compare_round6_output.txt`,
+0015 section 7), and the band of 0015 is the envelope of both.
 
 ## The rules this reading followed
 

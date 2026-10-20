@@ -9,7 +9,12 @@
  * First readings: docs/research/total-drag/data/fins_at_base_w1.md (page,
  * calibration, method, error) and fins_at_base_w1.csv (every value, held
  * to this file by tests/base/fins-on-base-w1.test.ts). Second readings:
- * pending (0014 section 10.4).
+ * the round-6 blind readings (docs/research/total-drag/audit/round6/),
+ * restated in fins_at_base_w1_second.csv by scripts/w1/round6_second.py
+ * and compared with the first value by value in
+ * w1_compare_round6_output.txt (0015 section 7). RM L52J21a fig. 8's
+ * second reading is pending; fig. 38(c)'s symbols cannot be separated on
+ * the scan and it stays read once.
  *
  * Coefficients: P_B = (p_b - p_inf) / q_inf; dPb = P_B with fins minus
  * P_B without, in the same facility.
@@ -44,6 +49,15 @@ const p6 = (
   xc: number,
   dPb: number,
 ): Tn2360Fig6Point => ({ reading: 'w1 first', mach, count, thicknessRatio, xc, dPb, error: 0.002 });
+/** A second-reading symbol, with its own reading error. */
+const p6s = (
+  mach: 1.5 | 2.0,
+  count: 2 | 4,
+  thicknessRatio: 0.05 | 0.1,
+  xc: number,
+  dPb: number,
+  error: number,
+): Tn2360Fig6Point => ({ reading: 'w1 second', mach, count, thicknessRatio, xc, dPb, error });
 
 export const TN2360_FIG6: readonly Tn2360Fig6Point[] = [
   // (a) M = 1.5, plane tail.
@@ -90,6 +104,47 @@ export const TN2360_FIG6: readonly Tn2360Fig6Point[] = [
   p6(2.0, 4, 0.1, 0.0, -0.0573),
   p6(2.0, 4, 0.1, 0.0, -0.0509),
   p6(2.0, 4, 0.05, 0.0, -0.0321),
+  // The second reading (round 6), in its file's order: x/c 0 to 1.0, each at the nearest station.
+  p6s(1.5, 2, 0.05, 1, -0.0045, 0.0003),
+  p6s(1.5, 2, 0.1, 0.8, -0.0117, 0.0003),
+  p6s(1.5, 2, 0.1, 0.6, -0.0367, 0.0003),
+  p6s(1.5, 2, 0.05, 0.4, -0.0104, 0.0003),
+  p6s(1.5, 2, 0.1, 0.4, -0.0435, 0.0003),
+  p6s(1.5, 2, 0.1, 0.2, -0.0538, 0.0003),
+  p6s(1.5, 2, 0.05, 0, -0.0334, 0.0003),
+  p6s(1.5, 2, 0.1, 0, -0.0686, 0.0003),
+  p6s(1.5, 2, 0.1, 1, -0.0085, 0.0021),
+  p6s(1.5, 4, 0.1, 1, 0.0144, 0.0003),
+  p6s(1.5, 4, 0.1, 1, 0.0094, 0.0003),
+  p6s(1.5, 4, 0.05, 1, 0.0071, 0.0003),
+  p6s(1.5, 4, 0.1, 0.8, 0.0031, 0.0003),
+  p6s(1.5, 4, 0.05, 0.6, 0.004, 0.0003),
+  p6s(1.5, 4, 0.1, 0.6, -0.0112, 0.0003),
+  p6s(1.5, 4, 0.05, 0.4, -0.0049, 0.0003),
+  p6s(1.5, 4, 0.05, 0.2, -0.0231, 0.0003),
+  p6s(1.5, 4, 0.1, 0.2, -0.0644, 0.0003),
+  p6s(1.5, 4, 0.1, 0.2, -0.0598, 0.0003),
+  p6s(1.5, 4, 0.05, 0, -0.0739, 0.0003),
+  p6s(1.5, 4, 0.1, 0, -0.1207, 0.0003),
+  p6s(1.5, 4, 0.1, 0, -0.1299, 0.0003),
+  p6s(1.5, 4, 0.1, 0.4, -0.018, 0.0005),
+  p6s(1.5, 4, 0.1, 0, -0.139, 0.0021),
+  p6s(2.0, 2, 0.1, 1, -0.0143, 0.0002),
+  p6s(2.0, 2, 0.1, 0.6, -0.0202, 0.0002),
+  p6s(2.0, 2, 0.1, 0.4, -0.0301, 0.0002),
+  p6s(2.0, 2, 0.1, 0.2, -0.0357, 0.0002),
+  p6s(2.0, 2, 0.1, 0, -0.0386, 0.0002),
+  p6s(2.0, 4, 0.1, 1, -0.0096, 0.0002),
+  p6s(2.0, 4, 0.05, 1, 0.004, 0.0002),
+  p6s(2.0, 4, 0.1, 0.8, -0.0126, 0.0002),
+  p6s(2.0, 4, 0.1, 0.6, -0.0285, 0.0002),
+  p6s(2.0, 4, 0.1, 0.4, -0.0623, 0.0002),
+  p6s(2.0, 4, 0.05, 0.4, -0.0204, 0.0002),
+  p6s(2.0, 4, 0.1, 0.2, -0.0639, 0.0002),
+  p6s(2.0, 4, 0.1, 0, -0.0496, 0.0002),
+  p6s(2.0, 4, 0.05, 0, -0.0302, 0.0002),
+  p6s(2.0, 4, 0.1, 0, -0.0644, 0.0002),
+  p6s(2.0, 4, 0.1, 0.2, -0.0579, 0.002),
 ];
 
 /**
@@ -114,6 +169,14 @@ export const TN3819_FIG33: readonly Fig33Point[] = [
   { reading: 'w1 first', mach: 2.0, thicknessRatio: 0.1, pB: -0.2092, error: 0.001 },
   { reading: 'w1 first', mach: 2.41, thicknessRatio: 0, pB: -0.1219, error: 0.001 },
   { reading: 'w1 first', mach: 2.41, thicknessRatio: 0.1, pB: -0.1649, error: 0.001 },
+  { reading: 'w1 second', mach: 1.5, thicknessRatio: 0, pB: -0.1947, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.5, thicknessRatio: 0.05, pB: -0.2698, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.5, thicknessRatio: 0.1, pB: -0.3251, error: 0.0002 },
+  { reading: 'w1 second', mach: 2, thicknessRatio: 0, pB: -0.1505, error: 0.0002 },
+  { reading: 'w1 second', mach: 2, thicknessRatio: 0.05, pB: -0.185, error: 0.0002 },
+  { reading: 'w1 second', mach: 2, thicknessRatio: 0.1, pB: -0.2091, error: 0.0002 },
+  { reading: 'w1 second', mach: 2.41, thicknessRatio: 0, pB: -0.1213, error: 0.0003 },
+  { reading: 'w1 second', mach: 2.41, thicknessRatio: 0.1, pB: -0.1649, error: 0.0002 },
 ];
 
 /**
@@ -134,13 +197,24 @@ export const TN3819_FIG34: readonly Fig34Point[] = [
   { reading: 'w1 first', mach: 1.59, withFins: -0.1094, withoutFins: -0.0962, error: 0.001 },
   { reading: 'w1 first', mach: 1.78, withFins: -0.1083, withoutFins: -0.0927, error: 0.001 },
   { reading: 'w1 first', mach: 1.98, withFins: -0.1067, withoutFins: -0.0932, error: 0.001 },
+  { reading: 'w1 second', mach: 1.49, withFins: -0.1131, withoutFins: -0.0919, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.59, withFins: -0.1093, withoutFins: -0.0961, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.78, withFins: -0.1082, withoutFins: -0.0926, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.98, withFins: -0.1066, withoutFins: -0.0931, error: 0.0002 },
 ];
 
 /**
- * TN 3819 fig. 35's free-flight line (ref. 12) at M 1.40 to 1.80, this
- * reading's: NOT BLIND, made after round 3's values of this range had been
- * seen (fins_at_base_w1.md). The line above M 1.80 and the tunnel pairs
- * have two readings in ./tn3819-fig35.ts, used as they are.
+ * TN 3819 fig. 35's free-flight line (ref. 12). The first, this work's, at
+ * M 1.40 to 1.80: NOT BLIND, made after round 3's values of this range had
+ * been seen (fins_at_base_w1.md). The second, round 6's, blind, over the
+ * whole line, M 1.0 to 3.0. Above M 2.3 round 6 identifies the line
+ * differently from 0008's reading and round 3's in ./tn3819-fig35.ts (the
+ * middle of the three lines there, by its long-short dash pattern, where
+ * they took the most negative): up to 0.010 less negative in P_B at M 2.4
+ * to 2.9 (w1_compare_round6_output.txt). Every reading is kept and the
+ * rebuilt factor's band is their envelope (0008's reading rule); the
+ * present factor (./fins-on-base.ts) keeps its own two readings unchanged
+ * (0014 section 10.3).
  */
 export interface W1Fig35Point {
   readonly mach: number;
@@ -165,6 +239,84 @@ export const TN3819_FIG35_W1: readonly {
       { mach: 1.75, pB: -0.248, error: 0.004 },
       { mach: 1.8, pB: -0.2365, error: 0.003 },
     ],
+  },
+  {
+    reading: 'w1 second',
+    points: [
+      { mach: 1, pB: -0.2998, error: 0.0003 },
+      { mach: 1.05, pB: -0.2913, error: 0.0003 },
+      { mach: 1.1, pB: -0.284, error: 0.0003 },
+      { mach: 1.15, pB: -0.2793, error: 0.0003 },
+      { mach: 1.2, pB: -0.275, error: 0.0003 },
+      { mach: 1.25, pB: -0.272, error: 0.0003 },
+      { mach: 1.3, pB: -0.2703, error: 0.0003 },
+      { mach: 1.35, pB: -0.2687, error: 0.0003 },
+      { mach: 1.4, pB: -0.2675, error: 0.0003 },
+      { mach: 1.45, pB: -0.2665, error: 0.0003 },
+      { mach: 1.5, pB: -0.2659, error: 0.0003 },
+      { mach: 1.55, pB: -0.2656, error: 0.0003 },
+      { mach: 1.6, pB: -0.2654, error: 0.0003 },
+      { mach: 1.65, pB: -0.2651, error: 0.002 },
+      { mach: 1.7, pB: -0.2612, error: 0.002 },
+      { mach: 1.75, pB: -0.2503, error: 0.002 },
+      { mach: 1.8, pB: -0.2368, error: 0.0003 },
+      { mach: 1.85, pB: -0.2226, error: 0.0003 },
+      { mach: 1.9, pB: -0.2108, error: 0.0003 },
+      { mach: 1.95, pB: -0.2, error: 0.0003 },
+      { mach: 2, pB: -0.1905, error: 0.0004 },
+      { mach: 2.1, pB: -0.1745, error: 0.003 },
+      { mach: 2.2, pB: -0.1625, error: 0.003 },
+      { mach: 2.3, pB: -0.1537, error: 0.003 },
+      { mach: 2.4, pB: -0.1464, error: 0.003 },
+      { mach: 2.5, pB: -0.1401, error: 0.0003 },
+      { mach: 2.6, pB: -0.1348, error: 0.0003 },
+      { mach: 2.7, pB: -0.1303, error: 0.0003 },
+      { mach: 2.8, pB: -0.1264, error: 0.0003 },
+      { mach: 2.9, pB: -0.1223, error: 0.0003 },
+      { mach: 3, pB: -0.1182, error: 0.0003 },
+    ],
+  },
+];
+
+/**
+ * Fig. 35's tunnel pairs, round 6's reading (a third, beside the two of
+ * ./tn3819-fig35.ts, which the present factor keeps): the same tunnel with
+ * and without fins at its test Mach numbers (read at 1.501, 2.001 to 2.002
+ * and 2.405 to 2.411). Reading error +-0.0003.
+ */
+export interface W1Fig35TunnelPair {
+  readonly reading: W1Reading;
+  readonly source: string;
+  readonly mach: number;
+  readonly withFins: number;
+  readonly withoutFins: number;
+  readonly error: number;
+}
+
+export const TN3819_FIG35_TUNNEL_W1: readonly W1Fig35TunnelPair[] = [
+  {
+    reading: 'w1 second',
+    source: 'ref. 26',
+    mach: 1.5,
+    withFins: -0.3251,
+    withoutFins: -0.194,
+    error: 0.0003,
+  },
+  {
+    reading: 'w1 second',
+    source: 'ref. 26',
+    mach: 2.0,
+    withFins: -0.2076,
+    withoutFins: -0.1502,
+    error: 0.0003,
+  },
+  {
+    reading: 'w1 second',
+    source: 'Langley 9 in',
+    mach: 2.41,
+    withFins: -0.1647,
+    withoutFins: -0.1202,
+    error: 0.0003,
   },
 ];
 
@@ -260,5 +412,25 @@ export const L52E06_FIG7: readonly L52e06Fig7Point[] = [
     centreNoFins: -0.1972,
     centreFins: -0.1937,
     error: 0.002,
+  },
+  // The second reading (round 6) at its read Mach numbers inside the first's window; at M 1.05, just
+  // below it, it is in fins_at_base_w1_second.csv for the comparison only.
+  {
+    reading: 'w1 second',
+    mach: 1.075,
+    rimNoFins: -0.2517,
+    rimFins: -0.2166,
+    centreNoFins: -0.2029,
+    centreFins: -0.199,
+    error: 0.0005,
+  },
+  {
+    reading: 'w1 second',
+    mach: 1.1,
+    rimNoFins: -0.2427,
+    rimFins: -0.2138,
+    centreNoFins: -0.1968,
+    centreFins: -0.1942,
+    error: 0.0005,
   },
 ];

@@ -4,16 +4,17 @@
   and its data `src/base/fins-on-base-w1-data.ts`, routed in
   `src/base/base-drag.ts`; `tests/base/fins-on-base-w1.test.ts`,
   `tests/total/fins-on-base-routing.test.ts`. Work item W1 of
-  [0014](0014-refusals.md), under its section 10's registration. **The
-  band rests on first readings only**: the second, blind reading is
-  pending (section 7), and the band becomes the envelope of both when it
-  arrives. No hold-out has been run on it (section 9).
+  [0014](0014-refusals.md), under its section 10's registration. **Both
+  readings are in** (round 6's blind second reading, paired in section 7) except for RM L52J21a: fig. 8's second reading is pending and fig.
+  38(c) cannot be read a second time from the scan. The band is the
+  envelope of every reading. No hold-out has been run on it (section 9).
 - **Date:** 2026-10-20
 - **Inputs:** 0014 sections 5.1, 6.2 (W1) and 10; [0010](0010-base-drag-and-total.md)
   section 1.3 (the present factor, kept) and section 10; [0008](0008-total-drag.md)
   section 3.4; the first readings
   ([`fins_at_base_w1.md`](../research/total-drag/data/fins_at_base_w1.md),
-  `.csv`, `../scripts/w1/`); the two readings of TN 3819 fig. 35 already
+  `.csv`, `../scripts/w1/`); the second
+  (`fins_at_base_w1_second.csv`, from `audit/round6/`); the two readings of TN 3819 fig. 35 already
   held (`src/base/tn3819-fig35.ts`); 0014's population
   (`docs/research/refusals/`).
 
@@ -94,28 +95,35 @@ noses (W5, W6) and the base below Mach 1.5 (W2).
 
 At each Mach number of 1.5 to 3.0, over every reading of TN 3819 fig. 35's
 free-flight line (0008's first reading from M 1.80, round 3's from 1.1,
-and this work's from 1.40 to 1.80, not blind), each as a factor on Love's
-basic curve with its reading error (at least +-0.005 in P_B at M 1.75 to
-2.35, the identity-swap error of 0010 section 1.3):
+this work's from 1.40 to 1.80, not blind, and round 6's, blind, from 1.0
+to 3.0), each as a factor on Love's basic curve with its reading error (at
+least +-0.005 in P_B at M 1.75 to 2.35, the identity-swap error of 0010
+section 1.3). Above M 2.3 round 6 takes a different line for the
+free-flight one (section 7): the low end there rests on its reading, the
+high end on 0008's and round 3's.
 
 - **low end:** the least of (line minus its error);
 - **high end:** the greatest of (line plus its error) and the tunnel
-  factor: TN 3819 fig. 35's pairs (two readings), fig. 33 (t/c 0.10 over 0) and TN 2360 fig. 6's three runs over fig. 33's body alone, each with
+  factor: TN 3819 fig. 35's pairs (three readings), fig. 33 (t/c 0.10 over 0, two) and TN 2360 fig. 6's runs (two readings) over fig. 33's body alone, each with
   its reading error toward a larger factor, the largest at each tunnel Mach
   number (1.50, 2.00, 2.41), linear between them; beyond M 2.41, the line
-  plus the largest tunnel excess over the line, **0.193** (TN 2360's run
-  at M 1.5 against the line), carried as 0010 section 1.3 carries its
-  0.140 (its option b, the conservative one).
+  plus the largest tunnel excess over the line, **0.194** (round 3's
+  reading of the Langley pair at M 2.41 against round 6's line; 0.1937 at
+  M 1.5, TN 2360's run against round 6's line, beside it), carried as
+  0010 section 1.3 carries its 0.140 (its option b, the conservative one).
 
 | M      | 1.5   | 1.65  | 1.8   | 2.0   | 2.2   | 2.41  | 2.5   | 2.8   | 3.0   |
 | ------ | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
-| F low  | 1.523 | 1.572 | 1.473 | 1.281 | 1.201 | 1.242 | 1.254 | 1.288 | 1.295 |
-| F high | 1.728 | 1.642 | 1.556 | 1.441 | 1.417 | 1.391 | 1.465 | 1.501 | 1.519 |
+| F low  | 1.523 | 1.571 | 1.473 | 1.281 | 1.183 | 1.172 | 1.193 | 1.214 | 1.223 |
+| F high | 1.728 | 1.642 | 1.556 | 1.441 | 1.417 | 1.391 | 1.466 | 1.502 | 1.520 |
 
-Below M 1.8 the line has round 3's reading and this work's (not blind);
-at 1.80 three; to 2.85 two (0008's first and round 3); above, round 3's
-alone to 2.99, with the first reading's extrapolation beside it; at 3.0
-both are extrapolated (flagged, as in 0010). The present factor's own band for the
+Below M 1.8 the line has three readings (round 3's, this work's, not
+blind, and round 6's); at 1.80 four; to 2.85 three (0008's first, round 3,
+round 6); above, round 3's and round 6's to 2.99, with the first reading's
+extrapolation beside them; at 3.0 round 6's alone is read, the others
+extrapolated (flagged, as in 0010). Before round 6 the low end at M 2.2
+to 3.0 was 1.201 to 1.295: round 6's identification lowers it by 0.02 to
+0.08. The present factor's own band for the
 same fins is built differently (its low end is half the increment, so as
 to cover 5% fins) and is not changed.
 
@@ -137,7 +145,7 @@ ratio member exists.
 
 | Member, x/c = 0    | Ratio at M 1.5 | Ratio at M 2.0 | F at M 1.5    | F at M 1.8    | F at M 2.0    |
 | ------------------ | -------------- | -------------- | ------------- | ------------- | ------------- |
-| four fins t/c 0.05 | 0.512 to 0.649 | 0.456 to 0.744 | 1.268 - 1.472 | 1.216 - 1.414 | 1.128 - 1.328 |
+| four fins t/c 0.05 | 0.512 to 0.649 | 0.455 to 0.744 | 1.268 - 1.472 | 1.215 - 1.414 | 1.128 - 1.328 |
 | two fins t/c 0.10  | 0.471 to 0.592 | 0.573 to 0.855 | 1.247 - 1.431 | 1.223 - 1.475 | 1.161 - 1.377 |
 | two fins t/c 0.05  | 0.225 to 0.300 | not measured   | M 1.5 only    |               |               |
 
@@ -162,8 +170,8 @@ fin effects over fig. 8's cylindrical-base P_B; `fins-on-base-w1.test.ts`):
 
 | Set                               | M            | F measured     | Zero member | Unswept member (low end)                                                         |
 | --------------------------------- | ------------ | -------------- | ----------- | -------------------------------------------------------------------------------- |
-| RM L52J21a, 45 deg, 8%, R 8.06e6  | 1.62 to 2.41 | 0.964 to 1.118 | 0.951 to 1  | 1.568, 1.340, 1.242 at M 1.62, 1.93, 2.41 (the reference, which bounds 8% fins)  |
-| RM-10, 60 deg, t/c 0.10 (fig. 34) | 1.49 to 1.98 | 1.137 to 1.229 | 0.951 to 1  | 1.523, 1.560, 1.491, 1.298 at M 1.5 (for 1.49), 1.59, 1.78, 1.98 (the reference) |
+| RM L52J21a, 45 deg, 8%, R 8.06e6  | 1.62 to 2.41 | 0.964 to 1.118 | 0.951 to 1  | 1.568, 1.339, 1.172 at M 1.62, 1.93, 2.41 (the reference, which bounds 8% fins)  |
+| RM-10, 60 deg, t/c 0.10 (fig. 34) | 1.49 to 1.98 | 1.137 to 1.229 | 0.951 to 1  | 1.523, 1.560, 1.491, 1.297 at M 1.5 (for 1.49), 1.59, 1.78, 1.98 (the reference) |
 
 So swept fins are served with the leading edge swept 45 to 60 deg and the
 trailing edge swept no more than the leading edge (as in both sets),
@@ -226,12 +234,12 @@ its midpoint (0008 section 6.3). Every row is asserted by
 | 1.5 | double wedge 2.4%, three fins, 45 deg          | zero; four fins t/c 0.05                | 0.9507 | 1.2115    | 1.4723 | 21.5%      |
 | 1.8 | the same                                       | zero; four fins t/c 0.05                | 0.9507 | 1.1822    | 1.4137 | 19.6%      |
 | 2.0 | the same                                       | zero; four fins t/c 0.05                | 0.9507 | 1.1394    | 1.3282 | 16.6%      |
-| 2.5 | the same                                       | zero; the reference                     | 0.9507 | 1.2076    | 1.4645 | 21.3%      |
-| 3.0 | the same                                       | zero; the reference                     | 0.9507 | 1.2348    | 1.5189 | 23.0%      |
+| 2.5 | the same                                       | zero; the reference                     | 0.9507 | 1.2082    | 1.4658 | 21.3%      |
+| 3.0 | the same                                       | zero; the reference                     | 0.9507 | 1.2354    | 1.5201 | 23.0%      |
 | 1.8 | double wedge 2.4%, four fins, unswept          | zero; four fins t/c 0.05                | 0.9507 | 1.1822    | 1.4137 | 19.6%      |
 | 1.8 | bevelled plate 3% (bevel 0.085 chord), 45 deg  | zero; the reference                     | 0.9507 | 1.2532    | 1.5558 | 24.1%      |
 | 1.8 | flat plate 2.4%, three fins, 45 deg (bounded)  | RM L52E06 relief; t/c 0.05              | 0.8379 | 1.1258    | 1.4137 | 25.6%      |
-| 2.5 | the same (bounded)                             | RM L52E06 relief; the reference         | 0.8379 | 1.1512    | 1.4645 | 27.2%      |
+| 2.5 | the same (bounded)                             | RM L52E06 relief; the reference         | 0.8379 | 1.1518    | 1.4658 | 27.3%      |
 | 1.8 | circular arc 10%, three fins, unswept          | two fins t/c 0.10; reference            | 1.2229 | 1.3893    | 1.5558 | 12.0%      |
 | 1.8 | double wedge 2.4%, three fins, 45 deg, x/c 0.5 | zero; four fins t/c 0.05 at 0.4 and 1.0 | 0.9045 | 1.0892    | 1.2739 | 17.0%      |
 
@@ -272,8 +280,9 @@ only; this record applies it here on that ruling, and says so.)
   pressure is "confined to a small region just behind the blunt trailing
   edge" (RM L52E06 p. 5). And at M 1.06 to 1.10, the one place both are
   measured, flat plates lie below the circular arcs: F 0.85 to 0.98 (RM
-  L52E06 fig. 7) where TN 3819 fig. 35's free-flight line gives 1.544 at M
-  1.1 (round 3's reading over Love's basic curve; one reading). So the upper bound is the unswept
+  L52E06 fig. 7) where TN 3819 fig. 35's free-flight line gives 1.544 and
+  1.541 at M 1.1 (round 3's and round 6's readings over Love's basic
+  curve). So the upper bound is the unswept
   circular-arc member at least as thick as the plate (t/c 0.05 or 0.10 by
   the plate's thickness, 0.10 above M 2.0), not a thinner one.
 - _Lower side._ The relief is measured: RM L52E06 fig. 7's rim pressures
@@ -355,14 +364,87 @@ method does not use were not read (TN 2360 figs. 5 and 7, TN 3819 fig. 32,
 RM L52J21a figs. 31 to 33 and 39, RM L52E06 figs. 6 and 8, TN 3372 figs. 7
 to 12).
 
-**Second readings: pending.** An independent reader is making blind
-second readings of the same figures. When they arrive they are added to
-`fins-on-base-w1-data.ts` beside the first, tagged 'w1 second'; every
-member's band is already built as the envelope over all readings held, so
-the band widens where the readings differ and the tests' tables are
-re-derived. Until then `secondReadingPending` is true on every result,
-and the bands above rest on one reading of each figure (two of fig. 35
-above M 1.8, three to 2.85).
+**Second readings** (round 6, blind, made on another branch from its own
+renders: `docs/research/total-drag/audit/round6/readings/`, method in its
+`method_*.md` files). Restated in the first reading's columns in
+`fins_at_base_w1_second.csv` (`../scripts/w1/round6_second.py`), held in
+`fins-on-base-w1-data.ts` as 'w1 second' beside the first and to the csv
+by `fins-on-base-w1.test.ts`. Paired: TN 2360 fig. 6(a) and (b) (every
+symbol at x/c 0 to 1.0), TN 3819 figs. 33 and 34 (every symbol) and 35
+(the free-flight line over its whole length, M 1.0 to 3.0, and the six
+tunnel symbols), RM L52E06 fig. 7 (M 1.075 and 1.10 inside the first
+reading's window; 1.05 for the comparison). Not paired: RM L52J21a fig. 8
+(in progress) and fig. 38(c) (below).
+
+**The comparison** (`../scripts/w1/compare_round6.py`, output
+`w1_compare_round6_output.txt`): each value, first minus second, against
+the combined reading error (the sum of the two); symbols paired by value
+within a station.
+
+| Figure                                  | Values paired                       | Largest difference             | Beyond the combined error                                                                                                                                                                                                                                                                                         |
+| --------------------------------------- | ----------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TN 2360 fig. 6                          | 38 pairs                            | 0.0024                         | one: 6(b) cruciform t/c 0.05 at x/c 1.0, +0.0064 against +0.0040 (combined 0.0022)                                                                                                                                                                                                                                |
+|                                         |                                     |                                | four symbols found by one reader: the second's +0.0094 (6(a) cruciform t/c 0.10, x/c 1.0) and -0.0644 (the same, x/c 0.2); the first's -0.0573 (6(b) cruciform t/c 0.10, x/c 0) and -0.0344 (the same, x/c 0.6). Round 6 marks the 6(b) cruciform naming LOW MARGIN (circles and squares stack two or three deep) |
+| TN 3819 fig. 33                         | 8                                   | 0.0006                         | none                                                                                                                                                                                                                                                                                                              |
+| TN 3819 fig. 34                         | 8                                   | 0.0002                         | none                                                                                                                                                                                                                                                                                                              |
+| TN 3819 fig. 35, tunnel symbols         | 12 (against the first and round 3)  | 0.0007                         | none                                                                                                                                                                                                                                                                                                              |
+| TN 3819 fig. 35, the line, M 1.1 to 2.3 | 28 (this work's, 0008's, round 3's) | 0.0050 (M 2.3, combined 0.010) | none                                                                                                                                                                                                                                                                                                              |
+| TN 3819 fig. 35, the line, M 2.4 to 2.9 | 11 (0008's, round 3's)              | -0.0098                        | **all**: round 6 reads the line 0.007 to 0.010 less negative                                                                                                                                                                                                                                                      |
+| RM L52E06 fig. 7                        | 13                                  | 0.0014                         | none; at M 1.06 the first reading could not separate the two centre lines (merged, +-0.003), the second separates them by 0.0055                                                                                                                                                                                  |
+
+**The disagreement at M 2.4 to 2.9 is one of identification, not of
+reading.** Above the knee three lines descend: the free-flight line
+(legend: long dash, short dash), estimate B (dashed) and estimate A (ends at
+M 2.56). 0008's reading and round 3 took the most negative line as the
+free-flight one wherever the lines separate; round 6 measured the dash
+patterns and takes the middle line above M 2.4, the most negative being
+the evenly dashed estimate B, which ends at M 3.0 above it. A look at a
+300 dpi render of the region (this work, not a reading) shows the
+long-short pattern on the middle line at M 2.4 to 2.9, as round 6 says.
+Both identifications are kept: the rebuilt factor's band is their
+envelope (0008's reading rule), which lowers the reference's low end at M
+2.2 to 3.0 (section 3.1). **The present factor** (0010 section 1.3, the
+Basic Finner's) keeps 0008's and round 3's readings unchanged (0014
+section 10.3): at M 2.3 to 2.9 round 6's line lies inside its band (F
+1.20 against a band of 1.10 to 1.38 at M 2.3, 1.22 against 1.15 to 1.46
+at 2.9) but 0.04 to 0.08 below its nominal. Whether the present factor's
+line is re-identified is the owner's decision; it is flagged, not acted on.
+
+**RM L52J21a fig. 38(c) is read once, and stays so.** Its symbols (three
+noses, two bases, plain and flagged) stack at each Mach number; the
+second reader could separate panel (a) only. Fig. 38's Delta P_B is "P_B
+with fins minus P_B without fins" (RM L52J21a p. 17): fig. 8's finned
+bodies (fin-supported) less the same bodies sting-supported without fins
+(figs. 31 to 33, against Reynolds number). The zero member's low end,
+0.951, rests on it. Without it the zero member would be F = 1 (no relief
+measured at M 1.5 or above for fins at the base other than flat plates),
+and every bracket that uses it as its lower member would narrow from
+below by 0.049:
+
+| M   | Case                                  | F low, nominal, high (with fig. 38(c)) | Without it               |
+| --- | ------------------------------------- | -------------------------------------- | ------------------------ |
+| 1.5 | double wedge 2.4%, three fins, 45 deg | 0.9507, 1.2115, 1.4723 (+-21.5%)       | 1.0000, 1.2362 (+-19.1%) |
+| 1.8 | the same                              | 0.9507, 1.1822, 1.4137 (+-19.6%)       | 1.0000, 1.2068 (+-17.1%) |
+| 2.0 | the same                              | 0.9507, 1.1394, 1.3282 (+-16.6%)       | 1.0000, 1.1641 (+-14.1%) |
+| 2.5 | the same                              | 0.9507, 1.2082, 1.4658 (+-21.3%)       | 1.0000, 1.2329 (+-18.9%) |
+| 3.0 | the same                              | 0.9507, 1.2354, 1.5201 (+-23.0%)       | 1.0000, 1.2601 (+-20.6%) |
+| 1.8 | bevelled plate 3%, three fins, 45 deg | 0.9507, 1.2532, 1.5558 (+-24.1%)       | 1.0000, 1.2779 (+-21.7%) |
+
+Flat plates (bounded from RM L52E06's relief) and brackets whose lower
+member is a measured family are unchanged. Keeping the single reading
+widens the band, the direction 0008's reading rule takes when readings
+cannot settle a value, so it is kept, labelled read once
+(`secondReadingPending` stays true while fig. 8 has one reading).
+
+**Can the zero member rest on fig. 8 alone?** No: fig. 8 holds only the
+finned bodies, and a fin effect needs the same bodies without fins. Once
+fig. 8 has its second reading, the zero member can be re-derived without
+fig. 38(c) from fig. 8 and figs. 31 to 33 (registered, 0014 section 10.1;
+round 6 has begun fig. 31), as the report itself formed fig. 38: each
+nose and base at R = 8.06e6, finned (fig. 8) minus unfinned (figs. 31 to
+33 at the same Reynolds number), both read twice. That would replace the
+single reading by a twice-read difference; fig. 38(c) would then be a
+check.
 
 ## 8. Coverage
 
@@ -408,7 +490,8 @@ total today: every flat plate is refused by its edge terms or the page
 
 None has been run. 0014 section 10.5 fixes when: BRL 934's range A (M 1.5
 to 2.47) once W1 is committed with its band, which needs the second
-readings in (rule 5 of 10.1); its rounds are the Basic Finner's wedges,
+readings in (rule 5 of 10.1: in, except RM L52J21a fig. 8, pending, and
+fig. 38(c), which cannot have one, section 7); its rounds are the Basic Finner's wedges,
 which the rebuilt factor refuses, so range A tests the present factor
 (10.3) and records the rebuilt one's refusal. The PARD standard body
 (flat plates, 45 deg, at the base) needs W2, W3 and W4 besides W1's
@@ -418,7 +501,11 @@ hold-out of its own yet.
 
 ## 10. Open
 
-- The second readings (section 7).
+- RM L52J21a fig. 8's second reading, and the zero member re-derived from
+  figs. 8 and 31 to 33 (section 7).
+- Which line of TN 3819 fig. 35 is the free-flight one above M 2.3: round
+  6 and 0008 or round 3 disagree; it bears on the present factor too
+  (section 7).
 - Sweeps of 0 to 45 deg: a measurement of moderately swept fins at the
   base (none among the opened sources).
 - Rounded and diverging trailing edges at the base.
