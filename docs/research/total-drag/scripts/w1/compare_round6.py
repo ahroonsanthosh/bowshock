@@ -116,6 +116,39 @@ for r in [r for r in first if r["source"] == "RM L52E06"]:
         v = sec7(n, m)
         print(line(f"{r['series']} M {m:.2f}" + (f" against {n}" if len(names) > 1 else ""), float(r["value"]), float(r["error"]), *v))
 
+print("=== RM L52J21a fig. 8, R = 8.06e6: each base's least negative P_B (what W1 uses: the cylindrical base)")
+for base in ("cylindrical", "conical"):
+    for m in ("1.62", "1.93", "2.41"):
+        fs = [(float(r["value"]), float(r["error"])) for r in first if r["figure"] == "8" and f"{base} base: least" in r["series"] and r["M"] == m]
+        ss = [(float(r["value"]), float(r["error"])) for r in second if r["figure"] == "8" and r["series"].startswith(base) and r["M"] == m and not r["note"].startswith("not a symbol")]
+        if fs and ss:
+            a, b = max(fs), max(ss)
+            print(line(f"{base} base M {m} least negative" + ("" if base == "cylindrical" else " (recorded, not used)"), a[0], a[1], b[0], b[1]))
+print("  not symbols (W1 inspection): " + "; ".join(f"{r['series']} M {r['M']} {r['value']}" for r in second if r["figure"] == "8" and r["note"].startswith("not a symbol")))
+
+print("=== RM L52J21a figs. 31 to 33 (d), unfinned, cylindrical base, R 7 to 9.5 x 10^6: first (data/w1_l52j21a_fig31_33d_output.txt) minus second, same nose, nearest R within 0.15")
+fr, Mc = [], None
+for l in open(D + "w1_l52j21a_fig31_33d_output.txt"):
+    h = re.match(r"fig\. (3\d)\(d\), M ([\d.]+)", l)
+    if h:
+        Mc = h.group(2)
+    m = re.match(r"\s+\w+\s+(\w+)\s+R ([\d.]+)\s+P_B (-[\d.]+)", l)
+    if m:
+        fr.append((Mc, m.group(1), float(m.group(2)), float(m.group(3))))
+sr = [(r["M"], r["series"].split(" ")[0], float(r["abscissa"]), float(r["value"]), float(r["error"])) for r in second if r["figure"] in ("31(d)", "32(d)", "33(d)")]
+used = set()
+for mc, nose, R, v in fr:
+    cand = [(abs(R - q[2]), k) for k, q in enumerate(sr) if q[0] == mc and q[1] == nose and abs(R - q[2]) <= 0.15 and k not in used]
+    if cand:
+        k = min(cand)[1]
+        used.add(k)
+        print(line(f"M {mc} {nose} R {R:.2f} (second at {sr[k][2]:.2f})", v, 0.002, sr[k][3], sr[k][4]))
+    else:
+        print(f"  M {mc} {nose} R {R:.2f}: first {v:+.4f} (+-0.0020) UNMATCHED: no second-reading symbol")
+for k, q in enumerate(sr):
+    if k not in used and 7.0 <= q[2] <= 9.5:
+        print(f"  M {q[0]} {q[1]} R {q[2]:.2f}: second {q[3]:+.4f} (+-{q[4]:.4f}) UNMATCHED: no first-reading symbol of that nose")
+
 print("=== Flagged (beyond the combined error, or found by one reader only)")
 for f in flags:
     print("  " + f)

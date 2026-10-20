@@ -363,6 +363,15 @@ export const L52J21A_FIG8: readonly Fig8Point[] = [
   { reading: 'w1 first', mach: 1.62, base: 'conical', leastNegative: -0.0322, error: 0.003 },
   { reading: 'w1 first', mach: 1.93, base: 'conical', leastNegative: -0.0617, error: 0.002 },
   { reading: 'w1 first', mach: 2.41, base: 'conical', leastNegative: -0.0598, error: 0.002 },
+  // The second reading (round 6, dde6cd0): each base's least negative over its named symbols and stack ends.
+  // Two stacks at M 2.41 are the panel's label and logo, not symbols (fins_at_base_w1_second.csv), and are left
+  // out. The conical base's value at M 1.62 disagrees with the first (0015 section 7); it is not used.
+  { reading: 'w1 second', mach: 1.62, base: 'cylindrical', leastNegative: -0.1476, error: 0.0007 },
+  { reading: 'w1 second', mach: 1.93, base: 'cylindrical', leastNegative: -0.1443, error: 0.0007 },
+  { reading: 'w1 second', mach: 2.41, base: 'cylindrical', leastNegative: -0.1124, error: 0.0007 },
+  { reading: 'w1 second', mach: 1.62, base: 'conical', leastNegative: -0.0387, error: 0.0007 },
+  { reading: 'w1 second', mach: 1.93, base: 'conical', leastNegative: -0.0634, error: 0.0007 },
+  { reading: 'w1 second', mach: 2.41, base: 'conical', leastNegative: -0.0604, error: 0.0007 },
 ];
 
 /**
@@ -433,4 +442,50 @@ export const L52E06_FIG7: readonly L52e06Fig7Point[] = [
     centreFins: -0.1942,
     error: 0.0005,
   },
+];
+
+/**
+ * NSWCDD/TR-92/509 (Moore, Wilcox and Hymer 1992; DTIC ADA258753), Table 2: base drag C_DB (on the base area,
+ * so -P_B) of an ogive-cylinder alone (configuration 1) and with four fins at the base (x/c 0; configurations 8,
+ * 5 and 2), alpha 0, fins undeflected, NASA Langley Unitary Plan tunnel, turbulent (grit), strut-supported. The
+ * fins: clipped deltas, root chord 4.00 in, tip 1.50 in, semispan 2.60 in, so the leading edge swept 43.9 deg and
+ * the trailing edge unswept; double wedges, ridge at mid-chord, sharp edges. Registered for W1's sweep ordering
+ * (0014 section 10.1, 2026-10-20), M 2.0 to 3.0; its fins ahead of the base are not used until TN 3819 fig. 32 is
+ * read twice. C_DB is uncertain by about +-5% of each value (the report, p. 10), carried on each.
+ * First transcription: docs/research/total-drag/data/nswc_tr92_509_table2.csv; the blind second is requested.
+ */
+export interface NswcTable2Point {
+  readonly reading: W1Reading;
+  /** Table 1's configuration. */
+  readonly config: 1 | 2 | 5 | 8;
+  /** Double-wedge t/c; 0 for the body alone. */
+  readonly thicknessRatio: 0 | 0.05 | 0.1 | 0.15;
+  readonly mach: 2.0 | 2.5 | 3.0;
+  readonly cdb: number;
+  /** Relative uncertainty of cdb. */
+  readonly relativeError: number;
+}
+
+const nswc = (
+  config: 1 | 2 | 5 | 8,
+  thicknessRatio: 0 | 0.05 | 0.1 | 0.15,
+  cdb: readonly number[],
+) =>
+  ([2.0, 2.5, 3.0] as const).map((mach, k): NswcTable2Point => ({
+    reading: 'w1 first',
+    config,
+    thicknessRatio,
+    mach,
+    cdb: cdb[k]!,
+    relativeError: 0.05,
+  }));
+
+/** NSWCDD/TR-92/509 swept at 43.9 deg (leading edge), trailing edge unswept. */
+export const NSWC_LEADING_EDGE_SWEEP_DEG = (Math.atan((4.0 - 1.5) / 2.6) * 180) / Math.PI;
+
+export const NSWC_TR92_509_TABLE2: readonly NswcTable2Point[] = [
+  ...nswc(1, 0, [0.138, 0.106, 0.09]),
+  ...nswc(8, 0.05, [0.148, 0.116, 0.1]),
+  ...nswc(5, 0.1, [0.158, 0.127, 0.108]),
+  ...nswc(2, 0.15, [0.167, 0.136, 0.114]),
 ];

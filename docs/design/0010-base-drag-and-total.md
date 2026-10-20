@@ -223,9 +223,13 @@ fins-on-base band, (F_low - F) and (F_high - F) times -P_B (0008 section
 chord or more ahead take the plain curve, labelled not validated with fins
 (0008 section 6.4); in between they were refused (TN 2360's variation not
 transcribed) and are now served by the rebuilt factor at Mach 1.5 to 2.0,
-where that variation is read (0015 section 3.3). Refused with a message (`BaseRefusal`, with a reason): Mach
-numbers outside 1.5 to 3.0, afterbodies other than cylinders, a laminar
-layer at the base, and the fins' conditions of 1.3.
+where that variation is read (0015 section 3.3). Below Mach 1.5, down
+to 1.0, the curve is continued with a band of 0.82 to 1.31 set on
+free-flight data and the nominal at its midpoint, and fins at the base
+from Mach 1.1 take the rebuilt factor (W2, 0015 section 11). Refused with
+a message (`BaseRefusal`, with a reason): Mach numbers outside 1.0 to 3.0,
+afterbodies other than cylinders, a laminar layer at the base, and the
+fins' conditions of 1.3 and 0015.
 
 ### 1.5 The fins' trailing-edge base
 

@@ -53,13 +53,13 @@ export const REASONS = {
   sectionReflected: 'fins: sharp section, a wave reflected from the leading-edge shock reaches the surface',
   pageSection: 'page: section not offered (wedge-flat with a blunt trailing edge; the library takes it)',
   // Body base.
-  baseMach: 'base: Mach outside 1.5 to 3.0',
+  baseMach: 'base: Mach outside 1.0 to 3.0 (below 1.5: W2, 0015 section 11)',
   boatTail: 'base: boat-tail',
   finsNearBase: 'base: fins ending within a chord of the base',
   finsAtBaseCount: 'base: fins at the base, not four',
   finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10',
   finsAtBaseMach: 'base: fins at the base, Mach 1.5 to 1.8 (outside 1.8 to 3.0)',
-  finsAtBaseLowMach: 'base: fins at the base, Mach below 1.5 (outside 1.8 to 3.0)',
+  finsAtBaseLowMach: 'base: fins at the base, Mach below 1.1 (the rebuilt factor from 1.1)',
   // The rebuilt factor's refusals (src/base/fins-on-base-w1.ts, 0015), where the present one refuses.
   finsW1Count: 'base (rebuilt factor): fins at the base, not two to four',
   finsW1Thickness: 'base (rebuilt factor): a section outside the 10% circular arc (steep bevels)',
@@ -218,15 +218,14 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
 
   // Body base (src/base/base-drag.ts, fins-on-base.ts, fins-on-base-w1.ts): the present factor where
   // it serves, the rebuilt one where it refuses (0015 section 5), decided by the library itself.
-  if (!(mach >= 1.5 && mach <= 3.0)) out.push('baseMach');
+  // Since W2 (0015 section 11) the body base serves Mach 1.0 to 3.0, and the rebuilt factor fins at the base
+  // from 1.1; the library decides.
+  if (!(mach >= 1.0 && mach <= 3.0)) out.push('baseMach');
   if (r.boatTail) out.push('boatTail');
   const x = r.trailingEdgeAheadChords;
-  if (x >= 0 && x < 1) {
-    if (mach < 1.5) out.push(x === 0 ? 'finsAtBaseLowMach' : 'finsNearBase');
-    else if (mach <= 3.0) {
-      const k = finsOnBaseReason(r, mach);
-      if (k !== undefined) out.push(k);
-    }
+  if (x >= 0 && x < 1 && mach >= 1.0 && mach <= 3.0) {
+    const k = finsOnBaseReason(r, mach);
+    if (k !== undefined) out.push(k);
   }
 
   // Blunt fin trailing edges (src/base/fin-trailing-edge.ts, src/total).
@@ -257,7 +256,7 @@ function baseSection(r: Rocket): SymmetricSection | 'rounded-te' {
   }
 }
 
-/** The fins-on-base factor's refusal at M 1.5 to 3.0, by the library (src/base/base-drag.ts); undefined if served. */
+/** The fins-on-base factor's refusal at M 1.0 to 3.0, by the library (src/base/base-drag.ts); undefined if served. */
 export function finsOnBaseReason(r: Rocket, mach: number): ReasonKey | undefined {
   const section = baseSection(r);
   if (section === 'rounded-te') return 'finsW1TrailingEdge';
@@ -294,6 +293,8 @@ export function finsOnBaseReason(r: Rocket, mach: number): ReasonKey | undefined
         return 'finsW1Sweep';
       case 'fins-near-base':
         return 'finsNearBase';
+      case 'mach-range':
+        return 'finsAtBaseLowMach';
       default:
         throw e;
     }

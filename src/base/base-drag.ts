@@ -6,7 +6,8 @@
  *
  *   body base:  C_D = -P_B(M) F (A_base / A_ref)
  *
- * with P_B Love's basic curve of TN 3819 fig. 18 (./compiled-curve.ts) and
+ * with P_B Love's basic curve of TN 3819 fig. 18 (./compiled-curve.ts; below Mach 1.5, down to 1.0,
+ * continued with W2's band and its nominal at the band's midpoint, ./base-w2.ts) and
  * F the fins-on-base factor (./fins-on-base.ts) when fins end at the base,
  * F = 1 without fins near the base. The band adds linearly, as 0008
  * section 6.3 requires:
@@ -46,6 +47,7 @@ import {
   compiledCurveBasePressure,
   type CompiledCurveBasePressure,
 } from './compiled-curve';
+import { W2_BAND, W2_LABEL, W2_MACH_RANGE, w2CurveBasePressure } from './base-w2';
 import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins-on-base';
 import { finsOnBaseFactorW1, type FinsNearBase, type FinsOnBaseFactorW1 } from './fins-on-base-w1';
 import { BaseRefusal } from './refusal';
@@ -84,12 +86,22 @@ export interface BodyBaseInput {
   readonly fins?: BaseFins;
 }
 
+/** The curve's band over the curve, and the nominal's ratio to the curve (1 from M 1.5; W2's midpoint below). */
+export interface CurveBand {
+  readonly low: number;
+  readonly high: number;
+  readonly nominal: number;
+  /** 'compiled' from M 1.5 (0008 section 3.3); 'w2' below (0015 section 11). */
+  readonly source: 'compiled' | 'w2';
+}
+
 export interface BodyBaseDrag {
   readonly cd: number;
   /** Lowest and highest C_D the model-form band allows (linear sum of its parts). */
   readonly low: number;
   readonly high: number;
   readonly curve: CompiledCurveBasePressure;
+  readonly curveBand: CurveBand;
   /** The fins-on-base factor, when fins end at the base or within a chord of it. */
   readonly finsOnBase: FinsOnBaseFactor | FinsOnBaseFactorW1 | undefined;
   /** Which factor that is (undefined without one). */
@@ -128,12 +140,22 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
   if (!(baseAreaRatio > 0 && Number.isFinite(baseAreaRatio))) {
     throw new BaseRefusal('input', `the base area ratio must be positive, got ${baseAreaRatio}`);
   }
-  const curve = compiledCurveBasePressure(mach);
-  const labels = [COMPILED_CURVE_LABEL];
+  // W2 (0015 section 11): below Mach 1.5 the curve continued, its band set on free-flight data.
+  const below = mach >= W2_MACH_RANGE[0] && mach < W2_MACH_RANGE[1];
+  const curve = below ? w2CurveBasePressure(mach) : compiledCurveBasePressure(mach);
+  const curveRange: CurveBand = below
+    ? { ...W2_BAND, source: 'w2' }
+    : {
+        low: COMPILED_CURVE_BAND.low,
+        high: COMPILED_CURVE_BAND.high,
+        nominal: 1,
+        source: 'compiled',
+      };
+  const labels = [below ? W2_LABEL : COMPILED_CURVE_LABEL];
   // 0014 section 10.2: a bounded component states its gap's size in C_D beside it.
   const gapOf = (f: FinsOnBaseFactorW1) =>
     f.bounded
-      ? `; the gap between the bounds is ${((f.high - f.low) * -curve.pB * baseAreaRatio).toFixed(4)} ` +
+      ? `; the gap between the bounds is ${((f.high - f.low) * -curve.pB * curveRange.nominal * baseAreaRatio).toFixed(4)} ` +
         'in C_D'
       : '';
   let factor: FinsOnBaseFactor | FinsOnBaseFactorW1 | undefined;
@@ -194,7 +216,8 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       );
     }
   }
-  const q = -curve.pB;
+  // The body's base pressure served: the curve times the band's nominal ratio (1 from M 1.5).
+  const q = -curve.pB * curveRange.nominal;
   const f = factor?.nominal ?? 1;
   const vacuum = vacuumBaseDrag(mach) * baseAreaRatio;
   const vacuumClamped: string[] = [];
@@ -205,10 +228,10 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
   };
   const cd = atMostVacuum(q * f * baseAreaRatio, 'term');
   const curveBand = [
-    (COMPILED_CURVE_BAND.low - 1) * cd,
-    (COMPILED_CURVE_BAND.high - 1) * cd,
+    (curveRange.low / curveRange.nominal - 1) * cd,
+    (curveRange.high / curveRange.nominal - 1) * cd,
   ] as const;
-  const e = curve.interpolationError * f * baseAreaRatio;
+  const e = curve.interpolationError * curveRange.nominal * f * baseAreaRatio;
   const interpolation = [-e, e] as const;
   const finsBand =
     factor === undefined
@@ -222,6 +245,7 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     low: atMostVacuum(cd + curveBand[0] + interpolation[0] + finsBand[0], 'band low end'),
     high: atMostVacuum(cd + curveBand[1] + interpolation[1] + finsBand[1], 'band high end'),
     curve,
+    curveBand: curveRange,
     finsOnBase: factor,
     finsOnBaseSource: source,
     presentRefusal,

@@ -167,3 +167,28 @@ body, and 0015 serves no flat-plate factor.
 | RM-10 (60 deg) with over without              | 1.229 (M 1.49) to 1.137 (1.59), 1.168 (1.78), 1.145 (1.98) |                                       |
 | RM L52J21a, Delta P_B at R 8.06e6             | -0.0157 to +0.0017 (M 1.62)                            | -0.0066 to +0.0055 (1.93); -0.0069 to +0.0020 (2.41) |
 | RM L52E06, C over A, M 1.06 to 1.10           | rim 0.852 to 0.882, centre 0.982                       |                                           |
+
+## Later first readings (after the pairing with round 6)
+
+**RM L52J21a figs. 31 to 33, panel (d)** (PDF pp. 58 to 60, cylindrical
+base, unfinned, sting-supported), read before round 6's values of these
+figures were opened, for the check of the zero member (0015 section 7):
+`../scripts/w1/l52j21a_fig31_33d.py`, output
+`w1_l52j21a_fig31_33d_output.txt`. Grid lines found as dark-row and
+dark-column peaks (page 58's rows tilt 0.015), values from the printed
+labels checked on axis strips; every symbol at R 7 to 9.5e6 picked by eye
+on 3x overlays and centred by template (squares conical, triangles ogive,
+circles radome; a triangle one third of its height above its base). The
+symbols overlap in pairs and the scores are low (0.2 to 0.6): error
++-0.002. A check, not a band.
+
+**RM L52E06 fig. 8** (PDF p. 17, lower half), the finless body A's C_DB,
+for W2 (0015 section 11): `../scripts/w1/l52e06_fig8.py`, output
+`w2_l52e06_fig8_output.txt`. Grid lines found as row and column peaks
+(C_DB every 0.04, M every 0.05; affine residuals at most 0.0005); the
+curve read column by column, the adopted run stated in the output. Near
+the peak (M 1.04 to 1.06) the curve runs along the 0.24 gridline, whose
+rows are excluded: error +-0.0012 there, +-0.0005 to +-0.001 elsewhere.
+The column-run helper's grid-row exclusion had wrapped round for grid
+rows above the read band (a negative slice end); fixed in `colruns.py`,
+and fig. 7's output, the only earlier use, is unchanged by the fix.

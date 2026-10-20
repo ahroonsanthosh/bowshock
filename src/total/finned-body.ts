@@ -390,7 +390,9 @@ export function finnedBodyComponents(
       high: base.high,
       label: base.labels.join('; '),
       band:
-        'curve 0.82 to 1.08 (0008 section 3.3), interpolation, ' +
+        (base.curveBand.source === 'w2'
+          ? `curve ${base.curveBand.low.toFixed(2)} to ${base.curveBand.high.toFixed(2)} below Mach 1.5 (0015 section 11), interpolation, `
+          : 'curve 0.82 to 1.08 (0008 section 3.3), interpolation, ') +
         (base.finsOnBaseSource === 'rebuilt'
           ? "the rebuilt fins-on-base factor's band (0015)"
           : 'fins-on-base band (section 3.4)'),

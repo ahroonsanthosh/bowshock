@@ -53,10 +53,23 @@
  *   and the trailing edge no more: between the zero member and the
  *   unswept member that dominates the section, since both measured swept
  *   sets lie there, below the unswept member at their Mach numbers (and
- *   TN 3819 p. 22). Sweeps between 0 and 45 deg are refused: no
- *   measurement, and for supersonic edges linear theory gives larger
- *   surface pressures with sweep at a fixed streamwise section, so the
- *   ordering is not shown there (0015 section 3.4).
+ *   TN 3819 p. 22). Leading edges swept 0 to 45 deg with an unswept
+ *   trailing edge, at M 2.0 to 3.0, take the same bracket (W1b, 0015
+ *   section 3.4): NSWCDD/TR-92/509's 43.9 deg fins with unswept trailing
+ *   edges lie inside it, and with the trailing edge unswept linear theory
+ *   moves the aft faces' pressures by at most 4% with the leading-edge
+ *   sweep there. Other sweeps between 0 and 45 deg, and those at M 1.5 to
+ *   2.0, are refused: for supersonic edges linear theory gives larger
+ *   surface pressures with sweep at a fixed streamwise section, and no
+ *   measurement shows the ordering there.
+ *
+ * Below M 1.5 (W2's part, 0015 section 11), at M 1.1 to 1.5: the reference
+ * is fig. 35's free-flight line (two readings from M 1.1) with the largest
+ * tunnel excess carried, the zero member reaches down to RM L52E06's
+ * relief with flat plates (the lowest relief measured at or below M 1.5),
+ * no ratio member and no position ahead of the base is measured, and
+ * swept fins are served only with flat faces (RM L52E06's plates are
+ * swept 45 deg).
  *
  * Fins with flat faces at a square trailing edge (flat plates) are
  * "bounded, not measured" (0014 section 10.2): between the lowest relief
@@ -85,6 +98,7 @@ import {
   L52E06_FIG7,
   L52J21A_FIG38C,
   L52J21A_FIG8,
+  NSWC_TR92_509_TABLE2,
   TN2360_FIG6,
   TN3819_FIG33,
   TN3819_FIG35_TUNNEL_W1,
@@ -95,8 +109,18 @@ import { BaseRefusal } from './refusal';
 import { FIG35_IDENTITY_SWAP, TN3819_FIG35_FREE_FLIGHT, TN3819_FIG35_TUNNEL } from './tn3819-fig35';
 import type { SymmetricSection } from '../fins/section';
 
-/** The Mach numbers the rebuilt factor serves. */
+/** The Mach numbers the rebuilt factor serves from its tunnel members up (W1). */
 export const W1_MACH_RANGE = [1.5, 3.0] as const;
+/** Below W1_MACH_RANGE: fins at the base from M 1.1 (W2's part, fig. 35's line read twice from there). */
+export const W1_LOW_MACH = 1.1;
+/**
+ * Moderate sweeps (W1b): the leading edge swept up to 45 deg with the trailing edge unswept, served at M 2.0 to
+ * 3.0 between the zero member and the unswept member (NSWCDD/TR-92/509; 0015 section 3.4).
+ */
+export const W1_MODERATE_SWEEP = {
+  leadingEdge: (45 * Math.PI) / 180,
+  mach: [2.0, 3.0],
+} as const;
 /** TN 2360's two Mach numbers: the only ones where t/c 0.05, two fins and x/c > 0 are measured. */
 export const W1_TUNNEL_MACHS = [1.5, 2.0] as const;
 /** The measured thickness ratios (circular arcs) and counts. */
@@ -150,7 +174,7 @@ export function reliefFactors(): { mach: number; factor: number }[] {
   });
 }
 
-/** The zero member's low end: the smallest relief factor, carried to every Mach number served. */
+/** The zero member's low end: the smallest relief factor, carried to every Mach number from 1.5. */
 export const W1_RELIEF_LOW = Math.min(...reliefFactors().map((r) => r.factor));
 export const ZERO_MEMBER: Band = { low: W1_RELIEF_LOW, high: 1 };
 
@@ -266,13 +290,14 @@ export interface ReferenceBand extends Band {
   readonly carried: number | undefined;
 }
 
-/** Four fins t/c 0.10 at x/c = 0: the reference member, M 1.5 to 3.0. */
+/** Four fins t/c 0.10 at x/c = 0: the reference member, M 1.1 to 3.0. */
 export function referenceBand(mach: number): ReferenceBand {
   const ff = freeFlightFactors(mach);
   if (ff.length === 0) throw new RangeError(`no reading of fig. 35's line at M ${mach}`);
   const t = interp(tunnelMax(), mach, (p) => p.factor);
   const maxFf = Math.max(...ff.map((f) => f.factor));
-  const carried = mach > 2.41 + 1e-12 ? maxFf + EXCESS : undefined;
+  // Beyond the tunnels' Mach numbers on either side (above M 2.41, and below 1.5: W2's part) the excess is carried.
+  const carried = mach > 2.41 + 1e-12 || mach < 1.5 - 1e-12 ? maxFf + EXCESS : undefined;
   return {
     low: Math.min(...ff.map((f) => f.factor - f.error)),
     high: Math.max(
@@ -365,8 +390,8 @@ export function memberBand(
   xc: number,
   mach: number,
 ): Band | undefined {
-  if (thickness === 0 || count === 0) return ZERO_MEMBER;
-  if (!(mach >= W1_MACH_RANGE[0] - 1e-12 && mach <= W1_MACH_RANGE[1] + 1e-12)) return undefined;
+  if (!(mach >= W1_LOW_MACH - 1e-12 && mach <= W1_MACH_RANGE[1] + 1e-12)) return undefined;
+  if (thickness === 0 || count === 0) return zeroMember(mach);
   const ref = referenceBand(mach);
   if (thickness === 0.1 && count === 4 && xc === 0) return { low: ref.low, high: ref.high };
   const st = stationsOf(thickness, count, mach);
@@ -485,8 +510,9 @@ export interface FinsOnBaseFactorW1 {
   readonly tauEq: number;
   readonly swept: boolean;
   /**
-   * A band-setting figure still lacks its second reading: RM L52J21a fig. 8 (the zero member's
-   * denominator; fig. 38(c), its numerator, cannot be read a second time from the scan, 0015 section 7).
+   * A band-setting input of this result has one reading: the zero member from M 1.5 (RM L52J21a fig.
+   * 38(c), which cannot be read a second time from the scan, 0015 section 7), or a moderate sweep's ordering
+   * (NSWCDD/TR-92/509 Table 2, its blind second transcription requested).
    */
   readonly secondReadingPending: boolean;
 }
@@ -517,12 +543,49 @@ export function flatPlateReliefs(): { mach: number; where: 'rim' | 'centre'; fac
 }
 export const W1_FLAT_RELIEF_LOW = Math.min(...flatPlateReliefs().map((r) => r.factor));
 
-const ZERO_NAME =
-  `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, ` +
-  'RM L52J21a fig. 38)';
-const memberName = (t: Thickness, n: Count, xc: number) =>
+/**
+ * The zero member at M: from M 1.5 down to RM L52J21a's relief (W1_RELIEF_LOW); below M 1.5 (W2's part) down
+ * to RM L52E06's relief with flat plates at the base (W1_FLAT_RELIEF_LOW), the lowest relief measured at or below
+ * M 1.5, since RM L52J21a measures none there.
+ */
+export function zeroMember(mach: number): Band {
+  return mach < W1_MACH_RANGE[0] - 1e-12 ? { low: W1_FLAT_RELIEF_LOW, high: 1 } : ZERO_MEMBER;
+}
+
+/**
+ * NSWCDD/TR-92/509's factors (fins over body alone, alpha 0, fins at the base, 43.9 deg leading edge, trailing
+ * edge unswept), each C_DB moved by its +-5% toward the ends: checks of the moderate-sweep bracket (W1b), not
+ * members.
+ */
+export function nswcFactors(): {
+  mach: number;
+  thicknessRatio: number;
+  factor: number;
+  low: number;
+  high: number;
+}[] {
+  const body = NSWC_TR92_509_TABLE2.filter((p) => p.config === 1);
+  return NSWC_TR92_509_TABLE2.filter((p) => p.config !== 1).map((p) => {
+    const b = body.find((q) => q.mach === p.mach && q.reading === p.reading)!;
+    return {
+      mach: p.mach,
+      thicknessRatio: p.thicknessRatio,
+      factor: p.cdb / b.cdb,
+      low: (p.cdb * (1 - p.relativeError)) / (b.cdb * (1 + b.relativeError)),
+      high: (p.cdb * (1 + p.relativeError)) / (b.cdb * (1 - b.relativeError)),
+    };
+  });
+}
+
+const zeroName = (mach: number) =>
+  mach < W1_MACH_RANGE[0] - 1e-12
+    ? `no fins or fins without a pressure field (F 1 down to ${W1_FLAT_RELIEF_LOW.toFixed(3)}, ` +
+      'RM L52E06 fig. 7, below M 1.5)'
+    : `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, ` +
+      'RM L52J21a fig. 38)';
+const memberName = (t: Thickness, n: Count, xc: number, mach: number) =>
   t === 0 || n === 0
-    ? ZERO_NAME
+    ? zeroName(mach)
     : `${n} unswept circular-arc fins t/c ${t.toFixed(2)} at x/c ${xc.toFixed(2)}`;
 
 export const W1_LABEL_PREFIX =
@@ -555,16 +618,33 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   const le = Math.abs(Math.atan(fins.tanLeadingEdgeSweep));
   const tes = Math.abs(Math.atan(fins.tanTrailingEdgeSweep));
   const swept = le > 1e-9 || tes > 1e-9;
-  if (
+  const measuredSwept =
+    le >= W1_SWEPT_RANGE[0] - 1e-9 && le <= W1_SWEPT_RANGE[1] + 1e-9 && tes <= le + 1e-9;
+  // W1b: the leading edge swept up to 45 deg with the trailing edge unswept, at M 2.0 to 3.0.
+  const moderate =
     swept &&
-    !(le >= W1_SWEPT_RANGE[0] - 1e-9 && le <= W1_SWEPT_RANGE[1] + 1e-9 && tes <= le + 1e-9)
-  ) {
+    !measuredSwept &&
+    tes <= 1e-9 &&
+    le < W1_MODERATE_SWEEP.leadingEdge + 1e-9 &&
+    mach >= W1_MODERATE_SWEEP.mach[0] - 1e-12 &&
+    mach <= W1_MODERATE_SWEEP.mach[1] + 1e-12;
+  const deg = (a: number) => ((a * 180) / Math.PI).toFixed(1);
+  if (swept && !measuredSwept && !moderate) {
     throw new BaseRefusal(
       'fin-sweep',
-      `fins with a leading edge swept ${((le * 180) / Math.PI).toFixed(1)} deg and a trailing edge ` +
-        `${((tes * 180) / Math.PI).toFixed(1)} deg: fins at the base are measured unswept and with the ` +
-        'leading edge swept 45 deg (RM L52J21a) and 60 deg (the RM-10, TN 3819 fig. 34), the trailing ' +
-        'edge swept no more than the leading edge (0015 section 3.4)',
+      `fins with a leading edge swept ${deg(le)} deg and a trailing edge ${deg(tes)} deg at M ${mach}: ` +
+        'fins at the base are measured unswept, with the leading edge swept 45 deg (RM L52J21a) and 60 ' +
+        'deg (the RM-10, TN 3819 fig. 34) and the trailing edge swept no more, and, at M 2.0 to 3.0 only, ' +
+        'with the leading edge swept 43.9 deg and the trailing edge unswept (NSWCDD/TR-92/509); other ' +
+        'sweeps are not measured and their ordering is not shown (0015 section 3.4)',
+    );
+  }
+  if (swept && !bounded && mach < W1_MACH_RANGE[0] - 1e-12) {
+    throw new BaseRefusal(
+      'fin-sweep',
+      `swept fins with a sharp trailing edge at M ${mach}: below M 1.5 no swept fins of such a section ` +
+        "are measured at the base (the RM-10's lowest Mach number is 1.49, RM L52J21a's 1.62); only " +
+        "RM L52E06's swept flat plates are, so only flat-faced fins are served swept there (0015 section 11)",
     );
   }
   const xc = fins.trailingEdgeAheadOfBase;
@@ -574,11 +654,12 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
       `the rebuilt factor takes fins ending 0 to 1 chord ahead of the base, got ${xc}`,
     );
   }
-  if (!(mach >= W1_MACH_RANGE[0] && mach <= W1_MACH_RANGE[1])) {
+  if (!(mach >= W1_LOW_MACH && mach <= W1_MACH_RANGE[1])) {
     throw new BaseRefusal(
       'mach-range',
-      `the rebuilt fins-on-base factor is measured at Mach ${W1_MACH_RANGE[0]} to ` +
-        `${W1_MACH_RANGE[1]} (TN 3819 fig. 35, TN 2360), asked Mach ${mach}`,
+      `the rebuilt fins-on-base factor is measured at Mach ${W1_LOW_MACH} to ` +
+        `${W1_MACH_RANGE[1]} (TN 3819 fig. 35's free-flight line, read twice from M ${W1_LOW_MACH}; ` +
+        `TN 2360), asked Mach ${mach}`,
     );
   }
   const thickness = Math.max(...section.halfThickness) * 2;
@@ -609,7 +690,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     for (const t of ts) {
       for (const n of ns) {
         const b = memberBand(t, n, xc, mach);
-        if (b !== undefined) return { thickness: t, count: n, band: b, name: memberName(t, n, xc) };
+        if (b !== undefined)
+          return { thickness: t, count: n, band: b, name: memberName(t, n, xc, mach) };
       }
     }
     return undefined;
@@ -620,6 +702,7 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         thickness: 0,
         count: 4,
         band: { low: W1_FLAT_RELIEF_LOW, high: 1 },
+        // (The same lower bound at every Mach number; below M 1.5 it is also the zero member's.)
         name:
           `the lowest relief measured with flat-faced fins at the base (F ${W1_FLAT_RELIEF_LOW.toFixed(3)}, ` +
           'RM L52E06 fig. 7 at M 1.06)',
@@ -655,10 +738,24 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         `${tr.tauEq.toFixed(3)}), not measured on this section`,
     );
   }
-  if (swept) {
+  if (moderate) {
+    reasons.push(
+      `the leading edge swept ${deg(le)} deg with the trailing edge unswept: bracketed between the zero ` +
+        "member and unswept fins, where NSWCDD/TR-92/509's 43.9 deg fins lie, linear theory moving the " +
+        "aft faces' pressures by at most 4% with the leading-edge sweep (0015 section 3.4)",
+    );
+  } else if (swept) {
     reasons.push(
       'swept fins bracketed between the zero member and unswept fins, as the measured swept fins lie ' +
-        '(RM L52J21a, the RM-10)',
+        '(RM L52J21a, the RM-10' +
+        (mach < W1_MACH_RANGE[0] - 1e-12 ? "; below M 1.5, RM L52E06's swept flat plates" : '') +
+        ')',
+    );
+  }
+  if (mach < W1_MACH_RANGE[0] - 1e-12) {
+    reasons.push(
+      "below M 1.5 the reference is TN 3819 fig. 35's free-flight line with the tunnel excess carried, " +
+        "and the zero member reaches down to RM L52E06's relief (0015 section 11)",
     );
   }
   if (count === 3) reasons.push('three fins bracketed between two (or none) and four');
@@ -684,6 +781,12 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     tauLow: tr.tauLow,
     tauEq: tr.tauEq,
     swept,
-    secondReadingPending: !L52J21A_FIG8.some((p) => p.reading === 'w1 second'),
+    // The zero member above M 1.5 rests on fig. 38(c), read once; moderate sweeps on NSWC's Table 2, read once.
+    secondReadingPending:
+      moderate ||
+      ((lower.thickness === 0 || upper.thickness === 0) &&
+        !bounded &&
+        mach >= W1_MACH_RANGE[0] - 1e-12) ||
+      !L52J21A_FIG8.some((p) => p.reading === 'w1 second'),
   };
 }

@@ -3,7 +3,8 @@
 # round6/readings/ on branch worktree-agent-adeeb9721ee747758 (TN 3819 figs. 33 to 35: 1b57563, corrected in
 # 66ad83e; TN 2360 fig. 6: 66ad83e; RM L52E06 fig. 7: 5531c84), each file's method in its method_*.md there.
 # Values and errors are the round-6 files', unchanged; the comparison with the first reading is
-# w1_compare_round6_output.txt. RM L52J21a figs. 8 and 38(c) have no second reading here (0015 section 7).
+# w1_compare_round6_output.txt. RM L52J21a fig. 8 (R 8.06e6) and figs. 31 to 33 (d) near R 8e6: dde6cd0;
+# fig. 38(c) has no second reading (0015 section 7). RM L52E06 fig. 8 (W2): 5531c84.
 # Columns: source, figure, series, M, abscissa (x/c, t/c in percent, or M), value, quantity, error, note.
 source,figure,series,M,abscissa,value,quantity,error,note
 TN 2360,6(a),plane t/c 0.05,1.5,1.0,-0.0045,dPb,0.0003,read at x/c 1.0040; LOW MARGIN
@@ -111,3 +112,51 @@ RM L52E06,7,C (fins at the base) rim,1.100,1.100,-0.2138,PB,0.0005,
 RM L52E06,7,C (fins at the base) centre,1.050,1.050,-0.2021,PB,0.0005,below the first reading's window (M 1.06 to 1.10): for the comparison only
 RM L52E06,7,C (fins at the base) centre,1.075,1.075,-0.1990,PB,0.0005,
 RM L52E06,7,C (fins at the base) centre,1.100,1.100,-0.1942,PB,0.0005,
+RM L52J21a,8,cylindrical base: ogive nose,1.62,1.617,-0.1485,PB,0.0002,
+RM L52J21a,8,cylindrical base: ogive nose,1.62,1.623,-0.1618,PB,0.0002,
+RM L52J21a,8,cylindrical base: conical nose,1.93,1.911,-0.1454,PB,0.0002,
+RM L52J21a,8,cylindrical base: radome nose,1.93,1.924,-0.1448,PB,0.0002,
+RM L52J21a,8,cylindrical base: ogive nose,1.93,1.928,-0.1515,PB,0.0002,
+RM L52J21a,8,conical base: ogive nose,2.41,2.410,-0.0687,PB,0.0002,
+RM L52J21a,8,cylindrical base: stack top symbol,1.62,1.620,-0.1499,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack bottom symbol,1.62,1.620,-0.1476,PB,0.0007,
+RM L52J21a,8,conical base: stack single symbol,1.62,1.620,-0.0445,PB,0.0007,
+RM L52J21a,8,conical base: stack single symbol,1.62,1.620,-0.0387,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack top symbol,1.93,1.930,-0.1521,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack bottom symbol,1.93,1.930,-0.1501,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack single symbol,1.93,1.930,-0.1443,PB,0.0007,
+RM L52J21a,8,conical base: stack top symbol,1.93,1.930,-0.0678,PB,0.0007,
+RM L52J21a,8,conical base: stack bottom symbol,1.93,1.930,-0.0634,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack top symbol,2.41,2.410,-0.1718,PB,0.0007,not a symbol (the panel's label or logo; W1 inspection)
+RM L52J21a,8,cylindrical base: stack bottom symbol,2.41,2.410,-0.1683,PB,0.0007,not a symbol (the panel's label or logo; W1 inspection)
+RM L52J21a,8,cylindrical base: stack top symbol,2.41,2.410,-0.1202,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack bottom symbol,2.41,2.410,-0.1124,PB,0.0007,
+RM L52J21a,8,conical base: stack top symbol,2.41,2.410,-0.0695,PB,0.0007,
+RM L52J21a,8,conical base: stack bottom symbol,2.41,2.410,-0.0604,PB,0.0007,
+RM L52J21a,8,conical base: stack top symbol,2.41,2.410,-0.0200,PB,0.0007,not a symbol (the panel's label or logo; W1 inspection)
+RM L52J21a,8,conical base: stack bottom symbol,2.41,2.410,-0.0182,PB,0.0007,not a symbol (the panel's label or logo; W1 inspection)
+RM L52J21a,31(d),radome nose (circle),1.62,7.124,-0.1349,PB,0.0002,
+RM L52J21a,31(d),conical nose (square),1.62,7.630,-0.1489,PB,0.0002,
+RM L52J21a,31(d),conical nose (square),1.62,8.788,-0.1476,PB,0.0002,
+RM L52J21a,31(d),conical nose (square),1.62,8.873,-0.1368,PB,0.0002,
+RM L52J21a,31(d),radome nose (circle),1.62,8.898,-0.1337,PB,0.0002,
+RM L52J21a,32(d),radome nose (circle),1.93,6.649,-0.1374,PB,0.0003,
+RM L52J21a,32(d),conical nose (square),1.93,6.884,-0.1512,PB,0.0003,
+RM L52J21a,32(d),radome nose (circle),1.93,7.372,-0.1386,PB,0.0003,
+RM L52J21a,32(d),radome nose (circle),1.93,8.179,-0.1387,PB,0.0003,
+RM L52J21a,32(d),ogive nose (triangle),1.93,9.111,-0.1411,PB,0.0003,
+RM L52J21a,33(d),radome nose (circle),2.41,6.549,-0.1161,PB,0.0002,
+RM L52J21a,33(d),conical nose (square),2.41,6.769,-0.1204,PB,0.0002,
+RM L52J21a,33(d),conical nose (square),2.41,6.852,-0.1176,PB,0.0002,
+RM L52J21a,33(d),ogive nose (triangle),2.41,7.286,-0.1178,PB,0.0002,
+RM L52J21a,33(d),radome nose (circle),2.41,7.288,-0.1144,PB,0.0002,
+RM L52J21a,33(d),radome nose (circle),2.41,8.103,-0.1128,PB,0.0002,
+RM L52E06,8,A (no fins) C_DB,1.050,1.050,0.2396,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.000,1.000,0.2177,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.025,1.025,0.2354,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.075,1.075,0.2338,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.100,1.100,0.2260,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.150,1.150,0.2228,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.200,1.200,0.2228,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.250,1.250,0.2225,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.280,1.280,0.2197,CDB,0.0005,

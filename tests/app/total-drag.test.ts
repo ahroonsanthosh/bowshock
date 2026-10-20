@@ -487,7 +487,8 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       expect(v.kind).toBe('refused');
       const r = reasons(v);
       expect(r).toContain('fin leading edges: leading-edge-range');
-      expect(r).toContain('body base: mach-range');
+      // The base below Mach 1.5 is served (W2), but not with the Basic Finner's wedges at it (0015).
+      expect(r).toContain('body base: fin-trailing-edge');
       if (s.mach < 1.2) expect(r).toContain('fin wave drag: detached-shock');
     }
   });

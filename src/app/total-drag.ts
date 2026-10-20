@@ -602,8 +602,9 @@ export const FINS_ON_BASE_W1_NOTE =
   'Fins-on-base factor: the present factor does not cover these fins, so the rebuilt factor ' +
   '(design record 0015) is used: a band between measured families of circular-arc fins that ' +
   "bracket these fins' section, count, sweep and position (TN 2360, TN 3819, RM L52J21a, RM " +
-  'L52E06), wider than a measurement on these fins would give. Its data are read twice, except ' +
-  'the measured relief that sets its lowest member (RM L52J21a), read once.';
+  'L52E06, NSWCDD/TR-92/509), wider than a measurement on these fins would give. Its data are read ' +
+  'twice, except the measured relief that sets its lowest member above Mach 1.5 (RM L52J21a) and, ' +
+  "for leading edges swept under 45 deg, NSWCDD/TR-92/509's table, each read once.";
 
 /** What the components' labels do not carry. */
 function notesOf(base: BodyBaseDrag | undefined): string[] {

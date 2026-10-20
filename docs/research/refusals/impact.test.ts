@@ -42,16 +42,16 @@ const CROSS_CHECK = Number(process.env.CROSS_CHECK ?? 300);
  * since lifting one alone unlocks nothing.
  */
 export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
-  // Since W1 (0015): what the rebuilt fins-on-base factor still refuses at M 1.5 to 3.0 (the present
+  // Since W1, W1b and W2 (0015): what the rebuilt fins-on-base factor still refuses at M 1.1 to 3.0 (the present
   // factor's refusals no longer arise there; below M 1.5 they belong to W2).
-  'W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)': [
+  'W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)': [
     'finsW1Sweep',
     'finsW1Thickness',
     'finsW1TrailingEdge',
     'finsW1Count',
     'finsNearBase',
   ],
-  'W2 base below Mach 1.5, with and without fins at the base': ['baseMach', 'finsAtBaseLowMach'],
+  'W2 the base below Mach 1.5 (served since 0015 section 11): what remains, the body base outside 1.0 to 3.0 and fins at the base below 1.1': ['baseMach', 'finsAtBaseLowMach'],
   'W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)': ['teThick', 'teTaper', 'teSwept', 'teMach'],
   'W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0': [
     'flatPlateLe',

@@ -129,6 +129,43 @@
   C (fins at the base) rim M 1.10: first -0.2137 (+-0.0020), second -0.2138 (+-0.0005), diff +0.0001, combined 0.0025
   A (no fins) centre M 1.10: first -0.1972 (+-0.0020), second -0.1968 (+-0.0005), diff -0.0004, combined 0.0025
   C (fins at the base) centre M 1.10: first -0.1937 (+-0.0020), second -0.1942 (+-0.0005), diff +0.0005, combined 0.0025
+=== RM L52J21a fig. 8, R = 8.06e6: each base's least negative P_B (what W1 uses: the cylindrical base)
+  cylindrical base M 1.62 least negative: first -0.1485 (+-0.0020), second -0.1476 (+-0.0007), diff -0.0009, combined 0.0027
+  cylindrical base M 1.93 least negative: first -0.1465 (+-0.0020), second -0.1443 (+-0.0007), diff -0.0022, combined 0.0027
+  cylindrical base M 2.41 least negative: first -0.1128 (+-0.0020), second -0.1124 (+-0.0007), diff -0.0004, combined 0.0027
+  conical base M 1.62 least negative (recorded, not used): first -0.0322 (+-0.0030), second -0.0387 (+-0.0007), diff +0.0065, combined 0.0037  DISAGREE
+  conical base M 1.93 least negative (recorded, not used): first -0.0617 (+-0.0020), second -0.0634 (+-0.0007), diff +0.0017, combined 0.0027
+  conical base M 2.41 least negative (recorded, not used): first -0.0598 (+-0.0020), second -0.0604 (+-0.0007), diff +0.0006, combined 0.0027
+  not symbols (W1 inspection): cylindrical base: stack top symbol M 2.41 -0.1718; cylindrical base: stack bottom symbol M 2.41 -0.1683; conical base: stack top symbol M 2.41 -0.0200; conical base: stack bottom symbol M 2.41 -0.0182
+=== RM L52J21a figs. 31 to 33 (d), unfinned, cylindrical base, R 7 to 9.5 x 10^6: first (data/w1_l52j21a_fig31_33d_output.txt) minus second, same nose, nearest R within 0.15
+  M 1.62 ogive R 7.23: first -0.1490 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.62 conical R 7.65 (second at 7.63): first -0.1490 (+-0.0020), second -0.1489 (+-0.0002), diff -0.0001, combined 0.0022
+  M 1.62 ogive R 8.03: first -0.1479 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.62 conical R 8.77 (second at 8.79): first -0.1477 (+-0.0020), second -0.1476 (+-0.0002), diff -0.0001, combined 0.0022
+  M 1.62 radome R 7.14 (second at 7.12): first -0.1350 (+-0.0020), second -0.1349 (+-0.0002), diff -0.0001, combined 0.0022
+  M 1.62 radome R 8.11: first -0.1338 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.62 radome R 8.87 (second at 8.90): first -0.1345 (+-0.0020), second -0.1337 (+-0.0002), diff -0.0008, combined 0.0022
+  M 1.93 conical R 7.29: first -0.1486 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 ogive R 7.23: first -0.1525 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 conical R 8.13: first -0.1524 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 ogive R 8.16: first -0.1520 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 conical R 9.03: first -0.1513 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 ogive R 8.92: first -0.1479 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 radome R 7.34 (second at 7.37): first -0.1379 (+-0.0020), second -0.1386 (+-0.0003), diff +0.0007, combined 0.0023
+  M 1.93 radome R 8.11 (second at 8.18): first -0.1376 (+-0.0020), second -0.1387 (+-0.0003), diff +0.0011, combined 0.0023
+  M 1.93 radome R 9.10: first -0.1401 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 ogive R 7.09: first -0.1239 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 ogive R 7.45: first -0.1222 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 conical R 7.53: first -0.1186 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 conical R 7.13: first -0.1172 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 radome R 7.29 (second at 7.29): first -0.1140 (+-0.0020), second -0.1144 (+-0.0002), diff +0.0004, combined 0.0022
+  M 2.41 radome R 7.54: first -0.1180 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 conical R 8.12: first -0.1204 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 ogive R 8.16: first -0.1198 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 radome R 8.12 (second at 8.10): first -0.1126 (+-0.0020), second -0.1128 (+-0.0002), diff +0.0002, combined 0.0022
+  M 1.62 conical R 8.87: second -0.1368 (+-0.0002) UNMATCHED: no first-reading symbol of that nose
+  M 1.93 ogive R 9.11: second -0.1411 (+-0.0003) UNMATCHED: no first-reading symbol of that nose
+  M 2.41 ogive R 7.29: second -0.1178 (+-0.0002) UNMATCHED: no first-reading symbol of that nose
 === Flagged (beyond the combined error, or found by one reader only)
   6(a) cruciform t/c 0.10 M 1.5 x/c 0.2: second -0.0644 not in the first reading
   6(a) cruciform t/c 0.10 M 1.5 x/c 1.0: second +0.0094 not in the first reading
@@ -147,4 +184,5 @@
   round 3 M 2.80
   round 3 M 2.90
   A and C centre (merged) M 1.06 against C (fins at the base) centre
-  17 flagged
+  conical base M 1.62 least negative (recorded, not used)
+  18 flagged

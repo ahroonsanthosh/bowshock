@@ -14,7 +14,9 @@ def runs_at(cal, a, u, v_lo, v_hi, W=4, T=150, L=8, gridrows=()):
         col = a[ya:yb, xi] < T
         for g in gridrows:
             gy = int(round(g(xi))) - ya
-            col[max(gy - 2, 0):gy + 3] = False
+            # A grid row above the band (gy + 3 <= 0) must not wrap round to a negative slice end.
+            if gy + 3 > 0:
+                col[max(gy - 2, 0):gy + 3] = False
         i = 0
         while i < len(col):
             if col[i]:

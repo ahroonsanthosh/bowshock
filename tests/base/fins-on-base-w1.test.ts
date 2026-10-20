@@ -13,6 +13,8 @@ import {
   L52E06_FIG7,
   L52J21A_FIG38C,
   L52J21A_FIG8,
+  NSWC_LEADING_EDGE_SWEEP_DEG,
+  NSWC_TR92_509_TABLE2,
   TN2360_FIG6,
   TN3819_FIG33,
   TN3819_FIG34,
@@ -25,6 +27,8 @@ import {
   W1_MACH_RANGE,
   W1_RELIEF_LOW,
   flatPlateReliefs,
+  nswcFactors,
+  zeroMember,
   ZERO_MEMBER,
   finsOnBaseFactorW1,
   largestTunnelExcess,
@@ -129,12 +133,20 @@ describe('the readings, held to the first- and second-reading records', () => {
       expect(Number(at.find((x) => x[2]!.includes('most positive'))![5])).toBe(p.mostPositive);
     }
     const r8 = rows('RM L52J21a', '8');
-    for (const p of L52J21A_FIG8) {
+    for (const p of of(L52J21A_FIG8, 'w1 first')) {
       const x = r8.find(
         (y) => Number(y[3]) === p.mach && y[2]!.includes(`${p.base} base: least negative`),
       )!;
       expect([Number(x[5]), Number(x[7])]).toEqual([p.leastNegative, p.error]);
     }
+    // The second (round 6): each base's least negative row, leaving out the two stacks that are not symbols.
+    const s8 = rows2('RM L52J21a', '8').filter((y) => !(y[8] ?? '').startsWith('not a symbol'));
+    for (const p of of(L52J21A_FIG8, 'w1 second')) {
+      const at = s8.filter((y) => Number(y[3]) === p.mach && y[2]!.startsWith(p.base));
+      expect(Math.max(...at.map((y) => Number(y[5])))).toBe(p.leastNegative);
+      expect(p.error).toBe(0.0007);
+    }
+    expect(of(L52J21A_FIG8, 'w1 second').length).toBe(6);
     expect(L52E06_FIG7.length).toBe(5);
     for (const p of L52E06_FIG7) {
       const r7 = p.reading === 'w1 first' ? rows('RM L52E06', '7') : rows2('RM L52E06', '7');
@@ -238,13 +250,18 @@ describe('the readings, held to the first- and second-reading records', () => {
 
 describe('the members', () => {
   it('the zero member: the largest relief at M >= 1.5, RM L52J21a fig. 38(c) over fig. 8', () => {
-    // At M 1.93: dPb +0.0055 (+0.002), cylindrical base P_B -0.1465 (+0.002 toward less suction).
-    const f = (0.1465 - 0.002) / (0.1465 - 0.002 + 0.0055 + 0.002);
+    // At M 1.93: dPb +0.0055 (+0.002), over the cylindrical base's least suction in either reading of fig.
+    // 8 toward less suction: round 6's -0.1443 (+0.0007), below the first's -0.1465 (+0.002).
+    const f = (0.1443 - 0.0007) / (0.1443 - 0.0007 + 0.0055 + 0.002);
     expect(W1_RELIEF_LOW).toBeCloseTo(f, 12);
-    expect(W1_RELIEF_LOW).toBeCloseTo(0.95066, 5);
+    expect(W1_RELIEF_LOW).toBeCloseTo(0.95036, 5);
     expect(ZERO_MEMBER).toEqual({ low: W1_RELIEF_LOW, high: 1 });
     expect(memberBand(0, 4, 0, 2.5)).toEqual(ZERO_MEMBER);
     expect(memberBand(0.1, 0, 0, 2.5)).toEqual(ZERO_MEMBER);
+    // Below M 1.5 (W2's part): down to RM L52E06's relief with flat plates.
+    expect(memberBand(0, 4, 0, 1.3)).toEqual({ low: W1_FLAT_RELIEF_LOW, high: 1 });
+    expect(zeroMember(1.3)).toEqual({ low: W1_FLAT_RELIEF_LOW, high: 1 });
+    expect(zeroMember(1.5)).toEqual(ZERO_MEMBER);
   });
 
   it('the reference at M 2.0, by hand from the readings', () => {
@@ -390,27 +407,32 @@ describe('the bands (0015 section 3.6)', () => {
   const n = 200;
   const xs = Array.from({ length: n + 1 }, (_, k) => k / n);
   const arc10: SymmetricSection = { x: xs, halfThickness: xs.map((s) => 2 * 0.1 * s * (1 - s)) };
-  const TABLE: [number, string, FinsNearBase, number, number, number][] = [
-    [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.2115, 1.4723],
-    [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.1822, 1.4137],
-    [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.1394, 1.3282],
-    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.2082, 1.4658],
-    [3.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9507, 1.2354, 1.5201],
+  const t30 = Math.tan((30 * Math.PI) / 180);
+  // [M, case, fins, low, nominal, high, second reading pending (the zero member from M 1.5 rests on fig.
+  // 38(c), read once; a moderate sweep on NSWC's Table 2, read once)].
+  const TABLE: [number, string, FinsNearBase, number, number, number, boolean][] = [
+    [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.2113, 1.4723, true],
+    [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.182, 1.4137, true],
+    [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.1393, 1.3282, true],
+    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.2081, 1.4658, true],
+    [3.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.2353, 1.5201, true],
     [
       1.8,
       'double wedge 2.4%, four fins, unswept',
       fins({ count: 4, tanLeadingEdgeSweep: 0 }),
-      0.9507,
-      1.1822,
+      0.9504,
+      1.182,
       1.4137,
+      true,
     ],
     [
       1.8,
       'bevelled plate 3%, three fins, 45 deg',
       fins({ section: hexagonal(0.03, 0.085, 0.085) }),
-      0.9507,
-      1.2532,
+      0.9504,
+      1.2531,
       1.5558,
+      true,
     ],
     [
       1.8,
@@ -419,6 +441,7 @@ describe('the bands (0015 section 3.6)', () => {
       0.8379,
       1.1258,
       1.4137,
+      false,
     ],
     [
       2.5,
@@ -427,6 +450,7 @@ describe('the bands (0015 section 3.6)', () => {
       0.8379,
       1.1518,
       1.4658,
+      false,
     ],
     [
       1.8,
@@ -435,6 +459,7 @@ describe('the bands (0015 section 3.6)', () => {
       1.2229,
       1.3893,
       1.5558,
+      false,
     ],
     [
       1.8,
@@ -443,9 +468,48 @@ describe('the bands (0015 section 3.6)', () => {
       0.9045,
       1.0892,
       1.2739,
+      true,
+    ],
+    // W1b: the leading edge swept 30 deg, the trailing edge unswept, M 2.0 to 3.0.
+    [
+      2.0,
+      'double wedge 2.4%, four fins, 30 deg, unswept trailing edge',
+      fins({ count: 4, tanLeadingEdgeSweep: t30 }),
+      0.9504,
+      1.1393,
+      1.3282,
+      true,
+    ],
+    [
+      2.5,
+      'double wedge 2.4%, three fins, 30 deg, unswept trailing edge',
+      fins({ tanLeadingEdgeSweep: t30 }),
+      0.9504,
+      1.2081,
+      1.4658,
+      true,
+    ],
+    // W2's part, below M 1.5: the zero member down to RM L52E06's relief; the reference from fig. 35's line.
+    [
+      1.2,
+      'double wedge 2.4%, three fins, unswept',
+      fins({ tanLeadingEdgeSweep: 0 }),
+      0.8379,
+      1.2654,
+      1.6928,
+      false,
+    ],
+    [
+      1.2,
+      'flat plate 2.4%, three fins, 45 deg (bounded)',
+      fins({ section: plate(0.024) }),
+      0.8379,
+      1.2654,
+      1.6928,
+      false,
     ],
   ];
-  for (const [m, name, f, low, nominal, high] of TABLE) {
+  for (const [m, name, f, low, nominal, high, pending] of TABLE) {
     it(`M ${m}: ${name}`, () => {
       const r = finsOnBaseFactorW1(m, f);
       expect(r.low).toBeCloseTo(low, 4);
@@ -453,9 +517,79 @@ describe('the bands (0015 section 3.6)', () => {
       expect(r.high).toBeCloseTo(high, 4);
       expect(r.nominal).toBeCloseTo(0.5 * (r.low + r.high), 12);
       expect(r.analogy).toBe(true);
-      expect(r.secondReadingPending).toBe(true);
+      expect(r.secondReadingPending).toBe(pending);
     });
   }
+
+  it('below Mach 1.5 the reference is the free-flight line with the tunnel excess carried', () => {
+    const noFins = Math.abs(compiledCurveValue(1.2, 'lessNegative'));
+    // Round 3's -0.2751 and round 6's -0.2750, each +-0.002 and +-0.0003.
+    const r = referenceBand(1.2);
+    expect(r.low).toBeCloseTo(Math.min(0.2751 - 0.002, 0.275 - 0.0003) / noFins, 12);
+    expect(r.high).toBeCloseTo(0.2751 / noFins + largestTunnelExcess(), 12);
+    expect(r.tunnel).toBeUndefined();
+    // A member itself at M 1.4: four unswept 10% arcs.
+    const m = finsOnBaseFactorW1(
+      1.4,
+      fins({ count: 4, section: arc10, sectionFamily: 'circular-arc', tanLeadingEdgeSweep: 0 }),
+    );
+    expect(m.analogy).toBe(false);
+    expect([m.low, m.high]).toEqual([referenceBand(1.4).low, referenceBand(1.4).high]);
+    // Below M 1.5 no ratio member: the bracket widens to the reference and the zero member.
+    expect(finsOnBaseFactorW1(1.2, fins({ tanLeadingEdgeSweep: 0 })).upper).toMatchObject({
+      thickness: 0.1,
+      count: 4,
+    });
+  });
+
+  it("the moderate-sweep bracket holds NSWCDD/TR-92/509's 43.9 deg fins (checks, not members)", () => {
+    expect(NSWC_LEADING_EDGE_SWEEP_DEG).toBeCloseTo(43.88, 2);
+    const tan = Math.tan((NSWC_LEADING_EDGE_SWEEP_DEG * Math.PI) / 180);
+    for (const p of nswcFactors()) {
+      if (p.thicknessRatio === 0.15) continue; // tauEq 0.15: the factor refuses it
+      const r = finsOnBaseFactorW1(p.mach, {
+        count: 4,
+        section: doubleWedge(p.thicknessRatio, 0.5),
+        sectionFamily: 'other',
+        tanLeadingEdgeSweep: tan,
+        tanTrailingEdgeSweep: 0,
+        trailingEdgeAheadOfBase: 0,
+      });
+      // Inside the bracket with its +-5%, and the nominal at or below the bounding member's low end but
+      // for the 10% wedge at M 2.5 (0.005 above it, 0015 section 3.4).
+      expect(p.low).toBeGreaterThan(r.low);
+      expect(p.high).toBeLessThan(r.high);
+      expect(p.factor).toBeLessThan(r.upper.band.low + 0.006);
+    }
+    // Every factor grows with thickness at each Mach number (NSWC's own increments).
+    for (const m of [2.0, 2.5, 3.0]) {
+      const at = nswcFactors().filter((p) => p.mach === m);
+      expect(at.map((p) => p.thicknessRatio)).toEqual([0.05, 0.1, 0.15]);
+      expect(at[0]!.factor).toBeLessThan(at[1]!.factor);
+      expect(at[1]!.factor).toBeLessThan(at[2]!.factor);
+    }
+  });
+
+  it('NSWCDD/TR-92/509 Table 2, held to the transcription', () => {
+    const t = readFileSync('docs/research/total-drag/data/nswc_tr92_509_table2.csv', 'utf8')
+      .split('\n')
+      .slice(1)
+      .filter((l) => l !== '')
+      .map((l) => l.split(','));
+    for (const p of NSWC_TR92_509_TABLE2) {
+      const x = t.find(
+        (y) =>
+          Number(y[0]) === p.config &&
+          Number(y[4]) === p.mach &&
+          Number(y[5]) === 0 &&
+          (p.config === 1 || Number(y[3]) === 0),
+      )!;
+      expect(Number(x[6])).toBe(p.cdb);
+      if (p.config !== 1) expect(Number(x[1])).toBe(p.thicknessRatio);
+      expect(Number(x[2] === '' ? 0 : x[2])).toBe(0);
+    }
+    expect(NSWC_TR92_509_TABLE2.length).toBe(12);
+  });
 
   it('the band is the envelope of the bracketing members', () => {
     const r = finsOnBaseFactorW1(1.8, fins());
@@ -576,12 +710,24 @@ describe('refusals', () => {
     expect(reason(() => finsOnBaseFactorW1(2, fins({ tanLeadingEdgeSweep: tan(45) })))).toBe(
       'served',
     );
+    // W1b: up to 45 deg with the trailing edge unswept, at M 2.0 to 3.0 only.
     expect(reason(() => finsOnBaseFactorW1(2, fins({ tanLeadingEdgeSweep: tan(44) })))).toBe(
+      'served',
+    );
+    expect(reason(() => finsOnBaseFactorW1(3, fins({ tanLeadingEdgeSweep: tan(20) })))).toBe(
+      'served',
+    );
+    expect(reason(() => finsOnBaseFactorW1(1.99, fins({ tanLeadingEdgeSweep: tan(44) })))).toBe(
       'fin-sweep',
     );
-    expect(reason(() => finsOnBaseFactorW1(2, fins({ tanLeadingEdgeSweep: tan(20) })))).toBe(
-      'fin-sweep',
-    );
+    expect(
+      reason(() =>
+        finsOnBaseFactorW1(
+          2.5,
+          fins({ tanLeadingEdgeSweep: tan(30), tanTrailingEdgeSweep: tan(10) }),
+        ),
+      ),
+    ).toBe('fin-sweep');
     expect(
       reason(() =>
         finsOnBaseFactorW1(
@@ -596,7 +742,18 @@ describe('refusals', () => {
       ),
     ).toBe('fin-sweep');
     expect(reason(() => finsOnBaseFactorW1(2, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
-    expect(reason(() => finsOnBaseFactorW1(1.49, fins()))).toBe('mach-range');
+    // Below M 1.5 (W2's part): from M 1.1; swept fins only with flat faces; no position ahead of the base.
+    expect(reason(() => finsOnBaseFactorW1(1.09, fins({ tanLeadingEdgeSweep: 0 })))).toBe(
+      'mach-range',
+    );
+    expect(reason(() => finsOnBaseFactorW1(1.1, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
+    expect(reason(() => finsOnBaseFactorW1(1.49, fins()))).toBe('fin-sweep');
+    expect(reason(() => finsOnBaseFactorW1(1.49, fins({ section: plate(0.024) })))).toBe('served');
+    expect(
+      reason(() =>
+        finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.5 })),
+      ),
+    ).toBe('fins-near-base');
     expect(reason(() => finsOnBaseFactorW1(3.01, fins()))).toBe('mach-range');
     expect(reason(() => finsOnBaseFactorW1(3.0, fins()))).toBe('served');
     expect(reason(() => finsOnBaseFactorW1(2.2, fins({ trailingEdgeAheadOfBase: 0.5 })))).toBe(

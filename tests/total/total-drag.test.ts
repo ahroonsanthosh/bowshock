@@ -369,8 +369,8 @@ describe('refusals', { timeout: 60_000 }, () => {
 
   it('boat-tails; the fins-on-base factor below M 1.8; a laminar base', () => {
     expect(refusals({ ...sharp, afterbody: 'boat-tail' })).toEqual(['body base: afterbody']);
-    // Below M 1.8 the present factor refuses and the rebuilt one (0015) serves these sharp fins;
-    // below M 1.5 the body base itself is refused.
+    // Below M 1.8 the present factor refuses and the rebuilt one (0015) serves these sharp fins, down
+    // to M 1.1 (W2's part, 0015 section 11); below M 1.1 the body base is refused.
     expect(refusals(sharp, 1.6)).toEqual([]);
     const at16 = finnedBodyComponents(
       sharp,
@@ -379,15 +379,22 @@ describe('refusals', { timeout: 60_000 }, () => {
     );
     expect(at16.base?.finsOnBaseSource).toBe('rebuilt');
     expect(at16.base?.presentRefusal?.reason).toBe('mach-range');
-    expect(refusals(sharp, 1.45)).toEqual(['body base: mach-range']);
+    expect(refusals(sharp, 1.45)).toEqual([]);
+    const at12 = finnedBodyComponents(
+      sharp,
+      { ...conditions, mach: 1.2 },
+      exactConeNoseWaveDrag(1.2, 10 * deg),
+    );
+    expect(at12.base?.finsOnBaseSource).toBe('rebuilt');
+    expect(at12.base?.curveBand.source).toBe('w2');
     expect(
       refusals({ ...sharp, fins: { ...sharp.fins, section: singleWedge(0.08) } }, 1.6),
     ).toEqual(['body base: fin-trailing-edge']);
     expect(refusals(sharp, 2.4, [2e7])).toEqual(['body base: laminar-base']);
   });
 
-  it('a detached fin shock and the base below M 1.5 together', () => {
-    expect(refusals(sharp, 1.1)).toEqual([
+  it('a detached fin shock and the base below M 1.1 together', () => {
+    expect(refusals(sharp, 1.08)).toEqual([
       'fin wave drag: detached-shock',
       'body base: mach-range',
     ]);

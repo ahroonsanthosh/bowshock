@@ -300,11 +300,15 @@ describe('refusals', () => {
     baseAreaRatio: 1,
   };
 
-  it('Mach numbers outside 1.5 to 3.0', () => {
+  it('Mach numbers outside 1.0 to 3.0 (below 1.5, W2: tests/base/base-w2.test.ts)', () => {
     expect(COMPILED_CURVE_MACH_RANGE).toEqual([1.5, 3.0]);
-    for (const mach of [1.0, 1.2, 1.4999, 3.0001, 3.5]) {
+    for (const mach of [0.5, 0.9999, 3.0001, 3.5]) {
       refusedWith('mach-range', () => bodyBaseDrag({ ...base, mach }));
     }
+    for (const mach of [1.0, 1.2, 1.4999]) {
+      expect(bodyBaseDrag({ ...base, mach }).curveBand.source).toBe('w2');
+    }
+    expect(bodyBaseDrag({ ...base, mach: 1.5 }).curveBand.source).toBe('compiled');
   });
 
   it('boat-tails and flares', () => {

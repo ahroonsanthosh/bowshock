@@ -15,8 +15,9 @@ by the solver or the page.
 | `edges.test.ts` | The parameters the fin-edge packages turn on, over the same cases: the trailing edges' thin-layer parameter, the leading edges' normal Mach and Reynolds numbers, the trailing-edge angle of fins at the base |
 | `w1b-w2-probe.test.ts`, `out/w1b-w2-probe.out` | The expected coverage of the proposals after W1 (`../total-drag/data/w1b_w2_proposal.md`): moderately swept fins at the base and W2, each applied to the same cases by editing their refusals, the rest asked of the library |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
-| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables; since W1 ([0015](../../design/0015-fins-at-the-base.md)), `impact.out` and `.json` are the run with the rebuilt fins-on-base factor, which `evaluate.ts` asks through `bodyBaseDrag` itself |
+| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables; since W1 ([0015](../../design/0015-fins-at-the-base.md)), `impact.out` and `.json` are the run with the rebuilt fins-on-base factor, which `evaluate.ts` asks through `bodyBaseDrag` itself, and since W1b and W2 the base from Mach 1.0 |
 | `out/impact-before-w1.out`, `out/impact-before-w1.json` | The run as 0014 quotes it, before the rebuilt factor (kept unchanged) |
+| `out/impact-after-w1.out`, `out/impact-after-w1.json` | The run after W1 alone (0015 section 8), before W1b and W2; `impact.out` now has both |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
