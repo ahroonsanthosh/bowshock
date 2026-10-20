@@ -13,6 +13,7 @@ by the solver or the page.
 | `evaluate.ts` | Every refusal a rocket at a condition triggers, each tested on its own (mirroring the code named in 0014's inventory), and the library's own verdict for the cross-check |
 | `impact.test.ts` | The run: outcome per Mach band, rate per refusal, sole blockers, the work packages (the share each is needed for, the greedy order, totals after each step of 0014's order), the altitude ends, two sensitivity variants, the cross-check against `src/total` |
 | `edges.test.ts` | The parameters the fin-edge packages turn on, over the same cases: the trailing edges' thin-layer parameter, the leading edges' normal Mach and Reynolds numbers, the trailing-edge angle of fins at the base |
+| `w1b-w2-probe.test.ts`, `out/w1b-w2-probe.out` | The expected coverage of the proposals after W1 (`../total-drag/data/w1b_w2_proposal.md`): moderately swept fins at the base and W2, each applied to the same cases by editing their refusals, the rest asked of the library |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
 | `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables; since W1 ([0015](../../design/0015-fins-at-the-base.md)), `impact.out` and `.json` are the run with the rebuilt fins-on-base factor, which `evaluate.ts` asks through `bodyBaseDrag` itself |
 | `out/impact-before-w1.out`, `out/impact-before-w1.json` | The run as 0014 quotes it, before the rebuilt factor (kept unchanged) |

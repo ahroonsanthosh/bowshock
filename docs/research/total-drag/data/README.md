@@ -40,6 +40,7 @@ the second pending, none using Basic Finner drag data.
 | bf_gate_width_v2_output.txt (0010) | Basic Finner gate sizing corrected (F on the less negative curve, fin friction once, 0010's F band, wall input); reproduces 0010's tolerances |
 | band_sum_v2_output.txt (0010) | The illustrative band combination with 0010's fins-on-base half-width (12.2%) |
 | fins_at_base_w1.md, fins_at_base_w1.csv, w1_*_output.txt (0015) | First readings for the rebuilt fins-on-base factor (W1 of 0014): TN 2360 fig. 6, TN 3819 figs. 33 to 35, RM L52J21a figs. 8 and 38(c), RM L52E06 fig. 7; method, calibration and errors; the second, blind reading pending |
+| w1b_w2_proposal.md, nswc_tr92_509_table2.csv | Research after W1, not implemented: moderately swept fins at the base (NSWCDD/TR-92/509, proposed for registration; its Table 2 at alpha 0, first transcription) and W2, the body base below Mach 1.5 (planning values from registered figures); proposals, bands, coverage and the readings owed |
 | *_output.txt (others) | Raw outputs of the scripts below |
 
 Scripts (in `../scripts/`, Python 3, numpy and Pillow only):
