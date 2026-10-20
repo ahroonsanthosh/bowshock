@@ -1,8 +1,9 @@
 /**
  * The total drag library (src/total): the linear combination of bands, the
  * components of a finned body against independent computations, the input
- * bands, and the refusals. Recorded in docs/design/0010-base-drag-and-total.md,
- * section 3.
+ * bands (the transition input as states of the boundary layer, round 5),
+ * and the refusals. Recorded in docs/design/0010-base-drag-and-total.md,
+ * sections 3 and 10.
  */
 
 import { describe, expect, it } from 'vitest';
@@ -18,6 +19,7 @@ import { flatPlateFriction } from '../../src/friction/flat-plate';
 import {
   BODY_FRICTION_BAND,
   FINS_OWN_DRAG_BAND,
+  finnedBodyComponents,
   finnedBodyTotalDrag,
   type FinnedBody,
 } from '../../src/total/finned-body';
@@ -246,25 +248,80 @@ describe(
       expect(c.cd).toBeCloseTo((4 * w.cd * g.faceRise) / Math.tan(g.faceAngle) / area, 15);
     });
 
-    it('the trailing edges: src/base with the edges in the base plane, and the laminar input', () => {
-      const t = finTrailingEdgeBaseDrag({
-        mach: 2.4,
-        count: 4,
-        thickness: 0.06,
-        span: 1,
-        chord: 1,
-        tanSweep: 0,
-        inBasePlane: true,
-        layer: 'turbulent',
-        reynoldsPerLength: 1.5e6,
-        transitionReynolds: [5e5, 3e6],
-        referenceArea: area,
-      });
+    const te = finTrailingEdgeBaseDrag({
+      mach: 2.4,
+      count: 4,
+      thickness: 0.06,
+      span: 1,
+      chord: 1,
+      tanSweep: 0,
+      inBasePlane: true,
+      layer: 'turbulent',
+      reynoldsPerLength: 1.5e6,
+      transitionReynolds: [5e5, 3e6],
+      referenceArea: area,
+    });
+
+    it('the trailing edges: src/base with the edges in the base plane', () => {
       const c = byName('fin trailing-edge base');
-      expect([c.cd, c.low, c.high]).toEqual([t.cd, t.low, t.high]);
+      expect([c.cd, c.low, c.high]).toEqual([te.cd, te.low, te.high]);
       expect(c.label.startsWith('an analogy, not a measurement')).toBe(true);
-      const input = total.inputs.find((i) => i.name === 'transition at the fin trailing edges')!;
-      expect([input.low, input.high]).toEqual([t.laminarInput.low, t.laminarInput.high]);
+    });
+
+    it('the transition input: each Re_T one state, friction and the trailing edges together, the body also turbulent', () => {
+      // Independently: the friction change of each run, on the body and on the fins.
+      const body = (reT?: number) =>
+        bodyFriction(blunt.body, {
+          method: 'momentum-integral',
+          ...conditions,
+          ...(reT === undefined ? {} : { transitionReynolds: reT }),
+        }).cd;
+      const fins = (reT?: number) =>
+        (4 *
+          2 *
+          flatPlateFriction({
+            mach: 2.4,
+            temperature: 290,
+            ...(reT === undefined ? {} : { transitionReynolds: reT }),
+          }).averageCf(1.5e6)) /
+        area;
+      // Re_c = 1.5e6: the run to 5e5 leaves the trailing edges turbulent, the run to 3e6
+      // leaves the fins laminar along their whole chord, and their base laminar with them.
+      const lam = te.laminarTerm!;
+      const expected = [
+        [body(5e5) - body() + fins(5e5) - fins(), 0, 0],
+        [fins(5e5) - fins(), 0, 0],
+        [body(3e6) - body() + fins(3e6) - fins(), lam.low - te.cd, lam.high - te.cd],
+        [fins(3e6) - fins(), lam.low - te.cd, lam.high - te.cd],
+      ];
+      const parts = finnedBodyComponents(blunt, conditions, nose(), {
+        transitionReynolds: [5e5, 3e6],
+      });
+      const states = parts.transitionStates;
+      expect(states.map((x) => [x.reynolds, x.bodyTurbulent, x.laminarTrailingEdge])).toEqual([
+        [5e5, false, false],
+        [5e5, true, false],
+        [3e6, false, true],
+        [3e6, true, true],
+      ]);
+      states.forEach((x, k) => {
+        const [friction, lo, hi] = expected[k]!;
+        expect(x.friction).toBeCloseTo(friction!, 14);
+        expect(x.low).toBeCloseTo(friction! + lo!, 14);
+        expect(x.high).toBeCloseTo(friction! + hi!, 14);
+      });
+      const input = total.inputs.find((i) => i.name === 'transition')!;
+      expect(input.low).toBe(Math.min(0, ...states.map((x) => x.low)));
+      expect(input.high).toBe(Math.max(0, ...states.map((x) => x.high)));
+      expect(total.inputs.map((i) => i.name)).toEqual(['transition', 'roughness']);
+      // The laminar fins' friction falls by more than the laminar base can rise, so no
+      // state lies above the turbulent nominal; the second run's arithmetic added the
+      // trailing edges' high end on its own, a state no boundary layer reaches.
+      expect(fins(3e6) - fins() + (lam.high - te.cd)).toBeLessThan(0);
+      expect(input.high).toBe(0);
+      expect(te.laminarInput.high).toBeGreaterThan(0);
+      expect(input.label).toMatch(/one state of the boundary layer/);
+      expect(input.label).toMatch(/TR 1109 fig\. 29/);
     });
   },
 );

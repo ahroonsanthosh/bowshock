@@ -58,7 +58,20 @@
  * linear extrapolation of the end interval (flagged); further out, in
  * either reading, the input is refused. This replaces 0008's fixed -13%
  * to +26%, computed at two read points for the whole Reynolds-number
- * range.
+ * range. The term in the laminar state is returned as `laminarTerm`;
+ * src/total adds it to the friction of the same state (a fin laminar at
+ * its trailing edge is laminar along its whole chord), never on its own.
+ *
+ * The envelope over M 1.5, 2.0 and 3.1 is kept near M 3, where its high
+ * end is the M 1.5 ratio (1.26 to 1.32) and TR 1109's own ratio at M 3.1
+ * is 0.92 to 0.97 for these abscissas: the reasoning is in 0010 section
+ * 10 (round 5, finding 8).
+ *
+ * The vacuum bound (./vacuum.ts): the term, its band's ends and the
+ * laminar state's ends are each at most 2 / (gamma M^2) n h s / A_ref,
+ * clamped there (`vacuumClamped` lists what was). Without the clamp the
+ * envelope's M 1.5 ratio, applied at M 2.97, implies a negative absolute
+ * base pressure (round 5, finding 8).
  */
 
 import {
@@ -78,6 +91,7 @@ import {
   type Tr1109Curve,
 } from './blunt-te-2d';
 import { BaseRefusal } from './refusal';
+import { vacuumBaseDrag } from './vacuum';
 
 const GAMMA = 1.4;
 
@@ -386,10 +400,22 @@ export interface FinTrailingEdgeBase {
   readonly label: string;
   /** c / [h Re_c^(1/5)]. */
   readonly thinLayerParameter: number;
-  /** The transition input's change of the term, C_D (zero when the edge stays turbulent). */
+  /** The chord Reynolds number; a transition input at or above it leaves the edge laminar. */
+  readonly chordReynolds: number;
+  /** The vacuum bound on the term, C_D: 2 / (gamma M^2) n h s / A_ref. No value here exceeds it. */
+  readonly vacuum: number;
+  /** The term with a laminar layer at the edge, C_D: the laminar ratio's ends times the term, at most the vacuum bound. */
+  readonly laminarTerm: { readonly low: number; readonly high: number } | undefined;
+  /**
+   * The term's change from turbulent to laminar, C_D, with zero (zero when
+   * no transition input reaches the edge). The band beside the term; a
+   * total adds the laminar term to the friction of the same state instead.
+   */
   readonly laminarInput: { readonly low: number; readonly high: number };
   /** The laminar ratio, when a transition input reaches the trailing edge. */
   readonly laminar: LaminarRatio | undefined;
+  /** The values the vacuum bound clamped, by name ('term', 'band high end', 'laminar high end', ...). */
+  readonly vacuumClamped: readonly string[];
 }
 
 export const FIN_TRAILING_EDGE_LABEL_ANALOGY =
@@ -420,8 +446,12 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
       pB: 0,
       label: 'sharp trailing edges: no base',
       thinLayerParameter: Infinity,
+      chordReynolds: reynoldsPerLength * chord,
+      vacuum: 0,
+      laminarTerm: undefined,
       laminarInput: { low: 0, high: 0 },
       laminar: undefined,
+      vacuumClamped: [],
     };
   }
   const [lo, hi] = FIN_TRAILING_EDGE_MACH_RANGE;
@@ -457,23 +487,39 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
     );
   }
   const pB = thinLayerBasePressure(mach);
-  const cd = (-pB * count * thickness * span) / referenceArea;
+  const area = (count * thickness * span) / referenceArea;
+  const vacuum = vacuumBaseDrag(mach, GAMMA) * area;
+  const vacuumClamped: string[] = [];
+  const atMostVacuum = (value: number, what: string) => {
+    if (value <= vacuum) return value;
+    vacuumClamped.push(what);
+    return vacuum;
+  };
+  const cd = atMostVacuum(-pB * area, 'term');
   const reaches = (input.transitionReynolds ?? []).some((reT) => reT >= reChord);
   const laminar = reaches ? laminarOverTurbulent(chord / thickness, reChord) : undefined;
+  const laminarTerm =
+    laminar === undefined
+      ? undefined
+      : {
+          low: atMostVacuum(laminar.low * cd, 'laminar low end'),
+          high: atMostVacuum(laminar.high * cd, 'laminar high end'),
+        };
   return {
     cd,
-    low: FIN_TRAILING_EDGE_BAND.low * cd,
-    high: FIN_TRAILING_EDGE_BAND.high * cd,
+    low: atMostVacuum(FIN_TRAILING_EDGE_BAND.low * cd, 'band low end'),
+    high: atMostVacuum(FIN_TRAILING_EDGE_BAND.high * cd, 'band high end'),
     pB,
     label: input.inBasePlane ? FIN_TRAILING_EDGE_LABEL_ANALOGY : FIN_TRAILING_EDGE_LABEL_FREE,
     thinLayerParameter: thin,
+    chordReynolds: reChord,
+    vacuum,
+    laminarTerm,
     laminarInput:
-      laminar === undefined
+      laminarTerm === undefined
         ? { low: 0, high: 0 }
-        : {
-            low: Math.min(0, (laminar.low - 1) * cd),
-            high: Math.max(0, (laminar.high - 1) * cd),
-          },
+        : { low: Math.min(0, laminarTerm.low - cd), high: Math.max(0, laminarTerm.high - cd) },
     laminar,
+    vacuumClamped,
   };
 }

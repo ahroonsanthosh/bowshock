@@ -23,10 +23,18 @@
  *
  * - transition: a laminar run to each Reynolds number given (on the
  *   surface distance from the tip, and from each fin's leading edge),
- *   against fully turbulent; a laminar layer at the base refuses the base;
- *   where it leaves a fin laminar at its blunt trailing edge, the
- *   trailing-edge term's laminar-against-turbulent change is a further
- *   input band;
+ *   against fully turbulent; a laminar layer at the base refuses the base.
+ *   Each Reynolds number is one state of the boundary layer, and every
+ *   component it reaches changes together: the friction of the body and
+ *   of the fins and, where the run reaches a fin's blunt trailing edge
+ *   (Re_T at least the chord Reynolds number, so the fin is laminar along
+ *   its whole chord), the trailing-edge base at its laminar value
+ *   (src/base/fin-trailing-edge.ts, at most the vacuum bound). Since the
+ *   body's transition need not follow the fins', each state is also taken
+ *   with the body turbulent. The input's ends are the lowest and highest
+ *   change over the states and the fully turbulent nominal (zero); no end
+ *   of one component is added to an end of another from a different state
+ *   (0010 section 10, round 5, finding 7);
  * - wall temperature: the change from the adiabatic wall to the
  *   temperature given (0007's band is measured on adiabatic walls only;
  *   the change is van Driest II's and the laminar solution's, not
@@ -42,16 +50,26 @@
  * blunt trailing edge on a fin of varying chord, and a transition input
  * that leaves the boundary layer laminar at the base.
  *
- * Not represented, with their sizes where known (0010): the fins' roots
- * do not remove body wetted area; fin-body interference and the body's
- * boundary layer at the fin roots; the Mach number and pressure ahead of
- * the base are the free stream's (fig. 18's abscissa for cylindrical
- * afterbodies); fin cant and roll; a nose-tip bluntness; the rounded
- * leading edge's effect on the fin faces (the analogy's stated gap).
+ * Not represented, with their sizes where known (0010 section 3): the
+ * nose's friction at its own surface state (it is taken at the free
+ * stream's edge conditions; on the Basic Finner's 10 deg cone about
+ * +0.0012 to +0.0035 in C_D omitted, round 5); the fins' roots do not
+ * remove body wetted area and the fins' tip faces carry no friction (net
+ * +0.0003 omitted on the Basic Finner); fin-body interference and the
+ * body's boundary layer at the fin roots; the Mach number and pressure
+ * ahead of the base are the free stream's (fig. 18's abscissa for
+ * cylindrical afterbodies); fin cant and roll; a nose-tip bluntness; the
+ * rounded leading edge's effect on the fin faces (the analogy's stated
+ * gap). If the trailing-edge term is refused, its laminar change is in no
+ * transition state; the total is refused then anyway.
  */
 
 import { bodyBaseDrag, type BodyBaseDrag } from '../base/base-drag';
-import { FIN_TRAILING_EDGE_BAND, finTrailingEdgeBaseDrag } from '../base/fin-trailing-edge';
+import {
+  FIN_TRAILING_EDGE_BAND,
+  finTrailingEdgeBaseDrag,
+  type FinTrailingEdgeBase,
+} from '../base/fin-trailing-edge';
 import { BaseRefusal } from '../base/refusal';
 import { finWaveDrag } from '../fins/fin-wave-drag';
 import { chordAt, planformArea, type Planform } from '../fins/planform';
@@ -123,6 +141,23 @@ export interface DragInputs {
   readonly roughness?: { readonly low: number; readonly high: number; readonly source: string };
 }
 
+/** One state of the transition input: a laminar run to one Reynolds number, every component it reaches changed together. */
+export interface TransitionState {
+  /** The run's Reynolds number, on the surface distance from the tip and from each fin's leading edge. */
+  readonly reynolds: number;
+  /** True when the body is taken turbulent and only the fins carry the run. */
+  readonly bodyTurbulent: boolean;
+  /** Friction against fully turbulent, C_D: the body's (unless bodyTurbulent) and the fins'. */
+  readonly friction: number;
+  /** True when the run reaches the fins' blunt trailing edges (Re_T at least Re_c). */
+  readonly laminarTrailingEdge: boolean;
+  /** The trailing-edge base's change in this state, C_D (zero while the edges stay turbulent). */
+  readonly trailingEdge: { readonly low: number; readonly high: number };
+  /** The state's change of the total, C_D: friction plus the trailing-edge change. */
+  readonly low: number;
+  readonly high: number;
+}
+
 export interface FinnedBodyComponents {
   /** The components that could be computed. */
   readonly components: readonly DragComponent[];
@@ -130,6 +165,8 @@ export interface FinnedBodyComponents {
   readonly refusals: readonly ComponentRefusal[];
   /** The body base's breakdown, when computed. */
   readonly base: BodyBaseDrag | undefined;
+  /** The states behind the transition input band (empty without a transition input). */
+  readonly transitionStates: readonly TransitionState[];
 }
 
 interface FrictionSettings {
@@ -284,43 +321,32 @@ export function finnedBodyComponents(
     refusals.push(refusalOf('fin wave drag', e));
   }
 
-  // Inputs.
-  const inputBands: InputBand[] = [];
+  // Inputs. The friction of each transition state; the states are formed
+  // once the trailing edges' laminar term is known (below).
   const transitions = inputs.transitionReynolds ?? [];
+  const runs = transitions.map((reT) => {
+    if (!(reT > 0 && Number.isFinite(reT))) {
+      throw new RangeError(`a transition Reynolds number must be positive and finite, got ${reT}`);
+    }
+    const f = frictionCds(config, conditions, { transitionReynolds: reT });
+    return { reT, body: f.body - nominal.body, fins: f.fins - nominal.fins };
+  });
   // A transition input at or beyond the base leaves the layer laminar there.
   const laminarBase = transitions.some((reT) => reT >= nominal.surfaceReynolds);
-  if (transitions.length > 0) {
-    const deltas = transitions.map((reT) => {
-      if (!(reT > 0 && Number.isFinite(reT))) {
-        throw new RangeError(
-          `a transition Reynolds number must be positive and finite, got ${reT}`,
-        );
-      }
-      const f = frictionCds(config, conditions, { transitionReynolds: reT });
-      return f.body + f.fins - nominal.body - nominal.fins;
-    });
-    inputBands.push({
-      name: 'transition',
-      low: Math.min(0, ...deltas),
-      high: Math.max(0, ...deltas),
-      label:
-        `input: a laminar run to Re_T = ${transitions.map((t) => t.toExponential(2)).join(', ')} ` +
-        'against fully turbulent (0008 section 2.3)',
-    });
-  }
+  let wallBand: InputBand | undefined;
   if (inputs.wallTemperature !== undefined) {
     const f = frictionCds(config, conditions, { wallTemperature: inputs.wallTemperature });
     const d = f.body + f.fins - nominal.body - nominal.fins;
-    inputBands.push({
+    wallBand = {
       name: 'wall temperature',
       low: Math.min(0, d),
       high: Math.max(0, d),
       label:
         `input: the wall from adiabatic to ${inputs.wallTemperature} K; 0007's friction band is ` +
         'measured on adiabatic walls only',
-    });
+    };
   }
-  inputBands.push(
+  const roughnessBand: InputBand =
     inputs.roughness === undefined
       ? {
           name: 'roughness',
@@ -333,8 +359,7 @@ export function finnedBodyComponents(
           low: inputs.roughness.low,
           high: inputs.roughness.high,
           label: `input: roughness, ${inputs.roughness.source}`,
-        },
-  );
+        };
 
   // Body base.
   let base: BodyBaseDrag | undefined;
@@ -364,6 +389,7 @@ export function finnedBodyComponents(
   }
 
   // Fin trailing-edge base: none for sharp trailing edges.
+  let te: FinTrailingEdgeBase | undefined;
   if (fins.section.bluntTrailingEdge === true) {
     const h = fins.section.halfThickness;
     try {
@@ -374,7 +400,7 @@ export function finnedBodyComponents(
             'chord Reynolds number then hold along the span)',
         );
       }
-      const te = finTrailingEdgeBaseDrag({
+      te = finTrailingEdgeBaseDrag({
         mach: conditions.mach,
         count: fins.count,
         thickness: 2 * h[h.length - 1]! * fins.planform.rootChord,
@@ -395,24 +421,70 @@ export function finnedBodyComponents(
         label: te.label,
         band: `two-dimensional base pressure, ${FIN_TRAILING_EDGE_BAND.low} to ${FIN_TRAILING_EDGE_BAND.high} (0008 section 3.4, 0010 section 5)`,
       });
-      if (te.laminar !== undefined) {
-        inputBands.push({
-          name: 'transition at the fin trailing edges',
-          low: te.laminarInput.low,
-          high: te.laminarInput.high,
-          label:
-            'input: laminar against turbulent trailing-edge base drag (TR 1109 fig. 29, ' +
-            `${te.laminar.low.toFixed(3)} to ${te.laminar.high.toFixed(3)} at c/[h Re^(1/2)] ` +
-            `${te.laminar.laminarAbscissa.toFixed(4)})` +
-            (te.laminar.extrapolated ? ', extrapolated within one read interval' : ''),
-        });
-      }
     } catch (e) {
+      te = undefined;
       refusals.push(refusalOf('fin trailing-edge base', e));
     }
   }
 
-  return { components, inputs: inputBands, refusals, base };
+  // The transition input: each Reynolds number one state of the boundary
+  // layer, on the body and the fins, or on the fins with the body turbulent.
+  const laminarEdge =
+    te?.laminarTerm === undefined
+      ? undefined
+      : {
+          chordReynolds: te.chordReynolds,
+          low: te.laminarTerm.low - te.cd,
+          high: te.laminarTerm.high - te.cd,
+        };
+  const transitionStates: TransitionState[] = [];
+  for (const run of runs) {
+    const laminarTrailingEdge = laminarEdge !== undefined && run.reT >= laminarEdge.chordReynolds;
+    const trailingEdge = laminarTrailingEdge
+      ? { low: laminarEdge.low, high: laminarEdge.high }
+      : { low: 0, high: 0 };
+    for (const bodyTurbulent of [false, true]) {
+      const friction = (bodyTurbulent ? 0 : run.body) + run.fins;
+      transitionStates.push({
+        reynolds: run.reT,
+        bodyTurbulent,
+        friction,
+        laminarTrailingEdge,
+        trailingEdge,
+        low: friction + trailingEdge.low,
+        high: friction + trailingEdge.high,
+      });
+    }
+  }
+  const inputBands: InputBand[] = [];
+  if (runs.length > 0) {
+    const lam = te?.laminar;
+    const teLabel =
+      te === undefined || lam === undefined
+        ? ''
+        : "; where the run reaches the fins' trailing edges, their base laminar with them " +
+          `(TR 1109 fig. 29, ${lam.low.toFixed(3)} to ${lam.high.toFixed(3)} of the term at ` +
+          `c/[h Re^(1/2)] ${lam.laminarAbscissa.toFixed(4)}` +
+          (lam.extrapolated ? ', extrapolated within one read interval' : '') +
+          (te.vacuumClamped.includes('laminar high end')
+            ? ', the high end clamped at the vacuum bound'
+            : '') +
+          ')';
+    inputBands.push({
+      name: 'transition',
+      low: Math.min(0, ...transitionStates.map((x) => x.low)),
+      high: Math.max(0, ...transitionStates.map((x) => x.high)),
+      label:
+        `input: a laminar run to Re_T = ${transitions.map((t) => t.toExponential(2)).join(', ')} ` +
+        'against fully turbulent, each Re_T one state of the boundary layer, the body also ' +
+        'taken turbulent (0008 section 2.3, 0010 section 3)' +
+        teLabel,
+    });
+  }
+  if (wallBand !== undefined) inputBands.push(wallBand);
+  inputBands.push(roughnessBand);
+
+  return { components, inputs: inputBands, refusals, base, transitionStates };
 }
 
 /** The total, or TotalDragRefusal listing every component refused. */
