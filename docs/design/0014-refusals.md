@@ -455,6 +455,21 @@ to F7.
   wedges, until a planar blunt solve measures it (0008 B4).
 - _Stays refused._ The transonic normal-Mach gap unless bridged; Re_D
   outside 6.7e3 to 1e6.
+- _Amended 2026-10-20 (0016 section 11), accepted by the coordinator
+  before any hold-out run._ (d) on flat plates from normal Mach number
+  1.0: NASA CR-149372 (Macha) measures the cylinder's front side at M 1.0,
+  1.1 and 1.2 (figs. 8b and 5), where the normal flow is sonic or faster
+  and the plate's nose sees the cylinder's flow. Between its 1.2 and TN
+  2960's 1.49 the ratios either side do not agree (0.90 and 0.99), so the
+  condition above fails; the gap is bridged instead by the
+  bracketing-node band, from the lower node's lowest reading to the upper
+  node's highest, each with its error, on the measured monotone rise of
+  the ratio at every node pair (0.77, 0.835, 0.90, 0.994, 1.035, 1.049 at
+  M 1.0 to 2.9) and its physical approach to modified Newtonian as the
+  normal Mach number rises, and the term there is labelled "an analogy,
+  interpolated across an unmeasured Mach range". Below M_n 1.49 the sweep
+  allowance, extrapolated from M_n 3.4, is twice its measured deviation
+  from 1. Below M_n 1.0 the gap stays refused.
 - _Hold-out._ The PARD standard body's totals, whose fins are exactly
   this edge (section 10). RM L52E06 fig. 11, their drag increments, is
   derived from held-back totals and sets nothing.
