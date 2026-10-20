@@ -952,8 +952,13 @@ section 7 of each).
   validated" until another set tests it.
 - RM A51J25 fig. 7's curve below M' 1.50 (read once; under the PARD
   symbols, not checkable); the band's domain starts at M 1.5.
-- The Basic Finner report's refs. 3 to 5 (BRL Reports 934 and 799, BuOrd
-  Ballistic Technical Note 5), not reached by the reader.
+- The Basic Finner report's refs. 3 to 5: BRL Report 934 (MacAllister
+  1955, the Basic Finner in the BRL spark range) is transcribed as a
+  candidate second hold-out
+  (`docs/research/total-drag/data/basic_finner_brl934.md`), not yet read
+  by a second reader and not run; its fin leading-edge radius is not
+  stated, which changes both the drag and the refusals. BRL Report 799
+  and BuOrd Ballistic Technical Note 5 were not reached.
 - The rounded edge's effect on the fin faces (entropy layer,
   overexpansion), the analogy's gap: planar shock fitting (0008 B4).
 - A measurement of a cylinder's front side near Re_D 1e4 at M 1.5 to 2.5.
