@@ -98,6 +98,8 @@ def scan(mask, clean, shapes, region, thr=0.62, nms=9, stroke=5.0, need_dot=Fals
     for c in kept:
         sh = c["sh"]
         c["name"] = sh["name"]
+        if sh.get("dot_name") and mask[max(0, c["y"] - 4):c["y"] + 5, max(0, c["x"] - 4):c["x"] + 5].sum() >= sh.get("dot_px", 8):
+            c["name"] = sh["dot_name"]
         c["flag"] = None
         if sh.get("flag"):
             fr = flag_ink(clean, c["x"], c["y"], sh["r"], sh["flag"]["angle"])

@@ -50,11 +50,15 @@ def main():
                 d = abs(np.interp(x, px, py) - Y)
                 if best is None or d < best[0]:
                     best = (d, c)
+            if best is None and A.get("keep_outside"):
+                r["series"] = A["keep_outside"] + " " + r["series"]
+                out.append(r)
+                continue
             if best is None or best[0] > A.get("max_px", 30):
                 continue
             c = best[1]
-            r["series"] = f"{c['name']} {r['series']}"
-            r["how"] += f"; on the {c['name']} curve ({best[0]:.0f} px from its path)"
+            r["how"] += f"; template named it {r['series']}; on the {c['name']} curve ({best[0]:.0f} px from its path)"
+            r["series"] = c["name"] if A.get("rename") else f"{c['name']} {r['series']}"
         else:
             c = gname
         r["y"] = f"{y + c['offset']:.4f}"
