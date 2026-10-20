@@ -24,7 +24,11 @@ number with an honest uncertainty band.
 > total drag, has passed its one validation test: the Basic Finner in free
 > flight, 11 shots at Mach 1.80 to 2.97, measured drag within -7.7% to
 > +4.5% of the model, inside a tolerance that is wide (about -20% to +27%).
-> That claim covers that class of rocket only. The drag page shows the
+> That claim covers that class of rocket only, and only at Mach 1.8 to
+> 2.15: above that, one term of the model (the fins' effect on base
+> pressure) was found to rest on a published prediction, not on
+> measurements, so the eight shots above Mach 2.15 tested a total built
+> partly on a prediction. The drag page shows the
 > total ([0011](docs/design/0011-total-drag-on-the-page.md)): labelled
 > validated inside the Basic Finner's class, an estimate, not validated,
 > outside it, and refused, with the reasons and no number, where a
@@ -190,9 +194,11 @@ them; the fitted-drag families are recorded in
   base, for a nose and a cylinder to a flat base with a set of fins
   (rectangular, trapezoidal or clipped-delta; single-wedge, double-wedge or
   hexagonal sections). Inside the Basic Finner's class (that rocket as
-  transcribed, each dimension within 0.5%, at Mach 1.799 to 3.0, Reynolds
+  transcribed, each dimension within 0.5%, at Mach 1.799 to 2.15, Reynolds
   number 1.19e7 to 2.0e7 on length, static temperature 216.65 to 320 K,
-  over which the modelled total moves by at most 0.21%) the total
+  over which the modelled total moves by at most 0.13%; above Mach 2.15
+  the fins-on-base factor was read from one of Love's estimates in TN 3819
+  fig. 35, not from its free-flight curve) the total
   is labelled validated on it, with the tolerance and the offset at Mach
   2.97 beside it; outside it, an estimate, not validated, with every
   reason; where a component's method does not reach (the base outside
@@ -208,7 +214,7 @@ them; the fitted-drag families are recorded in
   within a unit of their last printed digit (relative differences up to
   6.9e-5); or as the Reynolds number directly. The page opens on the
   Basic Finner's shape, 30 mm across, at sea level, inside its class from
-  Mach 1.8 to 2.86 (above, its Reynolds number leaves it).
+  Mach 1.8 to 2.15.
 
 Not yet: viscous flow in the solver; Von Karman (Haack) and power-series
 noses (their tips need grids being designed); Mach numbers below 1.2; a

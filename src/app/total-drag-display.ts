@@ -22,7 +22,6 @@ import {
   CLASS_DESCRIPTION,
   NOT_REPRESENTED,
   noseComponentOf,
-  OFFSET_CAVEAT,
   parseNumber,
   parseNumberList,
   PUBLISHED_GATE,
@@ -397,8 +396,6 @@ const interval = (low: number, high: number) => outward(low, high, DIGITS).join(
 export const PENDING_TEXT =
   'No total yet: run the solve above for this nose, body and Mach number. The total takes its ' +
   'nose wave drag and band; the other components are computed here and none of them is refused.';
-export const NEAR_MACH_3_TEXT =
-  'This Mach number lies nearer those two shots, at Mach 2.97, than any other gated shot.';
 export const ESTIMATE_TOLERANCE_TEXT =
   'Even inside the class the test is wide: its tolerance was -19.5% to -26.2% and +23.1% to ' +
   '+27.4% of the modelled total.';
@@ -435,13 +432,7 @@ export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
       const validated = claim.kind === 'validated';
       const claimBlocks: DisplayBlock[] =
         claim.kind === 'validated'
-          ? [
-              p(claim.text),
-              ...claim.caveats.map((c) =>
-                p(c, claim.nearMach3 && c === OFFSET_CAVEAT ? 'warn' : 'plain'),
-              ),
-              ...(claim.nearMach3 ? [p(NEAR_MACH_3_TEXT, 'warn')] : []),
-            ]
+          ? [p(claim.text), ...claim.caveats.map((c) => p(c))]
           : [
               p(claim.text),
               p('Outside the class because:'),
