@@ -248,6 +248,7 @@ export function noseStateOf(outcome: VerifiedDrag | NoseSolveError): NoseState |
               value: outcome.estimate.value,
               uncertainty: outcome.uncertainty,
               grids: outcome.levels.length,
+              floor: outcome.floor,
             }),
           };
   }

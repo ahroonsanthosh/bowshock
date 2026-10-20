@@ -16,7 +16,7 @@ import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE, type LevelReport } from '../analysi
 import type { Body } from '../geometry/body';
 import type { NoseShape } from '../geometry/nose';
 import { withBand } from './band';
-import { parseNumber, totalDragView, type NoseState } from './total-drag';
+import { allowanceText, parseNumber, totalDragView, type NoseState } from './total-drag';
 import {
   BASIC_FINNER_NOSE_FIELDS,
   basicFinnerFields,
@@ -115,6 +115,8 @@ function shape(): NoseShape {
       return { kind: 'parabolic', parameter };
     case 'ellipsoid':
       return { kind: 'ellipsoid' };
+    case 'von-karman':
+      return { kind: 'haack', parameter: 0 };
     default:
       return { kind: 'ogive', parameter: 1 };
   }
@@ -371,7 +373,7 @@ async function run(gpu: GPUDevice): Promise<void> {
             : ` The grids have ${outcome.columnDensity} times the usual columns along the body: the usual grid at refinement ${failed.refinement} fails the quality checks of fitted grids.`);
         if (outcome.uncertainty !== undefined) {
           show(
-            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`,
+            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${stopped}`,
             'ok',
           );
         } else {

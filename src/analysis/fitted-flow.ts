@@ -33,7 +33,13 @@ import { normalShock } from '../validation/gas-dynamics';
 import { coneFlowField, taylorMaccoll } from '../validation/taylor-maccoll';
 import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
 import { forebodyPressureDrag } from './forces';
-import { CPU_NOISE, ORDER_TOLERANCE, freeStreamAt, outflowMach } from './verified-drag';
+import {
+  CPU_NOISE,
+  ORDER_TOLERANCE,
+  TWO_SCALE_DRAG_FLOOR,
+  freeStreamAt,
+  outflowMach,
+} from './verified-drag';
 
 export interface FittedFlowOptions {
   readonly mach: number;
@@ -841,21 +847,79 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
 }
 
 /**
- * Whether a body is solved as a blunt family (the C grid round the tip,
- * the bow shock fitted from a captured start): blunt noses, and sharp
- * tips whose bow shock detaches at this Mach number, which the sharp
- * problem's inflow plane cannot serve.
+ * Why a blunt nose the fitted solver could solve is not served, or
+ * undefined if it is. Ellipsoids are served (0006). Of the noses solved as
+ * two-scale families (docs/design/0004-grids.md), only the Von Karman
+ * (LD-Haack, C = 0) nose has been checked against a reference, the method
+ * of characteristics from the fitted flow (0006), and it is served only
+ * inside the outline of the lengths and Mach numbers checked
+ * (VON_KARMAN_REFERENCES); other two-scale noses (the other Haack noses,
+ * the power series) are refused, as are sharp tips whose shock detaches
+ * (by sharpFitProblem).
  */
-export function usesBluntFamily(body: Body, mach: number, gamma: number): boolean {
-  const slope = noseTipSlope(body.nose);
-  if (!Number.isFinite(slope)) return true;
-  try {
-    taylorMaccoll(mach, Math.atan(slope), gamma);
-    return false;
-  } catch (error) {
-    if (error instanceof RangeError && /detaches/.test(error.message)) return true;
-    throw error;
+export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
+  const { shape, length, baseRadius } = body.nose;
+  if (Number.isFinite(noseTipSlope(body.nose)) || shape.kind === 'ellipsoid') return undefined;
+  if (!(shape.kind === 'haack' && shape.parameter === 0)) {
+    return 'of the blunt noses whose tip curvature is unbounded, only the Von Karman (LD-Haack) nose has been checked against a reference so far';
   }
+  const calibers = length / (2 * baseRadius);
+  if (insideOutline(VON_KARMAN_REFERENCES, [calibers, mach])) return undefined;
+  const checked = VON_KARMAN_REFERENCES.map(([c, m]) => `${c} at Mach ${m}`).join(', ');
+  return `a Von Karman nose of ${calibers} calibers at Mach ${mach} lies outside the referenced range (the outline of the noses checked against a reference, in calibers: ${checked})`;
+}
+
+/**
+ * The Von Karman noses checked against the method of characteristics
+ * (0006, "Two-scale noses"): nose length in calibers, Mach number.
+ */
+export const VON_KARMAN_REFERENCES: readonly (readonly [number, number])[] = [
+  [1, 2],
+  [3, 2],
+];
+
+/**
+ * Whether a point lies inside the outline (the convex hull) of the given
+ * points, or on it: a point, a segment or a polygon. Within 1e-9 of the
+ * points' extent in each coordinate.
+ */
+export function insideOutline(
+  points: readonly (readonly [number, number])[],
+  [x, y]: readonly [number, number],
+): boolean {
+  const xs = points.map((p) => p[0]);
+  const ys = points.map((p) => p[1]);
+  const sx = Math.max(...xs) - Math.min(...xs) || 1;
+  const sy = Math.max(...ys) - Math.min(...ys) || 1;
+  // Scaled to the points' extent, so that calibers and Mach numbers count alike.
+  const scaled = points.map(([px, py]) => [px / sx, py / sy] as const);
+  const p = [x / sx, y / sy] as const;
+  const tolerance = 1e-9;
+  const cross = (o: readonly number[], a: readonly number[], b: readonly number[]) =>
+    (a[0]! - o[0]!) * (b[1]! - o[1]!) - (a[1]! - o[1]!) * (b[0]! - o[0]!);
+  // The hull, counterclockwise (Andrew's monotone chain).
+  const sorted = [...scaled].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const half = (list: (readonly [number, number])[]) => {
+    const h: (readonly [number, number])[] = [];
+    for (const q of list) {
+      while (h.length >= 2 && cross(h[h.length - 2]!, h[h.length - 1]!, q) <= tolerance) h.pop();
+      h.push(q);
+    }
+    h.pop();
+    return h;
+  };
+  const hull = [...half(sorted), ...half([...sorted].reverse())];
+  if (hull.length <= 2) {
+    // A point or a segment: within the tolerance of it.
+    const [a, b] = [hull[0] ?? sorted[0]!, hull[1] ?? hull[0] ?? sorted[0]!];
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const t =
+      dx * dx + dy * dy > 0 ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy) : 0;
+    const u = Math.min(Math.max(t, 0), 1);
+    return Math.hypot(p[0] - a[0] - u * dx, p[1] - a[1] - u * dy) <= tolerance;
+  }
+  return hull.every((a, k) => cross(a, hull[(k + 1) % hull.length]!, p) >= -tolerance);
 }
 
 /** Steps of the captured solution on the base grid that places the first shock. */
@@ -871,6 +935,16 @@ const BOUNDARY_MARGIN = 0.5;
 const BOUNDARY_CELLS = 3;
 /** Passes of 1-2-1 smoothing of that boundary's distances along the lines. */
 const BOUNDARY_SMOOTHING = 50;
+
+/**
+ * The allowance for an error the grid family cannot show, relative: the
+ * caller's (FITTED_DRAG_FLOOR on the page), raised to TWO_SCALE_DRAG_FLOOR
+ * on a two-scale nose (a start with its own outer boundary), whose order
+ * is below 2 (0006, "Two-scale noses").
+ */
+export function fittedDragFloor(floor: number, start: BluntStart | null): number {
+  return start?.outerBoundary ? Math.max(floor, TWO_SCALE_DRAG_FLOOR) : floor;
+}
 
 export interface VerifiedFittedDragOptions {
   readonly mach: number;
@@ -893,6 +967,8 @@ export type VerifiedFittedDrag =
       readonly kind: 'solved';
       /** The column density of the family solved, where not the usual layout's. */
       readonly columnDensity?: number;
+      /** The allowance included in the band, relative (fittedDragFloor). */
+      readonly floor: number;
     })
   | {
       readonly kind: 'not-converged' | 'invalid';
@@ -917,9 +993,12 @@ export async function verifiedFittedDrag(
   body: Body,
   options: VerifiedFittedDragOptions,
 ): Promise<VerifiedFittedDrag> {
-  const blunt = usesBluntFamily(body, options.mach, options.gamma)
-    ? bluntFitFamily(body, { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ })
-    : null;
+  const refusal = bluntNoseRefusal(body, options.mach);
+  if (refusal !== undefined) return { kind: 'invalid', refinement: 1, reason: refusal };
+  const familyOptions = { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ };
+  const start = Number.isFinite(noseTipSlope(body.nose)) ? null : bluntStart(body, familyOptions);
+  const blunt = start ? bluntFitFamily(body, familyOptions, start) : null;
+  const floor = fittedDragFloor(options.floor, start);
   const family = (columnDensity?: number) =>
     refineUntilVerified(
       (refinement) => {
@@ -949,20 +1028,20 @@ export async function verifiedFittedDrag(
       {
         orderTolerance: ORDER_TOLERANCE,
         noise: CPU_NOISE,
-        floor: options.floor,
+        floor,
         tolerance: options.tolerance,
         maxRefinement: options.maxRefinement,
       },
     );
   try {
     try {
-      return { ...(await family()), kind: 'solved' };
+      return { ...(await family()), kind: 'solved', floor };
     } catch (error) {
       if (blunt !== null || !(error instanceof GridRefused)) throw error;
       options.onFallback?.(error.refinement, error.message);
       try {
         const result = await family(FALLBACK_COLUMN_DENSITY);
-        return { ...result, kind: 'solved', columnDensity: FALLBACK_COLUMN_DENSITY };
+        return { ...result, kind: 'solved', columnDensity: FALLBACK_COLUMN_DENSITY, floor };
       } catch (fallbackError) {
         if (!(fallbackError instanceof FitRefused)) throw fallbackError;
         throw new FitRefused(

@@ -510,6 +510,13 @@ export interface NoseSolve {
   readonly uncertainty: number;
   /** Grids solved. */
   readonly grids: number;
+  /** The allowance included in the band, relative (FITTED_DRAG_FLOOR if not given). */
+  readonly floor?: number;
+}
+
+/** An allowance as the page states it: 7e-5, 2.5e-4. */
+export function allowanceText(floor: number): string {
+  return Number(floor.toPrecision(2)).toExponential();
 }
 
 /** The nose term src/total is given: the page's solved value and band, unchanged. */
@@ -523,7 +530,7 @@ export function noseComponentOf(solve: NoseSolve): DragComponent {
       'solved on this page: the inviscid forebody pressure drag, bow shock fitted, finest of ' +
       `${solve.grids} grids (0006)`,
     band:
-      `measured from the grids, with an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the ` +
+      `measured from the grids, with an allowance of ${allowanceText(solve.floor ?? FITTED_DRAG_FLOOR)} of the ` +
       'value (0006)',
   };
 }

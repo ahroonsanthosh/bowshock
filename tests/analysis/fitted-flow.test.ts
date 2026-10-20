@@ -5,18 +5,23 @@ import {
   bluntFitFamily,
   bluntFitProblem,
   bluntFittedFlow,
+  bluntNoseRefusal,
   bluntStart,
   bluntStartInChunks,
+  fittedDragFloor,
   fittedFlow,
+  insideOutline,
   sharpFitProblem,
   sharpFittedFlow,
   solvedBluntBody,
   verifiedFittedDrag,
+  VON_KARMAN_REFERENCES,
   wallDrag,
   type BluntStart,
 } from '../../src/analysis/fitted-flow';
 import { startedFrom } from '../../src/analysis/gpu-fitted-flow';
 import type { GpuShockFit } from '../../src/engine-gpu/shock-fitting-gpu';
+import { TWO_SCALE_DRAG_FLOOR } from '../../src/analysis/verified-drag';
 import type { Body } from '../../src/geometry/body';
 import { bluntBodyGrid, gridOnLines } from '../../src/grid/blunt-grid';
 import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../../src/grid/quality';
@@ -218,6 +223,65 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
       coarse = fine;
     }
   }, 600_000);
+
+  it('serves ellipsoids, and Von Karman noses inside the outline of their references only', () => {
+    const nose = (shape: Body['nose']['shape'], calibers: number): Body => ({
+      nose: { shape, length: calibers, baseRadius: 0.5 },
+      cylinderLength: 1,
+    });
+    const vonKarman = { kind: 'haack', parameter: 0 } as const;
+    expect(bluntNoseRefusal(nose({ kind: 'ellipsoid' }, 6), 1.2)).toBeUndefined();
+    for (const [calibers, mach] of VON_KARMAN_REFERENCES) {
+      expect(bluntNoseRefusal(nose(vonKarman, calibers), mach)).toBeUndefined();
+    }
+    expect(bluntNoseRefusal(nose(vonKarman, 8), 1.2)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose({ kind: 'haack', parameter: 1 / 3 }, 3), 2)).toMatch(
+      /only the Von Karman/,
+    );
+    expect(bluntNoseRefusal(nose({ kind: 'power', exponent: 0.75 }, 3), 2)).toMatch(
+      /only the Von Karman/,
+    );
+    // Sharp tips are the sharp problem's to refuse (a detached shock).
+    expect(bluntNoseRefusal(nose({ kind: 'ogive', parameter: 1 }, 1), 1.2)).toBeUndefined();
+    // The outline: a point, a segment, a polygon.
+    expect(insideOutline([[3, 2]], [3, 2])).toBe(true);
+    expect(insideOutline([[3, 2]], [3, 2.1])).toBe(false);
+    expect(
+      insideOutline(
+        [
+          [1, 2],
+          [3, 2],
+        ],
+        [2, 2],
+      ),
+    ).toBe(true);
+    expect(
+      insideOutline(
+        [
+          [1, 2],
+          [3, 2],
+        ],
+        [2, 2.01],
+      ),
+    ).toBe(false);
+    const quad: [number, number][] = [
+      [1, 2],
+      [3, 2],
+      [3, 3],
+      [5, 1.5],
+    ];
+    expect(insideOutline(quad, [3, 2])).toBe(true);
+    expect(insideOutline(quad, [4, 2])).toBe(true);
+    expect(insideOutline(quad, [5, 1.5])).toBe(true);
+    expect(insideOutline(quad, [5, 2])).toBe(false);
+    expect(insideOutline(quad, [1, 1.5])).toBe(false);
+    // The allowance: raised on a two-scale start only.
+    const start = (outerBoundary?: { x: number; y: number }[]) =>
+      ({ ...(outerBoundary ? { outerBoundary } : {}) }) as unknown as BluntStart;
+    expect(fittedDragFloor(7e-5, null)).toBe(7e-5);
+    expect(fittedDragFloor(7e-5, start())).toBe(7e-5);
+    expect(fittedDragFloor(7e-5, start([{ x: -1, y: 0 }]))).toBe(TWO_SCALE_DRAG_FLOOR);
+  });
 
   it('a blunt start computed in chunks is the same start, and stops when aborted', async () => {
     const body: Body = {

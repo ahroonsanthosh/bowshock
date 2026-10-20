@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import type { VerifiedDrag } from '../../src/analysis/verified-drag';
+import { FITTED_DRAG_FLOOR, type VerifiedDrag } from '../../src/analysis/verified-drag';
 import {
   BASIC_FINNER_NOSE_FIELDS,
   basicFinnerFields,
@@ -196,6 +196,7 @@ describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
         ? { kind: 'unresolved', value: 0.1045, reason: 'four grids are needed' }
         : { kind: 'monotone', value: 0.1045, extrapolated: 0.10449, order: 2, uncertainty },
     uncertainty,
+    floor: FITTED_DRAG_FLOOR,
     verified: false,
     levels: [
       { refinement: 1, value: 0.1 },

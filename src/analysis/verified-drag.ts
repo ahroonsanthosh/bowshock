@@ -82,6 +82,8 @@ export type VerifiedDrag =
       readonly reports: readonly LevelReport[];
       /** The column density of the family solved, where not the usual layout's (onFallback). */
       readonly columnDensity?: number;
+      /** The allowance included in the band, relative (the caller's floor, or a larger one). */
+      readonly floor: number;
     })
   | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string }
   | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] }
@@ -128,6 +130,16 @@ export const DRAG_FLOOR = 1e-3;
  * finest grid's value, still contain its error (by 1.56 to 2.05 times).
  */
 export const FITTED_DRAG_FLOOR = 7e-5;
+/**
+ * The allowance for the fitted drag of a two-scale nose (Von Karman),
+ * relative, in place of FITTED_DRAG_FLOOR: its fitted drag converges at
+ * an order below 2 (1.49 on the 3-caliber nose at Mach 2), and against
+ * references from the method of characteristics started from the fitted
+ * flow the procedure's extrapolation misses by up to MISS of the value
+ * (docs/design/0006-shock-fitting.md, "Two-scale noses"); the allowance
+ * is twice that.
+ */
+export const TWO_SCALE_DRAG_FLOOR = 2.5e-4;
 /**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).
@@ -255,7 +267,7 @@ export async function verifiedForebodyDrag(
       lastRefinement = refinement;
       return solveAt(refinement);
     }, options);
-    return { ...result, kind: 'solved', reports };
+    return { ...result, kind: 'solved', reports, floor: options.floor };
   } catch (error) {
     if (error instanceof IterationStalled) {
       return { kind: 'not-converged', refinement: lastRefinement, reason: error.message };

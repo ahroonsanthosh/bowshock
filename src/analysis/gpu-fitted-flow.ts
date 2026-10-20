@@ -9,17 +9,20 @@ import { isGpuFlux } from '../engine-gpu/euler1d-gpu';
 import { GpuMemoryLimitError, type GpuEuler2DConfig } from '../engine-gpu/euler2d-gpu';
 import { fitShockGpu, type GpuShockFit } from '../engine-gpu/shock-fitting-gpu';
 import type { Body } from '../geometry/body';
+import { noseTipSlope } from '../geometry/nose';
 import type { StructuredGrid } from '../grid/structured';
 import { refineUntilVerified } from '../verification/grid-convergence';
 import {
   bluntFitFamily,
+  bluntNoseRefusal,
   bluntStartInChunks,
   FALLBACK_COLUMN_DENSITY,
   fittedCaseFailure,
+  fittedDragFloor,
   fittedGridFailure,
   sharpFitProblem,
-  usesBluntFamily,
   wallDrag,
+  type BluntStart,
   type FitProblem,
 } from './fitted-flow';
 import {
@@ -233,9 +236,12 @@ export async function verifiedFittedDragGpu(
     return drag;
   };
   try {
-    if (usesBluntFamily(body, options.mach, options.gamma)) {
+    const refusal = bluntNoseRefusal(body, options.mach);
+    if (refusal !== undefined) throw new InvalidCase(refusal);
+    let start: BluntStart | null = null;
+    if (!Number.isFinite(noseTipSlope(body.nose))) {
       const familyOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ };
-      const start = await bluntStartInChunks(body, familyOptions, {
+      start = await bluntStartInChunks(body, familyOptions, {
         chunk: START_CHUNK,
         pause: nextTask,
         signal: options.signal,
@@ -243,9 +249,11 @@ export async function verifiedFittedDragGpu(
       });
       blunt = bluntFitFamily(body, familyOptions, start);
     }
+    const floor = fittedDragFloor(options.floor, start);
     const verified = () =>
       refineUntilVerified(solveAt, {
         ...options,
+        floor,
         noise: GPU_NOISE,
         // A finer grid too large for this GPU, or whose fit does not
         // converge, leaves the band of the grids before it, as if a coarser
@@ -259,7 +267,7 @@ export async function verifiedFittedDragGpu(
               : undefined,
       });
     try {
-      return { ...(await verified()), kind: 'solved', reports };
+      return { ...(await verified()), kind: 'solved', reports, floor };
     } catch (error) {
       // A sharp nose whose grid fails only the quality gates: its whole
       // family again, with more columns; refused only if that one is too.
@@ -270,7 +278,7 @@ export async function verifiedFittedDragGpu(
       reports = [];
       try {
         const result = await verified();
-        return { ...result, kind: 'solved', reports, columnDensity };
+        return { ...result, kind: 'solved', reports, columnDensity, floor };
       } catch (fallbackError) {
         if (!(fallbackError instanceof InvalidCase)) throw fallbackError;
         throw new InvalidCase(

@@ -11,6 +11,7 @@ import {
   FITTED_DRAG_FLOOR,
   GPU_NOISE,
   ORDER_TOLERANCE,
+  TWO_SCALE_DRAG_FLOOR,
   type LevelReport,
 } from '../../src/analysis/verified-drag';
 import type { Body } from '../../src/geometry/body';
@@ -188,6 +189,53 @@ describe('fitted shock on the GPU', () => {
     const difference = Math.abs(levels[0]!.drag / 0.10583491196235459 - 1);
     expect(difference, `GPU ${levels[0]!.drag}`).toBeLessThan(GPU_NOISE);
   }, 1_800_000);
+
+  it('the page path on a Von Karman nose: within the GPU noise of the CPU, with its allowance', async () => {
+    // 1 caliber with 1 of body at Mach 2: a two-scale start (both
+    // captures, in chunks on the CPU), then the fit on the GPU. The CPU's
+    // fit of the same problem gives 0.42909806331220435 (0006,
+    // "Two-scale noses"); measured when written, the GPU's
+    // 0.42909808121884696 (+4.2e-8).
+    const body: Body = {
+      nose: { shape: { kind: 'haack', parameter: 0 }, length: 1, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const levels: LevelReport[] = [];
+    const steps: [number, number][] = [];
+    const result = await verifiedFittedDragGpu(device, body, {
+      mach: 2,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      onLevel: (report) => levels.push(report),
+      onStart: (done, total) => steps.push([done, total]),
+    });
+    expect(result.kind).toBe('solved');
+    if (result.kind === 'solved') expect(result.floor).toBe(TWO_SCALE_DRAG_FLOOR);
+    expect(steps.at(-1)).toEqual([6000, 6000]);
+    expect(levels).toHaveLength(1);
+    const difference = Math.abs(levels[0]!.drag / 0.42909806331220435 - 1);
+    expect(difference, `GPU ${levels[0]!.drag}`).toBeLessThan(GPU_NOISE);
+  }, 1_800_000);
+
+  it('the page refuses two-scale noses other than the Von Karman nose checked, with the reason', async () => {
+    const power: Body = {
+      nose: { shape: { kind: 'power', exponent: 0.75 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const result = await verifiedFittedDragGpu(device, power, {
+      mach: 2,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+    });
+    expect(result.kind).toBe('invalid');
+    if (result.kind === 'invalid') expect(result.reason).toMatch(/only the Von Karman/);
+  }, 60_000);
 
   it('the page refuses a tip whose flow is subsonic at the surface, with the reason', async () => {
     // A 26.6 deg cone at Mach 1.5: subsonic conical surface flow.
