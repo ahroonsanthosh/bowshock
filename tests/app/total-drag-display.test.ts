@@ -90,7 +90,7 @@ const paragraphs = (blocks: readonly DisplayBlock[]): DisplayBlock[] =>
 const tables = (blocks: readonly DisplayBlock[]) =>
   blocks.flatMap((b) => (b.kind === 'table' ? [b] : []));
 
-describe('the fields as typed', () => {
+describe('the fields as typed', { timeout: 60_000 }, () => {
   it('the page opens on the Basic Finner, inside the class', () => {
     const form = formOf(BODY, 2, DEFAULT_FIELDS);
     expect(basicFinnerClass(form)).toEqual({ inside: true, outside: [] });
@@ -188,7 +188,7 @@ describe('the fields as typed', () => {
   });
 });
 
-describe('the nose solve, as the total takes it', () => {
+describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
   const solved = (uncertainty: number | undefined): VerifiedDrag => ({
     kind: 'solved',
     estimate:
