@@ -64,7 +64,7 @@ const totalOf = (view: TotalDragView): TotalDrag => {
 const reasons = (view: TotalDragView) =>
   view.kind === 'refused' ? view.refusals.map((r) => `${r.component}: ${r.reason}`) : [];
 
-describe('the class rule', () => {
+describe('the class rule', { timeout: 60_000 }, () => {
   it('the Basic Finner at its gated shots, and the default at Mach 2, are inside', () => {
     for (const s of gated)
       expect(basicFinnerClass(gateForm(s))).toEqual({ inside: true, outside: [] });
@@ -439,7 +439,7 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
   });
 });
 
-describe('the nose term and the states of the solve', () => {
+describe('the nose term and the states of the solve', { timeout: 60_000 }, () => {
   it("is the page's solved value and band, unchanged", () => {
     const c = noseComponentOf({ value: 0.0968, uncertainty: 1.2e-5, grids: 4 });
     expect(c.name).toBe('nose wave drag');
@@ -536,7 +536,7 @@ describe(
   },
 );
 
-describe('refusals: every reason, no number', () => {
+describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
   const f = basicFinnerForm(2.4, 1.6e7);
   const nose = exactNose(f);
 

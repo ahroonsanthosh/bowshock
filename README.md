@@ -290,7 +290,6 @@ The design records, in order:
 - [0011](docs/design/0011-total-drag-on-the-page.md): the total drag on
   the drag page (draft): the nose term from the page's solve, the class
   rule that decides "validated on the Basic Finner", and the labels.
-
 - [0012](docs/design/0012-interface.md): the interface (draft): a
   full-window, dark, visualization-first layout inspired by FluidX3D's,
   with the drag, its band and its status always on screen.
