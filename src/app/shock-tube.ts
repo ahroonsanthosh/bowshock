@@ -115,7 +115,7 @@ const shell = new Shell<Action>({
         title: 'This page',
         body: [
           'A tube of gas at rest, with different states either side of a diaphragm at the start: when it bursts, a shock, a contact surface and an expansion travel along the tube. Toro\u2019s five problems test a solver on strong shocks, near-vacuum and colliding waves.',
-          'The dots are bowshock\u2019s 1D solver, on the CPU in 64-bit or on the GPU in 32-bit; the line is the exact solution. The L1 density error measures the difference over the tube; this page shows the solver against exact theory, so it has no error band.',
+          'The dots are bowshock\u2019s 1D solver, on the CPU in 64-bit or on the GPU in 32-bit; the line is the exact solution. The L1 density error is the density\u2019s difference from the exact solution at the cells\u2019 centres, summed over the tube\u2019s length of 1; this page shows the solver against exact theory, so it has no error band.',
         ],
       },
     ],
@@ -123,7 +123,7 @@ const shell = new Shell<Action>({
 });
 
 const readout = new Readout([
-  [{ id: 'problem' }, { id: 'cells', label: 'cells' }, { id: 'engine' }],
+  [{ id: 'cells', label: 'cells' }, { id: 'engine' }],
   [
     { id: 'time', label: 't' },
     { id: 'steps', label: 'steps' },
@@ -166,8 +166,6 @@ const againButton = element('#again', HTMLButtonElement);
 const status = element('#status', HTMLElement);
 const canvas = element('#plot', HTMLCanvasElement);
 const l1Text = element('#l1', HTMLElement);
-const timeText = element('#time', HTMLElement);
-const stepsText = element('#steps', HTMLElement);
 
 TORO_TESTS.forEach((test, i) => {
   problemSelect.add(new Option(`${test.name}: ${test.description}`, String(i)));
@@ -207,7 +205,6 @@ async function reset(): Promise<void> {
   status.textContent = '';
 
   test = TORO_TESTS[Number(problemSelect.value)] ?? TORO_TESTS[0]!;
-  readout.set('problem', test.name);
   readout.set('cells', cellsSelect.value);
   const config: Euler1DConfig = {
     ...DEFAULT_CONFIG,
@@ -365,8 +362,6 @@ function draw(): void {
   readout.set('time', `${time.toPrecision(4)} of ${test.tEnd}`);
   readout.set('steps', formatCount(steps));
   readout.set('l1', time > 0 ? formatExponent(l1, 2) : null);
-  timeText.textContent = `${time.toPrecision(4)} of ${test.tEnd}`;
-  stepsText.textContent = formatCount(steps);
   l1Text.textContent = time > 0 ? formatExponent(l1, 2) : '\u2026';
   shell.sheet.pinned.textContent =
     time > 0 ? `L1 density error ${formatExponent(l1, 2)} at t = ${time.toPrecision(4)}` : '';

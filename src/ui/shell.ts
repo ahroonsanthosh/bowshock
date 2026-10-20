@@ -156,6 +156,21 @@ export class Shell<A extends string> {
   }
 
   /**
+   * The whole view below the top bar (and, if asked, above the bottom
+   * row), in CSS pixels from the viewport's corner: where a flow is
+   * fitted, full window, with the panels and the readout floating over it.
+   */
+  viewRect(aboveBottomRow = false): Rect {
+    const box = this.viewport.getBoundingClientRect();
+    const top = Math.max(0, this.topBar.element.getBoundingClientRect().bottom - box.top);
+    let bottom = box.height;
+    if (aboveBottomRow && this.bottom.offsetHeight > 0) {
+      bottom = Math.min(bottom, this.bottom.getBoundingClientRect().top - box.top - MARGIN);
+    }
+    return { x: 0, y: top, width: box.width, height: Math.max(0, bottom - top) };
+  }
+
+  /**
    * Where a drawing of this aspect ratio (width over height) is largest
    * without going under the top bar, the readout, an open panel or the
    * bottom row: between the side panels, or below one or both of them,

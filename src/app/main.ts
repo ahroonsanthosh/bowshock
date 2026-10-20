@@ -18,10 +18,7 @@ function formatBytes(bytes: number): string {
 
 function render(support: GpuSupport): HTMLElement[] {
   if (support.kind === 'unavailable') {
-    return [
-      h('p', {}, h('span', { className: 'badge badge--warn', text: 'No WebGPU' })),
-      h('p', { className: 'muted', text: support.reason }),
-    ];
+    return [h('p', { className: 'muted', text: support.reason })];
   }
   const table = h('table', {}, h('caption', { className: 'visually-hidden', text: 'GPU limits' }));
   const body = h('tbody');
@@ -33,7 +30,6 @@ function render(support: GpuSupport): HTMLElement[] {
   }
   table.append(body);
   return [
-    h('p', {}, h('span', { className: 'badge badge--ok', text: 'WebGPU available' })),
     h('p', { text: `Adapter: ${support.adapterDescription}` }),
     table,
     h('p', { className: 'features', text: `Features: ${support.features.join(', ') || 'none'}` }),
@@ -79,8 +75,17 @@ window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && !help.isOpen && topBar.closeMenus()) event.preventDefault();
 });
 
-const target = document.querySelector('#gpu-status');
-if (target !== null) {
-  const support = await detectGpu(navigator.gpu);
-  target.replaceChildren(...render(support));
-}
+const support = await detectGpu(navigator.gpu);
+document.querySelector('#gpu-status')?.replaceChildren(...render(support));
+// The one line in view: whether the pages can run here.
+document
+  .querySelector('#gpu-line')
+  ?.replaceChildren(
+    support.kind === 'webgpu'
+      ? h('span', { className: 'badge badge--ok', text: 'WebGPU available' })
+      : h('span', { className: 'badge badge--warn', text: 'No WebGPU' }),
+    ' ',
+    support.kind === 'webgpu'
+      ? `Your GPU: ${support.adapterDescription}`
+      : 'The ramp and the shock tube run on the CPU instead; the drag page needs WebGPU.',
+  );

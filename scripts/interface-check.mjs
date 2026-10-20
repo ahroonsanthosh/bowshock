@@ -54,7 +54,7 @@ const PAGES = [
   {
     id: 'landing',
     path: 'index.html',
-    ready: (page) => until(page, async () => (await page.$('#gpu-status .badge')) !== null, 30),
+    ready: (page) => until(page, async () => (await page.$('#gpu-line .badge')) !== null, 30),
     keys: [{ press: 'h', expect: 'dialog-open' }],
   },
   {
@@ -92,6 +92,30 @@ const PAGES = [
     keys: [
       { press: 'r', expect: { text: ['#run', 'Pause'] } },
       { press: ' ', expect: { text: ['#run', 'Run'] } },
+      { press: 'h', expect: 'dialog-open' },
+    ],
+  },
+  {
+    id: 'flow',
+    // The coarsest grid only: software WebGPU solves the finer ones slowly.
+    path: 'demos/flow-view.html?finest=1',
+    ready: (page) =>
+      until(page, async () => /Done|Refused/.test(await readoutValue(page, 'state')), 900),
+    // Each field and view, after the default (schlieren).
+    shots: [
+      ['mach', ['2']],
+      ['cp', ['3']],
+      ['density', ['4']],
+      ['split', ['2', 'd']],
+      ['grid', ['d', '1', 'g']],
+    ],
+    keys: [
+      { press: '2', expect: { pressed: 'Mach' } },
+      { press: 'd', expect: { pressed: 'Split' } },
+      { press: 'd', expect: { notPressed: 'Split' } },
+      { press: 'g', expect: { notPressed: 'Grid' } },
+      { press: 's', expect: { notPressed: 'Shock' } },
+      { press: 's', expect: { pressed: 'Shock' } },
       { press: 'h', expect: 'dialog-open' },
     ],
   },
@@ -239,6 +263,11 @@ try {
       const ready = await spec.ready(page);
       const file = path.join(out, `${spec.id}-${size.width}.png`);
       await page.screenshot({ path: file });
+      for (const [name, keys] of spec.shots ?? []) {
+        for (const key of keys) await page.keyboard.press(key);
+        await page.waitForTimeout(1500);
+        await page.screenshot({ path: path.join(out, `${spec.id}-${name}-${size.width}.png`) });
+      }
       const violations = await accessibility(page);
       const lines = [
         `${spec.id} at ${size.width} px: ${file}${ready ? '' : ' (not ready in time)'}`,

@@ -16,7 +16,7 @@ import type { Primitive2D } from '../scheme/flux';
 import { colormapTable, hexToRgb, SCHLIEREN_DARK, SCHLIEREN_LIGHT } from '../render/colormap';
 import { FieldRenderer, domainToPixels, type PixelArea } from '../render/field-renderer';
 import { CanvasPresenter, CopyPresenter, type Presenter } from '../render/presenter';
-import { displayField, schlierenShade, type DisplayField } from '../render/fields';
+import { displayField, type DisplayField } from '../render/fields';
 import {
   deflectionAngle,
   machFromPrandtlMeyer,
@@ -43,7 +43,12 @@ import { Shell } from '../ui/shell';
 
 const GAMMA = 1.4;
 const DEG = Math.PI / 180;
-const SCHLIEREN_CONTRAST = 12;
+/**
+ * Light on dark, schlieren is shaded from the cube of the gradient's
+ * fraction of its largest, with a contrast to match: the captured shock,
+ * smeared over two or three cells, reads as a line (drawing only).
+ */
+const LIT_SCHLIEREN = { contrast: 12, exponent: 3 } as const;
 /** Domain: corner at x = 0, inflow at x = -0.5, outflow at x = 1.5, top at y = 1.2. */
 const DOMAIN = { xMin: -0.5, xCorner: 0, xMax: 1.5, height: 1.2 } as const;
 /** Ramp-face window, away from the corner and the outflow, over which pressure is compared. */
@@ -76,7 +81,7 @@ const FIELD_SCALES: Readonly<Record<DisplayField, { title: string; units: string
     schlieren: {
       title: 'Schlieren',
       units: '',
-      note: 'Density gradient, light on dark: the shock brightest, the expansion fainter.',
+      note: 'Light where the density changes fast: the shock.',
     },
     mach: { title: 'Mach number', units: '', note: '' },
     pressure: { title: 'Pressure', units: 'p / p∞', note: '' },
@@ -210,8 +215,11 @@ restartButton.addEventListener('click', () => void restart());
 /** The run's state in the readout and the panel's badge, a word as well as a colour. */
 function showState(text: string, kind: ReadoutKind = ''): void {
   readout.set('state', text, kind);
-  runBadge.textContent = text;
-  runBadge.className = `badge${kind === '' ? '' : ` badge--${kind}`}`;
+  for (const badge of [runBadge, shell.sheet.pinned.querySelector('.badge')]) {
+    if (badge === null) continue;
+    badge.textContent = text;
+    badge.className = `badge${kind === '' ? '' : ` badge--${kind}`}`;
+  }
 }
 
 /** Show the colour scale of the field just drawn. */
@@ -333,7 +341,8 @@ async function gpuRun(
         {
           field: shown,
           gamma: GAMMA,
-          schlierenContrast: SCHLIEREN_CONTRAST,
+          schlierenContrast: LIT_SCHLIEREN.contrast,
+          schlierenExponent: LIT_SCHLIEREN.exponent,
           schlierenStyle: 'light-on-dark',
         },
         background,
@@ -432,7 +441,8 @@ function drawCells2D(
       let rgb: number[];
       if (shown === 'schlieren') {
         // Light on dark: the shade inverted, between the two schlieren colours.
-        const t = 1 - schlierenShade(value, hi, SCHLIEREN_CONTRAST);
+        const fraction = Math.max(value, 0) / hi;
+        const t = 1 - Math.exp(-LIT_SCHLIEREN.contrast * fraction ** LIT_SCHLIEREN.exponent);
         const [dark, light] = SCHLIEREN_RGB;
         rgb = [0, 1, 2].map((c) => Math.round(255 * (dark[c]! + t * (light[c]! - dark[c]!))));
       } else {
@@ -467,23 +477,19 @@ function groundColour(): GPUColor {
 // ------------------------------------------------- drawing over the field
 
 /**
- * The part of the canvas the flow is drawn in, in pixels: where the domain
- * is largest without going under the panels, the readout or the bottom row.
+ * The part of the canvas the flow is fitted into, in pixels: the whole
+ * width of the view, between the top bar and the bottom row, so that the
+ * wall and its corner stay clear of the legend; the panels float over it.
  */
-function drawingArea(): PixelArea {
-  const dpr = window.devicePixelRatio || 1;
-  const grid = run?.grid;
-  let aspect = 2 / 1.2;
-  if (grid !== undefined) {
-    const ys = Array.from(grid.y);
-    aspect = (DOMAIN.xMax - DOMAIN.xMin) / (Math.max(...ys) - Math.min(...ys));
-  }
-  const rect = shell.drawingRect(aspect);
+function drawingArea(target: HTMLCanvasElement = canvas): PixelArea {
+  // Pixels of this canvas per CSS pixel.
+  const scale = target.width / Math.max(1, target.clientWidth);
+  const rect = shell.viewRect(true);
   return {
-    x: Math.round(dpr * rect.x),
-    y: Math.round(dpr * rect.y),
-    width: Math.max(1, Math.round(dpr * rect.width)),
-    height: Math.max(1, Math.round(dpr * rect.height)),
+    x: Math.round(scale * rect.x),
+    y: Math.round(scale * rect.y),
+    width: Math.max(1, Math.round(scale * rect.width)),
+    height: Math.max(1, Math.round(scale * rect.height)),
   };
 }
 
@@ -495,7 +501,7 @@ let overlayDrawn: { area: PixelArea; run: Run | null; grid: boolean } | null = n
  * the overlay canvas with the same fit as the field; drawn again only when
  * the area, the run or the grid lines change.
  */
-function drawOverlay(area = drawingArea()): void {
+function drawOverlay(area = drawingArea(overlay)): void {
   const current = run;
   const last = overlayDrawn;
   if (
@@ -540,17 +546,11 @@ function drawOverlay(area = drawingArea()): void {
     ctx.stroke();
   }
 
-  // The wall: the solid below the first row of nodes, carried on straight
-  // past both ends of the domain to the edges of the view.
+  // The wall: the solid below the first row of nodes, as wide as the field.
   const wall: [number, number][] = [];
   for (let i = 0; i <= grid.ni; i++) wall.push(node(i, 0));
-  const [x0, y0] = wall[0]!;
-  const [xa, ya] = wall[wall.length - 2]!;
-  const [xb, yb] = wall[wall.length - 1]!;
-  const right = overlay.width + 10;
-  // Upstream of the domain the wall is flat.
-  wall.unshift([Math.min(-10, x0), y0]);
-  wall.push([right, yb + ((right - xb) * (yb - ya)) / (xb - xa)]);
+  const [left] = wall[0]!;
+  const [right] = wall[wall.length - 1]!;
   const trace = () => {
     ctx.beginPath();
     wall.forEach(([x, y], k) => {
@@ -560,7 +560,7 @@ function drawOverlay(area = drawingArea()): void {
   };
   trace();
   ctx.lineTo(right, overlay.height + 10);
-  ctx.lineTo(-10, overlay.height + 10);
+  ctx.lineTo(left, overlay.height + 10);
   ctx.closePath();
   ctx.fillStyle = cssColour('--body');
   ctx.fill();
@@ -642,8 +642,9 @@ async function switchEngine(next: Presentation | 'cpu', reason: string): Promise
   // meanwhile) wait for it rather than starting on the CPU.
   engineReady = (async () => {
     gpu = next === 'cpu' ? null : await setUpGpu(next).catch(() => null);
+    sizeCanvas();
     const continuation = gpu
-      ? 'Continuing on the GPU, copying each frame to the page (slower).'
+      ? 'Continuing on the GPU, copying each frame (slower).'
       : 'Continuing on the CPU engine, on a coarser grid.';
     engineNote.textContent = `${reason} ${continuation}`;
     readout.set('engine', gpu ? 'GPU (copy)' : 'CPU engine');
@@ -666,12 +667,20 @@ function updateLabels(): { mach: number; angle: number } {
   return { mach, angle };
 }
 
-/** Size both canvases to the viewport, in device pixels. */
+/**
+ * Size both canvases to the viewport, in device pixels; frames copied from
+ * the GPU to the page (CopyPresenter, a software fallback) at half that,
+ * since copying every pixel of every frame would slow the solver's pace.
+ */
 function sizeCanvas(): void {
   const dpr = window.devicePixelRatio || 1;
-  for (const c of [canvas, overlay]) {
-    c.width = Math.max(1, Math.round(c.clientWidth * dpr));
-    c.height = Math.max(1, Math.round(c.clientHeight * dpr));
+  const copied = gpu?.presenter instanceof CopyPresenter ? 0.5 : 1;
+  for (const [c, scale] of [
+    [canvas, dpr * copied],
+    [overlay, dpr],
+  ] as const) {
+    c.width = Math.max(1, Math.round(c.clientWidth * scale));
+    c.height = Math.max(1, Math.round(c.clientHeight * scale));
   }
 }
 
@@ -731,7 +740,7 @@ function redraw(): Promise<void> {
   const myGeneration = generation;
   const shown = field;
   const area = drawingArea();
-  drawOverlay(area);
+  drawOverlay();
   drawing = current
     .draw(shown, area)
     .then((range) => {
@@ -826,15 +835,18 @@ function report(m: { steps: number; rampPressure: number; residual: number }): v
   differenceText.textContent = difference;
   if (m.residual !== 0) {
     comparison.textContent =
-      `Ramp pressure on the wall cells from x = ${PLATEAU.x0} to ${PLATEAU.x1}, in units of the ` +
-      'free-stream pressure; exact: the oblique-shock or Prandtl-Meyer solution.';
+      `Wall cells from x = ${PLATEAU.x0} to ${PLATEAU.x1}, over the free-stream pressure; ` +
+      'exact: the oblique shock or Prandtl-Meyer fan.';
   }
+  const badge = runBadge.cloneNode(true) as HTMLElement;
+  badge.removeAttribute('id');
   shell.sheet.pinned.replaceChildren(
-    `Ramp pressure ${formatFixed(m.rampPressure, 4)}`,
+    `Ramp ${formatFixed(m.rampPressure, 4)}`,
     Object.assign(document.createElement('span'), {
       className: 'mono muted',
-      textContent: `exact ${formatFixed(exactPressure, 4)}  ${difference}`,
+      textContent: `exact ${formatFixed(exactPressure, 4)} ${difference}`,
     }),
+    badge,
   );
 }
 

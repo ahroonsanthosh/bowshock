@@ -133,3 +133,27 @@ export class CopyPresenter implements Presenter {
 function bytesPerRow(width: number): number {
   return Math.ceil((4 * width) / 256) * 256;
 }
+
+/** What presentationFor needs to know of an adapter (GPUAdapter.info). */
+export interface AdapterTraits {
+  readonly vendor: string;
+  readonly architecture: string;
+  readonly description: string;
+  readonly isFallbackAdapter?: boolean;
+}
+
+/**
+ * How a page should show frames from this adapter: straight into a canvas,
+ * or by copying them (CopyPresenter) on a software adapter, where
+ * presenting to a canvas can lose the device (headless browsers on
+ * SwiftShader). A page that solves and draws on one device cannot afford
+ * to lose it: the solution would go with it.
+ */
+export function presentationFor(adapter: AdapterTraits): 'canvas' | 'copy' {
+  const software =
+    adapter.isFallbackAdapter === true ||
+    /swiftshader|llvmpipe|lavapipe|software|warp/i.test(
+      `${adapter.vendor} ${adapter.architecture} ${adapter.description}`,
+    );
+  return software ? 'copy' : 'canvas';
+}

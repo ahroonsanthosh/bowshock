@@ -1,7 +1,7 @@
 # 0012: The interface (draft)
 
 - **Status:** Draft, accepted by the owner 2026-10-20 (the four decisions
-  of section 6). Nothing implemented yet.
+  of section 6). U0 and U1 implemented (section 10).
 - **Scope:** the look, layout and interaction of every page. The physics,
   the numbers and their bands are out of scope: no change here may change
   a number the solver or the libraries report.
@@ -151,3 +151,59 @@ fixed case.
 
 No number without its band and its status; refusals show their reasons;
 nothing labelled validated that the records do not call validated.
+
+## 10. Done
+
+### U0: the shell
+
+`src/ui/`: one stylesheet of the tokens of section 5 (`style.css`), Inter
+4.001 and JetBrains Mono 2.211 self-hosted (Latin and Greek subsets,
+105 KB; a Greek file loads only when a page uses a Greek letter), and the
+components: top bar with menus, side panels and the phone's sheet,
+readout, help, legend, mode bar, toasts and the key map. The landing, the
+supersonic ramp and the shock tube use them.
+
+Numbers unchanged: on fixed settings each page reported the same values
+at every reading before and after (the ramp at Mach 2.5, +10 deg, on the
+GPU to convergence and on the CPU, and at -10 deg on the CPU; the shock
+tube's Toro tests 1 and 3 on the CPU and test 1 on the GPU).
+
+### U1: the flow view
+
+`src/render/flow-renderer.ts` and its shaders draw a solver's flow from
+its own buffers: the fields of `src/render/flow-fields.ts` per cell, each
+drawn at its cell's centre and blended linearly between centres, the
+moving grid of a fitted shock placed on the GPU from the line grid's
+buffers, mirrored about the axis. `src/ui/flow-view.ts` adds pan, zoom,
+the fields, the split view, grid lines, the shock line and a PNG;
+`demos/flow-view.html` runs the drag page's solve for the Basic Finner's
+body and draws it.
+
+The solver takes two hooks that change no number: `onLive` (the fit's
+buffers while it runs) and `gate` (awaited between batches of steps, to
+pause). A fit watched, drawn every batch and paused ends bitwise where an
+unwatched one does (`tests/gpu/flow-view.test.ts`).
+
+Measured (`tests/gpu/flow-view.test.ts`, the Mach 2 cone on its first
+grid, after 250 and 500 steps): the nodes placed on the GPU lie within
+1.3e-7 of the solver's grid; the value drawn at each cell's centre is the
+solver's cell value within 2.2e-7 of the field's largest for the Mach
+number, 4.0e-7 for Cp and 9.9e-8 for the density, the same mirrored;
+schlieren's gradient matches its TypeScript twin within 4.3e-5 of the
+largest; the colour drawn there is the
+colour map's within 1.5 of 255.
+
+Cost (`tests/gpu/flow-view-cost.test.ts`, the drag page's first grid of
+the Basic Finner's body, 191 x 20 cells, drawn at 1280 x 720, the best of
+three runs each on software WebGPU): 34 steps a second without the view,
+33 with it, 2.1%, within the runs' scatter. The view draws at most
+30 frames a second while the flow is live, and a frame only once the GPU
+has finished the one before, so frames never queue behind the solver's
+steps.
+
+### Usability
+
+Measured by `scripts/usability.mjs` before and after, at 390 and 1440 px,
+with the reasons where a measure got worse:
+`docs/research/interface/usability.md`. Every page now fits its window;
+no visible paragraph is over 32 words; help is one key away on every page.

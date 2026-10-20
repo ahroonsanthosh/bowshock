@@ -26,6 +26,13 @@ export interface RenderOptions {
    * SCHLIEREN_LIGHT at the steepest gradients; the same shade inverted).
    */
   readonly schlierenStyle?: 'dark-on-light' | 'light-on-dark';
+  /**
+   * Light on dark only: the gradient's fraction of its largest is raised
+   * to this power before shading (default 1). Above 1, the steepest
+   * gradients (the shock) stay bright and its smeared flanks dim: a
+   * thinner line, the same values.
+   */
+  readonly schlierenExponent?: number;
 }
 
 /** A rectangle of a texture, in pixels from its top left corner. */
@@ -203,7 +210,12 @@ export class FieldRenderer {
       DISPLAY_FIELD_CODES[options.field],
       options.schlierenStyle === 'light-on-dark' ? 1 : 0,
     ]);
-    new Float32Array(params, 16, 5).set([...scale, ...offset, options.schlierenContrast]);
+    new Float32Array(params, 16, 6).set([
+      ...scale,
+      ...offset,
+      options.schlierenContrast,
+      options.schlierenExponent ?? 1,
+    ]);
     new Float32Array(params, 48, 8).set([
       ...hexToRgb(SCHLIEREN_DARK),
       1,

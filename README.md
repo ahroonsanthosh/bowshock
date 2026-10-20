@@ -235,6 +235,10 @@ example); the ramp and the shock tube fall back to the CPU without it.
   components and their labels: validated on the Basic Finner inside that
   rocket's class, an estimate, not validated, outside it, or refused with
   the reasons.
+- **Live flow:** the flow around the Basic Finner's nose cone and body,
+  solved on your GPU as the drag page solves it and drawn from the GPU's
+  memory as it converges: schlieren, Mach number, pressure coefficient or
+  density, mirrored about the axis, with pan, zoom and a split view.
 - **Supersonic ramp:** oblique shocks and Prandtl-Meyer expansion fans,
   solved live on your GPU and drawn as numerical schlieren or colour-mapped
   fields, with the ramp pressure compared against exact theory as the run
@@ -263,8 +267,10 @@ on a static host.
 | `src/total/`         | Total drag from its components, the bands combined linearly                   |
 | `src/verification/`  | Discretisation error from nested grids                                        |
 | `src/validation/`    | Exact and reference solutions, and digitised wind-tunnel data                 |
-| `src/render/`        | Display fields, colour map and WebGPU rendering                               |
+| `src/render/`        | Display fields, colour map, WebGPU rendering and the flow view's renderer     |
+| `src/ui/`            | The interface: its one stylesheet, its faces, and its components              |
 | `src/app/`, `demos/` | The demo pages                                                                |
+| `scripts/`           | The interface's phase checks and usability measurements                       |
 | `tests/`             | Unit and validation tests (`tests/gpu/` runs in headless Chromium)            |
 | `docs/design/`       | Design records: what was decided, why, and the measurements behind each claim |
 | `docs/research/`     | Research records and work in progress, not used by the solver                 |

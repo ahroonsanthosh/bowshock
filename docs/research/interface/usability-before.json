@@ -1,0 +1,98 @@
+[
+  {
+    "page": "landing",
+    "width": 390,
+    "words": 129,
+    "controls": 3,
+    "longestParagraph": 32,
+    "height": 1212,
+    "firstResult": 0.52,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "openHelp": null
+    },
+    "errors": []
+  },
+  {
+    "page": "landing",
+    "width": 1440,
+    "words": 129,
+    "controls": 3,
+    "longestParagraph": 32,
+    "height": 915,
+    "firstResult": 0.587,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "openHelp": null
+    },
+    "errors": []
+  },
+  {
+    "page": "ramp",
+    "width": 390,
+    "words": 122,
+    "controls": 5,
+    "longestParagraph": 42,
+    "height": 961,
+    "firstResult": 11.457,
+    "converged": 56.946,
+    "actions": {
+      "result": 0,
+      "bandAndStatus": 0,
+      "changeMach": 1,
+      "openHelp": null
+    },
+    "errors": []
+  },
+  {
+    "page": "ramp",
+    "width": 1440,
+    "words": 122,
+    "controls": 5,
+    "longestParagraph": 42,
+    "height": 1158,
+    "firstResult": 8.109,
+    "converged": 64.547,
+    "actions": {
+      "result": 1,
+      "bandAndStatus": 1,
+      "changeMach": 1,
+      "openHelp": null
+    },
+    "errors": []
+  },
+  {
+    "page": "shock-tube",
+    "width": 390,
+    "words": 61,
+    "controls": 7,
+    "longestParagraph": 25,
+    "height": 1065,
+    "firstResult": 2.155,
+    "converged": null,
+    "actions": {
+      "result": 2,
+      "bandAndStatus": 1,
+      "openHelp": null
+    },
+    "errors": []
+  },
+  {
+    "page": "shock-tube",
+    "width": 1440,
+    "words": 61,
+    "controls": 7,
+    "longestParagraph": 25,
+    "height": 995,
+    "firstResult": 2.071,
+    "converged": null,
+    "actions": {
+      "result": 2,
+      "bandAndStatus": 1,
+      "openHelp": null
+    },
+    "errors": []
+  }
+]

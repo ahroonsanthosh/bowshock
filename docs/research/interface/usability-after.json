@@ -1,0 +1,132 @@
+[
+  {
+    "page": "landing",
+    "width": 390,
+    "words": 96,
+    "controls": 10,
+    "longestParagraph": 32,
+    "height": 881,
+    "firstResult": 1.017,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "openHelp": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "landing",
+    "width": 1440,
+    "words": 107,
+    "controls": 12,
+    "longestParagraph": 32,
+    "height": 900,
+    "firstResult": 0.214,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "openHelp": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "ramp",
+    "width": 390,
+    "words": 43,
+    "controls": 16,
+    "longestParagraph": 0,
+    "height": 844,
+    "firstResult": 8.491,
+    "converged": 47.48,
+    "actions": {
+      "result": 0,
+      "bandAndStatus": 0,
+      "changeMach": 1,
+      "openHelp": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "ramp",
+    "width": 1440,
+    "words": 107,
+    "controls": 20,
+    "longestParagraph": 21,
+    "height": 900,
+    "firstResult": 8.988,
+    "converged": 59.284,
+    "actions": {
+      "result": 0,
+      "bandAndStatus": 0,
+      "changeMach": 1,
+      "openHelp": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "shock-tube",
+    "width": 390,
+    "words": 49,
+    "controls": 14,
+    "longestParagraph": 0,
+    "height": 844,
+    "firstResult": 2.345,
+    "converged": null,
+    "actions": {
+      "result": 1,
+      "bandAndStatus": 0,
+      "openHelp": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "shock-tube",
+    "width": 1440,
+    "words": 61,
+    "controls": 16,
+    "longestParagraph": 7,
+    "height": 900,
+    "firstResult": 2.263,
+    "converged": null,
+    "actions": {
+      "result": 1,
+      "bandAndStatus": 0,
+      "openHelp": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "flow",
+    "width": 390,
+    "words": 108,
+    "controls": 16,
+    "longestParagraph": 28,
+    "height": 844,
+    "firstResult": 11.147,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "bandAndStatus": 0,
+      "changeMach": 1,
+      "openHelp": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "flow",
+    "width": 1440,
+    "words": 137,
+    "controls": 22,
+    "longestParagraph": 28,
+    "height": 900,
+    "firstResult": 16.152,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "bandAndStatus": 0,
+      "changeMach": 1,
+      "openHelp": 1
+    },
+    "errors": []
+  }
+]

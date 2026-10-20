@@ -12,6 +12,8 @@ export interface ModeOption<M extends string> {
   readonly label: string;
   /** Its name for assistive technology, if the label is a symbol (ρ). */
   readonly name?: string;
+  /** A longer name, shown as the button's tooltip ("Pressure coefficient"). */
+  readonly hint?: string;
   readonly key: string;
 }
 
@@ -40,7 +42,7 @@ export class ModeBar<M extends string, T extends string = never> {
       attrs: { role: 'group', 'aria-label': 'Field shown' },
     });
     for (const mode of options.modes) {
-      const button = modeButton(mode.label, mode.key, mode.name);
+      const button = modeButton(mode.label, mode.key, mode.name, mode.hint);
       button.addEventListener('click', () => {
         options.onMode(mode.id);
       });
@@ -84,7 +86,7 @@ export class ModeBar<M extends string, T extends string = never> {
   }
 }
 
-function modeButton(label: string, key: string, name?: string): HTMLButtonElement {
+function modeButton(label: string, key: string, name?: string, hint?: string): HTMLButtonElement {
   return h(
     'button',
     {
@@ -94,7 +96,7 @@ function modeButton(label: string, key: string, name?: string): HTMLButtonElemen
         'aria-pressed': 'false',
         'aria-keyshortcuts': key,
         'aria-label': name ?? null,
-        title: `${name ?? label} (${key})`,
+        title: `${hint ?? name ?? label} (${key})`,
       },
     },
     h('kbd', { text: key, attrs: { 'aria-hidden': 'true' } }),

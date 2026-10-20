@@ -19,7 +19,6 @@
     <main class="doc__main">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero__text">
-          <p class="eyebrow">Open-source CFD for rocketry</p>
           <h1 id="hero-title">
             Supersonic airflow around model rockets, simulated in your browser on your own GPU.
           </h1>
@@ -32,8 +31,9 @@
             <a class="button button--primary" href="demos/nose-drag.html"
               >Compute a rocket's drag</a
             >
-            <a class="button" href="demos/supersonic-ramp.html">Watch shocks form</a>
+            <a class="button" href="demos/flow-view.html">Watch the flow live</a>
           </div>
+          <p class="gpu-line" id="gpu-line" aria-live="polite">Checking for WebGPU…</p>
         </div>
         <figure class="hero__art">
           <svg viewBox="0 0 600 320" role="img" aria-labelledby="hero-art-caption">
@@ -84,52 +84,33 @@
               stroke-width="1.5"
             />
           </svg>
-          <figcaption id="hero-art-caption">
-            Illustration: the bow shock of a cone-cylinder in supersonic flow, and the expansion at
-            its shoulder.
-          </figcaption>
+          <figcaption id="hero-art-caption">Illustration of a bow shock, not a result.</figcaption>
         </figure>
       </section>
 
-      <section class="cards" aria-label="Pages">
-        <a class="card" href="demos/nose-drag.html">
-          <span class="card__kicker">Rocket</span>
-          <span class="card__title">Nose wave drag and total drag</span>
-          <span class="card__text"
-            >The wave drag of a nose and its body, with its error band, and the rocket's total drag
-            with fins and base: validated on the Basic Finner inside that rocket's class, an
-            estimate, not validated, outside it, or refused with the reasons.</span
-          >
-        </a>
+      <section class="cards" aria-labelledby="cards-title">
+        <h2 class="cards__title" id="cards-title">The solver against exact theory</h2>
         <a class="card" href="demos/supersonic-ramp.html">
-          <span class="card__kicker">Validation</span>
           <span class="card__title">Supersonic ramp</span>
-          <span class="card__text"
-            >Oblique shocks and expansion fans, solved live on your GPU, against exact theory.</span
-          >
+          <span class="card__text">Oblique shocks and expansion fans.</span>
         </a>
         <a class="card" href="demos/shock-tube.html">
-          <span class="card__kicker">Validation</span>
           <span class="card__title">Shock tube</span>
-          <span class="card__text"
-            >The 1D reference solver against the exact solutions of Toro's five Riemann
-            problems.</span
-          >
+          <span class="card__text">Toro's five Riemann problems.</span>
         </a>
       </section>
 
-      <section class="gpu-card" aria-labelledby="gpu-title">
-        <h2 id="gpu-title">Your GPU</h2>
-        <div id="gpu-status" aria-live="polite"><p class="muted">Checking for WebGPU…</p></div>
-      </section>
+      <details class="disclosure gpu-card">
+        <summary>Your GPU and its limits</summary>
+        <div id="gpu-status"><p class="muted">Checking for WebGPU…</p></div>
+      </details>
     </main>
     <footer class="doc__footer">
       <p>
-        bowshock is free software under the GNU AGPL, version 3 or later, and an independent
-        implementation of published numerical methods; it contains no FluidX3D code.
-        <a href="https://github.com/ahroonsanthosh/bowshock">Source code</a>.
+        Free software (AGPL), no FluidX3D code:
+        <a href="https://github.com/ahroonsanthosh/bowshock">source code</a>. Not for flight
+        decisions yet.
       </p>
-      <p>Nothing here should be used for flight decisions yet.</p>
     </footer>
     <script type="module" src="/src/app/main.ts"></script>
   </body>

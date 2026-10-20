@@ -58,7 +58,8 @@ export function siteMenus(root: string, current: PageId): MenuGroup[] {
       id: 'rocket',
       label: 'Rocket',
       items: [
-        page('drag', 'Nose wave drag', 'The wave drag of a nose and its body, with its error band'),
+        page('drag', 'Nose wave drag and total drag', 'With their bands, labels and status'),
+        page('flow', 'Live flow', "The Basic Finner's nose, solved and drawn as it converges"),
       ],
     },
     {
