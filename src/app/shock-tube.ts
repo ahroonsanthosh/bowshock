@@ -1,7 +1,7 @@
 /**
  * Shock tube demo: runs the 1D solver live, on the CPU reference engine or
  * on the GPU, and overlays the exact solution so anyone can see how
- * accurate the scheme is.
+ * accurate the scheme is; the plot fills the window.
  */
 
 import { DEFAULT_CONFIG, Euler1D, type Euler1DConfig } from '../engine-cpu/euler1d';
@@ -12,6 +12,11 @@ import type { Primitive1D } from '../scheme/gas';
 import { LIMITERS } from '../scheme/limiters';
 import { exactRiemannProfile } from '../scheme/riemann-exact';
 import { TORO_TESTS, type ToroTest } from '../validation/toro-tests';
+import { element, h } from '../ui/dom';
+import { formatCount, formatExponent } from '../ui/format';
+import type { KeyBinding } from '../ui/keymap';
+import { Readout } from '../ui/readout';
+import { Shell } from '../ui/shell';
 
 const GAMMA = 1.4;
 const EXACT_SAMPLES = 1000;
@@ -80,13 +85,6 @@ async function gpuRun(
   };
 }
 
-/** Look up an element and check its type, failing clearly if the page and script disagree. */
-function element<T extends HTMLElement>(selector: string, type: new () => T): T {
-  const el = document.querySelector(selector);
-  if (!(el instanceof type)) throw new Error(`expected ${type.name} at ${selector}`);
-  return el;
-}
-
 /** The selected option of a <select>, checked against the keys it must name. */
 function selectedKey<K extends string>(select: HTMLSelectElement, options: Record<K, unknown>): K {
   const value = select.value;
@@ -94,14 +92,82 @@ function selectedKey<K extends string>(select: HTMLSelectElement, options: Recor
   return value as K;
 }
 
+type Action = 'run' | 'again';
+
+const BINDINGS: readonly KeyBinding<Action>[] = [
+  { keys: [' '], action: 'run', description: 'Run, pause or resume' },
+  { keys: ['r'], action: 'again', description: 'Run again from the start' },
+];
+
+const shell = new Shell<Action>({
+  root: '../',
+  page: 'shock-tube',
+  title: 'Shock tube',
+  bindings: BINDINGS,
+  onAction: (action) => {
+    if (action === 'run') runButton.click();
+    else void runAgain();
+  },
+  help: {
+    title: 'Shock tube: keys and help',
+    sections: [
+      {
+        title: 'This page',
+        body: [
+          'A tube of gas at rest, with different states either side of a diaphragm at the start: when it bursts, a shock, a contact surface and an expansion travel along the tube. Toro\u2019s five problems test a solver on strong shocks, near-vacuum and colliding waves.',
+          'The dots are bowshock\u2019s 1D solver, on the CPU in 64-bit or on the GPU in 32-bit; the line is the exact solution. The L1 density error measures the difference over the tube; this page shows the solver against exact theory, so it has no error band.',
+        ],
+      },
+    ],
+  },
+});
+
+const readout = new Readout([
+  [{ id: 'problem' }, { id: 'cells', label: 'cells' }, { id: 'engine' }],
+  [
+    { id: 'time', label: 't' },
+    { id: 'steps', label: 'steps' },
+    { id: 'l1', label: 'L1' },
+  ],
+]);
+document.querySelector('main')?.append(readout.element);
+
+shell.bottom.append(
+  h(
+    'div',
+    { className: 'legend', attrs: { role: 'group', 'aria-label': 'Legend' } },
+    h(
+      'div',
+      { className: 'legend__title' },
+      h(
+        'span',
+        {},
+        h('span', { className: 'plot-key plot-key--dots', attrs: { 'aria-hidden': 'true' } }),
+        'bowshock',
+      ),
+      h(
+        'span',
+        {},
+        h('span', { className: 'plot-key plot-key--line', attrs: { 'aria-hidden': 'true' } }),
+        'exact',
+      ),
+    ),
+    h('p', { className: 'legend__note', text: 'Density, velocity and pressure along the tube.' }),
+  ),
+);
+
 const problemSelect = element('#problem', HTMLSelectElement);
 const engineSelect = element('#engine', HTMLSelectElement);
 const fluxSelect = element('#flux', HTMLSelectElement);
 const limiterSelect = element('#limiter', HTMLSelectElement);
 const cellsSelect = element('#cells', HTMLSelectElement);
 const runButton = element('#run', HTMLButtonElement);
+const againButton = element('#again', HTMLButtonElement);
 const status = element('#status', HTMLElement);
 const canvas = element('#plot', HTMLCanvasElement);
+const l1Text = element('#l1', HTMLElement);
+const timeText = element('#time', HTMLElement);
+const stepsText = element('#steps', HTMLElement);
 
 TORO_TESTS.forEach((test, i) => {
   problemSelect.add(new Option(`${test.name}: ${test.description}`, String(i)));
@@ -138,8 +204,11 @@ async function reset(): Promise<void> {
   run?.dispose();
   run = null;
   snapshot = null;
+  status.textContent = '';
 
   test = TORO_TESTS[Number(problemSelect.value)] ?? TORO_TESTS[0]!;
+  readout.set('problem', test.name);
+  readout.set('cells', cellsSelect.value);
   const config: Euler1DConfig = {
     ...DEFAULT_CONFIG,
     nCells: Number(cellsSelect.value),
@@ -155,6 +224,7 @@ async function reset(): Promise<void> {
     const device = await gpuDevice;
     if (device === null) {
       status.textContent = 'WebGPU is not available in this browser; using the CPU engine.';
+      shell.toasts.show(status.textContent, 'warn');
       engineSelect.value = 'cpu';
       syncFluxOptions();
       next = cpuRun(config, field);
@@ -170,8 +240,15 @@ async function reset(): Promise<void> {
     return;
   }
   run = next;
+  readout.set('engine', engineSelect.value === 'gpu' ? 'GPU' : 'CPU');
   snapshot = await run.snapshot();
   draw();
+}
+
+/** Start the problem again from its initial state, and run it. */
+async function runAgain(): Promise<void> {
+  await reset();
+  runButton.click();
 }
 
 async function frame(): Promise<void> {
@@ -217,14 +294,17 @@ function draw(): void {
       : exactXs.map((x) => (x < test.x0 ? test.left : test.right));
 
   const dpr = window.devicePixelRatio || 1;
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  canvas.width = Math.round(width * dpr);
-  canvas.height = Math.round(height * dpr);
+  canvas.width = Math.round(canvas.clientWidth * dpr);
+  canvas.height = Math.round(canvas.clientHeight * dpr);
   const ctx = canvas.getContext('2d');
   if (ctx === null) return;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, width, height);
+  ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+  // The plots fill the part of the window the panels and the readout leave.
+  const area = shell.drawingRect(1.4);
+  const width = Math.max(120, area.width);
+  const height = Math.max(150, area.height);
+  ctx.translate(area.x, area.y);
 
   const style = getComputedStyle(document.documentElement);
   const colour = (name: string) => style.getPropertyValue(name).trim();
@@ -245,18 +325,18 @@ function draw(): void {
     const px = (x: number) => pad.left + x * plotWidth;
     const py = (v: number) => top + (1 - (v - lo) / (hi - lo)) * plotHeight;
 
-    ctx.strokeStyle = colour('--grid');
+    ctx.strokeStyle = colour('--plot-grid');
     ctx.lineWidth = 1;
     ctx.strokeRect(pad.left, top, plotWidth, plotHeight);
     ctx.fillStyle = colour('--muted');
-    ctx.font = '12px system-ui, sans-serif';
+    ctx.font = `12px ${colour('--font-ui')}`;
     ctx.textAlign = 'left';
     ctx.fillText(panel.label, pad.left, top - 6);
     ctx.textAlign = 'right';
     ctx.fillText(formatTick(hi - margin), pad.left - 6, py(hi - margin) + 4);
     ctx.fillText(formatTick(lo + margin), pad.left - 6, py(lo + margin) + 4);
 
-    ctx.strokeStyle = colour('--exact');
+    ctx.strokeStyle = colour('--text');
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     exact.forEach((w, i) => {
@@ -267,7 +347,7 @@ function draw(): void {
     });
     ctx.stroke();
 
-    ctx.fillStyle = colour('--numeric');
+    ctx.fillStyle = colour('--accent');
     // Dot radius follows the spacing between cells so dense grids stay legible.
     const r = Math.min(2.2, Math.max(0.8, (0.35 * plotWidth) / n));
     cells.forEach((w, i) => {
@@ -282,9 +362,14 @@ function draw(): void {
     const exactAtCells = exactRiemannProfile(test.left, test.right, xs, test.x0, time, GAMMA);
     cells.forEach((w, i) => (l1 += Math.abs(w.rho - exactAtCells[i]!.rho) * dx));
   }
-  status.textContent =
-    `t = ${time.toPrecision(4)} of ${test.tEnd}, ${steps} steps` +
-    (time > 0 ? `, L1 density error ${l1.toExponential(2)}` : '');
+  readout.set('time', `${time.toPrecision(4)} of ${test.tEnd}`);
+  readout.set('steps', formatCount(steps));
+  readout.set('l1', time > 0 ? formatExponent(l1, 2) : null);
+  timeText.textContent = `${time.toPrecision(4)} of ${test.tEnd}`;
+  stepsText.textContent = formatCount(steps);
+  l1Text.textContent = time > 0 ? formatExponent(l1, 2) : '\u2026';
+  shell.sheet.pinned.textContent =
+    time > 0 ? `L1 density error ${formatExponent(l1, 2)} at t = ${time.toPrecision(4)}` : '';
 }
 
 function formatTick(v: number): string {
@@ -307,11 +392,12 @@ runButton.addEventListener('click', () => {
   })();
 });
 
+againButton.addEventListener('click', () => void runAgain());
 engineSelect.addEventListener('change', syncFluxOptions);
 for (const select of [problemSelect, engineSelect, fluxSelect, limiterSelect, cellsSelect]) {
   select.addEventListener('change', () => void reset());
 }
-window.addEventListener('resize', draw);
+shell.onLayout(draw);
 
 void (async () => {
   const device = await gpuDevice;

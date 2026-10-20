@@ -109,6 +109,20 @@ Shock standoff of a sphere, to place blunt-body grid boundaries
 Oklab colour space for the colour map (src/render/colormap.ts)
   B. Ottosson, "A perceptual color space for image processing", 2020.
 
+Typefaces of the interface (src/ui/fonts/), self-hosted: the Latin and
+Greek subsets that Google Fonts serves, as served:
+  Inter 4.001, Copyright 2016 The Inter Project Authors
+  (https://github.com/rsms/inter), under the SIL Open Font License,
+  Version 1.1 (src/ui/fonts/Inter-OFL.txt).
+  JetBrains Mono 2.211, Copyright 2020 The JetBrains Mono Project Authors
+  (https://github.com/JetBrains/JetBrainsMono), under the SIL Open Font
+  License, Version 1.1 (src/ui/fonts/JetBrainsMono-OFL.txt).
+
+Accessibility checks of the pages (scripts/interface-check.mjs, a
+development tool, not part of the site)
+  axe-core, Copyright Deque Systems, Inc., under the Mozilla Public
+  License 2.0.
+
 Reference data used for validation (cone tables, wind-tunnel pressures)
 are listed, with how far each source has been checked, in
 docs/validation/sources.md.

@@ -8,7 +8,7 @@
 import gasWgsl from '../engine-gpu/shaders/gas.wgsl?raw';
 import { BufferSet, compileShader } from '../engine-gpu/gpu-common';
 import type { StructuredGrid } from '../grid/structured';
-import { colormapTable } from './colormap';
+import { colormapTable, hexToRgb, SCHLIEREN_DARK, SCHLIEREN_LIGHT } from './colormap';
 import { DISPLAY_FIELD_CODES, type DisplayField } from './fields';
 import fieldsWgsl from './shaders/fields.wgsl?raw';
 import renderWgsl from './shaders/render.wgsl?raw';
@@ -20,7 +20,24 @@ export interface RenderOptions {
   readonly gamma: number;
   /** Schlieren contrast k in exp(-k g / g_max); about 10 to 15 shows weak waves. */
   readonly schlierenContrast: number;
+  /**
+   * Schlieren dark on light (white where the density is uniform, the
+   * default) or light on dark (SCHLIEREN_DARK where it is uniform, towards
+   * SCHLIEREN_LIGHT at the steepest gradients; the same shade inverted).
+   */
+  readonly schlierenStyle?: 'dark-on-light' | 'light-on-dark';
 }
+
+/** A rectangle of a texture, in pixels from its top left corner. */
+export interface PixelArea {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+/** Size of the RenderParams struct of render.wgsl. */
+const RENDER_PARAMS_BYTES = 80;
 
 export class FieldRenderer {
   private readonly buffers: BufferSet;
@@ -108,7 +125,11 @@ export class FieldRenderer {
     const b = this.buffers;
     this.nodes = b.createWith('nodes', packNodes(grid), usage.STORAGE);
     this.fieldParams = b.create('field params', 32, usage.UNIFORM | usage.COPY_DST);
-    this.renderParams = b.create('render params', 48, usage.UNIFORM | usage.COPY_DST);
+    this.renderParams = b.create(
+      'render params',
+      RENDER_PARAMS_BYTES,
+      usage.UNIFORM | usage.COPY_DST,
+    );
     this.cellValues = b.create('cell values', 4 * ni * nj, usage.STORAGE);
     this.nodeValues = b.create('node values', 4 * nNodes, usage.STORAGE | usage.COPY_SRC);
     this.range = b.create('range', 8 * (1 + this.nNodePartials), usage.STORAGE | usage.COPY_SRC);
@@ -163,18 +184,32 @@ export class FieldRenderer {
 
   /**
    * Compute a field and draw it into `target` (for example a canvas's
-   * current texture), fitting the domain with its aspect ratio kept.
+   * current texture), fitting the domain with its aspect ratio kept into
+   * `area` (by default the whole texture, which is cleared to `background`
+   * in either case).
    */
-  render(target: GPUTexture, state: GPUBuffer, options: RenderOptions, background: GPUColor): void {
-    const { scale, offset } = fitToViewport(this.grid, target.width, target.height);
-    const params = new ArrayBuffer(48);
+  render(
+    target: GPUTexture,
+    state: GPUBuffer,
+    options: RenderOptions,
+    background: GPUColor,
+    area: PixelArea = { x: 0, y: 0, width: target.width, height: target.height },
+  ): void {
+    const { scale, offset } = fitToViewport(this.grid, area.width, area.height);
+    const params = new ArrayBuffer(RENDER_PARAMS_BYTES);
     new Uint32Array(params, 0, 4).set([
       this.grid.ni,
       this.grid.nj,
       DISPLAY_FIELD_CODES[options.field],
-      0,
+      options.schlierenStyle === 'light-on-dark' ? 1 : 0,
     ]);
     new Float32Array(params, 16, 5).set([...scale, ...offset, options.schlierenContrast]);
+    new Float32Array(params, 48, 8).set([
+      ...hexToRgb(SCHLIEREN_DARK),
+      1,
+      ...hexToRgb(SCHLIEREN_LIGHT),
+      1,
+    ]);
     this.device.queue.writeBuffer(this.renderParams, 0, params);
 
     const encoder = this.device.createCommandEncoder({ label: 'render field' });
@@ -184,6 +219,7 @@ export class FieldRenderer {
         { view: target.createView(), loadOp: 'clear', storeOp: 'store', clearValue: background },
       ],
     });
+    pass.setViewport(area.x, area.y, area.width, area.height, 0, 1);
     pass.setPipeline(this.renderPipeline);
     pass.setBindGroup(0, this.renderBindGroup);
     pass.draw(6 * this.grid.ni * this.grid.nj);
@@ -232,6 +268,22 @@ function packNodes(grid: StructuredGrid): Float32Array<ArrayBuffer> {
   const data = new Float32Array(2 * grid.x.length);
   for (let n = 0; n < grid.x.length; n++) data.set([grid.x[n]!, grid.y[n]!], 2 * n);
   return data;
+}
+
+/**
+ * Where the domain point (x, y) is drawn by render() into `area`, in
+ * pixels of the target: for drawing over the field (a wall, grid lines)
+ * with the same fit.
+ */
+export function domainToPixels(
+  grid: StructuredGrid,
+  area: PixelArea,
+): (x: number, y: number) => [number, number] {
+  const { scale, offset } = fitToViewport(grid, area.width, area.height);
+  return (x, y) => [
+    area.x + 0.5 * (x * scale[0] + offset[0] + 1) * area.width,
+    area.y + 0.5 * (1 - (y * scale[1] + offset[1])) * area.height,
+  ];
 }
 
 /**

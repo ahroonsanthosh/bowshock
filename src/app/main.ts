@@ -1,41 +1,83 @@
 /**
- * The front page: reports whether this browser offers WebGPU and, if so,
- * the adapter and the limits that size the solver grids.
+ * The front page: the site's top bar and help, and whether this browser
+ * offers WebGPU and, if so, the adapter and the limits that size the
+ * solver grids.
  */
 
 import { detectGpu, type GpuSupport } from '../gpu/detect';
+import { h } from '../ui/dom';
+import { bandSection, colourScaleSection, Help } from '../ui/help';
+import { KeyMap, type KeyBinding } from '../ui/keymap';
+import { siteMenus } from '../ui/site';
+import { TopBar } from '../ui/topbar';
 
 function formatBytes(bytes: number): string {
   const mib = bytes / (1024 * 1024);
   return mib >= 1024 ? `${(mib / 1024).toFixed(1)} GiB` : `${mib.toFixed(0)} MiB`;
 }
 
-/** Create an element with text content; never interprets the text as HTML. */
-function el(tag: string, text = '', className = ''): HTMLElement {
-  const node = document.createElement(tag);
-  node.textContent = text;
-  if (className !== '') node.className = className;
-  return node;
-}
-
 function render(support: GpuSupport): HTMLElement[] {
   if (support.kind === 'unavailable') {
-    return [el('p', 'No WebGPU', 'status warn'), el('p', support.reason)];
+    return [
+      h('p', {}, h('span', { className: 'badge badge--warn', text: 'No WebGPU' })),
+      h('p', { className: 'muted', text: support.reason }),
+    ];
   }
-  const table = document.createElement('table');
+  const table = h('table', {}, h('caption', { className: 'visually-hidden', text: 'GPU limits' }));
+  const body = h('tbody');
   for (const [name, value] of Object.entries(support.limits)) {
-    const row = table.insertRow();
-    row.append(el('th', name));
     const shown = name.endsWith('Size') && value > 65536 ? formatBytes(value) : String(value);
-    row.append(el('td', shown));
+    body.append(
+      h('tr', {}, h('th', { text: name, attrs: { scope: 'row' } }), h('td', { text: shown })),
+    );
   }
+  table.append(body);
   return [
-    el('p', 'WebGPU available', 'status ok'),
-    el('p', `Adapter: ${support.adapterDescription}`),
+    h('p', {}, h('span', { className: 'badge badge--ok', text: 'WebGPU available' })),
+    h('p', { text: `Adapter: ${support.adapterDescription}` }),
     table,
-    el('p', `Features: ${support.features.join(', ') || 'none'}`, 'features'),
+    h('p', { className: 'features', text: `Features: ${support.features.join(', ') || 'none'}` }),
   ];
 }
+
+const HELP: KeyBinding<'help'> = {
+  keys: ['h', '?'],
+  action: 'help',
+  description: 'Show or hide this help',
+};
+const help = new Help({
+  title: 'Keys and help',
+  bindings: [HELP],
+  sections: [
+    {
+      title: 'The pages',
+      body: [
+        'Each page draws its flow full window on a dark ground and is run from the keyboard as well as by its buttons: open a page and press H there for its keys.',
+      ],
+    },
+    colourScaleSection(),
+    bandSection(),
+  ],
+});
+const topBar = new TopBar({
+  root: '',
+  menus: siteMenus('', 'home'),
+  onHelp: () => {
+    help.open();
+  },
+});
+document.body.prepend(topBar.element);
+document.body.append(help.element);
+new KeyMap(
+  [HELP],
+  () => {
+    help.toggle();
+  },
+  () => help.isOpen,
+).attach();
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !help.isOpen && topBar.closeMenus()) event.preventDefault();
+});
 
 const target = document.querySelector('#gpu-status');
 if (target !== null) {

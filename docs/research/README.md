@@ -73,6 +73,14 @@ the code), and that copy's changes from the commit it was taken at
 anchor, a progress callback; `snap2` adds the corner patch of
 `docs/design/patches/0006-corner-one-sided.diff`).
 
+## `interface/`: screenshots of the interface's phase checks
+
+Every page at 390, 768 and 1440 px wide, as `scripts/interface-check.mjs`
+takes them for the phase checks of
+[0012](../design/0012-interface.md) section 8 (headless Chromium on
+software WebGPU, so a flow is shown as far as it has converged in the time
+allowed), kept for review and taken again at each phase.
+
 ## `wip/`: code in progress, not yet validated
 
 Diffs of work on branches that exist only locally, kept here so that it

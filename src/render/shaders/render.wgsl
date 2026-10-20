@@ -8,12 +8,16 @@ struct RenderParams {
   ni: u32,
   nj: u32,
   field: u32,
-  _padding: u32,
+  // 0: schlieren dark on light (white where uniform); 1: light on dark.
+  light_on_dark: u32,
   // Node position to clip space: clip = position * scale + offset.
   scale: vec2f,
   offset: vec2f,
   // Schlieren contrast k in exp(-k g / g_max).
   schlieren_k: f32,
+  // Light on dark: the shade of uniform flow, and of the steepest gradient.
+  schlieren_dark: vec4f,
+  schlieren_light: vec4f,
 }
 
 @group(0) @binding(0) var<uniform> params: RenderParams;
@@ -53,6 +57,9 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
     // Numerical schlieren: white where the density is uniform, dark at
     // shocks and expansions.
     let shade = exp(-params.schlieren_k * input.value / max(range.y, 1.0e-30));
+    if (params.light_on_dark == 1u) {
+      return mix(params.schlieren_dark, params.schlieren_light, 1.0 - shade);
+    }
     return vec4f(vec3f(shade), 1.0);
   }
   let t = clamp((input.value - range.x) / max(range.y - range.x, 1.0e-30), 0.0, 1.0);

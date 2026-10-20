@@ -282,4 +282,7 @@ runs the WebGPU kernel tests in headless Chromium.
 AGPL-3.0-or-later. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 bowshock is an independent implementation of published numerical methods. It
-does not contain or derive from FluidX3D code.
+does not contain or derive from FluidX3D code. Its interface takes its
+inspiration from FluidX3D's (the flow full window on a dark ground, fields
+switched from the keyboard), with none of its code, shaders or assets
+([0012](docs/design/0012-interface.md)).
