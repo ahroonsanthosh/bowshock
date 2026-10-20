@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  FALLBACK_COLUMN_DENSITY,
   baseMach,
   bluntFitFamily,
   bluntFitProblem,
@@ -350,7 +351,7 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     }
   });
 
-  it('Mach 1.35, 3-caliber tangent ogive, axially subsonic tip: second order towards the measured value', () => {
+  it('Mach 1.35, 3-caliber tangent ogive, axially subsonic tip: second order towards the measured value', async () => {
     // Measured in 0006 on the page's family (nj = 20 to 160, each grid
     // converged to 1e-10 of its drag): 0.1081856017, 0.1077785038,
     // 0.1076868609, 0.1076656809, at orders 2.15 and 2.11, extrapolated
@@ -374,8 +375,59 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     expect(fine).toBeLessThan(5e-3);
     expect(coarse / fine).toBeGreaterThan(4.1);
     expect(coarse / fine).toBeLessThan(4.7);
-    // The page's base grid, as in the family above.
-    expect(Math.abs(drag(20, 1) / 0.1081856017 - 1)).toBeLessThan(1e-9);
+    // The page's base grid, as in the family above, through the verified
+    // procedure: its grid passes the gates, so it is solved as before the
+    // fallback to more columns existed, to the last bit (the value measured
+    // then).
+    const fallbacks: number[] = [];
+    const result = await verifiedFittedDrag(ogive, {
+      mach: 1.35,
+      gamma,
+      maxRefinement: 1,
+      floor: 0,
+      tolerance: 0,
+      iterationsPerRefinement: 20_000,
+      onFallback: (refinement) => fallbacks.push(refinement),
+    });
+    expect(fallbacks).toEqual([]);
+    expect(result.kind).toBe('solved');
+    if (result.kind === 'solved') {
+      expect(result.columnDensity).toBeUndefined();
+      expect(result.levels[0]!.value).toBe(0.1081856016981207);
+    }
+  }, 900_000);
+
+  it('a sharp nose whose usual grid fails only the quality gates is solved again with more columns', async () => {
+    // A 3-caliber tangent ogive with 30 calibers of cylinder at Mach 1.5:
+    // on 20 cells across the usual grid's wall cells at the end of the
+    // cylinder, under a far shock, reach an aspect ratio of 18.0 (measured
+    // when written), above the 13 allowed; with 1.5 times the columns
+    // every grid passes.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 30,
+    };
+    const fallbacks: { refinement: number; reason: string }[] = [];
+    const result = await verifiedFittedDrag(ogive, {
+      mach: 1.5,
+      gamma,
+      maxRefinement: 1,
+      floor: 0,
+      tolerance: 0,
+      iterationsPerRefinement: 20_000,
+      onFallback: (refinement, reason) => fallbacks.push({ refinement, reason }),
+    });
+    expect(fallbacks).toHaveLength(1);
+    expect(fallbacks[0]!.refinement).toBe(1);
+    expect(fallbacks[0]!.reason).toMatch(
+      /fails its quality checks \(cell aspect ratio 18.0 above 13\)/,
+    );
+    expect(result.kind).toBe('solved');
+    if (result.kind === 'solved') {
+      expect(result.columnDensity).toBe(FALLBACK_COLUMN_DENSITY);
+      // Measured when written: 0.10583491196235459 on 184 columns.
+      expect(Math.abs(result.levels[0]!.value / 0.10583491196235459 - 1)).toBeLessThan(1e-12);
+    }
   }, 900_000);
 
   it('verified fitted drag: a grid that does not converge gives no value, only the reason', async () => {

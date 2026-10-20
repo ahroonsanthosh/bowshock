@@ -132,7 +132,9 @@ them; the fitted-drag families are recorded in
   19 detach their shock and 13 were refused by this test; tips steeper
   than about 40 deg (a limit of the present grids, set on measurement);
   bodies whose flow at their end is subsonic; grids failing the other
-  quality gates, as on some long bodies.
+  quality gates, as on some long bodies, unless the family solved again
+  with 1.5 times the columns along the body passes them (its result is
+  then shown with the reason).
 - Ellipsoid noses (blunt) on the drag page, the shock standing off ahead
   of the tip on a grid wrapped round the nose: their fitted drag
   converges at observed orders of 1.99 to 2.21, and behind the sonic line

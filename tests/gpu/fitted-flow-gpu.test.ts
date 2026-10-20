@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
+  FALLBACK_COLUMN_DENSITY,
   bluntFitFamily,
   bluntFitProblem,
   fittedFlow,
@@ -155,6 +156,36 @@ describe('fitted shock on the GPU', () => {
     expect(result.kind).toBe('solved');
     expect(levels).toHaveLength(1);
     const difference = Math.abs(levels[0]!.drag / 0.1081856017 - 1);
+    expect(difference, `GPU ${levels[0]!.drag}`).toBeLessThan(GPU_NOISE);
+  }, 1_800_000);
+
+  it('the page path solves again with more columns where the usual grid fails the quality gates', async () => {
+    // As on the CPU (tests/analysis/fitted-flow.test.ts): a 3-caliber
+    // tangent ogive with 30 calibers of cylinder at Mach 1.5, whose usual
+    // grid's wall cells at the end of the cylinder are too flat. The CPU's
+    // fit of the grid with 1.5 times the columns, converged to 1e-12,
+    // gives 0.10583491196235459.
+    const ogive: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 30,
+    };
+    const levels: LevelReport[] = [];
+    const fallbacks: number[] = [];
+    const result = await verifiedFittedDragGpu(device, ogive, {
+      mach: 1.5,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      onLevel: (report) => levels.push(report),
+      onFallback: (refinement) => fallbacks.push(refinement),
+    });
+    expect(fallbacks).toEqual([1]);
+    expect(result.kind).toBe('solved');
+    if (result.kind === 'solved') expect(result.columnDensity).toBe(FALLBACK_COLUMN_DENSITY);
+    expect(levels).toHaveLength(1);
+    const difference = Math.abs(levels[0]!.drag / 0.10583491196235459 - 1);
     expect(difference, `GPU ${levels[0]!.drag}`).toBeLessThan(GPU_NOISE);
   }, 1_800_000);
 
