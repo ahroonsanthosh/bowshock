@@ -874,8 +874,10 @@ export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
  * (0006, "Two-scale noses"): nose length in calibers, Mach number.
  */
 export const VON_KARMAN_REFERENCES: readonly (readonly [number, number])[] = [
+  [1, 1.5],
   [1, 2],
   [3, 2],
+  [5, 1.5],
 ];
 
 /**
