@@ -170,16 +170,27 @@ the boundary at the body scale, the window averaged the normal over the
 whole region in which its angle rises past 80 deg, so the lines left the
 wall at 43 to 52 deg, and the tip fell inside one cell. The boundary's
 length scale is now the larger of the tip radius and the smaller of the
-base radius and two tip scales (`tipScaleFactor`): unchanged on spheres
-and ellipsoids up to 3.7:1, the tip scale on Haack noses. The window
+base radius and two tip scales (`tipScaleFactor`): the tip scale on
+Haack noses. Ellipsoids keep the base radius at every length, and the
+rest of the grid their families were measured on (0006): the window's
+half-width tabulated at 1024 equal steps, the density of lines evaluated
+exactly, the spacing's slope limited (`maxSpacingSlope`, 0.15). By the
+tip-scale rule a 3-caliber ellipsoid (tip scale 0.16) would have two
+scales, and the clustered tables below moved the lines of the shorter
+ones by up to 2.4e-6;
+with ellipsoids on their own path the generator's lines are bit-identical
+to those of the measured ellipsoid families (16 ellipsoids of 0.5 to 6
+calibers at Mach 1.2 to 3, refinements 1, 2 and 4, compared with main at
+0d69e69). The two-scale grids take the density of lines as tabulated,
+without the slope limit, as their families were measured. The window
 follows it, and near the cusp turns the lines into a fan, their angle
 rising linearly with s at a few radians per layer height, which keeps
 the outer cells of equal width at the price of wall angles below the
 right angle over the first cells: 72 to 80 deg on the Haack noses
 measured (3 and 5 calibers, Mach 1.5 to 3), 78 deg on the fit's grid of
 the 3-caliber nose at Mach 2. The spacing along the body follows the
-layer height, so the tip region of that nose (5 l) holds 53 of the 248
-lines of the base grid, and grows by at most 1.12 between neighbours.
+layer height, so the tip region of that nose (5 l) holds 53 of the 240
+lines of the family's base grid.
 The generator's boundary is generous at the body scale, where it keeps
 the angle blunt bodies need (the captured shock lies at a tenth of its
 height at the tip and 0.42 along the nose), so the fitted solver builds

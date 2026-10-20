@@ -4,3 +4,4 @@ package-lock.json
 LICENSE
 tests/tmp*
 tests/gpu/tmp*
+docs/research/

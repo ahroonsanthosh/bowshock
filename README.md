@@ -12,7 +12,8 @@ number with an honest uncertainty band.
 > **Status: early development.** Verified 1D and 2D (planar and
 > axisymmetric) Euler solvers run on both the CPU and the GPU (WebGPU), with
 > their test suites and live demos, and the inviscid forebody wave drag of
-> sharp-nosed bodies is computed with a measured error band. The full
+> sharp-nosed bodies and ellipsoid noses is computed with a measured error
+> band. The full
 > rocket solver (viscous flow, base and fins) does not exist yet, so
 > bowshock gives no total drag coefficient. Nothing here should be used for
 > flight decisions yet. The plan is in
@@ -82,8 +83,10 @@ them; the fitted-drag families are recorded in
   (within 3e-7 at its observed order, 2.06).
   On a hemisphere-cylinder the stagnation pressure is within 0.008% of
   its exact value on 20 cells across (capture: up to 9.7%). The GPU's
-  fitted drag is within 8e-7 of the CPU's on the same grids (compared on
-  20 cells across, and 40 on a blunt nose).
+  fitted drag is within 8e-7 of the CPU's on the same grids for cones,
+  ogives and hemispheres at Mach 1.98 to 5 (compared on 20 cells across,
+  and 40 on a blunt nose), and within 3.8e-6 on ellipsoids at Mach 1.2,
+  where the page's fit stops (a twentieth of its allowance of 7e-5).
 - Forebody pressure (wave) drag of sharp-nosed bodies, inviscid, at zero
   incidence, on the [nose wave drag page](demos/nose-drag.html): each
   result is solved on your GPU with the bow shock fitted, on nested grids
@@ -94,7 +97,7 @@ them; the fitted-drag families are recorded in
   extrapolation); where no band can be measured the value is shown as
   not verified. On the families measured against exact or converged
   reference solutions (on the CPU, which the GPU matches within 8e-7 on
-  20 cells across:
+  these families on 20 cells across:
   cones of 5 to 30 deg at Mach 1.3 to 3 on three grids, and at Mach 3
   and 5 on two; 3-caliber tangent ogives at Mach 1.5 to 4, a 5-caliber
   one at Mach 2, and 3-caliber secant-ogive and parabolic noses at Mach
@@ -119,14 +122,48 @@ them; the fitted-drag families are recorded in
   converges at observed orders of 1.99 to 2.21, and behind the sonic line
   it agrees with a method of characteristics started from the solution
   within 1e-5 of the nose's drag (3:1 and 2:1 ellipsoids at Mach 2, the
-  3:1 at Mach 3; 0006). Ahead of the sonic line, where the flow is
+  3:1 at Mach 3; 0006). At Mach 1.2 to 1.5, where the shock stands far
+  off, a short body behind the nose is solved longer than asked, to keep
+  the grid's cells even (the drag is still that of the body asked for,
+  whose flow leaves its end supersonically): of ellipsoids of 0.5 to 6
+  calibers with 1, 2 or 5 calibers of body at Mach 1.2, 1.3 and 1.5, all
+  pass the page's checks on the coarsest grid but the 6-caliber nose at
+  Mach 1.2 (its wall cells near the tip too skewed for the present
+  grids); four of them converge on three
+  grids at observed orders 1.91 to 2.17, and behind the sonic line the
+  method of characteristics agrees within 3.2e-6 of the nose's drag at
+  Mach 1.5 and within 6.3e-5 at Mach 1.2, where the flow it starts from
+  is barely supersonic. Ahead of the sonic line, where the flow is
   subsonic and no independent reference exists, the drag rests on the
   grids' convergence and the exact stagnation pressure.
 
-Not yet: viscous flow, Von Karman (Haack) and power-series noses (their
-tips need grids being designed), Mach numbers below 1.2, fins and the
-base. Until those pass their own validation, bowshock reports no total
-drag coefficient.
+- Skin friction, as a library not yet on the drag page
+  ([0007](docs/design/0007-skin-friction.md), `src/friction/`): van
+  Driest II for turbulent flow, the compressible laminar similarity
+  solution, transition at a given Reynolds number, and the friction drag
+  of a body of revolution. The implementation reproduces the NASA
+  Turbulence Modeling Resource's van Driest II tabulation within 5e-7 and
+  van Driest's laminar results (NACA TN 2597) within 0.84%. Against
+  measurements, turbulent friction on wind-tunnel cylinders (NACA TN 3097)
+  and on the RM-10 body in flight (NACA RM L54G14) lay between 0.88 and
+  1.19 times the model in all 23 comparisons: that, -12% to +19%, is the
+  band the evidence supports for smooth, adiabatic turbulent layers at
+  Mach 1 to 3.6.
+
+- Base drag and the total, as libraries not on the drag page
+  ([0010](docs/design/0010-base-drag-and-total.md), `src/base/`,
+  `src/total/`): the compiled base-pressure correlation of NACA TN 3819
+  with its band (measured over correlation 0.82 to 1.08), the factor for
+  fins ending at the base, and the sum of the components with their bands
+  added linearly. Its one hold-out test, the Basic Finner in free flight,
+  does not pass: the total is refused there, because its fins' blunt
+  trailing edges and rounded leading edges have no method with a measured
+  band, so bowshock refuses that configuration.
+
+Not yet: viscous flow in the solver, friction on the drag page, Von
+Karman (Haack) and power-series noses (their tips need grids being
+designed), Mach numbers below 1.2, fins and the base. Until those pass
+their own validation, bowshock reports no total drag coefficient.
 
 Limits: power off, zero angle of attack, no motor plume. When they
 exist, base drag will be the least certain component and transonic
@@ -170,12 +207,17 @@ on a static host.
 | `src/gpu/`           | WebGPU detection                                                              |
 | `src/solver/`        | Solver pieces shared by the engines, and the CPU shock fitting                |
 | `src/analysis/`      | Integrated forces and the verified forebody drag                              |
+| `src/friction/`      | Skin friction: van Driest II, laminar similarity, transition, bodies          |
+| `src/fins/`          | Fin wave drag: exact sharp sections, linear 3D drag of the planform           |
+| `src/base/`          | Base drag: the compiled base-pressure curve, the fins-on-base factor          |
+| `src/total/`         | Total drag from its components, the bands combined linearly                   |
 | `src/verification/`  | Discretisation error from nested grids                                        |
 | `src/validation/`    | Exact and reference solutions, and digitised wind-tunnel data                 |
 | `src/render/`        | Display fields, colour map and WebGPU rendering                               |
 | `src/app/`, `demos/` | The demo pages                                                                |
 | `tests/`             | Unit and validation tests (`tests/gpu/` runs in headless Chromium)            |
 | `docs/design/`       | Design records: what was decided, why, and the measurements behind each claim |
+| `docs/research/`     | Research records and work in progress, not used by the solver                 |
 
 The design records, in order:
 
@@ -189,6 +231,22 @@ The design records, in order:
   carries its measured discretisation error.
 - [0006](docs/design/0006-shock-fitting.md): the bow shock fitted as the
   outer boundary instead of captured.
+- [0007](docs/design/0007-skin-friction.md): skin friction (draft), the
+  first component of total drag, measured against wind-tunnel and flight
+  data.
+- [0008](docs/design/0008-total-drag.md): total drag (draft): the method
+  and measured band of each component, and the one validation set found
+  that matches a simple finned rocket (the Basic Finner in free flight,
+  Mach 1.8 to 3.0), audited twice.
+- [0009](docs/design/0009-fin-wave-drag.md): fin wave drag (draft), a
+  library not yet on the drag page: exact section drag of sharp fins and
+  the linear 3D drag of the planform, with the limits of each measured.
+- [0010](docs/design/0010-base-drag-and-total.md): base drag and the total
+  (draft), libraries not on the drag page, and the Basic Finner gate,
+  which the total does not pass (refused).
+
+Research records and unfinished work behind them (not used by the solver,
+not accepted designs): [docs/research](docs/research/README.md).
 
 Validation data and how far each source has been checked:
 [docs/validation/sources.md](docs/validation/sources.md).

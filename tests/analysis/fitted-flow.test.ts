@@ -9,13 +9,15 @@ import {
   fittedFlow,
   sharpFitProblem,
   sharpFittedFlow,
+  solvedBluntBody,
   verifiedFittedDrag,
   wallDrag,
+  type BluntStart,
 } from '../../src/analysis/fitted-flow';
 import { startedFrom } from '../../src/analysis/gpu-fitted-flow';
 import type { GpuShockFit } from '../../src/engine-gpu/shock-fitting-gpu';
 import type { Body } from '../../src/geometry/body';
-import { gridOnLines } from '../../src/grid/blunt-grid';
+import { bluntBodyGrid, gridOnLines } from '../../src/grid/blunt-grid';
 import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../../src/grid/quality';
 import { normalShock, stagnationPressureRatio } from '../../src/validation/gas-dynamics';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
@@ -25,16 +27,29 @@ const deg = Math.PI / 180;
 const options = { gamma, nj: 20, refinement: 1, maxIterations: 20_000 };
 
 describe('flow with the bow shock fitted (design record 0006)', () => {
-  it('Mach 3, 20 deg cone: converged, drag within 0.03% of Taylor-Maccoll on the coarsest grid', () => {
-    // Measured when written: +0.0251% (nj = 20); with the captured shock -0.395%.
+  it('Mach 3, 20 deg cone: drag within 0.03% of Taylor-Maccoll on the coarsest grid, at second order', () => {
+    // The page's claim rests on the order: a regression that kept the
+    // coarsest grid within 3e-4 would show in the ratio. Measured when
+    // written: +0.1017% on 10 cells across, +0.0251% on that grid refined
+    // twice (with the captured shock, -0.395% on 20 cells across), falling
+    // by 4.05, and extrapolated at second order to within 4.3e-6 of the
+    // exact drag.
     const cone: Body = {
       nose: { shape: { kind: 'conical' }, length: 0.5 / Math.tan(20 * deg), baseRadius: 0.5 },
       cylinderLength: 4,
     };
-    const { fit, drag } = sharpFittedFlow(cone, { ...options, mach: 3 });
-    expect(fit.converged).toBe(true);
     const exact = taylorMaccoll(3, 20 * deg, gamma).surfacePressureCoefficient;
-    expect(Math.abs(drag / exact - 1)).toBeLessThan(3e-4);
+    const error = (refinement: number) => {
+      const { fit, drag } = sharpFittedFlow(cone, { ...options, nj: 10, refinement, mach: 3 });
+      expect(fit.converged).toBe(true);
+      return drag / exact - 1;
+    };
+    const coarse = error(1);
+    const fine = error(2);
+    expect(Math.abs(fine)).toBeLessThan(3e-4);
+    expect(coarse / fine).toBeGreaterThan(3.9);
+    expect(coarse / fine).toBeLessThan(4.1);
+    expect(Math.abs(fine - (coarse - fine) / 3)).toBeLessThan(1e-5);
   }, 600_000);
 
   it('Mach 2 hemisphere-cylinder: converged, stagnation pressure within 0.01% of the pitot value', () => {
@@ -91,6 +106,118 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     });
   }, 600_000);
 
+  it('lengthens the solved cylinder of a blunt nose until its start grid meets the size-ratio gate', () => {
+    // The 1.5-caliber ellipsoid at Mach 1.2: on one and two calibers of
+    // cylinder the lines turn vertical over the last cells, which then
+    // differ in size by 1.35 and 1.38 (measured when written); on three by
+    // 1.24.
+    const asked: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const familyOptions = { mach: 1.2, gamma, nj: 20 };
+    const { body, base } = solvedBluntBody(asked, familyOptions);
+    expect(body.cylinderLength).toBe(3);
+    expect(body.nose).toEqual(asked.nose);
+    expect(gridQuality(base.grid).maxSizeRatio).toBeLessThanOrEqual(
+      FITTED_QUALITY_LIMITS.maxSizeRatio,
+    );
+    // A body that passes keeps its cylinder, as the measured families of
+    // 0006 do (the 3:1 ellipsoid with two calibers at Mach 2), and a bare
+    // nose gets the one caliber always solved.
+    const ellipsoid3: Body = { ...asked, nose: { ...asked.nose, length: 3 }, cylinderLength: 2 };
+    expect(solvedBluntBody(ellipsoid3, { ...familyOptions, mach: 2 }).body.cylinderLength).toBe(2);
+    const bare: Body = { ...ellipsoid3, cylinderLength: 0 };
+    expect(solvedBluntBody(bare, { ...familyOptions, mach: 3 }).body.cylinderLength).toBe(1);
+  }, 120_000);
+
+  it('a lengthened blunt family nests exactly at refinements 2, 4 and 8 (Mach 1.2)', () => {
+    // What startedFrom and nestedHeights need, on a family whose spacing's
+    // slope is limited and whose cylinder is lengthened. The start's
+    // heights are made up: the nesting does not depend on them.
+    const asked: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const familyOptions = { mach: 1.2, gamma, nj: 20 };
+    const { body, base } = solvedBluntBody(asked, familyOptions);
+    const start: BluntStart = {
+      body,
+      lines: base.lines,
+      heights: base.lines.map((l) => 0.4 * l.h),
+      grid: base.grid,
+      cell: () => ({ rho: 1, u: 1.2 * Math.sqrt(gamma), v: 0, p: 1 }),
+    };
+    const family = bluntFitFamily(asked, familyOptions, start);
+    let coarse = family(1);
+    expect(coarse.lines.at(-1)!.x).toBe(body.nose.length + body.cylinderLength);
+    for (const refinement of [2, 4, 8]) {
+      const fine = family(refinement);
+      expect(fine.lines.length - 1).toBe(2 * (coarse.lines.length - 1));
+      expect(fine.nj).toBe(2 * coarse.nj);
+      coarse.lines.forEach((a, k) => {
+        const b = fine.lines[2 * k]!;
+        expect(b.x).toBe(a.x);
+        expect(b.y).toBe(a.y);
+        expect(fine.heights[2 * k]).toBe(coarse.heights[k]);
+        a.fractions!.forEach((f, j) => {
+          expect(b.fractions![2 * j]).toBe(f);
+        });
+      });
+      const fit = { heights: coarse.heights, cell: coarse.initial } as unknown as GpuShockFit;
+      expect(startedFrom(fine, coarse, fit)).not.toBeNull();
+      coarse = fine;
+    }
+  }, 300_000);
+
+  it('a two-scale family nests exactly at refinements 2, 4 and 8 on its outer boundary (Haack)', () => {
+    // A two-scale nose keeps solvedBody's cylinder (its family's grid is
+    // built on the captured shock, not the generator's), and every grid
+    // of its family shares the start's outer boundary (secondCapture's;
+    // here, and the start's heights, made up).
+    const asked: Body = {
+      nose: { shape: { kind: 'haack', parameter: 0 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const familyOptions = { mach: 2, gamma, nj: 20 };
+    const { body, base: first } = solvedBluntBody(asked, familyOptions);
+    expect(first.twoScale).toBe(true);
+    expect(body).toEqual(asked);
+    const outerBoundary = first.lines.map((l) => ({
+      x: l.x + 0.4 * l.h * l.dx,
+      y: l.y + 0.4 * l.h * l.dy,
+    }));
+    const base = bluntBodyGrid(body, { nj: 20, mach: 2, outerBoundary, gated: false });
+    const start: BluntStart = {
+      body,
+      lines: base.lines,
+      heights: base.lines.map((l) => 0.6 * l.h),
+      grid: base.grid,
+      cell: () => ({ rho: 1, u: 2 * Math.sqrt(gamma), v: 0, p: 1 }),
+      outerBoundary,
+    };
+    const family = bluntFitFamily(asked, familyOptions, start);
+    let coarse = family(1);
+    expect(coarse.lines).toHaveLength(base.lines.length);
+    for (const refinement of [2, 4, 8]) {
+      const fine = family(refinement);
+      expect(fine.lines.length - 1).toBe(2 * (coarse.lines.length - 1));
+      expect(fine.nj).toBe(2 * coarse.nj);
+      coarse.lines.forEach((a, k) => {
+        const b = fine.lines[2 * k]!;
+        expect(b.x).toBe(a.x);
+        expect(b.y).toBe(a.y);
+        expect(fine.heights[2 * k]).toBe(coarse.heights[k]);
+        a.fractions!.forEach((f, j) => {
+          expect(b.fractions![2 * j]).toBe(f);
+        });
+      });
+      const fit = { heights: coarse.heights, cell: coarse.initial } as unknown as GpuShockFit;
+      expect(startedFrom(fine, coarse, fit)).not.toBeNull();
+      coarse = fine;
+    }
+  }, 600_000);
+
   it('a blunt start computed in chunks is the same start, and stops when aborted', async () => {
     const body: Body = {
       nose: { shape: { kind: 'ellipsoid' }, length: 1, baseRadius: 0.5 },
@@ -118,6 +245,36 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     });
     await expect(stopped).rejects.toThrow();
   }, 600_000);
+
+  it('a chunked blunt start returns to the caller between the cylinder lengths it tries', async () => {
+    // The 1.5-caliber ellipsoid at Mach 1.2 tries one, two and three
+    // calibers: a pause after each refused length, before the capture,
+    // where a page can stop it.
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const controller = new AbortController();
+    let pauses = 0;
+    const started = bluntStartInChunks(
+      body,
+      { mach: 1.2, gamma, nj: 20 },
+      {
+        chunk: 50,
+        pause: () => {
+          pauses++;
+          controller.abort();
+          return Promise.resolve();
+        },
+        signal: controller.signal,
+        onProgress: () => {
+          throw new Error('the capture should not start');
+        },
+      },
+    );
+    await expect(started).rejects.toThrow(/aborted/);
+    expect(pauses).toBe(1);
+  }, 120_000);
 
   it('tests the base flow at the end of the body asked for, between grid columns', () => {
     // A cylinder shorter than the one caliber always solved, whose end

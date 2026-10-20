@@ -109,6 +109,30 @@ describe('fitted shock on the GPU', () => {
     }
   }, 1_800_000);
 
+  it('the page path on an ellipsoid at Mach 1.2: where its fit stops, within 5e-6 of the CPU', async () => {
+    // 1.5 calibers with 1 of body asked (solved with 3: solvedBluntBody).
+    // The CPU's fit of the same problem converged to 1e-12 gives
+    // 0.2474069016; measured when written, the GPU's 0.2474075928 (+2.8e-6),
+    // above the 2e-6 assumed for its noise elsewhere (0006).
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const levels: LevelReport[] = [];
+    const result = await verifiedFittedDragGpu(device, body, {
+      mach: 1.2,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      onLevel: (report) => levels.push(report),
+    });
+    expect(result.kind).toBe('solved');
+    expect(levels).toHaveLength(1);
+    expect(Math.abs(levels[0]!.drag / 0.2474069016 - 1)).toBeLessThan(5e-6);
+  }, 1_800_000);
+
   it('the page refuses a tip whose flow is subsonic at the surface, with the reason', async () => {
     // A 26.6 deg cone at Mach 1.5: subsonic conical surface flow.
     const cone: Body = {

@@ -84,7 +84,109 @@ describe('body grids (C topology, blunt noses)', () => {
     }
   }, 60_000);
 
-  it('refuses sharp noses, noses meeting the body at an angle, and grids that fail the gates', () => {
+  it('limits the growth of the cells along the body where the lines stop turning (Mach 1.2)', () => {
+    // A 1.5-caliber ellipsoid with a caliber of cylinder: the cells along
+    // the body grew from 0.238 to 0.355 across the shoulder (1.49), where
+    // the turn of the lines, which shrinks the spacing, stops; with the
+    // spacing's slope limited, measured when written: 1.1605.
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const { lines } = bluntBodyGrid(body, { nj: 20, mach: 1.2, gated: false });
+    const ds = lines.slice(1).map((l, i) => Math.hypot(l.x - lines[i]!.x, l.y - lines[i]!.y));
+    let worst = 1;
+    for (let i = 1; i < ds.length; i++) {
+      worst = Math.max(worst, ds[i]! / ds[i - 1]!, ds[i - 1]! / ds[i]!);
+    }
+    expect(worst).toBeLessThan(1.17);
+    // The shoulder is still a node.
+    expect(lines.some((l) => l.x === body.nose.length)).toBe(true);
+  });
+
+  it('keeps every node of its coarser grids exactly at refinements 2, 4 and 8 with the slope limited', () => {
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 1.5, baseRadius: 0.5 },
+      cylinderLength: 1,
+    };
+    const coarse = bluntBodyGrid(body, { nj: 20, mach: 1.2, gated: false }).grid;
+    for (const refinement of [2, 4, 8]) {
+      const fine = bluntBodyGrid(body, { nj: 20, refinement, mach: 1.2, gated: false }).grid;
+      expect(fine.ni).toBe(refinement * coarse.ni);
+      expect(fine.nj).toBe(refinement * coarse.nj);
+      for (let j = 0; j <= coarse.nj; j++) {
+        for (let i = 0; i <= coarse.ni; i++) {
+          const c = nodeIndex(coarse, i, j);
+          const f = nodeIndex(fine, refinement * i, refinement * j);
+          expect(fine.x[f]).toBe(coarse.x[c]);
+          expect(fine.y[f]).toBe(coarse.y[c]);
+        }
+      }
+    }
+  }, 120_000);
+
+  it('a Haack nose has two scales: its tip scale, 2.88 (1 + 1.5 C)^2 R^4 / L^3, a hundredth of the body', () => {
+    // r = c x^(3/4) at the tip crosses r = x at (64 / pi^2) (2/3 + C)^2
+    // R^4 / L^3; the higher terms of the series lower it on the 3-caliber
+    // nose by 0.13% (C = 0) and 0.70% (C = 1/3).
+    for (const parameter of [0, 1 / 3]) {
+      const haack: Body = {
+        nose: { shape: { kind: 'haack', parameter }, length: 3, baseRadius: 0.5 },
+        cylinderLength: 2,
+      };
+      const g = bluntBodyGrid(haack, { nj: 20, mach: 2, gated: false });
+      const asymptotic = ((64 / Math.PI ** 2) * (2 / 3 + parameter) ** 2 * 0.5 ** 4) / 3 ** 3;
+      expect(Math.abs(g.tipScale / asymptotic - 1)).toBeLessThan(1e-2);
+      expect(g.twoScale).toBe(true);
+      expect(g.scale).toBe(2 * g.tipScale);
+    }
+    // Ellipsoids keep one scale, the base radius, whatever their length:
+    // the grids their families were measured on (0006).
+    for (const length of [0.5, 3, 6]) {
+      const ellipsoid: Body = {
+        ...hemisphereCylinder,
+        nose: { ...hemisphereCylinder.nose, length },
+      };
+      const g = bluntBodyGrid(ellipsoid, { nj: 20, mach: 2, gated: false });
+      expect(g.twoScale).toBe(false);
+      expect(g.scale).toBe(Math.max(0.5, 0.25 / length));
+    }
+  }, 120_000);
+
+  it('keeps every node of its coarser grids exactly on an outer boundary given (a two-scale family)', () => {
+    // The family's grids are built on the shock captured on the first,
+    // pushed out (secondCapture); here a boundary made up from the
+    // generator's own lines.
+    const haack: Body = {
+      nose: { shape: { kind: 'haack', parameter: 0 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const first = bluntBodyGrid(haack, { nj: 20, mach: 2, gated: false });
+    const outerBoundary = first.lines.map((l) => ({
+      x: l.x + 0.4 * l.h * l.dx,
+      y: l.y + 0.4 * l.h * l.dy,
+    }));
+    const options = { nj: 20, mach: 2, outerBoundary, gated: false };
+    const coarse = bluntBodyGrid(haack, options).grid;
+    expect(Math.abs(coarse.x[nodeIndex(coarse, 0, coarse.nj)]! - outerBoundary[0]!.x)).toBeLessThan(
+      1e-15,
+    );
+    for (const refinement of [2, 4]) {
+      const fine = bluntBodyGrid(haack, { ...options, refinement }).grid;
+      expect(fine.ni).toBe(refinement * coarse.ni);
+      expect(fine.nj).toBe(refinement * coarse.nj);
+      for (let j = 0; j <= coarse.nj; j++) {
+        for (let i = 0; i <= coarse.ni; i++) {
+          const c = nodeIndex(coarse, i, j);
+          const f = nodeIndex(fine, refinement * i, refinement * j);
+          expect(fine.x[f]).toBe(coarse.x[c]);
+          expect(fine.y[f]).toBe(coarse.y[c]);
+        }
+      }
+    }
+  }, 300_000);
+
+  it('serves sharp tips as the limit of two-scale noses, refuses noses meeting the body at an angle, and grids that fail the gates', () => {
     const sharp: Body = {
       ...hemisphereCylinder,
       nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 },

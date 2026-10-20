@@ -40,7 +40,12 @@ export interface BluntGridOptions {
    * grid, pushed out by a margin (src/analysis/fitted-flow.ts).
    */
   readonly outerBoundary?: readonly { readonly x: number; readonly y: number }[] | undefined;
-  /** Apply the quality gates (default); off for measuring grids that fail them. */
+  /**
+   * Apply the generated grids' quality gates (default true). Off where the
+   * grid is not the one solved for the answer: the captured start of a
+   * shock fit, and the lines of its finer grids, whose own grids are
+   * gated once the shock has settled (FITTED_QUALITY_LIMITS).
+   */
   readonly gated?: boolean;
   /** Overrides of the placement constants, for measurement only. */
   readonly tuning?: Partial<BluntGridTuning>;
@@ -75,10 +80,11 @@ export interface BluntGrid {
   /** Length scale that places the outer boundary ahead of the tip. */
   readonly scale: number;
   /**
-   * Whether that scale lies below the base radius: the tip's blunt part is
-   * far smaller than the body (the Haack series, the power series, long
-   * ellipsoids), and the boundary, at the tip's scale ahead of the tip, is
-   * generous at the body scale.
+   * Whether that scale lies below the base radius, or the tip is sharp:
+   * the tip's blunt part is far smaller than the body (the Haack series,
+   * the power series) or has no scale, and the boundary, at the tip's
+   * scale ahead of the tip, is generous at the body scale. Never on
+   * ellipsoids, which keep one scale.
    */
   readonly twoScale: boolean;
 }
@@ -141,6 +147,8 @@ const MAX_NOSE_RADIUS = 10;
 const MAX_SHOULDER_ANGLE = (15 * Math.PI) / 180;
 /** Samples of the half-width along the body (clustered at the tip). */
 const WIDTH_SAMPLES = 4096;
+/** Samples of the half-width along the body at equal steps (ellipsoids). */
+const UNIFORM_WIDTH_SAMPLES = 1024;
 /** Samples of the density of lines along the body (clustered at the tip). */
 const SPACING_SAMPLES = 8192;
 /** Samples of the normal across that window. */
@@ -165,6 +173,12 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // shock detaches: the limit of a two-scale nose, whose normal turns at
   // the tip instead of over the length of a blunt part.
   const sharp = Number.isFinite(noseTipSlope(nose));
+  // Ellipsoid noses keep the grids their families were measured on in
+  // docs/design/0006-shock-fitting.md, which the page serves: one length
+  // scale, the window's half-width tabulated at equal steps, the density
+  // of lines evaluated exactly and the spacing's slope limited. The other
+  // noses take the two-scale grid of docs/design/0004-grids.md.
+  const ellipsoid = nose.shape.kind === 'ellipsoid';
   const L = nose.length;
   const R = nose.baseRadius;
 
@@ -232,8 +246,8 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // the Haack series' (r ~ x^(3/4) there, its blunt part a thousandth of
   // the body on a 5-caliber nose). The outer boundary is placed at the
   // larger of the tip radius and the smaller of the base radius and a few
-  // tip scales: the base radius on spheres and the ellipsoids served, the
-  // tip scale where it is far smaller.
+  // tip scales: the tip scale where it is far smaller than the body. On
+  // ellipsoids it is the larger of the tip radius and the base radius.
   const xSmall = 1e-6 * L;
   const tipRadius = noseRadius(nose, xSmall) ** 2 / (2 * xSmall);
   if (!(tipRadius <= MAX_NOSE_RADIUS * R)) {
@@ -254,7 +268,14 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // A sharp tip has no blunt part: its detached shock stands off at a
   // distance set by the body and the Mach number, which the captured
   // start measures, so the generator's own boundary is at the body scale.
-  const scale = sharp ? R : Math.max(tipRadius, Math.min(R, tuning.tipScaleFactor * tipScale));
+  // Ellipsoids keep the base radius as the scale whatever their length,
+  // as their families were measured (docs/design/0006-shock-fitting.md):
+  // one scale, the generator's grid the family's.
+  const scale = ellipsoid
+    ? Math.max(tipRadius, R)
+    : sharp
+      ? R
+      : Math.max(tipRadius, Math.min(R, tuning.tipScaleFactor * tipScale));
 
   // Outer boundary: an arc of arcRadiusFactor times the length scale,
   // standoffFactor Billig standoffs ahead of the tip, until its tangent
@@ -328,6 +349,68 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     return high;
   };
 
+  // The window's half-width at sample points s along the body, limited to
+  // change by at most maxWidthSlope per unit length.
+  const widthAt = (s: number) => {
+    const p = surface(s);
+    return Math.min(tuning.smoothing * lengthAlong(s, p.nx, p.ny), sEnd - s);
+  };
+  /**
+   * The half-width tabulated at UNIFORM_WIDTH_SAMPLES equal steps along
+   * the body: the ellipsoids' grids, as their families were measured
+   * (docs/design/0006-shock-fitting.md).
+   */
+  const uniformHalfWidth = () => {
+    const widths = new Float64Array(UNIFORM_WIDTH_SAMPLES + 1);
+    const step = sEnd / UNIFORM_WIDTH_SAMPLES;
+    for (let k = 0; k <= UNIFORM_WIDTH_SAMPLES; k++) widths[k] = widthAt(k * step);
+    for (let k = 1; k <= UNIFORM_WIDTH_SAMPLES; k++) {
+      widths[k] = Math.min(widths[k]!, widths[k - 1]! + tuning.maxWidthSlope * step);
+    }
+    for (let k = UNIFORM_WIDTH_SAMPLES - 1; k >= 0; k--) {
+      widths[k] = Math.min(widths[k]!, widths[k + 1]! + tuning.maxWidthSlope * step);
+    }
+    return (s: number) => {
+      const t = Math.min(Math.max(s / step, 0), UNIFORM_WIDTH_SAMPLES);
+      const k = Math.min(Math.floor(t), UNIFORM_WIDTH_SAMPLES - 1);
+      return widths[k]! + (t - k) * (widths[k + 1]! - widths[k]!);
+    };
+  };
+  /**
+   * The half-width tabulated at WIDTH_SAMPLES points clustered at the tip
+   * (s proportional to the square of the index), where the layer of a
+   * two-scale nose is thin and the window with it.
+   */
+  const clusteredHalfWidth = () => {
+    const widthS = new Float64Array(WIDTH_SAMPLES + 1);
+    const widths = new Float64Array(WIDTH_SAMPLES + 1);
+    for (let k = 0; k <= WIDTH_SAMPLES; k++) {
+      widthS[k] = (sEnd * k * k) / (WIDTH_SAMPLES * WIDTH_SAMPLES);
+      widths[k] = widthAt(widthS[k]!);
+    }
+    for (let k = 1; k <= WIDTH_SAMPLES; k++) {
+      widths[k] = Math.min(
+        widths[k]!,
+        widths[k - 1]! + tuning.maxWidthSlope * (widthS[k]! - widthS[k - 1]!),
+      );
+    }
+    for (let k = WIDTH_SAMPLES - 1; k >= 0; k--) {
+      widths[k] = Math.min(
+        widths[k]!,
+        widths[k + 1]! + tuning.maxWidthSlope * (widthS[k + 1]! - widthS[k]!),
+      );
+    }
+    return (s: number) => {
+      const t = Math.min(
+        Math.max(Math.sqrt(Math.max(s, 0) / sEnd) * WIDTH_SAMPLES, 0),
+        WIDTH_SAMPLES,
+      );
+      const k = Math.min(Math.floor(t), WIDTH_SAMPLES - 1);
+      const f = (Math.min(Math.max(s, 0), sEnd) - widthS[k]!) / (widthS[k + 1]! - widthS[k]!);
+      return widths[k]! + Math.min(Math.max(f, 0), 1) * (widths[k + 1]! - widths[k]!);
+    };
+  };
+
   // Angle of the body normal to the upstream axis, 0 at the tip and pi / 2
   // on the cylinder; continued as an odd function ahead of the tip (the
   // mirror image of the body) and as pi / 2 beyond its end.
@@ -353,35 +436,7 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // (their angle rising linearly with s, at a rate of a few per layer
   // height), which keeps the outer cells of equal width, at the price of
   // wall angles below the right angle over the first few cells.
-  const widthS = new Float64Array(WIDTH_SAMPLES + 1);
-  const widths = new Float64Array(WIDTH_SAMPLES + 1);
-  for (let k = 0; k <= WIDTH_SAMPLES; k++) {
-    const s = (sEnd * k * k) / (WIDTH_SAMPLES * WIDTH_SAMPLES);
-    widthS[k] = s;
-    const p = surface(s);
-    widths[k] = Math.min(tuning.smoothing * lengthAlong(s, p.nx, p.ny), sEnd - s);
-  }
-  for (let k = 1; k <= WIDTH_SAMPLES; k++) {
-    widths[k] = Math.min(
-      widths[k]!,
-      widths[k - 1]! + tuning.maxWidthSlope * (widthS[k]! - widthS[k - 1]!),
-    );
-  }
-  for (let k = WIDTH_SAMPLES - 1; k >= 0; k--) {
-    widths[k] = Math.min(
-      widths[k]!,
-      widths[k + 1]! + tuning.maxWidthSlope * (widthS[k + 1]! - widthS[k]!),
-    );
-  }
-  const halfWidth = (s: number) => {
-    const t = Math.min(
-      Math.max(Math.sqrt(Math.max(s, 0) / sEnd) * WIDTH_SAMPLES, 0),
-      WIDTH_SAMPLES,
-    );
-    const k = Math.min(Math.floor(t), WIDTH_SAMPLES - 1);
-    const f = (Math.min(Math.max(s, 0), sEnd) - widthS[k]!) / (widthS[k + 1]! - widthS[k]!);
-    return widths[k]! + Math.min(Math.max(f, 0), 1) * (widths[k + 1]! - widths[k]!);
-  };
+  const halfWidth = ellipsoid ? uniformHalfWidth() : clusteredHalfWidth();
   // At a sharp tip the normal jumps by tipJump, from the axis to the
   // tip's normal. The window would spread the jump into a fan linear in
   // s over its width, and end it abruptly where it stops straddling the
@@ -456,23 +511,33 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // sixty-four points per line of the base grid, estimated from the ends,
   // where the dense tip of a two-scale nose makes that millions of
   // evaluations of the window average.
-  const densityS = new Float64Array(SPACING_SAMPLES + 1);
-  const densities = new Float64Array(SPACING_SAMPLES + 1);
-  for (let k = 0; k <= SPACING_SAMPLES; k++) {
-    densityS[k] = (sEnd * k * k) / (SPACING_SAMPLES * SPACING_SAMPLES);
-    densities[k] = 1 / spacing(densityS[k]!);
-  }
-  const density = (s: number) => {
-    const t = Math.min(
-      Math.max(Math.sqrt(Math.max(s, 0) / sEnd) * SPACING_SAMPLES, 0),
-      SPACING_SAMPLES,
-    );
-    const k = Math.min(Math.floor(t), SPACING_SAMPLES - 1);
-    const f = (Math.min(Math.max(s, 0), sEnd) - densityS[k]!) / (densityS[k + 1]! - densityS[k]!);
-    return densities[k]! + Math.min(Math.max(f, 0), 1) * (densities[k + 1]! - densities[k]!);
+  const tabulatedDensity = () => {
+    const densityS = new Float64Array(SPACING_SAMPLES + 1);
+    const densities = new Float64Array(SPACING_SAMPLES + 1);
+    for (let k = 0; k <= SPACING_SAMPLES; k++) {
+      densityS[k] = (sEnd * k * k) / (SPACING_SAMPLES * SPACING_SAMPLES);
+      densities[k] = 1 / spacing(densityS[k]!);
+    }
+    return (s: number) => {
+      const t = Math.min(
+        Math.max(Math.sqrt(Math.max(s, 0) / sEnd) * SPACING_SAMPLES, 0),
+        SPACING_SAMPLES,
+      );
+      const k = Math.min(Math.floor(t), SPACING_SAMPLES - 1);
+      const f = (Math.min(Math.max(s, 0), sEnd) - densityS[k]!) / (densityS[k + 1]! - densityS[k]!);
+      return densities[k]! + Math.min(Math.max(f, 0), 1) * (densities[k + 1]! - densities[k]!);
+    };
   };
   const breakpoints = body.cylinderLength > 0 ? [0, sNose, sEnd] : [0, sNose];
-  const ss = columnPositions(breakpoints, density, refinement);
+  // On ellipsoids the spacing's slope is limited (src/grid/spacing.ts):
+  // where the lines stop turning, at the shoulder at low Mach numbers, it
+  // would otherwise grow by up to 1.9 times from one cell to the next. The
+  // other noses take the density as tabulated, without the limit: their
+  // families were measured so (0006), on grids built on the captured
+  // shock, which the fitted grids' gates check.
+  const ss = ellipsoid
+    ? columnPositions(breakpoints, (s) => 1 / spacing(s), refinement, { maxSpacingSlope: 0.15 })
+    : columnPositions(breakpoints, tabulatedDensity(), refinement);
   const lines = ss.map((s) => {
     const p = surface(s);
     return { x: p.x, y: p.y, ...line(s) };
