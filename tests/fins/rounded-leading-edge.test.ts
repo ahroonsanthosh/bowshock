@@ -1,8 +1,9 @@
 /**
  * Rounded fin leading edges (src/fins/rounded-leading-edge.ts): TN 2960's
- * transcription and its band recomputed, the tangent geometry, the
- * modified-Newtonian nose term, the domain and its regimes, the refusals.
- * Recorded in docs/design/0010-base-drag-and-total.md, section 5.
+ * transcription and its band recomputed on both readings, the tangent
+ * geometry, the modified-Newtonian nose term, the domain and its regimes,
+ * the refusals. Recorded in docs/design/0010-base-drag-and-total.md,
+ * section 5.2.
  */
 
 import { readFileSync } from 'node:fs';
@@ -18,7 +19,12 @@ import {
 } from '../../src/fins/rounded-leading-edge';
 import { singleWedge } from '../../src/fins/section';
 import { exactSectionDrag } from '../../src/fins/section-drag';
-import { TN2960_FIG5C, TN2960_FIG7 } from '../../src/fins/tn2960';
+import {
+  TN2960_FIG5C,
+  TN2960_FIG5C_SECOND,
+  TN2960_FIG7,
+  TN2960_FIG7_SECOND,
+} from '../../src/fins/tn2960';
 
 const deg = Math.PI / 180;
 
@@ -33,15 +39,24 @@ const reason = (f: () => unknown) => {
 };
 
 describe("TN 2960, against 0008's data file (first readings)", () => {
-  it('holds fig. 5(c) and fig. 7', () => {
+  it('holds fig. 5(c) and fig. 7, with the one correction at M 1.98 and 45 deg (0.918 read, 0.884)', () => {
     const rows = readFileSync('docs/research/total-drag/data/le_bluntness.csv', 'utf8')
       .split('\n')
       .filter((l) => l.startsWith('TN 2960,'))
       .map((l) => l.split(','));
     const curve = rows.filter((r) => r[1] === '5(c)' && r[2] === 'faired curve');
-    expect(curve.map((r) => [Number(r[3]), Number(r[5]), Number(r[7])])).toEqual(
-      TN2960_FIG5C.flatMap((c) => c.points.map((p) => [c.mach, p.theta, p.p])),
-    );
+    const corrected = (m: number, t: number, p: number) => {
+      if (m !== 1.98 || t !== 45) return p;
+      expect(p).toBe(0.918);
+      return 0.884;
+    };
+    expect(
+      curve.map((r) => [
+        Number(r[3]),
+        Number(r[5]),
+        corrected(Number(r[3]), Number(r[5]), Number(r[7])),
+      ]),
+    ).toEqual(TN2960_FIG5C.flatMap((c) => c.points.map((p) => [c.mach, p.theta, p.p])));
     const fig7 = rows.filter((r) => r[1] === '7');
     expect(fig7.map((r) => [Number(r[3]), Number(r[7])])).toEqual(
       TN2960_FIG7.map((p) => [p.mach, p.cd]),
@@ -57,22 +72,40 @@ describe("TN 2960, against 0008's data file (first readings)", () => {
     ).toEqual([1.529, 1.654, 1.75]);
   });
 
-  it('integrates to front 1.014, 1.156, 1.232 and rear 0.454, 0.269, 0.093; totals within 0.985 to 1.001 of fig. 7', () => {
+  it('integrates to front 1.014, 1.150, 1.232 and rear 0.454, 0.269, 0.093; totals 0.987, 0.996, 0.985 of fig. 7', () => {
     const r = tn2960Integrated();
-    expect(r.map((x) => Math.round(1000 * x.front) / 1000)).toEqual([1.014, 1.156, 1.232]);
+    expect(r.map((x) => Math.round(1000 * x.front) / 1000)).toEqual([1.014, 1.15, 1.232]);
     expect(r.map((x) => Math.round(1000 * x.rear) / 1000)).toEqual([0.454, 0.269, 0.093]);
-    r.forEach((x, k) => {
-      const ratio = (x.front + x.rear) / TN2960_FIG7[k]!.cd;
-      expect(ratio).toBeGreaterThan(0.984);
-      expect(ratio).toBeLessThan(1.002);
-    });
+    expect(
+      r.map((x, k) => Math.round((1000 * (x.front + x.rear)) / TN2960_FIG7[k]!.cd) / 1000),
+    ).toEqual([0.987, 0.996, 0.985]);
   });
 
-  it('front over modified Newtonian: 0.995, 1.049, 1.056, so the band 0.99 to 1.06', () => {
-    expect(
-      tn2960Integrated().map((x) => Math.round(1000 * x.frontOverModifiedNewtonian) / 1000),
-    ).toEqual([0.995, 1.049, 1.056]);
+  it('front over modified Newtonian: 0.995, 1.043, 1.056 (the first reading); 1.002, 1.049, 1.052 (the second); so the band 0.99 to 1.06', () => {
+    const ratios = (reading: typeof TN2960_FIG5C) =>
+      tn2960Integrated(reading).map((x) => Math.round(1000 * x.frontOverModifiedNewtonian) / 1000);
+    expect(ratios(TN2960_FIG5C)).toEqual([0.995, 1.043, 1.056]);
+    expect(ratios(TN2960_FIG5C_SECOND)).toEqual([1.002, 1.049, 1.052]);
     expect(ROUNDED_EDGE_BAND).toEqual({ low: 0.99, high: 1.06 });
+  });
+
+  it("the second reading (symbols): front 1.021, 1.157, 1.227; totals 0.980, 0.976, 0.994 of fig. 7's mean diamond, 0.960 to 1.000 of single diamonds", () => {
+    const r = tn2960Integrated(TN2960_FIG5C_SECOND);
+    expect(r.map((x) => Math.round(1000 * x.front) / 1000)).toEqual([1.021, 1.157, 1.227]);
+    const ratios = r.map((x) => {
+      const cds = TN2960_FIG7_SECOND.filter((p) => Math.abs(p.mach - x.mach) < 0.05).map(
+        (p) => p.cd,
+      );
+      const t = x.front + x.rear;
+      return [
+        t / (cds.reduce((a, b) => a + b, 0) / cds.length),
+        t / Math.max(...cds),
+        t / Math.min(...cds),
+      ];
+    });
+    expect(ratios.map((q) => Math.round(1000 * q[0]!) / 1000)).toEqual([0.98, 0.976, 0.994]);
+    expect(Math.min(...ratios.map((q) => q[1]!))).toBeGreaterThan(0.959);
+    expect(Math.max(...ratios.map((q) => q[2]!))).toBeLessThan(1.001);
   });
 });
 
@@ -183,6 +216,20 @@ describe('the nose term', () => {
     ).toBe('leading-edge-range');
     expect(
       reason(() => roundedLeadingEdgeDrag({ ...base, mach: 2.6, reynoldsOnDiameter: 6e3 })),
+    ).toBe('leading-edge-range');
+  });
+
+  it("refuses Re_D above 1e6, TN 2960's highest (round 5, finding 11); 1e6 itself is measured", () => {
+    expect(roundedLeadingEdgeDrag({ ...base, mach: 2.0, reynoldsOnDiameter: 1e6 }).regime).toBe(
+      'measured',
+    );
+    for (const mach of [1.6, 2.0, 2.6, 2.95]) {
+      expect(
+        reason(() => roundedLeadingEdgeDrag({ ...base, mach, reynoldsOnDiameter: 1.01e6 })),
+      ).toBe('leading-edge-range');
+    }
+    expect(
+      reason(() => roundedLeadingEdgeDrag({ ...base, mach: 2.0, reynoldsOnDiameter: 5e6 })),
     ).toBe('leading-edge-range');
   });
 });

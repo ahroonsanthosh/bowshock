@@ -508,6 +508,78 @@ out family converging to the same value) before they are served. The
 fits are slow here: 4149 to 9867 steps on nj = 20, against a median of
 2300, doubling with each refinement.
 
+**Served: a tangent nose whose tip flow is supersonic but axially
+subsonic.** A 3-caliber tangent ogive at Mach 1.35 (18.9 deg tip, conical
+surface flow at Mach 1.037, its axial component 0.981; 2 calibers of
+cylinder), on the page's family (CPU, x0 = 1e-3), each grid started from
+the converged one before (`startedFrom`) and stopped once the drag's
+remaining iterative error, estimated geometrically from its changes as
+`SettlingValue` does, was below 1e-9 of it on two successive checks with
+the shock's speeds below 1e-9 (on nj = 40 this gives the fit converged
+to 1e-12 from a cold start within 1.2e-10, the estimate 1.16e-11 against
+an actual 1.25e-11):
+
+| nj  | Drag         | Steps | Remaining (estimated) |
+| --- | ------------ | ----- | --------------------- |
+| 20  | 0.1081856017 | 3100  | 8.0e-11               |
+| 40  | 0.1077785038 | 5800  | 1.1e-10               |
+| 80  | 0.1076868609 | 10400 | 1.0e-10               |
+| 160 | 0.1076656809 | 17600 | 1.4e-10               |
+
+The two triples converge at orders 2.15 and 2.11 (agreeing within the
+procedure's 0.5), so `refineUntilVerified` gives a band: extrapolated
+0.1076586209, band 8.8e-6, 1.6e-5 with the floor. Every grid passes the
+fitted grids' gates and the flow leaves the body supersonically. A
+second family, its columns laid out at 1.5 times the density along the
+whole body (105 columns against 70 on nj = 20, where only the start,
+the shoulder and the end coincide), gives 0.1083420499, 0.1078209882
+and 0.1076979934 on nj = 20, 40 and 80, order 2.08,
+extrapolated to 0.1076569950: 1.5e-5 of the value from the first
+family's extrapolation, within the floor of 7e-5 at the solver's own
+precision. The captured-shock solver's result, 0.1075742 with its band
+of 2.5e-4, contains both. Moving the inflow plane changes the drag by
+2.4e-5 or less on nj = 20 and 6.4e-6 or less on nj = 40, the columns
+moving with it. The page's fit on the GPU gives the CPU's value on
+nj = 20 to within the GPU's
+noise (`tests/gpu/fitted-flow-gpu.test.ts`). So `sharpFitProblem` now
+serves a tip whose axial surface Mach number is 1 or less where its
+surface flow is supersonic and the nose meets the body without a corner
+(`noseBaseSlope` 0: the tangent ogive and the parabola of parameter 1
+among sharp noses), with x0 = 1e-3 as elsewhere; it still refuses such
+tips at a corner, and every tip whose surface flow is subsonic, for
+which no reference of this kind has been measured yet (a 3-caliber
+tangent ogive at Mach 1.2 and a parabolic nose at Mach 1.25 are being
+measured; on the first, the default family's grids on nj = 40 and 80
+fail the aspect-ratio gate, 13.7 and 14.1 against 13, in the wall cells
+at the end of the solved cylinder, where those at 1.5 times the column
+density reach 8.5).
+
+**Where the usual grids fail the gates: the family again with more
+columns.** A sharp nose's family whose grid fails only the fitted grids'
+quality gates (`fittedGridFailure`) is solved again from its coarsest
+grid with 1.5 times the columns along the body
+(`FALLBACK_COLUMN_DENSITY`), on the page (`verifiedFittedDragGpu`) and on
+the CPU (`verifiedFittedDrag`), and served only if every grid of that
+family passes and the procedure verifies it; the reason the first family
+was refused is shown with the result. The fallback runs only where the
+usual family is refused, so every case served before it is solved as
+before, to the last bit (tested on the 3-caliber tangent ogive at Mach
+1.35, whose base grid gives 0.1081856016981207 either way). Its basis:
+the two families of that ogive agree to 1.5e-5 (above). On a 3-caliber
+tangent ogive with 30 calibers of cylinder at Mach 1.5 the usual grid of
+20 cells across reaches an aspect ratio of 18.0 in the wall cells at the
+end of the cylinder, under a far shock, and is refused; the grid with
+1.5 times the columns passes, and gives 0.1058349120 (the GPU within its
+noise of it). On the 3-caliber tangent ogive at Mach 1.2, whose surface
+flow is subsonic and which is still refused for that, the usual family
+gives 0.1094433219, 0.1090150597 and 0.1089485314 on nj = 20, 40 and 80
+(its grids on nj = 40 and 80 failing the aspect-ratio gate, 13.7 and
+14.1), and the family with 1.5 times the columns 0.1097464924,
+0.1091136911 and 0.1089778395 (every grid passing, 8.5 at most); the
+first three extrapolate to 0.1089263550 (order 2.69, capped at 2) and
+the second to 0.1089325560 (order 2.22), 5.7e-5 apart; the usual
+family's grid on nj = 160 is running.
+
 ## Blunt noses against the method of characteristics
 
 Behind the sonic line of a blunt nose the flow is supersonic, and from

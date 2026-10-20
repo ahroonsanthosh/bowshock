@@ -2,7 +2,8 @@
 
 The runners and outputs of the measurements quoted in
 [0010](../../design/0010-base-drag-and-total.md) that are not committed
-tests. The libraries are `src/base/` and `src/total/`; their tests are
+tests. The libraries are `src/base/`, `src/total/` and the fin-edge terms
+in `src/fins/`; their tests are
 `tests/base/`, `tests/total/` and `tests/validation/basic-finner.test.ts`,
 which hold every number of 0010 that these outputs also print.
 
@@ -32,3 +33,41 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   residuals with the wall adiabatic and at the air temperature, the
   tolerance, the gap and the scales of the missing terms, the clusters'
   statistics, and the refusals at the five shots below Mach 1.4.
+  The first run's table (0010 section 6).
+- `second-readings.test.ts`: the round-4 second-reading tables of
+  `src/base/blunt-te-2d.ts` and `src/fins/tn2960.ts` against the
+  independent reader's own files (`readings/*.csv` and the comparison set
+  of `scripts/compare_round4.py`), value by value, including the "not
+  blind" flags. The reader's folder is given by `ROUND4` (default
+  `docs/research/total-drag/audit/round4/`, beside rounds 2 and 3); the
+  recorded output was made on the reader's files as delivered, before they
+  were committed.
+- `laminar-band.test.ts`: the trailing-edge laminar input band at each
+  gated Basic Finner shot, from the shot's Reynolds number alone (no drag
+  value), on both readings, made before the second gate run (0010 section
+  5.1).
+- `gate-second-run.test.ts`: the second Basic Finner gate run, made once
+  (0010 section 4.2), after the fin-edge choices and the reader's report
+  were committed (f4791ad): per shot the components and their bands, the
+  input bands, the residual, the tolerance with and without the wall
+  input, pass or fail, the leading-edge regime and the trailing-edge
+  laminar band's label; the clusters' statistics; the refusals at the five
+  shots below Mach 1.4. `gate-second-run.out` is the output as it came out
+  (run as `gate2.test.ts`, written as `gate2.out` and `gate2.json`, copied
+  here unchanged); `gate-second-run.json` is the per-shot record from
+  which `tests/validation/basic-finner.test.ts` held its values until
+  round 5, and still holds the components and residuals.
+- `gate-round5.test.ts`: the second run's configuration re-run
+  (2026-10-20) after the round 5 audit changed the band arithmetic (0010
+  section 10): the transition input as states of the boundary layer and
+  the vacuum bound. Per shot the same columns as the second run, plus the
+  tolerance's high end under the second run's arithmetic (which
+  reproduces `gate-second-run.out`; also with the vacuum bound alone), the
+  states that set the transition input's ends, the trailing edges' high
+  end against the vacuum bound and their laminar band beside the term,
+  and the tolerance under the flagged nearest-Mach alternative of 0010
+  section 10.2. `gate-round5.out` is the output as it came out (run in
+  `tests/tmp-total/` under the same name, copied here unchanged);
+  `gate-round5.json` is the per-shot record from which
+  `tests/validation/basic-finner.test.ts` holds the re-derived input bands
+  and tolerances. The second run's files are kept unchanged beside it.

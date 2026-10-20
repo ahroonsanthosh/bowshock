@@ -10,6 +10,8 @@ export default tseslint.config(
       'tests/tmp*/',
       'tests/gpu/tmp*',
       'docs/research/',
+      // Local agent worktrees (gitignored; ESLint does not read .gitignore).
+      '.claude/',
     ],
   },
   js.configs.recommended,

@@ -9,13 +9,26 @@ professional CFD software. The aim: open the page, describe or import your
 rocket, watch the shock waves form, and export drag coefficient versus Mach
 number with an honest uncertainty band.
 
+**Try it in your browser: <https://ahroonsanthosh.github.io/bowshock/>**
+(needs WebGPU: a recent Chrome or Edge, for example).
+
 > **Status: early development.** Verified 1D and 2D (planar and
 > axisymmetric) Euler solvers run on both the CPU and the GPU (WebGPU), with
 > their test suites and live demos, and the inviscid forebody wave drag of
 > sharp-nosed bodies and ellipsoid noses is computed with a measured error
-> band. The full
-> rocket solver (viscous flow, base and fins) does not exist yet, so
-> bowshock gives no total drag coefficient. Nothing here should be used for
+> band. Skin friction, fin wave drag and base drag exist as libraries, each
+> measured against wind-tunnel or flight data
+> ([0007](docs/design/0007-skin-friction.md),
+> [0009](docs/design/0009-fin-wave-drag.md),
+> [0010](docs/design/0010-base-drag-and-total.md)), and their sum, the
+> total drag, has passed its one validation test: the Basic Finner in free
+> flight, 11 shots at Mach 1.80 to 2.97, measured drag within -7.7% to
+> +4.5% of the model, inside a tolerance that is wide (about -20% to +27%).
+> That claim covers that class of rocket only. The drag page shows the
+> total ([0011](docs/design/0011-total-drag-on-the-page.md)): labelled
+> validated inside the Basic Finner's class, an estimate, not validated,
+> outside it, and refused, with the reasons and no number, where a
+> component's method does not reach. Nothing here should be used for
 > flight decisions yet. The plan is in
 > [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
 
@@ -88,7 +101,7 @@ them; the fitted-drag families are recorded in
   and 40 on a blunt nose), and within 3.8e-6 on ellipsoids at Mach 1.2,
   where the page's fit stops (a twentieth of its allowance of 7e-5).
 - Forebody pressure (wave) drag of sharp-nosed bodies, inviscid, at zero
-  incidence, on the [nose wave drag page](demos/nose-drag.html): each
+  incidence, on the [drag page](demos/nose-drag.html): each
   result is solved on your GPU with the bow shock fitted, on nested grids
   of 20 to 160 (or 320) cells across, and reported as the finest grid's
   value with its error band, measured from the grids and including an
@@ -111,12 +124,17 @@ them; the fitted-drag families are recorded in
   shapes, lengths and Mach numbers are computed the same way but have
   not been compared with a reference. Refused, with the reason: tips
   whose shock detaches; tips whose flow crosses the solver's starting
-  plane, just behind the tip, at an axial Mach number below 1 (of 40
-  noses of 1 to 3 calibers tried at Mach 1.2, 19 detach their shock and
-  13 are refused by this test); tips steeper than about 40 deg (a limit
-  of the present grids, set on measurement); bodies whose flow at
-  their end is subsonic; grids failing the other quality gates, as on
-  some long bodies.
+  plane, just behind the tip, at an axial Mach number below 1, except
+  where the flow on the tip's surface is supersonic and the nose meets
+  the body without a corner (measured on a 3-caliber tangent ogive at
+  Mach 1.35: two differently laid out grid families agree within 1.5e-5);
+  of 40 noses of 1 to 3 calibers tried at Mach 1.2 before that exception,
+  19 detach their shock and 13 were refused by this test; tips steeper
+  than about 40 deg (a limit of the present grids, set on measurement);
+  bodies whose flow at their end is subsonic; grids failing the other
+  quality gates, as on some long bodies, unless the family solved again
+  with 1.5 times the columns along the body passes them (its result is
+  then shown with the reason).
 - Ellipsoid noses (blunt) on the drag page, the shock standing off ahead
   of the tip on a grid wrapped round the nose: their fitted drag
   converges at observed orders of 1.99 to 2.21, and behind the sonic line
@@ -137,7 +155,7 @@ them; the fitted-drag families are recorded in
   subsonic and no independent reference exists, the drag rests on the
   grids' convergence and the exact stagnation pressure.
 
-- Skin friction, as a library not yet on the drag page
+- Skin friction, on the drag page as part of the total
   ([0007](docs/design/0007-skin-friction.md), `src/friction/`): van
   Driest II for turbulent flow, the compressible laminar similarity
   solution, transition at a given Reynolds number, and the friction drag
@@ -150,26 +168,55 @@ them; the fitted-drag families are recorded in
   band the evidence supports for smooth, adiabatic turbulent layers at
   Mach 1 to 3.6.
 
-- Base drag and the total, as libraries not on the drag page
+- Base drag and the total
   ([0010](docs/design/0010-base-drag-and-total.md), `src/base/`,
   `src/total/`): the compiled base-pressure correlation of NACA TN 3819
   with its band (measured over correlation 0.82 to 1.08), the factor for
-  fins ending at the base, and the sum of the components with their bands
-  added linearly. Its one hold-out test, the Basic Finner in free flight,
-  does not pass: the total is refused there, because its fins' blunt
-  trailing edges and rounded leading edges have no method with a measured
-  band, so bowshock refuses that configuration.
+  fins ending at the base, the base drag of blunt fin trailing edges and
+  the drag of rounded fin leading edges (both analogies, with bands set
+  from component data read twice), and the sum of the components with
+  their bands added linearly. Its one hold-out test, the Basic Finner in
+  free flight at Mach 1.80 to 2.97, passes at all 11 shots: measured over
+  modelled -7.7% to +4.5% (mean -1.9%), inside a tolerance of -19.5% to
+  -26.2% and +23.1% to +27.4%, which is wide; the two shots at Mach 2.97
+  lie 5.4% and 7.6% below the model. An independent audit narrowed the
+  tolerance's high end from +26.5% to +31.4% after the test (a change to
+  how the bands combine, made after the hold-out was used; the measured
+  differences did not change, and every shot still passes).
 
-Not yet: viscous flow in the solver, friction on the drag page, Von
-Karman (Haack) and power-series noses (their tips need grids being
-designed), Mach numbers below 1.2, fins and the base. Until those pass
-their own validation, bowshock reports no total drag coefficient.
+- The total drag on the [drag page](demos/nose-drag.html)
+  ([0011](docs/design/0011-total-drag-on-the-page.md)): the nose wave drag
+  of the page's own solve, with its band, plus friction, the fins and the
+  base, for a nose and a cylinder to a flat base with a set of fins
+  (rectangular, trapezoidal or clipped-delta; single-wedge, double-wedge or
+  hexagonal sections). Inside the Basic Finner's class (that rocket as
+  transcribed, each dimension within 0.5%, at Mach 1.799 to 3.0, Reynolds
+  number 1.19e7 to 2.0e7 on length, the range's air temperature) the total
+  is labelled validated on it, with the tolerance and the offset at Mach
+  2.97 beside it; outside it, an estimate, not validated, with every
+  reason; where a component's method does not reach (the base outside
+  Mach 1.5 to 3.0, or 1.8 to 3.0 with fins ending at the base; swept
+  rounded leading edges; among others), it is refused with every reason
+  and no number. The model-form
+  band and each input band (transition, wall temperature, roughness) are
+  shown apart, rounded outward, with every component's band and label.
 
-Limits: power off, zero angle of attack, no motor plume. When they
-exist, base drag will be the least certain component and transonic
-results will carry wider bands.
+Not yet: viscous flow in the solver; Von Karman (Haack) and power-series
+noses (their tips need grids being designed); Mach numbers below 1.2; a
+total validated outside the Basic Finner's class; altitude and speed as
+inputs (no standard atmosphere is implemented, so the page asks for the
+Reynolds number).
+
+Limits: power off, zero angle of attack, no motor plume. The widest
+component bands are the fins' own drag (measured over model 1.01 to 1.59),
+the fins' blunt trailing edges (0.93 to 1.21) and the base (0.82 to 1.08,
+with the fins-on-base factor's band on top where fins end at the base);
+transonic results will carry wider bands.
 
 ## Try it
+
+Online at <https://ahroonsanthosh.github.io/bowshock/>, built from this
+branch on every push. Or locally:
 
 ```sh
 npm ci
@@ -180,11 +227,14 @@ Then open the page Vite prints (usually http://localhost:5173/) and pick a
 demo. They need a browser with WebGPU (recent Chrome or Edge, for
 example); the ramp and the shock tube fall back to the CPU without it.
 
-- **Nose wave drag:** the inviscid forebody pressure (wave) drag
-  coefficient of a cone, tangent or secant ogive, parabolic-series or
-  ellipsoid nose and its body, not the rocket's total drag, refined on nested
-  grids on your GPU and reported with its measured error band, or as not
-  verified.
+- **Nose wave drag and total drag:** the inviscid forebody pressure (wave)
+  drag coefficient of a cone, tangent or secant ogive, parabolic-series or
+  ellipsoid nose and its body, refined on nested grids on your GPU and
+  reported with its measured error band, or as not verified; and, from that
+  solve, the rocket's total drag with fins and base, with its bands, its
+  components and their labels: validated on the Basic Finner inside that
+  rocket's class, an estimate, not validated, outside it, or refused with
+  the reasons.
 - **Supersonic ramp:** oblique shocks and Prandtl-Meyer expansion fans,
   solved live on your GPU and drawn as numerical schlieren or colour-mapped
   fields, with the ramp pressure compared against exact theory as the run
@@ -239,11 +289,18 @@ The design records, in order:
   that matches a simple finned rocket (the Basic Finner in free flight,
   Mach 1.8 to 3.0), audited twice.
 - [0009](docs/design/0009-fin-wave-drag.md): fin wave drag (draft), a
-  library not yet on the drag page: exact section drag of sharp fins and
-  the linear 3D drag of the planform, with the limits of each measured.
+  library, on the drag page as part of the total: exact section drag of
+  sharp fins and the linear 3D drag of the planform, with the limits of
+  each measured.
 - [0010](docs/design/0010-base-drag-and-total.md): base drag and the total
-  (draft), libraries not on the drag page, and the Basic Finner gate,
-  which the total does not pass (refused).
+  (draft), and the Basic Finner gate, which the total passes at all 11
+  shots (the second run; the first was refused).
+- [0011](docs/design/0011-total-drag-on-the-page.md): the total drag on
+  the drag page (draft): the nose term from the page's solve, the class
+  rule that decides "validated on the Basic Finner", and the labels.
+- [0012](docs/design/0012-interface.md): the interface (draft): a
+  full-window, dark, visualization-first layout inspired by FluidX3D's,
+  with the drag, its band and its status always on screen.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).

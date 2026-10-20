@@ -14,7 +14,9 @@ import { refineUntilVerified } from '../verification/grid-convergence';
 import {
   bluntFitFamily,
   bluntStartInChunks,
+  FALLBACK_COLUMN_DENSITY,
   fittedCaseFailure,
+  fittedGridFailure,
   sharpFitProblem,
   usesBluntFamily,
   wallDrag,
@@ -156,6 +158,15 @@ function nextTask(): Promise<void> {
 
 class FitNotConverged extends Error {}
 class InvalidCase extends Error {}
+/** A grid that fails only the fitted grids' quality gates (fittedGridFailure). */
+class GridRefused extends InvalidCase {
+  constructor(
+    readonly refinement: number,
+    reason: string,
+  ) {
+    super(reason);
+  }
+}
 
 /**
  * The forebody pressure drag with the bow shock fitted, on the GPU, on
@@ -170,13 +181,21 @@ export async function verifiedFittedDragGpu(
 ): Promise<VerifiedDrag> {
   // Blunt noses: the family of problems, once its captured start is computed.
   let blunt: ((refinement: number) => FitProblem) | null = null;
-  const reports: LevelReport[] = [];
+  let reports: LevelReport[] = [];
   let lastRefinement = 1;
   // The last grid's problem and converged fit, to start the next from.
   let previous: { problem: FitProblem; fit: GpuShockFit } | null = null;
+  // The sharp grids' column density: the usual layout's, or the fallback's.
+  let columnDensity: number | undefined;
   const solveAt = async (refinement: number): Promise<number> => {
     lastRefinement = refinement;
-    const problemOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ, refinement };
+    const problemOptions = {
+      mach: options.mach,
+      gamma: options.gamma,
+      nj: BASE_NJ,
+      refinement,
+      ...(columnDensity === undefined ? {} : { columnDensity }),
+    };
     const fresh = blunt ? blunt(refinement) : sharpFitProblem(body, problemOptions);
     const problem = (previous && startedFrom(fresh, previous.problem, previous.fit)) ?? fresh;
     const checkEvery = CHECK_EVERY * refinement;
@@ -198,6 +217,8 @@ export async function verifiedFittedDragGpu(
         `the fit stopped after ${fit.iterations} iterations with the shock moving at ${fit.maxSpeed.toExponential(1)} of the sound speed or the drag still changing`,
       );
     }
+    const gridFailure = fittedGridFailure(fit.grid);
+    if (gridFailure !== undefined) throw new GridRefused(refinement, gridFailure);
     const failure = fittedCaseFailure(problem, fit.grid, fit.cell);
     if (failure !== undefined) throw new InvalidCase(failure);
     previous = { problem, fit };
@@ -222,21 +243,41 @@ export async function verifiedFittedDragGpu(
       });
       blunt = bluntFitFamily(body, familyOptions, start);
     }
-    const result = await refineUntilVerified(solveAt, {
-      ...options,
-      noise: GPU_NOISE,
-      // A finer grid too large for this GPU, or whose fit does not
-      // converge, leaves the band of the grids before it, as if a coarser
-      // finest grid had been chosen; a case refused on any grid stays
-      // refused.
-      stopOn: (error) =>
-        error instanceof GpuMemoryLimitError
-          ? error.message
-          : error instanceof FitNotConverged
-            ? `its fit did not converge (${error.message})`
-            : undefined,
-    });
-    return { ...result, kind: 'solved', reports };
+    const verified = () =>
+      refineUntilVerified(solveAt, {
+        ...options,
+        noise: GPU_NOISE,
+        // A finer grid too large for this GPU, or whose fit does not
+        // converge, leaves the band of the grids before it, as if a coarser
+        // finest grid had been chosen; a case refused on any grid stays
+        // refused.
+        stopOn: (error) =>
+          error instanceof GpuMemoryLimitError
+            ? error.message
+            : error instanceof FitNotConverged
+              ? `its fit did not converge (${error.message})`
+              : undefined,
+      });
+    try {
+      return { ...(await verified()), kind: 'solved', reports };
+    } catch (error) {
+      // A sharp nose whose grid fails only the quality gates: its whole
+      // family again, with more columns; refused only if that one is too.
+      if (blunt !== null || !(error instanceof GridRefused)) throw error;
+      options.onFallback?.(error.refinement, error.message);
+      columnDensity = FALLBACK_COLUMN_DENSITY;
+      previous = null;
+      reports = [];
+      try {
+        const result = await verified();
+        return { ...result, kind: 'solved', reports, columnDensity };
+      } catch (fallbackError) {
+        if (!(fallbackError instanceof InvalidCase)) throw fallbackError;
+        throw new InvalidCase(
+          `${fallbackError.message} (with ${FALLBACK_COLUMN_DENSITY} times as many columns, solved because the usual grid at refinement ${error.refinement} fails its quality checks)`,
+        );
+      }
+    }
   } catch (error) {
     if (options.signal?.aborted === true) return { kind: 'cancelled', reports };
     if (error instanceof FitNotConverged) {

@@ -24,12 +24,15 @@
  * which is (2/3) Cp_pitot (2 r) to within 1e-6 at these angles, Cp_pitot
  * from Rayleigh's pitot formula. Band, measured over modelled: TN 2960's
  * cylinder normal to the stream, front side (0 to 90 deg of fig. 5(c),
- * trapezoid rule) over (2/3) Cp_pitot, 0.995, 1.049 and 1.056 at M 1.49,
- * 1.98 and 2.90, rounded outward: **0.99 to 1.06** (./tn2960.ts).
- * Labelled "an analogy, not a measurement": behind a fin's edge are the
- * fin's faces, not the cylinder's separated wake, and the nose's effect on
- * the faces (its entropy layer, the overexpansion behind the shoulder) is
- * not modelled; no opened source measures it.
+ * trapezoid rule) over (2/3) Cp_pitot, at M 1.49, 1.98 and 2.90: 0.995,
+ * 1.043 and 1.056 on the first reading (with its corrected value at M 1.98
+ * and 45 deg), 1.002, 1.049 and 1.052 on the second; the envelope of both,
+ * 0.995 to 1.056, rounded outward: **0.99 to 1.06** (./tn2960.ts).
+ * Labelled "an analogy, not a measurement" and "tested only in the total"
+ * (0010 section 7): behind a fin's edge are the fin's faces, not the
+ * cylinder's separated wake, and the nose's effect on the faces (its
+ * entropy layer, the overexpansion behind the shoulder) is not modelled;
+ * no opened source measures it.
  *
  * **Domain** (0010 section 5, ruled on before the gate). TN 2960 covers
  * M 1.49 to 2.90 and Re_D 1e5 to 1e6. Beyond it:
@@ -42,14 +45,18 @@
  *   set from the boundary-layer displacement scale (about 1% to 2% of D at
  *   Re_D 1e4, doubled), not from data; labelled "extrapolated in Reynolds
  *   number".
- * Refused: M below 1.49 or above 3.0, Re_D below 6.7e3, swept leading
- * edges (no data at M 1.5 to 3; RM A55H31's eq. (14) would be an untested
- * theory there), and sections other than a single wedge.
+ * Refused: M below 1.49 or above 3.0, Re_D below 6.7e3 or above 1e6 (TN
+ * 2960's highest; no opened source measures the front side above it, and
+ * the +-3% allowance, set from the displacement scale at low Reynolds
+ * number, says nothing about a cylinder whose layer may turn turbulent
+ * before separation; round 5, finding 11), swept leading edges (no data at
+ * M 1.5 to 3; RM A55H31's eq. (14) would be an untested theory there), and
+ * sections other than a single wedge.
  */
 
 import { normalShock, stagnationPressureRatio } from '../validation/gas-dynamics';
 import { FinRefusal } from './refusal';
-import { TN2960_FIG5C } from './tn2960';
+import { TN2960_FIG5C, TN2960_FIG5C_SECOND } from './tn2960';
 
 const GAMMA = 1.4;
 const DEG = Math.PI / 180;
@@ -61,14 +68,17 @@ export function pitotPressureCoefficient(mach: number, gamma = GAMMA): number {
   return (p02 - 1) / (0.5 * gamma * mach * mach);
 }
 
-/** TN 2960 fig. 5(c) integrated by the trapezoid rule: front (0 to 90 deg), rear, total, on D. */
-export function tn2960Integrated(): {
+/**
+ * TN 2960 fig. 5(c) integrated by the trapezoid rule: front (0 to 90
+ * deg), rear, total, on D; the first reading unless another is given.
+ */
+export function tn2960Integrated(reading: typeof TN2960_FIG5C = TN2960_FIG5C): {
   readonly mach: number;
   readonly front: number;
   readonly rear: number;
   readonly frontOverModifiedNewtonian: number;
 }[] {
-  return TN2960_FIG5C.map((c) => {
+  return reading.map((c) => {
     let front = 0;
     let rear = 0;
     for (let k = 0; k + 1 < c.points.length; k++) {
@@ -91,9 +101,11 @@ export function tn2960Integrated(): {
   });
 }
 
-/** The nose term's band, measured over modelled: TN 2960's ratios rounded outward. */
+/** The nose term's band, measured over modelled: TN 2960's ratios, both readings, rounded outward. */
 export const ROUNDED_EDGE_BAND = (() => {
-  const r = tn2960Integrated().map((x) => x.frontOverModifiedNewtonian);
+  const r = [TN2960_FIG5C, TN2960_FIG5C_SECOND].flatMap((reading) =>
+    tn2960Integrated(reading).map((x) => x.frontOverModifiedNewtonian),
+  );
   return {
     low: Math.floor(Math.min(...r) * 100 + 1e-9) / 100,
     high: Math.ceil(Math.max(...r) * 100 - 1e-9) / 100,
@@ -199,6 +211,14 @@ export function roundedLeadingEdgeDrag(input: {
         'shows no Reynolds-number effect (RM A55H31)',
     );
   }
+  if (!(re <= TN2960_RANGE.reynolds[1])) {
+    throw new FinRefusal(
+      'leading-edge-range',
+      `Reynolds number ${re.toPrecision(3)} on the edge's diameter is above ` +
+        `${TN2960_RANGE.reynolds[1]}, the highest at which a front-side pressure measurement ` +
+        'was opened (TN 2960)',
+    );
+  }
   let regime: RoundedEdgeRegime;
   if (re >= TN2960_RANGE.reynolds[0] && mach <= TN2960_RANGE.mach[1]) regime = 'measured';
   else if (mach >= RM_A55H31_RANGE.mach[0]) regime = 'covered by RM A55H31';
@@ -209,7 +229,7 @@ export function roundedLeadingEdgeDrag(input: {
   const base =
     'an analogy, not a measurement: the modified-Newtonian front side of a cylinder normal to ' +
     'the stream (band 0.99 to 1.06 on TN 2960), carried to a fin edge whose faces replace the ' +
-    "cylinder's wake";
+    "cylinder's wake; band estimated on TN 2960, tested only in the total";
   const label =
     regime === 'measured'
       ? base
