@@ -1,0 +1,27 @@
+=== 1. fin tip faces: 4 x 0.04385 cal^2, parallel to the stream, no friction counted
+  DA95021318 M 1.799: tip faces +0.00079, root footprint -0.00045, net +0.00034 (+0.056% of the total)
+  DA95021529 M 1.846: tip faces +0.00078, root footprint -0.00044, net +0.00034 (+0.057% of the total)
+  DA95021308 M 1.850: tip faces +0.00078, root footprint -0.00044, net +0.00034 (+0.057% of the total)
+  DA95021328 M 2.348: tip faces +0.00068, root footprint -0.00038, net +0.00030 (+0.061% of the total)
+  DA95020907 M 2.364: tip faces +0.00068, root footprint -0.00038, net +0.00029 (+0.061% of the total)
+  DA95021317 M 2.414: tip faces +0.00066, root footprint -0.00037, net +0.00029 (+0.061% of the total)
+  DA95020927 M 2.663: tip faces +0.00062, root footprint -0.00035, net +0.00027 (+0.062% of the total)
+  DA95020906 M 2.741: tip faces +0.00061, root footprint -0.00034, net +0.00027 (+0.062% of the total)
+  DA95020916 M 2.749: tip faces +0.00061, root footprint -0.00034, net +0.00027 (+0.062% of the total)
+  DA95030603 M 2.969: tip faces +0.00057, root footprint -0.00032, net +0.00025 (+0.062% of the total)
+  DA95022205 M 2.970: tip faces +0.00057, root footprint -0.00032, net +0.00025 (+0.062% of the total)
+=== 2. the drawn cone, half-angle atan(0.5/2.84)
+  M 1.799: 10 deg 0.11054, 9.985 deg 0.11027: -0.24%, -2.69e-04
+  M 2.97: 10 deg 0.08781, 9.985 deg 0.08760: -0.25%, -2.19e-04
+=== 3. the trailing-edge laminar band's high end as a base pressure (p_b / p_inf = 1 - ratio (1 - nominal))
+  DA95021318 M 1.799: nominal 0.404; at the laminar high end +0.289; with the model-form high too +0.163
+  DA95021529 M 1.846: nominal 0.395; at the laminar high end +0.271; with the model-form high too +0.144
+  DA95021308 M 1.850: nominal 0.394; at the laminar high end +0.272; with the model-form high too +0.144
+  DA95021328 M 2.348: nominal 0.297; at the laminar high end +0.111; with the model-form high too -0.037
+  DA95020907 M 2.364: nominal 0.295; at the laminar high end +0.109; with the model-form high too -0.039
+  DA95021317 M 2.414: nominal 0.287; at the laminar high end +0.094; with the model-form high too -0.056
+  DA95020927 M 2.663: nominal 0.258; at the laminar high end +0.043; with the model-form high too -0.113
+  DA95020906 M 2.741: nominal 0.250; at the laminar high end +0.026; with the model-form high too -0.131
+  DA95020916 M 2.749: nominal 0.249; at the laminar high end +0.025; with the model-form high too -0.132
+  DA95030603 M 2.969: nominal 0.230; at the laminar high end -0.016; with the model-form high too -0.177
+  DA95022205 M 2.970: nominal 0.230; at the laminar high end -0.015; with the model-form high too -0.176
