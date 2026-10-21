@@ -46,6 +46,7 @@ export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
   'W1 fins at the base for hobby fins (3 and 4 fins, thin, swept, any trailing edge, M 1.5 to 3.0) and within a chord': [
     'finsAtBaseThickness',
     'finsAtBaseSwept',
+    'finsAtBasePlate',
     'finsAtBaseCount',
     'finsAtBaseMach',
     'finsNearBase',

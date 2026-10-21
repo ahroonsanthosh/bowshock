@@ -191,6 +191,14 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
       'has a swept edge)',
     change: 'unswept fins of constant chord, or fins a root chord or more ahead of the base',
   }),
+  'flat-plate-fins': () => ({
+    reason:
+      'flat plates at the base lower the base drag by up to 15% in the one measurement of them, ' +
+      "which the base drag's data do not cover yet",
+    change:
+      'fins a root chord or more ahead of the base, or wedge or bevelled fins of constant ' +
+      'chord at the base',
+  }),
   'rounded-trailing-edge': () => ({
     reason:
       "a rounded trailing edge's drag is not shown to be below a square edge's, so it cannot " +

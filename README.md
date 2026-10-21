@@ -347,10 +347,11 @@ grids' convergence and the exact stagnation pressure.
   for fins ending at the base, measured on circular-arc fins and applied
   to others by analogy, which serves only four unswept fins up to 10%
   thick (thinner than its 5% data, extended with its low end at no fin
-  effect; 0016) at Mach 1.8 to 3.0: read from TN 3819 fig. 35's
-  free-flight curve, identified and read twice, to its end at Mach 2.56,
-  and above it bounded, not measured (between no fin effect and its value
-  at Mach 2.56); fins swept at either edge, and so any tapered planform, are
+  effect; flat plates refused, since RM L52E06 fig. 7 measures relief;
+  see 0016) at Mach 1.8 to 3.0: read from TN 3819 fig. 35's free-flight
+  curve, identified and read twice, to its end at Mach 2.56, and above it
+  bounded, not measured (between no fin effect and its value at Mach
+  2.56); fins swept at either edge, and so any tapered planform, are
   refused until the rebuilt factor (W1) serves them; the base drag of
   blunt fin trailing edges (0.93 to 1.21) and the drag of rounded fin
   leading edges (0.99 to 1.06 at a normal Mach number of 1.49 to 3.0, and

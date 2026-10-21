@@ -13,7 +13,7 @@ import { finTrailingEdgeBaseDrag } from '../../src/base/fin-trailing-edge';
 import { clippedDeltaPlanform } from '../../src/fins/planform';
 import { standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
 import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
-import { flatPlate } from '../../src/fins/section';
+import { doubleWedge, flatPlate } from '../../src/fins/section';
 import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents } from '../../src/total/total-drag';
@@ -250,7 +250,8 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
     const base = r.refusals.find((x) => x.component === 'body base');
     expect(base?.reason).toBe('fin-thickness');
     expect(base?.message).toMatch(/t\/c = 0\.15 is outside them/);
-    // The same plates of constant chord 120 mm (t/c 0.06 everywhere) are inside the factor's range.
+    // The same plates of constant chord 120 mm (t/c 0.06 everywhere) pass the thickness check;
+    // since 0014 section 10.7 (e) flat plates at the base are refused for what RM L52E06 measures.
     const square = {
       ...fins,
       planform: clippedDeltaPlanform({ rootChord: 0.12, span: 0.08, taperRatio: 1 }),
@@ -260,45 +261,52 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
       cond(2.0),
       exactConeNoseWaveDrag(2.0, Math.atan(0.027 / 0.2)),
     );
-    expect(q.refusals.find((x) => x.component === 'body base')).toBeUndefined();
+    expect(q.refusals.find((x) => x.component === 'body base')?.reason).toBe('flat-plate-fins');
   });
 
-  it("plates thinner than the factor's 5% data at the base: unswept, served with the low end F = 1 and labelled; tapered, refused by the factor for sweep; thicker than 10%, refused", () => {
-    const plates = (thickness: number, taperRatio: number, count = 4) => ({
-      count,
+  it('flat plates at the base refused (RM L52E06 fig. 7 measures relief); sections thinner than the 5% data, unswept, served with the low end F = 1 and labelled; thicker than 10%, refused', () => {
+    const fins = (section: FinnedBody['fins']['section'], taperRatio = 1) => ({
+      count: 4,
       planform: clippedDeltaPlanform({ rootChord: 0.12, span: 0.08, taperRatio }),
-      section: flatPlate(thickness, 'rounded', 'square'),
+      section,
       sectionFamily: 'other' as const,
       leadingEdgeRadius: 0,
       trailingEdgeAheadOfBase: 0,
     });
-    const run = (fins: ReturnType<typeof plates>) =>
-      finnedBodyComponents(
-        body(fins),
-        cond(2.0),
-        exactConeNoseWaveDrag(2.0, Math.atan(0.027 / 0.2)),
+    const run = (f: ReturnType<typeof fins>) =>
+      finnedBodyComponents(body(f), cond(2.0), exactConeNoseWaveDrag(2.0, Math.atan(0.027 / 0.2)));
+    const baseRefusal = (f: ReturnType<typeof fins>) =>
+      run(f).refusals.find((x) => x.component === 'body base');
+    // Four plates of constant chord, thin (t/c 0.025) or inside the data (0.06), square or rounded.
+    for (const [t, le, te] of [
+      [0.003, 'rounded', 'square'],
+      [0.0072, 'rounded', 'square'],
+      [0.0072, 'square', 'square'],
+    ] as const) {
+      const r = baseRefusal(fins(flatPlate(t, le, te)));
+      expect(r?.reason).toBe('flat-plate-fins');
+      expect(r?.message).toBe(
+        'flat plates at the base lower the base drag by up to 15% (RM L52E06 fig. 7, F 0.85 to ' +
+          "0.88), which this factor's data do not cover; the rebuilt factor will serve them",
       );
-    // Four 3 mm plates of constant chord 120 mm: t/c 0.025 at every station.
-    const thin = run(plates(0.003, 1));
+    }
+    // The factor's own reasons come first: a tapered plate is refused for its swept edge.
+    expect(baseRefusal(fins(flatPlate(0.003, 'rounded', 'square'), 0.4))?.reason).toBe('fin-sweep');
+    // A sharp double wedge 3% thick (the hexagonal family): thinner than the data, served,
+    // extended; 6% thick, the factor as it was.
+    const thin = run(fins(doubleWedge(0.03)));
     const base = thin.components.find((c) => c.name === 'body base')!;
     expect(thin.refusals.filter((x) => x.component === 'body base')).toEqual([]);
     expect(base.label).toMatch(
-      /extended below the data's 5% thickness: t\/c down to 0\.025 over 100% of the span, the low end taken as no fin effect \(F = 1/,
+      /extended below the data's 5% thickness: t\/c down to 0\.030 over 100% of the span, the low end taken as no fin effect \(F = 1/,
     );
-    // The same plates 6 mm thick (t/c 0.05): inside the data, the factor as it was.
-    const inside = run(plates(0.006, 1)).components.find((c) => c.name === 'body base')!;
+    const inside = run(fins(doubleWedge(0.06))).components.find((c) => c.name === 'body base')!;
     expect(inside.label).not.toMatch(/extended below/);
-    // The factor's low end is no fin effect and its nominal the midpoint up to the factor's high
-    // end: the term and its low end fall, the high end does not rise.
     expect(base.cd).toBeLessThan(inside.cd);
     expect(base.low).toBeLessThan(inside.low);
     expect(base.high).toBeLessThanOrEqual(inside.high);
-    // Tapered (root 120 mm, tip 48 mm, t/c 0.025 to 0.0625): a swept edge, refused by the factor.
-    const tapered = run(plates(0.003, 0.4)).refusals.find((x) => x.component === 'body base');
-    expect(tapered?.reason).toBe('fin-sweep');
-    // Thicker than 10% anywhere stays refused (13 mm over 120 mm: 0.108).
-    const thick = run(plates(0.013, 1)).refusals.find((x) => x.component === 'body base');
-    expect(thick?.reason).toBe('fin-thickness');
+    // Thicker than 10% stays refused.
+    expect(baseRefusal(fins(doubleWedge(0.12)))?.reason).toBe('fin-thickness');
   });
 
   it('a plate of taper 0.1 with a transition input keeps its trailing edge: the tip sliver is bounded and labelled', () => {

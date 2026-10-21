@@ -397,7 +397,9 @@ export function finnedBodyComponents(
           plate === undefined
             ? symmetricThicknessRatio(fins.section as SymmetricSection)
             : plate.thickness / Math.min(fins.planform.rootChord, tipChord(fins.planform)),
-        ...(plate === undefined ? {} : { thinnest: plateThinnest(plate.thickness, fins.planform) }),
+        ...(plate === undefined
+          ? {}
+          : { thinnest: plateThinnest(plate.thickness, fins.planform), flatFaced: true }),
         section: fins.sectionFamily,
         tanLeadingEdge: fins.planform.tanLeadingEdge,
         tanTrailingEdge: fins.planform.tanTrailingEdge,

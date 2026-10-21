@@ -12,6 +12,29 @@ import type { RocketDesign } from '../../src/rocket/design';
 import { PRESETS, preset } from '../../src/rocket/presets';
 import { sceneRocketOf } from '../../src/rocket/scene-rocket';
 import { rocketFromForm } from '../../src/render3d/presets';
+import type { PlateEdge, PlateSection } from '../../src/render3d/rocket-mesh';
+import type { SymmetricSection } from '../../src/fins/section';
+
+/** A section's upper outline at a chord, in the body's unit: one geometry, whichever its form. */
+function outline(section: SymmetricSection | PlateSection, chord: number): [number, number][] {
+  if (!('kind' in section)) {
+    return section.x.map((f, k) => [f * chord, section.halfThickness[k]! * chord]);
+  }
+  const h = section.thickness / 2;
+  const edge = (e: PlateEdge, at: number, sign: number): [number, number][] =>
+    typeof e === 'object'
+      ? [
+          [at, 0],
+          [at + sign * e.bevel, h],
+        ]
+      : e === 'square'
+        ? [
+            [at, 0],
+            [at, h],
+          ]
+        : [[at, 0]];
+  return [...edge(section.leadingEdge, 0, 1), ...edge(section.trailingEdge, chord, -1).reverse()];
+}
 
 const formOf = (design: RocketDesign) => {
   const asked = designForm(design, 2, { without: true });
@@ -30,7 +53,16 @@ describe("the 3D view's rocket", () => {
       const fins = rocket?.fins;
       const expected = logic.fins!;
       expect(fins?.count).toBe(expected.count);
-      expect(fins?.section).toEqual(expected.section);
+      // The same section: the logic's in its own form (a hexagon in chord units for bevelled
+      // plates of constant chord, its FlatPlate otherwise), drawn here at its own size.
+      const c = expected.planform.rootChord;
+      const drawn = outline(fins!.section, c);
+      const theirs = outline(expected.section, c);
+      expect(drawn.length).toBe(theirs.length);
+      drawn.forEach(([x, t], k) => {
+        expect(x).toBeCloseTo(theirs[k]![0], 12);
+        expect(t).toBeCloseTo(theirs[k]![1], 12);
+      });
       for (const key of ['rootChord', 'span', 'tanLeadingEdge', 'tanTrailingEdge'] as const) {
         expect(fins?.planform[key]).toBeCloseTo(expected.planform[key], 12);
       }

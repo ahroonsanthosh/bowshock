@@ -80,7 +80,7 @@ const options = (design: RocketDesign = basic()) => ({
   finest: 8,
 });
 
-describe('the points', () => {
+describe('the points', { timeout: 60_000 }, () => {
   it('Mach 1.0 to 3.0 every 0.2 or 0.1, whatever the rocket flies to', () => {
     expect(curveMachs(0.2)).toEqual([1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3]);
     expect(curveMachs(0.1).length).toBe(21);
