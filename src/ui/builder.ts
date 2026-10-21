@@ -9,6 +9,7 @@
 
 import { noseRadius, type NoseShape } from '../geometry/nose';
 import type { FinEdge, FinSection, FinSetDesign, RocketDesign } from '../rocket/design';
+import { aheadOfBase } from '../rocket/adapter';
 import { baseStation } from '../rocket/design';
 import { calibresText, lengthText, toMetres, type LengthUnit } from '../rocket/units';
 import { h } from './dom';
@@ -347,10 +348,10 @@ export class Builder {
     return this.fins().planform as Trapezoid;
   }
 
-  /** How far the fins' trailing edges lie ahead of the base, m. */
+  /** How far the fins' trailing edges lie ahead of the base, m (0 within rounding, as the adapter takes it). */
   private ahead(): number {
     const f = this.fins();
-    return baseStation(this.current) - (f.rootLeadingEdge + this.trapezoid().rootChord);
+    return aheadOfBase(this.current, f.rootLeadingEdge + this.trapezoid().rootChord);
   }
 
   /** The fins kept the same distance ahead of the base when the body's lengths change. */

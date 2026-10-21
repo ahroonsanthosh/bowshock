@@ -71,11 +71,12 @@ export function solvingWords(grids: number): StatusWords {
 
 /** Parts bowshock does not model: no number until the user chooses to compute without them. */
 export function chooseWords(parts: readonly string[]): StatusWords {
+  const them = parts.length > 1 || parts.some((p) => /^the \d+ /.test(p)) ? 'them' : 'it';
   return {
     word: 'Your choice',
     sentence:
-      `bowshock does not model the drag of ${parts.join(', ')}: compute without ` +
-      `${parts.length === 1 ? 'it' : 'them'}, or keep ${parts.length === 1 ? 'it' : 'them'} and get no number.`,
+      `bowshock does not model the drag of ${parts.join(', ')}: compute without ${them}, ` +
+      `or keep ${them} and get no number.`,
     tone: 'muted',
     mark: 'tick',
   };

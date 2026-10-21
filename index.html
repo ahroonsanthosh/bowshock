@@ -35,7 +35,11 @@
       <div class="panel__body">
         <div class="field">
           <label class="field__label" for="preset">Start from</label>
-          <select id="preset"></select>
+          <div class="field__pair">
+            <select id="preset"></select>
+            <button id="import" class="button" type="button" hidden>Import .ork</button>
+          </div>
+          <input id="import-file" type="file" accept=".ork" hidden />
         </div>
         <figure class="drawing" id="drawing-figure">
           <div class="drawing__art" id="drawing" role="img"></div>
@@ -93,6 +97,10 @@
     <aside class="panel panel--phone" id="panel-view" data-title="View">
       <div class="panel__body">
         <div class="view-controls" id="view-controls"></div>
+        <p class="panel__note view-note">
+          The airflow is around the body; the fins are drawn, their drag computed separately.
+          Hatched: behind the base, not simulated.
+        </p>
       </div>
     </aside>
     <dialog class="drawer" id="drawer" aria-labelledby="drawer-title">

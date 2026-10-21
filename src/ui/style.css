@@ -2143,6 +2143,14 @@ input[aria-invalid='true'] {
 }
 
 /* The note on the airflow: what it shows. */
+.view-note {
+  margin-top: 12px;
+}
+@media (min-width: 700px) {
+  .view-note {
+    display: none;
+  }
+}
 .flow-note {
   position: fixed;
   z-index: 10;
@@ -2224,13 +2232,9 @@ input[aria-invalid='true'] {
 }
 
 @media (max-width: 699.98px) {
+  /* On phones the note is in the View tab, under the view's buttons. */
   .flow-note {
-    left: 8px;
-    right: 8px;
-    top: auto;
-    bottom: calc(100dvh - var(--sheet-top) + 58px);
-    max-width: none;
-    font-size: 11px;
+    display: none;
   }
   .pinned__value {
     font-family: var(--font-mono);

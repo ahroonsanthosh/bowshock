@@ -33,6 +33,7 @@ import { drawingLabel, drawRocket } from '../ui/rocket-drawing';
 import { Shell } from '../ui/shell';
 import { CurveRun, gridsTo, secondsPerPoint, type NoseSolver } from './curve';
 import { curveCsv } from './curve-csv';
+import { importSummary, loadImporter, type ImportSummary } from './import-summary';
 import {
   bodyOutline,
   FlowControls,
@@ -76,6 +77,8 @@ const progress = element('#progress', HTMLElement);
 const drawer = element('#drawer', HTMLDialogElement);
 const drawerBody = element('#drawer-body', HTMLElement);
 const drawerClose = element('#drawer-close', HTMLButtonElement);
+const importButton = element('#import', HTMLButtonElement);
+const importFile = element('#import-file', HTMLInputElement);
 
 // ---------------------------------------------------------------- state
 
@@ -99,6 +102,8 @@ let lost: string | null = null;
 let view: FlowView | null = null;
 /** The Mach number of the flow drawn, for the PNG's caption. */
 let drawnMach: number | null = null;
+/** The last OpenRocket import, while its rocket is the one shown. */
+let imported: ImportSummary | null = null;
 
 // ---------------------------------------------------------------- shell
 
@@ -197,6 +202,8 @@ let previewTimer: number | undefined;
 function rocketChanged(): void {
   showDrawing();
   changed = true;
+  // The file's notes no longer describe the rocket once it is edited.
+  imported = null;
   if (presetSelect.value !== 'typed') {
     if (presetSelect.querySelector('option[value="typed"]') === null) {
       presetSelect.append(h('option', { text: 'Your rocket', attrs: { value: 'typed' } }));
@@ -217,6 +224,7 @@ presetSelect.addEventListener('change', () => {
   if (p === undefined) return;
   design = p.design;
   without = false;
+  imported = null;
   builder.setDesign(design);
   showDrawing();
   void start();
@@ -478,10 +486,12 @@ function renderCurve(): void {
 function renderNotes(): void {
   const parts = excludableParts(design);
   const notes: HTMLElement[] = [];
+  // "it" for one part, "them" for several or for one counted ("the 2 rail buttons").
+  const them = parts.length > 1 || parts.some((p) => /^the \d+ /.test(p.part)) ? 'them' : 'it';
   if (parts.length > 0 && !without) {
     const button = h('button', {
       className: 'button',
-      text: `Compute without ${parts.length === 1 ? 'it' : 'them'}`,
+      text: `Compute without ${them}`,
       attrs: { type: 'button' },
     });
     button.addEventListener('click', () => {
@@ -493,14 +503,29 @@ function renderNotes(): void {
         'div',
         { className: 'note note--choice' },
         h('p', {
-          text: `bowshock does not model the drag of ${parts.map((p) => p.part).join(', ')}. With ${parts.length === 1 ? 'it' : 'them'} on the rocket no number is given; you can compute the rocket without ${parts.length === 1 ? 'it' : 'them'}, and every number is then labelled so.`,
+          text: `bowshock does not model the drag of ${parts.map((p) => p.part).join(', ')}. With ${them} on the rocket no number is given; you can compute the rocket without ${them}, and every number is then labelled so.`,
         }),
         button,
       ),
     );
   }
-  for (const n of design.notes) {
-    notes.push(h('p', { className: 'note', text: `${n.feature}: ${n.reason}` }));
+  if (imported !== null) {
+    const shown = imported.notTaken.slice(0, 3);
+    const more = imported.notTaken.length - shown.length;
+    notes.push(
+      h(
+        'div',
+        { className: 'note note--import' },
+        h('p', { text: imported.headline }),
+        shown.length === 0 ? null : h('ul', {}, ...shown.map((t) => h('li', { text: t }))),
+        more > 0 ? h('p', { text: `And ${more} more, in Details.` }) : null,
+        imported.finish === null ? null : h('p', { text: imported.finish }),
+      ),
+    );
+  } else {
+    for (const n of design.notes) {
+      notes.push(h('p', { className: 'note', text: `${n.feature}: ${n.reason}` }));
+    }
   }
   curveNotes.replaceChildren(...notes);
 }
@@ -656,6 +681,20 @@ function detailsBlocks(): HTMLElement[] {
     }
     out.push(h('div', { className: 'table-wrap' }, table));
   }
+  if (imported !== null) {
+    const list = (title: string, items: readonly string[]) =>
+      items.length === 0
+        ? []
+        : [h('h3', { text: title }), h('ul', {}, ...items.map((t) => h('li', { text: t })))];
+    out.push(
+      h('h3', { text: 'The OpenRocket file' }),
+      h('p', { text: imported.headline }),
+      h('p', { text: `The flight: ${imported.flight}.` }),
+      ...list('Not taken exactly', imported.notTaken),
+      ...list('Taken', imported.taken),
+      ...list('Left out (not part of the outside)', imported.ignored),
+    );
+  }
   out.push(h('h3', { text: 'The test behind the claims' }), blocks(gateDisplay()));
   out.push(
     h(
@@ -729,6 +768,50 @@ async function savePng(): Promise<void> {
   }
 }
 pngButton.addEventListener('click', () => void savePng());
+
+// -------------------------------------------------------------- import
+
+const importer = await loadImporter();
+importButton.hidden = importer === null;
+importButton.addEventListener('click', () => {
+  importFile.click();
+});
+importFile.addEventListener('change', () => {
+  const file = importFile.files?.[0];
+  importFile.value = '';
+  if (file === undefined || importer === null) return;
+  void (async () => {
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const { mapping } = await importer(bytes, { fileName: file.name });
+      imported = importSummary(file.name, mapping);
+      if (mapping.design === null) {
+        run?.stop();
+        renderCurve();
+        shell.toasts.show(imported.headline, 'bad', 8);
+        return;
+      }
+      design = mapping.design;
+      without = false;
+      if (presetSelect.querySelector('option[value="imported"]') === null) {
+        presetSelect.append(h('option', { attrs: { value: 'imported' } }));
+      }
+      const option = presetSelect.querySelector<HTMLOptionElement>('option[value="imported"]')!;
+      option.textContent = `Imported: ${design.name}`;
+      presetSelect.value = 'imported';
+      builder.setDesign(design);
+      showDrawing();
+      shell.announce(imported.headline);
+      await start();
+    } catch (error) {
+      shell.toasts.show(
+        `Could not import ${file.name}: ${error instanceof Error ? error.message : String(error)}`,
+        'bad',
+        8,
+      );
+    }
+  })();
+});
 
 // ----------------------------------------------------------------- GPU
 
