@@ -236,9 +236,9 @@ describe('the drag page: total drag before a nose solve', () => {
 
 describe('the total as the page lays it out', { timeout: 60_000 }, () => {
   it('every block of the display, in order, with the claim set apart and the numbers unwrapped', () => {
-    const mach = 2.97;
+    const mach = 1.85;
     const form = {
-      ...basicFinnerForm(mach, 1.97e7),
+      ...basicFinnerForm(mach, 1.23e7),
       transitionReynolds: GATE_TRANSITION_REYNOLDS,
       wallTemperature: 343.7 ** 2 / (1.4 * 287.05),
     };
@@ -252,12 +252,14 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     document.body.append(target);
     renderBlocks(target, blocks);
     expect(target.textContent).toBe(displayText(blocks));
-    // The gate's shot DA95022205 (0010 section 4.2): 0.4071 (0.3579 to 0.4786).
+    // The gate's shot DA95021308 (0010 section 4.2): 0.5944 (0.5172 to 0.7039).
     expect(target.querySelector('p.result.ok')?.textContent).toBe(
-      'Total C_D = 0.4071, model-form band 0.3579 to 0.4786 (-12.1% to +17.6%)',
+      'Total C_D = 0.5944, model-form band 0.5172 to 0.7039 (-13.0% to +18.5%)',
     );
     expect(target.querySelector('.claim.claim-ok')?.textContent).toContain(VALIDATED_CLAIM);
-    expect(target.querySelector('.claim .warn')?.textContent).toBe(OFFSET_CAVEAT);
+    // The offset at Mach 2.97 is stated in the claim, not set apart (the class stops at 2.15).
+    expect(target.querySelector('.claim.claim-ok')?.textContent).toContain(OFFSET_CAVEAT);
+    expect(target.querySelector('.claim .warn')).toBeNull();
     expect(target.querySelectorAll('tbody tr').length).toBe(
       view.total.inputs.length + view.total.components.length,
     );

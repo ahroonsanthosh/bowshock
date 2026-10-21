@@ -759,3 +759,13 @@ interpolated across an unmeasured Mach range").
 - Nothing among the figures this record uses is read once any more,
   except fig. 5(d)'s R 1.3e5 diamonds (a check of the band, which the
   reader did not read).
+
+## 15. Merged with the main line (68ae3ee)
+
+The main line's narrowing of the Basic Finner class to Mach 1.799 to 2.15
+(68ae3ee) is merged in; the page's explanation keeps both sentences (the
+class's range, and where a rounded edge is served). Nothing in this
+record's terms depends on the class. After the merge the population run
+reproduces `out/impact-w4e.out` and `.json` exactly: the second readings
+moved bands, not refusals, so the coverage of section 11 stands (W4 needed
+in 20.7% of cases; totals once W1 is done 3.4%; totals today 0.2%).

@@ -16,7 +16,8 @@
 - **Date:** 2026-10-20; the gate's tolerances and the edge labels updated
   the same day for the round 5 audit (0010 section 10), and the flight
   condition from altitude added and the class's static temperature
-  widened to 216.65 to 320 K (sections 9 and 3)
+  widened to 216.65 to 320 K (sections 9 and 3); the class's Mach range
+  narrowed to 1.799 to 2.15 the same day (section 3)
 - **Inputs:** [0010](0010-base-drag-and-total.md) section 7 (what may be
   claimed), section 4.2 (the gate) and section 10 (the round 5 audit),
   [0008](0008-total-drag.md) sections
@@ -129,17 +130,17 @@ on the page when it fails.
 | Section                   | single wedge to a blunt trailing edge | other sections may not be claimed                                                                                  |
 | Trailing-edge thickness   | 0.08 cal, within 0.5%                 |                                                                                                                    |
 | Leading-edge radius       | 0.004 cal, within 0.5%                | sharp-edged fins may not be claimed                                                                                |
-| Mach number               | 1.799 to 3.0                          | 0010's 1.8 to 3.0, its low end at the lowest gated shot                                                            |
+| Mach number               | 1.799 to 2.15                         | 0010's 1.8 to 2.15, its low end at the lowest gated shot; it was 3.0 until fig. 35's lines were identified (below) |
 | Reynolds number on length | 1.19e7 to 2.0e7                       | 0010's 1.2e7 to 2.0e7, its low end at the lowest gated shot                                                        |
-| Static temperature        | 216.65 to 320 K                       | the shots flew at the range's air, about 294 K; across this span the modelled total moves by at most 0.21% (below) |
+| Static temperature        | 216.65 to 320 K                       | the shots flew at the range's air, about 294 K; across this span the modelled total moves by at most 0.13% (below) |
 
 **The tolerance on dimensions, 0.5%,** is there for typing (2.84 for
 2.836), not for other rockets. What it lets through is measured: at Mach
-1.8, 2.4 and 3.0, each dimension moved to its tolerance moves the modelled
-total by under 0.2% (at most: the cone's length 0.19%, the span 0.17%, the
+1.8, 2.0 and 2.15, each dimension moved to its tolerance moves the modelled
+total by under 0.2% (at most: the cone's length 0.17%, the span 0.17%, the
 trailing-edge thickness 0.12%, the overall length 0.09%, the leading-edge
-radius 0.06%, the chord 0.01%), all of them together at most 0.7% (the
-sum), against residuals
+radius 0.04%, the chord 0.01%), all of them together at most 0.6% (the
+sum; at Mach 1.8, 2.4 and 3.0, when the class ran to 3.0, 0.7%), against residuals
 that spread with standard deviations of 1.6% to 6.3% within a cluster
 (`tests/validation/basic-finner.test.ts`) and a tolerance of about -20% to
 +27%. Discrete features are exact: a cone, four fins, no sweep, the
@@ -147,13 +148,15 @@ trailing edges at the base, a single wedge.
 
 **The Mach number and Reynolds number** are 0010 section 7's ranges,
 widened only to take in the gated shots themselves (M 1.799, Re 1.19e7).
-The box has corners no shot flew: the shots lie along Re = 6.6e6 M on
-length (one range, one air; 6.53e6 to 6.72e6 per unit Mach number). At
-Mach 1.8 and Re 2.0e7 the model lies 1.6% below its value on that line,
-at Mach 3.0 and Re 1.19e7 2.1% above it. The box is kept as 0010 states the
-class, and the corners are recorded here. Between M 2.97 and 3.0 no shot
-was flown, and there the fins-on-base factor rests on readings
-extrapolated past the drawn line (a note on the page).
+The Mach range stops at 2.15, not 3.0 as first ruled, because above 2.15
+the line of TN 3819 fig. 35 that the fins-on-base factor was read from is
+one of Love's estimates, not the free-flight curve (0010 section 7), so
+three of the 11 shots lie inside it. The box has corners no shot flew: the
+shots lie along Re = 6.6e6 M on length (one range, one air; 6.53e6 to
+6.72e6 per unit Mach number). At Mach 1.8 and Re 2.0e7 the model lies
+1.6% below its value on that line, at Mach 2.15 and Re 1.19e7 0.7% above
+it (at Mach 3.0, 2.1%, when the class ran to it). The box is kept as 0010
+states the class, and the corners are recorded here.
 
 **The static temperature** runs from 216.65 to 320 K. The gate's shots
 flew in the range's air, about 294 K (Table V's speed of sound, 343.4 to
@@ -164,11 +167,12 @@ claim names the Mach number, the geometry and the Reynolds number, not
 the static temperature; the 293 to 295 K limit was this page's own
 conservative addition. And the model's sensitivity to it is measured and
 small: swept from 216.65 K (the standard atmosphere's coldest, 11 to 20
-km') to 320 K in steps of 10 K at Mach 1.8, 2.4 and 3.0, with the
+km') to 320 K in steps of 10 K at Mach 1.8, 2.0 and 2.15, with the
 Reynolds number held at 1.19e7, 1.6e7 and 2.0e7, the modelled total moves
-from its value at the range's air, 293.95 K, by at most 0.21% (at Mach
-3.0, Re 1.19e7 and 216.65 K; 0.19% with Re held at 1.6e7;
-`tests/app/total-drag.test.ts`). It moves monotonically, more at higher
+from its value at the range's air, 293.95 K, by at most 0.13% (at Mach
+2.15, Re 1.19e7 and 216.65 K; 0.12% with Re held at 1.6e7;
+`tests/app/total-drag.test.ts`; 0.21% at Mach 3.0 when the class ran to
+it). It moves monotonically, more at higher
 Mach number and lower Reynolds number: at a given Reynolds number only
 the friction terms read the temperature. Against the residuals, -7.7% to +4.5%, and the
 tolerance, about -20% to +27%, that is small. The claim says so beside
@@ -199,8 +203,12 @@ nose term lies within its own band of the gate's, of order 1e-5 in C_D
   +23.1% to +27.4% of the modelled total (as re-derived after an
   independent audit, section 10). The shots flew in the range's air,
   about 294 K; across static temperatures of 216.65 to 320 K the modelled
-  total moves from its value there by at most 0.21% (design record 0011,
-  section 3)." The tolerance is 0010's as re-derived
+  total moves from its value there by at most 0.13% (design record 0011,
+  section 3). The class stops at Mach 2.15, taking in three of the shots
+  (Mach 1.80 to 1.85), because above it the line of TN 3819 fig. 35 that
+  the fins-on-base factor was read from is one of Love's estimates, not
+  the free-flight curve, which ends near Mach 2.56 (design record 0010,
+  section 7)." The tolerance is 0010's as re-derived
   after the round 5 audit, which changed the band arithmetic after the
   hold-out was used (the second run's high end was +26.5% to +31.4%; the
   residuals did not change); the published gate table on the page carries
@@ -210,10 +218,13 @@ nose term lies within its own band of the gate's, of order 1e-5 in C_D
   carry 24% to 25% of the Basic Finner's total and the body base carries
   the fins-on-base factor, an analogy from circular-arc fins; and the
   offset at Mach 2.97 (both shots 5.4% and 7.6% below the model, mean
-  -6.5%, beyond that cluster's spread of +-1.2%, not corrected). From Mach
-  2.86, nearer the two M 2.97 shots than the M 2.66 to 2.75 cluster (the
-  midpoint of 2.749 and 2.969 is 2.859), the offset is highlighted and the
-  page says the case lies nearest those shots.
+  -6.5%, beyond that cluster's spread of +-1.2%, not corrected). While the
+  class ran to Mach 3.0 the offset was highlighted from Mach 2.86, nearer
+  the two M 2.97 shots than the M 2.66 to 2.75 cluster; with the class
+  stopping at 2.15 no case inside it is, and the offset is stated plainly.
+  Above 2.15 a total is an estimate, with that reason: "Mach M is outside
+  1.799 to 2.15 (above Mach 2.15 the fins-on-base factor was read from one
+  of Love's estimates in TN 3819 fig. 35, not from its free-flight curve)".
 - **Outside it:** "Estimate, not validated: this case lies outside the one
   class whose total drag has passed a hold-out test (the Basic Finner).
   Each component is inside the domain of its own band, so the total is
@@ -250,23 +261,27 @@ With the nose as the gate gave it (on the page it is the solve's, which
 agrees within its band), the range's Reynolds number (6.62e6 times the
 Mach number, the gated shots' mean, and 293.95 K, which the Basic Finner
 button gives directly, section 9) and no inputs, the page shows, labelled
-validated on the Basic Finner:
+validated on the Basic Finner to Mach 2.15 and an estimate, not
+validated, above it (section 3):
 
-| M    | C_D    | Model-form band  | As percentages   |
-| ---- | ------ | ---------------- | ---------------- |
-| 1.8  | 0.6121 | 0.5309 to 0.7259 | -13.3% to +18.6% |
-| 2.0  | 0.5501 | 0.4823 to 0.6493 | -12.4% to +18.1% |
-| 2.4  | 0.4768 | 0.4193 to 0.5615 | -12.1% to +17.8% |
-| 2.75 | 0.4320 | 0.3797 to 0.5083 | -12.1% to +17.7% |
-| 2.97 | 0.4072 | 0.3579 to 0.4786 | -12.1% to +17.6% |
-| 3.0  | 0.4040 | 0.3554 to 0.4746 | -12.1% to +17.5% |
+| M    | C_D    | Model-form band  | As percentages   | Label     |
+| ---- | ------ | ---------------- | ---------------- | --------- |
+| 1.8  | 0.6121 | 0.5309 to 0.7259 | -13.3% to +18.6% | validated |
+| 2.0  | 0.5501 | 0.4823 to 0.6493 | -12.4% to +18.1% | validated |
+| 2.15 | 0.5188 | 0.4534 to 0.6142 | -12.7% to +18.4% | validated |
+| 2.4  | 0.4768 | 0.4193 to 0.5615 | -12.1% to +17.8% | estimate  |
+| 2.75 | 0.4320 | 0.3797 to 0.5083 | -12.1% to +17.7% | estimate  |
+| 2.97 | 0.4072 | 0.3579 to 0.4786 | -12.1% to +17.6% | estimate  |
+| 3.0  | 0.4040 | 0.3554 to 0.4746 | -12.1% to +17.5% | estimate  |
 
 At the 11 gated shots, with the gate's inputs (a laminar run to Re_T 5e5,
 1.6e6 and 3e6; the wall to the air temperature), every value the page
 shows, the total, each band, each component and each input band, equals
 the gate's computation (`tests/validation/basic-finner.test.ts`) within
-1e-12, every label is the same, and every shot is labelled validated. The
-five shots at Mach 1.06 to 1.33 are refused, as in the gate.
+1e-12, and every label is the same. The three shots at Mach 1.80 to 1.85
+are labelled validated, the eight at Mach 2.35 to 2.97 an estimate, not
+validated, by their Mach number alone. The five shots at Mach 1.06 to
+1.33 are refused, as in the gate.
 
 ## 6. Found in the libraries while integrating
 
@@ -289,8 +304,9 @@ five shots at Mach 1.06 to 1.33 are refused, as in the gate.
 
 ## 7. Tests
 
-- `tests/app/total-drag.test.ts`: the class rule (the gated shots and the
-  default inside; each dimension inside at 0.4% and outside at 0.6% with
+- `tests/app/total-drag.test.ts`: the class rule (the gated shots to Mach
+  2.15 and the default inside, the eight above outside by their Mach
+  number alone; each dimension inside at 0.4% and outside at 0.6% with
   one reason; other noses, counts, planforms, positions and sections; the
   Mach, Reynolds-number and temperature limits); what the tolerances allow;
   the box's corners; the temperature; the default as shown (section 5); the
@@ -303,9 +319,9 @@ five shots at Mach 1.06 to 1.33 are refused, as in the gate.
   Basic Finner button keeping the inputs); the nose solve's outcomes (a
   band, none, not converged, invalid, refused, stopped, a failed GPU, no
   WebGPU) and the key that ties a solve to its case; the display of each
-  state (no number while waiting or refused; the gate's shot at Mach 2.97
-  headed 0.4071, 0.3579 to 0.4786, -12.1% to +17.6%; every component's and
-  input's label; the offset set apart near Mach 3 and not at 2.4; an
+  state (no number while waiting or refused; the gate's shot at Mach 1.85
+  headed 0.5944, 0.5172 to 0.7039, -13.0% to +18.5%; every component's and
+  input's label; the offset stated, not set apart, inside the class; an
   estimate said in the headline and the claim, with its reasons); the gate
   as published.
 - `tests/app/band.test.ts`: intervals rounded outward, never inward.
@@ -313,7 +329,7 @@ five shots at Mach 1.06 to 1.33 are refused, as in the gate.
   `tests/app/flight-condition.test.ts`: the standard atmosphere against
   its tables and the flight condition from altitude (section 9); in
   `tests/app/total-drag-display.test.ts`, the page's default (the Basic
-  Finner's shape at sea level, inside the class to Mach 2.86), the
+  Finner's shape at sea level, inside the class to Mach 2.15), the
   condition and the values shown beside it, its refusals said once each,
   the change of unit, and the Basic Finner button giving the range's
   conditions directly; in `tests/app/total-drag.test.ts`, the sweep of the
@@ -433,7 +449,8 @@ Its Reynolds numbers, 1.19e7 to 2.0e7, are unchanged, and are what limits
 a case asked by altitude. At sea level the Basic Finner's 30 mm body gives
 6.99e6 per unit Mach number (5.6% above the range's 6.62e6, its air
 warmer, 293.95 K): inside the class from Mach 1.799 to
-2.86, where its Reynolds number reaches 2.0e7 (at Mach 2.87, 2.01e7).
+2.15, the class's top (section 3); its Reynolds number would reach 2.0e7
+at Mach 2.86 (at Mach 2.87, 2.01e7).
 So the page opens labelled inside the class at Mach 2 (Re 1.40e7, 288.15
 K). The Basic Finner button gives the range's conditions directly, as
 before: it switches to "Reynolds number directly" with 6.62e6 times the

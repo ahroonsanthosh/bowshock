@@ -173,7 +173,8 @@ export function parseNumberList(text: string): number[] {
  * `dimensionTolerance` of its value, at the Mach and Reynolds numbers of
  * 0010 section 7 (widened only to take in the gated shots themselves), at
  * static temperatures over which the model's sensitivity is measured.
- * Conservative by design: what the gate did not test is outside.
+ * Conservative by design: what the gate did not test is outside, and so
+ * is what it tested on a prediction, not a measurement (Mach 2.15 to 3.0).
  */
 export const BASIC_FINNER_CLASS = {
   /** Relative tolerance on every dimension. */
@@ -185,8 +186,12 @@ export const BASIC_FINNER_CLASS = {
   span: BASIC_FINNER_GEOMETRY.finSpan,
   trailingEdgeThickness: BASIC_FINNER_GEOMETRY.finTrailingEdgeThickness,
   leadingEdgeRadius: BASIC_FINNER_GEOMETRY.finLeadingEdgeRadius,
-  /** From the lowest gated shot (M 1.799) to 0010 section 7's Mach 3.0. */
-  mach: [Math.min(...gated.map((s) => s.mach)), 3.0] as const,
+  /**
+   * From the lowest gated shot (M 1.799) to 2.15, 0010 section 7's top:
+   * above it the line of TN 3819 fig. 35 that the fins-on-base factor was
+   * read from is one of Love's estimates, not the free-flight curve.
+   */
+  mach: [Math.min(...gated.map((s) => s.mach)), 2.15] as const,
   /** From the lowest gated shot's Reynolds number (1.19e7) to 0010 section 7's 2.0e7. */
   reynoldsOnLength: [Math.min(...gated.map((s) => s.reynolds)), 2.0e7] as const,
   /**
@@ -198,6 +203,11 @@ export const BASIC_FINNER_CLASS = {
    */
   temperature: [216.65, 320] as const,
 } as const;
+
+/** Why the class stops at Mach 2.15, said with a Mach number above it (0010 section 7). */
+export const ABOVE_THE_CLASS =
+  " (above Mach 2.15 the fins-on-base factor was read from one of Love's estimates in TN 3819 " +
+  'fig. 35, not from its free-flight curve)';
 
 export interface ClassCheck {
   readonly inside: boolean;
@@ -267,7 +277,10 @@ export function basicFinnerClass(form: TotalDragForm): ClassCheck {
     );
   }
   if (!(form.mach >= c.mach[0] && form.mach <= c.mach[1])) {
-    out.push(`Mach ${fmt(form.mach)} is outside ${c.mach[0]} to ${c.mach[1].toFixed(1)}`);
+    out.push(
+      `Mach ${fmt(form.mach)} is outside ${c.mach[0]} to ${c.mach[1]}` +
+        (form.mach > c.mach[1] ? ABOVE_THE_CLASS : ''),
+    );
   }
   const re = form.reynoldsOnLength;
   if (!(re >= c.reynoldsOnLength[0] && re <= c.reynoldsOnLength[1])) {
@@ -291,11 +304,11 @@ export function basicFinnerClass(form: TotalDragForm): ClassCheck {
 /**
  * The largest change of the modelled total over the class's static
  * temperatures, from its value at the range's air, as a fraction: at the
- * class's Mach numbers 1.8, 2.4 and 3.0 and Reynolds numbers 1.19e7, 1.6e7
- * and 2.0e7, the largest at Mach 3.0, Re 1.19e7 and 216.65 K
+ * class's Mach numbers 1.8, 2.0 and 2.15 and Reynolds numbers 1.19e7, 1.6e7
+ * and 2.0e7, the largest at Mach 2.15, Re 1.19e7 and 216.65 K
  * (tests/app/total-drag.test.ts; 0011 section 3).
  */
-export const TEMPERATURE_SENSITIVITY = 0.0021;
+export const TEMPERATURE_SENSITIVITY = 0.0013;
 const sensitivity = `${(100 * TEMPERATURE_SENSITIVITY).toFixed(2)}%`;
 
 /** The class in words, for the page. */
@@ -304,7 +317,9 @@ export const CLASS_DESCRIPTION =
   '20 deg cone (2.836 cal) on a cylinder to a flat base, 10.0 cal overall; four rectangular fins ' +
   'of 1.0 cal root chord and span, their trailing edges at the base; single-wedge sections from a ' +
   '0.004 cal leading-edge radius to a blunt trailing edge 0.08 cal thick; every dimension within ' +
-  '0.5%; Mach 1.799 to 3.0; Reynolds number 1.19e7 to 2.0e7 on length; static temperature ' +
+  "0.5%; Mach 1.799 to 2.15 (above it the fins-on-base factor was read from one of Love's " +
+  'estimates in TN 3819 fig. 35, not from its free-flight curve); Reynolds number 1.19e7 to ' +
+  '2.0e7 on length; static temperature ' +
   `216.65 to 320 K (the shots flew at about 294 K; across this span the modelled total moves by ` +
   `at most ${sensitivity}); zero incidence, power off.`;
 
@@ -319,7 +334,10 @@ export const VALIDATED_CLAIM =
   'tolerance of -19.5% to -26.2% and +23.1% to +27.4% of the modelled total (as re-derived ' +
   "after an independent audit, section 10). The shots flew in the range's air, about 294 K; " +
   'across static temperatures of 216.65 to 320 K the modelled total moves from its value there ' +
-  `by at most ${sensitivity} (design record 0011, section 3).`;
+  `by at most ${sensitivity} (design record 0011, section 3). The class stops at Mach 2.15, ` +
+  'taking in three of the shots (Mach 1.80 to 1.85), because above it the line of TN 3819 ' +
+  "fig. 35 that the fins-on-base factor was read from is one of Love's estimates, not the " +
+  'free-flight curve, which ends near Mach 2.56 (design record 0010, section 7).';
 export const TOLERANCE_CAVEAT =
   'That tolerance is wide: a pass at such a width says little by itself, and the residuals are ' +
   'the finding. The two fin-edge terms, both analogies, carry 24% to 25% of the Basic ' +
@@ -329,8 +347,6 @@ export const OFFSET_CAVEAT =
   'At Mach 2.97 both shots lay below the model, by 5.4% and 7.6% (mean -6.5%), beyond that ' +
   "cluster's own spread of +-1.2%: a systematic offset inside the tolerance, not corrected (the " +
   'model is not retuned on its own hold-out).';
-/** Beyond this Mach number the case is nearer the M 2.97 shots than the M 2.66 to 2.75 cluster. */
-export const NEAR_MACH_3 = 2.86;
 export const ESTIMATE_CLAIM =
   'Estimate, not validated: this case lies outside the one class whose total drag has passed a ' +
   'hold-out test (the Basic Finner). Each component is inside the domain of its own band, so the ' +
@@ -356,23 +372,17 @@ export const NOT_REPRESENTED =
   'fin faces; friction is at free-stream edge conditions. Zero incidence, power off, no plume.';
 
 export type Claim =
-  | {
-      readonly kind: 'validated';
-      readonly text: string;
-      readonly caveats: readonly string[];
-      /** The case is nearer the M 2.97 shots, whose offset applies most. */
-      readonly nearMach3: boolean;
-    }
+  | { readonly kind: 'validated'; readonly text: string; readonly caveats: readonly string[] }
   | { readonly kind: 'estimate'; readonly text: string; readonly reasons: readonly string[] };
 
-function claimOf(form: TotalDragForm, check: ClassCheck): Claim {
+/**
+ * The offset at Mach 2.97 is stated beside every validated total. It was
+ * set apart from Mach 2.86 up, nearer those shots; the class now stops at
+ * 2.15, so no case inside it is.
+ */
+function claimOf(check: ClassCheck): Claim {
   if (!check.inside) return { kind: 'estimate', text: ESTIMATE_CLAIM, reasons: check.outside };
-  return {
-    kind: 'validated',
-    text: VALIDATED_CLAIM,
-    caveats: [TOLERANCE_CAVEAT, OFFSET_CAVEAT],
-    nearMach3: form.mach >= NEAR_MACH_3,
-  };
+  return { kind: 'validated', text: VALIDATED_CLAIM, caveats: [TOLERANCE_CAVEAT, OFFSET_CAVEAT] };
 }
 
 // ---------------------------------------------------------- configuration
@@ -702,7 +712,7 @@ export function totalDragView(form: TotalDragForm, nose: NoseState): TotalDragVi
     total,
     withInputs: bandWithInputs(total),
     check,
-    claim: claimOf(form, check),
+    claim: claimOf(check),
     notes: notesOf(parts.base),
   };
 }
