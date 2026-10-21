@@ -29,6 +29,8 @@ struct DrawParams {
   schlieren_dark: vec4f,
   schlieren_light: vec4f,
   grid_colour: vec4f,
+  // The free stream's value of the upper and the lower half's field (x, y).
+  free_value: vec4f,
 }
 
 struct LineParams {
@@ -120,6 +122,42 @@ fn fs_field(input: FieldOut) -> @location(0) vec4f {
   let position = t * f32(COLORMAP_SIZE - 1u);
   let k = min(u32(position), COLORMAP_SIZE - 2u);
   return mix(colormap[k], colormap[k + 1u], position - f32(k));
+}
+
+// --------------------------------------------- the free stream outside
+
+// Beyond the fitted shock (the grid's last row of nodes, j = nj) the flow
+// is the free stream, untouched: it is filled with the free stream's own
+// value of the field, upstream of the shock's first node and above each
+// segment of the shock, to a height far beyond any view. Not beyond the
+// grid's last line, where the flow is not the free stream.
+const FAR: f32 = 1.0e4;
+
+@vertex
+fn vs_free(@builtin(vertex_index) vertex: u32, @builtin(instance_index) instance: u32) -> FieldOut {
+  let quad = vertex / 6u;
+  let corner = CORNERS[vertex % 6u];
+  var a: vec2f;
+  var b: vec2f;
+  if (quad == 0u) {
+    // Upstream of the shock's first node, from the axis up.
+    let first = node(0u, params.nj);
+    a = vec2f(-FAR, 0.0);
+    b = vec2f(first.x, 0.0);
+  } else {
+    a = node(quad - 1u, params.nj);
+    b = node(quad, params.nj);
+  }
+  // Corner (0, 0) and (1, 0) on the shock (or the axis), (0, 1) and (1, 1) far above.
+  let x = select(a.x, b.x, corner.x == 1u);
+  let y = select(select(a.y, b.y, corner.x == 1u), FAR, corner.y == 1u);
+  let slot = select(params.slot_upper, params.slot_lower, instance == 1u);
+  var out: FieldOut;
+  out.position = to_clip(vec2f(x, y), instance);
+  out.value = select(params.free_value.x, params.free_value.y, instance == 1u);
+  out.field = select(params.field_upper, params.field_lower, instance == 1u);
+  out.slot = slot;
+  return out;
 }
 
 // The value itself, for probing what is drawn at a point (an r32float target).
