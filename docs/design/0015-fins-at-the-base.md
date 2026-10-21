@@ -261,7 +261,8 @@ No fins, or fins whose pressure field vanishes: F from 1 down to the
 largest relief measured at M 1.5 or above with fins near the base and a
 turbulent layer, RM L52J21a fig. 38(c) at R = 8.06e6 (its most positive
 dPb at each Mach number, over fig. 8's least negative cylindrical-base
-P_B in either reading, both read toward more relief): **0.950** at M 1.93
+P_B in either reading, both read toward more relief): **0.9504** at M 1.93
+(0.950 where three decimals are quoted)
 (round 6's fig. 8, -0.1443, is less negative than the first's). The
 plain and flagged symbols of fig. 38 cannot be told apart on the 1-bit
 scan, so the cylindrical base's relief is at most the cluster's; its
@@ -370,7 +371,7 @@ only; this record applies it here on that ruling, and says so.)
   Mach number, and at M 1.62 to 2.41 RM L52J21a measures at most 5% relief
   with turbulent layers (3.5). The lowest, at M 1.06 with the reading
   errors toward more relief, is **0.838** (`W1_FLAT_RELIEF_LOW`): below
-  the zero member's 0.951, so RM L52E06's reduction is contained.
+  the zero member's 0.950, so RM L52E06's reduction is contained.
 
 At M 1.5 and above no flat-faced fin is measured at the base. There the
 ordering rests on what is measured: the increment's dependence on the

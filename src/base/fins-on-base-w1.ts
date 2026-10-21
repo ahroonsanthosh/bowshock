@@ -32,7 +32,8 @@
  * - the zero member, no fins or fins with no pressure field: F from 1 down
  *   to the largest relief measured with fins near the base and a turbulent
  *   layer at M 1.5 or above (RM L52J21a fig. 38(c) over fig. 8's
- *   cylindrical base: 0.951), at every M.
+ *   cylindrical base: 0.9504, W1_RELIEF_LOW), at every M from 1.5; below
+ *   1.5, RM L52E06's relief with flat plates (0.838, zeroMember).
  *
  * A case is bracketed between a lower member it dominates and an upper
  * member that dominates it, in each variable the sources show moves F:
