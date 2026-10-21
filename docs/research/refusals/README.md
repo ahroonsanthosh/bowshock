@@ -13,6 +13,7 @@ by the solver or the page.
 | `evaluate.ts` | Every refusal a rocket at a condition triggers, each tested on its own (mirroring the code named in 0014's inventory), and the library's own verdict for the cross-check |
 | `impact.test.ts` | The run: outcome per Mach band, rate per refusal, sole blockers, the work packages (the share each is needed for, the greedy order, totals after each step of 0014's order), the altitude ends, two sensitivity variants, the cross-check against `src/total` |
 | `edges.test.ts` | The parameters the fin-edge packages turn on, over the same cases: the trailing edges' thin-layer parameter, the leading edges' normal Mach and Reynolds numbers, the trailing-edge angle of fins at the base |
+| `w7-fins.test.ts` | The parameters the fin terms near Mach 1 turn on (design record 0019), over the same cases: normal Mach numbers of rounded and bevelled edges, bevel angles, the double wedges' transonic similarity parameters, the trailing edges' h/c and layer parameter, the fins' chord Reynolds numbers; the present code's sharp sections near Mach 1; the share of cases whose fin terms each variant of 0019's plan would serve. Writes `out/w7-plan.out` |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
 | `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables, as 0014 quotes them |
 | `out/impact-w34.out`, `out/impact-w34.json` | The same run after the fin edges of flat plates (design record 0016, sections 1 to 10): `evaluate.ts` with `EDGES=w34` mirrors that code |
@@ -53,6 +54,12 @@ cached. The edge parameters:
 
 ```sh
 ONLY=./edges.test.ts nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
+```
+
+The fin terms near Mach 1 (0019):
+
+```sh
+ONLY=./w7-fins.test.ts nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
 ```
 
 The OpenRocket survey: clone `https://github.com/openrocket/openrocket`
