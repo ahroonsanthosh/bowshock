@@ -46,6 +46,7 @@ export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
   'W1 fins at the base for hobby fins (3 and 4 fins, thin, swept, any trailing edge, M 1.5 to 3.0) and within a chord': [
     'finsAtBaseThickness',
     'finsAtBaseSwept',
+    'finsAtBasePlate',
     'finsAtBaseCount',
     'finsAtBaseMach',
     'finsNearBase',
@@ -61,7 +62,10 @@ export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
   ],
   'W5 Haack and power-series noses (in progress)': ['noseHaack'],
   'W6 blunted nose tips': ['noseTip'],
-  'W7 Mach 1.0 to 1.2 nose solve (0013, in progress)': ['noseMach'],
+  'W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins\' own-drag band below Mach 1.5)': [
+    'noseMach',
+    'finsOwnDragMach',
+  ],
   'W8 steep, detached and subsonic sharp tips': ['noseDetached', 'noseSubsonicTip', 'noseSteep', 'noseEllipsoid'],
   'W9 sharp sections: reflected waves and detached bevel shocks': ['sectionReflected', 'sectionDetached'],
   'W10 boat-tails': ['boatTail'],

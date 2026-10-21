@@ -600,7 +600,9 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       if (s.mach < 1.3) expect(r).toContain('fin leading edges: leading-edge-range');
       else expect(r).not.toContain('fin leading edges: leading-edge-range');
       expect(r).toContain('body base: mach-range');
-      if (s.mach < 1.2) expect(r).toContain('fin wave drag: detached-shock');
+      // Below M 1.5 the fins' own-drag band is not carried (0014 section 10.7 (f)); it is the first reason.
+      expect(r).toContain('fin friction: fins-own-drag-mach');
+      expect(r).toContain('fin wave drag: fins-own-drag-mach');
     }
   });
 });
