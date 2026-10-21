@@ -543,18 +543,22 @@ describe('the factor', () => {
     ];
     for (const m of [1.8, 2.0, 2.56, 2.8, 3.0]) {
       for (const s of swept) {
-        expect(() => finsOnBaseFactor(m, { ...wedge, ...s })).toThrow(BaseRefusal);
-        try {
-          finsOnBaseFactor(m, { ...wedge, ...s, section: 'circular-arc' });
-        } catch (e) {
-          expect((e as BaseRefusal).reason).toBe('fin-sweep');
+        for (const section of ['other', 'circular-arc'] as const) {
+          let reason = 'none';
+          try {
+            finsOnBaseFactor(m, { ...wedge, ...s, section });
+          } catch (e) {
+            expect(e).toBeInstanceOf(BaseRefusal);
+            reason = (e as BaseRefusal).reason;
+          }
+          expect(reason, `M ${m}, ${section}, ${JSON.stringify(s)}`).toBe('fin-sweep');
         }
       }
     }
     expect(() =>
       finsOnBaseFactor(2.8, { ...wedge, tanLeadingEdge: t45, tanTrailingEdge: t45 }),
     ).toThrow(
-      'the fins-on-base factor is measured on unswept fins (TN 3819 figs. 33 to 35, TN 2360); ' +
+      'the fins-on-base factor is measured on unswept fins (TN 3819 figs. 33 and 35, TN 2360); ' +
         'fins at the base swept 45.0 deg at the leading edge and 45.0 deg at the trailing edge ' +
         'are not covered (a tapered planform has a swept edge), since sweep changes the factor ' +
         '(TN 3819 fig. 34, RM L52J21a; design record 0014, section 5.1)',

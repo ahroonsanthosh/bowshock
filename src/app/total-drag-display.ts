@@ -400,8 +400,8 @@ export const PENDING_TEXT =
   'No total yet: run the solve above for this nose, body and Mach number. The total takes its ' +
   'nose wave drag and band; the other components are computed here and none of them is refused.';
 export const INSIDE_PENDING_TEXT =
-  "This case lies inside the Basic Finner's class, kept as the range its next registered test " +
-  'will cover: the total will be an estimate, not validated, while the claim is suspended (the ' +
+  "This case lies inside the Basic Finner's class, kept for its next registered test: the total " +
+  'will be an estimate, not validated, while the claim is suspended (the ' +
   'fins-on-base factor was corrected after the test; design record 0010, section 11.7).';
 export const ESTIMATE_TOLERANCE_TEXT =
   "The Basic Finner's test was wide: with the corrected fins-on-base factor its tolerance is " +

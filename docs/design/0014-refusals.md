@@ -919,8 +919,8 @@ section 6.4).
 - _What moved._ Inside the class the body base, and so the total, moves
   by +0.00105, -0.00031 and -0.00042 in C_D at the three shots (Mach
   1.799, 1.846, 1.85: -0.07% to +0.17% of the total), and by -0.00082
-  and -0.00123 at Mach 2.0 and 2.15; the served defaults by +0.16%,
-  -0.15% and -0.23% at Mach 1.8, 2.0 and 2.15. Above the class the total
+  and -0.00123 at Mach 2.0 and 2.15; the served defaults by +0.17%,
+  -0.15% and -0.24% at Mach 1.8, 2.0 and 2.15. Above the class the total
   falls by 0.7% to 1.0% at Mach 2.35 to 2.41 and by 2.6% to 3.0% at 2.66
   to 2.97. The gate re-run is a recorded correction, not a test:
   residuals -5.1% to +7.5% (mean -0.4%), every shot inside its tolerance
@@ -933,8 +933,8 @@ section 6.4).
   ... unchanged") therefore holds no validated total meanwhile: the class
   keeps the corrected present factor, and its rule (Mach 1.799 to 2.15,
   Reynolds number 1.19e7 to 2.0e7, 216.65 to 320 K, each dimension
-  within 0.5%; 0011 section 3) is kept as the range the next test will
-  cover.
+  within 0.5%; 0011 section 3) is kept for the next test, which covers
+  its Mach range at BRL's conditions, not the whole class (10.6, item 6).
 - _The route back._ BRL Report 934's range A (Mach 1.5 to 2.47, 10.5),
   run once as registered, after its second reading and the decisions of
   10.6, is the test of the corrected factor: the present model reported
@@ -958,7 +958,7 @@ correction).
 
 - _Which fins._ Amendment (a)'s lower bound, no fin effect, rests on
   sources that measure four unswept fins 5% to 10% thick at the base
-  (TN 3819 figs. 33 to 35, TN 2360). The present factor took no sweep:
+  (TN 3819 figs. 33 and 35, TN 2360). The present factor took no sweep:
   the review found four 8% double wedges swept 45 deg at both edges, at
   the base, served at Mach 2.0 as an analogy (F 1.258) and at 2.8 as
   bounded, 1 to 1.3612, where RM L52J21a measures about 0.96 to 1.12 for

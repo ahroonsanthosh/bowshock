@@ -53,7 +53,7 @@
  * curve, which the figure's no-fin curve reproduces, and it serves only the
  * fins its sources measured, four unswept fins 5% to 10% thick at the base
  * (refused otherwise, below), which every one of those sources (TN 3819
- * figs. 33 to 35, TN 2360) shows lowering the base pressure, never raising
+ * figs. 33 and 35, TN 2360) shows lowering the base pressure, never raising
  * it. The upper bound is the row at M 2.56 with its band's high end,
  * 1.3612, carried as a ratio. The ordering rests on that bound's margin,
  * not on a trend: the free-flight factor at the curve's end is 1.153, and
@@ -348,7 +348,7 @@ export function finsOnBaseFactor(mach: number, fins: FinsAtBase): FinsOnBaseFact
     const deg = (t: number) => ((Math.atan(t) * 180) / Math.PI).toFixed(1);
     throw new BaseRefusal(
       'fin-sweep',
-      'the fins-on-base factor is measured on unswept fins (TN 3819 figs. 33 to 35, TN 2360); ' +
+      'the fins-on-base factor is measured on unswept fins (TN 3819 figs. 33 and 35, TN 2360); ' +
         `fins at the base swept ${deg(fins.tanLeadingEdge)} deg at the leading edge and ` +
         `${deg(fins.tanTrailingEdge)} deg at the trailing edge are not covered (a tapered ` +
         'planform has a swept edge), since sweep changes the factor (TN 3819 fig. 34, RM ' +

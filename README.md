@@ -28,12 +28,14 @@ number with an honest uncertainty band.
 > rest, above Mach 2.15, on a published prediction, not on measurements,
 > and was corrected to the measured curve after the test's results were
 > known. The correction moved the total by up to 3% above Mach 2.15 and
-> by at most 0.23% inside the class the test had opened (Mach 1.8 to
+> by at most 0.24% inside the class the test had opened (Mach 1.8 to
 > 2.15), but a term changed after a test is not validated by it, so **the
 > validated claim is suspended: no total is validated today.** The class
-> is kept as the range of the next registered test, BRL Report 934's
-> Basic Finner rounds at Mach 1.5 to 2.47, run once as registered; if it
-> passes, the class is validated over what that range supports
+> is kept for the next registered test, BRL Report 934's Basic Finner
+> rounds at Mach 1.5 to 2.47, run once as registered, which covers the
+> class's Mach range at BRL's own Reynolds numbers and leading edges (both
+> outside the class); if it passes, the class is validated over what that
+> range supports
 > ([0010](docs/design/0010-base-drag-and-total.md) section 11.7). The
 > drag page shows the total
 > ([0011](docs/design/0011-total-drag-on-the-page.md)): an estimate, not
@@ -204,10 +206,11 @@ them; the fitted-drag families are recorded in
   (Mach 1.80 to 1.85), 0.7% to 1.0% at 2.35 to 2.41 and 2.6% to 3.0% at
   2.66 to 2.97, so the validated claim is suspended (0008 section 6.1:
   a term changed after a test is not validated by it). The class, Mach
-  1.8 to 2.15, is kept as the range of the registered test of the
-  corrected factor, BRL Report 934's range A (Mach 1.5 to 2.47), run once
-  after its second reading and the decisions registered for it; if it
-  passes, the class is validated over what that range supports. The second
+  1.8 to 2.15, is kept for the registered test of the corrected factor,
+  BRL Report 934's range A (Mach 1.5 to 2.47), run once after its second
+  reading and the decisions registered for it, which covers the class's
+  Mach range at BRL's conditions (its Reynolds numbers and sharp leading
+  edges lie outside the class; 0014 section 10.6); if it passes, the class is validated over what that range supports. The second
   run and the correction's residuals are kept in the record as history.
 
 - The total drag on the [drag page](demos/nose-drag.html)
@@ -351,8 +354,8 @@ The design records, in order:
   (section 11).
 - [0011](docs/design/0011-total-drag-on-the-page.md): the total drag on
   the drag page (draft): the nose term from the page's solve, the class
-  rule (the range the next registered test will cover; its validated
-  claim suspended), the labels, and the
+  rule (kept for the next registered test; its validated claim
+  suspended), the labels, and the
   flight condition from altitude, Mach number and diameter in the 1976
   standard atmosphere.
 - [0012](docs/design/0012-interface.md): the interface (draft): a

@@ -771,7 +771,8 @@ term the gate tested inside the class too, moving the total by -0.07% to
 +0.17% at the three shots there (by 0.7% to 3.0% above it). Nothing is
 claimed as validated meanwhile; the Basic Finner's total is "an estimate,
 not validated" everywhere, and the class (Mach 1.8 to 2.15 with its other
-limits) is kept as the range the next test will cover. The route back:
+limits) is kept for the next test, which covers its Mach range at BRL's
+conditions (0014 section 10.6). The route back:
 BRL Report 934's range A (Mach 1.5 to 2.47; 0014 sections 10.5 and
 10.6), run once as registered, after its second reading and decisions,
 as the test of the corrected factor; if it passes, the class is

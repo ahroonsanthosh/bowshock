@@ -54,7 +54,7 @@ tolerance). Because the correction changes a tested term, inside the
 class too (by +0.0011 to -0.0004 in C_D at its three shots), the
 validated claim is suspended by 0008 section 6.1: every total is an
 estimate, not validated, until BRL Report 934's range A, registered as
-the test of the corrected factor, is run (section 11.7).
+the test of the corrected factor, is run and passes (section 11.7).
 
 ## 1. B3: base drag (`src/base/`)
 
@@ -854,8 +854,9 @@ and the configuration then has no hold-out.
 **Suspended since 2026-10-21 (section 11.7).** The fins-on-base factor
 was corrected after the gate (section 11), a change to a tested term, so
 by 0008 section 6.1 nothing below may be claimed as validated until BRL
-Report 934's range A tests the corrected factor; the class is kept as the
-range that test will cover. The section stands as the claim the second
+Report 934's range A tests the corrected factor; the class is kept for
+that test, which covers its Mach range at BRL's conditions (0014 section
+10.6). The section stands as the claim the second
 run opened:
 
 The gate has passed at every shot (section 4.2), so 0008 section 6.4's
@@ -1285,9 +1286,10 @@ differs beyond the combined errors. Both end the line at M 2.563 +-0.002,
 P_B -0.1318 (first, at M 2.56) and -0.1317 (second). Two of the second
 reading's values sit off the line the first reading follows, each within
 its own +-0.003 there: at M 2.15, -0.1693, on estimate B (0.0004 from its
-own reading of B; the first reading's -0.1675 is on A), and at M 2.20,
--0.1633, between the lines where they have barely separated (0.0001 from
-its own reading of A; the first reading puts the free-flight line at
+own reading of B; the first reading's -0.1675 is on the free-flight line,
+which at M 2.15 is one stroke with estimate A, the two merged from M
+2.135 to 2.19), and at M 2.20, -0.1633, just past where they part
+(0.0001 from its own reading of A; the first reading puts the free-flight line at
 -0.1621 and A at -0.1626). They are kept as read; the rows there take
 both readings, as every row does, inside the swap allowance.
 
@@ -1359,7 +1361,7 @@ Above M 2.56 the figure has no free-flight data. Decided by the owner on
 is "bounded, not measured" (recorded in 0014 section 10.7, amendment a).
 
 - **Which fins.** Only those the present factor's sources measured: four
-  unswept fins, 5% to 10% thick, at the base (TN 3819 figs. 33 to 35, TN
+  unswept fins, 5% to 10% thick, at the base (TN 3819 figs. 33 and 35, TN
   2360). Since 2026-10-21 the factor refuses fins with a swept leading or
   trailing edge, and so any tapered planform, in the measured and the
   bounded parts alike (`fin-sweep`; 0014 section 10.7, amendment d). Until
@@ -1496,16 +1498,20 @@ validated claim to show).
   combined errors (section 11.3). The residuals at the three shots go
   from -3.0%, +0.4%, -4.6% to -3.2%, +0.5%, -4.5%, the totals by -0.07%
   to +0.17%, the tolerances by 0.2 to 0.4 points; the page's defaults (at
-  the range's Reynolds number, section 5 of 0011) by +0.16%, -0.15% and
-  -0.23% at M 1.8, 2.0 and 2.15; the factor's band at M 1.80 from 1.2365
+  the range's Reynolds number, section 5 of 0011) by +0.17%, -0.15% and
+  -0.24% at M 1.8, 2.0 and 2.15 (-0.24% also at the class's corner of
+  Reynolds number 2.0e7 at M 2.15); the factor's band at M 1.80 from 1.2365
   to 1.5373 to 1.2282 to 1.5590. Small, but a change to a term the gate
   tested, inside the class, and made after its residuals were known:
   together with the owner's decision, that is why the class's claim is
   suspended. Above the class the total falls by 0.7% to 1.0% at M 2.35
   to 2.41 and by 2.6% to 3.0% at M 2.66 to 2.97 (section 11.6).
 
-- **The class is kept as the registered range** the next test will
-  cover: Mach 1.799 to 2.15 with its other limits (0011 section 3). A
+- **The class is kept for the registered test:** Mach 1.799 to 2.15
+  with its other limits (0011 section 3). That test covers its Mach range
+  at BRL's conditions, not the whole class: BRL's Reynolds numbers (about
+  0.7 times DREV's, at or below the class's floor of 1.19e7) and its sharp
+  leading edges lie outside it (0014 section 10.6). A
   case inside it is an estimate whose reason is the suspension; a case
   outside it, an estimate with every condition it fails. The class was
   first narrowed to 2.15 (2026-10-20) because the factor tested above it

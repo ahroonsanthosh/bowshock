@@ -130,7 +130,7 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(text('#implied-temperature')).toBe('288.15 K');
     const out = text('#total-output');
     expect(out).toContain('No total yet: run the solve above');
-    expect(out).toContain("inside the Basic Finner's class, kept as the range");
+    expect(out).toContain("inside the Basic Finner's class, kept for its next registered test");
     expect(out).not.toContain('C_D =');
     const form = formOf(BODY, 2, pageFields());
     expect(out).toBe(displayText(totalDragDisplay(totalDragView(form, { kind: 'pending' }))));
@@ -167,7 +167,7 @@ describe('the drag page: total drag before a nose solve', () => {
     out = await settled(before);
     expect(hidden('#altitude-field') || hidden('#implied-reynolds-field')).toBe(true);
     expect(hidden('#reynolds-field') || hidden('#temperature-field')).toBe(false);
-    expect(out).toContain("inside the Basic Finner's class, kept as the range");
+    expect(out).toContain("inside the Basic Finner's class, kept for its next registered test");
     // Back to meters, as the page opened: inside the class again, the same words.
     set('#condition-mode', 'altitude-m');
     set('#altitude', '0');
@@ -221,7 +221,7 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(hidden('#reynolds-field')).toBe(false);
     expect(pageFields().reynoldsOnLength).toBe('1.32e7');
     expect(pageFields().temperature).toBe('293.95');
-    expect(out).toContain("inside the Basic Finner's class, kept as the range");
+    expect(out).toContain("inside the Basic Finner's class, kept for its next registered test");
     expect(text('#overall-length')).toBe('10 calibers');
   });
 });

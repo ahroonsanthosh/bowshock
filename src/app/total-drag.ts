@@ -164,8 +164,9 @@ export function parseNumberList(text: string): number[] {
  * Conservative by design: what the gate did not test is outside, and so
  * is what it tested on a prediction, not a measurement (Mach 2.15 to 3.0).
  * Its validated claim is suspended (0010 section 11.7): the class is kept
- * as the range the registered test of the corrected factor will cover, and
- * a case inside it is an estimate with that reason.
+ * for the registered test of the corrected factor, BRL 934's range A, which
+ * covers its Mach range at BRL's conditions (0014 section 10.6), and a case
+ * inside it is an estimate with that reason.
  */
 export const BASIC_FINNER_CLASS = {
   /** Relative tolerance on every dimension. */
@@ -306,8 +307,9 @@ const sensitivity = `${(100 * TEMPERATURE_SENSITIVITY).toFixed(2)}%`;
 
 /** The class in words, for the page. */
 export const CLASS_DESCRIPTION =
-  "The Basic Finner's class, as this page decides it (design record 0011), kept as the range its " +
-  'next registered test will cover; its validated claim is suspended since the fins-on-base ' +
+  "The Basic Finner's class, as this page decides it (design record 0011), kept for its next " +
+  "registered test, which covers its Mach range at BRL's conditions (design record 0014, " +
+  'section 10.6); its validated claim is suspended since the fins-on-base ' +
   'factor was corrected after its test (design record 0010, section 11.7). The Basic Finner as ' +
   'transcribed, a ' +
   '20 deg cone (2.836 cal) on a cylinder to a flat base, 10.0 cal overall; four rectangular fins ' +
@@ -326,21 +328,24 @@ export const CLASS_DESCRIPTION =
  * The class passed its hold-out test (0010 section 4.2), but the
  * fins-on-base factor was corrected after it (0010 section 11), and by 0008
  * section 6.1 a term changed after a test is not validated by it. The class
- * is kept as the range the registered test of the corrected factor will
- * cover (0014 section 10.5). No total on the page is labelled validated.
+ * is kept for the registered test of the corrected factor (0014 section
+ * 10.5), which covers its Mach range at BRL's conditions, not the whole
+ * class: BRL's Reynolds numbers and sharp leading edges lie outside it (0014
+ * section 10.6). No total on the page is labelled validated.
  */
 export const CLASS_CLAIM =
   "Estimate, not validated: this case lies inside the Basic Finner's class, whose total drag " +
   'passed a hold-out test in free flight (DREV TM 9703: 11 shots at Mach 1.80 to 2.97; design ' +
   'record 0010, section 4.2), but that claim is suspended: the fins-on-base factor was corrected ' +
   'after the test (design record 0010, section 11), and a term changed after a test is not ' +
-  'validated by it (design record 0008, section 6.1). The class is kept as the range its next ' +
-  "registered test will cover, BRL Report 934's range A (Mach 1.5 to 2.47).";
+  'validated by it (design record 0008, section 6.1). The class is kept for its next registered ' +
+  "test, BRL Report 934's range A (Mach 1.5 to 2.47), which covers its Mach range, at BRL's " +
+  'conditions (design record 0014, section 10.6).';
 /** The reason given with it. */
 export const SUSPENDED_REASON =
   'the fins-on-base factor was corrected after the Basic Finner gate (design record 0010, ' +
   'section 11), so by design record 0008 section 6.1 the claim is suspended until the ' +
-  "registered test of the corrected factor, BRL Report 934's range A, is run";
+  "registered test of the corrected factor, BRL Report 934's range A, is run and passes";
 /** Outside the class. */
 export const ESTIMATE_CLAIM =
   "Estimate, not validated: this case lies outside the Basic Finner's class, the one class " +

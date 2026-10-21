@@ -126,7 +126,9 @@ after the residuals were known, not a new test.
 
 0010 section 7 opens one claim class, the Basic Finner's; since
 2026-10-21 its validated claim is suspended (0010 section 11.7), and the
-class is kept as the range its next registered test will cover. The page
+class is kept for its next registered test, BRL Report 934's range A,
+which covers its Mach range at BRL's conditions (0014 section 10.6). The
+page
 decides in code whether a case lies in it (`basicFinnerClass`): the
 Basic Finner as transcribed (`src/validation/basic-finner.ts`), at the conditions the gate
 covered. What the gate did not test is outside. Every condition is listed
@@ -226,9 +228,12 @@ fins-on-base factor was corrected after the gate (0010 section 11), a
 change to a term the gate tested, inside the class as well as above it
 (the body base by +0.0011, -0.0003 and -0.0004 in C_D at the three shots
 inside it), and by 0008 section 6.1 a term changed after a test is not
-validated by it. The class rule (section 3) is kept as the range that the
-registered test of the corrected factor, BRL Report 934's range A (Mach
-1.5 to 2.47, 0014 section 10.5), will cover; if it passes, the class is
+validated by it. The class rule (section 3) is kept for the registered
+test of the corrected factor, BRL Report 934's range A (Mach 1.5 to 2.47,
+0014 section 10.5). That test covers the class's Mach range at BRL's
+conditions, not the whole class: BRL's Reynolds numbers (about 0.7 times
+DREV's, at or below the class's floor of 1.19e7) and its sharp leading
+edges lie outside it (0014 section 10.6). If it passes, the class is
 validated over what that range supports. Until then nothing on the page
 says validated: there is no validated claim in `src/app/total-drag.ts`,
 no green status in the display (`Tone` has none), and the headline of
@@ -240,13 +245,14 @@ every total ends ": an estimate, not validated".
   0010, section 4.2), but that claim is suspended: the fins-on-base factor
   was corrected after the test (design record 0010, section 11), and a
   term changed after a test is not validated by it (design record 0008,
-  section 6.1). The class is kept as the range its next registered test
-  will cover, BRL Report 934's range A (Mach 1.5 to 2.47)." Under "Not
+  section 6.1). The class is kept for its next registered test, BRL
+  Report 934's range A (Mach 1.5 to 2.47), which covers its Mach range, at
+  BRL's conditions (design record 0014, section 10.6)." Under "Not
   validated because:", the reason: "the fins-on-base factor was corrected
   after the Basic Finner gate (design record 0010, section 11), so by
   design record 0008 section 6.1 the claim is suspended until the
   registered test of the corrected factor, BRL Report 934's range A, is
-  run"; then the gate's tolerance, as corrected ("The Basic Finner's test
+  run and passes"; then the gate's tolerance, as corrected ("The Basic Finner's test
   was wide: with the corrected fins-on-base factor its tolerance is -20.0%
   to -27.0% and +23.3% to +28.6% of the modelled total over the 11 shots
   (-24.0% to -24.6% and +23.3% to +23.5% at the three inside the
