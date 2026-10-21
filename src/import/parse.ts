@@ -28,6 +28,7 @@ import type {
   OrkRadius,
   OrkRadiusOffset,
   OrkShoulder,
+  OrkSimulation,
   OrkStage,
 } from './model';
 import { ORK_TYPE_NAMES } from './model';
@@ -534,6 +535,32 @@ function componentOf(element: XmlElement, path: string, ctx: Context): OrkCompon
   }
 }
 
+/** A simulation's launch altitude and summary result; its time series are not kept. */
+function simulationOf(s: XmlElement): OrkSimulation {
+  const text = (e: XmlElement | undefined, name: string) =>
+    e?.children.find((c) => c.name === name)?.text.trim() ?? null;
+  const conditions = s.children.find((c) => c.name === 'conditions');
+  const data = s.children.find((c) => c.name === 'flightdata');
+  const altitude = text(conditions, 'launchaltitude');
+  const attribute = (name: string) => {
+    const v = data?.attributes.get(name);
+    return v === undefined ? null : parseJavaDouble(v);
+  };
+  return {
+    name: text(s, 'name') ?? '',
+    status: s.attributes.get('status') ?? null,
+    launchAltitude: altitude === null ? null : parseJavaDouble(altitude),
+    result:
+      data === undefined
+        ? null
+        : {
+            maxMach: attribute('maxmach'),
+            maxAltitude: attribute('maxaltitude'),
+            maxVelocity: attribute('maxvelocity'),
+          },
+  };
+}
+
 /** The mirror of a parsed `<openrocket>` document. */
 export function documentOf(root: XmlElement, container: OrkContainer): OrkDocument {
   const ctx = new Context();
@@ -572,11 +599,17 @@ export function documentOf(root: XmlElement, container: OrkContainer): OrkDocume
       else unattached.push(component);
     }
   }
+  const simulations = root.children
+    .filter((c) => c.name === 'simulations')
+    .slice(0, 1)
+    .flatMap((s) => s.children.filter((c) => c.name === 'simulation'))
+    .map((s) => simulationOf(s));
   return {
     container,
     formatVersion,
     creator,
     rocket: { name, designer, stages, unattached },
+    simulations,
     warnings: ctx.warnings,
   };
 }

@@ -1,25 +1,25 @@
 /**
  * OpenRocket import: read a .ork file into the typed mirror of its rocket,
- * and map that onto the design the drag model takes, every component
- * represented exactly, reported as not represented, or ignored, each with
- * its reason. A library, no interface.
+ * and map that into src/rocket's RocketDesign, every component held in
+ * the design, held with a note for what the design has no place for, or
+ * ignored with its reason. A library, no interface.
  *
  * docs/design/0018-openrocket-import.md.
  */
 
-import { mapRocket, type OrkMapping } from './mapping';
+import { mapOrk, type MapOptions, type OrkMapping } from './mapping';
 import type { OrkDocument } from './model';
 import { readOrk, type ReadOptions } from './read';
 
 export { DEFAULT_MAX_INFLATED_BYTES } from './container';
-export type { DesignFinSet, FlatPlateSection, ImportedDesign } from './design';
 export { OrkReadError, type OrkReadErrorKind } from './errors';
 export {
-  mapRocket,
-  ROUGHNESS_NOTE,
+  DEFAULT_FLIGHT,
+  mapOrk,
   type ComponentRef,
   type FinishNote,
   type IgnoredNote,
+  type MapOptions,
   type NotRepresentedNote,
   type OrkMapping,
   type RepresentedNote,
@@ -32,8 +32,14 @@ export interface OrkImport {
   readonly mapping: OrkMapping;
 }
 
-/** Read an OpenRocket file and map its rocket. Throws OrkReadError if the file cannot be read. */
-export async function importOrk(bytes: Uint8Array, options: ReadOptions = {}): Promise<OrkImport> {
+/**
+ * Read an OpenRocket file and map its rocket into the design. Throws
+ * OrkReadError, with a plain message, if the file cannot be read.
+ */
+export async function importOrk(
+  bytes: Uint8Array,
+  options: ReadOptions & MapOptions,
+): Promise<OrkImport> {
   const document = await readOrk(bytes, options);
-  return { document, mapping: mapRocket(document.rocket) };
+  return { document, mapping: mapOrk(document, options) };
 }

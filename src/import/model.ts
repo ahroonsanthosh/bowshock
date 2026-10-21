@@ -29,8 +29,25 @@ export interface OrkDocument {
   /** The `<openrocket creator>` attribute (e.g. "OpenRocket 24.12"). */
   readonly creator: string | null;
   readonly rocket: OrkRocket;
+  /** The simulations' settings and summary results (their time series are not kept). */
+  readonly simulations: readonly OrkSimulation[];
   /** What the reader met that it could not take as written, in plain words. */
   readonly warnings: readonly string[];
+}
+
+/** One of the file's simulations: its launch site and the summary of its last run. */
+export interface OrkSimulation {
+  readonly name: string;
+  /** OpenRocket's status: 'uptodate', 'loaded', 'outdated', 'cantrun' or 'notsimulated'. */
+  readonly status: string | null;
+  /** The launch site's altitude above sea level, m (`<conditions><launchaltitude>`). */
+  readonly launchAltitude: OrkNumber;
+  /** The run's summary (`<flightdata>` attributes); null if the file holds no result. */
+  readonly result: {
+    readonly maxMach: OrkNumber;
+    readonly maxAltitude: OrkNumber;
+    readonly maxVelocity: OrkNumber;
+  } | null;
 }
 
 export interface OrkRocket {

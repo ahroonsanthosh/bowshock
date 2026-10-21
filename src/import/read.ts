@@ -15,8 +15,11 @@ import { parseXml, XmlError } from './xml';
 
 export type ReadOptions = UnpackOptions;
 
-/** Elements whose content is not kept: results and settings, not the design. */
-const NOT_KEPT = new Set(['simulations', 'photostudio', 'docprefs', 'datatypes']);
+/**
+ * Elements whose content is not kept: the simulations' time series (the
+ * bulk of a file) and display settings, not the design.
+ */
+const NOT_KEPT = new Set(['databranch', 'photostudio', 'docprefs', 'datatypes']);
 
 /** The encoding of an XML document from its byte-order mark or declaration (UTF-8 by default). */
 function encodingOf(bytes: Uint8Array): { label: string; skip: number } {
