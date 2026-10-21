@@ -69,21 +69,32 @@ function layerParameter(c: Case): number {
  */
 interface Variant {
   readonly name: string;
-  /** Serve a rounded leading edge below M_n 1.0 ("bounded, not measured" by a recorded decision). */
-  readonly roundedBelowSonic: boolean;
-  /** Serve swept blunt trailing edges by the sweep analogy measured on R&M 3348's table 3. */
+  /**
+   * The highest normal Mach number below 1.0 at which a rounded leading edge is served "bounded,
+   * not measured" (0019 section 3.2); undefined for none.
+   */
+  readonly roundedBoundedTo?: number;
+  /** Serve swept blunt trailing edges by R&M 3348's swept wedge wings (0014 10.7 (h), item 3). */
   readonly sweptTe: boolean;
   /** Largest bevel half-angle served, degrees (Bryson's thin wedges reach 10 deg). */
   readonly bevelMax: number;
-  /** Largest normal Mach number of a bevel served on measured data (Bryson's subsonic set ends near 0.9). */
+  /** Largest normal Mach number of a bevel served (measured to 0.9; bounded to 1.2, 0019 section 3.3). */
   readonly bevelMnMax: number;
 }
 
 const VARIANTS: readonly Variant[] = [
-  { name: 'A: on data', roundedBelowSonic: false, sweptTe: false, bevelMax: 10, bevelMnMax: 0.9 },
-  { name: 'B: A with swept trailing edges (R&M 3348)', roundedBelowSonic: false, sweptTe: true, bevelMax: 10, bevelMnMax: 0.9 },
-  { name: 'C: B with rounded edges below M_n 1.0 bounded', roundedBelowSonic: true, sweptTe: true, bevelMax: 10, bevelMnMax: 0.9 },
-  { name: 'D: C with bevels to 15 deg and M_n to 1.2 (theory-bridged)', roundedBelowSonic: true, sweptTe: true, bevelMax: 15, bevelMnMax: 1.2 },
+  { name: 'A: on data', sweptTe: false, bevelMax: 10, bevelMnMax: 0.9 },
+  { name: 'B: A with swept trailing edges (R&M 3348)', sweptTe: true, bevelMax: 10, bevelMnMax: 0.9 },
+  { name: 'C: B with rounded edges below M_n 1.0 bounded', roundedBoundedTo: 1.0, sweptTe: true, bevelMax: 10, bevelMnMax: 0.9 },
+  { name: 'D: C with bevels to 15 deg and M_n to 1.2 (theory-bridged)', roundedBoundedTo: 1.0, sweptTe: true, bevelMax: 15, bevelMnMax: 1.2 },
+  {
+    name: 'E: as decided (rounded edges bounded to M_n 0.9; bevels to 10 deg, bounded at M_n 0.9 to 1.2; swept trailing edges)',
+    roundedBoundedTo: 0.9,
+    sweptTe: true,
+    bevelMax: 10,
+    bevelMnMax: 1.2,
+  },
+  { name: 'F: E with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)', roundedBoundedTo: 0.9, sweptTe: true, bevelMax: 15, bevelMnMax: 1.2 },
 ];
 
 function finReasons(c: Case, v: Variant): string[] {
@@ -94,7 +105,9 @@ function finReasons(c: Case, v: Variant): string[] {
   if (r.section === 'rounded-both') out.push('rounded trailing edge (W11)');
   if (roundedLe(r)) {
     if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('rounded edge swept beyond 60 deg');
-    else if (mn < 1.0 && !v.roundedBelowSonic) out.push('rounded edge below M_n 1.0');
+    else if (mn < 1.0 && !(v.roundedBoundedTo !== undefined && mn <= v.roundedBoundedTo)) {
+      out.push(v.roundedBoundedTo === 0.9 && mn > 0.9 ? 'rounded edge at M_n 0.9 to 1.0' : 'rounded edge below M_n 1.0');
+    }
     const reN = c.rePerMetre * r.thickness * Math.cos(r.leadingEdgeSweepDeg * DEG);
     if (!(reN >= 6.7e3 && reN <= 1e6)) out.push('rounded edge Re_D outside 6.7e3 to 1e6');
   }

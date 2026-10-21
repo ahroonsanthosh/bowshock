@@ -1,8 +1,11 @@
 # 0019: Fin drag near Mach 1 (the fin terms of 0014 W7)
 
-- **Status:** Draft plan. Research and planning only: nothing in `src/`
-  changes with this record. One research script is added,
-  `docs/research/refusals/w7-fins.test.ts`, with its output
+- **Status:** Draft plan, with the coordinator's decisions of 2026-10-21
+  recorded (section 5; 0014 section 10.7, amendments (f) to (h)). Of the
+  code, only the guard is done (fin friction and the wave drag of sharp
+  sections refused below Mach 1.5, amendment (f), on the main line; the
+  band above Mach 2.96 labelled, amendment (g)). One research script is
+  added, `docs/research/refusals/w7-fins.test.ts`, with its output
   `docs/research/refusals/out/w7-plan.out` (the population's parameters
   near Mach 1, the present code's behaviour there, and the coverage of
   each variant of this plan). No figure was read for a band: every value
@@ -47,8 +50,9 @@ opened at its figures) for a fin increment near Mach 1 that would set the
 fins' own-drag band; those stay refused unless the data serve or the
 owner decides otherwise (section 5). If the fins' own-drag band is found,
 the fin terms of 14.5% of the population's cases at Mach 1.0 to 1.2 would
-be served on data (14.9% with swept trailing edges by decision; 38.0% with
-the bounded rounded edge of section 3.2); the rest stay refused for the
+be served on data, and 35.2% with the coordinator's decisions (rounded
+edges bounded to M_n 0.9, bevels bounded across Bryson's gap, swept
+trailing edges on R&M 3348; section 4); the rest stay refused for the
 square-cut leading edges and rounded trailing edges of 0014 W11 (30.8%),
 the rear bevels of hexagonal sections (20.6%, no source) and bevels
 steeper than the data (21.9%).
@@ -193,15 +197,23 @@ before it is used (section 5).
 
 ### 2.3 Found, not reached or not yet opened
 
-- **Knechtel**, NASA (about 1959), pressure distributions over wedge (4.4
-  deg, parallel afterbody) and circular-arc sections at transonic speeds
-  with perforated-wall interference (cited by R&M 3348 as its ref. 19):
-  would fill Bryson's gap at M 0.9 to 1.2 with data. Not found on NTRS by
-  keyword; HathiTrust refused.
-- **AEDC**, Smith and German (1971) and Whoric (1972), aerodynamic
-  characteristics of low-aspect-ratio fins at Mach 0.8 to 1.3: fin-balance
-  data near Mach 1 that may hold fin axial force. DTIC and HathiTrust
-  refused.
+- **Knechtel**, NASA (about 1959), "Experimental investigation at
+  transonic speeds of pressure distributions over wedge and circular-arc
+  airfoil sections and evaluation of perforated-wall interference" (a 4.4
+  deg wedge with a parallel afterbody, and circular-arc sections, cited by
+  R&M 3348 as its ref. 19). What it would add: wedge-forebody pressures in
+  Bryson's gap, M 0.9 to 1.2, at higher Reynolds numbers, so that F3's
+  bounded range could be measured. Not found on NTRS by keyword;
+  HathiTrust refused (HTTP 403).
+- **AEDC**, Smith and German (1971), "Aerodynamic characteristics of low
+  aspect ratio fins at Mach numbers from 0.80 to 1.30", and Whoric (1972),
+  "... several low aspect ratio stabilizer fins at Mach numbers from 0.8 to
+  1.3". What they would add: fin-balance loads near Mach 1; if they hold
+  the fins' axial force at zero incidence, a fins' own-drag band near Mach
+  1 (F1), and if any fin is a plate with rounded or square edges, a
+  measurement for F2 or W11. DTIC and HathiTrust refused (HTTP 403).
+- These refusals were not worked around (no mirror, no other route); the
+  sources stay listed with what they would add.
 - **Howell and Braslow**, NACA RM L55H09 (NTRS 20050019382): the
   pressure-drag increment of the stabilizing fins of a fin-stabilized
   parabolic body, fins on minus fins off in the Langley transonic
@@ -298,51 +310,126 @@ well, and so is the coordinator's decision (section 5, item 1).
 
 ### 3.2 F2: rounded leading edges below M_n 1.0 (0014 W4(d))
 
-**Measured only: stays refused.** No source opened by 0016 or here
-measures a semicircular nose followed by flat faces at a subsonic normal
-Mach number. Below M_n 1.0 the normal flow is subsonic, the faces and the
-base are felt at the nose, and the cylinder's separated wake (TN 2960,
-CR-149372 below M 1.0) is not a plate's flow (0016 section 11). The
-bluntness series found (Graham's blunted biconvex aerofoils, Wilby's six
-round leading edges, Pepper's blunter 65A009 nose, Kyle and Feryn's slab
-wing) are airfoil noses or faired extensions; they show blunting changes
-the transonic pressure drag little, which is a reason to expect a small
-term, not a measurement of it.
+**Measured: nothing.** No source opened by 0016 or here measures a
+semicircular nose followed by flat faces at a subsonic normal Mach
+number. Below M_n 1.0 the normal flow is subsonic and what lies behind the
+nose is felt at it, so the cylinder's front side (TN 2960, CR-149372 below
+M 1.0), which has a separated wake behind it, is not a plate's (0016
+section 11). The bluntness series found (Graham's blunted biconvex
+aerofoils, Wilby's round leading edges, Pepper's blunter 65A009 nose, Kyle
+and Feryn's slab wing) are airfoil noses or faired extensions.
 
-**Bounded, not measured: an option for a recorded decision** (0014
-section 10.2 allows it "anywhere else only by a recorded decision"):
+**Decided (0014 section 10.7 (h), item 1): served "bounded, not
+measured"** under 0014 section 10.2, its two orderings written here,
+reviewed independently before anything is served.
 
-- _Lower bound: no drag on the nose._ The argument: in subcritical
-  inviscid flow the forebody of a semi-infinite two-dimensional body
-  carries no drag (the pressure far behind returns to the free stream's
-  along faces parallel to it); above the critical normal Mach number the
-  shocks of the local supersonic region add wave drag, which is positive;
-  the separation that a laminar layer may form behind the shoulder
-  reduces the suction there, which also adds drag. What is not shown: that
-  the base's upstream influence through the subsonic flow cannot lower
-  the nose's pressures below the free stream's by more than these add.
-  On the population's plates the base lies 20 to 70 thicknesses behind
-  the nose, but no measurement shows the effect is small. So the ordering
-  is argued, not shown, and 10.2 requires it shown: this is for the owner
-  to accept or not.
-- _Upper bound: the term at M_n 1.0, at its band's high end._ CR-149372's
-  node at M_n 1.0 (kappa 0.764, range 0.751 to 0.772), with the sweep
-  allowance's high end, as a coefficient on the normal dynamic pressure
-  at the case's own M_n. The ordering: every forebody measured rises in
-  drag coefficient through M 1 (Bryson's wedge forebodies, fig. 14, and
-  the front half of his 12% biconvex airfoil, whose "fore drag coefficient
-  has a maximum after M = 1", fig. 23, PDF p. 32; the cylinder's front
-  side, 0.10 to 0.41 of modified Newtonian at M 0.05 to 0.70 on both
-  readings of TN 2960, 0.764 at M 1.0 on CR-149372). Bryson's conclusion
-  that the drag coefficient peaks just below M 1 "for all bodies in steady
-  flight" (PDF p. 32) is of whole bodies; on the same airfoil the rear
-  part peaks before M 1 and the front after, so it does not order a
-  forebody. That a semicircular nose on flat faces behaves as these
-  forebodies do is itself the analogy, not shown.
-- _Served:_ the midpoint, the band the whole gap, labelled "bounded, not
-  measured: between no drag on the nose (an inviscid argument) and the
-  term at M_n 1.0 (CR-149372, TN 2960)". On the hobby example at Mach 1.1
-  (M_n 0.82): 0.070 +- 0.070 in C_D (section 1.2).
+**The setting.** In the plane normal to the edge (the independence
+principle, as for W4(c)), a plate of thickness t with a semicircular nose
+of radius t/2, faces parallel to the stream for a chord c (c/t 23 to 71 at
+the population's roots, 8 to 40 at their tips), then a trailing edge. Only
+the nose's surface, from the stagnation line to the shoulders at 90 deg,
+carries a force along the stream; the faces carry none. The term is the
+nose's pressure drag per unit span, C = D / (q_n t), on the normal dynamic
+pressure q_n and the nose's frontal height t.
+
+**The upper bound: C(M_n) cannot exceed C(1.0), the term at M_n 1.0 at
+its band's high end.** C(1.0) is CR-149372's node (kappa 0.764, range
+0.751 to 0.772) times modified Newtonian, (2/3) Cp_pitot(1.0) = 0.8504,
+times the sweep allowance's high end (1.22 from 14.3 deg of sweep, 0016
+section 19): 0.6565 unswept, 0.801 swept. At M_n 1.0 and above the plate's
+nose sees the cylinder's flow (0016 section 11), so C(1.0) is a plate's
+value. The ordering:
+
+- _(U1) Below the critical normal Mach number C is near zero._ The plate's
+  forebody alone, in shock-free inviscid flow, carries no drag (the
+  lower bound's argument, (L1)), against C(1.0) = 0.66.
+- _(U2) Above it, C rises with M_n through 1._ The nose then carries the
+  wave drag of the local supersonic region at the shoulder, which grows
+  as M_n rises. Every forebody followed by a straight section that has
+  been measured through Mach 1 rises in drag coefficient to a maximum
+  past M = 1: Bryson's three thin wedges (TR 1094 figs. 13 and 14: the
+  subsonic points rise toward the supersonic plateau and lie below it),
+  and the fore part of his 12% biconvex airfoil ("the fore drag
+  coefficient has a maximum after M = 1", fig. 23, PDF p. 32). Bryson's
+  models are of the plate's own kind: noses followed by straight
+  afterbodies. The stagnation pressure, which acts over the front of the
+  nose where most of its drag lies, rises with M_n too:
+  Cp_0 = [(1 + 0.2 M_n^2)^3.5 - 1] / (0.7 M_n^2) goes from 1 to 1.2756.
+- _(U3) A separated shoulder does not reach C(1.0)._ A laminar bubble at
+  the shoulder (Re_D 1e4 to 1e5) loses suction over the nose's aft part,
+  raising C. The largest effect is bounded by the cylinder's, whose
+  separation is far larger and whose wake displaces the approaching flow:
+  TN 2960's front sides are 0.10 to 0.41 of modified Newtonian at M 0.05
+  to 0.70 (both readings), C = 0.067 to 0.31, all below 0.66. CR-149372's
+  fig. 8a (subsonic front sides, named as a check by 0014 10.7 (h)) is
+  read to show how the cylinder approaches C(1.0) between M 0.7 and 1.0;
+  if any of it exceeds the bound, the range where it does is refused.
+- _(U4) What is not shown._ That a semicircle on flat faces rises
+  monotonically as these forebodies do: it is the closest analogy the
+  data hold, not a measurement. The sweep allowance at subsonic M_n is
+  unmeasured as it is at M_n 1.0 to 1.95 (0016 section 16); the bound
+  carries its high end.
+
+**The lower bound: C(M_n) cannot be below C_L = -(t / c) / (pi beta_n),
+beta_n = (1 - M_n^2)^(1/2), at M_n up to 0.9.** The coordinator's
+decision was "no drag on the nose"; writing the ordering out found that
+zero can be crossed by a small amount, so the bound is widened to what the
+argument supports (0014 10.7 (h), item 1):
+
+- _(L1) The plate alone, shock free: C = 0._ A semi-infinite body whose
+  faces become parallel to the stream carries no drag in steady
+  shock-free inviscid flow: a momentum balance on a large contour that
+  cuts the body far downstream, where the flow is uniform along the faces,
+  leaves no force (the half-body theorem; its far field is a source of
+  strength U t). Its nose, the only surface with a component along the
+  stream, carries none.
+- _(L2) With shocks: C > 0._ The drag of that body is then the entropy
+  flux through its shocks, positive by the second law, and still carried
+  by the nose alone.
+- _(L3) Viscosity raises C._ The faces' layers thicken downstream, a body
+  growing behind the nose; its induced velocity at the nose opposes the
+  stream and raises the nose's pressure. A bubble at the shoulder lowers
+  the suction there, on forward-facing surface. Both add drag.
+- _(L4) The trailing edge can lower C below zero._ Behind the trailing
+  edge the plate's displacement closes in its wake (the base, its dead
+  air, and a waist about two base heights downstream; Nash, R&M 3323
+  pp. 7 to 8). At most it is a sink of strength U t at least a chord c behind the
+  nose. In linearized subsonic flow it induces at the nose a velocity U t
+  / (2 pi beta_n x) along the stream, lowering the pressure there by at
+  most t / (pi beta_n c) of q_n; on the frontal height t, C is lowered by
+  at most (t / c) / (pi beta_n). The wake does not close its displacement
+  entirely (its momentum deficit remains), and (L3) acts the other way, so
+  this overstates the effect. On the population's roots (c/t 23 to 71) it
+  is 0.010 to 0.032 at M_n 0.9 and 0.007 to 0.023 at 0.8; at the tips of
+  tapered plates (c/t down to 8) up to 0.09. It is taken station by station
+  along the span with the local chord.
+- _(L5) Where it fails._ As M_n approaches 1 the linearized estimate
+  diverges (beta_n to 0) and the upstream influence is transonic. So the
+  bound is served to M_n 0.9; between 0.9 and 1.0 the edge stays refused
+  ("no bound below M_n 1.0 is shown where the linearized upstream
+  influence fails"), 6.3% of the cases at Mach 1.0 to 1.2.
+- _(L6) Data that check the sign._ The measured bluntness increments at
+  subsonic normal Mach numbers are all positive or within their errors of
+  zero: Pepper's blunter nose on a 45 deg 65A009 wing, +0.002 at Mach 1.05
+  to 1.2 (M_n about 0.74 to 0.85; abstract); Sandahl and Stoney's 60 deg
+  delta, no measurable effect (+-0.0007, M_n to 0.95); Kyle and Feryn's
+  67 deg slab wing, bluntness raising the minimum drag at M_n 0.59 to 0.98.
+  Graham's 2D blunted aerofoils show small and sometimes favourable
+  changes, but a closed aerofoil's rear changes with its nose ((L4) at its
+  closest), so they check nothing here. These are increments of airfoil
+  noses: checks of the sign, not of the size. Kyle and Feryn's increments
+  are to be read twice and set against the bounds computed for their nose
+  as a check.
+
+**Served:** the midpoint of [C_L, C(1.0)], the band the whole gap, on q_n
+t times the span and the count, at M_n up to 0.9 and Re_D 6.7e3 to 1e6 on
+the normal component (as W4(e)), labelled "bounded, not measured: between
+no drag on the nose less the trailing edge's upstream influence (an
+inviscid argument, 0019 section 3.2) and the term at M_n 1.0 at its band's
+high end (CR-149372, TN 2960)", with the gap in C_D beside it. On the
+hobby example at Mach 1.1 (M_n 0.82, c/t 40 at the root and 16 at the
+tip): C from -0.021 (integrated along the span) to 0.801, so 0.068 +-
+0.071 in C_D.
 
 **What would replace it:** pressure distributions or drag on a flat plate
 with a semicircular leading edge (r = t/2), two-dimensional or swept, at
@@ -362,28 +449,52 @@ dimensions.
   flow over an infinite swept wedge), per unit span times the span; the
   faces behind it carry none. Near Mach 1 it replaces the section product
   for the front bevel; at Mach 1.5 and above the present product stays.
-- _Data and band._ Bryson's three thin wedges (4.53, 7.56 and 10.00 deg),
-  interpolated in the transonic similarity variables of his fig. 13
-  between the measured wedges; the band, the scatter of both readings'
-  points about the interpolant, with the reading errors and the
-  systematic variation with wedge angle that Bryson notes. The sweep
-  allowance: R&M 3348's forebody chordwise force against M cos(sweep)
-  (fig. 31b, sweep 0 to 60 deg), measured over the unswept curve. The
-  Reynolds number: Bryson's 6e4 (laminar) against R&M 3348 (1.3e6 to
-  3.4e6) and Johnston at the same similarity parameter; the difference
-  sets an allowance.
-- _Domain._ Measured at M_n about 0.6 to 0.9 (75.7% of the population's
-  bevels at Mach 1.0 to 1.2 lie at 0.9 or below; below about 0.6 Cole's
-  subsonic theory, where the term is small, to be shown on the data's low
-  end) and from about 1.2 to 1.47. Between 0.9 and 1.2 Bryson has no points: bridged only by a
-  recorded decision, by transonic small-disturbance theory (Vincenti and
-  Wagoner, Guderley and Yoshihara, Cole), which his fig. 14 shows meeting
-  the data on both sides, labelled "interpolated across an unmeasured Mach
-  range by transonic small-disturbance theory" (as 0014 W4(e) bridged 1.2
-  to 1.49), unless Knechtel's tests (section 2.3) are reached. Half-angles
-  to 10 deg measured (26.1% of the population's bevels); 10 to 15 deg only
-  if the 26.57 deg wedge shows the similarity holding to that angle (one
-  supersonic Mach number, 1.44), else refused.
+- _Measured: the nominal and its band._ Bryson's three thin wedges (4.53,
+  7.56 and 10.00 deg), interpolated in the transonic similarity variables
+  of his fig. 13 between the measured wedges, where his points lie: at
+  M_n about 0.6 to 0.9 (75.7% of the population's bevels at Mach 1.0 to
+  1.2 lie at 0.9 or below) and about 1.2 to 1.47. The band: the scatter
+  of both readings' points about the interpolant, with the reading errors
+  and the systematic variation with wedge angle that Bryson notes. The
+  sweep allowance: R&M 3348's forebody chordwise force against M
+  cos(sweep) (fig. 31b, sweep 0 to 60 deg), measured over the unswept
+  curve. The Reynolds number: Bryson's 6e4 (laminar) against R&M 3348
+  (1.3e6 to 3.4e6) and Johnston (1.2e6 to 1.4e6) at the same similarity
+  parameter; the difference sets an allowance.
+- _Decided (0014 10.7 (h), item 2): Bryson's gap, bounded, not
+  measured._ Between his last subsonic point (reduced Mach number xi_s,
+  about -0.5) and his first supersonic one (xi_p, about 0.9) there are no
+  points. A case there is served between two measured values, never on
+  theory:
+  - lower bound: the reduced drag measured at xi_s, the low end of both
+    readings with their errors. The ordering: a forebody's drag rises with
+    the Mach number through M = 1 (all three of Bryson's comparisons:
+    Vincenti and Wagoner's, Cole's and Guderley and Yoshihara's theories;
+    the measured subsonic points rise toward the supersonic plateau, TR
+    1094 figs. 13 and 14; and section 3.2's (U2) for the forebodies
+    measured through Mach 1);
+  - upper bound: the highest reduced drag measured at supersonic speeds
+    (the plateau's high end, both readings, with their errors). The
+    ordering: the forebody's maximum lies at or after xi_p, so nothing in
+    the gap exceeds the plateau. The data show the plateau falling only
+    above about xi 1.3; that the maximum is not inside the gap rests on the
+    theories, which put it near shock attachment, and on fig. 13's
+    supersonic points beginning at the plateau's level. This is the
+    argument the review must accept; if the theories place a maximum in
+    the gap above the measured plateau, the upper bound is raised to it
+    or the gap refused.
+  - served: the midpoint, the band the whole gap, labelled "bounded, not
+    measured: between Bryson's measured wedge forebodies either side of
+    Mach 1 (TR 1094), interpolated across no data".
+- _Low normal Mach numbers._ Below Bryson's lowest point (about M_n 0.6,
+  5% of the population's bevels), bounded the same way between section
+  3.2's lower bound (no drag less the trailing edge's upstream influence,
+  (L1) to (L4), which hold for any forebody of a semi-infinite plate) and
+  the lowest measured point, the drag rising with the Mach number.
+- _Bevels of 10 to 15 deg_ (73.9% of the population's bevels) only if TR
+  1094 figs. 15 and 16, the 26.57 deg wedge at Mach 1.44, fall on the thin
+  wedges' curve in the similarity variables within the band; then the
+  interpolation in angle reaches 15 deg, labelled. Otherwise refused.
 - _Stays refused._ Bevels steeper than the data allow; sweeps beyond 60
   deg; hexagons' rear bevels (F6).
 
@@ -413,12 +524,17 @@ The largest fin term near Mach 1 (section 1.2), and the best covered.
   data's (TR 1109 fig. 29(a)'s factor K is measured from Mach 1.5 only),
   the edge is served only if fig. 4 and Cleary and Stevens (small h/c,
   transonic) cover it; else refused.
-- _Sweep._ R&M 3348's base pressures collapse "to a considerable degree"
-  on M cos(sweep) (fig. 30b, with Goin's 45 deg points): the scatter about
-  the unswept curve, both readings, would set a sweep allowance for swept
-  trailing edges at Mach 1.0 to 1.2 (15.0% of the population's blunt
-  edges). This reverses, for that range only, the coordinator's ruling of
-  0016 section 6 (W3(c)), so it is a decision (section 5, item 4).
+- _Sweep, decided (0014 10.7 (h), item 3)._ R&M 3348's base pressures
+  collapse "to a considerable degree" on M cos(sweep) (fig. 30b, with
+  Goin's 45 deg points). Swept trailing edges at Mach 1.0 to 1.2 (15.0% of
+  the population's blunt edges) are served if R&M 3348's table 3 and figs.
+  30a and 30b, read twice, set the band directly: each swept point over
+  the unswept curve at its own M cos(sweep), the envelope the allowance,
+  the edge's nominal the unswept curve at M cos(sweep). This changes 0016
+  section 6's ruling (W3(c)) for Mach 1.0 to 1.2 only. It is the edge's own
+  base drag: W1's fins-on-base factor, which refuses swept trailing edges
+  at the base because nothing measures them there, is a separate term,
+  and R&M 3348 says nothing about it.
 - _Fins at the base._ The edge in the base plane stays "an analogy, not a
   measurement" (its wake meets the body's base flow); 72.2% of the
   population's blunt edges are there.
@@ -447,6 +563,15 @@ BRL 934's fins, whose range C, Mach 0.98 to 1.2, needs this term).
   Johnston's 20% single wedges, and Bryson's forebodies for the face (with
   the free stream supersonic the face sees only the sonic shoulder ahead
   of the base).
+- _The thinnest sections._ TR 1253 leaves its 2% wings out of its
+  correlation, "because of the uncertainty of reading accurately the
+  rather small transonic drag rise", and shows them separately "to
+  illustrate the pronounced effect of the boundary layer for these
+  thinnest profiles" (PDF text, figs. 6 and 7). The population's double
+  wedges are 1.5% to 4.3% thick (median 2.4%): below 4% the band rests on
+  the 2% wings of TN 3529 and RM L54B25 and on similarity from thicker
+  ones, and is widened by what the 2% wings' boundary-layer effect shows,
+  or refused where it cannot be read.
 - _Domain._ Above Mach 1.0 (linear theory is singular at 1.0 itself; the
   quadrature near beta = 0 to be measured first), to Mach 1.10 on the Ames
   wings and 1.18 on the Langley wings; from 1.18 to 1.2 bridged to the
@@ -472,51 +597,52 @@ BRL 934's fins, whose range C, Mach 0.98 to 1.2, needs this term).
 `w7-plan.out`, the fin terms only, at Mach 1.0 to 1.2 (a case may be
 refused for several reasons; F1 taken as served once its band is read):
 
-| Variant                                                           | Fin terms served | Main refusals left                                                                          |
-| ----------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------- |
-| A: on data (bevels to 10 deg and M_n 0.9; unswept trailing edges) | 14.5%            | rounded edges below M_n 1.0 37.0%; W11 30.8%; bevels beyond 10 deg 21.9%; rear bevels 20.6% |
-| B: A with swept trailing edges (R&M 3348)                         | 14.9%            | as A, less the swept trailing edges                                                         |
-| C: B with rounded edges below M_n 1.0 bounded                     | 38.0%            | W11 30.8%; bevels beyond 10 deg 21.9%; rear bevels 20.6%                                    |
-| D: C with bevels to 15 deg and M_n to 1.2, theory-bridged         | 45.3%            | rear bevels 20.6%; W11 30.8%                                                                |
+| Variant                                                                                                                 | Fin terms served | Main refusals left                                                                             |
+| ----------------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
+| A: on data (bevels to 10 deg and M_n 0.9; unswept trailing edges)                                                       | 14.5%            | rounded edges below M_n 1.0 37.0%; W11 30.8%; bevels beyond 10 deg 21.9%; rear bevels 20.6%    |
+| B: A with swept trailing edges (R&M 3348)                                                                               | 14.9%            | as A, less the swept trailing edges                                                            |
+| C: B with rounded edges below M_n 1.0 bounded                                                                           | 38.0%            | W11 30.8%; bevels beyond 10 deg 21.9%; rear bevels 20.6%                                       |
+| D: C with bevels to 15 deg and M_n to 1.2, theory-bridged                                                               | 45.3%            | rear bevels 20.6%; W11 30.8%                                                                   |
+| **E: as decided** (rounded edges bounded to M_n 0.9; bevels to 10 deg, bounded at M_n 0.9 to 1.2; swept trailing edges) | **35.2%**        | bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3% |
+| F: E with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                             | 41.5%            | rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3%                             |
 
-These are ceilings on the totals at Mach 1.0 to 1.2: a total there also
-needs the nose (0013), the base below Mach 1.5 (W2), the fins at the base
-below Mach 1.5 (W1, which must serve flat plates there, since 0016
-section 20 refuses them on the present factor; 72% of the population's
-fins end at the base), and the nose shapes and tips (W5, W6, W8). Totals
-at Mach 1.0 to 1.2 are 0% today and stay 0% until those land; the
-population run with all of them is made in step 2 (section 6), before and
-after each term, as 0016 did.
+Variant D's theory bridge is not done (0014 10.7 (h), item 2): it is
+kept to show what the theory alone would add. These are ceilings on the
+totals at Mach 1.0 to 1.2: a total there also needs the nose (0013), the
+base below Mach 1.5 (W2), the fins at the base below Mach 1.5 (W1, which
+must serve flat plates there, since 0016 section 20 refuses them on the
+present factor; 72% of the population's fins end at the base), and the
+nose shapes and tips (W5, W6, W8). Totals at Mach 1.0 to 1.2 are 0% today
+and stay 0% until those land; the population run with all of them is made
+in step 2 (section 6), before and after each term, as 0016 did.
 
-Without F1 every fin term near Mach 1 stays refused, whatever the rest.
-Without F2, the PARD standard body's range B (0014 section 10.5; its fins
-are rounded-edge plates swept 45 deg, M_n 0.71 to 0.85 at Mach 1.0 to
-1.2) cannot be run: it would be refused, not tested.
+Without F1 every fin term below Mach 1.5 stays refused, whatever the rest
+(the guard, 0014 10.7 (f), now on the main line). With F2 the PARD
+standard body's range B (0014 section 10.5; its fins are rounded-edge
+plates swept 45 deg, M_n 0.71 to 0.85 at Mach 1.0 to 1.2) can be run,
+with its leading edges bounded, not measured.
 
-## 5. Decisions asked for before any method work
+## 5. Decisions (2026-10-21), and where they are recorded
 
-1. **The guard below Mach 1.5 (F1).** Refuse fin friction and fin wave
-   drag below Mach 1.5 with the reason of section 3.1, until a fin
-   increment sets the band; it changes no served total today and gates
-   W2's totals at Mach 1.2 to 1.5.
-2. **The bounded rounded edge below M_n 1.0 (F2).** Accept, or not, the
-   ordering argument of section 3.2 under 0014 section 10.2; without it
-   the term stays refused (variants A and B), with it 38.0% (variant C).
-3. **The bevel's theory bridge at M_n 0.9 to 1.2 (F3)**, as 0014 W4(e)'s
-   bridge was decided, and bevels of 10 to 15 deg if the 26.57 deg wedge
-   supports the similarity.
-4. **Swept trailing edges at Mach 1.0 to 1.2 (F4)** on R&M 3348, reversing
-   0016 section 6's ruling for that range only.
-5. **Registration.** An amendment to 0014 section 10.1's band-setting
-   table (dated, in 10.7), naming before use: TR 1094 figs. 1, 13 and 14;
-   R&M 3348 table 3 and figs. 30a, 30b, 31a, 31b and 33 to 36; R&M 3427
-   figs. 9, 10 and 13; R&M 3323 figs. 4 and 5 (after their sources are
-   traced); Johnston's force and base-pressure figures (named when read);
-   RM L8B13's wedge figures; TN 3306's drag figures; TR 1253's, TN 3529's
-   and RM L54B25's zero-lift drag figures (named when read); RM L55H09's
-   fin increments if its fins and base qualify, its other figures not
-   used. And, as "not used": TN 3548 figs. 7 to 10, and PARD wing
-   increments formed on the standard body.
+1. **The guard below Mach 1.5 (F1): done.** Fin friction and the wave
+   drag of sharp sections refused below Mach 1.5 (0014 10.7 (f), commit
+   7411c70, on the main line); above Mach 2.96 the band carried and
+   labelled (0014 10.7 (g)). Next, F1's data: RM L55H09, once its body is
+   confirmed to be neither the RM-10 nor the PARD body.
+2. **Rounded leading edges below M_n 1.0 (F2): bounded, not measured**,
+   both orderings written in section 3.2, reviewed independently before
+   anything is served (0014 10.7 (h), item 1). Writing the ordering out
+   widened the lower bound below zero by the trailing edge's upstream
+   influence and limited it to M_n 0.9 (section 3.2, (L4) and (L5)).
+3. **Bevels (F3): measured where Bryson's points lie; bounded, not
+   measured, between his measured values across his gap**, the theory
+   only in the ordering; 10 to 15 deg only if the 26.57 deg wedge
+   supports the similarity (0014 10.7 (h), item 2; section 3.3).
+4. **Swept trailing edges at Mach 1.0 to 1.2 (F4)**, if R&M 3348, read
+   twice, sets the band directly; a change to 0016 section 6 for that
+   range only, separate from W1's factor (0014 10.7 (h), item 3; section
+   3.4).
+5. **Registration: done** (0014 10.7 (h)), before any figure is read.
 
 ## 6. Readings owed, and the order of work
 
@@ -526,25 +652,31 @@ AERADE handle, PDF page), its calibration and per-row errors, under
 arrives it is labelled "read once", and every band is the envelope of
 both once it does.
 
-1. **The guard** (item 1), with tests: fin friction and fin wave drag
-   refused below Mach 1.5, the Basic Finner's gated shots bit for bit.
+1. **The guard: done** (0014 10.7 (f) and (g); tests in
+   `tests/total/fins-own-drag-guard.test.ts`; the Basic Finner's gated
+   shots unchanged in number).
 2. **F4, the trailing edges.** Readings: RM A51J25 fig. 7 below M' 1.5
-   (second reading of the curve; symbols), TN 3548 fig. 6, R&M 3427 figs.
-   9, 10, 13, R&M 3323 figs. 4, 5, R&M 3348 table 3 (typed twice, not read
-   by eye), Johnston's base pressures, RM L8B13's wedge. Then
+   (a second reading of the curve there, 0010's being the first, and its
+   symbols), TN 3548 fig. 6, R&M 3427 figs. 9, 10, 13, 15, 16, R&M 3323
+   figs. 4, 5 (their sources traced first), R&M 3348 table 3 (typed, not
+   read by eye) and figs. 30a, 30b (the sweep), Johnston's figs. 4 to 12,
+   RM L8B13 fig. 4(c) to 4(e). Then
    `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the data
    (each set's points inside the band, the step at 1.5), the record.
-3. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13 and 14, R&M
-   3348 figs. 31a and 31b. Then a bevel term in `src/fins` (beside
+3. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13, 14, 15 and
+   16, R&M 3348 figs. 31a, 31b and 32. Then a bevel term in `src/fins` (beside
    `rounded-leading-edge.ts`), `finned-body.ts`'s bevel-leading-edge and
    hexagonal paths below Mach 1.5, tests against Bryson's points.
 4. **F5, thin sharp sections.** Readings: the bump wings' zero-lift drag
    figures, TN 3306, R&M 3348 figs. 35 and 36. First the linear code's
    convergence near beta = 0 (its quadrature error, against the area-rule
    support code of `tests/fins/support/area-rule.ts`), then the band.
-5. **F1, the fins' own-drag band.** Open RM L55H09 at its fins and base;
-   if it qualifies, read its increments; form the band.
-6. **F2**, as decided.
+5. **F1, the fins' own-drag band.** Confirm from RM L55H09's text and fig.
+   1 that its body is neither the RM-10 nor the PARD standard body; name
+   its increment and base-pressure figures in 0014 10.7 before reading
+   them; read them; form the band as 0008 section 4.3 formed ARCAS's.
+6. **F2**, as decided: the checks (CR-149372 fig. 8a; Kyle and Feryn's
+   increments) read, the orderings reviewed, then the term.
 
 Wiring into `src/total/finned-body.ts` waits for W1's branch and the main
 line (the coordinator's word); the main line is merged, never rebased.
