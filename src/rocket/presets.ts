@@ -56,7 +56,7 @@ function basicFinner(): RocketDesign {
       },
     ],
     otherParts: [],
-    flight: { maxMach: 3, altitude: 0 },
+    flight: { maxMach: 3, altitude: 0, from: "the preset's figure" },
     notes: [],
     source: { kind: 'preset', id: 'basic-finner' },
   };
@@ -100,7 +100,7 @@ function highPower54(): RocketDesign {
       },
     ],
     otherParts: [],
-    flight: { maxMach: 2.4, altitude: 1200 },
+    flight: { maxMach: 2.4, altitude: 1200, from: "the example's own figure" },
     notes: [],
     source: { kind: 'preset', id: 'example-54' },
   };
@@ -143,7 +143,7 @@ function hobby98(): RocketDesign {
       },
     ],
     otherParts: [{ kind: 'rail-button', name: 'Rail buttons', count: 2 }],
-    flight: { maxMach: 1.6, altitude: 1200 },
+    flight: { maxMach: 1.6, altitude: 1200, from: "the example's own figure" },
     notes: [],
     source: { kind: 'preset', id: 'example-98' },
   };

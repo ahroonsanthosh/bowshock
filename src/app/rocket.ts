@@ -18,7 +18,7 @@ import type { Body } from '../geometry/body';
 import { liveFitSource } from '../render/flow-source';
 import { presentationFor } from '../render/presenter';
 import type { FlowScene3D, SceneScale } from '../render3d/scene';
-import { excludableParts, withoutText } from '../rocket/adapter';
+import { excludableParts, partSizeWords, withoutText } from '../rocket/adapter';
 import type { RocketDesign } from '../rocket/design';
 import { PRESETS, preset } from '../rocket/presets';
 import { rocketGeometry, sideViewFins } from '../rocket/geometry';
@@ -39,6 +39,7 @@ import { curveCsv } from './curve-csv';
 import { importSummary, loadImporter, type ImportSummary } from './import-summary';
 import { bodyOutline, FlowControls, viewMenu } from './flow-controls';
 import { pointView, type PointView } from './point-view';
+import { flightWords } from './status-words';
 import { loadRender3D, sceneLegend, type Render3DModule } from './scene3d';
 import {
   appBindings,
@@ -98,6 +99,7 @@ const stepSelect = element('#step', HTMLSelectElement);
 const computeButton = element('#compute', HTMLButtonElement);
 const stopButton = element('#stop', HTMLButtonElement);
 const curveRocket = element('#curve-rocket', HTMLElement);
+const curveFlight = element('#curve-flight', HTMLElement);
 const curveNotes = element('#curve-notes', HTMLElement);
 const chartBox = element('#chart', HTMLElement);
 const pointBox = element('#point', HTMLElement);
@@ -211,7 +213,7 @@ const shell = new Shell<Action>({
       {
         title: 'This page',
         body: [
-          'Describe your rocket on the left, or start from a preset. The curve on the right is its drag coefficient against Mach number, from 1.0 to the highest Mach number it flies, each point with its error band and a status in plain words.',
+          'Describe your rocket on the left, or start from a preset. The curve on the right is its drag coefficient against Mach number, from 1.0 to 3.0, each point with its error band and a status in plain words; the highest Mach number the rocket flies is marked on it.',
           'Each point needs the airflow round the nose solved on your GPU, on grids each twice as fine as the one before; the rest of the drag (friction, the base, the fins) is computed from measured correlations. A point the methods cannot give to a known accuracy shows no number, with the reason.',
           'Lengths are in millimetres or inches, each with its value in calibres (the body diameter) beside it.',
           'The airflow shows in 3D, or from the side (key V). The number keys act on the view shown: in 3D they show and hide its layers, from the side they choose the field. In 3D, drag to turn the view, right drag or Shift drag to pan, and use the wheel or a pinch to zoom.',
@@ -776,6 +778,7 @@ function renderCurve(): void {
   const r = run;
   const parts = withoutText(without ? excludableParts(design).map((e) => e.part) : []);
   curveRocket.textContent = `${design.name}${parts === '' ? '' : `, ${parts}`}`;
+  curveFlight.textContent = flightWords(design);
   renderNotes();
   if (r === null) {
     chartBox.replaceChildren();
@@ -792,6 +795,7 @@ function renderCurve(): void {
       solving: r.current,
       onSelect: select,
       width: chartBox.clientWidth || 340,
+      flight: r.options.design.flight.maxMach,
     }),
   );
   renderPoint(r, pointViews);
@@ -804,14 +808,17 @@ function renderCurve(): void {
       ? `Solving Mach ${r.points[solving]!.mach.toFixed(2)}; ${queue.length} point${queue.length === 1 ? '' : 's'} to go${paused ? ' (paused: Space resumes)' : ''}.`
       : r.done
         ? 'Done.'
-        : r.points.length === 0
-          ? 'No points: the highest Mach number is below 1.0.'
-          : '';
+        : '';
   computeButton.textContent = changed || r.done ? 'Compute the curve' : 'Compute again';
 }
 
 function renderNotes(): void {
   const parts = excludableParts(design);
+  // Each part with its size and place, where its source gives them.
+  const named = parts.map((p) => {
+    const size = p.of === undefined ? '' : partSizeWords(p.of, unit);
+    return size === '' ? p.part : `${p.part} (${size})`;
+  });
   const notes: HTMLElement[] = [];
   // "it" for one part, "them" for several or for one counted ("the 2 rail buttons").
   const them = parts.length > 1 || parts.some((p) => /^the \d+ /.test(p.part)) ? 'them' : 'it';
@@ -830,7 +837,7 @@ function renderNotes(): void {
         'div',
         { className: 'note note--choice' },
         h('p', {
-          text: `bowshock does not model the drag of ${parts.map((p) => p.part).join(', ')}. With ${them} on the rocket no number is given; you can compute the rocket without ${them}, and every number is then labelled so.`,
+          text: `bowshock does not model the drag of ${named.join(', ')}. With ${them} on the rocket no number is given; you can compute the rocket without ${them}, and every number is then labelled so.`,
         }),
         button,
       ),

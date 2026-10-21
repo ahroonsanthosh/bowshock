@@ -70,6 +70,13 @@ export type BodySection =
       readonly foreDiameter: number;
       readonly aftDiameter: number;
       readonly shape: NoseShape;
+      /**
+       * OpenRocket's clipped profile (its default for the ellipsoid, power
+       * and Haack shapes): the part of a nose of the larger diameter that
+       * lies between the two diameters, rather than the nose shape laid
+       * between them. By default not clipped.
+       */
+      readonly clipped?: boolean;
     };
 
 /** A set of identical fins spaced evenly around the body. */
@@ -137,6 +144,28 @@ export type FinSection =
   /** OpenRocket's airfoil section: a smooth symmetric profile. */
   | { readonly kind: 'airfoil' };
 
+/** An other part's size, m, as its source gives it: each field only where it applies. */
+export interface PartSize {
+  /** Along the axis. */
+  readonly length?: number;
+  /** Outer diameter. */
+  readonly diameter?: number;
+  readonly innerDiameter?: number;
+  /** How far it stands out from the body's surface (rail buttons). */
+  readonly height?: number;
+  readonly baseHeight?: number;
+  readonly flangeHeight?: number;
+  readonly screwHeight?: number;
+  /** Wall thickness (lugs, tube fins). */
+  readonly thickness?: number;
+  /** Between one and the next along the axis, for more than one. */
+  readonly separation?: number;
+  /** From the rocket's axis to the part's axis (pods, boosters). */
+  readonly radialOffset?: number;
+  /** How far it reaches aft of the base (an inner part or a motor reaching out). */
+  readonly reachAftOfBase?: number;
+}
+
 /** A part outside the body other than fins. */
 export interface OtherPart {
   readonly kind: 'launch-lug' | 'rail-button' | 'pod' | 'other';
@@ -144,14 +173,25 @@ export interface OtherPart {
   readonly name: string;
   /** How many. */
   readonly count: number;
+  /** Its size, where the source gives it. */
+  readonly size?: PartSize;
+  /** Its front, m from the nose's tip, where the source places it. */
+  readonly front?: number;
+  /** The first one's roll angle, degrees, where the source gives one. */
+  readonly rotation?: number;
 }
 
-/** The flight the curve is for. */
+/** The flight the rocket makes, and the air the curve is computed in. */
 export interface FlightDesign {
-  /** The highest Mach number the rocket flies to: the curve runs from Mach 1.0 to it (at most 3.0). */
+  /**
+   * The highest Mach number the rocket flies to, marked on the curve (which
+   * runs from Mach 1.0 to 3.0 whatever it is; 0017, the owner's rule).
+   */
   readonly maxMach: number;
   /** Geometric altitude above mean sea level at which the curve is computed, m (U.S. Standard Atmosphere, 1976). */
   readonly altitude: number;
+  /** Where these numbers came from, in plain words ("the file's simulation ..."); by default typed. */
+  readonly from?: string;
 }
 
 /** Something in the source the model has no place for, as the importer says it. */

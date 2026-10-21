@@ -1,7 +1,7 @@
 /**
  * The drag curve (docs/design/0017-rocketeer-interface.md section 8),
- * without the DOM: C_D against Mach 1.0 to the flight's highest Mach
- * number, every 0.2 (or 0.1), each point what the logic returns there.
+ * without the DOM: C_D against Mach 1.0 to 3.0, whatever the rocket flies
+ * to, every 0.2 (or 0.1), each point what the logic returns there.
  *
  * At the start every point is put to the logic with the nose pending: a
  * point refused for reasons other than the nose is final at once and costs
@@ -27,13 +27,16 @@ import {
   type TotalDragView,
 } from './total-drag';
 
-/** The Mach numbers of a curve: from 1.0 every `step` to the highest flown, at most 3.0. */
-export function curveMachs(maxMach: number, step: number): number[] {
-  const top = Math.min(maxMach, 3);
+/** The curve's range: Mach 1.0 to 3.0, whatever the rocket flies to (the owner's rule, 0017). */
+export const CURVE_MACHS = { from: 1, to: 3 } as const;
+
+/** The Mach numbers of a curve: from 1.0 to 3.0 every `step` (the flight's Mach number is marked, not a limit). */
+export function curveMachs(step: number): number[] {
+  const top = CURVE_MACHS.to;
   const machs: number[] = [];
   for (let k = 0; ; k++) {
     // Rounded to the step's decimals, so that 1.2 is 1.2, not 1.2000000000000002.
-    const mach = Number((1 + k * step).toFixed(2));
+    const mach = Number((CURVE_MACHS.from + k * step).toFixed(2));
     if (mach > top + 1e-9) break;
     machs.push(mach);
   }
@@ -144,7 +147,7 @@ export class CurveRun {
     private readonly solve: NoseSolver,
     private readonly onChange: (run: CurveRun, index: number) => void,
   ) {
-    const machs = curveMachs(options.design.flight.maxMach, options.step);
+    const machs = curveMachs(options.step);
     this.forms = [];
     this.points = machs.map((mach) => {
       const point = this.initial(mach);

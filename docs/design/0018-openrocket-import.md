@@ -189,7 +189,7 @@ judges the drag.
 | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | the first nose cone (not flipped)                                               | `nose`: its `NoseShape` (4.2), length, diameter twice the aft radius                   |                                                                   |
 | every stage's body tubes, front to back                                         | `body`: a `tube` each, its length and diameter                                         |                                                                   |
-| transitions                                                                     | `body`: a `transition`, length, fore and aft diameters, `NoseShape`                    | if OpenRocket clips its profile (4.4)                             |
+| transitions                                                                     | `body`: a `transition`, length, fore and aft diameters, `NoseShape`, `clipped` (4.4)   |                                                                   |
 | a flipped nose cone (a tail cone), or a nose cone not first                     | `body`: a `transition` to or from diameter 0, its shape                                |                                                                   |
 | trapezoidal fin sets                                                            | `finSets`: `trapezoidal`, root and tip chord, span (OpenRocket's height), sweep length |                                                                   |
 | elliptical fin sets                                                             | `finSets`: `elliptical`, root chord, span                                              |                                                                   |
@@ -221,13 +221,16 @@ can name it and offer to compute without it (the adapter's `without`,
 0017 section 4.2): launch lugs, rail buttons, pods, boosters, tube fins,
 a nose shoulder standing out of the body, an inside part or motor
 reaching aft of the base (or one the file does not give enough to place),
-and any component this importer does not know. `OtherPart` has no place
-for sizes, so `mapping.otherPartDetails` carries them, one per other
-part in the same order (`PartSize`, metres: length, diameter, inner
-diameter, height and the rail button's base, flange and screw heights,
-wall thickness, spacing, a pod's axis-to-axis offset by OpenRocket's
-radius methods, how far a part reaches aft of the base), with its front
-from the nose's tip and roll angle; the notes say the same in words. A
+and any component this importer does not know. Each part holds its size
+(`size`, a `PartSize`, metres: length, diameter, inner diameter, height
+and the rail button's base, flange and screw heights, wall thickness,
+spacing, a pod's axis-to-axis offset by OpenRocket's radius methods, how
+far a part reaches aft of the base), its front from the nose's tip
+(`front`) and its roll angle (`rotation`), where the file gives them
+(added to `OtherPart` on 2026-10-21, so that the page names each part
+with its size); `mapping.otherPartDetails` carries the same beside the
+design, one per other part in the same order, and the notes say it in
+words. A
 motor mount holds one motor per flight configuration; a motor's diameter
 and length are the largest among them, and its reach aft of the base
 does not depend on which (it is the mount's aft end plus the overhang).
@@ -250,8 +253,11 @@ given; otherwise the highest maximum Mach number among the file's
 simulation results that are up to date with the design (any results, if
 none is, which is said), at that simulation's launch-site altitude;
 otherwise Mach 3.0 at 0 m, the page's defaults (0017 section 2).
-`mapping.flightFrom` says which, in words. These are OpenRocket's own
-estimates: of the sixteen examples, one flies past Mach 1 by them.
+`mapping.flightFrom` says which, in words, and `design.flight.from` holds
+the same, so that the page says where the number came from beside it.
+These are OpenRocket's own estimates: of the sixteen examples, one flies
+past Mach 1 by them. The page's curve runs from Mach 1.0 to 3.0 whatever
+the flight (0017); the flight's Mach number is marked on it.
 
 **Tolerances.** Fin sets are at one position, and an inside part flush
 with the base, within 1 nanometre: far below any rocket's tolerances and
@@ -344,9 +350,10 @@ the shape's tip at the narrower end (a boat-tail is the shape pointing
 aft). For the ellipsoid, power and Haack shapes OpenRocket by default
 clips the profile instead: it is then the part of a nose of the larger
 radius that lies between the two radii (`Transition.getRadius`,
-`calculateClip`). The design's transition has no flag for clipping, so a
-clipped transition is held with its shape and a note saying the profile
-differs. Tail cones (flipped nose cones) are never clipped.
+`calculateClip`). The design's transition holds this as `clipped: true`
+(added on 2026-10-21), and the page draws the clipped profile; until the
+drag logic takes transitions it matters only for the drawing and the
+flags. Tail cones (flipped nose cones) are never clipped.
 
 ### 4.5 Surface finish
 
@@ -363,13 +370,11 @@ height, and one note says them in words.
 
 Each of these is held in a note today; a field would hold it exactly:
 
-1. **Clipping of a transition's profile** (4.4), and the convention that
-   the shape's tip is at the narrower end.
-2. **The size and place of other parts**: carried beside the design in
-   `mapping.otherPartDetails` (section 4.1) until `OtherPart` has fields
-   for them; a field such as `size?: PartSize`, `front?: number` and
-   `rotation?: number` on `OtherPart` would hold them in the design. A
-   pod's own shape (its nose, tubes and fins) would need more.
+1. **The convention that a transition's shape has its tip at the narrower
+   end** (4.4). Its clipping is held since 2026-10-21 (`clipped`).
+2. **A pod's own shape** (its nose, tubes and fins). The size and place
+   of other parts are held since 2026-10-21 (`size`, `front`,
+   `rotation` on `OtherPart`).
 3. **Surface roughness** (4.5).
 4. **Stages**: that the stack separates.
 

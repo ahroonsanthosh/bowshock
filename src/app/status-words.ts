@@ -14,6 +14,7 @@
 import type { BaseRefusalReason } from '../base/refusal';
 import type { FinRefusalReason } from '../fins/refusal';
 import type { ComponentRefusal } from '../total/total-drag';
+import type { RocketDesign } from '../rocket/design';
 import { BOUNDED_REASON, CLASS_CLAIM, type Claim } from './total-drag';
 
 /** The colour family of a status: green, amber, blue, red, grey. */
@@ -327,4 +328,20 @@ export function changeText(plain: PlainReason): string {
   return plain.change === NOTHING
     ? 'Nothing about the rocket changes this: this speed has no number yet.'
     : `To get a number: ${plain.change}.`;
+}
+
+/**
+ * The flight beside the curve: how fast the rocket flies and where that
+ * number came from (an OpenRocket file's own simulation is often
+ * subsonic), the curve running from Mach 1.0 to 3.0 whatever it is.
+ */
+export function flightWords(d: RocketDesign): string {
+  const m = d.flight.maxMach;
+  if (!(m > 0)) return 'The curve runs from Mach 1.0 to 3.0.';
+  const at = `It flies to Mach ${m.toFixed(2)} (${d.flight.from ?? 'as set in the builder'})`;
+  return m < 1
+    ? `${at}: below the curve, which runs from Mach 1.0 to 3.0 all the same.`
+    : m > 3
+      ? `${at}: past the curve's end at Mach 3.0.`
+      : `${at}, marked on the curve.`;
 }

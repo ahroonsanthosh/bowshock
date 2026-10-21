@@ -322,8 +322,8 @@ describe(
       expect(asked).toEqual({
         kind: 'choose',
         excludable: [
-          { part: 'the launch lug' },
-          { part: 'the 2 rail buttons' },
+          { part: 'the launch lug', of: lugged.otherParts[0] },
+          { part: 'the 2 rail buttons', of: lugged.otherParts[1] },
           { part: 'the fin fillets' },
           { part: "the fins' cant" },
         ],
@@ -369,7 +369,7 @@ describe('the presets', { timeout: 60_000 }, () => {
     const design = preset('example-98').design;
     expect(designForm(design, 1.6, NO)).toEqual({
       kind: 'choose',
-      excludable: [{ part: 'the 2 rail buttons' }],
+      excludable: [{ part: 'the 2 rail buttons', of: design.otherParts[0] }],
     });
     // Computed without them, the logic refuses it at every Mach number, with its reasons.
     for (const mach of [1, 1.6]) {

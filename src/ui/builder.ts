@@ -307,11 +307,13 @@ export class Builder {
         true,
       ),
       h('h3', { className: 'builder__heading', text: 'Flight' }),
-      this.numberField('max-mach', 'Highest Mach number', d.flight.maxMach, 0.1, 1, (x) => ({
+      // Typed here, the flight is the user's: where it came from before no longer holds.
+      this.numberField('max-mach', 'Flies to Mach number', d.flight.maxMach, 0.1, 0, (x) => ({
         ...this.current,
-        flight: { ...this.current.flight, maxMach: x },
+        flight: { maxMach: x, altitude: this.current.flight.altitude },
       })),
       this.altitudeField(),
+      this.flightNote(),
     );
     this.refreshCalibres();
   }
@@ -485,6 +487,18 @@ export class Builder {
     return this.field(id, label, input);
   }
 
+  /** Where the flight's numbers came from, and what the Mach number does (marks the curve). */
+  private flightNote(): HTMLElement {
+    const note = h('p', { className: 'field__note', attrs: { id: 'b-flight-from' } });
+    this.refreshers.push(() => {
+      const from = this.current.flight.from;
+      note.textContent =
+        `${from === undefined ? 'As set here' : `From ${from}`}. The curve runs from Mach 1.0 ` +
+        'to 3.0 whatever this is, and marks this Mach number; the altitude sets the air.';
+    });
+    return note;
+  }
+
   private altitudeField(): HTMLElement {
     const feet = this.unitNow === 'in';
     const scale = feet ? 0.3048 : 1;
@@ -501,7 +515,7 @@ export class Builder {
       const typed = input.value.trim() === '' ? Number.NaN : Number(input.value);
       this.change({
         ...this.current,
-        flight: { ...this.current.flight, altitude: typed * scale },
+        flight: { maxMach: this.current.flight.maxMach, altitude: typed * scale },
       });
     });
     return this.field('altitude', `Altitude above sea level (${feet ? 'ft' : 'm'})`, input);
@@ -687,7 +701,24 @@ export class Builder {
         }),
       );
     };
+    // A rounded edge is a full round, radius half the thickness, as the drag logic takes it
+    // (and as an OpenRocket file's "rounded" is read): said, so that the user can correct it.
+    const round = h('p', { className: 'field__note', attrs: { id: `b-${which}-round` } });
+    this.refreshers.push(() => {
+      const t = this.fins().thickness;
+      const d = this.current.nose.diameter;
+      round.textContent =
+        `A full round: radius ${lengthText(t / 2, this.unitNow)} ${this.unitNow} ` +
+        `(${calibresText(t / 2, d)}), half the thickness${this.current.source.kind === 'openrocket' ? ", as OpenRocket's rounded edge is read" : ''}. ` +
+        "The rounded edge's drag is for a full round; if yours is not one, choose the nearer " +
+        'of square and bevelled.';
+    });
     const showBevel = (e: FinEdge) => {
+      if (e.kind === 'rounded') {
+        bevel.replaceChildren(round);
+        this.refreshCalibres();
+        return;
+      }
       if (e.kind !== 'bevelled') {
         bevel.replaceChildren();
         return;

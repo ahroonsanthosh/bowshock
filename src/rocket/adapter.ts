@@ -19,6 +19,7 @@ import { flightConditionOf } from '../app/flight-condition';
 import type { PlanformInput, SectionInput, TotalDragForm } from '../app/total-drag';
 import type { Body } from '../geometry/body';
 import type { FinSetDesign, OtherPart, RocketDesign } from './design';
+import { lengthText, type LengthUnit } from './units';
 import { baseStation } from './design';
 
 /** A feature the logic cannot represent: no number while it is there. */
@@ -35,6 +36,8 @@ export interface NotModelled {
 export interface Excludable {
   /** As the labels say it: "the launch lug", "the 2 rail buttons". */
   readonly part: string;
+  /** The design's part, where it is one of its other parts (its size and place). */
+  readonly of?: OtherPart;
 }
 
 export type DesignForm =
@@ -74,12 +77,50 @@ export function excludableParts(design: RocketDesign): Excludable[] {
             : [p.name, p.name];
     return p.count === 1 ? `the ${what[0]!}` : `the ${p.count} ${what[1]!}`;
   };
-  for (const p of design.otherParts) parts.push({ part: named(p) });
+  for (const p of design.otherParts) parts.push({ part: named(p), of: p });
   for (const fins of design.finSets) {
     if (fins.filletRadius > 0) parts.push({ part: 'the fin fillets' });
     if (fins.cant !== 0) parts.push({ part: "the fins' cant" });
   }
   return parts;
+}
+
+/**
+ * A part's size and place in words, in the page's unit ("7 mm across and
+ * 35 mm long, its front 257.5 mm from the nose's tip"), from what its
+ * source gives; '' if it gives nothing.
+ */
+export function partSizeWords(p: OtherPart, unit: LengthUnit): string {
+  const s = p.size ?? {};
+  const len = (m: number | undefined) =>
+    m === undefined ? null : `${lengthText(m, unit)} ${unit}`;
+  const across = len(s.diameter);
+  const long = len(s.length);
+  const tall = len(s.height);
+  const parts: string[] = [];
+  if (p.kind === 'rail-button') {
+    if (across !== null) parts.push(`${across} across`);
+    if (tall !== null) parts.push(`${tall} tall`);
+  } else {
+    if (across !== null) parts.push(`${across} across`);
+    if (long !== null) parts.push(`${long} long`);
+  }
+  let words = parts.join(' and ');
+  const offset = len(s.radialOffset);
+  if (offset !== null) words += `${words === '' ? '' : ', '}its axis ${offset} from the rocket's`;
+  const reach = len(s.reachAftOfBase);
+  if (reach !== null) words += `${words === '' ? '' : ', '}reaching ${reach} aft of the base`;
+  if (p.front !== undefined) {
+    const front = len(p.front)!;
+    words +=
+      (words === '' ? '' : ', ') +
+      (p.count > 1
+        ? `the first ${front} from the nose's tip`
+        : `its front ${front} from the nose's tip`);
+    const apart = len(s.separation);
+    if (p.count > 1 && apart !== null) words += `, ${apart} apart`;
+  }
+  return words;
 }
 
 /** The body: one diameter from the nose to a flat base, or what is not. */

@@ -44,6 +44,7 @@ import type {
   FlightDesign,
   NoseDesign,
   OtherPart,
+  PartSize,
   RocketDesign,
 } from '../rocket/design';
 import {
@@ -126,31 +127,11 @@ export interface MapOptions {
 
 /**
  * The size of an other part, metres, as the file gives it; each field
- * only where it applies. RocketDesign's OtherPart has no place for these
- * yet, so they travel beside it (`OrkMapping.otherPartDetails`). A motor
- * mount holds one motor per flight configuration: a motor's diameter and
- * length are the largest among them.
+ * only where it applies (RocketDesign's PartSize, held in the part). A
+ * motor mount holds one motor per flight configuration: a motor's
+ * diameter and length are the largest among them.
  */
-export interface PartSize {
-  /** Along the axis. */
-  readonly length?: number;
-  /** Outer diameter. */
-  readonly diameter?: number;
-  readonly innerDiameter?: number;
-  /** How far it stands out from the body's surface (rail buttons). */
-  readonly height?: number;
-  readonly baseHeight?: number;
-  readonly flangeHeight?: number;
-  readonly screwHeight?: number;
-  /** Wall thickness (lugs, tube fins). */
-  readonly thickness?: number;
-  /** Between one and the next along the axis, for more than one. */
-  readonly separation?: number;
-  /** From the rocket's axis to the part's axis (pods, boosters). */
-  readonly radialOffset?: number;
-  /** How far it reaches aft of the base (an inner part or a motor reaching out). */
-  readonly reachAftOfBase?: number;
-}
+export type { PartSize } from '../rocket/design';
 
 /** One of the design's other parts, with what OtherPart has no place for. */
 export interface OtherPartDetail {
@@ -576,7 +557,7 @@ class Mapper {
     this.ignored.push({ ...this.ref(c, label), reason });
   }
 
-  /** An outside part the design holds as an other part, its size and place beside it. */
+  /** An outside part the design holds as an other part, with its size and place (and beside it). */
   other(
     c: OrkComponent,
     label: string,
@@ -585,7 +566,15 @@ class Mapper {
     front: number | null,
     rotation: number | null = null,
   ) {
-    const p: OtherPart = { kind: part.kind, name: part.name ?? c.name, count: part.count ?? 1 };
+    // Its size, front and roll in the part itself (and beside it, as before).
+    const p: OtherPart = {
+      kind: part.kind,
+      name: part.name ?? c.name,
+      count: part.count ?? 1,
+      size,
+      ...(front === null ? {} : { front }),
+      ...(rotation === null ? {} : { rotation }),
+    };
     this.otherParts.push(p);
     this.otherPartDetails.push({ part: p, component: label, type: c.type, size, front, rotation });
   }
@@ -847,7 +836,8 @@ export function mapOrk(doc: OrkDocument, options: MapOptions): OrkMapping {
       body,
       finSets,
       otherParts: m.otherParts,
-      flight,
+      // Where the flight's numbers came from, said on the page beside them.
+      flight: flight.from === undefined ? { ...flight, from: flightFrom } : flight,
       notes,
       source: { kind: 'openrocket', fileName: options.fileName },
     },
@@ -866,7 +856,15 @@ function transitionOf(
   aft: number,
   body: BodySection[],
 ) {
-  body.push({ kind: 'transition', length, foreDiameter: 2 * fore, aftDiameter: 2 * aft, shape });
+  const clipped = c.type === 'transition' && clips(c);
+  body.push({
+    kind: 'transition',
+    length,
+    foreDiameter: 2 * fore,
+    aftDiameter: 2 * aft,
+    shape,
+    ...(clipped ? { clipped: true } : {}),
+  });
   const what =
     c.type === 'nosecone'
       ? c.flipped
@@ -876,10 +874,9 @@ function transitionOf(
   m.represent(
     c,
     label,
-    `${what}: ${describeShape(shape)}, ${formatLength(length)} long, from ` +
-      `${formatLength(2 * fore)} to ${formatLength(2 * aft)} across`,
+    `${what}: ${describeShape(shape)}${clipped ? ', clipped as OpenRocket clips it' : ''}, ` +
+      `${formatLength(length)} long, from ${formatLength(2 * fore)} to ${formatLength(2 * aft)} across`,
   );
-  if (c.type === 'transition') clipCheck(m, c, label, fore, aft);
 }
 
 function result(m: Mapper, design: RocketDesign | null, flightFrom: string): OrkMapping {
@@ -955,20 +952,14 @@ function shoulderCheck(m: Mapper, c: OrkNoseCone, label: string, radius: number,
 }
 
 /**
- * OpenRocket clips an ellipsoid, power or Haack transition by default: its
- * profile is then the part of a nose of the larger radius lying between
- * the two radii, not the nose shape laid between them.
+ * Whether OpenRocket clips this transition's profile (by default for the
+ * ellipsoid, power and Haack shapes): it is then the part of a nose of the
+ * larger radius lying between the two radii, not the nose shape laid
+ * between them; the design's transition holds it as `clipped`.
  */
-function clipCheck(m: Mapper, c: OrkTransition, label: string, fore: number, aft: number) {
+function clips(c: OrkTransition): boolean {
   const clippable = c.shape === 'ellipsoid' || c.shape === 'power' || c.shape === 'haack';
-  if (!clippable || c.shapeClipped === false || fore === aft || Math.min(fore, aft) === 0) return;
-  m.note(
-    c,
-    `profile of ${label}`,
-    "OpenRocket clips this transition's profile: it is the part of a nose of the larger " +
-      "diameter that lies between the two diameters, which the design's transition has no " +
-      'place for; the design holds the shape laid between the diameters instead',
-  );
+  return clippable && c.shapeClipped !== false;
 }
 
 /**
@@ -1155,7 +1146,8 @@ function mapChildren(m: Mapper, parent: Parent) {
         m.note(
           c,
           label,
-          `${size}${where}: the design holds that it is there, not its size or place`,
+          `${size}${where}: the design holds it with its size and place; bowshock does not ` +
+            "model a launch lug's drag",
         );
         break;
       }
@@ -1194,8 +1186,8 @@ function mapChildren(m: Mapper, parent: Parent) {
           c,
           label,
           `${n === 1 ? 'a rail button' : `${n} rail buttons`}${size}${place}: the design ` +
-            `holds that ${n === 1 ? 'it is' : 'they are'} there, not ${n === 1 ? 'its' : 'their'} ` +
-            'size or place',
+            `holds ${n === 1 ? 'it' : 'them'} with ${n === 1 ? 'its' : 'their'} size and place; ` +
+            "bowshock does not model a rail button's drag",
         );
         break;
       }
@@ -1212,7 +1204,7 @@ function mapChildren(m: Mapper, parent: Parent) {
           c,
           label,
           `${c.instanceCount ?? 1} pod${c.instanceCount === 1 ? '' : 's'} beside the body` +
-            `${withContents(c)}: the design holds that they are there, not their shape`,
+            `${withContents(c)}: the design holds their size and place, not their shape`,
         );
         break;
       case 'parallelstage':
@@ -1228,8 +1220,8 @@ function mapChildren(m: Mapper, parent: Parent) {
           c,
           label,
           `${c.instanceCount ?? 1} booster${c.instanceCount === 1 ? '' : 's'} (a parallel stage) ` +
-            `beside the body${withContents(c)}: the design holds them as another part, not their ` +
-            'shape or that they separate',
+            `beside the body${withContents(c)}: the design holds them as another part, with ` +
+            'their size and place, not their shape or that they separate',
         );
         break;
       case 'stage':

@@ -81,12 +81,19 @@ const options = (design: RocketDesign = basic()) => ({
 });
 
 describe('the points', () => {
-  it('Mach 1.0 to the highest flown, every 0.2 or 0.1, at most 3.0', () => {
-    expect(curveMachs(3, 0.2)).toEqual([1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3]);
-    expect(curveMachs(3, 0.1).length).toBe(21);
-    expect(curveMachs(2.4, 0.2)).toEqual([1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4]);
-    expect(curveMachs(3.6, 0.2).at(-1)).toBe(3);
-    expect(curveMachs(0.9, 0.2)).toEqual([]);
+  it('Mach 1.0 to 3.0 every 0.2 or 0.1, whatever the rocket flies to', () => {
+    expect(curveMachs(0.2)).toEqual([1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3]);
+    expect(curveMachs(0.1).length).toBe(21);
+    // A rocket flying to Mach 0.28 (an OpenRocket file's own simulation) gets the whole curve.
+    const b = preset('basic-finner').design;
+    for (const maxMach of [0.28, 1.6, 3.6]) {
+      const run = new CurveRun(
+        { ...options(), design: { ...b, flight: { ...b.flight, maxMach } } },
+        standIn(),
+        () => {},
+      );
+      expect(run.points.map((p) => p.mach)).toEqual(curveMachs(0.2));
+    }
   });
 
   it('solved coarse to fine: the ends, then the middles', () => {

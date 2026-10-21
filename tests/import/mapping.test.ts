@@ -68,7 +68,11 @@ describe('fixtures written for these tests', () => {
         },
       ],
       otherParts: [],
-      flight: { maxMach: 3, altitude: 0 },
+      flight: {
+        maxMach: 3,
+        altitude: 0,
+        from: 'the file holds no simulation results, so the defaults: Mach 3 at 0 m',
+      },
       notes: [
         {
           feature: 'surface finish',
@@ -129,7 +133,15 @@ describe('fixtures written for these tests', () => {
         trailingEdge: { kind: 'rounded' },
       },
     });
-    expect(d.otherParts).toEqual([{ kind: 'launch-lug', name: 'Launch lug', count: 1 }]);
+    expect(d.otherParts).toMatchObject([
+      {
+        kind: 'launch-lug',
+        name: 'Launch lug',
+        count: 1,
+        size: { length: 0.035, diameter: 0.007, thickness: 0.001 },
+      },
+    ]);
+    expect(d.otherParts[0]!.front).toBeCloseTo(0.2575, 15);
     expect(notesOf(m)).toEqual([
       {
         component: 'launch lug "Launch lug" (on body tube "Body tube")',
@@ -137,7 +149,7 @@ describe('fixtures written for these tests', () => {
         name: 'Launch lug',
         reason:
           "a tube 7 mm across and 35 mm long, its front 257.5 mm from the nose's tip: the " +
-          'design holds that it is there, not its size or place',
+          "design holds it with its size and place; bowshock does not model a launch lug's drag",
         effect: 'note',
       },
     ]);
@@ -273,14 +285,23 @@ describe('the body', () => {
     expect(m.ignored.map((i) => i.name)).toEqual(['Weight']);
   });
 
-  it("OpenRocket's clipped transition profile is noted", async () => {
-    const clipped = transition(0.0125, 0.01).replace(
-      '<shape>conical</shape>',
-      '<shape>ellipsoid</shape><shapeclipped>true</shapeclipped>',
-    );
-    const m = await mapXml(document([stage([nose(), tube(), clipped])]));
-    expect(designOf(m).body[1]).toMatchObject({ kind: 'transition', shape: { kind: 'ellipsoid' } });
-    expect(notesOf(m)[0]!.reason).toMatch(/OpenRocket clips this transition's profile/);
+  it("OpenRocket's clipped transition profile is held as clipped, an unclipped one not", async () => {
+    const shaped = (clip: string) =>
+      transition(0.0125, 0.01).replace('<shape>conical</shape>', `<shape>ellipsoid</shape>${clip}`);
+    for (const [clip, clipped] of [
+      ['<shapeclipped>true</shapeclipped>', true],
+      ['', true],
+      ['<shapeclipped>false</shapeclipped>', false],
+    ] as const) {
+      const m = await mapXml(document([stage([nose(), tube(), shaped(clip)])]));
+      const t = designOf(m).body[1];
+      expect(t).toMatchObject({ kind: 'transition', shape: { kind: 'ellipsoid' } });
+      expect(t?.kind === 'transition' && t.clipped === true).toBe(clipped);
+      expect(notesOf(m).filter((n) => /clip/.test(n.reason))).toEqual([]);
+    }
+    // A conical transition is never clipped.
+    const conical = await mapXml(document([stage([nose(), tube(), transition(0.0125, 0.01)])]));
+    expect(designOf(conical).body[1]).not.toHaveProperty('clipped');
   });
 
   const noDesign: readonly (readonly [string, () => string, RegExp])[] = [
@@ -492,19 +513,29 @@ describe('other parts outside the body', () => {
       }),
     );
     const d = designOf(m);
-    expect(d.otherParts).toEqual([
+    expect(d.otherParts.map(({ kind, name, count }) => ({ kind, name, count }))).toEqual([
       { kind: 'launch-lug', name: 'Launch lug', count: 1 },
       { kind: 'rail-button', name: 'Rail button', count: 2 },
       { kind: 'pod', name: 'Pods', count: 2 },
       { kind: 'other', name: 'Tube fins', count: 6 },
     ]);
+    // Each part holds its size, front and roll: those of its detail.
+    d.otherParts.forEach((part, k) => {
+      const detail = m.otherPartDetails[k]!;
+      expect(detail.part).toBe(part);
+      expect(part.size).toEqual(detail.size);
+      expect(part.front ?? null).toBe(detail.front);
+      expect(part.rotation ?? null).toBe(detail.rotation);
+    });
+    expect(d.otherParts[0]!.size).toMatchObject({ length: 0.035, diameter: 0.007 });
+    expect(d.otherParts[0]!.front).toBeCloseTo(0.2325, 15);
     expect(notesOf(m).map((n) => n.reason)).toEqual([
       "a tube 7 mm across and 35 mm long, its front 232.5 mm from the nose's tip: the design " +
-        'holds that it is there, not its size or place',
+        "holds it with its size and place; bowshock does not model a launch lug's drag",
       "2 rail buttons 9.7 mm across and 9.7 mm tall, the first 250 mm from the nose's tip, " +
-        '200 mm apart: the design holds that they are there, not their size or place',
-      '2 pods beside the body (with the 2 components in it): the design holds that they are ' +
-        'there, not their shape',
+        "200 mm apart: the design holds them with their size and place; bowshock does not model a rail button's drag",
+      '2 pods beside the body (with the 2 components in it): the design holds their size and ' +
+        'place, not their shape',
       "6 tube fins, 60 mm long, its front 340 mm from the nose's tip: the design's fin sets are " +
         'flat fins, so it holds them as another part, not their shape',
     ]);
@@ -518,7 +549,7 @@ describe('other parts outside the body', () => {
         ],
       }),
     );
-    expect(designOf(m).otherParts).toEqual([
+    expect(designOf(m).otherParts.map(({ kind, name, count }) => ({ kind, name, count }))).toEqual([
       { kind: 'other', name: 'Inner tube', count: 1 },
       { kind: 'other', name: 'motor in Inner tube', count: 1 },
     ]);
@@ -584,7 +615,13 @@ describe('other parts outside the body', () => {
   it('a nose shoulder wider than the body is an other part', async () => {
     const m = await mapXml(simpleRocket({ noseSpec: { shoulderRadius: 0.014 } }));
     expect(designOf(m).otherParts).toEqual([
-      { kind: 'other', name: 'Nose cone shoulder', count: 1 },
+      {
+        kind: 'other',
+        name: 'Nose cone shoulder',
+        count: 1,
+        size: { length: 0.02, diameter: 0.028 },
+        front: 0.1,
+      },
     ]);
     expect(m.otherPartDetails[0]).toMatchObject({
       size: { length: 0.02, diameter: 0.028 },
@@ -610,7 +647,9 @@ describe('other parts outside the body', () => {
     const m = await mapXml(
       simpleRocket({ tubeChildren: ['<widget><name>Camera pod</name></widget>'] }),
     );
-    expect(designOf(m).otherParts).toEqual([{ kind: 'other', name: 'Camera pod', count: 1 }]);
+    expect(designOf(m).otherParts.map(({ kind, name, count }) => ({ kind, name, count }))).toEqual([
+      { kind: 'other', name: 'Camera pod', count: 1 },
+    ]);
     expect(notesOf(m)[0]!.reason).toMatch(/<widget> is not a component this importer knows/);
   });
 
@@ -661,7 +700,7 @@ describe('settings', () => {
 
   it("the flight: the highest Mach number of the file's up-to-date simulations, at its launch altitude", async () => {
     const m = await mapFile('a-simple-model-rocket.ork');
-    expect(designOf(m).flight).toEqual({ maxMach: 0.281, altitude: 0 });
+    expect(designOf(m).flight).toEqual({ maxMach: 0.281, altitude: 0, from: m.flightFrom });
     expect(m.flightFrom).toBe(
       'the highest Mach number of the file\'s up-to-date simulations, 0.281 in "Simulation 3 - ' +
         "too short delay\" (OpenRocket's own estimate), at its launch site's altitude, 0 m",
@@ -672,7 +711,11 @@ describe('settings', () => {
         flight: { maxMach: 2, altitude: 1500 },
       })
     ).mapping;
-    expect(designOf(given).flight).toEqual({ maxMach: 2, altitude: 1500 });
+    expect(designOf(given).flight).toEqual({
+      maxMach: 2,
+      altitude: 1500,
+      from: 'given by the caller',
+    });
     expect(given.flightFrom).toBe('given by the caller');
   });
 });

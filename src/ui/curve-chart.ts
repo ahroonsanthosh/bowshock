@@ -67,6 +67,8 @@ export interface ChartOptions {
   readonly solving: number | null;
   readonly onSelect: (index: number) => void;
   readonly width: number;
+  /** The highest Mach number the rocket flies to, marked where it lies on the curve. */
+  readonly flight?: number;
 }
 
 function markShape(mark: Mark, x: number, y: number, r: number, className: string): SVGElement {
@@ -165,6 +167,22 @@ export function curveChart(o: ChartOptions): SVGSVGElement {
   }
   if (segment.length > 1) lines.push(`M${segment.join('L')}`);
   if (lines.length > 0) root.append(svg('path', { d: lines.join(''), class: 'chart__curve' }));
+
+  // The rocket's flight: a line at its highest Mach number, or an arrow past the curve's end.
+  if (o.flight !== undefined && o.flight >= x0) {
+    const inside = o.flight <= x1;
+    const x = inside ? X(o.flight) : m.left + plotW;
+    if (inside) {
+      root.append(svg('line', { x1: x, x2: x, y1: m.top, y2: axisY, class: 'chart__flight' }));
+    }
+    root.append(
+      svg(
+        'text',
+        { x: inside ? x : x - 2, y: m.top - 6, class: 'chart__flight-label' },
+        inside ? `flies to M ${o.flight.toFixed(2)}` : `flies to M ${o.flight.toFixed(2)} \u2192`,
+      ),
+    );
+  }
 
   if (o.selected !== null && o.points[o.selected] !== undefined) {
     const x = X(o.points[o.selected]!.mach);

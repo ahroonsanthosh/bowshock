@@ -69,6 +69,50 @@ function shapePoints(
   return widens ? points : points.reverse();
 }
 
+/**
+ * A clipped transition's profile (OpenRocket's clipped shapes): the part
+ * of a nose of the larger radius R lying between the two radii. That nose
+ * is c + length long, c found by bisection so that its radius at c is the
+ * smaller radius; the transition is its stretch from c to its base, the
+ * narrow end where the smaller radius is. Fore to aft.
+ */
+export function clippedPoints(
+  shape: NoseShape,
+  x0: number,
+  length: number,
+  r0: number,
+  r1: number,
+  n: number,
+): Point[] {
+  const big = Math.max(r0, r1);
+  const small = Math.min(r0, r1);
+  if (!(small > 0) || big === small || !(length > 0))
+    return shapePoints(shape, x0, length, r0, r1, n);
+  const at = (c: number, s: number) =>
+    noseRadius({ shape, length: c + length, baseRadius: big }, s);
+  let lo = 0;
+  let hi = length;
+  for (let k = 0; k < 60 && at(hi, hi) < small; k++) {
+    lo = hi;
+    hi *= 2;
+  }
+  for (let k = 0; k < 100; k++) {
+    const c = (lo + hi) / 2;
+    if (at(c, c) > small) hi = c;
+    else lo = c;
+  }
+  const c = (lo + hi) / 2;
+  const widens = r1 >= r0;
+  const points: Point[] = [];
+  for (let k = 0; k <= n; k++) {
+    // From the narrow end, denser there, where the profile bends most.
+    const f = (k / n) ** 1.5;
+    const r = k === 0 ? small : k === n ? big : at(c, c + f * length);
+    points.push([widens ? x0 + f * length : x0 + (1 - f) * length, r]);
+  }
+  return widens ? points : points.reverse();
+}
+
 /** One fin's outline in its own plane, root leading edge first, clockwise seen from +z with y up. */
 export function finOutline(p: FinPlanform, rootLeadingEdge: number): Point[] {
   switch (p.kind) {
@@ -126,8 +170,12 @@ export function rocketGeometry(design: RocketDesign): RocketGeometry {
       const r = cal(s.diameter) / 2;
       profile.push([x, r], [x + length, r]);
     } else {
+      const r0 = cal(s.foreDiameter) / 2;
+      const r1 = cal(s.aftDiameter) / 2;
       profile.push(
-        ...shapePoints(s.shape, x, length, cal(s.foreDiameter) / 2, cal(s.aftDiameter) / 2, 32),
+        ...(s.clipped === true
+          ? clippedPoints(s.shape, x, length, r0, r1, 32)
+          : shapePoints(s.shape, x, length, r0, r1, 32)),
       );
     }
     x += length;

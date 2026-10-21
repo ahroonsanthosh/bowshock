@@ -2013,6 +2013,22 @@ input[aria-invalid='true'] {
   stroke: rgb(230 232 235 / 0.35);
   stroke-width: 1.2;
 }
+.curve__flight {
+  margin: -4px 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.chart__flight {
+  stroke: rgb(120 200 255 / 0.55);
+  stroke-dasharray: 5 3;
+}
+.chart__flight-label {
+  fill: rgb(150 210 255 / 0.9);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-anchor: end;
+}
 .chart__selected {
   stroke: rgb(255 255 255 / 0.28);
   stroke-dasharray: 2 3;
