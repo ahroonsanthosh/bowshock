@@ -72,8 +72,8 @@ describe('a clipped delta in sheet stock, rounded leading edge, square trailing 
     // 42 deg of sweep, M_n 2.08, Re_n 7.4e4: swept and extrapolated in Reynolds number.
     expect(n.sweepDegrees).toBeCloseTo(Math.atan(0.9) / (Math.PI / 180), 12);
     expect(n.regime).toBe('extrapolated in Reynolds number');
-    // The served sweep allowance, 0.95 to 1.21 (0016 section 16), on the band widened by +-3%.
-    expect(n.band).toEqual({ low: 0.91, high: 1.32 });
+    // The sweep allowance at 42 deg, 0.961 to 1.170 (0016 section 18), on the band widened by +-3%.
+    expect(n.band).toEqual({ low: 0.922, high: 1.276 });
     expect(c.label).toMatch(/on a flat plate, a semicircular nose/);
   });
 
@@ -225,10 +225,12 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
       const cd = (3 * n.dragPerSpan * 0.08) / area;
       return [cd, n.band.low * cd, n.band.high * cd].map((v) => Math.round(1e4 * v) / 1e4);
     };
-    // Before the review: 0.1311 (0.1180 to 0.1664), 0.1606 (0.1381 to 0.2120), 0.1825 (0.1770 to 0.2080).
-    expect(at(1.5)).toEqual([0.1311, 0.1167, 0.177]);
-    expect(at(1.8)).toEqual([0.1607, 0.1366, 0.2249]);
-    expect(at(2.2)).toEqual([0.1825, 0.1715, 0.2354]);
+    // Before the review: 0.1311 (0.1180 to 0.1664), 0.1606 (0.1381 to 0.2120), 0.1825 (0.1770 to
+    // 0.2080); at f8df436 (flat 0.95 to 1.21): 0.1311 (0.1167 to 0.1770), 0.1607 (0.1366 to
+    // 0.2249), 0.1825 (0.1715 to 0.2354); now the allowance at 42 deg (0016 section 18).
+    expect(at(1.5)).toEqual([0.1311, 0.1182, 0.1703]);
+    expect(at(1.8)).toEqual([0.1607, 0.1388, 0.2162]);
+    expect(at(2.2)).toEqual([0.1825, 0.1735, 0.2264]);
   });
 
   it('fins at the base take the plate t/c at the tip, the largest: four 7.2 mm plates, root 120, tip 48 mm (t/c 0.06 to 0.15), refused at M 2.0', () => {
@@ -261,6 +263,44 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
     expect(q.refusals.find((x) => x.component === 'body base')).toBeUndefined();
   });
 
+  it("plates thinner than the factor's 5% data at the base: unswept, served with the low end F = 1 and labelled; tapered, refused by the factor for sweep; thicker than 10%, refused", () => {
+    const plates = (thickness: number, taperRatio: number, count = 4) => ({
+      count,
+      planform: clippedDeltaPlanform({ rootChord: 0.12, span: 0.08, taperRatio }),
+      section: flatPlate(thickness, 'rounded', 'square'),
+      sectionFamily: 'other' as const,
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: 0,
+    });
+    const run = (fins: ReturnType<typeof plates>) =>
+      finnedBodyComponents(
+        body(fins),
+        cond(2.0),
+        exactConeNoseWaveDrag(2.0, Math.atan(0.027 / 0.2)),
+      );
+    // Four 3 mm plates of constant chord 120 mm: t/c 0.025 at every station.
+    const thin = run(plates(0.003, 1));
+    const base = thin.components.find((c) => c.name === 'body base')!;
+    expect(thin.refusals.filter((x) => x.component === 'body base')).toEqual([]);
+    expect(base.label).toMatch(
+      /extended below the data's 5% thickness: t\/c down to 0\.025 over 100% of the span, the low end taken as no fin effect \(F = 1/,
+    );
+    // The same plates 6 mm thick (t/c 0.05): inside the data, the factor as it was.
+    const inside = run(plates(0.006, 1)).components.find((c) => c.name === 'body base')!;
+    expect(inside.label).not.toMatch(/extended below/);
+    // The factor's low end is no fin effect and its nominal the midpoint up to the 5% fins' high
+    // end: the term and its low end fall, the high end does not rise.
+    expect(base.cd).toBeLessThan(inside.cd);
+    expect(base.low).toBeLessThan(inside.low);
+    expect(base.high).toBeLessThanOrEqual(inside.high);
+    // Tapered (root 120 mm, tip 48 mm, t/c 0.025 to 0.0625): a swept edge, refused by the factor.
+    const tapered = run(plates(0.003, 0.4)).refusals.find((x) => x.component === 'body base');
+    expect(tapered?.reason).toBe('fin-sweep');
+    // Thicker than 10% anywhere stays refused (13 mm over 120 mm: 0.108).
+    const thick = run(plates(0.013, 1)).refusals.find((x) => x.component === 'body base');
+    expect(thick?.reason).toBe('fin-thickness');
+  });
+
   it('a plate of taper 0.1 with a transition input keeps its trailing edge: the tip sliver is bounded and labelled', () => {
     const fins = {
       count: 3,
@@ -284,5 +324,8 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
       /the stations beyond fig\. 29's read range \(up to \d+% of the span, near the tip\)/,
     );
     expect(te.label).toMatch(/is below 0\.45, fig\. 29\(a\)'s lowest read abscissa/);
+    // There fig. 29(b)'s laminar base pressure keeps falling: the high end is the vacuum bound.
+    expect(te.label).toMatch(/and above by the vacuum bound \(0016\)/);
+    expect(te.label).toMatch(/up to 4\.2% of its value at 1\.0, at M 3\.1/);
   });
 });

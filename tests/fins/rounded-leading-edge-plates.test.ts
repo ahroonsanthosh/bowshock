@@ -27,6 +27,7 @@ import {
   stagnationPressureCoefficient,
   SWEEP_ALLOWANCE,
   SWEEP_ALLOWANCE_SERVED,
+  sweepAllowanceAt,
   SWEEP_LIMIT_DEGREES,
   stagnationChecks,
   sweepChecks,
@@ -174,11 +175,14 @@ describe("TN 2960's other front sides (0016 section 2)", () => {
 describe('the independence principle on yawed cylinders (RM A55H31 figs. 11, 12)', () => {
   const checks = sweepChecks();
 
-  it('r on the first reading, exact gauge conversion: 1.072 (30 deg, M 3.9); 0.997, 1.007, 1.036, 0.996 (M 6.86); set apart: 1.134, 1.277, 1.287', () => {
-    expect(checks.map((c) => Math.round(1000 * c.r) / 1000)).toEqual([
-      1.072, 1.134, 1.277, 0.997, 1.007, 1.036, 0.996, 1.287,
+  it('r on the first reading, exact gauge conversion, at the stated yaws: 1.0685 (30 deg, M 3.9); 0.9958, 1.0073, 1.0303, 0.9869 (M 6.86); set apart: 1.1278, 1.2633, 1.1698', () => {
+    expect(checks.map((c) => Math.round(1e4 * c.r) / 1e4)).toEqual([
+      1.0685, 1.1278, 1.2633, 0.9958, 1.0073, 1.0303, 0.9869, 1.1698,
     ]);
-    expect(checks.filter((c) => c.flag !== undefined).map((c) => c.yaw)).toEqual([
+    // r at the yaws the reports state (fig. 10's legend, p. 10; TN 3861 fig. 5), not where fig. 12
+    // draws the symbols.
+    expect(checks.map((c) => c.yaw)).toEqual([30, 45, 60, 14.3, 29.6, 45.1, 59.8, 75.1]);
+    expect(checks.filter((c) => c.flag !== undefined).map((c) => c.readYaw)).toEqual([
       45.1, 60.1, 75.5,
     ]);
   });
@@ -218,45 +222,49 @@ describe('the independence principle on yawed cylinders (RM A55H31 figs. 11, 12)
     }
   });
 
-  it('on the second reading (0016 section 14): r 1.069; 0.993, 1.005, 1.022, 0.988; set apart: 1.113, 1.183, 1.004', () => {
+  it('on the second reading, at the stated yaws: r 1.0720; 0.9950, 1.0117, 1.0335, 1.0100; set apart: 1.1287, 1.2101, 1.0130', () => {
     const second = sweepChecks(RM_A55H31_FIG12_SECOND);
-    expect(second.map((c) => Math.round(1000 * c.r) / 1000)).toEqual([
-      1.069, 1.113, 1.183, 0.993, 1.005, 1.022, 0.988, 1.004,
+    expect(second.map((c) => Math.round(1e4 * c.r) / 1e4)).toEqual([
+      1.072, 1.1287, 1.2101, 0.995, 1.0117, 1.0335, 1.01, 1.013,
     ]);
-    expect(second.filter((c) => c.flag !== undefined).map((c) => Math.round(c.yaw))).toEqual([
-      45, 60, 75,
-    ]);
+    expect(second.filter((c) => c.flag !== undefined).map((c) => c.yaw)).toEqual([45, 60, 75.1]);
     second.forEach((c, i) => {
       expect(c.source).toBe(checks[i]!.source);
-      expect(Math.abs(c.yaw - checks[i]!.yaw)).toBeLessThan(0.45);
+      expect(c.yaw).toBe(checks[i]!.yaw);
+      // Fig. 12 draws every symbol below the stated yaw, 0.15 to 0.25 deg at all but 30 and 75
+      // deg (0.09, 0.04; 0016 section 18).
+      expect(c.yaw - c.readYaw).toBeGreaterThan(0.03);
+      expect(c.yaw - c.readYaw).toBeLessThan(0.26);
     });
   });
 
-  it('the measured allowance: 0.98 to 1.08, every point the reports do not set apart, both readings (M_n 3.37 to 6.65)', () => {
+  it('the measured allowance: 0.98 to 1.08, every point the reports do not set apart, both readings (M_n 3.38 to 6.65)', () => {
     expect(SWEEP_ALLOWANCE).toEqual({ low: 0.98, high: 1.08 });
     const used = checks.filter((c) => c.flag === undefined);
     expect(Math.min(...used.map((c) => c.normalMach))).toBeGreaterThan(3.37);
     expect(Math.max(...used.map((c) => c.yaw))).toBeLessThanOrEqual(SWEEP_LIMIT_DEGREES);
   });
 
-  it("the third looks at the present tests' 45 and 60 deg rings side with the second reading: r 1.113, 1.195", () => {
+  it("the third looks at the present tests' 45 and 60 deg rings place them where the second reading does; at the stated yaws r 1.1278, 1.2167", () => {
     const third = sweepChecks(RM_A55H31_FIG12_THIRD_LOOK);
     const second = sweepChecks(RM_A55H31_FIG12_SECOND);
-    expect(third.map((c) => Math.round(1000 * c.r) / 1000)).toEqual([1.113, 1.195]);
+    expect(third.map((c) => Math.round(1e4 * c.r) / 1e4)).toEqual([1.1278, 1.2167]);
     third.forEach((c, i) => {
-      // Within 0.06 deg and 0.001 of the second reading; 0.27 to 0.34 deg below the first's.
-      expect(Math.abs(c.yaw - second[i + 1]!.yaw)).toBeLessThan(0.06);
+      // Within 0.06 deg and 0.001 of the second reading as drawn; the first reading's 60 deg
+      // ratio (0.170) is 0.005 high, misread.
+      expect(Math.abs(c.readYaw - second[i + 1]!.readYaw)).toBeLessThan(0.06);
       expect(
         Math.abs(RM_A55H31_FIG12_THIRD_LOOK[i]!.value - RM_A55H31_FIG12_SECOND[i + 1]!.value),
       ).toBeLessThan(0.001);
-      expect(checks[i + 1]!.yaw - c.yaw).toBeGreaterThan(0.25);
     });
+    expect(checks[2]!.r - third[1]!.r).toBeGreaterThan(0.04);
   });
 
-  it('the served allowance (every served M_n is below 3.37): 0.95 to 1.21, containing every yawed datum at served sweeps and normal Mach numbers', () => {
-    expect(SWEEP_ALLOWANCE_SERVED).toEqual({ low: 0.95, high: 1.21 });
-    // RM A55H31's own tests at 45 and 60 deg (M_n 2.77, 1.96), the second reading and the third
-    // looks: 1.113 to 1.195. The first reading's two, misread in yaw (1.134, 1.277), set aside.
+  it('the served allowance at 60 deg (every served M_n is below 3.38): 0.95 to 1.22, containing every yawed datum at served sweeps and normal Mach numbers', () => {
+    expect(SWEEP_ALLOWANCE_SERVED).toEqual({ low: 0.95, high: 1.22 });
+    // RM A55H31's own tests at 45 and 60 deg (M_n 2.76, 1.95), the second reading and the third
+    // looks at the stated yaws: 1.128 to 1.217. The first reading's 60 deg ratio, misread, set
+    // aside (1.263).
     const atServed = [
       ...sweepChecks(RM_A55H31_FIG12_SECOND),
       ...sweepChecks(RM_A55H31_FIG12_THIRD_LOOK),
@@ -272,6 +280,28 @@ describe('the independence principle on yawed cylinders (RM A55H31 figs. 11, 12)
     for (const r of [0.995, 1.079]) {
       expect(r).toBeGreaterThanOrEqual(SWEEP_ALLOWANCE_SERVED.low);
       expect(r).toBeLessThanOrEqual(SWEEP_ALLOWANCE_SERVED.high);
+    }
+  });
+
+  it('the allowance grows with sin(sweep) from none unswept to 0.95 to 1.22 at 60 deg, and at every tested sweep contains every datum there', () => {
+    expect(sweepAllowanceAt(0)).toEqual({ low: 1, high: 1 });
+    expect(sweepAllowanceAt(60)).toEqual(SWEEP_ALLOWANCE_SERVED);
+    const a = sweepAllowanceAt(14.3);
+    expect([a.low, a.high].map((x) => Math.round(1e3 * x) / 1e3)).toEqual([0.986, 1.063]);
+    const data = [
+      ...checks.filter((c) => c.flag === undefined),
+      ...sweepChecks(RM_A55H31_FIG12_SECOND),
+      ...sweepChecks(RM_A55H31_FIG12_THIRD_LOOK),
+    ].filter((c) => c.yaw <= SWEEP_LIMIT_DEGREES);
+    expect(data.length).toBe(14);
+    for (const c of data) {
+      const at = sweepAllowanceAt(c.yaw);
+      expect(c.r).toBeGreaterThanOrEqual(at.low);
+      expect(c.r).toBeLessThanOrEqual(at.high);
+    }
+    for (let d = 1; d <= 60; d++) {
+      expect(sweepAllowanceAt(d).high).toBeGreaterThan(sweepAllowanceAt(d - 1).high);
+      expect(sweepAllowanceAt(d).low).toBeLessThan(sweepAllowanceAt(d - 1).low);
     }
   });
 
@@ -304,7 +334,7 @@ describe('the nose term on flat and swept fins', () => {
     expect(t.sweepDegrees).toBe(0);
   });
 
-  it('swept: at the normal Mach number on the normal dynamic pressure; band 0.94 to 1.29 (the served allowance)', () => {
+  it('swept: at the normal Mach number on the normal dynamic pressure; band 0.953 to 1.234 (the allowance at 40 deg)', () => {
     const sweep = 40;
     const t = roundedLeadingEdgeDrag({
       mach: 2.8,
@@ -322,19 +352,24 @@ describe('the nose term on flat and swept fins', () => {
     // Re_n 1.53e5: measured (TN 2960's Reynolds numbers, M_n 2.14).
     expect(t.regime).toBe('measured');
     expect(t.reynoldsOnDiameter).toBeCloseTo(2e5 * Math.cos(sweep * deg), 8);
-    expect(t.band).toEqual({ low: 0.94, high: 1.29 });
+    const a = sweepAllowanceAt(sweep);
+    expect(t.band).toEqual({
+      low: Math.floor(0.99 * a.low * 1000 + 1e-9) / 1000,
+      high: Math.ceil(1.06 * a.high * 1000 - 1e-9) / 1000,
+    });
+    expect(t.band).toEqual({ low: 0.953, high: 1.234 });
     expect(t.label).toMatch(/swept 40\.0 deg: the independence principle/);
     expect(t.label).toMatch(
-      /RM A55H31 figs\. 11, 12\), the band widened by 0\.95 to 1\.21 for it, the sweep allowance extrapolated in normal Mach number/,
+      /RM A55H31 figs\. 11, 12\), the band widened by 0\.963 to 1\.163 for it \(0\.95 to 1\.22 at 60 deg, in proportion to sin\(sweep\) below\), the sweep allowance extrapolated in normal Mach number/,
     );
     expect(t.label).not.toMatch(/read once/);
     expect(t.label).toMatch(
-      /and TN 3861's crossflow points; no yawed datum below M_n 1\.96 at a served sweep\) \(0016\)$/,
+      /and TN 3861's crossflow points; no yawed datum below M_n 1\.95 at a served sweep\) \(0016\)$/,
     );
     expect(t.label.startsWith('an analogy, not a measurement')).toBe(true);
   });
 
-  it('swept and extrapolated in Reynolds number (normal component below 1e5): 0.91 to 1.32', () => {
+  it('swept and extrapolated in Reynolds number (normal component below 1e5): 0.924 to 1.268', () => {
     const t = roundedLeadingEdgeDrag({
       mach: 2.8,
       radius: 0.0015,
@@ -344,10 +379,16 @@ describe('the nose term on flat and swept fins', () => {
     });
     expect(t.regime).toBe('extrapolated in Reynolds number');
     expect(t.band).toEqual({
-      low: Math.floor((ROUNDED_EDGE_BAND.low - REYNOLDS_ALLOWANCE) * 0.95 * 100 + 1e-9) / 100,
-      high: Math.ceil((ROUNDED_EDGE_BAND.high + REYNOLDS_ALLOWANCE) * 1.21 * 100 - 1e-9) / 100,
+      low:
+        Math.floor(
+          (ROUNDED_EDGE_BAND.low - REYNOLDS_ALLOWANCE) * sweepAllowanceAt(40).low * 1000 + 1e-9,
+        ) / 1000,
+      high:
+        Math.ceil(
+          (ROUNDED_EDGE_BAND.high + REYNOLDS_ALLOWANCE) * sweepAllowanceAt(40).high * 1000 - 1e-9,
+        ) / 1000,
     });
-    expect(t.band).toEqual({ low: 0.91, high: 1.32 });
+    expect(t.band).toEqual({ low: 0.924, high: 1.268 });
   });
 
   it('refuses a normal Mach number below 1.0 (1.0 to 1.49: section 11), with the subsonic reasons', () => {

@@ -74,14 +74,16 @@
  * allowance) decided on M_n and the Reynolds number on the normal
  * component. Its error is measured on yawed cylinders (RM A55H31 figs. 11
  * and 12, ./rm-a55h31.ts, both readings, fig. 12 converted exactly to gauge
- * pressure): the yawed front side over this model, relative to the
- * unyawed, 0.98 to 1.08 over the checks the reports do not set apart, all at
- * M_n 3.37 to 6.65 (SWEEP_ALLOWANCE). Every swept edge served is at M_n 3.0
- * or less, so its allowance is extrapolated in normal Mach number and set
- * to contain every yawed datum at served sweeps and normal Mach numbers:
- * **0.95 to 1.21** (SWEEP_ALLOWANCE_SERVED, 0016 section 16). Swept edges
- * are served to 60 deg (the checks reach 59.9 deg; at 75 deg the only
- * points have an end effect).
+ * pressure, r at the tests' stated yaws): the yawed front side over this
+ * model, relative to the unyawed, 0.98 to 1.08 over the checks the reports
+ * do not set apart, all at M_n 3.38 to 6.65 (SWEEP_ALLOWANCE). Every swept
+ * edge served is at M_n 3.0 or less, so its allowance is extrapolated in
+ * normal Mach number and set to contain every yawed datum at served sweeps
+ * and normal Mach numbers: **0.95 to 1.22** at 60 deg
+ * (SWEEP_ALLOWANCE_SERVED, 0016 sections 16 and 18), growing from none
+ * unswept with sin(sweep) (sweepAllowanceAt). Swept edges are served to 60
+ * deg (the checks reach 59.8 deg; at 75 deg the only points have an end
+ * effect).
  *
  * **Normal Mach numbers 1.0 to 1.49** (0016 section 11, W4(e), on flat
  * plates and rounded wedges): the same analogy, the normal flow sonic or
@@ -98,7 +100,7 @@
  * and run spread at M 1.0; the 1.49 node's range is TN 2960's band), so
  * across 1.2 to 1.49, where nothing is measured, the band spans both sides
  * (0014 W4(d) as amended by 0016). Swept, the served sweep allowance
- * above (0.95 to 1.21).
+ * above (0.95 to 1.22 at 60 deg).
  *
  * **Normal Mach numbers below 1.0** stay refused (0016, W4(d)): below Mach 1 a cylinder's front side is set by its
  * separation and wake (TN 2960 figs. 5(a), 5(b), 5(e): 0.10 to 0.41 of the
@@ -250,7 +252,10 @@ export function tn2960FrontSides(): {
 export interface SweepCheck {
   readonly source: string;
   readonly mach: number;
+  /** The test's yaw, as the reports state it (the yaw r is evaluated at). */
   readonly yaw: number;
+  /** The yaw where the symbol is drawn, as read. */
+  readonly readYaw: number;
   readonly normalMach: number;
   /** Fig. 12's ratio on gauge pressures. */
   readonly gauge: number;
@@ -263,11 +268,12 @@ export interface SweepCheck {
 
 /**
  * The independence principle on RM A55H31 (0016, W4(c)): each fig. 12
- * ratio, on absolute pressures as eq. (14), converted to gauge pressures
- * with fig. 11's stagnation ratio S (times Rayleigh's p_t2 / p_inf) and the
- * unyawed shape integral I_g of table II at yaw 0, gauge = ratio [1 - 1 /
- * (S I_g)] / [1 - 1 / (S_0 I_g)], then over the model per unit length of
- * the cylinder, cos^3(L) Cp_pitot(M cos L) / Cp_pitot(M).
+ * ratio R, on absolute pressures as eq. (14), converted exactly to gauge
+ * pressures with the unyawed shape integral I_g of table II at yaw 0 and P
+ * = p_t2 / p_inf (Rayleigh), gauge = (R P I_g - cos L) / (P I_g - 1), then
+ * over the model per unit length of the cylinder, cos^3(L) Cp_pitot(M cos
+ * L) / Cp_pitot(M). L is the test's yaw as the reports state it, not where
+ * fig. 12 draws the symbol (0.2 to 0.25 deg below it; 0016 section 18).
  */
 export function sweepChecks(fig12: typeof RM_A55H31_FIG12 = RM_A55H31_FIG12): SweepCheck[] {
   const t0 = RM_A55H31_TABLE2.find((t) => t.yaw === 0)!;
@@ -276,7 +282,8 @@ export function sweepChecks(fig12: typeof RM_A55H31_FIG12 = RM_A55H31_FIG12): Sw
   const p0p = (m: number) => 1 + 0.5 * GAMMA * m * m * pitotPressureCoefficient(m);
   return fig12.map((pt) => {
     const pt2 = p0p(pt.mach);
-    const L = pt.yaw * DEG;
+    const yaw = pt.statedYaw ?? pt.yaw;
+    const L = yaw * DEG;
     // Eq. (14)'s ratio R is cos(L) times the absolute front-side integrals' ratio; with the
     // unyawed integral P I_g on p_inf, the gauge ratio is exactly (R P I_g - cos L) / (P I_g - 1).
     const gauge = (pt.value * pt2 * ig - Math.cos(L)) / (pt2 * ig - 1);
@@ -286,7 +293,8 @@ export function sweepChecks(fig12: typeof RM_A55H31_FIG12 = RM_A55H31_FIG12): Sw
     return {
       source: pt.source,
       mach: pt.mach,
-      yaw: pt.yaw,
+      yaw,
+      readYaw: pt.yaw,
       normalMach,
       gauge,
       model,
@@ -613,21 +621,22 @@ export function transonicFrontSide(normalMach: number): TransonicFrontSide {
 }
 
 /**
- * The sweep allowance on the swept edges served (0016 section 16). The
- * checks behind SWEEP_ALLOWANCE lie at M_n 3.37 to 6.65 and the domain is
- * M_n 1.0 to 3.0, so every swept edge served is extrapolated in normal
- * Mach number. TN 3861's crossflow figures (figs. 15 and 16 read twice,
- * fig. 17 once) hold one point below M_n 3.37 at a served sweep (Lord and
- * Ulmann's, about 60 deg, M_n about 2.0): its front side, estimated from
- * figs. 16 and 17, is 0.995 to 1.079 of the unyawed, inside this
- * allowance. No yawed datum lies below M_n 1.96 at a served sweep. So it
- * contains every yawed datum at served sweeps and normal
- * Mach numbers (RM A55H31's own tests at 45 and 60 deg, M_n 1.94 to 2.77:
- * the second reading and the third looks, 1.11 to 1.19, the first
- * reading's misplaced points set aside; the report sets them apart for
- * three-dimensional flow from the 1 in model in the 3 in stream, a
- * finite-length effect a fin's edge may share), twice the measured
- * allowance's deviation from 1, and the interim floor of 0.95 to 1.21.
+ * The sweep allowance at 60 deg on the swept edges served (0016 sections
+ * 16 and 18). The checks behind SWEEP_ALLOWANCE lie at M_n 3.38 to 6.65 and
+ * the domain is M_n 1.0 to 3.0, so every swept edge served is extrapolated
+ * in normal Mach number. It contains every yawed datum at served sweeps and
+ * normal Mach numbers, r at the tests' stated yaws: RM A55H31's own tests at
+ * 45 and 60 deg (M_n 2.76 and 1.95; the second reading and the third looks,
+ * 1.128 to 1.217, the first reading's 60 deg ratio, misread, set aside; the
+ * report sets them apart for three-dimensional flow from the 1 in model in
+ * the 3 in stream, a finite-length effect a fin's edge may share; the 45
+ * deg run is at R 2.1e3, below the served 6.7e3, so counting it is
+ * conservative) and TN
+ * 3861's one crossflow point at a served sweep (Lord and Ulmann's, about 60
+ * deg, M_n about 2.0: 0.995 to 1.079 of the unyawed, an estimate from figs.
+ * 16 and 17); with twice the measured allowance's deviation from 1 and the
+ * interim floor of 0.95 to 1.21. No yawed datum lies below M_n 1.95 at a
+ * served sweep. Below 60 deg it shrinks with sin(sweep): sweepAllowanceAt.
  */
 export const SWEEP_ALLOWANCE_SERVED = (() => {
   const looked = (c: SweepCheck) =>
@@ -648,6 +657,26 @@ export const SWEEP_ALLOWANCE_SERVED = (() => {
     high: Math.ceil(high * 100 - 1e-9) / 100,
   };
 })();
+
+/**
+ * The sweep allowance at a sweep of S deg (0016 section 18): none unswept,
+ * growing in proportion to sin(S) / sin(60 deg) to SWEEP_ALLOWANCE_SERVED at
+ * 60 deg. The yawed data grow with sweep (RM A55H31's own tests: r 1.07, 1.13,
+ * 1.22 at 30, 45, 60 deg, about 0.29 sin^2(S)), and sin(S) / sin(60 deg)
+ * lies above sin^2(S) / sin^2(60 deg) at every served sweep, so the allowance
+ * at each tested sweep contains every datum at that sweep (Penland's at 14.3
+ * deg, 0.995 and 0.996, inside 0.986 to 1.063).
+ */
+export function sweepAllowanceAt(sweepDegrees: number): { low: number; high: number } {
+  const s = Math.min(
+    1,
+    Math.sin(Math.abs(sweepDegrees) * DEG) / Math.sin(SWEEP_LIMIT_DEGREES * DEG),
+  );
+  return {
+    low: 1 - (1 - SWEEP_ALLOWANCE_SERVED.low) * s,
+    high: 1 + (SWEEP_ALLOWANCE_SERVED.high - 1) * s,
+  };
+}
 
 /** Widening of the band where no measurement covers the Reynolds number (0010 section 5). */
 export const REYNOLDS_ALLOWANCE = 0.03;
@@ -865,22 +894,25 @@ export function roundedLeadingEdgeDrag(input: {
       ...extra,
     };
   }
-  const allowance = SWEEP_ALLOWANCE_SERVED;
+  const allowance = sweepAllowanceAt(sweepDegrees);
   return {
     dragPerSpan,
+    // Rounded outward to 0.001, so the band grows from the unswept one without a step.
     band: {
-      low: Math.floor(band.low * allowance.low * 100 + 1e-9) / 100,
-      high: Math.ceil(band.high * allowance.high * 100 - 1e-9) / 100,
+      low: Math.floor(band.low * allowance.low * 1000 + 1e-9) / 1000,
+      high: Math.ceil(band.high * allowance.high * 1000 - 1e-9) / 1000,
     },
     regime,
     label:
       `${label}; swept ${sweepDegrees.toFixed(1)} deg: the independence principle, the front side ` +
       'at the normal Mach number on the normal dynamic pressure, checked on yawed cylinders ' +
       `(RM A55H31 figs. 11, 12${RM_A55H31_READINGS < 2 ? ', read once, the second reading pending' : ''}), ` +
-      `the band widened by ${allowance.low.toFixed(2)} to ${allowance.high.toFixed(2)} for it, ` +
-      'the sweep allowance extrapolated in normal Mach number (checked at M_n 3.37 to 6.65; ' +
-      "widened to contain RM A55H31's own tests at 45 and 60 deg, M_n 1.96 to 2.77, and TN 3861's " +
-      'crossflow points; no yawed datum below M_n 1.96 at a served sweep) (0016)',
+      `the band widened by ${allowance.low.toFixed(3)} to ${allowance.high.toFixed(3)} for it ` +
+      `(${SWEEP_ALLOWANCE_SERVED.low.toFixed(2)} to ${SWEEP_ALLOWANCE_SERVED.high.toFixed(2)} at ` +
+      `${SWEEP_LIMIT_DEGREES} deg, in proportion to sin(sweep) below), the sweep allowance ` +
+      'extrapolated in normal Mach number (checked at M_n 3.38 to 6.65; widened to contain ' +
+      "RM A55H31's own tests at 45 and 60 deg, M_n 1.95 to 2.76, and TN 3861's crossflow points; " +
+      'no yawed datum below M_n 1.95 at a served sweep) (0016)',
     reynoldsOnDiameter: re,
     normalMach: mach,
     sweepDegrees,

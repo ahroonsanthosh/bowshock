@@ -20,6 +20,7 @@ by the solver or the page.
 | `out/impact-review.out`, `out/impact-review.json` | The same run after 0016 section 16 (fins at the base take a plate's largest t/c, at the tip): `evaluate.ts`'s default, `EDGES=w4e` |
 | `out/2026-10-21-swept-at-base/` | The same run after the fins-on-base factor began refusing swept fins at the base (2026-10-21; 0014 section 10.7, amendment d): `evaluate.ts` mirrors it (`finsAtBaseSwept`, in W1's package). `out/impact.out` stays as 0014's sections 1 to 6 quote it, from before |
 | `out/2026-10-21-w34-merge/` | The same run with the fin edges of flat plates (0016, through section 16) merged with the swept-fins refusal (0016 section 17): `evaluate.ts`'s default, `EDGES=w4e` |
+| `out/2026-10-21-w34-rereview/` | The same run after 0016 section 18 (fins at the base thinner than the factor's 5% data served, extended; only thicker than 10% refused): `evaluate.ts`'s default, `EDGES=w4e` |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |

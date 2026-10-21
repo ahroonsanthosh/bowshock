@@ -206,6 +206,18 @@ or crossing a line dropped, a least-squares circle, three passes; radius
 yaws run 0.2 to 0.4 deg high, section 14 of 0016) and set aside; r at the
 third look is 1.113 and 1.195.
 
+**At the stated yaws (0016 section 18).** The reports state each test's
+yaw: the present tests 30, 45 and 60 deg (p. 10, fig. 10's legend),
+reference 1's 14.3, 29.6, 45.1 and 59.8 deg (fig. 10's legend) and 75.1 deg
+(TN 3861 fig. 5, alpha 14.9 deg). Fig. 12 draws its symbols below them
+(0.15 to 0.25 deg on the second reading, 0.09 and 0.04 at 30 and 75 deg),
+and fig. 11 draws the same tests at 60.0 and 60.04 deg, so the third looks
+measured where a symbol is drawn, not the test's yaw. r is evaluated at the
+stated yaw (`w34_fin_edges.py`, `A55_STATED_YAW`): the first reading 1.0685,
+1.1278, 1.2633; 0.9958, 1.0073, 1.0303, 0.9869; 1.1698; the second 1.0720,
+1.1287, 1.2101; 0.9950, 1.0117, 1.0335, 1.0100; 1.0130; the third looks
+1.1278 and 1.2167. At 60 deg r moves 0.126 per degree of yaw.
+
 Fig. 11 against Rayleigh's pitot formula on the normal Mach number:
 present tests 1.019, 1.039, 1.104 of it at 30, 45, 60 deg; ref. 1 0.956 to
 1.036 to 60 deg, 0.653 at 75 deg (the same end effect). Table II's

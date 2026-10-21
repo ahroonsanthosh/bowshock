@@ -28,7 +28,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from w34_fin_edges import (A55_FIG11, A55_FIG12, A55_TABLE2, M5_BRANCHES, M5_COMMON_CURVE,  # noqa: E402
+from w34_fin_edges import (A55_FIG11, A55_FIG12, A55_STATED_YAW, A55_TABLE2, M5_BRANCHES, M5_COMMON_CURVE,  # noqa: E402
                            M5_COMMON_SYMBOLS, M8B_CURVE, M8B_SYMBOLS, cp0, front, front90, p0_over_p)
 
 # Misreads shown by the scan, left out (0016 sections 14 and 16): the second reading's M 1.2
@@ -157,8 +157,8 @@ def main():
     say('## RM A55H31 figs. 11 and 12: the pairs, and r on each reading (exact gauge conversion)')
     say('')
     say('| Point | Fig. 12, first | Second | dyaw (comb.) | dratio (comb.) | Fig. 11, first | Second | '
-        'dvalue (comb.) | r, first | r, second |')
-    say('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |')
+        'dvalue (comb.) | r, first | r, second | stated yaw | r there, first | second |')
+    say('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |')
     r12 = list(csv.DictReader(open(os.path.join(d, 'rma55h31_fig12.csv'))))
     r11 = list(csv.DictReader(open(os.path.join(d, 'rma55h31_fig11.csv'))))
     m0, pinf0, p0vals = A55_TABLE2[0]
@@ -176,17 +176,21 @@ def main():
         return float(best['x']), float(best['y']), float(best['err_y']), xerr(best['how'])
 
     for (src, m, lam, v) in A55_FIG12:
+        ls = A55_STATED_YAW[(m, round(lam / 15))]
         y2, v2, e2, x2 = second_of(r12, m, lam)
         f11 = min((q for q in A55_FIG11 if q[1] == m), key=lambda q: abs(q[2] - lam))
         y11, v11, e11, x11 = second_of(r11, m, f11[2])
         say(f'| {src}, {lam:.0f} deg | {lam}, {v:.3f} | {y2:.2f}, {v2:.4f} | {abs(lam - y2):.2f} ({0.2 + x2:.2f}) | '
             f'{abs(v - v2):.4f} ({0.004 + e2:.4f}) | {f11[2]}, {f11[3]:.3f} | {y11:.2f}, {v11:.4f} | '
-            f'{abs(f11[3] - v11):.4f} ({0.004 + e11:.4f}) | {r_of(m, lam, v):.4f} | {r_of(m, y2, v2):.4f} |')
+            f'{abs(f11[3] - v11):.4f} ({0.004 + e11:.4f}) | {r_of(m, lam, v):.4f} | {r_of(m, y2, v2):.4f} | '
+            f'{ls} | {r_of(m, ls, v):.4f} | {r_of(m, ls, v2):.4f} |')
     # Third looks (0016 section 16): the present tests' rings fitted by a circle on the deskewed
     # scan, centre to +-0.5 px (+-0.02 deg, +-0.0005); 30 deg agrees, 45 and 60 resolve their pairs.
     say('')
     for lam, v in ((29.91, 0.702), (44.76, 0.410), (59.83, 0.165)):
-        say(f'- third look, present tests, {lam} deg, {v:.3f}: r {r_of(3.9, lam, v):.4f}')
+        ls = A55_STATED_YAW[(3.9, round(lam / 15))]
+        say(f'- third look, present tests, drawn at {lam} deg, {v:.3f}: r {r_of(3.9, lam, v):.4f}; '
+            f'at the stated {ls} deg, r {r_of(3.9, ls, v):.4f}')
     if len(sys.argv) > 2:
         say('')
         say('## Round 7: fig. 8b, M 1.2, the blind re-read, against the first reading')

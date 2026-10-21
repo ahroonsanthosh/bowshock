@@ -45,14 +45,17 @@ refused, change only their reasons (section 12).
 
 ## 1. What is served, and on what
 
-| Item                  | Method                                                                                            | Band on the term                                                    | Domain                                     | Data                                                        |
-| --------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------- |
-| W3(a) thick layers    | thin-layer term times K(M, X) = D(X) / D(1.0) on TR 1109 fig. 29(a)                               | 0.93 x K_low to 1.21 x K_high (section 2)                           | X 1.0 to 4.5 at M 1.5 to 3.1               | TR 1109 fig. 29(a), both readings                           |
-| W3(b) varying chord   | the term integrated along the span (unswept trailing edge)                                        | as W3(a), station by station                                        | as the term                                |                                                             |
-| W4(a) flat plates     | the rounded wedge's limit, face angle 0: (2/3) Cp_pitot (2r) per span                             | 0.99 to 1.06, as now                                                | as now                                     | TN 2960 fig. 5(c) both readings; figs. 5(d), 5(e) as checks |
-| W4(b) any planform    | the nose term per unit span times the span (a plate's radius is the same at every station)        | as W4(a)                                                            |                                            |                                                             |
-| W4(c) swept           | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure   | 0.97 to 1.14 (0.94 to 1.17 extrapolated in Reynolds number)         | sweep to 60 deg, M_n 1.49 to 3.0           | RM A55H31 figs. 11, 12 (two readings)                       |
-| W4(e) M_n 1.0 to 1.49 | plates: the term times kappa(M_n), the cylinder's front side over modified Newtonian (section 11) | the bracketing nodes' range (section 11); swept, times 0.96 to 1.14 | plates and rounded wedges, M_n 1.0 to 1.49 | NASA CR-149372 figs. 8b, 5 (two readings); TN 2960 at 1.49  |
+The table as of section 18 (the sections below record how each row came to be).
+
+| Item                  | Method                                                                                                                                                                                                         | Band on the term                                                                                                                                                 | Domain                          | Data                                                                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| W3(a) thick layers    | thin-layer term times K(M, X) = D(X) / D(1.0) on TR 1109 fig. 29(a)                                                                                                                                            | 0.93 x K_low to 1.21 x K_high (section 2)                                                                                                                        | X 1.0 to 4.5 at M 1.5 to 3.1    | TR 1109 fig. 29(a), both readings                                                                                                     |
+| W3(b) varying chord   | the term integrated along the span (unswept trailing edge); stations below X 0.45 take the thin-layer term, labelled; a tip sliver beyond fig. 29's laminar read range bounded by the vacuum (sections 16, 18) | as W3(a), station by station                                                                                                                                     | as the term                     |                                                                                                                                       |
+| W4(a) flat plates     | the rounded wedge's limit, face angle 0: (2/3) Cp_pitot (2r) per span                                                                                                                                          | 0.99 to 1.06 (0.98 at M_n 1.49, rising to 0.99 by 1.59)                                                                                                          | M_n 1.49 to 3.0                 | TN 2960 fig. 5(c) both readings; figs. 5(d), 5(e) as checks                                                                           |
+| W4(b) any planform    | the nose term per unit span times the span (a plate's radius is the same at every station)                                                                                                                     | as W4(a)                                                                                                                                                         |                                 |                                                                                                                                       |
+| W4(c) swept           | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure                                                                                                                | W4(a)'s or W4(e)'s times the sweep allowance, 0.95 to 1.22 at 60 deg, growing from none unswept with sin(sweep) (section 18); extrapolated in normal Mach number | sweep to 60 deg, M_n 1.0 to 3.0 | RM A55H31 figs. 11, 12 (two readings and third looks, r at the stated yaws); TN 3861 figs. 15, 16 (two readings), 17 (one), as checks |
+| W4(e) M_n 1.0 to 1.49 | plates and rounded wedges: the term times kappa(M_n), the cylinder's front side over modified Newtonian (section 11)                                                                                           | the bracketing nodes' range (sections 11, 14, 16)                                                                                                                | M_n 1.0 to 1.49                 | NASA CR-149372 figs. 8b, 5 (two readings; fig. 8b at M 1.2 three); TN 2960 at 1.49                                                    |
+| Fins at the base      | a plate's largest t/c (its shorter end chord) to the fins-on-base factor; thinner than 5% anywhere, the factor extended (section 18)                                                                           | the factor's; extended, low end F = 1                                                                                                                            | t/c up to 0.10                  | as the factor (0010)                                                                                                                  |
 
 ## 2. W3(a): blunt trailing edges with thick layers
 
@@ -166,37 +169,41 @@ Converted exactly to gauge pressure, (R P I_g - cos L) / (P I_g - 1) with P
 as first committed, through fig. 11's stagnation ratio, an approximation),
 and divided by the model's ratio, cos^3(L) Cp_pitot(M cos L) /
 Cp_pitot(M), each point gives r, measured over modelled relative to the
-unyawed cylinder (the numbers as of section 16; the second reading,
+unyawed cylinder, at the test's yaw as the reports state it (section 18;
+fig. 12 draws its symbols up to 0.25 deg below it; the second reading,
 section 14; the third looks, section 16):
 
-| Source, yaw         | M_n  | r, first | r, second (third look) | Used                                                                                                                  |
-| ------------------- | ---- | -------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| RM A55H31, 30.1 deg | 3.37 | 1.072    | 1.069                  | yes                                                                                                                   |
-| RM A55H31, 45.1 deg | 2.75 | 1.134    | 1.113 (1.113)          | in the measured allowance, no: R 2.1e3, three-dimensional flow suspected (p. 14); in the served one, yes (section 16) |
-| RM A55H31, 60.1 deg | 1.94 | 1.277    | 1.183 (1.195)          | the same; the first reading misread (section 16)                                                                      |
-| Penland, 14.4 deg   | 6.64 | 0.997    | 0.993                  | yes                                                                                                                   |
-| Penland, 29.6 deg   | 5.96 | 1.007    | 1.005                  | yes                                                                                                                   |
-| Penland, 45.2 deg   | 4.83 | 1.036    | 1.022                  | yes                                                                                                                   |
-| Penland, 59.9 deg   | 3.44 | 0.996    | 0.988                  | yes                                                                                                                   |
-| Penland, 75.5 deg   | 1.72 | 1.287    | 1.004                  | no: an end effect (TN 3861 p. 10), and beyond 60 deg                                                                  |
+| Source, stated yaw | M_n  | r, first | r, second (third look) | Used                                                                                                                       |
+| ------------------ | ---- | -------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| RM A55H31, 30 deg  | 3.38 | 1.069    | 1.072                  | yes                                                                                                                        |
+| RM A55H31, 45 deg  | 2.76 | 1.128    | 1.129 (1.128)          | in the measured allowance, no: R 2.1e3, three-dimensional flow suspected (p. 14); in the served one, yes (sections 16, 18) |
+| RM A55H31, 60 deg  | 1.95 | 1.263    | 1.210 (1.217)          | the same; the first reading's ratio misread (sections 16, 18)                                                              |
+| Penland, 14.3 deg  | 6.65 | 0.996    | 0.995                  | yes                                                                                                                        |
+| Penland, 29.6 deg  | 5.96 | 1.007    | 1.012                  | yes                                                                                                                        |
+| Penland, 45.1 deg  | 4.84 | 1.030    | 1.034                  | yes                                                                                                                        |
+| Penland, 59.8 deg  | 3.45 | 0.987    | 1.010                  | yes                                                                                                                        |
+| Penland, 75.1 deg  | 1.76 | 1.170    | 1.013                  | no: an end effect (TN 3861 p. 10), and beyond 60 deg                                                                       |
 
 The points set apart are set apart by the reports' own statements, made
-before any of this, not by their values. Over those used, r is 0.988 to
+before any of this, not by their values. Over those used, r is 0.987 to
 1.072, so **the measured sweep allowance is 0.98 to 1.08** (rounded
-outward; as first committed, on one reading and the approximate
-conversion, 0.99 to 1.07), at M_n 3.37 to 6.65. Every swept edge served
-is at M_n 3.0 or less, so the allowance served is extrapolated in normal
-Mach number and contains every yawed datum at served sweeps and normal
-Mach numbers, the 45 and 60 deg points among them: **0.95 to 1.21**
-(section 16). The band on a swept edge is TN 2960's times it, rounded
-outward: **0.94 to 1.29** (0.93 at M_n 1.49, section 16's local low end),
-and **0.91 to 1.32** where extrapolated in Reynolds number. The allowance
-is the larger of the two effects the checks cannot separate: the
-independence principle's own error, and the modified-Newtonian ratio's
-drift from M to M_n (TN 2960: 0.995 to 1.056 over 1.49 to 2.90).
+outward; as first committed, on one reading, the approximate conversion
+and the yaws as drawn, 0.99 to 1.07), at M_n 3.38 to 6.65. Every swept
+edge served is at M_n 3.0 or less, so the allowance served is extrapolated
+in normal Mach number and contains every yawed datum at served sweeps and
+normal Mach numbers, the 45 and 60 deg points among them: **0.95 to 1.22
+at 60 deg**, growing from none unswept with sin(sweep) (section 18; at
+f8df436 a flat 0.95 to 1.21). The band on a swept edge is TN 2960's times
+it, rounded outward to 0.001: at 60 deg **0.940 to 1.294** (0.931 at M_n
+1.49, section 16's local low end), and **0.912 to 1.330** where
+extrapolated in Reynolds number; less at smaller sweeps (at 40 deg 0.953
+to 1.234). The allowance is the larger of the two effects the checks
+cannot separate: the independence principle's own error, and the
+modified-Newtonian ratio's drift from M to M_n (TN 2960: 0.995 to 1.056
+over 1.49 to 2.90).
 
 **Served to 60 deg of sweep**, the largest yaw among the points used
-(59.9 deg); beyond it the only point is affected by an end effect.
+(59.8 deg as stated); beyond it the only point is affected by an end effect.
 Penland's ratios in RM A55H31 were formed on RM L54A14, before TN 3861
 corrected its 90 deg data for a local Mach-number variation (p. 7), by an
 amount neither report states; TN 3861's own polar plot (fig. 5) is too
@@ -205,9 +212,10 @@ coarse at low incidence to integrate (`fin_edges_w34.md` section 4).
 **Label:** the rounded edge's, with "swept S deg: the independence
 principle, the front side at the normal Mach number on the normal dynamic
 pressure, checked on yawed cylinders (RM A55H31 figs. 11, 12), the band
-widened by 0.95 to 1.21 for it, the sweep allowance extrapolated in normal
-Mach number (...)" (section 16; as first committed, "read once, the second
-reading pending" and 0.99 to 1.07).
+widened by L to H for it (0.95 to 1.22 at 60 deg, in proportion to
+sin(sweep) below), the sweep allowance extrapolated in normal Mach number
+(...)" (section 18; as first committed, "read once, the second reading
+pending" and 0.99 to 1.07).
 Not modelled, the analogy's gap as before: a fin's edge is not an infinite
 cylinder, and the root (the body's boundary layer) and the tip are not
 represented.
@@ -812,15 +820,16 @@ at served conditions (sweep 45 and 60 deg, M_n 2.77 and 1.96), and the
 allowance served must contain them.
 
 Their two readings disagree beyond the combined error (yaw 0.35 and 0.32
-deg apart, the 60 deg ratio 0.006 apart), and at 60 deg r moves about 0.3
-per degree of yaw, so each ring was looked at a third time, by a circle
+deg apart, the 60 deg ratio 0.006 apart), and at 60 deg r moves 0.126 per
+degree of yaw (corrected in section 18; this section first said about 0.3), so each ring was looked at a third time, by a circle
 fit on the deskewed scan (`fin_edges_w34.md` section 3): 44.76 deg, 0.410
 and 59.83 deg, 0.165, within 0.05 deg and 0.001 of the second reading's
 44.75, 0.410 and 59.78, 0.164. The first reading's two are misread (its
 yaws run high, as section 14 found) and are set aside by 0014 section 10
 (`RM_A55H31_FIG12_THIRD_LOOK`). r is 1.113 and 1.195 at the third looks,
 1.113 and 1.183 on the second reading (the first's, set aside, 1.134 and
-1.277).
+1.277). (Section 18: at the yaws the reports state, 1.128 and 1.217 at the
+third looks, 1.129 and 1.210 on the second reading.)
 
 **(b) TN 3861 figs. 15 and 16, both readings** (with fig. 17, which the
 drag needs, read once; `fin_edges_w34.md` section 4). The first reading was
@@ -879,12 +888,16 @@ first-reading point would have made it 1.28. The label: "the band widened
 by 0.95 to 1.21 for it, the sweep allowance extrapolated in normal Mach
 number (checked at M_n 3.37 to 6.65; widened to contain RM A55H31's own
 tests at 45 and 60 deg, M_n 1.96 to 2.77, and TN 3861's crossflow points;
-no yawed datum below M_n 1.96 at a served sweep)".
+no yawed datum below M_n 1.96 at a served sweep)". (Section 18 evaluates
+r at the tests' stated yaws: the data span 0.995 to 1.217, the allowance
+is 0.95 to 1.22 at 60 deg, growing with sin(sweep), and the label's M_n
+is 1.95 to 2.76.)
 
 **The coordinator's decision (2026-10-21): served.** Swept edges below M_n
-1.96, where no yawed datum lies at a served sweep, are served, not refused,
-with the band that contains every yawed datum (0.95 to 1.21) and the label
-above, under the owner's rule: serve rather than refuse wherever an honest
+1.95 (1.96 as first written, section 18), where no yawed datum lies at a
+served sweep, are served, not refused, with the band that contains every
+yawed datum (0.95 to 1.21 then; 0.95 to 1.22 at 60 deg, growing with
+sin(sweep), since section 18) and the label above, under the owner's rule: serve rather than refuse wherever an honest
 band can be given, and state plainly what it rests on (0014 W4, amended
 2026-10-21). Refusing them would have refused the hobby example's leading
 edges at M 1.5 and 1.8 again (M_n 1.11 and 1.34).
@@ -1077,3 +1090,95 @@ its cross-check against `src/total` agreeing on all 1200 cases): totals
 today 0.2% (main alone 0.1%; this branch before the merge 0.4%), the swept
 fins at the base refused in 69.0% of cases; W4 is needed in 20.7% of cases
 (main alone 43.9%); totals once W1 is done 3.4% (main alone 1.4%).
+
+## 18. The re-check of f8df436 (2026-10-21)
+
+The original reviewer's re-check found items 2 and 4 of section 16 and
+most smaller items held, and three problems remaining. What each became:
+
+**1. r at the tests' stated yaws.** The reports state each test's yaw (the
+present tests 30, 45, 60 deg, p. 10 and fig. 10's legend; reference 1's
+14.3, 29.6, 45.1, 59.8 deg, fig. 10's legend, and 75.1, TN 3861 fig. 5).
+Fig. 12 draws its symbols below them (0.15 to 0.25 deg on the second
+reading, 0.09 and 0.04 at 30 and 75 deg), and fig. 11 draws the same tests
+at 60.0 and 60.04 deg: section 16's third looks measured where the symbol
+is drawn, not the test's yaw. r is now evaluated at the stated yaw
+(`statedYaw` in `rm-a55h31.ts`; section 5's table): at 60 deg 1.210 on the
+second reading's ratio, 1.217 on the third look's, 1.263 on the first's
+(its ratio 0.170 misread, 0.165 on the third look, so set aside); at 45 deg
+1.128 on all three. At 60 deg r moves 0.126 per degree of yaw (section 16
+said about 0.3). The measured allowance stays 0.98 to 1.08 (r 0.987 to
+1.072 at M_n 3.38 to 6.65); the allowance served is **0.95 to 1.22 at 60
+deg**; the label's M_n is 1.95 to 2.76, and no yawed datum lies below M_n
+1.95 at a served sweep. The 45 deg run is at R 2.1e3, below the served
+6.7e3: counting it is conservative.
+
+**The allowance grows with sweep.** Unswept the band was 0.99 to 1.06 and
+at 1 deg of sweep 0.94 to 1.29, a step the data do not ask for: Penland's
+14.3 deg point gives r 0.995 and 0.996. The allowance at a sweep S is now
+1 - 0.05 s to 1 + 0.22 s with s = sin(S) / sin(60 deg) (`sweepAllowanceAt`):
+none unswept, the full 0.95 to 1.22 at 60 deg. The data grow with sweep
+(RM A55H31's own tests: r - 1 of 0.07, 0.13, 0.22 at 30, 45, 60 deg, about
+0.29 sin^2(S)), and sin(S) / sin(60 deg) lies above sin^2(S) / sin^2(60
+deg) at every served sweep, so at every tested sweep the allowance contains
+every datum there (a test holds all 14: at 14.3 deg 0.986 to 1.063). The
+swept band is rounded outward to 0.001, not 0.01, so it grows from the
+unswept one without a step (at 1 deg 0.989 to 1.065; at 40 deg 0.953 to
+1.234; at 60 deg 0.940 to 1.294).
+
+The hobby example's leading edges (C_D; section 16's table):
+
+| M   | Before the review         | At f8df436 (flat 0.95 to 1.21) | Now (0.961 to 1.170 at 42 deg) |
+| --- | ------------------------- | ------------------------------ | ------------------------------ |
+| 1.5 | 0.1311 (0.1180 to 0.1664) | 0.1311 (0.1167 to 0.1770)      | 0.1311 (0.1182 to 0.1703)      |
+| 1.8 | 0.1606 (0.1381 to 0.2120) | 0.1607 (0.1366 to 0.2249)      | 0.1607 (0.1388 to 0.2162)      |
+| 2.2 | 0.1825 (0.1770 to 0.2080) | 0.1825 (0.1715 to 0.2354)      | 0.1825 (0.1735 to 0.2264)      |
+
+A flat 0.95 to 1.22 would give high ends of 0.178, 0.227 and 0.237 (the
+reviewer's figures); at 42 deg of sweep the grown allowance gives less.
+
+**2. Thin plates at the base.** With the tip's t/c passed, 156 of the 376
+four-plate rockets at the base in the population newly passed the
+thickness check with a root thinner than 5% (a median 79% of the span
+thinner than the factor's 5% data; the reviewer counts 157). After the
+merge with the main line the present factor refuses fins swept at either
+edge, and a tapered plate has a swept edge: it sees **none** of them. The
+rule is now robust whatever the factor serves later: a plate's largest
+t/c is its thickness over the shorter end chord and its smallest over the
+longer (`finned-body.ts`). Within 0.05 to 0.10 at every station it is
+served as before. Thinner than 0.05 anywhere, none thicker than 0.10, the
+factor is taken at 5% with its low end at no fin effect (F = 1, the
+physical limit, since thinner fins lower the base pressure less), its high
+end kept and the nominal their midpoint, labelled "extended below the
+data's 5% thickness: t/c down to X over Y% of the span, the low end taken
+as no fin effect (F = 1; thinner fins lower the base pressure less), the
+high end the 5% fins'" (`base-drag.ts`, `BaseFins.thinnest`; the factor
+itself, `fins-on-base.ts`, is not changed). A section of uniform t/c below
+5% takes the same rule. Thicker than 0.10 stays refused. In the population it lifts the thickness refusal from the 23 unswept four-plate rockets at the base, all thinner than 5%, and from unswept sections thinner than 5% (a test holds four 3 mm plates of constant chord 120 mm).
+
+**3. The tip sliver's upper bound.** In the sliver the stations lie below
+fig. 29(b)'s read range in c/[h Re^(1/2)], where the laminar base pressure
+keeps falling (M 1.5: p_b/p_inf 0.4068 at 0.012, 0.3576 at 0.010; M 3.1:
+0.2486 at 0.010, 0.1917 at 0.006), so the nearest station's value is not an
+upper bound. The sliver now takes the vacuum bound as its high end (its low
+end the smaller of none and the nearest station's value), labelled. The
+station scan behind the sliver is made only when a sliver needs it, so the
+transition test no longer nears its 5 s timeout under load.
+
+**Smaller items.** Section 1's table is brought up to date. "Fig. 29(a)
+varies by under 4% from 0.45 to 1.0" now reads "by up to 4.2% of its value
+at 1.0, at M 3.1". The working tree is clean and both merges (7f1d579,
+96c7b22; 4d6bbe5, 7cf5cab) are complete commits; the conflicted state the
+reviewer saw was the first merge in progress.
+
+The Basic Finner's gated shots are bit for bit the main line's (7cf5cab;
+693 values, the largest difference 0); its reported shots change only
+their reasons (the leading edges served at Mach 1.332 and 1.377).
+
+**Coverage** (the same population and run, `out/2026-10-21-w34-rereview/`,
+its cross-check against `src/total` agreeing on all 1200 cases): only item
+2 moves a refusal. The thickness refusal at the base falls from 53.1% of
+cases to 5.5% (thicker than 10% only); totals today rise from 0.2% to 0.3%
+(M 1.8 to 3.0: 0.4% to 0.7%); W1 is needed in 94.6% of cases (was 96.0%),
+W4 still in 20.7%, and the totals once W1 is done stay 3.4%. The swept
+fins at the base stay refused in 69.0% of cases.

@@ -216,7 +216,7 @@ describe('the term on a flat plate at M_n 1.0 to 1.49', () => {
     expect(t.band.high).toBeCloseTo(k.high / k.nominal + REYNOLDS_ALLOWANCE, 15);
   });
 
-  it('swept: the served allowance, 0.95 to 1.21, and so labelled (the hobby case, M 1.8 at 42 deg, M_n 1.338)', () => {
+  it('swept: the allowance at 42 deg, 0.961 to 1.170, and so labelled (the hobby case, M 1.8 at 42 deg, M_n 1.338)', () => {
     const sweep = Math.atan(0.9) / deg;
     const t = plate(1.8, sweep, 1e5);
     const mn = 1.8 * Math.cos(sweep * deg);
@@ -226,9 +226,9 @@ describe('the term on a flat plate at M_n 1.0 to 1.49', () => {
       k.nominal * (2 / 3) * pitotPressureCoefficient(mn) * Math.cos(sweep * deg) ** 2 * 0.003,
       16,
     );
-    expect(t.band).toEqual({ low: 0.85, high: 1.4 });
+    expect(t.band).toEqual({ low: 0.864, high: 1.346 });
     expect(t.label).toMatch(
-      /the band widened by 0\.95 to 1\.21 for it, the sweep allowance extrapolated in normal Mach number/,
+      /the band widened by 0\.961 to 1\.170 for it \(0\.95 to 1\.22 at 60 deg, in proportion to sin\(sweep\) below\), the sweep allowance extrapolated in normal Mach number/,
     );
     // Round 7's blind re-read pairs with the first over 22 to 65 deg: no one-reading label.
     expect(t.label).not.toMatch(/one reading/);
@@ -256,7 +256,7 @@ describe('the term on a flat plate at M_n 1.0 to 1.49', () => {
     expect(a.band).toEqual({ low: 0.98, high: 1.06 });
     expect(plate(1.6).band).toEqual({ low: 0.99, high: 1.06 });
     const s = plate(2.8, 40);
-    expect(s.band).toEqual({ low: 0.94, high: 1.29 });
+    expect(s.band).toEqual({ low: 0.953, high: 1.234 });
   });
 });
 

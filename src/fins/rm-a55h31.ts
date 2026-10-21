@@ -26,7 +26,15 @@ export const RM_A55H31_READINGS = 2 as number;
 export interface YawPoint {
   readonly source: 'present tests' | 'reference 1';
   readonly mach: number;
+  /** The yaw where the symbol is drawn, as read. */
   readonly yaw: number;
+  /**
+   * The test's yaw as the reports state it (0016 section 18): the present
+   * tests 30, 45, 60 deg (p. 10; fig. 10's legend); reference 1 14.3, 29.6,
+   * 45.1, 59.8 deg (fig. 10's legend) and 75.1 (TN 3861 fig. 5, alpha 14.9
+   * deg). Fig. 12's symbols are drafted 0.2 to 0.25 deg below them.
+   */
+  readonly statedYaw?: number;
   readonly value: number;
   /** Why the report's own text sets the point apart, if it does. */
   readonly flag?: string;
@@ -46,20 +54,21 @@ const FLAG_END =
  * II). Symbol centres by eye on 2x ruler crops, +-0.004 in the ratio.
  */
 export const RM_A55H31_FIG12: readonly YawPoint[] = [
-  { source: 'present tests', mach: 3.9, yaw: 30.1, value: 0.7 },
+  { source: 'present tests', mach: 3.9, yaw: 30.1, statedYaw: 30, value: 0.7 },
   {
     source: 'present tests',
     mach: 3.9,
     yaw: 45.1,
+    statedYaw: 45,
     value: 0.41,
     flag: `${FLAG_3D}; ${FLAG_REYNOLDS}`,
   },
-  { source: 'present tests', mach: 3.9, yaw: 60.1, value: 0.17, flag: FLAG_3D },
-  { source: 'reference 1', mach: 6.86, yaw: 14.4, value: 0.907 },
-  { source: 'reference 1', mach: 6.86, yaw: 29.6, value: 0.665 },
-  { source: 'reference 1', mach: 6.86, yaw: 45.2, value: 0.367 },
-  { source: 'reference 1', mach: 6.86, yaw: 59.9, value: 0.131 },
-  { source: 'reference 1', mach: 6.86, yaw: 75.5, value: 0.023, flag: FLAG_END },
+  { source: 'present tests', mach: 3.9, yaw: 60.1, statedYaw: 60, value: 0.17, flag: FLAG_3D },
+  { source: 'reference 1', mach: 6.86, yaw: 14.4, statedYaw: 14.3, value: 0.907 },
+  { source: 'reference 1', mach: 6.86, yaw: 29.6, statedYaw: 29.6, value: 0.665 },
+  { source: 'reference 1', mach: 6.86, yaw: 45.2, statedYaw: 45.1, value: 0.367 },
+  { source: 'reference 1', mach: 6.86, yaw: 59.9, statedYaw: 59.8, value: 0.131 },
+  { source: 'reference 1', mach: 6.86, yaw: 75.5, statedYaw: 75.1, value: 0.023, flag: FLAG_END },
 ];
 
 /**
@@ -100,20 +109,28 @@ export const RM_A55H31_TABLE2: readonly {
  * 0.04 to 0.09 deg; the flags are the same points' (by source and yaw).
  */
 export const RM_A55H31_FIG12_SECOND: readonly YawPoint[] = [
-  { source: 'present tests', mach: 3.9, yaw: 29.9147, value: 0.7021 },
+  { source: 'present tests', mach: 3.9, yaw: 29.9147, statedYaw: 30, value: 0.7021 },
   {
     source: 'present tests',
     mach: 3.9,
     yaw: 44.7498,
+    statedYaw: 45,
     value: 0.4103,
     flag: `${FLAG_3D}; ${FLAG_REYNOLDS}`,
   },
-  { source: 'present tests', mach: 3.9, yaw: 59.7835, value: 0.1643, flag: FLAG_3D },
-  { source: 'reference 1', mach: 6.86, yaw: 14.1452, value: 0.9063 },
-  { source: 'reference 1', mach: 6.86, yaw: 29.3753, value: 0.6678 },
-  { source: 'reference 1', mach: 6.86, yaw: 44.8872, value: 0.3681 },
-  { source: 'reference 1', mach: 6.86, yaw: 59.5617, value: 0.1338 },
-  { source: 'reference 1', mach: 6.86, yaw: 75.0617, value: 0.0207, flag: FLAG_END },
+  { source: 'present tests', mach: 3.9, yaw: 59.7835, statedYaw: 60, value: 0.1643, flag: FLAG_3D },
+  { source: 'reference 1', mach: 6.86, yaw: 14.1452, statedYaw: 14.3, value: 0.9063 },
+  { source: 'reference 1', mach: 6.86, yaw: 29.3753, statedYaw: 29.6, value: 0.6678 },
+  { source: 'reference 1', mach: 6.86, yaw: 44.8872, statedYaw: 45.1, value: 0.3681 },
+  { source: 'reference 1', mach: 6.86, yaw: 59.5617, statedYaw: 59.8, value: 0.1338 },
+  {
+    source: 'reference 1',
+    mach: 6.86,
+    yaw: 75.0617,
+    statedYaw: 75.1,
+    value: 0.0207,
+    flag: FLAG_END,
+  },
 ];
 
 /**
@@ -130,10 +147,11 @@ export const RM_A55H31_FIG12_THIRD_LOOK: readonly YawPoint[] = [
     source: 'present tests',
     mach: 3.9,
     yaw: 44.76,
+    statedYaw: 45,
     value: 0.41,
     flag: `${FLAG_3D}; ${FLAG_REYNOLDS}`,
   },
-  { source: 'present tests', mach: 3.9, yaw: 59.83, value: 0.165, flag: FLAG_3D },
+  { source: 'present tests', mach: 3.9, yaw: 59.83, statedYaw: 60, value: 0.165, flag: FLAG_3D },
 ];
 
 /** Fig. 11, second reading (commit 6e6d9be, `rma55h31_fig11.csv`), the yawed points. */

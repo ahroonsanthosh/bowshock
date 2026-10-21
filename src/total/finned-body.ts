@@ -64,7 +64,7 @@
  * transition state; the total is refused then anyway.
  */
 
-import { bodyBaseDrag, type BodyBaseDrag } from '../base/base-drag';
+import { bodyBaseDrag, FINS_ON_BASE_THINNEST_DATA, type BodyBaseDrag } from '../base/base-drag';
 import {
   FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
@@ -390,12 +390,14 @@ export function finnedBodyComponents(
       baseAreaRatio: 1,
       fins: {
         count: fins.count,
-        // A plate's largest t/c, at the tip (the factor's field is the largest thickness over
-        // chord; 0016 section 16), a section's own.
+        // A plate's largest t/c, at its shorter end chord (the factor's field is the largest
+        // thickness over chord), and its thinnest station's, at the longer (0016 sections 16 and
+        // 18); a section's t/c is the same at every station.
         thicknessRatio:
           plate === undefined
             ? symmetricThicknessRatio(fins.section as SymmetricSection)
-            : plate.thickness / tipChord(fins.planform),
+            : plate.thickness / Math.min(fins.planform.rootChord, tipChord(fins.planform)),
+        ...(plate === undefined ? {} : { thinnest: plateThinnest(plate.thickness, fins.planform) }),
         section: fins.sectionFamily,
         tanLeadingEdge: fins.planform.tanLeadingEdge,
         tanTrailingEdge: fins.planform.tanTrailingEdge,
@@ -611,4 +613,26 @@ export function finnedBodyTotalDrag(
   const r = finnedBodyComponents(config, conditions, nose, inputs);
   if (r.refusals.length > 0) throw new TotalDragRefusal(r.refusals);
   return combineComponents(r.components, r.inputs);
+}
+
+/**
+ * A flat plate's thinnest station (thickness over the longer end chord) and
+ * the share of its span thinner than the fins-on-base factor's 5% data,
+ * where the chord, linear along the span, exceeds 20 thicknesses.
+ */
+function plateThinnest(
+  thickness: number,
+  planform: Planform,
+): { thicknessRatio: number; spanShareBelow: number } {
+  const root = planform.rootChord;
+  const tip = tipChord(planform);
+  const limit = thickness / FINS_ON_BASE_THINNEST_DATA;
+  let share: number;
+  if (root === tip) share = root > limit ? 1 : 0;
+  else {
+    // c(y) = root + (tip - root) y: the span fraction where c > limit.
+    const yAt = (limit - root) / (tip - root);
+    share = tip < root ? Math.min(1, Math.max(0, yAt)) : 1 - Math.min(1, Math.max(0, yAt));
+  }
+  return { thicknessRatio: thickness / Math.max(root, tip), spanShareBelow: share };
 }

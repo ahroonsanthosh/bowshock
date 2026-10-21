@@ -91,7 +91,7 @@ export const REASONS = {
   boatTail: 'base: boat-tail',
   finsNearBase: 'base: fins ending within a chord of the base',
   finsAtBaseCount: 'base: fins at the base, not four',
-  finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10',
+  finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10 (since 0016 section 18 above 0.10 only)',
   finsAtBaseSwept: 'base: fins at the base, a swept leading or trailing edge (factor measured on unswept fins; 2026-10-21)',
   finsAtBaseMach: 'base: fins at the base, Mach 1.5 to 1.8 (outside 1.8 to 3.0)',
   finsAtBaseLowMach: 'base: fins at the base, Mach below 1.5 (outside 1.8 to 3.0)',
@@ -227,12 +227,14 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   const tanLe = Math.tan(r.leadingEdgeSweepDeg * DEG);
   const tanTe = Math.tan(r.trailingEdgeSweepDeg * DEG);
   const constantChord = Math.abs(tanLe - tanTe) < 1e-9;
-  // The largest t/c: a flat plate's at the tip (0016 section 16); a bevelled or double-wedge
-  // section scales with the chord, so its t/c is the same at every station.
+  // The largest t/c: a flat plate's at its shorter end chord (0016 section 16); a bevelled or
+  // double-wedge section scales with the chord, so its t/c is the same at every station.
   const flatPlateSection =
     r.section === 'rounded-le-square-te' || r.section === 'rounded-both' || r.section === 'square-both';
   const tipChordOf = r.rootChord - r.span * (tanLe - tanTe);
-  const tc = r.thickness / (flatPlateSection && EDGES === 'w4e' ? tipChordOf : r.rootChord);
+  const tc =
+    r.thickness /
+    (flatPlateSection && EDGES === 'w4e' ? Math.min(r.rootChord, tipChordOf) : r.rootChord);
 
   // Sections and edges.
   if (r.section === 'square-both') out.push('squareLe');
@@ -271,7 +273,9 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   if (x > 0 && x < 1) out.push('finsNearBase');
   if (x === 0) {
     if (r.finCount !== 4) out.push('finsAtBaseCount');
-    if (!(tc >= 0.05 && tc <= 0.1)) out.push('finsAtBaseThickness');
+    // Since 0016 section 18 only fins thicker than 10% are refused; thinner than 5% anywhere,
+    // the factor is served extended (low end F = 1).
+    if (EDGES === 'w4e' ? !(tc <= 0.1) : !(tc >= 0.05 && tc <= 0.1)) out.push('finsAtBaseThickness');
     // Since 2026-10-21 (0014 section 10.7): the factor refuses swept edges, as the trailing-edge term does.
     if (tanLe !== 0 || tanTe !== 0) out.push('finsAtBaseSwept');
     if (!(mach >= 1.8 - 0.002 && mach <= 3.0)) out.push(mach >= 1.5 ? 'finsAtBaseMach' : 'finsAtBaseLowMach');

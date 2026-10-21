@@ -51,6 +51,38 @@ export const COMPILED_CURVE_LABEL =
 export interface BaseFins extends FinsAtBase {
   /** Distance of the fins' trailing edges ahead of the base, in root chords (0: at the base). */
   readonly trailingEdgeAheadOfBase: number;
+  /**
+   * The thinnest station's thickness over chord and the share of the span
+   * thinner than the factor's thinnest data (a flat plate of varying chord;
+   * 0016 section 18). Absent: every station has thicknessRatio.
+   */
+  readonly thinnest?: { readonly thicknessRatio: number; readonly spanShareBelow: number };
+}
+
+/** The thinnest fins the fins-on-base factor's data hold: 5% thick (TN 2360, TN 3819 fig. 35). */
+export const FINS_ON_BASE_THINNEST_DATA = 0.05;
+
+/**
+ * Fins thinner than the factor's 5% data at some station, none thicker than
+ * 10% (0016 section 18, the coordinator's rule): the factor at 5%, its low
+ * end taken as no fin effect (F = 1), the physical limit, since thinner fins
+ * lower the base pressure less, its high end kept, the nominal the midpoint.
+ */
+function extendedBelowThinnestData(
+  f: FinsOnBaseFactor,
+  thicknessRatio: number,
+  spanShare: number,
+): FinsOnBaseFactor {
+  return {
+    ...f,
+    low: 1,
+    nominal: 0.5 * (1 + f.high),
+    label:
+      `${f.label}; extended below the data's 5% thickness: t/c down to ` +
+      `${thicknessRatio.toFixed(3)} over ${(100 * spanShare).toFixed(0)}% of the span, the low ` +
+      'end taken as no fin effect (F = 1; thinner fins lower the base pressure less), the high ' +
+      "end the 5% fins' (0016)",
+  };
 }
 
 export interface BodyBaseInput {
@@ -112,7 +144,17 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       throw new BaseRefusal('input', `the fins' trailing edges must lie at or ahead of the base`);
     }
     if (x === 0) {
-      factor = finsOnBaseFactor(mach, fins);
+      const thinnest = fins.thinnest?.thicknessRatio ?? fins.thicknessRatio;
+      const below = thinnest < FINS_ON_BASE_THINNEST_DATA && fins.thicknessRatio <= 0.1;
+      factor = finsOnBaseFactor(
+        mach,
+        below
+          ? { ...fins, thicknessRatio: Math.max(fins.thicknessRatio, FINS_ON_BASE_THINNEST_DATA) }
+          : fins,
+      );
+      if (below) {
+        factor = extendedBelowThinnestData(factor, thinnest, fins.thinnest?.spanShareBelow ?? 1);
+      }
       // Bounded, not measured: the gap between the bounds in C_D beside it (0014 section 10.2).
       labels.push(
         factor.bounded

@@ -480,21 +480,24 @@ to F7.
   are bit for bit unchanged. The sweep allowance on every swept edge
   served (all at M_n 3.0 or less, below the checks' 3.37) is extrapolated
   in normal Mach number and contains every yawed datum at served sweeps
-  and normal Mach numbers: 0.95 to 1.21, RM A55H31's own tests at 45 and
+  and normal Mach numbers: 0.95 to 1.21 (0.95 to 1.22 at 60 deg, growing
+  with sin(sweep), since 0016 section 18), RM A55H31's own tests at 45 and
   60 deg counted (the report's suspicion of three-dimensional flow, from
   the 1 in model in the 3 in stream, is a finite-length effect a fin's
   edge may share). TN 3861 figs. 15 and 16, read twice (with fig. 17, read
   once), hold one crossflow point at a served sweep, an estimate inside
-  that allowance. No yawed datum lies below M_n 1.96 at a served sweep.
+  that allowance. No yawed datum lies below M_n 1.95 at a served sweep
+  (r at the tests' stated yaws, 0016 section 18).
 - _Amended 2026-10-21, the coordinator's decision under the owner's rule
   (serve rather than refuse wherever an honest band can be given, and say
   plainly what it rests on; 0016 section 16)._ Swept edges at M_n 1.0 to
-  1.96, where no yawed datum lies at a served sweep, are served with the
-  sweep allowance that contains every yawed datum, 0.95 to 1.21, labelled
+  1.95, where no yawed datum lies at a served sweep, are served with the
+  sweep allowance that contains every yawed datum, 0.95 to 1.22 at 60 deg
+  growing with sin(sweep) (0016 section 18), labelled
   "the sweep allowance extrapolated in normal Mach number" and "no yawed
-  datum below M_n 1.96 at a served sweep". What would replace the
+  datum below M_n 1.95 at a served sweep". What would replace the
   extrapolation: front-side pressures on yawed cylinders or swept blunt
-  leading edges at M_n 1.0 to 1.96 and sweeps up to 45 deg, read twice.
+  leading edges at M_n 1.0 to 1.95 and sweeps up to 45 deg, read twice.
   None is held; candidates to open are O'Neal's free-flight swept blunt
   leading edges (36.75 and 45 deg, M 1.78 to 2.99, NTRS 19980227361, heat
   transfer, pressures not known) and Holdaway, Lazzeroni and Hatfield's 45

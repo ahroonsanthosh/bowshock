@@ -114,6 +114,10 @@ A55_FIG12 = [
     ('ref. 1, M 6.9', 6.86, 45.2, 0.367), ('ref. 1, M 6.9', 6.86, 59.9, 0.131),
     ('ref. 1, M 6.9', 6.86, 75.5, 0.023),
 ]
+# The tests' yaws as the reports state them: the present tests (p. 10, fig. 10's legend) and
+# reference 1 (fig. 10's legend; 75.1 from TN 3861 fig. 5, alpha 14.9 deg), keyed by (M, yaw / 15).
+A55_STATED_YAW = {(3.9, 2): 30, (3.9, 3): 45, (3.9, 4): 60, (6.86, 1): 14.3, (6.86, 2): 29.6,
+                  (6.86, 3): 45.1, (6.86, 4): 59.8, (6.86, 5): 75.1}
 # fig. 11, PDF p. 40, deskewed -0.322 deg: stagnation-line pressure over the stream's
 # impact pressure, p_x=0 / p_t2, symbol centres on 2x crops, +-0.004.
 A55_FIG11 = [
@@ -342,6 +346,13 @@ def main():
         say(f'  - {src}, yaw {lam:4.1f} (M_n {mn:4.2f}): fig. 11 {st:.3f} against Rayleigh at M_n '
             f'{p0_over_p(mn) / pt2:.3f}; fig. 12 {ab:.3f}, gauge {gauge:.4f}; model {model:.4f}; '
             f'r {gauge / model:.3f}')
+        # r at the test's yaw as the reports state it (fig. 10's legend, p. 10; TN 3861 fig. 5):
+        # fig. 12 draws its symbols 0.04 to 0.25 deg below it (0016 section 18).
+        ls = A55_STATED_YAW[(m, round(lam / 15))]
+        Ls = math.radians(ls)
+        gs = (ab * pt2 * ig - math.cos(Ls)) / (pt2 * ig - 1)
+        ms = math.cos(Ls) ** 3 * cp0(m * math.cos(Ls)) / cp0(m)
+        say(f'    at the stated yaw {ls} (M_n {m * math.cos(Ls):.3f}): r {gs / ms:.4f}')
     say('- table II directly (gauge, trapezoid at 15 deg), rho = front on q_n over (2/3) Cp_pitot(M_n):')
     rho = {}
     for lam, (m, pinf, p) in A55_TABLE2.items():

@@ -692,8 +692,10 @@ function varyingChordTrailingEdge(
   cd = atMostVacuum(cd, 'term');
   const sub = gaussLegendre(LAMINAR_NODES);
   // Near a small tip the stations can lie beyond fig. 29's read range for the laminar input
-  // (c/[h Re^(1/2)] small): that sliver takes the laminar change bounded between none and its
-  // value at the nearest station read, instead of the whole term being refused (0016 section 16).
+  // (c/[h Re^(1/2)] small), where fig. 29(b)'s laminar base pressure keeps falling: that sliver
+  // takes the laminar change bounded below by the smaller of none and its value at the nearest
+  // station read, and above by the vacuum bound, instead of the whole term being refused (0016
+  // sections 16 and 18).
   const scan = Array.from({ length: SCAN_STATIONS + 1 }, (_, k) => (span * k) / SCAN_STATIONS);
   const ratioAt = (y: number): LaminarRatio | undefined => {
     try {
@@ -704,7 +706,11 @@ function varyingChordTrailingEdge(
       throw e;
     }
   };
-  const readable = (input.transitionReynolds ?? []).length > 0 ? scan.map(ratioAt) : [];
+  // The scan is made only when a sliver needs it (most calls have none), and once.
+  let readableScan: (LaminarRatio | undefined)[] | undefined;
+  const readable = () => (readableScan ??= scan.map(ratioAt));
+  const vacuumOverTerm = (y: number) =>
+    vacuumBaseDrag(mach, GAMMA) / (-pB * thickLayerFactor(mach, parameter(y)).nominal);
   let sliverMax = 0;
   const laminarStates = (input.transitionReynolds ?? []).map((reT): LaminarState => {
     // The stations laminar at their trailing edge: Re' c(y) <= Re_T, an interval of the span.
@@ -729,7 +735,7 @@ function varyingChordTrailingEdge(
       if (ratio === undefined) {
         let best: LaminarRatio | undefined;
         let dist = Infinity;
-        readable.forEach((r, k) => {
+        readable().forEach((r, k) => {
           if (r !== undefined && Math.abs(scan[k]! - y) < dist) {
             dist = Math.abs(scan[k]! - y);
             best = r;
@@ -740,7 +746,7 @@ function varyingChordTrailingEdge(
           laminarOverTurbulent(c / h, reynoldsPerLength * c); // throws the refusal
           throw new BaseRefusal('beyond-read-range', 'no station of the span is read');
         }
-        ratio = { ...best, low: Math.min(best.low, 1), high: Math.max(best.high, 1) };
+        ratio = { ...best, low: Math.min(best.low, 1), high: Math.max(vacuumOverTerm(y), 1) };
         sliver += (0.5 * w * (y1 - y0)) / span;
       }
       const term =
@@ -767,12 +773,14 @@ function varyingChordTrailingEdge(
     (belowRead > 0
       ? `; near the tip, over ${(100 * belowRead).toFixed(0)}% of the span, c/[h Re_c^(1/5)] is below ` +
         `${FIG29A_LOWEST_READ}, fig. 29(a)'s lowest read abscissa, and the thin-layer term is taken ` +
-        'there unchanged (fig. 29(a) varies by under 4% from 0.45 to 1.0; an extrapolation, 0016)'
+        'there unchanged (from 0.45 to 1.0 fig. 29(a) varies by up to 4.2% of its value at 1.0, at ' +
+        'M 3.1; an extrapolation, 0016)'
       : '') +
     (sliverMax > 0
       ? `; in a transition state, the stations beyond fig. 29's read range (up to ` +
-        `${(100 * sliverMax).toFixed(0)}% of the span, near the tip) take the laminar change bounded ` +
-        'between none and its value at the nearest station read (0016)'
+        `${(100 * sliverMax).toFixed(0)}% of the span, near the tip), where its laminar base ` +
+        'pressure keeps falling, take the laminar change bounded below by the smaller of none and ' +
+        'its value at the nearest station read and above by the vacuum bound (0016)'
       : '');
   return {
     cd,

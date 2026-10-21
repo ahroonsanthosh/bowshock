@@ -345,11 +345,12 @@ grids' convergence and the exact stagnation pressure.
   compiled base-pressure correlation of NACA TN 3819 with its band
   (measured over correlation 0.82 to 1.08, at Mach 1.5 to 3.0); the factor
   for fins ending at the base, measured on circular-arc fins and applied
-  to others by analogy, which serves only four unswept fins 5% to 10%
-  thick at Mach 1.8 to 3.0: read from TN 3819 fig. 35's free-flight curve,
-  identified and read twice, to its end at Mach 2.56, and above it
-  bounded, not measured (between no fin effect and its value at Mach
-  2.56); fins swept at either edge, and so any tapered planform, are
+  to others by analogy, which serves only four unswept fins up to 10%
+  thick (thinner than its 5% data, extended with its low end at no fin
+  effect; 0016) at Mach 1.8 to 3.0: read from TN 3819 fig. 35's
+  free-flight curve, identified and read twice, to its end at Mach 2.56,
+  and above it bounded, not measured (between no fin effect and its value
+  at Mach 2.56); fins swept at either edge, and so any tapered planform, are
   refused until the rebuilt factor (W1) serves them; the base drag of
   blunt fin trailing edges (0.93 to 1.21) and the drag of rounded fin
   leading edges (0.99 to 1.06 at a normal Mach number of 1.49 to 3.0, and
@@ -361,10 +362,11 @@ grids' convergence and the exact stagnation pressure.
   leading edges on flat, tapered and swept fins at a normal Mach number,
   M cos(sweep), of 1.0 to 3.0 (from 1.0 to 1.2 on NASA CR-149372's
   cylinder, then across an unmeasured Mach range to 1.49), swept to 60
-  deg with the band widened by 0.95 to 1.21, the sweep allowance
-  extrapolated in normal Mach number; square-cut leading edges, rounded
-  and swept trailing edges, and normal Mach numbers below 1.0 refused.
-  Each band is estimated on component data and tested only in the total.
+  deg with the band widened by up to 0.95 to 1.22 (growing with
+  sin(sweep)), the sweep allowance extrapolated in normal Mach number;
+  square-cut leading edges, rounded and swept trailing edges, and normal
+  Mach numbers below 1.0 refused. Each
+  band is estimated on component data and tested only in the total.
 - **The total** (`src/total/`): the sum of the components, their bands
   added linearly. Its one hold-out test, the Basic Finner in free flight at
   Mach 1.80 to 2.97, passed at all 11 shots: measured over modelled -7.7%
