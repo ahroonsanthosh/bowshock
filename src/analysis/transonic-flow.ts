@@ -37,6 +37,8 @@ export interface TransonicOptions {
   readonly cylinder: number;
   /** The base grid's spacings (transonicGrid), for studies of the grid itself. */
   readonly spacing?: Partial<TransonicSpacing>;
+  /** The domain cut back or continued node for node (transonicGrid), for the allowances. */
+  readonly nested?: { readonly farField?: number; readonly cylinder?: number };
 }
 
 export interface TransonicProblem {

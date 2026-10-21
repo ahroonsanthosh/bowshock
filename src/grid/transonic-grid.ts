@@ -51,6 +51,14 @@ export interface TransonicGridOptions {
   readonly cylinder: number;
   /** The base grid's spacings (default TRANSONIC_SPACING), for studies of the grid itself. */
   readonly spacing?: Partial<TransonicSpacing>;
+  /**
+   * The grid of `farField` and `cylinder`, cut back or continued to these
+   * far boundaries and cylinder (each defaulting to the grid's own), node
+   * for node the same wherever the two domains overlap, so that the drag's
+   * change with the domain is the domain's and not the grid's (sharp
+   * noses only; see `nestedGrid`).
+   */
+  readonly nested?: { readonly farField?: number; readonly cylinder?: number };
 }
 
 /** The base grid's spacings, in body radii. */
@@ -131,6 +139,9 @@ export function transonicGrid(body: Body, options: TransonicGridOptions): Transo
   const xEnd = L + 2 * R * options.cylinder;
   const nj = baseNj * refinement;
   if (blunt) {
+    if (options.nested !== undefined) {
+      throw new RangeError('nested domains are not available on the C grids of blunt noses yet');
+    }
     const blunt = bluntGrid(body, s, refinement, baseNj, farRadius, xEnd);
     return { ...blunt, farRadius, xUpstream, xEnd, baseNj };
   }
@@ -164,14 +175,132 @@ export function transonicGrid(body: Body, options: TransonicGridOptions): Transo
   // columns are dense along the body only).
   const b = growth * baseNj;
   const ni = xs.length - 1;
-  const grid = gridFromFunction(ni, nj, (i, j) => {
+  const node = (i: number, j: number): [number, number] => {
     const x = xs[i]!;
     const r = bodyRadius(body, x);
     const f = Math.expm1((b * j) / nj) / Math.expm1(b);
     const xFar = xUpstream + ((xEnd - xUpstream) * i) / ni;
     return [x + (xFar - x) * f * f, r + (farRadius - r) * f];
-  });
+  };
+  if (options.nested !== undefined) {
+    return nestedGrid(body, options, s, { xs, node, iTip, iShoulder, farRadius, xEnd, nj });
+  }
+  const grid = gridFromFunction(ni, nj, node);
   return { grid, iTip, iShoulder, farRadius, xUpstream, xEnd, baseNj, topology: 'H' };
+}
+
+/**
+ * The H grid of `options.farField` and `options.cylinder` cut back or
+ * continued to the far boundaries and cylinder of `options.nested`, every
+ * node the two domains share the same (design record 0013, "The allowance
+ * rule"). Cut back, the grid keeps its lines up to the first base-grid
+ * row at or beyond the nearer far boundary (on the axis), the last
+ * base-grid column at or upstream of it, and the first at or beyond the
+ * shorter cylinder's end. Continued, the columns upstream and downstream
+ * follow the same geometric growth of their spacing as the grid's own
+ * there (its density integrated on), as vertical lines, and the rows
+ * beyond the far radius the same growth as on the axis, as horizontal
+ * lines over the whole grid (the grid's lines lean to points evenly spaced
+ * along its far boundary, and from there go straight out). Each cut and
+ * each continuation is in whole base-grid cells, so the grids of a family
+ * still nest.
+ */
+function nestedGrid(
+  body: Body,
+  options: TransonicGridOptions,
+  s: TransonicSpacing,
+  own: {
+    readonly xs: readonly number[];
+    readonly node: (i: number, j: number) => [number, number];
+    readonly iTip: number;
+    readonly iShoulder: number;
+    readonly farRadius: number;
+    readonly xEnd: number;
+    readonly nj: number;
+  },
+): TransonicGrid {
+  const { refinement } = options;
+  const R = body.nose.baseRadius;
+  const L = body.nose.length;
+  const g = s.growth;
+  const wall = s.wall * R;
+  const { xs, node, iTip, iShoulder, farRadius, xEnd, nj } = own;
+  const ni = xs.length - 1;
+  const xUpstream = xs[0]!;
+  const asked = options.nested?.farField;
+  const far = asked === undefined || asked === options.farField ? farRadius : asked * R;
+  const cylinderEnd = L + 2 * R * (options.nested?.cylinder ?? options.cylinder);
+  if (!(far > 4 * Math.max(R, L))) {
+    throw new RangeError('the far boundaries must lie beyond four nose lengths');
+  }
+  if (!(cylinderEnd > L)) throw new RangeError('the transonic domain needs a cylinder');
+  // Height of row j on the axis, and of the rows beyond the far radius.
+  const row = (j: number) => (wall / g) * Math.expm1((g * j) / refinement);
+  // The grid's columns integrate the density refinement / spacing; the
+  // spacing grows as tip + g |x| upstream and shoulder + g (x - L)
+  // downstream, so their k-th base column beyond the end lies where the
+  // integral of 1 / spacing has grown by k times its mean per base column.
+  const tip = s.tip * R;
+  const shoulder = s.shoulder * R;
+  const upstreamStep = Math.log1p((g * -xUpstream) / tip) / g / (iTip / refinement);
+  const downstreamStep =
+    Math.log1p((g * (xEnd - L)) / shoulder) / g / ((ni - iShoulder) / refinement);
+  const xBefore = (k: number) =>
+    -((tip + g * -xUpstream) * Math.exp(g * k * upstreamStep) - tip) / g;
+  const xBeyond = (k: number) =>
+    L + ((shoulder + g * (xEnd - L)) * Math.exp(g * k * downstreamStep) - shoulder) / g;
+  const xAt = (i: number) =>
+    i < 0 ? xBefore(-i / refinement) : i > ni ? xBeyond((i - ni) / refinement) : xs[i]!;
+
+  // The index ranges, in whole base cells.
+  let jHi = nj;
+  let iLo = 0;
+  if (far < farRadius) {
+    let jb = 1;
+    while (row(jb * refinement) < far) jb++;
+    jHi = jb * refinement;
+    let m = 0;
+    while (xs[(m + 1) * refinement]! <= -far) m++;
+    iLo = m * refinement;
+  } else if (far > farRadius) {
+    jHi = refinement * Math.ceil(Math.log1p((g * far) / wall) / g - 1e-9);
+    let k = 1;
+    while (xBefore(k) > -far) k++;
+    iLo = -k * refinement;
+  }
+  let iHi = ni;
+  if (cylinderEnd < xEnd) {
+    let m = iShoulder / refinement + 1;
+    while (xs[m * refinement]! < cylinderEnd) m++;
+    iHi = m * refinement;
+  } else if (cylinderEnd > xEnd) {
+    let k = 1;
+    while (xBeyond(k) < cylinderEnd) k++;
+    iHi = ni + k * refinement;
+  }
+
+  const xFar = (i: number) => xUpstream + ((xEnd - xUpstream) * i) / ni;
+  const at = (i: number, j: number): readonly [number, number] => {
+    if (i >= 0 && i <= ni && j <= nj) return node(i, j);
+    if (j > nj) return [i < 0 || i > ni ? xAt(i) : xFar(i), row(j)];
+    // Beyond the ends along x, as vertical lines: upstream on the axis,
+    // downstream on the cylinder, with the end columns' rows.
+    const x = xAt(i);
+    if (i < 0) return [x, row(j)];
+    const f = Math.expm1((g * j) / refinement) / Math.expm1((g * nj) / refinement);
+    return [x, R + (farRadius - R) * f];
+  };
+  const grid = gridFromFunction(iHi - iLo, jHi, (i, j) => at(i + iLo, j));
+  return {
+    grid,
+    iTip: iTip - iLo,
+    iShoulder: iShoulder - iLo,
+    farRadius: row(jHi),
+    xUpstream: xAt(iLo),
+    xEnd: xAt(iHi),
+    baseNj: jHi / refinement,
+    topology: 'H',
+  };
 }
 
 /** Samples of a blunt nose's profile for its arc length. */
