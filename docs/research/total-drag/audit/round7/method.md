@@ -377,3 +377,134 @@ Uncertain or not read: the cross centre of 16-06 (its upper half is under
 the circle 16-05), the hidden dots of 15-03, 15-09, 15-14 and 16-14
 (values from the outline geometry), and the last reading of curve B where it
 runs into the frame.
+
+## Item 5: BRL Report 934 Graph I (DTIC AD0068959), transcription only
+
+File `DTIC_AD0068959.pdf`, SHA-256
+`ecc596bf21b9b0a009ca0939b5af1213866c4da25626d34c5f43360f80bca02b`; Graph I
+is on PDF p. 24 (the page carries "22" in its margin), a 300 dpi CCITT
+bilevel scan, rendered at 600 dpi and turned clockwise so the graph reads
+normally (`scripts/rotate.py`). This is a held-back flight set: the symbols
+were transcribed and nothing else was done with them. No model value was
+computed, run or looked at, and `docs/research/total-drag/data/basic_finner_brl934.md`
+was not opened.
+
+### What the graph shows
+
+* Title "DRAG COEFFICIENT VS MACH NUMBER", caption "GRAPH I".
+* Abscissa "M" (Mach number), labelled 1.0, 1.4, 1.8, 2.2, 2.6; ordinate
+  "C_D" (drag coefficient), labelled 0.3 to 0.9 every 0.1. A heavy axis line
+  is drawn on the C_D 0.3 ruling.
+* Legend, transcribed as printed: crossed circle "CONSOLIDATION OF PHASE I
+  ROUNDS"; plus "ROUND VALUE"; solid dot "VALUE CORRECTED FOR YAW"; open
+  circle "CORRECTED FOR YAW AND FULL TURBLENT B.L." (sic).
+* A faired curve rises from about M 0.96 to a peak near M 1.04 and falls to
+  its end at about M 2.48. It was not read (not asked).
+
+### Calibration
+
+Graph paper: heavy rulings every 0.05 in M (each label sits on every 8th)
+and every 0.025 in C_D (each label on every 4th), with fine dashed rulings
+at fifths between the heavy horizontal ones. The 0.3 assignment was checked
+by following the ruling under the drawn axis line across the page
+(`scripts/brl_hprobe.py`): it is the ruling labelled 0.3 at the left. The
+page is sheared, not just turned: vertical rulings lean by dx/dy = -0.010 to
+-0.014 and horizontal rulings by dy/dx = +0.019 to +0.022, so the axes are
+89.53 deg apart and the M axis runs 1.17 deg from the image horizontal. The
+36 vertical (M 0.95 to 2.70) and 27 horizontal (C_D 0.300 to 0.950) heavy
+rulings were each followed from several seeds (`scripts/grid_calib.py`,
+config `brl934`) and every intersection taken from local straight fits;
+values in between come from bilinear interpolation in each cell
+(`localgrid.py`). 898 of 972 intersections were measured; the 74 missing lie
+under the legend (C_D 0.70 to 0.80 at M 2.0 to 2.7, no data there). Per-line
+rms about a straight line 0.4 to 1.5 px (1.7 px for the C_D 0.95 ruling
+near the title). In the data window (M 0.95 to 2.5, C_D 0.45 to 0.925): one
+affine map leaves M residuals rms 0.00076 (max 0.0056) and C_D residuals rms
+0.00032 (max 0.0010); leave-one-out (each intersection from its four
+neighbours) rms 0.93 px in x and 0.82 px in y. The one large leave-one-out
+value (9.4 px) is at M 1.75, C_D 0.775, inside the legend. The M 1.25 ruling
+is missing from the scan between C_D about 0.62 and 0.75, and the D symbols
+touch it; its intersections there sat up to 4.8 px off the ruling's own
+quadratic and were replaced by that quadratic (moving D1 to D3 by 0.0006 to
+0.0014 in M). Scale: 1921 px per unit M, 3839 px per unit C_D, so 1 px is
+0.00052 in M and 0.00026 in C_D.
+
+### Identification
+
+Every mark off the faired curve, and every mark on it, was looked at in
+zoomed crops (`scripts/crop.py`, `scripts/brl_clean.py`, which greys the
+vertical rulings) and pixel maps (`scripts/pixmap.py`). The four legend
+symbols differ by: plus = two crossing strokes; solid dot = disc with no
+hole; open circle = thick ring with one central hole; crossed circle = thick
+ring with four small holes (the cross). The data symbols are drawn somewhat
+smaller than the legend's (dots 30 to 48 px against 50 px). Each call and the
+features it rests on are in the CSV (`shape_features`). As supporting
+evidence the four legend symbols, cut from the page, were correlated with
+each mark with the vertical rulings masked out (`scripts/brl_symbols.py`);
+the scores are in the CSV, but on this bilevel scan they separate the types
+poorly (the dot template scores well on any compact blob, including clear
+pluses, and the crossed-circle template loses to the open circle at G1,
+whose four holes and horizontal cross stroke match the legend's crossed
+circle and no open circle), so no call rests on them. Where a call changes
+the meaning, the confidence column says how firm it is.
+
+The data come in groups at one Mach number, joined by thin vertical lines:
+a plus at the top, then a dot, and in two groups an open circle between
+them. In the legend's terms: the round value, the value corrected for yaw
+and the value corrected for yaw and full turbulent boundary layer.
+
+### Results (`readings/brl934_graph1.csv`)
+
+Centres are the midpoints of each mark's outer extents read from the pixel
+map; errors about 2 sigma (centre reading error set per mark, plus 2 px for
+the calibration). The drafting error of the original plot is not included.
+
+| id | symbol | M | C_D | call |
+|---|---|---|---|---|
+| A1 | plus | 0.9743 +- 0.0034 | 0.8967 +- 0.0031 | low |
+| A2 | open circle | 0.9749 +- 0.0029 | 0.8347 +- 0.0014 | medium |
+| A4 | dot | 0.9740 +- 0.0019 | 0.7896 +- 0.0009 | high |
+| B1 | plus | 1.0193 +- 0.0027 | 0.8954 +- 0.0026 | low |
+| B2 | plus | 1.0466 +- 0.0028 | 0.9001 +- 0.0026 | low |
+| B3 | plus | 1.0468 +- 0.0028 | 0.8809 +- 0.0014 | medium |
+| B4 | plus | 1.0836 +- 0.0019 | 0.8917 +- 0.0009 | high |
+| C1 | plus | 1.1423 +- 0.0033 | 0.8231 +- 0.0017 | low |
+| C2 | dot | 1.1419 +- 0.0023 | 0.8055 +- 0.0012 | medium |
+| D1 | plus | 1.2650 +- 0.0019 | 0.7553 +- 0.0010 | high |
+| D2 | open circle | 1.2656 +- 0.0019 | 0.7371 +- 0.0009 | high |
+| D3 | dot | 1.2619 +- 0.0019 | 0.7173 +- 0.0012 | high |
+| E1 | plus | 1.4007 +- 0.0023 | 0.7870 +- 0.0011 | medium |
+| E2a | plus | 1.3882 +- 0.0028 | 0.7002 +- 0.0014 | medium |
+| E2b | dot | 1.4017 +- 0.0028 | 0.7020 +- 0.0014 | medium |
+| F1 | plus | 1.5100 +- 0.0029 | 0.7079 +- 0.0014 | medium |
+| F2 | dot | 1.5090 +- 0.0024 | 0.6892 +- 0.0011 | high |
+| G1 | crossed circle | 1.8013 +- 0.0023 | 0.6068 +- 0.0012 | high |
+| H1 | plus | 1.9925 +- 0.0024 | 0.5825 +- 0.0011 | high |
+| H2 | dot | 1.9881 +- 0.0029 | 0.5593 +- 0.0015 | medium |
+| I1 | plus | 2.0323 +- 0.0018 | 0.5649 +- 0.0010 | medium |
+| I2 | open circle | 2.0510 +- 0.0024 | 0.5482 +- 0.0011 | medium |
+| I3 | dot | 2.0498 +- 0.0019 | 0.5171 +- 0.0009 | high |
+| J1 | plus | 2.4214 +- 0.0027 | 0.4753 +- 0.0022 | low |
+| J2 | open circle | 2.4191 +- 0.0032 | 0.4658 +- 0.0017 | low |
+| K1 | plus | 2.4696 +- 0.0019 | 0.4741 +- 0.0009 | high |
+
+Groups: A, one vertical line at M 0.975 from C_D 0.90 down through A2 to
+A4; D, F and H, plus joined to the symbols below it; E, a line from E1 down
+to E2b, with the plus E2a just left of E2b; I, the plus I1 alone at M 2.03
+and I2 joined to I3 along the M 2.05 ruling; J1 stands on J2; B (four marks
+at the curve's peak), C (two marks on the falling curve), G and K are not
+joined to anything.
+
+Uncertain or not read:
+
+* A1, B1, B2, C1 and J1 show only one or two free arms; the rest of each
+  mark lies inside the faired curve, a heavy ruling or a connecting line.
+  They are called pluses because of those arms and because pluses head the
+  other groups; any of them could be something else, and their C_D is
+  uncertain by up to +-0.003.
+* J2 is a blob on the curve with a small hole: called an open circle, could
+  be a dot.
+* The dark broken strokes just left of the A line (M 0.955 to 0.965, C_D
+  0.79 to 0.84) are read as the lower end of the faired curve, not as
+  symbols; a symbol hidden in them cannot be excluded.
+* The faired curve was not read.
