@@ -814,6 +814,199 @@ body.app {
   color: var(--bad);
 }
 
+/* ------------------------------------------------------------ drag page */
+
+/* Its inputs and tables need wider panels than the other pages'. */
+body.app.app--wide-panels {
+  --panel-width: clamp(260px, 24vw, 340px);
+}
+.field[hidden] {
+  display: none;
+}
+.panel__preset {
+  width: 100%;
+  margin-bottom: 12px;
+}
+.panel fieldset {
+  min-width: 0;
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+}
+.panel legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.panel output {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.field__pair {
+  display: flex;
+  gap: 8px;
+}
+.field__pair input {
+  flex: 1;
+  min-width: 0;
+}
+.panel .scope {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.drag-part + .drag-part {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--panel-border);
+}
+.drag-part__title {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+#result {
+  margin: 8px 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* The total: the logic's blocks, its result and claim in view, the rest folded. */
+#total-output {
+  font-size: 12px;
+  line-height: 1.5;
+}
+#total-output > * + * {
+  margin-top: 8px;
+}
+#total-output p.result {
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.button[hidden] {
+  display: none;
+}
+#total-output .ok {
+  color: var(--ok);
+}
+#total-output .warn {
+  color: var(--warn);
+}
+#total-output .bad {
+  color: var(--bad);
+}
+#total-output .scope {
+  color: var(--muted);
+}
+#total-output ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.total--brief [data-detail] {
+  display: none;
+}
+.claim {
+  padding-left: 10px;
+  border-left: 3px solid var(--ok);
+}
+.claim-warn {
+  border-left-color: var(--warn);
+}
+.claim > * + * {
+  margin-top: 6px;
+}
+.table-wrap {
+  overflow-x: auto;
+}
+#total-output table,
+#gate-body table {
+  border-collapse: collapse;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+#total-output caption,
+#gate-body caption {
+  padding-bottom: 4px;
+  color: var(--muted);
+  text-align: left;
+}
+#total-output th,
+#total-output td,
+#gate-body th,
+#gate-body td {
+  padding: 3px 10px 3px 0;
+  border-top: 1px solid var(--panel-border);
+  text-align: left;
+  vertical-align: top;
+}
+#total-output th,
+#gate-body th {
+  color: var(--muted);
+  font-weight: 500;
+}
+td.num {
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+#gate-body > * + * {
+  margin-top: 8px;
+}
+#total-details {
+  margin-top: 10px;
+}
+
+/* The components as bars: the value solid, its band a lighter span over it. */
+.bars {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 10px;
+}
+.bars[hidden] {
+  display: none;
+}
+.bar {
+  display: grid;
+  grid-template-columns: minmax(0, 9.5em) 1fr;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 11px;
+}
+.bar__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bar__track {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 0.06);
+}
+.bar__value {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 4px;
+  background: var(--accent);
+}
+.bar__band {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  border: 1px solid var(--text);
+  border-radius: 3px;
+  background: rgb(255 255 255 / 0.14);
+}
+
 /* ------------------------------------------------- legend and mode bar */
 
 .hud-bottom {

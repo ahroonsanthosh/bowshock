@@ -8,15 +8,50 @@
  * term, with the fins and the flight condition asked below it
  * (docs/design/0011-total-drag-on-the-page.md; ./total-drag.ts decides
  * what is shown and how it is labelled).
+ *
+ * The page is laid out in the shell of docs/design/0012-interface.md
+ * (phase U2): the solve's flow drawn full window as it converges, the
+ * rocket's inputs in the left panel, the drag in the right one. Every
+ * text, number, band, label and refusal reason is the one the logic
+ * returns; the layout only places them, and gives each status its colour
+ * by help's rule.
  */
 
 import { verifiedFittedDragGpu } from '../analysis/gpu-fitted-flow';
 import { GpuExecutionError } from '../engine-gpu/gpu-common';
+import type { LiveFit } from '../engine-gpu/shock-fitting-gpu';
 import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE, type LevelReport } from '../analysis/verified-drag';
 import type { Body } from '../geometry/body';
 import type { NoseShape } from '../geometry/nose';
+import { liveFitSource } from '../render/flow-source';
+import { presentationFor } from '../render/presenter';
+import { FlowView } from '../ui/flow-view';
+import { formatCount, formatExponent, formatFixed, formatGrid, formatRate } from '../ui/format';
+import { bandSection, colourScaleSection, schlierenSection } from '../ui/help';
+import { Shell } from '../ui/shell';
 import { withBand } from './band';
-import { parseNumber, totalDragView, type NoseState } from './total-drag';
+import { DrawnCaseRecord, pngCaption, pngName } from './drawn-case';
+import {
+  bodyOutline,
+  FlowControls,
+  flowReadout,
+  RUN_BINDINGS,
+  VIEW_BINDINGS,
+  viewMenu,
+  type RunAction,
+  type ViewAction,
+} from './flow-controls';
+import {
+  GPU_FAILED,
+  NOT_CONVERGED,
+  NOT_VERIFIED,
+  REFUSED,
+  STOPPED,
+  VERIFIED,
+  type NoseStatus,
+} from './nose-status';
+import { presentTotal } from './total-drag-layout';
+import { parseNumber, totalDragView, type NoseState, type TotalDragView } from './total-drag';
 import {
   altitudeInUnit,
   altitudeUnitOf,
@@ -36,6 +71,7 @@ import {
   type TotalDragFields,
 } from './total-drag-display';
 import { renderBlocks } from './total-drag-render';
+import { h } from '../ui/dom';
 
 const GAMMA = 1.4;
 
@@ -55,9 +91,13 @@ const machInput = element('#mach', HTMLInputElement);
 const finestSelect = element('#finest', HTMLSelectElement);
 const runButton = element('#run', HTMLButtonElement);
 const stopButton = element('#stop', HTMLButtonElement);
+const pauseButton = element('#pause', HTMLButtonElement);
 const result = element('#result', HTMLElement);
 const note = element('#note', HTMLElement);
 const status = element('#status', HTMLElement);
+const noseValue = element('#nose-value', HTMLElement);
+const noseBadge = element('#nose-status', HTMLElement);
+const canvas = element('#flow', HTMLCanvasElement);
 const levels = element('#levels', HTMLTableElement);
 
 const totalForm = element('#total-form', HTMLFormElement);
@@ -84,6 +124,72 @@ const reynoldsFields = ['#reynolds-field', '#temperature-field'].map((s) =>
 const basicFinnerButton = element('#basic-finner', HTMLButtonElement);
 const totalOutput = element('#total-output', HTMLElement);
 const gateBody = element('#gate-body', HTMLElement);
+
+// ------------------------------------------------------------ the shell
+
+type Action = ViewAction | RunAction;
+
+let view: FlowView | null = null;
+
+const shell = new Shell<Action>({
+  root: '../',
+  page: 'drag',
+  title: 'Rocket drag',
+  bindings: [...VIEW_BINDINGS, ...RUN_BINDINGS],
+  view: viewMenu(
+    () => view,
+    () => void savePng(),
+  ),
+  onAction: (action) => {
+    if (action === 'pause') togglePause();
+    else if (action === 'again') void runAgain();
+    else controls.act(action);
+  },
+  help: {
+    title: 'Rocket drag: keys and help',
+    sections: [
+      // The page's own words, kept in its HTML.
+      {
+        title: 'This page',
+        body: Array.from(document.querySelectorAll('#page-help > p'), (p) => p.textContent.trim()),
+      },
+      schlierenSection(),
+      colourScaleSection(),
+      bandSection(),
+    ],
+  },
+});
+
+const readout = flowReadout();
+document.querySelector('main')?.append(readout.element);
+
+const controls = new FlowControls(
+  () => view,
+  () => void savePng(),
+  shell.bottom,
+  element('#view-controls', HTMLElement),
+  () => {
+    shell.topBar.refresh();
+  },
+);
+
+/** The case whose flow is drawn: the PNG's name and caption. */
+const drawnCase = new DrawnCaseRecord();
+
+async function savePng(): Promise<void> {
+  const drawn = drawnCase.current;
+  if (view === null || drawn === null) {
+    shell.toasts.show('Nothing to save yet: the flow shows once a solve has set up its grid.');
+    return;
+  }
+  const name = pngName(drawn, view.shown.split ? 'split' : view.shown.field);
+  try {
+    await view.savePng(name, pngCaption(drawn));
+    shell.toasts.show(`Saved ${name}`);
+  } catch (error) {
+    shell.toasts.show(`Could not save the PNG: ${String(error)}`, 'bad');
+  }
+}
 
 /** The page's element for each total-drag field. */
 const FIELD_IDS: Record<keyof TotalDragFields, string> = {
@@ -166,11 +272,52 @@ function caseText(): string {
   return `${name}${parameter}, nose length ${noseLengthInput.value} and body length ${bodyLengthInput.value} calibers, Mach ${machInput.value}`;
 }
 
-function show(text: string, kind: 'ok' | 'warn' | '' = ''): void {
+/**
+ * The nose solve's result: its text as the page has always written it,
+ * its status in a word and a colour (help's rule), and the value shown
+ * large (the same value as in the text, or none).
+ */
+/** The body as a saved PNG names it, and a short name for its file. */
+function caseLabel(): { text: string; slug: string } {
+  const name = shapeSelect.selectedOptions[0]?.textContent ?? shapeSelect.value;
+  const parameter = parameterField.hidden ? '' : ` (parameter ${parameterInput.value})`;
+  return {
+    text: `${name}${parameter}, nose ${noseLengthInput.value} and body ${bodyLengthInput.value} calibers`,
+    slug: shapeSelect.value,
+  };
+}
+
+function show(text: string, outcome: NoseStatus | null = null, value = 'none'): void {
   result.textContent = text;
-  result.className = kind;
   // What a value means goes with every value shown, from the first grid's on.
-  if (kind === 'ok') note.hidden = false;
+  if (outcome === VERIFIED) note.hidden = false;
+  if (outcome === null) return;
+  noseValue.textContent = value;
+  noseBadge.textContent = outcome.word;
+  noseBadge.className = `badge${outcome.kind === '' ? '' : ` badge--${outcome.kind}`}`;
+  readout.set('state', outcome.word, outcome.kind);
+  drawnCase.settled(generation, value, outcome.word);
+  pin();
+  shell.announce(`Nose wave drag ${value}: ${outcome.word}. ${text}`);
+}
+
+/** The phone's pinned line: the total with its status once there is one, else the nose's. */
+function pin(): void {
+  const copy = (badge: HTMLElement) => {
+    const c = badge.cloneNode(true) as HTMLElement;
+    c.removeAttribute('id');
+    return c;
+  };
+  const headline = totalOutput.querySelector('p.result');
+  shell.sheet.pinned.replaceChildren(
+    ...(totalShown && headline !== null
+      ? [h('span', { className: 'mono', text: headline.textContent }), copy(totalBadge)]
+      : [
+          h('span', {}, 'Wave C', h('sub', { text: 'D' }), ' '),
+          h('span', { className: 'mono', text: noseValue.textContent }),
+          copy(noseBadge),
+        ]),
+  );
 }
 
 function addLevel(report: LevelReport, seconds: number): void {
@@ -188,23 +335,67 @@ function addLevel(report: LevelReport, seconds: number): void {
 }
 
 let controller: AbortController | null = null;
-stopButton.addEventListener('click', () => controller?.abort());
+stopButton.addEventListener('click', () => {
+  if (paused) togglePause();
+  controller?.abort();
+});
+
+/** Each run's number: what a run's callbacks check they still belong to. */
+let generation = 0;
+/** The run on the GPU; settled once it has released its grids. */
+let running: Promise<void> = Promise.resolve();
+
+// Pause (Space): the solve waits between its batches of steps.
+let paused = false;
+let resume: (() => void) | null = null;
+
+function gate(): Promise<void> {
+  if (!paused) return Promise.resolve();
+  return new Promise((resolve) => {
+    resume = resolve;
+  });
+}
+
+function togglePause(): void {
+  if (controller === null) return;
+  paused = !paused;
+  pauseButton.textContent = paused ? 'Resume' : 'Pause';
+  if (!paused) {
+    resume?.();
+    resume = null;
+  }
+  readout.set('state', paused ? 'Paused' : 'Solving');
+  view?.setLive(!paused);
+}
+pauseButton.addEventListener('click', togglePause);
+
+/** R: run again from the start, stopping the run going (if any) first. */
+async function runAgain(): Promise<void> {
+  if (controller !== null) {
+    if (paused) togglePause();
+    controller.abort();
+    await running;
+  }
+  form.requestSubmit();
+}
 
 /**
- * A GPU device, or null without WebGPU (navigator.gpu is then undefined
- * despite its type), with the adapter's largest buffers: the finest grids
- * of long bodies need more than the default 128 MiB.
+ * A GPU device and what its adapter says of itself, or null without WebGPU
+ * (navigator.gpu is then undefined despite its type), with the adapter's
+ * largest buffers: the finest grids of long bodies need more than the
+ * default 128 MiB.
  */
-async function requestDevice(): Promise<GPUDevice | null> {
+async function requestDevice(): Promise<{ device: GPUDevice; info: GPUAdapterInfo } | null> {
   const gpu = navigator.gpu as GPU | undefined;
   const adapter = await gpu?.requestAdapter();
   if (!adapter) return null;
-  return adapter.requestDevice({
+  const device = await adapter.requestDevice({
     requiredLimits: {
       maxBufferSize: adapter.limits.maxBufferSize,
       maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
     },
   });
+  return { device, info: adapter.info };
 }
 
 // ------------------------------------------------------------ total drag
@@ -214,6 +405,10 @@ async function requestDevice(): Promise<GPUDevice | null> {
 
 /** The last nose solve: what it was for, and what it gave the total. */
 let noseSolve: { readonly key: string; readonly state: NoseState } | null = null;
+/** The total's status badge; whether a total (a number) is shown; whether to say the next one. */
+const totalBadge = element('#total-status', HTMLElement);
+let totalShown = false;
+let announceTotal = false;
 /** Set when this browser has no WebGPU, so that no nose can be solved here. */
 let noGpu = false;
 
@@ -259,12 +454,28 @@ function updateTotal(): void {
   impliedTemperature.value = implied.temperature;
   const form = formOf(body, mach, fieldsAsked());
   let blocks: DisplayBlock[];
+  let totalView: TotalDragView | null = null;
   try {
-    blocks = totalDragDisplay(totalDragView(form, noseState()));
+    totalView = totalDragView(form, noseState());
+    blocks = totalDragDisplay(totalView);
   } catch (error) {
     blocks = failureDisplay(error instanceof Error ? error.message : String(error));
   }
   renderBlocks(totalOutput, blocks);
+  // The layout of what the logic returned: its status badge, the components
+  // as bars, the details folded, the pinned line.
+  const shown = presentTotal(totalView, {
+    output: totalOutput,
+    badge: totalBadge,
+    bars: element('#total-bars', HTMLElement),
+    details: element('#total-details', HTMLButtonElement),
+  });
+  totalShown = shown.total;
+  pin();
+  if (announceTotal) {
+    announceTotal = false;
+    shell.announce(shown.said);
+  }
 }
 
 // Each total takes a fraction of a second: computed once typing pauses.
@@ -292,10 +503,11 @@ totalForm.addEventListener('change', showFinFields);
 totalForm.addEventListener('submit', (event) => {
   event.preventDefault();
 });
-for (const f of [form, totalForm]) {
-  f.addEventListener('input', scheduleTotal);
-  f.addEventListener('change', scheduleTotal);
-}
+// The Rocket panel holds both forms' fields (some of the solve's sit under
+// "More", outside its form element, tied to it by their form attribute).
+const rocketPanel = element('#panel-rocket', HTMLElement);
+rocketPanel.addEventListener('input', scheduleTotal);
+rocketPanel.addEventListener('change', scheduleTotal);
 basicFinnerButton.addEventListener('click', setBasicFinner);
 showFinFields();
 renderBlocks(gateBody, gateDisplay());
@@ -306,26 +518,60 @@ let device: GPUDevice | null = null;
 runButton.disabled = true;
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  if (device !== null && controller === null) void run(device);
+  if (device !== null && controller === null) {
+    running = run(device);
+  }
 });
 status.textContent = 'Starting the GPU...';
-device = await requestDevice();
+readout.set('state', 'Starting the GPU');
+const gpu = await requestDevice().catch(() => null);
+device = gpu?.device ?? null;
 status.textContent = '';
 // A lost device makes the next read of the GPU fail with an error of its
 // own; the reason is kept to report it as the GPU's failure.
 let lost: string | null = null;
 void device?.lost.then((info) => {
   lost = info.message === '' ? info.reason : info.message;
+  view?.setLive(false);
 });
-if (device === null) {
-  show('This page needs WebGPU, which this browser does not provide.', 'warn');
+if (gpu === null) {
+  show('This page needs WebGPU, which this browser does not provide.', {
+    word: 'No WebGPU',
+    kind: 'bad',
+  });
   noGpu = true;
   updateTotal();
 } else {
+  readout.set('gpu', gpu.info.description || gpu.info.architecture || gpu.info.vendor);
+  try {
+    view = await FlowView.create(gpu.device, canvas, {
+      presentation: presentationFor(gpu.info),
+      // Clear of the readout, the panels and the bottom row.
+      fitRect: (aspect) => shell.drawingRect(aspect),
+      onScale: (scale) => {
+        controls.showScale(scale);
+      },
+    });
+    view.onChange(() => {
+      controls.showViewState();
+    });
+    controls.showViewState();
+    shell.onLayout(() => {
+      view?.invalidate();
+    });
+  } catch {
+    // Without the view the solve still runs: its numbers are the page's.
+    view = null;
+  }
   runButton.disabled = false;
+  readout.set('state', 'Ready: Run (R) solves this case');
 }
 
+/** Steps per second, from the checks of the grid being solved. */
+let rate: { refinement: number; time: number; iterations: number; cells: number } | null = null;
+
 async function run(gpu: GPUDevice): Promise<void> {
+  const myGeneration = ++generation;
   const body = bodyAsked();
   const mach = parseNumber(machInput.value);
   const asked = caseText();
@@ -340,9 +586,22 @@ async function run(gpu: GPUDevice): Promise<void> {
   levels.hidden = true;
   note.hidden = true;
   show('');
+  noseValue.textContent = '…';
+  noseBadge.textContent = `Solving, finest grid ${20 * Number(finestSelect.value)} cells across`;
+  noseBadge.className = 'badge';
+  pin();
   runButton.disabled = true;
   stopButton.disabled = false;
+  pauseButton.disabled = false;
   controller = new AbortController();
+  // The flow drawn from here on is this case's.
+  view?.setBody(bodyOutline(body));
+  view?.setLive(!paused);
+  readout.set('mach', formatFixed(mach, 2));
+  readout.set('alpha', '0°');
+  for (const id of ['grid', 'step', 'shock', 'cd', 'rate']) readout.set(id, null);
+  readout.set('state', 'Solving');
+  const label = caseLabel();
   let started = performance.now();
   // Where the usual grids fail the quality checks and the family is solved
   // again with more columns: the grid that failed.
@@ -357,12 +616,39 @@ async function run(gpu: GPUDevice): Promise<void> {
       floor: FITTED_DRAG_FLOOR,
       orderTolerance: ORDER_TOLERANCE,
       signal: controller.signal,
+      gate,
       onStart: (steps, total) => {
         status.textContent = `Starting from a captured solution on the CPU: ${steps} of ${total} steps`;
       },
       onProgress: (refinement, iterations, drag) => {
         status.textContent = `Grid at refinement ${refinement}: ${iterations} iterations, wave Cd on this grid so far ${drag.toFixed(6)}`;
         note.hidden = false;
+      },
+      onLive: (live: LiveFit | null, refinement) => {
+        if (myGeneration !== generation) return;
+        if (live === null) {
+          view?.freeze();
+          return;
+        }
+        rate = { refinement, time: performance.now(), iterations: 0, cells: live.ni * live.nj };
+        const grid = formatGrid(live.ni, live.nj);
+        readout.set('grid', grid);
+        view?.setSource(liveFitSource(live));
+        drawnCase.drawnGrid(myGeneration, mach, grid, label.text, label.slug);
+      },
+      onCheck: (refinement, iterations, speed, drag) => {
+        if (myGeneration !== generation) return;
+        drawnCase.checked(myGeneration, drag);
+        readout.set('step', formatCount(iterations));
+        readout.set('shock', formatExponent(speed, 1));
+        readout.set('cd', drag.toFixed(5));
+        const now = performance.now();
+        if (rate?.refinement === refinement && now > rate.time && !paused) {
+          const perSecond =
+            ((iterations - rate.iterations) * rate.cells * 1000) / (now - rate.time);
+          readout.set('rate', formatRate(perSecond, 'cell'));
+        }
+        rate = { refinement, time: now, iterations, cells: rate?.cells ?? 0 };
       },
       onLevel: (report) => {
         addLevel(report, (performance.now() - started) / 1000);
@@ -378,18 +664,18 @@ async function run(gpu: GPUDevice): Promise<void> {
     status.textContent = '';
     switch (outcome.kind) {
       case 'cancelled':
-        show('Stopped.');
+        show('Stopped.', STOPPED);
         break;
       case 'invalid':
         show(
           `${asked}. No result: on the grid at refinement ${outcome.refinement}, ${outcome.reason}.`,
-          'warn',
+          REFUSED,
         );
         break;
       case 'not-converged':
         show(
           `${asked}. No result: the grid at refinement ${outcome.refinement} did not converge (${outcome.reason}).`,
-          'warn',
+          NOT_CONVERGED,
         );
         break;
       case 'solved': {
@@ -405,7 +691,8 @@ async function run(gpu: GPUDevice): Promise<void> {
         if (outcome.uncertainty !== undefined) {
           show(
             `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`,
-            'ok',
+            VERIFIED,
+            withBand(e.value, outcome.uncertainty),
           );
         } else {
           const finer =
@@ -416,7 +703,8 @@ async function run(gpu: GPUDevice): Promise<void> {
                 : 'choosing 320 cells across may verify it';
           show(
             `${asked}. No error band: ${e.kind === 'unresolved' ? e.reason : 'none measured'}. The finest grid's wave Cd, ${e.value.toFixed(5)}, is not verified; ${finer}.${stopped}`,
-            'warn',
+            NOT_VERIFIED,
+            e.value.toFixed(5),
           );
           note.hidden = false;
         }
@@ -436,14 +724,19 @@ async function run(gpu: GPUDevice): Promise<void> {
         : error instanceof GpuExecutionError
           ? `The GPU failed: ${reason}.`
           : `${asked}. Cannot solve this case: ${reason}.`,
-      'warn',
+      gpuFailed ? GPU_FAILED : REFUSED,
     );
     // A case the solver refuses refuses the total; a failed GPU leaves it unsolved.
     result(noseStateOf({ kind: 'error', message: reason, gpuFailed }));
   } finally {
     runButton.disabled = false;
     stopButton.disabled = true;
+    pauseButton.disabled = true;
+    pauseButton.textContent = 'Pause';
+    paused = false;
     controller = null;
+    view?.setLive(false);
+    announceTotal = true;
     updateTotal();
   }
 }
