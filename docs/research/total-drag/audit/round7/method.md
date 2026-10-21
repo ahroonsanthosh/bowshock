@@ -508,3 +508,84 @@ Uncertain or not read:
   0.79 to 0.84) are read as the lower end of the faired curve, not as
   symbols; a symbol hidden in them cannot be excluded.
 * The faired curve was not read.
+
+## Item 6: NACA RM L52J21a fig. 8, nose calls (finned body)
+
+Same file as items 1 and 2 (`19930087533.pdf`, SHA-256
+`9392252bc0b9c2c60c178aa4bbb56616a247f1366890660f3eadaef960e25550`). Fig. 8
+("Effect of Mach number and Reynolds number upon the base pressure of the
+finned body having variable nose and base shapes") is on PDF p. 28 (report
+p. 27), a 300 dpi CCITT bilevel scan rendered at 600 dpi. It has six panels:
+R = 2.91, 5.12 and 8.06 x 10^6 down the page, boattail and cusp bases on the
+left, cylindrical and conical bases on the right; P_B against M at M 1.62,
+1.93 and 2.41. Legend: circle = conical nose, square = ogive nose, diamond =
+radome nose, "Flagged symbols denote fixed transition" (no flags in the
+panel read). Only the lower right panel (cylindrical and conical bases,
+R = 8.06 x 10^6) was read: it is the only panel at the Reynolds number of
+the unfinned readings (item 2, R 7 to 9.5 x 10^6), and its cylindrical-base
+stack at M 1.62 is the one near P_B = -0.1485. The other five panels were not
+read.
+
+### Calibration
+
+Gridlines every 0.1 in M (1.5 to 2.7) and every 0.02 in P_B (0 to -0.20);
+all 143 intersections measured (`scripts/grid_calib.py`, config `rm8br`;
+the in-panel labels and the NACA wing were masked). The page is turned by
+0.82 deg, axes 89.87 deg apart. One affine map leaves M residuals rms 0.0005
+(max 0.0011) and P_B residuals rms 0.00008 (max 0.0002); leave-one-out rms
+0.38 px in x and 0.40 px in y (max 1.1 px). Scale: 1231 px per unit M,
+6186 px per unit P_B (1 px = 0.0008 in M, 0.00016 in P_B).
+
+### How the noses were called
+
+Sizes from isolated symbols of the same figure (lower left panel, M 1.62):
+circle outer diameter 46 to 48 px, diamond 56 to 61 px vertex to vertex,
+square side 43 px, stroke 4 to 5 px, centre dots. In each stack the
+symbols overlap, so each was called from the parts of its outline that no
+other symbol covers (`scripts/rm8_symbols.py`, pixel maps): a square from a
+straight edge with right-angle corners, a diamond from pointed vertices
+(the bottom vertex found as the crossing of the two straight lower edges),
+a circle from round arcs and a vertical side where a diamond edge would be
+diagonal. Two objective checks are in the CSV: the support of each shape's
+centre line (fraction of outline points with ink within 1 px) and the key
+points that only one shape inks (square corners, diamond vertices, circle
+45-deg points). In a stack the support saturates for every shape (all the
+ink is near every outline), so it does not separate the calls; the key
+points do where they are free (for example, at CY241-di all four diamond
+vertices are inked but the square's and circle's lower key points are
+empty; at CY241-sq no diamond vertex is inked). Overlays draw each called
+shape's centre line on the scan (`overlays/rml52j21a_f8_lr_*.png`).
+
+### Results (`readings/rml52j21a_fig8_lr.csv`)
+
+Errors about 2 sigma: centre reading error (1.5 to 6 px) and 0.8 px
+calibration.
+
+| stack | id | nose (symbol) | M | P_B | call |
+|---|---|---|---|---|---|
+| cylindrical base, M 2.41 | CY241-sq | ogive (square) | 2.408 | -0.1188 +- 0.0003 | high |
+| | CY241-ci | conical (circle) | 2.409 | -0.1157 +- 0.0005 | high |
+| | CY241-di | radome (diamond) | 2.409 | -0.1121 +- 0.0005 | high |
+| conical base, M 2.41 | CO241-sq | ogive (square, centre dot) | 2.409 | -0.0680 +- 0.0003 | high |
+| | CO241-ci | conical (circle) | 2.408 | -0.0619 +- 0.0010 | medium |
+| | CO241-di | radome (diamond) | 2.409 | -0.0603 +- 0.0005 | high |
+| cylindrical base, M 1.62 (lower) | CY162-ci | conical (circle) | 1.617 | -0.1488 +- 0.0005 | medium |
+| | CY162-di | radome (diamond) | 1.617 | -0.1482 +- 0.0005 | high |
+
+M errors are 0.0014 to 0.005. Stack extents (outer ink): cylindrical base
+M 2.41 from -0.1224 (top edge of the square) to -0.1073 (bottom vertex of
+the diamond); conical base M 2.41 from -0.0718 to -0.0554; cylindrical base
+M 1.62 lower stack from -0.1529 to -0.1432. The ogive square at M 1.62 sits
+apart above that stack, near -0.16; it was not asked for and not read.
+
+Separation: in both M 2.41 stacks the three noses separate (order from the
+top: ogive, conical, radome). At M 1.62 the stack near -0.1485 is two
+symbols drawn almost on top of each other, a diamond (radome) and a circle
+(conical): the diamond's pointed top, bottom and side vertices stand outside
+the circle, and the circle shows as a flat wide top and bottom that pointed
+vertices cannot give. Their centres differ by 4 px (0.0006 in P_B, less than
+the reading error), so the two values cannot be told apart. One centre dot
+serves both. The least certain call is CO241-ci: its arc is
+partly inside the diamond and on the -0.06 gridline. It would change if the
+round top arc proved to be part of the square's bottom edge and the
+diamond's top vertex, which the vertical right side argues against.

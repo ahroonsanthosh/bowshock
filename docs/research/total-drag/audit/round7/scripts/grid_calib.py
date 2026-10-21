@@ -46,6 +46,17 @@ CONFIG = {
         hpos=[3665.6 - 231.33 * j for j in range(14)],
         box=(1565, 5231, 662, 3661),
         exclude=[(3640, 5240, 2490, 3290)], half=200),
+    # NACA RM L52J21a fig. 8 (PDF p. 28), lower right panel (cylindrical and conical bases,
+    # R = 8.06e6): M 1.5..2.7 every 0.1, P_B -0.20..0 every 0.02
+    "rm8br": dict(
+        vvals=[round(1.5 + 0.1 * k, 1) for k in range(13)],
+        vpos=[2138.7, 2262.1, 2385.6, 2508.9, 2631.6, 2755.5, 2877.7, 3001.5, 3124.7, 3248.0, 3369.5,
+              3493.6, 3616.4],
+        hvals=[round(-0.20 + 0.02 * j, 2) for j in range(11)],
+        hpos=[4061.8, 4183.6, 4308.3, 4431.8, 4555.9, 4679.9, 4803.9, 4927.3, 5049.9, 5173.5, 5297.9],
+        box=(2140, 3615, 4063, 5296),
+        exclude=[(2880, 3440, 4195, 4350), (2885, 3295, 4700, 4815), (2620, 3075, 5030, 5160),
+                 (3085, 3575, 5105, 5270)], half=200),
     # BRL Report 934 Graph I (PDF p. 24 rotated clockwise): graph paper with heavy rulings every
     # 0.05 in M and every 0.025 in C_D (labels 1.0, 1.4, ... every 8th vertical ruling, 0.3, 0.4, ...
     # every 4th horizontal ruling). The page is sheared: vertical rulings lean by dx/dy = -0.012,

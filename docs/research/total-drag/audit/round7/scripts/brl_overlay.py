@@ -1,4 +1,5 @@
-"""Overlays for the BRL Report 934 Graph I transcription.
+"""Overlays for the BRL Report 934 Graph I transcription (also used for
+RM L52J21a fig. 8: circle, square and diamond calls).
 
 usage: python3 -I brl_overlay.py PAGE.png CALIB.json SYMBOLS.json OUT.png x0 y0 x1 y1 scale TITLE_KEY
 SYMBOLS.json may be "none". Cyan squares: measured ruling intersections.
@@ -12,10 +13,13 @@ from PIL import Image, ImageDraw, ImageFont
 
 Image.MAX_IMAGE_PIXELS = None
 TITLES = {
+    "rm8cal": "RM L52J21a fig. 8, lower right panel: cyan squares = measured gridline intersections",
+    "rm8sym": "RM L52J21a fig. 8: green circle = conical, red square = ogive, blue diamond = radome; box = centre error",
     "cal": "BRL 934 Graph I: cyan squares = measured ruling intersections (every 0.05 in M, 0.025 in C_D)",
     "sym": "BRL 934 Graph I: red plus, blue dot, green open circle, orange crossed circle; box = centre error",
 }
-COL = {"plus": (230, 0, 0), "dot": (0, 70, 230), "open circle": (0, 160, 0), "crossed circle": (240, 140, 0)}
+COL = {"plus": (230, 0, 0), "dot": (0, 70, 230), "open circle": (0, 160, 0), "crossed circle": (240, 140, 0),
+       "circle": (0, 160, 0), "square": (230, 0, 0), "diamond": (0, 70, 230)}
 
 
 def main():
@@ -42,14 +46,25 @@ def main():
                 r = max(2, 3 * s)
                 dr.rectangle((a - r, b - r, a + r, b + r), outline=(0, 190, 210), width=2)
     if sym != "none":
-        for r in json.load(open(sym)):
+        js = json.load(open(sym))
+        for r in (js["symbols"] if isinstance(js, dict) else js):
             x, y = r["centre_px"]
             if not (x0 <= x <= x1 and y0 <= y <= y1):
                 continue
-            ex, ey = r["centre_err_px"]
+            e = r["centre_err_px"]
+            ex, ey = (e, e) if isinstance(e, (int, float)) else e
             col = COL[r["symbol"]]
             a, b = P(x, y)
             dr.rectangle((a - ex * s, b - ey * s, a + ex * s, b + ey * s), outline=col, width=2)
+            # fig. 8 calls: the called shape's centre line drawn thin (circle r 21.5, square half side
+            # 19.5, diamond half diagonal 27 px, as in rm8_symbols.py)
+            if r["symbol"] == "circle":
+                dr.ellipse((a - 21.5 * s, b - 21.5 * s, a + 21.5 * s, b + 21.5 * s), outline=col, width=1)
+            elif r["symbol"] == "square":
+                dr.rectangle((a - 19.5 * s, b - 19.5 * s, a + 19.5 * s, b + 19.5 * s), outline=col, width=1)
+            elif r["symbol"] == "diamond":
+                h = 27 * s
+                dr.polygon([(a, b - h), (a + h, b), (a, b + h), (a - h, b)], outline=col)
             dr.line((a - 3, b, a + 3, b), fill=col, width=1)
             dr.line((a, b - 3, a, b + 3), fill=col, width=1)
             dr.text((a + 30 * s, b - 8 * s), r["id"], fill=col, font=font)
