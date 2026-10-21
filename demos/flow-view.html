@@ -30,8 +30,7 @@
     <aside class="panel panel--left" id="panel-case" data-title="Case">
       <div class="panel__body">
         <p class="panel__lead">
-          The Basic Finner's body: a 20° nose cone (10° half-angle, 2.84 calibers) on a cylinder, 10
-          calibers in all, without its fins.
+          The Basic Finner's body without its fins: a 20° cone on a cylinder, 10 calibers long.
         </p>
         <div class="field">
           <label class="field__label" for="mach">Mach number</label>
@@ -56,10 +55,6 @@
           <button id="pause" class="button" type="button" aria-keyshortcuts="Space">Pause</button>
           <button id="again" class="button" type="button" aria-keyshortcuts="R">Run again</button>
         </div>
-        <p class="panel__note">
-          Solved as the drag page solves it, the bow shock fitted, on grids each twice as fine as
-          the last; drawn from the GPU's memory as it converges.
-        </p>
       </div>
     </aside>
     <aside class="panel panel--right" id="panel-drag" data-title="Wave drag" data-tab="Drag">
@@ -69,7 +64,7 @@
           <dd class="figure__main" id="drag">…</dd>
         </dl>
         <p><span id="status" class="badge">Starting</span></p>
-        <p class="panel__note" id="result" aria-live="polite"></p>
+        <p class="panel__note" id="result"></p>
         <table class="levels" id="levels" aria-label="Grids solved" hidden>
           <thead>
             <tr>

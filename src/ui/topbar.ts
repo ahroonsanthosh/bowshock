@@ -17,6 +17,8 @@ export interface TopBarOptions {
   readonly menus: readonly MenuGroup[];
   /** Opens the help overlay; without it there is no help button. */
   readonly onHelp?: () => void;
+  /** Whether a dialog is open over the page (then Esc is the dialog's). */
+  readonly dialogOpen?: () => boolean;
 }
 
 export class TopBar {
@@ -25,6 +27,11 @@ export class TopBar {
   private fullscreenButton: HTMLButtonElement | null = null;
 
   constructor(options: TopBarOptions) {
+    // Esc anywhere closes an open menu (the one listener for it on a page).
+    window.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || options.dialogOpen?.() === true) return;
+      if (this.closeMenus()) event.preventDefault();
+    });
     const brand = h(
       'a',
       { className: 'topbar__brand', attrs: { href: pagePath(options.root, 'home') } },

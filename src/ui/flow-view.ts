@@ -90,8 +90,6 @@ export class FlowView {
   private readonly pointers = new Map<number, { x: number; y: number }>();
   private readonly listeners: (() => void)[] = [];
   private lastScale = '';
-  /** The colour scale last given to onScale, for the PNG's legend. */
-  private scale: FlowScale | null = null;
   private destroyed = false;
   private lost = false;
   private frames = 0;
@@ -277,6 +275,8 @@ export class FlowView {
    * its bottom left, so that the image says what it shows.
    */
   async pngBlob(caption: readonly string[] = []): Promise<Blob> {
+    const view = this.currentView();
+    if (this.renderer.source === null || view === null) throw new Error('no flow is drawn yet');
     const { width, height } = this.canvas;
     const texture = this.device.createTexture({
       size: [width, height],
@@ -288,17 +288,18 @@ export class FlowView {
       usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
     });
     try {
-      const view = this.currentView();
-      if (view !== null) this.renderer.draw(texture, { ...this.drawOptions(), view });
+      this.renderer.draw(texture, { ...this.drawOptions(), view });
       const image = new ImageData(width, height);
       await readPixels(this.device, texture, buffer, image);
+      // The colour scale of this very frame, read after it was drawn.
+      const scale = await this.drawnScale();
       const canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
       const context = canvas.getContext('2d');
       if (context !== null) {
         context.putImageData(image, 0, 0);
-        this.drawCaption(context, caption);
+        this.drawCaption(context, caption, scale);
       }
       return await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob((blob) => {
@@ -312,11 +313,30 @@ export class FlowView {
     }
   }
 
+  /**
+   * The colour scale of the frame just drawn (none for schlieren alone):
+   * read from the GPU, waiting while the legend's own read holds the
+   * readback buffer.
+   */
+  private async drawnScale(): Promise<FlowScale | null> {
+    const { field, split } = this.state;
+    if (field === 'schlieren' && !split) return null;
+    const shown: FlowField = split && field === 'schlieren' ? 'mach' : field;
+    for (let k = 0; k < 40; k++) {
+      const range = await this.renderer.readRange(split ? 1 : 0);
+      if (range !== null) return { field: shown, split, min: range.min, max: range.max };
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    throw new Error('the colour scale could not be read');
+  }
+
   /** The caption and the colour scale, bottom left on a backing. */
-  private drawCaption(context: CanvasRenderingContext2D, caption: readonly string[]): void {
+  private drawCaption(
+    context: CanvasRenderingContext2D,
+    caption: readonly string[],
+    colour: FlowScale | null,
+  ): void {
     const dpr = window.devicePixelRatio || 1;
-    const scale = this.scale;
-    const colour = scale !== null && (scale.field !== 'schlieren' || scale.split) ? scale : null;
     const lines = [...caption];
     if (colour !== null) {
       const ends = `${formatScaleValue(colour.min)} to ${formatScaleValue(colour.max)}`;
@@ -455,8 +475,7 @@ export class FlowView {
     const key = `${field} ${split} ${range.min} ${range.max}`;
     if (key === this.lastScale) return;
     this.lastScale = key;
-    this.scale = { field, split, min: range.min, max: range.max };
-    this.options.onScale(this.scale);
+    this.options.onScale({ field, split, min: range.min, max: range.max });
   }
 
   private drawOptions(): Omit<FlowDrawOptions, 'view'> {

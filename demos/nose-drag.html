@@ -325,12 +325,14 @@
             friction, wave drag and edges and the base, whose bands are estimated on data of each
             component and tested only in the total (design records 0007 to 0010; each component's
             label says what it is). The bands add linearly. One class of rocket has passed a test of
-            the total against free-flight data, the Basic Finner's, at Mach 1.8 to 3.0, and its
-            tolerance was wide: -19.5% to -26.2% and +23.1% to +27.4% of the modelled total, so a
-            pass says little by itself. Inside that class the total is labelled validated; outside
-            it, an estimate, not validated. Where a component's method does not cover the case, the
-            total is refused, with every reason, and no number is given. The defaults are the Basic
-            Finner's shape, 30 mm across, at sea level; its button sets the range's conditions.
+            the total against free-flight data, the Basic Finner's, and its tolerance was wide:
+            -19.5% to -26.2% and +23.1% to +27.4% of the modelled total, so a pass says little by
+            itself. The class runs from Mach 1.8 to 2.15 only: above it the fins-on-base factor was
+            read from one of Love's estimates in TN 3819 fig. 35, not from its free-flight curve.
+            Inside that class the total is labelled validated; outside it, an estimate, not
+            validated. Where a component's method does not cover the case, the total is refused,
+            with every reason, and no number is given. The defaults are the Basic Finner's shape, 30
+            mm across, at sea level; its button sets the range's conditions.
           </p>
         </details>
         <form class="controls" id="total-form">
@@ -503,7 +505,7 @@
             890 m below sea level, so its button gives the range's Reynolds number (about 6.6e6
             times the Mach number) and temperature directly. The gate's shots flew in that air; the
             validated class takes static temperatures of 216.65 to 320 K, over which the modelled
-            total moves by at most 0.21% (design record 0011, section 3), and its Reynolds numbers,
+            total moves by at most 0.13% (design record 0011, section 3), and its Reynolds numbers,
             1.19e7 to 2.0e7. The gate's inputs (placeholders above): a laminar run to Re_T 5e5,
             1.6e6 and 3e6 from the tip and from each fin's leading edge, and the wall at the air
             temperature. No roughness model is validated: a roughness band is yours, shown with the

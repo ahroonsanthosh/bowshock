@@ -208,7 +208,7 @@ export function bandSection(): HelpSection {
     title: 'The band and the status',
     body: [
       'bowshock shows no drag value without its band and its status. The wave drag’s band is measured from nested grids, each twice as fine as the one before, and includes an allowance of 7e-5 of the value for an error the grids cannot show; where no band can be measured, the value is marked not verified.',
-      'The status is written in words as well as colour: green for verified or validated, amber for an estimate, red for refused, with the reason.',
+      'The status is written in words as well as colour. On the live flow and ramp pages: green for a value verified (its band measured) or a run converged; amber for a value not verified, or a run stopped at its limit; red where there is no value (refused, not converged, or a failure of the GPU), with the reason. The drag page keeps its own wording until it moves to this layout.',
     ],
   };
 }
