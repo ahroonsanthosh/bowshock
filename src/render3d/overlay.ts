@@ -5,7 +5,7 @@
  * simulated, the label on the base, and the help (key H).
  */
 
-import type { QuantityScale } from './quantities';
+import type { ColourRange, QuantityScale } from './quantities';
 
 export const OVERLAY_FONT = "'JetBrains Mono', ui-monospace, 'DejaVu Sans Mono', monospace";
 
@@ -107,7 +107,7 @@ function decimalsFor(ticks: readonly number[]): number {
  */
 export function legend(
   scale: QuantityScale,
-  range: { min: number; max: number },
+  range: ColourRange,
   levels: readonly number[],
   px: number,
 ): Canvas2D {
@@ -121,11 +121,22 @@ export function legend(
     levels.length > 0
       ? `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; notches: surfaces; black: none drawn`
       : `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; black: nothing drawn`;
+  // Values beyond the range are drawn in its end colours: said, with the
+  // cells' own extremes.
+  const span = range.max - range.min;
+  const below = range.cellMin < range.min - 1e-9 * span;
+  const above = range.cellMax > range.max + 1e-9 * span;
+  const clipped =
+    below || above
+      ? `cells from ${range.cellMin.toFixed(decimals + 1)} to ${range.cellMax.toFixed(decimals + 1)}; beyond the bar, its end colours`
+      : '';
   const notesFont = `400 ${Math.round(px * 0.85)}px ${OVERLAY_FONT}`;
   const probe = context(makeCanvas(1, 1));
   probe.font = notesFont;
-  const width = Math.max(barWidth + 2 * px, probe.measureText(notes).width) + 2 * pad;
-  const c = makeCanvas(width, 3.6 * lineHeight + barHeight + 2 * pad);
+  const width =
+    Math.max(barWidth + 2 * px, probe.measureText(notes).width, probe.measureText(clipped).width) +
+    2 * pad;
+  const c = makeCanvas(width, (clipped === '' ? 3.6 : 4.6) * lineHeight + barHeight + 2 * pad);
   const ctx = context(c);
   backing(ctx, c.width, c.height, px);
   ctx.textBaseline = 'middle';
@@ -169,5 +180,27 @@ export function legend(
   ctx.font = notesFont;
   ctx.fillStyle = 'rgba(200, 204, 212, 0.85)';
   ctx.fillText(notes, pad, y0 + barHeight + Math.round(px * 0.35) + 2.1 * lineHeight);
+  if (clipped !== '') {
+    ctx.fillText(clipped, pad, y0 + barHeight + Math.round(px * 0.35) + 3.1 * lineHeight);
+    // Arrows at the ends that clip.
+    ctx.fillStyle = 'rgba(236, 238, 242, 0.9)';
+    const mid = y0 + barHeight / 2;
+    const w = Math.round(px * 0.5);
+    if (below) {
+      ctx.beginPath();
+      ctx.moveTo(x0 - 2 - w, mid);
+      ctx.lineTo(x0 - 2, mid - barHeight / 2);
+      ctx.lineTo(x0 - 2, mid + barHeight / 2);
+      ctx.fill();
+    }
+    if (above) {
+      const x1 = x0 + barWidth + 2;
+      ctx.beginPath();
+      ctx.moveTo(x1 + w, mid);
+      ctx.lineTo(x1, mid - barHeight / 2);
+      ctx.lineTo(x1, mid + barHeight / 2);
+      ctx.fill();
+    }
+  }
   return c;
 }

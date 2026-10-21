@@ -12,6 +12,7 @@ import {
   quantityRange,
   quantityScale,
   type Quantity,
+  type ColourRange,
   type QuantityScale,
   type Units,
 } from './quantities';
@@ -22,7 +23,7 @@ export interface FlowGeometry {
   readonly mesh: DualMesh;
   readonly scale: QuantityScale;
   /** Colour range of the quantity. */
-  readonly range: { min: number; max: number };
+  readonly range: ColourRange;
   /** The quantity at the dual mesh's vertices. */
   readonly values: Float64Array;
   readonly levels: number[];
@@ -52,14 +53,11 @@ export function flowGeometry(field: MeridionalField, options: FlowGeometryOption
   const scale = quantityScale(field, options.quantity, options.units);
   const values = dualValues(mesh, scale);
   const range = quantityRange(field, scale);
-  // Levels inside the cells' own range (the free stream's value can widen
-  // the colour range, but no surface lies outside the cells' values).
-  let lo = Infinity;
-  let hi = -Infinity;
-  for (const v of values) {
-    lo = Math.min(lo, v);
-    hi = Math.max(hi, v);
-  }
+  // Levels inside both the colour range and the cells' own values (the
+  // free stream's value can widen the colour range, but no surface lies
+  // outside the cells' values).
+  const lo = Math.max(range.min, range.cellMin);
+  const hi = Math.min(range.max, range.cellMax);
   const levels = niceLevels(lo, hi, options.isoCount ?? 7);
   // On a finer, smooth resampling (./resample.ts): about 800 columns.
   const k = Math.min(

@@ -164,26 +164,92 @@ export function dualValues(mesh: DualMesh, scale: QuantityScale): Float64Array {
   return values;
 }
 
+/** A colour range, and the cells' own extremes (beyond it where the range clips them). */
+export interface ColourRange {
+  readonly min: number;
+  readonly max: number;
+  readonly cellMin: number;
+  readonly cellMax: number;
+}
+
 /**
- * The colour range of a quantity: its cells' smallest and largest values,
- * widened to take in the free stream's; for the pressure coefficient,
- * symmetric about 0 so that the free stream sits at the palette's middle.
+ * The colour range of a quantity: from the value below which lie `tail`
+ * of the computed volume to the value above which lie `tail` of it (each
+ * cell weighted by its volume of revolution, r dA), widened to take in
+ * the free stream's; for the pressure coefficient, symmetric about 0 so
+ * that the free stream sits at the palette's middle. So a tiny region of
+ * extreme values (the stagnation point of a blunt tip, at Mach 0) does not
+ * take the whole palette from the rest of the flow; values beyond the
+ * range are drawn in its end colours, and the legend says so.
  */
 export function quantityRange(
   field: MeridionalField,
   scale: QuantityScale,
-): { min: number; max: number } {
-  let min = scale.freeValue;
-  let max = scale.freeValue;
-  for (let c = 0; c < field.ni * field.nj; c++) {
-    const q = scale.cellValue(c);
-    if (q < min) min = q;
-    if (q > max) max = q;
+  tail = 0.005,
+): ColourRange {
+  const { ni, nj, x, r } = field;
+  const n = ni * nj;
+  const cells: { value: number; weight: number }[] = [];
+  let cellMin = Infinity;
+  let cellMax = -Infinity;
+  let total = 0;
+  for (let j = 0; j < nj; j++) {
+    for (let i = 0; i < ni; i++) {
+      const k = [
+        i + j * (ni + 1),
+        i + 1 + j * (ni + 1),
+        i + 1 + (j + 1) * (ni + 1),
+        i + (j + 1) * (ni + 1),
+      ];
+      let area = 0;
+      let rc = 0;
+      for (let q = 0; q < 4; q++) {
+        const a = k[q]!;
+        const b = k[(q + 1) % 4]!;
+        area += 0.5 * (x[a]! * r[b]! - x[b]! * r[a]!);
+        rc += 0.25 * r[a]!;
+      }
+      const value = scale.cellValue(i + j * ni);
+      const weight = Math.abs(area) * Math.max(rc, 0);
+      cells.push({ value, weight });
+      total += weight;
+      cellMin = Math.min(cellMin, value);
+      cellMax = Math.max(cellMax, value);
+    }
   }
+  let lo = cellMin;
+  let hi = cellMax;
+  if (n > 0 && total > 0) {
+    cells.sort((p, q) => p.value - q.value);
+    let sum = 0;
+    lo = cells[0]!.value;
+    for (const c of cells) {
+      sum += c.weight;
+      if (sum > tail * total) {
+        lo = c.value;
+        break;
+      }
+    }
+    sum = 0;
+    hi = cells[cells.length - 1]!.value;
+    for (let q = cells.length - 1; q >= 0; q--) {
+      sum += cells[q]!.weight;
+      if (sum > tail * total) {
+        hi = cells[q]!.value;
+        break;
+      }
+    }
+  }
+  let min = Math.min(lo, scale.freeValue);
+  let max = Math.max(hi, scale.freeValue);
   if (scale.quantity === 'cp') {
     const m = Math.max(Math.abs(min), Math.abs(max));
-    return { min: -m, max: m };
+    min = -m;
+    max = m;
   }
-  if (!(max > min)) return { min: min - 0.5, max: max + 0.5 };
-  return { min, max };
+  if (!(max > min)) {
+    min -= 0.5;
+    max += 0.5;
+  }
+  return { min, max, cellMin, cellMax };
 }

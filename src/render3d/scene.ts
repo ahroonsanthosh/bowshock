@@ -120,6 +120,9 @@ export interface SceneScale {
   readonly min: number;
   readonly max: number;
   readonly freeValue: number;
+  /** The cells' own smallest and largest values (beyond min and max where those clip them). */
+  readonly cellMin: number;
+  readonly cellMax: number;
   /** Iso-surface levels drawn. */
   readonly levels: readonly number[];
   /** The palette, t in [0, 1] of the range. */
@@ -1789,6 +1792,8 @@ function sceneScale(g: FlowGeometry): SceneScale {
     min: g.range.min,
     max: g.range.max,
     freeValue: g.scale.freeValue,
+    cellMin: g.range.cellMin,
+    cellMax: g.range.cellMax,
     levels: g.levels,
     colour: g.scale.palette,
   };

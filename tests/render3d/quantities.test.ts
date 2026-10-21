@@ -59,6 +59,27 @@ describe('the quantities coloured', () => {
     expect(m.max).toBeCloseTo(2, 12);
   });
 
+  it('range over the bulk of the flow by volume: a tiny cell of extreme value is beyond the range, and reported', () => {
+    // 40 cells of equal size at Mach about 2, one cell a thousandth of the
+    // volume at Mach 0.1 (a stagnation point).
+    // Node 0 at x = -0.001, the others at 0.001, 1.001, 2.001, ...
+    const g = gridFromFunction(41, 1, (i, j) => [i === 0 ? -0.001 : i - 0.999, 1 + j]);
+    const f = fieldFromCells(
+      g,
+      (i) =>
+        i === 0
+          ? { rho: 1.5, u: 0.1 * Math.sqrt(gamma), v: 0, p: 1 }
+          : { rho: 1, u: (1.9 + 0.005 * i) * Math.sqrt(gamma), v: 0, p: 1 },
+      gamma,
+      free,
+    );
+    const r = quantityRange(f, quantityScale(f, 'mach'));
+    expect(r.cellMin).toBeLessThan(0.2);
+    expect(r.min).toBeGreaterThan(1.85);
+    expect(r.cellMax).toBeCloseTo(1.9 + 0.005 * 40, 9);
+    expect(r.max).toBeCloseTo(r.cellMax, 9);
+  });
+
   it('palettes: the spectrum runs magenta to red, fully saturated; every palette in range', () => {
     expect(spectrum(0)[0]).toBeGreaterThan(0.9);
     expect(spectrum(0)[2]).toBeGreaterThan(0.7);
