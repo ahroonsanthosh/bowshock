@@ -56,6 +56,7 @@ const topBar = new TopBar({
   onHelp: () => {
     help.open();
   },
+  dialogOpen: () => help.isOpen,
 });
 document.body.prepend(topBar.element);
 document.body.append(help.element);
@@ -66,9 +67,6 @@ new KeyMap(
   },
   () => help.isOpen,
 ).attach();
-window.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && !help.isOpen && topBar.closeMenus()) event.preventDefault();
-});
 
 const support = await detectGpu(navigator.gpu);
 document.querySelector('#gpu-status')?.replaceChildren(...render(support));

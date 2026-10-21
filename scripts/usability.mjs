@@ -39,6 +39,8 @@ function census() {
     el.getClientRects().length > 0;
   const words = (text) => text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
   let total = 0;
+  // Words one tap away: in a tab not shown (the phone's sheet) or a closed disclosure.
+  let tucked = 0;
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
     const parent = node.parentElement;
@@ -49,7 +51,12 @@ function census() {
     ) {
       continue;
     }
-    if (!shown(parent)) continue;
+    if (!shown(parent)) {
+      if (parent.closest('[data-tab-hidden], details:not([open])') !== null) {
+        tucked += words(node.textContent ?? '');
+      }
+      continue;
+    }
     total += words(node.textContent ?? '');
   }
   // A select shows its chosen option only.
@@ -67,6 +74,7 @@ function census() {
   ).filter((el) => shown(el) && !el.closest('dialog:not([open])')).length;
   return {
     words: total,
+    tucked,
     controls,
     longestParagraph: longest,
     height: document.documentElement.scrollHeight,
@@ -153,7 +161,10 @@ const PAGES = {
     machResult: { selector: '.readout [data-id="cd"]', pattern: '\\d\\.\\d{5}' },
     // The value with its band (or, unmeasured, the value), and its status.
     band: { selector: '#drag, .pinned', pattern: '\\d\\.\\d{5}( ± \\d)?' },
-    status: { selector: '#status, .pinned', pattern: 'Verified|Not verified|Refused' },
+    status: {
+      selector: '#status, .pinned',
+      pattern: 'Verified|Not verified|Refused|Not converged|GPU failed',
+    },
     tasks: () => ({ mach: [{ select: ['#mach', '3'] }], help: [{ key: 'h' }] }),
   },
 };
@@ -267,14 +278,14 @@ function table(before, after) {
   const old = new Map((before ?? []).map((r) => [key(r), r]));
   const fmt = (v) => (v === null || v === undefined ? 'none' : String(v));
   const lines = [
-    '| Page | Width | Words | Controls | Longest paragraph | Height | First result (s) | Converged (s) | See the result (actions) | Band and status (actions) | Mach (actions) | Help (actions) |',
-    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    '| Page | Width | Words | Words a tab or disclosure away | Controls | Longest paragraph | Height | First result (s) | Converged (s) | See the result (actions) | Band and status (actions) | Mach (actions) | Help (actions) |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
   ];
   for (const r of after) {
     const b = old.get(key(r));
     const pair = (f) => (b === undefined ? fmt(f(r)) : `${fmt(f(b))} to ${fmt(f(r))}`);
     lines.push(
-      `| ${r.page} | ${r.width} | ${pair((x) => x.words)} | ${pair((x) => x.controls)} | ${pair((x) => x.longestParagraph)} | ${pair((x) => x.height)} | ${pair((x) => x.firstResult?.toFixed(1))} | ${pair((x) => x.converged?.toFixed(1))} | ${pair((x) => x.actions.result)} | ${pair((x) => x.actions.bandAndStatus)} | ${pair((x) => x.actions.changeMach)} | ${pair((x) => x.actions.openHelp)} |`,
+      `| ${r.page} | ${r.width} | ${pair((x) => x.words)} | ${pair((x) => x.tucked)} | ${pair((x) => x.controls)} | ${pair((x) => x.longestParagraph)} | ${pair((x) => x.height)} | ${pair((x) => x.firstResult?.toFixed(1))} | ${pair((x) => x.converged?.toFixed(1))} | ${pair((x) => x.actions.result)} | ${pair((x) => x.actions.bandAndStatus)} | ${pair((x) => x.actions.changeMach)} | ${pair((x) => x.actions.openHelp)} |`,
     );
   }
   return lines.join('\n');

@@ -93,6 +93,7 @@ export class Shell<A extends string> {
       onHelp: () => {
         this.help.open();
       },
+      dialogOpen: () => this.help.isOpen,
     });
     this.keys = new KeyMap<A | 'help'>(
       bindings,
@@ -104,11 +105,6 @@ export class Shell<A extends string> {
       () => this.help.isOpen,
     );
     this.keys.attach();
-    window.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !this.help.isOpen && this.topBar.closeMenus()) {
-        event.preventDefault();
-      }
-    });
 
     this.panels = Array.from(document.querySelectorAll<HTMLElement>('aside.panel'), (el) => {
       const panel = new Panel(el);

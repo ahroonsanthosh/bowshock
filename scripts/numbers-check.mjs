@@ -5,16 +5,17 @@
  * (docs/design/0012-interface.md section 8).
  *
  *   node scripts/numbers-check.mjs --before http://localhost:4180 --after http://localhost:4173 \
+ *     --before-build cacc38e --after-build <commit> \
  *     --out docs/research/interface/numbers.json [--cases ramp-gpu,tube-cpu]
  *
  * The ramp: its readings (iteration, residual, the ramp pressure, the
- * exact one, their difference) as it runs, on the GPU and on the CPU
- * engine, compared at every iteration both builds reported. The shock
- * tube: the time, the steps and the L1 error it ends with. The wave drag:
- * the first grid's drag on the drag page with the old preset typed (2.836
- * and 7.164), with its new one (2.835641 and 7.164359), with the exact
- * body typed in full, and on the live flow page (the exact body), all from
- * the `after` build. Chromium:
+ * exact one, their difference) as it runs to convergence, on the GPU and
+ * on the CPU engine, compared at every iteration both builds reported and
+ * at the reading once "Converged" shows. The shock tube: the time, the
+ * steps and the L1 error it ends with. The wave drag: the first grid's
+ * drag on the drag page with the old preset typed (2.836 and 7.164), with
+ * its new one (2.835641 and 7.164359), with the exact body typed in full,
+ * and on the live flow page, all from the `after` build. Chromium:
  * CHROMIUM_PATH, or Playwright's own.
  */
 
@@ -192,7 +193,7 @@ async function dragPage(base, nose, cylinder) {
 }
 
 const CASES = {
-  'ramp-gpu': async (b, a) => compareRamp(b, a, { gpu: true, readings: 5 }),
+  'ramp-gpu': async (b, a) => compareRamp(b, a, { gpu: true, readings: 1000 }),
   'ramp-cpu': async (b, a) => compareRamp(b, a, { gpu: false, readings: 1000 }),
   'ramp-cpu-expansion': async (b, a) =>
     compareRamp(b, a, { gpu: false, angle: -10, readings: 1000 }),
@@ -229,13 +230,21 @@ async function compareRamp(before, after, options) {
     compared += 1;
     if (JSON.stringify(old) !== JSON.stringify(r)) differences.push({ before: old, after: r });
   }
+  // The end state: the reading once "Converged" shows, in both builds.
+  const endBefore = b.series.find((r) => r.converged) ?? null;
+  const endAfter = a.series.find((r) => r.converged) ?? null;
+  const endIdentical =
+    endBefore !== null &&
+    endAfter !== null &&
+    JSON.stringify(endBefore) === JSON.stringify(endAfter);
   return {
     options,
     compared,
-    identical: compared > 0 && differences.length === 0,
+    endIdentical,
+    identical: compared > 0 && differences.length === 0 && endIdentical,
     differences,
-    lastBefore: b.series.at(-1) ?? null,
-    lastAfter: a.series.at(-1) ?? null,
+    endBefore,
+    endAfter,
     errors: { before: b.errors, after: a.errors },
   };
 }
@@ -254,6 +263,11 @@ async function compareTube(before, after, options) {
 const before = argument('before', 'http://localhost:4180').replace(/\/$/, '');
 const after = argument('after', 'http://localhost:4173').replace(/\/$/, '');
 const only = argument('cases', null)?.split(',');
+// The two builds compared, as the caller names them (their commits).
+const builds = {
+  before: argument('before-build', before),
+  after: argument('after-build', after),
+};
 const results = {};
 for (const [id, run] of Object.entries(CASES)) {
   if (only !== undefined && !only.includes(id)) continue;
@@ -261,4 +275,6 @@ for (const [id, run] of Object.entries(CASES)) {
   console.log(id, JSON.stringify(results[id]));
 }
 const out = argument('out', null);
-if (out !== null) await writeFile(out, `${JSON.stringify(results, null, 2)}\n`);
+if (out !== null) {
+  await writeFile(out, `${JSON.stringify({ builds, cases: results }, null, 2)}\n`);
+}

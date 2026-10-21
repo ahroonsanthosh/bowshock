@@ -107,7 +107,8 @@ const PAGES = [
     ready: (page) =>
       until(
         page,
-        async () => /erified|Refused|GPU failed/.test(await readoutValue(page, 'state')),
+        async () =>
+          /erified|Refused|Not converged|GPU failed/.test(await readoutValue(page, 'state')),
         900,
       ),
     // Each field and view, after the default (schlieren).
@@ -129,6 +130,9 @@ const PAGES = [
     ],
     // 3 in the focused Mach select shows Cp, and leaves the Mach number.
     select: { focus: '#mach', press: '3', pressed: 'Cp' },
+    // Another Mach number chosen and K pressed at once: the PNG is of the flow
+    // still drawn (Mach 2), not of the case being set up.
+    png: { select: '#mach', value: '3', expect: '-M2-' },
   },
 ];
 
@@ -281,6 +285,21 @@ async function selectKeys(page, spec) {
   return { skipped: false, problems };
 }
 
+/** Choose another case and press K at once: the PNG saved must name the case drawn. */
+async function pngOfDrawnCase(page, spec) {
+  await page.evaluate(() => document.activeElement?.blur());
+  const download = page.waitForEvent('download', { timeout: 30_000 }).catch(() => null);
+  await page.selectOption(spec.select, spec.value);
+  await page.keyboard.press('k');
+  const file = await download;
+  const name = file?.suggestedFilename() ?? 'none';
+  const ok = name.includes(spec.expect);
+  return {
+    problems: ok ? 0 : 1,
+    line: `${spec.select} set to ${spec.value}, then K: saved ${name}${ok ? '' : `, expected a name with ${spec.expect}`}`,
+  };
+}
+
 /** Press each key and check its effect; then the help dialog by keyboard. */
 async function keyboard(page, keys) {
   const problems = [];
@@ -364,6 +383,11 @@ try {
           `  keyboard: ${problems.length === 0 ? 'every key and stop works' : problems.join('; ')}`,
         );
         failures += problems.length;
+      }
+      if (spec.png !== undefined && size.width === 1440) {
+        const result = await pngOfDrawnCase(page, spec.png);
+        lines.push(`  ${result.line}`);
+        failures += result.problems;
       }
       lines.push(`  console errors: ${errors.length === 0 ? 'none' : errors.join(' | ')}`);
       lines.push(

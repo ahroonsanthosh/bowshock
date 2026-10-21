@@ -699,5 +699,3 @@ export class FlowRenderer {
     this.device.queue.writeBuffer(this.drawParams, 0, params);
   }
 }
-
-/** Node positions as vec2f, node (i, j) at index i + j * (ni + 1). */
