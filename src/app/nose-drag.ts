@@ -18,12 +18,15 @@ import type { NoseShape } from '../geometry/nose';
 import { withBand } from './band';
 import { parseNumber, totalDragView, type NoseState } from './total-drag';
 import {
+  altitudeInUnit,
+  altitudeUnitOf,
   BASIC_FINNER_NOSE_FIELDS,
   basicFinnerFields,
   failureDisplay,
   fieldsShown,
   formOf,
   gateDisplay,
+  impliedConditionText,
   NO_WEBGPU,
   noseKeyOf,
   noseStateOf,
@@ -66,6 +69,18 @@ const ridgeField = element('#ridge-field', HTMLElement);
 const bevelFields = element('#bevel-fields', HTMLElement);
 const overallLength = element('#overall-length', HTMLOutputElement);
 const totalMach = element('#total-mach', HTMLOutputElement);
+const conditionMode = element('#condition-mode', HTMLSelectElement);
+const altitudeInput = element('#altitude', HTMLInputElement);
+const altitudeLabel = element('#altitude-label', HTMLLabelElement);
+const altitudeFields = ['#altitude-field', '#diameter-field'].map((s) => element(s, HTMLElement));
+const impliedFields = ['#implied-reynolds-field', '#implied-temperature-field'].map((s) =>
+  element(s, HTMLElement),
+);
+const impliedReynolds = element('#implied-reynolds', HTMLOutputElement);
+const impliedTemperature = element('#implied-temperature', HTMLOutputElement);
+const reynoldsFields = ['#reynolds-field', '#temperature-field'].map((s) =>
+  element(s, HTMLElement),
+);
 const basicFinnerButton = element('#basic-finner', HTMLButtonElement);
 const totalOutput = element('#total-output', HTMLElement);
 const gateBody = element('#gate-body', HTMLElement);
@@ -86,6 +101,9 @@ const FIELD_IDS: Record<keyof TotalDragFields, string> = {
   rearBevel: '#rear-bevel',
   leadingEdgeRadius: '#le-radius',
   trailingEdgeAheadOfBase: '#te-ahead',
+  conditionMode: '#condition-mode',
+  altitude: '#altitude',
+  diameter: '#diameter',
   reynoldsOnLength: '#reynolds',
   temperature: '#temperature',
   transitionReynolds: '#transition',
@@ -210,7 +228,15 @@ function fieldsAsked(): TotalDragFields {
   ) as unknown as TotalDragFields;
 }
 
+/** The unit the altitude was last typed in: a change of unit converts it. */
+let altitudeUnit = altitudeUnitOf(conditionMode.value) ?? 'm';
+
 function showFinFields(): void {
+  const unit = altitudeUnitOf(conditionMode.value);
+  if (unit !== null && unit !== altitudeUnit) {
+    altitudeInput.value = altitudeInUnit(altitudeInput.value, altitudeUnit, unit);
+    altitudeUnit = unit;
+  }
   const shown = fieldsShown(fieldsAsked());
   sweepFields.hidden = !shown.sweeps;
   teSweepField.hidden = !shown.sweeps;
@@ -218,13 +244,20 @@ function showFinFields(): void {
   ridgeField.hidden = !shown.ridge;
   bevelFields.hidden = !shown.bevels;
   thicknessLabel.textContent = shown.thicknessLabel;
+  for (const f of [...altitudeFields, ...impliedFields]) f.hidden = !shown.altitude;
+  for (const f of reynoldsFields) f.hidden = !shown.reynolds;
+  altitudeLabel.textContent = shown.altitudeLabel;
 }
 
 function updateTotal(): void {
   const body = bodyAsked();
   overallLength.value = overallLengthText(body);
   totalMach.value = machInput.value;
-  const form = formOf(body, parseNumber(machInput.value), fieldsAsked());
+  const mach = parseNumber(machInput.value);
+  const implied = impliedConditionText(body, mach, fieldsAsked());
+  impliedReynolds.value = implied.reynolds;
+  impliedTemperature.value = implied.temperature;
+  const form = formOf(body, mach, fieldsAsked());
   let blocks: DisplayBlock[];
   try {
     blocks = totalDragDisplay(totalDragView(form, noseState()));

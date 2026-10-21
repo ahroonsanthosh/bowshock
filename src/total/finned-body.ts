@@ -373,6 +373,8 @@ export function finnedBodyComponents(
         count: fins.count,
         thicknessRatio: symmetricThicknessRatio(fins.section),
         section: fins.sectionFamily,
+        tanLeadingEdge: fins.planform.tanLeadingEdge,
+        tanTrailingEdge: fins.planform.tanTrailingEdge,
         trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
       },
     });

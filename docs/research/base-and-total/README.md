@@ -71,3 +71,19 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   `gate-round5.json` is the per-shot record from which
   `tests/validation/basic-finner.test.ts` holds the re-derived input bands
   and tolerances. The second run's files are kept unchanged beside it.
+- `gate-corrected.test.ts`: the gate re-run (2026-10-21) with the
+  fins-on-base factor corrected to TN 3819 fig. 35's free-flight curve as
+  identified (0010 section 11), a recorded correction made on the
+  figure's evidence after the residuals were known, not a validation; the
+  configuration and the arithmetic are round 5's. It prints first the two
+  readings of the curve paired, the identity-swap allowance from both
+  readings' estimates A and B, the tunnel excesses, the corrected rows,
+  the bounded factor above M 2.56 with Love's estimates against it and the
+  increment-carried alternative, and the superseded factor beside the
+  corrected one at each shot; then per shot the components, the input
+  bands, the residual, the tolerance and the body base's label, and the
+  clusters. `gate-corrected.out` and `.json` are the output as it came out
+  (run in `tests/tmp-total/` under the same name, copied here unchanged);
+  `tests/validation/basic-finner.test.ts` holds the corrected values from
+  the `.json` beside round 5's. `base-rows.test.ts` and its output are the
+  superseded factor's, kept as they came out.

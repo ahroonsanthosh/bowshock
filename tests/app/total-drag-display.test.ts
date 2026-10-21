@@ -10,14 +10,18 @@
 import { describe, expect, it } from 'vitest';
 import type { VerifiedDrag } from '../../src/analysis/verified-drag';
 import {
+  altitudeInUnit,
   BASIC_FINNER_NOSE_FIELDS,
   basicFinnerFields,
+  conditionOf,
   displayText,
+  ESTIMATE_TOLERANCE_TEXT,
   failureDisplay,
   fieldsShown,
   formOf,
   gateDisplay,
-  NEAR_MACH_3_TEXT,
+  impliedConditionText,
+  INSIDE_PENDING_TEXT,
   NO_WEBGPU,
   noseKeyOf,
   noseStateOf,
@@ -28,6 +32,7 @@ import {
   type TotalDragFields,
 } from '../../src/app/total-drag-display';
 import {
+  ABOVE_THE_CLASS,
   BAND_CAVEAT,
   basicFinnerClass,
   basicFinnerForm,
@@ -38,18 +43,22 @@ import {
   FINS_ON_BASE_NOTE,
   GATE_TRANSITION_REYNOLDS,
   NOT_REPRESENTED,
-  OFFSET_CAVEAT,
+  CLASS_CLAIM,
   PUBLISHED_GATE,
-  TOLERANCE_CAVEAT,
+  SUSPENDED_REASON,
   totalDragView,
-  VALIDATED_CLAIM,
   type NoseState,
   type TotalDragForm,
 } from '../../src/app/total-drag';
+import { flightConditionOf } from '../../src/app/flight-condition';
 import type { Body } from '../../src/geometry/body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
+import { basicFinnerBody, basicFinnerBodyAsTyped } from '../../src/validation/basic-finner';
 
-/** The page's fields as it opens: the Basic Finner at Mach 2 (demos/nose-drag.html). */
+/**
+ * The page's fields as it opens (demos/nose-drag.html): the Basic Finner's
+ * shape, 30 mm across, at sea level in the standard atmosphere, at Mach 2.
+ */
 const DEFAULT_FIELDS: TotalDragFields = {
   finCount: '4',
   planform: 'rectangular',
@@ -65,6 +74,9 @@ const DEFAULT_FIELDS: TotalDragFields = {
   rearBevel: '0.25',
   leadingEdgeRadius: '0.004',
   trailingEdgeAheadOfBase: '0',
+  conditionMode: 'altitude-m',
+  altitude: '0',
+  diameter: '30',
   reynoldsOnLength: '1.32e7',
   temperature: '293.95',
   transitionReynolds: '',
@@ -73,9 +85,12 @@ const DEFAULT_FIELDS: TotalDragFields = {
   roughnessHigh: '',
   roughnessSource: '',
 };
+/** The same with the Reynolds number and temperature given directly: the Basic Finner's range at Mach 2. */
+const DIRECT_FIELDS: TotalDragFields = { ...DEFAULT_FIELDS, conditionMode: 'reynolds' };
+/** The Basic Finner as the page's fields give it (BASIC_FINNER_NOSE_FIELDS). */
 const BODY: Body = {
-  nose: { shape: { kind: 'conical' }, length: 2.836, baseRadius: 0.5 },
-  cylinderLength: 7.164,
+  nose: { shape: { kind: 'conical' }, length: 2.835641, baseRadius: 0.5 },
+  cylinderLength: 7.164359,
 };
 
 const exactNose = (form: TotalDragForm): NoseState => ({
@@ -91,13 +106,97 @@ const tables = (blocks: readonly DisplayBlock[]) =>
   blocks.flatMap((b) => (b.kind === 'table' ? [b] : []));
 
 describe('the fields as typed', { timeout: 60_000 }, () => {
-  it('the page opens on the Basic Finner, inside the class', () => {
+  it("the page opens on the Basic Finner's shape, 30 mm across, at sea level: inside the class", () => {
     const form = formOf(BODY, 2, DEFAULT_FIELDS);
+    // The standard atmosphere at sea level: 288.15 K; Re 1.40e7, inside 1.19e7 to 2.0e7.
+    expect(form.temperature).toBe(288.15);
+    expect(form.reynoldsOnLength).toBeCloseTo(1.3978e7, -3);
     expect(basicFinnerClass(form)).toEqual({ inside: true, outside: [] });
     expect(form.transitionReynolds).toEqual([]);
     expect(form.wallTemperature).toBeUndefined();
     expect(form.roughness).toBeUndefined();
     expect(overallLengthText(BODY)).toBe('10 calibers');
+    // So are the range's Reynolds number and temperature given directly.
+    expect(basicFinnerClass(formOf(BODY, 2, DIRECT_FIELDS))).toEqual({ inside: true, outside: [] });
+    // At sea level, 30 mm across, the case lies inside the class from Mach 1.799 to 2.15;
+    // above, the Mach number leaves it, and from 2.87 the Reynolds number too.
+    expect(basicFinnerClass(formOf(BODY, 2.15, DEFAULT_FIELDS)).inside).toBe(true);
+    expect(basicFinnerClass(formOf(BODY, 2.86, DEFAULT_FIELDS)).outside).toEqual([
+      `Mach 2.86 is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+    ]);
+    expect(basicFinnerClass(formOf(BODY, 2.87, DEFAULT_FIELDS)).outside).toEqual([
+      `Mach 2.87 is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+      'the Reynolds number on length, 2.01e7, is outside 1.19e7 to 2.0e7',
+    ]);
+  });
+
+  it('the flight condition from the altitude, Mach number and diameter, shown read-only beside them', () => {
+    const c = flightConditionOf({
+      altitude: 0,
+      altitudeUnit: 'm',
+      mach: 2,
+      diameterMm: 30,
+      lengthCalibers: 10,
+    });
+    if (c.kind !== 'ok') throw new Error('expected a condition');
+    expect(conditionOf(BODY, 2, DEFAULT_FIELDS)).toEqual({
+      reynoldsOnLength: c.value.reynoldsOnLength,
+      temperature: 288.15,
+      refusals: [],
+    });
+    expect(impliedConditionText(BODY, 2, DEFAULT_FIELDS)).toEqual({
+      reynolds: '1.40e7',
+      temperature: '288.15 K',
+    });
+    // In feet; the length is the body's, in calibers, times the diameter.
+    const feet = { ...DEFAULT_FIELDS, conditionMode: 'altitude-ft', altitude: '36089.24' };
+    expect(impliedConditionText(BODY, 2, feet).temperature).toBe('216.77 K');
+    const longer = { ...BODY, cylinderLength: 2 * 7.164359 + 2.835641 };
+    expect(conditionOf(longer, 2, DEFAULT_FIELDS).reynoldsOnLength).toBeCloseTo(
+      2 * c.value.reynoldsOnLength,
+      0,
+    );
+    // Given directly, the altitude and diameter are not read.
+    expect(conditionOf(BODY, 2, { ...DIRECT_FIELDS, altitude: '', diameter: '' })).toEqual({
+      reynoldsOnLength: 1.32e7,
+      temperature: 293.95,
+      refusals: [],
+    });
+  });
+
+  it('an altitude out of range or a missing diameter refuses the total, with the reason', () => {
+    const fields = { ...DEFAULT_FIELDS, altitude: '60000', diameter: '' };
+    expect(impliedConditionText(BODY, 2, fields)).toEqual({
+      reynolds: 'none',
+      temperature: 'none',
+    });
+    const form = formOf(BODY, 2, fields);
+    expect(form.reynoldsOnLength).toBeNaN();
+    const text = displayText(totalDragDisplay(totalDragView(form, exactNose(form))));
+    expect(text).toContain(
+      'flight condition (input): the altitude must lie within -5,000 to 51,412 m above sea level',
+    );
+    expect(text).toContain(
+      'flight condition (input): the diameter must be a positive number of millimeters.',
+    );
+    // Said once, not again as a Reynolds number or a temperature.
+    expect(text).not.toContain('the Reynolds number on length must be');
+    expect(text).not.toContain('the static temperature must be');
+    // A Mach number that is not one is said once.
+    const noMach = displayText(
+      totalDragDisplay(
+        totalDragView(formOf(BODY, Number.NaN, DEFAULT_FIELDS), { kind: 'pending' }),
+      ),
+    );
+    expect(noMach.split('the Mach number must be a positive number').length).toBe(2);
+  });
+
+  it('a change of unit converts the altitude typed', () => {
+    expect(altitudeInUnit('3048', 'm', 'ft')).toBe('10000');
+    expect(altitudeInUnit('10000', 'ft', 'm')).toBe('3048');
+    expect(altitudeInUnit('1000', 'm', 'ft')).toBe('3280.8');
+    expect(altitudeInUnit('', 'm', 'ft')).toBe('');
+    expect(altitudeInUnit('1000', 'm', 'm')).toBe('1000');
   });
 
   it('an empty number is refused, not read as zero; lists and one-sided bands', () => {
@@ -154,36 +253,73 @@ describe('the fields as typed', { timeout: 60_000 }, () => {
       ridge: false,
       bevels: false,
       thicknessLabel: 'Trailing-edge thickness',
+      altitude: true,
+      altitudeLabel: 'Altitude (m)',
+      reynolds: false,
     });
-    expect(fieldsShown({ planform: 'trapezoidal', section: 'hexagonal' })).toEqual({
+    expect(
+      fieldsShown({ planform: 'trapezoidal', section: 'hexagonal', conditionMode: 'reynolds' }),
+    ).toEqual({
       sweeps: true,
       taperRatio: false,
       ridge: false,
       bevels: true,
       thicknessLabel: 'Largest thickness',
+      altitude: false,
+      altitudeLabel: 'Altitude (m)',
+      reynolds: true,
     });
+    expect(fieldsShown({ ...DEFAULT_FIELDS, conditionMode: 'altitude-ft' }).altitudeLabel).toBe(
+      'Altitude (ft)',
+    );
   });
 
-  it('the Basic Finner button: its nose, fins and range conditions, the inputs kept', () => {
+  it('the Basic Finner button: its nose, fins and range conditions given directly, the inputs kept', () => {
     expect(BASIC_FINNER_NOSE_FIELDS).toEqual({
       shape: 'conical',
-      noseLength: '2.836',
-      bodyLength: '7.164',
+      noseLength: '2.835641',
+      bodyLength: '7.164359',
     });
+    // The exact body (basicFinnerBody, the gate's), to six decimals.
+    const exact = basicFinnerBody();
+    expect(Math.abs(Number(BASIC_FINNER_NOSE_FIELDS.noseLength) - exact.nose.length)).toBeLessThan(
+      5e-7,
+    );
+    expect(
+      Math.abs(Number(BASIC_FINNER_NOSE_FIELDS.bodyLength) - exact.cylinderLength),
+    ).toBeLessThan(5e-7);
+    expect(basicFinnerForm().body).toEqual(exact);
+    // The live flow page solves what these fields give, to the last bit.
+    expect(basicFinnerBodyAsTyped()).toEqual({
+      nose: {
+        shape: { kind: 'conical' },
+        length: Number(BASIC_FINNER_NOSE_FIELDS.noseLength),
+        baseRadius: 0.5,
+      },
+      cylinderLength: Number(BASIC_FINNER_NOSE_FIELDS.bodyLength),
+    });
+    expect(BODY).toEqual(basicFinnerBodyAsTyped());
     const typed = {
       ...DEFAULT_FIELDS,
       finCount: '3',
       section: 'double-wedge',
+      altitude: '1500',
+      diameter: '54',
       reynoldsOnLength: '4e7',
       temperature: '250',
       transitionReynolds: '1e6',
     };
-    const fields = basicFinnerFields(2.9, typed);
-    expect(fields.reynoldsOnLength).toBe('1.92e7');
+    const fields = basicFinnerFields(2.1, typed);
+    // The range's air was no standard atmosphere: its conditions are given directly.
+    expect(fields.conditionMode).toBe('reynolds');
+    expect(fields.diameter).toBe('30');
+    expect(fields.altitude).toBe('1500');
+    expect(fields.reynoldsOnLength).toBe('1.39e7');
     expect(basicFinnerFields(2, typed).reynoldsOnLength).toBe(DEFAULT_FIELDS.reynoldsOnLength);
+    expect(basicFinnerFields(2.9, typed).reynoldsOnLength).toBe('1.92e7');
     expect(fields.temperature).toBe('293.95');
     expect(fields.transitionReynolds).toBe('1e6');
-    const form = formOf(BODY, 2.9, fields);
+    const form = formOf(BODY, 2.1, fields);
     expect(basicFinnerClass(form)).toEqual({ inside: true, outside: [] });
   });
 });
@@ -254,8 +390,8 @@ describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
       'Total drag refused: no number is given. Every reason:' +
         'nose wave drag (not-verified): the nose wave drag is solved on the GPU, and this ' +
         'browser provides no WebGPU.' +
-        'body base (mach-range): the fins-on-base factor is read at Mach 1.8 to 3 (TN 3819 ' +
-        'fig. 35), asked Mach 1.6.',
+        'body base (mach-range): the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded ' +
+        'to 3 (TN 3819 fig. 35), asked Mach 1.6.',
     );
   });
 });
@@ -263,7 +399,7 @@ describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
 describe('the display', { timeout: 60_000 }, () => {
   it('waiting for the nose: no number, and whether the case is in the class', () => {
     const inside = totalDragDisplay(
-      totalDragView(formOf(BODY, 2, DEFAULT_FIELDS), { kind: 'pending' }),
+      totalDragView(formOf(BODY, 2, DIRECT_FIELDS), { kind: 'pending' }),
     );
     expect(inside[0]).toEqual({
       kind: 'paragraph',
@@ -271,14 +407,17 @@ describe('the display', { timeout: 60_000 }, () => {
       tone: 'plain',
       headline: true,
     });
-    expect(displayText(inside)).toContain('inside the class tested by the Basic Finner');
+    expect(displayText(inside)).toContain(INSIDE_PENDING_TEXT);
+    expect(displayText(inside)).toContain(
+      'an estimate, not validated, while the claim is suspended',
+    );
     expect(displayText(inside)).not.toContain('C_D =');
     const ogive = {
       ...BODY,
       nose: { ...BODY.nose, shape: { kind: 'ogive', parameter: 1 } },
     } as const;
     const outside = totalDragDisplay(
-      totalDragView(formOf(ogive, 2, DEFAULT_FIELDS), { kind: 'pending' }),
+      totalDragView(formOf(ogive, 2, DIRECT_FIELDS), { kind: 'pending' }),
     );
     expect(displayText(outside)).toContain('so the total will be an estimate, not validated:');
     expect(outside.at(-1)).toEqual({
@@ -287,69 +426,77 @@ describe('the display', { timeout: 60_000 }, () => {
     });
   });
 
-  it('a validated total: the headline rounded outward, the claim, every label, the notes', () => {
+  it('a total inside the class: an estimate, its claim suspended, the headline rounded outward, every label, the notes', () => {
     const form: TotalDragForm = {
-      ...basicFinnerForm(2.97, 1.97e7),
+      ...basicFinnerForm(1.85, 1.23e7),
       transitionReynolds: GATE_TRANSITION_REYNOLDS,
       wallTemperature: 343.7 ** 2 / (1.4 * 287.05),
     };
     const view = totalDragView(form, exactNose(form));
     if (view.kind !== 'total') throw new Error(view.kind);
     const blocks = totalDragDisplay(view);
-    // The gate's shot DA95022205 (0010 section 4.2): 0.4071 (0.3579 to 0.4786).
+    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048), the
+    // band rounded outward as in the gate's table.
     expect(blocks[0]).toEqual({
       kind: 'paragraph',
-      text: 'Total C_D = 0.4071, model-form band 0.3579 to 0.4786 (-12.1% to +17.6%)',
-      tone: 'ok',
+      text:
+        'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%): an estimate, ' +
+        'not validated',
+      tone: 'warn',
       headline: true,
     });
     const box = blocks[1]!;
-    expect(box.kind === 'box' && box.tone).toBe('ok');
+    if (box.kind !== 'box') throw new Error('expected the claim');
+    expect(box.tone).toBe('warn');
+    expect(box.blocks).toContainEqual({ kind: 'list', items: [SUSPENDED_REASON] });
     const said = paragraphs(blocks).flatMap((b) => (b.kind === 'paragraph' ? [b] : []));
     for (const text of [
-      VALIDATED_CLAIM,
-      TOLERANCE_CAVEAT,
+      CLASS_CLAIM,
+      ESTIMATE_TOLERANCE_TEXT,
       BAND_CAVEAT,
       BREAKDOWN_NOTE,
       NOT_REPRESENTED,
     ]) {
       expect(said.map((b) => b.text)).toContain(text);
     }
-    // Near Mach 3 the offset is set apart.
-    expect(said.find((b) => b.text === OFFSET_CAVEAT)?.tone).toBe('warn');
-    expect(said.find((b) => b.text === NEAR_MACH_3_TEXT)?.tone).toBe('warn');
     const [inputs, components] = tables(blocks);
     expect(inputs!.rows.map((r) => [r[0], r[2]])).toEqual(
       view.total.inputs.map((i) => [i.name, i.label]),
     );
     expect(inputs!.rows.find((r) => r[0] === 'roughness')![1]).toBe('none');
     // The transition as states of the boundary layer (0010 section 10): the run to 3e6 with
-    // the fins and their trailing edges laminar together, -0.02534, rounded outward.
-    expect(inputs!.rows.find((r) => r[0] === 'transition')![1]).toBe('-0.0254 to 0.0000');
+    // the fins and their trailing edges laminar together, rounded outward.
+    expect(inputs!.rows.find((r) => r[0] === 'transition')![1]).toBe('-0.0448 to 0.0000');
     expect(components!.rows.map((r) => [r[0], r[4], r[5]])).toEqual(
       view.total.components.map((c) => [c.name, c.label, c.band]),
     );
     expect(components!.rows.find((r) => r[0] === 'body base')!.slice(1, 4)).toEqual([
-      '0.1272',
-      '0.0886 to 0.1531',
-      '31%',
+      '0.2073',
+      '0.1468 to 0.2470',
+      '35%',
     ]);
-    expect(blocks).toContainEqual({
-      kind: 'list',
-      items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE, expect.stringContaining('one reading') as string],
-    });
+    expect(blocks).toContainEqual({ kind: 'list', items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE] });
   });
 
-  it('away from Mach 3 the offset is stated, not set apart', () => {
-    const form = basicFinnerForm(2.4);
-    const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
-    const said = paragraphs(blocks).flatMap((b) => (b.kind === 'paragraph' ? [b] : []));
-    expect(said.find((b) => b.text === OFFSET_CAVEAT)?.tone).toBe('plain');
-    expect(said.some((b) => b.text === NEAR_MACH_3_TEXT)).toBe(false);
+  it('no total is shown as validated, inside the class or out (M 1.8, 2.0, 2.15, 2.3, 2.9): the headline and the claim warn', () => {
+    for (const mach of [1.8, 2.0, 2.15, 2.3, 2.9]) {
+      const form = basicFinnerForm(mach);
+      const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
+      const head = blocks[0]!;
+      const box = blocks[1]!;
+      if (head.kind !== 'paragraph' || box.kind !== 'box') throw new Error('expected a total');
+      expect([head.tone, head.text.endsWith(': an estimate, not validated'), box.tone]).toEqual([
+        'warn',
+        true,
+        'warn',
+      ]);
+      expect(displayText(box.blocks)).toContain(mach <= 2.15 ? CLASS_CLAIM : ESTIMATE_CLAIM);
+      expect(displayText(blocks)).not.toContain('Validated on');
+    }
   });
 
   it('an estimate: said in the headline and the box, with every reason and the tolerance', () => {
-    const form = { ...basicFinnerForm(2.4), trailingEdgeAheadOfBase: 1, leadingEdgeRadius: 0 };
+    const form = { ...basicFinnerForm(2.0), trailingEdgeAheadOfBase: 1, leadingEdgeRadius: 0 };
     const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
     const head = blocks[0]!;
     expect(head.kind === 'paragraph' && head.text.endsWith(': an estimate, not validated')).toBe(
@@ -367,7 +514,7 @@ describe('the display', { timeout: 60_000 }, () => {
         'the leading-edge radius is 0 cal, not 0.004 within 0.5%',
       ],
     });
-    expect(displayText(box.blocks)).toContain('-19.5% to -26.2% and +23.1% to +27.4%');
+    expect(displayText(box.blocks)).toContain('-20.0% to -27.0% and +23.3% to +28.6%');
   });
 
   it('a failure of the computation itself: no number', () => {
@@ -376,32 +523,35 @@ describe('the display', { timeout: 60_000 }, () => {
     );
   });
 
-  it('the class in words, and the gate as 0010 section 4.2 prints it', () => {
+  it('the class in words, and the gate corrected (0010 section 11) beside the second run (section 4.2)', () => {
     const blocks = gateDisplay();
     expect(displayText(blocks)).toContain(CLASS_DESCRIPTION);
     const [gate] = tables(blocks);
+    expect(gate!.caption).toContain('a recorded correction made after the residuals were known');
+    expect(gate!.head.at(-1)).toBe('Second run');
     expect(gate!.rows.length).toBe(11);
     expect(gate!.rows[0]).toEqual([
       'DA95021318',
       '1.799',
       '0.594',
-      '0.6123 (0.5311 to 0.7261)',
+      '0.6134 (0.5296 to 0.7297)',
+      '-3.2%',
+      '-24.6% to +23.5%',
       '-3.0%',
-      '-24.2% to +23.1%',
     ]);
     expect(gate!.rows.map((r) => r[0])).toEqual(PUBLISHED_GATE.map((s) => s.shot));
-    expect(gate!.rows.map((r) => r[4])).toEqual([
-      '-3.0%',
-      '+0.4%',
-      '-4.6%',
-      '+3.2%',
-      '-0.9%',
-      '-0.3%',
-      '+0.7%',
-      '-7.7%',
-      '+4.5%',
-      '-5.4%',
-      '-7.6%',
+    expect(gate!.rows.map((r) => `${r[4]} ${r[6]}`)).toEqual([
+      '-3.2% -3.0%',
+      '+0.5% +0.4%',
+      '-4.5% -4.6%',
+      '+3.9% +3.2%',
+      '-0.1% -0.9%',
+      '+0.7% -0.3%',
+      '+3.4% +0.7%',
+      '-5.1% -7.7%',
+      '+7.5% +4.5%',
+      '-2.6% -5.4%',
+      '-4.8% -7.6%',
     ]);
   });
 });
