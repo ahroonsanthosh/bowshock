@@ -59,6 +59,28 @@ export function provisionalWords(grid: number, grids: number): StatusWords {
   };
 }
 
+/** A point whose first grid is being solved. */
+export function solvingWords(grids: number): StatusWords {
+  return {
+    word: 'Solving',
+    sentence: `The airflow round the nose is being solved, on grid 1 of ${grids}.`,
+    tone: 'muted',
+    mark: 'hollow',
+  };
+}
+
+/** Parts bowshock does not model: no number until the user chooses to compute without them. */
+export function chooseWords(parts: readonly string[]): StatusWords {
+  return {
+    word: 'Your choice',
+    sentence:
+      `bowshock does not model the drag of ${parts.join(', ')}: compute without ` +
+      `${parts.length === 1 ? 'it' : 'them'}, or keep ${parts.length === 1 ? 'it' : 'them'} and get no number.`,
+    tone: 'muted',
+    mark: 'tick',
+  };
+}
+
 /** A point not computed yet. */
 export const WAITING: StatusWords = {
   word: 'Waiting',
