@@ -756,7 +756,11 @@ describe(
         if (s.mach < 1.3) expect(le?.message).toMatch(/^Reynolds number .* is below 6700/);
         else expect(le).toBeUndefined();
         expect(reasons).toContain('mach-range');
-        if (s.mach < 1.2) expect(reasons).toContain('detached-shock');
+        // Below M 1.5 fin friction and the wedges' wave drag are refused first: the fins' own-drag
+        // band is measured only at M 1.5 to 2.96 (0014 section 10.7 (f)).
+        expect(
+          r.refusals.filter((x) => x.reason === 'fins-own-drag-mach').map((x) => x.component),
+        ).toEqual(['fin friction', 'fin wave drag']);
       }
     });
   },

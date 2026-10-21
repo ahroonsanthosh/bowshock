@@ -23,6 +23,7 @@ by the solver or the page.
 | `out/2026-10-21-w34-merge/` | The same run with the fin edges of flat plates (0016, through section 16) merged with the swept-fins refusal (0016 section 17): `evaluate.ts`'s default, `EDGES=w4e` |
 | `out/2026-10-21-w34-rereview/` | The same run after 0016 section 18 (fins at the base thinner than the factor's 5% data served, extended; only thicker than 10% refused): `evaluate.ts`'s default, `EDGES=w4e` |
 | `out/2026-10-21-plates-at-base/` | The same run after the present factor began refusing flat plates at the base (0014 section 10.7, amendment e; 0016 section 20): `evaluate.ts`'s default, `EDGES=w4e` |
+| `out/2026-10-21-w7-guard/` | The same run after fin friction and the wave drag of sharp sections were refused below Mach 1.5, the fins' own-drag band being measured at Mach 1.5 to 2.96 only (0014 section 10.7, amendment f): `evaluate.ts`'s default, `EDGES=w4e`, with `finsOwnDragMach` in W7's package |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
