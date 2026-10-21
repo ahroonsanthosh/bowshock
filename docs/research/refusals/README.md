@@ -15,6 +15,7 @@ by the solver or the page.
 | `edges.test.ts` | The parameters the fin-edge packages turn on, over the same cases: the trailing edges' thin-layer parameter, the leading edges' normal Mach and Reynolds numbers, the trailing-edge angle of fins at the base |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
 | `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables, as 0014 quotes them |
+| `out/2026-10-21-swept-at-base/` | The same run after the fins-on-base factor began refusing swept fins at the base (2026-10-21; 0014 section 10.7, amendment d): `evaluate.ts` mirrors it (`finsAtBaseSwept`, in W1's package). `out/impact.out` stays as 0014's sections 1 to 6 quote it, from before |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
@@ -30,7 +31,8 @@ nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
 
 `N_ROCKETS` (default 2000, the quoted run) and `CROSS_CHECK` (rockets
 whose cases are checked against `src/total`, default 300) set the size.
-It writes `out/impact.out` and `out/impact.json`. On a loaded four-core
+It writes `out/impact.out` and `out/impact.json`, or, with `OUT_DIR`
+(relative to the repository root), into that directory. On a loaded four-core
 machine it takes about five minutes; the slow part is the fitted
 solver's tip test (`sharpFitProblem`, 0.3 s a call), called only where
 the tip cone's Taylor-Maccoll solution does not already decide it, and

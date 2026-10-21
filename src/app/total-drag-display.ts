@@ -356,7 +356,8 @@ export function noseStateOf(outcome: VerifiedDrag | NoseSolveError): NoseState |
 
 // ------------------------------------------------------------ the display
 
-export type Tone = 'plain' | 'ok' | 'warn' | 'muted';
+/** No 'ok' tone: no total is shown as validated while the Basic Finner's claim is suspended (0010 section 11.7). */
+export type Tone = 'plain' | 'warn' | 'muted';
 
 /** What the page lays out, every string final. */
 export type DisplayBlock =
@@ -376,10 +377,10 @@ export type DisplayBlock =
       /** Columns of numbers, which do not wrap. */
       readonly numeric: readonly number[];
     }
-  /** The claim, set apart. */
+  /** The claim, set apart: always an estimate (0010 section 11.7). */
   | {
       readonly kind: 'box';
-      readonly tone: 'ok' | 'warn';
+      readonly tone: 'warn';
       readonly blocks: readonly DisplayBlock[];
     };
 
@@ -398,9 +399,14 @@ const interval = (low: number, high: number) => outward(low, high, DIGITS).join(
 export const PENDING_TEXT =
   'No total yet: run the solve above for this nose, body and Mach number. The total takes its ' +
   'nose wave drag and band; the other components are computed here and none of them is refused.';
+export const INSIDE_PENDING_TEXT =
+  "This case lies inside the Basic Finner's class, kept for its next registered test: the total " +
+  'will be an estimate, not validated, while the claim is suspended (the ' +
+  'fins-on-base factor was corrected after the test; design record 0010, section 11.7).';
 export const ESTIMATE_TOLERANCE_TEXT =
-  'Even inside the class the test is wide: its tolerance was -19.5% to -26.2% and +23.1% to ' +
-  '+27.4% of the modelled total.';
+  "The Basic Finner's test was wide: with the corrected fins-on-base factor its tolerance is " +
+  '-20.0% to -27.0% and +23.3% to +28.6% of the modelled total over the 11 shots (-24.0% to ' +
+  '-24.6% and +23.3% to +23.5% at the three inside the class).';
 
 /** The total-drag output for a view. */
 export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
@@ -412,44 +418,34 @@ export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
       ];
     case 'pending':
       return view.check.inside
-        ? [
-            p(PENDING_TEXT, 'plain', true),
-            p(
-              'This case lies inside the class tested by the Basic Finner: the total will be ' +
-                'labelled validated on it, with the tolerance and the offset at Mach 2.97 beside it.',
-              'muted',
-            ),
-          ]
+        ? [p(PENDING_TEXT, 'plain', true), p(INSIDE_PENDING_TEXT, 'muted')]
         : [
             p(PENDING_TEXT, 'plain', true),
             p(
-              'This case lies outside the class tested by the Basic Finner, so the total will be ' +
-                'an estimate, not validated:',
+              "This case lies outside the Basic Finner's class, so the total will be an " +
+                'estimate, not validated:',
               'muted',
             ),
             list(view.check.outside),
           ];
     case 'total': {
+      // Every total is an estimate (0010 section 11.7): there is no other claim to show.
       const { total, claim } = view;
-      const validated = claim.kind === 'validated';
-      const claimBlocks: DisplayBlock[] =
-        claim.kind === 'validated'
-          ? [p(claim.text), ...claim.caveats.map((c) => p(c))]
-          : [
-              p(claim.text),
-              p('Outside the class because:'),
-              list(claim.reasons),
-              p(ESTIMATE_TOLERANCE_TEXT),
-            ];
+      const claimBlocks: DisplayBlock[] = [
+        p(claim.text),
+        p('Not validated because:'),
+        list(claim.reasons),
+        p(ESTIMATE_TOLERANCE_TEXT),
+      ];
       return [
         p(
           `Total C_D = ${total.cd.toFixed(DIGITS)}, model-form band ${interval(total.low, total.high)} ` +
-            `(${outwardPercent(total.low / total.cd - 1, total.high / total.cd - 1)})` +
-            (validated ? '' : ': an estimate, not validated'),
-          validated ? 'ok' : 'warn',
+            `(${outwardPercent(total.low / total.cd - 1, total.high / total.cd - 1)}): an ` +
+            'estimate, not validated',
+          'warn',
           true,
         ),
-        { kind: 'box', tone: validated ? 'ok' : 'warn', blocks: claimBlocks },
+        { kind: 'box', tone: 'warn', blocks: claimBlocks },
         p(BAND_CAVEAT, 'muted'),
         {
           kind: 'table',
@@ -498,17 +494,27 @@ export function failureDisplay(message: string): DisplayBlock[] {
 
 const signedPercent = (x: number) => `${x > 0 ? '+' : ''}${x.toFixed(1)}%`;
 
-/** The class in words and the gate's 11 shots as published in 0010 section 4.2. */
+/** The class in words and the gate's 11 shots, corrected, with the second run's residuals (0010 sections 4.2, 11). */
 export function gateDisplay(): DisplayBlock[] {
   return [
     p(CLASS_DESCRIPTION, 'muted'),
     {
       kind: 'table',
       caption:
-        'The Basic Finner gate, second run, as published in design record 0010 section 4.2, ' +
-        'with the tolerances re-derived after an independent audit (its section 10; residual: ' +
-        'measured CX0 over modelled, minus 1; values to the nearest last digit shown)',
-      head: ['Shot', 'Mach', 'CX0 measured', 'Modelled C_D (band)', 'Residual', 'Tolerance'],
+        'The Basic Finner gate re-run with the corrected fins-on-base factor (design record 0010 ' +
+        'section 11): a recorded correction made after the residuals were known, not a new test, ' +
+        'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
+        'audit (its section 10); residual: measured CX0 over modelled, minus 1; each band rounded ' +
+        'outward, other values to the nearest last digit shown',
+      head: [
+        'Shot',
+        'Mach',
+        'CX0 measured',
+        'Modelled C_D (band)',
+        'Residual',
+        'Tolerance',
+        'Second run',
+      ],
       rows: PUBLISHED_GATE.map((s) => [
         s.shot,
         s.mach.toFixed(3),
@@ -516,8 +522,9 @@ export function gateDisplay(): DisplayBlock[] {
         `${s.cd.toFixed(4)} (${s.low.toFixed(4)} to ${s.high.toFixed(4)})`,
         signedPercent(s.residual),
         `${signedPercent(s.tolerance[0])} to ${signedPercent(s.tolerance[1])}`,
+        signedPercent(s.secondRun),
       ]),
-      numeric: [1, 2, 3, 4, 5],
+      numeric: [1, 2, 3, 4, 5, 6],
     },
     p(
       'In the gate the nose was the exact Taylor-Maccoll value, and the inputs were a laminar ' +
