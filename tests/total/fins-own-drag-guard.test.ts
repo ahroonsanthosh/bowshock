@@ -150,3 +150,30 @@ describe('at Mach 1.5 and above, unchanged', () => {
     }
   });
 });
+
+describe('above Mach 2.96, carried and labelled', () => {
+  it('the labels say by how much the band is carried beyond its measurements', () => {
+    for (const [mach, by] of [
+      [2.98, '0.02'],
+      [3.0, '0.04'],
+      [2.9601, 'less than 0.01'],
+    ] as const) {
+      const r = parts(config(doubleWedge(0.015)), mach);
+      for (const name of ['fin friction', 'fin wave drag']) {
+        const c = r.components.find((x) => x.name === name)!;
+        expect(c.label).toContain(`the band is carried ${by} in Mach beyond its measurements`);
+        expect(c.label).toContain('the ARCAS increments end at Mach 2.96');
+        expect(c.low / c.cd).toBeCloseTo(FINS_OWN_DRAG_BAND[0], name === 'fin friction' ? 12 : 2);
+      }
+    }
+  });
+
+  it('at Mach 2.96 and below, no such words', () => {
+    const r = parts(config(doubleWedge(0.015)), 2.96);
+    for (const name of ['fin friction', 'fin wave drag']) {
+      expect(r.components.find((x) => x.name === name)!.label).not.toContain(
+        'beyond its measurements',
+      );
+    }
+  });
+});

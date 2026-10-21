@@ -1086,3 +1086,12 @@ refusal applies to every case below Mach 1.5 and is the sole blocker in
 none. In 0014's ranked order the totals at Mach 1.2 to 1.5 now wait for
 the fin terms of W7 as well as W2 (0% until W7; before, 16.3% after W2
 and 74.8% after W11).
+
+**2026-10-21 (g): the fins' own-drag band above Mach 2.96 labelled** (the
+coordinator's decision on amendment (f)). Above the ARCAS increments'
+highest Mach number, 2.96, the band is carried, not refused, and the
+labels of fin friction and of the wave drag of sharp sections now say so:
+"at Mach M the band is carried d in Mach beyond its measurements (the
+ARCAS increments end at Mach 2.96)", d at most 0.04 for a total (the body
+base and the fins at the base refuse above Mach 3.0). The Basic Finner's
+gated shot at Mach 2.97 carries the words; no number changes.
