@@ -82,7 +82,8 @@ export interface FlowDrawOptions {
 const COLOURS = {
   grid: [1, 1, 1, 0.16],
   shock: [0.95, 0.96, 0.98, 0.92],
-  body: [...hexToRgb('#2a3039'), 1],
+  // Lit as a solid of revolution (fs_body_shaded): the colour at full light.
+  body: [...hexToRgb('#a7afba'), 1],
   bodyEdge: [...hexToRgb('#7d8796'), 1],
 } as const;
 
@@ -218,16 +219,20 @@ class FlowPipelines {
         },
         primitive: { topology },
       });
-    const [field, probe, free, freeProbe, grid, body, line] = await Promise.all([
-      make('flow field', 'vs_field', 'fs_field', 'triangle-list', false),
-      make('flow probe', 'vs_field', 'fs_probe', 'triangle-list', false, 'r32float'),
-      make('flow free stream', 'vs_free', 'fs_field', 'triangle-list', false),
-      make('flow free stream probe', 'vs_free', 'fs_probe', 'triangle-list', false, 'r32float'),
-      make('flow grid', 'vs_grid', 'fs_grid', 'line-list', true),
-      make('flow body', 'vs_body', 'fs_body', 'triangle-strip', false),
-      make('flow line', 'vs_line', 'fs_line', 'triangle-list', true),
-    ]);
-    return { field, probe, free, freeProbe, grid, body, line };
+    const [field, probe, free, freeProbe, grid, body, line, shape, unsimulated] = await Promise.all(
+      [
+        make('flow field', 'vs_field', 'fs_field', 'triangle-list', false),
+        make('flow probe', 'vs_field', 'fs_probe', 'triangle-list', false, 'r32float'),
+        make('flow free stream', 'vs_free', 'fs_field', 'triangle-list', false),
+        make('flow free stream probe', 'vs_free', 'fs_probe', 'triangle-list', false, 'r32float'),
+        make('flow grid', 'vs_grid', 'fs_grid', 'line-list', true),
+        make('flow body', 'vs_body_shaded', 'fs_body_shaded', 'triangle-strip', false),
+        make('flow line', 'vs_line', 'fs_line', 'triangle-list', true),
+        make('flow shape', 'vs_shape', 'fs_body', 'triangle-list', true),
+        make('flow not simulated', 'vs_unsimulated', 'fs_unsimulated', 'triangle-list', false),
+      ],
+    );
+    return { field, probe, free, freeProbe, grid, body, line, shape, unsimulated };
   }
 }
 
@@ -239,6 +244,18 @@ interface DrawPipelines {
   readonly grid: GPURenderPipeline;
   readonly body: GPURenderPipeline;
   readonly line: GPURenderPipeline;
+  readonly shape: GPURenderPipeline;
+  readonly unsimulated: GPURenderPipeline;
+}
+
+/** A convex polygon drawn over the flow as it is (not mirrored): a fin seen from the side. */
+export interface FlowShape {
+  readonly points: readonly (readonly [number, number])[];
+  /** RGBA, 0 to 1. */
+  readonly fill: readonly number[];
+  readonly edge: readonly number[];
+  /** Drawn behind the body (a fin on the far side) or in front of it. */
+  readonly behind: boolean;
 }
 
 /** The buffers of one source (one grid size). */
@@ -273,6 +290,16 @@ export class FlowRenderer {
     readonly edge: GPUBindGroup;
   } | null = null;
   private readonly bodyBuffers: BufferSet;
+  /** The body's base, x: behind it the flow is not simulated (hatched). */
+  private baseX: number | null = null;
+  private shapes: {
+    readonly behind: boolean;
+    readonly count: number;
+    readonly fill: GPUBindGroup;
+    readonly edgeCount: number;
+    readonly edge: GPUBindGroup;
+  }[] = [];
+  private readonly shapeBuffers: BufferSet;
   private mapping = false;
 
   /** A renderer able to draw into textures of `format`, and of rgba8unorm (for PNGs). */
@@ -289,6 +316,7 @@ export class FlowRenderer {
     const usage = GPUBufferUsage;
     this.buffers = new BufferSet(device);
     this.bodyBuffers = new BufferSet(device);
+    this.shapeBuffers = new BufferSet(device);
     this.drawParams = this.buffers.create(
       'flow draw params',
       DRAW_PARAMS_BYTES,
@@ -356,6 +384,8 @@ export class FlowRenderer {
   setBody(outline: readonly (readonly [number, number])[] | null): void {
     this.bodyBuffers.destroyAll();
     this.body = null;
+    this.baseX =
+      outline === null || outline.length === 0 ? null : Math.max(...outline.map(([x]) => x));
     if (outline === null || outline.length < 2) return;
     const usage = GPUBufferUsage;
     const points = this.bodyBuffers.createWith(
@@ -384,6 +414,50 @@ export class FlowRenderer {
       fill: group(COLOURS.body, 0),
       edge: group(COLOURS.bodyEdge, 1.25 * (window.devicePixelRatio || 1)),
     };
+  }
+
+  /** Convex shapes drawn as they are over the flow, behind or in front of the body (the fins). */
+  setShapes(shapes: readonly FlowShape[]): void {
+    this.shapeBuffers.destroyAll();
+    this.shapes = [];
+    const usage = GPUBufferUsage;
+    const dpr = window.devicePixelRatio || 1;
+    for (const shape of shapes) {
+      const p = shape.points;
+      if (p.length < 3) continue;
+      // A fan of triangles, then the closed outline.
+      const triangles: number[] = [];
+      for (let k = 1; k + 1 < p.length; k++) triangles.push(...p[0]!, ...p[k]!, ...p[k + 1]!);
+      const outline = [...p, p[0]!].flatMap(([x, y]) => [x, y]);
+      const points = this.shapeBuffers.createWith(
+        'shape points',
+        new Float32Array([...triangles, ...outline]),
+        usage.STORAGE,
+      );
+      const group = (first: number, count: number, colour: readonly number[], width: number) => {
+        const params = new ArrayBuffer(LINE_PARAMS_BYTES);
+        new Uint32Array(params, 0, 2).set([first, count]);
+        new Float32Array(params, 8, 1).set([width]);
+        new Float32Array(params, 16, 4).set(colour);
+        const buffer = this.shapeBuffers.createWith(
+          'shape params',
+          new Uint8Array(params),
+          usage.UNIFORM,
+        );
+        return this.device.createBindGroup({
+          layout: this.pipelines.lineLayout,
+          entries: [buffer, points].map((b, binding) => ({ binding, resource: { buffer: b } })),
+        });
+      };
+      const count = triangles.length / 2;
+      this.shapes.push({
+        behind: shape.behind,
+        count,
+        fill: group(0, count, shape.fill, 0),
+        edgeCount: p.length + 1,
+        edge: group(count, p.length + 1, shape.edge, 1.0 * dpr),
+      });
+    }
   }
 
   /**
@@ -419,6 +493,22 @@ export class FlowRenderer {
       }
       pass.setPipeline(pipelines.field);
       pass.draw(6 * (ni + 1) * (nj + 1), instances);
+      if (this.baseX !== null && r.source.fittedShock) {
+        // Behind the base the solver computes nothing: hatched, not painted.
+        pass.setPipeline(pipelines.unsimulated);
+        pass.draw(6);
+      }
+      const drawShapes = (behind: boolean) => {
+        for (const shape of this.shapes.filter((sh) => sh.behind === behind)) {
+          pass.setBindGroup(1, shape.fill);
+          pass.setPipeline(pipelines.shape);
+          pass.draw(shape.count);
+          pass.setBindGroup(1, shape.edge);
+          pass.setPipeline(pipelines.line);
+          pass.draw(6 * (shape.edgeCount - 1), 1);
+        }
+      };
+      drawShapes(true);
       if (this.body !== null) {
         pass.setBindGroup(1, this.body.fill);
         pass.setPipeline(pipelines.body);
@@ -440,6 +530,7 @@ export class FlowRenderer {
         pass.setPipeline(pipelines.line);
         pass.draw(6 * (this.body.count - 1), 2);
       }
+      drawShapes(false);
     }
     pass.end();
     this.device.queue.submit([encoder.finish()]);
@@ -553,6 +644,8 @@ export class FlowRenderer {
     this.resources = null;
     this.bodyBuffers.destroyAll();
     this.body = null;
+    this.shapeBuffers.destroyAll();
+    this.shapes = [];
     this.buffers.destroyAll();
   }
 
@@ -712,7 +805,7 @@ export class FlowRenderer {
     floats.set([...hexToRgb(SCHLIEREN_DARK), 1, ...hexToRgb(SCHLIEREN_LIGHT), 1], 16);
     floats.set(COLOURS.grid, 24);
     const free = this.freeValues(r.source, slots);
-    floats.set([free[0], free[lower], 0, 0], 28);
+    floats.set([free[0], free[lower], 0, this.baseX ?? 0], 28);
     this.device.queue.writeBuffer(this.drawParams, 0, params);
   }
 

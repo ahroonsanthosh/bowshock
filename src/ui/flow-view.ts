@@ -12,7 +12,12 @@
  * are read back a few times a second for the legend (8 bytes).
  */
 
-import { FlowRenderer, type FlowDrawOptions, type FlowSource } from '../render/flow-renderer';
+import {
+  FlowRenderer,
+  type FlowDrawOptions,
+  type FlowShape,
+  type FlowSource,
+} from '../render/flow-renderer';
 import type { FlowField } from '../render/flow-fields';
 import { colormapTable, hexToRgb } from '../render/colormap';
 import {
@@ -181,6 +186,12 @@ export class FlowView {
     if (outline !== null && outline.length > 0) {
       this.bodyRadius = Math.max(...outline.map(([, r]) => r));
     }
+    this.invalidate();
+  }
+
+  /** Shapes drawn over the flow as they are, behind or in front of the body (the fins seen from the side). */
+  setShapes(shapes: readonly FlowShape[]): void {
+    this.renderer.setShapes(shapes);
     this.invalidate();
   }
 

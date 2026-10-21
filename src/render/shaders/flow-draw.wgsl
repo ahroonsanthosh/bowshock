@@ -29,7 +29,8 @@ struct DrawParams {
   schlieren_dark: vec4f,
   schlieren_light: vec4f,
   grid_colour: vec4f,
-  // The free stream's value of the upper and the lower half's field (x, y).
+  // The free stream's value of the upper and the lower half's field (x, y);
+  // the body's base, x, behind which the flow is not simulated (w).
   free_value: vec4f,
 }
 
@@ -213,6 +214,66 @@ fn vs_body(@builtin(vertex_index) vertex: u32) -> PlainOut {
 @fragment
 fn fs_body() -> @location(0) vec4f {
   return line.colour;
+}
+
+// The body shaded as a solid of revolution seen from the side: the strip's
+// vertices are (x, r) and (x, -r), so `across` runs from 1 to -1 as y / r,
+// and the surface's normal there is (0, y / r, sqrt(1 - (y / r)^2)); lit
+// from above and in front.
+struct BodyOut {
+  @builtin(position) position: vec4f,
+  @location(0) across: f32,
+}
+
+@vertex
+fn vs_body_shaded(@builtin(vertex_index) vertex: u32) -> BodyOut {
+  let p = points[line.first + vertex / 2u];
+  var out: BodyOut;
+  out.position = to_clip(p, vertex % 2u);
+  out.across = select(1.0, -1.0, vertex % 2u == 1u);
+  return out;
+}
+
+@fragment
+fn fs_body_shaded(input: BodyOut) -> @location(0) vec4f {
+  let v = clamp(input.across, -1.0, 1.0);
+  let normal = vec3f(0.0, v, sqrt(max(0.0, 1.0 - v * v)));
+  let light = normalize(vec3f(-0.3, 0.65, 1.0));
+  let diffuse = max(dot(normal, light), 0.0);
+  let half_way = normalize(light + vec3f(0.0, 0.0, 1.0));
+  let specular = pow(max(dot(normal, half_way), 0.0), 36.0);
+  return vec4f(line.colour.rgb * (0.16 + 0.84 * diffuse) + vec3f(0.3 * specular), 1.0);
+}
+
+// Shapes drawn as they are, not mirrored: triangles of world points (the
+// fins seen from the side, docs/design/0017-rocketeer-interface.md section 7).
+@vertex
+fn vs_shape(@builtin(vertex_index) vertex: u32) -> PlainOut {
+  var out: PlainOut;
+  out.position = to_clip(points[line.first + vertex], 0u);
+  return out;
+}
+
+// --------------------------------------------- what is not simulated
+
+// Behind the body's base (x beyond free_value.w) the solver computes
+// nothing: the region is hatched, never painted with a flow.
+@vertex
+fn vs_unsimulated(@builtin(vertex_index) vertex: u32) -> PlainOut {
+  let corner = CORNERS[vertex % 6u];
+  let x = select(params.free_value.w, FAR, corner.x == 1u);
+  let y = select(-FAR, FAR, corner.y == 1u);
+  var out: PlainOut;
+  out.position = to_clip(vec2f(x, y), 0u);
+  return out;
+}
+
+@fragment
+fn fs_unsimulated(@builtin(position) position: vec4f) -> @location(0) vec4f {
+  let spacing = 12.0 * max(params.viewport.y / 900.0, 1.0);
+  let d = abs(fract((position.x + position.y) / spacing) - 0.5) * spacing;
+  let stripe = clamp(1.0 - d + 0.5, 0.0, 1.0);
+  return vec4f(mix(vec3f(0.027, 0.035, 0.047), vec3f(0.15, 0.16, 0.18), stripe), 1.0);
 }
 
 // --------------------------------------------------------- smooth lines
