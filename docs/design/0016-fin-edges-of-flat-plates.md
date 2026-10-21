@@ -47,15 +47,15 @@ refused, change only their reasons (section 12).
 
 The table as of section 18 (the sections below record how each row came to be).
 
-| Item                  | Method                                                                                                                                                                                                         | Band on the term                                                                                                                                                 | Domain                          | Data                                                                                                                                  |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| W3(a) thick layers    | thin-layer term times K(M, X) = D(X) / D(1.0) on TR 1109 fig. 29(a)                                                                                                                                            | 0.93 x K_low to 1.21 x K_high (section 2)                                                                                                                        | X 1.0 to 4.5 at M 1.5 to 3.1    | TR 1109 fig. 29(a), both readings                                                                                                     |
-| W3(b) varying chord   | the term integrated along the span (unswept trailing edge); stations below X 0.45 take the thin-layer term, labelled; a tip sliver beyond fig. 29's laminar read range bounded by the vacuum (sections 16, 18) | as W3(a), station by station                                                                                                                                     | as the term                     |                                                                                                                                       |
-| W4(a) flat plates     | the rounded wedge's limit, face angle 0: (2/3) Cp_pitot (2r) per span                                                                                                                                          | 0.99 to 1.06 (0.98 at M_n 1.49, rising to 0.99 by 1.59)                                                                                                          | M_n 1.49 to 3.0                 | TN 2960 fig. 5(c) both readings; figs. 5(d), 5(e) as checks                                                                           |
-| W4(b) any planform    | the nose term per unit span times the span (a plate's radius is the same at every station)                                                                                                                     | as W4(a)                                                                                                                                                         |                                 |                                                                                                                                       |
-| W4(c) swept           | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure                                                                                                                | W4(a)'s or W4(e)'s times the sweep allowance, 0.95 to 1.22 at 60 deg, growing from none unswept with sin(sweep) (section 18); extrapolated in normal Mach number | sweep to 60 deg, M_n 1.0 to 3.0 | RM A55H31 figs. 11, 12 (two readings and third looks, r at the stated yaws); TN 3861 figs. 15, 16 (two readings), 17 (one), as checks |
-| W4(e) M_n 1.0 to 1.49 | plates and rounded wedges: the term times kappa(M_n), the cylinder's front side over modified Newtonian (section 11)                                                                                           | the bracketing nodes' range (sections 11, 14, 16)                                                                                                                | M_n 1.0 to 1.49                 | NASA CR-149372 figs. 8b, 5 (two readings; fig. 8b at M 1.2 three); TN 2960 at 1.49                                                    |
-| Fins at the base      | a plate's largest t/c (its shorter end chord) to the fins-on-base factor; thinner than 5% anywhere, the factor extended (section 18)                                                                           | the factor's; extended, low end F = 1                                                                                                                            | t/c up to 0.10                  | as the factor (0010)                                                                                                                  |
+| Item                  | Method                                                                                                                                                                                                         | Band on the term                                                                                                                                                                          | Domain                          | Data                                                                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| W3(a) thick layers    | thin-layer term times K(M, X) = D(X) / D(1.0) on TR 1109 fig. 29(a)                                                                                                                                            | 0.93 x K_low to 1.21 x K_high (section 2)                                                                                                                                                 | X 1.0 to 4.5 at M 1.5 to 3.1    | TR 1109 fig. 29(a), both readings                                                                                                     |
+| W3(b) varying chord   | the term integrated along the span (unswept trailing edge); stations below X 0.45 take the thin-layer term, labelled; a tip sliver beyond fig. 29's laminar read range bounded by the vacuum (sections 16, 18) | as W3(a), station by station                                                                                                                                                              | as the term                     |                                                                                                                                       |
+| W4(a) flat plates     | the rounded wedge's limit, face angle 0: (2/3) Cp_pitot (2r) per span                                                                                                                                          | 0.99 to 1.06 (0.98 at M_n 1.49, rising to 0.99 by 1.59)                                                                                                                                   | M_n 1.49 to 3.0                 | TN 2960 fig. 5(c) both readings; figs. 5(d), 5(e) as checks                                                                           |
+| W4(b) any planform    | the nose term per unit span times the span (a plate's radius is the same at every station)                                                                                                                     | as W4(a)                                                                                                                                                                                  |                                 |                                                                                                                                       |
+| W4(c) swept           | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure                                                                                                                | W4(a)'s or W4(e)'s times the sweep allowance, 0.95 to 1.22 from 14.3 deg, the smallest yaw tested, tapered below it to none unswept (sections 18, 19); extrapolated in normal Mach number | sweep to 60 deg, M_n 1.0 to 3.0 | RM A55H31 figs. 11, 12 (two readings and third looks, r at the stated yaws); TN 3861 figs. 15, 16 (two readings), 17 (one), as checks |
+| W4(e) M_n 1.0 to 1.49 | plates and rounded wedges: the term times kappa(M_n), the cylinder's front side over modified Newtonian (section 11)                                                                                           | the bracketing nodes' range (sections 11, 14, 16)                                                                                                                                         | M_n 1.0 to 1.49                 | NASA CR-149372 figs. 8b, 5 (two readings; fig. 8b at M 1.2 three); TN 2960 at 1.49                                                    |
+| Fins at the base      | a plate's largest t/c (its shorter end chord) to the fins-on-base factor; thinner than 5% anywhere, the factor extended (section 18)                                                                           | the factor's; extended, low end F = 1                                                                                                                                                     | t/c up to 0.10                  | as the factor (0010)                                                                                                                  |
 
 ## 2. W3(a): blunt trailing edges with thick layers
 
@@ -191,13 +191,12 @@ outward; as first committed, on one reading, the approximate conversion
 and the yaws as drawn, 0.99 to 1.07), at M_n 3.38 to 6.65. Every swept
 edge served is at M_n 3.0 or less, so the allowance served is extrapolated
 in normal Mach number and contains every yawed datum at served sweeps and
-normal Mach numbers, the 45 and 60 deg points among them: **0.95 to 1.22
-at 60 deg**, growing from none unswept with sin(sweep) (section 18; at
-f8df436 a flat 0.95 to 1.21). The band on a swept edge is TN 2960's times
-it, rounded outward to 0.001: at 60 deg **0.940 to 1.294** (0.931 at M_n
-1.49, section 16's local low end), and **0.912 to 1.330** where
-extrapolated in Reynolds number; less at smaller sweeps (at 40 deg 0.953
-to 1.234). The allowance is the larger of the two effects the checks
+normal Mach numbers, the 45 and 60 deg points among them: **0.95 to 1.22**
+from 14.3 deg of sweep, the smallest yaw tested, up, tapered linearly below
+it to none unswept (sections 18 and 19; at f8df436 a flat 0.95 to 1.21).
+The band on a swept edge is TN 2960's times it, rounded outward to 0.001:
+**0.940 to 1.294** (0.931 at M_n 1.49, section 16's local low end), and
+**0.912 to 1.330** where extrapolated in Reynolds number. The allowance is the larger of the two effects the checks
 cannot separate: the independence principle's own error, and the
 modified-Newtonian ratio's drift from M to M_n (TN 2960: 0.995 to 1.056
 over 1.49 to 2.90).
@@ -212,9 +211,9 @@ coarse at low incidence to integrate (`fin_edges_w34.md` section 4).
 **Label:** the rounded edge's, with "swept S deg: the independence
 principle, the front side at the normal Mach number on the normal dynamic
 pressure, checked on yawed cylinders (RM A55H31 figs. 11, 12), the band
-widened by L to H for it (0.95 to 1.22 at 60 deg, in proportion to
-sin(sweep) below), the sweep allowance extrapolated in normal Mach number
-(...)" (section 18; as first committed, "read once, the second reading
+widened by L to H for it (0.95 to 1.22 from 14.3 deg, the smallest yaw
+tested, tapered below it to meet the unswept band), the sweep allowance
+extrapolated in normal Mach number (...)" (section 19; as first committed, "read once, the second reading
 pending" and 0.99 to 1.07).
 Not modelled, the analogy's gap as before: a fin's edge is not an infinite
 cylinder, and the root (the body's boundary layer) and the tip are not
@@ -890,14 +889,14 @@ number (checked at M_n 3.37 to 6.65; widened to contain RM A55H31's own
 tests at 45 and 60 deg, M_n 1.96 to 2.77, and TN 3861's crossflow points;
 no yawed datum below M_n 1.96 at a served sweep)". (Section 18 evaluates
 r at the tests' stated yaws: the data span 0.995 to 1.217, the allowance
-is 0.95 to 1.22 at 60 deg, growing with sin(sweep), and the label's M_n
+is 0.95 to 1.22, held from 14.3 deg up (section 19), and the label's M_n
 is 1.95 to 2.76.)
 
 **The coordinator's decision (2026-10-21): served.** Swept edges below M_n
 1.95 (1.96 as first written, section 18), where no yawed datum lies at a
 served sweep, are served, not refused, with the band that contains every
-yawed datum (0.95 to 1.21 then; 0.95 to 1.22 at 60 deg, growing with
-sin(sweep), since section 18) and the label above, under the owner's rule: serve rather than refuse wherever an honest
+yawed datum (0.95 to 1.21 then; 0.95 to 1.22 from 14.3 deg, since sections
+18 and 19) and the label above, under the owner's rule: serve rather than refuse wherever an honest
 band can be given, and state plainly what it rests on (0014 W4, amended
 2026-10-21). Refusing them would have refused the hobby example's leading
 edges at M 1.5 and 1.8 again (M_n 1.11 and 1.34).
@@ -1113,29 +1112,28 @@ deg**; the label's M_n is 1.95 to 2.76, and no yawed datum lies below M_n
 1.95 at a served sweep. The 45 deg run is at R 2.1e3, below the served
 6.7e3: counting it is conservative.
 
-**The allowance grows with sweep.** Unswept the band was 0.99 to 1.06 and
+**The allowance grew with sweep (superseded, section 19).** Unswept the band was 0.99 to 1.06 and
 at 1 deg of sweep 0.94 to 1.29, a step the data do not ask for: Penland's
-14.3 deg point gives r 0.995 and 0.996. The allowance at a sweep S is now
-1 - 0.05 s to 1 + 0.22 s with s = sin(S) / sin(60 deg) (`sweepAllowanceAt`):
-none unswept, the full 0.95 to 1.22 at 60 deg. The data grow with sweep
-(RM A55H31's own tests: r - 1 of 0.07, 0.13, 0.22 at 30, 45, 60 deg, about
-0.29 sin^2(S)), and sin(S) / sin(60 deg) lies above sin^2(S) / sin^2(60
-deg) at every served sweep, so at every tested sweep the allowance contains
-every datum there (a test holds all 14: at 14.3 deg 0.986 to 1.063). The
+14.3 deg point gives r 0.995 and 0.996. The allowance at a sweep S was set
+here to 1 - 0.05 s to 1 + 0.22 s with s = sin(S) / sin(60 deg). The reason
+given, that the data grow with sweep, does not hold: in RM A55H31's own
+tests (r - 1 of 0.07, 0.13, 0.22 at 30, 45, 60 deg) sweep and normal Mach
+number move together (M_n 3.38, 2.76, 1.95), so the rise cannot be put on
+sweep, and Penland's series does not rise with sweep (section 19). The
 swept band is rounded outward to 0.001, not 0.01, so it grows from the
-unswept one without a step (at 1 deg 0.989 to 1.065; at 40 deg 0.953 to
-1.234; at 60 deg 0.940 to 1.294).
+unswept one without a step (with the grown allowance, at 1 deg 0.989 to
+1.065; at 40 deg 0.953 to 1.234; at 60 deg 0.940 to 1.294).
 
 The hobby example's leading edges (C_D; section 16's table):
 
-| M   | Before the review         | At f8df436 (flat 0.95 to 1.21) | Now (0.961 to 1.170 at 42 deg) |
-| --- | ------------------------- | ------------------------------ | ------------------------------ |
-| 1.5 | 0.1311 (0.1180 to 0.1664) | 0.1311 (0.1167 to 0.1770)      | 0.1311 (0.1182 to 0.1703)      |
-| 1.8 | 0.1606 (0.1381 to 0.2120) | 0.1607 (0.1366 to 0.2249)      | 0.1607 (0.1388 to 0.2162)      |
-| 2.2 | 0.1825 (0.1770 to 0.2080) | 0.1825 (0.1715 to 0.2354)      | 0.1825 (0.1735 to 0.2264)      |
+| M   | Before the review         | At f8df436 (flat 0.95 to 1.21) | At 379d137 (0.961 to 1.170 at 42 deg) |
+| --- | ------------------------- | ------------------------------ | ------------------------------------- |
+| 1.5 | 0.1311 (0.1180 to 0.1664) | 0.1311 (0.1167 to 0.1770)      | 0.1311 (0.1182 to 0.1703)             |
+| 1.8 | 0.1606 (0.1381 to 0.2120) | 0.1607 (0.1366 to 0.2249)      | 0.1607 (0.1388 to 0.2162)             |
+| 2.2 | 0.1825 (0.1770 to 0.2080) | 0.1825 (0.1715 to 0.2354)      | 0.1825 (0.1735 to 0.2264)             |
 
-A flat 0.95 to 1.22 would give high ends of 0.178, 0.227 and 0.237 (the
-reviewer's figures); at 42 deg of sweep the grown allowance gives less.
+A flat 0.95 to 1.22 gives high ends of 0.178, 0.227 and 0.237 (the
+reviewer's figures; section 19 restores it).
 
 **2. Thin plates at the base.** With the tip's t/c passed, 156 of the 376
 four-plate rockets at the base in the population newly passed the
@@ -1152,7 +1150,8 @@ physical limit, since thinner fins lower the base pressure less), its high
 end kept and the nominal their midpoint, labelled "extended below the
 data's 5% thickness: t/c down to X over Y% of the span, the low end taken
 as no fin effect (F = 1; thinner fins lower the base pressure less), the
-high end the 5% fins'" (`base-drag.ts`, `BaseFins.thinnest`; the factor
+high end the 5% fins'" (reworded in section 19: the high end rests on the
+10% fins and the tunnel data) (`base-drag.ts`, `BaseFins.thinnest`; the factor
 itself, `fins-on-base.ts`, is not changed). A section of uniform t/c below
 5% takes the same rule. Thicker than 0.10 stays refused. In the population it lifts the thickness refusal from the 23 unswept four-plate rockets at the base, all thinner than 5%, and from unswept sections thinner than 5% (a test holds four 3 mm plates of constant chord 120 mm).
 
@@ -1182,3 +1181,54 @@ cases to 5.5% (thicker than 10% only); totals today rise from 0.2% to 0.3%
 (M 1.8 to 3.0: 0.4% to 0.7%); W1 is needed in 94.6% of cases (was 96.0%),
 W4 still in 20.7%, and the totals once W1 is done stay 3.4%. The swept
 fins at the base stay refused in 69.0% of cases.
+
+## 19. The third check of 379d137 (2026-10-21)
+
+The third check found items 1, 3, 4 and 5 of section 18 held (r at the
+stated yaws, the thin-plate rule, the vacuum bound, the Basic Finner bit
+for bit, the coverage reproduced), and one blocking problem.
+
+**The sweep allowance is held from the smallest tested sweep.** Section
+18's growth with sin(sweep) is not supported by the data and narrowed the
+served bands. In RM A55H31's own tests sweep and normal Mach number move
+together (30 deg: M_n 3.38, r - 1 = 0.07; 45: 2.76, 0.13; 60: 1.95, 0.22),
+so the rise cannot be attributed to sweep; Penland's series does not rise
+with sweep (14.3, 29.6, 45.1, 59.8 deg: 0.995, 1.007 to 1.012, 1.030 to
+1.034, 0.987 to 1.012); at matched M_n near 3.4 the order reverses (30 deg,
+1.07; 59.8 deg, 0.99 to 1.01); and at 45 deg the grown allowance (1.180)
+sat below the 1.217 measured at 60 deg and M_n 1.95, while 45 deg edges
+are served down to M_n 1.0, where no datum exists at any sweep. The
+allowance is now the full **0.95 to 1.22 from 14.3 deg**, the smallest yaw
+tested (`SMALLEST_TESTED_SWEEP`), **up to 60 deg**, and below 14.3 deg it
+tapers linearly to none unswept, for continuity with the unswept band, not
+from data (`sweepAllowanceAt`; labelled "0.95 to 1.22 from 14.3 deg, the
+smallest yaw tested, tapered below it to meet the unswept band"). Every
+datum at a served sweep lies inside it (a test holds all 14). Swept bands:
+0.940 to 1.294 (0.931 at M_n 1.49), 0.912 to 1.330 extrapolated in Reynolds
+number, at every sweep from 14.3 deg; at 1 deg 0.986 to 1.077.
+
+The hobby example's leading edges (C_D; sections 16 and 18):
+
+| M   | Before the review         | At f8df436 (flat 0.95 to 1.21) | At 379d137 (grown)        | Now (0.95 to 1.22)        |
+| --- | ------------------------- | ------------------------------ | ------------------------- | ------------------------- |
+| 1.5 | 0.1311 (0.1180 to 0.1664) | 0.1311 (0.1167 to 0.1770)      | 0.1311 (0.1182 to 0.1703) | 0.1311 (0.1169 to 0.1776) |
+| 1.8 | 0.1606 (0.1381 to 0.2120) | 0.1607 (0.1366 to 0.2249)      | 0.1607 (0.1388 to 0.2162) | 0.1607 (0.1372 to 0.2256) |
+| 2.2 | 0.1825 (0.1770 to 0.2080) | 0.1825 (0.1715 to 0.2354)      | 0.1825 (0.1735 to 0.2264) | 0.1825 (0.1715 to 0.2361) |
+
+The reviewer's 0.178, 0.227 and 0.237 are these to rounding (the swept band
+is rounded outward to 0.001 here).
+
+**Smaller items.** The leading edges' band text in the total (`band`)
+printed bands rounded to 0.001 with toFixed(2), rounding inward (0.951 to
+1.241 as 0.95 to 1.24); it is now printed to two decimals rounded outward.
+The thin-plate label said the high end is the 5% fins'; it rests on the 10%
+fins and the tunnel data, and now says so. The transition test of
+`fin-trailing-edge-thick.test.ts` computed its reference integrals with
+60000 readings of fig. 29; one pass of 8000 strips now gives both ends (the
+same 1e-4 test), and its stated timeout, 30 s, reflects that work (about 1
+s alone).
+
+**Coverage.** The run on this code reproduces `out/2026-10-21-w34-rereview/`
+exactly, its cross-check against `src/total` agreeing on all 1200 cases:
+the allowance moves bands, not refusals. The Basic Finner's gated shots
+stay bit for bit the main line's (693 values, the largest difference 0).

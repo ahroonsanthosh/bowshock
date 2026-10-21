@@ -480,8 +480,8 @@ to F7.
   are bit for bit unchanged. The sweep allowance on every swept edge
   served (all at M_n 3.0 or less, below the checks' 3.37) is extrapolated
   in normal Mach number and contains every yawed datum at served sweeps
-  and normal Mach numbers: 0.95 to 1.21 (0.95 to 1.22 at 60 deg, growing
-  with sin(sweep), since 0016 section 18), RM A55H31's own tests at 45 and
+  and normal Mach numbers: 0.95 to 1.21 (0.95 to 1.22 from 14.3 deg of sweep
+  up, tapered below, since 0016 sections 18 and 19), RM A55H31's own tests at 45 and
   60 deg counted (the report's suspicion of three-dimensional flow, from
   the 1 in model in the 3 in stream, is a finite-length effect a fin's
   edge may share). TN 3861 figs. 15 and 16, read twice (with fig. 17, read
@@ -492,8 +492,8 @@ to F7.
   (serve rather than refuse wherever an honest band can be given, and say
   plainly what it rests on; 0016 section 16)._ Swept edges at M_n 1.0 to
   1.95, where no yawed datum lies at a served sweep, are served with the
-  sweep allowance that contains every yawed datum, 0.95 to 1.22 at 60 deg
-  growing with sin(sweep) (0016 section 18), labelled
+  sweep allowance that contains every yawed datum, 0.95 to 1.22 from 14.3
+  deg of sweep up (0016 sections 18 and 19), labelled
   "the sweep allowance extrapolated in normal Mach number" and "no yawed
   datum below M_n 1.95 at a served sweep". What would replace the
   extrapolation: front-side pressures on yawed cylinders or swept blunt

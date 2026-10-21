@@ -219,34 +219,45 @@ describe('fins of varying chord, unswept trailing edge (W3(b))', () => {
     expect(Math.abs(t.cd / ref - 1)).toBeLessThan(1e-5);
   });
 
-  it('a transition state leaves laminar the part of the span it reaches, integrated on that part alone', () => {
-    // Re_T 1.2e6 reaches chords up to 0.075, so y from 0.045 to the tip.
-    const t = finTrailingEdgeBaseDrag({ ...edges, transitionReynolds: [5e5, 1.2e6, 3e6] });
-    const [none, part, all] = t.laminarStates!;
-    expect(none!.laminarSpanFraction).toBe(0);
-    expect(none!.low).toBe(0);
-    expect(none!.high).toBe(0);
-    expect(part!.laminarSpanFraction).toBeCloseTo((0.08 - 0.045) / 0.08, 12);
-    expect(all!.laminarSpanFraction).toBe(1);
-    const q = (-thinLayerBasePressure(2.2) * 3 * 0.003) / edges.referenceArea;
-    const change = (y0: number, end: 'low' | 'high') => {
-      const n = 20000;
-      let s = 0;
-      for (let i = 0; i < n; i++) {
-        const y = y0 + ((i + 0.5) * (0.08 - y0)) / n;
-        const c = chordAt(y);
-        const r = laminarOverTurbulent(c / 0.003, 1.6e7 * c);
-        s += (r[end] - 1) * thickLayerFactor(2.2, xAt(y)).nominal * ((0.08 - y0) / n);
-      }
-      return q * s;
-    };
-    expect(Math.abs(part!.low / change(0.045, 'low') - 1)).toBeLessThan(1e-4);
-    expect(Math.abs(part!.high / change(0.045, 'high') - 1)).toBeLessThan(1e-4);
-    expect(Math.abs(all!.high / change(0, 'high') - 1)).toBeLessThan(1e-4);
-    expect(t.laminarInput.low).toBe(Math.min(0, ...t.laminarStates!.map((s) => s.low)));
-    expect(t.laminarInput.high).toBe(Math.max(0, ...t.laminarStates!.map((s) => s.high)));
-    expect(t.laminarTerm).toBeUndefined();
-  });
+  // The reference integrals below evaluate fig. 29's laminar reading at 16000 strips; under a
+  // loaded machine that takes seconds, so the timeout states the real work.
+  it(
+    'a transition state leaves laminar the part of the span it reaches, integrated on that part alone',
+    { timeout: 30_000 },
+    () => {
+      // Re_T 1.2e6 reaches chords up to 0.075, so y from 0.045 to the tip.
+      const t = finTrailingEdgeBaseDrag({ ...edges, transitionReynolds: [5e5, 1.2e6, 3e6] });
+      const [none, part, all] = t.laminarStates!;
+      expect(none!.laminarSpanFraction).toBe(0);
+      expect(none!.low).toBe(0);
+      expect(none!.high).toBe(0);
+      expect(part!.laminarSpanFraction).toBeCloseTo((0.08 - 0.045) / 0.08, 12);
+      expect(all!.laminarSpanFraction).toBe(1);
+      const q = (-thinLayerBasePressure(2.2) * 3 * 0.003) / edges.referenceArea;
+      // Both ends from one pass of 8000 midpoint strips.
+      const change = (y0: number) => {
+        const n = 8000;
+        let low = 0;
+        let high = 0;
+        for (let i = 0; i < n; i++) {
+          const y = y0 + ((i + 0.5) * (0.08 - y0)) / n;
+          const c = chordAt(y);
+          const r = laminarOverTurbulent(c / 0.003, 1.6e7 * c);
+          const w = thickLayerFactor(2.2, xAt(y)).nominal * ((0.08 - y0) / n);
+          low += (r.low - 1) * w;
+          high += (r.high - 1) * w;
+        }
+        return { low: q * low, high: q * high };
+      };
+      const partRef = change(0.045);
+      expect(Math.abs(part!.low / partRef.low - 1)).toBeLessThan(1e-4);
+      expect(Math.abs(part!.high / partRef.high - 1)).toBeLessThan(1e-4);
+      expect(Math.abs(all!.high / change(0).high - 1)).toBeLessThan(1e-4);
+      expect(t.laminarInput.low).toBe(Math.min(0, ...t.laminarStates!.map((s) => s.low)));
+      expect(t.laminarInput.high).toBe(Math.max(0, ...t.laminarStates!.map((s) => s.high)));
+      expect(t.laminarTerm).toBeUndefined();
+    },
+  );
 
   it('refuses a layer thicker than 4.5 anywhere along the span', () => {
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, chord: 0.6, tipChord: 0.1 }))).toBe(

@@ -72,8 +72,8 @@ describe('a clipped delta in sheet stock, rounded leading edge, square trailing 
     // 42 deg of sweep, M_n 2.08, Re_n 7.4e4: swept and extrapolated in Reynolds number.
     expect(n.sweepDegrees).toBeCloseTo(Math.atan(0.9) / (Math.PI / 180), 12);
     expect(n.regime).toBe('extrapolated in Reynolds number');
-    // The sweep allowance at 42 deg, 0.961 to 1.170 (0016 section 18), on the band widened by +-3%.
-    expect(n.band).toEqual({ low: 0.922, high: 1.276 });
+    // The sweep allowance at 42 deg, 0.95 to 1.22 (0016 section 19), on the band widened by +-3%.
+    expect(n.band).toEqual({ low: 0.912, high: 1.33 });
     expect(c.label).toMatch(/on a flat plate, a semicircular nose/);
   });
 
@@ -227,10 +227,10 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
     };
     // Before the review: 0.1311 (0.1180 to 0.1664), 0.1606 (0.1381 to 0.2120), 0.1825 (0.1770 to
     // 0.2080); at f8df436 (flat 0.95 to 1.21): 0.1311 (0.1167 to 0.1770), 0.1607 (0.1366 to
-    // 0.2249), 0.1825 (0.1715 to 0.2354); now the allowance at 42 deg (0016 section 18).
-    expect(at(1.5)).toEqual([0.1311, 0.1182, 0.1703]);
-    expect(at(1.8)).toEqual([0.1607, 0.1388, 0.2162]);
-    expect(at(2.2)).toEqual([0.1825, 0.1735, 0.2264]);
+    // 0.2249), 0.1825 (0.1715 to 0.2354); now 0.95 to 1.22 at 42 deg (0016 section 19).
+    expect(at(1.5)).toEqual([0.1311, 0.1169, 0.1776]);
+    expect(at(1.8)).toEqual([0.1607, 0.1372, 0.2256]);
+    expect(at(2.2)).toEqual([0.1825, 0.1715, 0.2361]);
   });
 
   it('fins at the base take the plate t/c at the tip, the largest: four 7.2 mm plates, root 120, tip 48 mm (t/c 0.06 to 0.15), refused at M 2.0', () => {
@@ -288,7 +288,7 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
     // The same plates 6 mm thick (t/c 0.05): inside the data, the factor as it was.
     const inside = run(plates(0.006, 1)).components.find((c) => c.name === 'body base')!;
     expect(inside.label).not.toMatch(/extended below/);
-    // The factor's low end is no fin effect and its nominal the midpoint up to the 5% fins' high
+    // The factor's low end is no fin effect and its nominal the midpoint up to the factor's high
     // end: the term and its low end fall, the high end does not rise.
     expect(base.cd).toBeLessThan(inside.cd);
     expect(base.low).toBeLessThan(inside.low);

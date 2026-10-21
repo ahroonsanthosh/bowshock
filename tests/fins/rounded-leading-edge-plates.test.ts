@@ -27,6 +27,7 @@ import {
   stagnationPressureCoefficient,
   SWEEP_ALLOWANCE,
   SWEEP_ALLOWANCE_SERVED,
+  SMALLEST_TESTED_SWEEP,
   sweepAllowanceAt,
   SWEEP_LIMIT_DEGREES,
   stagnationChecks,
@@ -283,25 +284,24 @@ describe('the independence principle on yawed cylinders (RM A55H31 figs. 11, 12)
     }
   });
 
-  it('the allowance grows with sin(sweep) from none unswept to 0.95 to 1.22 at 60 deg, and at every tested sweep contains every datum there', () => {
+  it('the allowance: the full 0.95 to 1.22 from 14.3 deg, the smallest yaw tested, up, tapered linearly below it to none unswept; every datum inside', () => {
+    expect(SMALLEST_TESTED_SWEEP).toBe(14.3);
     expect(sweepAllowanceAt(0)).toEqual({ low: 1, high: 1 });
-    expect(sweepAllowanceAt(60)).toEqual(SWEEP_ALLOWANCE_SERVED);
-    const a = sweepAllowanceAt(14.3);
-    expect([a.low, a.high].map((x) => Math.round(1e3 * x) / 1e3)).toEqual([0.986, 1.063]);
+    for (const d of [14.3, 20, 30, 45, 60])
+      expect(sweepAllowanceAt(d)).toEqual(SWEEP_ALLOWANCE_SERVED);
+    const half = sweepAllowanceAt(7.15);
+    expect(half.low).toBeCloseTo(0.975, 12);
+    expect(half.high).toBeCloseTo(1.11, 12);
     const data = [
       ...checks.filter((c) => c.flag === undefined),
       ...sweepChecks(RM_A55H31_FIG12_SECOND),
       ...sweepChecks(RM_A55H31_FIG12_THIRD_LOOK),
     ].filter((c) => c.yaw <= SWEEP_LIMIT_DEGREES);
     expect(data.length).toBe(14);
+    expect(Math.min(...data.map((c) => c.yaw))).toBe(SMALLEST_TESTED_SWEEP);
     for (const c of data) {
-      const at = sweepAllowanceAt(c.yaw);
-      expect(c.r).toBeGreaterThanOrEqual(at.low);
-      expect(c.r).toBeLessThanOrEqual(at.high);
-    }
-    for (let d = 1; d <= 60; d++) {
-      expect(sweepAllowanceAt(d).high).toBeGreaterThan(sweepAllowanceAt(d - 1).high);
-      expect(sweepAllowanceAt(d).low).toBeLessThan(sweepAllowanceAt(d - 1).low);
+      expect(c.r).toBeGreaterThanOrEqual(SWEEP_ALLOWANCE_SERVED.low);
+      expect(c.r).toBeLessThanOrEqual(SWEEP_ALLOWANCE_SERVED.high);
     }
   });
 
@@ -334,7 +334,7 @@ describe('the nose term on flat and swept fins', () => {
     expect(t.sweepDegrees).toBe(0);
   });
 
-  it('swept: at the normal Mach number on the normal dynamic pressure; band 0.953 to 1.234 (the allowance at 40 deg)', () => {
+  it('swept: at the normal Mach number on the normal dynamic pressure; band 0.940 to 1.294 (the allowance at 40 deg)', () => {
     const sweep = 40;
     const t = roundedLeadingEdgeDrag({
       mach: 2.8,
@@ -357,10 +357,10 @@ describe('the nose term on flat and swept fins', () => {
       low: Math.floor(0.99 * a.low * 1000 + 1e-9) / 1000,
       high: Math.ceil(1.06 * a.high * 1000 - 1e-9) / 1000,
     });
-    expect(t.band).toEqual({ low: 0.953, high: 1.234 });
+    expect(t.band).toEqual({ low: 0.94, high: 1.294 });
     expect(t.label).toMatch(/swept 40\.0 deg: the independence principle/);
     expect(t.label).toMatch(
-      /RM A55H31 figs\. 11, 12\), the band widened by 0\.963 to 1\.163 for it \(0\.95 to 1\.22 at 60 deg, in proportion to sin\(sweep\) below\), the sweep allowance extrapolated in normal Mach number/,
+      /RM A55H31 figs\. 11, 12\), the band widened by 0\.950 to 1\.220 for it \(0\.95 to 1\.22 from 14\.3 deg, the smallest yaw tested, tapered below it to meet the unswept band\), the sweep allowance extrapolated in normal Mach number/,
     );
     expect(t.label).not.toMatch(/read once/);
     expect(t.label).toMatch(
@@ -369,7 +369,7 @@ describe('the nose term on flat and swept fins', () => {
     expect(t.label.startsWith('an analogy, not a measurement')).toBe(true);
   });
 
-  it('swept and extrapolated in Reynolds number (normal component below 1e5): 0.924 to 1.268', () => {
+  it('swept and extrapolated in Reynolds number (normal component below 1e5): 0.912 to 1.330', () => {
     const t = roundedLeadingEdgeDrag({
       mach: 2.8,
       radius: 0.0015,
@@ -388,7 +388,7 @@ describe('the nose term on flat and swept fins', () => {
           (ROUNDED_EDGE_BAND.high + REYNOLDS_ALLOWANCE) * sweepAllowanceAt(40).high * 1000 - 1e-9,
         ) / 1000,
     });
-    expect(t.band).toEqual({ low: 0.924, high: 1.268 });
+    expect(t.band).toEqual({ low: 0.912, high: 1.33 });
   });
 
   it('refuses a normal Mach number below 1.0 (1.0 to 1.49: section 11), with the subsonic reasons', () => {

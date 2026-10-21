@@ -66,7 +66,8 @@ export const FINS_ON_BASE_THINNEST_DATA = 0.05;
  * Fins thinner than the factor's 5% data at some station, none thicker than
  * 10% (0016 section 18, the coordinator's rule): the factor at 5%, its low
  * end taken as no fin effect (F = 1), the physical limit, since thinner fins
- * lower the base pressure less, its high end kept, the nominal the midpoint.
+ * lower the base pressure less, its high end kept (it rests on the 10% fins
+ * and the tunnel data), the nominal the midpoint.
  */
 function extendedBelowThinnestData(
   f: FinsOnBaseFactor,
@@ -81,7 +82,7 @@ function extendedBelowThinnestData(
       `${f.label}; extended below the data's 5% thickness: t/c down to ` +
       `${thicknessRatio.toFixed(3)} over ${(100 * spanShare).toFixed(0)}% of the span, the low ` +
       'end taken as no fin effect (F = 1; thinner fins lower the base pressure less), the high ' +
-      "end the 5% fins' (0016)",
+      "end the factor's own, which rests on the 10% fins and the tunnel data (0016)",
   };
 }
 

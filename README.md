@@ -362,8 +362,8 @@ grids' convergence and the exact stagnation pressure.
   leading edges on flat, tapered and swept fins at a normal Mach number,
   M cos(sweep), of 1.0 to 3.0 (from 1.0 to 1.2 on NASA CR-149372's
   cylinder, then across an unmeasured Mach range to 1.49), swept to 60
-  deg with the band widened by up to 0.95 to 1.22 (growing with
-  sin(sweep)), the sweep allowance extrapolated in normal Mach number;
+  deg with the band widened by 0.95 to 1.22 (from 14.3 deg of sweep,
+  tapered below it), the sweep allowance extrapolated in normal Mach number;
   square-cut leading edges, rounded and swept trailing edges, and normal
   Mach numbers below 1.0 refused. Each
   band is estimated on component data and tested only in the total.

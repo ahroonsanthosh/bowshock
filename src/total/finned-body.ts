@@ -305,7 +305,7 @@ export function finnedBodyComponents(
         low: nose.band.low * cd,
         high: nose.band.high * cd,
         label: nose.label,
-        band: `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified Newtonian, ${nose.band.low.toFixed(2)} to ${nose.band.high.toFixed(2)} (${nose.regime})`,
+        band: `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified Newtonian, ${outward(nose.band)} (${nose.regime})`,
       });
     } catch (e) {
       refusals.push(refusalOf('fin leading edges', e));
@@ -585,7 +585,7 @@ function platePart(
       label: `${nose.label}; on a flat plate, a semicircular nose (0016)`,
       band:
         `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified ` +
-        `Newtonian, ${nose.band.low.toFixed(2)} to ${nose.band.high.toFixed(2)} ` +
+        `Newtonian, ${outward(nose.band)} ` +
         `(${nose.regime}${nose.sweepDegrees > 0 ? ', swept' : ''})`,
     });
   } catch (e) {
@@ -635,4 +635,11 @@ function plateThinnest(
     share = tip < root ? Math.min(1, Math.max(0, yAt)) : 1 - Math.min(1, Math.max(0, yAt));
   }
   return { thicknessRatio: thickness / Math.max(root, tip), spanShareBelow: share };
+}
+
+/** A band printed to two decimals, rounded outward, so the text never narrows it. */
+function outward(band: { readonly low: number; readonly high: number }): string {
+  const low = Math.floor(band.low * 100 + 1e-9) / 100;
+  const high = Math.ceil(band.high * 100 - 1e-9) / 100;
+  return `${low.toFixed(2)} to ${high.toFixed(2)}`;
 }
