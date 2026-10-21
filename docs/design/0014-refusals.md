@@ -1150,3 +1150,13 @@ owner's rule):
    the fins-on-base factor (W1), which refuses swept trailing edges at the
    base, where nothing measures them, is a separate term and is not
    changed by it.
+
+**2026-10-21 (i): further band-setting figures for W7's fin terms, named
+before they are read** (rule 2 of 10.1, as (h)). Found while typing R&M
+3348 table 3 and opening R&M 3427; none has been read for a value.
+
+| Source                                                        | Sets bands with                                                                                                                                                                                                                                                     | Not used to set bands      |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Rogers, Berry and Quincey, ARC R&M 3348 (AERADE 1826.2/3929)  | figs. 47 to 52, the single-wedge section's pressure distributions at the pressure-plotting station, Mach 0.70 to 1.20: the surface pressure just ahead of the base (x/c 0.995), for the local M' and p' with which table 3's base pressures are compared            | the rest of figs. 40 to 58 |
+|                                                               | tables 4 and 5 and fig. 59, the balance results (single and double wedge; the report notes the single wedge's drag includes its raked tip edge): candidates for the fins' own drag near Mach 1 (F1) and for F5, what each sets decided by a later record before use |                            |
+| Nash, Quincey and Callinan, ARC R&M 3427 (AERADE 1826.2/4011) | fig. 18 (the Reynolds number's effect on base pressure); fig. 39 (the base conditions' effect on the surface pressures upstream of the base)                                                                                                                        |                            |
