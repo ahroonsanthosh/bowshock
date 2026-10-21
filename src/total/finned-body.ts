@@ -47,8 +47,11 @@
  * whatever src/base and src/fins refuse (among them swept rounded leading
  * edges and swept, laminar or thick-layer blunt trailing edges), a rounded
  * leading edge on anything but a single-wedge fin of constant chord, a
- * blunt trailing edge on a fin of varying chord, and a transition input
- * that leaves the boundary layer laminar at the base.
+ * blunt trailing edge on a fin of varying chord, a transition input that
+ * leaves the boundary layer laminar at the base, and, below Mach 1.5, fin
+ * friction and the wave drag of sharp sections, whose band (the fins' own
+ * drag, ARCAS) is measured only at Mach 1.5 to 2.96
+ * (`FINS_OWN_DRAG_MACH_RANGE`; 0014 section 10.7, amendment f).
  *
  * Not represented, with their sizes where known (0010 section 3): the
  * nose's friction at its own surface state (it is taken at the free
@@ -114,6 +117,49 @@ export const BODY_FRICTION_BAND = [0.88, 1.19] as const;
  * change removed; one-sided (the model was never above the data).
  */
 export const FINS_OWN_DRAG_BAND = [1.01, 1.59] as const;
+/**
+ * The Mach numbers of the ARCAS increments behind `FINS_OWN_DRAG_BAND`
+ * (TN D-4014, 0008 section 4.3). Below the lower end the band is not
+ * carried (0014 section 10.7, amendment f; design record 0019 section
+ * 3.1): the increments' shortfall against the model grows as the Mach
+ * number falls (fins' own over measured 0.49 at Mach 1.5, 0.85 at 2.96),
+ * so the band measured at 1.5 bounds nothing below it, and
+ * the fin terms that carry it, fin friction and the wave drag of sharp
+ * sections, are refused there. A flat plate's faces, of no wave drag by
+ * the geometry, carry no band and stay served.
+ */
+export const FINS_OWN_DRAG_MACH_RANGE = [1.5, 2.96] as const;
+
+/** The guard of `FINS_OWN_DRAG_MACH_RANGE`, or undefined at or above its lower end. */
+function finsOwnDragMachRefusal(
+  mach: number,
+  term: 'friction' | 'wave drag',
+): FinRefusal | undefined {
+  const floor = FINS_OWN_DRAG_MACH_RANGE[0];
+  if (mach >= floor) return undefined;
+  const what =
+    term === 'friction'
+      ? "fin friction carries the fins' own-drag band"
+      : 'the wave drag of a sharp section (the exact 2D section drag times the linear 3D ratio, ' +
+        "0009) carries the fins' own-drag band, its only measured test";
+  return new FinRefusal(
+    'fins-own-drag-mach',
+    `the Mach number ${machShownBelow(mach, floor)} is below ${floor.toFixed(1)}: ${what} ` +
+      `(1.01 to 1.59, 0008 section 4.3), measured on the ARCAS increments at Mach ` +
+      `${floor.toFixed(1)} to ${FINS_OWN_DRAG_MACH_RANGE[1]} only, and the increments' shortfall ` +
+      "against the model grows as the Mach number falls (fins' own over measured 0.49 at Mach " +
+      '1.5, 0.85 at 2.96), so the band is not carried below Mach 1.5 (0014 section 10.7, amendment f)',
+  );
+}
+
+/** A Mach number printed with the digits that keep "below" true at the boundary. */
+function machShownBelow(mach: number, limit: number): string {
+  for (let digits = 3; digits <= 15; digits++) {
+    const text = mach.toPrecision(digits);
+    if (Number(text) < limit) return text;
+  }
+  return String(mach);
+}
 
 export interface FinSet {
   readonly count: number;
@@ -269,15 +315,19 @@ export function finnedBodyComponents(
   );
   const finsLabel = 'estimated on the ARCAS increments (TN D-4014), tested only in the total';
   const finsBand = "0008 section 4.3: fins' own drag, measured over modelled 1.01 to 1.59";
-  components.push(
-    componentWithRatioBand(
-      'fin friction',
-      nominal.fins,
-      FINS_OWN_DRAG_BAND,
-      `van Driest II flat plates of the local chord, adiabatic wall; ${finsLabel}`,
-      finsBand,
-    ),
-  );
+  const frictionGuard = finsOwnDragMachRefusal(conditions.mach, 'friction');
+  if (frictionGuard !== undefined) refusals.push(refusalOf('fin friction', frictionGuard));
+  else {
+    components.push(
+      componentWithRatioBand(
+        'fin friction',
+        nominal.fins,
+        FINS_OWN_DRAG_BAND,
+        `van Driest II flat plates of the local chord, adiabatic wall; ${finsLabel}`,
+        finsBand,
+      ),
+    );
+  }
 
   // Fin wave drag, and the nose of a rounded leading edge.
   const constantChord = fins.planform.tanTrailingEdge === fins.planform.tanLeadingEdge;
@@ -319,6 +369,8 @@ export function finnedBodyComponents(
   }
   if (plate === undefined) {
     try {
+      const guard = finsOwnDragMachRefusal(conditions.mach, 'wave drag');
+      if (guard !== undefined) throw guard;
       // With a rounded edge the faces are a wedge at the tangent geometry's
       // angle, on their own rise (src/fins/rounded-leading-edge.ts).
       const section =

@@ -1263,7 +1263,7 @@ rockets to 10; totals today 0.3% to 0.2%, at Mach 1.8 to 3.0 0.7% to
 0.5%). W1 is needed in 95.5% of cases (94.6% before); the totals once W1 is
 done stay 3.4%.
 
-**Superseded with W1 (2026-10-21; 0014 section 10.7, amendment h).** With
+**Superseded with W1 (2026-10-21; 0014 section 10.7, amendment i).** With
 the rebuilt factor merged (0015), the refusal routes on: `bodyBaseDrag`
 gives every flat-faced fin at the base the present factor's
 `flat-plate-fins` refusal first, before its own checks (plates are not

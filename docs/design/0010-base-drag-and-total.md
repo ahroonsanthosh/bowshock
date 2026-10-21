@@ -239,7 +239,7 @@ W1 of 0014). This factor and its labels are unchanged, and it serves the
 fin families it was measured on, unswept wedge, circular-arc and
 hexagonal sections 5% to 10% thick (with 0016 section 18's extension
 below 5% for those families), so the Basic Finner's gated total keeps it
-(0014 sections 10.3 and 10.7, amendment h). Where it refuses (fins other
+(0014 sections 10.3 and 10.7, amendment i). Where it refuses (fins other
 than four, swept at either edge, Mach 1.0 to 1.8, fins within a chord of
 the base), and for flat-faced fins (plates), which it is not measured on,
 `base-drag.ts` asks the rebuilt factor (`src/base/fins-on-base-w1.ts`),
@@ -1404,7 +1404,7 @@ is "bounded, not measured" (recorded in 0014 section 10.7, amendment a).
   serves swept fins where it measures the sweep (0015 sections 3.4 and
   5), not these: a sharp section with its trailing edge swept at the base
   is refused there, since RM L52J21a's fins end 0.8 root chords ahead of
-  it; plates go to it too (0014 section 10.7, amendment h).
+  it; plates go to it too (0014 section 10.7, amendment i).
 - **Lower bound: no fin effect, F = 1** for the present factor. It is
   defined on Love's basic curve, which fig. 35's own no-fin curve
   reproduces, so no fin effect is exactly F = 1, and every source it is

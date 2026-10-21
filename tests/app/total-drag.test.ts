@@ -604,7 +604,9 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       else expect(r).not.toContain('fin leading edges: leading-edge-range');
       // The base below Mach 1.5 is served (W2), but not with the Basic Finner's wedges at it (0015).
       expect(r).toContain('body base: fin-trailing-edge');
-      if (s.mach < 1.2) expect(r).toContain('fin wave drag: detached-shock');
+      // Below M 1.5 the fins' own-drag band is not carried (0014 section 10.7 (f)); it is the first reason.
+      expect(r).toContain('fin friction: fins-own-drag-mach');
+      expect(r).toContain('fin wave drag: fins-own-drag-mach');
     }
   });
 });

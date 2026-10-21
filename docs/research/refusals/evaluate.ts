@@ -88,6 +88,8 @@ export const REASONS = {
   sectionDetached: 'fins: sharp section, leading-edge shock detached or subsonic behind it',
   sectionReflected: 'fins: sharp section, a wave reflected from the leading-edge shock reaches the surface',
   pageSection: 'page: section not offered (wedge-flat with a blunt trailing edge; the library takes it)',
+  finsOwnDragMach:
+    "fins: below Mach 1.5, fin friction and the wave drag of sharp sections (the fins' own-drag band, ARCAS, is measured at Mach 1.5 to 2.96 only, 0014 section 10.7 (f))",
   // Body base.
   baseMach: 'base: Mach outside 1.0 to 3.0 (below 1.5: W2, 0015 section 11)',
   boatTail: 'base: boat-tail',
@@ -259,6 +261,9 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     }
   }
   if (r.section === 'bevel-le-square-te') out.push('pageSection');
+  // 0014 section 10.7 (f): below Mach 1.5 fin friction (every fin) and the wave drag of sharp sections
+  // carry a band measured only at Mach 1.5 to 2.96, and are refused.
+  if (mach < 1.5) out.push('finsOwnDragMach');
   if (r.section === 'bevel-both' || r.section === 'bevel-le-square-te' || r.section === 'double-wedge') {
     try {
       exactSectionDrag(librarySection(r)!, mach);

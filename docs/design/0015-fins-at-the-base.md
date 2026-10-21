@@ -31,7 +31,7 @@
   not counted twice (section 11.2); the zero member RM L52E06's below M
   1.62 (section 3.5); the present factor kept for its measured families
   only, every flat-faced fin taking the rebuilt factor's flat-plate value
-  (sections 4, 5; 0014 section 10.7, amendment h, superseding main's
+  (sections 4, 5; 0014 section 10.7, amendment i, superseding main's
   amendment e); the TN 2360 symbols one reader found flagged where they
   set a band's end (section 7).
 - **Date:** 2026-10-20 (revised 2026-10-21)
@@ -68,7 +68,7 @@ of 0014 section 10.1 cover:
   review of 2026-10-21).
 - **Flat faces at a square trailing edge** (flat plates, at every Mach
   number from 1.0, since 2026-10-21 also where the present factor would
-  have served them; 0014 section 10.7, amendment h), the same counts,
+  have served them; 0014 section 10.7, amendment i), the same counts,
   sweeps and positions, swept also below Mach 1.5: "bounded, not
   measured" (0014 section 10.2), between the lowest relief measured with
   such fins and the circular-arc member at least as thick (section 4).
@@ -94,7 +94,7 @@ its validated claim is suspended by the owner's decision, 0008 section
 6.1); the rebuilt factor is used where the present one refuses and for
 flat-faced fins (plates), which the present one is not measured on (every
 flat-faced fin at the base since the review of 2026-10-21, superseding
-main's refusal of them; 0014 section 10.7, amendment h), and says so in
+main's refusal of them; 0014 section 10.7, amendment i), and says so in
 its label (section 5). Since 2026-10-21 the present factor
 refuses fins swept at either edge (0014 section 10.7), so swept fins at
 the base go to the rebuilt factor, which serves the sweeps it measures
@@ -600,7 +600,7 @@ t/c 0.05 to M 2.0; for thicker plates, whose upper member is the 10% arc,
 body base (section 11.2) the band is +-31.8% to +-34.9% (34.9% at M 1.0).
 
 **Every flat-faced fin at the base takes this value** (the review of
-2026-10-21; 0014 section 10.7, amendment h, which supersedes main's
+2026-10-21; 0014 section 10.7, amendment i, which supersedes main's
 amendment e). The present factor is measured on wedge, circular-arc and
 hexagonal sections, the Basic Finner's family among them, and on no fin
 with flat faces at the trailing edge; RM L52E06 fig. 7 measures such fins
@@ -622,7 +622,7 @@ bounds a rounded edge (its half-thickness falls as the square root of the
 distance to the edge), so neither bound is shown and nothing at the base
 measures them; refused, also as the four unswept plates at Mach 1.8 to
 3.0 the present factor served until main's amendment (e) (0014 section
-10.7 (h); their edge term is refused anyway, W11); blunt edges whose faces diverge to them (the Basic
+10.7 (i); their edge term is refused anyway, W11); blunt edges whose faces diverge to them (the Basic
 Finner's single wedges: their faces compress the flow near the base,
 which TN 2360's argument says raises the base pressure by an amount no
 source measures, so neither bound is shown) or converge to them.
@@ -648,7 +648,7 @@ says which factor was used. The body base's fin input is built once,
 `baseFinsOf` in `src/total/finned-body.ts`, for the total and for the
 coverage run's `evaluate.ts`.
 
-By family (the review of 2026-10-21; 0014 section 10.7, amendment h):
+By family (the review of 2026-10-21; 0014 section 10.7, amendment i):
 
 - **Flat-faced fins** (plates, and sections whose trailing edge is flat;
   `BaseFins.flatFaced`): the present factor refuses them
@@ -737,7 +737,7 @@ read later for the zero member (below), and RM L52E06 fig. 8 for W2
 (section 11.3). The band-setting figures 0014 lists that this method does
 not use were not read (TN 2360 figs. 5 and 7, TN 3819 fig. 32, RM L52J21a
 fig. 39 and figs. 31 to 33 outside panel (d), RM L52E06 fig. 6, TN 3372
-figs. 7 to 12); 0014 section 10.7 (g) gives the status of each.
+figs. 7 to 12); 0014 section 10.7 (h) gives the status of each.
 
 **Second readings** (round 6, blind, made on another branch from its own
 renders: `docs/research/total-drag/audit/round6/readings/`, method in its
@@ -989,7 +989,7 @@ swept at the base or closer than 0.8 root chords). The totals lost are
 ten cases, all of them that: double wedges and bevelled plates at the
 base with the leading edge swept 45 to 60 deg and the trailing edge swept
 15 to 53 deg aft, at Mach 1.5 to 3.0 (five rockets, each in two bands).
-Routing flat plates by family (amendment h) moves no case between served
+Routing flat plates by family (amendment i) moves no case between served
 and refused: three of the totals served (four unswept rectangular plates
 with rounded leading edges at Mach 1.8 to 3.0) took the present factor
 before the review and now take the rebuilt factor's flat-plate value, and

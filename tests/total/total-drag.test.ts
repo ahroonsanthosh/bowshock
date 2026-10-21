@@ -422,7 +422,8 @@ describe('refusals', { timeout: 60_000 }, () => {
   it('boat-tails; the fins-on-base factor below M 1.8; a laminar base', () => {
     expect(refusals({ ...sharp, afterbody: 'boat-tail' })).toEqual(['body base: afterbody']);
     // Below M 1.8 the present factor refuses and the rebuilt one (0015) serves these sharp fins, down
-    // to M 1.0 (W2's part, 0015 section 11); below M 1.0 the body base is refused.
+    // to M 1.0 (W2's part, 0015 section 11); below M 1.0 the body base is refused. Below M 1.5 the total
+    // is refused by the fins' own-drag guard alone (0014 section 10.7 (f)), the base served.
     expect(refusals(sharp, 1.6)).toEqual([]);
     const at16 = finnedBodyComponents(
       sharp,
@@ -431,7 +432,10 @@ describe('refusals', { timeout: 60_000 }, () => {
     );
     expect(at16.base?.finsOnBaseSource).toBe('rebuilt');
     expect(at16.base?.presentRefusal?.reason).toBe('mach-range');
-    expect(refusals(sharp, 1.45)).toEqual([]);
+    expect(refusals(sharp, 1.45)).toEqual([
+      'fin friction: fins-own-drag-mach',
+      'fin wave drag: fins-own-drag-mach',
+    ]);
     const at12 = finnedBodyComponents(
       sharp,
       { ...conditions, mach: 1.2 },
@@ -445,8 +449,15 @@ describe('refusals', { timeout: 60_000 }, () => {
     expect(refusals(sharp, 2.4, [2e7])).toEqual(['body base: laminar-base']);
   });
 
-  it('a detached fin shock at M 1.08, where the base is served (from M 1.0, 0015 section 11.2)', () => {
-    expect(refusals(sharp, 1.08)).toEqual(['fin wave drag: detached-shock']);
+  it("below Mach 1.5: the fins' own-drag band (ARCAS, Mach 1.5 to 2.96) refused, the base served (W2)", () => {
+    // The guard comes first: at M 1.08 and 1.1 the double wedge's shock is also detached (0014 section
+    // 10.7 (f)). The body base is served from M 1.0 (0015 section 11.2), so the guard alone refuses the total.
+    for (const m of [1.08, 1.1, 1.4999999]) {
+      expect(refusals(sharp, m)).toEqual([
+        'fin friction: fins-own-drag-mach',
+        'fin wave drag: fins-own-drag-mach',
+      ]);
+    }
     const b = finnedBodyComponents(
       sharp,
       { ...conditions, mach: 1.08 },
@@ -454,5 +465,12 @@ describe('refusals', { timeout: 60_000 }, () => {
     ).base;
     expect(b?.finsOnBaseSource).toBe('rebuilt');
     expect(b?.curveBand.source).toBe('w2');
+  });
+
+  it('a detached fin shock above the guard, at M 1.55 (a 25% double wedge, 14.0 deg)', () => {
+    const thick = { ...sharp, fins: { ...sharp.fins, section: doubleWedge(0.25) } };
+    const r = refusals(thick, 1.55);
+    expect(r).toContain('fin wave drag: detached-shock');
+    expect(r).not.toContain('fin friction: fins-own-drag-mach');
   });
 });
