@@ -32,6 +32,7 @@ import {
   W1_RELIEF_MEASURED_FROM,
   W1_RELIEF_ON_ONE_CALL,
   W1_RELIEF_SINGLE_CALLS,
+  W1_SWEPT_TRAILING_EDGE_AHEAD,
   W1_ZERO_MEMBER_PENDING,
   flatPlateReliefs,
   noseCallReliefFactors,
@@ -900,5 +901,28 @@ describe('refusals', () => {
     expect(reason(() => finsOnBaseFactorW1(1.8, fins({ trailingEdgeAheadOfBase: 0.5 })))).toBe(
       'served',
     );
+    // A sharp section with a swept trailing edge: measured only at RM L52J21a's position, about 0.8 root
+    // chords ahead of the base; closer to the base refused, either way (0015 section 3.4).
+    expect(W1_SWEPT_TRAILING_EDGE_AHEAD).toBe(0.8);
+    const both = (xc: number, te = tan(45)) =>
+      fins({ tanTrailingEdgeSweep: te, trailingEdgeAheadOfBase: xc });
+    for (const xc of [0, 0.1, 0.5, 0.79]) {
+      for (const te of [tan(45), -tan(45), tan(10)]) {
+        expect(
+          reason(() => finsOnBaseFactorW1(1.8, both(xc, te))),
+          `x/c ${xc}`,
+        ).toBe('fin-sweep');
+      }
+    }
+    expect(reason(() => finsOnBaseFactorW1(1.8, both(0.8)))).toBe('served');
+    expect(reason(() => finsOnBaseFactorW1(1.8, both(1)))).toBe('served');
+    expect(() => finsOnBaseFactorW1(1.8, both(0.5))).toThrow(/ending 0\.5 root chords ahead/);
+    expect(() => finsOnBaseFactorW1(1.8, both(0))).toThrow(/sharp section at the base/);
+    // Flat faces are bounded from RM L52E06's relief at any sweep measured (section 4).
+    expect(
+      reason(() =>
+        finsOnBaseFactorW1(1.8, fins({ section: plate(0.024), tanTrailingEdgeSweep: tan(45) })),
+      ),
+    ).toBe('served');
   });
 });

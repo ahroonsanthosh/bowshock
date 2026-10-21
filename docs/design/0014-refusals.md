@@ -736,21 +736,20 @@ no PARD data sets any band.
 
 **Band-setting: component and tunnel data.**
 
-| Source                                                                                                                                          | Sets bands with                                                                                                                                                                                                                                                                                                                                                                              | Not used to set bands                                                                                                                                                                                              |
-| ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| TN 3819 (Love)                                                                                                                                  | figs. 32 to 35 (fins at the base: location, thickness, sweep, Mach; fig. 35's free-flight line is base pressure, component data); fig. 18 as now; figs. 19 to 26 (W10)                                                                                                                                                                                                                       | the rest                                                                                                                                                                                                           |
-| TN 2360 (Spahr and Dickey)                                                                                                                      | figs. 5 to 7 (base pressure with tails: Reynolds number, location, count, thickness, Mach)                                                                                                                                                                                                                                                                                                   | fig. 1 (a compilation of other reports)                                                                                                                                                                            |
-| RM L52J21a (Love and O'Donnell)                                                                                                                 | fig. 8 (the finned body's base pressures), figs. 31 to 33 (unfinned, against Reynolds number), figs. 38, 39 (fin effects)                                                                                                                                                                                                                                                                    | the rest, unless a later record names them                                                                                                                                                                         |
-| RM L52E06 (Hart)                                                                                                                                | figs. 6 to 8 (base pressures: the sting's effect, rim and centre with and without fins, base drag of A and C)                                                                                                                                                                                                                                                                                | figs. 9 to 12, held back                                                                                                                                                                                           |
-| TN 3372 (Peck)                                                                                                                                  | figs. 7 to 12 (base pressures of configurations A to D, D for W10)                                                                                                                                                                                                                                                                                                                           | it has no total drag                                                                                                                                                                                               |
-| TR 1109, RM A51J25, TN D-1056                                                                                                                   | as now (figs. 8 and 29; fig. 7; table II)                                                                                                                                                                                                                                                                                                                                                    |                                                                                                                                                                                                                    |
-| RM L52D21 (Goin)                                                                                                                                | figs. 3, 4 and 7 to 16 (base pressures of blunt trailing edges, unswept and swept)                                                                                                                                                                                                                                                                                                           | figs. 1, 2, 5, 6 (models, photographs)                                                                                                                                                                             |
-| TN 3548 (Morrow and Katz)                                                                                                                       | its base pressures on the blunt trailing-edge airfoil (figures named when it is opened)                                                                                                                                                                                                                                                                                                      | its diamond and circular-arc airfoils' drag                                                                                                                                                                        |
-| TN 2960 (Gowen and Perkins)                                                                                                                     | figs. 5(a) to 5(e) (pressure distributions), 6, 7 (drag against Reynolds and Mach numbers; figs. 5(c) and 7 as now)                                                                                                                                                                                                                                                                          | figs. 8, 9                                                                                                                                                                                                         |
-| RM A55H31 (Goodwin et al.)                                                                                                                      | figs. 9 to 12 (pressure ratios on the yawed cylinder, pressure drag against yaw)                                                                                                                                                                                                                                                                                                             | the heat-transfer figures                                                                                                                                                                                          |
-| TN 3861 (Penland)                                                                                                                               | figs. 15, 16 (crossflow results) and the pressure distributions behind them                                                                                                                                                                                                                                                                                                                  | the rest                                                                                                                                                                                                           |
-| NSWCDD/TR-92/509 (Moore, Wilcox and Hymer 1992, DTIC ADA258753): added by this record, decided by the coordinator on 2026-10-20, before any use | Table 2's zero-incidence rows with the fins undeflected, and Table 1 (the configuration index): four fins at the base (x/c 0) with the leading edge swept 43.9 deg and the trailing edge unswept, double wedges t/c 0.05 to 0.15, M 2.0 to 3.0, for W1's sweep ordering. A strut-supported tunnel model (no sting); C_DB uncertain by about +-5% as the report states, carried on each value | its fins one and two chords ahead (configurations 11 to 16) until TN 3819 fig. 32 is read twice; its angle-of-attack and deflection data; its empirical model (figs. 1 to 3, 5, 7) and its references; M above 3.0 |
-| By the same rule, for W5, W6, W10                                                                                                               | TR 1386 (nose pressures and foredrags: a check of the nose solve, as 0006 uses TN 3716, not a total); RM E51F26 (boat-tail side and base pressures, no jet)                                                                                                                                                                                                                                  | RM E51F26's jet-on data                                                                                                                                                                                            |
+| Source                            | Sets bands with                                                                                                                                                        | Not used to set bands                       |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| TN 3819 (Love)                    | figs. 32 to 35 (fins at the base: location, thickness, sweep, Mach; fig. 35's free-flight line is base pressure, component data); fig. 18 as now; figs. 19 to 26 (W10) | the rest                                    |
+| TN 2360 (Spahr and Dickey)        | figs. 5 to 7 (base pressure with tails: Reynolds number, location, count, thickness, Mach)                                                                             | fig. 1 (a compilation of other reports)     |
+| RM L52J21a (Love and O'Donnell)   | fig. 8 (the finned body's base pressures), figs. 31 to 33 (unfinned, against Reynolds number), figs. 38, 39 (fin effects)                                              | the rest, unless a later record names them  |
+| RM L52E06 (Hart)                  | figs. 6 to 8 (base pressures: the sting's effect, rim and centre with and without fins, base drag of A and C)                                                          | figs. 9 to 12, held back                    |
+| TN 3372 (Peck)                    | figs. 7 to 12 (base pressures of configurations A to D, D for W10)                                                                                                     | it has no total drag                        |
+| TR 1109, RM A51J25, TN D-1056     | as now (figs. 8 and 29; fig. 7; table II)                                                                                                                              |                                             |
+| RM L52D21 (Goin)                  | figs. 3, 4 and 7 to 16 (base pressures of blunt trailing edges, unswept and swept)                                                                                     | figs. 1, 2, 5, 6 (models, photographs)      |
+| TN 3548 (Morrow and Katz)         | its base pressures on the blunt trailing-edge airfoil (figures named when it is opened)                                                                                | its diamond and circular-arc airfoils' drag |
+| TN 2960 (Gowen and Perkins)       | figs. 5(a) to 5(e) (pressure distributions), 6, 7 (drag against Reynolds and Mach numbers; figs. 5(c) and 7 as now)                                                    | figs. 8, 9                                  |
+| RM A55H31 (Goodwin et al.)        | figs. 9 to 12 (pressure ratios on the yawed cylinder, pressure drag against yaw)                                                                                       | the heat-transfer figures                   |
+| TN 3861 (Penland)                 | figs. 15, 16 (crossflow results) and the pressure distributions behind them                                                                                            | the rest                                    |
+| By the same rule, for W5, W6, W10 | TR 1386 (nose pressures and foredrags: a check of the nose solve, as 0006 uses TN 3716, not a total); RM E51F26 (boat-tail side and base pressures, no jet)            | RM E51F26's jet-on data                     |
 
 RM A53D02 fig. 17 (square-cut leading edges, a total-drag increment, read
 once in 0008 and so not blind) sets no bound of W11; it may check the
@@ -817,7 +816,7 @@ Before any of these sets a band or tests anything, each is read twice:
 - **One reading, by eye, in this record** (section 5): TN 3697 fig. 5; RM
   L52E06 figs. 7 and 8; TN 3819 figs. 33 and 34. They are quoted only to
   plan the work.
-- **One reading:** NSWCDD/TR-92/509 Table 2 (W1b's transcription; a blind second is requested); TN 3819 fig. 35 below Mach 1.8 (round 3 only); TN 3819
+- **One reading:** TN 3819 fig. 35 below Mach 1.8 (round 3 only); TN 3819
   fig. 18's rows at Mach 1.0, 1.2 and 1.4; BRL 934's Graph I (its tables
   were read twice by the same reader; a second reader is pending, 0010
   section 9).
@@ -1057,3 +1056,97 @@ families. It applies to 43.5% of the population's cases and refuses 3 of
 the 20 totals served (all at Mach 1.8 to 3.0: 13 of 2000 rockets to 10;
 `docs/research/refusals/out/2026-10-21-plates-at-base/`, the library
 agreeing with the decomposition on all 1200 cases checked).
+
+**2026-10-21 (f): NSWCDD/TR-92/509, and the true order of events.**
+Commit 6497a66 (2026-10-20, 22:58 UTC) added NSWCDD/TR-92/509 to 10.1's
+table as band-setting, "decided by the coordinator on 2026-10-20, before
+any use", and to 10.4's one-reading list. The order was the other way: its
+Table 2 had been transcribed and examined against W1's swept bracket in
+commit 10beeff (19:39 UTC the same day; `w1b_w2_proposal.md` section 1.3,
+"Is the effect bracketed?"), which found every value at the base inside
+the bracket, before it was registered. That row is removed from 10.1 and
+10.4, which read again as registered (68ae3ee), and the registration is
+recorded here as what it was, a decision taken after the data were seen:
+Table 2's zero-incidence rows with the fins undeflected and Table 1 (the
+configuration index), four fins at the base with the leading edge swept
+43.9 deg and the trailing edge unswept, t/c 0.05 to 0.15, Mach 2.0 to 3.0,
+C_DB to about +-5%, for W1's ordering of moderate sweeps (W1b, 0015
+section 3.4); not its fins ahead of the base, its angle-of-attack and
+deflection data, its empirical model or Mach numbers above 3.0. Since it
+was seen first, it is a check of the ordering, never a test of it, and no
+claim rests on it as one. Its Table 2 has one transcription (a blind
+second requested).
+
+**2026-10-21 (g): the reading status of every figure 10.4 lists**, as of
+this date (each record named holds the pairing):
+
+- TN 3697 fig. 5: one reading, by eye, in this record; held back and not
+  to be read further before its run.
+- RM L52E06 fig. 7: two readings (0015 section 7). Fig. 8: two readings
+  of A (0015 section 11.3). Fig. 6: not read.
+- TN 3819 figs. 33 and 34: two readings (0015 section 7). Fig. 35's
+  free-flight curve: two readings at Mach 1.0 to 2.56 (0010 section
+  11.3; amendment c), the tunnel symbols three. Fig. 18's rows at Mach
+  1.0, 1.2 and 1.4: two readings (round 1, round 7), the basic curve's
+  row at 1.4 found a misread and replaced by round 7's on the third
+  evidence of fig. 35's no-fin curve (0015 section 7). Fig. 32: not read.
+- BRL 934's Graph I: as 0010 section 9 states (its tables read twice by
+  one reader, a second reader pending); W1's work did not change it.
+- TN 2360 fig. 6: two readings (0015 section 7), four symbols found by
+  one reader alone, flagged where they set a band's end. Figs. 5 and 7:
+  not read.
+- TN 3372 figs. 7 to 12: not read.
+- RM L52J21a: fig. 8 at R 8.06e6, two readings of the base pressures and
+  the noses called by three readers (this work, rounds 6 and 7; two calls
+  left out on pairing, the conical and radome noses at Mach 2.41 called
+  by round 7 alone; 0015 section 7); figs. 31 to 33 panel (d) at R 7e6 to
+  9.5e6, two readings (this work, round 7); fig. 38(c), one reading, which
+  the scan does not allow a second of and which no longer sets a band;
+  its other figures not read.
+- RM L52D21 fig. 11: one reading (0016 section 8); the rest not read.
+- TN 2960 figs. 5(a), 5(b), 5(d), 5(e): two readings (0016 section 13);
+  figs. 5(c) and 7 as before (0010); fig. 6 read by round 6.
+- RM A55H31 figs. 11 and 12: two readings (0016 section 14); figs. 9 and
+  10 not read.
+- TN 3861 figs. 15 and 16: two readings, fig. 17 one (0016).
+- TN 3548, TR 1386, RM E51F26: not read.
+- Held back: TN 3650 fig. 4, RM L52E06 figs. 9 to 12, the Eglin Table
+  D-3: not read.
+
+**2026-10-21 (h): which factor serves fins at the base, superseding
+amendment (e)** (the coordinator's decision under the owner's rule to
+serve each case from the data that cover it; after the independent review
+of W1, commit e254989). The present factor serves only the fin families
+it was measured on: unswept wedge, circular-arc and hexagonal sections,
+5% to 10% thick, the Basic Finner's family among them, with 0016 section
+18's extension below 5% for those families only. Flat-faced fins (plates,
+and plates bevelled at the leading edge only) go to the rebuilt factor's
+flat-plate value, "bounded, not measured", with RM L52E06's relief as its
+low end (0015 section 4); amendment (e)'s refusal stands only where the
+rebuilt factor refuses too (a rounded trailing edge, a plate thicker than
+10% at a station, or a sweep it does not take). Swept fins go to the
+rebuilt factor as before, except that a sharp section with a swept
+trailing edge (either way) is refused at the base and closer to it than
+0.8 root chords: no such fins are measured there (RM L52J21a's 45 deg
+fins end about 0.8 root chords ahead of the base, and the RM-10's
+trailing-edge sweep is not stated), and linear theory puts the faces
+behind a swept trailing edge above the unswept fin's (0015 section 3.4).
+Plates with a rounded trailing edge, which the present factor served as
+four unswept fins at Mach 1.8 to 3.0 until amendment (e), stay refused:
+no circular arc bounds a rounded edge (its half-thickness falls as the
+square root of the distance to the edge), so neither bound of the bracket
+is shown, and no measurement at the base covers them. The third bullet of
+10.3, "outside the class the rebuilt factor is served", is read with
+this: outside the class the present factor still serves its own families,
+the Basic Finner's wedges among them, the rebuilt factor the rest.
+
+What it costs and gains (0015 section 8; `docs/research/refusals/out/impact.out`):
+totals of all bands 2.1% before the review to 2.0% (Mach 1.5 to 1.8: 2.7%
+to 2.5%; 1.8 to 3.0: 5.5% to 5.2%), ten cases lost, all to the swept
+trailing edge, which no band shown covers. No plate case is lost: three
+totals served move from the present factor to the flat-plate value, and
+the 3 of 20 totals amendment (e) refused on main are served here. The
+rounded-trailing-edge plates that amendment (e) refused are 0.2% of the
+cases at Mach 1.8 to 3.0, and every one is refused by its edge term
+anyway (W11), so no total moves with them. No case is newly refused that
+an honest band covers.

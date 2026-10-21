@@ -53,7 +53,11 @@
  *   x/c, each member's own (M 1.5 to 2.0 only);
  * - sweep: only where measured, the leading edge swept 45 to 60 deg (RM
  *   L52J21a's 45 deg fins, fig. 38; the RM-10's 60 deg, TN 3819 fig. 34)
- *   and the trailing edge no more: between the zero member and the
+ *   and the trailing edge no more, a sharp section's trailing edge swept
+ *   only as far ahead of the base as RM L52J21a's (0.8 root chords or
+ *   more; closer, refused, since the RM-10's trailing-edge sweep is not
+ *   stated and linear theory raises the pressures behind a swept edge):
+ *   between the zero member and the
  *   unswept member that dominates the section, since both measured swept
  *   sets lie there, below the unswept member at their Mach numbers (and
  *   TN 3819 p. 22). Leading edges swept 0 to 45 deg with an unswept
@@ -665,6 +669,13 @@ export interface FinsOnBaseFactorW1 {
 export const W1_SWEPT_RANGE = [(45 * Math.PI) / 180, (60 * Math.PI) / 180] as const;
 
 /**
+ * The one position at which fins of a sharp section with a swept trailing edge are measured near the base: RM
+ * L52J21a's 45 deg fins, the root trailing edge about 0.8 root chords ahead of the base (its figs. 1 and 5).
+ * Closer to the base such fins are refused (the RM-10's trailing-edge sweep is not stated; 0015 section 3.4).
+ */
+export const W1_SWEPT_TRAILING_EDGE_AHEAD = 0.8;
+
+/**
  * The lowest relief measured with fins at the base: RM L52E06 fig. 7, four flat-plate fins with square
  * trailing edges, M 1.06 to 1.10, the rim and centre pressures with and without fins, each with its
  * reading error toward more relief. The lower bound of the bounded value for flat-faced fins.
@@ -828,20 +839,22 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
       `the rebuilt factor takes fins ending 0 to 1 chord ahead of the base, got ${xc}`,
     );
   }
-  // At the base, a sharp section with a swept trailing edge (either way) rests on no measurement: RM
-  // L52J21a's 45 deg fins end about 0.8 root chords ahead of the base, the RM-10's trailing-edge sweep is not
-  // stated, and linear theory puts the faces behind a swept edge above the unswept fin's (0015 section 3.4).
-  if (!bounded && xc === 0 && tes > 1e-9) {
+  // At the base, and closer to it than RM L52J21a's 45 deg fins (the root trailing edge about 0.8 root chords
+  // ahead), a sharp section with a swept trailing edge (either way) rests on no measurement: the RM-10's
+  // trailing-edge sweep is not stated, and linear theory puts the faces behind a swept edge above the unswept
+  // fin's (0015 section 3.4).
+  if (!bounded && xc < W1_SWEPT_TRAILING_EDGE_AHEAD - 1e-9 && tes > 1e-9) {
     const k = (m: number) => Math.sqrt(m * m - 1) / Math.sqrt(m * m - 1 / Math.cos(tes) ** 2);
     const factor = mach * Math.cos(tes) > 1 ? `${k(mach).toFixed(2)} times` : 'more than';
+    const where = xc === 0 ? 'at the base' : `ending ${xc} root chords ahead of the base`;
     throw new BaseRefusal(
       'fin-sweep',
-      `fins of a sharp section at the base with the trailing edge swept ${deg(tes)} deg ` +
+      `fins of a sharp section ${where} with the trailing edge swept ${deg(tes)} deg ` +
         `(${fins.tanTrailingEdgeSweep < 0 ? 'forward' : 'aft'}) at M ${mach}: no such fins are measured ` +
-        "at the base (RM L52J21a's 45 deg fins end about 0.8 root chords ahead of it; the RM-10's " +
-        'trailing-edge sweep is not stated), and linear theory gives the faces behind that edge ' +
-        `${factor} the unswept fin's pressures, so they may act as thicker fins than the bracket's ` +
-        'upper member (0015 section 3.4)',
+        `closer to the base than RM L52J21a's 45 deg fins, which end about ${W1_SWEPT_TRAILING_EDGE_AHEAD} ` +
+        "root chords ahead of it (the RM-10's trailing-edge sweep is not stated), and linear theory gives " +
+        `the faces behind that edge ${factor} the unswept fin's pressures, so they may act as thicker ` +
+        "fins than the bracket's upper member (0015 section 3.4)",
     );
   }
   if (!(mach >= W1_LOW_MACH && mach <= W1_MACH_RANGE[1])) {

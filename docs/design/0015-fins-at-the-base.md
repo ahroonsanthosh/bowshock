@@ -24,7 +24,16 @@
   been run (sections 9, 11.4). Revised on 2026-10-21 for the
   identification of TN 3819 fig. 35's free-flight curve (0010 section
   11): the reference member rests on the identified curve to Mach 2.56
-  and is bounded, not measured, above it (sections 3.1, 7).
+  and is bounded, not measured, above it (sections 3.1, 7). Revised again
+  after the independent review of e254989 (2026-10-21): sharp sections
+  with a swept trailing edge at the base refused (section 3.4); below M
+  1.5 the factor stated on W2's body base, so the free-flight excess is
+  not counted twice (section 11.2); the zero member RM L52E06's below M
+  1.62 (section 3.5); the present factor kept for its measured families
+  only, every flat-faced fin taking the rebuilt factor's flat-plate value
+  (sections 4, 5; 0014 section 10.7, amendment h, superseding main's
+  amendment e); the TN 2360 symbols one reader found flagged where they
+  set a band's end (section 7).
 - **Date:** 2026-10-20 (revised 2026-10-21)
 - **Inputs:** 0014 sections 5.1, 6.2 (W1) and 10; [0010](0010-base-drag-and-total.md)
   section 1.3 (the present factor, kept) and section 10; [0008](0008-total-drag.md)
@@ -39,20 +48,28 @@
 
 The present fins-on-base factor F (P_B with fins over P_B without, 0010
 section 1.3) is measured on one family, four unswept 10%-thick
-circular-arc fins at the base, and serves four fins 5% to 10% thick at
-Mach 1.80 to 3.0. It refuses 96% of 0014's population. The rebuilt
-factor serves what the band-setting data of 0014 section 10.1 cover:
+circular-arc fins at the base, and serves four unswept fins of its own
+families (wedge, circular-arc and hexagonal sections) 5% to 10% thick at
+Mach 1.80 to 3.0 (below 5% extended, 0016 section 18). It refuses 96% of
+0014's population. The rebuilt factor serves what the band-setting data
+of 0014 section 10.1 cover:
 
 - **Sharp trailing edges** of any section that lies inside the 10%
-  circular arc near its edges, two to four fins, unswept or with the
-  leading edge swept 45 to 60 deg, at the base, at Mach 1.5 to 3.0; with
-  the leading edge swept up to 45 deg and the trailing edge unswept at
-  Mach 2.0 to 3.0 (W1b, section 3.4); fins ending up to a chord ahead of
-  the base at Mach 1.5 to 2.0; and, below Mach 1.5 (W2, section 11),
-  unswept fins at the base at Mach 1.0 to 1.5 (from 1.0 since the owner's
-  decision of 2026-10-21, section 11.2).
-- **Flat faces at a square trailing edge** (flat plates), the same
-  counts, sweeps and positions, swept also below Mach 1.5: "bounded, not
+  circular arc near its edges, two to four fins, at Mach 1.5 to 3.0: at
+  the base unswept or with the leading edge swept 45 to 60 deg and the
+  trailing edge unswept, and with the leading edge swept up to 45 deg and
+  the trailing edge unswept at Mach 2.0 to 3.0 (W1b, section 3.4); fins
+  ending up to a chord ahead of the base at Mach 1.5 to 2.0, the trailing
+  edge swept no more than the leading edge from 0.8 root chords ahead
+  (RM L52J21a's position); and, below Mach 1.5 (W2, section 11), unswept
+  fins at the base at Mach 1.0 to 1.5 (from 1.0 since the owner's
+  decision of 2026-10-21, section 11.2), the factor stated on W2's body
+  base so that the free-flight excess is not counted twice (since the
+  review of 2026-10-21).
+- **Flat faces at a square trailing edge** (flat plates, at every Mach
+  number from 1.0, since 2026-10-21 also where the present factor would
+  have served them; 0014 section 10.7, amendment h), the same counts,
+  sweeps and positions, swept also below Mach 1.5: "bounded, not
   measured" (0014 section 10.2), between the lowest relief measured with
   such fins and the circular-arc member at least as thick (section 4).
 - **The body base below Mach 1.5** (W2, section 11): Love's curve
@@ -64,36 +81,50 @@ factor serves what the band-setting data of 0014 section 10.1 cover:
   high end at Mach 2.56 (section 3.1).
 - **Refused:** other counts, rounded or diverging trailing edges (the
   Basic Finner's wedges among them), thicker sections, sweeps not
-  measured (0 to 45 deg with a swept trailing edge or below Mach 2.0,
-  above 60 deg; swept sharp sections below 1.5), fins at the base below
+  measured (sharp sections with a swept trailing edge, either way, at the
+  base or within 0.8 root chords of it; 0 to 45 deg below Mach 2.0, above 60 deg; swept sharp sections
+  below 1.5), fins at the base below
   Mach 1.0 or above 3.0, positions ahead of the base above Mach 2.0 or
   below 1.5 (section 6).
 
-**Routing (0014 section 10.3).** The present factor is kept wherever it
-serves, so the Basic Finner's gated total is unchanged to 1e-12 at all 11
-gated shots (`fins-on-base-routing.test.ts`; its validated claim is
-suspended by the owner's decision, 0008 section 6.1); the rebuilt factor
-is used only where the present one refuses, and says so in its label
-(section 5). Since 2026-10-21 the present factor refuses fins swept at
-either edge (0014 section 10.7), so swept fins at the base now go to the
-rebuilt factor, which serves the sweeps it measures (section 5). This
-holds until the owner decides otherwise after BRL 934's run.
+**Routing (0014 sections 10.3 and 10.7).** The present factor is kept for
+the fin families it was measured on, so the Basic Finner's gated total is
+unchanged to 1e-12 at all 11 gated shots (`fins-on-base-routing.test.ts`;
+its validated claim is suspended by the owner's decision, 0008 section
+6.1); the rebuilt factor is used where the present one refuses and for
+flat-faced fins (plates), which the present one is not measured on (every
+flat-faced fin at the base since the review of 2026-10-21, superseding
+main's refusal of them; 0014 section 10.7, amendment h), and says so in
+its label (section 5). Since 2026-10-21 the present factor
+refuses fins swept at either edge (0014 section 10.7), so swept fins at
+the base go to the rebuilt factor, which serves the sweeps it measures
+(section 5). This holds until the owner decides otherwise after BRL 934's
+run.
 
-**Bands.** On F, from 0.94 up to 1.33 to 1.56 for thin sharp-edged fins
-(+-17% to +-25% about the midpoint), from 0.84 up to 1.33 to 1.54 for
-flat plates (+-23% to +-30%), +-7.3% to +-10.9% for the 5% circular arcs
-that are members themselves (section 3.6). Wider than 0014's planning figure of +-10% to
-+-20%: the data bracket hobby fins only between families, not on them.
+**Bands.** On F, over Love's curve: for thin sharp-edged fins from 0.94
+up to 1.33 to 1.49 at Mach 1.62 to 3.0 (+-17% to +-23% about the
+midpoint) and from 0.84 up to 1.47 to 1.52 at 1.5 to 1.62 (+-27.5% to
++-29%), where the zero member is RM L52E06's (section 3.5); for flat
+plates at most 5% thick at their thickest station from 0.84 up to 1.33 to
+1.52 at Mach 1.5 to 3.0 (+-23% to +-29%), and for thicker plates, whose
+upper member is the 10% arc, +-24.5% at 2.5 to 3.0, +-30.1% at 1.8 and
++-34.7% at 1.5; below Mach 1.5, where every upper member is the
+reference, on W2's body base +-31.8% to +-34.9% for both; +-7.3% to
++-10.9% for the 5% circular arcs that are members themselves (section
+3.6). Wider than 0014's planning figure of +-10% to +-20%: the data
+bracket hobby fins only between families, not on them.
 
 **Coverage** (0014's population, section 8): totals of all bands rise
 from 0.1% before W1 to 0.7% after it and 1.0% after W1b and W2; with
-main's fin edges of flat plates merged (0016), 2.1% (Mach 1.5 to 1.8:
-2.7%; 1.8 to 3.0: 5.5%), against 0.3% for main with the present factor
-alone. The rebuilt factor still refuses, of each band from Mach 1.5:
-unmeasured sweeps 16% to 42%, rounded and diverging trailing edges 15%,
-steep bevels 7% to 14%, fins within a chord above Mach 2.0 12% (Mach 1.8
-to 3.0). Totals at Mach 1.0 to 1.2 stay 0% until the nose solve there
-(W7).
+main's fin edges of flat plates merged (0016), 2.1%; after the review of
+2026-10-21, 2.0% (Mach 1.5 to 1.8: 2.5%; 1.8 to 3.0: 5.2%; the ten cases
+lost are sharp sections with a swept trailing edge at the base), against
+0.2% for main with the present factor alone after its plates-at-base
+hotfix. Of the 159 totals served, 80 carry the flat-plate value. The
+rebuilt factor still refuses, of each band from Mach 1.5: unmeasured
+sweeps 18% to 45%, rounded and diverging trailing edges 15%, steep bevels
+6.5% to 13%, fins within a chord above Mach 2.0 11.5% (Mach 1.8 to 3.0).
+Totals at Mach 1.0 to 1.2 stay 0% until the nose solve there (W7).
 
 ## 2. What moves the factor, in the band-setting sources
 
@@ -215,22 +246,51 @@ labelled not validated with fins.
 
 ### 3.4 Sweep: only where measured
 
-The band-setting data have swept fins at the base at two sweeps, both
+The band-setting data have swept fins near the base at two sweeps, both
 with circular-arc sections: RM L52J21a's 45 deg (leading and trailing
-edges) at M 1.62 to 2.41, and the RM-10's 60 deg at M 1.49 to 1.98. Both
-lie inside the bracket from the zero member (3.5) to the unswept member
-that bounds their thickness, at every Mach number measured (RM L52J21a's
-fin effects over fig. 8's cylindrical-base P_B; `fins-on-base-w1.test.ts`):
+edges) at M 1.62 to 2.41, the root trailing edge about 0.8 root chords
+ahead of the base and the swept trailing edge crossing the base plane
+about a diameter out (its figs. 1 and 5, read from the drawings), and the
+RM-10's 60 deg leading edge at the base at M 1.49 to 1.98, whose
+trailing-edge sweep TN 3819 does not state. Both lie inside the bracket
+from the zero member (3.5) to the unswept member that bounds their
+thickness, at every Mach number measured (RM L52J21a's fin effects over
+fig. 8's cylindrical-base P_B; `fins-on-base-w1.test.ts`):
 
-| Set                               | M            | F measured     | Zero member | Unswept member (low end)                                                         |
-| --------------------------------- | ------------ | -------------- | ----------- | -------------------------------------------------------------------------------- |
-| RM L52J21a, 45 deg, 8%, R 8.06e6  | 1.62 to 2.41 | 0.963 to 1.119 | 0.938 to 1  | 1.568, 1.320, 1.100 at M 1.62, 1.93, 2.41 (the reference, which bounds 8% fins)  |
-| RM-10, 60 deg, t/c 0.10 (fig. 34) | 1.49 to 1.98 | 1.137 to 1.229 | 0.938 to 1  | 1.523, 1.560, 1.477, 1.275 at M 1.5 (for 1.49), 1.59, 1.78, 1.98 (the reference) |
+| Set                               | M            | F measured     | Zero member                                        | Unswept member (low end)                                                         |
+| --------------------------------- | ------------ | -------------- | -------------------------------------------------- | -------------------------------------------------------------------------------- |
+| RM L52J21a, 45 deg, 8%, R 8.06e6  | 1.62 to 2.41 | 0.963 to 1.119 | 0.938 to 1                                         | 1.568, 1.320, 1.100 at M 1.62, 1.93, 2.41 (the reference, which bounds 8% fins)  |
+| RM-10, 60 deg, t/c 0.10 (fig. 34) | 1.49 to 1.98 | 1.137 to 1.229 | 0.838 to 1 below M 1.62 (3.5), 0.938 to 1 above it | 1.523, 1.560, 1.477, 1.275 at M 1.5 (for 1.49), 1.59, 1.78, 1.98 (the reference) |
 
-So swept fins are served with the leading edge swept 45 to 60 deg and the
-trailing edge swept no more than the leading edge (as in both sets),
-bracketed between the zero member and the unswept member that bounds the
-section. The RM-10's base pressures (fig. 34) check this bracket at M 1.49
+So fins of a sharp section are served swept with the leading edge swept
+45 to 60 deg: at the base with the trailing edge unswept, and with the
+trailing edge swept no more than the leading edge only as far ahead of the
+base as RM L52J21a's fins, 0.8 to 1 root chord (at M 1.5 to 2.0, where
+positions ahead of the base are measured, 3.3); in both, bracketed
+between the zero member and the unswept member that bounds the section.
+
+**A swept trailing edge at the base** (the review of 2026-10-21). This
+record said before that swept fins were served at the base with the
+trailing edge swept no more than the leading edge, "as in both sets".
+Neither set shows that at the base: RM L52J21a's fins end about 0.8 root
+chords ahead of it, and the RM-10's trailing-edge sweep is not stated.
+And a swept trailing edge moves the pressures the increment rests on: in
+linear theory the faces behind an edge swept L carry sqrt(M^2 - 1) /
+sqrt(M^2 - sec^2 L) times the unswept fin's pressures, for 45 deg 2.24,
+1.67, 1.34, 1.22, 1.11 and 1.07 times at M 1.5, 1.6, 1.8, 2.0, 2.5 and
+3.0 (the edge subsonic below M 1.41). So such fins may act as thicker
+fins than the bracket's upper member, and nothing measured at the base
+says they do not. The code also took the trailing edge's sweep by its
+magnitude, so a forward-swept edge was served as an aft-swept one. Fins
+of a sharp section with the trailing edge swept either way, at the base or
+closer to it than RM L52J21a's 0.8 root chords
+(`W1_SWEPT_TRAILING_EDGE_AHEAD`), are now refused (`'fin-sweep'`), the
+message giving the linear-theory factor at the Mach number and the reason
+(`fins-on-base-w1.test.ts`, `fins-on-base-routing.test.ts`). Flat plates
+are unaffected: their faces carry no slope, and their band runs from RM
+L52E06's relief to the arc at least as thick whatever the sweep (section
+4). A bounded treatment is proposed in section 10, not shipped. The
+RM-10's base pressures (fig. 34) check this bracket at M 1.49
 to 1.98, and the RM-10's own totals (TN 3320) are held back for W10: the
 overlap 0014 section 10.1 records for the PARD body applies wherever a
 base term rests on the RM-10's base pressures, and TN 3320's run will say
@@ -291,9 +351,10 @@ these results.
 unswept trailing edge are measured there; the aft faces' factor grows to
 1.11 at M 1.5 and the forward faces' to 1.98, the 43.9 deg edge near
 sonic; the 45 and 60 deg sets there have other planforms, which is
-suggestive but not the ordering), and moderate sweeps with a swept
+suggestive but not the ordering), moderate sweeps with a swept
 trailing edge at any Mach number (one 45/45 deg set, RM L52J21a: one end,
-no ordering). Leading edges above 60 deg stay refused (beyond the
+no ordering), and sharp sections with any swept trailing edge closer to
+the base than 0.8 root chords (above). Leading edges above 60 deg stay refused (beyond the
 RM-10's). Opening them needs base pressures with and without fins of 20
 to 45 deg at M 1.5 to 2.0, with unswept and with swept trailing edges;
 Heyser, Maurer and Oberdorffer (AGARD CP-10, 1966) is the one candidate
@@ -303,9 +364,9 @@ known that might hold them.
 
 No fins, or fins whose pressure field vanishes: F from 1 down to the
 most relief RM L52J21a allows at M 1.5 or above with fins near the base
-and a turbulent layer (R = 8.06e6, cylindrical base), carried to every
-Mach number from 1.5: **0.9378** (0.938 where three decimals are quoted;
-`W1_RELIEF_LOW`). It is the lesser of two derivations:
+and a turbulent layer (R = 8.06e6, cylindrical base), measured at M 1.62
+to 2.41 and carried to 3.0: **0.9378** (0.938 where three decimals are
+quoted; `W1_RELIEF_LOW`). It is the lesser of two derivations:
 
 - **Fig. 8 over figs. 31 to 33 (d), by nose** (`noseCallReliefFactors`):
   fig. 8's finned symbol of each nose over the same nose's unfinned
@@ -339,13 +400,23 @@ It is the lower member of every bracket whose section lies below t/c
 measured, and the reference's low end above M 2.56 (3.1). The conical and
 radome noses at M 2.41 are called by round 7 alone (this work's calls
 there are left out, section 7): a second reading of them could lower the
-member, so every result that uses it keeps `secondReadingPending`
-(`W1_ZERO_MEMBER_PENDING`), and its label names them.
+member, so every result that uses it from M 1.62 keeps
+`secondReadingPending` (`W1_ZERO_MEMBER_PENDING`), whether as its lower
+member or as the zero-fin member of two or three fins where two are not
+measured (a member of count 0 of any thickness, which the code missed
+before the review), and its label names them.
 
-Below M 1.5 (W2's part, section 11) RM L52J21a measures nothing; the zero
-member there runs from 1 down to **0.838**, the lowest relief measured
-with fins at the base at or below M 1.5 (RM L52E06 fig. 7, flat plates,
-M 1.06 to 1.10, both readings), the flat plates' own lower bound.
+Below M 1.62, where RM L52J21a's measurements begin
+(`W1_RELIEF_MEASURED_FROM`), the zero member runs from 1 down to
+**0.838**, the lowest relief measured with fins at the base below it (RM
+L52E06 fig. 7, flat plates, read at M 1.05 to 1.10 in two readings, the
+points at 1.06 to 1.10 used), the flat plates' own lower bound, carried
+down to M 1.0 and up to 1.62 (`zeroMember`). Before the review of
+2026-10-21 the member was 0.938 from M 1.5, carried down from 1.62 over a
+range where nothing is measured; RM L52E06's larger relief is the safe
+side there, since the relief weakens with Mach number on both sets and no
+measurement between M 1.10 and 1.62 says by how much. It widens the band
+at M 1.5 to 1.62 (section 3.6) and its label names both carries.
 
 ### 3.6 The bracket and the band
 
@@ -385,8 +456,8 @@ dominates it:
   present factor serves only unswept fins, for which every source shows
   F at least 1 (0010 section 11.5), while the rebuilt factor's members
   already run from the zero member, whose low end is relief measured
-  below F = 1 (0.938 with swept fins, 0.838 with flat plates), to t/c
-  0.10, so a thinner station lies inside its data and the bracket takes
+  below F = 1 (0.938 from M 1.62, 0.838 below it and with flat plates),
+  to t/c 0.10, so a thinner station lies inside its data and the bracket takes
   it there; raising its low end to 1 would cut off measured relief.
   `bodyBaseDrag` passes a plate's thinnest station to the rebuilt factor
   as its section scaled to that t/c (`thinnest`, from `baseFinsOf` in
@@ -405,7 +476,7 @@ its midpoint (0008 section 6.3). Every row is asserted by
 
 | M   | Case                                                    | Lower, upper member                       | F low  | F nominal | F high | Half-width |
 | --- | ------------------------------------------------------- | ----------------------------------------- | ------ | --------- | ------ | ---------- |
-| 1.5 | double wedge 2.4%, three fins, 45 deg                   | zero; four fins t/c 0.05                  | 0.9378 | 1.2051    | 1.4723 | 22.2%      |
+| 1.5 | double wedge 2.4%, three fins, 45 deg                   | zero (below M 1.62); four fins t/c 0.05   | 0.8379 | 1.1551    | 1.4723 | 27.5%      |
 | 1.8 | the same                                                | zero; four fins t/c 0.05                  | 0.9378 | 1.1769    | 1.4161 | 20.3%      |
 | 2.0 | the same                                                | zero; four fins t/c 0.05                  | 0.9378 | 1.1330    | 1.3282 | 17.2%      |
 | 2.5 | the same                                                | zero; the reference                       | 0.9378 | 1.1602    | 1.3826 | 19.2%      |
@@ -418,9 +489,18 @@ its midpoint (0008 section 6.3). Every row is asserted by
 | 1.8 | double wedge 2.4%, three fins, 45 deg, x/c 0.5          | zero; four fins t/c 0.05 at 0.4 and 1.0   | 0.9040 | 1.0897    | 1.2755 | 17.0%      |
 | 2.0 | double wedge 2.4%, four fins, 30 deg, TE unswept (W1b)  | zero; four fins t/c 0.05                  | 0.9378 | 1.1330    | 1.3282 | 17.2%      |
 | 2.5 | double wedge 2.4%, three fins, 30 deg, TE unswept (W1b) | zero; the reference                       | 0.9378 | 1.1602    | 1.3826 | 19.2%      |
-| 1.2 | double wedge 2.4%, three fins, unswept (W2)             | zero below M 1.5; the reference           | 0.8379 | 1.2822    | 1.7265 | 34.7%      |
+| 1.2 | double wedge 2.4%, three fins, unswept (W2)             | zero below M 1.62; the reference          | 0.8379 | 1.2822    | 1.7265 | 34.7%      |
 | 1.2 | flat plate 2.4%, three fins, 45 deg (W2, bounded)       | RM L52E06 relief; the reference           | 0.8379 | 1.2822    | 1.7265 | 34.7%      |
-| 1.0 | double wedge 2.4%, three fins, unswept (W2, from M 1.0) | zero below M 1.5; the reference           | 0.8379 | 1.3437    | 1.8496 | 37.6%      |
+| 1.0 | double wedge 2.4%, three fins, unswept (W2, from M 1.0) | zero below M 1.62; the reference          | 0.8379 | 1.3437    | 1.8496 | 37.6%      |
+
+The rows are the rebuilt factor's F over Love's curve. Below M 1.5
+`bodyBaseDrag` states it on W2's body base, 1.065 times the curve, so its
+members built on fig. 35's free-flight line are divided by 1.065 there
+and the zero members are not (section 11.2): the double wedge at M 1.2
+becomes 0.8379 to 1.6211 on W2's term (nominal 1.2295, +-31.9%), at M 1.0
+0.8379 to 1.7367 (1.2873, +-34.9%). The first row's 27.5% (22.2% before
+the review) is the zero member below M 1.62 (3.5); from 1.62 the same
+fins give 0.9378 to 1.4907 (+-22.8%).
 
 A member served as itself (four unswept 5% arcs at M 1.5 to 2.0) carries
 +-7.3% to +-10.9%, the widest just above M 1.5, where its ratio range
@@ -446,7 +526,14 @@ member's own name says what it rests on: "F 1 down to 0.938, the most
 relief RM L52J21a allows: its fig. 8 over figs. 31 to 33 by nose, at M
 1.93, each read twice; fig. 38(c) gives 0.950; the conical nose at M
 2.41 and the radome nose at M 2.41 called by one reader, the second
-pending". Every total
+pending"; below M 1.62, "F 1 down to 0.838, RM L52E06 fig. 7, measured
+with flat plates at M 1.05 to 1.10 and carried to 1.0 and up to 1.62,
+where RM L52J21a's measurements begin". Every carry is named: the
+reference's tunnel excess measured at M 2.41 (0.2282) carried below M
+1.5 and at 2.41 to 2.56, and a moderate sweep's ordering, read once.
+Where an end of the band rests on a TN 2360 symbol that one reader alone
+found (section 7), the label says so and `secondReadingPending` is set.
+Every total
 containing it is "an estimate, not validated" (the class rule of 0011
 section 3, unchanged), and one containing a bounded factor names it in
 its claim.
@@ -494,17 +581,48 @@ M 1.10, RM L52J21a from 1.62). It is an ordering argued from those
 measurements, not a measurement of these fins, which is what 0014 section
 10.2's label says.
 
-**What is served.** At M 1.5 to 3.0, with the counts, sweeps and
-positions of section 3: the midpoint of 0.838 and the upper member's high
-end, the band the whole gap, labelled "bounded, not measured: the rebuilt
+**What is served.** At M 1.0 to 3.0 (below 1.5 W2's part, section
+11.2), with the counts and positions of section 3 and the sweeps it
+serves (a swept trailing edge among them: the faces carry no slope, so the
+argument of section 3.4 does not reach them, and RM L52E06's plates are
+swept 45 deg): the midpoint of 0.838 and the upper member's high end, the
+band the whole gap, labelled "bounded, not measured: the rebuilt
 fins-on-base factor (0015), between the lowest relief measured with
 flat-faced fins at the base (F 0.838, RM L52E06 fig. 7 at M 1.06) and
 <upper member>; ...", with the gap's size in C_D beside it
 (`base-drag.ts`). A total containing it is at best "an estimate, not
-validated" and names the component (0014 section 10.2).
+validated" and names the component (0014 section 10.2). The half-width
+on F, over Love's curve, is +-23% to +-29% at M 1.5 to 3.0 for plates at
+most 5% thick at their thickest station, whose upper member is four fins
+t/c 0.05 to M 2.0; for thicker plates, whose upper member is the 10% arc,
++-34.7% at M 1.5, +-30.1% at 1.8, +-26.5% at 2.0 and +-24.5% at 2.5 to
+3.0; below M 1.5 every plate's upper member is the reference, and on W2's
+body base (section 11.2) the band is +-31.8% to +-34.9% (34.9% at M 1.0).
 
-**What it does not reach.** Rounded trailing edges (no section form;
-refused as before); blunt edges whose faces diverge to them (the Basic
+**Every flat-faced fin at the base takes this value** (the review of
+2026-10-21; 0014 section 10.7, amendment h, which supersedes main's
+amendment e). The present factor is measured on wedge, circular-arc and
+hexagonal sections, the Basic Finner's family among them, and on no fin
+with flat faces at the trailing edge; RM L52E06 fig. 7 measures such fins
+relieving the base (F 0.85 to 0.88 at the rim), which the present
+factor's band, from F = 1 up, cannot hold. Until the review the present
+factor served four unswept plates 5% to 10% thick at M 1.8 to 3.0; main's
+amendment e then refused them (`flat-plate-fins`, 0016 section 20), which
+left a case refused that this band covers. Now `bodyBaseDrag` sends every
+flat-faced fin at the base (`BaseFins.flatFaced`, set by `baseFinsOf` for
+plates and for sections whose trailing edge is flat) to the rebuilt
+factor, which bounds it from RM L52E06's relief, with the present
+factor's `flat-plate-fins` reason beside it in the label; a plate whose
+trailing edge is rounded, which the rebuilt factor does not take, is
+refused for its trailing edge with both reasons
+(`flat-plates.test.ts`, `fins-on-base-routing.test.ts`).
+
+**What it does not reach.** Rounded trailing edges: no circular arc
+bounds a rounded edge (its half-thickness falls as the square root of the
+distance to the edge), so neither bound is shown and nothing at the base
+measures them; refused, also as the four unswept plates at Mach 1.8 to
+3.0 the present factor served until main's amendment (e) (0014 section
+10.7 (h); their edge term is refused anyway, W11); blunt edges whose faces diverge to them (the Basic
 Finner's single wedges: their faces compress the flow near the base,
 which TN 2360's argument says raises the base pressure by an amount no
 source measures, so neither bound is shown) or converge to them.
@@ -512,67 +630,100 @@ source measures, so neither bound is shown) or converge to them.
 ## 5. Routing
 
 `bodyBaseDrag` (`src/base/base-drag.ts`) with fins at the base first asks
-the present factor. Where it serves, its result is used unchanged (labels
-and numbers); where it refuses, and the fins' section and sweeps are
-given (`BaseFins.nearBase`; `src/total/finned-body.ts` gives them), the
-rebuilt factor is asked, and its label carries "the rebuilt factor is used
-because the present factor (0010 section 1.3), which the Basic Finner's
-gated total keeps, does not cover these fins (<the present refusal>)"
-("gated", not "validated", since the owner suspended the Basic Finner's
-validated claim, 0008 section 6.1). Where both refuse, the refusal is the rebuilt factor's, with
-the present factor's message beside it. Fins within a chord ahead of the
-base go to the rebuilt factor directly. `BodyBaseDrag.finsOnBaseSource`
-says which factor was used.
+the present factor, for the fin families it was measured on: unswept
+wedge, circular-arc and hexagonal sections 5% to 10% thick, four fins, at
+Mach 1.8 to 3.0, the Basic Finner's family among them, with main's
+extension below 5% for those families (0016 section 18). Where it serves,
+its result is used unchanged (labels and numbers). Where it refuses, and
+the fins' section and sweeps are given (`BaseFins.nearBase`;
+`src/total/finned-body.ts` gives them), the rebuilt factor is asked, and
+its label carries "the rebuilt factor is used because the present factor
+(0010 section 1.3), which the Basic Finner's gated total keeps, does not
+cover these fins (<the present refusal>)" ("gated", not "validated",
+since the owner suspended the Basic Finner's validated claim, 0008
+section 6.1). Where both refuse, the refusal is the rebuilt factor's,
+with the present factor's message beside it. Fins within a chord ahead
+of the base go to the rebuilt factor directly. `BodyBaseDrag.finsOnBaseSource`
+says which factor was used. The body base's fin input is built once,
+`baseFinsOf` in `src/total/finned-body.ts`, for the total and for the
+coverage run's `evaluate.ts`.
 
-Tests (`fins-on-base-routing.test.ts`): four fins 5% to 10% thick at M
-1.799 to 3.0 give identical numbers and labels with and without the
-section; the 11 gated Basic Finner shots give the same body base and total
-(C_D, low and high) within 1e-12, the present factor used at each; three
-fins, thin fins and M 1.6 go to the rebuilt factor with the routing label;
-the refusals carry both reasons. Behaviour changes only where the present
-factor refused: on the page the Basic Finner's form at M 1.6 or with three
-fins is now refused for its trailing edge, by the rebuilt factor, with the
-present factor's reason beside it (`tests/app/`).
+By family (the review of 2026-10-21; 0014 section 10.7, amendment h):
 
-**Swept fins at the base** (2026-10-21). The present factor now refuses
-fins swept at either edge, any tapered planform among them, because RM
-L52J21a shows swept fins can relieve the base (0014 section 10.7), and
-`finnedBodyComponents` passes both edge sweeps to it. Those fins go to the
-rebuilt factor, which serves the sweeps it measures (section 3.4: the
-leading edge 45 to 60 deg with the trailing edge swept no more, and at M
-2.0 to 3.0 up to 45 deg with it unswept) with its bracket from the zero
-member, and refuses the rest with both reasons. Asserted in
-`fins-on-base-routing.test.ts`: four 8% double wedges swept 45 deg at both
-edges get the rebuilt factor's value and band (term and band parts equal
-to W1's at M 1.8, 2.0, 2.4 and 2.8, bounded at 2.8), and the same fins
-unswept keep the present factor's numbers; through `finnedBodyComponents`
-a tapered planform at the base takes the rebuilt factor, with the present
-factor's 'fin-sweep' refusal recorded beside it.
+- **Flat-faced fins** (plates, and sections whose trailing edge is flat;
+  `BaseFins.flatFaced`): the present factor refuses them
+  (`flat-plate-fins`: it is not measured on them, and RM L52E06 measures
+  them relieving the base), and the rebuilt factor bounds them from RM
+  L52E06's relief (section 4), at every count, sweep and position it
+  serves and from Mach 1.0. A plate with a rounded trailing edge has no
+  section the rebuilt factor takes and is refused for its trailing edge,
+  with both reasons.
+- **Swept fins**, at either edge (any tapered planform among them): the
+  present factor refuses them (RM L52J21a shows swept fins can relieve
+  the base), and the rebuilt factor serves the sweeps it measures
+  (section 3.4): the leading edge swept 45 to 60 deg with the trailing
+  edge unswept at the base, the trailing edge swept no more than the
+  leading edge from 0.8 root chords ahead, and at M 2.0 to 3.0 the
+  leading edge up to 45 deg with the trailing edge unswept. A sharp
+  section with the trailing edge swept either way, at the base or closer
+  to it than 0.8 root chords, is refused (`'fin-sweep'`), the message
+  giving the linear-theory factor and the reason (section 3.4). Before
+  the review such fins were served when the trailing edge was swept no
+  more than the leading edge, and a forward sweep was taken by its
+  magnitude.
+- **Fins thinner than 5% of the present factor's families**: the present
+  factor serves four unswept fins thinner than its 5% data at some
+  station, none thicker than 10%, at 5% with its low end F = 1 (0016
+  section 18), and they reach the rebuilt factor only where the present
+  factor refuses for another reason (count, sweep, Mach number), with the
+  thinnest station carried (`thinnest`; the rebuilt factor brackets every
+  station, section 3.6).
+- **Below Mach 1.5** the rebuilt factor's members built on fig. 35's
+  free-flight line (the reference and its ratio members) apply to Love's
+  curve itself, not on top of W2's 1.065: `bodyBaseDrag` divides them by
+  1.065 on W2's term, and leaves the zero members (ratios to the body
+  without fins) as they are (section 11.2).
 
-**Fins thinner than 5% at the base** (main, 0016 section 18): the present
-factor now serves four unswept fins thinner than its 5% data at some
-station, none thicker than 10%, at 5% with its low end F = 1; so four
-thin unswept fins at Mach 1.8 to 3.0 keep the present factor, and reach
-the rebuilt one only where the present factor refuses for another reason
-(count, sweep, Mach number), with the thinnest station carried
-(`fins-on-base-routing.test.ts`: a 10% double wedge with a 4% root at M
-1.6 takes the zero member as its lower member; a tapered plate at M 2.0
-is bounded from RM L52E06's relief, its tip's t/c setting the upper
-member; a plate with a rounded trailing edge, which the rebuilt factor
-does not take, keeps the present factor's verdict). The body base's fin
-input is built once, `baseFinsOf`, for the total and for the coverage
-run's `evaluate.ts`.
+Tests (`fins-on-base-routing.test.ts`): four fins of the present factor's
+families 5% to 10% thick at M 1.799 to 3.0 give identical numbers and
+labels with and without the section; the 11 gated Basic Finner shots give
+the same body base and total (C_D, low and high) within 1e-12, the present
+factor used at each; three fins, swept fins (the leading edge swept 45
+deg, the trailing edge unswept) and M 1.6 go to the rebuilt factor with
+the routing label, its term and band parts equal to W1's at M 1.8, 2.0,
+2.4 and 2.8 (bounded at 2.8); a 45 deg trailing edge, aft or forward, at
+the base is refused with "1.67 times" at M 1.6; through
+`finnedBodyComponents` a tapered planform with the trailing edge unswept
+takes the rebuilt factor with the present factor's `'fin-sweep'` beside
+it, and one swept at both edges is refused (`total-drag.test.ts`); a 10%
+double wedge with a 4% root at M 1.6 takes the zero member as its lower
+member; a tapered plate at M 2.0 is bounded from RM L52E06's relief, its
+tip's t/c setting the upper member; plates at the base, tapered or of
+constant chord, take the rebuilt factor's flat-plate value with
+`flat-plate-fins` recorded, and a rounded trailing edge is refused
+(`flat-plates.test.ts`). On the page the Basic Finner's form at M 1.6, with
+three fins, or swept is refused for its trailing edge by the rebuilt
+factor, with the present factor's reason beside it (`tests/app/`).
 
-| Refused                                                                                    | Why                                                                       |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| fewer than two or more than four fins                                                      | TN 2360 has two and four                                                  |
-| sections outside the 10% arc (tauEq above 0.10)                                            | the thickest member; steep short bevels among them                        |
-| rounded, diverging and converging blunt trailing edges                                     | no measurement, no ordering (section 4)                                   |
-| leading-edge sweep 0 to 45 deg with a swept trailing edge, or at M 1.5 to 2.0, or above 60 | not measured; ordering not shown (3.4)                                    |
-| swept fins with a sharp trailing edge below M 1.5                                          | no swept fins of such sections measured there (section 11)                |
-| trailing edge swept more than the leading edge                                             | outside both swept sets                                                   |
-| Mach below 1.0 or above 3.0                                                                | fig. 35's free-flight curve starts at M 1.0; the body base below 1.0 (11) |
-| fins ending ahead of the base above M 2.0 or below 1.5                                     | TN 2360 measures positions at M 1.5 and 2.0 only                          |
+The coverage run's cross-check (section 8: 1200 cases, refused or not
+agreeing with `finnedBodyComponents`) is not independent for the base
+term: `evaluate.ts` asks `bodyBaseDrag` itself, with `baseFinsOf`'s
+input, so it checks the decomposition of the other components and the
+fin input's construction, not the base factor's routing.
+
+## 6. What stays refused
+
+| Refused                                                                                       | Why                                                                          |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| fewer than two or more than four fins                                                         | TN 2360 has two and four                                                     |
+| sections outside the 10% arc (tauEq above 0.10)                                               | the thickest member; steep short bevels among them                           |
+| rounded, diverging and converging blunt trailing edges                                        | no measurement, no ordering (section 4)                                      |
+| leading-edge sweep 0 to 45 deg with a swept trailing edge, or at M 1.5 to 2.0, or above 60    | not measured; ordering not shown (3.4)                                       |
+| swept fins with a sharp trailing edge below M 1.5                                             | no swept fins of such sections measured there (section 11)                   |
+| trailing edge swept more than the leading edge                                                | outside both swept sets                                                      |
+| a sharp section with a swept trailing edge, either way, at the base or within 0.8 root chords | not measured there; linear theory raises the pressures behind the edge (3.4) |
+| Mach below 1.0 or above 3.0                                                                   | fig. 35's free-flight curve starts at M 1.0; the body base below 1.0 (11)    |
+| fins ending ahead of the base above M 2.0 or below 1.5                                        | TN 2360 measures positions at M 1.5 and 2.0 only                             |
 
 ## 7. Readings
 
@@ -581,10 +732,12 @@ First readings (this work): TN 2360 fig. 6 (every symbol at x/c = 1.0 to
 M 1.40 to 1.80, not blind), RM L52J21a figs. 38(c) and 8 (R = 8.06e6),
 RM L52E06 fig. 7 (M 1.06 to 1.10): `fins_at_base_w1.md`, with every value
 in `fins_at_base_w1.csv` and `fins-on-base-w1-data.ts`, held to each other
-by `fins-on-base-w1.test.ts`. The band-setting figures 0014 lists that this
-method does not use were not read (TN 2360 figs. 5 and 7, TN 3819 fig. 32,
-RM L52J21a figs. 31 to 33 and 39, RM L52E06 figs. 6 and 8, TN 3372 figs. 7
-to 12).
+by `fins-on-base-w1.test.ts`. RM L52J21a figs. 31 to 33 panel (d) were
+read later for the zero member (below), and RM L52E06 fig. 8 for W2
+(section 11.3). The band-setting figures 0014 lists that this method does
+not use were not read (TN 2360 figs. 5 and 7, TN 3819 fig. 32, RM L52J21a
+fig. 39 and figs. 31 to 33 outside panel (d), RM L52E06 fig. 6, TN 3372
+figs. 7 to 12); 0014 section 10.7 (g) gives the status of each.
 
 **Second readings** (round 6, blind, made on another branch from its own
 renders: `docs/research/total-drag/audit/round6/readings/`, method in its
@@ -634,6 +787,21 @@ within a station.
 | RM L52J21a figs. 31 to 33 (d), round 7      | 24 (by nose, R within 0.15e6)                                           | 0.0022 (combined 0.0025)                                      | none; this work's "radome" at M 2.41, R 7.54e6 is round 7's conical square (a wrong template call), and round 7's second square outline at M 1.93, R 7.33e6 has no counterpart                                                                                                                                    |
 | TN 3819 fig. 18, the compiled curves (W2)   | 14 (round 1's rows at M 1.0, 1.2, 1.4, 1.5, 2.0, 2.5, 3.0, both curves) | -0.0020 (M 1.4, basic curve, combined 0.0012)                 | **one**: the basic curve at M 1.4, round 1's -0.1796 against round 7's -0.1776; resolved below                                                                                                                                                                                                                    |
 | TN 3819 fig. 18, the free-flight curve (W2) | 4 (0008's values against round 7's, interpolated)                       | 0.0005 (M 1.159, combined 0.0014)                             | none                                                                                                                                                                                                                                                                                                              |
+
+**The symbols one reader alone found** (TN 2360 fig. 6, the first row
+above) stay in the data with both readings' envelope, flagged
+(`singleReader`), and the code tests whether each sets an end of a band
+it uses (`memberEndOnSingleReader`: the member's ratio range with and
+without them). Three do, all on the cruciform t/c 0.10 ahead of the base:
+-0.0644 at 6(a) x/c 0.2 and +0.0094 at x/c 1.0 (M 1.5, round 6's), which
+set the ends of the four-fin 10% member at x/c 0.1 to 0.3 and 0.9 to
+1.0 at M 1.5, and -0.0344 at 6(b) x/c 0.6 (M 2.0, this work's), which
+sets them at x/c 0.5 to 0.7 at M 1.8 to 2.0. The fourth, -0.0573 at 6(b)
+x/c 0 (a reference run), sets no end. Every result whose band uses such
+an end carries `secondReadingPending` and says so in its label (the
+review of 2026-10-21; before it, nothing flagged them). A third reading
+of fig. 6(a) and (b)'s cruciform t/c 0.10 at those stations would clear
+or move them.
 
 **Fig. 35's line above M 2.15: the identification resolved, and both
 earlier lines were the wrong ones.** Round 6's first version read the
@@ -757,6 +925,9 @@ What moved (the high ends do not change):
 
 Flat plates (bounded from RM L52E06's relief), brackets whose lower
 member is a measured family, and everything below M 1.5 are unchanged.
+Since the review of 2026-10-21 the zero member below M 1.62 is RM
+L52E06's 0.838 (section 3.5), so the first row is now 0.8379, 1.1551,
+1.4723 (+-27.5%); the rows from M 1.8 are as in the last column.
 
 **NSWCDD/TR-92/509 Table 2** (W1b, 3.4): this work's transcription; the
 blind second is requested. **W2's readings**: section 11.
@@ -767,7 +938,8 @@ blind second is requested. **W2's readings**: section 11.
 condition per Mach band), with `evaluate.ts` asking the library itself
 (`bodyBaseDrag` with the fins' section and sweeps) at Mach 1.0 to 3.0.
 Runs: before W1, `out/impact-before-w1.out` (0014's); after W1,
-`out/impact-after-w1.out`; after W1b and W2, `out/impact.out`.
+`out/impact-after-w1.out`; now (after W1b, W2, main's fin edges of flat
+plates and the review of 2026-10-21), `out/impact.out`.
 
 Totals (a number served for the whole rocket), share of the cases in each
 band:
@@ -777,11 +949,13 @@ band:
 | Baseline population, before W1                           | 0.1%       | 0%           | 0%         | 0.2%       | 0.3%       |
 | after W1                                                 | 0.7%       | 0%           | 0%         | 1.4%       | 1.4%       |
 | after W1b and W2                                         | **1.0%**   | 0%           | **0.3%**   | 1.4%       | **2.4%**   |
-| with main's fin edges of flat plates (0016, W3, W4), now | **2.1%**   | 0%           | 0.3%       | **2.7%**   | **5.5%**   |
-| Blunted tips entered as sharp, after W1, now             | 1.2%, 1.8% |              |            |            |            |
-| Every condition at 0 km, and at 20 km, now               | 1.0%       |              |            |            |            |
-| Variant: four-fin, sharp-edged fins, after W1, now       | 1.6%, 2.3% |              |            |            |            |
-| Variant: fewer Haack noses and blunt tips, after W1, now | 1.4%, 2.0% |              |            |            |            |
+| with main's fin edges of flat plates (0016, W3, W4)      | 2.1%       | 0%           | 0.3%       | 2.7%       | 5.5%       |
+| after the review of 2026-10-21, now                      | **2.0%**   | 0%           | 0.3%       | **2.5%**   | **5.2%**   |
+| main alone, after its plates-at-base hotfix (e42d5d4)    | 0.2%       | 0%           | 0%         | 0.3%       | 0.5%       |
+| Blunted tips entered as sharp, after W1, now             | 1.2%, 3.5% |              |            |            |            |
+| Every condition at 0 km, and at 20 km, now               | 2.0%, 1.7% |              |            |            |            |
+| Variant: four-fin, sharp-edged fins, after W1, now       | 1.6%, 2.8% |              |            |            |            |
+| Variant: fewer Haack noses and blunt tips, after W1, now | 1.4%, 4.2% |              |            |            |            |
 
 The fig. 35 correction of 2026-10-21 (section 3.1) and round 7's pairing
 (fig. 18's row at M 1.4, W2's interpolation bound; section 7) move no
@@ -803,6 +977,33 @@ against 0.3% for main's own run with the present factor alone
 agreeing. Steep bevels refused rise from 4.2% to 6.5% of the cases, a
 plate's t/c now taken at its tip.
 
+**After the review of 2026-10-21** (B1 to B4 and the rest, sections 3.4,
+3.5, 4, 5 and 11.2; `out/impact.out`, against the run before it kept in
+the session as `impact-before-review.out`): totals of all bands 2.1% to
+2.0%, Mach 1.5 to 1.8 2.7% to 2.5%, 1.8 to 3.0 5.5% to 5.2%, 1.2 to 1.5
+unchanged at 0.3%, as the reviewer estimated. What moves is the swept
+trailing edge at the base: the rebuilt factor's sweep refusals rise from
+42.4% to 45.0% at Mach 1.5 to 1.8 and from 15.8% to 18.4% at 1.8 to 3.0
+(the cases it no longer serves, a sharp section with its trailing edge
+swept at the base or closer than 0.8 root chords). The totals lost are
+ten cases, all of them that: double wedges and bevelled plates at the
+base with the leading edge swept 45 to 60 deg and the trailing edge swept
+15 to 53 deg aft, at Mach 1.5 to 3.0 (five rockets, each in two bands).
+Routing flat plates by family (amendment h) moves no case between served
+and refused: three of the totals served (four unswept rectangular plates
+with rounded leading edges at Mach 1.8 to 3.0) took the present factor
+before the review and now take the rebuilt factor's flat-plate value, and
+main's `flat-plate-fins` refusal, which cut main's own run from 0.3% to
+0.2%, is lifted here by the rebuilt factor. The zero member
+below M 1.62 and the B2 correction below M 1.5 widen or move bands and
+move no case. Of the 159 totals served (of 8000 cases), 80 carry the
+rebuilt factor's flat-plate value (rounded-leading-edge plates with square
+trailing edges), 58 the rebuilt factor on sharp sections, 2 the present
+factor, and 19 the plain curve (fins a chord or more ahead); before the
+review the reviewer counted 77 of 169 on the flat-plate value. The
+cross-check agrees on all 1200 cases; it is not independent for the base
+term (section 5).
+
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in
 12.2%, 20.4%, 31.4% and 45.8% of the four bands, from 0%, 0%, 31.4% and
@@ -811,23 +1012,25 @@ Mach 1.2 to 1.5 and 13.5% at 1.8 to 3.0 (the probe), against 0014's
 projection of 16.3% and 17.1% with every base refusal lifted; totals at
 Mach 1.0 to 1.2 stay 0% until W7.
 
-The rebuilt factor's own refusals, as a share of each band's cases (the run with main's fin edges merged):
+The rebuilt factor's own refusals, as a share of each band's cases (now):
 
-| Refusal (rebuilt factor)                                                           | 1.0 to 1.2 | 1.2 to 1.5 | 1.5 to 1.8 | 1.8 to 3.0 |
-| ---------------------------------------------------------------------------------- | ---------- | ---------- | ---------- | ---------- |
-| sweep not measured (below M 1.5 every swept sharp section)                         | 55.0%      | 55.0%      | 42.4%      | 15.8%      |
-| rounded or diverging blunt trailing edge                                           | 14.8%      | 14.8%      | 14.8%      | 14.6%      |
-| section outside the 10% arc (steep bevels)                                         | 2.3%       | 2.3%       | 7.4%       | 13.9%      |
-| fins within a chord of the base, above M 2.0 or below 1.5                          | 6.0%       | 6.0%       | 0%         | 11.9%      |
-| fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2) | 0%         | 0%         | 0%         | 0%         |
-| fewer than two or more than four fins                                              | 0%         | 0%         | 0%         | 0%         |
+| Refusal (rebuilt factor)                                                                                         | 1.0 to 1.2 | 1.2 to 1.5 | 1.5 to 1.8 | 1.8 to 3.0 |
+| ---------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ---------- | ---------- |
+| sweep not measured (below M 1.5 every swept sharp section; a swept trailing edge on a sharp section at the base) | 55.0%      | 55.0%      | 45.0%      | 18.4%      |
+| rounded or diverging blunt trailing edge                                                                         | 14.8%      | 14.8%      | 14.8%      | 14.8%      |
+| section outside the 10% arc (steep bevels)                                                                       | 2.3%       | 2.3%       | 6.5%       | 13.0%      |
+| fins within a chord of the base, above M 2.0 or below 1.5                                                        | 6.0%       | 6.0%       | 0%         | 11.5%      |
+| fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2)                               | 0%         | 0%         | 0%         | 0%         |
+| fewer than two or more than four fins                                                                            | 0%         | 0%         | 0%         | 0%         |
 
 (Sweep is checked before position: the moderate sweeps served now at Mach
 2.0 to 3.0 that end ahead of the base move from the first row to the
 fourth.) The decomposition agrees with `src/total` on all 1200 cases the
 library can represent (`impact.out`, cross-check). The flat plates'
-bounded value changes no total today: every flat plate is refused by its
-edge terms or the page (F1 to F3, F12 of 0014's inventory).
+bounded value is in 80 of the 159 totals served (above); this record said
+before that it changed no total, which stopped being true when main's fin
+edges of flat plates (0016) began serving plates with rounded leading
+edges.
 
 ## 9. Hold-outs
 
@@ -844,14 +1047,20 @@ hold-out of its own yet.
 
 ## 10. Open
 
-- The zero member is re-derived (0.9378, section 3.5); the conical and
-  radome noses of fig. 8's M 2.41 stack are called by round 7 alone. A
-  second reading of that stack (the lower right panel only) would clear
-  `secondReadingPending` on the results that use the member (section 7).
-- The second reading requested: NSWCDD/TR-92/509 Table 2 (W1b).
+- The zero member is re-derived (0.9378 from M 1.62, RM L52E06's 0.838
+  below it; section 3.5); the conical and radome noses of fig. 8's M 2.41
+  stack are called by round 7 alone. A second reading of that stack (the
+  lower right panel only) would clear `secondReadingPending` on the
+  results that use the member from M 1.62 (section 7).
+- The second reading requested: NSWCDD/TR-92/509 Table 2 (W1b). A third
+  reading of TN 2360 fig. 6's cruciform t/c 0.10 at x/c 0.2, 0.6 and 1.0,
+  where one reader alone found the symbols that set band ends (section 7).
 - Moderate sweeps at Mach 1.5 to 2.0, and with swept trailing edges: a
   measurement of such fins at the base (section 3.4); swept fins of sharp
-  sections below Mach 1.5 (section 11.2).
+  sections below Mach 1.5 (section 11.2); a sharp section's swept
+  trailing edge at the base (refused since the review, section 3.4; a
+  bounded treatment is proposed below).
+- The step at Mach 1.5 where W2's 1.065 ends (section 11.2).
 - Rounded and diverging trailing edges at the base.
 - Fins ahead of the base above M 2.0 (TN 3819 fig. 32's Langley symbols
   at M 2.41, x/c 0 to 1, are band-setting and not yet read twice;
@@ -860,6 +1069,38 @@ hold-out of its own yet.
 - Whether the rebuilt factor replaces the present one inside the Basic
   Finner's class: the owner's decision after BRL 934's run (0014 section
   10.3). It would not today: it refuses the Basic Finner's wedges.
+
+**Proposed for review, not shipped: a bounded value for a swept trailing
+edge at the base.** The review of 2026-10-21 asked that sharp sections
+with a swept trailing edge at the base be refused this round (section
+3.4) and allowed a "bounded, not measured" treatment to be proposed
+separately. The proposal: for a sharp section whose trailing edge is
+swept L at the base or within 0.8 root chords (either way), the lower
+bound the zero member, as for every swept fin; the upper bound the
+unswept member that bounds a section k times as thick near its edges,
+k = sqrt(M^2 - 1) / sqrt(M^2 - sec^2 L), linear theory's factor on the
+pressures of the faces behind the edge (TN 2360 ties the increment to
+those faces' pressures, "proportional to the local slopes", and in linear
+theory a face of slope theta behind an edge swept L carries the pressure
+of one of slope k theta behind an unswept edge): the section's tauEq
+times k, refused above 0.10 and where the edge is subsonic (M cos L at
+most 1, where linear theory gives no finite factor). For a 45 deg edge
+k is 1.67 at M 1.6, 1.22 at 2.0 and 1.11 at 2.5, so a 2.4% double wedge
+keeps four fins t/c 0.05 as its upper member from about M 1.52 (k at most
+2.08), and a 5% double wedge takes the 10% reference; at M 1.8 to 3.0
+the bands would be those of the unswept fin of k times its thickness.
+The labels would say "bounded, not measured" and name linear theory as
+the ordering. What it rests on is linear theory, not a measurement at the
+base: RM L52J21a's 45/45 fins 0.8 root chords ahead lie inside the
+unswept bracket, which says only that the effect is no larger there.
+Questions for the review: whether linear theory's factor on the face
+pressures bounds an increment that TN 2360 traces to the fins' pressure
+field over the dead-air region (p. 6), a viscous interaction; whether the
+tip's trailing edge, which a swept edge carries aft of the base (RM
+L52J21a's crosses the base plane about a diameter out), changes the
+argument; and whether a forward-swept edge needs more than the same
+factor. It would reach the ten cases the refusal took from the totals
+(section 8). Not shipped; no code carries it.
 
 ## 11. The base below Mach 1.5 (W2)
 
@@ -895,9 +1136,12 @@ and the W2 rows of `fins-on-base-w1.test.ts`.
   order 0014 planned (0.85 to 1.3).
 - **The band sum** is the present linear one (0010 section 1.4): the
   curve's band, the interpolation bound and the fins-on-base band add.
-  For fins at the base this counts the free-flight excess over the curve
-  twice, since fig. 35's line is itself a free-flight measurement over the
-  curve; narrowing it is a separate decision, not taken here.
+  For fins at the base the nominal no longer counts the free-flight
+  excess twice (section 11.2, since the review of 2026-10-21); the band
+  still adds the curve's band to the factor's, which is conservative
+  where the factor's member is itself a free-flight measurement of the
+  whole term (the reference, fig. 35's line); narrowing it is a separate
+  decision, not taken here.
 - **The interpolation bound** between the rows takes a curvature bound of
   its own below M 1.5 (`W2_CURVATURE_BOUND`, 0.14): the bound of 0008's
   curve (0.063, set on twice-read nodes from M 1.5) does not hold there,
@@ -910,7 +1154,9 @@ and the W2 rows of `fins-on-base-w1.test.ts`.
   band 0.82 to 1.31 over the curve, set on free-flight data at Mach 1.0 to
   1.3 (RM L52E06 fig. 8, TN 3819 fig. 18) and carried to 1.5 (0015 section
   11); the curve's rows below 1.5 and fig. 18's free-flight curve read
-  twice; tested only in the total".
+  twice; with fins at the base, the fins-on-base members built on TN 3819
+  fig. 35's free-flight line apply to the curve itself, not on top of the
+  1.065 (0015 section 11.2); tested only in the total".
 - **Refused:** below Mach 1.0 (the data opened stop there for this term),
   and as above 1.5: boat-tails, laminar bases.
 
@@ -944,7 +1190,7 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
 
 - **Zero member:** 1 down to 0.838, RM L52E06's relief with flat plates
   at the base (M 1.06 to 1.10, two readings), the lowest relief measured
-  at or below M 1.5; RM L52J21a measures none there.
+  below M 1.62, where RM L52J21a's measurements begin (section 3.5).
 - **No ratio members** (TN 2360 measures at M 1.5 and 2.0 only): sections
   are bracketed between the zero member and the reference, three fins
   between zero and four, flat plates bounded between 0.838 and the
@@ -977,14 +1223,42 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
     rim relief strengthens from 0.882 at M 1.10 to 0.852 at 1.06 and
     levels off by 1.05 (0.850 in round 6's reading, 0.847 with its errors,
     above 0.838).
-  - Example: a 2.4% double wedge, three unswept fins, at M 1.0: F 0.838
-    to 1.850, nominal 1.344 (+-37.6%); the body base term on the base
-    area 0.265, band 0.104 to 0.425 in C_D (0.197, band 0.152 to 0.242,
-    without fins: W2's body base serves M 1.0 to 1.5, section 11.1).
+  - Example: a 2.4% double wedge, three unswept fins, at M 1.0: the
+    rebuilt factor's F over the curve 0.838 to 1.850, nominal 1.344
+    (+-37.6%); on W2's term (below) 0.838 to 1.737, nominal 1.287
+    (+-34.9%), the body base term on the base area 0.2535, band 0.1067 to
+    0.4003 in C_D (0.265, 0.104 to 0.425 before the review; 0.197, band
+    0.152 to 0.242, without fins: W2's body base serves M 1.0 to 1.5,
+    section 11.1).
+
+- **On W2's term, not on top of it** (the review of 2026-10-21). Below
+  M 1.5 the body base is Love's curve times 1.065 (11.1), and the factor's
+  reference is fig. 35's free-flight line over Love's curve itself, its
+  ratio members ratios to that reference: so the product counted the
+  free-flight excess over the curve twice, the term with four 10% arcs
+  1.065 times the line it rests on. `bodyBaseDrag` now states the factor
+  on W2's term: the members built on fig. 35's line (the reference and
+  its ratio members) divided by 1.065, the zero members (RM L52E06's and
+  RM L52J21a's reliefs, ratios to the body without fins) and the flat
+  plates' relief as they are, the band the envelope and the nominal its
+  midpoint as before, the label saying so (`base-w2.test.ts`). With four
+  10% arcs at M 1.0 the term is 0.3199 (band 0.2242 to 0.4156), the line
+  itself 0.2998 (the nominal the band's midpoint, whose high end carries
+  the tunnel excess); before, 0.3407.
+- **The step at M 1.5.** W2's 1.065 ends at M 1.5 and the ratio members
+  begin there, so the term steps: with four 10% arcs from 0.2847 just
+  below to 0.2817 at M 1.5 (-1.1%), where only the 1.065 and its
+  correction meet; with three 2.4% double wedges from 0.2301 to 0.2002
+  (-13%), where TN 2360's four fins t/c 0.05 replace the reference as the
+  upper member. The step is the method's (members measured at M 1.5 and
+  not below), not a measurement; the labels name it, and smoothing it is
+  not done here (section 10).
 
 Example (section 3.6): a 2.4% double wedge, three unswept fins, at M 1.2:
-F 0.838 to 1.727, nominal 1.282 (+-34.7%); the term on the base area is
-0.251 with a band of about 0.11 to 0.40 in C_D.
+the rebuilt factor's F over the curve 0.838 to 1.727, nominal 1.282
+(+-34.7%); on W2's term 0.838 to 1.621, nominal 1.230 (+-31.9%), the term
+on the base area 0.2404 with a band of 0.1085 to 0.3723 in C_D (0.251,
+about 0.11 to 0.40, before the review).
 
 ### 11.3 Readings
 
@@ -994,7 +1268,7 @@ F 0.838 to 1.727, nominal 1.282 (+-34.7%); the term on the base area is
 | TN 3819 fig. 18, rows at M 1.0, 1.2, 1.4, 1.5       | two (round 1, round 7): within the combined errors but the basic curve at M 1.4, round 1's misread, now round 7's (section 7) |
 | TN 3819 fig. 18, the free-flight curve              | two (0008, round 7), within 0.0005                                                                                            |
 | TN 3819 fig. 35, the free-flight line, M 1.0 to 1.5 | two (the identified curve's, 0010 section 11.3), within 0.0006; this work's from M 1.4 within 0.0001                          |
-| RM L52E06 fig. 7 (the zero member below M 1.5)      | two (section 7)                                                                                                               |
+| RM L52E06 fig. 7 (the zero member below M 1.62)     | two (section 7)                                                                                                               |
 
 ### 11.4 Hold-outs
 
