@@ -264,21 +264,44 @@ At Mach 1.1 the cone's conical surface flow is still supersonic (Mach
 1.037, axial 1.029), so its drag is again exactly Taylor-Maccoll's,
 0.0944976, and the fitted solver accepts the case.
 
-| r   | Cells   | Drag      | vs Taylor-Maccoll | Steps | Time           |
-| --- | ------- | --------- | ----------------- | ----- | -------------- |
-| 1   | 3,540   | 0.0944683 | -3.10e-4          | 950   | 17 s           |
-| 2   | 14,160  | 0.0944644 | -3.51e-4          | 1,600 | 120 s          |
-| 4   | 56,640  | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s        |
-| 8   | 226,560 | 0.0944913 | -6.7e-5           | 5,600 | 4,110 s of CPU |
+| r   | Cells   | Drag      | vs Taylor-Maccoll | Steps | Time            |
+| --- | ------- | --------- | ----------------- | ----- | --------------- |
+| 1   | 3,540   | 0.0944683 | -3.10e-4          | 950   | 17 s            |
+| 2   | 14,160  | 0.0944644 | -3.51e-4          | 1,600 | 120 s           |
+| 4   | 56,640  | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s         |
+| 8   | 226,560 | 0.0944913 | -6.7e-5           | 5,600 | 4,110 s of CPU  |
+| 16  | 906,240 | 0.0944950 | -2.8e-5           | 7,300 | 17,126 s of CPU |
 
-The changes (-3.9e-6, +1.77e-5, +9.1e-6) change sign at the first step
-and then fall at first order (0.95 on the finest triple, extrapolated
-0.0945010, 3.6e-5 of the value above the exact one). The procedure
-(`gridConvergence`, four grids) returns no band here: its coarser
-triple oscillates ("unresolved"). So at Mach 1.1 the four grids are
-within 3.5e-4 of the exact value and r = 8 within 6.7e-5, but the
-procedure as it stands refuses the case; a band would need a fifth grid
-(r = 16, 900,000 cells), so that both triples are the monotone ones.
+On r = 1 to 8 the changes (-3.9e-6, +1.77e-5, +9.1e-6) change sign at
+the first step, and the procedure (`gridConvergence`, the four finest
+grids) refused them: its coarser triple oscillates ("unresolved"). As
+the certification plan (below) set out before the run, r = 16 was added
+so that the four finest grids are r = 2 to 16.
+
+**Mach 1.1 certified (2026-10-21).** With r = 16 the changes are
++1.770e-5, +9.14e-6 and +3.69e-6: observed orders 0.95 (r = 2, 4, 8) and
+1.31 (r = 4, 8, 16), within the procedure's 0.5 of each other, so it
+returns a monotone band. On the finest triple, order 1.31, the
+extrapolated drag is 0.0944975 and the procedure's band (its grid
+convergence index: 1.25 times the last change over 2^1.31 - 1) is 3.13e-6,
+3.3e-5 of the value. The exact value, 0.0944976, lies 2.6e-6 above r =
+16 (2.8e-5 of it): inside the band, at 0.83 of it; the extrapolation is
+within 1e-7 of it. The iteration error is small against all this: r = 16
+stopped on the settling test 300 steps after resuming from its
+checkpoint, with the drag still rising by 8e-9 per 100 steps and falling
+by about 0.93 each time; the geometric estimate of its remaining change
+is 1.0e-7 to 1.5e-7 (the recorded one 1.5e-7), 4 to 5% of the band and
+of the last grid change. Counting it in (r = 16 at 0.0944951) gives
+order 1.26 and a band of 3.45e-6, which still contains the error
+(2.47e-6). On r = 8 the estimate is 5e-10; r = 1 to 4 settled to 1e-7 of
+the drag. As the plan requires, the far boundaries' and the cylinder's
+largest measured change on the base grid at Mach 1.1 (+1.98e-5, 55.1 to
+224.2 radii and 5 to 20 calibers, though at this Mach number the cone's
+drag cannot depend on them: it is the grid's change with the domain) is
+above a quarter of the band and is added once: **the certified band at
+Mach 1.1 is 2.29e-5 (2.4e-4 of the value) about 0.0944950**, containing
+the exact error by a factor of 9. Cost: r = 16 took 17,126 s of CPU (1.9
+s per step, 1.1 to 1.6 GB), about 10 h of wall time on this machine.
 
 The fitted solver on the same cone: 0.0938653 (nj = 20) and 0.0940974
 (nj = 40), -6.69e-3 and -4.24e-3 of the exact value, ten to twenty times
@@ -742,10 +765,13 @@ on the CPU engine:
   domain and the supersonic fitted solver agree where both apply, within
   2.7e-5 on the cone and 1e-3 on the ogive and the ellipsoid: the two
   definitions meet at Mach 1.2.
-- **Mach 1.1.** Cone: four grids within 3.5e-4 of the exact value, r =
-  8 within 6.7e-5; the procedure refuses a band (its coarser triple
-  oscillates); the fitted solver is 4e-3 to 7e-3 off here. Ogive and hemisphere: r = 1 and 2 only
-  (changes of 4e-3 and 2% of the value): not established.
+- **Mach 1.1.** Cone: certified by the procedure on r = 2 to 16 (a
+  monotone band of 3.13e-6 containing the exact error, 2.6e-6; with the
+  far boundaries' and cylinder's largest base-grid change added as the
+  plan requires, 2.29e-5, 2.4e-4 of the value). Curved noses: the
+  10-caliber ogive's family against the characteristics is next; the
+  5-caliber ogive and the hemisphere have r = 1 and 2 only. The fitted
+  solver is 4e-3 to 7e-3 off here.
 - **Mach 1.05.** Cone: no exact value; first order, r = 4 within about
   1.5e-3 of its extrapolation, far boundaries at most 2e-4, cylinder
   within the noise: about 2e-3 on r = 4, if the first order holds (the
@@ -764,18 +790,19 @@ on the CPU engine:
 
 So the evidence supports the transonic domain at Mach 1.2 to the
 supersonic solvers' standard on cones and on the ogive (four grids, the
-procedure's band containing the error against exact references). Blunt
-noses reach about 1e-3 (three grids each, against the fitted solver),
-which does not meet the standard: they stay unserved. Below Mach 1.2 the
-procedure gives no band: at Mach 1.1 it refuses the cone's four grids
-(the coarser triple oscillates) although r = 8 is within 6.7e-5 of the
-exact value, and the rule is not changed after seeing the result; at
-Mach 1.05 the cone's r = 8 is the last queued run (r = 4 is about 1.5e-3
-from its extrapolation, and with no exact reference r = 8 can only show
-self-consistency); at Mach 1 there are three grids and the far-boundary
-extrapolation (0.0932 within about 0.1%, r = 4 a fitted estimate).
-Nothing below Mach 1.2 is served; whether Mach 1 to 1.2 is shown at all,
-and how it is labelled, is the owner's decision.
+procedure's band containing the error against exact references), and at
+Mach 1.1 on the cone (r = 2 to 16, band 2.29e-5 containing the exact
+error). Blunt noses reach about 1e-3 at Mach 1.2 (three grids each,
+against the fitted solver), which does not meet the standard: they stay
+unserved below Mach 1.5. Curved noses at Mach 1.1 wait on the 10-caliber
+ogive's family; at
+Mach 1.05 the cone's r = 8 is running (r = 4 is about 1.5e-3 from its
+extrapolation, and with no exact reference the band can only be the
+procedure's own); at Mach 1 there are three grids, and the far-boundary
+rule written for it failed its test at Mach 1.2, so Mach 1 stays refused
+(0.0932 within about 0.1% is an estimate, not a certification). Nothing
+below Mach 1.2 is shown until certified; the owner decided to spend the
+compute on the certification plan below.
 
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
@@ -810,7 +837,9 @@ else be added to it (their largest measured change, once). An
   r = 1 to 16 at Mach 1.1, certified as the cone. (The characteristics
   refuse it at Mach 1.05.)
 - First the cost of r = 16 is measured on its first steps (time per step
-  and memory) and reported before the runs are committed.
+  and memory) and reported before the runs are committed. (Measured: 1.1
+  to 1.6 GB, 1.9 s of CPU per step; the cone's r = 16 certified Mach 1.1,
+  above.)
 
 **Mach 1.05.** The cone's r = 8 and r = 16, certified by the procedure
 alone (no exact reference exists for any nose here: Taylor-Maccoll's
