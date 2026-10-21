@@ -20,6 +20,8 @@
  * P_B without, in the same facility.
  */
 
+import { TN3819_FIG35_FREE_FLIGHT, type Fig35Point } from './tn3819-fig35';
+
 export type W1Reading = 'w1 first' | 'w1 second';
 
 /**
@@ -276,6 +278,20 @@ export const TN3819_FIG35_W1: readonly {
       { mach: 3, pB: -0.1182, error: 0.0003 },
     ],
   },
+];
+
+/**
+ * Every reading of TN 3819 fig. 35's free-flight line that the rebuilt factor's reference member uses (and so
+ * W2's fins at the base below Mach 1.5 and the carried tunnel excess): the present factor's two, held in
+ * ./tn3819-fig35.ts, and W1's two above. The member's only source for the line (./fins-on-base-w1.ts,
+ * freeFlightFactors): when the line is corrected (0010 section 7), this one definition is what changes.
+ */
+export const W1_FIG35_LINE: readonly {
+  readonly reading: string;
+  readonly points: readonly Fig35Point[];
+}[] = [
+  ...TN3819_FIG35_FREE_FLIGHT.map((r) => ({ reading: r.reading, points: r.points })),
+  ...TN3819_FIG35_W1.map((r) => ({ reading: r.reading, points: r.points })),
 ];
 
 /**

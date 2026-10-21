@@ -102,11 +102,11 @@ import {
   TN2360_FIG6,
   TN3819_FIG33,
   TN3819_FIG35_TUNNEL_W1,
-  TN3819_FIG35_W1,
+  W1_FIG35_LINE,
   type Tn2360Fig6Point,
 } from './fins-on-base-w1-data';
 import { BaseRefusal } from './refusal';
-import { FIG35_IDENTITY_SWAP, TN3819_FIG35_FREE_FLIGHT, TN3819_FIG35_TUNNEL } from './tn3819-fig35';
+import { FIG35_IDENTITY_SWAP, TN3819_FIG35_TUNNEL } from './tn3819-fig35';
 import type { SymmetricSection } from '../fins/section';
 
 /** The Mach numbers the rebuilt factor serves from its tunnel members up (W1). */
@@ -191,11 +191,7 @@ interface FreeFlight {
 export function freeFlightFactors(mach: number): FreeFlight[] {
   const noFins = Math.abs(compiledCurveValue(mach, 'lessNegative'));
   const out: FreeFlight[] = [];
-  const readings = [
-    ...TN3819_FIG35_FREE_FLIGHT.map((r) => ({ reading: r.reading, points: r.points })),
-    ...TN3819_FIG35_W1.map((r) => ({ reading: r.reading, points: r.points })),
-  ];
-  for (const r of readings) {
+  for (const r of W1_FIG35_LINE) {
     const v = interp(r.points, mach, (p) => p.pB);
     if (v === undefined) continue;
     let error = Math.max(v.a.error, v.b.error);
