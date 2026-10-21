@@ -359,6 +359,109 @@ export const L52J21A_FIG8: readonly Fig8Point[] = [
   { reading: 'w1 second', mach: 2.41, base: 'conical', leastNegative: -0.0604, error: 0.0007 },
 ];
 
+export type L52j21aNose = 'conical' | 'ogive' | 'radome';
+
+/**
+ * RM L52J21a fig. 8, cylindrical base, R = 8.06e6: the finned symbols with
+ * their nose called. This work's first reading calls every symbol by
+ * template (scores 0.19 to 0.44 but the ogive at M 1.93, 0.76;
+ * w1_l52j21a_fig8_output.txt); round 6 names some (dde6cd0). The calls are
+ * one reader's at M 2.41 and disagree at M 1.62 (the -0.1485 symbol): the
+ * second call is pending (0015 sections 3.5, 7). Errors as the readings'.
+ */
+export interface Fig8NoseCall {
+  readonly reading: W1Reading;
+  readonly mach: number;
+  readonly nose: L52j21aNose;
+  readonly pB: number;
+  readonly error: number;
+}
+
+export const L52J21A_FIG8_NOSE_CALLS: readonly Fig8NoseCall[] = [
+  { reading: 'w1 first', mach: 1.62, nose: 'ogive', pB: -0.1611, error: 0.002 },
+  { reading: 'w1 first', mach: 1.62, nose: 'conical', pB: -0.1485, error: 0.002 },
+  { reading: 'w1 first', mach: 1.62, nose: 'radome', pB: -0.1488, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'ogive', pB: -0.1513, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'conical', pB: -0.1468, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'radome', pB: -0.1465, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'ogive', pB: -0.119, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'conical', pB: -0.1128, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'radome', pB: -0.1139, error: 0.002 },
+  { reading: 'w1 second', mach: 1.62, nose: 'ogive', pB: -0.1485, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.62, nose: 'ogive', pB: -0.1618, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.93, nose: 'conical', pB: -0.1454, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.93, nose: 'radome', pB: -0.1448, error: 0.0002 },
+  { reading: 'w1 second', mach: 1.93, nose: 'ogive', pB: -0.1515, error: 0.0002 },
+];
+
+/**
+ * RM L52J21a figs. 31 to 33 panel (d), cylindrical base, the same bodies
+ * without fins (sting-supported): every symbol within 0.6e6 of fig. 8's R =
+ * 8.06e6, by nose. Two readings: this work's first (template calls,
+ * w1_l52j21a_fig31_33d_output.txt, +-0.002), kept only where round 7
+ * confirms the symbol, and round 7's blind reading (data/round7/, nose by
+ * symbol shape, its errors). Paired in w1_round7_pairing_output.txt.
+ */
+export interface Fig31To33Point {
+  readonly reading: 'w1 first' | 'round 7';
+  readonly mach: number;
+  readonly nose: L52j21aNose;
+  readonly reynolds: number;
+  readonly pB: number;
+  readonly error: number;
+}
+
+export const L52J21A_FIG31_33D: readonly Fig31To33Point[] = [
+  { reading: 'w1 first', mach: 1.62, nose: 'conical', reynolds: 7.65e6, pB: -0.149, error: 0.002 },
+  { reading: 'w1 first', mach: 1.62, nose: 'ogive', reynolds: 8.03e6, pB: -0.1479, error: 0.002 },
+  { reading: 'w1 first', mach: 1.62, nose: 'radome', reynolds: 8.11e6, pB: -0.1338, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'conical', reynolds: 8.13e6, pB: -0.1524, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'ogive', reynolds: 8.16e6, pB: -0.152, error: 0.002 },
+  { reading: 'w1 first', mach: 1.93, nose: 'radome', reynolds: 8.11e6, pB: -0.1376, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'conical', reynolds: 7.53e6, pB: -0.1186, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'conical', reynolds: 8.12e6, pB: -0.1204, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'ogive', reynolds: 8.16e6, pB: -0.1198, error: 0.002 },
+  { reading: 'w1 first', mach: 2.41, nose: 'radome', reynolds: 8.12e6, pB: -0.1126, error: 0.002 },
+  {
+    reading: 'round 7',
+    mach: 1.62,
+    nose: 'conical',
+    reynolds: 7.625e6,
+    pB: -0.1488,
+    error: 0.0002,
+  },
+  { reading: 'round 7', mach: 1.62, nose: 'ogive', reynolds: 8.023e6, pB: -0.1479, error: 0.0008 },
+  { reading: 'round 7', mach: 1.62, nose: 'radome', reynolds: 8.053e6, pB: -0.1331, error: 0.0002 },
+  {
+    reading: 'round 7',
+    mach: 1.93,
+    nose: 'conical',
+    reynolds: 8.032e6,
+    pB: -0.1506,
+    error: 0.0005,
+  },
+  { reading: 'round 7', mach: 1.93, nose: 'ogive', reynolds: 8.168e6, pB: -0.1517, error: 0.0008 },
+  { reading: 'round 7', mach: 1.93, nose: 'radome', reynolds: 8.189e6, pB: -0.1391, error: 0.0005 },
+  {
+    reading: 'round 7',
+    mach: 2.41,
+    nose: 'conical',
+    reynolds: 7.519e6,
+    pB: -0.1184,
+    error: 0.0002,
+  },
+  {
+    reading: 'round 7',
+    mach: 2.41,
+    nose: 'conical',
+    reynolds: 8.121e6,
+    pB: -0.1191,
+    error: 0.0006,
+  },
+  { reading: 'round 7', mach: 2.41, nose: 'ogive', reynolds: 8.162e6, pB: -0.1196, error: 0.0008 },
+  { reading: 'round 7', mach: 2.41, nose: 'radome', reynolds: 8.06e6, pB: -0.1128, error: 0.0002 },
+];
+
 /**
  * NACA RM L52E06 (Hart 1952) fig. 7: rim and centre P_B of the PARD body
  * without fins (A) and with four 0.091 in flat-plate fins with square

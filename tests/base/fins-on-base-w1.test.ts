@@ -11,6 +11,7 @@ import { describe, expect, it } from 'vitest';
 import { compiledCurveValue } from '../../src/base/compiled-curve';
 import {
   L52E06_FIG7,
+  L52J21A_FIG31_33D,
   L52J21A_FIG38C,
   L52J21A_FIG8,
   NSWC_LEADING_EDGE_SWEEP_DEG,
@@ -26,7 +27,10 @@ import {
   W1_FLAT_RELIEF_LOW,
   W1_MACH_RANGE,
   W1_RELIEF_LOW,
+  W1_RELIEF_LOW_FIG38C,
+  W1_RELIEF_ON_ONE_CALL,
   flatPlateReliefs,
+  noseCallReliefFactors,
   nswcFactors,
   zeroMember,
   ZERO_MEMBER,
@@ -255,12 +259,32 @@ describe('the readings, held to the first- and second-reading records', () => {
 });
 
 describe('the members', () => {
-  it('the zero member: the largest relief at M >= 1.5, RM L52J21a fig. 38(c) over fig. 8', () => {
-    // At M 1.93: dPb +0.0055 (+0.002), over the cylindrical base's least suction in either reading of fig.
-    // 8 toward less suction: round 6's -0.1443 (+0.0007), below the first's -0.1465 (+0.002).
+  it("the zero member: the most relief RM L52J21a allows at M >= 1.5, on one reader's nose calls", () => {
+    // Fig. 38(c) at M 1.93: dPb +0.0055 (+0.002), over the cylindrical base's least suction in either reading
+    // of fig. 8 toward less suction: round 6's -0.1443 (+0.0007), below the first's -0.1465 (+0.002).
     const f = (0.1443 - 0.0007) / (0.1443 - 0.0007 + 0.0055 + 0.002);
-    expect(W1_RELIEF_LOW).toBeCloseTo(f, 12);
-    expect(W1_RELIEF_LOW).toBeCloseTo(0.95036, 5);
+    expect(W1_RELIEF_LOW_FIG38C).toBeCloseTo(f, 12);
+    expect(W1_RELIEF_LOW_FIG38C).toBeCloseTo(0.95036, 5);
+    // Fig. 8 over figs. 31 to 33 (d) by nose: the first reading's conical call at M 2.41, -0.1128 (+-0.002),
+    // over its own unfinned conical symbol at R 8.12e6, -0.1204 (+-0.002), each toward more relief. No second
+    // reader calls fig. 8's noses at M 2.41, so it rests on one reader's calls (0015 section 3.5).
+    const g = (0.1128 - 0.002) / (0.1204 + 0.002);
+    expect(W1_RELIEF_LOW).toBeCloseTo(g, 12);
+    expect(W1_RELIEF_LOW).toBeCloseTo(0.90523, 5);
+    expect(W1_RELIEF_ON_ONE_CALL).toBe(true);
+    const least = noseCallReliefFactors().reduce((a, b) => (b.factor < a.factor ? b : a));
+    expect(least).toMatchObject({
+      mach: 2.41,
+      nose: 'conical',
+      callReading: 'w1 first',
+      confirmed: false,
+    });
+    // At M 1.93 both readers call the conical nose alike: F down to 0.938 there.
+    const at193 = noseCallReliefFactors().filter((r) => r.mach === 1.93 && r.nose === 'conical');
+    expect(at193.every((r) => r.confirmed)).toBe(true);
+    expect(Math.min(...at193.map((r) => r.factor))).toBeCloseTo(0.9378, 4);
+    // The unfinned symbols used are round 7's and this work's that round 7 confirms (0015 section 7).
+    expect(L52J21A_FIG31_33D.filter((u) => u.reading === 'round 7').length).toBe(10);
     expect(ZERO_MEMBER).toEqual({ low: W1_RELIEF_LOW, high: 1 });
     expect(memberBand(0, 4, 0, 2.5)).toEqual(ZERO_MEMBER);
     expect(memberBand(0.1, 0, 0, 2.5)).toEqual(ZERO_MEMBER);
@@ -328,8 +352,8 @@ describe('the members', () => {
       [2.41, 1.0996, 1.3909],
       [2.5, 1.0887, 1.3826],
       [2.56, 1.0855, 1.3811],
-      [2.8, 0.9504, 1.3811],
-      [3.0, 0.9504, 1.3811],
+      [2.8, 0.9052, 1.3811],
+      [3.0, 0.9052, 1.3811],
     ];
     for (const [m, low, high] of TABLE31) {
       const r = referenceBand(m);
@@ -449,18 +473,18 @@ describe('the bands (0015 section 3.6)', () => {
   // [M, case, fins, low, nominal, high, second reading pending (the zero member from M 1.5 rests on fig.
   // 38(c), read once; a moderate sweep on NSWC's Table 2, read once)].
   const TABLE: [number, string, FinsNearBase, number, number, number, boolean][] = [
-    [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.2113, 1.4723, true],
-    [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.1832, 1.4161, true],
-    [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.1393, 1.3282, true],
-    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.1665, 1.3826, true],
+    [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9052, 1.1888, 1.4723, true],
+    [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9052, 1.1607, 1.4161, true],
+    [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9052, 1.1167, 1.3282, true],
+    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9052, 1.1439, 1.3826, true],
     // Above M 2.56 the reference is bounded, not measured (0010 section 11): so is the bracket.
-    [3.0, 'double wedge 2.4%, three fins, 45 deg (bounded)', fins(), 0.9504, 1.1657, 1.3811, true],
+    [3.0, 'double wedge 2.4%, three fins, 45 deg (bounded)', fins(), 0.9052, 1.1431, 1.3811, true],
     [
       1.8,
       'double wedge 2.4%, four fins, unswept',
       fins({ count: 4, tanLeadingEdgeSweep: 0 }),
-      0.9504,
-      1.1832,
+      0.9052,
+      1.1607,
       1.4161,
       true,
     ],
@@ -468,8 +492,8 @@ describe('the bands (0015 section 3.6)', () => {
       1.8,
       'bevelled plate 3%, three fins, 45 deg',
       fins({ section: hexagonal(0.03, 0.085, 0.085) }),
-      0.9504,
-      1.2547,
+      0.9052,
+      1.2321,
       1.559,
       true,
     ],
@@ -514,8 +538,8 @@ describe('the bands (0015 section 3.6)', () => {
       2.0,
       'double wedge 2.4%, four fins, 30 deg, unswept trailing edge',
       fins({ count: 4, tanLeadingEdgeSweep: t30 }),
-      0.9504,
-      1.1393,
+      0.9052,
+      1.1167,
       1.3282,
       true,
     ],
@@ -523,8 +547,8 @@ describe('the bands (0015 section 3.6)', () => {
       2.5,
       'double wedge 2.4%, three fins, 30 deg, unswept trailing edge',
       fins({ tanLeadingEdgeSweep: t30 }),
-      0.9504,
-      1.1665,
+      0.9052,
+      1.1439,
       1.3826,
       true,
     ],
@@ -783,11 +807,12 @@ describe('refusals', () => {
       ),
     ).toBe('fin-sweep');
     expect(reason(() => finsOnBaseFactorW1(2, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
-    // Below M 1.5 (W2's part): from M 1.1; swept fins only with flat faces; no position ahead of the base.
-    expect(reason(() => finsOnBaseFactorW1(1.09, fins({ tanLeadingEdgeSweep: 0 })))).toBe(
+    // Below M 1.5 (W2's part): from M 1.0; swept fins only with flat faces; no position ahead of the base.
+    expect(reason(() => finsOnBaseFactorW1(0.99, fins({ tanLeadingEdgeSweep: 0 })))).toBe(
       'mach-range',
     );
-    expect(reason(() => finsOnBaseFactorW1(1.1, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
+    expect(reason(() => finsOnBaseFactorW1(1.0, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
+    expect(reason(() => finsOnBaseFactorW1(1.09, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
     expect(reason(() => finsOnBaseFactorW1(1.49, fins()))).toBe('fin-sweep');
     expect(reason(() => finsOnBaseFactorW1(1.49, fins({ section: plate(0.024) })))).toBe('served');
     expect(

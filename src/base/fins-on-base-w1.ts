@@ -30,10 +30,13 @@
  *   the reference's increment band, so the tunnel's ratio is carried to
  *   free flight and the band holds both;
  * - the zero member, no fins or fins with no pressure field: F from 1 down
- *   to the largest relief measured with fins near the base and a turbulent
- *   layer at M 1.5 or above (RM L52J21a fig. 38(c) over fig. 8's
- *   cylindrical base: 0.9504, W1_RELIEF_LOW), at every M from 1.5; below
- *   1.5, RM L52E06's relief with flat plates (0.838, zeroMember).
+ *   to the largest relief RM L52J21a allows with fins near the base and a
+ *   turbulent layer at M 1.5 or above, at every M from 1.5
+ *   (W1_RELIEF_LOW): fig. 8 over figs. 31 to 33 by nose, 0.905 at M 2.41 on
+ *   one reader's symbol calls, until a second reader's calls arrive; fig.
+ *   38(c) over fig. 8 gives 0.9504, the value the second call may restore
+ *   (W1_RELIEF_LOW_FIG38C). Below 1.5, RM L52E06's relief with flat plates
+ *   (0.838, zeroMember).
  *
  * A case is bracketed between a lower member it dominates and an upper
  * member that dominates it, in each variable the sources show moves F:
@@ -64,7 +67,7 @@
  *   surface pressures with sweep at a fixed streamwise section, and no
  *   measurement shows the ordering there.
  *
- * Below M 1.5 (W2's part, 0015 section 11), at M 1.1 to 1.5: the reference
+ * Below M 1.5 (W2's part, 0015 section 11), at M 1.0 to 1.5: the reference
  * is fig. 35's free-flight curve (two readings from M 1.0) with the largest
  * tunnel excess carried, the zero member reaches down to RM L52E06's
  * relief with flat plates (the lowest relief measured at or below M 1.5),
@@ -97,8 +100,10 @@
 import { compiledCurveValue } from './compiled-curve';
 import {
   L52E06_FIG7,
+  L52J21A_FIG31_33D,
   L52J21A_FIG38C,
   L52J21A_FIG8,
+  L52J21A_FIG8_NOSE_CALLS,
   NSWC_TR92_509_TABLE2,
   TN2360_FIG6,
   TN3819_FIG33,
@@ -112,8 +117,12 @@ import type { SymmetricSection } from '../fins/section';
 
 /** The Mach numbers the rebuilt factor serves from its tunnel members up (W1). */
 export const W1_MACH_RANGE = [1.5, 3.0] as const;
-/** Below W1_MACH_RANGE: fins at the base from M 1.1 (W2's part, as approved; fig. 35's curve is read twice from M 1.0). */
-export const W1_LOW_MACH = 1.1;
+/**
+ * Below W1_MACH_RANGE: fins at the base from M 1.0 (W2's part), where fig. 35's identified free-flight curve
+ * starts and is read twice (the owner's decision of 2026-10-21: serve wherever the result is accurate, with
+ * its band; 0015 section 11.2).
+ */
+export const W1_LOW_MACH = 1.0;
 /**
  * Moderate sweeps (W1b): the leading edge swept up to 45 deg with the trailing edge unswept, served at M 2.0 to
  * 3.0 between the zero member and the unswept member (NSWCDD/TR-92/509; 0015 section 3.4).
@@ -175,8 +184,61 @@ export function reliefFactors(): { mach: number; factor: number }[] {
   });
 }
 
-/** The zero member's low end: the smallest relief factor, carried to every Mach number from 1.5. */
-export const W1_RELIEF_LOW = Math.min(...reliefFactors().map((r) => r.factor));
+/** Fig. 38(c)'s least relief factor (0.9504): the zero member's low end if a second reader's calls confirm it. */
+export const W1_RELIEF_LOW_FIG38C = Math.min(...reliefFactors().map((r) => r.factor));
+
+/**
+ * The relief by nose: fig. 8's finned symbol of each nose (each reader's call) over figs. 31 to 33 (d)'s
+ * unfinned symbols of the same nose near R 8.06e6 (both readings), each moved by its error toward more
+ * relief. `confirmed` is whether another reading calls a symbol of that nose within the two errors.
+ */
+export function noseCallReliefFactors(): {
+  mach: number;
+  nose: string;
+  callReading: string;
+  confirmed: boolean;
+  factor: number;
+}[] {
+  const out: {
+    mach: number;
+    nose: string;
+    callReading: string;
+    confirmed: boolean;
+    factor: number;
+  }[] = [];
+  for (const c of L52J21A_FIG8_NOSE_CALLS) {
+    const confirmed = L52J21A_FIG8_NOSE_CALLS.some(
+      (d) =>
+        d.reading !== c.reading &&
+        d.mach === c.mach &&
+        d.nose === c.nose &&
+        Math.abs(d.pB - c.pB) <= d.error + c.error,
+    );
+    for (const u of L52J21A_FIG31_33D) {
+      if (u.mach !== c.mach || u.nose !== c.nose) continue;
+      out.push({
+        mach: c.mach,
+        nose: c.nose,
+        callReading: c.reading,
+        confirmed,
+        factor: (Math.abs(c.pB) - c.error) / (Math.abs(u.pB) + u.error),
+      });
+    }
+  }
+  return out;
+}
+
+const LEAST_BY_CALL = noseCallReliefFactors().reduce((a, b) => (b.factor < a.factor ? b : a));
+
+/**
+ * The zero member's low end, carried to every Mach number from 1.5: the most relief the evidence allows,
+ * fig. 38(c)'s or the nose-paired one's (0015 section 3.5).
+ */
+export const W1_RELIEF_LOW = Math.min(W1_RELIEF_LOW_FIG38C, LEAST_BY_CALL.factor);
+
+/** Whether that low end rests on a nose call that no second reader has confirmed (the second call pending). */
+export const W1_RELIEF_ON_ONE_CALL =
+  LEAST_BY_CALL.factor < W1_RELIEF_LOW_FIG38C && !LEAST_BY_CALL.confirmed;
 export const ZERO_MEMBER: Band = { low: W1_RELIEF_LOW, high: 1 };
 
 // ------------------------------------------------------ the reference member
@@ -292,7 +354,7 @@ export interface ReferenceBand extends Band {
   readonly bounded: boolean;
 }
 
-/** Four fins t/c 0.10 at x/c = 0: the reference member, measured at M 1.1 to 2.56, bounded to 3.0. */
+/** Four fins t/c 0.10 at x/c = 0: the reference member, measured at M 1.0 to 2.56, bounded to 3.0. */
 export function referenceBand(mach: number): ReferenceBand {
   if (mach > FIG35_FREE_FLIGHT_END + 1e-12) {
     const end = referenceBand(FIG35_FREE_FLIGHT_END);
@@ -525,9 +587,10 @@ export interface FinsOnBaseFactorW1 {
   readonly tauEq: number;
   readonly swept: boolean;
   /**
-   * A band-setting input of this result has one reading: the zero member from M 1.5 (RM L52J21a fig.
-   * 38(c), which cannot be read a second time from the scan, 0015 section 7), or a moderate sweep's ordering
-   * (NSWCDD/TR-92/509 Table 2, its blind second transcription requested).
+   * A band-setting input of this result has one reading: the zero member from M 1.5 (one reader's nose calls
+   * of RM L52J21a fig. 8 at M 2.41, and fig. 38(c), which cannot be read a second time from the scan; 0015
+   * sections 3.5, 7), or a moderate sweep's ordering (NSWCDD/TR-92/509 Table 2, its blind second
+   * transcription requested).
    */
   readonly secondReadingPending: boolean;
 }
@@ -595,8 +658,13 @@ const zeroName = (mach: number) =>
   mach < W1_MACH_RANGE[0] - 1e-12
     ? `no fins or fins without a pressure field (F 1 down to ${W1_FLAT_RELIEF_LOW.toFixed(3)}, ` +
       'RM L52E06 fig. 7, below M 1.5)'
-    : `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, ` +
-      'RM L52J21a fig. 38)';
+    : W1_RELIEF_ON_ONE_CALL
+      ? `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, the most ` +
+        `relief RM L52J21a allows: its fig. 8 over figs. 31 to 33 at M ${LEAST_BY_CALL.mach}, resting on ` +
+        "one reader's calls of which nose each symbol is, the second call pending; fig. 38(c) gives " +
+        `${W1_RELIEF_LOW_FIG38C.toFixed(3)})`
+      : `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, ` +
+        'RM L52J21a figs. 8, 31 to 33 and 38)';
 const memberName = (t: Thickness, n: Count, xc: number, mach: number) =>
   t === 0 || n === 0
     ? zeroName(mach)
