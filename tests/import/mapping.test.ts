@@ -78,9 +78,18 @@ describe('fixtures written for these tests', () => {
             'takes roughness only as a band with its source (design record 0008 section 2.3), ' +
             'so none is made from it',
         },
+        {
+          feature: 'mass component "Altimeter" (in nose cone "Von Karman nose")',
+          reason: 'ignored: a mass inside the body: it does not change the outside',
+        },
+        {
+          feature: 'parachute "Parachute" (in body tube "Airframe and motor case")',
+          reason: 'ignored: a mass inside the body: it does not change the outside',
+        },
       ],
       source: { kind: 'openrocket', fileName: 'minimum-diameter.ork' },
     });
+    expect(m.otherPartDetails).toEqual([]);
     expect(m.flightFrom).toMatch(/no simulation results, so the defaults: Mach 3 at 0 m/);
     // The fins end at the base, to the rounding of a sum of lengths.
     const fins = d.finSets[0]!;
@@ -228,6 +237,40 @@ describe('the body', () => {
     expect(designOf(m).nose.diameter).toBe(0.04);
     const t = await mapXml(document([stage([nose({ radius: '0.02' }), tube({ radius: 'auto' })])]));
     expect(designOf(t).body[0]).toMatchObject({ diameter: 0.04 });
+  });
+
+  it('a transition the design cannot hold still has what is on it accounted for', async () => {
+    const bad = transition(0.0125, 0.01)
+      .replace(
+        '</transition>',
+        '<subcomponents>' + massComponent('Weight') + '</subcomponents></transition>',
+      )
+      .replace(
+        '<shape>conical</shape>',
+        '<shape>haack</shape><shapeparameter>0.9</shapeparameter>',
+      );
+    const m = await mapXml(document([stage([nose(), tube(), bad])]));
+    expect(m.design).toBeNull();
+    expect(m.notRepresented.find((n) => n.type === 'transition')?.reason).toMatch(
+      /0\.9 lies outside/,
+    );
+    expect(m.ignored.map((i) => i.name)).toEqual(['Weight']);
+  });
+
+  it('a transition of zero length is a step between two diameters, held as it is', async () => {
+    const step = transition(0.0125, 0.0155, 0).replace(
+      '</transition>',
+      '<subcomponents>' + massComponent('Weight') + '</subcomponents></transition>',
+    );
+    const m = await mapXml(document([stage([nose(), tube(), step, tube({ radius: '0.0155' })])]));
+    expect(designOf(m).body[1]).toEqual({
+      kind: 'transition',
+      length: 0,
+      foreDiameter: 0.025,
+      aftDiameter: 0.031,
+      shape: { kind: 'conical' },
+    });
+    expect(m.ignored.map((i) => i.name)).toEqual(['Weight']);
   });
 
   it("OpenRocket's clipped transition profile is noted", async () => {
@@ -480,9 +523,81 @@ describe('other parts outside the body', () => {
       { kind: 'other', name: 'motor in Inner tube', count: 1 },
     ]);
     expect(notesOf(m).map((n) => n.reason)).toEqual([
-      'it reaches 5 mm aft of the base, outside the body; the design holds it as another part, not its size',
-      "the motor reaches 8 mm aft of the base (by OpenRocket's overhang); the design holds it as another part, not its size",
+      'it reaches 5 mm aft of the base, outside the body; the design holds it as another part',
+      "the motor reaches 8 mm aft of the base (by OpenRocket's overhang); the design holds it as another part",
     ]);
+    // The simple rocket: a 100 mm nose, a 300 mm tube; the mount 75 mm long, its aft end
+    // 5 mm aft of the base; the C6 70 mm long, 3 mm beyond the mount.
+    const [tubePart, motor] = m.otherPartDetails;
+    expect(tubePart!.size).toMatchObject({ length: 0.075, diameter: 0.019 });
+    expect(tubePart!.size.reachAftOfBase).toBeCloseTo(0.005, 15);
+    expect(tubePart!.front).toBeCloseTo(0.4 + 0.005 - 0.075, 15);
+    expect(motor!.size.diameter).toBe(0.018);
+    expect(motor!.size.length).toBe(0.07);
+    expect(motor!.size.reachAftOfBase).toBeCloseTo(0.008, 15);
+    expect(motor!.front).toBeCloseTo(0.4 + 0.008 - 0.07, 15);
+  });
+
+  it('each other part with its size and place, beside the design, in the same order', async () => {
+    const m = await mapXml(
+      simpleRocket({
+        tubeChildren: [
+          launchLug(),
+          railButtons(),
+          podSet([nose({ radius: '0.006', shoulderRadius: 0.005 }), tube({ radius: '0.006' })]),
+          tubeFins(),
+        ],
+      }),
+    );
+    const details = m.otherPartDetails;
+    expect(details.map((d) => d.part)).toEqual(designOf(m).otherParts);
+    expect(details.map((d) => [d.type, d.size, d.rotation])).toEqual([
+      ['launchlug', { length: 0.035, diameter: 0.007, thickness: 0.001 }, 30],
+      [
+        'railbutton',
+        {
+          diameter: 0.0097,
+          innerDiameter: 0.008,
+          height: 0.0097,
+          baseHeight: 0.002,
+          flangeHeight: 0.002,
+          screwHeight: 0,
+          separation: 0.2,
+        },
+        180,
+      ],
+      // The pods: a 100 mm nose and a 300 mm tube of radius 6 mm, 20 mm off the
+      // 12.5 mm body tube's surface ("relative"): 12.5 + 20 + 6 mm axis to axis.
+      ['podset', { length: 0.4, diameter: 0.012, radialOffset: 0.0125 + 0.02 + 0.006 }, 0],
+      // The tube fins' radius is automatic and not stored: no diameter.
+      ['tubefinset', { length: 0.06, thickness: 0.0003 }, 0],
+    ]);
+    // Fronts: the lug and the buttons centred on the 300 mm tube behind the 100 mm nose,
+    // the pods (400 mm) and the tube fins (60 mm) flush with its aft end.
+    const fronts = details.map((d) => d.front!);
+    const expected = [0.1 + (0.3 - 0.035) / 2, 0.1 + 0.3 / 2, 0.1 + 0.3 - 0.4, 0.1 + 0.3 - 0.06];
+    fronts.forEach((f, k) => {
+      expect(f).toBeCloseTo(expected[k]!, 15);
+    });
+  });
+
+  it('a nose shoulder wider than the body is an other part', async () => {
+    const m = await mapXml(simpleRocket({ noseSpec: { shoulderRadius: 0.014 } }));
+    expect(designOf(m).otherParts).toEqual([
+      { kind: 'other', name: 'Nose cone shoulder', count: 1 },
+    ]);
+    expect(m.otherPartDetails[0]).toMatchObject({
+      size: { length: 0.02, diameter: 0.028 },
+      front: 0.1,
+    });
+  });
+
+  it("inside components are among the design's notes, as ignored", async () => {
+    const m = await mapXml(simpleRocket({ tubeChildren: [massComponent('Ballast')] }));
+    expect(designOf(m).notes).toContainEqual({
+      feature: 'mass component "Ballast" (in body tube "Body tube")',
+      reason: 'ignored: a mass inside the body: it does not change the outside',
+    });
   });
 
   it('a mount flush with the base, its motor not overhanging: inside, ignored', async () => {

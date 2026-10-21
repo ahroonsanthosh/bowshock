@@ -22,6 +22,8 @@ export {
   type MapOptions,
   type NotRepresentedNote,
   type OrkMapping,
+  type OtherPartDetail,
+  type PartSize,
   type RepresentedNote,
 } from './mapping';
 export * from './model';

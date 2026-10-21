@@ -55,6 +55,7 @@ import {
   type OrkFinSet,
   type OrkMotorMount,
   type OrkNoseCone,
+  type OrkPodSet,
   type OrkSimulation,
   type OrkTransition,
 } from './model';
@@ -123,6 +124,49 @@ export interface MapOptions {
   readonly flight?: FlightDesign;
 }
 
+/**
+ * The size of an other part, metres, as the file gives it; each field
+ * only where it applies. RocketDesign's OtherPart has no place for these
+ * yet, so they travel beside it (`OrkMapping.otherPartDetails`). A motor
+ * mount holds one motor per flight configuration: a motor's diameter and
+ * length are the largest among them.
+ */
+export interface PartSize {
+  /** Along the axis. */
+  readonly length?: number;
+  /** Outer diameter. */
+  readonly diameter?: number;
+  readonly innerDiameter?: number;
+  /** How far it stands out from the body's surface (rail buttons). */
+  readonly height?: number;
+  readonly baseHeight?: number;
+  readonly flangeHeight?: number;
+  readonly screwHeight?: number;
+  /** Wall thickness (lugs, tube fins). */
+  readonly thickness?: number;
+  /** Between one and the next along the axis, for more than one. */
+  readonly separation?: number;
+  /** From the rocket's axis to the part's axis (pods, boosters). */
+  readonly radialOffset?: number;
+  /** How far it reaches aft of the base (an inner part or a motor reaching out). */
+  readonly reachAftOfBase?: number;
+}
+
+/** One of the design's other parts, with what OtherPart has no place for. */
+export interface OtherPartDetail {
+  /** The part as in `design.otherParts`, at the same index. */
+  readonly part: OtherPart;
+  /** The component in plain words, as in the notes. */
+  readonly component: string;
+  /** OpenRocket's element name. */
+  readonly type: OrkComponent['type'];
+  readonly size: PartSize;
+  /** Its front, metres from the nose's tip; null if the file does not give enough to place it. */
+  readonly front: number | null;
+  /** The first one's roll angle, degrees, where the file gives one. */
+  readonly rotation: number | null;
+}
+
 export interface OrkMapping {
   /** The design, or null when something marked 'no-design' keeps it from being made. */
   readonly design: RocketDesign | null;
@@ -130,8 +174,14 @@ export interface OrkMapping {
   readonly represented: readonly RepresentedNote[];
   /** Components and settings the design cannot hold exactly, each with its reason. */
   readonly notRepresented: readonly NotRepresentedNote[];
-  /** Components that do not belong in the design (inside the body, or not attached by OpenRocket). */
+  /**
+   * Components that do not belong in the design (inside the body, or not
+   * attached by OpenRocket); each is also among the design's notes, its
+   * reason starting "ignored:".
+   */
   readonly ignored: readonly IgnoredNote[];
+  /** Each of `design.otherParts`, in the same order, with its size and place. */
+  readonly otherPartDetails: readonly OtherPartDetail[];
   /** The surface finish of each outside component. */
   readonly finishes: readonly FinishNote[];
   /** Where the design's flight came from, in plain words. */
@@ -262,6 +312,17 @@ interface Parent {
   /** Absolute position of the front, metres from the nose's tip; null if unknown. */
   readonly absX: number | null;
   readonly length: number | null;
+  /** A body tube's outer radius (pods and boosters are placed from it); null otherwise. */
+  readonly radius: number | null;
+}
+
+/** The fields of a PartSize that the file gives: absent and unreadable values left out. */
+function sized(fields: { readonly [K in keyof PartSize]?: number | null }): PartSize {
+  const size: Record<string, number> = {};
+  for (const [k, v] of Object.entries(fields)) {
+    if (typeof v === 'number') size[k] = v;
+  }
+  return size;
 }
 
 /**
@@ -489,6 +550,7 @@ class Mapper {
   readonly finishes: FinishNote[] = [];
   readonly candidates: FinCandidate[] = [];
   readonly otherParts: OtherPart[] = [];
+  readonly otherPartDetails: OtherPartDetail[] = [];
   /** The base's position from the nose's tip, once the body is read. */
   base: number | null = null;
 
@@ -514,8 +576,18 @@ class Mapper {
     this.ignored.push({ ...this.ref(c, label), reason });
   }
 
-  other(c: OrkComponent, kind: OtherPart['kind'], count: number | null, name = c.name) {
-    this.otherParts.push({ kind, name, count: count ?? 1 });
+  /** An outside part the design holds as an other part, its size and place beside it. */
+  other(
+    c: OrkComponent,
+    label: string,
+    part: { kind: OtherPart['kind']; count: number | null; name?: string },
+    size: PartSize,
+    front: number | null,
+    rotation: number | null = null,
+  ) {
+    const p: OtherPart = { kind: part.kind, name: part.name ?? c.name, count: part.count ?? 1 };
+    this.otherParts.push(p);
+    this.otherPartDetails.push({ part: p, component: label, type: c.type, size, front, rotation });
   }
 
   /** The aspects every component may carry: a drag override, a surface finish. */
@@ -628,7 +700,7 @@ export function mapOrk(doc: OrkDocument, options: MapOptions): OrkMapping {
       if (c.type === 'nosecone' || c.type === 'bodytube' || c.type === 'transition') {
         items.push(bodyItem(c));
       } else if (c.type === 'unknown') {
-        unknown(m, c, named(c));
+        unknown(m, c, named(c), null);
       } else {
         m.ignore(
           c,
@@ -691,7 +763,13 @@ export function mapOrk(doc: OrkDocument, options: MapOptions): OrkMapping {
     if (problems.length > 0 || length === null || fore === null || aft === null) {
       // Not when the first component is not a nose: that is said already.
       if (problems.length > 0) m.refuse(c, label, problems.join('; '));
-      mapChildren(m, { component: c, label, absX: fronts[i] ?? null, length: c.length });
+      mapChildren(m, {
+        component: c,
+        label,
+        absX: fronts[i] ?? null,
+        length: c.length,
+        radius: c.type === 'bodytube' ? fore : null,
+      });
       return;
     }
     if (i === 0 && c.type === 'nosecone' && !c.flipped) {
@@ -708,7 +786,7 @@ export function mapOrk(doc: OrkDocument, options: MapOptions): OrkMapping {
               ? ' (its shoulder lies inside the body tube)'
               : ''),
         );
-        shoulderCheck(m, c, label, aft);
+        shoulderCheck(m, c, label, aft, length);
       } catch (e) {
         if (!(e instanceof RangeError)) throw e;
         m.refuse(c, label, e.message);
@@ -720,39 +798,30 @@ export function mapOrk(doc: OrkDocument, options: MapOptions): OrkMapping {
         label,
         `a tube ${formatLength(length)} long, ${formatLength(2 * fore)} across`,
       );
-    } else if (i > 0) {
+    } else if (i > 0 && c.type !== 'bodytube') {
       const s = shape as NoseShape;
-      if (fore !== aft) {
+      let refused = false;
+      // A transition of zero length is a step between the two diameters,
+      // whatever its shape; shapeOf has checked the shape's range already,
+      // so this is a guard.
+      if (fore !== aft && length > 0) {
         try {
           validateNose({ shape: s, length, baseRadius: Math.abs(aft - fore) });
         } catch (e) {
           if (!(e instanceof RangeError)) throw e;
           m.refuse(c, label, e.message);
-          return;
+          refused = true;
         }
       }
-      body.push({
-        kind: 'transition',
-        length,
-        foreDiameter: 2 * fore,
-        aftDiameter: 2 * aft,
-        shape: s,
-      });
-      const what =
-        c.type === 'nosecone'
-          ? c.flipped
-            ? 'a tail cone (a flipped nose cone), held as a transition'
-            : 'a nose cone behind the front of the rocket, held as a transition'
-          : 'a transition';
-      m.represent(
-        c,
-        label,
-        `${what}: ${describeShape(s)}, ${formatLength(length)} long, from ` +
-          `${formatLength(2 * fore)} to ${formatLength(2 * aft)} across`,
-      );
-      if (c.type === 'transition') clipCheck(m, c, label, fore, aft);
+      if (!refused) transitionOf(m, c, label, s, length, fore, aft, body);
     }
-    mapChildren(m, { component: c, label, absX: fronts[i] ?? null, length });
+    mapChildren(m, {
+      component: c,
+      label,
+      absX: fronts[i] ?? null,
+      length,
+      radius: c.type === 'bodytube' ? fore : null,
+    });
     if (c.type === 'bodytube' && c.motorMount !== null) {
       const end = fronts[i] === null || fronts[i] === undefined ? null : fronts[i] + length;
       checkMotor(m, c, label, c.motorMount, end);
@@ -764,10 +833,12 @@ export function mapOrk(doc: OrkDocument, options: MapOptions): OrkMapping {
   if (nose === undefined || m.notRepresented.some((n) => n.effect === 'no-design')) {
     return result(m, null, flightFrom);
   }
-  const notes: DesignNote[] = m.notRepresented.map((n) => ({
-    feature: n.component,
-    reason: n.reason,
-  }));
+  // The notes: what the design holds only in part or not at all, then
+  // what was ignored (inside the body, or not attached by OpenRocket).
+  const notes: DesignNote[] = [
+    ...m.notRepresented.map((n) => ({ feature: n.component, reason: n.reason })),
+    ...m.ignored.map((n) => ({ feature: n.component, reason: `ignored: ${n.reason}` })),
+  ];
   return result(
     m,
     {
@@ -784,12 +855,40 @@ export function mapOrk(doc: OrkDocument, options: MapOptions): OrkMapping {
   );
 }
 
+/** A transition, or a nose cone behind the front, as the design's transition. */
+function transitionOf(
+  m: Mapper,
+  c: OrkNoseCone | OrkTransition,
+  label: string,
+  shape: NoseShape,
+  length: number,
+  fore: number,
+  aft: number,
+  body: BodySection[],
+) {
+  body.push({ kind: 'transition', length, foreDiameter: 2 * fore, aftDiameter: 2 * aft, shape });
+  const what =
+    c.type === 'nosecone'
+      ? c.flipped
+        ? 'a tail cone (a flipped nose cone), held as a transition'
+        : 'a nose cone behind the front of the rocket, held as a transition'
+      : 'a transition';
+  m.represent(
+    c,
+    label,
+    `${what}: ${describeShape(shape)}, ${formatLength(length)} long, from ` +
+      `${formatLength(2 * fore)} to ${formatLength(2 * aft)} across`,
+  );
+  if (c.type === 'transition') clipCheck(m, c, label, fore, aft);
+}
+
 function result(m: Mapper, design: RocketDesign | null, flightFrom: string): OrkMapping {
   return {
     design,
     represented: m.represented,
     notRepresented: m.notRepresented,
     ignored: m.ignored,
+    otherPartDetails: design === null ? [] : m.otherPartDetails,
     finishes: m.finishes,
     flightFrom,
   };
@@ -828,8 +927,8 @@ function resolveAutomaticRadii(items: BodyItem[]) {
   }
 }
 
-/** A shoulder wider than the body would stand out of the body tube. */
-function shoulderCheck(m: Mapper, c: OrkNoseCone, label: string, radius: number) {
+/** A shoulder wider than the body would stand out of the body tube: an other part. */
+function shoulderCheck(m: Mapper, c: OrkNoseCone, label: string, radius: number, length: number) {
   const s = c.aftShoulder;
   if (
     s.length !== null &&
@@ -837,12 +936,20 @@ function shoulderCheck(m: Mapper, c: OrkNoseCone, label: string, radius: number)
     s.radius !== null &&
     s.radius > radius + LENGTH_TOLERANCE
   ) {
+    const shoulder = `shoulder of ${label}`;
+    m.other(
+      c,
+      shoulder,
+      { kind: 'other', count: 1, name: `${c.name} shoulder` },
+      sized({ length: s.length, diameter: 2 * s.radius }),
+      length,
+    );
     m.note(
       c,
-      `shoulder of ${label}`,
+      shoulder,
       `the shoulder's radius, ${formatLength(s.radius)}, is greater than the nose's base ` +
         `radius, ${formatLength(radius)}, so it would stand out of the body tube; the design ` +
-        'has no place for a shoulder',
+        'holds it as another part',
     );
   }
 }
@@ -864,9 +971,57 @@ function clipCheck(m: Mapper, c: OrkTransition, label: string, fore: number, aft
   );
 }
 
-function unknown(m: Mapper, c: OrkComponent, label: string) {
+/**
+ * A pod's or booster's size: the length of its body, its largest
+ * diameter, and its axis's distance from the rocket's, by OpenRocket's
+ * radius methods (RadiusMethod: free, the offset itself; relative, the
+ * body tube's radius, the offset and the pod's radius; surface, the two
+ * radii; coaxial, zero).
+ */
+function podSize(c: OrkPodSet, parentRadius: number | null): PartSize {
+  let radius: number | null = 0;
+  for (const k of c.children) {
+    const r =
+      k.type === 'nosecone'
+        ? k.aftRadius.value
+        : k.type === 'bodytube'
+          ? k.outerRadius.value
+          : k.type === 'transition'
+            ? k.foreRadius.value === null || k.aftRadius.value === null
+              ? null
+              : Math.max(k.foreRadius.value, k.aftRadius.value)
+            : 0;
+    radius = radius === null || r === null ? null : Math.max(radius, r);
+  }
+  const o = c.radiusOffset;
+  const radialOffset =
+    o === null
+      ? null
+      : o.method === 'coaxial'
+        ? 0
+        : o.method === 'free'
+          ? o.value
+          : o.method === 'relative' && o.value !== null && parentRadius !== null && radius !== null
+            ? parentRadius + o.value + radius
+            : o.method === 'surface' && parentRadius !== null && radius !== null
+              ? parentRadius + radius
+              : null;
+  return sized({
+    length: lengthOf(c),
+    diameter: radius === null ? null : 2 * radius,
+    radialOffset,
+  });
+}
+
+function unknown(m: Mapper, c: OrkComponent, label: string, front: number | null) {
   const element = c.type === 'unknown' ? c.element : c.type;
-  m.other(c, 'other', 1, c.name === '' ? `<${element}>` : c.name);
+  m.other(
+    c,
+    label,
+    { kind: 'other', count: 1, name: c.name === '' ? `<${element}>` : c.name },
+    {},
+    front,
+  );
   m.note(
     c,
     label,
@@ -892,20 +1047,30 @@ function checkMotor(
     motorMount.overhang === null || mountEnd === null || m.base === null
       ? null
       : mountEnd + motorMount.overhang - m.base;
+  const largest = (values: readonly (number | null)[]) => {
+    const known = values.filter((v): v is number => v !== null);
+    return known.length === 0 ? null : Math.max(...known);
+  };
+  const diameter = largest(motorMount.motors.map((x) => x.diameter));
+  const length = largest(motorMount.motors.map((x) => x.length));
+  const part = { kind: 'other' as const, count: 1, name: `motor in ${mount.name}` };
   if (reach === null) {
+    m.other(mount, motorLabel, part, sized({ diameter, length }), null);
     m.note(
       mount,
       motorLabel,
       'the file does not give enough to place the motor, so whether it reaches aft of the base ' +
-        'is not known',
+        'is not known; the design holds it as another part',
     );
   } else if (reach > LENGTH_TOLERANCE) {
-    m.other(mount, 'other', 1, `motor in ${mount.name}`);
+    const front =
+      length === null || mountEnd === null ? null : mountEnd + motorMount.overhang! - length;
+    m.other(mount, motorLabel, part, sized({ diameter, length, reachAftOfBase: reach }), front);
     m.note(
       mount,
       motorLabel,
       `the motor reaches ${formatLength(reach)} aft of the base (by OpenRocket's overhang); the ` +
-        'design holds it as another part, not its size',
+        'design holds it as another part',
     );
   }
 }
@@ -920,7 +1085,7 @@ function mapChildren(m: Mapper, parent: Parent) {
     const own = lengthOf(c);
     previousEnd = x === null || own === null ? null : x + own;
     if (c.type === 'unknown') {
-      unknown(m, c, label);
+      unknown(m, c, label, parent.absX === null || x === null ? null : parent.absX + x);
       continue;
     }
     if (!attaches(parent.component.type, c.type)) {
@@ -942,7 +1107,18 @@ function mapChildren(m: Mapper, parent: Parent) {
         fin(m, c, label, absX);
         break;
       case 'tubefinset': {
-        m.other(c, 'other', c.count);
+        m.other(
+          c,
+          label,
+          { kind: 'other', count: c.count },
+          sized({
+            length: c.length,
+            diameter: c.outerRadius.value === null ? null : 2 * c.outerRadius.value,
+            thickness: c.thickness,
+          }),
+          absX,
+          c.angleOffset?.degrees ?? null,
+        );
         const size =
           c.length === null
             ? ''
@@ -959,7 +1135,19 @@ function mapChildren(m: Mapper, parent: Parent) {
         break;
       }
       case 'launchlug': {
-        m.other(c, 'launch-lug', c.instanceCount);
+        m.other(
+          c,
+          label,
+          { kind: 'launch-lug', count: c.instanceCount },
+          sized({
+            length: c.length,
+            diameter: c.outerRadius === null ? null : 2 * c.outerRadius,
+            thickness: c.thickness,
+            separation: (c.instanceCount ?? 1) > 1 ? c.instanceSeparation : null,
+          }),
+          absX,
+          c.angleOffset?.degrees ?? null,
+        );
         const size =
           c.outerRadius !== null && c.length !== null
             ? `a tube ${formatLength(2 * c.outerRadius)} across and ${formatLength(c.length)} long`
@@ -973,7 +1161,22 @@ function mapChildren(m: Mapper, parent: Parent) {
       }
       case 'railbutton': {
         const n = c.instanceCount ?? 1;
-        m.other(c, 'rail-button', n);
+        m.other(
+          c,
+          label,
+          { kind: 'rail-button', count: n },
+          sized({
+            diameter: c.outerDiameter,
+            innerDiameter: c.innerDiameter,
+            height: c.height,
+            baseHeight: c.baseHeight,
+            flangeHeight: c.flangeHeight,
+            screwHeight: c.screwHeight,
+            separation: n > 1 ? c.instanceSeparation : null,
+          }),
+          absX,
+          c.angleOffset?.degrees ?? null,
+        );
         const size =
           c.outerDiameter !== null && c.height !== null
             ? ` ${formatLength(c.outerDiameter)} across and ${formatLength(c.height)} tall`
@@ -997,7 +1200,14 @@ function mapChildren(m: Mapper, parent: Parent) {
         break;
       }
       case 'podset':
-        m.other(c, 'pod', c.instanceCount);
+        m.other(
+          c,
+          label,
+          { kind: 'pod', count: c.instanceCount },
+          podSize(c, parent.radius),
+          absX,
+          c.angleOffset?.degrees ?? null,
+        );
         m.note(
           c,
           label,
@@ -1006,7 +1216,14 @@ function mapChildren(m: Mapper, parent: Parent) {
         );
         break;
       case 'parallelstage':
-        m.other(c, 'other', c.instanceCount);
+        m.other(
+          c,
+          label,
+          { kind: 'other', count: c.instanceCount },
+          podSize(c, parent.radius),
+          absX,
+          c.angleOffset?.degrees ?? null,
+        );
         m.note(
           c,
           label,
@@ -1100,20 +1317,34 @@ function internal(
     default: {
       const end = absX === null || own === null ? null : absX + own;
       const reach = end === null || m.base === null ? null : end - m.base;
+      const outer =
+        c.type === 'innertube' || c.type === 'tubecoupler' || c.type === 'engineblock'
+          ? c.outerRadius.value
+          : c.type === 'centeringring' || c.type === 'bulkhead'
+            ? c.outerRadius.value
+            : null;
+      const diameter = outer === null ? null : 2 * outer;
       if (reach === null) {
+        m.other(c, label, { kind: 'other', count: 1 }, sized({ length: own, diameter }), absX);
         m.note(
           c,
           label,
           'the file does not give enough to place it, so whether it reaches aft of the base ' +
-            'is not known',
+            'is not known; the design holds it as another part',
         );
       } else if (reach > LENGTH_TOLERANCE) {
-        m.other(c, 'other', 1);
+        m.other(
+          c,
+          label,
+          { kind: 'other', count: 1 },
+          sized({ length: own, diameter, reachAftOfBase: reach }),
+          absX,
+        );
         m.note(
           c,
           label,
           `it reaches ${formatLength(reach)} aft of the base, outside the body; the design ` +
-            'holds it as another part, not its size',
+            'holds it as another part',
         );
       } else {
         m.ignore(c, label, inside);
@@ -1124,7 +1355,7 @@ function internal(
     }
   }
   // What is inside it, placed relative to it.
-  mapChildren(m, { component: c, label: named(c), absX, length: own });
+  mapChildren(m, { component: c, label: named(c), absX, length: own, radius: null });
 }
 
 /**

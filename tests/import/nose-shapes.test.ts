@@ -106,9 +106,10 @@ describe("each OpenRocket nose shape keeps OpenRocket's radius profile", () => {
         it(`${shape}${parameters.length > 1 ? ` ${p}` : ''}, length ${L} m, base radius ${R} m`, async () => {
           const n = await importedNose(shape, ORK_PARAMETER(shape, p), L, R);
           // OpenRocket's ogive subtracts two nearly equal terms for small
-          // parameters; src/geometry rearranges them, so the two agree to
-          // OpenRocket's own rounding there, and to 1e-12 elsewhere.
-          const tolerance = shape === 'ogive' && p < 0.1 ? 1e-9 : 1e-12;
+          // parameters (1.3e-11 measured at 0.0011); src/geometry rearranges
+          // them, so the two agree to OpenRocket's own rounding there, and
+          // to 1e-13 elsewhere (3.1e-14 the largest measured).
+          const tolerance = shape === 'ogive' && p < 0.1 ? 1e-10 : 1e-13;
           expect(largestDifference(shape, p, n)).toBeLessThan(tolerance);
         });
       }
