@@ -264,4 +264,9 @@ An independent review of U0 and U1 before merging found, and these fix:
   `docs/research/interface/numbers.json`): the ramp on the GPU and the
   CPU (also at -10 deg) and the shock tube's Toro tests 1 and 3 on the
   CPU and test 1 on the GPU are identical at every reading compared.
-  PAGE_PATH_LINE
+- **The page's own path changes no number.** `tests/gpu/flow-view.test.ts`
+  solves the verified drag as the flow page asks it, to 80 cells across
+  (checked every 1000 steps there), once unwatched and once watched, drawn
+  between batches and paused (24 pauses): the two outcomes are equal in
+  every field, each grid's drag and steps included (45 and 43 minutes on
+  software WebGPU here).
