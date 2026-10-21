@@ -322,7 +322,7 @@ describe('the band adopted, M 1.80 to 2.56', () => {
     expect(r4(row(FINS_ON_BASE_ROWS, 2.56)!.high)).toBe(1.3612);
   });
 
-  it('the rows: F on the free-flight curve 1.505 to 1.153, the band 1.228 to 1.559 at M 1.80 and 1.043 to 1.361 at 2.56', () => {
+  it('the rows: F on the free-flight curve (the larger reading) 1.510 at M 1.80 to 1.153 at 2.56, the band 1.228 to 1.559 at M 1.80 and 1.043 to 1.361 at 2.56', () => {
     const at = (m: number) => {
       const r = row(FINS_ON_BASE_ROWS, m)!;
       return [r4(Math.max(...r.freeFlight.map((f) => f.factor))), r4(r.low), r4(r.high)];
@@ -340,6 +340,44 @@ describe('the band adopted, M 1.80 to 2.56', () => {
     expect(largest).toBeLessThan(0.133);
     const toClassTop = Math.max(...FINS_ON_BASE_ROWS.filter((r) => r.mach <= 2.15).map(halfWidth));
     expect(toClassTop).toBeLessThan(0.119);
+  });
+
+  it('what moved inside the class, superseded to corrected (0010 section 11.7), and why', () => {
+    // On the Basic Finner the base is the reference area, so the body base's C_D moves by
+    // |P_B, no fins| times the nominal factor's change.
+    const machs = [1.799, 1.846, 1.85, 2.0, 2.15];
+    const r5 = (x: number) => Math.round(1e5 * x) / 1e5;
+    const moved = (to: readonly FinsOnBaseRow[], from: readonly FinsOnBaseRow[], at = machs) =>
+      at.map((m) => r5(noFins(m) * (factorAt(to, m).nominal - factorAt(from, m).nominal)));
+    expect(moved(FINS_ON_BASE_ROWS, OLD_ROWS)).toEqual([
+      0.00105, -0.00031, -0.00042, -0.00082, -0.00123,
+    ]);
+    // The swap allowance alone, 0.005 to 0.0077 (+0.000675 at M 1.799, on the last digit's edge).
+    const allowance = moved(supersededRows({ identitySwapSpan: FIG35_IDENTITY_SWAP }), OLD_ROWS);
+    [0.00067, 0.00022, 0.00018, -0.00068, -0.00068].forEach((x, k) => {
+      expect(Math.abs(allowance[k]! - x)).toBeLessThanOrEqual(1e-5 + 1e-12);
+    });
+    // Reading 2's -0.2369 at M 1.80, through the high end.
+    expect(moved(FINS_ON_BASE_ROWS, finsOnBaseRows({ readings: [first!] }), [1.799])).toEqual([
+      0.00035,
+    ]);
+    // The rows every 0.05, so a row at M 1.85.
+    const oldMachs = SUPERSEDED_MACHS.filter((m) => m <= 2.5);
+    expect(moved(FINS_ON_BASE_ROWS, finsOnBaseRows({ machs: oldMachs }), [1.846, 1.85])).toEqual([
+      -0.00072, -0.00079,
+    ]);
+    // At M 2.15 the superseded factor leaned toward its M 2.2 row, on estimate B.
+    expect(
+      moved(
+        FINS_ON_BASE_ROWS,
+        supersededRows({ identitySwapSpan: FIG35_IDENTITY_SWAP }),
+        [2.15],
+      )[0],
+    ).toBe(-0.00056);
+    // The band at M 1.80.
+    const o = factorAt(OLD_ROWS, 1.8);
+    const n = factorAt(FINS_ON_BASE_ROWS, 1.8);
+    expect([o.low, o.high, n.low, n.high].map(r4)).toEqual([1.2365, 1.5373, 1.2282, 1.559]);
   });
 });
 

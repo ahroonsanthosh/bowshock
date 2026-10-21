@@ -151,8 +151,10 @@ is not used by the page and is left out.
 | P3  | a method fails (the laminar similarity solution not found)                                                                                                                                                       | `totalDragView`   | 0011             | grids            |
 | P4  | not inputs at all: a tip radius, a boat-tail, flat-plate edge shapes, fins placed other than by a distance ahead of the base, altitude and speed (the page asks for the Reynolds number; no standard atmosphere) | the page          | README "Not yet" | input            |
 
-Not refusals: the class rule ("validated on the Basic Finner" or
-"estimate, not validated", 0011 section 3) and the vacuum clamp (0010
+Not refusals: the class rule ("estimate, not validated", inside the class
+too since the claim was suspended on 2026-10-21, section 10.7; before
+that "validated on the Basic Finner" inside it; 0011 sections 3 and 4)
+and the vacuum clamp (0010
 section 10) label or bound a number; they never withhold one. The README's
 "Limits" (power off, zero incidence, no plume) lie outside the page's
 scope.
@@ -577,7 +579,8 @@ atmosphere).
   bands are stated to 3.0).
 - **The class rule** is not a refusal and stays: outside the Basic
   Finner's class a total is "an estimate, not validated" until a hold-out
-  of its own class passes.
+  of its own class passes (and inside it too, while its claim is
+  suspended, section 10.7).
 
 ## 8. Sources
 
@@ -737,24 +740,13 @@ for square-cut leading edges and rounded trailing edges. Defined:
   neither thrust nor more than the square edge's base drag. Anywhere else
   only by a recorded decision, and never where a measured method covers
   the case.
-- **Recorded decision, 2026-10-20: fins at the base above the end of TN
-  3819 fig. 35's free-flight curve** (M 2.56 to 3.0; 0010 section 11.5).
-  Lower, no fin effect (F = 1 for the present factor, defined on the basic
-  curve; the zero member's low end for the rebuilt factor, 0015); upper,
-  the factor at the curve's end, its band's high end, carried as a ratio;
-  the ordering argued there from Love's "decrease in fin effects as Mach
-  number increases" (TN 3819 p. 23) and TN 2360's dependence on the fins'
-  thickness and slope, written before the number was served.
 
 ### 10.3 The Basic Finner's factor
 
 - The validated total of the Basic Finner's class keeps the present
   fins-on-base factor (0010 section 1.3, `src/base/fins-on-base.ts`) and
   its labels unchanged, for every case inside the class, even where the
-  rebuilt factor (W1) would also cover it. (The present factor was
-  corrected on 2026-10-21 to fig. 35's free-flight curve, by a recorded
-  decision; the class was narrowed to Mach 1.8 to 2.15 the day before:
-  0010 section 11.)
+  rebuilt factor (W1) would also cover it.
 - The rebuilt factor replaces it inside the class only after the rebuilt
   factor passes its own hold-out, BRL 934 first, and then only by a
   recorded decision. Once replaced, the class's validated claim rests on
@@ -887,3 +879,74 @@ the decisions below uses a drag value.
    the claim's configuration at BRL's conditions; by the decision
    registered in 10.3, a failure of the present model there withdraws the
    claim all the same.
+
+### 10.7 Amendments, dated
+
+Added below the registered text, never written over it: sections 10.1
+to 10.6 stand as registered on 2026-10-20, and each change to what they
+decide is a dated entry here, made before the data it concerns are run.
+
+**2026-10-21 (a): fins at the base above the end of TN 3819 fig. 35's
+free-flight curve**, a recorded decision under 10.2's "Anywhere else
+only by a recorded decision". First written as a bullet inside 10.2's
+list on 2026-10-21 (commit 9b089bb), and moved here unchanged the same
+day, except that its reference to W1's record, not yet on the main
+branch, is reworded:
+
+> **Recorded decision, 2026-10-20: fins at the base above the end of TN
+> 3819 fig. 35's free-flight curve** (M 2.56 to 3.0; 0010 section 11.5).
+> Lower, no fin effect (F = 1 for the present factor, defined on the
+> basic curve; the zero member's low end for the rebuilt factor, W1's
+> record, pending); upper, the factor at the curve's end, its band's high
+> end, carried as a ratio; the ordering argued there from Love's
+> "decrease in fin effects as Mach number increases" (TN 3819 p. 23) and
+> TN 2360's dependence on the fins' thickness and slope, written before
+> the number was served.
+
+**2026-10-21 (b): the present factor corrected, and the Basic Finner's
+validated claim suspended** (10.3; 0010 sections 11 and 11.7; 0008
+section 6.4).
+
+- _The correction._ The present factor's free-flight line, as this
+  record and 0010 section 1.3 knew it, followed Love's estimate B, a
+  prediction, above about Mach 2.15; the factor was corrected on
+  2026-10-21 to two readings of fig. 35's free-flight curve as
+  identified, which ends at Mach 2.563, with the identity-swap allowance
+  re-derived (0.005 to 0.0077) and, above the end, the bounded factor of
+  amendment (a). The class had been narrowed to Mach 1.799 to 2.15 the
+  day before (0010 section 7).
+- _What moved._ Inside the class the body base, and so the total, moves
+  by +0.00105, -0.00031 and -0.00042 in C_D at the three shots (Mach
+  1.799, 1.846, 1.85: -0.07% to +0.17% of the total), and by -0.00082
+  and -0.00123 at Mach 2.0 and 2.15; the served defaults by +0.16%,
+  -0.15% and -0.23% at Mach 1.8, 2.0 and 2.15. Above the class the total
+  falls by 0.7% to 1.0% at Mach 2.35 to 2.41 and by 2.6% to 3.0% at 2.66
+  to 2.97. The gate re-run is a recorded correction, not a test:
+  residuals -5.1% to +7.5% (mean -0.4%), every shot inside its tolerance
+  (0010 section 11.6).
+- _The owner's decision._ By 0008 section 6.1 (a term changed after a
+  test is not validated by it), the Basic Finner's total is "an
+  estimate, not validated" everywhere, inside the class too, until a
+  held-back set tests the corrected factor. 10.3's first bullet ("the
+  validated total of the Basic Finner's class keeps the present factor
+  ... unchanged") therefore holds no validated total meanwhile: the class
+  keeps the corrected present factor, and its rule (Mach 1.799 to 2.15,
+  Reynolds number 1.19e7 to 2.0e7, 216.65 to 320 K, each dimension
+  within 0.5%; 0011 section 3) is kept as the range the next test will
+  cover.
+- _The route back._ BRL Report 934's range A (Mach 1.5 to 2.47, 10.5),
+  run once as registered, after its second reading and the decisions of
+  10.6, is the test of the corrected factor: the present model reported
+  at its rounds at Mach 1.798 to 2.47, as 10.3's last bullet registers.
+  If it passes by rule 4 of 10.1, the class is validated over what that
+  range supports; if it fails, the claim is withdrawn, as registered.
+  Not run.
+- _History._ The second run (0010 section 4.2), round 5's tolerances
+  (0010 section 10) and the correction's residuals (0010 section 11.6)
+  are kept in the record as they were.
+
+**2026-10-21 (c): readings.** Fig. 35's free-flight curve is now read
+twice, at Mach 1.0 to 2.56, by two readers (0010 section 11.3), so 10.4's
+"TN 3819 fig. 35 below Mach 1.8 (round 3 only)" no longer applies to
+that curve; round 3's reading is superseded above about Mach 2.15, where
+it followed estimate B.

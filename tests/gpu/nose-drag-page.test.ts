@@ -14,9 +14,9 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   basicFinnerForm,
   GATE_TRANSITION_REYNOLDS,
-  OFFSET_CAVEAT,
+  CLASS_CLAIM,
   totalDragView,
-  VALIDATED_CLAIM,
+  SUSPENDED_REASON,
 } from '../../src/app/total-drag';
 import {
   displayText,
@@ -129,7 +129,7 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(text('#implied-temperature')).toBe('288.15 K');
     const out = text('#total-output');
     expect(out).toContain('No total yet: run the solve above');
-    expect(out).toContain('inside the class tested by the Basic Finner');
+    expect(out).toContain("inside the Basic Finner's class, kept as the range");
     expect(out).not.toContain('C_D =');
     const form = formOf(BODY, 2, pageFields());
     expect(out).toBe(displayText(totalDragDisplay(totalDragView(form, { kind: 'pending' }))));
@@ -166,7 +166,7 @@ describe('the drag page: total drag before a nose solve', () => {
     out = await settled(before);
     expect(hidden('#altitude-field') || hidden('#implied-reynolds-field')).toBe(true);
     expect(hidden('#reynolds-field') || hidden('#temperature-field')).toBe(false);
-    expect(out).toContain('inside the class tested by the Basic Finner');
+    expect(out).toContain("inside the Basic Finner's class, kept as the range");
     // Back to meters, as the page opened: inside the class again, the same words.
     set('#condition-mode', 'altitude-m');
     set('#altitude', '0');
@@ -190,7 +190,7 @@ describe('the drag page: total drag before a nose solve', () => {
     let before = text('#total-output');
     set('#shape', 'ogive');
     let out = await settled(before);
-    expect(out).toContain('outside the class tested by the Basic Finner');
+    expect(out).toContain("outside the Basic Finner's class");
     expect(out).toContain('the nose is not a cone');
     before = out;
     set('#planform', 'trapezoidal');
@@ -217,7 +217,7 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(hidden('#reynolds-field')).toBe(false);
     expect(pageFields().reynoldsOnLength).toBe('1.32e7');
     expect(pageFields().temperature).toBe('293.95');
-    expect(out).toContain('inside the class tested by the Basic Finner');
+    expect(out).toContain("inside the Basic Finner's class, kept as the range");
     expect(text('#overall-length')).toBe('10 calibers');
   });
 });
@@ -240,14 +240,16 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     document.body.append(target);
     renderBlocks(target, blocks);
     expect(target.textContent).toBe(displayText(blocks));
-    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5156 to 0.7047).
-    expect(target.querySelector('p.result.ok')?.textContent).toBe(
-      'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%)',
+    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048), inside
+    // the class and an estimate, its claim suspended (0010 section 11.7).
+    expect(target.querySelector('p.result.warn')?.textContent).toBe(
+      'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%): an estimate, ' +
+        'not validated',
     );
-    expect(target.querySelector('.claim.claim-ok')?.textContent).toContain(VALIDATED_CLAIM);
-    // The offset at Mach 2.97 is stated in the claim, not set apart (the class stops at 2.15).
-    expect(target.querySelector('.claim.claim-ok')?.textContent).toContain(OFFSET_CAVEAT);
-    expect(target.querySelector('.claim .warn')).toBeNull();
+    expect(target.querySelector('.claim.claim-warn')?.textContent).toContain(CLASS_CLAIM);
+    expect(target.querySelector('.claim.claim-warn')?.textContent).toContain(SUSPENDED_REASON);
+    // No green status anywhere in the total.
+    expect(target.querySelector('.ok, .claim-ok')).toBeNull();
     expect(target.querySelectorAll('tbody tr').length).toBe(
       view.total.inputs.length + view.total.components.length,
     );
@@ -257,8 +259,8 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     target.remove();
   });
 
-  it('above Mach 2.15 the Basic Finner is laid out as an estimate, not validated, with the corrected band, never refused: M 2.3, 2.5, 2.9', () => {
-    for (const mach of [2.3, 2.5, 2.9]) {
+  it('the Basic Finner is laid out as an estimate, not validated, with the corrected band, never refused, inside the class (M 1.8, 2.0, 2.15, its claim suspended) and above it (M 2.3, 2.5, 2.9)', () => {
+    for (const mach of [1.8, 2.0, 2.15, 2.3, 2.5, 2.9]) {
       const form = basicFinnerForm(mach);
       const view = totalDragView(form, {
         kind: 'solved',
@@ -274,11 +276,12 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
       expect(head.startsWith(`Total C_D = ${view.total.cd.toFixed(4)}`)).toBe(true);
       expect(head.endsWith(': an estimate, not validated')).toBe(true);
       expect(target.querySelector('.claim.claim-warn')?.textContent).toContain(
-        `Mach ${mach} is outside 1.799 to 2.15`,
+        mach <= 2.15 ? SUSPENDED_REASON : `Mach ${mach} is outside 1.799 to 2.15`,
       );
       expect(target.textContent).toContain(
         mach > 2.56 ? 'bounded, not measured' : 'an analogy, not a measurement',
       );
+      expect(target.querySelector('.ok, .claim-ok')).toBeNull();
       target.remove();
     }
   });

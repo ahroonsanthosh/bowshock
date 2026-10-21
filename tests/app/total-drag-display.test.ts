@@ -15,11 +15,13 @@ import {
   basicFinnerFields,
   conditionOf,
   displayText,
+  ESTIMATE_TOLERANCE_TEXT,
   failureDisplay,
   fieldsShown,
   formOf,
   gateDisplay,
   impliedConditionText,
+  INSIDE_PENDING_TEXT,
   NO_WEBGPU,
   noseKeyOf,
   noseStateOf,
@@ -41,11 +43,10 @@ import {
   FINS_ON_BASE_NOTE,
   GATE_TRANSITION_REYNOLDS,
   NOT_REPRESENTED,
-  OFFSET_CAVEAT,
+  CLASS_CLAIM,
   PUBLISHED_GATE,
-  TOLERANCE_CAVEAT,
+  SUSPENDED_REASON,
   totalDragView,
-  VALIDATED_CLAIM,
   type NoseState,
   type TotalDragForm,
 } from '../../src/app/total-drag';
@@ -385,7 +386,10 @@ describe('the display', { timeout: 60_000 }, () => {
       tone: 'plain',
       headline: true,
     });
-    expect(displayText(inside)).toContain('inside the class tested by the Basic Finner');
+    expect(displayText(inside)).toContain(INSIDE_PENDING_TEXT);
+    expect(displayText(inside)).toContain(
+      'an estimate, not validated, while the claim is suspended',
+    );
     expect(displayText(inside)).not.toContain('C_D =');
     const ogive = {
       ...BODY,
@@ -401,7 +405,7 @@ describe('the display', { timeout: 60_000 }, () => {
     });
   });
 
-  it('a validated total: the headline rounded outward, the claim, every label, the notes', () => {
+  it('a total inside the class: an estimate, its claim suspended, the headline rounded outward, every label, the notes', () => {
     const form: TotalDragForm = {
       ...basicFinnerForm(1.85, 1.23e7),
       transitionReynolds: GATE_TRANSITION_REYNOLDS,
@@ -410,28 +414,30 @@ describe('the display', { timeout: 60_000 }, () => {
     const view = totalDragView(form, exactNose(form));
     if (view.kind !== 'total') throw new Error(view.kind);
     const blocks = totalDragDisplay(view);
-    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5156 to 0.7047).
+    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048), the
+    // band rounded outward as in the gate's table.
     expect(blocks[0]).toEqual({
       kind: 'paragraph',
-      text: 'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%)',
-      tone: 'ok',
+      text:
+        'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%): an estimate, ' +
+        'not validated',
+      tone: 'warn',
       headline: true,
     });
     const box = blocks[1]!;
-    expect(box.kind === 'box' && box.tone).toBe('ok');
+    if (box.kind !== 'box') throw new Error('expected the claim');
+    expect(box.tone).toBe('warn');
+    expect(box.blocks).toContainEqual({ kind: 'list', items: [SUSPENDED_REASON] });
     const said = paragraphs(blocks).flatMap((b) => (b.kind === 'paragraph' ? [b] : []));
     for (const text of [
-      VALIDATED_CLAIM,
-      TOLERANCE_CAVEAT,
+      CLASS_CLAIM,
+      ESTIMATE_TOLERANCE_TEXT,
       BAND_CAVEAT,
       BREAKDOWN_NOTE,
       NOT_REPRESENTED,
     ]) {
       expect(said.map((b) => b.text)).toContain(text);
     }
-    // The offset at Mach 2.97 is stated beside the claim, not set apart: the class stops at
-    // Mach 2.15, below those shots.
-    expect(said.find((b) => b.text === OFFSET_CAVEAT)?.tone).toBe('plain');
     const [inputs, components] = tables(blocks);
     expect(inputs!.rows.map((r) => [r[0], r[2]])).toEqual(
       view.total.inputs.map((i) => [i.name, i.label]),
@@ -451,16 +457,20 @@ describe('the display', { timeout: 60_000 }, () => {
     expect(blocks).toContainEqual({ kind: 'list', items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE] });
   });
 
-  it('inside the class the offset is stated, not set apart: nothing in the claim is', () => {
-    for (const mach of [1.799, 2.0, 2.15]) {
+  it('no total is shown as validated, inside the class or out (M 1.8, 2.0, 2.15, 2.3, 2.9): the headline and the claim warn', () => {
+    for (const mach of [1.8, 2.0, 2.15, 2.3, 2.9]) {
       const form = basicFinnerForm(mach);
       const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
+      const head = blocks[0]!;
       const box = blocks[1]!;
-      if (box.kind !== 'box') throw new Error('expected the claim');
-      expect(box.tone).toBe('ok');
-      const said = paragraphs(box.blocks).flatMap((b) => (b.kind === 'paragraph' ? [b] : []));
-      expect(said.find((b) => b.text === OFFSET_CAVEAT)?.tone).toBe('plain');
-      expect(said.every((b) => b.tone === 'plain')).toBe(true);
+      if (head.kind !== 'paragraph' || box.kind !== 'box') throw new Error('expected a total');
+      expect([head.tone, head.text.endsWith(': an estimate, not validated'), box.tone]).toEqual([
+        'warn',
+        true,
+        'warn',
+      ]);
+      expect(displayText(box.blocks)).toContain(mach <= 2.15 ? CLASS_CLAIM : ESTIMATE_CLAIM);
+      expect(displayText(blocks)).not.toContain('Validated on');
     }
   });
 
@@ -483,7 +493,7 @@ describe('the display', { timeout: 60_000 }, () => {
         'the leading-edge radius is 0 cal, not 0.004 within 0.5%',
       ],
     });
-    expect(displayText(box.blocks)).toContain('-19.5% to -26.2% and +23.1% to +27.4%');
+    expect(displayText(box.blocks)).toContain('-20.0% to -27.0% and +23.3% to +28.6%');
   });
 
   it('a failure of the computation itself: no number', () => {
@@ -503,7 +513,7 @@ describe('the display', { timeout: 60_000 }, () => {
       'DA95021318',
       '1.799',
       '0.594',
-      '0.6134 (0.5296 to 0.7296)',
+      '0.6134 (0.5296 to 0.7297)',
       '-3.2%',
       '-24.6% to +23.5%',
       '-3.0%',

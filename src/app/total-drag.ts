@@ -12,9 +12,10 @@
  * - **awaiting the nose**: every other component computes, but the nose
  *   has not been solved for this nose, body and Mach number (no number);
  * - **total**: src/total's C_D with its model-form band, each input band
- *   apart, each component with its band and label, and the claim:
- *   "validated on the Basic Finner" inside the class of `basicFinnerClass`,
- *   "estimate, not validated" outside it.
+ *   apart, each component with its band and label, and the claim, always
+ *   "estimate, not validated": inside the class of `basicFinnerClass`
+ *   because its validated claim is suspended (0010 section 11.7), outside
+ *   it with every condition it fails.
  */
 
 import { FITTED_DRAG_FLOOR } from '../analysis/verified-drag';
@@ -162,6 +163,9 @@ export function parseNumberList(text: string): number[] {
  * static temperatures over which the model's sensitivity is measured.
  * Conservative by design: what the gate did not test is outside, and so
  * is what it tested on a prediction, not a measurement (Mach 2.15 to 3.0).
+ * Its validated claim is suspended (0010 section 11.7): the class is kept
+ * as the range the registered test of the corrected factor will cover, and
+ * a case inside it is an estimate with that reason.
  */
 export const BASIC_FINNER_CLASS = {
   /** Relative tolerance on every dimension. */
@@ -302,7 +306,10 @@ const sensitivity = `${(100 * TEMPERATURE_SENSITIVITY).toFixed(2)}%`;
 
 /** The class in words, for the page. */
 export const CLASS_DESCRIPTION =
-  'The class, as this page decides it (design record 0011): the Basic Finner as transcribed, a ' +
+  "The Basic Finner's class, as this page decides it (design record 0011), kept as the range its " +
+  'next registered test will cover; its validated claim is suspended since the fins-on-base ' +
+  'factor was corrected after its test (design record 0010, section 11.7). The Basic Finner as ' +
+  'transcribed, a ' +
   '20 deg cone (2.836 cal) on a cylinder to a flat base, 10.0 cal overall; four rectangular fins ' +
   'of 1.0 cal root chord and span, their trailing edges at the base; single-wedge sections from a ' +
   '0.004 cal leading-edge radius to a blunt trailing edge 0.08 cal thick; every dimension within ' +
@@ -314,37 +321,33 @@ export const CLASS_DESCRIPTION =
 
 // ------------------------------------------------------------- the claims
 
-/** Inside the class (0010 sections 4.2 and 7). */
-export const VALIDATED_CLAIM =
-  'Validated on the Basic Finner: this configuration and condition lie inside the one class whose ' +
-  'total drag has passed a hold-out test, the Basic Finner in free flight (DREV TM 9703: 11 shots ' +
-  'at Mach 1.80 to 2.97, Reynolds numbers 1.19e7 to 1.98e7 on length; design record 0010, section ' +
-  '4.2). Measured over modelled, the 11 residuals were -7.7% to +4.5% (mean -1.9%), inside a ' +
-  'tolerance of -19.5% to -26.2% and +23.1% to +27.4% of the modelled total (as re-derived ' +
-  "after an independent audit, section 10). The shots flew in the range's air, about 294 K; " +
-  'across static temperatures of 216.65 to 320 K the modelled total moves from its value there ' +
-  `by at most ${sensitivity} (design record 0011, section 3). The class stops at Mach 2.15, ` +
-  'taking in three of the shots (Mach 1.80 to 1.85), because above it the fins-on-base factor ' +
-  "the gate tested was read from one of Love's estimates in TN 3819 fig. 35, not from its " +
-  'free-flight curve, which ends at Mach 2.56 (design record 0010, section 7). The factor was ' +
-  'corrected to that curve after the residuals were known, a recorded correction, not a new ' +
-  'test: re-run, the three shots inside the class lie -4.5% to +0.5% from the corrected model ' +
-  '(design record 0010, section 11).';
-export const TOLERANCE_CAVEAT =
-  'That tolerance is wide: a pass at such a width says little by itself, and the residuals are ' +
-  'the finding. The two fin-edge terms, both analogies, carry 24% to 25% of the Basic ' +
-  "Finner's modelled total, and the body base carries the fins-on-base factor, itself an " +
-  'analogy from circular-arc fins.';
-export const OFFSET_CAVEAT =
-  'At Mach 2.97 both shots lay below the model, by 5.4% and 7.6% (mean -6.5%), beyond that ' +
-  "cluster's own spread of +-1.2%: a systematic offset inside the tolerance. The model was not " +
-  'retuned on it; the fins-on-base correction, made on the figure alone after it was known, ' +
-  'leaves 2.6% and 4.8% there, where the total is now an estimate.';
+/**
+ * Inside the class (0010 section 11.7): the validated claim is suspended.
+ * The class passed its hold-out test (0010 section 4.2), but the
+ * fins-on-base factor was corrected after it (0010 section 11), and by 0008
+ * section 6.1 a term changed after a test is not validated by it. The class
+ * is kept as the range the registered test of the corrected factor will
+ * cover (0014 section 10.5). No total on the page is labelled validated.
+ */
+export const CLASS_CLAIM =
+  "Estimate, not validated: this case lies inside the Basic Finner's class, whose total drag " +
+  'passed a hold-out test in free flight (DREV TM 9703: 11 shots at Mach 1.80 to 2.97; design ' +
+  'record 0010, section 4.2), but that claim is suspended: the fins-on-base factor was corrected ' +
+  'after the test (design record 0010, section 11), and a term changed after a test is not ' +
+  'validated by it (design record 0008, section 6.1). The class is kept as the range its next ' +
+  "registered test will cover, BRL Report 934's range A (Mach 1.5 to 2.47).";
+/** The reason given with it. */
+export const SUSPENDED_REASON =
+  'the fins-on-base factor was corrected after the Basic Finner gate (design record 0010, ' +
+  'section 11), so by design record 0008 section 6.1 the claim is suspended until the ' +
+  "registered test of the corrected factor, BRL Report 934's range A, is run";
+/** Outside the class. */
 export const ESTIMATE_CLAIM =
-  'Estimate, not validated: this case lies outside the one class whose total drag has passed a ' +
-  'hold-out test (the Basic Finner). Each component is inside the domain of its own band, so the ' +
-  'total is computed, but no total-drag measurement tests this configuration or condition, and ' +
-  'the component bands are estimates here.';
+  "Estimate, not validated: this case lies outside the Basic Finner's class, the one class " +
+  'whose total drag has been tested against free flight (its claim is suspended meanwhile; ' +
+  'design record 0010, section 11.7). Each component is inside the domain of its own band, so ' +
+  'the total is computed, but no total-drag measurement tests this configuration or condition, ' +
+  'and the component bands are estimates here.';
 /** Every total (0008 section 6.3). */
 export const BAND_CAVEAT =
   "The model-form band is the linear sum of the components' bands and is a minimum: each " +
@@ -364,22 +367,25 @@ export const NOT_REPRESENTED =
   "0.004 cal meplat, 1.0e-4 in C_D at pitot pressure), the rounded leading edge's effect on the " +
   'fin faces; friction is at free-stream edge conditions. Zero incidence, power off, no plume.';
 
-export type Claim =
-  | { readonly kind: 'validated'; readonly text: string; readonly caveats: readonly string[] }
-  | { readonly kind: 'estimate'; readonly text: string; readonly reasons: readonly string[] };
+/**
+ * Every total is an estimate (0010 section 11.7): there is no validated
+ * claim while the Basic Finner's is suspended, and so no path to one.
+ */
+export interface Claim {
+  readonly kind: 'estimate';
+  readonly text: string;
+  readonly reasons: readonly string[];
+}
 
 /**
- * The offset at Mach 2.97 is stated beside every validated total. It was
- * set apart from Mach 2.86 up, nearer those shots; the class now stops at
- * 2.15, so no case inside it is. A total with a component bounded, not
- * measured, is at best an estimate, and its claim names that component
- * (0014 section 10.2), inside the class or not.
+ * Inside the class, the suspended claim and its reason; outside it, every
+ * condition it fails. A total with a component bounded, not measured, also
+ * names that component (0014 section 10.2).
  */
 function claimOf(check: ClassCheck, bounded: readonly string[]): Claim {
-  if (!check.inside || bounded.length > 0) {
-    return { kind: 'estimate', text: ESTIMATE_CLAIM, reasons: [...check.outside, ...bounded] };
-  }
-  return { kind: 'validated', text: VALIDATED_CLAIM, caveats: [TOLERANCE_CAVEAT, OFFSET_CAVEAT] };
+  return check.inside
+    ? { kind: 'estimate', text: CLASS_CLAIM, reasons: [SUSPENDED_REASON, ...bounded] }
+    : { kind: 'estimate', text: ESTIMATE_CLAIM, reasons: [...check.outside, ...bounded] };
 }
 
 // ---------------------------------------------------------- configuration
@@ -738,7 +744,9 @@ export interface PublishedShot {
  * The gate re-run with the corrected fins-on-base factor (0010 section 11), a recorded
  * correction made after the residuals were known, not a validation: the modelled totals, bands,
  * residuals and tolerances (round 5's arithmetic, 0010 section 10) held to the library by the
- * tests, with the second run's residual beside each (0010 section 4.2).
+ * tests, with the second run's residual beside each (0010 section 4.2). Each band is rounded
+ * outward, as every band on the page is (./band.ts), so that the table and a total's headline
+ * show the same interval for the same shot; the other values to the nearest last digit.
  */
 export const PUBLISHED_GATE: readonly PublishedShot[] = [
   {
@@ -747,7 +755,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     cx0: 0.594,
     cd: 0.6134,
     low: 0.5296,
-    high: 0.7296,
+    high: 0.7297,
     residual: -3.2,
     tolerance: [-24.6, 23.5],
     secondRun: -3.0,
@@ -758,7 +766,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     cx0: 0.598,
     cd: 0.5952,
     low: 0.5164,
-    high: 0.7063,
+    high: 0.7064,
     residual: 0.5,
     tolerance: [-24.0, 23.3],
     secondRun: 0.4,
@@ -768,8 +776,8 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     mach: 1.85,
     cx0: 0.567,
     cd: 0.594,
-    low: 0.5156,
-    high: 0.7047,
+    low: 0.5155,
+    high: 0.7048,
     residual: -4.5,
     tolerance: [-24.0, 23.3],
     secondRun: -4.6,
@@ -780,7 +788,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     cx0: 0.5,
     cd: 0.4811,
     low: 0.4187,
-    high: 0.5717,
+    high: 0.5718,
     residual: 3.9,
     tolerance: [-22.0, 26.4],
     secondRun: 3.2,
@@ -790,8 +798,8 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     mach: 2.364,
     cx0: 0.478,
     cd: 0.4787,
-    low: 0.4167,
-    high: 0.5687,
+    low: 0.4166,
+    high: 0.5688,
     residual: -0.1,
     tolerance: [-22.0, 26.5],
     secondRun: -0.9,
@@ -802,7 +810,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     cx0: 0.473,
     cd: 0.4699,
     low: 0.4094,
-    high: 0.558,
+    high: 0.5581,
     residual: 0.7,
     tolerance: [-21.9, 26.6],
     secondRun: -0.3,
@@ -823,7 +831,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     mach: 2.741,
     cx0: 0.4,
     cd: 0.4215,
-    low: 0.368,
+    low: 0.3679,
     high: 0.5002,
     residual: -5.1,
     tolerance: [-26.9, 28.6],
@@ -835,7 +843,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     cx0: 0.452,
     cd: 0.4206,
     low: 0.3672,
-    high: 0.499,
+    high: 0.4991,
     residual: 7.5,
     tolerance: [-26.8, 28.6],
     secondRun: 4.5,
@@ -846,7 +854,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     cx0: 0.385,
     cd: 0.3951,
     low: 0.3459,
-    high: 0.4677,
+    high: 0.4678,
     residual: -2.6,
     tolerance: [-20.0, 25.7],
     secondRun: -5.4,
@@ -856,7 +864,7 @@ export const PUBLISHED_GATE: readonly PublishedShot[] = [
     mach: 2.97,
     cx0: 0.376,
     cd: 0.3951,
-    low: 0.3459,
+    low: 0.3458,
     high: 0.4677,
     residual: -4.8,
     tolerance: [-20.0, 25.7],
