@@ -229,3 +229,66 @@ centre values and ink extents and what could and could not be separated.
   and fitted symbol outlines drawn over the scan.
 * `scripts/`: everything used, in the order calib, track or symbols, read,
   overlays, make_csvs.
+
+## Item 3: NASA CR-149372 fig. 8b (Macha 1976, NTRS 19770008057)
+
+File `19770008057.pdf`, SHA-256
+`339f24fc82ecc0409c7bb93c83219c32caf5223241f0d452d9e4d9145ea59c18`, PDF p. 26
+(report p. 25), "Figure 8b. As in Figure 8a except Mach number = 1.0 to 1.2":
+Cp against circumferential angle theta (deg) on a circular cylinder in
+crossflow. Legend: circle with dot = M 1.0, square with dot = M 1.1,
+triangle = M 1.2, all at Reynolds number 0.19 x 10^6, diameter 1.91 cm.
+The report text (p. 9) quotes "corrected" Cp values for this figure; what is
+read here is what is plotted.
+
+The embedded image is a 300 dpi JBIG2 halftone, so lines and symbols are
+dithered: everything is measured on the page box-blurred with radius 2 (5 x 5
+px at 600 dpi). The curves are about 15 px wide.
+
+Calibration (`scripts/grid_calib.py`, configuration `cr8b`): the only
+gridlines are every 30 deg and every 0.4 in Cp, drawn by hand and broken by
+the draftsman where they meet the curves; lines are followed from several
+seeds each. 53 of 56 intersections measured (the 3 missing are under the
+legend). Gridline straightness rms 0.6 to 1.5 px. The grid is irregular:
+vertical spacings 437 to 458 px for 30 deg. A single affine map through all
+intersections leaves theta residuals rms 0.42 deg (max 0.96 deg) and Cp
+residuals rms 0.0017 (max 0.0035); leave-one-out rms 3.0 px in x, 2.0 px in y.
+Values are read with the local bilinear map (relative to the drawn grid);
+the affine-map value is also given in the CSV for every row, so the effect of
+the irregular grid can be seen (up to 0.6 deg in theta, 0.0025 in Cp).
+
+Identification: each faired line passes through its own symbols. The M 1.2
+line (`scripts/cr_track.py`, red on the overlays) passes through or touches
+every triangle; the M 1.1 and M 1.0 lines were tracked over 17 to 65 deg
+only to make sure the M 1.2 track never moved onto them. From 22 to 65 deg
+the M 1.2 line is the right-most of the three (largest theta at a given Cp),
+35 to 70 px (2.3 to 4.7 deg) from the M 1.1 line and more than 86 px from
+the M 1.0 line; no M 1.2 point came within 22 px of another line. Columns
+were measured where the line is flat and rows where it is steep. Points
+within 30 px of a triangle centre or where the ink run is wider than 24 px
+(a symbol) are left out of the fits, as are points on gridlines.
+
+Triangles (`scripts/tri_match.py`): a synthetic outline drawn from a clean
+symbol (centre-line apex to base 44 px, base 54 px, stroke 10 px) is
+correlated with the blurred page; the template's reference point is the
+centroid of its vertices. 22 triangles were found along the M 1.2 line (one
+correlation peak at theta 77 deg had no symbol under it and was rejected by
+eye). Error 2 px per axis for the template fit plus 1 px of calibration.
+
+Faired curve (`scripts/cr_read.py`): at each 5 deg the clean points within
++-1.5, 2.5 and 4 deg are fitted by a line and a parabola. Error as in the
+TN 3819 reading with 1.4 px per axis; in the steep part it is dominated by
+the theta position times the slope (0.03 per deg), giving +-0.005 to 0.007.
+
+Results (`readings/cr149372_fig8b.csv`): faired curve at theta 0 to 100 in
+steps of 5: 1.394, 1.388, 1.357, 1.303, 1.221, 1.117, 1.000, 0.869, 0.719,
+0.570, 0.425, 0.278, 0.124, -0.023, -0.169, -0.302, -0.423, -0.521, -0.619,
+-0.687, -0.741 (errors +-0.002 to 0.007, +-0.012 at 100 deg).
+
+Uncertain or not read: the faired line is hidden inside the theta = 0
+triangle below 1.7 deg (the 0 deg value is extrapolated with zero slope at
+0); from theta 93 to 112 the line runs through a cluster of overlapping
+triangles, so 95 deg (+-0.006) and especially 100 deg (+-0.012) are read
+from short visible pieces. Near the top (0 to 15 deg) and at 101 to 108 deg
+the faired line runs through the upper part of the triangles, 0.012 to
+0.018 above their centroids; in the steep part it passes through them.
