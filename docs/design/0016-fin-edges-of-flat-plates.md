@@ -879,10 +879,32 @@ first-reading point would have made it 1.28. The label: "the band widened
 by 0.95 to 1.21 for it, the sweep allowance extrapolated in normal Mach
 number (checked at M_n 3.37 to 6.65; widened to contain RM A55H31's own
 tests at 45 and 60 deg, M_n 1.96 to 2.77, and TN 3861's crossflow points;
-no yawed datum below M_n 1.96 at a served sweep)". Whether swept edges
-below M_n 1.96 should instead be refused is the coordinator's call: it
-would refuse the hobby example's leading edges at M 1.5 and 1.8 again
-(M_n 1.11 and 1.34).
+no yawed datum below M_n 1.96 at a served sweep)".
+
+**The coordinator's decision (2026-10-21): served.** Swept edges below M_n
+1.96, where no yawed datum lies at a served sweep, are served, not refused,
+with the band that contains every yawed datum (0.95 to 1.21) and the label
+above, under the owner's rule: serve rather than refuse wherever an honest
+band can be given, and state plainly what it rests on (0014 W4, amended
+2026-10-21). Refusing them would have refused the hobby example's leading
+edges at M 1.5 and 1.8 again (M_n 1.11 and 1.34).
+
+**What would replace the extrapolation:** front-side pressures (or the
+front side's drag) on yawed circular cylinders or swept blunt leading
+edges at M_n 1.0 to 1.96 and sweeps up to 45 deg, a free-stream Mach number
+of about 1.0 to 2.8, each read twice. None opened for this record holds
+them. Searched and not in range: Bursnall and Loftin, NACA TN 2463 (yawed
+cylinder, M_n under 0.2); Sawyer and Daum, NACA wing-flow tests (NTRS
+19930085324: a 45 deg swept cylinder at M 0.7 to 1.2, rear pressures,
+M_n under 0.85); Pepper, free flight to M 1.4 (NTRS 19930087226: a 45 deg
+blunt-edged wing, M_n under 1.0); Kyle and Feryn (NTRS 19660028010: 67 deg
+of sweep). Candidates to open, not read here: O'Neal, free flight of
+cylindrically blunted wedges swept 36.75 and 45 deg at M 1.78 to 2.99 (NTRS
+19980227361; M_n about 1.26 to 2.4; heat transfer, whether it holds
+pressures is not known until opened); Holdaway, Lazzeroni and Hatfield, a
+45 deg swept wing with blunted leading edges to M 2.20 (NTRS 19980223578;
+M_n up to 1.56; wing-body drag increments, a check at most, not a front
+side).
 
 ### Item 2: fig. 12 converted exactly
 

@@ -483,6 +483,20 @@ to F7.
   edge may share). TN 3861 figs. 15 and 16, read twice (with fig. 17, read
   once), hold one crossflow point at a served sweep, an estimate inside
   that allowance. No yawed datum lies below M_n 1.96 at a served sweep.
+- _Amended 2026-10-21, the coordinator's decision under the owner's rule
+  (serve rather than refuse wherever an honest band can be given, and say
+  plainly what it rests on; 0016 section 16)._ Swept edges at M_n 1.0 to
+  1.96, where no yawed datum lies at a served sweep, are served with the
+  sweep allowance that contains every yawed datum, 0.95 to 1.21, labelled
+  "the sweep allowance extrapolated in normal Mach number" and "no yawed
+  datum below M_n 1.96 at a served sweep". What would replace the
+  extrapolation: front-side pressures on yawed cylinders or swept blunt
+  leading edges at M_n 1.0 to 1.96 and sweeps up to 45 deg, read twice.
+  None is held; candidates to open are O'Neal's free-flight swept blunt
+  leading edges (36.75 and 45 deg, M 1.78 to 2.99, NTRS 19980227361, heat
+  transfer, pressures not known) and Holdaway, Lazzeroni and Hatfield's 45
+  deg swept wing with blunted leading edges to M 2.20 (NTRS 19980223578,
+  drag increments only, a check at most).
 - _Hold-out._ The PARD standard body's totals, whose fins are exactly
   this edge (section 10). RM L52E06 fig. 11, their drag increments, is
   derived from held-back totals and sets nothing.
