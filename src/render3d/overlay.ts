@@ -146,8 +146,8 @@ export function legend(
   ctx.fillStyle = 'rgba(200, 204, 212, 0.85)';
   const notes =
     levels.length > 0
-      ? `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; notches: the surfaces`
-      : `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}`;
+      ? `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; notches: surfaces; black: none drawn`
+      : `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; black: nothing drawn`;
   ctx.fillText(notes, pad, y0 + barHeight + Math.round(px * 0.35) + 2.1 * lineHeight);
   return c;
 }

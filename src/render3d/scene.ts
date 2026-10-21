@@ -49,6 +49,7 @@ import {
   meridionalSliceTriangles,
   segments3d,
   shellSegments,
+  shockRadiusAt,
   shockSegments,
   type FlowGeometry,
 } from './geometry';
@@ -140,6 +141,8 @@ export interface FlowScene3DOptions {
 const SAMPLES = 4;
 /** A frame slower than this (ms) makes live frames drafts. */
 const DRAFT_ABOVE_MS = 150;
+/** Live frames a second at most. */
+const MAX_LIVE_FPS = 30;
 const DEPTH_FORMAT: GPUTextureFormat = 'depth24plus';
 const FRAME_BYTES = 256;
 const DRAW_BYTES = 64;
@@ -399,6 +402,8 @@ export class FlowScene3D {
   private draftPipelines: Promise<Pipelines> | null = null;
   /** Live frames are drafts on an adapter where a full frame is slow. */
   private lastFullFrameMs = 0;
+  /** What the last frame cost (drawFrame). */
+  private lastFrameMs = 0;
   private geometryDraft = false;
 
   private rocket: Rocket | null = null;
@@ -578,7 +583,7 @@ export class FlowScene3D {
     if (status !== undefined) this.status = { ...this.status, ...status };
     this.geometryDirty = true;
     this.overlayDirty = true;
-    this.requestDraw();
+    this.requestDraw(true);
   }
 
   /**
@@ -623,7 +628,7 @@ export class FlowScene3D {
   setStatus(status: SceneStatus): void {
     this.status = { ...this.status, ...status };
     this.overlayDirty = true;
-    this.requestDraw();
+    this.requestDraw(true);
   }
 
   setUnits(units: Units): void {
@@ -759,9 +764,13 @@ export class FlowScene3D {
 
   // ---------------------------------------------------------------- drawing
 
-  /** Draw a frame when the browser next can (coalesced). */
-  requestDraw(): void {
-    if (this.destroyed) return;
+  /**
+   * Draw a frame when the browser next can (coalesced). A change of the
+   * data (`fromData`: the flow, the status) waits, while live, for the
+   * next live frame, which draws it at the live rate.
+   */
+  requestDraw(fromData = false): void {
+    if (this.destroyed || (fromData && this.live)) return;
     if (this.drawing !== null) {
       this.redrawAfter = true;
       return;
@@ -788,13 +797,15 @@ export class FlowScene3D {
       return this.drawing;
     }
     const draft = this.live && this.lastFullFrameMs > DRAFT_ABOVE_MS;
-    this.drawing = this.drawFrame(undefined, draft).finally(() => {
-      this.drawing = null;
-      if (this.redrawAfter) {
-        this.redrawAfter = false;
-        this.requestDraw();
-      }
-    });
+    this.drawing = this.drawFrame(undefined, draft)
+      .then(() => undefined)
+      .finally(() => {
+        this.drawing = null;
+        if (this.redrawAfter) {
+          this.redrawAfter = false;
+          this.requestDraw();
+        }
+      });
     return this.drawing;
   }
 
@@ -948,35 +959,7 @@ export class FlowScene3D {
     // The base: the end of the computed region, hatched.
     const h = region.rMax;
     const xb = region.xMax;
-    this.baseTriangles = this.triangleSet(
-      'base plane',
-      new Float32Array([
-        xb,
-        -h,
-        -h,
-        0,
-        xb,
-        h,
-        -h,
-        0,
-        xb,
-        h,
-        h,
-        0,
-        xb,
-        -h,
-        -h,
-        0,
-        xb,
-        h,
-        h,
-        0,
-        xb,
-        -h,
-        h,
-        0,
-      ]),
-    );
+    this.baseTriangles = this.triangleSet('base plane', squareAt(xb, h, 0));
     const hatch: [number[], number[]][] = [];
     const n = 16;
     for (let k = 1; k < 2 * n; k++) {
@@ -1004,14 +987,14 @@ export class FlowScene3D {
               this.slicePosition.axial,
               this.slicePosition.axial + Math.PI,
             ]);
-      case 'axial':
-        return meridionalSliceTriangles(g.mesh, g.values, [
-          this.slicePosition.axial,
-          this.slicePosition.axial + Math.PI,
-        ]);
+      case 'axial': {
+        // The plane through the axis, the free stream filled out to the box.
+        const phis = [this.slicePosition.axial, this.slicePosition.axial + Math.PI];
+        return concat(meridionalSliceTriangles(g.mesh, g.values, phis), freeStreamPlane(g, phis));
+      }
       case 'cross': {
         const x = g.bounds.xMin + this.slicePosition.cross * (g.bounds.xMax - g.bounds.xMin);
-        return crossSliceTriangles(g.mesh, g.values, x, 144);
+        return concat(crossSliceTriangles(g.mesh, g.values, x, 144), freeStreamDisc(g, x, 144));
       }
     }
   }
@@ -1098,10 +1081,13 @@ export class FlowScene3D {
     }
   }
 
-  private async drawFrame(into?: GPUTexture, draft = false): Promise<void> {
-    if (this.canvas.width < 2 || this.canvas.height < 2) return;
-    const started = performance.now();
-    if (this.geometryDirty || this.geometryDraft !== draft) this.rebuildGeometry(draft);
+  /**
+   * Draw a frame; resolves, once the GPU has done it, to what it cost (ms):
+   * the CPU's time to build and encode it, and the GPU's from when the
+   * queue reached it (after the work before it, the solver's) to its end.
+   */
+  private async drawFrame(into?: GPUTexture, draft = false): Promise<number> {
+    if (this.canvas.width < 2 || this.canvas.height < 2) return 0;
     const pipelines = draft
       ? await (this.draftPipelines ??= Pipelines.create(
           this.device,
@@ -1110,6 +1096,8 @@ export class FlowScene3D {
           this.pipelines,
         ))
       : this.pipelines;
+    const started = performance.now();
+    if (this.geometryDirty || this.geometryDraft !== draft) this.rebuildGeometry(draft);
     const samples = draft ? 1 : SAMPLES;
     // Fit the view to the region while the viewer has not moved it (the
     // region grows as the shock settles, and the canvas may be resized).
@@ -1121,7 +1109,7 @@ export class FlowScene3D {
       this.resetView();
     }
     const orbit = this.orbit;
-    if (orbit === null) return;
+    if (orbit === null) return 0;
     this.ensureTargets(samples);
     const region = this.regionBox();
     const sceneRadius =
@@ -1334,10 +1322,18 @@ export class FlowScene3D {
         place(s.help, (w - s.help.width) / 2, (h - s.help.height) / 2);
     }
     pass.end();
+    // When the queue has done the work before this frame, and this frame.
+    const reached = this.device.queue.onSubmittedWorkDone().then(() => performance.now());
+    const submitted = performance.now();
     this.device.queue.submit([encoder.finish()]);
+    const done = this.device.queue.onSubmittedWorkDone().then(() => performance.now());
     this.framesDrawn += 1;
     if (into === undefined) await this.presenter.present();
-    if (!draft) this.lastFullFrameMs = performance.now() - started;
+    const [tReached, tDone] = await Promise.all([reached, done]);
+    const cost = submitted - started + (tDone - Math.max(tReached, submitted));
+    if (!draft) this.lastFullFrameMs = cost;
+    this.lastFrameMs = cost;
+    return cost;
   }
 
   // ---------------------------------------------------------------- text
@@ -1409,8 +1405,7 @@ export class FlowScene3D {
           )
         : undefined;
     const notes = [
-      { text: 'Flow solved around the body (nose and cylinder) only.' },
-      { text: 'Fins: geometry only; their drag is computed separately.' },
+      { text: 'The airflow shown is around the body; the fins\u2019 drag is computed separately.' },
       { text: 'Behind the base: not simulated.' },
     ];
     s.notes = this.sprite(textBlock(notes, Math.round(px * 0.92), { align: 'right' }), s.notes);
@@ -1439,14 +1434,17 @@ export class FlowScene3D {
     }, delay);
   }
 
+  /**
+   * One live frame: the flow read back (which waits for the solver's batch
+   * of steps in the queue), drawn, and the next frame put off so that
+   * drawing takes at most `liveDuty` of the time (by the frame's own cost,
+   * not the solver's work it waited behind); one frame in flight.
+   */
   private async liveFrame(): Promise<void> {
-    const started = performance.now();
     await this.readSource();
     await this.render();
-    await this.device.queue.onSubmittedWorkDone();
-    const cost = performance.now() - started;
-    // Spend at most liveDuty of the time drawing; at least 200 ms between frames.
-    this.scheduleLive(Math.max(200, (cost * (1 - this.liveDuty)) / this.liveDuty));
+    const cost = this.lastFrameMs;
+    this.scheduleLive(Math.max(1000 / MAX_LIVE_FPS, (cost * (1 - this.liveDuty)) / this.liveDuty));
   }
 
   /** Read the source's state and grid back into a field (a few kilobytes); once at a time. */
@@ -1551,7 +1549,7 @@ export class FlowScene3D {
       format: this.presenter.format,
       usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC,
     });
-    const drawing = this.drawFrame(copy);
+    const drawing = this.drawFrame(copy).then(() => undefined);
     this.drawing = drawing;
     try {
       await drawing;
@@ -1669,6 +1667,100 @@ function clipOutline(
   x.push(xEnd);
   r.push(r[r.length - 1]!);
   return { x, r };
+}
+
+function concat(
+  a: Float32Array<ArrayBuffer>,
+  b: Float32Array<ArrayBuffer>,
+): Float32Array<ArrayBuffer> {
+  const out = new Float32Array(a.length + b.length);
+  out.set(a, 0);
+  out.set(b, a.length);
+  return out;
+}
+
+/**
+ * The free stream in the half-planes at these azimuths: from the shock to
+ * the box's edge (r = rMax) and ahead of the shock, at the free stream's
+ * value, as triangles (x, y, z, value).
+ */
+function freeStreamPlane(g: FlowGeometry, phis: readonly number[]): Float32Array<ArrayBuffer> {
+  const { x, r } = g.shock;
+  const { xMin, xMax, rMax } = g.bounds;
+  const v = g.scale.freeValue;
+  const quads: [number, number][][] = [];
+  // Ahead of the shock's first point.
+  if (x[0]! > xMin) {
+    quads.push([
+      [xMin, 0],
+      [x[0]!, 0],
+      [x[0]!, rMax],
+      [xMin, rMax],
+    ]);
+  }
+  for (let k = 0; k + 1 < x.length && x[k]! < xMax; k++) {
+    const x1 = Math.min(x[k + 1]!, xMax);
+    quads.push([
+      [x[k]!, Math.min(r[k]!, rMax)],
+      [x1, Math.min(r[k + 1]!, rMax)],
+      [x1, rMax],
+      [x[k]!, rMax],
+    ]);
+  }
+  const out = new Float32Array(phis.length * quads.length * 6 * 4);
+  let o = 0;
+  for (const phi of phis) {
+    const c = Math.cos(phi);
+    const sn = Math.sin(phi);
+    for (const q of quads) {
+      for (const k of [0, 1, 2, 0, 2, 3]) {
+        const [px, pr] = q[k]!;
+        out.set([px, pr * c, pr * sn, v], o);
+        o += 4;
+      }
+    }
+  }
+  return out;
+}
+
+/** The free stream across the axis at x: a ring from the shock's radius there to the box's. */
+function freeStreamDisc(g: FlowGeometry, x: number, sectors: number): Float32Array<ArrayBuffer> {
+  const inner = shockRadiusAt(g.shock, x);
+  const outer = g.bounds.rMax;
+  if (!(outer > inner)) return new Float32Array(0);
+  const v = g.scale.freeValue;
+  const out = new Float32Array(sectors * 6 * 4);
+  let o = 0;
+  for (let s = 0; s < sectors; s++) {
+    const a0 = (2 * Math.PI * s) / sectors;
+    const a1 = (2 * Math.PI * (s + 1)) / sectors;
+    const p = (r: number, a: number) => [x, r * Math.cos(a), r * Math.sin(a), v];
+    for (const q of [
+      p(inner, a0),
+      p(outer, a0),
+      p(outer, a1),
+      p(inner, a0),
+      p(outer, a1),
+      p(inner, a1),
+    ]) {
+      out.set(q, o);
+      o += 4;
+    }
+  }
+  return out;
+}
+
+/** Two triangles (x, y, z, value) of the square [-h, h]^2 in the plane at x. */
+function squareAt(x: number, h: number, value: number): Float32Array<ArrayBuffer> {
+  const corner = (y: number, z: number) => [x, y, z, value];
+  return new Float32Array([
+    ...corner(-h, -h),
+    ...corner(h, -h),
+    ...corner(h, h),
+    ...corner(-h, -h),
+    ...corner(h, h),
+    ...corner(-h, h),
+  ]);
 }
 
 /** The cutaway's first azimuth: the fin nearest azimuth 0, so that fins lie on its faces. */
@@ -1827,7 +1919,9 @@ function helpLines(
     { text: `1  rocket: solid, wireframe or off (now ${L.body})` },
     { text: `2  field on a slice (now ${on(L.slice)}, ${scene.getSlice()})` },
     { text: `3  streamlines (now ${on(L.streamlines)})` },
-    { text: `4  iso-surfaces of the colour quantity (now ${on(L.isosurfaces)})` },
+    {
+      text: `4  iso-surfaces of the colour quantity: glowing, solid, off (now ${L.isosurfaces ? (L.solidShells ? 'solid' : 'glowing') : 'off'})`,
+    },
     { text: `5  bow shock (now ${on(L.shock)})    6  cutaway (now ${on(L.cutaway)})` },
     { text: `Z  colour: ${scale?.label ?? ''}${unit}` },
     { text: 'T  slice: cutaway faces, plane through the axis, plane across it' },

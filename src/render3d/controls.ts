@@ -1,8 +1,9 @@
 /**
  * Mouse, touch and keyboard for the 3D view, after FluidX3D's (as its
- * README describes them): number keys switch layers that combine, Z
- * cycles the colour quantity, T the slice and Q / E move it, H shows the
- * help; drag orbits, the wheel zooms. Also: right drag or shift drag
+ * README describes them): number keys switch layers that combine (4
+ * cycles the iso-surfaces: glowing, lit solid, none), Z cycles the colour
+ * quantity, T the slice and Q / E move it, H shows the help; drag orbits,
+ * the wheel zooms. Also: right drag or shift drag
  * pans, two fingers pinch and pan, the arrow keys orbit (with shift,
  * pan), + and - zoom, 0 resets the view.
  */
@@ -91,7 +92,14 @@ export function attachControls(
         scene.setLayers({ streamlines: !L.streamlines });
         break;
       case '4':
-        scene.setLayers({ isosurfaces: !L.isosurfaces });
+        // Glowing shells, lit solid shells, none.
+        scene.setLayers(
+          !L.isosurfaces
+            ? { isosurfaces: true, solidShells: false }
+            : L.solidShells
+              ? { isosurfaces: false }
+              : { solidShells: true },
+        );
         break;
       case '5':
         scene.setLayers({ shock: !L.shock });
