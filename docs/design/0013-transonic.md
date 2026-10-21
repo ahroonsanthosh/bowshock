@@ -8,7 +8,7 @@
   not on the GPU engine. Nothing below Mach 1.2 is served (see "What
   accuracy the evidence supports"); whether it is shown at all is the
   owner's decision.
-- **Date:** 2026-10-18 to 20
+- **Date:** 2026-10-18 to 21
 - **Inputs:** [0002](0002-architecture.md) section 11 (the range to serve
   is Mach 1 to 3), the measurements below, and the references in
   [docs/validation/sources.md](../validation/sources.md).
@@ -303,12 +303,17 @@ Mach 1.1 is 2.29e-5 (2.4e-4 of the value) about 0.0944950**, containing
 the exact error by a factor of 9. Cost: r = 16 took 17,126 s of CPU (1.9
 s per step, 1.1 to 1.6 GB), about 10 h of wall time on this machine.
 
-The fitted solver on the same cone: 0.0938653 (nj = 20) and 0.0940974
-(nj = 40), -6.69e-3 and -4.24e-3 of the exact value, ten to twenty times
-the transonic domain's errors, and falling at less than first order
-(nj = 80: see below). Near the sonic limit of its starting plane (axial
-Mach number 1.029 at the tip cone's surface) its error is far larger
-than on the supersonic families of 0006.
+The fitted solver on the same cone: 0.0938653 (nj = 20), 0.0940974
+(nj = 40) and 0.0943618 (nj = 80), -6.69e-3, -4.24e-3 and -1.44e-3 of
+the exact value. Its changes grow (+2.32e-4, then +2.64e-4) while its
+errors fall by 1.6 and then 2.9: the family is not yet in its
+asymptotic range, and the procedure would give it no band. nj = 80
+stopped with the drag settled (remaining change estimated at 7.7e-11,
+outflow axial Mach number 1.07; 10,600 iterations, 1,080 s of CPU), so
+this is the discretisation, not the iteration. Its finest error is
+about 50 times the transonic r = 16's (2.8e-5). Near the sonic limit of
+its starting plane (axial Mach number 1.029 at the tip cone's surface)
+its error is far larger than on the supersonic families of 0006.
 
 ### Mach 1.05: first order, from the level of the whole cone's pressure
 
@@ -493,29 +498,64 @@ Mach 1.2 with 4 calibers of cylinder and the hemisphere at Mach 1.5 with
 2; and the total pressure on the stagnation streamline, which must be the
 normal shock's (the pitot pressure at the stagnation point).
 
-| Body, Mach         | r = 1     | r = 2     | r = 4     | Extrapolated | Fitted nj = 20 | nj = 40   | nj = 80   |
-| ------------------ | --------- | --------- | --------- | ------------ | -------------- | --------- | --------- |
-| 2:1 ellipsoid, 1.2 | 0.3482049 | 0.3433539 | 0.3425969 | 0.3423446    | 0.3472957      | 0.3437625 | 0.3429002 |
-| hemisphere, 1.5    | 0.6994860 | 0.6885561 | 0.6863477 | 0.6856117    | 0.6904222      | 0.6872292 |           |
-| hemisphere, 1.2    | 0.5546180 | 0.5431759 | 0.5404303 | 0.5395151    | refused        |           |           |
+| Body, Mach         | r = 1     | r = 2     | r = 4     | r = 8     | Extrapolated | Fitted nj = 20 | nj = 40   | nj = 80   | Extrapolated |
+| ------------------ | --------- | --------- | --------- | --------- | ------------ | -------------- | --------- | --------- | ------------ |
+| 2:1 ellipsoid, 1.2 | 0.3482049 | 0.3433539 | 0.3425968 | 0.3425233 | 0.3424988    | 0.3472957      | 0.3437625 | 0.3429002 | 0.3426128    |
+| hemisphere, 1.5    | 0.6994860 | 0.6885561 | 0.6863477 |           | 0.6856116    | 0.6904222      | 0.6872292 | 0.6863779 | 0.6860941    |
+| hemisphere, 1.2    | 0.5546180 | 0.5431759 | 0.5404303 |           | 0.5395151    | refused        |           |           |              |
 
-(transonic extrapolated at second order from r = 2 and 4; observed orders
-2.68, 2.31 and 2.06). The transonic families converge at about second
-order from above, as the fitted ones do (on the ellipsoid at order 2.03,
-nj = 80 stopped with the drag settled, its remaining iterative change
-estimated at 2.8e-10, and the outflow supersonic, axial Mach number 1.14
-or more). Extrapolated at second order the fitted families give 0.3426128
-(ellipsoid, from nj = 40 and 80) and 0.6861649 (hemisphere, from nj = 20
-and 40): 2.7e-4 (7.8e-4 of the value) and 5.5e-4 (8.1e-4) above the
-transonic extrapolations, while the finest grids differ by 3.0e-4
-(8.8e-4) on the ellipsoid. The two solvers thus agree on blunt noses to
-about 8e-4 of the value, the transonic domain's value the lower, and on
-the ellipsoid the gap between the extrapolations does not close from the
-finest grids to the extrapolations; its cause is not known (the
-stagnation line below would push the transonic drag up, not down). The
-drags of r = 4 lie 2.5e-4 and 7.4e-4 above the transonic extrapolations
-(7e-4 and 1.1e-3 of the value), and 9.2e-4 (1.7e-3) on the hemisphere at
-Mach 1.2.
+(each family extrapolated at second order from its two finest grids:
+r = 4 and 8 on the ellipsoid, r = 2 and 4 on the hemispheres, nj = 40
+and 80 for the fitted solver). Observed orders: transonic 2.68 and then
+3.36 on the ellipsoid, 2.31 (hemisphere, 1.5) and 2.06 (hemisphere,
+1.2); fitted 2.03 (ellipsoid) and 1.91 (hemisphere). Both solvers
+converge from above at about second order or faster. The fitted nj = 80
+grids stopped with the drag settled: remaining iterative change
+estimated at 2.8e-10 (ellipsoid) and 5.6e-10 (hemisphere), and the
+outflow supersonic (axial Mach number 1.14 or more on the ellipsoid,
+1.33 on the hemisphere). The transonic r = 8 on the ellipsoid stopped
+on the settling test after 3,200 steps (1,076 s of CPU), its remaining
+change estimated at 7e-11.
+
+**The 2:1 ellipsoid with r = 8 (2026-10-21).** On r = 1 to 8 the
+procedure refuses the family: the observed orders of its two triples,
+2.68 and 3.36, differ by more than its 0.5 ("unresolved"). r = 8
+changed the drag by -7.4e-5, where the order of r = 1 to 4 predicted
+-1.2e-4; the extrapolation from r = 2 and 4 (0.3423445) had overshot,
+and the one from r = 4 and 8 is 1.5e-4 higher. Against the fitted
+solver:
+
+- r = 8 lies 8.9e-5 (2.6e-4 of the value) below the fitted
+  extrapolation;
+- the transonic extrapolation lies 1.14e-4 (3.3e-4) below it at second
+  order, and 1.06e-4 (3.1e-4) at the observed orders;
+- with r = 2 and 4 alone that gap was 2.7e-4 (7.8e-4).
+
+So r = 8 closed more than half of the gap. Most of the earlier gap was
+the transonic family still approaching its asymptotic range, not a
+difference between the two solvers. What remains is smaller than the
+fitted family's own extrapolation (2.9e-4) and 1.5 times the transonic
+family's last change (7.4e-5). The finest grids still differ by 3.8e-4
+(1.1e-3), because the fitted nj = 80 is further from its limit than the
+transonic r = 8.
+
+**The hemisphere at Mach 1.5 with the fitted nj = 80.** The finest grids
+agree within 3.0e-5 (4.4e-5 of the value). The transonic family
+converges faster (order 2.31 against 1.91), so its extrapolation lies
+below the fitted one: by 4.8e-4 (7.0e-4) at second order, and by 2.8e-4
+(4.1e-4) at the observed orders. From nj = 20 and 40 the gap was 5.5e-4
+(8.1e-4). Whether r = 8 closes it as on the ellipsoid is not measured;
+it is queued (see the certification plan's additions).
+
+The two solvers thus agree on blunt noses to about 3e-4 of the value
+on the ellipsoid (with r = 8) and 4e-4 to 7e-4 on the hemisphere (r = 2
+and 4), with the transonic domain's value the lower. The stagnation line
+below would push the transonic drag up, not down. The ellipsoid's r = 4
+lies 9.8e-5 (2.9e-4 of the value) above its extrapolation from the two
+finest grids; the extrapolation from r = 2 and 4 had put r = 4 2.6 times
+further from its limit. The hemispheres' r = 4 lie 7.4e-4 (1.1e-3, Mach
+1.5) and 9.2e-4 (1.7e-3, Mach 1.2) above their extrapolations from r = 2
+and 4.
 
 The stagnation streamline: total pressure of the cells along the axis
 behind the bow shock, over the free stream's, against the normal shock's
@@ -584,38 +624,90 @@ total pressure along the body at first order (0.25% by x = 1 on r = 4,
 0.55% on r = 2); either could set a level of this size, neither was
 isolated. Using the observed order (2.68) instead of 2 for the transonic
 extrapolation moves it by +1.1e-4, so the gap is 1.5e-4 to 2.7e-4, of
-the size of the families' own remaining change; r = 8 is queued.
+the size of the families' own remaining change.
+
+The same comparison with r = 8 (2026-10-21), extrapolated pointwise from
+r = 4 and 8, gives transonic minus fitted:
+
+- +3.3e-5 to +4.0e-5 from r^2 = 0.05 to 0.2 (it was +1.9e-4);
+- +2.8e-5 at r^2 = 0.4;
+- falling to -1.0e-4 by r^2 = 0.9;
+- ending at -1.1e-4 (it was -2.7e-4).
+
+Both parts shrank: the stagnation region's excess by about 80%, and the
+deficit over the rest of the nose (from r^2 = 0.4 on, -1.4e-4 against
+-2.9e-4) by half. What is left, 1.1e-4 (3.3e-4 of the value), lies
+within the families' own remaining change (above). It is no longer a gap
+that refinement leaves open, so it needs no cause of its own. Most of
+the earlier stagnation excess and deficit came from extrapolating r = 2
+and 4, which were not yet in the asymptotic range.
 
 ### The ogive and the hemisphere from Mach 1.1 to 1
 
-No reference below Mach 1.2 for these; drag on r = 1 and 2 (100.6
-radii, 10 calibers) and, at Mach 1, on 408.7 radii:
+No reference below Mach 1.2 for these: the characteristics refuse the
+5-caliber ogive below 1.2, and the fitted solver refuses the hemisphere
+there. Drag on r = 1, 2 and, where run, 4 (100.6 radii, 10 calibers),
+and at Mach 1 on 408.7 radii:
 
-| Body       | Mach | r = 1     | r = 2     | Change    | 408.7 radii, r = 1 |
-| ---------- | ---- | --------- | --------- | --------- | ------------------ |
-| ogive      | 1.2  | 0.0437833 | 0.0433724 | -4.11e-4  |                    |
-| ogive      | 1.1  | 0.0435202 | 0.0433484 | -1.72e-4  |                    |
-| ogive      | 1.05 | 0.0418288 | 0.0417434 | -8.5e-5   |                    |
-| ogive      | 1.0  | 0.0171707 |           |           | 0.0186725          |
-| hemisphere | 1.2  | 0.5546180 | 0.5431759 | -1.144e-2 |                    |
-| hemisphere | 1.1  | 0.4704390 | 0.4610574 | -9.38e-3  |                    |
-| hemisphere | 1.05 | 0.4181985 | 0.4092866 | -8.91e-3  |                    |
-| hemisphere | 1.0  | 0.3595713 |           |           | 0.3594575          |
+| Body       | Mach | r = 1     | r = 2     | r = 4     | Changes             | 408.7 radii, r = 1 |
+| ---------- | ---- | --------- | --------- | --------- | ------------------- | ------------------ |
+| ogive      | 1.2  | 0.0437833 | 0.0433724 | 0.0433244 | -4.11e-4, -4.80e-5  |                    |
+| ogive      | 1.1  | 0.0435202 | 0.0433484 | 0.0434044 | -1.72e-4, +5.60e-5  |                    |
+| ogive      | 1.05 | 0.0418288 | 0.0417434 | 0.0418273 | -8.54e-5, +8.39e-5  |                    |
+| ogive      | 1.0  | 0.0171707 | 0.0170016 |           | -1.69e-4            | 0.0186725          |
+| hemisphere | 1.2  | 0.5546180 | 0.5431759 | 0.5404303 | -1.144e-2, -2.75e-3 |                    |
+| hemisphere | 1.1  | 0.4704390 | 0.4610574 |           | -9.38e-3            |                    |
+| hemisphere | 1.05 | 0.4181985 | 0.4092866 |           | -8.91e-3            |                    |
+| hemisphere | 1.0  | 0.3595713 |           |           |                     | 0.3594575          |
 
 The base grid's error, judged from the change to r = 2, falls with the
 Mach number on the ogive (from 9.4e-3 of the value at 1.2 to 2.0e-3 at
 1.05) and stays near 2% on the hemisphere, whose families converge at
-about second order where measured (Mach 1.2 and 1.5, above). At Mach 1
-the far boundaries' distance acts on the ogive as on the cone, by about
-the same amount (+1.50e-3 from 100.6 to 408.7 radii, against the cone's
-+1.38e-3), which is 8.7% of the ogive's much smaller drag; on the
-hemisphere it is -1.1e-4, 3e-4 of its drag. With the ogive on a third
-distance (0.0182824 on 224.2 radii), the power law gives q = 1.06 and,
-for boundaries at infinity, 0.019109 (with the cone's q = 1.35 instead,
-0.018985): on 100.6 radii the ogive's drag is about 10% low, on 408.7
-radii 1.7% to 2.3% low, and on the base grid its Mach 1 drag is 0.0190
-within about 0.7%; its grid error at Mach 1 is not measured (r = 2: see
-Open).
+about second order where measured (Mach 1.2 and 1.5, above).
+
+**The ogive's r = 4 at Mach 1.1 and 1.05 (2026-10-21).** Both
+oscillate: the drag falls from r = 1 to 2 and rises from r = 2 to 4, as
+the cone's did at Mach 1.1.
+
+- At Mach 1.1 the second change is 3.1 times smaller than the first.
+- At Mach 1.05 it is as large as the first (ratio 1.02), and r = 4 is
+  back within 1.5e-6 of r = 1. So these three grids give no evidence of
+  convergence at Mach 1.05.
+
+The procedure needs four grids in any case. Both runs stopped on the
+settling test with small remaining changes:
+
+- Mach 1.1: 3,400 steps, 644 s of CPU, remaining change estimated at
+  3e-11.
+- Mach 1.05: 8,800 steps, 1,620 s of CPU, remaining change estimated
+  at 1.3e-9.
+
+r = 8 at both Mach numbers is queued as an addition to the
+certification plan (below).
+
+**The ogive's r = 2 at Mach 1 (2026-10-21).** On 100.6 radii the drag is
+0.0170016. The change from r = 1 is -1.69e-4, 1.0% of the drag; the
+cone's at Mach 1 was -1.15e-4, 0.13% of its drag. The run took 33,700
+plain steps (r = 1: 13,300; the cone's r = 2: 51,700) and 767 s of CPU.
+Its drag history is a damped oscillation:
+
+- period about 10,000 steps, each swing 0.24 times the one before;
+- the settling test stopped it 500 steps after a crest, about 8.5e-8
+  above the oscillation's limit (5e-6 of the drag), which is negligible
+  here.
+
+At Mach 1 the far boundaries' distance acts on the ogive as on the
+cone, by about the same amount (+1.50e-3 from 100.6 to 408.7 radii,
+against the cone's +1.38e-3), which is 8.7% of the ogive's much smaller
+drag; on the hemisphere it is -1.1e-4, 3e-4 of its drag. With the ogive
+on a third distance (0.0182824 on 224.2 radii), the power law gives q =
+1.06 and, for boundaries at infinity, 0.019109 (with the cone's q = 1.35
+instead, 0.018985). So on 100.6 radii the ogive's drag is about 10% low,
+on 408.7 radii 1.7% to 2.3% low, and on the base grid its Mach 1 drag
+is 0.0190 within about 0.7%. The base grid's correction added to r = 2
+gives 0.01882 to 0.01894, 0.9% below the base grid's value. The grid
+error beyond r = 2 is not measured. This is an estimate only, since the
+far-boundary rule failed its test (see the certification plan).
 
 ### Near Mach 1: the slope of the drag
 
@@ -777,25 +869,30 @@ on the CPU engine:
   containing the error. Ogive: r = 8 within 2.2e-4 of the method of
   characteristics, the family oscillatory, its band (1.1e-3) containing
   the error, and the fitted solver within 7.9e-4 (finest grids): about
-  2e-4 on r = 8 and 3e-4 on r = 4. 2:1 ellipsoid: r = 4 within 7e-4 of its extrapolation,
-  which lies 7.8e-4 below the fitted solver's (nj = 20 to 80): about
-  1e-3. Hemisphere: second-order convergence but no reference, and the
-  stagnation line's open error. Far boundaries and cylinder: below 1e-4. The transonic
-  domain and the supersonic fitted solver agree where both apply, within
-  2.7e-5 on the cone and 1e-3 on the ogive and the ellipsoid: the two
+  2e-4 on r = 8 and 3e-4 on r = 4. 2:1 ellipsoid: the procedure refuses
+  r = 1 to 8 (orders 2.68 and 3.36). r = 8 is 2.6e-4 of the value below
+  the fitted solver's extrapolation, and its own extrapolation 3.3e-4
+  below it (with r = 2 and 4 only, 7.8e-4). Hemisphere: second-order
+  convergence but no reference, and the stagnation line's open error.
+  Far boundaries and cylinder: below 1e-4. The transonic domain and the
+  supersonic fitted solver agree where both apply, within 2.7e-5 on the
+  cone, 1e-3 on the ogive and 3e-4 to 1e-3 on the ellipsoid: the two
   definitions meet at Mach 1.2.
 - **Mach 1.1.** Cone: certified by the procedure on r = 2 to 16 (a
   monotone band of 3.13e-6 containing the exact error, 2.6e-6; with the
   far boundaries' and cylinder's largest base-grid change added as the
   plan requires, 2.29e-5, 2.4e-4 of the value). Curved noses: the
-  10-caliber ogive's family against the characteristics is next; the
-  5-caliber ogive and the hemisphere have r = 1 and 2 only. The fitted
-  solver is 4e-3 to 7e-3 off here.
+  10-caliber ogive's family against the characteristics is running. The
+  5-caliber ogive has r = 1 to 4, oscillatory, with r = 8 queued; the
+  hemisphere has r = 1 and 2. The fitted solver is 1.4e-3 off on nj = 80
+  and not yet converging.
 - **Mach 1.05.** Cone: certified by the procedure alone on r = 1 to 8
   (monotone, orders 1.05 and 1.21): 0.1071116 with a band of 1.14e-4
   (1.07e-3 of the value, the far boundaries' 55.1 to 100.6 change
   included), 7.04e-5 by the plan's narrower reading; no exact value
-  exists to test it. Ogive and hemisphere: r = 1 and 2 only.
+  exists to test it. 5-caliber ogive: r = 1 to 4 oscillate with equal
+  steps (-8.5e-5, +8.4e-5), which shows no convergence yet; r = 8 is
+  queued. Hemisphere: r = 1 and 2 only.
 - **Mach 1.0.** Cone: 0.0932 within about 0.1%: three grids converging
   at first order (1.16), extrapolated, plus the far boundaries'
   correction (measured on the base grid, holding on r = 2 within 6e-6);
@@ -804,20 +901,24 @@ on the CPU engine:
   grew 2.9 times from r = 1 to 2 and r = 4 had not settled after 1.7
   times r = 2's, each grid with 4 times the cells). Ogive: on the base grid
   0.0190 within about 0.7% after the same extrapolation (10% low on
-  100.6 radii, 2% on 408.7), its grid error not measured. Hemisphere: far
-  boundaries 3e-4, grid error not measured at Mach 1. The wind tunnel and
-  slender-body theory confirm the cone's level to 5 to 10%, no better.
+  100.6 radii, 2% on 408.7). On r = 2 it is 0.0188 to 0.0189 (r = 1 to 2
+  changed it by 1.0%); its grid error beyond r = 2 is not measured.
+  Hemisphere: far boundaries 3e-4, grid error not measured at Mach 1.
+  The wind tunnel and slender-body theory confirm the cone's level to 5
+  to 10%, no better.
 
 So the evidence supports the transonic domain at Mach 1.2 to the
 supersonic solvers' standard on cones and on the ogive (four grids, the
 procedure's band containing the error against exact references), and at
 Mach 1.1 on the cone (r = 2 to 16, band 2.29e-5 containing the exact
-error). Blunt noses reach about 1e-3 at Mach 1.2 (three grids each,
-against the fitted solver), which does not meet the standard: they stay
-unserved below Mach 1.5. Curved noses at Mach 1.1 wait on the 10-caliber
-ogive's family; at
-Mach 1.05 the cone is certified by the procedure alone (band 1.14e-4,
-1.07e-3 of the value; no exact reference exists there); at Mach 1 there are three grids, and the far-boundary
+error). Blunt noses reach about 1e-3 at Mach 1.2 on r = 4 and 3e-4 on
+the ellipsoid's r = 8, against the fitted solver. The procedure gives
+them no band (it refuses the ellipsoid's r = 1 to 8), so they do not
+meet the standard and stay unserved below Mach 1.5. Curved noses at
+Mach 1.1 wait on the 10-caliber ogive's family, and at 1.1 and 1.05 on
+the 5-caliber ogive's r = 8. At Mach 1.05 the cone is certified by the
+procedure alone (band 1.14e-4, 1.07e-3 of the value; no exact reference
+exists there). At Mach 1 there are three grids, and the far-boundary
 rule written for it failed its test at Mach 1.2, so Mach 1 stays refused
 (0.0932 within about 0.1% is an estimate, not a certification). Nothing
 below Mach 1.2 is shown until certified; the owner decided to spend the
@@ -909,6 +1010,27 @@ give a monotone band, so r = 16 was not needed; certified, above.)
   refused. Option B (a domain large enough to need no rule) waits on the
   divergence near the axis at 800 radii.
 
+**Additions (written 2026-10-21, before their runs).** The procedure and
+the rules above are unchanged. These runs only give it more cases.
+
+- _The 5-caliber ogive at Mach 1.1 and 1.05._ r = 8 at both, so that
+  each family has four grids (r = 1 to 8). They are judged by the
+  procedure as it stands. Neither Mach number has a reference for this
+  ogive, since the characteristics refuse it below 1.2. At Mach 1.1 the
+  10-caliber ogive (running) is the curved nose with a reference, and at
+  Mach 1.05 no nose has one, as for the cone. On the base grid at each
+  Mach number, the far boundaries (55.1 and 224.2 radii) and the
+  cylinder (5 and 20 calibers) are measured. Their largest change is
+  added to the band if it exceeds a quarter of it. If the procedure
+  returns `unresolved`, the case stays refused; r = 16 would be
+  considered only as at Mach 1.1 on the cone, that is if the finer
+  triple is monotone.
+- _The hemisphere at Mach 1.5._ r = 8, to see whether the gap between
+  its extrapolation and the fitted solver's (7.0e-4 of the value at
+  second order) closes as the ellipsoid's did with r = 8. This is not a
+  certification: blunt noses stay unserved below Mach 1.5, and at 1.5
+  the fitted solver serves them.
+
 ## What did not work
 
 Measured on the 7 deg cone at Mach 1.05 (and 1.0 where stated), base
@@ -960,12 +1082,13 @@ grid unless stated:
 
 ## Open
 
-- **Runs queued, not yet done** (in this order): the cone's r = 8 at
-  Mach 1.05; the ogive at Mach 1 on r = 2; the fitted
-  solver's nj = 80 on the hemisphere at Mach 1.5 and the cone at Mach
-  1.1; the ogive's r = 4 at Mach 1.1 and 1.05; the 2:1 ellipsoid's r = 8
-  at Mach 1.2. The job scripts save their state every 10 minutes and
-  resume from it, so each survives the container's restarts.
+- **Runs queued or running** (each saves its state every 10 minutes and
+  resumes from it, so it survives the container's restarts):
+  - the 10-caliber ogive's family r = 1 to 16 at Mach 1.1, against the
+    characteristics (running);
+  - the 5-caliber ogive's base-grid far boundaries and cylinder at Mach
+    1.1 and 1.05, then its r = 8 at both;
+  - the hemisphere's r = 8 at Mach 1.5 (the plan's additions, above).
 - **The stagnation line on blunt noses**: the captured shock's
   pointwise total-pressure error (above); removing it needs the shock
   fitted or aligned with the cells on the axis.
