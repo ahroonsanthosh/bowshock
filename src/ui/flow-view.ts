@@ -74,6 +74,15 @@ export interface FlowViewState {
 
 /** Schlieren's contrast k in 1 - exp(-k g): weak waves visible, shocks bright. */
 export const SCHLIEREN_CONTRAST = 3;
+/**
+ * The share of the time live frames may take, by their measured cost (their
+ * own GPU time and their showing): on a fast GPU a frame costs a
+ * millisecond and the view draws at its maximum rate; on a software
+ * adapter, where drawing competes with the solver for the same cores, it
+ * draws less often, so that the solver keeps over nine tenths of its
+ * steps (tests/gpu/flow-view-cost.test.ts).
+ */
+export const FRAME_BUDGET = 0.04;
 /** Grid lines are drawn at least this many CSS pixels apart (every 2^n-th line). */
 const GRID_SPACING = 5;
 /** How often the legend's range is read back, milliseconds. */
@@ -114,6 +123,8 @@ export class FlowView {
   private destroyed = false;
   private lost = false;
   private frames = 0;
+  /** A live frame's measured cost, ms: its own GPU time and its showing, smoothed. */
+  private frameCost: number | null = null;
 
   static async create(
     device: GPUDevice,
@@ -165,7 +176,7 @@ export class FlowView {
     return this.state;
   }
 
-  /** The source drawn, if any. */
+  /** The flow drawn, if any: the live fit's buffers, or the view's own copy once frozen. */
   get source(): FlowSource | null {
     return this.renderer.source;
   }
@@ -429,9 +440,19 @@ export class FlowView {
   }
 
   private resize(): void {
+    // Hidden (no box): the size and the frame shown are kept, to show again at once.
+    if (this.hidden) return;
     const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = Math.max(1, Math.round(this.canvas.clientWidth * dpr));
-    this.canvas.height = Math.max(1, Math.round(this.canvas.clientHeight * dpr));
+    const width = Math.max(1, Math.round(this.canvas.clientWidth * dpr));
+    const height = Math.max(1, Math.round(this.canvas.clientHeight * dpr));
+    // Setting a canvas's size clears it, even to the size it has.
+    if (this.canvas.width !== width) this.canvas.width = width;
+    if (this.canvas.height !== height) this.canvas.height = height;
+  }
+
+  /** The canvas has no box (the page shows another view): nothing is drawn until it has. */
+  private get hidden(): boolean {
+    return this.canvas.clientWidth === 0 || this.canvas.clientHeight === 0;
   }
 
   private schedule(): void {
@@ -443,7 +464,15 @@ export class FlowView {
   }
 
   private tick(time: number): void {
-    const interval = 1000 / (this.options.maxFps ?? 30);
+    // Hidden, nothing is drawn: a change stays due, drawn once the canvas is shown (resized).
+    if (this.hidden) return;
+    // Live frames are paced by what they cost: at most maxFps, and no more
+    // often than keeps their measured cost within FRAME_BUDGET of the time,
+    // so that drawing never takes the solver's steps (0017 section 6.4).
+    const interval = Math.max(
+      1000 / (this.options.maxFps ?? 30),
+      (this.frameCost ?? 0) / FRAME_BUDGET,
+    );
     const due = this.dirty || (this.live && time - this.lastFrame >= interval);
     // One frame at a time: a frame being copied to the page (CopyPresenter)
     // holds its buffers until it is shown.
@@ -467,12 +496,20 @@ export class FlowView {
   private async drawFrame(time: number, asked: boolean): Promise<void> {
     const view = this.currentView();
     if (view === null) return;
+    // The frame's own cost: from the moment the work queued before it (the
+    // solver's) is done to the moment it is done and shown. Work completes
+    // in order, so this is the frame's GPU time, not the solver's.
+    const queue = this.device.queue;
+    const before = queue.onSubmittedWorkDone().then(() => performance.now());
     this.renderer.draw(this.presenter.frameTexture(), { ...this.drawOptions(), view });
     this.frames += 1;
+    const done = queue.onSubmittedWorkDone().then(() => performance.now());
+    const shown = this.presenter.present().then(() => performance.now());
     // One frame in flight: the next is drawn only once the GPU has done
-    // this one, so frames never queue up behind the solver's steps and
-    // drawing takes at most a frame per batch of steps the GPU runs.
-    await Promise.all([this.presenter.present(), this.device.queue.onSubmittedWorkDone()]);
+    // this one, so frames never queue up behind the solver's steps.
+    const [start, end, presented] = await Promise.all([before, done, shown]);
+    const cost = Math.max(0, Math.max(end, presented) - start);
+    this.frameCost = this.frameCost === null ? cost : 0.7 * this.frameCost + 0.3 * cost;
     // The legend's range: after a frame asked for (a change), and every
     // RANGE_INTERVAL while live.
     if (asked || time - this.lastRange >= RANGE_INTERVAL || this.lastScale === '') {

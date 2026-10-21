@@ -259,6 +259,42 @@ fins drawn in projection, the region behind the base hatched and labelled
 "not simulated", the body shaded as a solid (prototyped, about 150 lines;
 the 2D glow look is dropped).
 
+### 6.4 Frame pacing: what drawing live costs the solver
+
+The claim (0012 U1, `tests/gpu/flow-view-cost.test.ts`, unchanged):
+drawing the flow live costs the solver less than a tenth of its steps.
+On a real GPU a frame costs about a millisecond. On a software adapter
+(SwiftShader, as on CI) the frames and the solver share the same CPU
+cores, and a fixed 30 frames a second took 13% of the steps on CI (drawn
+over unwatched 0.868, against the test's 0.9).
+
+What the page does now (`src/ui/flow-view.ts`):
+
+- Each live frame's cost is measured: from the moment the work queued
+  before it (the solver's) is done to the moment the frame is done and
+  shown (`onSubmittedWorkDone` before and after its submission, and the
+  presentation). Work completes in order, so this is the frame's own GPU
+  time, not the solver's. It is smoothed (0.7 of the last estimate, 0.3
+  of the new frame).
+- The next live frame is due no sooner than cost / `FRAME_BUDGET` after
+  the last, with `FRAME_BUDGET` = 0.04, and at most 30 a second. Frames
+  so take about 4% of the time on any adapter: on a fast GPU the view
+  draws 30 frames a second; on SwiftShader on this machine, loaded by the
+  solver runs, a 1280 x 720 frame cost about 0.2 s and the view drew 0.2
+  frames a second.
+- A change the user makes (a field, a pan, a zoom) is drawn at once, as
+  before; only the live redraws are paced.
+- Only the view shown draws live. The hidden one (3D or side) draws
+  nothing until it is shown, and keeps its last frame to show at once.
+- The 3D scene is held to the same share: the page creates it with
+  `liveDuty` = `FRAME_BUDGET` (its own pacing, by its frames' measured
+  cost, the same way).
+
+Measured with the test as it is (SwiftShader, 4 cores loaded by other
+solver runs): steps per second without the view 34, 29 and 33; drawn
+live 34, 36 and 35; 0.2 frames drawn a second; cost -5.6%, within the
+noise, against the threshold of 10%.
+
 ## 7. The rocket drawing
 
 `src/rocket/geometry.ts`, tested without the DOM: the nose's profile
