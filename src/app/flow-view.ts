@@ -23,8 +23,9 @@ import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import type { FlowField } from '../render/flow-fields';
 import { liveFitSource } from '../render/flow-source';
 import { presentationFor } from '../render/presenter';
-import { basicFinnerBody } from '../validation/basic-finner';
+import { basicFinnerBodyAsTyped } from '../validation/basic-finner';
 import { withBand } from './band';
+import { DrawnCaseRecord, pngCaption, pngName } from './drawn-case';
 import { element, h } from '../ui/dom';
 import { FlowView, type FlowScale } from '../ui/flow-view';
 import { formatCount, formatExponent, formatFixed, formatGrid, formatRate } from '../ui/format';
@@ -342,21 +343,18 @@ function showScale(scale: FlowScale): void {
   });
 }
 
-/** What the PNG says it shows: the case, the grid, and the value with its status. */
-function caption(): string[] {
-  const mach = formatFixed(Number(machSelect.value), 2);
-  const value =
-    outcomeShown || lastDrag === null
-      ? `wave Cd ${dragText.textContent} (${statusBadge.textContent})`
-      : `wave Cd on this grid ${lastDrag.toFixed(5)} (solving, not verified)`;
-  return [`bowshock: the Basic Finner, M ${mach}, α 0°, grid ${shownGrid}`, value];
-}
+/** The case whose flow is drawn: the PNG's name and caption (not the controls, which may be ahead of it). */
+const drawnCase = new DrawnCaseRecord();
 
 async function savePng(): Promise<void> {
-  if (view === null) return;
-  const name = `bowshock-basic-finner-M${machSelect.value}-${view.shown.split ? 'split' : view.shown.field}.png`;
+  const drawn = drawnCase.current;
+  if (view === null || drawn === null) {
+    shell.toasts.show('Nothing to save yet: the flow shows once its first grid is set up.');
+    return;
+  }
+  const name = pngName(drawn, view.shown.split ? 'split' : view.shown.field);
   try {
-    await view.savePng(name, caption());
+    await view.savePng(name, pngCaption(drawn));
     shell.toasts.show(`Saved ${name}`);
   } catch (error) {
     shell.toasts.show(`Could not save the PNG: ${String(error)}`, 'bad');
@@ -371,12 +369,9 @@ let controller: AbortController | null = null;
 let generation = 0;
 /** The run on the GPU; settled once it has released its grids. */
 let running: Promise<void> = Promise.resolve();
-/** Why the GPU was lost, once it has been. */
+/** Why the GPU was lost, once it has been; and the promise that says so. */
 let lost: string | null = null;
-/** The grid drawn, the latest check's drag on it, and whether an outcome is shown. */
-let shownGrid = '';
-let lastDrag: number | null = null;
-let outcomeShown = false;
+let deviceLost: Promise<unknown> = new Promise(() => {});
 
 /** Resolves when the run is not paused (or has been stopped). */
 function gate(): Promise<void> {
@@ -455,7 +450,7 @@ function addLevel(report: LevelReport): void {
  * once to screen readers. Green only for a measured band.
  */
 function settle(value: string, status: string, kind: ReadoutKind, reason: string): void {
-  outcomeShown = true;
+  drawnCase.settled(generation, value, status);
   dragText.textContent = value;
   resultText.textContent = reason;
   badge(status, kind);
@@ -468,7 +463,17 @@ function showOutcome(
   outcome: Exclude<VerifiedDrag, { kind: 'cancelled' }>,
   fallback: number | null,
 ): void {
-  if (outcome.kind !== 'solved') {
+  if (outcome.kind === 'not-converged') {
+    // As the drag page says it: the grid did not converge.
+    settle(
+      'none',
+      'Not converged',
+      'bad',
+      `No result: the grid at refinement ${outcome.refinement} did not converge (${outcome.reason}).`,
+    );
+    return;
+  }
+  if (outcome.kind === 'invalid') {
     settle(
       'none',
       'Refused',
@@ -520,8 +525,13 @@ function showGpuFailure(reason: string): void {
 /** Steps per second, from the checks of the grid being solved. */
 let rate: { refinement: number; time: number; iterations: number; cells: number } | null = null;
 
+/** An error from the GPU itself (a failed map or submission), not from the case. */
+const fromGpu = (error: unknown) =>
+  error instanceof GpuExecutionError || error instanceof DOMException;
+
 async function run(device: GPUDevice, myGeneration: number): Promise<void> {
-  const body = basicFinnerBody();
+  // The drag page's Basic Finner, to the last bit (its fields, read back).
+  const body = basicFinnerBodyAsTyped();
   const mach = Number(machSelect.value);
   const finest = Number(finestSelect.value);
   view?.setBody(outline(body));
@@ -530,8 +540,6 @@ async function run(device: GPUDevice, myGeneration: number): Promise<void> {
   for (const id of ['grid', 'step', 'shock', 'cd', 'rate']) readout.set(id, null);
   levels.tBodies[0]!.replaceChildren();
   levels.hidden = true;
-  outcomeShown = false;
-  lastDrag = null;
   dragText.textContent = '…';
   resultText.textContent = '';
   badge(`Solving, finest grid ${20 * finest} cells across`, '');
@@ -560,13 +568,15 @@ async function run(device: GPUDevice, myGeneration: number): Promise<void> {
           return;
         }
         rate = { refinement, time: performance.now(), iterations: 0, cells: live.ni * live.nj };
-        shownGrid = formatGrid(live.ni, live.nj);
-        readout.set('grid', shownGrid);
+        const grid = formatGrid(live.ni, live.nj);
+        readout.set('grid', grid);
         view?.setSource(liveFitSource(live));
+        // From now on the flow drawn, and so the PNG, is this run's.
+        drawnCase.drawnGrid(myGeneration, mach, grid);
       },
       onCheck: (refinement, iterations, speed, drag) => {
         if (myGeneration !== generation) return;
-        lastDrag = drag;
+        drawnCase.checked(myGeneration, drag);
         readout.set('step', formatCount(iterations));
         readout.set('shock', formatExponent(speed, 1));
         readout.set('cd', drag.toFixed(5));
@@ -596,8 +606,14 @@ async function run(device: GPUDevice, myGeneration: number): Promise<void> {
   } catch (error) {
     if (myGeneration !== generation) return;
     const reason = error instanceof Error ? error.message : String(error);
+    // A map that fails as the device is lost can reject before `lost`
+    // resolves: wait a moment for it, so that the first word is the right one.
+    if (lost === null && fromGpu(error)) {
+      await Promise.race([deviceLost, new Promise((resolve) => setTimeout(resolve, 500))]);
+      if (myGeneration !== generation) return;
+    }
     if (lost !== null) showGpuFailure(lostText(lost));
-    else if (error instanceof GpuExecutionError) showGpuFailure(`The GPU failed: ${reason}.`);
+    else if (fromGpu(error)) showGpuFailure(`The GPU failed: ${reason}.`);
     else settle('none', 'Refused', 'bad', `Cannot solve this case: ${reason}.`);
   } finally {
     if (myGeneration === generation) {
@@ -664,6 +680,7 @@ async function startGpu(): Promise<void> {
     return;
   }
   device = gpuDevice;
+  deviceLost = gpuDevice.lost;
   void gpuDevice.lost.then((info) => {
     if (info.reason === 'destroyed') return;
     const reason = info.message === '' ? info.reason : info.message;
@@ -674,12 +691,21 @@ async function startGpu(): Promise<void> {
     shell.toasts.show(lostText(reason), 'bad', 8);
   });
   readout.set('gpu', adapter.info.description || adapter.info.architecture || adapter.info.vendor);
-  view = await FlowView.create(gpuDevice, canvas, {
-    presentation: presentationFor(adapter.info),
-    // Clear of the readout, the panels and the bottom row.
-    fitRect: (aspect) => shell.drawingRect(aspect),
-    onScale: showScale,
-  });
+  try {
+    view = await FlowView.create(gpuDevice, canvas, {
+      presentation: presentationFor(adapter.info),
+      // Clear of the readout, the panels and the bottom row.
+      fitRect: (aspect) => shell.drawingRect(aspect),
+      onScale: showScale,
+    });
+  } catch (error) {
+    // Without the view nothing can be shown: a failed state, not "Starting the GPU".
+    disableRuns();
+    showGpuFailure(
+      `The flow view could not be set up: ${error instanceof Error ? error.message : String(error)}.`,
+    );
+    return;
+  }
   view.onChange(showViewState);
   view.setField(flowField(params.get('field')));
   showViewState();
