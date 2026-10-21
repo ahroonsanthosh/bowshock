@@ -1270,8 +1270,9 @@ P_B -0.1318 (first, at M 2.56) and -0.1317 (second).
 
 **Calibration checks.** The no-fin curve of fig. 35 against fig. 18's
 basic curve (`src/base/tn3819-fig18.ts`), which it reproduces within 0.001
-(0008 section 3.4): the first reading within 0.0009 at M 1.0 to 3.2
-(within 0.0005 at 13 of 14 Mach numbers); the second within 0.0008 at M
+(0008 section 3.4): the first reading within 0.0009 at the 13 Mach
+numbers it tracked from M 1.0 to 3.2 (within 0.0005 at 11); the second
+within 0.0008 at M
 1.0 to 3.2 except two points. At M 2.4 it reads -0.1194 against -0.1224,
 where the Langley no-fin diamond sits on the curve (it read the symbol at
 M 2.4108, -0.1202); the first reading's track there gives -0.1223. At M

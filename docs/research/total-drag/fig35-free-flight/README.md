@@ -53,8 +53,11 @@ by the scripts in `reading1/scripts/` (Python 3, numpy and Pillow, run as
 - `nofin_check.py` is the calibration check: the solid no-fin curve,
   tracked the same way, against fig. 18's basic curve (the adopted table
   of `src/base/tn3819-fig18.ts`), which it reproduces within 0.001 (0008
-  section 3.4). Measured here: within 0.0009 at M 1.0 to 3.2, within
-  0.0005 at 13 of the 14 Mach numbers (`nofin_check.out`).
+  section 3.4). Measured here: within 0.0009 at the 13 Mach numbers
+  tracked from M 1.0 to 3.2, within 0.0005 at 11 of them
+  (`nofin_check.out`). The track missed M 1.4, where its guide (fig.
+  18's row) lies 0.002 off the curve; the column runs there give -0.1774
+  (see `reading2/` below).
 
 The tracks are in `tracks/` (u, M, the guide, the centre found, its width
 and darkness, P_B). The overlays (`ov_*.png`) draw the tracked centres
