@@ -55,7 +55,7 @@ The table as of section 18 (the sections below record how each row came to be).
 | W4(b) any planform    | the nose term per unit span times the span (a plate's radius is the same at every station)                                                                                                                     | as W4(a)                                                                                                                                                                                  |                                 |                                                                                                                                       |
 | W4(c) swept           | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure                                                                                                                | W4(a)'s or W4(e)'s times the sweep allowance, 0.95 to 1.22 from 14.3 deg, the smallest yaw tested, tapered below it to none unswept (sections 18, 19); extrapolated in normal Mach number | sweep to 60 deg, M_n 1.0 to 3.0 | RM A55H31 figs. 11, 12 (two readings and third looks, r at the stated yaws); TN 3861 figs. 15, 16 (two readings), 17 (one), as checks |
 | W4(e) M_n 1.0 to 1.49 | plates and rounded wedges: the term times kappa(M_n), the cylinder's front side over modified Newtonian (section 11)                                                                                           | the bracketing nodes' range (sections 11, 14, 16)                                                                                                                                         | M_n 1.0 to 1.49                 | NASA CR-149372 figs. 8b, 5 (two readings; fig. 8b at M 1.2 three); TN 2960 at 1.49                                                    |
-| Fins at the base      | a plate's largest t/c (its shorter end chord) to the fins-on-base factor; thinner than 5% anywhere, the factor extended (section 18)                                                                           | the factor's; extended, low end F = 1                                                                                                                                                     | t/c up to 0.10                  | as the factor (0010)                                                                                                                  |
+| Fins at the base      | flat plates refused (RM L52E06 fig. 7 measures relief; section 20); the wedge, circular-arc and hexagonal families thinner than 5%, the factor extended (section 18)                                           | the factor's; extended, low end F = 1                                                                                                                                                     | t/c up to 0.10                  | as the factor (0010)                                                                                                                  |
 
 ## 2. W3(a): blunt trailing edges with thick layers
 
@@ -1153,7 +1153,9 @@ as no fin effect (F = 1; thinner fins lower the base pressure less), the
 high end the 5% fins'" (reworded in section 19: the high end rests on the
 10% fins and the tunnel data) (`base-drag.ts`, `BaseFins.thinnest`; the factor
 itself, `fins-on-base.ts`, is not changed). A section of uniform t/c below
-5% takes the same rule. Thicker than 0.10 stays refused. In the population it lifts the thickness refusal from the 23 unswept four-plate rockets at the base, all thinner than 5%, and from unswept sections thinner than 5% (a test holds four 3 mm plates of constant chord 120 mm).
+5% takes the same rule. Thicker than 0.10 stays refused. (Section 20:
+flat plates at the base are refused; the extension holds for the wedge,
+circular-arc and hexagonal families only.) In the population it lifts the thickness refusal from the 23 unswept four-plate rockets at the base, all thinner than 5%, and from unswept sections thinner than 5% (a test holds four 3 mm plates of constant chord 120 mm).
 
 **3. The tip sliver's upper bound.** In the sliver the stations lie below
 fig. 29(b)'s read range in c/[h Re^(1/2)], where the laminar base pressure
@@ -1232,3 +1234,31 @@ s alone).
 exactly, its cross-check against `src/total` agreeing on all 1200 cases:
 the allowance moves bands, not refusals. The Basic Finner's gated shots
 stay bit for bit the main line's (693 values, the largest difference 0).
+
+## 20. Flat plates at the base refused (hotfix, 2026-10-21)
+
+W1's review found that the thin-plate rule of section 18 served unswept
+flat plates at the base with the factor's low end at no fin effect (F =
+1), while the only flat-plate source, RM L52E06 fig. 7 (four plates at the
+base), measures relief, F 0.85 to 0.88: for plates F = 1 is not a lower
+bound, and the coordinator's rule was wrong for them. Until W1's rebuilt
+factor lands (it will serve plates with RM L52E06's relief as the low end),
+the present factor refuses flat-faced fins at the base, flat plates with
+square or rounded edges (`flat-plate-fins`): "flat plates at the base lower
+the base drag by up to 15% (RM L52E06 fig. 7, F 0.85 to 0.88), which this
+factor's data do not cover; the rebuilt factor will serve them"
+(`base-drag.ts`, `BaseFins.flatFaced`, after the factor's own checks, so a
+plate refused for count, thickness, sweep or Mach number shows that reason
+first). The thin-fins extension of section 18 stays for the wedge,
+circular-arc and hexagonal families only. A test holds plates of constant
+chord, thin and inside the data, square and rounded, refused; a tapered
+plate refused for its sweep first; a 3% double wedge served, extended; and
+a 12% one refused (0014 section 10.7, amendment e).
+
+**Coverage** (the same population and run, `out/2026-10-21-plates-at-base/`,
+its cross-check against `src/total` agreeing on all 1200 cases): the
+refusal applies to 43.5% of cases and is the sole blocker in 0.04%. Served
+totals fall from 20 of 8000 cases to 17 (all at Mach 1.8 to 3.0: 13 of 2000
+rockets to 10; totals today 0.3% to 0.2%, at Mach 1.8 to 3.0 0.7% to
+0.5%). W1 is needed in 95.5% of cases (94.6% before); the totals once W1 is
+done stay 3.4%.

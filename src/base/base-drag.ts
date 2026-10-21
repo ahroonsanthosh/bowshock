@@ -57,14 +57,25 @@ export interface BaseFins extends FinsAtBase {
    * 0016 section 18). Absent: every station has thicknessRatio.
    */
   readonly thinnest?: { readonly thicknessRatio: number; readonly spanShareBelow: number };
+  /**
+   * Flat-faced fins (flat plates, square or rounded edges): refused at the
+   * base by the present factor (0014 section 10.7, amendment e).
+   */
+  readonly flatFaced?: boolean;
 }
+
+/** Why the present factor refuses flat plates at the base (0014 section 10.7 (e); 0016 section 20). */
+export const FLAT_PLATES_AT_BASE_REFUSAL =
+  'flat plates at the base lower the base drag by up to 15% (RM L52E06 fig. 7, F 0.85 to ' +
+  "0.88), which this factor's data do not cover; the rebuilt factor will serve them";
 
 /** The thinnest fins the fins-on-base factor's data hold: 5% thick (TN 2360, TN 3819 fig. 35). */
 export const FINS_ON_BASE_THINNEST_DATA = 0.05;
 
 /**
  * Fins thinner than the factor's 5% data at some station, none thicker than
- * 10% (0016 section 18, the coordinator's rule): the factor at 5%, its low
+ * 10% (0016 section 18, the coordinator's rule; since 0016 section 20 for the
+ * wedge, circular-arc and hexagonal families only, flat plates being refused): the factor at 5%, its low
  * end taken as no fin effect (F = 1), the physical limit, since thinner fins
  * lower the base pressure less, its high end kept (it rests on the 10% fins
  * and the tunnel data), the nominal the midpoint.
@@ -153,6 +164,10 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
           ? { ...fins, thicknessRatio: Math.max(fins.thicknessRatio, FINS_ON_BASE_THINNEST_DATA) }
           : fins,
       );
+      // After the factor's own checks, so its reasons (count, thickness, sweep, Mach) show first.
+      if (fins.flatFaced === true) {
+        throw new BaseRefusal('flat-plate-fins', FLAT_PLATES_AT_BASE_REFUSAL);
+      }
       if (below) {
         factor = extendedBelowThinnestData(factor, thinnest, fins.thinnest?.spanShareBelow ?? 1);
       }
