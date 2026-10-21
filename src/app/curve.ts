@@ -65,6 +65,8 @@ export function solveOrder(count: number): number[] {
 
 /** The nose solve the page uses, as the curve calls it. */
 export interface NoseSolveHooks {
+  /** The logic's inputs at this point, for drawing the rocket solved (the 3D view's). */
+  readonly form: TotalDragForm;
   readonly signal: AbortSignal;
   /** After each grid. */
   readonly onLevel: (report: LevelReport) => void;
@@ -183,6 +185,7 @@ export class CurveRun {
       let cellUpdates = 0;
       let levels = 0;
       const outcome = await this.solve(form.body, mach, {
+        form,
         signal: this.controller.signal,
         onLevel: (report) => {
           levels += 1;

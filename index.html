@@ -25,11 +25,20 @@
           tabindex="0"
           aria-label="The airflow around the rocket's body, mirrored about its axis, as it is solved"
         ></canvas>
+        <canvas
+          id="flow3d"
+          role="img"
+          tabindex="0"
+          hidden
+          aria-label="The rocket in 3D with the airflow around its body, revolved about its axis, as it is solved; drag to turn it"
+        ></canvas>
       </div>
-      <p class="flow-note" id="flow-note">
-        The airflow is around the body; the fins are drawn, their drag computed separately. Hatched:
-        behind the base, not simulated.
-      </p>
+      <div class="flow-aside" id="flow-aside">
+        <p class="flow-note" id="flow-note">
+          The airflow is around the body; the fins are drawn, their drag computed separately.
+          Hatched: behind the base, not simulated.
+        </p>
+      </div>
     </main>
     <aside class="panel panel--left" id="panel-rocket" data-title="Rocket">
       <div class="panel__body">
@@ -97,7 +106,7 @@
     <aside class="panel panel--phone" id="panel-view" data-title="View">
       <div class="panel__body">
         <div class="view-controls" id="view-controls"></div>
-        <p class="panel__note view-note">
+        <p class="panel__note view-note" id="view-note">
           The airflow is around the body; the fins are drawn, their drag computed separately.
           Hatched: behind the base, not simulated.
         </p>

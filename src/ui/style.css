@@ -376,6 +376,9 @@ body.app {
   height: 100%;
   display: block;
 }
+.viewport canvas[hidden] {
+  display: none;
+}
 .viewport canvas:focus-visible {
   outline-offset: -3px;
 }
@@ -1107,9 +1110,19 @@ td.num {
   backdrop-filter: blur(var(--panel-blur));
   -webkit-backdrop-filter: blur(var(--panel-blur));
 }
+.modebar[hidden] {
+  display: none;
+}
 .modebar__group {
   display: flex;
   gap: 2px;
+}
+/* The 3D | Side switch, beside the field mode bar (or alone, in 3D). */
+.modebar.flow-switch {
+  margin-left: auto;
+}
+.modebar.flow-switch + .modebar {
+  margin-left: 0;
 }
 .modebar__divider {
   width: 1px;
@@ -2173,12 +2186,27 @@ input[aria-invalid='true'] {
     display: none;
   }
 }
-.flow-note {
+/*
+ * What the airflow shows, at the top left of the view under the readout:
+ * the note, then (on desktops) the colour legend, clear of the rocket
+ * panel, which runs the window's height.
+ */
+.flow-aside {
   position: fixed;
   z-index: 10;
   left: calc(2 * var(--inset) + var(--panel-width) + 4px);
   top: calc(var(--topbar-height) + var(--inset) + 104px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   max-width: 360px;
+  pointer-events: none;
+}
+.flow-aside .legend {
+  min-width: 260px;
+}
+.flow-note {
   margin: 0;
   padding: 4px 10px;
   border: 1px solid var(--panel-border);
@@ -2254,8 +2282,8 @@ input[aria-invalid='true'] {
 }
 
 @media (max-width: 699.98px) {
-  /* On phones the note is in the View tab, under the view's buttons. */
-  .flow-note {
+  /* On phones the note is in the View tab, under the view's buttons; the legend is above the sheet. */
+  .flow-aside {
     display: none;
   }
   .pinned__value {

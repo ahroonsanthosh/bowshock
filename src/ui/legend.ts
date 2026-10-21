@@ -42,6 +42,16 @@ export type LegendScale =
       readonly min: number;
       readonly max: number;
       readonly note?: string;
+    }
+  /** A colour field on a palette of its own (the 3D view's), as a CSS gradient from low to high. */
+  | {
+      readonly kind: 'palette';
+      readonly title: string;
+      readonly units?: string;
+      readonly min: number;
+      readonly max: number;
+      readonly gradient: string;
+      readonly note?: string;
     };
 
 /** The density gradients marked on the glow view's brightness bar. */
@@ -82,6 +92,8 @@ export class Legend {
   /** The glow view's second channel: the brightness. */
   private readonly brightness = h('div', { className: 'legend__channel', attrs: { hidden: true } });
   private kind: LegendScale['kind'] | null = null;
+  /** The palette's gradient set on the bar, if a palette is shown. */
+  private gradient: string | null = null;
 
   constructor() {
     this.element = h(
@@ -130,13 +142,20 @@ export class Legend {
   }
 
   show(scale: LegendScale): void {
-    if (this.kind !== scale.kind) {
+    if (scale.kind === 'palette') {
+      // Set only when it changes: the browser rewrites what it is given.
+      if (this.gradient !== scale.gradient) this.bar.style.background = scale.gradient;
+      this.gradient = scale.gradient;
+    } else if (this.kind !== scale.kind) {
+      this.gradient = null;
       this.bar.style.background =
         scale.kind === 'colormap'
           ? colormapGradient()
           : scale.kind === 'glow' || scale.kind === 'spectrum'
             ? spectrumGradient()
             : schlierenGradient();
+    }
+    if (this.kind !== scale.kind) {
       this.kind = scale.kind;
       this.brightness.hidden = true;
     }
@@ -152,7 +171,7 @@ export class Legend {
     }
     setText(this.title, scale.title);
     setText(this.note, scale.note ?? '');
-    if (scale.kind === 'colormap' || scale.kind === 'spectrum') {
+    if (scale.kind === 'colormap' || scale.kind === 'spectrum' || scale.kind === 'palette') {
       setText(this.units, scale.units ?? '');
       setText(this.low, formatScaleValue(scale.min));
       setText(this.high, formatScaleValue(scale.max));

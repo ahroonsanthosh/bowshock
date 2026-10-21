@@ -15,6 +15,7 @@ import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE } from '../analysis/verified-drag';
 import { GpuExecutionError } from '../engine-gpu/gpu-common';
 import type { LiveFit } from '../engine-gpu/shock-fitting-gpu';
 import type { Body } from '../geometry/body';
+import type { TotalDragForm } from './total-drag';
 import { liveFitSource } from '../render/flow-source';
 import { presentationFor } from '../render/presenter';
 import { excludableParts, withoutText } from '../rocket/adapter';
@@ -25,9 +26,10 @@ import { rememberedUnit, rememberUnit, type LengthUnit } from '../rocket/units';
 import { Builder } from '../ui/builder';
 import { curveChart, curveTable } from '../ui/curve-chart';
 import { element, h } from '../ui/dom';
-import { FlowView } from '../ui/flow-view';
+import { FlowView, FRAME_BUDGET, type FlowScale } from '../ui/flow-view';
 import { formatCount, formatExponent, formatGrid, formatRate } from '../ui/format';
 import { bandSection, colourScaleSection, schlierenSection } from '../ui/help';
+import { ModeBar } from '../ui/modebar';
 import { Readout, type ReadoutKind } from '../ui/readout';
 import { drawingLabel, drawRocket } from '../ui/rocket-drawing';
 import { Shell } from '../ui/shell';
@@ -44,6 +46,14 @@ import {
 } from './flow-controls';
 import { pointView, type PointView } from './point-view';
 import {
+  HAS_RENDER3D,
+  loadRender3D,
+  paletteGradient,
+  type Render3DModule,
+  type Scene3D,
+  type SceneScaleSeen,
+} from './scene3d';
+import {
   gateDisplay,
   totalDragDisplay,
   type DisplayBlock,
@@ -53,11 +63,30 @@ import { renderBlocks } from './total-drag-render';
 
 const GAMMA = 1.4;
 
-type Action = ViewAction | 'pause' | 'compute';
+type Action = ViewAction | 'pause' | 'compute' | 'flow-view';
+
+/** Which view of the airflow is shown: the 3D scene, or the side view (also its fallback). */
+type FlowShown = '3d' | 'side';
+const FLOW_SHOWN_KEY = 'bowshock:flow-view';
+
+/** The note on the airflow shown: what is simulated and what is only drawn. */
+function flowNoteText(which: FlowShown, finsDrawn: boolean): string {
+  const fins = finsDrawn
+    ? 'the fins are drawn, their drag computed separately'
+    : 'the fins are not drawn in 3D (the side view shows them), their drag computed separately';
+  return which === '3d'
+    ? `The airflow is around the body, revolved about its axis; ${fins}. ` +
+        'Hatched: behind the base, not simulated. Drag to turn it.'
+    : 'The airflow is around the body; the fins are drawn, their drag computed separately. ' +
+        'Hatched: behind the base, not simulated.';
+}
 
 // ------------------------------------------------------------- elements
 
 const canvas = element('#flow', HTMLCanvasElement);
+const canvas3d = element('#flow3d', HTMLCanvasElement);
+const flowNote = element('#flow-note', HTMLElement);
+const viewNote = element('#view-note', HTMLElement);
 const presetSelect = element('#preset', HTMLSelectElement);
 const drawing = element('#drawing', HTMLElement);
 const finestSelect = element('#finest', HTMLSelectElement);
@@ -101,6 +130,17 @@ let device: GPUDevice | null = null;
 let noGpu = false;
 let lost: string | null = null;
 let view: FlowView | null = null;
+/** The 3D view, once set up (null in a build without it, or if it could not be). */
+let scene: Scene3D | null = null;
+let render3d: Render3DModule | null = null;
+let shown: FlowShown = rememberedFlow();
+/** The fit being solved and drawn live, while its grid runs. */
+let liveFit: LiveFit | null = null;
+/** The last colour scales of each view, shown again when it is. */
+let scale2d: FlowScale | null = null;
+let scale3d: SceneScaleSeen | null = null;
+/** Whether the 3D view draws the fins (it cannot draw every section yet). */
+let finsIn3d = true;
 /** The Mach number of the flow drawn, for the PNG's caption. */
 let drawnMach: number | null = null;
 /** The last OpenRocket import, while its rocket is the one shown. */
@@ -113,19 +153,54 @@ const shell = new Shell<Action>({
   page: 'home',
   title: 'Drag curve',
   bindings: [
+    ...(HAS_RENDER3D
+      ? [
+          {
+            keys: ['v'],
+            action: 'flow-view' as const,
+            description: 'Switch the airflow between the 3D view and the side view',
+          },
+        ]
+      : []),
     ...VIEW_BINDINGS,
     GLOW_BINDING,
     { keys: [' '], action: 'pause', description: 'Pause or resume the airflow solve' },
     { keys: ['r'], action: 'compute', description: 'Compute the curve' },
   ],
-  view: viewMenu(
-    () => view,
-    () => void savePng(),
-    true,
-  ),
+  view: [
+    ...(HAS_RENDER3D
+      ? [
+          {
+            label: '3D view',
+            key: 'V',
+            action: () => {
+              showFlow('3d');
+            },
+            pressed: () => shown === '3d',
+          },
+          {
+            label: 'Side view',
+            key: 'V',
+            action: () => {
+              showFlow('side');
+            },
+            pressed: () => shown === 'side',
+          },
+        ]
+      : []),
+    ...viewMenu(
+      () => sideView(),
+      () => void savePng(),
+      true,
+    ),
+  ],
   onAction: (action) => {
     if (action === 'pause') togglePause();
     else if (action === 'compute') void start();
+    else if (action === 'flow-view') showFlow(shown === '3d' ? 'side' : '3d');
+    else if (action === 'png') void savePng();
+    else if (action === 'fit' && shown === '3d') fitScene();
+    // The side view's keys act on it only while it is shown (the 3D view has its own).
     else controls.act(action);
   },
   help: {
@@ -137,6 +212,11 @@ const shell = new Shell<Action>({
           'Describe your rocket on the left, or start from a preset. The curve on the right is its drag coefficient against Mach number, from 1.0 to the highest Mach number it flies, each point with its error band and a status in plain words.',
           'Each point needs the airflow round the nose solved on your GPU, on grids each twice as fine as the one before; the rest of the drag (friction, the base, the fins) is computed from measured correlations. A point the methods cannot give to a known accuracy shows no number, with the reason.',
           'Lengths are in millimetres or inches, each with its value in calibres (the body diameter) beside it.',
+          ...(HAS_RENDER3D
+            ? [
+                'The airflow shows in 3D, or from the side (key V). The keys below act on the side view; the 3D view has its own while it has focus (click it, then press H to list them): drag to turn it, the wheel to zoom.',
+              ]
+            : []),
         ],
       },
       schlierenSection(),
@@ -164,7 +244,7 @@ const readout = new Readout([
 document.querySelector('main')?.append(readout.element);
 
 const controls = new FlowControls(
-  () => view,
+  () => sideView(),
   () => void savePng(),
   shell.bottom,
   element('#view-controls', HTMLElement),
@@ -173,6 +253,124 @@ const controls = new FlowControls(
   },
   true,
 );
+
+// ------------------------------------------------------- the two views
+
+/** The 3D | Side switch (key V), before the field mode bar; shown once the 3D view is set up. */
+const flowSwitch = new ModeBar<FlowShown>({
+  label: 'Airflow view',
+  modes: [
+    { id: '3d', label: '3D', key: 'V', hint: 'The rocket and its airflow in 3D' },
+    {
+      id: 'side',
+      label: 'Side',
+      key: 'V',
+      hint: 'The airflow seen from the side, mirrored about the axis',
+    },
+  ],
+  onMode: (mode) => {
+    showFlow(mode);
+  },
+});
+flowSwitch.element.classList.add('flow-switch');
+flowSwitch.element.hidden = true;
+controls.modes.element.before(flowSwitch.element);
+
+/**
+ * The legend: on desktops under the note at the top left of the view (the
+ * rocket panel runs the window's height, and the glow's legend is tall);
+ * on phones in the bottom row, a line above the sheet.
+ */
+const flowAside = element('#flow-aside', HTMLElement);
+const wide = window.matchMedia('(min-width: 700px)');
+function placeLegend(): void {
+  if (wide.matches) flowAside.append(controls.legend.element);
+  else shell.bottom.prepend(controls.legend.element);
+}
+placeLegend();
+wide.addEventListener('change', placeLegend);
+
+function rememberedFlow(): FlowShown {
+  try {
+    return localStorage.getItem(FLOW_SHOWN_KEY) === 'side' ? 'side' : '3d';
+  } catch {
+    return '3d';
+  }
+}
+
+/** The side view, while it is the one shown: its keys, mode bar and menu act on it only then. */
+function sideView(): FlowView | null {
+  return shown === 'side' || scene === null ? view : null;
+}
+
+/** Whether the flow is being solved now (a grid running, not paused): then the view shown draws live. */
+function solvingLive(): boolean {
+  return liveFit !== null && !paused && run !== null && !run.done;
+}
+
+/** Only the view shown draws live, so that the solver pays for one view's frames, not two. */
+function setLive(): void {
+  const live = solvingLive();
+  view?.setLive(live && sideView() !== null);
+  scene?.setLive(live && sideView() === null);
+}
+
+/** Show this view of the airflow (the side view if the 3D view is not set up). */
+function showFlow(which: FlowShown): void {
+  const is3d = which === '3d' && scene !== null;
+  shown = is3d ? '3d' : 'side';
+  try {
+    localStorage.setItem(FLOW_SHOWN_KEY, which);
+  } catch {
+    // Remembering the choice is a convenience only.
+  }
+  canvas.hidden = is3d;
+  canvas3d.hidden = !is3d;
+  flowSwitch.setMode(shown);
+  controls.modes.element.hidden = is3d;
+  showFlowNote();
+  if (scene !== null && is3d) {
+    // Hidden, the 3D view read the flow only as each grid began: give it the flow drawn now.
+    const source = liveFit !== null ? liveFitSource(liveFit) : (view?.source ?? null);
+    if (source !== null) scene.setFlow(source);
+    fitScene();
+    if (scale3d !== null) showScale3d(scale3d);
+  } else {
+    view?.invalidate();
+    controls.showViewState();
+    if (scale2d !== null) controls.showScale(scale2d);
+  }
+  setLive();
+  shell.topBar.refresh();
+}
+
+function showFlowNote(): void {
+  const text = flowNoteText(shown, shown === 'side' || finsIn3d);
+  flowNote.textContent = text;
+  viewNote.textContent = text;
+}
+
+/** Fit the 3D view into the part of the window the panels leave free (device pixels). */
+function fitScene(): void {
+  if (scene === null) return;
+  const dpr = window.devicePixelRatio || 1;
+  // A three-quarter view is about 1.4 times as wide as tall: between the panels, as a rule.
+  const r = shell.drawingRect(1.4);
+  scene.fit({ x: r.x * dpr, y: r.y * dpr, width: r.width * dpr, height: r.height * dpr });
+}
+
+/** The 3D view's colour scale in the page's legend: its quantity, unit, range and palette. */
+function showScale3d(s: SceneScaleSeen): void {
+  controls.legend.show({
+    kind: 'palette',
+    title: s.label,
+    units: s.unit,
+    min: s.min,
+    max: s.max,
+    gradient: paletteGradient(s.colour),
+    note: 'Hatched: behind the base, not simulated.',
+  });
+}
 
 // -------------------------------------------------------------- builder
 
@@ -248,6 +446,7 @@ const gpuSolver: NoseSolver = async (body: Body, mach: number, hooks) => {
   }
   view?.setBody(bodyOutline(body));
   view?.setShapes(finShapes());
+  setSceneRocket(hooks.form);
   readout.set('mach', mach.toFixed(2));
   readout.set('alpha', '0°');
   for (const id of ['grid', 'level', 'step', 'shock', 'cd', 'rate']) readout.set(id, null);
@@ -266,14 +465,22 @@ const gpuSolver: NoseSolver = async (body: Body, mach: number, hooks) => {
       gate,
       onLevel: hooks.onLevel,
       onLive: (live: LiveFit | null, refinement) => {
+        // Both views are given each grid (to show either at a switch); only the one shown draws live.
         if (live === null) {
+          liveFit = null;
           view?.freeze();
+          scene?.freeze();
+          setLive();
           return;
         }
+        liveFit = live;
         rate = { refinement, time: performance.now(), iterations: 0, cells: live.ni * live.nj };
         readout.set('grid', formatGrid(live.ni, live.nj));
         readout.set('level', `(${Math.round(Math.log2(refinement)) + 1} of ${grids})`);
         view?.setSource(liveFitSource(live));
+        scene?.setFlow(liveFitSource(live));
+        scene?.setStatus({ steps: 0, converged: false });
+        setLive();
         drawnMach = mach;
       },
       onCheck: (refinement, iterations, speed, drag) => {
@@ -285,6 +492,9 @@ const gpuSolver: NoseSolver = async (body: Body, mach: number, hooks) => {
           const perSecond =
             ((iterations - rate.iterations) * rate.cells * 1000) / (now - rate.time);
           readout.set('rate', formatRate(perSecond, 'cell'));
+          scene?.setStatus({ steps: iterations, cellRate: perSecond });
+        } else {
+          scene?.setStatus({ steps: iterations });
         }
         rate = { refinement, time: now, iterations, cells: rate?.cells ?? 0 };
       },
@@ -298,10 +508,15 @@ const gpuSolver: NoseSolver = async (body: Body, mach: number, hooks) => {
 };
 
 /** The fins seen from the side, in calibres (the solver's unit), shaded by how much of each face shows. */
+/** The rocket of the curve being solved (the one shown may since have been edited). */
+function solvedDesign(): RocketDesign {
+  return run?.options.design ?? design;
+}
+
 function finShapes() {
   let fins;
   try {
-    fins = sideViewFins(rocketGeometry(design));
+    fins = sideViewFins(rocketGeometry(solvedDesign()));
   } catch {
     return [];
   }
@@ -319,6 +534,27 @@ function finShapes() {
   );
 }
 
+/**
+ * The rocket in the 3D view: the logic's body and fins at this point
+ * (render3d's rocketFromForm), the first fin rolled as the design's; the
+ * body alone, and the note saying so, where the scene cannot draw the fins.
+ */
+function setSceneRocket(form: TotalDragForm): void {
+  if (scene === null || render3d === null) return;
+  scene.setUnits({ freeStreamTemperature: form.temperature });
+  const rocket = render3d.rocketFromForm(form);
+  const fins = rocket.fins;
+  const roll = ((solvedDesign().finSets[0]?.rotation ?? 0) * Math.PI) / 180;
+  try {
+    scene.setRocket(fins === undefined ? rocket : { ...rocket, fins: { ...fins, roll } });
+    finsIn3d = fins !== undefined || solvedDesign().finSets.length === 0;
+  } catch {
+    scene.setRocket({ body: rocket.body });
+    finsIn3d = false;
+  }
+  showFlowNote();
+}
+
 /** Resolves when the solve is not paused. */
 function gate(): Promise<void> {
   if (!paused) return Promise.resolve();
@@ -334,7 +570,7 @@ function togglePause(): void {
     resume?.();
     resume = null;
   }
-  view?.setLive(!paused);
+  setLive();
   showState(paused ? 'Paused' : 'Solving', '');
   renderCurve();
 }
@@ -375,13 +611,13 @@ async function start(): Promise<void> {
   run = mine;
   selected = defaultSelection(mine);
   stopButton.disabled = false;
-  view?.setLive(true);
+  setLive();
   showState('Solving', '');
   renderCurve();
   running = mine.run().then(() => {
     if (run !== mine) return;
     stopButton.disabled = true;
-    view?.setLive(false);
+    setLive();
     const numbers = mine.points.filter(
       (p) => p.state.kind === 'done' && p.state.result.kind === 'total',
     ).length;
@@ -749,7 +985,7 @@ csvButton.addEventListener('click', () => {
 });
 
 async function savePng(): Promise<void> {
-  if (view === null || drawnMach === null) {
+  if ((view === null && scene === null) || drawnMach === null) {
     shell.toasts.show('Nothing to save yet: the airflow shows once its first grid is set up.');
     return;
   }
@@ -765,13 +1001,28 @@ async function savePng(): Promise<void> {
       : `C_D ${v.value ?? 'none'}${v.band === null ? '' : `, band ${v.band}`}: ${v.status.word}`,
   ].filter((line) => line !== '');
   try {
-    await view.savePng(name, caption);
+    if (scene !== null && shown === '3d') {
+      // The scene draws its own legend and notes into its PNG, the case as its first line.
+      download(await scene.pngBlob(caption.join('; ')), name);
+    } else if (view !== null) {
+      await view.savePng(name, caption);
+    }
     shell.toasts.show(`Saved ${name}`);
   } catch (error) {
     shell.toasts.show(`Could not save the PNG: ${String(error)}`, 'bad');
   }
 }
 pngButton.addEventListener('click', () => void savePng());
+
+function download(blob: Blob, name: string): void {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = name;
+  link.click();
+  window.setTimeout(() => {
+    URL.revokeObjectURL(link.href);
+  }, 10_000);
+}
 
 // -------------------------------------------------------------- import
 
@@ -858,7 +1109,8 @@ async function startGpu(): Promise<void> {
       background: '#000000',
       fitAft: 0.12,
       onScale: (scale) => {
-        controls.showScale(scale);
+        scale2d = scale;
+        if (sideView() !== null) controls.showScale(scale);
       },
     });
   } catch (error) {
@@ -870,9 +1122,63 @@ async function startGpu(): Promise<void> {
   });
   view.setLook('glow');
   controls.showViewState();
+  await startScene(device, adapter.info);
+  showFlow(shown);
   shell.onLayout(() => {
     view?.invalidate();
+    fitScene();
   });
+}
+
+/**
+ * The 3D view (src/render3d), if this build has it, on the solver's device
+ * (so that it reads the live fit's buffers in place), its live frames held
+ * to the same share of the time as the side view's (FRAME_BUDGET).
+ */
+async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
+  if (!HAS_RENDER3D) return;
+  try {
+    render3d = await loadRender3D();
+    if (render3d === null) return;
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const width = Math.max(2, Math.round(canvas3d.clientWidth * dpr));
+      const height = Math.max(2, Math.round(canvas3d.clientHeight * dpr));
+      // Setting a canvas's size clears it, even to the size it has: the frame shown stays until redrawn.
+      if (canvas3d.width !== width) canvas3d.width = width;
+      if (canvas3d.height !== height) canvas3d.height = height;
+    };
+    // Sized while shown, so that its first frame is at the window's size.
+    canvas3d.hidden = false;
+    resize();
+    const made = await render3d.FlowScene3D.create(gpu, canvas3d, {
+      presentation: presentationFor(info),
+      liveDuty: FRAME_BUDGET,
+    });
+    // The page's own legend, notes and readout stand in for the scene's text (a PNG has it).
+    made.setLayers({ overlay: false });
+    made.onScale((s) => {
+      scale3d = s;
+      if (shown === '3d') showScale3d(s);
+    });
+    render3d.attachControls(made, canvas3d);
+    new ResizeObserver(() => {
+      if (canvas3d.hidden) return;
+      resize();
+      fitScene();
+      made.requestDraw();
+    }).observe(canvas3d);
+    scene = made;
+    flowSwitch.element.hidden = false;
+  } catch (error) {
+    scene = null;
+    canvas3d.hidden = true;
+    shell.toasts.show(
+      `The 3D view could not be set up (${String(error)}); the side view shows the airflow.`,
+      'bad',
+      8,
+    );
+  }
 }
 
 showDrawing();
