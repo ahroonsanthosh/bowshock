@@ -45,6 +45,7 @@ import euler2dWgsl from './shaders/euler2d.wgsl?raw';
 import fluxWgsl from './shaders/flux.wgsl?raw';
 import gasWgsl from './shaders/gas.wgsl?raw';
 import limitersWgsl from './shaders/limiters.wgsl?raw';
+import implicitWgsl from './shaders/euler2d-implicit.wgsl?raw';
 import reconstructionWgsl from './shaders/reconstruction.wgsl?raw';
 
 /** WGSL names of the reconstruction functions in reconstruction.wgsl. */
@@ -157,6 +158,24 @@ const ENTRY_POINTS = [
 ] as const;
 type EntryPoint = (typeof ENTRY_POINTS)[number];
 
+const IMPLICIT_ENTRY_POINTS = [
+  'implicit_prepare',
+  'implicit_relax',
+  'implicit_update',
+  'implicit_advance',
+] as const;
+type ImplicitEntryPoint = (typeof IMPLICIT_ENTRY_POINTS)[number];
+/** Size of the ImplicitParams struct in euler2d-implicit.wgsl. */
+const IMPLICIT_PARAMS_BYTES = 32;
+
+interface ImplicitResources {
+  readonly pipelines: Readonly<Record<ImplicitEntryPoint, GPUComputePipeline>>;
+  /** The parameters for the even (0) and the odd (1) cells' half-sweeps. */
+  readonly params: readonly [GPUBuffer, GPUBuffer];
+  readonly work: GPUBuffer;
+  readonly group: (src: StateIndex, dst: StateIndex, colour: 0 | 1) => GPUBindGroup;
+}
+
 interface Control2DReading extends ControlReading {
   readonly residualNorm: number;
 }
@@ -182,6 +201,9 @@ export class GpuEuler2D {
   private readonly geometry: GPUBuffer;
   private readonly boundary: GPUBuffer;
   private readonly boundaryReadback: GPUBuffer;
+  private readonly faceFluxBuffer: GPUBuffer;
+  /** The implicit steps' pipelines, buffers and bind groups, made on first use. */
+  private implicit: ImplicitResources | undefined;
   /** Sides whose face fluxes are imposed from the boundary buffer. */
   private readonly imposed = new Set<Side>();
   /** Index into stateBuffers of the buffer holding the current solution. */
@@ -294,11 +316,11 @@ export class GpuEuler2D {
       CONTROL_BYTES,
       usage.STORAGE | usage.COPY_DST | usage.COPY_SRC,
     );
-    const faceFluxBuffer = b.create(
+    const faceFluxBuffer = (this.faceFluxBuffer = b.create(
       'face flux',
       16 * ((ni + 1) * nj + ni * (nj + 1)),
       usage.STORAGE,
-    );
+    ));
     const scratchBuffer = b.create('scratch', 4 * (this.nCells + this.nPartials), usage.STORAGE);
     // States and imposed fluxes for every boundary face, then the fitted
     // shock's speed per jMax face (layout in euler2d.wgsl).
@@ -636,6 +658,199 @@ export class GpuEuler2D {
   /** Release all GPU buffers. The solver cannot be used afterwards. */
   destroy(): void {
     this.buffers.destroyAll();
+  }
+
+  /**
+   * Set the CFL number the next implicit step starts from (iterateImplicit
+   * ramps it from there): 1 from the free stream, the largest from a
+   * solution on a coarser grid, as solveTransonic does on the CPU.
+   */
+  async setImplicitCfl(cfl: number): Promise<void> {
+    if (!(cfl > 0)) throw new RangeError('the CFL number must be positive');
+    await this.exclusive.run(async () => {
+      const implicit = await this.implicitResources();
+      this.device.queue.writeBuffer(
+        implicit.work,
+        16 * 2 * this.nCells,
+        new Float32Array([cfl, 0, 0, 0]),
+      );
+    });
+  }
+
+  /**
+   * Take `count` implicit steps towards a steady state: the GPU twin of
+   * Euler2D.iterateImplicit with the red-black relaxation of `sweeps`
+   * sweeps (src/engine-cpu/euler2d.ts), each step's CFL number the
+   * previous one's times `growth`, up to `cfl` (from the value set by
+   * setImplicitCfl, 1 at first). Design record 0013, "The GPU solve".
+   */
+  async iterateImplicit(
+    count: number,
+    options: {
+      readonly cfl: number;
+      readonly sweeps: number;
+      readonly omega?: number;
+      readonly growth?: number;
+    },
+  ): Promise<void> {
+    const { cfl, sweeps } = options;
+    const omega = options.omega ?? 1.5;
+    const growth = options.growth ?? 1.2;
+    if (!(cfl > 0 && omega >= 1 && growth >= 1)) {
+      throw new RangeError('implicit steps need cfl > 0, omega >= 1 and growth >= 1');
+    }
+    if (!(Number.isInteger(sweeps) && sweeps >= 1)) {
+      throw new RangeError('the relaxation needs a whole number of sweeps, at least one');
+    }
+    if (this.config.fittedShock !== undefined) {
+      throw new Error('implicit steps do not move a fitted shock');
+    }
+    await this.exclusive.run(async () => {
+      const implicit = await this.implicitResources();
+      this.writeImplicitParams(implicit, omega, cfl, growth);
+      let remaining = count;
+      while (remaining > 0) {
+        const batch = Math.min(remaining, 64);
+        const encoder = this.device.createCommandEncoder();
+        const pass = encoder.beginComputePass();
+        for (let step = 0; step < batch; step++) this.encodeImplicitStep(pass, implicit, sweeps);
+        pass.end();
+        this.device.queue.submit([encoder.finish()]);
+        this.ledger.account(await this.readControl(), false, batch);
+        remaining -= batch;
+      }
+    });
+  }
+
+  private encodeImplicitStep(
+    pass: GPUComputePassEncoder,
+    implicit: ImplicitResources,
+    sweeps: number,
+  ): void {
+    const src = this.current;
+    const dst = ((src + 1) % 3) as StateIndex;
+    // The face fluxes of the current state, by euler2d.wgsl.
+    pass.setBindGroup(0, this.sharedBindGroup);
+    pass.setBindGroup(1, this.stageBindGroups.get(this.stagePlan()[0]!));
+    this.dispatchFluxes(pass);
+    const groups = [implicit.group(src, dst, 0), implicit.group(src, dst, 1)] as const;
+    const cells = this.nPartials;
+    pass.setBindGroup(0, groups[0]);
+    pass.setPipeline(implicit.pipelines.implicit_prepare);
+    pass.dispatchWorkgroups(cells);
+    pass.setPipeline(implicit.pipelines.implicit_relax);
+    for (let s = 0; s < sweeps; s++) {
+      for (const group of groups) {
+        pass.setBindGroup(0, group);
+        pass.dispatchWorkgroups(cells);
+      }
+    }
+    pass.setPipeline(implicit.pipelines.implicit_update);
+    pass.dispatchWorkgroups(cells);
+    pass.setPipeline(implicit.pipelines.implicit_advance);
+    pass.dispatchWorkgroups(1);
+    this.current = dst;
+  }
+
+  private writeImplicitParams(
+    implicit: ImplicitResources,
+    omega: number,
+    cfl: number,
+    growth: number,
+  ): void {
+    const { ni, nj } = this.metrics;
+    for (const colour of [0, 1] as const) {
+      const data = new ArrayBuffer(IMPLICIT_PARAMS_BYTES);
+      const words = new Uint32Array(data);
+      const floats = new Float32Array(data);
+      words.set([ni, nj, this.config.geometry === 'axisymmetric' ? 1 : 0, colour]);
+      floats.set([this.config.gamma, omega, cfl, growth], 4);
+      this.device.queue.writeBuffer(implicit.params[colour], 0, data);
+    }
+  }
+
+  private async implicitResources(): Promise<ImplicitResources> {
+    if (this.implicit !== undefined) return this.implicit;
+    const device = this.device;
+    const module = await compileShader(
+      device,
+      'euler2d implicit',
+      [gasWgsl, implicitWgsl].join('\n'),
+    );
+    const entry = (binding: number, type: GPUBufferBindingType): GPUBindGroupLayoutEntry => ({
+      binding,
+      visibility: GPUShaderStage.COMPUTE,
+      buffer: { type },
+    });
+    const layout = device.createBindGroupLayout({
+      label: 'euler2d implicit',
+      entries: [
+        entry(0, 'uniform'),
+        entry(1, 'read-only-storage'),
+        entry(2, 'read-only-storage'),
+        entry(3, 'read-only-storage'),
+        entry(4, 'storage'),
+        entry(5, 'storage'),
+        entry(6, 'storage'),
+        entry(7, 'storage'),
+      ],
+    });
+    const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
+    const compiled = await Promise.all(
+      IMPLICIT_ENTRY_POINTS.map((entryPoint) =>
+        device.createComputePipelineAsync({
+          label: entryPoint,
+          layout: pipelineLayout,
+          compute: { module, entryPoint },
+        }),
+      ),
+    );
+    const pipelines = Object.fromEntries(
+      IMPLICIT_ENTRY_POINTS.map((name, k) => [name, compiled[k]!]),
+    ) as Record<ImplicitEntryPoint, GPUComputePipeline>;
+    const usage = GPUBufferUsage;
+    const params = [
+      this.buffers.create(
+        'implicit params 0',
+        IMPLICIT_PARAMS_BYTES,
+        usage.UNIFORM | usage.COPY_DST,
+      ),
+      this.buffers.create(
+        'implicit params 1',
+        IMPLICIT_PARAMS_BYTES,
+        usage.UNIFORM | usage.COPY_DST,
+      ),
+    ] as const;
+    // Residuals, diagonals and the CFL number (1 to start with).
+    const initial = new Float32Array(4 * (2 * this.nCells + 1));
+    initial[4 * 2 * this.nCells] = 1;
+    const work = this.buffers.createWith('implicit work', initial, usage.STORAGE | usage.COPY_DST);
+    const dq = this.buffers.create('implicit dq', 16 * this.nCells, usage.STORAGE);
+    const groups = new Map<string, GPUBindGroup>();
+    const group = (src: StateIndex, dst: StateIndex, colour: 0 | 1): GPUBindGroup => {
+      const key = `${src}${dst}${colour}`;
+      let g = groups.get(key);
+      if (g === undefined) {
+        g = device.createBindGroup({
+          label: `euler2d implicit ${key}`,
+          layout,
+          entries: [
+            params[colour],
+            this.geometry,
+            this.faceFluxBuffer,
+            this.stateBuffers[src],
+            this.stateBuffers[dst],
+            work,
+            dq,
+            this.controlBuffer,
+          ].map((buffer, binding) => ({ binding, resource: { buffer } })),
+        });
+        groups.set(key, g);
+      }
+      return g;
+    };
+    this.implicit = { pipelines, params, work, group };
+    return this.implicit;
   }
 
   /** Faces along a side. */

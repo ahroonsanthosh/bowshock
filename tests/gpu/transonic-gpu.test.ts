@@ -62,6 +62,26 @@ describe('GpuEuler2D: far-field boundaries (transonic domain)', () => {
     }
   }, 600_000);
 
+  it('red-black implicit steps follow the CPU twin step for step, the CFL number ramped from 1', async () => {
+    const cpu = new Euler2D(problem.config);
+    cpu.setInitialCondition(() => problem.freeStream.state);
+    let cfl = 1;
+    for (let n = 0; n < 30; n++) {
+      cpu.iterateImplicit(1, cfl, 1.5, { kind: 'redBlack', sweeps: 2 });
+      cfl = Math.min(1000, cfl * 1.2);
+    }
+    const s = await gpuSolver();
+    try {
+      s.setInitialCondition(() => problem.freeStream.state);
+      await s.setImplicitCfl(1);
+      await s.iterateImplicit(30, { cfl: 1000, sweeps: 2 });
+      // Measured when written: 2.8e-6.
+      expect(worstPressureDifference(cpu, await s.readState())).toBeLessThan(2e-5);
+    } finally {
+      s.destroy();
+    }
+  }, 600_000);
+
   it("holds the CPU's converged solution, its drag within its 32-bit wander", async () => {
     const cpu = solveTransonic(problem, {
       noise: 1e-9,

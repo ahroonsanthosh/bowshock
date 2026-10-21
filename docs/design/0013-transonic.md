@@ -978,7 +978,11 @@ The serving rules, which the page's transonic solve follows:
    - the far boundaries' and the cylinder's allowances, from base-grid
      solves made by the same request.
 
-   Nothing is borrowed from the offline runs.
+   Nothing is borrowed from the offline runs. The procedure's noise is
+   the one measured for that case on that device (the drag's wander once
+   it has settled, rule of 2026-10-21), never an assumed value, so a
+   solve that wanders gets a wide band or a refusal rather than too
+   narrow a band.
 
 2. **The offline runs validate the procedure; they do not certify the
    page's numbers.** Where an exact value exists, the procedure's band
@@ -1466,6 +1470,47 @@ The next steps, in order:
   step, or finish each grid's last steps on the CPU in double.
 
 This is the plan's main open risk.
+
+**Step 4 (G2), the red-black implicit step on the GPU, built
+(2026-10-21).** `GpuEuler2D.iterateImplicit` and `setImplicitCfl`, in
+`src/engine-gpu/shaders/euler2d-implicit.wgsl`, the twin of the CPU's
+red-black relaxation. On SwiftShader, on the cone's base grid:
+
+- From the free stream, after 30 steps with the CFL number ramped from
+  1, the GPU's pressures are within 2.8e-6 (Mach 1.1) and 3.3e-6 (1.05)
+  of the CPU twin's.
+- One step with two sweeps takes 22 to 26 ms on these 3,540 cells, under
+  the shared machine's load.
+
+**The wander under the implicit steps is larger, not smaller.** From
+the CPU's converged solution, sampled every 250 steps over 3,000:
+
+| Mach | Implicit (CFL 1000) | Explicit     |
+| ---- | ------------------- | ------------ |
+| 1.1  | up to 7.1e-5        | up to 1.7e-5 |
+| 1.05 | up to 7.6e-5        | up to 6.0e-5 |
+
+The implicit step turns the 32-bit residual's noise into changes of the
+state far larger than the explicit step's small local steps do. Under
+the rule of 2026-10-21 (above), a wander above about 2e-6 means the
+two-float residual. So the 32-bit transonic solve is not used for the
+page.
+
+**Next, step 4b: the two-float path.**
+
+- The state is held in two-float (a high and a low 32-bit part).
+- The residual, with the reconstruction, HLLC, the far-field and wall
+  states and the axisymmetric source, is evaluated in two-float
+  arithmetic. Its fixed point is then that of a residual accurate to
+  about 1e-14.
+- The implicit operator can stay in 32 bits, since it changes only the
+  path.
+- Cost measured on a small kernel of the flux's operations (add,
+  multiply, divide, square root; `tests/tmp-transonic/gpu-df-cost.test.ts`):
+  5.5 times the 32-bit arithmetic on SwiftShader, before the doubled
+  memory traffic. The page's times above grow by about that factor.
+- Its test: the GPU's two-float residual against the CPU's double one
+  on the same state, to about 1e-12.
 
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
