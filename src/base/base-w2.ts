@@ -21,9 +21,15 @@
  * record says so.
  */
 
-import { COMPILED_CURVE_BAND, compiledCurveValue, interpolationErrorBound } from './compiled-curve';
+import {
+  COMPILED_CURVE_BAND,
+  COMPILED_CURVE_CURVATURE_BOUND,
+  compiledCurveValue,
+  interpolationErrorBound,
+} from './compiled-curve';
 import type { CompiledCurveBasePressure } from './compiled-curve';
 import { BaseRefusal } from './refusal';
+import { TN3819_FIG18_ROUND7 } from './tn3819-fig18';
 
 /** Where this term serves; from M 1.5 the compiled curve's own band (./compiled-curve.ts) applies. */
 export const W2_MACH_RANGE = [1.0, 1.5] as const;
@@ -81,8 +87,8 @@ export const L52E06_FIG8_A: readonly {
 
 /**
  * TN 3819 fig. 18's free-flight curve (Langley, R 30e6 to 35e6) over the compiled curves (both), 0008's reading
- * (docs/research/total-drag/data/love18_ff_output.txt): the range at each read Mach number. One reading; the
- * blind second is requested.
+ * (docs/research/total-drag/data/love18_ff_output.txt): the range at each read Mach number. Its second reading
+ * is round 7's (TN3819_FIG18_FREE_FLIGHT_ROUND7); the two agree within 0.0005 (0015 section 11.3).
  */
 export const TN3819_FIG18_FREE_FLIGHT_OVER_CURVE: readonly {
   readonly mach: number;
@@ -93,6 +99,26 @@ export const TN3819_FIG18_FREE_FLIGHT_OVER_CURVE: readonly {
   { mach: 1.149, low: 1.027, high: 1.048 },
   { mach: 1.159, low: 1.031, high: 1.052 },
   { mach: 1.214, low: 1.057, high: 1.076 },
+];
+
+/**
+ * TN 3819 fig. 18's free-flight curve, round 7's blind reading (data/round7/tn3819_fig18.csv; audit/round7 on
+ * another branch, 92fb693): P_B every 0.05 in M from 1.05 and its extremes, each with its reading error. Drawn
+ * from M 1.008 to 1.279; not read at M 1.0, where it cannot be told from the border.
+ */
+export const TN3819_FIG18_FREE_FLIGHT_ROUND7: readonly {
+  readonly mach: number;
+  readonly pB: number;
+  readonly error: number;
+}[] = [
+  { mach: 1.05, pB: -0.2066, error: 0.0003 },
+  { mach: 1.0606, pB: -0.2073, error: 0.0002 },
+  { mach: 1.1, pB: -0.1991, error: 0.0006 },
+  { mach: 1.1445, pB: -0.1931, error: 0.0002 },
+  { mach: 1.15, pB: -0.1931, error: 0.0002 },
+  { mach: 1.2, pB: -0.1975, error: 0.0004 },
+  { mach: 1.2185, pB: -0.1978, error: 0.0002 },
+  { mach: 1.25, pB: -0.197, error: 0.0002 },
 ];
 
 /** Every free-flight datum below M 1.5 over Love's basic curve, each moved by its error toward a larger ratio. */
@@ -110,8 +136,36 @@ export function w2FreeFlightRatios(): { source: string; mach: number; ratio: num
   for (const p of TN3819_FIG18_FREE_FLIGHT_OVER_CURVE) {
     out.push({ source: "TN 3819 fig. 18's free-flight curve (0008)", mach: p.mach, ratio: p.high });
   }
+  for (const p of TN3819_FIG18_FREE_FLIGHT_ROUND7) {
+    out.push({
+      source: "TN 3819 fig. 18's free-flight curve (round 7)",
+      mach: p.mach,
+      ratio: (Math.abs(p.pB) + p.error) / Math.abs(compiledCurveValue(p.mach, 'lessNegative')),
+    });
+  }
   return out;
 }
+
+/**
+ * The curvature bound below M 1.5. The bound of ./compiled-curve.ts is set on the twice-read nodes from M 1.5
+ * (0.063) and does not hold below: round 7's rows at M 1.1 and 1.3 lie off the chord of its own neighbouring
+ * rows by 0.0006 and 0.00055, where that bound allows 0.0003 (the basic curve bends near M 1.2). So below 1.5
+ * the bound is the largest |P_B''| of round 7's rows every 0.1 at M 1.0 to 1.5, both curves (twice the
+ * largest second divided difference, as above), if larger.
+ */
+export const W2_CURVATURE_BOUND = (() => {
+  let k = COMPILED_CURVE_CURVATURE_BOUND;
+  const rows = TN3819_FIG18_ROUND7.filter((r) => r.mach <= W2_MACH_RANGE[1] + 1e-12);
+  for (const c of ['moreNegative', 'lessNegative'] as const) {
+    for (let i = 1; i + 1 < rows.length; i++) {
+      const [a, b, d] = [rows[i - 1]!, rows[i]!, rows[i + 1]!];
+      const s1 = (b[c] - a[c]) / (b.mach - a.mach);
+      const s2 = (d[c] - b[c]) / (d.mach - b.mach);
+      k = Math.max(k, Math.abs((2 * (s2 - s1)) / (d.mach - a.mach)));
+    }
+  }
+  return k;
+})();
 
 /** The band over Love's basic curve below M 1.5, and the nominal at its midpoint. */
 export const W2_BAND = (() => {
@@ -125,7 +179,7 @@ export const W2_LABEL =
   `times ${W2_BAND.nominal.toFixed(3)}, the midpoint of its band ${W2_BAND.low.toFixed(2)} to ` +
   `${W2_BAND.high.toFixed(2)} over the curve, set on free-flight data at Mach 1.0 to 1.3 (RM L52E06 fig. ` +
   "8, TN 3819 fig. 18) and carried to 1.5 (0015 section 11); the curve's rows below 1.5 and fig. 18's " +
-  'free-flight curve are read once, the second readings pending; tested only in the total';
+  'free-flight curve read twice; tested only in the total';
 
 /** The curve at M 1.0 to 1.5 (below the compiled curve's own range), as ./compiled-curve.ts returns it above. */
 export function w2CurveBasePressure(mach: number): CompiledCurveBasePressure {
@@ -141,8 +195,9 @@ export function w2CurveBasePressure(mach: number): CompiledCurveBasePressure {
     mach,
     pB: compiledCurveValue(mach, 'lessNegative'),
     pBMoreNegative: compiledCurveValue(mach, 'moreNegative'),
-    interpolationError: interpolationErrorBound(mach),
-    // The rows at M 1.0, 1.2 and 1.4 have one reading (0014 section 10.4).
-    bracketReadTwice: false,
+    interpolationError:
+      (interpolationErrorBound(mach) * W2_CURVATURE_BOUND) / COMPILED_CURVE_CURVATURE_BOUND,
+    // The rows at M 1.0, 1.2, 1.4 and 1.5 are read twice (round 1, round 7; 0015 section 11.3).
+    bracketReadTwice: true,
   };
 }

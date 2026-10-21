@@ -1,0 +1,85 @@
+=== TN 3819 fig. 18, the compiled curves: round 1 (adopted, +-0.001) against round 7
+  M 1.0 basic (Love)  round 1 -0.1849  round 7 -0.1851 +-0.0003  difference +0.0002 (combined 0.0013)
+  M 1.0 Chapman       round 1 -0.1896  round 7 -0.1902 +-0.0004  difference +0.0006 (combined 0.0014)
+  M 1.2 basic (Love)  round 1 -0.1836  round 7 -0.1839 +-0.0003  difference +0.0003 (combined 0.0013)
+  M 1.2 Chapman       round 1 -0.1870  round 7 -0.1874 +-0.0002  difference +0.0004 (combined 0.0012)
+  M 1.4 basic (Love)  round 1 -0.1796  round 7 -0.1776 +-0.0002  difference -0.0020 (combined 0.0012)  BEYOND
+  M 1.4 Chapman       round 1 -0.1810  round 7 -0.1814 +-0.0005  difference +0.0004 (combined 0.0015)
+  M 1.5 basic (Love)  round 1 -0.1733  round 7 -0.1734 +-0.0003  difference +0.0001 (combined 0.0013)
+  M 1.5 Chapman       round 1 -0.1775  round 7 -0.1776 +-0.0003  difference +0.0001 (combined 0.0013)
+  M 2.0 basic (Love)  round 1 -0.1447  round 7 -0.1448 +-0.0002  difference +0.0001 (combined 0.0012)
+  M 2.0 Chapman       round 1 -0.1496  round 7 -0.1499 +-0.0003  difference +0.0003 (combined 0.0013)
+  M 2.5 basic (Love)  round 1 -0.1172  round 7 -0.1172 +-0.0002  difference +0.0000 (combined 0.0012)
+  M 2.5 Chapman       round 1 -0.1196  round 7 -0.1196 +-0.0005  difference +0.0000 (combined 0.0015)
+  M 3.0 basic (Love)  round 1 -0.0964  round 7 -0.0965 +-0.0003  difference +0.0001 (combined 0.0013)
+  M 3.0 Chapman       round 1 -0.0978  round 7 -0.0965 +-0.0005  difference -0.0013 (combined 0.0015)
+  rows read by round 7 only (round 1 has no row there; its linear interpolation beside):
+  M 1.1 basic (Love)  round 7 -0.1851  round 1 interpolated -0.1842 (rows 1.0, 1.2)
+  M 1.3 basic (Love)  round 7 -0.1813  round 1 interpolated -0.1816 (rows 1.2, 1.4)
+  The third evidence at M 1.4: fig. 35's no-fin curve, which reproduces the basic curve within 0.001 (0008
+  section 3.4): first reading -0.1774 (column runs; fig35-free-flight/README.md), second -0.1775 (reading2/no_fin_curve.csv).
+  Chapman minus basic, round 1 and round 7: M 1.0: -0.0047, -0.0051, M 1.2: -0.0034, -0.0035, M 1.4: -0.0014, -0.0038, M 1.5: -0.0042, -0.0042
+  Disagreements beyond the combined errors: M 1.4 basic (Love)
+
+=== TN 3819 fig. 18, the free-flight curve: 0008 (+-0.001 taken) against round 7 (interpolated between its
+    rows, extremes and end points)
+  M 1.057  0008 -0.2070  round 7 -0.2071 +-0.0003  difference +0.0001 (combined 0.0013)
+  M 1.149  0008 -0.1928  round 7 -0.1931 +-0.0002  difference +0.0003 (combined 0.0012)
+  M 1.159  0008 -0.1934  round 7 -0.1939 +-0.0004  difference +0.0005 (combined 0.0014)
+  M 1.214  0008 -0.1976  round 7 -0.1977 +-0.0004  difference +0.0001 (combined 0.0014)
+  round 7's extremes: M 1.0081 -0.1875, M 1.0606 -0.2073, M 1.1445 -0.1931, M 1.2185 -0.1978, M 1.2791 -0.1955
+
+=== RM L52J21a figs. 31 to 33 (d), R 7e6 to 9.5e6: this work's first reading (+-0.002, shape calls by
+    template) against round 7 (shapes on zoomed crops, its errors), paired by nose and R within 0.15e6
+  M 1.62
+    conical  R 7.65 -0.1490 (score 0.27)  round 7 31-S1 R 7.62 -0.1488 +-0.0002  difference -0.0002 (combined 0.0022)
+    conical  R 8.77 -0.1477 (score 0.33)  round 7 31-S2 R 8.80 -0.1481 +-0.0002  difference +0.0004 (combined 0.0022)
+    ogive    R 7.23 -0.1490 (score 0.55)  round 7 31-T1 R 7.22 -0.1488 +-0.0008  difference -0.0002 (combined 0.0028)
+    ogive    R 8.03 -0.1479 (score 0.54)  round 7 31-T2 R 8.02 -0.1479 +-0.0008  difference +0.0000 (combined 0.0028)
+    radome   R 7.14 -0.1350 (score 0.25)  round 7 31-C1 R 7.09 -0.1350 +-0.0002  difference +0.0000 (combined 0.0022)
+    radome   R 8.11 -0.1338 (score 0.29)  round 7 31-C2 R 8.05 -0.1331 +-0.0002  difference -0.0007 (combined 0.0022)
+    radome   R 8.87 -0.1345 (score 0.24)  round 7 31-C3 R 8.90 -0.1337 +-0.0002  difference -0.0008 (combined 0.0022)
+  M 1.93
+    conical  R 7.29 -0.1486 (score 0.28)  round 7 32-SA R 7.33 -0.1508 +-0.0005  difference +0.0022 (combined 0.0025)
+    conical  R 8.13 -0.1524 (score 0.25)  round 7 32-S2 R 8.03 -0.1506 +-0.0005  difference -0.0018 (combined 0.0025)
+    conical  R 9.03 -0.1513 (score 0.26)  round 7 32-S3 R 9.03 -0.1508 +-0.0005  difference -0.0005 (combined 0.0025)
+    ogive    R 7.23 -0.1525 (score 0.42)  round 7 32-T1 R 7.23 -0.1519 +-0.0008  difference -0.0006 (combined 0.0028)
+    ogive    R 8.16 -0.1520 (score 0.33)  round 7 32-T2 R 8.17 -0.1517 +-0.0008  difference -0.0003 (combined 0.0028)
+    ogive    R 8.92 -0.1479 (score 0.38)  round 7 32-T3 R 8.93 -0.1481 +-0.0008  difference +0.0002 (combined 0.0028)
+    radome   R 7.34 -0.1379 (score 0.23)  round 7 32-C1 R 7.37 -0.1391 +-0.0005  difference +0.0012 (combined 0.0025)
+    radome   R 8.11 -0.1376 (score 0.20)  round 7 32-C2 R 8.19 -0.1391 +-0.0005  difference +0.0015 (combined 0.0025)
+    radome   R 9.10 -0.1401 (score 0.20)  round 7 32-C3 R 9.06 -0.1406 +-0.0005  difference +0.0005 (combined 0.0025)
+    round 7 only: conical 32-SB R 7.33 -0.1494 +-0.0007
+  M 2.41
+    conical  R 7.13 -0.1172 (score 0.24)  round 7 33-SB R 7.04 -0.1194 +-0.0008  difference +0.0022 (combined 0.0028)
+    conical  R 7.53 -0.1186 (score 0.27)  round 7 33-SD R 7.52 -0.1184 +-0.0002  difference -0.0002 (combined 0.0022)
+    conical  R 8.12 -0.1204 (score 0.30)  round 7 33-SF R 8.12 -0.1191 +-0.0006  difference -0.0013 (combined 0.0026)
+    ogive    R 7.09 -0.1239 (score 0.42)  round 7 33-TA R 7.11 -0.1230 +-0.0008  difference -0.0009 (combined 0.0028)
+    ogive    R 7.45 -0.1222 (score 0.56)  round 7 33-TC R 7.46 -0.1219 +-0.0009  difference -0.0003 (combined 0.0029)
+    ogive    R 8.16 -0.1198 (score 0.33)  round 7 33-TE R 8.16 -0.1196 +-0.0008  difference -0.0002 (combined 0.0028)
+    radome   R 7.29 -0.1140 (score 0.20)  round 7 33-C1 R 7.29 -0.1143 +-0.0002  difference +0.0003 (combined 0.0022)
+    radome   R 7.54 -0.1180 (score 0.20): no radome symbol in round 7 within 0.15e6 (round 7 has ogive 33-TC at R 7.46, -0.1219; round 7 has conical 33-SD at R 7.52, -0.1184)
+    radome   R 8.12 -0.1126 (score 0.21)  round 7 33-C2 R 8.06 -0.1128 +-0.0002  difference +0.0002 (combined 0.0022)
+
+=== The zero member re-derived (fig. 8 finned minus figs. 31 to 33 (d) unfinned, cylindrical base, R 8.06e6)?
+  Unfinned: both readings within 0.6e6 of R 8.06e6, the first reading's only where round 7 confirms the symbol.
+  F = finned over unfinned, each moved by its error toward more relief; the zero member is the least F over
+  the three Mach numbers (0015 section 3.5: 0.9504, fig. 38(c) at M 1.93 over fig. 8).
+  M 1.62: fig. 8, first reading's calls (template scores): ogive -0.1611 (0.42), conical -0.1485 (0.30), radome -0.1488 (0.22); round 6's: ogive -0.1485, ogive -0.1618; round 6's stack ends: -0.1499, -0.1476
+    conical  unfinned -0.1490, -0.1488; first's call -0.1485: Delta P_B up to +0.0005, F down to 0.970
+    ogive    unfinned -0.1479, -0.1479; first's call -0.1611: Delta P_B up to -0.0132, F down to 1.061; round 6's call -0.1485: Delta P_B up to -0.0006, F down to 0.989; round 6's call -0.1618: Delta P_B up to -0.0139, F down to 1.078
+    radome   unfinned -0.1338, -0.1331; first's call -0.1488: Delta P_B up to -0.0150, F down to 1.081
+    without calls: least negative finned -0.1476 over most negative unfinned -0.1490 (R within 0.6e6): F down to 0.973
+    fig. 38(c), read once: Delta P_B -0.0157 to +0.0017 (+-0.002)
+  M 1.93: fig. 8, first reading's calls (template scores): ogive -0.1513 (0.76), conical -0.1468 (0.21), radome -0.1465 (0.23); round 6's: conical -0.1454, radome -0.1448, ogive -0.1515; round 6's stack ends: -0.1521, -0.1501, -0.1443
+    conical  unfinned -0.1524, -0.1506; first's call -0.1468: Delta P_B up to +0.0056, F down to 0.938; round 6's call -0.1454: Delta P_B up to +0.0070, F down to 0.940
+    ogive    unfinned -0.1520, -0.1517; first's call -0.1513: Delta P_B up to +0.0007, F down to 0.969; round 6's call -0.1515: Delta P_B up to +0.0005, F down to 0.982
+    radome   unfinned -0.1376, -0.1391; first's call -0.1465: Delta P_B up to -0.0074, F down to 1.035; round 6's call -0.1448: Delta P_B up to -0.0057, F down to 1.036
+    without calls: least negative finned -0.1443 over most negative unfinned -0.1524 (R within 0.6e6): F down to 0.930
+    fig. 38(c), read once: Delta P_B -0.0066 to +0.0055 (+-0.002)
+  M 2.41: fig. 8, first reading's calls (template scores): ogive -0.1190 (0.44), conical -0.1128 (0.25), radome -0.1139 (0.19); round 6's: none; round 6's stack ends: -0.1202, -0.1124
+    conical  unfinned -0.1186, -0.1204, -0.1184, -0.1191; first's call -0.1128: Delta P_B up to +0.0076, F down to 0.905
+    ogive    unfinned -0.1198, -0.1196; first's call -0.1190: Delta P_B up to +0.0008, F down to 0.961
+    radome   unfinned -0.1126, -0.1128; first's call -0.1139: Delta P_B up to -0.0011, F down to 0.976
+    without calls: least negative finned -0.1124 over most negative unfinned -0.1204 (R within 0.6e6): F down to 0.913
+    fig. 38(c), read once: Delta P_B -0.0069 to +0.0020 (+-0.002)

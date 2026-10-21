@@ -9,10 +9,13 @@
   registration, with W1b (moderate sweeps, section 3.4) and W2 (section 11) as the coordinator decided on 2026-10-20. **Readings:** W1's are in
   twice (round 6's blind second reading, paired in section 7) except RM
   L52J21a fig. 38(c), which cannot be read a second time from the scan;
-  NSWCDD/TR-92/509 Table 2 (W1b) and TN 3819 fig. 18's rows below Mach 1.5
-  and free-flight curve (W2) have one reading, their blind seconds
+  NSWCDD/TR-92/509 Table 2 (W1b) has one reading, its blind second
   requested, and the code carries `secondReadingPending` and the labels
-  say so. Every band is the envelope of every reading. No hold-out has
+  say so. TN 3819 fig. 18's rows below Mach 1.5 and its free-flight curve
+  (W2) and RM L52J21a figs. 31 to 33 (d) are read twice since round 7
+  (2026-10-21, section 7): fig. 18's basic-curve row at M 1.4 was a
+  misread and is corrected, and the zero member stays on fig. 38(c)
+  (section 7 says why). Every band is the envelope of every reading. No hold-out has
   been run (sections 9, 11.4). Revised on 2026-10-21 for the
   identification of TN 3819 fig. 35's free-flight curve (0010 section
   11): the reference member rests on the identified curve to Mach 2.56
@@ -23,7 +26,7 @@
   section 3.4; the first readings
   ([`fins_at_base_w1.md`](../research/total-drag/data/fins_at_base_w1.md),
   `.csv`, `../scripts/w1/`); the second
-  (`fins_at_base_w1_second.csv`, from `audit/round6/`); the two readings of TN 3819 fig. 35's
+  (`fins_at_base_w1_second.csv`, from `audit/round6/`), and round 7's (`data/round7/`); the two readings of TN 3819 fig. 35's
   identified free-flight curve (0010 section 11, `src/base/tn3819-fig35.ts`); 0014's population
   (`docs/research/refusals/`).
 
@@ -301,7 +304,9 @@ is the lower member of every bracket whose section lies below t/c 0.05,
 of every swept fin, and of three or two fins where two are not measured,
 and the reference's low end above M 2.56 (3.1).
 Fig. 38(c) is read once (section 7), so every result that uses this
-member carries `secondReadingPending`.
+member carries `secondReadingPending`. Re-deriving it from figs. 8 and 31
+to 33 waits on fig. 8's nose calls at M 2.41 (section 7); on the one
+reader's calls there it would be lower, about 0.91 to 0.95.
 
 Below M 1.5 (W2's part, section 11) RM L52J21a measures nothing; the zero
 member there runs from 1 down to **0.838**, the lowest relief measured
@@ -499,24 +504,37 @@ reading's window; 1.05 for the comparison), RM L52J21a fig. 8 at R =
 33 panel (d) near R = 8e6 (below), and RM L52E06 fig. 8 for W2 (section
 11). Not paired: RM L52J21a fig. 38(c) (below).
 
+**Round 7** (blind, 2026-10-21, made on another branch from its own
+renders: `docs/research/total-drag/audit/round7/` there, commit 92fb693,
+method in its `method.md`; its two reading files copied unchanged in
+`data/round7/`): TN 3819 fig. 18's two compiled curves at M 1.0 to 1.5
+every 0.1 and at 2.0, 2.5 and 3.0, and its free-flight curve (W2,
+section 11.3), and RM L52J21a figs. 31 to 33 panel (d) at R 7e6 to
+9.5e6, every symbol by nose. Paired by `../scripts/w1/pair_round7.py`
+(output `w1_round7_pairing_output.txt`) and held in the code by
+`compiled-curve.test.ts` and `base-w2.test.ts`.
+
 **The comparison** (`../scripts/w1/compare_round6.py`, output
 `w1_compare_round6_output.txt`): each value, first minus second, against
 the combined reading error (the sum of the two); symbols paired by value
 within a station.
 
-| Figure                                     | Values paired                                                          | Largest difference                                            | Beyond the combined error                                                                                                                                                                                                                                                                                         |
-| ------------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TN 2360 fig. 6                             | 38 pairs                                                               | 0.0024                                                        | one: 6(b) cruciform t/c 0.05 at x/c 1.0, +0.0064 against +0.0040 (combined 0.0022)                                                                                                                                                                                                                                |
-|                                            |                                                                        |                                                               | four symbols found by one reader: the second's +0.0094 (6(a) cruciform t/c 0.10, x/c 1.0) and -0.0644 (the same, x/c 0.2); the first's -0.0573 (6(b) cruciform t/c 0.10, x/c 0) and -0.0344 (the same, x/c 0.6). Round 6 marks the 6(b) cruciform naming LOW MARGIN (circles and squares stack two or three deep) |
-| TN 3819 fig. 33                            | 8                                                                      | 0.0006                                                        | none                                                                                                                                                                                                                                                                                                              |
-| TN 3819 fig. 34                            | 8                                                                      | 0.0002                                                        | none                                                                                                                                                                                                                                                                                                              |
-| TN 3819 fig. 35, tunnel symbols            | 12 (against the first and round 3)                                     | 0.0007                                                        | none                                                                                                                                                                                                                                                                                                              |
-| TN 3819 fig. 35, the identified line       | 32 (its two readings, 0010 section 11.3); 9 (this work's against them) | 0.0018 (M 2.15); 0.0023 (this work's, M 1.75, combined 0.006) | none                                                                                                                                                                                                                                                                                                              |
-| RM L52E06 fig. 7                           | 13                                                                     | 0.0014                                                        | none; at M 1.06 the first reading could not separate the two centre lines (merged, +-0.003), the second separates them by 0.0055                                                                                                                                                                                  |
-| RM L52J21a fig. 8, cylindrical base        | 3 (each Mach number's least negative)                                  | -0.0022 (M 1.93, combined 0.0027)                             | none. Two of round 6's stacks at M 2.41 are the panel's label and the NACA logo, not symbols (W1's look at the scan); left out                                                                                                                                                                                    |
-| RM L52J21a fig. 8, conical base (not used) | 3                                                                      | +0.0065                                                       | one: M 1.62, -0.0322 against -0.0387 (combined 0.0037)                                                                                                                                                                                                                                                            |
-| RM L52J21a figs. 31 to 33 (d), a check     | 8 (same nose, R within 0.15e6)                                         | 0.0011                                                        | none; 17 of the first reading's 25 symbols at R 7 to 9.5e6 have no second (round 6 found the radome nose's circles there, and the conical nose's squares at M 1.62 only), and 3 of the second's carry another nose than the first's at the same place                                                             |
-| RM L52E06 fig. 8, A (W2)                   | 8                                                                      | 0.0008                                                        | none                                                                                                                                                                                                                                                                                                              |
+| Figure                                      | Values paired                                                           | Largest difference                                            | Beyond the combined error                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TN 2360 fig. 6                              | 38 pairs                                                                | 0.0024                                                        | one: 6(b) cruciform t/c 0.05 at x/c 1.0, +0.0064 against +0.0040 (combined 0.0022)                                                                                                                                                                                                                                |
+|                                             |                                                                         |                                                               | four symbols found by one reader: the second's +0.0094 (6(a) cruciform t/c 0.10, x/c 1.0) and -0.0644 (the same, x/c 0.2); the first's -0.0573 (6(b) cruciform t/c 0.10, x/c 0) and -0.0344 (the same, x/c 0.6). Round 6 marks the 6(b) cruciform naming LOW MARGIN (circles and squares stack two or three deep) |
+| TN 3819 fig. 33                             | 8                                                                       | 0.0006                                                        | none                                                                                                                                                                                                                                                                                                              |
+| TN 3819 fig. 34                             | 8                                                                       | 0.0002                                                        | none                                                                                                                                                                                                                                                                                                              |
+| TN 3819 fig. 35, tunnel symbols             | 12 (against the first and round 3)                                      | 0.0007                                                        | none                                                                                                                                                                                                                                                                                                              |
+| TN 3819 fig. 35, the identified line        | 32 (its two readings, 0010 section 11.3); 9 (this work's against them)  | 0.0018 (M 2.15); 0.0023 (this work's, M 1.75, combined 0.006) | none                                                                                                                                                                                                                                                                                                              |
+| RM L52E06 fig. 7                            | 13                                                                      | 0.0014                                                        | none; at M 1.06 the first reading could not separate the two centre lines (merged, +-0.003), the second separates them by 0.0055                                                                                                                                                                                  |
+| RM L52J21a fig. 8, cylindrical base         | 3 (each Mach number's least negative)                                   | -0.0022 (M 1.93, combined 0.0027)                             | none. Two of round 6's stacks at M 2.41 are the panel's label and the NACA logo, not symbols (W1's look at the scan); left out                                                                                                                                                                                    |
+| RM L52J21a fig. 8, conical base (not used)  | 3                                                                       | +0.0065                                                       | one: M 1.62, -0.0322 against -0.0387 (combined 0.0037)                                                                                                                                                                                                                                                            |
+| RM L52J21a figs. 31 to 33 (d), a check      | 8 (same nose, R within 0.15e6)                                          | 0.0011                                                        | none; 17 of the first reading's 25 symbols at R 7 to 9.5e6 have no second (round 6 found the radome nose's circles there, and the conical nose's squares at M 1.62 only), and 3 of the second's carry another nose than the first's at the same place                                                             |
+| RM L52E06 fig. 8, A (W2)                    | 8                                                                       | 0.0008                                                        | none                                                                                                                                                                                                                                                                                                              |
+| RM L52J21a figs. 31 to 33 (d), round 7      | 24 (by nose, R within 0.15e6)                                           | 0.0022 (combined 0.0025)                                      | none; this work's "radome" at M 2.41, R 7.54e6 is round 7's conical square (a wrong template call), and round 7's second square outline at M 1.93, R 7.33e6 has no counterpart                                                                                                                                    |
+| TN 3819 fig. 18, the compiled curves (W2)   | 14 (round 1's rows at M 1.0, 1.2, 1.4, 1.5, 2.0, 2.5, 3.0, both curves) | -0.0020 (M 1.4, basic curve, combined 0.0012)                 | **one**: the basic curve at M 1.4, round 1's -0.1796 against round 7's -0.1776; resolved below                                                                                                                                                                                                                    |
+| TN 3819 fig. 18, the free-flight curve (W2) | 4 (0008's values against round 7's, interpolated)                       | 0.0005 (M 1.159, combined 0.0014)                             | none                                                                                                                                                                                                                                                                                                              |
 
 **Fig. 35's line above M 2.15: the identification resolved, and both
 earlier lines were the wrong ones.** Round 6's first version read the
@@ -538,12 +556,24 @@ factor). The present factor (0010 section 1.3, the Basic Finner's) was
 corrected on the same readings (0010 section 11.4) and is bounded, not
 measured, above M 2.56, between F = 1 and 1.3612 (0010 section 11.5);
 the Basic Finner's validated class was narrowed to Mach 1.799 to 2.15
-(68ae3ee). At M 1.4 both readings of the identified curve put fig. 35's
-no-fin curve at -0.1774 to -0.1775, against -0.1796 in fig. 18's
-adopted row, read once (0010 section 11.3): the rebuilt factor divides by
-that row at M 1.4, where a 0.002 change moves the reference by about 1%.
-It is left for the pairing of fig. 18's rows, whose blind second reading
-is under way (section 11.3).
+(68ae3ee).
+
+**Fig. 18's basic curve at M 1.4: round 1's row is a misread.** Round
+1 (the adopted table, +-0.001) reads -0.1796, round 7 -0.1776 +-0.0002:
+0.0020 apart against a combined 0.0012, the only pair of fig. 18's 14
+beyond its errors. The third evidence decides it: fig. 35's no-fin
+curve, which reproduces the basic curve within 0.001 (0008 section 3.4),
+reads -0.1774 and -0.1775 there in both readings of the identified curve
+(0010 section 11.3), with round 7; and round 1 puts the two compiled
+curves 0.0014 apart at M 1.4, where both readings put them 0.0034 to
+0.0042 apart at M 1.2 and 1.5 and round 7 0.0038 at 1.4. So the row takes
+round 7's value and round 1's is recorded as a misread
+(`TN3819_FIG18_MISREADS`, `src/base/tn3819-fig18.ts`). The row is the
+same on main; nothing served there uses it (main serves the compiled
+curve from M 1.5, its curvature bound is set on twice-read nodes from
+1.5, and the present factor's tunnel pairs are at 1.5, 2.0 and 2.41).
+Here it enters the body base of W2 and the rebuilt factor's reference
+at M 1.2 to 1.5 (section 11).
 
 **RM L52J21a fig. 38(c) is read once, and stays so; the zero member is
 not re-derived.** Fig. 38(c)'s symbols (three noses, two bases, plain and
@@ -552,32 +582,53 @@ panel (a) only. Fig. 38's Delta P_B is "P_B with fins minus P_B without
 fins" (RM L52J21a p. 17): fig. 8's finned bodies (fin-supported) less the
 same bodies sting-supported without fins (figs. 31 to 33 against
 Reynolds number), so the zero member could rest on those instead, each
-read twice. With round 6's fig. 8 and figs. 31 to 33 in, this was tried
+read twice. It was tried first with round 6's fig. 8 and figs. 31 to 33
 (`../scripts/w1/zero_member_check.py`, output
 `w1_zero_member_check_output.txt`; this work's first reading of figs. 31
 to 33 panel (d) at R 7 to 9.5e6, `w1_l52j21a_fig31_33d_output.txt`, made
-before round 6's was opened). It cannot replace fig. 38(c) yet:
+before round 6's was opened), and again on 2026-10-21 with round 7's
+blind reading of figs. 31 to 33 (d), which separates the three noses by
+symbol (`../scripts/w1/pair_round7.py`, output
+`w1_round7_pairing_output.txt`; round 7's file copied in
+`data/round7/`). The unfinned side is now read twice: 24 symbols pair
+with this work's by nose within 0.15e6 in R, the largest difference
+0.0022 against a combined 0.0025, none beyond (this work's "radome" at M
+2.41, R 7.54e6, is round 7's conical square, a wrong template call, and
+is left out). The finned side is not: fig. 8's noses are called by
+template in this work's reading (scores 0.19 to 0.44) and named in part
+by round 6. At each Mach number, F (finned over unfinned, each moved by
+its error toward more relief):
 
-- the unfinned values that matter, the conical and ogive noses near R =
-  8.06e6 at M 1.93 and 2.41, have one reading: round 6's scan found only
-  the radome nose's symbols there;
-- fig. 8's symbols stand in stacks of up to seven at each Mach number,
-  and neither reading can call their noses reliably (this work's
-  template scores 0.19 to 0.44; round 6 reports the stacks' ends only),
-  so a nose-paired difference rests on uncertain calls;
-- without nose calls the bound mixes noses (the least negative finned
-  value minus the most negative unfinned one): F at least 0.973, 0.929
-  and 0.887 at M 1.62, 1.93 and 2.41. That is a difference between
-  different bodies, not a fin effect, and not a member.
+- **M 1.62:** the readers name one symbol differently (-0.1485: conical
+  in this work's reading, ogive in round 6's), but on any call the relief
+  is small: F at least 0.970 on this work's calls and 0.973 on none (the
+  least negative finned symbol over the most negative unfinned value);
+  fig. 38(c): Delta P_B at most +0.0017.
+- **M 1.93:** both readers call the ogive alike (-0.1513, -0.1515), and
+  each names the conical and radome noses within one cluster (-0.1448 to
+  -0.1468), so the calls do not change the difference. The conical nose:
+  Delta P_B +0.0038 to +0.0070 over the readings, against fig. 38(c)'s
+  +0.0055 +-0.002, which agree; with every error toward relief, F down
+  to 0.938, where fig. 38(c) gives 0.9504: the difference of two plots
+  carries both their errors, the report's own difference one.
+- **M 2.41:** fig. 8's noses are called by this work's template alone;
+  round 6 gives the stack's ends only. On those calls the conical nose's
+  Delta P_B reaches +0.0076 (F down to 0.905), against fig. 38(c)'s
+  +0.0020 +-0.002; on no calls, F down to 0.913.
 
-As a check, the nose-paired differences on the first reading's calls
-agree with fig. 38(c) within the combined errors at all three Mach
-numbers: -0.0150 to +0.0005 at M 1.62 (fig. 38(c): -0.0157 to +0.0017),
--0.0089 to +0.0056 at 1.93 (-0.0066 to +0.0055: its most positive symbol
-is the cylindrical base's conical nose), and -0.0013 to +0.0076 at 2.41
-(-0.0069 to +0.0020, the conical nose 0.0056 above it against a combined
-0.006, where fig. 8's calls are least certain). So the zero member stays
-on fig. 38(c), read once, now over fig. 8's two readings (0.950), and
+So the member, the least F over the three Mach numbers, would rest on
+fig. 8's calls at M 2.41, which no second reader has made, and on them it
+would fall below 0.9504. It is not re-derived: it stays on fig. 38(c),
+whose most positive value agrees with the twice-read difference at M
+1.93 where the member is set. What would allow it: fig. 8's noses at M
+2.41 (and the -0.1485 symbol at 1.62) called by a second reader who can
+separate the stacks. Until then the risk is one-sided and stated: if
+this work's calls at M 2.41 were right, the zero member would be about
+0.91 to 0.95, not 0.9504, and every bracket that uses it would widen
+downward by up to 0.045 in F.
+
+The zero member stays on
+fig. 38(c), read once, over fig. 8's two readings (0.9504), and
 `secondReadingPending` stays true on every result that uses it. Without
 fig. 38(c) the zero member would be F = 1 and every bracket using it
 would narrow from below by 0.050, as would the reference's band above M
@@ -623,8 +674,10 @@ band:
 | Variant: four-fin, sharp-edged fins, after W1, now       | 1.6%, 2.3% |              |            |            |            |
 | Variant: fewer Haack noses and blunt tips, after W1, now | 1.4%, 2.0% |              |            |            |            |
 
-The fig. 35 correction of 2026-10-21 (section 3.1) moves no case between
-served and refused: `impact.out` is unchanged by it, byte for byte.
+The fig. 35 correction of 2026-10-21 (section 3.1) and round 7's pairing
+(fig. 18's row at M 1.4, W2's interpolation bound; section 7) move no
+case between served and refused: `impact.out` is unchanged by either,
+byte for byte.
 
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in
@@ -656,8 +709,8 @@ edge terms or the page (F1 to F3, F12 of 0014's inventory).
 
 None has been run. 0014 section 10.5 fixes when: BRL 934's range A (M 1.5
 to 2.47) once W1 is committed with its band, which needs the second
-readings in (rule 5 of 10.1: in, except RM L52J21a fig. 8, pending, and
-fig. 38(c), which cannot have one, section 7); its rounds are the Basic Finner's wedges,
+readings in (rule 5 of 10.1: in, except RM L52J21a fig. 38(c), which
+cannot have one, and NSWCDD/TR-92/509 Table 2 for W1b, section 7); its rounds are the Basic Finner's wedges,
 which the rebuilt factor refuses, so range A tests the present factor
 (10.3) and records the rebuilt one's refusal. The PARD standard body
 (flat plates, 45 deg, at the base) needs W2, W3 and W4 besides W1's
@@ -667,13 +720,12 @@ hold-out of its own yet.
 
 ## 10. Open
 
-- The zero member re-derived from RM L52J21a figs. 8 and 31 to 33: needs
-  figs. 31 to 33 (d)'s conical and ogive symbols near R = 8e6 read a
-  second time and fig. 8's nose calls settled (section 7).
-- The second readings requested: NSWCDD/TR-92/509 Table 2 (W1b), TN 3819
-  fig. 18's rows at Mach 1.0, 1.2 and 1.4 and its free-flight curve (W2);
-  with fig. 18's row at M 1.4, the 0.002 between it and fig. 35's no-fin
-  curve there (section 7).
+- The zero member re-derived from RM L52J21a figs. 8 and 31 to 33: figs.
+  31 to 33 (d) are read twice since round 7; it needs fig. 8's noses at M
+  2.41 (and the -0.1485 symbol at 1.62) called by a second reader. On
+  this work's calls at 2.41 the member would be about 0.91 to 0.95, below
+  fig. 38(c)'s 0.9504 (section 7).
+- The second reading requested: NSWCDD/TR-92/509 Table 2 (W1b).
 - Fins at the base at Mach 1.0 to 1.1: refused since W2 because fig. 35's
   line then had one reading below M 1.1; the identified curve is now read
   twice from M 1.0 (0010 section 11.3), so that reason no longer holds.
@@ -703,7 +755,9 @@ and the W2 rows of `fins-on-base-w1.test.ts`.
 ### 11.1 The body base, Mach 1.0 to 1.5
 
 - **Value:** Love's basic curve of TN 3819 fig. 18 continued below 1.5
-  (its rows at M 1.0, 1.2, 1.4 and 1.5, linear in M as above 1.5), times
+  (its rows at M 1.0, 1.2, 1.4 and 1.5, linear in M as above 1.5, read
+  twice since round 7; at M 1.4 round 7's -0.1776, round 1's -0.1796
+  being a misread, section 7), times
   **1.065**, the band's midpoint. A method choice, as in W1's brackets:
   every free-flight datum below M 1.5 lies above the curve (1.03 to 1.30
   times it), so the curve itself would sit near the band's low end. The
@@ -713,8 +767,9 @@ and the W2 rows of `fins-on-base-w1.test.ts`.
   rounded outward: RM L52E06 fig. 8's finless PARD body A at M 1.05 to
   1.055, 1.301 in both readings (this work's 0.2389 +-0.0012, where the
   curve runs along the 0.24 gridline; round 6's 0.2396 +-0.0005). TN 3819
-  fig. 18's free-flight curve, 1.03 to 1.12 over the curves (0008's
-  reading), lies inside. Low end: no finless datum below the curve was
+  fig. 18's free-flight curve lies inside: 1.03 to 1.12 over the curves
+  in 0008's reading, 1.05 to 1.125 over the basic curve with its error in
+  round 7's (the two within 0.0005 of each other). Low end: no finless datum below the curve was
   found under M 1.5 (fig. 18's tunnel symbols start at M 1.50, where they
   reach 0.88), so 0.82, the band-setting low end of M 1.5 to 3.0, is
   carried down. Carried flat across M 1.3 to 1.5, where no free-flight
@@ -725,12 +780,19 @@ and the W2 rows of `fins-on-base-w1.test.ts`.
   For fins at the base this counts the free-flight excess over the curve
   twice, since fig. 35's line is itself a free-flight measurement over the
   curve; narrowing it is a separate decision, not taken here.
+- **The interpolation bound** between the rows takes a curvature bound of
+  its own below M 1.5 (`W2_CURVATURE_BOUND`, 0.14): the bound of 0008's
+  curve (0.063, set on twice-read nodes from M 1.5) does not hold there,
+  since round 7's rows at M 1.1 and 1.3 lie 0.0006 and 0.00055 off the
+  chord of their neighbours where it allows 0.0003; the basic curve bends
+  near M 1.2. It is the largest |P_B''| of round 7's rows every 0.1, both
+  curves; at most 0.0007 in P_B mid-interval, 0.4% of the term.
 - **Label:** "correlation: compiled base-pressure curve of TN 3819 fig.
   18 (Love) continued below Mach 1.5, times 1.065, the midpoint of its
   band 0.82 to 1.31 over the curve, set on free-flight data at Mach 1.0 to
   1.3 (RM L52E06 fig. 8, TN 3819 fig. 18) and carried to 1.5 (0015 section
-  11); the curve's rows below 1.5 and fig. 18's free-flight curve are read
-  once, the second readings pending; tested only in the total".
+  11); the curve's rows below 1.5 and fig. 18's free-flight curve read
+  twice; tested only in the total".
 - **Refused:** below Mach 1.0 (the data opened stop there for this term),
   and as above 1.5: boat-tails, laminar bases.
 
@@ -751,13 +813,16 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
 
   | M      | 1.1    | 1.2    | 1.3    | 1.4    | 1.5    |
   | ------ | ------ | ------ | ------ | ------ | ------ |
-  | F low  | 1.5338 | 1.4875 | 1.4774 | 1.4777 | 1.5228 |
-  | F high | 1.7728 | 1.7265 | 1.7166 | 1.7176 | 1.7281 |
+  | F low  | 1.5338 | 1.4875 | 1.4856 | 1.4944 | 1.5228 |
+  | F high | 1.7728 | 1.7265 | 1.7248 | 1.7344 | 1.7281 |
 
-  Against the readings used before, the low end is unchanged within
-  0.002 and the high end rises by 0.032 to 0.035 at M 1.1 to 1.4, with
-  the larger excess (at 1.5 the tunnel sets it). At M 1.4 both rest on
-  fig. 18's row, read once (section 7).
+  Against the line and the curve used before the fig. 35 correction, the
+  low end is within 0.002 at M 1.1 and 1.2 and the high end 0.034 to
+  0.035 higher there, with the larger excess (at 1.5 the tunnel sets
+  both); at M 1.3 and 1.4 both ends rise a further 0.008 and 0.017 with
+  fig. 18's corrected row at 1.4 (section 7), the factor's denominator.
+  The term with these fins barely moves there: F times the curve is the
+  line.
 
 - **Zero member:** 1 down to 0.838, RM L52E06's relief with flat plates
   at the base (M 1.06 to 1.10, two readings), the lowest relief measured
@@ -784,13 +849,13 @@ F 0.838 to 1.727, nominal 1.282 (+-34.7%); the term on the base area is
 
 ### 11.3 Readings
 
-| Input                                               | Readings                                                                                                        |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| RM L52E06 fig. 8, A, M 1.025 to 1.28                | two: this work's (`w2_l52e06_fig8_output.txt`), round 6's; 8 pairs within their combined errors, largest 0.0008 |
-| TN 3819 fig. 18, rows at M 1.0, 1.2, 1.4            | one (round 1); the blind second requested                                                                       |
-| TN 3819 fig. 18, the free-flight curve              | one (0008); the blind second requested                                                                          |
-| TN 3819 fig. 35, the free-flight line, M 1.1 to 1.5 | two (the identified curve's, 0010 section 11.3), within 0.0006; this work's from M 1.4 within 0.0001            |
-| RM L52E06 fig. 7 (the zero member below M 1.5)      | two (section 7)                                                                                                 |
+| Input                                               | Readings                                                                                                                      |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| RM L52E06 fig. 8, A, M 1.025 to 1.28                | two: this work's (`w2_l52e06_fig8_output.txt`), round 6's; 8 pairs within their combined errors, largest 0.0008               |
+| TN 3819 fig. 18, rows at M 1.0, 1.2, 1.4, 1.5       | two (round 1, round 7): within the combined errors but the basic curve at M 1.4, round 1's misread, now round 7's (section 7) |
+| TN 3819 fig. 18, the free-flight curve              | two (0008, round 7), within 0.0005                                                                                            |
+| TN 3819 fig. 35, the free-flight line, M 1.1 to 1.5 | two (the identified curve's, 0010 section 11.3), within 0.0006; this work's from M 1.4 within 0.0001                          |
+| RM L52E06 fig. 7 (the zero member below M 1.5)      | two (section 7)                                                                                                               |
 
 ### 11.4 Hold-outs
 
