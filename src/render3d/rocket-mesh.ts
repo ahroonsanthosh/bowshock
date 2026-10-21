@@ -10,9 +10,26 @@
  */
 
 import type { Planform } from '../fins/planform';
-import { isFlatPlate, type FlatPlate, type SymmetricSection } from '../fins/section';
+import type { SymmetricSection } from '../fins/section';
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import { noseRadius } from '../geometry/nose';
+
+/** A plate's edge as drawn: square, rounded (a full radius), or bevelled over this length. */
+export type PlateEdge = 'square' | 'rounded' | { readonly bevel: number };
+
+/**
+ * A flat plate of one thickness whatever the chord (sheet stock), lengths
+ * in the body's unit: the logic's FlatPlate (src/fins/section.ts), or one
+ * whose edges are bevelled, as a rocketeer's drawing has them.
+ */
+export interface PlateSection {
+  readonly kind: 'flat-plate';
+  readonly thickness: number;
+  readonly leadingEdge: PlateEdge;
+  readonly trailingEdge: PlateEdge;
+}
+
+const isPlate = (s: SymmetricSection | PlateSection): s is PlateSection => 'kind' in s;
 
 export interface FinSet {
   readonly count: number;
@@ -21,7 +38,7 @@ export interface FinSet {
    * Half-thickness over chord along the chord (constant along the span),
    * or a flat plate of one thickness whatever the chord (sheet stock).
    */
-  readonly section: SymmetricSection | FlatPlate;
+  readonly section: SymmetricSection | PlateSection;
   /** Distance of the root trailing edge ahead of the base. */
   readonly trailingEdgeAheadOfBase: number;
   /** Azimuth of the first fin, radians (default 0: the first fin along +y). */
@@ -174,11 +191,11 @@ const ROUND_SEGMENTS = 6;
 
 /** The outline of a fin's section at one span station: points (x along, t across). */
 function sectionOutline(
-  section: SymmetricSection | FlatPlate,
+  section: SymmetricSection | PlateSection,
   leadingEdge: number,
   chord: number,
 ): { upper: [number, number][]; lower: [number, number][] } {
-  const upper = isFlatPlate(section)
+  const upper = isPlate(section)
     ? plateOutline(section, leadingEdge, chord)
     : section.x.map((f, k): [number, number] => [
         leadingEdge + f * chord,
@@ -193,33 +210,36 @@ function sectionOutline(
  * mid-plane to its trailing edge's: half its thickness across the whole
  * chord (the same at every span station), a rounded edge a quarter circle
  * of that radius, a square edge a face normal to the plate (its first or
- * last segment, across the thickness). The same number of points at every
- * chord, so that root and tip join point to point.
+ * last segment, across the thickness), a bevel a straight taper over its
+ * length. The same number of points at every chord, so that root and tip
+ * join point to point.
  */
-function plateOutline(plate: FlatPlate, leadingEdge: number, chord: number): [number, number][] {
+function plateOutline(plate: PlateSection, leadingEdge: number, chord: number): [number, number][] {
   const h = Math.min(plate.thickness / 2, chord / 2);
+  // An edge's points from the edge (on the mid-plane) inward, as offsets (along, across).
+  const edge = (e: PlateEdge): [number, number][] => {
+    if (e === 'rounded') {
+      return Array.from({ length: ROUND_SEGMENTS + 1 }, (_, k): [number, number] => {
+        const a = (Math.PI / 2) * (k / ROUND_SEGMENTS);
+        return [h * (1 - Math.cos(a)), h * Math.sin(a)];
+      });
+    }
+    if (e === 'square') {
+      return [
+        [0, 0],
+        [0, h],
+      ];
+    }
+    return [
+      [0, 0],
+      [Math.min(e.bevel, chord / 2), h],
+    ];
+  };
   const te = leadingEdge + chord;
-  const quarter = (k: number) => (Math.PI / 2) * (k / ROUND_SEGMENTS);
-  const front: [number, number][] =
-    plate.leadingEdge === 'rounded'
-      ? Array.from({ length: ROUND_SEGMENTS + 1 }, (_, k): [number, number] => [
-          leadingEdge + h * (1 - Math.cos(quarter(k))),
-          h * Math.sin(quarter(k)),
-        ])
-      : [
-          [leadingEdge, 0],
-          [leadingEdge, h],
-        ];
-  const back: [number, number][] =
-    plate.trailingEdge === 'rounded'
-      ? Array.from({ length: ROUND_SEGMENTS + 1 }, (_, k): [number, number] => [
-          te - h * (1 - Math.cos(quarter(ROUND_SEGMENTS - k))),
-          h * Math.sin(quarter(ROUND_SEGMENTS - k)),
-        ])
-      : [
-          [te, h],
-          [te, 0],
-        ];
+  const front = edge(plate.leadingEdge).map(([a, t]): [number, number] => [leadingEdge + a, t]);
+  const back = edge(plate.trailingEdge)
+    .reverse()
+    .map(([a, t]): [number, number] => [te - a, t]);
   return [...front, ...back];
 }
 
@@ -306,7 +326,7 @@ function addFins(m: MeshBuilder, body: Body, fins: FinSet): void {
       );
     }
     // A plate's square edges are faces of its outline already.
-    if (!isFlatPlate(fins.section) && fins.section.bluntTrailingEdge === true) {
+    if (!isPlate(fins.section) && fins.section.bluntTrailingEdge === true) {
       // The flat base of the trailing edge.
       quad(
         at(root.upper[n - 1]![0], s0.r, root.upper[n - 1]![1]),

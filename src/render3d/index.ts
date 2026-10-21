@@ -37,7 +37,7 @@ export {
   type SceneStatus,
   type SliceMode,
 } from './scene';
-export { attachControls, type ControlsOptions } from './controls';
+export { attachControls, sceneKey, type ControlsOptions } from './controls';
 export {
   fieldFromCells,
   fieldFromConserved,
@@ -48,4 +48,4 @@ export {
 } from './field';
 export { QUANTITIES, type Quantity, type Units } from './quantities';
 export { basicFinnerRocket, rocketFromForm } from './presets';
-export type { FinSet, Rocket } from './rocket-mesh';
+export type { FinSet, PlateEdge, PlateSection, Rocket } from './rocket-mesh';

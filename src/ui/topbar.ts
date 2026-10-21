@@ -217,12 +217,13 @@ class Menu {
 
   refresh(): void {
     for (const { item, node } of this.toggles) {
-      node.setAttribute('aria-pressed', String(item.pressed?.() ?? false));
+      if (item.pressed !== undefined) node.setAttribute('aria-pressed', String(item.pressed()));
+      if (item.shown !== undefined) node.hidden = !item.shown();
     }
   }
 
   private items(): HTMLElement[] {
-    return Array.from(this.list.querySelectorAll<HTMLElement>('.menu__item'));
+    return Array.from(this.list.querySelectorAll<HTMLElement>('.menu__item:not([hidden])'));
   }
 
   private focusItem(index: number): void {
@@ -269,7 +270,10 @@ class Menu {
       text,
       key,
     );
-    if (item.pressed !== undefined) this.toggles.push({ item, node: button });
+    if (item.pressed !== undefined || item.shown !== undefined) {
+      this.toggles.push({ item, node: button });
+    }
+    if (item.shown?.() === false) button.hidden = true;
     button.addEventListener('click', () => {
       item.action?.();
       this.close();

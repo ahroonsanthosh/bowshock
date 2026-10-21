@@ -46,9 +46,28 @@ export class Help {
     const titleId = 'help-title';
     const keys = h('table', { className: 'help__keys' });
     const tbody = h('tbody');
+    const escape = h(
+      'tr',
+      {},
+      h('th', { attrs: { scope: 'row' } }, h('kbd', { text: 'Esc' })),
+      h('td', { text: 'Close this help, or an open menu' }),
+    );
     // A binding without a description is listed with another (the four arrows as one).
+    let group: string | undefined;
     for (const binding of options.bindings.filter((b) => b.description !== '')) {
       const labels = bindingLabels(binding);
+      // The keys of one view of a page with two, under its name, after the page's own.
+      if (binding.group !== undefined && binding.group !== group) {
+        if (escape.parentNode === null) tbody.append(escape);
+        tbody.append(
+          h(
+            'tr',
+            { className: 'help__group' },
+            h('th', { text: binding.group, attrs: { scope: 'colgroup', colspan: '2' } }),
+          ),
+        );
+      }
+      group = binding.group;
       tbody.append(
         h(
           'tr',
@@ -58,14 +77,7 @@ export class Help {
         ),
       );
     }
-    tbody.append(
-      h(
-        'tr',
-        {},
-        h('th', { attrs: { scope: 'row' } }, h('kbd', { text: 'Esc' })),
-        h('td', { text: 'Close this help, or an open menu' }),
-      ),
-    );
+    if (escape.parentNode === null) tbody.append(escape);
     keys.append(
       h('caption', { className: 'visually-hidden', text: 'Keys and what they do' }),
       tbody,

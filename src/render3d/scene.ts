@@ -108,8 +108,8 @@ export interface SceneStatus {
   readonly converged?: boolean | undefined;
   /** Cell updates per second, if the page measures them. */
   readonly cellRate?: number | undefined;
-  /** A first line naming the case. */
-  readonly caption?: string | undefined;
+  /** First lines naming the case (and, in a page's PNG, its result). */
+  readonly caption?: string | readonly string[] | undefined;
 }
 
 /** The colour channel's scale, for a page's own legend. */
@@ -1379,7 +1379,10 @@ export class FlowScene3D {
     const field = this.field;
     const g = this.geometry;
     const lines: { text: string; colour?: string; bold?: boolean }[] = [];
-    if (this.status.caption !== undefined) lines.push({ text: this.status.caption, bold: true });
+    const caption = this.status.caption;
+    const captionLines =
+      caption === undefined ? [] : typeof caption === 'string' ? [caption] : caption;
+    captionLines.forEach((text, k) => lines.push({ text, bold: k === 0 }));
     if (field !== null) {
       const steps = this.status.steps;
       const conv =
@@ -1600,9 +1603,9 @@ export class FlowScene3D {
   /**
    * The frame as a PNG, with the scene's own text (readout, legend, notes)
    * drawn in whatever the overlay layer's setting, and `caption` (the case)
-   * as its first line if given.
+   * as its first lines if given (the first in bold).
    */
-  async pngBlob(caption?: string): Promise<Blob> {
+  async pngBlob(caption?: string | readonly string[]): Promise<Blob> {
     const saved = { layers: this.layers, status: this.status };
     this.layers = { ...this.layers, overlay: true };
     if (caption !== undefined) this.status = { ...this.status, caption };

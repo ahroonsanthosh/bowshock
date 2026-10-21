@@ -22,6 +22,8 @@ export interface MenuItem {
   readonly key?: string;
   /** For a toggle: whether it is on now. */
   readonly pressed?: () => boolean;
+  /** Whether it is listed now (by default always): an item of one view of two. */
+  readonly shown?: () => boolean;
   readonly current?: boolean;
 }
 

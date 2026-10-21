@@ -1,97 +1,60 @@
 /**
  * The 3D view as the page uses it (docs/design/0017-rocketeer-interface.md
- * section 6.1): src/render3d's FlowScene3D (another agent's, on its own
- * branch until merged), loaded with `import.meta.glob` so that the page
- * builds without it and offers the 3D view once it is part of the build.
- * These types are the scene's API as the page calls it: the page owns the
- * rocket, the curve and the GPU device, and hands the scene the rocket
- * (in calibres, the solver's unit) and the live fit's own GPU buffers.
+ * section 6.1): src/render3d's FlowScene3D, loaded on its own (it is a
+ * large part of the page, and only needed once the GPU is up), and its
+ * colour scale in the page's own legend. The page owns the rocket, the
+ * curve and the GPU device; it hands the scene the rocket in calibres
+ * (src/rocket/scene-rocket.ts, the page's one geometry) and the live
+ * fit's own GPU buffers.
  */
 
-import type { Body } from '../geometry/body';
-import type { FlowSource } from '../render/flow-renderer';
-import type { TotalDragForm } from './total-drag';
+import type * as Render3D from '../render3d/index';
+import type { SceneScale } from '../render3d/scene';
+import { formatScaleValue } from '../ui/format';
+import type { LegendScale } from '../ui/legend';
 
-/** The scene's rocket, as the page reads it: the body, and the fins with their roll (radians). */
-export interface SceneRocket {
-  readonly body: Body;
-  readonly fins?: { readonly roll?: number } | undefined;
-}
+export type Render3DModule = typeof Render3D;
 
-/** The colour channel's scale, as the scene reports it for the page's legend. */
-export interface SceneScaleSeen {
-  readonly label: string;
-  readonly unit: string;
-  readonly min: number;
-  readonly max: number;
-  /** The palette, t in [0, 1] of the range, sRGB 0 to 1. */
-  readonly colour: (t: number) => readonly [number, number, number];
-}
-
-/** What the page calls on the scene. */
-export interface Scene3D {
-  setRocket(rocket: SceneRocket | null): void;
-  setFlow(source: FlowSource | null): void;
-  freeze(): void;
-  setLive(live: boolean): void;
-  setStatus(status: {
-    readonly steps?: number | undefined;
-    readonly converged?: boolean | undefined;
-    readonly cellRate?: number | undefined;
-    readonly caption?: string | undefined;
-  }): void;
-  /** The free stream's static temperature (K), for speeds in m/s and temperatures in K. */
-  setUnits(units: { readonly freeStreamTemperature?: number | undefined }): void;
-  /** The page draws its own legend and notes: the scene's text layer off (it is always in a PNG). */
-  setLayers(layers: { readonly overlay?: boolean }): void;
-  onScale(listener: (scale: SceneScaleSeen) => void): () => void;
-  /** Fit the view into this part of the canvas, device pixels from its top left. */
-  fit(rect: { x: number; y: number; width: number; height: number } | null): void;
-  /** Draw again (after the page resized the canvas). */
-  requestDraw(): void;
-  pngBlob(caption?: string): Promise<Blob>;
-  destroy(): void;
-}
-
-/** src/render3d/index.ts, as the page reads it. */
-export interface Render3DModule {
-  readonly FlowScene3D: {
-    create(
-      device: GPUDevice,
-      canvas: HTMLCanvasElement,
-      options: {
-        readonly presentation?: 'canvas' | 'copy';
-        /** Most of the time live frames may take, by their own measured cost. */
-        readonly liveDuty?: number;
-      },
-    ): Promise<Scene3D>;
-  };
-  /** Mouse, touch, and the scene's keys while its canvas has focus; returns a function removing them. */
-  attachControls(
-    scene: Scene3D,
-    canvas: HTMLCanvasElement,
-    options?: { readonly onChange?: (key: string) => void },
-  ): () => void;
-  /** The scene's rocket from the logic's inputs: the body, and the fins where the logic takes them. */
-  rocketFromForm(form: TotalDragForm): SceneRocket;
-}
-
-const FOUND = import.meta.glob<Render3DModule>('../render3d/index.ts');
-
-/** Whether this build has the 3D view (known before it is loaded). */
-export const HAS_RENDER3D = Object.keys(FOUND).length > 0;
-
-/** The 3D view's module, if this build has it. */
-export async function loadRender3D(): Promise<Render3DModule | null> {
-  const load = Object.values(FOUND)[0];
-  return load === undefined ? null : load();
+/** The 3D view's module, loaded when the page first needs it. */
+export function loadRender3D(): Promise<Render3DModule> {
+  return import('../render3d/index');
 }
 
 /** A CSS gradient of a scale's palette, left to right from low to high. */
-export function paletteGradient(colour: SceneScaleSeen['colour'], stops = 17): string {
+export function paletteGradient(colour: SceneScale['colour'], stops = 17): string {
   const parts = Array.from({ length: stops }, (_, k) => {
     const [r, g, b] = colour(k / (stops - 1)).map((c) => Math.round(255 * c));
     return `rgb(${r} ${g} ${b}) ${((100 * k) / (stops - 1)).toFixed(1)}%`;
   });
   return `linear-gradient(to right, ${parts.join(', ')})`;
+}
+
+/**
+ * The page's legend for the 3D view's colour: the quantity, its unit and
+ * range on the scene's palette, and what the scene's own legend says (the
+ * free stream's value, the shells' values, the cells' extremes where the
+ * bar clips them, what black means) and that behind the base is not
+ * simulated, all in real values.
+ */
+export function sceneLegend(s: SceneScale): LegendScale {
+  const span = s.max - s.min;
+  const clipped = s.cellMin < s.min - 1e-9 * span || s.cellMax > s.max + 1e-9 * span;
+  const notes = [
+    `Free stream ${formatScaleValue(s.freeValue)}.`,
+    s.levels.length > 0 ? `Shells at ${s.levels.map(formatScaleValue).join(', ')}.` : '',
+    clipped
+      ? `Cells from ${formatScaleValue(s.cellMin)} to ${formatScaleValue(s.cellMax)}; ` +
+        'beyond the bar, its end colours.'
+      : '',
+    'Black: no flow drawn. Hatched: behind the base, not simulated.',
+  ];
+  return {
+    kind: 'palette',
+    title: s.label,
+    units: s.unit,
+    min: s.min,
+    max: s.max,
+    gradient: paletteGradient(s.colour),
+    note: notes.filter((n) => n !== '').join(' '),
+  };
 }

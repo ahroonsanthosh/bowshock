@@ -10,6 +10,7 @@ import {
   noseProfile,
   rocketMesh,
   type FinSet,
+  type PlateEdge,
 } from '../../src/render3d/rocket-mesh';
 
 const SHAPES: NoseShape[] = [
@@ -191,8 +192,11 @@ describe('the rocket mesh', () => {
     ['rounded', 'square'],
     ['square', 'rounded'],
     ['rounded', 'rounded'],
+    [{ bevel: 0.15 }, 'square'],
+    ['square', { bevel: 0.1 }],
   ] as const) {
-    it(`draws a tapered flat plate (${leadingEdge} leading, ${trailingEdge} trailing edge) one thickness at root and tip`, () => {
+    const name = (e: PlateEdge) => (typeof e === 'string' ? e : `bevelled ${e.bevel}`);
+    it(`draws a tapered flat plate (${name(leadingEdge)} leading, ${name(trailingEdge)} trailing edge) one thickness at root and tip`, () => {
       const body = bodyWith({ kind: 'ogive', parameter: 1 });
       const planform = trapezoidalPlanform({
         rootChord: 2,
@@ -204,7 +208,10 @@ describe('the rocket mesh', () => {
       const fins: FinSet = {
         count: 3,
         planform,
-        section: flatPlate(thickness, leadingEdge, trailingEdge),
+        section:
+          typeof leadingEdge === 'string' && typeof trailingEdge === 'string'
+            ? flatPlate(thickness, leadingEdge, trailingEdge)
+            : { kind: 'flat-plate', thickness, leadingEdge, trailingEdge },
         trailingEdgeAheadOfBase: 0,
         roll: 0,
       };

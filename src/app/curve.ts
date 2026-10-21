@@ -137,6 +137,7 @@ export class CurveRun {
   private readonly forms: (TotalDragForm | null)[];
   private readonly controller = new AbortController();
   private finished = false;
+  private began = false;
 
   constructor(
     readonly options: CurveOptions,
@@ -154,6 +155,11 @@ export class CurveRun {
   /** Whether the run has ended (all points done or stopped). */
   get done(): boolean {
     return this.finished;
+  }
+
+  /** Started and not yet done (a preview, never run, is neither). */
+  get running(): boolean {
+    return this.began && !this.finished;
   }
 
   /** The indices still to solve, in the order they will be. */
@@ -175,6 +181,7 @@ export class CurveRun {
 
   /** Solve every point that needs the nose, in order; resolves when done or stopped. */
   async run(): Promise<void> {
+    this.began = true;
     const grids = gridsTo(this.options.finest);
     for (const k of this.queue) {
       if (this.controller.signal.aborted) break;

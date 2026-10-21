@@ -161,13 +161,19 @@ describe('the Basic Finner with a stand-in nose', { timeout: 120_000 }, () => {
 
   it('stop: the point under way and every point after it stopped, the run done', async () => {
     let run: CurveRun | null = null;
+    const seen: boolean[] = [];
     const solver = standIn({
       onStart: (mach) => {
+        seen.push(run?.running ?? false);
         if (mach === 3) run?.stop();
       },
     });
     run = new CurveRun(options(), solver, () => {});
+    // Not running until run() (a preview), running while it solves, then done.
+    expect(run.running).toBe(false);
     await run.run();
+    expect(seen.every((r) => r)).toBe(true);
+    expect(run.running).toBe(false);
     const at = (mach: number) => run.points.find((p) => p.mach === mach)!.state.kind;
     expect(at(1.8)).toBe('done');
     expect(at(3)).toBe('stopped');

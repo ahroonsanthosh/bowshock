@@ -17,6 +17,7 @@
 
 import { flightConditionOf } from '../app/flight-condition';
 import type { PlanformInput, SectionInput, TotalDragForm } from '../app/total-drag';
+import type { Body } from '../geometry/body';
 import type { FinSetDesign, OtherPart, RocketDesign } from './design';
 import { baseStation } from './design';
 
@@ -106,6 +107,26 @@ function bodyOf(design: RocketDesign, flags: NotModelled[]): number {
     }
   }
   return cylinder;
+}
+
+/** The body the solver is given, in calibres: the nose, and the tubes of its diameter to a flat base. */
+function calibreBody(design: RocketDesign, cylinder: number): Body {
+  const d = design.nose.diameter;
+  return {
+    nose: { shape: design.nose.shape, length: design.nose.length / d, baseRadius: 0.5 },
+    cylinderLength: cylinder / d,
+  };
+}
+
+/**
+ * The body the solver is given for this rocket, in calibres, and whether
+ * it is the whole of the rocket's body (false with a transition, a
+ * boat-tail or tubes of another diameter, which the solver does not take).
+ */
+export function solverBody(design: RocketDesign): { readonly body: Body; readonly whole: boolean } {
+  const flags: NotModelled[] = [];
+  const cylinder = bodyOf(design, flags);
+  return { body: calibreBody(design, cylinder), whole: flags.length === 0 };
 }
 
 /** The planform as the logic takes it, or why not. */
@@ -269,10 +290,7 @@ export function designForm(
   if (excludable.length > 0 && !options.without) return { kind: 'choose', excludable };
 
   const p = fins.planform as Extract<FinSetDesign['planform'], { kind: 'trapezoidal' }>;
-  const body = {
-    nose: { shape: design.nose.shape, length: design.nose.length / d, baseRadius: 0.5 },
-    cylinderLength: cylinder / d,
-  };
+  const body = calibreBody(design, cylinder);
   const lengthCalibers = body.nose.length + body.cylinderLength;
   const condition = flightConditionOf({
     altitude: design.flight.altitude,
