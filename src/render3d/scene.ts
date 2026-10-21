@@ -1212,7 +1212,7 @@ export class FlowScene3D {
       pass.draw(6, this.shells.count * sectors);
     }
     if (L.shock && this.shock !== null) {
-      this.writeDraw('shock', { look: [0.025, 0.4, 3.0, 0.6], sweep: shellSweep });
+      this.writeDraw('shock', { look: [0.035, 0.55, 3.0, 0.6], sweep: shellSweep });
       pass.setPipeline(pipelines.shell);
       pass.setBindGroup(1, this.groupFor('shock', this.shock.buffer));
       pass.draw(6, this.shock.count * sectors);
@@ -1304,8 +1304,8 @@ export class FlowScene3D {
         if (s.notes !== undefined)
           place(s.notes, w - margin - s.notes.width, h - margin - s.notes.height);
         if (s.base !== undefined && region !== null) {
-          // By the base plane's edge nearest the viewer, at mid-height.
-          const anchor: Vec3 = [region.xMax, 0, region.rMax];
+          // In the base plane, half way out to its corner on the viewer's side.
+          const anchor: Vec3 = [region.xMax, 0.5 * region.rMax, 0.5 * region.rMax];
           const c = transform(viewProj, anchor);
           if (c[3] > 0) {
             const sx = (0.5 + (0.5 * c[0]) / c[3]) * w;
@@ -1396,7 +1396,8 @@ export class FlowScene3D {
         lines.push({ text: `${(this.status.cellRate / 1e6).toFixed(1)} M cell updates/s` });
       }
     }
-    s.corner = lines.length > 0 ? this.sprite(textBlock(lines, px), s.corner) : undefined;
+    s.corner =
+      lines.length > 0 ? this.sprite(textBlock(lines, px, { backing: true }), s.corner) : undefined;
     s.legend =
       g !== null
         ? this.sprite(
@@ -1408,7 +1409,10 @@ export class FlowScene3D {
       { text: 'The airflow shown is around the body; the fins\u2019 drag is computed separately.' },
       { text: 'Behind the base: not simulated.' },
     ];
-    s.notes = this.sprite(textBlock(notes, Math.round(px * 0.92), { align: 'right' }), s.notes);
+    s.notes = this.sprite(
+      textBlock(notes, Math.round(px * 0.92), { align: 'right', backing: true }),
+      s.notes,
+    );
     s.base =
       g !== null
         ? this.sprite(

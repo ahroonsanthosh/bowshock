@@ -27,11 +27,24 @@ function context(c: Canvas2D): CanvasRenderingContext2D | OffscreenCanvasRenderi
   return ctx;
 }
 
+/** A faint dark ground with rounded corners, so that text reads over a bright slice. */
+function backing(
+  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+  width: number,
+  height: number,
+  px: number,
+): void {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, width, height, Math.round(px * 0.4));
+  ctx.fill();
+}
+
 /** Lines of text, light on a transparent ground, with a faint shadow so they read over the flow. */
 export function textBlock(
   lines: readonly { text: string; colour?: string; bold?: boolean }[],
   px: number,
-  options: { align?: 'left' | 'right'; panel?: boolean } = {},
+  options: { align?: 'left' | 'right'; panel?: boolean; backing?: boolean } = {},
 ): Canvas2D {
   const lineHeight = Math.round(px * 1.45);
   const pad = Math.round(px * (options.panel === true ? 1.2 : 0.5));
@@ -51,6 +64,8 @@ export function textBlock(
     ctx.strokeStyle = 'rgba(160, 166, 178, 0.6)';
     ctx.lineWidth = Math.max(1, Math.round(px / 12));
     ctx.strokeRect(0.5, 0.5, c.width - 1, c.height - 1);
+  } else if (options.backing === true) {
+    backing(ctx, c.width, c.height, px);
   }
   ctx.textBaseline = 'middle';
   ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
@@ -100,8 +115,19 @@ export function legend(
   const barHeight = Math.round(px * 0.8);
   const pad = Math.round(px * 0.6);
   const lineHeight = Math.round(px * 1.45);
-  const c = makeCanvas(barWidth + 2 * pad + px * 2, 3.6 * lineHeight + barHeight + 2 * pad);
+  const ticks = legendTicks(range.min, range.max, 5);
+  const decimals = decimalsFor(ticks);
+  const notes =
+    levels.length > 0
+      ? `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; notches: surfaces; black: none drawn`
+      : `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; black: nothing drawn`;
+  const notesFont = `400 ${Math.round(px * 0.85)}px ${OVERLAY_FONT}`;
+  const probe = context(makeCanvas(1, 1));
+  probe.font = notesFont;
+  const width = Math.max(barWidth + 2 * px, probe.measureText(notes).width) + 2 * pad;
+  const c = makeCanvas(width, 3.6 * lineHeight + barHeight + 2 * pad);
   const ctx = context(c);
+  backing(ctx, c.width, c.height, px);
   ctx.textBaseline = 'middle';
   ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
   ctx.shadowBlur = Math.round(px * 0.3);
@@ -121,8 +147,6 @@ export function legend(
   // Iso-surface levels: notches under the bar.
   ctx.fillStyle = 'rgba(236, 238, 242, 0.8)';
   for (const l of levels) ctx.fillRect(Math.round(at(l)), y0 + barHeight, 1, Math.round(px * 0.35));
-  const ticks = legendTicks(range.min, range.max, 5);
-  const decimals = decimalsFor(ticks);
   ctx.font = `400 ${Math.round(px * 0.92)}px ${OVERLAY_FONT}`;
   ctx.shadowBlur = Math.round(px * 0.3);
   ctx.fillStyle = 'rgba(236, 238, 242, 0.9)';
@@ -142,12 +166,8 @@ export function legend(
   ctx.lineTo(xf + Math.round(px * 0.35), y0 - Math.round(px * 0.55));
   ctx.closePath();
   ctx.fill();
-  ctx.font = `400 ${Math.round(px * 0.85)}px ${OVERLAY_FONT}`;
+  ctx.font = notesFont;
   ctx.fillStyle = 'rgba(200, 204, 212, 0.85)';
-  const notes =
-    levels.length > 0
-      ? `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; notches: surfaces; black: none drawn`
-      : `mark: free stream ${scale.freeValue.toFixed(decimals + 1)}; black: nothing drawn`;
   ctx.fillText(notes, pad, y0 + barHeight + Math.round(px * 0.35) + 2.1 * lineHeight);
   return c;
 }

@@ -18,6 +18,8 @@ import { requireDevice } from './device';
  */
 
 const LIVE_DUTY = 0.06;
+/** Rounds of the two, alternately: the machine's other work varies the rates from run to run. */
+const ROUNDS = 5;
 
 let device: GPUDevice;
 beforeAll(async () => {
@@ -93,7 +95,7 @@ describe('the 3D view drawing live', () => {
     const drawn: number[] = [];
     let frames = 0;
     let seconds = 0;
-    for (let round = 0; round < 3; round++) {
+    for (let round = 0; round < ROUNDS; round++) {
       without.push((await stepsPerSecond(null)).rate);
       const live = await stepsPerSecond(scene);
       drawn.push(live.rate);
@@ -103,11 +105,15 @@ describe('the 3D view drawing live', () => {
     scene.destroy();
     const best = Math.max(...without);
     const bestDrawn = Math.max(...drawn);
+    // Each drawn run against the run without the view just before it.
+    const ratios = drawn.map((d, k) => d / without[k]!).sort((a, b) => a - b);
+    const median = ratios[Math.floor(ratios.length / 2)]!;
     console.log(
-      `3D view: steps per second without it ${without.map((r) => r.toFixed(0)).join(', ')}; ` +
-        `drawn live ${drawn.map((r) => r.toFixed(0)).join(', ')}, ` +
+      `3D view: steps per second without it ${without.map((r) => r.toFixed(1)).join(', ')}; ` +
+        `drawn live ${drawn.map((r) => r.toFixed(1)).join(', ')}, ` +
         `${(frames / seconds).toFixed(2)} frames drawn a second (${frames} in ${seconds.toFixed(0)} s); ` +
-        `cost ${((1 - bestDrawn / best) * 100).toFixed(1)}%`,
+        `cost, best of each ${((1 - bestDrawn / best) * 100).toFixed(1)}%, ` +
+        `median of the pairs ${((1 - median) * 100).toFixed(1)}%`,
     );
     // The view did draw, live, while the solver ran.
     expect(frames).toBeGreaterThan(3);
