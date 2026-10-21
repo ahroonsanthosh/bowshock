@@ -356,6 +356,8 @@ test('refusal impact on a population of supersonic amateur rockets', () => {
     '',
   );
   json.crossCheck = { checked, agree };
-  writeFileSync(join(outDir, 'impact.out'), lines.join('\n'));
-  writeFileSync(join(outDir, 'impact.json'), JSON.stringify(json, null, 1));
+  // OUT_NAME keeps a later run beside the one 0014 quotes (impact.out): 0016's is impact-w34.
+  const name = process.env.OUT_NAME ?? 'impact';
+  writeFileSync(join(outDir, `${name}.out`), lines.join('\n'));
+  writeFileSync(join(outDir, `${name}.json`), JSON.stringify(json, null, 1));
 });

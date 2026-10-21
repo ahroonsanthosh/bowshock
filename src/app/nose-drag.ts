@@ -67,6 +67,7 @@ const taperField = element('#taper-field', HTMLElement);
 const thicknessLabel = element('#thickness-label', HTMLLabelElement);
 const ridgeField = element('#ridge-field', HTMLElement);
 const bevelFields = element('#bevel-fields', HTMLElement);
+const leRadiusField = element('#le-radius-field', HTMLElement);
 const overallLength = element('#overall-length', HTMLOutputElement);
 const totalMach = element('#total-mach', HTMLOutputElement);
 const conditionMode = element('#condition-mode', HTMLSelectElement);
@@ -243,6 +244,7 @@ function showFinFields(): void {
   taperField.hidden = !shown.taperRatio;
   ridgeField.hidden = !shown.ridge;
   bevelFields.hidden = !shown.bevels;
+  leRadiusField.hidden = !shown.leadingEdgeRadius;
   thicknessLabel.textContent = shown.thicknessLabel;
   for (const f of [...altitudeFields, ...impliedFields]) f.hidden = !shown.altitude;
   for (const f of reynoldsFields) f.hidden = !shown.reynolds;
