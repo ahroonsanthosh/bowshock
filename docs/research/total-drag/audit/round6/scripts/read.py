@@ -131,6 +131,19 @@ def main():
                 if rs:
                     c = min(rs, key=lambda q: abs(q[0] - yp))
                     cs.append((Xi, c[0]))
+            bridged = False
+            if len(cs) < 3 and g.get("bridge", 0):
+                # a dash gap at the abscissa: fit the ink found within
+                # +-bridge px either side (on the path) and evaluate at X
+                for Xi in list(range(int(round(X)) - g["bridge"], int(round(X)) - 3)) + \
+                        list(range(int(round(X)) + 4, int(round(X)) + g["bridge"] + 1)):
+                    ypi = float(np.interp(f.ax.value(Xi, yp), px_, py_)) - bx[1]
+                    rs = dig.column_runs(f.clean, Xi, int(ypi - hw), int(ypi + hw) + 1)
+                    rs = [(0.5 * (s + e), e - s + 1) for s, e in rs if e - s + 1 <= g.get("max_run", 24)]
+                    if rs:
+                        c = min(rs, key=lambda q: abs(q[0] - ypi))
+                        cs.append((Xi, c[0]))
+                bridged = len(cs) >= 3
             ex = 0.0
             for x0, x1, ee in g.get("extra", []):
                 if x0 <= xq <= x1:
@@ -144,7 +157,8 @@ def main():
             xv, yv = f.data(X, Yc)
             err = float(np.sqrt(floor ** 2 + caly ** 2 + (sc_ * uy) ** 2 + (k[0] * uy / ux * calx) ** 2 + ex ** 2))
             rows.append([spec.get("figure", ""), g["series"], f"{xq:g}", f"{yv:.4f}", f"{err:.4f}",
-                         f"guided column read; n={len(cs)}" + (f"; extra {ex:g}" if ex else "")])
+                         f"guided column read; n={len(cs)}" + ("; dash gap bridged from ink either side" if bridged else "")
+                         + (f"; extra {ex:g}" if ex else "")])
             marks.append((X, Yc, (0, 120, 255), 7))
     done = {(r[1], r[2]) for r in rows if r[-1].startswith("column read")}
     rows = [r for r in rows if not (r[-1] == "not traced" and (r[1], r[2]) in done)]
