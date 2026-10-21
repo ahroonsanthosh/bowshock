@@ -317,16 +317,35 @@ At Mach 1.05 the cone's conical flow would be subsonic at the surface
 shoulder reaches the whole cone, and there is no exact solution; the
 fitted solver refuses the case.
 
-| r   | Cells  | Drag      | Change    | Steps  | Wall time |
-| --- | ------ | --------- | --------- | ------ | --------- |
-| 1   | 3,540  | 0.1065105 |           | 5,050  | 81 s      |
-| 2   | 14,160 | 0.1068662 | +3.557e-4 | 8,300  | 735 s     |
-| 4   | 56,640 | 0.1070376 | +1.714e-4 | 14,200 | 4,309 s   |
+| r   | Cells   | Drag      | Change    | Steps  | Time           |
+| --- | ------- | --------- | --------- | ------ | -------------- |
+| 1   | 3,540   | 0.1065105 |           | 5,050  | 81 s           |
+| 2   | 14,160  | 0.1068662 | +3.557e-4 | 8,300  | 735 s          |
+| 4   | 56,640  | 0.1070376 | +1.714e-4 | 14,200 | 4,309 s        |
+| 8   | 226,560 | 0.1071116 | +7.41e-5  | 18,000 | 9,918 s of CPU |
 
-The changes fall by 2.08: observed order 1.05, first order. Extrapolated
-at that order the drag is 0.107197 (at order 1, 0.107209), 1.6e-4 (1.5e-3
-of the value) above the finest grid; the procedure needs a fourth grid to
-confirm the order before it gives a band (r = 8: see Open). The change
+**Mach 1.05 certified by the procedure (2026-10-21).** The changes fall
+by 2.08 and 2.31: observed orders 1.05 (r = 1, 2, 4) and 1.21 (r = 2, 4,
+8), within 0.5 of each other, so `gridConvergence` returns a monotone
+band on r = 1 to 8: extrapolated (order 1.21) 0.1071680, band 7.04e-5
+(6.6e-4 of the value) about r = 8. r = 16 is not needed for a band, as
+it was at Mach 1.1 (there the coarser triple oscillated; here both are
+monotone). There is no exact value to test the band against at this Mach
+number: Taylor-Maccoll's conical solution exists (0.1082676, with the
+surface subsonic, Mach 0.982), but the shoulder reaches the cone and
+lowers the drag, by 1.0% on the extrapolation; it is context, not a
+reference. The iteration error: r = 8 stopped on the settling test with
+the drag still rising by 1e-8 per 400 steps and falling by about 0.89
+each time, so about 1e-7 remained (0.14% of the band); r = 1 to 4 ended
+with changes of 1e-9 per check (a remaining change near 1e-8). The far
+boundaries and the cylinder: the plan's Mach 1.05 entry names the change
+from 100.6 to 224.2 radii (+1.3e-5) and the cylinder's (up to 7e-6),
+both below a quarter of the band (1.76e-5), so the band stays 7.04e-5;
+read by its general rule (the largest change from 55.1 to 224.2 radii),
+the 55.1 to 100.6 change (+4.36e-5) would be added, giving 1.14e-4
+(1.07e-3 of the value). The more conservative reading is the one
+certified here: **0.1071116 with a band of 1.14e-4**. (The narrative of
+the first three grids follows.) The change
 from r = 2 to 4 is not local: integrated along the cone it is a nearly
 uniform rise of the pressure coefficient by 1.6e-4 to 2.1e-4 from x / l =
 0.2 to 0.99 (1.73e-4 of the 1.71e-4 change), with -2.9e-5 from the tip's
@@ -772,10 +791,11 @@ on the CPU engine:
   10-caliber ogive's family against the characteristics is next; the
   5-caliber ogive and the hemisphere have r = 1 and 2 only. The fitted
   solver is 4e-3 to 7e-3 off here.
-- **Mach 1.05.** Cone: no exact value; first order, r = 4 within about
-  1.5e-3 of its extrapolation, far boundaries at most 2e-4, cylinder
-  within the noise: about 2e-3 on r = 4, if the first order holds (the
-  band needs r = 8). Ogive and hemisphere: r = 1 and 2 only.
+- **Mach 1.05.** Cone: certified by the procedure alone on r = 1 to 8
+  (monotone, orders 1.05 and 1.21): 0.1071116 with a band of 1.14e-4
+  (1.07e-3 of the value, the far boundaries' 55.1 to 100.6 change
+  included), 7.04e-5 by the plan's narrower reading; no exact value
+  exists to test it. Ogive and hemisphere: r = 1 and 2 only.
 - **Mach 1.0.** Cone: 0.0932 within about 0.1%: three grids converging
   at first order (1.16), extrapolated, plus the far boundaries'
   correction (measured on the base grid, holding on r = 2 within 6e-6);
@@ -796,9 +816,8 @@ error). Blunt noses reach about 1e-3 at Mach 1.2 (three grids each,
 against the fitted solver), which does not meet the standard: they stay
 unserved below Mach 1.5. Curved noses at Mach 1.1 wait on the 10-caliber
 ogive's family; at
-Mach 1.05 the cone's r = 8 is running (r = 4 is about 1.5e-3 from its
-extrapolation, and with no exact reference the band can only be the
-procedure's own); at Mach 1 there are three grids, and the far-boundary
+Mach 1.05 the cone is certified by the procedure alone (band 1.14e-4,
+1.07e-3 of the value; no exact reference exists there); at Mach 1 there are three grids, and the far-boundary
 rule written for it failed its test at Mach 1.2, so Mach 1 stays refused
 (0.0932 within about 0.1% is an estimate, not a certification). Nothing
 below Mach 1.2 is shown until certified; the owner decided to spend the
@@ -846,7 +865,8 @@ alone (no exact reference exists for any nose here: Taylor-Maccoll's
 conical flow is subsonic at the cone's surface, and the characteristics
 refuse the ogives). The far boundaries' change from 100.6 to 224.2
 radii on the base grid (+1.3e-5) and the cylinder's (up to 7e-6) are
-added to the band if above a quarter of it.
+added to the band if above a quarter of it. (Result: r = 1 to 8 already
+give a monotone band, so r = 16 was not needed; certified, above.)
 
 **Mach 1.** Two parts, both needed:
 
