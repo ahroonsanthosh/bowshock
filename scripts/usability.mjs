@@ -167,7 +167,41 @@ const PAGES = {
     },
     tasks: () => ({ mach: [{ select: ['#mach', '3'] }], help: [{ key: 'h' }] }),
   },
+  drag: {
+    // The default case, the Basic Finner's body at Mach 2, run: its first
+    // grid's wave drag is the first result (its band needs the finest grid,
+    // 160 cells across, which software WebGPU here does not reach in hours).
+    path: 'demos/nose-drag.html',
+    runWhen: '#run:not([disabled])',
+    run: [{ click: '#run' }],
+    result: { selector: '#status, .readout [data-id="cd"]', pattern: '\\d\\.\\d{5}' },
+    // The new result: Stop, the new Mach number, Run, and its first grid's drag.
+    machResult: { selector: '#status, .readout [data-id="cd"]', pattern: '\\d\\.\\d{5}' },
+    // Before the band: the status the total states, its class.
+    status: { selector: '#total-output', pattern: 'inside the class|outside the class' },
+    tasks: () => ({
+      mach: [{ click: '#stop' }, { fill: ['#mach', '2.5'] }, { click: '#run' }],
+      help: [{ key: 'h' }],
+    }),
+  },
 };
+
+/**
+ * Brings what matches `selector` into view, if it is not: a scroll to it,
+ * or a tap on the phone sheet's tab that holds it. Whether it is in view
+ * after that one action.
+ */
+async function reveal(page, selector, pattern) {
+  await page.evaluate((selector) => {
+    const el = document.querySelector(selector);
+    if (el === null) return;
+    const panel = el.closest('[data-tab-hidden]');
+    if (panel !== null) document.getElementById(`${panel.id}-tab`)?.click();
+    else el.scrollIntoView();
+  }, selector);
+  await page.waitForTimeout(300);
+  return inView(page, selector, pattern);
+}
 
 async function act(page, steps) {
   for (const step of steps) {
@@ -204,6 +238,7 @@ async function measure(browser, base, id, spec, size) {
   if (spec.run !== undefined) {
     await until(() => page.evaluate(() => document.readyState === 'complete'), 30);
     await page.waitForTimeout(1500);
+    if (spec.runWhen !== undefined) await page.waitForSelector(spec.runWhen, { timeout: 120_000 });
     await act(page, spec.run);
   }
   const first = await until(() => onPage(page, spec.result.selector, spec.result.pattern), 900);
@@ -219,24 +254,24 @@ async function measure(browser, base, id, spec, size) {
   }
   const counts = await page.evaluate(census);
   // The band and the status: once the run has its outcome, both in view
-  // now, or how many actions away.
-  if (spec.band !== undefined) {
+  // now, or how many actions away (a page whose band needs a solve too long
+  // for this machine: its status alone).
+  if (spec.status !== undefined) {
+    const target = spec.band ?? spec.status;
     const both = async () =>
-      (await inView(page, spec.band.selector, spec.band.pattern)) &&
+      (spec.band === undefined || (await inView(page, spec.band.selector, spec.band.pattern))) &&
       (await inView(page, spec.status.selector, spec.status.pattern));
     const outcome = await until(
       async () =>
-        (await onPage(page, spec.band.selector, spec.band.pattern)) &&
+        (await onPage(page, target.selector, target.pattern)) &&
         (await onPage(page, spec.status.selector, spec.status.pattern)),
       900,
     );
     if (outcome === null) actions.bandAndStatus = null;
     else if (await both()) actions.bandAndStatus = 0;
     else {
-      // One scroll to the band, if it is on the page at all.
-      await page.evaluate((selector) => {
-        document.querySelector(selector)?.scrollIntoView();
-      }, spec.band.selector);
+      // One scroll or tab to the band, if it is on the page at all.
+      await reveal(page, target.selector, target.pattern);
       actions.bandAndStatus = (await both()) ? 1 : null;
     }
   }

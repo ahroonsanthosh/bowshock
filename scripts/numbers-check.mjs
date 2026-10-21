@@ -179,20 +179,114 @@ async function firstGridDrag(url, setUp) {
   return { grid: row[0], iterations: number(row[1]), drag: number(row[2]), errors };
 }
 
+/** Sets a field of the drag page, opening the disclosures it may sit in. */
+async function setField(page, selector, value) {
+  await page.evaluate((selector) => {
+    for (let d = document.querySelector(selector)?.closest('details'); d;) {
+      d.open = true;
+      d = d.parentElement?.closest('details') ?? null;
+    }
+  }, selector);
+  const tag = await page.evaluate((s) => document.querySelector(s)?.tagName, selector);
+  if (tag === 'SELECT') await page.selectOption(selector, value);
+  else await page.fill(selector, value);
+}
+
 async function dragPage(base, nose, cylinder) {
   return firstGridDrag(`${base}/demos/nose-drag.html`, async (page) => {
     await page.waitForFunction(() => document.querySelector('#run')?.disabled === false, null, {
       timeout: 120_000,
     });
     if (nose !== undefined) {
-      await page.fill('#nose-length', nose);
-      await page.fill('#body-length', cylinder);
+      await setField(page, '#nose-length', nose);
+      await setField(page, '#body-length', cylinder);
     }
     await page.click('#run');
   });
 }
 
+/**
+ * The drag page's numbers and words for a case: the total section as the
+ * logic gives it (its result, claim, every reason), the flight condition
+ * it implies, and, when asked, the nose solve's first grid (cells, steps,
+ * wave drag) or its outcome when the solver refuses.
+ */
+async function dragState(base, setUp, solve) {
+  const { browser, page, errors } = await open(`${base}/demos/nose-drag.html`, true);
+  await page.waitForFunction(() => document.querySelector('#run')?.disabled === false, null, {
+    timeout: 120_000,
+  });
+  await setUp(page);
+  // The total is computed once typing pauses (300 ms).
+  await page.waitForTimeout(2500);
+  const text = (s) => page.evaluate((s) => document.querySelector(s)?.textContent ?? '', s);
+  const state = {
+    total: await text('#total-output'),
+    overallLength: await text('#overall-length'),
+    mach: await text('#total-mach'),
+    impliedReynolds: await text('#implied-reynolds'),
+    impliedTemperature: await text('#implied-temperature'),
+  };
+  if (solve === 'first-grid') {
+    await page.click('#run');
+    await page.waitForFunction(() => document.querySelector('#levels tbody tr') !== null, null, {
+      timeout: 1_800_000,
+      polling: 1000,
+    });
+    const row = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('#levels tbody tr:first-child td'), (td) =>
+        td.textContent.trim(),
+      ),
+    );
+    // The time column is the machine's, not the solve's.
+    state.firstGrid = { cells: row[0], iterations: row[1], drag: row[2] };
+  } else if (solve === 'outcome') {
+    await page.click('#run');
+    await page.waitForFunction(() => document.querySelector('#run')?.disabled === false, null, {
+      timeout: 1_800_000,
+      polling: 1000,
+    });
+    state.result = await text('#result');
+    // The total once the nose's outcome is in (refused with the nose's reason).
+    await page.waitForTimeout(2500);
+    state.totalAfter = await text('#total-output');
+  }
+  await browser.close();
+  return { state, errors };
+}
+
+async function compareDrag(before, after, setUp, solve) {
+  const [b, a] = await Promise.all([
+    dragState(before, setUp, solve),
+    dragState(after, setUp, solve),
+  ]);
+  return {
+    before: b.state,
+    after: a.state,
+    identical: JSON.stringify(b.state) === JSON.stringify(a.state),
+    errors: { before: b.errors, after: a.errors },
+  };
+}
+
 const CASES = {
+  // The drag page: the Basic Finner by its button, with its first grid solved.
+  'drag-basic-finner': async (b, a) =>
+    compareDrag(b, a, (page) => page.click('#basic-finner'), 'first-grid'),
+  // A total refused: below the base drag's Mach range, with every reason.
+  'drag-refused': async (b, a) => compareDrag(b, a, (page) => setField(page, '#mach', '1.6')),
+  // An estimate: another nose, outside the class, with every reason.
+  'drag-estimate': async (b, a) => compareDrag(b, a, (page) => setField(page, '#shape', 'ogive')),
+  // A nose the solver refuses: a cone too steep for the grids, and the total it refuses.
+  'drag-nose-refused': async (b, a) =>
+    compareDrag(
+      b,
+      a,
+      async (page) => {
+        await setField(page, '#nose-length', '0.5');
+        await setField(page, '#body-length', '9.5');
+      },
+      'outcome',
+    ),
   'ramp-gpu': async (b, a) => compareRamp(b, a, { gpu: true, readings: 1000 }),
   'ramp-cpu': async (b, a) => compareRamp(b, a, { gpu: false, readings: 1000 }),
   'ramp-cpu-expansion': async (b, a) =>
