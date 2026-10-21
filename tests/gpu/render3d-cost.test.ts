@@ -15,6 +15,11 @@ import { requireDevice } from './device';
  * draft on a slow adapter). Each is timed three times, alternately, and
  * the fastest of each kept, so that other work on the machine counts
  * against neither. As the 2D view's (tests/gpu/flow-view-cost.test.ts).
+ *
+ * Measured when written, on SwiftShader on a loaded 4-core machine: 26.9
+ * to 34.4 steps a second without the view, 25.9 to 32.5 with it, a cost
+ * of 5.6% (best of each, and the median of the five pairs), 6 frames
+ * drawn in 168 s (drafts: a full frame there costs seconds).
  */
 
 const LIVE_DUTY = 0.06;

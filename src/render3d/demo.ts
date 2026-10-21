@@ -14,6 +14,31 @@ import { attachControls } from './controls';
 import { fieldFromCells, type MeridionalField } from './field';
 import { FlowScene3D } from './scene';
 import { basicFinnerRocket } from './presets';
+import { trapezoidalPlanform } from '../fins/planform';
+import { doubleWedge } from '../fins/section';
+import type { Rocket } from './rocket-mesh';
+
+/** A rocket of the usual hobby kind: a von Karman nose 3 calibres long, three swept fins. */
+function vonKarmanRocket(): Rocket {
+  return {
+    body: {
+      nose: { shape: { kind: 'haack', parameter: 0 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 7,
+    },
+    fins: {
+      count: 3,
+      planform: trapezoidalPlanform({
+        rootChord: 1.6,
+        span: 1.1,
+        leadingEdgeSweep: (45 * Math.PI) / 180,
+        trailingEdgeSweep: (15 * Math.PI) / 180,
+      }),
+      section: doubleWedge(0.05),
+      trailingEdgeAheadOfBase: 0,
+      roll: 0,
+    },
+  };
+}
 
 /** A field saved as JSON: ni, nj, gamma, freeStream, node x and y, primitive (rho, u, v, p) per cell. */
 export interface SavedField {
@@ -81,8 +106,12 @@ async function main(): Promise<void> {
     pixelRatio: ratio,
     units: { freeStreamTemperature: BASIC_FINNER_TEMPERATURE },
   });
-  scene.setRocket(basicFinnerRocket());
-  scene.setStatus({ caption: 'Basic Finner, Mach 2' });
+  // ?rocket=haack: a von Karman nose with three swept fins (for a saved field of it).
+  const haack = params.get('rocket') === 'haack';
+  scene.setRocket(haack ? vonKarmanRocket() : basicFinnerRocket());
+  scene.setStatus({
+    caption: haack ? 'Von Karman nose, 3 calibres, three fins, Mach 2' : 'Basic Finner, Mach 2',
+  });
   attachControls(scene, canvas);
   new ResizeObserver(() => {
     resize();
