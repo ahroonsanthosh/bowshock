@@ -13,6 +13,8 @@
  * band, so nothing may be tuned on it (section 6.1).
  */
 
+import type { Body } from '../geometry/body';
+
 /** Geometry, in calibers (1 cal = 30.0 mm), fig. 2 (PDF p. 53), text p. 3, Table I. */
 export const BASIC_FINNER_GEOMETRY = {
   caliberMetres: 0.03,
@@ -31,6 +33,48 @@ export const BASIC_FINNER_GEOMETRY = {
   /** "The leading edges of the fins were very sharp with a radius 0.004 cal" (p. 3). */
   finLeadingEdgeRadius: 0.004,
 } as const;
+
+/**
+ * The Basic Finner's body without its fins, in calibers: the 20 deg cone,
+ * 0.5 / tan(10 deg) = 2.8356409 long, exactly (not fig. 2's printed 2.84),
+ * on a cylinder to 10 cal overall, to a flat base. The gate and the class
+ * rule take it so.
+ */
+export function basicFinnerBody(): Body {
+  const g = BASIC_FINNER_GEOMETRY;
+  const noseLength = 0.5 / Math.tan(g.coneHalfAngleDegrees * (Math.PI / 180));
+  return {
+    nose: { shape: { kind: 'conical' }, length: noseLength, baseRadius: 0.5 },
+    cylinderLength: g.length - noseLength,
+  };
+}
+
+/**
+ * basicFinnerBody's lengths as a page's fields hold them, to six decimals:
+ * 2.835641 and 7.164359, within 5e-7 of it. At three decimals (2.836) the
+ * wave drag moved by 2.0e-4 of its value at Mach 2, three times the band's
+ * allowance of 7e-5 of the value.
+ */
+export const BASIC_FINNER_LENGTHS = {
+  nose: basicFinnerBody().nose.length.toFixed(6),
+  cylinder: basicFinnerBody().cylinderLength.toFixed(6),
+} as const;
+
+/**
+ * The body every page solves for the Basic Finner: BASIC_FINNER_LENGTHS
+ * read back, the body the drag page's fields give, so that the drag page
+ * and the live flow page solve the same case to the last bit.
+ */
+export function basicFinnerBodyAsTyped(): Body {
+  return {
+    nose: {
+      shape: { kind: 'conical' },
+      length: Number(BASIC_FINNER_LENGTHS.nose),
+      baseRadius: 0.5,
+    },
+    cylinderLength: Number(BASIC_FINNER_LENGTHS.cylinder),
+  };
+}
 
 /**
  * Range conditions (Table V, PDF p. 41; text p. 3): air at 20 deg C

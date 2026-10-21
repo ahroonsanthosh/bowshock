@@ -7,7 +7,7 @@
 
 import { isGpuFlux } from '../engine-gpu/euler1d-gpu';
 import { GpuMemoryLimitError, type GpuEuler2DConfig } from '../engine-gpu/euler2d-gpu';
-import { fitShockGpu, type GpuShockFit } from '../engine-gpu/shock-fitting-gpu';
+import { fitShockGpu, type GpuShockFit, type LiveFit } from '../engine-gpu/shock-fitting-gpu';
 import type { Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
 import type { StructuredGrid } from '../grid/structured';
@@ -41,6 +41,21 @@ export interface GpuFittedFlowOptions {
   readonly knownRate?: number | undefined;
   readonly signal?: AbortSignal | undefined;
   readonly onProgress?: ((iterations: number, maxSpeed: number, drag: number) => void) | undefined;
+  /** The fit as it runs, for drawing it (fitShockGpu's onLive). */
+  readonly onLive?: ((live: LiveFit | null) => void) | undefined;
+  /** Awaited between batches of steps, to pause (fitShockGpu's gate). */
+  readonly gate?: (() => Promise<void>) | undefined;
+}
+
+/** What a page may add to watch and pause the verified drag's fits; neither changes a number. */
+export interface GpuFitWatch {
+  /** Each grid's fit as it runs, with its refinement, and null once it is released. */
+  readonly onLive?: ((live: LiveFit | null, refinement: number) => void) | undefined;
+  /** Awaited between batches of steps (and of the blunt start's steps): hold it to pause. */
+  readonly gate?: (() => Promise<void>) | undefined;
+  /** After each convergence check: the steps so far, the shock's fastest speed over the sound speed, the drag. */
+  readonly onCheck?:
+    ((refinement: number, iterations: number, maxSpeed: number, drag: number) => void) | undefined;
 }
 
 export interface GpuFittedFlow {
@@ -81,6 +96,8 @@ export async function gpuFittedFlow(
     maxIterations: options.maxIterations,
     signal: options.signal,
     onProgress: options.onProgress,
+    onLive: options.onLive,
+    gate: options.gate,
   });
   return { fit, drag: fit.value };
 }
@@ -177,7 +194,7 @@ class GridRefused extends InvalidCase {
 export async function verifiedFittedDragGpu(
   device: GPUDevice,
   body: Body,
-  options: Omit<VerifiedDragOptions, 'noise'>,
+  options: Omit<VerifiedDragOptions, 'noise'> & GpuFitWatch,
 ): Promise<VerifiedDrag> {
   // Blunt noses: the family of problems, once its captured start is computed.
   let blunt: ((refinement: number) => FitProblem) | null = null;
@@ -208,9 +225,17 @@ export async function verifiedFittedDragGpu(
       // limit to show its own rate of convergence: it takes that grid's.
       knownRate: previous?.fit.rate,
       signal: options.signal,
-      onProgress: (iterations, _speed, value) => {
+      onProgress: (iterations, speed, value) => {
+        options.onCheck?.(refinement, iterations, speed, value);
         options.onProgress?.(refinement, iterations, value);
       },
+      onLive:
+        options.onLive === undefined
+          ? undefined
+          : (live) => {
+              options.onLive?.(live, refinement);
+            },
+      gate: options.gate,
     });
     if (!fit.converged) {
       throw new FitNotConverged(
@@ -235,9 +260,16 @@ export async function verifiedFittedDragGpu(
   try {
     if (!Number.isFinite(noseTipSlope(body.nose))) {
       const familyOptions = { mach: options.mach, gamma: options.gamma, nj: BASE_NJ };
+      const gate = options.gate;
       const start = await bluntStartInChunks(body, familyOptions, {
         chunk: START_CHUNK,
-        pause: nextTask,
+        pause:
+          gate === undefined
+            ? nextTask
+            : async () => {
+                await nextTask();
+                await gate();
+              },
         signal: options.signal,
         onProgress: options.onStart,
       });

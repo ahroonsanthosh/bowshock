@@ -36,7 +36,11 @@ import {
   type DragComponent,
   type TotalDrag,
 } from '../total/total-drag';
-import { BASIC_FINNER_GEOMETRY, BASIC_FINNER_SHOTS } from '../validation/basic-finner';
+import {
+  BASIC_FINNER_GEOMETRY,
+  BASIC_FINNER_SHOTS,
+  basicFinnerBody,
+} from '../validation/basic-finner';
 
 const DEG = Math.PI / 180;
 
@@ -109,12 +113,8 @@ export function basicFinnerForm(
   reynoldsOnLength = BASIC_FINNER_REYNOLDS_PER_MACH * mach,
 ): TotalDragForm {
   const g = BASIC_FINNER_GEOMETRY;
-  const noseLength = 0.5 / Math.tan(g.coneHalfAngleDegrees * DEG);
   return {
-    body: {
-      nose: { shape: { kind: 'conical' }, length: noseLength, baseRadius: 0.5 },
-      cylinderLength: g.length - noseLength,
-    },
+    body: basicFinnerBody(),
     mach,
     finCount: g.finCount,
     planform: { kind: 'rectangular' },
@@ -166,7 +166,7 @@ export function parseNumberList(text: string): number[] {
 export const BASIC_FINNER_CLASS = {
   /** Relative tolerance on every dimension. */
   dimensionTolerance: 0.005,
-  noseLength: 0.5 / Math.tan(BASIC_FINNER_GEOMETRY.coneHalfAngleDegrees * DEG),
+  noseLength: basicFinnerBody().nose.length,
   length: BASIC_FINNER_GEOMETRY.length,
   finCount: BASIC_FINNER_GEOMETRY.finCount,
   rootChord: BASIC_FINNER_GEOMETRY.finChord,

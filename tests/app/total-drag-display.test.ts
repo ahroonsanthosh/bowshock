@@ -52,6 +52,7 @@ import {
 import { flightConditionOf } from '../../src/app/flight-condition';
 import type { Body } from '../../src/geometry/body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
+import { basicFinnerBody, basicFinnerBodyAsTyped } from '../../src/validation/basic-finner';
 
 /**
  * The page's fields as it opens (demos/nose-drag.html): the Basic Finner's
@@ -85,9 +86,10 @@ const DEFAULT_FIELDS: TotalDragFields = {
 };
 /** The same with the Reynolds number and temperature given directly: the Basic Finner's range at Mach 2. */
 const DIRECT_FIELDS: TotalDragFields = { ...DEFAULT_FIELDS, conditionMode: 'reynolds' };
+/** The Basic Finner as the page's fields give it (BASIC_FINNER_NOSE_FIELDS). */
 const BODY: Body = {
-  nose: { shape: { kind: 'conical' }, length: 2.836, baseRadius: 0.5 },
-  cylinderLength: 7.164,
+  nose: { shape: { kind: 'conical' }, length: 2.835641, baseRadius: 0.5 },
+  cylinderLength: 7.164359,
 };
 
 const exactNose = (form: TotalDragForm): NoseState => ({
@@ -148,7 +150,7 @@ describe('the fields as typed', { timeout: 60_000 }, () => {
     // In feet; the length is the body's, in calibers, times the diameter.
     const feet = { ...DEFAULT_FIELDS, conditionMode: 'altitude-ft', altitude: '36089.24' };
     expect(impliedConditionText(BODY, 2, feet).temperature).toBe('216.77 K');
-    const longer = { ...BODY, cylinderLength: 2 * 7.164 + 2.836 };
+    const longer = { ...BODY, cylinderLength: 2 * 7.164359 + 2.835641 };
     expect(conditionOf(longer, 2, DEFAULT_FIELDS).reynoldsOnLength).toBeCloseTo(
       2 * c.value.reynoldsOnLength,
       0,
@@ -274,9 +276,28 @@ describe('the fields as typed', { timeout: 60_000 }, () => {
   it('the Basic Finner button: its nose, fins and range conditions given directly, the inputs kept', () => {
     expect(BASIC_FINNER_NOSE_FIELDS).toEqual({
       shape: 'conical',
-      noseLength: '2.836',
-      bodyLength: '7.164',
+      noseLength: '2.835641',
+      bodyLength: '7.164359',
     });
+    // The exact body (basicFinnerBody, the gate's), to six decimals.
+    const exact = basicFinnerBody();
+    expect(Math.abs(Number(BASIC_FINNER_NOSE_FIELDS.noseLength) - exact.nose.length)).toBeLessThan(
+      5e-7,
+    );
+    expect(
+      Math.abs(Number(BASIC_FINNER_NOSE_FIELDS.bodyLength) - exact.cylinderLength),
+    ).toBeLessThan(5e-7);
+    expect(basicFinnerForm().body).toEqual(exact);
+    // The live flow page solves what these fields give, to the last bit.
+    expect(basicFinnerBodyAsTyped()).toEqual({
+      nose: {
+        shape: { kind: 'conical' },
+        length: Number(BASIC_FINNER_NOSE_FIELDS.noseLength),
+        baseRadius: 0.5,
+      },
+      cylinderLength: Number(BASIC_FINNER_NOSE_FIELDS.bodyLength),
+    });
+    expect(BODY).toEqual(basicFinnerBodyAsTyped());
     const typed = {
       ...DEFAULT_FIELDS,
       finCount: '3',
