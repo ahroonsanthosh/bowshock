@@ -1095,3 +1095,58 @@ labels of fin friction and of the wave drag of sharp sections now say so:
 ARCAS increments end at Mach 2.96)", d at most 0.04 for a total (the body
 base and the fins at the base refuse above Mach 3.0). The Basic Finner's
 gated shot at Mach 2.97 carries the words; no number changes.
+
+**2026-10-21 (h): the band-setting data of W7's fin terms, named before
+any is read** (rule 2 of 10.1; the coordinator's decisions of 2026-10-21
+on design record 0019). No figure below has been read for a value; each
+was opened only to see what it covers (0019 section 2). Each is read
+twice, by this record's reader and blind by a second, before it sets a
+band.
+
+| Source                                                        | Sets bands with                                                                                                                                                                                                                                  | Not used to set bands                                                                                              |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Bryson, NACA TR 1094 (NTRS 19930092136)                       | figs. 13 and 14 (the thin wedges' forebody drag against Mach number, and in transonic similarity variables); figs. 15 and 16 (the 26.57 deg wedge at Mach 1.44, for whether the similarity reaches bevels of 10 to 15 deg); fig. 1 (the models)  | figs. 22 and 23 (the 12% biconvex airfoil): a check of 0019's ordering for rounded edges only; the rest            |
+| Rogers, Berry and Quincey, ARC R&M 3348 (AERADE 1826.2/3929)  | table 3 (base pressures, typed twice); figs. 30a and 30b (base pressure against Mach number and M cos(sweep)); figs. 31a, 31b and 32 to 36 (forebody and complete chordwise forces, single and double wedge); figs. 2 and 3 (planform, sections) | the normal-force and shock-position figures                                                                        |
+| Nash, Quincey and Callinan, ARC R&M 3427 (AERADE 1826.2/4011) | figs. 9, 10, 13, 15 and 16 (the layers; base pressure against Mach number; its spanwise and sectionwise variation); figs. 2 and 3 (the model, the tappings)                                                                                      | the splitter plates, the step and the cavity; its semicircular trailing edge (W11's, for a later record)           |
+| Nash, ARC R&M 3323 (AERADE 1826.2/3903)                       | figs. 4 and 5, each plotted set once its source is traced; a set that appears elsewhere in this table is counted once                                                                                                                            | the rest                                                                                                           |
+| Morrow and Katz, NACA TN 3548 (NTRS 19930084307)              | fig. 6, as 10.1 names it; it appears to be RM A51J25 fig. 7's PARD set (0016's `fin_edges_w34.md` section 6), so the two are counted as one set                                                                                                  | figs. 7 to 10: they carry the PARD standard body's totals (its fig. 4 is that body), so they are held back with it |
+| RM A51J25                                                     | fig. 7, as 10.1 names it, below M' 1.5 too                                                                                                                                                                                                       |                                                                                                                    |
+| Johnston, NASA Memo 4-30-59L (NTRS 19980228287)               | figs. 4 to 12 (the sharp single wedge: forces from pressures, base pressure and drag), 13 (the leading-edge radius), 16 to 23 (the diamond, and the two compared)                                                                                | figs. 14 and 15 (pressure pulsations)                                                                              |
+| Sawyer and Daum, NACA RM L8B13 (NTRS 19930085324)             | fig. 4(c) to 4(e) (the wedge's base and sides)                                                                                                                                                                                                   | the cylinders' figs. 4(a) and 4(b)                                                                                 |
+| Humphreys, NACA TN 3306 (NTRS 19930084050)                    | figs. 7 to 9 (zero-lift pressure drag, its fore and aft parts, in transonic similarity variables)                                                                                                                                                | the rest                                                                                                           |
+| McDevitt, NACA TR 1253 (NTRS 19930092253)                     | figs. 6 to 8 (the symmetrical wings' minimum pressure drag: its correlation, against Mach number, its summary)                                                                                                                                   | the cambered wings                                                                                                 |
+| Nelson, Allen and Krumm, NACA TN 3529 (NTRS 19930084232)      | fig. 14 (minimum pressure drag against Mach number) and the basic drag data at zero lift it is formed from (figs. 4 to 32)                                                                                                                       | lift and moments                                                                                                   |
+| Few and Fournier, NACA RM L54B25 (NTRS 19930093723)           | figs. 5 to 20 at zero lift (the basic drag data), figs. 21 and 22 (the summary and the pressure-drag rise)                                                                                                                                       | lift and moments                                                                                                   |
+| Howell and Braslow, NACA RM L55H09 (NTRS 20050019382)         | the fins-on minus fins-off pressure-drag increments and the tunnel's base pressures, their figures named here before they are read, and only once its text and fig. 1 (the model) show its body is neither the PARD standard body nor the RM-10  | its airplane model; everything, if its body is a held-back one                                                     |
+| NASA CR-149372 (Macha)                                        | as 10.1 names it for W4                                                                                                                                                                                                                          | fig. 8a (subsonic front sides): a check of 0019's ordering for rounded edges only                                  |
+
+Checks, which set nothing: TN 3469, TR 1359, ARC CP 145, TN 1211, ARC
+R&M 3465, TN D-3634 (the blunt extensions' minimum-drag increments, a
+check of the rounded-edge bounds), RM L53L24a, and Pepper's blunt-nosed
+65A009 wing (its abstract). Not used: the PARD wing tests whose wing
+increments are formed on the PARD standard body (RM L50G31, RM L52F02a and
+the like), unless a later record shows the body is another.
+
+Decisions recorded with this registration (the coordinator's, under the
+owner's rule):
+
+1. **Rounded leading edges of flat plates below M_n 1.0** are served
+   "bounded, not measured" (10.2): from no drag on the nose to the term at
+   M_n 1.0 at its band's high end, both orderings written in 0019 section
+   3.2 with their physics and the data that check them, and served only
+   after an independent review of that argument. Where the written
+   argument finds a bound can be crossed, that bound is widened to what
+   the argument supports, or the range it cannot support is refused,
+   before the review.
+2. **Bevelled leading edges at M_n 0.9 to 1.2**, where TR 1094 has no
+   points, only "bounded, not measured" between measured values, its
+   ordering written in 0019 section 3.3; transonic small-disturbance
+   theory is never the nominal. Bevels of 10 to 15 deg only if TR 1094's
+   26.57 deg wedge supports the similarity in the data; otherwise refused.
+3. **Swept blunt trailing edges at Mach 1.0 to 1.2** are served if R&M
+   3348's swept single-wedge wings, read twice (table 3, figs. 30a and
+   30b), set the band directly. This changes 0016 section 6's ruling
+   (W3(c)) for Mach 1.0 to 1.2 only. It concerns the edge's own base drag:
+   the fins-on-base factor (W1), which refuses swept trailing edges at the
+   base, where nothing measures them, is a separate term and is not
+   changed by it.
