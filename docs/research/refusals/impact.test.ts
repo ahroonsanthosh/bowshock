@@ -46,6 +46,7 @@ export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
   'W1 fins at the base for hobby fins (3 and 4 fins, thin, swept, any trailing edge, M 1.5 to 3.0) and within a chord': [
     'finsAtBaseThickness',
     'finsAtBaseSwept',
+    'finsAtBasePlate',
     'finsAtBaseCount',
     'finsAtBaseMach',
     'finsNearBase',
@@ -356,6 +357,8 @@ test('refusal impact on a population of supersonic amateur rockets', () => {
     '',
   );
   json.crossCheck = { checked, agree };
-  writeFileSync(join(outDir, 'impact.out'), lines.join('\n'));
-  writeFileSync(join(outDir, 'impact.json'), JSON.stringify(json, null, 1));
+  // OUT_NAME keeps a later run beside the one 0014 quotes (impact.out): 0016's is impact-w34.
+  const name = process.env.OUT_NAME ?? 'impact';
+  writeFileSync(join(outDir, `${name}.out`), lines.join('\n'));
+  writeFileSync(join(outDir, `${name}.json`), JSON.stringify(json, null, 1));
 });

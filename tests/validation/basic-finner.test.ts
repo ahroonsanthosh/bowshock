@@ -742,7 +742,7 @@ describe(
       ]);
     });
 
-    it('the five shots at Mach 1.06 to 1.33 are refused (reported, not gated)', () => {
+    it('the five shots at Mach 1.06 to 1.33 are refused (reported, not gated); the leading edges from M_n 1.0 (0016 section 11)', () => {
       for (const s of BASIC_FINNER_SHOTS.filter((x) => x.use === 'reported')) {
         const r = finnedBodyComponents(
           asTranscribed,
@@ -751,7 +751,10 @@ describe(
           inputs,
         );
         const reasons = r.refusals.map((x) => x.reason);
-        expect(reasons).toContain('leading-edge-range');
+        // The edge's Reynolds number on its diameter is below 6.7e3 to M 1.25; at 1.33 it is served.
+        const le = r.refusals.find((x) => x.component === 'fin leading edges');
+        if (s.mach < 1.3) expect(le?.message).toMatch(/^Reynolds number .* is below 6700/);
+        else expect(le).toBeUndefined();
         expect(reasons).toContain('mach-range');
         if (s.mach < 1.2) expect(reasons).toContain('detached-shock');
       }
