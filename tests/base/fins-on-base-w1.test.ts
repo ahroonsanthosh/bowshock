@@ -40,7 +40,11 @@ import {
   type FinsNearBase,
 } from '../../src/base/fins-on-base-w1';
 import { BaseRefusal } from '../../src/base/refusal';
-import { TN3819_FIG35_FREE_FLIGHT } from '../../src/base/tn3819-fig35';
+import {
+  FIG35_FREE_FLIGHT_END,
+  FIG35_IDENTITY_SWAP,
+  TN3819_FIG35_FREE_FLIGHT,
+} from '../../src/base/tn3819-fig35';
 import { doubleWedge, hexagonal, singleWedge, type SymmetricSection } from '../../src/fins/section';
 
 const load = (path: string) =>
@@ -104,15 +108,20 @@ describe('the readings, held to the first- and second-reading records', () => {
         expect(Math.abs(Number(wo[k]![3]) - p.mach)).toBeLessThan(0.011);
         expect(p.error).toBe(Number(w[k]![7]));
       });
-      const r35 = from('TN 3819', '35').filter((x) => x[2]!.startsWith('free-flight'));
-      expect(r35.map((x) => [Number(x[3]), Number(x[5]), Number(x[7])])).toEqual(
-        TN3819_FIG35_W1.find((r) => r.reading === reading)!.points.map((p) => [
-          p.mach,
-          p.pB,
-          p.error,
-        ]),
-      );
+      // Fig. 35's line: only the first is held; round 6's first version of the line (its second here) is
+      // superseded by the identified curve of ./tn3819-fig35.ts and stays in the csv as the record.
+      if (reading === 'w1 first') {
+        const r35 = from('TN 3819', '35').filter((x) => x[2]!.startsWith('free-flight'));
+        expect(r35.map((x) => [Number(x[3]), Number(x[5]), Number(x[7])])).toEqual(
+          TN3819_FIG35_W1.find((r) => r.reading === reading)!.points.map((p) => [
+            p.mach,
+            p.pB,
+            p.error,
+          ]),
+        );
+      }
     }
+    expect(TN3819_FIG35_W1.map((r) => r.reading)).toEqual(['w1 first']);
     expect(rows('TN 3819', '35').every((x) => /not blind/i.test(x[8]!))).toBe(true);
     expect(rows2('TN 3819', '35').some((x) => /not blind/i.test(x[8]!))).toBe(false);
     // Fig. 35's tunnel pairs, the second reading.
@@ -176,20 +185,16 @@ describe('the readings, held to the first- and second-reading records', () => {
         p.error + s34[k]!.error,
       );
     });
-    // Fig. 35's line: this work's (M 1.40 to 1.80) and round 3's to M 2.3 agree with round 6; at M 2.4
-    // to 2.9 round 6 identifies another line, 0.007 to 0.010 less negative (flagged, both kept).
-    const second = TN3819_FIG35_W1.find((r) => r.reading === 'w1 second')!.points;
-    const r3 = TN3819_FIG35_FREE_FLIGHT.find((r) => r.reading === 'round 3')!.points;
-    for (const p of [...TN3819_FIG35_W1[0]!.points, ...r3]) {
-      const q = second.find((x) => Math.abs(x.mach - p.mach) < 1e-9);
-      if (q === undefined || ('extrapolated' in p && p.extrapolated === true)) continue;
-      const swap = p.mach >= 1.75 && p.mach <= 2.35 ? 0.005 : 0;
-      const d = p.pB - q.pB;
-      if (p.mach <= 2.3 + 1e-9) {
-        expect(Math.abs(d)).toBeLessThanOrEqual(Math.max(p.error, swap) + Math.max(q.error, swap));
-      } else {
-        expect(d).toBeGreaterThan(-0.0105);
-        expect(d).toBeLessThan(-0.007);
+    // Fig. 35's line: this work's (M 1.40 to 1.80) against both readings of the identified curve (0010
+    // section 11), with the identity-swap error where it applies.
+    for (const r of TN3819_FIG35_FREE_FLIGHT) {
+      for (const p of TN3819_FIG35_W1[0]!.points) {
+        const q = r.points.find((x) => Math.abs(x.mach - p.mach) < 1e-9);
+        if (q === undefined) continue;
+        const swap = p.mach >= FIG35_IDENTITY_SWAP.from ? FIG35_IDENTITY_SWAP.error : 0;
+        expect(Math.abs(p.pB - q.pB)).toBeLessThanOrEqual(
+          Math.max(p.error, swap) + Math.max(q.error, swap),
+        );
       }
     }
     // RM L52E06 fig. 7 at M 1.10, read by both.
@@ -236,11 +241,12 @@ describe('the readings, held to the first- and second-reading records', () => {
       expect(d10).toBeGreaterThanOrEqual(Math.min(...runs.map((p) => p.dPb)) - 0.003);
       expect(d10).toBeLessThanOrEqual(Math.max(...runs.map((p) => p.dPb)) + 0.003);
     }
-    // This reading of fig. 35 below M 1.8 against round 3's (not blind): within their combined errors.
-    const r3 = TN3819_FIG35_FREE_FLIGHT.find((r) => r.reading === 'round 3')!.points;
+    // This reading of fig. 35 below M 1.75 against the identified curve's first reading: within their
+    // combined errors.
+    const first35 = TN3819_FIG35_FREE_FLIGHT[0]!.points;
     for (const p of TN3819_FIG35_W1[0]!.points) {
-      const q = r3.find((x) => Math.abs(x.mach - p.mach) < 1e-9);
-      if (q === undefined) continue;
+      const q = first35.find((x) => Math.abs(x.mach - p.mach) < 1e-9);
+      if (q === undefined || p.mach >= FIG35_IDENTITY_SWAP.from) continue;
       expect(Math.abs(p.pB - q.pB)).toBeLessThanOrEqual(p.error + q.error);
     }
     // RM L52E06 (flat plates, square trailing edges, at the base, M 1.06 to 1.10): fins relieve the base.
@@ -266,9 +272,10 @@ describe('the members', () => {
 
   it('the reference at M 2.0, by hand from the readings', () => {
     const noFins = Math.abs(compiledCurveValue(2.0, 'lessNegative'));
-    // Both readings of the line at M 2.0 with the identity-swap error (0.005).
-    const ff = [-0.1905, -0.1903].map((p) => Math.abs(p) / noFins);
-    const low = Math.min(...ff) - 0.005 / noFins;
+    // Both readings of the identified line at M 2.0 with the identity-swap error (0.0077).
+    const ff = [-0.1903, -0.1897].map((p) => Math.abs(p) / noFins);
+    const low = Math.min(...ff) - 0.0077 / noFins;
+    expect(low).toBeCloseTo(1.2578, 4);
     // Tunnel: fig. 6's largest run, -0.0640 (+-0.002), over fig. 33's body alone -0.1507 (+-0.001).
     const tunnel = 1 + (0.064 + 0.002) / (0.1507 - 0.001);
     const r = referenceBand(2.0);
@@ -278,26 +285,57 @@ describe('the members', () => {
     expect(r.carried).toBeUndefined();
   });
 
-  it('the reference beyond M 2.41 carries the largest tunnel excess (at M 2.41, with round 6)', () => {
+  it('the reference beyond M 2.41 carries the largest tunnel excess (at M 2.41), and is bounded above 2.56', () => {
     // M 1.5: TN 2360's largest run (first -0.1391 +-0.002; round 6 -0.1390 +-0.0021, a tie) over fig.
-    // 33's body alone (first, -0.1948 +-0.001), against the least reading of the line (round 6, -0.2659).
+    // 33's body alone (first, -0.1948 +-0.001), against the least reading of the line (-0.2659).
     const at15 =
       1 +
       (0.1391 + 0.002) / (0.1948 - 0.001) -
       0.2659 / Math.abs(compiledCurveValue(1.5, 'lessNegative'));
-    // M 2.41: round 3's Langley pair (-0.1648 and -0.1202, +-0.001) against round 6's line, -0.1464 at
-    // M 2.4 and -0.1401 at 2.5, interpolated (round 6 reads the line less negative there, 0015 section 7).
-    const line241 = 0.1464 - 0.1 * (0.1464 - 0.1401);
-    const at241 =
-      (0.1648 + 0.001) / (0.1202 - 0.001) -
-      line241 / Math.abs(compiledCurveValue(2.41, 'lessNegative'));
-    expect(at241).toBeGreaterThan(at15);
-    expect(largestTunnelExcess()).toBeCloseTo(at241, 12);
-    const r = referenceBand(2.8);
+    // M 2.41: round 3's Langley pair (-0.1648 and -0.1202, +-0.001), 1.3909, against the identified
+    // curve's first reading, -0.1424 at M 2.4 and -0.1387 at 2.45, interpolated: 1.1628.
+    const line241 = 0.1424 - 0.2 * (0.1424 - 0.1387);
+    const tunnel241 = (0.1648 + 0.001) / (0.1202 - 0.001);
+    const ff241 = line241 / Math.abs(compiledCurveValue(2.41, 'lessNegative'));
+    expect(tunnel241).toBeCloseTo(1.3909, 4);
+    expect(ff241).toBeCloseTo(1.1628, 4);
+    expect(at15).toBeLessThan(tunnel241 - ff241);
+    expect(largestTunnelExcess()).toBeCloseTo(tunnel241 - ff241, 12);
+    expect(largestTunnelExcess()).toBeCloseTo(0.2282, 4);
+    const r = referenceBand(2.5);
     const ffMax = Math.max(...r.freeFlight.map((f) => f.factor));
     expect(r.carried).toBeCloseTo(ffMax + largestTunnelExcess(), 12);
     expect(r.high).toBeCloseTo(r.carried!, 12);
     expect(r.tunnel).toBeUndefined();
+    expect(r.bounded).toBe(false);
+    // Above M 2.56, where the free-flight curve ends: from the zero member's low end to the high end at 2.56.
+    const end = referenceBand(FIG35_FREE_FLIGHT_END);
+    expect(end.bounded).toBe(false);
+    for (const m of [2.57, 2.8, 3.0]) {
+      expect(referenceBand(m)).toMatchObject({ low: W1_RELIEF_LOW, high: end.high, bounded: true });
+    }
+  });
+
+  it('the reference member, low and high, as 0015 section 3.1 tabulates them', () => {
+    const TABLE31: [number, number, number][] = [
+      [1.5, 1.5228, 1.7281],
+      [1.65, 1.5832, 1.6419],
+      [1.8, 1.4563, 1.559],
+      [2.0, 1.2578, 1.4409],
+      [2.15, 1.175, 1.4226],
+      [2.2, 1.16, 1.4165],
+      [2.3, 1.1233, 1.4043],
+      [2.41, 1.0996, 1.3909],
+      [2.5, 1.0887, 1.3826],
+      [2.56, 1.0855, 1.3811],
+      [2.8, 0.9504, 1.3811],
+      [3.0, 0.9504, 1.3811],
+    ];
+    for (const [m, low, high] of TABLE31) {
+      const r = referenceBand(m);
+      expect(r.low, `M ${m}`).toBeCloseTo(low, 4);
+      expect(r.high, `M ${m}`).toBeCloseTo(high, 4);
+    }
   });
 
   it("four fins t/c 0.05 at x/c 0: TN 2360's increment ratio over the reference, every run and reading", () => {
@@ -412,17 +450,18 @@ describe('the bands (0015 section 3.6)', () => {
   // 38(c), read once; a moderate sweep on NSWC's Table 2, read once)].
   const TABLE: [number, string, FinsNearBase, number, number, number, boolean][] = [
     [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.2113, 1.4723, true],
-    [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.182, 1.4137, true],
+    [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.1832, 1.4161, true],
     [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.1393, 1.3282, true],
-    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.2081, 1.4658, true],
-    [3.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.2353, 1.5201, true],
+    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9504, 1.1665, 1.3826, true],
+    // Above M 2.56 the reference is bounded, not measured (0010 section 11): so is the bracket.
+    [3.0, 'double wedge 2.4%, three fins, 45 deg (bounded)', fins(), 0.9504, 1.1657, 1.3811, true],
     [
       1.8,
       'double wedge 2.4%, four fins, unswept',
       fins({ count: 4, tanLeadingEdgeSweep: 0 }),
       0.9504,
-      1.182,
-      1.4137,
+      1.1832,
+      1.4161,
       true,
     ],
     [
@@ -430,8 +469,8 @@ describe('the bands (0015 section 3.6)', () => {
       'bevelled plate 3%, three fins, 45 deg',
       fins({ section: hexagonal(0.03, 0.085, 0.085) }),
       0.9504,
-      1.2531,
-      1.5558,
+      1.2547,
+      1.559,
       true,
     ],
     [
@@ -439,8 +478,8 @@ describe('the bands (0015 section 3.6)', () => {
       'flat plate 2.4%, three fins, 45 deg (bounded)',
       fins({ section: plate(0.024) }),
       0.8379,
-      1.1258,
-      1.4137,
+      1.127,
+      1.4161,
       false,
     ],
     [
@@ -448,26 +487,26 @@ describe('the bands (0015 section 3.6)', () => {
       'flat plate 2.4%, three fins, 45 deg (bounded)',
       fins({ section: plate(0.024) }),
       0.8379,
-      1.1518,
-      1.4658,
+      1.1103,
+      1.3826,
       false,
     ],
     [
       1.8,
       'circular arc 10%, three fins, unswept',
       fins({ section: arc10, sectionFamily: 'circular-arc', tanLeadingEdgeSweep: 0 }),
-      1.2229,
-      1.3893,
-      1.5558,
+      1.2151,
+      1.387,
+      1.559,
       false,
     ],
     [
       1.8,
       'double wedge 2.4%, three fins, 45 deg, x/c 0.5',
       fins({ trailingEdgeAheadOfBase: 0.5 }),
-      0.9045,
-      1.0892,
-      1.2739,
+      0.904,
+      1.0897,
+      1.2755,
       true,
     ],
     // W1b: the leading edge swept 30 deg, the trailing edge unswept, M 2.0 to 3.0.
@@ -485,8 +524,8 @@ describe('the bands (0015 section 3.6)', () => {
       'double wedge 2.4%, three fins, 30 deg, unswept trailing edge',
       fins({ tanLeadingEdgeSweep: t30 }),
       0.9504,
-      1.2081,
-      1.4658,
+      1.1665,
+      1.3826,
       true,
     ],
     // W2's part, below M 1.5: the zero member down to RM L52E06's relief; the reference from fig. 35's line.
@@ -495,8 +534,8 @@ describe('the bands (0015 section 3.6)', () => {
       'double wedge 2.4%, three fins, unswept',
       fins({ tanLeadingEdgeSweep: 0 }),
       0.8379,
-      1.2654,
-      1.6928,
+      1.2822,
+      1.7265,
       false,
     ],
     [
@@ -504,8 +543,8 @@ describe('the bands (0015 section 3.6)', () => {
       'flat plate 2.4%, three fins, 45 deg (bounded)',
       fins({ section: plate(0.024) }),
       0.8379,
-      1.2654,
-      1.6928,
+      1.2822,
+      1.7265,
       false,
     ],
   ];
@@ -555,11 +594,13 @@ describe('the bands (0015 section 3.6)', () => {
         tanTrailingEdgeSweep: 0,
         trailingEdgeAheadOfBase: 0,
       });
-      // Inside the bracket with its +-5%, and the nominal at or below the bounding member's low end but
-      // for the 10% wedge at M 2.5 (0.005 above it, 0015 section 3.4).
+      // Inside the bracket with its +-5% (at least 0.055 below its top). At M 2.0 below the bounding
+      // member's low end; at 2.5 inside the reference's band; at 3.0 the bracket is bounded (0015 3.4).
       expect(p.low).toBeGreaterThan(r.low);
-      expect(p.high).toBeLessThan(r.high);
-      expect(p.factor).toBeLessThan(r.upper.band.low + 0.006);
+      expect(p.high).toBeLessThan(r.high - 0.05);
+      if (p.mach === 2.0) expect(p.factor).toBeLessThan(r.upper.band.low);
+      if (p.mach === 2.5) expect(p.factor).toBeGreaterThan(r.upper.band.low);
+      expect(r.bounded).toBe(p.mach === 3.0);
     }
     // Every factor grows with thickness at each Mach number (NSWC's own increments).
     for (const m of [2.0, 2.5, 3.0]) {

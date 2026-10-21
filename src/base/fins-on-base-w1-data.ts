@@ -20,7 +20,7 @@
  * P_B without, in the same facility.
  */
 
-import { TN3819_FIG35_FREE_FLIGHT, type Fig35Point } from './tn3819-fig35';
+import { FIG35_FREE_FLIGHT_END, TN3819_FIG35_FREE_FLIGHT, type Fig35Point } from './tn3819-fig35';
 
 export type W1Reading = 'w1 first' | 'w1 second';
 
@@ -206,17 +206,13 @@ export const TN3819_FIG34: readonly Fig34Point[] = [
 ];
 
 /**
- * TN 3819 fig. 35's free-flight line (ref. 12). The first, this work's, at
- * M 1.40 to 1.80: NOT BLIND, made after round 3's values of this range had
- * been seen (fins_at_base_w1.md). The second, round 6's, blind, over the
- * whole line, M 1.0 to 3.0. Above M 2.3 round 6 identifies the line
- * differently from 0008's reading and round 3's in ./tn3819-fig35.ts (the
- * middle of the three lines there, by its long-short dash pattern, where
- * they took the most negative): up to 0.010 less negative in P_B at M 2.4
- * to 2.9 (w1_compare_round6_output.txt). Every reading is kept and the
- * rebuilt factor's band is their envelope (0008's reading rule); the
- * present factor (./fins-on-base.ts) keeps its own two readings unchanged
- * (0014 section 10.3).
+ * TN 3819 fig. 35's free-flight line (ref. 12), this work's reading at M
+ * 1.40 to 1.80: NOT BLIND, made after round 3's values of this range had
+ * been seen (fins_at_base_w1.md). Round 6's first version of the whole line
+ * (on estimate A above about M 2.2) is dropped: the line is now identified
+ * and read twice in ./tn3819-fig35.ts (0010 section 11), round 6's revision
+ * being its second reading; round 6's first version stays in
+ * fins_at_base_w1_second.csv as the record.
  */
 export interface W1Fig35Point {
   readonly mach: number;
@@ -242,56 +238,29 @@ export const TN3819_FIG35_W1: readonly {
       { mach: 1.8, pB: -0.2365, error: 0.003 },
     ],
   },
-  {
-    reading: 'w1 second',
-    points: [
-      { mach: 1, pB: -0.2998, error: 0.0003 },
-      { mach: 1.05, pB: -0.2913, error: 0.0003 },
-      { mach: 1.1, pB: -0.284, error: 0.0003 },
-      { mach: 1.15, pB: -0.2793, error: 0.0003 },
-      { mach: 1.2, pB: -0.275, error: 0.0003 },
-      { mach: 1.25, pB: -0.272, error: 0.0003 },
-      { mach: 1.3, pB: -0.2703, error: 0.0003 },
-      { mach: 1.35, pB: -0.2687, error: 0.0003 },
-      { mach: 1.4, pB: -0.2675, error: 0.0003 },
-      { mach: 1.45, pB: -0.2665, error: 0.0003 },
-      { mach: 1.5, pB: -0.2659, error: 0.0003 },
-      { mach: 1.55, pB: -0.2656, error: 0.0003 },
-      { mach: 1.6, pB: -0.2654, error: 0.0003 },
-      { mach: 1.65, pB: -0.2651, error: 0.002 },
-      { mach: 1.7, pB: -0.2612, error: 0.002 },
-      { mach: 1.75, pB: -0.2503, error: 0.002 },
-      { mach: 1.8, pB: -0.2368, error: 0.0003 },
-      { mach: 1.85, pB: -0.2226, error: 0.0003 },
-      { mach: 1.9, pB: -0.2108, error: 0.0003 },
-      { mach: 1.95, pB: -0.2, error: 0.0003 },
-      { mach: 2, pB: -0.1905, error: 0.0004 },
-      { mach: 2.1, pB: -0.1745, error: 0.003 },
-      { mach: 2.2, pB: -0.1625, error: 0.003 },
-      { mach: 2.3, pB: -0.1537, error: 0.003 },
-      { mach: 2.4, pB: -0.1464, error: 0.003 },
-      { mach: 2.5, pB: -0.1401, error: 0.0003 },
-      { mach: 2.6, pB: -0.1348, error: 0.0003 },
-      { mach: 2.7, pB: -0.1303, error: 0.0003 },
-      { mach: 2.8, pB: -0.1264, error: 0.0003 },
-      { mach: 2.9, pB: -0.1223, error: 0.0003 },
-      { mach: 3, pB: -0.1182, error: 0.0003 },
-    ],
-  },
 ];
 
 /**
  * Every reading of TN 3819 fig. 35's free-flight line that the rebuilt factor's reference member uses (and so
  * W2's fins at the base below Mach 1.5 and the carried tunnel excess): the present factor's two, held in
- * ./tn3819-fig35.ts, and W1's two above. The member's only source for the line (./fins-on-base-w1.ts,
- * freeFlightFactors): when the line is corrected (0010 section 7), this one definition is what changes.
+ * ./tn3819-fig35.ts, and W1's first above. The member's only source for the line (./fins-on-base-w1.ts,
+ * freeFlightFactors). Since the correction of 0010 section 11: the identified curve's two readings, and W1's
+ * first reading at M 1.4 to 1.8; never TN3819_FIG35_SUPERSEDED.
  */
 export const W1_FIG35_LINE: readonly {
   readonly reading: string;
   readonly points: readonly Fig35Point[];
 }[] = [
-  ...TN3819_FIG35_FREE_FLIGHT.map((r) => ({ reading: r.reading, points: r.points })),
-  ...TN3819_FIG35_W1.map((r) => ({ reading: r.reading, points: r.points })),
+  // The identified curve, read twice (0010 section 11), to its end at M 2.56: the second reading's last
+  // inked column at M 2.563 is left out, so the line ends where the factor's measured range does.
+  ...TN3819_FIG35_FREE_FLIGHT.map((r) => ({
+    reading: r.reading,
+    points: r.points.filter((p) => p.mach <= FIG35_FREE_FLIGHT_END + 1e-9),
+  })),
+  ...TN3819_FIG35_W1.filter((r) => r.reading === 'w1 first').map((r) => ({
+    reading: r.reading,
+    points: r.points,
+  })),
 ];
 
 /**

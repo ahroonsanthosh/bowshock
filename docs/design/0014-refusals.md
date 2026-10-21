@@ -738,13 +738,24 @@ for square-cut leading edges and rounded trailing edges. Defined:
   neither thrust nor more than the square edge's base drag. Anywhere else
   only by a recorded decision, and never where a measured method covers
   the case.
+- **Recorded decision, 2026-10-20: fins at the base above the end of TN
+  3819 fig. 35's free-flight curve** (M 2.56 to 3.0; 0010 section 11.5).
+  Lower, no fin effect (F = 1 for the present factor, defined on the basic
+  curve; the zero member's low end for the rebuilt factor, 0015); upper,
+  the factor at the curve's end, its band's high end, carried as a ratio;
+  the ordering argued there from Love's "decrease in fin effects as Mach
+  number increases" (TN 3819 p. 23) and TN 2360's dependence on the fins'
+  thickness and slope, written before the number was served.
 
 ### 10.3 The Basic Finner's factor
 
 - The validated total of the Basic Finner's class keeps the present
   fins-on-base factor (0010 section 1.3, `src/base/fins-on-base.ts`) and
   its labels unchanged, for every case inside the class, even where the
-  rebuilt factor (W1) would also cover it.
+  rebuilt factor (W1) would also cover it. (The present factor was
+  corrected on 2026-10-21 to fig. 35's free-flight curve, by a recorded
+  decision; the class was narrowed to Mach 1.8 to 2.15 the day before:
+  0010 section 11.)
 - The rebuilt factor replaces it inside the class only after the rebuilt
   factor passes its own hold-out, BRL 934 first, and then only by a
   recorded decision. Once replaced, the class's validated claim rests on

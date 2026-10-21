@@ -133,6 +133,28 @@ describe('the rebuilt factor only where the present one refuses', () => {
       `the gap between the bounds is ${((f.high - f.low) * -r.curve.pB).toFixed(4)} in C_D`,
     );
   });
+
+  it('above Mach 2.56, where fig. 35 ends, both factors are bounded and each label states its gap', () => {
+    // The rebuilt factor (three thin fins): from the zero member's low end to its reference's high end at M 2.56.
+    const w = base(
+      2.8,
+      fins({ count: 3, thicknessRatio: 0.024, nearBase: near(doubleWedge(0.024)) }),
+    );
+    const fw = w.finsOnBase as FinsOnBaseFactorW1;
+    expect(w.finsOnBaseSource).toBe('rebuilt');
+    expect(fw.bounded).toBe(true);
+    expect(w.labels[1]).toMatch(/^bounded, not measured/);
+    expect(w.labels[1]).toContain(
+      `the gap between the bounds is ${((fw.high - fw.low) * -w.curve.pB).toFixed(4)} in C_D`,
+    );
+    // The present factor (four fins t/c 0.08), bounded by its own rule (0010 section 11).
+    const p = base(2.8, fins({ thicknessRatio: 0.08, nearBase: near(doubleWedge(0.08)) }));
+    expect(p.finsOnBaseSource).toBe('present');
+    expect(p.finsOnBase?.bounded).toBe(true);
+    expect(p.labels[1]).toContain(
+      `the gap between the bounds is ${((p.finsOnBase!.high - p.finsOnBase!.low) * -p.curve.pB).toFixed(4)} in C_D`,
+    );
+  });
 });
 
 describe("the Basic Finner's gate: unchanged", { timeout: 120_000 }, () => {

@@ -1,0 +1,17 @@
+M,P_B,err,how
+1.5,-0.2559,0.0003,guided column read; n=18
+1.6,-0.2468,0.0003,guided column read; n=18
+1.7,-0.2392,0.0003,guided column read; n=18
+1.8,-0.2169,0.0003,guided column read; n=11
+1.9,-0.1990,0.0003,guided column read; n=8
+2,-0.1843,0.0030,guided column read; n=18; extra 0.003
+2.1,-0.1736,0.0030,guided column read; n=18; extra 0.003
+2.2,-0.1632,0.0031,guided column read; n=18; extra 0.003
+2.3,-0.1539,0.0030,guided column read; n=9; extra 0.003
+2.4,-0.1466,0.0003,guided column read; n=18
+2.5,-0.1401,0.0003,guided column read; n=18
+2.6,-0.1348,0.0003,guided column read; n=9
+2.7,-0.1304,0.0003,guided column read; n=18
+2.8,-0.1264,0.0003,guided column read; n=18
+2.9,-0.1223,0.0003,guided column read; n=18
+3,-0.1181,0.0003,guided column read; n=9

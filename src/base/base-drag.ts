@@ -16,7 +16,9 @@
  *   term with the nominal F;
  * - the interpolation-error bound of the curve, times F and the area ratio;
  * - the fins-on-base band, (F_low - F) and (F_high - F) times -P_B and the
- *   area ratio.
+ *   area ratio. Above M 2.55, where TN 3819 fig. 35's free-flight curve
+ *   ends, the factor is bounded, not measured (0014 section 10.2), and its
+ *   label carries the gap between the bounds in C_D.
  *
  * Fins: with their trailing edges at the base, the factor applies; ending
  * one root chord or more ahead of it, the plain curve (TN 2360 found the
@@ -36,7 +38,7 @@
  * The vacuum bound (./vacuum.ts): the term and its band's ends are each at
  * most 2 / (gamma M^2) times the area ratio, clamped there (`vacuumClamped`
  * lists what was; the parts are reported unclamped). Over M 1.5 to 3.0 no
- * value reaches it (the band's high end is at most 0.9535 of it, at M 3.0
+ * value reaches it (the band's high end is at most 0.8840 of it, at M 3.0
  * with fins at the base; 0.656 without fins); the clamp is a guard.
  *
  * Blunt fin trailing edges are a further base, ./fin-trailing-edge.ts.
@@ -153,7 +155,7 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       };
   const labels = [below ? W2_LABEL : COMPILED_CURVE_LABEL];
   // 0014 section 10.2: a bounded component states its gap's size in C_D beside it.
-  const gapOf = (f: FinsOnBaseFactorW1) =>
+  const gapOf = (f: { readonly bounded: boolean; readonly low: number; readonly high: number }) =>
     f.bounded
       ? `; the gap between the bounds is ${((f.high - f.low) * -curve.pB * curveRange.nominal * baseAreaRatio).toFixed(4)} ` +
         'in C_D'
@@ -193,7 +195,8 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       try {
         factor = finsOnBaseFactor(mach, fins);
         source = 'present';
-        labels.push(factor.label);
+        // Bounded, not measured: the gap between the bounds in C_D beside it (0014 section 10.2).
+        labels.push(`${factor.label}${gapOf(factor)}`);
       } catch (e) {
         if (!(e instanceof BaseRefusal)) throw e;
         presentRefusal = e;

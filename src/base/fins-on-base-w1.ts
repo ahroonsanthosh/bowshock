@@ -65,7 +65,7 @@
  *   measurement shows the ordering there.
  *
  * Below M 1.5 (W2's part, 0015 section 11), at M 1.1 to 1.5: the reference
- * is fig. 35's free-flight line (two readings from M 1.1) with the largest
+ * is fig. 35's free-flight curve (two readings from M 1.0) with the largest
  * tunnel excess carried, the zero member reaches down to RM L52E06's
  * relief with flat plates (the lowest relief measured at or below M 1.5),
  * no ratio member and no position ahead of the base is measured, and
@@ -107,12 +107,12 @@ import {
   type Tn2360Fig6Point,
 } from './fins-on-base-w1-data';
 import { BaseRefusal } from './refusal';
-import { FIG35_IDENTITY_SWAP, TN3819_FIG35_TUNNEL } from './tn3819-fig35';
+import { FIG35_FREE_FLIGHT_END, FIG35_IDENTITY_SWAP, TN3819_FIG35_TUNNEL } from './tn3819-fig35';
 import type { SymmetricSection } from '../fins/section';
 
 /** The Mach numbers the rebuilt factor serves from its tunnel members up (W1). */
 export const W1_MACH_RANGE = [1.5, 3.0] as const;
-/** Below W1_MACH_RANGE: fins at the base from M 1.1 (W2's part, fig. 35's line read twice from there). */
+/** Below W1_MACH_RANGE: fins at the base from M 1.1 (W2's part, as approved; fig. 35's curve is read twice from M 1.0). */
 export const W1_LOW_MACH = 1.1;
 /**
  * Moderate sweeps (W1b): the leading edge swept up to 45 deg with the trailing edge unswept, served at M 2.0 to
@@ -285,10 +285,26 @@ export interface ReferenceBand extends Band {
   readonly tunnel: number | undefined;
   /** Beyond M 2.41: the free-flight factor plus the largest tunnel excess. */
   readonly carried: number | undefined;
+  /**
+   * Above the free-flight curve's end (M 2.56, 0010 section 11): bounded, not measured, from the zero member's
+   * low end to the member's high end at M 2.56; its band the whole gap.
+   */
+  readonly bounded: boolean;
 }
 
-/** Four fins t/c 0.10 at x/c = 0: the reference member, M 1.1 to 3.0. */
+/** Four fins t/c 0.10 at x/c = 0: the reference member, measured at M 1.1 to 2.56, bounded to 3.0. */
 export function referenceBand(mach: number): ReferenceBand {
+  if (mach > FIG35_FREE_FLIGHT_END + 1e-12) {
+    const end = referenceBand(FIG35_FREE_FLIGHT_END);
+    return {
+      low: W1_RELIEF_LOW,
+      high: end.high,
+      freeFlight: [],
+      tunnel: undefined,
+      carried: undefined,
+      bounded: true,
+    };
+  }
   const ff = freeFlightFactors(mach);
   if (ff.length === 0) throw new RangeError(`no reading of fig. 35's line at M ${mach}`);
   const t = interp(tunnelMax(), mach, (p) => p.factor);
@@ -305,6 +321,7 @@ export function referenceBand(mach: number): ReferenceBand {
     freeFlight: ff,
     tunnel: t?.value,
     carried,
+    bounded: false,
   };
 }
 
@@ -491,7 +508,8 @@ export interface FinsOnBaseFactorW1 {
   readonly analogy: boolean;
   /**
    * "Bounded, not measured" (0014 section 10.2): fins with flat faces at a square trailing edge, between
-   * the lowest relief measured with such fins (RM L52E06) and the circular-arc member at least as thick.
+   * the lowest relief measured with such fins (RM L52E06) and the circular-arc member at least as thick;
+   * and every case above M 2.56, where the reference member is bounded (ReferenceBand.bounded).
    */
   readonly bounded: boolean;
   /** Fewer than two readings of fig. 35's line at M, not counting extrapolations. */
@@ -516,8 +534,7 @@ export interface FinsOnBaseFactorW1 {
 
 /**
  * The swept fins measured at the base (leading-edge sweep): RM L52J21a's 45 deg (fig. 38) and the RM-10's
- * 60 deg (TN 3819 fig. 34). Sweeps between 0 and 45 deg are not measured and are refused (0015 section
- * 3.4).
+ * 60 deg (TN 3819 fig. 34). Below 45 deg only W1_MODERATE_SWEEP is served (0015 section 3.4).
  */
 export const W1_SWEPT_RANGE = [(45 * Math.PI) / 180, (60 * Math.PI) / 180] as const;
 
@@ -654,8 +671,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   if (!(mach >= W1_LOW_MACH && mach <= W1_MACH_RANGE[1])) {
     throw new BaseRefusal(
       'mach-range',
-      `the rebuilt fins-on-base factor is measured at Mach ${W1_LOW_MACH} to ` +
-        `${W1_MACH_RANGE[1]} (TN 3819 fig. 35's free-flight line, read twice from M ${W1_LOW_MACH}; ` +
+      `the rebuilt fins-on-base factor serves Mach ${W1_LOW_MACH} to ${W1_MACH_RANGE[1]} (TN 3819 ` +
+        `fig. 35's free-flight curve, read twice, to M ${FIG35_FREE_FLIGHT_END} and bounded above it; ` +
         `TN 2360), asked Mach ${mach}`,
     );
   }
@@ -714,9 +731,13 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   }
   const low = Math.min(lower.band.low, upper.band.low);
   const high = Math.max(lower.band.high, upper.band.high);
+  // Above the free-flight curve's end the reference, and every bracket that uses it, is bounded, not measured.
+  const aboveLine = mach > FIG35_FREE_FLIGHT_END + 1e-12;
+  const boundedResult = bounded || aboveLine;
   const member =
     !swept &&
     !bounded &&
+    !aboveLine &&
     fins.sectionFamily === 'circular-arc' &&
     lower.thickness === upper.thickness &&
     lower.count === upper.count &&
@@ -755,12 +776,19 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         "and the zero member reaches down to RM L52E06's relief (0015 section 11)",
     );
   }
+  if (aboveLine) {
+    reasons.push(
+      `above M ${FIG35_FREE_FLIGHT_END}, where TN 3819 fig. 35's free-flight curve ends, the reference is ` +
+        `bounded, not measured: from the zero member's low end (F ${W1_RELIEF_LOW.toFixed(4)}) to its high end at M ` +
+        `${FIG35_FREE_FLIGHT_END} (0010 section 11, 0015 section 3.1)`,
+    );
+  }
   if (count === 3) reasons.push('three fins bracketed between two (or none) and four');
   if (xc > 0) reasons.push('the position bracketed between the stations of TN 2360 fig. 6');
   const label = member
     ? `estimated on component data: the rebuilt fins-on-base factor (0015), measured on ${lower.name} ` +
       '(TN 2360 fig. 6, TN 3819 figs. 33 and 35), tested only in the total'
-    : `${bounded ? W1_BOUNDED_PREFIX : W1_LABEL_PREFIX}${lower.name} and ${upper.name}; ` +
+    : `${boundedResult ? W1_BOUNDED_PREFIX : W1_LABEL_PREFIX}${lower.name} and ${upper.name}; ` +
       `${reasons.join('; ')}; not measured on these fins, tested only in the total`;
   return {
     mach,
@@ -769,8 +797,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     high,
     label,
     analogy: !member,
-    bounded,
-    singleReading: ff.filter((f) => !f.extrapolated).length < 2,
+    bounded: boundedResult,
+    singleReading: !aboveLine && ff.filter((f) => !f.extrapolated).length < 2,
     extrapolated: ff.some((f) => f.extrapolated),
     atRangeEnd: false,
     lower,
@@ -779,9 +807,10 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     tauEq: tr.tauEq,
     swept,
     // The zero member above M 1.5 rests on fig. 38(c), read once; moderate sweeps on NSWC's Table 2, read once.
+    // Above M 2.56 the bounded reference's low end is the zero member's, so it rests on fig. 38(c) too.
     secondReadingPending:
       moderate ||
-      ((lower.thickness === 0 || upper.thickness === 0) &&
+      ((lower.thickness === 0 || upper.thickness === 0 || aboveLine) &&
         !bounded &&
         mach >= W1_MACH_RANGE[0] - 1e-12) ||
       !L52J21A_FIG8.some((p) => p.reading === 'w1 second'),
