@@ -1056,3 +1056,33 @@ families. It applies to 43.5% of the population's cases and refuses 3 of
 the 20 totals served (all at Mach 1.8 to 3.0: 13 of 2000 rockets to 10;
 `docs/research/refusals/out/2026-10-21-plates-at-base/`, the library
 agreeing with the decomposition on all 1200 cases checked).
+
+**2026-10-21 (f): the fins' own-drag band refused below Mach 1.5** (the
+coordinator's decision on design record 0019's finding, branch
+`w7-fins`; the fin terms of W7). The fins' own-drag band, 1.01 to 1.59
+(0008 section 4.3), was formed on the ARCAS increments at Mach 1.5 to 2.96
+only, yet `src/total` applied it to fin friction and to the wave drag of
+sharp sections at every Mach number. The increments' shortfall against
+the model grows as the Mach number falls (fins' own over measured 0.49 at
+Mach 1.5, 0.85 at 2.96), so the band measured at 1.5 bounds nothing below
+it. Below Mach 1.5 fin friction and the wave drag of sharp sections (the
+exact 2D section drag times the linear 3D ratio, 0009, tested only
+through that band) are now refused (`fins-own-drag-mach`); a flat
+plate's faces, of no wave drag by the geometry, stay served. Before it
+the library served the wave drag of thin double wedges from where their
+2D shock attaches (from Mach 1.08 at t/c 0.015 on the hobby planform of 0016) with the ARCAS band: 109 of the 2000 population cases at Mach 1.0
+to 1.2 (0019, `docs/research/refusals/out/w7-plan.out` on `w7-fins`). No
+served total changes: every total below Mach 1.5 is refused by the body
+base (B1). It must land before or with W1, which opens the body base at
+Mach 1.0 to 1.5. Lifted only by a fin increment near Mach 1, read twice
+(RM L55H09 the candidate; 0019 section 3.1), and, for sharp sections, by
+the measured near-Mach-1 method of 0019 (F5). The band's upper end
+(2.96) is not enforced: the body base and the fins at the base refuse
+above Mach 3.0, and 2.96 to 3.0 is carried, as before. Coverage (the same
+population and run, `docs/research/refusals/out/2026-10-21-w7-guard/`,
+its cross-check against `src/total` agreeing on all 1200 cases): the
+outcomes are those of `out/2026-10-21-plates-at-base/` in every band; the
+refusal applies to every case below Mach 1.5 and is the sole blocker in
+none. In 0014's ranked order the totals at Mach 1.2 to 1.5 now wait for
+the fin terms of W7 as well as W2 (0% until W7; before, 16.3% after W2
+and 74.8% after W11).
