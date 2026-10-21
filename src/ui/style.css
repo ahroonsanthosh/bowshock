@@ -1689,3 +1689,551 @@ body.doc {
     margin-top: 28px;
   }
 }
+
+/* --------------------------------------------- the app (design record 0017) */
+
+body.app.app--rocket {
+  --panel-width: clamp(280px, 24vw, 340px);
+  --curve-width: clamp(300px, 27vw, 384px);
+}
+@media (min-width: 700px) {
+  body.app--rocket #panel-curve {
+    width: var(--curve-width);
+  }
+  body.app--rocket .readout {
+    max-width: calc(100vw - var(--panel-width) - var(--curve-width) - 6 * var(--inset));
+  }
+}
+
+.builder__units {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 4px 0 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-small);
+  background: var(--ground-raised);
+}
+.segmented__option {
+  min-height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.segmented__option[aria-checked='true'] {
+  background: var(--pressed);
+  color: var(--text);
+}
+.builder__heading {
+  margin: 16px 0 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--panel-border);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.field__length {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.field__length input {
+  flex: 0 1 110px;
+  min-width: 0;
+}
+.field__unit {
+  color: var(--muted);
+  font-size: 12px;
+}
+.field__cal {
+  margin-left: auto;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.field__overall {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.field__error {
+  color: var(--bad);
+  font-size: 12px;
+}
+.field__error[hidden] {
+  display: none;
+}
+.field__note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+input[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+
+/* A row of pictures to choose from (radio buttons). */
+.panel fieldset.pick {
+  margin: 0 0 12px;
+}
+.pick {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.pick legend {
+  grid-column: 1 / -1;
+}
+.pick__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.pick__option {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 4px 5px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-small);
+  background: var(--ground-raised);
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+}
+.pick__option:hover {
+  color: var(--text);
+  border-color: rgb(255 255 255 / 0.24);
+}
+.pick__input:checked + .pick__option {
+  color: var(--text);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.pick__input:focus-visible + .pick__option {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.pick__picture {
+  width: 44px;
+  height: 20px;
+  fill: #aab2bd;
+}
+.pick__input:checked + .pick__option .pick__picture {
+  fill: #e6e8eb;
+}
+
+/* The rocket's drawing. */
+.drawing {
+  margin: 4px 0;
+  padding: 8px 8px 6px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-small);
+  background: radial-gradient(120% 140% at 50% 0%, #1a2029, #0c1015);
+}
+.drawing__art {
+  display: grid;
+  gap: 4px;
+}
+.drawing__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 130px;
+}
+.drawing__scale {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.drawing__bar {
+  height: 6px;
+  border: 1px solid #aab2bd;
+  border-top: 0;
+}
+.drawing__empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.compute {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--panel-border);
+}
+
+/* The curve. */
+.curve__rocket {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.curve__notes:empty {
+  display: none;
+}
+.note {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--warn);
+  border-radius: 0 var(--radius-small) var(--radius-small) 0;
+  background: var(--warn-soft);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.note p {
+  margin: 0 0 8px;
+}
+.curve__chart {
+  margin: 0 -4px;
+}
+.chart {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  font-family: var(--font-mono);
+}
+.chart__grid {
+  stroke: var(--plot-grid);
+}
+.chart__axis {
+  stroke: rgb(255 255 255 / 0.4);
+}
+.chart__tick {
+  fill: var(--muted);
+  font-size: 10.5px;
+}
+.chart__tick--y {
+  text-anchor: end;
+}
+.chart__tick--x {
+  text-anchor: middle;
+}
+.chart__name {
+  fill: var(--text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+}
+.chart__name--sub {
+  font-size: 9px;
+}
+.chart__name--x {
+  fill: var(--muted);
+  font-weight: 500;
+  text-anchor: end;
+}
+.chart__lane {
+  fill: var(--bad);
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.chart__lane-line {
+  stroke: rgb(255 107 107 / 0.25);
+  stroke-dasharray: 3 3;
+}
+.chart__curve {
+  fill: none;
+  stroke: rgb(230 232 235 / 0.35);
+  stroke-width: 1.2;
+}
+.chart__selected {
+  stroke: rgb(255 255 255 / 0.28);
+  stroke-dasharray: 2 3;
+}
+.chart__band {
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.chart__mark {
+  stroke-width: 1.6;
+}
+.chart__point--ok .chart__band,
+.chart__point--ok .chart__mark {
+  stroke: var(--ok);
+}
+.chart__point--ok .chart__mark {
+  fill: var(--ok);
+}
+.chart__point--warn .chart__band,
+.chart__point--warn .chart__mark {
+  stroke: var(--warn);
+}
+.chart__point--warn .chart__mark {
+  fill: var(--warn);
+}
+.chart__point--bounded .chart__band,
+.chart__point--bounded .chart__mark {
+  stroke: #6ea8ff;
+}
+.chart__point--bounded .chart__mark {
+  fill: #6ea8ff;
+}
+.chart__point--bad .chart__mark {
+  fill: none;
+  stroke: var(--bad);
+  stroke-width: 2;
+}
+.chart__point--muted .chart__mark {
+  fill: none;
+  stroke: var(--muted);
+}
+.chart__mark--tick {
+  stroke-width: 2;
+}
+.chart__point .chart__mark--selected {
+  stroke: #fff;
+  stroke-width: 2.4;
+}
+.chart__solving {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 2;
+}
+.chart__hit {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.point {
+  margin: 6px 0 10px;
+}
+.point__head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.point__mach {
+  min-width: 80px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+.point__step {
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+}
+.point__head .status-word {
+  margin-left: auto;
+}
+.point__value {
+  margin: 6px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.point__cd {
+  font-size: 18px;
+  font-weight: 600;
+}
+.point__band {
+  color: var(--muted);
+}
+.point__sentence,
+.point__change,
+.point__without {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.point__change {
+  color: var(--text);
+  font-weight: 500;
+}
+.point__without {
+  color: var(--warn);
+  font-weight: 600;
+}
+.status-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.06);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status-word--ok {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.status-word--warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.status-word--bounded {
+  background: rgb(110 168 255 / 0.14);
+  color: #8bb9ff;
+}
+.status-word--bad {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+.curve__actions {
+  flex-wrap: wrap;
+}
+.curve__progress {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.curve__progress:empty {
+  display: none;
+}
+.curve-table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.curve-table th,
+.curve-table td {
+  padding: 3px 4px;
+  border-bottom: 1px solid var(--panel-border);
+  text-align: left;
+}
+.curve-table th {
+  color: var(--muted);
+  font-weight: 600;
+}
+.curve-table tr[aria-current='true'] {
+  background: var(--hover);
+}
+.curve-table__mach {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+
+/* The note on the airflow: what it shows. */
+.flow-note {
+  position: fixed;
+  z-index: 10;
+  left: calc(2 * var(--inset) + var(--panel-width) + 4px);
+  top: calc(var(--topbar-height) + var(--inset) + 104px);
+  max-width: 360px;
+  margin: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  pointer-events: none;
+}
+
+/* The details drawer. */
+.drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(560px, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--panel-border-strong);
+  background: var(--panel-solid);
+  color: var(--text);
+}
+.drawer::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+.drawer[open] {
+  display: flex;
+  flex-direction: column;
+}
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.drawer__header h2 {
+  margin: 0;
+  font-size: 15px;
+}
+.drawer__body {
+  padding: 12px 16px 28px;
+  overflow-y: auto;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.drawer__body h3 {
+  margin: 16px 0 8px;
+  font-size: 13px;
+}
+.drawer__body h3:first-child {
+  margin-top: 0;
+}
+.details__blocks > * + * {
+  margin-top: 8px;
+}
+.details__blocks .ok {
+  color: var(--ok);
+}
+.details__blocks .warn {
+  color: var(--warn);
+}
+.details__blocks .scope {
+  color: var(--muted);
+}
+.details__blocks p.result {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 699.98px) {
+  .flow-note {
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: calc(100dvh - var(--sheet-top) + 58px);
+    max-width: none;
+    font-size: 11px;
+  }
+  .pinned__value {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}

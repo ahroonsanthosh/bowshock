@@ -9,7 +9,7 @@ import monoLicence from './fonts/JetBrainsMono-OFL.txt?url';
 
 export const REPOSITORY = 'https://github.com/ahroonsanthosh/bowshock';
 
-export type PageId = 'home' | 'drag' | 'flow' | 'ramp' | 'shock-tube';
+export type PageId = 'home' | 'about' | 'drag' | 'flow' | 'ramp' | 'shock-tube';
 
 export interface MenuItem {
   readonly label: string;
@@ -34,6 +34,7 @@ export interface MenuGroup {
 /** Each page's path from the site's root. */
 const PATHS: Readonly<Record<PageId, string>> = {
   home: 'index.html',
+  about: 'about.html',
   drag: 'demos/nose-drag.html',
   flow: 'demos/flow-view.html',
   ramp: 'demos/supersonic-ramp.html',
@@ -58,7 +59,8 @@ export function siteMenus(root: string, current: PageId): MenuGroup[] {
       id: 'rocket',
       label: 'Rocket',
       items: [
-        page('drag', 'Nose wave drag and total drag', 'With their bands, labels and status'),
+        page('home', 'Drag curve', 'Your rocket: C_D against Mach number, with bands'),
+        page('drag', 'All inputs (calibres)', 'Every input of the drag model, one Mach number'),
         page('flow', 'Live flow', "The Basic Finner's nose, solved and drawn as it converges"),
       ],
     },
@@ -74,7 +76,7 @@ export function siteMenus(root: string, current: PageId): MenuGroup[] {
       id: 'about',
       label: 'About',
       items: [
-        page('home', 'bowshock', 'What it is, and your GPU'),
+        page('about', 'bowshock', 'What it is, and your GPU'),
         {
           label: 'What is validated',
           detail: 'The claims, each with its measured accuracy (README)',
