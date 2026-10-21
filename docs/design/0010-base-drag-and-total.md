@@ -822,8 +822,12 @@ The gate has passed at every shot (section 4.2), so 0008 section 6.4's
 claim class opens, and no more:
 
 - **May be claimed:** total zero-incidence, power-off C_D at **Mach 1.8 to
-  3.0** for the Basic Finner's class (a sharp-nosed cylindrical-afterbody
-  body of L/d 10; four rectangular fins of 1 cal chord and span ending at
+  2.15** (narrowed from 3.0 on 2026-10-20, since above M 2.15 the line of
+  TN 3819 fig. 35 that the fins-on-base factor was read from, by both
+  readings of section 1.3, is one of Love's estimates, not the free-flight
+  curve, which ends near M 2.56) for the Basic Finner's class (a
+  sharp-nosed cylindrical-afterbody body of L/d 10; four rectangular fins
+  of 1 cal chord and span ending at
   the base; a single-wedge section with a blunt trailing edge 0.08 cal
   thick across the span and a 0.004 cal leading-edge radius; Reynolds
   number 1.2e7 to 2.0e7 on length; free flight), with the model-form band,
@@ -847,7 +851,8 @@ claim class opens, and no more:
   it and leaves every residual where it was.
 - **May not be claimed:** anything outside that class (0008 section 6.4):
   sharp-edged fins at the base, Mach 1.5 to 1.8 (no shot), Mach 1 to 1.5
-  (reported, refused here), fins clear of the base, other fin sections,
+  (reported, refused here), Mach 2.15 to 3.0 (the fins-on-base factor
+  there rests on a prediction), fins clear of the base, other fin sections,
   thicknesses or planforms, other noses, fineness ratios or Reynolds
   numbers. Nor a tolerance narrower than the gate's: the pass is at -19.5%
   to -26.2% and +23.1% to +27.4% as re-derived after round 5 (+26.5% to
