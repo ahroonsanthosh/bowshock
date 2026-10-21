@@ -64,8 +64,9 @@ function basicFinner(): RocketDesign {
 
 /**
  * A 54 mm minimum-diameter high-power rocket: a 5-caliber tangent ogive,
- * four swept fins of constant chord cut from 1/4 in (6.35 mm) sheet and
- * bevelled at both edges, at the base; flown to Mach 2.4 at 1,200 m.
+ * four rectangular fins cut from 1/4 in (6.35 mm) sheet, their leading
+ * edges rounded and their trailing edges square, at the base; flown to
+ * Mach 2.4 at 1,200 m.
  */
 function highPower54(): RocketDesign {
   const d = 54 * MM;
@@ -84,13 +85,13 @@ function highPower54(): RocketDesign {
           rootChord: chord,
           tipChord: chord,
           span: 50 * MM,
-          sweepLength: 42 * MM,
+          sweepLength: 0,
         },
         thickness: 6.35 * MM,
         section: {
           kind: 'flat',
-          leadingEdge: { kind: 'bevelled', length: 20 * MM },
-          trailingEdge: { kind: 'bevelled', length: 20 * MM },
+          leadingEdge: { kind: 'rounded' },
+          trailingEdge: { kind: 'square' },
         },
         rootLeadingEdge: nose + tube - chord,
         rotation: 0,
@@ -159,7 +160,7 @@ export const PRESETS: readonly Preset[] = [
   {
     id: 'example-54',
     label: 'Example: 54 mm, four fins',
-    detail: 'A high-power rocket with bevelled fins, not a real rocket',
+    detail: 'A high-power rocket with flat sheet fins, not a real rocket',
     example: true,
     design: highPower54(),
   },

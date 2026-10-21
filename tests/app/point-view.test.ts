@@ -63,7 +63,10 @@ describe('a point as shown', { timeout: 120_000 }, () => {
           `Total C_D = ${view.value}, model-form band ${view.band} (${view.percent})`,
         ),
       ).toBe(true);
-      expect(view.status.word).toBe(mach <= 2.15 ? 'Inside the tested class' : 'Estimate');
+      // Inside the class (to 2.15), outside it, and above Mach 2.56 with the fins-on-base factor bounded.
+      expect(view.status.word).toBe(
+        mach <= 2.15 ? 'Estimate, tested class' : mach <= 2.56 ? 'Estimate' : 'Estimate, bounded',
+      );
       expect(view.change).toBeNull();
     }
   });
@@ -74,10 +77,10 @@ describe('a point as shown', { timeout: 120_000 }, () => {
     expect([v.value, v.band, v.percent]).toEqual([null, null, null]);
     expect(v.status.word).toBe('No number');
     expect(v.status.sentence).toBe(
-      "The drag here cannot be given to a known accuracy: a rounded leading edge's drag is " +
-        'measured only at Mach 1.49 to 3.0 and for edge sizes within its data.',
+      'The drag here cannot be given to a known accuracy: the drag behind the base is known ' +
+        'from measurements only at other speeds.',
     );
-    expect(v.change).toBe('To get a number: bevelled leading edges.');
+    expect(v.change).toBe('Nothing about the rocket changes this: this speed has no number yet.');
   });
 
   it('a nose without a band: the finer grid suggested only where it is offered', async () => {

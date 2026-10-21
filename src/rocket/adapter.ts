@@ -51,11 +51,6 @@ export type DesignForm =
 export interface AdapterOptions {
   /** The user chose "Compute without it" for the parts bowshock does not model. */
   readonly without: boolean;
-  /**
-   * Whether the logic takes flat plates of uniform thickness (SectionInput
-   * 'flat-plate', on the w34-fin-edges branch until it reaches main).
-   */
-  readonly flatPlates?: boolean;
 }
 
 /** Relative difference within which two diameters are the same (rounding in a file). */
@@ -158,7 +153,6 @@ const TAPERED: Omit<NotModelled, 'feature'> = {
 function sectionOf(
   fins: FinSetDesign,
   d: number,
-  flatPlates: boolean,
   flags: NotModelled[],
 ): { section: SectionInput; leadingEdgeRadius: number } | null {
   const s = fins.section;
@@ -205,17 +199,16 @@ function sectionOf(
         };
       }
       if (le.kind !== 'bevelled' && te.kind !== 'bevelled') {
-        if (!flatPlates) {
-          flags.push({
-            feature: `flat fins with ${le.kind} leading and ${te.kind} trailing edges`,
-            reason:
-              'the drag logic takes flat plates of uniform thickness from its next update ' +
-              '(design record 0016), not yet on this build',
-            change: 'bevelled edges',
-          });
-          return null;
-        }
-        return plateSection(t, le.kind, te.kind);
+        // A flat plate of uniform thickness, on any planform: the logic's own (design record 0016).
+        return {
+          section: {
+            kind: 'flat-plate',
+            thickness: t,
+            leadingEdge: le.kind,
+            trailingEdge: te.kind,
+          },
+          leadingEdgeRadius: 0,
+        };
       }
       flags.push({
         feature:
@@ -232,20 +225,6 @@ function sectionOf(
       return null;
     }
   }
-}
-
-/**
- * A flat plate as the logic takes it on the w34-fin-edges branch: its
- * thickness absolute (here in calibres), its edges as cut. Typed loosely
- * until the branch reaches main, where SectionInput has this member.
- */
-function plateSection(
-  thickness: number,
-  leadingEdge: 'square' | 'rounded',
-  trailingEdge: 'square' | 'rounded',
-): { section: SectionInput; leadingEdgeRadius: number } {
-  const plate = { kind: 'flat-plate', thickness, leadingEdge, trailingEdge };
-  return { section: plate as unknown as SectionInput, leadingEdgeRadius: 0 };
 }
 
 /**
@@ -282,10 +261,7 @@ export function designForm(
   }
   const fins = design.finSets[0];
   const planform = fins === undefined ? null : planformOf(fins, flags);
-  const section =
-    fins === undefined || planform === null
-      ? null
-      : sectionOf(fins, d, options.flatPlates ?? false, flags);
+  const section = fins === undefined || planform === null ? null : sectionOf(fins, d, flags);
   const excludable = excludableParts(design);
   if (flags.length > 0 || fins === undefined || planform === null || section === null) {
     return { kind: 'not-modelled', features: flags, excludable };

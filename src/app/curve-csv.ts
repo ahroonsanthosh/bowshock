@@ -37,7 +37,8 @@ export function csvRow(point: CurvePoint): string {
       const t = r.view.total;
       const [low, high] = outward(t.low, t.high, 4);
       const without = withoutText(r.without);
-      const claim = r.view.claim.text;
+      const c = r.view.claim;
+      const claim = c.reasons.length === 0 ? c.text : `${c.text} Because: ${c.reasons.join('; ')}.`;
       return row(
         t.cd.toFixed(4),
         low,

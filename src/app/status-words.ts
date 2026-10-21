@@ -14,7 +14,7 @@
 import type { BaseRefusalReason } from '../base/refusal';
 import type { FinRefusalReason } from '../fins/refusal';
 import type { ComponentRefusal } from '../total/total-drag';
-import type { Claim } from './total-drag';
+import { BOUNDED_REASON, CLASS_CLAIM, type Claim } from './total-drag';
 
 /** The colour family of a status: green, amber, blue, red, grey. */
 export type Tone = 'ok' | 'warn' | 'bounded' | 'bad' | 'muted';
@@ -29,25 +29,53 @@ export interface StatusWords {
   readonly mark: Mark;
 }
 
-/** Each claim the logic makes, in plain words. */
-export const CLAIM_WORDS: Readonly<Record<Claim['kind'], StatusWords>> = {
-  validated: {
-    word: 'Inside the tested class',
-    sentence:
-      'This rocket and speed lie inside the one class whose total drag passed a test against ' +
-      "flight measurements it was not tuned on (the Basic Finner); that test's tolerance is wide.",
-    tone: 'ok',
-    mark: 'circle',
-  },
-  estimate: {
-    word: 'Estimate',
-    sentence:
-      "Each part is computed inside its own band's range, but no measurement of a whole rocket " +
-      "like this checks the total, and the parts' bands are estimates here.",
-    tone: 'warn',
-    mark: 'diamond',
-  },
+/**
+ * The logic's claims in plain words. Today it makes one kind, an estimate,
+ * not validated (the Basic Finner's validated claim is suspended, design
+ * record 0010 section 11.7), said three ways by its text and reasons:
+ * outside the Basic Finner's class (ESTIMATE_CLAIM); inside it, its claim
+ * suspended (CLASS_CLAIM); and with a part bounded, not measured
+ * (BOUNDED_REASON among its reasons).
+ */
+export const ESTIMATE_WORDS: StatusWords = {
+  word: 'Estimate',
+  sentence:
+    "Each part is computed inside its own band's range, but no measurement of a whole rocket " +
+    "like this checks the total, and the parts' bands are estimates here.",
+  tone: 'warn',
+  mark: 'diamond',
 };
+export const CLASS_WORDS: StatusWords = {
+  word: 'Estimate, tested class',
+  sentence:
+    'An estimate: this rocket and speed lie inside the one class tested in free flight (the ' +
+    "Basic Finner), but that test's claim is suspended until a corrected part is tested again.",
+  tone: 'warn',
+  mark: 'diamond',
+};
+export const BOUNDED_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    "An estimate with one part bounded, not measured: the fins' effect on the base drag, whose " +
+    'band runs from no effect to its value at the last speed measured.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
+/** Each kind of claim, worded: a new kind fails the build here until it is. */
+const CLAIM_KINDS: Readonly<Record<Claim['kind'], (claim: Claim) => StatusWords>> = {
+  estimate: (claim) =>
+    claim.reasons.includes(BOUNDED_REASON)
+      ? BOUNDED_WORDS
+      : claim.text === CLASS_CLAIM
+        ? CLASS_WORDS
+        : ESTIMATE_WORDS,
+};
+
+/** A claim of the logic in plain words. */
+export function claimWords(claim: Claim): StatusWords {
+  return CLAIM_KINDS[claim.kind](claim);
+}
 
 /** A point while its nose is still being solved: the latest grid's value, no band. */
 export function provisionalWords(grid: number, grids: number): StatusWords {
@@ -156,6 +184,18 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     reason: 'with fins at the base, the base drag is measured with four fins only',
     change: 'four fins, or fins a root chord or more ahead of the base',
   }),
+  'fin-sweep': () => ({
+    reason:
+      'with fins at the base, the base drag is measured with unswept fins only (a tapered fin ' +
+      'has a swept edge)',
+    change: 'unswept fins of constant chord, or fins a root chord or more ahead of the base',
+  }),
+  'rounded-trailing-edge': () => ({
+    reason:
+      "a rounded trailing edge's drag is not shown to be below a square edge's, so it cannot " +
+      'be bounded yet',
+    change: 'square or bevelled trailing edges',
+  }),
   'fin-thickness': () => ({
     reason:
       'with fins at the base, the base drag is measured for fins 5% to 10% as thick as their ' +
@@ -213,9 +253,13 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
   }),
   'leading-edge-range': () => ({
     reason:
-      "a rounded leading edge's drag is measured only at Mach 1.49 to 3.0 and for edge sizes " +
-      'within its data',
+      "a rounded leading edge's drag is measured only where the Mach number across the edge is " +
+      '1.0 to 3.0 and for edge sizes within its data',
     change: 'bevelled leading edges',
+  }),
+  'square-leading-edge': () => ({
+    reason: "a square-cut leading edge's drag cannot yet be bounded from measurements",
+    change: 'rounded or bevelled leading edges',
   }),
   'leading-edge-geometry': () => ({
     reason: 'a rounded leading edge is modelled only on a wedge-shaped fin, not on this one',

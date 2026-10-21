@@ -261,7 +261,7 @@ describe('what is named, not mapped', { timeout: 60_000 }, () => {
     ).toEqual(['tapered diamond fins']);
   });
 
-  it('pairs of edges with no section; flat plates until the logic takes them', () => {
+  it("pairs of edges with no section; flat plates of uniform thickness to the logic's plates", () => {
     const flat = (le: 'square' | 'rounded' | 'bevelled', te: 'square' | 'rounded' | 'bevelled') =>
       withFins({
         section: {
@@ -279,10 +279,7 @@ describe('what is named, not mapped', { timeout: 60_000 }, () => {
     expect(named(flat('rounded', 'bevelled'))).toEqual([
       'a rounded leading edge with a bevelled trailing edge',
     ]);
-    expect(named(flat('rounded', 'square'))).toEqual([
-      'flat fins with rounded leading and square trailing edges',
-    ]);
-    // With the logic's flat plates: the plate, its thickness absolute, in calibres, on any taper.
+    // The logic's flat plate (design record 0016): its thickness absolute, in calibres, on any taper.
     const plate = designForm(
       withFins({
         ...flat('rounded', 'square').finSets[0]!,
@@ -295,7 +292,7 @@ describe('what is named, not mapped', { timeout: 60_000 }, () => {
         },
       }),
       2,
-      { without: false, flatPlates: true },
+      NO,
     );
     expect(formFor(plate).section).toEqual({
       kind: 'flat-plate',
@@ -370,10 +367,15 @@ describe('the presets', { timeout: 60_000 }, () => {
 
   it('the 98 mm example asks about its rail buttons, and has no number today', () => {
     const design = preset('example-98').design;
-    const result = designForm(design, 1.6, NO);
-    expect(result.kind).toBe('not-modelled');
-    if (result.kind === 'not-modelled')
-      expect(result.excludable).toEqual([{ part: 'the 2 rail buttons' }]);
+    expect(designForm(design, 1.6, NO)).toEqual({
+      kind: 'choose',
+      excludable: [{ part: 'the 2 rail buttons' }],
+    });
+    // Computed without them, the logic refuses it at every Mach number, with its reasons.
+    for (const mach of [1, 1.6]) {
+      const form = formFor(designForm(design, mach, { without: true }));
+      expect(totalDragView(form, { kind: 'pending' }).kind).toBe('refused');
+    }
   });
 
   it('every preset is labelled, and the examples say they are examples', () => {

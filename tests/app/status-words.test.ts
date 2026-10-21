@@ -7,8 +7,10 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+  BOUNDED_WORDS,
   changeText,
-  CLAIM_WORDS,
+  CLASS_WORDS,
+  ESTIMATE_WORDS,
   noNumberWords,
   noseWords,
   provisionalWords,
@@ -26,7 +28,9 @@ const words = (text: string) => text.split(/\s+/).filter((w) => w !== '').length
 describe('the words', () => {
   it('one sentence of at most 32 words for every status, and never "validated"', () => {
     const all = [
-      ...Object.values(CLAIM_WORDS),
+      ESTIMATE_WORDS,
+      CLASS_WORDS,
+      BOUNDED_WORDS,
       provisionalWords(2, 4),
       WAITING,
       STOPPED,
@@ -40,11 +44,17 @@ describe('the words', () => {
   });
 
   it('a mark and a colour for each, the claims apart from the provisional and the refused', () => {
-    expect(CLAIM_WORDS.validated.mark).toBe('circle');
-    expect(CLAIM_WORDS.estimate.mark).toBe('diamond');
+    expect(ESTIMATE_WORDS.mark).toBe('diamond');
+    expect(CLASS_WORDS.mark).toBe('diamond');
+    expect(BOUNDED_WORDS.mark).toBe('square');
     expect(provisionalWords(1, 4).mark).toBe('hollow');
     expect(noNumberWords('x').mark).toBe('cross');
-    expect(new Set(Object.values(CLAIM_WORDS).map((w) => w.tone)).size).toBe(2);
+    // Every claim is an estimate today: none of them green.
+    expect([ESTIMATE_WORDS, CLASS_WORDS, BOUNDED_WORDS].map((w) => w.tone)).toEqual([
+      'warn',
+      'warn',
+      'bounded',
+    ]);
   });
 
   it("the nose's ends; a finer grid suggested only where one is offered", () => {
@@ -76,18 +86,9 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     return view.kind === 'refused' ? view.refusals : [];
   };
 
-  it("the Basic Finner at Mach 1.4: the base, the trailing edges' base, the leading edges", () => {
+  it("the Basic Finner at Mach 1.4: the base and the trailing edges' base", () => {
     const plain = refusalsAt('basic-finner', 1.4).map((r) => [r.component, refusalWords(r)]);
     expect(plain).toEqual([
-      [
-        'fin leading edges',
-        {
-          reason:
-            "a rounded leading edge's drag is measured only at Mach 1.49 to 3.0 and for edge " +
-            'sizes within its data',
-          change: 'bevelled leading edges',
-        },
-      ],
       [
         'body base',
         {
@@ -105,11 +106,18 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     ]);
   });
 
-  it('Mach 1.0: the fins’ method does not apply', () => {
+  it("Mach 1.0: the fins' method does not apply; the rounded edges' range", () => {
     const fins = refusalsAt('basic-finner', 1).find((r) => r.component === 'fin wave drag')!;
     expect(refusalWords(fins)).toEqual({
       reason: "at Mach 1 and below the fins' method does not apply",
       change: '',
+    });
+    const edges = refusalsAt('basic-finner', 1).find((r) => r.component === 'fin leading edges')!;
+    expect(refusalWords(edges)).toEqual({
+      reason:
+        "a rounded leading edge's drag is measured only where the Mach number across the edge " +
+        'is 1.0 to 3.0 and for edge sizes within its data',
+      change: 'bevelled leading edges',
     });
   });
 

@@ -13,7 +13,7 @@ import type { CurvePoint } from './curve';
 import {
   changeText,
   chooseWords,
-  CLAIM_WORDS,
+  claimWords,
   noNumberWords,
   noseWords,
   provisionalWords,
@@ -97,7 +97,7 @@ export function pointView(point: CurvePoint, finer: boolean): PointView {
       value: t.cd.toFixed(DIGITS),
       band: `${low} to ${high}`,
       percent: outwardPercent(t.low / t.cd - 1, t.high / t.cd - 1),
-      status: CLAIM_WORDS[r.view.claim.kind],
+      status: claimWords(r.view.claim),
       change: null,
       without: withoutText(r.without),
     };

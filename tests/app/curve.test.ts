@@ -17,7 +17,7 @@ import {
   type NoseSolver,
 } from '../../src/app/curve';
 import { CSV_HEADER, csvField, csvRow, curveCsv } from '../../src/app/curve-csv';
-import { totalDragView } from '../../src/app/total-drag';
+import { CLASS_CLAIM, totalDragView } from '../../src/app/total-drag';
 import { noseStateOf } from '../../src/app/total-drag-display';
 import type { Body } from '../../src/geometry/body';
 import { designForm } from '../../src/rocket/adapter';
@@ -136,7 +136,9 @@ describe('the Basic Finner with a stand-in nose', { timeout: 120_000 }, () => {
       const view = totalDragView(form.form, noseStateOf(outcome)!);
       expect(p.state.result).toEqual({ kind: 'total', view, without: [] });
       if (p.state.result.kind === 'total') {
-        expect(p.state.result.view.claim.kind).toBe(p.mach <= 2.15 ? 'validated' : 'estimate');
+        // An estimate everywhere while the Basic Finner's claim is suspended; inside its class, said so.
+        expect(p.state.result.view.claim.kind).toBe('estimate');
+        expect(p.state.result.view.claim.text === CLASS_CLAIM).toBe(p.mach <= 2.15);
       }
     }
   });
@@ -264,7 +266,12 @@ describe('the CSV', { timeout: 120_000 }, () => {
     const t = at2.state.result.view.total;
     const row = lines[4 + 5]!;
     expect(row.startsWith(`2.00,${t.cd.toFixed(4)},`)).toBe(true);
-    expect(row).toMatch(/,validated,"Validated on the Basic Finner: /);
+    expect(row).toMatch(
+      /,estimate,"Estimate, not validated: this case lies inside the Basic Finner's class/,
+    );
+    expect(row).toMatch(
+      /Because: the fins-on-base factor was corrected after the Basic Finner gate/,
+    );
     const [, , low, high] = row.split(',');
     expect(Number(low)).toBeLessThanOrEqual(t.low);
     expect(Number(high)).toBeGreaterThanOrEqual(t.high);

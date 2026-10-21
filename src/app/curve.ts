@@ -122,8 +122,6 @@ export interface CurveOptions {
   readonly step: number;
   /** The finest refinement of the nose's grids (8: 160 cells across, four grids). */
   readonly finest: number;
-  /** Whether the logic takes flat plates (main, once w34-fin-edges is merged). */
-  readonly flatPlates?: boolean;
   /** No WebGPU: every point needing the nose is refused with that reason. */
   readonly noGpu?: boolean;
 }
@@ -238,10 +236,7 @@ export class CurveRun {
   private initial(mach: number): CurvePoint {
     const blank = { mach, nose: null, seconds: 0, cellUpdates: 0 };
     const o = this.options;
-    const asked = designForm(o.design, mach, {
-      without: o.without,
-      ...(o.flatPlates === undefined ? {} : { flatPlates: o.flatPlates }),
-    });
+    const asked = designForm(o.design, mach, { without: o.without });
     if (asked.kind !== 'form') {
       this.forms.push(null);
       const result: PointResult =
@@ -288,7 +283,6 @@ export class CurveRun {
     if (view.kind === 'total') {
       const asked = designForm(this.options.design, this.points[k]!.mach, {
         without: this.options.without,
-        ...(this.options.flatPlates === undefined ? {} : { flatPlates: this.options.flatPlates }),
       });
       return { kind: 'total', view, without: asked.kind === 'form' ? asked.without : [] };
     }
