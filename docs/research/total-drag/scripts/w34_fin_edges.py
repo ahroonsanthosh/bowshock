@@ -1,0 +1,520 @@
+"""First readings for the fin edges of flat plates (0014 W3, W4, W11; design
+record 0016), and the computations behind data/fin_edges_w34.md.
+
+Writes data/fin_edges_w34.csv (every value read, with its figure, method and
+reading error) and prints the computed results (data/fin_edges_w34_output.txt).
+Run from the repository root:  python3 -I docs/research/total-drag/scripts/w34_fin_edges.py
+Pure Python (math, csv). The readings were made with the w34_*.py tools on
+page images extracted with pdfimages (300 ppi scans) and deskewed where a
+long grid line showed a tilt (w34_deskew.py)."""
+
+import csv
+import math
+import os
+import sys
+
+G = 1.4
+HERE = os.path.dirname(os.path.abspath(__file__))
+DATA = os.path.join(HERE, '..', 'data')
+
+
+def p0_over_p(m):
+    """Stagnation pressure over static: Rayleigh's pitot formula above Mach 1, isentropic below."""
+    if m >= 1:
+        p2 = 1 + 2 * G / (G + 1) * (m * m - 1)
+        m2s = (1 + 0.5 * (G - 1) * m * m) / (G * m * m - 0.5 * (G - 1))
+        return p2 * (1 + 0.5 * (G - 1) * m2s) ** (G / (G - 1))
+    return (1 + 0.5 * (G - 1) * m * m) ** (G / (G - 1))
+
+
+def cp0(m):
+    return (p0_over_p(m) - 1) / (0.5 * G * m * m)
+
+
+def front(points):
+    """Front side, 0 to 90 deg, trapezoid rule: int P cos(theta) dtheta, on the diameter."""
+    s = 0.0
+    for (t0, p0), (t1, p1) in zip(points, points[1:]):
+        if t1 > 90 + 1e-9:
+            break
+        s += 0.5 * (p0 * math.cos(math.radians(t0)) + p1 * math.cos(math.radians(t1))) * math.radians(t1 - t0)
+    return s
+
+
+# --------------------------------------------------------------------------
+# TN 2960 (Gowen and Perkins 1953, NTRS 19930084018). P against theta, deg.
+# Pages are PDF pages; calibrations in data/fin_edges_w34.md section 2.
+
+TN2960 = {
+    # fig. 5(a), PDF p. 18, deskewed -0.380 deg; faired curves by eye on the ruler crop, +-0.03
+    '5(a) circles, M 0.05, R 3.14e5': (0.05, 'eye, faired curve', 0.03, [
+        (0, 1.00), (5, 0.97), (10, 0.90), (15, 0.80), (20, 0.65), (25, 0.45), (30, 0.20), (35, -0.03),
+        (40, -0.27), (45, -0.55), (50, -0.80), (55, -0.97), (60, -1.06), (65, -1.10), (70, -1.07),
+        (75, -0.97), (80, -0.91), (85, -0.90), (90, -0.89)]),
+    '5(a) squares, M 0.06 to 0.07, R 4.26e5': (0.065, 'eye, faired curve', 0.03, [
+        (0, 1.00), (5, 0.95), (10, 0.88), (15, 0.72), (20, 0.52), (25, 0.27), (30, 0.00), (35, -0.30),
+        (40, -0.62), (45, -0.95), (50, -1.30), (55, -1.62), (60, -1.88), (65, -2.12), (70, -2.30),
+        (75, -2.42), (80, -2.50), (85, -2.52), (90, -2.51)]),
+    # fig. 5(b), PDF p. 19 (tilt 0.04 deg, not deskewed); four curves offset by 0.4 each, the
+    # offsets removed; guided column scans (median over +-0.6 deg), 0 deg by eye; +-0.02 (+-0.04 at 55 to 90)
+    '5(b) M 0.7': (0.70, 'guided column scan', 0.02, [
+        (0, 1.12), (5, 1.103), (15, 0.959), (25, 0.706), (35, 0.337), (45, -0.120), (55, -0.649),
+        (65, -0.967), (75, -1.17), (85, -1.159), (90, -1.18)]),
+    '5(b) M 0.6': (0.60, 'guided column scan', 0.02, [
+        (0, 1.10), (5, 1.064), (15, 0.915), (25, 0.639), (35, 0.235), (45, -0.273), (50, -0.549),
+        (55, -0.827), (60, -0.996), (65, -1.128), (70, -1.176), (80, -1.226), (85, -1.185), (90, -1.139)]),
+    '5(b) M 0.5': (0.50, 'guided column scan', 0.02, [
+        (0, 1.06), (5, 1.03), (15, 0.872), (25, 0.528), (35, 0.104), (40, -0.142), (45, -0.385),
+        (50, -0.653), (55, -0.919), (60, -1.013), (65, -1.148), (70, -1.171), (80, -1.216), (85, -1.22),
+        (90, -1.13)]),
+    '5(b) M 0.3': (0.30, 'guided column scan', 0.02, [
+        (0, 1.03), (5, 0.994), (15, 0.84), (25, 0.474), (35, 0.043), (40, -0.218), (45, -0.443),
+        (50, -0.666), (60, -1.019), (70, -1.17), (80, -1.17), (90, -1.05)]),
+    # fig. 5(d), PDF p. 21, deskewed +0.685 deg; the faired curve, guided scans, +-0.02 (+-0.04
+    # where a symbol covers the curve: 15, 40, 70 deg); 0 deg as drawn (the pitot line)
+    '5(d) faired curve, M 1.98': (1.98, 'guided column scan', 0.02, [
+        (0, 1.67), (5, 1.646), (10, 1.630), (15, 1.60), (20, 1.484), (25, 1.391), (30, 1.284),
+        (35, 1.170), (40, 1.008), (45, 0.860), (50, 0.766), (55, 0.638), (60, 0.483), (65, 0.387),
+        (70, 0.284), (75, 0.146), (80, 0.077), (85, -0.068), (90, -0.101)]),
+    # fig. 5(d) symbols by eye on 2x ruler crops (+-0.01); theta 0 at Rayleigh's pitot coefficient
+    '5(d) circles, R 13.2e5': (1.98, 'eye, symbols', 0.01, [
+        (0, None), (2, 1.67), (11, 1.61), (17, 1.52), (26, 1.38), (32, 1.21), (41, 1.00), (47, 0.80),
+        (57, 0.64), (62, 0.41), (72, 0.24), (78, 0.08), (87, -0.03), (92, -0.16)]),
+    '5(d) squares, R 5.5e5': (1.98, 'eye, symbols', 0.01, [
+        (0, None), (14, 1.57), (29, 1.33), (44, 0.95), (59, 0.46), (74, 0.12), (89, -0.11), (92, -0.13)]),
+    '5(d) diamonds, R 1.3e5': (1.98, 'eye, symbols (pairs averaged at 44 and 89 deg)', 0.01, [
+        (0, None), (15, 1.58), (29, 1.35), (44, 0.92), (59, 0.56), (75, 0.18), (89, -0.12), (92, -0.14)]),
+    # fig. 5(e), PDF p. 22, deskewed +0.389 deg; guided column scans between the symbols, +-0.02
+    '5(e) M 0.06 (R above critical)': (0.06, 'guided column scan', 0.02, [
+        (0, 1.00), (5, 0.939), (15, 0.686), (25, 0.275), (30, 0.029), (35, -0.265), (45, -0.923),
+        (55, -1.535), (65, -2.038), (75, -2.409), (85, -2.534), (90, -2.532)]),
+    '5(e) M 0.70': (0.70, 'guided column scan', 0.02, [
+        (0, 1.15), (5, 1.119), (15, 0.971), (25, 0.700), (35, 0.326), (45, -0.144), (55, -0.641),
+        (65, -0.995), (75, -1.178), (85, -1.214), (90, -1.21)]),
+    '5(e) M 1.49': (1.49, 'guided column scan between symbols', 0.02, [
+        (0, None), (3, 1.525), (9, 1.488), (11, 1.473), (20, 1.363), (22, 1.329), (24, 1.295), (26, 1.259),
+        (34, 1.087), (36, 1.039), (38, 0.987), (40, 0.926), (49, 0.676), (51, 0.612), (53, 0.544),
+        (56, 0.437), (64, 0.213), (66, 0.162), (68, 0.114), (70, 0.066), (79, -0.131), (81, -0.171),
+        (83, -0.209), (86, -0.260), (90, -0.30)]),
+    '5(e) M 2.90': (2.90, 'guided column scan between symbols', 0.02, [
+        (0, None), (3, 1.746), (6, 1.718), (9, 1.686), (11, 1.664), (20, 1.559), (22, 1.526), (24, 1.484),
+        (26, 1.452), (34, 1.286), (36, 1.240), (38, 1.197), (40, 1.144), (49, 0.879), (51, 0.808),
+        (53, 0.767), (56, 0.683), (64, 0.437), (66, 0.393), (68, 0.350), (70, 0.308), (79, 0.154),
+        (81, 0.128), (83, 0.103), (86, 0.074), (90, 0.03)]),
+}
+
+# --------------------------------------------------------------------------
+# RM A55H31 (Goodwin, Creager and Winkler 1956, NTRS 19930088843).
+# fig. 12, PDF p. 41, deskewed +0.212 deg: front-side pressure drag, yawed over
+# unyawed, symbol centres by eye on 2x ruler crops, +-0.004 in the ratio, +-0.2 deg.
+A55_FIG12 = [
+    ('present tests, M 3.9', 3.9, 30.1, 0.700), ('present tests, M 3.9', 3.9, 45.1, 0.410),
+    ('present tests, M 3.9', 3.9, 60.1, 0.170),
+    ('ref. 1, M 6.9', 6.86, 14.4, 0.907), ('ref. 1, M 6.9', 6.86, 29.6, 0.665),
+    ('ref. 1, M 6.9', 6.86, 45.2, 0.367), ('ref. 1, M 6.9', 6.86, 59.9, 0.131),
+    ('ref. 1, M 6.9', 6.86, 75.5, 0.023),
+]
+# The tests' yaws as the reports state them: the present tests (p. 10, fig. 10's legend) and
+# reference 1 (fig. 10's legend; 75.1 from TN 3861 fig. 5, alpha 14.9 deg), keyed by (M, yaw / 15).
+A55_STATED_YAW = {(3.9, 2): 30, (3.9, 3): 45, (3.9, 4): 60, (6.86, 1): 14.3, (6.86, 2): 29.6,
+                  (6.86, 3): 45.1, (6.86, 4): 59.8, (6.86, 5): 75.1}
+# fig. 11, PDF p. 40, deskewed -0.322 deg: stagnation-line pressure over the stream's
+# impact pressure, p_x=0 / p_t2, symbol centres on 2x crops, +-0.004.
+A55_FIG11 = [
+    ('present tests, M 3.9', 3.9, 30, 0.769), ('present tests, M 3.9', 3.9, 45, 0.530),
+    ('present tests, M 3.9', 3.9, 60, 0.295),
+    ('ref. 1, M 6.9', 6.86, 14.3, 0.972), ('ref. 1, M 6.9', 6.86, 29.6, 0.750),
+    ('ref. 1, M 6.9', 6.86, 45.1, 0.500), ('ref. 1, M 6.9', 6.86, 59.8, 0.246),
+    ('ref. 1, M 6.9', 6.86, 75.2, 0.046),
+]
+# Table II, PDF p. 27, typed: the present tests' pressures (mm Hg; the column head says
+# microns for p_inf, whose values are mm Hg: 0.319 is table I's 320 microns).
+A55_TABLE2 = {
+    0: (3.94, 0.319, [6.54, 6.18, 5.17, 3.80, 2.48, 1.43, 0.75]),
+    30: (3.90, 0.318, [5.05, 4.77, 3.97, 2.80, 1.85, 1.08, 0.60]),
+    45: (3.8, 0.10, [1.05, 1.00, 0.85, 0.66, 0.46, 0.29, 0.18]),
+}
+
+# --------------------------------------------------------------------------
+# RM L52D21 (Goin 1952, NTRS 19930087183) fig. 11, PDF p. 46, rotated upright;
+# alpha 0, the summary curves at h/t = 1.0 (column scans at h/t 0.95 to 0.99), +-0.005:
+# P_b' / P_bv = 1 - p_b / p_inf (the base pressure coefficient over the vacuum's).
+L52_FIG11 = [(1.41, 0.534, 0.488), (1.62, 0.570, 0.548), (1.96, 0.663, 0.575)]  # M, sweep 0, sweep 45
+# RM A51J25 fig. 7's mean curve (first reading, src/base/blunt-te-2d.ts), p_b / p_inf
+A51 = [(1.4, 0.517), (1.5, 0.474), (1.6, 0.446), (1.7, 0.42), (1.83, 0.399), (2.0, 0.359)]
+
+
+def a51(m):
+    for (m0, r0), (m1, r1) in zip(A51, A51[1:]):
+        if m0 <= m <= m1:
+            return r0 + (r1 - r0) * (m - m0) / (m1 - m0)
+    raise ValueError(m)
+
+
+# --------------------------------------------------------------------------
+# NASA CR-149372 (Macha 1976, TAMU report 3318-76-01, NTRS 19770008057).
+# Pages are PDF pages; calibrations in data/fin_edges_w34.md section 9.
+# fig. 8b, p. 26: Cp against theta, M 1.0, 1.1, 1.2, the 1.91 cm cylinder,
+# Re_d 1.9e5. Symbols: centres by eye on 2x ruler crops placed between the
+# figure's own grid lines (w34_pwruler.py), +-0.003 in Cp, +-0.3 deg. Curve:
+# column scans of the faired line (w34_pwscan.py, +-0.3 deg of columns, the
+# median), kept at least 2 deg (3 deg for the triangles) from a symbol.
+M8B_SYMBOLS = {
+    1.0: [(0, 1.283), (2.9, 1.278), (9.5, 1.232), (19.0, 1.108), (27.9, 0.892), (37.2, 0.600),
+          (49.2, 0.221), (61.7, -0.177), (73.1, -0.603), (80.0, -0.751), (86.3, -0.888), (95.4, -1.064)],
+    1.1: [(0, 1.329), (6.7, 1.310), (15.3, 1.216), (24.8, 1.051), (36.1, 0.732), (46.7, 0.447),
+          (55.1, 0.140), (67.1, -0.247), (77.0, -0.481), (86.1, -0.708), (92.0, -0.817), (95.9, -0.895)],
+    1.2: [(0, 1.387), (6.9, 1.371), (13.1, 1.322), (21.9, 1.186), (34.0, 0.908), (43.1, 0.623),
+          (55.1, 0.274), (69.7, -0.161), (83.4, -0.483), (89.7, -0.605), (95.9, -0.695)],
+}
+M8B_CURVE = {
+    1.0: [(6.0, 1.256), (7.5, 1.247), (12.0, 1.206), (13.5, 1.179), (15.0, 1.157), (16.5, 1.133),
+          (21.0, 1.058), (22.5, 1.023), (24.0, 0.981), (25.5, 0.946), (30.0, 0.825), (31.5, 0.782),
+          (33.0, 0.736), (34.5, 0.690), (40.5, 0.497), (42.0, 0.450), (43.5, 0.407), (45.0, 0.354),
+          (46.5, 0.306), (52.5, 0.116), (54.0, 0.064), (55.5, 0.017), (57.0, -0.027), (58.5, -0.077),
+          (64.5, -0.300), (66.0, -0.359), (67.5, -0.409), (69.0, -0.455), (70.5, -0.502), (76.5, -0.679),
+          (78.0, -0.712), (82.5, -0.816), (84.0, -0.848), (88.5, -0.929), (90.0, -0.958), (91.5, -0.984)],
+    1.1: [(3.0, 1.325), (4.5, 1.315), (9.0, 1.286), (10.5, 1.274), (12.0, 1.255), (18.0, 1.171),
+          (19.5, 1.149), (21.0, 1.119), (22.5, 1.093), (27.0, 0.990), (28.5, 0.954), (30.0, 0.902),
+          (31.5, 0.876), (33.0, 0.840), (39.0, 0.655), (40.5, 0.613), (42.0, 0.573), (43.5, 0.528),
+          (49.5, 0.335), (51.0, 0.290), (52.5, 0.234), (58.5, 0.032), (60.0, -0.016), (61.5, -0.072),
+          (63.0, -0.126), (64.5, -0.172), (70.5, -0.347), (72.0, -0.374), (73.5, -0.415), (75.0, -0.454),
+          (79.5, -0.561), (81.0, -0.596), (82.5, -0.625), (84.0, -0.659), (88.5, -0.758), (90.0, -0.784)],
+    1.2: [(16.5, 1.274), (18.0, 1.251), (25.5, 1.101), (27.0, 1.066), (28.5, 1.031), (30.0, 1.001),
+          (37.5, 0.793), (39.0, 0.751), (46.5, 0.529), (48.0, 0.486), (49.5, 0.442), (51.0, 0.391),
+          (58.5, 0.169), (60.0, 0.132), (61.5, 0.083), (63.0, 0.040), (64.5, -0.010), (66.0, -0.054),
+          (73.5, -0.257), (75.0, -0.301), (76.5, -0.337), (78.0, -0.371), (79.5, -0.411)],
+}
+# fig. 5, p. 22: M 1.0, the four cylinders; the plot starts at Cp 0.4 (about 44 deg).
+# The faired curve the four share to about 78 deg (column scans; symbols by eye,
+# +-0.01, +-0.5 deg), then each cylinder's own points.
+M5_COMMON_CURVE = [(44.0, 0.373), (45.0, 0.343), (46.0, 0.309), (47.0, 0.268), (50.5, 0.167),
+                   (51.5, 0.135), (52.5, 0.097), (56.0, -0.007), (57.0, -0.043), (58.0, -0.090),
+                   (62.0, -0.212), (65.0, -0.306), (71.0, -0.502), (74.0, -0.597), (78.0, -0.723)]
+M5_COMMON_SYMBOLS = [(48.8, 0.205), (54.0, 0.050), (58.8, -0.120), (60.5, -0.180), (63.5, -0.250),
+                     (66.2, -0.345), (67.3, -0.416), (69.9, -0.474), (72.3, -0.561), (75.3, -0.625),
+                     (77.2, -0.686)]
+M5_BRANCHES = {
+    '1.91 and 2.54 cm (curve)': [(80.0, -0.783), (83.0, -0.820), (84.0, -0.870), (85.0, -0.895),
+                                 (86.0, -0.914), (87.0, -0.939), (89.0, -0.982), (90.0, -0.998)],
+    '3.81 cm': [(82.0, -0.800), (87.0, -0.820), (91.3, -0.760)],
+    '5.08 cm': [(81.3, -0.690), (85.0, -0.655), (86.7, -0.645), (91.3, -0.640)],
+}
+
+
+# --------------------------------------------------------------------------
+# TN 3861 (Penland 1957, NTRS 19930084664) figs. 15, 16, 17 (PDF pp. 31 to 33, 300 ppi):
+# crossflow results, each against the crossflow Mach number M_c = M sin(alpha).
+# Symbol centres by eye on gridded crops, +-0.02 in M_c, +-0.01 in the coefficient (+-0.02
+# where two symbols overlap). Crossflow sets: Penland (crossed squares, diamonds and circles,
+# M 6.86, alpha 14.9 and 30.2 deg at these M_c) and Lord and Ulmann (unpublished, crossed
+# symbols, M 4.04, alpha 15 deg at M_c 1.04 by TN 3861 p. 11). TN 2960's own points (ref. 8,
+# a cylinder normal to the stream) as replotted. (figure, set, free-stream M, M_c, value, error)
+# AS READ, on the flat calibrations below (axis-aligned, from two to four grid lines).
+TN3861_AS_READ = [
+    ('15', 'Penland', 6.86, 1.72, 1.895, 0.01), ('15', 'Penland', 6.86, 3.43, 1.78, 0.01),
+    ('15', 'Lord and Ulmann', 4.04, 0.97, 1.965, 0.01), ('15', 'Lord and Ulmann', 4.04, 1.36, 1.60, 0.01),
+    ('15', 'Lord and Ulmann', 4.04, 1.95, 1.825, 0.01),
+    ('16', 'Penland', 6.86, 1.73, -0.216, 0.01), ('16', 'Penland', 6.86, 3.43, -0.020, 0.01),
+    ('16', 'Lord and Ulmann', 4.04, 1.04, -0.810, 0.01), ('16', 'Lord and Ulmann', 4.04, 1.38, -0.505, 0.01),
+    ('16', 'Lord and Ulmann', 4.04, 1.99, -0.285, 0.01),
+    ('16', 'TN 2960', None, 1.50, -0.47, 0.01), ('16', 'TN 2960', None, 1.97, -0.27, 0.01),
+    ('16', 'TN 2960', None, 2.85, -0.097, 0.01),
+    ('17', 'Penland, pressure', 6.86, 1.73, 1.45, 0.01), ('17', 'Penland, pressure', 6.86, 3.43, 1.265, 0.01),
+    ('17', 'Penland, force', 6.86, 1.73, 1.545, 0.01), ('17', 'Penland, force', 6.86, 3.41, 1.405, 0.01),
+    ('17', 'Lord and Ulmann', 4.04, 0.68, 2.465, 0.01), ('17', 'Lord and Ulmann', 4.04, 1.02, 2.045, 0.01),
+    ('17', 'Lord and Ulmann', 4.04, 1.38, 1.535, 0.01), ('17', 'Lord and Ulmann', 4.04, 1.97, 1.51, 0.02),
+    ('17', 'TN 2960', None, 1.47, 1.48, 0.01), ('17', 'TN 2960', None, 1.98, 1.50, 0.02),
+    ('17', 'TN 2960', None, 2.88, 1.335, 0.01),
+]
+# The flat calibrations the crops were drawn on: [pixel, value] pairs, linear between them.
+TN3861_FLAT = {
+    '15': ([[545, 0], [781, 1], [1015, 2], [1251.5, 3], [1488, 4], [1725, 5], [1960.5, 6], [2197.5, 7]],
+           [[528, 2.5], [1720, 0]]),
+    '16': ([[780, 0], [1009.5, 1], [1239.5, 2], [1468.5, 3], [1698, 4], [1928.5, 5], [2159.5, 6], [2388.5, 7]],
+           [[561, 0.2], [791, 0], [1024, -0.2], [1255.5, -0.4]]),
+    '17': ([[482, 0], [725.5, 1], [973, 2], [1218.5, 3], [1464, 4], [1708.5, 5], [1953.5, 6], [2198.5, 7]],
+           [[408, 2.75], [1022, 1.5], [1146.5, 1.25], [1761, 0]]),
+}
+# The scans are rotated or sheared by 0.4 to 0.8 deg, which the flat calibrations ignore. Affine
+# calibrations, value = a + b x + c y, fitted to every grid line detected in three to six
+# windows across each figure (29 to 57 points a direction, worst residual 0.0014 to 0.009;
+# 0016 section 16), re-map each value read through the pixel the flat calibration put it at.
+TN3861_AFFINE = {
+    '15': ((-2.22203, 0.0042326, -5.72902e-05), (3.63035, -2.93814e-05, -0.00210769)),
+    '16': ((-3.40494, 0.00435351, 8.14279e-06), (0.67306, 6.04726e-06, -0.000863252)),
+    '17': ((-1.93176, 0.00407962, -2.882e-05), (3.6117, -1.67325e-05, -0.00203561)),
+}
+
+
+def _flat_to_pixel(pairs, v):
+    q = sorted(pairs, key=lambda p: p[1])
+    for (pa, va), (pb, vb) in zip(q, q[1:]):
+        if v <= vb or (pb, vb) == tuple(q[-1]):
+            return pa + (v - va) * (pb - pa) / (vb - va)
+
+
+def _remap(fig, mc, v):
+    x = _flat_to_pixel(TN3861_FLAT[fig][0], mc)
+    y = _flat_to_pixel(TN3861_FLAT[fig][1], v)
+    fx, fy = TN3861_AFFINE[fig]
+    return fx[0] + fx[1] * x + fx[2] * y, fy[0] + fy[1] * x + fy[2] * y
+
+
+TN3861 = [(f, n, m, *(_remap(f, mc, v)), e) for f, n, m, mc, v, e in TN3861_AS_READ]
+# The blind second reading of figs. 15 and 16 (audit round 7, commit e45e0d6,
+# docs/research/total-drag/audit/round7/readings/tn3861_figs15-16.csv), the symbols paired:
+# (figure, set, M_c, value, M_c error, value error).
+TN3861_SECOND = [
+    ('15', 'Penland', 1.733, 1.8771, 0.005, 0.0025), ('15', 'Penland', 3.448, 1.7595, 0.005, 0.0025),
+    ('15', 'Lord and Ulmann', 1.044, 1.9504, 0.005, 0.0025),
+    ('15', 'Lord and Ulmann', 1.393, 1.5884, 0.005, 0.0025),
+    ('15', 'Lord and Ulmann', 2.003, 1.8000, 0.007, 0.0034),
+    ('16', 'Penland', 1.744, -0.2195, 0.005, 0.001), ('16', 'Penland', 3.458, -0.0221, 0.005, 0.001),
+    ('16', 'Lord and Ulmann', 1.044, -0.8144, 0.005, 0.001),
+    ('16', 'Lord and Ulmann', 1.407, -0.5104, 0.005, 0.001),
+    ('16', 'Lord and Ulmann', 2.032, -0.2848, 0.007, 0.0014),
+    ('16', 'TN 2960', 1.501, -0.4724, 0.006, 0.0012), ('16', 'TN 2960', 1.980, -0.2753, 0.006, 0.0012),
+    ('16', 'TN 2960', 2.896, -0.0996, 0.006, 0.0012),
+]
+TN3861_QUANTITY = {'15': '(p_stag - p_inf) / q_c', '16': '(p_down - p_inf) / q_c', '17': 'C_D on q_c'}
+# TN 2960's integrated front side over (2/3) Cp_pitot, this script's own output above
+# (figs. 5(e) at 1.49, 5(d) at 1.98, 5(e) at 2.90), the unyawed reference.
+TN2960_FRONT_RATIO = [(1.49, 0.994), (1.98, 1.040), (2.90, 1.049)]
+
+
+def front90(points):
+    """front() of points in any order, cut at 90 deg and interpolated there."""
+    pts = sorted(points)
+    out = []
+    for (a, pa), (b, pb) in zip(pts, pts[1:]):
+        out.append((a, pa))
+        if b > 90:
+            out.append((90, pa + (pb - pa) * (90 - a) / (b - a)))
+            break
+    else:
+        out.append(pts[-1])
+    return front(out)
+
+
+def main():
+    rows = []
+    out = []
+    say = out.append
+
+    say('# Fin edges of flat plates: first readings and computations (w34_fin_edges.py)')
+    say('')
+    say('## TN 2960: front side over modified Newtonian, (2/3) Cp_0')
+    for name, (m, method, err, pts) in TN2960.items():
+        pts = [(t, cp0(m) if p is None else p) for t, p in pts]
+        for t, p in pts:
+            rows.append(['TN 2960', name.split(' ')[0], name, m, 'theta deg', t, 'P', round(p, 4),
+                         'first', method, err])
+        # value at 90 deg for symbol sets that pass it: linear between the neighbours
+        if pts[-1][0] > 90:
+            for (a, pa), (b, pb) in zip(pts, pts[1:]):
+                if a <= 90 <= b:
+                    v90 = pa + (pb - pa) * (90 - a) / (b - a)
+            pts = [p for p in pts if p[0] < 90] + [(90, v90)]
+        f = front(pts)
+        say(f'- {name}: front {f:+.3f} on D; (2/3) Cp_0 {2 / 3 * cp0(m):.3f} (Cp_0 {cp0(m):.3f}); '
+            f'ratio {f / (2 / 3 * cp0(m)):+.3f}')
+    say('')
+
+    say('## RM A55H31: the yawed front side against the independence principle')
+    pt2s = {m: p0_over_p(m) for m in (3.9, 6.86)}
+    m0, pinf0, p0vals = A55_TABLE2[0]
+    shape = [p / p0vals[0] for p in p0vals]
+    ig = front(list(zip(range(0, 91, 15), shape)))
+    say(f'- unyawed shape integral I_g = int (p/p_x=0) cos(phi) dphi, table II at 0 deg: {ig:.4f}')
+    for src, m, lam, ab in A55_FIG12:
+        rows.append(['RM A55H31', '12', src, m, 'yaw deg', lam, 'CD front, yawed over unyawed', ab,
+                     'first', 'eye, symbol centre on 2x ruler crop', 0.004])
+    for src, m, lam, st in A55_FIG11:
+        rows.append(['RM A55H31', '11', src, m, 'yaw deg', lam, 'p_x=0 / p_t2', st,
+                     'first', 'eye, symbol centre on 2x ruler crop', 0.004])
+    say('- fig. 12 (absolute-pressure basis, as eq. (14)) converted exactly to gauge pressure,')
+    say('  (R P I_g - cos L) / (P I_g - 1) with P = p_t2 / p_inf (0016 section 16); fig. 11 a check;')
+    say('  r = gauge ratio over cos^3(L) Cp_pitot(M cos L) / Cp_pitot(M):')
+    for (src, m, lam, ab) in A55_FIG12:
+        L = math.radians(lam)
+        mn = m * math.cos(L)
+        st = min((x for x in A55_FIG11 if x[1] == m), key=lambda x: abs(x[2] - lam))[3]
+        pt2 = pt2s[m]
+        gauge = (ab * pt2 * ig - math.cos(L)) / (pt2 * ig - 1)
+        model = math.cos(L) ** 3 * cp0(mn) / cp0(m)
+        say(f'  - {src}, yaw {lam:4.1f} (M_n {mn:4.2f}): fig. 11 {st:.3f} against Rayleigh at M_n '
+            f'{p0_over_p(mn) / pt2:.3f}; fig. 12 {ab:.3f}, gauge {gauge:.4f}; model {model:.4f}; '
+            f'r {gauge / model:.3f}')
+        # r at the test's yaw as the reports state it (fig. 10's legend, p. 10; TN 3861 fig. 5):
+        # fig. 12 draws its symbols 0.04 to 0.25 deg below it (0016 section 18).
+        ls = A55_STATED_YAW[(m, round(lam / 15))]
+        Ls = math.radians(ls)
+        gs = (ab * pt2 * ig - math.cos(Ls)) / (pt2 * ig - 1)
+        ms = math.cos(Ls) ** 3 * cp0(m * math.cos(Ls)) / cp0(m)
+        say(f'    at the stated yaw {ls} (M_n {m * math.cos(Ls):.3f}): r {gs / ms:.4f}')
+    say('- table II directly (gauge, trapezoid at 15 deg), rho = front on q_n over (2/3) Cp_pitot(M_n):')
+    rho = {}
+    for lam, (m, pinf, p) in A55_TABLE2.items():
+        L = math.radians(lam)
+        mn = m * math.cos(L)
+        qn = 0.5 * G * pinf * m * m * math.cos(L) ** 2
+        cf = front(list(zip(range(0, 91, 15), [(x - pinf) / qn for x in p])))
+        rho[lam] = cf / (2 / 3 * cp0(mn))
+        say(f'  - yaw {lam:2d}, M {m}, M_n {mn:.3f}: stagnation p/p_inf {p[0] / pinf:.2f} (Rayleigh '
+            f'{p0_over_p(mn):.2f}); front on q_n {cf:.4f}; rho {rho[lam]:.4f}; over yaw 0 '
+            f'{rho[lam] / rho[0]:.4f}')
+    say('')
+
+    say('## RM L52D21 fig. 11 (alpha 0, h/t 1.0) over the thin-layer curve at the free-stream Mach number')
+    for m, s0, s45 in L52_FIG11:
+        model = 1 - a51(m)
+        for sweep, v in ((0, s0), (45, s45)):
+            rows.append(['RM L52D21', '11', f'sweep {sweep} deg, h/t 1.0, alpha 0', m, 'h/t', 1.0,
+                         "P_b'/P_bv", v, 'first', 'column scan at h/t 0.95 to 0.99', 0.005])
+        say(f'- M {m}: model 1 - p_b/p_inf {model:.3f}; sweep 0 {s0:.3f} ({s0 / model:.3f}); '
+            f'sweep 45 {s45:.3f} ({s45 / model:.3f})')
+    say('')
+
+    say('## TN 2960 fig. 5(c): rear side against a square base of the same height (first readings, 0010)')
+    rear = {1.49: 0.454, 1.98: 0.269, 2.90: 0.093}
+    for m, r in rear.items():
+        sq = -((a51_full(m) - 1) * 2 / (G * m * m))
+        say(f'- M {m}: cylinder rear side {r:.3f} on D; square base at the thin-layer curve {sq:.3f}; '
+            f'ratio {r / sq:.2f}')
+
+
+    say('## NASA CR-149372 fig. 8b: front side over modified Newtonian, (2/3) Cp_pitot (kappa)')
+    kappa = {}
+    for m in (1.0, 1.1, 1.2):
+        for t, p in M8B_SYMBOLS[m]:
+            rows.append(['NASA CR-149372', '8b', f'M {m}, 1.91 cm, symbols', m, 'theta deg', t, 'Cp', p,
+                         'first', 'eye, symbol centre on 2x ruler crop', 0.003])
+        for t, p in M8B_CURVE[m]:
+            rows.append(['NASA CR-149372', '8b', f'M {m}, 1.91 cm, faired curve', m, 'theta deg', t, 'Cp', p,
+                         'first', 'column scan, +-0.3 deg, median', 0.005])
+        both = front90(M8B_SYMBOLS[m] + M8B_CURVE[m])
+        sym = front90(M8B_SYMBOLS[m])
+        mn = 2 / 3 * cp0(m)
+        kappa[m] = both / mn
+        say(f'- M {m}: Cp at 0 deg {M8B_SYMBOLS[m][0][1]:.3f} against Rayleigh {cp0(m):.4f} '
+            f'({M8B_SYMBOLS[m][0][1] / cp0(m) - 1:+.2%}); front {both:.4f} on D, kappa {kappa[m]:.4f} '
+            f'(symbols alone {sym:.4f}, {sym / mn:.4f})')
+    say('')
+    say('## NASA CR-149372 fig. 5 (M 1.0): each cylinder over fig. 8b, fig. 8b below 44 deg')
+    for t, p in M5_COMMON_CURVE:
+        rows.append(['NASA CR-149372', '5', 'M 1.0, shared curve', 1.0, 'theta deg', t, 'Cp', p,
+                     'first', 'column scan, +-0.3 deg, median', 0.005])
+    for t, p in M5_COMMON_SYMBOLS:
+        rows.append(['NASA CR-149372', '5', 'M 1.0, shared curve, symbols', 1.0, 'theta deg', t, 'Cp', p,
+                     'first', 'eye, symbol centre on 2x ruler crop', 0.01])
+    for name, pts in M5_BRANCHES.items():
+        for t, p in pts:
+            rows.append(['NASA CR-149372', '5', f'M 1.0, {name}', 1.0, 'theta deg', t, 'Cp', p, 'first',
+                         'column scan' if 'curve' in name else 'eye, symbol centre on 2x ruler crop',
+                         0.005 if 'curve' in name else 0.01])
+    own = front90(M8B_SYMBOLS[1.0] + M8B_CURVE[1.0])
+    below = [q for q in M8B_SYMBOLS[1.0] + M8B_CURVE[1.0] if q[0] < 44.0]
+    common = [q for q in M5_COMMON_CURVE + M5_COMMON_SYMBOLS if q[0] <= 78]
+    changes = []
+    for name, pts in M5_BRANCHES.items():
+        c = front90(below + common + pts) / own - 1
+        changes.append(c)
+        say(f'- {name}: front {front90(below + common + pts):.4f}, {c:+.2%} of fig. 8b')
+    lo, hi = min(0.0, *changes), max(0.0, *changes)
+    say(f'- spread {lo:+.2%} to {hi:+.2%}')
+    say('')
+    say('## kappa nodes (reading error 1%, the spread above), and the term at 1.49 (TN 2960 band)')
+    for m in (1.0, 1.1, 1.2):
+        say(f'- M {m}: {kappa[m]:.4f}, range {kappa[m] * 0.99 * (1 + lo):.4f} to {kappa[m] * 1.01 * (1 + hi):.4f}')
+    say('- M 1.49: 1, range 0.99 to 1.06 (TN 2960 fig. 5(c) at 1.49: 0.995, 1.002; fig. 5(e): 0.994)')
+    say('')
+    say('## TN 3861 figs. 15 to 17: crossflow points against the yawed-cylinder allowance')
+    say('(figs. 15 and 16 read twice, fig. 17 once; the first reading re-mapped for the scans\' rotation)')
+    for (fig, name, m, mc, v, err), (_, _, _, mc0, v0, _) in zip(TN3861, TN3861_AS_READ):
+        alpha = f'alpha {math.degrees(math.asin(min(1.0, mc / m))):.1f} deg' if m else 'normal to the stream'
+        rows.append(['NACA TN 3861', fig, f'{name}, {alpha}', m if m else round(mc, 3), 'M_c', round(mc, 3),
+                     TN3861_QUANTITY[fig], round(v, 4), 'first',
+                     f'eye, symbol centre on gridded crop (as read {mc0}, {v0}), re-mapped for the rotation', err])
+    for fig, name, mc, v, emc, ev in TN3861_SECOND:
+        rows.append(['NACA TN 3861', fig, f'{name} (second reading, round 7, e45e0d6)', '', 'M_c', mc,
+                     TN3861_QUANTITY[fig], v, 'second', 'blind, the reader\'s method', ev])
+    say('- the pairs (first re-mapped, second; combined error):')
+    for fig, name, mc2, v2, emc, ev in TN3861_SECOND:
+        f = min((x for x in TN3861 if x[0] == fig and x[1] == name), key=lambda x: abs(x[3] - mc2))
+        ok = abs(f[3] - mc2) <= 0.02 + emc and abs(f[4] - v2) <= f[5] + ev
+        say(f'  - fig. {fig}, {name}: M_c {f[3]:.3f} / {mc2:.3f} ({abs(f[3] - mc2):.3f}, {0.02 + emc:.3f}); '
+            f'value {f[4]:.4f} / {v2:.4f} ({abs(f[4] - v2):.4f}, {f[5] + ev:.4f}){"" if ok else " APART"}')
+
+    def near(fig, name, mc, reading=TN3861):
+        if reading is TN3861:
+            c = [x for x in TN3861 if x[0] == fig and x[1] == name and abs(x[3] - mc) < 0.1]
+            return (c[0][3], c[0][4]) if c else None
+        c = [x for x in TN3861_SECOND if x[0] == fig and x[1] == name and abs(x[2] - mc) < 0.1]
+        return (c[0][2], c[0][3]) if c else None
+
+    def unyawed(mc):
+        pts = TN2960_FRONT_RATIO
+        for (a, ra), (b, rb) in zip(pts, pts[1:]):
+            if a <= mc <= b:
+                return ra + (rb - ra) * (mc - a) / (b - a)
+        return None
+
+    say('- F = C_D (fig. 17, pressure) + (p_down - p_inf)/q_c (fig. 16): the front side if the')
+    say('  downstream pressure held over the rear half. MN = (2/3) Cp_pitot(M_c). Each value on')
+    say('  the first reading / the second (fig. 17 the first throughout).')
+    tn = {}
+    for name, m, mc in (('TN 2960', None, 1.49), ('TN 2960', None, 1.98), ('TN 2960', None, 2.9),
+                        ('Penland', 6.86, 1.75), ('Penland', 6.86, 3.44),
+                        ('Lord and Ulmann', 4.04, 1.03), ('Lord and Ulmann', 4.04, 1.39),
+                        ('Lord and Ulmann', 4.04, 1.99)):
+        cd = near('17', 'Penland, pressure' if name == 'Penland' else name, mc)
+        fs, ss = [], []
+        for reading in (TN3861, TN3861_SECOND):
+            dn = near('16', name, mc, reading)
+            st = near('15', name, mc, reading)
+            mcm = (cd[0] + dn[0]) / 2
+            fs.append(((cd[1] + dn[1]) / (2 / 3 * cp0(mcm)), mcm))
+            if st:
+                ss.append(st[1] / cp0(st[0]))
+        line = f'- {name}, M_c {fs[0][1]:.2f}'
+        if m:
+            a = math.degrees(math.asin(fs[0][1] / m))
+            line += f' (alpha {a:.1f}, sweep {90 - a:.1f} deg)'
+        line += ': F/MN ' + ' / '.join(f'{x:.3f}' for x, _ in fs)
+        if ss:
+            line += '; stagnation over Rayleigh at M_c ' + ' / '.join(f'{x:.3f}' for x in ss)
+        if not m:
+            tn[mc] = [x for x, _ in fs]
+        ref = unyawed(fs[0][1])
+        if m and ref:
+            line += f'; over TN 2960 integrated ({ref:.3f}) ' + ' / '.join(f'{x / ref:.3f}' for x, _ in fs)
+        if m and abs(fs[0][1] - 1.98) < 0.05:
+            line += '; over TN 2960\'s own F at 1.98 ' + ' / '.join(
+                f'{x / y:.3f}' for (x, _), y in zip(fs, tn[1.98]))
+        say(line)
+    say('')
+    with open(os.path.join(DATA, 'fin_edges_w34.csv'), 'w', newline='') as fh:
+        w = csv.writer(fh)
+        fh.write('# Fin edges of flat plates: first readings. Second readings by independent readers are paired in\n')
+        fh.write('# design record 0016 sections 13, 14 and 16; TN 3861 fig. 17 is read once.\n')
+        fh.write('# Written by scripts/w34_fin_edges.py; sources, calibrations and limits in data/fin_edges_w34.md.\n')
+        w.writerow(['source', 'figure', 'item', 'M', 'x_name', 'x', 'quantity', 'value', 'reading',
+                    'method', 'error'])
+        w.writerows(rows)
+    print('\n'.join(out))
+
+
+A51_FULL = [(1.4, 0.517), (1.5, 0.474), (1.6, 0.446), (1.7, 0.42), (1.83, 0.399), (2.0, 0.359),
+            (2.1, 0.337), (2.25, 0.311), (2.5, 0.275), (2.75, 0.249), (2.9, 0.236), (3.0, 0.228)]
+
+
+def a51_full(m):
+    for (m0, r0), (m1, r1) in zip(A51_FULL, A51_FULL[1:]):
+        if m0 <= m <= m1:
+            return r0 + (r1 - r0) * (m - m0) / (m1 - m0)
+    raise ValueError(m)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

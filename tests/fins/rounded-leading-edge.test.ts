@@ -197,19 +197,19 @@ describe('the nose term', () => {
     expect(x.label.startsWith('an analogy, not a measurement')).toBe(true);
   });
 
-  it('refuses swept edges, Mach numbers outside 1.49 to 3.0, Re_D below 6.7e3', () => {
+  it('refuses edges swept beyond 60 deg, Mach numbers outside 1.0 to 3.0, Re_D below 6.7e3', () => {
     expect(
       reason(() =>
         roundedLeadingEdgeDrag({
           ...base,
-          mach: 2,
+          mach: 2.9,
           reynoldsOnDiameter: 2e5,
-          tanLeadingEdgeSweep: 0.1,
+          tanLeadingEdgeSweep: Math.tan(60.5 * deg),
         }),
       ),
     ).toBe('swept-leading-edge');
     expect(
-      reason(() => roundedLeadingEdgeDrag({ ...base, mach: 1.45, reynoldsOnDiameter: 2e5 })),
+      reason(() => roundedLeadingEdgeDrag({ ...base, mach: 0.98, reynoldsOnDiameter: 2e5 })),
     ).toBe('leading-edge-range');
     expect(
       reason(() => roundedLeadingEdgeDrag({ ...base, mach: 3.05, reynoldsOnDiameter: 2e5 })),

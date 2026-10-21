@@ -11,12 +11,14 @@ export type FinRefusalReason =
   | 'expansion-limit'
   | 'reflected-wave'
   | 'planform'
-  /** A rounded leading edge on a swept edge (no data at M 1.5 to 3). */
+  /** A rounded leading edge swept beyond the yawed-cylinder checks (0016). */
   | 'swept-leading-edge'
   /** A rounded leading edge outside the Mach or Reynolds numbers its band covers. */
   | 'leading-edge-range'
   /** A rounded leading edge on a section the model does not represent. */
-  | 'leading-edge-geometry';
+  | 'leading-edge-geometry'
+  /** A square-cut leading edge: bounded, but the ordering of its bounds is not shown (0016). */
+  | 'square-leading-edge';
 
 export class FinRefusal extends RangeError {
   readonly reason: FinRefusalReason;

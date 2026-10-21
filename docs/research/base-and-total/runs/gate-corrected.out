@@ -1,0 +1,156 @@
+== the two readings of the free-flight curve, paired
+M 1: first -0.2998 (+-0.002), second -0.2998 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 1.05: first -0.2914 (+-0.002), second -0.2913 (+-0.0003), difference 0.0001, within the combined errors (4%)
+M 1.1: first -0.2846 (+-0.002), second -0.284 (+-0.0003), difference 0.0006, within the combined errors (26%)
+M 1.15: first -0.2791 (+-0.002), second -0.2793 (+-0.0003), difference 0.0002, within the combined errors (9%)
+M 1.2: first -0.2751 (+-0.002), second -0.275 (+-0.0003), difference 0.0001, within the combined errors (4%)
+M 1.25: first -0.2721 (+-0.002), second -0.272 (+-0.0003), difference 0.0001, within the combined errors (4%)
+M 1.3: first -0.2703 (+-0.002), second -0.2703 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 1.35: first -0.2687 (+-0.002), second -0.2687 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 1.4: first -0.2675 (+-0.002), second -0.2675 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 1.45: first -0.2665 (+-0.002), second -0.2665 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 1.5: first -0.2659 (+-0.002), second -0.2659 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 1.55: first -0.2655 (+-0.002), second -0.2656 (+-0.0003), difference 0.0001, within the combined errors (4%)
+M 1.6: first -0.2654 (+-0.002), second -0.2654 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 1.65: first -0.2651 (+-0.003), second -0.2651 (+-0.002), difference 0.0000, within the combined errors (0%)
+M 1.7: first -0.2622 (+-0.003), second -0.2611 (+-0.002), difference 0.0011, within the combined errors (22%)
+M 1.75: first -0.2502 (+-0.002), second -0.2503 (+-0.002), difference 0.0001, within the combined errors (3%)
+M 1.8: first -0.2362 (+-0.002), second -0.2369 (+-0.0003), difference 0.0007, within the combined errors (30%)
+M 1.85: first -0.2225 (+-0.002), second -0.2225 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 1.9: first -0.2107 (+-0.002), second -0.2108 (+-0.0003), difference 0.0001, within the combined errors (4%)
+M 1.95: first -0.1999 (+-0.002), second -0.1999 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 2: first -0.1903 (+-0.003), second -0.1897 (+-0.003), difference 0.0006, within the combined errors (10%)
+M 2.05: first -0.1819 (+-0.003), second -0.1819 (+-0.003), difference 0.0000, within the combined errors (0%)
+M 2.1: first -0.1744 (+-0.003), second -0.1746 (+-0.003), difference 0.0002, within the combined errors (3%)
+M 2.15: first -0.1675 (+-0.003), second -0.1693 (+-0.003), difference 0.0018, within the combined errors (30%)
+M 2.2: first -0.1621 (+-0.003), second -0.1633 (+-0.0031), difference 0.0012, within the combined errors (20%)
+M 2.25: first -0.1562 (+-0.003), second -0.1562 (+-0.003), difference 0.0000, within the combined errors (0%)
+M 2.3: first -0.1512 (+-0.002), second -0.1515 (+-0.0003), difference 0.0003, within the combined errors (13%)
+M 2.35: first -0.1466 (+-0.002), second -0.1466 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 2.4: first -0.1424 (+-0.002), second -0.1425 (+-0.0003), difference 0.0001, within the combined errors (4%)
+M 2.45: first -0.1387 (+-0.002), second -0.1387 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 2.5: first -0.1353 (+-0.002), second -0.1353 (+-0.0003), difference 0.0000, within the combined errors (0%)
+M 2.55: first -0.1322 (+-0.002), second -0.1321 (+-0.0003), difference 0.0001, within the combined errors (4%)
+largest difference 0.0018 at M 2.15
+== the identity-swap allowance: distance to the nearer estimate, each reading its own
+identified, first M 1.75: nearer estimate B, 0.0058
+identified, first M 1.8: nearer estimate B, 0.0063
+identified, first M 1.85: nearer estimate B, 0.0058
+identified, first M 1.9: nearer estimate B, 0.0047
+identified, first M 1.95: nearer estimate B, 0.0034
+identified, first M 2: nearer estimate B, 0.0021
+identified, first M 2.05: nearer estimate B, 0.0000
+identified, first M 2.1: nearer estimate B, 0.0000
+identified, first M 2.15: nearer estimate A, 0.0000
+identified, first M 2.2: nearer estimate A, 0.0005
+identified, first M 2.25: nearer estimate A, 0.0021
+identified, first M 2.3: nearer estimate A, 0.0030
+identified, first M 2.35: nearer estimate A, 0.0035
+identified, first M 2.4: nearer estimate A, 0.0042
+identified, first M 2.45: nearer estimate A, 0.0046
+identified, first M 2.5: nearer estimate A, 0.0052
+identified, first M 2.55: nearer estimate A, 0.0053
+identified, first M 2.56: nearer estimate A, 0.0052
+identified, second M 1.75: nearer estimate B, 0.0059
+identified, second M 1.8: nearer estimate B, 0.0077
+identified, second M 1.85: nearer estimate B, 0.0048
+identified, second M 1.9: nearer estimate B, 0.0046
+identified, second M 1.95: nearer estimate B, 0.0024
+identified, second M 2: nearer estimate B, 0.0010
+identified, second M 2.05: nearer estimate B, 0.0003
+identified, second M 2.1: nearer estimate B, 0.0001
+identified, second M 2.15: nearer estimate B, 0.0004
+identified, second M 2.2: nearer estimate A, 0.0001
+identified, second M 2.25: nearer estimate A, 0.0024
+identified, second M 2.3: nearer estimate A, 0.0024
+identified, second M 2.35: nearer estimate A, 0.0036
+identified, second M 2.4: nearer estimate A, 0.0041
+identified, second M 2.45: nearer estimate A, 0.0046
+identified, second M 2.5: nearer estimate A, 0.0048
+identified, second M 2.55: nearer estimate A, 0.0054
+largest: 0.0077, estimate B, M 1.8, identified, second
+== the tunnel excess over free flight
+M 1.5 tunnel first line identified, first: 0.1409
+M 1.5 tunnel first line identified, second: 0.1409
+M 2 tunnel first line identified, first: 0.0715
+M 2 tunnel first line identified, second: 0.0757
+M 2.41 tunnel first line identified, first: 0.2039
+M 2.41 tunnel first line identified, second: 0.2032
+M 1.5 tunnel round 3 line identified, first: 0.1406
+M 1.5 tunnel round 3 line identified, second: 0.1406
+M 2 tunnel round 3 line identified, first: 0.0695
+M 2 tunnel round 3 line identified, second: 0.0737
+M 2.41 tunnel round 3 line identified, first: 0.2083
+M 2.41 tunnel round 3 line identified, second: 0.2076
+== the rows (measured, M 1.80 to 2.56)
+M 1.8: no fins -0.1569 | identified, first F 1.5054 +-0.0491; identified, second F 1.5099 +-0.0491 | tunnel 1.5021 carried - | low 1.2282 high 1.5590 nominal 1.3936 | read 2
+M 1.85: no fins -0.1538 | identified, first F 1.4464 +-0.0501; identified, second F 1.4464 +-0.0501 | tunnel 1.4732 carried - | low 1.1982 high 1.4965 nominal 1.3473 | read 2
+M 1.9: no fins -0.1508 | identified, first F 1.3977 +-0.0511; identified, second F 1.3983 +-0.0511 | tunnel 1.4444 carried - | low 1.1733 high 1.4494 nominal 1.3113 | read 2
+M 1.95: no fins -0.1477 | identified, first F 1.3531 +-0.0521; identified, second F 1.3531 +-0.0521 | tunnel 1.4155 carried - | low 1.1505 high 1.4155 nominal 1.2830 | read 2
+M 2: no fins -0.1447 | identified, first F 1.3151 +-0.0532; identified, second F 1.3110 +-0.0532 | tunnel 1.3867 carried - | low 1.1289 high 1.3867 nominal 1.2578 | read 2
+M 2.05: no fins -0.1418 | identified, first F 1.2826 +-0.0543; identified, second F 1.2826 +-0.0543 | tunnel 1.3842 carried - | low 1.1142 high 1.3842 nominal 1.2492 | read 2
+M 2.1: no fins -0.1389 | identified, first F 1.2555 +-0.0554; identified, second F 1.2569 +-0.0554 | tunnel 1.3818 carried - | low 1.1000 high 1.3818 nominal 1.2409 | read 2
+M 2.15: no fins -0.1360 | identified, first F 1.2316 +-0.0566; identified, second F 1.2448 +-0.0566 | tunnel 1.3797 carried - | low 1.0875 high 1.3797 nominal 1.2336 | read 2
+M 2.2: no fins -0.1331 | identified, first F 1.2179 +-0.0579; identified, second F 1.2269 +-0.0579 | tunnel 1.3780 carried - | low 1.0800 high 1.3780 nominal 1.2290 | read 2
+M 2.25: no fins -0.1304 | identified, first F 1.1976 +-0.0590; identified, second F 1.1976 +-0.0590 | tunnel 1.3764 carried - | low 1.0693 high 1.3764 nominal 1.2228 | read 2
+M 2.3: no fins -0.1278 | identified, first F 1.1836 +-0.0603; identified, second F 1.1859 +-0.0603 | tunnel 1.3747 carried - | low 1.0616 high 1.3747 nominal 1.2182 | read 2
+M 2.35: no fins -0.1251 | identified, first F 1.1721 +-0.0616; identified, second F 1.1721 +-0.0616 | tunnel 1.3730 carried - | low 1.0553 high 1.3730 nominal 1.2142 | read 2
+M 2.4: no fins -0.1224 | identified, first F 1.1634 +-0.0629; identified, second F 1.1642 +-0.0629 | tunnel 1.3714 carried - | low 1.0502 high 1.3714 nominal 1.2108 | read 2
+M 2.45: no fins -0.1198 | identified, first F 1.1581 +-0.0643; identified, second F 1.1581 +-0.0643 | tunnel - carried 1.3664 | low 1.0469 high 1.3664 nominal 1.2067 | read 2
+M 2.5: no fins -0.1172 | identified, first F 1.1544 +-0.0657; identified, second F 1.1544 +-0.0657 | tunnel - carried 1.3627 | low 1.0444 high 1.3627 nominal 1.2035 | read 2
+M 2.55: no fins -0.1148 | identified, first F 1.1516 +-0.0671; identified, second F 1.1507 +-0.0671 | tunnel - carried 1.3598 | low 1.0418 high 1.3598 nominal 1.2008 | read 2
+M 2.56: no fins -0.1143 | identified, first F 1.1529 +-0.0674; identified, second F 1.1528 +-0.0674 | tunnel - carried 1.3612 | low 1.0427 high 1.3612 nominal 1.2020 | read 2
+== bounded, M 2.56 to 3: 1 to 1.3612, nominal 1.1806
+estimate A (identified, first) M 2.6: F 1.2011 (+-0.0178) inside
+estimate A (identified, first) M 2.7: F 1.2072 (+-0.0185) inside
+estimate A (identified, first) M 2.8: F 1.2175 (+-0.0192) inside
+estimate A (identified, first) M 2.9: F 1.2232 (+-0.0200) inside
+estimate A (identified, first) M 2.97: F 1.2212 (+-0.0205) inside
+estimate A (identified, first) M 3: F 1.2272 (+-0.0207) inside
+estimate B (identified, first) M 2.6: F 1.2856 (+-0.0178) inside
+estimate B (identified, first) M 2.8: F 1.3099 (+-0.0192) inside
+estimate B (identified, first) M 2.9: F 1.3180 (+-0.0200) inside
+estimate B (identified, first) M 2.97: F 1.3248 (+-0.0205) inside
+estimate B (identified, first) M 3: F 1.3288 (+-0.0207) inside
+estimate A (identified, second) M 2.6: F 1.1993 (+-0.0027) inside
+estimate A (identified, second) M 2.7: F 1.2072 (+-0.0028) inside
+estimate A (identified, second) M 2.8: F 1.2166 (+-0.0029) inside
+estimate A (identified, second) M 2.9: F 1.2212 (+-0.0030) inside
+estimate A (identified, second) M 3: F 1.2251 (+-0.0031) inside
+estimate B (identified, second) M 2.6: F 1.2865 (+-0.0027) inside
+estimate B (identified, second) M 2.7: F 1.2952 (+-0.0028) inside
+estimate B (identified, second) M 2.8: F 1.3090 (+-0.0029) inside
+estimate B (identified, second) M 2.9: F 1.3170 (+-0.0030) inside
+estimate B (identified, second) M 3: F 1.3247 (+-0.0031) inside
+M 2.6: increment carried instead of the ratio: high end 1.3673; sqrt(M^2-1)|P_B,no fins| 0.2698 (at the end 0.2694)
+M 2.8: increment carried instead of the ratio: high end 1.3974; sqrt(M^2-1)|P_B,no fins| 0.2717 (at the end 0.2694)
+M 3: increment carried instead of the ratio: high end 1.4283; sqrt(M^2-1)|P_B,no fins| 0.2727 (at the end 0.2694)
+== the factor at the gated shots: superseded and corrected (body base, area ratio 1)
+DA95021318 M 1.799: superseded F 1.3869 (1.2365 to 1.5373), corrected F 1.3936 (1.2282 to 1.5590); body base nominal moves 0.00105
+DA95021529 M 1.846: superseded F 1.3530 (1.2115 to 1.4946), corrected F 1.3510 (1.2006 to 1.5015); body base nominal moves -0.00031
+DA95021308 M 1.85: superseded F 1.3501 (1.2094 to 1.4908), corrected F 1.3473 (1.1982 to 1.4965); body base nominal moves -0.00042
+DA95021328 M 2.348: superseded F 1.2418 (1.1105 to 1.3731), corrected F 1.2143 (1.0555 to 1.3731); body base nominal moves -0.00344
+DA95020907 M 2.364: superseded F 1.2430 (1.1134 to 1.3726), corrected F 1.2132 (1.0539 to 1.3726); body base nominal moves -0.00370
+DA95021317 M 2.414: superseded F 1.2471 (1.1213 to 1.3728), corrected F 1.2097 (1.0493 to 1.3700); body base nominal moves -0.00455
+DA95020927 M 2.663: superseded F 1.2845 (1.1364 to 1.4326), corrected F 1.1806 (1.0000 to 1.3612) bounded; body base nominal moves -0.01138
+DA95020906 M 2.741: superseded F 1.2909 (1.1406 to 1.4413), corrected F 1.1806 (1.0000 to 1.3612) bounded; body base nominal moves -0.01173
+DA95020916 M 2.749: superseded F 1.2916 (1.1410 to 1.4422), corrected F 1.1806 (1.0000 to 1.3612) bounded; body base nominal moves -0.01177
+DA95030603 M 2.969: superseded F 1.3042 (1.1460 to 1.4624), corrected F 1.1806 (1.0000 to 1.3612) bounded; body base nominal moves -0.01206
+DA95022205 M 2.97: superseded F 1.3042 (1.1460 to 1.4625), corrected F 1.1806 (1.0000 to 1.3612) bounded; body base nominal moves -0.01206
+== the gate, corrected
+DA95021318 M 1.799 CX0 0.594 | total 0.6134 band 0.5296..0.7296 | nose wave drag 0.1105 [0.1105, 0.1105]; body friction 0.0804 [0.0707, 0.0957]; fin friction 0.0360 [0.0364, 0.0573]; fin leading edges 0.0439 [0.0422, 0.0479]; fin wave drag 0.0165 [0.0167, 0.0263]; body base 0.2187 [0.1534, 0.2622]; fin trailing-edge base 0.1072 [0.0997, 0.1297] | transition -0.0466..0.0000; wall temperature 0.0000..0.0155; roughness 0.0000..0.0000 | residual -3.2% tolerance -24.6% to 23.5% (without the wall 20.9%) PASS | body base label: an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+DA95021529 M 1.846 CX0 0.598 | total 0.5952 band 0.5164..0.7063 | nose wave drag 0.1090 [0.1090, 0.1090]; body friction 0.0791 [0.0696, 0.0941]; fin friction 0.0355 [0.0358, 0.0564]; fin leading edges 0.0442 [0.0425, 0.0482]; fin wave drag 0.0160 [0.0162, 0.0255]; body base 0.2082 [0.1473, 0.2482]; fin trailing-edge base 0.1033 [0.0961, 0.1250] | transition -0.0447..0.0000; wall temperature 0.0000..0.0160; roughness 0.0000..0.0000 | residual 0.5% tolerance -24.0% to 23.3% (without the wall 20.7%) PASS | body base label: an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+DA95021308 M 1.85 CX0 0.567 | total 0.5940 band 0.5156..0.7047 | nose wave drag 0.1088 [0.1088, 0.1089]; body friction 0.0792 [0.0697, 0.0942]; fin friction 0.0355 [0.0358, 0.0564]; fin leading edges 0.0442 [0.0425, 0.0482]; fin wave drag 0.0160 [0.0161, 0.0254]; body base 0.2073 [0.1468, 0.2470]; fin trailing-edge base 0.1030 [0.0958, 0.1246] | transition -0.0448..0.0000; wall temperature 0.0000..0.0160; roughness 0.0000..0.0000 | residual -4.5% tolerance -24.0% to 23.3% (without the wall 20.6%) PASS | body base label: an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+DA95021328 M 2.348 CX0 0.5 | total 0.4811 band 0.4187..0.5717 | nose wave drag 0.0968 [0.0968, 0.0968]; body friction 0.0688 [0.0605, 0.0819]; fin friction 0.0309 [0.0312, 0.0491]; fin leading edges 0.0463 [0.0445, 0.0505]; fin wave drag 0.0121 [0.0123, 0.0193]; body base 0.1520 [0.1045, 0.1843]; fin trailing-edge base 0.0742 [0.0690, 0.0898] | transition -0.0330..0.0000; wall temperature 0.0000..0.0204; roughness 0.0000..0.0000 | residual 3.9% tolerance -22.0% to 26.4% (without the wall 22.2%) PASS | body base label: an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+DA95020907 M 2.364 CX0 0.478 | total 0.4787 band 0.4167..0.5687 | nose wave drag 0.0965 [0.0965, 0.0965]; body friction 0.0686 [0.0604, 0.0817]; fin friction 0.0308 [0.0311, 0.0490]; fin leading edges 0.0464 [0.0445, 0.0505]; fin wave drag 0.0121 [0.0122, 0.0192]; body base 0.1508 [0.1036, 0.1829]; fin trailing-edge base 0.0735 [0.0683, 0.0889] | transition -0.0329..0.0000; wall temperature 0.0000..0.0206; roughness 0.0000..0.0000 | residual -0.1% tolerance -22.0% to 26.5% (without the wall 22.2%) PASS | body base label: an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+DA95021317 M 2.414 CX0 0.473 | total 0.4699 band 0.4094..0.5580 | nose wave drag 0.0956 [0.0956, 0.0956]; body friction 0.0675 [0.0594, 0.0803]; fin friction 0.0303 [0.0306, 0.0482]; fin leading edges 0.0465 [0.0446, 0.0507]; fin wave drag 0.0118 [0.0119, 0.0188]; body base 0.1471 [0.1011, 0.1784]; fin trailing-edge base 0.0712 [0.0662, 0.0861] | transition -0.0320..0.0000; wall temperature 0.0000..0.0209; roughness 0.0000..0.0000 | residual 0.7% tolerance -21.9% to 26.6% (without the wall 22.1%) PASS | body base label: an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+DA95020927 M 2.663 CX0 0.446 | total 0.4314 band 0.3763..0.5123 | nose wave drag 0.0917 [0.0917, 0.0917]; body friction 0.0632 [0.0556, 0.0752]; fin friction 0.0285 [0.0287, 0.0452]; fin leading edges 0.0471 [0.0466, 0.0499]; fin wave drag 0.0106 [0.0107, 0.0169]; body base 0.1294 [0.0863, 0.1596]; fin trailing-edge base 0.0609 [0.0566, 0.0737] | transition -0.0288..0.0000; wall temperature 0.0000..0.0226; roughness 0.0000..0.0000 | residual 3.4% tolerance -27.0% to 28.5% (without the wall 23.2%) PASS | body base label: bounded, not measured: the fins-on-base factor between no fin effect (F = 1 on the basic curve of TN 3819 fig. 18) and its value at M 2.56, where the free-flight curve of TN 3819 fig. 35 ends (the high end of its band there, F = 1.361), measured on circular-arc fins below that Mach number and applied by analogy to these fins (0010 section 11); the gap between the bounds is 0.0396 in C_D
+DA95020906 M 2.741 CX0 0.4 | total 0.4215 band 0.3680..0.5002 | nose wave drag 0.0906 [0.0906, 0.0906]; body friction 0.0618 [0.0544, 0.0736]; fin friction 0.0278 [0.0281, 0.0443]; fin leading edges 0.0473 [0.0468, 0.0501]; fin wave drag 0.0103 [0.0104, 0.0164]; body base 0.1255 [0.0836, 0.1549]; fin trailing-edge base 0.0581 [0.0540, 0.0703] | transition -0.0279..0.0000; wall temperature 0.0000..0.0230; roughness 0.0000..0.0000 | residual -5.1% tolerance -26.9% to 28.6% (without the wall 23.1%) PASS | body base label: bounded, not measured: the fins-on-base factor between no fin effect (F = 1 on the basic curve of TN 3819 fig. 18) and its value at M 2.56, where the free-flight curve of TN 3819 fig. 35 ends (the high end of its band there, F = 1.361), measured on circular-arc fins below that Mach number and applied by analogy to these fins (0010 section 11); the gap between the bounds is 0.0384 in C_D
+DA95020916 M 2.749 CX0 0.452 | total 0.4206 band 0.3672..0.4990 | nose wave drag 0.0905 [0.0905, 0.0905]; body friction 0.0617 [0.0543, 0.0734]; fin friction 0.0278 [0.0281, 0.0442]; fin leading edges 0.0473 [0.0468, 0.0501]; fin wave drag 0.0103 [0.0104, 0.0164]; body base 0.1251 [0.0833, 0.1544]; fin trailing-edge base 0.0578 [0.0538, 0.0700] | transition -0.0278..0.0000; wall temperature 0.0000..0.0231; roughness 0.0000..0.0000 | residual 7.5% tolerance -26.8% to 28.6% (without the wall 23.1%) PASS | body base label: bounded, not measured: the fins-on-base factor between no fin effect (F = 1 on the basic curve of TN 3819 fig. 18) and its value at M 2.56, where the free-flight curve of TN 3819 fig. 35 ends (the high end of its band there, F = 1.361), measured on circular-arc fins below that Mach number and applied by analogy to these fins (0010 section 11); the gap between the bounds is 0.0383 in C_D
+DA95030603 M 2.969 CX0 0.385 | total 0.3951 band 0.3459..0.4677 | nose wave drag 0.0878 [0.0878, 0.0878]; body friction 0.0580 [0.0510, 0.0690]; fin friction 0.0261 [0.0264, 0.0415]; fin leading edges 0.0476 [0.0472, 0.0505]; fin wave drag 0.0095 [0.0096, 0.0152]; body base 0.1152 [0.0766, 0.1422]; fin trailing-edge base 0.0508 [0.0473, 0.0615] | transition -0.0253..0.0000; wall temperature 0.0000..0.0241; roughness 0.0000..0.0000 | residual -2.6% tolerance -20.0% to 25.7% (without the wall 19.6%) PASS | body base label: bounded, not measured: the fins-on-base factor between no fin effect (F = 1 on the basic curve of TN 3819 fig. 18) and its value at M 2.56, where the free-flight curve of TN 3819 fig. 35 ends (the high end of its band there, F = 1.361), measured on circular-arc fins below that Mach number and applied by analogy to these fins (0010 section 11); the gap between the bounds is 0.0352 in C_D
+DA95022205 M 2.97 CX0 0.376 | total 0.3951 band 0.3459..0.4677 | nose wave drag 0.0878 [0.0878, 0.0878]; body friction 0.0580 [0.0510, 0.0690]; fin friction 0.0262 [0.0264, 0.0416]; fin leading edges 0.0476 [0.0472, 0.0505]; fin wave drag 0.0095 [0.0096, 0.0151]; body base 0.1151 [0.0766, 0.1422]; fin trailing-edge base 0.0508 [0.0472, 0.0614] | transition -0.0253..0.0000; wall temperature 0.0000..0.0241; roughness 0.0000..0.0000 | residual -4.8% tolerance -20.0% to 25.7% (without the wall 19.6%) PASS | body base label: bounded, not measured: the fins-on-base factor between no fin effect (F = 1 on the basic curve of TN 3819 fig. 18) and its value at M 2.56, where the free-flight curve of TN 3819 fig. 35 ends (the high end of its band there, F = 1.361), measured on circular-arc fins below that Mach number and applied by analogy to these fins (0010 section 11); the gap between the bounds is 0.0352 in C_D
+cluster 1.79 to 1.86: n 3, mean -2.4%, min -4.5%, max 0.5%, sd 2.6%
+cluster 2.34 to 2.42: n 3, mean 1.5%, min -0.1%, max 3.9%, sd 2.2%
+cluster 2.66 to 2.75: n 3, mean 1.9%, min -5.1%, max 7.5%, sd 6.4%
+cluster 2.96 to 2.98: n 2, mean -3.7%, min -4.8%, max -2.6%, sd 1.6%
+all: mean -0.4%, min -5.1%, max 7.5%

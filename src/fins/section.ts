@@ -54,6 +54,39 @@ export interface SymmetricSection {
 }
 
 /**
+ * A flat plate of uniform thickness, the same along the span whatever the
+ * chord (sheet stock), with its edges' shapes: rounded is a full radius,
+ * half the thickness; square-cut is a flat face normal to the plate. Its
+ * faces are parallel to the stream, so they carry no wave drag; its edges
+ * are separate terms (src/fins/rounded-leading-edge.ts,
+ * src/base/fin-trailing-edge.ts; docs/design/0016-fin-edges-of-flat-plates.md).
+ */
+export interface FlatPlate {
+  readonly kind: 'flat-plate';
+  /** In the body's length unit (not chord units). */
+  readonly thickness: number;
+  readonly leadingEdge: 'rounded' | 'square';
+  readonly trailingEdge: 'square' | 'rounded';
+}
+
+/** A flat plate of the thickness given (in the body's length unit). */
+export function flatPlate(
+  thickness: number,
+  leadingEdge: FlatPlate['leadingEdge'],
+  trailingEdge: FlatPlate['trailingEdge'],
+): FlatPlate {
+  if (!(thickness > 0 && Number.isFinite(thickness))) {
+    throw new RangeError('the plate thickness must be a positive number');
+  }
+  return { kind: 'flat-plate', thickness, leadingEdge, trailingEdge };
+}
+
+/** True for a flat plate, false for a section in chord units. */
+export function isFlatPlate(s: SymmetricSection | FlatPlate): s is FlatPlate {
+  return 'kind' in s;
+}
+
+/**
  * A single wedge from a sharp leading edge to a blunt trailing edge of
  * thickness ratio t/c (the trailing edge's thickness over the chord).
  */

@@ -1,0 +1,17 @@
+M,P_B,err,how
+1.5,-0.2977,0.0003,guided column read; n=7; dash gap bridged from ink either side
+1.6,-0.2702,0.0003,guided column read; n=5
+1.7,-0.2597,0.0031,guided column read; n=10; extra 0.003
+1.8,-0.2292,0.0030,guided column read; n=9; extra 0.003
+1.9,-0.2062,0.0030,guided column read; n=55; dash gap bridged from ink either side; extra 0.003
+2,-0.1887,0.0031,guided column read; n=17; extra 0.003
+2.1,-0.1745,0.0030,guided column read; n=9; extra 0.003
+2.2,-0.1649,0.0030,guided column read; n=9; extra 0.003
+2.3,-0.1589,0.0030,guided column read; n=14; extra 0.003
+2.4,-0.1538,0.0003,guided column read; n=9
+2.5,-0.1491,0.0003,guided column read; n=18
+2.6,-0.1446,0.0003,guided column read; n=4
+2.7,-0.1399,0.0003,guided column read; n=9
+2.8,-0.1360,0.0003,guided column read; n=18
+2.9,-0.1319,0.0003,guided column read; n=53; dash gap bridged from ink either side
+3,-0.1277,0.0003,guided column read; n=9

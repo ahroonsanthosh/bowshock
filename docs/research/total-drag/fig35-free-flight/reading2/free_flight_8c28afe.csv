@@ -1,0 +1,35 @@
+M,P_B,err,how,nearby lines and identity
+1,-0.2998,0.0003,curve; n=10,alone (no other with-fins line drawn below M 1.5); identity certain
+1.05,-0.2913,0.0003,curve; n=16,alone (no other with-fins line drawn below M 1.5); identity certain
+1.1,-0.2840,0.0003,curve; n=12,alone (no other with-fins line drawn below M 1.5); identity certain
+1.15,-0.2793,0.0003,curve; n=16,alone (no other with-fins line drawn below M 1.5); identity certain
+1.2,-0.2750,0.0003,curve; n=16,alone (no other with-fins line drawn below M 1.5); identity certain
+1.25,-0.2720,0.0003,curve; n=16,alone (no other with-fins line drawn below M 1.5); identity certain
+1.3,-0.2703,0.0003,curve; n=12,alone (no other with-fins line drawn below M 1.5); identity certain
+1.35,-0.2687,0.0003,curve; n=16,alone (no other with-fins line drawn below M 1.5); identity certain
+1.4,-0.2675,0.0003,curve; n=16,alone (no other with-fins line drawn below M 1.5); identity certain
+1.45,-0.2665,0.0003,curve; n=16,alone (no other with-fins line drawn below M 1.5); identity certain
+1.5,-0.2659,0.0003,curve; n=16,estimate B above (0.005 to 0.03 more negative) and A below; identity certain
+1.55,-0.2656,0.0003,curve; n=16,estimate B above (0.005 to 0.03 more negative) and A below; identity certain
+1.6,-0.2654,0.0003,curve; n=12,estimate B above (0.005 to 0.03 more negative) and A below; identity certain
+1.65,-0.2651,0.0020,curve; n=16; extra 0.002,merged with estimate B within the line width (the knee); value shared; identity certain
+1.7,-0.2611,0.0020,curve; n=8; extra 0.002,merged with estimate B within the line width (the knee); value shared; identity certain
+1.72,-0.2582,0.0020,guided column read; n=7; extra 0.002,merged with estimate B within the line width (the knee); value shared; identity certain
+1.75,-0.2503,0.0020,guided column read; n=7; extra 0.002,merged with estimate B within the line width (the knee); value shared; identity certain
+1.8,-0.2369,0.0003,guided column read; n=3,B and A below it (less negative) by 0.005 to 0.02; identity certain by dash style
+1.85,-0.2225,0.0003,guided column read; n=7,B and A below it (less negative) by 0.005 to 0.02; identity certain by dash style
+1.9,-0.2108,0.0003,guided column read; n=10,B and A below it (less negative) by 0.005 to 0.02; identity certain by dash style
+1.95,-0.1999,0.0003,guided column read; n=7,B and A below it (less negative) by 0.005 to 0.02; identity certain by dash style
+2,-0.1897,0.0030,guided column read; n=12; extra 0.003,B and A within 0.002 to 0.005; it crosses A near M 2.15 to 2.25; identity by dash style, medium confidence
+2.05,-0.1819,0.0030,guided column read; n=7; extra 0.003,B and A within 0.002 to 0.005; it crosses A near M 2.15 to 2.25; identity by dash style, medium confidence
+2.1,-0.1746,0.0030,guided column read; n=18; extra 0.003,B and A within 0.002 to 0.005; it crosses A near M 2.15 to 2.25; identity by dash style, medium confidence
+2.15,-0.1693,0.0030,guided column read; n=7; extra 0.003,B and A within 0.002 to 0.005; it crosses A near M 2.15 to 2.25; identity by dash style, medium confidence
+2.2,-0.1633,0.0031,guided column read; n=18; extra 0.003,B and A within 0.002 to 0.005; it crosses A near M 2.15 to 2.25; identity by dash style, medium confidence
+2.25,-0.1562,0.0030,guided column read; n=5; extra 0.003,B and A within 0.002 to 0.005; it crosses A near M 2.15 to 2.25; identity by dash style, medium confidence
+2.3,-0.1515,0.0003,guided column read; n=4,below A (less negative) by 0.004 to 0.006; identity certain by dash style (single short dash)
+2.35,-0.1466,0.0003,guided column read; n=7,below A (less negative) by 0.004 to 0.006; identity certain by dash style (single short dash)
+2.4,-0.1425,0.0003,guided column read; n=18,below A (less negative) by 0.004 to 0.006; identity certain by dash style (single short dash)
+2.45,-0.1387,0.0003,guided column read; n=7,below A (less negative) by 0.004 to 0.006; identity certain by dash style (single short dash)
+2.5,-0.1353,0.0003,guided column read; n=18,below A (less negative) by 0.004 to 0.006; identity certain by dash style (single short dash)
+2.55,-0.1321,0.0003,guided column read; n=7,below A (less negative) by 0.004 to 0.006; identity certain by dash style (single short dash)
+2.563,-0.1317,0.0004,right-hand end of the line: last ink column x 3545 px; M err 0.002 (half a stroke),below A (less negative) by 0.004 to 0.006; identity certain by dash style (single short dash)

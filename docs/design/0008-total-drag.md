@@ -300,7 +300,16 @@ four rectangular, unswept, circular-arc fins whose trailing edges are at the
 base. Love's fig. 35 (TN 3819, t/c 0.10, x/c 0) gives it over Mach 1.5 to
 3.0. This record's first reading is in `data/love_fig35_tn3819.csv`, with
 the calibration and identification in its header; round 3's second
-reading is used in 0010 section 1.3, and the band below uses both:
+reading is used in 0010 section 1.3, and the band below uses both.
+
+**Corrected 2026-10-21 (0010 section 11).** Both readings, this record's
+included, took the most negative with-fin line for the free-flight line
+wherever the lines separate. Above about M 2.15 that line is Love's
+estimate B, a prediction; the free-flight curve is the least negative
+with-fin line there, and it ends at M 2.563. The rows below from M 2.2 up
+are therefore estimate B's, not free flight's. The factor now rests on two
+readings of the identified curve, and above its end it is bounded, not
+measured (0010 sections 11.4 and 11.5); this section is kept as written:
 
 | M    | Free flight (ref. 12), finned, P_B     | No-fin curve, P_B | F, free flight | F, tunnel pairs                              |
 | ---- | -------------------------------------- | ----------------- | -------------- | -------------------------------------------- |
@@ -750,6 +759,26 @@ all 11 shots (0010 section 6.1); the second passed at all 11 (0010 section
 hold-out is used: any later change to a term it tested is "estimated on the
 Basic Finner, not validated" until another set tests it.
 
+**Narrowed 2026-10-20, and the factor corrected 2026-10-21 (0010
+sections 7 and 11).** The class now runs from Mach 1.8 to 2.15 only:
+above it the fins-on-base factor the gate tested rested on one of Love's
+predictions in TN 3819 fig. 35, and the corrected factor has no hold-out
+there. The Mach 1.8 to 3.0 below is the plan as first written.
+
+**Suspended 2026-10-21 (0010 section 11.7).** By the hold-out rule above
+(6.1), the class's validated claim is suspended: the correction changed a
+term the gate tested inside the class too, moving the total by -0.07% to
++0.17% at the three shots there (by 0.7% to 3.0% above it). Nothing is
+claimed as validated meanwhile; the Basic Finner's total is "an estimate,
+not validated" everywhere, and the class (Mach 1.8 to 2.15 with its other
+limits) is kept for the next test, which covers its Mach range at BRL's
+conditions (0014 section 10.6). The route back:
+BRL Report 934's range A (Mach 1.5 to 2.47; 0014 sections 10.5 and
+10.6), run once as registered, after its second reading and decisions,
+as the test of the corrected factor; if it passes, the class is
+validated over what that range supports. The second run and the
+correction's residuals are kept as history (0010 sections 4.2 and 11.6).
+
 May claim:
 
 - Total zero-incidence, power-off Cd at **Mach 1.8 to 3.0** for one class of
@@ -1069,3 +1098,36 @@ Changes after the round 5 audit of the total (0010 section 10;
    total, largest at M 2.97, where it would deepen the offset (6.4).
 4. **The rounded leading edge** is refused above Re_D 1e6, TN 2960's
    highest (4.1, through 0010 section 5.2).
+
+Changes after TN 3819 fig. 35 was identified (0010 section 11;
+`../research/total-drag/fig35-free-flight/`):
+
+1. **The fins-on-base factor's free-flight line** (3.4, 6.4): the line
+   this record and round 3 read is estimate B, one of Love's predictions,
+   above about M 2.15. The factor now rests on two readings of the
+   free-flight curve as identified, which ends at M 2.563, and above M
+   2.56 it is bounded, not measured, between no fin effect and the factor
+   at the curve's end (0014 section 10.2). The claim class was narrowed to
+   Mach 1.8 to 2.15 (6.4).
+2. **The gate re-run with it** is a recorded correction, made on the
+   figure's evidence after the residuals were known, not a validation:
+   residuals -5.1% to +7.5% (mean -0.4%), the M 2.97 offset -3.7% (B5,
+   6.4).
+3. **The validated claim suspended** (6.1, 6.4): decided by the owner on
+   2026-10-21 by the hold-out rule of 6.1. The correction changes the
+   fins-on-base factor, a term the gate tested, inside the class as well
+   as above it (the total by -0.07% to +0.17% at the three shots inside
+   it, 0.7% to 1.0% at M 2.35 to 2.41, 2.6% to 3.0% at 2.66 to 2.97), so
+   the Basic Finner's total is "an estimate, not validated" everywhere
+   until a held-back set tests the corrected factor: BRL Report 934's
+   range A (Mach 1.5 to 2.47; 0014 section 10.5), run once as registered,
+   after its second reading and the decisions of 0014 section 10.6. If it
+   passes, the class is validated over what that range supports (0010
+   section 11.7).
+4. **Swept fins at the base refused** (3.4): the factor of 3.4 is
+   measured on four unswept fins, but until 2026-10-21 the code took no
+   sweep and served swept and tapered fins at the base with it. It now
+   refuses fins swept at either edge, and so any tapered planform, in the
+   measured part and above M 2.56 alike, until the rebuilt factor (W1)
+   serves them (0010 section 11.5; 0014 section 10.7). The Basic Finner,
+   unswept, is unchanged.
