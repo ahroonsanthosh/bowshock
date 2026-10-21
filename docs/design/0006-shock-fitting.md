@@ -1063,23 +1063,27 @@ not served.
 **Against the method of characteristics.** Each family's fitted flow on
 nj = 20, 40 and 80, marched from grid lines behind the sonic line as in
 "Blunt noses against the method of characteristics" (the row next to the
-wall left out; 640, 1280 and 2560 intervals, the finest used). Lines
-nearer the tip, where the least Mach number on the line is below about
-1.3 at Mach 2 (and the entropy gradient at the wall is steepest), fold
-or do not settle in the intervals (mass balance 6e-5 to 3e-4) and are
-left out; on the 1-caliber noses, whose layer is thicker, lines down to
-Mach 1.06 march cleanly (mass balance 1e-6 to 1e-5). The fitted drag
+wall left out; 640, 1280 and 2560 intervals, the finest used). A line is
+used where, on every grid, the march's mass balance on 2560 intervals is
+below 3.5e-5 and its change from 1280 intervals below 3.5e-5 of the
+nose's drag. Lines nearer the tip, where the entropy gradient at the
+wall is steepest, fail it (mass balance 4.7e-5 to 3e-4 on the 3-caliber
+noses; on the 5-caliber nose at Mach 1.5, changes with the intervals of
+6.5e-5 to 3.2e-4 of the drag); on the 1-caliber noses, whose layer is
+thicker, lines down to a least Mach number of 1.06 pass. The fitted drag
 downstream of each line falls with the grid, the march from its data
 rises, and the reference for the nose is the march extrapolated over the
-grids plus the fitted drag ahead of the line, extrapolated (at the
-observed orders and at second order; the larger difference is kept):
+grids plus the fitted drag ahead of the line, extrapolated (each at its
+observed order and at second order; both differences are given):
 
 | Nose, Mach  | Lines (x)    | Share of drag | Fitted, order | March, order | Extrapolation minus reference | nj = 80 minus reference |
 | ----------- | ------------ | ------------- | ------------- | ------------ | ----------------------------- | ----------------------- |
 | 1 cal., 1.5 | 0.50 to 0.73 | 24% to 4%     | 1.88 to 2.05  | 1.92 to 2.59 | +5e-7 to +6.8e-6              | 1.58e-4 to 1.65e-4      |
 | 1 cal., 2   | 0.26 to 0.58 | 60% to 18%    | 1.65 to 1.89  | 1.76 to 1.86 | -4.9e-6 to +2.1e-6            | 9.6e-5 to 1.03e-4       |
+| 1 cal., 3   | 0.13 to 0.41 | 82% to 38%    | 1.89 to 1.97  | 1.78 to 2.01 | -2.7e-6 to +1.6e-6            | 3.1e-5 to 3.5e-5        |
 | 3 cal., 2   | 0.09 to 1.02 | 95% to 40%    | 1.49 to 1.74  | 1.16 to 1.31 | -1.24e-4 to +8.8e-5           | 3.4e-4 to 5.5e-4        |
-| 5 cal., 1.5 | 0.16 to 1.33 | 93% to 43%    | 2.29 to 2.34  | 1.52 to 1.91 | +2.20e-4 to +2.44e-4          | 5.5e-4 to 5.7e-4        |
+| 3 cal., 3   | 0.32 to 1.05 | 81% to 41%    | 1.82 to 1.91  | 1.44 to 1.49 | -1.4e-5 to +4.5e-5            | 1.63e-4 to 2.22e-4      |
+| 5 cal., 1.5 | 0.16 to 0.32 | 93% to 86%    | 2.29 to 2.30  | 1.52 to 1.58 | +2.20e-4 to +2.44e-4          | 5.5e-4 to 5.7e-4        |
 
 (relative to the nose's drag). On the 1-caliber noses the two agree
 within 7e-6 of the drag and both converge at close to second order. On
@@ -1087,31 +1091,34 @@ the 3-caliber nose at Mach 2 the fitted drag converges at 1.49 and the
 march from its data at 1.16 to 1.31 from the other side: the data carry
 a slowly converging error, the unresolved entropy layer the likely
 source. The tightest bracket (the line at x = 0.092, 95% of the drag,
-whose upstream part changes by 1.6e-6 between the two finest grids) puts the true drag between
-0.0803759 and the nj = 80 value if both sequences stay monotone: an
-error of at most 3.6e-4 on nj = 80, inside the band of 5.76e-4. On the
-5-caliber nose at Mach 1.5 the order on these grids, 2.28, is above 2,
-but the fitted minus march difference falls by 4.06 and then by 2.76:
-the convergence slows, and the procedure's extrapolation, its order
-capped at 2, lies 2.2e-4 to 2.44e-4 above the references. There the
-finest grid lies 5.5e-4 to 5.7e-4 above them, which the band alone
-(4.09e-4) does not contain, nor with the allowance of 7e-5 (4.8e-4).
+whose upstream part changes by 1.6e-6 between the two finest grids) puts
+the true drag between 0.0803759 and the nj = 80 value if both sequences
+stay monotone: an error of at most 3.6e-4 on nj = 80, inside the band of
+5.76e-4. On the 5-caliber nose at Mach 1.5 the order on these grids,
+2.28, is above 2, but the fitted minus march difference falls by 4.06
+and then by 2.76: the convergence slows, and the procedure's
+extrapolation, its order capped at 2, lies 2.20e-4 to 2.44e-4 above the
+references. There the finest grid lies 5.5e-4 to 5.8e-4 above them and
+their lowest bound, which the band alone (4.09e-4) does not contain, nor
+with the allowance of 7e-5 (4.8e-4).
 
 **The allowance and the served region.** So the allowance for two-scale
 noses (`TWO_SCALE_DRAG_FLOOR`) is twice the largest miss of the
 procedure's extrapolation over these references, rounded up: 5e-4, in
 place of `FITTED_DRAG_FLOOR` on any start with its own outer boundary
-(`fittedDragFloor`). With it every band above contains its error, the
-5-caliber nose's by 1.4 times against the lowest bound of its march. Only the Von Karman nose is served
-(`bluntNoseRefusal`), and only inside the outline of the (calibers, Mach)
-points referenced (`VON_KARMAN_REFERENCES`, `insideOutline`): (1, 1.5),
-(1, 2), (3, 2), (5, 1.5); a case outside is refused with the reason, as
-are the other Haack noses and the power series. References at Mach 3 (1
-and 3 calibers, whose families are above) and at the outline's open
-corners (5 calibers at Mach 2 and 3) are in progress; each that passes
-extends the outline and resets the allowance. On the GPU the page's path
-gives the 1-caliber nose at Mach 2 within 4.2e-8 of the CPU's value
-on nj = 20 (0.42909808121884696 against 0.42909806331220435).
+(`fittedDragFloor`). With it every band above contains its error: the
+5-caliber nose's by 1.56 times against the lowest bound of its march,
+the others' by 2 times or more. Only the Von Karman nose is served
+(`bluntNoseRefusal`), and only inside the outline of the (calibers,
+Mach) points referenced (`VON_KARMAN_REFERENCES`, `insideOutline`): (1,
+1.5), (1, 2), (1, 3), (3, 2), (3, 3), (5, 1.5), whose outline has the
+corners (1, 1.5), (5, 1.5), (3, 3) and (1, 3); a case outside is refused
+with the reason, as are the other Haack noses and the power series.
+References at the open corners (5 calibers at Mach 2 and 3) are in
+progress; each that passes extends the outline and resets the
+allowance. On the GPU the page's path gives the 1-caliber nose at Mach 2
+within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
+against 0.42909806331220435).
 
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of
@@ -1144,7 +1151,7 @@ grids, with no third grid and no reference; the parabolic nose on nj =
   the march can start from (40% of the 3:1 ellipsoid's at Mach 2, 76% of
   the 1-caliber Von Karman nose's at Mach 1.5) still has only the fitted
   family's own convergence, and the stagnation-point checks. Two-scale noses: the
-  Mach 3 references and the outline's corners (in progress); the other
+  outline's corners at 5 calibers, Mach 2 and 3 (in progress); the other
   Haack noses and the power series (no reference); sharp tips whose
   shock detaches (no third grid, no reference).
 - The blunt grid's lines near a slender tip at low Mach numbers: on the

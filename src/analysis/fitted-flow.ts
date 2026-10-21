@@ -876,7 +876,9 @@ export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
 export const VON_KARMAN_REFERENCES: readonly (readonly [number, number])[] = [
   [1, 1.5],
   [1, 2],
+  [1, 3],
   [3, 2],
+  [3, 3],
   [5, 1.5],
 ];
 

@@ -15,7 +15,7 @@ number with an honest uncertainty band.
 > **Status: early development.** Verified 1D and 2D (planar and
 > axisymmetric) Euler solvers run on both the CPU and the GPU (WebGPU), with
 > their test suites and live demos, and the inviscid forebody wave drag of
-> sharp-nosed bodies and ellipsoid noses is computed with a measured error
+> sharp-nosed bodies, ellipsoid and Von Karman noses is computed with a measured error
 > band. Skin friction, fin wave drag and base drag exist as libraries, each
 > measured against wind-tunnel or flight data
 > ([0007](docs/design/0007-skin-friction.md),
@@ -154,6 +154,25 @@ them; the fitted-drag families are recorded in
   is barely supersonic. Ahead of the sonic line, where the flow is
   subsonic and no independent reference exists, the drag rests on the
   grids' convergence and the exact stagnation pressure.
+- Von Karman (LD-Haack) noses on the drag page. Their tip is blunt only
+  over a hundredth to a thousandth of the nose, so they are solved on a
+  grid with two length scales, fitted to a shock captured twice
+  ([0004](docs/design/0004-grids.md),
+  [0006](docs/design/0006-shock-fitting.md)), and their drag converges
+  more slowly: observed orders 1.49 to 2.28 on 20, 40 and 80 cells across
+  for six noses (1 caliber at Mach 1.5, 2 and 3; 3 calibers at Mach 2 and
+  3; 5 calibers at Mach 1.5). Against a method of characteristics started
+  from each grid's solution behind the sonic line, the value extrapolated
+  from the three grids misses by up to 2.44e-4 of the value (the
+  5-caliber nose at Mach 1.5, whose convergence slows on the finer
+  grids), so their band includes an allowance of 5e-4 of the value, twice
+  that, instead of 7e-5; with it every band measured contains its error,
+  by 1.56 times or more. They are served only inside the range those six
+  span: from 1 caliber up to 5 at Mach 1.5, 4.3 at Mach 2 and 3 at Mach
+  3; outside it, and for the other Haack noses and the power series, the
+  case is refused with the reason. On the GPU the page's drag of the
+  1-caliber nose at Mach 2 is within 4.2e-8 of the CPU's on 20 cells
+  across.
 
 - Skin friction, on the drag page as part of the total
   ([0007](docs/design/0007-skin-friction.md), `src/friction/`): van
@@ -201,8 +220,9 @@ them; the fitted-drag families are recorded in
   band and each input band (transition, wall temperature, roughness) are
   shown apart, rounded outward, with every component's band and label.
 
-Not yet: viscous flow in the solver; Von Karman (Haack) and power-series
-noses (their tips need grids being designed); Mach numbers below 1.2; a
+Not yet: viscous flow in the solver; the other Haack noses and the power
+series (their grids exist, no reference yet), and Von Karman noses outside
+the range referenced; Mach numbers below 1.2; a
 total validated outside the Basic Finner's class; altitude and speed as
 inputs (no standard atmosphere is implemented, so the page asks for the
 Reynolds number).
@@ -228,8 +248,8 @@ demo. They need a browser with WebGPU (recent Chrome or Edge, for
 example); the ramp and the shock tube fall back to the CPU without it.
 
 - **Nose wave drag and total drag:** the inviscid forebody pressure (wave)
-  drag coefficient of a cone, tangent or secant ogive, parabolic-series or
-  ellipsoid nose and its body, refined on nested grids on your GPU and
+  drag coefficient of a cone, tangent or secant ogive, parabolic-series,
+  ellipsoid or Von Karman nose and its body, refined on nested grids on your GPU and
   reported with its measured error band, or as not verified; and, from that
   solve, the rocket's total drag with fins and base, with its bands, its
   components and their labels: validated on the Basic Finner inside that
