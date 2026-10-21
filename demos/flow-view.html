@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07090c" />
+    <meta
+      name="description"
+      content="The flow around the Basic Finner's 20 degree nose cone, solved on your GPU with the bow shock fitted and drawn live as it converges."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M27 4 Q6 8 5 16 Q6 24 27 28%27 fill=%27none%27 stroke=%27%23ff5a6e%27 stroke-width=%273%27 stroke-linecap=%27round%27/%3E%3Cpath d=%27M11 16 L27 11.5 L27 20.5 Z%27 fill=%27%23e6e8eb%27/%3E%3C/svg%3E"
+    />
+    <title>Live flow · bowshock</title>
+    <link rel="stylesheet" href="/src/ui/style.css" />
+  </head>
+  <body class="app">
+    <main class="stage">
+      <h1 class="visually-hidden">Live flow around the Basic Finner's nose</h1>
+      <div class="viewport">
+        <canvas
+          id="flow"
+          role="img"
+          tabindex="0"
+          aria-label="The flow around the body, mirrored about its axis, as it is solved"
+        ></canvas>
+      </div>
+    </main>
+    <aside class="panel panel--left" id="panel-case" data-title="Case">
+      <div class="panel__body">
+        <p class="panel__lead">
+          The Basic Finner's body without its fins: a 20° cone on a cylinder, 10 calibers long.
+        </p>
+        <div class="field">
+          <label class="field__label" for="mach">Mach number</label>
+          <select id="mach">
+            <option value="1.5">1.5</option>
+            <option value="2" selected>2.0</option>
+            <option value="2.5">2.5</option>
+            <option value="3">3.0</option>
+            <option value="4">4.0</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field__label" for="finest">Finest grid</label>
+          <select id="finest">
+            <option value="1">20 cells across</option>
+            <option value="2">40 cells across</option>
+            <option value="4">80 cells across</option>
+            <option value="8" selected>160 cells across</option>
+          </select>
+        </div>
+        <div class="field panel__row">
+          <button id="pause" class="button" type="button" aria-keyshortcuts="Space">Pause</button>
+          <button id="again" class="button" type="button" aria-keyshortcuts="R">Run again</button>
+        </div>
+      </div>
+    </aside>
+    <aside class="panel panel--right" id="panel-drag" data-title="Wave drag" data-tab="Drag">
+      <div class="panel__body">
+        <dl class="figure">
+          <dt>Wave C<sub>D</sub></dt>
+          <dd class="figure__main" id="drag">…</dd>
+        </dl>
+        <p><span id="status" class="badge">Starting</span></p>
+        <p class="panel__note" id="result"></p>
+        <table class="levels" id="levels" aria-label="Grids solved" hidden>
+          <thead>
+            <tr>
+              <th scope="col">Cells</th>
+              <th scope="col">Steps</th>
+              <th scope="col">C<sub>D</sub>, this grid</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <details class="disclosure">
+          <summary>What this value is</summary>
+          <p class="panel__note">
+            The inviscid pressure (wave) drag of the nose and the body ahead of the base, on the
+            body's cross-section, at zero incidence: not the rocket's total drag, which also has
+            skin friction, base drag and fins.
+          </p>
+          <p class="panel__note">
+            The value shown is the finest grid's; its band is measured from the grids and includes
+            an allowance of 7e-5 of the value for an error the grids cannot show.
+          </p>
+        </details>
+      </div>
+    </aside>
+    <aside class="panel panel--phone" id="panel-view" data-title="View">
+      <div class="panel__body">
+        <div class="view-controls" id="view-controls"></div>
+      </div>
+    </aside>
+    <script type="module" src="/src/app/flow-view.ts"></script>
+  </body>
+</html>

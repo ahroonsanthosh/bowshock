@@ -112,9 +112,10 @@ function pageFields(): TotalDragFields {
   };
 }
 
+/** The Basic Finner as the page opens on it (BASIC_FINNER_NOSE_FIELDS). */
 const BODY = {
-  nose: { shape: { kind: 'conical' }, length: 2.836, baseRadius: 0.5 },
-  cylinderLength: 7.164,
+  nose: { shape: { kind: 'conical' }, length: 2.835641, baseRadius: 0.5 },
+  cylinderLength: 7.164359,
 } as const;
 
 describe('the drag page: total drag before a nose solve', () => {
