@@ -28,7 +28,10 @@ number with an honest uncertainty band.
 > 2.15: above that, one term of the model (the fins' effect on base
 > pressure) was found to rest on a published prediction, not on
 > measurements, so the eight shots above Mach 2.15 tested a total built
-> partly on a prediction. The drag page shows the
+> partly on a prediction. That term has since been corrected to the
+> measured curve, after the test's results were known, so it is recorded
+> as a correction, not a new test: above Mach 2.15 the total is an
+> estimate. The drag page shows the
 > total ([0011](docs/design/0011-total-drag-on-the-page.md)): labelled
 > validated inside the Basic Finner's class, an estimate, not validated,
 > outside it, and refused, with the reasons and no number, where a
@@ -186,7 +189,14 @@ them; the fitted-drag families are recorded in
   lie 5.4% and 7.6% below the model. An independent audit narrowed the
   tolerance's high end from +26.5% to +31.4% after the test (a change to
   how the bands combine, made after the hold-out was used; the measured
-  differences did not change, and every shot still passes).
+  differences did not change, and every shot still passes). Then the
+  fins-on-base factor was found to have been read, above Mach 2.15, from
+  one of Love's predictions in TN 3819 fig. 35 instead of its free-flight
+  curve, which ends at Mach 2.56: the curve was identified from the report
+  and read twice, the factor corrected to it and, above its end, bounded,
+  not measured; the gate re-run as a recorded correction, not a
+  validation, gives -5.1% to +7.5% (mean -0.4%), every shot still inside
+  its tolerance. The validated class stops at Mach 2.15.
 
 - The total drag on the [drag page](demos/nose-drag.html)
   ([0011](docs/design/0011-total-drag-on-the-page.md)): the nose wave drag
@@ -197,12 +207,15 @@ them; the fitted-drag families are recorded in
   transcribed, each dimension within 0.5%, at Mach 1.799 to 2.15, Reynolds
   number 1.19e7 to 2.0e7 on length, static temperature 216.65 to 320 K,
   over which the modelled total moves by at most 0.13%; above Mach 2.15
-  the fins-on-base factor was read from one of Love's estimates in TN 3819
-  fig. 35, not from its free-flight curve) the total
-  is labelled validated on it, with the tolerance and the offset at Mach
-  2.97 beside it; outside it, an estimate, not validated, with every
-  reason; where a component's method does not reach (the base outside
-  Mach 1.5 to 3.0, or 1.8 to 3.0 with fins ending at the base; swept
+  the gate tested a fins-on-base factor read from one of Love's estimates
+  in TN 3819 fig. 35, and the factor corrected since has no hold-out
+  there) the total is labelled validated on it, with the tolerance and
+  the offset at Mach 2.97 beside it; outside it, an estimate, not
+  validated, with every reason (above Mach 2.56, where fig. 35's
+  free-flight curve ends, the fins-on-base factor is bounded, not
+  measured, and says so); where a component's method does not reach
+  (the base outside Mach 1.5 to 3.0, or 1.8 to 3.0 with fins ending at
+  the base; swept
   rounded leading edges; among others), it is refused with every reason
   and no number. The model-form
   band and each input band (transition, wall temperature, roughness) are
@@ -309,7 +322,9 @@ The design records, in order:
   each measured.
 - [0010](docs/design/0010-base-drag-and-total.md): base drag and the total
   (draft), and the Basic Finner gate, which the total passes at all 11
-  shots (the second run; the first was refused).
+  shots (the second run; the first was refused), and the correction of
+  the fins-on-base factor to TN 3819 fig. 35's free-flight curve, the
+  gate re-run with it as a recorded correction (section 11).
 - [0011](docs/design/0011-total-drag-on-the-page.md): the total drag on
   the drag page (draft): the nose term from the page's solve, the class
   rule that decides "validated on the Basic Finner", the labels, and the

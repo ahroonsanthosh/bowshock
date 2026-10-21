@@ -435,7 +435,7 @@ export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
           ? [p(claim.text), ...claim.caveats.map((c) => p(c))]
           : [
               p(claim.text),
-              p('Outside the class because:'),
+              p('Not validated because:'),
               list(claim.reasons),
               p(ESTIMATE_TOLERANCE_TEXT),
             ];
@@ -496,17 +496,27 @@ export function failureDisplay(message: string): DisplayBlock[] {
 
 const signedPercent = (x: number) => `${x > 0 ? '+' : ''}${x.toFixed(1)}%`;
 
-/** The class in words and the gate's 11 shots as published in 0010 section 4.2. */
+/** The class in words and the gate's 11 shots, corrected, with the second run's residuals (0010 sections 4.2, 11). */
 export function gateDisplay(): DisplayBlock[] {
   return [
     p(CLASS_DESCRIPTION, 'muted'),
     {
       kind: 'table',
       caption:
-        'The Basic Finner gate, second run, as published in design record 0010 section 4.2, ' +
-        'with the tolerances re-derived after an independent audit (its section 10; residual: ' +
-        'measured CX0 over modelled, minus 1; values to the nearest last digit shown)',
-      head: ['Shot', 'Mach', 'CX0 measured', 'Modelled C_D (band)', 'Residual', 'Tolerance'],
+        'The Basic Finner gate re-run with the corrected fins-on-base factor (design record 0010 ' +
+        'section 11): a recorded correction made after the residuals were known, not a new test, ' +
+        'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
+        'audit (its section 10); residual: measured CX0 over modelled, minus 1; values to the ' +
+        'nearest last digit shown',
+      head: [
+        'Shot',
+        'Mach',
+        'CX0 measured',
+        'Modelled C_D (band)',
+        'Residual',
+        'Tolerance',
+        'Second run',
+      ],
       rows: PUBLISHED_GATE.map((s) => [
         s.shot,
         s.mach.toFixed(3),
@@ -514,8 +524,9 @@ export function gateDisplay(): DisplayBlock[] {
         `${s.cd.toFixed(4)} (${s.low.toFixed(4)} to ${s.high.toFixed(4)})`,
         signedPercent(s.residual),
         `${signedPercent(s.tolerance[0])} to ${signedPercent(s.tolerance[1])}`,
+        signedPercent(s.secondRun),
       ]),
-      numeric: [1, 2, 3, 4, 5],
+      numeric: [1, 2, 3, 4, 5, 6],
     },
     p(
       'In the gate the nose was the exact Taylor-Maccoll value, and the inputs were a laminar ' +

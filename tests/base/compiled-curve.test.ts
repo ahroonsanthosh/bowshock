@@ -245,7 +245,7 @@ describe('body base drag: the arithmetic', () => {
     expect(r.labels[1]).toMatch(/^an analogy, not a measurement/);
   });
 
-  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9535 of it (M 3.0, fins at the base), 0.656 without fins', () => {
+  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.8840 of it (M 3.0, fins at the base; 0.9535 before the correction of 0010 section 11), 0.656 without fins', () => {
     const fins = {
       count: 4,
       thicknessRatio: 0.08,
@@ -274,7 +274,8 @@ describe('body base drag: the arithmetic', () => {
       }
     }
     withFins = Math.max(withFins, at(3.0, true).high / at(3.0, true).vacuum);
-    expect(withFins).toBeCloseTo(0.9535, 4);
+    expect(withFins).toBeCloseTo(0.884, 4);
+    expect(at(3.0, true).high / at(3.0, true).vacuum).toBe(withFins);
     expect(Math.round(1000 * without) / 1000).toBe(0.656);
   });
 

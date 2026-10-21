@@ -240,9 +240,9 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     document.body.append(target);
     renderBlocks(target, blocks);
     expect(target.textContent).toBe(displayText(blocks));
-    // The gate's shot DA95021308 (0010 section 4.2): 0.5944 (0.5172 to 0.7039).
+    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5156 to 0.7047).
     expect(target.querySelector('p.result.ok')?.textContent).toBe(
-      'Total C_D = 0.5944, model-form band 0.5172 to 0.7039 (-13.0% to +18.5%)',
+      'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%)',
     );
     expect(target.querySelector('.claim.claim-ok')?.textContent).toContain(VALIDATED_CLAIM);
     // The offset at Mach 2.97 is stated in the claim, not set apart (the class stops at 2.15).
@@ -255,5 +255,31 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
       view.total.inputs.length + 3 * view.total.components.length,
     );
     target.remove();
+  });
+
+  it('above Mach 2.15 the Basic Finner is laid out as an estimate, not validated, with the corrected band, never refused: M 2.3, 2.5, 2.9', () => {
+    for (const mach of [2.3, 2.5, 2.9]) {
+      const form = basicFinnerForm(mach);
+      const view = totalDragView(form, {
+        kind: 'solved',
+        component: exactConeNoseWaveDrag(mach, Math.atan(0.5 / form.body.nose.length)),
+      });
+      if (view.kind !== 'total') throw new Error(`M ${mach}: ${view.kind}`);
+      const blocks = totalDragDisplay(view);
+      const target = document.createElement('div');
+      document.body.append(target);
+      renderBlocks(target, blocks);
+      expect(target.textContent).toBe(displayText(blocks));
+      const head = target.querySelector('p.result.warn')?.textContent ?? '';
+      expect(head.startsWith(`Total C_D = ${view.total.cd.toFixed(4)}`)).toBe(true);
+      expect(head.endsWith(': an estimate, not validated')).toBe(true);
+      expect(target.querySelector('.claim.claim-warn')?.textContent).toContain(
+        `Mach ${mach} is outside 1.799 to 2.15`,
+      );
+      expect(target.textContent).toContain(
+        mach > 2.56 ? 'bounded, not measured' : 'an analogy, not a measurement',
+      );
+      target.remove();
+    }
   });
 });

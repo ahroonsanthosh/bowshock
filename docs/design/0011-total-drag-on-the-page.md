@@ -17,7 +17,9 @@
   the same day for the round 5 audit (0010 section 10), and the flight
   condition from altitude added and the class's static temperature
   widened to 216.65 to 320 K (sections 9 and 3); the class's Mach range
-  narrowed to 1.799 to 2.15 the same day (section 3)
+  narrowed to 1.799 to 2.15 the same day (section 3); the fins-on-base
+  factor corrected to TN 3819 fig. 35's free-flight curve on 2026-10-21,
+  the page's numbers, labels and gate table with it (0010 section 11)
 - **Inputs:** [0010](0010-base-drag-and-total.md) section 7 (what may be
   claimed), section 4.2 (the gate) and section 10 (the round 5 audit),
   [0008](0008-total-drag.md) sections
@@ -99,17 +101,21 @@ The notes carry what the labels do not: the band of fin friction and fin
 wave drag runs from 1.01 to 1.59 times the value, above it (on the ARCAS
 increments the model was never above the data, 0008 section 4.3); the
 fins-on-base factor does not depend on the fins' span, chord or planform
-(section 6); and its flags from `src/base` (one reading of TN 3819 fig. 35
-above M 2.85 up to 2.97, an extrapolated row above M 2.97, the M 1.80 row
+(section 6); and its flags from `src/base` (above M 2.56, where TN 3819
+fig. 35's free-flight curve ends, the factor bounded, not measured; one
+reading of the curve, should a row ever rest on one; the M 1.80 row
 taken just below it). Every total also carries the band's caveat (the
 linear sum is a minimum, not a coverage interval, 0008 section 6.3), the
 breakdown as 0010 section 7 allows it, and what `src/total` does not
 represent.
 
-A table of the gate's 11 shots is on the page, as printed in 0010 section
-4.2 (`PUBLISHED_GATE`), and held to the library: each shot's modelled C_D,
-its band, its residual and its tolerance, recomputed through the page's
-code, round to the printed values.
+A table of the gate's 11 shots is on the page (`PUBLISHED_GATE`), as
+re-run with the corrected fins-on-base factor (0010 section 11.6), with
+the second run's residual beside each (0010 section 4.2), and held to the
+library: each shot's modelled C_D, its band, its residual and its
+tolerance, recomputed through the page's code, round to the printed
+values. Its caption says that the re-run is a recorded correction made
+after the residuals were known, not a new test.
 
 ## 3. The class rule
 
@@ -149,10 +155,11 @@ trailing edges at the base, a single wedge.
 **The Mach number and Reynolds number** are 0010 section 7's ranges,
 widened only to take in the gated shots themselves (M 1.799, Re 1.19e7).
 The Mach range stops at 2.15, not 3.0 as first ruled, because above 2.15
-the line of TN 3819 fig. 35 that the fins-on-base factor was read from is
-one of Love's estimates, not the free-flight curve (0010 section 7), so
-three of the 11 shots lie inside it. The box has corners no shot flew: the
-shots lie along Re = 6.6e6 M on length (one range, one air; 6.53e6 to
+the fins-on-base factor the gate tested was read from one of Love's
+estimates in TN 3819 fig. 35, not the free-flight curve, and the factor
+corrected since, after the residuals were known, has no hold-out there
+(0010 sections 7 and 11.7); three of the 11 shots lie inside it. The box
+has corners no shot flew: the shots lie along Re = 6.6e6 M on length (one range, one air; 6.53e6 to
 6.72e6 per unit Mach number). At Mach 1.8 and Re 2.0e7 the model lies
 1.6% below its value on that line, at Mach 2.15 and Re 1.19e7 0.7% above
 it (at Mach 3.0, 2.1%, when the class ran to it). The box is kept as 0010
@@ -205,26 +212,36 @@ nose term lies within its own band of the gate's, of order 1e-5 in C_D
   about 294 K; across static temperatures of 216.65 to 320 K the modelled
   total moves from its value there by at most 0.13% (design record 0011,
   section 3). The class stops at Mach 2.15, taking in three of the shots
-  (Mach 1.80 to 1.85), because above it the line of TN 3819 fig. 35 that
-  the fins-on-base factor was read from is one of Love's estimates, not
-  the free-flight curve, which ends near Mach 2.56 (design record 0010,
-  section 7)." The tolerance is 0010's as re-derived
-  after the round 5 audit, which changed the band arithmetic after the
-  hold-out was used (the second run's high end was +26.5% to +31.4%; the
-  residuals did not change); the published gate table on the page carries
-  the re-derived tolerances. Beside it, always: that the
-  tolerance is wide and a pass at that width says little by itself, the
+  (Mach 1.80 to 1.85), because above it the fins-on-base factor the gate
+  tested was read from one of Love's estimates in TN 3819 fig. 35, not
+  from its free-flight curve, which ends at Mach 2.56 (design record
+  0010, section 7). The factor was corrected to that curve after the
+  residuals were known, a recorded correction, not a new test: re-run,
+  the three shots inside the class lie -4.5% to +0.5% from the corrected
+  model (design record 0010, section 11)." The tolerance is 0010's as
+  re-derived after the round 5 audit, which changed the band arithmetic
+  after the hold-out was used (the second run's high end was +26.5% to
+  +31.4%; the residuals did not change); the published gate table on the
+  page carries the corrected run's tolerances, by the same arithmetic.
+  Beside it, always: that the tolerance is wide and a pass at that width says little by itself, the
   residuals being the finding; that the two fin-edge terms, both analogies,
   carry 24% to 25% of the Basic Finner's total and the body base carries
   the fins-on-base factor, an analogy from circular-arc fins; and the
   offset at Mach 2.97 (both shots 5.4% and 7.6% below the model, mean
-  -6.5%, beyond that cluster's spread of +-1.2%, not corrected). While the
-  class ran to Mach 3.0 the offset was highlighted from Mach 2.86, nearer
-  the two M 2.97 shots than the M 2.66 to 2.75 cluster; with the class
-  stopping at 2.15 no case inside it is, and the offset is stated plainly.
-  Above 2.15 a total is an estimate, with that reason: "Mach M is outside
-  1.799 to 2.15 (above Mach 2.15 the fins-on-base factor was read from one
-  of Love's estimates in TN 3819 fig. 35, not from its free-flight curve)".
+  -6.5%, beyond that cluster's spread of +-1.2%; the model not retuned on
+  it, and 2.6% and 4.8% after the fins-on-base correction, made on the
+  figure alone after it was known, where the total is now an estimate).
+  While the class ran to Mach 3.0 the offset was highlighted from Mach
+  2.86, nearer the two M 2.97 shots than the M 2.66 to 2.75 cluster; with
+  the class stopping at 2.15 no case inside it is, and the offset is
+  stated plainly. Above 2.15 a total is an estimate, with that reason:
+  "Mach M is outside 1.799 to 2.15 (above Mach 2.15 the gate tested a
+  fins-on-base factor read from one of Love's estimates in TN 3819 fig.
+  35, not from its free-flight curve; the factor corrected since has no
+  hold-out there)"; above 2.56, also "the body base's fins-on-base factor
+  is bounded, not measured, above Mach 2.56, where the free-flight curve
+  of TN 3819 fig. 35 ends" (0014 section 10.2: the claim names the
+  bounded component). The reasons are headed "Not validated because:".
 - **Outside it:** "Estimate, not validated: this case lies outside the one
   class whose total drag has passed a hold-out test (the Basic Finner).
   Each component is inside the domain of its own band, so the total is
@@ -264,15 +281,24 @@ button gives directly, section 9) and no inputs, the page shows, labelled
 validated on the Basic Finner to Mach 2.15 and an estimate, not
 validated, above it (section 3):
 
-| M    | C_D    | Model-form band  | As percentages   | Label     |
-| ---- | ------ | ---------------- | ---------------- | --------- |
-| 1.8  | 0.6121 | 0.5309 to 0.7259 | -13.3% to +18.6% | validated |
-| 2.0  | 0.5501 | 0.4823 to 0.6493 | -12.4% to +18.1% | validated |
-| 2.15 | 0.5188 | 0.4534 to 0.6142 | -12.7% to +18.4% | validated |
-| 2.4  | 0.4768 | 0.4193 to 0.5615 | -12.1% to +17.8% | estimate  |
-| 2.75 | 0.4320 | 0.3797 to 0.5083 | -12.1% to +17.7% | estimate  |
-| 2.97 | 0.4072 | 0.3579 to 0.4786 | -12.1% to +17.6% | estimate  |
-| 3.0  | 0.4040 | 0.3554 to 0.4746 | -12.1% to +17.5% | estimate  |
+| M    | C_D    | Model-form band  | As percentages   | Label                          |
+| ---- | ------ | ---------------- | ---------------- | ------------------------------ |
+| 1.8  | 0.6131 | 0.5294 to 0.7293 | -13.7% to +19.0% | validated                      |
+| 2.0  | 0.5493 | 0.4808 to 0.6493 | -12.5% to +18.2% | validated                      |
+| 2.15 | 0.5176 | 0.4512 to 0.6141 | -12.9% to +18.7% | validated                      |
+| 2.3  | 0.4896 | 0.4260 to 0.5818 | -13.0% to +18.9% | estimate                       |
+| 2.4  | 0.4725 | 0.4115 to 0.5612 | -12.9% to +18.8% | estimate                       |
+| 2.5  | 0.4564 | 0.3996 to 0.5401 | -12.5% to +18.4% | estimate                       |
+| 2.75 | 0.4203 | 0.3669 to 0.4987 | -12.7% to +18.7% | estimate, fins-on-base bounded |
+| 2.9  | 0.4028 | 0.3521 to 0.4775 | -12.6% to +18.6% | estimate, fins-on-base bounded |
+| 2.97 | 0.3951 | 0.3459 to 0.4678 | -12.5% to +18.4% | estimate, fins-on-base bounded |
+| 3.0  | 0.3919 | 0.3434 to 0.4636 | -12.4% to +18.3% | estimate, fins-on-base bounded |
+
+With the corrected fins-on-base factor (0010 section 11); before it the
+same rows were 0.6121, 0.5501, 0.5188, 0.4768 at M 2.4, 0.4320, 0.4072
+and 0.4040. Above Mach 2.15 the Basic Finner is served as an estimate,
+not validated, with the corrected band, and never refused (asserted at M
+2.3, 2.5 and 2.9 on the page and in `src/total`).
 
 At the 11 gated shots, with the gate's inputs (a laminar run to Re_T 5e5,
 1.6e6 and 3e6; the wall to the air temperature), every value the page
@@ -280,8 +306,9 @@ shows, the total, each band, each component and each input band, equals
 the gate's computation (`tests/validation/basic-finner.test.ts`) within
 1e-12, and every label is the same. The three shots at Mach 1.80 to 1.85
 are labelled validated, the eight at Mach 2.35 to 2.97 an estimate, not
-validated, by their Mach number alone. The five shots at Mach 1.06 to
-1.33 are refused, as in the gate.
+validated, by their Mach number (and the five above 2.56 by the bounded
+factor too). The five shots at Mach 1.06 to 1.33 are refused, as in the
+gate.
 
 ## 6. Found in the libraries while integrating
 
@@ -309,10 +336,12 @@ validated, by their Mach number alone. The five shots at Mach 1.06 to
   number alone; each dimension inside at 0.4% and outside at 0.6% with
   one reason; other noses, counts, planforms, positions and sections; the
   Mach, Reynolds-number and temperature limits); what the tolerances allow;
-  the box's corners; the temperature; the default as shown (section 5); the
-  notes; the 11 shots against the gate and the published table; the nose
-  term and the states of the solve; estimates outside the class; refusals
-  and the page's own input checks.
+  the box's corners; the temperature; the default as shown (section 5),
+  and above Mach 2.15 an estimate, never refused, at M 2.3, 2.5 and 2.9
+  on the page and in `src/total`; the notes (the bounded factor's above M
+  2.56); the 11 shots against the gate and the published (corrected)
+  table; the nose term and the states of the solve; estimates outside the
+  class; refusals and the page's own input checks.
 - `tests/app/total-drag-display.test.ts`: the fields as typed (the page's
   defaults inside the class, empty numbers refused, lists, one-sided
   roughness bands, each planform and section, which fields are asked, the
@@ -320,10 +349,11 @@ validated, by their Mach number alone. The five shots at Mach 1.06 to
   band, none, not converged, invalid, refused, stopped, a failed GPU, no
   WebGPU) and the key that ties a solve to its case; the display of each
   state (no number while waiting or refused; the gate's shot at Mach 1.85
-  headed 0.5944, 0.5172 to 0.7039, -13.0% to +18.5%; every component's and
-  input's label; the offset stated, not set apart, inside the class; an
-  estimate said in the headline and the claim, with its reasons); the gate
-  as published.
+  headed 0.5940, 0.5155 to 0.7048, -13.2% to +18.7%, corrected; every
+  component's and input's label; the offset stated, not set apart, inside
+  the class; an estimate said in the headline and the claim, with its
+  reasons); the gate as published, corrected, with the second run beside
+  it.
 - `tests/app/band.test.ts`: intervals rounded outward, never inward.
 - `tests/atmosphere/us-standard-1976.test.ts` and
   `tests/app/flight-condition.test.ts`: the standard atmosphere against
@@ -344,8 +374,9 @@ validated, by their Mach number alone. The five shots at Mach 1.06 to
   below Mach 1.8 it is refused with the reason; another nose is outside
   the class with the reason; swept fins are refused with both reasons; the
   Basic Finner button gives the range's conditions directly and restores
-  the class; and the layout of a total shows every block in order, the
-  claim set apart. The nose solve itself is not run there: on software
+  the class; the layout of a total shows every block in order, the claim
+  set apart; and above Mach 2.15 (M 2.3, 2.5, 2.9) the Basic Finner is
+  laid out as an estimate, not validated, never refused. The nose solve itself is not run there: on software
   WebGPU it takes far longer than a test can wait.
 
 ## 8. Open

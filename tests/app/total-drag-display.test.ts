@@ -368,8 +368,8 @@ describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
       'Total drag refused: no number is given. Every reason:' +
         'nose wave drag (not-verified): the nose wave drag is solved on the GPU, and this ' +
         'browser provides no WebGPU.' +
-        'body base (mach-range): the fins-on-base factor is read at Mach 1.8 to 3 (TN 3819 ' +
-        'fig. 35), asked Mach 1.6.',
+        'body base (mach-range): the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded ' +
+        'to 3 (TN 3819 fig. 35), asked Mach 1.6.',
     );
   });
 });
@@ -410,10 +410,10 @@ describe('the display', { timeout: 60_000 }, () => {
     const view = totalDragView(form, exactNose(form));
     if (view.kind !== 'total') throw new Error(view.kind);
     const blocks = totalDragDisplay(view);
-    // The gate's shot DA95021308 (0010 section 4.2): 0.5944 (0.5172 to 0.7039).
+    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5156 to 0.7047).
     expect(blocks[0]).toEqual({
       kind: 'paragraph',
-      text: 'Total C_D = 0.5944, model-form band 0.5172 to 0.7039 (-13.0% to +18.5%)',
+      text: 'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%)',
       tone: 'ok',
       headline: true,
     });
@@ -444,8 +444,8 @@ describe('the display', { timeout: 60_000 }, () => {
       view.total.components.map((c) => [c.name, c.label, c.band]),
     );
     expect(components!.rows.find((r) => r[0] === 'body base')!.slice(1, 4)).toEqual([
-      '0.2077',
-      '0.1484 to 0.2462',
+      '0.2073',
+      '0.1468 to 0.2470',
       '35%',
     ]);
     expect(blocks).toContainEqual({ kind: 'list', items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE] });
@@ -492,32 +492,35 @@ describe('the display', { timeout: 60_000 }, () => {
     );
   });
 
-  it('the class in words, and the gate as 0010 section 4.2 prints it', () => {
+  it('the class in words, and the gate corrected (0010 section 11) beside the second run (section 4.2)', () => {
     const blocks = gateDisplay();
     expect(displayText(blocks)).toContain(CLASS_DESCRIPTION);
     const [gate] = tables(blocks);
+    expect(gate!.caption).toContain('a recorded correction made after the residuals were known');
+    expect(gate!.head.at(-1)).toBe('Second run');
     expect(gate!.rows.length).toBe(11);
     expect(gate!.rows[0]).toEqual([
       'DA95021318',
       '1.799',
       '0.594',
-      '0.6123 (0.5311 to 0.7261)',
+      '0.6134 (0.5296 to 0.7296)',
+      '-3.2%',
+      '-24.6% to +23.5%',
       '-3.0%',
-      '-24.2% to +23.1%',
     ]);
     expect(gate!.rows.map((r) => r[0])).toEqual(PUBLISHED_GATE.map((s) => s.shot));
-    expect(gate!.rows.map((r) => r[4])).toEqual([
-      '-3.0%',
-      '+0.4%',
-      '-4.6%',
-      '+3.2%',
-      '-0.9%',
-      '-0.3%',
-      '+0.7%',
-      '-7.7%',
-      '+4.5%',
-      '-5.4%',
-      '-7.6%',
+    expect(gate!.rows.map((r) => `${r[4]} ${r[6]}`)).toEqual([
+      '-3.2% -3.0%',
+      '+0.5% +0.4%',
+      '-4.5% -4.6%',
+      '+3.9% +3.2%',
+      '-0.1% -0.9%',
+      '+0.7% -0.3%',
+      '+3.4% +0.7%',
+      '-5.1% -7.7%',
+      '+7.5% +4.5%',
+      '-2.6% -5.4%',
+      '-4.8% -7.6%',
     ]);
   });
 });
