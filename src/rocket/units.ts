@@ -14,28 +14,34 @@ export const METRES_PER: Readonly<Record<LengthUnit, number>> = { mm: 1e-3, in: 
 
 /** A length typed in `unit`, in metres. */
 export function toMetres(value: number, unit: LengthUnit): number {
-  return value * METRES_PER[unit];
+  // Millimetres divided by 1000 (exact in decimal), not times 1e-3 (not exact in binary).
+  return unit === 'mm' ? value / 1000 : value * METRES_PER[unit];
 }
 
 /** A length in metres, in `unit`. */
 export function fromMetres(metres: number, unit: LengthUnit): number {
-  return metres / METRES_PER[unit];
+  return unit === 'mm' ? metres * 1000 : metres / METRES_PER[unit];
 }
 
+/** Decimals a length is shown to: a hundredth of a millimetre, a thousandth of an inch. */
+export const SHOWN_DECIMALS: Readonly<Record<LengthUnit, number>> = { mm: 2, in: 3 };
+
 /**
- * A length for a field: in `unit`, to seven significant digits (a micron
- * on a metre-long rocket), trailing zeros dropped, so that a preset's
- * exact length is shown as it is used.
+ * A length for a field: in `unit`, to a hundredth of a millimetre or a
+ * thousandth of an inch, trailing zeros dropped. A preset's exact length
+ * is kept as it is until the field is edited (the builder reads a field
+ * only when it is typed in), and the calibres beside it carry its exact
+ * digits (`calibresText`), so what is shown never hides what is solved.
  */
 export function lengthText(metres: number, unit: LengthUnit): string {
   if (!Number.isFinite(metres)) return '';
-  return String(Number(fromMetres(metres, unit).toPrecision(7)));
+  return String(Number(fromMetres(metres, unit).toFixed(SHOWN_DECIMALS[unit])));
 }
 
-/** A length in calibres, as shown beside a field: three decimals. */
+/** A length in calibres, as shown beside a field: to six decimals, trailing zeros dropped. */
 export function calibresText(metres: number, diameter: number): string {
   const c = metres / diameter;
-  return Number.isFinite(c) && diameter > 0 ? `${c.toFixed(3)} cal` : '';
+  return Number.isFinite(c) && diameter > 0 ? `${String(Number(c.toFixed(6)))} cal` : '';
 }
 
 /** A round length for a scale bar: the largest of 1, 2 and 5 times a power of ten not above `most`. */

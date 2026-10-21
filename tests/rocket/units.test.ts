@@ -17,19 +17,16 @@ describe('lengths', () => {
     expect(toMetres(30, 'mm')).toBe(0.03);
   });
 
-  it("a preset's lengths are shown as used, and read back to the same metres", () => {
+  it('lengths to 0.01 mm or 0.001 in; the calibres beside them carry the exact digits', () => {
     const d = preset('basic-finner').design;
-    expect(lengthText(d.nose.length, 'mm')).toBe('85.06923');
-    expect(toMetres(Number(lengthText(d.nose.length, 'mm')), 'mm')).toBeCloseTo(d.nose.length, 15);
+    expect(lengthText(d.nose.length, 'mm')).toBe('85.07');
+    expect(lengthText(d.body[0]!.length, 'mm')).toBe('214.93');
     expect(lengthText(d.nose.diameter, 'mm')).toBe('30');
-    expect(lengthText(d.nose.diameter, 'in')).toBe('1.181102');
+    expect(lengthText(d.nose.diameter, 'in')).toBe('1.181');
     expect(lengthText(Number.NaN, 'mm')).toBe('');
-  });
-
-  it('calibres beside each length: over the diameter, three decimals', () => {
-    const d = preset('basic-finner').design;
-    expect(calibresText(d.nose.length, d.nose.diameter)).toBe('2.836 cal');
-    expect(calibresText(d.body[0]!.length, d.nose.diameter)).toBe('7.164 cal');
+    expect(calibresText(d.nose.length, d.nose.diameter)).toBe('2.835641 cal');
+    expect(calibresText(d.body[0]!.length, d.nose.diameter)).toBe('7.164359 cal');
+    expect(calibresText(d.finSets[0]!.thickness, d.nose.diameter)).toBe('0.08 cal');
     expect(calibresText(0.03, 0)).toBe('');
   });
 
