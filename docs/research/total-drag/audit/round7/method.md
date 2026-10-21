@@ -589,3 +589,90 @@ serves both. The least certain call is CO241-ci: its arc is
 partly inside the diamond and on the -0.06 gridline. It would change if the
 round top arc proved to be part of the square's bottom edge and the
 diamond's top vertex, which the vertical right side argues against.
+
+## Item 7: O'Neal, NTRS 19980227361 (what it contains; no values read)
+
+File `19980227361.pdf` (NTRS download), SHA-256
+`2c1103128aadee9a9a85fcba62fbf1d4d54b9a41006f3d42662855e4d3dc7020`, 40 PDF
+pages; it is NASA TM X-208 (O'Neal, March 1960), "Heat transfer to 36.75 deg
+and 45 deg swept blunt leading edges in free flight at Mach numbers from 1.70
+to 2.99 and from 2.50 to 4.05". Report page = PDF page - 2.
+
+* What was measured: heat transfer (Stanton number) on four leading-edge
+  segments, cylindrically blunted wedges (flats at 4.27 deg to the chord
+  plane, 4 in span) on a rocket model: 45 deg sweep with D = 1/4, 1/2 and
+  3/4 in, and 36.75 deg sweep with D = 1/2 in. M 1.78 to 2.99 (high Reynolds
+  number, t = 2.0 to 3.2 s) and 2.50 to 4.05 (t = 52 to 56 s); summary and
+  model, PDF pp. 3, 6 (report pp. 1, 4).
+* Pressure: one orifice only, on the flat (wedge) surface of the 45 deg,
+  D = 3/4 in segment, 1.42 in behind the leading edge (fig. 3(a), section
+  B-B, PDF p. 19, report p. 17). Its C_p against time is fig. 8 (PDF p. 25,
+  report p. 23); Mach number against time is fig. 6 (PDF p. 23, report
+  p. 21). Text on it: PDF pp. 7, 9 and 10 (report pp. 5, 7, 8): negative
+  C_p, overexpansion around the blunt edge, said to agree with the pressures
+  of ref. 8 when correlated on normal Mach number.
+* Nothing on the leading edge itself: no stagnation-line or cylinder
+  pressures (local conditions there are computed from theory, ref. 4
+  equations), and no drag. The 36.75 deg segment has no pressure orifice.
+* So for a swept blunt edge at normal Mach 1.26 to 2.4 the report has no
+  leading-edge or front-side pressure and no drag. The single after-flat
+  C_p of the 45 deg segment covers normal Mach about 1.26 to 2.11 (M 1.78
+  to 2.99) and 1.77 to 2.86 (M 2.50 to 4.05); it is a downstream surface
+  pressure, not a front-side one. Leads named in its references (not opened):
+  ref. 4, Goodwin, Creager and Winkler, NACA RM A55H31 (1956), local heat
+  transfer and pressure drag of a yawed circular cylinder at supersonic
+  speeds; ref. 8, O'Neal and Bond, NACA RM L58A13 (1958), 0 and 75 deg swept
+  blunt leading edges in free flight, M 1.90 to 3.07, which the text says
+  has pressure measurements.
+
+## Item 5, paired with the first reading of Graph I
+
+Opened after 22981ab was committed, as allowed: the Graph I part of section
+7 and the Table III rows of `docs/research/total-drag/data/basic_finner_brl934.md`
+(section 6) and the Table III columns of `basic_finner_brl934.csv`,
+including its `graph1` column (the first reader's symbol per round). Nothing
+else in those files, no model value, and nothing under
+`docs/research/refusals/` was opened. Pairs, differences and resolutions:
+`readings/brl934_graph1_pairing.csv`.
+
+The first reading gives values for the consolidation symbol (M and C_D) and,
+in C_D only, for the symbols of rounds 3256, 3255, 3249, 3263 and 3246 (its
+calibration checks); it names the symbols of 3246 and 3254 without values
+and did not read the rest below M 1.5. Errors taken for it: +-0.003 in C_D,
++-0.01 in M, as it states.
+
+* Nine pairs have values on both sides: the consolidation symbol, 3256's plus
+  and dot, 3255's plus, 3249's open circle and dot, 3263's plus, 3264's mark
+  and 3246's plus. All agree within the combined errors: C_D differences
+  -0.0009 to +0.0018 (combined error +-0.0031 to +-0.0037), and -0.0047 in M
+  for the consolidation symbol (+-0.010).
+* Calls differ at two:
+  * 3263's lower symbol (my J2, called an open circle with low confidence;
+    the first reading calls it a dot on the faired curve). Third look,
+    resolved: it is a dot. The white "hole" is the wedge between the blob
+    and the faired curve where the curve leaves it, not a hole inside the
+    symbol; the blob is solid and dot sized. New centre M 2.4161 +- 0.0033,
+    C_D 0.4652 +- 0.0017 (one reading of the value; the first gives none).
+  * 3264's mark (my K1, a plus, high; the first reading, a filled dot).
+    Third look, not resolved, so the call is left out and the position
+    kept. It shows a thin top arm, a 55 px horizontal arm lying on the heavy
+    C_D 0.475 ruling and a lower arm thickened into a blob 20 to 24 px wide:
+    either a plus with a heavy lower arm or a small dot under a plus (dot
+    centre C_D 0.4712). Both readings agree that this is the only mark at
+    M 2.47, at C_D 0.471 to 0.474, and that nothing is plotted near Table
+    III's 0.449 (the area was checked again and is empty), so the first
+    reading's mismatch flag stands.
+* The calls agree at 3263's plus (J1), my low call matched by the first
+  reader's, and at the named-only symbols of 3246 (dot, my E2b) and 3254
+  (plus and dot, my F1 and F2), whose values have one reading.
+* No pair exists for A1 to A4, B1 to B4, C1, C2, D1 to D3 and E2a (all
+  below M 1.5, not read by the first reader). A1, B1, B2 and C1, low calls
+  with one reading, are left out. A third look at C1 found only a short
+  vertical stroke with a right arm beside the curve, and no separate mark
+  at round 3258's Table III point (M 1.139, C_D 0.850). The others are
+  usable only after a second reading.
+* Against Table III (not a pair, a check): the round-value pluses sit 0.0015
+  to 0.003 below the table's C_D in both readings at M 1.4 to 2.42 (E1, F1,
+  H1, I1, J1). Both readings calibrate differently, so this looks like the
+  plot, not the reading. E2a (one reading, round 3257 by position) is 0.006
+  below its table value.
