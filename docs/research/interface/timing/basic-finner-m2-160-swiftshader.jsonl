@@ -1,0 +1,9 @@
+{"t":"2026-10-21T09:52:36.974Z","start":true,"mach":"2","finest":"8"}
+{"t":"2026-10-21T09:53:22.398Z","level":1,"row":["191×20","750","0.104617"],"seconds":48.287}
+{"t":"2026-10-21T09:54:37.665Z","sample":true,"seconds":123.554,"grid":"382×40","step":"750","rate":"96.3 kcell/s","state":"Solving"}
+{"t":"2026-10-21T09:56:38.183Z","sample":true,"seconds":244.071,"grid":"382×40","step":"500","rate":"72.4 kcell/s","state":"Solving"}
+{"t":"2026-10-21T09:58:38.668Z","sample":true,"seconds":364.557,"grid":"382×40","step":"1000","rate":"66.6 kcell/s","state":"Solving"}
+{"t":"2026-10-21T10:00:34.313Z","level":2,"row":["382×40","2000","0.104507"],"seconds":480.202}
+{"t":"2026-10-21T10:00:39.332Z","sample":true,"seconds":485.221,"grid":"764×80","step":"2000","rate":"80.3 kcell/s","state":"Solving"}
+{"t":"2026-10-21T10:02:40.149Z","sample":true,"seconds":606.038,"grid":"764×80","step":"2000","rate":"80.3 kcell/s","state":"Solving"}
+{"t":"2026-10-21T10:04:40.780Z","sample":true,"seconds":726.669,"grid":"764×80","step":"2000","rate":"80.3 kcell/s","state":"Solving"}
