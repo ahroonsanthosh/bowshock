@@ -17,7 +17,13 @@
 import gasWgsl from '../engine-gpu/shaders/gas.wgsl?raw';
 import { BufferSet, compileShader } from '../engine-gpu/gpu-common';
 import type { Primitive2D } from '../scheme/flux';
-import { colormapTable, hexToRgb, SCHLIEREN_DARK, SCHLIEREN_LIGHT } from './colormap';
+import {
+  colormapTable,
+  hexToRgb,
+  SCHLIEREN_DARK,
+  SCHLIEREN_LIGHT,
+  spectrumTable,
+} from './colormap';
 import { FLOW_FIELD_CODES, freeStreamValue, type FlowField } from './flow-fields';
 import flowDrawWgsl from './shaders/flow-draw.wgsl?raw';
 import flowFieldsWgsl from './shaders/flow-fields.wgsl?raw';
@@ -76,7 +82,21 @@ export interface FlowDrawOptions {
   /** Draw every stride-th grid line. */
   readonly gridStride: number;
   readonly background: GPUColor;
+  /**
+   * 'filled': the field's colour (or schlieren's grey); 'glow': the Mach
+   * number's colour on the spectrum at the density gradient's brightness
+   * (docs/design/0017-rocketeer-interface.md section 6). Default 'filled'.
+   */
+  readonly look?: FlowLook;
+  /** The colour fields' table. Default 'perceptual'. */
+  readonly palette?: FlowPalette;
 }
+
+export type FlowLook = 'filled' | 'glow';
+export type FlowPalette = 'perceptual' | 'spectrum';
+
+/** The glow view's brightness where the flow is uniform: near black. */
+export const GLOW_BASE = 0.04;
 
 /** The colours of what is drawn over the field, as RGBA from 0 to 1. */
 const COLOURS = {
@@ -138,8 +158,9 @@ class FlowPipelines {
         entry(0, VF, 'uniform'),
         entry(1, GPUShaderStage.VERTEX, 'read-only-storage'),
         entry(2, GPUShaderStage.VERTEX, 'read-only-storage'),
-        entry(3, GPUShaderStage.FRAGMENT, 'read-only-storage'),
-        entry(4, GPUShaderStage.FRAGMENT, 'read-only-storage'),
+        // The ranges and the colour tables: the glow's shock line takes its colour per vertex.
+        entry(3, VF, 'read-only-storage'),
+        entry(4, VF, 'read-only-storage'),
       ],
     });
     const lineLayout = device.createBindGroupLayout({
@@ -219,20 +240,47 @@ class FlowPipelines {
         },
         primitive: { topology },
       });
-    const [field, probe, free, freeProbe, grid, body, line, shape, unsimulated] = await Promise.all(
-      [
-        make('flow field', 'vs_field', 'fs_field', 'triangle-list', false),
-        make('flow probe', 'vs_field', 'fs_probe', 'triangle-list', false, 'r32float'),
-        make('flow free stream', 'vs_free', 'fs_field', 'triangle-list', false),
-        make('flow free stream probe', 'vs_free', 'fs_probe', 'triangle-list', false, 'r32float'),
-        make('flow grid', 'vs_grid', 'fs_grid', 'line-list', true),
-        make('flow body', 'vs_body_shaded', 'fs_body_shaded', 'triangle-strip', false),
-        make('flow line', 'vs_line', 'fs_line', 'triangle-list', true),
-        make('flow shape', 'vs_shape', 'fs_body', 'triangle-list', true),
-        make('flow not simulated', 'vs_unsimulated', 'fs_unsimulated', 'triangle-list', false),
-      ],
-    );
-    return { field, probe, free, freeProbe, grid, body, line, shape, unsimulated };
+    const [
+      field,
+      probe,
+      free,
+      freeProbe,
+      grid,
+      body,
+      line,
+      shape,
+      unsimulated,
+      glow,
+      freeGlow,
+      shockGlow,
+    ] = await Promise.all([
+      make('flow field', 'vs_field', 'fs_field', 'triangle-list', false),
+      make('flow probe', 'vs_field', 'fs_probe', 'triangle-list', false, 'r32float'),
+      make('flow free stream', 'vs_free', 'fs_field', 'triangle-list', false),
+      make('flow free stream probe', 'vs_free', 'fs_probe', 'triangle-list', false, 'r32float'),
+      make('flow grid', 'vs_grid', 'fs_grid', 'line-list', true),
+      make('flow body', 'vs_body_shaded', 'fs_body_shaded', 'triangle-strip', false),
+      make('flow line', 'vs_line', 'fs_line', 'triangle-list', true),
+      make('flow shape', 'vs_shape', 'fs_body', 'triangle-list', true),
+      make('flow not simulated', 'vs_unsimulated', 'fs_unsimulated', 'triangle-list', false),
+      make('flow glow', 'vs_glow', 'fs_glow', 'triangle-list', false),
+      make('flow free stream glow', 'vs_free_glow', 'fs_glow', 'triangle-list', false),
+      make('flow shock glow', 'vs_shock_glow', 'fs_shock_glow', 'triangle-list', true),
+    ]);
+    return {
+      field,
+      probe,
+      free,
+      freeProbe,
+      grid,
+      body,
+      line,
+      shape,
+      unsimulated,
+      glow,
+      freeGlow,
+      shockGlow,
+    };
   }
 }
 
@@ -246,6 +294,9 @@ interface DrawPipelines {
   readonly line: GPURenderPipeline;
   readonly shape: GPURenderPipeline;
   readonly unsimulated: GPURenderPipeline;
+  readonly glow: GPURenderPipeline;
+  readonly freeGlow: GPURenderPipeline;
+  readonly shockGlow: GPURenderPipeline;
 }
 
 /** A convex polygon drawn over the flow as it is (not mirrored): a fin seen from the side. */
@@ -322,7 +373,10 @@ export class FlowRenderer {
       DRAW_PARAMS_BYTES,
       usage.UNIFORM | usage.COPY_DST,
     );
-    this.colormap = this.buffers.createWith('colormap', colormapTable(256), usage.STORAGE);
+    const tables = new Float32Array(4 * 512);
+    tables.set(colormapTable(256), 0);
+    tables.set(spectrumTable(256), 4 * 256);
+    this.colormap = this.buffers.createWith('colour tables', tables, usage.STORAGE);
     this.rangeReadback = this.buffers.create(
       'flow range readback',
       16,
@@ -484,14 +538,15 @@ export class FlowRenderer {
       this.writeDrawParams(r, options, slots, target.width, target.height, options.view);
       const instances = r.source.mirror ? 2 : 1;
       const { ni, nj } = r.source;
+      const glow = options.look === 'glow';
       pass.setBindGroup(0, r.drawGroup);
       pass.setBindGroup(1, r.shockGroup);
       if (r.source.fittedShock) {
         // Outside the fitted shock: the free stream.
-        pass.setPipeline(pipelines.free);
+        pass.setPipeline(glow ? pipelines.freeGlow : pipelines.free);
         pass.draw(6 * (ni + 1), instances);
       }
-      pass.setPipeline(pipelines.field);
+      pass.setPipeline(glow ? pipelines.glow : pipelines.field);
       pass.draw(6 * (ni + 1) * (nj + 1), instances);
       if (this.baseX !== null && r.source.fittedShock) {
         // Behind the base the solver computes nothing: hatched, not painted.
@@ -522,7 +577,7 @@ export class FlowRenderer {
       }
       if (options.shock && r.source.fittedShock) {
         pass.setBindGroup(1, r.shockGroup);
-        pass.setPipeline(pipelines.line);
+        pass.setPipeline(glow ? pipelines.shockGlow : pipelines.line);
         pass.draw(6 * ni, instances);
       }
       if (this.body !== null) {
@@ -713,13 +768,16 @@ export class FlowRenderer {
   private computeFields(
     encoder: GPUCommandEncoder,
     r: SourceResources,
-    options: Pick<FlowDrawOptions, 'field' | 'split' | 'lengthScale'>,
+    options: Pick<FlowDrawOptions, 'field' | 'split' | 'lengthScale' | 'look'>,
   ): [FlowField, FlowField] {
     const { source } = r;
-    const slots: [FlowField, FlowField] = options.split
-      ? ['schlieren', options.field === 'schlieren' ? 'mach' : options.field]
-      : [options.field, options.field];
-    const count = options.split ? 2 : 1;
+    const glow = options.look === 'glow';
+    const slots: [FlowField, FlowField] = glow
+      ? ['mach', 'schlieren']
+      : options.split
+        ? ['schlieren', options.field === 'schlieren' ? 'mach' : options.field]
+        : [options.field, options.field];
+    const count = options.split || glow ? 2 : 1;
     const params = new ArrayBuffer(FLOW_PARAMS_BYTES);
     new Uint32Array(params, 0, 5).set([
       source.ni,
@@ -776,7 +834,10 @@ export class FlowRenderer {
 
   private writeDrawParams(
     r: SourceResources,
-    options: Pick<FlowDrawOptions, 'split' | 'schlierenContrast' | 'gridStride'>,
+    options: Pick<
+      FlowDrawOptions,
+      'split' | 'schlierenContrast' | 'gridStride' | 'look' | 'palette'
+    >,
     slots: [FlowField, FlowField],
     width: number,
     height: number,
@@ -802,10 +863,11 @@ export class FlowRenderer {
       6,
     );
     floats[14] = options.schlierenContrast;
+    words[15] = options.palette === 'spectrum' ? 1 : 0;
     floats.set([...hexToRgb(SCHLIEREN_DARK), 1, ...hexToRgb(SCHLIEREN_LIGHT), 1], 16);
     floats.set(COLOURS.grid, 24);
     const free = this.freeValues(r.source, slots);
-    floats.set([free[0], free[lower], 0, this.baseX ?? 0], 28);
+    floats.set([free[0], free[lower], GLOW_BASE, this.baseX ?? 0], 28);
     this.device.queue.writeBuffer(this.drawParams, 0, params);
   }
 

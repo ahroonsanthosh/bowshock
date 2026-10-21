@@ -37,6 +37,7 @@ import { importSummary, loadImporter, type ImportSummary } from './import-summar
 import {
   bodyOutline,
   FlowControls,
+  GLOW_BINDING,
   VIEW_BINDINGS,
   viewMenu,
   type ViewAction,
@@ -113,12 +114,14 @@ const shell = new Shell<Action>({
   title: 'Drag curve',
   bindings: [
     ...VIEW_BINDINGS,
+    GLOW_BINDING,
     { keys: [' '], action: 'pause', description: 'Pause or resume the airflow solve' },
     { keys: ['r'], action: 'compute', description: 'Compute the curve' },
   ],
   view: viewMenu(
     () => view,
     () => void savePng(),
+    true,
   ),
   onAction: (action) => {
     if (action === 'pause') togglePause();
@@ -168,6 +171,7 @@ const controls = new FlowControls(
   () => {
     shell.topBar.refresh();
   },
+  true,
 );
 
 // -------------------------------------------------------------- builder
@@ -849,6 +853,10 @@ async function startGpu(): Promise<void> {
     view = await FlowView.create(device, canvas, {
       presentation: presentationFor(adapter.info),
       fitRect: (aspect) => shell.drawingRect(aspect),
+      // The app's colours: the spectrum on black; room behind the base to show where nothing is simulated.
+      palette: 'spectrum',
+      background: '#000000',
+      fitAft: 0.12,
       onScale: (scale) => {
         controls.showScale(scale);
       },
@@ -860,7 +868,7 @@ async function startGpu(): Promise<void> {
   view.onChange(() => {
     controls.showViewState();
   });
-  view.setField('mach');
+  view.setLook('glow');
   controls.showViewState();
   shell.onLayout(() => {
     view?.invalidate();

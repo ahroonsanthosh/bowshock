@@ -25,12 +25,14 @@ struct DrawParams {
   // Grid lines: every stride-th line of each family.
   stride: u32,
   schlieren_k: f32,
-  _pad: u32,
+  // The colour fields' table: 0 the perceptual map, 1 the spectrum.
+  palette: u32,
   schlieren_dark: vec4f,
   schlieren_light: vec4f,
   grid_colour: vec4f,
   // The free stream's value of the upper and the lower half's field (x, y);
-  // the body's base, x, behind which the flow is not simulated (w).
+  // the glow view's brightness where the flow is uniform (z); the body's
+  // base, x, behind which the flow is not simulated (w).
   free_value: vec4f,
 }
 
@@ -48,7 +50,8 @@ struct LineParams {
 @group(0) @binding(1) var<storage, read> nodes: array<vec2f>;
 @group(0) @binding(2) var<storage, read> cell_value: array<f32>;
 @group(0) @binding(3) var<storage, read> value_range: array<vec2f>;
-@group(0) @binding(4) var<storage, read> colormap: array<vec4f, COLORMAP_SIZE>;
+// Two tables of COLORMAP_SIZE colours: the perceptual map, then the spectrum.
+@group(0) @binding(4) var<storage, read> colormap: array<vec4f, 512>;
 
 @group(1) @binding(0) var<uniform> line: LineParams;
 @group(1) @binding(1) var<storage, read> points: array<vec2f>;
@@ -118,11 +121,53 @@ fn fs_field(input: FieldOut) -> @location(0) vec4f {
     let t = 1.0 - exp(-params.schlieren_k * max(input.value, 0.0));
     return mix(params.schlieren_dark, params.schlieren_light, t);
   }
-  let range = value_range[input.slot * (1u + params.n_partials)];
-  let t = clamp((input.value - range.x) / max(range.y - range.x, 1.0e-30), 0.0, 1.0);
+  return colour_of(input.value, input.slot);
+}
+
+// The colour of a value of a slot's field, on the slot's range, from the palette's table.
+fn colour_of(value: f32, slot: u32) -> vec4f {
+  let range = value_range[slot * (1u + params.n_partials)];
+  let t = clamp((value - range.x) / max(range.y - range.x, 1.0e-30), 0.0, 1.0);
   let position = t * f32(COLORMAP_SIZE - 1u);
   let k = min(u32(position), COLORMAP_SIZE - 2u);
-  return mix(colormap[k], colormap[k + 1u], position - f32(k));
+  let base = params.palette * COLORMAP_SIZE;
+  return mix(colormap[base + k], colormap[base + k + 1u], position - f32(k));
+}
+
+// ------------------------------------------------------------- the glow
+
+// The glow view (docs/design/0017-rocketeer-interface.md section 6): two
+// channels at once. The hue is the Mach number (slot 0) on the spectrum;
+// the brightness the density gradient (slot 1), schlieren's
+// 1 - exp(-k g) over a base near zero, so uniform flow is near black and
+// shocks and expansions show in the colour of their Mach number.
+
+struct GlowOut {
+  @builtin(position) position: vec4f,
+  @location(0) mach: f32,
+  @location(1) gradient: f32,
+}
+
+@vertex
+fn vs_glow(@builtin(vertex_index) vertex: u32, @builtin(instance_index) instance: u32) -> GlowOut {
+  let quad = vertex / 6u;
+  let corner = CORNERS[vertex % 6u];
+  let a = quad % (params.ni + 1u) + corner.x;
+  let b = quad / (params.ni + 1u) + corner.y;
+  let cell = dual_cell(a, b);
+  var out: GlowOut;
+  out.position = to_clip(dual_position(a, b), instance);
+  out.mach = cell_value[cell];
+  out.gradient = cell_value[params.ni * params.nj + cell];
+  return out;
+}
+
+@fragment
+fn fs_glow(input: GlowOut) -> @location(0) vec4f {
+  let colour = colour_of(input.mach, 0u);
+  let lit = 1.0 - exp(-params.schlieren_k * max(input.gradient, 0.0));
+  let brightness = params.free_value.z + (1.0 - params.free_value.z) * lit;
+  return vec4f(colour.rgb * brightness, 1.0);
 }
 
 // --------------------------------------------- the free stream outside
@@ -136,6 +181,21 @@ const FAR: f32 = 1.0e4;
 
 @vertex
 fn vs_free(@builtin(vertex_index) vertex: u32, @builtin(instance_index) instance: u32) -> FieldOut {
+  return free_vertex(vertex, instance);
+}
+
+// The free stream in the glow view: its Mach number, and no gradient.
+@vertex
+fn vs_free_glow(@builtin(vertex_index) vertex: u32, @builtin(instance_index) instance: u32) -> GlowOut {
+  let free = free_vertex(vertex, instance);
+  var out: GlowOut;
+  out.position = free.position;
+  out.mach = params.free_value.x;
+  out.gradient = 0.0;
+  return out;
+}
+
+fn free_vertex(vertex: u32, instance: u32) -> FieldOut {
   let quad = vertex / 6u;
   let corner = CORNERS[vertex % 6u];
   var a: vec2f;
@@ -316,4 +376,46 @@ fn vs_line(@builtin(vertex_index) vertex: u32, @builtin(instance_index) instance
 fn fs_line(input: LineOut) -> @location(0) vec4f {
   let coverage = clamp(0.5 * line.width + 0.5 - abs(input.across), 0.0, 1.0);
   return vec4f(line.colour.rgb, line.colour.a * coverage);
+}
+
+// The fitted shock in the glow view: a jump, the steepest gradient there
+// is, so at full brightness, in the colour of the Mach number of the cell
+// just behind it (cell (segment, nj - 1)), with a soft halo.
+struct ShockGlowOut {
+  @builtin(position) position: vec4f,
+  @location(0) across: f32,
+  @location(1) @interpolate(flat) colour: vec4f,
+}
+
+const HALO: f32 = 3.0;
+
+@vertex
+fn vs_shock_glow(
+  @builtin(vertex_index) vertex: u32,
+  @builtin(instance_index) instance: u32,
+) -> ShockGlowOut {
+  let segment = vertex / 6u;
+  let k = vertex % 6u;
+  let half_viewport = 0.5 * params.viewport;
+  let p0 = to_clip(points[line.first + segment], instance).xy * half_viewport;
+  let p1 = to_clip(points[line.first + segment + 1u], instance).xy * half_viewport;
+  var direction = p1 - p0;
+  let size = length(direction);
+  direction = select(vec2f(1.0, 0.0), direction / size, size > 0.0);
+  let normal = vec2f(-direction.y, direction.x);
+  let half_width = HALO * line.width;
+  let extend = (ALONG[k] * 2.0 - 1.0) * 0.5 * line.width;
+  let p = mix(p0, p1, ALONG[k]) + direction * extend + normal * SIDE[k] * half_width;
+  var out: ShockGlowOut;
+  out.position = vec4f(p / half_viewport, 0.0, 1.0);
+  out.across = SIDE[k] * half_width;
+  out.colour = colour_of(cell_value[segment + (params.nj - 1u) * params.ni], 0u);
+  return out;
+}
+
+@fragment
+fn fs_shock_glow(input: ShockGlowOut) -> @location(0) vec4f {
+  let core = clamp(0.5 * line.width + 0.5 - abs(input.across), 0.0, 1.0);
+  let u = input.across / (HALO * line.width);
+  return vec4f(input.colour.rgb, max(core, 0.45 * exp(-8.0 * u * u)));
 }

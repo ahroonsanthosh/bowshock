@@ -9,7 +9,8 @@
 import { bodyLength, bodyRadius, type Body } from '../geometry/body';
 import type { FlowField } from '../render/flow-fields';
 import { h } from '../ui/dom';
-import type { FlowScale, FlowView } from '../ui/flow-view';
+import { GLOW_BASE } from '../render/flow-renderer';
+import { SCHLIEREN_CONTRAST, type FlowScale, type FlowView } from '../ui/flow-view';
 import type { KeyBinding } from '../ui/keymap';
 import { Legend } from '../ui/legend';
 import { ModeBar } from '../ui/modebar';
@@ -21,6 +22,7 @@ export type ViewAction =
   | 'field-2'
   | 'field-3'
   | 'field-4'
+  | 'glow'
   | 'split'
   | 'grid'
   | 'shock'
@@ -86,6 +88,13 @@ export const VIEW_BINDINGS: readonly KeyBinding<ViewAction>[] = [
   { keys: ['k'], action: 'png', description: 'Save a PNG of the view' },
 ];
 
+/** The glow view's key, on the pages that offer it (the app). */
+export const GLOW_BINDING: KeyBinding<ViewAction> = {
+  keys: ['5'],
+  action: 'glow',
+  description: 'Glow: the Mach number in colour, brightest where the density changes',
+};
+
 export const RUN_BINDINGS: readonly KeyBinding<RunAction>[] = [
   { keys: [' '], action: 'pause', description: 'Pause or resume the solver' },
   { keys: ['r'], action: 'again', description: 'Run again from the start' },
@@ -134,13 +143,27 @@ export function flowReadout(): Readout {
 }
 
 /** The View menu: the fields, the toggles, fit and the PNG. */
-export function viewMenu(view: () => FlowView | null, savePng: () => void): MenuItem[] {
+export function viewMenu(
+  view: () => FlowView | null,
+  savePng: () => void,
+  glow = false,
+): MenuItem[] {
   return [
+    ...(glow
+      ? [
+          {
+            label: 'Glow',
+            key: '5',
+            action: () => view()?.setLook('glow'),
+            pressed: () => view()?.shown.look === 'glow',
+          },
+        ]
+      : []),
     ...FLOW_FIELDS.map((f) => ({
       label: f.name,
       key: f.key,
       action: () => view()?.setField(f.field),
-      pressed: () => view()?.shown.field === f.field,
+      pressed: () => view()?.shown.look !== 'glow' && view()?.shown.field === f.field,
     })),
     {
       label: 'Split view',
@@ -172,7 +195,7 @@ export function viewMenu(view: () => FlowView | null, savePng: () => void): Menu
  */
 export class FlowControls {
   readonly legend = new Legend();
-  readonly modes: ModeBar<FlowField, 'split' | 'grid' | 'shock'>;
+  readonly modes: ModeBar<FlowField | 'glow', 'split' | 'grid' | 'shock'>;
   private readonly viewButtons: { button: HTMLButtonElement; toggle: string | null }[];
 
   constructor(
@@ -183,15 +206,32 @@ export class FlowControls {
     viewControls: HTMLElement,
     /** Called after the view's state is shown (to refresh the menus). */
     private readonly refreshed: () => void,
+    /** The app's views: the glow mode, and the colour fields on the spectrum. */
+    private readonly app = false,
   ) {
-    this.modes = new ModeBar<FlowField, 'split' | 'grid' | 'shock'>({
-      modes: FLOW_FIELDS.map((f) => ({ id: f.field, label: f.label, key: f.key, hint: f.name })),
+    this.modes = new ModeBar<FlowField | 'glow', 'split' | 'grid' | 'shock'>({
+      modes: [
+        ...(app
+          ? [
+              {
+                id: 'glow' as const,
+                label: 'Glow',
+                key: '5',
+                hint: 'The Mach number in colour, brightest where the density changes',
+              },
+            ]
+          : []),
+        ...FLOW_FIELDS.map((f) => ({ id: f.field, label: f.label, key: f.key, hint: f.name })),
+      ],
       toggles: [
         { id: 'split', label: 'Split', key: 'D' },
         { id: 'grid', label: 'Grid', key: 'G' },
         { id: 'shock', label: 'Shock', key: 'S' },
       ],
-      onMode: (field) => view()?.setField(field),
+      onMode: (mode) => {
+        if (mode === 'glow') view()?.setLook('glow');
+        else view()?.setField(mode);
+      },
       onToggle: (toggle) => {
         if (toggle === 'split') view()?.toggleSplit();
         else if (toggle === 'grid') view()?.toggleGrid();
@@ -264,6 +304,9 @@ export class FlowControls {
       case 'png':
         this.savePng();
         break;
+      case 'glow':
+        if (this.app) v.setLook('glow');
+        break;
     }
   }
 
@@ -272,7 +315,7 @@ export class FlowControls {
     const v = this.view();
     if (v === null) return;
     const s = v.shown;
-    this.modes.setMode(s.field);
+    this.modes.setMode(s.look === 'glow' ? 'glow' : s.field);
     this.modes.setToggle('split', s.split);
     this.modes.setToggle('grid', s.grid);
     this.modes.setToggle('shock', s.shock);
@@ -282,7 +325,7 @@ export class FlowControls {
       }
     }
     this.refreshed();
-    if (s.field === 'schlieren' && !s.split) {
+    if (s.look !== 'glow' && s.field === 'schlieren' && !s.split) {
       this.legend.show({
         kind: 'schlieren',
         title: 'Schlieren',
@@ -293,10 +336,20 @@ export class FlowControls {
 
   /** The colour scale of the field shown (the view's onScale). */
   showScale(scale: FlowScale): void {
+    if (scale.glow === true) {
+      this.legend.show({
+        kind: 'glow',
+        min: scale.min,
+        max: scale.max,
+        contrast: SCHLIEREN_CONTRAST,
+        base: GLOW_BASE,
+      });
+      return;
+    }
     if (scale.field === 'schlieren') return;
     const { title, units } = SCALES[scale.field];
     this.legend.show({
-      kind: 'colormap',
+      kind: this.app ? 'spectrum' : 'colormap',
       title,
       units,
       min: scale.min,

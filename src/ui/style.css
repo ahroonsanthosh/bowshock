@@ -1072,6 +1072,28 @@ td.num {
 .legend__note:empty {
   display: none;
 }
+.legend__channel {
+  margin-top: 8px;
+}
+.legend__channel[hidden] {
+  display: none;
+}
+.legend__ticks {
+  position: relative;
+  height: 14px;
+  margin-top: 4px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.legend__tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+.legend__tick:first-child {
+  transform: none;
+}
 
 .modebar {
   margin-left: auto;

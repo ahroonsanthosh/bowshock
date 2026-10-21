@@ -55,8 +55,39 @@ async function until(page, test, seconds) {
 /** The pages, how to tell each is ready to be seen, and the keys to try on it. */
 const PAGES = [
   {
-    id: 'landing',
+    id: 'app',
     path: 'index.html',
+    // The Basic Finner's curve starts on opening: ready once its first
+    // point's first grid is solved (a provisional value), a minute or two
+    // on software WebGPU; its finest grid would take hours.
+    ready: (page) =>
+      until(
+        page,
+        async () =>
+          (await page.evaluate(() => document.querySelector('.point__value') !== null)) &&
+          (await readoutValue(page, 'cd')) !== '',
+        900,
+      ),
+    shots: [
+      ['schlieren', ['1']],
+      ['mach', ['2']],
+      ['glow', ['5']],
+    ],
+    keys: [
+      { press: '2', expect: { pressed: 'Mach' } },
+      { press: '5', expect: { pressed: 'Glow' } },
+      { press: 'g', expect: { pressed: 'Grid' } },
+      { press: 'g', expect: { notPressed: 'Grid' } },
+      { press: ' ', expect: { text: ['.readout [data-id="state"] .readout__value', 'Paused'] } },
+      { press: ' ', expect: { text: ['.readout [data-id="state"] .readout__value', 'Solving'] } },
+      { press: 'h', expect: 'dialog-open' },
+    ],
+    // 2 in the focused preset select shows Mach, and leaves the preset.
+    select: { focus: '#preset', press: '2', pressed: 'Mach' },
+  },
+  {
+    id: 'about',
+    path: 'about.html',
     ready: (page) => until(page, async () => (await page.$('#gpu-line .badge')) !== null, 30),
     keys: [{ press: 'h', expect: 'dialog-open' }],
   },
@@ -252,7 +283,12 @@ const modePressed = (page, label) =>
  */
 async function helpByKeyboard(page, key) {
   const problems = [];
-  const isOpen = () => page.evaluate(() => document.querySelector('dialog')?.open === true);
+  // The help dialog (a page may have others, such as the app's Details drawer).
+  const isOpen = () =>
+    page.evaluate(
+      () =>
+        (document.querySelector('dialog.help') ?? document.querySelector('dialog'))?.open === true,
+    );
   const focusBack = () =>
     page.evaluate(() => document.activeElement?.hasAttribute('data-check-focus') === true);
   const marked = await page.evaluate(() => {
@@ -274,7 +310,9 @@ async function helpByKeyboard(page, key) {
     if (!(await isOpen())) problems.push(`${open} did not open the help`);
     for (let k = 0; k < 8; k++) await page.keyboard.press('Tab');
     const inside = await page.evaluate(() =>
-      document.querySelector('dialog')?.contains(document.activeElement),
+      (document.querySelector('dialog.help') ?? document.querySelector('dialog'))?.contains(
+        document.activeElement,
+      ),
     );
     if (!inside) problems.push('Tab left the help dialog');
     await page.keyboard.press(close);

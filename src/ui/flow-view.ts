@@ -15,11 +15,13 @@
 import {
   FlowRenderer,
   type FlowDrawOptions,
+  type FlowLook,
+  type FlowPalette,
   type FlowShape,
   type FlowSource,
 } from '../render/flow-renderer';
 import type { FlowField } from '../render/flow-fields';
-import { colormapTable, hexToRgb } from '../render/colormap';
+import { colormapTable, hexToRgb, spectrumTable } from '../render/colormap';
 import {
   bytesPerRow,
   CanvasPresenter,
@@ -45,17 +47,25 @@ export interface FlowViewOptions {
   readonly maxFps?: number;
   /** The background, as #rrggbb (default the ground's). */
   readonly background?: string;
+  /** The colour fields' table (default the perceptual map). */
+  readonly palette?: FlowPalette;
+  /** Room left behind the flow's last line when fitted, as a fraction of its length (default 0). */
+  readonly fitAft?: number;
 }
 
 /** The scale of the colour field shown (below the axis in the split view). */
 export interface FlowScale {
   readonly field: FlowField;
   readonly split: boolean;
+  /** The glow view: the Mach number's colours, at the density gradient's brightness. */
+  readonly glow?: boolean;
   readonly min: number;
   readonly max: number;
 }
 
 export interface FlowViewState {
+  /** 'glow': the Mach number's colour at the density gradient's brightness; `field` is then not drawn. */
+  readonly look: FlowLook;
   readonly field: FlowField;
   readonly split: boolean;
   readonly grid: boolean;
@@ -63,7 +73,7 @@ export interface FlowViewState {
 }
 
 /** Schlieren's contrast k in 1 - exp(-k g): weak waves visible, shocks bright. */
-const SCHLIEREN_CONTRAST = 3;
+export const SCHLIEREN_CONTRAST = 3;
 /** Grid lines are drawn at least this many CSS pixels apart (every 2^n-th line). */
 const GRID_SPACING = 5;
 /** How often the legend's range is read back, milliseconds. */
@@ -91,7 +101,13 @@ export class FlowView {
   private lastRange = 0;
   private drawing: Promise<void> | null = null;
   private bodyRadius = 0.5;
-  private state: FlowViewState = { field: 'schlieren', split: false, grid: false, shock: true };
+  private state: FlowViewState = {
+    look: 'filled',
+    field: 'schlieren',
+    split: false,
+    grid: false,
+    shock: true,
+  };
   private readonly pointers = new Map<number, { x: number; y: number }>();
   private readonly listeners: (() => void)[] = [];
   private lastScale = '';
@@ -202,7 +218,11 @@ export class FlowView {
   }
 
   setField(field: FlowField): void {
-    this.update({ field });
+    this.update({ field, look: 'filled' });
+  }
+
+  setLook(look: FlowLook): void {
+    this.update({ look });
   }
 
   toggleSplit(): void {
@@ -330,12 +350,15 @@ export class FlowView {
    * readback buffer.
    */
   private async drawnScale(): Promise<FlowScale | null> {
-    const { field, split } = this.state;
-    if (field === 'schlieren' && !split) return null;
-    const shown: FlowField = split && field === 'schlieren' ? 'mach' : field;
+    const { field, split, look } = this.state;
+    const glow = look === 'glow';
+    if (!glow && field === 'schlieren' && !split) return null;
+    const shown: FlowField = glow || (split && field === 'schlieren') ? 'mach' : field;
     for (let k = 0; k < 40; k++) {
-      const range = await this.renderer.readRange(split ? 1 : 0);
-      if (range !== null) return { field: shown, split, min: range.min, max: range.max };
+      const range = await this.renderer.readRange(!glow && split ? 1 : 0);
+      if (range !== null) {
+        return { field: shown, split: split && !glow, glow, min: range.min, max: range.max };
+      }
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
     throw new Error('the colour scale could not be read');
@@ -351,7 +374,11 @@ export class FlowView {
     const lines = [...caption];
     if (colour !== null) {
       const ends = `${formatScaleValue(colour.min)} to ${formatScaleValue(colour.max)}`;
-      lines.push(`${FIELD_NAMES[colour.field]}${colour.split ? ' below the axis' : ''}: ${ends}`);
+      lines.push(
+        colour.glow === true
+          ? `Colour: Mach number, ${ends}; brightness: the density gradient; black: uniform flow`
+          : `${FIELD_NAMES[colour.field]}${colour.split ? ' below the axis' : ''}: ${ends}`,
+      );
     }
     if (lines.length === 0) return;
     const size = Math.round(12 * dpr);
@@ -373,7 +400,7 @@ export class FlowView {
     });
     if (colour !== null) {
       const top = y + pad + lines.length * line;
-      const table = colormapTable(64);
+      const table = (this.options.palette === 'spectrum' ? spectrumTable : colormapTable)(64);
       const gradient = context.createLinearGradient(x + pad, 0, x + boxWidth - pad, 0);
       for (let k = 0; k < 64; k++) {
         const [r, g, b] = [0, 1, 2].map((c) => Math.round(255 * table[4 * k + c]!));
@@ -475,24 +502,23 @@ export class FlowView {
   }
 
   private async readScale(): Promise<void> {
-    const split = this.state.split;
-    const field: FlowField = split
-      ? this.state.field === 'schlieren'
-        ? 'mach'
-        : this.state.field
-      : this.state.field;
+    const glow = this.state.look === 'glow';
+    const split = this.state.split && !glow;
+    const field: FlowField =
+      glow || (split && this.state.field === 'schlieren') ? 'mach' : this.state.field;
     const range = await this.renderer.readRange(split ? 1 : 0);
     if (range === null || this.options.onScale === undefined) return;
-    const key = `${field} ${split} ${range.min} ${range.max}`;
+    const key = `${field} ${split} ${glow} ${range.min} ${range.max}`;
     if (key === this.lastScale) return;
     this.lastScale = key;
-    this.options.onScale({ field, split, min: range.min, max: range.max });
+    this.options.onScale({ field, split, glow, min: range.min, max: range.max });
   }
 
   private drawOptions(): Omit<FlowDrawOptions, 'view'> {
     return {
       ...this.state,
       schlierenContrast: SCHLIEREN_CONTRAST,
+      palette: this.options.palette ?? 'perceptual',
       lengthScale: this.bodyRadius,
       gridStride: this.gridStride(),
       background: this.background(),
@@ -521,9 +547,11 @@ export class FlowView {
     const source = this.renderer.source;
     if (source === null) return null;
     const b = source.bounds();
-    if (!source.mirror) return b;
+    // Room behind the last line (the region not simulated, shown as such), so the body's end is in view.
+    const xMax = b.xMax + (this.options.fitAft ?? 0) * (b.xMax - b.xMin);
+    if (!source.mirror) return { ...b, xMax };
     const y = Math.max(Math.abs(b.yMin), Math.abs(b.yMax));
-    return { xMin: b.xMin, xMax: b.xMax, yMin: -y, yMax: y };
+    return { xMin: b.xMin, xMax, yMin: -y, yMax: y };
   }
 
   private fitRectPixels(aspect: number): PixelRect {
