@@ -6,9 +6,8 @@
   bands rest on first readings where a figure was read for this record
   (RM A55H31 figs. 11 and 12; NASA CR-149372 figs. 8b and 5, section
   11); the independent reader's blind second readings (round 6) are
-  paired for TN 2960 (section 13) and pending for the rest, and each band
-  becomes the envelope of both when they are held beside the first
-  (section 8).
+  held beside the first and every band is the envelope of both (TN 2960
+  in section 13, RM A55H31 and CR-149372 in section 14).
 - **Date:** 2026-10-20
 - **Inputs:** [0014](0014-refusals.md) W3, W4, W11 and section 10 (what
   sets bands, what is held back, "bounded, not measured", the readings
@@ -43,14 +42,14 @@ refused, change only their reasons (section 12).
 
 ## 1. What is served, and on what
 
-| Item                  | Method                                                                                            | Band on the term                                                    | Domain                           | Data                                                        |
-| --------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------- |
-| W3(a) thick layers    | thin-layer term times K(M, X) = D(X) / D(1.0) on TR 1109 fig. 29(a)                               | 0.93 x K_low to 1.21 x K_high (section 2)                           | X 1.0 to 4.5 at M 1.5 to 3.1     | TR 1109 fig. 29(a), both readings                           |
-| W3(b) varying chord   | the term integrated along the span (unswept trailing edge)                                        | as W3(a), station by station                                        | as the term                      |                                                             |
-| W4(a) flat plates     | the rounded wedge's limit, face angle 0: (2/3) Cp_pitot (2r) per span                             | 0.99 to 1.06, as now                                                | as now                           | TN 2960 fig. 5(c) both readings; figs. 5(d), 5(e) as checks |
-| W4(b) any planform    | the nose term per unit span times the span (a plate's radius is the same at every station)        | as W4(a)                                                            |                                  |                                                             |
-| W4(c) swept           | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure   | 0.98 to 1.14 (0.95 to 1.17 extrapolated in Reynolds number)         | sweep to 60 deg, M_n 1.49 to 3.0 | RM A55H31 figs. 11, 12 (one reading)                        |
-| W4(e) M_n 1.0 to 1.49 | plates: the term times kappa(M_n), the cylinder's front side over modified Newtonian (section 11) | the bracketing nodes' range (section 11); swept, times 0.98 to 1.14 | plates, M_n 1.0 to 1.49          | NASA CR-149372 figs. 8b, 5 (one reading); TN 2960 at 1.49   |
+| Item                  | Method                                                                                            | Band on the term                                                    | Domain                                     | Data                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------- |
+| W3(a) thick layers    | thin-layer term times K(M, X) = D(X) / D(1.0) on TR 1109 fig. 29(a)                               | 0.93 x K_low to 1.21 x K_high (section 2)                           | X 1.0 to 4.5 at M 1.5 to 3.1               | TR 1109 fig. 29(a), both readings                           |
+| W3(b) varying chord   | the term integrated along the span (unswept trailing edge)                                        | as W3(a), station by station                                        | as the term                                |                                                             |
+| W4(a) flat plates     | the rounded wedge's limit, face angle 0: (2/3) Cp_pitot (2r) per span                             | 0.99 to 1.06, as now                                                | as now                                     | TN 2960 fig. 5(c) both readings; figs. 5(d), 5(e) as checks |
+| W4(b) any planform    | the nose term per unit span times the span (a plate's radius is the same at every station)        | as W4(a)                                                            |                                            |                                                             |
+| W4(c) swept           | the independence principle: the front side at M_n = M cos(sweep) on the normal dynamic pressure   | 0.97 to 1.14 (0.94 to 1.17 extrapolated in Reynolds number)         | sweep to 60 deg, M_n 1.49 to 3.0           | RM A55H31 figs. 11, 12 (two readings)                       |
+| W4(e) M_n 1.0 to 1.49 | plates: the term times kappa(M_n), the cylinder's front side over modified Newtonian (section 11) | the bracketing nodes' range (section 11); swept, times 0.96 to 1.14 | plates and rounded wedges, M_n 1.0 to 1.49 | NASA CR-149372 figs. 8b, 5 (two readings); TN 2960 at 1.49  |
 
 ## 2. W3(a): blunt trailing edges with thick layers
 
@@ -311,10 +310,10 @@ unchanged.
 | Figure                               | Readings now     | Used for                                                 |
 | ------------------------------------ | ---------------- | -------------------------------------------------------- |
 | TR 1109 fig. 29(a)                   | two (0010)       | W3(a)'s K and band                                       |
-| RM A55H31 figs. 11, 12               | one              | W4(c)'s sweep allowance                                  |
+| RM A55H31 figs. 11, 12               | two (section 14) | W4(c)'s sweep allowance                                  |
 | TN 2960 figs. 5(a), 5(b), 5(d), 5(e) | two (section 13) | checks of the band and the reasons of W4(d); set nothing |
 | RM L52D21 fig. 11                    | one              | the reason W3(c) stays refused                           |
-| NASA CR-149372 figs. 8b, 5           | one              | W4(e)'s kappa nodes and their spread (section 11)        |
+| NASA CR-149372 figs. 8b, 5           | two (section 14) | W4(e)'s kappa nodes and their spread (section 11)        |
 
 When the second readings of RM A55H31 figs. 11 and 12 arrive they are held
 beside the first in `src/fins/rm-a55h31.ts`, the allowance becomes the
@@ -643,3 +642,120 @@ symbols ahead of it), so their second front side rests on three points.
 - No label changes: no TN 2960 term carried "read once". The terms still
   marked "read once" are those on RM A55H31 figs. 11 and 12 and NASA
   CR-149372 figs. 8b and 5, next in the reader's queue.
+
+## 14. The second readings of RM A55H31 and CR-149372 (audit round 6)
+
+The independent reader's blind second readings: RM A55H31 figs. 11 and 12
+(commit 6e6d9be, all 17 symbols, ratio error 0.001 to 0.002; the theory
+curves not read) and NASA CR-149372 figs. 8b and 5 (commit fc66a2f), on the
+reader's branch, read with `git show` and not merged; paired by
+`docs/research/total-drag/scripts/w34_pair_round6.py` and held beside the
+first readings in `src/fins/rm-a55h31.ts` and `src/fins/macha.ts`. By 0014
+section 10's rule each band is the envelope of both readings, and a pair
+that disagrees beyond the combined reading error is named and either
+resolved by a third look at the scan or left out of the band.
+
+### RM A55H31 (the sweep allowance)
+
+Combined reading error: 0.004 in the ratio and 0.2 deg in yaw on the first
+reading, the reader's stated errors (0.0009 to 0.0019, and 0.04 to 0.09
+deg) on the second. Yaw and value as read (fig. 12, fig. 11), and r:
+
+| Point                      | Fig. 12, first | Second       | Fig. 11, first | Second       | r, first | r, second | Verdict                                                              |
+| -------------------------- | -------------- | ------------ | -------------- | ------------ | -------- | --------- | -------------------------------------------------------------------- |
+| M 3.9, 30 deg              | 30.1, 0.700    | 29.91, 0.702 | 30, 0.769      | 30.03, 0.770 | 1.067    | 1.064     | agree                                                                |
+| M 3.9, 45 deg (set apart)  | 45.1, 0.410    | 44.75, 0.410 | 45, 0.530      | 44.81, 0.534 | 1.120    | 1.101     | yaw 0.35 apart; set apart by the report anyway                       |
+| M 3.9, 60 deg (set apart)  | 60.1, 0.170    | 59.78, 0.164 | 60, 0.295      | 60.04, 0.303 | 1.226    | 1.158     | yaw and fig. 11 apart; set apart anyway                              |
+| M 6.86, 14 deg             | 14.4, 0.907    | 14.15, 0.906 | 14.3, 0.972    | 14.44, 0.972 | 0.998    | 0.994     | agree                                                                |
+| M 6.86, 30 deg             | 29.6, 0.665    | 29.38, 0.668 | 29.6, 0.750    | 30.05, 0.756 | 1.007    | 1.004     | fig. 11 apart (yaw 0.45, value 0.006): left out, no change           |
+| M 6.86, 45 deg             | 45.2, 0.367    | 44.89, 0.368 | 45.1, 0.500    | 44.87, 0.507 | 1.034    | 1.021     | yaw 0.31 apart, fig. 11 0.007: left out, no change                   |
+| M 6.86, 60 deg             | 59.9, 0.131    | 59.56, 0.134 | 59.8, 0.246    | 60.00, 0.252 | 0.990    | 0.983     | yaw 0.34 apart: third look 59.75 deg, 0.134, between them; both kept |
+| M 6.86, 75 deg (set apart) | 75.5, 0.023    | 75.06, 0.021 | 75.2, 0.046    | 74.75, 0.057 | 0.866    | 0.839     | set apart anyway                                                     |
+
+The first reading's yaws run 0.2 to 0.4 deg above the second's on fig. 12
+(its grid is uniform to 0.06 deg, so the difference is in placing the
+symbols). The model is sensitive to yaw (cos^3: 2.7% per 0.3 deg at 60
+deg), so the pair at 60 deg, M 6.86, which sets the allowance's low end,
+was looked at a third time on a 3x crop between the figure's own grid
+lines: 59.75 deg, 0.134, between the readings, so both are kept and their
+envelope brackets it. The present tests' 30 deg point, which sets the high
+end, agrees (third look: 30.0 deg, 0.701). The pairs at 30 and 45 deg, M
+6.86, are left out of the band; the allowance without them is the same,
+their r lying inside the others' envelope. The theory curves feed nothing.
+
+**The allowance: 0.98 to 1.07** (was 0.99 to 1.07), the envelope of r over
+both readings' points the reports do not set apart, rounded outward. The
+swept band above M_n 1.49 is **0.97 to 1.14** (was 0.98 to 1.14), and
+**0.94 to 1.17** extrapolated in Reynolds number (was 0.95 to 1.17); below
+M_n 1.49 the extrapolated allowance, twice the deviation from 1, is **0.96
+to 1.14** (was 0.98 to 1.14). The label drops "read once".
+
+### CR-149372 (kappa)
+
+**Fig. 8b.** Each second-reading point at 0 to 90 deg against the first
+reading interpolated there; combined error: 0.005 in Cp on the first, the
+reader's err_y, plus the local slope times 0.3 deg and the reader's x
+error (0.1 deg on its curve reads).
+
+| M   | Points used | Mean difference | Combined error | Left out                                                                     | kappa, first | Second | Node: nominal, range  |
+| --- | ----------- | --------------- | -------------- | ---------------------------------------------------------------------------- | ------------ | ------ | --------------------- |
+| 1.0 | 28          | +0.003          | 0.016          | 54.2 deg (+0.053); a stray at 86.5 deg, Cp -0.08                             | 0.762        | 0.765  | 0.764, 0.751 to 0.772 |
+| 1.1 | 25          | 0.000           | 0.016          | 3.4, 39.1, 41.3, 50.0, 53.5 deg (up to 0.059; symbols in the crowded middle) | 0.831        | 0.831  | 0.831, 0.818 to 0.839 |
+| 1.2 | 15          | +0.002          | 0.013          | the curve at 25 to 60 deg and a "triangle" at 30.7 deg (below)               | 0.897        | 0.896  | 0.896, 0.882 to 0.906 |
+
+The second reading's M 1.2 curve between 25 and 60 deg lies up to 0.10
+below the first's and equals its own M 1.1 curve at 30 and 35 deg (0.911
+against 0.908, 0.770 against 0.770): its path runs through a triangle it
+found at 30.7 deg, Cp 0.890, which lies on the M 1.1 line. A third look on
+a 1.6x crop shows three distinct lines there, the triangle at about 34
+deg, 0.91, on the third (as the first reading has it), and none at 30.7
+deg; those points are left out, so between 22 and 65 deg the second
+reading's M 1.2 front side rests on the first's curve. The second front
+sides are formed as in section 13, by the difference from the first.
+
+**Fig. 5.** The reader names the symbols below 88 deg by shape, marked
+uncertain. Where the four curves coincide (44 to 78 deg) the name does not
+matter, so they are used as the shared curve, less the "60" axis label
+read as symbols (59.6, 59.8 and 64.3 deg, near Cp 0) and one point at 69.7
+deg outside the combined error. Where the curves part (78 to 88 deg) a
+wrong name would put a point on the wrong cylinder, so they are excluded:
+the first reading's branch points stand alone there. Above 88 deg the
+reader names them by plateau; within 90 deg, the 2.54 cm square at 89.1 deg
+(0.009 from the first) and the 3.81 cm circle at 89.7 deg (0.012). Values
+below Cp -0.8 lie below the last gridline in both readings and are
+extrapolated on its uniform spacing; they are kept, since a 2% scale error
+there moves a front side by under 0.01%. The spread on the second reading
+is -0.56%, -0.46% and -0.14% (first: -0.56%, -0.43%, -0.12%); the nodes take
+-0.56% to 0%.
+
+**The nodes**: nominal the mean of both readings, range their lowest and
+highest widened by the 1% reading error and the spread. The band on the
+term (unswept, measured Reynolds number):
+
+| M_n  | Nominal kappa | Band, both readings | First reading alone (section 11) |
+| ---- | ------------- | ------------------- | -------------------------------- |
+| 1.0  | 0.764         | 0.983 to 1.012      | 0.985 to 1.010                   |
+| 1.05 | 0.797         | 0.942 to 1.053      | 0.942 to 1.053                   |
+| 1.1  | 0.831         | 0.984 to 1.010      | 0.985 to 1.010                   |
+| 1.15 | 0.864         | 0.947 to 1.049      | 0.947 to 1.049                   |
+| 1.2  | 0.896         | 0.984 to 1.010      | 0.985 to 1.010                   |
+| 1.3  | 0.932         | 0.946 to 1.137      | 0.947 to 1.137                   |
+| 1.45 | 0.986         | 0.895 to 1.075      | 0.896 to 1.075                   |
+
+The label drops "read once" (from 1.2 to 1.49 it is still "an analogy,
+interpolated across an unmeasured Mach range").
+
+### What the pairing changed in the claims
+
+- The term above M_n 1.49 on a swept edge: 0.97 to 1.14 (0.94 to 1.17
+  extrapolated in Reynolds number). Unswept edges, the Basic Finner's
+  among them, are unchanged.
+- W4(e): kappa's nominal moves by at most 0.15% (at M_n 1.0) and its
+  bands by 0.001 to 0.002; swept, below M_n 1.49, the allowance is 0.96 to
+  1.14. The hobby example's leading edges: 0.131 (0.118 to 0.166) at M
+  1.5, 0.161 (0.138 to 0.212) at M 1.8, 0.183 (0.177 to 0.208) at M 2.2.
+- No refusal moves, so the coverage of section 11 stands (the run after
+  merging main is in section 15).
+- Nothing among the figures this record uses is read once any more,
+  except fig. 5(d)'s R 1.3e5 diamonds (a check of the band, which the
+  reader did not read).

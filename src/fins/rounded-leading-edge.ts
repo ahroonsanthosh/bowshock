@@ -105,11 +105,19 @@
  */
 
 import { normalShock, stagnationPressureRatio } from '../validation/gas-dynamics';
-import { MACHA_FIG5, MACHA_FIG8B, MACHA_READINGS } from './macha';
+import {
+  MACHA_FIG5,
+  MACHA_FIG5_SECOND,
+  MACHA_FIG8B,
+  MACHA_FIG8B_SECOND,
+  MACHA_READINGS,
+} from './macha';
 import { FinRefusal } from './refusal';
 import {
   RM_A55H31_FIG11,
+  RM_A55H31_FIG11_SECOND,
   RM_A55H31_FIG12,
+  RM_A55H31_FIG12_SECOND,
   RM_A55H31_READINGS,
   RM_A55H31_TABLE2,
 } from './rm-a55h31';
@@ -280,9 +288,12 @@ export function sweepChecks(
   });
 }
 
-/** The sweep allowance: the checks the reports do not set apart, rounded outward. */
+/**
+ * The sweep allowance: the checks the reports do not set apart, on both
+ * readings (0016 section 14), rounded outward.
+ */
 export const SWEEP_ALLOWANCE = (() => {
-  const r = sweepChecks()
+  const r = [...sweepChecks(), ...sweepChecks(RM_A55H31_FIG12_SECOND, RM_A55H31_FIG11_SECOND)]
     .filter((c) => c.flag === undefined)
     .map((c) => c.r);
   return {
@@ -307,47 +318,101 @@ export const ROUNDED_EDGE_BAND = (() => {
 /** The domain of the term without kappa (from M_n 1.0 to 1.49 with it: `TRANSONIC_NODES`). */
 export const ROUNDED_EDGE_MACH_RANGE = [1.49, 3.0] as const;
 
+/** Linear interpolation in theta, held at the ends. */
+function valueAt(
+  points: readonly { readonly theta: number; readonly p: number }[],
+  theta: number,
+): number {
+  const s = [...points].sort((a, b) => a.theta - b.theta);
+  if (theta <= s[0]!.theta) return s[0]!.p;
+  for (let k = 0; k + 1 < s.length; k++) {
+    const a = s[k]!;
+    const b = s[k + 1]!;
+    if (theta <= b.theta) {
+      return b.theta > a.theta
+        ? a.p + ((b.p - a.p) * (theta - a.theta)) / (b.theta - a.theta)
+        : a.p;
+    }
+  }
+  return s[s.length - 1]!.p;
+}
+
 /**
- * NASA CR-149372 fig. 8b's front sides (0 to 90 deg, trapezoid rule over
- * the symbols and the faired curve together) over (2/3) Cp_pitot at the
- * test Mach number: kappa, measured over modelled (0016 section 11).
+ * A second reading's front side by its difference from the first (0016
+ * sections 13 and 14): the first's front side plus the integral, 0 to 90
+ * deg on a 0.5 deg grid, of the second's points minus the first reading
+ * there, interpolated between the second's points and held at its ends, so
+ * that the second's gaps take the first's curvature, not a chord.
  */
-export function machaFrontSides(reading: typeof MACHA_FIG8B = MACHA_FIG8B): {
+export function frontByDifference(
+  first: readonly { readonly theta: number; readonly p: number }[],
+  second: readonly { readonly theta: number; readonly p: number }[],
+): number {
+  const d = second.map((q) => ({ theta: q.theta, p: q.p - valueAt(first, q.theta) }));
+  const grid = Array.from({ length: 181 }, (_, k) => ({ theta: k / 2, p: valueAt(d, k / 2) }));
+  return frontToNinety(first) + frontSide(grid);
+}
+
+/**
+ * NASA CR-149372 fig. 8b's front sides over (2/3) Cp_pitot at the test Mach
+ * number: kappa, measured over modelled (0016 sections 11 and 14). The
+ * first reading by the trapezoid rule over its symbols and faired curve
+ * together, 0 to 90 deg; the second by its difference from the first.
+ */
+export function machaFrontSides(reading: 'first' | 'second' = 'first'): {
   readonly mach: number;
   readonly front: number;
   readonly ratio: number;
 }[] {
-  return reading.map((c) => {
-    const front = frontToNinety(c.points);
+  return MACHA_FIG8B.map((c) => {
+    const second = MACHA_FIG8B_SECOND.find((x) => x.mach === c.mach)!;
+    const front =
+      reading === 'first' ? frontToNinety(c.points) : frontByDifference(c.points, second.points);
     return { mach: c.mach, front, ratio: front / ((2 / 3) * pitotPressureCoefficient(c.mach)) };
   });
 }
-
-/** The readings of fig. 8b held (the second to be added beside the first). */
-const MACHA_FIG8B_HELD: readonly (typeof MACHA_FIG8B)[] = [MACHA_FIG8B];
 
 /**
  * Fig. 5 at M 1.0: each cylinder's front side, fig. 8b's M 1.0 points below
  * 44 deg (where fig. 5 starts) and fig. 5's from there (the shared curve to
  * 78 deg, the cylinder's own points beyond), over fig. 8b's own: the
  * change with blockage (3.1% to 8.4%) and run (Re_d 1.9e5 against 2.8e5
- * to 3.3e5).
+ * to 3.3e5). The second reading by its difference from the first, fig.
+ * 8b's second reading below 44 deg, fig. 5's above (0016 section 14).
  */
-export function machaBlockageSpread(): {
+export function machaBlockageSpread(reading: 'first' | 'second' = 'first'): {
   readonly diameterCm: number;
   readonly blockage: number;
   readonly change: number;
 }[] {
   const m10 = MACHA_FIG8B.find((c) => c.mach === 1.0)!;
-  const own = frontToNinety(m10.points);
+  const m10b = MACHA_FIG8B_SECOND.find((c) => c.mach === 1.0)!;
   const start = Math.min(...MACHA_FIG5.common.map((q) => q.theta));
   const below = m10.points.filter((q) => q.theta < start);
   const common = MACHA_FIG5.common.filter((q) => q.theta <= 78);
-  return MACHA_FIG5.branches.map((b) => ({
-    diameterCm: b.diameterCm,
-    blockage: b.blockage,
-    change: frontToNinety([...below, ...common, ...b.points]) / own - 1,
-  }));
+  const own =
+    reading === 'first' ? frontToNinety(m10.points) : frontByDifference(m10.points, m10b.points);
+  return MACHA_FIG5.branches.map((b) => {
+    const first = [...below, ...common, ...b.points];
+    if (reading === 'first') {
+      return {
+        diameterCm: b.diameterCm,
+        blockage: b.blockage,
+        change: frontToNinety(first) / own - 1,
+      };
+    }
+    const sb = MACHA_FIG5_SECOND.branches.find((x) => x.diameterCm === b.diameterCm)!;
+    const second = [
+      ...m10b.points.filter((q) => q.theta < start),
+      ...MACHA_FIG5_SECOND.common,
+      ...sb.points,
+    ];
+    return {
+      diameterCm: b.diameterCm,
+      blockage: b.blockage,
+      change: frontByDifference(first, second) / own - 1,
+    };
+  });
 }
 
 /** The reading error allowed on each CR-149372 node's ratio (0016 section 11). */
@@ -369,10 +434,14 @@ export interface FrontSideNode {
  * (nominal 1, range TN 2960's band).
  */
 export const TRANSONIC_NODES: readonly FrontSideNode[] = (() => {
-  const spread = machaBlockageSpread().map((s) => s.change);
+  const spread = [...machaBlockageSpread('first'), ...machaBlockageSpread('second')].map(
+    (s) => s.change,
+  );
   const sLow = Math.min(0, ...spread);
   const sHigh = Math.max(0, ...spread);
-  const per = MACHA_FIG8B_HELD.map((r) => machaFrontSides(r));
+  const per = (MACHA_READINGS >= 2 ? (['first', 'second'] as const) : (['first'] as const)).map(
+    (r) => machaFrontSides(r),
+  );
   const nodes: FrontSideNode[] = MACHA_FIG8B.map((c, i) => {
     const r = per.map((x) => x[i]!.ratio);
     return {

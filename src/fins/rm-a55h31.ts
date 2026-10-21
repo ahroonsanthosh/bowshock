@@ -3,9 +3,11 @@
  * NACA RM A55H31, 1956 (https://ntrs.nasa.gov/citations/19930088843), as
  * transcribed for docs/design/0016-fin-edges-of-flat-plates.md
  * (`docs/research/total-drag/data/fin_edges_w34.md` section 3 and `.csv`,
- * `scripts/w34_fin_edges.py`): the first readings. The independent
- * reader's second readings are pending; the sweep allowance of
- * ./rounded-leading-edge.ts is to be the envelope of both.
+ * `scripts/w34_fin_edges.py`): the first readings, and beside them the
+ * independent reader's blind second readings (audit round 6, commit
+ * 6e6d9be), paired in 0016 section 14; the sweep allowance of
+ * ./rounded-leading-edge.ts is the envelope of both. The figures' theory
+ * curves (eqs. 10c and 14) were read by neither and feed nothing.
  *
  * The present tests: the Ames 8 in low-density tunnel, nominal M 3.9, a 1 in
  * cylinder in a 3 in usable stream, free-stream Reynolds number 2.1e3 to
@@ -14,11 +16,11 @@
  */
 
 /**
- * How many readings of figs. 11 and 12 are held: one until the independent
- * reader's second readings are held beside these (0014 section 10.1, rule
- * 5); until then the sweep allowance's label says it rests on one reading.
+ * How many readings of figs. 11 and 12 are held: two since the independent
+ * reader's blind second readings (0016 section 14); with one, the sweep
+ * allowance's label says it rests on one reading.
  */
-export const RM_A55H31_READINGS = 1 as number;
+export const RM_A55H31_READINGS = 2 as number;
 
 /** A point of fig. 11 or fig. 12: its source, free-stream Mach number, yaw in degrees and value. */
 export interface YawPoint {
@@ -89,4 +91,39 @@ export const RM_A55H31_TABLE2: readonly {
   { yaw: 0, mach: 3.94, pInf: 0.319, p: [6.54, 6.18, 5.17, 3.8, 2.48, 1.43, 0.75] },
   { yaw: 30, mach: 3.9, pInf: 0.318, p: [5.05, 4.77, 3.97, 2.8, 1.85, 1.08, 0.6] },
   { yaw: 45, mach: 3.8, pInf: 0.1, p: [1.05, 1.0, 0.85, 0.66, 0.46, 0.29, 0.18] },
+];
+
+/**
+ * Fig. 12, second reading (audit round 6, commit 6e6d9be,
+ * `docs/research/total-drag/audit/round6/readings/rma55h31_fig12.csv`):
+ * symbol centres by outline template, +-0.001 to 0.002 in the ratio and
+ * 0.04 to 0.09 deg; the flags are the same points' (by source and yaw).
+ */
+export const RM_A55H31_FIG12_SECOND: readonly YawPoint[] = [
+  { source: 'present tests', mach: 3.9, yaw: 29.9147, value: 0.7021 },
+  {
+    source: 'present tests',
+    mach: 3.9,
+    yaw: 44.7498,
+    value: 0.4103,
+    flag: `${FLAG_3D}; ${FLAG_REYNOLDS}`,
+  },
+  { source: 'present tests', mach: 3.9, yaw: 59.7835, value: 0.1643, flag: FLAG_3D },
+  { source: 'reference 1', mach: 6.86, yaw: 14.1452, value: 0.9063 },
+  { source: 'reference 1', mach: 6.86, yaw: 29.3753, value: 0.6678 },
+  { source: 'reference 1', mach: 6.86, yaw: 44.8872, value: 0.3681 },
+  { source: 'reference 1', mach: 6.86, yaw: 59.5617, value: 0.1338 },
+  { source: 'reference 1', mach: 6.86, yaw: 75.0617, value: 0.0207, flag: FLAG_END },
+];
+
+/** Fig. 11, second reading (commit 6e6d9be, `rma55h31_fig11.csv`), the yawed points. */
+export const RM_A55H31_FIG11_SECOND: readonly YawPoint[] = [
+  { source: 'present tests', mach: 3.9, yaw: 30.027, value: 0.7703 },
+  { source: 'present tests', mach: 3.9, yaw: 44.8104, value: 0.534 },
+  { source: 'present tests', mach: 3.9, yaw: 60.0388, value: 0.3026 },
+  { source: 'reference 1', mach: 6.86, yaw: 14.4383, value: 0.9718 },
+  { source: 'reference 1', mach: 6.86, yaw: 30.0505, value: 0.7562 },
+  { source: 'reference 1', mach: 6.86, yaw: 44.8713, value: 0.5069 },
+  { source: 'reference 1', mach: 6.86, yaw: 59.9993, value: 0.2516 },
+  { source: 'reference 1', mach: 6.86, yaw: 74.7516, value: 0.0567 },
 ];

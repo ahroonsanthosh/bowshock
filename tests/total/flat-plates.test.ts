@@ -71,7 +71,7 @@ describe('a clipped delta in sheet stock, rounded leading edge, square trailing 
     // 42 deg of sweep, M_n 2.08, Re_n 7.4e4: swept and extrapolated in Reynolds number.
     expect(n.sweepDegrees).toBeCloseTo(Math.atan(0.9) / (Math.PI / 180), 12);
     expect(n.regime).toBe('extrapolated in Reynolds number');
-    expect(n.band).toEqual({ low: 0.95, high: 1.17 });
+    expect(n.band).toEqual({ low: 0.94, high: 1.17 });
     expect(c.label).toMatch(/on a flat plate, a semicircular nose/);
   });
 

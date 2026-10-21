@@ -11,7 +11,13 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { FinRefusal } from '../../src/fins/refusal';
-import { RM_A55H31_FIG11, RM_A55H31_FIG12, RM_A55H31_TABLE2 } from '../../src/fins/rm-a55h31';
+import {
+  RM_A55H31_FIG11,
+  RM_A55H31_FIG11_SECOND,
+  RM_A55H31_FIG12,
+  RM_A55H31_FIG12_SECOND,
+  RM_A55H31_TABLE2,
+} from '../../src/fins/rm-a55h31';
 import {
   pitotPressureCoefficient,
   REYNOLDS_ALLOWANCE,
@@ -194,8 +200,32 @@ describe('the independence principle on yawed cylinders (RM A55H31 figs. 11, 12)
     }
   });
 
-  it('the allowance: 0.99 to 1.07, rounded outward; served to 60 deg, the largest unflagged yaw', () => {
-    expect(SWEEP_ALLOWANCE).toEqual({ low: 0.99, high: 1.07 });
+  it('on the second reading (0016 section 14): r 1.064; 0.994, 1.004, 1.021, 0.983; set apart: 1.101, 1.158, 0.839', () => {
+    const second = sweepChecks(RM_A55H31_FIG12_SECOND, RM_A55H31_FIG11_SECOND);
+    expect(second.map((c) => Math.round(1000 * c.r) / 1000)).toEqual([
+      1.064, 1.101, 1.158, 0.994, 1.004, 1.021, 0.983, 0.839,
+    ]);
+    expect(second.filter((c) => c.flag !== undefined).map((c) => Math.round(c.yaw))).toEqual([
+      45, 60, 75,
+    ]);
+    // Each second-reading point is the first's within 0.45 deg of yaw.
+    second.forEach((c, i) => {
+      expect(c.source).toBe(checks[i]!.source);
+      expect(Math.abs(c.yaw - checks[i]!.yaw)).toBeLessThan(0.45);
+    });
+  });
+
+  it('the allowance: 0.98 to 1.07, the envelope of both readings rounded outward; the same without the pair that disagrees (45 deg, M 6.86); served to 60 deg', () => {
+    expect(SWEEP_ALLOWANCE).toEqual({ low: 0.98, high: 1.07 });
+    const second = sweepChecks(RM_A55H31_FIG12_SECOND, RM_A55H31_FIG11_SECOND);
+    const r = [...checks, ...second]
+      .filter(
+        (c) => c.flag === undefined && !(c.source === 'reference 1' && Math.round(c.yaw) === 45),
+      )
+      .map((c) => c.r);
+    expect([Math.floor(100 * Math.min(...r)) / 100, Math.ceil(100 * Math.max(...r)) / 100]).toEqual(
+      [0.98, 1.07],
+    );
     const used = checks.filter((c) => c.flag === undefined);
     expect(Math.max(...used.map((c) => c.yaw))).toBeLessThanOrEqual(SWEEP_LIMIT_DEGREES);
     expect(Math.max(...used.map((c) => c.yaw))).toBeGreaterThan(SWEEP_LIMIT_DEGREES - 0.5);
@@ -216,7 +246,7 @@ describe('the nose term on flat and swept fins', () => {
     expect(t.sweepDegrees).toBe(0);
   });
 
-  it('swept: at the normal Mach number on the normal dynamic pressure; band 0.98 to 1.14', () => {
+  it('swept: at the normal Mach number on the normal dynamic pressure; band 0.97 to 1.14', () => {
     const sweep = 40;
     const t = roundedLeadingEdgeDrag({
       mach: 2.8,
@@ -234,13 +264,14 @@ describe('the nose term on flat and swept fins', () => {
     // Re_n 1.53e5: measured (TN 2960's Reynolds numbers, M_n 2.14).
     expect(t.regime).toBe('measured');
     expect(t.reynoldsOnDiameter).toBeCloseTo(2e5 * Math.cos(sweep * deg), 8);
-    expect(t.band).toEqual({ low: 0.98, high: 1.14 });
+    expect(t.band).toEqual({ low: 0.97, high: 1.14 });
     expect(t.label).toMatch(/swept 40\.0 deg: the independence principle/);
-    expect(t.label).toMatch(/RM A55H31 figs\. 11, 12, read once, the second reading pending/);
+    expect(t.label).toMatch(/RM A55H31 figs\. 11, 12\), the band widened by 0\.98 to 1\.07/);
+    expect(t.label).not.toMatch(/read once/);
     expect(t.label.startsWith('an analogy, not a measurement')).toBe(true);
   });
 
-  it('swept and extrapolated in Reynolds number (normal component below 1e5): 0.95 to 1.17', () => {
+  it('swept and extrapolated in Reynolds number (normal component below 1e5): 0.94 to 1.17', () => {
     const t = roundedLeadingEdgeDrag({
       mach: 2.8,
       radius: 0.0015,
@@ -250,10 +281,10 @@ describe('the nose term on flat and swept fins', () => {
     });
     expect(t.regime).toBe('extrapolated in Reynolds number');
     expect(t.band).toEqual({
-      low: Math.floor((ROUNDED_EDGE_BAND.low - REYNOLDS_ALLOWANCE) * 0.99 * 100 + 1e-9) / 100,
+      low: Math.floor((ROUNDED_EDGE_BAND.low - REYNOLDS_ALLOWANCE) * 0.98 * 100 + 1e-9) / 100,
       high: Math.ceil((ROUNDED_EDGE_BAND.high + REYNOLDS_ALLOWANCE) * 1.07 * 100 - 1e-9) / 100,
     });
-    expect(t.band).toEqual({ low: 0.95, high: 1.17 });
+    expect(t.band).toEqual({ low: 0.94, high: 1.17 });
   });
 
   it('refuses a normal Mach number below 1.0 (1.0 to 1.49: section 11), with the subsonic reasons', () => {

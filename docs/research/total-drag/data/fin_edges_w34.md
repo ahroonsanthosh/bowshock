@@ -281,9 +281,14 @@ nearest measurement in hand at M 1.5 to 2.
   as its argument); the comparison table, the method and what changes are
   in 0016 section 13. The second readings' front sides are held in
   `src/fins/tn2960.ts` (`TN2960_FRONT_SIDES_SECOND`).
-- **RM A55H31 figs. 11, 12 and NASA CR-149372 figs. 8b, 5:** pending, by
-  the independent reader. To be held beside these in the code, and every
-  band to be the envelope of both.
+- **RM A55H31 figs. 11, 12 and NASA CR-149372 figs. 8b, 5:** the
+  independent reader's blind second readings (audit round 6, commits
+  6e6d9be and fc66a2f), paired by `scripts/w34_pair_round6.py` (run with the
+  round-6 readings directory as its argument), with third looks at the
+  scans for the pairs that set a band and disagree (0016 section 14). Held
+  in `src/fins/rm-a55h31.ts` (`RM_A55H31_FIG12_SECOND`,
+  `RM_A55H31_FIG11_SECOND`) and `src/fins/macha.ts` (`MACHA_FIG8B_SECOND`,
+  `MACHA_FIG5_SECOND`).
 
 ## 9. NASA CR-149372 (Macha): the cylinder's front side at M 1.0 to 1.2
 

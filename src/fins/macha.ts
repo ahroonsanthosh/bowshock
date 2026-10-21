@@ -5,9 +5,10 @@
  * (https://ntrs.nasa.gov/citations/19770008057), as transcribed for
  * docs/design/0016-fin-edges-of-flat-plates.md section 11
  * (`docs/research/total-drag/data/fin_edges_w34.md` section 9 and `.csv`,
- * `scripts/w34_fin_edges.py`): the first readings. The independent
- * reader's second readings are pending; the front-side ratios of
- * ./rounded-leading-edge.ts are to be the envelope of both.
+ * `scripts/w34_fin_edges.py`): the first readings, and beside them the
+ * independent reader's blind second readings (audit round 6, commit
+ * fc66a2f), paired in 0016 section 14 (`scripts/w34_pair_round6.py`); the
+ * front-side ratios of ./rounded-leading-edge.ts are the envelope of both.
  *
  * The tests: the Ames 2 by 2 ft transonic tunnel, solid side walls through
  * which the models' ends were mounted, slotted floor and ceiling; cylinders
@@ -17,11 +18,11 @@
  */
 
 /**
- * How many readings of figs. 8b and 5 are held: one until the independent
- * reader's second readings are held beside these (0014 section 10.1, rule
- * 5); until then the term's label says it rests on one reading.
+ * How many readings of figs. 8b and 5 are held: two since the independent
+ * reader's blind second readings (0016 section 14); with one, the term's
+ * label says it rests on one reading.
  */
-export const MACHA_READINGS = 1 as number;
+export const MACHA_READINGS = 2 as number;
 
 /** A point of a pressure distribution: azimuth from the stagnation line, deg, and Cp. */
 export interface MachaPoint {
@@ -280,5 +281,148 @@ export const MACHA_FIG5 = {
         [91.3, -0.64],
       ]),
     },
+  ],
+} as const;
+
+/**
+ * Fig. 8b, second reading (audit round 6, commit fc66a2f,
+ * `docs/research/total-drag/audit/round6/readings/cr149372_fig8b.csv`): the
+ * points used, the faired curves every 5 deg (`curve`) and the symbols
+ * (`symbol`), 0 to 90 deg. Left out (0016 section 14): a stray detection
+ * (86.5 deg, Cp -0.084, at M 1.0), the points outside the combined reading
+ * error (M 1.0 at 54.2 deg; M 1.1 at 3.4, 39.1, 41.3, 50.0, 53.5 deg), and
+ * the M 1.2 curve at 25 to 60 deg with the "triangle" at 30.7 deg, which run
+ * on the M 1.1 line (a third look puts the triangle at 34 deg, 0.91, on
+ * the third line).
+ */
+export const MACHA_FIG8B_SECOND: readonly {
+  readonly mach: number;
+  readonly points: readonly MachaPoint[];
+}[] = (
+  [
+    [
+      1.0,
+      [
+        [0, 1.2821, 'c'],
+        [0.3992, 1.2819, 's'],
+        [3.307, 1.2731, 's'],
+        [5, 1.2631, 'c'],
+        [9.708, 1.2292, 's'],
+        [10, 1.2267, 'c'],
+        [15, 1.1567, 'c'],
+        [19.07, 1.104, 's'],
+        [20, 1.0843, 'c'],
+        [25, 0.9624, 'c'],
+        [28.07, 0.8932, 's'],
+        [30, 0.833, 'c'],
+        [35, 0.6796, 'c'],
+        [37.66, 0.6001, 's'],
+        [40, 0.5212, 'c'],
+        [45, 0.3589, 'c'],
+        [49.15, 0.2202, 's'],
+        [50, 0.2007, 'c'],
+        [60, -0.1248, 'c'],
+        [61.36, -0.1796, 's'],
+        [65, -0.3206, 'c'],
+        [70, -0.4955, 'c'],
+        [73.09, -0.6058, 's'],
+        [75, -0.6433, 'c'],
+        [80, -0.7527, 'c'],
+        [80.21, -0.755, 's'],
+        [85, -0.8602, 'c'],
+        [86.53, -0.8901, 's'],
+      ],
+    ],
+    [
+      1.1,
+      [
+        [0.207, 1.331, 's'],
+        [5, 1.3094, 'c'],
+        [6.947, 1.3114, 's'],
+        [10, 1.2785, 'c'],
+        [15, 1.2243, 'c'],
+        [15.57, 1.213, 's'],
+        [20, 1.1379, 'c'],
+        [24.99, 1.0493, 's'],
+        [25, 1.0479, 'c'],
+        [30, 0.9084, 'c'],
+        [35, 0.7703, 'c'],
+        [36.55, 0.7286, 's'],
+        [45, 0.4816, 'c'],
+        [46.35, 0.444, 's'],
+        [54.98, 0.1395, 's'],
+        [55, 0.1395, 'c'],
+        [60, -0.0236, 'c'],
+        [65, -0.1859, 'c'],
+        [67.19, -0.2547, 's'],
+        [70, -0.3224, 'c'],
+        [75, -0.4483, 'c'],
+        [76.82, -0.4812, 's'],
+        [80, -0.5628, 'c'],
+        [85, -0.6725, 'c'],
+        [86.46, -0.7055, 's'],
+      ],
+    ],
+    [
+      1.2,
+      [
+        [0, 1.3859, 'c'],
+        [0.2653, 1.3855, 's'],
+        [5, 1.3805, 'c'],
+        [7.083, 1.3713, 's'],
+        [10, 1.3528, 'c'],
+        [13.15, 1.3261, 's'],
+        [15, 1.2977, 'c'],
+        [20, 1.2158, 'c'],
+        [21.9, 1.1837, 's'],
+        [65, -0.0296, 'c'],
+        [69.84, -0.164, 's'],
+        [70, -0.1631, 'c'],
+        [75, -0.2903, 'c'],
+        [85, -0.5006, 'c'],
+        [89.65, -0.6073, 's'],
+      ],
+    ],
+  ] as const
+).map(([mach, xs]) => ({
+  mach,
+  points: xs.map(([theta, p, k]) => ({
+    theta,
+    p,
+    kind: k === 'c' ? ('curve' as const) : ('symbol' as const),
+  })),
+}));
+
+/**
+ * Fig. 5, second reading (commit fc66a2f, `cr149372_fig5.csv`): symbols
+ * only. Below 88 deg the reader names them by shape, uncertain; used only
+ * where the four curves coincide (44 to 78 deg, where the name does not
+ * matter), not where they part (78 to 88 deg). Left out of the shared
+ * curve: the "60" axis label read as symbols (59.6, 59.8, 64.3 deg near Cp
+ * 0) and 69.7 deg, outside the combined error. Above 88 deg, named by
+ * plateau: the 2.54 cm square at 89.1 deg (on the curve the 1.91 and 2.54 cm
+ * share there) and the 3.81 cm circle at 89.7 deg; values below -0.8 are
+ * extrapolated on the uniform grid spacing in both readings.
+ */
+export const MACHA_FIG5_SECOND = {
+  mach: 1.0,
+  common: pts('symbol', [
+    [49.02, 0.1988],
+    [54.23, 0.0477],
+    [58.36, -0.1199],
+    [60.52, -0.1797],
+    [63.56, -0.2531],
+    [66.13, -0.3472],
+    [67.28, -0.3952],
+    [67.55, -0.415],
+    [69.78, -0.4726],
+    [72.49, -0.5641],
+    [75.06, -0.6285],
+    [77.36, -0.6922],
+  ]),
+  branches: [
+    { diameterCm: 1.91, points: pts('symbol', [[89.14, -0.9749]]) },
+    { diameterCm: 3.81, points: pts('symbol', [[89.65, -0.7951]]) },
+    { diameterCm: 5.08, points: pts('symbol', []) },
   ],
 } as const;
