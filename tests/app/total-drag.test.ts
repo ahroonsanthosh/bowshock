@@ -723,6 +723,8 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
       ),
     ).toEqual([
       'fin leading edges: swept-leading-edge',
+      // The fins end at the base: the factor refuses swept fins (0014 section 10.7).
+      'body base: fin-sweep',
       'fin trailing-edge base: swept-trailing-edge',
     ]);
     expect(reasons(totalDragView({ ...f, transitionReynolds: [2e7] }, nose))).toEqual([

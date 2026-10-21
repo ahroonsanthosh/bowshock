@@ -340,10 +340,15 @@ shots at Mach 1.06 to 1.33 are refused, as in the gate.
 - The fins-on-base factor (`src/base/fins-on-base.ts`) does not depend on
   the fins' size: fins of 0.1 cal span at the base take the same factor,
   band and body-base drag as fins of 1 cal. It refuses fin counts other
-  than four and thicknesses outside 5% to 10%, not planforms or spans. A
-  total with such fins is outside the class, so labelled an estimate, and
-  the page says the factor does not depend on them; the factor's band
-  carries nothing for it.
+  than four and thicknesses outside 5% to 10%, not spans. A total with
+  such fins is outside the class, so labelled an estimate, and the page
+  says the factor does not depend on them; the factor's band carries
+  nothing for it. Until 2026-10-21 it did not refuse planforms either:
+  swept and tapered fins at the base took the factor of unswept fins,
+  which an independent review found served where RM L52J21a measures a
+  smaller one. It now refuses fins swept at either edge, and so any
+  tapered planform, with its reason (`fin-sweep`; 0010 section 11.5,
+  0014 section 10.7); the page shows it beside the fins' own refusals.
 - The leading-edge and trailing-edge labels said "an analogy, not a
   measurement" but not "tested only in the total", which 0010 section 7
   asks of the base and fin terms; the page states it once for all of them
@@ -398,7 +403,8 @@ shots at Mach 1.06 to 1.33 are refused, as in the gate.
   the display's blocks for its fields; the altitude in
   feet, converted, out of range refused, and the Reynolds number directly;
   below Mach 1.8 it is refused with the reason; another nose is outside
-  the class with the reason; swept fins are refused with both reasons; the
+  the class with the reason; swept fins are refused with every reason
+  (the fins' edges and, the fins ending at the base, the body base); the
   Basic Finner button gives the range's conditions directly and restores
   the class; the layout of a total shows every block in order, the claim
   set apart, as an estimate with the suspension's reason and nothing in

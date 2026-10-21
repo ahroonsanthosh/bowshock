@@ -56,6 +56,7 @@ export const REASONS = {
   finsNearBase: 'base: fins ending within a chord of the base',
   finsAtBaseCount: 'base: fins at the base, not four',
   finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10',
+  finsAtBaseSwept: 'base: fins at the base, a swept leading or trailing edge (factor measured on unswept fins; 2026-10-21)',
   finsAtBaseMach: 'base: fins at the base, Mach 1.5 to 1.8 (outside 1.8 to 3.0)',
   finsAtBaseLowMach: 'base: fins at the base, Mach below 1.5 (outside 1.8 to 3.0)',
   // Fin trailing-edge base.
@@ -217,6 +218,8 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   if (x === 0) {
     if (r.finCount !== 4) out.push('finsAtBaseCount');
     if (!(tc >= 0.05 && tc <= 0.1)) out.push('finsAtBaseThickness');
+    // Since 2026-10-21 (0014 section 10.7): the factor refuses swept edges, as the trailing-edge term does.
+    if (tanLe !== 0 || tanTe !== 0) out.push('finsAtBaseSwept');
     if (!(mach >= 1.8 - 0.002 && mach <= 3.0)) out.push(mach >= 1.5 ? 'finsAtBaseMach' : 'finsAtBaseLowMach');
   }
 

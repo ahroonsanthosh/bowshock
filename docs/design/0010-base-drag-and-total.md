@@ -1222,7 +1222,9 @@ overlay and scripts are in `docs/research/total-drag/fig35-free-flight/identific
   the knee near M 1.65, on the most negative line of the steep part to M
   2.0, and on the least negative with-fin line of the right-hand side,
   which ends at M 2.563 (a single short dash between long ones at M 2.31
-  to 2.33 and 2.405 to 2.42); estimate A, long dashes with groups of
+  to 2.33 and 2.405 to 2.42; the independent review of 2026-10-21
+  confirmed the first, at M 2.310 to 2.3235, on its own scan, but not the
+  second, both of whose bounding gaps sit under gridline crossings); estimate A, long dashes with groups of
   short ones, on the middle line to M 3.0; estimate B, regular dashes, on
   the most negative line above about M 2.15, to M 3.0.
 
@@ -1280,7 +1282,14 @@ the two agree within their combined errors; the largest differences are
 0.0018 at M 2.15 and 0.0012 at 2.20 (in the crossing with A), 0.0011 at
 1.70 (the knee) and 0.0007 at 1.80; elsewhere at most 0.0006. No row
 differs beyond the combined errors. Both end the line at M 2.563 +-0.002,
-P_B -0.1318 (first, at M 2.56) and -0.1317 (second).
+P_B -0.1318 (first, at M 2.56) and -0.1317 (second). Two of the second
+reading's values sit off the line the first reading follows, each within
+its own +-0.003 there: at M 2.15, -0.1693, on estimate B (0.0004 from its
+own reading of B; the first reading's -0.1675 is on A), and at M 2.20,
+-0.1633, between the lines where they have barely separated (0.0001 from
+its own reading of A; the first reading puts the free-flight line at
+-0.1621 and A at -0.1626). They are kept as read; the rows there take
+both readings, as every row does, inside the swap allowance.
 
 **Calibration checks.** The no-fin curve of fig. 35 against fig. 18's
 basic curve (`src/base/tn3819-fig18.ts`), which it reproduces within 0.001
@@ -1307,10 +1316,10 @@ nearer estimate at M 1.75 to 2.56, each reading against its own reading
 of A and B (`TN3819_FIG35_ESTIMATES`): estimate B, 0.0058 to 0.0077 less
 negative at M 1.75 to 1.85, one stroke with it at 2.05 to 2.10; estimate
 A, one stroke at 2.15, then 0.0024 to 0.0054 more negative at 2.3 to
-2.56. The allowance is the largest, 0.0077 (B at M 1.80, second
-reading; 0.0064 in the first), the larger of that and the first
-reading's 0.0065, applied at M 1.75 to 2.56 so that a swap with the
-nearer line is covered (section 1.3's was 0.005 at M 1.75 to 2.35).
+2.56. The allowance is the largest of these over both readings, 0.0077
+(B at M 1.80, second reading; 0.0063 in the first), applied at M 1.75 to
+2.56 so that a swap with the nearer line is covered (section 1.3's was
+0.005 at M 1.75 to 2.35).
 
 ### 11.4 The corrected factor, M 1.80 to 2.56
 
@@ -1335,7 +1344,8 @@ reading of the curve; 0.113 before), carried above M 2.41 as before.
 (F: the larger of the two readings' factors; every row is in
 `gate-corrected.out`, asserted by `fins-on-base.test.ts`.) To M 2.15 the
 rows barely move: the same line, read again, with the larger swap
-allowance. Above it the free-flight factor falls, against the line read
+allowance, a second reading and rows every 0.05 (what moved there, and
+why, in section 11.7). Above it the free-flight factor falls, against the line read
 before (estimate B), by 0.01 at M 2.2, 0.09 at 2.4 and 0.12 at 2.5, which
 lowers the low end; the high
 end is held up there by the tunnel factor to M 2.41 and by the carried
@@ -1346,20 +1356,29 @@ before).
 
 Above M 2.56 the figure has no free-flight data. Decided by the owner on
 2026-10-20, under 0014 section 10.2, before the gate was re-run: the term
-is "bounded, not measured".
+is "bounded, not measured" (recorded in 0014 section 10.7, amendment a).
 
-- **Lower bound: no fin effect, F = 1** for the present factor, not the
-  zero member's 0.950 of the rebuilt factor (0015 section 3.5). The
-  present factor is defined on Love's basic curve, which fig. 35's own
-  no-fin curve reproduces, so no fin effect is exactly F = 1; it serves
-  only four unswept fins 5% to 10% thick at the base, and every source it
-  is built on (TN 3819 figs. 33 to 35, TN 2360) shows such fins lowering
-  the base pressure, never raising it. The 0.950 is a relief measured on
-  RM L52J21a's 45 deg swept 8% fins, a family the present factor refuses.
-  (The rebuilt factor's reference member takes its own zero member's low
-  end.)
+- **Which fins.** Only those the present factor's sources measured: four
+  unswept fins, 5% to 10% thick, at the base (TN 3819 figs. 33 to 35, TN
+  2360). Since 2026-10-21 the factor refuses fins with a swept leading or
+  trailing edge, and so any tapered planform, in the measured and the
+  bounded parts alike (`fin-sweep`; 0014 section 10.7, amendment d). Until
+  then it took no sweep: the independent review of 2026-10-21 found four
+  8% double wedges swept 45 deg at both edges, at the base, served at M
+  2.0 as an analogy (F 1.258) and at M 2.8 as bounded, 1 to 1.3612, where
+  RM L52J21a measures F of about 0.96 to 1.12 for four 45 deg swept 8%
+  fins (W1's reading, pending on its branch), below this band. The
+  rebuilt factor (W1) is to serve swept fins.
+- **Lower bound: no fin effect, F = 1** for the present factor. It is
+  defined on Love's basic curve, which fig. 35's own no-fin curve
+  reproduces, so no fin effect is exactly F = 1, and every source it is
+  built on shows four unswept fins 5% to 10% thick at the base lowering
+  the base pressure, never raising it. It is not the rebuilt factor's
+  zero member's low end, 0.950 (W1's record, pending on its branch),
+  a relief measured on RM L52J21a's 45 deg swept fins, which the present
+  factor refuses.
 - **Upper bound: the factor at M 2.56 with its band's high end,** 1.3612
-  (the free-flight factor 1.153 plus the carried excess 0.208), carried
+  (the free-flight factor 1.153 plus the carried excess 0.2083), carried
   as a ratio to M 3.0.
 - **Served:** the midpoint, F = 1.1806, its band the whole gap, 1 to
   1.3612; the body base's label "bounded, not measured: the fins-on-base
@@ -1368,24 +1387,32 @@ is "bounded, not measured".
   in C_D beside it (0.0396 at M 2.663 to 0.0352 at 2.97). A total that
   contains it is at best "an estimate, not validated", and its claim
   names the bounded component.
+- **The step at M 2.56.** The served factor is not continuous there: the
+  nominal falls from 1.2020 (the M 2.56 row, 1.043 to 1.361) to 1.1806,
+  about -0.0024 in the Basic Finner's body base C_D, -0.55% of its total,
+  and the low end from 1.043 to 1.
 
 **The ordering** (that F lies between the bounds above M 2.56), written
-before the number is served, as 0014 section 10.2 asks: Love, printed p.
-23, "Also indicated is the decrease in fin effects as Mach number
-increases", which fig. 35 shows from M 1.7 to 2.56 (F - 1 falls from
-0.51 at M 1.8 to 0.31 at 2.0 and 0.15 at 2.56); and TN 2360's dependence
-of the increment on the fins' thickness and the slope of their faces near
-the trailing edge (0008 section 3.4). In linear theory a face of given
-slope changes the pressure by an amount proportional to the slope over
-sqrt(M^2 - 1); over M 2.56 to 3.0, sqrt(M^2 - 1) |P_B,no fins| changes by
-+1.2% (0.2694 to 0.2727), so at fixed slope F - 1 would fall by about
-1%, and measured it fell faster than that below M 2.56. This is a
-judgement backed by the trend, not a measurement. Carried as an
-increment instead (the fin effect in P_B held at its value at M 2.56),
-the high end would rise to 1.367 at M 2.6, 1.397 at 2.8 and 1.428 at 3.0,
-against 1.361. Love's estimates A and B, in both readings, lie inside the
-bounded band at every Mach number read from 2.6 to 3.0 (A: F 1.20 to
-1.23; B: 1.29 to 1.33; `fins-on-base.test.ts`).
+before the number was served, as 0014 section 10.2 asks, and restated on
+2026-10-21 after the review. As first written it rested on Love's "Also
+indicated is the decrease in fin effects as Mach number increases"
+(printed p. 23), which fig. 35 shows from M 1.7 to 2.56 (F - 1 falls from
+0.51 at M 1.8 to 0.31 at 2.0 and 0.15 at 2.56). Above the curve's end the
+figure does not show that: both of Love's predictions, in both readings,
+rise from M 2.6 to 3.0 (A: F 1.20 to 1.23; B: 1.29 to 1.33). What holds
+the bound is its margin, not a trend: the free-flight factor at the
+curve's end is 1.153; held fixed in P_B (the fin effect at M 2.56 carried
+as an increment) it would be 1.18 at M 3.0; the upper bound, 1.3612, lies
+above both by the carried tunnel excess, 0.2083, and above both
+predictions. That the predictions lie inside the band (at every Mach
+number read from 2.6 to 3.0, `fins-on-base.test.ts`) checks two
+predictions, not the bound. In linear theory a face of given slope
+changes the pressure by an amount proportional to the slope over
+sqrt(M^2 - 1); over M 2.56 to 3.0, sqrt(M^2 - 1) |P_B,no fins| changes
+by +1.2% (0.2694 to 0.2727), so at fixed slope F - 1 would change by
+about 1%: a judgement, not a measurement. Carried as an increment of the
+high end instead, the high end would rise to 1.367 at M 2.6, 1.397 at
+2.8 and 1.428 at 3.0, against 1.361.
 
 ### 11.6 The gate re-run: a recorded correction, not a validation
 
@@ -1521,7 +1548,13 @@ validated claim to show).
   tables and the round 5 findings reproduced from the superseded readings;
   the corrected rows, excess and band; what moved inside the class and
   why (section 11.7); the bounded factor, its label, Love's estimates
-  inside it, the increment alternative and the linear-theory scale.
+  inside it and rising, the margin that holds the bound, the step at M
+  2.56, the increment alternative and the linear-theory scale; swept and
+  tapered fins refused in the measured and the bounded parts (section
+  11.5).
+- `tests/total/total-drag.test.ts`: the review's probe (four 8% double
+  wedges swept 45 deg at the base) refused at M 2.0 and 2.8, and served
+  a chord ahead of the base.
 - `tests/validation/basic-finner.test.ts`: the second run and round 5 as
   recorded, the corrected run, every shot passing under each.
 - `docs/research/base-and-total/runs/gate-corrected.test.ts` and its

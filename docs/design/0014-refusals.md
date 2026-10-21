@@ -136,6 +136,7 @@ is not used by the page and is left out.
 | B5  | fins at the base, not four                                                                               | `finsOnBaseFactor`                     | 0010 section 1.3       | data                                       | 40.2%                                |
 | B6  | fins at the base, t/c outside 0.05 to 0.10                                                               | `finsOnBaseFactor`                     | 0010 section 1.3       | data                                       | 71.7%                                |
 | B7  | fins at the base, Mach outside 1.798 to 3.0                                                              | `finsOnBaseFactor`                     | 0010 section 1.3       | data                                       | 54.3% (72% of each band below M 1.8) |
+| B8  | fins at the base swept at either edge, so any tapered planform (since 2026-10-21, section 10.7)          | `finsOnBaseFactor`                     | 0010 section 11.5      | data                                       | 69.0% (sole blocker 0.01%)           |
 | T1  | a blunt trailing edge on fins of varying chord                                                           | `finnedBodyComponents`                 | 0010 section 3         | method (implementation)                    | 49.8%                                |
 | T2  | a swept blunt trailing edge                                                                              | `finTrailingEdgeBaseDrag`              | 0008 section 3.4       | data                                       | 7.9%                                 |
 | T3  | a blunt trailing edge outside Mach 1.5 to 3.2                                                            | `finTrailingEdgeBaseDrag`              | 0010 section 5.1       | data                                       | 26.4%                                |
@@ -950,3 +951,46 @@ twice, at Mach 1.0 to 2.56, by two readers (0010 section 11.3), so 10.4's
 "TN 3819 fig. 35 below Mach 1.8 (round 3 only)" no longer applies to
 that curve; round 3's reading is superseded above about Mach 2.15, where
 it followed estimate B.
+
+**2026-10-21 (d): swept fins at the base refused; the ordering of (a)
+restated** (0010 section 11.5; after the independent review of the
+correction).
+
+- _Which fins._ Amendment (a)'s lower bound, no fin effect, rests on
+  sources that measure four unswept fins 5% to 10% thick at the base
+  (TN 3819 figs. 33 to 35, TN 2360). The present factor took no sweep:
+  the review found four 8% double wedges swept 45 deg at both edges, at
+  the base, served at Mach 2.0 as an analogy (F 1.258) and at 2.8 as
+  bounded, 1 to 1.3612, where RM L52J21a measures about 0.96 to 1.12 for
+  four 45 deg swept 8% fins (W1's reading, pending on its branch). The
+  factor now refuses fins swept at either edge, and so any tapered
+  planform, in the measured and the bounded parts alike (`fin-sweep`;
+  section 2.3, B8), until the rebuilt factor (W1) serves them. Its other
+  inputs were checked against its sources the same way: four fins and t/c
+  0.05 to 0.10 were already refused otherwise; sections other than
+  circular arcs stay "an analogy, not a measurement" (0008 section 3.4);
+  span and chord, which the sources do not vary, are not refused (0011
+  section 6).
+- _What it costs before W1_ (`docs/research/refusals/`, the same 2000
+  rockets, its `out/2026-10-21-swept-at-base/`; the library agrees with
+  the decomposition on all 824 cases it can represent): the refusal
+  applies to 69.0% of cases, but nearly all of them are refused already
+  (thickness, count, edges); it is the sole blocker in 0.01%. Totals
+  served at Mach 1.8 to 3.0 go from 5 of 2000 rockets to 4 (0.25% to
+  0.20%), over all four bands from 9 of 8000 cases to 8; in the
+  sensitivity with more four-fin, sharp-edged fins from 9 to 8 at Mach
+  1.8 to 3.0, and with fewer Haack noses unchanged at 7. W1's share of
+  cases is 96.0% (95.8% before). Sections 1 to 6 quote the run before
+  this change.
+- _The ordering, restated._ (a) argued the upper bound from Love's
+  "decrease in fin effects as Mach number increases". Fig. 35 shows that
+  decrease from Mach 1.7 to 2.56, not above: both of Love's predictions,
+  in both readings, rise from Mach 2.6 to 3.0 (A: F 1.20 to 1.23; B:
+  1.29 to 1.33). The bound holds by its margin: the free-flight factor at
+  the curve's end is 1.153, and 1.18 at Mach 3.0 with the fin effect at
+  2.56 held fixed in P_B; the upper bound, 1.3612, lies above both by the
+  carried tunnel excess (0.2083) and above both predictions. That the
+  predictions lie inside the band checks two predictions, not the bound.
+- _The step at Mach 2.56._ The served nominal falls from 1.2020 (the M
+  2.56 row) to 1.1806, about -0.0024 in the Basic Finner's body base C_D
+  (-0.55% of its total), and the low end from 1.043 to 1.

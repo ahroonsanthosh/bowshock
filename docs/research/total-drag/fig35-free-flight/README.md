@@ -83,10 +83,13 @@ stroke with it at M 1.99 to 2.13; estimate A in one stroke at M 2.14 to
   on estimate B there.
 - On the right the free-flight line (the lowest with-fin line) shows a
   single short dash between long ones at M 2.31 to 2.33 and 2.405 to
-  2.42, the legend's pattern; estimate A above it has a group of short
+  2.42, the legend's pattern (the independent review of 2026-10-21
+  confirmed the dash at M 2.310 to 2.3235 on its own scan, but could not
+  confirm the one at 2.405 to 2.42: both gaps that would bound it sit
+  under gridline crossings); estimate A above it has a group of short
   dashes at M 2.56 to 2.58 and runs on to 3.0.
 - The free-flight line's distance from the nearest other with-fin line:
-  estimate B 0.0058 to 0.0064 less negative at M 1.75 to 1.85, 0.0021 at
+  estimate B 0.0058 to 0.0063 less negative at M 1.75 to 1.85, 0.0021 at
   2.0, one stroke at 2.05 to 2.10; estimate A one stroke at 2.15, 0.0029
   more negative at 2.3, 0.0041 at 2.4, 0.0051 to 0.0053 at 2.5 to 2.56.
 

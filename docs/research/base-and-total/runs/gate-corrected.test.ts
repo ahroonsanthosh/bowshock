@@ -54,7 +54,14 @@ function at(points: readonly { mach: number; pB: number }[], m: number): number 
 
 it('the gate with the corrected fins-on-base factor', () => {
   writeFileSync(OUT, '');
-  const wedge = { count: 4, thicknessRatio: 0.08, section: 'other' as const };
+  const wedge = {
+    count: 4,
+    thicknessRatio: 0.08,
+    section: 'other' as const,
+    // Unswept: the factor refuses swept fins since 2026-10-21 (0014 section 10.7).
+    tanLeadingEdge: 0,
+    tanTrailingEdge: 0,
+  };
 
   log('== the two readings of the free-flight curve, paired');
   const [r1, r2] = TN3819_FIG35_FREE_FLIGHT;

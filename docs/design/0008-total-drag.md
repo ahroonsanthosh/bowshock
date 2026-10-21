@@ -1123,3 +1123,10 @@ Changes after TN 3819 fig. 35 was identified (0010 section 11;
    after its second reading and the decisions of 0014 section 10.6. If it
    passes, the class is validated over what that range supports (0010
    section 11.7).
+4. **Swept fins at the base refused** (3.4): the factor of 3.4 is
+   measured on four unswept fins, but until 2026-10-21 the code took no
+   sweep and served swept and tapered fins at the base with it. It now
+   refuses fins swept at either edge, and so any tapered planform, in the
+   measured part and above M 2.56 alike, until the rebuilt factor (W1)
+   serves them (0010 section 11.5; 0014 section 10.7). The Basic Finner,
+   unswept, is unchanged.

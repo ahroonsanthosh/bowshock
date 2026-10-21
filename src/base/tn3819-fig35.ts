@@ -172,7 +172,7 @@ export const FIG35_FREE_FLIGHT_END = 2.56;
  * largest distance from the free-flight line to the nearer estimate at M
  * 1.75 to 2.56, over both readings, each against its own reading of A and
  * B (TN3819_FIG35_ESTIMATES): 0.0077, estimate B at M 1.80 in the second
- * reading (0.0064 in the first); estimate A is the nearer above M 2.15,
+ * reading (0.0063 in the first); estimate A is the nearer above M 2.15,
  * 0.0024 to 0.0054. The identification's confidence is about 99% on the
  * left half and 85% for which right-hand line is free flight and which is
  * A.

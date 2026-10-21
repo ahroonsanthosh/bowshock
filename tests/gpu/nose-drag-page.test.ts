@@ -197,18 +197,21 @@ describe('the drag page: total drag before a nose solve', () => {
     set('#planform', 'trapezoidal');
     expect((doc.querySelector('#sweep-fields') as HTMLElement).hidden).toBe(false);
     // Swept at 30 deg front and back, of constant chord: src/fins refuses the
-    // swept rounded leading edge and src/base the swept blunt trailing edge.
+    // swept rounded leading edge and src/base the swept blunt trailing edge and,
+    // the fins ending at the base, the fins-on-base factor (0014 section 10.7).
     set('#le-sweep', '30');
     set('#te-sweep', '30');
     out = await settled(before);
     expect(out).toContain('Total drag refused: no number is given');
     expect(out).toContain('fin leading edges (swept-leading-edge)');
     expect(out).toContain('fin trailing-edge base (swept-trailing-edge)');
+    expect(out).toContain('body base (fin-sweep)');
     before = out;
     // Sweeping the leading edge alone changes the chord along the span.
     set('#te-sweep', '0');
     out = await settled(before);
     expect(out).toContain('fin leading edges (leading-edge-geometry)');
+    expect(out).toContain('body base (fin-sweep)');
     expect(out).toContain('fin trailing-edge base (input)');
     before = out;
     (doc.querySelector('#basic-finner') as HTMLButtonElement).click();
