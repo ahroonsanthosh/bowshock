@@ -296,7 +296,14 @@ describe('body base drag: the arithmetic', () => {
       afterbody: 'cylinder',
       boundaryLayerAtBase: 'turbulent',
       baseAreaRatio: 1,
-      fins: { count: 4, thicknessRatio: 0.08, section: 'other', trailingEdgeAheadOfBase: 0 },
+      fins: {
+        count: 4,
+        thicknessRatio: 0.08,
+        section: 'other',
+        tanLeadingEdge: 0,
+        tanTrailingEdge: 0,
+        trailingEdgeAheadOfBase: 0,
+      },
     });
     const f = r.finsOnBase!;
     const q = -compiledCurveValue(2.4, 'lessNegative');
@@ -311,6 +318,8 @@ describe('body base drag: the arithmetic', () => {
       count: 4,
       thicknessRatio: 0.08,
       section: 'other' as const,
+      tanLeadingEdge: 0,
+      tanTrailingEdge: 0,
       trailingEdgeAheadOfBase: 0,
     };
     const at = (mach: number, withFins: boolean) =>
@@ -346,7 +355,14 @@ describe('body base drag: the arithmetic', () => {
       afterbody: 'cylinder',
       boundaryLayerAtBase: 'turbulent',
       baseAreaRatio: 1,
-      fins: { count: 4, thicknessRatio: 0.05, section: 'other', trailingEdgeAheadOfBase: 1 },
+      fins: {
+        count: 4,
+        thicknessRatio: 0.05,
+        section: 'other',
+        tanLeadingEdge: 0,
+        tanTrailingEdge: 0,
+        trailingEdgeAheadOfBase: 1,
+      },
     });
     expect(r.cd).toBeCloseTo(0.1447, 15);
     expect(r.finsOnBase).toBeUndefined();
@@ -387,7 +403,14 @@ describe('refusals', () => {
       refusedWith('fins-near-base', () =>
         bodyBaseDrag({
           ...base,
-          fins: { count: 4, thicknessRatio: 0.08, section: 'other', trailingEdgeAheadOfBase: x },
+          fins: {
+            count: 4,
+            thicknessRatio: 0.08,
+            section: 'other',
+            tanLeadingEdge: 0,
+            tanTrailingEdge: 0,
+            trailingEdgeAheadOfBase: x,
+          },
         }),
       );
     }

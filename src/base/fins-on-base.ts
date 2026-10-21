@@ -9,21 +9,21 @@
  * compiled curves of fig. 18 (./compiled-curve.ts): the figure's own no-fin
  * estimate reproduces that curve within 0.001, and against the more
  * negative curve F would be 2% to 3.5% smaller (1.453 instead of 1.505 at
- * M 1.8; round-3 audit, section 4.2). It must be applied to that curve and
- * to no other; ./base-drag.ts does.
+ * M 1.8 as round 3 read it; round-3 audit, section 4.2). It must be applied
+ * to that curve and to no other; ./base-drag.ts does.
  *
- * Corrected on 2026-10-20 (0010 section 11): the rows rest on the two
+ * Corrected on 2026-10-21 (0010 section 11): the rows rest on the two
  * readings of fig. 35's free-flight curve as identified, which ends at M
  * 2.563; until then they rested on two readings that followed estimate B,
  * one of Love's predictions, above about M 2.15 (kept as
  * TN3819_FIG35_SUPERSEDED, reproduced by the tests through the options of
  * `finsOnBaseRows`).
  *
- * Measured, M 1.80 to 2.55 (FIG35_FREE_FLIGHT_END, the last Mach number
- * both readings read). The band at each row (a Mach number where some
- * reading of the free-flight line exists), over every reading r of that
- * line, with F_r = P_B,r / P_B,no fins and e_r its reading error over
- * |P_B,no fins|:
+ * Measured, M 1.80 to 2.56 (FIG35_FREE_FLIGHT_END, the first reading's
+ * last point, inside the second's end at 2.563). The band at each row (a
+ * Mach number where some reading of the free-flight line exists), over
+ * every reading r of that line, with F_r = P_B,r / P_B,no fins and e_r its
+ * reading error over |P_B,no fins|:
  *
  * - low end: min over r of 1 + (F_r - e_r - 1) / 2, half the 10%-thick
  *   increment, since TN 2360's 5%-thick fins gave about half the
@@ -33,8 +33,8 @@
  *   linearly between M 1.50, 2.00 and 2.41). Beyond the last tunnel pair
  *   (M 2.41) the tunnel's excess over free flight is carried: the high end
  *   there is max over r of F_r plus the largest excess measured at any
- *   tunnel Mach number (0.208, at M 2.41, the Langley pair against the
- *   first reading of the line; 0.140 at 1.50 and 0.073 at 2.00). This is
+ *   tunnel Mach number (0.2083, at M 2.41, the Langley pair against the
+ *   first reading of the line; 0.1409 at 1.50 and 0.0757 at 2.00). This is
  *   the conservative choice of the round-3 audit (its section 4.1, option
  *   b), adopted on that reading's evidence, not on any gate: TN 3819 p. 23,
  *   "All the wind-tunnel base pressures for the body with fins are lower
@@ -42,38 +42,52 @@
  * - nominal: the band's midpoint (0008 section 6.3).
  *
  * Reading errors are each reading's own, and at least
- * FIG35_IDENTITY_SWAP.error (0.0065) at M 1.75 to 2.55, where estimate B
+ * FIG35_IDENTITY_SWAP.error (0.0077) at M 1.75 to 2.56, where estimate B
  * (to 2.15) or estimate A (above) runs within that of the free-flight line,
  * so that a swap of the two is covered. Between rows the low and high ends
  * are interpolated linearly in M.
  *
- * Bounded, not measured, above M 2.55 to 3.0 (0014 section 10.2; 0010
- * section 11): the figure has no free-flight data there. The lower bound is
- * no fin effect, F = 1 exactly (the factor is defined on the basic curve,
- * which the figure's no-fin curve reproduces; and every source this factor
- * rests on, TN 3819 figs. 33 to 35 and TN 2360, shows four unswept fins 5%
- * to 10% thick at the base lowering the base pressure, never raising it).
- * The upper bound is the factor at M 2.55 with its band's high end, carried
- * as a ratio: Love, p. 23, "Also indicated is the decrease in fin effects
- * as Mach number increases", and TN 2360's dependence on the fins'
- * thickness and slope, whose pressure field scales in linear theory as the
- * slope over sqrt(M^2 - 1) (a judgement backed by the trend, not a
- * measurement). Served: the midpoint of 1 and that high end, the band the
- * whole gap.
+ * Bounded, not measured, above M 2.56 to 3.0 (0014 sections 10.2 and 10.7;
+ * 0010 section 11.5): the figure has no free-flight data there. The lower
+ * bound is no fin effect, F = 1 exactly: the factor is defined on the basic
+ * curve, which the figure's no-fin curve reproduces, and it serves only the
+ * fins its sources measured, four unswept fins 5% to 10% thick at the base
+ * (refused otherwise, below), which every one of those sources (TN 3819
+ * figs. 33 and 35, TN 2360) shows lowering the base pressure, never raising
+ * it. The upper bound is the row at M 2.56 with its band's high end,
+ * 1.3612, carried as a ratio. The ordering rests on that bound's margin,
+ * not on a trend: the free-flight factor at the curve's end is 1.153, and
+ * held fixed in P_B (the fin effect of M 2.56 carried as an increment) it
+ * would be 1.18 at M 3.0; the margin above both is the tunnel's excess,
+ * 0.2083, carried. Love's two predictions, in both readings, rise from M
+ * 2.6 to 3.0 (A: F 1.20 to 1.23; B: 1.29 to 1.33), so fig. 35 does not
+ * show the fin effect falling above its curve's end; both lie inside the
+ * band, a check of two predictions, not of the bound. Served: the midpoint
+ * of 1 and that high end, 1.1806, the band the whole gap. At M 2.56 the
+ * nominal steps from 1.2020 (the row) to 1.1806 (about -0.0024 in the
+ * Basic Finner's body base, -0.55% of its total) and the low end from
+ * 1.043 to 1.
  *
  * Labels (0008 sections 3.4, 6.2 B3, 6.4): on circular-arc fins the factor
  * is a correlation measured on such fins; on any other section, such as
  * the Basic Finner's single wedges with blunt trailing edges, it is "an
  * analogy, not a measurement", since no opened source measures F for them.
- * Above M 2.55, "bounded, not measured" in either case.
+ * Above M 2.56, "bounded, not measured" in either case.
  *
- * Refused: fins other than four (the data are cruciform; TN 2360 found a
- * cruciform tail's increment less than twice a plane tail's, not
- * quantified); thickness ratios outside 0.05 to 0.10 (the band rests on the
- * 5% and 10% data); Mach numbers outside 1.80 to 3.0 (a Mach number below
- * 1.80 by no more than the figure's abscissa reading error, 0.002, takes
- * the 1.80 row, flagged). Fins ending between the base and a chord ahead of
- * it are refused by ./base-drag.ts.
+ * Refused, in the measured and the bounded parts alike: fins other than
+ * four (the data are cruciform; TN 2360 found a cruciform tail's increment
+ * less than twice a plane tail's, not quantified); thickness ratios outside
+ * 0.05 to 0.10 (the band rests on the 5% and 10% data); since 2026-10-21,
+ * fins with a swept leading or trailing edge, and so any tapered planform
+ * (a tapered panel has a swept edge): every source measures unswept fins,
+ * and sweep changes the factor (TN 3819 fig. 34; RM L52J21a; 0014 section
+ * 5.1), so the rebuilt factor (W1) is to serve them; Mach numbers outside
+ * 1.80 to 3.0 (a Mach number below 1.80 by no more than the figure's
+ * abscissa reading error, 0.002, takes the 1.80 row, flagged). Not refused:
+ * the fins' span and chord, which the sources do not vary (fig. 35's fins
+ * span 3.5 body diameters; the factor does not depend on them, 0011
+ * section 6). Fins ending between the base and a chord ahead of it
+ * are refused by ./base-drag.ts.
  */
 
 import { compiledCurveValue } from './compiled-curve';
@@ -254,7 +268,7 @@ export function finsOnBaseRows(options: FinsOnBaseRowOptions = {}): FinsOnBaseRo
   });
 }
 
-/** The adopted rows, M 1.80 to 2.55: both readings, the tunnel excess carried, the identity-swap error. */
+/** The adopted rows, M 1.80 to 2.56: both readings, the tunnel excess carried, the identity-swap error. */
 export const FINS_ON_BASE_ROWS: readonly FinsOnBaseRow[] = finsOnBaseRows();
 
 /**
@@ -273,6 +287,10 @@ export interface FinsAtBase {
   readonly thicknessRatio: number;
   /** 'circular-arc' is the section of fig. 35's fins; anything else is an analogy. */
   readonly section: 'circular-arc' | 'other';
+  /** tan of the leading-edge sweep (0: unswept; ../fins/planform.ts). */
+  readonly tanLeadingEdge: number;
+  /** tan of the trailing-edge sweep (0: unswept). */
+  readonly tanTrailingEdge: number;
 }
 
 export interface FinsOnBaseFactor {
@@ -285,7 +303,7 @@ export interface FinsOnBaseFactor {
   /** True when the factor is carried over from circular-arc fins. */
   readonly analogy: boolean;
   /**
-   * Above the free-flight curve's end (M 2.55): bounded, not measured, from
+   * Above the free-flight curve's end (M 2.56): bounded, not measured, from
    * no fin effect to the factor at the end (0014 section 10.2).
    */
   readonly bounded: boolean;
@@ -324,6 +342,17 @@ export function finsOnBaseFactor(mach: number, fins: FinsAtBase): FinsOnBaseFact
       'fin-thickness',
       `the fins-on-base band rests on fins 5% and 10% thick (TN 2360, TN 3819 fig. 35); ` +
         `t/c = ${fins.thicknessRatio} is outside them`,
+    );
+  }
+  if (fins.tanLeadingEdge !== 0 || fins.tanTrailingEdge !== 0) {
+    const deg = (t: number) => ((Math.atan(t) * 180) / Math.PI).toFixed(1);
+    throw new BaseRefusal(
+      'fin-sweep',
+      'the fins-on-base factor is measured on unswept fins (TN 3819 figs. 33 and 35, TN 2360); ' +
+        `fins at the base swept ${deg(fins.tanLeadingEdge)} deg at the leading edge and ` +
+        `${deg(fins.tanTrailingEdge)} deg at the trailing edge are not covered (a tapered ` +
+        'planform has a swept edge), since sweep changes the factor (TN 3819 fig. 34, RM ' +
+        'L52J21a; design record 0014, section 5.1)',
     );
   }
   const rows = FINS_ON_BASE_ROWS;

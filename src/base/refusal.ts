@@ -20,7 +20,10 @@ export type BaseRefusalReason =
   | 'fin-thickness'
   /** Fins near the base whose trailing edge the data do not cover (blunt, rounded). */
   | 'fin-trailing-edge'
-  /** Fins near the base swept beyond the data. */
+  /**
+   * Fins at or near the base swept beyond the data: for the present factor any swept leading or trailing edge
+   * (it is measured on unswept fins); for the rebuilt factor sweeps outside those measured (0015 section 3.4).
+   */
   | 'fin-sweep'
   /** Swept blunt trailing edges. */
   | 'swept-trailing-edge'

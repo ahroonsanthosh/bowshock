@@ -183,6 +183,8 @@ describe('the term (bodyBaseDrag)', () => {
       count: 4,
       thicknessRatio: 0.024,
       section: 'other' as const,
+      tanLeadingEdge: 0,
+      tanTrailingEdge: 0,
       trailingEdgeAheadOfBase: 0,
       nearBase: {
         section: doubleWedge(0.024, 0.5),
@@ -197,7 +199,11 @@ describe('the term (bodyBaseDrag)', () => {
     const f = finsOnBaseFactorW1(1.3, { ...fins.nearBase, count: 4, trailingEdgeAheadOfBase: 0 });
     expect(r.cd).toBeCloseTo(curve(1.3) * 1.065 * f.nominal, 12);
     // Swept fins of a sharp section below M 1.5, and fins ahead of the base, are refused.
-    const swept = { ...fins, nearBase: { ...fins.nearBase, tanLeadingEdgeSweep: 1 } };
+    const swept = {
+      ...fins,
+      tanLeadingEdge: 1,
+      nearBase: { ...fins.nearBase, tanLeadingEdgeSweep: 1 },
+    };
     expect(() => bodyBaseDrag({ ...base, mach: 1.3, fins: swept })).toThrow(/below M 1.5/);
     expect(() =>
       bodyBaseDrag({ ...base, mach: 1.3, fins: { ...fins, trailingEdgeAheadOfBase: 0.5 } }),

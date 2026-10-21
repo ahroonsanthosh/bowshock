@@ -58,8 +58,9 @@ export const REASONS = {
   finsNearBase: 'base: fins ending within a chord of the base',
   finsAtBaseCount: 'base: fins at the base, not four',
   finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10',
+  finsAtBaseSwept: 'base: fins at the base, a swept leading or trailing edge (factor measured on unswept fins; 2026-10-21)',
   finsAtBaseMach: 'base: fins at the base, Mach 1.5 to 1.8 (outside 1.8 to 3.0)',
-  finsAtBaseLowMach: 'base: fins at the base, Mach below 1.1 (the rebuilt factor from 1.1)',
+  finsAtBaseLowMach: 'base: fins at the base, Mach below 1.0 (the rebuilt factor from 1.0)',
   // The rebuilt factor's refusals (src/base/fins-on-base-w1.ts, 0015), where the present one refuses.
   finsW1Count: 'base (rebuilt factor): fins at the base, not two to four',
   finsW1Thickness: 'base (rebuilt factor): a section outside the 10% circular arc (steep bevels)',
@@ -219,7 +220,7 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   // Body base (src/base/base-drag.ts, fins-on-base.ts, fins-on-base-w1.ts): the present factor where
   // it serves, the rebuilt one where it refuses (0015 section 5), decided by the library itself.
   // Since W2 (0015 section 11) the body base serves Mach 1.0 to 3.0, and the rebuilt factor fins at the base
-  // from 1.1; the library decides.
+  // from 1.0 (the owner's decision of 2026-10-21); the library decides.
   if (!(mach >= 1.0 && mach <= 3.0)) out.push('baseMach');
   if (r.boatTail) out.push('boatTail');
   const x = r.trailingEdgeAheadChords;
@@ -270,6 +271,9 @@ export function finsOnBaseReason(r: Rocket, mach: number): ReasonKey | undefined
         count: r.finCount,
         thicknessRatio: r.thickness / r.rootChord,
         section: 'other',
+        // The present factor refuses swept edges (0014 section 10.7); the library then asks the rebuilt one.
+        tanLeadingEdge: Math.tan(r.leadingEdgeSweepDeg * DEG),
+        tanTrailingEdge: Math.tan(r.trailingEdgeSweepDeg * DEG),
         trailingEdgeAheadOfBase: r.trailingEdgeAheadChords,
         nearBase: {
           section,

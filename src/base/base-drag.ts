@@ -16,7 +16,7 @@
  *   term with the nominal F;
  * - the interpolation-error bound of the curve, times F and the area ratio;
  * - the fins-on-base band, (F_low - F) and (F_high - F) times -P_B and the
- *   area ratio. Above M 2.55, where TN 3819 fig. 35's free-flight curve
+ *   area ratio. Above M 2.56, where TN 3819 fig. 35's free-flight curve
  *   ends, the factor is bounded, not measured (0014 section 10.2), and its
  *   label carries the gap between the bounds in C_D.
  *

@@ -42,7 +42,13 @@ const oldRound3 = TN3819_FIG35_SUPERSEDED.filter((r) => r.reading === 'round 3')
 const row = <T extends { mach: number }>(rows: readonly T[], m: number): T | undefined =>
   rows.find((r) => Math.abs(r.mach - m) < 1e-9);
 const noFins = (m: number) => Math.abs(compiledCurveValue(m, 'lessNegative'));
-const wedge = { count: 4, thicknessRatio: 0.08, section: 'other' as const };
+const wedge = {
+  count: 4,
+  thicknessRatio: 0.08,
+  section: 'other' as const,
+  tanLeadingEdge: 0,
+  tanTrailingEdge: 0,
+};
 const r4 = (x: number) => Math.round(1e4 * x) / 1e4;
 
 /** A line's value at M, linear between its points; undefined outside them. */
@@ -322,7 +328,7 @@ describe('the band adopted, M 1.80 to 2.56', () => {
     expect(r4(row(FINS_ON_BASE_ROWS, 2.56)!.high)).toBe(1.3612);
   });
 
-  it('the rows: F on the free-flight curve 1.505 to 1.153, the band 1.228 to 1.559 at M 1.80 and 1.043 to 1.361 at 2.56', () => {
+  it('the rows: F on the free-flight curve (the larger reading) 1.510 at M 1.80 to 1.153 at 2.56, the band 1.228 to 1.559 at M 1.80 and 1.043 to 1.361 at 2.56', () => {
     const at = (m: number) => {
       const r = row(FINS_ON_BASE_ROWS, m)!;
       return [r4(Math.max(...r.freeFlight.map((f) => f.factor))), r4(r.low), r4(r.high)];
@@ -340,6 +346,44 @@ describe('the band adopted, M 1.80 to 2.56', () => {
     expect(largest).toBeLessThan(0.133);
     const toClassTop = Math.max(...FINS_ON_BASE_ROWS.filter((r) => r.mach <= 2.15).map(halfWidth));
     expect(toClassTop).toBeLessThan(0.119);
+  });
+
+  it('what moved inside the class, superseded to corrected (0010 section 11.7), and why', () => {
+    // On the Basic Finner the base is the reference area, so the body base's C_D moves by
+    // |P_B, no fins| times the nominal factor's change.
+    const machs = [1.799, 1.846, 1.85, 2.0, 2.15];
+    const r5 = (x: number) => Math.round(1e5 * x) / 1e5;
+    const moved = (to: readonly FinsOnBaseRow[], from: readonly FinsOnBaseRow[], at = machs) =>
+      at.map((m) => r5(noFins(m) * (factorAt(to, m).nominal - factorAt(from, m).nominal)));
+    expect(moved(FINS_ON_BASE_ROWS, OLD_ROWS)).toEqual([
+      0.00105, -0.00031, -0.00042, -0.00082, -0.00123,
+    ]);
+    // The swap allowance alone, 0.005 to 0.0077 (+0.000675 at M 1.799, on the last digit's edge).
+    const allowance = moved(supersededRows({ identitySwapSpan: FIG35_IDENTITY_SWAP }), OLD_ROWS);
+    [0.00067, 0.00022, 0.00018, -0.00068, -0.00068].forEach((x, k) => {
+      expect(Math.abs(allowance[k]! - x)).toBeLessThanOrEqual(1e-5 + 1e-12);
+    });
+    // Reading 2's -0.2369 at M 1.80, through the high end.
+    expect(moved(FINS_ON_BASE_ROWS, finsOnBaseRows({ readings: [first!] }), [1.799])).toEqual([
+      0.00035,
+    ]);
+    // The rows every 0.05, so a row at M 1.85.
+    const oldMachs = SUPERSEDED_MACHS.filter((m) => m <= 2.5);
+    expect(moved(FINS_ON_BASE_ROWS, finsOnBaseRows({ machs: oldMachs }), [1.846, 1.85])).toEqual([
+      -0.00072, -0.00079,
+    ]);
+    // At M 2.15 the superseded factor leaned toward its M 2.2 row, on estimate B.
+    expect(
+      moved(
+        FINS_ON_BASE_ROWS,
+        supersededRows({ identitySwapSpan: FIG35_IDENTITY_SWAP }),
+        [2.15],
+      )[0],
+    ).toBe(-0.00056);
+    // The band at M 1.80.
+    const o = factorAt(OLD_ROWS, 1.8);
+    const n = factorAt(FINS_ON_BASE_ROWS, 1.8);
+    expect([o.low, o.high, n.low, n.high].map(r4)).toEqual([1.2365, 1.5373, 1.2282, 1.559]);
   });
 });
 
@@ -380,6 +424,34 @@ describe("bounded, not measured, above the curve's end (M 2.56 to 3.0)", () => {
     expect(Math.round(1000 * increment(3.0)) / 1000).toBe(1.428);
     const scale = (m: number) => Math.sqrt(m * m - 1) * noFins(m);
     expect(Math.round(1000 * (scale(3.0) / scale(2.56) - 1)) / 10).toBe(1.2);
+  });
+
+  it("the ordering rests on the bound's margin, not on a trend: F 1.153 at the end, 1.18 at M 3.0 with the fin effect held in P_B; Love's estimates rise from M 2.6 to 3.0 (A 1.20 to 1.23, B 1.29 to 1.33)", () => {
+    const end = FINS_ON_BASE_ROWS.at(-1)!;
+    const fEnd = Math.max(...end.freeFlight.map((f) => f.factor));
+    expect(r4(fEnd)).toBe(1.1529);
+    const held = 1 + ((fEnd - 1) * end.pBNoFins) / compiledCurveValue(3.0, 'lessNegative');
+    expect(Math.round(100 * held) / 100).toBe(1.18);
+    // The margin above both is the tunnel excess carried.
+    expect(FINS_ON_BASE_BOUNDED.high - fEnd).toBeCloseTo(0.2083, 4);
+    for (const e of TN3819_FIG35_ESTIMATES) {
+      const pts = e.points.filter((x) => x.mach > FINS_ON_BASE_BOUNDED.from);
+      const F = pts.map((p) => p.pB / compiledCurveValue(p.mach, 'lessNegative'));
+      expect(F.at(-1)!, `${e.estimate} ${e.reading}`).toBeGreaterThan(F[0]!);
+      const [lo, hi] = e.estimate === 'A' ? [1.195, 1.235] : [1.285, 1.335];
+      for (const f of F) {
+        expect(f).toBeGreaterThan(lo);
+        expect(f).toBeLessThan(hi);
+      }
+    }
+  });
+
+  it('steps at M 2.56: the nominal from 1.2020 to 1.1806, about -0.0024 in the body base on its area, the low end from 1.043 to 1', () => {
+    const row = finsOnBaseFactor(2.56, wedge);
+    const above = finsOnBaseFactor(2.5601, wedge);
+    expect([row.nominal, above.nominal].map(r4)).toEqual([1.202, 1.1806]);
+    expect(r4((above.nominal - row.nominal) * noFins(2.56))).toBe(-0.0024);
+    expect([row.low, above.low].map((x) => Math.round(1000 * x) / 1000)).toEqual([1.043, 1]);
   });
 
   it('is labelled bounded, not measured, with its bounds', () => {
@@ -457,6 +529,43 @@ describe('the factor', () => {
     expect(() => finsOnBaseFactor(3.01, wedge)).toThrow(
       'the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded to 3 (TN 3819 fig. 35), asked Mach 3.01',
     );
+  });
+
+  it('refuses fins swept at either edge, and so any tapered planform, in the measured and the bounded parts (0014 section 10.7)', () => {
+    const t45 = Math.tan(Math.PI / 4);
+    const swept = [
+      // The review's probe: four 8% double wedges swept 45 deg at both edges, at the base
+      // (RM L52J21a measures F 0.96 to 1.12 for such fins, below this factor's band).
+      { tanLeadingEdge: t45, tanTrailingEdge: t45 },
+      { tanLeadingEdge: t45, tanTrailingEdge: 0 }, // a clipped delta
+      { tanLeadingEdge: 0, tanTrailingEdge: -0.3 }, // trailing edge swept forward
+      { tanLeadingEdge: 0.4, tanTrailingEdge: 0.2 }, // tapered, both edges swept back
+    ];
+    for (const m of [1.8, 2.0, 2.56, 2.8, 3.0]) {
+      for (const s of swept) {
+        for (const section of ['other', 'circular-arc'] as const) {
+          let reason = 'none';
+          try {
+            finsOnBaseFactor(m, { ...wedge, ...s, section });
+          } catch (e) {
+            expect(e).toBeInstanceOf(BaseRefusal);
+            reason = (e as BaseRefusal).reason;
+          }
+          expect(reason, `M ${m}, ${section}, ${JSON.stringify(s)}`).toBe('fin-sweep');
+        }
+      }
+    }
+    expect(() =>
+      finsOnBaseFactor(2.8, { ...wedge, tanLeadingEdge: t45, tanTrailingEdge: t45 }),
+    ).toThrow(
+      'the fins-on-base factor is measured on unswept fins (TN 3819 figs. 33 and 35, TN 2360); ' +
+        'fins at the base swept 45.0 deg at the leading edge and 45.0 deg at the trailing edge ' +
+        'are not covered (a tapered planform has a swept edge), since sweep changes the factor ' +
+        '(TN 3819 fig. 34, RM L52J21a; design record 0014, section 5.1)',
+    );
+    // Unswept, rectangular fins are served as before.
+    expect(finsOnBaseFactor(2.0, wedge).bounded).toBe(false);
+    expect(finsOnBaseFactor(2.8, wedge).bounded).toBe(true);
   });
 });
 

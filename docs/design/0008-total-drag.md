@@ -765,6 +765,20 @@ above it the fins-on-base factor the gate tested rested on one of Love's
 predictions in TN 3819 fig. 35, and the corrected factor has no hold-out
 there. The Mach 1.8 to 3.0 below is the plan as first written.
 
+**Suspended 2026-10-21 (0010 section 11.7).** By the hold-out rule above
+(6.1), the class's validated claim is suspended: the correction changed a
+term the gate tested inside the class too, moving the total by -0.07% to
++0.17% at the three shots there (by 0.7% to 3.0% above it). Nothing is
+claimed as validated meanwhile; the Basic Finner's total is "an estimate,
+not validated" everywhere, and the class (Mach 1.8 to 2.15 with its other
+limits) is kept for the next test, which covers its Mach range at BRL's
+conditions (0014 section 10.6). The route back:
+BRL Report 934's range A (Mach 1.5 to 2.47; 0014 sections 10.5 and
+10.6), run once as registered, after its second reading and decisions,
+as the test of the corrected factor; if it passes, the class is
+validated over what that range supports. The second run and the
+correction's residuals are kept as history (0010 sections 4.2 and 11.6).
+
 May claim:
 
 - Total zero-incidence, power-off Cd at **Mach 1.8 to 3.0** for one class of
@@ -1099,3 +1113,21 @@ Changes after TN 3819 fig. 35 was identified (0010 section 11;
    figure's evidence after the residuals were known, not a validation:
    residuals -5.1% to +7.5% (mean -0.4%), the M 2.97 offset -3.7% (B5,
    6.4).
+3. **The validated claim suspended** (6.1, 6.4): decided by the owner on
+   2026-10-21 by the hold-out rule of 6.1. The correction changes the
+   fins-on-base factor, a term the gate tested, inside the class as well
+   as above it (the total by -0.07% to +0.17% at the three shots inside
+   it, 0.7% to 1.0% at M 2.35 to 2.41, 2.6% to 3.0% at 2.66 to 2.97), so
+   the Basic Finner's total is "an estimate, not validated" everywhere
+   until a held-back set tests the corrected factor: BRL Report 934's
+   range A (Mach 1.5 to 2.47; 0014 section 10.5), run once as registered,
+   after its second reading and the decisions of 0014 section 10.6. If it
+   passes, the class is validated over what that range supports (0010
+   section 11.7).
+4. **Swept fins at the base refused** (3.4): the factor of 3.4 is
+   measured on four unswept fins, but until 2026-10-21 the code took no
+   sweep and served swept and tapered fins at the base with it. It now
+   refuses fins swept at either edge, and so any tapered planform, in the
+   measured part and above M 2.56 alike, until the rebuilt factor (W1)
+   serves them (0010 section 11.5; 0014 section 10.7). The Basic Finner,
+   unswept, is unchanged.

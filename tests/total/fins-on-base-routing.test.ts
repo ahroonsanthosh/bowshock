@@ -23,10 +23,13 @@ const near = (section: SymmetricSection, tanLe = 0, tanTe = 0) => ({
   tanLeadingEdgeSweep: tanLe,
   tanTrailingEdgeSweep: tanTe,
 });
+// The present factor's edge sweeps follow the rebuilt factor's input unless given (the planform's own).
 const fins = (over: Partial<BaseFins>): BaseFins => ({
   count: 4,
   thicknessRatio: 0.08,
   section: 'other',
+  tanLeadingEdge: over.nearBase?.tanLeadingEdgeSweep ?? 0,
+  tanTrailingEdge: over.nearBase?.tanTrailingEdgeSweep ?? 0,
   trailingEdgeAheadOfBase: 0,
   ...over,
 });
@@ -157,6 +160,69 @@ describe('the rebuilt factor only where the present one refuses', () => {
   });
 });
 
+describe('swept fins at the base (0014 section 10.7): the rebuilt factor, not a refusal', () => {
+  const t45 = Math.tan((45 * Math.PI) / 180);
+  it("swept fins get the rebuilt factor's value and band; the same fins unswept keep the present factor", () => {
+    for (const mach of [1.8, 2.0, 2.4, 2.8]) {
+      // Four 8% double wedges swept 45 deg at both edges: the present factor refuses the sweep.
+      const swept = fins({ thicknessRatio: 0.08, nearBase: near(doubleWedge(0.08), t45, t45) });
+      expect(() => finsOnBaseFactor(mach, swept)).toThrow(/unswept fins/);
+      const r = base(mach, swept);
+      const w = finsOnBaseFactorW1(mach, {
+        ...swept.nearBase!,
+        count: 4,
+        trailingEdgeAheadOfBase: 0,
+      });
+      expect(r.finsOnBaseSource).toBe('rebuilt');
+      expect(r.presentRefusal?.reason).toBe('fin-sweep');
+      expect([r.finsOnBase!.low, r.finsOnBase!.nominal, r.finsOnBase!.high]).toEqual([
+        w.low,
+        w.nominal,
+        w.high,
+      ]);
+      expect(r.cd).toBeCloseTo(-r.curve.pB * w.nominal, 12);
+      expect(r.parts.finsOnBase[0]).toBeCloseTo((w.low - w.nominal) * -r.curve.pB, 12);
+      expect(r.parts.finsOnBase[1]).toBeCloseTo((w.high - w.nominal) * -r.curve.pB, 12);
+      expect(r.labels[1]).toContain(FINS_ON_BASE_ROUTING_LABEL);
+      // The same fins unswept: the present factor, its numbers unchanged.
+      const unswept = fins({ thicknessRatio: 0.08, nearBase: near(doubleWedge(0.08)) });
+      const u = base(mach, unswept);
+      const p = finsOnBaseFactor(mach, unswept);
+      expect(u.finsOnBaseSource).toBe('present');
+      expect([u.finsOnBase!.low, u.finsOnBase!.nominal, u.finsOnBase!.high]).toEqual([
+        p.low,
+        p.nominal,
+        p.high,
+      ]);
+    }
+    // Through the total: a tapered planform at the base goes to the rebuilt factor.
+    const tapered: FinnedBody = {
+      body: { nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 }, cylinderLength: 8 },
+      afterbody: 'cylinder',
+      fins: {
+        count: 4,
+        planform: trapezoidalPlanform({
+          rootChord: 1,
+          span: 1,
+          leadingEdgeSweep: Math.PI / 4,
+          trailingEdgeSweep: Math.PI / 4,
+        }),
+        section: doubleWedge(0.08),
+        sectionFamily: 'other',
+        leadingEdgeRadius: 0,
+        trailingEdgeAheadOfBase: 0,
+      },
+    };
+    const c = finnedBodyComponents(
+      tapered,
+      { mach: 2.0, temperature: 290, reynoldsPerLength: 1.5e6 },
+      exactConeNoseWaveDrag(2.0, Math.atan(0.25)),
+    );
+    expect(c.base?.finsOnBaseSource).toBe('rebuilt');
+    expect(c.base?.presentRefusal?.reason).toBe('fin-sweep');
+  });
+});
+
 describe("the Basic Finner's gate: unchanged", { timeout: 120_000 }, () => {
   const gamma = 1.4;
   const half = (G.coneHalfAngleDegrees * Math.PI) / 180;
@@ -202,6 +268,8 @@ describe("the Basic Finner's gate: unchanged", { timeout: 120_000 }, () => {
           count: 4,
           thicknessRatio: G.finTrailingEdgeThickness / G.finChord,
           section: 'other',
+          tanLeadingEdge: 0,
+          tanTrailingEdge: 0,
           trailingEdgeAheadOfBase: 0,
         },
       });

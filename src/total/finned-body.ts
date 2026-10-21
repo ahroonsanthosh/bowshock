@@ -373,6 +373,8 @@ export function finnedBodyComponents(
         count: fins.count,
         thicknessRatio: symmetricThicknessRatio(fins.section),
         section: fins.sectionFamily,
+        tanLeadingEdge: fins.planform.tanLeadingEdge,
+        tanTrailingEdge: fins.planform.tanTrailingEdge,
         trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
         // For the rebuilt factor, used only where the present one refuses (0015 section 5).
         nearBase: {

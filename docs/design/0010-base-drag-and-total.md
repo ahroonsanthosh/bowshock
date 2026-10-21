@@ -2,13 +2,16 @@
 
 - **Status:** Draft. Libraries with tests (`src/base/`, `src/total/`, and
   additions to `src/fins/`); the total is on the drag page since
-  [0011](0011-total-drag-on-the-page.md), labelled by section 7. Steps B3, B4's
+  [0011](0011-total-drag-on-the-page.md), labelled by section 7 (every
+  total an estimate, not validated, since 2026-10-21: the claim is
+  suspended, section 11.7). Steps B3, B4's
   rounded-edge term and B5 of [0008](0008-total-drag.md), whose rules
   (section 6.1) govern everything here.
 - **Date:** 2026-10-19; revised 2026-10-20 after the round 5 audit
   (section 10); the class narrowed to Mach 1.8 to 2.15 on 2026-10-20 and
   the fins-on-base factor corrected to TN 3819 fig. 35's free-flight curve
-  on 2026-10-21 (section 11)
+  on 2026-10-21 (section 11), and the validated claim suspended the same
+  day (section 11.7)
 - **Inputs:** 0008 sections 3, 4.1, 6.1 to 6.4 and its data files
   (`docs/research/total-drag/data/`: `love_tn3819_fig18.csv`,
   `love_fig35_tn3819.csv`, `love_fig35_factor.csv`,
@@ -47,7 +50,11 @@ curve, which ends at M 2.563: the validated class was narrowed to Mach
 1.8 to 2.15, the factor corrected to the curve, bounded, not measured,
 above its end, and the gate re-run as a recorded correction, not a
 validation (residuals -5.1% to +7.5%, mean -0.4%; every shot inside its
-tolerance).
+tolerance). Because the correction changes a tested term, inside the
+class too (by +0.0011 to -0.0004 in C_D at its three shots), the
+validated claim is suspended by 0008 section 6.1: every total is an
+estimate, not validated, until BRL Report 934's range A, registered as
+the test of the corrected factor, is run and passes (section 11.7).
 
 ## 1. B3: base drag (`src/base/`)
 
@@ -858,6 +865,14 @@ and the configuration then has no hold-out.
 
 ## 7. What may and may not be claimed
 
+**Suspended since 2026-10-21 (section 11.7).** The fins-on-base factor
+was corrected after the gate (section 11), a change to a tested term, so
+by 0008 section 6.1 nothing below may be claimed as validated until BRL
+Report 934's range A tests the corrected factor; the class is kept for
+that test, which covers its Mach range at BRL's conditions (0014 section
+10.6). The section stands as the claim the second
+run opened:
+
 The gate has passed at every shot (section 4.2), so 0008 section 6.4's
 claim class opens, and no more:
 
@@ -1222,7 +1237,9 @@ overlay and scripts are in `docs/research/total-drag/fig35-free-flight/identific
   the knee near M 1.65, on the most negative line of the steep part to M
   2.0, and on the least negative with-fin line of the right-hand side,
   which ends at M 2.563 (a single short dash between long ones at M 2.31
-  to 2.33 and 2.405 to 2.42); estimate A, long dashes with groups of
+  to 2.33 and 2.405 to 2.42; the independent review of 2026-10-21
+  confirmed the first, at M 2.310 to 2.3235, on its own scan, but not the
+  second, both of whose bounding gaps sit under gridline crossings); estimate A, long dashes with groups of
   short ones, on the middle line to M 3.0; estimate B, regular dashes, on
   the most negative line above about M 2.15, to M 3.0.
 
@@ -1280,7 +1297,15 @@ the two agree within their combined errors; the largest differences are
 0.0018 at M 2.15 and 0.0012 at 2.20 (in the crossing with A), 0.0011 at
 1.70 (the knee) and 0.0007 at 1.80; elsewhere at most 0.0006. No row
 differs beyond the combined errors. Both end the line at M 2.563 +-0.002,
-P_B -0.1318 (first, at M 2.56) and -0.1317 (second).
+P_B -0.1318 (first, at M 2.56) and -0.1317 (second). Two of the second
+reading's values sit off the line the first reading follows, each within
+its own +-0.003 there: at M 2.15, -0.1693, on estimate B (0.0004 from its
+own reading of B; the first reading's -0.1675 is on the free-flight line,
+which at M 2.15 is one stroke with estimate A, the two merged from M
+2.135 to 2.19), and at M 2.20, -0.1633, just past where they part
+(0.0001 from its own reading of A; the first reading puts the free-flight line at
+-0.1621 and A at -0.1626). They are kept as read; the rows there take
+both readings, as every row does, inside the swap allowance.
 
 **Calibration checks.** The no-fin curve of fig. 35 against fig. 18's
 basic curve (`src/base/tn3819-fig18.ts`), which it reproduces within 0.001
@@ -1307,10 +1332,10 @@ nearer estimate at M 1.75 to 2.56, each reading against its own reading
 of A and B (`TN3819_FIG35_ESTIMATES`): estimate B, 0.0058 to 0.0077 less
 negative at M 1.75 to 1.85, one stroke with it at 2.05 to 2.10; estimate
 A, one stroke at 2.15, then 0.0024 to 0.0054 more negative at 2.3 to
-2.56. The allowance is the largest, 0.0077 (B at M 1.80, second
-reading; 0.0064 in the first), the larger of that and the first
-reading's 0.0065, applied at M 1.75 to 2.56 so that a swap with the
-nearer line is covered (section 1.3's was 0.005 at M 1.75 to 2.35).
+2.56. The allowance is the largest of these over both readings, 0.0077
+(B at M 1.80, second reading; 0.0063 in the first), applied at M 1.75 to
+2.56 so that a swap with the nearer line is covered (section 1.3's was
+0.005 at M 1.75 to 2.35).
 
 ### 11.4 The corrected factor, M 1.80 to 2.56
 
@@ -1335,7 +1360,8 @@ reading of the curve; 0.113 before), carried above M 2.41 as before.
 (F: the larger of the two readings' factors; every row is in
 `gate-corrected.out`, asserted by `fins-on-base.test.ts`.) To M 2.15 the
 rows barely move: the same line, read again, with the larger swap
-allowance. Above it the free-flight factor falls, against the line read
+allowance, a second reading and rows every 0.05 (what moved there, and
+why, in section 11.7). Above it the free-flight factor falls, against the line read
 before (estimate B), by 0.01 at M 2.2, 0.09 at 2.4 and 0.12 at 2.5, which
 lowers the low end; the high
 end is held up there by the tunnel factor to M 2.41 and by the carried
@@ -1346,20 +1372,29 @@ before).
 
 Above M 2.56 the figure has no free-flight data. Decided by the owner on
 2026-10-20, under 0014 section 10.2, before the gate was re-run: the term
-is "bounded, not measured".
+is "bounded, not measured" (recorded in 0014 section 10.7, amendment a).
 
-- **Lower bound: no fin effect, F = 1** for the present factor, not the
-  zero member's 0.950 of the rebuilt factor (0015 section 3.5). The
-  present factor is defined on Love's basic curve, which fig. 35's own
-  no-fin curve reproduces, so no fin effect is exactly F = 1; it serves
-  only four unswept fins 5% to 10% thick at the base, and every source it
-  is built on (TN 3819 figs. 33 to 35, TN 2360) shows such fins lowering
-  the base pressure, never raising it. The 0.950 is a relief measured on
-  RM L52J21a's 45 deg swept 8% fins, a family the present factor refuses.
-  (The rebuilt factor's reference member takes its own zero member's low
-  end.)
+- **Which fins.** Only those the present factor's sources measured: four
+  unswept fins, 5% to 10% thick, at the base (TN 3819 figs. 33 and 35, TN
+  2360). Since 2026-10-21 the factor refuses fins with a swept leading or
+  trailing edge, and so any tapered planform, in the measured and the
+  bounded parts alike (`fin-sweep`; 0014 section 10.7, amendment d). Until
+  then it took no sweep: the independent review of 2026-10-21 found four
+  8% double wedges swept 45 deg at both edges, at the base, served at M
+  2.0 as an analogy (F 1.258) and at M 2.8 as bounded, 1 to 1.3612, where
+  RM L52J21a measures F of about 0.96 to 1.12 for four 45 deg swept 8%
+  fins (W1's reading, pending on its branch), below this band. The
+  rebuilt factor (W1) is to serve swept fins.
+- **Lower bound: no fin effect, F = 1** for the present factor. It is
+  defined on Love's basic curve, which fig. 35's own no-fin curve
+  reproduces, so no fin effect is exactly F = 1, and every source it is
+  built on shows four unswept fins 5% to 10% thick at the base lowering
+  the base pressure, never raising it. It is not the rebuilt factor's
+  zero member's low end, 0.950 (W1's record, pending on its branch),
+  a relief measured on RM L52J21a's 45 deg swept fins, which the present
+  factor refuses.
 - **Upper bound: the factor at M 2.56 with its band's high end,** 1.3612
-  (the free-flight factor 1.153 plus the carried excess 0.208), carried
+  (the free-flight factor 1.153 plus the carried excess 0.2083), carried
   as a ratio to M 3.0.
 - **Served:** the midpoint, F = 1.1806, its band the whole gap, 1 to
   1.3612; the body base's label "bounded, not measured: the fins-on-base
@@ -1368,24 +1403,32 @@ is "bounded, not measured".
   in C_D beside it (0.0396 at M 2.663 to 0.0352 at 2.97). A total that
   contains it is at best "an estimate, not validated", and its claim
   names the bounded component.
+- **The step at M 2.56.** The served factor is not continuous there: the
+  nominal falls from 1.2020 (the M 2.56 row, 1.043 to 1.361) to 1.1806,
+  about -0.0024 in the Basic Finner's body base C_D, -0.55% of its total,
+  and the low end from 1.043 to 1.
 
 **The ordering** (that F lies between the bounds above M 2.56), written
-before the number is served, as 0014 section 10.2 asks: Love, printed p.
-23, "Also indicated is the decrease in fin effects as Mach number
-increases", which fig. 35 shows from M 1.7 to 2.56 (F - 1 falls from
-0.51 at M 1.8 to 0.31 at 2.0 and 0.15 at 2.56); and TN 2360's dependence
-of the increment on the fins' thickness and the slope of their faces near
-the trailing edge (0008 section 3.4). In linear theory a face of given
-slope changes the pressure by an amount proportional to the slope over
-sqrt(M^2 - 1); over M 2.56 to 3.0, sqrt(M^2 - 1) |P_B,no fins| changes by
-+1.2% (0.2694 to 0.2727), so at fixed slope F - 1 would fall by about
-1%, and measured it fell faster than that below M 2.56. This is a
-judgement backed by the trend, not a measurement. Carried as an
-increment instead (the fin effect in P_B held at its value at M 2.56),
-the high end would rise to 1.367 at M 2.6, 1.397 at 2.8 and 1.428 at 3.0,
-against 1.361. Love's estimates A and B, in both readings, lie inside the
-bounded band at every Mach number read from 2.6 to 3.0 (A: F 1.20 to
-1.23; B: 1.29 to 1.33; `fins-on-base.test.ts`).
+before the number was served, as 0014 section 10.2 asks, and restated on
+2026-10-21 after the review. As first written it rested on Love's "Also
+indicated is the decrease in fin effects as Mach number increases"
+(printed p. 23), which fig. 35 shows from M 1.7 to 2.56 (F - 1 falls from
+0.51 at M 1.8 to 0.31 at 2.0 and 0.15 at 2.56). Above the curve's end the
+figure does not show that: both of Love's predictions, in both readings,
+rise from M 2.6 to 3.0 (A: F 1.20 to 1.23; B: 1.29 to 1.33). What holds
+the bound is its margin, not a trend: the free-flight factor at the
+curve's end is 1.153; held fixed in P_B (the fin effect at M 2.56 carried
+as an increment) it would be 1.18 at M 3.0; the upper bound, 1.3612, lies
+above both by the carried tunnel excess, 0.2083, and above both
+predictions. That the predictions lie inside the band (at every Mach
+number read from 2.6 to 3.0, `fins-on-base.test.ts`) checks two
+predictions, not the bound. In linear theory a face of given slope
+changes the pressure by an amount proportional to the slope over
+sqrt(M^2 - 1); over M 2.56 to 3.0, sqrt(M^2 - 1) |P_B,no fins| changes
+by +1.2% (0.2694 to 0.2727), so at fixed slope F - 1 would change by
+about 1%: a judgement, not a measurement. Carried as an increment of the
+high end instead, the high end would rise to 1.367 at M 2.6, 1.397 at
+2.8 and 1.428 at 3.0, against 1.361.
 
 ### 11.6 The gate re-run: a recorded correction, not a validation
 
@@ -1400,69 +1443,117 @@ and `.json`).
 
 | Shot       | M     | CX0   | Second run C_D | Residual | Tolerance (round 5) | Corrected C_D (band)      | Residual | Tolerance        |
 | ---------- | ----- | ----- | -------------- | -------- | ------------------- | ------------------------- | -------- | ---------------- |
-| DA95021318 | 1.799 | 0.594 | 0.6123         | -3.0%    | -24.2% to +23.1%    | 0.6134 (0.5296 to 0.7296) | -3.2%    | -24.6% to +23.5% |
-| DA95021529 | 1.846 | 0.598 | 0.5955         | +0.4%    | -23.8% to +23.1%    | 0.5952 (0.5164 to 0.7063) | +0.5%    | -24.0% to +23.3% |
-| DA95021308 | 1.850 | 0.567 | 0.5944         | -4.6%    | -23.8% to +23.1%    | 0.5940 (0.5156 to 0.7047) | -4.5%    | -24.0% to +23.3% |
-| DA95021328 | 2.348 | 0.500 | 0.4846         | +3.2%    | -21.3% to +25.6%    | 0.4811 (0.4187 to 0.5717) | +3.9%    | -22.0% to +26.4% |
-| DA95020907 | 2.364 | 0.478 | 0.4824         | -0.9%    | -21.3% to +25.6%    | 0.4787 (0.4167 to 0.5687) | -0.1%    | -22.0% to +26.5% |
-| DA95021317 | 2.414 | 0.473 | 0.4745         | -0.3%    | -21.0% to +25.5%    | 0.4699 (0.4094 to 0.5580) | +0.7%    | -21.9% to +26.6% |
+| DA95021318 | 1.799 | 0.594 | 0.6123         | -3.0%    | -24.2% to +23.1%    | 0.6134 (0.5296 to 0.7297) | -3.2%    | -24.6% to +23.5% |
+| DA95021529 | 1.846 | 0.598 | 0.5955         | +0.4%    | -23.8% to +23.1%    | 0.5952 (0.5164 to 0.7064) | +0.5%    | -24.0% to +23.3% |
+| DA95021308 | 1.850 | 0.567 | 0.5944         | -4.6%    | -23.8% to +23.1%    | 0.5940 (0.5155 to 0.7048) | -4.5%    | -24.0% to +23.3% |
+| DA95021328 | 2.348 | 0.500 | 0.4846         | +3.2%    | -21.3% to +25.6%    | 0.4811 (0.4187 to 0.5718) | +3.9%    | -22.0% to +26.4% |
+| DA95020907 | 2.364 | 0.478 | 0.4824         | -0.9%    | -21.3% to +25.6%    | 0.4787 (0.4166 to 0.5688) | -0.1%    | -22.0% to +26.5% |
+| DA95021317 | 2.414 | 0.473 | 0.4745         | -0.3%    | -21.0% to +25.5%    | 0.4699 (0.4094 to 0.5581) | +0.7%    | -21.9% to +26.6% |
 | DA95020927 | 2.663 | 0.446 | 0.4428         | +0.7%    | -26.2% to +27.2%    | 0.4314 (0.3763 to 0.5123) | +3.4%    | -27.0% to +28.5% |
-| DA95020906 | 2.741 | 0.400 | 0.4332         | -7.7%    | -26.1% to +27.4%    | 0.4215 (0.3680 to 0.5002) | -5.1%    | -26.9% to +28.6% |
-| DA95020916 | 2.749 | 0.452 | 0.4323         | +4.5%    | -26.1% to +27.4%    | 0.4206 (0.3672 to 0.4990) | +7.5%    | -26.8% to +28.6% |
-| DA95030603 | 2.969 | 0.385 | 0.4072         | -5.4%    | -19.5% to +24.6%    | 0.3951 (0.3459 to 0.4677) | -2.6%    | -20.0% to +25.7% |
-| DA95022205 | 2.970 | 0.376 | 0.4071         | -7.6%    | -19.5% to +24.7%    | 0.3951 (0.3459 to 0.4677) | -4.8%    | -20.0% to +25.7% |
+| DA95020906 | 2.741 | 0.400 | 0.4332         | -7.7%    | -26.1% to +27.4%    | 0.4215 (0.3679 to 0.5002) | -5.1%    | -26.9% to +28.6% |
+| DA95020916 | 2.749 | 0.452 | 0.4323         | +4.5%    | -26.1% to +27.4%    | 0.4206 (0.3672 to 0.4991) | +7.5%    | -26.8% to +28.6% |
+| DA95030603 | 2.969 | 0.385 | 0.4072         | -5.4%    | -19.5% to +24.6%    | 0.3951 (0.3459 to 0.4678) | -2.6%    | -20.0% to +25.7% |
+| DA95022205 | 2.970 | 0.376 | 0.4071         | -7.6%    | -19.5% to +24.7%    | 0.3951 (0.3458 to 0.4677) | -4.8%    | -20.0% to +25.7% |
 
 (Tolerances by round 5's arithmetic, section 10.3; the second run's own
-high ends were +26.5% to +31.4%.) Every shot lies inside its tolerance.
+high ends were +26.5% to +31.4%. Corrected bands rounded outward, as the
+page shows them, 0011 section 2; the run's output rounds to the nearest.) Every shot lies inside its tolerance.
 Over the 11: residuals -5.1% to +7.5%, mean -0.4% (second run -7.7% to
 +4.5%, mean -1.9%); tolerances -20.0% to -27.0% and +23.3% to +28.6%;
 smallest margins 15.2 points on the low side and 21.1 on the high (11.8
 and 22.4 after round 5). The modelled total falls by 2.6% to 3.0% at the
 five shots above M 2.56 (the bounded factor, nominal 1.181 against
 1.284 to 1.304 before), by 0.7% to 1.0% at M 2.35 to 2.41, and moves by
--0.17% to +0.07% at M 1.80 to 1.85. Per cluster, mean (min, max, sd):
+-0.07% to +0.17% at M 1.80 to 1.85 (printed as -0.17% to +0.07% when
+first recorded, the signs swapped; corrected 2026-10-21 with section
+11.7). Per cluster, mean (min, max, sd):
 -2.4% (-4.5%, +0.5%, 2.6) at M 1.80 to 1.85, +1.5% (-0.1%, +3.9%, 2.2) at
 2.35 to 2.41, +1.9% (-5.1%, +7.5%, 6.4) at 2.66 to 2.75, -3.7% (-4.8%,
 -2.6%, 1.6) at 2.97; the second run's means were -2.4%, +0.7%, -0.8% and
 -6.5%. The offset at M 2.97, -6.5% at the second run, is -3.7% after the
 correction, which was not aimed at it: it follows from the figure.
 
-### 11.7 What may be claimed after the correction
+### 11.7 What may be claimed after the correction: nothing validated
 
-Decided by the coordinator on 2026-10-21 (0011 section 3):
+**The validated claim is suspended.** Decided by the owner on 2026-10-21,
+by the rule of 0008 section 6.1: the hold-out is used, and "any later
+change to a term it tested is 'estimated on the Basic Finner, not
+validated' until another set tests it". The correction changes the
+fins-on-base factor, a tested term, inside the class as well as above
+it, so the Basic Finner's total drag is "an estimate, not validated"
+everywhere until a held-back set tests the corrected factor. Nothing on
+the page or in the library is labelled validated meanwhile (the claim
+inside the class carries the reason; `src/app/total-drag.ts` has no
+validated claim to show).
 
-- **The validated class stays Mach 1.799 to 2.15.** A correction made
-  with the residuals of the shots at M 2.35 to 2.41 known cannot validate
-  on those shots under the pre-registration of 0014 section 10, so they
-  support no claim.
-- **Inside the class the term moved too, slightly.** There the corrected
-  factor reads the same line (the two readings within 0.0008 of each
-  other and of the earlier ones), but the swap allowance grew from 0.005
-  to 0.0077, which widens the band: at the three shots the body base
-  moves by +0.0011, -0.0003 and -0.0004 in C_D (+0.17% to -0.07% of the
-  total), the residuals from -3.0%, +0.4%, -4.6% to -3.2%, +0.5%, -4.5%,
-  the tolerances by 0.2 to 0.4 points. By 0008 section 6.1 a change to a
-  tested term is "estimated on the Basic Finner, not validated" until
-  another set tests it; the class is kept validated by that decision, on
-  a change of the size of the readings' own error. It is stated here so
-  that it is not missed.
-- **After the fact, not counted:** at M 2.35 to 2.41 the corrected model
-  lies +3.9%, -0.1% and +0.7% from the shots (mean +1.5%), inside the
-  tolerance, as the second run's -0.9% to +3.2% did. This is a comparison
-  made after the residuals were known, labelled so; it shows the corrected
-  factor does not put the model outside the shots there, and it is not
-  evidence for the claim.
-- **Above M 2.15** the Basic Finner is served as "estimate, not
-  validated", with the corrected band, never refused (tests at M 2.3, 2.5
-  and 2.9 in `tests/app/total-drag.test.ts` and
-  `tests/gpu/nose-drag-page.test.ts`); above M 2.56 its claim names the
-  bounded factor.
-- **The route by which the class could later widen:** BRL Report 934's
-  range A, Mach 1.5 to 2.47 (0014 section 10.5), the Basic Finner in free
-  flight, registered to run once when W1 is committed, with the present
-  model reported beside the rebuilt one at its rounds at M 1.798 to 2.47
-  (0014 sections 10.3 and 10.6). It covers 2.15 to 2.47 of the gap; no
-  registered range of the Basic Finner covers 2.47 to 2.56. Not run.
+- **What moved inside the class, and why.** Below M 2.15 the superseded
+  readings followed the free-flight curve too, but the corrected factor
+  is not the same there. The body base drag, superseded to corrected,
+  moves by +0.00105, -0.00031 and -0.00042 in C_D at the three shots (M
+  1.799, 1.846, 1.85) and by -0.00082 and -0.00123 at M 2.0 and 2.15
+  (`tests/base/fins-on-base.test.ts` reproduces both factors). Four
+  causes, each taken alone against the superseded factor (the order of
+  the steps moves the last digit):
+  - the swap allowance, 0.005 to 0.0077: +0.00067, +0.00022, +0.00018,
+    -0.00068 and -0.00068 at those five Mach numbers, by moving the
+    band's ends and with them its midpoint, the nominal factor;
+  - reading 2's -0.2369 at M 1.80 (reading 1's -0.2362): +0.00035 at M
+    1.799 (+0.00037 taken in another order), through the high end, which
+    is the larger over both readings;
+  - the rows now every 0.05 in M, so a row at M 1.85 where the
+    superseded factor interpolated from 1.8 to 1.9: -0.00072 and
+    -0.00079 at M 1.846 and 1.85;
+  - at M 2.10 to 2.15 the superseded factor was interpolated toward its
+    M 2.2 row, which rested on estimate B, so the top of the old class
+    partly rested on B: -0.00056 at M 2.15 from the readings and the
+    rows, the allowance apart.
+
+  The two readings differ by up to 0.0018 in P_B, at M 2.15, within their
+  combined errors (section 11.3). The residuals at the three shots go
+  from -3.0%, +0.4%, -4.6% to -3.2%, +0.5%, -4.5%, the totals by -0.07%
+  to +0.17%, the tolerances by 0.2 to 0.4 points; the page's defaults (at
+  the range's Reynolds number, section 5 of 0011) by +0.17%, -0.15% and
+  -0.24% at M 1.8, 2.0 and 2.15 (-0.24% also at the class's corner of
+  Reynolds number 2.0e7 at M 2.15); the factor's band at M 1.80 from 1.2365
+  to 1.5373 to 1.2282 to 1.5590. Small, but a change to a term the gate
+  tested, inside the class, and made after its residuals were known:
+  together with the owner's decision, that is why the class's claim is
+  suspended. Above the class the total falls by 0.7% to 1.0% at M 2.35
+  to 2.41 and by 2.6% to 3.0% at M 2.66 to 2.97 (section 11.6).
+
+- **The class is kept for the registered test:** Mach 1.799 to 2.15
+  with its other limits (0011 section 3). That test covers its Mach range
+  at BRL's conditions, not the whole class: BRL's Reynolds numbers (about
+  0.7 times DREV's, at or below the class's floor of 1.19e7) and its sharp
+  leading edges lie outside it (0014 section 10.6). A
+  case inside it is an estimate whose reason is the suspension; a case
+  outside it, an estimate with every condition it fails. The class was
+  first narrowed to 2.15 (2026-10-20) because the factor tested above it
+  rested on a prediction; a correction made with the residuals of the
+  shots at M 2.35 to 2.41 known cannot validate on those shots under the
+  pre-registration of 0014 section 10, so they support no claim.
+- **The route back:** BRL Report 934's range A, Mach 1.5 to 2.47 (0014
+  section 10.5), the Basic Finner in free flight, run once as registered,
+  after its second reading and the decisions of 0014 section 10.6, as the
+  test of the corrected factor (the present model is reported at its
+  rounds at M 1.798 to 2.47 beside the rebuilt one, 0014 section 10.3).
+  If it passes, the class is validated over what that range supports; if
+  it fails, the claim is withdrawn (0014 section 10.3). It covers 2.15 to
+  2.47 beyond the class; no registered range of the Basic Finner covers
+  2.47 to 2.56. Not run.
+- **History, kept.** The second run (section 4.2) passed at all 11 shots
+  and opened the class; round 5 re-derived its tolerances (section 10);
+  the correction's re-run (section 11.6) is recorded beside both. At M
+  2.35 to 2.41 the corrected model lies +3.9%, -0.1% and +0.7% from the
+  shots (mean +1.5%), inside the tolerance, as the second run's -0.9% to
+  +3.2% did: a comparison made after the residuals were known, labelled
+  so, and not evidence for any claim.
+- **Served:** the Basic Finner everywhere as "estimate, not validated",
+  with the corrected band, never refused (tests at M 1.8, 2.0 and 2.15
+  inside the class and 2.3, 2.5 and 2.9 above it, in
+  `tests/app/total-drag.test.ts`, `tests/app/total-drag-display.test.ts`
+  and `tests/gpu/nose-drag-page.test.ts`); above M 2.56 its claim also
+  names the bounded factor.
 
 ### 11.8 Records and tests
 
@@ -1475,9 +1566,15 @@ Decided by the coordinator on 2026-10-21 (0011 section 3):
   the swap allowance from both readings' estimates; the superseded
   readings on the curve to M 2.1 and on B above; 0008's and round 3's
   tables and the round 5 findings reproduced from the superseded readings;
-  the corrected rows, excess and band; the bounded factor, its label,
-  Love's estimates inside it, the increment alternative and the
-  linear-theory scale.
+  the corrected rows, excess and band; what moved inside the class and
+  why (section 11.7); the bounded factor, its label, Love's estimates
+  inside it and rising, the margin that holds the bound, the step at M
+  2.56, the increment alternative and the linear-theory scale; swept and
+  tapered fins refused in the measured and the bounded parts (section
+  11.5).
+- `tests/total/total-drag.test.ts`: the review's probe (four 8% double
+  wedges swept 45 deg at the base) refused at M 2.0 and 2.8, and served
+  a chord ahead of the base.
 - `tests/validation/basic-finner.test.ts`: the second run and round 5 as
   recorded, the corrected run, every shot passing under each.
 - `docs/research/base-and-total/runs/gate-corrected.test.ts` and its

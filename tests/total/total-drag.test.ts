@@ -141,7 +141,14 @@ describe(
         afterbody: 'cylinder',
         boundaryLayerAtBase: 'turbulent',
         baseAreaRatio: 1,
-        fins: { count: 4, thicknessRatio: 0.06, section: 'other', trailingEdgeAheadOfBase: 0 },
+        fins: {
+          count: 4,
+          thicknessRatio: 0.06,
+          section: 'other',
+          tanLeadingEdge: 0,
+          tanTrailingEdge: 0,
+          trailingEdgeAheadOfBase: 0,
+        },
       });
       const c = byName('body base');
       expect([c.cd, c.low, c.high]).toEqual([b.cd, b.low, b.high]);
@@ -343,7 +350,7 @@ describe('refusals', { timeout: 60_000 }, () => {
     return [];
   };
 
-  it('swept blunt trailing edges and swept rounded leading edges', () => {
+  it('swept blunt trailing edges and swept rounded leading edges (and, at the base, the body base)', () => {
     const swept = trapezoidalPlanform({
       rootChord: 1,
       span: 1,
@@ -357,8 +364,44 @@ describe('refusals', { timeout: 60_000 }, () => {
       }),
     ).toEqual([
       'fin leading edges: swept-leading-edge',
+      // The present factor refuses swept fins (0014 section 10.7); the rebuilt factor (0015) is asked and
+      // refuses the blunt trailing edge, its refusal carrying the present one's.
+      'body base: fin-trailing-edge',
       'fin trailing-edge base: swept-trailing-edge',
     ]);
+  });
+
+  it('swept fins at the base: the present factor refuses them, the rebuilt factor (0015) serves its bracket; a chord ahead, served', () => {
+    // The review's probe: four 8% double wedges swept 45 deg at both edges, at the base.
+    const probe: FinnedBody = {
+      ...sharp,
+      fins: {
+        ...sharp.fins,
+        section: doubleWedge(0.08),
+        planform: trapezoidalPlanform({
+          rootChord: 1,
+          span: 1,
+          leadingEdgeSweep: 45 * deg,
+          trailingEdgeSweep: 45 * deg,
+        }),
+      },
+    };
+    expect(refusals(probe, 2.0)).toEqual([]);
+    expect(refusals(probe, 2.8)).toEqual([]);
+    for (const mach of [2.0, 2.8]) {
+      const b = finnedBodyComponents(
+        probe,
+        { ...conditions, mach },
+        exactConeNoseWaveDrag(mach, 10 * deg),
+      ).base!;
+      expect(b.finsOnBaseSource).toBe('rebuilt');
+      expect(b.presentRefusal?.reason).toBe('fin-sweep');
+      // Above M 2.56, where fig. 35's free-flight curve ends, bounded, not measured.
+      expect(b.finsOnBase?.bounded).toBe(mach > 2.56);
+    }
+    const ahead = { ...probe, fins: { ...probe.fins, trailingEdgeAheadOfBase: 1 } };
+    expect(refusals(ahead, 2.0)).toEqual([]);
+    expect(refusals(ahead, 2.8)).toEqual([]);
   });
 
   it('a rounded leading edge on a section other than a single wedge', () => {

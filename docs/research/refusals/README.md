@@ -15,9 +15,10 @@ by the solver or the page.
 | `edges.test.ts` | The parameters the fin-edge packages turn on, over the same cases: the trailing edges' thin-layer parameter, the leading edges' normal Mach and Reynolds numbers, the trailing-edge angle of fins at the base |
 | `w1b-w2-probe.test.ts`, `out/w1b-w2-probe.out` | The expected coverage of the proposals after W1 (`../total-drag/data/w1b_w2_proposal.md`): moderately swept fins at the base and W2, each applied to the same cases by editing their refusals, the rest asked of the library |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
-| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables; since W1 ([0015](../../design/0015-fins-at-the-base.md)), `impact.out` and `.json` are the run with the rebuilt fins-on-base factor, which `evaluate.ts` asks through `bodyBaseDrag` itself, and since W1b and W2 the base from Mach 1.0 |
+| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables; since W1 ([0015](../../design/0015-fins-at-the-base.md)), `impact.out` and `.json` are the run with the rebuilt fins-on-base factor, which `evaluate.ts` asks through `bodyBaseDrag` itself, and since W1b and W2 the base from Mach 1.0; since 2026-10-21 the present factor refuses swept fins at the base and the library sends them to the rebuilt factor, which `evaluate.ts` follows |
 | `out/impact-before-w1.out`, `out/impact-before-w1.json` | The run as 0014 quotes it, before the rebuilt factor (kept unchanged) |
 | `out/impact-after-w1.out`, `out/impact-after-w1.json` | The run after W1 alone (0015 section 8), before W1b and W2; `impact.out` now has both |
+| `out/2026-10-21-swept-at-base/` | Main's run with the present factor alone after it began refusing swept fins at the base (2026-10-21; 0014 section 10.7, amendment d), `evaluate.ts` then mirroring it (`finsAtBaseSwept`). On this branch the library sends those fins to the rebuilt factor, and `out/impact.out` is that run |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
@@ -33,7 +34,8 @@ nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
 
 `N_ROCKETS` (default 2000, the quoted run) and `CROSS_CHECK` (rockets
 whose cases are checked against `src/total`, default 300) set the size.
-It writes `out/impact.out` and `out/impact.json`. On a loaded four-core
+It writes `out/impact.out` and `out/impact.json`, or, with `OUT_DIR`
+(relative to the repository root), into that directory. On a loaded four-core
 machine it takes about five minutes; the slow part is the fitted
 solver's tip test (`sharpFitProblem`, 0.3 s a call), called only where
 the tip cone's Taylor-Maccoll solution does not already decide it, and

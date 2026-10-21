@@ -21,22 +21,27 @@ number with an honest uncertainty band.
 > ([0007](docs/design/0007-skin-friction.md),
 > [0009](docs/design/0009-fin-wave-drag.md),
 > [0010](docs/design/0010-base-drag-and-total.md)), and their sum, the
-> total drag, has passed its one validation test: the Basic Finner in free
-> flight, 11 shots at Mach 1.80 to 2.97, measured drag within -7.7% to
-> +4.5% of the model, inside a tolerance that is wide (about -20% to +27%).
-> That claim covers that class of rocket only, and only at Mach 1.8 to
-> 2.15: above that, one term of the model (the fins' effect on base
-> pressure) was found to rest on a published prediction, not on
-> measurements, so the eight shots above Mach 2.15 tested a total built
-> partly on a prediction. That term has since been corrected to the
-> measured curve, after the test's results were known, so it is recorded
-> as a correction, not a new test: above Mach 2.15 the total is an
-> estimate. The drag page shows the
-> total ([0011](docs/design/0011-total-drag-on-the-page.md)): labelled
-> validated inside the Basic Finner's class, an estimate, not validated,
-> outside it, and refused, with the reasons and no number, where a
-> component's method does not reach. Nothing here should be used for
-> flight decisions yet. The plan is in
+> total drag, passed one hold-out test: the Basic Finner in free flight,
+> 11 shots at Mach 1.80 to 2.97, measured drag within -7.7% to +4.5% of
+> the model, inside a tolerance that is wide (about -20% to +27%). Then
+> one term of the model (the fins' effect on base pressure) was found to
+> rest, above Mach 2.15, on a published prediction, not on measurements,
+> and was corrected to the measured curve after the test's results were
+> known. The correction moved the total by up to 3% above Mach 2.15 and
+> by at most 0.24% inside the class the test had opened (Mach 1.8 to
+> 2.15), but a term changed after a test is not validated by it, so **the
+> validated claim is suspended: no total is validated today.** The class
+> is kept for the next registered test, BRL Report 934's Basic Finner
+> rounds at Mach 1.5 to 2.47, run once as registered, which covers the
+> class's Mach range at BRL's own Reynolds numbers and leading edges (both
+> outside the class); if it passes, the class is validated over what that
+> range supports
+> ([0010](docs/design/0010-base-drag-and-total.md) section 11.7). The
+> drag page shows the total
+> ([0011](docs/design/0011-total-drag-on-the-page.md)): an estimate, not
+> validated, with the reasons, or refused, with the reasons and no
+> number, where a component's method does not reach. Nothing here should
+> be used for flight decisions yet. The plan is in
 > [docs/design/0002-architecture.md](docs/design/0002-architecture.md).
 
 ## What it will do
@@ -183,7 +188,7 @@ them; the fitted-drag families are recorded in
   the drag of rounded fin leading edges (both analogies, with bands set
   from component data read twice), and the sum of the components with
   their bands added linearly. Its one hold-out test, the Basic Finner in
-  free flight at Mach 1.80 to 2.97, passes at all 11 shots: measured over
+  free flight at Mach 1.80 to 2.97, passed at all 11 shots: measured over
   modelled -7.7% to +4.5% (mean -1.9%), inside a tolerance of -19.5% to
   -26.2% and +23.1% to +27.4%, which is wide; the two shots at Mach 2.97
   lie 5.4% and 7.6% below the model. An independent audit narrowed the
@@ -196,22 +201,33 @@ them; the fitted-drag families are recorded in
   and read twice, the factor corrected to it and, above its end, bounded,
   not measured; the gate re-run as a recorded correction, not a
   validation, gives -5.1% to +7.5% (mean -0.4%), every shot still inside
-  its tolerance. The validated class stops at Mach 2.15.
+  its tolerance (-20.0% to -27.0% and +23.3% to +28.6%). The correction
+  moved the total by -0.07% to +0.17% at the three shots inside the class
+  (Mach 1.80 to 1.85), 0.7% to 1.0% at 2.35 to 2.41 and 2.6% to 3.0% at
+  2.66 to 2.97, so the validated claim is suspended (0008 section 6.1:
+  a term changed after a test is not validated by it). The class, Mach
+  1.8 to 2.15, is kept for the registered test of the corrected factor,
+  BRL Report 934's range A (Mach 1.5 to 2.47), run once after its second
+  reading and the decisions registered for it, which covers the class's
+  Mach range at BRL's conditions (its Reynolds numbers and sharp leading
+  edges lie outside the class; 0014 section 10.6); if it passes, the class is validated over what that range supports. The second
+  run and the correction's residuals are kept in the record as history.
 
 - The total drag on the [drag page](demos/nose-drag.html)
   ([0011](docs/design/0011-total-drag-on-the-page.md)): the nose wave drag
   of the page's own solve, with its band, plus friction, the fins and the
   base, for a nose and a cylinder to a flat base with a set of fins
   (rectangular, trapezoidal or clipped-delta; single-wedge, double-wedge or
-  hexagonal sections). Inside the Basic Finner's class (that rocket as
+  hexagonal sections). Every total is an estimate, not validated, while
+  the Basic Finner's claim is suspended: inside that rocket's class (as
   transcribed, each dimension within 0.5%, at Mach 1.799 to 2.15, Reynolds
   number 1.19e7 to 2.0e7 on length, static temperature 216.65 to 320 K,
-  over which the modelled total moves by at most 0.13%; above Mach 2.15
-  the gate tested a fins-on-base factor read from one of Love's estimates
-  in TN 3819 fig. 35, and the factor corrected since has no hold-out
-  there) the total is labelled validated on it, with the tolerance and
-  the offset at Mach 2.97 beside it; outside it, an estimate, not
-  validated, with every reason (above Mach 2.56, where fig. 35's
+  over which the modelled total moves by at most 0.13%), with the
+  suspension as the reason and the gate's tolerance beside it; outside
+  it, with every condition the case fails (above Mach 2.15 the gate
+  tested a fins-on-base factor read from one of Love's estimates in TN
+  3819 fig. 35, and the factor corrected since has no hold-out there;
+  above Mach 2.56, where fig. 35's
   free-flight curve ends, the fins-on-base factor is bounded, not
   measured, and says so); where a component's method does not reach
   (the base outside Mach 1.5 to 3.0, or 1.8 to 3.0 with fins ending at
@@ -227,11 +243,13 @@ them; the fitted-drag families are recorded in
   within a unit of their last printed digit (relative differences up to
   6.9e-5); or as the Reynolds number directly. The page opens on the
   Basic Finner's shape, 30 mm across, at sea level, inside its class from
-  Mach 1.8 to 2.15.
+  Mach 1.8 to 2.15, an estimate there as everywhere.
 
 Not yet: viscous flow in the solver; Von Karman (Haack) and power-series
 noses (their tips need grids being designed); Mach numbers below 1.2; a
-total validated outside the Basic Finner's class; altitudes above 51 km
+validated total (the Basic Finner's claim is suspended until BRL Report
+934's range A tests the corrected factor), inside or outside the Basic
+Finner's class; altitudes above 51 km
 and days off the standard atmosphere (give the Reynolds number directly).
 
 Limits: power off, zero angle of attack, no motor plume. The widest
@@ -259,9 +277,10 @@ example); the ramp and the shock tube fall back to the CPU without it.
   ellipsoid nose and its body, refined on nested grids on your GPU and
   reported with its measured error band, or as not verified; and, from that
   solve, the rocket's total drag with fins and base at the altitude and
-  diameter you give, with its bands, its components and their labels:
-  validated on the Basic Finner inside that rocket's class, an estimate,
-  not validated, outside it, or refused with the reasons.
+  diameter you give, with its bands, its components and their labels: an
+  estimate, not validated, with the reasons (inside the Basic Finner's
+  class too, while its validated claim is suspended), or refused with the
+  reasons.
 - **Live flow:** the flow around the Basic Finner's nose cone and body,
   solved on your GPU as the drag page solves it and drawn from the GPU's
   memory as it converges: schlieren, Mach number, pressure coefficient or
@@ -327,13 +346,16 @@ The design records, in order:
   sharp fins and the linear 3D drag of the planform, with the limits of
   each measured.
 - [0010](docs/design/0010-base-drag-and-total.md): base drag and the total
-  (draft), and the Basic Finner gate, which the total passes at all 11
+  (draft), and the Basic Finner gate, which the total passed at all 11
   shots (the second run; the first was refused), and the correction of
   the fins-on-base factor to TN 3819 fig. 35's free-flight curve, the
-  gate re-run with it as a recorded correction (section 11).
+  gate re-run with it as a recorded correction, and the validated claim
+  suspended until BRL Report 934's range A tests the corrected factor
+  (section 11).
 - [0011](docs/design/0011-total-drag-on-the-page.md): the total drag on
   the drag page (draft): the nose term from the page's solve, the class
-  rule that decides "validated on the Basic Finner", the labels, and the
+  rule (kept for the next registered test; its validated claim
+  suspended), the labels, and the
   flight condition from altitude, Mach number and diameter in the 1976
   standard atmosphere.
 - [0012](docs/design/0012-interface.md): the interface (draft): a
@@ -345,8 +367,9 @@ The design records, in order:
   (Mach 1.2 meets the supersonic standard on sharp noses; Mach 1.1 and
   1.05 are being certified on finer grids; Mach 1 is not yet certifiable).
 - [0014](docs/design/0014-refusals.md): refusals (draft): every refusal,
-  what it costs on a population of supersonic amateur rockets, and the
-  ranked work to lift them with measured bands.
+  what it costs on a population of supersonic amateur rockets, the
+  ranked work to lift them with measured bands, and the hold-outs
+  registered before that work (section 10), with its dated amendments.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
