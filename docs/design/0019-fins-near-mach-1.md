@@ -206,13 +206,15 @@ before it is used (section 5).
   pressure-drag increment of the stabilizing fins of a fin-stabilized
   parabolic body, fins on minus fins off in the Langley transonic
   blowdown tunnel and by another method in free flight, Mach 0.81 to
-  1.41. Its body was checked from its text only: "a fin-stabilized
-  parabolic body of revolution", its references Hart and Katz's
-  fin-stabilized parabolic bodies (RM L9I30) and Katz and Stoney's base
-  pressures on them (RM L51F29); so not the PARD standard body (an
-  ogive-cylinder). That it is not the RM-10 (TN 3320, held back whole) is
-  to be confirmed from its model description before any figure is opened.
-  Its drag figures were not opened. The one candidate found for F1.
+  1.41. Read from its text only: the body's radius is a parabola in the
+  distance from 0.6 of its length (its maximum diameter there), its
+  dimensions scaled from the free-flight model of its ref. 1 (Hart and
+  Katz, RM L9I30); the tunnel model's base pressure was measured through
+  the sting, so the fins' effect on the base can be separated. Not the
+  PARD standard body (an ogive-cylinder); that it is not the RM-10 (TN
+  3320, held back whole) is to be confirmed from a geometry-only source
+  before any of its figures is opened. Its drag figures were not opened.
+  The one candidate found for F1.
 - **Jorgensen, Spahr and Hill**, NASA TM X-653 (NTRS 19720065133): fins
   and flares on low-fineness bodies, M 0.6 to 3.8, including fin
   leading-edge bluntness. Not opened.
