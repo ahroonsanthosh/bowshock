@@ -87,12 +87,19 @@ export interface BaseFins extends FinsAtBase {
   readonly flatFaced?: boolean;
 }
 
+/** Why the present factor refuses flat plates at the base (0014 section 10.7 (e); 0016 section 20). */
+export const FLAT_PLATES_AT_BASE_REFUSAL =
+  'the present fins-on-base factor is measured on wedge, circular-arc and hexagonal sections, not on ' +
+  'fins with flat faces at the trailing edge (plates), which lower the base drag by up to 15% at the ' +
+  'base (RM L52E06 fig. 7, F 0.85 to 0.88; 0014 section 10.7)';
+
 /** The thinnest fins the fins-on-base factor's data hold: 5% thick (TN 2360, TN 3819 fig. 35). */
 export const FINS_ON_BASE_THINNEST_DATA = 0.05;
 
 /**
  * Fins thinner than the factor's 5% data at some station, none thicker than
- * 10% (0016 section 18, the coordinator's rule): the factor at 5%, its low
+ * 10% (0016 section 18, the coordinator's rule; since 0016 section 20 for the
+ * wedge, circular-arc and hexagonal families only, flat plates being refused): the factor at 5%, its low
  * end taken as no fin effect (F = 1), the physical limit, since thinner fins
  * lower the base pressure less, its high end kept (it rests on the 10% fins
  * and the tunnel data), the nominal the midpoint.
@@ -300,12 +307,7 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
         // hexagonal sections); flat-faced fins go to the rebuilt factor's flat-plate value (0014 section
         // 10.7, 2026-10-21).
         if (fins.flatFaced === true) {
-          throw new BaseRefusal(
-            'fin-trailing-edge',
-            'the present fins-on-base factor is measured on wedge, circular-arc and hexagonal sections, ' +
-              'not on fins with flat faces at the trailing edge (plates), whose only source at the base, ' +
-              'RM L52E06 fig. 7, measures relief (F 0.85 to 0.88; 0014 section 10.7)',
-          );
+          throw new BaseRefusal('flat-plate-fins', FLAT_PLATES_AT_BASE_REFUSAL);
         }
         // Thinner than the present factor's 5% data at some station, none thicker than 10% (0016
         // section 18): the factor at 5% with its low end F = 1.

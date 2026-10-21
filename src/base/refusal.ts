@@ -25,6 +25,8 @@ export type BaseRefusalReason =
    * (it is measured on unswept fins); for the rebuilt factor sweeps outside those measured (0015 section 3.4).
    */
   | 'fin-sweep'
+  /** Flat-plate fins at the base: RM L52E06 fig. 7 measures relief, outside the factor's data. */
+  | 'flat-plate-fins'
   /** Swept blunt trailing edges. */
   | 'swept-trailing-edge'
   /** A laminar layer at a blunt trailing edge. */

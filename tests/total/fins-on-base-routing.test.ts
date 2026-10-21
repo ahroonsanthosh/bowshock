@@ -308,7 +308,7 @@ describe('fins thinner than 5% at some station (0016 section 18) in the rebuilt 
     const w = r.finsOnBase as FinsOnBaseFactorW1;
     expect(r.finsOnBaseSource).toBe('rebuilt');
     // Plates are not among the present factor's families (0014 section 10.7).
-    expect(r.presentRefusal?.reason).toBe('fin-trailing-edge');
+    expect(r.presentRefusal?.reason).toBe('flat-plate-fins');
     expect(w.bounded).toBe(true);
     expect(w.low).toBe(W1_FLAT_RELIEF_LOW);
     expect(w.upper).toMatchObject({ thickness: 0.1 });

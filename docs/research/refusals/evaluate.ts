@@ -95,6 +95,7 @@ export const REASONS = {
   finsAtBaseCount: 'base: fins at the base, not four',
   finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10 (since 0016 section 18 above 0.10 only)',
   finsAtBaseSwept: 'base: fins at the base, a swept leading or trailing edge (factor measured on unswept fins; 2026-10-21)',
+  finsAtBasePlate: 'base: fins at the base, flat plates (RM L52E06 fig. 7 measures relief, outside the factor; 2026-10-21)',
   finsAtBaseMach: 'base: fins at the base, Mach 1.5 to 1.8 (outside 1.8 to 3.0)',
   finsAtBaseLowMach: 'base: fins at the base, Mach below 1.0 (the rebuilt factor from 1.0)',
   // The rebuilt factor's refusals (src/base/fins-on-base-w1.ts, 0015), where the present one refuses.
@@ -341,6 +342,7 @@ export function finsOnBaseReason(r: Rocket, mach: number): ReasonKey | undefined
       case 'fin-thickness':
         return 'finsW1Thickness';
       case 'fin-trailing-edge':
+      case 'flat-plate-fins':
         return 'finsW1TrailingEdge';
       case 'fin-sweep':
         return 'finsW1Sweep';

@@ -1040,3 +1040,20 @@ correction).
 - _The step at Mach 2.56._ The served nominal falls from 1.2020 (the M
   2.56 row) to 1.1806, about -0.0024 in the Basic Finner's body base C_D
   (-0.55% of its total), and the low end from 1.043 to 1.
+
+**2026-10-21 (e): flat plates at the base refused** (0016 sections 18 and
+20; after W1's review). 0016 section 18 served fins at the base thinner
+than the factor's 5% data with the factor's low end at no fin effect (F =
+1), on the argument that thinner fins lower the base pressure less. For
+flat plates that is not a lower bound: the only flat-plate source, RM
+L52E06 fig. 7 (four plates at the base), measures relief, F 0.85 to 0.88.
+Until W1's rebuilt factor serves plates with that relief as its low end,
+the present factor refuses flat-faced fins (flat plates with square or
+rounded edges) at the base (`flat-plate-fins`): "flat plates at the base
+lower the base drag by up to 15% (RM L52E06 fig. 7, F 0.85 to 0.88), which
+this factor's data do not cover; the rebuilt factor will serve them". The
+thin-fins extension stays for the wedge, circular-arc and hexagonal
+families. It applies to 43.5% of the population's cases and refuses 3 of
+the 20 totals served (all at Mach 1.8 to 3.0: 13 of 2000 rockets to 10;
+`docs/research/refusals/out/2026-10-21-plates-at-base/`, the library
+agreeing with the decomposition on all 1200 cases checked).
