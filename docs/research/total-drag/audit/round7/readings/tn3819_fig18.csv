@@ -1,0 +1,30 @@
+curve,kind,M,M_err,P_B,P_B_err,notes
+"Love basic curve (lower, less negative compiled curve)",at M,1.0,0.0,-0.1851,0.0003,left border; extrapolated 0.010 in M from clean points at M 1.010 to 1.035; the curve starts inside a heavy vertical stroke on the border (P_B -0.188 to -0.182)
+"Love basic curve (lower, less negative compiled curve)",at M,1.1,0.0,-0.1851,0.0002,
+"Love basic curve (lower, less negative compiled curve)",at M,1.2,0.0,-0.1839,0.0003,on the M = 1.2 gridline; interpolated across it
+"Love basic curve (lower, less negative compiled curve)",at M,1.3,0.0,-0.1813,0.0002,L meets the P_B = -0.18 gridline at M 1.33; points right of M 1.305 overlap it and are not used
+"Love basic curve (lower, less negative compiled curve)",at M,1.4,0.0,-0.1776,0.0002,on the M = 1.4 gridline; interpolated across it
+"Love basic curve (lower, less negative compiled curve)",at M,1.5,0.0,-0.1734,0.0003,
+"Love basic curve (lower, less negative compiled curve)",at M,2.0,0.0,-0.1448,0.0002,on the M = 2.0 gridline; the stacked squares at M 1.9 cover L from M 1.90 to 1.97 (not used)
+"Love basic curve (lower, less negative compiled curve)",at M,2.5,0.0,-0.1172,0.0002,
+"Love basic curve (lower, less negative compiled curve)",at M,3.0,0.0,-0.0965,0.0003,"on the M = 3.0 gridline; U joins L between M 2.97 and 3.0, so right of M 3.0 the ink is both curves superposed (heavy dashes); the Gabeaud curve passes 21 px (0.0035) above"
+"Chapman compilation (upper, more negative compiled curve)",at M,1.0,0.0,-0.1902,0.0004,left border; extrapolated 0.010 in M from clean points at M 1.010 to 1.033
+"Chapman compilation (upper, more negative compiled curve)",at M,1.1,0.0,-0.1892,0.0002,
+"Chapman compilation (upper, more negative compiled curve)",at M,1.2,0.0,-0.1874,0.0002,on the M = 1.2 gridline; interpolated across it
+"Chapman compilation (upper, more negative compiled curve)",at M,1.3,0.0,-0.1847,0.0002,U turns dashed at M 1.31
+"Chapman compilation (upper, more negative compiled curve)",at M,1.4,0.0,-0.1814,0.0005,U is dashed here; a dash ends on the M = 1.4 gridline and a faint dash (M 1.41 to 1.43) lies just above the P_B = -0.18 gridline; value from dashes on both sides
+"Chapman compilation (upper, more negative compiled curve)",at M,1.5,0.0,-0.1776,0.0003,the Ref. 9 circle touches U from M 1.478 to 1.545 and U runs on the P_B = -0.18 gridline from M 1.43 to 1.47; interpolated across from M 1.47 and M 1.55 to 1.58
+"Chapman compilation (upper, more negative compiled curve)",at M,2.0,0.0,-0.1499,0.0003,on the M = 2.0 gridline; U is dashed from about M 1.84 to 1.94
+"Chapman compilation (upper, more negative compiled curve)",at M,2.5,0.0,-0.1196,0.0005,U is dashed from M 2.42 to 2.53 and crosses the P_B = -0.12 gridline here; interpolated between dashes at M 2.42 to 2.46 and 2.53 to 2.56
+"free-flight curve (Langley, R = 30 to 35e6)",at M,1.05,0.0,-0.2066,0.0003,near the first peak
+"free-flight curve (Langley, R = 30 to 35e6)",at M,1.1,0.0,-0.1991,0.0006,"steep descending segment, crossing the P_B = -0.20 gridline at M 1.096; the leader arrowhead touches F at M 1.09 (points there not used)"
+"free-flight curve (Langley, R = 30 to 35e6)",at M,1.15,0.0,-0.1931,0.0002,near the trough
+"free-flight curve (Langley, R = 30 to 35e6)",at M,1.2,0.0,-0.1975,0.0004,on the M = 1.2 gridline where F bends from rising to flat; 11 px gap interpolated
+"free-flight curve (Langley, R = 30 to 35e6)",at M,1.25,0.0,-0.197,0.0002,
+"free-flight curve (Langley, R = 30 to 35e6)",end point,1.0081,0.0101,-0.1875,0.001,F low-M end: dashed descent meets the M = 1.0 border; centre of the ink blob at the border
+"free-flight curve (Langley, R = 30 to 35e6)",end point,1.2791,0.0067,-0.1955,0.0007,"F high-M end: end of the drawn stroke, centreline"
+"free-flight curve (Langley, R = 30 to 35e6)",extremum,1.0606,0.004,-0.2073,0.0002,F first peak (most negative): extremum of a quadratic fitted over M 1.040 to 1.075 (33 points)
+"free-flight curve (Langley, R = 30 to 35e6)",extremum,1.1445,0.004,-0.1931,0.0002,F trough: extremum of a quadratic fitted over M 1.130 to 1.165 (21 points)
+"free-flight curve (Langley, R = 30 to 35e6)",extremum,1.2185,0.004,-0.1978,0.0002,F second peak: extremum of a quadratic fitted over M 1.205 to 1.245 (20 points)
+"Chapman compilation (upper, more negative compiled curve)",at M,3.0,0.0,-0.0965,0.0005,"U and L are superposed at M 3.0 (U joins L between M 2.97 and 3.0); cannot be separated, value is that of the merged line"
+"free-flight curve (Langley, R = 30 to 35e6)",not read,1.0,0.0,,,"F does not reach M = 1.000 as a separate line: its dashed descent meets the border at M 1.008, P_B -0.1875; a heavy vertical stroke on the border below it spans P_B -0.188 to -0.182 and may or may not belong to F"
