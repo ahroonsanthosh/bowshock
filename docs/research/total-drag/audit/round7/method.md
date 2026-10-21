@@ -292,3 +292,88 @@ triangles, so 95 deg (+-0.006) and especially 100 deg (+-0.012) are read
 from short visible pieces. Near the top (0 to 15 deg) and at 101 to 108 deg
 the faired line runs through the upper part of the triangles, 0.012 to
 0.018 above their centroids; in the steep part it passes through them.
+
+## Item 4: NACA TN 3861 figs. 15 and 16 (Penland, NTRS 19930084664)
+
+File `19930084664.pdf`, SHA-256
+`4b3884fdbd75781c8707748aa906af00974f5e1a995d056c550f64f6c41f5957`; fig. 15
+on PDF p. 31 (report p. 30), fig. 16 on PDF p. 32 (report p. 31), both
+landscape, 300 dpi grayscale JPEG scans rendered at 600 dpi.
+
+### What the axes are (from the report's text and symbol list)
+
+* Abscissa of both: crossflow Mach number M_c = M sin(alpha) (symbol list,
+  p. 2).
+* Fig. 15 ordinate: "(p_c - p_inf)/q_c and (p_3 - p_inf)/q_c", the
+  stagnation pressure coefficient based on the crossflow dynamic pressure
+  q_c. p_c is the measured pressure on the cylinder (at the stagnation point
+  for this figure), p_3 is "stagnation pressure behind shock of flow component
+  normal to shock", p_inf the free-stream static pressure.
+* Fig. 16 ordinate: Delta p/q_c = (p_c - p_inf)/q_c, the pressure coefficient
+  "on the downstream side of a circular cylinder", based on q_c.
+* Present data: M = 6.86, Reynolds number 129,000 on the 1/2-inch diameter.
+  The pressure-model angles of attack in the legend of fig. 5 are 90.0, 75.7,
+  60.4, 44.9, 30.2 and 14.9 deg, so M sin(alpha) = 6.860, 6.647, 5.965, 4.842,
+  3.451 and 1.764. A cross on a symbol "indicates data obtained through
+  crossflow study"; the uncrossed present-data symbol is the alpha = 90 deg
+  case. The text (p. 10) singles out the present point at M_c = 1.74 as high
+  because the shock was not parallel to the body at alpha about 15 deg.
+* Lord and Ulmann (unpublished): M = 4.04, crossflow; the text (p. 11) says
+  M_c = 1.04 is alpha = 15 deg. Gowen and Perkins (ref. 8) and Walter and
+  Lange (ref. 9) are cylinders normal to the stream at M 1.49 to 2.9 and 2.48
+  to 4.92, so for them M_c = M. Fig. 16 data span Reynolds numbers 0.4 x 10^5
+  to 2.1 x 10^6 (text p. 11).
+
+### Symbols (legends differ between the two figures)
+
+* Fig. 15: square = present data, right triangle with straight hypotenuse =
+  Gowen and Perkins, right triangle with a quarter-round hypotenuse = Lord and
+  Ulmann, circle = Walter and Lange, cross added = crossflow-derived.
+* Fig. 16: circle = Gowen and Perkins, square = Lord and Ulmann, diamond =
+  present data, triangle = Walter and Lange, cross added = crossflow-derived.
+
+Every symbol was identified by eye on contact sheets against the legend
+(`scripts/symsheet.py`); 17 in each figure. The plotted point is taken as
+the centre dot where one is visible, the crossing of the cross strokes for
+crossed symbols, the fitted circle centre for circles whose dot is hidden,
+and the centroid for right triangles (the visible dot of 15-06 sits at its
+right-triangle centroid, 1 to 3 px off). Where a stroke or dot coincides
+with a gridline or another symbol, the position was read by eye from a pixel
+map; the CSV says which (`value_from`). Errors are about 2 sigma: 1 to 3 px
+measurement and 0.6 px calibration, so +-0.0025 in fig. 15 ordinate units
+(948 px per unit) and +-0.001 in fig. 16 (2313 px per unit), more for the
+pixel-map and centroid cases.
+
+### Curves
+
+* Fig. 15 curve A: solid from M_c = 1.0 (where it ends in a blob on the
+  M_c = 1 gridline at 1.281) to about 2.0, then dashed to M_c 8.48. Its dash
+  pattern (long, long, short) is the legend's "Oblique shock values".
+* Fig. 15 curve B: a heavier line from M_c 7.0 to the frame at 9.0, dash
+  pattern long (240 px), short (48), long (232), short (51), long, which is
+  the legend's "Newtonian flow, Grimminger's hypersonic approx., ref. 1"
+  (long, short, long). It lies on the 2.0 gridline: read with the gridline
+  subtracted, 2.003 and 2.004 at M_c 7.5 and 8.0.
+* Fig. 16 curve C: the dashed "Delta p/q_c for zero pressure" line, from
+  M_c 1.336 (-0.828) to 6.976 (-0.030). Its steep start was tracked row by
+  row, the rest column by column (`scripts/t3861_track.py`).
+
+Values at M_c steps are in `readings/tn3861_figs15-16.csv`
+(`scripts/t3861_read.py`; error about 2 sigma as for the other curves).
+
+### Calibration
+
+Fig. 15: gridlines every 0.5 in M_c and every 0.25 in the ordinate; in the
+data window (M_c 0 to 9, ordinate 0 to 2.25) 188 of 190 intersections were
+measured (the legend box blanks the rows above 2.25). The page is rotated by
+-0.78 deg. A single affine map leaves M_c residuals rms 0.0021 (max 0.009)
+and ordinate residuals rms 0.0019 (max 0.010); leave-one-out rms 0.32 px in
+x, 0.89 px in y. Fig. 16: gridlines every 0.5 and every 0.1; 218 of 238
+intersections (the 20 missing are under the legend box); rotation +0.39 deg,
+axes 89.68 deg apart; affine residuals M_c rms 0.0033 (max 0.0095), ordinate
+rms 0.0005 (max 0.0023); leave-one-out 0.68 and 0.80 px rms.
+
+Uncertain or not read: the cross centre of 16-06 (its upper half is under
+the circle 16-05), the hidden dots of 15-03, 15-09, 15-14 and 16-14
+(values from the outline geometry), and the last reading of curve B where it
+runs into the frame.

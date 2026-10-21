@@ -30,6 +30,22 @@ CONFIG = {
         hpos=[5907.0, 5322.4, 4732.3, 4145.1, 3549.1, 2964.6, 2379.5, 1784.5],
         box=(1655, 4327, 1789, 5902),
         exclude=[(3010, 4340, 1790, 2670)], half=320),
+    # NACA TN 3861 fig. 15 (PDF p. 31, landscape): Mc 0..9 every 0.5, ordinate 0..3.0 every 0.25
+    "t3861f15": dict(
+        vvals=[0.5 * k for k in range(19)],
+        vpos=[1080.7 + 236.25 * k for k in range(19)],
+        hvals=[0.25 * j for j in range(13)],
+        hpos=[3398.1 - 237.5 * j for j in range(13)],
+        box=(1085, 5332, 565, 3394),
+        exclude=[(1800, 5380, 565, 1250)], half=200),
+    # NACA TN 3861 fig. 16 (PDF p. 32, landscape): Mc 0..8 every 0.5, ordinate -0.9..0.4 every 0.1
+    "t3861f16": dict(
+        vvals=[0.5 * k for k in range(17)],
+        vpos=[1561.0 + 229.66 * k for k in range(17)],
+        hvals=[round(-0.9 + 0.1 * j, 2) for j in range(14)],
+        hpos=[3665.6 - 231.33 * j for j in range(14)],
+        box=(1565, 5231, 662, 3661),
+        exclude=[(3640, 5240, 2490, 3290)], half=200),
 }
 
 
