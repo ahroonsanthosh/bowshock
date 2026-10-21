@@ -1031,7 +1031,12 @@ The serving rules, which the page's transonic solve follows:
 8. **Mach 1.0** is refused with its reason until the work below is
    done. The far boundaries' effect there (1.8% of the cone's drag on
    100.6 radii, 10% of the ogive's) has no tested bound, and no family
-   of four grids has converged.
+   of four grids has converged. (Decision of 2026-10-21, after the plan:
+   if the allowance rule passes its test, Mach 1.0 is served with the
+   wide band the rule gives, labelled plainly, rather than refused while
+   the 800-radius divergence is fixed; narrowing it comes later. Its
+   fourth grid's cost, about 300,000 steps, is stated on the page with
+   the measured time, and the user chooses to run it, as for any point.)
 
 ## The path to the page (plan, written 2026-10-21, before its build)
 
@@ -1328,6 +1333,9 @@ Two things are missing, and both are measured.
   the CPU, with no guarantee.
 
 Until both are done the page refuses Mach 1.0, and gives this reason.
+(Superseded in part by the decision recorded under rule 8: once the
+allowance rule passes its test, the wide band is served, and the fourth
+grid's cost is the user's choice.)
 
 ### Order of the build
 
@@ -1346,6 +1354,118 @@ briefly at nice 0.
 7. The record: the GPU measurements (SwiftShader here; a hardware GPU's
    rate from the benchmark in `tests/gpu`, run by whoever has one) and
    the GPU families against Taylor-Maccoll at page sizes.
+
+### Build progress
+
+**Step 1, done (2026-10-21; `cbc5e6a`).** `transonicGrid`'s `nested`
+option and `domainAllowance` (`src/verification/domain-allowance.ts`).
+
+- Cut back, the grid keeps its own lines. Continued, the columns
+  upstream and downstream are vertical lines with the grid's own
+  geometric spacing, and the rows beyond the far radius are horizontal,
+  with the axis's growth.
+- Tested: every shared node is bit for bit the same, the domain asked
+  for is reached in whole base cells, and the families still nest.
+- The continuation leaves neighbouring cells up to 20 times different
+  in size at the old grid's upstream top corner. The grid's leaning
+  lines squeeze its top-left cells to 1.1 radii there, beside new
+  columns 20 radii wide. Test (a) below shows this does not reach the
+  drag.
+
+The rule's pre-registered test, on the base grid (runs of 2026-10-21,
+`tests/tmp-transonic/queue-nest.txt`):
+
+- **(a) passes.** On the cone at Mach 1.2 and 1.1 every change is
+  below 1.1e-7 of the drag: -3.5e-9 and +8.7e-9 (1.2), -3.4e-9 and
+  -1.8e-9 (1.1); the cylinder's are below 1.1e-8. On regridded domains
+  the same changes were 6e-6 and 2e-5. The nested grids remove the
+  grid's noise from the test, as intended.
+- **(b), the cases run so far** (far boundaries; allowance against
+  C(408.7) - C(100.6)):
+
+| Case                | c1 (55.1 to 100.6) | c2 (100.6 to 224.2) | Rule                     | C(408.7) - C(100.6) |
+| ------------------- | ------------------ | ------------------- | ------------------------ | ------------------- |
+| cone, 1.05          | +6.4e-6            | -1.2e-7             | negligible, 6.4e-6       | -1.2e-7, inside     |
+| ogive, 1.1          | -5.9e-11           | -4.1e-9             | negligible, 4.1e-9       | +2.6e-9, inside     |
+| ogive, 1.05         | +1.10e-5           | +2.41e-6            | rho 0.22, 3.09e-6        | +2.41e-6, inside    |
+| cone, 1.02          | +7.69e-4           | -1.03e-4            | refused (sign change)    | -1.01e-4            |
+| cone, 1.01          | +2.86e-3           | +9.03e-4            | rho 0.32, 1.32e-3 (1.3%) | +8.63e-4, inside    |
+| cone and ogive, 1.0 | running            |                     |                          |                     |
+
+Every bound the rule gave contains the larger domain's change. At
+Mach 1.02 it refuses: the effect overshoots (up from 55.1 to 100.6
+radii, down beyond), and a sign change gives it nothing to bound
+with. Measured there, the drag moves by 2e-6 between 224.2 and 408.7
+radii.
+
+- **What the regridded domains had hidden.** On nested domains the
+  5-caliber ogive at Mach 1.05 is not domain-limited: 3.1e-6 (7.4e-5 of
+  its drag), where the regridded domains had shown -1.22e-4 and then
+  -1.07e-4, which were the grid's noise. On the cone at 1.05 the
+  effect beyond 100.6 radii is 1.2e-7. At Mach 1.01 the change from
+  100.6 to 408.7 radii is +8.6e-4, not the +2.3e-3 of the regridded
+  domains. The cylinder's changes are below 1e-8 everywhere measured.
+  (The far-boundary rule refuted earlier read the regridded noise as a
+  correction; these numbers show how large that noise was.)
+
+**Step 2, built (2026-10-21; `35f7e3a`); counts running.** Jacobi and
+red-black relaxations of the implicit system (`ImplicitRelaxation`).
+
+- The default stays bit for bit LU-SGS: 300 steps with and without
+  Anderson give identical states against the previous commit.
+- Both reach the explicit scheme's drag within 1e-12 on the Mach 2
+  cone.
+- Steps on the 7 deg cone with Anderson (depth 8), against LU-SGS's:
+  - Mach 1.2: Jacobi with 4 sweeps 850 and 900 on r = 1 and 2, red-black
+    with 2 sweeps 900 and 1,000, against LU-SGS's 700 and 700;
+  - Mach 1.1: Jacobi 1,000 on r = 1, against 950.
+
+  They reach the same drags within 7e-9. CPU cost per cell and step is
+  2.5e-6 s (Jacobi) and 2.0e-6 s (red-black), against LU-SGS's 1.5e-6
+  without Anderson. The rest (1.1, 1.05, and without Anderson) is
+  running.
+
+- A third data-parallel form needs no new iteration: LU-SGS's own
+  sweeps run by diagonals. Cell (i, j) of the forward sweep waits only
+  for (i - 1, j) and (i, j - 1), so every cell with the same i + j can
+  be solved at once. That is the same iteration as on the CPU, at
+  ni + nj dispatches per sweep (2,370 per step on r = 8), each with at
+  most nj cells, which is a dispatch-bound cost to measure on hardware.
+
+**Step 3 (G1), done (2026-10-21).** The far-field boundary in
+`euler2d.wgsl`, `tests/gpu/transonic-gpu.test.ts`. On SwiftShader, on
+the cone's base grid at Mach 1.1:
+
+- From the free stream, after 100 explicit steps, the GPU's pressures
+  are within 4.9e-6 of the CPU's.
+- From the CPU's converged solution, the GPU's drag wanders about the
+  CPU's: +1.5e-6, -6.2e-6, -2.9e-6, +3.3e-6 and +4.8e-6 of it after
+  100, 500, 1,500, 3,000 and 5,000 explicit steps. Its density
+  residual stays near 3e-6 throughout.
+
+**What the wander means for the page.** It is three times the GPU's
+noise on supersonic flows (2e-6, 0005). It comes from the 32-bit
+residual, not the 32-bit state: on the CPU, rounding the state to 32
+bits after every step (the residual still in double) freezes the drag
+within 4e-8 of its converged value, with explicit, LU-SGS and Jacobi
+steps alike (`tests/tmp-transonic/f32-wander.test.ts`).
+
+The procedure with a noise of 1e-5 refuses cases it certifies at 2e-6.
+The cone at Mach 1.1 on r = 2 to 16 becomes `unresolved`, its changes
+too small to measure against that noise, and so does the 5-caliber
+ogive at 1.2. So the page cannot serve those with the 32-bit residual
+as it is.
+
+The next steps, in order:
+
+- measure the wander under the GPU's implicit steps (step 4), which
+  damp the slow modes the noise excites far faster than explicit
+  steps;
+- if it stays above about 2e-6, evaluate the residual on the GPU in
+  two-float (double-single) arithmetic, at several times the cost of a
+  step, or finish each grid's last steps on the CPU in double.
+
+This is the plan's main open risk.
 
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
