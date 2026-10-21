@@ -14,10 +14,12 @@ by the solver or the page.
 | `impact.test.ts` | The run: outcome per Mach band, rate per refusal, sole blockers, the work packages (the share each is needed for, the greedy order, totals after each step of 0014's order), the altitude ends, two sensitivity variants, the cross-check against `src/total` |
 | `edges.test.ts` | The parameters the fin-edge packages turn on, over the same cases: the trailing edges' thin-layer parameter, the leading edges' normal Mach and Reynolds numbers, the trailing-edge angle of fins at the base |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
-| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables, as 0014 quotes them (the code of 5245241) |
+| `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables, as 0014 quotes them |
 | `out/impact-w34.out`, `out/impact-w34.json` | The same run after the fin edges of flat plates (design record 0016, sections 1 to 10): `evaluate.ts` with `EDGES=w34` mirrors that code |
 | `out/impact-w4e.out`, `out/impact-w4e.json` | The same run after 0016 section 11 (a plate's rounded leading edge from normal Mach number 1.0): `EDGES=w4e` before 0016 section 16 |
 | `out/impact-review.out`, `out/impact-review.json` | The same run after 0016 section 16 (fins at the base take a plate's largest t/c, at the tip): `evaluate.ts`'s default, `EDGES=w4e` |
+| `out/2026-10-21-swept-at-base/` | The same run after the fins-on-base factor began refusing swept fins at the base (2026-10-21; 0014 section 10.7, amendment d): `evaluate.ts` mirrors it (`finsAtBaseSwept`, in W1's package). `out/impact.out` stays as 0014's sections 1 to 6 quote it, from before |
+| `out/2026-10-21-w34-merge/` | The same run with the fin edges of flat plates (0016, through section 16) merged with the swept-fins refusal (0016 section 17): `evaluate.ts`'s default, `EDGES=w4e` |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
@@ -33,7 +35,8 @@ nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
 
 `N_ROCKETS` (default 2000, the quoted run) and `CROSS_CHECK` (rockets
 whose cases are checked against `src/total`, default 300) set the size.
-It writes `out/impact.out` and `out/impact.json`; `OUT_NAME=impact-w34`
+It writes `out/impact.out` and `out/impact.json`, or, with `OUT_DIR`
+(relative to the repository root), into that directory; `OUT_NAME=impact-w34`
 writes `out/impact-w34.out` and `.json` instead (0016's run), and
 `OUT_NAME=impact-w4e` 0016 section 11's and `OUT_NAME=impact-review` section 16's.
 `evaluate.ts` mirrors the refusals of the present code (flat plates,

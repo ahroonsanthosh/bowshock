@@ -22,10 +22,12 @@ import {
   BASIC_FINNER_SHOTS,
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
+import { displayText, totalDragDisplay } from '../../src/app/total-drag-display';
 import {
   ABOVE_THE_CLASS,
   BASIC_FINNER_CLASS,
   BASIC_FINNER_REYNOLDS_PER_MACH,
+  BOUNDED_REASON,
   BASIC_FINNER_TEMPERATURE,
   TEMPERATURE_SENSITIVITY,
   basicFinnerClass,
@@ -33,13 +35,15 @@ import {
   configurationOf,
   ESTIMATE_CLAIM,
   FINS_BAND_NOTE,
+  FINS_ON_BASE_BOUNDED_NOTE,
   FINS_ON_BASE_NOTE,
   GATE_TRANSITION_REYNOLDS,
   noseComponentOf,
-  OFFSET_CAVEAT,
+  CLASS_CLAIM,
+  CLASS_DESCRIPTION,
   PUBLISHED_GATE,
   totalDragView,
-  VALIDATED_CLAIM,
+  SUSPENDED_REASON,
   type NoseState,
   type TotalDragForm,
   type TotalDragView,
@@ -179,7 +183,7 @@ describe('the class rule', { timeout: 60_000 }, () => {
     const outside = (mach: number) =>
       basicFinnerClass({ ...f, mach, reynoldsOnLength: 1.5e7 }).outside;
     expect(outside(2.4)).toEqual([
-      "Mach 2.4 is outside 1.799 to 2.15 (above Mach 2.15 the fins-on-base factor was read from one of Love's estimates in TN 3819 fig. 35, not from its free-flight curve)",
+      "Mach 2.4 is outside 1.799 to 2.15 (above Mach 2.15 the gate tested a fins-on-base factor read from one of Love's estimates in TN 3819 fig. 35, not from its free-flight curve; the factor corrected since has no hold-out there)",
     ]);
     expect(outside(1.7)).toEqual(['Mach 1.7 is outside 1.799 to 2.15']);
     expect(at(2.0, 1.189e7)).toBe(false);
@@ -347,23 +351,84 @@ describe('the class rule', { timeout: 60_000 }, () => {
       expect(Math.round(1e4 * largest.change) / 1e4).toBe(TEMPERATURE_SENSITIVITY);
       expect(TEMPERATURE_SENSITIVITY).toBe(0.0013);
       // Against the residuals, -7.7% to +4.5%, and the tolerance, about -20% to +27%: small.
-      expect(VALIDATED_CLAIM).toContain('by at most 0.13%');
+      expect(CLASS_DESCRIPTION).toContain('at most 0.13%');
     },
   );
 });
 
 describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, () => {
-  it('at Mach 1.8 to 3.0, the range Reynolds number, no inputs: validated to Mach 2.15, an estimate above, its band rounded outward', () => {
+  it('at Mach 1.8 to 3.0, the range Reynolds number, no inputs: an estimate everywhere (inside the class the claim suspended, above it outside), its band rounded outward', () => {
     const shown = [1.8, 2.0, 2.15, 2.4, 2.75, 2.97, 3.0].map((mach) => {
       const form = basicFinnerForm(mach);
       const v = totalDragView(form, exactNose(form));
       if (v.kind !== 'total') throw new Error(v.kind);
-      expect(v.claim.kind).toBe(mach <= 2.15 ? 'validated' : 'estimate');
-      if (v.claim.kind === 'estimate') {
-        expect(v.claim.reasons).toEqual([
-          `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
-        ]);
-      }
+      expect(v.claim.kind).toBe('estimate');
+      expect(basicFinnerClass(form).inside).toBe(mach <= 2.15);
+      expect(v.claim.text).toBe(mach <= 2.15 ? CLASS_CLAIM : ESTIMATE_CLAIM);
+      expect(v.claim.reasons).toEqual(
+        mach <= 2.15
+          ? [SUSPENDED_REASON]
+          : [
+              `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+              ...(mach > 2.56 ? [BOUNDED_REASON] : []),
+            ],
+      );
+      const t = v.total;
+      return [
+        t.cd.toFixed(4),
+        outward(t.low, t.high, 4).join(' to '),
+        outwardPercent(t.low / t.cd - 1, t.high / t.cd - 1),
+      ];
+    });
+    // With the corrected fins-on-base factor (0010 section 11); before it, at the same Mach
+    // numbers: 0.6121, 0.5501, 0.5188, 0.4768, 0.4320, 0.4072, 0.4040.
+    expect(shown).toEqual([
+      ['0.6131', '0.5294 to 0.7293', '-13.7% to +19.0%'],
+      ['0.5493', '0.4808 to 0.6493', '-12.5% to +18.2%'],
+      ['0.5176', '0.4512 to 0.6141', '-12.9% to +18.7%'],
+      ['0.4725', '0.4115 to 0.5612', '-12.9% to +18.8%'],
+      ['0.4203', '0.3669 to 0.4987', '-12.7% to +18.7%'],
+      ['0.3951', '0.3459 to 0.4678', '-12.5% to +18.4%'],
+      ['0.3919', '0.3434 to 0.4636', '-12.4% to +18.3%'],
+    ]);
+  });
+
+  it('the claim suspended (0010 section 11.7): an estimate, not validated, with the corrected band, never refused, inside the class (M 1.8, 2.0, 2.15) and above it (M 2.3, 2.5, 2.9), on the page and in the library', () => {
+    const shown = [1.8, 2.0, 2.15, 2.3, 2.5, 2.9].map((mach) => {
+      const form = basicFinnerForm(mach);
+      const v = totalDragView(form, exactNose(form));
+      if (v.kind !== 'total') throw new Error(`refused at M ${mach}: ${reasons(v).join(', ')}`);
+      expect(v.claim.kind).toBe('estimate');
+      // The reason says plainly why: inside the class, the suspension; above it, the class.
+      expect(v.claim.reasons[0]).toBe(
+        mach <= 2.15 ? SUSPENDED_REASON : `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+      );
+      // Nowhere in what the page shows is the total called validated.
+      const said = displayText(totalDragDisplay(v));
+      expect(said).toContain(': an estimate, not validated');
+      // (The one other use of the word is body friction's band, validated on friction data.)
+      expect(
+        said
+          .replace(/not validated/gi, '')
+          .replace("friction's band is validated on wind-tunnel and flight data of friction", ''),
+      ).not.toMatch(/validated/i);
+      const base = v.total.components.find((c) => c.name === 'body base')!;
+      expect(base.label).toContain(
+        mach > 2.56 ? 'bounded, not measured' : 'an analogy, not a measurement',
+      );
+      // The library: src/total with the same configuration refuses nothing.
+      const c = configurationOf(form);
+      const nose = exactNose(form);
+      if (c.kind !== 'ok' || nose.kind !== 'solved') throw new Error('unreachable');
+      const lib = finnedBodyComponents(
+        c.value.config,
+        c.value.conditions,
+        nose.component,
+        c.value.inputs,
+      );
+      expect(lib.refusals).toEqual([]);
+      expect(combineComponents(lib.components, lib.inputs).cd).toBe(v.total.cd);
+      expect(lib.base!.finsOnBase!.bounded).toBe(mach > 2.56);
       const t = v.total;
       return [
         t.cd.toFixed(4),
@@ -372,13 +437,12 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
       ];
     });
     expect(shown).toEqual([
-      ['0.6121', '0.5309 to 0.7259', '-13.3% to +18.6%'],
-      ['0.5501', '0.4823 to 0.6493', '-12.4% to +18.1%'],
-      ['0.5188', '0.4534 to 0.6142', '-12.7% to +18.4%'],
-      ['0.4768', '0.4193 to 0.5615', '-12.1% to +17.8%'],
-      ['0.4320', '0.3797 to 0.5083', '-12.1% to +17.7%'],
-      ['0.4072', '0.3579 to 0.4786', '-12.1% to +17.6%'],
-      ['0.4040', '0.3554 to 0.4746', '-12.1% to +17.5%'],
+      ['0.6131', '0.5294 to 0.7293', '-13.7% to +19.0%'],
+      ['0.5493', '0.4808 to 0.6493', '-12.5% to +18.2%'],
+      ['0.5176', '0.4512 to 0.6141', '-12.9% to +18.7%'],
+      ['0.4896', '0.4260 to 0.5818', '-13.0% to +18.9%'],
+      ['0.4564', '0.3996 to 0.5401', '-12.5% to +18.4%'],
+      ['0.4028', '0.3521 to 0.4775', '-12.6% to +18.6%'],
     ]);
   });
 
@@ -391,9 +455,10 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
     };
     expect(at(2.4)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE]);
     expect(at(1.799).some((n) => n.includes('the M 1.80 row is taken'))).toBe(true);
-    expect(at(2.85).some((n) => n.includes('one reading'))).toBe(false);
-    expect(at(2.88).some((n) => n.includes('one reading'))).toBe(true);
-    expect(at(2.99).some((n) => n.includes('extrapolated'))).toBe(true);
+    // Every row rests on two readings; above the curve's end, the bounded note.
+    expect(at(2.56)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE]);
+    expect(at(2.57)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE, FINS_ON_BASE_BOUNDED_NOTE]);
+    expect(at(2.99)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE, FINS_ON_BASE_BOUNDED_NOTE]);
     // Fins clear of the base take no factor, and no note on it.
     const clear = { ...basicFinnerForm(2.4), trailingEdgeAheadOfBase: 1 };
     const v = totalDragView(clear, exactNose(clear));
@@ -470,7 +535,10 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
     });
   });
 
-  it('the table the page publishes is 0010 section 4.2, held to the library', () => {
+  it('the table the page publishes is the corrected gate (0010 section 11), held to the library, with the second run beside it (section 4.2)', () => {
+    expect(PUBLISHED_GATE.map((p) => p.secondRun)).toEqual([
+      -3.0, 0.4, -4.6, 3.2, -0.9, -0.3, 0.7, -7.7, 4.5, -5.4, -7.6,
+    ]);
     const cx0 = (m: number) => gated.find((s) => s.mach === m)!.cx0;
     const spread = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
       const v = gated.filter((s) => s.mach >= a && s.mach <= b).map((s) => s.cx0);
@@ -478,13 +546,18 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       return { lo: Math.min(...v) / mean - 1, hi: Math.max(...v) / mean - 1 };
     });
     expect(PUBLISHED_GATE.map((p) => p.shot)).toEqual(gated.map((s) => s.shot));
+    // The band rounded outward, as every band on the page is (src/app/band.ts), so that the
+    // table and a total's headline show the same interval for the same shot.
+    expect(PUBLISHED_GATE.map((p) => [p.cd, p.low, p.high])).toEqual(
+      views.map((v) => {
+        const t = totalOf(v);
+        return [Math.round(1e4 * t.cd) / 1e4, ...outward(t.low, t.high, 4).map(Number)];
+      }),
+    );
     PUBLISHED_GATE.forEach((p, k) => {
       const t = totalOf(views[k]!);
       expect(p.mach).toBe(gated[k]!.mach);
       expect(p.cx0).toBe(cx0(p.mach));
-      expect([p.cd, p.low, p.high]).toEqual(
-        [t.cd, t.low, t.high].map((x) => Math.round(1e4 * x) / 1e4),
-      );
       expect(p.residual).toBe(Math.round(1000 * (p.cx0 / t.cd - 1)) / 10);
       const inLow = t.inputs.reduce((a, i) => a + i.low, 0);
       const inHigh = t.inputs.reduce((a, i) => a + i.high, 0);
@@ -497,22 +570,24 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
     });
   });
 
-  it('the three shots at Mach 1.80 to 1.85 are labelled validated, with the offset beside them; the eight above Mach 2.15, an estimate', () => {
+  it('every shot is an estimate: the three at Mach 1.80 to 1.85, inside the class, with the suspension as the reason; the eight above Mach 2.15 outside it', () => {
     views.forEach((v, k) => {
       if (v.kind !== 'total') throw new Error('expected a total');
       const mach = gated[k]!.mach;
-      expect(v.claim.kind).toBe(mach <= 2.15 ? 'validated' : 'estimate');
-      if (v.claim.kind === 'estimate') {
-        expect(v.claim.text).toBe(ESTIMATE_CLAIM);
-        expect(v.claim.reasons).toEqual([
-          `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
-        ]);
+      expect(v.claim.kind).toBe('estimate');
+      if (mach <= 2.15) {
+        expect(v.claim.text).toBe(CLASS_CLAIM);
+        expect(v.claim.reasons).toEqual([SUSPENDED_REASON]);
         return;
       }
-      expect(v.claim.text).toBe(VALIDATED_CLAIM);
-      expect(v.claim.caveats).toContain(OFFSET_CAVEAT);
+      expect(v.claim.text).toBe(ESTIMATE_CLAIM);
+      // The five above M 2.56 also carry the bounded factor (0014 section 10.2).
+      expect(v.claim.reasons).toEqual([
+        `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+        ...(mach > 2.56 ? [BOUNDED_REASON] : []),
+      ]);
     });
-    expect(views.filter((v) => v.kind === 'total' && v.claim.kind === 'validated').length).toBe(3);
+    expect(gated.filter((s) => basicFinnerClass(gateForm(s)).inside).length).toBe(3);
   });
 
   it('the five shots at Mach 1.06 to 1.33 are refused, with every reason and no number', () => {
@@ -597,7 +672,6 @@ describe(
         reynoldsOnLength: 4e7,
       });
       expect(v.claim.kind).toBe('estimate');
-      if (v.claim.kind !== 'estimate') return;
       expect(v.claim.text).toBe(ESTIMATE_CLAIM);
       expect(v.claim.reasons).toEqual([
         "the nose is not a cone (the Basic Finner's is a 20 deg cone)",
@@ -622,7 +696,7 @@ describe(
       ]);
       const base = v.total.components.find((c) => c.name === 'body base')!;
       expect(base.label).toContain('not validated with fins');
-      if (v.claim.kind === 'estimate') expect(v.claim.reasons.length).toBe(3);
+      expect(v.claim.reasons.length).toBe(3);
     });
   },
 );
@@ -649,7 +723,11 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
           nose,
         ),
       ),
-    ).toEqual(['fin trailing-edge base: swept-trailing-edge']);
+    ).toEqual([
+      // The fins end at the base: the factor refuses swept fins (0014 section 10.7).
+      'body base: fin-sweep',
+      'fin trailing-edge base: swept-trailing-edge',
+    ]);
     expect(reasons(totalDragView({ ...f, transitionReynolds: [2e7] }, nose))).toEqual([
       'body base: laminar-base',
     ]);
@@ -668,8 +746,9 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
     const r = reasons(
       totalDragView({ ...f, planform: { kind: 'clipped-delta', taperRatio: 0.5 } }, nose),
     );
-    // Since 0016 the blunt trailing edge of fins of varying chord is integrated along the span.
-    expect(r).toEqual(['fin leading edges: leading-edge-geometry']);
+    // Since 0016 the blunt trailing edge of fins of varying chord is integrated along the span;
+    // the swept leading edge, the fins ending at the base, is refused by the factor (0014 10.7).
+    expect(r).toEqual(['fin leading edges: leading-edge-geometry', 'body base: fin-sweep']);
   });
 
   it('inputs the page cannot take, all listed', () => {
@@ -715,7 +794,7 @@ describe('found in the libraries (0011 section 6)', { timeout: 60_000 }, () => {
       const form = { ...basicFinnerForm(2.0), span };
       const v = totalDragView(form, exactNose(form));
       if (v.kind !== 'total') throw new Error(v.kind);
-      expect(v.claim.kind).toBe(span === 1 ? 'validated' : 'estimate');
+      expect(v.claim.text).toBe(span === 1 ? CLASS_CLAIM : ESTIMATE_CLAIM);
       const b = v.total.components.find((c) => c.name === 'body base')!;
       return [b.cd, b.low, b.high];
     };

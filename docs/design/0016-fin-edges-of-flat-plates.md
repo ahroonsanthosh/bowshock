@@ -1060,3 +1060,20 @@ nothing.
 **Still read once:** TN 3861 fig. 17 (the drag behind the crossflow
 estimates, a check on the allowance, not a band) and TN 2960 fig. 5(d)'s
 R 1.3e5 diamonds (a check of the band, as in section 14).
+
+## 17. Merged with the main line (96c7b22): the fig. 35 correction
+
+The main line's correction of the fins-on-base factor (TN 3819 fig. 35's
+free-flight curve, swept fins at the base refused by the present factor,
+the Basic Finner's validated claim suspended) is merged in. Both stand:
+the factor refuses a swept fin at the base whatever its edges, and takes a
+plate's largest t/c (section 16); the page states the suspended claim and
+where a rounded edge is served. Tests whose swept fins end at the base now
+expect the body base's refusal ("fin-sweep") beside the edges' own
+outcomes; the swept rounded leading edge stays served.
+
+**Coverage** (the same population and run, `out/2026-10-21-w34-merge/`,
+its cross-check against `src/total` agreeing on all 1200 cases): totals
+today 0.2% (main alone 0.1%; this branch before the merge 0.4%), the swept
+fins at the base refused in 69.0% of cases; W4 is needed in 20.7% of cases
+(main alone 43.9%); totals once W1 is done 3.4% (main alone 1.4%).

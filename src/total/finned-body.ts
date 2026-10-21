@@ -397,6 +397,8 @@ export function finnedBodyComponents(
             ? symmetricThicknessRatio(fins.section as SymmetricSection)
             : plate.thickness / tipChord(fins.planform),
         section: fins.sectionFamily,
+        tanLeadingEdge: fins.planform.tanLeadingEdge,
+        tanTrailingEdge: fins.planform.tanTrailingEdge,
         trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
       },
     });

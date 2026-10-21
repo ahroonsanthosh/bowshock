@@ -136,6 +136,7 @@ is not used by the page and is left out.
 | B5  | fins at the base, not four                                                                               | `finsOnBaseFactor`                     | 0010 section 1.3       | data                                       | 40.2%                                |
 | B6  | fins at the base, t/c outside 0.05 to 0.10                                                               | `finsOnBaseFactor`                     | 0010 section 1.3       | data                                       | 71.7%                                |
 | B7  | fins at the base, Mach outside 1.798 to 3.0                                                              | `finsOnBaseFactor`                     | 0010 section 1.3       | data                                       | 54.3% (72% of each band below M 1.8) |
+| B8  | fins at the base swept at either edge, so any tapered planform (since 2026-10-21, section 10.7)          | `finsOnBaseFactor`                     | 0010 section 11.5      | data                                       | 69.0% (sole blocker 0.01%)           |
 | T1  | a blunt trailing edge on fins of varying chord                                                           | `finnedBodyComponents`                 | 0010 section 3         | method (implementation)                    | 49.8%                                |
 | T2  | a swept blunt trailing edge                                                                              | `finTrailingEdgeBaseDrag`              | 0008 section 3.4       | data                                       | 7.9%                                 |
 | T3  | a blunt trailing edge outside Mach 1.5 to 3.2                                                            | `finTrailingEdgeBaseDrag`              | 0010 section 5.1       | data                                       | 26.4%                                |
@@ -151,8 +152,10 @@ is not used by the page and is left out.
 | P3  | a method fails (the laminar similarity solution not found)                                                                                                                                                       | `totalDragView`   | 0011             | grids            |
 | P4  | not inputs at all: a tip radius, a boat-tail, flat-plate edge shapes, fins placed other than by a distance ahead of the base, altitude and speed (the page asks for the Reynolds number; no standard atmosphere) | the page          | README "Not yet" | input            |
 
-Not refusals: the class rule ("validated on the Basic Finner" or
-"estimate, not validated", 0011 section 3) and the vacuum clamp (0010
+Not refusals: the class rule ("estimate, not validated", inside the class
+too since the claim was suspended on 2026-10-21, section 10.7; before
+that "validated on the Basic Finner" inside it; 0011 sections 3 and 4)
+and the vacuum clamp (0010
 section 10) label or bound a number; they never withhold one. The README's
 "Limits" (power off, zero incidence, no plume) lie outside the page's
 scope.
@@ -619,7 +622,8 @@ atmosphere).
   bands are stated to 3.0).
 - **The class rule** is not a refusal and stays: outside the Basic
   Finner's class a total is "an estimate, not validated" until a hold-out
-  of its own class passes.
+  of its own class passes (and inside it too, while its claim is
+  suspended, section 10.7).
 
 ## 8. Sources
 
@@ -918,3 +922,117 @@ the decisions below uses a drag value.
    the claim's configuration at BRL's conditions; by the decision
    registered in 10.3, a failure of the present model there withdraws the
    claim all the same.
+
+### 10.7 Amendments, dated
+
+Added below the registered text, never written over it: sections 10.1
+to 10.6 stand as registered on 2026-10-20, and each change to what they
+decide is a dated entry here, made before the data it concerns are run.
+
+**2026-10-21 (a): fins at the base above the end of TN 3819 fig. 35's
+free-flight curve**, a recorded decision under 10.2's "Anywhere else
+only by a recorded decision". First written as a bullet inside 10.2's
+list on 2026-10-21 (commit 9b089bb), and moved here unchanged the same
+day, except that its reference to W1's record, not yet on the main
+branch, is reworded:
+
+> **Recorded decision, 2026-10-20: fins at the base above the end of TN
+> 3819 fig. 35's free-flight curve** (M 2.56 to 3.0; 0010 section 11.5).
+> Lower, no fin effect (F = 1 for the present factor, defined on the
+> basic curve; the zero member's low end for the rebuilt factor, W1's
+> record, pending); upper, the factor at the curve's end, its band's high
+> end, carried as a ratio; the ordering argued there from Love's
+> "decrease in fin effects as Mach number increases" (TN 3819 p. 23) and
+> TN 2360's dependence on the fins' thickness and slope, written before
+> the number was served.
+
+**2026-10-21 (b): the present factor corrected, and the Basic Finner's
+validated claim suspended** (10.3; 0010 sections 11 and 11.7; 0008
+section 6.4).
+
+- _The correction._ The present factor's free-flight line, as this
+  record and 0010 section 1.3 knew it, followed Love's estimate B, a
+  prediction, above about Mach 2.15; the factor was corrected on
+  2026-10-21 to two readings of fig. 35's free-flight curve as
+  identified, which ends at Mach 2.563, with the identity-swap allowance
+  re-derived (0.005 to 0.0077) and, above the end, the bounded factor of
+  amendment (a). The class had been narrowed to Mach 1.799 to 2.15 the
+  day before (0010 section 7).
+- _What moved._ Inside the class the body base, and so the total, moves
+  by +0.00105, -0.00031 and -0.00042 in C_D at the three shots (Mach
+  1.799, 1.846, 1.85: -0.07% to +0.17% of the total), and by -0.00082
+  and -0.00123 at Mach 2.0 and 2.15; the served defaults by +0.17%,
+  -0.15% and -0.24% at Mach 1.8, 2.0 and 2.15. Above the class the total
+  falls by 0.7% to 1.0% at Mach 2.35 to 2.41 and by 2.6% to 3.0% at 2.66
+  to 2.97. The gate re-run is a recorded correction, not a test:
+  residuals -5.1% to +7.5% (mean -0.4%), every shot inside its tolerance
+  (0010 section 11.6).
+- _The owner's decision._ By 0008 section 6.1 (a term changed after a
+  test is not validated by it), the Basic Finner's total is "an
+  estimate, not validated" everywhere, inside the class too, until a
+  held-back set tests the corrected factor. 10.3's first bullet ("the
+  validated total of the Basic Finner's class keeps the present factor
+  ... unchanged") therefore holds no validated total meanwhile: the class
+  keeps the corrected present factor, and its rule (Mach 1.799 to 2.15,
+  Reynolds number 1.19e7 to 2.0e7, 216.65 to 320 K, each dimension
+  within 0.5%; 0011 section 3) is kept for the next test, which covers
+  its Mach range at BRL's conditions, not the whole class (10.6, item 6).
+- _The route back._ BRL Report 934's range A (Mach 1.5 to 2.47, 10.5),
+  run once as registered, after its second reading and the decisions of
+  10.6, is the test of the corrected factor: the present model reported
+  at its rounds at Mach 1.798 to 2.47, as 10.3's last bullet registers.
+  If it passes by rule 4 of 10.1, the class is validated over what that
+  range supports; if it fails, the claim is withdrawn, as registered.
+  Not run.
+- _History._ The second run (0010 section 4.2), round 5's tolerances
+  (0010 section 10) and the correction's residuals (0010 section 11.6)
+  are kept in the record as they were.
+
+**2026-10-21 (c): readings.** Fig. 35's free-flight curve is now read
+twice, at Mach 1.0 to 2.56, by two readers (0010 section 11.3), so 10.4's
+"TN 3819 fig. 35 below Mach 1.8 (round 3 only)" no longer applies to
+that curve; round 3's reading is superseded above about Mach 2.15, where
+it followed estimate B.
+
+**2026-10-21 (d): swept fins at the base refused; the ordering of (a)
+restated** (0010 section 11.5; after the independent review of the
+correction).
+
+- _Which fins._ Amendment (a)'s lower bound, no fin effect, rests on
+  sources that measure four unswept fins 5% to 10% thick at the base
+  (TN 3819 figs. 33 and 35, TN 2360). The present factor took no sweep:
+  the review found four 8% double wedges swept 45 deg at both edges, at
+  the base, served at Mach 2.0 as an analogy (F 1.258) and at 2.8 as
+  bounded, 1 to 1.3612, where RM L52J21a measures about 0.96 to 1.12 for
+  four 45 deg swept 8% fins (W1's reading, pending on its branch). The
+  factor now refuses fins swept at either edge, and so any tapered
+  planform, in the measured and the bounded parts alike (`fin-sweep`;
+  section 2.3, B8), until the rebuilt factor (W1) serves them. Its other
+  inputs were checked against its sources the same way: four fins and t/c
+  0.05 to 0.10 were already refused otherwise; sections other than
+  circular arcs stay "an analogy, not a measurement" (0008 section 3.4);
+  span and chord, which the sources do not vary, are not refused (0011
+  section 6).
+- _What it costs before W1_ (`docs/research/refusals/`, the same 2000
+  rockets, its `out/2026-10-21-swept-at-base/`; the library agrees with
+  the decomposition on all 824 cases it can represent): the refusal
+  applies to 69.0% of cases, but nearly all of them are refused already
+  (thickness, count, edges); it is the sole blocker in 0.01%. Totals
+  served at Mach 1.8 to 3.0 go from 5 of 2000 rockets to 4 (0.25% to
+  0.20%), over all four bands from 9 of 8000 cases to 8; in the
+  sensitivity with more four-fin, sharp-edged fins from 9 to 8 at Mach
+  1.8 to 3.0, and with fewer Haack noses unchanged at 7. W1's share of
+  cases is 96.0% (95.8% before). Sections 1 to 6 quote the run before
+  this change.
+- _The ordering, restated._ (a) argued the upper bound from Love's
+  "decrease in fin effects as Mach number increases". Fig. 35 shows that
+  decrease from Mach 1.7 to 2.56, not above: both of Love's predictions,
+  in both readings, rise from Mach 2.6 to 3.0 (A: F 1.20 to 1.23; B:
+  1.29 to 1.33). The bound holds by its margin: the free-flight factor at
+  the curve's end is 1.153, and 1.18 at Mach 3.0 with the fin effect at
+  2.56 held fixed in P_B; the upper bound, 1.3612, lies above both by the
+  carried tunnel excess (0.2083) and above both predictions. That the
+  predictions lie inside the band checks two predictions, not the bound.
+- _The step at Mach 2.56._ The served nominal falls from 1.2020 (the M
+  2.56 row) to 1.1806, about -0.0024 in the Basic Finner's body base C_D
+  (-0.55% of its total), and the low end from 1.043 to 1.

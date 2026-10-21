@@ -141,7 +141,14 @@ describe(
         afterbody: 'cylinder',
         boundaryLayerAtBase: 'turbulent',
         baseAreaRatio: 1,
-        fins: { count: 4, thicknessRatio: 0.06, section: 'other', trailingEdgeAheadOfBase: 0 },
+        fins: {
+          count: 4,
+          thicknessRatio: 0.06,
+          section: 'other',
+          tanLeadingEdge: 0,
+          tanTrailingEdge: 0,
+          trailingEdgeAheadOfBase: 0,
+        },
       });
       const c = byName('body base');
       expect([c.cd, c.low, c.high]).toEqual([b.cd, b.low, b.high]);
@@ -343,7 +350,7 @@ describe('refusals', { timeout: 60_000 }, () => {
     return [];
   };
 
-  it('swept blunt trailing edges (a swept rounded leading edge is served since 0016)', () => {
+  it('swept blunt trailing edges and, at the base, the body base (a swept rounded leading edge is served since 0016)', () => {
     const swept = trapezoidalPlanform({
       rootChord: 1,
       span: 1,
@@ -355,7 +362,29 @@ describe('refusals', { timeout: 60_000 }, () => {
         ...sharp,
         fins: { ...blunt.fins, planform: swept },
       }),
-    ).toEqual(['fin trailing-edge base: swept-trailing-edge']);
+    ).toEqual(['body base: fin-sweep', 'fin trailing-edge base: swept-trailing-edge']);
+  });
+
+  it('swept fins at the base: the body base refused, measured and bounded parts alike (0014 section 10.7); a chord ahead, served', () => {
+    // The review's probe: four 8% double wedges swept 45 deg at both edges, at the base.
+    const probe: FinnedBody = {
+      ...sharp,
+      fins: {
+        ...sharp.fins,
+        section: doubleWedge(0.08),
+        planform: trapezoidalPlanform({
+          rootChord: 1,
+          span: 1,
+          leadingEdgeSweep: 45 * deg,
+          trailingEdgeSweep: 45 * deg,
+        }),
+      },
+    };
+    expect(refusals(probe, 2.0)).toEqual(['body base: fin-sweep']);
+    expect(refusals(probe, 2.8)).toEqual(['body base: fin-sweep']);
+    const ahead = { ...probe, fins: { ...probe.fins, trailingEdgeAheadOfBase: 1 } };
+    expect(refusals(ahead, 2.0)).toEqual([]);
+    expect(refusals(ahead, 2.8)).toEqual([]);
   });
 
   it('a rounded leading edge on a section other than a single wedge', () => {

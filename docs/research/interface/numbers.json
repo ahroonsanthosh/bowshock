@@ -1,0 +1,189 @@
+{
+  "builds": {
+    "before": "cacc38e (the commit before U0)",
+    "after": "bdf60e7 (this branch)"
+  },
+  "cases": {
+    "ramp-gpu": {
+      "options": {
+        "gpu": true,
+        "readings": 1000
+      },
+      "compared": 5,
+      "endIdentical": true,
+      "identical": true,
+      "differences": [],
+      "endBefore": {
+        "iteration": 610,
+        "residual": 0.000014,
+        "computed": 1.864,
+        "exact": 1.8639,
+        "percent": 0.01,
+        "converged": true
+      },
+      "endAfter": {
+        "iteration": 610,
+        "residual": 0.000014,
+        "computed": 1.864,
+        "exact": 1.8639,
+        "percent": 0.01,
+        "converged": true
+      },
+      "errors": {
+        "before": [],
+        "after": []
+      }
+    },
+    "ramp-cpu": {
+      "options": {
+        "gpu": false,
+        "readings": 1000
+      },
+      "compared": 4,
+      "endIdentical": true,
+      "identical": true,
+      "differences": [],
+      "endBefore": {
+        "iteration": 460,
+        "residual": 1.1e-10,
+        "computed": 1.8642,
+        "exact": 1.8639,
+        "percent": 0.02,
+        "converged": true
+      },
+      "endAfter": {
+        "iteration": 460,
+        "residual": 1.1e-10,
+        "computed": 1.8642,
+        "exact": 1.8639,
+        "percent": 0.02,
+        "converged": true
+      },
+      "errors": {
+        "before": [],
+        "after": []
+      }
+    },
+    "ramp-cpu-expansion": {
+      "options": {
+        "gpu": false,
+        "angle": -10,
+        "readings": 1000
+      },
+      "compared": 3,
+      "endIdentical": true,
+      "identical": true,
+      "differences": [],
+      "endBefore": {
+        "iteration": 310,
+        "residual": 2.2e-14,
+        "computed": 0.489,
+        "exact": 0.4885,
+        "percent": 0.1,
+        "converged": true
+      },
+      "endAfter": {
+        "iteration": 310,
+        "residual": 2.2e-14,
+        "computed": 0.489,
+        "exact": 0.4885,
+        "percent": 0.1,
+        "converged": true
+      },
+      "errors": {
+        "before": [],
+        "after": []
+      }
+    },
+    "tube-cpu": {
+      "options": {
+        "gpu": false
+      },
+      "before": {
+        "time": 0.25,
+        "steps": 239,
+        "l1": 0.00299
+      },
+      "after": {
+        "time": 0.25,
+        "steps": 239,
+        "l1": 0.00299
+      },
+      "identical": true,
+      "errors": {
+        "before": [],
+        "after": []
+      }
+    },
+    "tube-cpu-3": {
+      "options": {
+        "gpu": false,
+        "problem": 2
+      },
+      "before": {
+        "time": 0.012,
+        "steps": 357,
+        "l1": 0.0884
+      },
+      "after": {
+        "time": 0.012,
+        "steps": 357,
+        "l1": 0.0884
+      },
+      "identical": true,
+      "errors": {
+        "before": [],
+        "after": []
+      }
+    },
+    "tube-gpu": {
+      "options": {
+        "gpu": true
+      },
+      "before": {
+        "time": 0.25,
+        "steps": 240,
+        "l1": 0.00299
+      },
+      "after": {
+        "time": 0.25,
+        "steps": 240,
+        "l1": 0.00299
+      },
+      "identical": true,
+      "errors": {
+        "before": [],
+        "after": []
+      }
+    },
+    "wave-drag": {
+      "what": "the first grid's wave drag of the Basic Finner's body at Mach 2, all from the after build",
+      "dragPageOldPreset": {
+        "grid": "191 x 20",
+        "iterations": 750,
+        "drag": 0.104596,
+        "errors": []
+      },
+      "dragPageNewPreset": {
+        "grid": "191 x 20",
+        "iterations": 750,
+        "drag": 0.104617,
+        "errors": []
+      },
+      "dragPageExactBody": {
+        "grid": "191 x 20",
+        "iterations": 1000,
+        "drag": 0.104617,
+        "errors": []
+      },
+      "flowPage": {
+        "grid": "191×20",
+        "iterations": 750,
+        "drag": 0.104617,
+        "errors": []
+      },
+      "sameDragOnBothPages": true,
+      "sameStepsOnBothPages": true
+    }
+  }
+}
