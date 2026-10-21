@@ -205,11 +205,14 @@ steps.
 
 Measured by `scripts/usability.mjs` before and after, at 390 and 1440 px,
 with the reasons where a measure got worse:
-`docs/research/interface/usability.md`. The ramp, the shock tube and the
-live flow fit the window; the landing is shorter (881 px at 390 px wide,
-from 1212) but still scrolls by 37 px in an 844 px window; no visible
-paragraph is over 32 words; help is one key away on every page in the
-shell (the drag page joins it in U2).
+`docs/research/interface/usability.md`, against the commit before U0
+(`cacc38e`) and against main's tip. The ramp, the shock tube and the
+live flow fit the window, and on a phone each tab of their sheets fits
+too (the live flow's Case tab: 263 px of content in its 297 px at 390 by
+844); the landing is shorter (881 px at 390 px wide, from 1212) but
+still scrolls by 37 px in an 844 px window; no visible paragraph is over
+32 words; help is one key away on every page in the shell (the drag page
+joins it in U2).
 
 ### Review fixes
 
@@ -219,18 +222,18 @@ An independent review of U0 and U1 before merging found, and these fix:
   0.5 / tan 10 deg = 2.8356409 cal); the drag page from its fields,
   rounded to 2.836 and 7.164; their wave drags differed by 2.0e-4 of the
   value at Mach 2 on the first grid, three times the band's allowance of
-  7e-5 of the value.
-  Both now take `basicFinnerBody` (`src/validation/basic-finner.ts`), and
-  the drag page's fields carry it to six decimals (2.835641 and 7.164359;
-  0011 section 3). On the first grid, 20 cells across, the drag page now
-  gives the flow page's wave drag, 0.104617 (it gave 0.104596 with
-  2.836); its fit's convergence check lands at 750 steps rather than the
-  exact body's 1000, and typed in full the drag page matches the flow
-  page in both (`docs/research/interface/numbers.json`).
+  7e-5 of the value. Both now solve the exact body to six decimals
+  (2.835641 and 7.164359; 0011 section 3): the drag page from its fields,
+  the flow page from the same lengths read back (`basicFinnerBodyAsTyped`
+  in `src/validation/basic-finner.ts`). On the first grid, 20 cells
+  across, at Mach 2, both now give 0.104617 at 750 steps (the drag page
+  gave 0.104596 with 2.836; the exact body typed in full converges at
+  1000 steps to the same six decimals): `docs/research/interface/numbers.json`.
 - **No value reads as more than it is.** The readout's running value is
   "wave Cd, this grid"; the end of a run is coloured by its outcome
   (green only for a measured band, amber for a value not verified, red
-  for a refusal or a failed GPU) and said once to screen readers (the
+  where there is no value: refused, not converged, or a failed GPU), as
+  help says it, and said once to screen readers (the
   pinned line, which changes at every check, is not a live region). A
   lost or failed GPU is reported as that, not as a refusal, and disables
   the runs; the grids solved again with more columns are reported as the
@@ -270,3 +273,34 @@ An independent review of U0 and U1 before merging found, and these fix:
   between batches and paused (24 pauses): the two outcomes are equal in
   every field, each grid's drag and steps included (45 and 43 minutes on
   software WebGPU here).
+
+### Second review
+
+A second review of these fixes found, and these fix:
+
+- **A saved PNG named the case being set up, not the case drawn.** After a
+  run at Mach 2, choosing 3 and pressing K at once saved a file named and
+  captioned Mach 3 over the Mach 2 flow, still drawn while the new run
+  set up. The name and the caption now come from the case recorded when
+  its grid was drawn (`src/app/drawn-case.ts`; the sequence is
+  `tests/app/drawn-case.test.ts`, and the interface checks repeat it on
+  the page), the colour scale from the frame the PNG draws, and K before
+  any flow is drawn says there is nothing to save yet.
+- **One body, to the last bit**, on the drag page and the flow page (the
+  first item above).
+- **Colours mean one thing.** A grid that did not converge is "Not
+  converged", as the drag page says it, not "Refused"; red is for no
+  value (refused, not converged, a failed GPU), and help says what each
+  colour means on the pages that use them.
+- **Each outcome is announced once:** the flow page's reason and the
+  shock tube's status line are no longer live regions as well.
+- **The Case tab fits a phone's sheet**: its note, which repeated help,
+  is gone.
+- **Failures are named first time:** a flow view that cannot be set up
+  leaves a failed state; a GPU error waits for the device's loss before
+  it is named; one Esc listener closes menus, in the top bar.
+- **The records:** every screenshot taken again from the final build;
+  the numbers check compares the ramp's converged reading and names the
+  builds it compares; usability is measured against main's tip as well
+  as the commit before U0, with the words a tab or disclosure away
+  counted apart from those removed.
