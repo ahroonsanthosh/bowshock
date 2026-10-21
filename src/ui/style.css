@@ -376,8 +376,14 @@ body.app {
   height: 100%;
   display: block;
 }
+/*
+ * The view not shown (3D or side) keeps its box, so that it keeps its size
+ * and its last frame and shows them at once when switched to; it is not
+ * seen, takes no pointer and is out of the accessibility tree.
+ */
 .viewport canvas[hidden] {
-  display: none;
+  display: block;
+  visibility: hidden;
 }
 .viewport canvas:focus-visible {
   outline-offset: -3px;
@@ -855,9 +861,13 @@ body.app.app--wide-panels {
   display: flex;
   gap: 8px;
 }
-.field__pair input {
+.field__pair input,
+.field__pair select {
   flex: 1;
   min-width: 0;
+}
+.field__pair .button {
+  white-space: nowrap;
 }
 .panel .scope {
   color: var(--muted);

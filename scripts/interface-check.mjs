@@ -68,22 +68,27 @@ const PAGES = [
           (await readoutValue(page, 'cd')) !== '',
         900,
       ),
+    // The 3D view opens; V switches to the side view (its fields on 1 to 5) and back.
     shots: [
-      ['schlieren', ['1']],
+      ['slice', ['2']],
+      ['side', ['2', 'v']],
       ['mach', ['2']],
       ['glow', ['5']],
+      ['3d', ['v']],
     ],
     keys: [
+      { press: 'v', expect: { pressed: 'Side' } },
       { press: '2', expect: { pressed: 'Mach' } },
       { press: '5', expect: { pressed: 'Glow' } },
       { press: 'g', expect: { pressed: 'Grid' } },
       { press: 'g', expect: { notPressed: 'Grid' } },
+      { press: 'v', expect: { pressed: '3D' } },
       { press: ' ', expect: { text: ['.readout [data-id="state"] .readout__value', 'Paused'] } },
       { press: ' ', expect: { text: ['.readout [data-id="state"] .readout__value', 'Solving'] } },
       { press: 'h', expect: 'dialog-open' },
     ],
-    // 2 in the focused preset select shows Mach, and leaves the preset.
-    select: { focus: '#preset', press: '2', pressed: 'Mach' },
+    // V in the focused preset select shows the side view, and leaves the preset.
+    select: { focus: '#preset', press: 'v', pressed: 'Side' },
   },
   {
     id: 'about',

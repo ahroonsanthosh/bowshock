@@ -493,8 +493,8 @@ export class Builder {
     this.refreshers.push(() => {
       const from = this.current.flight.from;
       note.textContent =
-        `${from === undefined ? 'As set here' : `From ${from}`}. The curve runs from Mach 1.0 ` +
-        'to 3.0 whatever this is, and marks this Mach number; the altitude sets the air.';
+        `Where these come from: ${from ?? 'set here'}. The curve runs from Mach 1.0 to 3.0 ` +
+        'whatever this is, and marks this Mach number; the altitude sets the air.';
     });
     return note;
   }

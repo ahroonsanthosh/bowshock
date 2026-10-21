@@ -1261,7 +1261,6 @@ async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
     // Pointer and wheel only: the keys are the page's one key map's (scene-keys.ts).
     render3d.attachControls(made, canvas3d, { keys: false });
     new ResizeObserver(() => {
-      if (canvas3d.hidden) return;
       resize();
       fitScene();
       made.requestDraw();

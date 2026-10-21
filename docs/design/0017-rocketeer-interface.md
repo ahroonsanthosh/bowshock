@@ -1,12 +1,12 @@
 # 0017: The rocketeer's interface (plan)
 
-- **Status:** Plan, for the owner's review. Nothing here changes a number:
-  the drag logic and the libraries (`src/app/total-drag.ts`'s
-  computations, `src/total`, `src/base`, `src/fins`, `src/friction`,
-  `src/analysis`, `src/engine*`, `src/verification`) are called, never
-  changed, and every status, reason and text shown comes from what they
-  return. Committed with it: the rocket model, `src/rocket/design.ts`
-  (section 4.1), so that the OpenRocket importer can map into it.
+- **Status:** Built, on the interface branch, for the owner's review; this
+  record is the plan, updated with what was built and the decisions taken
+  on the way (section 14). Nothing here changes a number: the drag logic
+  and the libraries (`src/app/total-drag.ts`'s computations, `src/total`,
+  `src/base`, `src/fins`, `src/friction`, `src/analysis`, `src/engine*`,
+  `src/verification`) are called, never changed, and every status, reason
+  and text shown comes from what they return.
 - **Date:** 2026-10-21
 - **Owner's direction (2026-10-21):** accuracy, then usability, then looks.
   One page, full width: the rocket builder on the left, the airflow filling
@@ -110,6 +110,9 @@ At 390 by 844 (phones, below 700 px, the 0012 sheet):
 | `src/ui/builder.ts`                       | The builder panel: fields, units toggle (remembered), nose and edge pictures.                                                                                                                                       | yes |
 | `src/ui/curve-chart.ts`                   | The chart (SVG) and the table: bands, status marks, the "no number" row.                                                                                                                                            | yes |
 | `src/app/rocket.ts`, `index.html`         | The page: the shell of 0012, the builder, the scene, the result; the import flow.                                                                                                                                   | yes |
+| `src/rocket/scene-rocket.ts`              | The 3D scene's rocket from the same geometry (section 6.1).                                                                                                                                                         | no  |
+| `src/app/scene3d.ts`, `scene-keys.ts`     | The 3D scene's loader and legend; the app's one key map, the 3D view's keys and menu items (section 6.1).                                                                                                           | no  |
+| `src/app/import-summary.ts`               | What an OpenRocket import took, noted and ignored, for the page (with `src/import/`, 0018).                                                                                                                         | no  |
 | `src/render3d/` (another agent)           | The 3D scene (section 6).                                                                                                                                                                                           | yes |
 | `src/ui/flow-view.ts`, `src/render/` (U1) | The 2D side view, secondary (section 6.3).                                                                                                                                                                          | yes |
 
@@ -131,9 +134,14 @@ that nothing is dropped on the way in: a nose (`NoseShape` of
 front to back (tubes and transitions), fin sets (trapezoidal, elliptical or
 freeform; thickness; a section: flat with each edge square, rounded or
 bevelled, a wedge, a diamond, or OpenRocket's airfoil; position, rotation,
-cant, fillets), other outside parts (lugs, rail buttons, pods), the flight
-(highest Mach number, altitude), notes for what the source held that the
-model has no place for, and the source (preset, .ork, typed).
+cant, fillets), other outside parts (lugs, rail buttons, pods, each with
+its size, front and roll where the source gives them), the flight (the
+highest Mach number it flies to, the altitude, and where these came from:
+an OpenRocket file's simulation, the preset's figure, or as typed), notes
+for what the source held that the model has no place for, and the source
+(preset, .ork, typed). A transition may be `clipped`, OpenRocket's default
+profile for the ellipsoid, power and Haack shapes (the part of a nose of
+the larger diameter between the two diameters), drawn so.
 
 ### 4.2 The adapter: what maps, what is flagged
 
@@ -145,22 +153,21 @@ gets no number ("Not modelled", section 5). Tests: on the Basic Finner the
 form equals the drag page's `formOf` for the same values field for field,
 and every row below has its case.
 
-| The design has                                  | Maps to                                                                                                        | Or is flagged because                                                                                                      |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| a nose, then tubes of the nose's diameter       | `body`: the nose, one cylinder of their summed length                                                          |                                                                                                                            |
-| a transition, a tube of another diameter        |                                                                                                                | the logic takes one diameter to a flat base (a boat-tail is also refused by `src/base`, B2)                                |
-| one trapezoidal fin set (rectangular as a case) | `planform`: rectangular, or trapezoidal with the leading-edge sweep atan(sweep / span) and the trailing edge's | more than one fin set; elliptical or freeform fins (no planform for them)                                                  |
-| flat fin, both edges bevelled                   | `hexagonal`, the bevels as fractions of the root chord                                                         |                                                                                                                            |
-| flat fin, rounded leading, square trailing edge | `single-wedge`: the trailing edge the fin's thickness, a leading-edge radius of half of it (the same shape)    | (the logic then refuses it itself, F3: a rounded wedge needs r < h)                                                        |
-| wedge (the Basic Finner's)                      | `single-wedge`, its leading-edge radius                                                                        |                                                                                                                            |
-| diamond                                         | `double-wedge`, its ridge                                                                                      |                                                                                                                            |
-| a square leading edge; a rounded trailing edge  |                                                                                                                | no section form for them (0014, F1 and F2)                                                                                 |
-| bevelled leading, square trailing edge          |                                                                                                                | `src/fins` has it but `TotalDragForm` does not (0014, F12): a change to the logic's form, not the interface's              |
-| an airfoil section                              |                                                                                                                | no section form for it                                                                                                     |
-| a tapered fin of constant thickness             | (see open question 1)                                                                                          | the logic's section is the same in chord units along the span, so its fin thins toward the tip where the real one does not |
-| cant, fillets, launch lugs, rail buttons, pods  |                                                                                                                | not represented by `src/total` (see open question 2)                                                                       |
-| fins at a position                              | `trailingEdgeAheadOfBase` = base station minus (root leading edge plus root chord)                             | fins not on the last tube                                                                                                  |
-| flight: altitude; each Mach number of the curve | Reynolds number and temperature by `flightConditionOf`, the diameter in mm                                     |                                                                                                                            |
+| The design has                                        | Maps to                                                                                                                      | Or is flagged because                                                                                                        |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| a nose, then tubes of the nose's diameter             | `body`: the nose, one cylinder of their summed length                                                                        |                                                                                                                              |
+| a transition (clipped or not), a tube of another size |                                                                                                                              | the logic takes one diameter to a flat base (a boat-tail is also refused by `src/base`, B2)                                  |
+| one trapezoidal fin set (rectangular as a case)       | `planform`: rectangular, or trapezoidal with the leading-edge sweep atan(sweep / span) and the trailing edge's               | more than one fin set; elliptical or freeform fins (no planform for them); no fins                                           |
+| flat fin, neither edge bevelled, any planform         | `flat-plate` (main since `c223856`): the thickness absolute (in calibres), each edge square or rounded (a full round)        | (the logic then serves or refuses each edge itself: a square leading edge, a rounded trailing edge, flat plates at the base) |
+| flat fin, both edges bevelled, constant chord         | `hexagonal`, the bevels as fractions of the root chord                                                                       | tapered: the section in chord units would thin toward the tip                                                                |
+| bevelled leading, square trailing edge                |                                                                                                                              | `src/fins` has it but `TotalDragForm` does not (0014, F12): a change for the logic's agents                                  |
+| other pairs of a bevel and a square or rounded edge   |                                                                                                                              | no section form for them                                                                                                     |
+| wedge (the Basic Finner's), constant chord            | `single-wedge`, its leading-edge radius                                                                                      | tapered, as for bevels                                                                                                       |
+| diamond, constant chord                               | `double-wedge`, its ridge                                                                                                    | tapered, as for bevels                                                                                                       |
+| an airfoil section                                    |                                                                                                                              | no section form for it                                                                                                       |
+| launch lugs, rail buttons, pods, fillets, cant        | asked first ("Compute without it"); once chosen, the form without them, every number labelled "without the launch lug"       | (never dropped silently, never given a guessed allowance)                                                                    |
+| fins at a position                                    | `trailingEdgeAheadOfBase` = base station minus (root leading edge plus root chord), within 1e-9 m of the base taken as at it |                                                                                                                              |
+| flight: altitude; each Mach number of the curve       | Reynolds number and temperature by `flightConditionOf`, the diameter in mm                                                   |                                                                                                                              |
 
 ## 5. Status words
 
@@ -168,17 +175,22 @@ Each point shows one word and one sentence, beside its colour and mark;
 Details shows the logic's own text, word for word (the claim, every
 reason with its component and type, the class conditions, the notes, the
 component table). The wording below must say the same as the logic's
-claim, no more and no less; the word "validated" is the logic's alone and
-appears only inside its own text in Details.
+claim, no more and no less; that word of the logic's for a tested total
+is its alone, and appears only inside its own text in Details.
 
 **Points with a number** (`totalDragView` kind `total`):
 
-| Logic                                                       | Word                    | Sentence                                                                                                                                                                         | Mark            |
-| ----------------------------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| claim `validated` (`VALIDATED_CLAIM`)                       | Inside the tested class | This rocket and speed lie inside the one class whose total drag passed a test against flight measurements it was not tuned on (the Basic Finner); that test's tolerance is wide. | green, ●        |
-| claim `estimate` (`ESTIMATE_CLAIM`)                         | Estimate                | Each part is computed inside its own band's range, but no measurement of a whole rocket like this checks the total, and the parts' bands are estimates here.                     | amber, ◆        |
-| "bounded, not measured" (to come with fig. 35's correction) | Bounded, not measured   | Worded from the logic's text when it lands; until then the build fails on the unworded kind.                                                                                     | blue, ■         |
-| our own: the nose still solving                             | Provisional             | Not finished: the nose is solved on grid k of n; no band yet.                                                                                                                    | grey, ○, no bar |
+| Logic                                                               | Word                   | Sentence                                                                                                                                                                         | Mark            |
+| ------------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| claim `estimate`, text `ESTIMATE_CLAIM` (outside the class)         | Estimate               | Each part is computed inside its own band's range, but no measurement of a whole rocket like this checks the total, and the parts' bands are estimates here.                     | amber, ◆        |
+| claim `estimate`, text `CLASS_CLAIM` (inside the class, suspended)  | Estimate, tested class | An estimate: this rocket and speed lie inside the one class tested in free flight (the Basic Finner), but that test's claim is suspended until a corrected part is tested again. | amber, ◆        |
+| claim `estimate`, `BOUNDED_REASON` among its reasons (above M 2.56) | Estimate, bounded      | An estimate with one part bounded, not measured: the fins' effect on the base drag, whose band runs from no effect to its value at the last speed measured.                      | blue, ■         |
+| our own: the nose still solving                                     | Provisional            | Not finished: the nose is solved on grid k of n; no band yet.                                                                                                                    | grey, ○, no bar |
+
+The logic makes one kind of claim today, an estimate: the Basic Finner's
+tested claim is suspended (design record 0010 section 11.7), and the words
+follow its text and reasons. A new kind fails the build
+(`src/app/status-words.ts`) until it is worded here and there.
 
 **Points without a number** (kind `refused`, the nose solve's outcomes,
 and the adapter's flags): the word is **No number**, the mark a red ✕ in
@@ -195,6 +207,10 @@ of them in Details), then what the user could change.
 | `fins-near-base`                                  | fins ending less than a root chord ahead of the base: no measurement of the base drag with them there | the fins' trailing edges at the base, or a root chord or more ahead of it |
 | `fin-count`                                       | with fins at the base, the base drag is measured with four fins only                                  | four fins, or fins a root chord or more ahead of the base                 |
 | `fin-thickness`                                   | with fins at the base, the base drag is measured for fins 5% to 10% as thick as their root chord      | that thickness, or fins a root chord or more ahead of the base            |
+| `fin-sweep`                                       | with fins at the base, the base drag is measured with unswept fins only                               | unswept fins of constant chord, or fins a root chord or more ahead        |
+| `flat-plate-fins` (main since `e42d5d4`)          | flat plates at the base lower the base drag by up to 15% in the one measurement of them, not covered  | fins a root chord or more ahead, or wedge or bevelled fins at the base    |
+| `rounded-trailing-edge`                           | a rounded trailing edge's drag is not shown to be below a square edge's, so it cannot be bounded yet  | square or bevelled trailing edges                                         |
+| `square-leading-edge`                             | a square-cut leading edge's drag cannot yet be bounded from measurements                              | rounded or bevelled leading edges                                         |
 | `swept-trailing-edge`                             | a swept square trailing edge's drag is not measured                                                   | an unswept trailing edge, or a bevelled one                               |
 | `thick-layer`                                     | the square trailing edge is thin against the air's boundary layer there; not measured                 | a thicker trailing edge, or a bevelled one                                |
 | `beyond-read-range`, `input`, `planform`          | the logic's message, as it says it                                                                    | from the message                                                          |
@@ -203,7 +219,7 @@ of them in Details), then what the user could change.
 | `compression-corner`, `expansion-limit`           | the fin's section has a corner the method does not model                                              | another section                                                           |
 | `reflected-wave`                                  | a wave from the leading edge's shock could land on the fin; not modelled                              | a longer bevel or a thinner fin                                           |
 | `swept-leading-edge`                              | a swept rounded leading edge's drag is not measured                                                   | an unswept leading edge, or a bevelled one                                |
-| `leading-edge-range`                              | a rounded leading edge's drag is measured only at Mach 1.49 to 3.0 and edge sizes within its data     | a bevelled leading edge                                                   |
+| `leading-edge-range`                              | measured only where the Mach number across the edge is 1.0 to 3.0, and for edge sizes in its data     | a bevelled leading edge                                                   |
 | `leading-edge-geometry`                           | a rounded leading edge is modelled only on a wedge-shaped fin, not on this one                        | a bevelled leading edge                                                   |
 | `not-verified` (the nose: no band)                | the airflow round the nose did not settle to a measured accuracy on the grids solved                  | the finer grid (320 cells across), where 160 was used                     |
 | the nose solve refused (`invalid`, a thrown case) | the airflow solver does not serve this nose at this speed: its reason                                 | from the reason (a more slender nose, a higher speed)                     |
@@ -220,22 +236,36 @@ shows what the logic returns there (today: refused, with its reasons).
 
 ### 6.1 What the page hands the 3D scene
 
-The page owns the rocket, the curve and the GPU device; the scene draws.
-Proposed to the `src/render3d/` agent (to agree before either side
-builds on it):
+The page owns the rocket, the curve and the GPU device; the scene
+(`src/render3d/`, merged from its branch) draws. As built
+(`src/app/rocket.ts`, `src/app/scene3d.ts`, `src/app/scene-keys.ts`):
 
-| Call                         | What the page gives                                                                                                                                                                                |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `create(device, canvas)`     | the page's GPU device (the one the solver uses: buffers are shared, nothing is copied)                                                                                                             |
-| `setRocket(geometry)`        | `rocketGeometry(design)` of `src/rocket/geometry.ts`, in calibres (the solver's unit, body radius 0.5): the profile r(x), each fin's outline, section thickness, root station and roll angle       |
-| `setFlow(source)`            | the live fit as a `FlowSource` (`src/render/flow-renderer.ts`, from `liveFitSource`): its state buffer, the line grid's node buffers, ni and nj, gamma, the free stream, the bounds; null for none |
-| `freeze()`, `setLive(live)`  | as the 2D view's: keep drawing after the solver releases its buffers; draw continuously while it runs                                                                                              |
-| `onScale(listener)`          | the scene reports each colour channel's range and units, for the page's legend                                                                                                                     |
-| `fit(rect)`, `pngBlob(text)` | the part of the window left uncovered; a PNG with the case as its caption                                                                                                                          |
+| Call                                       | What the page gives                                                                                                                                                                                                                                                              |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FlowScene3D.create(device, canvas, ...)`  | the solver's own device (the live fit's buffers are read where they are), the presentation for the adapter, `liveDuty` = `FRAME_BUDGET` (section 6.4); loaded on its own once the GPU is up                                                                                      |
+| `setRocket(rocket)`                        | `sceneRocketOf(design)` (`src/rocket/scene-rocket.ts`): the body the solver is given and the fin set as `src/rocket/geometry.ts` draws it (outline, thickness at its own size, place, roll), equal to the logic's own for every preset; what it cannot draw is named in the note |
+| `setUnits`                                 | the free stream's temperature at the point, for speeds in m/s and temperatures in K                                                                                                                                                                                              |
+| `setFlow(liveFitSource(live))`, `freeze()` | each grid's live fit; freeze when it ends. Both views get every grid; only the view shown draws live                                                                                                                                                                             |
+| `setStatus`                                | the steps and the measured cell rate, for its PNG's readout                                                                                                                                                                                                                      |
+| `setLayers({ overlay: false })`            | the page draws its own readout, legend and notes (HTML, accessible, the same in both views); the scene's text is in its PNG                                                                                                                                                      |
+| `onScale(listener)`                        | the page's legend: the quantity, its unit and range, the free stream's value, the shells' values, the cells' extremes where the bar clips them, what black means, the hatch                                                                                                      |
+| `fit(rect)`                                | the part of the window the panels leave free, a little inset (the scene lets the shock's far reaches leave the view, never the rocket)                                                                                                                                           |
+| `pngBlob(lines)`                           | the rocket (and the parts left out), C_D, band and status; then the scene's grid, steps, Mach number, legend and notes                                                                                                                                                           |
+| `attachControls(..., { keys: false })`     | drag to turn, right or Shift drag to pan, the wheel or a pinch to zoom; the keys are the page's one map                                                                                                                                                                          |
 
-The page keeps its own HTML readout over the scene (M, grid ni x nj cells
-and grid k of n, steps, shock speed, cell rate, GPU, state) and the
-legend, so that both are accessible text and the same in 3D and 2D.
+**One key map.** The page's keys (V, Space, R, F or 0, + and -, the
+arrows, K, H) act in both views. The 3D view's (FluidX3D's: 1 rocket,
+2 slice, 3 streamlines, 4 shells, 5 shock, 6 cutaway, Z colour, T slice
+orientation, Q and E) act only while it is shown, through render3d's own
+`sceneKey`; the side view's (1 to 4 fields, 5 glow, D, G, S) only while
+it is. A binding has `when` and a help `group`, and the help lists each
+view's keys under its name; the View menu and the phone's View tab have
+a button for each. A test holds that every key has one action in either
+view. **The default look** is glowing shells of the colour quantity with
+streamlines, the shock and a cutaway (no slice), unless the owner says
+otherwise. With no airflow shown the 3D view follows the builder; when the
+rocket changes the flow is cleared, so that no view shows one rocket
+with another's flow.
 
 ### 6.2 What must be true in every view
 
@@ -256,8 +286,10 @@ V), with schlieren, Mach, Cp and density (keys 1 to 4), split, grid lines
 and the shock line. It is also the fallback where the 3D scene cannot run,
 and what the GPU tests probe. It gets the rules of 6.2 that it lacks: the
 fins drawn in projection, the region behind the base hatched and labelled
-"not simulated", the body shaded as a solid (prototyped, about 150 lines;
-the 2D glow look is dropped).
+"not simulated", the body shaded as a solid. On the owner's notes it draws
+in the 3D scene's spectrum, uniform flow black, its default the glow (the
+Mach number in colour, brightest where the density changes, key 5), with
+the brightness channel in the legend.
 
 ### 6.4 Frame pacing: what drawing live costs the solver
 
@@ -284,8 +316,10 @@ What the page does now (`src/ui/flow-view.ts`):
   frames a second.
 - A change the user makes (a field, a pan, a zoom) is drawn at once, as
   before; only the live redraws are paced.
-- Only the view shown draws live. The hidden one (3D or side) draws
-  nothing until it is shown, and keeps its last frame to show at once.
+- Only the view shown draws live. The hidden one (3D or side) keeps its
+  box and its last frame, not seen and out of the accessibility tree; it
+  draws no live frames, only once as each grid begins and ends (a few
+  frames a point), so that a switch shows a recent frame at once.
 - The 3D scene is held to the same share: the page creates it with
   `liveDuty` = `FRAME_BUDGET` (its own pacing, by its frames' measured
   cost, the same way).
@@ -315,8 +349,11 @@ scale bar of a round length in the user's units (10, 20, 50 or 100 mm, or
 
 ### 8.1 Points and order
 
-Mach 1.0 to the flight's highest Mach number (at most 3.0), every 0.2 by
-default (11 points to Mach 3.0), every 0.1 as the other choice (21). At
+Mach 1.0 to 3.0 whatever the rocket flies to, every 0.2 by default (11
+points), every 0.1 as the other choice (21). The flight's highest Mach
+number is marked on the chart and said beside it with where it came from
+(an OpenRocket file's own simulation is often subsonic: 15 of its 16
+examples fly below Mach 1). At
 the start every point is put to the logic with the nose pending
 (`totalDragView` with `{ kind: 'pending' }`): a point refused for reasons
 other than the nose is final at once, with its reasons, and costs no GPU
@@ -344,16 +381,16 @@ solver yields between batches, as on the live flow page).
 
 The work of one point at 160 cells across, the Basic Finner at Mach 2, as
 the page solves it on SwiftShader here (`docs/research/interface/timing/`):
-191 x 20 cells for 750 steps (48 s, with the page's start) and 382 x 40 for
-2 000 (432 s), measured; each grid has needed about twice the steps of the
-one before, so 764 x 80 for about 4 000 and 1528 x 160 for about 8 000
-(the third and fourth grids are being measured now). That is about 2.2e9
-cell updates, 88% of them on the finest grid; at 320 cells across, about
-1.8e10, eight times as many.
+191 x 20 cells for 750 steps (48 s, with the page's start), 382 x 40 for
+2 000 (432 s) and 764 x 80 for 3 000 (3 096 s, 52 min), measured; 1528 x
+160 had not reached its first check (every 2 000 steps) after an hour at
+55 kcell/s, about 7 h by that rate. That is about 2.2e9 cell updates a
+point, 88% of them on the finest grid; at 320 cells across, about 1.8e10,
+eight times as many.
 
 | Where                                  | Cell rate                                 | One point, 160 across | The Basic Finner's 7 solved points |
 | -------------------------------------- | ----------------------------------------- | --------------------- | ---------------------------------- |
-| SwiftShader, here (4 cores, loaded)    | 66 to 96 kcell/s, measured                | about 6 to 9 hours    | about 2 to 3 days                  |
+| SwiftShader, here (4 cores, loaded)    | 55 to 96 kcell/s, measured                | about 8 hours         | about 2 to 3 days                  |
 | A real GPU (an estimate, not measured) | 2e7 to 3e8 cell updates a second, assumed | about 10 s to 2 min   | about 1 to 14 min                  |
 
 The real-GPU row is an assumption (integrated to discrete GPUs, these
@@ -380,25 +417,29 @@ grid and the build:
 
 ```
 mach,cd,cd_low,cd_high,status,reason
-2.0,0.5501,0.4823,0.6493,estimate,"Estimate, not validated: ..."
+2.0,0.5501,0.4823,0.6493,estimate,"<the logic's claim text> Because: <its reasons>."
 1.4,,,,refused,"body base (mach-range): the base-pressure correlation's band ..."
 ```
 
 `cd_low` and `cd_high` are the model-form band rounded outward (as shown);
-`status` is the logic's kind (`validated`, `estimate`, `refused`, and the
-bounded kind when it lands); `reason` its text. A test pins the format.
+`status` is the logic's kind (`estimate` today, or `refused`, or no number
+for a point not modelled, asking about its parts, or not finished);
+`reason` the logic's claim text and its reasons, prefixed "Computed without
+..." when parts were left out. A test pins the format.
 
 ## 9. Presets
 
-| Preset                                   | What                                                                                                                                          | What the logic gives today (nose pending)                                                  |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Basic Finner (reference test rocket)     | the reference projectile whose free flights (DREV TM 9703) tested the total, 30 mm, exactly as 0011's (the body to six decimals)              | refused at Mach 1.0 to 1.6; inside the tested class at 1.8 and 2.0; estimate at 2.2 to 3.0 |
-| Example: 54 mm high-power rocket, 4 fins | tangent ogive, minimum diameter; four swept fins of constant chord (100 mm, 40 deg), 6.35 mm (1/4 in) thick, bevelled both edges, at the base | refused at 1.0 to 1.6; estimate at 1.8 to 3.0                                              |
-| Example: 98 mm rocket, 3 fins            | the commonest hobby layout: three tapered flat fins with rounded edges at the base                                                            | no number at any Mach number, with the reasons and the changes                             |
+| Preset                                   | What                                                                                                                                    | What the logic gives today (nose stand-in for the claim)                                                       |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Basic Finner (reference test rocket)     | the reference projectile whose free flights (DREV TM 9703) tested the total, 30 mm, exactly as 0011's (the body to six decimals)        | refused at Mach 1.0 to 1.6; Estimate, tested class at 1.8 and 2.0; Estimate at 2.2 and 2.4; bounded 2.6 to 3.0 |
+| Example: 54 mm high-power rocket, 4 fins | tangent ogive, minimum diameter; four rectangular fins of 1/4 in (6.35 mm) sheet, both edges bevelled over 20 mm, at the base; Mach 2.4 | refused at 1.0 to 1.6; Estimate at 1.8 to 2.4; Estimate, bounded at 2.6 to 3.0                                 |
+| Example: 98 mm rocket, 3 fins            | the commonest hobby layout: three tapered swept plates with rounded edges at the base, two rail buttons (asked about first); Mach 1.6   | no number at any Mach number (three fins at the base, a rounded trailing edge), with the reasons and changes   |
 
 Each example is labelled "Example, not a real rocket", and shows what the
 page does with a common rocket today: the second one honestly, with no
-number.
+number. The 54 mm example's fins were flat plates (a rounded leading and
+a square trailing edge) until main refused flat plates at the base
+(`e42d5d4`); bevelled sheet fins are as common, and served.
 
 ## 10. From 0012: kept, and superseded
 
@@ -410,8 +451,8 @@ D, G, S, F, K, H, Esc), the shared flow controls and nose status words
 (`13131bd`), the interface, usability and numbers checks in `scripts/`,
 and the rule of 0012 section 9. Superseded: section 3's layout (the right
 panel is the curve, the left the builder), section 5's "Fields" and
-section 2's "no rainbow colour maps" (the 3D scene's colours are the 3D
-agent's, on the owner's decision of 2026-10-21), section 7 (`/` is the
+section 2's "no rainbow colour maps" (the 3D scene's spectrum, and the
+side view's on the owner's notes of 2026-10-21), section 7 (`/` is the
 app), and phases U2 to U4 (this record's build order replaces them; U2's
 page stays as "All inputs").
 
@@ -443,8 +484,8 @@ Small commits, each tested: the model (with this plan); the adapter and
 its table; the presets; the geometry and its projection; the status words;
 the curve runner with a stand-in solver, and the CSV; the layout; the
 builder and its drawing; the chart, table and result; the side view's
-fins, hatch and shading; the 3D scene, when its API lands; the import
-button, wired to `src/import/` when it lands. Main is merged whenever it
+fins, hatch and shading; the 3D scene, merged from its branch; the import
+button, wired to `src/import/`, merged from its branch. Main is merged whenever it
 moves (merge, never rebase), and the status words follow what the logic
 returns. Before each report: tsc, eslint, prettier, the build, tests/ui,
 tests/render, tests/app, the interface check at 390 and 1440 px, the
@@ -456,13 +497,34 @@ Screenshots of the final build in `docs/research/interface/`.
 
 ## 13. Open questions for the owner
 
-1. **Tapered fins of constant thickness.** The logic's fin keeps its
-   section in chord units along the span, so it models a tapered flat fin
-   as thinning toward its tip. Recommended: flag it as not modelled (no
-   number) until the logic carries constant thickness; the alternative is
-   a number with that difference stated beside it.
-2. **Lugs, rail buttons, fillets, cant.** Not in `src/total`. Recommended:
-   no number while they are on the rocket, with "remove it to see the
-   drag without it"; the alternative is the number for the rocket without
-   them, labelled so beside the number.
-3. **The default point spacing**: 0.2 (11 points) as proposed, or 0.1.
+1. **The 3D view's default look**: glowing shells with streamlines, the
+   shock and a cutaway, as built; or with the slice (key 2).
+2. **The real-GPU timing**: an estimate until the owner reads the cell
+   rate off the readout on a real GPU (section 8.3).
+
+## 14. Decisions taken while building (2026-10-21)
+
+1. **Tapered fins of constant thickness** map to the logic's flat plates
+   (main's `c223856`, W34); combinations it cannot represent stay flagged
+   with the reason (section 4.2).
+2. **Lugs, rail buttons, fillets, cant**: a plain note naming each part
+   with its size, and one button, "Compute without it", which the user
+   must press; every number is then labelled "without the launch lug" (or
+   whichever parts) on the curve, the table, the CSV and the PNG. Never
+   dropped silently; no guessed allowance.
+3. **Points**: every 0.2 in Mach number by default (11), 0.1 the other
+   choice; the curve always Mach 1.0 to 3.0, the flight marked on it.
+4. **The 3D hand-off** as section 6.1; the side view the fallback (key V).
+5. **Timing**: the page's own measured time a point; the real-GPU figure
+   labelled an estimate; the SwiftShader hours not shown as typical.
+6. **F12** (a bevelled leading edge with a square trailing edge) goes to
+   the logic's agents: `src/app/total-drag.ts` is not changed here.
+7. **Lengths** shown to 0.01 mm (0.001 in); a preset's exact value kept
+   until the field is edited, the calibres beside it to six decimals
+   (2.835641 cal), tested.
+8. **Frame pacing** (section 6.4), the same budget for both views.
+9. **The importer** (0018): each other part's size, front and roll held in
+   the model; transitions' clipping held and drawn; fins at the base at
+   the base; a rounded edge shown in the builder as a full round with its
+   radius, so that the user can correct it; the flight's source said
+   beside it.
