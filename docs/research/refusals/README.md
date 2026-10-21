@@ -19,6 +19,12 @@ by the solver or the page.
 | `out/impact-before-w1.out`, `out/impact-before-w1.json` | The run as 0014 quotes it, before the rebuilt factor (kept unchanged) |
 | `out/impact-after-w1.out`, `out/impact-after-w1.json` | The run after W1 alone (0015 section 8), before W1b and W2; `impact.out` now has both |
 | `out/2026-10-21-swept-at-base/` | Main's run with the present factor alone after it began refusing swept fins at the base (2026-10-21; 0014 section 10.7, amendment d), `evaluate.ts` then mirroring it (`finsAtBaseSwept`). On this branch the library sends those fins to the rebuilt factor, and `out/impact.out` is that run |
+| `out/impact-w34.out`, `out/impact-w34.json` | The same run after the fin edges of flat plates (design record 0016, sections 1 to 10): `evaluate.ts` with `EDGES=w34` mirrors that code |
+| `out/impact-w4e.out`, `out/impact-w4e.json` | The same run after 0016 section 11 (a plate's rounded leading edge from normal Mach number 1.0): `EDGES=w4e` before 0016 section 16 |
+| `out/impact-review.out`, `out/impact-review.json` | The same run after 0016 section 16 (fins at the base take a plate's largest t/c, at the tip): `evaluate.ts`'s default, `EDGES=w4e` |
+| `out/2026-10-21-w34-merge/` | The same run with the fin edges of flat plates (0016, through section 16) merged with the swept-fins refusal (0016 section 17): `evaluate.ts`'s default, `EDGES=w4e` |
+| `out/2026-10-21-w34-rereview/` | The same run after 0016 section 18 (fins at the base thinner than the factor's 5% data served, extended; only thicker than 10% refused): `evaluate.ts`'s default, `EDGES=w4e` |
+| | Those runs are main's, with `evaluate.ts` mirroring the present factor alone (`EDGES`); on this branch `evaluate.ts` asks the library, which routes what the present factor refuses to the rebuilt one, and `out/impact.out` is that run |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
@@ -35,7 +41,14 @@ nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
 `N_ROCKETS` (default 2000, the quoted run) and `CROSS_CHECK` (rockets
 whose cases are checked against `src/total`, default 300) set the size.
 It writes `out/impact.out` and `out/impact.json`, or, with `OUT_DIR`
-(relative to the repository root), into that directory. On a loaded four-core
+(relative to the repository root), into that directory; `OUT_NAME=impact-w34`
+writes `out/impact-w34.out` and `.json` instead (0016's run), and
+`OUT_NAME=impact-w4e` 0016 section 11's and `OUT_NAME=impact-review` section 16's.
+`evaluate.ts` mirrors the refusals of the present code (flat plates,
+swept rounded edges on the normal components from M_n 1.0 on a plate,
+thick layers and tapered trailing edges); `EDGES=w34` gives 0016's
+sections 1 to 10 (M_n from 1.49) and `EDGES=before` the decomposition
+0014 measured, both without the cross-check, which needs that code. On a loaded four-core
 machine it takes about five minutes; the slow part is the fitted
 solver's tip test (`sharpFitProblem`, 0.3 s a call), called only where
 the tip cone's Taylor-Maccoll solution does not already decide it, and

@@ -29,8 +29,10 @@ export type BaseRefusalReason =
   | 'swept-trailing-edge'
   /** A laminar layer at a blunt trailing edge. */
   | 'laminar-trailing-edge'
-  /** A boundary layer thick against the trailing edge. */
+  /** A boundary layer thick against the trailing edge, beyond the data. */
   | 'thick-layer'
+  /** A rounded trailing edge: bounded, but the ordering of its bounds is not shown (0016). */
+  | 'rounded-trailing-edge'
   /** An input that needs a curve more than one read interval beyond its readings. */
   | 'beyond-read-range'
   /** A geometric input out of range. */

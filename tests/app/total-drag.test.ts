@@ -599,7 +599,9 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       const v = totalDragView(form, exactNose(form));
       expect(v.kind).toBe('refused');
       const r = reasons(v);
-      expect(r).toContain('fin leading edges: leading-edge-range');
+      // The leading edges' Reynolds number refuses them to M 1.25; at 1.33 they are served (0016 section 11).
+      if (s.mach < 1.3) expect(r).toContain('fin leading edges: leading-edge-range');
+      else expect(r).not.toContain('fin leading edges: leading-edge-range');
       // The base below Mach 1.5 is served (W2), but not with the Basic Finner's wedges at it (0015).
       expect(r).toContain('body base: fin-trailing-edge');
       if (s.mach < 1.2) expect(r).toContain('fin wave drag: detached-shock');
@@ -728,7 +730,6 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
         ),
       ),
     ).toEqual([
-      'fin leading edges: swept-leading-edge',
       // The fins end at the base: the present factor refuses swept fins (0014 section 10.7), and the
       // rebuilt factor (0015) refuses the wedges' blunt trailing edge.
       'body base: fin-trailing-edge',
@@ -756,8 +757,10 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
     const r = reasons(
       totalDragView({ ...f, planform: { kind: 'clipped-delta', taperRatio: 0.5 } }, nose),
     );
-    expect(r).toContain('fin leading edges: leading-edge-geometry');
-    expect(r).toContain('fin trailing-edge base: input');
+    // Since 0016 the blunt trailing edge of fins of varying chord is integrated along the span;
+    // the swept leading edge, the fins ending at the base, is refused by the present factor (0014
+    // 10.7), and the rebuilt factor (0015) refuses the single wedges' blunt trailing edge.
+    expect(r).toEqual(['fin leading edges: leading-edge-geometry', 'body base: fin-trailing-edge']);
   });
 
   it('inputs the page cannot take, all listed', () => {
@@ -866,5 +869,69 @@ describe('a bounded fins-on-base factor is named in the claim (0014 section 10.2
     expect(boundedReasons(body(2.8, three))).toEqual([W1_BOUNDED_REASON]);
     expect(boundedReasons(body(2.4, three))).toEqual([]);
     expect(boundedReasons(undefined)).toEqual([]);
+  });
+});
+
+describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
+  const f = basicFinnerForm(2.8, 1.6e7);
+  const plate = (leadingEdge: 'rounded' | 'square', trailingEdge: 'square' | 'rounded') => ({
+    ...f,
+    section: { kind: 'flat-plate' as const, thickness: 0.05, leadingEdge, trailingEdge },
+    planform: { kind: 'clipped-delta' as const, taperRatio: 0.4 },
+    rootChord: 1.5,
+    trailingEdgeAheadOfBase: 2,
+  });
+
+  it('a plate is a flat plate of the thickness asked; the leading-edge radius is not used', () => {
+    const c = configurationOf({ ...plate('rounded', 'square'), leadingEdgeRadius: Number.NaN });
+    if (c.kind !== 'ok') throw new Error(JSON.stringify(c.refusals));
+    expect(c.value.config.fins.section).toEqual({
+      kind: 'flat-plate',
+      thickness: 0.05,
+      leadingEdge: 'rounded',
+      trailingEdge: 'square',
+    });
+    expect(c.value.config.fins.leadingEdgeRadius).toBe(0);
+    expect(basicFinnerClass(plate('rounded', 'square')).outside).toContain(
+      'the fin section is not a single wedge with a blunt trailing edge',
+    );
+    // The hidden radius field is not checked on a plate (0016 section 16): no "NaN cal".
+    const outside = basicFinnerClass({
+      ...plate('rounded', 'square'),
+      leadingEdgeRadius: Number.NaN,
+    }).outside;
+    expect(outside.some((x) => x.includes('leading-edge radius'))).toBe(false);
+  });
+
+  it('a rounded leading edge and a square trailing edge: a total, an estimate', () => {
+    const form = plate('rounded', 'square');
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'total') throw new Error(JSON.stringify(v));
+    expect(v.claim.kind).toBe('estimate');
+    expect(v.total.components.find((c) => c.name === 'fin wave drag')!.cd).toBe(0);
+  });
+
+  it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {
+    const a = plate('square', 'square');
+    expect(reasons(totalDragView(a, exactNose(a)))).toEqual([
+      'fin leading edges: square-leading-edge',
+    ]);
+    const b = plate('rounded', 'rounded');
+    expect(reasons(totalDragView(b, exactNose(b)))).toEqual([
+      'fin trailing-edge base: rounded-trailing-edge',
+    ]);
+  });
+
+  it('a negative or missing plate thickness is an input refusal', () => {
+    const c = configurationOf({
+      ...plate('rounded', 'square'),
+      section: {
+        kind: 'flat-plate',
+        thickness: -1,
+        leadingEdge: 'rounded',
+        trailingEdge: 'square',
+      },
+    });
+    expect(c.kind).toBe('refused');
   });
 });

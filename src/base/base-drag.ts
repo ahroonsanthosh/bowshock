@@ -69,6 +69,39 @@ export interface BaseFins extends FinsAtBase {
    * refuses; without them the present factor's refusal stands.
    */
   readonly nearBase?: Omit<FinsNearBase, 'count' | 'trailingEdgeAheadOfBase'>;
+  /**
+   * The thinnest station's thickness over chord and the share of the span
+   * thinner than the factor's thinnest data (a flat plate of varying chord;
+   * 0016 section 18). Absent: every station has thicknessRatio.
+   */
+  readonly thinnest?: { readonly thicknessRatio: number; readonly spanShareBelow: number };
+}
+
+/** The thinnest fins the fins-on-base factor's data hold: 5% thick (TN 2360, TN 3819 fig. 35). */
+export const FINS_ON_BASE_THINNEST_DATA = 0.05;
+
+/**
+ * Fins thinner than the factor's 5% data at some station, none thicker than
+ * 10% (0016 section 18, the coordinator's rule): the factor at 5%, its low
+ * end taken as no fin effect (F = 1), the physical limit, since thinner fins
+ * lower the base pressure less, its high end kept (it rests on the 10% fins
+ * and the tunnel data), the nominal the midpoint.
+ */
+function extendedBelowThinnestData(
+  f: FinsOnBaseFactor,
+  thicknessRatio: number,
+  spanShare: number,
+): FinsOnBaseFactor {
+  return {
+    ...f,
+    low: 1,
+    nominal: 0.5 * (1 + f.high),
+    label:
+      `${f.label}; extended below the data's 5% thickness: t/c down to ` +
+      `${thicknessRatio.toFixed(3)} over ${(100 * spanShare).toFixed(0)}% of the span, the low ` +
+      'end taken as no fin effect (F = 1; thinner fins lower the base pressure less), the high ' +
+      "end the factor's own, which rests on the 10% fins and the tunnel data (0016)",
+  };
 }
 
 /** Which fins-on-base factor a body base used: the present one (0010 section 1.3) or the rebuilt one (0015). */
@@ -182,8 +215,27 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
           )
         );
       }
+      // A plate of one thickness on a tapered planform (`thinnest`): its thinnest station is the same section
+      // scaled in thickness, and the rebuilt factor brackets every station (0015 section 3.6). It does not
+      // take the present factor's thin-plate rule (low end F = 1): its members run from the zero member,
+      // whose low end is measured relief below F = 1, to t/c 0.10, so a thinner station lies inside its
+      // data and only moves the lower member down to the zero member (flat plates: RM L52E06's relief).
+      const scale =
+        fins.thinnest !== undefined && fins.thicknessRatio > 0
+          ? fins.thinnest.thicknessRatio / fins.thicknessRatio
+          : 1;
+      const spanSections =
+        near.spanSections ??
+        (scale < 1 - 1e-12
+          ? [{ ...near.section, halfThickness: near.section.halfThickness.map((h) => h * scale) }]
+          : undefined);
       try {
-        return finsOnBaseFactorW1(mach, { ...near, count: fins.count, trailingEdgeAheadOfBase: x });
+        return finsOnBaseFactorW1(mach, {
+          ...near,
+          ...(spanSections === undefined ? {} : { spanSections }),
+          count: fins.count,
+          trailingEdgeAheadOfBase: x,
+        });
       } catch (e) {
         if (!(e instanceof BaseRefusal) || presentRefusal === undefined) throw e;
         throw new BaseRefusal(
@@ -194,7 +246,19 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     };
     if (x === 0) {
       try {
-        factor = finsOnBaseFactor(mach, fins);
+        // Thinner than the present factor's 5% data at some station, none thicker than 10% (0016
+        // section 18): the factor at 5% with its low end F = 1.
+        const thinnest = fins.thinnest?.thicknessRatio ?? fins.thicknessRatio;
+        const thin = thinnest < FINS_ON_BASE_THINNEST_DATA && fins.thicknessRatio <= 0.1;
+        factor = finsOnBaseFactor(
+          mach,
+          thin
+            ? { ...fins, thicknessRatio: Math.max(fins.thicknessRatio, FINS_ON_BASE_THINNEST_DATA) }
+            : fins,
+        );
+        if (thin) {
+          factor = extendedBelowThinnestData(factor, thinnest, fins.thinnest?.spanShareBelow ?? 1);
+        }
         source = 'present';
         // Bounded, not measured: the gap between the bounds in C_D beside it (0014 section 10.2).
         labels.push(`${factor.label}${gapOf(factor)}`);

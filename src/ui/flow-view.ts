@@ -439,8 +439,10 @@ export class FlowView {
     // RANGE_INTERVAL while live.
     if (asked || time - this.lastRange >= RANGE_INTERVAL || this.lastScale === '') {
       this.lastRange = time;
+      // A view destroyed while the read is in flight aborts its mapping; the
+      // legend no longer needs the range then.
       void this.readScale().catch((error: unknown) => {
-        if (!this.lost) throw error;
+        if (!this.lost && !this.destroyed) throw error;
       });
     }
   }

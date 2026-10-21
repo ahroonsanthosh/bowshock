@@ -458,6 +458,51 @@ to F7.
   wedges, until a planar blunt solve measures it (0008 B4).
 - _Stays refused._ The transonic normal-Mach gap unless bridged; Re_D
   outside 6.7e3 to 1e6.
+- _Amended 2026-10-20 (0016 section 11), accepted by the coordinator
+  before any hold-out run._ (d) on flat plates from normal Mach number
+  1.0: NASA CR-149372 (Macha) measures the cylinder's front side at M 1.0,
+  1.1 and 1.2 (figs. 8b and 5), where the normal flow is sonic or faster
+  and the plate's nose sees the cylinder's flow. Between its 1.2 and TN
+  2960's 1.49 the ratios either side do not agree (0.90 and 0.99), so the
+  condition above fails; the gap is bridged instead by the
+  bracketing-node band, from the lower node's lowest reading to the upper
+  node's highest, each with its error, on the measured monotone rise of
+  the ratio at every node pair (0.77, 0.835, 0.90, 0.994, 1.035, 1.049 at
+  M 1.0 to 2.9) and its physical approach to modified Newtonian as the
+  normal Mach number rises, and the term there is labelled "an analogy,
+  interpolated across an unmeasured Mach range". Below M_n 1.49 the sweep
+  allowance, extrapolated from M_n 3.4, is twice its measured deviation
+  from 1. Below M_n 1.0 the gap stays refused.
+- _Amended 2026-10-21 (0016 sections 12 and 16)._ The amendment above
+  holds for rounded wedges too, the present term's own section (0016
+  section 12): up to its tangent points a wedge's nose sees the cylinder's
+  flow from M_n 1.0 as a plate's does, and the Basic Finner's gated shots
+  are bit for bit unchanged. The sweep allowance on every swept edge
+  served (all at M_n 3.0 or less, below the checks' 3.37) is extrapolated
+  in normal Mach number and contains every yawed datum at served sweeps
+  and normal Mach numbers: 0.95 to 1.21 (0.95 to 1.22 from 14.3 deg of sweep
+  up, tapered below, since 0016 sections 18 and 19), RM A55H31's own tests at 45 and
+  60 deg counted (the report's suspicion of three-dimensional flow, from
+  the 1 in model in the 3 in stream, is a finite-length effect a fin's
+  edge may share). TN 3861 figs. 15 and 16, read twice (with fig. 17, read
+  once), hold one crossflow point at a served sweep, an estimate inside
+  that allowance. No yawed datum lies below M_n 1.95 at a served sweep
+  (r at the tests' stated yaws, 0016 section 18).
+- _Amended 2026-10-21, the coordinator's decision under the owner's rule
+  (serve rather than refuse wherever an honest band can be given, and say
+  plainly what it rests on; 0016 section 16)._ Swept edges at M_n 1.0 to
+  1.95, where no yawed datum lies at a served sweep, are served with the
+  sweep allowance that contains every yawed datum, 0.95 to 1.22 from 14.3
+  deg of sweep up (0016 sections 18 and 19), labelled
+  "the sweep allowance extrapolated in normal Mach number" and "no yawed
+  datum below M_n 1.95 at a served sweep". What would replace the
+  extrapolation: front-side pressures on yawed cylinders or swept blunt
+  leading edges at M_n 1.0 to 1.95 and sweeps up to 45 deg, read twice.
+  None is held; candidates to open are O'Neal's free-flight swept blunt
+  leading edges (36.75 and 45 deg, M 1.78 to 2.99, NTRS 19980227361, heat
+  transfer, pressures not known) and Holdaway, Lazzeroni and Hatfield's 45
+  deg swept wing with blunted leading edges to M 2.20 (NTRS 19980223578,
+  drag increments only, a check at most).
 - _Hold-out._ The PARD standard body's totals, whose fins are exactly
   this edge (section 10). RM L52E06 fig. 11, their drag increments, is
   derived from held-back totals and sets nothing.

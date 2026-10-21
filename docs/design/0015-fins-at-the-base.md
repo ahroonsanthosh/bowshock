@@ -85,14 +85,15 @@ flat plates (+-23% to +-30%), +-7.3% to +-10.9% for the 5% circular arcs
 that are members themselves (section 3.6). Wider than 0014's planning figure of +-10% to
 +-20%: the data bracket hobby fins only between families, not on them.
 
-**Coverage** (0014's population, section 8): totals at Mach 1.5 to 1.8
-rise from 0.2% to 1.4% of cases, at Mach 1.8 to 3.0 from 0.3% to 1.4%
-(all bands 0.1% to 0.7%). The rebuilt factor still refuses, of each band
-from Mach 1.5: unmeasured sweeps 42%, rounded and diverging trailing
-edges 15%, steep bevels 6%, fins within a chord above Mach 2.0 7% (Mach
-1.8 to 3.0); with those lifted 0014's projection of 2.8% would be met.
-Everything else stays blocked by the fin-edge terms (W3, W4, W11), the
-noses (W5, W6) and the base below Mach 1.5 (W2).
+**Coverage** (0014's population, section 8): totals of all bands rise
+from 0.1% before W1 to 0.7% after it and 1.0% after W1b and W2; with
+main's fin edges of flat plates merged (0016), 2.1% (Mach 1.5 to 1.8:
+2.7%; 1.8 to 3.0: 5.5%), against 0.3% for main with the present factor
+alone. The rebuilt factor still refuses, of each band from Mach 1.5:
+unmeasured sweeps 16% to 42%, rounded and diverging trailing edges 15%,
+steep bevels 7% to 14%, fins within a chord above Mach 2.0 12% (Mach 1.8
+to 3.0). Totals at Mach 1.0 to 1.2 stay 0% until the nose solve there
+(W7).
 
 ## 2. What moves the factor, in the band-setting sources
 
@@ -378,8 +379,19 @@ dominates it:
   (`fins-on-base-w1.test.ts`). For flat plates the lower bound is RM
   L52E06's relief whatever their thickness (section 4), so the root
   changes nothing. Every station must have the same trailing-edge shape.
-  (The present factor refuses any tapered planform, so this is the
-  rebuilt factor's rule only; decided 2026-10-21 for W34.)
+  Decided 2026-10-21 for W34. Main's thin-plate rule for the present
+  factor (0016 section 18: a station thinner than 5% gives the factor at
+  5% with its low end F = 1) is not carried into the rebuilt factor: the
+  present factor serves only unswept fins, for which every source shows
+  F at least 1 (0010 section 11.5), while the rebuilt factor's members
+  already run from the zero member, whose low end is relief measured
+  below F = 1 (0.938 with swept fins, 0.838 with flat plates), to t/c
+  0.10, so a thinner station lies inside its data and the bracket takes
+  it there; raising its low end to 1 would cut off measured relief.
+  `bodyBaseDrag` passes a plate's thinnest station to the rebuilt factor
+  as its section scaled to that t/c (`thinnest`, from `baseFinsOf` in
+  `src/total/finned-body.ts`), and refuses above t/c 0.10 at the
+  thickest station, as the present factor does.
 - **Count:** four fins, the four-fin members; three, between two and
   four; two, the two-fin members, or zero to four where two are not
   measured.
@@ -536,6 +548,20 @@ to W1's at M 1.8, 2.0, 2.4 and 2.8, bounded at 2.8), and the same fins
 unswept keep the present factor's numbers; through `finnedBodyComponents`
 a tapered planform at the base takes the rebuilt factor, with the present
 factor's 'fin-sweep' refusal recorded beside it.
+
+**Fins thinner than 5% at the base** (main, 0016 section 18): the present
+factor now serves four unswept fins thinner than its 5% data at some
+station, none thicker than 10%, at 5% with its low end F = 1; so four
+thin unswept fins at Mach 1.8 to 3.0 keep the present factor, and reach
+the rebuilt one only where the present factor refuses for another reason
+(count, sweep, Mach number), with the thinnest station carried
+(`fins-on-base-routing.test.ts`: a 10% double wedge with a 4% root at M
+1.6 takes the zero member as its lower member; a tapered plate at M 2.0
+is bounded from RM L52E06's relief, its tip's t/c setting the upper
+member; a plate with a rounded trailing edge, which the rebuilt factor
+does not take, keeps the present factor's verdict). The body base's fin
+input is built once, `baseFinsOf`, for the total and for the coverage
+run's `evaluate.ts`.
 
 | Refused                                                                                    | Why                                                                       |
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
@@ -751,6 +777,7 @@ band:
 | Baseline population, before W1                           | 0.1%       | 0%           | 0%         | 0.2%       | 0.3%       |
 | after W1                                                 | 0.7%       | 0%           | 0%         | 1.4%       | 1.4%       |
 | after W1b and W2                                         | **1.0%**   | 0%           | **0.3%**   | 1.4%       | **2.4%**   |
+| with main's fin edges of flat plates (0016, W3, W4), now | **2.1%**   | 0%           | 0.3%       | **2.7%**   | **5.5%**   |
 | Blunted tips entered as sharp, after W1, now             | 1.2%, 1.8% |              |            |            |            |
 | Every condition at 0 km, and at 20 km, now               | 1.0%       |              |            |            |            |
 | Variant: four-fin, sharp-edged fins, after W1, now       | 1.6%, 2.3% |              |            |            |            |
@@ -767,7 +794,14 @@ and the cross-check at 824 of 824. What moves is at Mach 1.0 to 1.2: the
 12.7% of that band's cases refused for fins at the base below M 1.1 are
 asked of the rebuilt factor, which refuses 3.1 points of them for their
 sweep, position or section and serves the rest, about 9.6% of the band;
-totals there stay 0% (the nose, W7).
+totals there stay 0% (the nose, W7). With main's fin edges of flat plates
+merged (0016: W3 and W4, a plate's largest t/c at its shorter end chord,
+the present factor's thin-plate rule), the totals rise to 2.1% of all
+bands (0.3%, 2.7% and 5.5% at Mach 1.2 to 1.5, 1.5 to 1.8 and 1.8 to 3.0)
+against 0.3% for main's own run with the present factor alone
+(`out/2026-10-21-w34-rereview/`); the cross-check covers 1200 cases, all
+agreeing. Steep bevels refused rise from 4.2% to 6.5% of the cases, a
+plate's t/c now taken at its tip.
 
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in
@@ -777,20 +811,20 @@ Mach 1.2 to 1.5 and 13.5% at 1.8 to 3.0 (the probe), against 0014's
 projection of 16.3% and 17.1% with every base refusal lifted; totals at
 Mach 1.0 to 1.2 stay 0% until W7.
 
-The rebuilt factor's own refusals, as a share of each band's cases:
+The rebuilt factor's own refusals, as a share of each band's cases (the run with main's fin edges merged):
 
 | Refusal (rebuilt factor)                                                           | 1.0 to 1.2 | 1.2 to 1.5 | 1.5 to 1.8 | 1.8 to 3.0 |
 | ---------------------------------------------------------------------------------- | ---------- | ---------- | ---------- | ---------- |
 | sweep not measured (below M 1.5 every swept sharp section)                         | 55.0%      | 55.0%      | 42.4%      | 15.8%      |
-| rounded or diverging blunt trailing edge                                           | 14.8%      | 14.8%      | 14.8%      | 14.8%      |
-| section outside the 10% arc (steep bevels)                                         | 0.4%       | 0.4%       | 5.6%       | 10.2%      |
-| fins within a chord of the base, above M 2.0 or below 1.5                          | 6.6%       | 6.6%       | 0%         | 12.8%      |
+| rounded or diverging blunt trailing edge                                           | 14.8%      | 14.8%      | 14.8%      | 14.6%      |
+| section outside the 10% arc (steep bevels)                                         | 2.3%       | 2.3%       | 7.4%       | 13.9%      |
+| fins within a chord of the base, above M 2.0 or below 1.5                          | 6.0%       | 6.0%       | 0%         | 11.9%      |
 | fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2) | 0%         | 0%         | 0%         | 0%         |
 | fewer than two or more than four fins                                              | 0%         | 0%         | 0%         | 0%         |
 
 (Sweep is checked before position: the moderate sweeps served now at Mach
 2.0 to 3.0 that end ahead of the base move from the first row to the
-fourth.) The decomposition agrees with `src/total` on all 824 cases the
+fourth.) The decomposition agrees with `src/total` on all 1200 cases the
 library can represent (`impact.out`, cross-check). The flat plates'
 bounded value changes no total today: every flat plate is refused by its
 edge terms or the page (F1 to F3, F12 of 0014's inventory).

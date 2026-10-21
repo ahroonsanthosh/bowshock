@@ -8,11 +8,15 @@
 import { describe, expect, it } from 'vitest';
 import { FINS_ON_BASE_ROUTING_LABEL, bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
 import { finsOnBaseFactor } from '../../src/base/fins-on-base';
-import { finsOnBaseFactorW1, type FinsOnBaseFactorW1 } from '../../src/base/fins-on-base-w1';
+import {
+  W1_FLAT_RELIEF_LOW,
+  finsOnBaseFactorW1,
+  type FinsOnBaseFactorW1,
+} from '../../src/base/fins-on-base-w1';
 import { BaseRefusal } from '../../src/base/refusal';
 import { trapezoidalPlanform } from '../../src/fins/planform';
-import { doubleWedge, singleWedge, type SymmetricSection } from '../../src/fins/section';
-import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
+import { doubleWedge, flatPlate, singleWedge, type SymmetricSection } from '../../src/fins/section';
+import { baseFinsOf, finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents } from '../../src/total/total-drag';
 import { BASIC_FINNER_GEOMETRY as G, BASIC_FINNER_SHOTS } from '../../src/validation/basic-finner';
@@ -63,14 +67,13 @@ describe('the present factor wherever it serves', () => {
 });
 
 describe('the rebuilt factor only where the present one refuses', () => {
-  it('three fins, thin fins, Mach 1.5 to 1.8: rebuilt, labelled with the routing', () => {
+  it('three fins, Mach 1.5 to 1.8: rebuilt, labelled with the routing', () => {
     const cases: [number, BaseFins, string][] = [
       [
         2.5,
         fins({ count: 3, thicknessRatio: 0.024, nearBase: near(doubleWedge(0.024), 1) }),
         'fin-count',
       ],
-      [2.5, fins({ thicknessRatio: 0.024, nearBase: near(doubleWedge(0.024)) }), 'fin-thickness'],
       [1.6, fins({ thicknessRatio: 0.08, nearBase: near(doubleWedge(0.08)) }), 'mach-range'],
     ];
     for (const [mach, f, presentReason] of cases) {
@@ -90,6 +93,16 @@ describe('the rebuilt factor only where the present one refuses', () => {
       expect(r.parts.finsOnBase[0]).toBeCloseTo((w1.low - w1.nominal) * -r.curve.pB, 12);
       expect(r.parts.finsOnBase[1]).toBeCloseTo((w1.high - w1.nominal) * -r.curve.pB, 12);
     }
+  });
+
+  it('four thin unswept fins at M 1.8 to 3.0: the present factor, extended below its 5% data (0016 section 18)', () => {
+    const thin = fins({ thicknessRatio: 0.024, nearBase: near(doubleWedge(0.024)) });
+    const r = base(2.5, thin);
+    expect(r.finsOnBaseSource).toBe('present');
+    expect(r.finsOnBase!.low).toBe(1);
+    const at5 = finsOnBaseFactor(2.5, { ...thin, thicknessRatio: 0.05 });
+    expect(r.finsOnBase!.high).toBe(at5.high);
+    expect(r.labels[1]).toContain("extended below the data's 5% thickness");
   });
 
   it('fins ending within a chord of the base: rebuilt where measured (M 1.5 to 2.0), else refused', () => {
@@ -220,6 +233,71 @@ describe('swept fins at the base (0014 section 10.7): the rebuilt factor, not a 
     );
     expect(c.base?.finsOnBaseSource).toBe('rebuilt');
     expect(c.base?.presentRefusal?.reason).toBe('fin-sweep');
+  });
+});
+
+describe('fins thinner than 5% at some station (0016 section 18) in the rebuilt factor (0015 section 3.6)', () => {
+  it('the thinnest station sets the lower member; no low end of F = 1, the zero member lying below', () => {
+    // Four unswept double wedges, 10% at the tip and 4% at the root, at M 1.6, where the present factor
+    // refuses the Mach number: the rebuilt factor brackets both stations.
+    const tip = doubleWedge(0.1, 0.5);
+    const thin = fins({
+      thicknessRatio: 0.1,
+      thinnest: { thicknessRatio: 0.04, spanShareBelow: 0.5 },
+      nearBase: near(tip),
+    });
+    const r = base(1.6, thin);
+    const w = r.finsOnBase as FinsOnBaseFactorW1;
+    expect(r.finsOnBaseSource).toBe('rebuilt');
+    expect(w.lower).toMatchObject({ thickness: 0 });
+    expect(w.upper).toMatchObject({ thickness: 0.1, count: 4 });
+    expect(w.tauLow).toBeCloseTo(0.02, 12);
+    const scaled: SymmetricSection = {
+      ...tip,
+      halfThickness: tip.halfThickness.map((h) => h * 0.4),
+    };
+    const direct = finsOnBaseFactorW1(1.6, {
+      ...near(tip),
+      spanSections: [scaled],
+      count: 4,
+      trailingEdgeAheadOfBase: 0,
+    });
+    expect([w.low, w.nominal, w.high]).toEqual([direct.low, direct.nominal, direct.high]);
+    expect(w.low).toBeLessThan(1);
+    // Without the thinner station, the lower member would be four fins t/c 0.05.
+    const tipOnly = base(1.6, fins({ thicknessRatio: 0.1, nearBase: near(tip) }));
+    expect((tipOnly.finsOnBase as FinsOnBaseFactorW1).lower).toMatchObject({ thickness: 0.05 });
+  });
+
+  it('a flat plate of one thickness on a tapered planform: bounded from RM L52E06 relief, the tip setting the upper member', () => {
+    // A clipped delta swept 45 deg at the leading edge, taper 0.4: t/c 0.03 at the root, 0.075 at the tip.
+    const planform = trapezoidalPlanform({
+      rootChord: 1,
+      span: 0.6,
+      leadingEdgeSweep: Math.PI / 4,
+    });
+    const plateFins = {
+      count: 4,
+      planform,
+      section: flatPlate(0.03, 'rounded', 'square'),
+      sectionFamily: 'other' as const,
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: 0,
+    };
+    const b = baseFinsOf(plateFins);
+    expect(b.thicknessRatio).toBeCloseTo(0.075, 12);
+    expect(b.thinnest?.thicknessRatio).toBeCloseTo(0.03, 12);
+    const r = base(2.0, b);
+    const w = r.finsOnBase as FinsOnBaseFactorW1;
+    expect(r.finsOnBaseSource).toBe('rebuilt');
+    expect(r.presentRefusal?.reason).toBe('fin-sweep');
+    expect(w.bounded).toBe(true);
+    expect(w.low).toBe(W1_FLAT_RELIEF_LOW);
+    expect(w.upper).toMatchObject({ thickness: 0.1 });
+    // A rounded trailing edge has no section the rebuilt factor takes: the present factor's refusal stands.
+    const rounded = baseFinsOf({ ...plateFins, section: flatPlate(0.03, 'rounded', 'rounded') });
+    expect(rounded.nearBase).toBeUndefined();
+    expect(() => base(2.0, rounded)).toThrow(BaseRefusal);
   });
 });
 
