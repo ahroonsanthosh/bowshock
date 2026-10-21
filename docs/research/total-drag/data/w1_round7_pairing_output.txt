@@ -62,24 +62,24 @@
     radome   R 8.12 -0.1126 (score 0.21)  round 7 33-C2 R 8.06 -0.1128 +-0.0002  difference +0.0002 (combined 0.0022)
 
 === The zero member re-derived (fig. 8 finned minus figs. 31 to 33 (d) unfinned, cylindrical base, R 8.06e6)?
+  Fig. 8's calls by reader (cylindrical base, R 8.06e6):
+  M 1.62: first: ogive -0.1611, conical -0.1485, radome -0.1488; round 6: ogive -0.1485, ogive -0.1618; round 7: conical -0.1488, radome -0.1482
+  M 1.93: first: ogive -0.1513, conical -0.1468, radome -0.1465; round 6: conical -0.1454, radome -0.1448, ogive -0.1515; round 7: none
+  M 2.41: first: ogive -0.1190, conical -0.1128, radome -0.1139; round 6: none; round 7: ogive -0.1188, conical -0.1157, radome -0.1121
+  Disagreement at M 2.41: the first reading's conical call -0.1128 against round 7's -0.1157 (combined 0.0025); its circle and diamond fits lie 0.0010 apart in P_B, round 7's symbols 0.0036: the template did not separate them. Round 7 calls from the outlines' free parts (high confidence); fig. 38(c)'s relief there is the smaller. Left out: the first reading's conical and radome calls at M 2.41.
+  Disagreement at M 1.62: round 6 names the -0.1485 symbol ogive; the first reading and round 7 call that stack conical and radome, the ogive square apart near -0.161. Left out: round 6's -0.1485 ogive call.
   Unfinned: both readings within 0.6e6 of R 8.06e6, the first reading's only where round 7 confirms the symbol.
-  F = finned over unfinned, each moved by its error toward more relief; the zero member is the least F over
-  the three Mach numbers (0015 section 3.5: 0.9504, fig. 38(c) at M 1.93 over fig. 8).
-  M 1.62: fig. 8, first reading's calls (template scores): ogive -0.1611 (0.42), conical -0.1485 (0.30), radome -0.1488 (0.22); round 6's: ogive -0.1485, ogive -0.1618; round 6's stack ends: -0.1499, -0.1476
-    conical  unfinned -0.1490, -0.1488; first's call -0.1485: Delta P_B up to +0.0005, F down to 0.970
-    ogive    unfinned -0.1479, -0.1479; first's call -0.1611: Delta P_B up to -0.0132, F down to 1.061; round 6's call -0.1485: Delta P_B up to -0.0006, F down to 0.989; round 6's call -0.1618: Delta P_B up to -0.0139, F down to 1.078
-    radome   unfinned -0.1338, -0.1331; first's call -0.1488: Delta P_B up to -0.0150, F down to 1.081
-    without calls: least negative finned -0.1476 over most negative unfinned -0.1490 (R within 0.6e6): F down to 0.973
+  F = finned over unfinned, each moved by its error toward more relief; the member is the least F.
+    M 1.62 conical  unfinned -0.1490, -0.1488; called by first and round 7: first -0.1485: F down to 0.9702; round 7 -0.1488: F down to 0.9821
+    M 1.62 ogive    unfinned -0.1479, -0.1479; called by first and round 6: first -0.1611: F down to 1.0614; round 6 -0.1618: F down to 1.0781
+    M 1.62 radome   unfinned -0.1338, -0.1331; called by first and round 7: first -0.1488: F down to 1.0810; round 7 -0.1482: F down to 1.0876
     fig. 38(c), read once: Delta P_B -0.0157 to +0.0017 (+-0.002)
-  M 1.93: fig. 8, first reading's calls (template scores): ogive -0.1513 (0.76), conical -0.1468 (0.21), radome -0.1465 (0.23); round 6's: conical -0.1454, radome -0.1448, ogive -0.1515; round 6's stack ends: -0.1521, -0.1501, -0.1443
-    conical  unfinned -0.1524, -0.1506; first's call -0.1468: Delta P_B up to +0.0056, F down to 0.938; round 6's call -0.1454: Delta P_B up to +0.0070, F down to 0.940
-    ogive    unfinned -0.1520, -0.1517; first's call -0.1513: Delta P_B up to +0.0007, F down to 0.969; round 6's call -0.1515: Delta P_B up to +0.0005, F down to 0.982
-    radome   unfinned -0.1376, -0.1391; first's call -0.1465: Delta P_B up to -0.0074, F down to 1.035; round 6's call -0.1448: Delta P_B up to -0.0057, F down to 1.036
-    without calls: least negative finned -0.1443 over most negative unfinned -0.1524 (R within 0.6e6): F down to 0.930
+    M 1.93 conical  unfinned -0.1524, -0.1506; called by first and round 6: first -0.1468: F down to 0.9378; round 6 -0.1454: F down to 0.9404
+    M 1.93 ogive    unfinned -0.1520, -0.1517; called by first and round 6: first -0.1513: F down to 0.9695; round 6 -0.1515: F down to 0.9825
+    M 1.93 radome   unfinned -0.1376, -0.1391; called by first and round 6: first -0.1465: F down to 1.0351; round 6 -0.1448: F down to 1.0358
     fig. 38(c), read once: Delta P_B -0.0066 to +0.0055 (+-0.002)
-  M 2.41: fig. 8, first reading's calls (template scores): ogive -0.1190 (0.44), conical -0.1128 (0.25), radome -0.1139 (0.19); round 6's: none; round 6's stack ends: -0.1202, -0.1124
-    conical  unfinned -0.1186, -0.1204, -0.1184, -0.1191; first's call -0.1128: Delta P_B up to +0.0076, F down to 0.905
-    ogive    unfinned -0.1198, -0.1196; first's call -0.1190: Delta P_B up to +0.0008, F down to 0.961
-    radome   unfinned -0.1126, -0.1128; first's call -0.1139: Delta P_B up to -0.0011, F down to 0.976
-    without calls: least negative finned -0.1124 over most negative unfinned -0.1204 (R within 0.6e6): F down to 0.913
+    M 2.41 conical  unfinned -0.1186, -0.1204, -0.1184, -0.1191; called by round 7: round 7 -0.1157: F down to 0.9412
+    M 2.41 ogive    unfinned -0.1198, -0.1196; called by first and round 7: first -0.1190: F down to 0.9606; round 7 -0.1188: F down to 0.9729
+    M 2.41 radome   unfinned -0.1126, -0.1128; called by round 7: round 7 -0.1121: F down to 0.9738
     fig. 38(c), read once: Delta P_B -0.0069 to +0.0020 (+-0.002)
+  The member re-derived: F 0.9378, M 1.93 conical (first's call); fig. 38(c) over fig. 8 gives 0.9504.

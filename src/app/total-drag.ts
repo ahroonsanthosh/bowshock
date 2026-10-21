@@ -635,8 +635,8 @@ export const FINS_ON_BASE_W1_NOTE =
   '(design record 0015) is used: a band between measured families of circular-arc fins that ' +
   "bracket these fins' section, count, sweep and position (TN 2360, TN 3819, RM L52J21a, RM " +
   'L52E06, NSWCDD/TR-92/509), wider than a measurement on these fins would give. Its data are read ' +
-  "twice, except two: its lowest member above Mach 1.5 rests on one reader's calls of which nose " +
-  "each of RM L52J21a's symbols is (the second call pending), and for leading edges swept under 45 " +
+  'twice, except two: two of the symbols of RM L52J21a that its lowest member above Mach 1.5 rests ' +
+  'on are called by one reader (the second reading pending), and for leading edges swept under 45 ' +
   "deg NSWCDD/TR-92/509's table is read once.";
 /** Above the end of TN 3819 fig. 35's free-flight curve (src/base/fins-on-base.ts, 0010 section 11). */
 export const FINS_ON_BASE_BOUNDED_NOTE =

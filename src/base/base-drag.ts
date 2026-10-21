@@ -28,10 +28,11 @@
  *
  * Which factor (0014 section 10.3, docs/design/0015-fins-at-the-base.md
  * section 5): the present factor (./fins-on-base.ts) wherever it serves,
- * so the Basic Finner's validated total keeps it; the rebuilt factor
+ * so the Basic Finner's gated total keeps it; the rebuilt factor
  * (./fins-on-base-w1.ts) only where the present factor refuses (fins other
- * than four, thinner than 5%, at Mach 1.5 to 1.8, or ending within a chord
- * ahead of the base), and only when the fins' section and sweeps are given
+ * than four, thinner than 5%, swept at either edge, at Mach 1.0 to 1.8, or
+ * ending within a chord ahead of the base), and only when the fins' section
+ * and sweeps are given
  * (`nearBase`); otherwise the present refusal stands. This routing holds
  * until the owner decides otherwise after BRL 934's run.
  *
@@ -76,7 +77,7 @@ export type FinsOnBaseSource = 'present' | 'rebuilt';
 /** The label added to the rebuilt factor's, saying why it, not the present factor, is used. */
 export const FINS_ON_BASE_ROUTING_LABEL =
   'the rebuilt factor is used because the present factor (0010 section 1.3), which the Basic ' +
-  "Finner's validated total keeps, does not cover these fins";
+  "Finner's gated total keeps, does not cover these fins";
 
 export interface BodyBaseInput {
   /** Free-stream Mach number. */

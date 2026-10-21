@@ -363,19 +363,29 @@ export type L52j21aNose = 'conical' | 'ogive' | 'radome';
 
 /**
  * RM L52J21a fig. 8, cylindrical base, R = 8.06e6: the finned symbols with
- * their nose called. This work's first reading calls every symbol by
+ * their nose called, by three readers: this work's first reading by
  * template (scores 0.19 to 0.44 but the ogive at M 1.93, 0.76;
- * w1_l52j21a_fig8_output.txt); round 6 names some (dde6cd0). The calls are
- * one reader's at M 2.41 and disagree at M 1.62 (the -0.1485 symbol): the
- * second call is pending (0015 sections 3.5, 7). Errors as the readings'.
+ * w1_l52j21a_fig8_output.txt), round 6 (names some, dde6cd0) and round 7
+ * (blind, by the free parts of each outline, M 2.41 and the M 1.62 stack
+ * near -0.1485; data/round7/rml52j21a_fig8_lr.csv, 1cc821d). Paired in 0015
+ * section 7: a call another reader contradicts beyond the combined errors,
+ * with the third evidence against it, is kept with `leftOut` saying why,
+ * and is not used. Errors as each reading's.
  */
 export interface Fig8NoseCall {
-  readonly reading: W1Reading;
+  readonly reading: W1Reading | 'round 7';
   readonly mach: number;
   readonly nose: L52j21aNose;
   readonly pB: number;
   readonly error: number;
+  readonly leftOut?: string;
 }
+
+const FIRST_AT_241 =
+  "the first reading's template fits for the circle and the diamond at M 2.41 lie 3 px (0.0010) apart, " +
+  'where round 7 finds the two symbols 0.0036 apart: it did not separate them, and its conical call is ' +
+  "0.0029 from round 7's (combined 0.0025); round 7's calls, from the outlines' free parts, and fig. " +
+  "38(c)'s smaller relief there decide it";
 
 export const L52J21A_FIG8_NOSE_CALLS: readonly Fig8NoseCall[] = [
   { reading: 'w1 first', mach: 1.62, nose: 'ogive', pB: -0.1611, error: 0.002 },
@@ -385,13 +395,42 @@ export const L52J21A_FIG8_NOSE_CALLS: readonly Fig8NoseCall[] = [
   { reading: 'w1 first', mach: 1.93, nose: 'conical', pB: -0.1468, error: 0.002 },
   { reading: 'w1 first', mach: 1.93, nose: 'radome', pB: -0.1465, error: 0.002 },
   { reading: 'w1 first', mach: 2.41, nose: 'ogive', pB: -0.119, error: 0.002 },
-  { reading: 'w1 first', mach: 2.41, nose: 'conical', pB: -0.1128, error: 0.002 },
-  { reading: 'w1 first', mach: 2.41, nose: 'radome', pB: -0.1139, error: 0.002 },
-  { reading: 'w1 second', mach: 1.62, nose: 'ogive', pB: -0.1485, error: 0.0002 },
+  {
+    reading: 'w1 first',
+    mach: 2.41,
+    nose: 'conical',
+    pB: -0.1128,
+    error: 0.002,
+    leftOut: FIRST_AT_241,
+  },
+  {
+    reading: 'w1 first',
+    mach: 2.41,
+    nose: 'radome',
+    pB: -0.1139,
+    error: 0.002,
+    leftOut: FIRST_AT_241,
+  },
+  {
+    reading: 'w1 second',
+    mach: 1.62,
+    nose: 'ogive',
+    pB: -0.1485,
+    error: 0.0002,
+    leftOut:
+      'the first reading and round 7 both call the -0.1485 stack conical and radome, round 7 from the ' +
+      "outlines (a diamond's vertices and a circle's flat round top and bottom), and the ogive square " +
+      'apart near -0.161, where round 6 names one too',
+  },
   { reading: 'w1 second', mach: 1.62, nose: 'ogive', pB: -0.1618, error: 0.0002 },
   { reading: 'w1 second', mach: 1.93, nose: 'conical', pB: -0.1454, error: 0.0002 },
   { reading: 'w1 second', mach: 1.93, nose: 'radome', pB: -0.1448, error: 0.0002 },
   { reading: 'w1 second', mach: 1.93, nose: 'ogive', pB: -0.1515, error: 0.0002 },
+  { reading: 'round 7', mach: 1.62, nose: 'conical', pB: -0.1488, error: 0.0005 },
+  { reading: 'round 7', mach: 1.62, nose: 'radome', pB: -0.1482, error: 0.0005 },
+  { reading: 'round 7', mach: 2.41, nose: 'ogive', pB: -0.1188, error: 0.0003 },
+  { reading: 'round 7', mach: 2.41, nose: 'conical', pB: -0.1157, error: 0.0005 },
+  { reading: 'round 7', mach: 2.41, nose: 'radome', pB: -0.1121, error: 0.0005 },
 ];
 
 /**

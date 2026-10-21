@@ -14,6 +14,7 @@ import {
   L52J21A_FIG31_33D,
   L52J21A_FIG38C,
   L52J21A_FIG8,
+  L52J21A_FIG8_NOSE_CALLS,
   NSWC_LEADING_EDGE_SWEEP_DEG,
   NSWC_TR92_509_TABLE2,
   TN2360_FIG6,
@@ -29,6 +30,8 @@ import {
   W1_RELIEF_LOW,
   W1_RELIEF_LOW_FIG38C,
   W1_RELIEF_ON_ONE_CALL,
+  W1_RELIEF_SINGLE_CALLS,
+  W1_ZERO_MEMBER_PENDING,
   flatPlateReliefs,
   noseCallReliefFactors,
   nswcFactors,
@@ -259,30 +262,48 @@ describe('the readings, held to the first- and second-reading records', () => {
 });
 
 describe('the members', () => {
-  it("the zero member: the most relief RM L52J21a allows at M >= 1.5, on one reader's nose calls", () => {
+  it('the zero member: the most relief RM L52J21a allows at M >= 1.5, its fig. 8 calls paired', () => {
     // Fig. 38(c) at M 1.93: dPb +0.0055 (+0.002), over the cylindrical base's least suction in either reading
     // of fig. 8 toward less suction: round 6's -0.1443 (+0.0007), below the first's -0.1465 (+0.002).
     const f = (0.1443 - 0.0007) / (0.1443 - 0.0007 + 0.0055 + 0.002);
     expect(W1_RELIEF_LOW_FIG38C).toBeCloseTo(f, 12);
     expect(W1_RELIEF_LOW_FIG38C).toBeCloseTo(0.95036, 5);
-    // Fig. 8 over figs. 31 to 33 (d) by nose: the first reading's conical call at M 2.41, -0.1128 (+-0.002),
-    // over its own unfinned conical symbol at R 8.12e6, -0.1204 (+-0.002), each toward more relief. No second
-    // reader calls fig. 8's noses at M 2.41, so it rests on one reader's calls (0015 section 3.5).
-    const g = (0.1128 - 0.002) / (0.1204 + 0.002);
+    // Fig. 8 over figs. 31 to 33 (d) by nose (0015 section 3.5): at M 1.93 the conical nose, called alike by
+    // the first reading (-0.1468 +-0.002) and round 6, over this work's unfinned conical symbol at R 8.13e6
+    // (-0.1524 +-0.002), each toward more relief.
+    const g = (0.1468 - 0.002) / (0.1524 + 0.002);
     expect(W1_RELIEF_LOW).toBeCloseTo(g, 12);
-    expect(W1_RELIEF_LOW).toBeCloseTo(0.90523, 5);
-    expect(W1_RELIEF_ON_ONE_CALL).toBe(true);
+    expect(W1_RELIEF_LOW).toBeCloseTo(0.93782, 5);
+    expect(W1_RELIEF_ON_ONE_CALL).toBe(false);
     const least = noseCallReliefFactors().reduce((a, b) => (b.factor < a.factor ? b : a));
     expect(least).toMatchObject({
-      mach: 2.41,
+      mach: 1.93,
       nose: 'conical',
       callReading: 'w1 first',
-      confirmed: false,
+      confirmed: true,
     });
-    // At M 1.93 both readers call the conical nose alike: F down to 0.938 there.
-    const at193 = noseCallReliefFactors().filter((r) => r.mach === 1.93 && r.nose === 'conical');
-    expect(at193.every((r) => r.confirmed)).toBe(true);
-    expect(Math.min(...at193.map((r) => r.factor))).toBeCloseTo(0.9378, 4);
+    // Left out on pairing: the first reading's conical and radome calls at M 2.41 (round 7 separates the
+    // circle and the diamond; the template did not) and round 6's ogive call at 1.62.
+    expect(
+      L52J21A_FIG8_NOSE_CALLS.filter((c) => c.leftOut !== undefined).map((c) => [
+        c.reading,
+        c.mach,
+        c.nose,
+      ]),
+    ).toEqual([
+      ['w1 first', 2.41, 'conical'],
+      ['w1 first', 2.41, 'radome'],
+      ['w1 second', 1.62, 'ogive'],
+    ]);
+    // Round 7's conical call at M 2.41 stands alone, so the member still waits on a second reading there;
+    // on it the conical nose gives F down to 0.941, above the member.
+    expect(W1_RELIEF_SINGLE_CALLS).toEqual([
+      'the conical nose at M 2.41',
+      'the radome nose at M 2.41',
+    ]);
+    expect(W1_ZERO_MEMBER_PENDING).toBe(true);
+    const at241 = noseCallReliefFactors().filter((r) => r.mach === 2.41 && r.nose === 'conical');
+    expect(Math.min(...at241.map((r) => r.factor))).toBeCloseTo(0.9412, 4);
     // The unfinned symbols used are round 7's and this work's that round 7 confirms (0015 section 7).
     expect(L52J21A_FIG31_33D.filter((u) => u.reading === 'round 7').length).toBe(10);
     expect(ZERO_MEMBER).toEqual({ low: W1_RELIEF_LOW, high: 1 });
@@ -352,8 +373,8 @@ describe('the members', () => {
       [2.41, 1.0996, 1.3909],
       [2.5, 1.0887, 1.3826],
       [2.56, 1.0855, 1.3811],
-      [2.8, 0.9052, 1.3811],
-      [3.0, 0.9052, 1.3811],
+      [2.8, 0.9378, 1.3811],
+      [3.0, 0.9378, 1.3811],
     ];
     for (const [m, low, high] of TABLE31) {
       const r = referenceBand(m);
@@ -473,18 +494,18 @@ describe('the bands (0015 section 3.6)', () => {
   // [M, case, fins, low, nominal, high, second reading pending (the zero member from M 1.5 rests on fig.
   // 38(c), read once; a moderate sweep on NSWC's Table 2, read once)].
   const TABLE: [number, string, FinsNearBase, number, number, number, boolean][] = [
-    [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9052, 1.1888, 1.4723, true],
-    [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9052, 1.1607, 1.4161, true],
-    [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9052, 1.1167, 1.3282, true],
-    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9052, 1.1439, 1.3826, true],
+    [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9378, 1.2051, 1.4723, true],
+    [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9378, 1.1769, 1.4161, true],
+    [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9378, 1.133, 1.3282, true],
+    [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9378, 1.1602, 1.3826, true],
     // Above M 2.56 the reference is bounded, not measured (0010 section 11): so is the bracket.
-    [3.0, 'double wedge 2.4%, three fins, 45 deg (bounded)', fins(), 0.9052, 1.1431, 1.3811, true],
+    [3.0, 'double wedge 2.4%, three fins, 45 deg (bounded)', fins(), 0.9378, 1.1594, 1.3811, true],
     [
       1.8,
       'double wedge 2.4%, four fins, unswept',
       fins({ count: 4, tanLeadingEdgeSweep: 0 }),
-      0.9052,
-      1.1607,
+      0.9378,
+      1.1769,
       1.4161,
       true,
     ],
@@ -492,8 +513,8 @@ describe('the bands (0015 section 3.6)', () => {
       1.8,
       'bevelled plate 3%, three fins, 45 deg',
       fins({ section: hexagonal(0.03, 0.085, 0.085) }),
-      0.9052,
-      1.2321,
+      0.9378,
+      1.2484,
       1.559,
       true,
     ],
@@ -538,8 +559,8 @@ describe('the bands (0015 section 3.6)', () => {
       2.0,
       'double wedge 2.4%, four fins, 30 deg, unswept trailing edge',
       fins({ count: 4, tanLeadingEdgeSweep: t30 }),
-      0.9052,
-      1.1167,
+      0.9378,
+      1.133,
       1.3282,
       true,
     ],
@@ -547,8 +568,8 @@ describe('the bands (0015 section 3.6)', () => {
       2.5,
       'double wedge 2.4%, three fins, 30 deg, unswept trailing edge',
       fins({ tanLeadingEdgeSweep: t30 }),
-      0.9052,
-      1.1439,
+      0.9378,
+      1.1602,
       1.3826,
       true,
     ],
@@ -569,6 +590,16 @@ describe('the bands (0015 section 3.6)', () => {
       0.8379,
       1.2822,
       1.7265,
+      false,
+    ],
+    // From M 1.0 (the owner's decision of 2026-10-21, 0015 section 11.2).
+    [
+      1.0,
+      'double wedge 2.4%, three fins, unswept, from M 1.0',
+      fins({ tanLeadingEdgeSweep: 0 }),
+      0.8379,
+      1.3437,
+      1.8496,
       false,
     ],
   ];
@@ -701,6 +732,41 @@ describe('the bands (0015 section 3.6)', () => {
       expect(pb / (pb + p.mostPositive)).toBeGreaterThanOrEqual(ZERO_MEMBER.low);
       expect(pb / (pb + p.mostNegative)).toBeLessThan(referenceBand(p.mach).low);
     }
+  });
+});
+
+describe('a section that changes along the span (a plate of one thickness on a tapered planform)', () => {
+  it('the upper member from the thickest station, the lower from the thinnest; no range of its own below', () => {
+    // A double wedge 10% thick at the tip and 5% at the root (one thickness, the tip chord half the root's).
+    const tip = doubleWedge(0.1, 0.5);
+    const root = doubleWedge(0.05, 0.5);
+    const four = { count: 4, tanLeadingEdgeSweep: 0, tanTrailingEdgeSweep: 0 };
+    const tipOnly = finsOnBaseFactorW1(1.8, fins({ ...four, section: tip }));
+    const both = finsOnBaseFactorW1(1.8, fins({ ...four, section: tip, spanSections: [root] }));
+    // The tip alone: tauLow 0.05, so the lower member would be four fins t/c 0.05; the root is thinner
+    // (tauLow 0.025), so the lower member is the zero member, which lies below any section.
+    expect(tipOnly.lower).toMatchObject({ thickness: 0.05, count: 4 });
+    expect(both.lower).toMatchObject({ thickness: 0 });
+    expect(both.upper).toMatchObject({ thickness: 0.1, count: 4 });
+    expect([both.tauLow, both.tauEq]).toEqual([0.025, 0.1]);
+    expect(both.low).toBe(W1_RELIEF_LOW);
+    expect(both.high).toBe(tipOnly.high);
+    // Flat plates: the lower bound is RM L52E06's relief whatever the thickness, the upper member set by the
+    // thickest station; a thinner root changes nothing.
+    const plateTip = finsOnBaseFactorW1(2.5, fins({ ...four, section: plate(0.08) }));
+    const plateBoth = finsOnBaseFactorW1(
+      2.5,
+      fins({ ...four, section: plate(0.08), spanSections: [plate(0.03)] }),
+    );
+    expect([plateBoth.low, plateBoth.nominal, plateBoth.high]).toEqual([
+      plateTip.low,
+      plateTip.nominal,
+      plateTip.high,
+    ]);
+    // One trailing-edge shape at a time.
+    expect(() =>
+      finsOnBaseFactorW1(2.5, fins({ ...four, section: tip, spanSections: [plate(0.03)] })),
+    ).toThrow(BaseRefusal);
   });
 });
 

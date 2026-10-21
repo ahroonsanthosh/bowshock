@@ -32,11 +32,10 @@
  * - the zero member, no fins or fins with no pressure field: F from 1 down
  *   to the largest relief RM L52J21a allows with fins near the base and a
  *   turbulent layer at M 1.5 or above, at every M from 1.5
- *   (W1_RELIEF_LOW): fig. 8 over figs. 31 to 33 by nose, 0.905 at M 2.41 on
- *   one reader's symbol calls, until a second reader's calls arrive; fig.
- *   38(c) over fig. 8 gives 0.9504, the value the second call may restore
- *   (W1_RELIEF_LOW_FIG38C). Below 1.5, RM L52E06's relief with flat plates
- *   (0.838, zeroMember).
+ *   (W1_RELIEF_LOW): the lesser of fig. 8 over figs. 31 to 33 by nose, its
+ *   calls paired among three readers (0.938, the conical nose at M 1.93),
+ *   and fig. 38(c) over fig. 8 (0.9504, W1_RELIEF_LOW_FIG38C). Below 1.5,
+ *   RM L52E06's relief with flat plates (0.838, zeroMember).
  *
  * A case is bracketed between a lower member it dominates and an upper
  * member that dominates it, in each variable the sources show moves F:
@@ -184,13 +183,14 @@ export function reliefFactors(): { mach: number; factor: number }[] {
   });
 }
 
-/** Fig. 38(c)'s least relief factor (0.9504): the zero member's low end if a second reader's calls confirm it. */
+/** Fig. 38(c)'s least relief factor (0.9504), read once; the zero member's low end is the lesser of it and the nose-paired one. */
 export const W1_RELIEF_LOW_FIG38C = Math.min(...reliefFactors().map((r) => r.factor));
 
 /**
- * The relief by nose: fig. 8's finned symbol of each nose (each reader's call) over figs. 31 to 33 (d)'s
- * unfinned symbols of the same nose near R 8.06e6 (both readings), each moved by its error toward more
- * relief. `confirmed` is whether another reading calls a symbol of that nose within the two errors.
+ * The relief by nose: fig. 8's finned symbol of each nose (each reader's call, but those left out on
+ * pairing) over figs. 31 to 33 (d)'s unfinned symbols of the same nose near R 8.06e6 (both readings), each
+ * moved by its error toward more relief. `confirmed` is whether another reading calls a symbol of that
+ * nose within the two errors.
  */
 export function noseCallReliefFactors(): {
   mach: number;
@@ -206,8 +206,9 @@ export function noseCallReliefFactors(): {
     confirmed: boolean;
     factor: number;
   }[] = [];
-  for (const c of L52J21A_FIG8_NOSE_CALLS) {
-    const confirmed = L52J21A_FIG8_NOSE_CALLS.some(
+  const used = L52J21A_FIG8_NOSE_CALLS.filter((c) => c.leftOut === undefined);
+  for (const c of used) {
+    const confirmed = used.some(
       (d) =>
         d.reading !== c.reading &&
         d.mach === c.mach &&
@@ -239,7 +240,22 @@ export const W1_RELIEF_LOW = Math.min(W1_RELIEF_LOW_FIG38C, LEAST_BY_CALL.factor
 /** Whether that low end rests on a nose call that no second reader has confirmed (the second call pending). */
 export const W1_RELIEF_ON_ONE_CALL =
   LEAST_BY_CALL.factor < W1_RELIEF_LOW_FIG38C && !LEAST_BY_CALL.confirmed;
+
+/**
+ * The calls used that one reader alone has made (Mach number and nose): while any remains, a second
+ * reading of it could lower the member, and results using it carry `secondReadingPending`.
+ */
+export const W1_RELIEF_SINGLE_CALLS: readonly string[] = [
+  ...new Set(
+    noseCallReliefFactors()
+      .filter((r) => !r.confirmed)
+      .map((r) => `the ${r.nose} nose at M ${r.mach}`),
+  ),
+];
 export const ZERO_MEMBER: Band = { low: W1_RELIEF_LOW, high: 1 };
+
+/** Whether the zero member from M 1.5 still waits on a second reading (a call one reader alone has made). */
+export const W1_ZERO_MEMBER_PENDING = W1_RELIEF_ON_ONE_CALL || W1_RELIEF_SINGLE_CALLS.length > 0;
 
 // ------------------------------------------------------ the reference member
 
@@ -541,8 +557,18 @@ export function trailingEdgeShape(section: SymmetricSection): TrailingEdgeShape 
 /** The fins, as the rebuilt factor needs them. */
 export interface FinsNearBase {
   readonly count: number;
-  /** The section in chord units (src/fins), the same along the span. */
+  /** The section in chord units (src/fins); with spanSections, its thickest station (largest t/c). */
   readonly section: SymmetricSection;
+  /**
+   * The section at other spanwise stations, in their own chord units, where it changes along the span (a
+   * plate of one thickness on a tapered planform: `section` at the tip, the largest t/c, and the root here,
+   * the smallest). The bracket must hold at every station, since the measured fins are rectangular with one
+   * section and do not say which station sets the factor: the upper member dominates the thickest station
+   * (tauEq the largest over all) and the lower member is dominated by the thinnest (tauLow the least over
+   * all). A thinner station needs no range of its own: the zero member lies below any section (0015 section
+   * 3.6). Every station must have the same trailing-edge shape.
+   */
+  readonly spanSections?: readonly SymmetricSection[];
   /** 'circular-arc' when the section is one (its own member); else bracketed. */
   readonly sectionFamily: 'circular-arc' | 'other';
   /** Tangents of the leading- and trailing-edge sweep angles. */
@@ -587,10 +613,9 @@ export interface FinsOnBaseFactorW1 {
   readonly tauEq: number;
   readonly swept: boolean;
   /**
-   * A band-setting input of this result has one reading: the zero member from M 1.5 (one reader's nose calls
-   * of RM L52J21a fig. 8 at M 2.41, and fig. 38(c), which cannot be read a second time from the scan; 0015
-   * sections 3.5, 7), or a moderate sweep's ordering (NSWCDD/TR-92/509 Table 2, its blind second
-   * transcription requested).
+   * A band-setting input of this result has one reading: the zero member from M 1.5 while any nose call of
+   * RM L52J21a fig. 8 it uses has one reader (W1_RELIEF_SINGLE_CALLS; 0015 sections 3.5, 7), or a moderate
+   * sweep's ordering (NSWCDD/TR-92/509 Table 2, its blind second transcription requested).
    */
   readonly secondReadingPending: boolean;
 }
@@ -663,8 +688,12 @@ const zeroName = (mach: number) =>
         `relief RM L52J21a allows: its fig. 8 over figs. 31 to 33 at M ${LEAST_BY_CALL.mach}, resting on ` +
         "one reader's calls of which nose each symbol is, the second call pending; fig. 38(c) gives " +
         `${W1_RELIEF_LOW_FIG38C.toFixed(3)})`
-      : `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, ` +
-        'RM L52J21a figs. 8, 31 to 33 and 38)';
+      : `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, the most ` +
+        `relief RM L52J21a allows: its fig. 8 over figs. 31 to 33 by nose, at M ${LEAST_BY_CALL.mach}, ` +
+        `each read twice; fig. 38(c) gives ${W1_RELIEF_LOW_FIG38C.toFixed(3)}` +
+        (W1_RELIEF_SINGLE_CALLS.length > 0
+          ? `; ${W1_RELIEF_SINGLE_CALLS.join(' and ')} called by one reader, the second pending)`
+          : ')');
 const memberName = (t: Thickness, n: Count, xc: number, mach: number) =>
   t === 0 || n === 0
     ? zeroName(mach)
@@ -684,7 +713,15 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         `three between them; ${count} fins are not covered`,
     );
   }
+  const stations = [section, ...(fins.spanSections ?? [])];
   const te = trailingEdgeShape(section);
+  if (stations.some((st) => trailingEdgeShape(st) !== te)) {
+    throw new BaseRefusal(
+      'input',
+      'the sections given along the span have different trailing-edge shapes; the rebuilt factor ' +
+        'brackets one shape at a time',
+    );
+  }
   if (te !== 'sharp' && te !== 'flat') {
     throw new BaseRefusal(
       'fin-trailing-edge',
@@ -744,13 +781,19 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         `TN 2360), asked Mach ${mach}`,
     );
   }
-  const thickness = Math.max(...section.halfThickness) * 2;
-  const tr =
+  const thicknesses = stations.map((st) => Math.max(...st.halfThickness) * 2);
+  const thickness = Math.max(...thicknesses);
+  const brackets = stations.map((st, k) =>
     fins.sectionFamily === 'circular-arc'
-      ? { tauLow: thickness, tauEq: thickness }
+      ? { tauLow: thicknesses[k]!, tauEq: thicknesses[k]! }
       : bounded
-        ? { tauLow: 0, tauEq: thickness }
-        : sectionBracket(section);
+        ? { tauLow: 0, tauEq: thicknesses[k]! }
+        : sectionBracket(st),
+  );
+  const tr = {
+    tauLow: Math.min(...brackets.map((b) => b.tauLow)),
+    tauEq: Math.max(...brackets.map((b) => b.tauEq)),
+  };
   if (tr.tauEq > 0.1 + 1e-9) {
     throw new BaseRefusal(
       'fin-thickness',
@@ -878,7 +921,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     // Above M 2.56 the bounded reference's low end is the zero member's, so it rests on fig. 38(c) too.
     secondReadingPending:
       moderate ||
-      ((lower.thickness === 0 || upper.thickness === 0 || aboveLine) &&
+      (W1_ZERO_MEMBER_PENDING &&
+        (lower.thickness === 0 || upper.thickness === 0 || aboveLine) &&
         !bounded &&
         mach >= W1_MACH_RANGE[0] - 1e-12) ||
       !L52J21A_FIG8.some((p) => p.reading === 'w1 second'),
