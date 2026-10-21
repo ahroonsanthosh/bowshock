@@ -13,6 +13,7 @@ export default defineConfig({
         supersonicRamp: 'demos/supersonic-ramp.html',
         noseDrag: 'demos/nose-drag.html',
         flowView: 'demos/flow-view.html',
+        flow3d: 'demos/flow-3d.html',
       },
     },
   },

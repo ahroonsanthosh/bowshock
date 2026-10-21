@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="The supersonic flow around the Basic Finner in 3D, solved on your GPU with the bow shock fitted, drawn as it converges."
+    />
+    <title>Flow in 3D · bowshock</title>
+    <link rel="stylesheet" href="/src/ui/style.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+      }
+      #flow3d {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        outline: none;
+      }
+      #flow3d-status {
+        position: fixed;
+        right: 12px;
+        top: 10px;
+        margin: 0;
+        color: #c8ccd4;
+        font:
+          12px 'JetBrains Mono',
+          ui-monospace,
+          monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="visually-hidden">The flow around the Basic Finner at Mach 2, in 3D</h1>
+    <canvas
+      id="flow3d"
+      tabindex="0"
+      role="img"
+      aria-label="The flow around the Basic Finner in 3D: press H for the keys"
+    ></canvas>
+    <p id="flow3d-status" role="status" aria-live="polite">Starting</p>
+    <script type="module" src="/src/render3d/demo.ts"></script>
+  </body>
+</html>
