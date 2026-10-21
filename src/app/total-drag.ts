@@ -654,10 +654,11 @@ export const FINS_ON_BASE_W1_NOTE =
   'Fins-on-base factor: the present factor does not cover these fins, so the rebuilt factor ' +
   '(design record 0015) is used: a band between measured families of circular-arc fins that ' +
   "bracket these fins' section, count, sweep and position (TN 2360, TN 3819, RM L52J21a, RM " +
-  'L52E06, NSWCDD/TR-92/509), wider than a measurement on these fins would give. Its data are read ' +
-  'twice, except two: two of the symbols of RM L52J21a that its lowest member above Mach 1.5 rests ' +
-  'on are called by one reader (the second reading pending), and for leading edges swept under 45 ' +
-  "deg NSWCDD/TR-92/509's table is read once.";
+  'L52E06, NSWCDD/TR-92/509), wider than a measurement on these fins would give; for plates, ' +
+  "bounded, not measured, from RM L52E06's relief with plates at the base. Some of its data are " +
+  'read once, each named in its label: two noses of RM L52J21a that its lowest member above Mach ' +
+  '1.62 rests on, three symbols of TN 2360 fig. 6 at stations ahead of the base, and, for leading ' +
+  "edges swept under 45 deg, NSWCDD/TR-92/509's table.";
 /** Above the end of TN 3819 fig. 35's free-flight curve (src/base/fins-on-base.ts, 0010 section 11). */
 export const FINS_ON_BASE_BOUNDED_NOTE =
   `Fins-on-base factor: above M ${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 ` +

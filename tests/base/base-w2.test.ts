@@ -197,7 +197,15 @@ describe('the term (bodyBaseDrag)', () => {
     expect(r.finsOnBaseSource).toBe('rebuilt');
     expect(r.labels.some((l) => l.includes(FINS_ON_BASE_ROUTING_LABEL))).toBe(true);
     const f = finsOnBaseFactorW1(1.3, { ...fins.nearBase, count: 4, trailingEdgeAheadOfBase: 0 });
-    expect(r.cd).toBeCloseTo(curve(1.3) * 1.065 * f.nominal, 12);
+    // The reference, built on fig. 35's free-flight line over the curve, applies to the curve itself, not
+    // on top of W2's 1.065; the zero member applies to W2's term (0015 section 11.2).
+    const g = r.finsOnBase as typeof f;
+    expect(g.upper.band.low).toBeCloseTo(f.upper.band.low / 1.065, 12);
+    expect(g.upper.band.high).toBeCloseTo(f.upper.band.high / 1.065, 12);
+    expect(g.lower.band).toEqual(f.lower.band);
+    expect(g.nominal).toBeCloseTo(0.5 * (f.lower.band.low + f.upper.band.high / 1.065), 12);
+    expect(r.cd).toBeCloseTo(curve(1.3) * 1.065 * g.nominal, 12);
+    expect(r.labels[1]).toContain("apply to Love's curve itself");
     // Swept fins of a sharp section below M 1.5, and fins ahead of the base, are refused.
     const swept = {
       ...fins,

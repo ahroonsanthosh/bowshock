@@ -370,8 +370,9 @@ describe('refusals', { timeout: 60_000 }, () => {
     ]);
   });
 
-  it('swept fins at the base: the present factor refuses them, the rebuilt factor (0015) serves its bracket; a chord ahead, served', () => {
-    // The review's probe: four 8% double wedges swept 45 deg at both edges, at the base.
+  it('swept fins at the base: the leading edge swept, the rebuilt factor (0015) serves its bracket; the trailing edge swept, refused; a chord ahead, served', () => {
+    // The review's probe: four 8% double wedges swept 45 deg at both edges, at the base. No sharp fins with
+    // a swept trailing edge are measured at the base (0015 section 3.4): refused.
     const probe: FinnedBody = {
       ...sharp,
       fins: {
@@ -385,11 +386,20 @@ describe('refusals', { timeout: 60_000 }, () => {
         }),
       },
     };
-    expect(refusals(probe, 2.0)).toEqual([]);
-    expect(refusals(probe, 2.8)).toEqual([]);
+    expect(refusals(probe, 2.0)).toEqual(['body base: fin-sweep']);
+    expect(refusals(probe, 2.8)).toEqual(['body base: fin-sweep']);
+    // The same fins with the trailing edge unswept: the rebuilt factor's bracket.
+    const leOnly: FinnedBody = {
+      ...probe,
+      fins: {
+        ...probe.fins,
+        planform: trapezoidalPlanform({ rootChord: 1, span: 0.5, leadingEdgeSweep: 45 * deg }),
+      },
+    };
     for (const mach of [2.0, 2.8]) {
+      expect(refusals(leOnly, mach)).toEqual([]);
       const b = finnedBodyComponents(
-        probe,
+        leOnly,
         { ...conditions, mach },
         exactConeNoseWaveDrag(mach, 10 * deg),
       ).base!;

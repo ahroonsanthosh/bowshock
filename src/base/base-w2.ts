@@ -179,7 +179,9 @@ export const W2_LABEL =
   `times ${W2_BAND.nominal.toFixed(3)}, the midpoint of its band ${W2_BAND.low.toFixed(2)} to ` +
   `${W2_BAND.high.toFixed(2)} over the curve, set on free-flight data at Mach 1.0 to 1.3 (RM L52E06 fig. ` +
   "8, TN 3819 fig. 18) and carried to 1.5 (0015 section 11); the curve's rows below 1.5 and fig. 18's " +
-  'free-flight curve read twice; tested only in the total';
+  'free-flight curve read twice; with fins at the base, the fins-on-base members built on TN 3819 fig. ' +
+  "35's free-flight line apply to the curve itself, not on top of the 1.065 (0015 section 11.2); tested " +
+  'only in the total';
 
 /** The curve at M 1.0 to 1.5 (below the compiled curve's own range), as ./compiled-curve.ts returns it above. */
 export function w2CurveBasePressure(mach: number): CompiledCurveBasePressure {

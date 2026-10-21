@@ -177,8 +177,9 @@ describe('swept fins at the base (0014 section 10.7): the rebuilt factor, not a 
   const t45 = Math.tan((45 * Math.PI) / 180);
   it("swept fins get the rebuilt factor's value and band; the same fins unswept keep the present factor", () => {
     for (const mach of [1.8, 2.0, 2.4, 2.8]) {
-      // Four 8% double wedges swept 45 deg at both edges: the present factor refuses the sweep.
-      const swept = fins({ thicknessRatio: 0.08, nearBase: near(doubleWedge(0.08), t45, t45) });
+      // Four 8% double wedges, the leading edge swept 45 deg, the trailing edge unswept: the present
+      // factor refuses the sweep.
+      const swept = fins({ thicknessRatio: 0.08, nearBase: near(doubleWedge(0.08), t45, 0) });
       expect(() => finsOnBaseFactor(mach, swept)).toThrow(/unswept fins/);
       const r = base(mach, swept);
       const w = finsOnBaseFactorW1(mach, {
@@ -208,6 +209,22 @@ describe('swept fins at the base (0014 section 10.7): the rebuilt factor, not a 
         p.high,
       ]);
     }
+    // A sharp section with a swept trailing edge (either way) at the base: refused by both, with a plain
+    // reason (0015 section 3.4): no such fins are measured at the base, and linear theory gives the faces
+    // behind a 45 deg edge 1.67 times the unswept fin's pressures at M 1.6.
+    for (const tanTe of [t45, -t45]) {
+      const both = fins({ thicknessRatio: 0.045, nearBase: near(doubleWedge(0.045), t45, tanTe) });
+      let e: unknown;
+      try {
+        base(1.6, both);
+      } catch (x) {
+        e = x;
+      }
+      expect(e).toBeInstanceOf(BaseRefusal);
+      expect((e as BaseRefusal).reason).toBe('fin-sweep');
+      expect((e as BaseRefusal).message).toMatch(tanTe > 0 ? /\(aft\)/ : /\(forward\)/);
+      expect((e as BaseRefusal).message).toContain('1.67 times');
+    }
     // Through the total: a tapered planform at the base goes to the rebuilt factor.
     const tapered: FinnedBody = {
       body: { nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 }, cylinderLength: 8 },
@@ -218,7 +235,7 @@ describe('swept fins at the base (0014 section 10.7): the rebuilt factor, not a 
           rootChord: 1,
           span: 1,
           leadingEdgeSweep: Math.PI / 4,
-          trailingEdgeSweep: Math.PI / 4,
+          trailingEdgeSweep: 0,
         }),
         section: doubleWedge(0.08),
         sectionFamily: 'other',
@@ -290,7 +307,8 @@ describe('fins thinner than 5% at some station (0016 section 18) in the rebuilt 
     const r = base(2.0, b);
     const w = r.finsOnBase as FinsOnBaseFactorW1;
     expect(r.finsOnBaseSource).toBe('rebuilt');
-    expect(r.presentRefusal?.reason).toBe('fin-sweep');
+    // Plates are not among the present factor's families (0014 section 10.7).
+    expect(r.presentRefusal?.reason).toBe('fin-trailing-edge');
     expect(w.bounded).toBe(true);
     expect(w.low).toBe(W1_FLAT_RELIEF_LOW);
     expect(w.upper).toMatchObject({ thickness: 0.1 });

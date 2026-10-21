@@ -8,7 +8,7 @@
  *
  * with P_B Love's basic curve of TN 3819 fig. 18 (./compiled-curve.ts; below Mach 1.5, down to 1.0,
  * continued with W2's band and its nominal at the band's midpoint, ./base-w2.ts) and
- * F the fins-on-base factor (./fins-on-base.ts) when fins end at the base,
+ * F the fins-on-base factor (./fins-on-base.ts or ./fins-on-base-w1.ts) when fins end at or near the base,
  * F = 1 without fins near the base. The band adds linearly, as 0008
  * section 6.3 requires:
  *
@@ -26,15 +26,19 @@
  * with fins (0008 section 6.4: no total-drag case with fins clear of the
  * base was found).
  *
- * Which factor (0014 section 10.3, docs/design/0015-fins-at-the-base.md
- * section 5): the present factor (./fins-on-base.ts) wherever it serves,
- * so the Basic Finner's gated total keeps it; the rebuilt factor
- * (./fins-on-base-w1.ts) only where the present factor refuses (fins other
- * than four, thinner than 5%, swept at either edge, at Mach 1.0 to 1.8, or
- * ending within a chord ahead of the base), and only when the fins' section
- * and sweeps are given
- * (`nearBase`); otherwise the present refusal stands. This routing holds
- * until the owner decides otherwise after BRL 934's run.
+ * Which factor (0014 sections 10.3 and 10.7, docs/design/0015-fins-at-the-base.md
+ * section 5): the present factor (./fins-on-base.ts) for the fin families it
+ * was measured on (unswept wedge, circular-arc and hexagonal sections, 5% to
+ * 10%, with the extension below 5% of 0016 section 18), so the Basic Finner's
+ * gated total keeps it; the rebuilt factor (./fins-on-base-w1.ts) where the
+ * present factor refuses (fins other than four, swept at either edge, at Mach
+ * 1.0 to 1.8, ending within a chord ahead of the base) and for flat-faced
+ * fins (plates), which the present factor is not measured on, when the fins'
+ * section and sweeps are given (`nearBase`); otherwise the present refusal
+ * stands. Below Mach 1.5 the rebuilt factor's members built on fig. 35's
+ * free-flight line apply to the curve itself, not on top of W2's 1.065
+ * (0015 section 11.2). This routing holds until the owner decides otherwise
+ * after BRL 934's run.
  *
  * The vacuum bound (./vacuum.ts): the term and its band's ends are each at
  * most 2 / (gamma M^2) times the area ratio, clamped there (`vacuumClamped`
@@ -75,6 +79,12 @@ export interface BaseFins extends FinsAtBase {
    * 0016 section 18). Absent: every station has thicknessRatio.
    */
   readonly thinnest?: { readonly thicknessRatio: number; readonly spanShareBelow: number };
+  /**
+   * Flat faces near the trailing edge (plates, and plates bevelled at the leading edge only): the present
+   * factor is not measured on them, so they go to the rebuilt factor's flat-plate value, RM L52E06's relief
+   * its low end (0014 section 10.7, 2026-10-21).
+   */
+  readonly flatFaced?: boolean;
 }
 
 /** The thinnest fins the fins-on-base factor's data hold: 5% thick (TN 2360, TN 3819 fig. 35). */
@@ -177,7 +187,8 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     throw new BaseRefusal('input', `the base area ratio must be positive, got ${baseAreaRatio}`);
   }
   // W2 (0015 section 11): below Mach 1.5 the curve continued, its band set on free-flight data.
-  const below = mach >= W2_MACH_RANGE[0] && mach < W2_MACH_RANGE[1];
+  // Below M 1.5 W2's continuation, which refuses below 1.0 with its own reason.
+  const below = mach < W2_MACH_RANGE[1];
   const curve = below ? w2CurveBasePressure(mach) : compiledCurveBasePressure(mach);
   const curveRange: CurveBand = below
     ? { ...W2_BAND, source: 'w2' }
@@ -202,8 +213,45 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     if (!(x >= 0 && Number.isFinite(x))) {
       throw new BaseRefusal('input', `the fins' trailing edges must lie at or ahead of the base`);
     }
+    // Below M 1.5 the served body base is W2's, the curve times its band's midpoint (1.065), a free-flight
+    // correction. The rebuilt factor's members built on fig. 35's free-flight line are already free-flight
+    // values over the curve itself, so they apply to the curve at nominal 1, not on top of W2's 1.065
+    // (0015 section 11.2); the zero member and the flat plates' relief, ratios to the body without fins,
+    // apply to W2's term as it is.
+    const onW2Curve = (w: FinsOnBaseFactorW1): FinsOnBaseFactorW1 => {
+      if (!below || curveRange.nominal === 1) return w;
+      const s = 1 / curveRange.nominal;
+      const scaled = (m: FinsOnBaseFactorW1['lower']): FinsOnBaseFactorW1['lower'] =>
+        m.thickness === 0 || m.count === 0
+          ? m
+          : { ...m, band: { low: m.band.low * s, high: m.band.high * s } };
+      const lower = scaled(w.lower);
+      const upper = scaled(w.upper);
+      const low = Math.min(lower.band.low, upper.band.low);
+      const high = Math.max(lower.band.high, upper.band.high);
+      return {
+        ...w,
+        lower,
+        upper,
+        low,
+        high,
+        nominal: 0.5 * (low + high),
+        label:
+          `${w.label}; below M 1.5 the members built on TN 3819 fig. 35's free-flight line apply to Love's ` +
+          `curve itself, not to W2's body base ${curveRange.nominal.toFixed(3)} times it, so the factor is ` +
+          `stated on W2's term (those members over ${curveRange.nominal.toFixed(3)}); at M 1.5 the term ` +
+          "steps where W2's 1.065 ends (0015 section 11.2)",
+      };
+    };
     const rebuilt = (): FinsOnBaseFactorW1 => {
       const near = fins.nearBase;
+      if (near === undefined && fins.flatFaced === true && presentRefusal !== undefined) {
+        throw new BaseRefusal(
+          'fin-trailing-edge',
+          `${presentRefusal.message}; the rebuilt factor's flat-plate value covers square trailing edges ` +
+            'only: a rounded trailing edge has no measurement at the base (0015 section 4)',
+        );
+      }
       if (near === undefined) {
         throw (
           presentRefusal ??
@@ -230,12 +278,14 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
           ? [{ ...near.section, halfThickness: near.section.halfThickness.map((h) => h * scale) }]
           : undefined);
       try {
-        return finsOnBaseFactorW1(mach, {
-          ...near,
-          ...(spanSections === undefined ? {} : { spanSections }),
-          count: fins.count,
-          trailingEdgeAheadOfBase: x,
-        });
+        return onW2Curve(
+          finsOnBaseFactorW1(mach, {
+            ...near,
+            ...(spanSections === undefined ? {} : { spanSections }),
+            count: fins.count,
+            trailingEdgeAheadOfBase: x,
+          }),
+        );
       } catch (e) {
         if (!(e instanceof BaseRefusal) || presentRefusal === undefined) throw e;
         throw new BaseRefusal(
@@ -246,6 +296,17 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     };
     if (x === 0) {
       try {
+        // The present factor serves the fin families it was measured on (wedge, circular-arc and
+        // hexagonal sections); flat-faced fins go to the rebuilt factor's flat-plate value (0014 section
+        // 10.7, 2026-10-21).
+        if (fins.flatFaced === true) {
+          throw new BaseRefusal(
+            'fin-trailing-edge',
+            'the present fins-on-base factor is measured on wedge, circular-arc and hexagonal sections, ' +
+              'not on fins with flat faces at the trailing edge (plates), whose only source at the base, ' +
+              'RM L52E06 fig. 7, measures relief (F 0.85 to 0.88; 0014 section 10.7)',
+          );
+        }
         // Thinner than the present factor's 5% data at some station, none thicker than 10% (0016
         // section 18): the factor at 5% with its low end F = 1.
         const thinnest = fins.thinnest?.thicknessRatio ?? fins.thicknessRatio;

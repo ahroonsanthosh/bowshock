@@ -29,6 +29,7 @@ import {
   W1_MACH_RANGE,
   W1_RELIEF_LOW,
   W1_RELIEF_LOW_FIG38C,
+  W1_RELIEF_MEASURED_FROM,
   W1_RELIEF_ON_ONE_CALL,
   W1_RELIEF_SINGLE_CALLS,
   W1_ZERO_MEMBER_PENDING,
@@ -312,7 +313,11 @@ describe('the members', () => {
     // Below M 1.5 (W2's part): down to RM L52E06's relief with flat plates.
     expect(memberBand(0, 4, 0, 1.3)).toEqual({ low: W1_FLAT_RELIEF_LOW, high: 1 });
     expect(zeroMember(1.3)).toEqual({ low: W1_FLAT_RELIEF_LOW, high: 1 });
-    expect(zeroMember(1.5)).toEqual(ZERO_MEMBER);
+    // RM L52J21a measures from M 1.62: below it the zero member keeps RM L52E06's lower relief, the safe side.
+    expect(W1_RELIEF_MEASURED_FROM).toBe(1.62);
+    expect(zeroMember(1.5)).toEqual({ low: W1_FLAT_RELIEF_LOW, high: 1 });
+    expect(zeroMember(1.619)).toEqual({ low: W1_FLAT_RELIEF_LOW, high: 1 });
+    expect(zeroMember(1.62)).toEqual(ZERO_MEMBER);
   });
 
   it('the reference at M 2.0, by hand from the readings', () => {
@@ -494,7 +499,8 @@ describe('the bands (0015 section 3.6)', () => {
   // [M, case, fins, low, nominal, high, second reading pending (the zero member from M 1.5 rests on fig.
   // 38(c), read once; a moderate sweep on NSWC's Table 2, read once)].
   const TABLE: [number, string, FinsNearBase, number, number, number, boolean][] = [
-    [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9378, 1.2051, 1.4723, true],
+    // Below M 1.62, where RM L52J21a's measurements begin, the zero member is RM L52E06's (read twice).
+    [1.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.8379, 1.1551, 1.4723, false],
     [1.8, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9378, 1.1769, 1.4161, true],
     [2.0, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9378, 1.133, 1.3282, true],
     [2.5, 'double wedge 2.4%, three fins, 45 deg', fins(), 0.9378, 1.1602, 1.3826, true],

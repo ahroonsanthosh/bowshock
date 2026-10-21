@@ -417,9 +417,14 @@ export function memberRatio(
   count: 2 | 4,
   station: number,
   tunnelMach: 1.5 | 2.0,
+  withoutSingleReader = false,
 ): Band | undefined {
   const sel = (p: Tn2360Fig6Point, t: number, n: number, s: number) =>
-    p.mach === tunnelMach && p.thicknessRatio === t && p.count === n && Math.abs(p.xc - s) < 1e-9;
+    p.mach === tunnelMach &&
+    p.thicknessRatio === t &&
+    p.count === n &&
+    Math.abs(p.xc - s) < 1e-9 &&
+    !(withoutSingleReader && p.singleReader === true);
   const val = (dPb: number, e: number) => ({ lo: dPb - e, hi: dPb + e });
   const members = TN2360_FIG6.filter((p) => sel(p, thickness, count, station)).map((p) =>
     val(p.dPb, p.error),
@@ -452,10 +457,11 @@ function ratioAt(
   count: 2 | 4,
   station: number,
   mach: number,
+  withoutSingleReader = false,
 ): Band | undefined {
   const [m0, m1] = W1_TUNNEL_MACHS;
-  const r0 = memberRatio(thickness, count, station, m0);
-  const r1 = memberRatio(thickness, count, station, m1);
+  const r0 = memberRatio(thickness, count, station, m0, withoutSingleReader);
+  const r1 = memberRatio(thickness, count, station, m1, withoutSingleReader);
   if (Math.abs(mach - m0) < 1e-12) return r0;
   if (Math.abs(mach - m1) < 1e-12) return r1;
   if (r0 === undefined || r1 === undefined || !(mach > m0 && mach < m1)) return undefined;
@@ -509,6 +515,38 @@ export function memberBand(
     high = Math.max(high, 1 + b.high);
   }
   return { low, high };
+}
+
+/**
+ * Whether an end of a member's band at M and x/c rests on a symbol of TN 2360 fig. 6 that one reader alone
+ * found (`singleReader`, 0015 section 7): the band's ratio range at a station it uses moves when those
+ * symbols are left out. Such a result carries `secondReadingPending`.
+ */
+export function memberEndOnSingleReader(
+  thickness: Thickness,
+  count: Count,
+  xc: number,
+  mach: number,
+): boolean {
+  if (thickness === 0 || count === 0) return false;
+  const st = stationsOf(thickness, count, mach);
+  const below = st.filter((x) => x <= xc + 1e-12);
+  const above = st.filter((x) => x >= xc - 1e-12);
+  if (below.length === 0 || above.length === 0) return false;
+  for (const station of new Set([Math.max(...below), Math.min(...above)])) {
+    if (thickness === 0.1 && count === 4 && station === 0) continue;
+    const all = ratioAt(thickness, count, station, mach);
+    const kept = ratioAt(thickness, count, station, mach, true);
+    if (all === undefined) continue;
+    if (
+      kept === undefined ||
+      Math.abs(all.low - kept.low) > 1e-12 ||
+      Math.abs(all.high - kept.high) > 1e-12
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // ----------------------------------------------------------- the case's bracket
@@ -646,12 +684,21 @@ export function flatPlateReliefs(): { mach: number; where: 'rim' | 'centre'; fac
 export const W1_FLAT_RELIEF_LOW = Math.min(...flatPlateReliefs().map((r) => r.factor));
 
 /**
- * The zero member at M: from M 1.5 down to RM L52J21a's relief (W1_RELIEF_LOW); below M 1.5 (W2's part) down
- * to RM L52E06's relief with flat plates at the base (W1_FLAT_RELIEF_LOW), the lowest relief measured at or below
- * M 1.5, since RM L52J21a measures none there.
+ * The lowest Mach number at which RM L52J21a measures the relief (fig. 38(c), figs. 8 and 31 to 33): M 1.62.
+ * Below it the zero member keeps RM L52E06's lower relief (W1_FLAT_RELIEF_LOW), the safe side, since no relief
+ * is measured between M 1.10 and 1.62.
+ */
+export const W1_RELIEF_MEASURED_FROM = Math.min(...L52J21A_FIG38C.map((p) => p.mach));
+
+/**
+ * The zero member at M: from M 1.62 down to RM L52J21a's relief (W1_RELIEF_LOW), measured at 1.62 to 2.41 and
+ * carried to 3.0; below 1.62 down to RM L52E06's relief with flat plates at the base (W1_FLAT_RELIEF_LOW),
+ * measured at M 1.05 to 1.10 and carried over 1.0 to 1.62.
  */
 export function zeroMember(mach: number): Band {
-  return mach < W1_MACH_RANGE[0] - 1e-12 ? { low: W1_FLAT_RELIEF_LOW, high: 1 } : ZERO_MEMBER;
+  return mach < W1_RELIEF_MEASURED_FROM - 1e-12
+    ? { low: W1_FLAT_RELIEF_LOW, high: 1 }
+    : ZERO_MEMBER;
 }
 
 /**
@@ -680,9 +727,10 @@ export function nswcFactors(): {
 }
 
 const zeroName = (mach: number) =>
-  mach < W1_MACH_RANGE[0] - 1e-12
+  mach < W1_RELIEF_MEASURED_FROM - 1e-12
     ? `no fins or fins without a pressure field (F 1 down to ${W1_FLAT_RELIEF_LOW.toFixed(3)}, ` +
-      'RM L52E06 fig. 7, below M 1.5)'
+      'RM L52E06 fig. 7, measured with flat plates at M 1.05 to 1.10 and carried to 1.0 and up to ' +
+      `${W1_RELIEF_MEASURED_FROM}, where RM L52J21a's measurements begin)`
     : W1_RELIEF_ON_ONE_CALL
       ? `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, the most ` +
         `relief RM L52J21a allows: its fig. 8 over figs. 31 to 33 at M ${LEAST_BY_CALL.mach}, resting on ` +
@@ -690,7 +738,8 @@ const zeroName = (mach: number) =>
         `${W1_RELIEF_LOW_FIG38C.toFixed(3)})`
       : `no fins or fins without a pressure field (F 1 down to ${W1_RELIEF_LOW.toFixed(3)}, the most ` +
         `relief RM L52J21a allows: its fig. 8 over figs. 31 to 33 by nose, at M ${LEAST_BY_CALL.mach}, ` +
-        `each read twice; fig. 38(c) gives ${W1_RELIEF_LOW_FIG38C.toFixed(3)}` +
+        `each read twice, measured at M ${W1_RELIEF_MEASURED_FROM} to 2.41 and carried to ` +
+        `${W1_MACH_RANGE[1]}; fig. 38(c) gives ${W1_RELIEF_LOW_FIG38C.toFixed(3)}` +
         (W1_RELIEF_SINGLE_CALLS.length > 0
           ? `; ${W1_RELIEF_SINGLE_CALLS.join(' and ')} called by one reader, the second pending)`
           : ')');
@@ -703,6 +752,12 @@ export const W1_LABEL_PREFIX =
   'estimated on component data: the rebuilt fins-on-base factor (0015), between ';
 export const W1_BOUNDED_PREFIX =
   'bounded, not measured: the rebuilt fins-on-base factor (0015), between ';
+
+/** A t/c for a message: beyond 1 (a tip chord near zero), the plate's t/c grows without bound toward the tip. */
+const tcText = (tc: number) =>
+  Number.isFinite(tc) && tc <= 1
+    ? `t/c ${tc.toFixed(3)}`
+    : 'whose t/c grows without bound toward a tip chord of zero';
 
 export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBaseFactorW1 {
   const { count, section } = fins;
@@ -752,8 +807,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     throw new BaseRefusal(
       'fin-sweep',
       `fins with a leading edge swept ${deg(le)} deg and a trailing edge ${deg(tes)} deg at M ${mach}: ` +
-        'fins at the base are measured unswept, with the leading edge swept 45 deg (RM L52J21a) and 60 ' +
-        'deg (the RM-10, TN 3819 fig. 34) and the trailing edge swept no more, and, at M 2.0 to 3.0 only, ' +
+        'fins at or near the base are measured unswept, with the leading edge swept 45 deg (RM L52J21a, a ' +
+        'chord ahead of the base) and 60 deg (the RM-10, TN 3819 fig. 34), and, at M 2.0 to 3.0 only, ' +
         'with the leading edge swept 43.9 deg and the trailing edge unswept (NSWCDD/TR-92/509); other ' +
         'sweeps are not measured and their ordering is not shown (0015 section 3.4)',
     );
@@ -771,6 +826,22 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     throw new BaseRefusal(
       'input',
       `the rebuilt factor takes fins ending 0 to 1 chord ahead of the base, got ${xc}`,
+    );
+  }
+  // At the base, a sharp section with a swept trailing edge (either way) rests on no measurement: RM
+  // L52J21a's 45 deg fins end about 0.8 root chords ahead of the base, the RM-10's trailing-edge sweep is not
+  // stated, and linear theory puts the faces behind a swept edge above the unswept fin's (0015 section 3.4).
+  if (!bounded && xc === 0 && tes > 1e-9) {
+    const k = (m: number) => Math.sqrt(m * m - 1) / Math.sqrt(m * m - 1 / Math.cos(tes) ** 2);
+    const factor = mach * Math.cos(tes) > 1 ? `${k(mach).toFixed(2)} times` : 'more than';
+    throw new BaseRefusal(
+      'fin-sweep',
+      `fins of a sharp section at the base with the trailing edge swept ${deg(tes)} deg ` +
+        `(${fins.tanTrailingEdgeSweep < 0 ? 'forward' : 'aft'}) at M ${mach}: no such fins are measured ` +
+        "at the base (RM L52J21a's 45 deg fins end about 0.8 root chords ahead of it; the RM-10's " +
+        'trailing-edge sweep is not stated), and linear theory gives the faces behind that edge ' +
+        `${factor} the unswept fin's pressures, so they may act as thicker fins than the bracket's ` +
+        'upper member (0015 section 3.4)',
     );
   }
   if (!(mach >= W1_LOW_MACH && mach <= W1_MACH_RANGE[1])) {
@@ -798,7 +869,7 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     throw new BaseRefusal(
       'fin-thickness',
       bounded
-        ? `flat-faced fins t/c ${thickness.toFixed(3)}: the circular-arc members that bound them reach ` +
+        ? `flat-faced fins ${tcText(thickness)}: the circular-arc members that bound them reach ` +
             't/c 0.10 (TN 2360, TN 3819 fig. 33)'
         : `this section is not inside the 10%-thick circular arc near its edges (it would need an ` +
             `arc of t/c ${tr.tauEq.toFixed(3)}); thicker fins at the base are not measured (TN 2360, ` +
@@ -873,6 +944,12 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         "member and unswept fins, where NSWCDD/TR-92/509's 43.9 deg fins lie, linear theory moving the " +
         "aft faces' pressures by at most 4% with the leading-edge sweep (0015 section 3.4)",
     );
+  } else if (swept && !bounded && xc === 0) {
+    reasons.push(
+      `the leading edge swept ${deg(le)} deg with the trailing edge unswept: bracketed between the ` +
+        "zero member and unswept fins, as the RM-10's 60 deg fins at the base lie (TN 3819 fig. 34) and " +
+        "RM L52J21a's 45 deg fins a chord ahead of it (0015 section 3.4)",
+    );
   } else if (swept) {
     reasons.push(
       'swept fins bracketed between the zero member and unswept fins, as the measured swept fins lie ' +
@@ -883,8 +960,14 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   }
   if (mach < W1_MACH_RANGE[0] - 1e-12) {
     reasons.push(
-      "below M 1.5 the reference is TN 3819 fig. 35's free-flight line with the tunnel excess carried, " +
-        "and the zero member reaches down to RM L52E06's relief (0015 section 11)",
+      "below M 1.5 the reference is TN 3819 fig. 35's free-flight line with the tunnel excess measured at " +
+        `M 2.41 (${largestTunnelExcess().toFixed(4)}) carried down, and the zero member reaches down to ` +
+        "RM L52E06's relief (0015 section 11)",
+    );
+  } else if (mach > 2.41 + 1e-12 && !aboveLine) {
+    reasons.push(
+      "above M 2.41, the tunnels' last Mach number, the reference's high end carries the tunnel excess " +
+        `measured there (${largestTunnelExcess().toFixed(4)}) on the free-flight line (0015 section 3.1)`,
     );
   }
   if (aboveLine) {
@@ -892,6 +975,15 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
       `above M ${FIG35_FREE_FLIGHT_END}, where TN 3819 fig. 35's free-flight curve ends, the reference is ` +
         `bounded, not measured: from the zero member's low end (F ${W1_RELIEF_LOW.toFixed(4)}) to its high end at M ` +
         `${FIG35_FREE_FLIGHT_END} (0010 section 11, 0015 section 3.1)`,
+    );
+  }
+  const singleEnd =
+    memberEndOnSingleReader(lower.thickness, lower.count, xc, mach) ||
+    memberEndOnSingleReader(upper.thickness, upper.count, xc, mach);
+  if (singleEnd) {
+    reasons.push(
+      'an end of the band rests on a symbol of TN 2360 fig. 6 that one reader alone found, the second ' +
+        'reading pending (0015 section 7)',
     );
   }
   if (count === 3) reasons.push('three fins bracketed between two (or none) and four');
@@ -921,10 +1013,15 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     // Above M 2.56 the bounded reference's low end is the zero member's, so it rests on fig. 38(c) too.
     secondReadingPending:
       moderate ||
+      singleEnd ||
       (W1_ZERO_MEMBER_PENDING &&
-        (lower.thickness === 0 || upper.thickness === 0 || aboveLine) &&
+        (lower.thickness === 0 ||
+          lower.count === 0 ||
+          upper.thickness === 0 ||
+          upper.count === 0 ||
+          aboveLine) &&
         !bounded &&
-        mach >= W1_MACH_RANGE[0] - 1e-12) ||
+        mach >= W1_RELIEF_MEASURED_FROM - 1e-12) ||
       !L52J21A_FIG8.some((p) => p.reading === 'w1 second'),
   };
 }

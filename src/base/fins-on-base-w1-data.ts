@@ -40,6 +40,8 @@ export interface Tn2360Fig6Point {
   /** Trailing edge ahead of the base, in chords. */
   readonly xc: number;
   readonly dPb: number;
+  /** Found by one reader only (0015 section 7); a band end resting on it carries secondReadingPending. */
+  readonly singleReader?: true;
   /** Reading error, in dPb. */
   readonly error: number;
 }
@@ -51,6 +53,8 @@ const p6 = (
   xc: number,
   dPb: number,
 ): Tn2360Fig6Point => ({ reading: 'w1 first', mach, count, thicknessRatio, xc, dPb, error: 0.002 });
+/** A symbol one reader alone found (0015 section 7: the other reader's scan shows none there). */
+const single = (p: Tn2360Fig6Point): Tn2360Fig6Point => ({ ...p, singleReader: true });
 /** A second-reading symbol, with its own reading error. */
 const p6s = (
   mach: 1.5 | 2.0,
@@ -96,14 +100,14 @@ export const TN2360_FIG6: readonly Tn2360Fig6Point[] = [
   p6(2.0, 4, 0.1, 1.0, -0.0096),
   p6(2.0, 4, 0.05, 1.0, 0.0064),
   p6(2.0, 4, 0.1, 0.8, -0.0124),
-  p6(2.0, 4, 0.1, 0.6, -0.0344),
+  single(p6(2.0, 4, 0.1, 0.6, -0.0344)),
   p6(2.0, 4, 0.1, 0.6, -0.0295),
   p6(2.0, 4, 0.1, 0.4, -0.0629),
   p6(2.0, 4, 0.05, 0.4, -0.0221),
   p6(2.0, 4, 0.1, 0.2, -0.0642),
   p6(2.0, 4, 0.1, 0.2, -0.057),
   p6(2.0, 4, 0.1, 0.0, -0.064),
-  p6(2.0, 4, 0.1, 0.0, -0.0573),
+  single(p6(2.0, 4, 0.1, 0.0, -0.0573)),
   p6(2.0, 4, 0.1, 0.0, -0.0509),
   p6(2.0, 4, 0.05, 0.0, -0.0321),
   // The second reading (round 6), in its file's order: x/c 0 to 1.0, each at the nearest station.
@@ -117,14 +121,14 @@ export const TN2360_FIG6: readonly Tn2360Fig6Point[] = [
   p6s(1.5, 2, 0.1, 0, -0.0686, 0.0003),
   p6s(1.5, 2, 0.1, 1, -0.0085, 0.0021),
   p6s(1.5, 4, 0.1, 1, 0.0144, 0.0003),
-  p6s(1.5, 4, 0.1, 1, 0.0094, 0.0003),
+  single(p6s(1.5, 4, 0.1, 1, 0.0094, 0.0003)),
   p6s(1.5, 4, 0.05, 1, 0.0071, 0.0003),
   p6s(1.5, 4, 0.1, 0.8, 0.0031, 0.0003),
   p6s(1.5, 4, 0.05, 0.6, 0.004, 0.0003),
   p6s(1.5, 4, 0.1, 0.6, -0.0112, 0.0003),
   p6s(1.5, 4, 0.05, 0.4, -0.0049, 0.0003),
   p6s(1.5, 4, 0.05, 0.2, -0.0231, 0.0003),
-  p6s(1.5, 4, 0.1, 0.2, -0.0644, 0.0003),
+  single(p6s(1.5, 4, 0.1, 0.2, -0.0644, 0.0003)),
   p6s(1.5, 4, 0.1, 0.2, -0.0598, 0.0003),
   p6s(1.5, 4, 0.05, 0, -0.0739, 0.0003),
   p6s(1.5, 4, 0.1, 0, -0.1207, 0.0003),

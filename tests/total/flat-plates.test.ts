@@ -249,7 +249,8 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
     );
     const base = r.refusals.find((x) => x.component === 'body base');
     expect(base?.reason).toBe('fin-thickness');
-    expect(base?.message).toMatch(/t\/c = 0\.15 is outside them/);
+    // Plates go to the rebuilt factor's flat-plate value (0014 section 10.7), whose arcs reach t/c 0.10.
+    expect(base?.message).toMatch(/flat-faced fins t\/c 0\.150/);
     // The same plates of constant chord 120 mm (t/c 0.06 everywhere) are inside the factor's range.
     const square = {
       ...fins,
@@ -263,7 +264,7 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
     expect(q.refusals.find((x) => x.component === 'body base')).toBeUndefined();
   });
 
-  it("plates thinner than the factor's 5% data at the base: unswept, served with the low end F = 1 and labelled; tapered, refused by the present factor for sweep and served by the rebuilt one; thicker than 10%, refused", () => {
+  it("plates at the base: the rebuilt factor's flat-plate value, RM L52E06's relief its low end (0014 section 10.7); thicker than 10%, refused", () => {
     const plates = (thickness: number, taperRatio: number, count = 4) => ({
       count,
       planform: clippedDeltaPlanform({ rootChord: 0.12, span: 0.08, taperRatio }),
@@ -278,29 +279,29 @@ describe('the review of 2026-10-21 (0016 section 16)', () => {
         cond(2.0),
         exactConeNoseWaveDrag(2.0, Math.atan(0.027 / 0.2)),
       );
-    // Four 3 mm plates of constant chord 120 mm: t/c 0.025 at every station.
+    // Four 3 mm plates of constant chord 120 mm (t/c 0.025): the present factor is not measured on
+    // plates; the rebuilt factor bounds them from RM L52E06's relief to the 5% arc member, not from F = 1.
     const thin = run(plates(0.003, 1));
-    const base = thin.components.find((c) => c.name === 'body base')!;
     expect(thin.refusals.filter((x) => x.component === 'body base')).toEqual([]);
-    expect(base.label).toMatch(
-      /extended below the data's 5% thickness: t\/c down to 0\.025 over 100% of the span, the low end taken as no fin effect \(F = 1/,
+    expect(thin.base?.finsOnBaseSource).toBe('rebuilt');
+    expect(thin.base?.presentRefusal?.reason).toBe('fin-trailing-edge');
+    expect(thin.base?.finsOnBase?.bounded).toBe(true);
+    expect(thin.base?.finsOnBase?.low).toBeCloseTo(0.8379, 4);
+    expect(thin.components.find((c) => c.name === 'body base')!.label).toMatch(
+      /bounded, not measured: the rebuilt fins-on-base factor \(0015\), between the lowest relief measured with flat-faced fins/,
     );
-    // The same plates 6 mm thick (t/c 0.05): inside the data, the factor as it was.
-    const inside = run(plates(0.006, 1)).components.find((c) => c.name === 'body base')!;
-    expect(inside.label).not.toMatch(/extended below/);
-    // The factor's low end is no fin effect and its nominal the midpoint up to the factor's high
-    // end: the term and its low end fall, the high end does not rise.
-    expect(base.cd).toBeLessThan(inside.cd);
-    expect(base.low).toBeLessThan(inside.low);
-    expect(base.high).toBeLessThanOrEqual(inside.high);
-    // Tapered (root 120 mm, tip 48 mm, t/c 0.025 to 0.0625): a swept edge, refused by the present
-    // factor; the rebuilt factor (0015 section 5) serves it, the leading edge swept 42 deg with the
-    // trailing edge unswept at M 2.0 (its moderate sweeps, 3.4), bounded as a flat plate (section 4),
-    // the tip's t/c setting its upper member and the root's its lower (3.6).
+    // The same plates 6 mm thick (t/c 0.05): the same bracket, the 5% arc member at least as thick.
+    const inside = run(plates(0.006, 1));
+    expect([inside.base?.finsOnBase?.low, inside.base?.finsOnBase?.high]).toEqual([
+      thin.base?.finsOnBase?.low,
+      thin.base?.finsOnBase?.high,
+    ]);
+    // Tapered (root 120 mm, tip 48 mm, t/c 0.025 to 0.0625): the leading edge swept 42 deg with the
+    // trailing edge unswept at M 2.0 (the rebuilt factor's moderate sweeps, 0015 section 3.4), bounded as a
+    // flat plate (section 4), the tip's t/c setting its upper member (3.6): the 10% arc.
     const taperedRun = run(plates(0.003, 0.4));
     expect(taperedRun.refusals.find((x) => x.component === 'body base')).toBeUndefined();
     expect(taperedRun.base?.finsOnBaseSource).toBe('rebuilt');
-    expect(taperedRun.base?.presentRefusal?.reason).toBe('fin-sweep');
     expect(taperedRun.base?.finsOnBase?.bounded).toBe(true);
     // Thicker than 10% anywhere stays refused (13 mm over 120 mm: 0.108).
     const thick = run(plates(0.013, 1)).refusals.find((x) => x.component === 'body base');

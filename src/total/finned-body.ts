@@ -70,6 +70,7 @@ import {
   type BaseFins,
   type BodyBaseDrag,
 } from '../base/base-drag';
+import { trailingEdgeShape } from '../base/fins-on-base-w1';
 import {
   FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
@@ -639,10 +640,15 @@ export function baseFinsOf(fins: FinSet): BaseFins {
             bluntTrailingEdge: true,
           }
         : undefined;
+  // Flat faces at the trailing edge (plates; a plate bevelled at the leading edge only): not the present
+  // factor's families (0014 section 10.7).
+  const flatFaced =
+    plate !== undefined || (section !== undefined && trailingEdgeShape(section) === 'flat');
   return {
     count: fins.count,
     thicknessRatio,
     ...(plate === undefined ? {} : { thinnest: plateThinnest(plate.thickness, fins.planform) }),
+    ...(flatFaced ? { flatFaced: true } : {}),
     section: fins.sectionFamily,
     tanLeadingEdge: fins.planform.tanLeadingEdge,
     tanTrailingEdge: fins.planform.tanTrailingEdge,
