@@ -1179,4 +1179,9 @@ the 3 of 20 totals amendment (e) refused on main are served here. The
 rounded-trailing-edge plates that amendment (e) refused are 0.2% of the
 cases at Mach 1.8 to 3.0, and every one is refused by its edge term
 anyway (W11), so no total moves with them. No case is newly refused that
-an honest band covers.
+an honest band covers. With amendment (f) merged after it, totals at Mach
+1.0 to 1.5 are 0% on the W1 branch too: W2 serves the body base there,
+and fin friction refuses every case (the six totals at Mach 1.2 to 1.5,
+double wedges, are refused for it); totals of all bands 1.9% (Mach 1.5 to
+1.8: 2.5%; 1.8 to 3.0: 5.2%), the cross-check agreeing on all 1200
+cases.

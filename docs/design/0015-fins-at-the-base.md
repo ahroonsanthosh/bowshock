@@ -117,14 +117,18 @@ bracket hobby fins only between families, not on them.
 **Coverage** (0014's population, section 8): totals of all bands rise
 from 0.1% before W1 to 0.7% after it and 1.0% after W1b and W2; with
 main's fin edges of flat plates merged (0016), 2.1%; after the review of
-2026-10-21, 2.0% (Mach 1.5 to 1.8: 2.5%; 1.8 to 3.0: 5.2%; the ten cases
-lost are sharp sections with a swept trailing edge at the base), against
-0.2% for main with the present factor alone after its plates-at-base
-hotfix. Of the 159 totals served, 80 carry the flat-plate value. The
+2026-10-21, 2.0% (the ten cases lost are sharp sections with a swept
+trailing edge at the base); and with main's fins' own-drag guard merged
+(0014 section 10.7 (f): fin friction and the wave drag of sharp sections
+refused below Mach 1.5), 1.9%: 0% at Mach 1.0 to 1.5, where W2 serves the
+body base but every total waits for the fin terms, 2.5% at 1.5 to 1.8 and
+5.2% at 1.8 to 3.0, against 0.2% for main with the present factor alone.
+Of the 153 totals served, 80 carry the flat-plate value. The
 rebuilt factor still refuses, of each band from Mach 1.5: unmeasured
 sweeps 18% to 45%, rounded and diverging trailing edges 15%, steep bevels
 6.5% to 13%, fins within a chord above Mach 2.0 11.5% (Mach 1.8 to 3.0).
-Totals at Mach 1.0 to 1.2 stay 0% until the nose solve there (W7).
+Totals at Mach 1.0 to 1.5 stay 0% until W7: its nose solve below Mach 1.2
+and its fin terms near Mach 1 (0019).
 
 ## 2. What moves the factor, in the band-setting sources
 
@@ -939,7 +943,8 @@ condition per Mach band), with `evaluate.ts` asking the library itself
 (`bodyBaseDrag` with the fins' section and sweeps) at Mach 1.0 to 3.0.
 Runs: before W1, `out/impact-before-w1.out` (0014's); after W1,
 `out/impact-after-w1.out`; now (after W1b, W2, main's fin edges of flat
-plates and the review of 2026-10-21), `out/impact.out`.
+plates, the review of 2026-10-21 and main's fins' own-drag guard),
+`out/impact.out`.
 
 Totals (a number served for the whole rocket), share of the cases in each
 band:
@@ -950,12 +955,13 @@ band:
 | after W1                                                 | 0.7%       | 0%           | 0%         | 1.4%       | 1.4%       |
 | after W1b and W2                                         | **1.0%**   | 0%           | **0.3%**   | 1.4%       | **2.4%**   |
 | with main's fin edges of flat plates (0016, W3, W4)      | 2.1%       | 0%           | 0.3%       | 2.7%       | 5.5%       |
-| after the review of 2026-10-21, now                      | **2.0%**   | 0%           | 0.3%       | **2.5%**   | **5.2%**   |
+| after the review of 2026-10-21                           | 2.0%       | 0%           | 0.3%       | 2.5%       | 5.2%       |
+| with main's fins' own-drag guard (7411c70), now          | **1.9%**   | 0%           | **0%**     | **2.5%**   | **5.2%**   |
 | main alone, after its plates-at-base hotfix (e42d5d4)    | 0.2%       | 0%           | 0%         | 0.3%       | 0.5%       |
-| Blunted tips entered as sharp, after W1, now             | 1.2%, 3.5% |              |            |            |            |
-| Every condition at 0 km, and at 20 km, now               | 2.0%, 1.7% |              |            |            |            |
-| Variant: four-fin, sharp-edged fins, after W1, now       | 1.6%, 2.8% |              |            |            |            |
-| Variant: fewer Haack noses and blunt tips, after W1, now | 1.4%, 4.2% |              |            |            |            |
+| Blunted tips entered as sharp, after W1, now             | 1.2%, 3.4% |              |            |            |            |
+| Every condition at 0 km, and at 20 km, now               | 1.9%, 1.6% |              |            |            |            |
+| Variant: four-fin, sharp-edged fins, after W1, now       | 1.6%, 2.6% |              |            |            |            |
+| Variant: fewer Haack noses and blunt tips, after W1, now | 1.4%, 4.1% |              |            |            |            |
 
 The fig. 35 correction of 2026-10-21 (section 3.1) and round 7's pairing
 (fig. 18's row at M 1.4, W2's interpolation bound; section 7) move no
@@ -1004,13 +1010,31 @@ review the reviewer counted 77 of 169 on the flat-plate value. The
 cross-check agrees on all 1200 cases; it is not independent for the base
 term (section 5).
 
+**With main's fins' own-drag guard** (7411c70, 0014 section 10.7 (f),
+merged after the review): below Mach 1.5 fin friction (every fin) and the
+wave drag of sharp sections are refused, their band (the fins' own drag,
+ARCAS) being measured at Mach 1.5 to 2.96 only. On main the body base
+refused every total there already; here W2 serves it, so the guard is
+what refuses them, and the coverage shows totals at Mach 1.0 to 1.5 only
+where every component is served: none. Totals of all bands 2.0% to 1.9%,
+Mach 1.2 to 1.5 0.3% to 0%: the six cases there (double wedges, two at
+the base on the rebuilt factor and four a chord or more ahead on the plain
+curve) are now refused for fin friction and fin wave drag; Mach 1.5 to
+3.0 unchanged. Of the 153 totals served now, 80 carry the rebuilt
+factor's flat-plate value, 56 the rebuilt factor on sharp sections, 2 the
+present factor and 15 the plain curve. The rebuilt factor's part below
+Mach 1.5 (section 11) is served in the body base term and enters no total
+until the fin terms near Mach 1 are measured (W7, 0019). Cross-check 1200
+of 1200.
+
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in
 12.2%, 20.4%, 31.4% and 45.8% of the four bands, from 0%, 0%, 31.4% and
 29.5% after W1. Once W3, W4 and W5 are done the totals would be 6.3% at
-Mach 1.2 to 1.5 and 13.5% at 1.8 to 3.0 (the probe), against 0014's
-projection of 16.3% and 17.1% with every base refusal lifted; totals at
-Mach 1.0 to 1.2 stay 0% until W7.
+Mach 1.2 to 1.5 and 13.5% at 1.8 to 3.0 (the probe, made before the fins'
+own-drag guard; with it, 0% below Mach 1.5 until W7's fin terms), against
+0014's projection of 16.3% and 17.1% with every base refusal lifted;
+totals at Mach 1.0 to 1.2 stay 0% until W7.
 
 The rebuilt factor's own refusals, as a share of each band's cases (now):
 
@@ -1110,6 +1134,14 @@ nominal at the band's midpoint and the linear band sum kept. Library:
 `src/base/base-w2.ts`, routed in `src/base/base-drag.ts`; fins at the base
 through `fins-on-base-w1.ts` below M 1.5; tests `tests/base/base-w2.test.ts`
 and the W2 rows of `fins-on-base-w1.test.ts`.
+
+Totals below Mach 1.5: W2 serves the body base term there, with fins at
+the base, but since main's guard (0014 section 10.7 (f), merged here on
+2026-10-21) fin friction and the wave drag of sharp sections are refused
+below Mach 1.5, their band measured at Mach 1.5 to 2.96 only, so no total
+below 1.5 is served until the fin terms near Mach 1 are (W7, design
+record 0019). What this section sets is the base term such a total
+would carry.
 
 ### 11.1 The body base, Mach 1.0 to 1.5
 
