@@ -134,6 +134,35 @@ const PAGES = [
     // still drawn (Mach 2), not of the case being set up.
     png: { select: '#mach', value: '3', expect: '-M2-' },
   },
+  {
+    id: 'drag',
+    path: 'demos/nose-drag.html',
+    // Run the default case (the Basic Finner's body at Mach 2) until its
+    // first grid is drawn and checked: its finest grid, 160 cells across,
+    // would take hours on software WebGPU.
+    ready: async (page) => {
+      await until(page, async () => !(await page.isDisabled('#run')), 120);
+      await page.click('#run');
+      return until(page, async () => (await readoutValue(page, 'cd')) !== '', 900);
+    },
+    shots: [
+      ['mach', ['2']],
+      ['split', ['d']],
+    ],
+    keys: [
+      { press: '1', expect: { pressed: 'Schlieren' } },
+      { press: 'd', expect: { notPressed: 'Split' } },
+      { press: 'g', expect: { pressed: 'Grid' } },
+      { press: 'g', expect: { notPressed: 'Grid' } },
+      { press: ' ', expect: { text: ['#pause', 'Resume'] } },
+      { press: ' ', expect: { text: ['#pause', 'Pause'] } },
+      { press: 'h', expect: 'dialog-open' },
+    ],
+    // 2 in the focused Nose select shows Mach, and leaves the nose.
+    select: { focus: '#shape', press: '2', pressed: 'Mach' },
+    // Another Mach number typed and K pressed: the PNG is of the flow drawn (Mach 2).
+    png: { fill: '#mach', value: '3', expect: '-M2-' },
+  },
 ];
 
 function argument(name, fallback) {
@@ -289,14 +318,17 @@ async function selectKeys(page, spec) {
 async function pngOfDrawnCase(page, spec) {
   await page.evaluate(() => document.activeElement?.blur());
   const download = page.waitForEvent('download', { timeout: 30_000 }).catch(() => null);
-  await page.selectOption(spec.select, spec.value);
+  if (spec.select !== undefined) await page.selectOption(spec.select, spec.value);
+  else await page.fill(spec.fill, spec.value);
+  // K from outside the field typed in (keys do not act in a text field).
+  await page.evaluate(() => document.activeElement?.blur());
   await page.keyboard.press('k');
   const file = await download;
   const name = file?.suggestedFilename() ?? 'none';
   const ok = name.includes(spec.expect);
   return {
     problems: ok ? 0 : 1,
-    line: `${spec.select} set to ${spec.value}, then K: saved ${name}${ok ? '' : `, expected a name with ${spec.expect}`}`,
+    line: `${spec.select ?? spec.fill} set to ${spec.value}, then K: saved ${name}${ok ? '' : `, expected a name with ${spec.expect}`}`,
   };
 }
 
