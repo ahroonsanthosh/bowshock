@@ -68,5 +68,7 @@ describe('two-scale noses on the CPU (design record 0006)', () => {
     // iterative errors of them.
     expect(Math.abs(first.drag / MEASURED[0]! - 1)).toBeLessThan(1e-9);
     expect(Math.abs(second.drag / MEASURED[1]! - 1)).toBeLessThan(1e-9);
-  }, 1_800_000);
+    // Two fits to round-off, the finer on 226 x 40 cells: past 1800 s on
+    // four cores loaded at 13 to 17.
+  }, 3_600_000);
 });
