@@ -18,12 +18,16 @@ export type BaseRefusalReason =
   | 'fin-count'
   /** Fins at the base thinner or thicker than the data bracket. */
   | 'fin-thickness'
+  /** Fins at the base with a swept leading or trailing edge (the factor is measured on unswept fins). */
+  | 'fin-sweep'
   /** Swept blunt trailing edges. */
   | 'swept-trailing-edge'
   /** A laminar layer at a blunt trailing edge. */
   | 'laminar-trailing-edge'
-  /** A boundary layer thick against the trailing edge. */
+  /** A boundary layer thick against the trailing edge, beyond the data. */
   | 'thick-layer'
+  /** A rounded trailing edge: bounded, but the ordering of its bounds is not shown (0016). */
+  | 'rounded-trailing-edge'
   /** An input that needs a curve more than one read interval beyond its readings. */
   | 'beyond-read-range'
   /** A geometric input out of range. */

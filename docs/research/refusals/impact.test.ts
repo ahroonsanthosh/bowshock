@@ -30,7 +30,8 @@ import {
 } from './evaluate';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const outDir = join(here, 'out');
+// OUT_DIR, relative to the repository root, writes a run elsewhere (the dated runs under out/).
+const outDir = process.env.OUT_DIR === undefined ? join(here, 'out') : process.env.OUT_DIR;
 
 const N_ROCKETS = Number(process.env.N_ROCKETS ?? 2000);
 const CROSS_CHECK = Number(process.env.CROSS_CHECK ?? 300);
@@ -42,8 +43,9 @@ const CROSS_CHECK = Number(process.env.CROSS_CHECK ?? 300);
  * since lifting one alone unlocks nothing.
  */
 export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
-  'W1 fins at the base for hobby fins (3 and 4 fins, thin, any trailing edge, M 1.5 to 3.0) and within a chord': [
+  'W1 fins at the base for hobby fins (3 and 4 fins, thin, swept, any trailing edge, M 1.5 to 3.0) and within a chord': [
     'finsAtBaseThickness',
+    'finsAtBaseSwept',
     'finsAtBaseCount',
     'finsAtBaseMach',
     'finsNearBase',
@@ -354,6 +356,8 @@ test('refusal impact on a population of supersonic amateur rockets', () => {
     '',
   );
   json.crossCheck = { checked, agree };
-  writeFileSync(join(outDir, 'impact.out'), lines.join('\n'));
-  writeFileSync(join(outDir, 'impact.json'), JSON.stringify(json, null, 1));
+  // OUT_NAME keeps a later run beside the one 0014 quotes (impact.out): 0016's is impact-w34.
+  const name = process.env.OUT_NAME ?? 'impact';
+  writeFileSync(join(outDir, `${name}.out`), lines.join('\n'));
+  writeFileSync(join(outDir, `${name}.json`), JSON.stringify(json, null, 1));
 });

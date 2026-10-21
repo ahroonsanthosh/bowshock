@@ -15,7 +15,9 @@
  *   term with the nominal F;
  * - the interpolation-error bound of the curve, times F and the area ratio;
  * - the fins-on-base band, (F_low - F) and (F_high - F) times -P_B and the
- *   area ratio.
+ *   area ratio. Above M 2.56, where TN 3819 fig. 35's free-flight curve
+ *   ends, the factor is bounded, not measured (0014 section 10.2), and its
+ *   label carries the gap between the bounds in C_D.
  *
  * Fins: with their trailing edges at the base, the factor applies; ending
  * one root chord or more ahead of it, the plain curve (TN 2360 found the
@@ -26,7 +28,7 @@
  * The vacuum bound (./vacuum.ts): the term and its band's ends are each at
  * most 2 / (gamma M^2) times the area ratio, clamped there (`vacuumClamped`
  * lists what was; the parts are reported unclamped). Over M 1.5 to 3.0 no
- * value reaches it (the band's high end is at most 0.9535 of it, at M 3.0
+ * value reaches it (the band's high end is at most 0.8840 of it, at M 3.0
  * with fins at the base; 0.656 without fins); the clamp is a guard.
  *
  * Blunt fin trailing edges are a further base, ./fin-trailing-edge.ts.
@@ -49,6 +51,39 @@ export const COMPILED_CURVE_LABEL =
 export interface BaseFins extends FinsAtBase {
   /** Distance of the fins' trailing edges ahead of the base, in root chords (0: at the base). */
   readonly trailingEdgeAheadOfBase: number;
+  /**
+   * The thinnest station's thickness over chord and the share of the span
+   * thinner than the factor's thinnest data (a flat plate of varying chord;
+   * 0016 section 18). Absent: every station has thicknessRatio.
+   */
+  readonly thinnest?: { readonly thicknessRatio: number; readonly spanShareBelow: number };
+}
+
+/** The thinnest fins the fins-on-base factor's data hold: 5% thick (TN 2360, TN 3819 fig. 35). */
+export const FINS_ON_BASE_THINNEST_DATA = 0.05;
+
+/**
+ * Fins thinner than the factor's 5% data at some station, none thicker than
+ * 10% (0016 section 18, the coordinator's rule): the factor at 5%, its low
+ * end taken as no fin effect (F = 1), the physical limit, since thinner fins
+ * lower the base pressure less, its high end kept (it rests on the 10% fins
+ * and the tunnel data), the nominal the midpoint.
+ */
+function extendedBelowThinnestData(
+  f: FinsOnBaseFactor,
+  thicknessRatio: number,
+  spanShare: number,
+): FinsOnBaseFactor {
+  return {
+    ...f,
+    low: 1,
+    nominal: 0.5 * (1 + f.high),
+    label:
+      `${f.label}; extended below the data's 5% thickness: t/c down to ` +
+      `${thicknessRatio.toFixed(3)} over ${(100 * spanShare).toFixed(0)}% of the span, the low ` +
+      'end taken as no fin effect (F = 1; thinner fins lower the base pressure less), the high ' +
+      "end the factor's own, which rests on the 10% fins and the tunnel data (0016)",
+  };
 }
 
 export interface BodyBaseInput {
@@ -110,8 +145,24 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       throw new BaseRefusal('input', `the fins' trailing edges must lie at or ahead of the base`);
     }
     if (x === 0) {
-      factor = finsOnBaseFactor(mach, fins);
-      labels.push(factor.label);
+      const thinnest = fins.thinnest?.thicknessRatio ?? fins.thicknessRatio;
+      const below = thinnest < FINS_ON_BASE_THINNEST_DATA && fins.thicknessRatio <= 0.1;
+      factor = finsOnBaseFactor(
+        mach,
+        below
+          ? { ...fins, thicknessRatio: Math.max(fins.thicknessRatio, FINS_ON_BASE_THINNEST_DATA) }
+          : fins,
+      );
+      if (below) {
+        factor = extendedBelowThinnestData(factor, thinnest, fins.thinnest?.spanShareBelow ?? 1);
+      }
+      // Bounded, not measured: the gap between the bounds in C_D beside it (0014 section 10.2).
+      labels.push(
+        factor.bounded
+          ? `${factor.label}; the gap between the bounds is ` +
+              `${((factor.high - factor.low) * -curve.pB * baseAreaRatio).toFixed(4)} in C_D`
+          : factor.label,
+      );
     } else if (x < 1) {
       throw new BaseRefusal(
         'fins-near-base',
