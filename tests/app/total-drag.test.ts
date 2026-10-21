@@ -771,6 +771,12 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     expect(basicFinnerClass(plate('rounded', 'square')).outside).toContain(
       'the fin section is not a single wedge with a blunt trailing edge',
     );
+    // The hidden radius field is not checked on a plate (0016 section 16): no "NaN cal".
+    const outside = basicFinnerClass({
+      ...plate('rounded', 'square'),
+      leadingEdgeRadius: Number.NaN,
+    }).outside;
+    expect(outside.some((x) => x.includes('leading-edge radius'))).toBe(false);
   });
 
   it('a rounded leading edge and a square trailing edge: a total, an estimate', () => {

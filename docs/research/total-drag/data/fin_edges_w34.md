@@ -2,10 +2,12 @@
 
 Transcriptions for design record 0016 (blunt trailing edges of thin and
 tapered fins; rounded leading edges on flat, tapered and swept fins; the
-"bounded, not measured" edges of 0014 section 10.2). **First readings; the
-independent reader's blind second readings are pending** (they are made
-without this file, and this file was made without theirs). Every band is
-to be the envelope of both readings.
+"bounded, not measured" edges of 0014 section 10.2). **First readings.**
+The independent reader's blind second readings (made without this file,
+as this file was made without theirs) are paired in section 8 and 0016
+sections 13, 14 and 16; every band is the envelope of both readings. TN
+3861 figs. 15 and 16 are read twice and fig. 17 once (section 4): a check,
+not a band.
 
 No held-back set was opened or used (0014 section 10.1): not the PARD body's
 totals (TN 3697 fig. 5, TN 3650 fig. 4, RM L52E06 figs. 9 to 12), not BRL
@@ -38,7 +40,7 @@ scratchpad (`w34/img/`), each download in its own directory
 | --- | --- | --- | --- |
 | Gowen and Perkins, NACA TN 2960, 1953 | 19930084018 | 5(a) p. 18, 5(b) p. 19, 5(d) p. 21, 5(e) p. 22 | Read (section 2). 5(c) and 7 were read twice for 0010; figs. 6 (p. 23) and 7 (p. 24) viewed, not digitised: used for no number |
 | Goodwin, Creager and Winkler, NACA RM A55H31, 1956 | 19930088843 | 11 p. 40, 12 p. 41; table II p. 27 typed | Read (section 3). Figs. 9 (p. 38) and 10 (p. 39) viewed, not digitised |
-| Penland, NACA TN 3861, 1957 | 19930084664 | 5(a) p. 20 calibrated | Not used for a number (section 4). Figs. 15, 16 viewed |
+| Penland, NACA TN 3861, 1957 | 19930084664 | 5(a) p. 20 calibrated; figs. 15 to 17 (pp. 31 to 33); figs. 15 and 16 read twice, fig. 17 once | Not used for a number (section 4): a check on the sweep allowance |
 | Goin, NACA RM L52D21, 1952 | 19930087183 | 11 p. 46 (alpha 0, h/t 1.0) | Read (section 5). Fig. 12 p. 47 viewed; fig. 1 p. 22 text layer |
 | Morrow and Katz, NACA TN 3548, 1955 | 19930084307 | none | Opened, text read (section 6); fig. 6 not read |
 | Macha, NASA CR-149372 (Texas A&M report 3318-76-01), 1976 | 19770008057 | 8b p. 26, 5 p. 22 | Read (section 9). Figs. 8a (p. 25), 10 (p. 30), 11 (p. 31), 12 (p. 32) viewed, not digitised |
@@ -165,13 +167,16 @@ shape p/p_x=0 unchanged. Table II integrated both ways gives 0.677 and
 pressures (each run on its own dynamic pressure), against fig. 12's 0.700
 and 0.410: the figure is on the absolute basis (the remaining 1.5% to 3.4%
 is not explained; it may be the figure's finer azimuth spacing). A fin's
-nose drag is the gauge integral, so each point is converted: gauge = ratio
-x [1 - 1 / (S I_g)] / [1 - 1 / (S_0 I_g)], with S = (p_x=0 / p_t2)(p_t2 /
-p_inf) from fig. 11 and Rayleigh, S_0 = p_t2 / p_inf, and I_g = 0.721, the
-unyawed shape integral of table II at yaw 0 (the data of fig. 9's
-present-test symbols). The conversion lowers the unflagged ratios by 0.1%
-to 7.1%, the most at 59.9 deg of yaw, where the stagnation pressure is
-lowest against the free stream's.
+nose drag is the gauge integral, so each point is converted, exactly (0016
+section 16): with P = p_t2 / p_inf (Rayleigh) and I_g = 0.721, the unyawed
+shape integral of table II at yaw 0 (the data of fig. 9's present-test
+symbols), the unyawed absolute integral on p_inf is P I_g and the gauge
+ratio is (R P I_g - cos L) / (P I_g - 1). Applied to table II's own
+absolute ratio it returns table II's gauge ratio (a test holds it). It
+lowers the unflagged ratios by 0.2% to 6.6%, the most at 59.9 deg of yaw,
+where the stagnation pressure is lowest against the free stream's. (The
+first conversion, through fig. 11's stagnation pressure, was approximate:
+it lowered them by 0.1% to 7.1%.)
 
 **The independence model.** On the normal component, per unit length of the
 cylinder: cos^3(L) Cp_pitot(M cos L) / Cp_pitot(M), the modified-Newtonian
@@ -180,21 +185,33 @@ projected. r is the measured (gauge) ratio over it:
 
 | Source, yaw | M_n | r | Flag |
 | --- | --- | --- | --- |
-| present, 30.1 deg | 3.37 | 1.067 | (table II directly: 1.029) |
-| present, 45.1 deg | 2.75 | 1.120 | R 2.1e3, below the domain; three-dimensional flow suspected by the report |
-| present, 60.1 deg | 1.94 | 1.226 | three-dimensional flow suspected by the report |
-| ref. 1, 14.4 deg | 6.64 | 0.998 | |
+| present, 30.1 deg | 3.37 | 1.072 | (table II directly: 1.029) |
+| present, 45.1 deg | 2.75 | 1.134 | R 2.1e3, below the domain; three-dimensional flow suspected by the report; yaw misread (below) |
+| present, 60.1 deg | 1.94 | 1.277 | three-dimensional flow suspected by the report; yaw misread (below) |
+| ref. 1, 14.4 deg | 6.64 | 0.997 | |
 | ref. 1, 29.6 deg | 5.96 | 1.007 | |
-| ref. 1, 45.2 deg | 4.83 | 1.034 | |
-| ref. 1, 59.9 deg | 3.44 | 0.990 | |
-| ref. 1, 75.5 deg | 1.72 | 0.866 | end effects (TN 3861 p. 10: the shock not parallel to the body at alpha 15 deg) |
+| ref. 1, 45.2 deg | 4.83 | 1.036 | |
+| ref. 1, 59.9 deg | 3.44 | 0.996 | |
+| ref. 1, 75.5 deg | 1.72 | 1.287 | end effects (TN 3861 p. 10: the shock not parallel to the body at alpha 15 deg) |
+
+**Third look at the present tests' rings (0016 section 16).** The second
+reading put the 45 and 60 deg rings 0.35 and 0.32 deg lower in yaw, beyond
+the combined error, and the 60 deg one 0.006 lower in the ratio. Each ring
+was fitted by a circle on the deskewed scan (72 rays from a trial centre,
+the mid-line of the dark run on each, rays off the median radius by 1.5 px
+or crossing a line dropped, a least-squares circle, three passes; radius
+14.4 to 14.6 px, centre to +-0.5 px): 29.91 deg, 0.702; 44.76 deg, 0.410;
+59.83 deg, 0.165, against the second reading's 29.91, 0.702; 44.75, 0.410;
+59.78, 0.164. The first reading's 45 and 60 deg points are misread (its
+yaws run 0.2 to 0.4 deg high, section 14 of 0016) and set aside; r at the
+third look is 1.113 and 1.195.
 
 Fig. 11 against Rayleigh's pitot formula on the normal Mach number:
 present tests 1.019, 1.039, 1.104 of it at 30, 45, 60 deg; ref. 1 0.956 to
 1.036 to 60 deg, 0.653 at 75 deg (the same end effect). Table II's
 stagnation pressures are 1.047 and 1.075 of Rayleigh's at 30 and 45 deg.
 
-## 4. TN 3861 (Penland): not used for a number
+## 4. TN 3861 (Penland): a check, not used for a number
 
 Fig. 5(a) (p. 20) is a polar plot of dP/q on the free stream's dynamic
 pressure. Calibrated: centre (1199, 1552.5); dP/q = (r - 220) / 441 (the
@@ -210,6 +227,87 @@ variation of the all-steel nozzle (p. 7); RM A55H31's reference-1 ratios
 were formed on RM L54A14, before that correction, so their unyawed
 denominator may differ from TN 3861's by its size, which neither report
 states.
+
+**Figs. 15 to 17, first reading, and the pair (0016 section 16, review
+item 1(b)).** PDF pp. 31 to 33 at 300 ppi, upright. Symbol centres by eye
+on crops with a calibrated grid drawn every 0.05 to 0.1 in M_c and 0.02 to
+0.05 in the coefficient, +-0.02 in M_c and +-0.01 in the coefficient
+(+-0.02 where two symbols overlap: fig. 17 near M_c 1.98, Lord and Ulmann
+over TN 2960). The crops' calibrations were flat, pixel to value linear
+between printed grid lines and axis-aligned: fig. 15 x (M_c 0 to 7) at 545,
+781, 1015, 1251.5, 1488, 1725, 1960.5, 2197.5, y 2.5 at 528 and 0 at 1720;
+fig. 16 x at 780, 1009.5, 1239.5, 1468.5, 1698, 1928.5, 2159.5, 2388.5, y
+0.2 at 561, 0 at 791, -0.2 at 1024, -0.4 at 1255.5; fig. 17 x at 482,
+725.5, 973, 1218.5, 1464, 1708.5, 1953.5, 2198.5, y 2.75 at 408, 1.5 at
+1022, 1.25 at 1146.5, 0 at 1761.
+
+**The rotation, found at the pairing.** Paired with the blind second
+reading (audit round 7, commit e45e0d6, `tn3861_figs15-16.csv`), fig. 15's
+ordinates as read ran 0.012 to 0.025 high. The scans are rotated or sheared
+by 0.4 to 0.8 deg (fig. 15's zero line falls from y 1713.6 at x 600 to 1693
+at x 2120), which the flat calibrations ignore. Every grid line was
+detected in three to six windows across each figure (a row or column more
+than 60% dark over the window, its weighted centre), the value of each
+line from the flat calibration rounded to the grid step, and an affine
+calibration, value = a + b x + c y, fitted to them (29 to 57 points a
+direction after dropping detections more than 4 px off a first fit, the
+faired curves and symbols beside a line; worst residual 0.0014 to 0.009).
+Each first-reading value is re-mapped through the pixel the flat
+calibration put it at (`w34_fin_edges.py`, `TN3861_AS_READ` to `TN3861`;
+the CSV gives both).
+
+**The pair** (re-mapped first, second; combined error the first's +-0.02
+and +-0.01 plus the reader's own): all 13 ordinates agree, the largest
+difference 0.0097 (fig. 15, Lord and Ulmann near M_c 2.0, against 0.0134).
+Six abscissae differ by 0.025 to 0.050, beyond the combined 0.025 to 0.027.
+Where the report states the condition, the second reading is the closer:
+Penland's alpha 30.2 deg is M_c 3.451 (second 3.458, first 3.424), Lord
+and Ulmann's 15 deg is M_c 1.04 (p. 11; second 1.044, first 1.009), TN
+2960's last is M 2.90 (second 2.896, first 2.846); the first reading's
+abscissae there are misread. Lord and Ulmann's other two points have no
+stated angle, and the two readings put them 0.025 and 0.027 to 0.042 apart
+(each reader also places the same point differently on figs. 15 and 16);
+M_c enters only through Cp_pitot(M_c), which moves by under 0.3% over 0.04
+at M_c 2, so both readings are carried.
+
+What the figures are: fig. 15 the stagnation pressure coefficient on the
+crossflow dynamic pressure, fig. 16 the downstream-side pressure
+coefficient, fig. 17 the drag coefficient. A crossed symbol is a yawed
+cylinder reduced by crossflow theory. Below M_c 3.37 the crossed symbols are
+Penland's alpha 14.9 deg point (M_c 1.76, sweep 75 deg), which TN 3861
+p. 10 flags itself (the shock not parallel to the body: "an end effect"),
+and Lord and Ulmann's unpublished M 4.04 points at alpha about 10, 15, 20 and
+30 deg (sweeps 80, 75, 70 and 60 deg; the M_c 1.04 point is flagged high by
+TN 3861 p. 11 too; the 10 deg one is on fig. 17 only). Penland's alpha 30.2
+deg point is at M_c 3.45, sweep 60 deg: RM A55H31's reference-1 point at
+59.9 deg, the same test. The circles and plain triangles at M_c 1.49 to 2.9
+are TN 2960 (reference 8), cylinders normal to the stream.
+
+None of the three is the front-side drag. An estimate is F = C_D + (p_down -
+p_inf)/q_c, the front side if the downstream pressure held over the rear
+half (fig. 17 read once). On TN 2960's own points, as replotted, F over
+modified Newtonian is 1.005, 1.126, 1.069 at M_c 1.49, 1.98, 2.87 (1.006,
+1.124, 1.067 on fig. 16's second reading), where TN 2960's integrated front
+sides give 0.994, 1.040, 1.049: the estimate is off by up to 0.086, as large
+as the allowance it would set. The crossflow points (`w34_fin_edges.py`
+output; first reading / second reading of figs. 15 and 16):
+
+| Set, M_c | Sweep, deg | F/MN | F/MN over TN 2960 integrated | Stagnation over Rayleigh | Flag |
+| --- | --- | --- | --- | --- | --- |
+| Lord and Ulmann, 1.98 to 2.03 | 60 to 61 | 1.121 / 1.122 | 1.078 / 1.079 (0.995 / 0.998 over TN 2960's own F at 1.98) | 1.095 / 1.086 | one point, unpublished |
+| Lord and Ulmann, 1.38 to 1.41 | 70 | 1.053 / 1.048 | (below TN 2960's 1.49) | 1.067 / 1.066 | sweep beyond 60 |
+| Lord and Ulmann, 1.04 | 75 | 1.445 / 1.445 | | 1.528 / 1.497 | flagged high by the report; sweep beyond 60 |
+| Penland, 1.73 to 1.76 | 75 | 1.166 / 1.165 | 1.147 / 1.146 | 1.171 / 1.172 | end effect (p. 10); sweep beyond 60 |
+| Penland, 3.43 to 3.46 | 60 | 1.057 / 1.055 | (beyond 2.9) | 0.988 / 0.991 | M_n above 3.37: RM A55H31 ref. 1 |
+
+So below M_n 3.37 at a served sweep (60 deg or less, to 0.5 deg) these
+figures hold one point, Lord and Ulmann's at about 60 deg and M_c about
+2.0, unpublished, whose front side is an estimate good to about 0.09:
+0.995 to 1.079 of the unyawed. They check the allowance and cannot set it
+alone; every value at a served sweep lies inside the allowance served
+(0.95 to 1.21, 0016 section 16). Below M_n 1.96 no yawed point lies at a
+served sweep: the only ones (sweeps 70 and 75 deg) give 1.05 to 1.17 of
+modified Newtonian, and 1.45 where the report flags the point.
 
 ## 5. RM L52D21: swept blunt trailing edges
 
@@ -289,6 +387,19 @@ nearest measurement in hand at M 1.5 to 2.
   in `src/fins/rm-a55h31.ts` (`RM_A55H31_FIG12_SECOND`,
   `RM_A55H31_FIG11_SECOND`) and `src/fins/macha.ts` (`MACHA_FIG8B_SECOND`,
   `MACHA_FIG5_SECOND`).
+- **CR-149372 fig. 8b, M 1.2, 0 to 95 deg:** a blind re-read (audit round
+  7, commit 47f32ec), paired by `scripts/w34_pair_round6.py` with the
+  round-7 readings directory as its second argument: 12 of 12 points
+  within the combined error over 22 to 65 deg, kappa 0.8990 against the
+  first's 0.8967 (0016 section 16). Held in `src/fins/macha.ts`
+  (`MACHA_FIG8B_M12_ROUND7`).
+- **TN 3861 figs. 15 and 16:** a blind second reading (audit round 7,
+  commit e45e0d6), paired in section 4 after re-mapping the first reading
+  for the scans' rotation; held in `scripts/w34_fin_edges.py`
+  (`TN3861_SECOND`). Fig. 17 is read once.
+- **RM A55H31 fig. 12, the present tests' 45 and 60 deg rings:** third
+  looks by a circle fit (section 3), siding with the second reading; held
+  as `RM_A55H31_FIG12_THIRD_LOOK` (0016 section 16).
 
 ## 9. NASA CR-149372 (Macha): the cylinder's front side at M 1.0 to 1.2
 
@@ -379,6 +490,6 @@ three (the report says blockage effects lessen above M 1.0):
 | 1.2 | 0.8967 | 0.8828 to 0.9057 |
 | 1.49 | 1 (the term above) | 0.99 to 1.06 (TN 2960's band) |
 
-Second readings: figs. 8b and 5 are on the round-6 reader's list; until
-they are held beside these, the term says "read once, the second reading
-pending".
+Second readings: figs. 8b and 5 were read blind in round 6 and fig. 8b's
+M 1.2 curve again in round 7 (section 8); the nodes now take the mean of
+the readings (0016 sections 14 and 16), and no label says "read once".

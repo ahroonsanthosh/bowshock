@@ -16,7 +16,8 @@ by the solver or the page.
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
 | `out/impact.out`, `out/impact.json`, `out/edges.out` | The runs' tables, as 0014 quotes them (the code of 5245241) |
 | `out/impact-w34.out`, `out/impact-w34.json` | The same run after the fin edges of flat plates (design record 0016, sections 1 to 10): `evaluate.ts` with `EDGES=w34` mirrors that code |
-| `out/impact-w4e.out`, `out/impact-w4e.json` | The same run after 0016 section 11 (a plate's rounded leading edge from normal Mach number 1.0): `evaluate.ts`'s default, `EDGES=w4e` |
+| `out/impact-w4e.out`, `out/impact-w4e.json` | The same run after 0016 section 11 (a plate's rounded leading edge from normal Mach number 1.0): `EDGES=w4e` before 0016 section 16 |
+| `out/impact-review.out`, `out/impact-review.json` | The same run after 0016 section 16 (fins at the base take a plate's largest t/c, at the tip): `evaluate.ts`'s default, `EDGES=w4e` |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
@@ -34,7 +35,7 @@ nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
 whose cases are checked against `src/total`, default 300) set the size.
 It writes `out/impact.out` and `out/impact.json`; `OUT_NAME=impact-w34`
 writes `out/impact-w34.out` and `.json` instead (0016's run), and
-`OUT_NAME=impact-w4e` 0016 section 11's.
+`OUT_NAME=impact-w4e` 0016 section 11's and `OUT_NAME=impact-review` section 16's.
 `evaluate.ts` mirrors the refusals of the present code (flat plates,
 swept rounded edges on the normal components from M_n 1.0 on a plate,
 thick layers and tapered trailing edges); `EDGES=w34` gives 0016's

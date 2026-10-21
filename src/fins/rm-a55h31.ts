@@ -116,6 +116,26 @@ export const RM_A55H31_FIG12_SECOND: readonly YawPoint[] = [
   { source: 'reference 1', mach: 6.86, yaw: 75.0617, value: 0.0207, flag: FLAG_END },
 ];
 
+/**
+ * Third looks at fig. 12 where the two readings disagree beyond their
+ * combined error at a served sweep and normal Mach number (0014 section
+ * 10; 0016 section 16): the present tests' rings at 45 and 60 deg, each
+ * fitted by a circle on the deskewed scan (72 rays from the centre, the
+ * ring's mid-line, a least-squares circle; centre to +-0.5 px, +-0.02 deg
+ * and +-0.0005 in the ratio). Both side with the second reading; the first
+ * put them 0.3 deg high in yaw, so there it is set aside as misread.
+ */
+export const RM_A55H31_FIG12_THIRD_LOOK: readonly YawPoint[] = [
+  {
+    source: 'present tests',
+    mach: 3.9,
+    yaw: 44.76,
+    value: 0.41,
+    flag: `${FLAG_3D}; ${FLAG_REYNOLDS}`,
+  },
+  { source: 'present tests', mach: 3.9, yaw: 59.83, value: 0.165, flag: FLAG_3D },
+];
+
 /** Fig. 11, second reading (commit 6e6d9be, `rma55h31_fig11.csv`), the yawed points. */
 export const RM_A55H31_FIG11_SECOND: readonly YawPoint[] = [
   { source: 'present tests', mach: 3.9, yaw: 30.027, value: 0.7703 },

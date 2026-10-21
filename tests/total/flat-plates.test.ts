@@ -11,6 +11,7 @@
 import { describe, expect, it } from 'vitest';
 import { finTrailingEdgeBaseDrag } from '../../src/base/fin-trailing-edge';
 import { clippedDeltaPlanform } from '../../src/fins/planform';
+import { standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
 import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
 import { flatPlate } from '../../src/fins/section';
 import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
@@ -71,7 +72,8 @@ describe('a clipped delta in sheet stock, rounded leading edge, square trailing 
     // 42 deg of sweep, M_n 2.08, Re_n 7.4e4: swept and extrapolated in Reynolds number.
     expect(n.sweepDegrees).toBeCloseTo(Math.atan(0.9) / (Math.PI / 180), 12);
     expect(n.regime).toBe('extrapolated in Reynolds number');
-    expect(n.band).toEqual({ low: 0.94, high: 1.17 });
+    // The served sweep allowance, 0.95 to 1.21 (0016 section 16), on the band widened by +-3%.
+    expect(n.band).toEqual({ low: 0.91, high: 1.32 });
     expect(c.label).toMatch(/on a flat plate, a semicircular nose/);
   });
 
@@ -189,5 +191,98 @@ describe('transition on the part of the span it reaches', () => {
     expect(t.laminarStates!.map((l) => Math.round(1000 * l.laminarSpanFraction) / 1000)).toEqual([
       0, 0.444, 1,
     ]);
+  });
+});
+
+describe('the review of 2026-10-21 (0016 section 16)', () => {
+  const air = standardAtmosphere(0);
+  const rePer = (mach: number) => (mach * air.speedOfSound) / air.kinematicViscosity;
+  const hobby = clippedDeltaPlanform({ rootChord: 0.12, span: 0.08, taperRatio: 0.4 });
+  const body = (fins: FinnedBody['fins']): FinnedBody => ({
+    body: {
+      nose: { shape: { kind: 'conical' }, length: 0.2, baseRadius: 0.027 },
+      cylinderLength: 0.6,
+    },
+    afterbody: 'cylinder',
+    fins,
+  });
+  const cond = (mach: number) => ({
+    mach,
+    temperature: air.temperature,
+    reynoldsPerLength: rePer(mach),
+  });
+
+  it('the hobby fins (three 3 mm plates, root 120, tip 48, span 80 mm, 42 deg, 54 mm body, sea level): the leading edges', () => {
+    const area = (Math.PI * 0.054 ** 2) / 4;
+    const at = (mach: number) => {
+      const n = roundedLeadingEdgeDrag({
+        mach,
+        radius: 0.0015,
+        faceAngle: 0,
+        tanLeadingEdgeSweep: hobby.tanLeadingEdge,
+        reynoldsOnDiameter: rePer(mach) * 0.003,
+      });
+      const cd = (3 * n.dragPerSpan * 0.08) / area;
+      return [cd, n.band.low * cd, n.band.high * cd].map((v) => Math.round(1e4 * v) / 1e4);
+    };
+    // Before the review: 0.1311 (0.1180 to 0.1664), 0.1606 (0.1381 to 0.2120), 0.1825 (0.1770 to 0.2080).
+    expect(at(1.5)).toEqual([0.1311, 0.1167, 0.177]);
+    expect(at(1.8)).toEqual([0.1607, 0.1366, 0.2249]);
+    expect(at(2.2)).toEqual([0.1825, 0.1715, 0.2354]);
+  });
+
+  it('fins at the base take the plate t/c at the tip, the largest: four 7.2 mm plates, root 120, tip 48 mm (t/c 0.06 to 0.15), refused at M 2.0', () => {
+    const fins = {
+      count: 4,
+      planform: hobby,
+      section: flatPlate(0.0072, 'rounded', 'square'),
+      sectionFamily: 'other' as const,
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: 0,
+    };
+    const r = finnedBodyComponents(
+      body(fins),
+      cond(2.0),
+      exactConeNoseWaveDrag(2.0, Math.atan(0.027 / 0.2)),
+    );
+    const base = r.refusals.find((x) => x.component === 'body base');
+    expect(base?.reason).toBe('fin-thickness');
+    expect(base?.message).toMatch(/t\/c = 0\.15 is outside them/);
+    // The same plates of constant chord 120 mm (t/c 0.06 everywhere) are inside the factor's range.
+    const square = {
+      ...fins,
+      planform: clippedDeltaPlanform({ rootChord: 0.12, span: 0.08, taperRatio: 1 }),
+    };
+    const q = finnedBodyComponents(
+      body(square),
+      cond(2.0),
+      exactConeNoseWaveDrag(2.0, Math.atan(0.027 / 0.2)),
+    );
+    expect(q.refusals.find((x) => x.component === 'body base')).toBeUndefined();
+  });
+
+  it('a plate of taper 0.1 with a transition input keeps its trailing edge: the tip sliver is bounded and labelled', () => {
+    const fins = {
+      count: 3,
+      planform: clippedDeltaPlanform({ rootChord: 0.12, span: 0.08, taperRatio: 0.1 }),
+      section: flatPlate(0.003, 'rounded', 'square'),
+      sectionFamily: 'other' as const,
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: 0.2,
+    };
+    const r = finnedBodyComponents(
+      body(fins),
+      cond(2.2),
+      exactConeNoseWaveDrag(2.2, Math.atan(0.027 / 0.2)),
+      {
+        transitionReynolds: [5e5, 1.6e6, 3e6],
+      },
+    );
+    expect(r.refusals.filter((x) => x.component === 'fin trailing-edge base')).toEqual([]);
+    const te = r.components.find((c) => c.name === 'fin trailing-edge base')!;
+    expect(te.label).toMatch(
+      /the stations beyond fig\. 29's read range \(up to \d+% of the span, near the tip\)/,
+    );
+    expect(te.label).toMatch(/is below 0\.45, fig\. 29\(a\)'s lowest read abscissa/);
   });
 });

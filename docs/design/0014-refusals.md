@@ -470,6 +470,19 @@ to F7.
   interpolated across an unmeasured Mach range". Below M_n 1.49 the sweep
   allowance, extrapolated from M_n 3.4, is twice its measured deviation
   from 1. Below M_n 1.0 the gap stays refused.
+- _Amended 2026-10-21 (0016 sections 12 and 16)._ The amendment above
+  holds for rounded wedges too, the present term's own section (0016
+  section 12): up to its tangent points a wedge's nose sees the cylinder's
+  flow from M_n 1.0 as a plate's does, and the Basic Finner's gated shots
+  are bit for bit unchanged. The sweep allowance on every swept edge
+  served (all at M_n 3.0 or less, below the checks' 3.37) is extrapolated
+  in normal Mach number and contains every yawed datum at served sweeps
+  and normal Mach numbers: 0.95 to 1.21, RM A55H31's own tests at 45 and
+  60 deg counted (the report's suspicion of three-dimensional flow, from
+  the 1 in model in the 3 in stream, is a finite-length effect a fin's
+  edge may share). TN 3861 figs. 15 and 16, read twice (with fig. 17, read
+  once), hold one crossflow point at a served sweep, an estimate inside
+  that allowance. No yawed datum lies below M_n 1.96 at a served sweep.
 - _Hold-out._ The PARD standard body's totals, whose fins are exactly
   this edge (section 10). RM L52E06 fig. 11, their drag increments, is
   derived from held-back totals and sets nothing.

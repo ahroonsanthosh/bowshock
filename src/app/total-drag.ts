@@ -270,7 +270,9 @@ export function basicFinnerClass(form: TotalDragForm): ClassCheck {
         `${c.trailingEdgeThickness} within ${pct}`,
     );
   }
-  if (!near(form.leadingEdgeRadius, c.leadingEdgeRadius)) {
+  // A flat plate's radius field is hidden (its rounded edge is a full radius), so it is not
+  // checked there (0016 section 16).
+  if (form.section.kind !== 'flat-plate' && !near(form.leadingEdgeRadius, c.leadingEdgeRadius)) {
     out.push(
       `the leading-edge radius is ${fmt(form.leadingEdgeRadius)} cal, not ` +
         `${c.leadingEdgeRadius} within ${pct}`,

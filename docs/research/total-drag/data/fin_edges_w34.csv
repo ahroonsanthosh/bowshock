@@ -1,4 +1,5 @@
-# Fin edges of flat plates: first readings (second readings by an independent reader, pending).
+# Fin edges of flat plates: first readings. Second readings by independent readers are paired in
+# design record 0016 sections 13, 14 and 16; TN 3861 fig. 17 is read once.
 # Written by scripts/w34_fin_edges.py; sources, calibrations and limits in data/fin_edges_w34.md.
 source,figure,item,M,x_name,x,quantity,value,reading,method,error
 TN 2960,5(a),"5(a) circles, M 0.05, R 3.14e5",0.05,theta deg,0,P,1.0,first,"eye, faired curve",0.03
@@ -407,3 +408,40 @@ NASA CR-149372,5,"M 1.0, 5.08 cm",1.0,theta deg,81.3,Cp,-0.69,first,"eye, symbol
 NASA CR-149372,5,"M 1.0, 5.08 cm",1.0,theta deg,85.0,Cp,-0.655,first,"eye, symbol centre on 2x ruler crop",0.01
 NASA CR-149372,5,"M 1.0, 5.08 cm",1.0,theta deg,86.7,Cp,-0.645,first,"eye, symbol centre on 2x ruler crop",0.01
 NASA CR-149372,5,"M 1.0, 5.08 cm",1.0,theta deg,91.3,Cp,-0.64,first,"eye, symbol centre on 2x ruler crop",0.01
+NACA TN 3861,15,"Penland, alpha 14.8 deg",6.86,M_c,1.75,(p_stag - p_inf) / q_c,1.8816,first,"eye, symbol centre on gridded crop (as read 1.72, 1.895), re-mapped for the rotation",0.01
+NACA TN 3861,15,"Penland, alpha 30.2 deg",6.86,M_c,3.456,(p_stag - p_inf) / q_c,1.7542,first,"eye, symbol centre on gridded crop (as read 3.43, 1.78), re-mapped for the rotation",0.01
+NACA TN 3861,15,"Lord and Ulmann, alpha 14.5 deg",4.04,M_c,1.009,(p_stag - p_inf) / q_c,1.9571,first,"eye, symbol centre on gridded crop (as read 0.97, 1.965), re-mapped for the rotation",0.01
+NACA TN 3861,15,"Lord and Ulmann, alpha 20.1 deg",4.04,M_c,1.385,(p_stag - p_inf) / q_c,1.5876,first,"eye, symbol centre on gridded crop (as read 1.36, 1.6), re-mapped for the rotation",0.01
+NACA TN 3861,15,"Lord and Ulmann, alpha 29.3 deg",4.04,M_c,1.976,(p_stag - p_inf) / q_c,1.8097,first,"eye, symbol centre on gridded crop (as read 1.95, 1.825), re-mapped for the rotation",0.01
+NACA TN 3861,16,"Penland, alpha 14.6 deg",6.86,M_c,1.729,(p_down - p_inf) / q_c,-0.2198,first,"eye, symbol centre on gridded crop (as read 1.73, -0.216), re-mapped for the rotation",0.01
+NACA TN 3861,16,"Penland, alpha 29.9 deg",6.86,M_c,3.424,(p_down - p_inf) / q_c,-0.0204,first,"eye, symbol centre on gridded crop (as read 3.43, -0.02), re-mapped for the rotation",0.01
+NACA TN 3861,16,"Lord and Ulmann, alpha 15.0 deg",4.04,M_c,1.044,(p_down - p_inf) / q_c,-0.8143,first,"eye, symbol centre on gridded crop (as read 1.04, -0.81), re-mapped for the rotation",0.01
+NACA TN 3861,16,"Lord and Ulmann, alpha 20.0 deg",4.04,M_c,1.382,(p_down - p_inf) / q_c,-0.509,first,"eye, symbol centre on gridded crop (as read 1.38, -0.505), re-mapped for the rotation",0.01
+NACA TN 3861,16,"Lord and Ulmann, alpha 29.5 deg",4.04,M_c,1.99,(p_down - p_inf) / q_c,-0.2884,first,"eye, symbol centre on gridded crop (as read 1.99, -0.285), re-mapped for the rotation",0.01
+NACA TN 3861,16,"TN 2960, normal to the stream",1.501,M_c,1.501,(p_down - p_inf) / q_c,-0.4739,first,"eye, symbol centre on gridded crop (as read 1.5, -0.47), re-mapped for the rotation",0.01
+NACA TN 3861,16,"TN 2960, normal to the stream",1.97,M_c,1.97,(p_down - p_inf) / q_c,-0.2734,first,"eye, symbol centre on gridded crop (as read 1.97, -0.27), re-mapped for the rotation",0.01
+NACA TN 3861,16,"TN 2960, normal to the stream",2.846,M_c,2.846,(p_down - p_inf) / q_c,-0.0987,first,"eye, symbol centre on gridded crop (as read 2.85, -0.097), re-mapped for the rotation",0.01
+NACA TN 3861,17,"Penland, pressure, alpha 14.6 deg",6.86,M_c,1.735,C_D on q_c,1.4655,first,"eye, symbol centre on gridded crop (as read 1.73, 1.45), re-mapped for the rotation",0.01
+NACA TN 3861,17,"Penland, pressure, alpha 30.1 deg",6.86,M_c,3.437,C_D on q_c,1.2709,first,"eye, symbol centre on gridded crop (as read 3.43, 1.265), re-mapped for the rotation",0.01
+NACA TN 3861,17,"Penland, force, alpha 14.7 deg",6.86,M_c,1.736,C_D on q_c,1.5611,first,"eye, symbol centre on gridded crop (as read 1.73, 1.545), re-mapped for the rotation",0.01
+NACA TN 3861,17,"Penland, force, alpha 29.9 deg",6.86,M_c,3.419,C_D on q_c,1.4129,first,"eye, symbol centre on gridded crop (as read 3.41, 1.405), re-mapped for the rotation",0.01
+NACA TN 3861,17,"Lord and Ulmann, alpha 9.9 deg",4.04,M_c,0.694,C_D on q_c,2.4854,first,"eye, symbol centre on gridded crop (as read 0.68, 2.465), re-mapped for the rotation",0.01
+NACA TN 3861,17,"Lord and Ulmann, alpha 14.7 deg",4.04,M_c,1.026,C_D on q_c,2.064,first,"eye, symbol centre on gridded crop (as read 1.02, 2.045), re-mapped for the rotation",0.01
+NACA TN 3861,17,"Lord and Ulmann, alpha 20.0 deg",4.04,M_c,1.383,C_D on q_c,1.5526,first,"eye, symbol centre on gridded crop (as read 1.38, 1.535), re-mapped for the rotation",0.01
+NACA TN 3861,17,"Lord and Ulmann, alpha 29.3 deg",4.04,M_c,1.978,C_D on q_c,1.5251,first,"eye, symbol centre on gridded crop (as read 1.97, 1.51), re-mapped for the rotation",0.02
+NACA TN 3861,17,"TN 2960, normal to the stream",1.473,M_c,1.473,C_D on q_c,1.4969,first,"eye, symbol centre on gridded crop (as read 1.47, 1.48), re-mapped for the rotation",0.01
+NACA TN 3861,17,"TN 2960, normal to the stream",1.988,M_c,1.988,C_D on q_c,1.5151,first,"eye, symbol centre on gridded crop (as read 1.98, 1.5), re-mapped for the rotation",0.02
+NACA TN 3861,17,"TN 2960, normal to the stream",2.887,M_c,2.887,C_D on q_c,1.3441,first,"eye, symbol centre on gridded crop (as read 2.88, 1.335), re-mapped for the rotation",0.01
+NACA TN 3861,15,"Penland (second reading, round 7, e45e0d6)",,M_c,1.733,(p_stag - p_inf) / q_c,1.8771,second,"blind, the reader's method",0.0025
+NACA TN 3861,15,"Penland (second reading, round 7, e45e0d6)",,M_c,3.448,(p_stag - p_inf) / q_c,1.7595,second,"blind, the reader's method",0.0025
+NACA TN 3861,15,"Lord and Ulmann (second reading, round 7, e45e0d6)",,M_c,1.044,(p_stag - p_inf) / q_c,1.9504,second,"blind, the reader's method",0.0025
+NACA TN 3861,15,"Lord and Ulmann (second reading, round 7, e45e0d6)",,M_c,1.393,(p_stag - p_inf) / q_c,1.5884,second,"blind, the reader's method",0.0025
+NACA TN 3861,15,"Lord and Ulmann (second reading, round 7, e45e0d6)",,M_c,2.003,(p_stag - p_inf) / q_c,1.8,second,"blind, the reader's method",0.0034
+NACA TN 3861,16,"Penland (second reading, round 7, e45e0d6)",,M_c,1.744,(p_down - p_inf) / q_c,-0.2195,second,"blind, the reader's method",0.001
+NACA TN 3861,16,"Penland (second reading, round 7, e45e0d6)",,M_c,3.458,(p_down - p_inf) / q_c,-0.0221,second,"blind, the reader's method",0.001
+NACA TN 3861,16,"Lord and Ulmann (second reading, round 7, e45e0d6)",,M_c,1.044,(p_down - p_inf) / q_c,-0.8144,second,"blind, the reader's method",0.001
+NACA TN 3861,16,"Lord and Ulmann (second reading, round 7, e45e0d6)",,M_c,1.407,(p_down - p_inf) / q_c,-0.5104,second,"blind, the reader's method",0.001
+NACA TN 3861,16,"Lord and Ulmann (second reading, round 7, e45e0d6)",,M_c,2.032,(p_down - p_inf) / q_c,-0.2848,second,"blind, the reader's method",0.0014
+NACA TN 3861,16,"TN 2960 (second reading, round 7, e45e0d6)",,M_c,1.501,(p_down - p_inf) / q_c,-0.4724,second,"blind, the reader's method",0.0012
+NACA TN 3861,16,"TN 2960 (second reading, round 7, e45e0d6)",,M_c,1.98,(p_down - p_inf) / q_c,-0.2753,second,"blind, the reader's method",0.0012
+NACA TN 3861,16,"TN 2960 (second reading, round 7, e45e0d6)",,M_c,2.896,(p_down - p_inf) / q_c,-0.0996,second,"blind, the reader's method",0.0012

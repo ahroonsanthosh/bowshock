@@ -390,11 +390,12 @@ export function finnedBodyComponents(
       baseAreaRatio: 1,
       fins: {
         count: fins.count,
-        // A plate's t/c at the root (its thinnest), a section's own.
+        // A plate's largest t/c, at the tip (the factor's field is the largest thickness over
+        // chord; 0016 section 16), a section's own.
         thicknessRatio:
           plate === undefined
             ? symmetricThicknessRatio(fins.section as SymmetricSection)
-            : plate.thickness / fins.planform.rootChord,
+            : plate.thickness / tipChord(fins.planform),
         section: fins.sectionFamily,
         trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
       },

@@ -332,10 +332,12 @@
             Inside that class the total is labelled validated; outside it, an estimate, not
             validated. Where a component's method does not cover the case, the total is refused,
             with every reason, and no number is given. A flat plate's rounded edge is a full radius,
-            half its thickness; a rounded edge is served where the Mach number normal to it, M
-            cos(sweep), is 1.0 or more; square-cut leading edges and rounded trailing edges are
-            refused (design record 0016). The defaults are the Basic Finner's shape, 30 mm across,
-            at sea level; its button sets the range's conditions.
+            half its thickness. A rounded edge is served where the Mach number normal to it, M
+            cos(sweep), is 1.0 to 3.0, swept up to 60 deg, at Reynolds numbers on its diameter of
+            6.7e3 to 1e6, on a wedge only of constant chord; a swept edge's band is wide, its sweep
+            allowance extrapolated in normal Mach number. Square-cut leading edges and rounded
+            trailing edges are refused (design record 0016). The defaults are the Basic Finner's
+            shape, 30 mm across, at sea level; its button sets the range's conditions.
           </p>
         </details>
         <form class="controls" id="total-form">

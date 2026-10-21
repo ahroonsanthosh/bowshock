@@ -18,16 +18,17 @@
 
 ## RM A55H31: the yawed front side against the independence principle
 - unyawed shape integral I_g = int (p/p_x=0) cos(phi) dphi, table II at 0 deg: 0.7211
-- fig. 12 (absolute-pressure basis, as eq. (14)) converted to gauge pressure with fig. 11 and I_g;
+- fig. 12 (absolute-pressure basis, as eq. (14)) converted exactly to gauge pressure,
+  (R P I_g - cos L) / (P I_g - 1) with P = p_t2 / p_inf (0016 section 16); fig. 11 a check;
   r = gauge ratio over cos^3(L) Cp_pitot(M cos L) / Cp_pitot(M):
-  - present tests, M 3.9, yaw 30.1 (M_n 3.37): fig. 11 0.769 against Rayleigh at M_n 0.754; fig. 12 0.700, gauge 0.6844; model 0.6416; r 1.067
-  - present tests, M 3.9, yaw 45.1 (M_n 2.75): fig. 11 0.530 against Rayleigh at M_n 0.510; fig. 12 0.410, gauge 0.3830; model 0.3421; r 1.120
-  - present tests, M 3.9, yaw 60.1 (M_n 1.94): fig. 11 0.295 against Rayleigh at M_n 0.267; fig. 12 0.170, gauge 0.1398; model 0.1140; r 1.226
-  - ref. 1, M 6.9, yaw 14.4 (M_n 6.64): fig. 11 0.972 against Rayleigh at M_n 0.939; fig. 12 0.907, gauge 0.9064; model 0.9081; r 0.998
-  - ref. 1, M 6.9, yaw 29.6 (M_n 5.96): fig. 11 0.750 against Rayleigh at M_n 0.758; fig. 12 0.665, gauge 0.6598; model 0.6555; r 1.007
-  - ref. 1, M 6.9, yaw 45.2 (M_n 4.83): fig. 11 0.500 against Rayleigh at M_n 0.500; fig. 12 0.367, gauge 0.3585; model 0.3467; r 1.034
-  - ref. 1, M 6.9, yaw 59.9 (M_n 3.44): fig. 11 0.246 against Rayleigh at M_n 0.257; fig. 12 0.131, gauge 0.1217; model 0.1228; r 0.990
-  - ref. 1, M 6.9, yaw 75.5 (M_n 1.72): fig. 11 0.046 against Rayleigh at M_n 0.070; fig. 12 0.023, gauge 0.0119; model 0.0138; r 0.866
+  - present tests, M 3.9, yaw 30.1 (M_n 3.37): fig. 11 0.769 against Rayleigh at M_n 0.754; fig. 12 0.700, gauge 0.6877; model 0.6416; r 1.072
+  - present tests, M 3.9, yaw 45.1 (M_n 2.75): fig. 11 0.530 against Rayleigh at M_n 0.510; fig. 12 0.410, gauge 0.3880; model 0.3421; r 1.134
+  - present tests, M 3.9, yaw 60.1 (M_n 1.94): fig. 11 0.295 against Rayleigh at M_n 0.267; fig. 12 0.170, gauge 0.1456; model 0.1140; r 1.277
+  - ref. 1, M 6.9, yaw 14.4 (M_n 6.64): fig. 11 0.972 against Rayleigh at M_n 0.939; fig. 12 0.907, gauge 0.9056; model 0.9081; r 0.997
+  - ref. 1, M 6.9, yaw 29.6 (M_n 5.96): fig. 11 0.750 against Rayleigh at M_n 0.758; fig. 12 0.665, gauge 0.6602; model 0.6555; r 1.007
+  - ref. 1, M 6.9, yaw 45.2 (M_n 4.83): fig. 11 0.500 against Rayleigh at M_n 0.500; fig. 12 0.367, gauge 0.3592; model 0.3467; r 1.036
+  - ref. 1, M 6.9, yaw 59.9 (M_n 3.44): fig. 11 0.246 against Rayleigh at M_n 0.257; fig. 12 0.131, gauge 0.1224; model 0.1228; r 0.996
+  - ref. 1, M 6.9, yaw 75.5 (M_n 1.72): fig. 11 0.046 against Rayleigh at M_n 0.070; fig. 12 0.023, gauge 0.0177; model 0.0138; r 1.287
 - table II directly (gauge, trapezoid at 15 deg), rho = front on q_n over (2/3) Cp_pitot(M_n):
   - yaw  0, M 3.94, M_n 3.940: stagnation p/p_inf 20.50 (Rayleigh 20.45); front on q_n 1.2690; rho 1.0632; over yaw 0 1.0000
   - yaw 30, M 3.9, M_n 3.377: stagnation p/p_inf 15.88 (Rayleigh 15.16); front on q_n 1.2936; rho 1.0944; over yaw 0 1.0294
@@ -58,4 +59,32 @@
 - M 1.1: 0.8306, range 0.8177 to 0.8389
 - M 1.2: 0.8967, range 0.8828 to 0.9057
 - M 1.49: 1, range 0.99 to 1.06 (TN 2960 fig. 5(c) at 1.49: 0.995, 1.002; fig. 5(e): 0.994)
+
+## TN 3861 figs. 15 to 17: crossflow points against the yawed-cylinder allowance
+(figs. 15 and 16 read twice, fig. 17 once; the first reading re-mapped for the scans' rotation)
+- the pairs (first re-mapped, second; combined error):
+  - fig. 15, Penland: M_c 1.750 / 1.733 (0.017, 0.025); value 1.8816 / 1.8771 (0.0045, 0.0125)
+  - fig. 15, Penland: M_c 3.456 / 3.448 (0.008, 0.025); value 1.7542 / 1.7595 (0.0053, 0.0125)
+  - fig. 15, Lord and Ulmann: M_c 1.009 / 1.044 (0.035, 0.025); value 1.9571 / 1.9504 (0.0067, 0.0125) APART
+  - fig. 15, Lord and Ulmann: M_c 1.385 / 1.393 (0.008, 0.025); value 1.5876 / 1.5884 (0.0008, 0.0125)
+  - fig. 15, Lord and Ulmann: M_c 1.976 / 2.003 (0.027, 0.027); value 1.8097 / 1.8000 (0.0097, 0.0134) APART
+  - fig. 16, Penland: M_c 1.729 / 1.744 (0.015, 0.025); value -0.2198 / -0.2195 (0.0003, 0.0110)
+  - fig. 16, Penland: M_c 3.424 / 3.458 (0.034, 0.025); value -0.0204 / -0.0221 (0.0017, 0.0110) APART
+  - fig. 16, Lord and Ulmann: M_c 1.044 / 1.044 (0.000, 0.025); value -0.8143 / -0.8144 (0.0001, 0.0110)
+  - fig. 16, Lord and Ulmann: M_c 1.382 / 1.407 (0.025, 0.025); value -0.5090 / -0.5104 (0.0014, 0.0110) APART
+  - fig. 16, Lord and Ulmann: M_c 1.990 / 2.032 (0.042, 0.027); value -0.2884 / -0.2848 (0.0036, 0.0114) APART
+  - fig. 16, TN 2960: M_c 1.501 / 1.501 (0.000, 0.026); value -0.4739 / -0.4724 (0.0015, 0.0112)
+  - fig. 16, TN 2960: M_c 1.970 / 1.980 (0.010, 0.026); value -0.2734 / -0.2753 (0.0019, 0.0112)
+  - fig. 16, TN 2960: M_c 2.846 / 2.896 (0.050, 0.026); value -0.0987 / -0.0996 (0.0009, 0.0112) APART
+- F = C_D (fig. 17, pressure) + (p_down - p_inf)/q_c (fig. 16): the front side if the
+  downstream pressure held over the rear half. MN = (2/3) Cp_pitot(M_c). Each value on
+  the first reading / the second (fig. 17 the first throughout).
+- TN 2960, M_c 1.49: F/MN 1.005 / 1.006
+- TN 2960, M_c 1.98: F/MN 1.126 / 1.124
+- TN 2960, M_c 2.87: F/MN 1.069 / 1.067
+- Penland, M_c 1.73 (alpha 14.6, sweep 75.4 deg): F/MN 1.166 / 1.165; stagnation over Rayleigh at M_c 1.171 / 1.172; over TN 2960 integrated (1.017) 1.147 / 1.146
+- Penland, M_c 3.43 (alpha 30.0, sweep 60.0 deg): F/MN 1.057 / 1.055; stagnation over Rayleigh at M_c 0.988 / 0.991
+- Lord and Ulmann, M_c 1.04 (alpha 14.8, sweep 75.2 deg): F/MN 1.445 / 1.445; stagnation over Rayleigh at M_c 1.528 / 1.497
+- Lord and Ulmann, M_c 1.38 (alpha 20.0, sweep 70.0 deg): F/MN 1.053 / 1.048; stagnation over Rayleigh at M_c 1.067 / 1.066
+- Lord and Ulmann, M_c 1.98 (alpha 29.4, sweep 60.6 deg): F/MN 1.121 / 1.122; stagnation over Rayleigh at M_c 1.095 / 1.086; over TN 2960 integrated (1.040) 1.078 / 1.079; over TN 2960's own F at 1.98 0.995 / 0.998
 

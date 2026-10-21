@@ -16,12 +16,11 @@ import { FinRefusal } from '../../src/fins/refusal';
 import {
   machaBlockageSpread,
   machaFrontSides,
+  machaM12Round7,
   MACHA_READING_ERROR,
   pitotPressureCoefficient,
   REYNOLDS_ALLOWANCE,
   roundedLeadingEdgeDrag,
-  SWEEP_ALLOWANCE,
-  SWEEP_ALLOWANCE_EXTRAPOLATED,
   tn2960FrontSides,
   TRANSONIC_NODES,
   transonicFrontSide,
@@ -127,31 +126,39 @@ describe('kappa, the front side over modified Newtonian (0016 section 11)', () =
     ]);
   });
 
-  it('the second reading (0016 section 14): kappa 0.765, 0.831, 0.896; the spread -0.56%, -0.46%, -0.14%', () => {
-    expect(machaFrontSides('second').map((x) => r3(x.ratio))).toEqual([0.765, 0.831, 0.896]);
+  it('the second reading, its points outside the combined error kept (0016 section 16): kappa 0.768, 0.831, 0.896; the spread -0.91%, -0.81%, -0.49%', () => {
+    expect(machaFrontSides('second').map((x) => r3(x.ratio))).toEqual([0.768, 0.831, 0.896]);
     expect(machaBlockageSpread('second').map((s) => Math.round(1e4 * s.change) / 1e4)).toEqual([
-      -0.0056, -0.0046, -0.0014,
+      -0.0091, -0.0081, -0.0049,
     ]);
   });
 
-  it("the nodes: the mean of both readings, their envelope widened by the 1% reading error and fig. 5's spread on both; 1.49 is the term above", () => {
+  it("the nodes: the mean of the readings (at M 1.2 round 7's too), their envelope widened by the 1% reading error and fig. 5's spread on both; 1.49 is the term above", () => {
     const k1 = machaFrontSides('first');
     const k2 = machaFrontSides('second');
     const sLow = Math.min(
       0,
       ...[...machaBlockageSpread('first'), ...machaBlockageSpread('second')].map((s) => s.change),
     );
+    expect(r3(machaM12Round7())).toBe(0.899);
     TRANSONIC_NODES.slice(0, 3).forEach((n, i) => {
-      const a = k1[i]!.ratio;
-      const b = k2[i]!.ratio;
-      expect(n.nominal).toBeCloseTo((a + b) / 2, 15);
-      expect(n.low).toBeCloseTo(Math.min(a, b) * (1 - MACHA_READING_ERROR) * (1 + sLow), 15);
-      expect(n.high).toBeCloseTo(Math.max(a, b) * (1 + MACHA_READING_ERROR), 15);
+      const r = [k1[i]!.ratio, k2[i]!.ratio, ...(i === 2 ? [machaM12Round7()] : [])];
+      expect(n.nominal).toBeCloseTo(r.reduce((x, y) => x + y, 0) / r.length, 15);
+      expect(n.low).toBeCloseTo(Math.min(...r) * (1 - MACHA_READING_ERROR) * (1 + sLow), 15);
+      expect(n.high).toBeCloseTo(Math.max(...r) * (1 + MACHA_READING_ERROR), 15);
     });
+    // Hand values (four figures): 0.7651, 0.8307, 0.8973 nominal; M 1.2 low 0.8792, high 0.9080.
+    expect(TRANSONIC_NODES.slice(0, 3).map((n) => Math.round(1e4 * n.nominal) / 1e4)).toEqual([
+      0.7651, 0.8307, 0.8973,
+    ]);
+    expect(
+      [TRANSONIC_NODES[2]!.low, TRANSONIC_NODES[2]!.high].map((x) => Math.round(1e4 * x) / 1e4),
+    ).toEqual([0.8792, 0.908]);
+    // The 1.49 node's low end: fig. 5(e)'s M 1.49 symbols (0.982) lower it to 0.98 (0016 section 16).
     expect(TRANSONIC_NODES[3]).toEqual({
       mach: 1.49,
       nominal: 1,
-      low: 0.99,
+      low: 0.98,
       high: 1.06,
       source: 'TN 2960',
     });
@@ -173,8 +180,8 @@ describe('kappa, the front side over modified Newtonian (0016 section 11)', () =
     const at13 = transonicFrontSide(1.3);
     expect([at13.low, at13.high]).toEqual([c!.low, d!.high]);
     expect(at13.nominal).toBeCloseTo(c!.nominal + ((1.3 - 1.2) / 0.29) * (1 - c!.nominal), 14);
-    expect(r3(at13.low / at13.nominal)).toBe(0.946);
-    expect(r3(at13.high / at13.nominal)).toBe(1.137);
+    expect(r3(at13.low / at13.nominal)).toBe(0.943);
+    expect(r3(at13.high / at13.nominal)).toBe(1.136);
   });
 });
 
@@ -209,13 +216,7 @@ describe('the term on a flat plate at M_n 1.0 to 1.49', () => {
     expect(t.band.high).toBeCloseTo(k.high / k.nominal + REYNOLDS_ALLOWANCE, 15);
   });
 
-  it('swept: the allowance widened to twice its deviation from 1, 0.96 to 1.14, and so labelled', () => {
-    expect(SWEEP_ALLOWANCE_EXTRAPOLATED.low).toBeCloseTo(1 - 2 * (1 - SWEEP_ALLOWANCE.low), 15);
-    expect(SWEEP_ALLOWANCE_EXTRAPOLATED.high).toBeCloseTo(1 + 2 * (SWEEP_ALLOWANCE.high - 1), 15);
-    expect([r3(SWEEP_ALLOWANCE_EXTRAPOLATED.low), r3(SWEEP_ALLOWANCE_EXTRAPOLATED.high)]).toEqual([
-      0.96, 1.14,
-    ]);
-    // M 1.8 at 42 deg: M_n 1.338, the hobby example's.
+  it('swept: the served allowance, 0.95 to 1.21, and so labelled (the hobby case, M 1.8 at 42 deg, M_n 1.338)', () => {
     const sweep = Math.atan(0.9) / deg;
     const t = plate(1.8, sweep, 1e5);
     const mn = 1.8 * Math.cos(sweep * deg);
@@ -225,14 +226,19 @@ describe('the term on a flat plate at M_n 1.0 to 1.49', () => {
       k.nominal * (2 / 3) * pitotPressureCoefficient(mn) * Math.cos(sweep * deg) ** 2 * 0.003,
       16,
     );
-    expect(t.band).toEqual({
-      low: Math.floor((k.low / k.nominal - REYNOLDS_ALLOWANCE) * 0.96 * 100 + 1e-9) / 100,
-      high: Math.ceil((k.high / k.nominal + REYNOLDS_ALLOWANCE) * 1.14 * 100 - 1e-9) / 100,
-    });
-    expect(t.band).toEqual({ low: 0.86, high: 1.32 });
+    expect(t.band).toEqual({ low: 0.85, high: 1.4 });
     expect(t.label).toMatch(
-      /the band widened by 0\.96 to 1\.14 for it, the sweep allowance extrapolated in normal Mach number/,
+      /the band widened by 0\.95 to 1\.21 for it, the sweep allowance extrapolated in normal Mach number/,
     );
+    // Round 7's blind re-read pairs with the first over 22 to 65 deg: no one-reading label.
+    expect(t.label).not.toMatch(/one reading/);
+  });
+
+  it("the transonic Reynolds regime: measured only at CR-149372's Re_d 1.9e5 to 3.3e5", () => {
+    expect(plate(1.1, 0, 2.5e5).regime).toBe('measured');
+    expect(plate(1.1, 0, 1.5e5).regime).toBe('extrapolated in Reynolds number');
+    expect(plate(1.1, 0, 5e5).regime).toBe('extrapolated in Reynolds number');
+    expect(plate(1.6, 0, 5e5).regime).toBe('measured');
   });
 
   it('at M_n 1.49 and above, the term of 0016 sections 4 and 5, unchanged', () => {
@@ -246,10 +252,11 @@ describe('the term on a flat plate at M_n 1.0 to 1.49', () => {
     });
     expect(a).toEqual(b);
     expect(a.transonic).toBeUndefined();
-    expect(a.band).toEqual({ low: 0.99, high: 1.06 });
+    // At M_n 1.49 the low end is fig. 5(e)'s symbols' 0.98; from about 1.59, the band's 0.99.
+    expect(a.band).toEqual({ low: 0.98, high: 1.06 });
+    expect(plate(1.6).band).toEqual({ low: 0.99, high: 1.06 });
     const s = plate(2.8, 40);
-    expect(s.band).toEqual({ low: 0.97, high: 1.14 });
-    expect(s.label).toMatch(/0\.98 to 1\.07 for it \(0016\)$/);
+    expect(s.band).toEqual({ low: 0.94, high: 1.29 });
   });
 });
 
@@ -257,7 +264,7 @@ describe('refusals', () => {
   it('a plate below M_n 1.0, citing the airfoil series', () => {
     const e = failure(() => plate(1.3, 45));
     expect(e.reason).toBe('leading-edge-range');
-    expect(e.message).toMatch(/normal to the edge, M cos\(sweep\), 0\.919 is below 1\.0/);
+    expect(e.message).toMatch(/normal to the edge, M cos\(sweep\), 0\.9192 is below 1\.0/);
     expect(e.message).toMatch(/RM L53L24a, NASA TP 2204, NASA TN D-3634/);
     expect(e.message).toMatch(/both readings: 0\.10 to 0\.41 of the modified-Newtonian value/);
     expect(plate(1.0).normalMach).toBe(1);
@@ -274,7 +281,28 @@ describe('refusals', () => {
       }),
     );
     expect(e.reason).toBe('leading-edge-range');
-    expect(e.message).toMatch(/0\.950 is below 1\.0/);
+    expect(e.message).toMatch(/0\.9500 is below 1\.0/);
+    // At the boundary the message prints enough digits to stay true.
+    const f = failure(() =>
+      roundedLeadingEdgeDrag({
+        mach: 0.9999999,
+        radius: 0.0015,
+        faceAngle: 0,
+        tanLeadingEdgeSweep: 0,
+        reynoldsOnDiameter: 2e5,
+      }),
+    );
+    expect(f.message).toMatch(/0\.9999999 is below 1\.0/);
+    const g = failure(() =>
+      roundedLeadingEdgeDrag({
+        mach: 2,
+        radius: 0.0015,
+        faceAngle: 0,
+        tanLeadingEdgeSweep: 0,
+        reynoldsOnDiameter: 1.0001e6,
+      }),
+    );
+    expect(g.message).toMatch(/Reynolds number 1\.0001e\+6 on the edge's diameter is above/);
   });
 });
 

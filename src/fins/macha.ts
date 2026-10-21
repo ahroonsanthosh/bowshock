@@ -288,12 +288,14 @@ export const MACHA_FIG5 = {
  * Fig. 8b, second reading (audit round 6, commit fc66a2f,
  * `docs/research/total-drag/audit/round6/readings/cr149372_fig8b.csv`): the
  * points used, the faired curves every 5 deg (`curve`) and the symbols
- * (`symbol`), 0 to 90 deg. Left out (0016 section 14): a stray detection
- * (86.5 deg, Cp -0.084, at M 1.0), the points outside the combined reading
- * error (M 1.0 at 54.2 deg; M 1.1 at 3.4, 39.1, 41.3, 50.0, 53.5 deg), and
- * the M 1.2 curve at 25 to 60 deg with the "triangle" at 30.7 deg, which run
- * on the M 1.1 line (a third look puts the triangle at 34 deg, 0.91, on
- * the third line).
+ * (`symbol`), 0 to 90 deg, including those outside the combined reading
+ * error (M 1.0 at 54.2 deg; M 1.1 at 3.4, 39.1, 41.3, 50.0, 53.5 deg; 0016
+ * section 16). Left out, as misreads shown by the scan: the "90" axis
+ * label read as a circle (86.5 deg, Cp -0.084, at M 1.0) and the M 1.2
+ * curve at 25 to 60 deg with the "triangle" at 30.7 deg, which run on the
+ * M 1.1 line (a third look puts the triangle at 34 deg, 0.91, on the third
+ * line). That stretch was read again blind in round 7
+ * (`MACHA_FIG8B_M12_ROUND7`), which pairs with the first reading there.
  */
 export const MACHA_FIG8B_SECOND: readonly {
   readonly mach: number;
@@ -321,6 +323,7 @@ export const MACHA_FIG8B_SECOND: readonly {
         [45, 0.3589, 'c'],
         [49.15, 0.2202, 's'],
         [50, 0.2007, 'c'],
+        [54.25, 0.1093, 's'],
         [60, -0.1248, 'c'],
         [61.36, -0.1796, 's'],
         [65, -0.3206, 'c'],
@@ -337,6 +340,7 @@ export const MACHA_FIG8B_SECOND: readonly {
       1.1,
       [
         [0.207, 1.331, 's'],
+        [3.442, 1.3074, 's'],
         [5, 1.3094, 'c'],
         [6.947, 1.3114, 's'],
         [10, 1.2785, 'c'],
@@ -348,8 +352,12 @@ export const MACHA_FIG8B_SECOND: readonly {
         [30, 0.9084, 'c'],
         [35, 0.7703, 'c'],
         [36.55, 0.7286, 's'],
+        [39.1, 0.6985, 's'],
+        [41.26, 0.6315, 's'],
         [45, 0.4816, 'c'],
         [46.35, 0.444, 's'],
+        [50, 0.2893, 'c'],
+        [53.47, 0.1395, 's'],
         [54.98, 0.1395, 's'],
         [55, 0.1395, 'c'],
         [60, -0.0236, 'c'],
@@ -398,8 +406,9 @@ export const MACHA_FIG8B_SECOND: readonly {
  * only. Below 88 deg the reader names them by shape, uncertain; used only
  * where the four curves coincide (44 to 78 deg, where the name does not
  * matter), not where they part (78 to 88 deg). Left out of the shared
- * curve: the "60" axis label read as symbols (59.6, 59.8, 64.3 deg near Cp
- * 0) and 69.7 deg, outside the combined error. Above 88 deg, named by
+ * curve, as misreads: the "60" axis label read as symbols (59.6, 59.8, 64.3
+ * deg near Cp 0); kept, though outside the combined error, 69.7 deg (0016
+ * section 16). Above 88 deg, named by
  * plateau: the 2.54 cm square at 89.1 deg (on the curve the 1.91 and 2.54 cm
  * share there) and the 3.81 cm circle at 89.7 deg; values below -0.8 are
  * extrapolated on the uniform grid spacing in both readings.
@@ -415,6 +424,7 @@ export const MACHA_FIG5_SECOND = {
     [66.13, -0.3472],
     [67.28, -0.3952],
     [67.55, -0.415],
+    [69.71, -0.4339],
     [69.78, -0.4726],
     [72.49, -0.5641],
     [75.06, -0.6285],
@@ -426,3 +436,50 @@ export const MACHA_FIG5_SECOND = {
     { diameterCm: 5.08, points: pts('symbol', []) },
   ],
 } as const;
+
+/**
+ * Fig. 8b's M 1.2 curve, read again blind (audit round 7, commit 47f32ec,
+ * `docs/research/total-drag/audit/round7/readings/cr149372_fig8b.csv`): the
+ * faired line every 5 deg from 0 to 100 (local-grid values; the 0 deg value
+ * extrapolated as a + b theta^2) and every triangle's centroid, the line
+ * identified by its own symbols (right-most, 2.3 to 4.7 deg from the M 1.1
+ * line over 17 to 65 deg). It pairs with the first reading over the
+ * stretch the round-6 reading left out (0016 section 16).
+ */
+export const MACHA_FIG8B_M12_ROUND7: readonly MachaPoint[] = [
+  ...pts('curve', [
+    [0, 1.3944],
+    [5, 1.3876],
+    [10, 1.3566],
+    [15, 1.3029],
+    [20, 1.2207],
+    [25, 1.1165],
+    [30, 1.0003],
+    [35, 0.8691],
+    [40, 0.7188],
+    [45, 0.5699],
+    [50, 0.4252],
+    [55, 0.2778],
+    [60, 0.1238],
+    [65, -0.0227],
+    [70, -0.1693],
+    [75, -0.3022],
+    [80, -0.4228],
+    [85, -0.5213],
+    [90, -0.6191],
+    [95, -0.6869],
+  ]),
+  ...pts('symbol', [
+    [-0.24, 1.3855],
+    [7.07, 1.372],
+    [13.18, 1.3269],
+    [21.9, 1.1836],
+    [33.9, 0.9026],
+    [43.42, 0.6256],
+    [55.18, 0.2735],
+    [69.86, -0.1638],
+    [83.31, -0.4843],
+    [89.68, -0.6066],
+    [95.6, -0.6849],
+  ]),
+];

@@ -7,7 +7,10 @@
   (RM A55H31 figs. 11 and 12; NASA CR-149372 figs. 8b and 5, section
   11); the independent reader's blind second readings (round 6) are
   held beside the first and every band is the envelope of both (TN 2960
-  in section 13, RM A55H31 and CR-149372 in section 14).
+  in section 13, RM A55H31 and CR-149372 in section 14; round 7's re-read
+  of fig. 8b at M 1.2 and the third looks at RM A55H31 fig. 12 in section
+  16, the review's fixes). TN 3861 figs. 15 and 16 are read twice and fig.
+  17 once, a check on the sweep allowance, not a band (section 16).
 - **Date:** 2026-10-20
 - **Inputs:** [0014](0014-refusals.md) W3, W4, W11 and section 10 (what
   sets bands, what is held back, "bounded, not measured", the readings
@@ -85,7 +88,7 @@ at 4.5 K is 0.885, 0.863, 0.719 at M 1.5, 2.0, 3.1 (first reading) and
 | --- | --- | --------- | -------------- | -------------------------------- |
 | 2.5 | 2.2 | 0.931     | 0.903 to 0.956 | 0.90 to 1.24                     |
 | 1.8 | 3.3 | 0.923     | 0.909 to 0.944 | 0.92 to 1.24                     |
-| 2.5 | 3.3 | 0.866     | 0.815 to 0.910 | 0.88 to 1.27                     |
+| 2.5 | 3.3 | 0.866     | 0.815 to 0.910 | 0.87 to 1.27                     |
 
 On a 54 mm rocket at sea level with three 3 mm plates (root 120 mm, tip 48
 mm, span 80 mm) at the base, the term is 0.082, 0.062, 0.051 and 0.038 in
@@ -158,29 +161,37 @@ decided on M_n and on the Reynolds number's normal component.
 fig. 12 plots the front side's pressure drag, yawed over unyawed, for its
 own tests (M 3.9) and Penland's (M 6.9, its reference 1), on absolute
 pressures as its eq. (14) is (table II integrated both ways shows it).
-Converted to gauge pressure with fig. 11's stagnation ratio and the
-unyawed shape integral of table II, and divided by the model's ratio,
-cos^3(L) Cp_pitot(M cos L) / Cp_pitot(M), each point gives r, measured over
-modelled relative to the unyawed cylinder:
+Converted exactly to gauge pressure, (R P I_g - cos L) / (P I_g - 1) with P
+= p_t2 / p_inf and I_g the unyawed shape integral of table II (section 16;
+as first committed, through fig. 11's stagnation ratio, an approximation),
+and divided by the model's ratio, cos^3(L) Cp_pitot(M cos L) /
+Cp_pitot(M), each point gives r, measured over modelled relative to the
+unyawed cylinder (the numbers as of section 16; the second reading,
+section 14; the third looks, section 16):
 
-| Source, yaw         | M_n  | r     | Used                                                                                      |
-| ------------------- | ---- | ----- | ----------------------------------------------------------------------------------------- |
-| RM A55H31, 30.1 deg | 3.37 | 1.067 | yes                                                                                       |
-| RM A55H31, 45.1 deg | 2.75 | 1.120 | no: at R 2.1e3, below the 6.7e3 floor; the report suspects three-dimensional flow (p. 14) |
-| RM A55H31, 60.1 deg | 1.94 | 1.226 | no: the same suspicion                                                                    |
-| Penland, 14.4 deg   | 6.64 | 0.998 | yes                                                                                       |
-| Penland, 29.6 deg   | 5.96 | 1.007 | yes                                                                                       |
-| Penland, 45.2 deg   | 4.83 | 1.034 | yes                                                                                       |
-| Penland, 59.9 deg   | 3.44 | 0.990 | yes                                                                                       |
-| Penland, 75.5 deg   | 1.72 | 0.866 | no: an end effect (TN 3861 p. 10)                                                         |
+| Source, yaw         | M_n  | r, first | r, second (third look) | Used                                                                                                                  |
+| ------------------- | ---- | -------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| RM A55H31, 30.1 deg | 3.37 | 1.072    | 1.069                  | yes                                                                                                                   |
+| RM A55H31, 45.1 deg | 2.75 | 1.134    | 1.113 (1.113)          | in the measured allowance, no: R 2.1e3, three-dimensional flow suspected (p. 14); in the served one, yes (section 16) |
+| RM A55H31, 60.1 deg | 1.94 | 1.277    | 1.183 (1.195)          | the same; the first reading misread (section 16)                                                                      |
+| Penland, 14.4 deg   | 6.64 | 0.997    | 0.993                  | yes                                                                                                                   |
+| Penland, 29.6 deg   | 5.96 | 1.007    | 1.005                  | yes                                                                                                                   |
+| Penland, 45.2 deg   | 4.83 | 1.036    | 1.022                  | yes                                                                                                                   |
+| Penland, 59.9 deg   | 3.44 | 0.996    | 0.988                  | yes                                                                                                                   |
+| Penland, 75.5 deg   | 1.72 | 1.287    | 1.004                  | no: an end effect (TN 3861 p. 10), and beyond 60 deg                                                                  |
 
 The points set apart are set apart by the reports' own statements, made
-before any of this, not by their values. Over those used, r is 0.990 to
-1.067, so **the sweep allowance is 0.99 to 1.07** (rounded outward) and
-the band on a swept edge is TN 2960's times it, rounded outward: **0.98 to
-1.14**, and **0.95 to 1.17** where extrapolated in Reynolds number. Had
-the three been kept, the high end would be 1.30 or more. The allowance is
-the larger of the two effects the checks cannot separate: the
+before any of this, not by their values. Over those used, r is 0.988 to
+1.072, so **the measured sweep allowance is 0.98 to 1.08** (rounded
+outward; as first committed, on one reading and the approximate
+conversion, 0.99 to 1.07), at M_n 3.37 to 6.65. Every swept edge served
+is at M_n 3.0 or less, so the allowance served is extrapolated in normal
+Mach number and contains every yawed datum at served sweeps and normal
+Mach numbers, the 45 and 60 deg points among them: **0.95 to 1.21**
+(section 16). The band on a swept edge is TN 2960's times it, rounded
+outward: **0.94 to 1.29** (0.93 at M_n 1.49, section 16's local low end),
+and **0.91 to 1.32** where extrapolated in Reynolds number. The allowance
+is the larger of the two effects the checks cannot separate: the
 independence principle's own error, and the modified-Newtonian ratio's
 drift from M to M_n (TN 2960: 0.995 to 1.056 over 1.49 to 2.90).
 
@@ -193,8 +204,10 @@ coarse at low incidence to integrate (`fin_edges_w34.md` section 4).
 
 **Label:** the rounded edge's, with "swept S deg: the independence
 principle, the front side at the normal Mach number on the normal dynamic
-pressure, checked on yawed cylinders (RM A55H31 figs. 11, 12, read once,
-the second reading pending), the band widened by 0.99 to 1.07 for it".
+pressure, checked on yawed cylinders (RM A55H31 figs. 11, 12), the band
+widened by 0.95 to 1.21 for it, the sweep allowance extrapolated in normal
+Mach number (...)" (section 16; as first committed, "read once, the second
+reading pending" and 0.99 to 1.07).
 Not modelled, the analogy's gap as before: a fin's edge is not an infinite
 cylinder, and the root (the body's boundary layer) and the tip are not
 represented.
@@ -420,12 +433,12 @@ and 5 times kappa(M_n), the cylinder's front side over modified Newtonian:
 per unit span. Kappa's nodes (first reading; trapezoid rule over symbols
 and faired curve, 0 to 90 deg):
 
-| M_n  | kappa              | Range          | From                                                  |
-| ---- | ------------------ | -------------- | ----------------------------------------------------- |
-| 1.0  | 0.762              | 0.751 to 0.770 | CR-149372 fig. 8b                                     |
-| 1.1  | 0.831              | 0.818 to 0.839 | CR-149372 fig. 8b                                     |
-| 1.2  | 0.897              | 0.883 to 0.906 | CR-149372 fig. 8b                                     |
-| 1.49 | 1 (the term above) | 0.99 to 1.06   | TN 2960's band (its readings at 1.49: 0.994 to 1.002) |
+| M_n  | kappa              | Range          | From                                                                                 |
+| ---- | ------------------ | -------------- | ------------------------------------------------------------------------------------ |
+| 1.0  | 0.762              | 0.751 to 0.770 | CR-149372 fig. 8b                                                                    |
+| 1.1  | 0.831              | 0.818 to 0.839 | CR-149372 fig. 8b                                                                    |
+| 1.2  | 0.897              | 0.883 to 0.906 | CR-149372 fig. 8b                                                                    |
+| 1.49 | 1 (the term above) | 0.99 to 1.06   | TN 2960's band (its readings at 1.49: 0.994 to 1.002; 0.98 to 1.06 since section 16) |
 
 Each CR-149372 node's range is its readings' lowest and highest widened by
 a 1% reading error (the calibration's +-1 px moves the front side by 0.5%
@@ -464,17 +477,19 @@ spread); 6.7e3 to 1e5 "extrapolated in Reynolds number", +-3% of the term;
 outside, refused.
 
 **Sweep.** The independence principle as in section 5, at the normal
-Mach number. Its checks reach down to M_n 3.37 only, so below 1.49 the
-allowance is extrapolated in normal Mach number and widened to twice its
-measured deviation from 1: **0.98 to 1.14** in place of 0.99 to 1.07,
-labelled "the sweep allowance extrapolated in normal Mach number". (At
-M_n just above 1 the bow shock stands far off a cylinder, so the root and
-the tip reach further along a finite edge; that is the analogy's gap of
-section 5, not represented.) The hobby example's fins (three 3 mm plates,
-root 120 mm, tip 48 mm, span 80 mm, 42 deg, on a 54 mm body at sea
-level), refused at M 1.8 before, now give 0.161 (0.141 to 0.212) at M 1.8
-(M_n 1.34) and 0.131 (0.121 to 0.166) at M 1.5 (M_n 1.11), both
-extrapolated in Reynolds number.
+Mach number. Its checks reach down to M_n 3.37 only, so the allowance is
+extrapolated in normal Mach number, labelled "the sweep allowance
+extrapolated in normal Mach number". As first committed here, below 1.49
+only, widened to twice its measured deviation from 1 (0.98 to 1.14); since
+section 16, on every swept edge served (all are below 3.37), **0.95 to
+1.21**. (At M_n just above 1 the bow shock stands far off a cylinder, so
+the root and the tip reach further along a finite edge; that is the
+analogy's gap of section 5, not represented.) The hobby example's fins
+(three 3 mm plates, root 120 mm, tip 48 mm, span 80 mm, 42 deg, on a 54 mm
+body at sea level), refused at M 1.8 before, give 0.161 (0.137 to 0.225)
+at M 1.8 (M_n 1.34) and 0.131 (0.117 to 0.177) at M 1.5 (M_n 1.11), both
+extrapolated in Reynolds number (section 16; as first committed here,
+0.161 (0.141 to 0.212) and 0.131 (0.121 to 0.166)).
 
 **Refused.** A flat plate below M_n 1.0: "below it the normal flow is
 subsonic and the faces behind a rounded edge are felt at its nose, which a
@@ -491,6 +506,8 @@ section 12 the wedges take this term too.
 **Readings.** CR-149372 figs. 8b and 5 are read once; the round-6 reader
 reads them blind. Until the second readings are held beside these, the
 term's label says "read once, the second reading pending" (section 8).
+(Both are read twice since section 14, and fig. 8b's M 1.2 curve from 22
+to 65 deg three times since section 16; no label says "read once".)
 
 **Coverage** (the same population and run as section 9, `out/impact-w4e.out`;
 `evaluate.ts` mirrors the code, `EDGES=w4e` by default, `EDGES=w34` the
@@ -769,3 +786,255 @@ record's terms depends on the class. After the merge the population run
 reproduces `out/impact-w4e.out` and `.json` exactly: the second readings
 moved bands, not refusals, so the coverage of section 11 stands (W4 needed
 in 20.7% of cases; totals once W1 is done 3.4%; totals today 0.2%).
+
+## 16. The review of 2026-10-21
+
+The coordinator's review named four items to fix before the merge and a
+list of smaller ones. What each became:
+
+### Item 1: the sweep allowance on the swept edges served
+
+**(a) Why RM A55H31 sets its own 45 and 60 deg tests apart.** The report,
+p. 14 (and again p. 17): "The pressure distribution over the cylinder
+measured at 45 deg and 60 deg of yaw in the present tests departed from
+that reported in reference 1 for azimuth angles greater than about 45 deg.
+It is suspected that this departure is brought about by the fact that the
+flow over the cylinder was becoming three-dimensional due to the
+1-inch-diameter model in the 3-inch-diameter stream" (the departure is
+fig. 10's). Its other doubt, p. 18, is about heat transfer at 60 deg (air
+bubbles under the measuring plug, shorts in its heater wires), not the
+pressure orifices; and the 45 deg run is at R 2.1e3 (table II), below the
+6.7e3 of p. 13's statement. The suspicion is not tested in the report, and
+the effect it names, a yawed model only a few diameters long in the
+stream, is a finite-length effect that a fin's edge, with a root and a
+tip, may share. So the reason does not hold for this use: the two are data
+at served conditions (sweep 45 and 60 deg, M_n 2.77 and 1.96), and the
+allowance served must contain them.
+
+Their two readings disagree beyond the combined error (yaw 0.35 and 0.32
+deg apart, the 60 deg ratio 0.006 apart), and at 60 deg r moves about 0.3
+per degree of yaw, so each ring was looked at a third time, by a circle
+fit on the deskewed scan (`fin_edges_w34.md` section 3): 44.76 deg, 0.410
+and 59.83 deg, 0.165, within 0.05 deg and 0.001 of the second reading's
+44.75, 0.410 and 59.78, 0.164. The first reading's two are misread (its
+yaws run high, as section 14 found) and are set aside by 0014 section 10
+(`RM_A55H31_FIG12_THIRD_LOOK`). r is 1.113 and 1.195 at the third looks,
+1.113 and 1.183 on the second reading (the first's, set aside, 1.134 and
+1.277).
+
+**(b) TN 3861 figs. 15 and 16, both readings** (with fig. 17, which the
+drag needs, read once; `fin_edges_w34.md` section 4). The first reading was
+made and recorded before the blind second (audit round 7, commit e45e0d6)
+was opened. Paired, fig. 15's ordinates disagreed by 0.012 to 0.025: the
+scans are rotated or sheared by 0.4 to 0.8 deg, which the first reading's
+axis-aligned calibrations ignored. Re-mapped through affine calibrations
+fitted to every grid line detected on the scans, all 13 paired ordinates
+agree within the combined error (largest 0.0097 against 0.0134). Six
+abscissae still differ by 0.025 to 0.050; where the report states the
+condition (Penland's alpha 30.2 deg, M_c 3.451; Lord and Ulmann's 15 deg,
+M_c 1.04; TN 2960's M 2.90) the second reading is the closer, so the
+first's are misread there; elsewhere both are carried (M_c moves the
+reference Cp_pitot by under 0.3%).
+
+What the pair shows:
+
+- Fig. 15 is the stagnation pressure and fig. 16 the downstream-side
+  pressure, against the crossflow Mach number; neither is the front side's
+  drag. An estimate needs fig. 17's drag and the assumption that the
+  downstream pressure holds over the rear half, F = C_D + Cp_down. On TN
+  2960's own cylinders as replotted there it is off by up to 0.086 of the
+  modified-Newtonian front side (1.126 at M 1.98, where TN 2960's
+  integrated front side gives 1.040).
+- Below M_c 3.37 the crossflow symbols are Penland's at alpha 14.9 deg (M_c
+  1.76, sweep 75 deg), flagged by TN 3861 itself as an end effect, and Lord
+  and Ulmann's unpublished M 4.04 points at alpha about 10, 15, 20 and 30
+  deg (sweeps 80, 75, 70 and 60 deg; the 15 deg one flagged high, p. 11).
+  Only the last is at a served sweep. Penland's 30.2 deg point is at M_c
+  3.45: RM A55H31's reference-1 point at 59.9 deg, the same test.
+- At that one point F over modified Newtonian is 1.121 and 1.122 (first and
+  second reading of fig. 16): 1.078 and 1.079 of TN 2960's integrated front
+  side at M 1.98, 0.995 and 0.998 of TN 2960's own F there (the same
+  estimate both sides). Its stagnation pressure is 1.095 and 1.086 of
+  Rayleigh's, as RM A55H31's 60 deg tests (1.10 and 1.13).
+
+**Do the yawed points cover the served range?** No. At served sweeps (to
+60 deg) and normal Mach numbers (1.0 to 3.0) the yawed data are three
+points, all at sweeps of 45 to 61 deg and M_n 1.96 to 2.77: RM A55H31's 45
+and 60 deg tests (r 1.113 and 1.183 to 1.195) and Lord and Ulmann's point
+(0.995 to 1.079, an estimate). Nothing yawed lies below M_n 1.96 at a served
+sweep, nor below 45 deg of sweep at M_n under 3.37. Below M_n 1.96 the only
+yawed points are at sweeps of 70 and 75 deg (F 1.05 to 1.17 of modified
+Newtonian, 1.45 where the report flags the point), beyond the served 60.
+
+**(c) The allowance served.** Every swept edge served is at M_n 3.0 or
+less, below the checks' 3.37, so every one is labelled "the sweep
+allowance extrapolated in normal Mach number". The yawed data at served
+sweeps and normal Mach numbers span 0.995 to 1.195 (RM A55H31's 45 and 60
+deg points on the second reading and the third looks, and TN 3861's one
+estimate); widened by twice the measured allowance's deviation from 1
+(0.96 to 1.16) they set 0.96 to 1.20. The allowance is kept at the interim
+floor that contains them, **0.95 to 1.21** (`SWEEP_ALLOWANCE_SERVED`),
+since the points do not cover the range it serves. Kept, the misread
+first-reading point would have made it 1.28. The label: "the band widened
+by 0.95 to 1.21 for it, the sweep allowance extrapolated in normal Mach
+number (checked at M_n 3.37 to 6.65; widened to contain RM A55H31's own
+tests at 45 and 60 deg, M_n 1.96 to 2.77, and TN 3861's crossflow points;
+no yawed datum below M_n 1.96 at a served sweep)". Whether swept edges
+below M_n 1.96 should instead be refused is the coordinator's call: it
+would refuse the hobby example's leading edges at M 1.5 and 1.8 again
+(M_n 1.11 and 1.34).
+
+### Item 2: fig. 12 converted exactly
+
+Eq. (14)'s R is cos L times the ratio of the absolute front-side
+integrals; with the unyawed absolute integral P I_g on p_inf (P = p_t2 /
+p_inf, I_g = 0.721 from table II), the gauge ratio is exactly (R P I_g -
+cos L) / (P I_g - 1). Applied to table II's own absolute ratio it returns
+table II's gauge ratio (a test holds it). r, measured over modelled:
+
+| Point                      | M_n  | r, first | r, second | Third look | Use                                    |
+| -------------------------- | ---- | -------- | --------- | ---------- | -------------------------------------- |
+| M 3.9, 30 deg              | 3.37 | 1.072    | 1.069     | 1.069      | measured allowance (its high end)      |
+| M 3.9, 45 deg              | 2.77 | 1.134    | 1.113     | 1.113      | served allowance; the first misread    |
+| M 3.9, 60 deg              | 1.96 | 1.277    | 1.183     | 1.195      | served allowance; the first misread    |
+| M 6.86, 14 deg             | 6.64 | 0.997    | 0.993     |            | measured allowance                     |
+| M 6.86, 30 deg             | 5.96 | 1.007    | 1.005     |            | measured allowance                     |
+| M 6.86, 45 deg             | 4.83 | 1.036    | 1.022     |            | measured allowance                     |
+| M 6.86, 60 deg             | 3.44 | 0.996    | 0.988     | 1.007      | measured allowance (its low end)       |
+| M 6.86, 75 deg (set apart) | 1.72 | 1.287    | 1.004     |            | none: an end effect, and beyond 60 deg |
+
+**The measured allowance: 0.98 to 1.08** (section 14: 0.98 to 1.07), at
+M_n 3.37 to 6.65. (Section 14's third look at M 6.86, 60 deg, 59.75 deg and
+0.134, lies between the readings in yaw but not in r: 1.007 against 0.988
+and 0.996, inside the allowance either way; the low end stays the second
+reading's.) The swept bands the review expected from it (0.97 to
+1.15, 0.94 to 1.18, 0.96 to 1.16) are superseded by item 1: above M_n 1.49
+a swept edge's band is **0.94 to 1.29** (0.93 at M_n 1.49, below), **0.91
+to 1.32** extrapolated in Reynolds number; from 1.0 to 1.49, kappa's band
+times 0.95 to 1.21.
+
+### Item 3: fins at the base take a plate's largest t/c
+
+`finned-body.ts` passes the plate's thickness over its tip chord, the
+largest t/c, the fins-on-base factor's field (`evaluate.ts` mirrors it).
+The review's case, four 7.2 mm plates of root 120 mm and tip 48 mm at M
+2.0 at sea level (t/c 0.06 at the root, 0.15 at the tip), is refused: "the
+fins-on-base band rests on fins 5% and 10% thick (TN 2360, TN 3819 fig.
+35); t/c = 0.15 is outside them" (a test, with the same plates of
+constant chord served). Left to W1: a tapered plate's root may be thinner
+than 5% while its tip is inside (three 3 mm plates of root 120 mm, tip 48
+mm: 0.025 to 0.0625); the factor's field is the largest t/c, so such a
+plate passes its thickness check. Whether the thinnest station must also
+lie inside is a rule of `src/base/fins-on-base.ts`, not changed here.
+
+### Item 4: CR-149372 fig. 8b, M 1.2, 22 to 65 deg
+
+The round-7 blind re-read (commit 47f32ec, the M 1.2 curve every 5 deg
+from 0 to 95 deg and its triangles), paired with the first reading as in
+section 14 (`w34_pair_round6.py`, the round-7 directory its second
+argument):
+
+| Span        | Points | Mean difference | Largest          | Within the combined error | kappa, first | Round 7 |
+| ----------- | ------ | --------------- | ---------------- | ------------------------- | ------------ | ------- |
+| 0 to 90 deg | 28     | +0.0006         | +0.012 at 5 deg  | 27 of 28                  | 0.8967       | 0.8990  |
+| 22 to 65    | 12     | -0.0003         | +0.011 at 43 deg | 12 of 12                  |              |         |
+
+The pair supports the first reading where the round-6 reading went astray,
+so the label "the Mach 1.2 node rests on one reading of fig. 8b from 22 to
+65 deg" is dropped (code, tests and page). The M 1.2 node takes the mean
+of its three readings, **0.8973** (first 0.8967, round 6 0.8962, round 7
+0.8990), range **0.879 to 0.908** (section 14: 0.896, 0.882 to 0.906; the
+low end falls with fig. 5's wider spread below).
+
+### The smaller items
+
+- **TN 2960 fig. 5(e), M 1.49:** its symbols give 0.981 and 0.982 (both
+  readings), below the band's 0.99. The band's low end is now local: 0.98
+  at M_n 1.49, rising linearly to 0.99 by M_n 1.59 (TN 2960's lows by
+  Mach number, 0.98 at 1.49 and 1.03 at 1.98 and 2.90, capped at the band's
+  0.99: `roundedEdgeBandLow`), unchanged above. Lowering it everywhere moved
+  the Basic Finner's gated shots; the local low end does not (its edges
+  are unswept at M 1.8 and above). The 1.49 node's range is 0.98 to 1.06.
+- **The transonic Reynolds regime** is "measured" only at CR-149372's own
+  Re_d, 1.9e5 (fig. 8b) to 3.3e5 (fig. 5); elsewhere from M_n 1.0 to 1.49
+  it is "extrapolated in Reynolds number" (+-3%), and outside 6.7e3 to 1e6
+  refused (`MACHA_REYNOLDS`).
+- **Points outside the combined error are kept** unless a third look
+  shows a misread: fig. 8b's M 1.0 point at 54.2 deg and M 1.1 points at
+  3.4, 39.1, 41.3, 50.0 and 53.5 deg, and fig. 5's shared-curve point at
+  69.7 deg, now count. Still out: the stray at 86.5 deg (the "90" axis
+  label), the "60" axis label read as symbols, the M 1.2 curve at 25 to 60
+  deg and the "triangle" at 30.7 deg (a third look and now round 7 show
+  them on the M 1.1 line), and fig. 5's 78 to 88 deg points whose cylinder
+  the reader could not name. Second-reading kappa: 0.768, 0.831, 0.896
+  (section 14: 0.765, 0.831, 0.896); fig. 5's spread on it -0.91%,
+  -0.81%, -0.49% (was -0.56%, -0.46%, -0.14%).
+- **Section 14 and the code on the M 6.86 30 and 45 deg pairs:** section 14
+  left them out; the code kept them. Both keep them now: their r lies
+  inside the envelope of the others, so the allowance is the same either
+  way.
+- **Stale numbers** corrected: sections 2 (M 2.5, X 3.3: 0.87, not 0.88), 5
+  and 11 (each now gives the present values, with the first committed in
+  brackets), the header comment of `rounded-leading-edge.ts`, and the CSV
+  header, which said the second readings were pending.
+- **0014's W4 amendment** extends to rounded wedges (section 12) and states
+  the served sweep allowance.
+- **W3(b), small tips.** Stations below fig. 29(a)'s lowest read abscissa,
+  X 0.45, take the thin-layer term unchanged and the label says over what
+  share of the span ("near the tip, over 9% of the span, c/[h Re_c^(1/5)]
+  is below 0.45 ... an extrapolation"; fig. 29(a) varies by under 4% from
+  0.45 to 1.0). With a transition input, stations beyond fig. 29's read
+  range for the laminar change no longer refuse the whole term: that
+  sliver takes the laminar change bounded between none and its value at
+  the nearest station read, labelled with its share. A plate of taper 0.1
+  (root 120 mm, span 80 mm, 3 mm) at M 2.2 with transition inputs keeps
+  its trailing edge (19% of the span in the sliver; a test).
+- **Boundary refusals** print the asked value with the digits that show
+  which side it is on: "the Mach number 0.9999999 is below 1.0", "Reynolds
+  number 1.0001e+6 on the edge's diameter is above 1000000".
+- **The page.** `basicFinnerClass` no longer checks a hidden leading-edge
+  radius on a flat plate (the plate's edge is half its thickness), and the
+  explanation names the limits: M cos(sweep) 1.0 to 3.0, sweep to 60 deg,
+  Re on the diameter 6.7e3 to 1e6, wedges only of constant chord, a swept
+  edge's band wide and its allowance extrapolated.
+- **Reproducibility.** `w34_pair_round6.py` reads RM A55H31's round-6 files
+  and prints r on both readings and the third looks; with the round-7
+  directory it pairs fig. 8b's M 1.2 re-read. `w34_fin_edges.py` holds TN
+  3861's readings (the first as read and re-mapped, the second), pairs them
+  and prints the estimates.
+- **Tests** hold the hobby numbers and, where they can, values from the
+  data or by hand (the nodes to four figures; r on each reading; the third
+  looks).
+
+### What the review changed
+
+The hobby example's leading edges (three 3 mm plates, root 120 mm, tip 48
+mm, span 80 mm, 42 deg, on a 54 mm body at sea level), C_D on the body's
+area:
+
+| M   | M_n   | Before the review         | After                     |
+| --- | ----- | ------------------------- | ------------------------- |
+| 1.5 | 1.115 | 0.1311 (0.1180 to 0.1664) | 0.1311 (0.1167 to 0.1770) |
+| 1.8 | 1.338 | 0.1606 (0.1381 to 0.2120) | 0.1607 (0.1366 to 0.2249) |
+| 2.2 | 1.635 | 0.1825 (0.1770 to 0.2080) | 0.1825 (0.1715 to 0.2354) |
+
+The nominal moves only at M 1.8 (the M 1.2 node's third reading); the
+bands widen with the served allowance (0.95 to 1.21 in place of 0.96 to
+1.14 below M_n 1.49 and 0.97 to 1.14 above).
+
+The Basic Finner's gated shots are bit for bit unchanged (components,
+bands, inputs and states, to 1e-12), its edges unswept and of constant
+chord.
+
+**Coverage** (the same population and run, `out/impact-review.out`, its
+cross-check against `src/total` agreeing on all 1200 cases): only item 3
+moves a refusal. With a plate's largest t/c passed to the fins-on-base
+factor, its thickness refusal falls from 71.7% to 53.1% of cases and
+totals today rise from 0.2% to 0.4% (M 1.8 to 3.0: 0.5% to 1.2%); W1 is
+needed in 90.0% of cases (was 95.8%), W4 still in 20.7%, and the totals
+once W1 is done stay 3.4%. The bands moved by items 1, 2 and 4 refuse
+nothing.
+
+**Still read once:** TN 3861 fig. 17 (the drag behind the crossflow
+estimates, a check on the allowance, not a band) and TN 2960 fig. 5(d)'s
+R 1.3e5 diamonds (a check of the band, as in section 14).

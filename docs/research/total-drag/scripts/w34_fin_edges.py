@@ -198,6 +198,87 @@ M5_BRANCHES = {
 }
 
 
+# --------------------------------------------------------------------------
+# TN 3861 (Penland 1957, NTRS 19930084664) figs. 15, 16, 17 (PDF pp. 31 to 33, 300 ppi):
+# crossflow results, each against the crossflow Mach number M_c = M sin(alpha).
+# Symbol centres by eye on gridded crops, +-0.02 in M_c, +-0.01 in the coefficient (+-0.02
+# where two symbols overlap). Crossflow sets: Penland (crossed squares, diamonds and circles,
+# M 6.86, alpha 14.9 and 30.2 deg at these M_c) and Lord and Ulmann (unpublished, crossed
+# symbols, M 4.04, alpha 15 deg at M_c 1.04 by TN 3861 p. 11). TN 2960's own points (ref. 8,
+# a cylinder normal to the stream) as replotted. (figure, set, free-stream M, M_c, value, error)
+# AS READ, on the flat calibrations below (axis-aligned, from two to four grid lines).
+TN3861_AS_READ = [
+    ('15', 'Penland', 6.86, 1.72, 1.895, 0.01), ('15', 'Penland', 6.86, 3.43, 1.78, 0.01),
+    ('15', 'Lord and Ulmann', 4.04, 0.97, 1.965, 0.01), ('15', 'Lord and Ulmann', 4.04, 1.36, 1.60, 0.01),
+    ('15', 'Lord and Ulmann', 4.04, 1.95, 1.825, 0.01),
+    ('16', 'Penland', 6.86, 1.73, -0.216, 0.01), ('16', 'Penland', 6.86, 3.43, -0.020, 0.01),
+    ('16', 'Lord and Ulmann', 4.04, 1.04, -0.810, 0.01), ('16', 'Lord and Ulmann', 4.04, 1.38, -0.505, 0.01),
+    ('16', 'Lord and Ulmann', 4.04, 1.99, -0.285, 0.01),
+    ('16', 'TN 2960', None, 1.50, -0.47, 0.01), ('16', 'TN 2960', None, 1.97, -0.27, 0.01),
+    ('16', 'TN 2960', None, 2.85, -0.097, 0.01),
+    ('17', 'Penland, pressure', 6.86, 1.73, 1.45, 0.01), ('17', 'Penland, pressure', 6.86, 3.43, 1.265, 0.01),
+    ('17', 'Penland, force', 6.86, 1.73, 1.545, 0.01), ('17', 'Penland, force', 6.86, 3.41, 1.405, 0.01),
+    ('17', 'Lord and Ulmann', 4.04, 0.68, 2.465, 0.01), ('17', 'Lord and Ulmann', 4.04, 1.02, 2.045, 0.01),
+    ('17', 'Lord and Ulmann', 4.04, 1.38, 1.535, 0.01), ('17', 'Lord and Ulmann', 4.04, 1.97, 1.51, 0.02),
+    ('17', 'TN 2960', None, 1.47, 1.48, 0.01), ('17', 'TN 2960', None, 1.98, 1.50, 0.02),
+    ('17', 'TN 2960', None, 2.88, 1.335, 0.01),
+]
+# The flat calibrations the crops were drawn on: [pixel, value] pairs, linear between them.
+TN3861_FLAT = {
+    '15': ([[545, 0], [781, 1], [1015, 2], [1251.5, 3], [1488, 4], [1725, 5], [1960.5, 6], [2197.5, 7]],
+           [[528, 2.5], [1720, 0]]),
+    '16': ([[780, 0], [1009.5, 1], [1239.5, 2], [1468.5, 3], [1698, 4], [1928.5, 5], [2159.5, 6], [2388.5, 7]],
+           [[561, 0.2], [791, 0], [1024, -0.2], [1255.5, -0.4]]),
+    '17': ([[482, 0], [725.5, 1], [973, 2], [1218.5, 3], [1464, 4], [1708.5, 5], [1953.5, 6], [2198.5, 7]],
+           [[408, 2.75], [1022, 1.5], [1146.5, 1.25], [1761, 0]]),
+}
+# The scans are rotated or sheared by 0.4 to 0.8 deg, which the flat calibrations ignore. Affine
+# calibrations, value = a + b x + c y, fitted to every grid line detected in three to six
+# windows across each figure (29 to 57 points a direction, worst residual 0.0014 to 0.009;
+# 0016 section 16), re-map each value read through the pixel the flat calibration put it at.
+TN3861_AFFINE = {
+    '15': ((-2.22203, 0.0042326, -5.72902e-05), (3.63035, -2.93814e-05, -0.00210769)),
+    '16': ((-3.40494, 0.00435351, 8.14279e-06), (0.67306, 6.04726e-06, -0.000863252)),
+    '17': ((-1.93176, 0.00407962, -2.882e-05), (3.6117, -1.67325e-05, -0.00203561)),
+}
+
+
+def _flat_to_pixel(pairs, v):
+    q = sorted(pairs, key=lambda p: p[1])
+    for (pa, va), (pb, vb) in zip(q, q[1:]):
+        if v <= vb or (pb, vb) == tuple(q[-1]):
+            return pa + (v - va) * (pb - pa) / (vb - va)
+
+
+def _remap(fig, mc, v):
+    x = _flat_to_pixel(TN3861_FLAT[fig][0], mc)
+    y = _flat_to_pixel(TN3861_FLAT[fig][1], v)
+    fx, fy = TN3861_AFFINE[fig]
+    return fx[0] + fx[1] * x + fx[2] * y, fy[0] + fy[1] * x + fy[2] * y
+
+
+TN3861 = [(f, n, m, *(_remap(f, mc, v)), e) for f, n, m, mc, v, e in TN3861_AS_READ]
+# The blind second reading of figs. 15 and 16 (audit round 7, commit e45e0d6,
+# docs/research/total-drag/audit/round7/readings/tn3861_figs15-16.csv), the symbols paired:
+# (figure, set, M_c, value, M_c error, value error).
+TN3861_SECOND = [
+    ('15', 'Penland', 1.733, 1.8771, 0.005, 0.0025), ('15', 'Penland', 3.448, 1.7595, 0.005, 0.0025),
+    ('15', 'Lord and Ulmann', 1.044, 1.9504, 0.005, 0.0025),
+    ('15', 'Lord and Ulmann', 1.393, 1.5884, 0.005, 0.0025),
+    ('15', 'Lord and Ulmann', 2.003, 1.8000, 0.007, 0.0034),
+    ('16', 'Penland', 1.744, -0.2195, 0.005, 0.001), ('16', 'Penland', 3.458, -0.0221, 0.005, 0.001),
+    ('16', 'Lord and Ulmann', 1.044, -0.8144, 0.005, 0.001),
+    ('16', 'Lord and Ulmann', 1.407, -0.5104, 0.005, 0.001),
+    ('16', 'Lord and Ulmann', 2.032, -0.2848, 0.007, 0.0014),
+    ('16', 'TN 2960', 1.501, -0.4724, 0.006, 0.0012), ('16', 'TN 2960', 1.980, -0.2753, 0.006, 0.0012),
+    ('16', 'TN 2960', 2.896, -0.0996, 0.006, 0.0012),
+]
+TN3861_QUANTITY = {'15': '(p_stag - p_inf) / q_c', '16': '(p_down - p_inf) / q_c', '17': 'C_D on q_c'}
+# TN 2960's integrated front side over (2/3) Cp_pitot, this script's own output above
+# (figs. 5(e) at 1.49, 5(d) at 1.98, 5(e) at 2.90), the unyawed reference.
+TN2960_FRONT_RATIO = [(1.49, 0.994), (1.98, 1.040), (2.90, 1.049)]
+
+
 def front90(points):
     """front() of points in any order, cut at 90 deg and interpolated there."""
     pts = sorted(points)
@@ -248,14 +329,15 @@ def main():
     for src, m, lam, st in A55_FIG11:
         rows.append(['RM A55H31', '11', src, m, 'yaw deg', lam, 'p_x=0 / p_t2', st,
                      'first', 'eye, symbol centre on 2x ruler crop', 0.004])
-    say('- fig. 12 (absolute-pressure basis, as eq. (14)) converted to gauge pressure with fig. 11 and I_g;')
+    say('- fig. 12 (absolute-pressure basis, as eq. (14)) converted exactly to gauge pressure,')
+    say('  (R P I_g - cos L) / (P I_g - 1) with P = p_t2 / p_inf (0016 section 16); fig. 11 a check;')
     say('  r = gauge ratio over cos^3(L) Cp_pitot(M cos L) / Cp_pitot(M):')
     for (src, m, lam, ab) in A55_FIG12:
         L = math.radians(lam)
         mn = m * math.cos(L)
         st = min((x for x in A55_FIG11 if x[1] == m), key=lambda x: abs(x[2] - lam))[3]
         pt2 = pt2s[m]
-        gauge = ab * (1 - 1 / (st * pt2 * ig)) / (1 - 1 / (pt2 * ig))
+        gauge = (ab * pt2 * ig - math.cos(L)) / (pt2 * ig - 1)
         model = math.cos(L) ** 3 * cp0(mn) / cp0(m)
         say(f'  - {src}, yaw {lam:4.1f} (M_n {mn:4.2f}): fig. 11 {st:.3f} against Rayleigh at M_n '
             f'{p0_over_p(mn) / pt2:.3f}; fig. 12 {ab:.3f}, gauge {gauge:.4f}; model {model:.4f}; '
@@ -336,9 +418,75 @@ def main():
         say(f'- M {m}: {kappa[m]:.4f}, range {kappa[m] * 0.99 * (1 + lo):.4f} to {kappa[m] * 1.01 * (1 + hi):.4f}')
     say('- M 1.49: 1, range 0.99 to 1.06 (TN 2960 fig. 5(c) at 1.49: 0.995, 1.002; fig. 5(e): 0.994)')
     say('')
+    say('## TN 3861 figs. 15 to 17: crossflow points against the yawed-cylinder allowance')
+    say('(figs. 15 and 16 read twice, fig. 17 once; the first reading re-mapped for the scans\' rotation)')
+    for (fig, name, m, mc, v, err), (_, _, _, mc0, v0, _) in zip(TN3861, TN3861_AS_READ):
+        alpha = f'alpha {math.degrees(math.asin(min(1.0, mc / m))):.1f} deg' if m else 'normal to the stream'
+        rows.append(['NACA TN 3861', fig, f'{name}, {alpha}', m if m else round(mc, 3), 'M_c', round(mc, 3),
+                     TN3861_QUANTITY[fig], round(v, 4), 'first',
+                     f'eye, symbol centre on gridded crop (as read {mc0}, {v0}), re-mapped for the rotation', err])
+    for fig, name, mc, v, emc, ev in TN3861_SECOND:
+        rows.append(['NACA TN 3861', fig, f'{name} (second reading, round 7, e45e0d6)', '', 'M_c', mc,
+                     TN3861_QUANTITY[fig], v, 'second', 'blind, the reader\'s method', ev])
+    say('- the pairs (first re-mapped, second; combined error):')
+    for fig, name, mc2, v2, emc, ev in TN3861_SECOND:
+        f = min((x for x in TN3861 if x[0] == fig and x[1] == name), key=lambda x: abs(x[3] - mc2))
+        ok = abs(f[3] - mc2) <= 0.02 + emc and abs(f[4] - v2) <= f[5] + ev
+        say(f'  - fig. {fig}, {name}: M_c {f[3]:.3f} / {mc2:.3f} ({abs(f[3] - mc2):.3f}, {0.02 + emc:.3f}); '
+            f'value {f[4]:.4f} / {v2:.4f} ({abs(f[4] - v2):.4f}, {f[5] + ev:.4f}){"" if ok else " APART"}')
+
+    def near(fig, name, mc, reading=TN3861):
+        if reading is TN3861:
+            c = [x for x in TN3861 if x[0] == fig and x[1] == name and abs(x[3] - mc) < 0.1]
+            return (c[0][3], c[0][4]) if c else None
+        c = [x for x in TN3861_SECOND if x[0] == fig and x[1] == name and abs(x[2] - mc) < 0.1]
+        return (c[0][2], c[0][3]) if c else None
+
+    def unyawed(mc):
+        pts = TN2960_FRONT_RATIO
+        for (a, ra), (b, rb) in zip(pts, pts[1:]):
+            if a <= mc <= b:
+                return ra + (rb - ra) * (mc - a) / (b - a)
+        return None
+
+    say('- F = C_D (fig. 17, pressure) + (p_down - p_inf)/q_c (fig. 16): the front side if the')
+    say('  downstream pressure held over the rear half. MN = (2/3) Cp_pitot(M_c). Each value on')
+    say('  the first reading / the second (fig. 17 the first throughout).')
+    tn = {}
+    for name, m, mc in (('TN 2960', None, 1.49), ('TN 2960', None, 1.98), ('TN 2960', None, 2.9),
+                        ('Penland', 6.86, 1.75), ('Penland', 6.86, 3.44),
+                        ('Lord and Ulmann', 4.04, 1.03), ('Lord and Ulmann', 4.04, 1.39),
+                        ('Lord and Ulmann', 4.04, 1.99)):
+        cd = near('17', 'Penland, pressure' if name == 'Penland' else name, mc)
+        fs, ss = [], []
+        for reading in (TN3861, TN3861_SECOND):
+            dn = near('16', name, mc, reading)
+            st = near('15', name, mc, reading)
+            mcm = (cd[0] + dn[0]) / 2
+            fs.append(((cd[1] + dn[1]) / (2 / 3 * cp0(mcm)), mcm))
+            if st:
+                ss.append(st[1] / cp0(st[0]))
+        line = f'- {name}, M_c {fs[0][1]:.2f}'
+        if m:
+            a = math.degrees(math.asin(fs[0][1] / m))
+            line += f' (alpha {a:.1f}, sweep {90 - a:.1f} deg)'
+        line += ': F/MN ' + ' / '.join(f'{x:.3f}' for x, _ in fs)
+        if ss:
+            line += '; stagnation over Rayleigh at M_c ' + ' / '.join(f'{x:.3f}' for x in ss)
+        if not m:
+            tn[mc] = [x for x, _ in fs]
+        ref = unyawed(fs[0][1])
+        if m and ref:
+            line += f'; over TN 2960 integrated ({ref:.3f}) ' + ' / '.join(f'{x / ref:.3f}' for x, _ in fs)
+        if m and abs(fs[0][1] - 1.98) < 0.05:
+            line += '; over TN 2960\'s own F at 1.98 ' + ' / '.join(
+                f'{x / y:.3f}' for (x, _), y in zip(fs, tn[1.98]))
+        say(line)
+    say('')
     with open(os.path.join(DATA, 'fin_edges_w34.csv'), 'w', newline='') as fh:
         w = csv.writer(fh)
-        fh.write('# Fin edges of flat plates: first readings (second readings by an independent reader, pending).\n')
+        fh.write('# Fin edges of flat plates: first readings. Second readings by independent readers are paired in\n')
+        fh.write('# design record 0016 sections 13, 14 and 16; TN 3861 fig. 17 is read once.\n')
         fh.write('# Written by scripts/w34_fin_edges.py; sources, calibrations and limits in data/fin_edges_w34.md.\n')
         w.writerow(['source', 'figure', 'item', 'M', 'x_name', 'x', 'quantity', 'value', 'reading',
                     'method', 'error'])

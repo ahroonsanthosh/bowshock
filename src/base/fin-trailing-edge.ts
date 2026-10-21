@@ -691,6 +691,21 @@ function varyingChordTrailingEdge(
   };
   cd = atMostVacuum(cd, 'term');
   const sub = gaussLegendre(LAMINAR_NODES);
+  // Near a small tip the stations can lie beyond fig. 29's read range for the laminar input
+  // (c/[h Re^(1/2)] small): that sliver takes the laminar change bounded between none and its
+  // value at the nearest station read, instead of the whole term being refused (0016 section 16).
+  const scan = Array.from({ length: SCAN_STATIONS + 1 }, (_, k) => (span * k) / SCAN_STATIONS);
+  const ratioAt = (y: number): LaminarRatio | undefined => {
+    try {
+      const c = chordAt(y);
+      return laminarOverTurbulent(c / thicknessAt(y), reynoldsPerLength * c);
+    } catch (e) {
+      if (e instanceof BaseRefusal && e.reason === 'beyond-read-range') return undefined;
+      throw e;
+    }
+  };
+  const readable = (input.transitionReynolds ?? []).length > 0 ? scan.map(ratioAt) : [];
+  let sliverMax = 0;
   const laminarStates = (input.transitionReynolds ?? []).map((reT): LaminarState => {
     // The stations laminar at their trailing edge: Re' c(y) <= Re_T, an interval of the span.
     const cT = reT / reynoldsPerLength;
@@ -706,16 +721,34 @@ function varyingChordTrailingEdge(
     if (!(y1 > y0)) return { reynolds: reT, laminarSpanFraction: 0, low: 0, high: 0 };
     let low = 0;
     let high = 0;
+    let sliver = 0;
     sub.weights.forEach((w, i) => {
       const y = y0 + 0.5 * (y1 - y0) * (sub.nodes[i]! + 1);
-      const c = chordAt(y);
       const h = thicknessAt(y);
-      const ratio = laminarOverTurbulent(c / h, reynoldsPerLength * c);
+      let ratio = ratioAt(y);
+      if (ratio === undefined) {
+        let best: LaminarRatio | undefined;
+        let dist = Infinity;
+        readable.forEach((r, k) => {
+          if (r !== undefined && Math.abs(scan[k]! - y) < dist) {
+            dist = Math.abs(scan[k]! - y);
+            best = r;
+          }
+        });
+        if (best === undefined) {
+          const c = chordAt(y);
+          laminarOverTurbulent(c / h, reynoldsPerLength * c); // throws the refusal
+          throw new BaseRefusal('beyond-read-range', 'no station of the span is read');
+        }
+        ratio = { ...best, low: Math.min(best.low, 1), high: Math.max(best.high, 1) };
+        sliver += (0.5 * w * (y1 - y0)) / span;
+      }
       const term =
         0.5 * (y1 - y0) * w * -pB * h * scale * thickLayerFactor(mach, parameter(y)).nominal;
       low += (ratio.low - 1) * term;
       high += (ratio.high - 1) * term;
     });
+    sliverMax = Math.max(sliverMax, sliver);
     const lowTerm = atMostVacuum(cd + low, 'laminar low end');
     const highTerm = atMostVacuum(cd + high, 'laminar high end');
     return {
@@ -728,6 +761,19 @@ function varyingChordTrailingEdge(
   const xRoot = parameter(0);
   const xMax = Math.max(...stations.map(parameter));
   const base = input.inBasePlane ? FIN_TRAILING_EDGE_LABEL_ANALOGY : FIN_TRAILING_EDGE_LABEL_FREE;
+  // Stations below fig. 29(a)'s lowest read abscissa take the thin-layer term unchanged.
+  const belowRead = scan.filter((y) => parameter(y) < FIG29A_LOWEST_READ).length / scan.length;
+  const tipLabels =
+    (belowRead > 0
+      ? `; near the tip, over ${(100 * belowRead).toFixed(0)}% of the span, c/[h Re_c^(1/5)] is below ` +
+        `${FIG29A_LOWEST_READ}, fig. 29(a)'s lowest read abscissa, and the thin-layer term is taken ` +
+        'there unchanged (fig. 29(a) varies by under 4% from 0.45 to 1.0; an extrapolation, 0016)'
+      : '') +
+    (sliverMax > 0
+      ? `; in a transition state, the stations beyond fig. 29's read range (up to ` +
+        `${(100 * sliverMax).toFixed(0)}% of the span, near the tip) take the laminar change bounded ` +
+        'between none and its value at the nearest station read (0016)'
+      : '');
   return {
     cd,
     low: atMostVacuum(FIN_TRAILING_EDGE_BAND.low * lowSum, 'band low end'),
@@ -736,7 +782,8 @@ function varyingChordTrailingEdge(
     label:
       base +
       '; on fins of varying chord, integrated along the span with the local chord (0016)' +
-      (xMax > THIN_LAYER_LIMIT ? thickLabel(xMax).replace('c/[h', 'largest c/[h') : ''),
+      (xMax > THIN_LAYER_LIMIT ? thickLabel(xMax).replace('c/[h', 'largest c/[h') : '') +
+      tipLabels,
     thinLayerParameter: xRoot,
     chordReynolds: reynoldsPerLength * chord,
     vacuum,
@@ -752,6 +799,10 @@ function varyingChordTrailingEdge(
   };
 }
 
+/** Stations scanned along the span for the tip's read-range checks (0016 section 16). */
+const SCAN_STATIONS = 400;
+/** TR 1109 fig. 29(a)'s lowest read abscissa, c / [h Re_c^(1/5)]. */
+const FIG29A_LOWEST_READ = 0.45;
 /** Gauss-Legendre nodes along the span for fins of varying chord. */
 const VARYING_CHORD_NODES = 32;
 /** Gauss-Legendre nodes over the laminar part of the span in a transition state. */

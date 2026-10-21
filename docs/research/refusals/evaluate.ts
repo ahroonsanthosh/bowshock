@@ -226,7 +226,12 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   const tanLe = Math.tan(r.leadingEdgeSweepDeg * DEG);
   const tanTe = Math.tan(r.trailingEdgeSweepDeg * DEG);
   const constantChord = Math.abs(tanLe - tanTe) < 1e-9;
-  const tc = r.thickness / r.rootChord;
+  // The largest t/c: a flat plate's at the tip (0016 section 16); a bevelled or double-wedge
+  // section scales with the chord, so its t/c is the same at every station.
+  const flatPlateSection =
+    r.section === 'rounded-le-square-te' || r.section === 'rounded-both' || r.section === 'square-both';
+  const tipChordOf = r.rootChord - r.span * (tanLe - tanTe);
+  const tc = r.thickness / (flatPlateSection && EDGES === 'w4e' ? tipChordOf : r.rootChord);
 
   // Sections and edges.
   if (r.section === 'square-both') out.push('squareLe');
