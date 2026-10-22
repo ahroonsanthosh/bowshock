@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { solveNoseDrag, solverFor, type NoseDragSolvers } from '../../src/analysis/nose-drag-solve';
+import {
+  FITTED_FROM,
+  solveNoseDrag,
+  solverFor,
+  TRANSONIC_FROM,
+  type NoseDragSolvers,
+} from '../../src/analysis/nose-drag-solve';
 import { verifiedTransonicDrag, type TransonicDrag } from '../../src/analysis/transonic-drag';
 import type { VerifiedDrag } from '../../src/analysis/verified-drag';
 import type { Body } from '../../src/geometry/body';
@@ -57,10 +63,19 @@ describe('the nose drag solver for a Mach number (design record 0013, serving ru
   it('the transonic solve itself refuses Mach numbers outside [1, 1.2), saying where the fitted solver serves', async () => {
     const engine = () => Promise.reject(new Error('not reached'));
     for (const mach of [0.999, 1.2, 1.2001]) {
-      await expect(
-        verifiedTransonicDrag(cone, { mach, gamma: 1.4, finest: 8 }, engine),
-      ).rejects.toThrow('the transonic solve serves Mach 1 to 1.2 (the fitted solver from 1.2)');
+      const solve = verifiedTransonicDrag(cone, { mach, gamma: 1.4, finest: 8 }, engine);
+      await expect(solve).rejects.toBeInstanceOf(RangeError);
+      await expect(solve).rejects.toThrow(
+        /^the transonic solve serves Mach 1 to 1\.2 \(the fitted solver from 1\.2\)$/,
+      );
     }
+    // Its own range is the router's: from TRANSONIC_FROM to below FITTED_FROM.
+    for (const mach of [TRANSONIC_FROM, 1.1999]) {
+      await expect(
+        verifiedTransonicDrag(cone, { mach, gamma: 1.4, finest: 8, allowMach1: true }, engine),
+      ).rejects.toThrow('not reached');
+    }
+    expect([TRANSONIC_FROM, FITTED_FROM]).toEqual([1, 1.2]);
   });
 
   it('a body the fitted solver refuses by throwing comes back refused with the reason', async () => {
