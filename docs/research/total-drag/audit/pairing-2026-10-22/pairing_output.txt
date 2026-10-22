@@ -1,0 +1,123 @@
+=== R&M 3427 fig. 9 (u*, y in.), W7 against round 10
+  axes x = u*, y = y_in; 1 px = 0.00199 and 0.00025; gate 6 px
+  symbols: first (W7) 33 (21 circle, 12 square); second 33 (22 circle, 11 square)
+  matched pairs 33; same type and within errors 32; outside errors 0; type disagreements 1; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.46, y 0.57
+    TYPE: row33 square (1 in upstream) against te-21 circle (trailing edge): A (1.0019, 0.10565) B (1.0014, 0.10564); dx +0.00050 (combined 0.00580), dy +0.00001 (combined 0.00064)
+    not a symbol, one reading only: W7 did not read the 1/7th power-law line
+    not a symbol, one reading only: round 10 only: 11 x 'curve (x at fixed y)' power_law (solid line labelled "1/7 th power law")
+    not a symbol, one reading only: round 10 only: 2 x 'line end' power_law (solid line labelled "1/7 th power law")
+
+=== R&M 3427 fig. 10 (M_inf, delta/h), W7 against round 10
+  axes x = M_inf, y = delta_over_h; 1 px = 0.00199 and 0.0005; gate 6 px
+  symbols: first (W7) 5 (4 square, 1 circle); second 5 (4 square, 1 circle)
+  matched pairs 5; same type and within errors 5; outside errors 0; type disagreements 0; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.13, y 0.23
+    not a symbol, one reading only: W7 did not read the two dashed flat-plate lines (estimates, its header says)
+    not a symbol, one reading only: round 10 only: 20 x 'curve' turbulent (dashed line labelled "Flat plate turbulent from leading edge")
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' turbulent (dashed line labelled "Flat plate turbulent from leading edge")
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' turbulent (dashed line labelled "Flat plate turbulent from leading edge")
+    not a symbol, one reading only: round 10 only: 20 x 'curve' laminar (dashed line labelled "Flat plate, laminar")
+    not a symbol, one reading only: round 10 only: 1 x 'curve start' laminar (dashed line labelled "Flat plate, laminar")
+    not a symbol, one reading only: round 10 only: 1 x 'curve end' laminar (dashed line labelled "Flat plate, laminar")
+
+=== R&M 3427 fig. 13 base holes 5, 6, 7 (M_inf, Cp_b), W7 against round 10
+  axes x = M_inf, y = Cp_b; 1 px = 0.00101 and 0.00102; gate 6 px
+  symbols: first (W7) 35 (17 circle, 6 square, 12 triangle); second 35 (17 circle, 6 square, 12 triangle)
+  matched pairs 35; same type and within errors 35; outside errors 0; type disagreements 0; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.33, y 0.78
+    not a symbol, one reading only: W7 did not read the faired lines or the jump line
+    not a symbol, one reading only: round 10 only: 37 x 'curve' hole6 (hole 6 (circle line; labelled 6))
+    not a symbol, one reading only: round 10 only: 16 x 'curve' hole5 (hole 5 (square line; labelled 5); the same line as hole 6 below M 0.6 and from about M 0.88 to 0.93)
+    not a symbol, one reading only: round 10 only: 27 x 'curve' hole7 (hole 7 (triangle line; labelled 7))
+    not a symbol, one reading only: round 10 only: 6 x 'curve' supersonic (single line through circles after the jump at M 0.977)
+    not a symbol, one reading only: round 10 only: 2 x 'line' jump (vertical line at the end of the three base lines)
+
+=== R&M 3427 fig. 13 surface hole 4 (M_inf, Cp), W7 against round 11
+  axes x = M_inf, y = Cp; 1 px = 0.00101 and 0.00102; gate 6 px
+  symbols: first (W7) 11 (11 plus); second 11 (11 plus)
+  matched pairs 11; same type and within errors 11; outside errors 0; type disagreements 0; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.24, y 0.31
+
+=== R&M 3427 fig. 15 (spanwise in., Cp_b), W7 against round 11
+  axes x = spanwise_in, y = Cp_b; 1 px = 0.0101 and 0.002; gate 6 px
+  symbols: first (W7) 30 (3 diamond, 4 circle, 2 square, 21 cross); second 30 (3 diamond, 3 circle, 3 square, 21 cross)
+  matched pairs 30; same type and within errors 29; outside errors 0; type disagreements 1; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.38, y 0.31
+    TYPE: row07 circle (M 0.4 tapping) against t04-1 square (M 0.4 tapping): A (-2.493, -0.6053) B (-2.4989, -0.60446); dx +0.00590 (combined 0.03810), dy -0.00084 (combined 0.00695)
+
+=== R&M 3427 fig. 16a (y/h, Cp_b), W7 against round 11
+  axes x = y_over_h, y = Cp_b; 1 px = 0.0034 and 0.002; gate 6 px
+  symbols: first (W7) 9 (3 diamond, 3 circle, 3 square); second 9 (3 diamond, 3 circle, 3 square)
+  matched pairs 9; same type and within errors 9; outside errors 0; type disagreements 0; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.12, y 0.45
+
+=== R&M 3427 fig. 16b (y/h, Cp_b), W7 against round 11
+  axes x = y_over_h, y = Cp_b; 1 px = 0.0034 and 0.002; gate 6 px
+  symbols: first (W7) 15 (5 diamond, 5 circle, 5 square); second 15 (5 diamond, 5 circle, 5 square)
+  matched pairs 15; same type and within errors 15; outside errors 0; type disagreements 0; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.18, y 0.22
+
+=== R&M 3427 fig. 18 (Re x 1e-6, Cp_b), W7 against round 11
+  axes x = Re_e6, y = Cp_b; 1 px = 0.0101 and 0.000201; gate 6 px
+  symbols: first (W7) 3 (3 circle); second 3 (3 circle)
+  matched pairs 3; same type and within errors 3; outside errors 0; type disagreements 0; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.30, y 0.19
+
+=== R&M 3427 fig. 39 (x/h, Cp), W7 against round 11
+  axes x = x_over_h, y = Cp; 1 px = 0.004 and 0.001; gate 6 px
+  symbols: first (W7) 15 (5 circle, 5 cross, 5 square); second 15 (5 circle, 5 cross, 5 square)
+  matched pairs 15; same type and within errors 15; outside errors 0; type disagreements 0; first only 0; second only 0
+  largest |difference| / combined error over the matched pairs: x 0.25, y 0.30
+
+=== NACA TN 3548 fig. 6 (M, Cp_b), W7 against round 11
+  axes x = M, y = Cp_b; 1 px = 0.0009 and 0.0009; gate 6 px
+  symbols: first (W7) 76 (39 square, 37 circle); second 78 (38 circle, 40 square)
+  matched pairs 76; same type and within errors 76; outside errors 0; type disagreements 0; first only 0; second only 2
+  largest |difference| / combined error over the matched pairs: x 0.92, y 0.46
+    SECOND ONLY: ob-07 circle (outboard) at (0.7748, -0.56998); nearest first: s06 (square, inboard) at 1.3 px
+    SECOND ONLY: ib-10 square (inboard) at (0.8464, -0.58422); nearest first: s10 (square, inboard) at 4.5 px
+
+=== NACA RM A51J25 fig. 7 below M' 1.5, symbols (M', p_b/p'), W7 against round 11
+  axes x = M_prime, y = pb_over_pprime; 1 px = 0.0037 and 0.0015; gate 6 px
+  symbols: first (W7) 5 (1 filled circle, 2 square with a triangle inside, one glyph, 1 half-filled triangle (Langley 9 in), 1 diamond); second 7 (1 filled circle, 2 square, 2 triangle, 1 flagged glyph (Langley 9 x 12 in delta), 1 diamond)
+  matched pairs 5; same type and within errors 2; outside errors 0; type disagreements 3; first only 0; second only 2
+  largest |difference| / combined error over the matched pairs: x 0.18, y 0.42
+    TYPE: s2 half-filled triangle (Langley 9 in) (half-filled triangle (the legend's Langley 9 in, two-dimensi) against delta-1 flagged glyph (Langley 9 x 12 in delta) (Langley 9 x 12 in, delta AR 4 (flagged glyph)): A (1.414, 0.5311) B (1.4101, 0.53423); dx +0.00390 (combined 0.03698), dy -0.00313 (combined 0.01286)
+    TYPE: s4 square with a triangle inside, one glyph (square with a triangle inside (as s1)) against sq-2 square (Ames 1 x 3-ft, rect. AR 3 (square, the second profile)): A (1.502, 0.5049) B (1.4957, 0.50366); dx +0.00630 (combined 0.03505), dy +0.00124 (combined 0.01206)
+    TYPE: s1 square with a triangle inside, one glyph (square with a triangle inside (the legend's Langley 9 x 12 i) against tri-1 triangle (Ames 1 x 3-ft, rect. AR 3 (triangle, the first profile)): A (1.257, 0.4981) B (1.251, 0.49309); dx +0.00600 (combined 0.03505), dy +0.00501 (combined 0.01206)
+    SECOND ONLY: sq-1 square (Ames 1 x 3-ft, rect. AR 3 (square, the second profile)) at (1.2466, 0.50447); nearest first: s1 (square with a triangle inside, one glyph, square with a triangle inside (the legend's Langley 9 x 12 i) at 5.1 px
+    SECOND ONLY: tri-2 triangle (Ames 1 x 3-ft, rect. AR 3 (triangle, the first profile)) at (1.5085, 0.4968); nearest first: s4 (square with a triangle inside, one glyph, square with a triangle inside (as s1)) at 5.7 px
+    not a symbol, one reading only: W7's M' error is not stated for its symbols; taken as its stated p_b/p' error in pixels (2 to 3 px placement plus 1.5 px calibration) converted at its own scales
+
+=== NACA RM A51J25 fig. 7 below M' 1.5, the band of the faired curve and the PARD circles: edges, W7 against round 11
+  W7 edge error 1.5 px = 0.0023 (4.5 px = 0.0068 on the top at M' 1.498); round 11 +-0.0034; M' errors 0.0002 (W7) and 0.017 (round 11)
+  M' 1.199 upper: W7 0.5957 +-0.0023, round 11 0.5963 +-0.0034 (interpolated), difference -0.0006 (combined 0.0057); round 11 over M' +-0.0172: 0.5823 to 0.5963: agree at the same M'
+  M' 1.199 lower: W7 0.5470 +-0.0023, round 11 0.5441 +-0.0034 (interpolated), difference +0.0029 (combined 0.0057); round 11 over M' +-0.0172: 0.5270 to 0.5597: agree at the same M'
+  M' 1.250 upper: W7 0.5605 +-0.0023, round 11 0.5587 +-0.0034 (interpolated), difference +0.0018 (combined 0.0057); round 11 over M' +-0.0172: 0.5476 to 0.5730: agree at the same M'
+  M' 1.250 lower: W7 0.5240 +-0.0023, round 11 0.5226 +-0.0034 (interpolated), difference +0.0014 (combined 0.0057); round 11 over M' +-0.0172: 0.5218 to 0.5239: agree at the same M'
+  M' 1.301 upper: W7 0.5451 +-0.0023, round 11 0.5474 +-0.0034 (interpolated), difference -0.0023 (combined 0.0057); round 11 over M' +-0.0172: 0.5459 to 0.5475: agree at the same M'
+  M' 1.301 lower: W7 0.5223 +-0.0023, round 11 0.5199 +-0.0034 (interpolated), difference +0.0024 (combined 0.0057); round 11 over M' +-0.0172: 0.5156 to 0.5216: agree at the same M'
+  M' 1.348 upper: W7 0.5359 +-0.0023, round 11 0.5361 +-0.0034 (interpolated), difference -0.0002 (combined 0.0057); round 11 over M' +-0.0172: 0.5302 to 0.5408: agree at the same M'
+  M' 1.348 lower: W7 0.5100 +-0.0023, round 11 0.5056 +-0.0034 (interpolated), difference +0.0044 (combined 0.0057); round 11 over M' +-0.0172: 0.4994 to 0.5121: agree at the same M'
+  M' 1.400 upper: W7 0.5205 +-0.0023, round 11 0.5167 +-0.0034 (interpolated), difference +0.0038 (combined 0.0057); round 11 over M' +-0.0172: 0.5143 to 0.5169: agree at the same M'; round 11's upper edge here is a bound (true edge at or above, hidden under a glyph); W7 is above it
+  M' 1.400 lower: W7 0.4961 +-0.0023, round 11 0.4925 +-0.0034 (interpolated), difference +0.0036 (combined 0.0057); round 11 over M' +-0.0172: 0.4901 to 0.4967: agree at the same M'
+  M' 1.451 upper: W7 0.5081 +-0.0023, round 11 0.4987 +-0.0034 (interpolated), difference +0.0094 (combined 0.0057); round 11 over M' +-0.0172: 0.4894 to 0.5127: outside at the same M'; within errors when M' is moved within its combined error; round 11's upper edge here is a bound (true edge at or above, hidden under a glyph); W7 is above it
+  M' 1.451 lower: W7 0.4838 +-0.0023, round 11 0.4842 +-0.0034 (interpolated), difference -0.0004 (combined 0.0057); round 11 over M' +-0.0172: 0.4818 to 0.4884: agree at the same M'
+  M' 1.498 upper: W7 0.4882; round 11 has no value here (W7 only)
+  M' 1.498 lower: W7 0.4699; round 11 has no value here (W7 only)
+  round 11 only: its first column (M' 1.156, 0.580 to 0.587) and the column at M' 1.18 (0.563 to 0.596), below W7's first row at M' 1.199
+  W7's midpoints (p_mid, +-half band plus calibration) have no counterpart in round 11 and are not paired
+
+=== Summary (symbols): figure, first, second, matched, agree, outside errors, type disagreements, first only, second only
+  rm3427_fig9, 33, 33, 33, 32, 0, 1, 0, 0
+  rm3427_fig10, 5, 5, 5, 5, 0, 0, 0, 0
+  rm3427_fig13_holes5to7, 35, 35, 35, 35, 0, 0, 0, 0
+  rm3427_fig13_hole4, 11, 11, 11, 11, 0, 0, 0, 0
+  rm3427_fig15, 30, 30, 30, 29, 0, 1, 0, 0
+  rm3427_fig16a, 9, 9, 9, 9, 0, 0, 0, 0
+  rm3427_fig16b, 15, 15, 15, 15, 0, 0, 0, 0
+  rm3427_fig18, 3, 3, 3, 3, 0, 0, 0, 0
+  rm3427_fig39, 15, 15, 15, 15, 0, 0, 0, 0
+  tn3548_fig6, 76, 78, 76, 76, 0, 0, 0, 2
+  rma51j25_fig7_symbols, 5, 7, 5, 2, 0, 3, 0, 2

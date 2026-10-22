@@ -1,0 +1,15 @@
+W7_M_prime,edge,W7_p,W7_err,round11_p_interpolated,round11_err,difference,combined_err,round11_range_over_M_prime_err,verdict,note
+1.199,upper,0.5957,0.0023,0.5963,0.0034,-0.0006,0.0057,0.5823 to 0.5963,agree at the same M',
+1.199,lower,0.547,0.0023,0.5441,0.0034,+0.0029,0.0057,0.5270 to 0.5597,agree at the same M',
+1.25,upper,0.5605,0.0023,0.5587,0.0034,+0.0018,0.0057,0.5476 to 0.5730,agree at the same M',
+1.25,lower,0.524,0.0023,0.5226,0.0034,+0.0014,0.0057,0.5218 to 0.5239,agree at the same M',
+1.301,upper,0.5451,0.0023,0.5474,0.0034,-0.0023,0.0057,0.5459 to 0.5475,agree at the same M',
+1.301,lower,0.5223,0.0023,0.5199,0.0034,+0.0024,0.0057,0.5156 to 0.5216,agree at the same M',
+1.348,upper,0.5359,0.0023,0.5361,0.0034,-0.0002,0.0057,0.5302 to 0.5408,agree at the same M',
+1.348,lower,0.51,0.0023,0.5056,0.0034,+0.0044,0.0057,0.4994 to 0.5121,agree at the same M',
+1.4,upper,0.5205,0.0023,0.5167,0.0034,+0.0038,0.0057,0.5143 to 0.5169,agree at the same M',"round 11's upper edge here is a bound (true edge at or above, hidden under a glyph); W7 is above it"
+1.4,lower,0.4961,0.0023,0.4925,0.0034,+0.0036,0.0057,0.4901 to 0.4967,agree at the same M',
+1.451,upper,0.5081,0.0023,0.4987,0.0034,+0.0094,0.0057,0.4894 to 0.5127,outside at the same M'; within errors when M' is moved within its combined error,"round 11's upper edge here is a bound (true edge at or above, hidden under a glyph); W7 is above it"
+1.451,lower,0.4838,0.0023,0.4842,0.0034,-0.0004,0.0057,0.4818 to 0.4884,agree at the same M',
+1.498,upper,0.4882,0.0068,,,,,,first reading (W7) only,round 11 does not read this column (its band ends at M' 1.458; 1.48 and 1.50 not read)
+1.498,lower,0.4699,0.0023,,,,,,first reading (W7) only,round 11 does not read this column (its band ends at M' 1.458; 1.48 and 1.50 not read)

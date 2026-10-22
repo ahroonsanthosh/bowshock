@@ -1,0 +1,4 @@
+figure,verdict,A_id,A_type,A_series,A_x,A_x_err,A_y,A_y_err,B_id,B_type,B_series,B_x,B_x_err,B_y,B_y_err,dx_A_minus_B,dy_A_minus_B,combined_x_err,combined_y_err,distance_px,note
+rm3427_fig18,agree,row01,circle,M 0.8,2.321,0.005,-0.7453,0.00013,re-1,circle,M 0.8,2.3275,0.0173,-0.7451,0.00091,-0.00650,-0.00020,0.02230,0.00104,1.2,
+rm3427_fig18,agree,row02,circle,M 0.8,3.383,0.005,-0.7435,0.00013,re-2,circle,M 0.8,3.3896,0.0173,-0.74331,0.00091,-0.00660,-0.00019,0.02230,0.00104,1.1,
+rm3427_fig18,agree,row03,circle,M 0.8,4.505,0.005,-0.7413,0.00013,re-3,circle,M 0.8,4.5113,0.0173,-0.74117,0.00091,-0.00630,-0.00013,0.02230,0.00104,0.9,
