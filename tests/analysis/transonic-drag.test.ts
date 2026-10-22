@@ -172,7 +172,17 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     if (result.kind === 'refused') {
       expect(result.reason).toBe('no-band');
       expect(result.message).toMatch(/oscillate/);
-      expect(result.finer?.refinement).toBe(16);
+      // The expected work: r = 8's steps times their growth from r = 4,
+      // and the work of this solve, which a solve to r = 16 repeats.
+      const [r4, r8] = result.levels.slice(-2);
+      const finer = result.finer!;
+      expect(finer.refinement).toBe(16);
+      expect(finer.cells).toBe(4 * r8!.cells.ni * r8!.cells.nj);
+      expect(finer.steps).toBe(Math.round(r8!.steps * Math.max(1, r8!.steps / r4!.steps)));
+      expect(finer.cellUpdates).toBe(finer.steps * finer.cells);
+      const family = result.levels.reduce((sum, l) => sum + l.steps * l.cells.ni * l.cells.nj, 0);
+      // With the four allowance grids, more than the family alone.
+      expect(finer.repeatedCellUpdates).toBeGreaterThan(family);
     }
   });
 

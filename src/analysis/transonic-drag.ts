@@ -125,6 +125,29 @@ type GridRole =
       readonly size: number;
     };
 
+/**
+ * The r = 16 grid a refusal may offer (only when the solve stopped at
+ * r = 8), with its expected work.
+ */
+export interface TransonicFinerGrid {
+  readonly refinement: 16;
+  readonly cells: number;
+  /**
+   * Its expected steps: r = 8's steps times their growth from r = 4 (at
+   * least 1). An estimate on the high side: on the cone at Mach 1.1 (CPU,
+   * LU-SGS) it gives 9,800 against the 7,300 measured.
+   */
+  readonly steps: number;
+  /** Its expected cell updates: `steps` times `cells`. */
+  readonly cellUpdates: number;
+  /**
+   * The cell updates this solve took (every grid of the family and of the
+   * allowances), which a solve to r = 16 repeats before it reaches the
+   * new grid.
+   */
+  readonly repeatedCellUpdates: number;
+}
+
 export interface TransonicLevel {
   readonly refinement: number;
   readonly cells: { readonly ni: number; readonly nj: number };
@@ -222,8 +245,12 @@ export type TransonicDrag =
         readonly farField: TransonicAllowance;
         readonly cylinder: TransonicAllowance;
       };
-      /** A finer grid that may give a band, with its size, where the procedure suggests one. */
-      readonly finer?: { readonly refinement: number; readonly cells: number };
+      /**
+       * The finer grid that may give a band, where the procedure suggests
+       * one, with its expected work, for the page to multiply by its own
+       * measured rate of cell updates.
+       */
+      readonly finer?: TransonicFinerGrid;
     }
   | {
       readonly kind: 'not-converged';
@@ -282,6 +309,8 @@ export async function verifiedTransonicDrag(
     };
   }
   const levels: TransonicLevel[] = [];
+  // Cell updates so far, every grid counted.
+  let work = 0;
   try {
     // The family.
     let previous: { problem: TransonicProblem; cells: TransonicCells } | null = null;
@@ -291,6 +320,7 @@ export async function verifiedTransonicDrag(
       const result: GridSolution = await solveGrid(engine, problem, previous, options, {
         what: 'grid',
       });
+      work += result.cellUpdates;
       const level: TransonicLevel = {
         refinement,
         cells: { ni: problem.config.grid.ni, nj: problem.config.grid.nj },
@@ -334,6 +364,7 @@ export async function verifiedTransonicDrag(
       };
       const smaller = await solveNested(nested[0], 0);
       const larger = await solveNested(nested[1], 2);
+      work += smaller.cellUpdates + larger.cellUpdates;
       return {
         values: [smaller.drag, own.drag, larger.drag],
         noise: Math.max(smaller.noise, own.noise, larger.noise),
@@ -364,8 +395,8 @@ export async function verifiedTransonicDrag(
       cylinder: { values: cylinder.values, domains: cylinder.domains, result: cylinderAllowance },
     } as const;
     if (estimate.kind === 'unresolved') {
-      const finer = finerMayResolve(values) && options.finest <= 8 ? options.finest * 2 : undefined;
-      const finest = levels[levels.length - 1]!;
+      const finer =
+        finerMayResolve(values) && options.finest === 8 ? finerGrid(levels, work) : undefined;
       return {
         kind: 'refused',
         reason: 'no-band',
@@ -373,9 +404,7 @@ export async function verifiedTransonicDrag(
         levels,
         estimate,
         allowances,
-        ...(finer === undefined
-          ? {}
-          : { finer: { refinement: finer, cells: 4 * finest.cells.ni * finest.cells.nj } }),
+        ...(finer === undefined ? {} : { finer }),
       };
     }
     for (const [reason, what, a] of [
@@ -430,6 +459,14 @@ export async function verifiedTransonicDrag(
   }
 }
 
+/** The r = 16 grid after r = 1 to 8, with its expected work (TransonicFinerGrid). */
+function finerGrid(levels: readonly TransonicLevel[], work: number): TransonicFinerGrid {
+  const [r4, r8] = levels.slice(-2) as [TransonicLevel, TransonicLevel];
+  const cells = 4 * r8.cells.ni * r8.cells.nj;
+  const steps = Math.round(r8.steps * Math.max(1, r8.steps / r4.steps));
+  return { refinement: 16, cells, steps, cellUpdates: steps * cells, repeatedCellUpdates: work };
+}
+
 /**
  * Whether the four grids' refusal could be lifted by one more: the coarser
  * triple oscillates while the finer one is monotone (the cone at Mach 1.1
@@ -470,6 +507,8 @@ export function referenceNote(body: Body, mach: number, gamma: number): Referenc
 interface GridSolution {
   readonly drag: number;
   readonly steps: number;
+  /** Steps times cells. */
+  readonly cellUpdates: number;
   readonly seconds: number;
   readonly noise: number;
   readonly cells: TransonicCells;
@@ -559,6 +598,7 @@ async function solveGrid(
     return {
       drag,
       steps,
+      cellUpdates: steps * problem.config.grid.ni * problem.config.grid.nj,
       seconds: (performance.now() - t0) / 1000,
       noise,
       cells: await solver.cells(),

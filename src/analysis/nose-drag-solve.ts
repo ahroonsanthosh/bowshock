@@ -10,7 +10,12 @@
 
 import { GpuExecutionError } from '../engine-gpu/gpu-common';
 import type { Body } from '../geometry/body';
-import type { TransonicDrag, TransonicDragOptions, TransonicLevel } from './transonic-drag';
+import type {
+  TransonicDrag,
+  TransonicDragOptions,
+  TransonicFinerGrid,
+  TransonicLevel,
+} from './transonic-drag';
 import { FITTED_DRAG_FLOOR, type LevelReport, type VerifiedDrag } from './verified-drag';
 
 /** The lowest Mach number of each solver's range. */
@@ -74,8 +79,8 @@ export interface NoseDragOutcome {
   /** The label shown with the value, or the reason there is none. */
   readonly text: string;
   readonly levels: readonly NoseDragLevel[];
-  /** A finer grid that may give a band, offered to the user (transonic). */
-  readonly finer?: { readonly refinement: number; readonly cells: number };
+  /** A finer grid that may give a band, offered to the user, with its expected work (transonic). */
+  readonly finer?: TransonicFinerGrid;
   /** The solver's own result, for the details. */
   readonly detail:
     | { readonly solver: 'transonic'; readonly result: TransonicDrag }
