@@ -703,9 +703,10 @@ The largest fin term near Mach 1 (section 1.2), and the best covered.
   the unswept curve at its own M cos(sweep), the envelope the allowance,
   the edge's nominal the unswept curve at M cos(sweep). This changes 0016
   section 6's ruling (W3(c)) for Mach 1.0 to 1.2 only. It is the edge's own
-  base drag: W1's fins-on-base factor, which refuses swept trailing edges
-  at the base because nothing measures them there, is a separate term,
-  and R&M 3348 says nothing about it.
+  base drag: W1's fins-on-base factor (rebuilt, on the main line since
+  b86c308; 0015, 0014 10.7 (i)), which takes swept fins at the base with
+  the exceptions 10.7 (i) lists, is a separate term, and R&M 3348 says
+  nothing about it.
 - _Fins at the base._ The edge in the base plane stays "an analogy, not a
   measurement" (its wake meets the body's base flow); 72.2% of the
   population's blunt edges are there.
@@ -784,9 +785,10 @@ reviewed (sections 3.2 and 3.3), and G is the plan now. Variant D's
 theory bridge is not done (0014 10.7 (k), item 2): it is kept to show
 what the theory alone would add. These are ceilings on the
 totals at Mach 1.0 to 1.2: a total there also needs the nose (0013), the
-base below Mach 1.5 (W2), the fins at the base below Mach 1.5 (W1, which
-must serve flat plates there, since 0016 section 20 refuses them on the
-present factor; 72% of the population's fins end at the base), and the
+base below Mach 1.5 (W2), the fins at the base below Mach 1.5 (W1, on the
+main line since b86c308, its rebuilt factor serving flat plates
+"bounded, not measured", 0014 10.7 (i); 72% of the population's fins end
+at the base), and the
 nose shapes and tips (W5, W6, W8). Totals at Mach 1.0 to 1.2 are 0% today
 and stay 0% until those land; the population run with all of them is made
 in step 2 (section 6), before and after each term, as 0016 did.
