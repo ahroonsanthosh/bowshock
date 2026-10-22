@@ -958,40 +958,58 @@ Each figure is read by me first and recorded with its source (NTRS id or
 AERADE handle, PDF page), its calibration and per-row errors, under
 `docs/research/total-drag/audit/w7-fins/`; until the blind second reading
 arrives it is labelled "read once", and every band is the envelope of
-both once it does.
+both once it does. The order (the advisor's, which the coordinator
+adopted on 2026-10-22, HANDOFF section 8): F4, then F1, then F3, F5, and
+F2 last.
 
 1. **The guard: done** (0014 10.7 (f) and (j); tests in
    `tests/total/fins-own-drag-guard.test.ts`; the Basic Finner's gated
    shots unchanged in number).
-2. **F4, the trailing edges.** Readings: RM A51J25 fig. 7 below M' 1.5
-   (a second reading of the curve there, 0010's being the first, and its
-   symbols), TN 3548 fig. 6, R&M 3427 figs. 9, 10, 13, 15, 16, R&M 3323
-   figs. 4, 5 (their sources traced first), R&M 3348 table 3 (typed, not
-   read by eye; read twice and paired, 852 of 852 identical, 2026-10-22)
-   and figs. 30a, 30b (the sweep), Johnston's figs. 4 to 12, RM L8B13 fig.
-   4(c) to 4(e). Then
-   `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the data
-   (each set's points inside the band, the step at 1.5), the record.
-3. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13, 14, 15 and
-   16, R&M 3348 figs. 31a, 31b and 32. Then a bevel term in `src/fins` (beside
-   `rounded-leading-edge.ts`), `finned-body.ts`'s bevel-leading-edge and
-   hexagonal paths below Mach 1.5, tests against Bryson's points.
-4. **F5, thin sharp sections.** Readings: the bump wings' zero-lift drag
+2. **F4, the trailing edges.** Readings, each with its state on
+   2026-10-22 (the second readings are the coordinator's to arrange, and
+   round 10's are paired by a neutral party):
+   - read once, second to arrange: R&M 3427 fig. 39 (10.7 (l)) and fig.
+     13's hole 4 (10.7 (m)); TN 3548 fig. 6; RM A51J25 fig. 7 below M' 1.5
+     (the curve-and-symbols band; the earlier reading there is audit
+     round 4's); R&M 3427 figs. 15, 16 and 18;
+   - read once, round 10's blind reading to pair: R&M 3427 figs. 9, 10 and
+     13 (holes 5 to 7);
+   - read twice and paired: R&M 3348 table 3 (typed, 852 of 852
+     identical);
+   - not yet read: R&M 3348 figs. 30a, 30b (round 10 has read them blind;
+     W7's first reading to make, the fig. 30 against table 3 inconsistency
+     raised at the pairing) and figs. 47 to 52 (10.7 (l)); R&M 3323 figs.
+     4, 5 (their sources traced first); Johnston's figs. 4 to 12; RM L8B13
+     fig. 4(c) to 4(e).
+
+   Then `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the
+   data (each set's points inside the band, the step at 1.5), the record.
+
+3. **F1, the fins' own-drag band.** Confirm from RM L55H09's text and fig.
+   1, and from RM L9I30's model drawings (10.7 (p)), that its body is
+   neither the RM-10 nor the PARD standard body; name its increment and
+   base-pressure figures, and RM L51F29's, in 0014 10.7 before reading
+   them; read them; form the band as 0008 section 4.3 formed ARCAS's.
+4. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13, 14, 15 and
+   16, R&M 3348 figs. 31a, 31b and 32 (31b and 32 read blind by round 10,
+   W7's first readings to make); Knechtel's tunnel and corrections recorded
+   before his curve sets anything (3.3, N4). Then a bevel term in
+   `src/fins` (beside `rounded-leading-edge.ts`), `finned-body.ts`'s
+   bevel-leading-edge and hexagonal paths below Mach 1.5, tests against
+   Bryson's points.
+5. **F5, thin sharp sections.** Readings: the bump wings' zero-lift drag
    figures, TN 3306, R&M 3348 figs. 35 and 36. First the linear code's
    convergence near beta = 0 (its quadrature error, against the area-rule
    support code of `tests/fins/support/area-rule.ts`), then the band.
-5. **F1, the fins' own-drag band.** Confirm from RM L55H09's text and fig.
-   1 that its body is neither the RM-10 nor the PARD standard body; name
-   its increment and base-pressure figures in 0014 10.7 before reading
-   them; read them; form the band as 0008 section 4.3 formed ARCAS's.
 6. **F2**, refused until NASA TM X-653 is read (0014 10.7 (o)): name its
    figures in 10.7 from its model drawings and list of figures, then read
    them twice. The candidate is `src/fins/rounded-edge-bounded.ts` with
-   `tests/fins/rounded-edge-bounded.test.ts` (not wired); the rewrite of
-   section 3.2 goes back to the reviewer; then the checks read
-   twice (CR-149372 fig. 8a, R&M 3348 figs. 31b and 32, queued with the
-   blind reader; Kyle and Feryn's increments), the margin and the cap
-   reconsidered on them, then the wiring.
+   `tests/fins/rounded-edge-bounded.test.ts` (not wired; rejected as it
+   stands by the re-review of 2026-10-22, its findings F, N1 and N5 made
+   in 3.2, the base's sink still to be written, (L4) and (L5)); then the
+   checks read twice (CR-149372 fig. 8a, R&M 3348 figs. 31b and 32; Kyle
+   and Feryn's increments), the margin and the cap reconsidered on them,
+   then the wiring.
 
 Wiring into `src/total/finned-body.ts` waits for W1's branch and the main
 line (the coordinator's word); the main line is merged, never rebased.
