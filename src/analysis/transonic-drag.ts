@@ -28,6 +28,7 @@ import { taylorMaccoll } from '../validation/taylor-maccoll';
 import { domainAllowance, type DomainAllowance } from '../verification/domain-allowance';
 import { gridConvergence, type ConvergenceEstimate } from '../verification/grid-convergence';
 import { SettlingValue } from '../verification/iterative-convergence';
+import { GpuMemoryLimitError } from '../engine-gpu/gpu-common';
 import type { FlowSource } from '../render/flow-renderer';
 import { transonicProblem, type TransonicOptions, type TransonicProblem } from './transonic-flow';
 
@@ -54,7 +55,15 @@ export interface TransonicGridSolver {
   destroy(): void;
 }
 
-export type TransonicEngine = (problem: TransonicProblem) => Promise<TransonicGridSolver>;
+export interface TransonicEngine {
+  (problem: TransonicProblem): Promise<TransonicGridSolver>;
+  /**
+   * Why this engine cannot take a grid of this size (its device's
+   * memory or dispatch limits), or null: checked for the finest grid
+   * before any solve, so that such a case is refused at once.
+   */
+  readonly refuses?: (cells: { readonly ni: number; readonly nj: number }) => string | null;
+}
 
 /**
  * The floor: an allowance for what a captured shock's family cannot show,
@@ -79,10 +88,34 @@ export const WANDER_CHECKS = 4;
  * rule tested so far does not bound (review of aed95b0, B1).
  */
 export const NEAR_SONIC_LIMIT = 1.05;
-/** The family's far boundaries (radii) and cylinder (calibers), and the nested domains of the allowances. */
+/**
+ * The family's far boundaries (radii, at least) and cylinder (calibers).
+ * A long nose gets far boundaries 10 nose lengths out instead
+ * (transonicDomains), so that the allowances' smaller domain still lies
+ * beyond the four nose lengths the grid needs.
+ */
 export const FAMILY_DOMAIN = { farField: 100, cylinder: 10 } as const;
-export const FAR_FIELD_DOMAINS = [50, 200] as const;
+/** The allowances' nested domains, as multiples of the family's far boundaries. */
+export const FAR_FIELD_SCALES = [0.5, 2] as const;
+/** The allowances' nested cylinders (calibers). */
 export const CYLINDER_DOMAINS = [5, 20] as const;
+
+/** The family's domain and the allowances' nested ones, for this body (radii and calibers). */
+export interface TransonicDomains {
+  readonly family: { readonly farField: number; readonly cylinder: number };
+  readonly farField: readonly [number, number, number];
+  readonly cylinder: readonly [number, number, number];
+}
+
+export function transonicDomains(body: Body): TransonicDomains {
+  const R = body.nose.baseRadius;
+  const farField = Math.max(FAMILY_DOMAIN.farField, (10 * body.nose.length) / R);
+  return {
+    family: { farField, cylinder: FAMILY_DOMAIN.cylinder },
+    farField: [FAR_FIELD_SCALES[0] * farField, farField, FAR_FIELD_SCALES[1] * farField],
+    cylinder: [CYLINDER_DOMAINS[0], FAMILY_DOMAIN.cylinder, CYLINDER_DOMAINS[1]],
+  };
+}
 
 export interface TransonicDragOptions {
   readonly mach: number;
@@ -209,16 +242,21 @@ export interface ReferenceNote {
  * - 'no-band': the procedure gives no band from the grids (`estimate`
  *   says why; `finer` may offer one more grid);
  * - 'far-field', 'cylinder': that effect does not fall fast enough, as
- *   the domain grows, to bound what lies beyond (domainAllowance).
+ *   the domain grows, to bound what lies beyond (domainAllowance);
+ * - 'domain': the grids cannot be built for this body (transonicGrid's
+ *   reason in `message`);
+ * - 'device-memory': a grid is too large for the engine's device.
  */
 export type TransonicRefusalReason =
-  'near-sonic' | 'blunt-nose' | 'no-band' | 'far-field' | 'cylinder';
+  'near-sonic' | 'blunt-nose' | 'no-band' | 'far-field' | 'cylinder' | 'domain' | 'device-memory';
 export const TRANSONIC_REFUSAL_REASONS: readonly TransonicRefusalReason[] = [
   'near-sonic',
   'blunt-nose',
   'no-band',
   'far-field',
   'cylinder',
+  'domain',
+  'device-memory',
 ];
 
 /**
@@ -334,76 +372,117 @@ export async function verifiedTransonicDrag(
   const levels: TransonicLevel[] = [];
   // Cell updates so far, every grid counted.
   let work = 0;
+  const domains = transonicDomains(body);
+  const problemOf = (refinement: number, nested?: Nested) =>
+    transonicProblem(body, {
+      mach,
+      gamma,
+      refinement,
+      ...domains.family,
+      ...(nested === undefined ? {} : { nested }),
+    });
+  // Every base grid up front, and the finest grid's size against the
+  // engine's limits: a body the domains do not fit, or a device too
+  // small, is refused before anything is solved (review of aed95b0, S4).
+  let problems: {
+    readonly base: TransonicProblem;
+    readonly farField: readonly [TransonicProblem, TransonicProblem];
+    readonly cylinder: readonly [TransonicProblem, TransonicProblem];
+  };
   try {
-    // The family.
-    let previous: { problem: TransonicProblem; cells: TransonicCells } | null = null;
-    let base: { problem: TransonicProblem; drag: number; noise: number } | null = null;
-    for (let refinement = 1; refinement <= options.finest; refinement *= 2) {
-      const problem = transonicProblem(body, { mach, gamma, refinement, ...FAMILY_DOMAIN });
-      const result: GridSolution = await solveGrid(engine, problem, previous, options, {
-        what: 'grid',
-      });
-      work += result.cellUpdates;
-      const level: TransonicLevel = {
-        refinement,
-        cells: { ni: problem.config.grid.ni, nj: problem.config.grid.nj },
-        drag: result.drag,
-        steps: result.steps,
-        seconds: result.seconds,
-        noise: result.noise,
-      };
-      levels.push(level);
-      options.onLevel?.(level);
-      if (refinement === 1) base = { problem, drag: result.drag, noise: result.noise };
-      previous = { problem, cells: result.cells };
-      // Stop at 8 unless asked for 16: the caller offers the finer grid.
-      if (refinement >= 8 && refinement >= options.finest) break;
-    }
-    // The allowances, on the base grid.
-    const own = base!;
+    problems = {
+      base: problemOf(1),
+      farField: [
+        problemOf(1, { farField: domains.farField[0] }),
+        problemOf(1, { farField: domains.farField[2] }),
+      ],
+      cylinder: [
+        problemOf(1, { cylinder: domains.cylinder[0] }),
+        problemOf(1, { cylinder: domains.cylinder[2] }),
+      ],
+    };
+  } catch (error) {
+    if (!(error instanceof RangeError)) throw error;
+    return {
+      kind: 'refused',
+      reason: 'domain',
+      message: `the transonic domain cannot be built for this body: ${error.message}`,
+      levels,
+    };
+  }
+  const cellsAt = (refinement: number) => ({
+    ni: refinement * problems.base.config.grid.ni,
+    nj: refinement * problems.base.config.grid.nj,
+  });
+  const tooLarge = engine.refuses?.(cellsAt(options.finest)) ?? null;
+  if (tooLarge !== null) {
+    return {
+      kind: 'refused',
+      reason: 'device-memory',
+      message: `the finest grid (refinement ${options.finest}) is too large for this device: ${tooLarge}`,
+      levels,
+    };
+  }
+  try {
+    // The family's base grid, then the allowances on base grids (as the
+    // plan says: they cost seconds), then the finer grids.
+    const baseSolution = await solveGrid(engine, problems.base, null, options, { what: 'grid' });
+    const levelOf = (problem: TransonicProblem, result: GridSolution): TransonicLevel => ({
+      refinement: problem.options.refinement,
+      cells: { ni: problem.config.grid.ni, nj: problem.config.grid.nj },
+      drag: result.drag,
+      steps: result.steps,
+      seconds: result.seconds,
+      noise: result.noise,
+    });
+    work += baseSolution.cellUpdates;
+    const baseLevel = levelOf(problems.base, baseSolution);
+    levels.push(baseLevel);
+    options.onLevel?.(baseLevel);
     const allowanceOf = async (
       allowance: 'farField' | 'cylinder',
-      nested: readonly [Nested, Nested],
-      domains: readonly [number, number, number],
+      nested: readonly [TransonicProblem, TransonicProblem],
+      sizes: readonly [number, number, number],
     ): Promise<{
       values: [number, number, number];
       noise: number;
       domains: readonly [number, number, number];
     }> => {
-      const solveNested = async (n: Nested, domain: 0 | 2) => {
-        const problem = transonicProblem(body, {
-          mach,
-          gamma,
-          refinement: 1,
-          ...FAMILY_DOMAIN,
-          nested: n,
-        });
-        return solveGrid(engine, problem, null, options, {
+      const solveNested = (problem: TransonicProblem, domain: 0 | 2) =>
+        solveGrid(engine, problem, null, options, {
           what: 'allowance',
           allowance,
           domain,
-          size: domains[domain],
+          size: sizes[domain],
         });
-      };
       const smaller = await solveNested(nested[0], 0);
       const larger = await solveNested(nested[1], 2);
       work += smaller.cellUpdates + larger.cellUpdates;
       return {
-        values: [smaller.drag, own.drag, larger.drag],
-        noise: Math.max(smaller.noise, own.noise, larger.noise),
-        domains,
+        values: [smaller.drag, baseSolution.drag, larger.drag],
+        noise: Math.max(smaller.noise, baseSolution.noise, larger.noise),
+        domains: sizes,
       };
     };
-    const far = await allowanceOf(
-      'farField',
-      [{ farField: FAR_FIELD_DOMAINS[0] }, { farField: FAR_FIELD_DOMAINS[1] }],
-      [FAR_FIELD_DOMAINS[0], FAMILY_DOMAIN.farField, FAR_FIELD_DOMAINS[1]],
-    );
-    const cylinder = await allowanceOf(
-      'cylinder',
-      [{ cylinder: CYLINDER_DOMAINS[0] }, { cylinder: CYLINDER_DOMAINS[1] }],
-      [CYLINDER_DOMAINS[0], FAMILY_DOMAIN.cylinder, CYLINDER_DOMAINS[1]],
-    );
+    const far = await allowanceOf('farField', problems.farField, domains.farField);
+    const cylinder = await allowanceOf('cylinder', problems.cylinder, domains.cylinder);
+
+    // The family's finer grids, each started from the one before.
+    let previous: { problem: TransonicProblem; cells: TransonicCells } = {
+      problem: problems.base,
+      cells: baseSolution.cells,
+    };
+    for (let refinement = 2; refinement <= options.finest; refinement *= 2) {
+      const problem = problemOf(refinement);
+      const result: GridSolution = await solveGrid(engine, problem, previous, options, {
+        what: 'grid',
+      });
+      work += result.cellUpdates;
+      const level = levelOf(problem, result);
+      levels.push(level);
+      options.onLevel?.(level);
+      previous = { problem, cells: result.cells };
+    }
 
     // The procedure, with the noise measured.
     const noise = Math.max(...levels.slice(-4).map((l) => l.noise));
@@ -419,7 +498,11 @@ export async function verifiedTransonicDrag(
     } as const;
     if (estimate.kind === 'unresolved') {
       const finer =
-        finerMayResolve(values) && options.finest === 8 ? finerGrid(levels, work) : undefined;
+        finerMayResolve(values) &&
+        options.finest === 8 &&
+        (engine.refuses?.(cellsAt(16)) ?? null) === null
+          ? finerGrid(levels, work)
+          : undefined;
       return {
         kind: 'refused',
         reason: 'no-band',
@@ -469,6 +552,22 @@ export async function verifiedTransonicDrag(
     };
   } catch (error) {
     if (error instanceof Cancelled) return { kind: 'cancelled', levels };
+    if (error instanceof GpuMemoryLimitError) {
+      return {
+        kind: 'refused',
+        reason: 'device-memory',
+        message: `a grid is too large for this device: ${error.message}`,
+        levels,
+      };
+    }
+    if (error instanceof RangeError) {
+      return {
+        kind: 'refused',
+        reason: 'domain',
+        message: `the transonic domain cannot be built for this body: ${error.message}`,
+        levels,
+      };
+    }
     if (error instanceof NotConverged) {
       return {
         kind: 'not-converged',

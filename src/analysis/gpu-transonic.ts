@@ -8,11 +8,12 @@
  */
 
 import { Euler2D } from '../engine-cpu/euler2d';
-import { GpuEuler2DTwoFloat } from '../engine-gpu/euler2d-two-float';
+import { GpuEuler2DTwoFloat, twoFloatGridLimit } from '../engine-gpu/euler2d-two-float';
 import type { FlowSource } from '../render/flow-renderer';
 import type { Bounds } from '../render/view';
 import { pressureFromConserved2D } from '../scheme/gas';
-import type { TransonicCells, TransonicEngine } from './transonic-drag';
+import type { TransonicCells, TransonicEngine, TransonicGridSolver } from './transonic-drag';
+import type { TransonicProblem } from './transonic-flow';
 
 export interface GpuTransonicOptions {
   /** Red-black sweeps per implicit step. */
@@ -26,7 +27,7 @@ export function gpuTransonicEngine(
   options: GpuTransonicOptions,
 ): TransonicEngine {
   const cfl = options.cfl ?? 1000;
-  return async (problem) => {
+  const solve = async (problem: TransonicProblem): Promise<TransonicGridSolver> => {
     const solver = await GpuEuler2DTwoFloat.create(device, problem.config);
     const evaluator = new Euler2D(problem.config);
     const { ni, nj } = problem.config.grid;
@@ -75,6 +76,10 @@ export function gpuTransonicEngine(
       },
     };
   };
+  return Object.assign(solve, {
+    refuses: (cells: { readonly ni: number; readonly nj: number }) =>
+      twoFloatGridLimit(device, cells.ni, cells.nj),
+  });
 }
 
 /** The grid's extent: the whole domain (the far boundaries 100 radii out on the family's grids). */

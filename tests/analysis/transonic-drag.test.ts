@@ -5,8 +5,10 @@ import {
   TRANSONIC_DRAG_FLOOR,
   transonicNoseTerm,
   verifiedTransonicDrag,
+  transonicDomains,
   type TransonicEngine,
 } from '../../src/analysis/transonic-drag';
+import { GpuMemoryLimitError } from '../../src/engine-gpu/gpu-common';
 import type { FlowSource } from '../../src/render/flow-renderer';
 import { noseComponentOf } from '../../src/app/total-drag';
 import type { TransonicProblem } from '../../src/analysis/transonic-flow';
@@ -286,6 +288,85 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
       synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 }),
     );
     expect(none).toEqual([]);
+  });
+
+  it('a long nose: the domains scale with its length; the allowances come right after the base grid', async () => {
+    // The 10-caliber ogive, 20 radii long: 100 radii would leave the
+    // smaller nested domain (50) inside the four nose lengths the grid
+    // needs (review of aed95b0, S4, A5).
+    const ogive10: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 20, baseRadius: 1 },
+      cylinderLength: 0,
+    };
+    expect(transonicDomains(ogive10).farField).toEqual([100, 200, 400]);
+    expect(transonicDomains(ogive).farField).toEqual([50, 100, 200]);
+    expect(transonicDomains(cone).farField).toEqual([50, 100, 200]);
+    const order: string[] = [];
+    const result = await verifiedTransonicDrag(
+      ogive10,
+      {
+        ...options,
+        onProgress: (p) => {
+          const key =
+            p.what === 'grid' ? `grid ${p.refinement}` : `${p.allowance} ${p.domain} ${p.size}`;
+          if (order[order.length - 1] !== key) order.push(key);
+        },
+      },
+      synthetic({ converged: (r) => 0.0114 + 1e-5 / r ** 2 }),
+    );
+    expect(result.kind).toBe('solved');
+    expect(order).toEqual([
+      'grid 1',
+      'farField 0 100',
+      'farField 2 400',
+      'cylinder 0 5',
+      'cylinder 2 20',
+      'grid 2',
+      'grid 4',
+      'grid 8',
+    ]);
+    if (result.kind === 'solved')
+      expect(result.allowances.farField.domains).toEqual([100, 200, 400]);
+  });
+
+  it('a device too small is refused before any solve, or when a grid runs out of memory, with the grids before', async () => {
+    let created = 0;
+    const counting = synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 });
+    const small: TransonicEngine = Object.assign(
+      (problem: TransonicProblem) => {
+        created++;
+        return counting(problem);
+      },
+      { refuses: (cells: { ni: number; nj: number }) => (cells.ni > 500 ? 'too large' : null) },
+    );
+    const before = await verifiedTransonicDrag(ogive, options, small);
+    expect(before).toMatchObject({ kind: 'refused', reason: 'device-memory', levels: [] });
+    expect(created).toBe(0);
+    // Out of memory on creating r = 4: refused, with r = 1 and 2.
+    const failing: TransonicEngine = (problem) =>
+      problem.options.refinement === 4
+        ? Promise.reject(new GpuMemoryLimitError('the GPU ran out of memory'))
+        : counting(problem);
+    const during = await verifiedTransonicDrag(ogive, options, failing);
+    expect(during.kind).toBe('refused');
+    if (during.kind === 'refused') {
+      expect(during.reason).toBe('device-memory');
+      expect(during.levels.map((l) => l.refinement)).toEqual([1, 2]);
+    }
+  });
+
+  it('r = 16 is offered only where the device can hold it', async () => {
+    const drags = [0.0944683, 0.0944644, 0.0944821, 0.0944913];
+    const engine = synthetic({
+      converged: (r, far, cylinder) =>
+        (far ?? cylinder) === undefined ? drags[Math.log2(r)]! : drags[0]!,
+    });
+    const limited: TransonicEngine = Object.assign(engine, {
+      refuses: (cells: { ni: number; nj: number }) => (cells.ni > 1000 ? 'too large' : null),
+    });
+    const result = await verifiedTransonicDrag(cone, options, limited);
+    expect(result).toMatchObject({ kind: 'refused', reason: 'no-band' });
+    if (result.kind === 'refused') expect(result.finer).toBeUndefined();
   });
 
   it('below Mach 1.05 the solve refuses (near-sonic) unless allowed; from 1.05 it serves', async () => {

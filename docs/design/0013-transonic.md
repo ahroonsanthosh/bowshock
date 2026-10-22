@@ -1610,6 +1610,32 @@ each.**
 7. The range error's text and type are pinned, and the transonic
    solve's range is the router's (`4aef318`).
 
+**The independent review of `aed95b0` (2026-10-22).** It verified the
+two-float formulas, that no 32-bit quantity lies on the path to the
+fixed point, that the implicit parts change only the path, that the GPU
+equals the CPU, that the nested grids share their nodes, and that no
+number is given without a settled grid. Its findings, one commit each:
+
+- **B1**, Mach numbers just above 1 served on an untested rule: the
+  solve refuses below Mach 1.05 (serving rule 8, amended).
+- **S4**, long noses failing after the whole family was solved: the
+  nested 50 radii lay inside the four nose lengths the grid needs for
+  any nose 12.5 to 25 radii long, the 10-caliber ogive among them.
+  - The far boundaries now lie at the larger of 100 radii and 10 nose
+    lengths (`transonicDomains`), and the nested ones at half and twice
+    that. This is unchanged for every body validated here: the cone,
+    and the 3- and 5-caliber ogives, are at 100 radii. The 10-caliber
+    ogive's family is at 200 radii, with its allowances at 100 and 400.
+  - Every base grid is built, and the finest grid's size is checked
+    against the engine's device, before any solve. A body the domains
+    do not fit is refused ('domain'), and so is a device too small
+    ('device-memory', also when a grid runs out of memory mid-solve).
+    Neither throws, and the router turns any remaining
+    `GpuMemoryLimitError` into a refusal too.
+  - The allowances are solved right after the base grid, as the plan
+    said, before the finer grids.
+  - r = 16 is offered only where the device can hold it.
+
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
 (Superseded as a serving rule by the owner's decision of 2026-10-21,

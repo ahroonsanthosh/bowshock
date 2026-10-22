@@ -8,6 +8,7 @@ import {
 } from '../../src/analysis/nose-drag-solve';
 import { verifiedTransonicDrag, type TransonicDrag } from '../../src/analysis/transonic-drag';
 import type { VerifiedDrag } from '../../src/analysis/verified-drag';
+import { GpuMemoryLimitError } from '../../src/engine-gpu/gpu-common';
 import type { Body } from '../../src/geometry/body';
 
 const deg = Math.PI / 180;
@@ -76,6 +77,19 @@ describe('the nose drag solver for a Mach number (design record 0013, serving ru
       ).rejects.toThrow('not reached');
     }
     expect([TRANSONIC_FROM, FITTED_FROM]).toEqual([1, 1.2]);
+  });
+
+  it('a grid too large for the device is a refusal from either solver, not an exception', async () => {
+    const tooLarge = () => Promise.reject(new GpuMemoryLimitError('the GPU ran out of memory'));
+    for (const mach of [1.1, 2]) {
+      const outcome = await solveNoseDrag(
+        cone,
+        { mach, gamma: 1.4, finest: 8 },
+        { transonic: tooLarge, fitted: tooLarge },
+      );
+      expect(outcome.status, `Mach ${mach}`).toBe('refused');
+      expect(outcome.text).toMatch(/ran out of memory/);
+    }
   });
 
   it('a body the fitted solver refuses by throwing comes back refused with the reason', async () => {

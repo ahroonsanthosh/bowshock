@@ -24,7 +24,6 @@ import {
   ExclusiveRunner,
   GpuExecutionError,
   GpuMemoryLimitError,
-  checkDispatchSize,
   compileShader,
   readBuffer,
   withDeviceErrors,
@@ -85,6 +84,24 @@ export interface TwoFloatViewBuffers {
   readonly state: GPUBuffer;
 }
 
+/**
+ * Why this device cannot hold a two-float grid of ni x nj cells (its
+ * largest buffer, or its workgroups per dispatch), or null.
+ */
+export function twoFloatGridLimit(device: GPUDevice, ni: number, nj: number): string | null {
+  const largest = 32 * ((ni + 1) * nj + ni * (nj + 1) + ni * nj);
+  const limit = Math.min(device.limits.maxStorageBufferBindingSize, device.limits.maxBufferSize);
+  if (largest > limit) {
+    return `a grid of ${ni} x ${nj} cells needs a ${largest}-byte buffer, more than this GPU allows (${limit})`;
+  }
+  const groups = Math.ceil(((ni + 1) * nj) / WORKGROUP_SIZE);
+  const most = device.limits.maxComputeWorkgroupsPerDimension;
+  if (groups > most) {
+    return `a grid of ${ni} x ${nj} cells needs ${groups} workgroups in one dispatch, more than this GPU allows (${most})`;
+  }
+  return null;
+}
+
 /** The high and low 32-bit parts of a double: hi + lo is within 2^-48 of it, relative. */
 export function split(value: number): [number, number] {
   const hi = Math.fround(value);
@@ -142,14 +159,8 @@ export class GpuEuler2DTwoFloat {
     densityPower(config.gamma);
     freeStreamOf(config);
     const { ni, nj } = config.grid;
-    const largest = 32 * ((ni + 1) * nj + ni * (nj + 1) + ni * nj);
-    const limit = Math.min(device.limits.maxStorageBufferBindingSize, device.limits.maxBufferSize);
-    if (largest > limit) {
-      throw new GpuMemoryLimitError(
-        `a grid of ${ni} x ${nj} cells needs a ${largest}-byte buffer, more than this GPU allows (${limit})`,
-      );
-    }
-    checkDispatchSize(device, (ni + 1) * nj, WORKGROUP_SIZE, `a grid of ${ni} x ${nj} cells`);
+    const tooLarge = twoFloatGridLimit(device, ni, nj);
+    if (tooLarge !== null) throw new GpuMemoryLimitError(tooLarge);
     await twoFloatSelfTest(device);
     const module = await compileShader(
       device,

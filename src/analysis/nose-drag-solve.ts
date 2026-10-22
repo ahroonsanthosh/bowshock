@@ -8,7 +8,7 @@
  * are passed in (gpuNoseDragSolvers on the page, stand-ins in tests).
  */
 
-import { GpuExecutionError } from '../engine-gpu/gpu-common';
+import { GpuExecutionError, GpuMemoryLimitError } from '../engine-gpu/gpu-common';
 import type { Body } from '../geometry/body';
 import type { FlowSource } from '../render/flow-renderer';
 import type {
@@ -121,21 +121,29 @@ export async function solveNoseDrag(
     };
   }
   if (solver === 'transonic') {
-    const result = await solvers.transonic(body, {
-      mach: request.mach,
-      gamma: request.gamma,
-      finest: request.finest,
-      ...(request.signal === undefined ? {} : { signal: request.signal }),
-      ...(request.allowNearSonic === undefined ? {} : { allowNearSonic: request.allowNearSonic }),
-      ...(request.onLive === undefined ? {} : { onLive: request.onLive }),
-      onProgress: (p) => {
-        const where =
-          p.what === 'grid'
-            ? `Grid at refinement ${p.refinement}`
-            : `Allowance for the ${p.allowance === 'farField' ? 'far boundaries' : 'cylinder'}, base grid on ${p.size} ${p.allowance === 'farField' ? 'radii' : 'calibers'}`;
-        request.onProgress?.(`${where}: ${p.steps} steps, wave Cd so far ${p.drag.toFixed(6)}`);
-      },
-    });
+    let result: TransonicDrag;
+    try {
+      result = await solvers.transonic(body, {
+        mach: request.mach,
+        gamma: request.gamma,
+        finest: request.finest,
+        ...(request.signal === undefined ? {} : { signal: request.signal }),
+        ...(request.allowNearSonic === undefined ? {} : { allowNearSonic: request.allowNearSonic }),
+        ...(request.onLive === undefined ? {} : { onLive: request.onLive }),
+        onProgress: (p) => {
+          const where =
+            p.what === 'grid'
+              ? `Grid at refinement ${p.refinement}`
+              : `Allowance for the ${p.allowance === 'farField' ? 'far boundaries' : 'cylinder'}, base grid on ${p.size} ${p.allowance === 'farField' ? 'radii' : 'calibers'}`;
+          request.onProgress?.(`${where}: ${p.steps} steps, wave Cd so far ${p.drag.toFixed(6)}`);
+        },
+      });
+    } catch (error) {
+      // A grid too large for the device is a refusal, never an exception
+      // (the driver refuses it itself; this covers any other solver).
+      if (!(error instanceof GpuMemoryLimitError)) throw error;
+      result = { kind: 'refused', reason: 'device-memory', message: error.message, levels: [] };
+    }
     return fromTransonic(result);
   }
   try {
