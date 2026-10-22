@@ -45,6 +45,13 @@ nose at Mach 2 on nj = 20 and 40, against the values recorded here) and
   nose's drag, the march's drag, its mass balance. Rows without a `case`
   field (the first marches) are told apart by the nose's drag
   (`analysis/moc3.mjs`).
+- The 5-caliber nose at Mach 2 (2 calibers of cylinder, `marches2.sh`,
+  2026-10-22): `scan-L5c2M2r1.txt`, then lines 168 to 240 (x 0.08 to
+  1.0) on nj = 20, 40 and 80 (`moc-L5c2M2.txt`, rows in `moc.jsonl`).
+  A first run on lines 90 to 138 was stopped and set aside
+  (`moc-L5c2M2-tiplines.txt` and `.jsonl`, not in `moc.jsonl`): this
+  grid has 293 lines, against 168 on the 5-caliber nose at Mach 1.5, so
+  those lines lie at x 6e-3 to 3e-2, near the tip.
 - `moc*.txt`: the same runs as text. `scan-*.txt`: every line of nj = 20
   with its least Mach number and the drag downstream, from which the
   lines marched were chosen.

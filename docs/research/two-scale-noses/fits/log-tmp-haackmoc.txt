@@ -298,3 +298,4 @@
 2026-10-22T11:57:32.374Z haack C0 L1 M2 cyl1 nj20x8: resumed from checkpoint at 0 iterations
 2026-10-22T21:37:55.716Z haack C0 L1 M2 cyl1 nj20x8: start, save to tests/tmp-haackmoc/L1c1M2r8
 2026-10-22T21:38:16.965Z haack C0 L1 M2 cyl1 nj20x8: resumed from checkpoint at 0 iterations
+2026-10-22T22:10:40.335Z haack C0 L1 M2 cyl1 nj20x8: 1000 iterations, maxSpeed 5.06e-4, drag 0.428554447983, remaining 0.00e+0
