@@ -109,6 +109,15 @@ const tableBox = element('#table', HTMLElement);
 const csvButton = element('#csv', HTMLButtonElement);
 const pngButton = element('#png', HTMLButtonElement);
 const progress = element('#progress', HTMLElement);
+/** The curve's progress line: what is under way, and Compute beside it once the rocket changed. */
+const progressText = h('span');
+const progressCompute = h('button', {
+  className: 'button curve__compute',
+  text: 'Compute its curve',
+  attrs: { type: 'button', hidden: true },
+});
+progressCompute.addEventListener('click', () => void start());
+progress.append(progressText, progressCompute);
 const drawer = element('#drawer', HTMLDialogElement);
 const drawerBody = element('#drawer-body', HTMLElement);
 const drawerClose = element('#drawer-close', HTMLButtonElement);
@@ -784,7 +793,8 @@ function renderCurve(): void {
   if (r === null) {
     chartBox.replaceChildren();
     pointBox.replaceChildren();
-    progress.textContent = '';
+    progressText.textContent = '';
+    progressCompute.hidden = true;
     return;
   }
   const pointViews = views(r);
@@ -803,8 +813,11 @@ function renderCurve(): void {
   if (!tableBox.hidden) tableBox.replaceChildren(curveTable(pointViews, selected, select));
   const queue = r.points.filter((p) => p.state.kind === 'solving' || p.state.kind === 'waiting');
   const solving = r.current;
-  progress.textContent = changed
-    ? 'The rocket or the grids changed: press Compute the curve for its curve.'
+  // Changed: the way to the new curve beside the curve itself (Compute is at the builder's
+  // foot, often scrolled out of view, or on another tab on phones).
+  progressCompute.hidden = !changed;
+  progressText.textContent = changed
+    ? 'The rocket or the grids changed since this curve.'
     : solving !== null
       ? `Solving Mach ${r.points[solving]!.mach.toFixed(2)}; ${queue.length} point${queue.length === 1 ? '' : 's'} to go${paused ? ' (paused: Space resumes)' : ''}.`
       : r.done

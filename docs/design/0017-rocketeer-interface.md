@@ -428,6 +428,52 @@ for a point not modelled, asking about its parts, or not finished);
 `reason` the logic's claim text and its reasons, prefixed "Computed without
 ..." when parts were left out. A test pins the format.
 
+### 8.5 The points near Mach 1 (1.0 to 1.2): planned, not wired
+
+The transonic agent's solve (`verifiedTransonicDrag` with
+`gpuTransonicEngine`, branch `transonic-mach1`, under review) gives the
+nose term from Mach 1.0 up to, not including, 1.2; the fitted solve keeps
+1.2 and up. It is not on the page until it is reviewed and on main. Until
+then the points below Mach 1.2 are put to the logic as every point is,
+and today the logic refuses them (the base, and the fins' own drag below
+Mach 1.5), so the curve shows them as results with their reasons. When it
+lands:
+
+- **Which solve.** The curve's solver is chosen by Mach number: the
+  transonic solve below 1.2, the fitted one from 1.2 (`CurveRun` takes
+  both, with a stand-in for each in its tests). The page passes the
+  outcome on to the logic, which turns it into its nose term and band;
+  the page never combines bands (asked of the logic's agents: their
+  mapping from the transonic outcome to the nose state).
+- **While it runs (minutes a point).** The point is "Solving", then, as
+  each grid ends, "Provisional" with the logic's total at that grid's
+  nose term (no band, as for the fitted points). The progress line and
+  the readout say the stage: "grid 2 of 3, 382 x 40 cells, step 4 000",
+  then "allowance: the far boundaries, domain 2 of 3" and "the cylinder,
+  domain 2 of 3". Stop cancels it through the solve's signal, in view
+  beside the progress line while it runs (the solve has no pause: Space
+  pauses the fitted points only, and says so here); the page's own
+  measured time a point is kept apart for these points, which take far
+  longer than the fitted ones.
+- **Solved.** The number with the logic's band and status, as any point.
+  Details gives the nose term's band in its parts as the solve gives them
+  (from the grids, the floor, the far boundaries, the cylinder), and its
+  `label` word for word, which names the reference or its absence.
+- **Refused.** "No number" and the plain reason, worded by the reason's
+  code once the solve gives one (asked for), its sentence in Details. With
+  `finer` set, the point offers the finer grid as an explicit choice the
+  user must press: "Solve Mach 1.10 on the finer grid (320 cells across):
+  about N here", N from the page's measured cell rate and the work the
+  solve says the finer grid takes (asked for); the curve does not run it
+  by itself.
+- **Not converged.** "No number: the airflow near the nose did not settle
+  on grid k, so no band can be given here", with the grids that ran.
+- **Stopped.** "Stopped before it finished: no number", the grids that
+  finished in Details; Compute starts it again.
+- **The airflow.** Drawn if the solve hands the page its field (asked for:
+  a `FlowSource` on the solver's device, as the fitted solve's); until
+  then the views say "No airflow is drawn for the points near Mach 1".
+
 ## 9. Presets
 
 | Preset                                   | What                                                                                                                                    | What the logic gives today (nose stand-in for the claim)                                                       |

@@ -2185,8 +2185,11 @@ input[aria-invalid='true'] {
   color: var(--muted);
   font-size: 12px;
 }
-.curve__progress:empty {
+.curve__progress:has(> span:empty):has(> button[hidden]) {
   display: none;
+}
+.curve__compute {
+  margin-left: 8px;
 }
 .curve-table {
   width: 100%;
