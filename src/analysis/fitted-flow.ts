@@ -410,7 +410,8 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
   // and the nose meets the body tangentially, the drag still converges at
   // second order, to a value that moving the plane does not change, and a
   // second, differently laid out family converges to the same value
-  // (measured on a 3-caliber tangent ogive at Mach 1.35, 0006). At a corner
+  // (measured on tangent ogives of 3 calibers at Mach 1.35 and 2 calibers
+  // at Mach 1.6, within 1.5e-5 and 2.0e-6, 0006). At a corner
   // the cells ahead of it converge at an order of about 0.35, and where the
   // surface flow is subsonic the body behind the tip reaches it, with no
   // such reference measured yet: both refused.

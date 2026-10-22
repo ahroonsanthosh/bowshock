@@ -449,6 +449,13 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     for (const refinement of [1, 8]) {
       expect(() => sharpFitProblem(ogive, { gamma, nj: 20, refinement, mach: 1.35 })).not.toThrow();
     }
+    // So is a 2-caliber tangent ogive at Mach 1.6, near the least Mach
+    // number at which it is served: surface Mach 1.0036, axial 0.886 (0006).
+    const short: Body = { ...ogive, nose: { ...ogive.nose, length: 2 } };
+    expect(() => sharpFitProblem(short, { gamma, nj: 20, refinement: 1, mach: 1.6 })).not.toThrow();
+    expect(() => sharpFitProblem(short, { gamma, nj: 20, refinement: 1, mach: 1.59 })).toThrow(
+      /is subsonic at the surface \(Mach 0.99\)/,
+    );
     // A 24 deg cone at Mach 1.5: supersonic surface flow (Mach 1.04), whose
     // axial component (0.95) crosses the plane normal to the axis
     // subsonically, and a corner at the cylinder: refused, on every grid.

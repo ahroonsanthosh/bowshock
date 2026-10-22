@@ -295,9 +295,13 @@ verified.
 - **Refused, with the reason:** tips whose shock detaches; tips whose flow
   crosses the solver's starting plane, just behind the tip, at an axial
   Mach number below 1, except where the flow on the tip's surface is
-  supersonic and the nose meets the body without a corner (measured on a
-  3-caliber tangent ogive at Mach 1.35: two differently laid out grid
-  families agree within 1.5e-5); of 40 noses of 1 to 3 calibers tried at
+  supersonic and the nose meets the body without a corner (measured on
+  tangent ogives of 3 calibers at Mach 1.35 and of 2 calibers at Mach
+  1.6, near the least Mach number that nose is served at: two
+  differently laid out grid families agree within 1.5e-5 and 2.0e-6; the
+  captured-shock solver's band contains the first, but on the second it
+  gives no band, so that case rests on the fitted solver's own
+  verification); of 40 noses of 1 to 3 calibers tried at
   Mach 1.2 before that exception, 19 detach their shock and 13 were refused
   by this test; tips steeper than about 40 deg (a limit of the present
   grids, set on measurement); bodies whose flow at their end is subsonic;
