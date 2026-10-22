@@ -60,6 +60,20 @@ nose at Mach 2 on nj = 20 and 40, against the values recorded here) and
   characteristics" of 0006 and the containment ratios of its allowance.
   `node analysis/moc3.mjs marches/moc.jsonl ["C0 L3 M2 cyl2"]`.
 
+## `grids/`
+
+- `dump.test.ts` (with `vitest.config.ts`, run from `tests/tmp-gridcmp/`):
+  every line (x, y, dx, dy, h) of the generator's base grids at
+  refinements 1, 2 and 4 for 16 ellipsoids of 0.5 to 6 calibers at Mach
+  1.2 to 3 and, with `TWO=1`, the five two-scale noses and three detached
+  sharp tips measured, written to `OUTFILE`.
+- `compare.mjs`: whether two dumps are identical, grid by grid. On the
+  merged tree of 235286d against main b86c308: the 48 ellipsoid grids
+  identical; against haack-grid a076072: the 24 two-scale grids
+  identical, the ellipsoids not (a076072 had changed them; the merge
+  restores main's path). The dumps themselves (0.5 and 1.2 MB) are not
+  kept.
+
 ## `runners/`
 
 The throwaway vitest files and the lane scripts as they ran (paths are
