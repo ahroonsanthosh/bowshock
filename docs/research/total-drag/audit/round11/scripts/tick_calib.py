@@ -66,6 +66,16 @@ CONFIG = {
                      xticks=[(2.0, 942.6), (3.0, 1215.9), (4.0, 1489.2)], xtick_side=1,
                      yticks=[(0.2, 1126.5), (0.4, 994.5), (0.6, 862.5), (0.8, 731.6), (1.0, 598.5)], ytick_side=1,
                      tick_len=12, origin=(1.0, 0.0)),
+    # Round 11. R&M 3427 fig. 16a and 16b (PDF p. 39, below fig. 15): y/h ticks at 0 and +0.5 rising from the
+    # x axis, which starts at y/h = -0.5 on the Cp_b axis; Cp_b ticks every 0.2 to -1.0 pointing right
+    "r3427f16a": dict(xaxis=(2110.5, 935, 1230), yaxis=(921.0, 1620, 2100),
+                      xticks=[(0.0, 1066.5), (0.5, 1217.0)], xtick_side=1,
+                      yticks=[(-0.2, 2008.5), (-0.4, 1909.5), (-0.6, 1811.0), (-0.8, 1711.0), (-1.0, 1612.4)],
+                      ytick_side=1, tick_len=10, origin=(-0.5, 0.0)),
+    "r3427f16b": dict(xaxis=(2113.5, 1330, 1625), yaxis=(1317.6, 1625, 2105),
+                      xticks=[(0.0, 1465.5), (0.5, 1614.5)], xtick_side=1,
+                      yticks=[(-0.2, 2012.6), (-0.4, 1912.6), (-0.6, 1813.5), (-0.8, 1715.5), (-1.0, 1616.9)],
+                      ytick_side=1, tick_len=10, origin=(-0.5, 0.0)),
 }
 
 

@@ -386,3 +386,44 @@ circle 11 to 12 px, square 13 by 11 px, cross 11 by 9 px).
 * p08-21, the last cross: the outline fit stopped at the edge of its
   +-3 px search, so its centre is from the pixel map (1 px error).
 * The faired lines were not read.
+
+## R&M 3427 figs. 16a and 16b (PDF p. 39, below fig. 15)
+
+**As printed.** Caption: "Variation of pressure across base." Panel a)
+"alpha = 0", panel b) "alpha = 2 deg" with an arrow "Upper surface"
+pointing to positive y/h. Abscissa y/h, -0.5 (at the Cp_b axis) to +0.5,
+ticks at 0 and +0.5; ordinate Cp_b, 0 to -1.0, ticks every 0.2. No legend:
+in each panel a dashed line labelled M_inf = 1.0 through diamonds and solid
+lines labelled 0.8 (circles) and 0.4 (squares).
+
+**Calibration** (`readings/rm3427_fig16a_calib.json`,
+`readings/rm3427_fig16b_calib.json`; `tick_calib.py` entries `r3427f16a`,
+`r3427f16b`). Both panels' axes are tilted by about 0.6 deg (fitted). x:
+the axes' crossing (y/h -0.5) and the ticks at 0 and +0.5; 298.4 and 297.7
+px per unit; leave-one-out 1.01 px (a) and 0.18 px (b). y: six points,
+496.0 and 495.3 px per unit; leave-one-out 0.61 and 0.88 px. 1 px = 0.0034
+in y/h and 0.0020 in Cp_b.
+
+**What was read** (`readings/rm3427_fig16a.csv`, `readings/rm3427_fig16b.csv`),
+by outline fits (diamond 14 px across its diagonals, circle 12 to 13 px,
+square 13 by 11 px):
+* 16a, 9 symbols at y/h about -0.265, 0.005 and 0.144: M_inf 1.0 diamonds
+  Cp_b -0.782, -0.786, -0.783; 0.8 circles -0.705, -0.748, -0.735; 0.4
+  squares -0.610, -0.632, -0.630.
+* 16b, 15 symbols at y/h about -0.266, -0.136, 0.000, 0.134 and 0.267:
+  M_inf 1.0 diamonds -0.786, -0.782, -0.784, -0.781, -0.781; 0.8 circles
+  -0.652, -0.683, -0.692, -0.696, -0.667; 0.4 squares -0.567, -0.592,
+  -0.607, -0.611, -0.598.
+* Errors +-0.0055 to 0.0121 in y/h and +-0.0040 to 0.0071 in Cp_b (the
+  larger where the outline score is below 0.45).
+
+**Uncertain calls.**
+* In 16a the middle station reads 0.001 (diamond), 0.004 (circle) and 0.011
+  (square), and in 16b the squares b04-3 and b04-5 read 0.006 and 0.271
+  against 0.000 and 0.267 for the other symbols at those stations: the
+  squares sit up to 2.5 px right of the other glyphs, within or near their
+  errors.
+* At nearest-neighbour zoom three of the M_inf 1.0 glyphs (16a's middle one,
+  16b's first and third) look rounder than the others; at ordinary zoom all
+  are diamonds, and all lie on the dashed M_inf 1.0 line.
+* The faired lines were not read.

@@ -28,6 +28,13 @@ META = {
                                 'from centre-line, inches"; legend for M_inf = 0.8: pressure tappings (circle), '
                                 'pitot traverse (cross)',
                      curves={}, notes={}, tri_note=""),
+    "r3427f16a": dict(figure="R&M 3427 fig. 16a", x="y_over_h", y="Cp_b",
+                      conditions='caption: "Variation of pressure across base."; panel a), alpha = 0',
+                      curves={}, notes={}, tri_note=""),
+    "r3427f16b": dict(figure="R&M 3427 fig. 16b", x="y_over_h", y="Cp_b",
+                      conditions='caption: "Variation of pressure across base."; panel b), alpha = 2 deg; arrow '
+                                 '"Upper surface" pointing to positive y/h',
+                      curves={}, notes={}, tri_note=""),
     "a51j25f7": dict(figure="NACA RM A51J25 fig. 7 (below M' 1.5)", x="M_prime", y="pb_over_pprime",
                      conditions='"AIRFOILS / BASE PRESSURE VERSUS MACH NUMBER"; profiles, data sources and '
                                 'planforms as in the legend (series column)',

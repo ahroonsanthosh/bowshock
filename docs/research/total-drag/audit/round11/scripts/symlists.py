@@ -158,3 +158,28 @@ FIGS["r3427f15"] = dict(
         ("p08-19", "cross", 1567.0, 846.5), ("p08-20", "cross", 1592.0, 852.0),
         ("p08-21", "cross", 1616.0, 855.0, {"manual": (1616.75, 860.0), "e": 1.0, "note": "last cross, at the line's right end; the outline fit stopped at the edge of its +-3 px search, so the centre is from the pixel map (arms x 1611 to 1623, rows 854 to 865)"}),
     ])
+
+# R&M 3427 figs. 16a (alpha = 0) and 16b (alpha = 2 deg), PDF p. 39. No legend: three lines labelled
+# M_inf = 1.0 (dashed, diamonds), 0.8 (circles) and 0.4 (squares). Typed by the line each lies on and by
+# shape. Templates are plotted glyphs of 16b.
+
+_F16 = dict(half=8, outline_search=3.0,
+            legend={"dia": (1427.0, 1726.0), "circ": (1428.0, 1774.5), "sq": (1429.0, 1820.0)},
+            outline={"dia": ("diamond", 6.5), "circ": ("circle", 5.5), "sq": ("rect", 5.5, 4.5)},
+            series={"dia": "M_inf = 1.0 (diamond, dashed line)", "circ": "M_inf = 0.8 (circle)",
+                    "sq": "M_inf = 0.4 (square)"})
+FIGS["r3427f16a"] = dict(_F16, symbols=[
+    ("a10-1", "dia", 989.5, 1720.0), ("a10-2", "dia", 1069.0, 1719.5),
+    ("a10-3", "dia", 1112.5, 1720.0),
+    ("a08-1", "circ", 991.0, 1761.0), ("a08-2", "circ", 1069.5, 1740.0), ("a08-3", "circ", 1112.5, 1746.0),
+    ("a04-1", "sq", 990.0, 1808.0), ("a04-2", "sq", 1070.0, 1797.5), ("a04-3", "sq", 1112.5, 1799.5),
+])
+FIGS["r3427f16b"] = dict(_F16, symbols=[
+    ("b10-1", "dia", 1389.0, 1725.0), ("b10-2", "dia", 1427.0, 1726.0),
+    ("b10-3", "dia", 1468.0, 1726.0), ("b10-4", "dia", 1510.5, 1727.0),
+    ("b10-5", "dia", 1547.5, 1728.0),
+    ("b08-1", "circ", 1388.5, 1789.0), ("b08-2", "circ", 1428.0, 1774.5), ("b08-3", "circ", 1467.5, 1769.5),
+    ("b08-4", "circ", 1508.0, 1768.0), ("b08-5", "circ", 1546.0, 1782.0),
+    ("b04-1", "sq", 1389.0, 1830.0), ("b04-2", "sq", 1429.0, 1820.0), ("b04-3", "sq", 1467.0, 1812.0),
+    ("b04-4", "sq", 1508.0, 1809.0), ("b04-5", "sq", 1546.5, 1816.5),
+])
