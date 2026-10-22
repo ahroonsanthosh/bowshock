@@ -14,6 +14,10 @@ META = {
                      conditions='caption: "Effect of base conditions on surface pressures upstream of base."; '
                                 'M_inf = 0.8 (printed in the plot)',
                      curves={}, notes={}, tri_note=""),
+    "r3427f13h4": dict(figure="R&M 3427 fig. 13 (lower set: surface hole 4 only)", x="M_inf", y="Cp",
+                       conditions='caption: "Pressures on basic model. (Zero incidence.)"; set labelled "On surface '
+                                  'upstream of base"; line labelled "x/h = -0.167" (4)',
+                       curves={}, notes={}, tri_note=""),
 }
 
 

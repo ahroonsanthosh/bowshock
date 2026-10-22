@@ -131,3 +131,58 @@ This page is a grey JPEG, not a bilevel scan, so edges are soft.
 * bm-5, sp-5 and st-5 sit on the Cp axis (x/h = 0), which hides their
   middles. bm-5's outline score is 0.28.
 * The five stations are the same for the three models within 0.012 in x/h.
+
+## R&M 3427 fig. 13, surface hole 4 only (PDF p. 37, printed p. 36)
+
+**Scope.** Only hole 4 of the lower set ("On surface upstream of base") is
+read. Round 10 read the base holes 5 to 7; I did not open its reading. Holes
+1 to 3 were looked at only to tell their symbols from hole 4's, and are not
+read.
+
+**As printed.** Caption: "Pressures on basic model. (Zero incidence.)"
+Abscissa M_inf, 0 to 1.2 by 0.2; ordinate Cp, increasing downwards. The
+lower set's lines are labelled x/h = -0.167 (circled 4), -0.330 (3),
+-0.667 (2) and -1.667 (1). Their symbols: hole 4 upright plus, hole 3
+inverted triangle, hole 2 diamond, hole 1 diagonal cross. The label
+"x/h = -0.167" with the circled 4 sits on the line of pluses at M 0.4 to
+0.8.
+
+**Calibration** (`readings/rm3427_fig13_calib.json`). Run by me with round
+10's `grid_calib.py` configuration `r3427f13` (the gridline positions and
+lettering boxes), which I reused unchanged. 34 of 35 intersections
+measured; the missing one, (0, -0.8), is under the lettering box, far from
+hole 4. Leave-one-out 0.37 px in x and 0.64 px in y; one affine map leaves
+0.0009 in M and 0.0018 in Cp. 1 px = 0.0010 in each.
+
+**Which symbol is hole 4.** The plus and the diagonal cross are the same
+size (13 px arms), so each was typed on pixel maps by whether its strokes
+are upright or diagonal. After the jump at M 0.85 to 0.88 three lines
+descend to M 1.05 (ink runs along rows y 2120 to 2140 cross exactly three
+lines plus the M 1.0 gridline): the upper one through pluses, the middle
+one through diagonal crosses, the lower one through diamonds.
+
+**What was read** (`readings/rm3427_fig13_hole4.csv`): 11 pluses, at M
+0.401, 0.599, 0.701, 0.800, 0.850, 0.874, 0.901, 0.925, 0.949, 0.975 and
+1.050; Cp -0.407, -0.421, -0.428, -0.429, -0.383, -0.353, -0.468, -0.426,
+-0.385, -0.345 and -0.226. Errors +-0.0018 in M and +-0.0021 in Cp, larger
+for h4-02 and h4-07 (below).
+
+**Where hole 4 has no symbol.** None at M 0.2 or 0.5 (the line starts at
+M 0.4). None at M 1.0: the plus line crosses the M 1.0 gridline at Cp
+about -0.30 (pixel map, x 1663, y 2137 to 2146) with no horizontal arm,
+while holes 1 and 2 do have symbols on that gridline.
+
+**Uncertain calls.**
+* h4-01, h4-02 and h4-04 sit on the M 0.4, 0.6 and 0.8 gridlines, which
+  hide their vertical arms; x comes from the horizontal arm. For h4-02 the
+  outline fit went 1.3 px left of the arm's middle (the line touches the
+  arm), so its centre is from the pixel map (arm x 1259 to 1268, rows 2025
+  and 2026), with a 1 px error.
+* h4-07 (M 0.901, Cp -0.468), at the end of the second loop, lies on a
+  vertical stroke that drops from the hole 1 cross at the top of the top
+  loop. I typed it a plus because its horizontal arm runs 3 px right of
+  that stroke, which a bare junction of lines would not do. Error 1.5 px.
+  If it were not a symbol, hole 4 would have no point between M 0.874 and
+  0.925.
+* h4-06 (the bottom of the dip, M 0.874) has two rising lines within 6 px;
+  its outline score is 0.47.

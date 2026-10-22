@@ -29,4 +29,22 @@ FIGS = {
         ("st-1", "sq", 2159.0, 1347.0), ("st-2", "sq", 2404.0, 1334.0), ("st-3", "sq", 2492.5, 1312.5),
         ("st-4", "sq", 2535.0, 1290.0), ("st-5", "sq", 2573.5, 1302.5, {"note": "on the Cp axis (x/h = 0)"}),
     ]),
+    # R&M 3427 fig. 13 (PDF p. 37), lower set ("On surface upstream of base"), hole 4 only: the line labelled
+    # "x/h = -0.167" and circled 4, drawn through upright pluses (hole 1, x/h -1.667, has diagonal crosses).
+    # Template: the isolated plus h4-03 (arms 13 px, crossing at (1365, 2019.5) on the pixel map).
+    "r3427f13h4": dict(half=8, legend={"plus": (1365.0, 2019.5)}, outline={"plus": ("plus", 6.5)},
+                       outline_search=3.0, series={"plus": "hole 4 (surface, x/h = -0.167)"}, symbols=[
+        ("h4-01", "plus", 1067.5, 2037.5, {"note": "on the M 0.4 gridline, which hides its vertical arm"}),
+        ("h4-02", "plus", 1265.0, 2026.0, {"manual": (1263.75, 2025.5), "e": 1.0, "note": "on the M 0.6 gridline, which hides its vertical arm; the outline fit went 1.3 px left (the line touches the arm), so the centre is from the pixel map: horizontal arm x 1259 to 1268, rows 2025 to 2026"}),
+        ("h4-03", "plus", 1365.0, 2019.5),
+        ("h4-04", "plus", 1465.0, 2018.5, {"note": "on the M 0.8 gridline, which hides its vertical arm"}),
+        ("h4-05", "plus", 1514.0, 2064.5),
+        ("h4-06", "plus", 1537.5, 2094.5, {"note": "lowest point of the dip; two rising lines pass within 6 px"}),
+        ("h4-07", "plus", 1565.0, 1982.0, {"e": 1.5, "note": "end of the second loop, on the vertical stroke that "
+                                            "drops from the hole 1 cross at the top loop; typed a plus because its "
+                                            "horizontal arm runs 3 px right of that stroke (x 1561 to 1568, rows "
+                                            "1980 to 1981), which a bare junction would not"}),
+        ("h4-08", "plus", 1589.0, 2022.0), ("h4-09", "plus", 1614.0, 2062.7), ("h4-10", "plus", 1639.0, 2103.0),
+        ("h4-11", "plus", 1714.5, 2220.5, {"note": "last point"}),
+    ]),
 }
