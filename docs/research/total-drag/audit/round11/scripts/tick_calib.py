@@ -60,6 +60,12 @@ CONFIG = {
                      xticks=[(-2.0, 2075.5), (-1.0, 2324.0)], xtick_side=1,
                      yticks=[(-0.2, 1345), (-0.4, 1142), (-0.6, 939), (-0.8, 739), (-1.0, 534)], ytick_side=-1,
                      tick_len=10, origin=(0.0, 0.0)),
+    # Round 11. NACA RM A51J25 fig. 7 (PDF p. 14, 300 dpi CCITT): M' ticks at 2, 3 and 4 rising from the
+    # x axis, which starts at M' = 1 on the p_b/p' axis; p_b/p' ticks every 0.2 to 1.0 pointing right
+    "a51j25f7": dict(xaxis=(1256.5, 690, 1480), yaxis=(670.5, 610, 1245),
+                     xticks=[(2.0, 942.6), (3.0, 1215.9), (4.0, 1489.2)], xtick_side=1,
+                     yticks=[(0.2, 1126.5), (0.4, 994.5), (0.6, 862.5), (0.8, 731.6), (1.0, 598.5)], ytick_side=1,
+                     tick_len=12, origin=(1.0, 0.0)),
 }
 
 

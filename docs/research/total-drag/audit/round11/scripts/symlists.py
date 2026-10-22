@@ -99,3 +99,38 @@ FIGS["tn3548f6"] = dict(
         ("ib-37", "sq", 1809.0, 1162.0), ("ib-38", "sq", 1858.5, 1175.5), ("ib-39", "sq", 1909.0, 1188.0),
         ("ib-40", "sq", 1962.0, 1199.0, {"note": "last square"}),
     ])
+
+# NACA RM A51J25 fig. 7 (PDF p. 14, 300 dpi CCITT), the part below M' 1.5 only. Legend: filled circle
+# "Langley, PARD" (rect., AR 2.7); Ames 1 x 3-ft (rect., AR 3): triangle, square and inverted triangle for
+# three profiles; Langley 9 x 12 in: diamond (rect., AR 2.7) and a glyph with a slanted flag at its top left
+# (delta, AR 4); Langley 9 in (two-dimensional): right triangle; NPL England (two-dimensional, half-model):
+# square with a rounded top. Legend glyph bounding-box centres from the pixel map. The filled PARD circles
+# merge with the faired line into one band of ink below M' 1.5, read as band edges (band_edges.py), not as
+# symbols, except the first circle, whose top and left outline is free.
+FIGS["a51j25f7"] = dict(
+    half=12, legend={"dia": (1251.5, 747.5), "sq": (1250.5, 653.0), "tri": (1251.5, 603.5),
+                     "delta": (1250.5, 787.5), "pard": (1249.0, 560.0)},
+    series={"dia": "Langley 9 x 12 in, rect. AR 2.7 (diamond)",
+            "sq": "Ames 1 x 3-ft, rect. AR 3 (square, the second profile)",
+            "tri": "Ames 1 x 3-ft, rect. AR 3 (triangle, the first profile)",
+            "delta": "Langley 9 x 12 in, delta AR 4 (flagged glyph)",
+            "pard": "Langley, PARD, rect. AR 2.7 (filled circle)"},
+    symbols=[
+        ("pard-1", "pard", 719.5, 872.0, {"manual": (719.5, 872.0), "e": 2.0, "note": "first filled circle at the "
+         "top left end of the band; centre from its free top and left outline (x 711 to 727, y 864 to 880, "
+         "16 px like the legend's); its lower right merges with the band"}),
+        ("sq-1", "sq", 737.0, 925.0, {"manual": (736.75, 925.0), "e": 2.0, "note": "a square and a triangle "
+         "drawn over each other; square from its flat top (rows 916 to 919) and sides (stroke centres x 730 and "
+         "743.5), taken 19 px tall like the legend's; its bottom edge is hidden by the triangle"}),
+        ("tri-1", "tri", 738.0, 932.5, {"manual": (738.0, 932.5), "e": 2.0, "note": "the triangle inside "
+         "square sq-1: apex row 924, base rows 938 to 941, x 728 to 748; bounding-box centre"}),
+        ("delta-1", "delta", 780.75, 905.0, {"manual": (780.75, 905.0), "e": 2.0, "note": "flagged glyph "
+         "(slanted stroke from x 773, y 894) with its box (x 777 to 788, top row 900); its bottom edge (rows "
+         "914 to 916) merges with the band; bounding-box centre, as for the legend glyph"}),
+        ("dia-1", "dia", 783.5, 951.5, {"note": "isolated, below the band"}),
+        ("sq-2", "sq", 804.0, 925.0, {"manual": (804.0, 925.0), "e": 2.0, "note": "at M' 1.50, the limit of "
+         "this reading; a square and a triangle drawn over each other at the band's end, as sq-1 and tri-1: "
+         "flat top rows 914 to 918, stroke centres x 797 and 811"}),
+        ("tri-2", "tri", 807.5, 929.5, {"manual": (807.5, 929.5), "e": 2.5, "note": "at M' 1.50; the triangle "
+         "inside square sq-2: apex (805.5, 921), base rows 935 to 938, merging with a filled circle below"}),
+    ])

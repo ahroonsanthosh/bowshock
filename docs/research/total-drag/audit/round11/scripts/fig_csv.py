@@ -23,6 +23,17 @@ META = {
                                 'limiting base pressure coefficient (vacuum) plotted against Mach number."; legend '
                                 '"Outboard slit" (circle), "Inboard slit" (square)',
                      curves={}, notes={}, tri_note=""),
+    "a51j25f7": dict(figure="NACA RM A51J25 fig. 7 (below M' 1.5)", x="M_prime", y="pb_over_pprime",
+                     conditions='"AIRFOILS / BASE PRESSURE VERSUS MACH NUMBER"; profiles, data sources and '
+                                'planforms as in the legend (series column)',
+                     curves={}, notes={}, tri_note="triangle centre = bounding-box centre",
+                     band=dict(id="pard-band", series="Langley, PARD filled circles and the faired line, "
+                                                      "merged into one band of ink",
+                               err_x=0.017, err_y=0.0034,
+                               hidden_top=[(772, 790, "upper edge hidden under delta-1 (masked): the true upper "
+                                                      "edge is at or above this value"),
+                                           (794, 814, "upper edge hidden under sq-2 and tri-2 (masked): the true "
+                                                      "upper edge is at or above this value")])),
 }
 
 
@@ -62,6 +73,19 @@ def main():
                          "centre_from": "track fit" if kind == "at abscissa" else "first or last tracked ink",
                          "glyph_score": "", "conditions": m["conditions"],
                          "notes": "" if kind == "at abscissa" else "where the tracked line ends"})
+    # round 11: an optional 5th argument, a band_edges.py JSON (merged ink read as its upper and lower edges)
+    if len(sys.argv) > 5:
+        bm = m["band"]
+        for r in json.load(open(sys.argv[5])):
+            note = [r["kind"]] + [t for (lo, hi, t) in bm["hidden_top"] if lo <= r["x_px"] <= hi]
+            for edge, xk, yk in (("upper", "x_top", "y_top"), ("lower", "x_bottom", "y_bottom")):
+                rows.append({"figure": m["figure"], "item": "band %s edge" % edge, "id": bm["id"],
+                             "series": bm["series"], "symbol": "", m["x"]: round(r[xk], 4),
+                             m["x"] + "_err": bm["err_x"], m["y"]: round(r[yk], 4), m["y"] + "_err": bm["err_y"],
+                             "centre_from": "outer edge of the ink (column %d, row %.1f)" % (
+                                 r["x_px"], r["top_px" if edge == "upper" else "bottom_px"]),
+                             "glyph_score": "", "conditions": m["conditions"],
+                             "notes": "; ".join(note if edge == "upper" else [r["kind"]])})
     for e in m.get("extra", []):
         rows.append({"figure": m["figure"], "item": e["item"], "id": e["id"], "series": e["series"], "symbol": "",
                      m["x"]: e["x"], m["x"] + "_err": e["x_err"], m["y"]: e["y"], m["y"] + "_err": e["y_err"],

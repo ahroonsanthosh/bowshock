@@ -267,3 +267,81 @@ flat top edge and the circle's half its height above its round bottom edge
 * ob-01 at M 0.624 touches the Cp_b -0.55 gridline at its bottom edge.
 * The faired line, the body of revolution's dashed line and the limiting
   pressure's dash-dot line were not read.
+
+## NACA RM A51J25 fig. 7, below M' 1.5 (PDF p. 14, printed p. 26)
+
+**Scope.** Only the part of the plot at M' below 1.5. The PDF has no text
+layer; I found the page from a contact sheet of all 18 page thumbnails and
+read no text page.
+
+**As printed.** "AIRFOILS / BASE PRESSURE VERSUS MACH NUMBER", "Figure 7".
+Abscissa M' with ticks at 2, 3 and 4 (the axis starts at M' = 1 on the
+ordinate axis); ordinate p_b/p' with ticks every 0.2 to 1.0. Legend
+(columns PROFILE, DATA SOURCE, PLANFORM): filled circle "LANGLEY, PARD",
+rect., AR 2.7; triangle, square and inverted triangle "AMES 1 x 3-FT",
+rect., AR 3, one per profile; diamond and a glyph with a slanted flag at its
+top left "LANGLEY, 9 x 12 IN", rect. AR 2.7 and delta AR 4; right triangle
+"LANGLEY, 9 IN", two-dimensional; a square with a rounded top "NPL ENGLAND
+(HALF-MODEL)", two-dimensional. One solid faired line.
+
+**Calibration** (`readings/rma51j25_fig7_calib.json`, `tick_calib.py` entry
+`a51j25f7`). The page is tilted by 0.45 deg (both axes fitted; rms 0.25 and
+0.31 px). x: the axes' crossing (M' 1 at x 672.7) and the ticks at 2, 3 and
+4 (942.6, 1215.8, 1489.2), 272.3 px per unit. The three ticks are evenly
+spaced (273.2 and 273.3 px), but extrapolated back they put M' 1 at 669.4,
+3.3 px left of the crossing. That sets the leave-one-out, 2.24 px rms, and
+the error in M' below 1.5 (+-0.017 to 0.022) is dominated by it. y: six
+points, 658.3 px per unit, leave-one-out 0.99 px. 1 px = 0.0037 in M' and
+0.0015 in p_b/p'.
+
+**What is there below M' 1.5.** The filled PARD circles (16 px across, the
+legend's size) and the faired line run together as one solid band of ink
+from M' 1.156 to past 1.5. Individual circles cannot be separated inside
+it, so, as asked, the band is read as its upper and lower edges, not as
+points. Over and beside the band lie six open symbols.
+
+**What was read** (`readings/rma51j25_fig7.csv`).
+* **The band** (`readings/rma51j25_fig7_band.json`, `scripts/band_edges.py`):
+  the 8-connected ink component through the first circle, with the open
+  symbols touching it blanked; its top and bottom ink rows per column,
+  moved half a pixel outwards, at M' 1.18 to 1.46 every 0.02, plus its
+  first column (M' 1.156, p_b/p' 0.580 to 0.587). Upper edge from 0.596
+  (M' 1.18 to 1.20) to 0.512 (1.44); lower edge from 0.563 (1.18) to 0.488
+  (1.44). Errors +-0.017 in M' and +-0.0034 in p_b/p'.
+  * At M' 1.38 to 1.44 the upper edge is hidden under the flagged glyph
+    delta-1, and at 1.46 under sq-2 and tri-2: the values given are the
+    glyphs' lower edges, so the true upper edge is at or above them. The
+    CSV says so on those rows.
+  * Past M' 1.46 the band runs into sq-2 and tri-2 and, below them, a
+    filled circle at about M' 1.54, so 1.48 and 1.50 are not read.
+* **pard-1**, the first filled circle, at the band's top left end: its top
+  and left outline is free, 16 px across. Centre M' 1.184, p_b/p' 0.585
+  (2 px error).
+* **sq-1 and tri-1** (M' 1.247 and 1.251; p_b/p' 0.505 and 0.493): a square
+  with a triangle inside it, read as an Ames square and an Ames triangle
+  drawn over each other. The box (x 729 to 746, rows 916 to 941) is 25 px
+  tall, too tall for one glyph (the legend's square is 19 px), and the
+  triangle (apex row 924, base rows 938 to 941, 20 px wide) matches the
+  legend's triangle. The square's centre is 9 px below its flat top; its
+  bottom edge is hidden by the triangle. 2 px errors.
+* **delta-1** (M' 1.410, p_b/p' 0.534): the flagged glyph of the Langley
+  9 x 12 in delta wing, identified by its slanted stroke at the top left,
+  which no other legend glyph has. Bounding-box centre; its bottom edge
+  merges with the band. 2 px error.
+* **dia-1** (M' 1.419, p_b/p' 0.464): an isolated diamond, Langley
+  9 x 12 in rect., centred by correlation with the legend's diamond (score
+  0.97).
+* **sq-2 and tri-2** (M' 1.496 and 1.509; p_b/p' 0.504 and 0.497): at the
+  limit of this reading, a second square-with-triangle like sq-1 and tri-1,
+  sitting on the band's end. 2 and 2.5 px errors.
+* No inverted triangle, right triangle or NPL glyph was found below M' 1.5.
+
+**Uncertain calls.**
+* sq-1/tri-1 and sq-2/tri-2 could instead each be one glyph not in the
+  legend; I read them as two overlapping Ames symbols because each box
+  holds a whole legend triangle and is 5 to 6 px taller than one square.
+  The box tops are flat (rows 916 and 914 run 12 to 17 px), unlike the
+  NPL glyph's rounded top.
+* Open symbols or further circles may be hidden inside the band. The band
+  edges bound everything there, including the faired line, which cannot
+  be seen apart from the circles below M' 1.5.
