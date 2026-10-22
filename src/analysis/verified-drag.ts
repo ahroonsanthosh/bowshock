@@ -134,7 +134,7 @@ export const FITTED_DRAG_FLOOR = 7e-5;
  * The allowance for the fitted drag of a two-scale nose (Von Karman),
  * relative, in place of FITTED_DRAG_FLOOR. Against references from the
  * method of characteristics started from the fitted flow, on the families
- * that set the served region (fittedFlow's VON_KARMAN_REFERENCES), the
+ * that set the served region (VON_KARMAN_REFERENCES in fitted-flow.ts), the
  * procedure's extrapolation from nj = 20, 40 and 80 misses by up to
  * 2.44e-4 of the value: on the 5-caliber nose at Mach 1.5, whose observed
  * order (2.28 on those grids) is capped at 2 while the references show

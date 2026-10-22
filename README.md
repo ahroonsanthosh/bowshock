@@ -144,9 +144,9 @@ code, are in [CONTRIBUTING.md](CONTRIBUTING.md).
 - **Nose wave drag and total drag**
   ([open](https://ahroonsanthosh.github.io/bowshock/demos/nose-drag.html)):
   the inviscid forebody pressure (wave) drag coefficient of a cone, tangent
-  or secant ogive, parabolic-series, ellipsoid or Von Karman nose and its body, refined
-  on nested grids on your GPU and reported with its measured error band, or
-  as not verified; and, from that solve, the rocket's total drag with fins
+  or secant ogive, parabolic-series, ellipsoid or Von Karman nose and its
+  body, refined on nested grids on your GPU and reported with its measured
+  error band, or as not verified; and, from that solve, the rocket's total drag with fins
   and base at the altitude and diameter you give, with its bands, its
   components and their labels: an estimate, not validated, with the reasons
   (inside the Basic Finner's class too, while its validated claim is
@@ -323,9 +323,11 @@ starts from is barely supersonic. Ahead of the sonic line, where the flow
 is subsonic and no independent reference exists, the drag rests on the
 grids' convergence and the exact stagnation pressure.
 
-**Von Karman (LD-Haack) noses.** Their tip is blunt only over a hundredth to
-a thousandth of the nose, so they are solved on a grid with two length
-scales, fitted to a shock captured twice ([0004](docs/design/0004-grids.md),
+**Von Karman (LD-Haack) noses.** Their tip is vertical, with unbounded
+curvature, and blunt only where the profile lies above the line r = x from
+the tip: over 0.16 of the nose's length at 1 caliber, 2.2e-3 at 3 and 2.9e-4
+at 5. So they are solved on a grid with two length scales, fitted to a
+shock captured twice ([0004](docs/design/0004-grids.md),
 [0006](docs/design/0006-shock-fitting.md)), and their drag converges more
 slowly: observed orders 1.49 to 2.28 on 20, 40 and 80 cells across, for six
 noses (1 caliber at Mach 1.5, 2 and 3; 3 calibers at Mach 2 and 3; 5

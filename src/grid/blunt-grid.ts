@@ -243,8 +243,8 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // in the limit, sizes a rounded tip; the tip scale, the x at which the
   // profile crosses the line r = x from the tip (the radius of a sphere),
   // sizes the blunt part of a tip whose curvature is unbounded, such as
-  // the Haack series' (r ~ x^(3/4) there, its blunt part a thousandth of
-  // the body on a 5-caliber nose). The outer boundary is placed at the
+  // the Haack series' (r ~ x^(3/4) there, its blunt part 1.4e-3 of the
+  // diameter on a 5-caliber nose). The outer boundary is placed at the
   // larger of the tip radius and the smaller of the base radius and a few
   // tip scales: the tip scale where it is far smaller than the body. On
   // ellipsoids it is the larger of the tip radius and the base radius.

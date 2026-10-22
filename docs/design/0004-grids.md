@@ -163,9 +163,11 @@ the tip as r = c x^(3/4): vertical, with unbounded curvature, and blunt
 only within the length l = c^4 at which the profile crosses the line
 r = x from the tip (the radius of a sphere, 0.6 of the base radius on a
 3:1 ellipsoid): 2.88 (1 + 1.5 C)^2 R^4 / L^3, which for R = 0.5 is
-6.7e-3 at L = 3 and 1.4e-3 at L = 5, a hundredth to a thousandth of the
-body. The captured shock stands 0.1 l ahead of the tip at Mach 2 (0.03 l
-at Mach 3, 0.4 l at Mach 1.5), a third of a sphere's of radius l. With
+6.7e-3 at L = 3 and 1.4e-3 at L = 5 (2.2e-3 and 2.9e-4 of the nose's
+length; the crossing itself, which the grid uses, is 0.16 at L = 1,
+where the asymptote gives 0.18). The captured shock stands 0.1 l ahead
+of the tip at Mach 2 (0.03 l at Mach 3, 0.4 l at Mach 1.5), a third of
+a sphere's of radius l. With
 the boundary at the body scale, the window averaged the normal over the
 whole region in which its angle rises past 80 deg, so the lines left the
 wall at 43 to 52 deg, and the tip fell inside one cell. The boundary's
@@ -177,8 +179,7 @@ half-width tabulated at 1024 equal steps, the density of lines evaluated
 exactly, the spacing's slope limited (`maxSpacingSlope`, 0.15). By the
 tip-scale rule a 3-caliber ellipsoid (tip scale 0.16) would have two
 scales, and the clustered tables below moved the lines of the shorter
-ones by up to 2.4e-6;
-with ellipsoids on their own path the generator's lines are bit-identical
+ones by up to 2.4e-6; with ellipsoids on their own path the generator's lines are bit-identical
 to those of the measured ellipsoid families (16 ellipsoids of 0.5 to 6
 calibers at Mach 1.2 to 3, refinements 1, 2 and 4, compared with main at
 0d69e69). The two-scale grids take the density of lines as tabulated,
@@ -231,8 +232,8 @@ settled on): a 1-caliber tangent ogive (53 deg tip) at Mach 1.5, wall
 cells at 58.6 deg (56.1 on nj = 40), size ratio 1.16, aspect 3.8; a
 1-caliber parabolic nose (45 deg) at Mach 1.2, 52.4 deg, 1.24, 7.9; a
 1.5-caliber tangent ogive (37 deg) at Mach 1.2, 45.4 deg and 1.30,
-refused by the fitted gates. At Mach 1.2 the shock stands 7 to 10 radii out along the
-cylinder, and the window, which closes at the end of the body, turns
+refused by the fitted gates. At Mach 1.2 the shock stands 7 to 10
+radii out along the cylinder, and the window, which closes at the end of the body, turns
 the lines vertical over the last two or three cells of a 2-caliber
 cylinder, where the wall widths jump by 1.6 to 1.7: those cases need 5
 calibers of cylinder, over which the turn is resolved (the same limit

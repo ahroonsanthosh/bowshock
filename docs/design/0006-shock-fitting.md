@@ -80,9 +80,10 @@ at the tip. That boundary continues its last segment to the last line
 smoothed by 50 passes of 1-2-1, which the start is not: at Mach 1.2 a
 captured shock 7 to 10 radii out is stepped enough after the start's 20
 passes to jump the outer cells by 1.4. A sharp tip whose bow shock
-detaches at the Mach number asked for (`usesBluntFamily`) is solved as
-a blunt family on the same grids (0004), since the sharp problem's
-inflow plane cannot serve it. **Sharp noses** start just behind
+detaches at the Mach number asked for is refused (by `sharpFitProblem`):
+the sharp problem's inflow plane cannot serve it, and the blunt family
+on the same grids (0004), measured in "Two-scale noses" below, has no
+reference. **Sharp noses** start just behind
 the tip, at x0 = 1e-3 of the nose length, with the conical flow of the
 tip's half-angle (Taylor-Maccoll) as the inflow there and the tip's
 conical shock as the first guess; the part ahead of x0 adds the tip
@@ -1027,7 +1028,9 @@ between 0 (no rate measurable, the changes per 1000 steps below 1e-11 of
 the drag) and 3.9e-11. The finer grids of the families measured last
 started from the saved fit on the grid before (each fine cell the
 state of its coarse cell; the converged fit does not depend on its
-start). LD-Haack (Von Karman) noses, with the cylinder given:
+start). The records, the runners and the script that derives the
+tables below are in `docs/research/two-scale-noses/`. LD-Haack (Von
+Karman) noses, with the cylinder given:
 
 | Nose, Mach      | nj = 20      | nj = 40      | nj = 80      | Order | Extrapolated, off nj = 80 | Band (no allowance) |
 | --------------- | ------------ | ------------ | ------------ | ----- | ------------------------- | ------------------- |
@@ -1107,12 +1110,14 @@ noses (`TWO_SCALE_DRAG_FLOOR`) is twice the largest miss of the
 procedure's extrapolation over these references, rounded up: 5e-4, in
 place of `FITTED_DRAG_FLOOR` on any start with its own outer boundary
 (`fittedDragFloor`). With it every band above contains its error: the
-5-caliber nose's by 1.56 times against the lowest bound of its march,
-the others' by 2 times or more. Only the Von Karman nose is served
-(`bluntNoseRefusal`), and only inside the outline of the (calibers,
-Mach) points referenced (`VON_KARMAN_REFERENCES`, `insideOutline`): (1,
-1.5), (1, 2), (1, 3), (3, 2), (3, 3), (5, 1.5), whose outline has the
-corners (1, 1.5), (5, 1.5), (3, 3) and (1, 3); a case outside is refused
+5-caliber nose's by 1.56 times and the 3-caliber nose's at Mach 2 by
+1.78 times, against the lowest bound of their marches (the finest
+grid's march plus the upstream part extrapolated: 5.81e-4 and 6.06e-4
+below the nj = 80 values), the others' by 2.6 times or more. Only the
+Von Karman nose is served (`bluntNoseRefusal`), and only inside the
+outline of the (calibers, Mach) points referenced
+(`VON_KARMAN_REFERENCES`, `insideOutline`): (1, 1.5), (1, 2), (1, 3),
+(3, 2), (3, 3), (5, 1.5), whose outline has the corners (1, 1.5), (5, 1.5), (3, 3) and (1, 3); a case outside is refused
 with the reason, as are the other Haack noses and the power series.
 References at the open corners (5 calibers at Mach 2 and 3) are in
 progress; each that passes extends the outline and resets the

@@ -8,6 +8,7 @@
  */
 
 import { beforeAll, describe, expect, it } from 'vitest';
+import { FITTED_DRAG_FLOOR, TWO_SCALE_DRAG_FLOOR } from '../../src/analysis/verified-drag';
 import { ALTITUDE_RANGE, standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
 import { flightConditionOf } from '../../src/app/flight-condition';
 import { trapezoidalPlanform } from '../../src/fins/planform';
@@ -42,6 +43,7 @@ import {
   FINS_ON_BASE_NOTE,
   GATE_TRANSITION_REYNOLDS,
   noseComponentOf,
+  allowanceText,
   CLASS_CLAIM,
   CLASS_DESCRIPTION,
   PUBLISHED_GATE,
@@ -618,6 +620,15 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
     expect([c.cd, c.low, c.high]).toEqual([0.0968, 0.0968 - 1.2e-5, 0.0968 + 1.2e-5]);
     expect(c.label).toContain('solved on this page');
     expect(c.label).toContain('4 grids');
+  });
+
+  it("states the solve's own allowance: 7e-5, or 5e-4 on a Von Karman nose", () => {
+    expect(allowanceText(FITTED_DRAG_FLOOR)).toBe('7e-5');
+    expect(allowanceText(TWO_SCALE_DRAG_FLOOR)).toBe('5e-4');
+    const usual = noseComponentOf({ value: 0.0968, uncertainty: 1.2e-5, grids: 4 });
+    expect(usual.band).toContain('an allowance of 7e-5 of the value');
+    const vk = { value: 0.0804, uncertainty: 8.7e-5, grids: 4, floor: TWO_SCALE_DRAG_FLOOR };
+    expect(noseComponentOf(vk).band).toContain('an allowance of 5e-4 of the value');
   });
 
   it('before the solve: the other components are checked, no number is given', () => {

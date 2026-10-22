@@ -77,6 +77,16 @@ the code), and that copy's changes from the commit it was taken at
 anchor, a progress callback; `snap2` adds the corner patch of
 `docs/design/patches/0006-corner-one-sided.diff`).
 
+## `two-scale-noses/`: the Von Karman nose's references
+
+The fits and marches of characteristics behind "Two-scale noses" in
+[0006](../design/0006-shock-fitting.md), which set the Von Karman nose's
+allowance and served range: the fit records on nj = 20, 40 and 80
+(`fits/`), the marches from them (`marches/`), the script that derives
+0006's table from them (`analysis/`), and the runners (`runners/`, which
+ran from `tests/tmp-haack/` and `tests/tmp-haackmoc/` at haack-grid
+a076072). Its README says how to re-run each.
+
 ## `refusals/`: the refusal audit behind 0014
 
 The population of supersonic amateur and student rockets, the run that
@@ -100,15 +110,11 @@ and after (`numbers.json`, `scripts/numbers-check.mjs`).
 
 Diffs of work on branches that exist only locally, kept here so that it
 survives. None of it is merged into the solver; each is merged only once
-its own validation passes.
-
-- `haack-grid.diff` (commits in `haack-grid.log`): the two-scale C grid for
-  Von Karman (Haack) and power-series noses, and sharp tips whose bow shock
-  stands off ahead of them. Measured on two grids so far; the third is
-  running.
+its own validation passes. There is none at present.
 
 Each diff names its base commit in its first line, and applies there with
 `git apply`. A diff whose work is merged is removed from here (the changes
 for blunt noses at Mach 1.2 to 1.5 were merged in eeaa537; the transonic
 prototype, unserved, with its record
-[0013](../design/0013-transonic.md)).
+[0013](../design/0013-transonic.md); the two-scale grid, with the Von
+Karman nose served, by the merge of haack-grid).

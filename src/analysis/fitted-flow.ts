@@ -943,8 +943,9 @@ const BOUNDARY_SMOOTHING = 50;
 /**
  * The allowance for an error the grid family cannot show, relative: the
  * caller's (FITTED_DRAG_FLOOR on the page), raised to TWO_SCALE_DRAG_FLOOR
- * on a two-scale nose (a start with its own outer boundary), whose order
- * is below 2 (0006, "Two-scale noses").
+ * on a two-scale nose (a start with its own outer boundary), whose
+ * extrapolation from three grids misses its references by up to 2.44e-4
+ * (0006, "Two-scale noses").
  */
 export function fittedDragFloor(floor: number, start: BluntStart | null): number {
   return start?.outerBoundary ? Math.max(floor, TWO_SCALE_DRAG_FLOOR) : floor;

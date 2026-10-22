@@ -125,7 +125,7 @@ describe('body grids (C topology, blunt noses)', () => {
     }
   }, 120_000);
 
-  it('a Haack nose has two scales: its tip scale, 2.88 (1 + 1.5 C)^2 R^4 / L^3, a hundredth of the body', () => {
+  it('a Haack nose has two scales: its tip scale, 2.88 (1 + 1.5 C)^2 R^4 / L^3 (6.7e-3 of the diameter at 3 calibers)', () => {
     // r = c x^(3/4) at the tip crosses r = x at (64 / pi^2) (2/3 + C)^2
     // R^4 / L^3; the higher terms of the series lower it on the 3-caliber
     // nose by 0.13% (C = 0) and 0.70% (C = 1/3).
