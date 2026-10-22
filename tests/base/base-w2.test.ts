@@ -27,7 +27,7 @@ import {
 import { finsOnBaseFactorW1 } from '../../src/base/fins-on-base-w1';
 import { BaseRefusal } from '../../src/base/refusal';
 import { TN3819_FIG18_ROUND7 } from '../../src/base/tn3819-fig18';
-import { doubleWedge } from '../../src/fins/section';
+import { doubleWedge, type SymmetricSection } from '../../src/fins/section';
 
 const D = 'docs/research/total-drag/data/';
 const curve = (m: number) => Math.abs(compiledCurveValue(m, 'lessNegative'));
@@ -177,6 +177,80 @@ describe('the term (bodyBaseDrag)', () => {
     expect(W2_MACH_RANGE).toEqual([1.0, 1.5]);
     expect(() => bodyBaseDrag({ ...base, mach: 0.99 })).toThrow(BaseRefusal);
   });
+
+  it('four unswept 10% arcs below Mach 1.5: a member whose label names the tunnel excess it carries', () => {
+    const n = 200;
+    const xs = Array.from({ length: n + 1 }, (_, k) => k / n);
+    const arc10 = { x: xs, halfThickness: xs.map((s) => 2 * 0.1 * s * (1 - s)) };
+    const fins = {
+      count: 4,
+      thicknessRatio: 0.1,
+      section: 'circular-arc' as const,
+      tanLeadingEdge: 0,
+      tanTrailingEdge: 0,
+      trailingEdgeAheadOfBase: 0,
+      nearBase: {
+        section: arc10,
+        sectionFamily: 'circular-arc' as const,
+        tanLeadingEdgeSweep: 0,
+        tanTrailingEdgeSweep: 0,
+      },
+    };
+    const r = bodyBaseDrag({ ...base, mach: 1.2, fins });
+    const f = r.finsOnBase as ReturnType<typeof finsOnBaseFactorW1>;
+    expect(f.analogy).toBe(false);
+    // Its high end on W2's term (0015 section 11.2) carries the M 2.41 tunnel excess (0015 section 3.1).
+    expect(f.high).toBeCloseTo(1.6211, 4);
+    expect(f.label).toMatch(
+      /^estimated on component data: the rebuilt fins-on-base factor \(0015\), measured on/,
+    );
+    expect(f.label).toContain(
+      'its high end carrying the tunnel excess measured at M 2.41 (0.2282)',
+    );
+    expect(f.label).not.toContain('the zero member reaches down');
+  });
+
+  it("the steps 0015 section 11.2 quotes, at M 1.5 and 1.62, and the half-widths on W2's term", () => {
+    const n = 200;
+    const xs = Array.from({ length: n + 1 }, (_, k) => k / n);
+    const arc10: SymmetricSection = { x: xs, halfThickness: xs.map((s) => 2 * 0.1 * s * (1 - s)) };
+    const finsOf = (
+      count: number,
+      t: number,
+      section: SymmetricSection,
+      family: 'circular-arc' | 'other',
+    ) => ({
+      count,
+      thicknessRatio: t,
+      section: family,
+      tanLeadingEdge: 0,
+      tanTrailingEdge: 0,
+      trailingEdgeAheadOfBase: 0,
+      nearBase: { section, sectionFamily: family, tanLeadingEdgeSweep: 0, tanTrailingEdgeSweep: 0 },
+    });
+    const arcs = finsOf(4, 0.1, arc10, 'circular-arc');
+    const wedges = finsOf(3, 0.024, doubleWedge(0.024, 0.5), 'other');
+    const term = (fins: typeof arcs, mach: number) => {
+      const r = bodyBaseDrag({ ...base, mach, fins });
+      return [r.cd, r.low, r.high].map((x) => Math.round(1e4 * x) / 1e4);
+    };
+    // M 1.5, where W2's 1.065 ends and TN 2360's ratio members begin.
+    expect(term(arcs, 1.5 - 1e-9)[0]).toBe(0.2847);
+    expect(term(arcs, 1.5)[0]).toBe(0.2817);
+    expect(term(wedges, 1.5 - 1e-9)).toEqual([0.2301, 0.1017, 0.3585]);
+    expect(term(wedges, 1.5)).toEqual([0.2002, 0.1092, 0.2712]);
+    // M 1.62, where the zero member goes from RM L52E06's 0.838 to RM L52J21a's 0.938.
+    expect(term(wedges, 1.6)).toEqual([0.1967, 0.1056, 0.268]);
+    expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.1051, 0.2649]);
+    expect(term(wedges, 1.62)).toEqual([0.2031, 0.1203, 0.2655]);
+    expect(term(arcs, 1.62 - 1e-9)[0]).toBeCloseTo(term(arcs, 1.62)[0]!, 3);
+    // Below M 1.5, on W2's term, +-31.7% to +-34.9% on F (sharp sections and plates alike).
+    const hw = Array.from({ length: 501 }, (_, k) => 1.0 + k * 0.000999).map((m) => {
+      const f = bodyBaseDrag({ ...base, mach: m, fins: wedges }).finsOnBase!;
+      return Math.round((1000 * (f.high - f.low)) / 2 / f.nominal) / 10;
+    });
+    expect([Math.min(...hw), Math.max(...hw)]).toEqual([31.7, 34.9]);
+  }, 120_000);
 
   it('fins at the base below Mach 1.5: the rebuilt factor, since the present one refuses', () => {
     const fins = {

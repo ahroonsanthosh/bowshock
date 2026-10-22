@@ -491,6 +491,86 @@ const fins = (over: Partial<FinsNearBase> = {}): FinsNearBase => ({
   ...over,
 });
 
+describe(
+  'the band widths 0015 quotes (sections 1, 3.6, 4 and 11.2), held to the code',
+  { timeout: 120_000 },
+  () => {
+    /** The extremes of the high end and the half-width (in %, to 0.1) over a Mach grid. */
+    const scan = (f: FinsNearBase, ms: number[]) => {
+      const rs = ms.map((m) => finsOnBaseFactorW1(m, f));
+      const hw = rs.map((r) => Math.round((1000 * (r.high - r.low)) / 2 / r.nominal) / 10);
+      const high = rs.map((r) => r.high);
+      return {
+        low: rs.map((r) => r.low),
+        high: [Math.min(...high), Math.max(...high)],
+        hw: [Math.min(...hw), Math.max(...hw)],
+      };
+    };
+    const grid = (a: number, b: number, step = 0.001) =>
+      Array.from({ length: Math.round((b - a) / step) + 1 }, (_, k) => a + k * step);
+    const thin = [fins({ tanLeadingEdgeSweep: 0 }), fins({ section: doubleWedge(0.05, 0.5) })];
+    const thinPlates = [fins({ section: plate(0.024) }), fins({ section: plate(0.05) })];
+    const thickPlates = [fins({ section: plate(0.06) }), fins({ section: plate(0.1) })];
+
+    it('sharp fins up to 5% thick at M 1.5 to 1.62: 0.84 up to 1.47 at M 1.5, 1.49 to 1.54 above it', () => {
+      for (const f of thin) {
+        const at = finsOnBaseFactorW1(1.5, f);
+        expect([at.low, at.high]).toEqual([W1_FLAT_RELIEF_LOW, expect.closeTo(1.4723, 4)]);
+        expect(Math.round((1000 * (at.high - at.low)) / 2 / at.nominal) / 10).toBe(27.5);
+        // Just above M 1.5 the ratio range becomes the envelope of both tunnel Mach numbers' (3.2).
+        const above = scan(f, [1.5 + 1e-9, ...grid(1.501, 1.619)]);
+        expect(above.low.every((x) => x === W1_FLAT_RELIEF_LOW)).toBe(true);
+        expect(above.high.map((x) => Math.round(100 * x) / 100)).toEqual([1.49, 1.54]);
+        expect(above.hw).toEqual([28.0, 29.6]);
+      }
+    });
+
+    it('sharp fins up to 5% thick at M 1.62 to 3.0: 0.94 up to 1.33 to 1.49', () => {
+      for (const f of thin) {
+        const r = scan(f, grid(1.62, 3.0));
+        expect(r.low.every((x) => x === W1_RELIEF_LOW)).toBe(true);
+        expect(r.high.map((x) => Math.round(100 * x) / 100)).toEqual([1.33, 1.49]);
+        expect(r.hw).toEqual([17.2, 22.8]);
+      }
+    });
+
+    it('flat plates up to 5% thick at M 1.5 to 3.0: 0.84 up to 1.33 to 1.54', () => {
+      for (const f of thinPlates) {
+        const r = scan(f, [1.5, 1.5 + 1e-9, ...grid(1.501, 3.0)]);
+        expect(r.low.every((x) => x === W1_FLAT_RELIEF_LOW)).toBe(true);
+        expect(r.high.map((x) => Math.round(100 * x) / 100)).toEqual([1.33, 1.54]);
+        expect(r.hw).toEqual([22.6, 29.6]);
+      }
+    });
+
+    it('thicker flat plates: +-34.7% at M 1.5, +-30.1% at 1.8, +-26.5% at 2.0, +-24.4% to +-24.5% at 2.5 to 3.0', () => {
+      for (const f of thickPlates) {
+        expect(scan(f, [1.5]).hw).toEqual([34.7, 34.7]);
+        expect(scan(f, [1.8]).hw).toEqual([30.1, 30.1]);
+        expect(scan(f, [2.0]).hw).toEqual([26.5, 26.5]);
+        expect(scan(f, grid(2.5, 3.0)).hw).toEqual([24.4, 24.5]);
+      }
+    });
+
+    it('a member: four 10% arcs above M 2.41 name the tunnel excess their high end carries', () => {
+      const n = 200;
+      const xs = Array.from({ length: n + 1 }, (_, k) => k / n);
+      const arc10: SymmetricSection = {
+        x: xs,
+        halfThickness: xs.map((s) => 2 * 0.1 * s * (1 - s)),
+      };
+      const r = finsOnBaseFactorW1(
+        2.5,
+        fins({ count: 4, section: arc10, sectionFamily: 'circular-arc', tanLeadingEdgeSweep: 0 }),
+      );
+      expect(r.analogy).toBe(false);
+      expect(r.label).toContain(
+        "above M 2.41, the tunnels' last Mach number, the reference's high end",
+      );
+    });
+  },
+);
+
 describe('the bands (0015 section 3.6)', () => {
   /** [M, case, low, nominal, high] as the record tabulates them. */
   const n = 200;
@@ -901,28 +981,62 @@ describe('refusals', () => {
     expect(reason(() => finsOnBaseFactorW1(1.8, fins({ trailingEdgeAheadOfBase: 0.5 })))).toBe(
       'served',
     );
-    // A sharp section with a swept trailing edge: measured only at RM L52J21a's position, about 0.8 root
-    // chords ahead of the base; closer to the base refused, either way (0015 section 3.4).
-    expect(W1_SWEPT_TRAILING_EDGE_AHEAD).toBe(0.8);
-    const both = (xc: number, te = tan(45)) =>
-      fins({ tanTrailingEdgeSweep: te, trailingEdgeAheadOfBase: xc });
-    for (const xc of [0, 0.1, 0.5, 0.79]) {
-      for (const te of [tan(45), -tan(45), tan(10)]) {
+  });
+
+  // A sharp section with a swept trailing edge: measured only with RM L52J21a's 45 deg fins, swept aft, their
+  // root trailing edge 0.85 +-0.05 root chords ahead of the base (0015 section 3.4).
+  const tan = (d: number) => Math.tan((d * Math.PI) / 180);
+  const sweptTe = (xc: number, te: number) =>
+    fins({ tanTrailingEdgeSweep: te, trailingEdgeAheadOfBase: xc });
+
+  it('a trailing edge swept aft is served only from 0.9 root chords ahead of the base', () => {
+    expect(W1_SWEPT_TRAILING_EDGE_AHEAD).toBe(0.9);
+    for (const xc of [0, 0.1, 0.5, 0.8, 0.85, 0.89]) {
+      for (const te of [tan(45), tan(10)]) {
         expect(
-          reason(() => finsOnBaseFactorW1(1.8, both(xc, te))),
+          reason(() => finsOnBaseFactorW1(1.8, sweptTe(xc, te))),
           `x/c ${xc}`,
         ).toBe('fin-sweep');
       }
     }
-    expect(reason(() => finsOnBaseFactorW1(1.8, both(0.8)))).toBe('served');
-    expect(reason(() => finsOnBaseFactorW1(1.8, both(1)))).toBe('served');
-    expect(() => finsOnBaseFactorW1(1.8, both(0.5))).toThrow(/ending 0\.5 root chords ahead/);
-    expect(() => finsOnBaseFactorW1(1.8, both(0))).toThrow(/sharp section at the base/);
-    // Flat faces are bounded from RM L52E06's relief at any sweep measured (section 4).
-    expect(
-      reason(() =>
-        finsOnBaseFactorW1(1.8, fins({ section: plate(0.024), tanTrailingEdgeSweep: tan(45) })),
-      ),
-    ).toBe('served');
+    for (const xc of [0.9, 1]) {
+      expect(
+        reason(() => finsOnBaseFactorW1(1.8, sweptTe(xc, tan(45)))),
+        `x/c ${xc}`,
+      ).toBe('served');
+    }
+    expect(() => finsOnBaseFactorW1(1.8, sweptTe(0.5, tan(45)))).toThrow(
+      /ending 0\.5 root chords ahead/,
+    );
+    expect(() => finsOnBaseFactorW1(1.8, sweptTe(0.85, tan(45)))).toThrow(/served from 0\.9/);
+    expect(() => finsOnBaseFactorW1(1.8, sweptTe(0, tan(45)))).toThrow(/sharp section at the base/);
+  });
+
+  it('a trailing edge swept forward is refused on a sharp section wherever it ends', () => {
+    for (const xc of [0, 0.5, 0.9, 1]) {
+      for (const te of [-tan(45), -tan(10)]) {
+        expect(
+          reason(() => finsOnBaseFactorW1(1.8, sweptTe(xc, te))),
+          `x/c ${xc}`,
+        ).toBe('fin-sweep');
+        expect(() => finsOnBaseFactorW1(1.8, sweptTe(xc, te))).toThrow(/deg forward at M 1\.8/);
+      }
+    }
+  });
+
+  it("swept flat plates: bounded from RM L52E06's relief, either way, named in the label", () => {
+    for (const te of [tan(45), -tan(45), 0]) {
+      for (const xc of [0, 0.5]) {
+        const r = finsOnBaseFactorW1(
+          1.8,
+          fins({ section: plate(0.024), tanTrailingEdgeSweep: te, trailingEdgeAheadOfBase: xc }),
+        );
+        expect(r.low).toBe(W1_FLAT_RELIEF_LOW);
+        expect(r.label).toContain(
+          "bracketed between RM L52E06's relief with flat plates at the base",
+        );
+        expect(r.label).not.toContain('bracketed between the zero member');
+      }
+    }
   });
 });

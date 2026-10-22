@@ -1155,12 +1155,18 @@ flat-plate value, "bounded, not measured", with RM L52E06's relief as its
 low end (0015 section 4); amendment (e)'s refusal stands only where the
 rebuilt factor refuses too (a rounded trailing edge, a plate thicker than
 10% at a station, or a sweep it does not take). Swept fins go to the
-rebuilt factor as before, except that a sharp section with a swept
-trailing edge (either way) is refused at the base and closer to it than
-0.8 root chords: no such fins are measured there (RM L52J21a's 45 deg
-fins end about 0.8 root chords ahead of the base, and the RM-10's
+rebuilt factor as before, except that a sharp section with its trailing
+edge swept aft is refused closer to the base than 0.9 root chords, and
+one with it swept forward anywhere: no such fins are measured there (RM
+L52J21a's 45 deg fins, the one set with a swept trailing edge, sweep it
+aft and end 0.85 +-0.05 root chords ahead of the base, and the RM-10's
 trailing-edge sweep is not stated), and linear theory puts the faces
 behind a swept trailing edge above the unswept fin's (0015 section 3.4).
+(As first written this said 0.8 root chords, either way; the second
+review of 2026-10-22 found RM L52J21a's position 0.85 +-0.05 from its own
+dimensions, so the threshold is the far end, 0.9, and a forward sweep has
+no measurement anywhere. Neither change moves a served total, 0015
+section 8.)
 Plates with a rounded trailing edge, which the present factor served as
 four unswept fins at Mach 1.8 to 3.0 until amendment (e), stay refused:
 no circular arc bounds a rounded edge (its half-thickness falls as the

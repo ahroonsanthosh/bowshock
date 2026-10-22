@@ -312,8 +312,9 @@ export const TN3819_FIG35_TUNNEL_W1: readonly W1Fig35TunnelPair[] = [
 /**
  * NACA RM L52J21a (Love and O'Donnell 1952) fig. 38(c), R = 8.06e6: the fin
  * effect dPb of four 45 deg swept 8% circular-arc fins (their root trailing
- * edge about 0.8 chords ahead of the base, the swept trailing edge crossing
- * the base plane about a diameter out), cylindrical and conical bases, three
+ * edge about 0.9 in, 0.85 +-0.05 streamwise root chords, ahead of the base,
+ * the swept trailing edge crossing the base plane about a diameter out),
+ * cylindrical and conical bases, three
  * noses. The symbols overlap and the two bases cannot be told apart on the
  * scan: the reading is each Mach number's most negative and most positive
  * symbol.

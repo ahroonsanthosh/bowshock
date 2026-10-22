@@ -1403,8 +1403,8 @@ is "bounded, not measured" (recorded in 0014 section 10.7, amendment a).
   fins (0015 section 3.4), below this band. The rebuilt factor (W1)
   serves swept fins where it measures the sweep (0015 sections 3.4 and
   5), not these: a sharp section with its trailing edge swept at the base
-  is refused there, since RM L52J21a's fins end 0.8 root chords ahead of
-  it; plates go to it too (0014 section 10.7, amendment i).
+  is refused there, since RM L52J21a's fins end 0.85 +-0.05 root chords
+  ahead of it; plates go to it too (0014 section 10.7, amendment i).
 - **Lower bound: no fin effect, F = 1** for the present factor. It is
   defined on Love's basic curve, which fig. 35's own no-fin curve
   reproduces, so no fin effect is exactly F = 1, and every source it is

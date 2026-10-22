@@ -104,7 +104,7 @@ export const REASONS = {
   finsW1Count: 'base (rebuilt factor): fins at the base, not two to four',
   finsW1Thickness: 'base (rebuilt factor): a section outside the 10% circular arc (steep bevels)',
   finsW1TrailingEdge: 'base (rebuilt factor): a rounded or diverging blunt trailing edge',
-  finsW1Sweep: 'base (rebuilt factor): sweep not measured (leading edge 0 to 45 or above 60 deg, or trailing edge beyond it; a sharp section with a swept trailing edge closer to the base than 0.8 root chords)',
+  finsW1Sweep: 'base (rebuilt factor): sweep not measured (leading edge 0 to 45 or above 60 deg, or trailing edge beyond it; a sharp section with a trailing edge swept aft closer to the base than 0.9 root chords, or swept forward)',
   // Fin trailing-edge base.
   teTaper:
     EDGES !== 'before'

@@ -54,9 +54,10 @@
  * - sweep: only where measured, the leading edge swept 45 to 60 deg (RM
  *   L52J21a's 45 deg fins, fig. 38; the RM-10's 60 deg, TN 3819 fig. 34)
  *   and the trailing edge no more, a sharp section's trailing edge swept
- *   only as far ahead of the base as RM L52J21a's (0.8 root chords or
- *   more; closer, refused, since the RM-10's trailing-edge sweep is not
- *   stated and linear theory raises the pressures behind a swept edge):
+ *   aft only as far ahead of the base as RM L52J21a's fins (0.9 root
+ *   chords or more; closer, refused, since the RM-10's trailing-edge sweep
+ *   is not stated and linear theory raises the pressures behind a swept
+ *   edge; swept forward, refused, since RM L52J21a's is swept aft):
  *   between the zero member and the
  *   unswept member that dominates the section, since both measured swept
  *   sets lie there, below the unswept member at their Mach numbers (and
@@ -669,11 +670,14 @@ export interface FinsOnBaseFactorW1 {
 export const W1_SWEPT_RANGE = [(45 * Math.PI) / 180, (60 * Math.PI) / 180] as const;
 
 /**
- * The one position at which fins of a sharp section with a swept trailing edge are measured near the base: RM
- * L52J21a's 45 deg fins, the root trailing edge about 0.8 root chords ahead of the base (its figs. 1 and 5).
- * Closer to the base such fins are refused (the RM-10's trailing-edge sweep is not stated; 0015 section 3.4).
+ * Where fins of a sharp section with a swept trailing edge are measured near the base: RM L52J21a's 45 deg
+ * fins, the trailing edge swept aft and the root trailing edge about 0.9 in ahead of the base on a streamwise
+ * chord of 0.75 in / cos 45 deg = 1.06 in, so 0.85 +-0.05 root chords (its figs. 1 and 5, read from the
+ * drawings to +-0.05 in). Served only where the measurement covers it, from the uncertainty's far end: 0.9
+ * root chords. Closer to the base such fins are refused, and so is a forward-swept trailing edge anywhere,
+ * RM L52J21a's being the one set (the RM-10's trailing-edge sweep is not stated; 0015 section 3.4).
  */
-export const W1_SWEPT_TRAILING_EDGE_AHEAD = 0.8;
+export const W1_SWEPT_TRAILING_EDGE_AHEAD = 0.9;
 
 /**
  * The lowest relief measured with fins at the base: RM L52E06 fig. 7, four flat-plate fins with square
@@ -759,6 +763,10 @@ const memberName = (t: Thickness, n: Count, xc: number, mach: number) =>
     ? zeroName(mach)
     : `${n} unswept circular-arc fins t/c ${t.toFixed(2)} at x/c ${xc.toFixed(2)}`;
 
+const SINGLE_END_REASON =
+  'an end of the band rests on a symbol of TN 2360 fig. 6 that one reader alone found, the second ' +
+  'reading pending (0015 section 7)';
+
 export const W1_LABEL_PREFIX =
   'estimated on component data: the rebuilt fins-on-base factor (0015), between ';
 export const W1_BOUNDED_PREFIX =
@@ -839,8 +847,19 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
       `the rebuilt factor takes fins ending 0 to 1 chord ahead of the base, got ${xc}`,
     );
   }
-  // At the base, and closer to it than RM L52J21a's 45 deg fins (the root trailing edge about 0.8 root chords
-  // ahead), a sharp section with a swept trailing edge (either way) rests on no measurement: the RM-10's
+  // A sharp section with a forward-swept trailing edge rests on no measurement anywhere: the one set with a
+  // swept trailing edge near the base, RM L52J21a's, sweeps it aft (0015 section 3.4).
+  if (!bounded && fins.tanTrailingEdgeSweep < 0 && tes > 1e-9) {
+    throw new BaseRefusal(
+      'fin-sweep',
+      `fins of a sharp section with the trailing edge swept ${deg(tes)} deg forward at M ${mach}: the one ` +
+        "set measured near the base with a swept trailing edge, RM L52J21a's 45 deg fins, sweeps it aft, " +
+        "and the RM-10's trailing-edge sweep is not stated, so a forward-swept edge is not measured and " +
+        'its ordering is not shown (0015 section 3.4)',
+    );
+  }
+  // At the base, and closer to it than RM L52J21a's 45 deg fins (the root trailing edge 0.85 +-0.05 root
+  // chords ahead), a sharp section with a swept trailing edge rests on no measurement: the RM-10's
   // trailing-edge sweep is not stated, and linear theory puts the faces behind a swept edge above the unswept
   // fin's (0015 section 3.4).
   if (!bounded && xc < W1_SWEPT_TRAILING_EDGE_AHEAD - 1e-9 && tes > 1e-9) {
@@ -850,9 +869,9 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     throw new BaseRefusal(
       'fin-sweep',
       `fins of a sharp section ${where} with the trailing edge swept ${deg(tes)} deg ` +
-        `(${fins.tanTrailingEdgeSweep < 0 ? 'forward' : 'aft'}) at M ${mach}: no such fins are measured ` +
-        `closer to the base than RM L52J21a's 45 deg fins, which end about ${W1_SWEPT_TRAILING_EDGE_AHEAD} ` +
-        "root chords ahead of it (the RM-10's trailing-edge sweep is not stated), and linear theory gives " +
+        `aft at M ${mach}: no such fins are measured closer to the base than RM L52J21a's 45 deg fins, ` +
+        'which end 0.85 +-0.05 root chords ahead of it, so they are served from ' +
+        `${W1_SWEPT_TRAILING_EDGE_AHEAD} (the RM-10's trailing-edge sweep is not stated), and linear theory gives ` +
         `the faces behind that edge ${factor} the unswept fin's pressures, so they may act as thicker ` +
         "fins than the bracket's upper member (0015 section 3.4)",
     );
@@ -951,38 +970,49 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         `${tr.tauEq.toFixed(3)}), not measured on this section`,
     );
   }
-  if (moderate) {
+  if (swept && bounded) {
+    // Flat faces: the lower bound is RM L52E06's relief with swept plates, not the zero member (0015 section 4).
+    reasons.push(
+      `the leading edge swept ${deg(le)} deg and the trailing edge ${deg(tes)} deg, with flat faces: ` +
+        "bracketed between RM L52E06's relief with flat plates at the base (F " +
+        `${W1_FLAT_RELIEF_LOW.toFixed(3)}, its plates swept 45 deg) and unswept circular-arc fins, the ` +
+        'faces carrying no slope for the sweep to act on (0015 section 4)',
+    );
+  } else if (moderate) {
     reasons.push(
       `the leading edge swept ${deg(le)} deg with the trailing edge unswept: bracketed between the zero ` +
         "member and unswept fins, where NSWCDD/TR-92/509's 43.9 deg fins lie, linear theory moving the " +
         "aft faces' pressures by at most 4% with the leading-edge sweep (0015 section 3.4)",
     );
-  } else if (swept && !bounded && xc === 0) {
+  } else if (swept && xc === 0) {
     reasons.push(
       `the leading edge swept ${deg(le)} deg with the trailing edge unswept: bracketed between the ` +
         "zero member and unswept fins, as the RM-10's 60 deg fins at the base lie (TN 3819 fig. 34) and " +
-        "RM L52J21a's 45 deg fins a chord ahead of it (0015 section 3.4)",
+        "RM L52J21a's 45 deg fins about 0.85 root chords ahead of it (0015 section 3.4)",
     );
   } else if (swept) {
     reasons.push(
       'swept fins bracketed between the zero member and unswept fins, as the measured swept fins lie ' +
-        '(RM L52J21a, the RM-10' +
-        (mach < W1_MACH_RANGE[0] - 1e-12 ? "; below M 1.5, RM L52E06's swept flat plates" : '') +
-        ')',
+        "(RM L52J21a's 45 deg fins about 0.85 root chords ahead of the base, the RM-10)",
     );
   }
+  // The carries of the reference's high end, named on members and brackets alike.
+  const carries: string[] = [];
   if (mach < W1_MACH_RANGE[0] - 1e-12) {
-    reasons.push(
-      "below M 1.5 the reference is TN 3819 fig. 35's free-flight line with the tunnel excess measured at " +
-        `M 2.41 (${largestTunnelExcess().toFixed(4)}) carried down, and the zero member reaches down to ` +
-        "RM L52E06's relief (0015 section 11)",
+    carries.push(
+      "below M 1.5 the reference is TN 3819 fig. 35's free-flight line, its high end carrying the tunnel " +
+        `excess measured at M 2.41 (${largestTunnelExcess().toFixed(4)}) down from the tunnels' Mach ` +
+        'numbers' +
+        (member ? '' : ", and the zero member reaches down to RM L52E06's relief") +
+        ' (0015 sections 3.1 and 11.2)',
     );
   } else if (mach > 2.41 + 1e-12 && !aboveLine) {
-    reasons.push(
+    carries.push(
       "above M 2.41, the tunnels' last Mach number, the reference's high end carries the tunnel excess " +
         `measured there (${largestTunnelExcess().toFixed(4)}) on the free-flight line (0015 section 3.1)`,
     );
   }
+  reasons.push(...carries);
   if (aboveLine) {
     reasons.push(
       `above M ${FIG35_FREE_FLIGHT_END}, where TN 3819 fig. 35's free-flight curve ends, the reference is ` +
@@ -993,17 +1023,14 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   const singleEnd =
     memberEndOnSingleReader(lower.thickness, lower.count, xc, mach) ||
     memberEndOnSingleReader(upper.thickness, upper.count, xc, mach);
-  if (singleEnd) {
-    reasons.push(
-      'an end of the band rests on a symbol of TN 2360 fig. 6 that one reader alone found, the second ' +
-        'reading pending (0015 section 7)',
-    );
-  }
+  if (singleEnd) reasons.push(SINGLE_END_REASON);
   if (count === 3) reasons.push('three fins bracketed between two (or none) and four');
   if (xc > 0) reasons.push('the position bracketed between the stations of TN 2360 fig. 6');
   const label = member
     ? `estimated on component data: the rebuilt fins-on-base factor (0015), measured on ${lower.name} ` +
-      '(TN 2360 fig. 6, TN 3819 figs. 33 and 35), tested only in the total'
+      '(TN 2360 fig. 6, TN 3819 figs. 33 and 35)' +
+      [...carries, ...(singleEnd ? [SINGLE_END_REASON] : [])].map((c) => `; ${c}`).join('') +
+      ', tested only in the total'
     : `${boundedResult ? W1_BOUNDED_PREFIX : W1_LABEL_PREFIX}${lower.name} and ${upper.name}; ` +
       `${reasons.join('; ')}; not measured on these fins, tested only in the total`;
   return {

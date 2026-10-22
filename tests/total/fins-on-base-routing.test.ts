@@ -210,8 +210,8 @@ describe('swept fins at the base (0014 section 10.7): the rebuilt factor, not a 
       ]);
     }
     // A sharp section with a swept trailing edge (either way) at the base: refused by both, with a plain
-    // reason (0015 section 3.4): no such fins are measured at the base, and linear theory gives the faces
-    // behind a 45 deg edge 1.67 times the unswept fin's pressures at M 1.6.
+    // reason (0015 section 3.4): no such fins are measured at the base (and none swept forward anywhere), and
+    // linear theory gives the faces behind a 45 deg edge 1.67 times the unswept fin's pressures at M 1.6.
     for (const tanTe of [t45, -t45]) {
       const both = fins({ thicknessRatio: 0.045, nearBase: near(doubleWedge(0.045), t45, tanTe) });
       let e: unknown;
@@ -222,8 +222,12 @@ describe('swept fins at the base (0014 section 10.7): the rebuilt factor, not a 
       }
       expect(e).toBeInstanceOf(BaseRefusal);
       expect((e as BaseRefusal).reason).toBe('fin-sweep');
-      expect((e as BaseRefusal).message).toMatch(tanTe > 0 ? /\(aft\)/ : /\(forward\)/);
-      expect((e as BaseRefusal).message).toContain('1.67 times');
+      // Aft: not measured closer to the base than RM L52J21a's fins, with linear theory's factor; forward:
+      // not measured anywhere (RM L52J21a's edge is swept aft).
+      expect((e as BaseRefusal).message).toMatch(
+        tanTe > 0 ? /deg aft at M 1\.6/ : /deg forward at M 1\.6/,
+      );
+      if (tanTe > 0) expect((e as BaseRefusal).message).toContain('1.67 times');
     }
     // Through the total: a tapered planform at the base goes to the rebuilt factor.
     const tapered: FinnedBody = {

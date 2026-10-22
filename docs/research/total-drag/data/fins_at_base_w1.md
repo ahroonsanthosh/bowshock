@@ -116,7 +116,7 @@ no position other than x/c = 0 above M 2.0.
 Four 45 deg swept circular-arc fins about 8% thick, 3/4 in chord normal
 to the edges, on a 0.900 in body, carried by the fins (no sting); the
 fins cross the body inside the base section, the root trailing edge
-about 0.9 in (0.8 root chords) ahead of the base, and the swept trailing
+about 0.9 in (0.85 +-0.05 root chords on the streamwise chord, 0.75 in / cos 45 deg = 1.06 in; 0.8 in an earlier version of this note, which divided by the wrong chord) ahead of the base, and the swept trailing
 edge crosses the base plane about one diameter out (figs. 1, 5; dimensions
 read from the drawings, +-0.05 in). The bodies without fins were sting
 supported. Tunnel, M 1.62, 1.93, 2.41.

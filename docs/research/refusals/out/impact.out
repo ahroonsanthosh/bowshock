@@ -32,7 +32,7 @@
 | nose: Haack (Von Karman, LV) or power-series shape not served (two-scale grids in progress) | 52.0% | 52.0% | 52.0% | 52.0% | 52.0% | 1.88% |
 | fins: below Mach 1.5, fin friction and the wave drag of sharp sections (the fins' own-drag band, ARCAS, is measured at Mach 1.5 to 2.96 only, 0014 section 10.7 (f)) | 100.0% | 100.0% | 0.0% | 0.0% | 50.0% | 0.07% |
 | nose: rounded (blunted) tip not represented | 49.7% | 49.7% | 49.7% | 49.7% | 49.7% | 1.51% |
-| base (rebuilt factor): sweep not measured (leading edge 0 to 45 or above 60 deg, or trailing edge beyond it; a sharp section with a swept trailing edge closer to the base than 0.8 root chords) | 55.0% | 55.0% | 45.0% | 18.4% | 43.4% | 1.13% |
+| base (rebuilt factor): sweep not measured (leading edge 0 to 45 or above 60 deg, or trailing edge beyond it; a sharp section with a trailing edge swept aft closer to the base than 0.9 root chords, or swept forward) | 55.0% | 55.0% | 45.1% | 18.5% | 43.4% | 1.13% |
 | te: Mach outside 1.5 to 3.2 | 52.7% | 52.7% | 0.0% | 0.0% | 26.4% | 0.00% |
 | nose: Mach below 1.2 (page input and solver; transonic solver in progress, 0013) | 100.0% | 0.0% | 0.0% | 0.0% | 25.0% | 0.00% |
 | fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.0 to 3.0 (on a flat plate, 0016) | 37.0% | 22.8% | 9.7% | 0.5% | 17.5% | 0.09% |
