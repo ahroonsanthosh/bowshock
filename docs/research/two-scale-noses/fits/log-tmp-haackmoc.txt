@@ -288,3 +288,13 @@
 2026-10-22T08:43:06.980Z haack C0 L5 M2 cyl2 nj20x4: start, save to tests/tmp-haackmoc/L5c2M2r4
 2026-10-22T08:45:51.622Z haack C0 L5 M2 cyl2 nj20x4: resumed from checkpoint at 11000 iterations
 2026-10-22T08:47:51.931Z haack C0 L5 M3 cyl2 nj20x4: resumed from checkpoint at 4000 iterations
+2026-10-22T10:23:54.519Z haack C0 L5 M2 cyl2 nj20x4: start, save to tests/tmp-haackmoc/L5c2M2r4
+2026-10-22T10:26:48.852Z haack C0 L5 M2 cyl2 nj20x4: resumed from checkpoint at 11000 iterations
+2026-10-22T11:03:17.747Z haack C0 L5 M2 cyl2 nj20x4: 12000 iterations, maxSpeed 1.32e-9, drag 0.0326452038190, remaining 0.00e+0
+2026-10-22T11:34:46.076Z haack C0 L5 M2 cyl2 nj20x4: 13000 iterations, maxSpeed 5.63e-10, drag 0.0326452038194, remaining 0.00e+0
+2026-10-22T11:56:36.642Z haack C0 L5 M2 cyl2 nj20x4: quality {"wall":77.40210427163936,"minAngle":59.01050113655954,"sizeRatio":1.0933343414865606,"aspect":4.491479941083875,"gates":[],"stagnationError":-0.0003218658137781327,"standoff":0.00014172130970708813}
+2026-10-22T11:56:36.692Z haack C0 L5 M2 cyl2 nj20x4: settled early at 14000 iterations, remaining 0.00e+0, maxSpeed 2.40e-10, drag 0.032645203819490848, from the wall strip 0.032645203819490917; saved
+2026-10-22T11:56:43.528Z haack C0 L1 M2 cyl1 nj20x8: start, save to tests/tmp-haackmoc/L1c1M2r8
+2026-10-22T11:57:32.374Z haack C0 L1 M2 cyl1 nj20x8: resumed from checkpoint at 0 iterations
+2026-10-22T21:37:55.716Z haack C0 L1 M2 cyl1 nj20x8: start, save to tests/tmp-haackmoc/L1c1M2r8
+2026-10-22T21:38:16.965Z haack C0 L1 M2 cyl1 nj20x8: resumed from checkpoint at 0 iterations
