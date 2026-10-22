@@ -270,6 +270,27 @@ describe('refusals', () => {
     expect(plate(1.0).normalMach).toBe(1);
   });
 
+  it('every failed condition is reported, not only the first (re-review of 2026-10-22, N6)', () => {
+    // M 1.2 at 60 deg (M_n 0.6), the normal component of the Reynolds number 5e3 (below 6.7e3).
+    const e = failure(() => plate(1.2, 60, 1e4));
+    expect(e.reason).toBe('leading-edge-range');
+    expect(e.message).toMatch(/normal to the edge, M cos\(sweep\), 0\.6000 is below 1\.0/);
+    expect(e.message).toMatch(
+      /; and Reynolds number 5000 on the edge's diameter \(normal component\) is below 6700/,
+    );
+    // Swept beyond 60 deg and below M_n 1.0: the sweep's code, both reasons.
+    const f = failure(() => plate(1.2, 70));
+    expect(f.reason).toBe('swept-leading-edge');
+    expect(f.message).toMatch(/^a rounded leading edge swept 70\.0 deg is refused/);
+    expect(f.message).toMatch(
+      /; and the Mach number normal to the edge, M cos\(sweep\), 0\.4104 is below 1\.0/,
+    );
+    // Above the band's Mach numbers and the Reynolds numbers at once.
+    const g = failure(() => plate(9, 0, 1e7));
+    expect(g.message).toMatch(/the rounded-edge band covers Mach/);
+    expect(g.message).toMatch(/; and Reynolds number .* is above/);
+  });
+
   it('a rounded wedge below M_n 1.0, the same reasons', () => {
     const e = failure(() =>
       roundedLeadingEdgeDrag({
