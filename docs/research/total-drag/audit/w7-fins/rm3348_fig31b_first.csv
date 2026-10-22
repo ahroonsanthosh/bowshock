@@ -1,0 +1,45 @@
+# ARC R&M 3348 (Rogers, Berry and Quincey; AERADE 1826.2/3929, sha256 d2f35d8a...b383e158), fig. 31(b) "Correlation of
+# reduced chordwise pressure-force coefficients for single-wedge profile at zero incidence (coefficients determined for front
+# half of 7% thick double-wedge section)", PDF p. 69 (printed p. 68): C_cf sec^2(phi) against M_0 cos(phi), by sweep. The
+# faired curve through the 0 deg points not read. Named by 0014 10.7 (k) before this reading. FIRST reading (0019 reader,
+# W7), 2026-10-22, blind to round 10's reading. 300 dpi render; grid every 0.1 in M_0 cos(phi) and 0.01 in the coefficient,
+# traced on the panel's crop at page (560, 1590) (calib.py, rm3348_fig31b_grid.json in crop pixels); px_x, px_y are page
+# pixels. source: fit (symfit.py, +-1 px) or hand (plus, +-1.5 px; fit moved more than 3 px, +-2.5 px). Method:
+# method_rm3348_fig31b_32.md.
+id,series,symbol,px_x,px_y,mach_normal,ccf_sec2phi,mach_normal_err,ccf_sec2phi_err,source
+o01,phi 0 deg (circle),circle,956.95,2038.55,0.59998,-0.00569,0.00066,0.00010,fit
+o02,phi 0 deg (circle),circle,1130.20,2013.45,0.70112,-0.00346,0.00065,0.00010,fit
+o03,phi 0 deg (circle),circle,1299.30,1984.00,0.79939,-0.00088,0.00148,0.00022,hand
+o04,phi 0 deg (circle),circle,1384.25,1963.05,0.85016,0.00095,0.00067,0.00010,fit
+o05,phi 0 deg (circle),circle,1469.50,1925.00,0.90111,0.00426,0.00065,0.00010,fit
+o06,phi 0 deg (circle),circle,1554.25,1870.20,0.95006,0.00904,0.00065,0.00010,fit
+o07,phi 0 deg (circle),circle,1639.50,1828.55,0.99960,0.01274,0.00065,0.00010,fit
+o08,phi 0 deg (circle),circle,1723.75,1792.45,1.04930,0.01593,0.00066,0.00010,fit
+o09,phi 0 deg (circle),circle,1826.00,1741.45,1.10958,0.02040,0.00067,0.00010,fit
+o10,phi 0 deg (circle),circle,1908.80,1700.70,1.15885,0.02395,0.00067,0.00010,fit
+x01,phi 30 deg (cross),cross,975.00,2032.70,0.61052,-0.00517,0.00149,0.00022,hand
+x02,phi 30 deg (cross),cross,1116.50,2024.00,0.69316,-0.00438,0.00065,0.00010,fit
+x03,phi 30 deg (cross),cross,1264.00,2011.95,0.77906,-0.00332,0.00065,0.00010,fit
+x04,phi 30 deg (cross),cross,1340.00,1992.20,0.82373,-0.00159,0.00067,0.00010,fit
+x05,phi 30 deg (cross),cross,1410.95,1940.70,0.86620,0.00288,0.00067,0.00010,fit
+x06,phi 30 deg (cross),cross,1486.30,1877.05,0.91072,0.00842,0.00065,0.00010,fit
+x07,phi 30 deg (cross),cross,1574.75,1819.95,0.96204,0.01345,0.00065,0.00010,fit
+x08,phi 30 deg (cross),cross,1645.25,1756.00,1.00292,0.01905,0.00066,0.00010,fit
+t01,phi 45 deg (triangle),triangle,779.00,2085.55,0.49446,-0.00992,0.00065,0.00010,fit
+t02,phi 45 deg (triangle),triangle,900.45,2070.00,0.56645,-0.00847,0.00066,0.00010,fit
+t03,phi 45 deg (triangle),triangle,1022.30,2057.75,0.63818,-0.00733,0.00065,0.00010,fit
+t04,phi 45 deg (triangle),triangle,1081.80,2061.55,0.67294,-0.00766,0.00065,0.00010,fit
+t05,phi 45 deg (triangle),triangle,1143.25,2059.05,0.70883,-0.00744,0.00065,0.00010,fit
+t06,phi 45 deg (triangle),triangle,1203.00,2028.55,0.74362,-0.00477,0.00065,0.00010,fit
+t07,phi 45 deg (triangle),triangle,1267.05,1961.45,0.78072,0.00108,0.00065,0.00010,fit
+t08,phi 45 deg (triangle),triangle,1297.55,1966.00,0.79845,0.00068,0.00065,0.00010,fit
+t09,phi 45 deg (triangle),triangle,1335.25,1870.25,0.82103,0.00891,0.00067,0.00010,fit
+t10,phi 45 deg (triangle),triangle,1382.05,1862.45,0.84887,0.00959,0.00067,0.00010,fit
+p01,phi 60 deg (plus),plus,616.70,2080.00,0.40030,-0.00944,0.00092,0.00014,hand
+p02,phi 60 deg (plus),plus,706.00,2082.70,0.45211,-0.00968,0.00092,0.00014,hand
+p03,phi 60 deg (plus),plus,748.30,2060.70,0.47662,-0.00775,0.00092,0.00014,hand
+p04,phi 60 deg (plus),plus,787.70,2019.30,0.49950,-0.00410,0.00092,0.00014,hand
+p05,phi 60 deg (plus),plus,831.70,2085.00,0.52562,-0.00982,0.00094,0.00014,hand
+p06,phi 60 deg (plus),plus,880.00,2090.70,0.55431,-0.01029,0.00094,0.00014,hand
+p07,phi 60 deg (plus),plus,923.30,2070.70,0.58002,-0.00852,0.00094,0.00014,hand
+p08,phi 60 deg (plus),plus,957.30,2053.30,0.60020,-0.00698,0.00092,0.00014,hand
