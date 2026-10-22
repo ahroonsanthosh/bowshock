@@ -1134,7 +1134,8 @@ td.num {
 .modebar.flow-switch {
   margin-left: auto;
 }
-.modebar.flow-switch + .modebar {
+/* Beside the switch when it shows; at the right, as before, where there is no 3D view. */
+.modebar.flow-switch:not([hidden]) + .modebar {
   margin-left: 0;
 }
 .modebar__divider {
