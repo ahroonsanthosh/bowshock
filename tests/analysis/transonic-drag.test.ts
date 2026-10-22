@@ -482,6 +482,51 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     expect(allowed.kind).toBe('solved');
   });
 
+  it('below Mach 1.05 the family moves to 224.2 radii, with 100.6 and 408.7 as its neighbours (decision 7.3)', async () => {
+    expect(transonicDomains(cone, 1).family).toEqual({
+      farField: 100,
+      cylinder: 10,
+      nested: { farField: 200 },
+    });
+    expect(transonicDomains(cone, 1).farField).toEqual([100, 200, 400]);
+    expect(transonicDomains(cone, 1.05).farField).toEqual([50, 100, 200]);
+    expect(transonicDomains(cone, 1.05).family.nested).toBeUndefined();
+    // The cone's base-grid drags at Mach 1.0 on the nested domains (0013,
+    // "Mach 1.0: the family moved to 224.2 radii"), with grids converging
+    // at second order towards them.
+    const measured: Record<number, number> = {
+      100: 0.09171531708471234,
+      200: 0.09292826439834694,
+      400: 0.09328843962216965,
+    };
+    const asked: { far: number | undefined; cylinder: number | undefined; r: number }[] = [];
+    const engine = synthetic({
+      converged: (r, far, cylinder) => {
+        asked.push({ far, cylinder, r });
+        return measured[far ?? 100]! + 2e-4 / r ** 2;
+      },
+    });
+    const result = await verifiedTransonicDrag(
+      cone,
+      { ...options, mach: 1, allowNearSonic: true },
+      engine,
+    );
+    // Every grid of the family, and the cylinder's neighbours, on 224.2 radii.
+    for (const a of asked) {
+      if (a.r > 1 || a.cylinder !== undefined) expect(a.far).toBe(200);
+    }
+    expect(asked.filter((a) => a.r === 1).map((a) => a.far)).toEqual([200, 100, 400, 200, 200]);
+    expect(result.kind).toBe('solved');
+    if (result.kind !== 'solved') return;
+    expect(result.allowances.farField.domains).toEqual([100, 200, 400]);
+    const [c1, c2] = [measured[200]! - measured[100]!, measured[400]! - measured[200]!];
+    expect(result.allowances.farField.result.kind).toBe('decaying');
+    // rho 0.297: the allowance |c2| / (1 - rho), 5.12e-4, at least.
+    expect(c2 / c1).toBeCloseTo(0.297, 3);
+    expect(result.parts.farField).toBeGreaterThanOrEqual(Math.abs(c2) / (1 - c2 / c1));
+    expect(result.parts.farField).toBeLessThan(5.2e-4);
+  });
+
   it('blunt noses are refused, and Mach numbers outside the range throw', async () => {
     const engine = synthetic({ converged: () => 0.09 });
     const blunt: Body = {

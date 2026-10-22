@@ -110,23 +110,52 @@ export const NEAR_SONIC_LIMIT = 1.05;
 export const FAMILY_DOMAIN = { farField: 100, cylinder: 10 } as const;
 /** The allowances' nested domains, as multiples of the family's far boundaries. */
 export const FAR_FIELD_SCALES = [0.5, 2] as const;
+/**
+ * Below NEAR_SONIC_LIMIT the family's own grid is its far boundaries'
+ * grid continued, node for node, to this multiple of them (224.2 radii
+ * for 100), and the allowances' far-boundary neighbours are the grid
+ * itself and the grid continued to twice as far again (100.6 and 408.7
+ * radii): the allowance rule's pre-registered next step, taken by the
+ * owner's decision 7.3 of 2026-10-22 (0013, "Mach 1.0: the family moved to
+ * 224.2 radii").
+ */
+export const NEAR_SONIC_FAMILY_SCALE = 2;
 /** The allowances' nested cylinders (calibers). */
 export const CYLINDER_DOMAINS = [5, 20] as const;
 
-/** The family's domain and the allowances' nested ones, for this body (radii and calibers). */
+/**
+ * The family's domain and the allowances' nested ones, for this body and
+ * Mach number (radii and calibers, as asked of the grid: 50, 100, 200 and
+ * 400 radii give 55.1, 100.6, 224.2 and 408.7 for a base radius of 1).
+ * `family.nested`, where present, is the continuation of the family's own
+ * grid (below NEAR_SONIC_LIMIT).
+ */
 export interface TransonicDomains {
-  readonly family: { readonly farField: number; readonly cylinder: number };
+  readonly family: {
+    readonly farField: number;
+    readonly cylinder: number;
+    readonly nested?: { readonly farField: number };
+  };
   readonly farField: readonly [number, number, number];
   readonly cylinder: readonly [number, number, number];
 }
 
-export function transonicDomains(body: Body): TransonicDomains {
+export function transonicDomains(body: Body, mach = NEAR_SONIC_LIMIT): TransonicDomains {
   const R = body.nose.baseRadius;
   const farField = Math.max(FAMILY_DOMAIN.farField, (10 * body.nose.length) / R);
+  const cylinder = [CYLINDER_DOMAINS[0], FAMILY_DOMAIN.cylinder, CYLINDER_DOMAINS[1]] as const;
+  if (mach < NEAR_SONIC_LIMIT) {
+    const own = NEAR_SONIC_FAMILY_SCALE * farField;
+    return {
+      family: { farField, cylinder: FAMILY_DOMAIN.cylinder, nested: { farField: own } },
+      farField: [farField, own, NEAR_SONIC_FAMILY_SCALE * own],
+      cylinder,
+    };
+  }
   return {
     family: { farField, cylinder: FAMILY_DOMAIN.cylinder },
     farField: [FAR_FIELD_SCALES[0] * farField, farField, FAR_FIELD_SCALES[1] * farField],
-    cylinder: [CYLINDER_DOMAINS[0], FAMILY_DOMAIN.cylinder, CYLINDER_DOMAINS[1]],
+    cylinder,
   };
 }
 
@@ -387,15 +416,20 @@ export async function verifiedTransonicDrag(
   const levels: TransonicLevel[] = [];
   // Cell updates so far, every grid counted.
   let work = 0;
-  const domains = transonicDomains(body);
-  const problemOf = (refinement: number, nested?: Nested) =>
-    transonicProblem(body, {
+  const domains = transonicDomains(body, mach);
+  // A grid of the family, or of an allowance: the family's own grid with
+  // its far boundaries or cylinder moved (nested), node for node.
+  const problemOf = (refinement: number, nested?: Nested) => {
+    const merged = { ...domains.family.nested, ...nested };
+    return transonicProblem(body, {
       mach,
       gamma,
       refinement,
-      ...domains.family,
-      ...(nested === undefined ? {} : { nested }),
+      farField: domains.family.farField,
+      cylinder: domains.family.cylinder,
+      ...(Object.keys(merged).length === 0 ? {} : { nested: merged }),
     });
+  };
   // Every base grid up front, and the finest grid's size against the
   // engine's limits: a body the domains do not fit, or a device too
   // small, is refused before anything is solved (review of aed95b0, S4).

@@ -1674,6 +1674,108 @@ number is given without a settled grid. Its findings, one commit each:
     2 (`tests/tmp-transonic/df-settle2.txt`). The setting must become 2.
     Its margin on finer grids and other bodies is not yet measured.
 
+**Mach 1.0: the family moved to 224.2 radii (owner's decision 7.3,
+2026-10-22).** The allowance rule's own pre-registered next step ("The
+allowance rule", above: "Moving the family to 224.2 radii, with 408.7 as
+the third distance, is the next step if refusals here matter"), taken as
+the advisor recommended (`advice/fable-2026-10-22.md` section 2 on the
+handoff branch). DECAY_LIMIT stays 0.6. Below Mach 1.05 the family's own
+grid is now the 100.6-radius grid continued, node for node, to 224.2
+radii (`transonicDomains(body, mach)`; the base grid's `nested` far
+field at twice the family's), and its far-boundary neighbours are the
+100.6-radius grid itself and the same grid continued to 408.7 radii. The
+cylinder's neighbours are 5 and 20 calibers on the moved grid. From Mach
+1.05 nothing changes. Nothing below 1.05 is served yet (B1): the moved
+family only changes what the offline solve (`allowNearSonic`) gives.
+
+The evidence, in the order the advisor lists it. All on the base grid,
+nested domains, plain LU-SGS steps, from `tests/tmp-transonic/results/
+n-*.jsonl` (runs of 2026-10-22, settled by the test before S1, which
+can leave a value up to about 4e-6 from its limit at these Mach numbers;
+every change below is at least 25 times that, except where said).
+
+1. **The nested changes and their ratios.** Drag at 55.1, 100.6, 224.2
+   and 408.7 radii; c1, c2, c3 the three successive changes:
+
+   | Case       | 55.1      | 100.6     | 224.2     | 408.7     | c1        | c2        | c3       | c2/c1 | c3/c2  |
+   | ---------- | --------- | --------- | --------- | --------- | --------- | --------- | -------- | ----- | ------ |
+   | cone, 1.0  | 0.0897885 | 0.0917153 | 0.0929283 | 0.0932884 | +1.927e-3 | +1.213e-3 | +3.60e-4 | 0.630 | 0.297  |
+   | ogive, 1.0 | 0.0155313 | 0.0171707 | 0.0184068 | 0.0188677 | +1.639e-3 | +1.236e-3 | +4.61e-4 | 0.754 | 0.373  |
+   | cone, 1.01 | 0.0997535 | 0.1026103 | 0.1035135 | 0.1034732 | +2.857e-3 | +9.03e-4  | -4.02e-5 | 0.316 | -0.045 |
+
+   At Mach 1.0 the ratios fall outward (0.63 then 0.30 on the cone, 0.75
+   then 0.37 on the ogive), as a power law with an exponent above about 1
+   and these distance ratios implies: the exponents through three
+   successive radii are 1.09 and 1.29 (cone) and 0.82 and 0.98 (ogive).
+   With the family on 224.2 radii the rule's two changes are c2 and c3,
+   of one sign, rho = 0.297 (cone) and 0.373 (ogive), both within 0.6:
+   **the rule as written gives the cone at Mach 1.0 an allowance of
+   |c3| / (1 - rho) = 5.12e-4 (0.55% of its 224.2-radius base-grid drag,
+   0.0929283) and the ogive 7.35e-4 (4.0% of 0.0184068).** On 100.6
+   radii the rule refused both (rho 0.63 and 0.75).
+
+   **At Mach 1.01 the moved family is worse, not better.** On 100.6
+   radii the rule gave 1.32e-3 (rho 0.32), and C(408.7) - C(100.6) =
+   +8.63e-4 lay inside it (test (b)). On 224.2 radii the rule's changes
+   are +9.03e-4 and then -4.02e-5: the effect turns between 224.2 and
+   408.7 radii, and the rule as written refuses a sign change. That is
+   the sign-reversal case of the review's S2, which the next entry's
+   rule handles.
+
+2. **A consistency check, not the registered test.** The registered
+   test (b) for the moved family would need a fourth distance beyond
+   408.7 radii (about 800), where the implicit steps diverge ("Mach 1
+   without the extrapolation"), so it cannot be run as written. Instead:
+   the geometric bound from 55.1, 100.6 and 224.2 radii, computed with
+   the measured rho although the rule refuses it there, must contain
+   C(408.7) - C(100.6). Cone: |c2| / (1 - 0.630) = 3.27e-3 against
+   +1.573e-3, contained. Ogive: |c2| / (1 - 0.754) = 5.03e-3 against
+   +1.697e-3, contained. So the decay's form that the rule rests on
+   holds one domain further out. This is a consistency check, and it is
+   labelled so wherever it is quoted: it is not the rule's registered
+   test, and it does not lift the near-sonic refusal (B1).
+
+3. **Why the decay continues beyond 408.7 radii (the ordering).** A
+   free-stream condition at a distance D is wrong by the perturbation
+   there, which falls at least as fast as the measured local exponents
+   (0.39 to 0.47 between 19 and 62 radii on 408.7 radii) and, in the
+   far field's asymptotic forms, faster ("Mach 1 without the
+   extrapolation"). The drag's own error falls faster still over these
+   four distances (the exponents above, 0.8 to 1.3). That is the reason
+   the remainder beyond the family's domain is taken to keep falling.
+
+4. **The grid band.** Mach 1.0 needs four grids (r = 1 to 8) on the
+   moved family for the procedure's band, and none of them beyond the
+   base grid has been solved on 224.2 radii. r = 8 at Mach 1 is about
+   300,000 steps ("Mach 1.0 itself"). Until a four-grid family exists a
+   Mach 1.0 point has no band and is refused ('no-band' offline,
+   'near-sonic' on the page), as rule 8 of "Serving below Mach 1.2"
+   says. The cost would be stated on the page and the user would choose.
+
+5. **Two cheap checks, not bands.**
+   - Bryson's stationarity (TR 1094 eq. 43, as 0019 section 3.2 uses
+     it) gives a forebody's drag a positive slope through Mach 1, so
+     C_D(1.00) must lie below C_D(1.01). On every nested domain it does:
+     0.0897885 < 0.0997535 (55.1 radii), 0.0917153 < 0.1026103 (100.6),
+     0.0929283 < 0.1035135 (224.2), 0.0932884 < 0.1034732 (408.7).
+   - Slender-body theory's slope at Mach 1, 1.64 (Spreiter and
+     Alksne's eq. 80, "Near Mach 1"), against the one-sided three-point
+     estimate from Mach 1.00, 1.01 and 1.02 on the nested domains: 1.28
+     (224.2 radii) and 1.22 (408.7 radii), 22 to 26% below the theory.
+     The secant from 1.00 to 1.01 is 1.06 and 1.02. The earlier figure
+     of 1.49 to 1.54 ("Near Mach 1") came from the regridded domains,
+     whose 408.7-radius grid put the drag at Mach 1.01 1.5e-3 higher
+     than the nested one does. Since the drag curve bends over within a
+     few hundredths of Mach 1, differences over 0.01 underestimate the
+     slope at Mach 1, so the check says the sign and the order of
+     magnitude agree, no more.
+
+**Outcome.** rho is 0.30 and 0.37 at Mach 1.0 on the moved family,
+within the limit of 0.6, so the far boundaries no longer refuse Mach 1.0
+offline; Mach 1.0 is still refused on the page (B1, and no four-grid
+family). Mach 1.01 on the moved family is refused by the rule as written
+(sign change) until the corrected rule below.
+
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
 (Superseded as a serving rule by the owner's decision of 2026-10-21,
