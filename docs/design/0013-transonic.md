@@ -1635,6 +1635,44 @@ number is given without a settled grid. Its findings, one commit each:
   - The allowances are solved right after the base grid, as the plan
     said, before the finer grids.
   - r = 16 is offered only where the device can hold it.
+- **S1**, settling that a slow oscillation could pass. The settling
+  test passed at the oscillation's turning points with the drag still
+  3e-6 to 4e-6 from its limit, on the nested cone runs at Mach 1.0 and
+  1.02 (periods of about 6,000 steps).
+  - A damped-oscillation fit to the last third and the last quarter of
+    each grid's history (`dampedOscillationBound`) must now decay and
+    lie within 1e-7 before the grid counts as settled, and its bound
+    enters the grid's noise.
+  - Growing changes are not settling.
+  - Each family grid passes its rate on to the next.
+  - The residual must have fallen to half the largest seen on the
+    grid, and still be changing. A residual 100 times its first value
+    stops the grid as 'diverging'.
+  - (WIP: the GPU engine's residual is not yet run on SwiftShader.)
+- **The GPU's sweeps (found while measuring, 2026-10-22).** The page
+  engine's red-black relaxation with 4 sweeps does not converge.
+  - From the free stream at Mach 1.1 the drag came within 1.4e-5 of the
+    CPU's by step 500, then fell into a limit cycle between 0.067 and
+    0.164, with a period of about 4,700 steps on r = 1. The same
+    happened on r = 2 (`tests/tmp-transonic/df-settle-rb4.txt`).
+  - The CPU twin (red-black, no Anderson) behaves the same way, so the
+    method fails, not the GPU. On the cone's base grid at Mach 1.1:
+    1 sweep converged in 2,350 steps, 2 in 1,200, 3 in 800, and 4
+    never did (residual near 1.5 after 8,000 steps). Jacobi with 2
+    sweeps took 2,500.
+  - Why: for the near-sonic acoustic wave the scalar operator's
+    neighbour terms sum to the diagonal (both about 1.5 times the wave
+    speed), so the relaxation's own iteration is not contracting there.
+    Each extra sweep amplifies that wave, and between 3 and 4 sweeps the
+    outer iteration fails.
+  - With 2 sweeps, measured on the CPU twin: the cone at Mach 1.2
+    (650 steps), 1.1 (1,200; r = 2: 2,100) and 1.05 (7,400), the
+    5-caliber ogive at 1.1 (1,100) and the 3-caliber ogive at 1.2 (650).
+    On SwiftShader: the cone at 1.1 settles in 1,200 steps (r = 1,
+    4.9e-8 from the CPU) and 2,100 (r = 2), and at 1.2 in 650 (-4.9e-10
+    from the CPU), at 110 to 120 ms per step on r = 1 and 560 ms on r =
+    2 (`tests/tmp-transonic/df-settle2.txt`). The setting must become 2.
+    Its margin on finer grids and other bodies is not yet measured.
 
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 

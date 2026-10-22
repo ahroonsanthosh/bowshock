@@ -12,12 +12,14 @@ import { verifiedTransonicDrag } from './transonic-drag';
 import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE } from './verified-drag';
 
 /**
- * Red-black sweeps per implicit step of the transonic solve on the GPU
- * (0013, step 2: on the CPU twin, 2 sweeps took 1.1 to 2.1 times LU-SGS's
- * steps and 4 Jacobi sweeps 1.0 to 1.7 times; on the GPU the two-float
- * residual dominates each step's cost, so more sweeps pay).
+ * Red-black sweeps per implicit step of the transonic solve on the GPU.
+ * Not more: the relaxation's own iteration does not contract for the
+ * near-sonic acoustic wave, so each sweep amplifies it. On the cone's
+ * base grid at Mach 1.1 (CPU twin, no Anderson) 1, 2 and 3 sweeps
+ * converged in 2,350, 1,200 and 800 steps, and 4 fell into a limit
+ * cycle, on the CPU and the GPU alike (0013, the review's findings).
  */
-export const GPU_TRANSONIC_SWEEPS = 4;
+export const GPU_TRANSONIC_SWEEPS = 2;
 
 export function gpuNoseDragSolvers(device: GPUDevice): NoseDragSolvers {
   return {
