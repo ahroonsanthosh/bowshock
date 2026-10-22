@@ -9,6 +9,8 @@ import { describe, expect, it } from 'vitest';
 import {
   BOUNDED_WORDS,
   changeText,
+  claimWords,
+  W1_BOUNDED_WORDS,
   CLASS_WORDS,
   ESTIMATE_WORDS,
   noNumberWords,
@@ -19,7 +21,13 @@ import {
   WAITING,
   type NoseEnd,
 } from '../../src/app/status-words';
-import { totalDragView } from '../../src/app/total-drag';
+import {
+  BOUNDED_REASON,
+  CLASS_CLAIM,
+  ESTIMATE_CLAIM,
+  totalDragView,
+  W1_BOUNDED_REASON,
+} from '../../src/app/total-drag';
 import { designForm } from '../../src/rocket/adapter';
 import { preset } from '../../src/rocket/presets';
 
@@ -31,6 +39,7 @@ describe('the words', () => {
       ESTIMATE_WORDS,
       CLASS_WORDS,
       BOUNDED_WORDS,
+      W1_BOUNDED_WORDS,
       provisionalWords(2, 4),
       WAITING,
       STOPPED,
@@ -55,6 +64,19 @@ describe('the words', () => {
       'warn',
       'bounded',
     ]);
+  });
+
+  it("each claim's words follow its text and reasons, a bounded part first", () => {
+    const claim = (text: string, reasons: string[]) => ({
+      kind: 'estimate' as const,
+      text,
+      reasons,
+    });
+    expect(claimWords(claim(ESTIMATE_CLAIM, []))).toBe(ESTIMATE_WORDS);
+    expect(claimWords(claim(CLASS_CLAIM, []))).toBe(CLASS_WORDS);
+    expect(claimWords(claim(CLASS_CLAIM, [BOUNDED_REASON]))).toBe(BOUNDED_WORDS);
+    // The rebuilt fins-on-base factor's bounded values (main's W1).
+    expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_REASON]))).toBe(W1_BOUNDED_WORDS);
   });
 
   it("the nose's ends; a finer grid suggested only where one is offered", () => {
@@ -97,11 +119,18 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(plain).toEqual([
       ['fin friction', own],
       ['fin wave drag', own],
+      // The rebuilt fins-on-base factor (main's W1) reaches below Mach 1.8, but not the wedge's
+      // thick trailing edge at the base.
       [
         'body base',
         {
-          reason: 'the drag behind the base is known from measurements only at other speeds',
-          change: '',
+          reason:
+            'the base drag with fins at the base is measured here only for flat fins with square ' +
+            'trailing edges or fins with sharp ones, not for this trailing edge (a wedge ' +
+            'thickening to it, or a rounded one)',
+          change:
+            'flat fins with square trailing edges, sharp trailing edges, or fins a root chord or ' +
+            'more ahead of the base',
         },
       ],
       [

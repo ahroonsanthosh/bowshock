@@ -351,14 +351,15 @@ describe(
 );
 
 describe('the presets', { timeout: 60_000 }, () => {
-  it('the 54 mm example is served by the logic from Mach 1.8, refused below with reasons', () => {
+  it('the 54 mm example is served by the logic from Mach 1.6, refused below with reasons', () => {
     const design = preset('example-54').design;
-    for (const mach of [1.8, 2, 2.4]) {
+    // From Mach 1.6 since main's W1 (b86c308): the rebuilt fins-on-base factor serves it there.
+    for (const mach of [1.6, 1.8, 2, 2.4]) {
       expect(totalDragView(formFor(designForm(design, mach, NO)), { kind: 'pending' }).kind).toBe(
         'pending',
       );
     }
-    for (const mach of [1, 1.2, 1.4, 1.6]) {
+    for (const mach of [1, 1.2, 1.4]) {
       expect(totalDragView(formFor(designForm(design, mach, NO)), { kind: 'pending' }).kind).toBe(
         'refused',
       );

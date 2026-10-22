@@ -12,7 +12,8 @@ import { ALTITUDE_RANGE, standardAtmosphere } from '../../src/atmosphere/us-stan
 import { flightConditionOf } from '../../src/app/flight-condition';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
-import { singleWedge } from '../../src/fins/section';
+import { doubleWedge, singleWedge } from '../../src/fins/section';
+import { bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
 import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents, type TotalDrag } from '../../src/total/total-drag';
@@ -28,6 +29,8 @@ import {
   BASIC_FINNER_CLASS,
   BASIC_FINNER_REYNOLDS_PER_MACH,
   BOUNDED_REASON,
+  boundedReasons,
+  W1_BOUNDED_REASON,
   BASIC_FINNER_TEMPERATURE,
   TEMPERATURE_SENSITIVITY,
   basicFinnerClass,
@@ -599,7 +602,8 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       // The leading edges' Reynolds number refuses them to M 1.25; at 1.33 they are served (0016 section 11).
       if (s.mach < 1.3) expect(r).toContain('fin leading edges: leading-edge-range');
       else expect(r).not.toContain('fin leading edges: leading-edge-range');
-      expect(r).toContain('body base: mach-range');
+      // The base below Mach 1.5 is served (W2), but not with the Basic Finner's wedges at it (0015).
+      expect(r).toContain('body base: fin-trailing-edge');
       // Below M 1.5 the fins' own-drag band is not carried (0014 section 10.7 (f)); it is the first reason.
       expect(r).toContain('fin friction: fins-own-drag-mach');
       expect(r).toContain('fin wave drag: fins-own-drag-mach');
@@ -630,7 +634,7 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
     expect(reasons(totalDragView(f, no))).toEqual(['nose wave drag: not-verified']);
     expect(reasons(totalDragView({ ...f, mach: 1.6 }, no))).toEqual([
       'nose wave drag: not-verified',
-      'body base: mach-range',
+      'body base: fin-trailing-edge',
     ]);
   });
 
@@ -708,9 +712,11 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
   const nose = exactNose(f);
 
   it('below Mach 1.8 with fins at the base; swept fins; a laminar base', () => {
-    expect(reasons(totalDragView({ ...f, mach: 1.6 }, exactNose({ ...f, mach: 1.6 })))).toEqual([
-      'body base: mach-range',
-    ]);
+    // The present factor refuses M 1.6; the rebuilt factor (0015) refuses the Basic Finner's wedges,
+    // thickest at their blunt trailing edge, and says the present factor refuses too.
+    const v = totalDragView({ ...f, mach: 1.6 }, exactNose({ ...f, mach: 1.6 }));
+    expect(reasons(v)).toEqual(['body base: fin-trailing-edge']);
+    expect(JSON.stringify(v)).toContain('the present factor (0010 section 1.3) refuses it too');
     expect(
       reasons(
         totalDragView(
@@ -726,14 +732,19 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
         ),
       ),
     ).toEqual([
-      // The fins end at the base: the factor refuses swept fins (0014 section 10.7).
-      'body base: fin-sweep',
+      // The fins end at the base: the present factor refuses swept fins (0014 section 10.7), and the
+      // rebuilt factor (0015) refuses the wedges' blunt trailing edge.
+      'body base: fin-trailing-edge',
       'fin trailing-edge base: swept-trailing-edge',
     ]);
     expect(reasons(totalDragView({ ...f, transitionReynolds: [2e7] }, nose))).toEqual([
       'body base: laminar-base',
     ]);
-    expect(reasons(totalDragView({ ...f, finCount: 3 }, nose))).toEqual(['body base: fin-count']);
+    // Three fins: the present factor refuses the count; the rebuilt factor (0015) is tried and
+    // refuses the Basic Finner's single wedges, thickest at their blunt trailing edge.
+    expect(reasons(totalDragView({ ...f, finCount: 3 }, nose))).toEqual([
+      'body base: fin-trailing-edge',
+    ]);
   });
 
   it('a rounded leading edge on a double wedge; a clipped delta with a blunt trailing edge', () => {
@@ -749,8 +760,9 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
       totalDragView({ ...f, planform: { kind: 'clipped-delta', taperRatio: 0.5 } }, nose),
     );
     // Since 0016 the blunt trailing edge of fins of varying chord is integrated along the span;
-    // the swept leading edge, the fins ending at the base, is refused by the factor (0014 10.7).
-    expect(r).toEqual(['fin leading edges: leading-edge-geometry', 'body base: fin-sweep']);
+    // the swept leading edge, the fins ending at the base, is refused by the present factor (0014
+    // 10.7), and the rebuilt factor (0015) refuses the single wedges' blunt trailing edge.
+    expect(r).toEqual(['fin leading edges: leading-edge-geometry', 'body base: fin-trailing-edge']);
   });
 
   it('inputs the page cannot take, all listed', () => {
@@ -826,6 +838,39 @@ describe('found in the libraries (0011 section 6)', { timeout: 60_000 }, () => {
       expect(label.startsWith('an analogy, not a measurement')).toBe(true);
       expect(label).toContain('tested only in the total');
     }
+  });
+});
+
+describe('a bounded fins-on-base factor is named in the claim (0014 section 10.2)', () => {
+  const body = (mach: number, fins: BaseFins) =>
+    bodyBaseDrag({
+      mach,
+      afterbody: 'cylinder',
+      boundaryLayerAtBase: 'turbulent',
+      baseAreaRatio: 1,
+      fins,
+    });
+  it("the present factor's reason, or the rebuilt factor's, by which one is bounded", () => {
+    const four = {
+      count: 4,
+      thicknessRatio: 0.08,
+      section: 'other' as const,
+      tanLeadingEdge: 0,
+      tanTrailingEdge: 0,
+      trailingEdgeAheadOfBase: 0,
+    };
+    expect(boundedReasons(body(2.8, four))).toEqual([BOUNDED_REASON]);
+    expect(boundedReasons(body(2.4, four))).toEqual([]);
+    const near = {
+      section: doubleWedge(0.024, 0.5),
+      sectionFamily: 'other' as const,
+      tanLeadingEdgeSweep: 0,
+      tanTrailingEdgeSweep: 0,
+    };
+    const three = { ...four, count: 3, thicknessRatio: 0.024, nearBase: near };
+    expect(boundedReasons(body(2.8, three))).toEqual([W1_BOUNDED_REASON]);
+    expect(boundedReasons(body(2.4, three))).toEqual([]);
+    expect(boundedReasons(undefined)).toEqual([]);
   });
 });
 

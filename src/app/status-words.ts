@@ -15,7 +15,7 @@ import type { BaseRefusalReason } from '../base/refusal';
 import type { FinRefusalReason } from '../fins/refusal';
 import type { ComponentRefusal } from '../total/total-drag';
 import type { RocketDesign } from '../rocket/design';
-import { BOUNDED_REASON, CLASS_CLAIM, type Claim } from './total-drag';
+import { BOUNDED_REASON, CLASS_CLAIM, W1_BOUNDED_REASON, type Claim } from './total-drag';
 
 /** The colour family of a status: green, amber, blue, red, grey. */
 export type Tone = 'ok' | 'warn' | 'bounded' | 'bad' | 'muted';
@@ -64,13 +64,29 @@ export const BOUNDED_WORDS: StatusWords = {
 };
 
 /** Each kind of claim, worded: a new kind fails the build here until it is. */
+/**
+ * The rebuilt fins-on-base factor's bounded values (main's W1, 0015): for
+ * plates, bounded from the relief measured with plates at the base; above
+ * Mach 2.56, as the present factor's.
+ */
+export const W1_BOUNDED_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    "An estimate with one part bounded, not measured: the fins' effect on the base drag, whose " +
+    'band the rebuilt factor sets from bounds, not from a measurement of these fins.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
 const CLAIM_KINDS: Readonly<Record<Claim['kind'], (claim: Claim) => StatusWords>> = {
   estimate: (claim) =>
     claim.reasons.includes(BOUNDED_REASON)
       ? BOUNDED_WORDS
-      : claim.text === CLASS_CLAIM
-        ? CLASS_WORDS
-        : ESTIMATE_WORDS,
+      : claim.reasons.includes(W1_BOUNDED_REASON)
+        ? W1_BOUNDED_WORDS
+        : claim.text === CLASS_CLAIM
+          ? CLASS_WORDS
+          : ESTIMATE_WORDS,
 };
 
 /** A claim of the logic in plain words. */
@@ -190,6 +206,15 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
       'with fins at the base, the base drag is measured with unswept fins only (a tapered fin ' +
       'has a swept edge)',
     change: 'unswept fins of constant chord, or fins a root chord or more ahead of the base',
+  }),
+  'fin-trailing-edge': () => ({
+    reason:
+      'the base drag with fins at the base is measured here only for flat fins with square ' +
+      'trailing edges or fins with sharp ones, not for this trailing edge (a wedge thickening ' +
+      'to it, or a rounded one)',
+    change:
+      'flat fins with square trailing edges, sharp trailing edges, or fins a root chord or more ' +
+      'ahead of the base',
   }),
   'flat-plate-fins': () => ({
     reason:

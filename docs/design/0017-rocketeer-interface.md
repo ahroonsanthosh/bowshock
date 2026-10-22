@@ -185,6 +185,7 @@ is its alone, and appears only inside its own text in Details.
 | claim `estimate`, text `ESTIMATE_CLAIM` (outside the class)         | Estimate               | Each part is computed inside its own band's range, but no measurement of a whole rocket like this checks the total, and the parts' bands are estimates here.                     | amber, ◆        |
 | claim `estimate`, text `CLASS_CLAIM` (inside the class, suspended)  | Estimate, tested class | An estimate: this rocket and speed lie inside the one class tested in free flight (the Basic Finner), but that test's claim is suspended until a corrected part is tested again. | amber, ◆        |
 | claim `estimate`, `BOUNDED_REASON` among its reasons (above M 2.56) | Estimate, bounded      | An estimate with one part bounded, not measured: the fins' effect on the base drag, whose band runs from no effect to its value at the last speed measured.                      | blue, ■         |
+| claim `estimate`, `W1_BOUNDED_REASON` (the rebuilt factor, W1)      | Estimate, bounded      | An estimate with one part bounded, not measured: the fins' effect on the base drag, whose band the rebuilt factor sets from bounds, not from a measurement of these fins.        | blue, ■         |
 | our own: the nose still solving                                     | Provisional            | Not finished: the nose is solved on grid k of n; no band yet.                                                                                                                    | grey, ○, no bar |
 
 The logic makes one kind of claim today, an estimate: the Basic Finner's
@@ -209,6 +210,7 @@ of them in Details), then what the user could change.
 | `fin-thickness`                                   | with fins at the base, the base drag is measured for fins 5% to 10% as thick as their root chord              | that thickness, or fins a root chord or more ahead of the base            |
 | `fin-sweep`                                       | with fins at the base, the base drag is measured with unswept fins only                                       | unswept fins of constant chord, or fins a root chord or more ahead        |
 | `flat-plate-fins` (main since `e42d5d4`)          | flat plates at the base lower the base drag by up to 15% in the one measurement of them, not covered          | fins a root chord or more ahead, or wedge or bevelled fins at the base    |
+| `fin-trailing-edge` (main since W1, `b86c308`)    | measured here only for flat fins with square trailing edges or sharp ones, not a wedge's thick end or a round | those trailing edges, or fins a root chord or more ahead of the base      |
 | `rounded-trailing-edge`                           | a rounded trailing edge's drag is not shown to be below a square edge's, so it cannot be bounded yet          | square or bevelled trailing edges                                         |
 | `square-leading-edge`                             | a square-cut leading edge's drag cannot yet be bounded from measurements                                      | rounded or bevelled leading edges                                         |
 | `swept-trailing-edge`                             | a swept square trailing edge's drag is not measured                                                           | an unswept trailing edge, or a bevelled one                               |
@@ -430,63 +432,89 @@ for a point not modelled, asking about its parts, or not finished);
 
 ### 8.5 The points near Mach 1 (1.0 to 1.2): planned, not wired
 
-The transonic agent's solve (`verifiedTransonicDrag` with
-`gpuTransonicEngine`, branch `transonic-mach1`, under review) gives the
-nose term from Mach 1.0 up to, not including, 1.2; the fitted solve keeps
-1.2 and up. It is not on the page until it is reviewed and on main. Until
-then the points below Mach 1.2 are put to the logic as every point is,
-and today the logic refuses them (the base, and the fins' own drag below
-Mach 1.5), so the curve shows them as results with their reasons. When it
-lands:
+The transonic agent's solve (`verifiedTransonicDrag(body, options,
+gpuTransonicEngine(device, { sweeps }))`, branch `transonic-mach1`, under
+independent review) gives the nose term from Mach 1.0 up to, not
+including, 1.2 (its RangeError says so); the fitted solve keeps 1.2 and
+up. Nothing of it is on the page until it is reviewed and on main, and no
+prototype uses its GPU path (it cycled with 4 sweeps; the fix comes with
+its S5 commit). Until then the points below Mach 1.2 are put to the logic
+as every point is: today it refuses them (the fins' own drag below Mach
+1.5, the base), and the curve shows them as results with their reasons.
+The result type is final; the page will take it so:
 
-- **Which solve.** The curve's solver is chosen by Mach number: the
-  transonic solve below 1.2, the fitted one from 1.2 (`CurveRun` takes
-  both, with a stand-in for each in its tests). The page passes the
-  outcome on to the logic, which turns it into its nose term and band;
-  the page never combines bands (asked of the logic's agents: their
-  mapping from the transonic outcome to the nose state).
-- **While it runs (minutes a point).** The point is "Solving", then, as
-  each grid ends, "Provisional" with the logic's total at that grid's
-  nose term (no band, as for the fitted points). The progress line and
-  the readout say the stage: "grid 2 of 3, 382 x 40 cells, step 4 000",
-  then "allowance: the far boundaries, domain 2 of 3" and "the cylinder,
-  domain 2 of 3". Stop cancels it through the solve's signal, in view
-  beside the progress line while it runs (the solve has no pause: Space
-  pauses the fitted points only, and says so here); the page's own
-  measured time a point is kept apart for these points, which take far
-  longer than the fitted ones.
+- **Which solve.** The curve's solver is chosen by Mach number, the
+  transonic one below 1.2 (`CurveRun` takes both, a stand-in for each in
+  its tests). Its outcome goes to the logic through the solve's own bridge,
+  `transonicNoseTerm(result)` (`{ kind: 'solved', solve: { value,
+uncertainty, grids } }` for `noseComponentOf`, `band` being a half-width
+  as `VerifiedDrag.uncertainty`; `{ kind: 'refused', message }`; null when
+  cancelled): the page never combines bands. `noseComponentOf`'s label
+  names the fitted solver (0006) today; for these points it must name the
+  transonic solver and its record (0013), a change to
+  `src/app/total-drag.ts`'s label (not its numbers) to make with the
+  wiring.
+- **While it runs (minutes a point).** "Solving", then, after each grid
+  (`onLevel`), "Provisional" with the logic's total at that grid's nose
+  term, no band, as for the fitted points. The progress line and the
+  readout follow `onProgress` (`TransonicProgress`): "grid 2 of 3, 382 x
+  40 cells, step 4 000, C_D 0.11069"; then "allowance: the far boundaries,
+  the smaller domain" and "the larger domain" (domains 0 and 2; the middle
+  one is the base grid, reported as grid 1), and the same for the
+  cylinder. Stop, in view beside the progress line while it runs, cancels
+  through `signal` (the solve has no pause: Space pauses the fitted points
+  only, and the line says so). The page's own measured time a point is
+  kept apart for these points.
 - **Solved.** The number with the logic's band and status, as any point.
-  Details gives the nose term's band in its parts as the solve gives them
-  (from the grids, the floor, the far boundaries, the cylinder), and its
-  `label` word for word, which names the reference or its absence.
-- **Refused.** "No number" and the plain reason, worded by the reason's
-  code once the solve gives one (asked for), its sentence in Details. With
-  `finer` set, the point offers the finer grid as an explicit choice the
-  user must press: "Solve Mach 1.10 on the finer grid (320 cells across):
-  about N here", N from the page's measured cell rate and the work the
-  solve says the finer grid takes (asked for); the curve does not run it
-  by itself.
-- **Not converged.** "No number: the airflow near the nose did not settle
-  on grid k, so no band can be given here", with the grids that ran.
+  Details gives the nose term's band in its parts, as the solve gives them
+  (`parts`: the grids, the floor, the far boundaries, the cylinder, each
+  with its share of the band), the reference note, and the solve's `label`
+  word for word ("verified by grid convergence", the reference or its
+  absence).
+- **Refused.** "No number" and the plain reason by its code: `mach-1` (at
+  Mach 1.0 the far boundaries move the drag, and their allowance rule is
+  not yet tested there), `blunt-nose` (the far boundaries' allowance needs
+  nested domains, which a blunt nose's grids do not have yet), `no-band`
+  (the grids give no error band), `far-field` and `cylinder` (that
+  allowance could not be measured); the solve's `message` in Details. Each
+  is a row of section 5's table when it lands, the build failing until it
+  is worded. With `finer` set, the point offers the finer grid as a choice
+  the user must press: "Solve Mach 1.10 on the finer grid (320 cells
+  across): up to N here", N = (`cellUpdates` + `repeatedCellUpdates`) /
+  the page's measured cell rate, since a solve to r = 16 repeats the
+  refused solve's work first; "up to", the solve's step prediction running
+  high (9 800 predicted against 7 300 for the cone at Mach 1.1). The curve
+  never runs it by itself.
+- **Not converged.** By its code, `not-settled` ("the airflow near the
+  nose did not settle on grid k, so no band can be given here") or
+  `not-finite` ("the airflow solve broke down on grid k"), with the grids
+  that ran (`levels`).
 - **Stopped.** "Stopped before it finished: no number", the grids that
   finished in Details; Compute starts it again.
-- **The airflow.** Drawn if the solve hands the page its field (asked for:
-  a `FlowSource` on the solver's device, as the fitted solve's); until
-  then the views say "No airflow is drawn for the points near Mach 1".
+- **The airflow.** `onLive` hands the page each grid's field as it starts
+  (a `FlowSource`: nodes placed, mirrored, no fitted shock, the state
+  refreshed every 64 steps) and null just before its buffers go, when the
+  views freeze it, as for the fitted solve (one hook for both, through
+  `solveNoseDrag`). Its bounds are the whole domain, 100 radii from the
+  body (224 on the larger allowance grid), so fitting them would show the
+  body as a speck: these views get their own frame, the nose and body
+  with the near flow (a few body lengths), and the legend says the domain
+  reaches further.
 
 ## 9. Presets
 
-| Preset                                   | What                                                                                                                                    | What the logic gives today (nose stand-in for the claim)                                                       |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Basic Finner (reference test rocket)     | the reference projectile whose free flights (DREV TM 9703) tested the total, 30 mm, exactly as 0011's (the body to six decimals)        | refused at Mach 1.0 to 1.6; Estimate, tested class at 1.8 and 2.0; Estimate at 2.2 and 2.4; bounded 2.6 to 3.0 |
-| Example: 54 mm high-power rocket, 4 fins | tangent ogive, minimum diameter; four rectangular fins of 1/4 in (6.35 mm) sheet, both edges bevelled over 20 mm, at the base; Mach 2.4 | refused at 1.0 to 1.6; Estimate at 1.8 to 2.4; Estimate, bounded at 2.6 to 3.0                                 |
-| Example: 98 mm rocket, 3 fins            | the commonest hobby layout: three tapered swept plates with rounded edges at the base, two rail buttons (asked about first); Mach 1.6   | no number at any Mach number (three fins at the base, a rounded trailing edge), with the reasons and changes   |
+| Preset                                   | What                                                                                                                                    | What the logic gives today (nose stand-in for the claim)                                                                                                             |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Basic Finner (reference test rocket)     | the reference projectile whose free flights (DREV TM 9703) tested the total, 30 mm, exactly as 0011's (the body to six decimals)        | refused at Mach 1.0 to 1.6 (at 1.6 its wedges' thick trailing edges at the base); Estimate, tested class at 1.8 and 2.0; Estimate at 2.2 and 2.4; bounded 2.6 to 3.0 |
+| Example: 54 mm high-power rocket, 4 fins | tangent ogive, minimum diameter; four rectangular fins of 1/4 in (6.35 mm) sheet, both edges bevelled over 20 mm, at the base; Mach 2.4 | refused at 1.0 to 1.4 (the fins' own drag below 1.5); Estimate at 1.6 to 2.4 (at 1.6 by W1's rebuilt factor); Estimate, bounded at 2.6 to 3.0                        |
+| Example: 98 mm rocket, 3 fins            | the commonest hobby layout: three tapered swept plates with rounded edges at the base, two rail buttons (asked about first); Mach 1.6   | no number at any Mach number (a rounded trailing edge at the base), with the reasons and changes                                                                     |
 
 Each example is labelled "Example, not a real rocket", and shows what the
 page does with a common rocket today: the second one honestly, with no
 number. The 54 mm example's fins were flat plates (a rounded leading and
 a square trailing edge) until main refused flat plates at the base
-(`e42d5d4`); bevelled sheet fins are as common, and served.
+(`e42d5d4`); bevelled sheet fins are as common, and served. Main's W1
+(`b86c308`, the rebuilt fins-on-base factor) serves it from Mach 1.6.
 
 ## 10. From 0012: kept, and superseded
 

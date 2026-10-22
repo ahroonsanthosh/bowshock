@@ -56,7 +56,33 @@ const solver =
     return outcome;
   };
 
-const CASES: readonly { name: string; id: string; mach: number; word: string | null }[] = [
+/** The 54 mm example with flat sheet fins (a rounded leading, a square trailing edge). */
+function plates54(): RocketDesign {
+  const b = preset('example-54').design;
+  const set = b.finSets[0]!;
+  return {
+    ...b,
+    name: 'Example: 54 mm, flat plates',
+    finSets: [
+      {
+        ...set,
+        section: {
+          kind: 'flat',
+          leadingEdge: { kind: 'rounded' },
+          trailingEdge: { kind: 'square' },
+        },
+      },
+    ],
+  };
+}
+
+const CASES: readonly {
+  name: string;
+  id: string;
+  mach: number;
+  word: string | null;
+  design?: () => RocketDesign;
+}[] = [
   {
     name: 'the Basic Finner inside its class',
     id: 'basic-finner',
@@ -65,13 +91,20 @@ const CASES: readonly { name: string; id: string; mach: number; word: string | n
   },
   { name: 'an estimate outside it', id: 'example-54', mach: 2, word: 'Estimate' },
   { name: 'a bounded case', id: 'basic-finner', mach: 2.8, word: 'Estimate, bounded' },
+  {
+    name: "a case the rebuilt factor bounds (main's W1)",
+    id: 'flat plates at the base',
+    mach: 2,
+    word: 'Estimate, bounded',
+    design: plates54,
+  },
   { name: 'a refused case', id: 'basic-finner', mach: 1.4, word: null },
 ];
 
-describe('the numbers the page shows are the logic’s', { timeout: 120_000 }, () => {
+describe('the numbers the page shows are the logic’s', { timeout: 600_000 }, () => {
   for (const c of CASES) {
     it(`${c.name}: ${c.id} at Mach ${c.mach.toFixed(1)}`, async () => {
-      const design = preset(c.id).design;
+      const design = c.design?.() ?? preset(c.id).design;
       const run = new CurveRun(
         { design, without: false, step: 0.2, finest: 8 },
         solver(design),
