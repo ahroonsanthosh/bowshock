@@ -277,10 +277,12 @@ mirrored (2D) is exact; outside the fitted bow shock the flow is the free
 stream, exactly, and is shown so (the 2D view does, `fca08a8`); behind
 the base the solver computes nothing, and that region is marked "not
 simulated", never painted, and never in the colour that means uniform
-flow; the fins are drawn as geometry, with the note "The airflow shown is
-around the body; the fins' drag is computed separately"; every colour or
-brightness channel has a legend with real values and units, and says what
-dark means.
+flow; the fins are drawn as geometry, with the note "The axisymmetric
+solution, revolved; fins are not in the airflow" on the 3D legend and in
+the 3D PNG (the advisor's item 10, 2026-10-22: the glowing-shell look is a
+3D solver's, so the page says this flow is not 3D), and "the fins' drag is
+computed separately"; every colour or brightness channel has a legend with
+real values and units, and says what dark means.
 
 ### 6.3 The side view (2D), secondary
 

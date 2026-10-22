@@ -1412,7 +1412,9 @@ export class FlowScene3D {
           )
         : undefined;
     const notes = [
-      { text: 'The airflow shown is around the body; the fins\u2019 drag is computed separately.' },
+      // The advisor's item 10: the glowing shells read as a 3D simulation unless this is said.
+      { text: 'The axisymmetric solution, revolved; fins are not in the airflow.' },
+      { text: 'The fins\u2019 drag is computed separately.' },
       { text: 'Behind the base: not simulated.' },
     ];
     s.notes = this.sprite(

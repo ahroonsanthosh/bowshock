@@ -31,7 +31,8 @@ export function paletteGradient(colour: SceneScale['colour'], stops = 17): strin
 
 /**
  * The page's legend for the 3D view's colour: the quantity, its unit and
- * range on the scene's palette, and what the scene's own legend says (the
+ * range on the scene's palette, that the flow is the axisymmetric solution
+ * revolved with the fins not in it, and what the scene's own legend says (the
  * free stream's value, the shells' values, the cells' extremes where the
  * bar clips them, what black means) and that behind the base is not
  * simulated, all in real values.
@@ -40,6 +41,8 @@ export function sceneLegend(s: SceneScale): LegendScale {
   const span = s.max - s.min;
   const clipped = s.cellMin < s.min - 1e-9 * span || s.cellMax > s.max + 1e-9 * span;
   const notes = [
+    // The advisor's item 10: the look is FluidX3D's, a 3D solver's; this flow is not 3D.
+    'The axisymmetric solution, revolved; fins are not in the airflow.',
     `Free stream ${formatScaleValue(s.freeValue)}.`,
     s.levels.length > 0 ? `Shells at ${s.levels.map(formatScaleValue).join(', ')}.` : '',
     clipped
