@@ -8,7 +8,7 @@
  * (axe-core), in each field the flow page shows.
  *
  *   npm run build
- *   node scripts/interface-check.mjs [--out docs/research/interface] [--pages ramp,shock-tube]
+ *   node scripts/interface-check.mjs [--out docs/research/interface] [--pages ramp,shock-tube] [--widths 390,1440]
  *
  * Without BASE_URL it serves dist/ with `vite preview`; with it (for
  * example a dev server's http://localhost:5173) it checks that site.
@@ -407,6 +407,7 @@ async function keyboard(page, keys) {
 
 const out = argument('out', 'docs/research/interface');
 const only = argument('pages', null)?.split(',');
+const widths = argument('widths', null)?.split(',').map(Number);
 await mkdir(out, { recursive: true });
 const server = await serve();
 const browser = await chromium.launch({
@@ -421,14 +422,15 @@ const browser = await chromium.launch({
 let failures = 0;
 try {
   for (const spec of PAGES.filter((p) => only === undefined || only.includes(p.id))) {
-    for (const size of WIDTHS) {
+    for (const size of WIDTHS.filter((w) => widths === undefined || widths.includes(w.width))) {
       const page = await browser.newPage({ viewport: size, deviceScaleFactor: 1 });
       const errors = [];
       page.on('console', (m) => {
         if (m.type() === 'error') errors.push(m.text());
       });
       page.on('pageerror', (e) => errors.push(e.message));
-      await page.goto(`${server.url}/${spec.path}`);
+      // A loaded machine (solver runs beside it) can take its time to load the page.
+      await page.goto(`${server.url}/${spec.path}`, { timeout: 180_000 });
       const ready = await spec.ready(page);
       const file = path.join(out, `${spec.id}-${size.width}.png`);
       await page.screenshot({ path: file });

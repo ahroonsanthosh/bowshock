@@ -436,9 +436,10 @@ function fitScene(): void {
   const dpr = window.devicePixelRatio || 1;
   // A three-quarter view is about 1.4 times as wide as tall: between the panels, as a rule.
   const r = shell.drawingRect(1.4);
-  // The scene fits the flow a little past the rect's edges (its far reaches may leave the
-  // view): inset, so that the whole rocket stays clear of the panels.
-  const dx = 0.07 * r.width;
+  // The scene fits the flow's outline and then comes closer (0.84 of the distance), so the
+  // outline runs about 7% past each side of the rect, the nose's tip with it: inset by more,
+  // so that the whole rocket stays clear of the panels.
+  const dx = 0.12 * r.width;
   const dy = 0.04 * r.height;
   scene.fit({
     x: (r.x + dx) * dpr,
@@ -1124,8 +1125,17 @@ function download(blob: Blob, name: string): void {
 
 // -------------------------------------------------------------- import
 
-const importer = await loadImporter();
-importButton.hidden = importer === null;
+// Loaded on its own: the page draws and solves without waiting for it; the button shows once it has.
+let importer: Awaited<ReturnType<typeof loadImporter>> = null;
+importButton.hidden = true;
+loadImporter()
+  .then((load) => {
+    importer = load;
+    importButton.hidden = load === null;
+  })
+  .catch((error: unknown) => {
+    shell.toasts.show(`OpenRocket import is not available here: ${String(error)}`, 'bad', 8);
+  });
 importButton.addEventListener('click', () => {
   importFile.click();
 });
@@ -1244,7 +1254,7 @@ async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
       if (canvas3d.width !== width) canvas3d.width = width;
       if (canvas3d.height !== height) canvas3d.height = height;
     };
-    // Sized while shown, so that its first frame is at the window's size.
+    // Shown while it is set up, so that its first frame is at the window's size.
     canvas3d.hidden = false;
     resize();
     const made = await render3d.FlowScene3D.create(gpu, canvas3d, {
