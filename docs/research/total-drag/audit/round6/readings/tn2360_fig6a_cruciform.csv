@@ -1,0 +1,29 @@
+figure,series,x,y,err_y,how
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),1.003,0.0144,0.0003,rule centroid from the centre dot (dot at 1.002; 0.0144); match 0.72 at scale 1.1 (next t/c=0.05 (circle) 0.67); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),1.003,0.0094,0.0003,rule centroid from the centre dot (dot at 1.002; 0.0094); match 0.54 at scale 1.1 (next t/c=0.05 (circle) 0.46); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),0.9999,0.0071,0.0003,rule centroid from the centre dot (dot at 0.999; 0.0070); match 0.74 at scale 1 (next t/c=0.10 (square) 0.54); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),0.8009,0.0031,0.0003,rule centroid from the centre dot (dot at 0.7995; 0.0031); match 0.79 at scale 1 (next t/c=0.05 (circle) 0.78); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),0.6025,0.0040,0.0003,rule centroid from the centre dot (dot at 0.6016; 0.0039); match 0.83 at scale 1 (next t/c=0.10 (square) 0.77); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),0.6027,-0.0112,0.0003,rule centroid from the centre dot (dot at 0.6012; -0.0112); match 0.73 at scale 1.1 (next t/c=0.05 (circle) 0.51); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),0.4023,-0.0049,0.0003,rule centroid from the centre dot (dot at 0.4014; -0.0051); match 0.83 at scale 1 (next t/c=0.10 (square) 0.83); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),0.2011,-0.0231,0.0003,rule centroid from the centre dot (dot at 0.2002; -0.0232); match 0.85 at scale 1 (next t/c=0.10 (square) 0.68); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),0.2009,-0.0644,0.0003,rule centroid from the centre dot (dot at 0.1996; -0.0644); match 0.52 at scale 1 (next t/c=0.05 (circle) 0.39); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),0.1991,-0.0598,0.0003,rule centroid from the centre dot (dot at 0.1978; -0.0598); match 0.66 at scale 1 (next t/c=0.05 (circle) 0.53); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),0.0006751,-0.0739,0.0003,rule centroid from the centre dot (dot at -0.0002143; -0.0740); match 0.83 at scale 1 (next t/c=0.10 (square) 0.63); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),0.0004882,-0.1207,0.0003,rule centroid from the centre dot (dot at -0.0008584; -0.1207); match 0.88 at scale 1 (next t/c=0.05 (circle) 0.82); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.002496,-0.1299,0.0003,rule centroid from the centre dot (dot at -0.003849; -0.1299); match 0.87 at scale 1 (next t/c=0.05 (circle) 0.81); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.2001,-0.1355,0.0003,rule centroid from the centre dot (dot at -0.2015; -0.1355); match 0.68 at scale 1 (next t/c=0.05 (circle) 0.61); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.2007,-0.1242,0.0003,rule centroid from the centre dot (dot at -0.202; -0.1242); match 0.80 at scale 1 (next t/c=0.05 (circle) 0.75); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),-0.4,-0.0883,0.0003,rule centroid from the centre dot (dot at -0.4009; -0.0885); match 0.84 at scale 1 (next t/c=0.10 (square) 0.68); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.4003,-0.1693,0.0003,rule centroid from the centre dot (dot at -0.4017; -0.1693); match 0.69 at scale 1 (next t/c=0.05 (circle) 0.66); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),-0.5994,-0.0740,0.0003,rule centroid from the centre dot (dot at -0.6003; -0.0741); match 0.76 at scale 1 (next t/c=0.10 (square) 0.60); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.599,-0.0914,0.0003,rule centroid from the centre dot (dot at -0.6002; -0.0914); match 0.70 at scale 0.9 (next t/c=0.05 (circle) 0.68); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.6006,-0.0982,0.0003,rule centroid from the centre dot (dot at -0.6019; -0.0982); match 0.87 at scale 0.9 (next t/c=0.05 (circle) 0.84); x err 0.00113; LOW MARGIN
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),-0.7986,-0.0332,0.0003,rule centroid from the centre dot (dot at -0.7995; -0.0333); match 0.88 at scale 1 (next t/c=0.10 (square) 0.73); x err 0.00113
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),0.4012,-0.0180,0.0005,legend-glyph template at scale 1; match 0.73; x err 0.00192; dot on a gridline
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),-0.1987,-0.0643,0.0005,legend-glyph template at scale 0.9; match 0.85; x err 0.00192; dot on a gridline
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.8004,0.0044,0.0021,legend-glyph template at scale 1; match 0.90; x err 0.00192; two squares overlap
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.8006,0.0108,0.0021,legend-glyph template at scale 1; match 0.81; x err 0.00192; two squares overlap
+TN 2360 fig. 6(a) cruciform tail,t/c=0.05 (circle),-0.9971,0.0270,0.0005,legend-glyph template at scale 1; match 0.92; x err 0.00192; at the frame
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.995,0.1146,0.0005,legend-glyph template at scale 0.9; match 0.97; x err 0.00192; at the frame
+TN 2360 fig. 6(a) cruciform tail,t/c=0.10 (square),-0.001526,-0.1390,0.0021,legend-glyph template at scale 0.9; match 0.93; x err 0.00192; third square at x/c 0; overlapping
