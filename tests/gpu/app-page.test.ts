@@ -78,7 +78,7 @@ describe('the app page', () => {
     // The 3D view loads on its own once the GPU is up; this test's frame cannot load modules
     // on demand (the test runner's), so here the side view, its fallback, may show instead.
     await until(
-      () => !flow3d.hidden || /the side view shows the airflow/.test(text('.toasts')),
+      () => !flow3d.hidden || /side view shows the airflow/i.test(text('.toasts')),
       'a view of the airflow',
       120_000,
     );
@@ -87,8 +87,12 @@ describe('the app page', () => {
     expect(text('#flow-note')).toContain('Hatched: behind the base, not simulated.');
     expect(text('#flow-note')).toContain('their drag computed separately');
     if (!shown3d) {
-      // The fallback: the side view and its field mode bar; no 3D | Side switch.
+      // The fallback: the side view and its field mode bar; no 3D | Side switch; and the
+      // airflow's note keeps saying which step failed (0017 section 6.5).
       expect((doc.querySelector('.flow-switch') as HTMLElement).hidden).toBe(true);
+      expect(text('#flow-note')).toMatch(
+        /The 3D view could not be set up: (its code could not be fetched|the GPU did not set it up)/,
+      );
       return;
     }
     const win = frame.contentWindow as Window & typeof globalThis;
@@ -97,7 +101,7 @@ describe('the app page', () => {
     expect(flow3d.hidden).toBe(true);
     win.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'v', bubbles: true }));
     await until(() => !flow3d.hidden, 'the 3D view again');
-  });
+  }, 180_000);
 
   it("shows the first point's provisional C_D: the logic's total with that grid's nose", async () => {
     // The first point solved: the first of the order (the ends, then the middles) not refused.
