@@ -1365,7 +1365,8 @@ and final.
     outside it. The nose is the sharp cone the run took (its wave drag
     the exact Taylor-Maccoll value; on the page, the page's solve of that
     cone).
-  - Two disjoint windows of Mach and Reynolds number on length, with no
+  - (As first written; superseded by the correction below.) Two disjoint
+    windows of Mach and Reynolds number on length, with no
     interpolation across the gap (Mach 1.827 to 2.423 was not tested; its
     rounds 3249, 3255 and 3256 were out by 10.6 item 5): Mach 1.801 to
     1.827 with Reynolds number 7.965e6 to 8.870e6, and Mach 2.423 to 2.468
@@ -1381,6 +1382,30 @@ and final.
     (first window) and 1.8% (second) beyond the Reynolds numbers the
     nearest round reached,
     as the class's own box has corners no shot flew (0011 section 3).
+  - _Correction, 2026-10-22, after the independent review of bee550c_
+    (made before this amendment reached the main branch, and before any
+    new data were looked at): the boxes are replaced. Their corners were
+    validated though no round flew there: Mach 1.801 at 8.87e6, 1.44%
+    above the highest Reynolds number round 2591 reached at any corner
+    (8.7446e6), and Mach 2.468 at 1.072e7, 1.77% below the lowest of round
+    3264 (1.0914e7). In the run the Reynolds number on length over the
+    Mach number is one range at all seven rounds, 4.422072e6 to
+    4.855414e6, since it depends only on the diameter and the air. The
+    rule keeps the two Mach windows, 1.801 to 1.827 and 2.423 to 2.468,
+    nothing between, and takes the Reynolds number on length within
+    4.423e6 to 4.855e6 times the Mach number (the json's range rounded
+    inward to four figures): at Mach 1.801, 7.966e6 to 8.744e6; at 2.468,
+    1.092e7 to 1.198e7. Every case it admits lies within the Reynolds
+    numbers the run's corners spanned at that Mach number. The Reynolds
+    number and the temperature are still checked apart, so the page
+    accepts pairs the run never had (288 K at the lowest Reynolds number
+    per unit Mach number, where the run's 288 K corners lay at the
+    higher end); at a given Reynolds number the temperature moves the
+    total by at most 9.4e-5 of its value over 288 to 298 K at the
+    windows' ends (`tests/app/brl934-sub-class.test.ts`), and by at most
+    0.13% over the class's 216.65 to 320 K (0011 section 3). The 0.5%
+    tolerance on each dimension is the class's, for typing; the run tested
+    the nominal shape only.
   - Static temperature 288 to 298 K, the run's air range (10.6 item 2).
   - Zero incidence, power off, as the page computes every total.
   - The inputs (transition, wall temperature, roughness) are not part of
@@ -1393,13 +1418,15 @@ and final.
   solver's allowance) its total, model-form band and every component and
   input band equal the run's recorded values exactly (difference 0 in
   double precision). On the page the nose term is the page's solve of the
-  cone, which lies within its own band of the Taylor-Maccoll value: on
-  cones of 5 to 30 deg at Mach 1.3 to 3 the fitted solve's converged
-  value lies at most 3.4e-5 of the value from it (0006; the page's GPU
-  solver matches the CPU within 8e-7 there, 0011 section 3), so at these
-  rounds (nose terms 0.0947 to 0.1105) the page's total lies within about
-  4e-6 in C_D of the run's (the 7e-5 allowance alone is under 8e-6), below
-  the fourth decimal shown. The page's Basic Finner body, typed to six
+  cone. Its difference from the Taylor-Maccoll value was not measured on
+  the page at these rounds; it is bounded from 0006's measured agreement:
+  on cones of 5 to 30 deg at Mach 1.3 to 3 the fitted solve's converged
+  value lies at most 3.4e-5 of the value from it (the page's GPU solver
+  matches the CPU within 8e-7 there, 0011 section 3), so at these rounds
+  (nose terms 0.0947 to 0.1105) the page's total should lie within about
+  4e-6 in C_D of the run's (the 7e-5 allowance alone is under 8e-6),
+  below the fourth decimal shown. A GPU page test drives the page's own
+  solve at one such case (`tests/gpu/nose-drag-page.test.ts`). The page's Basic Finner body, typed to six
   decimals, moves the total by under 1e-8 (6e-9).
 - _The label for a case inside it_, plainly and in a few sentences:
   "validated", tested once against BRL Report 934's range A (seven
@@ -1409,7 +1436,11 @@ and final.
   air and the trailing-edge area at the test were assumed, not printed in
   the report (10.6); with DREV's 0.004 cal edge in place of the sharp one
   the residuals at Mach 2.42 and 2.47 fall to -1.1% and -4.2%, a
-  sensitivity, not a verdict. The full list (each round's residual and
+  sensitivity, not a verdict. (Corrected with the windows, after the same
+  review: the tolerances are said as +-25% to +-28%, as 0008 has them;
+  the label also says that halving the trailing-edge area, the run's
+  largest sensitivity, raises the residuals to +14.5% to +22.3%, and that
+  DREV's edge was refused at the five rounds at Mach 1.80 to 1.83.) The full list (each round's residual and
   tolerance, the trailing-edge term halved, the alternative readings) is
   in the page's details and in 0020.
 - _The class's reason, revised._ "Until ... is run and passes" is no

@@ -1516,7 +1516,7 @@ validated claim to show).
 sub-class validated** (0014 section 10.7 (q); the run, 0020). Range A was
 run once as registered and the present model passed at all seven rounds
 it serves: measured over modelled +3.9% to +11.0% (mean +7.3%, the model
-low at every round), inside tolerances of about +-27%. It overlaps the
+low at every round), inside tolerances of +-25% to +-28%. It overlaps the
 class in nothing: inside the class's Mach range its rounds flew at
 Reynolds numbers of 7.96e6 to 8.87e6 on length, below the floor of
 1.19e7, and every round was run with sharp fin leading edges, where the
@@ -1526,15 +1526,14 @@ run and passed at conditions outside it, so nothing has tested the
 corrected factor inside it. By the owner's decision a new, narrow
 sub-class is validated at exactly the tested conditions, and is the only
 total labelled validated: the Basic Finner as transcribed, each dimension
-within 0.5%, with sharp fin leading edges; Mach 1.801 to 1.827 with
-Reynolds number 7.965e6 to 8.870e6 on length, or Mach 2.423 to 2.468
-with 1.072e7 to 1.198e7, nothing between; 288 to 298 K
+within 0.5%, with sharp fin leading edges; Mach 1.801 to 1.827 or 2.423 to 2.468 (nothing between), with the Reynolds number on length 4.423e6 to 4.855e6 times the Mach number (the run's range at every round, from the diameter and the air); 288 to 298 K
 (`brl934SubClass` in `src/app/total-drag.ts`). Its label says the test
 was made once, that the model reads low at every round, that the
 tolerance is wide, that the diameter, air and trailing-edge area at the
-test were assumed (0014 section 10.6), and that with DREV's rounded edge
-the residuals at Mach 2.42 and 2.47 fall to -1.1% and -4.2%, a
-sensitivity. The rebuilt factor (W1) was refused at every round and has
+test were assumed (0014 section 10.6), that halving the trailing-edge
+area raises the residuals to +14.5% to +22.3%, and that DREV's rounded
+edge was refused at the five rounds at Mach 1.80 to 1.83 and lowers the
+residuals at Mach 2.42 and 2.47 to -1.1% and -4.2%, a sensitivity. The rebuilt factor (W1) was refused at every round and has
 no hold-out.
 
 - **What moved inside the class, and why.** Below M 2.15 the superseded
@@ -1572,7 +1571,10 @@ no hold-out.
   suspended. Above the class the total falls by 0.7% to 1.0% at M 2.35
   to 2.41 and by 2.6% to 3.0% at M 2.66 to 2.97 (section 11.6).
 
-- **The class is kept for the registered test:** Mach 1.799 to 2.15
+- **The class is kept for the registered test** (as written on
+  2026-10-21; that test has since run and covers nothing inside the
+  class, so the class is kept for a test that covers it, none registered,
+  0014 section 10.7 (q)): Mach 1.799 to 2.15
   with its other limits (0011 section 3). That test covers its Mach range
   at BRL's conditions, not the whole class: BRL's Reynolds numbers (about
   0.7 times DREV's, at or below the class's floor of 1.19e7) and its sharp

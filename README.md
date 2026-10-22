@@ -79,7 +79,7 @@ against a second free-flight set held back for it: BRL Report 934's Basic
 Finner rounds in its range A ([0020](docs/design/0020-brl934-range-a.md)).
 It passed at all seven rounds it serves: measured drag 3.9% to 11.0%
 above the model, so **the model reads low at every round** (by 7.3% on
-average), inside tolerances of about +-27%, which are wide, so the pass
+average), inside tolerances of +-25% to +-28%, which are wide, so the pass
 alone says little. The models' diameter, the range's air and the fins'
 trailing-edge area were not printed in the report and were assumed
 ([0014](docs/design/0014-refusals.md) section 10.6). Those rounds flew
@@ -89,9 +89,9 @@ By the owner's decision of 2026-10-22 ([0014](docs/design/0014-refusals.md)
 section 10.7 (q)):
 
 - **Validated, narrowly:** the Basic Finner with sharp fin leading edges,
-  at Mach 1.801 to 1.827 with Reynolds number 7.965e6 to 8.870e6 on
-  length, or Mach 2.423 to 2.468 with 1.072e7 to 1.198e7 (nothing in
-  between), at 288 to 298 K: exactly the conditions tested. With DREV's
+  at Mach 1.801 to 1.827 or 2.423 to 2.468 (nothing in between), with
+  the Reynolds number on length 4.423e6 to 4.855e6 times the Mach number,
+  at 288 to 298 K: the conditions tested. With DREV's
   rounded fin leading edge the residuals at Mach 2.42 and 2.47 would fall
   to -1.1% and -4.2%, a sensitivity, not a verdict.
 - **An estimate, not validated:** the Basic Finner's own class (DREV's
@@ -428,8 +428,8 @@ and the base, for a nose and a cylinder to a flat base with a set of fins
 (rectangular, trapezoidal or clipped-delta; single-wedge, double-wedge or
 hexagonal sections). A total is validated only inside the Basic Finner's
 BRL sub-class: that rocket as transcribed with sharp fin leading edges, at
-Mach 1.801 to 1.827 and Reynolds number 7.965e6 to 8.870e6 on length, or
-2.423 to 2.468 and 1.072e7 to 1.198e7, at 288 to 298 K, labelled with what
+Mach 1.801 to 1.827 or 2.423 to 2.468, with the Reynolds number on length
+4.423e6 to 4.855e6 times the Mach number, at 288 to 298 K, labelled with what
 its one test can and cannot say. Every other total is an estimate, not
 validated: inside that rocket's class (as
 transcribed, each dimension within 0.5%, at Mach 1.799 to 2.15, Reynolds
@@ -527,12 +527,13 @@ transonic results will carry wider bands.
   (draft), and the Basic Finner gate, which the total passed at all 11
   shots (the second run; the first was refused), and the correction of the
   fins-on-base factor to TN 3819 fig. 35's free-flight curve, the gate
-  re-run with it as a recorded correction, and the validated claim
-  suspended until BRL Report 934's range A tests the corrected factor
-  (section 11).
+  re-run with it as a recorded correction, and the class's validated claim
+  suspended; BRL Report 934's range A, the corrected factor's test,
+  passed at conditions outside the class, so the class stays an estimate
+  and a narrow sub-class at those conditions is validated (section 11.7).
 - [0011](docs/design/0011-total-drag-on-the-page.md): the total drag on the
   drag page (draft): the nose term from the page's solve, the class rule
-  (kept for the next registered test; its validated claim suspended), the
+  (its validated claim suspended) and the BRL sub-class's (validated), the
   labels, and the flight condition from altitude, Mach number and diameter
   in the 1976 standard atmosphere.
 - [0012](docs/design/0012-interface.md): the interface (draft): a

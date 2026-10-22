@@ -189,11 +189,15 @@ for the present model:
     revised to say that this test was run and passed at conditions
     outside it, and a narrow sub-class is validated at exactly the tested
     conditions: the Basic Finner with sharp fin leading edges, at Mach
-    1.801 to 1.827 with Reynolds number 7.965e6 to 8.870e6 on length or
-    Mach 2.423 to 2.468 with 1.072e7 to 1.198e7 (the run's ranges in the
-    json, rounded inward; section 2's 7.96e6 and 1.20e7 are rounded
-    outward), nothing between, at 288 to 298 K. The page's total at the
-    seven rounds equals the run's (`tests/app/brl934-sub-class.test.ts`).
+    1.801 to 1.827 or 2.423 to 2.468, nothing between, with the Reynolds
+    number on length 4.423e6 to 4.855e6 times the Mach number (in the
+    json the same range at every round, 4.422072e6 to 4.855414e6, since
+    it depends only on the diameter and the air; rounded inward), at 288
+    to 298 K. (As first written in (q) the Reynolds bounds were boxes,
+    7.965e6 to 8.870e6 and 1.072e7 to 1.198e7, whose corners lay up to
+    1.8% beyond any round; corrected after the independent review, as
+    (q) records.) The page's total at the seven rounds equals the run's
+    (`tests/app/brl934-sub-class.test.ts`).
 
 ## 6. Findings stated beside the verdict
 

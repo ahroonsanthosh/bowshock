@@ -228,22 +228,30 @@ section 10.7 (q)), since 2026-10-22 the only cases labelled validated:
 BRL Report 934's range A as it was run (0020), every bound the run's and
 none wider. Disjoint from the class: its fin leading edges are sharp.
 
-| Condition                | Inside                                                                                            | Why                                                                                                     |
-| ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Shape                    | the class's, each dimension within 0.5%, except the fin leading edges                             | the Basic Finner as transcribed; the trailing edge constant across the span, 0.32 cal^2 as run          |
-| Fin leading edges        | sharp (radius 0); any rounded edge, DREV's 0.004 cal included, is outside                         | 0014 section 10.6 item 3: sharp, from period drawings of the model                                      |
-| Mach and Reynolds number | Mach 1.801 to 1.827 at 7.965e6 to 8.870e6 on length, or Mach 2.423 to 2.468 at 1.072e7 to 1.198e7 | the rounds' Mach numbers; the least and greatest Reynolds number over the run's corners, rounded inward |
-| Between the windows      | outside: Mach 1.827 to 2.423 was not tested, and nothing is interpolated across it                | its rounds 3249, 3255 and 3256 were out by the admission rule                                           |
-| Static temperature       | 288 to 298 K                                                                                      | the range's air as the run took it (0014 section 10.6 item 2)                                           |
+| Condition                 | Inside                                                                             | Why                                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Shape                     | the class's, each dimension within 0.5%, except the fin leading edges              | the Basic Finner as transcribed; the trailing edge constant across the span, 0.32 cal^2 as run |
+| Fin leading edges         | sharp (radius 0); any rounded edge, DREV's 0.004 cal included, is outside          | 0014 section 10.6 item 3: sharp, from period drawings of the model                             |
+| Mach number               | 1.801 to 1.827, or 2.423 to 2.468                                                  | the rounds' Mach numbers                                                                       |
+| Reynolds number on length | 4.423e6 to 4.855e6 times the Mach number                                           | the run's range at every round (it depends only on the diameter and the air), rounded inward   |
+| Between the windows       | outside: Mach 1.827 to 2.423 was not tested, and nothing is interpolated across it | its rounds 3249, 3255 and 3256 were out by the admission rule                                  |
+| Static temperature        | 288 to 298 K                                                                       | the range's air as the run took it (0014 section 10.6 item 2)                                  |
 
-The Reynolds ends are the run's, 7.9642e6 to 8.8708e6 and 1.07147e7 to
-1.19832e7 (`docs/research/base-and-total/runs/brl934-range-a.json`),
-rounded inward to four figures; 0020's three-figure 7.96e6 and 1.20e7 lie
-0.05% and 0.14% beyond what was run. The windows are boxes: their
-corners lie up to 1.4% and 1.8% beyond the Reynolds numbers the nearest
-round reached, as the class's box has corners no shot flew. A sharp
-Basic Finner outside the windows is an estimate whose reasons name both
-the class's conditions and the sub-class's.
+The Reynolds number per unit Mach number is the run's, 4.422072e6 to
+4.855414e6 over its four corners of diameter and air, the same at all
+seven rounds (`docs/research/base-and-total/runs/brl934-range-a.json`),
+rounded inward to four figures. As first written (a2e8211) the rule took
+boxes of Reynolds number over each window, 7.965e6 to 8.870e6 and
+1.072e7 to 1.198e7, whose corners lay up to 1.44% and 1.77% beyond any
+round's; the independent review found it, and the rule was corrected
+(0014 section 10.7 (q)). The Reynolds number and the temperature are
+checked apart, so the page accepts pairs the run never had (288 K at the
+lowest Reynolds number per unit Mach number); at a given Reynolds number
+the temperature moves the total by at most 9.4e-5 of its value over 288
+to 298 K at the windows' ends. The 0.5% tolerance on each dimension is
+the class's, for typing, and was not tested. A sharp Basic Finner
+outside the sub-class is an estimate whose reasons name both the
+class's conditions and the sub-class's.
 
 On the page's own path, with the run's nose (Taylor-Maccoll with the
 fitted solver's allowance), the total at each of the seven rounds, its
@@ -288,13 +296,16 @@ every other headline ends ": an estimate, not validated".
   Report 934's range A, where this model was tested once, against seven
   rounds in free flight, and passed (design records 0020 and 0014,
   section 10.7 (q)). Measured over modelled was +3.9% to +11.0%: the
-  model reads low at every round (mean +7.3%), inside tolerances of about
-  +-27%. That tolerance is wide, so the pass alone says little (design
+  model reads low at every round (mean +7.3%), inside tolerances of
+  +-25% to +-28%. That tolerance is wide, so the pass alone says little (design
   record 0008, section 6.3)." Beside it, two caveats: the models'
   diameter, the range's air and the fins' trailing-edge area at the test
-  were assumed, not printed in the report (0014 section 10.6); and with
-  DREV's rounded fin leading edge (0.004 cal) the residuals at Mach 2.42
-  and 2.47 fall to -1.1% and -4.2%, a sensitivity, not a verdict. The
+  were assumed, not printed in the report (0014 section 10.6), and with
+  the trailing-edge area halved, the run's largest sensitivity, the
+  residuals rise to +14.5% to +22.3%; and DREV's rounded fin leading edge
+  (0.004 cal) was refused in the run at the five rounds at Mach 1.80 to
+  1.83 and at Mach 2.42 and 2.47 lowers the residuals to -1.1% and -4.2%,
+  a sensitivity, not a verdict. The
   headline ends ": validated, on one test (BRL Report 934's range A)". The
   full list, each round with its residual and tolerance and the other
   sensitivities, is in the page's details (section 2) and in 0020.
