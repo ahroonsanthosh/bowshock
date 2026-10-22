@@ -344,7 +344,7 @@ fitted solver refuses the case.
 | 4   | 56,640  | 0.1070376 | +1.714e-4 | 14,200 | 4,309 s        |
 | 8   | 226,560 | 0.1071116 | +7.41e-5  | 18,000 | 9,918 s of CPU |
 
-**Mach 1.05 certified by the procedure (2026-10-21).** The changes fall
+**Mach 1.05 certified by the procedure (2026-10-21)** (settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`). The changes fall
 by 2.08 and 2.31: observed orders 1.05 (r = 1, 2, 4) and 1.21 (r = 2, 4,
 8), within 0.5 of each other, so `gridConvergence` returns a monotone
 band on r = 1 to 8: extrapolated (order 1.21) 0.1071680, band 7.04e-5
@@ -938,7 +938,7 @@ on the CPU engine:
   hemisphere has r = 1 and 2. The fitted solver is 1.4e-3 off on nj = 80
   and not yet converging.
 - **Mach 1.05.** Cone: certified by the procedure on r = 1 to 8
-  (monotone, orders 1.05 and 1.21): 0.1071116 with a band of 8.435e-5 on
+  (settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`) (monotone, orders 1.05 and 1.21): 0.1071116 with a band of 8.435e-5 on
   nested domains by the rule as reviewed, 9.793e-5 by the corrected rule
   (the 1.14e-4 once recorded here added a regridded change; S7 of the
   review); no exact value exists to test it. 5-caliber ogive: r = 1 to 4 oscillate with equal
@@ -972,7 +972,7 @@ them no band (it refuses the ellipsoid's r = 1 to 8), so they do not
 meet the standard and stay unserved below Mach 1.5. Curved noses at
 Mach 1.1 wait on the 10-caliber ogive's family, and at 1.1 and 1.05 on
 the 5-caliber ogive's r = 8. At Mach 1.05 the cone is certified by the
-procedure (band 9.8e-5 by the corrected rule, 9.1e-4 of the value; no exact reference
+procedure (settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`) (band 9.8e-5 by the corrected rule, 9.1e-4 of the value; no exact reference
 exists there). At Mach 1 there are three grids, and the far-boundary
 rule written for it failed its test at Mach 1.2, so Mach 1 stays refused
 (0.0932 within about 0.1% is an estimate, not a certification). These
@@ -2052,7 +2052,7 @@ all stay refused (B1).
 0.1089110, 0.1088724, 0.1088983 (4,400 steps on r = 8). The procedure:
 oscillatory (changes -6.12e-4, -3.86e-5, +2.59e-5), band 3.86e-5; the
 floor 7.6e-6; the far boundaries 1.4e-7 and the cylinder 9.3e-8 (nested
-base grids, corrected rule). **0.1088983 +- 4.65e-5.** This is a
+base grids, corrected rule). **0.1088983 +- 4.65e-5, recorded** (settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`). This is a
 validation-style offline number (the driver serves below 1.2); it was
 computed without seeing the subtip work's value.
 
@@ -2070,7 +2070,12 @@ findings and what was done, one by one.
    (`tests/analysis/transonic-drag.test.ts`, after the reviewer's case):
    the 10-caliber ogive at Mach 1.1, r = 2, 4 and 8 starting paused and
    then moving away by up to 1e-3. Before the fix the family was served
-   (measured); now r = 2 does not settle.
+   (measured); now r = 2 does not settle. The reviewer's own stub (the
+   drag v (1 + 1e-3 cos(2 pi (check - 6) / 1200)) on r = 2, 4 and 8) was
+   served on `dd6c423` (0.1001125 +- 2.27e-5, 1e-3 from its limit) and
+   is not converged on `0613b3f`, by the re-reviewer's check. (A note of
+   mine outside this record said that stub did not settle even before the
+   fix; that was wrong: my version of it differed.)
 
    **The certified offline numbers against this rule.** They come from
    `family.test.ts` (not the driver), whose grids stopped on the
@@ -2195,7 +2200,7 @@ else be added to it (their largest measured change, once). An
   above.)
 
 **Mach 1.05.** The cone's r = 8 and r = 16, certified by the procedure
-alone (no exact reference exists for any nose here: Taylor-Maccoll's
+(settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`) alone (no exact reference exists for any nose here: Taylor-Maccoll's
 conical flow is subsonic at the cone's surface, and the characteristics
 refuse the ogives). The far boundaries' change from 100.6 to 224.2
 radii on the base grid (+1.3e-5) and the cylinder's (up to 7e-6) are
