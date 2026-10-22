@@ -15,6 +15,8 @@ the repository; only readings, methods and scripts are here.
 | `rm3427_fig9_first.csv`, `rm3427_fig10_first.csv`, `method_rm3427_figs9_10.md`   | ARC R&M 3427 (AERADE 1826.2/4011), figs. 9 and 10, PDF p. 36  | the boundary layers ahead of the base: profiles at M 0.8, delta/h at M 0.4 to 1.1 (F4)                              | read once; second to arrange |
 | `rm3427_fig15_first.csv`, `rm3427_fig16_first.csv`, `method_rm3427_figs15_16.md` | ARC R&M 3427 (AERADE 1826.2/4011), figs. 15 and 16, PDF p. 39 | base pressure across the span (M 1.0, 0.8, 0.4, with a pitot traverse) and across the base (alpha 0 and 2 deg) (F4) | read once; second to arrange |
 | `rm3427_fig18_first.csv`, `method_rm3427_fig18.md`                               | ARC R&M 3427 (AERADE 1826.2/4011), fig. 18, PDF p. 41         | base pressure at M 0.8 against the chord Reynolds number, 2.3e6 to 4.5e6 (F4)                                       | read once; second to arrange |
+| `rm3427_fig39_first.csv`, `method_rm3427_fig39.md` | ARC R&M 3427 (AERADE 1826.2/4011), fig. 39, PDF p. 56 | surface pressures upstream of the base at M 0.8: basic model, splitter plate, step (F4; 10.7 (l)) | read once; second to arrange |
+| `rm3427_fig13_hole4_first.csv`, `method_rm3427_fig13_hole4.md` | ARC R&M 3427 (AERADE 1826.2/4011), fig. 13 lower panel, PDF p. 37 | hole 4 (x/h -0.167), surface pressure against M 0.4 to 1.05 (F4; 10.7 (m)) | read once; second to arrange |
 
 **Pairings.**
 
