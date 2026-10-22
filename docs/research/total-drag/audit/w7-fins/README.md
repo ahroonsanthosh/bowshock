@@ -10,4 +10,12 @@ the repository; only readings, methods and scripts are here.
 
 | File                                                   | Source                                                              | What                                                              | Status                         |
 | ------------------------------------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------ |
-| `rm3348_table3_first.csv`, `method_rm3348_table3.md`   | ARC R&M 3348 (AERADE 1826.2/3929), table 3, PDF pp. 32 to 38        | base pressure of the single-wedge wing, 852 values (F4, its sweep) | typed once; second pending     |
+| `rm3348_table3_first.csv`, `method_rm3348_table3.md`   | ARC R&M 3348 (AERADE 1826.2/3929), table 3, PDF pp. 32 to 38        | base pressure of the single-wedge wing, 852 values (F4, its sweep) | read twice; paired (below)     |
+
+**Pairings.**
+
+- R&M 3348 tables 2(b) and 3: paired by the coordinator on 2026-10-22: 852
+  of 852 values identical, table 2(b) 6 of 6. The second, blind typing is
+  round 8's (`../round8/`, commit ffbac76); its reader did not open this
+  typing. `tests/base/rm3348-table3-readings.test.ts` holds the two equal,
+  value for value.

@@ -659,8 +659,9 @@ both once it does.
    (a second reading of the curve there, 0010's being the first, and its
    symbols), TN 3548 fig. 6, R&M 3427 figs. 9, 10, 13, 15, 16, R&M 3323
    figs. 4, 5 (their sources traced first), R&M 3348 table 3 (typed, not
-   read by eye) and figs. 30a, 30b (the sweep), Johnston's figs. 4 to 12,
-   RM L8B13 fig. 4(c) to 4(e). Then
+   read by eye; read twice and paired, 852 of 852 identical, 2026-10-22)
+   and figs. 30a, 30b (the sweep), Johnston's figs. 4 to 12, RM L8B13 fig.
+   4(c) to 4(e). Then
    `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the data
    (each set's points inside the band, the step at 1.5), the record.
 3. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13, 14, 15 and

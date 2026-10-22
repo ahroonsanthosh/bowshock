@@ -67,5 +67,10 @@ finite span), to be quoted when the band is formed.
   those 0014 10.7 (k) names, so they were named in 10.7 (l) (figs. 47 to
   52) before they are read.
 
-**Status.** First typing, by the 0019 reader, 2026-10-21. Read once: the
-blind second typing is pending. Not yet used for anything.
+**Status.** First typing, by the 0019 reader, 2026-10-21. Read twice:
+the blind second typing (round 8, `../round8/readings/rm3348_table3.csv`
+and `rm3348_table2b.csv`, commit ffbac76, its reader not having opened
+this typing) was paired with this one by the coordinator on 2026-10-22:
+852 of 852 values identical, on the same PDF pages, and table 2(b)'s six
+hole positions identical. `tests/base/rm3348-table3-readings.test.ts`
+holds the two typings equal. Not yet used for anything.

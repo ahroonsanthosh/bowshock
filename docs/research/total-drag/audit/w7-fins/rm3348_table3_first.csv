@@ -1,7 +1,7 @@
 # ARC R&M 3348 (Rogers, Berry and Quincey, 1963; AERADE 1826.2/3929), table 3: base pressure on the single-wedge wing,
 # p_b / p_0 (p_0 the tunnel static pressure), typed from the scan (PDF pp. 33 to 38, rendered at 130 dpi); hole positions
-# eta_b (fraction of the base span from the root) from table 2(b), PDF p. 32. First reading (typed once, by the 0019 reader);
-# the second, blind typing is pending. Typed values: no reading error beyond a typing slip; see method_rm3348_table3.md.
+# eta_b (fraction of the base span from the root) from table 2(b), PDF p. 32. First reading (typed by the 0019 reader);
+# paired with the blind second typing (round8/readings/rm3348_table3.csv) on 2026-10-22: identical. Typed values: no reading error beyond a typing slip; see method_rm3348_table3.md.
 case,mach,sweep_deg,hole,eta_b,alpha_deg,pb_over_p0,pdf_page
 a,0.70,0,6,0.915,0,0.766,33
 a,0.70,0,6,0.915,2,0.765,33
