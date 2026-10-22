@@ -144,3 +144,101 @@ reading.
   is 0.017 and 0.022.
 * So above M_0 1.1 the figure does not plot the table's hole-4, alpha 0
   numbers. The report does not say why.
+
+## R&M 3348, fig. 31b
+
+PDF p. 69 (printed p. 68). **Caption, as printed:** "Correlation of reduced
+chordwise pressure-force coefficients for single-wedge profile at zero
+incidence (coefficients determined for front half of 7 % thick double-wedge
+section)". The abscissa is M_0 cos phi (0.4 to 1.2) and the ordinate
+C_cf sec^2 phi (-0.02 to 0.03).
+
+**Legend**, against which every symbol was identified:
+* phi = 0 deg: a circle drawn on a line. The only line in the plot runs
+  through the circles, so it is read as the 0 deg curve.
+* 30 deg cross, 45 deg triangle, 60 deg plus.
+* The short solid pieces between the pluses at the far left (0.40 to 0.56)
+  are the C_cf sec^2 phi = -0.01 gridline running between the symbols, not
+  a curve. The gridline continues through the plot at that level, and the
+  legend box blanks the gridlines above it.
+
+**Calibration.**
+* Gridlines every 0.1 and every 0.01; 53 of 54 intersections measured. The
+  missing one is under the legend; the 0.5 line starts only below the
+  legend.
+* Leave-one-out rms 0.65 px in x and 0.38 px in y; one affine map leaves
+  residuals of 0.0007 and 0.00006.
+* Scale: 1700 px per unit of M_0 cos phi and 11460 px per unit of the
+  ordinate, so 1 px = 0.00059 and 0.000087.
+
+**What was read** (`readings/rm3348_fig31b.csv`):
+* 10 circles, 8 crosses, 10 triangles and 8 pluses. Errors are +-0.0012 in
+  x and +-0.0002 in y.
+  * Circles c0-8 to c0-10 and two crosses score below 0.6 against their
+    glyph, because the legend circle has the line through it horizontally.
+    Their errors are raised to +-0.0019 and +-0.0003, and their centres
+    were checked on the overlay.
+* The 0 deg line, every 0.02 from 0.62 to 1.18, with errors of +-0.0001 to
+  0.0002. It starts at its first circle (0.607, -0.0059) and ends at
+  (1.182, 0.0256), past the last circle. 0.82 and 0.84 are not read: the
+  circles at 0.80 and 0.85 mask the line there.
+* Triangles are centred on their bounding box; the centroid would be
+  0.0002 lower.
+
+## R&M 3348, fig. 32
+
+PDF p. 70 (printed p. 69).
+* **Caption, as printed:** "Variation of chordwise pressure-force
+  coefficient with Mach number for phi = 0 deg plotted in transonic
+  similarity form. (Single-wedge models.)"
+* **Abscissa:** xi_0 = (M_0^2 - 1)/[(gamma+1) M_0^2 (t/c)]^(2/3), from -5 to
+  2. A top axis is marked in M_0, with ticks at 0.60, 0.70, 0.80, 0.85,
+  0.90, 0.95, 1.00, 1.05, 1.10 and 1.15.
+* **Ordinate:** C~_cf = [(gamma+1) M_0^2]^(1/3) C_cf/(t/c)^(5/3), from -0.5
+  to 3.0.
+* **Labels** (each identified by its leader):
+  * "Theory (Ref 30)", whose leader ends on the dashed line;
+  * "Two-dimensional Expt. (Ref. 19)", whose leader ends on the solid line,
+    with a sketch of a wedge with a parallel afterbody beside it;
+  * "Present tests of single-wedge wing at phi = 0 deg shown thus O".
+
+**Calibration.**
+* Gridlines every 1 in xi_0 and every 0.5 in C~_cf; all 64 intersections
+  measured.
+* The rulings are not evenly spaced in y: 112 px per 0.5 at the bottom,
+  117.7 px at the top. So one affine map leaves 0.035 in y, while
+  leave-one-out within cells is 0.28 px in x and 0.63 px in y (max 2.5 px,
+  at an intersection under the text box).
+* The 0.5 gridline stops at xi_0 0.3, so its intersections at xi_0 1 and 2
+  are extrapolated. No point or curve lies in the cells around them.
+* Scale: 173 px per unit of xi_0 and 228 px per unit of C~_cf, so 1 px =
+  0.0058 and 0.0044.
+* The M_0 ticks of the top axis were located on the frame and converted:
+  0.60 at xi_0 -4.141, 0.70 -2.718, 0.80 -1.595, 0.85 -1.119, 0.90 -0.719,
+  0.95 -0.340, 1.00 -0.001, 1.05 0.326, 1.10 0.609, 1.15 0.860.
+
+**What was read** (`readings/rm3348_fig32.csv`):
+* **Nine circles.**
+  * The template is the isolated plotted circle d-2. The legend's circle is
+    set in the text and is larger (19 px against 15 px).
+  * Errors are +-0.010 in xi_0 and +-0.009 in C~_cf.
+  * Each circle sits at an M_0 tick (0.60 to 1.05) within 4 px. The last
+    lies between the 1.10 and 1.15 ticks, at M_0 about 1.11. The CSV notes
+    give each.
+* **Knechtel's curve** (ref. 19, solid), every 0.1 from xi_0 -1.0 to 0.3.
+  * It runs on the C~_cf = 0 gridline from about -1.6 and cannot be
+    separated from it there. The first separable point is
+    (-1.325, 0.024); xi_0 -1.5 to -1.1 are not read.
+  * It ends at (0.394, 2.200).
+* **The theory curve** (ref. 30, dashed), from its start (-1.565, 0.050) to
+  its end (-0.050, 1.595). -1.2 to -1.0 are not read (dash gaps beside
+  circle d-4); 0.0 is past its end.
+* **Telling the two curves apart.**
+  * Below xi_0 -0.6 the two run 3 to 12 px apart and touch near -0.55. They
+    were told apart from ink runs read column by column (the dashed line is
+    the upper one at the left and the left-hand one above), and tracked with
+    the search cut to +-4 to 6 px.
+  * The overlay `overlays/rm3348_fig32.png` shows the two tracks separate
+    throughout.
+  * Curve errors are +-0.008 to 0.027 in C~_cf. They are dominated by the
+    steep slope times the x reading error.

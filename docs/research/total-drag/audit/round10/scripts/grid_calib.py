@@ -22,6 +22,21 @@ import rm_calib  # noqa: E402
 Image.MAX_IMAGE_PIXELS = None
 
 CONFIG = {
+    # R&M 3348 fig. 32 (PDF p. 70): xi_0 -5..2 every 1; C~_cf -0.5..3.0 every 0.5
+    "r3348f32": dict(
+        vvals=[float(k) for k in range(-5, 3)],
+        vpos=[428.5, 599.8, 773.0, 945.0, 1117.9, 1290.9, 1463.8, 1636.9], vref=1035.0, vslope=0.005,
+        hvals=[round(-0.5 + 0.5 * j, 1) for j in range(8)],
+        hpos=[1117.0, 1005.0, 893.0, 779.0, 665.0, 549.6, 435.0, 317.1],
+        box=(431, 1634, 319, 1115),
+        exclude=[(1110, 1285, 615, 660), (1290, 1570, 728, 822), (1300, 1570, 875, 975)], half=150),
+    # R&M 3348 fig. 31b (PDF p. 69): M_0 cos(phi) 0.4..1.2 every 0.1; C_cf sec^2(phi) -0.02..0.03 every 0.01
+    "r3348f31b": dict(
+        vvals=[round(0.4 + 0.1 * k, 1) for k in range(9)],
+        vpos=[616.9, 788.5, 956.5, 1127.5, 1298.9, 1466.8, 1638.0, 1806.5, 1974.5],
+        hvals=[round(-0.02 + 0.01 * j, 2) for j in range(6)],
+        hpos=[2203.5, 2088.5, 1974.5, 1859.1, 1744.9, 1630.0],
+        box=(619, 1972, 1632, 2201), exclude=[(620, 952, 1632, 1965)], half=150),
     # R&M 3348 fig. 30a (PDF p. 68): M_0 0.7..1.2 every 0.1; p_b/p_0 0.3 (top) .. 1.0 every 0.1
     "r3348f30a": dict(
         vvals=[round(0.7 + 0.1 * k, 1) for k in range(6)],

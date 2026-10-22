@@ -22,6 +22,11 @@ SERIES30B = dict(SERIES30, g3="Goin ref. 29, phi = 45 deg, aspect ratio 2.7, t/c
                  g6="Goin ref. 29, phi = 45 deg, aspect ratio 2.7, t/c = 6 %",
                  g10="Goin ref. 29, phi = 45 deg, aspect ratio 2.7, t/c = 10 %")
 
+# R&M 3348 fig. 31b (PDF p. 69). Legend: phi = 0 deg circle on a line, 30 deg cross,
+# 45 deg triangle, 60 deg plus.
+LEGEND31B = {"circ": (843.5, 1736.5), "cross": (842.0, 1794.5), "tri": (844.5, 1849.0), "plus": (843.0, 1908.0)}
+SERIES31B = {"circ": "phi = 0 deg", "cross": "phi = 30 deg", "tri": "phi = 45 deg", "plus": "phi = 60 deg"}
+
 FIGS = {
     "f30a": dict(half=9, legend=LEGEND30, series=SERIES30, symbols=[
         ("a0-1", "circ", 234, 1411), ("a0-2", "circ", 351, 1301), ("a0-3", "circ", 378, 1291),
@@ -69,5 +74,30 @@ FIGS = {
         ("g45-1", "g45", 1639.5, 1100), ("g45-2", "g45", 1810.5, 1093),
         ("g6-1", "g6", 1638.75, 1138.75), ("g6-2", "g6", 1808.75, 1126.25),
         ("g10-1", "g10", 1638.25, 1213.75), ("g10-2", "g10", 1806.25, 1140),
+    ]),
+    "f31b": dict(half=9, legend=LEGEND31B, series=SERIES31B, symbols=[
+        ("c0-1", "circ", 956.5, 2039), ("c0-2", "circ", 1130, 2012.5), ("c0-3", "circ", 1299, 1985),
+        ("c0-4", "circ", 1383.5, 1964), ("c0-5", "circ", 1468.5, 1925), ("c0-6", "circ", 1554, 1871),
+        ("c0-7", "circ", 1638.5, 1828.5), ("c0-8", "circ", 1722, 1792), ("c0-9", "circ", 1825.6, 1742),
+        ("c0-10", "circ", 1909, 1701),
+        ("c30-1", "cross", 974, 2031), ("c30-2", "cross", 1115, 2025), ("c30-3", "cross", 1264, 2011.5),
+        ("c30-4", "cross", 1340, 1992.5), ("c30-5", "cross", 1411.5, 1941.5), ("c30-6", "cross", 1486.5, 1879),
+        ("c30-7", "cross", 1574, 1820), ("c30-8", "cross", 1644, 1756),
+        ("c45-1", "tri", 779, 2082.5), ("c45-2", "tri", 901, 2069), ("c45-3", "tri", 1022.5, 2056),
+        ("c45-4", "tri", 1082.5, 2059), ("c45-5", "tri", 1142.5, 2056), ("c45-6", "tri", 1204, 2026),
+        ("c45-7", "tri", 1267.5, 1961.5), ("c45-8", "tri", 1299, 1963.5), ("c45-9", "tri", 1335, 1869),
+        ("c45-10", "tri", 1383.5, 1860),
+        ("c60-1", "plus", 617.5, 2081.5), ("c60-2", "plus", 704, 2082.5), ("c60-3", "plus", 747.5, 2062.5),
+        ("c60-4", "plus", 787.5, 2020), ("c60-5", "plus", 831.5, 2086), ("c60-6", "plus", 879, 2092.5),
+        ("c60-7", "plus", 924, 2071), ("c60-8", "plus", 958.5, 2052.5),
+    ]),
+    # R&M 3348 fig. 32 (PDF p. 70): "Present tests of single-wedge wing at phi = 0 deg shown thus O".
+    # The legend's own circle is set in the text and is larger (19 px) than the plotted ones (15 px), so the
+    # template is the isolated plotted circle d-2 (bounding-box centre from the pixel map).
+    "f32": dict(half=9, legend={"circ": (823.0, 1076.5)},
+                series={"circ": "present tests, single-wedge wing, phi = 0 deg"}, symbols=[
+        ("d-1", "circ", 575.6, 1112.2), ("d-2", "circ", 823.0, 1076.5), ("d-3", "circ", 1013.3, 1025.6),
+        ("d-4", "circ", 1094.0, 984.5), ("d-5", "circ", 1168.9, 905.6), ("d-6", "circ", 1230.0, 782.2),
+        ("d-7", "circ", 1292.0, 674.5), ("d-8", "circ", 1344.4, 575.6), ("d-9", "circ", 1400.0, 432.2),
     ]),
 }
