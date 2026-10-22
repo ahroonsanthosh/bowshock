@@ -342,31 +342,35 @@ export function basicFinnerClass(form: TotalDragForm): ClassCheck {
  * Finner as transcribed, each dimension within 0.5%, with sharp fin
  * leading edges (0014 section 10.6 item 3) and the trailing edge constant
  * across the span (item 4, as a single wedge on a rectangular fin is
- * here); in one of two disjoint windows of Mach and Reynolds number, with
- * nothing between them; in the run's air. Every bound is the run's,
- * never wider: the Mach ends are its rounds', the Reynolds ends the least
- * and greatest over its four corners of diameter and air at those rounds
- * (7.9642e6 to 8.8708e6 and 1.07147e7 to 1.19832e7,
- * docs/research/base-and-total/runs/brl934-range-a.json), rounded inward
- * to four significant figures.
+ * here); in one of two disjoint windows of Mach number, with nothing
+ * between them, at the run's Reynolds number per unit Mach number; in the
+ * run's air. Every bound is the run's, never wider: the Mach ends are its
+ * rounds'; the Reynolds number on length over the Mach number is the same
+ * range at every round, since it depends only on the diameter and the air,
+ * 4.422072e6 to 4.855414e6 over the run's four corners
+ * (docs/research/base-and-total/runs/brl934-range-a.json), rounded inward
+ * to four significant figures. (The first rule, of a2e8211, took boxes of
+ * Reynolds number over each window, whose corners lay up to 1.8% beyond
+ * any round; corrected after the independent review, 0014 section 10.7
+ * (q).) The Reynolds number and the temperature are checked apart, so a
+ * pair the run never had (288 K at the lowest Reynolds number, say) is
+ * inside; the temperature moves the total at a given Reynolds number by
+ * little (`tests/app/brl934-sub-class.test.ts`).
  */
 export const BRL934_SUB_CLASS = {
-  windows: [
-    { mach: [1.801, 1.827], reynoldsOnLength: [7.965e6, 8.87e6] },
-    { mach: [2.423, 2.468], reynoldsOnLength: [1.072e7, 1.198e7] },
-  ],
+  windows: [{ mach: [1.801, 1.827] }, { mach: [2.423, 2.468] }],
+  /** The Reynolds number on length over the Mach number. */
+  reynoldsPerMach: [4.423e6, 4.855e6],
   /** 0014 section 10.6 item 2: the range's air, 288 to 298 K. */
   temperature: [288, 298],
 } as const;
 
-const windowsText =
-  BRL934_SUB_CLASS.windows
-    .map(
-      (w) =>
-        `Mach ${w.mach[0]} to ${w.mach[1]} at ${sci(w.reynoldsOnLength[0], 3)} to ` +
-        sci(w.reynoldsOnLength[1], 3),
-    )
-    .join(', or ') + ', nothing between them';
+const machWindowsText =
+  BRL934_SUB_CLASS.windows.map((w) => `${w.mach[0]} to ${w.mach[1]}`).join(' or ') +
+  ', nothing between them';
+const perMachText =
+  `${sci(BRL934_SUB_CLASS.reynoldsPerMach[0], 3)} to ` +
+  `${sci(BRL934_SUB_CLASS.reynoldsPerMach[1], 3)} times the Mach number`;
 
 export interface SubClassCheck extends ClassCheck {
   /** The shape's differences alone (empty when it is the sub-class's shape). */
@@ -380,18 +384,21 @@ export interface SubClassCheck extends ClassCheck {
 export function brl934SubClass(form: TotalDragForm): SubClassCheck {
   const shape = shapeOutside(form, 'sharp');
   const conditions: string[] = [];
-  const re = form.reynoldsOnLength;
-  const inWindow = BRL934_SUB_CLASS.windows.some(
-    (w) =>
-      form.mach >= w.mach[0] &&
-      form.mach <= w.mach[1] &&
-      re >= w.reynoldsOnLength[0] &&
-      re <= w.reynoldsOnLength[1],
-  );
-  if (!inWindow) {
+  const m = form.mach;
+  if (!BRL934_SUB_CLASS.windows.some((w) => m >= w.mach[0] && m <= w.mach[1])) {
     conditions.push(
-      `Mach ${fmt(form.mach)} at a Reynolds number on length of ${sci(re, 3)} lies in neither ` +
-        `window BRL Report 934's range A tested (${windowsText})`,
+      `Mach ${fmt(m)} lies in neither window BRL Report 934's range A tested ` +
+        `(Mach ${machWindowsText})`,
+    );
+  }
+  const re = form.reynoldsOnLength;
+  const [k0, k1] = BRL934_SUB_CLASS.reynoldsPerMach;
+  if (!(re >= k0 * m && re <= k1 * m)) {
+    conditions.push(
+      `the Reynolds number on length, ${sci(re, 3)}, is outside the range A run's ${perMachText}` +
+        (Number.isFinite(m) && m > 0
+          ? ` (${sci(k0 * m, 3)} to ${sci(k1 * m, 3)} at Mach ${fmt(m)})`
+          : ''),
     );
   }
   const t = form.temperature;
@@ -414,6 +421,12 @@ export function brl934SubClass(form: TotalDragForm): SubClassCheck {
  * (tests/app/total-drag.test.ts; 0011 section 3).
  */
 export const TEMPERATURE_SENSITIVITY = 0.0013;
+/**
+ * The same over the BRL sub-class's 288 to 298 K, from 293 K, at both ends
+ * of each Mach window and of its Reynolds number per unit Mach number
+ * (tests/app/brl934-sub-class.test.ts).
+ */
+export const SUB_CLASS_TEMPERATURE_SENSITIVITY = 0.0001;
 const sensitivity = `${(100 * TEMPERATURE_SENSITIVITY).toFixed(2)}%`;
 
 /** The class in words, for the page. */
@@ -439,15 +452,21 @@ export const SUB_CLASS_DESCRIPTION =
   'Basic Finner as transcribed, each dimension within 0.5%, a sharp 20 deg cone on a cylinder ' +
   'to a flat base, 10.0 cal overall; four rectangular fins of 1.0 cal root chord and span, their ' +
   'trailing edges at the base, with sharp leading edges and single-wedge sections to a blunt ' +
-  'trailing edge 0.08 cal thick across the span; ' +
-  windowsText.replace('Mach', 'at Mach') +
-  ' (Reynolds number on length; Mach 1.827 to 2.423 was not tested); static temperature ' +
+  'trailing edge 0.08 cal thick across the span; at Mach ' +
+  machWindowsText +
+  ` (Mach 1.827 to 2.423 was not tested), with the Reynolds number on length ${perMachText}, ` +
+  `as at every round; static temperature ` +
   `${BRL934_SUB_CLASS.temperature[0]} to ${BRL934_SUB_CLASS.temperature[1]} K; zero ` +
   "incidence, power off. These are BRL Report 934's range A as it was run (design record " +
   "0020): the models' diameter (0.78 to 0.82 in), the range's air (288 to 298 K) and the " +
   "fins' trailing-edge area (0.32 cal^2) are not printed in the report and were assumed " +
   '(design record 0014, section 10.6), and the fin leading edges were taken as sharp from ' +
-  'period drawings of the model.';
+  'period drawings of the model. The Reynolds number and the temperature are checked apart, so ' +
+  'some pairs inside (288 K at the lowest Reynolds number, say) were never run; at a given ' +
+  'Reynolds number the temperature moves the total by at most ' +
+  `${(100 * SUB_CLASS_TEMPERATURE_SENSITIVITY).toFixed(2)}% over 288 to 298 K (and by at most ` +
+  `${(100 * TEMPERATURE_SENSITIVITY).toFixed(2)}% over the class's 216.65 to 320 K). The 0.5% ` +
+  "tolerance on each dimension is the class's, for typing; it was not tested.";
 
 // ------------------------------------------------------------- the claims
 
@@ -461,16 +480,20 @@ export const VALIDATED_CLAIM =
   "BRL Report 934's range A, where this model was tested once, against seven rounds in free " +
   'flight, and passed (design records 0020 and 0014, section 10.7 (q)). Measured over modelled ' +
   'was +3.9% to +11.0%: the model reads low at every round (mean +7.3%), inside tolerances of ' +
-  'about +-27%. That tolerance is wide, so the pass alone says little (design record 0008, ' +
+  '+-25% to +-28%. That tolerance is wide, so the pass alone says little (design record 0008, ' +
   'section 6.3).';
 /** Stated beside it. */
 export const ASSUMED_CAVEAT =
   "The models' diameter, the range's air and the fins' trailing-edge area at that test were " +
-  'assumed, not printed in the report (design record 0014, section 10.6).';
+  'assumed, not printed in the report (design record 0014, section 10.6). The largest ' +
+  'sensitivity of the run: with the trailing-edge area halved (a tapered edge), the residuals ' +
+  'rise to +14.5% to +22.3%, still inside (design record 0020, section 4).';
 export const ROUNDED_EDGE_CAVEAT =
-  "With DREV's rounded fin leading edge (0.004 cal) in place of the sharp one, the residuals at " +
-  'Mach 2.42 and 2.47 fall to -1.1% and -4.2%: a sensitivity, not a verdict (design record ' +
-  '0020, section 4).';
+  "DREV's rounded fin leading edge (0.004 cal), in place of the sharp one, was refused in the " +
+  "run at the five rounds at Mach 1.80 to 1.83 (the Reynolds number on the edge's diameter " +
+  'below 6.7e3, at the nominal or at an end of the diameter and air); at Mach 2.42 and 2.47 it ' +
+  'lowers the residuals to -1.1% and -4.2%: a sensitivity, not a verdict (design record 0020, ' +
+  'section 4).';
 /**
  * Inside the class (0010 section 11.7): the validated claim is suspended.
  * The class passed its hold-out test (0010 section 4.2), but the

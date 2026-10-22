@@ -32,6 +32,7 @@ import {
   PUBLISHED_BRL934,
   ROUNDED_EDGE_CAVEAT,
   SUB_CLASS_DESCRIPTION,
+  SUB_CLASS_TEMPERATURE_SENSITIVITY,
   SUSPENDED_REASON,
   totalDragView,
   VALIDATED_CLAIM,
@@ -109,30 +110,27 @@ const roundForm = (mach: number, leadingEdgeRadius = 0): TotalDragForm => {
 };
 
 describe('the bounds, from the run', () => {
-  it("the Mach ends are the rounds'; the Reynolds ends the run's corners, rounded inward to four figures", () => {
+  it("the Mach ends are the rounds'; the Reynolds number per unit Mach number the run's, the same at every round, rounded inward to four figures", () => {
     expect(RUN.map((r) => r.round)).toEqual([2591, 2588, 2590, 2596, 2589, 3263, 3264]);
     const groups = [RUN.slice(0, 5), RUN.slice(5)];
     BRL934_SUB_CLASS.windows.forEach((w, k) => {
       const g = groups[k]!;
       expect(w.mach).toEqual([g[0]!.mach, g.at(-1)!.mach]);
-      const lo = Math.min(...g.map((r) => r.reynoldsOnLength.low));
-      const hi = Math.max(...g.map((r) => r.reynoldsOnLength.high));
-      // Never wider than tested, and within a unit of the fourth figure of it.
-      expect(w.reynoldsOnLength[0]).toBeGreaterThanOrEqual(lo);
-      expect(w.reynoldsOnLength[1]).toBeLessThanOrEqual(hi);
-      expect(w.reynoldsOnLength[0] - lo).toBeLessThan(lo * 1e-3);
-      expect(hi - w.reynoldsOnLength[1]).toBeLessThan(hi * 1e-3);
-      expect(w.reynoldsOnLength.map((x) => Number(x.toPrecision(4)))).toEqual([
-        ...w.reynoldsOnLength,
-      ]);
     });
-    expect(BRL934_SUB_CLASS.windows.map((w) => [...w.reynoldsOnLength])).toEqual([
-      [7.965e6, 8.87e6],
-      [1.072e7, 1.198e7],
-    ]);
-    // 0020 section 2's three-figure 7.96e6 and 1.20e7 lie beyond what was run.
-    expect(7.96e6).toBeLessThan(Math.min(...RUN.map((r) => r.reynoldsOnLength.low)));
-    expect(1.2e7).toBeGreaterThan(Math.max(...RUN.map((r) => r.reynoldsOnLength.high)));
+    // Re / M depends only on the diameter and the air: one range at all seven rounds.
+    const lows = RUN.map((r) => r.reynoldsOnLength.low / r.mach);
+    const highs = RUN.map((r) => r.reynoldsOnLength.high / r.mach);
+    for (const x of lows) expect(x / lows[0]! - 1).toBeLessThan(1e-12);
+    for (const x of highs) expect(x / highs[0]! - 1).toBeLessThan(1e-12);
+    expect(Math.round(lows[0]!)).toBe(4422072);
+    expect(Math.round(highs[0]!)).toBe(4855414);
+    const [k0, k1] = BRL934_SUB_CLASS.reynoldsPerMach;
+    expect([k0, k1]).toEqual([4.423e6, 4.855e6]);
+    // Never wider than run, within a unit of the fourth figure of it.
+    expect(k0).toBeGreaterThanOrEqual(Math.max(...lows));
+    expect(k1).toBeLessThanOrEqual(Math.min(...highs));
+    expect(k0 - lows[0]!).toBeLessThan(1e3);
+    expect(highs[0]! - k1).toBeLessThan(1e3);
     // The air range of the run (0014 section 10.6 item 2).
     expect([...BRL934_SUB_CLASS.temperature]).toEqual([...BRL934_AIR.temperatureRange]);
   });
@@ -140,35 +138,68 @@ describe('the bounds, from the run', () => {
 
 describe('the sub-class rule', { timeout: 60_000 }, () => {
   const inside = (form: TotalDragForm) => brl934SubClass(form).inside;
+  const [k0, k1] = BRL934_SUB_CLASS.reynoldsPerMach;
 
-  it('inside at every corner of both windows and at both ends of the air; outside just beyond each bound', () => {
+  it('inside at both Mach ends of both windows at both ends of Re / M and of the air; outside just beyond each bound', () => {
     for (const w of BRL934_SUB_CLASS.windows) {
       const [m0, m1] = w.mach;
-      const [r0, r1] = w.reynoldsOnLength;
-      for (const m of [m0, m1]) for (const r of [r0, r1]) expect(inside(sharp(m, r))).toBe(true);
-      const rm = (r0 + r1) / 2;
+      for (const m of [m0, m1]) {
+        for (const k of [k0, k1]) expect(inside(sharp(m, k * m))).toBe(true);
+        expect(inside(sharp(m, k0 * m * (1 - 1e-4)))).toBe(false);
+        expect(inside(sharp(m, k1 * m * (1 + 1e-4)))).toBe(false);
+      }
       const mm = (m0 + m1) / 2;
+      const rm = ((k0 + k1) / 2) * mm;
       expect(inside(sharp(m0 - 1e-3, rm))).toBe(false);
       expect(inside(sharp(m1 + 1e-3, rm))).toBe(false);
-      expect(inside(sharp(mm, r0 * (1 - 1e-4)))).toBe(false);
-      expect(inside(sharp(mm, r1 * (1 + 1e-4)))).toBe(false);
       for (const t of [288, 298]) expect(inside(sharp(mm, rm, t))).toBe(true);
       for (const t of [287.9, 298.1]) expect(inside(sharp(mm, rm, t))).toBe(false);
     }
   });
 
-  it("two windows, no interpolation: the gap and each window at the other one's Reynolds number are outside", () => {
-    for (const m of [1.83, 2.0, 2.15, 2.42]) expect(inside(sharp(m, 1e7))).toBe(false);
-    expect(inside(sharp(1.81, 1.1e7))).toBe(false);
-    expect(inside(sharp(2.44, 8.4e6))).toBe(false);
-    expect(brl934SubClass(sharp(2.0, 1e7)).outside).toEqual([
-      "Mach 2 at a Reynolds number on length of 1.000e7 lies in neither window BRL Report 934's " +
-        'range A tested (Mach 1.801 to 1.827 at 7.965e6 to 8.870e6, or Mach 2.423 to 2.468 at ' +
-        '1.072e7 to 1.198e7, nothing between them)',
+  it("the first rule's box corners, beyond any round, are outside now (the independent review)", () => {
+    // Round 2591 at Mach 1.801 reached 8.7446e6 at most; 3264 at 2.468, 1.0914e7 at least.
+    expect(inside(sharp(1.801, 8.87e6))).toBe(false);
+    expect(inside(sharp(2.468, 1.072e7))).toBe(false);
+    expect(brl934SubClass(sharp(1.801, 8.87e6)).outside).toEqual([
+      "the Reynolds number on length, 8.870e6, is outside the range A run's 4.423e6 to " +
+        '4.855e6 times the Mach number (7.966e6 to 8.744e6 at Mach 1.801)',
+    ]);
+    // Each round's own nominal is inside.
+    for (const r of RUN) expect(inside(sharp(r.mach, r.reynoldsOnLength.nominal))).toBe(true);
+  });
+
+  it('two windows, no interpolation: the gap is outside at any Reynolds number', () => {
+    for (const m of [1.83, 2.0, 2.15, 2.42, 2.47]) {
+      for (const k of [k0, (k0 + k1) / 2, k1]) expect(inside(sharp(m, k * m))).toBe(false);
+    }
+    expect(brl934SubClass(sharp(2.0, 9.3e6)).outside).toEqual([
+      "Mach 2 lies in neither window BRL Report 934's range A tested (Mach 1.801 to 1.827 or " +
+        '2.423 to 2.468, nothing between them)',
     ]);
     expect(brl934SubClass(sharp(1.81, 8.4e6, 300)).outside).toEqual([
       "the static temperature, 300 K, is outside the range's air at that test, 288 to 298 K",
     ]);
+  });
+
+  it('the temperature at a given Reynolds number, 288 to 298 K: the total moves from its value at 293 K by at most SUB_CLASS_TEMPERATURE_SENSITIVITY', () => {
+    let largest = 0;
+    for (const w of BRL934_SUB_CLASS.windows) {
+      for (const m of w.mach) {
+        for (const k of [k0, k1]) {
+          const cd = (t: number) => {
+            const form = sharp(m, k * m, t);
+            expect(inside(form)).toBe(true);
+            return totalOf(totalDragView(form, exactNose(form))).cd;
+          };
+          const ref = cd(293);
+          for (const t of [288, 298]) largest = Math.max(largest, Math.abs(cd(t) / ref - 1));
+        }
+      }
+    }
+    // 9.4e-5 when measured.
+    expect(largest).toBeLessThan(SUB_CLASS_TEMPERATURE_SENSITIVITY);
+    expect(Math.round(1e4 * largest) / 1e4).toBe(SUB_CLASS_TEMPERATURE_SENSITIVITY);
   });
 
   it('the shape: the Basic Finner within 0.5%, with sharp fin leading edges only', () => {
@@ -236,12 +267,12 @@ describe(
   () => {
     it('a total inside either window is validated, said plainly, with its caveats', () => {
       for (const [mach, re] of [
-        [1.801, 7.965e6],
+        [1.801, 4.423e6 * 1.801],
         [1.814, 8.4e6],
-        [1.827, 8.87e6],
-        [2.423, 1.072e7],
+        [1.827, 4.855e6 * 1.827],
+        [2.423, 4.423e6 * 2.423],
         [2.45, 1.15e7],
-        [2.468, 1.198e7],
+        [2.468, 4.855e6 * 2.468],
       ] as const) {
         for (const t of [288, 293, 298]) {
           const form = sharp(mach, re, t);
@@ -265,11 +296,16 @@ describe(
         'seven rounds',
         '+3.9% to +11.0%',
         'the model reads low at every round (mean +7.3%)',
-        'about +-27%',
+        '+-25% to +-28%',
         'the pass alone says little',
       ])
         expect(VALIDATED_CLAIM).toContain(words);
+      expect(VALIDATED_CLAIM).not.toContain('about +-27%');
       expect(ASSUMED_CAVEAT).toContain('assumed, not printed in the report');
+      expect(ASSUMED_CAVEAT).toContain('the residuals rise to +14.5% to +22.3%');
+      expect(ROUNDED_EDGE_CAVEAT).toContain(
+        'refused in the run at the five rounds at Mach 1.80 to 1.83',
+      );
       expect(ROUNDED_EDGE_CAVEAT).toContain('-1.1% and -4.2%: a sensitivity, not a verdict');
     });
 
@@ -283,9 +319,8 @@ describe(
       expect(v.claim.reasons).toEqual([
         'the leading-edge radius is 0 cal, not 0.004 within 0.5%',
         'the Reynolds number on length, 8.40e6, is outside 1.19e7 to 2.0e7',
-        'Mach 1.85 at a Reynolds number on length of 8.400e6 lies in neither window BRL Report ' +
-          "934's range A tested (Mach 1.801 to 1.827 at 7.965e6 to 8.870e6, or Mach 2.423 to " +
-          '2.468 at 1.072e7 to 1.198e7, nothing between them)',
+        "Mach 1.85 lies in neither window BRL Report 934's range A tested (Mach 1.801 to 1.827 " +
+          'or 2.423 to 2.468, nothing between them)',
       ]);
     });
 
@@ -423,7 +458,7 @@ describe('the display', { timeout: 60_000 }, () => {
       displayText(totalDragDisplay(totalDragView(form, { kind: 'pending' })));
     expect(text(sharp(1.81, 8.4e6))).toContain(SUB_CLASS_PENDING_TEXT);
     expect(text(basicFinnerForm(2.0))).toContain(INSIDE_PENDING_TEXT);
-    const neither = text(sharp(2.0, 1e7));
+    const neither = text(sharp(2.0, 9.3e6));
     expect(neither).toContain("outside the Basic Finner's class and its BRL sub-class");
     expect(neither).toContain('lies in neither window');
   });
@@ -442,8 +477,10 @@ describe('the display', { timeout: 60_000 }, () => {
       '-27.1% to +27.0%',
     ]);
     expect(SUB_CLASS_DESCRIPTION).toContain(
-      'at Mach 1.801 to 1.827 at 7.965e6 to 8.870e6, or Mach 2.423 to 2.468 at 1.072e7 to ' +
-        '1.198e7, nothing between them',
+      'at Mach 1.801 to 1.827 or 2.423 to 2.468, nothing between them (Mach 1.827 to 2.423 was ' +
+        'not tested), with the Reynolds number on length 4.423e6 to 4.855e6 times the Mach number',
     );
+    expect(SUB_CLASS_DESCRIPTION).toContain('some pairs inside (288 K at the lowest');
+    expect(SUB_CLASS_DESCRIPTION).toContain("tolerance on each dimension is the class's");
   });
 });
