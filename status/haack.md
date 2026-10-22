@@ -57,9 +57,9 @@ current outline, widen it after the corner runs.
 - lane6: `tests/tmp-haack/lane6.sh`, last line `family.sh L5c2M3 5 2 3 tests/tmp-haack/queue.log`, the
   5-caliber nose at Mach 3, nj 80 (checkpoint tests/tmp-haackmoc/ckpt-L5c2M3r4.{json,bin} at 4000
   iterations, maxSpeed 5.4e-7, far from done).
-- lanex: `tests/tmp-haackmoc/lanex.sh`, last line `family.sh L5c2M2 5 2 2 tests/tmp-haackmoc/lanex.log`,
-  5 calibers at Mach 2, nj 80 (checkpoint at 11000 iterations, drag 0.0326452038177, maxSpeed 3.1e-9;
-  the stop needs 1e-9: close).
+- lanex: FINISHED at 10:31 UTC ("done L5c2M2r4", "lanex corners finished"): 5 calibers at Mach 2,
+  nj 80, saved as tests/tmp-haackmoc/L5c2M2r4.{json,bin} (in claude/wip/results from cde6af4). Its
+  march and the (5, 2) reference check can start; lanex needs no restart.
 - Restart, one copy each (edit the hard-coded `cd` in the scripts if the path differs):
   `echo "$(date -u +%FT%TZ) lane6 restarted" >> tests/tmp-haack/queue.log && setsid nohup nice -n 10 bash tests/tmp-haack/lane6.sh >/dev/null 2>&1 </dev/null &`
   `echo "$(date -u +%FT%TZ) lanex restarted" >> tests/tmp-haackmoc/lanex.log && setsid nohup nice -n 10 bash tests/tmp-haackmoc/lanex.sh >/dev/null 2>&1 </dev/null &`

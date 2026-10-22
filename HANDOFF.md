@@ -277,7 +277,7 @@ transonic checkpoints (217 MB). The owner asked that it be deleted once those ru
 | Transonic s12 | 5-caliber ogive, Mach 1.1, r = 16 | 800 steps |
 | Transonic ogive3 | case A, Mach 1.2 | r = 8 running |
 | Haack lane6 | 5 calibers, Mach 3, nj 80 | 4,000 iterations |
-| Haack lanex | 5 calibers, Mach 2, nj 80 | close to done |
+| Haack lanex | 5 calibers, Mach 2, nj 80 | finished at 10:31 UTC (results branch cde6af4) |
 | Subtip lane A | G's families | G at nj 80 |
 | Subtip lane B | A's default family | nj 160, from 13,600 iterations |
 
