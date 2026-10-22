@@ -1281,3 +1281,69 @@ pressures are compared with RM A51J25 fig. 7's curve (on M', p') and with
 R&M 3348's table 3 (on its own local values, from figs. 47 to 52, (l)).
 Holes 1 to 3 (x/h -0.330, -0.667, -1.667) are not used to set bands. No
 value of hole 4 has been read; it is read twice before use.
+
+**2026-10-22 (o): NASA TM X-653, named before it is opened for F2, and
+rounded leading edges below M_n 1.0 refused until it is read** (rule 2 of
+10.1, as (k); the owner's decision 7.5 of 2026-10-22, which supersedes
+(k)'s decision 1). Jorgensen, Spahr and Hill, "Comparison of the
+effectiveness of flares with that of fins for stabilizing low fineness
+ratio bodies at Mach numbers from 0.6 to 5.8", NASA TM X-653 (A-575), May
+1962, NTRS 19720065133 (the catalogue record and its abstract only: tunnel
+tests at Mach 0.6 to 3.8 of normal force, centre of pressure and drag of
+conical noses with cylindrical midsections and finned or flared
+aftersections, among them "fin leading-edge bluntness"). It is named a
+candidate band-setting source for F2 (0019 section 3.2), for the drag of
+fins with blunt or rounded leading edges against the same fins with
+sharp ones, at subsonic normal Mach numbers of the leading edge. Which of
+its figures or tables set what is decided by a further dated entry, made
+after its model drawings and list of figures are seen and before any
+value is read: the fins' sections, edge shape and radius, sweep and
+Reynolds numbers, and whether its drag includes the base, decide whether
+it measures a rounded plate edge at all. Its body is a low-fineness
+conical-nosed cylinder, not a held-back body; if a figure carries a
+held-back set it is not used. A record kept honestly: the total-drag
+validation search (`docs/research/total-drag/data/validation_candidates.md`)
+lists TM X-653 as set aside after opening, for its totals ("tunnel, drag
+without base drag"); no fin-edge value from it was read or recorded there
+or anywhere in this repository. Until it is read (twice, as (k)), rounded
+leading edges of flat plates below M_n 1.0 are refused, with that reason;
+the bounded term of 0019 section 3.2 is kept as a recorded candidate,
+not wired. If TM X-653 measures such an edge, the term becomes
+"estimated on component data"; if it does not, the bounded term is put
+to the owner again with its ordering (U3)'s weakness named in its label.
+
+_A note on (k), item 3._ Its last sentence describes the fins-on-base
+factor (W1) as it stood on 2026-10-21, before W1 was on the main branch.
+Since W1's merge (b86c308), 0015 section 3.4 governs: sharp sections with
+the trailing edge swept at the base are refused, fins with the leading
+edge swept 45 to 60 deg are served with the trailing edge unswept, or
+swept aft no more than the leading edge only 0.9 to 1 root chord ahead of
+the base, and the present factor refuses swept fins at the base (0015
+section 5). Item 3's decision on the edge's own base drag is unchanged,
+and it remains a term separate from that factor.
+
+**2026-10-22 (p): RM L9I30 and RM L51F29, named before they are opened
+for F1** (rule 2 of 10.1, as (k)). Neither has been opened; each is known
+here from its NTRS catalogue record only.
+
+- Hart and Katz, "Flight investigations at high-subsonic, transonic, and
+  supersonic speeds to determine zero-lift drag of fin-stabilized bodies
+  of revolution having fineness ratios of 12.5, 8.91, and 6.04 and varying
+  positions of maximum diameter", NACA RM L9I30, 1949, NTRS 20050019251:
+  rocket-powered free flight, cut-off sterns, equal base, frontal and
+  exposed fin areas. RM L55H09's body is scaled from it (0019 section
+  2.3), so it is first a geometry source: whether that body is the RM-10
+  (TN 3320, held back whole) or the PARD standard body is settled from
+  its model drawings before any of its drag figures is opened.
+- Katz and Stoney, "Base pressures measured on several parabolic-arc
+  bodies of revolution in free flight at Mach numbers from 0.8 to 1.4 and
+  at large Reynolds numbers", NACA RM L51F29, 1951, NTRS 19930086750: the
+  base pressures with which a free-flight fin-stabilized total of such a
+  body is split into its base and the rest.
+
+Both are candidate band-setting sources for F1 (0019 section 3.1, the
+fins' own drag near Mach 1, base separated), with RM L55H09. Which
+figures or tables set what is decided by a further dated entry, after
+the model drawings are seen and before any value is read. Any body in
+them that is the RM-10 or the PARD standard body is held back with its
+set, and nothing flown on it is used.
