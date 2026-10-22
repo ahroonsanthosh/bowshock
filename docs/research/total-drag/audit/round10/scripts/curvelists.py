@@ -53,6 +53,35 @@ FIGS = {
                              widths={0: 4.0, 1: 4.0, 2: 4.0, 3: 4.0, 4: 6.0, 5: 6.0, 6: 6.0, 7: 6.0, 8: 6.0},
                              targets=[round(-1.5 + 0.1 * k, 1) for k in range(16)], extend_end=True),
     }, mask_boxes=[(1195, 650, 1263, 700)]),
+    # R&M 3427 fig. 9: the "1/7 th power law" line, read as u* at fixed y (it is near-vertical above
+    # y 0.03 in.). Nodes are ink-run centres along rows (rowpeaks.py) between the symbols; the label, the
+    # legend and the label's arrow are masked.
+    # s_px: sqrt(0.84^2 + 0.7^2), the tick calibration's leave-one-out (x) with the ink centroid
+    "r3427f9": dict(box=(1190, 238, 1490, 722), windows=(0.004, 0.006, 0.008), s_px=1.1,
+                    mask_r={"circ": 7.5, "sq": 8.0}, node_off={"circ": 7.5, "sq": 8.0},
+                    mask_boxes=[(990, 340, 1360, 470), (1000, 590, 1300, 640), (1240, 625, 1295, 697)],
+                    curves={
+        "power_law": dict(nodes=[(1212, 721), (1297.2, 700), (1348.2, 680), (1379.0, 655), (1405.7, 615),
+                                 (1425.3, 575), (1441.3, 535), (1453.9, 495), (1463.1, 455), (1471.0, 415),
+                                 (1472.0, 340), (1470.0, 280), (1469.0, 250)],
+                          width=5.0, by="y", extend_end=False,
+                          targets=[round(0.005 * k, 3) for k in range(1, 25)]),
+    }),
+    # R&M 3427 fig. 10: the two dashed flat-plate lines. Nodes are column ink runs (peaks.py) on dashes;
+    # the lettering and its two leaders are masked.
+    # s_px: sqrt(2.03^2 + 0.7^2), the tick calibration's leave-one-out (y) with the ink centroid
+    "r3427f10": dict(box=(976, 1200, 1600, 1712), windows=(0.03, 0.045, 0.06), grow=0.5, s_px=2.15,
+                     mask_r={"circ": 8.5, "sq": 9.5}, node_off={"circ": 8.5, "sq": 9.5},
+                     mask_boxes=[(1030, 1335, 1305, 1400), (1160, 1285, 1185, 1335), (1000, 1515, 1125, 1580),
+                                 (1090, 1578, 1112, 1606)],
+                     curves={
+        "turbulent": dict(nodes=[(1068, 1216), (1100, 1241.0), (1150, 1268.5), (1200, 1286.7), (1250, 1300.2),
+                                 (1350, 1316.7), (1450, 1325.0), (1500, 1327.5), (1550, 1329.0), (1575, 1330)],
+                          width=5.0, extend_end=True, targets=[round(0.2 + 0.05 * k, 2) for k in range(20)]),
+        "laminar": dict(nodes=[(1052, 1593), (1070, 1601.0), (1150, 1624.0), (1200, 1633.3), (1250, 1640.0),
+                               (1300, 1645.5), (1400, 1649.5), (1500, 1651.2), (1570, 1651.5)],
+                        width=5.0, extend_end=True, targets=[round(0.2 + 0.05 * k, 2) for k in range(20)]),
+    }),
     # R&M 3427 fig. 13, upper set only (base holes 5, 6, 7). Below M 0.6 the hole 5 line is the hole 6 line
     # (one line, circles only); from M 0.88 to about 0.93 it runs into the hole 6 line again (h5-04 to h6-09)
     # and leaves it below h5-05. The three lines end at the top frame near M 0.97; a vertical line at

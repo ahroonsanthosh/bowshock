@@ -32,6 +32,28 @@ META = {
                        "d-8": "nearest top-axis M0 tick 1.05 (0.326)",
                        "d-9": "between the top-axis ticks 1.10 (0.609) and 1.15 (0.860): M0 about 1.11"},
                 tri_note=""),
+    "r3427f9": dict(figure="R&M 3427 fig. 9", x="u_star", y="y_in",
+                    conditions='caption: "Boundary-layer profiles on basic model, M_inf = 0.8."; legend "Station :-" '
+                               'circle "At trailing edge", square "1 in. upstream of trailing edge"',
+                    curves={"power_law": 'solid line labelled "1/7 th power law"'},
+                    notes={"te-01": "on the x axis (y = 0 within the error)",
+                           "te-18": "right side merges with the line; typed by its round left side",
+                           "te-21": "between te-20 and up-11 in a stack; round corners (circle)",
+                           "te-22": "highest symbol"},
+                    skip_kinds=("start", "end"),
+                    extra=[dict(item="line end", id="power_law", series='solid line labelled "1/7 th power law"',
+                                x=0.47, x_err=0.01, y=0.0007, y_err=0.0005,
+                                notes="lower end: the line runs into the x axis between u* 0.46 and 0.48"),
+                           dict(item="line end", id="power_law", series='solid line labelled "1/7 th power law"',
+                                x=0.996, x_err=0.004, y=0.1207, y_err=0.0005,
+                                notes="upper end of the vertical line, above te-22 (column ink runs)")],
+                    tri_note=""),
+    "r3427f10": dict(figure="R&M 3427 fig. 10", x="M_inf", y="delta_over_h",
+                     conditions='caption: "Variation of boundary-layer thickness with Mach number."; "(Symbols as '
+                                'in Fig. 9)": circle at trailing edge, square 1 in. upstream of trailing edge',
+                     curves={"turbulent": 'dashed line labelled "Flat plate turbulent from leading edge"',
+                             "laminar": 'dashed line labelled "Flat plate, laminar"'},
+                     notes={}, tri_note=""),
     "r3427f13": dict(figure="R&M 3427 fig. 13 (upper set: base holes 5, 6, 7)", x="M_inf", y="Cp",
                      conditions='caption: "Pressures on basic model. (Zero incidence.)"; set labelled "Pressure '
                                 'tappings on base"; "(The positions of the pressure tappings are given in Fig. 3)"',
@@ -78,6 +100,14 @@ def main():
                 continue
             kind = r.get("kind", "at abscissa")
             if kind in m.get("skip_kinds", ()):
+                continue
+            if r.get("by") == "y":  # abscissa read at a fixed ordinate
+                rows.append({"figure": m["figure"], "item": "curve (x at fixed y)", "id": r["curve"],
+                             "series": m["curves"][r["curve"]], "symbol": "",
+                             m["x"]: round(r["value"], 4), m["x"] + "_err": round(r["err"], 4),
+                             m["y"]: round(r["x"], 5), m["y"] + "_err": "",
+                             "centre_from": "track fit", "glyph_score": "", "conditions": m["conditions"],
+                             "notes": ""})
                 continue
             rows.append({"figure": m["figure"], "item": "curve" if kind == "at abscissa" else "curve " + kind,
                          "id": r["curve"], "series": m["curves"][r["curve"]], "symbol": "",

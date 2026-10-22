@@ -307,4 +307,12 @@ class LocalGrid:
         g.vvals, g.hvals = rep["vvals"], rep["hvals"]
         g.X = np.array([[np.nan if v is None else v for v in row] for row in rep["X"]])
         g.Y = np.array([[np.nan if v is None else v for v in row] for row in rep["Y"]])
+        # a tick calibration (tick_calib.py) has virtual lines; only the ones listed here are ink
+        g.mask_lines = rep.get("mask_lines")
         return g
+
+    def is_ink(self, orient, idx):
+        """True if line idx ("v" or "h") is drawn on the page (all are, unless the calibration lists
+        which ones are)."""
+        ml = getattr(self, "mask_lines", None)
+        return ml is None or [orient, idx] in [list(m) for m in ml]

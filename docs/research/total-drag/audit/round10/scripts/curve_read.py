@@ -24,7 +24,12 @@ entry may give wider windows from a given abscissa on, "windows_from"); the cent
 fit gives the value and the spread of the fits is kept as a model term.
 Error (about 2 sigma) = 2 sqrt(se^2 + (s dy)^2 + (slope s dx)^2) + spread/2,
 s = 0.8 px (0.4 px leave-one-out calibration and 0.7 px ink centroid). A
-target with points on one side only is not read.
+target with points on one side only is not read. A curve with "by": "y" is
+read the other way round, the abscissa at fixed ordinates (for near-vertical
+curves); its readings carry "by": "y", with x the ordinate target and value
+the abscissa read. A figure entry may also set "grow" (see chord_scan) and
+"s_px" in place of the 0.8 px (for a tick calibration, whose leave-one-out
+is larger).
 """
 import json
 import os
@@ -95,8 +100,8 @@ def main():
     ink = (np.asarray(Image.open(page).convert("L")) < 128).astype(np.uint8) * 255
     d = np.asarray(Image.fromarray(ink).filter(ImageFilter.BoxBlur(cfg.get("blur", 1)))).astype(np.float32)
     bx0, by0, bx1, by1 = cfg["box"]
-    vl = [g.vline(k) for k in range(len(g.vvals)) if np.sum(~np.isnan(g.X[k])) >= 2]
-    hl = [g.hline(j) for j in range(len(g.hvals)) if np.sum(~np.isnan(g.X[:, j])) >= 2]
+    vl = [g.vline(k) for k in range(len(g.vvals)) if np.sum(~np.isnan(g.X[k])) >= 2 and g.is_ink("v", k)]
+    hl = [g.hline(j) for j in range(len(g.hvals)) if np.sum(~np.isnan(g.X[:, j])) >= 2 and g.is_ink("h", j)]
     mask = ridge.grid_mask(d.shape, vl, hl, 2.5, (bx0, bx1, by0, by1))
     yy, xx = np.mgrid[by0:by1, bx0:bx1]
     for sid, (sx, sy) in syms.items():
@@ -137,6 +142,9 @@ def main():
         P = [p for p in pts if not p["near_grid"]]
         X = np.array([p["X"] for p in P])
         Y = np.array([p["Y"] for p in P])
+        by_y = cv.get("by") == "y"
+        if by_y:  # read the abscissa at fixed ordinates (near-vertical curves)
+            X, Y = Y, X
         for xt in cv["targets"]:
             res = []
             wins = cfg["windows"]
@@ -164,13 +172,18 @@ def main():
             cen = res[len(res) // 2]
             vals = [r["value"] for r in res]
             spread = max(vals) - min(vals)
-            px, py = g.to_pixel(xt, cen["value"])
-            dx = abs(g.to_data(px + 10, py)[0] - xt) / 10
-            dy = abs(g.to_data(px, py + 10)[1] - cen["value"]) / 10
-            s = 0.8
+            px, py = g.to_pixel(cen["value"], xt) if by_y else g.to_pixel(xt, cen["value"])
+            dx = abs(g.to_data(px + 10, py)[0] - g.to_data(px, py)[0]) / 10
+            dy = abs(g.to_data(px, py + 10)[1] - g.to_data(px, py)[1]) / 10
+            if by_y:
+                dx, dy = dy, dx
+            s = cfg.get("s_px", 0.8)
             err = 2 * np.sqrt(cen["se"] ** 2 + (s * dy) ** 2 + (cen["slope"] * s * dx) ** 2) + spread / 2
-            reads.append(dict(curve=name, x=xt, value=cen["value"], err=float(err), slope=cen["slope"],
-                              n=cen["n"], spread=float(spread), px=float(px), py=float(py)))
+            rec = dict(curve=name, x=xt, value=cen["value"], err=float(err), slope=cen["slope"],
+                       n=cen["n"], spread=float(spread), px=float(px), py=float(py))
+            if by_y:
+                rec["by"] = "y"
+            reads.append(rec)
         # drawn ends of the curve: first and last tracked points
         if pts:
             for lab, p in (("start", pts[0]), ("end", pts[-1])):

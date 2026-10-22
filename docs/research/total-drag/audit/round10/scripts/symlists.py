@@ -126,6 +126,33 @@ FIGS = {
         ("h7-07", "tri", 1538, 1766), ("h7-08", "tri", 1565, 1752), ("h7-09", "tri", 1575, 1737),
         ("h7-10", "tri", 1590, 1709), ("h7-11", "tri", 1612, 1628), ("h7-12", "tri", 1626, 1599),
     ]),
+    # R&M 3427 fig. 9 (PDF p. 36). Legend ("Station :-"): circle "At trailing edge", square "1" upstream of
+    # trailing edge". Symbols overlap in a near-vertical stack, so each is centred by an outline fit of the
+    # measured size (circle 13 px, square 14 px outside), searched within +-3 px only.
+    "r3427f9": dict(half=9, legend={"circ": (1069.5, 365.5), "sq": (1070.5, 411.5)},
+                    outline={"circ": ("circle", 5.5), "sq": ("square", 6.25)}, outline_search=3.0,
+                    series={"circ": "at trailing edge", "sq": "1 in. upstream of trailing edge"}, symbols=[
+        ("te-01", "circ", 1237, 724, {"note": "on the x axis line"}), ("te-02", "circ", 1261, 705),
+        ("te-03", "circ", 1321, 686), ("te-04", "circ", 1352, 664), ("te-05", "circ", 1380, 646),
+        ("te-06", "circ", 1394, 622), ("te-07", "circ", 1403, 604), ("te-08", "circ", 1414, 582),
+        ("te-09", "circ", 1421, 566), ("te-10", "circ", 1427, 546), ("te-11", "circ", 1437, 525),
+        ("te-12", "circ", 1444, 505), ("te-13", "circ", 1449, 484), ("te-14", "circ", 1455, 464),
+        ("te-15", "circ", 1459, 445), ("te-16", "circ", 1462, 424), ("te-17", "circ", 1466, 405),
+        ("te-18", "circ", 1465, 384), ("te-19", "circ", 1469, 366), ("te-20", "circ", 1471, 327),
+        ("te-21", "circ", 1471, 304), ("te-22", "circ", 1471, 267),
+        ("up-01", "sq", 1329, 711), ("up-02", "sq", 1360, 675), ("up-03", "sq", 1392, 633),
+        ("up-04", "sq", 1418, 592), ("up-05", "sq", 1440, 553), ("up-06", "sq", 1450, 515),
+        ("up-07", "sq", 1462, 475), ("up-08", "sq", 1468, 435), ("up-09", "sq", 1474, 395),
+        ("up-10", "sq", 1474, 354), ("up-11", "sq", 1471, 315),
+    ]),
+    # R&M 3427 fig. 10 (PDF p. 36): "(Symbols as in Fig. 9)": circle at the trailing edge, square 1 in.
+    # upstream. Five isolated symbols, centred by outline fit (outside size 14 to 15 px).
+    "r3427f10": dict(half=9, legend={"circ": (1069.5, 365.5), "sq": (1070.5, 411.5)},
+                     outline={"circ": ("circle", 6.0), "sq": ("square", 6.5)}, outline_search=3.0,
+                     series={"circ": "at trailing edge", "sq": "1 in. upstream of trailing edge"}, symbols=[
+        ("d-01", "sq", 1167, 1475), ("d-02", "circ", 1373, 1425), ("d-03", "sq", 1374, 1466),
+        ("d-04", "sq", 1474, 1484), ("d-05", "sq", 1525, 1513),
+    ]),
     # NASA CR-149372 fig. 8a (PDF p. 25). Legend: Mach 0.6 circle with centre
     # dot, 0.7 square with centre dot, 0.8 triangle (no dot), 0.9 hexagon with
     # centre dot; all Reynolds number .19x10^6, diameter 1.91 cm. Legend glyph

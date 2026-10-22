@@ -48,10 +48,10 @@ def grid_mask(g, x0, y0, w, h, rad=3):
     xs = np.arange(x0, x0 + w, dtype=float)
     m = np.zeros((h, w), bool)
     for k in range(len(g.vvals)):
-        if np.sum(~np.isnan(g.X[k])) >= 2:
+        if np.sum(~np.isnan(g.X[k])) >= 2 and g.is_ink("v", k):
             m |= np.abs(xs[None, :] - g.vline(k)(ys)[:, None]) <= rad
     for j in range(len(g.hvals)):
-        if np.sum(~np.isnan(g.X[:, j])) >= 2:
+        if np.sum(~np.isnan(g.X[:, j])) >= 2 and g.is_ink("h", j):
             m |= np.abs(ys[:, None] - g.hline(j)(xs)[None, :]) <= rad
     return m
 
@@ -216,7 +216,7 @@ def main():
             rec["centre_from"] = "pixel map (manual)"
             e = opt.get("e", 1.5)
         elif typ in cfg.get("outline", {}):
-            osc, oc = outline_centre(B1, g, cfg["outline"][typ], ax, ay)
+            osc, oc = outline_centre(B1, g, cfg["outline"][typ], ax, ay, search=cfg.get("outline_search", 4.0))
             rec["centre_px"] = oc
             rec["centre_from"] = "outline fit"
             rec["glyph_ncc"] = rec["score"]

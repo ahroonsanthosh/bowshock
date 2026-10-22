@@ -491,3 +491,70 @@ follows.
 * The peak cluster (M 0.95 to 0.97). Six symbols lie within 30 px, three
   lines converge there, and the lines' last 10 px before the frame are not
   separable. h7-12 (score 0.43) carries the larger error.
+
+## R&M 3427, figs. 9 and 10 (PDF p. 36, printed p. 35)
+
+Both plots have axes with tick marks and no grid. They are calibrated by
+`scripts/tick_calib.py`.
+* Each axis line is sampled along its length and fitted with a straight
+  line, which gives its tilt.
+* Each tick is located by the ink centroid of its mark, and a straight line
+  of value against position is fitted per axis.
+* The result is written in the LocalGrid format: virtual lines through the
+  ticks, parallel to the other axis. Only the two axes are listed as ink
+  lines (`mask_lines`), so symbol and curve masks use only them.
+* The error uses the ticks' leave-one-out. For the curves, `s_px` is
+  sqrt(LOO^2 + 0.7^2) in place of 0.8 px.
+
+**Fig. 9.** Caption: "Boundary-layer profiles on basic model, M_inf =
+0.8." The abscissa is u* (0 to 1.0, ticks every 0.2) and the ordinate
+"y (inches)" (0, 0.05, 0.10). Legend "Station :-": circle "At trailing
+edge", square "1" upstream of trailing edge". The line is labelled "1/7 th
+power law".
+* **Calibration.** 503 px per unit u* and 3969 px per inch of y; the axes
+  tilt by 0.39 and 0.58 deg. Tick residuals are 0.58 and 0.17 px rms, with
+  leave-one-out 0.84 and 0.64 px.
+* **Symbols** (`readings/rm3427_fig9.csv`): 22 circles (te-01 to te-22) and
+  11 squares (up-01 to up-11), stacked almost vertically near u* = 1. Each
+  is centred by an outline fit of its measured size (13 and 14 px outside),
+  searched within +-3 px so that it cannot jump to a neighbour, and every
+  centre was checked on a contact sheet. Errors are +-0.0046 in u* (squares
+  scoring below 0.45: +-0.0068) and +-0.0005 in. in y (+-0.0008).
+  * Five points read u* 1.000 to 1.003, past 1.0 by less than their error.
+* **The power-law line,** read as u* at fixed y every 0.005 in., because it
+  is near-vertical above y 0.03 in.
+  * The symbol stack hides most of the line. Readable: y 0.005 to 0.020,
+    0.040, 0.045, and 0.090 to 0.115.
+  * It meets the x axis between u* 0.46 and 0.48 (merged with the axis
+    there) and ends at the top at (0.996, 0.1207).
+* **Uncertain calls.**
+  * te-18 is typed as a circle by its round left side; its right side
+    merges with the line.
+  * te-21, between te-20 and the square up-11 in a stack, is typed as a
+    circle: its top row is 10 px wide against 13 px for a square of its
+    size.
+  * Squares up-01, up-02, up-05, up-06 and up-08 are partly hidden (outline
+    scores 0.41 to 0.44) and carry the larger error.
+
+**Fig. 10.** Caption: "Variation of boundary-layer thickness with Mach
+number." The ordinate is delta/h (ticks at 0.1 and 0.2) and the abscissa
+M_inf (ticks at 0.5 and 1.0). The figure says "(Symbols as in Fig. 9)".
+Dashed lines are labelled "Flat plate turbulent from leading edge" (upper)
+and "Flat plate, laminar" (lower).
+* **Calibration.** 504 px per unit M and 1987 px per unit delta/h. There
+  are only three ticks per axis (with the origin), so leave-one-out is
+  large: 1.77 px in x and 2.03 px in y. It sets the errors.
+* **Symbols:** four squares at M 0.396, 0.800, 0.999 and 1.097 (delta/h
+  0.121, 0.125, 0.116, 0.101), and one circle at M 0.797 (0.145). Errors are
+  +-0.008 to 0.009 in M and +-0.0022 to 0.0025 in delta/h.
+* **The two dashed lines,** every 0.05 from M 0.20 to 1.15, with errors
+  +-0.0022 to 0.0029.
+  * The turbulent line runs from (0.197, 0.250) to (1.183, 0.194).
+  * The laminar line runs from (0.167, 0.060) to (1.179, 0.032).
+  * Lettering and its two leaders are masked.
+
+## Not read in this session
+
+R&M 3427 fig. 15 has been calibrated (`tick_calib.py` entry `r3427f15`:
+x ticks residual 0.81 px, leave-one-out 1.10 px; y 0.46 and 0.81 px), but
+no symbol or line was read. Fig. 16 has not been started.
