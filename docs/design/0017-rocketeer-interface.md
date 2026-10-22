@@ -334,6 +334,33 @@ solver runs): steps per second without the view 34, 29 and 33; drawn
 live 34, 36 and 35; 0.2 frames drawn a second; cost -5.6%, within the
 noise, against the threshold of 10%.
 
+### 6.5 When the 3D view does not set up (investigated 2026-10-22)
+
+The import screenshot of `eceab88` (`docs/research/interface/app-import-1440.png`)
+was taken in a third browser page in which the 3D view did not set up: the
+side view showed, with its field mode bar and no 3D | Side switch. The
+toast that said why had gone after 8 s, and nothing else recorded it.
+
+SwiftShader limiting concurrent WebGPU pages is not the cause.
+`docs/research/interface/3d-setup/pages.mjs` opens N app pages in one
+Chromium on SwiftShader, each left open and solving on its own device:
+with N = 3, 4 and 8 (the machine loaded at about 10), the 3D view set up
+in every page; with an .ork imported as the page opened, it set up too.
+What reproduces the screenshot exactly is the 3D view's own code failing
+to load: it is a chunk of its own, fetched when the GPU is up, so a
+dropped connection or a site rebuilt while the page was open (new chunk
+names) makes the import fail; with `BLOCK=1` the script refuses that
+chunk and the page falls back exactly as in the screenshot. Whether
+that run rebuilt the site beside open pages was not recorded, so the
+cause of that one picture is not proven; it is the one cause found.
+
+The fallback now says which step failed, plainly, in three places: the
+toast ("The 3D view could not be set up: its code could not be fetched
+(...); reloading the page may fix it", or "the GPU did not set it up
+(...)" with the GPU's own message), the airflow's note, which stays, and
+the console as an error, so that `scripts/interface-check.mjs` fails on
+a page whose 3D view did not set up instead of taking its picture.
+
 ## 7. The rocket drawing
 
 `src/rocket/geometry.ts`, tested without the DOM: the nose's profile

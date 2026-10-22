@@ -70,11 +70,16 @@ const FLOW_SHOWN_KEY = 'bowshock:flow-view';
  * The note on the airflow shown (0017 section 6.2): what is simulated and
  * what is only drawn, and what of the rocket the 3D view cannot draw.
  */
-function flowNoteText(which: FlowShown, missing: readonly string[]): string {
+function flowNoteText(
+  which: FlowShown,
+  missing: readonly string[],
+  failure: string | null,
+): string {
   if (which === 'side') {
     return (
       'The airflow is around the body; the fins are drawn, their drag computed separately. ' +
-      'Hatched: behind the base, not simulated.'
+      'Hatched: behind the base, not simulated.' +
+      (failure === null ? '' : ` The 3D view could not be set up: ${failure}.`)
     );
   }
   const notDrawn =
@@ -146,6 +151,8 @@ let lost: string | null = null;
 let view: FlowView | null = null;
 /** The 3D view, once set up (null if it could not be). */
 let scene: FlowScene3D | null = null;
+/** Why the 3D view could not be set up, in plain words (null: it was, or not yet tried). */
+let sceneFailure: string | null = null;
 let render3d: Render3DModule | null = null;
 /** The rocket whose airflow the views show (null: none shown; the 3D view shows the rocket edited). */
 let flowDesign: RocketDesign | null = null;
@@ -434,7 +441,7 @@ function showFlow(which: FlowShown): void {
 }
 
 function showFlowNote(): void {
-  const text = flowNoteText(shown, missing3d);
+  const text = flowNoteText(shown, missing3d, sceneFailure);
   flowNote.textContent = text;
   viewNote.textContent = text;
 }
@@ -1281,8 +1288,15 @@ async function startGpu(): Promise<void> {
  * to the same share of the time as the side view's (FRAME_BUDGET).
  */
 async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
+  const message = (error: unknown) => (error instanceof Error ? error.message : String(error));
   try {
     render3d = await loadRender3D();
+  } catch (error) {
+    // Its code is a file of its own, fetched now: a dropped connection, or a site updated since the page loaded.
+    failScene(`its code could not be fetched (${message(error)}); reloading the page may fix it`);
+    return;
+  }
+  try {
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
       const width = Math.max(2, Math.round(canvas3d.clientWidth * dpr));
@@ -1316,14 +1330,22 @@ async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
     flowSwitch.element.hidden = false;
     showSceneRocket();
   } catch (error) {
-    scene = null;
-    canvas3d.hidden = true;
-    shell.toasts.show(
-      `The 3D view could not be set up (${String(error)}); the side view shows the airflow.`,
-      'bad',
-      8,
-    );
+    failScene(`the GPU did not set it up (${message(error)})`);
   }
+}
+
+/** The 3D view could not be set up: said on the page (toast and the airflow's note) and in the console. */
+function failScene(why: string): void {
+  scene = null;
+  canvas3d.hidden = true;
+  sceneFailure = why;
+  console.error(`bowshock: the 3D view could not be set up: ${why}`);
+  shell.toasts.show(
+    `The 3D view could not be set up: ${why}. The side view shows the airflow.`,
+    'bad',
+    8,
+  );
+  showFlowNote();
 }
 
 showDrawing();
