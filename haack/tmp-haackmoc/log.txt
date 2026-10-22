@@ -288,3 +288,8 @@
 2026-10-22T08:43:06.980Z haack C0 L5 M2 cyl2 nj20x4: start, save to tests/tmp-haackmoc/L5c2M2r4
 2026-10-22T08:45:51.622Z haack C0 L5 M2 cyl2 nj20x4: resumed from checkpoint at 11000 iterations
 2026-10-22T08:47:51.931Z haack C0 L5 M3 cyl2 nj20x4: resumed from checkpoint at 4000 iterations
+2026-10-22T09:38:26.661Z haack C0 L5 M2 cyl2 nj20x4: 12000 iterations, maxSpeed 1.32e-9, drag 0.0326452038190, remaining 0.00e+0
+2026-10-22T10:01:32.757Z haack C0 L5 M3 cyl2 nj20x4: 5000 iterations, maxSpeed 1.49e-7, drag 0.0301044366019, remaining 0.00e+0
+2026-10-22T10:06:53.075Z haack C0 L5 M2 cyl2 nj20x4: 13000 iterations, maxSpeed 5.63e-10, drag 0.0326452038194, remaining 0.00e+0
+2026-10-22T10:31:02.399Z haack C0 L5 M2 cyl2 nj20x4: quality {"wall":77.40210427163936,"minAngle":59.01050113655954,"sizeRatio":1.0933343414865606,"aspect":4.491479941083875,"gates":[],"stagnationError":-0.0003218658137781327,"standoff":0.00014172130970708813}
+2026-10-22T10:31:02.405Z haack C0 L5 M2 cyl2 nj20x4: settled early at 14000 iterations, remaining 0.00e+0, maxSpeed 2.40e-10, drag 0.032645203819490848, from the wall strip 0.032645203819490917; saved

@@ -57,3 +57,5 @@ seeded tests/tmp-haackmoc/ckpt-L5c2M2r4 (1172 x 80) from tests/tmp-haackmoc/L5c2
 2026-10-22T08:42:53Z lanex restarted after a container restart (by the coordinator)
 2026-10-22T08:42:54Z lanex finished
 2026-10-22T08:42:54Z start L5c2M2r4
+2026-10-22T10:31:02Z done L5c2M2r4
+2026-10-22T10:31:02Z lanex corners finished

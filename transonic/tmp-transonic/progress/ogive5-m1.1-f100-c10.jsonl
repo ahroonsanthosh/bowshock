@@ -91,3 +91,15 @@
 {"refinement":16,"checkpoint":700}
 {"refinement":16,"steps":800,"drag":0.04344547893227636,"residual":0.000020878663125506192,"seconds":5118.767636771,"rssMB":1540}
 {"refinement":16,"checkpoint":800}
+{"refinement":16,"steps":900,"drag":0.04344612013451222,"residual":0.000018691740166639748,"seconds":6067.841838061,"rssMB":1576}
+{"refinement":16,"checkpoint":900}
+{"refinement":16,"steps":1000,"drag":0.04344674222269794,"residual":0.00001643357944917321,"seconds":6651.459087126999,"rssMB":1545}
+{"refinement":16,"steps":1100,"drag":0.04344732034059566,"residual":0.000015273128942524925,"seconds":7169.906499571,"rssMB":1638}
+{"refinement":16,"checkpoint":1100}
+{"refinement":16,"steps":1200,"drag":0.04344788454439719,"residual":0.000014359772765950174,"seconds":7671.209601902999,"rssMB":1607}
+{"refinement":16,"steps":1300,"drag":0.043448463135293304,"residual":0.000013489016382636911,"seconds":8140.391589759999,"rssMB":1545}
+{"refinement":16,"checkpoint":1300}
+{"refinement":16,"steps":1400,"drag":0.04344927790347511,"residual":0.000012147247201623316,"seconds":8579.732178683,"rssMB":1607}
+{"refinement":16,"steps":1500,"drag":0.04345005069856903,"residual":0.0000111577935717601,"seconds":9014.014673849,"rssMB":1638}
+{"refinement":16,"checkpoint":1500}
+{"refinement":16,"steps":1600,"drag":0.043450778993408386,"residual":0.000010218944436353773,"seconds":9449.914934872999,"rssMB":1576}
