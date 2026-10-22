@@ -1,50 +1,167 @@
 import { describe, expect, it } from 'vitest';
-import { DECAY_LIMIT, domainAllowance } from '../../src/verification/domain-allowance';
+import {
+  DECAY_LIMIT,
+  domainAllowance,
+  powerLawRatio,
+  Q_FAST,
+  Q_SLOW,
+  tailFactor,
+} from '../../src/verification/domain-allowance';
 
-describe('domain allowance (design record 0013, "The allowance rule")', () => {
-  it('a geometric decay: the remainder beyond the family domain, |c2| / (1 - rho)', () => {
+/** The nested domains' own far radii (base radius 1): 55.1, 100.6, 224.2 and 408.7. */
+const D = [55.10160405104679, 100.60719837318378, 224.2118229126046, 408.7461074989818] as const;
+const family100 = [D[0], D[1], D[2]] as const;
+const family224 = [D[1], D[2], D[3]] as const;
+
+describe('domain allowance (design record 0013, "The allowance rule corrected for sign reversal")', () => {
+  it('its constants: T and rho_fast over the page’s distances', () => {
+    expect(Q_SLOW).toBe(0.35);
+    expect(Q_FAST).toBe(3);
+    expect(tailFactor(D[1], D[2])).toBeCloseTo(3.0887, 4);
+    expect(tailFactor(D[2], D[3])).toBeCloseTo(4.2754, 4);
+    expect(tailFactor(10, 20)).toBeCloseTo(3.6422, 4);
+    expect(powerLawRatio(D[0], D[1], D[2])).toBeCloseTo(0.1788, 4);
+    expect(powerLawRatio(D[1], D[2], D[3])).toBeCloseTo(0.0829, 4);
+    expect(powerLawRatio(5, 10, 20)).toBeCloseTo(0.125, 12);
+  });
+
+  it('a geometric decay: the remainder beyond the family domain, |b| / (1 - rho), plus m', () => {
     // Changes 4e-4, then 2e-4, then 1e-4, ...: the remainder beyond the
     // family's domain is 2e-4 + 1e-4 + ... = 4e-4.
-    const a = domainAllowance([1, 1 + 4e-4, 1 + 6e-4], 1e-5, 1e-7);
+    const a = domainAllowance([1, 1 + 4e-4, 1 + 6e-4], family100, 1e-7);
     expect(a.kind).toBe('decaying');
     if (a.kind === 'refused') return;
-    expect(a.allowance).toBeCloseTo(4e-4, 15);
+    expect(a.measurability).toBeCloseTo(2 * 1e-7 * (1 + 6e-4), 18);
+    expect(a.allowance).toBeCloseTo(4e-4 + a.measurability, 15);
     expect(a.changes[0]).toBeCloseTo(4e-4, 15);
     expect(a.changes[1]).toBeCloseTo(2e-4, 15);
   });
 
   it('a power law in the distance is bounded where its changes fall by DECAY_LIMIT or less', () => {
-    // C(D) = 1 - D^-q on 55.1, 100.6, 224.2 (the page's domains): the
-    // remainder at 100.6 is 100.6^-q, which the allowance must contain.
-    for (const q of [0.8, 1, 1.35, 2]) {
-      const C = (D: number) => 1 - D ** -q;
-      const a = domainAllowance([C(55.1), C(100.6), C(224.2)], 0, 1e-12);
-      const rho = (C(224.2) - C(100.6)) / (C(100.6) - C(55.1));
+    // C(D) = 1 - D^-q on 55.1, 100.6, 224.2: the remainder at 100.6 is
+    // 100.6^-q, which the allowance must contain.
+    for (const q of [0.8, 1, 1.35, 2, 2.5, 4]) {
+      const C = (d: number) => 1 - d ** -q;
+      const a = domainAllowance([C(D[0]), C(D[1]), C(D[2])], family100, 1e-12);
+      const rho = (C(D[2]) - C(D[1])) / (C(D[1]) - C(D[0]));
       if (rho > DECAY_LIMIT) {
-        expect(a.kind).toBe('refused');
+        expect(a.kind, `q ${q}`).toBe('refused');
         continue;
       }
-      expect(a.kind).toBe('decaying');
+      expect(a.kind, `q ${q}`).toBe(q > Q_FAST ? 'turning' : 'decaying');
       if (a.kind === 'refused') continue;
-      expect(a.allowance).toBeGreaterThanOrEqual(100.6 ** -q);
+      expect(a.allowance, `q ${q}`).toBeGreaterThanOrEqual(D[1] ** -q);
     }
   });
 
-  it('negligible changes: below a quarter of the band, or below the noise; the larger one counts', () => {
-    const quarter = domainAllowance([1, 1 + 2e-6, 1 - 1e-6], 2e-5, 1e-9);
-    expect(quarter.kind).toBe('negligible');
-    if (quarter.kind !== 'refused') expect(quarter.allowance).toBeCloseTo(3e-6, 15);
-    const noise = domainAllowance([1, 1 + 5e-7, 1 - 5e-7], 0, 1e-7);
-    expect(noise.kind).toBe('negligible');
+  it('changes below the measurability level: the turning bound, never below m', () => {
+    const noise = 1e-6;
+    const values = [0.1, 0.1 + 1e-7, 0.1 - 5e-8] as const;
+    const a = domainAllowance(values, family100, noise);
+    expect(a.kind).toBe('unmeasurable');
+    if (a.kind === 'refused') return;
+    const m = 2 * noise * 0.1000001;
+    expect(a.measurability).toBeCloseTo(m, 15);
+    expect(a.allowance).toBeCloseTo(1.5e-7 + tailFactor(D[1], D[2]) * 1.5e-7 + m, 15);
+    expect(a.allowance).toBeGreaterThanOrEqual(m);
   });
 
-  it('refused: changes that do not fall, or change sign, above the band and the noise', () => {
+  it('more noise never narrows an allowance (review S3 (b))', () => {
+    const cases: (readonly [number, number, number])[] = [
+      [0.1, 0.1 + 4e-6, 0.1 + 6e-6],
+      [0.1, 0.1 + 6.4e-6, 0.1 + 6.28e-6],
+      [1, 1 + 1e-7, 1 + 1.5e-7],
+    ];
+    for (const values of cases) {
+      let last = 0;
+      for (const noise of [1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4]) {
+        const a = domainAllowance(values, family100, noise);
+        if (a.kind === 'refused') continue;
+        expect(a.allowance).toBeGreaterThanOrEqual(last);
+        last = a.allowance;
+      }
+    }
+  });
+
+  it('refused: changes that do not fall, whatever their signs', () => {
     // The 5-caliber ogive at Mach 1.05 on regridded domains (for
     // orientation): -1.22e-4, then -1.07e-4.
-    const slow = domainAllowance([0.041951, 0.0418288, 0.0417219], 7e-5, 2e-6);
+    const slow = domainAllowance([0.041951, 0.0418288, 0.0417219], family100, 2e-6);
     expect(slow.kind).toBe('refused');
     if (slow.kind === 'refused') expect(slow.reason).toMatch(/does not fall/);
-    const flip = domainAllowance([1, 1 + 1e-4, 1 + 5e-5], 1e-5, 1e-9);
+    const flip = domainAllowance([1, 1 + 1e-4, 1 + 3e-5], family100, 1e-9);
     expect(flip.kind).toBe('refused');
+    const fromNothing = domainAllowance([1, 1, 1 + 1e-4], family100, 1e-9);
+    expect(fromNothing.kind).toBe('refused');
+  });
+
+  it('the reviewer’s synthetic A1: a tiny b after a large a is the effect turning, not decaying', () => {
+    // c1 = +1.5e-3, c2 = +2e-6, and the effect reverses beyond 224.2 radii:
+    // the true remainder at 100.6 radii is -6e-5.
+    const own = 0.105;
+    const a = domainAllowance([own - 1.5e-3, own, own + 2e-6], family100, 1e-7);
+    expect(a.kind).toBe('turning');
+    if (a.kind === 'refused') return;
+    expect(a.allowance).toBeGreaterThanOrEqual(6e-5);
+    expect(a.allowance).toBeCloseTo(2e-6 + tailFactor(D[1], D[2]) * 1.5e-3 + a.measurability, 12);
+  });
+
+  // The nested base-grid runs of the cone (and, at Mach 1.0, the 5-caliber
+  // ogive) on 55.1, 100.6, 224.2 and 408.7 radii (0013, "Build progress";
+  // the reviewer's runs at 1.017 and 1.019). The noise is set so that
+  // nu max|C| = 3.5e-6, as the rule's test sets it.
+  const nested: Record<string, readonly [number, number, number, number]> = {
+    'cone 1.0': [0.0897884889365743, 0.09171531708471234, 0.09292826439834694, 0.09328843962216965],
+    'ogive 1.0': [
+      0.015531346369411083, 0.01717069015991946, 0.018406814640679985, 0.01886773676334449,
+    ],
+    'cone 1.01': [
+      0.09975348457485804, 0.10261026960618434, 0.10351345309568905, 0.1034732094263092,
+    ],
+    'cone 1.017': [
+      0.10705714504693876, 0.10867885189626623, 0.10861848369816539, 0.10861920667252987,
+    ],
+    'cone 1.019': [
+      0.10848387332398875, 0.10952523377135431, 0.10942235964505104, 0.10942451701124896,
+    ],
+    'cone 1.02': [0.10903164228339668, 0.109800801244637, 0.10969795361513447, 0.10969998420500345],
+  };
+  const noiseFor = (v: readonly number[]) => 3.5e-6 / Math.max(...v.map(Math.abs));
+
+  it('the reviewer’s table, family on 100.6 radii: every allowance contains C(408.7) - C(100.6)', () => {
+    const expected: Record<string, string> = {
+      'cone 1.0': 'refused',
+      'ogive 1.0': 'refused',
+      'cone 1.01': 'decaying',
+      'cone 1.017': 'turning',
+      'cone 1.019': 'turning',
+      'cone 1.02': 'turning',
+    };
+    for (const [name, v] of Object.entries(nested)) {
+      const three = [v[0], v[1], v[2]] as const;
+      const a = domainAllowance(three, family100, noiseFor(three));
+      expect(a.kind, name).toBe(expected[name]);
+      if (a.kind === 'refused') continue;
+      expect(a.allowance, name).toBeGreaterThanOrEqual(Math.abs(v[3] - v[1]));
+    }
+  });
+
+  it('the family moved to 224.2 radii (decision 7.3): Mach 1.0 decays, 1.01 to 1.02 turn', () => {
+    const expected: Record<string, [string, number]> = {
+      'cone 1.0': ['decaying', 5.123e-4],
+      'ogive 1.0': ['decaying', 7.35e-4],
+      'cone 1.01': ['turning', 3.902e-3],
+      'cone 1.017': ['turning', 2.588e-4],
+      'cone 1.019': ['turning', 4.42e-4],
+      'cone 1.02': ['turning', 4.418e-4],
+    };
+    for (const [name, v] of Object.entries(nested)) {
+      const three = [v[1], v[2], v[3]] as const;
+      const a = domainAllowance(three, family224, noiseFor(three));
+      const [kind, allowance] = expected[name]!;
+      expect(a.kind, name).toBe(kind);
+      if (a.kind === 'refused') continue;
+      expect(Math.abs(a.allowance - a.measurability - allowance), name).toBeLessThan(1e-6);
+    }
   });
 });

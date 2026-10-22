@@ -67,9 +67,9 @@ const options = { mach: 1.1, gamma: 1.4, finest: 8, checkEvery: 20 } as const;
 describe('verifiedTransonicDrag (design record 0013, "What a page solve does")', () => {
   it('a monotone family: the band is the procedure’s, the floor and both allowances', async () => {
     // Second order towards 0.1, the far boundaries' effect falling by 0.3
-    // per step outward, the cylinder's negligible.
+    // per step outward, the cylinder's below the measurability level.
     const exact = 0.1;
-    const farEffect = (far = 100) => (far === 50 ? -4e-5 : far === 200 ? 3.6e-6 : 0);
+    const farEffect = (far = 100) => (far === 50 ? -4e-5 : far === 200 ? 1.2e-5 : 0);
     const result = await verifiedTransonicDrag(
       ogive,
       options,
@@ -87,9 +87,18 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     // Within the iteration's remaining change (settled to 1e-7 of the drag).
     expect(Math.abs(result.parts.grids / ((1.25 * e21) / 3) - 1)).toBeLessThan(1e-3);
     expect(result.parts.floor).toBeCloseTo(TRANSONIC_DRAG_FLOOR * result.value, 15);
-    // c1 = +4e-5, c2 = +3.6e-6: rho = 0.09, allowance 3.6e-6 / 0.91.
-    expect(Math.abs(result.parts.farField / (3.6e-6 / (1 - 0.09)) - 1)).toBeLessThan(1e-2);
-    expect(result.parts.cylinder).toBeLessThan(1e-8);
+    // c1 = +4e-5, c2 = +1.2e-5: rho = 0.3, allowance 1.2e-5 / 0.7 plus the
+    // measurability level 2 nu max|C|.
+    const far = result.allowances.farField.result;
+    expect(far.kind).toBe('decaying');
+    expect(far.measurability).toBeCloseTo(2 * result.noise * (exact + 4e-4 + 1.2e-5), 12);
+    expect(Math.abs(result.parts.farField - far.measurability - 1.2e-5 / 0.7)).toBeLessThan(2e-8);
+    // The cylinder's changes (1e-9) are below the measurability level:
+    // the turning bound, at least that level.
+    const cylinder = result.allowances.cylinder.result;
+    expect(cylinder.kind).toBe('unmeasurable');
+    expect(result.parts.cylinder).toBeGreaterThanOrEqual(cylinder.measurability);
+    expect(result.parts.cylinder).toBeLessThan(1e-7);
     expect(result.band).toBeCloseTo(
       result.parts.grids + result.parts.floor + result.parts.farField + result.parts.cylinder,
       15,
@@ -205,7 +214,27 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     if (result.kind === 'refused') {
       expect(result.reason).toBe('far-field');
       expect(result.message).toMatch(/far boundaries.*does not fall/);
+      // Decided on the base grids, before any finer grid is solved.
+      expect(result.levels.map((l) => l.refinement)).toEqual([1]);
     }
+  });
+
+  it('the reviewer’s A1 through the driver: a tiny change after a large one is bounded as a turn', async () => {
+    // c1 = +1.5e-3, c2 = +2e-6, and the true remainder at 100.6 radii -6e-5.
+    const own = 0.105;
+    const result = await verifiedTransonicDrag(
+      cone,
+      options,
+      synthetic({
+        converged: (r, far) =>
+          own + 2e-4 / r ** 2 - 2e-4 / 64 + (far === 50 ? -1.5e-3 : far === 200 ? 2e-6 : 0),
+      }),
+    );
+    expect(result.kind).toBe('solved');
+    if (result.kind !== 'solved') return;
+    expect(result.allowances.farField.result.kind).toBe('turning');
+    expect(result.parts.farField).toBeGreaterThanOrEqual(6e-5);
+    expect(result.allowances.farField.distances[1]).toBeCloseTo(100.607, 3);
   });
 
   it('a wander measured on the grids widens the noise, so changes below it cannot be measured', async () => {
@@ -525,6 +554,25 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     expect(c2 / c1).toBeCloseTo(0.297, 3);
     expect(result.parts.farField).toBeGreaterThanOrEqual(Math.abs(c2) / (1 - c2 / c1));
     expect(result.parts.farField).toBeLessThan(5.2e-4);
+  });
+
+  it('the moved family at Mach 1.01: the effect turns beyond 224.2 radii, and the turning bound holds it', async () => {
+    const measured: Record<number, number> = {
+      100: 0.10261026960618434,
+      200: 0.10351345309568905,
+      400: 0.1034732094263092,
+    };
+    const result = await verifiedTransonicDrag(
+      cone,
+      { ...options, mach: 1.01, allowNearSonic: true },
+      synthetic({ converged: (r, far) => measured[far ?? 100]! + 2e-4 / r ** 2 }),
+    );
+    expect(result.kind).toBe('solved');
+    if (result.kind !== 'solved') return;
+    const far = result.allowances.farField.result;
+    expect(far.kind).toBe('turning');
+    // |b| + T |a| + m: 4.02e-5 + 4.28 x 9.03e-4, 3.9e-3 (3.8% of the drag).
+    expect(Math.abs(result.parts.farField - far.measurability - 3.902e-3)).toBeLessThan(2e-6);
   });
 
   it('blunt noses are refused, and Mach numbers outside the range throw', async () => {

@@ -1878,6 +1878,22 @@ the base grid with nested far boundaries at 55.1, 100.6, 224.2 and
   domain near 800 radii, where the steps diverge). Its allowances are
   the rule's, with the consistency check of the previous entry.
 
+**The corrected rule, coded (after the entry above was committed in
+`20ab07a`).** `domainAllowance(values, distances, noise)`
+(`src/verification/domain-allowance.ts`), with kinds 'unmeasurable',
+'decaying', 'turning' and 'refused'; the driver passes the grids' own
+far radii and cylinder lengths, and stops with the refusal right after
+the base grids. Its tests (`tests/verification/domain-allowance.test.ts`,
+`tests/analysis/transonic-drag.test.ts`) pin the constants, the
+reviewer's table on both families as listed above, A1 directly and
+through the driver, and that an allowance never narrows as the noise
+grows. One limit of S3 (b) remains, said plainly: more noise can still
+move a case whose changes do not fall from 'refused' to
+'unmeasurable', once both changes are below the measurability level.
+Its allowance is then the turning bound, at least (1 + T) times the
+larger change plus m, which holds any remainder decaying no slower than
+D^-0.35 from changes of that size; it is not refused.
+
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
 (Superseded as a serving rule by the owner's decision of 2026-10-21,

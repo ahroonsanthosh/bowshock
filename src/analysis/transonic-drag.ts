@@ -262,8 +262,10 @@ export interface TransonicLevel {
 export interface TransonicAllowance {
   /** Drag on the smaller, the family's own and the larger domain (base grid). */
   readonly values: readonly [number, number, number];
-  /** Those domains: radii for the far boundaries, calibers for the cylinder. */
+  /** Those domains as asked: radii for the far boundaries, calibers for the cylinder. */
   readonly domains: readonly [number, number, number];
+  /** The grids' own distances (far radii, or cylinder lengths in calibers), which the rule uses. */
+  readonly distances: readonly [number, number, number];
   readonly result: DomainAllowance;
 }
 
@@ -492,11 +494,7 @@ export async function verifiedTransonicDrag(
       allowance: 'farField' | 'cylinder',
       nested: readonly [TransonicProblem, TransonicProblem],
       sizes: readonly [number, number, number],
-    ): Promise<{
-      values: [number, number, number];
-      noise: number;
-      domains: readonly [number, number, number];
-    }> => {
+    ): Promise<TransonicAllowance> => {
       const solveNested = (problem: TransonicProblem, domain: 0 | 2) =>
         solveGrid(engine, problem, null, options, {
           what: 'allowance',
@@ -507,14 +505,41 @@ export async function verifiedTransonicDrag(
       const smaller = await solveNested(nested[0], 0);
       const larger = await solveNested(nested[1], 2);
       work += smaller.cellUpdates + larger.cellUpdates;
+      const values = [smaller.drag, baseSolution.drag, larger.drag] as const;
+      const distanceOf = (problem: TransonicProblem) =>
+        allowance === 'farField'
+          ? problem.grid.farRadius / body.nose.baseRadius
+          : (problem.grid.xEnd - body.nose.length) / (2 * body.nose.baseRadius);
+      const distances = [
+        distanceOf(nested[0]),
+        distanceOf(problems.base),
+        distanceOf(nested[1]),
+      ] as const;
+      const noise = Math.max(smaller.noise, baseSolution.noise, larger.noise);
       return {
-        values: [smaller.drag, baseSolution.drag, larger.drag],
-        noise: Math.max(smaller.noise, baseSolution.noise, larger.noise),
+        values,
         domains: sizes,
+        distances,
+        result: domainAllowance(values, distances, noise),
       };
     };
-    const far = await allowanceOf('farField', problems.farField, domains.farField);
-    const cylinder = await allowanceOf('cylinder', problems.cylinder, domains.cylinder);
+    // The allowances do not depend on the family's band (0013, "The
+    // allowance rule corrected for sign reversal"), so a refusal stops the
+    // request here, after the base grids only.
+    const allowances = {
+      farField: await allowanceOf('farField', problems.farField, domains.farField),
+      cylinder: await allowanceOf('cylinder', problems.cylinder, domains.cylinder),
+    } as const;
+    for (const [reason, what, a] of [
+      ['far-field', 'far boundaries', allowances.farField.result],
+      ['cylinder', 'cylinder', allowances.cylinder.result],
+    ] as const) {
+      if (a.kind === 'refused') {
+        return { kind: 'refused', reason, message: `the ${what}: ${a.reason}`, levels, allowances };
+      }
+    }
+    const farAllowance = allowances.farField.result;
+    const cylinderAllowance = allowances.cylinder.result;
 
     // The family's finer grids, each started from the one before.
     let previous: { problem: TransonicProblem; cells: TransonicCells; rate: number } = {
@@ -540,12 +565,6 @@ export async function verifiedTransonicDrag(
     const estimate = gridConvergence(values.slice(-4), { orderTolerance: ORDER_TOLERANCE, noise });
     const bandOf = (e: ConvergenceEstimate) => (e.kind === 'unresolved' ? 0 : e.uncertainty);
     const grids = bandOf(estimate);
-    const farAllowance = domainAllowance(far.values, grids, far.noise);
-    const cylinderAllowance = domainAllowance(cylinder.values, grids, cylinder.noise);
-    const allowances = {
-      farField: { values: far.values, domains: far.domains, result: farAllowance },
-      cylinder: { values: cylinder.values, domains: cylinder.domains, result: cylinderAllowance },
-    } as const;
     if (estimate.kind === 'unresolved') {
       const finer =
         finerMayResolve(values) &&
@@ -562,21 +581,6 @@ export async function verifiedTransonicDrag(
         allowances,
         ...(finer === undefined ? {} : { finer }),
       };
-    }
-    for (const [reason, what, a] of [
-      ['far-field', 'far boundaries', farAllowance],
-      ['cylinder', 'cylinder', cylinderAllowance],
-    ] as const) {
-      if (a.kind === 'refused') {
-        return {
-          kind: 'refused',
-          reason,
-          message: `the ${what}: ${a.reason}`,
-          levels,
-          estimate,
-          allowances,
-        };
-      }
     }
     const value = estimate.value;
     const parts = {
