@@ -538,6 +538,38 @@ fail the aspect-ratio gate, 13.7 and 14.1 against 13, in the wall cells
 at the end of the solved cylinder, where those at 1.5 times the column
 density reach 8.5).
 
+**A second reference of that class: a 2-caliber tangent ogive at Mach
+1.6** (28.07 deg tip; conical surface flow at Mach 1.0036, near the
+least Mach number at which this nose is served, its axial component
+0.886, the least of the cases measured; 2 calibers of cylinder),
+measured the same way (on the code of d5bb13a with the exception above,
+whose sharp grids are the same as those served, bit for bit):
+
+| nj  | Usual family | 1.5 times the columns |
+| --- | ------------ | --------------------- |
+| 20  | 0.2053948862 | 0.2056332765          |
+| 40  | 0.2051904733 | 0.2052482207          |
+| 80  | 0.2051381165 | 0.2051522947          |
+| 160 | 0.2051250814 |                       |
+
+The usual family's triples converge at orders 1.97 and 2.01,
+extrapolated 0.2051207363 (band 5.4e-6, 2.0e-5 with the floor); the
+second family converges at order 2.01 to 0.2051203194, 2.0e-6 of the
+value from the first. Every grid passes the fitted grids' gates and the
+flow leaves the body supersonically. Unlike on the first reference,
+the captured-shock solver gives no cross-check here: on nj = 20 to 160
+its values, 0.2056606, 0.2045075, 0.2045979 and 0.2048066 (its own grid
+gate bypassed on the two coarsest grids, whose neighbouring cells differ
+in size by 1.35 and 1.30 against 1.3), change by amounts that do not
+shrink, so the procedure gives no band; its finest value lies 1.5e-3
+below the fitted extrapolation and still rises, and even a first-order
+extrapolation of its last two grids (0.2050152) stays 1.05e-4 short. So
+this reference rests on the fitted method's own verification, its two
+differently laid out families, not on an independent method. A third,
+a parabola of parameter 1 of 2 calibers at Mach 1.6 (the tip and Mach
+number of the 26.6 deg cone above, without its corner), is being
+measured.
+
 **Where the usual grids fail the gates: the family again with more
 columns.** A sharp nose's family whose grid fails only the fitted grids'
 quality gates (`fittedGridFailure`) is solved again from its coarsest

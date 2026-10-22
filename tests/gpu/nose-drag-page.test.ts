@@ -181,7 +181,10 @@ describe('the drag page: total drag before a nose solve', () => {
     set('#mach', '1.6');
     const out = await settled(before);
     expect(out).toContain('Total drag refused: no number is given');
-    expect(out).toContain('body base (mach-range)');
+    // The rebuilt factor (0015) refuses the Basic Finner's diverging wedges at the
+    // base, and the present factor its Mach number (0014 section 10.7 (i)).
+    expect(out).toContain('body base (fin-trailing-edge)');
+    expect(out).toContain('the fins-on-base factor is read at Mach 1.8 to 2.56');
     expect(out).not.toContain('C_D =');
     set('#mach', '2');
     await settled(out);
@@ -198,21 +201,25 @@ describe('the drag page: total drag before a nose solve', () => {
     expect((doc.querySelector('#sweep-fields') as HTMLElement).hidden).toBe(false);
     // Swept at 30 deg front and back, of constant chord: the swept rounded
     // leading edge is served (0016); src/base refuses the swept blunt trailing edge
-    // and, the fins ending at the base, the fins-on-base factor (0014 section 10.7).
+    // and, the fins ending at the base, the fins-on-base factor: the rebuilt factor
+    // for the diverging wedge (0015 section 4), the present one for the sweep
+    // (0014 section 10.7 (d), (i)).
     set('#le-sweep', '30');
     set('#te-sweep', '30');
     out = await settled(before);
     expect(out).toContain('Total drag refused: no number is given');
     expect(out).not.toContain('fin leading edges (');
     expect(out).toContain('fin trailing-edge base (swept-trailing-edge)');
-    expect(out).toContain('body base (fin-sweep)');
+    expect(out).toContain('body base (fin-trailing-edge)');
+    expect(out).toContain('since sweep changes the factor');
     before = out;
     // Sweeping the leading edge alone changes the chord along the span: the
     // wedge's rounded edge is refused there, its trailing edge integrated (0016).
     set('#te-sweep', '0');
     out = await settled(before);
     expect(out).toContain('fin leading edges (leading-edge-geometry)');
-    expect(out).toContain('body base (fin-sweep)');
+    expect(out).toContain('body base (fin-trailing-edge)');
+    expect(out).toContain('since sweep changes the factor');
     expect(out).not.toContain('fin trailing-edge base (');
     before = out;
     // A flat plate (0016): its thickness asked, no radius; square-cut edges refused.
