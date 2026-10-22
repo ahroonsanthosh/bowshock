@@ -100,4 +100,57 @@ FIGS = {
         ("d-4", "circ", 1094.0, 984.5), ("d-5", "circ", 1168.9, 905.6), ("d-6", "circ", 1230.0, 782.2),
         ("d-7", "circ", 1292.0, 674.5), ("d-8", "circ", 1344.4, 575.6), ("d-9", "circ", 1400.0, 432.2),
     ]),
+    # NASA CR-149372 fig. 8a (PDF p. 25). Legend: Mach 0.6 circle with centre
+    # dot, 0.7 square with centre dot, 0.8 triangle (no dot), 0.9 hexagon with
+    # centre dot; all Reynolds number .19x10^6, diameter 1.91 cm. Legend glyph
+    # centres are bounding-box centres on the 2 px blurred page. Symbols were
+    # listed by eye on 3.2x to 6x gridded crops (gridcrop.py, 1 px blur) and
+    # typed by outline shape (round, square with corners, three-sided,
+    # six-sided with left and right vertices) and by the presence of a centre
+    # dot. The plotted hexagons are smaller than the legend's (44 to 52 px
+    # wide against 56); dotted symbols are therefore centred on their dot.
+    "cr8a": dict(half=16, blur=2, dot_types=("circ", "sq", "hex"), dot_check=("tri",),
+                 legend={"circ": (1636.0, 1024.5, 16), "sq": (1641.0, 1067.0, 17), "tri": (1638.5, 1111.0, 17),
+                         "hex": (1642.0, 1157.0, 26)},
+                 series={"circ": "Mach 0.6, Re .19x10^6", "sq": "Mach 0.7, Re .19x10^6",
+                         "tri": "Mach 0.8, Re .19x10^6", "hex": "Mach 0.9, Re .19x10^6"}, symbols=[
+        ("m6-01", "circ", 808, 870), ("m6-02", "circ", 857, 895), ("m6-03", "circ", 926, 1009),
+        ("m6-04", "circ", 991, 1213), ("m6-05", "circ", 1050, 1475), ("m6-06", "circ", 1127, 1835),
+        ("m6-07", "circ", 1199, 2163), ("m6-08", "circ", 1260, 2435), ("m6-09", "circ", 1286, 2487),
+        ("m6-10", "circ", 1327.5, 2521), ("m6-11", "circ", 1347.5, 2542.5), ("m6-12", "circ", 1370, 2534),
+        ("m6-13", "circ", 1402.5, 2504), ("m6-14", "circ", 1424, 2494), ("m6-15", "circ", 1446, 2485),
+        ("m6-16", "circ", 1470, 2490, {"manual": (1467.5, 2487.5), "e": 3.0, "note": "partly drawn circle sharing its left side with m6-15 (cell x 1459 to 1480, y 2477 to 2500, round); no clear dot; centre from the outline; tentative"}),
+        ("m6-17", "circ", 1491.5, 2471), ("m6-18", "circ", 1514, 2467), ("m6-19", "circ", 1561, 2482),
+        ("m6-20", "circ", 1602, 2491), ("m6-21", "circ", 1667, 2515), ("m6-22", "circ", 1743, 2532),
+        ("m6-23", "circ", 1836, 2534), ("m6-24", "circ", 1917.5, 2582), ("m6-25", "circ", 2016, 2630),
+        ("m6-26", "circ", 2077, 2682), ("m6-27", "circ", 2107.5, 2672, {"manual": (2108.5, 2669.5), "e": 3.5, "note": "partly drawn circle above m7-23 (shares its lower edge), on the line from m6-26 to m6-28; no separable dot; centre from the outline (x 2094 to 2121, top 2656) and the small interior left; tentative"}),
+        ("m6-28", "circ", 2134, 2652),
+        ("m7-01", "sq", 806, 838), ("m7-02", "sq", 837, 848), ("m7-03", "sq", 884, 889),
+        ("m7-04", "sq", 953, 1018), ("m7-05", "sq", 1018, 1239), ("m7-06", "sq", 1112, 1627),
+        ("m7-07", "sq", 1178, 1921), ("m7-08", "sq", 1259, 2314), ("m7-09", "sq", 1290.5, 2380),
+        ("m7-10", "sq", 1313, 2424), ("m7-11", "sq", 1335, 2448.5), ("m7-12", "sq", 1377.5, 2466.5),
+        ("m7-13", "sq", 1404, 2451), ("m7-14", "sq", 1446.5, 2461),
+        ("m7-15", "sq", 1470, 2465, {"manual": (1467.0, 2464.0), "e": 3.0, "note": "partly drawn square sharing its left side with m7-14 (cell x 1459 to 1480, y 2453 to 2475, square corners), no dot seen; centre from the outline; tentative"}),
+        ("m7-16", "sq", 1541, 2463), ("m7-17", "sq", 1628, 2491, {"note": "outline between round and square"}),
+        ("m7-18", "sq", 1705, 2484), ("m7-19", "sq", 1791.5, 2517), ("m7-20", "sq", 1881, 2557),
+        ("m7-21", "sq", 1946.5, 2579), ("m7-22", "sq", 2046, 2672), ("m7-23", "sq", 2106, 2692.5),
+        ("m7-24", "sq", 2140, 2682),
+        ("m8-01", "tri", 807, 815, {"e": 3.0, "note": "mostly hidden between m9-01 and m7-01; only a small triangular interior shows"}), ("m8-02", "tri", 864, 840), ("m8-03", "tri", 909, 903),
+        ("m8-04", "tri", 972, 1037), ("m8-05", "tri", 1018, 1165), ("m8-06", "tri", 1082, 1410),
+        ("m8-07", "tri", 1157, 1716), ("m8-08", "tri", 1222, 2008), ("m8-09", "tri", 1286, 2288),
+        ("m8-10", "tri", 1305, 2364), ("m8-11", "tri", 1338, 2402), ("m8-12", "tri", 1376, 2425),
+        ("m8-13", "tri", 1429, 2430), ("m8-14", "tri", 1473, 2440), ("m8-15", "tri", 1580, 2436),
+        ("m8-16", "tri", 1702, 2444), ("m8-17", "tri", 1788, 2474), ("m8-18", "tri", 1877.5, 2505),
+        ("m8-19", "tri", 1969, 2525), ("m8-20", "tri", 2040, 2563), ("m8-21", "tri", 2131, 2565),
+        ("m9-01", "hex", 807, 781), ("m9-02", "hex", 864, 798), ("m9-03", "hex", 955, 920),
+        ("m9-04", "hex", 1023, 1094), ("m9-05", "hex", 1082, 1300), ("m9-06", "hex", 1157, 1570),
+        ("m9-07", "hex", 1250, 1894), ("m9-08", "hex", 1316, 2155), ("m9-09", "hex", 1378, 2347),
+        ("m9-10", "hex", 1404, 2393), ("m9-11", "hex", 1425, 2348),
+        ("m9-12", "hex", 1454, 2348, {"manual": (1442.5, 2349.5), "e": 3.5, "note": "partly drawn hexagon overlapping m9-11: only its right vertex (x 1467, y 2350) and parts of its top and bottom edges show; no dot seen; centre = vertex minus a half-width of 24.5 px (22 to 27 on this plot)"}),
+        ("m9-13", "hex", 1472, 2351, {"manual": (1463.5, 2349.5), "e": 3.5, "note": "partly drawn hexagon overlapping m9-12: right vertex at x 1488, y 2349; dot not separable from the m9-12 vertex; centre = vertex minus a half-width of 24.5 px"}),
+        ("m9-14", "hex", 1539, 2349), ("m9-15", "hex", 1631, 2344), ("m9-16", "hex", 1705, 2336),
+        ("m9-17", "hex", 1790, 2350), ("m9-18", "hex", 1881, 2365), ("m9-19", "hex", 1949, 2359),
+        ("m9-20", "hex", 2017, 2345), ("m9-21", "hex", 2060, 2345),
+        ("m9-22", "hex", 2139.5, 2344.5, {"manual": (2137.0, 2345.5), "note": "the theta = 180 gridline runs through its middle and hides the dot; centre from the vertices (x 2114, 2160) and edges (y 2325, 2366)"}),
+    ]),
 }

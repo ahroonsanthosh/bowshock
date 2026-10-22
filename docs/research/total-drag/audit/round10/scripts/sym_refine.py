@@ -15,6 +15,19 @@ centre. Error (about 2 sigma) per axis: sqrt((2 x 0.8 px)^2 + (2 x cal)^2)
 in px for a fitted centre (0.8 px fit scatter, cal = the calibration's
 leave-one-out rms), larger for manual centres and low scores, times the
 local data-per-px scale.
+
+Options in a figure's entry: "blur" (box-blur radius of the ink, default 1;
+2 for a halftone scan) and "dot_types" (legend types drawn with a centre
+dot). For those the centre is the dot itself: within +-SEARCH px of the
+approximate centre, the point that maximises the mean ink of the 1 px
+blurred page over a disc of radius 2 minus its mean over the ring 4 to 7 px
+(gridline pixels left out), then the ink centroid within 4 px of it; the dot
+contrast is reported as the score (1 = black dot in a white ring) and a
+contrast below 0.35 counts as a low score. For every symbol the
+masked correlation of each legend glyph at the centre (best within +-3 px)
+is also reported as a check of the type called by eye. Types listed in
+"dot_check" are centred by correlation but also searched for a dot (within
++-SEARCH px of that centre), reported beside it.
 """
 import json
 import os
@@ -53,13 +66,62 @@ def wncc(t, p, w):
     return float((w * a * b).sum() / den) if den > 0 else np.nan
 
 
+def dot_centre(raw, B1, g, ax, ay):
+    """Centre dot of a dotted symbol near (ax, ay); returns (x, y, contrast)."""
+    R = 7
+    yy, xx = np.mgrid[-R:R + 1, -R:R + 1]
+    rr = np.hypot(xx, yy)
+    core, ring = rr <= 2, (rr >= 4) & (rr <= 7)
+    best = (-9, None)
+    x0, y0 = int(round(ax)), int(round(ay))
+    gm = grid_mask(g, x0 - SEARCH - R, y0 - SEARCH - R, 2 * (SEARCH + R) + 1, 2 * (SEARCH + R) + 1, rad=2.5)
+    for dy in range(-SEARCH, SEARCH + 1):
+        for dx in range(-SEARCH, SEARCH + 1):
+            cx, cy = x0 + dx, y0 + dy
+            p = B1[cy - R:cy + R + 1, cx - R:cx + R + 1]
+            m = ~gm[dy + SEARCH:dy + SEARCH + 2 * R + 1, dx + SEARCH:dx + SEARCH + 2 * R + 1]
+            if (ring & m).sum() < 20:
+                continue
+            sc = p[core].mean() - p[ring & m].mean()
+            if sc > best[0]:
+                best = (sc, (cx, cy))
+    cx, cy = best[1]
+    w = raw[cy - 4:cy + 5, cx - 4:cx + 5] * (rr[R - 4:R + 5, R - 4:R + 5] <= 4)
+    if w.sum() == 0:
+        return float(cx), float(cy), best[0]
+    gy, gx = np.mgrid[cy - 4:cy + 5, cx - 4:cx + 5]
+    return float((w * gx).sum() / w.sum()), float((w * gy).sum() / w.sum()), best[0]
+
+
+def type_check(I, g, temps, x, y):
+    out = {}
+    for name, (t, ox, oy, h) in temps.items():
+        n = 2 * h + 1
+        rx0, ry0 = int(round(x - ox)) - h - 3, int(round(y - oy)) - h - 3
+        big = grid_mask(g, rx0, ry0, n + 6, n + 6)
+        b = -9
+        for dy in range(-3, 4):
+            for dx in range(-3, 4):
+                cx, cy = int(round(x - ox)) + dx, int(round(y - oy)) + dy
+                p = I[cy - h:cy + h + 1, cx - h:cx + h + 1]
+                pm = big[cy - h - ry0:cy + h + 1 - ry0, cx - h - rx0:cx + h + 1 - rx0]
+                sc = wncc(t, p, (~pm).astype(float))
+                if sc == sc:
+                    b = max(b, sc)
+        out[name] = round(b, 3)
+    return out
+
+
 def main():
     page, calib, key, out = sys.argv[1:5]
     cfg = symlists.FIGS[key]
     g = localgrid.LocalGrid.load(calib)
     cal = json.load(open(calib))["leave_one_out_px"]
     ink = (np.asarray(Image.open(page).convert("L")) < 128).astype(np.uint8) * 255
-    I = np.asarray(Image.fromarray(ink).filter(ImageFilter.BoxBlur(1))).astype(float) / 255.0
+    I = np.asarray(Image.fromarray(ink).filter(ImageFilter.BoxBlur(cfg.get("blur", 1)))).astype(float) / 255.0
+    raw = ink.astype(float) / 255.0
+    B1 = np.asarray(Image.fromarray(ink).filter(ImageFilter.BoxBlur(1))).astype(float) / 255.0
+    dot_types = cfg.get("dot_types", ())
     temps = {}
     for name, spec in cfg["legend"].items():
         tx, ty = spec[:2]
@@ -90,11 +152,26 @@ def main():
             rec["centre_px"] = opt["manual"]
             rec["centre_from"] = "pixel map (manual)"
             e = opt.get("e", 1.5)
+        elif typ in dot_types:
+            dx_, dy_, dsc = dot_centre(raw, B1, g, ax, ay)
+            rec["centre_px"] = (dx_, dy_)
+            rec["centre_from"] = "centre dot"
+            rec["glyph_ncc"] = rec["score"]
+            rec["score"] = round(float(dsc), 3)
+            if dsc < 0.35:
+                e = 1.5
         else:
             rec["centre_px"] = best[1]
             rec["centre_from"] = "legend-glyph correlation"
             if best[0] < 0.6:
                 e = 1.5
+        if "manual" not in opt and "e" in opt:
+            e = opt["e"]
+        if typ in cfg.get("dot_check", ()):
+            qx, qy, qs = dot_centre(raw, B1, g, *rec["centre_px"])
+            rec["dot_check"] = dict(x=round(qx, 2), y=round(qy, 2), score=round(float(qs), 3))
+        if dot_types:
+            rec["type_check"] = type_check(I, g, temps, *rec["centre_px"])
         ex = np.hypot(2 * e, 2 * cal["rms_x"])
         ey = np.hypot(2 * e, 2 * cal["rms_y"])
         x, y = rec["centre_px"]
@@ -103,8 +180,10 @@ def main():
         dY = abs(g.to_data(x, y + 10)[1] - Y) / 10
         rec.update(x=X, y=Y, err_x=float(ex * dX), err_y=float(ey * dY), series=opt.get("series", cfg["series"][typ]))
         res.append(rec)
-        print("%-6s %-6s score %.2f centre (%.1f, %.1f) -> %.4f +- %.4f, %.4f +- %.4f %s" % (
-            sid, typ, best[0], x, y, X, rec["err_x"], Y, rec["err_y"], rec["note"]))
+        tc = rec.get("type_check")
+        tcs = "" if not tc else " check " + " ".join("%s=%.2f" % kv for kv in tc.items())
+        print("%-6s %-6s score %.2f centre (%.1f, %.1f) -> %.4f +- %.4f, %.4f +- %.4f%s %s" % (
+            sid, typ, rec["score"], x, y, X, rec["err_x"], Y, rec["err_y"], tcs, rec["note"]))
     json.dump(res, open(out, "w"), indent=1)
 
 

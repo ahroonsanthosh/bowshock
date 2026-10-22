@@ -242,3 +242,151 @@ PDF p. 70 (printed p. 69).
     throughout.
   * Curve errors are +-0.008 to 0.027 in C~_cf. They are dominated by the
     steep slope times the x reading error.
+
+## NASA CR-149372 (Macha), fig. 8a
+
+File `19770008057.pdf`, SHA-256
+`339f24fc82ecc0409c7bb93c83219c32caf5223241f0d452d9e4d9145ea59c18`; fig. 8a
+is on PDF p. 25. Unlike the R&M pages, this page is a 300 dpi JBIG2 image of
+a halftone (dithered) print, so ink is box-blurred by 2 px before any
+correlation or line tracking, and by 1 px for dot finding.
+
+**As printed.**
+* Caption: "Figure 8a. Circular cylinder pressure distributions; Mach
+  number = 0.6 to 0.9."
+* Ordinate "PRESSURE COEFFICIENT ~ Cp", -1.6 to 1.2 by 0.4. Abscissa
+  "CIRCUMFERENTIAL ANGLE ~ theta (DEGREES)", 0 to 180 by 30, labelled along
+  the Cp = 0 line.
+* Legend: "MACH NO." 0.6 circle, 0.7 square, 0.8 triangle, 0.9 hexagon;
+  "REYNOLDS NO." .19x10^6 for all four; "DIAMETER = 1.91 cm". The circle,
+  square and hexagon have a centre dot.
+
+**Calibration** (`readings/cr149372_fig8a_calib.json`).
+* 54 of 56 intersections measured; (120, 1.2) and (180, 0.8) are under the
+  legend box. The legend box and the axis-label strip are left out.
+* The grid is hand drawn and unevenly spaced: 213 to 228 px per 30 deg and
+  287 to 300 px per 0.4 in Cp. Leave-one-out is therefore large, 3.0 px in x
+  and 2.1 px in y (rms), and it sets most of the error below.
+* One affine map of the same intersections leaves 0.48 deg rms (max 0.91)
+  and 0.0034 rms in Cp (max 0.0070).
+* Values in the CSV are from the local grid (bilinear inside each cell).
+  The affine value is given beside each one (`theta_affine_deg`,
+  `Cp_affine`). Over the symbols the two differ by up to 0.79 deg (rms 0.35)
+  and 0.0054 in Cp (rms 0.0020).
+* Scale: about 7.3 px per deg and 735 px per unit Cp, so 1 px = 0.14 deg
+  and 0.0014.
+
+**Symbols: identification.**
+* Every symbol was listed by eye on gridded crops at 3.2x to 8x
+  (`scripts/gridcrop.py`, 1 px blur). Each was typed by outline: round;
+  square with corners; three-sided; or six-sided with left and right
+  vertices and flat top and bottom. The centre dot was also used: the
+  circle, square and hexagon have one, the triangle has none.
+* Contact sheets of every symbol, with the legend glyph first, are in
+  `overlays/cr149372_fig8a_sheet_{circ,sq,tri,hex}.png`.
+* As a check, the masked correlation of each of the four legend glyphs was
+  computed at each centre (`type_check` column).
+  * Every triangle and every whole hexagon matches its own glyph best.
+  * Circles against squares is a weak test, because the plotted circles
+    (25 to 31 px) and squares (26 to 30 px) are close in size. Five circles
+    (m6-02, m6-15, m6-16, m6-17, m6-20) score a little higher against the
+    square. On the crops each has a round interior with no corners, so each
+    is kept as a circle.
+* The plotted hexagons (44 to 52 px wide) are smaller than the legend's
+  (56 px), so correlation with the legend glyph is not used to centre them.
+* m9-10 (theta 80.7 deg, Cp -0.978) sits below the M 0.9 plateau line, and
+  no drawn line passes through it. It is read as a symbol and left out of
+  the curve.
+
+**Symbols: centring.**
+* Circles, squares and hexagons are centred on their dot (`sym_refine.py`,
+  `dot_types`). The dot is the point within +-6 px of the eye position where
+  ink on a 2 px disc stands out most from the ring 4 to 7 px out (gridline
+  pixels left out). The centre is the ink centroid within 4 px of that
+  point.
+* Triangles are centred by correlation with the legend triangle.
+  * The reference is the glyph's bounding-box centre (1638.5, 1111.0). Its
+    apex is at y 1095, its base at 1127, and its centroid 5.3 px below the
+    box centre, so Cp at the centroid would be 0.007 lower.
+  * A search for a dot inside the triangles found none consistently.
+    Offsets scatter by +-6 px and contrast is 0.37 to 0.51 against 0.5 to
+    0.75 for real dots; what it finds is the outline, or the line running
+    through the triangle.
+* Errors are about 2 sigma, as in the common method, with the 3.0 and
+  2.1 px leave-one-out: +-0.81 to 0.88 deg and +-0.0061 to 0.0064 in Cp.
+  Centres set by hand (below) carry 3 to 3.5 px: +-1.1 to 1.3 deg and
+  +-0.010 to 0.011.
+
+**What was read** (`readings/cr149372_fig8a.csv`).
+* **95 symbols:** 28 circles (M 0.6), 24 squares (0.7), 21 triangles (0.8)
+  and 22 hexagons (0.9).
+  * Each series starts with a symbol 4.5 to 6 px right of the theta = 0
+    gridline (theta 0.6 to 0.8 deg as read).
+  * Each ends within 1 deg of the 180 gridline: 180.6, 181.0, 179.6 and
+    180.4 deg.
+  * Stagnation values as read: Cp 1.091 (M 0.6), 1.133 (0.7), 1.166 (0.8)
+    and 1.209 (0.9).
+* **Four faired curves,** one per Mach number, read every 2.5 deg to 90 deg
+  and every 5 deg beyond. There are 147 readings.
+  * The chains run through every symbol of the series except m9-10. Page
+    points were added where a line bows away from the chord between two
+    symbols; they are ink-run centres read along rows (`scripts/rowpeaks.py`)
+    on the steep front side, or along columns past theta 150 deg.
+  * Symbol masks are sized by type: radius 15, 16, 19 and 26 px.
+  * Past theta 92.5 deg the curves are flat and the symbols hide much of
+    each line, so the fit windows widen there from +-1.5 to 3 deg to +-4 to
+    8 deg.
+  * Errors are +-0.003 to 0.018 in Cp on the front side and +-0.002 to
+    0.011 beyond.
+  * 36 readings fall inside a symbol, where the drawn line is hidden; they
+    are flagged in `notes`. The worst is M 0.9 at 37.5 deg (0.475 +- 0.016).
+    There the line runs almost vertically through hexagon m9-05 (centre
+    37.46 deg, 0.505), and a smooth fit cannot follow that.
+* **Not read, because touching symbols hide the line** (the symbols give the
+  values there):
+  * every curve below 7.5 deg (M 0.8 below 10, M 0.9 below 12.5);
+  * M 0.6 from 65 to 110 deg and from 165 deg;
+  * M 0.7 from 67.5 to 100 deg and from 165 deg;
+  * M 0.8 from 67.5 to 90 deg and at 180;
+  * M 0.9 at 10, 17.5 and 27.5 deg (hexagon masks), 77.5 to 90, 160 to 170
+    and 180 deg.
+
+**Telling the M 0.6 and 0.7 lines apart past 150 deg.**
+* From the cluster m6-24 and m7-21 two lines run 8 to 12 px apart. They
+  touch in one ink band from x 1958 to 1978 (theta 155 to 158 deg) and then
+  separate again.
+* Column peaks before and after the band (x 1965: y 2590.5 and 2600.9;
+  x 1980: 2601.4 and 2613.2) join only as upper to upper and lower to lower.
+  Joined crosswise they would need slopes of 1.5 and 0.03 px/px, against
+  0.6 to 1.0 everywhere else.
+* The upper line reaches m6-25 and the lower one m7-22, and they are
+  assigned to M 0.6 and 0.7 accordingly. Which symbol of the m6-24/m7-21
+  cluster each leaves from cannot be seen, because the square hides it.
+* A first pass without page points had put both tracks on the lower line;
+  the overlay shows the corrected tracks.
+
+**Uncertain calls.**
+* m8-01 (the theta = 0 triangle): mostly hidden between m9-01 and m7-01;
+  only a small triangular interior shows. Centred by correlation (score
+  0.76), with a 3 px error.
+* m9-12 and m9-13: two partly drawn hexagons overlapping m9-11 at Cp
+  -0.919. All that shows of each is a right vertex, at x 1467 and 1488 (y
+  2350), with parts of its top and bottom edges. No dot can be separated
+  from the vertex strokes.
+  * Each centre is set at the vertex minus a half-width of 24.5 px (the
+    plotted hexagons measure 22 to 27), with a 3.5 px error.
+  * This gives theta 85.8 and 88.5 deg, +-1.2. Both could instead be one
+    hexagon drawn twice, or one off-curve symbol; I read them as two.
+* m7-15 and m6-16 (theta 89 deg): partly drawn square and circle, sharing
+  their left sides with m7-14 and m6-15.
+  * The square cell has corners and the circle cell is round; neither has a
+    clear dot.
+  * Centres are from the outline, with a 3 px error.
+* m6-27 (176.5 deg): a partly drawn circle above square m7-23, on the line
+  from m6-26 to m6-28. Its outline shares m7-23's top edge and no dot
+  separates. Centre from the outline, with a 3.5 px error.
+* m9-22 (the 180 deg hexagon): the 180 gridline runs through its middle and
+  hides the dot. Centre from its vertices and edges, with a 1.5 px error.
+* m9-05: its dot is an elongated blob (14 by 8 px). The centre used
+  (1086.7, 1300.9) is 2.7 px right of the outline centre (1084, 1300.5), or
+  0.4 deg.

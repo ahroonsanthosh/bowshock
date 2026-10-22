@@ -1,17 +1,21 @@
 """Contact sheet of symbol crops (for identifying symbols by eye).
 
-usage: python3 -I symsheet.py PAGE.png OUT.png HALF SCALE "x,y,label;x,y,label;..."
+usage: python3 -I symsheet.py PAGE.png OUT.png HALF SCALE "x,y,label;x,y,label;..." [BLUR]
 Each crop is +-HALF px around (x, y), scaled by SCALE, with a red cross at
-(x, y) and the label above it.
+(x, y) and the label above it. BLUR (optional) box-blurs the page first.
+The item list can be given as @FILE (a file holding the same text).
 """
 import sys
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 Image.MAX_IMAGE_PIXELS = None
 page, out = sys.argv[1], sys.argv[2]
 half, s = int(sys.argv[3]), float(sys.argv[4])
-items = [p.split(",") for p in sys.argv[5].split(";")]
+spec = open(sys.argv[5][1:]).read().strip() if sys.argv[5].startswith("@") else sys.argv[5]
+items = [p.split(",") for p in spec.split(";")]
 im = Image.open(page).convert("L")
+if len(sys.argv) > 6:
+    im = im.filter(ImageFilter.BoxBlur(int(sys.argv[6])))
 tw = int(2 * half * s)
 cols = min(6, len(items))
 rows = (len(items) + cols - 1) // cols

@@ -22,6 +22,13 @@ import rm_calib  # noqa: E402
 Image.MAX_IMAGE_PIXELS = None
 
 CONFIG = {
+    # NASA CR-149372 fig. 8a (PDF p. 25, native 300 dpi JBIG2 halftone): theta 0..180 every 30; Cp -1.6..1.2 every 0.4
+    "cr8a": dict(
+        vvals=[0, 30, 60, 90, 120, 150, 180],
+        vpos=[803.3, 1032.1, 1246.5, 1474.0, 1694.5, 1920.5, 2132.5],
+        hvals=[round(-1.6 + 0.4 * j, 1) for j in range(8)],
+        hpos=[2855.8, 2556.4, 2262.6, 1964.9, 1679.0, 1377.6, 1080.0, 789.1],
+        box=(806, 2130, 792, 2853), exclude=[(1580, 2130, 875, 1275), (1330, 2150, 1698, 1745)], half=160),
     # R&M 3348 fig. 32 (PDF p. 70): xi_0 -5..2 every 1; C~_cf -0.5..3.0 every 0.5
     "r3348f32": dict(
         vvals=[float(k) for k in range(-5, 3)],
@@ -103,7 +110,7 @@ def main():
             new = float(np.polyval(c, g.Y[k, j]))
             print("refit M-line %g at %g: x %.1f -> %.1f" % (vval, cfg["hvals"][j], g.X[k, j], new))
             g.X[k, j] = new
-    rep = g.dump(out, extra=dict(page=os.path.basename(page), dpi=600, config=name))
+    rep = g.dump(out, extra=dict(page=os.path.basename(page), dpi=300, config=name))
     nan = np.isnan(g.X)
     print("intersections measured: %d of %d" % (g.X.size - int(nan.sum()), g.X.size))
     for k in range(len(cfg["vvals"])):
