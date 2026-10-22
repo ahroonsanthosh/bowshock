@@ -920,10 +920,13 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
       : h(
           'p',
           { className: 'point__value' },
-          h('span', { className: 'point__cd' }, 'C', h('sub', { text: 'D' }), ` ${v.value}`),
+          h('span', { className: 'point__cd' }, 'C', h('sub', { text: 'D' }), ` ${v.headline}`),
           v.band === null
             ? h('span', { className: 'point__band', text: ' no band yet' })
-            : h('span', { className: 'point__band', text: ` ${v.band} (${v.percent ?? ''})` }),
+            : h('span', {
+                className: 'point__band',
+                text: ` ${v.headlineBand} (${v.percent ?? ''})`,
+              }),
         ),
     h('p', { className: 'point__sentence', text: v.status.sentence }),
     v.change === null ? null : h('p', { className: 'point__change', text: v.change }),
@@ -940,7 +943,12 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
       `M ${v.mach}`,
       ...(v.value === null
         ? []
-        : ['  C', h('sub', { text: 'D' }), ` ${v.value}`, v.band === null ? '' : `  ${v.band}`]),
+        : [
+            '  C',
+            h('sub', { text: 'D' }),
+            ` ${v.headline}`,
+            v.headlineBand === null ? '' : `  ${v.headlineBand}`,
+          ]),
     ),
     chip.cloneNode(true),
   );
@@ -1109,7 +1117,7 @@ async function savePng(): Promise<void> {
   const result =
     v === null
       ? ''
-      : `C_D ${v.value ?? 'none'}${v.band === null ? '' : `, band ${v.band}`}: ${v.status.word}`;
+      : `C_D ${v.headline ?? 'none'}${v.headlineBand === null ? '' : `, band ${v.headlineBand}`}: ${v.status.word}`;
   try {
     if (scene !== null && shown === '3d') {
       // The scene's PNG has its own readout (grid, steps, Mach number), legend and notes.

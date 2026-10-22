@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import type { LevelReport, VerifiedDrag } from '../../src/analysis/verified-drag';
 import { CurveRun, type CurvePoint, type NoseSolver } from '../../src/app/curve';
-import { pointView } from '../../src/app/point-view';
+import { headlineDigits, pointView } from '../../src/app/point-view';
 import { totalDragDisplay } from '../../src/app/total-drag-display';
 import { preset } from '../../src/rocket/presets';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
@@ -71,6 +71,32 @@ describe('a point as shown', { timeout: 120_000 }, () => {
     }
   });
 
+  it('the headline: three significant figures where the band is wider than 1%', async () => {
+    const run = await basicFinnerRun();
+    for (const mach of [1.8, 2, 2.4, 3]) {
+      const p = at(run, mach);
+      if (p.state.kind !== 'done' || p.state.result.kind !== 'total') throw new Error('no total');
+      const t = p.state.result.view.total;
+      const view = pointView(p, true);
+      // The Basic Finner's bands are tens of percent wide: three figures, the band outward.
+      expect(Math.max(1 - t.low / t.cd, t.high / t.cd - 1)).toBeGreaterThan(0.01);
+      expect(view.headline).toBe(t.cd.toFixed(3));
+      const [low, high] = view.headlineBand!.split(' to ').map(Number);
+      expect(low!).toBeLessThanOrEqual(t.low);
+      expect(high!).toBeGreaterThanOrEqual(t.high);
+      // The full figures stay in the view for Details, the table and the CSV.
+      expect(view.value).toBe(t.cd.toFixed(4));
+    }
+  });
+
+  it('headline digits: four decimals within 1%, else three significant figures', () => {
+    expect(headlineDigits(0.5463, 0.5443, 0.5483)).toBe(4);
+    expect(headlineDigits(0.5463, 0.4, 0.7)).toBe(3);
+    expect(headlineDigits(0.5463, 0.5463, 0.552)).toBe(3);
+    expect(headlineDigits(1.234, 1.0, 1.5)).toBe(2);
+    expect(headlineDigits(0.0812, 0.07, 0.09)).toBe(4);
+  });
+
   it('a refused point: no number, the plain reason, and what could change it', async () => {
     const run = await basicFinnerRun();
     const v = pointView(at(run, 1.4), true);
@@ -111,6 +137,7 @@ describe('a point as shown', { timeout: 120_000 }, () => {
       'Stopped',
     ]);
     expect(views.map((v) => v.value)).toEqual([null, null, '0.550', null]);
+    expect(views.map((v) => v.headline)).toEqual([null, null, '0.550', null]);
     expect(views.every((v) => v.band === null)).toBe(true);
   });
 
