@@ -56,3 +56,19 @@ the layer parameter or delta/h, not by Mach number alone. One Reynolds
 number per Mach number (fig. 1).
 
 **Status.** First reading, by the 0019 reader, 2026-10-22. Read once.
+
+**Blindness: what can and cannot be stated** (added 2026-10-22, at the
+coordinator's request after the neutral pairing). This reading was made
+and committed (9f4d89f, 09:29 UTC) by the W7 agent of an earlier
+session. The note is written by the W7 agent of the following session,
+which did not make this reading and has no record of what that agent
+opened: this method file does not say, and that session's transcript is
+not available here. So it cannot be stated, from knowledge, whether round
+10's readings of figs. 9 and 10 were seen. What the repository shows:
+the commit adds only this folder's files; no file under
+`audit/round10/` was ever on the `w7-fins` branch's history up to it.
+Round 10's readings were on another branch (`claude/wip/round10-w7-figures`),
+pushed at 09:21, eight minutes before. That does not show they were not
+opened. Until the earlier agent's record shows otherwise, this reading
+is to be treated as **not shown to be blind**. The coordinator may have
+figs. 9 and 10 read again by a reader who has opened neither reading.
