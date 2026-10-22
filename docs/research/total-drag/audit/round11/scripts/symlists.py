@@ -134,3 +134,27 @@ FIGS["a51j25f7"] = dict(
         ("tri-2", "tri", 807.5, 929.5, {"manual": (807.5, 929.5), "e": 2.5, "note": "at M' 1.50; the triangle "
          "inside square sq-2: apex (805.5, 921), base rows 935 to 938, merging with a filled circle below"}),
     ])
+
+# R&M 3427 fig. 15 (PDF p. 39, CCITT). Three lines labelled M_inf = 1.0 (diamonds), 0.8 (circles and crosses)
+# and 0.4 (squares). Legend, for M_inf = 0.8 only: "Pressure tappings -> o", "Pitot traverse -> x". Glyphs
+# measured on pixel maps: diamond 14 px across the diagonals, circle 11 to 12 px, square 13 by 11 px, cross 11 by
+# 9 px; templates are plotted glyphs (diamond d10-1, circle t08-3, square t04-1, cross p08-14).
+FIGS["r3427f15"] = dict(
+    half=8, outline_search=3.0,
+    legend={"dia": (1071.5, 811.5), "circ": (1320.5, 831.0), "sq": (1072.0, 900.0), "cross": (1347.5, 831.5)},
+    outline={"dia": ("diamond", 6.5), "circ": ("circle", 5.0), "sq": ("rect", 5.5, 4.5), "cross": ("xcross", 5.0)},
+    series={"dia": "M_inf = 1.0 (diamond)", "circ": "M_inf = 0.8, pressure tappings (circle)",
+            "sq": "M_inf = 0.4 (square)", "cross": "M_inf = 0.8, pitot traverse (cross)"},
+    symbols=[
+        ("d10-1", "dia", 1071.5, 811.5), ("d10-2", "dia", 1219.0, 812.0), ("d10-3", "dia", 1321.0, 812.0),
+        ("t08-1", "circ", 1071.5, 849.5), ("t08-2", "circ", 1220.5, 836.0), ("t08-3", "circ", 1320.5, 831.0),
+        ("t04-1", "sq", 1072.0, 900.0), ("t04-2", "sq", 1219.0, 897.5), ("t04-3", "sq", 1321.0, 889.0),
+        ("p08-01", "cross", 1023.0, 853.0), ("p08-02", "cross", 1047.0, 849.0), ("p08-03", "cross", 1096.0, 845.0),
+        ("p08-04", "cross", 1121.0, 836.0), ("p08-05", "cross", 1170.0, 832.0), ("p08-06", "cross", 1194.5, 829.0),
+        ("p08-07", "cross", 1244.0, 828.5), ("p08-08", "cross", 1269.5, 829.0), ("p08-09", "cross", 1295.0, 831.0),
+        ("p08-10", "cross", 1345.0, 830.0), ("p08-11", "cross", 1370.0, 830.5), ("p08-12", "cross", 1394.0, 830.5),
+        ("p08-13", "cross", 1419.0, 830.0), ("p08-14", "cross", 1443.5, 832.5), ("p08-15", "cross", 1474.0, 836.5),
+        ("p08-16", "cross", 1495.0, 836.5), ("p08-17", "cross", 1518.0, 840.5), ("p08-18", "cross", 1543.0, 843.0),
+        ("p08-19", "cross", 1567.0, 846.5), ("p08-20", "cross", 1592.0, 852.0),
+        ("p08-21", "cross", 1616.0, 855.0, {"manual": (1616.75, 860.0), "e": 1.0, "note": "last cross, at the line's right end; the outline fit stopped at the edge of its +-3 px search, so the centre is from the pixel map (arms x 1611 to 1623, rows 854 to 865)"}),
+    ])

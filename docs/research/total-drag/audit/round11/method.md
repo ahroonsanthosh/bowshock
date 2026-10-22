@@ -345,3 +345,44 @@ points. Over and beside the band lie six open symbols.
 * Open symbols or further circles may be hidden inside the band. The band
   edges bound everything there, including the faired line, which cannot
   be seen apart from the circles below M' 1.5.
+
+## R&M 3427 fig. 15 (PDF p. 39, printed p. 38)
+
+**As printed.** Caption: "Spanwise uniformity of base pressure." Abscissa
+"Spanwise distance from (centre-line), inches", -4 (at the Cp_b axis) to
+3; ordinate Cp_b, 0 to -1.0. Three lines labelled M_inf = 1.0, 0.8 and
+0.4, and a scale bar marked h. Legend: "M_inf = 0.8:- Pressure tappings
+-> o; Pitot traverse -> x". The M_inf = 1.0 line carries diamonds and the
+0.4 line squares, at the three tapping stations; the legend does not name
+them.
+
+**Calibration** (`readings/rm3427_fig15_calib.json`). Round 10's
+`tick_calib.py` entry `r3427f15`, run by me unchanged: x ticks 99.25 px per
+inch, residual 0.81 px, leave-one-out 1.10 px; Cp_b 498.3 px per unit,
+residual 0.46 px, leave-one-out 0.81 px. 1 px = 0.010 in. and 0.0020 in
+Cp_b.
+
+**What was read** (`readings/rm3427_fig15.csv`): 30 symbols, centred by
+outline fits of the measured sizes (diamond 14 px across its diagonals,
+circle 11 to 12 px, square 13 by 11 px, cross 11 by 9 px).
+* M_inf 1.0, diamonds: -2.505, -1.006 and -0.015 in.; Cp_b -0.782 at all
+  three.
+* M_inf 0.8, pressure-tapping circles: -2.502, -0.978 and -0.005 in.; Cp_b
+  -0.703, -0.734 and -0.745. Each circle hangs just below the line, which
+  runs along its top.
+* M_inf 0.4, squares: -2.499, -0.998 and -0.015 in.; Cp_b -0.605, -0.609
+  and -0.626.
+* M_inf 0.8, pitot-traverse crosses: 21, from -2.988 in. (Cp_b -0.695) to
+  3.001 (-0.688), the highest -0.747 at -0.50 in. They are spaced about
+  0.25 in., with none drawn at -1.75 in. or at the three tapping stations
+  (-2.5, -1.0 and 0), and with p08-15 and p08-16 at 1.555 and 1.768 in.
+* Errors +-0.027 to 0.030 in. and +-0.0046 to 0.0052 in Cp_b (+-0.038 and
+  0.0069 where the outline score is below 0.45: t04-3 and p08-08).
+
+**Uncertain calls.**
+* t08-2, the circle at -1.0 in., reads -0.978, 2.3 px right of the diamond
+  and square at that station. Its sides are clear on the pixel map (stroke
+  centres x 1218 and 1228) and its top is merged with the line.
+* p08-21, the last cross: the outline fit stopped at the edge of its
+  +-3 px search, so its centre is from the pixel map (1 px error).
+* The faired lines were not read.

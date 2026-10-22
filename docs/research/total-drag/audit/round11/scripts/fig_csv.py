@@ -23,6 +23,11 @@ META = {
                                 'limiting base pressure coefficient (vacuum) plotted against Mach number."; legend '
                                 '"Outboard slit" (circle), "Inboard slit" (square)',
                      curves={}, notes={}, tri_note=""),
+    "r3427f15": dict(figure="R&M 3427 fig. 15", x="spanwise_in", y="Cp_b",
+                     conditions='caption: "Spanwise uniformity of base pressure."; abscissa "Spanwise distance '
+                                'from centre-line, inches"; legend for M_inf = 0.8: pressure tappings (circle), '
+                                'pitot traverse (cross)',
+                     curves={}, notes={}, tri_note=""),
     "a51j25f7": dict(figure="NACA RM A51J25 fig. 7 (below M' 1.5)", x="M_prime", y="pb_over_pprime",
                      conditions='"AIRFOILS / BASE PRESSURE VERSUS MACH NUMBER"; profiles, data sources and '
                                 'planforms as in the legend (series column)',
