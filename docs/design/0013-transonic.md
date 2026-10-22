@@ -344,7 +344,7 @@ fitted solver refuses the case.
 | 4   | 56,640  | 0.1070376 | +1.714e-4 | 14,200 | 4,309 s        |
 | 8   | 226,560 | 0.1071116 | +7.41e-5  | 18,000 | 9,918 s of CPU |
 
-**Mach 1.05 certified by the procedure (2026-10-21)** (settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`). The changes fall
+**Mach 1.05 certified by the procedure (2026-10-21)** (r = 8 settled by the fitted-window rule after 12,000 more steps, 5.8e-8 higher: 0.1071117 with a band of 9.808e-5 by the corrected rule; see the re-review of `dd6c423`). The changes fall
 by 2.08 and 2.31: observed orders 1.05 (r = 1, 2, 4) and 1.21 (r = 2, 4,
 8), within 0.5 of each other, so `gridConvergence` returns a monotone
 band on r = 1 to 8: extrapolated (order 1.21) 0.1071680, band 7.04e-5
@@ -938,7 +938,7 @@ on the CPU engine:
   hemisphere has r = 1 and 2. The fitted solver is 1.4e-3 off on nj = 80
   and not yet converging.
 - **Mach 1.05.** Cone: certified by the procedure on r = 1 to 8
-  (settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`) (monotone, orders 1.05 and 1.21): 0.1071116 with a band of 8.435e-5 on
+  (r = 8 settled by the fitted-window rule after 12,000 more steps, 5.8e-8 higher: 0.1071117 with a band of 9.808e-5 by the corrected rule; see the re-review of `dd6c423`) (monotone, orders 1.05 and 1.21): 0.1071116 with a band of 8.435e-5 on
   nested domains by the rule as reviewed, 9.793e-5 by the corrected rule
   (the 1.14e-4 once recorded here added a regridded change; S7 of the
   review); no exact value exists to test it. 5-caliber ogive: r = 1 to 4 oscillate with equal
@@ -972,7 +972,7 @@ them no band (it refuses the ellipsoid's r = 1 to 8), so they do not
 meet the standard and stay unserved below Mach 1.5. Curved noses at
 Mach 1.1 wait on the 10-caliber ogive's family, and at 1.1 and 1.05 on
 the 5-caliber ogive's r = 8. At Mach 1.05 the cone is certified by the
-procedure (settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`) (band 9.8e-5 by the corrected rule, 9.1e-4 of the value; no exact reference
+procedure (r = 8 settled by the fitted-window rule after 12,000 more steps, 5.8e-8 higher: 0.1071117 with a band of 9.808e-5 by the corrected rule; see the re-review of `dd6c423`) (band 9.8e-5 by the corrected rule, 9.1e-4 of the value; no exact reference
 exists there). At Mach 1 there are three grids, and the far-boundary
 rule written for it failed its test at Mach 1.2, so Mach 1 stays refused
 (0.0932 within about 0.1% is an estimate, not a certification). These
@@ -2052,7 +2052,7 @@ all stay refused (B1).
 0.1089110, 0.1088724, 0.1088983 (4,400 steps on r = 8). The procedure:
 oscillatory (changes -6.12e-4, -3.86e-5, +2.59e-5), band 3.86e-5; the
 floor 7.6e-6; the far boundaries 1.4e-7 and the cylinder 9.3e-8 (nested
-base grids, corrected rule). **0.1088983 +- 4.65e-5, recorded** (settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`). This is a
+base grids, corrected rule). **0.1088983 +- 4.65e-5, confirmed** (r = 8 settled by the fitted-window rule after 12,000 more steps, within 4e-11; see the re-review of `dd6c423`). This is a
 validation-style offline number (the driver serves below 1.2); it was
 computed without seeing the subtip work's value.
 
@@ -2089,6 +2089,17 @@ s1-recheck.md`) have fewer than 30 checks on every grid of the cone
    value lies inside its band (errors +1.90e-6 and -2.61e-6), which a
    grid stopped 1e-3 from its limit would not give. The cone at 1.05 (r = 8) and case A have no such check: their values stand as recorded but
    their grids' settling is not confirmed by the fitted-window rule.
+   **Continued since (2026-10-22, 22:36 to 23:47 UTC,
+   `tests/tmp-transonic/continue.test.ts`, results on
+   `claude/wip/results`):** each r = 8 was run on from its saved state
+   (plain LU-SGS, CFL 1000) until a fitted window existed, decaying,
+   within 1e-7 of the drag (31 checks, 12,000 steps). Case A moved by
+   3.9e-11 (bound 2.4e-14): **0.1088983 +- 4.65e-5 is confirmed.** The
+   cone at Mach 1.05 moved by +5.75e-8 (bound 4.4e-9) to 0.10711168:
+   **0.1071117 with a band of 9.808e-5** by the corrected rule (procedure
+   7.059e-5 at order 1.21, floor 7.50e-6, far boundaries 1.995e-5,
+   cylinder 4e-8), against 0.1071116 and 9.793e-5 before; the change is
+   0.06% of the band.
    Continuing each from its saved state for 30 checks would settle it
    (some hours each on one core); not done.
 
@@ -2200,7 +2211,7 @@ else be added to it (their largest measured change, once). An
   above.)
 
 **Mach 1.05.** The cone's r = 8 and r = 16, certified by the procedure
-(settling unconfirmed by the fitted-window rule; see the re-review of `dd6c423`) alone (no exact reference exists for any nose here: Taylor-Maccoll's
+(r = 8 settled by the fitted-window rule after 12,000 more steps, 5.8e-8 higher: 0.1071117 with a band of 9.808e-5 by the corrected rule; see the re-review of `dd6c423`) alone (no exact reference exists for any nose here: Taylor-Maccoll's
 conical flow is subsonic at the cone's surface, and the characteristics
 refuse the ogives). The far boundaries' change from 100.6 to 224.2
 radii on the base grid (+1.3e-5) and the cylinder's (up to 7e-6) are
