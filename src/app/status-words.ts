@@ -233,6 +233,12 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
     reason: "at Mach 1 and below the fins' method does not apply",
     change: NOTHING,
   }),
+  'fins-own-drag-mach': () => ({
+    reason:
+      "the fins' own drag (their friction, and a sharp section's wave drag) is checked against " +
+      'flight measurements only from Mach 1.5 to 2.96, and its error grows below that',
+    change: NOTHING,
+  }),
   'detached-shock': () => ({
     reason:
       "the fin's edge turns the air more than it can at this speed, so the shock stands off the " +

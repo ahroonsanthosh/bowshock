@@ -76,9 +76,11 @@ describe('a point as shown', { timeout: 120_000 }, () => {
     const v = pointView(at(run, 1.4), true);
     expect([v.value, v.band, v.percent]).toEqual([null, null, null]);
     expect(v.status.word).toBe('No number');
+    // The first of the logic's refusals there: the fins' own drag, below Mach 1.5 (main's 7411c70).
     expect(v.status.sentence).toBe(
-      'The drag here cannot be given to a known accuracy: the drag behind the base is known ' +
-        'from measurements only at other speeds.',
+      "The drag here cannot be given to a known accuracy: the fins' own drag (their friction, " +
+        "and a sharp section's wave drag) is checked against flight measurements only from " +
+        'Mach 1.5 to 2.96, and its error grows below that.',
     );
     expect(v.change).toBe('Nothing about the rocket changes this: this speed has no number yet.');
   });

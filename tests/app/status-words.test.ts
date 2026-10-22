@@ -86,9 +86,17 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     return view.kind === 'refused' ? view.refusals : [];
   };
 
-  it("the Basic Finner at Mach 1.4: the base and the trailing edges' base", () => {
+  it("the Basic Finner at Mach 1.4: the fins' own drag, the base and the trailing edges' base", () => {
+    const own = {
+      reason:
+        "the fins' own drag (their friction, and a sharp section's wave drag) is checked " +
+        'against flight measurements only from Mach 1.5 to 2.96, and its error grows below that',
+      change: '',
+    };
     const plain = refusalsAt('basic-finner', 1.4).map((r) => [r.component, refusalWords(r)]);
     expect(plain).toEqual([
+      ['fin friction', own],
+      ['fin wave drag', own],
       [
         'body base',
         {
@@ -106,9 +114,14 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     ]);
   });
 
-  it("Mach 1.0: the fins' method does not apply; the rounded edges' range", () => {
+  it("Mach 1.0: the fins' own drag below Mach 1.5; the fins' method; the rounded edges' range", () => {
     const fins = refusalsAt('basic-finner', 1).find((r) => r.component === 'fin wave drag')!;
-    expect(refusalWords(fins)).toEqual({
+    expect(fins.reason).toBe('fins-own-drag-mach');
+    expect(refusalWords(fins).reason).toMatch(/^the fins' own drag/);
+    // The fins' method's own reason at Mach 1 (behind the guard today), worded too.
+    expect(
+      refusalWords({ component: 'fin wave drag', reason: 'subsonic-free-stream', message: '' }),
+    ).toEqual({
       reason: "at Mach 1 and below the fins' method does not apply",
       change: '',
     });

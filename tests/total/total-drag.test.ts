@@ -399,10 +399,24 @@ describe('refusals', { timeout: 60_000 }, () => {
     expect(refusals(sharp, 2.4, [2e7])).toEqual(['body base: laminar-base']);
   });
 
-  it('a detached fin shock and the base below M 1.5 together', () => {
+  it("below Mach 1.5: the fins' own-drag band (ARCAS, Mach 1.5 to 2.96) and the base together", () => {
+    // The guard comes first: at M 1.1 the double wedge's shock is also detached (0014 section 10.7 (f)).
     expect(refusals(sharp, 1.1)).toEqual([
-      'fin wave drag: detached-shock',
+      'fin friction: fins-own-drag-mach',
+      'fin wave drag: fins-own-drag-mach',
       'body base: mach-range',
     ]);
+    expect(refusals(sharp, 1.4999999)).toEqual([
+      'fin friction: fins-own-drag-mach',
+      'fin wave drag: fins-own-drag-mach',
+      'body base: mach-range',
+    ]);
+  });
+
+  it('a detached fin shock above the guard, at M 1.55 (a 25% double wedge, 14.0 deg)', () => {
+    const thick = { ...sharp, fins: { ...sharp.fins, section: doubleWedge(0.25) } };
+    const r = refusals(thick, 1.55);
+    expect(r).toContain('fin wave drag: detached-shock');
+    expect(r).not.toContain('fin friction: fins-own-drag-mach');
   });
 });

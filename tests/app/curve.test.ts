@@ -272,7 +272,8 @@ describe('the CSV', { timeout: 120_000 }, () => {
     expect(lines[3]).toBe(CSV_HEADER);
     expect(lines.length).toBe(4 + 11);
     // A refused row: no number, every refusal in the reason.
-    expect(lines[4]).toMatch(/^1\.00,,,,refused,"fin leading edges \(leading-edge-range\): /);
+    expect(lines[4]).toMatch(/^1\.00,,,,refused,"fin friction \(fins-own-drag-mach\): /);
+    expect(lines[4]).toMatch(/fin leading edges \(leading-edge-range\): /);
     // A row with a number: C_D to four decimals, the band outward, the logic's claim.
     const at2 = run.points.find((p) => p.mach === 2)!;
     if (at2.state.kind !== 'done' || at2.state.result.kind !== 'total') throw new Error('no total');
