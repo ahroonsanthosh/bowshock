@@ -103,3 +103,8 @@
 {"refinement":16,"steps":1500,"drag":0.04345005069856903,"residual":0.0000111577935717601,"seconds":9014.014673849,"rssMB":1638}
 {"refinement":16,"checkpoint":1500}
 {"refinement":16,"steps":1600,"drag":0.043450778993408386,"residual":0.000010218944436353773,"seconds":9449.914934872999,"rssMB":1576}
+{"refinement":16,"steps":1700,"drag":0.04345147998619838,"residual":0.000009254458259070205,"seconds":9833.216766825,"rssMB":1576}
+{"refinement":16,"checkpoint":1700}
+{"refinement":16,"steps":1800,"drag":0.043452175170220625,"residual":0.000008309447547363223,"seconds":10204.555777529,"rssMB":1513}
+{"refinement":16,"steps":1900,"drag":0.043452863803251904,"residual":0.0000074244193603512344,"seconds":10576.003224635999,"rssMB":1545}
+{"refinement":16,"checkpoint":1900}

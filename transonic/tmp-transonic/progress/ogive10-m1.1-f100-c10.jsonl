@@ -173,3 +173,6 @@
 {"refinement":16,"checkpoint":2600}
 {"refinement":16,"steps":2700,"drag":0.01145217801836753,"residual":0.0000011690609566365387,"seconds":26217.203578593,"rssMB":1681}
 {"refinement":16,"checkpoint":2700}
+{"refinement":16,"steps":2800,"drag":0.01145221195555858,"residual":0.0000011461767461076103,"seconds":26851.707762123,"rssMB":1655}
+{"refinement":16,"checkpoint":2800}
+{"refinement":16,"steps":2900,"drag":0.011452242449219505,"residual":0.0000011267282864013855,"seconds":27429.819218824996,"rssMB":1716}
