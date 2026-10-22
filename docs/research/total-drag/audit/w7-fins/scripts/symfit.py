@@ -1,7 +1,8 @@
 """Refine plotted-symbol centres on a scanned plot by fitting an outline
 template, and draw the fits for checking by eye. Usage:
 python3 -I symfit.py <image> <points.csv> <out.csv> [<overlay.png> x0 y0 x1 y1 scale]
-<points.csv> has columns id,kind,x,y (kind circle, square or triangle; x, y
+<points.csv> has columns id,kind,x,y (kind circle, square, triangle, diamond or
+cross; x, y
 a rough centre in image pixels, placed by eye). For each point the centre
 is searched over +-search px in steps of 0.25 px, with the template's size
 over a small range, maximising the mean ink along the outline less the
@@ -45,13 +46,26 @@ def outline(kind, s):
         u = np.linspace(0, 1, 17)[:, None]
         o = np.r_[A + u * (B - A), B + u * (C - B), C + u * (A - C)]
         i = np.array([(a, b) for a in np.linspace(-0.3 * s, 0.3 * s, 3) for b in np.linspace(-0.3 * h, 0.05 * h, 3)])
+    elif kind == 'diamond':
+        # a square turned 45 deg; s is the half-diagonal
+        A, B, C, D = (np.array(v, float) for v in ((0, -s), (s, 0), (0, s), (-s, 0)))
+        u = np.linspace(0, 1, 13)[:, None]
+        o = np.r_[A + u * (B - A), B + u * (C - B), C + u * (D - C), D + u * (A - D)]
+        v = np.linspace(-0.3 * s, 0.3 * s, 3)
+        i = np.array([(a, b) for a in v for b in v])
+    elif kind == 'cross':
+        # an x: two diagonals of half-length s; no interior test (it is open)
+        u = np.linspace(-s, s, 17)
+        o = np.r_[np.c_[u, u], np.c_[u, -u]]
+        i = np.array([(s * 0.7, 0), (-s * 0.7, 0), (0, s * 0.7), (0, -s * 0.7)])
     else:
         raise SystemExit('unknown kind ' + kind)
     return o, i
 
 
 SIZES = {'circle': np.arange(3.5, 5.51, 0.25), 'square': np.arange(4.0, 6.01, 0.25),
-         'triangle': np.arange(5.0, 7.01, 0.25)}
+         'triangle': np.arange(5.0, 7.01, 0.25), 'diamond': np.arange(4.5, 7.01, 0.25),
+         'cross': np.arange(3.0, 6.01, 0.25)}
 rows = list(csv.DictReader(open(sys.argv[2])))
 out = []
 for r in rows:

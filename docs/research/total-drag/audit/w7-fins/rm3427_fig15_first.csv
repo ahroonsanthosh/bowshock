@@ -1,0 +1,37 @@
+# ARC R&M 3427 (AERADE 1826.2/4011), fig. 15 "Spanwise uniformity of base pressure.", PDF p. 39 (printed p. 38), upper figure.
+# Cp_b against the spanwise distance from the centre-line (in.), at M_inf 1.0 (diamonds), 0.8 (circles, the tappings; crosses,
+# a pitot probe traversed along the base 0.010 in from it, section 3.3) and 0.4 (squares, and a circle at -2.5 in, on the 0.4 line).
+# No grid: calibrated on the axes' ticks by least squares (tickcal.py, rm3427_fig15_axes.json); page render 300 dpi, crop at
+# page pixels (860, 640). Errors: fit 0.5 px plus start dependence, with the ticks' rms; 1 px = 0.0101 in. and 0.0020 in Cp_b.
+# First reading, by the 0019 reader, 2026-10-22: read once.
+mach,source,symbol,spanwise_in,cp_b,spanwise_err,cp_b_err,x_px,y_px
+1.0,tapping,diamond,-2.495,-0.7817,0.009,0.0016,212.0,173.0
+1.0,tapping,diamond,-1.001,-0.7813,0.009,0.0016,360.5,173.5
+1.0,tapping,diamond,-0.002,-0.7812,0.009,0.0016,459.75,173.75
+0.8,tapping,circle,-2.493,-0.7030,0.009,0.0016,212.25,212.25
+0.8,tapping,circle,-0.973,-0.7332,0.009,0.0016,363.25,197.5
+0.8,tapping,circle,0.008,-0.7441,0.011,0.0020,460.75,192.25
+0.4,tapping,circle,-2.493,-0.6053,0.011,0.0024,212.25,261.0
+0.4,tapping,square,-0.991,-0.6089,0.009,0.0016,361.5,259.5
+0.4,tapping,square,0.001,-0.6263,0.009,0.0016,460.0,251.0
+0.8,pitot traverse,cross,-2.981,-0.6948,0.009,0.0016,163.75,216.25
+0.8,pitot traverse,cross,-2.742,-0.7019,0.009,0.0016,187.5,212.75
+0.8,pitot traverse,cross,-2.239,-0.7135,0.009,0.0016,237.45,207.05
+0.8,pitot traverse,cross,-1.982,-0.7298,0.009,0.0016,263.05,199.0
+0.8,pitot traverse,cross,-1.495,-0.7404,0.009,0.0016,311.45,193.8
+0.8,pitot traverse,cross,-1.250,-0.7442,0.009,0.0016,335.75,191.95
+0.8,pitot traverse,cross,-0.739,-0.7442,0.009,0.0016,386.5,192.05
+0.8,pitot traverse,cross,-0.493,-0.7448,0.011,0.0016,410.95,191.8
+0.8,pitot traverse,cross,-0.246,-0.7400,0.009,0.0016,435.5,194.25
+0.8,pitot traverse,cross,0.262,-0.7441,0.009,0.0016,486.0,192.3
+0.8,pitot traverse,cross,0.514,-0.7427,0.009,0.0016,511.0,193.05
+0.8,pitot traverse,cross,0.760,-0.7428,0.009,0.0016,535.5,193.05
+0.8,pitot traverse,cross,1.009,-0.7434,0.009,0.0016,560.2,192.8
+0.8,pitot traverse,cross,1.249,-0.7395,0.009,0.0016,584.05,194.8
+0.8,pitot traverse,cross,1.558,-0.7316,0.009,0.0016,614.75,198.8
+0.8,pitot traverse,cross,1.771,-0.7313,0.009,0.0016,635.95,199.0
+0.8,pitot traverse,cross,1.998,-0.7234,0.009,0.0016,658.5,202.95
+0.8,pitot traverse,cross,2.248,-0.7175,0.009,0.0016,683.3,205.95
+0.8,pitot traverse,cross,2.497,-0.7100,0.009,0.0016,708.05,209.75
+0.8,pitot traverse,cross,2.758,-0.6976,0.009,0.0016,734.0,216.0
+0.8,pitot traverse,cross,2.997,-0.6863,0.009,0.0016,757.7,221.7

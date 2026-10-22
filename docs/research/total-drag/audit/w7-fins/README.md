@@ -8,10 +8,11 @@ per-row errors; a blind second reading is arranged by the coordinator, and
 no band is set until both are held and paired. Downloads are kept outside
 the repository; only readings, methods and scripts are here.
 
-| File                                                 | Source                                                       | What                                                                     | Status                       |
-| ---------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ | ---------------------------- |
-| `rm3348_table3_first.csv`, `method_rm3348_table3.md` | ARC R&M 3348 (AERADE 1826.2/3929), table 3, PDF pp. 32 to 38 | base pressure of the single-wedge wing, 852 values (F4, its sweep)       | read twice; paired (below)   |
-| `rm3427_fig13_first.csv`, `method_rm3427_fig13.md`   | ARC R&M 3427 (AERADE 1826.2/4011), fig. 13, PDF p. 37        | base pressure of the 10% blunt section, holes 5 to 7, M 0.2 to 1.12 (F4) | read once; second to arrange |
+| File                                                                             | Source                                                        | What                                                                                                                | Status                       |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `rm3348_table3_first.csv`, `method_rm3348_table3.md`                             | ARC R&M 3348 (AERADE 1826.2/3929), table 3, PDF pp. 32 to 38  | base pressure of the single-wedge wing, 852 values (F4, its sweep)                                                  | read twice; paired (below)   |
+| `rm3427_fig13_first.csv`, `method_rm3427_fig13.md`                               | ARC R&M 3427 (AERADE 1826.2/4011), fig. 13, PDF p. 37         | base pressure of the 10% blunt section, holes 5 to 7, M 0.2 to 1.12 (F4)                                            | read once; second to arrange |
+| `rm3427_fig15_first.csv`, `rm3427_fig16_first.csv`, `method_rm3427_figs15_16.md` | ARC R&M 3427 (AERADE 1826.2/4011), figs. 15 and 16, PDF p. 39 | base pressure across the span (M 1.0, 0.8, 0.4, with a pitot traverse) and across the base (alpha 0 and 2 deg) (F4) | read once; second to arrange |
 
 **Pairings.**
 
@@ -31,6 +32,9 @@ writes only the outputs named, run with `python3 -I`):
   square, triangle), with an overlay for checking by eye.
 - `calib.py`: centres to plot values, interpolated locally between the
   traced grid lines.
+- `ticks.py`: the ticks of an axis on a plot with no grid.
+- `tickcal.py`: centres to plot values on such a plot, along the axes'
+  own tilt, by a least-squares line through the ticks.
 
 Fig. 13 of R&M 3427 is reproduced by `symfit.py` on
 `rm3427_fig13_rough.csv`, then `calib.py` with `rm3427_fig13_grid.json`,
