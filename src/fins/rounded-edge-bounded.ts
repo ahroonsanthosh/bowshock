@@ -53,10 +53,15 @@ const GAMMA = 1.4;
 const DEG = Math.PI / 180;
 
 /**
- * The highest normal Mach number served (0019 section 3.2, (U3)): the
- * margin of the high end over the nose's estimated front side is ample to
- * M_n 0.8 and 0.4% to 6% at 0.85 to 0.9 (a first look at CR-149372 fig.
- * 8a); 0.8 until fig. 8a, read twice, shows the margin there.
+ * The highest normal Mach number served (0019 section 3.2, (U3)). The
+ * margin of the high end (0.659, or 0.679 with the Reynolds-number
+ * allowance) over the fuller of the nose's front-side estimates (a) and (b),
+ * built on the reviewer's first look at CR-149372 fig. 8a: 16% to 20% at
+ * M_n 0.8 (over (b), 0.566); 8% to 11% at 0.85 (over (b) interpolated
+ * between fig. 8a's M 0.8 and 0.9 sets, 0.610; fig. 8a has no 0.85 set);
+ * 0.8% to 3.8% at 0.9 (over (b), 0.654). Estimate (c) exceeds the high end
+ * by 2% to 5% at 0.8 already. 0.8 until fig. 8a, read twice, shows the
+ * margin at 0.85 to 0.9.
  */
 export const NORMAL_MACH_CAP = 0.8;
 
@@ -305,7 +310,10 @@ export function boundedRoundedEdge(input: {
       "M_n 1.0 at its band's high end (CR-149372, TN 2960" +
       (reynoldsAllowance ? ', the Reynolds-number allowance' : '') +
       (swept ? ', the sweep allowance' : '') +
-      '); a recorded candidate, not served: refused until NASA TM X-653 is read (0014 ' +
-      'section 10.7 (o))',
+      "); its upper ordering rests on an analogy, not a measurement: that the plate nose's " +
+      "front pressures stay within about a fifth of a cylinder's (0019 section 3.2, (U3) and " +
+      "(U4)), and the fullest estimate of the nose's front side, (c), exceeds the high end by 2% " +
+      'to 5% at M_n 0.8; a recorded candidate, not served: refused until NASA TM X-653 is read ' +
+      '(0014 section 10.7 (o))',
   };
 }

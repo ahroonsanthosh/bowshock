@@ -425,8 +425,13 @@ value. The ordering:
   0.75, 0.690 at 0.8 (the cylinder's measured pressures at 12 to 48 deg
   lie 3% to over 100% below Newtonian at M 0.8, first look). Against the
   high end without the sweep allowance, which multiplies both, 0.659 to
-  0.679: (a) and (b) leave 16% or more at 0.8, and about 1% to 10% at 0.85
-  to 0.9; (c) reaches it at M_n 0.70 to 0.75 and exceeds it by 2% to 5% at
+  0.679: over the fuller of (a) and (b), which is (b) at each of these, the
+  margin is 16% to 20% at 0.8 (0.566), 8% to 11% at 0.85 (0.610, (b)
+  interpolated between fig. 8a's M 0.8 and 0.9 sets; fig. 8a has no 0.85
+  set) and 0.8% to 3.8% at 0.9 (0.654); over (a) alone, 6% to 10% at 0.9
+  (recomputed 2026-10-22 from the reviewer's `fs8a.py`, re-review N5; the
+  "about 1% to 10% at 0.85 to 0.9" first written here, and the code's "0.4%
+  to 6%", were not one computation); (c) reaches it at M_n 0.70 to 0.75 and exceeds it by 2% to 5% at
   0.8. So the ordering holds at M_n 0.8 unless the nose's front pressures
   from 0 to 45 deg exceed the cylinder's by about a fifth (0.679 / 0.57),
   which (c) does and no measured subsonic body shows. Laminar edges (Re_D

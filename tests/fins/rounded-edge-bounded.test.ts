@@ -172,6 +172,9 @@ describe('the cases of the review', () => {
     expect(r.label).toContain('bounded, not measured');
     expect(r.label).toContain('a recorded candidate, not served');
     expect(r.label).toContain('refused until NASA TM X-653 is read');
+    // (U3)'s weakness named, as 0014 10.7 (o) requires (re-review of 2026-10-22, F).
+    expect(r.label).toContain('its upper ordering rests on an analogy, not a measurement');
+    expect(r.label).toContain('(c), exceeds the high end by 2% to 5% at M_n 0.8');
   });
 
   it('B1: LE 42, TE 30 deg, M 1.10, tip c/t 16 (M_n 0.817, TE normal Mach 0.953): refused', () => {
