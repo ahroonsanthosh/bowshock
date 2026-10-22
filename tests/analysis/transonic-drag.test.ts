@@ -6,6 +6,7 @@ import {
   verifiedTransonicDrag,
   type TransonicEngine,
 } from '../../src/analysis/transonic-drag';
+import type { FlowSource } from '../../src/render/flow-renderer';
 import { noseComponentOf } from '../../src/app/total-drag';
 import type { TransonicProblem } from '../../src/analysis/transonic-flow';
 import type { Body } from '../../src/geometry/body';
@@ -236,6 +237,54 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
       expect(result.refinement).toBe(2);
       expect(result.levels.map((l) => l.refinement)).toEqual([1]);
     }
+  });
+
+  it('gives each grid to draw as it starts, and null before releasing it; nothing from the CPU', async () => {
+    const events: string[] = [];
+    let created = 0;
+    const base = synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 });
+    const drawable: TransonicEngine = async (problem) => {
+      const solver = await base(problem);
+      const id = created++;
+      return {
+        ...solver,
+        live: () => {
+          events.push(`live ${id}`);
+          return { ni: id } as unknown as FlowSource;
+        },
+        destroy: () => {
+          events.push(`destroy ${id}`);
+          solver.destroy();
+        },
+      };
+    };
+    const seen: (number | null)[] = [];
+    const onLive = (source: FlowSource | null) => {
+      seen.push(source === null ? null : source.ni);
+      events.push(source === null ? 'null' : `shown ${source.ni}`);
+    };
+    const result = await verifiedTransonicDrag(ogive, { ...options, onLive }, drawable);
+    expect(result.kind).toBe('solved');
+    // Eight grids: the family's four and the allowances' four, each shown
+    // once and released after its null.
+    expect(created).toBe(8);
+    expect(seen).toEqual([0, null, 1, null, 2, null, 3, null, 4, null, 5, null, 6, null, 7, null]);
+    expect(events).toEqual(
+      [0, 1, 2, 3, 4, 5, 6, 7].flatMap((id) => [
+        `live ${id}`,
+        `shown ${id}`,
+        'null',
+        `destroy ${id}`,
+      ]),
+    );
+    // An engine with nothing to draw (the CPU's) gives nothing.
+    const none: (FlowSource | null)[] = [];
+    await verifiedTransonicDrag(
+      ogive,
+      { ...options, onLive: (s) => none.push(s) },
+      synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 }),
+    );
+    expect(none).toEqual([]);
   });
 
   it('Mach 1.0 is refused unless allowed, and blunt noses are refused', async () => {

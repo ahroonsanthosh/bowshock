@@ -28,6 +28,7 @@ import { taylorMaccoll } from '../validation/taylor-maccoll';
 import { domainAllowance, type DomainAllowance } from '../verification/domain-allowance';
 import { gridConvergence, type ConvergenceEstimate } from '../verification/grid-convergence';
 import { SettlingValue } from '../verification/iterative-convergence';
+import type { FlowSource } from '../render/flow-renderer';
 import { transonicProblem, type TransonicOptions, type TransonicProblem } from './transonic-flow';
 
 type Nested = NonNullable<TransonicOptions['nested']>;
@@ -45,6 +46,11 @@ export interface TransonicGridSolver {
   drag(): Promise<number>;
   /** The current state, in double precision. */
   cells(): Promise<TransonicCells>;
+  /**
+   * The flow to draw as it converges, on the solver's device (GPU
+   * engines only): its buffers live until destroy().
+   */
+  live?(): FlowSource;
   destroy(): void;
 }
 
@@ -87,6 +93,13 @@ export interface TransonicDragOptions {
   readonly allowMach1?: boolean;
   /** After each check of a grid's drag. */
   readonly onProgress?: (progress: TransonicProgress) => void;
+  /**
+   * The grid being solved, to draw as it converges (GPU engines): given
+   * when a grid starts, every grid of the family and of the allowances in
+   * turn (onProgress says which), and null just before its buffers are
+   * released, so that a view can freeze the picture in the callback.
+   */
+  readonly onLive?: (source: FlowSource | null) => void;
   readonly onLevel?: (level: TransonicLevel) => void;
   readonly signal?: AbortSignal;
 }
@@ -532,6 +545,7 @@ async function solveGrid(
   const free = problem.freeStream.state;
   const solver = await engine(problem);
   const t0 = performance.now();
+  let shown = false;
   try {
     if (start === null) {
       await solver.start(() => free, 1);
@@ -542,6 +556,10 @@ async function solveGrid(
         (i, j) => coarse(Math.floor(i / ratio), Math.floor(j / ratio)),
         options.cfl ?? 1000,
       );
+    }
+    if (options.onLive !== undefined && solver.live !== undefined) {
+      options.onLive(solver.live());
+      shown = true;
     }
     const settling = new SettlingValue(SETTLE_NOISE);
     const recent: number[] = [];
@@ -604,6 +622,7 @@ async function solveGrid(
       cells: await solver.cells(),
     };
   } finally {
+    if (shown) options.onLive?.(null);
     solver.destroy();
   }
 }

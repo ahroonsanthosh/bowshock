@@ -3,11 +3,14 @@
  * (design record 0013, step 4b): red-black implicit steps, the CFL number
  * ramped by 1.2 a step up to `cfl`, the state read back in double
  * precision at each check and the drag evaluated from it by the CPU
- * engine's scheme.
+ * engine's scheme. Each grid can be drawn as it converges (live(): its
+ * 32-bit view of the state, for drawing only).
  */
 
 import { Euler2D } from '../engine-cpu/euler2d';
 import { GpuEuler2DTwoFloat } from '../engine-gpu/euler2d-two-float';
+import type { FlowSource } from '../render/flow-renderer';
+import type { Bounds } from '../render/view';
 import { pressureFromConserved2D } from '../scheme/gas';
 import type { TransonicCells, TransonicEngine } from './transonic-drag';
 
@@ -26,7 +29,7 @@ export function gpuTransonicEngine(
   return async (problem) => {
     const solver = await GpuEuler2DTwoFloat.create(device, problem.config);
     const evaluator = new Euler2D(problem.config);
-    const { ni } = problem.config.grid;
+    const { ni, nj } = problem.config.grid;
     const gamma = problem.config.gamma;
     const cells = async (): Promise<TransonicCells> => {
       const q = await solver.readConserved();
@@ -52,9 +55,39 @@ export function gpuTransonicEngine(
         return problem.drag(evaluator);
       },
       cells,
+      live: (): FlowSource => {
+        const view = solver.viewBuffers();
+        const bounds = boundsOf(problem.config.grid);
+        return {
+          ni,
+          nj,
+          gamma,
+          freeStream: problem.freeStream.state,
+          mirror: problem.config.geometry === 'axisymmetric',
+          fittedShock: false,
+          nodes: { kind: 'placed', buffer: view.nodes },
+          state: () => view.state,
+          bounds: () => bounds,
+        };
+      },
       destroy: () => {
         solver.destroy();
       },
     };
   };
+}
+
+/** The grid's extent: the whole domain (the far boundaries 100 radii out on the family's grids). */
+function boundsOf(grid: { readonly x: Float64Array; readonly y: Float64Array }): Bounds {
+  let xMin = Infinity;
+  let xMax = -Infinity;
+  let yMin = Infinity;
+  let yMax = -Infinity;
+  for (let n = 0; n < grid.x.length; n++) {
+    xMin = Math.min(xMin, grid.x[n]!);
+    xMax = Math.max(xMax, grid.x[n]!);
+    yMin = Math.min(yMin, grid.y[n]!);
+    yMax = Math.max(yMax, grid.y[n]!);
+  }
+  return { xMin, xMax, yMin, yMax };
 }

@@ -10,6 +10,7 @@
 
 import { GpuExecutionError } from '../engine-gpu/gpu-common';
 import type { Body } from '../geometry/body';
+import type { FlowSource } from '../render/flow-renderer';
 import type {
   TransonicDrag,
   TransonicDragOptions,
@@ -40,13 +41,24 @@ export interface NoseDragRequest {
   readonly onProgress?: (text: string) => void;
   /** The transonic solve at Mach 1.0 itself (0013, serving rule 8). */
   readonly allowMach1?: boolean;
+  /**
+   * The grid being solved, either solver's, to draw as it converges, and
+   * null just before its buffers are released (freeze the picture then).
+   */
+  readonly onLive?: (source: FlowSource | null) => void;
 }
 
 export interface NoseDragSolvers {
   readonly transonic: (body: Body, options: TransonicDragOptions) => Promise<TransonicDrag>;
   readonly fitted: (
     body: Body,
-    options: { mach: number; gamma: number; maxRefinement: number; signal?: AbortSignal },
+    options: {
+      mach: number;
+      gamma: number;
+      maxRefinement: number;
+      signal?: AbortSignal;
+      onLive?: (source: FlowSource | null) => void;
+    },
   ) => Promise<VerifiedDrag>;
 }
 
@@ -115,6 +127,7 @@ export async function solveNoseDrag(
       finest: request.finest,
       ...(request.signal === undefined ? {} : { signal: request.signal }),
       ...(request.allowMach1 === undefined ? {} : { allowMach1: request.allowMach1 }),
+      ...(request.onLive === undefined ? {} : { onLive: request.onLive }),
       onProgress: (p) => {
         const where =
           p.what === 'grid'
@@ -131,6 +144,7 @@ export async function solveNoseDrag(
       gamma: request.gamma,
       maxRefinement: request.finest,
       ...(request.signal === undefined ? {} : { signal: request.signal }),
+      ...(request.onLive === undefined ? {} : { onLive: request.onLive }),
     });
     return fromFitted(result);
   } catch (error) {

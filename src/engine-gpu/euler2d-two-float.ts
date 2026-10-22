@@ -59,6 +59,32 @@ const ENTRY_POINTS = [
 ] as const;
 type EntryPoint = (typeof ENTRY_POINTS)[number];
 
+/**
+ * The state in 32 bits for drawing, (rho, rho u, rho v, E) per cell: the
+ * two-float state's high parts, copied after each batch of steps.
+ */
+const VIEW_WGSL = `
+@group(0) @binding(0) var<storage, read> two_float: array<vec4f>;
+@group(0) @binding(1) var<storage, read_write> view: array<vec4f>;
+
+@compute @workgroup_size(${WORKGROUP_SIZE})
+fn to_view(@builtin(global_invocation_id) id: vec3u) {
+  let c = id.x;
+  if (c >= arrayLength(&view)) {
+    return;
+  }
+  view[c] = two_float[2u * c];
+}
+`;
+
+/** Buffers a flow view draws from (src/render/flow-renderer.ts, nodes 'placed'). */
+export interface TwoFloatViewBuffers {
+  /** The grid's nodes as vec2f, node (i, j) at i + j (ni + 1). */
+  readonly nodes: GPUBuffer;
+  /** The state in 32 bits, (rho, rho u, rho v, E) per cell, for drawing only. */
+  readonly state: GPUBuffer;
+}
+
 /** The high and low 32-bit parts of a double: hi + lo is within 2^-48 of it, relative. */
 export function split(value: number): [number, number] {
   const hi = Math.fround(value);
@@ -90,6 +116,11 @@ export class GpuEuler2DTwoFloat {
   private readonly controlReadback: GPUBuffer;
   private readonly stateReadback: GPUBuffer;
   private readonly groups: readonly (readonly [GPUBindGroup, GPUBindGroup])[];
+  private readonly viewPipeline: GPUComputePipeline;
+  private view: {
+    readonly buffers: TwoFloatViewBuffers;
+    readonly groups: readonly [GPUBindGroup, GPUBindGroup];
+  } | null = null;
   private readonly nCells: number;
   private current: 0 | 1 = 0;
   private steps = 0;
@@ -144,22 +175,28 @@ export class GpuEuler2DTwoFloat {
       ],
     });
     const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [layout] });
-    const compiled = await Promise.all(
-      ENTRY_POINTS.map((entryPoint) =>
+    const viewModule = await compileShader(device, 'euler2d two-float view', VIEW_WGSL);
+    const [viewPipeline, ...compiled] = await Promise.all([
+      device.createComputePipelineAsync({
+        label: 'to_view',
+        layout: 'auto',
+        compute: { module: viewModule, entryPoint: 'to_view' },
+      }),
+      ...ENTRY_POINTS.map((entryPoint) =>
         device.createComputePipelineAsync({
           label: entryPoint,
           layout: pipelineLayout,
           compute: { module, entryPoint },
         }),
       ),
-    );
+    ]);
     const pipelines = Object.fromEntries(
       ENTRY_POINTS.map((name, k) => [name, compiled[k]!]),
     ) as Record<EntryPoint, GPUComputePipeline>;
     return withDeviceErrors(
       device,
       `a grid of ${ni} x ${nj} cells`,
-      () => new GpuEuler2DTwoFloat(device, config, layout, pipelines),
+      () => new GpuEuler2DTwoFloat(device, config, layout, pipelines, viewPipeline),
       (solver) => {
         solver.destroy();
       },
@@ -171,11 +208,13 @@ export class GpuEuler2DTwoFloat {
     config: Euler2DConfig,
     layout: GPUBindGroupLayout,
     pipelines: Record<EntryPoint, GPUComputePipeline>,
+    viewPipeline: GPUComputePipeline,
   ) {
     this.device = device;
     this.config = config;
     this.layout = layout;
     this.pipelines = pipelines;
+    this.viewPipeline = viewPipeline;
     this.metrics = computeMetrics(config.grid, config.geometry);
     const { ni, nj } = this.metrics;
     this.nCells = ni * nj;
@@ -266,6 +305,49 @@ export class GpuEuler2DTwoFloat {
     this.steps = 0;
     this.device.queue.writeBuffer(this.states[0], 0, packed);
     this.device.queue.writeBuffer(this.control, 0, new Uint32Array(CONTROL_BYTES / 4));
+    this.refreshView();
+  }
+
+  /**
+   * The buffers a flow view draws from, created on the first call: the
+   * nodes, and the state in 32 bits (the high parts), refreshed after each
+   * batch of steps. For drawing only; they are destroyed with the solver.
+   */
+  viewBuffers(): TwoFloatViewBuffers {
+    this.exclusive.assertIdle();
+    if (this.view === null) {
+      const { ni, nj, x, y } = this.config.grid;
+      const nodes = new Float32Array(2 * (ni + 1) * (nj + 1));
+      for (let n = 0; n < x.length; n++) {
+        nodes[2 * n] = x[n]!;
+        nodes[2 * n + 1] = y[n]!;
+      }
+      const usage = GPUBufferUsage;
+      const buffers = {
+        nodes: this.buffers.createWith(
+          'two-float view nodes',
+          nodes,
+          usage.STORAGE | usage.COPY_SRC,
+        ),
+        state: this.buffers.create(
+          'two-float view state',
+          16 * this.nCells,
+          usage.STORAGE | usage.COPY_SRC | usage.COPY_DST,
+        ),
+      };
+      const group = (src: 0 | 1) =>
+        this.device.createBindGroup({
+          label: `euler2d two-float view ${src}`,
+          layout: this.viewPipeline.getBindGroupLayout(0),
+          entries: [
+            { binding: 0, resource: { buffer: this.states[src] } },
+            { binding: 1, resource: { buffer: buffers.state } },
+          ],
+        });
+      this.view = { buffers, groups: [group(0), group(1)] };
+      this.refreshView();
+    }
+    return this.view.buffers;
   }
 
   /** Set the CFL number the next step starts from: 1 from the free stream, the largest from a coarser grid's solution. */
@@ -324,6 +406,7 @@ export class GpuEuler2DTwoFloat {
           pass.dispatchWorkgroups(1);
           this.current = this.current === 0 ? 1 : 0;
         }
+        this.encodeView(pass);
         pass.end();
         this.device.queue.submit([encoder.finish()]);
         const bytes = await readBuffer(
@@ -407,6 +490,24 @@ export class GpuEuler2DTwoFloat {
 
   destroy(): void {
     this.buffers.destroyAll();
+    this.view = null;
+  }
+
+  /** Copy the current state's high parts to the view's state, if there is a view. */
+  private refreshView(): void {
+    if (this.view === null) return;
+    const encoder = this.device.createCommandEncoder({ label: 'two-float view' });
+    const pass = encoder.beginComputePass();
+    this.encodeView(pass);
+    pass.end();
+    this.device.queue.submit([encoder.finish()]);
+  }
+
+  private encodeView(pass: GPUComputePassEncoder): void {
+    if (this.view === null) return;
+    pass.setPipeline(this.viewPipeline);
+    pass.setBindGroup(0, this.view.groups[this.current]);
+    pass.dispatchWorkgroups(Math.ceil(this.nCells / WORKGROUP_SIZE));
   }
 
   private writeParams(omega: number, cfl: number, growth: number): void {

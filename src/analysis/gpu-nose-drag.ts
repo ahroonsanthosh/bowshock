@@ -4,6 +4,7 @@
  * both on the given GPU device.
  */
 
+import { liveFitSource } from '../render/flow-source';
 import { verifiedFittedDragGpu } from './gpu-fitted-flow';
 import { gpuTransonicEngine } from './gpu-transonic';
 import type { NoseDragSolvers } from './nose-drag-solve';
@@ -26,13 +27,21 @@ export function gpuNoseDragSolvers(device: GPUDevice): NoseDragSolvers {
         options,
         gpuTransonicEngine(device, { sweeps: GPU_TRANSONIC_SWEEPS }),
       ),
-    fitted: (body, options) =>
+    fitted: (body, { onLive, ...options }) =>
       verifiedFittedDragGpu(device, body, {
         ...options,
         // No early stop: always refine to the finest grid allowed (as the page).
         tolerance: 0,
         floor: FITTED_DRAG_FLOOR,
         orderTolerance: ORDER_TOLERANCE,
+        // The fit as a flow source, as the transonic solve gives its grids.
+        ...(onLive === undefined
+          ? {}
+          : {
+              onLive: (live) => {
+                onLive(live === null ? null : liveFitSource(live));
+              },
+            }),
       }),
   };
 }

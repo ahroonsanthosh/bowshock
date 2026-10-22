@@ -1,9 +1,12 @@
 import { beforeAll, describe, expect, it } from 'vitest';
+import { gpuTransonicEngine } from '../../src/analysis/gpu-transonic';
 import { solveTransonic, transonicProblem } from '../../src/analysis/transonic-flow';
 import { Euler2D } from '../../src/engine-cpu/euler2d';
 import { GpuEuler2D, gpuPrimitive2D, type GpuState2D } from '../../src/engine-gpu/euler2d-gpu';
 import { GpuEuler2DTwoFloat } from '../../src/engine-gpu/euler2d-two-float';
 import type { Body } from '../../src/geometry/body';
+import { cellCentre, cellFieldValue } from '../../src/render/flow-fields';
+import { FlowRenderer } from '../../src/render/flow-renderer';
 import { pressureFromConserved2D } from '../../src/scheme/gas';
 import { requireDevice } from './device';
 
@@ -184,4 +187,115 @@ describe('GpuEuler2DTwoFloat: the transonic solve in two-float', () => {
       s.destroy();
     }
   }, 1_800_000);
+
+  it('is drawn as it converges: the 32-bit view of the state on the grid, frozen on release', async () => {
+    const { ni, nj } = problem.config.grid;
+    const read = async (buffer: GPUBuffer, size: number) => {
+      const readback = device.createBuffer({
+        size,
+        usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
+      });
+      const encoder = device.createCommandEncoder();
+      encoder.copyBufferToBuffer(buffer, 0, readback, 0, size);
+      device.queue.submit([encoder.finish()]);
+      await readback.mapAsync(GPUMapMode.READ);
+      const data = new Float32Array(readback.getMappedRange().slice(0));
+      readback.unmap();
+      readback.destroy();
+      return data;
+    };
+    const solver = await gpuTransonicEngine(device, { sweeps: 2 })(problem);
+    const renderer = await FlowRenderer.create(device, 'rgba8unorm');
+    try {
+      await solver.start(() => problem.freeStream.state, 1);
+      const source = solver.live!();
+      expect(source).toMatchObject({ ni, nj, gamma, mirror: true, fittedShock: false });
+      expect(source.nodes.kind).toBe('placed');
+      renderer.setSource(source);
+      // Two batches (64 and 36 steps), the view refreshed after each.
+      await solver.iterate(100);
+
+      // The view: the state to 32 bits; the nodes: the grid's.
+      const cells = await solver.cells();
+      const view = await read(source.state(), 16 * ni * nj);
+      let stateError = 0;
+      for (let j = 0; j < nj; j++) {
+        for (let i = 0; i < ni; i++) {
+          const w = cells(i, j);
+          const q = [
+            w.rho,
+            w.rho * w.u,
+            w.rho * w.v,
+            w.p / (gamma - 1) + 0.5 * w.rho * (w.u * w.u + w.v * w.v),
+          ];
+          for (let k = 0; k < 4; k++) {
+            const scale = Math.max(Math.abs(q[k]!), 1e-30);
+            stateError = Math.max(
+              stateError,
+              Math.abs(view[4 * (i + j * ni) + k]! - q[k]!) / scale,
+            );
+          }
+        }
+      }
+      expect(stateError, 'view state').toBeLessThan(1.2e-7);
+      // And it is the state after the steps, not the free stream it started from.
+      let compressed = 0;
+      for (let c = 0; c < ni * nj; c++) {
+        compressed = Math.max(compressed, view[4 * c]! / problem.freeStream.state.rho - 1);
+      }
+      expect(compressed, 'the largest compression drawn').toBeGreaterThan(0.01);
+      const nodes = await read(renderer.nodeBuffer!, 8 * (ni + 1) * (nj + 1));
+      const grid = problem.config.grid;
+      let nodeError = 0;
+      for (let n = 0; n < grid.x.length; n++) {
+        nodeError = Math.max(
+          nodeError,
+          Math.abs(nodes[2 * n]! - grid.x[n]!) / Math.max(1, Math.abs(grid.x[n]!)),
+          Math.abs(nodes[2 * n + 1]! - grid.y[n]!) / Math.max(1, Math.abs(grid.y[n]!)),
+        );
+      }
+      expect(nodeError, 'node positions').toBeLessThan(1.2e-7);
+
+      // Drawn at cell centres near the nose and the shoulder, as the view has them.
+      const picked: [number, number][] = [];
+      for (const fi of [0.2, 0.4, 0.6]) {
+        for (const j of [0, 3, 10]) picked.push([Math.floor(fi * ni), j]);
+      }
+      const points = picked.map(([i, j]) => cellCentre(grid, i, j));
+      const options = {
+        field: 'density',
+        split: false,
+        grid: false,
+        shock: false,
+        schlierenContrast: 3,
+        lengthScale: 1,
+        gridStride: 1,
+      } as const;
+      const expected = picked.map(([i, j]) => {
+        const c = 4 * (i + j * ni);
+        return cellFieldValue(
+          'density',
+          [view[c]!, view[c + 1]!, view[c + 2]!, view[c + 3]!],
+          Math.fround(gamma),
+          problem.freeStream.state,
+        );
+      });
+      const drawn = await renderer.probe(points, options);
+      expected.forEach((value, k) => {
+        expect(
+          Math.abs(drawn[k]! - value) / Math.abs(value),
+          `density at cell ${String(picked[k])}`,
+        ).toBeLessThan(2e-6);
+      });
+
+      // Released: the view keeps drawing its own copy.
+      renderer.freeze();
+      solver.destroy();
+      const after = await renderer.probe(points, options);
+      expect(after).toEqual(drawn);
+    } finally {
+      solver.destroy();
+      renderer.destroy();
+    }
+  }, 900_000);
 });
