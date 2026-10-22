@@ -670,8 +670,13 @@ built after its figures are read twice.
   maximum (the reviewer's first look: xi_0 -1.15 to +0.65, reduced drag
   0.10, 0.45, 1.0, 1.47, 1.9, 2.52). Once fig. 32 is read twice, thin
   bevels from xi about -0.35 to 0.65 are measured, not "bounded, not
-  measured" (0014 10.2): the nominal from fig. 32's points and Knechtel's
-  curve, the band their scatter about it with both readings' errors. The
+  measured" (0014 10.2): the nominal from fig. 32's points, the band
+  their scatter about it with both readings' errors. **Knechtel's curve
+  sets nothing yet** (re-review N4): its report's title is about
+  perforated-wall interference, so before it shapes any nominal its
+  tunnel, its wall and blockage corrections and its Reynolds number are
+  recorded here from that report or from R&M 3348's account of it; until
+  then it is drawn beside fig. 32's points as a check only. The
   first version would have served about 1.95 +- 1.05 at xi 0 against about
   1.5 measured. The band elsewhere: the scatter of both readings' points
   about the interpolant, with the reading errors and the systematic
@@ -688,8 +693,8 @@ built after its figures are read twice.
   supersonic, xi about 0.9, if the conversion leaves a gap there), served
   between measured values, never on theory:
   - lower bound: the measured value at the gap's lower end, the low end of
-    both readings with their errors. The ordering: fig. 32's points and
-    Knechtel's curve rise monotonically through the gap's neighbourhood
+    both readings with their errors. The ordering: fig. 32's points (and
+    Knechtel's curve, a check until N4 is met) rise monotonically through the gap's neighbourhood
     with no maximum (item 4), and Bryson's stationarity gives a forebody's
     drag a positive slope at M = 1, dC/dM = (4 - 2C) / (gamma + 1) on its
     frontal height (TR 1094 eq. 43; section 3.2, (U2)). The first
@@ -717,7 +722,11 @@ built after its figures are read twice.
   curve crosses zero. The reviewer's first look: at 45 deg and M_n 0.82 to
   0.85 the swept points are +0.009 to +0.010 in C_cf against about 0
   unswept, about +0.14 on q_n t, and at M_n 0.64 to 0.71 the swept points
-  lie below the unswept curve. The case to test when the term is built: a
+  lie below the unswept curve. These differences include the change in
+  the trailing edge's upstream influence with sweep (on R&M 3348's swept
+  wings both edges sweep together), which "The trailing edge" below also
+  adds: counted twice, on the conservative side (wider), and said so when
+  the band is formed (re-review N3). The case to test when the term is built: a
   bevel swept 45 deg at Mach 1.18 (M_n 0.83); today it is refused, by the
   guard below Mach 1.5 (`tests/total/fins-own-drag-guard.test.ts`).
 - _The Reynolds number._ Bryson's 6e4 (laminar) against R&M 3348 (1.3e6
@@ -734,9 +743,23 @@ built after its figures are read twice.
   M_n 0.6, 5% of the population's bevels), bounded the same way between
   section 3.2's lower bound, as rewritten ((L1) to (L5), which hold for
   any forebody of a semi-infinite plate: twice the trailing edge's
-  line-sink shift, the free stream from Mach 1.06, the trailing edge
-  outside the plate's transonic range) and the lowest measured point, the
-  drag rising with the Mach number.
+  line-sink shift, the free stream above (L5)'s floor, the fins' thickness counted, the trailing edge
+  outside the plate's transonic range) and an upper bound from the lowest
+  measured point. **Not "the lowest measured point, the drag rising with
+  the Mach number"** (re-review N2): that rise is not shown there. The
+  first look at fig. 31b gives -0.10 to -0.15 on q_n t at M_n 0.55 to
+  0.60, the trailing edge's suction outweighing the wedge's front
+  pressure, and in linear subsonic flow a pressure coefficient scales as
+  1/beta, so a negative value becomes less negative as the Mach number
+  falls (times beta(0.6)/beta(0.5) = 0.92 from M_n 0.6 to 0.5), above a
+  bound at the measured value. So the upper bound at M_n below the lowest
+  point M_m is C_m + 2 max(0, -C_m) (1 - beta(M_m)/beta(M_n)), C_m that
+  point's high end with both readings' errors: Prandtl-Glauert's change
+  with (L5)'s factor of 2 where C_m is negative, and C_m itself where it
+  is positive (the scaling then lowers the value as the Mach number
+  falls). Prandtl-Glauert at a wedge's stagnation point is itself a
+  small-disturbance estimate; the factor of 2 is its stated margin, as in
+  (L5).
 - _Bevels of 10 to 15 deg_ (73.9% of the population's bevels) only if TR
   1094 figs. 15 and 16, the 26.57 deg wedge at Mach 1.44, fall on the thin
   wedges' curve in the similarity variables within the band; then the
