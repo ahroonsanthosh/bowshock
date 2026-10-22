@@ -986,7 +986,11 @@ section 6.4).
   at its rounds at Mach 1.798 to 2.47, as 10.3's last bullet registers.
   If it passes by rule 4 of 10.1, the class is validated over what that
   range supports; if it fails, the claim is withdrawn, as registered.
-  Not run.
+  Not run (as written on 2026-10-21). Run once on 2026-10-22, as
+  registered in amendment (n): the present model passed at all seven
+  rounds (0020). Range A supports nothing inside the class, so the class
+  stays suspended, and a narrow sub-class at the tested conditions is
+  validated instead: amendment (q).
 - _History._ The second run (0010 section 4.2), round 5's tolerances
   (0010 section 10) and the correction's residuals (0010 section 11.6)
   are kept in the record as they were.
@@ -1323,3 +1327,103 @@ result is recorded whatever it is (rule 3 of 10.1), in
   `tests/validation/brl934-readings.test.ts`; the run,
   `tests/validation/brl934-range-a.test.ts`, its expectations placeholders
   until the run's values are recorded.
+
+**2026-10-22 (q): the Basic Finner after BRL Report 934's range A: a
+narrow validated sub-class at the tested conditions, the class still
+suspended** (10.3; amendment (b)'s route back; the run's record,
+`docs/design/0020-brl934-range-a.md`; letters (o) and (p) are reserved for
+another branch). The owner's decision, made on 2026-10-22 after the run
+and final.
+
+- _What the run found, and why it does not reopen the class._ The present
+  model passed range A by rule 4 of 10.1 at all seven rounds it serves
+  (0020 section 2). Amendment (b) registered that on a pass "the class is
+  validated over what that range supports". Range A supports nothing
+  inside the class as the page decides it (Mach 1.799 to 2.15, Reynolds
+  number 1.19e7 to 2.0e7 on length, DREV's 0.004 cal fin leading edge;
+  0011 section 3): the five rounds inside its Mach range (M 1.801 to
+  1.827) flew at Reynolds numbers of 7.96e6 to 8.87e6 on length, wholly
+  below its floor, the two at M 2.423 and 2.468 lie above its Mach range,
+  and every round was run with sharp fin leading edges (10.6 item 3). The
+  test and the class overlap in nothing.
+- _The decision._ A new, narrow sub-class is validated at exactly the
+  tested conditions, and nowhere else. The class itself is unchanged in
+  its limits and its values, and stays "an estimate, not validated"
+  (amendment (b)); only its stated reason changes, since the registered
+  test has now been run and passed, at conditions outside it.
+- _The sub-class_, every bound from the run's inputs (10.6, amendment
+  (n)) and its output (`docs/research/base-and-total/runs/brl934-range-a.json`),
+  none wider than tested:
+  - Geometry: the Basic Finner as transcribed, each dimension within 0.5%
+    as the class takes it (a cone 0.5 / tan 10 deg = 2.836 cal long, sharp,
+    on a cylinder to a flat base, 10.0 cal overall; four rectangular fins
+    of 1.0 cal root chord and span, unswept, their trailing edges at the
+    base), with sharp fin leading edges (radius 0, 10.6 item 3) and
+    single-wedge sections to a blunt trailing edge 0.08 cal thick, its
+    thickness constant across the span, 0.32 cal^2 over the four fins, as
+    the run assumed (10.6 item 4). A rounded leading edge of any radius is
+    outside it. The nose is the sharp cone the run took (its wave drag
+    the exact Taylor-Maccoll value; on the page, the page's solve of that
+    cone).
+  - Two disjoint windows of Mach and Reynolds number on length, with no
+    interpolation across the gap (Mach 1.827 to 2.423 was not tested; its
+    rounds 3249, 3255 and 3256 were out by 10.6 item 5): Mach 1.801 to
+    1.827 with Reynolds number 7.965e6 to 8.870e6, and Mach 2.423 to 2.468
+    with 1.072e7 to 1.198e7. The Mach ends are the rounds' own. The
+    Reynolds ends are the least and greatest over the run's four corners
+    (diameter 0.78 and 0.82 in, air 288 and 298 K) at the rounds in each
+    window, 7.9642e6 to 8.8708e6 and 1.07147e7 to 1.19832e7 in the json,
+    rounded inward to four significant figures: 0020 section 2's 7.96e6
+    and 1.20e7, rounded outward to three, lie 0.05% and 0.14% beyond what
+    was run, so they are not used. The windows are boxes over those
+    ranges: the run's Reynolds number rises with its Mach number within a
+    window, so a box's corners (M 1.801 at 8.87e6, say) lie up to 1.4%
+    (first window) and 1.8% (second) beyond the Reynolds numbers the
+    nearest round reached,
+    as the class's own box has corners no shot flew (0011 section 3).
+  - Static temperature 288 to 298 K, the run's air range (10.6 item 2).
+  - Zero incidence, power off, as the page computes every total.
+  - The inputs (transition, wall temperature, roughness) are not part of
+    the rule, as for the class: they move no nominal value and are shown
+    apart.
+- _Checked before the code._ The page's own path (`totalDragView` in
+  `src/app/total-drag.ts`) serves a total at all seven rounds, on the
+  present factor, with sharp edges at the run's nominal conditions (0.80
+  in, 293 K), and with the run's nose (Taylor-Maccoll with the fitted
+  solver's allowance) its total, model-form band and every component and
+  input band equal the run's recorded values exactly (difference 0 in
+  double precision). On the page the nose term is the page's solve of the
+  cone, which lies within its own band of the Taylor-Maccoll value: on
+  cones of 5 to 30 deg at Mach 1.3 to 3 the fitted solve's converged
+  value lies at most 3.4e-5 of the value from it (0006; the page's GPU
+  solver matches the CPU within 8e-7 there, 0011 section 3), so at these
+  rounds (nose terms 0.0947 to 0.1105) the page's total lies within about
+  4e-6 in C_D of the run's (the 7e-5 allowance alone is under 8e-6), below
+  the fourth decimal shown. The page's Basic Finner body, typed to six
+  decimals, moves the total by under 1e-8 (6e-9).
+- _The label for a case inside it_, plainly and in a few sentences:
+  "validated", tested once against BRL Report 934's range A (seven
+  rounds); measured over modelled +3.9% to +11.0%, so the model reads low
+  at every round (mean +7.3%), inside tolerances of about +-27%, a width
+  at which a pass alone says little (0008 section 6.3); the diameter, the
+  air and the trailing-edge area at the test were assumed, not printed in
+  the report (10.6); with DREV's 0.004 cal edge in place of the sharp one
+  the residuals at Mach 2.42 and 2.47 fall to -1.1% and -4.2%, a
+  sensitivity, not a verdict. The full list (each round's residual and
+  tolerance, the trailing-edge term halved, the alternative readings) is
+  in the page's details and in 0020.
+- _The class's reason, revised._ "Until ... is run and passes" is no
+  longer true. The class's reason now says that the factor was corrected
+  after the DREV gate, so by 0008 section 6.1 the gate no longer validates
+  it, and that the corrected factor's registered test, range A, was run
+  and passed at conditions outside the class (its Reynolds numbers below
+  the floor, its fin leading edges sharp), so nothing has tested the
+  corrected factor inside it; it validates only the sub-class. The class
+  stays kept, with its limits, for a test that covers it; none is
+  registered.
+- _What does not change._ No method, band, factor or tolerance; no value
+  of any total, inside the class, the sub-class or outside both. The
+  rebuilt factor (W1) is refused at every round of range A (in 0020,
+  section 3) and has no hold-out of its own, from range A or elsewhere: it
+  stays "estimated on component data", served outside the class as
+  amendment (i) has it. Range A is not run again (rule 3 of 10.1).
