@@ -7,6 +7,7 @@ import {
   verifiedTransonicDrag,
   transonicDomains,
   type TransonicEngine,
+  type TransonicLevel,
 } from '../../src/analysis/transonic-drag';
 import { GpuMemoryLimitError } from '../../src/engine-gpu/gpu-common';
 import type { FlowSource } from '../../src/render/flow-renderer';
@@ -54,6 +55,7 @@ function synthetic(s: Synthetic): TransonicEngine {
         const wander = (s.wander ?? 0) * Math.sin(steps / 37);
         return Promise.resolve(target * (1 + 0.01 * rate ** steps + wander));
       },
+      residual: () => Promise.resolve(0.01 * (s.rate ?? 0.99) ** steps + 1e-12 / (1 + steps)),
       cells: () => Promise.resolve(() => problem.freeStream.state),
       destroy: () => undefined,
     });
@@ -229,6 +231,7 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
         },
         drag: () =>
           Promise.resolve(drifting ? 0.1 + 1e-6 * steps : 0.1 * (1 + 0.01 * 0.9 ** steps)),
+        residual: () => Promise.resolve(0.01 * 0.9 ** steps + 1e-12 / (1 + steps)),
         cells: () => Promise.resolve(() => problem.freeStream.state),
         destroy: () => undefined,
       });
@@ -288,6 +291,94 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
       synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 }),
     );
     expect(none).toEqual([]);
+  });
+
+  it('a slow damped oscillation does not settle at a turning point: the noise covers the iteration error', async () => {
+    // The reviewer's A4: period 6,000 steps, decay time 1,800 steps (the
+    // nested Mach 1.02 base run's fit), checks every 50.
+    const target = (r: number) => 0.1098 + 1e-4 / r;
+    const oscillating: TransonicEngine = (problem) => {
+      const value = target(problem.options.refinement);
+      let steps = 0;
+      return Promise.resolve({
+        start: () => Promise.resolve(),
+        iterate: (n) => {
+          steps += n;
+          return Promise.resolve();
+        },
+        drag: () =>
+          Promise.resolve(
+            value *
+              (1 + 0.3 * Math.exp(-steps / 1800) * Math.cos((2 * Math.PI * steps) / 6000 + 0.3)),
+          ),
+        residual: () => Promise.resolve(Math.exp(-steps / 1800) + 1e-12 / (1 + steps)),
+        cells: () => Promise.resolve(() => problem.freeStream.state),
+        destroy: () => undefined,
+      });
+    };
+    const levels: TransonicLevel[] = [];
+    await verifiedTransonicDrag(
+      cone,
+      { ...options, checkEvery: 50, onLevel: (l) => levels.push(l) },
+      oscillating,
+    );
+    expect(levels.length).toBe(4);
+    for (const level of levels) {
+      const error = Math.abs(level.drag / target(level.refinement) - 1);
+      expect(error, `r = ${level.refinement}`).toBeLessThanOrEqual(level.noise);
+      // Conservative: the geometric remaining change read across a turning
+      // point inflates it (3.3e-6 here, measured when written).
+      expect(level.noise).toBeLessThan(1e-5);
+    }
+  });
+
+  it('a solver that stops moving, or whose drag changes grow, does not settle; a growing residual diverges', async () => {
+    const stub =
+      (drag: (steps: number) => number, residual: (steps: number) => number): TransonicEngine =>
+      (problem) => {
+        let steps = 0;
+        return Promise.resolve({
+          start: () => Promise.resolve(),
+          iterate: (n) => {
+            steps += n;
+            return Promise.resolve();
+          },
+          drag: () => Promise.resolve(drag(steps)),
+          residual: () => Promise.resolve(residual(steps)),
+          cells: () => Promise.resolve(() => problem.freeStream.state),
+          destroy: () => undefined,
+        });
+      };
+    const short = { ...options, maxSteps: 3000 };
+    // Frozen from the start: the same drag and the same residual every check.
+    const frozen = await verifiedTransonicDrag(
+      ogive,
+      short,
+      stub(
+        () => 0.1,
+        () => 1e-3,
+      ),
+    );
+    expect(frozen).toMatchObject({ kind: 'not-converged', reason: 'not-settled', refinement: 1 });
+    // Changes far below the settling noise, but growing.
+    const growing = await verifiedTransonicDrag(
+      ogive,
+      short,
+      stub(
+        (n) => 0.1 + 1e-13 * 1.004 ** n,
+        (n) => 1e-3 * 0.999 ** n,
+      ),
+    );
+    expect(growing).toMatchObject({ kind: 'not-converged', reason: 'not-settled' });
+    const diverging = await verifiedTransonicDrag(
+      ogive,
+      short,
+      stub(
+        (n) => 0.1 + 1e-3 * Math.sin(n / 100),
+        (n) => 1e-3 * 1.01 ** n,
+      ),
+    );
+    expect(diverging).toMatchObject({ kind: 'not-converged', reason: 'diverging' });
   });
 
   it('a long nose: the domains scale with its length; the allowances come right after the base grid', async () => {

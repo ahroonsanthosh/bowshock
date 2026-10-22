@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { SettlingValue } from '../../src/verification/iterative-convergence';
+import {
+  dampedOscillationBound,
+  SettlingValue,
+} from '../../src/verification/iterative-convergence';
 
 /** Checks until the value is declared settled, and the error then left. */
 function settle(
@@ -157,5 +160,66 @@ describe('settling of an iterated value', () => {
       const { check } = settle(() => 2 * (1 + 0.5e-6 * (2 * random() - 1)), 2, 1e-6);
       expect(check).toBe(2);
     }
+  });
+});
+
+describe('the damped-oscillation bound (review of aed95b0, S1)', () => {
+  const history = (n: number, value: (step: number) => number, every = 50) =>
+    Array.from({ length: n }, (_, k) => value((k + 1) * every));
+
+  it('bounds a slow damped oscillation by its envelope, which the settling test misses', () => {
+    // The reviewer's A4: period 6,000 steps, decay time 1,800, checks every 50.
+    const limit = 0.1098;
+    const value = (s: number) =>
+      limit * (1 + 0.3 * Math.exp(-s / 1800) * Math.cos((2 * Math.PI * s) / 6000 + 0.3));
+    for (const n of [200, 260, 330]) {
+      const values = history(n, value);
+      const { decaying, bound } = dampedOscillationBound(values, 1e-12);
+      const envelope = limit * 0.3 * Math.exp(-(n * 50) / 1800);
+      expect(decaying).toBe(true);
+      expect(bound).toBeGreaterThanOrEqual(Math.abs(values[n - 1]! - limit));
+      expect(bound).toBeGreaterThanOrEqual(envelope * 0.999);
+      expect(bound).toBeLessThan(2 * envelope);
+    }
+  });
+
+  it('bounds a monotone geometric convergence by what remains', () => {
+    const values = history(120, (s) => 1 + 1e-3 * 0.995 ** s, 1);
+    const { decaying, bound } = dampedOscillationBound(values, 1e-12);
+    expect(decaying).toBe(true);
+    const remaining = values[values.length - 1]! - 1;
+    expect(bound).toBeGreaterThanOrEqual(remaining * 0.999);
+    expect(bound).toBeLessThan(2 * remaining);
+  });
+
+  it('a value converged to its noise bounds by its span; growth and drift are not decaying', () => {
+    let seed = 1;
+    const noise = () => {
+      seed = (seed * 16807) % 2147483647;
+      return seed / 2147483647 - 0.5;
+    };
+    const quiet = 1e-8 * 0.1;
+    const settled = dampedOscillationBound(
+      history(100, () => 0.1 * (1 + 1e-13 * noise())),
+      quiet,
+    );
+    expect(settled.decaying).toBe(true);
+    expect(settled.bound).toBeLessThan(1e-13);
+    const growing = history(100, (s) => 0.1 * (1 + 1e-4 * Math.exp(s / 3000) * Math.sin(s / 300)));
+    expect(dampedOscillationBound(growing, quiet).decaying).toBe(false);
+    const drifting = history(100, (s) => 0.1 + 1e-9 * s);
+    expect(dampedOscillationBound(drifting, quiet).decaying).toBe(false);
+  });
+
+  it('a short history is left to the settling test', () => {
+    expect(
+      dampedOscillationBound(
+        history(25, (s) => 1 + 0.9 ** s),
+        1e-12,
+      ),
+    ).toEqual({
+      decaying: true,
+      bound: 0,
+    });
   });
 });

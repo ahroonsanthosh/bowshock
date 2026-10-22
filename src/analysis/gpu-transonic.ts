@@ -45,15 +45,31 @@ export function gpuTransonicEngine(
         };
       };
     };
+    // The evaluator holds the state of the last check, read back once for
+    // both the drag and the residual.
+    let loaded = false;
+    const load = async () => {
+      if (loaded) return;
+      evaluator.setCellPrimitives(await cells());
+      loaded = true;
+    };
     return {
       start: async (state, startCfl) => {
+        loaded = false;
         solver.setCellPrimitives(state);
         await solver.setImplicitCfl(startCfl);
       },
-      iterate: (steps) => solver.iterateImplicit(steps, { cfl, sweeps: options.sweeps }),
+      iterate: (steps) => {
+        loaded = false;
+        return solver.iterateImplicit(steps, { cfl, sweeps: options.sweeps });
+      },
       drag: async () => {
-        evaluator.setCellPrimitives(await cells());
+        await load();
         return problem.drag(evaluator);
+      },
+      residual: async () => {
+        await load();
+        return evaluator.densityResidualNorm();
       },
       cells,
       live: (): FlowSource => {

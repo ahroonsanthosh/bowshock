@@ -27,7 +27,7 @@ import type { Primitive2D } from '../scheme/flux';
 import { taylorMaccoll } from '../validation/taylor-maccoll';
 import { domainAllowance, type DomainAllowance } from '../verification/domain-allowance';
 import { gridConvergence, type ConvergenceEstimate } from '../verification/grid-convergence';
-import { SettlingValue } from '../verification/iterative-convergence';
+import { dampedOscillationBound, SettlingValue } from '../verification/iterative-convergence';
 import { GpuMemoryLimitError } from '../engine-gpu/gpu-common';
 import type { FlowSource } from '../render/flow-renderer';
 import { transonicProblem, type TransonicOptions, type TransonicProblem } from './transonic-flow';
@@ -47,6 +47,11 @@ export interface TransonicGridSolver {
   drag(): Promise<number>;
   /** The current state, in double precision. */
   cells(): Promise<TransonicCells>;
+  /**
+   * The current state's density residual, root mean square per unit
+   * volume, evaluated in double precision (Euler2D.densityResidualNorm).
+   */
+  residual(): Promise<number>;
   /**
    * The flow to draw as it converges, on the solver's device (GPU
    * engines only): its buffers live until destroy().
@@ -79,6 +84,14 @@ export const SETTLE_NOISE = 1e-7;
 export const GEOMETRIC_NOISE = 1e-9;
 /** Checks after settling over which the drag's wander is measured. */
 export const WANDER_CHECKS = 4;
+/**
+ * Settled needs the residual at most this fraction of the largest seen on
+ * the grid. Every converged grid of the CPU families fell further (to
+ * 0.15 at worst: the cone's r = 8 at Mach 1.2, started from r = 4).
+ */
+export const RESIDUAL_FALL = 0.5;
+/** A residual this many times its first value on a grid means the iteration diverges. */
+export const RESIDUAL_DIVERGENCE = 100;
 /**
  * The lowest Mach number served: 1.05, the lowest at which a case is
  * certified with a negligible far-field allowance (the 7 deg cone, 0013).
@@ -261,12 +274,14 @@ export const TRANSONIC_REFUSAL_REASONS: readonly TransonicRefusalReason[] = [
 
 /**
  * Why a grid did not converge: 'not-settled', its drag did not settle
- * within the steps allowed; 'not-finite', its drag became NaN or infinite.
+ * within the steps allowed; 'not-finite', its drag became NaN or infinite;
+ * 'diverging', its residual grew to RESIDUAL_DIVERGENCE times its first.
  */
-export type TransonicNotConvergedReason = 'not-settled' | 'not-finite';
+export type TransonicNotConvergedReason = 'not-settled' | 'not-finite' | 'diverging';
 export const TRANSONIC_NOT_CONVERGED_REASONS: readonly TransonicNotConvergedReason[] = [
   'not-settled',
   'not-finite',
+  'diverging',
 ];
 
 export type TransonicDrag =
@@ -468,9 +483,10 @@ export async function verifiedTransonicDrag(
     const cylinder = await allowanceOf('cylinder', problems.cylinder, domains.cylinder);
 
     // The family's finer grids, each started from the one before.
-    let previous: { problem: TransonicProblem; cells: TransonicCells } = {
+    let previous: { problem: TransonicProblem; cells: TransonicCells; rate: number } = {
       problem: problems.base,
       cells: baseSolution.cells,
+      rate: baseSolution.rate,
     };
     for (let refinement = 2; refinement <= options.finest; refinement *= 2) {
       const problem = problemOf(refinement);
@@ -481,7 +497,7 @@ export async function verifiedTransonicDrag(
       const level = levelOf(problem, result);
       levels.push(level);
       options.onLevel?.(level);
-      previous = { problem, cells: result.cells };
+      previous = { problem, cells: result.cells, rate: result.rate };
     }
 
     // The procedure, with the noise measured.
@@ -634,17 +650,33 @@ interface GridSolution {
   readonly seconds: number;
   readonly noise: number;
   readonly cells: TransonicCells;
+  /** The settling test's rate per check, for the next grid of the family (SettlingValue). */
+  readonly rate: number;
 }
 
 /**
- * Solve one grid until its drag settles (SettlingValue at SETTLE_NOISE, or
- * the geometric remaining change below GEOMETRIC_NOISE on two checks),
- * then watch it for WANDER_CHECKS more checks.
+ * Solve one grid until its drag settles, then watch it for WANDER_CHECKS
+ * more checks. Settled means all of:
+ * - the settling test passed (SettlingValue at SETTLE_NOISE, with the
+ *   coarser grid's rate where the grid starts from its solution), or the
+ *   geometric remaining change is below GEOMETRIC_NOISE on two checks;
+ * - that remaining change is finite (changes that grow are not
+ *   settling);
+ * - the residual has fallen to RESIDUAL_FALL of the largest seen on this
+ *   grid and still changes, so a solver that stopped moving does not
+ *   count;
+ * - the damped-oscillation bound on the drag's history decays and is
+ *   within SETTLE_NOISE of the drag, so a slow oscillation pausing at a
+ *   turning point does not count.
+ * The grid's noise is the largest of SETTLE_NOISE, the wander over the
+ * watched checks, the geometric remaining change and the oscillation
+ * bound (review of aed95b0, S1). A residual that grows to
+ * RESIDUAL_DIVERGENCE times its first value stops the grid as diverging.
  */
 async function solveGrid(
   engine: TransonicEngine,
   problem: TransonicProblem,
-  start: { problem: TransonicProblem; cells: TransonicCells } | null,
+  start: { problem: TransonicProblem; cells: TransonicCells; rate: number } | null,
   options: TransonicDragOptions,
   role: GridRole,
 ): Promise<GridSolution> {
@@ -670,12 +702,18 @@ async function solveGrid(
       options.onLive(solver.live());
       shown = true;
     }
-    const settling = new SettlingValue(SETTLE_NOISE);
-    const recent: number[] = [];
+    // A grid started from a coarser one's solution may start too close to
+    // its limit to show a rate of its own (SettlingValue's documentation).
+    const settling = new SettlingValue(SETTLE_NOISE, start?.rate ?? Number.NaN);
+    const history: number[] = [];
     let steps = 0;
     let drag = Number.NaN;
     let passes = 0;
     let remaining = Infinity;
+    let oscillation = 0;
+    let firstResidual = Number.NaN;
+    let largestResidual = 0;
+    let lastResidual = Number.NaN;
     let settled = false;
     while (steps < maxSteps) {
       if (options.signal?.aborted === true) throw new Cancelled();
@@ -685,16 +723,33 @@ async function solveGrid(
       if (!Number.isFinite(drag)) {
         throw new NotConverged(refinement, 'not-finite', 'the drag is not finite');
       }
+      const residual = await solver.residual();
+      if (Number.isNaN(firstResidual)) firstResidual = residual;
+      if (residual > RESIDUAL_DIVERGENCE * firstResidual) {
+        throw new NotConverged(
+          refinement,
+          'diverging',
+          `the residual grew from ${firstResidual.toExponential(2)} to ${residual.toExponential(2)}`,
+        );
+      }
+      largestResidual = Math.max(largestResidual, residual);
+      const moving = residual !== lastResidual;
+      lastResidual = residual;
       options.onProgress?.(
         role.what === 'grid'
           ? { what: 'grid', refinement, steps, drag }
           : { ...role, refinement: 1, steps, drag },
       );
-      recent.push(drag);
-      if (recent.length > 3) recent.shift();
-      remaining = geometricRemaining(recent);
+      history.push(drag);
+      remaining = geometricRemaining(history);
       passes = remaining <= GEOMETRIC_NOISE * Math.abs(drag) ? passes + 1 : 0;
-      if (settling.add(drag) || passes >= 2) {
+      const settlingPassed = settling.add(drag);
+      if (!(settlingPassed || passes >= 2)) continue;
+      if (!Number.isFinite(remaining)) continue;
+      if (!(moving && residual <= RESIDUAL_FALL * largestResidual)) continue;
+      const fit = dampedOscillationBound(history, 10 * GEOMETRIC_NOISE * Math.abs(drag));
+      oscillation = fit.bound;
+      if (fit.decaying && oscillation <= SETTLE_NOISE * Math.abs(drag)) {
         settled = true;
         break;
       }
@@ -720,7 +775,8 @@ async function solveGrid(
     const noise = Math.max(
       SETTLE_NOISE,
       (high - low) / scale,
-      Number.isFinite(remaining) ? remaining / scale : 0,
+      remaining / scale,
+      oscillation / scale,
     );
     return {
       drag,
@@ -729,6 +785,7 @@ async function solveGrid(
       seconds: (performance.now() - t0) / 1000,
       noise,
       cells: await solver.cells(),
+      rate: settling.rateToPassOn,
     };
   } finally {
     if (shown) options.onLive?.(null);
@@ -771,6 +828,7 @@ export function cpuTransonicEngine(cfl = 1000): TransonicEngine {
         return Promise.resolve();
       },
       drag: () => Promise.resolve(problem.drag(solver)),
+      residual: () => Promise.resolve(solver.densityResidualNorm()),
       cells: () => {
         const q = solver.conserved();
         const copy = new Euler2D(problem.config);
