@@ -7,7 +7,12 @@
 
 import { describe, expect, it } from 'vitest';
 import { formOf, type TotalDragFields } from '../../src/app/total-drag-display';
-import { basicFinnerClass, totalDragView, type TotalDragForm } from '../../src/app/total-drag';
+import {
+  basicFinnerClass,
+  noseComponentOf,
+  totalDragView,
+  type TotalDragForm,
+} from '../../src/app/total-drag';
 import {
   aheadOfBase,
   designForm,
@@ -366,8 +371,24 @@ describe('the presets', { timeout: 60_000 }, () => {
     }
   });
 
-  it('the 98 mm example asks about its rail buttons, and has no number today', () => {
+  it('the 98 mm example (the commonest layout) is served from Mach 1.6 to 3.0', () => {
     const design = preset('example-98').design;
+    for (const mach of [1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3]) {
+      const form = formFor(designForm(design, mach, NO));
+      // A solved nose stands in for the page's.
+      const nose = noseComponentOf({ value: 0.05 + 0.01 * mach, uncertainty: 2e-4, grids: 4 });
+      expect([mach, totalDragView(form, { kind: 'solved', component: nose }).kind]).toEqual([
+        mach,
+        mach >= 1.6 ? 'total' : 'refused',
+      ]);
+    }
+    // Its variant with rounded trailing edges, one click away, and back.
+    expect(preset('example-98').variant?.id).toBe('example-98-rounded');
+    expect(preset('example-98-rounded').variant?.id).toBe('example-98');
+  });
+
+  it('its variant with rounded trailing edges asks about its rail buttons, and has no number today', () => {
+    const design = preset('example-98-rounded').design;
     expect(designForm(design, 1.6, NO)).toEqual({
       kind: 'choose',
       excludable: [{ part: 'the 2 rail buttons', of: design.otherParts[0] }],

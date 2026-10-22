@@ -503,17 +503,26 @@ uncertainty, grids } }` for `noseComponentOf`, `band` being a half-width
 
 ## 9. Presets
 
-| Preset                                   | What                                                                                                                                    | What the logic gives today (nose stand-in for the claim)                                                                                                             |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Basic Finner (reference test rocket)     | the reference projectile whose free flights (DREV TM 9703) tested the total, 30 mm, exactly as 0011's (the body to six decimals)        | refused at Mach 1.0 to 1.6 (at 1.6 its wedges' thick trailing edges at the base); Estimate, tested class at 1.8 and 2.0; Estimate at 2.2 and 2.4; bounded 2.6 to 3.0 |
-| Example: 54 mm high-power rocket, 4 fins | tangent ogive, minimum diameter; four rectangular fins of 1/4 in (6.35 mm) sheet, both edges bevelled over 20 mm, at the base; Mach 2.4 | refused at 1.0 to 1.4 (the fins' own drag below 1.5); Estimate at 1.6 to 2.4 (at 1.6 by W1's rebuilt factor); Estimate, bounded at 2.6 to 3.0                        |
-| Example: 98 mm rocket, 3 fins            | the commonest hobby layout: three tapered swept plates with rounded edges at the base, two rail buttons (asked about first); Mach 1.6   | no number at any Mach number (a rounded trailing edge at the base), with the reasons and changes                                                                     |
+| Preset                                   | What                                                                                                                                                         | What the logic gives today (nose stand-in for the claim)                                                                                                             |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Basic Finner (reference test rocket)     | the reference projectile whose free flights (DREV TM 9703) tested the total, 30 mm, exactly as 0011's (the body to six decimals)                             | refused at Mach 1.0 to 1.6 (at 1.6 its wedges' thick trailing edges at the base); Estimate, tested class at 1.8 and 2.0; Estimate at 2.2 and 2.4; bounded 2.6 to 3.0 |
+| Example: 54 mm high-power rocket, 4 fins | tangent ogive, minimum diameter; four rectangular fins of 1/4 in (6.35 mm) sheet, both edges bevelled over 20 mm, at the base; Mach 2.4                      | refused at 1.0 to 1.4 (the fins' own drag below 1.5); Estimate at 1.6 to 2.4 (at 1.6 by W1's rebuilt factor); Estimate, bounded at 2.6 to 3.0                        |
+| Example: 98 mm rocket, 3 fins            | the commonest hobby layout: three tapered swept plates of 3/16 in sheet with rounded leading and square trailing edges at the base; Mach 1.6                 | refused at 1.0 to 1.4 (the fins' own drag below 1.5); a number from 1.6 to 3.0                                                                                       |
+| Example: 98 mm, rounded trailing edges   | the same rocket with rounded trailing edges too, and two rail buttons (asked about first); one click from the one above (a button under its curve), and back | no number at any Mach number (a rounded trailing edge at the base), with the reasons and changes                                                                     |
 
 Each example is labelled "Example, not a real rocket", and shows what the
-page does with a common rocket today: the second one honestly, with no
-number. The 54 mm example's fins were flat plates (a rounded leading and
-a square trailing edge) until main refused flat plates at the base
-(`e42d5d4`); bevelled sheet fins are as common, and served. Main's W1
+page does with a common rocket today. On the advisor's item 8
+(2026-10-22), the 98 mm example is the commonest layout the logic serves
+(a rounded leading and a square trailing edge), and the variant with
+rounded trailing edges, which
+gets no number, is one click from it (a button under its curve), with
+its reasons on every point. Its reasons were checked against the logic
+on this date: the body base (`fin-trailing-edge`) and the fins' trailing
+edge at the base (`rounded-trailing-edge`) at every Mach number, with the
+fins' own drag and leading edges below Mach 1.5; three fins at the base
+are not among them. The 54 mm example's fins were flat plates (a rounded
+leading and a square trailing edge) until main refused flat plates at the
+base (`e42d5d4`); bevelled sheet fins are as common, and served. Main's W1
 (`b86c308`, the rebuilt fins-on-base factor) serves it from Mach 1.6.
 
 ## 10. From 0012: kept, and superseded

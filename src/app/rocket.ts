@@ -857,6 +857,22 @@ function renderNotes(): void {
       ),
     );
   }
+  // A preset's variant, one click away (the 98 mm example with rounded trailing edges, and back).
+  const variant = PRESETS.find((p) => p.id === presetSelect.value)?.variant;
+  if (variant !== undefined) {
+    const button = h('button', {
+      className: 'button',
+      text: variant.button,
+      attrs: { type: 'button' },
+    });
+    button.addEventListener('click', () => {
+      presetSelect.value = variant.id;
+      presetSelect.dispatchEvent(new Event('change'));
+    });
+    notes.push(
+      h('div', { className: 'note note--choice' }, h('p', { text: variant.text }), button),
+    );
+  }
   if (imported !== null) {
     const shown = imported.notTaken.slice(0, 3);
     const more = imported.notTaken.length - shown.length;
