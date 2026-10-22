@@ -1,0 +1,10 @@
+# Owner decision 7.3 (2026-10-22): the family's own far boundaries moved to 224.2 radii at Mach
+# 1.0 and 1.01 (the 100.6-radius grid continued, nested), with 100.6 and 408.7 as its nested
+# neighbours (already run: n-*-base, n-*-f400). The cylinder's nested neighbours of the moved
+# family (5 and 20 calibers on 224.2 radii), base grid.
+BODY=cone7 MACH=1.0 FAR=100 CYL=10 REFS=1 TAG=m-cone7-m1.0-c5 DEPTH=0 MAXSTEPS=80000 NESTED={"farField":200,"cylinder":5}
+BODY=cone7 MACH=1.0 FAR=100 CYL=10 REFS=1 TAG=m-cone7-m1.0-c20 DEPTH=0 MAXSTEPS=80000 NESTED={"farField":200,"cylinder":20}
+BODY=ogive5 MACH=1.0 FAR=100 CYL=10 REFS=1 TAG=m-ogive5-m1.0-c5 DEPTH=0 MAXSTEPS=80000 NESTED={"farField":200,"cylinder":5}
+BODY=ogive5 MACH=1.0 FAR=100 CYL=10 REFS=1 TAG=m-ogive5-m1.0-c20 DEPTH=0 MAXSTEPS=80000 NESTED={"farField":200,"cylinder":20}
+BODY=cone7 MACH=1.01 FAR=100 CYL=10 REFS=1 TAG=m-cone7-m1.01-c5 DEPTH=0 MAXSTEPS=80000 NESTED={"farField":200,"cylinder":5}
+BODY=cone7 MACH=1.01 FAR=100 CYL=10 REFS=1 TAG=m-cone7-m1.01-c20 DEPTH=0 MAXSTEPS=80000 NESTED={"farField":200,"cylinder":20}

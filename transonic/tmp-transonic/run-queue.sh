@@ -4,7 +4,7 @@
 # job, e.g. "BODY=cone7 MACH=1.05 FAR=100 CYL=10 REFS=1,2,4". Jobs resume
 # from their results files, so the queue can simply be started again
 # after a restart. Lines starting with # are skipped.
-cd /home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15 || exit 1
+cd "$(dirname "$0")/../.." || exit 1 # the worktree root, wherever it is
 queue="$1"
 while IFS= read -r line; do
   case "$line" in
