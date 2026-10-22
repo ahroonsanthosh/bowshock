@@ -95,16 +95,25 @@ nose at Mach 2 on nj = 20 and 40, against the values recorded here) and
   its base, 0.34 to 0.40 along the cylinder: the numbers quoted in 0004,
   0006 and `secondCapture`'s comment.
 
-## The four-grid check (running)
+## The four-grid checks and the body length (running)
 
-The page verifies a value only from four grids (nj = 20 to 160), so a
-Von Karman case is checked there before it is served: the 1-caliber
-nose at Mach 2 on nj = 160, seeded from its nj = 80 fit
-(`runners/tmp-haackmoc/lane160.sh`, started 2026-10-22, about 30
-minutes per 1000 iterations on a shared core; nj = 80 took 13000).
-When `L1c1M2r8.json` is saved, `runners/tmp-haackmoc/check160.test.ts`
-gives the page's verdict on the four drags (orders of the two finest
-triples, band with the allowance) against the marches' references.
+The page verifies a value only from four grids (nj = 20 to 160), and no
+band of four grids has been measured on a Von Karman nose yet. Lanes
+(`runners/tmp-haackmoc/`, started 2026-10-22):
+
+- `lane160.sh`: the 1-caliber nose at Mach 2 on nj = 160, seeded from
+  its nj = 80 fit (about 30 minutes per 1000 iterations on a shared
+  core; nj = 80 took 13000).
+- `lane160b.sh`: the 3-caliber nose at Mach 2 on nj = 160 (fitted order
+  1.49, the riskier case), started once the transonic lanes end.
+- `lanecyl.sh`: the 3-caliber nose at Mach 2 with 0 and 30 calibers of
+  cylinder on nj = 20 and 40, against the 2-caliber family: the page
+  accepts 0 to 30 calibers of body, the references have 1 or 2.
+
+When a nj = 160 fit is saved, `check160.test.ts` (`TAG=L1c1M2` or
+`TAG=L3M2`) gives the page's verdict on the four drags (orders of the
+two finest triples, band with the allowance of 8e-4) against the
+marches' references and lowest bound.
 
 ## `runners/`
 
