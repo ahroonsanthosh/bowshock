@@ -570,6 +570,33 @@ case once it exists; the nose term from a recorded solve, plus one point
 solved end to end on SwiftShader), and the GPU drag-page test.
 Screenshots of the final build in `docs/research/interface/`.
 
+**As run for the review (2026-10-22, main `7d8221c` merged).** tsc,
+eslint, prettier and the build pass; the node tests of the interface, the
+3D view, the importer and the geometry pass (417, with main's own suites
+of the logic). The interface check passes at 390 and 1440 px on the app
+and About: every key and the tab order, V in a focused select, help by
+its key and Esc, no console errors, no serious or critical axe
+violations, no horizontal scroll. The numbers check is in two parts.
+`tests/app/numbers.test.ts`: for the Basic Finner inside its class (Mach
+2.0), an estimate outside it (the 54 mm example, 2.0), a bounded case
+(the Basic Finner, 2.8), a case the rebuilt factor bounds (flat plates at
+the base, 2.0) and a refused one (the Basic Finner, 1.4), every number,
+band, status and reason of the point as shown and of its CSV row equals
+the logic's, computed independently, for a nose outcome of the solve's
+own shape. `tests/gpu/app-page.test.ts`: the page in a browser, the
+points the logic refuses before any solve with its reasons in plain
+words, the view of the airflow with its truth notes, and the first
+point's provisional C_D equal to the logic's total at that grid's nose
+term (it passed on SwiftShader before W1; to run again). One point solved
+end to end on SwiftShader is not run: about 8 hours here (section 8.3).
+The GPU drag-page, app-page and builder tests, and the flow-view and
+render3d GPU tests, are to run again on this merge (the machine's solver
+lanes make them slow; they passed before it, apart from the drag-page
+test's reasons, which main has since updated for W1). The screenshots of
+this build are in `docs/research/interface/` (app and About at 390 and
+1440 px: the 3D view, the slice, the side view, Mach, glow; the phone's
+Curve tab).
+
 ## 13. Open questions for the owner
 
 1. **The 3D view's default look**: glowing shells with streamlines, the
