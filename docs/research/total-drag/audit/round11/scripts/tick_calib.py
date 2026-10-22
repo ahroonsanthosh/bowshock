@@ -76,6 +76,13 @@ CONFIG = {
                       xticks=[(0.0, 1465.5), (0.5, 1614.5)], xtick_side=1,
                       yticks=[(-0.2, 2012.6), (-0.4, 1912.6), (-0.6, 1813.5), (-0.8, 1715.5), (-1.0, 1616.9)],
                       ytick_side=1, tick_len=10, origin=(-0.5, 0.0)),
+    # Round 11. R&M 3427 fig. 18 (PDF p. 41): Re x 10^-6 ticks at 2, 4 and 6 rising from the x axis (Re 0 at
+    # the Cp_b axis); Cp_b ticks at -0.8, -0.75 (unlabelled) and -0.7 pointing right. The Cp_b axis is broken
+    # (a zig-zag) above the x axis, so the axes' crossing is not used for Cp_b
+    "r3427f18": dict(xaxis=(1638.5, 975, 1560), yaxis=(951.0, 1000, 1585),
+                     xticks=[(2.0, 1152.5), (4.0, 1351.0), (6.0, 1549.0)], xtick_side=1,
+                     yticks=[(-0.8, 1041.0), (-0.75, 1288.5), (-0.7, 1538.0)], ytick_side=1,
+                     tick_len=10, origin=(0.0, 0.0), y_origin=False),
 }
 
 
@@ -165,7 +172,8 @@ def main():
         p, n = tick_pos(ink, xax, "x", a, cfg["xtick_side"], L)
         xt.append((v, p))
         print("x tick %g at x %.2f (%d rows)" % (v, p, n))
-    yt = [(cfg["origin"][1], yo)]
+    # round 11: "y_origin": False leaves the axes' crossing out of the y fit (a broken y axis, fig. 18)
+    yt = [(cfg["origin"][1], yo)] if cfg.get("y_origin", True) else []
     for v, a in cfg["yticks"]:
         p, n = tick_pos(ink, yax, "y", a, cfg["ytick_side"], L)
         yt.append((v, p))
@@ -219,8 +227,8 @@ def main():
                               rms_y=float(np.sqrt(np.mean(ly ** 2))), max_x=float(np.abs(lx).max()),
                               max_y=float(np.abs(ly).max())),
         vvals=vvals, hvals=hvals, X=X.tolist(), Y=Y.tolist(),
-        mask_lines=[["v", int(np.argmin(np.abs(np.array(vvals) - cfg["origin"][0])))],
-                    ["h", int(np.argmin(np.abs(np.array(hvals) - cfg["origin"][1])))]])
+        mask_lines=[["v", int(np.argmin(np.abs(np.array(vvals) - cfg["origin"][0])))]] + (
+            [["h", int(np.argmin(np.abs(np.array(hvals) - cfg["origin"][1])))]] if cfg.get("y_origin", True) else []))
     rep["global"] = dict(affine_x=cV.tolist(), affine_y=cH.tolist())
     del rep["global_"]
     json.dump(rep, open(out, "w"), indent=1)

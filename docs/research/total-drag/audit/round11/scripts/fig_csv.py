@@ -35,6 +35,10 @@ META = {
                       conditions='caption: "Variation of pressure across base."; panel b), alpha = 2 deg; arrow '
                                  '"Upper surface" pointing to positive y/h',
                       curves={}, notes={}, tri_note=""),
+    "r3427f18": dict(figure="R&M 3427 fig. 18", x="Re_x1e-6", y="Cp_b",
+                     conditions='caption: "Effect of Reynolds number on base pressure."; M_inf = 0.8 (printed in '
+                                'the plot); abscissa "Re x 10^-6"',
+                     curves={}, notes={}, tri_note=""),
     "a51j25f7": dict(figure="NACA RM A51J25 fig. 7 (below M' 1.5)", x="M_prime", y="pb_over_pprime",
                      conditions='"AIRFOILS / BASE PRESSURE VERSUS MACH NUMBER"; profiles, data sources and '
                                 'planforms as in the legend (series column)',

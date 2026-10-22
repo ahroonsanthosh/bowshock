@@ -427,3 +427,29 @@ square 13 by 11 px):
   16b's first and third) look rounder than the others; at ordinary zoom all
   are diamonds, and all lie on the dashed M_inf 1.0 line.
 * The faired lines were not read.
+
+## R&M 3427 fig. 18 (PDF p. 41, printed p. 40)
+
+**As printed.** Caption: "Effect of Reynolds number on base pressure." In
+the plot: "M_inf = 0.8". Abscissa "Re x 10^-6", 0 at the Cp_b axis, ticks
+at 2, 4 and 6. Ordinate Cp_b with an arrow showing it increasing downwards:
+ticks at -0.8 (labelled), -0.75 (unlabelled) and -0.7 (labelled). The Cp_b
+axis is broken (a zig-zag) between -0.7 and the abscissa, so the abscissa
+is not at Cp_b 0. One solid line through three circles, no legend.
+
+**Calibration** (`readings/rm3427_fig18_calib.json`, `tick_calib.py` entry
+`r3427f18`, with a new option that leaves the axes' crossing out of the
+Cp_b fit because of the break). The two axes are not quite square to each
+other (tilts 0.23 and 0.60 deg), which the virtual grid follows. x: the
+crossing (Re 0) and the three ticks, 99.0 px per unit, residual 0.12 px,
+leave-one-out 0.31 px. Cp_b: the three ticks only, 4969 px per unit; their
+two intervals are 247.2 and 249.7 px, so leave-one-out is 2.13 px (0.0004 in
+Cp_b). 1 px = 0.010 in Re x 10^-6 and 0.0002 in Cp_b.
+
+**What was read** (`readings/rm3427_fig18.csv`): 3 circles, centred by
+outline fits (12 px across; scores 0.72 to 0.76): Re x 10^-6 = 2.328, 3.390
+and 4.511; Cp_b -0.7451, -0.7433 and -0.7412. Errors +-0.017 in Re x 10^-6
+and +-0.0009 in Cp_b. The line was not read.
+
+**Uncertain calls.** None beyond the Cp_b calibration from three ticks
+(the break in the axis rules out the abscissa as a fourth point).

@@ -183,3 +183,10 @@ FIGS["r3427f16b"] = dict(_F16, symbols=[
     ("b04-1", "sq", 1389.0, 1830.0), ("b04-2", "sq", 1429.0, 1820.0), ("b04-3", "sq", 1467.0, 1812.0),
     ("b04-4", "sq", 1508.0, 1809.0), ("b04-5", "sq", 1546.5, 1816.5),
 ])
+
+# R&M 3427 fig. 18 (PDF p. 41): "M_inf = 0.8", one line through three circles, no legend. Circle 12 px across;
+# template the first circle.
+FIGS["r3427f18"] = dict(half=8, outline_search=3.0, legend={"circ": (1181.0, 1312.0)},
+                        outline={"circ": ("circle", 5.25)}, series={"circ": "M_inf = 0.8 (circle)"}, symbols=[
+    ("re-1", "circ", 1181.0, 1312.0), ("re-2", "circ", 1287.5, 1321.0), ("re-3", "circ", 1397.0, 1330.0),
+])
