@@ -193,8 +193,11 @@ the 3-caliber nose at Mach 2. The spacing along the body follows the
 layer height, so the tip region of that nose (5 l) holds 53 of the 240
 lines of the family's base grid.
 The generator's boundary is generous at the body scale, where it keeps
-the angle blunt bodies need (the captured shock lies at a tenth of its
-height at the tip and 0.42 along the nose), so the fitted solver builds
+the angle blunt bodies need (on the 3-caliber nose at Mach 2, nj = 20,
+the first captured shock lies at 0.126 of the boundary's height at the
+tip and at 0.40 to 0.54 of it past the first percent of the nose, 0.42
+at its middle: `docs/research/two-scale-noses/ratio`), so the fitted
+solver builds
 the grid it starts on from the shock captured on this one (0006). The
 half-width and density tables are clustered at the tip (s proportional
 to the square of the sample index), the density of lines tabulated so

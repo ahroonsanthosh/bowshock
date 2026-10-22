@@ -74,6 +74,20 @@ nose at Mach 2 on nj = 20 and 40, against the values recorded here) and
   restores main's path). The dumps themselves (0.5 and 1.2 MB) are not
   kept.
 
+## `ratio/`
+
+- `ratio.test.ts` (with `vitest.config.ts`, run from `tests/tmp-ratio/`
+  of the merged code, 2026-10-22, after main 7d8221c was merged): the
+  first capture of a two-scale start as `bluntStart` runs it (3000 steps
+  from the free stream on the generator's base grid, nj = 20), and on
+  each line the captured shock's height (`capturedShockHeights`) over the
+  generator's boundary height. `ratio.json`: the 3-caliber Von Karman
+  nose with 2 calibers of cylinder at Mach 2 (`L=3 M=2 CYL=2`, the
+  defaults). Ratio 0.126 at the tip, rising to 0.54 at 1.9 percent of the
+  nose, 0.40 to 0.54 past its first percent, 0.42 at its middle, 0.40 at
+  its base, 0.34 to 0.40 along the cylinder: the numbers quoted in 0004,
+  0006 and `secondCapture`'s comment.
+
 ## `runners/`
 
 The throwaway vitest files and the lane scripts as they ran (paths are

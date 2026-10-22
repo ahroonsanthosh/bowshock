@@ -608,8 +608,10 @@ function bluntCapture(
  * generator's boundary is placed at the scale of the tip's blunt part, so
  * that the lines near the tip are sized for it, but is generous at the
  * body scale, where it keeps the angle the blunt bodies need: on a
- * 3-caliber Haack nose at Mach 2 the captured shock lies at a tenth of its
- * height at the tip and 0.42 along the nose, and the lines' spacing and
+ * 3-caliber Haack nose at Mach 2 (nj = 20) the first captured shock lies
+ * at 0.126 of the boundary's height at the tip and at 0.40 to 0.54 of it
+ * past the first percent of the nose (0.42 at its middle,
+ * docs/research/two-scale-noses/ratio), and the lines' spacing and
  * node fractions are sized from the boundary. So the grid the family
  * starts on is built on that captured shock, pushed out by
  * BOUNDARY_MARGIN of its height along each line and at least

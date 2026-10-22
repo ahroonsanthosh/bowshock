@@ -287,7 +287,8 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // tip. And it flattens away from the nose, so the arc is wider than the
   // nose's blunt part (docs/design/0004-grids.md). On a two-scale nose this
   // boundary is generous at the body scale (on a 3-caliber Haack nose at
-  // Mach 2 the captured shock lies at 0.42 of its height along the nose),
+  // Mach 2 the first captured shock lies at 0.40 to 0.54 of the height
+  // past the first percent of the nose),
   // so the fitted solver uses it only for a first captured solution and
   // passes the shock it finds back as `outerBoundary`.
   const outerAngle = (Math.PI / 2 + Math.asin(1 / mach)) / 2;

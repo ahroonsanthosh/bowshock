@@ -72,10 +72,11 @@ shock captured on the generator's own base grid, pushed out by half its
 height along each line and at least three base cells, is the outer
 boundary of the family's grids at every refinement, and the shock
 captured on the base grid built on it is the start (`secondCapture`).
-The generator's boundary is 8 times too far at the tip and 2.4 times
-along the nose, and the lines' spacing and node fractions are sized from
-it, so the fit on it would leave outer cells 10 times wider than tall
-at the tip. That boundary continues its last segment to the last line
+The generator's boundary is generous: on the 3-caliber nose at Mach 2
+(nj = 20) it lies 7.9 times as far from the body as the first captured
+shock at the tip and 1.8 to 2.5 times as far past the first percent of
+the nose (`docs/research/two-scale-noses/ratio`), and the lines' spacing
+and node fractions are sized from it. That boundary continues its last segment to the last line
 (the captured shock's last height is its last column's) and is
 smoothed by 50 passes of 1-2-1, which the start is not: at Mach 1.2 a
 captured shock 7 to 10 radii out is stepped enough after the start's 20
