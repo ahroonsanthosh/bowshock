@@ -390,3 +390,104 @@ correlation or line tracking, and by 1 px for dot finding.
 * m9-05: its dot is an elongated blob (14 by 8 px). The centre used
   (1086.7, 1300.9) is 2.7 px right of the outline centre (1084, 1300.5), or
   0.4 deg.
+
+## R&M 3427 (Nash, Quincey and Callinan), fig. 13: base holes 5, 6 and 7 only
+
+File `report.pdf`, SHA-256
+`0e8b4d6629eed639e87dca2ed99eb8bf715f24ca5d5bf01c6a165249ea3c5319`; fig. 13
+is on PDF p. 37 (printed p. 36), a 300 dpi CCITT page.
+
+**Scope.** Only the upper set, labelled "Pressure tappings on base", is read.
+The lower set ("On surface upstream of base", holes 1 to 4) is not registered
+yet and is not read. No crop, track or symbol list was made of it; the
+calibration uses the gridlines only. The overlay is cropped to the upper
+set.
+
+**As printed.**
+* Caption: "Pressures on basic model. (Zero incidence.)"
+* Abscissa M_inf, 0 to 1.2 by 0.2. Ordinate Cp, with an arrow showing Cp
+  increasing downwards: 0 at the bottom, -0.8 at the top gridline, and the
+  top frame at -0.90 (unlabelled).
+* Note in the figure: "(The positions of the pressure tappings are given in
+  Fig. 3)".
+
+**Which symbol is which hole.** There is no legend. The set has three lines,
+of circles (top, most negative), squares (middle) and triangles (bottom).
+Circled numbers 5, 6 and 7 carry leaders, and I worked out the assignment as
+follows.
+* **Leader 6 ends on the circle line.** Its arrow tip is at (1437, 1710),
+  where the circle line runs (pixel map); the square line is 14 px lower
+  there.
+* **Leader 7 ends on the triangle line,** from below, at about (1395, 1765).
+* **Leader 5 does not settle it.** It comes from above and stops at
+  (1383, 1731), 2 px above the circle line. To reach the square line, 10 px
+  lower, it would have had to cross the circle line. Since leader 6 already
+  names the circle line, 5 is the square line by elimination.
+* **The report's text and other figures agree.**
+  * Fig. 3 puts hole 6 at the centre of the base, hole 5 near the upper
+    surface and hole 7 below the centre.
+  * The text (section 3.3) says the subsonic peak suction is on the
+    centre-line of the base, and uses hole 6 for comparisons. The most
+    negative line is the circle line, which fits 6.
+  * Fig. 16a at M 0.8 has the centre point most negative (about -0.745). The
+    point on the positive y/h side is next (-0.73); fig. 16b marks positive
+    y/h as towards the upper surface. The negative side is least negative
+    (-0.70). Fig. 13 at M 0.8 reads circle -0.746, square -0.733 and
+    triangle -0.706, the same order: square = hole 5 (upper side) and
+    triangle = hole 7 (lower side).
+
+**Calibration** (`readings/rm3427_fig13_calib.json`).
+* Gridlines at M 0 to 1.2 and Cp 0 to -0.8; 34 of 35 intersections
+  measured. The missing one, (0, -0.8), is under the lettering box; no data
+  lie near it.
+* Leave-one-out 0.37 px in x and 0.64 px in y; one affine map leaves 0.0009
+  in M and 0.0018 in Cp.
+* Scale: 995 px per unit M and 988 px per unit Cp, so 1 px = 0.0010 in
+  each.
+* Points above the -0.8 gridline are extrapolated from the cell below. The
+  top frame then reads -0.901, which checks this.
+
+**Symbols: centring** (`symlists.py`, entry `r3427f13`).
+* The glyphs are small: circle 12 px, square 10 to 11 px, triangle 12 to
+  14 px. Most have lines attached or a gridline through them.
+* So each is centred by fitting an ideal outline of the measured size. The
+  centre is the point, in 0.25 px steps within +-4 px, that maximises the
+  ink on the outline stroke minus the ink inside (`outline_centre` in
+  `sym_refine.py`, gridline pixels left out).
+* The `glyph_score` column holds that outline score. Below 0.45 the error
+  is raised, as for a low correlation score.
+* h7-01 is centred by hand from its pixel map, because the M 0.4 gridline
+  runs through it and its base touches the Cp -0.6 gridline.
+* Errors are +-0.0018 in M and +-0.0021 in Cp (+-0.0031 and 0.0033 for low
+  scores).
+* Triangles are centred on their bounding box; the centroid would be about
+  2 px lower, making Cp 0.002 less negative.
+
+**What was read** (`readings/rm3427_fig13_base.csv`).
+* **17 circles (hole 6),** at M 0.20, 0.40, 0.50, 0.60, 0.70, 0.80, 0.85,
+  0.877, 0.90, 0.91, 0.926, 0.951, 0.965, 0.977, 1.001, 1.049 and 1.121.
+* **6 squares (hole 5),** at M 0.70, 0.80, 0.85, 0.876, 0.951 and 0.967.
+* **12 triangles (hole 7),** at M 0.40 to 0.965.
+* **Where symbols are missing.** No square is drawn at M 0.2 to 0.6 or at
+  0.90 and 0.91. There the hole 5 line is the hole 6 line: it leaves it at
+  h6-04 (M 0.6), runs into it at h6-09, and leaves again below h5-05. No
+  triangle is drawn at M 0.2.
+* **The peak.** The three lines rise to the top frame (Cp -0.901) near
+  M 0.97. A vertical line at M 0.977 +- 0.002 drops from there to circle
+  h6-14 (bottom end Cp -0.830). From h6-14 one line, through circles only,
+  runs to M 1.121. The text says the base readings "collapse ... to a
+  single curve" there.
+* **The faired lines** (hole 6, hole 5, hole 7 and the post-jump line), read
+  every 0.02 in M. There are 86 readings, with errors +-0.0017 to 0.017; the
+  largest are on the steep fall and rise from M 0.85 to 0.94.
+  * M 0.96 is not read on the three base lines: they end between symbols
+    there.
+  * 0.98 and 1.12 are not read on the post-jump line: they lie inside its
+    end symbols.
+
+**Uncertain calls.**
+* The hole 5 assignment rests on elimination, as above, with fig. 16a
+  confirming it.
+* The peak cluster (M 0.95 to 0.97). Six symbols lie within 30 px, three
+  lines converge there, and the lines' last 10 px before the frame are not
+  separable. h7-12 (score 0.43) carries the larger error.

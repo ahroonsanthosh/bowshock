@@ -32,6 +32,30 @@ META = {
                        "d-8": "nearest top-axis M0 tick 1.05 (0.326)",
                        "d-9": "between the top-axis ticks 1.10 (0.609) and 1.15 (0.860): M0 about 1.11"},
                 tri_note=""),
+    "r3427f13": dict(figure="R&M 3427 fig. 13 (upper set: base holes 5, 6, 7)", x="M_inf", y="Cp",
+                     conditions='caption: "Pressures on basic model. (Zero incidence.)"; set labelled "Pressure '
+                                'tappings on base"; "(The positions of the pressure tappings are given in Fig. 3)"',
+                     curves={"hole6": "hole 6 (circle line; labelled 6)",
+                             "hole5": "hole 5 (square line; labelled 5); the same line as hole 6 below M 0.6 "
+                                      "and from about M 0.88 to 0.93",
+                             "hole7": "hole 7 (triangle line; labelled 7)",
+                             "supersonic": "single line through circles after the jump at M 0.977"},
+                     notes={"h6-01": "only symbol at M 0.2 (no square or triangle)",
+                            "h6-02": "no square at M 0.4", "h6-03": "no square at M 0.5",
+                            "h6-04": "hole 5 line leaves the hole 6 line here; no square at M 0.6",
+                            "h6-09": "hole 5 line (from h5-04) joins here; no square at M 0.90 or 0.91",
+                            "h6-13": "highest point, on the top frame (Cp -0.901)",
+                            "h6-14": "first point after the vertical jump line (M 0.977); circles only from here",
+                            "h6-17": "last point"},
+                     skip_kinds=("start", "end"),
+                     extra=[dict(item="line", id="jump", series="vertical line at the end of the three base lines",
+                                 x=0.977, x_err=0.002, y=-0.901, y_err=0.002,
+                                 notes="top end, on the top frame, where the three lines meet"),
+                            dict(item="line", id="jump", series="vertical line at the end of the three base lines",
+                                 x=0.977, x_err=0.002, y=-0.830, y_err=0.003,
+                                 notes="bottom end, on the top of circle h6-14")],
+                     tri_note="triangle centre = bounding-box centre; its centroid is 2 px lower (Cp 0.002 less "
+                              "negative)"),
 }
 
 
@@ -53,6 +77,8 @@ def main():
             if r.get("value") is None:
                 continue
             kind = r.get("kind", "at abscissa")
+            if kind in m.get("skip_kinds", ()):
+                continue
             rows.append({"figure": m["figure"], "item": "curve" if kind == "at abscissa" else "curve " + kind,
                          "id": r["curve"], "series": m["curves"][r["curve"]], "symbol": "",
                          m["x"]: round(r["x"], 4), m["x"] + "_err": "" if kind == "at abscissa" else "5 px",
@@ -61,6 +87,11 @@ def main():
                          "centre_from": "track fit" if kind == "at abscissa" else "first or last tracked ink",
                          "glyph_score": "", "conditions": m["conditions"],
                          "notes": "" if kind == "at abscissa" else "where the tracked line ends"})
+    for e in m.get("extra", []):
+        rows.append({"figure": m["figure"], "item": e["item"], "id": e["id"], "series": e["series"], "symbol": "",
+                     m["x"]: e["x"], m["x"] + "_err": e["x_err"], m["y"]: e["y"], m["y"] + "_err": e["y_err"],
+                     "centre_from": "pixel map", "glyph_score": "", "conditions": m["conditions"],
+                     "notes": e["notes"]})
     with open(out, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         w.writeheader()

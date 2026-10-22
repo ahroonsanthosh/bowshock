@@ -22,6 +22,16 @@ import rm_calib  # noqa: E402
 Image.MAX_IMAGE_PIXELS = None
 
 CONFIG = {
+    # R&M 3427 fig. 13 (PDF p. 37, 300 dpi CCITT): M 0..1.2 every 0.2; Cp 0 (bottom) .. -0.8 every 0.2 (the top
+    # frame, about -0.9, is not labelled and is left out); lettering boxes excluded
+    "r3427f13": dict(
+        vvals=[round(0.2 * k, 1) for k in range(7)],
+        vpos=[670.5, 867.5, 1066.5, 1264.5, 1463.5, 1663.1, 1862.5],
+        hvals=[-0.8, -0.6, -0.4, -0.2, 0.0],
+        hpos=[1653.1, 1849.6, 2046.0, 2244.6, 2446.5],
+        box=(673, 1860, 1600, 2444),
+        exclude=[(673, 1240, 1570, 1675), (673, 1060, 1720, 1775), (990, 1375, 1975, 2240), (673, 1010, 2075, 2175)],
+        half=150),
     # NASA CR-149372 fig. 8a (PDF p. 25, native 300 dpi JBIG2 halftone): theta 0..180 every 30; Cp -1.6..1.2 every 0.4
     "cr8a": dict(
         vvals=[0, 30, 60, 90, 120, 150, 180],

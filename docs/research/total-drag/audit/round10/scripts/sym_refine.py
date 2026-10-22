@@ -93,6 +93,69 @@ def dot_centre(raw, B1, g, ax, ay):
     return float((w * gx).sum() / w.sum()), float((w * gy).sum() / w.sum()), best[0]
 
 
+def outline_offsets(shape):
+    """Sample offsets (0.25 px grid) on the stroke of an ideal glyph outline and
+    inside it. shape: ("circle", r), ("square", a) with a = half side, or
+    ("triangle", b, h) with half base b and apex-to-base height h, centred on
+    its bounding box; all measured to the stroke centre."""
+    st = np.arange(-12.0, 12.01, 0.25)
+    xx, yy = np.meshgrid(st, st)
+    kind = shape[0]
+    if kind == "circle":
+        d = np.hypot(xx, yy) - shape[1]
+    elif kind == "square":
+        d = np.maximum(np.abs(xx), np.abs(yy)) - shape[1]
+    else:
+        b, h = shape[1], shape[2]
+        # signed distance to the three edges, negative inside (sign fixed at the centroid)
+        p = [(0.0, -h / 2), (-b, h / 2), (b, h / 2)]
+        cx, cy = 0.0, h / 6
+        ds = []
+        for (x1, y1), (x2, y2) in ((p[0], p[1]), (p[1], p[2]), (p[2], p[0])):
+            nx, ny = (y2 - y1), -(x2 - x1)
+            L = np.hypot(nx, ny)
+            sg = 1.0 if ((cx - x1) * nx + (cy - y1) * ny) < 0 else -1.0
+            ds.append(sg * ((xx - x1) * nx + (yy - y1) * ny) / L)
+        d = np.max(ds, axis=0)
+    ring = np.abs(d) <= 1.0
+    inner = d <= -2.25
+    return (xx[ring], yy[ring]), (xx[inner], yy[inner])
+
+
+def outline_centre(B1, g, shape, ax, ay, search=4.0):
+    """Centre maximising ink on the ideal outline minus ink inside it (1 px
+    blurred ink, bilinear), over +-search px in 0.25 px steps; gridline
+    pixels are left out of both means."""
+    (rx, ry), (ix, iy) = outline_offsets(shape)
+    x0, y0 = int(round(ax)), int(round(ay))
+    W = int(search + 14)
+    gm = grid_mask(g, x0 - W, y0 - W, 2 * W + 1, 2 * W + 1, rad=2.5).astype(float)
+    best = (-9.0, None)
+    for dy in np.arange(-search, search + 0.01, 0.25):
+        for dx in np.arange(-search, search + 0.01, 0.25):
+            cx, cy = ax + dx, ay + dy
+            a = bilin(B1, cx + rx, cy + ry)
+            ma = bilin(gm, cx + rx - (x0 - W), cy + ry - (y0 - W)) < 0.5
+            b = bilin(B1, cx + ix, cy + iy)
+            mb = bilin(gm, cx + ix - (x0 - W), cy + iy - (y0 - W)) < 0.5
+            if ma.sum() < 10 or mb.sum() < 3:
+                continue
+            sc = a[ma].mean() - b[mb].mean()
+            if sc > best[0]:
+                best = (float(sc), (float(cx), float(cy)))
+    return best
+
+
+def bilin(img, x, y):
+    x0 = np.floor(x).astype(int)
+    y0 = np.floor(y).astype(int)
+    fx, fy = x - x0, y - y0
+    x0 = np.clip(x0, 0, img.shape[1] - 2)
+    y0 = np.clip(y0, 0, img.shape[0] - 2)
+    return (img[y0, x0] * (1 - fx) * (1 - fy) + img[y0, x0 + 1] * fx * (1 - fy) +
+            img[y0 + 1, x0] * (1 - fx) * fy + img[y0 + 1, x0 + 1] * fx * fy)
+
+
 def type_check(I, g, temps, x, y):
     out = {}
     for name, (t, ox, oy, h) in temps.items():
@@ -152,6 +215,14 @@ def main():
             rec["centre_px"] = opt["manual"]
             rec["centre_from"] = "pixel map (manual)"
             e = opt.get("e", 1.5)
+        elif typ in cfg.get("outline", {}):
+            osc, oc = outline_centre(B1, g, cfg["outline"][typ], ax, ay)
+            rec["centre_px"] = oc
+            rec["centre_from"] = "outline fit"
+            rec["glyph_ncc"] = rec["score"]
+            rec["score"] = round(osc, 3)
+            if osc < 0.45:
+                e = 1.5
         elif typ in dot_types:
             dx_, dy_, dsc = dot_centre(raw, B1, g, ax, ay)
             rec["centre_px"] = (dx_, dy_)

@@ -100,6 +100,32 @@ FIGS = {
         ("d-4", "circ", 1094.0, 984.5), ("d-5", "circ", 1168.9, 905.6), ("d-6", "circ", 1230.0, 782.2),
         ("d-7", "circ", 1292.0, 674.5), ("d-8", "circ", 1344.4, 575.6), ("d-9", "circ", 1400.0, 432.2),
     ]),
+    # R&M 3427 fig. 13 (PDF p. 37), upper set only ("Pressure tappings on base"; holes 5, 6, 7). There is
+    # no legend: the holes are named by circled numbers with leaders (6 to the circle line, 7 to the
+    # triangle line, 5 by elimination to the square line; see method.md). Templates are isolated plotted
+    # glyphs (bounding-box centres from pixel maps): circle h6-16, square h5-03, triangle h7-02.
+    # The glyphs are small (circle 12 px, square 10 to 11 px, triangle 14 by 14 px) and most have lines
+    # attached, so they are centred by fitting an ideal outline of the measured size ("outline"); the
+    # template correlation is kept as a check.
+    "r3427f13": dict(half=8, legend={"circ": (1711.5, 1759.5), "sq": (1515.0, 1712.5), "tri": (1166.0, 1832.5)},
+                     outline={"circ": ("circle", 5.0), "sq": ("square", 4.25), "tri": ("triangle", 6.0, 11.0)},
+                     series={"circ": "hole 6 (base centre-line)", "sq": "hole 5 (base, towards the upper surface)",
+                             "tri": "hole 7 (base, towards the lower surface)"}, symbols=[
+        ("h6-01", "circ", 867.5, 1837), ("h6-02", "circ", 1066, 1822), ("h6-03", "circ", 1163, 1808),
+        ("h6-04", "circ", 1266, 1793), ("h6-05", "circ", 1363, 1745), ("h6-06", "circ", 1463, 1706),
+        ("h6-07", "circ", 1512, 1700), ("h6-08", "circ", 1539, 1734), ("h6-09", "circ", 1563, 1735),
+        ("h6-10", "circ", 1572, 1726), ("h6-11", "circ", 1588, 1699), ("h6-12", "circ", 1613, 1579),
+        ("h6-13", "circ", 1626, 1560), ("h6-14", "circ", 1639, 1630), ("h6-15", "circ", 1663, 1671),
+        ("h6-16", "circ", 1711, 1759), ("h6-17", "circ", 1782, 1849),
+        ("h5-01", "sq", 1364, 1755), ("h5-02", "sq", 1464, 1719), ("h5-03", "sq", 1514, 1713),
+        ("h5-04", "sq", 1539, 1750), ("h5-05", "sq", 1611, 1617), ("h5-06", "sq", 1628, 1579),
+        ("h7-01", "tri", 1067, 1842, {"manual": (1069.0, 1839.5), "note": "the M 0.4 gridline runs through it "
+                                         "and its base touches the Cp -0.6 gridline: centre from the pixel map "
+                                         "(apex y 1834, base 1845, x 1062 to 1076)"}), ("h7-02", "tri", 1163, 1831), ("h7-03", "tri", 1266, 1814),
+        ("h7-04", "tri", 1367, 1780), ("h7-05", "tri", 1463, 1748), ("h7-06", "tri", 1513, 1735),
+        ("h7-07", "tri", 1538, 1766), ("h7-08", "tri", 1565, 1752), ("h7-09", "tri", 1575, 1737),
+        ("h7-10", "tri", 1590, 1709), ("h7-11", "tri", 1612, 1628), ("h7-12", "tri", 1626, 1599),
+    ]),
     # NASA CR-149372 fig. 8a (PDF p. 25). Legend: Mach 0.6 circle with centre
     # dot, 0.7 square with centre dot, 0.8 triangle (no dot), 0.9 hexagon with
     # centre dot; all Reynolds number .19x10^6, diameter 1.91 cm. Legend glyph

@@ -53,6 +53,25 @@ FIGS = {
                              widths={0: 4.0, 1: 4.0, 2: 4.0, 3: 4.0, 4: 6.0, 5: 6.0, 6: 6.0, 7: 6.0, 8: 6.0},
                              targets=[round(-1.5 + 0.1 * k, 1) for k in range(16)], extend_end=True),
     }, mask_boxes=[(1195, 650, 1263, 700)]),
+    # R&M 3427 fig. 13, upper set only (base holes 5, 6, 7). Below M 0.6 the hole 5 line is the hole 6 line
+    # (one line, circles only); from M 0.88 to about 0.93 it runs into the hole 6 line again (h5-04 to h6-09)
+    # and leaves it below h5-05. The three lines end at the top frame near M 0.97; a vertical line at
+    # M 0.975 drops from there to h6-14, from which one line (circles only) runs to M 1.12. Label circles
+    # and their leaders are masked.
+    "r3427f13": dict(box=(673, 1556, 1860, 1870), windows=(0.015, 0.0225, 0.03),
+                     mask_r={"circ": 8.0, "sq": 8.0, "tri": 9.0}, node_off={"circ": 8.0, "sq": 8.0, "tri": 9.0},
+                     mask_boxes=[(673, 1570, 1240, 1675), (673, 1720, 1060, 1775), (1300, 1655, 1360, 1710),
+                                 (1340, 1695, 1384, 1729), (1390, 1655, 1436, 1707), (1385, 1770, 1440, 1820)],
+                     curves={
+        "hole6": dict(nodes=["h6-%02d" % i for i in range(1, 14)], width=5.0,
+                      targets=[round(0.22 + 0.02 * k, 2) for k in range(38)]),
+        "hole5": dict(nodes=["h6-04", "h5-01", "h5-02", "h5-03", "h5-04", "h6-09", "h6-10", "h6-11", "h5-05",
+                             "h5-06"], width=5.0, targets=[round(0.62 + 0.02 * k, 2) for k in range(18)]),
+        "hole7": dict(nodes=["h7-%02d" % i for i in range(1, 13)], width=5.0,
+                      targets=[round(0.42 + 0.02 * k, 2) for k in range(28)]),
+        "supersonic": dict(nodes=["h6-14", "h6-15", "h6-16", "h6-17"], width=5.0,
+                           targets=[round(0.98 + 0.02 * k, 2) for k in range(8)]),
+    }),
     # NASA CR-149372 fig. 8a: one faired curve per Mach number through its symbols (halftone scan:
     # 2 px blur; symbol masks and node offsets sized per symbol type).
     # From theta 92.5 deg on the curves are nearly flat and the symbols (up to 7 deg wide) hide much of
