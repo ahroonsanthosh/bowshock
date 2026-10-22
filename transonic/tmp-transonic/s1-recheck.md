@@ -1,0 +1,19 @@
+| Family | r | Checks | Fitted windows | Decaying | Bound, of the drag |
+| --- | --- | --- | --- | --- | --- |
+| cone7-m1.2-f100-c10 | 1 | 14 | 0 | true | 0.00e+0 |
+| cone7-m1.2-f100-c10 | 2 | 7 | 0 | true | 0.00e+0 |
+| cone7-m1.2-f100-c10 | 4 | 7 | 0 | true | 0.00e+0 |
+| cone7-m1.2-f100-c10 | 8 | 7 | 0 | true | 0.00e+0 |
+| cone7-m1.1-f100-c10 | 1 | 19 | 0 | true | 0.00e+0 |
+| cone7-m1.1-f100-c10 | 2 | 16 | 0 | true | 0.00e+0 |
+| cone7-m1.1-f100-c10 | 4 | 16 | 0 | true | 0.00e+0 |
+| cone7-m1.1-f100-c10 | 8 | 14 | 0 | true | 0.00e+0 |
+| cone7-m1.1-f100-c10 | 16 | 18 | 0 | true | 0.00e+0 |
+| cone7-m1.05-f100-c10 | 1 | 101 | 2 | true | 9.02e-8 |
+| cone7-m1.05-f100-c10 | 2 | 83 | 2 | true | 6.23e-8 |
+| cone7-m1.05-f100-c10 | 4 | 71 | 2 | true | 5.92e-8 |
+| cone7-m1.05-f100-c10 | 8 | 3 | 0 | true | 0.00e+0 |
+| ogive3-m1.2-f100-c10 | 1 | 16 | 0 | true | 0.00e+0 |
+| ogive3-m1.2-f100-c10 | 2 | 9 | 0 | true | 0.00e+0 |
+| ogive3-m1.2-f100-c10 | 4 | 11 | 0 | true | 0.00e+0 |
+| ogive3-m1.2-f100-c10 | 8 | 11 | 0 | true | 0.00e+0 |
