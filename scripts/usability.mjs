@@ -106,6 +106,16 @@ async function shows(page, selector, pattern, inWindow) {
 const inView = (page, selector, pattern) => shows(page, selector, pattern, true);
 const onPage = (page, selector, pattern) => shows(page, selector, pattern, false);
 
+/** Whether the text wanted is in the document at all (in a phone sheet's hidden tab, say). */
+const inDocument = (page, selector, pattern) =>
+  page.evaluate(
+    ({ selector, pattern }) =>
+      Array.from(document.querySelectorAll(selector)).some((el) =>
+        new RegExp(pattern).test(el.textContent ?? ''),
+      ),
+    { selector, pattern },
+  );
+
 async function until(test, seconds) {
   const start = Date.now();
   while ((Date.now() - start) / 1000 < seconds) {
@@ -142,6 +152,7 @@ const PAGES = {
         name: 'preset',
         steps: [{ select: ['#preset', 'example-54'] }],
         expect: { selector: '#curve-rocket', pattern: 'Example: 54 mm' },
+        reveal: true,
       },
       {
         name: 'import',
@@ -383,7 +394,10 @@ async function measure(browser, base, id, spec, size) {
   }
   if (tasks.help !== undefined) {
     await act(page, tasks.help);
-    const open = await page.evaluate(() => document.querySelector('dialog')?.open === true);
+    // Any dialog open (the app has a closed drawer before the help).
+    const open = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('dialog')).some((d) => d.open),
+    );
     actions.openHelp = open ? tasks.help.length : null;
   }
   const fields =
@@ -412,8 +426,12 @@ async function measure(browser, base, id, spec, size) {
     }
     const extra = await act(fresh, check.steps);
     const steps = check.steps.reduce((n, step) => n + (step.upload !== undefined ? 2 : 1), 0);
+    // Shown, or (where a tap reveals it) in a tab not shown: the tap is then counted.
     const seen = await until(
-      () => onPage(fresh, check.expect.selector, check.expect.pattern),
+      async () =>
+        (await onPage(fresh, check.expect.selector, check.expect.pattern)) ||
+        (check.reveal === true &&
+          (await inDocument(fresh, check.expect.selector, check.expect.pattern))),
       check.wait ?? 120,
     );
     let count = seen === null ? null : steps + extra;

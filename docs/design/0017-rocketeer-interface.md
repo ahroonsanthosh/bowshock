@@ -591,6 +591,44 @@ and its box inside the window). It records the timings it can on
 SwiftShader. Before launch, the owner may run the same five tasks with
 three to five rocketeers, unaided, noting where each one stops.
 
+### 11.1 Measured (2026-10-22)
+
+`scripts/usability.mjs` on this branch's build (`fbd8426`, main's README
+merged), headless Chromium on SwiftShader, on the shared 4-core machine;
+the raw numbers are in `docs/research/interface/usability-app.json`. An
+action is a click, tap, key press or scroll, counted only once what the
+task is for is in view; on the phone a tap on the sheet's tab that holds
+the result counts as one more action. Two faults of the measure itself
+were fixed first: it looked only at the page's first dialog (the app's
+closed drawer comes before the help), and it gave no count to a task
+whose result lay in the phone sheet's other tab.
+
+| Target                                                                            | 390 by 844                    | 1440 by 900       | Met                                               |
+| --------------------------------------------------------------------------------- | ----------------------------- | ----------------- | ------------------------------------------------- |
+| U1 the Basic Finner's curve, no action; its first value (provisional, first grid) | 0 actions; 25.1 s             | 0 actions; 27.4 s | yes                                               |
+| U1 another preset (choose it, then see its curve)                                 | 2 (the choice, the Curve tab) | 1                 | yes at 1440; the phone's extra tap is the sheet's |
+| U2 fields of a rocket by hand, in the builder                                     | 13                            | 13                | yes (at most 14)                                  |
+| U3 an .ork to its notes on the curve (Import, the file)                           | 3 (the Curve tab)             | 2                 | yes at 1440                                       |
+| U4 the current point's C_D, band and status in view                               | 0 actions                     | 0 actions         | yes                                               |
+| The next point of the curve                                                       | 2                             | 1                 |                                                   |
+| U9 CSV                                                                            | 2 (the Curve tab)             | 1                 | yes at 1440                                       |
+| U9 PNG (key K)                                                                    | 1                             | 1                 | yes                                               |
+| The side view (key V)                                                             | 1                             | 1                 |                                                   |
+| Help (key H)                                                                      | 1                             | 1                 |                                                   |
+| U8 page height (no page scroll)                                                   | 844                           | 900               | yes                                               |
+| Words shown; a tab away                                                           | 217; 132                      | 340; 0            |                                                   |
+| Controls shown                                                                    | 31                            | 39                |                                                   |
+| Longest paragraph shown, words                                                    | 28                            | 43                |                                                   |
+
+U5 (each status sentence at most 32 words) is checked word for word by
+`tests/app/status-words.test.ts`; the 43-word paragraph at 1440 px is
+not a status sentence. U10: `scripts/interface-check.mjs` on the same
+build, app and About at 390 and 1440 px: every key and tab stop works,
+no console errors, no serious or critical axe violations. U6 is checked
+by `tests/gpu/app-page.test.ts`; U7 is seen in the interface check's
+screenshots (calibres, grid and steps on the first screen); neither by this measure. The times are SwiftShader's on a loaded
+machine; a hardware GPU has not been measured.
+
 ## 12. Build order and checks
 
 Small commits, each tested: the model (with this plan); the adapter and
