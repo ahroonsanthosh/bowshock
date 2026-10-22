@@ -66,7 +66,10 @@ export interface NoseDragOutcome {
   readonly status: NoseDragStatus;
   /** The finest grid's wave drag coefficient. */
   readonly value?: number;
-  /** The whole band, absolute. */
+  /**
+   * The band's half-width, absolute: the value lies within value +- band
+   * (VerifiedDrag.uncertainty's convention, for both solvers).
+   */
   readonly band?: number;
   /** The label shown with the value, or the reason there is none. */
   readonly text: string;

@@ -154,7 +154,11 @@ export type TransonicDrag =
       readonly kind: 'solved';
       /** The finest grid's drag coefficient. */
       readonly value: number;
-      /** The whole band, absolute: the sum of `parts`. */
+      /**
+       * The band's half-width, absolute: the drag lies within value +- band,
+       * the convention of VerifiedDrag.uncertainty. It is the sum of `parts`,
+       * each a half-width.
+       */
       readonly band: number;
       readonly parts: {
         readonly grids: number;
@@ -559,4 +563,43 @@ export function cpuTransonicEngine(cfl = 1000): TransonicEngine {
       destroy: () => undefined,
     });
   };
+}
+
+/**
+ * The nose term a transonic solve gives the total drag, in the shape the
+ * page's noseComponentOf takes ({ value, uncertainty, grids }), so that
+ * the transonic nose reaches the total exactly as the fitted one does and
+ * the page never combines bands itself: `uncertainty` is the band's
+ * half-width (value +- uncertainty), as for the fitted solver. A refusal
+ * or a grid that did not converge gives a refusal with the reason; a solve
+ * stopped gives null (no result: the total waits), as noseStateOf does.
+ */
+export type TransonicNoseTerm =
+  | {
+      readonly kind: 'solved';
+      readonly solve: {
+        readonly value: number;
+        readonly uncertainty: number;
+        readonly grids: number;
+      };
+    }
+  | { readonly kind: 'refused'; readonly message: string };
+
+export function transonicNoseTerm(result: TransonicDrag): TransonicNoseTerm | null {
+  switch (result.kind) {
+    case 'cancelled':
+      return null;
+    case 'refused':
+      return { kind: 'refused', message: `the nose wave drag has no band: ${result.message}` };
+    case 'not-converged':
+      return {
+        kind: 'refused',
+        message: `the nose wave drag was not solved: the grid at refinement ${result.refinement} did not converge (${result.message})`,
+      };
+    case 'solved':
+      return {
+        kind: 'solved',
+        solve: { value: result.value, uncertainty: result.band, grids: result.levels.length },
+      };
+  }
 }

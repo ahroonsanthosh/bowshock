@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   SETTLE_NOISE,
   TRANSONIC_DRAG_FLOOR,
+  transonicNoseTerm,
   verifiedTransonicDrag,
   type TransonicEngine,
 } from '../../src/analysis/transonic-drag';
+import { noseComponentOf } from '../../src/app/total-drag';
 import type { TransonicProblem } from '../../src/analysis/transonic-flow';
 import type { Body } from '../../src/geometry/body';
 
@@ -89,6 +91,29 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     expect(result.noise).toBeGreaterThanOrEqual(SETTLE_NOISE);
     expect(result.reference.exact).toBe(false);
     expect(result.label).toMatch(/no exact reference/);
+  });
+
+  it('the nose term for the total: the band as a half-width, as the fitted solver gives it', async () => {
+    const result = await verifiedTransonicDrag(
+      ogive,
+      options,
+      synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 }),
+    );
+    expect(result.kind).toBe('solved');
+    if (result.kind !== 'solved') return;
+    const term = transonicNoseTerm(result);
+    expect(term).toEqual({
+      kind: 'solved',
+      solve: { value: result.value, uncertainty: result.band, grids: 4 },
+    });
+    if (term?.kind !== 'solved') return;
+    const component = noseComponentOf(term.solve);
+    expect(component.low).toBeCloseTo(result.value - result.band, 15);
+    expect(component.high).toBeCloseTo(result.value + result.band, 15);
+    expect(transonicNoseTerm({ kind: 'cancelled', levels: [] })).toBeNull();
+    expect(
+      transonicNoseTerm({ kind: 'refused', reason: 'mach-1', message: 'not yet', levels: [] }),
+    ).toEqual({ kind: 'refused', message: 'the nose wave drag has no band: not yet' });
   });
 
   it('a cone whose conical flow is supersonic carries the exact-solution note', async () => {
