@@ -6,7 +6,7 @@
 
 import type { DisplayBlock, Tone } from './total-drag-display';
 
-const TONE_CLASS: Record<Tone, string> = { plain: '', ok: 'ok', warn: 'warn', muted: 'scope' };
+const TONE_CLASS: Record<Tone, string> = { plain: '', warn: 'warn', muted: 'scope' };
 
 function el(tag: string, text = '', className = ''): HTMLElement {
   const node = document.createElement(tag);

@@ -1,0 +1,343 @@
+[
+ {
+  "shot": "DA95021318",
+  "mach": 1.799,
+  "cx0": 0.594,
+  "cd": 0.61337,
+  "low": 0.52964,
+  "high": 0.72961,
+  "inputLow": -0.04664,
+  "inputHigh": 0.01551,
+  "residual": -0.0316,
+  "tolerance": [
+   -0.2455,
+   0.2347
+  ],
+  "toleranceHighWithoutWall": 0.2094,
+  "pass": true,
+  "bodyBase": [
+   0.21873,
+   0.15339,
+   0.2622
+  ],
+  "components": {
+   "nose wave drag": 0.11054,
+   "body friction": 0.08038,
+   "fin friction": 0.03604,
+   "fin leading edges": 0.04394,
+   "fin wave drag": 0.01655,
+   "body base": 0.21873,
+   "fin trailing-edge base": 0.10719
+  }
+ },
+ {
+  "shot": "DA95021529",
+  "mach": 1.846,
+  "cx0": 0.598,
+  "cd": 0.59523,
+  "low": 0.51642,
+  "high": 0.70632,
+  "inputLow": -0.04467,
+  "inputHigh": 0.01596,
+  "residual": 0.0046,
+  "tolerance": [
+   -0.2404,
+   0.2333
+  ],
+  "toleranceHighWithoutWall": 0.2065,
+  "pass": true,
+  "bodyBase": [
+   0.20816,
+   0.14733,
+   0.24817
+  ],
+  "components": {
+   "nose wave drag": 0.10897,
+   "body friction": 0.07911,
+   "fin friction": 0.03546,
+   "fin leading edges": 0.04422,
+   "fin wave drag": 0.01602,
+   "body base": 0.20816,
+   "fin trailing-edge base": 0.1033
+  }
+ },
+ {
+  "shot": "DA95021308",
+  "mach": 1.85,
+  "cx0": 0.567,
+  "cd": 0.59398,
+  "low": 0.51557,
+  "high": 0.70471,
+  "inputLow": -0.0448,
+  "inputHigh": 0.01601,
+  "residual": -0.0454,
+  "tolerance": [
+   -0.2404,
+   0.2333
+  ],
+  "toleranceHighWithoutWall": 0.2063,
+  "pass": true,
+  "bodyBase": [
+   0.20726,
+   0.14683,
+   0.24696
+  ],
+  "components": {
+   "nose wave drag": 0.10885,
+   "body friction": 0.07916,
+   "fin friction": 0.03549,
+   "fin leading edges": 0.04424,
+   "fin wave drag": 0.01598,
+   "body base": 0.20726,
+   "fin trailing-edge base": 0.10301
+  }
+ },
+ {
+  "shot": "DA95021328",
+  "mach": 2.348,
+  "cx0": 0.5,
+  "cd": 0.48114,
+  "low": 0.41873,
+  "high": 0.5717,
+  "inputLow": -0.03302,
+  "inputHigh": 0.02042,
+  "residual": 0.0392,
+  "tolerance": [
+   -0.2204,
+   0.2644
+  ],
+  "toleranceHighWithoutWall": 0.222,
+  "pass": true,
+  "bodyBase": [
+   0.15201,
+   0.10447,
+   0.18435
+  ],
+  "components": {
+   "nose wave drag": 0.09677,
+   "body friction": 0.06878,
+   "fin friction": 0.03089,
+   "fin leading edges": 0.04631,
+   "fin wave drag": 0.01215,
+   "body base": 0.15201,
+   "fin trailing-edge base": 0.07423
+  }
+ },
+ {
+  "shot": "DA95020907",
+  "mach": 2.364,
+  "cx0": 0.478,
+  "cd": 0.47866,
+  "low": 0.41666,
+  "high": 0.56873,
+  "inputLow": -0.03292,
+  "inputHigh": 0.02057,
+  "residual": -0.0014,
+  "tolerance": [
+   -0.2204,
+   0.2649
+  ],
+  "toleranceHighWithoutWall": 0.2219,
+  "pass": true,
+  "bodyBase": [
+   0.15083,
+   0.10364,
+   0.18294
+  ],
+  "components": {
+   "nose wave drag": 0.09647,
+   "body friction": 0.06863,
+   "fin friction": 0.03083,
+   "fin leading edges": 0.04636,
+   "fin wave drag": 0.01206,
+   "body base": 0.15083,
+   "fin trailing-edge base": 0.07347
+  }
+ },
+ {
+  "shot": "DA95021317",
+  "mach": 2.414,
+  "cx0": 0.473,
+  "cd": 0.46994,
+  "low": 0.40944,
+  "high": 0.55801,
+  "inputLow": -0.03201,
+  "inputHigh": 0.0209,
+  "residual": 0.0065,
+  "tolerance": [
+   -0.2189,
+   0.2656
+  ],
+  "toleranceHighWithoutWall": 0.2212,
+  "pass": true,
+  "bodyBase": [
+   0.14709,
+   0.10112,
+   0.17836
+  ],
+  "components": {
+   "nose wave drag": 0.09558,
+   "body friction": 0.06749,
+   "fin friction": 0.03031,
+   "fin leading edges": 0.0465,
+   "fin wave drag": 0.01179,
+   "body base": 0.14709,
+   "fin trailing-edge base": 0.07118
+  }
+ },
+ {
+  "shot": "DA95020927",
+  "mach": 2.663,
+  "cx0": 0.446,
+  "cd": 0.43137,
+  "low": 0.37631,
+  "high": 0.51225,
+  "inputLow": -0.02881,
+  "inputHigh": 0.02259,
+  "residual": 0.0339,
+  "tolerance": [
+   -0.2699,
+   0.2846
+  ],
+  "toleranceHighWithoutWall": 0.2322,
+  "pass": true,
+  "bodyBase": [
+   0.12939,
+   0.08627,
+   0.15958
+  ],
+  "components": {
+   "nose wave drag": 0.09168,
+   "body friction": 0.06321,
+   "fin friction": 0.02845,
+   "fin leading edges": 0.0471,
+   "fin wave drag": 0.01064,
+   "body base": 0.12939,
+   "fin trailing-edge base": 0.0609
+  }
+ },
+ {
+  "shot": "DA95020906",
+  "mach": 2.741,
+  "cx0": 0.4,
+  "cd": 0.4215,
+  "low": 0.36798,
+  "high": 0.50018,
+  "inputLow": -0.02786,
+  "inputHigh": 0.02303,
+  "residual": -0.051,
+  "tolerance": [
+   -0.2686,
+   0.286
+  ],
+  "toleranceHighWithoutWall": 0.2314,
+  "pass": true,
+  "bodyBase": [
+   0.12553,
+   0.0836,
+   0.15491
+  ],
+  "components": {
+   "nose wave drag": 0.09061,
+   "body friction": 0.06183,
+   "fin friction": 0.02784,
+   "fin leading edges": 0.04725,
+   "fin wave drag": 0.01033,
+   "body base": 0.12553,
+   "fin trailing-edge base": 0.05811
+  }
+ },
+ {
+  "shot": "DA95020916",
+  "mach": 2.749,
+  "cx0": 0.452,
+  "cd": 0.42056,
+  "low": 0.36721,
+  "high": 0.49904,
+  "inputLow": -0.02778,
+  "inputHigh": 0.02308,
+  "residual": 0.0747,
+  "tolerance": [
+   -0.2684,
+   0.2861
+  ],
+  "toleranceHighWithoutWall": 0.2313,
+  "pass": true,
+  "bodyBase": [
+   0.12514,
+   0.08334,
+   0.15443
+  ],
+  "components": {
+   "nose wave drag": 0.0905,
+   "body friction": 0.06172,
+   "fin friction": 0.02779,
+   "fin leading edges": 0.04727,
+   "fin wave drag": 0.0103,
+   "body base": 0.12514,
+   "fin trailing-edge base": 0.05784
+  }
+ },
+ {
+  "shot": "DA95030603",
+  "mach": 2.969,
+  "cx0": 0.385,
+  "cd": 0.39509,
+  "low": 0.34591,
+  "high": 0.46771,
+  "inputLow": -0.02533,
+  "inputHigh": 0.02411,
+  "residual": -0.0255,
+  "tolerance": [
+   -0.2004,
+   0.2567
+  ],
+  "toleranceHighWithoutWall": 0.1956,
+  "pass": true,
+  "bodyBase": [
+   0.11518,
+   0.07663,
+   0.14221
+  ],
+  "components": {
+   "nose wave drag": 0.08783,
+   "body friction": 0.05797,
+   "fin friction": 0.02613,
+   "fin leading edges": 0.04764,
+   "fin wave drag": 0.00953,
+   "body base": 0.11518,
+   "fin trailing-edge base": 0.05081
+  }
+ },
+ {
+  "shot": "DA95022205",
+  "mach": 2.97,
+  "cx0": 0.376,
+  "cd": 0.39507,
+  "low": 0.3459,
+  "high": 0.46768,
+  "inputLow": -0.02534,
+  "inputHigh": 0.02413,
+  "residual": -0.0483,
+  "tolerance": [
+   -0.2004,
+   0.2567
+  ],
+  "toleranceHighWithoutWall": 0.1956,
+  "pass": true,
+  "bodyBase": [
+   0.11514,
+   0.07661,
+   0.14215
+  ],
+  "components": {
+   "nose wave drag": 0.08781,
+   "body friction": 0.05801,
+   "fin friction": 0.02615,
+   "fin leading edges": 0.04764,
+   "fin wave drag": 0.00953,
+   "body base": 0.11514,
+   "fin trailing-edge base": 0.05078
+  }
+ }
+]

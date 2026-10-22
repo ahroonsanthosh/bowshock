@@ -1,0 +1,54 @@
+figure,series,x,y,err_y,how
+TN 3819 fig. 35,free_flight,1,-0.2998,0.0003,curve; n=10
+TN 3819 fig. 35,free_flight,1.05,-0.2913,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.1,-0.2840,0.0003,curve; n=12
+TN 3819 fig. 35,free_flight,1.15,-0.2793,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.2,-0.2750,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.25,-0.2720,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.3,-0.2703,0.0003,curve; n=12
+TN 3819 fig. 35,free_flight,1.35,-0.2687,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.4,-0.2675,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.45,-0.2665,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.5,-0.2659,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.55,-0.2656,0.0003,curve; n=16
+TN 3819 fig. 35,free_flight,1.6,-0.2654,0.0003,curve; n=12
+TN 3819 fig. 35,free_flight,1.65,-0.2651,0.0020,curve; n=16; extra 0.002
+TN 3819 fig. 35,free_flight,1.7,-0.2611,0.0020,curve; n=8; extra 0.002
+TN 3819 fig. 35,no_fins_estimate,1,-0.1847,0.0003,curve; n=10
+TN 3819 fig. 35,no_fins_estimate,1.2,-0.1836,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,1.4,-0.1775,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,1.5,-0.1728,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,1.6,-0.1679,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,1.8,-0.1568,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,2,-0.1447,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,2.2,-0.1323,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,2.4,-0.1194,0.0004,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,2.6,-0.1120,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,2.8,-0.1040,0.0003,curve; n=15
+TN 3819 fig. 35,no_fins_estimate,3,-0.0965,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,3.2,-0.0898,0.0003,curve; n=16
+TN 3819 fig. 35,no_fins_estimate,3.4,-0.0835,0.0003,curve; n=13
+TN 3819 fig. 35,free_flight,1.72,-0.2582,0.0020,guided column read; n=7; extra 0.002
+TN 3819 fig. 35,free_flight,1.75,-0.2503,0.0020,guided column read; n=7; extra 0.002
+TN 3819 fig. 35,free_flight,1.8,-0.2369,0.0003,guided column read; n=3
+TN 3819 fig. 35,free_flight,1.85,-0.2225,0.0003,guided column read; n=7
+TN 3819 fig. 35,free_flight,1.9,-0.2108,0.0003,guided column read; n=10
+TN 3819 fig. 35,free_flight,1.95,-0.1999,0.0003,guided column read; n=7
+TN 3819 fig. 35,free_flight,2,-0.1897,0.0030,guided column read; n=12; extra 0.003
+TN 3819 fig. 35,free_flight,2.05,-0.1819,0.0030,guided column read; n=7; extra 0.003
+TN 3819 fig. 35,free_flight,2.1,-0.1746,0.0030,guided column read; n=18; extra 0.003
+TN 3819 fig. 35,free_flight,2.15,-0.1693,0.0030,guided column read; n=7; extra 0.003
+TN 3819 fig. 35,free_flight,2.2,-0.1633,0.0031,guided column read; n=18; extra 0.003
+TN 3819 fig. 35,free_flight,2.25,-0.1562,0.0030,guided column read; n=5; extra 0.003
+TN 3819 fig. 35,free_flight,2.3,-0.1515,0.0003,guided column read; n=4
+TN 3819 fig. 35,free_flight,2.35,-0.1466,0.0003,guided column read; n=7
+TN 3819 fig. 35,free_flight,2.4,-0.1425,0.0003,guided column read; n=18
+TN 3819 fig. 35,free_flight,2.45,-0.1387,0.0003,guided column read; n=7
+TN 3819 fig. 35,free_flight,2.5,-0.1353,0.0003,guided column read; n=18
+TN 3819 fig. 35,free_flight,2.55,-0.1321,0.0003,guided column read; n=7
+TN 3819 fig. 35,ref26_circle_with_fins,1.5008,-0.3251,0.0003,symbol circle 43 px (score 0.88); x err 0.0013
+TN 3819 fig. 35,ref26_circle_no_fins_flagged,1.5018,-0.1940,0.0003,symbol circle 43 px (score 0.93); x err 0.0013; flag excluded by the template
+TN 3819 fig. 35,ref26_square_with_fins,2.0015,-0.2076,0.0003,symbol square 39 px (score 0.91); x err 0.0013
+TN 3819 fig. 35,ref26_square_no_fins_flagged,2.0012,-0.1502,0.0003,symbol square 39 px (score 0.84); x err 0.0013; flag excluded by the template
+TN 3819 fig. 35,9in_diamond_with_fins,2.4046,-0.1647,0.0003,symbol diamond 55 px (score 0.78); x err 0.0013
+TN 3819 fig. 35,9in_diamond_no_fins_flagged,2.4108,-0.1202,0.0003,symbol diamond 55 px (score 0.93); x err 0.0016; on the no-fins curve; flag excluded

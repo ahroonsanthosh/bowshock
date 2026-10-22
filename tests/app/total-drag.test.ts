@@ -8,9 +8,12 @@
  */
 
 import { beforeAll, describe, expect, it } from 'vitest';
+import { ALTITUDE_RANGE, standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
+import { flightConditionOf } from '../../src/app/flight-condition';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
-import { singleWedge } from '../../src/fins/section';
+import { doubleWedge, singleWedge } from '../../src/fins/section';
+import { bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
 import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents, type TotalDrag } from '../../src/total/total-drag';
@@ -20,22 +23,30 @@ import {
   BASIC_FINNER_SHOTS,
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
+import { displayText, totalDragDisplay } from '../../src/app/total-drag-display';
 import {
+  ABOVE_THE_CLASS,
   BASIC_FINNER_CLASS,
   BASIC_FINNER_REYNOLDS_PER_MACH,
+  BOUNDED_REASON,
+  boundedReasons,
+  W1_BOUNDED_REASON,
   BASIC_FINNER_TEMPERATURE,
+  TEMPERATURE_SENSITIVITY,
   basicFinnerClass,
   basicFinnerForm,
   configurationOf,
   ESTIMATE_CLAIM,
   FINS_BAND_NOTE,
+  FINS_ON_BASE_BOUNDED_NOTE,
   FINS_ON_BASE_NOTE,
   GATE_TRANSITION_REYNOLDS,
   noseComponentOf,
-  OFFSET_CAVEAT,
+  CLASS_CLAIM,
+  CLASS_DESCRIPTION,
   PUBLISHED_GATE,
   totalDragView,
-  VALIDATED_CLAIM,
+  SUSPENDED_REASON,
   type NoseState,
   type TotalDragForm,
   type TotalDragView,
@@ -65,9 +76,21 @@ const reasons = (view: TotalDragView) =>
   view.kind === 'refused' ? view.refusals.map((r) => `${r.component}: ${r.reason}`) : [];
 
 describe('the class rule', { timeout: 60_000 }, () => {
-  it('the Basic Finner at its gated shots, and the default at Mach 2, are inside', () => {
-    for (const s of gated)
+  it('the Basic Finner at its gated shots to Mach 2.15, and the default at Mach 2, are inside; the shots above, outside by their Mach number alone', () => {
+    const below = gated.filter((s) => s.mach <= 2.15);
+    expect(below.map((s) => s.mach)).toEqual([1.799, 1.846, 1.85]);
+    for (const s of below)
       expect(basicFinnerClass(gateForm(s))).toEqual({ inside: true, outside: [] });
+    // The eight at Mach 2.35 to 2.97 tested a total whose fins-on-base factor rests on a
+    // prediction drawn in TN 3819 fig. 35 (0010 section 7).
+    const above = gated.filter((s) => s.mach > 2.15);
+    expect(above.length).toBe(8);
+    for (const s of above) {
+      expect(basicFinnerClass(gateForm(s))).toEqual({
+        inside: false,
+        outside: [`Mach ${s.mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`],
+      });
+    }
     expect(basicFinnerClass(basicFinnerForm()).inside).toBe(true);
   });
 
@@ -148,36 +171,80 @@ describe('the class rule', { timeout: 60_000 }, () => {
     expect(outside({ ...f, leadingEdgeRadius: 0 }).length).toBe(1);
   });
 
-  it('Mach 1.799 to 3.0, Reynolds number 1.19e7 to 2.0e7 on length, 293 to 295 K', () => {
+  it('Mach 1.799 to 2.15, Reynolds number 1.19e7 to 2.0e7 on length, 216.65 to 320 K', () => {
     const f = basicFinnerForm();
     const at = (mach: number, re: number, t = BASIC_FINNER_TEMPERATURE) =>
       basicFinnerClass({ ...f, mach, reynoldsOnLength: re, temperature: t }).inside;
-    expect(BASIC_FINNER_CLASS.mach).toEqual([1.799, 3.0]);
+    expect(BASIC_FINNER_CLASS.mach).toEqual([1.799, 2.15]);
     expect(BASIC_FINNER_CLASS.reynoldsOnLength).toEqual([1.19e7, 2.0e7]);
     expect(at(1.799, 1.19e7)).toBe(true);
-    expect(at(3.0, 2.0e7)).toBe(true);
+    expect(at(2.15, 2.0e7)).toBe(true);
     expect(at(1.798, 1.5e7)).toBe(false);
-    expect(at(3.001, 1.5e7)).toBe(false);
-    expect(at(2.4, 1.189e7)).toBe(false);
-    expect(at(2.4, 2.001e7)).toBe(false);
-    expect(at(2.4, 1.6e7, 293)).toBe(true);
-    expect(at(2.4, 1.6e7, 295)).toBe(true);
-    expect(at(2.4, 1.6e7, 288.15)).toBe(false);
+    expect(at(2.151, 1.5e7)).toBe(false);
+    expect(at(3.0, 2.0e7)).toBe(false);
+    // Above the class the reason says why it stops there; below it, the reason is the range.
+    const outside = (mach: number) =>
+      basicFinnerClass({ ...f, mach, reynoldsOnLength: 1.5e7 }).outside;
+    expect(outside(2.4)).toEqual([
+      "Mach 2.4 is outside 1.799 to 2.15 (above Mach 2.15 the gate tested a fins-on-base factor read from one of Love's estimates in TN 3819 fig. 35, not from its free-flight curve; the factor corrected since has no hold-out there)",
+    ]);
+    expect(outside(1.7)).toEqual(['Mach 1.7 is outside 1.799 to 2.15']);
+    expect(at(2.0, 1.189e7)).toBe(false);
+    expect(at(2.0, 2.001e7)).toBe(false);
+    expect(BASIC_FINNER_CLASS.temperature).toEqual([216.65, 320]);
+    expect(at(2.0, 1.6e7, 216.65)).toBe(true);
+    expect(at(2.0, 1.6e7, 320)).toBe(true);
+    expect(at(2.0, 1.6e7, 288.15)).toBe(true);
+    expect(at(2.0, 1.6e7, 216.6)).toBe(false);
+    expect(at(2.0, 1.6e7, 320.1)).toBe(false);
+    expect(
+      basicFinnerClass({ ...f, mach: 2.0, reynoldsOnLength: 1.6e7, temperature: 330 }).outside,
+    ).toEqual(['the static temperature, 330 K, is outside 216.65 to 320 K']);
     for (const s of reported) expect(at(s.mach, s.reynolds)).toBe(false);
-    // The range's air from Table V's speed of sound, 343.4 to 344.0 m/s.
+    // The range's air from Table V's speed of sound, 343.4 to 344.0 m/s: about 294 K.
     const t = (a: number) => a ** 2 / (1.4 * 287.05);
-    expect(t(343.4)).toBeGreaterThan(293);
-    expect(t(344.0)).toBeLessThan(295);
+    expect([t(343.4), t(344.0)].map((x) => Math.round(10 * x) / 10)).toEqual([293.4, 294.5]);
+  });
+
+  it("a standard atmosphere's air lies in the class's temperatures from 4,896 m below sea level to 51 km", () => {
+    const f = basicFinnerForm(2.0, 1.6e7);
+    const inside = (z: number) =>
+      basicFinnerClass({ ...f, temperature: standardAtmosphere(z).temperature }).inside;
+    expect([-4897, -4896, 0, 11000, 20000, 47000, ALTITUDE_RANGE[1]].map(inside)).toEqual([
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]);
+    // Its coldest, 216.65 K, from 11 to 20 km' (Table 4), the class's low end.
+    expect(standardAtmosphere(15000).temperature).toBeCloseTo(216.65, 12);
+    // The range's 293.95 K about 890 m below sea level.
+    expect(standardAtmosphere(-892).temperature).toBeCloseTo(293.95, 2);
+    // At sea level the Basic Finner's 30 mm body gives 6.99e6 per unit Mach number, 5.6% above
+    // the range's 6.62e6 (its air warmer, 293.95 K).
+    const c = flightConditionOf({
+      altitude: 0,
+      altitudeUnit: 'm',
+      mach: 1,
+      diameterMm: 1000 * G.caliberMetres,
+      lengthCalibers: G.length,
+    });
+    if (c.kind !== 'ok') throw new Error('expected a condition');
+    expect(c.value.reynoldsOnLength).toBeCloseTo(6.99e6, -4);
+    expect(c.value.reynoldsOnLength / BASIC_FINNER_REYNOLDS_PER_MACH - 1).toBeCloseTo(0.056, 3);
   });
 
   it(
-    'what the tolerances allow: each dimension at +-0.5% moves the total by under 0.2%, all together under 0.7%',
+    'what the tolerances allow: each dimension at +-0.5% moves the total by under 0.2%, all together under 0.6%',
     { timeout: 120_000 },
     () => {
       const c = BASIC_FINNER_CLASS;
-      // The largest change of the total over the Mach numbers, per dimension.
+      // The largest change of the total over the class's Mach numbers, per dimension.
       const largest = new Map<string, number>();
-      for (const mach of [1.8, 2.4, 3.0]) {
+      for (const mach of [1.8, 2.0, 2.15]) {
         const base = basicFinnerForm(mach);
         const ref = totalOf(totalDragView(base, exactNose(base))).cd;
         const moved = (form: TotalDragForm) =>
@@ -211,7 +278,6 @@ describe('the class rule', { timeout: 60_000 }, () => {
               },
             ],
             ['leading-edge radius', { ...base, leadingEdgeRadius: c.leadingEdgeRadius * k }],
-            ['temperature', { ...base, temperature: k > 1 ? 295 : 293 }],
           ];
           for (const [name, form] of forms) {
             expect(basicFinnerClass(form).inside).toBe(true);
@@ -221,21 +287,20 @@ describe('the class rule', { timeout: 60_000 }, () => {
       }
       const r = (x: number) => Math.round(1e4 * x) / 100;
       expect(Object.fromEntries([...largest].map(([n, x]) => [n, r(x)]))).toEqual({
-        'cone length': 0.19,
+        'cone length': 0.17,
         'overall length': 0.09,
         'root chord': 0.01,
         span: 0.17,
         'trailing-edge thickness': 0.12,
-        'leading-edge radius': 0.06,
-        temperature: 0,
+        'leading-edge radius': 0.04,
       });
       const sum = [...largest.values()].reduce((a, x) => a + x, 0);
-      expect(sum).toBeLessThan(0.007);
+      expect(sum).toBeLessThan(0.006);
     },
   );
 
   it(
-    "the box's corners: at Mach 1.8 and 2.0e7, and Mach 3.0 and 1.19e7, the model lies 1.6% below and 2.1% above the shots' line",
+    "the box's corners: at Mach 1.8 and 2.0e7, and Mach 2.15 and 1.19e7, the model lies 1.6% below and 0.7% above the shots' line",
     { timeout: 60_000 },
     () => {
       // The shots lie near Re = 6.6e6 M on length (one range, one air);
@@ -246,11 +311,11 @@ describe('the class rule', { timeout: 60_000 }, () => {
       };
       const k = BASIC_FINNER_REYNOLDS_PER_MACH;
       const low = cd(1.8, 2.0e7) / cd(1.8, k * 1.8) - 1;
-      const high = cd(3.0, 1.19e7) / cd(3.0, k * 3.0) - 1;
+      const high = cd(2.15, 1.19e7) / cd(2.15, k * 2.15) - 1;
       expect(low).toBeGreaterThan(-0.0165);
       expect(low).toBeLessThan(-0.0155);
-      expect(high).toBeGreaterThan(0.0195);
-      expect(high).toBeLessThan(0.0215);
+      expect(high).toBeGreaterThan(0.006);
+      expect(high).toBeLessThan(0.007);
       const ratios = gated.map((s) => s.reynolds / s.mach);
       expect(Math.min(...ratios)).toBeGreaterThan(6.53e6);
       expect(Math.max(...ratios)).toBeLessThan(6.72e6);
@@ -259,30 +324,114 @@ describe('the class rule', { timeout: 60_000 }, () => {
   );
 
   it(
-    'the air temperature, outside the class from 293 to 295 K: over 216.65 to 320 K the total moves by under 0.2%',
-    { timeout: 60_000 },
+    "the static temperature over the class, 216.65 to 320 K: the total moves from its value at the range's air by at most 0.13%",
+    { timeout: 300_000 },
     () => {
-      for (const mach of [1.8, 3.0]) {
-        const base = basicFinnerForm(mach);
-        const ref = totalOf(totalDragView(base, exactNose(base))).cd;
-        for (const temperature of [216.65, 320]) {
-          const form = { ...base, temperature };
-          expect(basicFinnerClass(form).inside).toBe(false);
-          const cd = totalOf(totalDragView(form, exactNose(form))).cd;
-          expect(Math.abs(cd / ref - 1)).toBeLessThan(0.002);
+      // Swept at the class's Mach numbers 1.8, 2.0 and 2.15, with the Reynolds number held at
+      // each of its ends and inside, 1.6e7; the reference is the range's air, 293.95 K.
+      const temperatures = [216.65, ...Array.from({ length: 11 }, (_, k) => 220 + 10 * k)];
+      expect(temperatures.at(-1)).toBe(320);
+      let largest = { change: 0, at: '' };
+      for (const mach of [1.8, 2.0, 2.15]) {
+        for (const reynoldsOnLength of [1.19e7, 1.6e7, 2.0e7]) {
+          const base = { ...basicFinnerForm(mach, reynoldsOnLength) };
+          const cd = (temperature: number) => {
+            const form = { ...base, temperature };
+            expect(basicFinnerClass(form).inside).toBe(true);
+            return totalOf(totalDragView(form, exactNose(form))).cd;
+          };
+          const ref = cd(BASIC_FINNER_TEMPERATURE);
+          for (const t of temperatures) {
+            const change = Math.abs(cd(t) / ref - 1);
+            if (change > largest.change)
+              largest = { change, at: `M ${mach}, Re ${reynoldsOnLength}, ${t} K` };
+          }
         }
       }
+      // 0.128%, at the class's corner of highest Mach and lowest Reynolds number, coldest air
+      // (0.206% at Mach 3.0 when the class ran to it).
+      expect(largest.at).toBe('M 2.15, Re 11900000, 216.65 K');
+      expect(Math.round(1e4 * largest.change) / 1e4).toBe(TEMPERATURE_SENSITIVITY);
+      expect(TEMPERATURE_SENSITIVITY).toBe(0.0013);
+      // Against the residuals, -7.7% to +4.5%, and the tolerance, about -20% to +27%: small.
+      expect(CLASS_DESCRIPTION).toContain('at most 0.13%');
     },
   );
 });
 
 describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, () => {
-  it('at Mach 1.8 to 3.0, the range Reynolds number, no inputs: validated, its band rounded outward', () => {
-    const shown = [1.8, 2.0, 2.4, 2.75, 2.97, 3.0].map((mach) => {
+  it('at Mach 1.8 to 3.0, the range Reynolds number, no inputs: an estimate everywhere (inside the class the claim suspended, above it outside), its band rounded outward', () => {
+    const shown = [1.8, 2.0, 2.15, 2.4, 2.75, 2.97, 3.0].map((mach) => {
       const form = basicFinnerForm(mach);
       const v = totalDragView(form, exactNose(form));
       if (v.kind !== 'total') throw new Error(v.kind);
-      expect(v.claim.kind).toBe('validated');
+      expect(v.claim.kind).toBe('estimate');
+      expect(basicFinnerClass(form).inside).toBe(mach <= 2.15);
+      expect(v.claim.text).toBe(mach <= 2.15 ? CLASS_CLAIM : ESTIMATE_CLAIM);
+      expect(v.claim.reasons).toEqual(
+        mach <= 2.15
+          ? [SUSPENDED_REASON]
+          : [
+              `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+              ...(mach > 2.56 ? [BOUNDED_REASON] : []),
+            ],
+      );
+      const t = v.total;
+      return [
+        t.cd.toFixed(4),
+        outward(t.low, t.high, 4).join(' to '),
+        outwardPercent(t.low / t.cd - 1, t.high / t.cd - 1),
+      ];
+    });
+    // With the corrected fins-on-base factor (0010 section 11); before it, at the same Mach
+    // numbers: 0.6121, 0.5501, 0.5188, 0.4768, 0.4320, 0.4072, 0.4040.
+    expect(shown).toEqual([
+      ['0.6131', '0.5294 to 0.7293', '-13.7% to +19.0%'],
+      ['0.5493', '0.4808 to 0.6493', '-12.5% to +18.2%'],
+      ['0.5176', '0.4512 to 0.6141', '-12.9% to +18.7%'],
+      ['0.4725', '0.4115 to 0.5612', '-12.9% to +18.8%'],
+      ['0.4203', '0.3669 to 0.4987', '-12.7% to +18.7%'],
+      ['0.3951', '0.3459 to 0.4678', '-12.5% to +18.4%'],
+      ['0.3919', '0.3434 to 0.4636', '-12.4% to +18.3%'],
+    ]);
+  });
+
+  it('the claim suspended (0010 section 11.7): an estimate, not validated, with the corrected band, never refused, inside the class (M 1.8, 2.0, 2.15) and above it (M 2.3, 2.5, 2.9), on the page and in the library', () => {
+    const shown = [1.8, 2.0, 2.15, 2.3, 2.5, 2.9].map((mach) => {
+      const form = basicFinnerForm(mach);
+      const v = totalDragView(form, exactNose(form));
+      if (v.kind !== 'total') throw new Error(`refused at M ${mach}: ${reasons(v).join(', ')}`);
+      expect(v.claim.kind).toBe('estimate');
+      // The reason says plainly why: inside the class, the suspension; above it, the class.
+      expect(v.claim.reasons[0]).toBe(
+        mach <= 2.15 ? SUSPENDED_REASON : `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+      );
+      // Nowhere in what the page shows is the total called validated.
+      const said = displayText(totalDragDisplay(v));
+      expect(said).toContain(': an estimate, not validated');
+      // (The one other use of the word is body friction's band, validated on friction data.)
+      expect(
+        said
+          .replace(/not validated/gi, '')
+          .replace("friction's band is validated on wind-tunnel and flight data of friction", ''),
+      ).not.toMatch(/validated/i);
+      const base = v.total.components.find((c) => c.name === 'body base')!;
+      expect(base.label).toContain(
+        mach > 2.56 ? 'bounded, not measured' : 'an analogy, not a measurement',
+      );
+      // The library: src/total with the same configuration refuses nothing.
+      const c = configurationOf(form);
+      const nose = exactNose(form);
+      if (c.kind !== 'ok' || nose.kind !== 'solved') throw new Error('unreachable');
+      const lib = finnedBodyComponents(
+        c.value.config,
+        c.value.conditions,
+        nose.component,
+        c.value.inputs,
+      );
+      expect(lib.refusals).toEqual([]);
+      expect(combineComponents(lib.components, lib.inputs).cd).toBe(v.total.cd);
+      expect(lib.base!.finsOnBase!.bounded).toBe(mach > 2.56);
       const t = v.total;
       return [
         t.cd.toFixed(4),
@@ -291,12 +440,12 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
       ];
     });
     expect(shown).toEqual([
-      ['0.6121', '0.5309 to 0.7259', '-13.3% to +18.6%'],
-      ['0.5501', '0.4823 to 0.6493', '-12.4% to +18.1%'],
-      ['0.4768', '0.4193 to 0.5615', '-12.1% to +17.8%'],
-      ['0.4320', '0.3797 to 0.5083', '-12.1% to +17.7%'],
-      ['0.4072', '0.3579 to 0.4786', '-12.1% to +17.6%'],
-      ['0.4040', '0.3554 to 0.4746', '-12.1% to +17.5%'],
+      ['0.6131', '0.5294 to 0.7293', '-13.7% to +19.0%'],
+      ['0.5493', '0.4808 to 0.6493', '-12.5% to +18.2%'],
+      ['0.5176', '0.4512 to 0.6141', '-12.9% to +18.7%'],
+      ['0.4896', '0.4260 to 0.5818', '-13.0% to +18.9%'],
+      ['0.4564', '0.3996 to 0.5401', '-12.5% to +18.4%'],
+      ['0.4028', '0.3521 to 0.4775', '-12.6% to +18.6%'],
     ]);
   });
 
@@ -309,9 +458,10 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
     };
     expect(at(2.4)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE]);
     expect(at(1.799).some((n) => n.includes('the M 1.80 row is taken'))).toBe(true);
-    expect(at(2.85).some((n) => n.includes('one reading'))).toBe(false);
-    expect(at(2.88).some((n) => n.includes('one reading'))).toBe(true);
-    expect(at(2.99).some((n) => n.includes('extrapolated'))).toBe(true);
+    // Every row rests on two readings; above the curve's end, the bounded note.
+    expect(at(2.56)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE]);
+    expect(at(2.57)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE, FINS_ON_BASE_BOUNDED_NOTE]);
+    expect(at(2.99)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE, FINS_ON_BASE_BOUNDED_NOTE]);
     // Fins clear of the base take no factor, and no note on it.
     const clear = { ...basicFinnerForm(2.4), trailingEdgeAheadOfBase: 1 };
     const v = totalDragView(clear, exactNose(clear));
@@ -388,7 +538,10 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
     });
   });
 
-  it('the table the page publishes is 0010 section 4.2, held to the library', () => {
+  it('the table the page publishes is the corrected gate (0010 section 11), held to the library, with the second run beside it (section 4.2)', () => {
+    expect(PUBLISHED_GATE.map((p) => p.secondRun)).toEqual([
+      -3.0, 0.4, -4.6, 3.2, -0.9, -0.3, 0.7, -7.7, 4.5, -5.4, -7.6,
+    ]);
     const cx0 = (m: number) => gated.find((s) => s.mach === m)!.cx0;
     const spread = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
       const v = gated.filter((s) => s.mach >= a && s.mach <= b).map((s) => s.cx0);
@@ -396,13 +549,18 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       return { lo: Math.min(...v) / mean - 1, hi: Math.max(...v) / mean - 1 };
     });
     expect(PUBLISHED_GATE.map((p) => p.shot)).toEqual(gated.map((s) => s.shot));
+    // The band rounded outward, as every band on the page is (src/app/band.ts), so that the
+    // table and a total's headline show the same interval for the same shot.
+    expect(PUBLISHED_GATE.map((p) => [p.cd, p.low, p.high])).toEqual(
+      views.map((v) => {
+        const t = totalOf(v);
+        return [Math.round(1e4 * t.cd) / 1e4, ...outward(t.low, t.high, 4).map(Number)];
+      }),
+    );
     PUBLISHED_GATE.forEach((p, k) => {
       const t = totalOf(views[k]!);
       expect(p.mach).toBe(gated[k]!.mach);
       expect(p.cx0).toBe(cx0(p.mach));
-      expect([p.cd, p.low, p.high]).toEqual(
-        [t.cd, t.low, t.high].map((x) => Math.round(1e4 * x) / 1e4),
-      );
       expect(p.residual).toBe(Math.round(1000 * (p.cx0 / t.cd - 1)) / 10);
       const inLow = t.inputs.reduce((a, i) => a + i.low, 0);
       const inHigh = t.inputs.reduce((a, i) => a + i.high, 0);
@@ -415,15 +573,24 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
     });
   });
 
-  it('every shot is labelled validated, the two at M 2.97 nearest the offset', () => {
+  it('every shot is an estimate: the three at Mach 1.80 to 1.85, inside the class, with the suspension as the reason; the eight above Mach 2.15 outside it', () => {
     views.forEach((v, k) => {
       if (v.kind !== 'total') throw new Error('expected a total');
-      expect(v.claim.kind).toBe('validated');
-      if (v.claim.kind !== 'validated') return;
-      expect(v.claim.text).toBe(VALIDATED_CLAIM);
-      expect(v.claim.caveats).toContain(OFFSET_CAVEAT);
-      expect(v.claim.nearMach3).toBe(gated[k]!.mach > 2.9);
+      const mach = gated[k]!.mach;
+      expect(v.claim.kind).toBe('estimate');
+      if (mach <= 2.15) {
+        expect(v.claim.text).toBe(CLASS_CLAIM);
+        expect(v.claim.reasons).toEqual([SUSPENDED_REASON]);
+        return;
+      }
+      expect(v.claim.text).toBe(ESTIMATE_CLAIM);
+      // The five above M 2.56 also carry the bounded factor (0014 section 10.2).
+      expect(v.claim.reasons).toEqual([
+        `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
+        ...(mach > 2.56 ? [BOUNDED_REASON] : []),
+      ]);
     });
+    expect(gated.filter((s) => basicFinnerClass(gateForm(s)).inside).length).toBe(3);
   });
 
   it('the five shots at Mach 1.06 to 1.33 are refused, with every reason and no number', () => {
@@ -432,9 +599,14 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       const v = totalDragView(form, exactNose(form));
       expect(v.kind).toBe('refused');
       const r = reasons(v);
-      expect(r).toContain('fin leading edges: leading-edge-range');
-      expect(r).toContain('body base: mach-range');
-      if (s.mach < 1.2) expect(r).toContain('fin wave drag: detached-shock');
+      // The leading edges' Reynolds number refuses them to M 1.25; at 1.33 they are served (0016 section 11).
+      if (s.mach < 1.3) expect(r).toContain('fin leading edges: leading-edge-range');
+      else expect(r).not.toContain('fin leading edges: leading-edge-range');
+      // The base below Mach 1.5 is served (W2), but not with the Basic Finner's wedges at it (0015).
+      expect(r).toContain('body base: fin-trailing-edge');
+      // Below M 1.5 the fins' own-drag band is not carried (0014 section 10.7 (f)); it is the first reason.
+      expect(r).toContain('fin friction: fins-own-drag-mach');
+      expect(r).toContain('fin wave drag: fins-own-drag-mach');
     }
   });
 });
@@ -462,7 +634,7 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
     expect(reasons(totalDragView(f, no))).toEqual(['nose wave drag: not-verified']);
     expect(reasons(totalDragView({ ...f, mach: 1.6 }, no))).toEqual([
       'nose wave drag: not-verified',
-      'body base: mach-range',
+      'body base: fin-trailing-edge',
     ]);
   });
 
@@ -490,7 +662,7 @@ describe(
   'outside the class: an estimate, not validated, with every reason',
   { timeout: 60_000 },
   () => {
-    const f = basicFinnerForm(2.4, 1.6e7);
+    const f = basicFinnerForm(2.0, 1.6e7);
     const estimate = (form: TotalDragForm) => {
       const nose = noseComponentOf({ value: 0.09, uncertainty: 1e-5, grids: 4 });
       const v = totalDragView(form, { kind: 'solved', component: nose });
@@ -506,7 +678,6 @@ describe(
         reynoldsOnLength: 4e7,
       });
       expect(v.claim.kind).toBe('estimate');
-      if (v.claim.kind !== 'estimate') return;
       expect(v.claim.text).toBe(ESTIMATE_CLAIM);
       expect(v.claim.reasons).toEqual([
         "the nose is not a cone (the Basic Finner's is a 20 deg cone)",
@@ -531,7 +702,7 @@ describe(
       ]);
       const base = v.total.components.find((c) => c.name === 'body base')!;
       expect(base.label).toContain('not validated with fins');
-      if (v.claim.kind === 'estimate') expect(v.claim.reasons.length).toBe(3);
+      expect(v.claim.reasons.length).toBe(3);
     });
   },
 );
@@ -541,9 +712,11 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
   const nose = exactNose(f);
 
   it('below Mach 1.8 with fins at the base; swept fins; a laminar base', () => {
-    expect(reasons(totalDragView({ ...f, mach: 1.6 }, exactNose({ ...f, mach: 1.6 })))).toEqual([
-      'body base: mach-range',
-    ]);
+    // The present factor refuses M 1.6; the rebuilt factor (0015) refuses the Basic Finner's wedges,
+    // thickest at their blunt trailing edge, and says the present factor refuses too.
+    const v = totalDragView({ ...f, mach: 1.6 }, exactNose({ ...f, mach: 1.6 }));
+    expect(reasons(v)).toEqual(['body base: fin-trailing-edge']);
+    expect(JSON.stringify(v)).toContain('the present factor (0010 section 1.3) refuses it too');
     expect(
       reasons(
         totalDragView(
@@ -559,13 +732,19 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
         ),
       ),
     ).toEqual([
-      'fin leading edges: swept-leading-edge',
+      // The fins end at the base: the present factor refuses swept fins (0014 section 10.7), and the
+      // rebuilt factor (0015) refuses the wedges' blunt trailing edge.
+      'body base: fin-trailing-edge',
       'fin trailing-edge base: swept-trailing-edge',
     ]);
     expect(reasons(totalDragView({ ...f, transitionReynolds: [2e7] }, nose))).toEqual([
       'body base: laminar-base',
     ]);
-    expect(reasons(totalDragView({ ...f, finCount: 3 }, nose))).toEqual(['body base: fin-count']);
+    // Three fins: the present factor refuses the count; the rebuilt factor (0015) is tried and
+    // refuses the Basic Finner's single wedges, thickest at their blunt trailing edge.
+    expect(reasons(totalDragView({ ...f, finCount: 3 }, nose))).toEqual([
+      'body base: fin-trailing-edge',
+    ]);
   });
 
   it('a rounded leading edge on a double wedge; a clipped delta with a blunt trailing edge', () => {
@@ -580,8 +759,10 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
     const r = reasons(
       totalDragView({ ...f, planform: { kind: 'clipped-delta', taperRatio: 0.5 } }, nose),
     );
-    expect(r).toContain('fin leading edges: leading-edge-geometry');
-    expect(r).toContain('fin trailing-edge base: input');
+    // Since 0016 the blunt trailing edge of fins of varying chord is integrated along the span;
+    // the swept leading edge, the fins ending at the base, is refused by the present factor (0014
+    // 10.7), and the rebuilt factor (0015) refuses the single wedges' blunt trailing edge.
+    expect(r).toEqual(['fin leading edges: leading-edge-geometry', 'body base: fin-trailing-edge']);
   });
 
   it('inputs the page cannot take, all listed', () => {
@@ -624,10 +805,10 @@ describe('refusals: every reason, no number', { timeout: 60_000 }, () => {
 describe('found in the libraries (0011 section 6)', { timeout: 60_000 }, () => {
   it("the fins-on-base factor does not depend on the fins' size: 0.1 cal of span as 1 cal", () => {
     const base = (span: number) => {
-      const form = { ...basicFinnerForm(2.4), span };
+      const form = { ...basicFinnerForm(2.0), span };
       const v = totalDragView(form, exactNose(form));
       if (v.kind !== 'total') throw new Error(v.kind);
-      expect(v.claim.kind).toBe(span === 1 ? 'validated' : 'estimate');
+      expect(v.claim.text).toBe(span === 1 ? CLASS_CLAIM : ESTIMATE_CLAIM);
       const b = v.total.components.find((c) => c.name === 'body base')!;
       return [b.cd, b.low, b.high];
     };
@@ -657,5 +838,102 @@ describe('found in the libraries (0011 section 6)', { timeout: 60_000 }, () => {
       expect(label.startsWith('an analogy, not a measurement')).toBe(true);
       expect(label).toContain('tested only in the total');
     }
+  });
+});
+
+describe('a bounded fins-on-base factor is named in the claim (0014 section 10.2)', () => {
+  const body = (mach: number, fins: BaseFins) =>
+    bodyBaseDrag({
+      mach,
+      afterbody: 'cylinder',
+      boundaryLayerAtBase: 'turbulent',
+      baseAreaRatio: 1,
+      fins,
+    });
+  it("the present factor's reason, or the rebuilt factor's, by which one is bounded", () => {
+    const four = {
+      count: 4,
+      thicknessRatio: 0.08,
+      section: 'other' as const,
+      tanLeadingEdge: 0,
+      tanTrailingEdge: 0,
+      trailingEdgeAheadOfBase: 0,
+    };
+    expect(boundedReasons(body(2.8, four))).toEqual([BOUNDED_REASON]);
+    expect(boundedReasons(body(2.4, four))).toEqual([]);
+    const near = {
+      section: doubleWedge(0.024, 0.5),
+      sectionFamily: 'other' as const,
+      tanLeadingEdgeSweep: 0,
+      tanTrailingEdgeSweep: 0,
+    };
+    const three = { ...four, count: 3, thicknessRatio: 0.024, nearBase: near };
+    expect(boundedReasons(body(2.8, three))).toEqual([W1_BOUNDED_REASON]);
+    expect(boundedReasons(body(2.4, three))).toEqual([]);
+    expect(boundedReasons(undefined)).toEqual([]);
+  });
+});
+
+describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
+  const f = basicFinnerForm(2.8, 1.6e7);
+  const plate = (leadingEdge: 'rounded' | 'square', trailingEdge: 'square' | 'rounded') => ({
+    ...f,
+    section: { kind: 'flat-plate' as const, thickness: 0.05, leadingEdge, trailingEdge },
+    planform: { kind: 'clipped-delta' as const, taperRatio: 0.4 },
+    rootChord: 1.5,
+    trailingEdgeAheadOfBase: 2,
+  });
+
+  it('a plate is a flat plate of the thickness asked; the leading-edge radius is not used', () => {
+    const c = configurationOf({ ...plate('rounded', 'square'), leadingEdgeRadius: Number.NaN });
+    if (c.kind !== 'ok') throw new Error(JSON.stringify(c.refusals));
+    expect(c.value.config.fins.section).toEqual({
+      kind: 'flat-plate',
+      thickness: 0.05,
+      leadingEdge: 'rounded',
+      trailingEdge: 'square',
+    });
+    expect(c.value.config.fins.leadingEdgeRadius).toBe(0);
+    expect(basicFinnerClass(plate('rounded', 'square')).outside).toContain(
+      'the fin section is not a single wedge with a blunt trailing edge',
+    );
+    // The hidden radius field is not checked on a plate (0016 section 16): no "NaN cal".
+    const outside = basicFinnerClass({
+      ...plate('rounded', 'square'),
+      leadingEdgeRadius: Number.NaN,
+    }).outside;
+    expect(outside.some((x) => x.includes('leading-edge radius'))).toBe(false);
+  });
+
+  it('a rounded leading edge and a square trailing edge: a total, an estimate', () => {
+    const form = plate('rounded', 'square');
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'total') throw new Error(JSON.stringify(v));
+    expect(v.claim.kind).toBe('estimate');
+    expect(v.total.components.find((c) => c.name === 'fin wave drag')!.cd).toBe(0);
+  });
+
+  it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {
+    const a = plate('square', 'square');
+    expect(reasons(totalDragView(a, exactNose(a)))).toEqual([
+      'fin leading edges: square-leading-edge',
+    ]);
+    const b = plate('rounded', 'rounded');
+    expect(reasons(totalDragView(b, exactNose(b)))).toEqual([
+      'fin trailing-edge base: rounded-trailing-edge',
+    ]);
+  });
+
+  it('a negative or missing plate thickness is an input refusal', () => {
+    const c = configurationOf({
+      ...plate('rounded', 'square'),
+      section: {
+        kind: 'flat-plate',
+        thickness: -1,
+        leadingEdge: 'rounded',
+        trailingEdge: 'square',
+      },
+    });
+    expect(c.kind).toBe('refused');
   });
 });

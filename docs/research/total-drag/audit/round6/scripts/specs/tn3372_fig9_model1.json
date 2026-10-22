@@ -1,0 +1,109 @@
+{
+ "figure": "TN 3372 fig. 9 model 1 (configuration C)",
+ "ntrs": "19930084618",
+ "page": 18,
+ "box": [
+  1130,
+  660,
+  3820,
+  2460
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.15,
+ "frac_h": 0.15,
+ "xsel": "all",
+ "xvals": [
+  0.6,
+  0.65,
+  0.7,
+  0.75,
+  0.8,
+  0.85,
+  0.9,
+  0.95,
+  1.0,
+  1.05,
+  1.1,
+  1.15,
+  1.2
+ ],
+ "ysel": "all",
+ "yvals": [
+  -0.32,
+  -0.28,
+  -0.24,
+  -0.2,
+  -0.16,
+  -0.12,
+  -0.08,
+  -0.04,
+  0.0
+ ],
+ "dots": {
+  "legend": [
+   {
+    "series": "edge orifice (square)",
+    "at": [
+     1336,
+     857
+    ]
+   },
+   {
+    "series": "center orifice (circle)",
+    "at": [
+     1339,
+     1055
+    ]
+   }
+  ],
+  "region": [
+   1170,
+   1030,
+   3720,
+   2440
+  ],
+  "mask": "raw",
+  "R": 40,
+  "R_plot": 40,
+  "scales": [
+   1.0
+  ],
+  "classify": "corners",
+  "half": 30,
+  "square": "edge orifice (square)",
+  "circle": "center orifice (circle)",
+  "exclude": [
+   [
+    1339,
+    1055
+   ],
+   [
+    1336,
+    857
+   ],
+   [
+    1464,
+    1030
+   ],
+   [
+    2011,
+    1030
+   ]
+  ],
+  "glyph_scales": [
+   1.0,
+   1.08
+  ],
+  "glyph_at": [],
+  "rename": [
+   [
+    2829,
+    1063,
+    "edge orifice (square)"
+   ]
+  ]
+ },
+ "scale": 0.3
+}

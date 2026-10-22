@@ -1,0 +1,10 @@
+figure,series,x,y,err_y,how
+RM A55H31 fig. 11,reference 1 M=6.9 (square),0.1104,0.9961,0.0018,symbol square 55 px (score 0.98); x err 0.0921; touches the curve or the other symbol
+RM A55H31 fig. 11,reference 1 M=6.9 (square),14.4383,0.9718,0.0010,symbol square 55 px (score 0.98); x err 0.0484
+RM A55H31 fig. 11,present tests M=3.9 (circle),30.0270,0.7703,0.0018,symbol circle 65 px (score 0.99); x err 0.0921; touches the curve or the other symbol
+RM A55H31 fig. 11,reference 1 M=6.9 (square),30.0505,0.7562,0.0018,symbol square 59 px (score 0.74); x err 0.0921; touches the curve or the other symbol
+RM A55H31 fig. 11,present tests M=3.9 (circle),44.8104,0.5340,0.0018,symbol circle 65 px (score 0.94); x err 0.0921; touches the curve or the other symbol
+RM A55H31 fig. 11,reference 1 M=6.9 (square),44.8713,0.5069,0.0018,symbol square 57 px (score 0.97); x err 0.0921; touches the curve or the other symbol
+RM A55H31 fig. 11,present tests M=3.9 (circle),60.0388,0.3026,0.0010,symbol circle 65 px (score 0.93); x err 0.0484
+RM A55H31 fig. 11,reference 1 M=6.9 (square),59.9993,0.2516,0.0018,symbol square 55 px (score 0.99); x err 0.0921; touches the curve or the other symbol
+RM A55H31 fig. 11,reference 1 M=6.9 (square),74.7516,0.0567,0.0010,symbol square 55 px (score 0.98); x err 0.0484

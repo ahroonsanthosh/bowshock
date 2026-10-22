@@ -1,0 +1,29 @@
+figure,series,x,y,err_y,how
+TN 2360 fig. 5(a),x/c=-0.2 (triangle),0.56,-0.3295,0.0002,rule centroid from the centre dot (dot at 0.5574; -0.3302); match 0.76 (next tail off (dome) 0.63); x err 0.00193
+TN 2360 fig. 5(a),x/c=1.0 (circle),0.7677,-0.2085,0.0002,rule centroid from the centre dot (dot at 0.7694; -0.2083); match 0.74 (next x/c=0.6 (square) 0.63); x err 0.00193
+TN 2360 fig. 5(a),x/c=0.6 (square),0.7754,-0.2151,0.0002,rule centroid from the centre dot (dot at 0.7746; -0.2150); match 0.76 (next tail off (dome) 0.73); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=-0.6 (right triangle),0.7621,-0.2858,0.0002,rule centroid from the centre dot (dot at 0.7712; -0.2864); match 0.92 (next x/c=-0.2 (triangle) 0.63); x err 0.00193
+TN 2360 fig. 5(a),x/c=-1.0 (quarter round),0.8005,-0.0804,0.0002,rule centroid from the centre dot (dot at 0.8047; -0.0799); match 0.78 (next tail off (dome) 0.71); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=0.2 (diamond),0.782,-0.2683,0.0002,rule centroid from the centre dot (dot at 0.7836; -0.2683); match 0.98 (next x/c=1.0 (circle) 0.81); x err 0.00193
+TN 2360 fig. 5(a),tail off (dome),1.951,-0.1964,0.0002,rule centroid from the centre dot (dot at 1.951; -0.1957); match 0.88 (next x/c=0.6 (square) 0.82); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=-0.2 (triangle),1.941,-0.3308,0.0002,rule centroid from the centre dot (dot at 1.938; -0.3316); match 0.93 (next tail off (dome) 0.65); x err 0.00193
+TN 2360 fig. 5(a),x/c=-0.6 (right triangle),1.947,-0.2856,0.0002,rule centroid from the centre dot (dot at 1.957; -0.2861); match 0.78 (next x/c=-0.2 (triangle) 0.56); x err 0.00193
+TN 2360 fig. 5(a),x/c=0.2 (diamond),1.961,-0.2538,0.0002,rule centroid from the centre dot (dot at 1.963; -0.2539); match 0.98 (next x/c=1.0 (circle) 0.87); x err 0.00193
+TN 2360 fig. 5(a),x/c=0.6 (square),1.973,-0.2062,0.0002,rule centroid from the centre dot (dot at 1.972; -0.2060); match 0.80 (next x/c=1.0 (circle) 0.74); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=1.0 (circle),1.975,-0.1818,0.0002,rule centroid from the centre dot (dot at 1.977; -0.1817); match 0.74 (next x/c=0.2 (diamond) 0.70); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=0.6 (square),3.184,-0.2064,0.0002,rule centroid from the centre dot (dot at 3.183; -0.2063); match 0.97 (next tail off (dome) 0.87); x err 0.00193
+TN 2360 fig. 5(a),x/c=1.0 (circle),3.24,-0.1796,0.0002,rule centroid from the centre dot (dot at 3.241; -0.1795); match 0.77 (next x/c=0.2 (diamond) 0.72); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=0.2 (diamond),3.246,-0.2576,0.0002,rule centroid from the centre dot (dot at 3.248; -0.2577); match 0.95 (next x/c=1.0 (circle) 0.75); x err 0.00193
+TN 2360 fig. 5(a),tail off (dome),3.262,-0.1953,0.0002,rule centroid from the centre dot (dot at 3.262; -0.1945); match 0.96 (next x/c=0.6 (square) 0.95); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=-0.2 (triangle),3.251,-0.3347,0.0002,rule centroid from the centre dot (dot at 3.249; -0.3355); match 0.81 (next tail off (dome) 0.65); x err 0.00193
+TN 2360 fig. 5(a),x/c=-1.0 (quarter round),3.277,-0.0806,0.0002,rule centroid from the centre dot (dot at 3.281; -0.0801); match 0.80 (next tail off (dome) 0.71); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=-0.6 (right triangle),3.254,-0.2867,0.0002,rule centroid from the centre dot (dot at 3.264; -0.2873); match 0.92 (next x/c=-0.2 (triangle) 0.67); x err 0.00193
+TN 2360 fig. 5(a),tail off (dome),4.415,-0.1964,0.0002,rule centroid from the centre dot (dot at 4.415; -0.1957); match 0.98 (next x/c=0.6 (square) 0.91); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=1.0 (circle),4.43,-0.1812,0.0002,rule centroid from the centre dot (dot at 4.431; -0.1811); match 0.71 (next x/c=0.2 (diamond) 0.64); x err 0.00193; LOW MARGIN
+TN 2360 fig. 5(a),x/c=0.2 (diamond),4.424,-0.2616,0.0002,rule centroid from the centre dot (dot at 4.425; -0.2617); match 0.91 (next x/c=1.0 (circle) 0.74); x err 0.00193
+TN 2360 fig. 5(a),x/c=-0.6 (right triangle),4.416,-0.2874,0.0002,rule centroid from the centre dot (dot at 4.425; -0.2880); match 0.94 (next x/c=-0.2 (triangle) 0.60); x err 0.00193
+TN 2360 fig. 5(a),x/c=0.6 (square),4.438,-0.2081,0.0002,rule centroid from the centre dot (dot at 4.437; -0.2079); match 0.93 (next tail off (dome) 0.81); x err 0.00193
+TN 2360 fig. 5(a),x/c=-1.0 (quarter round),4.459,-0.0807,0.0002,rule centroid from the centre dot (dot at 4.463; -0.0802); match 0.70 (next tail off (dome) 0.49); x err 0.00193
+TN 2360 fig. 5(a),x/c=-0.2 (triangle),4.537,-0.3375,0.0002,rule centroid from the centre dot (dot at 4.534; -0.3382); match 0.95 (next tail off (dome) 0.63); x err 0.00193
+TN 2360 fig. 5(a),x/c=-1.0 (quarter round),2.005,-0.0798,0.0004,legend-glyph template (dot not separable); match 0.96; dot merged with the faired line
+TN 2360 fig. 5(a),tail off (dome),0.7613,-0.2031,0.0030,legend-glyph template (dot not separable); match 0.77; partly hidden behind the circle and square at the same R

@@ -221,7 +221,7 @@
             min="0.5"
             max="10"
             step="any"
-            value="2.836"
+            value="2.835641"
             required
           />
         </div>
@@ -233,7 +233,7 @@
             min="0"
             max="30"
             step="any"
-            value="7.164"
+            value="7.164359"
             required
           />
         </div>
@@ -317,7 +317,7 @@
       <section id="total" aria-labelledby="total-heading">
         <h2 id="total-heading">Total drag</h2>
         <details class="explain">
-          <summary>What the total includes, and how far it is validated</summary>
+          <summary>What the total includes, and how far it is tested</summary>
           <p class="scope">
             The rocket's total zero-incidence, power-off drag coefficient on the body's
             cross-section: the nose wave drag solved above, with its band, plus the body's skin
@@ -325,12 +325,26 @@
             friction, wave drag and edges and the base, whose bands are estimated on data of each
             component and tested only in the total (design records 0007 to 0010; each component's
             label says what it is). The bands add linearly. One class of rocket has passed a test of
-            the total against free-flight data, the Basic Finner's, at Mach 1.8 to 3.0, and its
-            tolerance was wide: -19.5% to -26.2% and +23.1% to +27.4% of the modelled total, so a
-            pass says little by itself. Inside that class the total is labelled validated; outside
-            it, an estimate, not validated. Where a component's method does not cover the case, the
-            total is refused, with every reason, and no number is given. The defaults are the Basic
-            Finner.
+            the total against free-flight data, the Basic Finner's, and its tolerance is wide:
+            -20.0% to -27.0% and +23.3% to +28.6% of the modelled total, as re-run with the
+            corrected factor below, so a pass says little by itself. The fins-on-base factor that
+            test used was then found to rest, above Mach 2.15, on one of Love's predictions in TN
+            3819 fig. 35, not on its free-flight curve, and was corrected after the results were
+            known, which moved the total by up to 3% (by at most 0.24% inside the class, Mach 1.8 to
+            2.15). A term changed after a test is not validated by it, so the validated claim is
+            suspended: every total here is an estimate, not validated, until the registered test of
+            the corrected factor (BRL Report 934, Mach 1.5 to 2.47) is run and passes (design record
+            0010, section 11.7). The Basic Finner's class, Mach 1.8 to 2.15, is kept for that test,
+            which covers its Mach range at BRL's conditions (its Reynolds numbers and sharp leading
+            edges lie outside the class); if it passes, the class is validated over what that range
+            supports. Where a component's method does not cover the case, the total is refused, with
+            every reason, and no number is given. A flat plate's rounded edge is a full radius, half
+            its thickness. A rounded edge is served where the Mach number normal to it, M
+            cos(sweep), is 1.0 to 3.0, swept up to 60 deg, at Reynolds numbers on its diameter of
+            6.7e3 to 1e6, on a wedge only of constant chord; a swept edge's band is wide, its sweep
+            allowance extrapolated in normal Mach number. Square-cut leading edges and rounded
+            trailing edges are refused (design record 0016). The defaults are the Basic Finner's
+            shape, 30 mm across, at sea level; its button sets the range's conditions.
           </p>
         </details>
         <form class="controls" id="total-form">
@@ -374,6 +388,11 @@
                 <option value="single-wedge" selected>Single wedge, blunt trailing edge</option>
                 <option value="double-wedge">Double wedge (sharp)</option>
                 <option value="hexagonal">Hexagonal (sharp)</option>
+                <option value="plate-rounded-square">
+                  Flat plate, rounded leading edge, square trailing edge
+                </option>
+                <option value="plate-square-square">Flat plate, square edges</option>
+                <option value="plate-rounded-rounded">Flat plate, rounded edges</option>
               </select>
             </div>
             <div class="field">
@@ -391,7 +410,7 @@
                 <input id="rear-bevel" type="number" min="0" max="1" step="any" value="0.25" />
               </span>
             </div>
-            <div class="field">
+            <div class="field" id="le-radius-field">
               <label for="le-radius">Leading-edge radius (0: sharp)</label>
               <input id="le-radius" type="number" min="0" step="any" value="0.004" />
             </div>
@@ -411,10 +430,34 @@
               <output id="total-mach"></output>
             </div>
             <div class="field">
+              <label for="condition-mode">Given as</label>
+              <select id="condition-mode">
+                <option value="altitude-m" selected>Altitude (m) and diameter</option>
+                <option value="altitude-ft">Altitude (ft) and diameter</option>
+                <option value="reynolds">Reynolds number directly</option>
+              </select>
+            </div>
+            <div class="field" id="altitude-field">
+              <label for="altitude" id="altitude-label">Altitude (m)</label>
+              <input id="altitude" type="number" step="any" value="0" />
+            </div>
+            <div class="field" id="diameter-field">
+              <label for="diameter">Diameter (mm)</label>
+              <input id="diameter" type="number" min="0" step="any" value="30" />
+            </div>
+            <div class="field" id="implied-reynolds-field">
+              <span class="scope">Reynolds number on length</span>
+              <output id="implied-reynolds"></output>
+            </div>
+            <div class="field" id="implied-temperature-field">
+              <span class="scope">Static temperature</span>
+              <output id="implied-temperature"></output>
+            </div>
+            <div class="field" id="reynolds-field" hidden>
               <label for="reynolds">Reynolds number on the overall length</label>
               <input id="reynolds" type="text" inputmode="decimal" value="1.32e7" />
             </div>
-            <div class="field">
+            <div class="field" id="temperature-field" hidden>
               <label for="temperature">Static temperature (K)</label>
               <input id="temperature" type="number" min="0" step="any" value="293.95" />
             </div>
@@ -461,18 +504,33 @@
           <button id="basic-finner" type="button">Basic Finner at this Mach number</button>
         </form>
         <details class="explain">
-          <summary>The Reynolds number, and the Basic Finner test's inputs</summary>
+          <summary>
+            The flight condition, the standard atmosphere, and the Basic Finner's inputs
+          </summary>
           <p class="scope">
-            Reynolds number: the free stream's speed times the overall length over its kinematic
-            viscosity. The Basic Finner's range gave about 6.6e6 times the Mach number. The gate's
-            inputs (placeholders above): a laminar run to Re_T 5e5, 1.6e6 and 3e6 from the tip and
-            from each fin's leading edge, and the wall at the air temperature. No roughness model is
-            validated: a roughness band is yours, shown with the source you give.
+            The altitude is above mean sea level, in the U.S. Standard Atmosphere, 1976 (NOAA-S/T
+            76-1562, NASA-TM-X-74335), served from 5,000 m below sea level to 51,412 m, the top of
+            the stratopause, and tested against the document's own tables (design record 0011,
+            section 9). It gives the air's temperature, speed of sound and viscosity. The speed is
+            the Mach number times the speed of sound; the Reynolds number is that speed times the
+            overall length (its calibers times the diameter) over the kinematic viscosity. Real air
+            departs from the standard one (a hot day is warmer): when you know the Reynolds number
+            and temperature, give them directly.
+          </p>
+          <p class="scope">
+            The Basic Finner's range air was 293.95 K, as warm as the standard atmosphere only about
+            890 m below sea level, so its button gives the range's Reynolds number (about 6.6e6
+            times the Mach number) and temperature directly. The gate's shots flew in that air; the
+            class takes static temperatures of 216.65 to 320 K, over which the modelled total moves
+            by at most 0.13% (design record 0011, section 3), and its Reynolds numbers, 1.19e7 to
+            2.0e7. The gate's inputs (placeholders above): a laminar run to Re_T 5e5, 1.6e6 and 3e6
+            from the tip and from each fin's leading edge, and the wall at the air temperature. No
+            roughness model is validated: a roughness band is yours, shown with the source you give.
           </p>
         </details>
         <div id="total-output" aria-live="polite"></div>
         <details id="gate">
-          <summary>The validated class, and the Basic Finner's 11 free-flight shots</summary>
+          <summary>The Basic Finner's class, and its 11 free-flight shots</summary>
           <div id="gate-body"></div>
         </details>
       </section>

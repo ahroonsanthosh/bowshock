@@ -13,7 +13,7 @@ import { FITTED_DRAG_FLOOR } from '../../src/analysis/verified-drag';
 import { finWaveDrag } from '../../src/fins/fin-wave-drag';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, roundedWedge } from '../../src/fins/rounded-leading-edge';
-import { doubleWedge, singleWedge } from '../../src/fins/section';
+import { doubleWedge, singleWedge, type SymmetricSection } from '../../src/fins/section';
 import { bodyFriction } from '../../src/friction/body-friction';
 import { flatPlateFriction } from '../../src/friction/flat-plate';
 import {
@@ -129,7 +129,7 @@ describe(
     });
 
     it('fin wave drag: src/fins on four panels over the cross-section', () => {
-      const w = finWaveDrag(sharp.fins.planform, sharp.fins.section, 2.4);
+      const w = finWaveDrag(sharp.fins.planform, sharp.fins.section as SymmetricSection, 2.4);
       const c = byName('fin wave drag');
       expect(c.cd).toBeCloseTo((4 * w.cd) / (Math.PI * 0.25), 15);
       expect(c.high).toBeGreaterThan(FINS_OWN_DRAG_BAND[1] * c.cd);
@@ -141,7 +141,14 @@ describe(
         afterbody: 'cylinder',
         boundaryLayerAtBase: 'turbulent',
         baseAreaRatio: 1,
-        fins: { count: 4, thicknessRatio: 0.06, section: 'other', trailingEdgeAheadOfBase: 0 },
+        fins: {
+          count: 4,
+          thicknessRatio: 0.06,
+          section: 'other',
+          tanLeadingEdge: 0,
+          tanTrailingEdge: 0,
+          trailingEdgeAheadOfBase: 0,
+        },
       });
       const c = byName('body base');
       expect([c.cd, c.low, c.high]).toEqual([b.cd, b.low, b.high]);
@@ -343,7 +350,7 @@ describe('refusals', { timeout: 60_000 }, () => {
     return [];
   };
 
-  it('swept blunt trailing edges and swept rounded leading edges', () => {
+  it('swept blunt trailing edges and, at the base, the body base (a swept rounded leading edge is served since 0016)', () => {
     const swept = trapezoidalPlanform({
       rootChord: 1,
       span: 1,
@@ -356,9 +363,54 @@ describe('refusals', { timeout: 60_000 }, () => {
         fins: { ...blunt.fins, planform: swept },
       }),
     ).toEqual([
-      'fin leading edges: swept-leading-edge',
+      // The present factor refuses swept fins (0014 section 10.7); the rebuilt factor (0015) is asked and
+      // refuses the blunt trailing edge, its refusal carrying the present one's.
+      'body base: fin-trailing-edge',
       'fin trailing-edge base: swept-trailing-edge',
     ]);
+  });
+
+  it('swept fins at the base: the leading edge swept, the rebuilt factor (0015) serves its bracket; the trailing edge swept, refused; a chord ahead, served', () => {
+    // The review's probe: four 8% double wedges swept 45 deg at both edges, at the base. No sharp fins with
+    // a swept trailing edge are measured at the base (0015 section 3.4): refused.
+    const probe: FinnedBody = {
+      ...sharp,
+      fins: {
+        ...sharp.fins,
+        section: doubleWedge(0.08),
+        planform: trapezoidalPlanform({
+          rootChord: 1,
+          span: 1,
+          leadingEdgeSweep: 45 * deg,
+          trailingEdgeSweep: 45 * deg,
+        }),
+      },
+    };
+    expect(refusals(probe, 2.0)).toEqual(['body base: fin-sweep']);
+    expect(refusals(probe, 2.8)).toEqual(['body base: fin-sweep']);
+    // The same fins with the trailing edge unswept: the rebuilt factor's bracket.
+    const leOnly: FinnedBody = {
+      ...probe,
+      fins: {
+        ...probe.fins,
+        planform: trapezoidalPlanform({ rootChord: 1, span: 0.5, leadingEdgeSweep: 45 * deg }),
+      },
+    };
+    for (const mach of [2.0, 2.8]) {
+      expect(refusals(leOnly, mach)).toEqual([]);
+      const b = finnedBodyComponents(
+        leOnly,
+        { ...conditions, mach },
+        exactConeNoseWaveDrag(mach, 10 * deg),
+      ).base!;
+      expect(b.finsOnBaseSource).toBe('rebuilt');
+      expect(b.presentRefusal?.reason).toBe('fin-sweep');
+      // Above M 2.56, where fig. 35's free-flight curve ends, bounded, not measured.
+      expect(b.finsOnBase?.bounded).toBe(mach > 2.56);
+    }
+    const ahead = { ...probe, fins: { ...probe.fins, trailingEdgeAheadOfBase: 1 } };
+    expect(refusals(ahead, 2.0)).toEqual([]);
+    expect(refusals(ahead, 2.8)).toEqual([]);
   });
 
   it('a rounded leading edge on a section other than a single wedge', () => {
@@ -369,14 +421,56 @@ describe('refusals', { timeout: 60_000 }, () => {
 
   it('boat-tails; the fins-on-base factor below M 1.8; a laminar base', () => {
     expect(refusals({ ...sharp, afterbody: 'boat-tail' })).toEqual(['body base: afterbody']);
-    expect(refusals(sharp, 1.6)).toEqual(['body base: mach-range']);
+    // Below M 1.8 the present factor refuses and the rebuilt one (0015) serves these sharp fins, down
+    // to M 1.0 (W2's part, 0015 section 11); below M 1.0 the body base is refused. Below M 1.5 the total
+    // is refused by the fins' own-drag guard alone (0014 section 10.7 (f)), the base served.
+    expect(refusals(sharp, 1.6)).toEqual([]);
+    const at16 = finnedBodyComponents(
+      sharp,
+      { ...conditions, mach: 1.6 },
+      exactConeNoseWaveDrag(1.6, 10 * deg),
+    );
+    expect(at16.base?.finsOnBaseSource).toBe('rebuilt');
+    expect(at16.base?.presentRefusal?.reason).toBe('mach-range');
+    expect(refusals(sharp, 1.45)).toEqual([
+      'fin friction: fins-own-drag-mach',
+      'fin wave drag: fins-own-drag-mach',
+    ]);
+    const at12 = finnedBodyComponents(
+      sharp,
+      { ...conditions, mach: 1.2 },
+      exactConeNoseWaveDrag(1.2, 10 * deg),
+    );
+    expect(at12.base?.finsOnBaseSource).toBe('rebuilt');
+    expect(at12.base?.curveBand.source).toBe('w2');
+    expect(
+      refusals({ ...sharp, fins: { ...sharp.fins, section: singleWedge(0.08) } }, 1.6),
+    ).toEqual(['body base: fin-trailing-edge']);
     expect(refusals(sharp, 2.4, [2e7])).toEqual(['body base: laminar-base']);
   });
 
-  it('a detached fin shock and the base below M 1.5 together', () => {
-    expect(refusals(sharp, 1.1)).toEqual([
-      'fin wave drag: detached-shock',
-      'body base: mach-range',
-    ]);
+  it("below Mach 1.5: the fins' own-drag band (ARCAS, Mach 1.5 to 2.96) refused, the base served (W2)", () => {
+    // The guard comes first: at M 1.08 and 1.1 the double wedge's shock is also detached (0014 section
+    // 10.7 (f)). The body base is served from M 1.0 (0015 section 11.2), so the guard alone refuses the total.
+    for (const m of [1.08, 1.1, 1.4999999]) {
+      expect(refusals(sharp, m)).toEqual([
+        'fin friction: fins-own-drag-mach',
+        'fin wave drag: fins-own-drag-mach',
+      ]);
+    }
+    const b = finnedBodyComponents(
+      sharp,
+      { ...conditions, mach: 1.08 },
+      exactConeNoseWaveDrag(1.08, 10 * deg),
+    ).base;
+    expect(b?.finsOnBaseSource).toBe('rebuilt');
+    expect(b?.curveBand.source).toBe('w2');
+  });
+
+  it('a detached fin shock above the guard, at M 1.55 (a 25% double wedge, 14.0 deg)', () => {
+    const thick = { ...sharp, fins: { ...sharp.fins, section: doubleWedge(0.25) } };
+    const r = refusals(thick, 1.55);
+    expect(r).toContain('fin wave drag: detached-shock');
+    expect(r).not.toContain('fin friction: fins-own-drag-mach');
   });
 });

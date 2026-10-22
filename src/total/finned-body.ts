@@ -13,7 +13,7 @@
  * | fin friction | van Driest II flat plates of the local chord, both faces | fins' own drag, 1.01 to 1.59 (0008 section 4.3) | estimated on ARCAS, tested only in the total |
  * | fin wave drag | exact 2D section drag times the linear 3D ratio (src/fins, 0009); with a rounded leading edge, the faces of the tangent geometry on their own rise | the same, plus the quadrature error | as above |
  * | fin leading edges | rounded, unswept: modified-Newtonian front side (src/fins/rounded-leading-edge.ts) | 0.99 to 1.06 (TN 2960), +-3% more where extrapolated in Reynolds number | an analogy, not a measurement |
- * | body base | compiled curve times the fins-on-base factor (src/base) | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the factor measured on circular-arc fins, an analogy for others |
+ * | body base | compiled curve times the fins-on-base factor (src/base): the present factor wherever it serves (the Basic Finner's class keeps it), the rebuilt factor of 0015 only where the present one refuses | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the present factor measured on circular-arc fins, an analogy for others; the rebuilt factor estimated on component data, bracketed |
  * | fin trailing-edge base | blunt, unswept, turbulent: two-dimensional base pressure at the free-stream Mach number (src/base/fin-trailing-edge.ts) | 0.93 to 1.21 | an analogy, not a measurement, for edges in the base plane |
  *
  * Friction is at free-stream edge conditions, turbulent from the tip and
@@ -47,8 +47,11 @@
  * whatever src/base and src/fins refuse (among them swept rounded leading
  * edges and swept, laminar or thick-layer blunt trailing edges), a rounded
  * leading edge on anything but a single-wedge fin of constant chord, a
- * blunt trailing edge on a fin of varying chord, and a transition input
- * that leaves the boundary layer laminar at the base.
+ * blunt trailing edge on a fin of varying chord, a transition input that
+ * leaves the boundary layer laminar at the base, and, below Mach 1.5, fin
+ * friction and the wave drag of sharp sections, whose band (the fins' own
+ * drag, ARCAS) is measured only at Mach 1.5 to 2.96
+ * (`FINS_OWN_DRAG_MACH_RANGE`; 0014 section 10.7, amendment f).
  *
  * Not represented, with their sizes where known (0010 section 3): the
  * nose's friction at its own surface state (it is taken at the free
@@ -64,7 +67,13 @@
  * transition state; the total is refused then anyway.
  */
 
-import { bodyBaseDrag, type BodyBaseDrag } from '../base/base-drag';
+import {
+  bodyBaseDrag,
+  FINS_ON_BASE_THINNEST_DATA,
+  type BaseFins,
+  type BodyBaseDrag,
+} from '../base/base-drag';
+import { trailingEdgeShape } from '../base/fins-on-base-w1';
 import {
   FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
@@ -72,7 +81,7 @@ import {
 } from '../base/fin-trailing-edge';
 import { BaseRefusal } from '../base/refusal';
 import { finWaveDrag } from '../fins/fin-wave-drag';
-import { chordAt, planformArea, type Planform } from '../fins/planform';
+import { chordAt, planformArea, tipChord, type Planform } from '../fins/planform';
 import { gaussLegendre } from '../fins/quadrature';
 import { FinRefusal } from '../fins/refusal';
 import {
@@ -80,7 +89,13 @@ import {
   roundedWedge,
   type RoundedWedge,
 } from '../fins/rounded-leading-edge';
-import { singleWedge, symmetricThicknessRatio, type SymmetricSection } from '../fins/section';
+import {
+  isFlatPlate,
+  singleWedge,
+  symmetricThicknessRatio,
+  type FlatPlate,
+  type SymmetricSection,
+} from '../fins/section';
 import { bodyFriction } from '../friction/body-friction';
 import { flatPlateFriction } from '../friction/flat-plate';
 import type { Body } from '../geometry/body';
@@ -102,16 +117,65 @@ export const BODY_FRICTION_BAND = [0.88, 1.19] as const;
  * change removed; one-sided (the model was never above the data).
  */
 export const FINS_OWN_DRAG_BAND = [1.01, 1.59] as const;
+/**
+ * The Mach numbers of the ARCAS increments behind `FINS_OWN_DRAG_BAND`
+ * (TN D-4014, 0008 section 4.3). Below the lower end the band is not
+ * carried (0014 section 10.7, amendment f; design record 0019 section
+ * 3.1): the increments' shortfall against the model grows as the Mach
+ * number falls (fins' own over measured 0.49 at Mach 1.5, 0.85 at 2.96),
+ * so the band measured at 1.5 bounds nothing below it, and
+ * the fin terms that carry it, fin friction and the wave drag of sharp
+ * sections, are refused there. A flat plate's faces, of no wave drag by
+ * the geometry, carry no band and stay served.
+ */
+export const FINS_OWN_DRAG_MACH_RANGE = [1.5, 2.96] as const;
+
+/** The guard of `FINS_OWN_DRAG_MACH_RANGE`, or undefined at or above its lower end. */
+function finsOwnDragMachRefusal(
+  mach: number,
+  term: 'friction' | 'wave drag',
+): FinRefusal | undefined {
+  const floor = FINS_OWN_DRAG_MACH_RANGE[0];
+  if (mach >= floor) return undefined;
+  const what =
+    term === 'friction'
+      ? "fin friction carries the fins' own-drag band"
+      : 'the wave drag of a sharp section (the exact 2D section drag times the linear 3D ratio, ' +
+        "0009) carries the fins' own-drag band, its only measured test";
+  return new FinRefusal(
+    'fins-own-drag-mach',
+    `the Mach number ${machShownBelow(mach, floor)} is below ${floor.toFixed(1)}: ${what} ` +
+      `(1.01 to 1.59, 0008 section 4.3), measured on the ARCAS increments at Mach ` +
+      `${floor.toFixed(1)} to ${FINS_OWN_DRAG_MACH_RANGE[1]} only, and the increments' shortfall ` +
+      "against the model grows as the Mach number falls (fins' own over measured 0.49 at Mach " +
+      '1.5, 0.85 at 2.96), so the band is not carried below Mach 1.5 (0014 section 10.7, amendment f)',
+  );
+}
+
+/** A Mach number printed with the digits that keep "below" true at the boundary. */
+function machShownBelow(mach: number, limit: number): string {
+  for (let digits = 3; digits <= 15; digits++) {
+    const text = mach.toPrecision(digits);
+    if (Number(text) < limit) return text;
+  }
+  return String(mach);
+}
 
 export interface FinSet {
   readonly count: number;
   /** One exposed panel, in the body's length unit. */
   readonly planform: Planform;
-  /** The section, in chord units, the same along the span. */
-  readonly section: SymmetricSection;
+  /**
+   * The section: in chord units, the same along the span; or a flat plate
+   * of uniform thickness in the body's length unit, with its edges' shapes.
+   */
+  readonly section: SymmetricSection | FlatPlate;
   /** 'circular-arc' for the section of TN 3819 fig. 35's fins, else 'other'. */
   readonly sectionFamily: 'circular-arc' | 'other';
-  /** Leading-edge radius in the body's length unit; 0 is sharp. */
+  /**
+   * Leading-edge radius in the body's length unit; 0 is sharp. Not used for
+   * a flat plate, whose rounded edge has half its thickness as its radius.
+   */
   readonly leadingEdgeRadius: number;
   /** Distance of the root trailing edge ahead of the base, in the body's length unit. */
   readonly trailingEdgeAheadOfBase: number;
@@ -251,21 +315,28 @@ export function finnedBodyComponents(
   );
   const finsLabel = 'estimated on the ARCAS increments (TN D-4014), tested only in the total';
   const finsBand = "0008 section 4.3: fins' own drag, measured over modelled 1.01 to 1.59";
-  components.push(
-    componentWithRatioBand(
-      'fin friction',
-      nominal.fins,
-      FINS_OWN_DRAG_BAND,
-      `van Driest II flat plates of the local chord, adiabatic wall; ${finsLabel}`,
-      finsBand,
-    ),
-  );
+  const frictionGuard = finsOwnDragMachRefusal(conditions.mach, 'friction');
+  if (frictionGuard !== undefined) refusals.push(refusalOf('fin friction', frictionGuard));
+  else {
+    components.push(
+      componentWithRatioBand(
+        'fin friction',
+        nominal.fins,
+        FINS_OWN_DRAG_BAND,
+        `van Driest II flat plates of the local chord, adiabatic wall; ${finsLabel}`,
+        finsBand,
+      ),
+    );
+  }
 
   // Fin wave drag, and the nose of a rounded leading edge.
   const constantChord = fins.planform.tanTrailingEdge === fins.planform.tanLeadingEdge;
   let rounded: RoundedWedge | undefined;
-  if (fins.leadingEdgeRadius !== 0) {
-    const s = fins.section;
+  const plate = isFlatPlate(fins.section) ? fins.section : undefined;
+  if (plate !== undefined) {
+    platePart(plate, config, conditions, area, components, refusals);
+  } else if (fins.leadingEdgeRadius !== 0) {
+    const s = fins.section as SymmetricSection;
     try {
       if (!(s.bluntTrailingEdge === true && s.x.length === 2 && constantChord)) {
         throw new FinRefusal(
@@ -290,35 +361,41 @@ export function finnedBodyComponents(
         low: nose.band.low * cd,
         high: nose.band.high * cd,
         label: nose.label,
-        band: `TN 2960, front side over modified Newtonian, ${nose.band.low.toFixed(2)} to ${nose.band.high.toFixed(2)} (${nose.regime})`,
+        band: `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified Newtonian, ${outward(nose.band)} (${nose.regime})`,
       });
     } catch (e) {
       refusals.push(refusalOf('fin leading edges', e));
     }
   }
-  try {
-    // With a rounded edge the faces are a wedge at the tangent geometry's
-    // angle, on their own rise (src/fins/rounded-leading-edge.ts).
-    const section =
-      rounded === undefined ? fins.section : singleWedge(2 * Math.tan(rounded.faceAngle));
-    const rise = rounded === undefined ? 1 : rounded.faceRise / Math.tan(rounded.faceAngle);
-    const w = finWaveDrag(fins.planform, section, conditions.mach);
-    const scale = (fins.count * planformArea(fins.planform) * rise) / area;
-    const cd = w.cd * scale;
-    const q = w.quadratureError * scale;
-    components.push({
-      name: 'fin wave drag',
-      cd,
-      low: FINS_OWN_DRAG_BAND[0] * cd - q,
-      high: FINS_OWN_DRAG_BAND[1] * cd + q,
-      label:
-        `exact section drag times the linear 3D ratio (0009)` +
-        (rounded === undefined ? '' : ', the faces of the rounded wedge') +
-        `; ${finsLabel}`,
-      band: `${finsBand}, and the quadrature error`,
-    });
-  } catch (e) {
-    refusals.push(refusalOf('fin wave drag', e));
+  if (plate === undefined) {
+    try {
+      const guard = finsOwnDragMachRefusal(conditions.mach, 'wave drag');
+      if (guard !== undefined) throw guard;
+      // With a rounded edge the faces are a wedge at the tangent geometry's
+      // angle, on their own rise (src/fins/rounded-leading-edge.ts).
+      const section =
+        rounded === undefined
+          ? (fins.section as SymmetricSection)
+          : singleWedge(2 * Math.tan(rounded.faceAngle));
+      const rise = rounded === undefined ? 1 : rounded.faceRise / Math.tan(rounded.faceAngle);
+      const w = finWaveDrag(fins.planform, section, conditions.mach);
+      const scale = (fins.count * planformArea(fins.planform) * rise) / area;
+      const cd = w.cd * scale;
+      const q = w.quadratureError * scale;
+      components.push({
+        name: 'fin wave drag',
+        cd,
+        low: FINS_OWN_DRAG_BAND[0] * cd - q,
+        high: FINS_OWN_DRAG_BAND[1] * cd + q,
+        label:
+          `exact section drag times the linear 3D ratio (0009)` +
+          (rounded === undefined ? '' : ', the faces of the rounded wedge') +
+          `; ${finsLabel}`,
+        band: `${finsBand}, and the quadrature error`,
+      });
+    } catch (e) {
+      refusals.push(refusalOf('fin wave drag', e));
+    }
   }
 
   // Inputs. The friction of each transition state; the states are formed
@@ -369,12 +446,7 @@ export function finnedBodyComponents(
       afterbody: config.afterbody,
       boundaryLayerAtBase: laminarBase ? 'laminar' : 'turbulent',
       baseAreaRatio: 1,
-      fins: {
-        count: fins.count,
-        thicknessRatio: symmetricThicknessRatio(fins.section),
-        section: fins.sectionFamily,
-        trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
-      },
+      fins: baseFinsOf(fins),
     });
     components.push({
       name: 'body base',
@@ -382,30 +454,55 @@ export function finnedBodyComponents(
       low: base.low,
       high: base.high,
       label: base.labels.join('; '),
-      band: 'curve 0.82 to 1.08 (0008 section 3.3), interpolation, fins-on-base band (section 3.4)',
+      band:
+        (base.curveBand.source === 'w2'
+          ? `curve ${base.curveBand.low.toFixed(2)} to ${base.curveBand.high.toFixed(2)} below Mach 1.5 (0015 section 11), interpolation, `
+          : 'curve 0.82 to 1.08 (0008 section 3.3), interpolation, ') +
+        (base.finsOnBaseSource === 'rebuilt'
+          ? "the rebuilt fins-on-base factor's band (0015)"
+          : 'fins-on-base band (section 3.4)'),
     });
   } catch (e) {
     refusals.push(refusalOf('body base', e));
   }
 
-  // Fin trailing-edge base: none for sharp trailing edges.
+  // Fin trailing-edge base: none for sharp trailing edges. On fins of
+  // varying chord the term is integrated along the span (0016, W3(b)): a
+  // plate's thickness is the same at every station, a section's scales
+  // with the chord.
   let te: FinTrailingEdgeBase | undefined;
-  if (fins.section.bluntTrailingEdge === true) {
-    const h = fins.section.halfThickness;
+  const blunt =
+    plate === undefined ? (fins.section as SymmetricSection).bluntTrailingEdge === true : true;
+  if (blunt) {
+    const root = fins.planform.rootChord;
+    const tip = tipChord(fins.planform);
+    let rootThickness: number;
+    let tipThickness: number;
+    if (plate === undefined) {
+      const h = (fins.section as SymmetricSection).halfThickness;
+      rootThickness = 2 * h[h.length - 1]! * root;
+      tipThickness = 2 * h[h.length - 1]! * tip;
+    } else {
+      rootThickness = plate.thickness;
+      tipThickness = plate.thickness;
+    }
     try {
-      if (!constantChord) {
+      if (plate !== undefined && plate.trailingEdge === 'rounded') {
         throw new BaseRefusal(
-          'input',
-          'the trailing-edge base term is implemented for fins of constant chord (c / h and the ' +
-            'chord Reynolds number then hold along the span)',
+          'rounded-trailing-edge',
+          'a rounded trailing edge is refused: "bounded, not measured" (0014 section 10.2) needs ' +
+            "it shown to carry no more than the square edge's base drag, and the nearest " +
+            "measurement contradicts that: TN 2960's cylinder rear side is 1.35 and 1.16 times a " +
+            'square base of the same height at M 1.49 and 1.98 (0016)',
         );
       }
       te = finTrailingEdgeBaseDrag({
         mach: conditions.mach,
         count: fins.count,
-        thickness: 2 * h[h.length - 1]! * fins.planform.rootChord,
+        thickness: rootThickness,
         span: fins.planform.span,
-        chord: fins.planform.rootChord,
+        chord: root,
+        ...(constantChord ? {} : { tipChord: tip, tipThickness }),
         tanSweep: fins.planform.tanTrailingEdge,
         inBasePlane: fins.trailingEdgeAheadOfBase === 0,
         layer: 'turbulent',
@@ -438,11 +535,19 @@ export function finnedBodyComponents(
           high: te.laminarTerm.high - te.cd,
         };
   const transitionStates: TransitionState[] = [];
-  for (const run of runs) {
-    const laminarTrailingEdge = laminarEdge !== undefined && run.reT >= laminarEdge.chordReynolds;
-    const trailingEdge = laminarTrailingEdge
-      ? { low: laminarEdge.low, high: laminarEdge.high }
-      : { low: 0, high: 0 };
+  for (const [i, run] of runs.entries()) {
+    // On fins of varying chord, the part of the span the run reaches (0016).
+    const partial = te?.laminarStates?.[i];
+    const laminarTrailingEdge =
+      partial !== undefined
+        ? partial.laminarSpanFraction > 0
+        : laminarEdge !== undefined && run.reT >= laminarEdge.chordReynolds;
+    const trailingEdge =
+      partial !== undefined
+        ? { low: partial.low, high: partial.high }
+        : laminarTrailingEdge
+          ? { low: laminarEdge!.low, high: laminarEdge!.high }
+          : { low: 0, high: 0 };
     for (const bodyTurbulent of [false, true]) {
       const friction = (bodyTurbulent ? 0 : run.body) + run.fins;
       transitionStates.push({
@@ -487,6 +592,67 @@ export function finnedBodyComponents(
   return { components, inputs: inputBands, refusals, base, transitionStates };
 }
 
+/**
+ * The leading edges and faces of a flat plate (0016, W4): a rounded edge's
+ * nose, a radius of half the thickness, at face angle zero on any planform
+ * and sweep; faces parallel to the stream, no wave drag. A square-cut edge
+ * is refused: "bounded, not measured" needs its bounds' ordering shown, and
+ * it is not.
+ */
+function platePart(
+  plate: FlatPlate,
+  config: FinnedBody,
+  conditions: FlightConditions,
+  area: number,
+  components: DragComponent[],
+  refusals: ComponentRefusal[],
+): void {
+  const { fins } = config;
+  try {
+    if (plate.leadingEdge === 'square') {
+      throw new FinRefusal(
+        'square-leading-edge',
+        'a square-cut leading edge is refused: "bounded, not measured" (0014 section 10.2) ' +
+          "needs it shown to carry at least a half-cylinder's front-side drag, and that is shown " +
+          'only where the half-cylinder is already supersonic, not over the inner part of the ' +
+          'face; no flat-face measurement is among the sources that set bands (0016)',
+      );
+    }
+    const radius = plate.thickness / 2;
+    const nose = roundedLeadingEdgeDrag({
+      mach: conditions.mach,
+      radius,
+      faceAngle: 0,
+      tanLeadingEdgeSweep: fins.planform.tanLeadingEdge,
+      reynoldsOnDiameter: conditions.reynoldsPerLength * plate.thickness,
+    });
+    const cd = (fins.count * nose.dragPerSpan * fins.planform.span) / area;
+    components.push({
+      name: 'fin leading edges',
+      cd,
+      low: nose.band.low * cd,
+      high: nose.band.high * cd,
+      label: `${nose.label}; on a flat plate, a semicircular nose (0016)`,
+      band:
+        `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified ` +
+        `Newtonian, ${outward(nose.band)} ` +
+        `(${nose.regime}${nose.sweepDegrees > 0 ? ', swept' : ''})`,
+    });
+  } catch (e) {
+    refusals.push(refusalOf('fin leading edges', e));
+  }
+  components.push({
+    name: 'fin wave drag',
+    cd: 0,
+    low: 0,
+    high: 0,
+    label:
+      "a flat plate's faces lie parallel to the stream and carry no wave drag; its edges are " +
+      'their own terms (0016)',
+    band: 'none: zero by the geometry',
+  });
+}
+
 /** The total, or TotalDragRefusal listing every component refused. */
 export function finnedBodyTotalDrag(
   config: FinnedBody,
@@ -497,4 +663,87 @@ export function finnedBodyTotalDrag(
   const r = finnedBodyComponents(config, conditions, nose, inputs);
   if (r.refusals.length > 0) throw new TotalDragRefusal(r.refusals);
   return combineComponents(r.components, r.inputs);
+}
+
+/**
+ * The body base's fin input (src/base/base-drag.ts) for a fin set: for the
+ * present factor, the largest t/c (a plate's at its shorter end chord; a
+ * section's is the same at every station) and a plate's thinnest station
+ * (0016 sections 16 and 18), with both edge sweeps; for the rebuilt factor
+ * (0015 section 5), the section in chord units at the thickest station
+ * (a plate: flat faces to a square trailing edge at that t/c; its thinner
+ * stations follow from `thinnest`). A plate with a rounded trailing edge has
+ * no section the rebuilt factor takes (0015 section 4), so it is not given
+ * one, and the present factor's verdict stands.
+ */
+export function baseFinsOf(fins: FinSet): BaseFins {
+  const plate = isFlatPlate(fins.section) ? fins.section : undefined;
+  const thicknessRatio =
+    plate === undefined
+      ? symmetricThicknessRatio(fins.section as SymmetricSection)
+      : plate.thickness / Math.min(fins.planform.rootChord, tipChord(fins.planform));
+  const section: SymmetricSection | undefined =
+    plate === undefined
+      ? (fins.section as SymmetricSection)
+      : plate.trailingEdge === 'square'
+        ? {
+            x: [0, 1e-3, 1],
+            halfThickness: [0, thicknessRatio / 2, thicknessRatio / 2],
+            bluntTrailingEdge: true,
+          }
+        : undefined;
+  // Flat faces at the trailing edge (plates; a plate bevelled at the leading edge only): not the present
+  // factor's families (0014 section 10.7).
+  const flatFaced =
+    plate !== undefined || (section !== undefined && trailingEdgeShape(section) === 'flat');
+  return {
+    count: fins.count,
+    thicknessRatio,
+    ...(plate === undefined ? {} : { thinnest: plateThinnest(plate.thickness, fins.planform) }),
+    ...(flatFaced ? { flatFaced: true } : {}),
+    section: fins.sectionFamily,
+    tanLeadingEdge: fins.planform.tanLeadingEdge,
+    tanTrailingEdge: fins.planform.tanTrailingEdge,
+    trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
+    // For the rebuilt factor, used only where the present one refuses (0015 section 5).
+    ...(section === undefined
+      ? {}
+      : {
+          nearBase: {
+            section,
+            sectionFamily: fins.sectionFamily,
+            tanLeadingEdgeSweep: fins.planform.tanLeadingEdge,
+            tanTrailingEdgeSweep: fins.planform.tanTrailingEdge,
+          },
+        }),
+  };
+}
+
+/**
+ * A flat plate's thinnest station (thickness over the longer end chord) and
+ * the share of its span thinner than the fins-on-base factor's 5% data,
+ * where the chord, linear along the span, exceeds 20 thicknesses.
+ */
+function plateThinnest(
+  thickness: number,
+  planform: Planform,
+): { thicknessRatio: number; spanShareBelow: number } {
+  const root = planform.rootChord;
+  const tip = tipChord(planform);
+  const limit = thickness / FINS_ON_BASE_THINNEST_DATA;
+  let share: number;
+  if (root === tip) share = root > limit ? 1 : 0;
+  else {
+    // c(y) = root + (tip - root) y: the span fraction where c > limit.
+    const yAt = (limit - root) / (tip - root);
+    share = tip < root ? Math.min(1, Math.max(0, yAt)) : 1 - Math.min(1, Math.max(0, yAt));
+  }
+  return { thicknessRatio: thickness / Math.max(root, tip), spanShareBelow: share };
+}
+
+/** A band printed to two decimals, rounded outward, so the text never narrows it. */
+function outward(band: { readonly low: number; readonly high: number }): string {
+  const low = Math.floor(band.low * 100 + 1e-9) / 100;
+  const high = Math.ceil(band.high * 100 - 1e-9) / 100;
+  return `${low.toFixed(2)} to ${high.toFixed(2)}`;
 }
