@@ -75,9 +75,41 @@ export const NORMAL_MACH_CAP = 0.8;
  * numbers, turns the flow by that much; by the transonic Prandtl-Meyer
  * function nu = (2/3)(M^2 - 1)^(3/2)/(gamma + 1) the flow stays supersonic
  * if M^2 - 1 >= (3 (gamma + 1) theta / 2)^(2/3) = 0.06; twice that, M^2 - 1
- * >= 0.12, gives Mach 1.058, taken as 1.06.
+ * >= 0.12, gives Mach 1.058, taken as 1.06. That is the floor for the
+ * boundary layer alone; the fins' own thickness turns the flow along the
+ * body further (`freeStreamFloor`, the re-review of 2026-10-22, N1), and the
+ * floor served is the higher.
  */
 export const FREE_STREAM_FLOOR = 1.06;
+
+/** The boundary layer's displacement growth along the body, rad ((L5)). */
+export const BOUNDARY_LAYER_TURNING = 0.004;
+
+/**
+ * The flow along the body near the fins' roots is turned by the boundary
+ * layer's growth and by the fins' own thickness, which adds n t of section
+ * area per unit span over the leading edge's streamwise extent s
+ * tan(Lambda_LE), spread over the body's circumference 2 pi r: theta_f = n t
+ * / (2 pi r tan(Lambda_LE)) (the span cancels). Taken as a two-dimensional
+ * turning, which overstates an axisymmetric compression, on the
+ * conservative side. With (L5)'s transonic Prandtl-Meyer condition and its
+ * factor of 2: M^2 - 1 >= 2 (3 (gamma + 1) theta / 2)^(2/3). An unswept
+ * leading edge adds the fins' thickness at once: no floor (Infinity).
+ * Never below FREE_STREAM_FLOOR.
+ */
+export function freeStreamFloor(p: {
+  readonly finCount: number;
+  readonly thickness: number;
+  readonly bodyRadius: number;
+  readonly tanLeadingEdge: number;
+}): number {
+  if (!(p.tanLeadingEdge > 0)) return Infinity;
+  const theta =
+    BOUNDARY_LAYER_TURNING +
+    (p.finCount * p.thickness) / (2 * Math.PI * p.bodyRadius * p.tanLeadingEdge);
+  const floor = Math.sqrt(1 + 2 * ((3 * (GAMMA + 1) * theta) / 2) ** (2 / 3));
+  return Math.max(FREE_STREAM_FLOOR, floor);
+}
 
 /**
  * The transonic similarity parameter below which, in magnitude, the
@@ -197,8 +229,17 @@ export function boundedRoundedEdge(input: {
   readonly planform: Planform;
   readonly thickness: number;
   readonly reynoldsOnDiameter: number;
+  /** The number of fins and the body's radius at the fins, for the free-stream floor ((L5)). */
+  readonly finCount: number;
+  readonly bodyRadius: number;
 }): BoundedRoundedEdge {
   const { mach, planform, thickness } = input;
+  const floor = freeStreamFloor({
+    finCount: input.finCount,
+    thickness,
+    bodyRadius: input.bodyRadius,
+    tanLeadingEdge: planform.tanLeadingEdge,
+  });
   const leSweep = Math.atan(planform.tanLeadingEdge);
   const teSweep = Math.atan(planform.tanTrailingEdge);
   const sweepDeg = leSweep / DEG;
@@ -213,11 +254,16 @@ export function boundedRoundedEdge(input: {
   const reN = input.reynoldsOnDiameter * Math.cos(leSweep);
 
   const failed: [BoundedEdgeCondition, string][] = [];
-  if (!(mach >= FREE_STREAM_FLOOR)) {
+  if (!(mach >= floor)) {
     failed.push([
       'free-stream',
-      `the free stream, Mach ${mach}, is below ${FREE_STREAM_FLOOR}: nearer sonic the body's base ` +
-        'and the flow along the body are not shown to leave the nose alone',
+      Number.isFinite(floor)
+        ? `the free stream, Mach ${mach}, is below ${floor.toFixed(3)}, where the flow along the ` +
+          "body, turned by its boundary layer and the fins' thickness, stays supersonic with a " +
+          "margin of 2: nearer sonic the body's base and the flow along the body are not shown " +
+          'to leave the nose alone'
+        : "the leading edge is unswept, so the fins' thickness turns the flow along the body at " +
+          'once and no free-stream Mach number is shown to keep it supersonic there',
     ]);
   }
   if (sweepDeg > SWEEP_LIMIT_DEGREES + 1e-9) {

@@ -61,11 +61,12 @@ opened at its figures) for a fin increment near Mach 1 that would set the
 fins' own-drag band; those stay refused unless the data serve or the
 owner decides otherwise (section 5). If the fins' own-drag band is found,
 the fin terms of 14.5% of the population's cases at Mach 1.0 to 1.2 would
-be served on data, and 15.7% as decided on 2026-10-22 (rounded edges
+be served on data, and 15.6% as decided on 2026-10-22 (rounded edges
 below M_n 1.0 refused until NASA TM X-653 is read; bevels to 10 deg,
 measured across Bryson's gap once R&M 3348 fig. 32 is read twice; swept
-trailing edges on R&M 3348; section 4; 17.4% with the rounded edges
-bounded as reviewed, 35.2% as first decided); the
+trailing edges on R&M 3348; section 4; 15.7% with the rounded edges
+bounded as the candidate now stands, 17.4% before the fins' thickness
+entered its free-stream floor, 35.2% as first decided); the
 rest stay refused for the
 square-cut leading edges and rounded trailing edges of 0014 W11 (30.8%),
 the rear bevels of hexagonal sections (20.6%, no source) and bevels
@@ -544,14 +545,45 @@ normal Mach number is supersonic.**
   that angle; by the transonic Prandtl-Meyer function, nu = (2/3) (M^2 -
   1)^(3/2) / (gamma + 1), it stays supersonic if M^2 - 1 >= (3 (gamma + 1)
   theta / 2)^(2/3) = 0.06; with the same factor of 2, M^2 - 1 >= 0.12: Mach
-  1.06 (`FREE_STREAM_FLOOR`). So the edge is refused with the free stream
-  below Mach 1.06 (the review's unswept trailing edge at Mach 1.00 fails
-  this and xi_TE), xi_TE inside +-1.175, M_n above 0.8 ((U3)), sweep
+  1.06 (`FREE_STREAM_FLOOR`). **That floor counted the boundary layer
+  alone (re-review of 2026-10-22, N1).** The fins' own thickness turns
+  the flow along the body too: n fins of thickness t add n t of section
+  area per unit span over the leading edge's streamwise extent s
+  tan(Lambda_LE), spread over the body's circumference 2 pi r, so theta_f
+  = n t / (2 pi r tan(Lambda_LE)), the span cancelling. Taken as a
+  two-dimensional turning, which overstates an axisymmetric compression
+  (the conservative side), with the boundary layer's 0.004 and the same
+  Prandtl-Meyer condition and factor of 2: M^2 - 1 >= 2 (3 (gamma + 1)
+  (0.004 + theta_f) / 2)^(2/3) (`freeStreamFloor`; an unswept leading edge
+  adds the thickness at once and has no floor). Three 3 mm fins on a 54
+  mm body: the hobby fin (42 deg, theta_f 0.059) needs Mach 1.32, the
+  review's case A (60 deg, 0.031) Mach 1.224, so case A at Mach 1.2 is
+  refused. The floor now depends on the rocket, and the candidate takes
+  the fin count and the body's radius as inputs. So the edge is refused
+  with the free stream below that floor (and never below Mach 1.06; the
+  review's unswept trailing edge at Mach 1.00 fails it and xi_TE), xi_TE inside +-1.175, M_n above 0.8 ((U3)), sweep
   beyond 60 deg, or the Reynolds number on the normal component outside
   6.7e3 to 1e6 (as W4(e)); the refusal lists every condition a case fails.
   (Until 2026-10-22 this item was printed with two of its lines broken
   into a numbered list by the formatter, at "(gamma + 1) M^2"; the text is
   unchanged.)
+- _(L4) and (L5) treat two sinks unalike (re-review N1)._ Linear theory
+  in a supersonic stream gives a point only what lies in its upstream Mach
+  cone. A finite fin's trailing edge lies downstream of every
+  leading-edge station unless the edge is swept far enough that inboard
+  parts of it lie upstream within the cone, so linear theory gives it, in
+  the cases served, no upstream influence; yet the candidate counts it as
+  an infinite swept line sink. The body's base, a larger sink, is set to
+  zero on that same linear theory. The two must be treated alike. The
+  line sink is kept as a stated allowance for what the linear domain of
+  dependence leaves out near Mach 1 (Mach angles of 56 to 71 deg at Mach
+  1.06 to 1.2, and the subsonic flow of the trailing edge's normal plane),
+  not as a linear result; by the same reasoning the base's sink must be
+  counted as well, as a point sink of the base's area at its distance
+  from each station in the linearised far field, before the candidate
+  could serve anything. That term is not written. Until it is, the
+  candidate is not consistent, and it is a condition of any later wiring,
+  with TM X-653.
 - _(L6) Data that check the sign._ The measured bluntness increments at
   subsonic normal Mach numbers are all positive or within their errors of
   zero: Pepper's blunter nose on a 45 deg 65A009 wing, +0.002 at Mach 1.05
@@ -577,23 +609,27 @@ section 3.2) and the term at M_n 1.0 at its band's high end (CR-149372, TN
 2960, with the allowances used)", with the gap in C_D beside it (the code's
 label adds "a recorded candidate, not served: refused until NASA TM X-653
 is read"). The
-review's case with both edges swept 60 deg (c/t 23, Mach 1.2, M_n 0.6): C
-from -0.069 to 0.829, 0.380 served. The hobby fin of 0016 (leading edge
+review's case with both edges swept 60 deg (c/t 23, Mach 1.2, M_n 0.6),
+with the fins' thickness not counted: C from -0.069 to 0.829, 0.380
+served; on three fins on a 54 mm body it is refused at Mach 1.2 for the
+free stream (floor 1.224) and served at 1.25. The hobby fin of 0016 (leading edge
 42 deg, trailing edge unswept, c/t 40 at the root and 16 at the tip) is
 refused at every Mach number from 1.0 to 1.2: at 1.0 and 1.05 for the free
 stream and its trailing edge (normal Mach 1.0 and 1.05, xi_TE 0 and
 -0.34), at 1.1 and 1.15 for M_n (0.82, 0.85) and its trailing edge (xi_TE
--0.66, -0.95), at 1.2 for M_n (0.89). The first version's 0.068 +- 0.071
+-0.66, -0.95), at 1.2 for M_n (0.89); on a 54 mm body with three fins,
+for the free stream as well at every one of them (floor 1.32). The first
+version's 0.068 +- 0.071
 in C_D at Mach 1.1 is withdrawn.
 
 **Coverage** (`w7-plan.out`): of the population's rounded edges below M_n
-1.0 at Mach 1.0 to 1.2, 55 of 801 (6.9%) would pass these rules; refused
-as decided, none is served, and the fin terms served at Mach 1.0 to 1.2
-fall from the reviewed plan's 17.4% (variant G) to 15.7% (variant I,
-section 4). The trailing
-edge's transonic rule refuses 84.0% of them (26.6% for it alone), M_n
-above 0.8 38.2%, the free stream 32.8%, the sweep 7.5%, the Reynolds
-number 2.6%.
+1.0 at Mach 1.0 to 1.2, 5 of 801 (0.6%) would pass these rules with the
+fins' thickness counted in the free-stream floor (55, 6.9%, with the
+boundary layer alone, as first rewritten); refused as decided, none is
+served, and the fin terms served at Mach 1.0 to 1.2 are 15.6% (variant
+I, section 4; the reviewed candidate, variant G, would serve 15.7%). The
+free stream refuses 98.6% of them, the trailing edge's transonic rule
+84.0%, M_n above 0.8 38.2%, the sweep 7.5%, the Reynolds number 2.6%.
 
 **What would replace it:** pressure distributions or drag on a flat plate
 with a semicircular leading edge (r = t/2), two-dimensional or swept, at
@@ -808,23 +844,25 @@ BRL 934's fins, whose range C, Mach 0.98 to 1.2, needs this term).
 `w7-plan.out`, the fin terms only, at Mach 1.0 to 1.2 (a case may be
 refused for several reasons; F1 taken as served once its band is read):
 
-| Variant                                                                                                                                               | Fin terms served | Main refusals left                                                                                                                                            |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A: on data (bevels to 10 deg and M_n 0.9; unswept trailing edges)                                                                                     | 14.5%            | rounded edges below M_n 1.0 37.0%; W11 30.8%; bevels beyond 10 deg 21.9%; rear bevels 20.6%                                                                   |
-| B: A with swept trailing edges (R&M 3348)                                                                                                             | 14.9%            | as A, less the swept trailing edges                                                                                                                           |
-| C: B with rounded edges below M_n 1.0 bounded                                                                                                         | 38.0%            | W11 30.8%; bevels beyond 10 deg 21.9%; rear bevels 20.6%                                                                                                      |
-| D: C with bevels to 15 deg and M_n to 1.2, theory-bridged                                                                                             | 45.3%            | rear bevels 20.6%; W11 30.8%                                                                                                                                  |
-| **E: as decided** (rounded edges bounded to M_n 0.9; bevels to 10 deg, bounded at M_n 0.9 to 1.2; swept trailing edges)                               | **35.2%**        | bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3%                                                                |
-| F: E with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 41.5%            | rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3%                                                                                            |
-| **G: as reviewed, 2026-10-22** (rounded edges by `boundedRoundedEdge`; bevels to 10 deg, to M_n 1.2 on fig. 32, 3.2's rules below M_n 0.6; swept TEs) | **17.4%**        | rounded edges: the trailing edge's transonic rule 33.6%, M_n above 0.8 15.3%, the free stream 13.2%; bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8% |
-| H: G with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 23.2%            | as G, less the bevels beyond 10 deg                                                                                                                           |
-| **I: as decided by the owner, 2026-10-22** (G with rounded edges below M_n 1.0 refused until NASA TM X-653 is read, 0014 10.7 (o))                    | **15.7%**        | rounded edges below M_n 1.0 40.0%; bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8%                                                                   |
-| J: I with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 21.4%            | as I, less the bevels beyond 10 deg                                                                                                                           |
+| Variant                                                                                                                                               | Fin terms served            | Main refusals left                                                                                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A: on data (bevels to 10 deg and M_n 0.9; unswept trailing edges)                                                                                     | 14.5%                       | rounded edges below M_n 1.0 37.0%; W11 30.8%; bevels beyond 10 deg 21.9%; rear bevels 20.6%                                                                                                  |
+| B: A with swept trailing edges (R&M 3348)                                                                                                             | 14.9%                       | as A, less the swept trailing edges                                                                                                                                                          |
+| C: B with rounded edges below M_n 1.0 bounded                                                                                                         | 38.0%                       | W11 30.8%; bevels beyond 10 deg 21.9%; rear bevels 20.6%                                                                                                                                     |
+| D: C with bevels to 15 deg and M_n to 1.2, theory-bridged                                                                                             | 45.3%                       | rear bevels 20.6%; W11 30.8%                                                                                                                                                                 |
+| **E: as decided** (rounded edges bounded to M_n 0.9; bevels to 10 deg, bounded at M_n 0.9 to 1.2; swept trailing edges)                               | **35.2%**                   | bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3%                                                                                               |
+| F: E with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 41.5%                       | rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3%                                                                                                                           |
+| **G: as reviewed, 2026-10-22** (rounded edges by `boundedRoundedEdge`; bevels to 10 deg, to M_n 1.2 on fig. 32, 3.2's rules below M_n 0.6; swept TEs) | **15.7%** (17.4% before N1) | rounded edges: the free stream (with the fins' thickness, N1) 39.5%, the trailing edge's transonic rule 33.6%, M_n above 0.8 15.3%; bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8% |
+| H: G with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 21.4% (23.2% before N1)     | as G, less the bevels beyond 10 deg                                                                                                                                                          |
+| **I: as decided by the owner, 2026-10-22** (G with rounded edges below M_n 1.0 refused until NASA TM X-653 is read, 0014 10.7 (o))                    | **15.6%**                   | rounded edges below M_n 1.0 40.0%; bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8%                                                                                                  |
+| J: I with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 21.3%                       | as I, less the bevels beyond 10 deg                                                                                                                                                          |
 
 Variants E and F are the decisions as first made; G and H are as
 reviewed (sections 3.2 and 3.3); I and J are G and H with the owner's
 decision of 2026-10-22 (rounded edges below M_n 1.0 refused until NASA TM
-X-653 is read, 0014 10.7 (o)), and I is the plan now. Variant D's
+X-653 is read, 0014 10.7 (o)), and I is the plan now. G to J were re-run
+on 2026-10-22 after the re-review's N1, the fins' thickness entering 3.2's
+free-stream floor (applied to the bevels below M_n 0.6 too). Variant D's
 theory bridge is not done (0014 10.7 (k), item 2): it is kept to show
 what the theory alone would add. These are ceilings on the
 totals at Mach 1.0 to 1.2: a total there also needs the nose (0013), the

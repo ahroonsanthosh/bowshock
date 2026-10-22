@@ -11,12 +11,14 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { trapezoidalPlanform, type Planform } from '../../src/fins/planform';
 import {
+  BOUNDARY_LAYER_TURNING,
   BoundedEdgeRefusal,
   FREE_STREAM_FLOOR,
   LOWER_BOUND_MARGIN,
   NORMAL_MACH_CAP,
   TRANSONIC_XI_MIN,
   boundedRoundedEdge,
+  freeStreamFloor,
   stationaritySlope,
   trailingEdgeSinkShift,
   trailingEdgeXi,
@@ -31,6 +33,13 @@ import {
 
 const DEG = Math.PI / 180;
 const T = 3; // mm, the plates' thickness throughout
+/** Three fins on a 54 mm body (the review's assumed body, N1), mm. */
+const BODY = { finCount: 3, bodyRadius: 27 };
+/**
+ * Fins whose thickness adds no area worth counting (a body of unbounded radius): the free-stream
+ * floor is then the boundary layer's, 1.06, and the other rules are tested alone.
+ */
+const ISOLATED = { finCount: 3, bodyRadius: 1e12 };
 
 const planform = (rootChord: number, span: number, le: number, te: number): Planform =>
   trapezoidalPlanform({
@@ -41,9 +50,14 @@ const planform = (rootChord: number, span: number, le: number, te: number): Plan
   });
 
 /** The conditions a case is refused for, or 'served'. */
-function outcome(mach: number, p: Planform, reynoldsOnDiameter = 1e5): string[] | 'served' {
+function outcome(
+  mach: number,
+  p: Planform,
+  reynoldsOnDiameter = 1e5,
+  body: { finCount: number; bodyRadius: number } = ISOLATED,
+): string[] | 'served' {
   try {
-    boundedRoundedEdge({ mach, planform: p, thickness: T, reynoldsOnDiameter });
+    boundedRoundedEdge({ mach, planform: p, thickness: T, reynoldsOnDiameter, ...body });
     return 'served';
   } catch (e) {
     if (!(e instanceof BoundedEdgeRefusal)) throw e;
@@ -151,9 +165,15 @@ describe('the transonic rule on the trailing edge (L5)', () => {
 });
 
 describe('the cases of the review', () => {
-  it('A: parallel edges swept 60 deg, c/t 23, M 1.2: served, the low end twice the line sink', () => {
+  it("A: parallel edges swept 60 deg, c/t 23, M 1.2, the fins' thickness not counted: served, the low end twice the line sink", () => {
     const p = planform(69, 100, 60, 60);
-    const r = boundedRoundedEdge({ mach: 1.2, planform: p, thickness: T, reynoldsOnDiameter: 1e5 });
+    const r = boundedRoundedEdge({
+      mach: 1.2,
+      planform: p,
+      thickness: T,
+      ...ISOLATED,
+      reynoldsOnDiameter: 1e5,
+    });
     expect(r.normalMach).toBeCloseTo(0.6, 12);
     expect(r.trailingEdgeNormalMach).toBeCloseTo(0.6, 12);
     expect(r.low).toBeCloseTo(-0.0692, 4);
@@ -234,11 +254,64 @@ describe('the cases of the review', () => {
       mach: 1.25,
       planform: planform(120, 60, 55, 0),
       thickness: T,
+      ...ISOLATED,
       reynoldsOnDiameter: 1e5,
     });
     expect(r.trailingEdgeNormalMach).toBe(1.25);
     expect(r.trailingEdgeXi).toBeLessThan(-TRANSONIC_XI_MIN);
     expect(r.low).toBe(0);
+  });
+});
+
+describe("the free-stream floor with the fins' thickness counted (re-review of 2026-10-22, N1)", () => {
+  it("the turning angle: n t / (2 pi r tan(Lambda_LE)) on the boundary layer's 0.004 rad; the span cancels", () => {
+    expect(BOUNDARY_LAYER_TURNING).toBe(0.004);
+    // The boundary layer alone: Mach 1.058, never below 1.06.
+    expect(
+      freeStreamFloor({ finCount: 3, thickness: T, bodyRadius: 1e12, tanLeadingEdge: 1 }),
+    ).toBe(FREE_STREAM_FLOOR);
+    const theta = (n: number, r: number, tanLe: number) =>
+      0.004 + (n * T) / (2 * Math.PI * r * tanLe);
+    const floorOf = (th: number) => Math.sqrt(1 + 2 * ((3 * 2.4 * th) / 2) ** (2 / 3));
+    // The reviewer's estimates on a 54 mm body, three 3 mm fins: the hobby fin (42 deg) 0.059 rad,
+    // case A (60 deg) 0.031 rad, before the boundary layer's 0.004.
+    expect(theta(3, 27, 72 / 80) - 0.004).toBeCloseTo(0.0589, 4);
+    expect(theta(3, 27, Math.tan(60 * DEG)) - 0.004).toBeCloseTo(0.0306, 4);
+    const hobby = freeStreamFloor({ ...BODY, thickness: T, tanLeadingEdge: 72 / 80 });
+    const caseA = freeStreamFloor({ ...BODY, thickness: T, tanLeadingEdge: Math.tan(60 * DEG) });
+    expect(hobby).toBeCloseTo(floorOf(theta(3, 27, 72 / 80)), 12);
+    expect(hobby).toBeCloseTo(1.32, 3);
+    expect(caseA).toBeCloseTo(1.224, 3);
+    // An unswept leading edge: no floor.
+    expect(freeStreamFloor({ ...BODY, thickness: T, tanLeadingEdge: 0 })).toBe(Infinity);
+  });
+
+  it('case A on a 54 mm body is refused at Mach 1.2 for the free stream, and served at 1.25', () => {
+    const p = planform(69, 100, 60, 60);
+    expect(outcome(1.2, p, 1e5, BODY)).toEqual(['free-stream']);
+    expect(outcome(1.25, p, 1e5, BODY)).toBe('served');
+    expect(() =>
+      boundedRoundedEdge({
+        mach: 1.2,
+        planform: p,
+        thickness: T,
+        reynoldsOnDiameter: 1e5,
+        ...BODY,
+      }),
+    ).toThrow(
+      /the free stream, Mach 1\.2, is below 1\.224, where the flow along the body, turned by its boundary layer and the fins' thickness/,
+    );
+  });
+
+  it('the hobby fin on a 54 mm body adds the free stream to its reasons at Mach 1.1 to 1.2', () => {
+    const hobby = planform(120, 80, Math.atan(72 / 80) / DEG, 0);
+    const re = 5.7e4 / Math.cos(Math.atan(72 / 80));
+    expect(outcome(1.1, hobby, re, BODY)).toEqual([
+      'free-stream',
+      'normal-mach',
+      'trailing-edge-transonic',
+    ]);
+    expect(outcome(1.2, hobby, re, BODY)).toEqual(['free-stream', 'normal-mach']);
   });
 });
 
@@ -260,12 +333,14 @@ describe('the high end (U1) to (U4), with the Reynolds-number allowance (review 
       mach: 1.2,
       planform: p,
       thickness: T,
+      ...ISOLATED,
       reynoldsOnDiameter: 1e5,
     });
     const inside = boundedRoundedEdge({
       mach: 1.2,
       planform: p,
       thickness: T,
+      ...ISOLATED,
       reynoldsOnDiameter: 4e5,
     });
     expect(outside.reynoldsAllowance).toBe(true);
@@ -298,6 +373,7 @@ describe("Barrowman's leading-edge curve (1967, eq. 4-17; OpenRocket's), set bes
       mach: 0.8 / Math.cos(55 * DEG),
       planform: planform(120, 60, 55, 55),
       thickness: T,
+      ...ISOLATED,
       reynoldsOnDiameter: 1e5,
     });
     expect(barrowman(r.normalMach)).toBeGreaterThan(r.low);
@@ -328,6 +404,7 @@ describe("refused, the owner's decision of 2026-10-22 (0014 section 10.7 (o)): t
         mach: 1.2,
         planform: planform(69, 100, 60, 60),
         thickness: T,
+        ...ISOLATED,
         reynoldsOnDiameter: 1e5,
       }).nominal,
     ).toBeCloseTo(0.38, 2);

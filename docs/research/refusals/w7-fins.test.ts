@@ -19,7 +19,7 @@ import { trapezoidalPlanform } from '../../../src/fins/planform';
 import { FinRefusal } from '../../../src/fins/refusal';
 import {
   BoundedEdgeRefusal,
-  FREE_STREAM_FLOOR,
+  freeStreamFloor,
   TRANSONIC_XI_MIN,
   boundedRoundedEdge,
   trailingEdgeXi,
@@ -150,6 +150,8 @@ function boundedConditions(c: Case): string[] {
       planform: planformOf(c.r),
       thickness: c.r.thickness,
       reynoldsOnDiameter: c.rePerMetre * c.r.thickness,
+      finCount: c.r.finCount,
+      bodyRadius: c.r.diameter / 2,
     });
     return [];
   } catch (e) {
@@ -161,7 +163,13 @@ function boundedConditions(c: Case): string[] {
 /** The free-stream and trailing-edge rules of 3.2 for a bevel below M_n 0.6 (0019 section 3.3). */
 function lowBevelConditions(c: Case): string[] {
   const out: string[] = [];
-  if (!(c.mach >= FREE_STREAM_FLOOR)) out.push('bevel below M_n 0.6: free-stream');
+  const floor = freeStreamFloor({
+    finCount: c.r.finCount,
+    thickness: c.r.thickness,
+    bodyRadius: c.r.diameter / 2,
+    tanLeadingEdge: Math.tan(c.r.leadingEdgeSweepDeg * DEG),
+  });
+  if (!(c.mach >= floor)) out.push('bevel below M_n 0.6: free-stream');
   const shortest = Math.min(c.r.rootChord, c.r.tipChord);
   const xi = trailingEdgeXi({
     mach: c.mach,
