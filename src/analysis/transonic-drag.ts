@@ -28,7 +28,7 @@ import { taylorMaccoll } from '../validation/taylor-maccoll';
 import { domainAllowance, type DomainAllowance } from '../verification/domain-allowance';
 import { gridConvergence, type ConvergenceEstimate } from '../verification/grid-convergence';
 import { dampedOscillationBound, SettlingValue } from '../verification/iterative-convergence';
-import { GpuMemoryLimitError } from '../engine-gpu/gpu-common';
+import { GpuMemoryLimitError, GpuPrecisionError } from '../engine-gpu/gpu-common';
 import type { FlowSource } from '../render/flow-renderer';
 import { transonicProblem, type TransonicOptions, type TransonicProblem } from './transonic-flow';
 
@@ -52,6 +52,13 @@ export interface TransonicGridSolver {
    * volume, evaluated in double precision (Euler2D.densityResidualNorm).
    */
   residual(): Promise<number>;
+  /**
+   * Check the device's arithmetic on the current state: its residual
+   * against the CPU's double one. Throws GpuPrecisionError if the low
+   * parts are lost. Called once per solve, after the first steps of the
+   * first grid (GPU engines only; review of aed95b0, S5).
+   */
+  checkPrecision?(): Promise<void>;
   /**
    * The flow to draw as it converges, on the solver's device (GPU
    * engines only): its buffers live until destroy().
@@ -289,10 +296,20 @@ export interface ReferenceNote {
  *   the domain grows, to bound what lies beyond (domainAllowance);
  * - 'domain': the grids cannot be built for this body (transonicGrid's
  *   reason in `message`);
- * - 'device-memory': a grid is too large for the engine's device.
+ * - 'device-memory': a grid is too large for the engine's device;
+ * - 'device-precision': the device loses the low parts of its two-float
+ *   arithmetic (its self-test, or its residual against the CPU's once per
+ *   solve).
  */
 export type TransonicRefusalReason =
-  'near-sonic' | 'blunt-nose' | 'no-band' | 'far-field' | 'cylinder' | 'domain' | 'device-memory';
+  | 'near-sonic'
+  | 'blunt-nose'
+  | 'no-band'
+  | 'far-field'
+  | 'cylinder'
+  | 'domain'
+  | 'device-memory'
+  | 'device-precision';
 export const TRANSONIC_REFUSAL_REASONS: readonly TransonicRefusalReason[] = [
   'near-sonic',
   'blunt-nose',
@@ -301,6 +318,7 @@ export const TRANSONIC_REFUSAL_REASONS: readonly TransonicRefusalReason[] = [
   'cylinder',
   'domain',
   'device-memory',
+  'device-precision',
 ];
 
 /**
@@ -477,7 +495,14 @@ export async function verifiedTransonicDrag(
   try {
     // The family's base grid, then the allowances on base grids (as the
     // plan says: they cost seconds), then the finer grids.
-    const baseSolution = await solveGrid(engine, problems.base, null, options, { what: 'grid' });
+    const baseSolution = await solveGrid(
+      engine,
+      problems.base,
+      null,
+      options,
+      { what: 'grid' },
+      true,
+    );
     const levelOf = (problem: TransonicProblem, result: GridSolution): TransonicLevel => ({
       refinement: problem.options.refinement,
       cells: { ni: problem.config.grid.ni, nj: problem.config.grid.nj },
@@ -606,6 +631,14 @@ export async function verifiedTransonicDrag(
     };
   } catch (error) {
     if (error instanceof Cancelled) return { kind: 'cancelled', levels };
+    if (error instanceof GpuPrecisionError) {
+      return {
+        kind: 'refused',
+        reason: 'device-precision',
+        message: `this device's arithmetic is not precise enough for the transonic solve: ${error.message}`,
+        levels,
+      };
+    }
     if (error instanceof GpuMemoryLimitError) {
       return {
         kind: 'refused',
@@ -717,6 +750,7 @@ async function solveGrid(
   start: { problem: TransonicProblem; cells: TransonicCells; rate: number } | null,
   options: TransonicDragOptions,
   role: GridRole,
+  checkPrecision = false,
 ): Promise<GridSolution> {
   const refinement = problem.options.refinement;
   const every = (options.checkEvery ?? 50) * refinement;
@@ -757,6 +791,7 @@ async function solveGrid(
       if (options.signal?.aborted === true) throw new Cancelled();
       await solver.iterate(every);
       steps += every;
+      if (checkPrecision && steps === every) await solver.checkPrecision?.();
       drag = await solver.drag();
       if (!Number.isFinite(drag)) {
         throw new NotConverged(refinement, 'not-finite', 'the drag is not finite');

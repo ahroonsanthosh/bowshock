@@ -9,7 +9,7 @@ import {
   type TransonicEngine,
   type TransonicLevel,
 } from '../../src/analysis/transonic-drag';
-import { GpuMemoryLimitError } from '../../src/engine-gpu/gpu-common';
+import { GpuMemoryLimitError, GpuPrecisionError } from '../../src/engine-gpu/gpu-common';
 import type { FlowSource } from '../../src/render/flow-renderer';
 import { noseComponentOf } from '../../src/app/total-drag';
 import type { TransonicProblem } from '../../src/analysis/transonic-flow';
@@ -473,6 +473,36 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
       expect(during.reason).toBe('device-memory');
       expect(during.levels.map((l) => l.refinement)).toEqual([1, 2]);
     }
+  });
+
+  it('the device’s precision: checked once per solve; a device losing low parts is refused', async () => {
+    let checks = 0;
+    const base = synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 });
+    const checked =
+      (fail: boolean): TransonicEngine =>
+      async (problem) => {
+        const solver = await base(problem);
+        return {
+          ...solver,
+          checkPrecision: () => {
+            checks++;
+            return fail
+              ? Promise.reject(new GpuPrecisionError('the residual lost its low parts'))
+              : Promise.resolve();
+          },
+        };
+      };
+    const fine = await verifiedTransonicDrag(ogive, options, checked(false));
+    expect(fine.kind).toBe('solved');
+    expect(checks).toBe(1);
+    const refused = await verifiedTransonicDrag(ogive, options, checked(true));
+    expect(refused).toMatchObject({ kind: 'refused', reason: 'device-precision', levels: [] });
+    if (refused.kind === 'refused') expect(refused.message).toMatch(/lost its low parts/);
+    // The self-test's refusal, when the engine creates a grid's solver.
+    const selfTest: TransonicEngine = () =>
+      Promise.reject(new GpuPrecisionError('the compiler contracts two-float products'));
+    const atCreate = await verifiedTransonicDrag(ogive, options, selfTest);
+    expect(atCreate).toMatchObject({ kind: 'refused', reason: 'device-precision' });
   });
 
   it('r = 16 is offered only where the device can hold it', async () => {

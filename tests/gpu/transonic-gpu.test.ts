@@ -1,5 +1,13 @@
 import { beforeAll, describe, expect, it } from 'vitest';
+import { GPU_TRANSONIC_SWEEPS, gpuNoseDragSolvers } from '../../src/analysis/gpu-nose-drag';
 import { gpuTransonicEngine } from '../../src/analysis/gpu-transonic';
+import {
+  cpuTransonicEngine,
+  verifiedTransonicDrag,
+  type TransonicDrag,
+  type TransonicDragOptions,
+  type TransonicLevel,
+} from '../../src/analysis/transonic-drag';
 import { solveTransonic, transonicProblem } from '../../src/analysis/transonic-flow';
 import { Euler2D } from '../../src/engine-cpu/euler2d';
 import { GpuEuler2D, gpuPrimitive2D, type GpuState2D } from '../../src/engine-gpu/euler2d-gpu';
@@ -298,4 +306,60 @@ describe('GpuEuler2DTwoFloat: the transonic solve in two-float', () => {
       renderer.destroy();
     }
   }, 900_000);
+});
+
+describe('the page engine: its precision check and its sweeps (review of aed95b0, S5)', () => {
+  it("passes its once-per-solve precision check: the residual is the CPU's double one", async () => {
+    const solver = await gpuTransonicEngine(device, { sweeps: GPU_TRANSONIC_SWEEPS })(problem);
+    try {
+      await solver.start(() => problem.freeStream.state, 1);
+      await solver.iterate(60);
+      // Throws GpuPrecisionError beyond RESIDUAL_PRECISION (1e-6 of the
+      // largest residual); two-float arithmetic measured 2.2e-9 here.
+      await expect(solver.checkPrecision!()).resolves.toBeUndefined();
+    } finally {
+      solver.destroy();
+    }
+  }, 600_000);
+
+  it('G3: gpuNoseDragSolvers settles the cone’s r = 1 and 2 at Mach 1.1 with 2 sweeps, on the CPU’s drags', async () => {
+    // 4 sweeps fall into a limit cycle here (drag 0.067 to 0.164, never
+    // settling: 0013, "The GPU's sweeps"); 2 settle in about 1,200 and
+    // 2,100 steps. The cap of 8,000 steps a grid turns a limit cycle into
+    // 'not-converged'.
+    expect(GPU_TRANSONIC_SWEEPS).toBe(2);
+    const twoGrids = async (
+      solve: (body: Body, options: TransonicDragOptions) => Promise<TransonicDrag>,
+    ): Promise<{ result: TransonicDrag; levels: TransonicLevel[] }> => {
+      const stop = new AbortController();
+      const levels: TransonicLevel[] = [];
+      const result = await solve(cone, {
+        mach: 1.1,
+        gamma,
+        finest: 8,
+        maxSteps: 8000,
+        signal: stop.signal,
+        onLevel: (level) => {
+          levels.push(level);
+          if (level.refinement === 2) stop.abort();
+        },
+      });
+      return { result, levels };
+    };
+    const gpu = await twoGrids(gpuNoseDragSolvers(device).transonic);
+    const cpu = await twoGrids((body, options) =>
+      verifiedTransonicDrag(body, options, cpuTransonicEngine()),
+    );
+    expect(gpu.result.kind).toBe('cancelled');
+    expect(cpu.result.kind).toBe('cancelled');
+    expect(gpu.levels.map((l) => l.refinement)).toEqual([1, 2]);
+    for (const k of [0, 1]) {
+      const g = gpu.levels[k]!;
+      const c = cpu.levels[k]!;
+      // Each settled to 1e-7 of its drag (measured on SwiftShader when the
+      // sweeps were fixed: r = 1 within 4.9e-8 of the CPU).
+      expect(Math.abs(g.drag / c.drag - 1), `r = ${g.refinement}`).toBeLessThan(3e-7);
+      expect(g.steps, `r = ${g.refinement} steps`).toBeLessThan(4000);
+    }
+  }, 10_800_000);
 });

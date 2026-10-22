@@ -8,6 +8,7 @@
  */
 
 import { Euler2D } from '../engine-cpu/euler2d';
+import { GpuPrecisionError } from '../engine-gpu/gpu-common';
 import { GpuEuler2DTwoFloat, twoFloatGridLimit } from '../engine-gpu/euler2d-two-float';
 import type { FlowSource } from '../render/flow-renderer';
 import type { Bounds } from '../render/view';
@@ -71,6 +72,12 @@ export function gpuTransonicEngine(
         await load();
         return evaluator.densityResidualNorm();
       },
+      checkPrecision: async () => {
+        const gpu = await solver.residual();
+        await load();
+        const why = residualPrecision(gpu, evaluator.residualVector());
+        if (why !== null) throw new GpuPrecisionError(why);
+      },
       cells,
       live: (): FlowSource => {
         const view = solver.viewBuffers();
@@ -96,6 +103,33 @@ export function gpuTransonicEngine(
     refuses: (cells: { readonly ni: number; readonly nj: number }) =>
       twoFloatGridLimit(device, cells.ni, cells.nj),
   });
+}
+
+/**
+ * Largest difference between the GPU's residual and the CPU's double one
+ * on the same state, relative to the largest residual, before the GPU is
+ * taken to lose the low parts. Two-float arithmetic measured 2.2e-9 on
+ * SwiftShader (0013, step 4b); 32-bit arithmetic loses about 1e-7 of the
+ * face fluxes, which reach 1e3 on the far cells, against residuals of
+ * order 0.1: some 1e-3.
+ */
+export const RESIDUAL_PRECISION = 1e-6;
+
+/**
+ * Why the GPU's residual is not the CPU's double one within
+ * RESIDUAL_PRECISION (four values per cell, as residualVector), or null.
+ */
+export function residualPrecision(gpu: Float64Array, cpu: Float64Array): string | null {
+  if (gpu.length !== cpu.length) return 'the GPU returned a residual of the wrong size';
+  let worst = 0;
+  let largest = 0;
+  for (let k = 0; k < cpu.length; k++) {
+    const d = Math.abs(gpu[k]! - cpu[k]!);
+    worst = Number.isNaN(d) ? Infinity : Math.max(worst, d);
+    largest = Math.max(largest, Math.abs(cpu[k]!));
+  }
+  if (worst <= RESIDUAL_PRECISION * largest) return null;
+  return `this GPU's residual differs from the CPU's double-precision one by ${(worst / largest).toExponential(2)} of the largest (at most ${RESIDUAL_PRECISION} allowed): it loses the low parts of its two-float arithmetic`;
 }
 
 /** The grid's extent: the whole domain (the far boundaries 100 radii out on the family's grids). */

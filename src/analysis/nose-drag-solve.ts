@@ -8,7 +8,11 @@
  * are passed in (gpuNoseDragSolvers on the page, stand-ins in tests).
  */
 
-import { GpuExecutionError, GpuMemoryLimitError } from '../engine-gpu/gpu-common';
+import {
+  GpuExecutionError,
+  GpuMemoryLimitError,
+  GpuPrecisionError,
+} from '../engine-gpu/gpu-common';
 import type { Body } from '../geometry/body';
 import type { FlowSource } from '../render/flow-renderer';
 import type {
@@ -139,10 +143,21 @@ export async function solveNoseDrag(
         },
       });
     } catch (error) {
-      // A grid too large for the device is a refusal, never an exception
-      // (the driver refuses it itself; this covers any other solver).
-      if (!(error instanceof GpuMemoryLimitError)) throw error;
-      result = { kind: 'refused', reason: 'device-memory', message: error.message, levels: [] };
+      // A grid too large for the device, or a device that loses the low
+      // parts of two-float numbers, is a refusal, never an exception (the
+      // driver refuses both itself; this covers any other solver).
+      if (error instanceof GpuPrecisionError) {
+        result = {
+          kind: 'refused',
+          reason: 'device-precision',
+          message: error.message,
+          levels: [],
+        };
+      } else if (error instanceof GpuMemoryLimitError) {
+        result = { kind: 'refused', reason: 'device-memory', message: error.message, levels: [] };
+      } else {
+        throw error;
+      }
     }
     return fromTransonic(result);
   }

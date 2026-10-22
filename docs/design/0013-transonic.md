@@ -1894,6 +1894,37 @@ Its allowance is then the turning bound, at least (1 + T) times the
 larger change plus m, which holds any remainder decaying no slower than
 D^-0.35 from changes of that size; it is not refused.
 
+**S5, the device's precision, and the sweeps pinned (owner's decision
+7.4: 2 sweeps).**
+
+- **Once per solve**, after the first batch of steps on the family's
+  base grid, the engine's residual on the GPU is compared with the CPU's
+  double one on the same state read back (`checkPrecision`,
+  `residualPrecision` in `src/analysis/gpu-transonic.ts`). A difference
+  above 1e-6 of the largest residual refuses the solve,
+  'device-precision', with the measured figure in the message.
+  Two-float arithmetic measured 2.2e-9 of it on SwiftShader (step 4b);
+  32-bit face fluxes of order 1e3 would lose about 1e-4 against residuals
+  of order 0.1, some 1e-3 of it. The per-device self-test now throws
+  the same kind of error (`GpuPrecisionError`), so a GPU whose compiler
+  loses the low parts is also a 'device-precision' refusal, in the
+  driver and in the router, and never an exception.
+- **The refusal paths are tested without a GPU**
+  (`tests/engine-gpu/two-float-checks.test.ts`): the self-test's
+  verdict on results with each low part dropped, or a NaN; the residual
+  check on two-float and 32-bit sized differences.
+  `tests/analysis/transonic-drag.test.ts` checks that the driver calls
+  the check exactly once per solve and refuses on it, and on a self-test
+  failing at creation; `tests/analysis/nose-drag-solve.test.ts` the
+  router.
+- **G3** (`tests/gpu/transonic-gpu.test.ts`): `gpuNoseDragSolvers` on
+  SwiftShader, the cone at Mach 1.1, stopped after r = 2. Its r = 1 and
+  r = 2 drags must be the CPU driver's within 3e-7, each settled in fewer
+  than 4,000 steps under a cap of 8,000 a grid, which a limit cycle
+  (4 sweeps) cannot meet. It pins `GPU_TRANSONIC_SWEEPS` at 2 by
+  behaviour, not only by value. Also on SwiftShader: the precision check
+  passes on a rough state of the cone.
+
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
 (Superseded as a serving rule by the owner's decision of 2026-10-21,

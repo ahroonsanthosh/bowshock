@@ -8,7 +8,7 @@ import {
 } from '../../src/analysis/nose-drag-solve';
 import { verifiedTransonicDrag, type TransonicDrag } from '../../src/analysis/transonic-drag';
 import type { VerifiedDrag } from '../../src/analysis/verified-drag';
-import { GpuMemoryLimitError } from '../../src/engine-gpu/gpu-common';
+import { GpuMemoryLimitError, GpuPrecisionError } from '../../src/engine-gpu/gpu-common';
 import type { Body } from '../../src/geometry/body';
 
 const deg = Math.PI / 180;
@@ -90,6 +90,18 @@ describe('the nose drag solver for a Mach number (design record 0013, serving ru
       expect(outcome.status, `Mach ${mach}`).toBe('refused');
       expect(outcome.text).toMatch(/ran out of memory/);
     }
+  });
+
+  it('a device that loses the low parts of two-float numbers is a transonic refusal, not an exception', async () => {
+    const imprecise = () =>
+      Promise.reject(new GpuPrecisionError('the residual lost its low parts'));
+    const outcome = await solveNoseDrag(
+      cone,
+      { mach: 1.1, gamma: 1.4, finest: 8 },
+      { transonic: imprecise, fitted: imprecise },
+    );
+    expect(outcome.status).toBe('refused');
+    expect(outcome.text).toMatch(/lost its low parts/);
   });
 
   it('a body the fitted solver refuses by throwing comes back refused with the reason', async () => {

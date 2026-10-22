@@ -23,6 +23,7 @@ import {
   BufferSet,
   ExclusiveRunner,
   GpuExecutionError,
+  GpuPrecisionError,
   GpuMemoryLimitError,
   compileShader,
   readBuffer,
@@ -673,22 +674,30 @@ fn main() {
     pass.dispatchWorkgroups(1);
     pass.end();
     device.queue.submit([encoder.finish()]);
-    const r = new Float32Array(await readBuffer(device, output, readback, 32));
-    const value = (k: number) => r[2 * k]! + r[2 * k + 1]!;
-    const sa = split(a);
-    const sb = split(b);
-    const exactA = sa[0] + sa[1];
-    const exactB = sb[0] + sb[1];
-    const expected = [exactA + exactB, exactA * exactB, exactA / exactB, Math.sqrt(exactB)];
-    for (let k = 0; k < 4; k++) {
-      const error = Math.abs(value(k) / expected[k]! - 1);
-      if (!(error < 1e-12)) {
-        throw new GpuExecutionError(
-          `this GPU's compiler does not keep two-float arithmetic exact (error ${error.toExponential(2)} in operation ${k}); the transonic solve needs it`,
-        );
-      }
-    }
+    checkSelfTest(new Float32Array(await readBuffer(device, output, readback, 32)), a, b);
   } finally {
     buffers.destroyAll();
+  }
+}
+
+/**
+ * The self-test's verdict on what the GPU returned for a + b, a b, a / b
+ * and sqrt(b) (four two-float numbers, high then low part): each within
+ * 1e-12 of double precision, or GpuPrecisionError.
+ */
+export function checkSelfTest(r: Float32Array, a: number, b: number): void {
+  const value = (k: number) => r[2 * k]! + r[2 * k + 1]!;
+  const sa = split(a);
+  const sb = split(b);
+  const exactA = sa[0] + sa[1];
+  const exactB = sb[0] + sb[1];
+  const expected = [exactA + exactB, exactA * exactB, exactA / exactB, Math.sqrt(exactB)];
+  for (let k = 0; k < 4; k++) {
+    const error = Math.abs(value(k) / expected[k]! - 1);
+    if (!(error < 1e-12)) {
+      throw new GpuPrecisionError(
+        `this GPU's compiler does not keep two-float arithmetic exact (error ${error.toExponential(2)} in operation ${k}); the transonic solve needs it`,
+      );
+    }
   }
 }
