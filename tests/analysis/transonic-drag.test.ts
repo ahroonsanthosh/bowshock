@@ -117,7 +117,8 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     );
     expect(result.kind).toBe('refused');
     if (result.kind === 'refused') {
-      expect(result.reason).toMatch(/oscillate/);
+      expect(result.reason).toBe('no-band');
+      expect(result.message).toMatch(/oscillate/);
       expect(result.finer?.refinement).toBe(16);
     }
   });
@@ -132,7 +133,10 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
       }),
     );
     expect(result.kind).toBe('refused');
-    if (result.kind === 'refused') expect(result.reason).toMatch(/far boundaries.*does not fall/);
+    if (result.kind === 'refused') {
+      expect(result.reason).toBe('far-field');
+      expect(result.message).toMatch(/far boundaries.*does not fall/);
+    }
   });
 
   it('a wander measured on the grids widens the noise, so changes below it cannot be measured', async () => {
@@ -149,13 +153,17 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     const engine = synthetic({ converged: () => 0.09 });
     const m1 = await verifiedTransonicDrag(cone, { ...options, mach: 1 }, engine);
     expect(m1.kind).toBe('refused');
-    if (m1.kind === 'refused') expect(m1.reason).toMatch(/Mach 1/);
+    if (m1.kind === 'refused') {
+      expect(m1.reason).toBe('mach-1');
+      expect(m1.message).toMatch(/Mach 1/);
+    }
     const blunt: Body = {
       nose: { shape: { kind: 'ellipsoid' }, length: 2, baseRadius: 1 },
       cylinderLength: 0,
     };
     const b = await verifiedTransonicDrag(blunt, options, engine);
     expect(b.kind).toBe('refused');
+    if (b.kind === 'refused') expect(b.reason).toBe('blunt-nose');
     await expect(verifiedTransonicDrag(cone, { ...options, mach: 1.3 }, engine)).rejects.toThrow(
       /Mach 1 to 1.2/,
     );

@@ -118,6 +118,37 @@ export interface ReferenceNote {
   readonly note: string;
 }
 
+/**
+ * Why a transonic solve gives no value, as a code the page words (the
+ * sentence in `message` says the same with the case's numbers):
+ * - 'mach-1': Mach 1.0 itself, until the allowance rule passes its test
+ *   there (0013, serving rule 8);
+ * - 'blunt-nose': the grids of blunt noses have no nested domains yet, so
+ *   the far boundaries' allowance cannot be measured;
+ * - 'no-band': the procedure gives no band from the grids (`estimate`
+ *   says why; `finer` may offer one more grid);
+ * - 'far-field', 'cylinder': that effect does not fall fast enough, as
+ *   the domain grows, to bound what lies beyond (domainAllowance).
+ */
+export type TransonicRefusalReason = 'mach-1' | 'blunt-nose' | 'no-band' | 'far-field' | 'cylinder';
+export const TRANSONIC_REFUSAL_REASONS: readonly TransonicRefusalReason[] = [
+  'mach-1',
+  'blunt-nose',
+  'no-band',
+  'far-field',
+  'cylinder',
+];
+
+/**
+ * Why a grid did not converge: 'not-settled', its drag did not settle
+ * within the steps allowed; 'not-finite', its drag became NaN or infinite.
+ */
+export type TransonicNotConvergedReason = 'not-settled' | 'not-finite';
+export const TRANSONIC_NOT_CONVERGED_REASONS: readonly TransonicNotConvergedReason[] = [
+  'not-settled',
+  'not-finite',
+];
+
 export type TransonicDrag =
   | {
       readonly kind: 'solved';
@@ -144,7 +175,8 @@ export type TransonicDrag =
     }
   | {
       readonly kind: 'refused';
-      readonly reason: string;
+      readonly reason: TransonicRefusalReason;
+      readonly message: string;
       readonly levels: readonly TransonicLevel[];
       readonly estimate?: ConvergenceEstimate;
       readonly allowances?: {
@@ -154,7 +186,12 @@ export type TransonicDrag =
       /** A finer grid that may give a band, with its size, where the procedure suggests one. */
       readonly finer?: { readonly refinement: number; readonly cells: number };
     }
-  | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string }
+  | {
+      readonly kind: 'not-converged';
+      readonly refinement: number;
+      readonly reason: TransonicNotConvergedReason;
+      readonly message: string;
+    }
   | { readonly kind: 'cancelled'; readonly levels: readonly TransonicLevel[] };
 
 class Cancelled extends Error {}
@@ -162,9 +199,10 @@ class Cancelled extends Error {}
 class NotConverged extends Error {
   constructor(
     readonly refinement: number,
-    reason: string,
+    readonly reason: TransonicNotConvergedReason,
+    message: string,
   ) {
-    super(reason);
+    super(message);
   }
 }
 
@@ -187,7 +225,8 @@ export async function verifiedTransonicDrag(
   if (mach < 1 + 1e-9 && options.allowMach1 !== true) {
     return {
       kind: 'refused',
-      reason:
+      reason: 'mach-1',
+      message:
         'at Mach 1 the far boundaries move the drag by 2% (cone) to 10% (ogive) on 100 radii, and their allowance rule has not yet passed its test there',
       levels: [],
     };
@@ -195,7 +234,8 @@ export async function verifiedTransonicDrag(
   if (!Number.isFinite(noseTipSlope(body.nose))) {
     return {
       kind: 'refused',
-      reason:
+      reason: 'blunt-nose',
+      message:
         'the far boundaries’ allowance needs nested domains, which the grids of blunt noses do not have yet',
       levels: [],
     };
@@ -277,7 +317,8 @@ export async function verifiedTransonicDrag(
       const finest = levels[levels.length - 1]!;
       return {
         kind: 'refused',
-        reason: `no error band from the grids: ${estimate.reason}`,
+        reason: 'no-band',
+        message: `no error band from the grids: ${estimate.reason}`,
         levels,
         estimate,
         allowances,
@@ -286,14 +327,15 @@ export async function verifiedTransonicDrag(
           : { finer: { refinement: finer, cells: 4 * finest.cells.ni * finest.cells.nj } }),
       };
     }
-    for (const [what, a] of [
-      ['far boundaries', farAllowance],
-      ['cylinder', cylinderAllowance],
+    for (const [reason, what, a] of [
+      ['far-field', 'far boundaries', farAllowance],
+      ['cylinder', 'cylinder', cylinderAllowance],
     ] as const) {
       if (a.kind === 'refused') {
         return {
           kind: 'refused',
-          reason: `the ${what}: ${a.reason}`,
+          reason,
+          message: `the ${what}: ${a.reason}`,
           levels,
           estimate,
           allowances,
@@ -325,7 +367,12 @@ export async function verifiedTransonicDrag(
   } catch (error) {
     if (error instanceof Cancelled) return { kind: 'cancelled', levels };
     if (error instanceof NotConverged) {
-      return { kind: 'not-converged', refinement: error.refinement, reason: error.message };
+      return {
+        kind: 'not-converged',
+        refinement: error.refinement,
+        reason: error.reason,
+        message: error.message,
+      };
     }
     throw error;
   }
@@ -417,7 +464,9 @@ async function solveGrid(
       await solver.iterate(every);
       steps += every;
       drag = await solver.drag();
-      if (!Number.isFinite(drag)) throw new NotConverged(refinement, 'the drag is not finite');
+      if (!Number.isFinite(drag)) {
+        throw new NotConverged(refinement, 'not-finite', 'the drag is not finite');
+      }
       options.onProgress?.(what, refinement, steps, drag);
       recent.push(drag);
       if (recent.length > 3) recent.shift();
@@ -429,7 +478,11 @@ async function solveGrid(
       }
     }
     if (!settled) {
-      throw new NotConverged(refinement, `the drag did not settle within ${maxSteps} steps`);
+      throw new NotConverged(
+        refinement,
+        'not-settled',
+        `the drag did not settle within ${maxSteps} steps`,
+      );
     }
     let low = drag;
     let high = drag;
