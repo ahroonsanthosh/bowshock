@@ -81,6 +81,63 @@ Uncertain calls, fig. 9:
 7. The power-law line trace near the arrow tip (u* about 0.66) may include a few arrow pixels; the
    effect on the fits is below the rms quoted.
 
+## Fig. 10: variation of boundary-layer thickness with Mach number
+
+Axes: M_inf (ticks at 0.5 and 1.0, pointing up; 0 is the y axis line); delta/h (ticks at 0.1 and 0.2,
+pointing right; 0 is the x axis line). Here the x axis is nearly level (slope -0.0013) and the y axis
+leans by 0.0055, a different distortion from fig. 9 on the same page, so each figure has its own
+frame.
+
+Calibration: M = 0.0019857 per px, delta/h = 0.00050310 per px; each a least-squares line through the
+two labelled ticks and the zero line. Residuals: M within 0.0013, delta/h within 0.0004 (see uncertain
+call 1). Calibration error used: 0.0019 in M, 0.00054 in delta/h.
+
+Legend: "Symbols as in Fig. 9": open circle = at trailing edge, open square = 1 in. upstream.
+
+Counts: 5 symbols, 1 circle and 4 squares (`readings/rm3427-fig10-points.csv`; every symbol is clean
+and isolated; errors 0.003 in M and 0.0007 in delta/h):
+
+| id | symbol | M_inf | delta/h |
+|---|---|---|---|
+| 1 | square | 0.397 | 0.1206 |
+| 2 | circle | 0.798 | 0.1434 |
+| 3 | square | 0.802 | 0.1250 |
+| 4 | square | 1.000 | 0.1159 |
+| 5 | square | 1.099 | 0.1008 |
+
+The CSV also gives each value from the two labelled ticks alone (zero lines ignored): differences up
+to 0.0004 in delta/h and 0.001 in M.
+
+Flat-plate lines (both dashed, both drawn): traced column by column near eye-placed guide points, with
+a quartic smoothing fit used only to reject stray pixels (1 column rejected on the upper line, 0 on the
+lower). `readings/rm3427-fig10-flatplate-lines.csv` gives every dash centre (18 dashes on each line;
+the laminar line's third dash is cut in two by the arrow head, so it lists 19 groups), the smoothed
+line at every 0.05 in M, and the drawn ends.
+- "Flat plate turbulent from leading edge": drawn from M = 0.193 (delta/h = 0.250) to M = 1.185
+  (0.1945); 0.2205 at M 0.4, 0.1991 at M 0.8, 0.1953 at M 1.0. rms of the traced columns about the
+  smooth line 0.0003.
+- "Flat plate, laminar": drawn from M = 0.167 (0.0599) to M = 1.207 (0.0317); 0.0436 at M 0.4, 0.0332
+  at M 0.8, 0.0324 at M 1.0. rms 0.0002.
+Line error per value: 0.0007 in delta/h (1 px centring plus calibration).
+
+Internal check (not used to change any value): with the base height h = 0.6 in. (section 2 of the
+report), the fig. 10 values at M 0.8 give delta of about 0.086 in. (circle) and 0.075 in. (square);
+fig. 9's profiles at M 0.8 reach u* of about 0.99 to 1.0 near y = 0.08 to 0.09 in. (circles) and 0.073
+to 0.083 in. (squares). The two figures agree to the reading accuracy that this rough check allows.
+
+Uncertain calls, fig. 10:
+1. Zero lines against ticks: extrapolating the 0.1 and 0.2 ticks puts delta/h = 0 at page row 1717.5,
+   while the x axis line is at 1714.6 to 1715.0 (about 0.0013 apart); for M, the 0.5 and 1.0 ticks put
+   0 about 2 px left of the y axis line. I used all three marks in a least-squares fit and put the
+   residual into the calibration error; the ticks-only values are in the CSV for comparison.
+2. The arrow leader to the turbulent line touches it near M 0.38 and the arrow head to the laminar
+   line merges with a dash near M 0.27; columns there were rejected or split; the smoothed line
+   bridges them.
+3. The ends of each dashed line are read as the ends of the first and last dash; the authors may have
+   meant the lines to extend further.
+4. No symbol is hidden behind the text or the lines as far as enlarged crops show; text letters ("o"
+   in "Symbols", "Flat plate", "turbulent") were rejected as symbol candidates by eye.
+
 ## What I opened
 
 - The shared brief (scratchpad `agent-brief.md`) and the owner's decisions file (scratchpad
