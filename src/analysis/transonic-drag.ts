@@ -10,10 +10,14 @@
  *    measure how much it still wanders;
  * 2. the procedure (gridConvergence) on the four finest grids, with the
  *    noise measured on those grids (never an assumed one);
- * 3. the far boundaries' and the cylinder's allowances (domainAllowance)
- *    from the base grid on nested domains: 55.1 and 224.2 radii, 5 and
- *    20 calibers;
- * 4. the band: the procedure's, plus the floor, plus both allowances.
+ * 3. the far boundaries' and the cylinder's allowances (domainAllowance,
+ *    the rule corrected for sign reversal) from the base grid on nested
+ *    domains, solved right after the base grid: 55.1 and 224.2 radii (from
+ *    Mach 1.05; below it the family moves to 224.2 radii and its
+ *    neighbours are 100.6 and 408.7), 5 and 20 calibers;
+ * 4. the band: the procedure's, plus the floor, plus both allowances;
+ *    for a cone with an exact solution, the solve's error against it must
+ *    lie inside the band, and the label reports it.
  *
  * A case is refused only when no band can be given, with the reason. The
  * engine is passed in: the two-float GPU solver on the page
@@ -81,8 +85,10 @@ export interface TransonicEngine {
  * The floor: an allowance for what a captured shock's family cannot show,
  * relative to the value. As the fitted solver's until the transonic
  * validation cases give a reason for another (0013, serving rule 3): the
- * procedure's own extrapolation missed the exact values by 6e-6 (cone,
- * Mach 1.2) and 1e-7 (cone, 1.1, r = 2 to 16).
+ * procedure's own extrapolation missed the exact values by 6.8e-6 of the
+ * value (5.6e-7 absolute; cone, Mach 1.2) and 1.1e-6 of it (1.0e-7
+ * absolute; cone, 1.1, r = 2 to 16), both well within the floor of 7e-5 of
+ * the value.
  */
 export const TRANSONIC_DRAG_FLOOR = FITTED_DRAG_FLOOR;
 /** A grid's drag has settled when it changes by less than this, relative (SettlingValue). */
@@ -280,7 +286,18 @@ export interface TransonicAllowance {
 export interface ReferenceNote {
   readonly exact: boolean;
   readonly note: string;
+  /**
+   * Where an exact solution exists, computed by the driver for this nose
+   * and Mach number: its drag coefficient, the solve's error against it
+   * (value - exact), and whether the band contains that error. Never part
+   * of the band.
+   */
+  readonly check?: { readonly value: number; readonly error: number; readonly inside: boolean };
 }
+
+/** What the label names as the procedure's validation, where no exact solution exists. */
+export const VALIDATION_CASES =
+  'the procedure was validated against Taylor-Maccoll’s exact solution on the 7 deg cone at Mach 1.1 and 1.2, and against the method of characteristics on the 5-caliber ogive at 1.2';
 
 /**
  * Why a transonic solve gives no value, as a code the page words (the
@@ -290,6 +307,9 @@ export interface ReferenceNote {
  *   serving rule 8);
  * - 'blunt-nose': the grids of blunt noses have no nested domains yet, so
  *   the far boundaries' allowance cannot be measured;
+ * - 'vertical-tip': a pointed nose whose surface meets the axis at a
+ *   right angle (Haack noses, power-law noses below exponent 1): the H
+ *   grid needs a finite tip angle, and the C grid has no nested domains;
  * - 'no-band': the procedure gives no band from the grids (`estimate`
  *   says why; `finer` may offer one more grid);
  * - 'far-field', 'cylinder': that effect does not fall fast enough, as
@@ -304,6 +324,7 @@ export interface ReferenceNote {
 export type TransonicRefusalReason =
   | 'near-sonic'
   | 'blunt-nose'
+  | 'vertical-tip'
   | 'no-band'
   | 'far-field'
   | 'cylinder'
@@ -313,6 +334,7 @@ export type TransonicRefusalReason =
 export const TRANSONIC_REFUSAL_REASONS: readonly TransonicRefusalReason[] = [
   'near-sonic',
   'blunt-nose',
+  'vertical-tip',
   'no-band',
   'far-field',
   'cylinder',
@@ -425,13 +447,21 @@ export async function verifiedTransonicDrag(
     };
   }
   if (!Number.isFinite(noseTipSlope(body.nose))) {
-    return {
-      kind: 'refused',
-      reason: 'blunt-nose',
-      message:
-        'the far boundaries’ allowance needs nested domains, which the grids of blunt noses do not have yet',
-      levels: [],
-    };
+    return body.nose.shape.kind === 'ellipsoid'
+      ? {
+          kind: 'refused',
+          reason: 'blunt-nose',
+          message:
+            'the far boundaries’ allowance needs nested domains, which the grids of blunt noses do not have yet',
+          levels: [],
+        }
+      : {
+          kind: 'refused',
+          reason: 'vertical-tip',
+          message:
+            'this nose is pointed but its surface meets the axis at a right angle, which the transonic grid for pointed noses cannot follow, and the grid for blunt noses has no nested domains for the far boundaries’ allowance yet',
+          levels: [],
+        };
   }
   const levels: TransonicLevel[] = [];
   // Cell updates so far, every grid counted.
@@ -614,20 +644,53 @@ export async function verifiedTransonicDrag(
       farField: farAllowance.kind === 'refused' ? 0 : farAllowance.allowance,
       cylinder: cylinderAllowance.kind === 'refused' ? 0 : cylinderAllowance.allowance,
     };
-    const reference = referenceNote(body, mach, gamma);
+    const band = parts.grids + parts.floor + parts.farField + parts.cylinder;
+    const exact = exactDrag(body, mach, gamma);
+    if (exact !== null) {
+      // The exact solution, computed here for this cone and Mach number
+      // (review of aed95b0, S6): the label names it only with the check.
+      const error = value - exact.value;
+      if (!(Math.abs(error) <= band)) {
+        return {
+          kind: 'refused',
+          reason: 'no-band',
+          message: `the band (${band.toExponential(2)}) does not contain the solve's error against the exact solution (Taylor-Maccoll's ${exact.value.toFixed(7)}): ${error.toExponential(2)}`,
+          levels,
+          estimate,
+          allowances,
+        };
+      }
+    }
+    const reference: ReferenceNote =
+      exact === null
+        ? referenceNote(body, mach, gamma)
+        : {
+            exact: true,
+            note: exact.note,
+            check: { value: exact.value, error: value - exact.value, inside: true },
+          };
+    const head =
+      reference.check === undefined
+        ? `verified by grid convergence, with no exact reference at this Mach number (${reference.note}); ${VALIDATION_CASES}`
+        : `verified by grid convergence, and checked here against the exact solution (${reference.note}): exact ${reference.check.value.toFixed(7)}, the solve's error ${reference.check.error.toExponential(2)}, inside the band`;
+    // Where the domain's allowances are most of the band, say what they
+    // rest on (review of aed95b0, S6).
+    const assumed = parts.farField + parts.cylinder;
+    const label =
+      assumed > parts.grids + parts.floor
+        ? `${head}; most of the band (${assumed.toExponential(2)} of ${band.toExponential(2)}) is the allowance for the truncated domain, which assumes its effect keeps decaying beyond the largest domain solved and is checked against no reference`
+        : head;
     return {
       kind: 'solved',
       value,
-      band: parts.grids + parts.floor + parts.farField + parts.cylinder,
+      band,
       parts,
       estimate,
       noise,
       levels,
       allowances,
       reference,
-      label: reference.exact
-        ? `verified by grid convergence; ${reference.note}`
-        : `verified by grid convergence, with no exact reference at this Mach number (${reference.note}); the procedure was validated against exact solutions on the cone at Mach 1.1 and 1.2 and the ogive at 1.2`,
+      label,
     };
   } catch (error) {
     if (error instanceof Cancelled) return { kind: 'cancelled', levels };
@@ -692,25 +755,46 @@ function finerMayResolve(values: readonly number[]): boolean {
 /**
  * Whether an exact solution exists for this nose at this Mach number: for
  * a cone, Taylor-Maccoll's with its surface flow supersonic (so that the
- * shoulder cannot reach it). For other noses the page states none.
+ * shoulder cannot reach it). For other noses the page states none. The
+ * driver itself computes the exact drag where one exists (exactDrag) and
+ * the label claims it only with that check.
  */
 export function referenceNote(body: Body, mach: number, gamma: number): ReferenceNote {
+  const exact = exactDrag(body, mach, gamma);
+  if (exact !== null) return { exact: true, note: exact.note };
   if (body.nose.shape.kind === 'conical') {
-    const angle = Math.atan(body.nose.baseRadius / body.nose.length);
     try {
-      const flow = taylorMaccoll(mach, angle, gamma);
-      if (flow.surfaceMach > 1) {
-        return {
-          exact: true,
-          note: `an exact solution exists here (Taylor-Maccoll's, surface Mach number ${flow.surfaceMach.toFixed(3)}), and the band contains its error where measured`,
-        };
-      }
+      taylorMaccoll(mach, Math.atan(body.nose.baseRadius / body.nose.length), gamma);
       return { exact: false, note: 'the cone’s conical surface flow would be subsonic' };
     } catch {
       return { exact: false, note: 'the cone’s shock would detach' };
     }
   }
   return { exact: false, note: 'none is computed for this nose' };
+}
+
+/**
+ * The exact forebody drag coefficient where one exists: a cone whose
+ * Taylor-Maccoll surface flow is supersonic carries its conical surface
+ * pressure all the way to the shoulder, so its pressure drag on the base
+ * area is that pressure coefficient. Null elsewhere.
+ */
+export function exactDrag(
+  body: Body,
+  mach: number,
+  gamma: number,
+): { readonly value: number; readonly note: string } | null {
+  if (body.nose.shape.kind !== 'conical') return null;
+  try {
+    const flow = taylorMaccoll(mach, Math.atan(body.nose.baseRadius / body.nose.length), gamma);
+    if (!(flow.surfaceMach > 1)) return null;
+    return {
+      value: flow.surfacePressureCoefficient,
+      note: `Taylor-Maccoll's, surface Mach number ${flow.surfaceMach.toFixed(3)}`,
+    };
+  } catch {
+    return null;
+  }
 }
 
 interface GridSolution {

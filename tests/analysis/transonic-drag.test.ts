@@ -6,6 +6,8 @@ import {
   transonicNoseTerm,
   verifiedTransonicDrag,
   transonicDomains,
+  exactDrag,
+  VALIDATION_CASES,
   type TransonicEngine,
   type TransonicLevel,
 } from '../../src/analysis/transonic-drag';
@@ -166,9 +168,59 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
       synthetic({ converged: (r) => 0.0945 + 1e-4 / r ** 2 }),
     );
     expect(result.kind).toBe('solved');
+    if (result.kind !== 'solved') return;
+    // Computed here for this cone and Mach number (review S6): Taylor-Maccoll's 0.0944976.
+    expect(result.reference.exact).toBe(true);
+    const check = result.reference.check!;
+    expect(check.value).toBeCloseTo(0.0944976, 6);
+    expect(check.error).toBeCloseTo(result.value - check.value, 15);
+    expect(Math.abs(check.error)).toBeLessThanOrEqual(result.band);
+    expect(result.label).toMatch(
+      /checked here against the exact solution \(Taylor-Maccoll's, surface Mach number 1\.037\): exact 0\.0944976, the solve's error .*, inside the band/,
+    );
+    expect(result.label).not.toMatch(/most of the band/);
+  });
+
+  it('a band that does not contain the error against the exact solution is refused', async () => {
+    const result = await verifiedTransonicDrag(
+      cone,
+      options,
+      synthetic({ converged: (r) => 0.0955 + 1e-4 / r ** 2 }),
+    );
+    expect(result).toMatchObject({ kind: 'refused', reason: 'no-band' });
+    if (result.kind === 'refused') {
+      expect(result.message).toMatch(
+        /does not contain the solve's error against the exact solution/,
+      );
+    }
+  });
+
+  it('the reviewer’s A6: a 10 deg cone at Mach 1.19 names the exact solution only with the check', async () => {
+    const cone10: Body = {
+      nose: { shape: { kind: 'conical' }, length: 1 / Math.tan(10 * deg), baseRadius: 1 },
+      cylinderLength: 0,
+    };
+    const exact = exactDrag(cone10, 1.19, 1.4)!;
+    expect(exact).not.toBeNull();
+    const result = await verifiedTransonicDrag(
+      cone10,
+      { ...options, mach: 1.19 },
+      synthetic({ converged: (r) => exact.value + 1e-5 / r ** 2 }),
+    );
+    expect(result.kind).toBe('solved');
     if (result.kind === 'solved') {
-      expect(result.reference.exact).toBe(true);
-      expect(result.label).toMatch(/Taylor-Maccoll/);
+      expect(result.reference.check?.inside).toBe(true);
+      expect(result.label).toMatch(/checked here against the exact solution/);
+    }
+    // An ogive: no exact solution, and the validation cases named as they were measured.
+    const ogiveResult = await verifiedTransonicDrag(
+      ogive,
+      options,
+      synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 }),
+    );
+    if (ogiveResult.kind === 'solved') {
+      expect(ogiveResult.reference.check).toBeUndefined();
+      expect(ogiveResult.label).toContain(VALIDATION_CASES);
     }
   });
 
@@ -223,7 +275,7 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     // c1 = +1.5e-3, c2 = +2e-6, and the true remainder at 100.6 radii -6e-5.
     const own = 0.105;
     const result = await verifiedTransonicDrag(
-      cone,
+      ogive,
       options,
       synthetic({
         converged: (r, far) =>
@@ -235,6 +287,11 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     expect(result.allowances.farField.result.kind).toBe('turning');
     expect(result.parts.farField).toBeGreaterThanOrEqual(6e-5);
     expect(result.allowances.farField.distances[1]).toBeCloseTo(100.607, 3);
+    // Most of the band is now the domain's allowance: the label says what it rests on.
+    expect(result.parts.farField).toBeGreaterThan(result.parts.grids + result.parts.floor);
+    expect(result.label).toMatch(
+      /most of the band .* is the allowance for the truncated domain, which assumes its effect keeps decaying beyond the largest domain solved and is checked against no reference/,
+    );
   });
 
   it('a wander measured on the grids widens the noise, so changes below it cannot be measured', async () => {
@@ -614,6 +671,16 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     const b = await verifiedTransonicDrag(blunt, options, engine);
     expect(b.kind).toBe('refused');
     if (b.kind === 'refused') expect(b.reason).toBe('blunt-nose');
+    // Pointed, but meeting the axis at a right angle: their own reason (review, minor).
+    for (const shape of [
+      { kind: 'haack', parameter: 0 },
+      { kind: 'power', exponent: 0.5 },
+    ] as const) {
+      const pointed: Body = { nose: { shape, length: 5, baseRadius: 1 }, cylinderLength: 0 };
+      const r = await verifiedTransonicDrag(pointed, options, engine);
+      expect(r, shape.kind).toMatchObject({ kind: 'refused', reason: 'vertical-tip' });
+      if (r.kind === 'refused') expect(r.message).toMatch(/pointed but its surface meets the axis/);
+    }
     await expect(verifiedTransonicDrag(cone, { ...options, mach: 1.3 }, engine)).rejects.toThrow(
       /Mach 1 to 1.2/,
     );
