@@ -149,6 +149,32 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     expect(result.kind).not.toBe('solved');
   });
 
+  it('a grid that does not settle: not converged, with its code and the grids solved before it', async () => {
+    // The base grid settles; r = 2 never does (a drag that keeps drifting).
+    const engine: TransonicEngine = (problem) => {
+      let steps = 0;
+      const drifting = problem.options.refinement > 1;
+      return Promise.resolve({
+        start: () => Promise.resolve(),
+        iterate: (n) => {
+          steps += n;
+          return Promise.resolve();
+        },
+        drag: () =>
+          Promise.resolve(drifting ? 0.1 + 1e-6 * steps : 0.1 * (1 + 0.01 * 0.9 ** steps)),
+        cells: () => Promise.resolve(() => problem.freeStream.state),
+        destroy: () => undefined,
+      });
+    };
+    const result = await verifiedTransonicDrag(ogive, { ...options, maxSteps: 2000 }, engine);
+    expect(result.kind).toBe('not-converged');
+    if (result.kind === 'not-converged') {
+      expect(result.reason).toBe('not-settled');
+      expect(result.refinement).toBe(2);
+      expect(result.levels.map((l) => l.refinement)).toEqual([1]);
+    }
+  });
+
   it('Mach 1.0 is refused unless allowed, and blunt noses are refused', async () => {
     const engine = synthetic({ converged: () => 0.09 });
     const m1 = await verifiedTransonicDrag(cone, { ...options, mach: 1 }, engine);

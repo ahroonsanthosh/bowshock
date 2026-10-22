@@ -168,7 +168,7 @@ function fromTransonic(result: TransonicDrag): NoseDragOutcome {
         solver: 'transonic',
         status: 'not-converged',
         text: `the grid at refinement ${result.refinement} did not converge (${result.message})`,
-        levels: [],
+        levels: transonicLevels(result.levels),
         detail,
       };
     case 'cancelled':

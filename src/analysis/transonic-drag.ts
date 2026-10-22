@@ -191,6 +191,8 @@ export type TransonicDrag =
       readonly refinement: number;
       readonly reason: TransonicNotConvergedReason;
       readonly message: string;
+      /** The grids solved before it. */
+      readonly levels: readonly TransonicLevel[];
     }
   | { readonly kind: 'cancelled'; readonly levels: readonly TransonicLevel[] };
 
@@ -372,6 +374,7 @@ export async function verifiedTransonicDrag(
         refinement: error.refinement,
         reason: error.reason,
         message: error.message,
+        levels,
       };
     }
     throw error;
