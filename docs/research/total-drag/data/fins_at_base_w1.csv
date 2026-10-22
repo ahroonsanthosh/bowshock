@@ -1,0 +1,99 @@
+# W1 (docs/design/0015-fins-at-the-base.md): FIRST READINGS of the band-setting figures for the rebuilt
+# fins-on-base factor. The method of each reading (page, calibration, error) is in fins_at_base_w1.md; the scripts
+# are in ../scripts/w1/ and their outputs are the w1_*_output.txt files beside this one. The second, blind
+# reading is fins_at_base_w1_second.csv (round 6), compared in w1_compare_round6_output.txt; the band is the
+# envelope of both.
+# Columns: source, figure, series, M, abscissa (x/c, t/c in percent, or M), value, quantity, error, note.
+# dPb = P_B with tail minus P_B without (TN 2360's Delta P_b); PB = (p_b - p_inf) / q_inf.
+source,figure,series,M,abscissa,value,quantity,error,note
+TN 2360,6(a),plane t/c 0.10,1.5,1.0,-0.0101,dPb,0.002,centre by eye; the circle overlaps its lower edge
+TN 2360,6(a),plane t/c 0.05,1.5,1.0,-0.0035,dPb,0.002,
+TN 2360,6(a),plane t/c 0.10,1.5,0.8,-0.0109,dPb,0.002,
+TN 2360,6(a),plane t/c 0.10,1.5,0.6,-0.0360,dPb,0.002,
+TN 2360,6(a),plane t/c 0.10,1.5,0.4,-0.0419,dPb,0.002,a second outline 4 px above (two runs within 0.002)
+TN 2360,6(a),plane t/c 0.05,1.5,0.4,-0.0106,dPb,0.002,
+TN 2360,6(a),plane t/c 0.10,1.5,0.2,-0.0538,dPb,0.002,
+TN 2360,6(a),plane t/c 0.10,1.5,0.0,-0.0685,dPb,0.002,
+TN 2360,6(a),plane t/c 0.05,1.5,0.0,-0.0337,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.05,1.5,1.0,0.0080,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.10,1.5,1.0,0.0155,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.8,0.0035,dPb,0.002,no circle at 0.8
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.6,-0.0125,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.05,1.5,0.6,0.0041,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.4,-0.0184,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.05,1.5,0.4,-0.0048,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.2,-0.0599,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.05,1.5,0.2,-0.0235,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.0,-0.1391,dPb,0.002,three squares stacked at x/c 0 (repeat runs)
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.0,-0.1303,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.0,-0.1210,dPb,0.002,
+TN 2360,6(a),cruciform t/c 0.05,1.5,0.0,-0.0743,dPb,0.002,
+TN 2360,6(b),plane t/c 0.10,2.0,1.0,-0.0137,dPb,0.002,no circles on the M 2.0 plane panel
+TN 2360,6(b),plane t/c 0.10,2.0,0.6,-0.0201,dPb,0.002,no symbol at 0.8
+TN 2360,6(b),plane t/c 0.10,2.0,0.4,-0.0313,dPb,0.002,
+TN 2360,6(b),plane t/c 0.10,2.0,0.2,-0.0348,dPb,0.002,
+TN 2360,6(b),plane t/c 0.10,2.0,0.0,-0.0398,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.10,2.0,1.0,-0.0096,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.05,2.0,1.0,0.0064,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.8,-0.0124,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.6,-0.0344,dPb,0.002,a second square about 0.004 lower
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.6,-0.0295,dPb,0.002,the second square at 0.6
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.4,-0.0629,dPb,0.002,start by eye
+TN 2360,6(b),cruciform t/c 0.05,2.0,0.4,-0.0221,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.2,-0.0642,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.2,-0.0570,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.0,-0.0640,dPb,0.002,three squares stacked at x/c 0; start by eye for the top one
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.0,-0.0573,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.0,-0.0509,dPb,0.002,
+TN 2360,6(b),cruciform t/c 0.05,2.0,0.0,-0.0321,dPb,0.002,start by eye
+TN 3819,33,ref. 26 circle,1.50,0,-0.1948,PB,0.001,
+TN 3819,33,ref. 26 circle,1.50,5,-0.2700,PB,0.001,
+TN 3819,33,ref. 26 circle,1.50,10,-0.3253,PB,0.001,
+TN 3819,33,ref. 26 square,2.00,0,-0.1507,PB,0.001,
+TN 3819,33,ref. 26 square,2.00,5,-0.1851,PB,0.001,
+TN 3819,33,ref. 26 square,2.00,10,-0.2092,PB,0.001,
+TN 3819,33,Langley 9 in diamond,2.41,0,-0.1219,PB,0.001,
+TN 3819,33,Langley 9 in diamond,2.41,10,-0.1649,PB,0.001,
+TN 3819,34,RM-10 with fins,1.490,1.490,-0.1132,PB,0.001,ref. 36; boat-tailed body; 60 deg sweep; t/c 0.10
+TN 3819,34,RM-10 with fins,1.590,1.590,-0.1094,PB,0.001,
+TN 3819,34,RM-10 with fins,1.780,1.780,-0.1083,PB,0.001,
+TN 3819,34,RM-10 with fins,1.980,1.980,-0.1067,PB,0.001,
+TN 3819,34,RM-10 without fins,1.487,1.487,-0.0921,PB,0.001,
+TN 3819,34,RM-10 without fins,1.588,1.588,-0.0962,PB,0.001,
+TN 3819,34,RM-10 without fins,1.778,1.778,-0.0927,PB,0.001,
+TN 3819,34,RM-10 without fins,1.988,1.988,-0.0932,PB,0.001,
+TN 3819,35,free-flight line (ref. 12),1.40,1.40,-0.2674,PB,0.002,NOT BLIND (round-3 values seen before reading)
+TN 3819,35,free-flight line (ref. 12),1.45,1.45,-0.2666,PB,0.002,not blind
+TN 3819,35,free-flight line (ref. 12),1.50,1.50,-0.2660,PB,0.002,not blind
+TN 3819,35,free-flight line (ref. 12),1.55,1.55,-0.2656,PB,0.002,not blind
+TN 3819,35,free-flight line (ref. 12),1.60,1.60,-0.2653,PB,0.002,not blind
+TN 3819,35,free-flight line (ref. 12),1.65,1.65,-0.2651,PB,0.002,not blind
+TN 3819,35,free-flight line (ref. 12),1.70,1.70,-0.2600,PB,0.003,not blind; the knee where three lines meet
+TN 3819,35,free-flight line (ref. 12),1.75,1.75,-0.2480,PB,0.004,not blind; by eye; the line cannot be told from estimate B
+TN 3819,35,free-flight line (ref. 12),1.80,1.80,-0.2365,PB,0.003,not blind; by eye; as above
+RM L52J21a,38(c),R 8.06e6 cylindrical or conical base: most negative symbol,1.62,1.62,-0.0157,dPb,0.002,overlapping cluster; plain and flagged symbols not separable
+RM L52J21a,38(c),R 8.06e6 cylindrical or conical base: most positive symbol,1.62,1.62,0.0017,dPb,0.002,
+RM L52J21a,38(c),R 8.06e6 cylindrical or conical base: most negative symbol,1.93,1.93,-0.0066,dPb,0.002,
+RM L52J21a,38(c),R 8.06e6 cylindrical or conical base: most positive symbol,1.93,1.93,0.0055,dPb,0.002,
+RM L52J21a,38(c),R 8.06e6 cylindrical or conical base: most negative symbol,2.41,2.41,-0.0069,dPb,0.002,
+RM L52J21a,38(c),R 8.06e6 cylindrical or conical base: most positive symbol,2.41,2.41,0.0020,dPb,0.002,
+RM L52J21a,8,R 8.06e6 cylindrical base: least negative of three noses,1.62,1.62,-0.1485,PB,0.002,
+RM L52J21a,8,R 8.06e6 cylindrical base: most negative of three noses,1.62,1.62,-0.1611,PB,0.002,
+RM L52J21a,8,R 8.06e6 cylindrical base: least negative of three noses,1.93,1.93,-0.1465,PB,0.002,
+RM L52J21a,8,R 8.06e6 cylindrical base: most negative of three noses,1.93,1.93,-0.1513,PB,0.002,
+RM L52J21a,8,R 8.06e6 cylindrical base: least negative of three noses,2.41,2.41,-0.1128,PB,0.002,
+RM L52J21a,8,R 8.06e6 cylindrical base: most negative of three noses,2.41,2.41,-0.1190,PB,0.002,
+RM L52J21a,8,R 8.06e6 conical base: least negative of three noses,1.93,1.93,-0.0617,PB,0.002,
+RM L52J21a,8,R 8.06e6 conical base: least negative of three noses,2.41,2.41,-0.0598,PB,0.002,
+RM L52J21a,8,R 8.06e6 conical base: least negative of two read,1.62,1.62,-0.0322,PB,0.003,
+RM L52E06,7,A (no fins) rim,1.06,1.06,-0.2559,PB,0.002,long dash
+RM L52E06,7,C (fins at the base) rim,1.06,1.06,-0.2181,PB,0.002,medium dash
+RM L52E06,7,A and C centre (merged),1.06,1.06,-0.2078,PB,0.003,solid and short dash not separable here
+RM L52E06,7,A (no fins) rim,1.08,1.08,-0.2499,PB,0.002,
+RM L52E06,7,C (fins at the base) rim,1.08,1.08,-0.2164,PB,0.002,
+RM L52E06,7,A (no fins) centre,1.08,1.08,-0.2017,PB,0.002,solid
+RM L52E06,7,C (fins at the base) centre,1.08,1.08,-0.1981,PB,0.002,short dash
+RM L52E06,7,A (no fins) rim,1.10,1.10,-0.2422,PB,0.002,
+RM L52E06,7,C (fins at the base) rim,1.10,1.10,-0.2137,PB,0.002,the C lines end near M 1.11
+RM L52E06,7,A (no fins) centre,1.10,1.10,-0.1972,PB,0.002,
+RM L52E06,7,C (fins at the base) centre,1.10,1.10,-0.1937,PB,0.002,

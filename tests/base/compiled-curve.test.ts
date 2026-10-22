@@ -24,6 +24,8 @@ import {
   TN3819_FIG18_CHECKS,
   TN3819_FIG18_CURVE_READING_ERROR,
   TN3819_FIG18_CURVES,
+  TN3819_FIG18_MISREADS,
+  TN3819_FIG18_ROUND7,
   TN3819_FIG18_TUNNEL,
 } from '../../src/base/tn3819-fig18';
 
@@ -68,7 +70,7 @@ describe('the transcription', () => {
     });
   });
 
-  it('holds the adopted table (the audit) exactly from M 1.0 to 3.5', () => {
+  it('holds the adopted table (the audit) exactly from M 1.0 to 3.5, but its one misread', () => {
     const audit = csv('docs/research/total-drag/audit/readings/tn3819_fig18.csv').filter(
       (l) => !/^s\d/.test(l),
     );
@@ -78,8 +80,67 @@ describe('the transcription', () => {
     expect(inRange.length).toBe(TN3819_FIG18_CURVES.length);
     inRange.forEach(([m, more, less], k) => {
       const row = TN3819_FIG18_CURVES[k]!;
-      expect([row.mach, row.moreNegative, row.lessNegative]).toEqual([m, more, less]);
+      const mis = TN3819_FIG18_MISREADS.find((x) => x.mach === m && x.curve === 'lessNegative');
+      expect([row.mach, row.moreNegative]).toEqual([m, more]);
+      if (mis === undefined) {
+        expect(row.lessNegative).toBe(less);
+      } else {
+        // The audit's value is the misread; the row holds round 7's (0015 section 7).
+        expect(mis.value).toBe(less);
+        expect(row.lessNegative).toBe(mis.replacedBy);
+      }
     });
+    expect(TN3819_FIG18_MISREADS.map((x) => [x.mach, x.curve])).toEqual([[1.4, 'lessNegative']]);
+  });
+
+  it("round 7, held to its file and paired with the audit's rows: one misread, at M 1.4", () => {
+    const file = csv('docs/research/total-drag/data/round7/tn3819_fig18.csv')
+      .slice(1)
+      .map((l) =>
+        l.match(/("[^"]*"|[^,]*)(,|$)/g)!.map((x) => x.replace(/,$/, '').replace(/"/g, '')),
+      );
+    const at = (curve: string, m: number) =>
+      file.find((f) => f[0]!.startsWith(curve) && f[1] === 'at M' && Number(f[2]) === m)!;
+    for (const r of TN3819_FIG18_ROUND7) {
+      const less = at('Love', r.mach);
+      expect([Number(less[4]), Number(less[5])]).toEqual([r.lessNegative, r.lessNegativeError]);
+      const more = at('Chapman', r.mach);
+      expect([Number(more[4]), Number(more[5])]).toEqual([r.moreNegative, r.moreNegativeError]);
+    }
+    expect(TN3819_FIG18_ROUND7.length).toBe(9);
+    // Paired with the audit's rows (0014 section 10.1, rule 5): within the combined errors but one.
+    const audit = new Map(
+      csv('docs/research/total-drag/audit/readings/tn3819_fig18.csv')
+        .filter((l) => !/^s\d/.test(l))
+        .map((l) => l.split(',').map(Number))
+        .map(([m, more, less]) => [m!, { moreNegative: more!, lessNegative: less! }]),
+    );
+    const beyond: string[] = [];
+    for (const r of TN3819_FIG18_ROUND7) {
+      const a = audit.get(r.mach);
+      if (a === undefined) continue;
+      for (const c of ['moreNegative', 'lessNegative'] as const) {
+        const e = c === 'moreNegative' ? r.moreNegativeError : r.lessNegativeError;
+        if (Math.abs(a[c] - r[c]) > e + TN3819_FIG18_CURVE_READING_ERROR + 1e-12) {
+          beyond.push(`${r.mach} ${c}`);
+        }
+      }
+    }
+    expect(beyond).toEqual(['1.4 lessNegative']);
+    // The third evidence: fig. 35's no-fin curve, both readings, -0.1774 and -0.1775 at M 1.4.
+    for (const v of [-0.1774, -0.1775]) {
+      expect(Math.abs(v - TN3819_FIG18_MISREADS[0]!.replacedBy)).toBeLessThanOrEqual(
+        0.0002 + 0.0003,
+      );
+      expect(Math.abs(v - TN3819_FIG18_MISREADS[0]!.value)).toBeGreaterThan(0.001 + 0.0003);
+    }
+    // Chapman minus basic: 0.0034 to 0.0042 at the neighbouring rows in both readings; round 1's 0.0014 at 1.4.
+    const sep = (m: number) => {
+      const r = TN3819_FIG18_ROUND7.find((x) => x.mach === m)!;
+      return r.lessNegative - r.moreNegative;
+    };
+    for (const m of [1.2, 1.4, 1.5]) expect(sep(m)).toBeGreaterThan(0.0033);
+    expect(-0.1796 - -0.181).toBeLessThan(0.0015);
   });
 
   it('every second reading agrees with the adopted value within the combined reading error', () => {
@@ -317,11 +378,15 @@ describe('refusals', () => {
     baseAreaRatio: 1,
   };
 
-  it('Mach numbers outside 1.5 to 3.0', () => {
+  it('Mach numbers outside 1.0 to 3.0 (below 1.5, W2: tests/base/base-w2.test.ts)', () => {
     expect(COMPILED_CURVE_MACH_RANGE).toEqual([1.5, 3.0]);
-    for (const mach of [1.0, 1.2, 1.4999, 3.0001, 3.5]) {
+    for (const mach of [0.5, 0.9999, 3.0001, 3.5]) {
       refusedWith('mach-range', () => bodyBaseDrag({ ...base, mach }));
     }
+    for (const mach of [1.0, 1.2, 1.4999]) {
+      expect(bodyBaseDrag({ ...base, mach }).curveBand.source).toBe('w2');
+    }
+    expect(bodyBaseDrag({ ...base, mach: 1.5 }).curveBand.source).toBe('compiled');
   });
 
   it('boat-tails and flares', () => {

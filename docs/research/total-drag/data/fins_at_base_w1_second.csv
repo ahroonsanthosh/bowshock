@@ -1,0 +1,162 @@
+# W1 (docs/design/0015-fins-at-the-base.md): SECOND READINGS, the round-6 blind readings restated in the
+# columns of fins_at_base_w1.csv by ../scripts/w1/round6_second.py. Source: docs/research/total-drag/audit/
+# round6/readings/ on branch worktree-agent-adeeb9721ee747758 (TN 3819 figs. 33 to 35: 1b57563, corrected in
+# 66ad83e; TN 2360 fig. 6: 66ad83e; RM L52E06 fig. 7: 5531c84), each file's method in its method_*.md there.
+# Values and errors are the round-6 files', unchanged; the comparison with the first reading is
+# w1_compare_round6_output.txt. RM L52J21a fig. 8 (R 8.06e6) and figs. 31 to 33 (d) near R 8e6: dde6cd0;
+# fig. 38(c) has no second reading (0015 section 7). RM L52E06 fig. 8 (W2): 5531c84.
+# Columns: source, figure, series, M, abscissa (x/c, t/c in percent, or M), value, quantity, error, note.
+source,figure,series,M,abscissa,value,quantity,error,note
+TN 2360,6(a),plane t/c 0.05,1.5,1.0,-0.0045,dPb,0.0003,read at x/c 1.0040; LOW MARGIN
+TN 2360,6(a),plane t/c 0.10,1.5,0.8,-0.0117,dPb,0.0003,read at x/c 0.7979; LOW MARGIN
+TN 2360,6(a),plane t/c 0.10,1.5,0.6,-0.0367,dPb,0.0003,read at x/c 0.5991; LOW MARGIN
+TN 2360,6(a),plane t/c 0.05,1.5,0.4,-0.0104,dPb,0.0003,read at x/c 0.4026
+TN 2360,6(a),plane t/c 0.10,1.5,0.4,-0.0435,dPb,0.0003,read at x/c 0.4008; LOW MARGIN
+TN 2360,6(a),plane t/c 0.10,1.5,0.2,-0.0538,dPb,0.0003,read at x/c 0.1986; LOW MARGIN
+TN 2360,6(a),plane t/c 0.05,1.5,0.0,-0.0334,dPb,0.0003,read at x/c 0.0013
+TN 2360,6(a),plane t/c 0.10,1.5,0.0,-0.0686,dPb,0.0003,read at x/c 0.0006; LOW MARGIN
+TN 2360,6(a),plane t/c 0.10,1.5,1.0,-0.0085,dPb,0.0021,read at x/c 1.0030; legend-glyph template at scale 1; behind the circle at the frame
+TN 2360,6(a),cruciform t/c 0.10,1.5,1.0,0.0144,dPb,0.0003,read at x/c 1.0030; LOW MARGIN
+TN 2360,6(a),cruciform t/c 0.10,1.5,1.0,0.0094,dPb,0.0003,read at x/c 1.0030; LOW MARGIN
+TN 2360,6(a),cruciform t/c 0.05,1.5,1.0,0.0071,dPb,0.0003,read at x/c 0.9999
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.8,0.0031,dPb,0.0003,read at x/c 0.8009; LOW MARGIN
+TN 2360,6(a),cruciform t/c 0.05,1.5,0.6,0.0040,dPb,0.0003,read at x/c 0.6025; LOW MARGIN
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.6,-0.0112,dPb,0.0003,read at x/c 0.6027
+TN 2360,6(a),cruciform t/c 0.05,1.5,0.4,-0.0049,dPb,0.0003,read at x/c 0.4023; LOW MARGIN
+TN 2360,6(a),cruciform t/c 0.05,1.5,0.2,-0.0231,dPb,0.0003,read at x/c 0.2011
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.2,-0.0644,dPb,0.0003,read at x/c 0.2009
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.2,-0.0598,dPb,0.0003,read at x/c 0.1991
+TN 2360,6(a),cruciform t/c 0.05,1.5,0.0,-0.0739,dPb,0.0003,read at x/c 0.0007
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.0,-0.1207,dPb,0.0003,read at x/c 0.0005; LOW MARGIN
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.0,-0.1299,dPb,0.0003,read at x/c -0.0025; LOW MARGIN
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.4,-0.0180,dPb,0.0005,read at x/c 0.4012; legend-glyph template at scale 1; dot on a gridline
+TN 2360,6(a),cruciform t/c 0.10,1.5,0.0,-0.1390,dPb,0.0021,read at x/c -0.0015; legend-glyph template at scale 0.9; third square at x/c 0; overlapping
+TN 2360,6(b),plane t/c 0.10,2.0,1.0,-0.0143,dPb,0.0002,read at x/c 0.9991; LOW MARGIN
+TN 2360,6(b),plane t/c 0.10,2.0,0.6,-0.0202,dPb,0.0002,read at x/c 0.5984; LOW MARGIN
+TN 2360,6(b),plane t/c 0.10,2.0,0.4,-0.0301,dPb,0.0002,read at x/c 0.3980
+TN 2360,6(b),plane t/c 0.10,2.0,0.2,-0.0357,dPb,0.0002,read at x/c 0.1984; LOW MARGIN
+TN 2360,6(b),plane t/c 0.10,2.0,0.0,-0.0386,dPb,0.0002,read at x/c -0.0001
+TN 2360,6(b),cruciform t/c 0.10,2.0,1.0,-0.0096,dPb,0.0002,read at x/c 0.9978; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.05,2.0,1.0,0.0040,dPb,0.0002,read at x/c 0.9972; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.8,-0.0126,dPb,0.0002,read at x/c 0.7973; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.6,-0.0285,dPb,0.0002,read at x/c 0.5994; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.4,-0.0623,dPb,0.0002,read at x/c 0.4018; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.05,2.0,0.4,-0.0204,dPb,0.0002,read at x/c 0.4007; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.2,-0.0639,dPb,0.0002,read at x/c 0.2003; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.0,-0.0496,dPb,0.0002,read at x/c 0.0044; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.05,2.0,0.0,-0.0302,dPb,0.0002,read at x/c 0.0036
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.0,-0.0644,dPb,0.0002,read at x/c 0.0029; LOW MARGIN
+TN 2360,6(b),cruciform t/c 0.10,2.0,0.2,-0.0579,dPb,0.0020,read at x/c 0.2024; legend-glyph template at scale 0.9; second of two stacked squares
+TN 3819,33,ref. 26 circle,1.50,0,-0.1947,PB,0.0002,read at t/c 0.034%
+TN 3819,33,ref. 26 circle,1.50,5,-0.2698,PB,0.0002,read at t/c 4.964%
+TN 3819,33,ref. 26 circle,1.50,10,-0.3251,PB,0.0002,read at t/c 9.976%
+TN 3819,33,ref. 26 square,2.00,0,-0.1505,PB,0.0002,read at t/c 0.072%
+TN 3819,33,ref. 26 square,2.00,5,-0.1850,PB,0.0002,read at t/c 4.992%
+TN 3819,33,ref. 26 square,2.00,10,-0.2091,PB,0.0002,read at t/c 9.967%
+TN 3819,33,Langley 9 in diamond,2.41,0,-0.1213,PB,0.0003,read at t/c 0.027%; on the frame corner
+TN 3819,33,Langley 9 in diamond,2.41,10,-0.1649,PB,0.0002,read at t/c 9.951%
+TN 3819,34,RM-10 with fins,1.490,1.490,-0.1131,PB,0.0002,
+TN 3819,34,RM-10 with fins,1.591,1.591,-0.1093,PB,0.0002,
+TN 3819,34,RM-10 with fins,1.781,1.781,-0.1082,PB,0.0002,
+TN 3819,34,RM-10 with fins,1.980,1.980,-0.1066,PB,0.0002,
+TN 3819,34,RM-10 without fins,1.488,1.488,-0.0919,PB,0.0002,
+TN 3819,34,RM-10 without fins,1.589,1.589,-0.0961,PB,0.0002,
+TN 3819,34,RM-10 without fins,1.778,1.778,-0.0926,PB,0.0002,
+TN 3819,34,RM-10 without fins,1.980,1.980,-0.0931,PB,0.0002,
+TN 3819,35,free-flight line (ref. 12),1.00,1.00,-0.2998,PB,0.0003,blind; curve; n=10
+TN 3819,35,free-flight line (ref. 12),1.05,1.05,-0.2913,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.10,1.10,-0.2840,PB,0.0003,blind; curve; n=12
+TN 3819,35,free-flight line (ref. 12),1.15,1.15,-0.2793,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.20,1.20,-0.2750,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.25,1.25,-0.2720,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.30,1.30,-0.2703,PB,0.0003,blind; curve; n=12
+TN 3819,35,free-flight line (ref. 12),1.35,1.35,-0.2687,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.40,1.40,-0.2675,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.45,1.45,-0.2665,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.50,1.50,-0.2659,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.55,1.55,-0.2656,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),1.60,1.60,-0.2654,PB,0.0003,blind; curve; n=12
+TN 3819,35,free-flight line (ref. 12),1.65,1.65,-0.2651,PB,0.0020,blind; curve; n=16; extra 0.002
+TN 3819,35,free-flight line (ref. 12),1.70,1.70,-0.2612,PB,0.0020,blind; curve; n=11; extra 0.002
+TN 3819,35,free-flight line (ref. 12),1.75,1.75,-0.2503,PB,0.0020,blind; curve; n=23; extra 0.002
+TN 3819,35,free-flight line (ref. 12),1.80,1.80,-0.2368,PB,0.0003,blind; curve; n=6
+TN 3819,35,free-flight line (ref. 12),1.85,1.85,-0.2226,PB,0.0003,blind; curve; n=22
+TN 3819,35,free-flight line (ref. 12),1.90,1.90,-0.2108,PB,0.0003,blind; curve; n=19
+TN 3819,35,free-flight line (ref. 12),1.95,1.95,-0.2000,PB,0.0003,blind; curve; n=17
+TN 3819,35,free-flight line (ref. 12),2.00,2.00,-0.1905,PB,0.0004,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),2.10,2.10,-0.1745,PB,0.0030,blind; curve; n=16; extra 0.003
+TN 3819,35,free-flight line (ref. 12),2.20,2.20,-0.1625,PB,0.0030,blind; curve; n=16; extra 0.003
+TN 3819,35,free-flight line (ref. 12),2.30,2.30,-0.1537,PB,0.0030,blind; curve; n=9; extra 0.003
+TN 3819,35,free-flight line (ref. 12),2.40,2.40,-0.1464,PB,0.0030,blind; curve; n=8; extra 0.003
+TN 3819,35,free-flight line (ref. 12),2.50,2.50,-0.1401,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),2.60,2.60,-0.1348,PB,0.0003,blind; curve; n=11
+TN 3819,35,free-flight line (ref. 12),2.70,2.70,-0.1303,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),2.80,2.80,-0.1264,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),2.90,2.90,-0.1223,PB,0.0003,blind; curve; n=16
+TN 3819,35,free-flight line (ref. 12),3.00,3.00,-0.1182,PB,0.0003,blind; curve; n=12
+TN 3819,35,tunnel ref. 26 with fins,1.50,1.5008,-0.3251,PB,0.0003,
+TN 3819,35,tunnel ref. 26 without fins,1.50,1.5018,-0.1940,PB,0.0003,
+TN 3819,35,tunnel ref. 26 with fins,2.00,2.0015,-0.2076,PB,0.0003,
+TN 3819,35,tunnel ref. 26 without fins,2.00,2.0012,-0.1502,PB,0.0003,
+TN 3819,35,tunnel Langley 9 in with fins,2.41,2.4046,-0.1647,PB,0.0003,
+TN 3819,35,tunnel Langley 9 in without fins,2.41,2.4108,-0.1202,PB,0.0003,
+RM L52E06,7,A (no fins) rim,1.050,1.050,-0.2575,PB,0.0005,below the first reading's window (M 1.06 to 1.10): for the comparison only
+RM L52E06,7,A (no fins) rim,1.075,1.075,-0.2517,PB,0.0005,
+RM L52E06,7,A (no fins) rim,1.100,1.100,-0.2427,PB,0.0005,
+RM L52E06,7,A (no fins) centre,1.050,1.050,-0.2087,PB,0.0005,below the first reading's window (M 1.06 to 1.10): for the comparison only
+RM L52E06,7,A (no fins) centre,1.075,1.075,-0.2029,PB,0.0005,
+RM L52E06,7,A (no fins) centre,1.100,1.100,-0.1968,PB,0.0005,
+RM L52E06,7,C (fins at the base) rim,1.050,1.050,-0.2190,PB,0.0005,below the first reading's window (M 1.06 to 1.10): for the comparison only
+RM L52E06,7,C (fins at the base) rim,1.075,1.075,-0.2166,PB,0.0005,
+RM L52E06,7,C (fins at the base) rim,1.100,1.100,-0.2138,PB,0.0005,
+RM L52E06,7,C (fins at the base) centre,1.050,1.050,-0.2021,PB,0.0005,below the first reading's window (M 1.06 to 1.10): for the comparison only
+RM L52E06,7,C (fins at the base) centre,1.075,1.075,-0.1990,PB,0.0005,
+RM L52E06,7,C (fins at the base) centre,1.100,1.100,-0.1942,PB,0.0005,
+RM L52J21a,8,cylindrical base: ogive nose,1.62,1.617,-0.1485,PB,0.0002,
+RM L52J21a,8,cylindrical base: ogive nose,1.62,1.623,-0.1618,PB,0.0002,
+RM L52J21a,8,cylindrical base: conical nose,1.93,1.911,-0.1454,PB,0.0002,
+RM L52J21a,8,cylindrical base: radome nose,1.93,1.924,-0.1448,PB,0.0002,
+RM L52J21a,8,cylindrical base: ogive nose,1.93,1.928,-0.1515,PB,0.0002,
+RM L52J21a,8,conical base: ogive nose,2.41,2.410,-0.0687,PB,0.0002,
+RM L52J21a,8,cylindrical base: stack top symbol,1.62,1.620,-0.1499,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack bottom symbol,1.62,1.620,-0.1476,PB,0.0007,
+RM L52J21a,8,conical base: stack single symbol,1.62,1.620,-0.0445,PB,0.0007,
+RM L52J21a,8,conical base: stack single symbol,1.62,1.620,-0.0387,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack top symbol,1.93,1.930,-0.1521,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack bottom symbol,1.93,1.930,-0.1501,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack single symbol,1.93,1.930,-0.1443,PB,0.0007,
+RM L52J21a,8,conical base: stack top symbol,1.93,1.930,-0.0678,PB,0.0007,
+RM L52J21a,8,conical base: stack bottom symbol,1.93,1.930,-0.0634,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack top symbol,2.41,2.410,-0.1718,PB,0.0007,not a symbol (the panel's label or logo; W1 inspection)
+RM L52J21a,8,cylindrical base: stack bottom symbol,2.41,2.410,-0.1683,PB,0.0007,not a symbol (the panel's label or logo; W1 inspection)
+RM L52J21a,8,cylindrical base: stack top symbol,2.41,2.410,-0.1202,PB,0.0007,
+RM L52J21a,8,cylindrical base: stack bottom symbol,2.41,2.410,-0.1124,PB,0.0007,
+RM L52J21a,8,conical base: stack top symbol,2.41,2.410,-0.0695,PB,0.0007,
+RM L52J21a,8,conical base: stack bottom symbol,2.41,2.410,-0.0604,PB,0.0007,
+RM L52J21a,8,conical base: stack top symbol,2.41,2.410,-0.0200,PB,0.0007,not a symbol (the panel's label or logo; W1 inspection)
+RM L52J21a,8,conical base: stack bottom symbol,2.41,2.410,-0.0182,PB,0.0007,not a symbol (the panel's label or logo; W1 inspection)
+RM L52J21a,31(d),radome nose (circle),1.62,7.124,-0.1349,PB,0.0002,
+RM L52J21a,31(d),conical nose (square),1.62,7.630,-0.1489,PB,0.0002,
+RM L52J21a,31(d),conical nose (square),1.62,8.788,-0.1476,PB,0.0002,
+RM L52J21a,31(d),conical nose (square),1.62,8.873,-0.1368,PB,0.0002,
+RM L52J21a,31(d),radome nose (circle),1.62,8.898,-0.1337,PB,0.0002,
+RM L52J21a,32(d),radome nose (circle),1.93,6.649,-0.1374,PB,0.0003,
+RM L52J21a,32(d),conical nose (square),1.93,6.884,-0.1512,PB,0.0003,
+RM L52J21a,32(d),radome nose (circle),1.93,7.372,-0.1386,PB,0.0003,
+RM L52J21a,32(d),radome nose (circle),1.93,8.179,-0.1387,PB,0.0003,
+RM L52J21a,32(d),ogive nose (triangle),1.93,9.111,-0.1411,PB,0.0003,
+RM L52J21a,33(d),radome nose (circle),2.41,6.549,-0.1161,PB,0.0002,
+RM L52J21a,33(d),conical nose (square),2.41,6.769,-0.1204,PB,0.0002,
+RM L52J21a,33(d),conical nose (square),2.41,6.852,-0.1176,PB,0.0002,
+RM L52J21a,33(d),ogive nose (triangle),2.41,7.286,-0.1178,PB,0.0002,
+RM L52J21a,33(d),radome nose (circle),2.41,7.288,-0.1144,PB,0.0002,
+RM L52J21a,33(d),radome nose (circle),2.41,8.103,-0.1128,PB,0.0002,
+RM L52E06,8,A (no fins) C_DB,1.050,1.050,0.2396,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.000,1.000,0.2177,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.025,1.025,0.2354,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.075,1.075,0.2338,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.100,1.100,0.2260,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.150,1.150,0.2228,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.200,1.200,0.2228,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.250,1.250,0.2225,CDB,0.0005,
+RM L52E06,8,A (no fins) C_DB,1.280,1.280,0.2197,CDB,0.0005,

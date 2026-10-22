@@ -1,0 +1,188 @@
+=== TN 2360 fig. 6: Delta P_b, first minus second, by panel, series and station (x/c 0 to 1.0)
+  6(a) cruciform t/c 0.05 M 1.5 x/c 0.0: first -0.0743 (+-0.0020), second -0.0739 (+-0.0003), diff -0.0004, combined 0.0023
+  6(a) cruciform t/c 0.05 M 1.5 x/c 0.2: first -0.0235 (+-0.0020), second -0.0231 (+-0.0003), diff -0.0004, combined 0.0023
+  6(a) cruciform t/c 0.05 M 1.5 x/c 0.4: first -0.0048 (+-0.0020), second -0.0049 (+-0.0003), diff +0.0001, combined 0.0023
+  6(a) cruciform t/c 0.05 M 1.5 x/c 0.6: first +0.0041 (+-0.0020), second +0.0040 (+-0.0003), diff +0.0001, combined 0.0023
+  6(a) cruciform t/c 0.05 M 1.5 x/c 1.0: first +0.0080 (+-0.0020), second +0.0071 (+-0.0003), diff +0.0009, combined 0.0023
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.0: first -0.1391 (+-0.0020), second -0.1390 (+-0.0021), diff -0.0001, combined 0.0041
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.0: first -0.1303 (+-0.0020), second -0.1299 (+-0.0003), diff -0.0004, combined 0.0023
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.0: first -0.1210 (+-0.0020), second -0.1207 (+-0.0003), diff -0.0003, combined 0.0023
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.2: first -0.0599 (+-0.0020), second -0.0598 (+-0.0003), diff -0.0001, combined 0.0023
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.2: second -0.0644 (+-0.0003) UNMATCHED: no first-reading symbol
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.4: first -0.0184 (+-0.0020), second -0.0180 (+-0.0005), diff -0.0004, combined 0.0025
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.6: first -0.0125 (+-0.0020), second -0.0112 (+-0.0003), diff -0.0013, combined 0.0023
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.8: first +0.0035 (+-0.0020), second +0.0031 (+-0.0003), diff +0.0004, combined 0.0023
+  6(a) cruciform t/c 0.10 M 1.5 x/c 1.0: first +0.0155 (+-0.0020), second +0.0144 (+-0.0003), diff +0.0011, combined 0.0023
+  6(a) cruciform t/c 0.10 M 1.5 x/c 1.0: second +0.0094 (+-0.0003) UNMATCHED: no first-reading symbol
+  6(a) plane t/c 0.05 M 1.5 x/c 0.0: first -0.0337 (+-0.0020), second -0.0334 (+-0.0003), diff -0.0003, combined 0.0023
+  6(a) plane t/c 0.05 M 1.5 x/c 0.4: first -0.0106 (+-0.0020), second -0.0104 (+-0.0003), diff -0.0002, combined 0.0023
+  6(a) plane t/c 0.05 M 1.5 x/c 1.0: first -0.0035 (+-0.0020), second -0.0045 (+-0.0003), diff +0.0010, combined 0.0023
+  6(a) plane t/c 0.10 M 1.5 x/c 0.0: first -0.0685 (+-0.0020), second -0.0686 (+-0.0003), diff +0.0001, combined 0.0023
+  6(a) plane t/c 0.10 M 1.5 x/c 0.2: first -0.0538 (+-0.0020), second -0.0538 (+-0.0003), diff +0.0000, combined 0.0023
+  6(a) plane t/c 0.10 M 1.5 x/c 0.4: first -0.0419 (+-0.0020), second -0.0435 (+-0.0003), diff +0.0016, combined 0.0023
+  6(a) plane t/c 0.10 M 1.5 x/c 0.6: first -0.0360 (+-0.0020), second -0.0367 (+-0.0003), diff +0.0007, combined 0.0023
+  6(a) plane t/c 0.10 M 1.5 x/c 0.8: first -0.0109 (+-0.0020), second -0.0117 (+-0.0003), diff +0.0008, combined 0.0023
+  6(a) plane t/c 0.10 M 1.5 x/c 1.0: first -0.0101 (+-0.0020), second -0.0085 (+-0.0021), diff -0.0016, combined 0.0041
+  6(b) cruciform t/c 0.05 M 2.0 x/c 0.0: first -0.0321 (+-0.0020), second -0.0302 (+-0.0002), diff -0.0019, combined 0.0022
+  6(b) cruciform t/c 0.05 M 2.0 x/c 0.4: first -0.0221 (+-0.0020), second -0.0204 (+-0.0002), diff -0.0017, combined 0.0022
+  6(b) cruciform t/c 0.05 M 2.0 x/c 1.0: first +0.0064 (+-0.0020), second +0.0040 (+-0.0002), diff +0.0024, combined 0.0022  DISAGREE
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.0: first -0.0640 (+-0.0020), second -0.0644 (+-0.0002), diff +0.0004, combined 0.0022
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.0: first -0.0509 (+-0.0020), second -0.0496 (+-0.0002), diff -0.0013, combined 0.0022
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.0: first -0.0573 (+-0.0020) UNMATCHED: no second-reading symbol
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.2: first -0.0642 (+-0.0020), second -0.0639 (+-0.0002), diff -0.0003, combined 0.0022
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.2: first -0.0570 (+-0.0020), second -0.0579 (+-0.0020), diff +0.0009, combined 0.0040
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.4: first -0.0629 (+-0.0020), second -0.0623 (+-0.0002), diff -0.0006, combined 0.0022
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.6: first -0.0295 (+-0.0020), second -0.0285 (+-0.0002), diff -0.0010, combined 0.0022
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.6: first -0.0344 (+-0.0020) UNMATCHED: no second-reading symbol
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.8: first -0.0124 (+-0.0020), second -0.0126 (+-0.0002), diff +0.0002, combined 0.0022
+  6(b) cruciform t/c 0.10 M 2.0 x/c 1.0: first -0.0096 (+-0.0020), second -0.0096 (+-0.0002), diff +0.0000, combined 0.0022
+  6(b) plane t/c 0.10 M 2.0 x/c 0.0: first -0.0398 (+-0.0020), second -0.0386 (+-0.0002), diff -0.0012, combined 0.0022
+  6(b) plane t/c 0.10 M 2.0 x/c 0.2: first -0.0348 (+-0.0020), second -0.0357 (+-0.0002), diff +0.0009, combined 0.0022
+  6(b) plane t/c 0.10 M 2.0 x/c 0.4: first -0.0313 (+-0.0020), second -0.0301 (+-0.0002), diff -0.0012, combined 0.0022
+  6(b) plane t/c 0.10 M 2.0 x/c 0.6: first -0.0201 (+-0.0020), second -0.0202 (+-0.0002), diff +0.0001, combined 0.0022
+  6(b) plane t/c 0.10 M 2.0 x/c 1.0: first -0.0137 (+-0.0020), second -0.0143 (+-0.0002), diff +0.0006, combined 0.0022
+=== TN 3819 fig. 33: P_B at x/c 0 against t/c
+  ref. 26 circle M 1.50 t/c 0%: first -0.1948 (+-0.0010), second -0.1947 (+-0.0002), diff -0.0001, combined 0.0012
+  ref. 26 circle M 1.50 t/c 5%: first -0.2700 (+-0.0010), second -0.2698 (+-0.0002), diff -0.0002, combined 0.0012
+  ref. 26 circle M 1.50 t/c 10%: first -0.3253 (+-0.0010), second -0.3251 (+-0.0002), diff -0.0002, combined 0.0012
+  ref. 26 square M 2.00 t/c 0%: first -0.1507 (+-0.0010), second -0.1505 (+-0.0002), diff -0.0002, combined 0.0012
+  ref. 26 square M 2.00 t/c 5%: first -0.1851 (+-0.0010), second -0.1850 (+-0.0002), diff -0.0001, combined 0.0012
+  ref. 26 square M 2.00 t/c 10%: first -0.2092 (+-0.0010), second -0.2091 (+-0.0002), diff -0.0001, combined 0.0012
+  Langley 9 in diamond M 2.41 t/c 0%: first -0.1219 (+-0.0010), second -0.1213 (+-0.0003), diff -0.0006, combined 0.0013
+  Langley 9 in diamond M 2.41 t/c 10%: first -0.1649 (+-0.0010), second -0.1649 (+-0.0002), diff +0.0000, combined 0.0012
+=== TN 3819 fig. 34: the RM-10, P_B with and without fins
+  RM-10 with fins M 1.490 (second at 1.490, dM +0.000): first -0.1132 (+-0.0010), second -0.1131 (+-0.0002), diff -0.0001, combined 0.0012
+  RM-10 with fins M 1.590 (second at 1.591, dM -0.001): first -0.1094 (+-0.0010), second -0.1093 (+-0.0002), diff -0.0001, combined 0.0012
+  RM-10 with fins M 1.780 (second at 1.781, dM -0.001): first -0.1083 (+-0.0010), second -0.1082 (+-0.0002), diff -0.0001, combined 0.0012
+  RM-10 with fins M 1.980 (second at 1.980, dM +0.000): first -0.1067 (+-0.0010), second -0.1066 (+-0.0002), diff -0.0001, combined 0.0012
+  RM-10 without fins M 1.487 (second at 1.488, dM -0.001): first -0.0921 (+-0.0010), second -0.0919 (+-0.0002), diff -0.0002, combined 0.0012
+  RM-10 without fins M 1.588 (second at 1.589, dM -0.001): first -0.0962 (+-0.0010), second -0.0961 (+-0.0002), diff -0.0001, combined 0.0012
+  RM-10 without fins M 1.778 (second at 1.778, dM +0.000): first -0.0927 (+-0.0010), second -0.0926 (+-0.0002), diff -0.0001, combined 0.0012
+  RM-10 without fins M 1.988 (second at 1.980, dM +0.008): first -0.0932 (+-0.0010), second -0.0931 (+-0.0002), diff -0.0001, combined 0.0012
+=== TN 3819 fig. 35: the free-flight line, each earlier reading minus the second (round 6)
+    (errors as held; between M 1.75 and 2.35 every reading's error is at least 0.005, FIG35_IDENTITY_SWAP)
+  -- w1 first
+  w1 first M 1.40: first -0.2674 (+-0.0020), second -0.2675 (+-0.0003), diff +0.0001, combined 0.0023
+  w1 first M 1.45: first -0.2666 (+-0.0020), second -0.2665 (+-0.0003), diff -0.0001, combined 0.0023
+  w1 first M 1.50: first -0.2660 (+-0.0020), second -0.2659 (+-0.0003), diff -0.0001, combined 0.0023
+  w1 first M 1.55: first -0.2656 (+-0.0020), second -0.2656 (+-0.0003), diff +0.0000, combined 0.0023
+  w1 first M 1.60: first -0.2653 (+-0.0020), second -0.2654 (+-0.0003), diff +0.0001, combined 0.0023
+  w1 first M 1.65: first -0.2651 (+-0.0020), second -0.2651 (+-0.0020), diff +0.0000, combined 0.0040
+  w1 first M 1.70: first -0.2600 (+-0.0030), second -0.2612 (+-0.0020), diff +0.0012, combined 0.0050
+  w1 first M 1.75: first -0.2480 (+-0.0050), second -0.2503 (+-0.0050), diff +0.0023, combined 0.0100
+  w1 first M 1.80: first -0.2365 (+-0.0050), second -0.2368 (+-0.0050), diff +0.0003, combined 0.0100
+  -- first (0008's first reading)
+  first M 1.80: first -0.2362 (+-0.0050), second -0.2368 (+-0.0050), diff +0.0006, combined 0.0100
+  first M 1.90: first -0.2108 (+-0.0050), second -0.2108 (+-0.0050), diff +0.0000, combined 0.0100
+  first M 2.00: first -0.1905 (+-0.0050), second -0.1905 (+-0.0050), diff +0.0000, combined 0.0100
+  first M 2.10: first -0.1746 (+-0.0050), second -0.1745 (+-0.0050), diff -0.0001, combined 0.0100
+  first M 2.20: first -0.1649 (+-0.0050), second -0.1625 (+-0.0050), diff -0.0024, combined 0.0100
+  first M 2.30: first -0.1587 (+-0.0050), second -0.1537 (+-0.0050), diff -0.0050, combined 0.0100
+  first M 2.40: first -0.1538 (+-0.0020), second -0.1464 (+-0.0030), diff -0.0074, combined 0.0050  DISAGREE
+  first M 2.50: first -0.1490 (+-0.0020), second -0.1401 (+-0.0003), diff -0.0089, combined 0.0023  DISAGREE
+  first M 2.60: first -0.1445 (+-0.0020), second -0.1348 (+-0.0003), diff -0.0097, combined 0.0023  DISAGREE
+  first M 2.70: first -0.1401 (+-0.0020), second -0.1303 (+-0.0003), diff -0.0098, combined 0.0023  DISAGREE
+  first M 2.80: first -0.1359 (+-0.0020), second -0.1264 (+-0.0003), diff -0.0095, combined 0.0023  DISAGREE
+  -- round 3
+  round 3 M 1.10: first -0.2844 (+-0.0020), second -0.2840 (+-0.0003), diff -0.0004, combined 0.0023
+  round 3 M 1.20: first -0.2751 (+-0.0020), second -0.2750 (+-0.0003), diff -0.0001, combined 0.0023
+  round 3 M 1.30: first -0.2705 (+-0.0020), second -0.2703 (+-0.0003), diff -0.0002, combined 0.0023
+  round 3 M 1.40: first -0.2678 (+-0.0020), second -0.2675 (+-0.0003), diff -0.0003, combined 0.0023
+  round 3 M 1.50: first -0.2661 (+-0.0020), second -0.2659 (+-0.0003), diff -0.0002, combined 0.0023
+  round 3 M 1.60: first -0.2655 (+-0.0020), second -0.2654 (+-0.0003), diff -0.0001, combined 0.0023
+  round 3 M 1.70: first -0.2588 (+-0.0020), second -0.2612 (+-0.0020), diff +0.0024, combined 0.0040
+  round 3 M 1.80: first -0.2361 (+-0.0050), second -0.2368 (+-0.0050), diff +0.0007, combined 0.0100
+  round 3 M 1.90: first -0.2107 (+-0.0050), second -0.2108 (+-0.0050), diff +0.0001, combined 0.0100
+  round 3 M 2.00: first -0.1903 (+-0.0050), second -0.1905 (+-0.0050), diff +0.0002, combined 0.0100
+  round 3 M 2.10: first -0.1745 (+-0.0050), second -0.1745 (+-0.0050), diff +0.0000, combined 0.0100
+  round 3 M 2.20: first -0.1652 (+-0.0050), second -0.1625 (+-0.0050), diff -0.0027, combined 0.0100
+  round 3 M 2.30: first -0.1587 (+-0.0050), second -0.1537 (+-0.0050), diff -0.0050, combined 0.0100
+  round 3 M 2.40: first -0.1539 (+-0.0020), second -0.1464 (+-0.0030), diff -0.0075, combined 0.0050  DISAGREE
+  round 3 M 2.50: first -0.1490 (+-0.0020), second -0.1401 (+-0.0003), diff -0.0089, combined 0.0023  DISAGREE
+  round 3 M 2.60: first -0.1443 (+-0.0020), second -0.1348 (+-0.0003), diff -0.0095, combined 0.0023  DISAGREE
+  round 3 M 2.70: first -0.1399 (+-0.0020), second -0.1303 (+-0.0003), diff -0.0096, combined 0.0023  DISAGREE
+  round 3 M 2.80: first -0.1358 (+-0.0020), second -0.1264 (+-0.0003), diff -0.0094, combined 0.0023  DISAGREE
+  round 3 M 2.90: first -0.1319 (+-0.0020), second -0.1223 (+-0.0003), diff -0.0096, combined 0.0023  DISAGREE
+=== TN 3819 fig. 35: the tunnel pairs, each earlier reading minus the second
+  first ref. 26 M 1.5 with fins: first -0.3250 (+-0.0010), second -0.3251 (+-0.0003), diff +0.0001, combined 0.0013
+  first ref. 26 M 1.5 without fins: first -0.1940 (+-0.0010), second -0.1940 (+-0.0003), diff +0.0000, combined 0.0013
+  first ref. 26 M 2.0 with fins: first -0.2080 (+-0.0010), second -0.2076 (+-0.0003), diff -0.0004, combined 0.0013
+  first ref. 26 M 2.0 without fins: first -0.1500 (+-0.0010), second -0.1502 (+-0.0003), diff +0.0002, combined 0.0013
+  first Langley 9 in M 2.41 with fins: first -0.1640 (+-0.0010), second -0.1647 (+-0.0003), diff +0.0007, combined 0.0013
+  first Langley 9 in M 2.41 without fins: first -0.1200 (+-0.0010), second -0.1202 (+-0.0003), diff +0.0002, combined 0.0013
+  round 3 ref. 26 M 1.5 with fins: first -0.3251 (+-0.0009), second -0.3251 (+-0.0003), diff +0.0000, combined 0.0012
+  round 3 ref. 26 M 1.5 without fins: first -0.1941 (+-0.0009), second -0.1940 (+-0.0003), diff -0.0001, combined 0.0012
+  round 3 ref. 26 M 2.0 with fins: first -0.2077 (+-0.0009), second -0.2076 (+-0.0003), diff -0.0001, combined 0.0012
+  round 3 ref. 26 M 2.0 without fins: first -0.1500 (+-0.0009), second -0.1502 (+-0.0003), diff +0.0002, combined 0.0012
+  round 3 Langley 9 in M 2.41 with fins: first -0.1648 (+-0.0009), second -0.1647 (+-0.0003), diff -0.0001, combined 0.0012
+  round 3 Langley 9 in M 2.41 without fins: first -0.1202 (+-0.0009), second -0.1202 (+-0.0003), diff +0.0000, combined 0.0012
+=== RM L52E06 fig. 7: rim and centre P_B (second interpolated linearly between its read Mach numbers)
+  A (no fins) rim M 1.06: first -0.2559 (+-0.0020), second -0.2552 (+-0.0005), diff -0.0007, combined 0.0025
+  C (fins at the base) rim M 1.06: first -0.2181 (+-0.0020), second -0.2180 (+-0.0005), diff -0.0001, combined 0.0025
+  A and C centre (merged) M 1.06 against A (no fins) centre: first -0.2078 (+-0.0030), second -0.2064 (+-0.0005), diff -0.0014, combined 0.0035
+  A and C centre (merged) M 1.06 against C (fins at the base) centre: first -0.2078 (+-0.0030), second -0.2009 (+-0.0005), diff -0.0069, combined 0.0035  DISAGREE
+  A (no fins) rim M 1.08: first -0.2499 (+-0.0020), second -0.2499 (+-0.0005), diff -0.0000, combined 0.0025
+  C (fins at the base) rim M 1.08: first -0.2164 (+-0.0020), second -0.2160 (+-0.0005), diff -0.0004, combined 0.0025
+  A (no fins) centre M 1.08: first -0.2017 (+-0.0020), second -0.2017 (+-0.0005), diff -0.0000, combined 0.0025
+  C (fins at the base) centre M 1.08: first -0.1981 (+-0.0020), second -0.1980 (+-0.0005), diff -0.0001, combined 0.0025
+  A (no fins) rim M 1.10: first -0.2422 (+-0.0020), second -0.2427 (+-0.0005), diff +0.0005, combined 0.0025
+  C (fins at the base) rim M 1.10: first -0.2137 (+-0.0020), second -0.2138 (+-0.0005), diff +0.0001, combined 0.0025
+  A (no fins) centre M 1.10: first -0.1972 (+-0.0020), second -0.1968 (+-0.0005), diff -0.0004, combined 0.0025
+  C (fins at the base) centre M 1.10: first -0.1937 (+-0.0020), second -0.1942 (+-0.0005), diff +0.0005, combined 0.0025
+=== RM L52J21a fig. 8, R = 8.06e6: each base's least negative P_B (what W1 uses: the cylindrical base)
+  cylindrical base M 1.62 least negative: first -0.1485 (+-0.0020), second -0.1476 (+-0.0007), diff -0.0009, combined 0.0027
+  cylindrical base M 1.93 least negative: first -0.1465 (+-0.0020), second -0.1443 (+-0.0007), diff -0.0022, combined 0.0027
+  cylindrical base M 2.41 least negative: first -0.1128 (+-0.0020), second -0.1124 (+-0.0007), diff -0.0004, combined 0.0027
+  conical base M 1.62 least negative (recorded, not used): first -0.0322 (+-0.0030), second -0.0387 (+-0.0007), diff +0.0065, combined 0.0037  DISAGREE
+  conical base M 1.93 least negative (recorded, not used): first -0.0617 (+-0.0020), second -0.0634 (+-0.0007), diff +0.0017, combined 0.0027
+  conical base M 2.41 least negative (recorded, not used): first -0.0598 (+-0.0020), second -0.0604 (+-0.0007), diff +0.0006, combined 0.0027
+  not symbols (W1 inspection): cylindrical base: stack top symbol M 2.41 -0.1718; cylindrical base: stack bottom symbol M 2.41 -0.1683; conical base: stack top symbol M 2.41 -0.0200; conical base: stack bottom symbol M 2.41 -0.0182
+=== RM L52J21a figs. 31 to 33 (d), unfinned, cylindrical base, R 7 to 9.5 x 10^6: first (data/w1_l52j21a_fig31_33d_output.txt) minus second, same nose, nearest R within 0.15
+  M 1.62 ogive R 7.23: first -0.1490 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.62 conical R 7.65 (second at 7.63): first -0.1490 (+-0.0020), second -0.1489 (+-0.0002), diff -0.0001, combined 0.0022
+  M 1.62 ogive R 8.03: first -0.1479 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.62 conical R 8.77 (second at 8.79): first -0.1477 (+-0.0020), second -0.1476 (+-0.0002), diff -0.0001, combined 0.0022
+  M 1.62 radome R 7.14 (second at 7.12): first -0.1350 (+-0.0020), second -0.1349 (+-0.0002), diff -0.0001, combined 0.0022
+  M 1.62 radome R 8.11: first -0.1338 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.62 radome R 8.87 (second at 8.90): first -0.1345 (+-0.0020), second -0.1337 (+-0.0002), diff -0.0008, combined 0.0022
+  M 1.93 conical R 7.29: first -0.1486 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 ogive R 7.23: first -0.1525 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 conical R 8.13: first -0.1524 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 ogive R 8.16: first -0.1520 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 conical R 9.03: first -0.1513 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 ogive R 8.92: first -0.1479 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 1.93 radome R 7.34 (second at 7.37): first -0.1379 (+-0.0020), second -0.1386 (+-0.0003), diff +0.0007, combined 0.0023
+  M 1.93 radome R 8.11 (second at 8.18): first -0.1376 (+-0.0020), second -0.1387 (+-0.0003), diff +0.0011, combined 0.0023
+  M 1.93 radome R 9.10: first -0.1401 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 ogive R 7.09: first -0.1239 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 ogive R 7.45: first -0.1222 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 conical R 7.53: first -0.1186 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 conical R 7.13: first -0.1172 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 radome R 7.29 (second at 7.29): first -0.1140 (+-0.0020), second -0.1144 (+-0.0002), diff +0.0004, combined 0.0022
+  M 2.41 radome R 7.54: first -0.1180 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 conical R 8.12: first -0.1204 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 ogive R 8.16: first -0.1198 (+-0.0020) UNMATCHED: no second-reading symbol
+  M 2.41 radome R 8.12 (second at 8.10): first -0.1126 (+-0.0020), second -0.1128 (+-0.0002), diff +0.0002, combined 0.0022
+  M 1.62 conical R 8.87: second -0.1368 (+-0.0002) UNMATCHED: no first-reading symbol of that nose
+  M 1.93 ogive R 9.11: second -0.1411 (+-0.0003) UNMATCHED: no first-reading symbol of that nose
+  M 2.41 ogive R 7.29: second -0.1178 (+-0.0002) UNMATCHED: no first-reading symbol of that nose
+=== Flagged (beyond the combined error, or found by one reader only)
+  6(a) cruciform t/c 0.10 M 1.5 x/c 0.2: second -0.0644 not in the first reading
+  6(a) cruciform t/c 0.10 M 1.5 x/c 1.0: second +0.0094 not in the first reading
+  6(b) cruciform t/c 0.05 M 2.0 x/c 1.0
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.0: first -0.0573 not found in the second reading
+  6(b) cruciform t/c 0.10 M 2.0 x/c 0.6: first -0.0344 not found in the second reading
+  first M 2.40
+  first M 2.50
+  first M 2.60
+  first M 2.70
+  first M 2.80
+  round 3 M 2.40
+  round 3 M 2.50
+  round 3 M 2.60
+  round 3 M 2.70
+  round 3 M 2.80
+  round 3 M 2.90
+  A and C centre (merged) M 1.06 against C (fins at the base) centre
+  conical base M 1.62 least negative (recorded, not used)
+  18 flagged

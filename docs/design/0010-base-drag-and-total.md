@@ -234,6 +234,20 @@ a Mach number below 1.80 by no more than the figure's abscissa reading
 error (0.002, round 3) takes the 1.80 row, flagged; this admits the gated
 shot at M 1.799.
 
+**Beside it, the rebuilt factor** ([0015](0015-fins-at-the-base.md),
+W1 of 0014). This factor and its labels are unchanged, and it serves the
+fin families it was measured on, unswept wedge, circular-arc and
+hexagonal sections 5% to 10% thick (with 0016 section 18's extension
+below 5% for those families), so the Basic Finner's gated total keeps it
+(0014 sections 10.3 and 10.7, amendment i). Where it refuses (fins other
+than four, swept at either edge, Mach 1.0 to 1.8, fins within a chord of
+the base), and for flat-faced fins (plates), which it is not measured on,
+`base-drag.ts` asks the rebuilt factor (`src/base/fins-on-base-w1.ts`),
+which brackets the fins between measured circular-arc families (plates:
+bounded from RM L52E06's relief; a sharp section with its trailing edge
+swept at the base refused, 0015 section 3.4), and labels it so. This holds until the
+owner decides otherwise after BRL 934's run.
+
 ### 1.4 Body base drag and refusals
 
 `base-drag.ts`: C_D = -P_B F (A_base / A_ref), its band the linear sum of
@@ -241,10 +255,17 @@ the curve's band on the term, the interpolation bound, and the
 fins-on-base band, (F_low - F) and (F_high - F) times -P_B (0008 section
 6.3). Fins with trailing edges at the base take the factor; fins one root
 chord or more ahead take the plain curve, labelled not validated with fins
-(0008 section 6.4); in between they are refused (TN 2360's variation not
-transcribed). Refused with a message (`BaseRefusal`, with a reason): Mach
-numbers outside 1.5 to 3.0, afterbodies other than cylinders, a laminar
-layer at the base, and the fins' conditions of 1.3.
+(0008 section 6.4); in between they were refused (TN 2360's variation not
+transcribed) and are now served by the rebuilt factor at Mach 1.5 to 2.0,
+where that variation is read (0015 section 3.3). Below Mach 1.5, down
+to 1.0, the curve is continued with a band of 0.82 to 1.31 set on
+free-flight data and the nominal at its midpoint, and fins at the base
+from Mach 1.0 take the rebuilt factor (W2, 0015 section 11), whose
+members built on fig. 35's free-flight line apply to the curve itself,
+not on top of that midpoint (0015 section 11.2). Refused with
+a message (`BaseRefusal`, with a reason): Mach numbers outside 1.0 to 3.0,
+afterbodies other than cylinders, a laminar layer at the base, and the
+fins' conditions of 1.3 and 0015.
 
 ### 1.5 The fins' trailing-edge base
 
@@ -1379,16 +1400,18 @@ is "bounded, not measured" (recorded in 0014 section 10.7, amendment a).
   8% double wedges swept 45 deg at both edges, at the base, served at M
   2.0 as an analogy (F 1.258) and at M 2.8 as bounded, 1 to 1.3612, where
   RM L52J21a measures F of about 0.96 to 1.12 for four 45 deg swept 8%
-  fins (W1's reading, pending on its branch), below this band. The
-  rebuilt factor (W1) is to serve swept fins.
+  fins (0015 section 3.4), below this band. The rebuilt factor (W1)
+  serves swept fins where it measures the sweep (0015 sections 3.4 and
+  5), not these: a sharp section with its trailing edge swept at the base
+  is refused there, since RM L52J21a's fins end 0.85 +-0.05 root chords
+  ahead of it; plates go to it too (0014 section 10.7, amendment i).
 - **Lower bound: no fin effect, F = 1** for the present factor. It is
   defined on Love's basic curve, which fig. 35's own no-fin curve
   reproduces, so no fin effect is exactly F = 1, and every source it is
   built on shows four unswept fins 5% to 10% thick at the base lowering
   the base pressure, never raising it. It is not the rebuilt factor's
-  zero member's low end, 0.950 (W1's record, pending on its branch),
-  a relief measured on RM L52J21a's 45 deg swept fins, which the present
-  factor refuses.
+  zero member's low end, 0.938 (0015 section 3.5), a relief measured on
+  RM L52J21a's 45 deg swept fins, which the present factor refuses.
 - **Upper bound: the factor at M 2.56 with its band's high end,** 1.3612
   (the free-flight factor 1.153 plus the carried excess 0.2083), carried
   as a ratio to M 3.0.
