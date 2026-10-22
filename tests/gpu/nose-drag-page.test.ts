@@ -17,13 +17,16 @@ import {
   CLASS_CLAIM,
   totalDragView,
   SUSPENDED_REASON,
+  VALIDATED_CLAIM,
 } from '../../src/app/total-drag';
 import {
   displayText,
   formOf,
   gateDisplay,
   impliedConditionText,
+  INSIDE_PENDING_TEXT,
   totalDragDisplay,
+  VALIDATED_HEADLINE,
   type TotalDragFields,
 } from '../../src/app/total-drag-display';
 import { renderBlocks } from '../../src/app/total-drag-render';
@@ -130,12 +133,13 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(text('#implied-temperature')).toBe('288.15 K');
     const out = text('#total-output');
     expect(out).toContain('No total yet: run the solve above');
-    expect(out).toContain("inside the Basic Finner's class, kept for its next registered test");
+    expect(out).toContain(INSIDE_PENDING_TEXT);
     expect(out).not.toContain('C_D =');
     const form = formOf(BODY, 2, pageFields());
     expect(out).toBe(displayText(totalDragDisplay(totalDragView(form, { kind: 'pending' }))));
     expect(text('#gate-body')).toBe(displayText(gateDisplay()));
-    expect(doc.querySelectorAll('#gate-body tbody tr').length).toBe(11);
+    // The gate's 11 shots and BRL Report 934's seven rounds (0014 section 10.7 (q)).
+    expect(doc.querySelectorAll('#gate-body tbody tr').length).toBe(11 + 7);
   });
 
   it('the altitude in feet, converted; the Reynolds number directly as the alternative', async () => {
@@ -167,7 +171,7 @@ describe('the drag page: total drag before a nose solve', () => {
     out = await settled(before);
     expect(hidden('#altitude-field') || hidden('#implied-reynolds-field')).toBe(true);
     expect(hidden('#reynolds-field') || hidden('#temperature-field')).toBe(false);
-    expect(out).toContain("inside the Basic Finner's class, kept for its next registered test");
+    expect(out).toContain(INSIDE_PENDING_TEXT);
     // Back to meters, as the page opened: inside the class again, the same words.
     set('#condition-mode', 'altitude-m');
     set('#altitude', '0');
@@ -240,7 +244,7 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(hidden('#reynolds-field')).toBe(false);
     expect(pageFields().reynoldsOnLength).toBe('1.32e7');
     expect(pageFields().temperature).toBe('293.95');
-    expect(out).toContain("inside the Basic Finner's class, kept for its next registered test");
+    expect(out).toContain(INSIDE_PENDING_TEXT);
     expect(text('#overall-length')).toBe('10 calibers');
   });
 });
@@ -307,5 +311,31 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
       expect(target.querySelector('.ok, .claim-ok')).toBeNull();
       target.remove();
     }
+  });
+
+  it("a total inside the BRL sub-class is laid out as validated, in the 'ok' tone (0014 section 10.7 (q))", () => {
+    // BRL Report 934's round 3263 as the run took it: sharp fin leading edges, 0.80 in, 293 K.
+    const mach = 2.423;
+    const form = {
+      ...basicFinnerForm(mach, 1.1228509262617167e7),
+      leadingEdgeRadius: 0,
+      temperature: 293,
+    };
+    const view = totalDragView(form, {
+      kind: 'solved',
+      component: exactConeNoseWaveDrag(mach, Math.atan(0.5 / form.body.nose.length)),
+    });
+    if (view.kind !== 'total') throw new Error(view.kind);
+    const blocks = totalDragDisplay(view);
+    const target = document.createElement('div');
+    document.body.append(target);
+    renderBlocks(target, blocks);
+    expect(target.textContent).toBe(displayText(blocks));
+    expect(target.querySelector('p.result.ok')?.textContent).toBe(
+      `Total C_D = 0.4314, model-form band 0.3725 to 0.5189 (-13.7% to +20.3%): ${VALIDATED_HEADLINE}`,
+    );
+    expect(target.querySelector('.claim.claim-ok')?.textContent).toContain(VALIDATED_CLAIM);
+    expect(target.querySelector('.warn, .claim-warn')).toBeNull();
+    target.remove();
   });
 });
