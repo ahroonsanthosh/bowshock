@@ -1,0 +1,10 @@
+{"figure": "TN 2360 fig. 6(a) plane tail", "ntrs": "19930083086", "page": 24,
+ "box": [1470, 1050, 3760, 2440], "thr": 0.6, "grid_thr": 0.7, "longruns": true, "frac_v": 0.12, "frac_h": 0.3,
+ "xsel": [0, 1, 2, 3, 4, 6, 7, 9, 10, 11, 12], "xvals": [1.0, 0.8, 0.6, 0.4, 0.2, 0.0, -0.2, -0.4, -0.6, -0.8, -1.0],
+ "ysel": "all", "yvals": [-0.15, -0.10, -0.05, 0.0, 0.05, 0.10, 0.15],
+ "dots": {"legend": [
+   {"series": "t/c=0.05 (circle)", "at": [1907, 924]},
+   {"series": "t/c=0.10 (square)", "at": [1907, 1011]}],
+  "region": [1480, 1060, 3750, 2430], "mask": "raw", "R": 40, "R_plot": 44, "scales": [0.9, 1.0, 1.1],
+  "glyph_at": [{"series": "t/c=0.10 (square)", "at": [1503, 1700], "extra": 0.002, "note": "behind the circle at the frame"}], "glyph_scales": [0.9, 1.0]},
+ "scale": 0.3}

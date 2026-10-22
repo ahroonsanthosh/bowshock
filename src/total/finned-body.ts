@@ -13,7 +13,7 @@
  * | fin friction | van Driest II flat plates of the local chord, both faces | fins' own drag, 1.01 to 1.59 (0008 section 4.3) | estimated on ARCAS, tested only in the total |
  * | fin wave drag | exact 2D section drag times the linear 3D ratio (src/fins, 0009); with a rounded leading edge, the faces of the tangent geometry on their own rise | the same, plus the quadrature error | as above |
  * | fin leading edges | rounded, unswept: modified-Newtonian front side (src/fins/rounded-leading-edge.ts) | 0.99 to 1.06 (TN 2960), +-3% more where extrapolated in Reynolds number | an analogy, not a measurement |
- * | body base | compiled curve times the fins-on-base factor (src/base) | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the factor measured on circular-arc fins, an analogy for others |
+ * | body base | compiled curve times the fins-on-base factor (src/base): the present factor wherever it serves (the Basic Finner's class keeps it), the rebuilt factor of 0015 only where the present one refuses | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the present factor measured on circular-arc fins, an analogy for others; the rebuilt factor estimated on component data, bracketed |
  * | fin trailing-edge base | blunt, unswept, turbulent: two-dimensional base pressure at the free-stream Mach number (src/base/fin-trailing-edge.ts) | 0.93 to 1.21 | an analogy, not a measurement, for edges in the base plane |
  *
  * Friction is at free-stream edge conditions, turbulent from the tip and
@@ -67,7 +67,13 @@
  * transition state; the total is refused then anyway.
  */
 
-import { bodyBaseDrag, FINS_ON_BASE_THINNEST_DATA, type BodyBaseDrag } from '../base/base-drag';
+import {
+  bodyBaseDrag,
+  FINS_ON_BASE_THINNEST_DATA,
+  type BaseFins,
+  type BodyBaseDrag,
+} from '../base/base-drag';
+import { trailingEdgeShape } from '../base/fins-on-base-w1';
 import {
   FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
@@ -440,23 +446,7 @@ export function finnedBodyComponents(
       afterbody: config.afterbody,
       boundaryLayerAtBase: laminarBase ? 'laminar' : 'turbulent',
       baseAreaRatio: 1,
-      fins: {
-        count: fins.count,
-        // A plate's largest t/c, at its shorter end chord (the factor's field is the largest
-        // thickness over chord), and its thinnest station's, at the longer (0016 sections 16 and
-        // 18); a section's t/c is the same at every station.
-        thicknessRatio:
-          plate === undefined
-            ? symmetricThicknessRatio(fins.section as SymmetricSection)
-            : plate.thickness / Math.min(fins.planform.rootChord, tipChord(fins.planform)),
-        ...(plate === undefined
-          ? {}
-          : { thinnest: plateThinnest(plate.thickness, fins.planform), flatFaced: true }),
-        section: fins.sectionFamily,
-        tanLeadingEdge: fins.planform.tanLeadingEdge,
-        tanTrailingEdge: fins.planform.tanTrailingEdge,
-        trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
-      },
+      fins: baseFinsOf(fins),
     });
     components.push({
       name: 'body base',
@@ -464,7 +454,13 @@ export function finnedBodyComponents(
       low: base.low,
       high: base.high,
       label: base.labels.join('; '),
-      band: 'curve 0.82 to 1.08 (0008 section 3.3), interpolation, fins-on-base band (section 3.4)',
+      band:
+        (base.curveBand.source === 'w2'
+          ? `curve ${base.curveBand.low.toFixed(2)} to ${base.curveBand.high.toFixed(2)} below Mach 1.5 (0015 section 11), interpolation, `
+          : 'curve 0.82 to 1.08 (0008 section 3.3), interpolation, ') +
+        (base.finsOnBaseSource === 'rebuilt'
+          ? "the rebuilt fins-on-base factor's band (0015)"
+          : 'fins-on-base band (section 3.4)'),
     });
   } catch (e) {
     refusals.push(refusalOf('body base', e));
@@ -667,6 +663,60 @@ export function finnedBodyTotalDrag(
   const r = finnedBodyComponents(config, conditions, nose, inputs);
   if (r.refusals.length > 0) throw new TotalDragRefusal(r.refusals);
   return combineComponents(r.components, r.inputs);
+}
+
+/**
+ * The body base's fin input (src/base/base-drag.ts) for a fin set: for the
+ * present factor, the largest t/c (a plate's at its shorter end chord; a
+ * section's is the same at every station) and a plate's thinnest station
+ * (0016 sections 16 and 18), with both edge sweeps; for the rebuilt factor
+ * (0015 section 5), the section in chord units at the thickest station
+ * (a plate: flat faces to a square trailing edge at that t/c; its thinner
+ * stations follow from `thinnest`). A plate with a rounded trailing edge has
+ * no section the rebuilt factor takes (0015 section 4), so it is not given
+ * one, and the present factor's verdict stands.
+ */
+export function baseFinsOf(fins: FinSet): BaseFins {
+  const plate = isFlatPlate(fins.section) ? fins.section : undefined;
+  const thicknessRatio =
+    plate === undefined
+      ? symmetricThicknessRatio(fins.section as SymmetricSection)
+      : plate.thickness / Math.min(fins.planform.rootChord, tipChord(fins.planform));
+  const section: SymmetricSection | undefined =
+    plate === undefined
+      ? (fins.section as SymmetricSection)
+      : plate.trailingEdge === 'square'
+        ? {
+            x: [0, 1e-3, 1],
+            halfThickness: [0, thicknessRatio / 2, thicknessRatio / 2],
+            bluntTrailingEdge: true,
+          }
+        : undefined;
+  // Flat faces at the trailing edge (plates; a plate bevelled at the leading edge only): not the present
+  // factor's families (0014 section 10.7).
+  const flatFaced =
+    plate !== undefined || (section !== undefined && trailingEdgeShape(section) === 'flat');
+  return {
+    count: fins.count,
+    thicknessRatio,
+    ...(plate === undefined ? {} : { thinnest: plateThinnest(plate.thickness, fins.planform) }),
+    ...(flatFaced ? { flatFaced: true } : {}),
+    section: fins.sectionFamily,
+    tanLeadingEdge: fins.planform.tanLeadingEdge,
+    tanTrailingEdge: fins.planform.tanTrailingEdge,
+    trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase / fins.planform.rootChord,
+    // For the rebuilt factor, used only where the present one refuses (0015 section 5).
+    ...(section === undefined
+      ? {}
+      : {
+          nearBase: {
+            section,
+            sectionFamily: fins.sectionFamily,
+            tanLeadingEdgeSweep: fins.planform.tanLeadingEdge,
+            tanTrailingEdgeSweep: fins.planform.tanTrailingEdge,
+          },
+        }),
+  };
 }
 
 /**

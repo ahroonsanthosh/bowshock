@@ -1,0 +1,4 @@
+figure,series,x,y,err_y,how
+RM L52J21a fig. 39(b) R=4.82e6,fin effect dP_B base A R=4.82e6 M~1.62,1.6203,-0.0369,0.0002,symbol circle 57 px (score 0.65); x err 0.0009
+RM L52J21a fig. 39(b) R=4.82e6,fin effect dP_B base A R=4.82e6 M~1.93,1.9304,-0.0630,0.0002,symbol circle 57 px (score 0.65); x err 0.0009
+RM L52J21a fig. 39(b) R=4.82e6,fin effect dP_B base A R=4.82e6 M~2.41,2.4110,-0.0620,0.0002,symbol circle 57 px (score 0.70); x err 0.0009

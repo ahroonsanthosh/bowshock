@@ -1,0 +1,19 @@
+{"figure": "TN 3819 fig. 34", "ntrs": "19930084517", "page": 65,
+ "box": [3270, 920, 4855, 3290], "thr": 0.6,
+ "xsel": "all", "xvals": [1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2],
+ "ysel": "all", "yvals": [-0.24,-0.22,-0.20,-0.18,-0.16,-0.14,-0.12,-0.10,-0.08,-0.06,-0.04,-0.02,0.0],
+ "curves": [
+  {"name": "with_fins_curve", "half_px": 12, "segs": [{"orient": "2d", "seed": [3760, 2200], "dir": 5, "both": true, "w": 8, "max_gap": 60, "lo": 3440, "hi": 4000}, {"orient": "2d", "seed": [4240, 2224], "dir": 0, "both": true, "w": 8, "max_gap": 60, "lo": 4060, "hi": 4440}], "at": [1.52, 1.55, 1.65, 1.7, 1.75, 1.85, 1.9, 1.95]},
+  {"name": "without_fins_curve", "half_px": 12, "segs": [{"seed": [3760, 2321], "lo": 3440, "hi": 4440}], "at": [1.52, 1.55, 1.65, 1.7, 1.75, 1.85, 1.9, 1.95]}
+ ],
+ "symbols": [
+  {"name": "with_fins_circle_1", "at": [3475, 2160], "r": 18, "shape": "circle", "search": 30},
+  {"name": "with_fins_circle_2", "at": [3670, 2195], "r": 18, "shape": "circle", "search": 30},
+  {"name": "with_fins_circle_3", "at": [4030, 2205], "r": 18, "shape": "circle", "search": 30},
+  {"name": "with_fins_circle_4", "at": [4410, 2220], "r": 18, "shape": "circle", "search": 30},
+  {"name": "without_fins_square_1", "at": [3475, 2360], "r": 18, "shape": "square", "search": 30},
+  {"name": "without_fins_square_2", "at": [3670, 2320], "r": 18, "shape": "square", "search": 30},
+  {"name": "without_fins_square_3", "at": [4030, 2355], "r": 18, "shape": "square", "search": 30},
+  {"name": "without_fins_square_4", "at": [4410, 2350], "r": 18, "shape": "square", "search": 30}
+ ],
+ "scale": 0.4}

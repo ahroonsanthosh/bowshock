@@ -1,0 +1,73 @@
+{
+ "figure": "RM L52J21a fig. 32(d) M=1.93 cylindrical base",
+ "ntrs": "19930087533",
+ "page": 59,
+ "box": [
+  2300,
+  3150,
+  3800,
+  4450
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.2,
+ "frac_h": 0.2,
+ "xsel": "all",
+ "xvals": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+ ],
+ "ysel": "all",
+ "yvals": [
+  -0.2,
+  -0.18,
+  -0.16,
+  -0.14,
+  -0.12,
+  -0.1,
+  -0.08,
+  -0.06,
+  -0.04
+ ],
+ "symscan": {
+  "shapes": [
+   {
+    "name": "conical nose (square)",
+    "shape": "square",
+    "r": 18
+   },
+   {
+    "name": "ogive nose (triangle)",
+    "shape": "triangle",
+    "r": 21
+   },
+   {
+    "name": "radome nose (circle)",
+    "shape": "circle",
+    "r": 20
+   }
+  ],
+  "region": [
+   2315,
+   3160,
+   3790,
+   4440
+  ],
+  "thr": 0.66,
+  "nms": 12,
+  "stroke": 5.0,
+  "need_dot": true,
+  "ann_max": 0.25,
+  "exclude": []
+ },
+ "scale": 0.4
+}

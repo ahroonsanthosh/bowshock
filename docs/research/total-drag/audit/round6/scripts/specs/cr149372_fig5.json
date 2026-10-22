@@ -1,0 +1,195 @@
+{
+ "figure": "CR-149372 fig. 5 (M 1.0)",
+ "ntrs": "19770008057",
+ "page": 22,
+ "box": [
+  1600,
+  2500,
+  4500,
+  5500
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.2,
+ "frac_h": 0.2,
+ "xsel": "all",
+ "xvals": [
+  0,
+  30,
+  60,
+  90,
+  120,
+  150,
+  180
+ ],
+ "ysel": [
+  2,
+  4,
+  5,
+  7
+ ],
+ "yvals": [
+  0.4,
+  0.0,
+  -0.4,
+  -0.8
+ ],
+ "symscan": {
+  "shapes": [
+   {
+    "name": "1.91 cm d/h 0.031 (small circle)",
+    "shape": "circle",
+    "r": 22
+   },
+   {
+    "name": "2.54 cm d/h 0.042 (square)",
+    "shape": "square",
+    "r": 21
+   },
+   {
+    "name": "3.81 cm d/h 0.063 (large circle)",
+    "shape": "circle",
+    "r": 29
+   },
+   {
+    "name": "5.08 cm d/h 0.084 (triangle)",
+    "shape": "triangle",
+    "r": 25
+   }
+  ],
+  "region": [
+   2400,
+   2620,
+   4490,
+   5490
+  ],
+  "regions": [
+   [
+    2400,
+    2620,
+    3050,
+    5490
+   ],
+   [
+    3050,
+    3700,
+    3400,
+    5490
+   ],
+   [
+    3400,
+    3700,
+    4490,
+    5490
+   ]
+  ],
+  "thr": 0.78,
+  "nms": 20,
+  "stroke": 6.0,
+  "need_dot": false,
+  "exclude": [
+   [
+    4000,
+    5427
+   ]
+  ]
+ },
+ "scale": 0.3,
+ "guided": [],
+ "assign": {
+  "max_px": 15,
+  "keep_outside": "(theta below 88 where the curves coincide; diameter from the symbol shape is uncertain)",
+  "curves": [
+   {
+    "name": "5.08 cm d/h 0.084 (triangles)",
+    "path": [
+     [
+      88,
+      4527.0
+     ],
+     [
+      92,
+      4504.9
+     ],
+     [
+      180,
+      4504.9
+     ]
+    ],
+    "offset": 0
+   },
+   {
+    "name": "3.81 cm d/h 0.063 (large circles)",
+    "path": [
+     [
+      88,
+      4704.0
+     ],
+     [
+      92,
+      4652.4
+     ],
+     [
+      180,
+      4662.7
+     ]
+    ],
+    "offset": 0
+   },
+   {
+    "name": "2.54 cm d/h 0.042 (squares)",
+    "path": [
+     [
+      88,
+      4925.2
+     ],
+     [
+      95,
+      5117.0
+     ],
+     [
+      100,
+      5131.8
+     ],
+     [
+      110,
+      5094.9
+     ],
+     [
+      180,
+      5099.3
+     ]
+    ],
+    "offset": 0
+   },
+   {
+    "name": "1.91 cm d/h 0.031 (small circles)",
+    "path": [
+     [
+      88,
+      4925.2
+     ],
+     [
+      95,
+      5190.8
+     ],
+     [
+      100,
+      5227.6
+     ],
+     [
+      110,
+      5190.8
+     ],
+     [
+      180,
+      5212.9
+     ]
+    ],
+    "offset": 0
+   }
+  ],
+  "rename": true
+ }
+}

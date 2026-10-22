@@ -1,0 +1,13 @@
+{"figure": "TN 2360 fig. 6(b) cruciform tail", "ntrs": "19930083086", "page": 25,
+ "box": [1160, 3005, 3990, 4715], "thr": 0.6, "grid_thr": 0.7, "longruns": true, "frac_v": 0.12, "frac_h": 0.3,
+ "xsel": "all", "xvals": [1.0, 0.8, 0.6, 0.4, 0.2, 0.0, -0.2, -0.4, -0.6, -0.8, -1.0],
+ "ysel": "all", "yvals": [-0.15, -0.10, -0.05, 0.0, 0.05, 0.10, 0.15],
+ "dots": {"legend": [
+   {"series": "t/c=0.05 (circle)", "at": [1791, 902], "nodot": true},
+   {"series": "t/c=0.10 (square)", "at": [1790, 1027], "nodot": true}],
+  "region": [1170, 3015, 3980, 4705], "mask": "raw", "R": 40, "R_plot": 44, "scales": [0.8, 0.9, 1.0],
+  "glyph_scales": [0.8, 0.9, 1.0], "glyph_at": [
+   {"series": "t/c=0.10 (square)", "at": [2297, 3540], "extra": 0.002, "note": "second of two stacked squares"},
+   {"series": "t/c=0.10 (square)", "at": [2850, 3665], "note": "dot on a gridline"},
+   {"series": "t/c=0.05 (circle)", "at": [3403, 3588], "extra": 0.002, "note": "overlaps a square"}]},
+ "scale": 0.3}

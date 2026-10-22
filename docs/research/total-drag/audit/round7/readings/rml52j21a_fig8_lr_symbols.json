@@ -1,0 +1,374 @@
+{
+ "symbols": [
+  {
+   "id": "CY241-sq",
+   "base": "cylindrical",
+   "group": "M 2.41",
+   "symbol": "square",
+   "nose": "ogive nose",
+   "confidence": "high",
+   "centre_px": [
+    3261.5,
+    4563.0
+   ],
+   "centre_err_px": 2.0,
+   "M": 2.4080356029198184,
+   "P_B": -0.11883021224360217,
+   "err_M": 0.0017748396216213528,
+   "err_P_B": 0.000348503115950206,
+   "centre_from": "outer edges x 3240-3283, y 4541-4585",
+   "features": "top edge and both upper corners free, straight sides; top of the 3-symbol stack. A different call would need the straight top edge and corners to belong to another symbol, and no other symbol reaches that high",
+   "support": {
+    "circle": 0.978,
+    "square": 1.0,
+    "diamond": 0.711
+   },
+   "keypoints": {
+    "circle": "0111",
+    "square": "1111",
+    "diamond": "0000"
+   },
+   "support_centre": {
+    "circle": [
+     3261.5,
+     4562.0
+    ],
+    "square": [
+     3259.5,
+     4561.0
+    ],
+    "diamond": [
+     3263.5,
+     4562.0
+    ]
+   }
+  },
+  {
+   "id": "CY241-ci",
+   "base": "cylindrical",
+   "group": "M 2.41",
+   "symbol": "circle",
+   "nose": "conical nose",
+   "confidence": "high",
+   "centre_px": [
+    3262.0,
+    4582.5
+   ],
+   "centre_err_px": 3.0,
+   "M": 2.4087088921278434,
+   "P_B": -0.11567654976898947,
+   "err_M": 0.0025586190953423506,
+   "err_P_B": 0.0005023290001831467,
+   "centre_from": "outer top of arc 4559, outer bottom 4606, right side 3287",
+   "features": "round top arc rising inside the square and round bottom arc below the square's bottom edge, with a white oval interior (3255-3273, 4583-4602); middle of the stack. Its left side is hidden under the square's left side and the M 2.4 gridline",
+   "support": {
+    "circle": 1.0,
+    "square": 0.974,
+    "diamond": 0.947
+   },
+   "keypoints": {
+    "circle": "1111",
+    "square": "1111",
+    "diamond": "1000"
+   },
+   "support_centre": {
+    "circle": [
+     3261.0,
+     4580.5
+    ],
+    "square": [
+     3260.0,
+     4582.5
+    ],
+    "diamond": [
+     3262.0,
+     4580.5
+    ]
+   }
+  },
+  {
+   "id": "CY241-di",
+   "base": "cylindrical",
+   "group": "M 2.41",
+   "symbol": "diamond",
+   "nose": "radome nose",
+   "confidence": "high",
+   "centre_px": [
+    3261.5,
+    4604.5
+   ],
+   "centre_err_px": 3.0,
+   "M": 2.4085916951636595,
+   "P_B": -0.11211597470307291,
+   "err_M": 0.0025590651551764005,
+   "err_P_B": 0.0005023294534366254,
+   "centre_from": "vertices: left 3236/4603, right 3288/4606, bottom 3260.5/4632 (crossing of the lower edges)",
+   "features": "straight lower edges meeting in a pointed bottom vertex below everything else, side vertices outside the circle; bottom of the stack. Upper half hidden in the circle and square",
+   "support": {
+    "circle": 0.993,
+    "square": 0.782,
+    "diamond": 1.0
+   },
+   "keypoints": {
+    "circle": "1100",
+    "square": "1100",
+    "diamond": "1111"
+   },
+   "support_centre": {
+    "circle": [
+     3261.5,
+     4603.5
+    ],
+    "square": [
+     3262.5,
+     4602.5
+    ],
+    "diamond": [
+     3260.5,
+     4602.5
+    ]
+   }
+  },
+  {
+   "id": "CO241-sq",
+   "base": "conical",
+   "group": "M 2.41",
+   "symbol": "square",
+   "nose": "ogive nose",
+   "confidence": "high",
+   "centre_px": [
+    3257.5,
+    4877.5
+   ],
+   "centre_err_px": 1.5,
+   "M": 2.409057258827176,
+   "P_B": -0.06797492346593033,
+   "err_M": 0.001402153970091806,
+   "err_P_B": 0.0002749583437745749,
+   "centre_from": "centre dot (outline centre 3257, 4875)",
+   "features": "complete square with a centre dot, clear of the other two; top of the stack",
+   "support": {
+    "circle": 0.97,
+    "square": 1.0,
+    "diamond": 0.816
+   },
+   "keypoints": {
+    "circle": "1111",
+    "square": "1111",
+    "diamond": "0011"
+   },
+   "support_centre": {
+    "circle": [
+     3256.5,
+     4876.5
+    ],
+    "square": [
+     3257.5,
+     4875.5
+    ],
+    "diamond": [
+     3258.5,
+     4877.5
+    ]
+   }
+  },
+  {
+   "id": "CO241-ci",
+   "base": "conical",
+   "group": "M 2.41",
+   "symbol": "circle",
+   "nose": "conical nose",
+   "confidence": "medium",
+   "centre_px": [
+    3255.0,
+    4915.0
+   ],
+   "centre_err_px": 6.0,
+   "M": 2.4075044333464772,
+   "P_B": -0.06190428654277014,
+   "err_M": 0.004993405353802086,
+   "err_P_B": 0.0009789813278561015,
+   "centre_from": "outer top of arc 4893 (centre line 4895.5, arc centred near x 3256), right side 3272-3280 from y 4900 to 4920 (the overlay shows the r 21.5 circle a little outside it, so x is set between the two); interior white 3248-3270, 4908-4923",
+   "features": "round top arc and a vertical right side (a diamond edge there would be diagonal, and that diagonal is seen separately) between the square and the diamond's side vertices; its lower half lies on the P_B = -0.06 gridline and inside the diamond, so the centre is less sure. If the arc belonged to the diamond the top would be pointed, which it is not",
+   "support": {
+    "circle": 0.859,
+    "square": 0.923,
+    "diamond": 0.757
+   },
+   "keypoints": {
+    "circle": "1010",
+    "square": "1111",
+    "diamond": "1000"
+   },
+   "support_centre": {
+    "circle": [
+     3255.0,
+     4913.0
+    ],
+    "square": [
+     3256.0,
+     4913.0
+    ],
+    "diamond": [
+     3255.0,
+     4913.0
+    ]
+   }
+  },
+  {
+   "id": "CO241-di",
+   "base": "conical",
+   "group": "M 2.41",
+   "symbol": "diamond",
+   "nose": "radome nose",
+   "confidence": "high",
+   "centre_px": [
+    3256.0,
+    4925.0
+   ],
+   "centre_err_px": 3.0,
+   "M": 2.408465210635004,
+   "P_B": -0.06028901009637316,
+   "err_M": 0.0025613964645507035,
+   "err_P_B": 0.000505655367717773,
+   "centre_from": "vertices: top 3255/4898, left 3232/4927, right 3280-3284/4925, bottom 3255/4952",
+   "features": "pointed bottom vertex and side vertices on the -0.06 gridline; bottom of the stack",
+   "support": {
+    "circle": 1.0,
+    "square": 0.795,
+    "diamond": 1.0
+   },
+   "keypoints": {
+    "circle": "1111",
+    "square": "1100",
+    "diamond": "1111"
+   },
+   "support_centre": {
+    "circle": [
+     3255.0,
+     4926.0
+    ],
+    "square": [
+     3256.0,
+     4923.0
+    ],
+    "diamond": [
+     3255.0,
+     4923.0
+    ]
+   }
+  },
+  {
+   "id": "CY162-ci",
+   "base": "cylindrical",
+   "group": "M 1.62",
+   "symbol": "circle",
+   "nose": "conical nose",
+   "confidence": "medium",
+   "centre_px": [
+    2289.0,
+    4363.5
+   ],
+   "centre_err_px": 3.0,
+   "M": 1.6166048335717684,
+   "P_B": -0.14880769068401586,
+   "err_M": 0.0025057017613665687,
+   "err_P_B": 0.000504321598642117,
+   "centre_from": "outer top 4341 (wide flat arc 2275-2309), outer bottom 4386 (flat band 2275-2307), sides 2265/2313",
+   "features": "a wide round top and a flat round bottom that a diamond's pointed vertices cannot give; superposed on the diamond CY162-di",
+   "support": {
+    "circle": 1.0,
+    "square": 0.987,
+    "diamond": 1.0
+   },
+   "keypoints": {
+    "circle": "1111",
+    "square": "1011",
+    "diamond": "0111"
+   },
+   "support_centre": {
+    "circle": [
+     2287.0,
+     4361.5
+    ],
+    "square": [
+     2288.0,
+     4363.5
+    ],
+    "diamond": [
+     2289.0,
+     4364.5
+    ]
+   }
+  },
+  {
+   "id": "CY162-di",
+   "base": "cylindrical",
+   "group": "M 1.62",
+   "symbol": "diamond",
+   "nose": "radome nose",
+   "confidence": "high",
+   "centre_px": [
+    2289.0,
+    4367.5
+   ],
+   "centre_err_px": 3.0,
+   "M": 1.6166528581261825,
+   "P_B": -0.14815796602563958,
+   "err_M": 0.002505710792769525,
+   "err_P_B": 0.0005043211234222231,
+   "centre_from": "vertices: top 2288/4338, bottom 2289/4397, left 2261/4367, right 2318/4365",
+   "features": "pointed top and bottom vertices above and below the circle; superposed on CY162-ci; one centre dot at (2291.5, 4367.5) serves both",
+   "support": {
+    "circle": 1.0,
+    "square": 0.962,
+    "diamond": 1.0
+   },
+   "keypoints": {
+    "circle": "1111",
+    "square": "1101",
+    "diamond": "1111"
+   },
+   "support_centre": {
+    "circle": [
+     2287.0,
+     4365.5
+    ],
+    "square": [
+     2288.0,
+     4365.5
+    ],
+    "diamond": [
+     2288.0,
+     4365.5
+    ]
+   }
+  }
+ ],
+ "stacks": [
+  {
+   "stack": "cylindrical base, M 2.41",
+   "x_px": 3262.0,
+   "top_px": 4541.0,
+   "bottom_px": 4634.0,
+   "P_B_top_edge": -0.12237400624149807,
+   "P_B_bottom_edge": -0.107344378474615
+  },
+  {
+   "stack": "conical base, M 2.41",
+   "x_px": 3256.0,
+   "top_px": 4854.0,
+   "bottom_px": 4955.0,
+   "P_B_top_edge": -0.07177199915052329,
+   "P_B_bottom_edge": -0.055398357923166705
+  },
+  {
+   "stack": "cylindrical base, M 1.62 (lower)",
+   "x_px": 2289.0,
+   "top_px": 4338.0,
+   "bottom_px": 4398.0,
+   "P_B_top_edge": -0.15294969977292333,
+   "P_B_bottom_edge": -0.14320383563770936
+  }
+ ]
+}

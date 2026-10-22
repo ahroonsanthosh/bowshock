@@ -1,0 +1,71 @@
+{
+ "figure": "RM L52J21a fig. 39(b) R=4.82e6",
+ "ntrs": "19930087533",
+ "page": 66,
+ "box": [
+  900,
+  2620,
+  3400,
+  3780
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.3,
+ "frac_h": 0.3,
+ "xsel": "all",
+ "xvals": [
+  1.5,
+  1.6,
+  1.7,
+  1.8,
+  1.9,
+  2.0,
+  2.1,
+  2.2,
+  2.3,
+  2.4,
+  2.5
+ ],
+ "ysel": "all",
+ "yvals": [
+  -0.08,
+  -0.06,
+  -0.04,
+  -0.02,
+  0.0
+ ],
+ "symbols": [
+  {
+   "name": "fin effect dP_B base A R=4.82e6 M~1.62",
+   "at": [
+    1267,
+    3194
+   ],
+   "r": 20,
+   "shape": "circle",
+   "search": 25
+  },
+  {
+   "name": "fin effect dP_B base A R=4.82e6 M~1.93",
+   "at": [
+    1989,
+    2883
+   ],
+   "r": 20,
+   "shape": "circle",
+   "search": 25
+  },
+  {
+   "name": "fin effect dP_B base A R=4.82e6 M~2.41",
+   "at": [
+    3111,
+    2894
+   ],
+   "r": 20,
+   "shape": "circle",
+   "search": 25
+  }
+ ],
+ "scale": 0.3
+}

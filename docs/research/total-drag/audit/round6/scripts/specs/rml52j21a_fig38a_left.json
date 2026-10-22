@@ -1,0 +1,113 @@
+{
+ "figure": "RM L52J21a fig. 38 R=2.91e6 boattail/cusp bases",
+ "ntrs": "19930087533",
+ "page": 65,
+ "rotate": 270,
+ "box": [
+  1360,
+  760,
+  2840,
+  1740
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.3,
+ "frac_h": 0.3,
+ "xsel": "all",
+ "xvals": [
+  1.6,
+  1.7,
+  1.8,
+  1.9,
+  2.0,
+  2.1,
+  2.2,
+  2.3,
+  2.4,
+  2.5
+ ],
+ "ysel": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7
+ ],
+ "yvals": [
+  -0.04,
+  -0.02,
+  0.0,
+  0.02,
+  0.04,
+  0.06,
+  0.08
+ ],
+ "scale": 0.4,
+ "symbols": [
+  {
+   "name": "radome nose, boattail base",
+   "at": [
+    1464,
+    1015
+   ],
+   "r": 30,
+   "shape": "diamond",
+   "search": 12
+  },
+  {
+   "name": "ogive nose, boattail base",
+   "at": [
+    1467,
+    1103
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 12,
+   "note": "on the 0 gridline"
+  },
+  {
+   "name": "conical nose, cusp base (flagged)",
+   "at": [
+    1465,
+    1232
+   ],
+   "r": 23,
+   "shape": "circle",
+   "search": 12
+  },
+  {
+   "name": "conical nose, boattail base",
+   "at": [
+    1463,
+    1313
+   ],
+   "r": 23,
+   "shape": "circle",
+   "search": 12
+  },
+  {
+   "name": "ogive nose, cusp base (flagged)",
+   "at": [
+    1466,
+    1432
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 12
+  },
+  {
+   "name": "radome nose, cusp base (flagged)",
+   "at": [
+    1465,
+    1690
+   ],
+   "r": 30,
+   "shape": "diamond",
+   "search": 12,
+   "note": "on the 0.08 frame line"
+  }
+ ]
+}

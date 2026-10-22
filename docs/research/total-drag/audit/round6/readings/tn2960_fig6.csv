@@ -1,0 +1,11 @@
+figure,series,x,y,err_y,how
+TN 2960 fig. 6,1x3 WT M=1.98 (square),129455.0409,1.4868,0.0014,symbol square 56 px (score 1.00); x err 340.5179
+TN 2960 fig. 6,1x3 WT M=1.49 (circle),159987.8318,1.4742,0.0014,symbol circle 62 px (score 0.96); x err 420.8312
+TN 2960 fig. 6,1x3 WT M=1.98 (square),260550.2649,1.4709,0.0014,symbol square 56 px (score 0.93); x err 685.3501
+TN 2960 fig. 6,1x3 WT M=1.49 (circle),379033.6240,1.5080,0.0014,symbol circle 62 px (score 1.00); x err 997.0081
+TN 2960 fig. 6,1x3 WT M=1.98 (square),421267.5348,1.4797,0.0014,symbol square 56 px (score 0.89); x err 1108.0999
+TN 2960 fig. 6,1x3 WT M=1.98 (square),544613.7923,1.4727,0.0014,symbol square 56 px (score 0.93); x err 1432.5493
+TN 2960 fig. 6,1x3 WT M=1.49 (circle),576179.9326,1.4942,0.0014,symbol circle 62 px (score 1.00); x err 1515.5807
+TN 2960 fig. 6,1x3 WT M=1.98 (square),750976.3917,1.4281,0.0021,symbol square 56 px (score 0.99); x err 2764.7597; two squares overlapping
+TN 2960 fig. 6,1x3 WT M=1.98 (square),776607.5115,1.4287,0.0021,symbol square 56 px (score 0.77); x err 2859.1220; two squares overlapping
+TN 2960 fig. 6,1x3 WT M=1.98 (square),1094993.5691,1.4249,0.0014,symbol square 56 px (score 1.00); x err 2880.2654

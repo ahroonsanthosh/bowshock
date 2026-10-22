@@ -1262,3 +1262,19 @@ totals fall from 20 of 8000 cases to 17 (all at Mach 1.8 to 3.0: 13 of 2000
 rockets to 10; totals today 0.3% to 0.2%, at Mach 1.8 to 3.0 0.7% to
 0.5%). W1 is needed in 95.5% of cases (94.6% before); the totals once W1 is
 done stay 3.4%.
+
+**Superseded with W1 (2026-10-21; 0014 section 10.7, amendment i).** With
+the rebuilt factor merged (0015), the refusal routes on: `bodyBaseDrag`
+gives every flat-faced fin at the base the present factor's
+`flat-plate-fins` refusal first, before its own checks (plates are not
+among its measured families, whatever their count, sweep or Mach number),
+and sends them to the rebuilt factor's flat-plate value, bounded from RM
+L52E06's relief to the circular arc at least as thick (0015 section 4);
+the message now reads "the present fins-on-base factor is measured on
+wedge, circular-arc and hexagonal sections, not on fins with flat faces at
+the trailing edge (plates), which lower the base drag by up to 15% at the
+base (RM L52E06 fig. 7, F 0.85 to 0.88; 0014 section 10.7)". A plate with
+a rounded trailing edge, which the rebuilt factor does not take, stays
+refused, for its trailing edge, with both reasons. The 3 totals this
+section's refusal removed are served again, on the flat-plate value (0015
+section 8).

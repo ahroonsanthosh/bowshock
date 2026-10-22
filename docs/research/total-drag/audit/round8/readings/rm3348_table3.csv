@@ -1,0 +1,853 @@
+table,sub_table,pdf_page,printed_page,M0,phi_deg,alpha_deg,hole,eta_printed,p_b_over_p0,legibility,note
+3,a,33,32,0.70,0,0,6,0·91 with subscript 5,0.766,certain,
+3,a,33,32,0.70,0,2,6,0·91 with subscript 5,0.765,certain,
+3,a,33,32,0.70,0,4,6,0·91 with subscript 5,0.788,certain,
+3,a,33,32,0.70,0,6,6,0·91 with subscript 5,0.793,certain,
+3,a,33,32,0.70,0,8,6,0·91 with subscript 5,0.735,certain,
+3,a,33,32,0.70,0,0,5,0·75,0.726,certain,
+3,a,33,32,0.70,0,2,5,0·75,0.736,certain,
+3,a,33,32,0.70,0,4,5,0·75,0.767,certain,
+3,a,33,32,0.70,0,6,5,0·75,0.784,certain,
+3,a,33,32,0.70,0,8,5,0·75,0.776,certain,
+3,a,33,32,0.70,0,0,4,0·59,0.703,certain,
+3,a,33,32,0.70,0,2,4,0·59,0.708,certain,
+3,a,33,32,0.70,0,4,4,0·59,0.749,certain,
+3,a,33,32,0.70,0,6,4,0·59,0.771,certain,
+3,a,33,32,0.70,0,8,4,0·59,0.787,certain,
+3,a,33,32,0.70,0,0,3,0·42 with subscript 5,0.703,certain,
+3,a,33,32,0.70,0,2,3,0·42 with subscript 5,0.703,certain,
+3,a,33,32,0.70,0,4,3,0·42 with subscript 5,0.752,certain,
+3,a,33,32,0.70,0,6,3,0·42 with subscript 5,0.827,certain,
+3,a,33,32,0.70,0,8,3,0·42 with subscript 5,0.855,certain,
+3,a,33,32,0.70,0,0,2,0·26,0.728,certain,
+3,a,33,32,0.70,0,2,2,0·26,0.727,certain,
+3,a,33,32,0.70,0,4,2,0·26,0.770,certain,
+3,a,33,32,0.70,0,6,2,0·26,0.850,certain,
+3,a,33,32,0.70,0,8,2,0·26,0.875,certain,
+3,a,33,32,0.70,0,0,1,0·10,0.759,certain,
+3,a,33,32,0.70,0,2,1,0·10,0.759,certain,
+3,a,33,32,0.70,0,4,1,0·10,0.788,certain,
+3,a,33,32,0.70,0,6,1,0·10,0.852,certain,
+3,a,33,32,0.70,0,8,1,0·10,0.867,certain,
+3,b,33,32,0.80,0,0,6,,0.664,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,2,6,,0.682,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,4,6,,0.708,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,6,6,,0.709,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,8,6,,0.678,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,0,5,,0.627,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,2,5,,0.644,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,4,5,,0.663,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,6,5,,0.672,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,8,5,,0.663,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,0,4,,0.611,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,2,4,,0.624,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,4,4,,0.642,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,6,4,,0.653,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,8,4,,0.641,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,0,3,,0.609,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,2,3,,0.621,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,4,3,,0.663,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,6,3,,0.655,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,8,3,,0.647,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,0,2,,0.621,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,2,2,,0.634,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,4,2,,0.673,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,6,2,,0.687,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,8,2,,0.687,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,0,1,,0.645,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,2,1,,0.656,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,4,1,,0.702,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,6,1,,0.756,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,b,33,32,0.80,0,8,1,,0.750,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,0,6,,0.477,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,2,6,,0.516,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,4,6,,0.548,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,6,6,,0.581,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,8,6,,0.552,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,0,5,,0.427,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,2,5,,0.476,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; scan speck next to the value (dust); read on a 3x crop: certain
+3,c,33,32,0.90,0,4,5,,0.510,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,6,5,,0.572,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,8,5,,0.554,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,0,4,,0.436,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,2,4,,0.452,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,4,4,,0.494,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,6,4,,0.565,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,8,4,,0.550,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,0,3,,0.466,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,2,3,,0.448,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,4,3,,0.484,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,6,3,,0.552,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,8,3,,0.548,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,0,2,,0.493,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,2,2,,0.477,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,4,2,,0.497,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,6,2,,0.558,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,8,2,,0.566,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,0,1,,0.529,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,2,1,,0.518,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,4,1,,0.538,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,6,1,,0.628,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,c,33,32,0.90,0,8,1,,0.608,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,0,6,,0.413,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,2,6,,0.397,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,4,6,,0.380,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,6,6,,0.363,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,8,6,,0.340,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,0,5,,0.413,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,2,5,,0.402,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,4,5,,0.393,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,6,5,,0.378,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,8,5,,0.359,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,0,4,,0.411,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,2,4,,0.402,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,4,4,,0.402,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,6,4,,0.391,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,8,4,,0.372,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,0,3,,0.411,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,2,3,,0.405,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,4,3,,0.411,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,6,3,,0.406,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,8,3,,0.389,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,0,2,,0.413,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,2,2,,0.408,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,4,2,,0.420,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,6,2,,0.422,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,8,2,,0.408,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,0,1,,0.402,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,2,1,,0.411,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,4,1,,0.418,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,6,1,,0.413,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,d,33,32,1.00,0,8,1,,0.386,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,0,6,,0.456,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,2,6,,0.432,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,4,6,,0.404,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,6,6,,0.384,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,8,6,,0.369,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,0,5,,0.453,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,2,5,,0.436,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,4,5,,0.419,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,6,5,,0.402,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,8,5,,0.391,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,0,4,,0.451,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,2,4,,0.438,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,4,4,,0.432,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,6,4,,0.415,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,8,4,,0.406,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,0,3,,0.453,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,2,3,,0.443,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,4,3,,0.440,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,6,3,,0.432,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,8,3,,0.421,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,0,2,,0.458,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,2,2,,0.449,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,4,2,,0.449,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,6,2,,0.445,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,8,2,,0.438,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,0,1,,0.443,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,2,1,,0.456,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,4,1,,0.447,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,6,1,,0.419,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,e,33,32,1.11,0,8,1,,0.404,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,f,34,33,1.16,0,0,6,,0.484,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,2,6,,0.458,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,3,6,,0.433,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,0,5,,0.479,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,2,5,,0.463,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,3,5,,0.447,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,0,4,,0.479,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,2,4,,0.465,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,3,4,,0.454,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,0,3,,0.479,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,2,3,,0.470,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,3,3,,0.461,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,0,2,,0.484,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,2,2,,0.477,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,3,2,,0.470,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,0,1,,0.472,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,2,1,,0.484,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,f,34,33,1.16,0,3,1,,0.474,certain,"this sub-table's own headings: alpha = 0, 2, 3 deg"
+3,g,34,33,0.70,15,0,6,,0.797,certain,
+3,g,34,33,0.70,15,2,6,,0.799,certain,scan speck next to the value (dust); read on a 3x crop: certain
+3,g,34,33,0.70,15,4,6,,0.804,certain,
+3,g,34,33,0.70,15,6,6,,0.840,certain,
+3,g,34,33,0.70,15,8,6,,0.829,certain,
+3,g,34,33,0.70,15,0,5,,0.753,certain,
+3,g,34,33,0.70,15,2,5,,0.751,certain,
+3,g,34,33,0.70,15,4,5,,0.772,certain,
+3,g,34,33,0.70,15,6,5,,0.826,certain,
+3,g,34,33,0.70,15,8,5,,0.832,certain,
+3,g,34,33,0.70,15,0,4,,0.738,certain,
+3,g,34,33,0.70,15,2,4,,0.739,certain,
+3,g,34,33,0.70,15,4,4,,0.770,certain,
+3,g,34,33,0.70,15,6,4,,0.852,certain,
+3,g,34,33,0.70,15,8,4,,0.895,certain,
+3,g,34,33,0.70,15,0,3,,0.732,certain,
+3,g,34,33,0.70,15,2,3,,0.731,certain,
+3,g,34,33,0.70,15,4,3,,0.762,certain,
+3,g,34,33,0.70,15,6,3,,0.837,certain,
+3,g,34,33,0.70,15,8,3,,0.886,certain,
+3,g,34,33,0.70,15,0,2,,0.732,certain,
+3,g,34,33,0.70,15,2,2,,0.731,certain,
+3,g,34,33,0.70,15,4,2,,0.761,certain,
+3,g,34,33,0.70,15,6,2,,0.812,certain,
+3,g,34,33,0.70,15,8,2,,0.850,certain,
+3,g,34,33,0.70,15,0,1,,0.740,certain,
+3,g,34,33,0.70,15,2,1,,0.736,certain,
+3,g,34,33,0.70,15,4,1,,0.768,certain,scan speck next to the value (dust); read on a 3x crop: certain
+3,g,34,33,0.70,15,6,1,,0.804,certain,
+3,g,34,33,0.70,15,8,1,,0.829,certain,
+3,h,34,33,0.80,15,0,6,,0.707,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,2,6,,0.708,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,4,6,,0.733,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,6,6,,0.786,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,8,6,,0.775,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,0,5,,0.657,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,2,5,,0.657,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,4,5,,0.692,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,6,5,,0.768,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,8,5,,0.763,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,0,4,,0.636,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,2,4,,0.639,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,4,4,,0.685,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,6,4,,0.797,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,8,4,,0.849,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,0,3,,0.628,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,2,3,,0.629,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,4,3,,0.676,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,6,3,,0.780,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,8,3,,0.827,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,0,2,,0.627,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,2,2,,0.627,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,4,2,,0.679,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,6,2,,0.757,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,8,2,,0.800,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,0,1,,0.632,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,2,1,,0.637,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,4,1,,0.713,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,6,1,,0.753,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,h,34,33,0.80,15,8,1,,0.780,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,0,6,,0.617,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,2,6,,0.624,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,4,6,,0.620,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,6,6,,0.635,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,8,6,,0.642,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,0,5,,0.595,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,2,5,,0.598,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,4,5,,0.598,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,6,5,,0.612,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,8,5,,0.615,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,0,4,,0.573,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,2,4,,0.576,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,4,4,,0.579,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,6,4,,0.587,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,8,4,,0.619,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,0,3,,0.558,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,2,3,,0.556,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,4,3,,0.559,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,6,3,,0.586,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,8,3,,0.642,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,0,2,,0.546,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,2,2,,0.542,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,4,2,,0.555,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,6,2,,0.596,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,8,2,,0.668,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,0,1,,0.561,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,2,1,,0.568,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,4,1,,0.605,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,6,1,,0.651,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,i,34,33,0.90,15,8,1,,0.646,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,0,6,,0.455,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,2,6,,0.452,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,4,6,,0.455,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,6,6,,0.465,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,8,6,,0.459,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,0,5,,0.442,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,2,5,,0.435,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,4,5,,0.442,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,6,5,,0.450,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,8,5,,0.446,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,0,4,,0.432,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; scan speck next to the value (dust); read on a 3x crop: certain
+3,j,34,33,1.00,15,2,4,,0.426,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,4,4,,0.433,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,6,4,,0.442,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,8,4,,0.435,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,0,3,,0.426,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,2,3,,0.420,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,4,3,,0.432,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,6,3,,0.446,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,8,3,,0.442,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,0,2,,0.423,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,2,2,,0.418,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,4,2,,0.433,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,6,2,,0.433,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,8,2,,0.426,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,0,1,,0.417,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,2,1,,0.423,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,4,1,,0.423,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,6,1,,0.420,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,j,34,33,1.00,15,8,1,,0.412,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,k,35,34,1.11,15,0,6,,0.488,certain,
+3,k,35,34,1.11,15,2,6,,0.486,certain,
+3,k,35,34,1.11,15,4,6,,0.464,certain,
+3,k,35,34,1.11,15,6,6,,0.432,certain,
+3,k,35,34,1.11,15,8,6,,0.393,certain,
+3,k,35,34,1.11,15,0,5,,0.473,certain,
+3,k,35,34,1.11,15,2,5,,0.466,certain,
+3,k,35,34,1.11,15,4,5,,0.451,certain,
+3,k,35,34,1.11,15,6,5,,0.423,certain,
+3,k,35,34,1.11,15,8,5,,0.391,certain,
+3,k,35,34,1.11,15,0,4,,0.462,certain,
+3,k,35,34,1.11,15,2,4,,0.456,certain,
+3,k,35,34,1.11,15,4,4,,0.445,certain,
+3,k,35,34,1.11,15,6,4,,0.432,certain,
+3,k,35,34,1.11,15,8,4,,0.419,certain,
+3,k,35,34,1.11,15,0,3,,0.456,certain,
+3,k,35,34,1.11,15,2,3,,0.449,certain,
+3,k,35,34,1.11,15,4,3,,0.445,certain,
+3,k,35,34,1.11,15,6,3,,0.443,certain,
+3,k,35,34,1.11,15,8,3,,0.440,certain,
+3,k,35,34,1.11,15,0,2,,0.449,certain,
+3,k,35,34,1.11,15,2,2,,0.449,certain,
+3,k,35,34,1.11,15,4,2,,0.438,certain,
+3,k,35,34,1.11,15,6,2,,0.436,certain,
+3,k,35,34,1.11,15,8,2,,0.432,certain,
+3,k,35,34,1.11,15,0,1,,0.447,certain,
+3,k,35,34,1.11,15,2,1,,0.456,certain,
+3,k,35,34,1.11,15,4,1,,0.432,certain,
+3,k,35,34,1.11,15,6,1,,0.434,certain,
+3,k,35,34,1.11,15,8,1,,0.425,certain,
+3,l,35,34,1.16,15,0,6,,0.514,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,2,6,,0.507,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty; scan speck next to the value (dust); read on a 3x crop: certain"
+3,l,35,34,1.16,15,4,6,,0.479,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,0,5,,0.497,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,2,5,,0.511,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,4,5,,0.467,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,0,4,,0.486,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,2,4,,0.474,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,4,4,,0.461,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,0,3,,0.477,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,2,3,,0.467,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,4,3,,0.458,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,0,2,,0.472,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,2,2,,0.465,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,4,2,,0.451,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,0,1,,0.467,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,2,1,,0.481,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,l,35,34,1.16,15,4,1,,0.451,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,m,35,34,0.70,30,0,6,,0.876,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,2,6,,0.876,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,4,6,,0.894,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,6,6,,0.925,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,8,6,,0.915,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,0,5,,0.813,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,2,5,,0.815,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,4,5,,0.846,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,6,5,,0.915,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,8,5,,0.915,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,0,4,,0.793,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,2,4,,0.799,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,4,4,,0.826,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,6,4,,0.873,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,8,4,,0.882,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,0,3,,0.788,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,2,3,,0.794,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,4,3,,0.823,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,6,3,,0.850,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,8,3,,0.858,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,0,2,,0.793,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,2,2,,0.799,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,4,2,,0.830,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,6,2,,0.843,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,8,2,,0.843,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,0,1,,0.831,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,2,1,,0.828,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,4,1,,0.833,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,6,1,,0.833,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,m,35,34,0.70,30,8,1,,0.842,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,0,6,,0.827,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,2,6,,0.830,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,4,6,,0.855,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,6,6,,0.896,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,8,6,,0.884,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,0,5,,0.748,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,2,5,,0.765,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,4,5,,0.792,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,6,5,,0.867,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,8,5,,0.878,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,0,4,,0.723,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,2,4,,0.727,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,4,4,,0.764,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,6,4,,0.825,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,8,4,,0.832,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,0,3,,0.723,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,2,3,,0.734,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,4,3,,0.771,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,6,3,,0.803,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,8,3,,0.798,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,0,2,,0.749,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,2,2,,0.757,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,4,2,,0.785,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,6,2,,0.797,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,8,2,,0.792,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,0,1,,0.760,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,2,1,,0.766,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,4,1,,0.757,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,6,1,,0.772,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,n,35,34,0.80,30,8,1,,0.774,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,0,6,,0.764,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,2,6,,0.771,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,4,6,,0.794,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,6,6,,0.852,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,8,6,,0.832,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,0,5,,0.699,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,2,5,,0.696,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,4,5,,0.744,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,6,5,,0.811,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,8,5,,0.842,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,0,4,,0.673,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,2,4,,0.674,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,4,4,,0.717,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,6,4,,0.787,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,8,4,,0.805,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,0,3,,0.680,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,2,3,,0.690,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,4,3,,0.723,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,6,3,,0.767,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,8,3,,0.777,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,0,2,,0.700,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,2,2,,0.710,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,4,2,,0.730,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,6,2,,0.755,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,8,2,,0.750,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,0,1,,0.621,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,2,1,,0.625,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,4,1,,0.639,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,6,1,,0.657,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,o,35,34,0.90,30,8,1,,0.649,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,p,36,35,1.00,30,0,6,,0.686,certain,
+3,p,36,35,1.00,30,2,6,,0.675,certain,
+3,p,36,35,1.00,30,4,6,,0.681,certain,
+3,p,36,35,1.00,30,6,6,,0.709,certain,
+3,p,36,35,1.00,30,8,6,,0.596,certain,
+3,p,36,35,1.00,30,0,5,,0.616,certain,
+3,p,36,35,1.00,30,2,5,,0.609,certain,
+3,p,36,35,1.00,30,4,5,,0.624,certain,
+3,p,36,35,1.00,30,6,5,,0.647,certain,
+3,p,36,35,1.00,30,8,5,,0.634,certain,
+3,p,36,35,1.00,30,0,4,,0.561,certain,
+3,p,36,35,1.00,30,2,4,,0.563,certain,
+3,p,36,35,1.00,30,4,4,,0.590,certain,
+3,p,36,35,1.00,30,6,4,,0.612,certain,
+3,p,36,35,1.00,30,8,4,,0.648,certain,
+3,p,36,35,1.00,30,0,3,,0.536,certain,
+3,p,36,35,1.00,30,2,3,,0.526,certain,
+3,p,36,35,1.00,30,4,3,,0.556,certain,
+3,p,36,35,1.00,30,6,3,,0.571,certain,
+3,p,36,35,1.00,30,8,3,,0.620,certain,
+3,p,36,35,1.00,30,0,2,,0.500,certain,
+3,p,36,35,1.00,30,2,2,,0.501,certain,
+3,p,36,35,1.00,30,4,2,,0.522,certain,
+3,p,36,35,1.00,30,6,2,,0.545,certain,
+3,p,36,35,1.00,30,8,2,,0.584,certain,
+3,p,36,35,1.00,30,0,1,,0.492,certain,
+3,p,36,35,1.00,30,2,1,,0.490,certain,
+3,p,36,35,1.00,30,4,1,,0.495,certain,
+3,p,36,35,1.00,30,6,1,,0.503,certain,
+3,p,36,35,1.00,30,8,1,,0.507,certain,
+3,q,36,35,1.11,30,0,6,,0.497,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,2,6,,0.527,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,4,6,,0.518,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,6,6,,0.495,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,8,6,,0.447,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,0,5,,0.449,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,2,5,,0.486,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,4,5,,0.484,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,6,5,,0.445,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,8,5,,0.382,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,0,4,,0.397,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,2,4,,0.438,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,4,4,,0.417,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,6,4,,0.389,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,8,4,,0.391,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,0,3,,0.367,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,2,3,,0.389,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,4,3,,0.391,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,6,3,,0.384,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,8,3,,0.406,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,0,2,,0.384,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,2,2,,0.404,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,4,2,,0.417,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,6,2,,0.434,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,8,2,,0.514,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,0,1,,0.469,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,2,1,,0.479,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,4,1,,0.486,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,6,1,,0.497,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,q,36,35,1.11,30,8,1,,0.499,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,r,36,35,1.16,30,0,6,,0.539,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,2,6,,0.532,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,4,6,,0.541,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,6,6,,0.497,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,0,5,,0.502,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,2,5,,0.495,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,4,5,,0.500,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,6,5,,0.449,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,0,4,,0.461,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,2,4,,0.447,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,4,4,,0.433,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,6,4,,0.403,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,0,3,,0.412,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,2,3,,0.431,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,4,3,,0.435,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,6,3,,0.408,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,0,2,,0.417,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,2,2,,0.428,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,4,2,,0.456,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,6,2,,0.458,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,0,1,,0.467,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,2,1,,0.467,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,4,1,,0.481,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,r,36,35,1.16,30,6,1,,0.516,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,s,36,35,0.70,45,0,6,,0.957,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,2,6,,0.954,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,4,6,,0.955,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,6,6,,0.941,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,8,6,,0.919,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,0,5,,0.884,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,2,5,,0.886,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,4,5,,0.896,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,6,5,,0.911,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,8,5,,0.916,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,0,4,,0.877,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,2,4,,0.881,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,4,4,,0.888,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,6,4,,0.899,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,8,4,,0.908,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,0,3,,0.883,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,2,3,,0.886,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,4,3,,0.888,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,6,3,,0.891,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,8,3,,0.896,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,0,2,,0.886,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,2,2,,0.886,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,4,2,,0.886,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,6,2,,0.887,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,8,2,,0.889,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,0,1,,0.884,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,2,1,,0.877,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,4,1,,0.873,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,6,1,,0.868,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,s,36,35,0.70,45,8,1,,0.865,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,0,6,,0.941,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,2,6,,0.941,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,4,6,,0.945,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,6,6,,0.920,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,8,6,,0.893,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,0,5,,0.846,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,2,5,,0.848,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,4,5,,0.864,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,6,5,,0.882,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,8,5,,0.894,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,0,4,,0.835,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,2,4,,0.844,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,4,4,,0.857,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; scan speck next to the value (dust); read on a 3x crop: certain
+3,t,36,35,0.80,45,6,4,,0.867,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,8,4,,0.882,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,0,3,,0.845,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,2,3,,0.849,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,4,3,,0.856,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,6,3,,0.861,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,8,3,,0.868,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,0,2,,0.848,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,2,2,,0.850,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,4,2,,0.855,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,6,2,,0.856,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,8,2,,0.859,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,0,1,,0.826,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,2,1,,0.827,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,4,1,,0.820,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,6,1,,0.818,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,t,36,35,0.80,45,8,1,,0.818,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,u,37,36,0.90,45,0,6,,0.920,certain,
+3,u,37,36,0.90,45,2,6,,0.923,certain,scan speck next to the value (dust); read on a 3x crop: certain
+3,u,37,36,0.90,45,4,6,,0.933,certain,
+3,u,37,36,0.90,45,6,6,,0.889,certain,
+3,u,37,36,0.90,45,8,6,,0.855,certain,
+3,u,37,36,0.90,45,0,5,,0.804,certain,
+3,u,37,36,0.90,45,2,5,,0.811,certain,
+3,u,37,36,0.90,45,4,5,,0.837,certain,
+3,u,37,36,0.90,45,6,5,,0.848,certain,
+3,u,37,36,0.90,45,8,5,,0.869,certain,
+3,u,37,36,0.90,45,0,4,,0.793,certain,
+3,u,37,36,0.90,45,2,4,,0.803,certain,
+3,u,37,36,0.90,45,4,4,,0.823,certain,
+3,u,37,36,0.90,45,6,4,,0.837,certain,
+3,u,37,36,0.90,45,8,4,,0.855,certain,
+3,u,37,36,0.90,45,0,3,,0.805,certain,
+3,u,37,36,0.90,45,2,3,,0.811,certain,
+3,u,37,36,0.90,45,4,3,,0.825,certain,
+3,u,37,36,0.90,45,6,3,,0.828,certain,
+3,u,37,36,0.90,45,8,3,,0.838,certain,
+3,u,37,36,0.90,45,0,2,,0.807,certain,
+3,u,37,36,0.90,45,2,2,,0.811,certain,
+3,u,37,36,0.90,45,4,2,,0.821,certain,
+3,u,37,36,0.90,45,6,2,,0.823,certain,
+3,u,37,36,0.90,45,8,2,,0.828,certain,
+3,u,37,36,0.90,45,0,1,,0.726,certain,
+3,u,37,36,0.90,45,2,1,,0.730,certain,
+3,u,37,36,0.90,45,4,1,,0.717,certain,
+3,u,37,36,0.90,45,6,1,,0.722,certain,
+3,u,37,36,0.90,45,8,1,,0.723,certain,
+3,v,37,36,1.00,45,0,6,,0.895,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,2,6,,0.899,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,4,6,,0.919,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,6,6,,0.891,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,8,6,,0.838,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,0,5,,0.819,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,2,5,,0.827,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,4,5,,0.836,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,6,5,,0.823,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,8,5,,0.836,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,0,4,,0.755,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,2,4,,0.764,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,4,4,,0.780,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,6,4,,0.790,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,8,4,,0.813,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,0,3,,0.770,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,2,3,,0.777,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,4,3,,0.776,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,6,3,,0.772,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,8,3,,0.785,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,0,2,,0.732,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,2,2,,0.742,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,4,2,,0.749,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,6,2,,0.746,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,8,2,,0.751,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,0,1,,0.608,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,2,1,,0.617,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,4,1,,0.613,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,6,1,,0.617,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,v,37,36,1.00,45,8,1,,0.613,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,0,6,,0.812,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,2,6,,0.812,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,4,6,,0.825,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,6,6,,0.754,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,8,6,,0.750,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,0,5,,0.680,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,2,5,,0.678,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,4,5,,0.683,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,6,5,,0.715,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,8,5,,0.752,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,0,4,,0.665,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,2,4,,0.680,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,4,4,,0.702,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,6,4,,0.724,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,8,4,,0.747,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,0,3,,0.665,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,2,3,,0.683,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,4,3,,0.698,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,6,3,,0.709,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,8,3,,0.743,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,0,2,,0.661,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,2,2,,0.672,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,4,2,,0.672,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,6,2,,0.672,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,8,2,,0.685,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,0,1,,0.566,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,2,1,,0.583,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,4,1,,0.583,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,6,1,,0.592,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,w,37,36,1.11,45,8,1,,0.592,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,x,37,36,1.20,45,0,6,,0.741,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,2,6,,0.744,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,4,6,,0.758,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,0,5,,0.618,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,2,5,,0.613,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,4,5,,0.613,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty; scan speck next to the value (dust); read on a 3x crop: certain"
+3,x,37,36,1.20,45,0,4,,0.581,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,2,4,,0.611,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,4,4,,0.649,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,0,3,,0.603,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,2,3,,0.608,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,4,3,,0.618,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,0,2,,0.567,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,2,2,,0.577,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,4,2,,0.591,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,0,1,,0.509,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,2,1,,0.514,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,x,37,36,1.20,45,4,1,,0.545,certain,"no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 6,8 deg printed empty"
+3,y,37,36,0.70,60,0,6,,0.981,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,2,6,,0.976,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,4,6,,0.964,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,6,6,,0.957,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,8,6,,0.959,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,0,5,,0.940,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,2,5,,0.940,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,4,5,,0.940,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,6,5,,0.943,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,8,5,,0.954,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,0,4,,0.934,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,2,4,,0.936,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,4,4,,0.937,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,6,4,,0.940,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,8,4,,0.950,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,0,3,,0.933,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,2,3,,0.936,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,4,3,,0.936,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,6,3,,0.937,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,8,3,,0.944,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,0,2,,0.933,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,2,2,,0.934,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,4,2,,0.936,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,6,2,,0.937,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,8,2,,0.940,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,0,1,,0.898,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,2,1,,0.900,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,4,1,,0.905,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,6,1,,0.911,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,y,37,36,0.70,60,8,1,,0.914,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,z,38,37,0.80,60,0,6,,0.979,certain,
+3,z,38,37,0.80,60,2,6,,0.972,certain,
+3,z,38,37,0.80,60,4,6,,0.954,certain,
+3,z,38,37,0.80,60,6,6,,0.944,certain,
+3,z,38,37,0.80,60,8,6,,0.945,certain,
+3,z,38,37,0.80,60,0,5,,0.919,certain,
+3,z,38,37,0.80,60,2,5,,0.919,certain,
+3,z,38,37,0.80,60,4,5,,0.920,certain,
+3,z,38,37,0.80,60,6,5,,0.925,certain,
+3,z,38,37,0.80,60,8,5,,0.939,certain,
+3,z,38,37,0.80,60,0,4,,0.915,certain,
+3,z,38,37,0.80,60,2,4,,0.915,certain,
+3,z,38,37,0.80,60,4,4,,0.916,certain,
+3,z,38,37,0.80,60,6,4,,0.922,certain,
+3,z,38,37,0.80,60,8,4,,0.932,certain,
+3,z,38,37,0.80,60,0,3,,0.912,certain,
+3,z,38,37,0.80,60,2,3,,0.913,certain,scan speck next to the value (dust); read on a 3x crop: certain
+3,z,38,37,0.80,60,4,3,,0.915,certain,
+3,z,38,37,0.80,60,6,3,,0.917,certain,
+3,z,38,37,0.80,60,8,3,,0.926,certain,
+3,z,38,37,0.80,60,0,2,,0.910,certain,
+3,z,38,37,0.80,60,2,2,,0.912,certain,
+3,z,38,37,0.80,60,4,2,,0.915,certain,
+3,z,38,37,0.80,60,6,2,,0.916,certain,
+3,z,38,37,0.80,60,8,2,,0.916,certain,
+3,z,38,37,0.80,60,0,1,,0.863,certain,
+3,z,38,37,0.80,60,2,1,,0.865,certain,
+3,z,38,37,0.80,60,4,1,,0.873,certain,
+3,z,38,37,0.80,60,6,1,,0.881,certain,
+3,z,38,37,0.80,60,8,1,,0.881,certain,
+3,aa,38,37,0.90,60,0,6,,0.979,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,2,6,,0.974,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,4,6,,0.943,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,6,6,,0.925,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,8,6,,0.930,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,0,5,,0.888,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,2,5,,0.898,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,4,5,,0.898,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,6,5,,0.906,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,8,5,,0.925,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,0,4,,0.890,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,2,4,,0.892,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,4,4,,0.895,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,6,4,,0.904,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,8,4,,0.915,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,0,3,,0.888,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,2,3,,0.890,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,4,3,,0.895,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,6,3,,0.898,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,8,3,,0.906,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,0,2,,0.885,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,2,2,,0.886,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,4,2,,0.890,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,6,2,,0.892,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,8,2,,0.892,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,0,1,,0.820,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,2,1,,0.821,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,4,1,,0.832,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,6,1,,0.842,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,aa,38,37,0.90,60,8,1,,0.840,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,0,6,,0.996,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,2,6,,0.989,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,4,6,,0.931,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,6,6,,0.901,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,8,6,,0.901,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,0,5,,0.826,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,2,5,,0.842,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,4,5,,0.848,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,6,5,,0.861,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,8,5,,0.897,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,0,4,,0.864,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,2,4,,0.871,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,4,4,,0.870,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,6,4,,0.887,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,8,4,,0.897,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,0,3,,0.870,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,2,3,,0.880,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,4,3,,0.887,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,6,3,,0.893,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,8,3,,0.897,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,0,2,,0.860,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,2,2,,0.859,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,4,2,,0.861,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,6,2,,0.863,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,8,2,,0.861,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,0,1,,0.743,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,2,1,,0.749,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; scan speck next to the value (dust); read on a 3x crop: certain
+3,bb,38,37,1.00,60,4,1,,0.768,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,6,1,,0.779,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,bb,38,37,1.00,60,8,1,,0.779,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,0,6,,0.907,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,2,6,,0.899,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,4,6,,0.853,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,6,6,,0.869,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,8,6,,0.920,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,0,5,,0.864,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,2,5,,0.873,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,4,5,,0.879,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,6,5,,0.890,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,8,5,,0.916,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,0,4,,0.856,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,2,4,,0.860,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,4,4,,0.869,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,6,4,,0.873,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,8,4,,0.914,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,0,3,,0.836,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,2,3,,0.847,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,4,3,,0.853,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,6,3,,0.869,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,8,3,,0.864,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,0,2,,0.817,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,2,2,,0.827,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,4,2,,0.836,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,6,2,,0.825,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,8,2,,0.845,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,0,1,,0.687,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,2,1,,0.700,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,4,1,,0.734,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,6,1,,0.752,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,cc,38,37,1.11,60,8,1,,0.750,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page
+3,dd,38,37,1.20,60,0,6,,0.849,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,2,6,,0.838,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,4,6,,0.803,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,6,6,,0.854,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,0,5,,0.854,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,2,5,,0.860,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,4,5,,0.870,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,6,5,,0.877,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,0,4,,0.817,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,2,4,,0.834,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,4,4,,0.844,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,6,4,,0.864,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,0,3,,0.803,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,2,3,,0.817,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,4,3,,0.824,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,6,3,,0.824,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,0,2,,0.795,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,2,2,,0.792,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,4,2,,0.788,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty; scan speck next to the value (dust); read on a 3x crop: certain
+3,dd,38,37,1.20,60,6,2,,0.780,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,0,1,,0.655,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,2,1,,0.652,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,4,1,,0.676,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty
+3,dd,38,37,1.20,60,6,1,,0.686,certain,no column headings printed in this sub-table; incidence from the column position under the nearest headed sub-table above it on the same page; columns for alpha 8 deg printed empty

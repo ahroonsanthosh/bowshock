@@ -1,0 +1,20 @@
+{"figure": "TN 3819 fig. 33", "ntrs": "19930084517", "page": 65,
+ "box": [1370, 920, 2590, 3290], "thr": 0.6, "frac_v": 0.3,
+ "xsel": "all", "xvals": [0, 2, 4, 6, 8, 10, 12],
+ "ysel": "all", "yvals": [-0.36,-0.34,-0.32,-0.30,-0.28,-0.26,-0.24,-0.22,-0.20,-0.18,-0.16,-0.14,-0.12],
+ "curves": [
+  {"name": "M1.50_ref26_curve", "half_px": 12, "segs": [{"orient": "2d", "seed": [1600, 2188], "dir": -56, "both": true, "max_gap": 60, "w": 10, "lo": 1395, "hi": 1845}, {"orient": "2d", "seed": [2100, 1537], "dir": -48, "both": true, "max_gap": 60, "w": 10, "lo": 1885, "hi": 2370}], "at": [1, 2, 3, 4, 6, 7, 8, 9]},
+  {"name": "M2.00_ref26_curve", "half_px": 12, "segs": [{"orient": "2d", "seed": [1640, 2782], "dir": -36, "both": true, "max_gap": 60, "w": 10, "lo": 1395, "hi": 1845}, {"orient": "2d", "seed": [2107, 2502], "dir": -26, "both": true, "max_gap": 60, "w": 10, "lo": 1885, "hi": 2370}], "at": [1, 2, 3, 4, 6, 7, 8, 9]},
+  {"name": "M2.41_9in_curve", "half_px": 12, "segs": [{"orient": "2d", "seed": [1880, 3017], "dir": -24, "both": true, "max_gap": 60, "w": 10, "lo": 1395, "hi": 2370}], "at": [1, 2, 3, 4, 6, 7, 8, 9]}
+ ],
+ "symbols": [
+  {"name": "M1.50_circle_tc0", "at": [1415, 2525], "r": 18, "shape": "circle", "search": 30},
+  {"name": "M1.50_circle_tc5", "at": [1865, 1800], "r": 18, "shape": "circle", "search": 30},
+  {"name": "M1.50_circle_tc10", "at": [2340, 1275], "r": 18, "shape": "circle", "search": 30},
+  {"name": "M2.00_square_tc0", "at": [1415, 2945], "r": 18, "shape": "square", "search": 30},
+  {"name": "M2.00_square_tc5", "at": [1865, 2620], "r": 18, "shape": "square", "search": 30},
+  {"name": "M2.00_square_tc10", "at": [2350, 2385], "r": 18, "shape": "square", "search": 30},
+  {"name": "M2.41_diamond_tc0", "at": [1415, 3230], "r": 22, "shape": "diamond", "search": 30, "touch": true, "note": "on the frame corner"},
+  {"name": "M2.41_diamond_tc10", "at": [2350, 2805], "r": 22, "shape": "diamond", "search": 30}
+ ],
+ "scale": 0.4}

@@ -1,0 +1,41 @@
+figure,series,x,y,err_y,how
+TN 3372 fig. 11,configuration A (solid),0.7,-0.1142,0.0004,guided column read; n=18
+TN 3372 fig. 11,configuration A (solid),0.75,-0.1079,0.0004,guided column read; n=18
+TN 3372 fig. 11,configuration A (solid),0.8,-0.1057,0.0004,guided column read; n=18
+TN 3372 fig. 11,configuration A (solid),0.85,-0.1083,0.0004,guided column read; n=18
+TN 3372 fig. 11,configuration A (solid),0.9,-0.1155,0.0004,guided column read; n=18
+TN 3372 fig. 11,configuration A (solid),0.95,-0.1299,0.0004,guided column read; n=18
+TN 3372 fig. 11,configuration A (solid),0.975,-0.1543,0.0004,guided column read; n=7
+TN 3372 fig. 11,configuration A (solid),1,-0.2007,0.0005,guided column read; n=7
+TN 3372 fig. 11,configuration A (solid),1.025,-0.2211,0.0004,guided column read; n=7
+TN 3372 fig. 11,configuration A (solid),1.05,-0.2188,0.0004,guided column read; n=18
+TN 3372 fig. 11,configuration A (solid),1.075,-0.2163,0.0004,guided column read; n=7
+TN 3372 fig. 11,configuration A (solid),1.1,-0.2153,0.0020,guided column read; n=18; extra 0.002
+TN 3372 fig. 11,configuration A (solid),1.125,-0.2124,0.0020,guided column read; n=7; extra 0.002
+TN 3372 fig. 11,configuration A (solid),1.15,,,guided read: no ink
+TN 3372 fig. 11,configuration B (dashed),0.7,-0.1216,0.0005,guided column read; n=18
+TN 3372 fig. 11,configuration B (dashed),0.75,-0.1229,0.0020,guided column read; n=16; extra 0.002
+TN 3372 fig. 11,configuration B (dashed),0.8,-0.1240,0.0020,guided column read; n=10; extra 0.002
+TN 3372 fig. 11,configuration B (dashed),0.85,-0.1267,0.0021,guided column read; n=13; extra 0.002
+TN 3372 fig. 11,configuration B (dashed),0.9,-0.1309,0.0020,guided column read; n=18; extra 0.002
+TN 3372 fig. 11,configuration B (dashed),0.95,-0.1509,0.0020,guided column read; n=17; extra 0.002
+TN 3372 fig. 11,configuration B (dashed),0.975,-0.1810,0.0004,guided column read; n=7
+TN 3372 fig. 11,configuration B (dashed),1,-0.2174,0.0005,guided column read; n=18
+TN 3372 fig. 11,configuration B (dashed),1.025,-0.2245,0.0004,guided column read; n=7
+TN 3372 fig. 11,configuration B (dashed),1.05,-0.2220,0.0004,guided column read; n=18
+TN 3372 fig. 11,configuration B (dashed),1.075,-0.2190,0.0004,guided column read; n=7
+TN 3372 fig. 11,configuration B (dashed),1.1,-0.2185,0.0020,guided column read; n=18; extra 0.002
+TN 3372 fig. 11,configuration B (dashed),1.125,-0.2124,0.0020,guided column read; n=7; extra 0.002
+TN 3372 fig. 11,configuration C (long dash),0.7,-0.1314,0.0004,guided column read; n=9
+TN 3372 fig. 11,configuration C (long dash),0.75,-0.1287,0.0020,guided column read; n=9; extra 0.002
+TN 3372 fig. 11,configuration C (long dash),0.8,-0.1271,0.0020,guided column read; n=5; extra 0.002
+TN 3372 fig. 11,configuration C (long dash),0.85,-0.1278,0.0020,guided column read; n=18; extra 0.002
+TN 3372 fig. 11,configuration C (long dash),0.9,-0.1323,0.0020,guided column read; n=18; extra 0.002
+TN 3372 fig. 11,configuration C (long dash),0.95,-0.1517,0.0020,guided column read; n=10; extra 0.002
+TN 3372 fig. 11,configuration C (long dash),0.975,,,guided read: no ink
+TN 3372 fig. 11,configuration C (long dash),1,-0.2400,0.0004,guided column read; n=14
+TN 3372 fig. 11,configuration C (long dash),1.025,,,guided read: no ink
+TN 3372 fig. 11,configuration C (long dash),1.05,-0.2327,0.0004,guided column read; n=16
+TN 3372 fig. 11,configuration C (long dash),1.075,-0.2255,0.0004,guided column read; n=7
+TN 3372 fig. 11,configuration C (long dash),1.1,-0.2188,0.0020,guided column read; n=14; extra 0.002
+TN 3372 fig. 11,configuration C (long dash),1.125,-0.2124,0.0020,guided column read; n=7; extra 0.002

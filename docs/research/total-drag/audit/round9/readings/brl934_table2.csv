@@ -1,0 +1,28 @@
+Round No.,M,Ave Yaw°,Method,Remarks,uncertain_cells
+2588,1.80,0.7,Shear Pin,,Round No.: best 2588; last digit's lower-left stroke is broken so the glyph alone also admits 2589 or 2583; next row 89 and PDF pp. 39 and 41 both give 2588
+89,1.83,0.9,"""",,
+90,1.80,0.3,"""",,
+95,1.78,0.8,"""",,
+96,1.81,1.2,"""",,
+98,1.80,2.4,"""",,
+99,1.79,1.2,"""",,
+91,1.80,0.5,"""",,
+93,1.73,7.4,"""",,
+94,1.74,6.0,"""",,
+3246,1.40,4.2,Electro-Magnetic Yaw Inducer,,
+47,1.26,2.5,,,"M: best 1.26; second decimal digit is a smeared blob, 2 best, 8 not excluded (alt 1.28)"
+48,1.08,0.5,,,
+49,2.05,2.3,"""",,
+52,1.01,0.5,"""",,
+53,1.05,0.6,"""",,
+54,1.51,1.9,"""",,"Round No.: best 54; both glyphs badly blotted, read as 5 and 4; ascending sequence 53, 55 supports it"
+55,2.03,0,"""",Model Magnet de-magnetized,
+56,1.99,2.6,"""",,
+57,1.39,0.7,"""",,
+58,1.14,2.3,"""",,
+59,1.08,0,"""",} Model Magnet de-magnetized,"Round No.: best 59; the two glyphs are fused into one blot, sequence 58, 60 supports it | M: best 1.08; last digit's upper-left stroke missing, lower loop closed, 8 best, alt 1.03 | Ave Yaw: best 0 (a faint 0 in the tenths position); faint broken vertical marks at the decimal-point position, so alt .0 or 0.0 not excluded"
+60,1.02,.0,"""",} Model Magnet de-magnetized,Ave Yaw: best .0 (a 0 in the tenths position with a faint period-like speck at the decimal-point position); alt 0 or 0.0 not excluded
+61,0.98,4.3,"""",,
+62,1.04,0.3,"""",,
+63,2.42,1.7,"""",,
+64,2.47,0.5,"""",,

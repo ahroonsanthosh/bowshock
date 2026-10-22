@@ -1,0 +1,143 @@
+{
+ "figure": "RM A55H31 fig. 11",
+ "ntrs": "19930088843",
+ "page": 40,
+ "box": [
+  1150,
+  1050,
+  5400,
+  3500
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.2,
+ "frac_h": 0.2,
+ "xsel": "all",
+ "xvals": [
+  0,
+  10,
+  20,
+  30,
+  40,
+  50,
+  60,
+  70,
+  80,
+  90
+ ],
+ "ysel": "all",
+ "yvals": [
+  1.0,
+  0.8,
+  0.6,
+  0.4,
+  0.2,
+  0.0
+ ],
+ "symbols": [
+  {
+   "name": "reference 1 M=6.9 (square)",
+   "at": [
+    1286,
+    1200
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 18,
+   "touch": true,
+   "note": "touches the curve or the other symbol"
+  },
+  {
+   "name": "reference 1 M=6.9 (square)",
+   "at": [
+    1923,
+    1259
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 18
+  },
+  {
+   "name": "present tests M=3.9 (circle)",
+   "at": [
+    2627,
+    1718
+   ],
+   "r": 25,
+   "shape": "circle",
+   "search": 18,
+   "touch": true,
+   "note": "touches the curve or the other symbol"
+  },
+  {
+   "name": "reference 1 M=6.9 (square)",
+   "at": [
+    2627,
+    1755
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 18,
+   "touch": true,
+   "note": "touches the curve or the other symbol"
+  },
+  {
+   "name": "present tests M=3.9 (circle)",
+   "at": [
+    3295,
+    2255
+   ],
+   "r": 25,
+   "shape": "circle",
+   "search": 18,
+   "touch": true,
+   "note": "touches the curve or the other symbol"
+  },
+  {
+   "name": "reference 1 M=6.9 (square)",
+   "at": [
+    3295,
+    2323
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 18,
+   "touch": true,
+   "note": "touches the curve or the other symbol"
+  },
+  {
+   "name": "present tests M=3.9 (circle)",
+   "at": [
+    3977,
+    2777
+   ],
+   "r": 25,
+   "shape": "circle",
+   "search": 18
+  },
+  {
+   "name": "reference 1 M=6.9 (square)",
+   "at": [
+    3977,
+    2891
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 18,
+   "touch": true,
+   "note": "touches the curve or the other symbol"
+  },
+  {
+   "name": "reference 1 M=6.9 (square)",
+   "at": [
+    4636,
+    3332
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 18
+  }
+ ],
+ "scale": 0.3
+}

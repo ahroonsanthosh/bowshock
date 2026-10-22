@@ -1,0 +1,19 @@
+figure,series,x,y,err_y,how
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,ogive nose / conical base,1.615,-0.0440,0.0002,outline template (square) score 0.70; x err 0.000918
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,ogive nose / conical base,1.618,-0.0572,0.0002,outline template (square) score 0.85; x err 0.000918
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,ogive nose / cylindrical base,1.615,-0.1566,0.0002,outline template (square) score 0.70; x err 0.000918
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,ogive nose / cylindrical base,1.616,-0.1498,0.0002,outline template (square) score 0.65; x err 0.000918
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,ogive nose / cylindrical base,1.914,-0.1576,0.0002,outline template (square) score 0.77; x err 0.000918
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,conical nose / conical base,1.929,-0.0676,0.0002,outline template (circle) score 0.92; x err 0.000918
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,ogive nose / cylindrical base,1.927,-0.1467,0.0002,outline template (square) score 0.69; x err 0.000918
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,ogive nose / cylindrical base,1.928,-0.1576,0.0002,outline template (square) score 0.84; x err 0.000918
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack top symbol / cylindrical base,1.93,-0.1590,0.0007,stack envelope; stack height 42 px, about 2 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack bottom symbol / cylindrical base,1.93,-0.1570,0.0007,stack envelope; stack height 42 px, about 2 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack top symbol / cylindrical base,1.93,-0.1476,0.0007,stack envelope; stack height 42 px, about 2 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack bottom symbol / cylindrical base,1.93,-0.1456,0.0007,stack envelope; stack height 42 px, about 2 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack single symbol / conical base,1.93,-0.0893,0.0007,stack envelope; stack height 23 px, about 1 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack top symbol / conical base,1.93,-0.0693,0.0007,stack envelope; stack height 52 px, about 3 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack bottom symbol / conical base,1.93,-0.0658,0.0007,stack envelope; stack height 52 px, about 3 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack single symbol / cylindrical base,2.41,-0.1308,0.0007,stack envelope; stack height 32 px, about 1 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack top symbol / conical base,2.41,-0.0803,0.0007,stack envelope; stack height 86 px, about 7 symbols; series not identified
+RM L52J21a fig. 8 R=5.12e6 cylindrical and conical bases,stack bottom symbol / conical base,2.41,-0.0713,0.0007,stack envelope; stack height 86 px, about 7 symbols; series not identified

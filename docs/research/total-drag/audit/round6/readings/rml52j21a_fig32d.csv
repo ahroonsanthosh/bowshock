@@ -1,0 +1,22 @@
+figure,series,x,y,err_y,how
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,ogive nose (triangle),0.8842,-0.0824,0.0003,outline template (triangle) score 0.80; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),1.676,-0.1229,0.0003,outline template (circle) score 0.72; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),1.726,-0.1254,0.0003,outline template (circle) score 0.73; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,conical nose (square),1.863,-0.1248,0.0003,outline template (square) score 0.68; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,ogive nose (triangle),1.882,-0.1294,0.0003,outline template (triangle) score 0.84; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,ogive nose (triangle),2.588,-0.1490,0.0003,outline template (triangle) score 1.00; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,conical nose (square),2.628,-0.1612,0.0003,outline template (square) score 0.88; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),2.673,-0.1411,0.0003,outline template (circle) score 0.83; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),2.862,-0.1504,0.0003,outline template (circle) score 0.71; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,conical nose (square),3.406,-0.1632,0.0003,outline template (square) score 0.98; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),3.556,-0.1542,0.0003,outline template (circle) score 0.98; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,conical nose (square),4.325,-0.1584,0.0003,outline template (square) score 0.94; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),4.535,-0.1502,0.0003,outline template (circle) score 0.78; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,conical nose (square),4.849,-0.1593,0.0003,outline template (square) score 0.79; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,conical nose (square),5.162,-0.1553,0.0003,outline template (square) score 0.92; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),5.353,-0.1427,0.0003,outline template (circle) score 0.86; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),6.649,-0.1374,0.0003,outline template (circle) score 0.82; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,conical nose (square),6.884,-0.1512,0.0003,outline template (square) score 0.67; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),7.372,-0.1386,0.0003,outline template (circle) score 0.77; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,radome nose (circle),8.179,-0.1387,0.0003,outline template (circle) score 0.85; x err 0.0088
+RM L52J21a fig. 32(d) M=1.93 cylindrical base,ogive nose (triangle),9.111,-0.1411,0.0003,outline template (triangle) score 0.86; x err 0.0088

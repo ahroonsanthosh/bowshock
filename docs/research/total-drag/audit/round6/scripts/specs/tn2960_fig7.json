@@ -1,0 +1,156 @@
+{
+ "figure": "TN 2960 fig. 7",
+ "ntrs": "19930084018",
+ "page": 24,
+ "box": [
+  1290,
+  600,
+  5300,
+  4250
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.15,
+ "frac_h": 0.15,
+ "xsel": "all",
+ "xvals": [
+  0.0,
+  0.2,
+  0.4,
+  0.6,
+  0.8,
+  1.0,
+  1.2,
+  1.4,
+  1.6,
+  1.8,
+  2.0,
+  2.2,
+  2.4,
+  2.6,
+  2.8,
+  3.0
+ ],
+ "ysel": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13
+ ],
+ "yvals": [
+  2.4,
+  2.2,
+  2.0,
+  1.8,
+  1.6,
+  1.4,
+  1.2,
+  1.0,
+  0.8,
+  0.6,
+  0.4,
+  0.2,
+  -0.0
+ ],
+ "symscan": {
+  "shapes": [
+   {
+    "name": "0.5 in. dia. 1-by-3.5-ft WT (circle)",
+    "shape": "circle",
+    "r": 26,
+    "xmax": 1210
+   },
+   {
+    "name": "0.3 in. dia. 1-by-3.5-ft WT (square)",
+    "shape": "square",
+    "r": 23,
+    "xmax": 1210
+   },
+   {
+    "name": "unknown dia. ref. 15 (triangle)",
+    "shape": "triangle",
+    "r": 26
+   },
+   {
+    "name": "1 in. dia. 1-by-3-ft supersonic WT (diamond)",
+    "shape": "diamond",
+    "r": 31
+   }
+  ],
+  "region": [
+   1330,
+   610,
+   5290,
+   4240
+  ],
+  "regions": [
+   [
+    1330,
+    610,
+    2480,
+    2350
+   ],
+   [
+    3115,
+    1500,
+    3370,
+    2200
+   ],
+   [
+    3760,
+    1500,
+    4020,
+    2200
+   ],
+   [
+    4900,
+    1900,
+    5170,
+    2350
+   ]
+  ],
+  "thr": 0.62,
+  "nms": 16,
+  "stroke": 5.0,
+  "need_dot": true,
+  "ann_max": 0.3,
+  "exclude": []
+ },
+ "scale": 0.3,
+ "symbols": [
+  {
+   "name": "unknown dia. ref. 15 (triangle)",
+   "at": [
+    3205,
+    1778
+   ],
+   "r": 26,
+   "shape": "triangle",
+   "search": 15,
+   "touch": true,
+   "note": "behind the diamonds at M 1.5; position by eye then template"
+  },
+  {
+   "name": "unknown dia. ref. 15 (triangle)",
+   "at": [
+    3845,
+    1800
+   ],
+   "r": 26,
+   "shape": "triangle",
+   "search": 15,
+   "touch": true,
+   "note": "behind the diamonds at M 2.0; position by eye then template"
+  }
+ ]
+}

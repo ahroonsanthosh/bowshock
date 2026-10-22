@@ -1,0 +1,424 @@
+[
+ {
+  "id": "33-SB",
+  "shape": "square",
+  "series": "conical nose",
+  "approx": [
+   3100,
+   3496
+  ],
+  "method": "manual sides (1 hidden, nominal side 41 px)",
+  "note": "centre on the R = 7, P_B = -0.12 gridline crossing; top side merged with the incoming fairing line",
+  "stack": "",
+  "conf": "high",
+  "sides": {
+   "left": [
+    3079,
+    0,
+    false
+   ],
+   "right": [
+    3121,
+    0,
+    false
+   ],
+   "top": [
+    3475.5,
+    0,
+    true
+   ],
+   "bottom": [
+    3516.5,
+    0,
+    false
+   ]
+  },
+  "centre": [
+   3100.0,
+   3496.0
+  ],
+  "centre_data": [
+   7.038883324510699,
+   -0.11938697460945062
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3100.0,
+   3496.0
+  ],
+  "value_data": [
+   7.038883324510699,
+   -0.11938697460945062
+  ],
+  "err_R": 0.04104891149916379,
+  "err_P": 0.000754883654987029
+ },
+ {
+  "id": "33-TA",
+  "shape": "triangle",
+  "series": "ogive nose",
+  "approx": [
+   3110,
+   3472
+  ],
+  "method": "manual vertices",
+  "note": "base overlaps the square's upper half",
+  "stack": "",
+  "conf": "high",
+  "triangle": {
+   "apex": [
+    3110,
+    3447
+   ],
+   "base_left": [
+    3088,
+    3485
+   ],
+   "base_right": [
+    3132,
+    3485
+   ]
+  },
+  "centre": [
+   3110.0,
+   3472.3333333333335
+  ],
+  "centre_data": [
+   7.111834412234794,
+   -0.12296836464719646
+  ],
+  "value_from": "outline centroid",
+  "value_px": [
+   3110.0,
+   3472.3333333333335
+  ],
+  "value_data": [
+   7.111834412234794,
+   -0.12296836464719646
+  ],
+  "err_R": 0.03165785049745985,
+  "err_P": 0.0008227482695688812
+ },
+ {
+  "id": "33-C1",
+  "shape": "circle",
+  "series": "radome nose",
+  "approx": [
+   3132,
+   3530
+  ],
+  "method": "auto",
+  "note": "",
+  "stack": "",
+  "conf": "high",
+  "circle": {
+   "xc": 3131.786589336149,
+   "yc": 3527.991064189869,
+   "r": 23.303680633618253,
+   "n": 789,
+   "rms": 1.8297533902983791,
+   "coverage_deg": 360
+  },
+  "centre": [
+   3131.786589336149,
+   3527.991064189869
+  ],
+  "centre_data": [
+   7.282111390741889,
+   -0.11466084708922888
+  ],
+  "dot": [
+   3133.5,
+   3530.2727272727275,
+   22
+  ],
+  "dot_how": "auto",
+  "dot_data": [
+   7.295277513254888,
+   -0.11432313060278033
+  ],
+  "value_from": "centre dot",
+  "dot_minus_outline_px": [
+   1.7134106638509365,
+   2.2816630828583584
+  ],
+  "value_px": [
+   3133.5,
+   3530.2727272727275
+  ],
+  "value_data": [
+   7.295277513254888,
+   -0.11432313060278033
+  ],
+  "err_R": 0.012162469826150485,
+  "err_P": 0.00024030943947046297
+ },
+ {
+  "id": "33-TC",
+  "shape": "triangle",
+  "series": "ogive nose",
+  "approx": [
+   3156,
+   3480
+  ],
+  "method": "manual vertices (base hidden, nominal height 38.8 px)",
+  "note": "base hidden on the P_B = -0.12 gridline; centroid from apex and nominal height",
+  "stack": "",
+  "conf": "high",
+  "triangle": {
+   "apex": [
+    3156,
+    3454
+   ],
+   "base_left": [
+    3134,
+    3492.75
+   ],
+   "base_right": [
+    3178,
+    3492.75
+   ]
+  },
+  "centre": [
+   3156.0,
+   3479.8333333333335
+  ],
+  "centre_data": [
+   7.459730265197695,
+   -0.12189661597156096
+  ],
+  "value_from": "outline centroid",
+  "value_px": [
+   3156.0,
+   3479.8333333333335
+  ],
+  "value_data": [
+   7.459730265197695,
+   -0.12189661597156096
+  ],
+  "err_R": 0.03587249966385661,
+  "err_P": 0.0008898337331614464
+ },
+ {
+  "id": "33-SD",
+  "shape": "square",
+  "series": "conical nose",
+  "approx": [
+   3166,
+   3499
+  ],
+  "method": "manual sides",
+  "note": "",
+  "stack": "",
+  "conf": "high",
+  "sides": {
+   "left": [
+    3146,
+    0,
+    false
+   ],
+   "right": [
+    3187,
+    0,
+    false
+   ],
+   "top": [
+    3479.5,
+    0,
+    false
+   ],
+   "bottom": [
+    3519.5,
+    0,
+    false
+   ]
+  },
+  "centre": [
+   3166.5,
+   3499.5
+  ],
+  "centre_data": [
+   7.540987979147406,
+   -0.11895261720420526
+  ],
+  "dot": [
+   3163.5,
+   3503.0,
+   0
+  ],
+  "dot_how": "manual (pixel map)",
+  "dot_data": [
+   7.5187182674832895,
+   -0.11842721298229225
+  ],
+  "value_from": "centre dot",
+  "dot_minus_outline_px": [
+   -3.0,
+   3.5
+  ],
+  "value_px": [
+   3163.5,
+   3503.0
+  ],
+  "value_data": [
+   7.5187182674832895,
+   -0.11842721298229225
+  ],
+  "err_R": 0.012165599654515587,
+  "err_P": 0.0002402309215836835
+ },
+ {
+  "id": "33-TE",
+  "shape": "triangle",
+  "series": "ogive nose",
+  "approx": [
+   3249,
+   3496
+  ],
+  "method": "manual vertices",
+  "note": "apex free above the square; base is the full-width line inside the square",
+  "stack": "33-A (R 8.2)",
+  "conf": "high",
+  "triangle": {
+   "apex": [
+    3249,
+    3470
+   ],
+   "base_left": [
+    3227,
+    3509.5
+   ],
+   "base_right": [
+    3271,
+    3509.5
+   ]
+  },
+  "centre": [
+   3249.0,
+   3496.3333333333335
+  ],
+  "centre_data": [
+   8.162259464171798,
+   -0.11955015326851971
+  ],
+  "value_from": "outline centroid",
+  "value_px": [
+   3249.0,
+   3496.3333333333335
+  ],
+  "value_data": [
+   8.162259464171798,
+   -0.11955015326851971
+  ],
+  "err_R": 0.0314856117415879,
+  "err_P": 0.0008111121543038557
+ },
+ {
+  "id": "33-SF",
+  "shape": "square",
+  "series": "conical nose",
+  "approx": [
+   3244,
+   3500
+  ],
+  "method": "manual sides",
+  "note": "left side merged with the R = 8 gridline",
+  "stack": "33-A (R 8.2)",
+  "conf": "high",
+  "sides": {
+   "left": [
+    3223,
+    0,
+    false
+   ],
+   "right": [
+    3264,
+    0,
+    false
+   ],
+   "top": [
+    3479.5,
+    0,
+    false
+   ],
+   "bottom": [
+    3519.5,
+    0,
+    false
+   ]
+  },
+  "centre": [
+   3243.5,
+   3499.5
+  ],
+  "centre_data": [
+   8.1212942108202,
+   -0.11906671763570395
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3243.5,
+   3499.5
+  ],
+  "value_data": [
+   8.1212942108202,
+   -0.11906671763570395
+  ],
+  "err_R": 0.03148504405965503,
+  "err_P": 0.0005501460200665343
+ },
+ {
+  "id": "33-C2",
+  "shape": "circle",
+  "series": "radome nose",
+  "approx": [
+   3253,
+   3542
+  ],
+  "method": "auto",
+  "note": "clear centre dot 7 px left of the fitted outline centre (outline R 8.12)",
+  "stack": "",
+  "conf": "high",
+  "circle": {
+   "xc": 3242.395665226955,
+   "yc": 3541.9993831309866,
+   "r": 22.700320336136116,
+   "n": 371,
+   "rms": 2.016415668283669,
+   "coverage_deg": 180
+  },
+  "centre": [
+   3242.395665226955,
+   3541.9993831309866
+  ],
+  "centre_data": [
+   8.117203570854123,
+   -0.11273378330019967
+  ],
+  "dot": [
+   3234.842105263158,
+   3541.5263157894738,
+   19
+  ],
+  "dot_how": "auto",
+  "dot_data": [
+   8.06048074647835,
+   -0.11278968310335308
+  ],
+  "value_from": "centre dot",
+  "dot_minus_outline_px": [
+   -7.553559963796943,
+   -0.47306734151288765
+  ],
+  "value_px": [
+   3234.842105263158,
+   3541.5263157894738
+  ],
+  "value_data": [
+   8.06048074647835,
+   -0.11278968310335308
+  ],
+  "err_R": 0.012098582158006375,
+  "err_P": 0.0002401915093155109
+ }
+]

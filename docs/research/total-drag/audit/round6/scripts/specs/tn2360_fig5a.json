@@ -1,0 +1,16 @@
+{"figure": "TN 2360 fig. 5(a)", "ntrs": "19930083086", "page": 22,
+ "box": [1130, 1720, 4220, 4200], "thr": 0.6, "grid_thr": 0.7, "longruns": true, "skew_h": 0.005, "frac_v": 0.3, "frac_h": 0.3,
+ "xsel": "all", "xvals": [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0],
+ "ysel": [0, 1, 3, 5, 7, 11, 12, 14, 15], "yvals": [-0.40, -0.35, -0.30, -0.25, -0.20, -0.15, -0.10, -0.05, 0.0],
+ "dots": {"legend": [
+   {"series": "x/c=1.0 (circle)", "at": [2002, 922]},
+   {"series": "x/c=0.6 (square)", "at": [2002, 1037]},
+   {"series": "x/c=0.2 (diamond)", "at": [2000, 1140]},
+   {"series": "x/c=-0.2 (triangle)", "at": [2001, 1268], "rule": "third"},
+   {"series": "x/c=-0.6 (right triangle)", "at": [2000, 1380], "rule": "third"},
+   {"series": "x/c=-1.0 (quarter round)", "at": [1994, 1490]},
+   {"series": "tail off (dome)", "at": [1995, 1600]}],
+  "region": [1180, 1780, 4200, 4150], "R": 40,
+  "glyph_at": [{"series": "x/c=-1.0 (quarter round)", "at": [2347, 3683], "note": "dot merged with the faired line"},
+               {"series": "tail off (dome)", "at": [1623, 2953], "extra": 0.003, "note": "partly hidden behind the circle and square at the same R"}]},
+ "scale": 0.3}

@@ -1,0 +1,19 @@
+Cylindrical base, R = 8.06e6. Delta P_B = finned (fig. 8) minus unfinned (figs. 31 to 33 (d)).
+=== M 1.62
+  conical  finned -0.1485  unfinned -0.1490 (R 7.65)  Delta P_B +0.0005 (+-0.0040), first reading's shape calls
+  ogive    finned -0.1611  unfinned -0.1479 (R 8.03)  Delta P_B -0.0132 (+-0.0040), first reading's shape calls
+  radome   finned -0.1488  unfinned -0.1338 (R 8.11)  Delta P_B -0.0150 (+-0.0040), first reading's shape calls
+  no nose calls: least negative finned -0.1476 (both readings), most negative unfinned -0.1490: Delta P_B at most +0.0041, F at least 0.973
+  fig. 38(c), both bases, read once: -0.0157 to +0.0017 (+-0.002)
+=== M 1.93
+  conical  finned -0.1468  unfinned -0.1524 (R 8.13)  Delta P_B +0.0056 (+-0.0040), first reading's shape calls
+  ogive    finned -0.1513  unfinned -0.1520 (R 8.16)  Delta P_B +0.0007 (+-0.0040), first reading's shape calls
+  radome   finned -0.1465  unfinned -0.1376 (R 8.11)  Delta P_B -0.0089 (+-0.0040), first reading's shape calls
+  no nose calls: least negative finned -0.1443 (both readings), most negative unfinned -0.1525: Delta P_B at most +0.0109, F at least 0.929
+  fig. 38(c), both bases, read once: -0.0066 to +0.0055 (+-0.002)
+=== M 2.41
+  conical  finned -0.1128  unfinned -0.1204 (R 8.12)  Delta P_B +0.0076 (+-0.0040), first reading's shape calls
+  ogive    finned -0.1190  unfinned -0.1198 (R 8.16)  Delta P_B +0.0008 (+-0.0040), first reading's shape calls
+  radome   finned -0.1139  unfinned -0.1126 (R 8.12)  Delta P_B -0.0013 (+-0.0040), first reading's shape calls
+  no nose calls: least negative finned -0.1124 (both readings), most negative unfinned -0.1239: Delta P_B at most +0.0142, F at least 0.887
+  fig. 38(c), both bases, read once: -0.0069 to +0.0020 (+-0.002)

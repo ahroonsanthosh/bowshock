@@ -1,0 +1,122 @@
+{
+ "figure": "TN 3372 fig. 10 (configuration D)",
+ "ntrs": "19930084618",
+ "page": 19,
+ "box": [
+  1100,
+  660,
+  3700,
+  1950
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.15,
+ "frac_h": 0.15,
+ "xsel": "all",
+ "xvals": [
+  0.6,
+  0.65,
+  0.7,
+  0.75,
+  0.8,
+  0.85,
+  0.9,
+  0.95,
+  1.0,
+  1.05,
+  1.1,
+  1.15,
+  1.2
+ ],
+ "ysel": "all",
+ "yvals": [
+  -0.08,
+  -0.04,
+  0.0,
+  0.04,
+  0.08,
+  0.12,
+  0.16
+ ],
+ "dots": {
+  "legend": [
+   {
+    "series": "edge orifice (square)",
+    "at": [
+     1327,
+     841
+    ]
+   },
+   {
+    "series": "center orifice (circle)",
+    "at": [
+     1326,
+     1015
+    ]
+   }
+  ],
+  "region": [
+   1160,
+   700,
+   3610,
+   1935
+  ],
+  "mask": "raw",
+  "R": 40,
+  "R_plot": 40,
+  "scales": [
+   1.0
+  ],
+  "classify": "corners",
+  "half": 30,
+  "square": "edge orifice (square)",
+  "circle": "center orifice (circle)",
+  "exclude": [
+   [
+    1327,
+    841
+   ],
+   [
+    1326,
+    1015
+   ],
+   [
+    1350,
+    1167
+   ],
+   [
+    1350,
+    1187
+   ],
+   [
+    3200,
+    1930
+   ],
+   [
+    3410,
+    1930
+   ],
+   [
+    2917,
+    917
+   ]
+  ],
+  "glyph_scales": [
+   1.0,
+   1.08
+  ],
+  "glyph_at": [],
+  "extra_box": [
+   [
+    2950,
+    850,
+    3260,
+    1120,
+    0.003,
+    "faded print; symbol partly unreadable"
+   ]
+  ]
+ },
+ "scale": 0.3
+}

@@ -1,0 +1,85 @@
+{
+ "figure": "TN 3372 fig. 8 model 2 (configuration B)",
+ "ntrs": "19930084618",
+ "page": 17,
+ "box": [
+  1180,
+  3020,
+  3860,
+  4820
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.15,
+ "frac_h": 0.15,
+ "xsel": "all",
+ "xvals": [
+  0.6,
+  0.65,
+  0.7,
+  0.75,
+  0.8,
+  0.85,
+  0.9,
+  0.95,
+  1.0,
+  1.05,
+  1.1,
+  1.15,
+  1.2
+ ],
+ "ysel": "all",
+ "yvals": [
+  -0.32,
+  -0.28,
+  -0.24,
+  -0.2,
+  -0.16,
+  -0.12,
+  -0.08,
+  -0.04,
+  0.0
+ ],
+ "dots": {
+  "legend": [
+   {
+    "series": "edge orifice (square)",
+    "at": [
+     1910,
+     3240
+    ]
+   },
+   {
+    "series": "center orifice (circle)",
+    "at": [
+     1911,
+     3423
+    ]
+   }
+  ],
+  "region": [
+   1280,
+   3460,
+   3830,
+   4800
+  ],
+  "mask": "raw",
+  "R": 40,
+  "R_plot": 40,
+  "scales": [
+   1.0
+  ],
+  "classify": "corners",
+  "half": 30,
+  "square": "edge orifice (square)",
+  "circle": "center orifice (circle)",
+  "exclude": [],
+  "glyph_scales": [
+   1.0,
+   1.08
+  ],
+  "glyph_at": []
+ },
+ "scale": 0.3
+}
