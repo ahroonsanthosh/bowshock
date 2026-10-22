@@ -1512,6 +1512,55 @@ page.
 - Its test: the GPU's two-float residual against the CPU's double one
   on the same state, to about 1e-12.
 
+**Step 4b, done (2026-10-22; `6ee3849`).** `GpuEuler2DTwoFloat`
+(`src/engine-gpu/euler2d-two-float.ts`, `two-float.wgsl`,
+`euler2d-two-float.wgsl`). Measured on SwiftShader, the cone's base
+grid:
+
+- **The residual.** On a rough state (60 explicit steps from the free
+  stream), the GPU's residual is the CPU's double one within 1.4e-10
+  at Mach 1.1 and 1.0e-10 at 1.05. That is 2e-9 of the largest
+  residual, about 1e-13 of the face fluxes times areas, which reach
+  1e3 on the far cells: two-float precision.
+- **No wander.** From the CPU's converged solution, the GPU's drag
+  stays between -4.5e-12 and -9.5e-12 of the CPU's at Mach 1.1, and
+  between -6.3e-12 and -9.5e-12 at 1.05, sampled every 250 steps over
+  3,000. The 32-bit engine wandered by up to 7.6e-5 there.
+- **Two things had to change on the way.**
+  - SwiftShader does not fuse `fma`, and a two-float product came out
+    3.4e-9 off. Products now use Dekker's splitting. A self-test, run
+    once per device, refuses a GPU whose compiler loses the low parts.
+  - With the neighbours' terms of the 32-bit implicit operator as the
+    CPU's difference of fluxes, F(Q + dQ) - F(Q), the drag still
+    wandered by 1e-5. That difference carries a 32-bit noise of the
+    size of the flux, which does not shrink as dQ does. As the flux
+    Jacobian applied to dQ, which is linear, the noise shrinks with dQ,
+    and the wander went with it. The path then differs from the CPU
+    twin's at second order in dQ: 1.3e-4 of the pressure after 30
+    steps from the free stream, at the same fixed point.
+- **Cost.** 89 to 96 ms per step on 3,540 cells, 3.7 times the 32-bit
+  implicit step, under the shared machine's load.
+
+**Step 5, done (2026-10-22; `aed95b0`).** `verifiedTransonicDrag`
+(`src/analysis/transonic-drag.ts`) does what "What a page solve does"
+describes, with `gpuTransonicEngine` (`src/analysis/gpu-transonic.ts`)
+on the page.
+
+- **Each grid's noise** is the largest of the settling test's noise
+  (1e-7), its remaining change estimated geometrically, and the drag's
+  spread over 4 checks after settling. The procedure uses the largest
+  noise of the four grids.
+- **The label** names Taylor-Maccoll for cones whose conical surface
+  flow is supersonic. Otherwise it says "no exact reference at this
+  Mach number" and names the validation cases.
+- **Refusals** carry their reason: an unresolved family, with r = 16
+  offered where the coarser triple oscillates and the finer one is
+  monotone; far boundaries or a cylinder whose effect does not fall
+  fast enough to bound; Mach 1.0 until the rule passes its test there;
+  blunt noses, which have no nested domains yet; a grid that does not
+  settle.
+- **Tests:** on a synthetic engine (`tests/analysis/transonic-drag.test.ts`).
+
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
 (Superseded as a serving rule by the owner's decision of 2026-10-21,
