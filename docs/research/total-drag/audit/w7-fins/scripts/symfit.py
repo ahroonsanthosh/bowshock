@@ -1,6 +1,6 @@
 """Refine plotted-symbol centres on a scanned plot by fitting an outline
 template, and draw the fits for checking by eye. Usage:
-python3 -I symfit.py <image> <points.csv> <out.csv> [<overlay.png> x0 y0 x1 y1 scale]
+python3 -I symfit.py <image> <points.csv> <out.csv> [<overlay.png> x0 y0 x1 y1 scale] [--big]
 <points.csv> has columns id,kind,x,y (kind circle, square, triangle, diamond or
 cross; x, y
 a rough centre in image pixels, placed by eye). For each point the centre
@@ -66,6 +66,10 @@ def outline(kind, s):
 SIZES = {'circle': np.arange(3.5, 5.51, 0.25), 'square': np.arange(4.0, 6.01, 0.25),
          'triangle': np.arange(5.0, 7.01, 0.25), 'diamond': np.arange(4.5, 7.01, 0.25),
          'cross': np.arange(3.0, 6.01, 0.25)}
+# --big: larger symbols (drawn larger on some figures); the size ranges are widened by 2 px.
+if '--big' in sys.argv:
+    sys.argv.remove('--big')
+    SIZES = {k: np.arange(v[0], v[-1] + 2.01, 0.25) for k, v in SIZES.items()}
 rows = list(csv.DictReader(open(sys.argv[2])))
 out = []
 for r in rows:
