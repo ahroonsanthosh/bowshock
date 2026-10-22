@@ -1322,6 +1322,11 @@ the base, and the present factor refuses swept fins at the base (0015
 section 5). Item 3's decision on the edge's own base drag is unchanged,
 and it remains a term separate from that factor.
 
+_A check that sets nothing, added to (k)'s list_ (the re-review of
+2026-10-22, N7): Barrowman's 1967 thesis (NTRS 20010047838; eqs. 4-17 to
+4-19 and fig. 4-5, PDF p. 60), the rounded leading-edge curve OpenRocket
+uses. 0019 section 3.2 (U5) sets it beside the bounds; it sets no band.
+
 **2026-10-22 (p): RM L9I30 and RM L51F29, named before they are opened
 for F1** (rule 2 of 10.1, as (k)). Neither has been opened; each is known
 here from its NTRS catalogue record only.
