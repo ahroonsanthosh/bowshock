@@ -16,7 +16,13 @@ import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE, type LevelReport } from '../analysi
 import type { Body } from '../geometry/body';
 import type { NoseShape } from '../geometry/nose';
 import { withBand } from './band';
-import { allowanceText, parseNumber, totalDragView, type NoseState } from './total-drag';
+import {
+  allowanceText,
+  bandCaveat,
+  parseNumber,
+  totalDragView,
+  type NoseState,
+} from './total-drag';
 import {
   altitudeInUnit,
   altitudeUnitOf,
@@ -408,7 +414,7 @@ async function run(gpu: GPUDevice): Promise<void> {
             : ` The grids have ${outcome.columnDensity} times the usual columns along the body: the usual grid at refinement ${failed.refinement} fails the quality checks of fitted grids.`);
         if (outcome.uncertainty !== undefined) {
           show(
-            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${stopped}`,
+            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${stopped}${bandCaveat(outcome.floor) === '' ? '' : ` ${bandCaveat(outcome.floor)}`}`,
             'ok',
           );
         } else {

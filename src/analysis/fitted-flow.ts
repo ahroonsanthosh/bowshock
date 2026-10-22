@@ -869,7 +869,7 @@ export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
   const calibers = length / (2 * baseRadius);
   if (insideOutline(VON_KARMAN_REFERENCES, [calibers, mach])) return undefined;
   const checked = VON_KARMAN_REFERENCES.map(([c, m]) => `${c} at Mach ${m}`).join(', ');
-  return `a Von Karman nose of ${calibers} calibers at Mach ${mach} lies outside the referenced range (the outline of the noses checked against a reference, in calibers: ${checked})`;
+  return `a Von Karman nose of ${calibers} ${calibers === 1 ? 'caliber' : 'calibers'} at Mach ${mach} lies outside the referenced range (the outline of the noses checked against a reference, in calibers: ${checked})`;
 }
 
 /**
@@ -948,8 +948,9 @@ const BOUNDARY_SMOOTHING = 50;
  * The allowance for an error the grid family cannot show, relative: the
  * caller's (FITTED_DRAG_FLOOR on the page), raised to TWO_SCALE_DRAG_FLOOR
  * on a two-scale nose (a start with its own outer boundary), whose
- * extrapolation from three grids misses its references by up to 3.33e-4
- * (0006, "Two-scale noses").
+ * extrapolation from three grids misses its references by up to 3.33e-4,
+ * and by up to 3.64e-4 on lines next to the one referenced (0006,
+ * "Two-scale noses").
  */
 export function fittedDragFloor(floor: number, start: BluntStart | null): number {
   return start?.outerBoundary ? Math.max(floor, TWO_SCALE_DRAG_FLOOR) : floor;

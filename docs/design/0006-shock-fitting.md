@@ -1146,20 +1146,47 @@ intervals. There the fitted drag converges at 1.86 and the march from
 its data at 1.17, as on the 3-caliber nose at Mach 2, and the
 procedure's extrapolation (order 1.79) lies 3.03e-4 to 3.33e-4 above
 the reference, the finest grid 6.8e-4 to 7.1e-4 and 7.35e-4 above the
-lowest bound.
+lowest bound. That reference rests on this one line: no second passing
+line guards it. The lines next to it, at x = 0.18 and 0.27, fail the
+criterion only on nj = 80's mass balance (4.6e-5 against 3.5e-5) and
+give misses of +3.45e-4 to +3.64e-4 and +3.56e-4 to +3.57e-4; over the
+seven lines marched (x = 0.08 to 1.0) the march's orders scatter from
+0.53 to 1.92 and the references spread over 2.2e-4 of the drag
+(`marches/moc-L5c2M2.txt`, `analysis/moc3.mjs`).
+
+What the line criterion checks, and what it does not. It checks the
+march's own convergence with the intervals and its mass balance, not
+the error in the fitted solution's data on the start line, which is the
+larger error here: the march from each grid's data converges over the
+grids at its own order, and that error is extrapolated away, not
+bounded. The lowest bound includes an extrapolated part too, the fitted
+drag upstream of the line (on the 5-caliber nose at Mach 2, line 216,
+that part moves the bound by -9.8e-5 of the drag from the nj = 80
+value).
 
 **The allowance and the served region.** So the allowance for two-scale
 noses (`TWO_SCALE_DRAG_FLOOR`) is twice the largest miss of the
-procedure's extrapolation over these references, rounded up: 7e-4
-(twice the 3.33e-4 of the 5-caliber nose at Mach 2; 5e-4, twice the
-2.44e-4 of the 5-caliber nose at Mach 1.5, before that reference), in
-place of `FITTED_DRAG_FLOOR` on any start with its own outer boundary
+procedure's extrapolation over these references, and over the lines
+next to the one the 5-caliber nose at Mach 2 rests on, rounded up:
+8e-4, twice the 3.64e-4 of the line at x = 0.18 on that nose (the
+passing line's 3.33e-4 alone would give 7e-4; the 2.44e-4 of the
+5-caliber nose at Mach 1.5, before that reference, gave 5e-4), in place
+of `FITTED_DRAG_FLOOR` on any start with its own outer boundary
 (`fittedDragFloor`). With it every band above contains its error,
 against the lowest bound of the marches (the finest grid's march plus
-the upstream part extrapolated): the 5-caliber nose's at Mach 2 by 1.60
-times (7.35e-4 below the nj = 80 value), at Mach 1.5 by 1.91 times
-(5.81e-4) and the 3-caliber nose's at Mach 2 by 2.11 times (6.06e-4),
-the others' by more (2.6 times or more with the earlier 5e-4). Only the
+the upstream part extrapolated): the 5-caliber nose's at Mach 2 by 1.73
+times (7.35e-4 below the nj = 80 value; 1.69 times against the lowest
+bound of all seven lines marched, 7.55e-4), at Mach 1.5 by 2.08 times
+(5.81e-4) and the 3-caliber nose's at Mach 2 by 2.27 times (6.06e-4),
+the others' by more (2.6 times or more with the earlier 5e-4).
+
+These are bands of three grids (nj = 20, 40 and 80). The page gives a
+band only from four (to nj = 160), when the orders of the two finest
+triples agree (0005), and no band of four grids has been measured on a
+Von Karman nose yet: the page's band on these noses is not yet checked,
+and says so. The checks under way: the 1-caliber nose at Mach 2 and the
+3-caliber nose at Mach 2 (whose fitted drag converges at 1.49 and its
+march at 1.16 to 1.31) on nj = 160 (`docs/research/two-scale-noses`). Only the
 Von Karman nose is served (`bluntNoseRefusal`), and only inside the
 outline of the (calibers, Mach) points referenced
 (`VON_KARMAN_REFERENCES`, `insideOutline`): (1, 1.5), (1, 2), (1, 3),

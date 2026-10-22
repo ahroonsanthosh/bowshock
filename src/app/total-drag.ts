@@ -18,7 +18,7 @@
  *   it with every condition it fails.
  */
 
-import { FITTED_DRAG_FLOOR } from '../analysis/verified-drag';
+import { FITTED_DRAG_FLOOR, TWO_SCALE_DRAG_FLOOR } from '../analysis/verified-drag';
 import type { BodyBaseDrag } from '../base/base-drag';
 import { FIG35_FREE_FLIGHT_END } from '../base/tn3819-fig35';
 import { clippedDeltaPlanform, trapezoidalPlanform, type Planform } from '../fins/planform';
@@ -603,6 +603,20 @@ export function allowanceText(floor: number): string {
   return Number(floor.toPrecision(2)).toExponential();
 }
 
+/**
+ * What a band with the given allowance has not been checked for, as the
+ * page states it after the band, or '' if nothing. A Von Karman nose's
+ * allowance was set from bands of three grids (nj = 20 to 80) against the
+ * method of characteristics; the page's bands come from four (to nj =
+ * 160), and none of those has been checked on a Von Karman nose yet
+ * (0006, "Two-scale noses").
+ */
+export function bandCaveat(floor: number): string {
+  return floor >= TWO_SCALE_DRAG_FLOOR
+    ? 'On Von Karman noses a band from four grids has not yet been checked against a reference.'
+    : '';
+}
+
 /** The nose term src/total is given: the page's solved value and band, unchanged. */
 export function noseComponentOf(solve: NoseSolve): DragComponent {
   return {
@@ -615,7 +629,10 @@ export function noseComponentOf(solve: NoseSolve): DragComponent {
       `${solve.grids} grids (0006)`,
     band:
       `measured from the grids, with an allowance of ${allowanceText(solve.floor ?? FITTED_DRAG_FLOOR)} of the ` +
-      'value (0006)',
+      'value (0006)' +
+      (bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR) === ''
+        ? ''
+        : `. ${bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR)}`),
   };
 }
 

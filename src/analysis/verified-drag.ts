@@ -139,10 +139,16 @@ export const FITTED_DRAG_FLOOR = 7e-5;
  * 3.33e-4 of the value: on the 5-caliber nose at Mach 2, whose march
  * converges more slowly than its fitted drag (on the 5-caliber nose at
  * Mach 1.5, whose observed order of 2.28 is capped at 2, by up to
- * 2.44e-4; docs/design/0006-shock-fitting.md, "Two-scale noses"). The
- * allowance is twice that, rounded up.
+ * 2.44e-4; docs/design/0006-shock-fitting.md, "Two-scale noses"). That
+ * reference rests on one line; the lines next to it, which fail the line
+ * criterion only on nj = 80's mass balance (4.6e-5 against 3.5e-5), give
+ * misses of up to 3.64e-4, with the march's orders scattered from 0.53 to
+ * 1.92 and the references spread over 2.2e-4 of the value. The allowance
+ * is twice the largest of these, 3.64e-4, rounded up. The bands it gives
+ * are of three grids; the page's four-grid bands on these noses have not
+ * been checked against a reference yet.
  */
-export const TWO_SCALE_DRAG_FLOOR = 7e-4;
+export const TWO_SCALE_DRAG_FLOOR = 8e-4;
 /**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).
