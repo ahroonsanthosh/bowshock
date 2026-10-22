@@ -1,0 +1,476 @@
+[
+ {
+  "id": "32-T1",
+  "shape": "triangle",
+  "series": "ogive nose",
+  "approx": [
+   3484,
+   3570
+  ],
+  "method": "manual vertices (base hidden, nominal height 41.0 px)",
+  "note": "apex free; base hidden in the heavy fairing-line band; centroid from apex and the figure's nominal height",
+  "stack": "32-A (R 7.3)",
+  "conf": "high (apex free)",
+  "triangle": {
+   "apex": [
+    3484,
+    3543
+   ],
+   "base_left": [
+    3462,
+    3584.0
+   ],
+   "base_right": [
+    3506,
+    3584.0
+   ]
+  },
+  "centre": [
+   3484.0,
+   3570.3333333333335
+  ],
+  "centre_data": [
+   7.226496837588476,
+   -0.15193728251348054
+  ],
+  "value_from": "outline centroid",
+  "value_px": [
+   3484.0,
+   3570.3333333333335
+  ],
+  "value_data": [
+   7.226496837588476,
+   -0.15193728251348054
+  ],
+  "err_R": 0.03496841635588397,
+  "err_P": 0.0008477764866199338
+ },
+ {
+  "id": "32-SA",
+  "shape": "square",
+  "series": "conical nose",
+  "approx": [
+   3498,
+   3578
+  ],
+  "method": "manual sides",
+  "note": "two square outlines share the left and right sides and are offset vertically by about 10 px (top sides 3557.5 and about 3567, bottom sides 3599.5 and 3609.5): either two conical-nose points or one redrawn square; this is the upper outline",
+  "stack": "32-A (R 7.3)",
+  "conf": "medium (two square outlines superposed)",
+  "sides": {
+   "left": [
+    3475,
+    0,
+    false
+   ],
+   "right": [
+    3521,
+    0,
+    false
+   ],
+   "top": [
+    3557.5,
+    0,
+    false
+   ],
+   "bottom": [
+    3599.5,
+    0,
+    false
+   ]
+  },
+  "centre": [
+   3498.0,
+   3578.5
+  ],
+  "centre_data": [
+   7.3300048646109035,
+   -0.15078158721891438
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3498.0,
+   3578.5
+  ],
+  "value_data": [
+   7.3300048646109035,
+   -0.15078158721891438
+  ],
+  "err_R": 0.03085797889738299,
+  "err_P": 0.000531983847664679
+ },
+ {
+  "id": "32-SB",
+  "shape": "square",
+  "series": "conical nose",
+  "approx": [
+   3498,
+   3588
+  ],
+  "method": "manual sides (1 hidden, nominal side 43 px)",
+  "note": "lower of the two superposed square outlines; its top side is hidden in the fairing-line band",
+  "stack": "32-A (R 7.3)",
+  "conf": "medium (two square outlines superposed)",
+  "sides": {
+   "left": [
+    3475,
+    0,
+    false
+   ],
+   "right": [
+    3521,
+    0,
+    false
+   ],
+   "top": [
+    3566.5,
+    0,
+    true
+   ],
+   "bottom": [
+    3609.5,
+    0,
+    false
+   ]
+  },
+  "centre": [
+   3498.0,
+   3588.0
+  ],
+  "centre_data": [
+   7.330619908242209,
+   -0.14941318154349403
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3498.0,
+   3588.0
+  ],
+  "value_data": [
+   7.330619908242209,
+   -0.14941318154349403
+  ],
+  "err_R": 0.04001697158836677,
+  "err_P": 0.0007293739660578954
+ },
+ {
+  "id": "32-S2",
+  "shape": "square",
+  "series": "conical nose",
+  "approx": [
+   3593,
+   3580
+  ],
+  "method": "manual sides",
+  "note": "R = 8 gridline and the triangle's left side cross the interior",
+  "stack": "32-B (R 8.0)",
+  "conf": "high",
+  "sides": {
+   "left": [
+    3573,
+    0,
+    false
+   ],
+   "right": [
+    3614,
+    0,
+    false
+   ],
+   "top": [
+    3558.5,
+    0,
+    false
+   ],
+   "bottom": [
+    3602.5,
+    0,
+    false
+   ]
+  },
+  "centre": [
+   3593.5,
+   3580.5
+  ],
+  "centre_data": [
+   8.032476093669324,
+   -0.15063546804762035
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3593.5,
+   3580.5
+  ],
+  "value_data": [
+   8.032476093669324,
+   -0.15063546804762035
+  ],
+  "err_R": 0.030758980130759696,
+  "err_P": 0.0005319953864483675
+ },
+ {
+  "id": "32-T2",
+  "shape": "triangle",
+  "series": "ogive nose",
+  "approx": [
+   3612,
+   3573
+  ],
+  "method": "manual vertices",
+  "note": "apex free above the square; base merged with the fairing line to the right",
+  "stack": "32-B (R 8.0)",
+  "conf": "high",
+  "triangle": {
+   "apex": [
+    3612,
+    3546
+   ],
+   "base_left": [
+    3590,
+    3586.5
+   ],
+   "base_right": [
+    3634,
+    3586.5
+   ]
+  },
+  "centre": [
+   3612.0,
+   3573.0
+  ],
+  "centre_data": [
+   8.167612617709022,
+   -0.15174776162091524
+  ],
+  "value_from": "outline centroid",
+  "value_px": [
+   3612.0,
+   3573.0
+  ],
+  "value_data": [
+   8.167612617709022,
+   -0.15174776162091524
+  ],
+  "err_R": 0.030752284685545233,
+  "err_P": 0.0007843926052604875
+ },
+ {
+  "id": "32-S3",
+  "shape": "square",
+  "series": "conical nose",
+  "approx": [
+   3730,
+   3581
+  ],
+  "method": "manual sides",
+  "note": "R = 9 gridline crosses the interior",
+  "stack": "32-C (R 9.0)",
+  "conf": "high",
+  "sides": {
+   "left": [
+    3709,
+    0,
+    false
+   ],
+   "right": [
+    3751,
+    0,
+    false
+   ],
+   "top": [
+    3559.5,
+    0,
+    false
+   ],
+   "bottom": [
+    3602.5,
+    0,
+    false
+   ]
+  },
+  "centre": [
+   3730.0,
+   3581.0
+  ],
+  "centre_data": [
+   9.033530679624128,
+   -0.1507981886959579
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3730.0,
+   3581.0
+  ],
+  "value_data": [
+   9.033530679624128,
+   -0.1507981886959579
+  ],
+  "err_R": 0.030986407973683107,
+  "err_P": 0.0005328111441087092
+ },
+ {
+  "id": "32-T3",
+  "shape": "triangle",
+  "series": "ogive nose",
+  "approx": [
+   3716,
+   3600
+  ],
+  "method": "manual vertices",
+  "note": "base and lower sides free below the square; apex hidden, placed from the nominal height 41 px",
+  "stack": "32-C (R 9.0)",
+  "conf": "medium (apex hidden inside the square)",
+  "triangle": {
+   "apex": [
+    3716,
+    3572.5
+   ],
+   "base_left": [
+    3694,
+    3613.5
+   ],
+   "base_right": [
+    3738,
+    3613.5
+   ]
+  },
+  "centre": [
+   3716.0,
+   3599.8333333333335
+  ],
+  "centre_data": [
+   8.932301225670823,
+   -0.1480568396571589
+  ],
+  "value_from": "outline centroid",
+  "value_px": [
+   3716.0,
+   3599.8333333333335
+  ],
+  "value_data": [
+   8.932301225670823,
+   -0.1480568396571589
+  ],
+  "err_R": 0.03488876673697488,
+  "err_P": 0.0008490191531434289
+ },
+ {
+  "id": "32-C1",
+  "shape": "circle",
+  "series": "radome nose",
+  "approx": [
+   3503,
+   3660
+  ],
+  "method": "auto",
+  "note": "centre dot merged with the fairing line through the circle; outline centre used",
+  "stack": "",
+  "conf": "high",
+  "circle": {
+   "xc": 3503.0491108074075,
+   "yc": 3659.707055122494,
+   "r": 24.652429675525838,
+   "n": 865,
+   "rms": 1.8931222558323735,
+   "coverage_deg": 360
+  },
+  "centre": [
+   3503.0491108074075,
+   3659.707055122494
+  ],
+  "centre_data": [
+   7.372510601787725,
+   -0.1390787152908826
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3503.0491108074075,
+   3659.707055122494
+  ],
+  "value_data": [
+   7.372510601787725,
+   -0.1390787152908826
+  ],
+  "err_R": 0.028097257465243095,
+  "err_P": 0.0004766039051947726
+ },
+ {
+  "id": "32-C2",
+  "shape": "circle",
+  "series": "radome nose",
+  "approx": [
+   3614,
+   3660
+  ],
+  "method": "auto",
+  "note": "centre dot merged with the fairing line through the circle; outline centre used",
+  "stack": "",
+  "conf": "high",
+  "circle": {
+   "xc": 3614.134324650713,
+   "yc": 3660.587623941747,
+   "r": 24.319673294386472,
+   "n": 827,
+   "rms": 2.055609312947634,
+   "coverage_deg": 360
+  },
+  "centre": [
+   3614.134324650713,
+   3660.587623941747
+  ],
+  "centre_data": [
+   8.189256196725884,
+   -0.13911982314376886
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3614.134324650713,
+   3660.587623941747
+  ],
+  "value_data": [
+   8.189256196725884,
+   -0.13911982314376886
+  ],
+  "err_R": 0.02807053670611579,
+  "err_P": 0.0004763963949367681
+ },
+ {
+  "id": "32-C3",
+  "shape": "circle",
+  "series": "radome nose",
+  "approx": [
+   3731,
+   3651
+  ],
+  "method": "auto",
+  "note": "centre dot merged with the fairing line through the circle; outline centre used",
+  "stack": "",
+  "conf": "high",
+  "circle": {
+   "xc": 3732.697490119202,
+   "yc": 3651.7391982097797,
+   "r": 24.601844490401486,
+   "n": 810,
+   "rms": 2.0227808026986858,
+   "coverage_deg": 345
+  },
+  "centre": [
+   3732.697490119202,
+   3651.7391982097797
+  ],
+  "centre_data": [
+   9.059779732640996,
+   -0.14059788207127216
+  ],
+  "value_from": "outline centre",
+  "value_px": [
+   3732.697490119202,
+   3651.7391982097797
+  ],
+  "value_data": [
+   9.059779732640996,
+   -0.14059788207127216
+  ],
+  "err_R": 0.02818330864775353,
+  "err_P": 0.0004735125254192388
+ }
+]

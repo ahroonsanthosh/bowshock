@@ -1,0 +1,168 @@
+{
+ "figure": "TN 2960 fig. 6",
+ "ntrs": "19930084018",
+ "page": 23,
+ "box": [
+  1100,
+  700,
+  5750,
+  4200
+ ],
+ "thr": 0.6,
+ "grid_thr": 0.6,
+ "longruns": true,
+ "frac_v": 0.15,
+ "frac_h": 0.15,
+ "xsel": "all",
+ "xvals": [
+  20000.0,
+  30000.0,
+  40000.0,
+  50000.0,
+  60000.0,
+  70000.0,
+  80000.0,
+  90000.0,
+  100000.0,
+  200000.0,
+  300000.0,
+  400000.0,
+  500000.0,
+  600000.0,
+  700000.0,
+  800000.0,
+  900000.0,
+  1000000.0,
+  2000000.0
+ ],
+ "xlog": true,
+ "ysel": [
+  0,
+  3,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15
+ ],
+ "yvals": [
+  1.8,
+  1.4,
+  1.2,
+  1.0,
+  0.8,
+  0.6,
+  0.4,
+  0.2,
+  0.0
+ ],
+ "scale": 0.3,
+ "symbols": [
+  {
+   "name": "1x3 WT M=1.98 (square)",
+   "at": [
+    3283,
+    1243
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 15
+  },
+  {
+   "name": "1x3 WT M=1.49 (circle)",
+   "at": [
+    3477,
+    1267
+   ],
+   "r": 25,
+   "shape": "circle",
+   "search": 15
+  },
+  {
+   "name": "1x3 WT M=1.98 (square)",
+   "at": [
+    3900,
+    1270
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 15
+  },
+  {
+   "name": "1x3 WT M=1.49 (circle)",
+   "at": [
+    4223,
+    1210
+   ],
+   "r": 25,
+   "shape": "circle",
+   "search": 15
+  },
+  {
+   "name": "1x3 WT M=1.98 (square)",
+   "at": [
+    4317,
+    1253
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 15
+  },
+  {
+   "name": "1x3 WT M=1.98 (square)",
+   "at": [
+    4540,
+    1267
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 15
+  },
+  {
+   "name": "1x3 WT M=1.49 (circle)",
+   "at": [
+    4590,
+    1233
+   ],
+   "r": 25,
+   "shape": "circle",
+   "search": 15
+  },
+  {
+   "name": "1x3 WT M=1.98 (square)",
+   "at": [
+    4827,
+    1327
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 15,
+   "note": "two squares overlapping",
+   "touch": true
+  },
+  {
+   "name": "1x3 WT M=1.98 (square)",
+   "at": [
+    4850,
+    1327
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 15,
+   "note": "two squares overlapping",
+   "touch": true
+  },
+  {
+   "name": "1x3 WT M=1.98 (square)",
+   "at": [
+    5147,
+    1333
+   ],
+   "r": 22,
+   "shape": "square",
+   "search": 15
+  }
+ ]
+}

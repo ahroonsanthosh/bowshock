@@ -656,6 +656,17 @@ export const FINS_ON_BASE_NOTE =
   'section (TN 3819 fig. 35; its band reaches down to 5% thick on TN 2360), and src/base ' +
   'applies it as it is to any four fins ending at the base, 5% to 10% thick.';
 
+/** The rebuilt factor, where it stands in for the present one (src/base/fins-on-base-w1.ts, 0015). */
+export const FINS_ON_BASE_W1_NOTE =
+  'Fins-on-base factor: the present factor does not cover these fins, so the rebuilt factor ' +
+  '(design record 0015) is used: a band between measured families of circular-arc fins that ' +
+  "bracket these fins' section, count, sweep and position (TN 2360, TN 3819, RM L52J21a, RM " +
+  'L52E06, NSWCDD/TR-92/509), wider than a measurement on these fins would give; for plates, ' +
+  "bounded, not measured, from RM L52E06's relief with plates at the base. Some of its data are " +
+  'read once, each named in its label: two noses of RM L52J21a at Mach 2.41, which do not set its ' +
+  'lowest member above Mach 1.62 (set at Mach 1.93 on calls both readers agree on) but whose second ' +
+  'reading could lower it; three symbols of TN 2360 fig. 6 at stations ahead of the base; and, for ' +
+  "leading edges swept under 45 deg, NSWCDD/TR-92/509's table.";
 /** Above the end of TN 3819 fig. 35's free-flight curve (src/base/fins-on-base.ts, 0010 section 11). */
 export const FINS_ON_BASE_BOUNDED_NOTE =
   `Fins-on-base factor: above M ${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 ` +
@@ -667,12 +678,34 @@ export const BOUNDED_REASON =
   "the body base's fins-on-base factor is bounded, not measured, above Mach " +
   `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends`;
 
+/** The rebuilt factor's bounded values (0015 sections 3.1 and 4), named in the claim as 0014 section 10.2 asks. */
+export const W1_BOUNDED_REASON =
+  "the body base's rebuilt fins-on-base factor is bounded, not measured (flat faces at a square " +
+  'trailing edge, or above Mach ' +
+  `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; 0015)`;
+
+/** The bounded components a total contains, named in its claim (0014 section 10.2). */
+export function boundedReasons(base: BodyBaseDrag | undefined): string[] {
+  if (base?.finsOnBase?.bounded !== true) return [];
+  return [base.finsOnBaseSource === 'rebuilt' ? W1_BOUNDED_REASON : BOUNDED_REASON];
+}
+
 /** What the components' labels do not carry. */
 function notesOf(base: BodyBaseDrag | undefined): string[] {
   const notes = [FINS_BAND_NOTE];
   // Flags of the fins-on-base factor (0010 sections 1.3 and 11).
   const f = base?.finsOnBase;
   if (f === undefined) return notes;
+  if (base?.finsOnBaseSource === 'rebuilt') {
+    notes.push(FINS_ON_BASE_W1_NOTE);
+    if (f.singleReading) {
+      notes.push(
+        'Fins-on-base factor: at this Mach number its reference rests on fewer than two readings ' +
+          'of the free-flight line of TN 3819 fig. 35 (0015 section 3.1).',
+      );
+    }
+    return notes;
+  }
   notes.push(FINS_ON_BASE_NOTE);
   if (f.atRangeEnd) {
     notes.push(
@@ -749,7 +782,7 @@ export function totalDragView(form: TotalDragForm, nose: NoseState): TotalDragVi
     total,
     withInputs: bandWithInputs(total),
     check,
-    claim: claimOf(check, parts.base?.finsOnBase?.bounded === true ? [BOUNDED_REASON] : []),
+    claim: claimOf(check, boundedReasons(parts.base)),
     notes: notesOf(parts.base),
   };
 }

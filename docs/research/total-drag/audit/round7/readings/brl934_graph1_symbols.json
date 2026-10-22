@@ -1,0 +1,912 @@
+[
+ {
+  "id": "A1",
+  "group": "A",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "low",
+  "centre_px": [
+   1342,
+   1405
+  ],
+  "centre_err_px": [
+   6,
+   12
+  ],
+  "M": 0.9742643936955757,
+  "CD": 0.8967233338020878,
+  "err_M": 0.003384508559744544,
+  "err_CD": 0.003090908511901514,
+  "features": "top end of the vertical line at M 0.975 (the line reaches the C_D 0.90 ruling); a cross-like mark merged with the 0.90 ruling and the rising faired curve; arms cannot be separated, centre uncertain in C_D",
+  "template_scores": {
+   "crossed circle": 0.081,
+   "plus": 0.279,
+   "dot": 0.373,
+   "open circle": 0.123
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   1342.0,
+   1399.0
+  ],
+  "template_centre_data": [
+   0.9742254082634744,
+   0.8982477365393495
+  ]
+ },
+ {
+  "id": "A2",
+  "group": "A",
+  "symbol": "open circle",
+  "legend_text": "CORRECTED FOR YAW AND FULL TURBLENT B.L. (sic)",
+  "confidence": "medium",
+  "centre_px": [
+   1340,
+   1643
+  ],
+  "centre_err_px": [
+   5,
+   5
+  ],
+  "M": 0.9748732005566193,
+  "CD": 0.8346779141519105,
+  "err_M": 0.0028594853232267094,
+  "err_CD": 0.0013948379176714977,
+  "features": "thick ring, single white hole at (1340, 1644); right half clean, left half merged with the dashed curve extension; the vertical line meets it top and bottom",
+  "template_scores": {
+   "crossed circle": 0.437,
+   "plus": 0.261,
+   "dot": 0.582,
+   "open circle": 0.396
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   1334.0,
+   1642.0
+  ],
+  "template_centre_data": [
+   0.9716796457532946,
+   0.8349048805102446
+  ]
+ },
+ {
+  "id": "A4",
+  "group": "A",
+  "symbol": "dot",
+  "legend_text": "VALUE CORRECTED FOR YAW",
+  "confidence": "high",
+  "centre_px": [
+   1336,
+   1817
+  ],
+  "centre_err_px": [
+   3,
+   3
+  ],
+  "M": 0.9740470260799552,
+  "CD": 0.7896498120146861,
+  "err_M": 0.0019197690473692303,
+  "err_CD": 0.0009212866943481766,
+  "features": "solid disc 40 x 38 px, no hole; vertical line from above ends on it",
+  "template_scores": {
+   "crossed circle": 0.017,
+   "plus": 0.424,
+   "dot": 0.601,
+   "open circle": 0.173
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   1341.0,
+   1819.0
+  ],
+  "template_centre_data": [
+   0.9767271429104654,
+   0.7891601830282879
+  ]
+ },
+ {
+  "id": "B1",
+  "group": "B",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "low",
+  "centre_px": [
+   1428,
+   1412
+  ],
+  "centre_err_px": [
+   5,
+   10
+  ],
+  "M": 1.019254388183624,
+  "CD": 0.895441026220068,
+  "err_M": 0.002730055224811789,
+  "err_CD": 0.002602906990759715,
+  "features": "vertical stroke 12 px wide hanging 30 px below the faired curve near its peak; no free horizontal arm (would lie inside the curve); only one arm visible",
+  "template_scores": {
+   "crossed circle": 0.204,
+   "plus": 0.445,
+   "dot": 0.414,
+   "open circle": 0.238
+  },
+  "best_template": "plus",
+  "template_centre_px": [
+   1427.0,
+   1406.0
+  ],
+  "template_centre_data": [
+   1.0187212840490332,
+   0.896967292752626
+  ]
+ },
+ {
+  "id": "B2",
+  "group": "B",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "low",
+  "centre_px": [
+   1482,
+   1395
+  ],
+  "centre_err_px": [
+   5,
+   10
+  ],
+  "M": 1.0465771600781115,
+  "CD": 0.9000612671319075,
+  "err_M": 0.0027825107474831567,
+  "err_CD": 0.00260581926975453,
+  "features": "vertical stroke 20 px tall standing above the faired curve at its peak; rest inside the curve; only one arm visible, could also be a pen flick",
+  "template_scores": {
+   "crossed circle": 0.177,
+   "plus": 0.45,
+   "dot": 0.486,
+   "open circle": 0.383
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   1480.0,
+   1392.0
+  ],
+  "template_centre_data": [
+   1.045543935954638,
+   0.9008243889892543
+  ]
+ },
+ {
+  "id": "B3",
+  "group": "B",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "medium",
+  "centre_px": [
+   1482,
+   1470
+  ],
+  "centre_err_px": [
+   5,
+   5
+  ],
+  "M": 1.0468125142339666,
+  "CD": 0.8809007233330847,
+  "err_M": 0.0027894085111304866,
+  "err_CD": 0.0013757402130055586,
+  "features": "horizontal arm 1464-1516 px at y 1469, vertical stroke 1474-1484 px from y 1458 to the C_D 0.875 ruling; vertical arm runs beside the M 1.05 ruling",
+  "template_scores": {
+   "crossed circle": 0.007,
+   "plus": 0.375,
+   "dot": 0.201,
+   "open circle": -0.012
+  },
+  "best_template": "plus",
+  "template_centre_px": [
+   1479.0,
+   1467.0
+  ],
+  "template_centre_data": [
+   1.0452858209313987,
+   0.8816524392604652
+  ]
+ },
+ {
+  "id": "B4",
+  "group": "B",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "high",
+  "centre_px": [
+   1551,
+   1429
+  ],
+  "centre_err_px": [
+   3,
+   3
+  ],
+  "M": 1.0835627061442614,
+  "CD": 0.8917217268885013,
+  "err_M": 0.0019373856499230013,
+  "err_CD": 0.0009224567723227864,
+  "features": "clean plus, arms 48 and 45 px",
+  "template_scores": {
+   "crossed circle": 0.195,
+   "plus": 0.447,
+   "dot": 0.277,
+   "open circle": 0.191
+  },
+  "best_template": "plus",
+  "template_centre_px": [
+   1550.0,
+   1426.0
+  ],
+  "template_centre_data": [
+   1.0830093137848824,
+   0.8924842081301749
+  ]
+ },
+ {
+  "id": "C1",
+  "group": "C",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "low",
+  "centre_px": [
+   1660,
+   1694
+  ],
+  "centre_err_px": [
+   6,
+   6
+  ],
+  "M": 1.1422551495585789,
+  "CD": 0.8230530938238623,
+  "err_M": 0.0032786993507417854,
+  "err_CD": 0.0016573613169265586,
+  "features": "top arm and right arm stand out of the descending faired curve; left and bottom arms inside the curve",
+  "template_scores": {
+   "crossed circle": 0.21,
+   "plus": 0.318,
+   "dot": 0.562,
+   "open circle": 0.224
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   1656.0,
+   1691.0
+  ],
+  "template_centre_data": [
+   1.1401505923664668,
+   0.8238174514864967
+  ]
+ },
+ {
+  "id": "C2",
+  "group": "C",
+  "symbol": "dot",
+  "legend_text": "VALUE CORRECTED FOR YAW",
+  "confidence": "medium",
+  "centre_px": [
+   1658,
+   1761
+  ],
+  "centre_err_px": [
+   4,
+   4
+  ],
+  "M": 1.1419136400312173,
+  "CD": 0.8054854812482447,
+  "err_M": 0.0023253120642719827,
+  "err_CD": 0.0011719680338303522,
+  "features": "solid disc 40 px wide on the faired curve, no hole; M 1.15 ruling crosses its right part",
+  "template_scores": {
+   "crossed circle": -0.0,
+   "plus": 0.598,
+   "dot": 0.582,
+   "open circle": 0.322
+  },
+  "best_template": "plus",
+  "template_centre_px": [
+   1661.0,
+   1765.0
+  ],
+  "template_centre_data": [
+   1.1435154357179242,
+   0.8044509427130092
+  ]
+ },
+ {
+  "id": "D1",
+  "group": "D",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "high",
+  "centre_px": [
+   1891,
+   1958
+  ],
+  "centre_err_px": [
+   3,
+   3
+  ],
+  "M": 1.2649823321896458,
+  "CD": 0.7553237323644996,
+  "err_M": 0.0018890336925590815,
+  "err_CD": 0.0009777353773744672,
+  "features": "plus with horizontal arm 60 px; bottom arm continues as the vertical line to D2",
+  "template_scores": {
+   "crossed circle": 0.085,
+   "plus": 0.524,
+   "dot": 0.593,
+   "open circle": 0.112
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   1889.0,
+   1953.0
+  ],
+  "template_centre_data": [
+   1.2638767937711899,
+   0.7566682464190072
+  ]
+ },
+ {
+  "id": "D2",
+  "group": "D",
+  "symbol": "open circle",
+  "legend_text": "CORRECTED FOR YAW AND FULL TURBLENT B.L. (sic)",
+  "confidence": "high",
+  "centre_px": [
+   1891,
+   2028
+  ],
+  "centre_err_px": [
+   3,
+   3
+  ],
+  "M": 1.2655549459453896,
+  "CD": 0.7370625028212914,
+  "err_M": 0.001886150027603982,
+  "err_CD": 0.000926121230714441,
+  "features": "ring 60 x 57 px with single hole 18 x 24 px; faired curve touches its lower right",
+  "template_scores": {
+   "crossed circle": 0.33,
+   "plus": 0.156,
+   "dot": 0.457,
+   "open circle": 0.53
+  },
+  "best_template": "open circle",
+  "template_centre_px": [
+   1887.0,
+   2027.0
+  ],
+  "template_centre_data": [
+   1.263455534331762,
+   0.7372967090292393
+  ]
+ },
+ {
+  "id": "D3",
+  "group": "D",
+  "symbol": "dot",
+  "legend_text": "VALUE CORRECTED FOR YAW",
+  "confidence": "high",
+  "centre_px": [
+   1883,
+   2104
+  ],
+  "centre_err_px": [
+   3,
+   4
+  ],
+  "M": 1.261880226658837,
+  "CD": 0.717258138943757,
+  "err_M": 0.0018857829826723323,
+  "err_CD": 0.0011850424647681912,
+  "features": "solid disc 42 x 30 px, vertical line from D2 ends on it",
+  "template_scores": {
+   "crossed circle": 0.073,
+   "plus": 0.559,
+   "dot": 0.696,
+   "open circle": 0.213
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   1878.0,
+   2098.0
+  ],
+  "template_centre_data": [
+   1.2592261525555013,
+   0.7188187187425934
+  ]
+ },
+ {
+  "id": "E1",
+  "group": "E",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "medium",
+  "centre_px": [
+   2153,
+   1843
+  ],
+  "centre_err_px": [
+   4,
+   4
+  ],
+  "M": 1.400693340252129,
+  "CD": 0.7869769351878402,
+  "err_M": 0.0023286702834817746,
+  "err_CD": 0.0011407546307281662,
+  "features": "horizontal arm 50 px centred on the M 1.40 ruling; the vertical arm is hidden by the ruling and by the vertical line that runs from it down to E2b",
+  "template_scores": {
+   "crossed circle": 0.068,
+   "plus": 0.604,
+   "dot": 0.576,
+   "open circle": 0.16
+  },
+  "best_template": "plus",
+  "template_centre_px": [
+   2154.0,
+   1843.0
+  ],
+  "template_centre_data": [
+   1.4012140457212383,
+   0.786982229386862
+  ]
+ },
+ {
+  "id": "E2a",
+  "group": "E",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "medium",
+  "centre_px": [
+   2125,
+   2174
+  ],
+  "centre_err_px": [
+   5,
+   5
+  ],
+  "M": 1.3882302393591892,
+  "CD": 0.7002136374330337,
+  "err_M": 0.0028019034597540856,
+  "err_CD": 0.001386110833838502,
+  "features": "plus just left of E2b: vertical arm 2152-2198 px free above and below the curve, horizontal arm merged with the faired curve and E2b",
+  "template_scores": {
+   "crossed circle": 0.052,
+   "plus": 0.538,
+   "dot": 0.603,
+   "open circle": 0.15
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   2121.0,
+   2174.0
+  ],
+  "template_centre_data": [
+   1.3861490270746342,
+   0.70018876674191
+  ]
+ },
+ {
+  "id": "E2b",
+  "group": "E",
+  "symbol": "dot",
+  "legend_text": "VALUE CORRECTED FOR YAW",
+  "confidence": "medium",
+  "centre_px": [
+   2151,
+   2168
+  ],
+  "centre_err_px": [
+   5,
+   5
+  ],
+  "M": 1.4017246074646825,
+  "CD": 0.7019622315918828,
+  "err_M": 0.002804418848623517,
+  "err_CD": 0.001414480640736487,
+  "features": "solid blob about 38 x 36 px on the faired curve at the foot of the vertical line from E1, no hole; its left edge merges with E2a",
+  "template_scores": {
+   "crossed circle": 0.247,
+   "plus": 0.484,
+   "dot": 0.569,
+   "open circle": 0.363
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   2145.0,
+   2167.0
+  ],
+  "template_centre_data": [
+   1.3985956047169663,
+   0.7021905411232111
+  ]
+ },
+ {
+  "id": "F1",
+  "group": "F",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "medium",
+  "centre_px": [
+   2361,
+   2150
+  ],
+  "centre_err_px": [
+   5,
+   5
+  ],
+  "M": 1.5100115236180516,
+  "CD": 0.7079428034955174,
+  "err_M": 0.002853490283425419,
+  "err_CD": 0.0014198161022237305,
+  "features": "vertical stroke 2354-2368 px with top arm free; right arm to 2394 px; left arm reaches the M 1.5 ruling only; bottom arm continues as the line to F2",
+  "template_scores": {
+   "crossed circle": 0.19,
+   "plus": 0.598,
+   "dot": 0.624,
+   "open circle": 0.271
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   2359.0,
+   2152.0
+  ],
+  "template_centre_data": [
+   1.5089678858550464,
+   0.707405008959342
+  ]
+ },
+ {
+  "id": "F2",
+  "group": "F",
+  "symbol": "dot",
+  "legend_text": "VALUE CORRECTED FOR YAW",
+  "confidence": "high",
+  "centre_px": [
+   2358,
+   2222
+  ],
+  "centre_err_px": [
+   4,
+   4
+  ],
+  "M": 1.5089913156083798,
+  "CD": 0.6892178238193515,
+  "err_M": 0.0023685746368221176,
+  "err_CD": 0.0011498943096210005,
+  "features": "solid disc about 40 x 33 px, left edge on the M 1.5 ruling",
+  "template_scores": {
+   "crossed circle": -0.024,
+   "plus": 0.514,
+   "dot": 0.67,
+   "open circle": 0.182
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   2357.0,
+   2222.0
+  ],
+  "template_centre_data": [
+   1.508461689543495,
+   0.6892127443254149
+  ]
+ },
+ {
+  "id": "G1",
+  "group": "G",
+  "symbol": "crossed circle",
+  "legend_text": "CONSOLIDATION OF PHASE I ROUNDS",
+  "confidence": "high",
+  "centre_px": [
+   2913,
+   2549
+  ],
+  "centre_err_px": [
+   4,
+   4
+  ],
+  "M": 1.8012640076893331,
+  "CD": 0.6067980957087892,
+  "err_M": 0.002300711126189254,
+  "err_CD": 0.0011926560211382366,
+  "features": "ring about 64 px with four small white quadrants and a horizontal cross stroke at y 2547; vertical cross stroke on the M 1.80 ruling; faired curve passes through it",
+  "template_scores": {
+   "crossed circle": 0.366,
+   "plus": 0.311,
+   "dot": 0.358,
+   "open circle": 0.504
+  },
+  "best_template": "open circle",
+  "template_centre_px": [
+   2912.0,
+   2552.0
+  ],
+  "template_centre_data": [
+   1.8007653459128397,
+   0.6059918167414862
+  ]
+ },
+ {
+  "id": "H1",
+  "group": "H",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "high",
+  "centre_px": [
+   3279,
+   2651
+  ],
+  "centre_err_px": [
+   4,
+   4
+  ],
+  "M": 1.9924804666696874,
+  "CD": 0.5824838436258588,
+  "err_M": 0.002388657411793662,
+  "err_CD": 0.0011470743693109409,
+  "features": "plus, arms 3256-3302 px and 2627-2675 px; bottom arm continues as the line to H2",
+  "template_scores": {
+   "crossed circle": 0.177,
+   "plus": 0.654,
+   "dot": 0.71,
+   "open circle": 0.249
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   3279.0,
+   2654.0
+  ],
+  "template_centre_data": [
+   1.9925001703005671,
+   0.581714362640363
+  ]
+ },
+ {
+  "id": "H2",
+  "group": "H",
+  "symbol": "dot",
+  "legend_text": "VALUE CORRECTED FOR YAW",
+  "confidence": "medium",
+  "centre_px": [
+   3270,
+   2738
+  ],
+  "centre_err_px": [
+   5,
+   5
+  ],
+  "M": 1.9881435233096107,
+  "CD": 0.5592843552655407,
+  "err_M": 0.0028649698032930278,
+  "err_CD": 0.0014590337460077788,
+  "features": "solid disc about 32 x 36 px, faired curve passes through it; no hole",
+  "template_scores": {
+   "crossed circle": -0.035,
+   "plus": 0.397,
+   "dot": 0.477,
+   "open circle": 0.15
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   3276.0,
+   2739.0
+  ],
+  "template_centre_data": [
+   1.9913401615779334,
+   0.5590462766805575
+  ]
+ },
+ {
+  "id": "I1",
+  "group": "I",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "medium",
+  "centre_px": [
+   3356,
+   2719
+  ],
+  "centre_err_px": [
+   3,
+   3
+  ],
+  "M": 2.0322913488011656,
+  "CD": 0.5649090166445971,
+  "err_M": 0.001831254891930228,
+  "err_CD": 0.0009757832909989411,
+  "features": "small plus (vertical arm 42 px, 3348-3364 px wide), horizontal arm lies on a fine ruling; not on the vertical line of I2 and I3 (0.02 in M to the left)",
+  "template_scores": {
+   "crossed circle": 0.066,
+   "plus": 0.548,
+   "dot": 0.492,
+   "open circle": 0.017
+  },
+  "best_template": "plus",
+  "template_centre_px": [
+   3357.0,
+   2718.0
+  ],
+  "template_centre_data": [
+   2.032794046313601,
+   0.5651852063667515
+  ]
+ },
+ {
+  "id": "I2",
+  "group": "I",
+  "symbol": "open circle",
+  "legend_text": "CORRECTED FOR YAW AND FULL TURBLENT B.L. (sic)",
+  "confidence": "medium",
+  "centre_px": [
+   3392,
+   2782
+  ],
+  "centre_err_px": [
+   4,
+   4
+  ],
+  "M": 2.0510108998500804,
+  "CD": 0.5481883190613905,
+  "err_M": 0.002390501759895049,
+  "err_CD": 0.0011362550436702752,
+  "features": "ring 52 px wide with a single hole 14 x 12 px; faired curve passes through it",
+  "template_scores": {
+   "crossed circle": 0.145,
+   "plus": 0.291,
+   "dot": 0.564,
+   "open circle": 0.526
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   3395.0,
+   2779.0
+  ],
+  "template_centre_data": [
+   2.0525919665991745,
+   0.5489687738314152
+  ]
+ },
+ {
+  "id": "I3",
+  "group": "I",
+  "symbol": "dot",
+  "legend_text": "VALUE CORRECTED FOR YAW",
+  "confidence": "high",
+  "centre_px": [
+   3388,
+   2904
+  ],
+  "centre_err_px": [
+   3,
+   3
+  ],
+  "M": 2.0498214683321736,
+  "CD": 0.5170973987842574,
+  "err_M": 0.0019141967070544334,
+  "err_CD": 0.0009243878598886493,
+  "features": "solid disc 48 x 38 px at the foot of the vertical line from I2 (which runs along the M 2.05 ruling)",
+  "template_scores": {
+   "crossed circle": 0.143,
+   "plus": 0.396,
+   "dot": 0.678,
+   "open circle": 0.336
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   3389.0,
+   2900.0
+  ],
+  "template_centre_data": [
+   2.0503153095347675,
+   0.5181281977231464
+  ]
+ },
+ {
+  "id": "J1",
+  "group": "J",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "low",
+  "centre_px": [
+   4101,
+   3080
+  ],
+  "centre_err_px": [
+   5,
+   8
+  ],
+  "M": 2.421359840393023,
+  "CD": 0.4752592670616821,
+  "err_M": 0.0027337961773530564,
+  "err_CD": 0.002162255573931944,
+  "features": "free vertical stroke 4094-4108 px wide from y 3062 to 3098, symmetric about the heavy C_D 0.475 ruling at y 3080, standing on J2; a horizontal arm would lie on that ruling and cannot be seen, so the call rests on the stroke's length and symmetry and on the other groups (plus above, corrected values below)",
+  "template_scores": {
+   "crossed circle": 0.263,
+   "plus": 0.404,
+   "dot": 0.361,
+   "open circle": 0.186
+  },
+  "best_template": "plus",
+  "template_centre_px": [
+   4099.0,
+   3077.0
+  ],
+  "template_centre_data": [
+   2.4203236572892224,
+   0.47602998321513207
+  ]
+ },
+ {
+  "id": "J2",
+  "group": "J",
+  "symbol": "open circle",
+  "legend_text": "CORRECTED FOR YAW AND FULL TURBLENT B.L. (sic)",
+  "confidence": "low",
+  "centre_px": [
+   4096,
+   3116
+  ],
+  "centre_err_px": [
+   6,
+   6
+  ],
+  "M": 2.4191202488061694,
+  "CD": 0.465790532993745,
+  "err_M": 0.0032130078296785172,
+  "err_CD": 0.001660662687976471,
+  "features": "blob 46 x 36 px on the faired curve with a small white hole (4102-4106, 3110-3116 px); called an open circle with the curve through it; could be a dot",
+  "template_scores": {
+   "crossed circle": 0.049,
+   "plus": 0.423,
+   "dot": 0.446,
+   "open circle": 0.215
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   4091.0,
+   3116.0
+  ],
+  "template_centre_data": [
+   2.4165801297117118,
+   0.46576928437442805
+  ]
+ },
+ {
+  "id": "K1",
+  "group": "K",
+  "symbol": "plus",
+  "legend_text": "ROUND VALUE",
+  "confidence": "high",
+  "centre_px": [
+   4194,
+   3086
+  ],
+  "centre_err_px": [
+   3,
+   3
+  ],
+  "M": 2.469600302217751,
+  "CD": 0.47409637713683367,
+  "err_M": 0.001926578757296329,
+  "err_CD": 0.0009445600442340687,
+  "features": "clean plus, arms 54 and 45 px, off the faired curve",
+  "template_scores": {
+   "crossed circle": 0.111,
+   "plus": 0.554,
+   "dot": 0.58,
+   "open circle": 0.224
+  },
+  "best_template": "dot",
+  "template_centre_px": [
+   4195.0,
+   3086.0
+  ],
+  "template_centre_data": [
+   2.4701346358726965,
+   0.4741016530010888
+  ]
+ }
+]

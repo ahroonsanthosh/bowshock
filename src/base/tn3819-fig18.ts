@@ -37,9 +37,31 @@
  *   which agree within 0.003. Symbol shapes and references are the audit's
  *   provisional assignment by shape.
  *
- * Values without a check rest on one reading: the rows at M 1.0, 1.2,
- * 1.4, 1.503, 1.6, 1.8, 2.009, 2.2, 2.4, 2.418, 2.6, 2.8, 3.2 and 3.5 (both
- * curves). tests/base/compiled-curve.test.ts holds every check against the
+ * - Round 7 (2026-10-21, blind, `audit/round7/` on another branch,
+ *   commit 92fb693; copied in `data/round7/tn3819_fig18.csv`): both curves
+ *   at M 1.0 to 1.5 every 0.1 and at 2.0, 2.5 and 3.0 (TN3819_FIG18_ROUND7).
+ *   Paired with the adopted rows (docs/design/0015-fins-at-the-base.md
+ *   section 7): within the combined errors at every Mach number but the
+ *   basic curve at M 1.4, where round 1's -0.1796 lies 0.0020 from round
+ *   7's -0.1776 (combined 0.0012). The third evidence is fig. 35's no-fin
+ *   curve, which reproduces the basic curve within 0.001 (0008 section
+ *   3.4) and reads -0.1774 and -0.1775 there in its two readings (0010
+ *   section 11.3); and round 1 puts the two curves 0.0014 apart at M 1.4,
+ *   against 0.0034 to 0.0042 at M 1.2 and 1.5 in both readings and 0.0038
+ *   in round 7 at 1.4. So round 1's value is a misread
+ *   (TN3819_FIG18_MISREADS), and the row takes round 7's. Nothing served
+ *   from M 1.5 uses that row; below 1.5 the body base of W2 and the rebuilt
+ *   fins-on-base factor do (0015 section 11). Round 7 is not added to
+ *   TN3819_FIG18_CHECKS: those set the curvature bound of
+ *   ./compiled-curve.ts, and nodes below M 1.5 would raise it (0.063 to
+ *   0.118, the bend near M 1.2) for the whole range; from M 1.5 its rows
+ *   would leave it unchanged.
+ *
+ * Values without a check rest on one reading from M 1.5: the rows at
+ * 1.503, 1.6, 1.8, 2.009, 2.2, 2.4, 2.418, 2.6, 2.8, 3.2 and 3.5 (both
+ * curves); the rows at M 1.0, 1.2 and 1.4 are read twice (round 1, round
+ * 7; at 1.4 the basic curve resolved as above).
+ * tests/base/compiled-curve.test.ts holds every check against the
  * adopted value within the combined reading error (0008's reading rule:
  * where two readings differ by more, both are kept and the one that
  * widens the band is used) and checks each single-read value against the
@@ -55,11 +77,11 @@ export interface CompiledCurveRow {
   readonly lessNegative: number;
 }
 
-/** Adopted reading (round-1 audit), M 1.0 to 3.5. */
+/** Adopted reading (round-1 audit), M 1.0 to 3.5; at M 1.4 the basic curve is round 7's (TN3819_FIG18_MISREADS). */
 export const TN3819_FIG18_CURVES: readonly CompiledCurveRow[] = [
   { mach: 1.0, moreNegative: -0.1896, lessNegative: -0.1849 },
   { mach: 1.2, moreNegative: -0.187, lessNegative: -0.1836 },
-  { mach: 1.4, moreNegative: -0.181, lessNegative: -0.1796 },
+  { mach: 1.4, moreNegative: -0.181, lessNegative: -0.1776 },
   { mach: 1.5, moreNegative: -0.1775, lessNegative: -0.1733 },
   { mach: 1.503, moreNegative: -0.1774, lessNegative: -0.1732 },
   { mach: 1.6, moreNegative: -0.1731, lessNegative: -0.1683 },
@@ -183,6 +205,111 @@ export const TN3819_FIG18_CHECKS: readonly CurveCheck[] = [
   { mach: 3.243, curve: 'lessNegative', value: -0.0886, error: 0.0015, source: 'round 3' },
   { mach: 3.497, curve: 'moreNegative', value: -0.0805, error: 0.0015, source: 'round 3' },
   { mach: 3.497, curve: 'lessNegative', value: -0.0805, error: 0.0015, source: 'round 3' },
+];
+
+/** An adopted value found to be a misread on pairing, and what replaced it. */
+export interface CurveMisread {
+  readonly mach: number;
+  readonly curve: CompiledCurveName;
+  /** The value read, now replaced. */
+  readonly value: number;
+  readonly source: 'round 1';
+  /** The value adopted in its place. */
+  readonly replacedBy: number;
+  readonly why: string;
+}
+
+export const TN3819_FIG18_MISREADS: readonly CurveMisread[] = [
+  {
+    mach: 1.4,
+    curve: 'lessNegative',
+    value: -0.1796,
+    source: 'round 1',
+    replacedBy: -0.1776,
+    why:
+      "0.0020 from round 7's -0.1776 +-0.0002 (combined 0.0012); fig. 35's no-fin curve, which reproduces " +
+      'the basic curve, reads -0.1774 and -0.1775 there (0010 section 11.3); 0.0014 from Chapman against ' +
+      '0.0034 to 0.0042 at the neighbouring rows',
+  },
+];
+
+/** One row of round 7's reading of the two compiled curves (P_B, each with its reading error). */
+export interface Round7Row {
+  readonly mach: number;
+  readonly moreNegative: number;
+  readonly moreNegativeError: number;
+  readonly lessNegative: number;
+  readonly lessNegativeError: number;
+}
+
+/**
+ * Round 7's blind reading of the two compiled curves (`data/round7/tn3819_fig18.csv`). At M 3.0 the curves
+ * merge on the figure and its value is the merged line's.
+ */
+export const TN3819_FIG18_ROUND7: readonly Round7Row[] = [
+  {
+    mach: 1.0,
+    moreNegative: -0.1902,
+    moreNegativeError: 0.0004,
+    lessNegative: -0.1851,
+    lessNegativeError: 0.0003,
+  },
+  {
+    mach: 1.1,
+    moreNegative: -0.1892,
+    moreNegativeError: 0.0002,
+    lessNegative: -0.1851,
+    lessNegativeError: 0.0002,
+  },
+  {
+    mach: 1.2,
+    moreNegative: -0.1874,
+    moreNegativeError: 0.0002,
+    lessNegative: -0.1839,
+    lessNegativeError: 0.0003,
+  },
+  {
+    mach: 1.3,
+    moreNegative: -0.1847,
+    moreNegativeError: 0.0002,
+    lessNegative: -0.1813,
+    lessNegativeError: 0.0002,
+  },
+  {
+    mach: 1.4,
+    moreNegative: -0.1814,
+    moreNegativeError: 0.0005,
+    lessNegative: -0.1776,
+    lessNegativeError: 0.0002,
+  },
+  {
+    mach: 1.5,
+    moreNegative: -0.1776,
+    moreNegativeError: 0.0003,
+    lessNegative: -0.1734,
+    lessNegativeError: 0.0003,
+  },
+  {
+    mach: 2.0,
+    moreNegative: -0.1499,
+    moreNegativeError: 0.0003,
+    lessNegative: -0.1448,
+    lessNegativeError: 0.0002,
+  },
+  {
+    mach: 2.5,
+    moreNegative: -0.1196,
+    moreNegativeError: 0.0005,
+    lessNegative: -0.1172,
+    lessNegativeError: 0.0002,
+  },
+  {
+    mach: 3.0,
+    moreNegative: -0.0965,
+    moreNegativeError: 0.0005,
+    lessNegative: -0.0965,
+    lessNegativeError: 0.0003,
+  },
 ];
 
 /** A tunnel symbol of fig. 18 with its two independent readings. */

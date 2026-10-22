@@ -1,0 +1,63 @@
+figure,series,x,y,err_y,how
+TN 3819 fig. 32,M1.50_ref26_measured,0.9,-0.1859,0.0004,curve; n=6
+TN 3819 fig. 32,M1.50_ref26_measured,0.8,-0.1958,0.0004,curve; n=9
+TN 3819 fig. 32,M1.50_ref26_measured,0.7,-0.2085,0.0004,curve; n=8
+TN 3819 fig. 32,M1.50_ref26_measured,0.6,-0.2150,0.0004,curve; n=10
+TN 3819 fig. 32,M1.50_ref26_measured,0.5,-0.2180,0.0003,curve; n=10
+TN 3819 fig. 32,M1.50_ref26_measured,0.4,-0.2199,0.0004,curve; n=9
+TN 3819 fig. 32,M1.50_ref26_measured,0.3,-0.2293,0.0004,curve; n=12
+TN 3819 fig. 32,M1.50_ref26_measured,0.2,-0.2592,0.0007,curve; n=18
+TN 3819 fig. 32,M1.50_ref26_measured,0.1,-0.3001,0.0007,curve; n=21
+TN 3819 fig. 32,M1.50_ref26_measured,0,-0.3251,0.0004,curve; n=10
+TN 3819 fig. 32,M1.50_ref26_measured,-0.1,-0.3276,0.0004,curve; n=7
+TN 3819 fig. 32,M1.50_ref26_measured,-0.2,-0.3294,0.0004,curve; n=6
+TN 3819 fig. 32,M1.50_ref26_measured,-0.3,-0.3391,0.0005,curve; n=14
+TN 3819 fig. 32,M1.50_ref26_measured,-0.4,-0.3650,0.0004,curve; n=10
+TN 3819 fig. 32,M1.50_ref26_measured,-0.5,-0.3355,0.0006,curve; n=19
+TN 3819 fig. 32,M1.50_ref26_measured,-0.6,-0.2892,0.0007,curve; n=15
+TN 3819 fig. 32,M1.50_ref26_measured,-0.7,-0.2389,0.0008,curve; n=17
+TN 3819 fig. 32,M1.50_ref26_measured,-0.8,-0.1878,0.0008,curve; n=18
+TN 3819 fig. 32,M1.50_ref26_measured,-0.9,-0.1355,0.0010,curve; n=18
+TN 3819 fig. 32,M1.50_ref26_measured,-1,-0.0999,0.0004,curve; n=4
+TN 3819 fig. 32,M2.00_ref26_measured,0.8,-0.1695,0.0004,curve; n=10
+TN 3819 fig. 32,M2.00_ref26_measured,0.7,-0.1750,0.0004,curve; n=10
+TN 3819 fig. 32,M2.00_ref26_measured,0.6,-0.1824,0.0004,curve; n=10
+TN 3819 fig. 32,M2.00_ref26_measured,0.5,-0.1935,0.0004,curve; n=9
+TN 3819 fig. 32,M2.00_ref26_measured,0.4,-0.2083,0.0004,curve; n=12
+TN 3819 fig. 32,M2.00_ref26_measured,0.3,-0.2199,0.0009,curve; n=11
+TN 3819 fig. 32,M2.00_ref26_measured,0.2,-0.2107,0.0004,curve; n=10
+TN 3819 fig. 32,M2.00_ref26_measured,0.1,-0.2067,0.0004,curve; n=6
+TN 3819 fig. 32,M2.00_ref26_measured,-0.2,-0.1849,0.0004,curve; n=8
+TN 3819 fig. 32,M2.00_ref26_measured,-0.3,-0.1861,0.0004,curve; n=5
+TN 3819 fig. 32,M2.00_ref26_measured,-0.4,-0.1960,0.0004,curve; n=11
+TN 3819 fig. 32,M2.00_ref26_measured,-0.5,-0.2027,0.0004,curve; n=6
+TN 3819 fig. 32,M2.00_ref26_measured,-0.6,-0.1984,0.0020,curve; n=10; extra 0.002
+TN 3819 fig. 32,M2.00_ref26_measured,-0.7,-0.1813,0.0021,curve; n=16; extra 0.002
+TN 3819 fig. 32,M2.00_ref26_measured,-0.8,-0.1544,0.0021,curve; n=11; extra 0.002
+TN 3819 fig. 32,M2.00_ref26_measured,-0.9,-0.1262,0.0020,curve; n=5; extra 0.002
+TN 3819 fig. 32,M2.00_ref26_measured,-1,-0.0998,0.0020,curve; n=5; extra 0.002
+TN 3819 fig. 32,M2.41_9in_faired,1,-0.0737,0.0011,curve; n=20
+TN 3819 fig. 32,M2.41_9in_faired,0.95,-0.1118,0.0007,curve; n=117
+TN 3819 fig. 32,M2.41_9in_faired,0.9,-0.1402,0.0007,curve; n=18
+TN 3819 fig. 32,M2.41_9in_faired,0.85,-0.1538,0.0004,curve; n=8
+TN 3819 fig. 32,M2.41_9in_faired,0.8,-0.1595,0.0004,curve; n=8
+TN 3819 fig. 32,M2.41_9in_faired,0.7,-0.1616,0.0004,curve; n=9
+TN 3819 fig. 32,M2.41_9in_faired,0.6,-0.1601,0.0004,curve; n=4
+TN 3819 fig. 32,M2.41_9in_faired,0.5,-0.1628,0.0004,curve; n=11
+TN 3819 fig. 32,M2.41_9in_faired,0.4,-0.1714,0.0004,curve; n=9
+TN 3819 fig. 32,M2.41_9in_faired,0.3,-0.1681,0.0004,curve; n=10
+TN 3819 fig. 32,M2.41_9in_faired,0.2,-0.1666,0.0004,curve; n=9
+TN 3819 fig. 32,M2.41_9in_faired,0.1,-0.1646,0.0004,curve; n=6
+TN 3819 fig. 32,M2.41_9in_faired,0,-0.1657,0.0004,curve; n=6
+TN 3819 fig. 32,M1.50_ref26_measured,1,-0.1800,0.0003,column read; at the frame
+TN 3819 fig. 32,M2.00_ref26_measured,1,-0.1643,0.0003,column read; at the frame
+TN 3819 fig. 32,M2.00_ref26_measured,0.9,-0.1661,0.0003,column read
+TN 3819 fig. 32,M2.00_ref26_measured,0,-0.2005,0.0003,column read; circles curve at -0.206 and P-M at -0.185 either side
+TN 3819 fig. 32,M2.00_ref26_measured,-0.1,-0.1929,0.0020,column read; extra 0.002; crosses the P-M line here
+TN 3819 fig. 32,tri_xc1.0_upper,0.9975,-0.0757,0.0003,symbol triangle 41 px (score 0.71); x err 0.0017
+TN 3819 fig. 32,tri_xc1.0_lower,0.9994,-0.0617,0.0003,symbol triangle 41 px (score 0.71); x err 0.0017
+TN 3819 fig. 32,tri_xc0.8,0.8001,-0.1604,0.0003,symbol triangle 33 px (score 0.78); x err 0.0017
+TN 3819 fig. 32,tri_xc0.6,0.6007,-0.1566,0.0003,symbol triangle 35 px (score 0.59); x err 0.0017
+TN 3819 fig. 32,tri_xc0.4,0.3996,-0.1728,0.0020,symbol triangle 39 px (score 0.77); x err 0.0017; plain and flagged triangles overlap
+TN 3819 fig. 32,tri_xc0.2,0.1999,-0.1679,0.0030,symbol triangle 35 px (score 0.81); x err 0.0017; plain and flagged triangles overlap
+TN 3819 fig. 32,tri_xc0.0,-0.0005,-0.1642,0.0020,symbol triangle 37 px (score 0.61); x err 0.0017; plain and flagged triangles overlap
