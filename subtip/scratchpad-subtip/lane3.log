@@ -1,0 +1,15 @@
+2026-10-17T16:00:18+00:00 start captured B
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  16:00:20
+   Duration  4550.53s (tests 100%)
+
+2026-10-17T17:16:10+00:00 end captured B exit 0
+2026-10-17T17:16:10+00:00 start captured A
+
+ RUN  v5.0.4 /home/user/bowshock
+

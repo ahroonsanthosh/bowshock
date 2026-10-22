@@ -1,0 +1,1 @@
+{"L":3,"cyl":30,"mach":1.5,"kind":"solved","columnDensity":1.5,"reason":null,"levels":[{"refinement":1,"drag":0.10583491196235459,"ni":184,"iterations":3408}],"fallbacks":[{"refinement":1,"reason":"the grid on the fitted shock fails its quality checks (cell aspect ratio 18.0 above 13): a limit of the present grids, not of the flow"}],"elapsed":411.944}

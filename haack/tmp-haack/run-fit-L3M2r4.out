@@ -1,0 +1,27 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03
+
+ ❯ tests/tmp-haack/fit.test.ts (1 test | 1 failed) 106491ms
+   × fit haack C0 L3 M2 cyl2 nj20x4 106489ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/tmp-haack/fit.test.ts > fit haack C0 L3 M2 cyl2 nj20x4
+Error: checkpoint of another grid
+ ❯ tests/tmp-haack/fit.test.ts:58:57
+     56|     };
+     57|     const cells = new Float64Array(readFileSync(`${CHECKPOINT}.bin`).b…
+     58|     if (head.ni !== ni || head.nj !== problem.nj) throw new Error('che…
+       |                                                         ^
+     59|     heights = head.heights;
+     60|     iterationsBefore = head.iterations;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  16:51:33
+   Duration  107.12s (tests 100%)
+
+done

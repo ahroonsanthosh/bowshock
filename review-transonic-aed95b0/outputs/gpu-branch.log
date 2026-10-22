@@ -1,0 +1,14 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/review-transonic-aed95b0
+
+ ✓ |chromium| tests/gpu/transonic-gpu.test.ts > GpuEuler2D: far-field boundaries (transonic domain) > follows the CPU engine step for step from the free stream 11320ms
+ ✓ |chromium| tests/gpu/transonic-gpu.test.ts > GpuEuler2D: far-field boundaries (transonic domain) > red-black implicit steps follow the CPU twin step for step, the CFL number ramped from 1 1962ms
+ ✓ |chromium| tests/gpu/transonic-gpu.test.ts > GpuEuler2D: far-field boundaries (transonic domain) > holds the CPU's converged solution, its drag within its 32-bit wander 59807ms
+ ✓ |chromium| tests/gpu/transonic-gpu.test.ts > GpuEuler2DTwoFloat: the transonic solve in two-float > its residual is the CPU's double one, on a rough state 23716ms
+ ✓ |chromium| tests/gpu/transonic-gpu.test.ts > GpuEuler2DTwoFloat: the transonic solve in two-float > holds the CPU's converged solution, its drag within 1e-10, with no wander 219269ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  04:57:06
+   Duration  325.12s (tests 99%)
+

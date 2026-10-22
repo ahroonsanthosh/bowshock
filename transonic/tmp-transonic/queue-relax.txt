@@ -1,0 +1,10 @@
+# The CPU twin of the GPU's iteration (red-black, no Anderson), from the free stream, base grid:
+# which sweep counts converge (2026-10-22; 4 sweeps fell into a limit cycle at Mach 1.1).
+BODY=cone7 MACH=1.1 FAR=100 CYL=10 REFS=1,2 TAG=x-cone7-m1.1-redBlack-2-d0 RELAX=redBlack:2 DEPTH=0 MAXSTEPS=8000
+BODY=cone7 MACH=1.1 FAR=100 CYL=10 REFS=1 TAG=x-cone7-m1.1-redBlack-3-d0 RELAX=redBlack:3 DEPTH=0 MAXSTEPS=8000
+BODY=cone7 MACH=1.1 FAR=100 CYL=10 REFS=1 TAG=x-cone7-m1.1-redBlack-1-d0 RELAX=redBlack:1 DEPTH=0 MAXSTEPS=8000
+BODY=cone7 MACH=1.2 FAR=100 CYL=10 REFS=1 TAG=x-cone7-m1.2-redBlack-2-d0 RELAX=redBlack:2 DEPTH=0 MAXSTEPS=8000
+BODY=cone7 MACH=1.05 FAR=100 CYL=10 REFS=1 TAG=x-cone7-m1.05-redBlack-2-d0 RELAX=redBlack:2 DEPTH=0 MAXSTEPS=8000
+BODY=ogive5 MACH=1.1 FAR=100 CYL=10 REFS=1 TAG=x-ogive5-m1.1-redBlack-2-d0 RELAX=redBlack:2 DEPTH=0 MAXSTEPS=8000
+BODY=ogive3 MACH=1.2 FAR=100 CYL=10 REFS=1 TAG=x-ogive3-m1.2-redBlack-2-d0 RELAX=redBlack:2 DEPTH=0 MAXSTEPS=8000
+BODY=cone7 MACH=1.1 FAR=100 CYL=10 REFS=1 TAG=x-cone7-m1.1-jacobi-2-d0 RELAX=jacobi:2 DEPTH=0 MAXSTEPS=8000

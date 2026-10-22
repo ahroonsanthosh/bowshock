@@ -1,0 +1,4 @@
+{"id":"A","family":"default","refinement":1,"ni":37,"nj":20,"failures":[],"worst":{"ratio":13.180269084775134,"i":36,"j":0,"x":4.237006150929574,"y":0.5},"L":3}
+{"id":"A","family":"default","refinement":2,"ni":74,"nj":40,"failures":["cell aspect ratio 13.7 above 13"],"worst":{"ratio":13.836127262458753,"i":73,"j":0,"x":4.605546926741756,"y":0.5},"L":3}
+{"id":"A","family":"dense","refinement":2,"ni":112,"nj":40,"failures":[],"worst":{"ratio":8.335485927203765,"i":111,"j":0,"x":4.7601566567042015,"y":0.5},"L":3}
+{"id":"A","family":"dense","refinement":4,"ni":224,"nj":80,"failures":[],"worst":{"ratio":8.53079726236683,"i":223,"j":0,"x":4.8788773452191885,"y":0.5},"L":3}

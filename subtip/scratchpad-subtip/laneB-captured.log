@@ -1,0 +1,23 @@
+2026-10-20T11:53:20+00:00 start captured F
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  11:53:23
+   Duration  6028.23s (tests 100%)
+
+2026-10-20T13:33:51+00:00 end captured F exit 0
+2026-10-20T13:33:51+00:00 start captured G
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:33:54
+   Duration  4351.50s (tests 100%)
+
+2026-10-20T14:46:26+00:00 end captured G exit 0
+2026-10-20T14:46:26+00:00 lane done

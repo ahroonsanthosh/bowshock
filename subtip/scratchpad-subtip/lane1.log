@@ -1,0 +1,59 @@
+2026-10-17T13:47:21+00:00 start A 1:1e-3,1:3e-4,1:1e-4,1:3e-3,1:1e-2
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:47:23
+   Duration  160.69s (tests 100%)
+
+2026-10-17T13:50:03+00:00 end A 1:1e-3,1:3e-4,1:1e-4,1:3e-3,1:1e-2 exit 0
+2026-10-17T13:50:03+00:00 start C 1:1e-3,1:3e-4,1:1e-4,1:3e-3,1:1e-2
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:50:04
+   Duration  198.28s (tests 100%)
+
+2026-10-17T13:53:22+00:00 end C 1:1e-3,1:3e-4,1:1e-4,1:3e-3,1:1e-2 exit 0
+2026-10-17T13:53:22+00:00 start A 2:1e-3,2:3e-4,2:1e-4,2:3e-3,2:1e-2
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:53:24
+   Duration  1749.54s (tests 100%)
+
+2026-10-17T14:22:34+00:00 end A 2:1e-3,2:3e-4,2:1e-4,2:3e-3,2:1e-2 exit 0
+2026-10-17T14:22:34+00:00 start C 2:1e-3,2:3e-4,2:1e-4,2:3e-3,2:1e-2
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  14:22:36
+   Duration  2883.05s (tests 100%)
+
+2026-10-17T15:10:39+00:00 end C 2:1e-3,2:3e-4,2:1e-4,2:3e-3,2:1e-2 exit 0
+2026-10-17T15:10:39+00:00 start A 4:1e-3
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  15:10:40
+   Duration  5098.02s (tests 100%)
+
+2026-10-17T16:35:38+00:00 end A 4:1e-3 exit 0
+2026-10-17T16:35:38+00:00 start C 4:1e-3
+
+ RUN  v5.0.4 /home/user/bowshock
+

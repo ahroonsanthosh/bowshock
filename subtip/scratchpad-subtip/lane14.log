@@ -1,0 +1,11 @@
+2026-10-18T08:30:02+00:00 start capprofile A 4
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:30:04
+   Duration  427.88s (tests 100%)
+
+2026-10-18T08:37:12+00:00 end capprofile A 4 exit 0

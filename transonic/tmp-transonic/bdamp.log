@@ -1,0 +1,9 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  09:36:08
+   Duration  68.83s (tests 99%, transform 1%)
+

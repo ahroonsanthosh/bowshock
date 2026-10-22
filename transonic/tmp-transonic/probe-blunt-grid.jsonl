@@ -1,0 +1,6 @@
+{"L":1,"refinement":1,"ni":53,"nj":30,"iShoulder":26,"topology":"C","minAngle":59.0699915984275,"minWallAngle":86.88141691641258,"maxSizeRatio":1.9243403138687367,"maxAspectRatio":65.40938771425336}
+{"L":1,"refinement":2,"ni":106,"nj":60,"iShoulder":52,"topology":"C","minAngle":61.16257711992602,"minWallAngle":88.42030230085307,"maxSizeRatio":1.6202463863517262,"maxAspectRatio":72.22707543146394}
+{"L":2,"refinement":1,"ni":59,"nj":30,"iShoulder":32,"topology":"C","minAngle":55.51190792710756,"minWallAngle":86.54236874398642,"maxSizeRatio":1.4308484525336145,"maxAspectRatio":65.40898898082506}
+{"L":2,"refinement":2,"ni":118,"nj":60,"iShoulder":64,"topology":"C","minAngle":56.37604235096405,"minWallAngle":88.28354482864006,"maxSizeRatio":1.2397450772560838,"maxAspectRatio":72.22691310916913}
+{"L":3,"refinement":1,"ni":64,"nj":30,"iShoulder":37,"topology":"C","minAngle":51.2772199001478,"minWallAngle":85.29659017722315,"maxSizeRatio":1.3693084886935911,"maxAspectRatio":65.40851542603832}
+{"L":3,"refinement":2,"ni":128,"nj":60,"iShoulder":74,"topology":"C","minAngle":52.0702533246917,"minWallAngle":87.6634184363359,"maxSizeRatio":1.2402851264235286,"maxAspectRatio":72.22674672170724}

@@ -1,0 +1,15 @@
+2026-10-19T20:23:32+00:00 start family:E:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  20:23:35
+   Duration  10082.36s (tests 100%)
+
+2026-10-19T23:11:37+00:00 end family:E:default:1:8 exit 0
+2026-10-19T23:11:37+00:00 start family:P:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+

@@ -1,0 +1,10 @@
+{"refinement":1,"steps":50,"drag":0.09788803528333198,"residual":0.009575411074044228,"seconds":2.056414357,"rssMB":85}
+{"refinement":1,"steps":100,"drag":0.10375818005600082,"residual":0.004443825711508487,"seconds":3.058536617,"rssMB":85}
+{"refinement":1,"steps":150,"drag":0.10755224363483383,"residual":0.0013437916690957215,"seconds":3.8509084340000004,"rssMB":85}
+{"refinement":1,"steps":200,"drag":0.10895310647862322,"residual":0.0009016512993517021,"seconds":4.8264535429999995,"rssMB":85}
+{"refinement":1,"steps":250,"drag":0.10951694948545107,"residual":0.0002927991254645805,"seconds":6.838859251,"rssMB":97}
+{"refinement":1,"steps":300,"drag":0.10952358577183545,"residual":0.00004687235837561635,"seconds":8.36839234,"rssMB":107}
+{"refinement":1,"steps":350,"drag":0.10952322939647198,"residual":0.000004868965921175799,"seconds":9.97483706,"rssMB":117}
+{"refinement":1,"steps":400,"drag":0.10952302511976732,"residual":6.654936463392904e-7,"seconds":11.600629914999999,"rssMB":126}
+{"refinement":1,"steps":450,"drag":0.1095230309800147,"residual":1.2719729674830897e-7,"seconds":13.039590231,"rssMB":130}
+{"refinement":1,"steps":500,"drag":0.10952302231843779,"residual":3.281392160337942e-8,"seconds":14.221606211000001,"rssMB":127}

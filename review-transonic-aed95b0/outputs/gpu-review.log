@@ -1,0 +1,9 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/review-transonic-aed95b0
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  04:48:21
+   Duration  238.00s (tests 97%, worker 3%)
+

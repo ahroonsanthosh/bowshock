@@ -1,0 +1,3 @@
+{"body":"ogive5","mach":1.2,"refinement":1,"nj":20,"drag":0.04396995414317321,"converged":true,"iterations":3306,"seconds":24.234709924000004,"cpuSeconds":15.684368}
+{"body":"ogive5","mach":1.2,"refinement":2,"nj":40,"drag":0.04346084693934614,"converged":true,"iterations":6416,"seconds":248.14818569000002,"cpuSeconds":146.127854}
+{"body":"ogive5","mach":1.2,"refinement":4,"nj":80,"drag":0.04336118923211206,"converged":true,"iterations":12826,"seconds":3810.0338207190002,"cpuSeconds":2480.888628}

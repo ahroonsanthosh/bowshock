@@ -1,0 +1,2 @@
+depth 0: steps 300 300, drag 0.09120721586562741 0.09120721586562741, identical true, values differing 0 of 14160
+depth 8: steps 300 300, drag 0.09438495323438119 0.09438495323438119, identical true, values differing 0 of 14160

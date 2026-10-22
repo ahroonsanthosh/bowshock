@@ -1,0 +1,33 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03
+
+ ❯ tests/tmp-haack/fit.test.ts (1 test | 1 failed) 39128ms
+   × fit haack C0 L3 M2 cyl2 nj10x1 39127ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/tmp-haack/fit.test.ts > fit haack C0 L3 M2 cyl2 nj10x1
+GridQualityError: the generated grid fails its quality checks: cell angle 9.3 deg below 12.0 deg; neighbouring cells differ in size by 1.88 (limit 1.3)
+ ❯ assertGridQuality src/grid/blunt-grid.ts:522:11
+    520|   const failures = qualityFailures(gridQuality(grid), limits);
+    521|   if (failures.length > 0) {
+    522|     throw new GridQualityError(
+       |           ^
+    523|       `the generated grid fails its quality checks: ${failures.join(';…
+    524|     );
+ ❯ bluntCapture src/analysis/fitted-flow.ts:444:22
+ ❯ secondCapture src/analysis/fitted-flow.ts:502:10
+ ❯ bluntStart src/analysis/fitted-flow.ts:369:18
+ ❯ bluntFitFamily src/analysis/fitted-flow.ts:516:23
+ ❯ bluntFitProblem src/analysis/fitted-flow.ts:340:10
+ ❯ tests/tmp-haack/fit.test.ts:30:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  08:32:39
+   Duration  40.02s (tests 100%)
+
+done

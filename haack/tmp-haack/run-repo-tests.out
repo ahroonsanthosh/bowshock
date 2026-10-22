@@ -1,0 +1,28 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03
+
+ ❯ tests/grid/body-grid.test.ts (9 tests | 1 failed) 25544ms
+   ❯ body grids (H topology, sharp noses) (9)
+     × property: 100 random rockets at Mach 2 to 5 pass every quality gate 7170ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/grid/body-grid.test.ts > body grids (H topology, sharp noses) > property: 100 random rockets at Mach 2 to 5 pass every quality gate
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/grid/body-grid.test.ts:30:3
+     28|
+     29| describe('body grids (H topology, sharp noses)', () => {
+     30|   it('property: 100 random rockets at Mach 2 to 5 pass every quality g…
+       |   ^
+     31|     fc.assert(
+     32|       fc.property(rocket, value(2, 5), (body, mach) => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 38 passed (39)
+   Start at  14:57:42
+   Duration  537.60s (tests 99%, transform 1%)
+

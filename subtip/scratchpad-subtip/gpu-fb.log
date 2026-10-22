@@ -1,0 +1,10 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/subtip-tangent
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed | 4 skipped (7)
+   Start at  06:21:59
+   Duration  145.53s (tests 99%, worker 1%)
+
+exit 0

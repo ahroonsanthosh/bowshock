@@ -1,0 +1,23 @@
+2026-10-19T05:25:04+00:00 start family:E:dense:1.5:4
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  05:25:06
+   Duration  6558.06s (tests 100%)
+
+2026-10-19T07:14:24+00:00 end family:E:dense:1.5:4 exit 0
+2026-10-19T07:14:24+00:00 start family:A:dense:1.5:4
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  07:14:25
+   Duration  4099.28s (tests 100%)
+
+2026-10-19T08:22:44+00:00 end family:A:dense:1.5:4 exit 0
+2026-10-19T08:22:44+00:00 lane done

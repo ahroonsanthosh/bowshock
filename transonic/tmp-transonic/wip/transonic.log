@@ -1,0 +1,28 @@
+c95c606 0013: the owner's decision, the serving rules and the plan for the page
+c9b9a6e Merge the main branch: the interface, 0014, and the transonic prototype as merged
+4dceeec 0013: the s11 results; plan additions for the 5-caliber ogive's r = 8
+6a9b580 0013: Mach 1.05 certified on the cone by the procedure (r = 1 to 8)
+4e58f7e 0013: Mach 1.1 certified on the cone (r = 2 to 16)
+2c81f29 0013: the far-boundary rule fails its Mach 1.2 test; Mach 1 stays refused
+76f1283 0013: certification plan below Mach 1.2, written before its runs
+62f6f87 0013: Mach 1 r = 4 labelled a fitted estimate; blunt noses and Mach 1 to 1.2 unserved
+57b2c72 0013: the cone's r = 8 at Mach 1.1, within 6.7e-5 of exact, refused by the procedure
+b5c1add Transonic record renumbered 0013 (0007 to 0012 are taken on main)
+36afd78 Merge commit '2efc1bc' into transonic-mach1
+5bac077 0007: Mach 1 on r = 4 (damped-oscillation estimate), first order, 0.0932 within 0.1%
+b200168 0007: the ellipsoid gap localized against the fitted nj = 40 and 80
+bf09563 0007: Mach 1 accuracy statement with the r = 2 domain test
+d1a1737 0007: the Mach 1 far-boundary correction holds on r = 2 (within 6e-6)
+ce768bd 0007: accuracy at Mach 1.2 with the ogive's four grids
+bb65505 0007: the ogive's r = 8 at Mach 1.2, oscillatory, band 1.1e-3 containing its error
+88dd578 Transonic solve: optional geometric stopping test, recorded
+43e5ac6 0007: 800 radii at Mach 1 with shorter upstream columns diverges sooner
+6fe14b8 0007: measured causes for the stagnation line and the ellipsoid gap; Mach 1 routes
+1fa4019 0007: the 2:1 ellipsoid against the fitted solver's nj = 80
+b25e8eb 0007: ogive at Mach 1 extrapolated in distance; sources point at the multigrid patch
+40704e6 0007: blunt-nose stagnation line, ogive and hemisphere below 1.2, accuracy
+b0df948 0007: Mach 1.05, ogive, blunt noses, domain studies, references
+472ce44 Transonic: C grids for blunt noses; 0007 references draft
+6896684 Transonic: drop the FAS multigrid, kept as a patch
+e8db96c 0007 draft: Mach 1.2, 1.1 and Mach 1 domain measurements
+8e2a514 Transonic prototype (WIP): far field, implicit steps, sting grids

@@ -1,0 +1,6 @@
+{"mach":1.2,"refinement":1,"cells":3540,"noise":0.000002,"steps":1550,"settled":true,"drag":0.08321841510429188,"seconds":95.640710805,"cellStepsPerSecond":57370.96633657751,"date":"2026-10-21T11:09:35.064Z"}
+{"mach":1.2,"refinement":2,"cells":14160,"noise":0.000002,"steps":2600,"settled":true,"drag":0.08305473841574285,"seconds":539.9344727920001,"cellStepsPerSecond":68186.05192890267,"date":"2026-10-21T11:18:35.441Z"}
+{"mach":1.1,"refinement":1,"cells":3540,"noise":0.000002,"steps":3650,"settled":true,"drag":0.09446825507712928,"seconds":158.99439257199992,"cellStepsPerSecond":81267.01697450607,"date":"2026-10-21T11:21:14.733Z"}
+{"mach":1.1,"refinement":2,"cells":14160,"noise":0.000002,"steps":5700,"settled":true,"drag":0.09446440254792526,"seconds":946.5090364880001,"cellStepsPerSecond":85273.35385986383,"date":"2026-10-21T11:37:01.391Z"}
+{"mach":1.05,"refinement":1,"cells":3540,"noise":0.000002,"steps":19050,"settled":true,"drag":0.10651031181197604,"seconds":954.0505971470001,"cellStepsPerSecond":70684.93033982065,"date":"2026-10-21T11:52:55.526Z"}
+{"mach":1.05,"refinement":2,"cells":14160,"noise":0.000002,"steps":25400,"settled":true,"drag":0.10686591905159143,"seconds":2412.9294261150003,"cellStepsPerSecond":149056.99110275527,"date":"2026-10-21T12:33:08.517Z"}

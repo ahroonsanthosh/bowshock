@@ -1,0 +1,22 @@
+start 2026-10-22T08:49:53.017Z
+  M 1.1 RB2 r1: 500 steps, drag 0.09396377003902773, remaining 5.64e-4, 125.7 ms/step
+  M 1.1 RB2 r1: 1000 steps, drag 0.09446813620279984, remaining 2.98e-7, 117.4 ms/step
+M 1.1 RB2 r1 (3540 cells): settled true after 1200 steps; 119.7 ms/step (33806 ns per cell-step), drag checks 0 s; drag 0.0944683072363556, CPU converged 0.09446830262123333, 4.89e-8
+  M 1.1 RB2 r2: 1000 steps, drag 0.09445964951365177, remaining 6.02e-6, 628.4 ms/step
+  M 1.1 RB2 r2: 2000 steps, drag 0.09446443923091455, remaining 1.00e-9, 561.8 ms/step
+M 1.1 RB2 r2 (14160 cells): settled true after 2100 steps; 562.0 ms/step (39687 ns per cell-step), drag checks 0 s; drag 0.09446443949857145, CPU converged NaN, NaN
+  M 1.2 RB2 r1: 500 steps, drag 0.08321845704115363, remaining 2.34e-9, 114.0 ms/step
+M 1.2 RB2 r1 (3540 cells): settled true after 650 steps; 110.3 ms/step (31159 ns per cell-step), drag checks 0 s; drag 0.08321843133392574, CPU converged 0.0832184313749694, -4.93e-10
+  M 1.05 RB2 r1: 500 steps, drag 0.09885169064083159, remaining 6.49e-3, 102.0 ms/step
+  M 1.05 RB2 r1: 1000 steps, drag 0.10446168810790564, remaining 1.74e-3, 107.1 ms/step
+  M 1.05 RB2 r1: 1500 steps, drag 0.1058329041167878, remaining 6.28e-4, 101.1 ms/step
+  M 1.05 RB2 r1: 2000 steps, drag 0.1062673758553502, remaining 2.32e-4, 106.3 ms/step
+  M 1.05 RB2 r1: 2500 steps, drag 0.10641947261599474, remaining 8.82e-5, 108.0 ms/step
+  M 1.05 RB2 r1: 3000 steps, drag 0.10647552024405145, remaining 3.44e-5, 108.2 ms/step
+  M 1.05 RB2 r1: 3500 steps, drag 0.10649689077773497, remaining 1.35e-5, 111.5 ms/step
+  M 1.05 RB2 r1: 4000 steps, drag 0.1065051875200506, remaining 5.34e-6, 112.7 ms/step
+  M 1.05 RB2 r1: 4500 steps, drag 0.1065084358980897, remaining 2.10e-6, 113.4 ms/step
+  M 1.05 RB2 r1: 5000 steps, drag 0.10650971228241214, remaining 8.28e-7, 114.2 ms/step
+  M 1.05 RB2 r1: 5500 steps, drag 0.10651021440669971, remaining 3.26e-7, 115.2 ms/step
+  M 1.05 RB2 r1: 6000 steps, drag 0.10651041193097736, remaining 1.28e-7, 119.5 ms/step
+  M 1.05 RB2 r1: 6500 steps, drag 0.1065104895775983, remaining 5.02e-8, 119.3 ms/step

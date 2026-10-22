@@ -1,0 +1,12 @@
+2026-10-18T14:56:24+00:00 start B 4:1e-3 anchor=
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  14:56:26
+   Duration  7326.73s (tests 100%)
+
+2026-10-18T16:58:32+00:00 end B 4:1e-3 anchor= exit 0
+2026-10-18T16:58:32+00:00 lane done

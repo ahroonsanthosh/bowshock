@@ -1,0 +1,10 @@
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  06:03:13
+   Duration  769.56s (tests 100%)
+
+exit 0

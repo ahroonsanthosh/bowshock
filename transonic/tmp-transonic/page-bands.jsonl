@@ -1,0 +1,16 @@
+{"file":"cone7-m1.05-f100-c10.jsonl","top":8,"noise":0.00001,"n":4,"estimate":{"kind":"monotone","value":0.10711161750489769,"extrapolated":0.1071679693974273,"order":1.2104771865738755,"uncertainty":0.00007043986566202377}}
+{"file":"cone7-m1.05-f100-c10.jsonl","top":8,"noise":0.000002,"n":4,"estimate":{"kind":"monotone","value":0.10711161750489769,"extrapolated":0.1071679693974273,"order":1.2104771865738755,"uncertainty":0.00007043986566202377}}
+{"file":"cone7-m1.1-f100-c10.jsonl","top":8,"noise":0.00001,"n":4,"estimate":{"kind":"unresolved","value":0.09449128217105732,"reason":"the changes between grids are too small to measure"}}
+{"file":"cone7-m1.1-f100-c10.jsonl","top":8,"noise":0.000002,"n":4,"estimate":{"kind":"unresolved","value":0.09449128217105732,"reason":"the values oscillate under refinement"}}
+{"file":"cone7-m1.1-f100-c10.jsonl","top":16,"noise":0.00001,"n":5,"estimate":{"kind":"unresolved","value":0.0944949749444897,"reason":"the changes between grids are too small to measure"}}
+{"file":"cone7-m1.1-f100-c10.jsonl","top":16,"noise":0.000002,"n":5,"estimate":{"kind":"monotone","value":0.0944949749444897,"extrapolated":0.09449747806446038,"order":1.3075848847392628,"uncertainty":0.000003128899963337306}}
+{"file":"cone7-m1.2-f100-c10.jsonl","top":8,"noise":0.00001,"n":4,"estimate":{"kind":"monotone","value":0.08301323443404968,"extrapolated":0.08301086446457046,"order":2.262524676579942,"uncertainty":0.0000037691711531931203}}
+{"file":"cone7-m1.2-f100-c10.jsonl","top":8,"noise":0.000002,"n":4,"estimate":{"kind":"monotone","value":0.08301323443404968,"extrapolated":0.08301077388664817,"order":2.208413846903011,"uncertainty":0.0000030756842518860072}}
+{"file":"ell2-m1.2-f100-c10.jsonl","top":8,"noise":0.00001,"n":4,"estimate":{"kind":"unresolved","value":0.34252331423905386,"reason":"the observed orders of the two finest triples differ (2.68 and 3.36)"}}
+{"file":"ell2-m1.2-f100-c10.jsonl","top":8,"noise":0.000002,"n":4,"estimate":{"kind":"unresolved","value":0.34252331423905386,"reason":"the observed orders of the two finest triples differ (2.68 and 3.36)"}}
+{"file":"ogive10-m1.1-f100-c10.jsonl","top":8,"noise":0.00001,"n":4,"estimate":{"kind":"monotone","value":0.011453168748026443,"extrapolated":0.011452824333341164,"order":3.441553070258048,"uncertainty":5.270766467258665e-7}}
+{"file":"ogive10-m1.1-f100-c10.jsonl","top":8,"noise":0.000002,"n":4,"estimate":{"kind":"unresolved","value":0.011453168748026443,"reason":"the observed orders of the two finest triples differ (3.44 and 4.14)"}}
+{"file":"ogive5-m1.1-f100-c10.jsonl","top":8,"noise":0.00001,"n":4,"estimate":{"kind":"unresolved","value":0.043446799466643274,"reason":"the values oscillate under refinement"}}
+{"file":"ogive5-m1.1-f100-c10.jsonl","top":8,"noise":0.000002,"n":4,"estimate":{"kind":"unresolved","value":0.043446799466643274,"reason":"the values oscillate under refinement"}}
+{"file":"ogive5-m1.2-f100-c10.jsonl","top":8,"noise":0.00001,"n":4,"estimate":{"kind":"unresolved","value":0.04332676286955845,"reason":"the finest change (-2.32e-6) is below the noise but not the one the coarser grids predict (5.61e-6)"}}
+{"file":"ogive5-m1.2-f100-c10.jsonl","top":8,"noise":0.000002,"n":4,"estimate":{"kind":"oscillatory","value":0.04332676286955845,"uncertainty":0.000048002824409268396}}

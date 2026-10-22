@@ -1,0 +1,6 @@
+2026-10-20T05:19:55+00:00 start family:P:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+2026-10-20T06:55:15+00:00 end family:P:default:1:8 exit 0
+2026-10-20T06:55:15+00:00 lane done

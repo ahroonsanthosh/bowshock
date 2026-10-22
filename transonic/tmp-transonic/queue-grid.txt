@@ -1,0 +1,21 @@
+BODY=cone7 MACH=1.05 REFS=1 TAG=g-default
+BODY=cone7 MACH=1.05 REFS=1 TAG=g-growth15 SPACING={"growth":0.15}
+BODY=cone7 MACH=1.05 REFS=1 TAG=g-nose10 SPACING={"nose":0.1}
+BODY=cone7 MACH=1.05 REFS=1 TAG=g-wall03 SPACING={"wall":0.03}
+BODY=cone7 MACH=1.05 REFS=1 TAG=g-shoulder01 SPACING={"shoulder":0.01}
+BODY=cone7 MACH=1.05 REFS=1,2,4 MG=1 POST=2 TAG=g-default-mg
+BODY=cone7 MACH=1.0 FAR=100 CYL=10 REFS=1 TAG=d1-cone7-m1.0-f100-c10
+BODY=cone7 MACH=1.0 FAR=50 CYL=10 REFS=1 TAG=d1-cone7-m1.0-f50-c10
+BODY=cone7 MACH=1.0 FAR=200 CYL=10 REFS=1 TAG=d1-cone7-m1.0-f200-c10
+BODY=cone7 MACH=1.0 FAR=400 CYL=10 REFS=1 TAG=d1-cone7-m1.0-f400-c10
+BODY=cone7 MACH=1.0 FAR=800 CYL=10 REFS=1 TAG=d1-cone7-m1.0-f800-c10
+BODY=cone7 MACH=1.0 FAR=100 CYL=5 REFS=1 TAG=d1-cone7-m1.0-f100-c5
+BODY=cone7 MACH=1.0 FAR=100 CYL=20 REFS=1 TAG=d1-cone7-m1.0-f100-c20
+BODY=cone7 MACH=1.0 FAR=100 CYL=40 REFS=1 TAG=d1-cone7-m1.0-f100-c40
+ONLY=tests/tmp-transonic/fitted.test.ts BODY=cone7 MACH=1.2 REFS=1,2,4
+ONLY=tests/tmp-transonic/fitted.test.ts BODY=cone7 MACH=1.1 REFS=1,2,4
+ONLY=tests/tmp-transonic/fitted.test.ts BODY=ogive5 MACH=1.2 REFS=1,2,4
+BODY=ogive5 MACH=1.2 FAR=100 CYL=10 REFS=1,2,4
+BODY=ogive5 MACH=1.1 FAR=100 CYL=10 REFS=1,2,4
+BODY=ogive5 MACH=1.05 FAR=100 CYL=10 REFS=1,2,4
+BODY=ogive5 MACH=1.0 FAR=100 CYL=10 REFS=1,2,4

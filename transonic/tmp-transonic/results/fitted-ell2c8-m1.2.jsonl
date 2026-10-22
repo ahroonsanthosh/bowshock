@@ -1,0 +1,3 @@
+{"body":"ell2c8","mach":1.2,"refinement":1,"nj":20,"drag":0.34729566686227764,"converged":true,"iterations":4389,"seconds":62.36628093,"cpuSeconds":30.792347}
+{"body":"ell2c8","mach":1.2,"refinement":2,"nj":40,"drag":0.34376253038926335,"converged":true,"iterations":9015,"seconds":393.516426033,"cpuSeconds":232.630513}
+{"body":"ell2c8","mach":1.2,"refinement":4,"nj":80,"drag":0.3429001957686504,"converged":true,"stoppedBy":"drag settled","remainingEstimate":2.764409490232673e-10,"residual":9.051833435302988e-12,"maxSpeed":1.1500984132007445e-9,"iterations":13500,"resumedFrom":null,"outflowMach":1.1437124828298781,"seconds":2992.237497352,"cpuSeconds":1389.437329}

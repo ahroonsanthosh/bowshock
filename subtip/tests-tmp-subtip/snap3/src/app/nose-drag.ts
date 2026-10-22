@@ -1,0 +1,230 @@
+/**
+ * Nose wave drag: the verified forebody pressure drag of a rocket body,
+ * solved on the GPU with the bow shock fitted (docs/design/0006-shock-fitting.md)
+ * on a nested family of grids up to the finest allowed, with its error
+ * band measured from them (docs/design/0005-solution-verification.md).
+ */
+
+import { verifiedFittedDragGpu } from '../analysis/gpu-fitted-flow';
+import { GpuExecutionError } from '../engine-gpu/gpu-common';
+import { FITTED_DRAG_FLOOR, ORDER_TOLERANCE, type LevelReport } from '../analysis/verified-drag';
+import type { Body } from '../geometry/body';
+import type { NoseShape } from '../geometry/nose';
+import { withBand } from './band';
+
+const GAMMA = 1.4;
+
+function element<T extends HTMLElement>(selector: string, type: new () => T): T {
+  const el = document.querySelector(selector);
+  if (!(el instanceof type)) throw new Error(`expected ${type.name} at ${selector}`);
+  return el;
+}
+
+const form = element('#form', HTMLFormElement);
+const shapeSelect = element('#shape', HTMLSelectElement);
+const parameterField = element('#parameter-field', HTMLElement);
+const parameterInput = element('#parameter', HTMLInputElement);
+const noseLengthInput = element('#nose-length', HTMLInputElement);
+const bodyLengthInput = element('#body-length', HTMLInputElement);
+const machInput = element('#mach', HTMLInputElement);
+const finestSelect = element('#finest', HTMLSelectElement);
+const runButton = element('#run', HTMLButtonElement);
+const stopButton = element('#stop', HTMLButtonElement);
+const result = element('#result', HTMLElement);
+const note = element('#note', HTMLElement);
+const status = element('#status', HTMLElement);
+const levels = element('#levels', HTMLTableElement);
+
+function shape(): NoseShape {
+  const parameter = Number(parameterInput.value);
+  switch (shapeSelect.value) {
+    case 'conical':
+      return { kind: 'conical' };
+    case 'secant':
+      return { kind: 'ogive', parameter };
+    case 'parabolic':
+      return { kind: 'parabolic', parameter };
+    case 'ellipsoid':
+      return { kind: 'ellipsoid' };
+    default:
+      return { kind: 'ogive', parameter: 1 };
+  }
+}
+
+shapeSelect.addEventListener('change', () => {
+  parameterField.hidden = !(shapeSelect.value === 'secant' || shapeSelect.value === 'parabolic');
+  // A hidden field is not asked for: disabled, it is left out of the
+  // form's validation, which refuses an empty number (it would read as 0).
+  parameterInput.disabled = parameterField.hidden;
+});
+
+/** The case as asked, repeated with its result. */
+function caseText(): string {
+  const name = shapeSelect.selectedOptions[0]?.textContent ?? shapeSelect.value;
+  const parameter = parameterField.hidden ? '' : ` (parameter ${parameterInput.value})`;
+  return `${name}${parameter}, nose length ${noseLengthInput.value} and body length ${bodyLengthInput.value} calibers, Mach ${machInput.value}`;
+}
+
+function show(text: string, kind: 'ok' | 'warn' | '' = ''): void {
+  result.textContent = text;
+  result.className = kind;
+  // What a value means goes with every value shown, from the first grid's on.
+  if (kind === 'ok') note.hidden = false;
+}
+
+function addLevel(report: LevelReport, seconds: number): void {
+  levels.hidden = false;
+  note.hidden = false;
+  const row = levels.tBodies[0]!.insertRow();
+  for (const text of [
+    `${report.cells.ni} x ${report.cells.nj}`,
+    String(report.iterations),
+    report.drag.toFixed(6),
+    `${seconds.toFixed(1)} s`,
+  ]) {
+    row.insertCell().textContent = text;
+  }
+}
+
+let controller: AbortController | null = null;
+stopButton.addEventListener('click', () => controller?.abort());
+
+/**
+ * A GPU device, or null without WebGPU (navigator.gpu is then undefined
+ * despite its type), with the adapter's largest buffers: the finest grids
+ * of long bodies need more than the default 128 MiB.
+ */
+async function requestDevice(): Promise<GPUDevice | null> {
+  const gpu = navigator.gpu as GPU | undefined;
+  const adapter = await gpu?.requestAdapter();
+  if (!adapter) return null;
+  return adapter.requestDevice({
+    requiredLimits: {
+      maxBufferSize: adapter.limits.maxBufferSize,
+      maxStorageBufferBindingSize: adapter.limits.maxStorageBufferBindingSize,
+    },
+  });
+}
+
+// The form never submits natively; Run stays disabled until the GPU is ready.
+let device: GPUDevice | null = null;
+runButton.disabled = true;
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  if (device !== null && controller === null) void run(device);
+});
+status.textContent = 'Starting the GPU...';
+device = await requestDevice();
+status.textContent = '';
+// A lost device makes the next read of the GPU fail with an error of its
+// own; the reason is kept to report it as the GPU's failure.
+let lost: string | null = null;
+void device?.lost.then((info) => {
+  lost = info.message === '' ? info.reason : info.message;
+});
+if (device === null) {
+  show('This page needs WebGPU, which this browser does not provide.', 'warn');
+} else {
+  runButton.disabled = false;
+}
+
+async function run(gpu: GPUDevice): Promise<void> {
+  const body: Body = {
+    nose: { shape: shape(), length: Number(noseLengthInput.value), baseRadius: 0.5 },
+    cylinderLength: Number(bodyLengthInput.value),
+  };
+  const mach = Number(machInput.value);
+  const asked = caseText();
+  levels.tBodies[0]!.replaceChildren();
+  levels.hidden = true;
+  note.hidden = true;
+  show('');
+  runButton.disabled = true;
+  stopButton.disabled = false;
+  controller = new AbortController();
+  let started = performance.now();
+  try {
+    const outcome = await verifiedFittedDragGpu(gpu, body, {
+      mach,
+      gamma: GAMMA,
+      // No early stop: always refine to the finest grid allowed.
+      tolerance: 0,
+      maxRefinement: Number(finestSelect.value),
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+      signal: controller.signal,
+      onStart: (steps, total) => {
+        status.textContent = `Starting from a captured solution on the CPU: ${steps} of ${total} steps`;
+      },
+      onProgress: (refinement, iterations, drag) => {
+        status.textContent = `Grid at refinement ${refinement}: ${iterations} iterations, wave Cd on this grid so far ${drag.toFixed(6)}`;
+        note.hidden = false;
+      },
+      onLevel: (report) => {
+        addLevel(report, (performance.now() - started) / 1000);
+        started = performance.now();
+      },
+    });
+    status.textContent = '';
+    switch (outcome.kind) {
+      case 'cancelled':
+        show('Stopped.');
+        break;
+      case 'invalid':
+        show(
+          `${asked}. No result: on the grid at refinement ${outcome.refinement}, ${outcome.reason}.`,
+          'warn',
+        );
+        break;
+      case 'not-converged':
+        show(
+          `${asked}. No result: the grid at refinement ${outcome.refinement} did not converge (${outcome.reason}).`,
+          'warn',
+        );
+        break;
+      case 'solved': {
+        const e = outcome.estimate;
+        const stopped =
+          outcome.stopped === undefined
+            ? ''
+            : ` The grid at refinement ${outcome.stopped.refinement} was not solved: ${outcome.stopped.reason}; the result is from the grids before it.`;
+        if (outcome.uncertainty !== undefined) {
+          show(
+            `${asked}. Wave Cd = ${withBand(e.value, outcome.uncertainty)}, the band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${stopped}`,
+            'ok',
+          );
+        } else {
+          const finer =
+            outcome.stopped !== undefined
+              ? 'no finer grid could be solved here'
+              : finestSelect.value === '16'
+                ? 'no finer grid is offered'
+                : 'choosing 320 cells across may verify it';
+          show(
+            `${asked}. No error band: ${e.kind === 'unresolved' ? e.reason : 'none measured'}. The finest grid's wave Cd, ${e.value.toFixed(5)}, is not verified; ${finer}.${stopped}`,
+            'warn',
+          );
+          note.hidden = false;
+        }
+        break;
+      }
+    }
+  } catch (error) {
+    // Bodies the solver does not serve yet (detached shocks, subsonic tip
+    // flow) are refused with the reason; a failure of the GPU says so.
+    status.textContent = '';
+    const reason = error instanceof Error ? error.message : String(error);
+    show(
+      lost !== null
+        ? `The GPU was lost (${lost}); reload the page to start it again.`
+        : error instanceof GpuExecutionError
+          ? `The GPU failed: ${reason}.`
+          : `${asked}. Cannot solve this case: ${reason}.`,
+      'warn',
+    );
+  } finally {
+    runButton.disabled = false;
+    stopButton.disabled = true;
+    controller = null;
+  }
+}

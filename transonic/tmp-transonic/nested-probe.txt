@@ -1,0 +1,7 @@
+plain 118 30 100.60719837318378 -100.60719837318378 28.163978552142765 30
+{"farField":50} 115 27 55.10 -55.10 28.16 iTip 27 minAngle 51.8 wall 83.0 size 1.307 aspect 181 shared 3248 worst 0
+{"farField":200} 122 34 224.21 -224.21 28.16 iTip 34 minAngle 34.8 wall 83.0 size 20.462 aspect 735 shared 3689 worst 0
+{"farField":400} 125 37 408.75 -408.75 28.16 iTip 37 minAngle 34.8 wall 83.0 size 20.462 aspect 1339 shared 3689 worst 0
+{"cylinder":5} 115 30 100.61 -100.61 19.21 iTip 30 minAngle 34.8 wall 83.0 size 1.385 aspect 330 shared 3596 worst 0
+{"cylinder":20} 122 30 100.61 -100.61 52.16 iTip 30 minAngle 34.8 wall 83.0 size 2.902 aspect 330 shared 3689 worst 0
+{"farField":100} 118 30 100.61 -100.61 28.16 iTip 30 minAngle 34.8 wall 83.0 size 1.385 aspect 330 shared 3689 worst 0

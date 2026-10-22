@@ -1,0 +1,5 @@
+2026-10-19T05:34:23Z start BODY=ogive5 MACH=1.0 FAR=200 CYL=10 REFS=1 DEPTH=0 MAXSTEPS=60000
+2026-10-19T05:40:38Z end 0 BODY=ogive5 MACH=1.0 FAR=200 CYL=10 REFS=1 DEPTH=0 MAXSTEPS=60000
+2026-10-19T05:40:38Z start ONLY=tests/tmp-transonic/fitted-ck.test.ts BODY=ell2c8 MACH=1.2 REFS=1,2,4
+2026-10-19T06:30:52Z end 0 ONLY=tests/tmp-transonic/fitted-ck.test.ts BODY=ell2c8 MACH=1.2 REFS=1,2,4
+2026-10-19T06:30:52Z start ONLY=tests/tmp-transonic/fitted-ck.test.ts BODY=hemi MACH=1.5 REFS=1,2,4

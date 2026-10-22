@@ -1,0 +1,3 @@
+{"mach":1.015,"nested":null,"farRadius":100.60719837318378,"drag":0.10737858062299678,"converged":true,"steps":19600,"stoppedBy":"settling"}
+{"mach":1.015,"nested":{"farField":200},"farRadius":224.2118229126046,"drag":0.10744780599719168,"converged":true,"steps":17000,"stoppedBy":"settling"}
+{"mach":1.015,"nested":{"farField":400},"farRadius":408.7461074989818,"drag":0.10744301524076927,"converged":true,"steps":19100,"stoppedBy":"settling"}

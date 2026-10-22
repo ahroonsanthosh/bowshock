@@ -1,0 +1,9 @@
+# Cross-check for the subtip work (2026-10-22): the 3-caliber tangent ogive at Mach 1.2.
+# The allowances' base grids first (nested far boundaries 50 and 200 radii, cylinder 5 and 20
+# calibers, and 2 calibers as the body asked, base at x = 5 calibers), then the family r = 1 to 8.
+BODY=ogive3 MACH=1.2 FAR=100 CYL=10 REFS=1 TAG=n-ogive3-m1.2-f50 NESTED={"farField":50}
+BODY=ogive3 MACH=1.2 FAR=100 CYL=10 REFS=1 TAG=n-ogive3-m1.2-f200 NESTED={"farField":200}
+BODY=ogive3 MACH=1.2 FAR=100 CYL=10 REFS=1 TAG=n-ogive3-m1.2-c5 NESTED={"cylinder":5}
+BODY=ogive3 MACH=1.2 FAR=100 CYL=10 REFS=1 TAG=n-ogive3-m1.2-c20 NESTED={"cylinder":20}
+BODY=ogive3 MACH=1.2 FAR=100 CYL=10 REFS=1 TAG=n-ogive3-m1.2-c2 NESTED={"cylinder":2}
+BODY=ogive3 MACH=1.2 FAR=100 CYL=10 REFS=1,2,4,8

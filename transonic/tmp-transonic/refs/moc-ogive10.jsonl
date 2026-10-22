@@ -1,0 +1,5 @@
+{"mach":1.1,"intervals":160,"start":0.001,"drag":0.011466552648429638,"massBalance":0.000001430142614004531,"seconds":1.5861416629999998}
+{"mach":1.1,"intervals":320,"start":0.001,"drag":0.011456510926582538,"massBalance":2.72589101807049e-7,"seconds":4.954788081}
+{"mach":1.1,"intervals":640,"start":0.001,"drag":0.011454055039833896,"massBalance":1.295831936153974e-7,"seconds":13.265473924}
+{"mach":1.1,"intervals":1280,"start":0.001,"drag":0.011453435393015443,"massBalance":7.639549009593644e-8,"seconds":51.28084375499999}
+{"mach":1.2,"intervals":160,"start":0.001,"drag":0.011395857604754903,"massBalance":0.0000029162986462115476,"seconds":1.881470082}

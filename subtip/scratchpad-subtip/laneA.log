@@ -1,0 +1,66 @@
+2026-10-20T11:53:19+00:00 start family:F:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+2026-10-20T17:40:20+00:00 start family:F:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+2026-10-20T22:45:09+00:00 start family:F:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+2026-10-21T04:26:47+00:00 start family:F:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+2026-10-21T09:52:00+00:00 start family:F:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+2026-10-21T17:50:07+00:00 start family:F:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  17:50:09
+   Duration  10685.58s (tests 100%)
+
+2026-10-21T20:48:15+00:00 end family:F:default:1:8 exit 0
+2026-10-21T20:48:15+00:00 start family:F:dense:1.5:4
+
+ RUN  v5.0.4 /home/user/bowshock
+
+2026-10-22T03:57:11+00:00 start family:F:dense:1.5:4
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  03:57:14
+   Duration  10574.49s (tests 100%)
+
+2026-10-22T06:53:28+00:00 end family:F:dense:1.5:4 exit 0
+2026-10-22T06:53:28+00:00 start family:G:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+
+2026-10-22T08:42:53Z laneA restarted after a container restart (by the coordinator)
+2026-10-22T08:42:53+00:00 start family:F:dense:1.5:4
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:43:01
+   Duration  8.09s (transform 69%, tests 28%, import 3%)
+
+2026-10-22T08:43:09+00:00 end family:F:dense:1.5:4 exit 0
+2026-10-22T08:43:09+00:00 start family:G:default:1:8
+
+ RUN  v5.0.4 /home/user/bowshock
+

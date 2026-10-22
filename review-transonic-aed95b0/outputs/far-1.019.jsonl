@@ -1,0 +1,5 @@
+{"mach":1.019,"nested":{"farField":50},"farRadius":55.10160405104679,"drag":0.10848387332398875,"converged":true,"steps":17250,"stoppedBy":"settling"}
+{"mach":1.019,"nested":null,"farRadius":100.60719837318378,"drag":0.10952523377135431,"converged":true,"steps":19400,"stoppedBy":"settling"}
+{"mach":1.019,"nested":{"farField":200},"farRadius":224.2118229126046,"drag":0.10942235964505104,"converged":true,"steps":19550,"stoppedBy":"settling"}
+{"mach":1.019,"nested":{"farField":400},"farRadius":408.7461074989818,"drag":0.10942451701124896,"converged":true,"steps":19550,"stoppedBy":"settling"}
+{"mach":1.019,"allowance":{"kind":"refused","reason":"the drag changes by 1.04e-3 and then -1.03e-4 as the domain grows, which does not fall fast enough to bound what lies beyond","changes":[0.0010413604473655663,-0.00010287412630327619]},"c3":0.0000021573661979218395,"c408":-0.00010071676010535435}

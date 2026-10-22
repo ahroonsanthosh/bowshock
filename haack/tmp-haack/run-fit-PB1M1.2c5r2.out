@@ -1,0 +1,31 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03
+
+ ❯ tests/tmp-haack/fit.test.ts (1 test | 1 failed) 33932ms
+   × fit parabolic K1 L1 M1.2 cyl5 nj20x2 33923ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/tmp-haack/fit.test.ts > fit parabolic K1 L1 M1.2 cyl5 nj20x2
+GridQualityError: the generated grid fails its quality checks: wall cell angle 49.8 deg below 50.0 deg
+ ❯ assertGridQuality src/grid/blunt-grid.ts:562:11
+    560|   const failures = qualityFailures(gridQuality(grid), limits);
+    561|   if (failures.length > 0) {
+    562|     throw new GridQualityError(
+       |           ^
+    563|       `the generated grid fails its quality checks: ${failures.join(';…
+    564|     );
+ ❯ src/analysis/fitted-flow.ts:568:9
+ ❯ src/analysis/fitted-flow.ts:571:6
+ ❯ bluntFitProblem src/analysis/fitted-flow.ts:340:40
+ ❯ tests/tmp-haack/fit.test.ts:31:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  15:49:29
+   Duration  34.82s (tests 99%, transform 1%)
+
+done

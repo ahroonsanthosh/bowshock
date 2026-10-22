@@ -1,0 +1,3 @@
+{"body":"cone7","mach":1.2,"refinement":1,"nj":20,"drag":0.08310596763762886,"converged":true,"iterations":2402,"seconds":26.188546651}
+{"body":"cone7","mach":1.2,"refinement":2,"nj":40,"drag":0.08300761476337111,"converged":true,"iterations":4620,"seconds":242.40554118}
+{"body":"cone7","mach":1.2,"refinement":4,"nj":80,"drag":0.08301535003241513,"converged":true,"iterations":8828,"seconds":2617.003721643}

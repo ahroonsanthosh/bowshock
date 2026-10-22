@@ -1,0 +1,56 @@
+2026-10-17T13:47:22+00:00 start B 1:1e-3,1:3e-4,1:1e-4,1:3e-3,1:1e-2
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:47:24
+   Duration  189.37s (tests 100%)
+
+2026-10-17T13:50:33+00:00 end B 1:1e-3,1:3e-4,1:1e-4,1:3e-3,1:1e-2 exit 0
+2026-10-17T13:50:33+00:00 start S1 1:1e-3
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:50:34
+   Duration  28.59s (tests 100%)
+
+2026-10-17T13:51:03+00:00 end S1 1:1e-3 exit 0
+2026-10-17T13:51:03+00:00 start S2 1:1e-3
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:51:03
+   Duration  63.63s (tests 100%)
+
+2026-10-17T13:52:07+00:00 end S2 1:1e-3 exit 0
+2026-10-17T13:52:07+00:00 start B 2:1e-3,2:3e-4,2:1e-4,2:3e-3,2:1e-2
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  13:52:08
+   Duration  1851.29s (tests 100%)
+
+2026-10-17T14:23:00+00:00 end B 2:1e-3,2:3e-4,2:1e-4,2:3e-3,2:1e-2 exit 0
+2026-10-17T14:23:00+00:00 start B 4:1e-3
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  14:23:02
+   Duration  5715.86s (tests 100%)
+
+2026-10-17T15:58:18+00:00 end B 4:1e-3 exit 0
+2026-10-17T15:58:18+00:00 lane done

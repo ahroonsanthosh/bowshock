@@ -1,0 +1,3 @@
+{"body":"cone7","mach":1.1,"refinement":1,"nj":20,"drag":0.09386533293622379,"converged":true,"iterations":4353,"seconds":34.423307822999995}
+{"body":"cone7","mach":1.1,"refinement":2,"nj":40,"drag":0.09409735310383015,"converged":true,"iterations":8033,"seconds":321.744299593}
+{"body":"cone7","mach":1.1,"refinement":4,"nj":80,"drag":0.09436176585685134,"converged":true,"stoppedBy":"drag settled","remainingEstimate":7.700496584102726e-11,"residual":2.731061538497323e-11,"maxSpeed":2.2057169201080546e-9,"iterations":10600,"resumedFrom":null,"outflowMach":1.0703311372839779,"seconds":2137.050724785,"cpuSeconds":1079.702572}

@@ -1,0 +1,59 @@
+2026-10-18T08:37:12+00:00 start D 1:1e-3 anchor=
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:37:14
+   Duration  85.14s (tests 98%, transform 1%)
+
+2026-10-18T08:38:39+00:00 end D 1:1e-3 anchor= exit 0
+2026-10-18T08:38:39+00:00 start D 2:1e-3 anchor=
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:38:42
+   Duration  719.02s (tests 100%)
+
+2026-10-18T08:50:41+00:00 end D 2:1e-3 anchor= exit 0
+2026-10-18T08:50:41+00:00 start D 4:1e-3 anchor=
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:50:43
+   Duration  8294.20s (tests 100%)
+
+2026-10-18T11:08:57+00:00 end D 4:1e-3 anchor= exit 0
+2026-10-18T11:08:57+00:00 start B 1:1e-3 anchor=
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  11:08:59
+   Duration  84.45s (tests 100%)
+
+2026-10-18T11:10:24+00:00 end B 1:1e-3 anchor= exit 0
+2026-10-18T11:10:24+00:00 start B 2:1e-3 anchor=
+
+ RUN  v5.0.4 /home/user/bowshock
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  11:10:25
+   Duration  681.81s (tests 100%)
+
+2026-10-18T11:21:47+00:00 end B 2:1e-3 anchor= exit 0
+2026-10-18T11:21:47+00:00 start B 4:1e-3 anchor=
+
+ RUN  v5.0.4 /home/user/bowshock
+

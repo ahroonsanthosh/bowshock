@@ -1,0 +1,59 @@
+2026-10-20T05:31:52Z start L5M1.5r1
+2026-10-20T05:39:54Z done L5M1.5r1
+2026-10-20T05:39:54Z start L3M3r1
+2026-10-20T06:09:25Z done L3M3r1
+2026-10-20T06:09:25Z start L5M1.5r2
+2026-10-20T07:51:26Z done L5M1.5r2
+2026-10-20T07:51:26Z start L1c1M2r1
+2026-10-20T08:00:18Z done L1c1M2r1
+2026-10-20T08:00:18Z start L1c1M2r2
+2026-10-20T11:16:29Z restarted lanex (nice 10) after a container restart; L1c1M2r2 resumes from its checkpoint
+2026-10-20T11:16:29Z start L1c1M2r2
+2026-10-20T11:29:30Z done L1c1M2r2
+2026-10-20T11:29:30Z start L1c1M2r4
+2026-10-20T11:29:43Z seeded ckpt-L1c1M2r4 from the saved nj = 40 fit before the run read it
+2026-10-20T14:06:59Z done L1c1M2r4
+2026-10-20T14:06:59Z lanex finished
+2026-10-20T17:39:58Z restarted lanex (nice 10) after a container restart; saved runs skip, fit-L5M1.5r4u resumes from its checkpoint (6000)
+2026-10-20T17:39:58Z lanex finished
+2026-10-20T20:38:14Z start L1c1M1.5r1
+2026-10-20T20:40:13Z done L1c1M1.5r1
+seeded tests/tmp-haackmoc/ckpt-L1c1M1.5r2 (126 x 40) from tests/tmp-haackmoc/L1c1M1.5r1 (63 x 20)
+2026-10-20T20:40:13Z start L1c1M1.5r2
+2026-10-20T20:49:16Z done L1c1M1.5r2
+seeded tests/tmp-haackmoc/ckpt-L1c1M1.5r4 (252 x 80) from tests/tmp-haackmoc/L1c1M1.5r2 (126 x 40)
+2026-10-20T20:49:16Z start L1c1M1.5r4
+2026-10-20T22:45:25Z restarted lanex (nice 10) after a container restart; L1c1M1.5r4 resumes from its checkpoint (10000)
+2026-10-20T22:45:25Z lanex finished
+2026-10-20T22:45:25Z start L1c1M1.5r4
+2026-10-20T23:11:09Z done L1c1M1.5r4
+2026-10-20T23:11:09Z start L1c1M3r1
+2026-10-20T23:19:47Z done L1c1M3r1
+seeded tests/tmp-haackmoc/ckpt-L1c1M3r2 (388 x 40) from tests/tmp-haackmoc/L1c1M3r1 (194 x 20)
+2026-10-20T23:19:48Z start L1c1M3r2
+2026-10-20T23:52:04Z done L1c1M3r2
+seeded tests/tmp-haackmoc/ckpt-L1c1M3r4 (776 x 80) from tests/tmp-haackmoc/L1c1M3r2 (388 x 40)
+2026-10-20T23:52:04Z start L1c1M3r4
+2026-10-21T04:26:39Z restarted lanex (nice 10) after a container restart; L1c1M3r4 resumes from its checkpoint (3000)
+2026-10-21T04:26:39Z lanex finished
+2026-10-21T04:26:39Z start L1c1M3r4
+2026-10-21T09:50:58Z restarted lanex (nice 10) after a container restart (by the coordinator)
+2026-10-21T09:50:58Z lanex finished
+2026-10-21T09:50:58Z start L1c1M3r4
+2026-10-21T12:14:00Z done L1c1M3r4
+2026-10-21T12:14:00Z start L5c2M2r1
+2026-10-21T12:25:45Z done L5c2M2r1
+seeded tests/tmp-haackmoc/ckpt-L5c2M2r2 (586 x 40) from tests/tmp-haackmoc/L5c2M2r1 (293 x 20)
+2026-10-21T12:25:46Z start L5c2M2r2
+2026-10-21T17:48:13Z restarted lanex (nice 10) after a container restart (by the coordinator)
+2026-10-21T17:48:13Z lanex finished
+2026-10-21T17:48:14Z start L5c2M2r2
+2026-10-21T18:15:02Z done L5c2M2r2
+seeded tests/tmp-haackmoc/ckpt-L5c2M2r4 (1172 x 80) from tests/tmp-haackmoc/L5c2M2r2 (586 x 40)
+2026-10-21T18:15:02Z start L5c2M2r4
+2026-10-22T03:55:31Z lanex restarted after a container restart (by the coordinator)
+2026-10-22T03:55:31Z lanex finished
+2026-10-22T03:55:31Z start L5c2M2r4
+2026-10-22T08:42:53Z lanex restarted after a container restart (by the coordinator)
+2026-10-22T08:42:54Z lanex finished
+2026-10-22T08:42:54Z start L5c2M2r4
