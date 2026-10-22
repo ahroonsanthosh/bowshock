@@ -125,7 +125,7 @@ import {
   MACHA_FIG8B_SECOND,
   MACHA_READINGS,
 } from './macha';
-import { FinRefusal } from './refusal';
+import { FinRefusal, type FinRefusalReason } from './refusal';
 import {
   RM_A55H31_FIG11,
   RM_A55H31_FIG12,
@@ -782,13 +782,16 @@ export function roundedLeadingEdgeDrag(input: {
   }
   const sweep = Math.atan(tanSweep);
   const sweepDegrees = sweep / DEG;
+  // Every condition the case fails is collected and reported, not only the first (the re-review
+  // of 2026-10-22, N6); the reason code is the first failed condition's.
+  const failed: [FinRefusalReason, string][] = [];
   if (sweepDegrees > SWEEP_LIMIT_DEGREES + 1e-9) {
-    throw new FinRefusal(
+    failed.push([
       'swept-leading-edge',
       `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg is refused: the yawed-cylinder ` +
         `checks of the independence principle reach ${SWEEP_LIMIT_DEGREES} deg (RM A55H31 fig. 12), ` +
         'and at 75 deg the only point has an end effect (0016)',
-    );
+    ]);
   }
   const cosSweep = Math.cos(sweep);
   const mach = input.mach * cosSweep;
@@ -798,7 +801,7 @@ export function roundedLeadingEdgeDrag(input: {
   const [mLo, mHi] = ROUNDED_EDGE_MACH_RANGE;
   const transonicFloor = TRANSONIC_NODES[0]!.mach;
   if (mach < transonicFloor) {
-    throw new FinRefusal(
+    failed.push([
       'leading-edge-range',
       `the Mach number${normal} ${shownBeyond(mach, transonicFloor, 'below')} is below ${transonicFloor.toFixed(1)}, the ` +
         "lowest at which a cylinder's front side is measured with the normal flow sonic or faster " +
@@ -813,32 +816,35 @@ export function roundedLeadingEdgeDrag(input: {
         "plate's rounded edge there (0019 section 3.2) is not served until NASA TM X-653, " +
         "which tested fins with blunt leading edges at Mach 0.6 to 3.8, is read (the owner's " +
         'decision of 2026-10-22, 0014 section 10.7 (o))',
-    );
+    ]);
   }
-  const transonic = mach < mLo ? transonicFrontSide(mach) : undefined;
   if (!(mach <= mHi)) {
-    throw new FinRefusal(
+    failed.push([
       'leading-edge-range',
       `the rounded-edge band covers Mach ${mLo} to ${mHi} (TN 2960 and RM A55H31), asked ` +
         `${swept ? `M cos(sweep) = ${mach.toFixed(3)}` : mach}`,
-    );
+    ]);
   }
   if (!(re >= RM_A55H31_RANGE.reynolds[0])) {
-    throw new FinRefusal(
+    failed.push([
       'leading-edge-range',
       `Reynolds number ${shownBeyond(re, RM_A55H31_RANGE.reynolds[0], 'below')} on the edge's diameter${swept ? ' (normal component)' : ''} is below ` +
         `${RM_A55H31_RANGE.reynolds[0]}, the lowest at which a front-side pressure measurement ` +
         'shows no Reynolds-number effect (RM A55H31)',
-    );
+    ]);
   }
   if (!(re <= TN2960_RANGE.reynolds[1])) {
-    throw new FinRefusal(
+    failed.push([
       'leading-edge-range',
       `Reynolds number ${shownBeyond(re, TN2960_RANGE.reynolds[1], 'above')} on the edge's diameter is above ` +
         `${TN2960_RANGE.reynolds[1]}, the highest at which a front-side pressure measurement ` +
         'was opened (TN 2960)',
-    );
+    ]);
   }
+  if (failed.length > 0) {
+    throw new FinRefusal(failed[0]![0], failed.map(([, m]) => m).join('; and '));
+  }
+  const transonic = mach < mLo ? transonicFrontSide(mach) : undefined;
   let regime: RoundedEdgeRegime;
   const inMeasuredReynolds = transonic
     ? re >= MACHA_REYNOLDS[0] && re <= MACHA_REYNOLDS[1]
