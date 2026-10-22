@@ -1776,6 +1776,108 @@ offline; Mach 1.0 is still refused on the page (B1, and no four-grid
 family). Mach 1.01 on the moved family is refused by the rule as written
 (sign change) until the corrected rule below.
 
+**The allowance rule corrected for sign reversal (review S2 and S3;
+written 2026-10-22, before its code and before the runs of its test).**
+The rule above has three faults the review found:
+
+- S2: a change that reverses sign beyond the family's domain is not
+  bounded. On the cone at Mach 1.01 to 1.02 the effect rises, peaks and
+  falls back as the domain grows. The reviewer's synthetic A1 (c1 =
+  +1.5e-3, c2 = +2e-6, and the true remainder -6e-5) passes as
+  "decaying" with an allowance of 2e-6, 30 times too small: a tiny c2
+  after a large c1 is the effect turning, not decaying.
+- S3 (a): the negligible branch (the larger change within a quarter of
+  the band) gives the larger change alone, which does not cover a slow
+  decay beyond the largest domain.
+- S3 (b): through the noise, more noise can turn a refusal into a pass.
+
+The corrected rule, for three nested domains D0 < D1 < D2 (the family's
+own is D1), with drags C0, C1, C2:
+
+- **Inputs.** a = C1 - C0 and b = C2 - C1. The distances are the grids'
+  own (their far radii; for the cylinder, its length in calibers), not
+  the sizes asked for. The noise nu is the largest of the three grids'
+  measured noises (relative).
+- **The measurability level** m = 2 nu max(|C0|, |C1|, |C2|). It is
+  added to every allowance, so no allowance is below it, and more noise
+  only ever widens an allowance.
+- **The slowest decay admitted**, Q_SLOW = 0.35: below every exponent
+  measured here, the drag's (0.8 to 1.35 over four distances) and the
+  far field's local pressure decay (0.39 to 0.47, "Mach 1 without the
+  extrapolation"). A part of the effect that decays as D^-q with q at
+  least Q_SLOW leaves, beyond D2, at most T times its change from D1 to
+  D2, with T = 1 / ((D2 / D1)^Q_SLOW - 1): 3.09 for 100.6 and 224.2
+  radii, 4.28 for 224.2 and 408.7, 3.64 for 10 and 20 calibers.
+- **The fastest decay admitted**, Q_FAST = 3: a disturbance of a closed
+  body in a subsonic stream falls off as a doublet's, the velocity as
+  D^-3, and nothing that acts on the drag from far away falls faster.
+  rho_fast is the ratio of successive changes that a single power law of
+  exponent 3 gives over these distances: 0.179 for 55.1, 100.6 and
+  224.2 radii, 0.083 for 100.6, 224.2 and 408.7, 0.125 for 5, 10 and 20
+  calibers. A change falling faster than that is two parts of opposite
+  sign cancelling, which is the effect turning.
+- **The turning bound** U = |b| + T max(|a|, |b|) + m: the change to D2,
+  plus a remainder beyond D2 that decays no slower than Q_SLOW from a
+  size no larger than the larger measured change.
+
+The branches, in order:
+
+1. **Unmeasurable**: max(|a|, |b|) <= m. The allowance is U.
+2. **Refused**: a = 0, or rho = |b| / |a| > DECAY_LIMIT (0.6) whatever
+   the signs. The effect does not fall fast enough to bound.
+3. **Decaying**: a and b of one sign and rho_fast <= rho <= 0.6. The
+   allowance is |b| / (1 - rho) + m, the registered geometric bound
+   plus the measurability level.
+4. **Turning**: every other case, that is b opposite in sign to a with
+   |b| <= 0.6 |a|, or one sign with rho below rho_fast. The allowance is
+   U.
+
+The negligible branch against a quarter of the band is withdrawn: the
+allowance no longer depends on the family's band, so it is decided
+right after the base grids and a refusal costs seconds. What the
+turning bound assumes, said plainly: that the part of the effect still
+to come after the turn changes, from D1 to D2, by no more than the
+larger change measured, and decays no slower than D^-0.35 beyond. It is
+an assumption about the far field's form, as the geometric bound is,
+and the test below is what checks it.
+
+**On the cases already seen (construction checks, not the test).** On
+the reviewer's table, family on 100.6 radii (55.1, 100.6 and 224.2):
+the cone at Mach 1.01 is decaying (rho 0.316), 1.32e-3 + m, against
+C(408.7) - C(100.6) = +8.63e-4; 1.017, 1.019 and 1.02 are turning, U =
+|b| + 3.09 |a| + m = 5.07e-3, 3.32e-3 and 2.48e-3, against -5.96e-5,
+-1.01e-4 and -1.01e-4. All contain it (1.015 has no 55.1-radius run).
+On the family moved to 224.2 radii (no larger domain to check against):
+Mach 1.0 decaying, 5.12e-4 + m (cone) and 7.35e-4 + m (ogive); 1.01
+turning, 4.02e-5 + 4.28 x 9.03e-4 + m = 3.90e-3 (3.8% of the drag);
+1.015, 1.017, 1.019 and 1.02 turning, 3.0e-4, 2.6e-4, 4.4e-4 and
+4.4e-4. Synthetic A1 (55.1, 100.6, 224.2): rho = 0.0013, below
+rho_fast, so turning, U = 2e-6 + 3.09 x 1.5e-3 + m = 4.6e-3, against
+the true -6e-5. The turning bound is wide: up to 5% of the drag at
+Mach 1.017 on 100.6 radii, where the registered rule refused.
+
+**Its test (pre-registered; the runs are made after this commit,
+`tests/tmp-transonic/queue-s2test.txt`).** Six cases not run before, on
+the base grid with nested far boundaries at 55.1, 100.6, 224.2 and
+408.7 radii (10 calibers): the 7 deg cone at Mach 1.005, 1.0125 and
+1.025, and the 5-caliber ogive at Mach 1.01, 1.02 and 1.03.
+
+- For each, the rule applied to 55.1, 100.6 and 224.2 radii, with
+  nu max|C| = 3.5e-6 (so m = 7e-6: the largest distance from its limit
+  that S1 found on the nested runs settled by the old test, 3.4e-6,
+  rounded up), must contain C(408.7) - C(100.6) wherever it gives an
+  allowance. A refusal is not a failure; it is reported.
+- If any case fails, the correction is withdrawn: sign changes and
+  changes falling faster than rho_fast are refused, as the registered
+  rule refuses sign changes, and B1 stays.
+- If every case passes, B1 still stays on this branch. The evidence goes
+  to the owner, through the re-review, with the proposal to lower
+  NEAR_SONIC_LIMIT; a Mach number below 1.05 also needs its four-grid
+  family, which the page's own request solves.
+- The family moved to 224.2 radii has no test of this kind (it needs a
+  domain near 800 radii, where the steps diverge). Its allowances are
+  the rule's, with the consistency check of the previous entry.
+
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
 (Superseded as a serving rule by the owner's decision of 2026-10-21,
