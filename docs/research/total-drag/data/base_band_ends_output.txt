@@ -1,7 +1,0 @@
-tunnel symbols, M 1.5 to 3.0: 0.8563 (M 1.500, first reading) to 1.0433 (M 1.503, audit reading)
-tunnel symbols above M 3.0 (3.243, 3.497): 1.0199 (M 3.497, audit) to 1.0783 (M 3.243, first)
-Herrin and Dutton, M 2.46: curve base drag (on base area) 0.1193 (less negative) to 0.1218 (more negative)
-  0008 low reading 0.553  : base drag 0.1055; data over curve 0.8666 to 0.8847
-  0008 high reading 0.575 : base drag 0.1003; data over curve 0.8240 to 0.8411
-  audit high 0.58         : base drag 0.0991; data over curve 0.8143 to 0.8312
-  0.575 + 0.01            : base drag 0.0980; data over curve 0.8046 to 0.8213

@@ -1,8 +1,0 @@
-check: row fit at x=600 for P=-0.16: y=2545.6; col fit d/h=0.4 at y=2500: x=617.3
-M=1.5 d/h=0.35: dark runs at P = -0.1747, -0.1745, -0.1723, -0.1702, -0.1700
-M=1.5 d/h=0.40: dark runs at P = -0.1745, -0.1741
-M=1.5 d/h=0.85: dark runs at P = -0.2402, -0.2400, -0.2373, -0.2371
-M=2.0 d/h=0.35: dark runs at P = -0.1406
-M=2.0 d/h=0.85: dark runs at P = -0.1904, -0.1900, -0.1898
-M=2.9 d/h=0.35: dark runs at P = -0.1155, -0.1153
-M=2.9 d/h=0.85: dark runs at P = -0.1424, -0.1419

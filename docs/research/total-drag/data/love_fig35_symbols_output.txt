@@ -1,6 +1,0 @@
-ref. 26, with fins, circle               box x 917-968 y 455-506 (216 px): M 1.499  P_B -0.3250
-ref. 26, no fins, flagged circle         box x 928-946 y 976-1027 (163 px): M 1.501  P_B -0.1931
-ref. 26, with fins, square               box x 1322-1333 y 917-968 (159 px): M 1.996  P_B -0.2091
-ref. 26, no fins, flagged square         box x 1315-1339 y 1158-1209 (178 px): M 1.999  P_B -0.1481
-Langley 9 in, with fins, diamond         box x 1626-1677 y 1101-1152 (243 px): M 2.409  P_B -0.1633
-Langley 9 in, no fins, flagged diamond   box x 1624-1675 y 1276-1327 (359 px): M 2.409  P_B -0.1192

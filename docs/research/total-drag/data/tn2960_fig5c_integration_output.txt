@@ -1,3 +1,0 @@
-M 1.49: P(0) read 1.511, Rayleigh pitot Cp 1.529; C_D front 1.014, rear 0.454, total 1.468 (fig. 7 first reading 1.487, ratio 0.987); front share 69.1%; front/Newtonian 4/3 0.760; front/(2/3 pitot Cp) 0.995
-M 1.98: P(0) read 1.670, Rayleigh pitot Cp 1.654; C_D front 1.156, rear 0.269, total 1.425 (fig. 7 first reading 1.424, ratio 1.001); front share 81.1%; front/Newtonian 4/3 0.867; front/(2/3 pitot Cp) 1.049
-M 2.90: P(0) read 1.750, Rayleigh pitot Cp 1.750; C_D front 1.232, rear 0.093, total 1.325 (fig. 7 first reading 1.346, ratio 0.985); front share 92.9%; front/Newtonian 4/3 0.924; front/(2/3 pitot Cp) 1.056

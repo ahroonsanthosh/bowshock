@@ -1,8 +1,0 @@
-6DOF CX0 against linear-theory CD0, use = Y:
-  CX0/CD0_lin - 1: +0.0% to +1.1%
-  high-yaw shot M 1.377 (DBSQ 15.8): CX0 0.708, CD0_lin 0.625, ratio 1.133
-M 1.79 to 1.86: 1.799:0.594 1.846:0.598 1.850:0.567  mean 0.586, range -3.3% to +2.0% of the mean
-M 2.34 to 2.42: 2.348:0.500 2.364:0.478 2.414:0.473  mean 0.484, range -2.2% to +3.4% of the mean
-M 2.66 to 2.75: 2.663:0.446 2.741:0.400 2.749:0.452  mean 0.433, range -7.6% to +4.5% of the mean
-M 2.96 to 2.98: 2.969:0.385 2.970:0.376  mean 0.381, range -1.2% to +1.2% of the mean
-M 1.05 to 1.06: 1.056:0.868 1.058:0.868  mean 0.868, range +0.0% to +0.0% of the mean

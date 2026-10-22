@@ -1,5 +1,0 @@
-M 1.80-1.85: friction -2.4/+3.8, base -6.7/+3.0, fins-on-base +-4.0, transition -6.4/0, spread -3.3/+2.0  => at least -23% to +13%
-M 2.35-2.41: friction -2.5/+3.9, base -5.9/+2.6, fins-on-base +-3.3, transition -6.0/0, spread -2.2/+3.4  => at least -20% to +13%
-M 2.66-2.75: friction -2.7/+4.2, base -5.4/+2.4, fins-on-base +-2.4, transition -6.1/0, spread -7.6/+4.5  => at least -24% to +14%
-M 2.97     : friction -2.7/+4.2, base -5.2/+2.3, fins-on-base +-2.5, transition -5.9/0, spread -1.2/+1.2  => at least -17% to +10%
-plus, on the high side, 0.59 times the fins own-drag share of CX0 (B4 band 1.01 to 1.59), and the fin trailing-edge base band
