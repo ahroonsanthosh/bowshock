@@ -70,6 +70,15 @@ export const SETTLE_NOISE = 1e-7;
 export const GEOMETRIC_NOISE = 1e-9;
 /** Checks after settling over which the drag's wander is measured. */
 export const WANDER_CHECKS = 4;
+/**
+ * The lowest Mach number served: 1.05, the lowest at which a case is
+ * certified with a negligible far-field allowance (the 7 deg cone, 0013).
+ * Below it the solve refuses ('near-sonic') until the allowance rule
+ * passes its pre-registered test there: on the cone at Mach 1.01 to 1.02
+ * the far boundaries' effect changes sign as the domain grows, which the
+ * rule tested so far does not bound (review of aed95b0, B1).
+ */
+export const NEAR_SONIC_LIMIT = 1.05;
 /** The family's far boundaries (radii) and cylinder (calibers), and the nested domains of the allowances. */
 export const FAMILY_DOMAIN = { farField: 100, cylinder: 10 } as const;
 export const FAR_FIELD_DOMAINS = [50, 200] as const;
@@ -87,10 +96,10 @@ export interface TransonicDragOptions {
   /** The CFL number a grid started from a coarser one's solution uses from its first step. */
   readonly cfl?: number;
   /**
-   * Serve Mach 1.0 itself: only once the allowance rule has passed its
-   * test there (0013, serving rule 8).
+   * Solve below NEAR_SONIC_LIMIT anyway, for the offline test of the
+   * allowance rule there; the page never sets it.
    */
-  readonly allowMach1?: boolean;
+  readonly allowNearSonic?: boolean;
   /** After each check of a grid's drag. */
   readonly onProgress?: (progress: TransonicProgress) => void;
   /**
@@ -192,8 +201,9 @@ export interface ReferenceNote {
 /**
  * Why a transonic solve gives no value, as a code the page words (the
  * sentence in `message` says the same with the case's numbers):
- * - 'mach-1': Mach 1.0 itself, until the allowance rule passes its test
- *   there (0013, serving rule 8);
+ * - 'near-sonic': below NEAR_SONIC_LIMIT (Mach 1.05), until the
+ *   allowance rule passes its pre-registered test lower down (0013,
+ *   serving rule 8);
  * - 'blunt-nose': the grids of blunt noses have no nested domains yet, so
  *   the far boundaries' allowance cannot be measured;
  * - 'no-band': the procedure gives no band from the grids (`estimate`
@@ -201,9 +211,10 @@ export interface ReferenceNote {
  * - 'far-field', 'cylinder': that effect does not fall fast enough, as
  *   the domain grows, to bound what lies beyond (domainAllowance).
  */
-export type TransonicRefusalReason = 'mach-1' | 'blunt-nose' | 'no-band' | 'far-field' | 'cylinder';
+export type TransonicRefusalReason =
+  'near-sonic' | 'blunt-nose' | 'no-band' | 'far-field' | 'cylinder';
 export const TRANSONIC_REFUSAL_REASONS: readonly TransonicRefusalReason[] = [
-  'mach-1',
+  'near-sonic',
   'blunt-nose',
   'no-band',
   'far-field',
@@ -303,12 +314,11 @@ export async function verifiedTransonicDrag(
   if (!(Number.isInteger(Math.log2(options.finest)) && options.finest >= 8)) {
     throw new RangeError('the finest refinement must be 8, 16, ...');
   }
-  if (mach < 1 + 1e-9 && options.allowMach1 !== true) {
+  if (mach < NEAR_SONIC_LIMIT && options.allowNearSonic !== true) {
     return {
       kind: 'refused',
-      reason: 'mach-1',
-      message:
-        'at Mach 1 the far boundaries move the drag by 2% (cone) to 10% (ogive) on 100 radii, and their allowance rule has not yet passed its test there',
+      reason: 'near-sonic',
+      message: `below Mach ${NEAR_SONIC_LIMIT} the far boundaries' effect on the drag has no tested bound: on 100 radii it moves the drag by 2% (cone) to 10% (ogive) at Mach 1, and between Mach 1.01 and 1.02 it changes sign as the domain grows`,
       levels: [],
     };
   }

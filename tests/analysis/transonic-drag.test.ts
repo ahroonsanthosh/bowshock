@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  NEAR_SONIC_LIMIT,
   SETTLE_NOISE,
   TRANSONIC_DRAG_FLOOR,
   transonicNoseTerm,
@@ -113,7 +114,7 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     expect(component.high).toBeCloseTo(result.value + result.band, 15);
     expect(transonicNoseTerm({ kind: 'cancelled', levels: [] })).toBeNull();
     expect(
-      transonicNoseTerm({ kind: 'refused', reason: 'mach-1', message: 'not yet', levels: [] }),
+      transonicNoseTerm({ kind: 'refused', reason: 'near-sonic', message: 'not yet', levels: [] }),
     ).toEqual({ kind: 'refused', message: 'the nose wave drag has no band: not yet' });
   });
 
@@ -287,14 +288,30 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     expect(none).toEqual([]);
   });
 
-  it('Mach 1.0 is refused unless allowed, and blunt noses are refused', async () => {
-    const engine = synthetic({ converged: () => 0.09 });
-    const m1 = await verifiedTransonicDrag(cone, { ...options, mach: 1 }, engine);
-    expect(m1.kind).toBe('refused');
-    if (m1.kind === 'refused') {
-      expect(m1.reason).toBe('mach-1');
-      expect(m1.message).toMatch(/Mach 1/);
+  it('below Mach 1.05 the solve refuses (near-sonic) unless allowed; from 1.05 it serves', async () => {
+    expect(NEAR_SONIC_LIMIT).toBe(1.05);
+    const engine = synthetic({ converged: (r) => 0.1 + 1e-4 / r ** 2 });
+    for (const mach of [1, 1.001, 1.0499]) {
+      const result = await verifiedTransonicDrag(cone, { ...options, mach }, engine);
+      expect(result.kind, `Mach ${mach}`).toBe('refused');
+      if (result.kind === 'refused') {
+        expect(result.reason).toBe('near-sonic');
+        expect(result.message).toMatch(/below Mach 1.05/);
+        expect(result.levels).toEqual([]);
+      }
     }
+    const at = await verifiedTransonicDrag(cone, { ...options, mach: 1.05 }, engine);
+    expect(at.kind).toBe('solved');
+    const allowed = await verifiedTransonicDrag(
+      cone,
+      { ...options, mach: 1, allowNearSonic: true },
+      engine,
+    );
+    expect(allowed.kind).toBe('solved');
+  });
+
+  it('blunt noses are refused, and Mach numbers outside the range throw', async () => {
+    const engine = synthetic({ converged: () => 0.09 });
     const blunt: Body = {
       nose: { shape: { kind: 'ellipsoid' }, length: 2, baseRadius: 1 },
       cylinderLength: 0,

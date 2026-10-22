@@ -39,8 +39,8 @@ export interface NoseDragRequest {
   readonly signal?: AbortSignal;
   /** Progress as text, for a status line. */
   readonly onProgress?: (text: string) => void;
-  /** The transonic solve at Mach 1.0 itself (0013, serving rule 8). */
-  readonly allowMach1?: boolean;
+  /** The transonic solve below NEAR_SONIC_LIMIT, for offline tests (0013, serving rule 8). */
+  readonly allowNearSonic?: boolean;
   /**
    * The grid being solved, either solver's, to draw as it converges, and
    * null just before its buffers are released (freeze the picture then).
@@ -126,7 +126,7 @@ export async function solveNoseDrag(
       gamma: request.gamma,
       finest: request.finest,
       ...(request.signal === undefined ? {} : { signal: request.signal }),
-      ...(request.allowMach1 === undefined ? {} : { allowMach1: request.allowMach1 }),
+      ...(request.allowNearSonic === undefined ? {} : { allowNearSonic: request.allowNearSonic }),
       ...(request.onLive === undefined ? {} : { onLive: request.onLive }),
       onProgress: (p) => {
         const where =

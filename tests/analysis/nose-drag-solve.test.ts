@@ -72,7 +72,7 @@ describe('the nose drag solver for a Mach number (design record 0013, serving ru
     // Its own range is the router's: from TRANSONIC_FROM to below FITTED_FROM.
     for (const mach of [TRANSONIC_FROM, 1.1999]) {
       await expect(
-        verifiedTransonicDrag(cone, { mach, gamma: 1.4, finest: 8, allowMach1: true }, engine),
+        verifiedTransonicDrag(cone, { mach, gamma: 1.4, finest: 8, allowNearSonic: true }, engine),
       ).rejects.toThrow('not reached');
     }
     expect([TRANSONIC_FROM, FITTED_FROM]).toEqual([1, 1.2]);

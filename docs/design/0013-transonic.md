@@ -1042,6 +1042,17 @@ The serving rules, which the page's transonic solve follows:
    fourth grid's cost, about 300,000 steps, is stated on the page with
    the measured time, and the user chooses to run it, as for any point.)
 
+   **Amended 2026-10-22 (review of `aed95b0`, B1):** the solve refused
+   only Mach 1 itself (below 1 + 1e-9), so a cone at Mach 1.001 or 1.005
+   was served as "verified" on a rule never tested there. It now
+   refuses everything below Mach 1.05 (`NEAR_SONIC_LIMIT`, reason
+   'near-sonic'), the lowest Mach number where a case is certified with
+   a negligible far-field allowance (the cone). The limit stays until
+   the corrected allowance rule (S2 and S3 of the review, below) passes
+   its pre-registered test lower down. The nested runs show why: on the
+   cone at Mach 1.01 to 1.02 the far boundaries' effect changes sign as
+   the domain grows, which the rule as tested does not bound.
+
 ## The path to the page (plan, written 2026-10-21, before its build)
 
 ### What a page solve does
