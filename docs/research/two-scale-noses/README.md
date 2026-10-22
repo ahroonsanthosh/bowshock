@@ -95,6 +95,17 @@ nose at Mach 2 on nj = 20 and 40, against the values recorded here) and
   its base, 0.34 to 0.40 along the cylinder: the numbers quoted in 0004,
   0006 and `secondCapture`'s comment.
 
+## The four-grid check (running)
+
+The page verifies a value only from four grids (nj = 20 to 160), so a
+Von Karman case is checked there before it is served: the 1-caliber
+nose at Mach 2 on nj = 160, seeded from its nj = 80 fit
+(`runners/tmp-haackmoc/lane160.sh`, started 2026-10-22, about 30
+minutes per 1000 iterations on a shared core; nj = 80 took 13000).
+When `L1c1M2r8.json` is saved, `runners/tmp-haackmoc/check160.test.ts`
+gives the page's verdict on the four drags (orders of the two finest
+triples, band with the allowance) against the marches' references.
+
 ## `runners/`
 
 The throwaway vitest files and the lane scripts as they ran (paths are
