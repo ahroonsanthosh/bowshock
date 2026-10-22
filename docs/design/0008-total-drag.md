@@ -779,6 +779,24 @@ as the test of the corrected factor; if it passes, the class is
 validated over what that range supports. The second run and the
 correction's residuals are kept as history (0010 sections 4.2 and 11.6).
 
+**Range A run, and a narrow sub-class validated, 2026-10-22 (0014
+section 10.7 (q); 0020).** Range A was run once as registered: the
+present model passed at all seven rounds it serves, measured over
+modelled +3.9% to +11.0% (mean +7.3%, the model low at every round),
+inside tolerances of about +-25% to +-28%, which are wide (6.3). The
+rounds overlap the class in nothing: inside its Mach range they flew at
+Reynolds numbers of 7.96e6 to 8.87e6 on length, below its 1.2e7, and with
+sharp fin leading edges, not its 0.004 cal radius. So the class stays
+suspended, "an estimate, not validated", now because nothing has tested
+the corrected factor inside it, and the owner validated instead a narrow
+sub-class at exactly the tested conditions: the Basic Finner with sharp
+fin leading edges, at Mach 1.801 to 1.827 with Reynolds number 7.965e6 to
+8.870e6 on length or Mach 2.423 to 2.468 with 1.072e7 to 1.198e7, nothing
+between, at 288 to 298 K. The diameter, air and trailing-edge area at the
+test were assumed (0014 section 10.6). The rebuilt factor (W1) was refused
+at every round and has no hold-out. This is the only total claimed as
+validated; the "May claim" list below is the plan as first written.
+
 May claim:
 
 - Total zero-incidence, power-off Cd at **Mach 1.8 to 3.0** for one class of
@@ -822,7 +840,9 @@ May not claim:
 
 - Sharp-edged fins at the base, the class the first draft named: no
   hold-out tests it, since the Basic Finner's fins are blunt-edged in the
-  model's sense (section 4.1).
+  model's sense (section 4.1). (Since 2026-10-22 the Basic Finner with
+  sharp fin leading edges is validated at BRL Report 934's conditions
+  only, the sub-class above; no other sharp-edged fins.)
 - Mach 1.5 to 1.8: the Basic Finner has no shot there (none between 1.38 and
   1.80); Mach 1 to 1.5 reported only.
 - Fins clear of the base: no total-drag case found; the base and fin bands

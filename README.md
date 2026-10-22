@@ -26,24 +26,25 @@ cells across._
 
 ## What works today
 
-| Capability                                                                                                                                                                                           | Status today                                                                                                                                                                                                                                                                                                                                                                                            | Record                                                                                                |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Nose wave drag**: the inviscid forebody pressure drag of cones, ogives, parabolic and ellipsoid noses, Mach 1.2 to 5 ([drag page](https://ahroonsanthosh.github.io/bowshock/demos/nose-drag.html)) | **Verified**: an error band measured from nested grids (on the sharp noses compared with exact or converged references, every band contained the error). **Not verified** where no band can be measured. **Refused**, with the reason, where the method does not reach                                                                                                                                  | [0005](docs/design/0005-solution-verification.md), [0006](docs/design/0006-shock-fitting.md)          |
-| **Live flow**: that solve, drawn as it converges ([flow page](https://ahroonsanthosh.github.io/bowshock/demos/flow-view.html))                                                                       | The same solve and labels, drawn from the solver's own value in each cell                                                                                                                                                                                                                                                                                                                               | [0012](docs/design/0012-interface.md)                                                                 |
-| **Solver checks**: shock tube, oblique shocks and expansions, cones                                                                                                                                  | **Verified** against exact solutions                                                                                                                                                                                                                                                                                                                                                                    | [0003](docs/design/0003-2d-solver.md)                                                                 |
-| **Skin friction**                                                                                                                                                                                    | **Validated on component data**: measured friction 0.88 to 1.19 times the model in all 23 wind-tunnel and flight comparisons                                                                                                                                                                                                                                                                            | [0007](docs/design/0007-skin-friction.md)                                                             |
-| **Fin drag**                                                                                                                                                                                         | **Estimated on component data** (measured 1.01 to 1.59 times the model on the ARCAS fin increments), tested only in the total                                                                                                                                                                                                                                                                           | [0009](docs/design/0009-fin-wave-drag.md)                                                             |
-| **Base drag**, and the fins' edges                                                                                                                                                                   | **Estimated on component data**, tested only in the total; the fins-on-base factor **bounded, not measured** above Mach 2.56, where its free-flight data end, and **refused** for swept fins until it is rebuilt; the fins' edges **an analogy, not a measurement**, on wedges and, since 0016, on flat-plate fins (tapered and swept; square-cut leading edges and rounded trailing edges **refused**) | [0010](docs/design/0010-base-drag-and-total.md), [0016](docs/design/0016-fin-edges-of-flat-plates.md) |
-| **Total drag** of a nose, body and fins ([drag page](https://ahroonsanthosh.github.io/bowshock/demos/nose-drag.html))                                                                                | **An estimate, not validated**, everywhere today: the Basic Finner's validated claim is suspended ([below](#the-basic-finners-total-drag)). **Refused**, with every reason, where a component's method does not reach: today, almost every realistic rocket                                                                                                                                             | [0011](docs/design/0011-total-drag-on-the-page.md), [0014](docs/design/0014-refusals.md)              |
-| **Mach 1 to 1.2**                                                                                                                                                                                    | A measured prototype, **not served**                                                                                                                                                                                                                                                                                                                                                                    | [0013](docs/design/0013-transonic.md)                                                                 |
-| **Viscous flow (RANS)**; C<sub>D</sub> against Mach number, exported                                                                                                                                 | **Not built**: [planned](#planned-not-yet-built)                                                                                                                                                                                                                                                                                                                                                        | [0002](docs/design/0002-architecture.md)                                                              |
-| **Angle of attack, roll, the motor plume**                                                                                                                                                           | **Out of scope** until the core is validated                                                                                                                                                                                                                                                                                                                                                            | [0002](docs/design/0002-architecture.md)                                                              |
+| Capability                                                                                                                                                                                           | Status today                                                                                                                                                                                                                                                                                                                                                                                                                                              | Record                                                                                                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Nose wave drag**: the inviscid forebody pressure drag of cones, ogives, parabolic and ellipsoid noses, Mach 1.2 to 5 ([drag page](https://ahroonsanthosh.github.io/bowshock/demos/nose-drag.html)) | **Verified**: an error band measured from nested grids (on the sharp noses compared with exact or converged references, every band contained the error). **Not verified** where no band can be measured. **Refused**, with the reason, where the method does not reach                                                                                                                                                                                    | [0005](docs/design/0005-solution-verification.md), [0006](docs/design/0006-shock-fitting.md)          |
+| **Live flow**: that solve, drawn as it converges ([flow page](https://ahroonsanthosh.github.io/bowshock/demos/flow-view.html))                                                                       | The same solve and labels, drawn from the solver's own value in each cell                                                                                                                                                                                                                                                                                                                                                                                 | [0012](docs/design/0012-interface.md)                                                                 |
+| **Solver checks**: shock tube, oblique shocks and expansions, cones                                                                                                                                  | **Verified** against exact solutions                                                                                                                                                                                                                                                                                                                                                                                                                      | [0003](docs/design/0003-2d-solver.md)                                                                 |
+| **Skin friction**                                                                                                                                                                                    | **Validated on component data**: measured friction 0.88 to 1.19 times the model in all 23 wind-tunnel and flight comparisons                                                                                                                                                                                                                                                                                                                              | [0007](docs/design/0007-skin-friction.md)                                                             |
+| **Fin drag**                                                                                                                                                                                         | **Estimated on component data** (measured 1.01 to 1.59 times the model on the ARCAS fin increments), tested only in the total                                                                                                                                                                                                                                                                                                                             | [0009](docs/design/0009-fin-wave-drag.md)                                                             |
+| **Base drag**, and the fins' edges                                                                                                                                                                   | **Estimated on component data**, tested only in the total; the fins-on-base factor **bounded, not measured** above Mach 2.56, where its free-flight data end, and **refused** for swept fins until it is rebuilt; the fins' edges **an analogy, not a measurement**, on wedges and, since 0016, on flat-plate fins (tapered and swept; square-cut leading edges and rounded trailing edges **refused**)                                                   | [0010](docs/design/0010-base-drag-and-total.md), [0016](docs/design/0016-fin-edges-of-flat-plates.md) |
+| **Total drag** of a nose, body and fins ([drag page](https://ahroonsanthosh.github.io/bowshock/demos/nose-drag.html))                                                                                | **Validated** in one narrow case only: the Basic Finner with sharp fin leading edges at the conditions of one free-flight test it passed, BRL Report 934's range A (Mach 1.80 to 1.83 and 2.42 to 2.47). **An estimate, not validated**, everywhere else, the Basic Finner's own class included ([below](#the-basic-finners-total-drag)). **Refused**, with every reason, where a component's method does not reach: today, almost every realistic rocket | [0011](docs/design/0011-total-drag-on-the-page.md), [0014](docs/design/0014-refusals.md)              |
+| **Mach 1 to 1.2**                                                                                                                                                                                    | A measured prototype, **not served**                                                                                                                                                                                                                                                                                                                                                                                                                      | [0013](docs/design/0013-transonic.md)                                                                 |
+| **Viscous flow (RANS)**; C<sub>D</sub> against Mach number, exported                                                                                                                                 | **Not built**: [planned](#planned-not-yet-built)                                                                                                                                                                                                                                                                                                                                                                                                          | [0002](docs/design/0002-architecture.md)                                                              |
+| **Angle of attack, roll, the motor plume**                                                                                                                                                           | **Out of scope** until the core is validated                                                                                                                                                                                                                                                                                                                                                                                                              | [0002](docs/design/0002-architecture.md)                                                              |
 
 The statuses, in the project's own words: **verified**, an error band
 measured from the grids; **validated** or **estimated on component data**, a
-component's band set from measurements of that component; **an estimate,
-not validated**, a total that no held-back test has confirmed as it now
-stands; **bounded, not measured**, a component no measurement covers (today
+component's band set from measurements of that component; **validated**,
+for a total, a case inside the conditions of a held-back test it passed
+(today one narrow case); **an estimate, not validated**, a total that no
+held-back test has confirmed as it now stands; **bounded, not measured**, a component no measurement covers (today
 the fins-on-base factor above Mach 2.56): the midpoint of two bounds, its
 band the whole gap between them ([0014](docs/design/0014-refusals.md)
 section 10.2); **refused**, every reason and no number. On 2000 modelled
@@ -71,15 +72,37 @@ the total by up to 3% above Mach 2.15 and by at most 0.24% inside the
 class the test had opened (Mach 1.8 to 2.15), but a term changed after a
 test is not validated by it ([0008](docs/design/0008-total-drag.md)
 section 6.1), so by the owner's decision of 2026-10-21 the validated claim
-is suspended: **no total is validated today.** The class is kept for the
-next registered test, BRL Report 934's Basic Finner rounds in its range A
-(Mach 1.5 to 2.47), run once as registered, which covers the class's Mach
-range at BRL's own Reynolds numbers and sharp leading edges (both outside
-the class; [0014](docs/design/0014-refusals.md) section 10.6). If it
-passes, the class is validated over what that range supports; if it
-fails, the claim is withdrawn
-([0010](docs/design/0010-base-drag-and-total.md) section 11.7;
-[0014](docs/design/0014-refusals.md) section 10).
+was suspended.
+
+The corrected model was then tested once, as registered beforehand,
+against a second free-flight set held back for it: BRL Report 934's Basic
+Finner rounds in its range A ([0020](docs/design/0020-brl934-range-a.md)).
+It passed at all seven rounds it serves: measured drag 3.9% to 11.0%
+above the model, so **the model reads low at every round** (by 7.3% on
+average), inside tolerances of about +-27%, which are wide, so the pass
+alone says little. The models' diameter, the range's air and the fins'
+trailing-edge area were not printed in the report and were assumed
+([0014](docs/design/0014-refusals.md) section 10.6). Those rounds flew
+at lower Reynolds numbers than the class (below 1.19e7 on length) and
+with sharp fin leading edges, so the test overlaps the class in nothing.
+By the owner's decision of 2026-10-22 ([0014](docs/design/0014-refusals.md)
+section 10.7 (q)):
+
+- **Validated, narrowly:** the Basic Finner with sharp fin leading edges,
+  at Mach 1.801 to 1.827 with Reynolds number 7.965e6 to 8.870e6 on
+  length, or Mach 2.423 to 2.468 with 1.072e7 to 1.198e7 (nothing in
+  between), at 288 to 298 K: exactly the conditions tested. With DREV's
+  rounded fin leading edge the residuals at Mach 2.42 and 2.47 would fall
+  to -1.1% and -4.2%, a sensitivity, not a verdict.
+- **An estimate, not validated:** the Basic Finner's own class (DREV's
+  rounded edges, Mach 1.8 to 2.15, Reynolds number 1.19e7 to 2.0e7),
+  since nothing has tested the corrected factor there, and every other
+  rocket.
+- **No hold-out pass for the rebuilt fins-at-the-base factor (W1):** it
+  refuses the Basic Finner's wedge fins, so BRL Report 934 gave it no
+  result, and no other test has run it. It is served outside the class
+  as estimated on component data
+  ([0015](docs/design/0015-fins-at-the-base.md)).
 
 ## How accuracy is earned
 
@@ -148,9 +171,11 @@ code, are in [CONTRIBUTING.md](CONTRIBUTING.md).
   on nested grids on your GPU and reported with its measured error band, or
   as not verified; and, from that solve, the rocket's total drag with fins
   and base at the altitude and diameter you give, with its bands, its
-  components and their labels: an estimate, not validated, with the reasons
-  (inside the Basic Finner's class too, while its validated claim is
-  suspended), or refused with the reasons.
+  components and their labels: validated only for the Basic Finner with
+  sharp fin leading edges at the conditions of BRL Report 934's range A,
+  elsewhere an estimate, not validated, with the reasons (inside the
+  Basic Finner's class too, while its validated claim is suspended), or
+  refused with the reasons.
 - **Live flow**
   ([open](https://ahroonsanthosh.github.io/bowshock/demos/flow-view.html)):
   the flow around the Basic Finner's nose cone and body, solved on your GPU
@@ -390,7 +415,10 @@ grids' convergence and the exact stagnation pressure.
   (Mach 1.80 to 1.85), 0.7% to 1.0% at 2.35 to 2.41 and 2.6% to 3.0% at
   2.66 to 2.97, so the validated claim is suspended
   ([above](#the-basic-finners-total-drag)). The second run and the
-  correction's residuals are kept in the record as history.
+  correction's residuals are kept in the record as history. The corrected
+  model then passed BRL Report 934's range A, run once as registered
+  (+3.9% to +11.0%, the model low at every round), at conditions outside
+  the class, which are validated as a narrow sub-class of their own.
 
 ### The total on the drag page
 
@@ -398,8 +426,12 @@ The total ([0011](docs/design/0011-total-drag-on-the-page.md)) is the nose
 wave drag of the page's own solve, with its band, plus friction, the fins
 and the base, for a nose and a cylinder to a flat base with a set of fins
 (rectangular, trapezoidal or clipped-delta; single-wedge, double-wedge or
-hexagonal sections). Every total is an estimate, not validated, while the
-Basic Finner's claim is suspended: inside that rocket's class (as
+hexagonal sections). A total is validated only inside the Basic Finner's
+BRL sub-class: that rocket as transcribed with sharp fin leading edges, at
+Mach 1.801 to 1.827 and Reynolds number 7.965e6 to 8.870e6 on length, or
+2.423 to 2.468 and 1.072e7 to 1.198e7, at 288 to 298 K, labelled with what
+its one test can and cannot say. Every other total is an estimate, not
+validated: inside that rocket's class (as
 transcribed, each dimension within 0.5%, at Mach 1.799 to 2.15, Reynolds
 number 1.19e7 to 2.0e7 on length, static temperature 216.65 to 320 K,
 over which the modelled total moves by at most 0.13%), with the
@@ -423,15 +455,15 @@ speed of sound and viscosity it reproduces at 22 altitudes within a unit of
 their last printed digit (relative differences up to 6.9e-5); or as the
 Reynolds number directly. The page opens on the Basic Finner's shape, 30 mm
 across, at sea level, inside its class from Mach 1.8 to 2.15: an estimate
-there, as everywhere.
+there.
 
 ### Not yet, and limits
 
 Not yet: viscous flow in the solver; Von Karman (Haack) and power-series
 noses (their tips need grids being designed); Mach numbers below 1.2; a
-validated total (the Basic Finner's claim is suspended until BRL Report
-934's range A tests the corrected factor), inside or outside the Basic
-Finner's class; fins swept at the base (until the rebuilt factor, W1);
+validated total beyond the Basic Finner at BRL Report 934's conditions
+(its own class stays an estimate: no test of the corrected factor covers
+it); fins swept at the base (until the rebuilt factor, W1);
 altitudes above 51 km and days off the standard atmosphere (give the
 Reynolds number directly).
 

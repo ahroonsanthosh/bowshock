@@ -183,7 +183,17 @@ for the present model:
     term was in the model tested.
   - The restoration of any validated label is a recorded decision, the
     owner's and the coordinator's; this record changes no claim, label or
-    page text, and the README is untouched.
+    page text, and the README is untouched. That decision is now made
+    (2026-10-22, 0014 section 10.7 (q)): since range A overlaps the class
+    in nothing, the class stays "an estimate, not validated", its reason
+    revised to say that this test was run and passed at conditions
+    outside it, and a narrow sub-class is validated at exactly the tested
+    conditions: the Basic Finner with sharp fin leading edges, at Mach
+    1.801 to 1.827 with Reynolds number 7.965e6 to 8.870e6 on length or
+    Mach 2.423 to 2.468 with 1.072e7 to 1.198e7 (the run's ranges in the
+    json, rounded inward; section 2's 7.96e6 and 1.20e7 are rounded
+    outward), nothing between, at 288 to 298 K. The page's total at the
+    seven rounds equals the run's (`tests/app/brl934-sub-class.test.ts`).
 
 ## 6. Findings stated beside the verdict
 
