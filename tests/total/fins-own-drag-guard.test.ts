@@ -9,7 +9,7 @@
 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { clippedDeltaPlanform } from '../../src/fins/planform';
+import { clippedDeltaPlanform, trapezoidalPlanform } from '../../src/fins/planform';
 import {
   doubleWedge,
   flatPlate,
@@ -175,5 +175,29 @@ describe('above Mach 2.96, carried and labelled', () => {
         'beyond its measurements',
       );
     }
+  });
+});
+
+describe("the review's bevel case (0019 section 3.3, 2026-10-22)", () => {
+  it('a bevel swept 45 deg at Mach 1.18 (M_n 0.83) is refused until its additive sweep allowance is set', () => {
+    // A 10 deg bevel on a 4% plate with a square trailing edge, leading edge swept 45 deg.
+    const h = 0.02;
+    const bevel = h / Math.tan((10 * Math.PI) / 180);
+    const section: SymmetricSection = {
+      x: [0, bevel, 1],
+      halfThickness: [0, h, h],
+      bluntTrailingEdge: true,
+    };
+    const swept45: FinnedBody = {
+      ...config(section),
+      fins: {
+        ...config(section).fins,
+        planform: trapezoidalPlanform({ rootChord: 1.5, span: 1, leadingEdgeSweep: Math.PI / 4 }),
+      },
+    };
+    expect(Math.atan(swept45.fins.planform.tanLeadingEdge) / (Math.PI / 180)).toBeCloseTo(45, 6);
+    const r = parts(swept45, 1.18);
+    expect(refusalOf(r, 'fin wave drag')?.reason).toBe('fins-own-drag-mach');
+    expect(r.components.find((c) => c.name === 'fin wave drag')).toBeUndefined();
   });
 });

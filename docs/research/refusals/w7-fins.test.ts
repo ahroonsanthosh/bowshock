@@ -17,6 +17,13 @@ import { test } from 'vitest';
 import { finWaveDrag } from '../../../src/fins/fin-wave-drag';
 import { trapezoidalPlanform } from '../../../src/fins/planform';
 import { FinRefusal } from '../../../src/fins/refusal';
+import {
+  BoundedEdgeRefusal,
+  FREE_STREAM_FLOOR,
+  TRANSONIC_XI_MIN,
+  boundedRoundedEdge,
+  trailingEdgeXi,
+} from '../../../src/fins/rounded-edge-bounded';
 import { doubleWedge, hexagonal, type SymmetricSection } from '../../../src/fins/section';
 import { MACH_BANDS, atmosphere, drawAltitude, mulberry32, population, type Rocket } from './population';
 
@@ -80,6 +87,13 @@ interface Variant {
   readonly bevelMax: number;
   /** Largest normal Mach number of a bevel served (measured to 0.9; bounded to 1.2, 0019 section 3.3). */
   readonly bevelMnMax: number;
+  /**
+   * The review of 2026-10-22 (0019 section 3.2 as rewritten): rounded edges below M_n 1.0 by
+   * `boundedRoundedEdge` (free stream from Mach 1.06, M_n to 0.8, the trailing edge outside the
+   * plate's transonic range), and bevels below M_n 0.6 under the same free-stream and
+   * trailing-edge rules, since they take 3.2's lower bound there.
+   */
+  readonly reviewed?: boolean;
 }
 
 const VARIANTS: readonly Variant[] = [
@@ -95,7 +109,54 @@ const VARIANTS: readonly Variant[] = [
     bevelMnMax: 1.2,
   },
   { name: 'F: E with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)', roundedBoundedTo: 0.9, sweptTe: true, bevelMax: 15, bevelMnMax: 1.2 },
+  {
+    name: 'G: as reviewed, 2026-10-22 (rounded edges bounded by boundedRoundedEdge; bevels to 10 deg, measured to M_n 1.2 once R&M 3348 fig. 32 is read twice, 3.2\'s rules below M_n 0.6; swept trailing edges)',
+    sweptTe: true,
+    bevelMax: 10,
+    bevelMnMax: 1.2,
+    reviewed: true,
+  },
+  { name: 'H: G with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)', sweptTe: true, bevelMax: 15, bevelMnMax: 1.2, reviewed: true },
 ];
+
+/** The planform of a rocket's fins (0019's population). */
+const planformOf = (r: Rocket) =>
+  trapezoidalPlanform({
+    rootChord: r.rootChord,
+    span: r.span,
+    leadingEdgeSweep: r.leadingEdgeSweepDeg * DEG,
+    trailingEdgeSweep: r.trailingEdgeSweepDeg * DEG,
+  });
+
+/** The reviewed rules for a rounded edge below M_n 1.0: the conditions it fails, none if served. */
+function boundedConditions(c: Case): string[] {
+  try {
+    boundedRoundedEdge({
+      mach: c.mach,
+      planform: planformOf(c.r),
+      thickness: c.r.thickness,
+      reynoldsOnDiameter: c.rePerMetre * c.r.thickness,
+    });
+    return [];
+  } catch (e) {
+    if (!(e instanceof BoundedEdgeRefusal)) throw e;
+    return e.conditions.map((k) => `rounded edge below M_n 1.0: ${k}`);
+  }
+}
+
+/** The free-stream and trailing-edge rules of 3.2 for a bevel below M_n 0.6 (0019 section 3.3). */
+function lowBevelConditions(c: Case): string[] {
+  const out: string[] = [];
+  if (!(c.mach >= FREE_STREAM_FLOOR)) out.push('bevel below M_n 0.6: free-stream');
+  const shortest = Math.min(c.r.rootChord, c.r.tipChord);
+  const xi = trailingEdgeXi({
+    mach: c.mach,
+    trailingEdgeSweep: c.r.trailingEdgeSweepDeg * DEG,
+    thicknessOverChord: c.r.thickness / shortest,
+  });
+  if (!(Math.abs(xi) >= TRANSONIC_XI_MIN)) out.push('bevel below M_n 0.6: trailing-edge-transonic');
+  return out;
+}
 
 function finReasons(c: Case, v: Variant): string[] {
   const { r } = c;
@@ -103,7 +164,14 @@ function finReasons(c: Case, v: Variant): string[] {
   const mn = normalMach(c);
   if (r.section === 'square-both') out.push('square leading edge (W11)');
   if (r.section === 'rounded-both') out.push('rounded trailing edge (W11)');
-  if (roundedLe(r)) {
+  if (roundedLe(r) && v.reviewed) {
+    if (mn < 1.0) out.push(...boundedConditions(c));
+    else {
+      if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('rounded edge swept beyond 60 deg');
+      const reN = c.rePerMetre * r.thickness * Math.cos(r.leadingEdgeSweepDeg * DEG);
+      if (!(reN >= 6.7e3 && reN <= 1e6)) out.push('rounded edge Re_D outside 6.7e3 to 1e6');
+    }
+  } else if (roundedLe(r)) {
     if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('rounded edge swept beyond 60 deg');
     else if (mn < 1.0 && !(v.roundedBoundedTo !== undefined && mn <= v.roundedBoundedTo)) {
       out.push(v.roundedBoundedTo === 0.9 && mn > 0.9 ? 'rounded edge at M_n 0.9 to 1.0' : 'rounded edge below M_n 1.0');
@@ -115,6 +183,7 @@ function finReasons(c: Case, v: Variant): string[] {
     if (r.bevelDeg > v.bevelMax + 1e-9) out.push('bevel beyond the measured half-angle');
     if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('bevel swept beyond 60 deg');
     if (mn > v.bevelMnMax) out.push('bevel at a normal Mach number not measured');
+    if (v.reviewed && mn < 0.6) out.push(...lowBevelConditions(c));
   }
   if (r.section === 'bevel-both') out.push('rear bevel near Mach 1 (no source)');
   if (r.section === 'double-wedge') {
@@ -226,6 +295,21 @@ test('fin terms near Mach 1 over the population', () => {
     const list = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${pct(n, low.length)}`).join('; ');
     lines.push(`| ${v.name} | ${pct(served, low.length)} | ${list} |`);
   }
+  // The reviewed rules for rounded edges below M_n 1.0 (0019 section 3.2, boundedRoundedEdge).
+  const below = low.filter((c) => roundedLe(c.r) && normalMach(c) < 1.0);
+  const conds = below.map(boundedConditions);
+  const bounded = conds.filter((x) => x.length === 0).length;
+  const each = new Map<string, number>();
+  for (const cs of conds) for (const k of cs) each.set(k, (each.get(k) ?? 0) + 1);
+  lines.push(
+    '',
+    '## Rounded edges below M_n 1.0 at Mach 1.0 to 1.2, the reviewed rules (boundedRoundedEdge)',
+    '',
+    `Served: ${bounded} of ${below.length} (${pct(bounded, below.length)}); refused for (a case may have several): ` +
+      [...each.entries()].sort((x, y) => y[1] - x[1]).map(([k, n]) => `${k.replace('rounded edge below M_n 1.0: ', '')} ${pct(n, below.length)}`).join('; '),
+  );
+  const onlyTe = conds.filter((x) => x.length === 1 && x[0]!.endsWith('trailing-edge-transonic')).length;
+  lines.push(`Refused for the trailing edge alone: ${onlyTe} (${pct(onlyTe, below.length)}).`);
   // The present code (src/fins) near Mach 1: which sharp sections it serves below Mach 1.2,
   // where the fins' own-drag band (ARCAS, Mach 1.5 to 2.96) is carried without data.
   lines.push('', '## The present code near Mach 1 (src/fins, sharp sections)', '');
