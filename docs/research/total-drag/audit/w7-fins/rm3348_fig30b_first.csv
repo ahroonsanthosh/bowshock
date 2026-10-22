@@ -1,0 +1,65 @@
+# ARC R&M 3348 (Rogers, Berry and Quincey; AERADE 1826.2/3929, sha256 d2f35d8a...b383e158), fig. 30(b), the same base
+# pressures "plotted against component of stream Mach number normal to the leading edge", PDF p. 68 (printed p. 67): p_b/p_0
+# against M_0 cos(phi). Present results by sweep, and Goin's (its ref. 29, RM L52D21; phi 45 deg, aspect ratio 2.7) by t/c.
+# The dashed mean curve of Cleary and Stevens (its ref. 28) not read. Named by 0014 10.7 (k) before this reading. FIRST
+# reading (0019 reader, W7), 2026-10-22, blind to round 10's reading and read as drawn (table 3 not consulted). 300 dpi render,
+# page pixels; grid every 0.1 traced on the panel's own crop (calib.py, rm3348_fig30b_grid.json, page coordinates). source:
+# fit (symfit.py, +-1 px) or hand (no template for the plus, the right-pointing triangle or the ellipse, +-1.5 px; or the fit
+# moved more than 3 px, +-2.5 px). Method: method_rm3348_fig30.md.
+id,series,symbol,px_x,px_y,mach_normal,pb_over_p0,mach_normal_err,pb_over_p0_err,source
+o01,"present, phi 0 deg (circle)",circle,1285.50,1420.75,0.6999,0.7029,0.0010,0.0010,fit
+o02,"present, phi 0 deg (circle)",circle,1402.20,1309.30,0.7990,0.6091,0.0010,0.0009,fit
+o03,"present, phi 0 deg (circle)",circle,1426.20,1303.30,0.8192,0.6038,0.0009,0.0009,fit
+o04,"present, phi 0 deg (circle)",circle,1450.45,1294.25,0.8396,0.5961,0.0009,0.0009,fit
+o05,"present, phi 0 deg (circle)",circle,1460.75,1275.00,0.8480,0.5800,0.0009,0.0009,fit
+o06,"present, phi 0 deg (circle)",circle,1474.25,1255.50,0.8593,0.5636,0.0009,0.0009,fit
+o07,"present, phi 0 deg (circle)",circle,1497.75,1193.05,0.8787,0.5112,0.0009,0.0009,fit
+o08,"present, phi 0 deg (circle)",circle,1521.55,1102.20,0.8984,0.4348,0.0009,0.0009,fit
+o09,"present, phi 0 deg (circle)",circle,1581.80,1087.55,0.9498,0.4222,0.0010,0.0009,fit
+o10,"present, phi 0 deg (circle)",circle,1638.75,1075.75,0.9985,0.4120,0.0010,0.0009,fit
+o11,"present, phi 0 deg (circle)",circle,1698.30,1098.05,1.0497,0.4303,0.0010,0.0009,fit
+o12,"present, phi 0 deg (circle)",circle,1767.80,1119.25,1.1095,0.4475,0.0010,0.0009,fit
+o13,"present, phi 0 deg (circle)",circle,1826.45,1149.05,1.1598,0.4716,0.0010,0.0009,fit
+x01,"present, phi 15 deg (cross)",cross,1256.95,1459.95,0.6757,0.7364,0.0010,0.0010,fit
+x02,"present, phi 15 deg (cross)",cross,1348.05,1372.20,0.7529,0.6620,0.0010,0.0009,fit
+x03,"present, phi 15 deg (cross)",cross,1370.95,1339.95,0.7725,0.6350,0.0010,0.0009,fit
+x04,"present, phi 15 deg (cross)",cross,1426.30,1318.05,0.8194,0.6162,0.0009,0.0009,fit
+x05,"present, phi 15 deg (cross)",cross,1481.20,1267.80,0.8652,0.5739,0.0009,0.0009,fit
+x06,"present, phi 15 deg (cross)",cross,1542.20,1139.05,0.9161,0.4655,0.0010,0.0009,fit
+x07,"present, phi 15 deg (cross)",cross,1600.25,1100.00,0.9657,0.4325,0.0010,0.0009,fit
+x08,"present, phi 15 deg (cross)",cross,1655.00,1110.75,1.0127,0.4411,0.0010,0.0009,fit
+x09,"present, phi 15 deg (cross)",cross,1724.95,1128.80,1.0728,0.4558,0.0010,0.0009,fit
+x10,"present, phi 15 deg (cross)",cross,1780.00,1157.80,1.1202,0.4794,0.0010,0.0009,fit
+t01,"present, phi 30 deg (triangle)",triangle,1177.30,1526.50,0.6071,0.7937,0.0010,0.0010,fit
+t02,"present, phi 30 deg (triangle)",triangle,1278.05,1442.05,0.6938,0.7211,0.0010,0.0010,fit
+t03,"present, phi 30 deg (triangle)",triangle,1378.25,1388.70,0.7788,0.6756,0.0010,0.0009,fit
+t04,"present, phi 30 deg (triangle)",triangle,1432.30,1400.55,0.8248,0.6853,0.0009,0.0009,fit
+t05,"present, phi 30 deg (triangle)",triangle,1533.55,1075.05,0.9084,0.4121,0.0010,0.0009,fit
+t06,"present, phi 30 deg (triangle)",triangle,1596.20,1056.25,0.9619,0.3960,0.0010,0.0010,fit
+t07,"present, phi 30 deg (triangle)",triangle,1650.00,1125.00,1.0085,0.4530,0.0022,0.0021,hand
+t08,"present, phi 30 deg (triangle)",triangle,1677.00,1128.00,1.0317,0.4553,0.0022,0.0021,hand
+p01,"present, phi 45 deg (plus)",plus,1044.30,1624.00,0.4934,0.8778,0.0013,0.0013,hand
+p02,"present, phi 45 deg (plus)",plus,1126.70,1574.00,0.5638,0.8348,0.0014,0.0014,hand
+p03,"present, phi 45 deg (plus)",plus,1210.00,1526.00,0.6353,0.7932,0.0014,0.0014,hand
+p04,"present, phi 45 deg (plus)",plus,1254.00,1503.30,0.6732,0.7736,0.0014,0.0014,hand
+p05,"present, phi 45 deg (plus)",plus,1294.00,1478.30,0.7076,0.7520,0.0014,0.0013,hand
+p06,"present, phi 45 deg (plus)",plus,1335.00,1431.70,0.7424,0.7120,0.0014,0.0013,hand
+p07,"present, phi 45 deg (plus)",plus,1386.00,1368.30,0.7854,0.6586,0.0014,0.0013,hand
+p08,"present, phi 45 deg (plus)",plus,1428.30,1342.70,0.8213,0.6368,0.0013,0.0013,hand
+p09,"present, phi 45 deg (plus)",plus,1461.00,1258.30,0.8481,0.5660,0.0013,0.0013,hand
+s01,"present, phi 60 deg (square)",square,932.30,1666.20,0.3987,0.9139,0.0009,0.0010,fit
+s02,"present, phi 60 deg (square)",square,992.55,1638.55,0.4495,0.8903,0.0009,0.0010,fit
+s03,"present, phi 60 deg (square)",square,1024.00,1618.80,0.4761,0.8734,0.0009,0.0010,fit
+s04,"present, phi 60 deg (square)",square,1052.30,1606.25,0.5001,0.8627,0.0010,0.0010,fit
+s05,"present, phi 60 deg (square)",square,1077.80,1620.20,0.5221,0.8745,0.0010,0.0010,fit
+s06,"present, phi 60 deg (square)",square,1113.55,1585.50,0.5526,0.8447,0.0010,0.0010,fit
+s07,"present, phi 60 deg (square)",square,1143.30,1568.30,0.5780,0.8297,0.0010,0.0010,fit
+s08,"present, phi 60 deg (square)",square,1167.55,1531.45,0.5988,0.7981,0.0010,0.0010,fit
+gs01,"Goin, t/c 3% (square)",square,1640.60,1169.00,1.0007,0.4897,0.0022,0.0021,hand
+gs02,"Goin, t/c 3% (square)",square,1811.70,1051.70,1.1464,0.3906,0.0022,0.0022,hand
+gd01,"Goin, t/c 4.5% (diamond)",diamond,1640.00,1101.00,0.9997,0.4330,0.0022,0.0021,hand
+gd02,"Goin, t/c 4.5% (diamond)",diamond,1811.70,1095.00,1.1466,0.4268,0.0022,0.0021,hand
+gt01,"Goin, t/c 6% (right-pointing triangle)",right-triangle,1640.00,1142.00,1.0000,0.4672,0.0014,0.0013,hand
+gt02,"Goin, t/c 6% (right-pointing triangle)",right-triangle,1810.00,1129.30,1.1456,0.4554,0.0013,0.0013,hand
+ge01,"Goin, t/c 10% (ellipse)",ellipse,1639.00,1216.00,0.9996,0.5291,0.0014,0.0013,hand
+ge02,"Goin, t/c 10% (ellipse)",ellipse,1806.00,1141.70,1.1423,0.4657,0.0014,0.0013,hand
