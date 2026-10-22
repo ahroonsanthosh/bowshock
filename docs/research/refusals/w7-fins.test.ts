@@ -94,6 +94,11 @@ interface Variant {
    * trailing-edge rules, since they take 3.2's lower bound there.
    */
   readonly reviewed?: boolean;
+  /**
+   * The owner's decision of 2026-10-22 (0014 10.7 (o)): with the reviewed rules otherwise, rounded
+   * edges below M_n 1.0 refused until NASA TM X-653 is read.
+   */
+  readonly roundedRefused?: boolean;
 }
 
 const VARIANTS: readonly Variant[] = [
@@ -117,6 +122,15 @@ const VARIANTS: readonly Variant[] = [
     reviewed: true,
   },
   { name: 'H: G with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)', sweptTe: true, bevelMax: 15, bevelMnMax: 1.2, reviewed: true },
+  {
+    name: 'I: as decided by the owner, 2026-10-22 (G with rounded edges below M_n 1.0 refused until NASA TM X-653 is read, 0014 10.7 (o))',
+    sweptTe: true,
+    bevelMax: 10,
+    bevelMnMax: 1.2,
+    reviewed: true,
+    roundedRefused: true,
+  },
+  { name: 'J: I with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)', sweptTe: true, bevelMax: 15, bevelMnMax: 1.2, reviewed: true, roundedRefused: true },
 ];
 
 /** The planform of a rocket's fins (0019's population). */
@@ -165,7 +179,8 @@ function finReasons(c: Case, v: Variant): string[] {
   if (r.section === 'square-both') out.push('square leading edge (W11)');
   if (r.section === 'rounded-both') out.push('rounded trailing edge (W11)');
   if (roundedLe(r) && v.reviewed) {
-    if (mn < 1.0) out.push(...boundedConditions(c));
+    if (mn < 1.0 && v.roundedRefused) out.push('rounded edge below M_n 1.0 (until TM X-653 is read)');
+    else if (mn < 1.0) out.push(...boundedConditions(c));
     else {
       if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('rounded edge swept beyond 60 deg');
       const reN = c.rePerMetre * r.thickness * Math.cos(r.leadingEdgeSweepDeg * DEG);

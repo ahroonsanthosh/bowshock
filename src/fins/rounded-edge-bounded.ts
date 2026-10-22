@@ -25,10 +25,15 @@
  * inside the plate's transonic range, sweeps beyond 60 deg, and Reynolds
  * numbers outside the measured term's.
  *
- * NOT WIRED into the total, and served nowhere: the orderings are with an
- * independent reviewer (0014 section 10.7 (k), item 1; the coordinator's
- * decisions of 2026-10-22). This module exists so that each case the review
- * names is a test (tests/fins/rounded-edge-bounded.test.ts).
+ * NOT WIRED into the total, and served nowhere. The owner decided on
+ * 2026-10-22 (0014 section 10.7 (o), superseding (k)'s item 1) that rounded
+ * leading edges of flat plates below M_n 1.0 are refused until NASA TM X-653
+ * is read; `roundedLeadingEdgeDrag` refuses them with that reason, and a test
+ * pins that nothing under src/ imports this module. It is kept as a recorded
+ * candidate: if TM X-653 measures such an edge the term becomes "estimated on
+ * component data" instead, and if it does not, this bound goes back to the
+ * owner. Each case the independent review of 2026-10-22 names is a test
+ * (tests/fins/rounded-edge-bounded.test.ts), for the re-review.
  */
 
 import { chordAt, tipChord, type Planform } from './planform';
@@ -300,6 +305,7 @@ export function boundedRoundedEdge(input: {
       "M_n 1.0 at its band's high end (CR-149372, TN 2960" +
       (reynoldsAllowance ? ', the Reynolds-number allowance' : '') +
       (swept ? ', the sweep allowance' : '') +
-      '); not served until reviewed',
+      '); a recorded candidate, not served: refused until NASA TM X-653 is read (0014 ' +
+      'section 10.7 (o))',
   };
 }

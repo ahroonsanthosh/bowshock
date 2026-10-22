@@ -110,7 +110,10 @@
  * does not have, and the normal flow is subsonic, so the faces are felt at
  * the nose; no source measures a rounded nose followed by flat faces there,
  * and the leading-edge bluntness series at subsonic leading edges (RM
- * L53L24a, NASA TP 2204, NASA TN D-3634) are of airfoil noses.
+ * L53L24a, NASA TP 2204, NASA TN D-3634) are of airfoil noses. The bounded
+ * term of 0019 section 3.2 (./rounded-edge-bounded.ts) is kept unwired:
+ * the owner decided on 2026-10-22 that these edges stay refused until NASA
+ * TM X-653 is read (0014 section 10.7 (o)), and the refusal says so.
  */
 
 import { normalShock, stagnationPressureRatio } from '../validation/gas-dynamics';
@@ -806,7 +809,10 @@ export function roundedLeadingEdgeDrag(input: {
         'no source measures a rounded nose followed by flat faces there, and the leading-edge ' +
         'bluntness series at subsonic leading edges (RM L53L24a, NASA TP 2204, NASA TN D-3634) ' +
         'are of airfoil noses, of radius about a tenth of the thickness or less or faired into ' +
-        'the section, their increments within their errors (0016)',
+        'the section, their increments within their errors (0016); a bound for a flat ' +
+        "plate's rounded edge there (0019 section 3.2) is not served until NASA TM X-653, " +
+        "which tested fins with blunt leading edges at Mach 0.6 to 3.8, is read (the owner's " +
+        'decision of 2026-10-22, 0014 section 10.7 (o))',
     );
   }
   const transonic = mach < mLo ? transonicFrontSide(mach) : undefined;

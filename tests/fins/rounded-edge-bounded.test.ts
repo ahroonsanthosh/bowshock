@@ -6,6 +6,8 @@
  * the refusal and its conditions.
  */
 
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { trapezoidalPlanform, type Planform } from '../../src/fins/planform';
 import {
@@ -19,9 +21,11 @@ import {
   trailingEdgeSinkShift,
   trailingEdgeXi,
 } from '../../src/fins/rounded-edge-bounded';
+import { FinRefusal } from '../../src/fins/refusal';
 import {
   REYNOLDS_ALLOWANCE,
   pitotPressureCoefficient,
+  roundedLeadingEdgeDrag,
   transonicFrontSide,
 } from '../../src/fins/rounded-leading-edge';
 
@@ -166,7 +170,8 @@ describe('the cases of the review', () => {
     expect(r.high).toBeCloseTo(0.829, 3);
     expect(r.nominal).toBeCloseTo((r.low + r.high) / 2, 12);
     expect(r.label).toContain('bounded, not measured');
-    expect(r.label).toContain('not served until reviewed');
+    expect(r.label).toContain('a recorded candidate, not served');
+    expect(r.label).toContain('refused until NASA TM X-653 is read');
   });
 
   it('B1: LE 42, TE 30 deg, M 1.10, tip c/t 16 (M_n 0.817, TE normal Mach 0.953): refused', () => {
@@ -294,5 +299,53 @@ describe("Barrowman's leading-edge curve (1967, eq. 4-17; OpenRocket's), set bes
     });
     expect(barrowman(r.normalMach)).toBeGreaterThan(r.low);
     expect(barrowman(r.normalMach)).toBeLessThan(r.high);
+  });
+});
+
+describe("refused, the owner's decision of 2026-10-22 (0014 section 10.7 (o)): the term stays unwired until NASA TM X-653 is read", () => {
+  const sources = (dir: string): string[] =>
+    readdirSync(dir).flatMap((f) => {
+      const p = join(dir, f);
+      return statSync(p).isDirectory() ? sources(p) : p.endsWith('.ts') ? [p] : [];
+    });
+
+  it('no module under src/ imports the bounded term', () => {
+    const importers = sources('src').filter(
+      (p) =>
+        !p.endsWith('rounded-edge-bounded.ts') &&
+        /from '[^']*rounded-edge-bounded'/.test(readFileSync(p, 'utf8')),
+    );
+    expect(importers).toEqual([]);
+  });
+
+  it("the review's case A, which the candidate would serve, is refused by the wired term, naming TM X-653", () => {
+    // Both edges swept 60 deg at Mach 1.2: M_n 0.6.
+    expect(
+      boundedRoundedEdge({
+        mach: 1.2,
+        planform: planform(69, 100, 60, 60),
+        thickness: T,
+        reynoldsOnDiameter: 1e5,
+      }).nominal,
+    ).toBeCloseTo(0.38, 2);
+    let refusal: unknown;
+    try {
+      roundedLeadingEdgeDrag({
+        mach: 1.2,
+        radius: T / 2000,
+        faceAngle: 0,
+        tanLeadingEdgeSweep: Math.tan(60 * DEG),
+        reynoldsOnDiameter: 1e5,
+      });
+    } catch (e) {
+      refusal = e;
+    }
+    expect(refusal).toBeInstanceOf(FinRefusal);
+    const e = refusal as FinRefusal;
+    expect(e.reason).toBe('leading-edge-range');
+    expect(e.message).toMatch(/0\.6000 is below 1\.0/);
+    expect(e.message).toMatch(
+      /a bound for a flat plate's rounded edge there \(0019 section 3\.2\) is not served until NASA TM X-653, which tested fins with blunt leading edges at Mach 0\.6 to 3\.8, is read \(the owner's decision of 2026-10-22, 0014 section 10\.7 \(o\)\)$/,
+    );
   });
 });

@@ -1,13 +1,16 @@
 # 0019: Fin drag near Mach 1 (the fin terms of 0014 W7)
 
 - **Status:** Draft plan, with the coordinator's decisions of 2026-10-21
-  recorded (section 5; 0014 section 10.7, amendments (f), (j) to (m)), and
+  recorded (section 5; 0014 section 10.7, amendments (f), (j) to (p)), and
   sections 3.2 and 3.3 rewritten after the independent review of
   2026-10-22 (3.2 rejected as first written, 3.3 accepted with changes);
-  the rewrite is back with the reviewer. Of the code, the guard is done
+  the rewrite is back with the reviewer. The owner decided on 2026-10-22
+  that 3.2's edges stay refused until NASA TM X-653 is read (0014 section
+  10.7 (o)); 3.2's bounded term is kept as a recorded candidate, not
+  wired, and the rest of the rewrite stands. Of the code, the guard is done
   (fin friction and the wave drag of sharp sections refused below Mach
   1.5, amendment (f), on the main line; the band above Mach 2.96
-  labelled, amendment (j)), and section 3.2's term is in
+  labelled, amendment (j)), and section 3.2's candidate term is in
   `src/fins/rounded-edge-bounded.ts`, not wired. One research script is
   added, `docs/research/refusals/w7-fins.test.ts`, with its output
   `docs/research/refusals/out/w7-plan.out` (the population's parameters
@@ -18,7 +21,8 @@
   other value quoted from a source below is from its text, or from a first
   look at a figure to see what it covers (mine or the reviewer's), and is
   marked so.
-- **Date:** 2026-10-21; sections 3.2 and 3.3 rewritten 2026-10-22
+- **Date:** 2026-10-21; sections 3.2 and 3.3 rewritten 2026-10-22, and
+  3.2's decision changed by the owner the same day
 - **Inputs:** the owner's decision of 2026-10-21 (serve a total at Mach
   1.0 to 1.2 wherever it is accurate; 0014 W7 and section 10.5);
   [0014](0014-refusals.md) in full (section 10: what sets bands, what is
@@ -57,11 +61,11 @@ opened at its figures) for a fin increment near Mach 1 that would set the
 fins' own-drag band; those stay refused unless the data serve or the
 owner decides otherwise (section 5). If the fins' own-drag band is found,
 the fin terms of 14.5% of the population's cases at Mach 1.0 to 1.2 would
-be served on data, and 17.4% with the coordinator's decisions as
-reviewed on 2026-10-22 (rounded edges bounded, from Mach 1.06, to M_n 0.8,
-with the trailing edge outside the plate's transonic range; bevels to 10
-deg, measured across Bryson's gap once R&M 3348 fig. 32 is read twice;
-swept trailing edges on R&M 3348; section 4; 35.2% as first decided); the
+be served on data, and 15.7% as decided on 2026-10-22 (rounded edges
+below M_n 1.0 refused until NASA TM X-653 is read; bevels to 10 deg,
+measured across Bryson's gap once R&M 3348 fig. 32 is read twice; swept
+trailing edges on R&M 3348; section 4; 17.4% with the rounded edges
+bounded as reviewed, 35.2% as first decided); the
 rest stay refused for the
 square-cut leading edges and rounded trailing edges of 0014 W11 (30.8%),
 the rear bevels of hexagonal sections (20.6%, no source) and bevels
@@ -240,15 +244,21 @@ before it is used (section 5).
   The one candidate found for F1.
 - **Jorgensen, Spahr and Hill**, NASA TM X-653 (NTRS 19720065133): fins
   and flares on low-fineness bodies, M 0.6 to 3.8, including fin
-  leading-edge bluntness. Not opened.
+  leading-edge bluntness. Not opened for this record. Named in 0014
+  section 10.7 (o) (2026-10-22) as a candidate band-setting source for F2,
+  before it is opened; rounded edges below M_n 1.0 are refused until it is
+  read (section 3.2). The total-drag validation search had opened it for
+  its totals and set it aside (`validation_candidates.md`); no fin-edge
+  value was read there.
 - **Cleary and Stevens**, NACA RM A51J11 (NTRS 19930087063): thickening
   the trailing edge of a 4% circular-arc wing at transonic speeds (base
   pressures at small h/c, cited by R&M 3348). Not opened.
 - **Goin**, RM L52D21 (named band-setting by 0014; 45 deg swept blunt
   trailing edges at M 1.41 and 1.62, within R&M 3348's fig. 30b);
-  **Katz and Stoney**, RM L51F29 and **Hart and Katz**, RM L9I30
-  (fin-stabilized parabolic bodies in free flight, M 0.8 to 1.4, base
-  pressures); **Vincenti and Wagoner**, TR 1095 (the PDF download failed;
+  **Katz and Stoney**, RM L51F29 (NTRS 19930086750) and **Hart and
+  Katz**, RM L9I30 (NTRS 20050019251) (fin-stabilized parabolic bodies in
+  free flight, M 0.8 to 1.4, base pressures; named for F1 in 0014 section
+  10.7 (p), 2026-10-22, before they are opened); **Vincenti and Wagoner**, TR 1095 (the PDF download failed;
   its text is held); Valensi and Pruden (R&M 2482), Liepmann, Ashkenas and
   Cole, and Griffith (cited by Bryson). Not opened.
 
@@ -330,14 +340,27 @@ section 11). The bluntness series found (Graham's blunted biconvex
 aerofoils, Wilby's round leading edges, Pepper's blunter 65A009 nose, Kyle
 and Feryn's slab wing) are airfoil noses or faired extensions.
 
-**Decided (0014 section 10.7 (k), item 1): served "bounded, not
-measured"** under 0014 section 10.2, its two orderings written here.
-**Reviewed 2026-10-22** (independent reviewer, at 87145fc): rejected as
-first written. This is the rewrite to the coordinator's decisions on the
-review's findings (section 5, item 2). Each case the review names is a
-test (`tests/fins/rounded-edge-bounded.test.ts`) of the code,
-`src/fins/rounded-edge-bounded.ts`, which is not wired: nothing is served
-until the same reviewer passes this rewrite.
+**Decided (the owner, 2026-10-22; 0014 section 10.7 (o), superseding
+(k)'s item 1): refused until NASA TM X-653 is named and read.** Rounded
+leading edges of flat plates below M_n 1.0 are refused, the refusal
+saying that a bound is not served until TM X-653 (Jorgensen, Spahr and
+Hill, tunnel tests of fins with blunt leading edges at Mach 0.6 to 3.8,
+section 2.3) is read. If it measures such an edge, the term becomes
+"estimated on component data"; if it does not, the bounded term below
+goes back to the owner, with (U3)'s weakness named in its label.
+
+**Kept as a recorded candidate, not wired.** The bounded term written out
+below (first decided under 0014 section 10.7 (k), item 1, "bounded, not
+measured" under 0014 section 10.2; reviewed 2026-10-22 by an independent
+reviewer at 87145fc, rejected as first written, and rewritten to the
+coordinator's decisions on the review's findings, section 5, item 2) is
+kept with its code, `src/fins/rounded-edge-bounded.ts`, and one test per
+case the review names (`tests/fins/rounded-edge-bounded.test.ts`), so
+that the re-review can judge it and so that it is ready if TM X-653 does
+not measure the edge. Nothing under `src/` imports it (a test pins that),
+and the wired term (`roundedLeadingEdgeDrag`) refuses every such edge
+with the TM X-653 reason (a test pins that on the review's case A, which
+the candidate would serve).
 
 **The setting.** In the plane normal to the edge (the independence
 principle, as for W4(c)), a plate of thickness t with a semicircular nose
@@ -493,34 +516,37 @@ normal Mach number is supersonic.**
   checked against fig. 31b and R&M 3348's p. 22 comparison once fig. 31b
   is read twice (queued, with fig. 32). The estimate is used only where its
   own nonlinear correction fits inside that margin. In the trailing edge's
-  normal plane the small-disturbance equation's nonlinear term, (gamma +
-  1. M_TE^2 u / U with u / U = 2 tau / (pi beta_TE) (the nose's source and
-     the trailing edge's sink at mid-chord, linear; tau = t / (c
-     cos(Lambda_TE))), may take at most half of 1 - M_TE^2, so that the local
-     beta falls by at most 2^(1/2): beta_TE^3 >= (4 / pi) (gamma + 1) M_TE^2
-     tau, that is xi_TE = (1 - M_TE^2) / [(gamma + 1) M_TE^2 tau]^(2/3) >=
-     (4 / pi)^(2/3) = 1.175, at the shortest chord (`TRANSONIC_XI_MIN`; the
-     review's case at M_n 0.9 and c/t 8, the parameter (1 - M^2) / ((gamma +
-  1. M^2) 0.098 against u / U 0.046, fails it). The same magnitude is
-     required on the supersonic side, xi_TE <= -1.175, where linear theory
-     gives the trailing edge no influence: the transonic range's width is set
-     by the same nonlinear term either side of sonic. That is the
-     conservative reading, not a separate argument, and it is the rule that
-     refuses most (below). The free stream: below Mach 1 the body's base, a
-     three-dimensional sink, is felt at the fins' noses too (about -0.046 on
-     q_n at a hobby rocket's root, the review's estimate) and is not bounded
-     here; above Mach 1 linear theory gives the base no upstream influence,
-     which needs the flow along the body to be supersonic with a margin. The
-     boundary layer's displacement growth, at most 0.004 rad at the
-     population's Reynolds numbers, compresses it by that angle; by the
-     transonic Prandtl-Meyer function, nu = (2/3) (M^2 - 1)^(3/2) / (gamma +
-     1), it stays supersonic if M^2 - 1 >= (3 (gamma + 1) theta / 2)^(2/3) =
-     0.06; with the same factor of 2, M^2 - 1 >= 0.12: Mach 1.06
-     (`FREE_STREAM_FLOOR`). So the edge is refused with the free stream below
-     Mach 1.06 (the review's unswept trailing edge at Mach 1.00 fails this and
-     xi_TE), xi_TE inside +-1.175, M_n above 0.8 ((U3)), sweep beyond 60 deg,
-     or the Reynolds number on the normal component outside 6.7e3 to 1e6 (as
-     W4(e)); the refusal lists every condition a case fails.
+  normal plane the small-disturbance equation's nonlinear term, the factor
+  (gamma + 1) M_TE^2 times u / U, with u / U = 2 tau / (pi beta_TE) (the
+  nose's source and the trailing edge's sink at mid-chord, linear; tau = t
+  / (c cos(Lambda_TE))), may take at most half of 1 - M_TE^2, so that the
+  local beta falls by at most 2^(1/2): beta_TE^3 >= (4 / pi) (gamma + 1)
+  M_TE^2 tau, that is xi_TE = (1 - M_TE^2) / [(gamma + 1) M_TE^2
+  tau]^(2/3) >= (4 / pi)^(2/3) = 1.175, at the shortest chord
+  (`TRANSONIC_XI_MIN`; the review's case at M_n 0.9 and c/t 8, the
+  parameter (1 - M^2) / ((gamma + 1) M^2) 0.098 against u / U 0.046, fails
+  it). The same magnitude is required on the supersonic side, xi_TE <=
+  -1.175, where linear theory gives the trailing edge no influence: the
+  transonic range's width is set by the same nonlinear term either side
+  of sonic. That is the conservative reading, not a separate argument, and
+  it is the rule that refuses most (below). The free stream: below Mach 1
+  the body's base, a three-dimensional sink, is felt at the fins' noses
+  too (about -0.046 on q_n at a hobby rocket's root, the review's
+  estimate) and is not bounded here; above Mach 1 linear theory gives the
+  base no upstream influence, which needs the flow along the body to be
+  supersonic with a margin. The boundary layer's displacement growth, at
+  most 0.004 rad at the population's Reynolds numbers, compresses it by
+  that angle; by the transonic Prandtl-Meyer function, nu = (2/3) (M^2 -
+  1)^(3/2) / (gamma + 1), it stays supersonic if M^2 - 1 >= (3 (gamma + 1)
+  theta / 2)^(2/3) = 0.06; with the same factor of 2, M^2 - 1 >= 0.12: Mach
+  1.06 (`FREE_STREAM_FLOOR`). So the edge is refused with the free stream
+  below Mach 1.06 (the review's unswept trailing edge at Mach 1.00 fails
+  this and xi_TE), xi_TE inside +-1.175, M_n above 0.8 ((U3)), sweep
+  beyond 60 deg, or the Reynolds number on the normal component outside
+  6.7e3 to 1e6 (as W4(e)); the refusal lists every condition a case fails.
+  (Until 2026-10-22 this item was printed with two of its lines broken
+  into a numbered list by the formatter, at "(gamma + 1) M^2"; the text is
+  unchanged.)
 - _(L6) Data that check the sign._ The measured bluntness increments at
   subsonic normal Mach numbers are all positive or within their errors of
   zero: Pepper's blunter nose on a 45 deg 65A009 wing, +0.002 at Mach 1.05
@@ -537,12 +563,15 @@ normal Mach number is supersonic.**
   be read twice and set against the bounds computed for their nose as a
   check.
 
-**Served, once the review passes it:** the midpoint of [C_L, C(1.0)], the
+**What the candidate would serve** (not served: refused until TM X-653 is
+read, above): the midpoint of [C_L, C(1.0)], the
 band the whole gap, on q_n t times the span and the count, labelled
 "bounded, not measured: between no drag on the nose less twice the
 trailing edge's linearised upstream influence (an inviscid argument, 0019
 section 3.2) and the term at M_n 1.0 at its band's high end (CR-149372, TN
-2960, with the allowances used)", with the gap in C_D beside it. The
+2960, with the allowances used)", with the gap in C_D beside it (the code's
+label adds "a recorded candidate, not served: refused until NASA TM X-653
+is read"). The
 review's case with both edges swept 60 deg (c/t 23, Mach 1.2, M_n 0.6): C
 from -0.069 to 0.829, 0.380 served. The hobby fin of 0016 (leading edge
 42 deg, trailing edge unswept, c/t 40 at the root and 16 at the tip) is
@@ -553,7 +582,10 @@ stream and its trailing edge (normal Mach 1.0 and 1.05, xi_TE 0 and
 in C_D at Mach 1.1 is withdrawn.
 
 **Coverage** (`w7-plan.out`): of the population's rounded edges below M_n
-1.0 at Mach 1.0 to 1.2, 55 of 801 (6.9%) pass these rules. The trailing
+1.0 at Mach 1.0 to 1.2, 55 of 801 (6.9%) would pass these rules; refused
+as decided, none is served, and the fin terms served at Mach 1.0 to 1.2
+fall from the reviewed plan's 17.4% (variant G) to 15.7% (variant I,
+section 4). The trailing
 edge's transonic rule refuses 84.0% of them (26.6% for it alone), M_n
 above 0.8 38.2%, the free stream 32.8%, the sweep 7.5%, the Reynolds
 number 2.6%.
@@ -563,7 +595,9 @@ with a semicircular leading edge (r = t/2), two-dimensional or swept, at
 M_n 0.5 to 1.0 and Re_D 1e4 to 1e6, read twice; or the drag of flat-plate
 fins with full-radius against sharp leading edges at Mach 0.9 to 1.3, the
 base separated. Candidates: the AEDC fin tests (section 2.3), Jorgensen,
-Spahr and Hill's fin-bluntness models. **What would relax the rules:** R&M
+Spahr and Hill's fin-bluntness models (NASA TM X-653, named in 0014
+section 10.7 (o) on 2026-10-22, before it is opened for this term).
+**What would relax the rules:** R&M
 3348 figs. 31b and 32, read twice (the closure effect measured on a wedge
 whose trailing edge is subsonic and near sonic, for the margin and the
 transonic rule); CR-149372 fig. 8a, read twice (the margin at M_n 0.85 to
@@ -779,9 +813,13 @@ refused for several reasons; F1 taken as served once its band is read):
 | F: E with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 41.5%            | rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3%                                                                                            |
 | **G: as reviewed, 2026-10-22** (rounded edges by `boundedRoundedEdge`; bevels to 10 deg, to M_n 1.2 on fig. 32, 3.2's rules below M_n 0.6; swept TEs) | **17.4%**        | rounded edges: the trailing edge's transonic rule 33.6%, M_n above 0.8 15.3%, the free stream 13.2%; bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8% |
 | H: G with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 23.2%            | as G, less the bevels beyond 10 deg                                                                                                                           |
+| **I: as decided by the owner, 2026-10-22** (G with rounded edges below M_n 1.0 refused until NASA TM X-653 is read, 0014 10.7 (o))                    | **15.7%**        | rounded edges below M_n 1.0 40.0%; bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8%                                                                   |
+| J: I with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                                                           | 21.4%            | as I, less the bevels beyond 10 deg                                                                                                                           |
 
 Variants E and F are the decisions as first made; G and H are as
-reviewed (sections 3.2 and 3.3), and G is the plan now. Variant D's
+reviewed (sections 3.2 and 3.3); I and J are G and H with the owner's
+decision of 2026-10-22 (rounded edges below M_n 1.0 refused until NASA TM
+X-653 is read, 0014 10.7 (o)), and I is the plan now. Variant D's
 theory bridge is not done (0014 10.7 (k), item 2): it is kept to show
 what the theory alone would add. These are ceilings on the
 totals at Mach 1.0 to 1.2: a total there also needs the nose (0013), the
@@ -827,7 +865,11 @@ of it (M_n 0.8 at 45 deg), to be found from its geometry (0014 section
    curve addressed; service capped at M_n 0.8 until CR-149372 fig. 8a,
    read twice, shows the margin at 0.85 to 0.9. Each case the review names
    is a test. Nothing is wired or served until the same reviewer passes
-   the rewrite.
+   the rewrite. **The owner's decision, 2026-10-22 (0014 10.7 (o)):
+   refused until NASA TM X-653 is named in 10.7 and read**; the bounded
+   term kept as a recorded candidate, not wired, and the rest of the
+   rewrite kept (the line sink with a margin of 2, the xi_TE rule, the
+   Mach 1.06 floor, and 3.3's bevels across Bryson's gap).
 3. **Bevels (F3): measured where Bryson's points lie; bounded, not
    measured, between his measured values across his gap**, the theory
    only in the ordering; 10 to 15 deg only if the 26.57 deg wedge
@@ -876,9 +918,11 @@ both once it does.
    1 that its body is neither the RM-10 nor the PARD standard body; name
    its increment and base-pressure figures in 0014 10.7 before reading
    them; read them; form the band as 0008 section 4.3 formed ARCAS's.
-6. **F2**, as reviewed: the code is `src/fins/rounded-edge-bounded.ts`
-   with `tests/fins/rounded-edge-bounded.test.ts` (not wired); the
-   rewrite of section 3.2 goes back to the reviewer; then the checks read
+6. **F2**, refused until NASA TM X-653 is read (0014 10.7 (o)): name its
+   figures in 10.7 from its model drawings and list of figures, then read
+   them twice. The candidate is `src/fins/rounded-edge-bounded.ts` with
+   `tests/fins/rounded-edge-bounded.test.ts` (not wired); the rewrite of
+   section 3.2 goes back to the reviewer; then the checks read
    twice (CR-149372 fig. 8a, R&M 3348 figs. 31b and 32, queued with the
    blind reader; Kyle and Feryn's increments), the margin and the cap
    reconsidered on them, then the wiring.
