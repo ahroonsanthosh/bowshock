@@ -237,8 +237,10 @@ Admitted:
   and F at Mach 1.6, which is on main.
 
 Not admitted:
-- surface-subsonic tips (A, P). They wait for the transonic solver's value for case A, and for the
-  advisor's three further requirements (7.6).
+- surface-subsonic tips (A, P). The transonic solver's independent value for case A came in at 10:50
+  UTC: 0.1088983 +- 4.6e-5, against the fitted 0.1089264 to 0.1089326 +- 6e-5. They agree within each
+  other's bands (details in the status file). The advisor's three further requirements (7.6) and A's
+  nj 160 comparison remain.
 
 ### 4.7 Blind readings (details: `status/round10-reader.md`)
 
@@ -275,7 +277,7 @@ transonic checkpoints (217 MB). The owner asked that it be deleted once those ru
 |---|---|---|
 | Transonic ogive10 | Mach 1.1, r = 16 | 2,200 steps |
 | Transonic s12 | 5-caliber ogive, Mach 1.1, r = 16 | 800 steps |
-| Transonic ogive3 | case A, Mach 1.2 | r = 8 running |
+| Transonic ogive3 | case A, Mach 1.2 | finished 10:48 UTC (results branch) |
 | Haack lane6 | 5 calibers, Mach 3, nj 80 | 4,000 iterations |
 | Haack lanex | 5 calibers, Mach 2, nj 80 | finished at 10:31 UTC (results branch cde6af4) |
 | Subtip lane A | G's families | G at nj 80 |

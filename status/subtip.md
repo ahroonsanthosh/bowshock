@@ -54,3 +54,23 @@ Commands as last run (from the repo root, with S pointing at the copied subtip f
 - `setsid nohup nice -n 10 bash $S/lanef.sh laneA family:F:dense:1.5:4 family:G:default:1:8 family:G:dense:1.5:4`
 - `setsid nohup nice -n 10 bash $S/lanef.sh laneB-family family:P:dense:1.5:4 family:A:default:1:8`
 Finished jobs are skipped quickly (F and P dense end at once).
+
+## Update 10:50 UTC: the independent cross-check of case A is in, and agrees
+
+The transonic solver (captured shock, body past its base, nested far field) finished case A at Mach
+1.2 (queue-ogive3, results `ogive3-m1.2-f100-c10.jsonl` in claude/wip/results): r = 1 0.10952300683,
+r = 2 0.10891098521, r = 4 0.10887237169, r = 8 0.10889830739 (each converged, noise 1e-7). The finest
+triple oscillates (changes -3.86e-5, +2.59e-5), so gridConvergence's oscillatory rule gives the spread
+3.86e-5; with the 7e-5 floor (7.6e-6) the band is 4.6e-5 (nested allowances about 3e-8). Transonic:
+0.1088983 +- 4.6e-5, an interval 0.1088521 to 0.1089445. The domain and the body behind the base
+change the nose's value by under 3e-8.
+
+Fitted (subtip, provisional until A's default nj 160 lands): 0.1089264 (default family) and 0.1089326
+(density 1.5), each about +- 6e-5. Differences -2.8e-5 and -3.4e-5: each method's value lies inside the
+other's band. Paired by the coordinator, the transonic agent never having seen the fitted value.
+
+This is one of the four requirements (HANDOFF 7.6), checked at the transonic solver's own precision
+(4.6e-5, about 4.2e-4 of the value), which is coarser than the fitted family's floor. Still required:
+A's two-family comparison at nj 160; the start-plane sensitivities and a perturbed imposed state; an
+admission domain bounded by the measured cases; the band widened if the families differ by more than
+half the floor. P (Mach 1.25) is outside the transonic solver's range, so it has no such cross-check.
