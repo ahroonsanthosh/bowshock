@@ -1073,7 +1073,7 @@ Karman) noses, with the cylinder given:
 | 3 cal. (2), 2   | 0.0806584338 | 0.0804716502 | 0.0804049623 | 1.49  | -4.61e-4                  | 5.76e-4             |
 | 3 cal. (2), 3   | 0.0730333563 | 0.0729189392 | 0.0728864162 | 1.81  | -1.77e-4                  | 2.22e-4             |
 | 5 cal. (2), 1.5 | 0.0346246642 | 0.0344608100 | 0.0344269903 | 2.28  | -3.27e-4                  | 4.09e-4             |
-| 5 cal. (2), 2   | 0.0327803301 | 0.0326755691 |              |       |                           |                     |
+| 5 cal. (2), 2   | 0.0327803301 | 0.0326755691 | 0.0326452038 | 1.79  | -3.80e-4                  | 4.75e-4             |
 
 (In parentheses the calibers of cylinder; the extrapolation and the
 band are the procedure's from the three grids, the order capped at 2,
@@ -1120,6 +1120,7 @@ observed order and at second order; both differences are given):
 | 3 cal., 2   | 0.09 to 1.02 | 95% to 40%    | 1.49 to 1.74  | 1.16 to 1.31 | -1.24e-4 to +8.8e-5           | 3.4e-4 to 5.5e-4        |
 | 3 cal., 3   | 0.32 to 1.05 | 81% to 41%    | 1.82 to 1.91  | 1.44 to 1.49 | -1.4e-5 to +4.5e-5            | 1.63e-4 to 2.22e-4      |
 | 5 cal., 1.5 | 0.16 to 0.32 | 93% to 86%    | 2.29 to 2.30  | 1.52 to 1.58 | +2.20e-4 to +2.44e-4          | 5.5e-4 to 5.7e-4        |
+| 5 cal., 2   | 0.41         | 84%           | 1.86          | 1.17         | +3.03e-4 to +3.33e-4          | 6.8e-4 to 7.1e-4        |
 
 (relative to the nose's drag). On the 1-caliber noses the two agree
 within 7e-6 of the drag and both converge at close to second order. On
@@ -1136,24 +1137,37 @@ and then by 2.76: the convergence slows, and the procedure's
 extrapolation, its order capped at 2, lies 2.20e-4 to 2.44e-4 above the
 references. There the finest grid lies 5.5e-4 to 5.8e-4 above them and
 their lowest bound, which the band alone (4.09e-4) does not contain, nor
-with the allowance of 7e-5 (4.8e-4).
+with the allowance of 7e-5 (4.8e-4). On the 5-caliber nose at Mach 2
+(measured 2026-10-22: the fit on nj = 80 settled at 14000 iterations)
+one line passes the criterion, at x = 0.41 (84% of the drag): the lines
+nearer the tip fail it on nj = 80 (mass balance 4.3e-5 to 4.6e-5), and
+those further back change by 3.5e-5 to 9.5e-5 of the drag from 1280
+intervals. There the fitted drag converges at 1.86 and the march from
+its data at 1.17, as on the 3-caliber nose at Mach 2, and the
+procedure's extrapolation (order 1.79) lies 3.03e-4 to 3.33e-4 above
+the reference, the finest grid 6.8e-4 to 7.1e-4 and 7.35e-4 above the
+lowest bound.
 
 **The allowance and the served region.** So the allowance for two-scale
 noses (`TWO_SCALE_DRAG_FLOOR`) is twice the largest miss of the
-procedure's extrapolation over these references, rounded up: 5e-4, in
+procedure's extrapolation over these references, rounded up: 7e-4
+(twice the 3.33e-4 of the 5-caliber nose at Mach 2; 5e-4, twice the
+2.44e-4 of the 5-caliber nose at Mach 1.5, before that reference), in
 place of `FITTED_DRAG_FLOOR` on any start with its own outer boundary
-(`fittedDragFloor`). With it every band above contains its error: the
-5-caliber nose's by 1.56 times and the 3-caliber nose's at Mach 2 by
-1.78 times, against the lowest bound of their marches (the finest
-grid's march plus the upstream part extrapolated: 5.81e-4 and 6.06e-4
-below the nj = 80 values), the others' by 2.6 times or more. Only the
+(`fittedDragFloor`). With it every band above contains its error,
+against the lowest bound of the marches (the finest grid's march plus
+the upstream part extrapolated): the 5-caliber nose's at Mach 2 by 1.60
+times (7.35e-4 below the nj = 80 value), at Mach 1.5 by 1.91 times
+(5.81e-4) and the 3-caliber nose's at Mach 2 by 2.11 times (6.06e-4),
+the others' by more (2.6 times or more with the earlier 5e-4). Only the
 Von Karman nose is served (`bluntNoseRefusal`), and only inside the
 outline of the (calibers, Mach) points referenced
 (`VON_KARMAN_REFERENCES`, `insideOutline`): (1, 1.5), (1, 2), (1, 3),
-(3, 2), (3, 3), (5, 1.5), whose outline has the corners (1, 1.5), (5, 1.5), (3, 3) and (1, 3); a case outside is refused
-with the reason, as are the other Haack noses and the power series.
-References at the open corners (5 calibers at Mach 2 and 3) are in
-progress; each that passes extends the outline and resets the
+(3, 2), (3, 3), (5, 1.5), (5, 2), whose outline has the corners
+(1, 1.5), (5, 1.5), (5, 2), (3, 3) and (1, 3); a case outside is
+refused with the reason, as are the other Haack noses and the power
+series. A reference at the open corner (5 calibers at Mach 3) is in
+progress; if it passes it extends the outline and resets the
 allowance. On the GPU the page's path gives the 1-caliber nose at Mach 2
 within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
 against 0.42909806331220435; measured again on the merged code on

@@ -136,12 +136,13 @@ export const FITTED_DRAG_FLOOR = 7e-5;
  * method of characteristics started from the fitted flow, on the families
  * that set the served region (VON_KARMAN_REFERENCES in fitted-flow.ts), the
  * procedure's extrapolation from nj = 20, 40 and 80 misses by up to
- * 2.44e-4 of the value: on the 5-caliber nose at Mach 1.5, whose observed
- * order (2.28 on those grids) is capped at 2 while the references show
- * its convergence slowing (docs/design/0006-shock-fitting.md, "Two-scale
- * noses"). The allowance is twice that, rounded up.
+ * 3.33e-4 of the value: on the 5-caliber nose at Mach 2, whose march
+ * converges more slowly than its fitted drag (on the 5-caliber nose at
+ * Mach 1.5, whose observed order of 2.28 is capped at 2, by up to
+ * 2.44e-4; docs/design/0006-shock-fitting.md, "Two-scale noses"). The
+ * allowance is twice that, rounded up.
  */
-export const TWO_SCALE_DRAG_FLOOR = 5e-4;
+export const TWO_SCALE_DRAG_FLOOR = 7e-4;
 /**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).

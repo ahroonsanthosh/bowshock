@@ -883,6 +883,7 @@ export const VON_KARMAN_REFERENCES: readonly (readonly [number, number])[] = [
   [3, 2],
   [3, 3],
   [5, 1.5],
+  [5, 2],
 ];
 
 /**
@@ -947,7 +948,7 @@ const BOUNDARY_SMOOTHING = 50;
  * The allowance for an error the grid family cannot show, relative: the
  * caller's (FITTED_DRAG_FLOOR on the page), raised to TWO_SCALE_DRAG_FLOOR
  * on a two-scale nose (a start with its own outer boundary), whose
- * extrapolation from three grids misses its references by up to 2.44e-4
+ * extrapolation from three grids misses its references by up to 3.33e-4
  * (0006, "Two-scale noses").
  */
 export function fittedDragFloor(floor: number, start: BluntStart | null): number {
