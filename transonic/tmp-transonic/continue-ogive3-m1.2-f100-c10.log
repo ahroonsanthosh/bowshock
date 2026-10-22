@@ -1,0 +1,11 @@
+2026-10-22T22:36:14Z start ogive3 1.2 ogive3-m1.2-f100-c10
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-aa52ebf4abcc549c6
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  22:36:15
+   Duration  2933.54s (tests 100%)
+
+2026-10-22T23:25:08Z end 0 ogive3 1.2 ogive3-m1.2-f100-c10
