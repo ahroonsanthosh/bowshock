@@ -1191,3 +1191,135 @@ and fin friction refuses every case (the six totals at Mach 1.2 to 1.5,
 double wedges, are refused for it); totals of all bands 1.9% (Mach 1.5 to
 1.8: 2.5%; 1.8 to 3.0: 5.2%), the cross-check agreeing on all 1200
 cases.
+
+**2026-10-22 (n): BRL Report 934's range A: its readings, rounds and
+inputs, fixed before its run** (10.3, 10.5, 10.6; letters (j) to (m) are
+reserved for another branch). Written and committed by the run's
+operator before any model value was computed for any BRL 934 round; no
+comparison of a BRL value with a model value exists before this commit.
+The run follows once this commit exists, at this commit, once, and its
+result is recorded whatever it is (rule 3 of 10.1), in
+`docs/design/0020-brl934-range-a.md`.
+
+- _Readings: 10.4's line on BRL 934 brought up to date._ 10.4 listed
+  "BRL 934's Graph I (its tables were read twice by the same reader; a
+  second reader is pending, 0010 section 9)" as read once. Now: Tables II
+  and III are read twice, the second blind by a second reader (round 9,
+  `docs/research/total-drag/audit/round9/`), paired by the coordinator on
+  2026-10-22 with 0 differences on M, mean squared yaw, C_D and -C_Ma
+  (Table III) and on M and average yaw (Table II), all 27 rounds (the
+  pairing repeated by `tests/validation/brl934-readings.test.ts`); Graph
+  I's symbols are read by two readers (the transcription's section 7, the
+  csv's graph1 column; round 7, `audit/round7/method.md` item 5, paired in
+  `readings/brl934_graph1_pairing.csv`); Graph II is read twice by two
+  methods, by one reader (the transcription's section 7). Every value the
+  run uses is read twice (rule 5 of 10.1).
+- _Rounds_ (10.6 item 5's rule, `admission` in `src/validation/brl934.ts`;
+  no drag value used). Of the 16 rounds of Table III in range A, ten are
+  in: 3254 (M 1.506, 3.7 deg^2), 2595 (1.784, 0.6), 2599 (1.788, 1.5),
+  2591 (1.801, 0.2), 2588 (1.802, 0.4), 2590 (1.803, 0.1), 2596 (1.814,
+  1.5), 2589 (1.827, 0.7), 3263 (2.423, 2.9) and 3264 (2.468, 0.2), each
+  with its mean squared yaw printed and at most 5 deg^2 in both readings
+  of Table III, and marked laminar by neither reading of Graph I (the
+  phase-1 rounds carry only the consolidation symbol; 3254 a plus and a
+  dot in both; 3263 and 3264 below). Six are out: 2593 (53.4 deg^2), 2594
+  (36.2), 2598 (5.6) and 3256 (6.6) for their yaw; 3255, no mean squared
+  yaw printed (blank in both readings; Table II average yaw 0, "Model
+  Magnet de-magnetized"); 3249, marked laminar (an open circle,
+  "corrected for yaw and full turbulent B.L.") by both readings. 3264 is
+  used at Table III's values (C_D 0.449), round 9 reading them alike;
+  Graph I's only mark at M 2.47 lies at C_D 0.471 to 0.474 in both
+  readings, nothing near 0.449. The present model is run at the seven at
+  M 1.798 and above (2591, 2588, 2590, 2596, 2589, 3263, 3264), the
+  rebuilt factor at all ten.
+- _Inputs_, each with its item of 10.6:
+  - Item 1, model diameter: 0.78 to 0.82 in, run at both ends; the
+    nominal at the midpoint, 0.80 in. No BRL or BuOrd source stating it
+    was reached.
+  - Item 2, range air: 288 to 298 K at 101325 Pa, run at both ends; the
+    nominal at the midpoint, 293 K. With the diameter: the total at the
+    four corners (0.78 and 0.82 in, 288 and 298 K) against the total at
+    the nominal, as one input band ("diameter and air"). The Reynolds
+    number on the diameter is rho M a d / mu, a = (1.4 x 287.05 T)^0.5,
+    rho = p / (287.05 T), mu by Sutherland's law (1.458e-6, 110.4 K). No
+    BRL record of the range air was reached.
+  - Item 3, fin leading edge: sharp, no rounded-edge term. Sensitivity
+    beside the verdict: DREV's 0.004 cal edge, computed in full (its
+    nominal, corners and tolerance) and reported where the library
+    serves it.
+  - Item 4, trailing-edge area: constant thickness, 0.32 cal^2 (0.08 cal
+    over the 1 cal span, four fins). Sensitivity beside the verdict: the
+    tapered alternative as the trailing-edge term halved by hand: its
+    nominal, its model-form band ends, its laminar change in every
+    transition state and its value at every corner, each times 0.5.
+  - Item 5, rounds: above.
+  - Item 5, zero-yaw value: CD0 = C_D - C_D'(M) dbar^2 (dbar^2 in rad^2),
+    C_D' the mean of Graph II's two readings, each linear between its
+    points. Each reading alone moves no admitted round's CD0 by 1e-4.
+    Beside it, the text's rounded C_D' (report p. 8): the line through 15.0
+    at M 1.4 and 8.9 at 2.4, continued beyond 2.4 for 3263 and 3264 (as
+    the transcription's section 7 computes it), with the cluster spreads
+    recomputed from those values.
+  - Item 5, transition: fully turbulent nominal; 0008's transition input
+    as for the DREV gate, laminar runs to Re_T 5e5, 1.6e6 and 3e6, each a
+    state of the boundary layer with the body also taken turbulent, the
+    fins' trailing-edge laminar term in the states that reach it (0010
+    section 10.1).
+  - Item 5, wall: adiabatic nominal; the input the wall at the nominal
+    air temperature, 293 K.
+  - Item 5, nose: a sharp 10 deg cone, 0.5 / tan 10 deg = 2.836 cal long,
+    its wave drag the exact Taylor-Maccoll value; the cylinder to 10.0
+    cal; four rectangular fins of 1 cal chord and span at the base,
+    unswept and uncanted, an 8% single wedge 0.08 cal thick at the
+    trailing edge. Free-stream edge conditions for friction, as for DREV.
+  - Item 5, tolerance: rule 4 of 10.1 as the DREV gate builds it
+    (`tests/validation/basic-finner.test.ts`; 0010 sections 4.1, 6.2 and
+    10.3): over the modelled total, the model-form band, the input bands
+    (transition, wall, roughness at zero, and diameter and air) and the
+    spread of the round's Mach cluster (its least and greatest CD0 over
+    its mean, minus 1). Clusters: M 1.50 to 1.51, 1.78 to 1.83, 2.42 to
+    2.47. Each model's spread is taken over the rounds it is run at: for
+    the present model the five at M 1.80 to 1.83 (CD0 0.6033 to 0.6436)
+    and the two at 2.42 to 2.47; for the rebuilt factor one, seven and
+    two. The residual is CD0 / modelled - 1; a round passes inside its
+    tolerance, and a model passes when every one of its rounds does.
+- _What is known before the run, from the records alone._ 0015 sections
+  1, 4, 6 and 9 state that the rebuilt factor refuses fins whose faces
+  diverge to a blunt trailing edge, "the Basic Finner's wedges among
+  them", so that range A "tests the present factor (10.3) and records the
+  rebuilt one's refusal". The run asks the rebuilt factor at every
+  admitted round all the same and records what it gives. W2 serves the
+  body base below Mach 1.5 only; every admitted round lies at M 1.506 or
+  above, so it serves none. The library itself serves the present factor
+  from M 1.798, so its own total at 3254, 2595 and 2599 goes to the
+  rebuilt factor; the run reports that routing beside each round.
+- _Where the text leaves a choice, decided now._
+  - "Which neither reading of Graph I marks laminar" (item 5) and "3249
+    is out if both readings mark it laminar" differ in wording; on the
+    readings as recorded only 3249 is marked, by both, so they admit the
+    same rounds. Round 7 first called 3263's lower symbol an open circle,
+    at low confidence ("could be a dot"); its third look, after the
+    pairing, found it a dot (the "hole" the wedge between the blob and
+    the faired curve) and is recorded as replacing that call for any use;
+    the first reading calls it a dot. Graph I's laminar groups show a
+    dot and an open circle beneath the plus, and 3263's group has one
+    mark there. 3263 is admitted on the readings as recorded. Since the
+    blind call was not a dot, the run also reports, beside the verdict
+    and not as it, 3264 with 3263 out (3264's cluster then one round, its
+    spread zero).
+  - The present model's spread at M 1.80 to 1.83 is the five rounds' it
+    is run at, the transcription's section 9 item 9 as 10.6 item 5
+    adopts it, and the narrower: 2595 and 2599, admitted for the rebuilt
+    factor, would widen it (-3.5% to +5.0% for -2.6% to +3.9%). The
+    seven-round spread is reported beside the verdict, not as it.
+  - The air range is item 2's 288 to 298 K, not the transcription
+    script's 288.15 to 298.15 K; the nominals are the ranges' midpoints,
+    the band covering both ends.
+- _The harness._ `src/validation/hold-out-run.ts`, validated on the DREV
+  gate's 11 shots, whose recorded values it reproduces, and its rebuilt
+  body base held equal to the library's wherever the library routes to
+  the rebuilt factor (`tests/validation/hold-out-run.test.ts`); the data,
+  readings and admission in `src/validation/brl934.ts` and
+  `tests/validation/brl934-readings.test.ts`; the run,
+  `tests/validation/brl934-range-a.test.ts`, its expectations placeholders
+  until the run's values are recorded.
