@@ -1163,3 +1163,16 @@ lettered (i); re-lettered (l) on 2026-10-22, as (j).
 | Rogers, Berry and Quincey, ARC R&M 3348 (AERADE 1826.2/3929)  | figs. 47 to 52, the single-wedge section's pressure distributions at the pressure-plotting station, Mach 0.70 to 1.20: the surface pressure just ahead of the base (x/c 0.995), for the local M' and p' with which table 3's base pressures are compared            | the rest of figs. 40 to 58 |
 |                                                               | tables 4 and 5 and fig. 59, the balance results (single and double wedge; the report notes the single wedge's drag includes its raked tip edge): candidates for the fins' own drag near Mach 1 (F1) and for F5, what each sets decided by a later record before use |                            |
 | Nash, Quincey and Callinan, ARC R&M 3427 (AERADE 1826.2/4011) | fig. 18 (the Reynolds number's effect on base pressure); fig. 39 (the base conditions' effect on the surface pressures upstream of the base)                                                                                                                        |                            |
+
+**2026-10-22 (m): R&M 3427 fig. 13's hole 4, named before it is read**
+(rule 2 of 10.1, as (k)). Fig. 13 of Nash, Quincey and Callinan (ARC R&M
+3427, AERADE 1826.2/4011, PDF p. 37) is named by (k) for its base
+pressures (holes 5, 6 and 7), read once (0019's reader) with a blind
+second reading queued. Its lower panel holds the surface pressure on the
+parallel afterbody at four holes; hole 4, at x/h -0.167 (0.1 in ahead of
+the base, fig. 3), is now named band-setting, for the local Mach number
+and static pressure just ahead of the base, with which the section's base
+pressures are compared with RM A51J25 fig. 7's curve (on M', p') and with
+R&M 3348's table 3 (on its own local values, from figs. 47 to 52, (l)).
+Holes 1 to 3 (x/h -0.330, -0.667, -1.667) are not used to set bands. No
+value of hole 4 has been read; it is read twice before use.
