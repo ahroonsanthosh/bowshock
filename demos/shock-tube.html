@@ -2,107 +2,46 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07090c" />
+    <meta
+      name="description"
+      content="The bowshock 1D solver, on the CPU or the GPU, against the exact solution of Toro's five Riemann problems."
+    />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M4 28 Q16 2 28 28%27 fill=%27none%27 stroke=%27%23d1495b%27 stroke-width=%274%27/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M27 4 Q6 8 5 16 Q6 24 27 28%27 fill=%27none%27 stroke=%27%23ff5a6e%27 stroke-width=%273%27 stroke-linecap=%27round%27/%3E%3Cpath d=%27M11 16 L27 11.5 L27 20.5 Z%27 fill=%27%23e6e8eb%27/%3E%3C/svg%3E"
     />
-    <title>Shock tube</title>
-    <style>
-      :root {
-        color-scheme: light dark;
-        --bg: #f7f7f5;
-        --fg: #1b1b1b;
-        --muted: #5c5c5c;
-        --grid: #d4d4d0;
-        --exact: #1b1b1b;
-        --numeric: #d1495b;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #111316;
-          --fg: #e8e8e6;
-          --muted: #a0a0a0;
-          --grid: #33363b;
-          --exact: #e8e8e6;
-          --numeric: #ff7a8a;
-        }
-      }
-      body {
-        margin: 0;
-        padding: 1.5rem 1rem;
-        background: var(--bg);
-        color: var(--fg);
-        font:
-          15px/1.5 system-ui,
-          sans-serif;
-      }
-      main {
-        max-width: 60rem;
-        margin: 0 auto;
-      }
-      .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem 1rem;
-        align-items: end;
-        margin-bottom: 0.75rem;
-      }
-      .field {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-      }
-      label {
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-      select {
-        max-width: 100%;
-      }
-      #problem {
-        max-width: min(28rem, 90vw);
-      }
-      #plot {
-        width: 100%;
-        height: min(70vh, 640px);
-        display: block;
-      }
-      #status {
-        font-variant-numeric: tabular-nums;
-        color: var(--muted);
-        min-height: 1.5em;
-      }
-      .legend span {
-        margin-right: 1rem;
-      }
-      .numeric {
-        color: var(--numeric);
-      }
-    </style>
+    <title>Shock tube · bowshock</title>
+    <link rel="stylesheet" href="/src/ui/style.css" />
   </head>
-  <body>
-    <main>
-      <h1>Shock tube</h1>
-      <p>
-        The bowshock 1D solver (dots), on the CPU or the GPU, against the exact solution (line) for
-        Toro's five Riemann test problems.
-        <a href="../index.html">Back to bowshock</a>
-      </p>
-      <div class="controls">
+  <body class="app">
+    <main class="stage">
+      <h1 class="visually-hidden">Shock tube</h1>
+      <div class="viewport">
+        <canvas
+          id="plot"
+          role="img"
+          tabindex="0"
+          aria-label="Density, velocity and pressure along the tube: bowshock against the exact solution"
+        ></canvas>
+      </div>
+    </main>
+    <aside class="panel panel--left" id="panel-problem" data-title="Problem">
+      <div class="panel__body">
         <div class="field">
-          <label for="problem">Problem</label>
+          <label class="field__label" for="problem">Riemann problem</label>
           <select id="problem"></select>
         </div>
         <div class="field">
-          <label for="engine">Engine</label>
+          <label class="field__label" for="engine">Engine</label>
           <select id="engine">
             <option value="cpu">CPU (64-bit)</option>
             <option value="gpu">GPU (WebGPU, 32-bit)</option>
           </select>
         </div>
         <div class="field">
-          <label for="flux">Flux</label>
+          <label class="field__label" for="flux">Flux</label>
           <select id="flux">
             <option value="hllc">HLLC</option>
             <option value="rusanov">Rusanov</option>
@@ -110,7 +49,7 @@
           </select>
         </div>
         <div class="field">
-          <label for="limiter">Limiter</label>
+          <label class="field__label" for="limiter">Limiter</label>
           <select id="limiter">
             <option value="vanLeer">van Leer</option>
             <option value="vanAlbada">van Albada</option>
@@ -120,7 +59,7 @@
           </select>
         </div>
         <div class="field">
-          <label for="cells">Cells</label>
+          <label class="field__label" for="cells">Cells</label>
           <select id="cells">
             <option>100</option>
             <option selected>200</option>
@@ -128,16 +67,28 @@
             <option>800</option>
           </select>
         </div>
-        <button id="run" type="button">Run</button>
+        <div class="field panel__row">
+          <button id="run" class="button button--primary" type="button" aria-keyshortcuts="Space">
+            Run
+          </button>
+          <button id="again" class="button" type="button" aria-keyshortcuts="R">Run again</button>
+        </div>
       </div>
-      <p class="legend"><span class="numeric">● bowshock</span><span>line: exact</span></p>
-      <canvas
-        id="plot"
-        role="img"
-        aria-label="Density, velocity and pressure along the tube: bowshock against the exact solution"
-      ></canvas>
-      <p id="status"></p>
-    </main>
+    </aside>
+    <aside
+      class="panel panel--right"
+      id="panel-exact"
+      data-title="Against the exact solution"
+      data-tab="Exact"
+    >
+      <div class="panel__body">
+        <dl class="figure">
+          <dt>L1 density error</dt>
+          <dd class="figure__main" id="l1">…</dd>
+        </dl>
+        <p class="panel__note" id="status"></p>
+      </div>
+    </aside>
     <script type="module" src="/src/app/shock-tube.ts"></script>
   </body>
 </html>

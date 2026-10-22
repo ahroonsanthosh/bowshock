@@ -10,7 +10,9 @@
 
 import type { VerifiedDrag } from '../analysis/verified-drag';
 import { bodyLength, type Body } from '../geometry/body';
+import { BASIC_FINNER_GEOMETRY, BASIC_FINNER_LENGTHS } from '../validation/basic-finner';
 import { outward, outwardPercent } from './band';
+import { FOOT, flightConditionOf, type AltitudeUnit } from './flight-condition';
 import {
   BAND_CAVEAT,
   BASIC_FINNER_CLASS,
@@ -20,7 +22,6 @@ import {
   CLASS_DESCRIPTION,
   NOT_REPRESENTED,
   noseComponentOf,
-  OFFSET_CAVEAT,
   parseNumber,
   parseNumberList,
   PUBLISHED_GATE,
@@ -53,6 +54,17 @@ export interface TotalDragFields {
   readonly rearBevel: string;
   readonly leadingEdgeRadius: string;
   readonly trailingEdgeAheadOfBase: string;
+  /**
+   * How the flight condition is given: 'altitude-m' or 'altitude-ft' (an
+   * altitude in that unit and the diameter, in the standard atmosphere),
+   * or 'reynolds' (the Reynolds number and temperature directly).
+   */
+  readonly conditionMode: string;
+  /** Above mean sea level, in the unit of `conditionMode`. */
+  readonly altitude: string;
+  /** The body's diameter, mm. */
+  readonly diameter: string;
+  /** Asked directly ('reynolds'); otherwise implied by the altitude and diameter. */
   readonly reynoldsOnLength: string;
   readonly temperature: string;
   /** Numbers separated by commas or spaces; empty is fully turbulent only. */
@@ -97,9 +109,90 @@ function sectionOf(f: TotalDragFields): SectionInput {
         frontBevel: parseNumber(f.frontBevel),
         rearBevel: parseNumber(f.rearBevel),
       };
+    case 'plate-rounded-square':
+      return { kind: 'flat-plate', thickness, leadingEdge: 'rounded', trailingEdge: 'square' };
+    case 'plate-square-square':
+      return { kind: 'flat-plate', thickness, leadingEdge: 'square', trailingEdge: 'square' };
+    case 'plate-rounded-rounded':
+      return { kind: 'flat-plate', thickness, leadingEdge: 'rounded', trailingEdge: 'rounded' };
     default:
       return { kind: 'single-wedge', trailingEdgeThickness: thickness };
   }
+}
+
+/** The section values that are flat plates (sheet stock). */
+const isPlate = (section: string) => section.startsWith('plate-');
+
+/** The unit of the altitude asked, or null when the Reynolds number is asked directly. */
+export function altitudeUnitOf(conditionMode: string): AltitudeUnit | null {
+  return conditionMode === 'reynolds' ? null : conditionMode === 'altitude-ft' ? 'ft' : 'm';
+}
+
+/**
+ * The Reynolds number on length and the static temperature the total
+ * takes: as typed in the direct mode; otherwise from the altitude, the
+ * Mach number and the diameter in the standard atmosphere
+ * (./flight-condition.ts), with every reason when they give none.
+ */
+export function conditionOf(
+  body: Body,
+  mach: number,
+  f: TotalDragFields,
+): {
+  readonly reynoldsOnLength: number;
+  readonly temperature: number;
+  /** Empty when the condition is given. */
+  readonly refusals: readonly string[];
+} {
+  const unit = altitudeUnitOf(f.conditionMode);
+  if (unit === null) {
+    return {
+      reynoldsOnLength: parseNumber(f.reynoldsOnLength),
+      temperature: parseNumber(f.temperature),
+      refusals: [],
+    };
+  }
+  const c = flightConditionOf({
+    altitude: parseNumber(f.altitude),
+    altitudeUnit: unit,
+    mach,
+    diameterMm: parseNumber(f.diameter),
+    lengthCalibers: bodyLength(body),
+  });
+  return c.kind === 'ok'
+    ? { reynoldsOnLength: c.value.reynoldsOnLength, temperature: c.value.temperature, refusals: [] }
+    : { reynoldsOnLength: Number.NaN, temperature: Number.NaN, refusals: c.reasons };
+}
+
+/** 1.40e7, not 1.40e+7. */
+const sci = (x: number, digits: number) => x.toExponential(digits).replace('e+', 'e');
+
+/**
+ * What the page shows read-only beside an altitude, Mach number and
+ * diameter: the Reynolds number on length and the static temperature they
+ * imply ('none' when they imply none; the reasons are in the total).
+ */
+export function impliedConditionText(
+  body: Body,
+  mach: number,
+  f: TotalDragFields,
+): { readonly reynolds: string; readonly temperature: string } {
+  const c = conditionOf(body, mach, f);
+  return c.refusals.length > 0
+    ? { reynolds: 'none', temperature: 'none' }
+    : { reynolds: sci(c.reynoldsOnLength, 2), temperature: `${c.temperature.toFixed(2)} K` };
+}
+
+/**
+ * The altitude typed, said in another unit when the unit asked changes
+ * (to the centimeter or the tenth of a foot); as typed if it is not a number.
+ */
+export function altitudeInUnit(text: string, from: AltitudeUnit, to: AltitudeUnit): string {
+  const x = parseNumber(text);
+  if (from === to || !Number.isFinite(x)) return text;
+  return to === 'ft'
+    ? String(Number((x / FOOT).toFixed(1)))
+    : String(Number((x * FOOT).toFixed(2)));
 }
 
 /** The inputs of ./total-drag.ts from the nose solve's body and Mach number and the fields. */
@@ -107,6 +200,7 @@ export function formOf(body: Body, mach: number, f: TotalDragFields): TotalDragF
   const roughGiven = [f.roughnessLow, f.roughnessHigh, f.roughnessSource].some(
     (t) => t.trim() !== '',
   );
+  const condition = conditionOf(body, mach, f);
   return {
     body,
     mach,
@@ -117,8 +211,9 @@ export function formOf(body: Body, mach: number, f: TotalDragFields): TotalDragF
     section: sectionOf(f),
     leadingEdgeRadius: parseNumber(f.leadingEdgeRadius),
     trailingEdgeAheadOfBase: parseNumber(f.trailingEdgeAheadOfBase),
-    reynoldsOnLength: parseNumber(f.reynoldsOnLength),
-    temperature: parseNumber(f.temperature),
+    reynoldsOnLength: condition.reynoldsOnLength,
+    temperature: condition.temperature,
+    ...(condition.refusals.length > 0 ? { conditionRefusals: condition.refusals } : {}),
     transitionReynolds: parseNumberList(f.transitionReynolds),
     wallTemperature: optional(f.wallTemperature),
     roughness: roughGiven
@@ -131,19 +226,23 @@ export function formOf(body: Body, mach: number, f: TotalDragFields): TotalDragF
   };
 }
 
-/** The nose solve's fields for the Basic Finner: its cone, and the cylinder to 10 cal overall. */
+/**
+ * The nose solve's fields for the Basic Finner: its cone and the cylinder
+ * to 10 cal overall, to six decimals (BASIC_FINNER_LENGTHS), the body the
+ * live flow page solves too (basicFinnerBodyAsTyped).
+ */
 export const BASIC_FINNER_NOSE_FIELDS = {
   shape: 'conical',
-  noseLength: BASIC_FINNER_CLASS.noseLength.toFixed(3),
-  bodyLength: (
-    BASIC_FINNER_CLASS.length - Number(BASIC_FINNER_CLASS.noseLength.toFixed(3))
-  ).toFixed(3),
+  noseLength: BASIC_FINNER_LENGTHS.nose,
+  bodyLength: BASIC_FINNER_LENGTHS.cylinder,
 } as const;
 
 /**
- * The Basic Finner's fins and range conditions at a Mach number (its
- * Reynolds number about 6.6e6 times the Mach number), keeping the inputs
- * (transition, wall temperature, roughness) of `current`.
+ * The Basic Finner's fins and range conditions at a Mach number, keeping
+ * the inputs (transition, wall temperature, roughness) and the altitude of
+ * `current`. The range's air (293.95 K) was not a standard atmosphere, so
+ * its Reynolds number (about 6.6e6 times the Mach number) and temperature
+ * are given directly; the diameter is its 30.0 mm.
  */
 export function basicFinnerFields(mach: number, current: TotalDragFields): TotalDragFields {
   const c = BASIC_FINNER_CLASS;
@@ -157,27 +256,46 @@ export function basicFinnerFields(mach: number, current: TotalDragFields): Total
     thickness: String(c.trailingEdgeThickness),
     leadingEdgeRadius: String(c.leadingEdgeRadius),
     trailingEdgeAheadOfBase: '0',
+    conditionMode: 'reynolds',
+    diameter: String(1000 * BASIC_FINNER_GEOMETRY.caliberMetres),
     reynoldsOnLength: Number.isFinite(mach)
-      ? (BASIC_FINNER_REYNOLDS_PER_MACH * mach).toExponential(2).replace('e+', 'e')
+      ? sci(BASIC_FINNER_REYNOLDS_PER_MACH * mach, 2)
       : current.reynoldsOnLength,
     temperature: BASIC_FINNER_TEMPERATURE.toFixed(2),
   };
 }
 
-/** Which of the fields that depend on the planform and section are asked, and the thickness's name. */
-export function fieldsShown(f: Pick<TotalDragFields, 'planform' | 'section'>): {
+/** Which of the fields that depend on other fields are asked, and the names that change. */
+export function fieldsShown(f: Pick<TotalDragFields, 'planform' | 'section' | 'conditionMode'>): {
   readonly sweeps: boolean;
   readonly taperRatio: boolean;
   readonly ridge: boolean;
   readonly bevels: boolean;
+  /** Not for a flat plate, whose rounded edges are a full radius. */
+  readonly leadingEdgeRadius: boolean;
   readonly thicknessLabel: string;
+  /** The altitude and diameter, and the Reynolds number and temperature they imply. */
+  readonly altitude: boolean;
+  readonly altitudeLabel: string;
+  /** The Reynolds number and temperature, typed. */
+  readonly reynolds: boolean;
 } {
+  const unit = altitudeUnitOf(f.conditionMode);
   return {
     sweeps: f.planform === 'trapezoidal',
     taperRatio: f.planform === 'clipped-delta',
     ridge: f.section === 'double-wedge',
     bevels: f.section === 'hexagonal',
-    thicknessLabel: f.section === 'single-wedge' ? 'Trailing-edge thickness' : 'Largest thickness',
+    leadingEdgeRadius: !isPlate(f.section),
+    thicknessLabel:
+      f.section === 'single-wedge'
+        ? 'Trailing-edge thickness'
+        : isPlate(f.section)
+          ? 'Plate thickness'
+          : 'Largest thickness',
+    altitude: unit !== null,
+    altitudeLabel: `Altitude (${unit ?? 'm'})`,
+    reynolds: unit === null,
   };
 }
 
@@ -256,7 +374,8 @@ export function noseStateOf(outcome: VerifiedDrag | NoseSolveError): NoseState |
 
 // ------------------------------------------------------------ the display
 
-export type Tone = 'plain' | 'ok' | 'warn' | 'muted';
+/** No 'ok' tone: no total is shown as validated while the Basic Finner's claim is suspended (0010 section 11.7). */
+export type Tone = 'plain' | 'warn' | 'muted';
 
 /** What the page lays out, every string final. */
 export type DisplayBlock =
@@ -276,10 +395,10 @@ export type DisplayBlock =
       /** Columns of numbers, which do not wrap. */
       readonly numeric: readonly number[];
     }
-  /** The claim, set apart. */
+  /** The claim, set apart: always an estimate (0010 section 11.7). */
   | {
       readonly kind: 'box';
-      readonly tone: 'ok' | 'warn';
+      readonly tone: 'warn';
       readonly blocks: readonly DisplayBlock[];
     };
 
@@ -298,11 +417,14 @@ const interval = (low: number, high: number) => outward(low, high, DIGITS).join(
 export const PENDING_TEXT =
   'No total yet: run the solve above for this nose, body and Mach number. The total takes its ' +
   'nose wave drag and band; the other components are computed here and none of them is refused.';
-export const NEAR_MACH_3_TEXT =
-  'This Mach number lies nearer those two shots, at Mach 2.97, than any other gated shot.';
+export const INSIDE_PENDING_TEXT =
+  "This case lies inside the Basic Finner's class, kept for its next registered test: the total " +
+  'will be an estimate, not validated, while the claim is suspended (the ' +
+  'fins-on-base factor was corrected after the test; design record 0010, section 11.7).';
 export const ESTIMATE_TOLERANCE_TEXT =
-  'Even inside the class the test is wide: its tolerance was -19.5% to -26.2% and +23.1% to ' +
-  '+27.4% of the modelled total.';
+  "The Basic Finner's test was wide: with the corrected fins-on-base factor its tolerance is " +
+  '-20.0% to -27.0% and +23.3% to +28.6% of the modelled total over the 11 shots (-24.0% to ' +
+  '-24.6% and +23.3% to +23.5% at the three inside the class).';
 
 /** The total-drag output for a view. */
 export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
@@ -314,50 +436,34 @@ export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
       ];
     case 'pending':
       return view.check.inside
-        ? [
-            p(PENDING_TEXT, 'plain', true),
-            p(
-              'This case lies inside the class tested by the Basic Finner: the total will be ' +
-                'labelled validated on it, with the tolerance and the offset at Mach 2.97 beside it.',
-              'muted',
-            ),
-          ]
+        ? [p(PENDING_TEXT, 'plain', true), p(INSIDE_PENDING_TEXT, 'muted')]
         : [
             p(PENDING_TEXT, 'plain', true),
             p(
-              'This case lies outside the class tested by the Basic Finner, so the total will be ' +
-                'an estimate, not validated:',
+              "This case lies outside the Basic Finner's class, so the total will be an " +
+                'estimate, not validated:',
               'muted',
             ),
             list(view.check.outside),
           ];
     case 'total': {
+      // Every total is an estimate (0010 section 11.7): there is no other claim to show.
       const { total, claim } = view;
-      const validated = claim.kind === 'validated';
-      const claimBlocks: DisplayBlock[] =
-        claim.kind === 'validated'
-          ? [
-              p(claim.text),
-              ...claim.caveats.map((c) =>
-                p(c, claim.nearMach3 && c === OFFSET_CAVEAT ? 'warn' : 'plain'),
-              ),
-              ...(claim.nearMach3 ? [p(NEAR_MACH_3_TEXT, 'warn')] : []),
-            ]
-          : [
-              p(claim.text),
-              p('Outside the class because:'),
-              list(claim.reasons),
-              p(ESTIMATE_TOLERANCE_TEXT),
-            ];
+      const claimBlocks: DisplayBlock[] = [
+        p(claim.text),
+        p('Not validated because:'),
+        list(claim.reasons),
+        p(ESTIMATE_TOLERANCE_TEXT),
+      ];
       return [
         p(
           `Total C_D = ${total.cd.toFixed(DIGITS)}, model-form band ${interval(total.low, total.high)} ` +
-            `(${outwardPercent(total.low / total.cd - 1, total.high / total.cd - 1)})` +
-            (validated ? '' : ': an estimate, not validated'),
-          validated ? 'ok' : 'warn',
+            `(${outwardPercent(total.low / total.cd - 1, total.high / total.cd - 1)}): an ` +
+            'estimate, not validated',
+          'warn',
           true,
         ),
-        { kind: 'box', tone: validated ? 'ok' : 'warn', blocks: claimBlocks },
+        { kind: 'box', tone: 'warn', blocks: claimBlocks },
         p(BAND_CAVEAT, 'muted'),
         {
           kind: 'table',
@@ -406,17 +512,27 @@ export function failureDisplay(message: string): DisplayBlock[] {
 
 const signedPercent = (x: number) => `${x > 0 ? '+' : ''}${x.toFixed(1)}%`;
 
-/** The class in words and the gate's 11 shots as published in 0010 section 4.2. */
+/** The class in words and the gate's 11 shots, corrected, with the second run's residuals (0010 sections 4.2, 11). */
 export function gateDisplay(): DisplayBlock[] {
   return [
     p(CLASS_DESCRIPTION, 'muted'),
     {
       kind: 'table',
       caption:
-        'The Basic Finner gate, second run, as published in design record 0010 section 4.2, ' +
-        'with the tolerances re-derived after an independent audit (its section 10; residual: ' +
-        'measured CX0 over modelled, minus 1; values to the nearest last digit shown)',
-      head: ['Shot', 'Mach', 'CX0 measured', 'Modelled C_D (band)', 'Residual', 'Tolerance'],
+        'The Basic Finner gate re-run with the corrected fins-on-base factor (design record 0010 ' +
+        'section 11): a recorded correction made after the residuals were known, not a new test, ' +
+        'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
+        'audit (its section 10); residual: measured CX0 over modelled, minus 1; each band rounded ' +
+        'outward, other values to the nearest last digit shown',
+      head: [
+        'Shot',
+        'Mach',
+        'CX0 measured',
+        'Modelled C_D (band)',
+        'Residual',
+        'Tolerance',
+        'Second run',
+      ],
       rows: PUBLISHED_GATE.map((s) => [
         s.shot,
         s.mach.toFixed(3),
@@ -424,8 +540,9 @@ export function gateDisplay(): DisplayBlock[] {
         `${s.cd.toFixed(4)} (${s.low.toFixed(4)} to ${s.high.toFixed(4)})`,
         signedPercent(s.residual),
         `${signedPercent(s.tolerance[0])} to ${signedPercent(s.tolerance[1])}`,
+        signedPercent(s.secondRun),
       ]),
-      numeric: [1, 2, 3, 4, 5],
+      numeric: [1, 2, 3, 4, 5, 6],
     },
     p(
       'In the gate the nose was the exact Taylor-Maccoll value, and the inputs were a laminar ' +
