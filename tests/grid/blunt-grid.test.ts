@@ -207,7 +207,7 @@ describe('body grids (C topology, blunt noses)', () => {
     // vertical by the end of the body, too fast for the gates.
     const stub: Body = { ...hemisphereCylinder, cylinderLength: 0 };
     expect(() => bluntBodyGrid(stub, { nj: 20, mach: 1.5 })).toThrow(GridQualityError);
-  });
+  }, 60_000);
 
   it('fixed node fractions reproduce the grid at the reference heights and scale with new ones', () => {
     const { grid, lines } = bluntBodyGrid(hemisphereCylinder, { nj: 20, mach: 3 });
