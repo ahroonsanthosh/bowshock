@@ -1156,7 +1156,8 @@ References at the open corners (5 calibers at Mach 2 and 3) are in
 progress; each that passes extends the outline and resets the
 allowance. On the GPU the page's path gives the 1-caliber nose at Mach 2
 within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
-against 0.42909806331220435).
+against 0.42909806331220435; measured again on the merged code on
+2026-10-22, SwiftShader, `tests/gpu/fitted-flow-gpu.test.ts`).
 
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of

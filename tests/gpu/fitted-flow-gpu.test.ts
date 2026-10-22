@@ -194,8 +194,8 @@ describe('fitted shock on the GPU', () => {
     // 1 caliber with 1 of body at Mach 2: a two-scale start (both
     // captures, in chunks on the CPU), then the fit on the GPU. The CPU's
     // fit of the same problem gives 0.42909806331220435 (0006,
-    // "Two-scale noses"); measured when written, the GPU's
-    // 0.42909808121884696 (+4.2e-8).
+    // "Two-scale noses"); the GPU's, measured again on the merged code
+    // (2026-10-22, SwiftShader): 0.42909808121884696 (+4.17e-8).
     const body: Body = {
       nose: { shape: { kind: 'haack', parameter: 0 }, length: 1, baseRadius: 0.5 },
       cylinderLength: 1,

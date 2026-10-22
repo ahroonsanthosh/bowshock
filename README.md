@@ -345,7 +345,7 @@ only inside the range those six span: from 1 caliber up to 5 at Mach 1.5,
 4.3 at Mach 2 and 3 at Mach 3; outside it, and for the other Haack noses and
 the power series, the case is refused with the reason. On the GPU the
 page's drag of the 1-caliber nose at Mach 2 is within 4.2e-8 of the CPU's on
-20 cells across.
+20 cells across (measured on the code as merged).
 
 ### The components of total drag
 
