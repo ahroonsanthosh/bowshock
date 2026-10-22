@@ -1953,7 +1953,8 @@ D^-0.35 from changes of that size; it is not refused.
 - **G3** (`tests/gpu/transonic-gpu.test.ts`): `gpuNoseDragSolvers` on
   SwiftShader, the cone at Mach 1.1, stopped after r = 2. Its r = 1 and
   r = 2 drags must be the CPU driver's within 3e-7, each settled in fewer
-  than 4,000 steps under a cap of 8,000 a grid, which a limit cycle
+  than 6,000 steps (4,000 before the fitted-window rule of the re-review
+  of `dd6c423`) under a cap of 8,000 a grid, which a limit cycle
   (4 sweeps) cannot meet. It pins `GPU_TRANSONIC_SWEEPS` at 2 by
   behaviour, not only by value. Also on SwiftShader: the precision check
   passes on a rough state of the cone.

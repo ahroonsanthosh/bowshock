@@ -325,8 +325,9 @@ describe('the page engine: its precision check and its sweeps (review of aed95b0
   it('G3: gpuNoseDragSolvers settles the cone’s r = 1 and 2 at Mach 1.1 with 2 sweeps, on the CPU’s drags', async () => {
     // 4 sweeps fall into a limit cycle here (drag 0.067 to 0.164, never
     // settling: 0013, "The GPU's sweeps"); 2 settle in about 1,200 and
-    // 2,100 steps. The cap of 8,000 steps a grid turns a limit cycle into
-    // 'not-converged'.
+    // 2,100 steps, and since the fitted-window rule (re-review of dd6c423)
+    // need at least 30 checks (1,500 and 3,000 steps). The cap of 8,000
+    // steps a grid turns a limit cycle into 'not-converged'.
     expect(GPU_TRANSONIC_SWEEPS).toBe(2);
     const twoGrids = async (
       solve: (body: Body, options: TransonicDragOptions) => Promise<TransonicDrag>,
@@ -359,7 +360,7 @@ describe('the page engine: its precision check and its sweeps (review of aed95b0
       // Each settled to 1e-7 of its drag (measured on SwiftShader when the
       // sweeps were fixed: r = 1 within 4.9e-8 of the CPU).
       expect(Math.abs(g.drag / c.drag - 1), `r = ${g.refinement}`).toBeLessThan(3e-7);
-      expect(g.steps, `r = ${g.refinement} steps`).toBeLessThan(4000);
+      expect(g.steps, `r = ${g.refinement} steps`).toBeLessThan(6000);
     }
   }, 10_800_000);
 });
