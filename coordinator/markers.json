@@ -1,0 +1,240 @@
+[
+ {
+  "id": "haack:L1c1M2r4",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haackmoc/lanex.log",
+  "pattern": "done L1c1M2r4"
+ },
+ {
+  "id": "haack:L5M1.5r4u",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haack/queue.log",
+  "pattern": "done fit-L5M1\\.5r4u"
+ },
+ {
+  "id": "haack:L3M3r4",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haack/queue.log",
+  "pattern": "done fit-L3M3r4"
+ },
+ {
+  "id": "haack:lane6-finished",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haack/queue.log",
+  "pattern": "lane6 finished"
+ },
+ {
+  "id": "haack:gpu-vk",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/haack/gpu-vk.out",
+  "pattern": "Test Files"
+ },
+ {
+  "id": "subtip:F-dense",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "\"id\":\"F\",\"family\":\"dense\",\"scale\":1.5,\"kind\":\"verified\""
+ },
+ {
+  "id": "subtip:F-captured",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/captured3.jsonl",
+  "pattern": "\"kind\":\"captured-result\",\"id\":\"F\""
+ },
+ {
+  "id": "subtip:G-dense",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "\"id\":\"G\",\"family\":\"dense\",\"scale\":1.5,\"kind\":\"verified\""
+ },
+ {
+  "id": "subtip:G-captured",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/captured3.jsonl",
+  "pattern": "\"kind\":\"captured-result\",\"id\":\"G\""
+ },
+ {
+  "id": "subtip:F-default",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "\"id\":\"F\",\"family\":\"default\",\"scale\":1,\"kind\":\"verified\""
+ },
+ {
+  "id": "subtip:G-default",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "\"id\":\"G\",\"family\":\"default\",\"scale\":1,\"kind\":\"verified\""
+ },
+ {
+  "id": "subtip:P-default",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "\"id\":\"P\",\"family\":\"default\",\"scale\":1,\"kind\":\"verified\""
+ },
+ {
+  "id": "subtip:A-default",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "\"id\":\"A\",\"family\":\"default\",\"scale\":1,\"kind\":\"verified\""
+ },
+ {
+  "id": "subtip:P-dense",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "\"id\":\"P\",\"family\":\"dense\",\"scale\":1.5,\"kind\":\"verified\""
+ },
+ {
+  "id": "subtip:notconverged",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "(?=.*\"kind\":\"level\")(?=.*\"stoppedEarly\":false,\"converged\":false)"
+ },
+ {
+  "id": "subtip:error-laneA.log",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/laneA.log",
+  "pattern": " end .* exit [1-9]"
+ },
+ {
+  "id": "subtip:error-laneB-captured.log",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/laneB-captured.log",
+  "pattern": " end .* exit [1-9]"
+ },
+ {
+  "id": "subtip:error-laneB-family.log",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/laneB-family.log",
+  "pattern": " end .* exit [1-9]"
+ },
+ {
+  "id": "haack:L1c1M1.5r4",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haackmoc/lanex.log",
+  "pattern": "done L1c1M1\\.5r4"
+ },
+ {
+  "id": "haack:L1c1M3r4",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haackmoc/lanex.log",
+  "pattern": "done L1c1M3r4"
+ },
+ {
+  "id": "haack:L5c2M2r4",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haackmoc/lanex.log",
+  "pattern": "done L5c2M2r4"
+ },
+ {
+  "id": "haack:L5c2M3r4",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haack/queue.log",
+  "pattern": "done L5c2M3r4"
+ },
+ {
+  "id": "haack:lanex-corners-finished",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haackmoc/lanex.log",
+  "pattern": "lanex corners finished"
+ },
+ {
+  "id": "haack:lane6-corner-finished",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haack/queue.log",
+  "pattern": "lane6 corner finished"
+ },
+ {
+  "id": "haack:NOT-converged",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haackmoc/log.txt",
+  "pattern": "NOT converged"
+ },
+ {
+  "id": "transonic:r16-cone-m1.1",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/results/cone7-m1.1-f100-c10.jsonl",
+  "pattern": "\"refinement\":16"
+ },
+ {
+  "id": "transonic:r16-error",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/r16-m1.1-cone.log",
+  "pattern": "FAIL|Error"
+ },
+ {
+  "id": "transonic:queue-job-failed",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/queue-s11.txt.log",
+  "pattern": " end [1-9]"
+ },
+ {
+  "id": "haack:L1c1M3r4b",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haackmoc/lanex.log",
+  "pattern": "done L1c1M3r4"
+ },
+ {
+  "id": "haack:two-scale-test",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/haack/two-scale-test.out",
+  "pattern": "Test Files"
+ },
+ {
+  "id": "ui:gpu-page-path",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/fix/gpu-long.log",
+  "pattern": "=== all done"
+ },
+ {
+  "id": "transonic:ogive10-r16",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/results/ogive10-m1.1-f100-c10.jsonl",
+  "pattern": "\"refinement\":16"
+ },
+ {
+  "id": "transonic:ogive10-job-failed",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/queue-ogive10.txt.log",
+  "pattern": " end [1-9]"
+ },
+ {
+  "id": "transonic:ogive5-m1.1-r8",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/results/ogive5-m1.1-f100-c10.jsonl",
+  "pattern": "\"refinement\":8"
+ },
+ {
+  "id": "transonic:ogive5-m1.05-r8",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/results/ogive5-m1.05-f100-c10.jsonl",
+  "pattern": "\"refinement\":8"
+ },
+ {
+  "id": "transonic:hemi-m1.5-r8",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/results/hemi-m1.5-f100-c10.jsonl",
+  "pattern": "\"refinement\":8"
+ },
+ {
+  "id": "transonic:s12-job-failed",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/queue-s12.txt.log",
+  "pattern": " end [1-9]"
+ },
+ {
+  "id": "transonic:ogive5-m1.1-r16",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/results/ogive5-m1.1-f100-c10.jsonl",
+  "pattern": "\"refinement\":16"
+ },
+ {
+  "id": "haack:marches-done",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-abd83b26cc3489c03/tests/tmp-haackmoc/marches.log",
+  "pattern": "done marches-L1c1M3"
+ },
+ {
+  "id": "transonic:nest-done",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/queue-nest.txt.log",
+  "pattern": " end .*TAG=n-ogive5-m1.0-f400"
+ },
+ {
+  "id": "transonic:ogive10-lane-dead-8",
+  "pgid": 256
+ },
+ {
+  "id": "transonic:s12-lane-dead-8",
+  "pgid": 257
+ },
+ {
+  "id": "haack:lane6-dead-8",
+  "pgid": 260
+ },
+ {
+  "id": "haack:lanex-dead-8",
+  "pgid": 264
+ },
+ {
+  "id": "subtip:laneA-dead-8",
+  "pgid": 265
+ },
+ {
+  "id": "subtip:laneB-dead-8",
+  "pgid": 267
+ },
+ {
+  "id": "subtip:A-default-done",
+  "file": "/tmp/claude-0/-home-user-bowshock/bdd8e536-5be2-56f7-a977-5e8c0e15cd6b/scratchpad/subtip/family3.jsonl",
+  "pattern": "\"id\":\"A\",\"family\":\"default\",\"scale\":1,\"kind\":\"verified\""
+ },
+ {
+  "id": "transonic:ogive3-lane-dead-8",
+  "pgid": 2498
+ },
+ {
+  "id": "transonic:ogive3-job-failed",
+  "file": "/home/user/bowshock/.claude/worktrees/agent-a9685e852221ade15/tests/tmp-transonic/queue-ogive3.txt.log",
+  "pattern": " end [1-9]"
+ }
+]
