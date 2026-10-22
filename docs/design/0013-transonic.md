@@ -1561,6 +1561,44 @@ on the page.
   settle.
 - **Tests:** on a synthetic engine (`tests/analysis/transonic-drag.test.ts`).
 
+**Step 6, done (2026-10-22; `61100c9`).** The routing, outside the page
+files: `solveNoseDrag` (`src/analysis/nose-drag-solve.ts`) picks the
+transonic solve from Mach 1 to below 1.2 and the fitted solver from 1.2
+(`solverFor`), and returns one shape for both (`NoseDragOutcome`: the
+status, the value and its band, the text, the grids, a finer grid
+offered, the solver's own result). Below Mach 1 it refuses. A fitted
+solver's refusal by throwing becomes a refusal; a failed GPU is thrown.
+`gpuNoseDragSolvers(device)` gives the page both solvers on its device.
+The choice is pinned at Mach 0.999, 1, 1.1999, 1.2 and 1.2001.
+
+**The interface's review of the result type (2026-10-22), one commit
+each.**
+
+1. Refusals and non-convergence carry a code (`reason`: 'mach-1',
+   'blunt-nose', 'no-band', 'far-field', 'cylinder'; 'not-settled',
+   'not-finite') and the sentence apart (`message`) (`55de905`).
+2. `transonicNoseTerm` gives the total drag the transonic nose in the
+   shape the fitted one has ({ value, uncertainty, grids }), so the
+   page never combines bands itself. `band` is a half-width, as
+   VerifiedDrag's `uncertainty` (`eef1ea5`).
+3. A grid that does not converge comes back with the grids solved
+   before it (`17a7424`).
+4. The offered r = 16 grid carries its expected work, for the page to
+   divide by its own measured rate: its steps (r = 8's times their
+   growth from r = 4, which on the cone at Mach 1.1 gives 9,800 against
+   the 7,300 measured), its cell updates, and the cell updates of the
+   solve so far, which a solve to r = 16 repeats (`943d6be`).
+5. Each grid, of the family and of the allowances, is given to
+   `onLive` to draw as it converges, and null just before its buffers
+   are released. The source is a 32-bit view of the two-float state
+   (its high parts), refreshed after each batch of steps, on the
+   grid's nodes, for drawing only. The fitted solver's fits come
+   through the same hook (`df544c9`).
+6. Progress is typed: a grid of the family, or an allowance's base grid
+   with which allowance and which domain (`fc062b0`).
+7. The range error's text and type are pinned, and the transonic
+   solve's range is the router's (`4aef318`).
+
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 
 (Superseded as a serving rule by the owner's decision of 2026-10-21,
