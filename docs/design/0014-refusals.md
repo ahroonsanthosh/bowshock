@@ -1426,7 +1426,11 @@ and final.
   (nose terms 0.0947 to 0.1105) the page's total should lie within about
   4e-6 in C_D of the run's (the 7e-5 allowance alone is under 8e-6),
   below the fourth decimal shown. A GPU page test drives the page's own
-  solve at one such case (`tests/gpu/nose-drag-page.test.ts`). The page's Basic Finner body, typed to six
+  solve at round 3263's conditions (`tests/gpu/nose-drag-page.test.ts`),
+  asserting the validated label and the run's total inside the page's
+  band; on software WebGPU it did not finish in two hours, so it runs
+  only when asked (`VITE_SLOW_GPU=1`) and has not yet been run to the
+  end. The page's Basic Finner body, typed to six
   decimals, moves the total by under 1e-8 (6e-9).
 - _The label for a case inside it_, plainly and in a few sentences:
   "validated", tested once against BRL Report 934's range A (seven

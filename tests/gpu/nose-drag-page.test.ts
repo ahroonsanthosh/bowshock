@@ -25,6 +25,7 @@ import {
   gateDisplay,
   impliedConditionText,
   INSIDE_PENDING_TEXT,
+  SUB_CLASS_PENDING_TEXT,
   totalDragDisplay,
   VALIDATED_HEADLINE,
   type TotalDragFields,
@@ -338,4 +339,58 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     expect(target.querySelector('.warn, .claim-warn')).toBeNull();
     target.remove();
   });
+});
+
+/**
+ * The page's own nose solve takes hours on software WebGPU: at the page's coarsest choice (four
+ * grids, to 160 cells across) it did not finish in two hours on SwiftShader on 2026-10-22, so it
+ * runs only when asked, with VITE_SLOW_GPU=1, on a real GPU or given the time.
+ */
+const SLOW_GPU = import.meta.env.VITE_SLOW_GPU === '1';
+
+describe("the page's own nose solve, into the BRL sub-class", () => {
+  it.runIf(SLOW_GPU)(
+    "a sharp-edged Basic Finner at Mach 2.423 (round 3263's conditions), solved on the page: validated, the total within its band of the run's",
+    async () => {
+      // Round 3263 as the run took it (0020): Mach 2.423, 0.80 in and 293 K, so the Reynolds
+      // number on length 4.634135e6 times the Mach number, inside 4.423e6 to 4.855e6.
+      const mach = 2.423;
+      const reynolds = 4.634135065050419e6 * mach;
+      const runCd = 0.4314048687808397;
+      const runNose = exactConeNoseWaveDrag(mach, Math.atan(0.5 / BODY.nose.length));
+      set('#mach', String(mach));
+      (doc.querySelector('#basic-finner') as HTMLButtonElement).click();
+      set('#le-radius', '0');
+      set('#condition-mode', 'reynolds');
+      set('#reynolds', String(reynolds));
+      set('#temperature', '293');
+      await until(
+        () => text('#total-output').includes(SUB_CLASS_PENDING_TEXT),
+        'the sub-class, pending',
+        10_000,
+      );
+      (doc.querySelector('#run') as HTMLButtonElement).click();
+      await until(() => text('#total-output').includes('Total C_D ='), 'the solve', 7_000_000);
+      // The page's own solve of the cone, with its band: it contains Taylor-Maccoll's value.
+      const wave = /Wave Cd = ([0-9.]+) ± ([0-9.]+)/.exec(text('#result'));
+      expect(wave).not.toBeNull();
+      const [value, band] = [Number(wave![1]), Number(wave![2])];
+      expect(Math.abs(value - runNose.cd)).toBeLessThanOrEqual(band);
+      const head = doc.querySelector('#total-output p.result.ok')?.textContent ?? '';
+      expect(head.endsWith(`: ${VALIDATED_HEADLINE}`)).toBe(true);
+      expect(doc.querySelector('#total-output .claim.claim-ok')?.textContent).toContain(
+        VALIDATED_CLAIM,
+      );
+      const total = /Total C_D = ([0-9.]+), model-form band ([0-9.]+) to ([0-9.]+)/.exec(head);
+      expect(total).not.toBeNull();
+      const [cd, low, high] = [Number(total![1]), Number(total![2]), Number(total![3])];
+      // The run's value lies inside the page's band; the page's total, to its fourth decimal,
+      // differs from the run's by the nose alone (0014 section 10.7 (q)).
+      expect(runCd).toBeGreaterThanOrEqual(low);
+      expect(runCd).toBeLessThanOrEqual(high);
+      expect(Math.abs(cd - runCd)).toBeLessThanOrEqual(5e-5 + band);
+      console.log(`page nose ${value} +- ${band}; Taylor-Maccoll ${runNose.cd}; total ${cd}`);
+    },
+    7_200_000,
+  );
 });
