@@ -548,6 +548,13 @@ transonic results will carry wider bands.
   what it costs on a population of supersonic amateur rockets, the ranked
   work to lift them with measured bands, and the held-back tests registered
   before that work (section 10), with its dated amendments.
+- [0015](docs/design/0015-fins-at-the-base.md): fins at the base, the
+  factor rebuilt (W1), and the base below Mach 1.5 (W2) (draft): served
+  outside the Basic Finner's class as estimated on component data, with
+  no hold-out pass of its own.
+- [0020](docs/design/0020-brl934-range-a.md): BRL Report 934's range A,
+  run once as registered: the present model passed at all seven rounds,
+  the rebuilt factor (W1) refused at every round.
 
 Research records and unfinished work behind them (not used by the solver,
 not accepted designs): [docs/research](docs/research/README.md).
