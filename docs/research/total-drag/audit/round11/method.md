@@ -186,3 +186,84 @@ while holes 1 and 2 do have symbols on that gridline.
   0.925.
 * h4-06 (the bottom of the dip, M 0.874) has two rising lines within 6 px;
   its outline score is 0.47.
+
+## NACA TN 3548 fig. 6 (PDF p. 17, printed p. 15)
+
+**The page.** A 300 dpi colour JPEG with the figure printed sideways. It was
+turned upright, losslessly, with `scripts/rotate.py` (grey, 90 deg
+clockwise, an exact pixel transpose); all pixel positions in this section
+and in `readings/tn3548_fig6_*.json` are of the turned page (3086 x 2344).
+The symbols are drawn in a light line (grey 150 to 200 on paper of about
+229), so ink for the symbols is grey < 200 (`ink` option of
+`sym_refine.py`).
+
+**As printed.** Caption: "Base pressure coefficient for slab wing, a body
+of revolution, and limiting base pressure coefficient (vacuum) plotted
+against Mach number." Abscissa M, 0.6 to 1.8, gridlines every 0.05;
+ordinate Cp_b, 0 to -0.9, gridlines every 0.05. Legend: a dash-dot line
+"Limiting base pressure coefficient (reference 1)"; a circle "Outboard
+slit"; a square "Inboard slit" (with a sketch of the two slits); a dashed
+line "Body of revolution (reference 2)". Both symbol glyphs have a centre
+dot. A solid faired line runs through the symbols.
+
+**Calibration** (`readings/tn3548_fig6_calib.json`, `grid_calib.py` entry
+`tn3548f6`). 442 of 475 intersections measured; the 33 missing are under
+the legend (M 1.65 to 1.8 at Cp_b -0.9 to -0.6, and the -0.9 line at M 1.4
+to 1.6), where the gridlines stop; no symbol is near them. Leave-one-out
+0.27 px in x and 0.16 px in y (rms); one affine map leaves 0.0007 in M and
+0.0004 in Cp_b (rms). Scale 1110 px per unit on both axes, so 1 px =
+0.0009.
+
+**Finding the symbols.** I listed every symbol by eye on contrast-stretched
+zooms at 3x to 8x with a page-pixel grid (`scripts/zoom.py`), following
+the faired line from M 0.62 to 1.61 and searching the whole plot area. An
+automatic dot finder was tried and dropped: the centre dots are too faint
+to stand out from the outline and the paper texture.
+
+**Typing.** Circle or square by the outline on the zooms: round sides and
+top against straight sides, corners and a flat top. The isolated glyphs
+measure 10.5 to 12 px between stroke centres for the circles, and 9 to 10
+px tall by 9 to 10 px wide for the squares, so the squares are a little
+smaller. An outline-fit score for each shape at each symbol was computed as
+a check and did not separate the two (the smaller square fits inside a
+circle's ring), so it was not used.
+
+**Centring.** Isolated glyphs by an outline fit (circle of radius 5.75 px,
+rectangle of half sides 4.75 and 4.5 px) within +-2 px of the eye centre.
+Eight pairs of glyphs drawn 2 to 10 px apart, one above
+the other, overlap (seven a circle and a square at the same Mach number,
+one two glyphs at M 0.846). For each, the stroke rows of the
+pair's top and bottom edges were found on a 5 px wide strip
+(`scripts/colprofile.py`); the square's centre is half its height below its
+flat top edge and the circle's half its height above its round bottom edge
+(or the reverse where the circle is the upper one). Those centres carry
+2 px (+-0.0037 in M and Cp_b).
+
+**What was read** (`readings/tn3548_fig6.csv`): 78 symbols.
+* 38 circles (outboard slit), ob-01 to ob-38, from M 0.624 (Cp_b -0.556) to
+  1.608 (-0.308).
+* 40 squares (inboard slit), ib-01 to ib-40, from M 0.624 (-0.562) to 1.608
+  (-0.293).
+* The peak: both slits rise almost vertically at M 0.97 to 0.99. The
+  highest symbols are a square (ib-23, M 0.984, Cp_b -0.831) and a circle
+  (ob-21, M 0.984, -0.826), overlapping, at the top of the vertical stack.
+* Errors: +-0.0015 in M and Cp_b where the outline score is 0.45 or more,
+  +-0.0028 below that, +-0.0037 for the overlapping pairs.
+
+**Uncertain calls.**
+* The pair at M 0.775 (ob-07 and ib-06, page x 1042) is drawn almost on
+  top of itself: one ink blob, rows 886 to 900. Its darkest row (887.5) is
+  read as the top of the square and the bottom row (899) as the bottom of
+  the circle, giving Cp_b -0.572 and -0.570. The two centres could be
+  swapped or both could lie anywhere in -0.566 to -0.578.
+* At M 0.846 (x 1120) two glyphs overlap (rows 873 to 888). Both show a flat
+  top edge, so I typed both squares (ib-10, ib-11), which leaves no circle at
+  that Mach number. Their heights (9.5 and 10 px between stroke centres) sit
+  between the square and circle sizes, so either could be a circle.
+* ib-07 (M 0.788) and ib-09 (M 0.831) have rounded corners; I typed them
+  squares by their straight sides. There is no circle at M 0.788 or 0.831,
+  and no square at M 0.732 or 0.817 (ob-05, ob-09), so a mistyping would
+  move a point from one slit to the other.
+* ob-01 at M 0.624 touches the Cp_b -0.55 gridline at its bottom edge.
+* The faired line, the body of revolution's dashed line and the limiting
+  pressure's dash-dot line were not read.

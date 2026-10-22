@@ -18,6 +18,11 @@ META = {
                        conditions='caption: "Pressures on basic model. (Zero incidence.)"; set labelled "On surface '
                                   'upstream of base"; line labelled "x/h = -0.167" (4)',
                        curves={}, notes={}, tri_note=""),
+    "tn3548f6": dict(figure="NACA TN 3548 fig. 6", x="M", y="Cp_b",
+                     conditions='caption: "Base pressure coefficient for slab wing, a body of revolution, and '
+                                'limiting base pressure coefficient (vacuum) plotted against Mach number."; legend '
+                                '"Outboard slit" (circle), "Inboard slit" (square)',
+                     curves={}, notes={}, tri_note=""),
 }
 
 

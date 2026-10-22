@@ -22,6 +22,19 @@ import rm_calib  # noqa: E402
 Image.MAX_IMAGE_PIXELS = None
 
 CONFIG = {
+    # Round 11. NASA TN 3548 fig. 6 (PDF p. 17, a 300 dpi colour JPEG, rotated 90 deg clockwise so that M runs
+    # to the right; see method.md): M 0.6..1.8 every 0.05; Cp_b -0.9 (top) .. 0 every 0.05. The legend (upper
+    # right, where the gridlines stop) and the NACA badge are excluded.
+    "tn3548f6": dict(
+        vvals=[round(0.6 + 0.05 * k, 2) for k in range(25)],
+        vpos=[851.0, 906.1, 961.5, 1016.0, 1070.9, 1126.5, 1180.9, 1236.0, 1291.1, 1346.1, 1401.9, 1456.5,
+              1510.5, 1566.0, 1621.5, 1676.4, 1731.5, 1787.5, 1843.0, 1897.5, 1953.5, 2008.4, 2062.5, 2118.5,
+              2174.5],
+        hvals=[round(-0.9 + 0.05 * j, 2) for j in range(19)],
+        hpos=[526.5, 581.5, 637.5, 693.1, 748.9, 804.1, 860.1, 915.9, 971.5, 1027.4, 1082.5, 1137.6, 1193.2,
+              1249.5, 1304.9, 1360.5, 1416.0, 1471.5, 1527.1],
+        box=(853, 2172, 529, 1525),
+        exclude=[(1680, 2180, 520, 870), (1905, 2145, 1435, 1510)], half=120),
     # R&M 3427 fig. 13 (PDF p. 37, 300 dpi CCITT): M 0..1.2 every 0.2; Cp 0 (bottom) .. -0.8 every 0.2 (the top
     # frame, about -0.9, is not labelled and is left out); lettering boxes excluded
     "r3427f13": dict(

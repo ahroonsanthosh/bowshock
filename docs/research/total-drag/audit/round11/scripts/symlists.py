@@ -48,3 +48,54 @@ FIGS = {
         ("h4-11", "plus", 1714.5, 2220.5, {"note": "last point"}),
     ]),
 }
+
+# NASA TN 3548 fig. 6 (PDF p. 17, colour JPEG page rotated 90 deg clockwise; pixel positions are of the
+# rotated page). Legend: "o Outboard slit", "square Inboard slit"; both glyphs carry a centre dot. The plotted
+# glyphs are 11 to 14 px across and drawn in a light line, so ink is grey < 200 and they are centred by outline
+# fits. Templates: the isolated plotted circle at (1207, 847.5) and square at (1259.5, 868.5). Pairs of a
+# circle and a square drawn 2 to 10 px apart overlap; there the type is called from the flat or round top and
+# bottom edges on 7x to 8x zooms (zoom.py) and the error is raised.
+_PAIR = "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge"
+_P2 = {"e": 2.0, "note": _PAIR}
+
+
+def _pm(x, y, edges):
+    """A symbol of an overlapping pair, centred from the stroke rows of the pair's top and bottom edges
+    (colprofile.py, 5 px wide strip): a square's centre is 4.5 to 5 px below its top edge, a circle's
+    5 to 5.5 px above its bottom edge (the isolated glyphs measure 9 to 10 px and 10.5 to 12 px between
+    stroke centres)."""
+    return {"manual": (x, y), "e": 2.0, "note": _PAIR + "; centre from the edges: " + edges}
+FIGS["tn3548f6"] = dict(
+    half=8, ink=200, outline_search=2.0,
+    legend={"circ": (1207.0, 847.5), "sq": (1259.5, 868.5)},
+    outline={"circ": ("circle", 5.75), "sq": ("rect", 4.75, 4.5)},
+    series={"circ": "outboard slit (legend circle)", "sq": "inboard slit (legend square)"}, symbols=[
+        ("ob-01", "circ", 875.5, 908.0, _pm(876.0, 909.0, "bottom edge row 914 (merges with the Cp -0.55 gridline at 915.9), top edge about 904")), ("ob-02", "circ", 905.0, 913.5),
+        ("ob-03", "circ", 932.0, 892.5, _pm(933.25, 892.0, "bottom edge row 897, top edge 887")), ("ob-04", "circ", 961.0, 926.0), ("ob-05", "circ", 995.0, 902.5),
+        ("ob-06", "circ", 1027.0, 903.0, _pm(1026.75, 901.75, "bottom edge row 907, top edge about 896.5")), ("ob-07", "circ", 1042.5, 894.5, _pm(1042.0, 893.5, "bottom edge row 899; the two glyphs are drawn almost on top of each other (ink rows 886 to 900, x 1037 to 1048), so this pair is the least certain")),
+        ("ob-08", "circ", 1071.5, 878.5, _pm(1071.5, 880.0, "top edge row 875, bottom edge about 885; on the M 0.8 gridline")), ("ob-09", "circ", 1088.0, 887.0), ("ob-10", "circ", 1136.0, 873.5),
+        ("ob-11", "circ", 1152.5, 872.0), ("ob-12", "circ", 1171.0, 874.5), ("ob-13", "circ", 1188.0, 862.5),
+        ("ob-14", "circ", 1207.0, 847.5), ("ob-15", "circ", 1228.5, 847.0), ("ob-16", "circ", 1251.5, 842.5),
+        ("ob-17", "circ", 1259.0, 829.5), ("ob-18", "circ", 1262.0, 793.5), ("ob-19", "circ", 1269.0, 724.0, _pm(1269.0, 725.5, "bottom edge row 731, top edge about 720")),
+        ("ob-20", "circ", 1274.0, 641.0), ("ob-21", "circ", 1270.0, 607.5, _pm(1270.0, 609.0, "bottom edge row 614.5, top edge 603.5")), ("ob-22", "circ", 1312.5, 717.0),
+        ("ob-23", "circ", 1344.5, 774.0), ("ob-24", "circ", 1366.5, 807.5), ("ob-25", "circ", 1401.0, 868.5),
+        ("ob-26", "circ", 1434.0, 909.0), ("ob-27", "circ", 1483.0, 963.5), ("ob-28", "circ", 1508.5, 995.5),
+        ("ob-29", "circ", 1550.0, 1027.0), ("ob-30", "circ", 1585.5, 1055.0), ("ob-31", "circ", 1627.5, 1082.5),
+        ("ob-32", "circ", 1671.0, 1101.0), ("ob-33", "circ", 1717.0, 1111.5), ("ob-34", "circ", 1761.0, 1127.5),
+        ("ob-35", "circ", 1810.0, 1145.5), ("ob-36", "circ", 1859.5, 1158.0), ("ob-37", "circ", 1909.5, 1173.5),
+        ("ob-38", "circ", 1962.0, 1182.0, {"note": "last circle; the faired line ends beside it"}),
+        ("ib-01", "sq", 875.5, 902.5, _pm(876.0, 902.75, "top edge row 898.5, bottom edge 907")), ("ib-02", "sq", 905.0, 949.0), ("ib-03", "sq", 932.0, 887.5, _pm(933.25, 887.5, "top edge row 883, bottom edge 892")),
+        ("ib-04", "sq", 961.0, 879.5), ("ib-05", "sq", 1026.0, 896.0, _pm(1026.75, 895.5, "top edge row 891, bottom edge about 900")), ("ib-06", "sq", 1042.5, 891.0, _pm(1042.0, 891.5, "top edge row 887.5 (the darkest row, top of both glyphs); the two glyphs are drawn almost on top of each other, so this pair is the least certain")),
+        ("ib-07", "sq", 1056.0, 888.0), ("ib-08", "sq", 1071.5, 889.5, _pm(1071.5, 889.5, "top edge row 885, bottom edge 894; on the M 0.8 gridline")), ("ib-09", "sq", 1104.0, 881.5),
+        ("ib-10", "sq", 1119.5, 877.5, _pm(1120.5, 877.75, "top edge row 873, bottom edge 882.5; typed a square by its flat top, tentatively (see method.md)")), ("ib-11", "sq", 1119.5, 883.0, _pm(1120.5, 882.5, "top edge row 877.5, bottom edge 887.5; typed a square by its flat top and bottom, tentatively (see method.md)")), ("ib-12", "sq", 1136.0, 881.5),
+        ("ib-13", "sq", 1152.5, 882.0), ("ib-14", "sq", 1171.0, 896.0), ("ib-15", "sq", 1189.0, 896.0),
+        ("ib-16", "sq", 1207.0, 891.0), ("ib-17", "sq", 1229.5, 884.5), ("ib-18", "sq", 1252.5, 882.5),
+        ("ib-19", "sq", 1259.5, 868.5), ("ib-20", "sq", 1261.5, 810.5), ("ib-21", "sq", 1269.0, 717.0, _pm(1269.0, 719.0, "top edge row 715, bottom edge about 723")),
+        ("ib-22", "sq", 1274.0, 680.0), ("ib-23", "sq", 1270.0, 601.0, _pm(1270.0, 602.5, "top edge row 597.5, bottom edge 607.5")), ("ib-24", "sq", 1312.0, 745.0),
+        ("ib-25", "sq", 1344.0, 796.5), ("ib-26", "sq", 1367.0, 840.0), ("ib-27", "sq", 1401.0, 887.5),
+        ("ib-28", "sq", 1434.0, 934.0), ("ib-29", "sq", 1483.0, 986.0), ("ib-30", "sq", 1507.5, 1013.5),
+        ("ib-31", "sq", 1550.0, 1042.5), ("ib-32", "sq", 1584.5, 1073.0), ("ib-33", "sq", 1627.0, 1099.5),
+        ("ib-34", "sq", 1671.0, 1118.5), ("ib-35", "sq", 1716.0, 1130.5), ("ib-36", "sq", 1760.0, 1141.5),
+        ("ib-37", "sq", 1809.0, 1162.0), ("ib-38", "sq", 1858.5, 1175.5), ("ib-39", "sq", 1909.0, 1188.0),
+        ("ib-40", "sq", 1962.0, 1199.0, {"note": "last square"}),
+    ])

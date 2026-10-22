@@ -203,7 +203,9 @@ def main():
     cfg = symlists.FIGS[key]
     g = localgrid.LocalGrid.load(calib)
     cal = json.load(open(calib))["leave_one_out_px"]
-    ink = (np.asarray(Image.open(page).convert("L")) < 128).astype(np.uint8) * 255
+    # round 11: "ink" sets the grey level below which a pixel counts as ink (default 128); TN 3548's symbols
+    # are drawn in a light pencil-like line (grey 150 to 200 on a 229 paper)
+    ink = (np.asarray(Image.open(page).convert("L")) < cfg.get("ink", 128)).astype(np.uint8) * 255
     I = np.asarray(Image.fromarray(ink).filter(ImageFilter.BoxBlur(cfg.get("blur", 1)))).astype(float) / 255.0
     raw = ink.astype(float) / 255.0
     B1 = np.asarray(Image.fromarray(ink).filter(ImageFilter.BoxBlur(1))).astype(float) / 255.0
@@ -261,6 +263,13 @@ def main():
                 e = 1.5
         if "manual" not in opt and "e" in opt:
             e = opt["e"]
+        if cfg.get("outline_check"):
+            # round 11: a check of the type called by eye: the outline score of every outline shape of the
+            # figure at its best position within +-2 px of the eye centre
+            rec["outline_check"] = {}
+            for name_, shp in cfg["outline"].items():
+                osc_, _ = outline_centre(B1, g, shp, ax, ay, search=2.0)
+                rec["outline_check"][name_] = round(osc_, 3)
         if typ in cfg.get("dot_check", ()):
             qx, qy, qs = dot_centre(raw, B1, g, *rec["centre_px"])
             rec["dot_check"] = dict(x=round(qx, 2), y=round(qy, 2), score=round(float(qs), 3))
@@ -276,6 +285,8 @@ def main():
         res.append(rec)
         tc = rec.get("type_check")
         tcs = "" if not tc else " check " + " ".join("%s=%.2f" % kv for kv in tc.items())
+        if rec.get("outline_check"):
+            tcs += " outline " + " ".join("%s=%.2f" % kv for kv in rec["outline_check"].items())
         print("%-6s %-6s score %.2f centre (%.1f, %.1f) -> %.4f +- %.4f, %.4f +- %.4f%s %s" % (
             sid, typ, rec["score"], x, y, X, rec["err_x"], Y, rec["err_y"], tcs, rec["note"]))
     json.dump(res, open(out, "w"), indent=1)
