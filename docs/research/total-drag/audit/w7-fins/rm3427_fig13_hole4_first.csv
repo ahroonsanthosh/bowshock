@@ -1,0 +1,17 @@
+# ARC R&M 3427 (AERADE 1826.2/4011, sha256 0e8b4d66...c5319), fig. 13 lower panel, PDF p. 37: surface pressure at hole 4
+# (x/h -0.167, fig. 3; plus symbols), against M_inf, zero incidence. Named by 0014 10.7 (m) before this reading. FIRST
+# reading (0019 reader), 2026-10-22; read once, a blind second to arrange. Crop at page pixels (473, 1386) as for holes 5
+# to 7 (rm3427_fig13_grid.json, calib.py). Centres placed by hand on zoomed views (plus symbols have no template in
+# symfit.py); err from the placement (+-1.5 px, more where lines cross) and the grid trace. Method: method_rm3427_fig13_hole4.md.
+id,px_x,px_y,mach,cp,mach_err,cp_err,note
+h4_01,595.0,651.7,0.4007,-0.4084,0.002,0.002,on the M 0.4 grid line
+h4_02,791.7,640.7,0.5997,-0.4209,0.002,0.002,on the M 0.6 grid line
+h4_03,892.3,634.3,0.7006,-0.4276,0.002,0.002,
+h4_04,992.3,633.3,0.8009,-0.4292,0.002,0.002,on the M 0.8 grid line
+h4_05,1042.0,679.0,0.8506,-0.3832,0.002,0.002,
+h4_06,1065.8,709.0,0.8743,-0.3529,0.003,0.003,among holes 1 to 3 at their dip; arms read where clear
+h4_07,1091.7,595.8,0.9004,-0.4675,0.003,0.003,near the peak where the four curves cross
+h4_08,1117.5,636.7,0.9261,-0.4260,0.002,0.002,
+h4_09,1140.8,677.5,0.9494,-0.3848,0.002,0.002,
+h4_10,1166.3,717.0,0.9747,-0.3451,0.002,0.002,
+h4_11,1241.3,835.0,1.0499,-0.2266,0.002,0.002,the last point

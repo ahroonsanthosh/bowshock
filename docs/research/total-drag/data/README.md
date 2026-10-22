@@ -39,6 +39,12 @@ the second pending, none using Basic Finner drag data.
 | base_band_ends_output.txt (0010) | The ends of the base band: tunnel envelope inside M 1.5 to 3.0, Herrin and Dutton low end at the audit's reading |
 | bf_gate_width_v2_output.txt (0010) | Basic Finner gate sizing corrected (F on the less negative curve, fin friction once, 0010's F band, wall input); reproduces 0010's tolerances |
 | band_sum_v2_output.txt (0010) | The illustrative band combination with 0010's fins-on-base half-width (12.2%) |
+| fins_at_base_w1.md, fins_at_base_w1.csv, w1_*_output.txt (0015) | First readings for the rebuilt fins-on-base factor (W1 of 0014): TN 2360 fig. 6, TN 3819 figs. 33 to 35, RM L52J21a figs. 8 and 38(c), RM L52E06 fig. 7; method, calibration and errors; the second, blind reading (round 6) paired in fins_at_base_w1_second.csv |
+| fins_at_base_w1_second.csv, w1_compare_round6_output.txt (0015) | The round-6 blind second readings of the same figures, restated by ../scripts/w1/round6_second.py, and the value-by-value comparison with the first (../scripts/w1/compare_round6.py): differences, combined errors, flagged disagreements |
+| w1_l52j21a_fig31_33d_output.txt, w1_zero_member_check_output.txt (0015) | First reading of RM L52J21a figs. 31 to 33 panel (d) near R 8e6 (../scripts/w1/l52j21a_fig31_33d.py), and the check of the zero member against fig. 8 minus those (../scripts/w1/zero_member_check.py): a check, not a band |
+| w2_l52e06_fig8_output.txt (0015 section 11) | First reading of RM L52E06 fig. 8 (../scripts/w1/l52e06_fig8.py), the finless PARD body's base drag: W2's band below Mach 1.5 |
+| round7/tn3819_fig18.csv, round7/rml52j21a_figs31-33d.csv, round7/rml52j21a_fig8_lr.csv, w1_round7_pairing_output.txt (0015 sections 3.5, 7, 11.3) | Round 7's blind readings (copied unchanged from docs/research/total-drag/audit/round7/readings/ at 92fb693 and 1cc821d on another branch, method in its method.md): TN 3819 fig. 18's compiled curves and free-flight curve, RM L52J21a figs. 31 to 33 (d) by nose, fig. 8's nose calls at R 8.06e6; paired with the readings held by ../scripts/w1/pair_round7.py, and the zero member re-derived from them |
+| w1b_w2_proposal.md, nswc_tr92_509_table2.csv | Research after W1, not implemented: moderately swept fins at the base (NSWCDD/TR-92/509, proposed for registration; its Table 2 at alpha 0, first transcription) and W2, the body base below Mach 1.5 (planning values from registered figures); proposals, bands, coverage and the readings owed |
 | *_output.txt (others) | Raw outputs of the scripts below |
 
 Scripts (in `../scripts/`, Python 3, numpy and Pillow only):
@@ -76,6 +82,7 @@ Scripts (in `../scripts/`, Python 3, numpy and Pillow only):
 | brl934.py | BRL 934: the two Graph II readings compared, yaw-corrected CD per round, Reynolds number estimates, domain checks; writes basic_finner_brl934_output.txt |
 | brl934_grid_skew.py, brl934_degrid.py, brl934_ruler_crop.py, brl934_graph2_second.py, brl934_f3_measure.py | BRL 934: grid skew, grid-line removal, ruler crops, Graph II second reading, fig. 3 diameter |
 | clean.py, ascii.py, cleanruler.py, xyruler.py, ruler.py, calib.py, near.py, refine_dot.py, dots.py, crop.py | Digitising aids of the first draft |
+| w1/ (0015) | The W1 first readings: cal.py (grid lines located locally, interpolation between them), sym.py (symbol template match), colruns.py (curve runs by column), dig.py, montage.py, ov_tile.py and tn2360_fig6_scan.py (aids); one script per figure (tn2360_fig6_read.py with fig6_grids.py, tn3819_fig33_34.py, tn3819_fig35.py, l52j21a_fig38.py, l52j21a_fig8.py, l52e06_fig7.py), each run as `python3 -I script.py IMGDIR` on 300 dpi greyscale page renders kept outside the repository |
 
 In the research scratchpad, downloaded PDFs are in `../pdfs/` (`../pdfs/new/` for TN 3320, TN 3372, RM
 L55G28a and NTRS 19930086750; `../pdfs/ia/` for the Basic Finner; `../pdfs/r3/` for TR 1109, TN 2960, RM A52C20,

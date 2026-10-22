@@ -1,0 +1,12 @@
+# ARC R&M 3427 (AERADE 1826.2/4011), fig. 10 "Variation of boundary-layer thickness with Mach number.", PDF p. 36 (printed
+# p. 35): delta/h against M_inf, symbols as fig. 9 (circle at the trailing edge, squares 1 in upstream). The two dashed flat-plate
+# curves (turbulent from the leading edge, laminar) are estimates, not read. No grid: ticks along the axes' tilt (tickcal.py,
+# rm3427_fig10_axes.json; the axis line taken as delta/h 0 sits 2.5 px off the ticks' line, inside the rms); crop at page
+# pixels (850, 1180); symbols fitted with --big. Errors: fit 0.5 px plus start dependence, with the ticks' rms; 1 px = 0.00199 in
+# M and 0.00050 in delta/h. First reading, by the 0019 reader, 2026-10-22: read once.
+station,symbol,mach,delta_over_h,mach_err,delta_over_h_err,x_px,y_px
+1 in upstream,square,0.3960,0.1201,0.0014,0.0004,321.0,297.0
+1 in upstream,square,0.8005,0.1250,0.0014,0.0004,524.75,287.0
+1 in upstream,square,1.0003,0.1157,0.0014,0.0004,625.5,305.5
+1 in upstream,square,1.0982,0.1008,0.0014,0.0004,675.0,335.0
+trailing edge,circle,0.7969,0.1439,0.0014,0.0004,522.75,249.5

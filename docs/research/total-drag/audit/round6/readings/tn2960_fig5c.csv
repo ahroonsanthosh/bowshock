@@ -1,0 +1,125 @@
+figure,series,x,y,err_y,how
+TN 2960 fig. 5(c),M 1.49 faired curve,5,,,guided read: no ink
+TN 2960 fig. 5(c),M 1.49 faired curve,10,,,guided read: no ink
+TN 2960 fig. 5(c),M 1.49 faired curve,20,1.3661,0.0030,guided column read; n=18
+TN 2960 fig. 5(c),M 1.49 faired curve,25,1.2786,0.0030,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,35,1.0490,0.0031,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,40,0.9133,0.0032,guided column read; n=9
+TN 2960 fig. 5(c),M 1.49 faired curve,50,0.7321,0.0029,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,55,0.5989,0.0029,guided column read; n=5
+TN 2960 fig. 5(c),M 1.49 faired curve,65,0.2263,0.0031,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,70,0.1056,0.0030,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,80,-0.1006,0.0030,guided column read; n=18
+TN 2960 fig. 5(c),M 1.49 faired curve,85,-0.1883,0.0030,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,95,,,guided read: no ink
+TN 2960 fig. 5(c),M 1.49 faired curve,100,-0.3868,0.0028,guided column read; n=6
+TN 2960 fig. 5(c),M 1.49 faired curve,110,-0.4484,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,115,-0.4608,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,125,-0.4647,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,130,-0.4642,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,140,-0.4642,0.0028,guided column read; n=18
+TN 2960 fig. 5(c),M 1.49 faired curve,145,-0.4662,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,155,-0.4652,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,160,-0.4654,0.0028,guided column read; n=18
+TN 2960 fig. 5(c),M 1.49 faired curve,170,-0.4659,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.49 faired curve,175,-0.4651,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,5,1.5947,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,10,1.5953,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,20,1.5052,0.0030,guided column read; n=17
+TN 2960 fig. 5(c),M 1.98 faired curve,25,1.4132,0.0030,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,35,1.1938,0.0034,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,40,1.0768,0.0074,guided column read; n=17
+TN 2960 fig. 5(c),M 1.98 faired curve,50,0.7381,0.0032,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,55,0.5935,0.0031,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,65,,,guided read: no ink
+TN 2960 fig. 5(c),M 1.98 faired curve,70,,,guided read: no ink
+TN 2960 fig. 5(c),M 1.98 faired curve,80,,,guided read: no ink
+TN 2960 fig. 5(c),M 1.98 faired curve,85,-0.0488,0.0028,guided column read; n=4
+TN 2960 fig. 5(c),M 1.98 faired curve,95,-0.1736,0.0029,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,100,-0.2187,0.0029,guided column read; n=18
+TN 2960 fig. 5(c),M 1.98 faired curve,110,-0.2626,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,115,-0.2740,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,125,-0.2775,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,130,-0.2766,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,140,-0.2762,0.0028,guided column read; n=18
+TN 2960 fig. 5(c),M 1.98 faired curve,145,-0.2782,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,155,-0.2754,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,160,-0.2744,0.0028,guided column read; n=18
+TN 2960 fig. 5(c),M 1.98 faired curve,170,-0.2712,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 1.98 faired curve,175,-0.2688,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,5,1.6572,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,10,1.6521,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,20,1.5661,0.0033,guided column read; n=18
+TN 2960 fig. 5(c),M 2.90 faired curve,25,1.4733,0.0029,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,35,1.2512,0.0031,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,40,1.1264,0.0031,guided column read; n=15
+TN 2960 fig. 5(c),M 2.90 faired curve,50,,,guided read: no ink
+TN 2960 fig. 5(c),M 2.90 faired curve,55,,,guided read: no ink
+TN 2960 fig. 5(c),M 2.90 faired curve,65,,,guided read: no ink
+TN 2960 fig. 5(c),M 2.90 faired curve,70,,,guided read: no ink
+TN 2960 fig. 5(c),M 2.90 faired curve,80,,,guided read: no ink
+TN 2960 fig. 5(c),M 2.90 faired curve,85,,,guided read: no ink
+TN 2960 fig. 5(c),M 2.90 faired curve,95,-0.0308,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,100,-0.0632,0.0028,guided column read; n=18
+TN 2960 fig. 5(c),M 2.90 faired curve,110,-0.0916,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,115,-0.0993,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,125,-0.0973,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,130,-0.0969,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,140,-0.0963,0.0028,guided column read; n=18
+TN 2960 fig. 5(c),M 2.90 faired curve,145,-0.0993,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,155,-0.1000,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,160,-0.1017,0.0028,guided column read; n=18
+TN 2960 fig. 5(c),M 2.90 faired curve,170,-0.1030,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M 2.90 faired curve,175,-0.1034,0.0028,guided column read; n=7
+TN 2960 fig. 5(c),M=2.90 (diamond),0.1266,1.5118,0.0016,outline template (diamond) score 0.62; flag ink 0.20; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,15,1.5752,0.0016,outline template (square) score 1.00; flag ink 0.96; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),15.14,1.6617,0.0016,outline template (diamond) score 1.00; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),15.25,1.4407,0.0016,outline template (circle) score 1.00; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,16.4,1.5751,0.0016,outline template (square) score 0.67; flag ink 0.50; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),30.01,1.3827,0.0016,outline template (circle) score 0.78; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,30.21,1.3227,0.0016,outline template (square) score 1.00; flag ink 0.39; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),30.19,1.1748,0.0016,outline template (circle) score 0.99; flag ink 0.11; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,45,0.9511,0.0016,outline template (square) score 1.00; flag ink 0.64; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,45.06,0.9137,0.0016,outline template (square) score 0.68; flag ink 0.45; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),45.13,0.9844,0.0016,outline template (circle) score 0.76; flag ink 0.02; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,45.13,0.8844,0.0016,outline template (square) score 1.00; flag ink 0.86; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),45.12,0.7364,0.0016,outline template (circle) score 1.00; flag ink 0.19; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle) flagged -theta,45.19,0.7977,0.0016,outline template (circle) score 0.93; flag ink 0.65; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),59.86,0.5593,0.0016,outline template (circle) score 0.66; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),59.99,0.5293,0.0016,outline template (circle) score 0.88; flag ink 0.27; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,60.05,0.4667,0.0016,outline template (square) score 1.00; flag ink 0.39; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle) flagged -theta,60.18,0.3989,0.0016,outline template (circle) score 1.00; flag ink 0.38; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),60.24,0.3117,0.0016,outline template (circle) score 1.00; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,74.94,0.1202,0.0016,outline template (square) score 0.68; flag ink 0.41; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),75.29,0.2409,0.0016,outline template (diamond) score 0.67; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle) flagged -theta,75.27,0.0303,0.0016,outline template (circle) score 0.64; flag ink 0.57; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle) flagged -theta,75.33,-0.0379,0.0016,outline template (circle) score 0.63; flag ink 0.44; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square),90.02,-0.1243,0.0016,outline template (square) score 1.00; flag ink 0.27; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),90.21,-0.2606,0.0016,outline template (circle) score 0.81; flag ink 0.25; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),90.36,0.0696,0.0016,outline template (diamond) score 0.99; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond) flagged -theta,90.42,-0.0214,0.0016,outline template (diamond) score 1.00; flag ink 0.47; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle) flagged -theta,90.4,-0.3154,0.0016,outline template (circle) score 1.00; flag ink 0.43; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond) flagged -theta,105,-0.1200,0.0016,outline template (diamond) score 0.99; flag ink 0.51; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,105,-0.4314,0.0016,outline template (square) score 0.72; flag ink 0.38; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle) flagged -theta,105,-0.4632,0.0016,outline template (circle) score 1.00; flag ink 0.49; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square),105.1,-0.2538,0.0016,outline template (square) score 1.00; flag ink 0.27; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),105.2,-0.0571,0.0016,outline template (diamond) score 0.88; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),119.8,-0.0983,0.0016,outline template (diamond) score 0.96; flag ink 0.31; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),120,-0.0621,0.0016,outline template (diamond) score 0.75; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square),120,-0.2818,0.0016,outline template (square) score 0.98; flag ink 0.27; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),120.2,-0.4593,0.0016,outline template (circle) score 1.00; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square),135.1,-0.2764,0.0016,outline template (square) score 0.77; flag ink 0.25; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,135.1,-0.2978,0.0016,outline template (square) score 0.97; flag ink 0.70; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),135.3,-0.0779,0.0016,outline template (diamond) score 0.72; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond) flagged -theta,135.3,-0.1114,0.0016,outline template (diamond) score 0.96; flag ink 0.40; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),135.6,-0.4607,0.0016,outline template (circle) score 1.00; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond) flagged -theta,150,-0.1191,0.0016,outline template (diamond) score 0.98; flag ink 0.50; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),150,-0.4647,0.0016,outline template (circle) score 1.00; flag ink 0.33; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square),150.3,-0.2857,0.0016,outline template (square) score 0.97; flag ink 0.27; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),164.8,-0.1269,0.0016,outline template (diamond) score 0.98; flag ink 0.20; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,165.1,-0.4344,0.0016,outline template (square) score 0.66; flag ink 0.36; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),165.1,-0.4701,0.0016,outline template (circle) score 1.00; flag ink 0.25; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square),165.2,-0.2776,0.0016,outline template (square) score 0.94; flag ink 0.21; x err 0.0835
+TN 2960 fig. 5(c),M=2.90 (diamond),179.9,-0.1024,0.0016,outline template (diamond) score 0.77; flag ink 0.00; x err 0.0835
+TN 2960 fig. 5(c),M=1.98 (square) flagged -theta,180,-0.2640,0.0016,outline template (square) score 0.65; flag ink 0.46; x err 0.0835
+TN 2960 fig. 5(c),M=1.49 (circle),180.3,-0.4689,0.0016,outline template (circle) score 0.64; flag ink 0.00; x err 0.0835

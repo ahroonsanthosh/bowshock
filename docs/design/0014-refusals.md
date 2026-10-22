@@ -1086,3 +1086,269 @@ refusal applies to every case below Mach 1.5 and is the sole blocker in
 none. In 0014's ranked order the totals at Mach 1.2 to 1.5 now wait for
 the fin terms of W7 as well as W2 (0% until W7; before, 16.3% after W2
 and 74.8% after W11).
+
+**2026-10-21 (g): NSWCDD/TR-92/509, and the true order of events.**
+Commit 6497a66 (2026-10-20, 22:58 UTC) added NSWCDD/TR-92/509 to 10.1's
+table as band-setting, "decided by the coordinator on 2026-10-20, before
+any use", and to 10.4's one-reading list. The order was the other way: its
+Table 2 had been transcribed and examined against W1's swept bracket in
+commit 10beeff (19:39 UTC the same day; `w1b_w2_proposal.md` section 1.3,
+"Is the effect bracketed?"), which found every value at the base inside
+the bracket, before it was registered. That row is removed from 10.1 and
+10.4, which read again as registered (68ae3ee), and the registration is
+recorded here as what it was, a decision taken after the data were seen:
+Table 2's zero-incidence rows with the fins undeflected and Table 1 (the
+configuration index), four fins at the base with the leading edge swept
+43.9 deg and the trailing edge unswept, t/c 0.05 to 0.15, Mach 2.0 to 3.0,
+C_DB to about +-5%, for W1's ordering of moderate sweeps (W1b, 0015
+section 3.4); not its fins ahead of the base, its angle-of-attack and
+deflection data, its empirical model or Mach numbers above 3.0. Since it
+was seen first, it is a check of the ordering, never a test of it, and no
+claim rests on it as one. Its Table 2 has one transcription (a blind
+second requested).
+
+**2026-10-21 (h): the reading status of every figure 10.4 lists**, as of
+this date (each record named holds the pairing):
+
+- TN 3697 fig. 5: one reading, by eye, in this record; held back and not
+  to be read further before its run.
+- RM L52E06 fig. 7: two readings (0015 section 7). Fig. 8: two readings
+  of A (0015 section 11.3). Fig. 6: not read.
+- TN 3819 figs. 33 and 34: two readings (0015 section 7). Fig. 35's
+  free-flight curve: two readings at Mach 1.0 to 2.56 (0010 section
+  11.3; amendment c), the tunnel symbols three. Fig. 18's rows at Mach
+  1.0, 1.2 and 1.4: two readings (round 1, round 7), the basic curve's
+  row at 1.4 found a misread and replaced by round 7's on the third
+  evidence of fig. 35's no-fin curve (0015 section 7). Fig. 32: not read.
+- BRL 934's Graph I: as 0010 section 9 states (its tables read twice by
+  one reader, a second reader pending); W1's work did not change it.
+- TN 2360 fig. 6: two readings (0015 section 7), four symbols found by
+  one reader alone, flagged where they set a band's end. Figs. 5 and 7:
+  not read.
+- TN 3372 figs. 7 to 12: not read.
+- RM L52J21a: fig. 8 at R 8.06e6, two readings of the base pressures and
+  the noses called by three readers (this work, rounds 6 and 7; two calls
+  left out on pairing, the conical and radome noses at Mach 2.41 called
+  by round 7 alone; 0015 section 7); figs. 31 to 33 panel (d) at R 7e6 to
+  9.5e6, two readings (this work, round 7); fig. 38(c), one reading, which
+  the scan does not allow a second of and which no longer sets a band;
+  its other figures not read.
+- RM L52D21 fig. 11: one reading (0016 section 8); the rest not read.
+- TN 2960 figs. 5(a), 5(b), 5(d), 5(e): two readings (0016 section 13);
+  figs. 5(c) and 7 as before (0010); fig. 6 read by round 6.
+- RM A55H31 figs. 11 and 12: two readings (0016 section 14); figs. 9 and
+  10 not read.
+- TN 3861 figs. 15 and 16: two readings, fig. 17 one (0016).
+- TN 3548, TR 1386, RM E51F26: not read.
+- Held back: TN 3650 fig. 4, RM L52E06 figs. 9 to 12, the Eglin Table
+  D-3: not read.
+
+**2026-10-21 (i): which factor serves fins at the base, superseding
+amendment (e)** (the coordinator's decision under the owner's rule to
+serve each case from the data that cover it; after the independent review
+of W1, commit e254989). The present factor serves only the fin families
+it was measured on: unswept wedge, circular-arc and hexagonal sections,
+5% to 10% thick, the Basic Finner's family among them, with 0016 section
+18's extension below 5% for those families only. Flat-faced fins (plates,
+and plates bevelled at the leading edge only) go to the rebuilt factor's
+flat-plate value, "bounded, not measured", with RM L52E06's relief as its
+low end (0015 section 4); amendment (e)'s refusal stands only where the
+rebuilt factor refuses too (a rounded trailing edge, a plate thicker than
+10% at a station, or a sweep it does not take). Swept fins go to the
+rebuilt factor as before, except that a sharp section with its trailing
+edge swept aft is refused closer to the base than 0.9 root chords, and
+one with it swept forward anywhere: no such fins are measured there (RM
+L52J21a's 45 deg fins, the one set with a swept trailing edge, sweep it
+aft and end 0.85 +-0.05 root chords ahead of the base, and the RM-10's
+trailing-edge sweep is not stated), and linear theory puts the faces
+behind a swept trailing edge above the unswept fin's (0015 section 3.4).
+(As first written this said 0.8 root chords, either way; the second
+review of 2026-10-22 found RM L52J21a's position 0.85 +-0.05 from its own
+dimensions, so the threshold is the far end, 0.9, and a forward sweep has
+no measurement anywhere. Neither change moves a served total, 0015
+section 8.)
+Plates with a rounded trailing edge, which the present factor served as
+four unswept fins at Mach 1.8 to 3.0 until amendment (e), stay refused:
+no circular arc bounds a rounded edge (its half-thickness falls as the
+square root of the distance to the edge), so neither bound of the bracket
+is shown, and no measurement at the base covers them. The third bullet of
+10.3, "outside the class the rebuilt factor is served", is read with
+this: outside the class the present factor still serves its own families,
+the Basic Finner's wedges among them, the rebuilt factor the rest.
+
+What it costs and gains (0015 section 8; `docs/research/refusals/out/impact.out`):
+totals of all bands 2.1% before the review to 2.0% (Mach 1.5 to 1.8: 2.7%
+to 2.5%; 1.8 to 3.0: 5.5% to 5.2%), ten cases lost, all to the swept
+trailing edge, which no band shown covers. No plate case is lost: three
+totals served move from the present factor to the flat-plate value, and
+the 3 of 20 totals amendment (e) refused on main are served here. The
+rounded-trailing-edge plates that amendment (e) refused are 0.2% of the
+cases at Mach 1.8 to 3.0, and every one is refused by its edge term
+anyway (W11), so no total moves with them. No case is newly refused that
+an honest band covers. With amendment (f) merged after it, totals at Mach
+1.0 to 1.5 are 0% on the W1 branch too: W2 serves the body base there,
+and fin friction refuses every case (the six totals at Mach 1.2 to 1.5,
+double wedges, are refused for it); totals of all bands 1.9% (Mach 1.5 to
+1.8: 2.5%; 1.8 to 3.0: 5.2%), the cross-check agreeing on all 1200
+cases.
+
+**2026-10-21 (j): the fins' own-drag band above Mach 2.96 labelled** (the
+coordinator's decision on amendment (f)). Above the ARCAS increments'
+highest Mach number, 2.96, the band is carried, not refused, and the
+labels of fin friction and of the wave drag of sharp sections now say so:
+"at Mach M the band is carried d in Mach beyond its measurements (the
+ARCAS increments end at Mach 2.96)", d at most 0.04 for a total (the body
+base and the fins at the base refuse above Mach 3.0). The Basic Finner's
+gated shot at Mach 2.97 carries the words; no number changes. First
+lettered (g); re-lettered (j) on 2026-10-22, the letters (g) to (i) being
+W1's.
+
+**2026-10-21 (k): the band-setting data of W7's fin terms, named before
+any is read** (rule 2 of 10.1; the coordinator's decisions of 2026-10-21
+on design record 0019). No figure below has been read for a value; each
+was opened only to see what it covers (0019 section 2). Each is read
+twice, by this record's reader and blind by a second, before it sets a
+band. First lettered (h); re-lettered (k) on 2026-10-22, as (j).
+
+| Source                                                        | Sets bands with                                                                                                                                                                                                                                  | Not used to set bands                                                                                              |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Bryson, NACA TR 1094 (NTRS 19930092136)                       | figs. 13 and 14 (the thin wedges' forebody drag against Mach number, and in transonic similarity variables); figs. 15 and 16 (the 26.57 deg wedge at Mach 1.44, for whether the similarity reaches bevels of 10 to 15 deg); fig. 1 (the models)  | figs. 22 and 23 (the 12% biconvex airfoil): a check of 0019's ordering for rounded edges only; the rest            |
+| Rogers, Berry and Quincey, ARC R&M 3348 (AERADE 1826.2/3929)  | table 3 (base pressures, typed twice); figs. 30a and 30b (base pressure against Mach number and M cos(sweep)); figs. 31a, 31b and 32 to 36 (forebody and complete chordwise forces, single and double wedge); figs. 2 and 3 (planform, sections) | the normal-force and shock-position figures                                                                        |
+| Nash, Quincey and Callinan, ARC R&M 3427 (AERADE 1826.2/4011) | figs. 9, 10, 13, 15 and 16 (the layers; base pressure against Mach number; its spanwise and sectionwise variation); figs. 2 and 3 (the model, the tappings)                                                                                      | the splitter plates, the step and the cavity; its semicircular trailing edge (W11's, for a later record)           |
+| Nash, ARC R&M 3323 (AERADE 1826.2/3903)                       | figs. 4 and 5, each plotted set once its source is traced; a set that appears elsewhere in this table is counted once                                                                                                                            | the rest                                                                                                           |
+| Morrow and Katz, NACA TN 3548 (NTRS 19930084307)              | fig. 6, as 10.1 names it; it appears to be RM A51J25 fig. 7's PARD set (0016's `fin_edges_w34.md` section 6), so the two are counted as one set                                                                                                  | figs. 7 to 10: they carry the PARD standard body's totals (its fig. 4 is that body), so they are held back with it |
+| RM A51J25                                                     | fig. 7, as 10.1 names it, below M' 1.5 too                                                                                                                                                                                                       |                                                                                                                    |
+| Johnston, NASA Memo 4-30-59L (NTRS 19980228287)               | figs. 4 to 12 (the sharp single wedge: forces from pressures, base pressure and drag), 13 (the leading-edge radius), 16 to 23 (the diamond, and the two compared)                                                                                | figs. 14 and 15 (pressure pulsations)                                                                              |
+| Sawyer and Daum, NACA RM L8B13 (NTRS 19930085324)             | fig. 4(c) to 4(e) (the wedge's base and sides)                                                                                                                                                                                                   | the cylinders' figs. 4(a) and 4(b)                                                                                 |
+| Humphreys, NACA TN 3306 (NTRS 19930084050)                    | figs. 7 to 9 (zero-lift pressure drag, its fore and aft parts, in transonic similarity variables)                                                                                                                                                | the rest                                                                                                           |
+| McDevitt, NACA TR 1253 (NTRS 19930092253)                     | figs. 6 to 8 (the symmetrical wings' minimum pressure drag: its correlation, against Mach number, its summary)                                                                                                                                   | the cambered wings                                                                                                 |
+| Nelson, Allen and Krumm, NACA TN 3529 (NTRS 19930084232)      | fig. 14 (minimum pressure drag against Mach number) and the basic drag data at zero lift it is formed from (figs. 4 to 32)                                                                                                                       | lift and moments                                                                                                   |
+| Few and Fournier, NACA RM L54B25 (NTRS 19930093723)           | figs. 5 to 20 at zero lift (the basic drag data), figs. 21 and 22 (the summary and the pressure-drag rise)                                                                                                                                       | lift and moments                                                                                                   |
+| Howell and Braslow, NACA RM L55H09 (NTRS 20050019382)         | the fins-on minus fins-off pressure-drag increments and the tunnel's base pressures, their figures named here before they are read, and only once its text and fig. 1 (the model) show its body is neither the PARD standard body nor the RM-10  | its airplane model; everything, if its body is a held-back one                                                     |
+| NASA CR-149372 (Macha)                                        | as 10.1 names it for W4                                                                                                                                                                                                                          | fig. 8a (subsonic front sides): a check of 0019's ordering for rounded edges only                                  |
+
+Checks, which set nothing: TN 3469, TR 1359, ARC CP 145, TN 1211, ARC
+R&M 3465, TN D-3634 (the blunt extensions' minimum-drag increments, a
+check of the rounded-edge bounds), RM L53L24a, and Pepper's blunt-nosed
+65A009 wing (its abstract). Not used: the PARD wing tests whose wing
+increments are formed on the PARD standard body (RM L50G31, RM L52F02a and
+the like), unless a later record shows the body is another.
+
+Decisions recorded with this registration (the coordinator's, under the
+owner's rule):
+
+1. **Rounded leading edges of flat plates below M_n 1.0** are served
+   "bounded, not measured" (10.2): from no drag on the nose to the term at
+   M_n 1.0 at its band's high end, both orderings written in 0019 section
+   3.2 with their physics and the data that check them, and served only
+   after an independent review of that argument. Where the written
+   argument finds a bound can be crossed, that bound is widened to what
+   the argument supports, or the range it cannot support is refused,
+   before the review.
+2. **Bevelled leading edges at M_n 0.9 to 1.2**, where TR 1094 has no
+   points, only "bounded, not measured" between measured values, its
+   ordering written in 0019 section 3.3; transonic small-disturbance
+   theory is never the nominal. Bevels of 10 to 15 deg only if TR 1094's
+   26.57 deg wedge supports the similarity in the data; otherwise refused.
+3. **Swept blunt trailing edges at Mach 1.0 to 1.2** are served if R&M
+   3348's swept single-wedge wings, read twice (table 3, figs. 30a and
+   30b), set the band directly. This changes 0016 section 6's ruling
+   (W3(c)) for Mach 1.0 to 1.2 only. It concerns the edge's own base drag:
+   the fins-on-base factor (W1), which refuses swept trailing edges at the
+   base, where nothing measures them, is a separate term and is not
+   changed by it.
+
+**2026-10-21 (l): further band-setting figures for W7's fin terms, named
+before they are read** (rule 2 of 10.1, as (k)). Found while typing R&M
+3348 table 3 and opening R&M 3427; none has been read for a value. First
+lettered (i); re-lettered (l) on 2026-10-22, as (j).
+
+| Source                                                        | Sets bands with                                                                                                                                                                                                                                                     | Not used to set bands      |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Rogers, Berry and Quincey, ARC R&M 3348 (AERADE 1826.2/3929)  | figs. 47 to 52, the single-wedge section's pressure distributions at the pressure-plotting station, Mach 0.70 to 1.20: the surface pressure just ahead of the base (x/c 0.995), for the local M' and p' with which table 3's base pressures are compared            | the rest of figs. 40 to 58 |
+|                                                               | tables 4 and 5 and fig. 59, the balance results (single and double wedge; the report notes the single wedge's drag includes its raked tip edge): candidates for the fins' own drag near Mach 1 (F1) and for F5, what each sets decided by a later record before use |                            |
+| Nash, Quincey and Callinan, ARC R&M 3427 (AERADE 1826.2/4011) | fig. 18 (the Reynolds number's effect on base pressure); fig. 39 (the base conditions' effect on the surface pressures upstream of the base)                                                                                                                        |                            |
+
+**2026-10-22 (m): R&M 3427 fig. 13's hole 4, named before it is read**
+(rule 2 of 10.1, as (k)). Fig. 13 of Nash, Quincey and Callinan (ARC R&M
+3427, AERADE 1826.2/4011, PDF p. 37) is named by (k) for its base
+pressures (holes 5, 6 and 7), read once (0019's reader) with a blind
+second reading queued. Its lower panel holds the surface pressure on the
+parallel afterbody at four holes; hole 4, at x/h -0.167 (0.1 in ahead of
+the base, fig. 3), is now named band-setting, for the local Mach number
+and static pressure just ahead of the base, with which the section's base
+pressures are compared with RM A51J25 fig. 7's curve (on M', p') and with
+R&M 3348's table 3 (on its own local values, from figs. 47 to 52, (l)).
+Holes 1 to 3 (x/h -0.330, -0.667, -1.667) are not used to set bands. No
+value of hole 4 has been read; it is read twice before use.
+
+**2026-10-22 (o): NASA TM X-653, named before it is opened for F2, and
+rounded leading edges below M_n 1.0 refused until it is read** (rule 2 of
+10.1, as (k); the owner's decision 7.5 of 2026-10-22, which supersedes
+(k)'s decision 1). Jorgensen, Spahr and Hill, "Comparison of the
+effectiveness of flares with that of fins for stabilizing low fineness
+ratio bodies at Mach numbers from 0.6 to 5.8", NASA TM X-653 (A-575), May
+1962, NTRS 19720065133 (the catalogue record and its abstract only: tunnel
+tests at Mach 0.6 to 3.8 of normal force, centre of pressure and drag of
+conical noses with cylindrical midsections and finned or flared
+aftersections, among them "fin leading-edge bluntness"). It is named a
+candidate band-setting source for F2 (0019 section 3.2), for the drag of
+fins with blunt or rounded leading edges against the same fins with
+sharp ones, at subsonic normal Mach numbers of the leading edge. Which of
+its figures or tables set what is decided by a further dated entry, made
+after its model drawings and list of figures are seen and before any
+value is read: the fins' sections, edge shape and radius, sweep and
+Reynolds numbers, and whether its drag includes the base, decide whether
+it measures a rounded plate edge at all. Its body is a low-fineness
+conical-nosed cylinder, not a held-back body; if a figure carries a
+held-back set it is not used. A record kept honestly: the total-drag
+validation search (`docs/research/total-drag/data/validation_candidates.md`)
+lists TM X-653 as set aside after opening, for its totals ("tunnel, drag
+without base drag"); no fin-edge value from it was read or recorded there
+or anywhere in this repository. Until it is read (twice, as (k)), rounded
+leading edges of flat plates below M_n 1.0 are refused, with that reason;
+the bounded term of 0019 section 3.2 is kept as a recorded candidate,
+not wired. If TM X-653 measures such an edge, the term becomes
+"estimated on component data"; if it does not, the bounded term is put
+to the owner again with its ordering (U3)'s weakness named in its label.
+
+_A note on (k), item 3._ Its last sentence describes the fins-on-base
+factor (W1) as it stood on 2026-10-21, before W1 was on the main branch.
+Since W1's merge (b86c308), 0015 section 3.4 governs: sharp sections with
+the trailing edge swept at the base are refused, fins with the leading
+edge swept 45 to 60 deg are served with the trailing edge unswept, or
+swept aft no more than the leading edge only 0.9 to 1 root chord ahead of
+the base, and the present factor refuses swept fins at the base (0015
+section 5). Item 3's decision on the edge's own base drag is unchanged,
+and it remains a term separate from that factor.
+
+_A check that sets nothing, added to (k)'s list_ (the re-review of
+2026-10-22, N7): Barrowman's 1967 thesis (NTRS 20010047838; eqs. 4-17 to
+4-19 and fig. 4-5, PDF p. 60), the rounded leading-edge curve OpenRocket
+uses. 0019 section 3.2 (U5) sets it beside the bounds; it sets no band.
+
+**2026-10-22 (p): RM L9I30 and RM L51F29, named before they are opened
+for F1** (rule 2 of 10.1, as (k)). Neither has been opened; each is known
+here from its NTRS catalogue record only.
+
+- Hart and Katz, "Flight investigations at high-subsonic, transonic, and
+  supersonic speeds to determine zero-lift drag of fin-stabilized bodies
+  of revolution having fineness ratios of 12.5, 8.91, and 6.04 and varying
+  positions of maximum diameter", NACA RM L9I30, 1949, NTRS 20050019251:
+  rocket-powered free flight, cut-off sterns, equal base, frontal and
+  exposed fin areas. RM L55H09's body is scaled from it (0019 section
+  2.3), so it is first a geometry source: whether that body is the RM-10
+  (TN 3320, held back whole) or the PARD standard body is settled from
+  its model drawings before any of its drag figures is opened.
+- Katz and Stoney, "Base pressures measured on several parabolic-arc
+  bodies of revolution in free flight at Mach numbers from 0.8 to 1.4 and
+  at large Reynolds numbers", NACA RM L51F29, 1951, NTRS 19930086750: the
+  base pressures with which a free-flight fin-stabilized total of such a
+  body is split into its base and the rest.
+
+Both are candidate band-setting sources for F1 (0019 section 3.1, the
+fins' own drag near Mach 1, base separated), with RM L55H09. Which
+figures or tables set what is decided by a further dated entry, after
+the model drawings are seen and before any value is read. Any body in
+them that is the RM-10 or the PARD standard body is held back with its
+set, and nothing flown on it is used.

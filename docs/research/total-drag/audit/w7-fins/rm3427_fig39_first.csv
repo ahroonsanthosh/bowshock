@@ -1,0 +1,22 @@
+# ARC R&M 3427 (Nash, Quincey and Callinan; AERADE 1826.2/4011, sha256 0e8b4d66...c5319), fig. 39 "Effect of base
+# conditions on surface pressures upstream of base", PDF p. 56 (printed p. 55), M_inf 0.8, zero incidence. FIRST reading (0019
+# reader), 2026-10-22; read once, a blind second to arrange. Rendered at 300 dpi, page pixels. x_over_h 0 is the base;
+# -0.154 to -0.166 is hole 4, -0.32 hole 3, -0.68 hole 2, -1.67 hole 1 (fig. 3). cp_err: the tick fit, the symbol placement
+# and the drawn zero line's tilt, in quadrature. x2 (cross, x/h -0.685) is half hidden by circle o2: placed on its upper arms.
+# Method: method_rm3427_fig39.md.
+id,series,symbol,px_x,px_y,x_over_h,cp,cp_err,x_over_h_err
+o0,basic model (circles),circle,2575.85,798.25,0.000,-0.7421,0.0017,0.01
+o4,basic model (circles),circle,2537.0,1117.25,-0.154,-0.4267,0.0016,0.01
+o3,basic model (circles),circle,2494.75,1197.3,-0.323,-0.3476,0.0022,0.01
+o2,basic model (circles),circle,2405.0,1269.0,-0.681,-0.2767,0.0021,0.01
+o1,basic model (circles),circle,2160.15,1322.1,-1.664,-0.2242,0.0037,0.01
+x0,model with 1 x h splitter plate (crosses),cross,2573.95,1114.0,-0.007,-0.4299,0.0019,0.01
+x4,model with 1 x h splitter plate (crosses),cross,2534.0,1178.05,-0.166,-0.3666,0.0018,0.01
+x3,model with 1 x h splitter plate (crosses),cross,2493.7,1210.05,-0.327,-0.3350,0.0020,0.01
+x2,model with 1 x h splitter plate (crosses),cross,2404.0,1261.25,-0.685,-0.2844,0.0030,0.01
+x1,model with 1 x h splitter plate (crosses),cross,2159.0,1314.9,-1.669,-0.2314,0.0036,0.01
+s0,backward-facing step (squares),square,2573.3,1304.25,-0.010,-0.2419,0.0020,0.01
+s4,backward-facing step (squares),square,2536.0,1292.25,-0.158,-0.2537,0.0018,0.01
+s3,backward-facing step (squares),square,2493.3,1314.75,-0.329,-0.2315,0.0018,0.01
+s2,backward-facing step (squares),square,2404.55,1336.55,-0.683,-0.2100,0.0023,0.01
+s1,backward-facing step (squares),square,2158.0,1349.25,-1.673,-0.1974,0.0037,0.01

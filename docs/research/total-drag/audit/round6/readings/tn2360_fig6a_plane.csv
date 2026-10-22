@@ -1,0 +1,20 @@
+figure,series,x,y,err_y,how
+TN 2360 fig. 6(a) plane tail,t/c=0.05 (circle),1.004,-0.0045,0.0003,rule centroid from the centre dot (dot at 1.003; -0.0046); match 0.82 at scale 0.9 (next t/c=0.10 (square) 0.78); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),0.7979,-0.0117,0.0003,rule centroid from the centre dot (dot at 0.7967; -0.0117); match 0.80 at scale 0.9 (next t/c=0.05 (circle) 0.79); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),0.5991,-0.0367,0.0003,rule centroid from the centre dot (dot at 0.5979; -0.0367); match 0.84 at scale 0.9 (next t/c=0.05 (circle) 0.81); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.05 (circle),0.4026,-0.0104,0.0003,rule centroid from the centre dot (dot at 0.4018; -0.0105); match 0.82 at scale 0.9 (next t/c=0.10 (square) 0.62); x err 0.0012
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),0.4008,-0.0435,0.0003,rule centroid from the centre dot (dot at 0.3995; -0.0435); match 0.82 at scale 1 (next t/c=0.05 (circle) 0.75); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),0.1986,-0.0538,0.0003,rule centroid from the centre dot (dot at 0.1974; -0.0538); match 0.84 at scale 0.9 (next t/c=0.05 (circle) 0.80); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.05 (circle),0.001258,-0.0334,0.0003,rule centroid from the centre dot (dot at 0.0004561; -0.0335); match 0.82 at scale 0.9 (next t/c=0.10 (square) 0.68); x err 0.0012
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),0.0005881,-0.0686,0.0003,rule centroid from the centre dot (dot at -0.0007672; -0.0686); match 0.80 at scale 1 (next t/c=0.05 (circle) 0.71); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.05 (circle),-0.2014,-0.0339,0.0003,rule centroid from the centre dot (dot at -0.2022; -0.0340); match 0.86 at scale 0.9 (next t/c=0.10 (square) 0.63); x err 0.0012
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),-0.2037,-0.0738,0.0003,rule centroid from the centre dot (dot at -0.205; -0.0738); match 0.61 at scale 1 (next t/c=0.05 (circle) 0.48); x err 0.0012
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),-0.2043,-0.0786,0.0003,rule centroid from the centre dot (dot at -0.2057; -0.0786); match 0.70 at scale 1.1 (next t/c=0.05 (circle) 0.57); x err 0.0012
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),-0.4007,-0.1012,0.0003,rule centroid from the centre dot (dot at -0.402; -0.1012); match 0.80 at scale 1 (next t/c=0.05 (circle) 0.75); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.05 (circle),-0.5984,-0.0513,0.0003,rule centroid from the centre dot (dot at -0.5992; -0.0514); match 0.83 at scale 0.9 (next t/c=0.10 (square) 0.61); x err 0.0012
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),-0.6003,-0.1038,0.0003,rule centroid from the centre dot (dot at -0.6018; -0.1038); match 0.63 at scale 1.1 (next t/c=0.05 (circle) 0.56); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),-0.6019,-0.0971,0.0003,rule centroid from the centre dot (dot at -0.6032; -0.0971); match 0.88 at scale 1 (next t/c=0.05 (circle) 0.79); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),-0.8006,-0.0409,0.0003,rule centroid from the centre dot (dot at -0.8019; -0.0409); match 0.73 at scale 1 (next t/c=0.05 (circle) 0.68); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),-0.9958,0.0304,0.0003,rule centroid from the centre dot (dot at -0.9972; 0.0304); match 0.59 at scale 1 (next t/c=0.05 (circle) 0.50); x err 0.0012; LOW MARGIN
+TN 2360 fig. 6(a) plane tail,t/c=0.05 (circle),-0.9977,-0.0068,0.0003,rule centroid from the centre dot (dot at -0.9985; -0.0069); match 0.64 at scale 0.9 (next t/c=0.10 (square) 0.37); x err 0.0012
+TN 2360 fig. 6(a) plane tail,t/c=0.10 (square),1.003,-0.0085,0.0021,legend-glyph template at scale 1; match 0.80; x err 0.00196; behind the circle at the frame
