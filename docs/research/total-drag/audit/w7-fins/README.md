@@ -2,7 +2,7 @@
 
 The figures and tables that set the bands of the fin terms near Mach 1
 (0019 sections 3.2 to 3.5), each named band-setting by 0014 section 10.7
-(h) before it was read. Each is read here once, by the 0019 reader, with
+(k) before it was read. Each is read here once, by the 0019 reader, with
 its source (NTRS id or AERADE handle, PDF page), its calibration and its
 per-row errors; a blind second reading is arranged by the coordinator, and
 no band is set until both are held and paired. Downloads are kept outside

@@ -1,10 +1,10 @@
 # 0019: Fin drag near Mach 1 (the fin terms of 0014 W7)
 
 - **Status:** Draft plan, with the coordinator's decisions of 2026-10-21
-  recorded (section 5; 0014 section 10.7, amendments (f) to (h)). Of the
+  recorded (section 5; 0014 section 10.7, amendments (f), (j) and (k)). Of the
   code, only the guard is done (fin friction and the wave drag of sharp
   sections refused below Mach 1.5, amendment (f), on the main line; the
-  band above Mach 2.96 labelled, amendment (g)). One research script is
+  band above Mach 2.96 labelled, amendment (j)). One research script is
   added, `docs/research/refusals/w7-fins.test.ts`, with its output
   `docs/research/refusals/out/w7-plan.out` (the population's parameters
   near Mach 1, the present code's behaviour there, and the coverage of
@@ -319,7 +319,7 @@ section 11). The bluntness series found (Graham's blunted biconvex
 aerofoils, Wilby's round leading edges, Pepper's blunter 65A009 nose, Kyle
 and Feryn's slab wing) are airfoil noses or faired extensions.
 
-**Decided (0014 section 10.7 (h), item 1): served "bounded, not
+**Decided (0014 section 10.7 (k), item 1): served "bounded, not
 measured"** under 0014 section 10.2, its two orderings written here,
 reviewed independently before anything is served.
 
@@ -361,7 +361,7 @@ value. The ordering:
   separation is far larger and whose wake displaces the approaching flow:
   TN 2960's front sides are 0.10 to 0.41 of modified Newtonian at M 0.05
   to 0.70 (both readings), C = 0.067 to 0.31, all below 0.66. CR-149372's
-  fig. 8a (subsonic front sides, named as a check by 0014 10.7 (h)) is
+  fig. 8a (subsonic front sides, named as a check by 0014 10.7 (k)) is
   read to show how the cylinder approaches C(1.0) between M 0.7 and 1.0;
   if any of it exceeds the bound, the range where it does is refused.
 - _(U4) What is not shown._ That a semicircle on flat faces rises
@@ -374,7 +374,7 @@ value. The ordering:
 beta_n = (1 - M_n^2)^(1/2), at M_n up to 0.9.** The coordinator's
 decision was "no drag on the nose"; writing the ordering out found that
 zero can be crossed by a small amount, so the bound is widened to what the
-argument supports (0014 10.7 (h), item 1):
+argument supports (0014 10.7 (k), item 1):
 
 - _(L1) The plate alone, shock free: C = 0._ A semi-infinite body whose
   faces become parallel to the stream carries no drag in steady
@@ -461,7 +461,7 @@ dimensions.
   curve. The Reynolds number: Bryson's 6e4 (laminar) against R&M 3348
   (1.3e6 to 3.4e6) and Johnston (1.2e6 to 1.4e6) at the same similarity
   parameter; the difference sets an allowance.
-- _Decided (0014 10.7 (h), item 2): Bryson's gap, bounded, not
+- _Decided (0014 10.7 (k), item 2): Bryson's gap, bounded, not
   measured._ Between his last subsonic point (reduced Mach number xi_s,
   about -0.5) and his first supersonic one (xi_p, about 0.9) there are no
   points. A case there is served between two measured values, never on
@@ -524,7 +524,7 @@ The largest fin term near Mach 1 (section 1.2), and the best covered.
   data's (TR 1109 fig. 29(a)'s factor K is measured from Mach 1.5 only),
   the edge is served only if fig. 4 and Cleary and Stevens (small h/c,
   transonic) cover it; else refused.
-- _Sweep, decided (0014 10.7 (h), item 3)._ R&M 3348's base pressures
+- _Sweep, decided (0014 10.7 (k), item 3)._ R&M 3348's base pressures
   collapse "to a considerable degree" on M cos(sweep) (fig. 30b, with
   Goin's 45 deg points). Swept trailing edges at Mach 1.0 to 1.2 (15.0% of
   the population's blunt edges) are served if R&M 3348's table 3 and figs.
@@ -606,7 +606,7 @@ refused for several reasons; F1 taken as served once its band is read):
 | **E: as decided** (rounded edges bounded to M_n 0.9; bevels to 10 deg, bounded at M_n 0.9 to 1.2; swept trailing edges) | **35.2%**        | bevels beyond 10 deg 21.9%; rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3% |
 | F: E with bevels to 15 deg (if the 26.57 deg wedge supports the similarity)                                             | 41.5%            | rear bevels 20.6%; W11 30.8%; rounded edges at M_n 0.9 to 1.0 6.3%                             |
 
-Variant D's theory bridge is not done (0014 10.7 (h), item 2): it is
+Variant D's theory bridge is not done (0014 10.7 (k), item 2): it is
 kept to show what the theory alone would add. These are ceilings on the
 totals at Mach 1.0 to 1.2: a total there also needs the nose (0013), the
 base below Mach 1.5 (W2), the fins at the base below Mach 1.5 (W1, which
@@ -627,22 +627,22 @@ with its leading edges bounded, not measured.
 1. **The guard below Mach 1.5 (F1): done.** Fin friction and the wave
    drag of sharp sections refused below Mach 1.5 (0014 10.7 (f), commit
    7411c70, on the main line); above Mach 2.96 the band carried and
-   labelled (0014 10.7 (g)). Next, F1's data: RM L55H09, once its body is
+   labelled (0014 10.7 (j)). Next, F1's data: RM L55H09, once its body is
    confirmed to be neither the RM-10 nor the PARD body.
 2. **Rounded leading edges below M_n 1.0 (F2): bounded, not measured**,
    both orderings written in section 3.2, reviewed independently before
-   anything is served (0014 10.7 (h), item 1). Writing the ordering out
+   anything is served (0014 10.7 (k), item 1). Writing the ordering out
    widened the lower bound below zero by the trailing edge's upstream
    influence and limited it to M_n 0.9 (section 3.2, (L4) and (L5)).
 3. **Bevels (F3): measured where Bryson's points lie; bounded, not
    measured, between his measured values across his gap**, the theory
    only in the ordering; 10 to 15 deg only if the 26.57 deg wedge
-   supports the similarity (0014 10.7 (h), item 2; section 3.3).
+   supports the similarity (0014 10.7 (k), item 2; section 3.3).
 4. **Swept trailing edges at Mach 1.0 to 1.2 (F4)**, if R&M 3348, read
    twice, sets the band directly; a change to 0016 section 6 for that
-   range only, separate from W1's factor (0014 10.7 (h), item 3; section
+   range only, separate from W1's factor (0014 10.7 (k), item 3; section
    3.4).
-5. **Registration: done** (0014 10.7 (h)), before any figure is read.
+5. **Registration: done** (0014 10.7 (k)), before any figure is read.
 
 ## 6. Readings owed, and the order of work
 
@@ -652,7 +652,7 @@ AERADE handle, PDF page), its calibration and per-row errors, under
 arrives it is labelled "read once", and every band is the envelope of
 both once it does.
 
-1. **The guard: done** (0014 10.7 (f) and (g); tests in
+1. **The guard: done** (0014 10.7 (f) and (j); tests in
    `tests/total/fins-own-drag-guard.test.ts`; the Basic Finner's gated
    shots unchanged in number).
 2. **F4, the trailing edges.** Readings: RM A51J25 fig. 7 below M' 1.5

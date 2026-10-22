@@ -1087,21 +1087,23 @@ none. In 0014's ranked order the totals at Mach 1.2 to 1.5 now wait for
 the fin terms of W7 as well as W2 (0% until W7; before, 16.3% after W2
 and 74.8% after W11).
 
-**2026-10-21 (g): the fins' own-drag band above Mach 2.96 labelled** (the
+**2026-10-21 (j): the fins' own-drag band above Mach 2.96 labelled** (the
 coordinator's decision on amendment (f)). Above the ARCAS increments'
 highest Mach number, 2.96, the band is carried, not refused, and the
 labels of fin friction and of the wave drag of sharp sections now say so:
 "at Mach M the band is carried d in Mach beyond its measurements (the
 ARCAS increments end at Mach 2.96)", d at most 0.04 for a total (the body
 base and the fins at the base refuse above Mach 3.0). The Basic Finner's
-gated shot at Mach 2.97 carries the words; no number changes.
+gated shot at Mach 2.97 carries the words; no number changes. First
+lettered (g); re-lettered (j) on 2026-10-22, the letters (g) to (i) being
+W1's.
 
-**2026-10-21 (h): the band-setting data of W7's fin terms, named before
+**2026-10-21 (k): the band-setting data of W7's fin terms, named before
 any is read** (rule 2 of 10.1; the coordinator's decisions of 2026-10-21
 on design record 0019). No figure below has been read for a value; each
 was opened only to see what it covers (0019 section 2). Each is read
 twice, by this record's reader and blind by a second, before it sets a
-band.
+band. First lettered (h); re-lettered (k) on 2026-10-22, as (j).
 
 | Source                                                        | Sets bands with                                                                                                                                                                                                                                  | Not used to set bands                                                                                              |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
@@ -1151,9 +1153,10 @@ owner's rule):
    base, where nothing measures them, is a separate term and is not
    changed by it.
 
-**2026-10-21 (i): further band-setting figures for W7's fin terms, named
-before they are read** (rule 2 of 10.1, as (h)). Found while typing R&M
-3348 table 3 and opening R&M 3427; none has been read for a value.
+**2026-10-21 (l): further band-setting figures for W7's fin terms, named
+before they are read** (rule 2 of 10.1, as (k)). Found while typing R&M
+3348 table 3 and opening R&M 3427; none has been read for a value. First
+lettered (i); re-lettered (l) on 2026-10-22, as (j).
 
 | Source                                                        | Sets bands with                                                                                                                                                                                                                                                     | Not used to set bands      |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |

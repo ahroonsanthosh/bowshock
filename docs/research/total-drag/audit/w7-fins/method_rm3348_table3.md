@@ -4,7 +4,7 @@
 transonic speeds on wings with wedge sections and sweep varying between 0
 deg and 60 deg", ARC R&M 3348, 1963 (N.P.L.; replaces A.R.C. 23,180).
 AERADE 1826.2/3929, `arc-rm-3348.pdf` (107 PDF pages). Named band-setting
-by 0014 section 10.7 (h) before this typing. Typed for design record 0019
+by 0014 section 10.7 (k) before this typing. Typed for design record 0019
 (F4: square trailing edges below Mach 1.5, and the sweep of item 3).
 
 **What the table holds.** p_b / p_0, the base pressure over the tunnel
@@ -64,8 +64,8 @@ finite span), to be quoted when the band is formed.
   RM A51J25 fig. 7's curve is on the local values (M', p'). The surface
   pressure nearest the base (hole 16 of table 2(a), x/c 0.995) is needed
   before the two are compared; the figures that hold it are not among
-  those 0014 10.7 (h) names, so they are named there before they are
-  read.
+  those 0014 10.7 (k) names, so they were named in 10.7 (l) (figs. 47 to
+  52) before they are read.
 
 **Status.** First typing, by the 0019 reader, 2026-10-21. Read once: the
 blind second typing is pending. Not yet used for anything.

@@ -148,7 +148,7 @@ function finsOwnDragMachRefusal(
 
 /**
  * Above the band's highest Mach number it is carried, not refused (the coordinator's decision,
- * 2026-10-21; 0014 section 10.7, amendment f): the label says by how much.
+ * 2026-10-21; 0014 section 10.7, amendment j): the label says by how much.
  */
 function finsOwnDragBeyondLabel(mach: number): string {
   const top = FINS_OWN_DRAG_MACH_RANGE[1];

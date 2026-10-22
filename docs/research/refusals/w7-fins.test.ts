@@ -74,7 +74,7 @@ interface Variant {
    * not measured" (0019 section 3.2); undefined for none.
    */
   readonly roundedBoundedTo?: number;
-  /** Serve swept blunt trailing edges by R&M 3348's swept wedge wings (0014 10.7 (h), item 3). */
+  /** Serve swept blunt trailing edges by R&M 3348's swept wedge wings (0014 10.7 (k), item 3). */
   readonly sweptTe: boolean;
   /** Largest bevel half-angle served, degrees (Bryson's thin wedges reach 10 deg). */
   readonly bevelMax: number;
