@@ -1,0 +1,40 @@
+# ARC R&M 3427 (AERADE 1826.2/4011), fig. 9 "Boundary-layer profiles on basic model, M_inf = 0.8.", PDF p. 36 (printed p. 35):
+# y (inches from the surface) against u* (u over its edge value), circles at the trailing edge, squares 1 in upstream of it.
+# No grid: calibrated on the ticks along the axes' tilt (tickcal.py, rm3427_fig9_axes.json); page render 300 dpi, crop at page
+# pixels (850, 170). Symbols fitted with --big. Errors: fit 0.5 px plus start dependence (o16: the fit from displaced starts was
+# pulled onto the curve; its centre checked by eye at 10x, 1 px allowed), with the ticks' rms; 1 px = 0.00199 in u* and 0.00025 in.
+# First reading, by the 0019 reader, 2026-10-22: read once.
+station,symbol,u_star,y_in,u_star_err,y_err_in,x_px,y_px
+trailing edge,circle,0.5268,0.00013,0.0012,0.00013,387.5,554.5
+trailing edge,circle,0.5754,0.00494,0.0012,0.00013,411.75,535.25
+trailing edge,circle,0.6935,0.00981,0.0012,0.00013,471.0,515.5
+trailing edge,circle,0.7565,0.01523,0.0012,0.00013,502.5,493.75
+trailing edge,circle,0.8105,0.01972,0.0012,0.00013,529.5,475.75
+trailing edge,circle,0.8413,0.02529,0.0012,0.00013,544.75,453.5
+trailing edge,circle,0.8585,0.03032,0.0012,0.00013,553.25,433.5
+trailing edge,circle,0.8808,0.03559,0.0012,0.00013,564.25,412.5
+trailing edge,circle,0.8965,0.04005,0.0012,0.00013,572.0,394.75
+trailing edge,circle,0.9073,0.04489,0.0012,0.00013,577.25,375.5
+trailing edge,circle,0.9261,0.05016,0.0012,0.00013,586.5,354.5
+trailing edge,circle,0.9429,0.05493,0.0012,0.00013,594.75,335.5
+trailing edge,circle,0.9513,0.06028,0.0012,0.00013,598.75,314.25
+trailing edge,circle,0.9636,0.06544,0.0012,0.00013,604.75,293.75
+trailing edge,circle,0.9729,0.07015,0.0012,0.00013,609.25,275.0
+trailing edge,circle,0.9807,0.07556,0.0030,0.00038,613.0,253.5
+trailing edge,circle,0.9880,0.08041,0.0012,0.00013,616.5,234.25
+trailing edge,circle,0.9884,0.08532,0.0012,0.00013,616.5,214.75
+trailing edge,circle,0.9947,0.09004,0.0012,0.00013,619.5,196.0
+trailing edge,circle,0.9980,0.10018,0.0012,0.00013,620.75,155.75
+trailing edge,circle,0.9996,0.11523,0.0012,0.00013,621.0,96.0
+1 in upstream,square,0.7079,0.00324,0.0012,0.00013,478.5,541.5
+1 in upstream,square,0.7722,0.01251,0.0012,0.00013,510.5,504.5
+1 in upstream,square,0.8346,0.02278,0.0012,0.00013,541.5,463.5
+1 in upstream,square,0.8940,0.03318,0.0012,0.00013,571.0,422.0
+1 in upstream,square,0.9316,0.04310,0.0012,0.00013,589.5,382.5
+1 in upstream,square,0.9601,0.05265,0.0012,0.00013,603.5,344.5
+1 in upstream,square,0.9748,0.06272,0.0021,0.00025,610.5,304.5
+1 in upstream,square,0.9914,0.07253,0.0012,0.00013,618.5,265.5
+1 in upstream,square,1.0011,0.08272,0.0021,0.00025,623.0,225.0
+1 in upstream,square,1.0039,0.09305,0.0012,0.00013,624.0,184.0
+1 in upstream,square,0.9997,0.10301,0.0012,0.00013,621.5,144.5
+1 in upstream,square,1.0019,0.10565,0.0012,0.00013,622.5,134.0

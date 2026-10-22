@@ -1,0 +1,86 @@
+# NACA TN 3548 (Morrow and Katz, 1955; NTRS 19930084307, sha256 5a6e1b5b...67b066acd6), fig. 6 "Base pressure
+# coefficient for slab wing, a body of revolution, and limiting base pressure coefficient (vacuum) plotted against
+# Mach number", PDF p. 17 (printed p. 15). The slab wing's two base slits, free flight: circle the outboard slit,
+# square the inboard slit. The faired curve, the body of revolution (its ref. 2) and the vacuum line not read. Named by
+# 0014 10.7 (k) before this reading. FIRST reading (0019 reader), 2026-10-22; read once, a blind second to arrange.
+# 300 dpi render, page pixels; grid every 0.05 in M and Cp_b traced (calib.py, tn3548_fig6_grid.json). source: fit
+# (symfit.py, placement +-1 px) or hand (the fit was pulled more than 2.5 px, by a grid line; +-2.5 px). Errors are the
+# reading's; the report states +-0.02 in Cp_b at M 0.8, +-0.005 at M 1.4, and M within +-0.01 (PDF p. 6).
+# Method: method_tn3548_fig6.md.
+id,slit,symbol,px_x,px_y,mach,cp_b,mach_err,cp_b_err,source
+s01,inboard,square,876.0,902.75,0.6229,-0.5621,0.0010,0.0010,fit
+c01,outboard,circle,876.25,911.85,0.6230,-0.5538,0.0010,0.0010,fit
+c02,outboard,circle,906.0,915.0,0.6500,-0.5509,0.0023,0.0023,hand
+s02,inboard,square,906.0,950.4,0.6500,-0.5193,0.0010,0.0010,fit
+s03,inboard,square,933.9,888.35,0.6755,-0.5751,0.0010,0.0010,fit
+c03,outboard,circle,934.4,895.5,0.6759,-0.5686,0.0023,0.0023,hand
+c04,outboard,circle,961.6,927.6,0.7006,-0.5396,0.0023,0.0023,hand
+s04,inboard,square,964.4,881.0,0.7034,-0.5818,0.0010,0.0010,fit
+c05,outboard,circle,995.75,902.5,0.7317,-0.5623,0.0010,0.0010,fit
+c06,outboard,circle,1028.0,901.0,0.7612,-0.5638,0.0024,0.0023,hand
+s05,inboard,square,1029.0,894.0,0.7622,-0.5702,0.0024,0.0023,hand
+s06,inboard,square,1042.85,893.0,0.7750,-0.5711,0.0010,0.0010,fit
+s07,inboard,square,1057.5,889.0,0.7885,-0.5748,0.0010,0.0010,fit
+s08,inboard,square,1073.6,891.0,0.8033,-0.5730,0.0010,0.0010,fit
+c07,outboard,circle,1073.6,880.0,0.8033,-0.5829,0.0023,0.0023,hand
+c08,outboard,circle,1088.75,887.5,0.8169,-0.5761,0.0010,0.0010,fit
+s09,inboard,square,1104.0,882.0,0.8307,-0.5811,0.0010,0.0010,fit
+s10,inboard,square,1120.75,883.0,0.8459,-0.5802,0.0010,0.0010,fit
+c09,outboard,circle,1135.75,872.5,0.8595,-0.5896,0.0010,0.0010,fit
+s11,inboard,square,1137.0,881.0,0.8606,-0.5820,0.0010,0.0010,fit
+c10,outboard,circle,1153.1,873.75,0.8752,-0.5885,0.0010,0.0010,fit
+s12,inboard,square,1153.35,882.5,0.8754,-0.5806,0.0010,0.0010,fit
+s13,inboard,square,1171.75,897.9,0.8919,-0.5668,0.0010,0.0010,fit
+c11,outboard,circle,1171.75,876.25,0.8921,-0.5863,0.0010,0.0010,fit
+s14,inboard,square,1188.75,898.15,0.9074,-0.5665,0.0010,0.0010,fit
+c12,outboard,circle,1189.0,862.4,0.9079,-0.5987,0.0023,0.0023,hand
+c13,outboard,circle,1207.5,847.65,0.9250,-0.6120,0.0010,0.0010,fit
+s15,inboard,square,1208.8,892.0,0.9259,-0.5721,0.0010,0.0010,fit
+c14,outboard,circle,1229.9,848.15,0.9455,-0.6116,0.0010,0.0010,fit
+s16,inboard,square,1230.5,885.5,0.9459,-0.5779,0.0010,0.0010,fit
+c15,outboard,circle,1252.5,842.65,0.9661,-0.6165,0.0010,0.0010,fit
+s17,inboard,square,1252.85,883.6,0.9662,-0.5796,0.0010,0.0010,fit
+s18,inboard,square,1259.5,870.0,0.9723,-0.5919,0.0010,0.0010,fit
+c16,outboard,circle,1259.35,830.1,0.9724,-0.6278,0.0010,0.0010,fit
+s19,inboard,square,1262.0,811.25,0.9750,-0.6448,0.0010,0.0010,fit
+c17,outboard,circle,1263.3,794.0,0.9763,-0.6602,0.0010,0.0010,fit
+c18,outboard,circle,1269.0,727.75,0.9818,-0.7193,0.0010,0.0010,fit
+s20,inboard,square,1270.0,719.75,0.9827,-0.7266,0.0010,0.0010,fit
+c19,outboard,circle,1270.8,607.5,0.9835,-0.8272,0.0023,0.0023,hand
+s21,inboard,square,1270.8,602.45,0.9835,-0.8317,0.0010,0.0010,fit
+c20,outboard,circle,1275.25,642.25,0.9875,-0.7962,0.0010,0.0010,fit
+s22,inboard,square,1275.25,681.0,0.9875,-0.7616,0.0010,0.0010,fit
+c21,outboard,circle,1313.55,717.75,1.0223,-0.7285,0.0010,0.0010,fit
+s23,inboard,square,1314.05,745.75,1.0228,-0.7031,0.0010,0.0010,fit
+s24,inboard,square,1345.0,796.0,1.0502,-0.6584,0.0023,0.0023,hand
+c22,outboard,circle,1347.5,775.5,1.0528,-0.6767,0.0010,0.0010,fit
+c23,outboard,circle,1366.5,809.05,1.0694,-0.6468,0.0010,0.0010,fit
+s25,inboard,square,1368.25,841.0,1.0706,-0.6180,0.0010,0.0010,fit
+c24,outboard,circle,1400.75,868.8,1.0998,-0.5930,0.0010,0.0010,fit
+s26,inboard,square,1402.0,888.5,1.1009,-0.5752,0.0010,0.0010,fit
+s27,inboard,square,1434.5,935.05,1.1304,-0.5331,0.0010,0.0010,fit
+c25,outboard,circle,1435.25,910.5,1.1311,-0.5551,0.0010,0.0010,fit
+c26,outboard,circle,1483.75,964.3,1.1756,-0.5064,0.0010,0.0010,fit
+s28,inboard,square,1484.0,987.0,1.1757,-0.4861,0.0010,0.0010,fit
+s29,inboard,square,1509.5,1013.8,1.1991,-0.4620,0.0023,0.0023,hand
+c27,outboard,circle,1509.5,995.0,1.1991,-0.4789,0.0023,0.0023,hand
+s30,inboard,square,1550.0,1043.05,1.2356,-0.4356,0.0010,0.0010,fit
+c28,outboard,circle,1550.5,1027.5,1.2361,-0.4497,0.0023,0.0023,hand
+s31,inboard,square,1585.5,1074.5,1.2676,-0.4072,0.0010,0.0010,fit
+c29,outboard,circle,1586.25,1056.75,1.2684,-0.4234,0.0010,0.0010,fit
+s32,inboard,square,1628.55,1100.3,1.3065,-0.3840,0.0010,0.0010,fit
+c30,outboard,circle,1628.8,1083.8,1.3068,-0.3988,0.0023,0.0023,hand
+c31,outboard,circle,1671.75,1102.25,1.3457,-0.3822,0.0010,0.0010,fit
+s33,inboard,square,1672.25,1119.25,1.3461,-0.3669,0.0010,0.0010,fit
+s34,inboard,square,1717.25,1132.75,1.3867,-0.3547,0.0010,0.0010,fit
+c32,outboard,circle,1717.5,1113.25,1.3869,-0.3723,0.0010,0.0010,fit
+s35,inboard,square,1761.5,1141.5,1.4266,-0.3468,0.0010,0.0010,fit
+c33,outboard,circle,1762.5,1128.55,1.4276,-0.3585,0.0010,0.0010,fit
+s36,inboard,square,1810.0,1163.55,1.4701,-0.3268,0.0010,0.0010,fit
+c34,outboard,circle,1810.5,1147.25,1.4706,-0.3414,0.0010,0.0010,fit
+s37,inboard,square,1859.75,1176.25,1.5151,-0.3154,0.0010,0.0010,fit
+c35,outboard,circle,1860.75,1159.05,1.5161,-0.3307,0.0010,0.0010,fit
+c36,outboard,circle,1912.0,1175.05,1.5632,-0.3164,0.0010,0.0010,fit
+s38,inboard,square,1912.0,1189.0,1.5632,-0.3039,0.0010,0.0010,fit
+c37,outboard,circle,1963.0,1183.55,1.6082,-0.3085,0.0010,0.0010,fit
+s39,inboard,square,1963.0,1201.05,1.6082,-0.2929,0.0010,0.0010,fit

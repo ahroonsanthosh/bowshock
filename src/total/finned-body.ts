@@ -152,6 +152,21 @@ function finsOwnDragMachRefusal(
   );
 }
 
+/**
+ * Above the band's highest Mach number it is carried, not refused (the coordinator's decision,
+ * 2026-10-21; 0014 section 10.7, amendment j): the label says by how much.
+ */
+function finsOwnDragBeyondLabel(mach: number): string {
+  const top = FINS_OWN_DRAG_MACH_RANGE[1];
+  if (!(mach > top)) return '';
+  const d = mach - top;
+  const by = d < 0.005 ? 'less than 0.01' : d.toFixed(2);
+  return (
+    `; at Mach ${mach} the band is carried ${by} in Mach beyond its measurements (the ARCAS ` +
+    `increments end at Mach ${top})`
+  );
+}
+
 /** A Mach number printed with the digits that keep "below" true at the boundary. */
 function machShownBelow(mach: number, limit: number): string {
   for (let digits = 3; digits <= 15; digits++) {
@@ -323,7 +338,8 @@ export function finnedBodyComponents(
         'fin friction',
         nominal.fins,
         FINS_OWN_DRAG_BAND,
-        `van Driest II flat plates of the local chord, adiabatic wall; ${finsLabel}`,
+        `van Driest II flat plates of the local chord, adiabatic wall; ${finsLabel}` +
+          finsOwnDragBeyondLabel(conditions.mach),
         finsBand,
       ),
     );
@@ -390,7 +406,8 @@ export function finnedBodyComponents(
         label:
           `exact section drag times the linear 3D ratio (0009)` +
           (rounded === undefined ? '' : ', the faces of the rounded wedge') +
-          `; ${finsLabel}`,
+          `; ${finsLabel}` +
+          finsOwnDragBeyondLabel(conditions.mach),
         band: `${finsBand}, and the quadrature error`,
       });
     } catch (e) {
