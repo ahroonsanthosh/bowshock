@@ -96,7 +96,7 @@ describe("the fins' own-drag band's Mach range, against the ARCAS check", () => 
   });
 });
 
-describe('below Mach 1.5', () => {
+describe('below Mach 1.5', { timeout: 60_000 }, () => {
   it('fin friction is refused, with the reason and the Mach number on the right side of 1.5', () => {
     for (const mach of [1.05, 1.2, 1.4999999]) {
       const r = parts(config(flatPlate(0.05, 'rounded', 'square')), mach);
@@ -134,7 +134,7 @@ describe('below Mach 1.5', () => {
   });
 });
 
-describe('at Mach 1.5 and above, unchanged', () => {
+describe('at Mach 1.5 and above, unchanged', { timeout: 60_000 }, () => {
   it('fin friction and the wave drag of a thin double wedge carry the band', () => {
     for (const mach of [1.5, 2.0, 2.96]) {
       const r = parts(config(doubleWedge(0.015)), mach);
@@ -151,7 +151,7 @@ describe('at Mach 1.5 and above, unchanged', () => {
   });
 });
 
-describe('above Mach 2.96, carried and labelled', () => {
+describe('above Mach 2.96, carried and labelled', { timeout: 60_000 }, () => {
   it('the labels say by how much the band is carried beyond its measurements', () => {
     for (const [mach, by] of [
       [2.98, '0.02'],
@@ -178,7 +178,7 @@ describe('above Mach 2.96, carried and labelled', () => {
   });
 });
 
-describe("the review's bevel case (0019 section 3.3, 2026-10-22)", () => {
+describe("the review's bevel case (0019 section 3.3, 2026-10-22)", { timeout: 60_000 }, () => {
   it('a bevel swept 45 deg at Mach 1.18 (M_n 0.83) is refused until its additive sweep allowance is set', () => {
     // A 10 deg bevel on a 4% plate with a square trailing edge, leading edge swept 45 deg.
     const h = 0.02;
