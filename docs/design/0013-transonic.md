@@ -1742,7 +1742,9 @@ every change below is at least 25 times that, except where said).
    **the rule as written gives the cone at Mach 1.0 an allowance of
    |c3| / (1 - rho) = 5.12e-4 (0.55% of its 224.2-radius base-grid drag,
    0.0929283) and the ogive 7.35e-4 (4.0% of 0.0184068).** On 100.6
-   radii the rule refused both (rho 0.63 and 0.75).
+   radii the rule refused both (rho 0.63 and 0.75). **These two are not
+   bounds** (re-review of `dd6c423`, below): on these uneven distance
+   ratios the geometric remainder understates every pure power law.
 
    **At Mach 1.01 the moved family is worse, not better.** On 100.6
    radii the rule gave 1.32e-3 (rho 0.32), and C(408.7) - C(100.6) =
@@ -1801,9 +1803,10 @@ every change below is at least 25 times that, except where said).
      magnitude agree, no more.
 
 **Outcome.** rho is 0.30 and 0.37 at Mach 1.0 on the moved family,
-within the limit of 0.6, so the far boundaries no longer refuse Mach 1.0
-offline; Mach 1.0 is still refused on the page (B1, and no four-grid
-family). Mach 1.01 on the moved family is refused by the rule as written
+within the limit of 0.6, so the rule as written no longer refuses Mach
+1.0 offline; but its allowances there are not bounds (re-review of
+`dd6c423`, below), and Mach 1.0 is still refused on the page (B1, and no
+four-grid family). Mach 1.01 on the moved family is refused by the rule as written
 (sign change) until the corrected rule below.
 
 **The allowance rule corrected for sign reversal (review S2 and S3;
@@ -2051,6 +2054,103 @@ floor 7.6e-6; the far boundaries 1.4e-7 and the cylinder 9.3e-8 (nested
 base grids, corrected rule). **0.1088983 +- 4.65e-5.** This is a
 validation-style offline number (the driver serves below 1.2); it was
 computed without seeing the subtip work's value.
+
+**The re-review of `dd6c423` (2026-10-22): merge after fixes.** Its
+findings and what was done, one by one.
+
+1. **S1 was half fixed (blocking).** `dampedOscillationBound` fits
+   only windows of at least 10 thinned values (the last third and
+   quarter of the history), so a history shorter than about 30 checks
+   fitted nothing and counted as decaying with a bound of 0. The finer
+   grids, started from the coarser solution, settle in a few checks, so
+   the check was skipped on the grids that set the band. Fixed: a grid
+   is not settled until at least one window is fitted (`fitted` in
+   `OscillationBound`); the solve keeps iterating until one is. The test
+   (`tests/analysis/transonic-drag.test.ts`, after the reviewer's case):
+   the 10-caliber ogive at Mach 1.1, r = 2, 4 and 8 starting paused and
+   then moving away by up to 1e-3. Before the fix the family was served
+   (measured); now r = 2 does not settle.
+
+   **The certified offline numbers against this rule.** They come from
+   `family.test.ts` (not the driver), whose grids stopped on the
+   settling test. Their recorded histories (`tests/tmp-transonic/
+s1-recheck.md`) have fewer than 30 checks on every grid of the cone
+   at Mach 1.2 and 1.1 and of case A, and 3 on the cone's r = 8 at 1.05
+   (resumed from a checkpoint); only the cone's r = 1 to 4 at 1.05 have
+   fitted windows (bounds 6e-8 to 9e-8 of the drag, decaying). So under
+   the fixed rule these grids are unverified, not refuted. The cone at
+   Mach 1.2 and 1.1 is checked independently: Taylor-Maccoll's exact
+   value lies inside its band (errors +1.90e-6 and -2.61e-6), which a
+   grid stopped 1e-3 from its limit would not give. The cone at 1.05 (r = 8) and case A have no such check: their values stand as recorded but
+   their grids' settling is not confirmed by the fitted-window rule.
+   Continuing each from its saved state for 30 checks would settle it
+   (some hours each on one core); not done.
+
+2. **The "decaying" branch is not a bound on the moved family.** With
+   the uneven distance ratios of 100.6, 224.2 and 408.7 radii (2.23 then
+   1.82), |b| / (1 - rho) understates every pure power law of exponent
+   0.35 to 2: the allowance over the true remainder is 0.46 at exponent
+   0.35, 0.66 at 0.8, 0.71 at 1, 0.78 at 1.35 and 0.85 at 2, and the rule
+   never refuses there. **So the moved family's Mach 1.0 allowances
+   (5.12e-4 on the cone, 7.35e-4 on the ogive) are not bounds;** on the
+   cone's measured exponent near 1.3 the remainder would be about 6.6e-4,
+   not 5.1e-4. Said where the numbers appear above. On the served family
+   (55.1, 100.6 and 224.2 radii, ratios 1.83 then 2.23) the branch holds:
+   wherever rho is at most 0.6 (exponents from about 1.2) the allowance is
+   1.2 to 1.4 times the true remainder. The cylinder (5, 10, 20
+   calibers, ratios 2 and 2) is exact for a pure power law at m = 0: a
+   ratio of 1.00, with no margin. **Pre-registered next step (written
+   2026-10-22, before any code for it):** the decaying branch is used
+   only where D2 / D1 >= D1 / D0; elsewhere the case is bounded as
+   turning or refused. Its test, before any proposal to serve below Mach
+   1.05: the pure power laws of exponent 0.35 to 3 on every distance set
+   the driver uses, each allowance at least the true remainder, and the
+   six cases of the test above re-evaluated. No code yet.
+
+3. **What the turning bound really assumes.** Its T uses D^-0.35, but
+   that alone does not make it a bound: two parts of opposite sign
+   decaying as D^-0.5 and D^-1 break it (allowance over truth 0.94, 0.74
+   and 0.60 for b = -0.1 a, -0.3 a and -0.55 a), and one-signed D^-0.5 +
+   D^-2 gives 0.96 to 0.97 in the decaying branch. With exponents at or
+   above the measured 0.8 it held in every mix the reviewer tried. The
+   assumption, stated now in the constants' comments, here and in the
+   label: **both parts of the effect decay as D^-0.8 or faster, or what
+   remains beyond the largest domain is no larger than the largest
+   change measured.** The label carries it for every turning allowance
+   (the cone at Mach 1.05, whose far boundaries are turning, 1.995e-5),
+   and for the others where they are most of the band; "assumes its
+   effect keeps decaying" is gone.
+
+4. **The pre-registered test's data, in this record** (base grid,
+   nested domains; m = 7e-6; runs `t-*` on `claude/wip/results` at
+   `e703a02`, evaluated by `s2test-eval.test.ts` there):
+
+   | Case         | C(55.1)   | C(100.6)  | C(224.2)  | C(408.7)  | a         | b         | Rule     | Allowance | C(408.7) - C(100.6) | Margin  |
+   | ------------ | --------- | --------- | --------- | --------- | --------- | --------- | -------- | --------- | ------------------- | ------- |
+   | cone, 1.005  | 0.0945430 | 0.0971910 | 0.0990099 | 0.0993428 | +2.648e-3 | +1.819e-3 | refused  |           | +2.152e-3           |         |
+   | cone, 1.0125 | 0.1025498 | 0.1051750 | 0.1055692 | 0.1055481 | +2.625e-3 | +3.942e-4 | turning  | 8.509e-3  | +3.731e-4           | 8.14e-3 |
+   | cone, 1.025  | 0.1103603 | 0.1102938 | 0.1102547 | 0.1102550 | -6.655e-5 | -3.909e-5 | decaying | 1.018e-4  | -3.877e-5           | 6.30e-5 |
+   | ogive, 1.01  | 0.0246432 | 0.0266810 | 0.0272533 | 0.0272177 | +2.038e-3 | +5.723e-4 | decaying | 8.028e-4  | +5.367e-4           | 2.66e-4 |
+   | ogive, 1.02  | 0.0354020 | 0.0362606 | 0.0361728 | 0.0361739 | +8.586e-4 | -8.778e-5 | turning  | 2.747e-3  | -8.674e-5           | 2.66e-3 |
+   | ogive, 1.03  | 0.0393246 | 0.0391332 | 0.0390980 | 0.0390983 | -1.914e-4 | -3.523e-5 | decaying | 5.018e-5  | -3.497e-5           | 1.52e-5 |
+
+   The smallest margin, 1.5e-5 (the ogive at 1.03), survives a likely
+   settling error of these runs (about 3e-6 on each of the four values),
+   but not a strict worst case (about 1.7e-5, the errors all adding up).
+
+5. **allowNearSonic** is off the page-facing request (`NoseDragRequest`):
+   only the driver's own options carry it, for offline tests.
+6. **Smaller.** `RESIDUAL_PRECISION` is 1e-8 (two-float measured 2.2e-9,
+   a margin of 4.5; 32-bit some 1e-3); `checkPrecision` is required of
+   every engine (the CPU's passes at once); only the grids' own refusals
+   are 'domain' refusals, and any other RangeError is thrown. The
+   reviewer's finding that more noise can turn a refusal into
+   'unmeasurable' stays as disclosed above.
+
+No served number changes (nothing is served below Mach 1.2 yet). The
+recorded numbers that change in meaning, not value: the moved family's
+Mach 1.0 allowances, now stated not to be bounds; and the cone at 1.05
+and case A, whose grids are unconfirmed by the fitted-window rule.
 
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
 

@@ -59,6 +59,7 @@ function synthetic(s: Synthetic): TransonicEngine {
       },
       residual: () => Promise.resolve(0.01 * (s.rate ?? 0.99) ** steps + 1e-12 / (1 + steps)),
       cells: () => Promise.resolve(() => problem.freeStream.state),
+      checkPrecision: () => Promise.resolve(),
       destroy: () => undefined,
     });
   };
@@ -290,7 +291,7 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     // Most of the band is now the domain's allowance: the label says what it rests on.
     expect(result.parts.farField).toBeGreaterThan(result.parts.grids + result.parts.floor);
     expect(result.label).toMatch(
-      /most of the band .* is the allowance for the truncated domain, which assumes its effect keeps decaying beyond the largest domain solved and is checked against no reference/,
+      /most of the band .* is the allowance for the truncated domain; the far boundaries' allowance \(.*\) assumes that the part of their effect still to come beyond the largest domain solved decays as D\^-0\.8 or faster, or is no larger than the largest change measured; it is checked against no reference/,
     );
   });
 
@@ -319,6 +320,7 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
           Promise.resolve(drifting ? 0.1 + 1e-6 * steps : 0.1 * (1 + 0.01 * 0.9 ** steps)),
         residual: () => Promise.resolve(0.01 * 0.9 ** steps + 1e-12 / (1 + steps)),
         cells: () => Promise.resolve(() => problem.freeStream.state),
+        checkPrecision: () => Promise.resolve(),
         destroy: () => undefined,
       });
     };
@@ -399,6 +401,7 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
           ),
         residual: () => Promise.resolve(Math.exp(-steps / 1800) + 1e-12 / (1 + steps)),
         cells: () => Promise.resolve(() => problem.freeStream.state),
+        checkPrecision: () => Promise.resolve(),
         destroy: () => undefined,
       });
     };
@@ -432,6 +435,7 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
           drag: () => Promise.resolve(drag(steps)),
           residual: () => Promise.resolve(residual(steps)),
           cells: () => Promise.resolve(() => problem.freeStream.state),
+          checkPrecision: () => Promise.resolve(),
           destroy: () => undefined,
         });
       };
@@ -529,6 +533,56 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     if (during.kind === 'refused') {
       expect(during.reason).toBe('device-memory');
       expect(during.levels.map((l) => l.refinement)).toEqual([1, 2]);
+    }
+  });
+
+  it('a finer grid paused at the peak of a slow oscillation is not taken as settled (re-review of dd6c423)', async () => {
+    // After the reviewer's case: the 10-caliber ogive at Mach 1.1; r = 1
+    // converges; r = 2, 4 and 8 start paused (as at the peak of a slow
+    // oscillation) and then move away by up to 1e-3. Before the fix each
+    // finer grid was accepted after 8 checks, with no window of the
+    // oscillation fit, and the family served as 'solved' (measured).
+    const ogive10: Body = {
+      nose: { shape: { kind: 'ogive', parameter: 1 }, length: 20, baseRadius: 1 },
+      cylinderLength: 0,
+    };
+    const v = (r: number) => 0.1 + 1e-4 / r ** 2;
+    const converging = synthetic({ converged: (r) => v(r) });
+    const engine: TransonicEngine = async (problem) => {
+      const { refinement } = problem.options;
+      if (refinement === 1) return converging(problem);
+      const every = options.checkEvery * refinement;
+      let steps = 0;
+      // Paused for 12 checks (as at a turning point, flatter than any
+      // settling test can see), then moving away by up to 1e-3.
+      const drag = () => {
+        const check = steps / every;
+        return check <= 12
+          ? v(refinement)
+          : v(refinement) * (1 + 1e-3 * Math.sin((2 * Math.PI * (check - 12)) / 1200));
+      };
+      return Promise.resolve({
+        start: () => Promise.resolve(),
+        iterate: (n) => {
+          steps += n;
+          return Promise.resolve();
+        },
+        drag: () => Promise.resolve(drag()),
+        residual: () => Promise.resolve(1e-3 / (1 + steps)),
+        cells: () => Promise.resolve(() => problem.freeStream.state),
+        checkPrecision: () => Promise.resolve(),
+        destroy: () => undefined,
+      });
+    };
+    const result = await verifiedTransonicDrag(
+      ogive10,
+      { ...options, maxSteps: 20 * options.checkEvery * 2 * 50 },
+      engine,
+    );
+    expect(result.kind).toBe('not-converged');
+    if (result.kind === 'not-converged') {
+      expect(result.refinement).toBe(2);
+      expect(result.reason).toBe('not-settled');
     }
   });
 

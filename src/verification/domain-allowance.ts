@@ -39,9 +39,18 @@
 /** Largest ratio of successive changes for which the remainder is bounded geometrically. */
 export const DECAY_LIMIT = 0.6;
 /**
- * The slowest decay with the distance admitted for what lies beyond the
- * largest domain: below every exponent measured, the drag's (0.8 to 1.35)
- * and the far field's local pressure decay (0.39 to 0.47) at Mach 1.
+ * The decay with the distance that T is computed for: below every exponent
+ * measured, the drag's (0.8 to 1.35) and the far field's local pressure
+ * decay (0.39 to 0.47) at Mach 1. It is not by itself what makes the
+ * allowances bounds (re-review of dd6c423): two parts of opposite sign
+ * decaying as D^-0.5 and D^-1 break the turning bound (0.6 to 0.94 of the
+ * truth), and one-signed D^-0.5 + D^-2 the decaying branch (0.96). What
+ * the rule assumes is that both parts of the effect decay as D^-0.8 or
+ * faster, or that what remains beyond the largest domain is no larger than
+ * the largest change measured; with exponents of 0.8 and above it held in
+ * every mix tried. The decaying branch is a bound only where D2 / D1 >=
+ * D1 / D0 (0013, the re-review's item 2): on the family moved to 224.2
+ * radii (ratios 2.23 then 1.82) it understates every pure power law.
  */
 export const Q_SLOW = 0.35;
 /** The fastest decay admitted for one part of the effect: a doublet's, D^-3. */

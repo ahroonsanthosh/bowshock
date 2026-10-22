@@ -109,11 +109,12 @@ export function gpuTransonicEngine(
  * Largest difference between the GPU's residual and the CPU's double one
  * on the same state, relative to the largest residual, before the GPU is
  * taken to lose the low parts. Two-float arithmetic measured 2.2e-9 on
- * SwiftShader (0013, step 4b); 32-bit arithmetic loses about 1e-7 of the
- * face fluxes, which reach 1e3 on the far cells, against residuals of
- * order 0.1: some 1e-3.
+ * SwiftShader (0013, step 4b), so 1e-8 leaves a margin of 4.5 for other
+ * devices' rounding; 32-bit arithmetic loses about 1e-7 of the face
+ * fluxes, which reach 1e3 on the far cells, against residuals of order
+ * 0.1: some 1e-3, five decades above it.
  */
-export const RESIDUAL_PRECISION = 1e-6;
+export const RESIDUAL_PRECISION = 1e-8;
 
 /**
  * Why the GPU's residual is not the CPU's double one within

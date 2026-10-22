@@ -145,15 +145,20 @@ const RATE_POINTS = 8;
  * largest of the windows'. A window whose values span less than `quiet`
  * has converged and bounds by its span. A mode of magnitude 1 or more in
  * any window means the value is not decaying. A window of fewer than
- * OSCILLATION_MIN_SAMPLES values is not fitted: with none fitted, the
- * bound is 0 and the value counts as decaying, so a short, fast
- * convergence is left to the settling test.
+ * OSCILLATION_MIN_SAMPLES values is not fitted, and `fitted` counts the
+ * windows that were (fitted or quiet). With none, the bound is 0 and says
+ * nothing: a caller must not take a value as settled until `fitted` is at
+ * least 1 (re-review of dd6c423: a grid started from a coarser solution
+ * could settle in a few checks paused at a turning point, with no window
+ * fitted).
  */
 export interface OscillationBound {
   /** Whether every fitted window decays. */
   readonly decaying: boolean;
   /** The bound, absolute. */
   readonly bound: number;
+  /** How many windows had enough values to be fitted (or were quiet). */
+  readonly fitted: number;
 }
 
 /** The windows, as fractions of the history: its last third and last quarter. */
@@ -166,12 +171,14 @@ const OSCILLATION_MIN_SAMPLES = 10;
 export function dampedOscillationBound(values: readonly number[], quiet: number): OscillationBound {
   let bound = 0;
   let decaying = true;
+  let fitted = 0;
   for (const fraction of OSCILLATION_WINDOWS) {
     const window = values.slice(values.length - Math.floor(values.length / fraction));
     const step = Math.max(1, Math.floor(window.length / OSCILLATION_SAMPLES));
     const xs: number[] = [];
     for (let k = window.length - 1; k >= 0; k -= step) xs.unshift(window[k]!);
     if (xs.length < OSCILLATION_MIN_SAMPLES) continue;
+    fitted++;
     const last = xs[xs.length - 1]!;
     const spread = Math.max(...xs) - Math.min(...xs);
     if (!(spread > quiet)) {
@@ -185,7 +192,7 @@ export function dampedOscillationBound(values: readonly number[], quiet: number)
     }
     bound = Math.max(bound, (Math.max(fit.distance, fit.envelope) + 3 * fit.rms) * spread);
   }
-  return { decaying, bound };
+  return { decaying, bound, fitted };
 }
 
 /**

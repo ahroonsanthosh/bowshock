@@ -48,7 +48,7 @@ describe('two-float precision checks', () => {
   });
 
   it('the residual check passes two-float differences and refuses 32-bit ones', () => {
-    expect(RESIDUAL_PRECISION).toBe(1e-6);
+    expect(RESIDUAL_PRECISION).toBe(1e-8);
     const n = 4000;
     const cpu = new Float64Array(n);
     for (let k = 0; k < n; k++) cpu[k] = 0.1 * Math.sin(k * 0.37);

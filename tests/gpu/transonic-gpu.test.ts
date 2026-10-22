@@ -314,9 +314,9 @@ describe('the page engine: its precision check and its sweeps (review of aed95b0
     try {
       await solver.start(() => problem.freeStream.state, 1);
       await solver.iterate(60);
-      // Throws GpuPrecisionError beyond RESIDUAL_PRECISION (1e-6 of the
+      // Throws GpuPrecisionError beyond RESIDUAL_PRECISION (1e-8 of the
       // largest residual); two-float arithmetic measured 2.2e-9 here.
-      await expect(solver.checkPrecision!()).resolves.toBeUndefined();
+      await expect(solver.checkPrecision()).resolves.toBeUndefined();
     } finally {
       solver.destroy();
     }

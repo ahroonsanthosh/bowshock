@@ -211,7 +211,7 @@ describe('the damped-oscillation bound (review of aed95b0, S1)', () => {
     expect(dampedOscillationBound(drifting, quiet).decaying).toBe(false);
   });
 
-  it('a short history is left to the settling test', () => {
+  it('a short history fits no window, and says so (fitted 0: not yet settled)', () => {
     expect(
       dampedOscillationBound(
         history(25, (s) => 1 + 0.9 ** s),
@@ -220,6 +220,7 @@ describe('the damped-oscillation bound (review of aed95b0, S1)', () => {
     ).toEqual({
       decaying: true,
       bound: 0,
+      fitted: 0,
     });
   });
 });

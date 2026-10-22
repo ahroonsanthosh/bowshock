@@ -60,9 +60,10 @@ export interface TransonicGridSolver {
    * Check the device's arithmetic on the current state: its residual
    * against the CPU's double one. Throws GpuPrecisionError if the low
    * parts are lost. Called once per solve, after the first steps of the
-   * first grid (GPU engines only; review of aed95b0, S5).
+   * first grid (review of aed95b0, S5). Required, so that no engine skips
+   * it by omission; the CPU engine, in double precision, passes at once.
    */
-  checkPrecision?(): Promise<void>;
+  checkPrecision(): Promise<void>;
   /**
    * The flow to draw as it converges, on the solver's device (GPU
    * engines only): its buffers live until destroy().
@@ -412,6 +413,9 @@ export type TransonicDrag =
 
 class Cancelled extends Error {}
 
+/** The transonic grids cannot be built for this body (transonicGrid's RangeError). */
+class DomainError extends Error {}
+
 class NotConverged extends Error {
   constructor(
     readonly refinement: number,
@@ -471,14 +475,21 @@ export async function verifiedTransonicDrag(
   // its far boundaries or cylinder moved (nested), node for node.
   const problemOf = (refinement: number, nested?: Nested) => {
     const merged = { ...domains.family.nested, ...nested };
-    return transonicProblem(body, {
-      mach,
-      gamma,
-      refinement,
-      farField: domains.family.farField,
-      cylinder: domains.family.cylinder,
-      ...(Object.keys(merged).length === 0 ? {} : { nested: merged }),
-    });
+    try {
+      return transonicProblem(body, {
+        mach,
+        gamma,
+        refinement,
+        farField: domains.family.farField,
+        cylinder: domains.family.cylinder,
+        ...(Object.keys(merged).length === 0 ? {} : { nested: merged }),
+      });
+    } catch (error) {
+      // Only the grids' own refusals are 'domain' refusals; any other
+      // RangeError is a fault and is thrown (re-review of dd6c423).
+      if (error instanceof RangeError) throw new DomainError(error.message);
+      throw error;
+    }
   };
   // Every base grid up front, and the finest grid's size against the
   // engine's limits: a body the domains do not fit, or a device too
@@ -501,7 +512,7 @@ export async function verifiedTransonicDrag(
       ],
     };
   } catch (error) {
-    if (!(error instanceof RangeError)) throw error;
+    if (!(error instanceof DomainError)) throw error;
     return {
       kind: 'refused',
       reason: 'domain',
@@ -673,13 +684,33 @@ export async function verifiedTransonicDrag(
       reference.check === undefined
         ? `verified by grid convergence, with no exact reference at this Mach number (${reference.note}); ${VALIDATION_CASES}`
         : `verified by grid convergence, and checked here against the exact solution (${reference.note}): exact ${reference.check.value.toFixed(7)}, the solve's error ${reference.check.error.toExponential(2)}, inside the band`;
-    // Where the domain's allowances are most of the band, say what they
-    // rest on (review of aed95b0, S6).
+    // What the domain's allowances rest on (review of aed95b0, S6, and
+    // re-review of dd6c423): each kind's own assumption, always for a
+    // turning allowance, and for the others where the allowances are most
+    // of the band.
     const assumed = parts.farField + parts.cylinder;
-    const label =
-      assumed > parts.grids + parts.floor
-        ? `${head}; most of the band (${assumed.toExponential(2)} of ${band.toExponential(2)}) is the allowance for the truncated domain, which assumes its effect keeps decaying beyond the largest domain solved and is checked against no reference`
-        : head;
+    const notes: string[] = [];
+    for (const [what, a] of [
+      ['far boundaries', farAllowance],
+      ['cylinder', cylinderAllowance],
+    ] as const) {
+      const dominant = assumed > parts.grids + parts.floor;
+      if (a.kind === 'turning' || (a.kind === 'unmeasurable' && dominant)) {
+        notes.push(
+          `the ${what}' allowance (${a.allowance.toExponential(2)}) assumes that the part of their effect still to come beyond the largest domain solved decays as D^-0.8 or faster, or is no larger than the largest change measured; it is checked against no reference`,
+        );
+      } else if (a.kind === 'decaying' && dominant) {
+        notes.push(
+          `the ${what}' allowance (${a.allowance.toExponential(2)}) assumes that their effect keeps falling at least geometrically beyond the largest domain solved; it is checked against no reference`,
+        );
+      }
+    }
+    if (assumed > parts.grids + parts.floor) {
+      notes.unshift(
+        `most of the band (${assumed.toExponential(2)} of ${band.toExponential(2)}) is the allowance for the truncated domain`,
+      );
+    }
+    const label = [head, ...notes].join('; ');
     return {
       kind: 'solved',
       value,
@@ -710,7 +741,7 @@ export async function verifiedTransonicDrag(
         levels,
       };
     }
-    if (error instanceof RangeError) {
+    if (error instanceof DomainError) {
       return {
         kind: 'refused',
         reason: 'domain',
@@ -820,9 +851,10 @@ interface GridSolution {
  * - the residual has fallen to RESIDUAL_FALL of the largest seen on this
  *   grid and still changes, so a solver that stopped moving does not
  *   count;
- * - the damped-oscillation bound on the drag's history decays and is
- *   within SETTLE_NOISE of the drag, so a slow oscillation pausing at a
- *   turning point does not count.
+ * - the damped-oscillation bound on the drag's history has at least one
+ *   fitted window (about 30 checks), decays and is within SETTLE_NOISE of
+ *   the drag, so a slow oscillation pausing at a turning point does not
+ *   count.
  * The grid's noise is the largest of SETTLE_NOISE, the wander over the
  * watched checks, the geometric remaining change and the oscillation
  * bound (review of aed95b0, S1). A residual that grows to
@@ -875,7 +907,7 @@ async function solveGrid(
       if (options.signal?.aborted === true) throw new Cancelled();
       await solver.iterate(every);
       steps += every;
-      if (checkPrecision && steps === every) await solver.checkPrecision?.();
+      if (checkPrecision && steps === every) await solver.checkPrecision();
       drag = await solver.drag();
       if (!Number.isFinite(drag)) {
         throw new NotConverged(refinement, 'not-finite', 'the drag is not finite');
@@ -906,7 +938,10 @@ async function solveGrid(
       if (!(moving && residual <= RESIDUAL_FALL * largestResidual)) continue;
       const fit = dampedOscillationBound(history, 10 * GEOMETRIC_NOISE * Math.abs(drag));
       oscillation = fit.bound;
-      if (fit.decaying && oscillation <= SETTLE_NOISE * Math.abs(drag)) {
+      // No window fitted yet (fewer than about 30 checks): keep going, so
+      // that a grid paused at a turning point of a slow oscillation is not
+      // taken as settled (re-review of dd6c423).
+      if (fit.fitted > 0 && fit.decaying && oscillation <= SETTLE_NOISE * Math.abs(drag)) {
         settled = true;
         break;
       }
@@ -986,6 +1021,8 @@ export function cpuTransonicEngine(cfl = 1000): TransonicEngine {
       },
       drag: () => Promise.resolve(problem.drag(solver)),
       residual: () => Promise.resolve(solver.densityResidualNorm()),
+      // Double precision throughout: nothing to check.
+      checkPrecision: () => Promise.resolve(),
       cells: () => {
         const q = solver.conserved();
         const copy = new Euler2D(problem.config);
