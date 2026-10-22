@@ -67,8 +67,12 @@ not available here. So it cannot be stated, from knowledge, whether round
 10's readings of figs. 9 and 10 were seen. What the repository shows:
 the commit adds only this folder's files; no file under
 `audit/round10/` was ever on the `w7-fins` branch's history up to it.
-Round 10's readings were on another branch (`claude/wip/round10-w7-figures`),
-pushed at 09:21, eight minutes before. That does not show they were not
+Round 10's readings were on another branch (`claude/wip/round10-w7-figures`):
+its commit 5c7c746 was made in the shared local repository at 09:21,
+eight minutes before this one, and the branch was first pushed to GitHub
+at 09:35:12, six minutes after it (corrected 2026-10-22; this note first
+said "pushed at 09:21"). Being in the shared local repository before
+09:29 does not show they were not
 opened. Until the earlier agent's record shows otherwise, this reading
 is to be treated as **not shown to be blind**. The coordinator may have
 figs. 9 and 10 read again by a reader who has opened neither reading.

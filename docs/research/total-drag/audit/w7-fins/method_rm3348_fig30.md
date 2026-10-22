@@ -15,6 +15,21 @@ values are typed in this folder) was not opened or consulted while
 reading, and no value was moved toward it. Panel (b) was not filled from
 panel (a) either: each panel's symbols are what that panel shows.
 
+_What I had read beforehand_ (added 2026-10-22, at the coordinator's
+question after the pairing). I did not open `status/round10-reader.md`
+on `claude/wip/handoff`, nor any other file holding round 10's values.
+Before reading, I had read `HANDOFF.md` (sections 0 to 8),
+`status/w7.md` and the advisor's section 5 on that branch. From them I
+knew this, with no values:
+- HANDOFF section 4.7: fig. 30's points at Mach 1.11 to 1.20 lie below
+  its own table 3;
+- section 8: keep both as an envelope, with R&M 3348 band-setting up to
+  Mach 1.00 and a flagged check at 1.11 to 1.20;
+- `status/w7.md`: the inconsistency is to be raised at the pairing.
+I knew the direction (fig. 30 below table 3) and the Mach range. I did
+not know by how much, or at which sweeps. 0019 (section 6, in my own
+words) names the inconsistency only, with no direction.
+
 **Method** (both panels). The page rendered at 300 dpi (`pdftoppm -r
 300`), page pixels.
 

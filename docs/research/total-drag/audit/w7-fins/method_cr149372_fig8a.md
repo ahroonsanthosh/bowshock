@@ -36,7 +36,7 @@ and 212 px per 30 deg. The local interpolation follows it. Errors:
 +-2.5 px placement and 0.5 px trace, 0.34 deg in theta and 0.0035 in Cp;
 +-4 px for the three flagged below.
 
-**Reading** (`cr149372_fig8a_first.csv`): 95 symbols. M 0.6 27 circles,
+**Reading** (`cr149372_fig8a_first.csv`): 94 symbols (corrected 2026-10-22; first written as 95, a miscount, and so in commit e94adb7's message). M 0.6 27 circles,
 M 0.7 24 squares, M 0.8 22 triangles, M 0.9 21 hexagons. A check, not a
 target: at theta 0 the four read 1.092, 1.132, 1.161 and 1.213. The
 isentropic stagnation values are 1.093, 1.129, 1.170 and 1.219 (from the
