@@ -1193,8 +1193,18 @@ outline of the (calibers, Mach) points referenced
 (3, 2), (3, 3), (5, 1.5), (5, 2), whose outline has the corners
 (1, 1.5), (5, 1.5), (5, 2), (3, 3) and (1, 3); a case outside is
 refused with the reason, as are the other Haack noses and the power
-series. A reference at the open corner (5 calibers at Mach 3) is in
-progress; if it passes it extends the outline and resets the
+series. The body's length is not a dimension of the outline: the
+references have 1 or 2 calibers of body, the page accepts 0 to 30.
+Measured on the 3-caliber nose at Mach 2 (2026-10-22,
+`runners/tmp-haackmoc/lanecyl.sh`), against 2 calibers of body: with
+none (solved with 1, the shortest the fit solves) the drag moves by
++6.5e-5 on nj = 20 and +2.1e-5 on nj = 40, with 30 by -2.8e-5 and
+-8.7e-6, falling by about 3 per grid as the grid error does, so towards
+the same value, and far inside the allowance: the body length is not
+restricted. With 30 calibers of body the fitted grids fail the
+aspect-ratio gate (14.0 and 14.7, against 13), so the page refuses that
+case on that ground, with the reason. A reference at the open corner (5
+calibers at Mach 3) is in progress; if it passes it extends the outline and resets the
 allowance. On the GPU the page's path gives the 1-caliber nose at Mach 2
 within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
 against 0.42909806331220435; measured again on the merged code on

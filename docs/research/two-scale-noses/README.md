@@ -109,6 +109,8 @@ band of four grids has been measured on a Von Karman nose yet. Lanes
 - `lanecyl.sh`: the 3-caliber nose at Mach 2 with 0 and 30 calibers of
   cylinder on nj = 20 and 40, against the 2-caliber family: the page
   accepts 0 to 30 calibers of body, the references have 1 or 2.
+  Finished: `fits/saved/L3c0M2r1`, `r2` and `L3c30M2r1`, `r2` (0006,
+  "The allowance and the served region").
 
 When a nj = 160 fit is saved, `check160.test.ts` (`TAG=L1c1M2` or
 `TAG=L3M2`) gives the page's verdict on the four drags (orders of the

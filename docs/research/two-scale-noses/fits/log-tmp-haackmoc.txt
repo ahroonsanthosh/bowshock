@@ -299,3 +299,61 @@
 2026-10-22T21:37:55.716Z haack C0 L1 M2 cyl1 nj20x8: start, save to tests/tmp-haackmoc/L1c1M2r8
 2026-10-22T21:38:16.965Z haack C0 L1 M2 cyl1 nj20x8: resumed from checkpoint at 0 iterations
 2026-10-22T22:10:40.335Z haack C0 L1 M2 cyl1 nj20x8: 1000 iterations, maxSpeed 5.06e-4, drag 0.428554447983, remaining 0.00e+0
+2026-10-22T22:43:09.136Z haack C0 L1 M2 cyl1 nj20x8: 2000 iterations, maxSpeed 2.16e-5, drag 0.428554957285, remaining 0.00e+0
+2026-10-22T23:13:22.808Z haack C0 L1 M2 cyl1 nj20x8: 3000 iterations, maxSpeed 2.72e-6, drag 0.428554545609, remaining Infinity
+2026-10-22T23:28:32.600Z haack C0 L3 M2 cyl0 nj20x1: start, save to tests/tmp-haackmoc/L3c0M2r1
+2026-10-22T23:28:33.486Z haack C0 L3 M2 cyl2 nj20x8: start, save to tests/tmp-haackmoc/L3M2r8
+2026-10-22T23:29:15.669Z haack C0 L3 M2 cyl2 nj20x8: resumed from checkpoint at 0 iterations
+2026-10-22T23:29:24.882Z haack C0 L3 M2 cyl0 nj20x1: 500 iterations, maxSpeed 5.39e-2, drag 0.0810523749497, remaining 0.00e+0
+2026-10-22T23:29:33.712Z haack C0 L3 M2 cyl0 nj20x1: 1000 iterations, maxSpeed 1.06e-2, drag 0.0807098807193, remaining 0.00e+0
+2026-10-22T23:29:43.473Z haack C0 L3 M2 cyl0 nj20x1: 1500 iterations, maxSpeed 1.92e-3, drag 0.0806710204641, remaining 6.17e-5
+2026-10-22T23:29:52.798Z haack C0 L3 M2 cyl0 nj20x1: 2000 iterations, maxSpeed 3.44e-4, drag 0.0806648770117, remaining 1.18e-5
+2026-10-22T23:30:01.390Z haack C0 L3 M2 cyl0 nj20x1: 2500 iterations, maxSpeed 6.14e-5, drag 0.0806638666550, remaining 2.12e-6
+2026-10-22T23:30:10.246Z haack C0 L3 M2 cyl0 nj20x1: 3000 iterations, maxSpeed 1.09e-5, drag 0.0806636934693, remaining 3.85e-7
+2026-10-22T23:30:18.674Z haack C0 L3 M2 cyl0 nj20x1: 3500 iterations, maxSpeed 1.94e-6, drag 0.0806636629843, remaining 7.07e-8
+2026-10-22T23:30:26.961Z haack C0 L3 M2 cyl0 nj20x1: 4000 iterations, maxSpeed 3.45e-7, drag 0.0806636575885, remaining 1.29e-8
+2026-10-22T23:30:35.874Z haack C0 L3 M2 cyl0 nj20x1: 4500 iterations, maxSpeed 6.13e-8, drag 0.0806636566315, remaining 2.34e-9
+2026-10-22T23:30:43.988Z haack C0 L3 M2 cyl0 nj20x1: 5000 iterations, maxSpeed 1.09e-8, drag 0.0806636564616, remaining 4.39e-10
+2026-10-22T23:30:52.810Z haack C0 L3 M2 cyl0 nj20x1: 5500 iterations, maxSpeed 1.93e-9, drag 0.0806636564314, remaining 7.79e-11
+2026-10-22T23:31:01.166Z haack C0 L3 M2 cyl0 nj20x1: 6000 iterations, maxSpeed 3.43e-10, drag 0.0806636564261, remaining 1.38e-11
+2026-10-22T23:31:09.576Z haack C0 L3 M2 cyl0 nj20x1: quality {"wall":77.30271500693348,"minAngle":57.586586719283886,"sizeRatio":1.1005535889474,"aspect":3.0814546838614807,"gates":[],"stagnationError":-0.0012131731842898175,"standoff":0.0006560542467813808}
+2026-10-22T23:31:09.577Z haack C0 L3 M2 cyl0 nj20x1: settled early at 6500 iterations, remaining 2.46e-12, maxSpeed 6.10e-11, drag 0.080663656425140284, from the wall strip 0.080663656425140132; saved
+2026-10-22T23:31:10.861Z haack C0 L3 M2 cyl0 nj20x2: start, save to tests/tmp-haackmoc/L3c0M2r2
+2026-10-22T23:31:50.860Z haack C0 L3 M2 cyl0 nj20x2: resumed from checkpoint at 0 iterations
+2026-10-22T23:33:09.602Z haack C0 L3 M2 cyl0 nj20x2: 1000 iterations, maxSpeed 1.45e-5, drag 0.0804729810237, remaining 0.00e+0
+2026-10-22T23:34:23.258Z haack C0 L3 M2 cyl0 nj20x2: 2000 iterations, maxSpeed 3.93e-6, drag 0.0804733415655, remaining 0.00e+0
+2026-10-22T23:35:09.914Z haack C0 L1 M2 cyl1 nj20x8: 4000 iterations, maxSpeed 1.32e-6, drag 0.428554497316, remaining 5.01e-8
+2026-10-22T23:35:34.906Z haack C0 L3 M2 cyl0 nj20x2: 3000 iterations, maxSpeed 1.03e-6, drag 0.0804733754681, remaining 4.37e-8
+2026-10-22T23:36:51.623Z haack C0 L3 M2 cyl0 nj20x2: 4000 iterations, maxSpeed 1.72e-7, drag 0.0804733796394, remaining 6.25e-9
+2026-10-22T23:38:09.655Z haack C0 L3 M2 cyl0 nj20x2: 5000 iterations, maxSpeed 2.93e-8, drag 0.0804733802120, remaining 9.45e-10
+2026-10-22T23:39:22.390Z haack C0 L3 M2 cyl0 nj20x2: 6000 iterations, maxSpeed 5.18e-9, drag 0.0804733802762, remaining 1.06e-10
+2026-10-22T23:40:37.219Z haack C0 L3 M2 cyl0 nj20x2: 7000 iterations, maxSpeed 9.34e-10, drag 0.0804733802891, remaining 2.12e-11
+2026-10-22T23:41:51.444Z haack C0 L3 M2 cyl0 nj20x2: quality {"wall":77.48900906120988,"minAngle":57.576158336151956,"sizeRatio":1.1265214582192888,"aspect":3.1570793850840535,"gates":[],"stagnationError":-0.0005524032184065497,"standoff":0.000655813859995893}
+2026-10-22T23:41:51.445Z haack C0 L3 M2 cyl0 nj20x2: settled early at 8000 iterations, remaining 4.26e-12, maxSpeed 1.70e-10, drag 0.080473380291657459, from the wall strip 0.080473380291657570; saved
+2026-10-22T23:41:52.588Z haack C0 L3 M2 cyl30 nj20x1: start, save to tests/tmp-haackmoc/L3c30M2r1
+2026-10-22T23:42:47.867Z haack C0 L3 M2 cyl30 nj20x1: 500 iterations, maxSpeed 5.47e-2, drag 0.0810435872866, remaining 0.00e+0
+2026-10-22T23:42:59.218Z haack C0 L3 M2 cyl30 nj20x1: 1000 iterations, maxSpeed 1.07e-2, drag 0.0807023988500, remaining 0.00e+0
+2026-10-22T23:43:08.375Z haack C0 L3 M2 cyl30 nj20x1: 1500 iterations, maxSpeed 1.93e-3, drag 0.0806634466209, remaining 6.22e-5
+2026-10-22T23:43:18.222Z haack C0 L3 M2 cyl30 nj20x1: 2000 iterations, maxSpeed 3.46e-4, drag 0.0806573968115, remaining 1.15e-5
+2026-10-22T23:43:28.774Z haack C0 L3 M2 cyl30 nj20x1: 2500 iterations, maxSpeed 6.16e-5, drag 0.0806563751122, remaining 2.15e-6
+2026-10-22T23:43:39.014Z haack C0 L3 M2 cyl30 nj20x1: 3000 iterations, maxSpeed 1.10e-5, drag 0.0806562007501, remaining 3.89e-7
+2026-10-22T23:43:49.345Z haack C0 L3 M2 cyl30 nj20x1: 3500 iterations, maxSpeed 1.95e-6, drag 0.0806561700375, remaining 7.14e-8
+2026-10-22T23:43:59.582Z haack C0 L3 M2 cyl30 nj20x1: 4000 iterations, maxSpeed 3.46e-7, drag 0.0806561646010, remaining 1.30e-8
+2026-10-22T23:44:09.838Z haack C0 L3 M2 cyl30 nj20x1: 4500 iterations, maxSpeed 6.14e-8, drag 0.0806561636369, remaining 2.36e-9
+2026-10-22T23:44:19.806Z haack C0 L3 M2 cyl30 nj20x1: 5000 iterations, maxSpeed 1.09e-8, drag 0.0806561634658, remaining 4.43e-10
+2026-10-22T23:44:29.331Z haack C0 L3 M2 cyl30 nj20x1: 5500 iterations, maxSpeed 1.94e-9, drag 0.0806561634354, remaining 7.86e-11
+2026-10-22T23:44:39.022Z haack C0 L3 M2 cyl30 nj20x1: 6000 iterations, maxSpeed 3.44e-10, drag 0.0806561634300, remaining 1.40e-11
+2026-10-22T23:44:49.241Z haack C0 L3 M2 cyl30 nj20x1: quality {"wall":76.86235746127984,"minAngle":57.826280918103684,"sizeRatio":1.2142680766885232,"aspect":14.004712923376035,"gates":["cell aspect ratio 14.0 above 13"],"stagnationError":-0.001853127527201348,"standoff":0.0006561043791843553}
+2026-10-22T23:44:49.242Z haack C0 L3 M2 cyl30 nj20x1: settled early at 6500 iterations, remaining 2.49e-12, maxSpeed 6.11e-11, drag 0.080656163429071823, from the wall strip 0.080656163429071753; saved
+2026-10-22T23:44:50.473Z haack C0 L3 M2 cyl30 nj20x2: start, save to tests/tmp-haackmoc/L3c30M2r2
+2026-10-22T23:45:35.638Z haack C0 L3 M2 cyl30 nj20x2: resumed from checkpoint at 0 iterations
+2026-10-22T23:47:04.542Z haack C0 L3 M2 cyl30 nj20x2: 1000 iterations, maxSpeed 1.41e-5, drag 0.0804705483846, remaining 0.00e+0
+2026-10-22T23:48:33.592Z haack C0 L3 M2 cyl30 nj20x2: 2000 iterations, maxSpeed 3.89e-6, drag 0.0804709091829, remaining 0.00e+0
+2026-10-22T23:49:59.300Z haack C0 L3 M2 cyl30 nj20x2: 3000 iterations, maxSpeed 1.03e-6, drag 0.0804709431023, remaining 4.37e-8
+2026-10-22T23:51:25.909Z haack C0 L3 M2 cyl30 nj20x2: 4000 iterations, maxSpeed 1.72e-7, drag 0.0804709472752, remaining 6.25e-9
+2026-10-22T23:52:52.695Z haack C0 L3 M2 cyl30 nj20x2: 5000 iterations, maxSpeed 2.93e-8, drag 0.0804709478502, remaining 9.51e-10
+2026-10-22T23:54:20.068Z haack C0 L3 M2 cyl30 nj20x2: 6000 iterations, maxSpeed 5.19e-9, drag 0.0804709479145, remaining 1.06e-10
+2026-10-22T23:55:48.463Z haack C0 L3 M2 cyl30 nj20x2: 7000 iterations, maxSpeed 9.35e-10, drag 0.0804709479274, remaining 2.13e-11
+2026-10-22T23:56:25.856Z haack C0 L1 M2 cyl1 nj20x8: 5000 iterations, maxSpeed 6.81e-7, drag 0.428554486361, remaining 8.75e-9
+2026-10-22T23:57:16.264Z haack C0 L3 M2 cyl30 nj20x2: quality {"wall":77.16692368924495,"minAngle":57.832532441975886,"sizeRatio":1.148094916028377,"aspect":14.658996491216067,"gates":["cell aspect ratio 14.7 above 13"],"stagnationError":-0.0008574306022869349,"standoff":0.0006558284950470624}
+2026-10-22T23:57:16.266Z haack C0 L3 M2 cyl30 nj20x2: settled early at 8000 iterations, remaining 4.27e-12, maxSpeed 1.70e-10, drag 0.080470947929945344, from the wall strip 0.080470947929945469; saved
