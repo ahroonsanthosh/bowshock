@@ -110,10 +110,12 @@ export async function solveNoseDrag(
       finest: request.finest,
       ...(request.signal === undefined ? {} : { signal: request.signal }),
       ...(request.allowMach1 === undefined ? {} : { allowMach1: request.allowMach1 }),
-      onProgress: (what, refinement, steps, drag) => {
-        request.onProgress?.(
-          `${what === 'grid' ? 'Grid' : 'Domain allowance, base grid'} at refinement ${refinement}: ${steps} steps, wave Cd so far ${drag.toFixed(6)}`,
-        );
+      onProgress: (p) => {
+        const where =
+          p.what === 'grid'
+            ? `Grid at refinement ${p.refinement}`
+            : `Allowance for the ${p.allowance === 'farField' ? 'far boundaries' : 'cylinder'}, base grid on ${p.size} ${p.allowance === 'farField' ? 'radii' : 'calibers'}`;
+        request.onProgress?.(`${where}: ${p.steps} steps, wave Cd so far ${p.drag.toFixed(6)}`);
       },
     });
     return fromTransonic(result);

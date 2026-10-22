@@ -116,6 +116,34 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     ).toEqual({ kind: 'refused', message: 'the nose wave drag has no band: not yet' });
   });
 
+  it('reports progress by grid and, for the allowances, by which one and which domain', async () => {
+    const seen = new Set<string>();
+    await verifiedTransonicDrag(
+      ogive,
+      {
+        ...options,
+        onProgress: (p) => {
+          seen.add(
+            p.what === 'grid'
+              ? `grid ${p.refinement}`
+              : `${p.allowance} ${p.domain} ${p.size} r${p.refinement}`,
+          );
+        },
+      },
+      synthetic({ converged: (r) => 0.04 + 1e-4 / r ** 2 }),
+    );
+    expect([...seen].sort()).toEqual([
+      'cylinder 0 5 r1',
+      'cylinder 2 20 r1',
+      'farField 0 50 r1',
+      'farField 2 200 r1',
+      'grid 1',
+      'grid 2',
+      'grid 4',
+      'grid 8',
+    ]);
+  });
+
   it('a cone whose conical flow is supersonic carries the exact-solution note', async () => {
     const result = await verifiedTransonicDrag(
       cone,

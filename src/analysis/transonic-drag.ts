@@ -85,10 +85,45 @@ export interface TransonicDragOptions {
    * test there (0013, serving rule 8).
    */
   readonly allowMach1?: boolean;
-  readonly onProgress?: (what: string, refinement: number, steps: number, drag: number) => void;
+  /** After each check of a grid's drag. */
+  readonly onProgress?: (progress: TransonicProgress) => void;
   readonly onLevel?: (level: TransonicLevel) => void;
   readonly signal?: AbortSignal;
 }
+
+/**
+ * A check of a grid's drag during a solve: a grid of the family, or a
+ * base grid of an allowance, with which allowance (the far boundaries or
+ * the cylinder) and which of its three domains (0 the smaller, 2 the
+ * larger; 1, the family's own, is the family's base grid) and that
+ * domain's size (radii or calibers).
+ */
+export type TransonicProgress =
+  | {
+      readonly what: 'grid';
+      readonly refinement: number;
+      readonly steps: number;
+      readonly drag: number;
+    }
+  | {
+      readonly what: 'allowance';
+      readonly allowance: 'farField' | 'cylinder';
+      readonly domain: 0 | 2;
+      readonly size: number;
+      readonly refinement: 1;
+      readonly steps: number;
+      readonly drag: number;
+    };
+
+/** Which solve a grid serves, for its progress reports. */
+type GridRole =
+  | { readonly what: 'grid' }
+  | {
+      readonly what: 'allowance';
+      readonly allowance: 'farField' | 'cylinder';
+      readonly domain: 0 | 2;
+      readonly size: number;
+    };
 
 export interface TransonicLevel {
   readonly refinement: number;
@@ -253,7 +288,9 @@ export async function verifiedTransonicDrag(
     let base: { problem: TransonicProblem; drag: number; noise: number } | null = null;
     for (let refinement = 1; refinement <= options.finest; refinement *= 2) {
       const problem = transonicProblem(body, { mach, gamma, refinement, ...FAMILY_DOMAIN });
-      const result: GridSolution = await solveGrid(engine, problem, previous, options, 'grid');
+      const result: GridSolution = await solveGrid(engine, problem, previous, options, {
+        what: 'grid',
+      });
       const level: TransonicLevel = {
         refinement,
         cells: { ni: problem.config.grid.ni, nj: problem.config.grid.nj },
@@ -272,6 +309,7 @@ export async function verifiedTransonicDrag(
     // The allowances, on the base grid.
     const own = base!;
     const allowanceOf = async (
+      allowance: 'farField' | 'cylinder',
       nested: readonly [Nested, Nested],
       domains: readonly [number, number, number],
     ): Promise<{
@@ -279,7 +317,7 @@ export async function verifiedTransonicDrag(
       noise: number;
       domains: readonly [number, number, number];
     }> => {
-      const solveNested = async (n: Nested) => {
+      const solveNested = async (n: Nested, domain: 0 | 2) => {
         const problem = transonicProblem(body, {
           mach,
           gamma,
@@ -287,10 +325,15 @@ export async function verifiedTransonicDrag(
           ...FAMILY_DOMAIN,
           nested: n,
         });
-        return solveGrid(engine, problem, null, options, 'allowance');
+        return solveGrid(engine, problem, null, options, {
+          what: 'allowance',
+          allowance,
+          domain,
+          size: domains[domain],
+        });
       };
-      const smaller = await solveNested(nested[0]);
-      const larger = await solveNested(nested[1]);
+      const smaller = await solveNested(nested[0], 0);
+      const larger = await solveNested(nested[1], 2);
       return {
         values: [smaller.drag, own.drag, larger.drag],
         noise: Math.max(smaller.noise, own.noise, larger.noise),
@@ -298,10 +341,12 @@ export async function verifiedTransonicDrag(
       };
     };
     const far = await allowanceOf(
+      'farField',
       [{ farField: FAR_FIELD_DOMAINS[0] }, { farField: FAR_FIELD_DOMAINS[1] }],
       [FAR_FIELD_DOMAINS[0], FAMILY_DOMAIN.farField, FAR_FIELD_DOMAINS[1]],
     );
     const cylinder = await allowanceOf(
+      'cylinder',
       [{ cylinder: CYLINDER_DOMAINS[0] }, { cylinder: CYLINDER_DOMAINS[1] }],
       [CYLINDER_DOMAINS[0], FAMILY_DOMAIN.cylinder, CYLINDER_DOMAINS[1]],
     );
@@ -440,7 +485,7 @@ async function solveGrid(
   problem: TransonicProblem,
   start: { problem: TransonicProblem; cells: TransonicCells } | null,
   options: TransonicDragOptions,
-  what: string,
+  role: GridRole,
 ): Promise<GridSolution> {
   const refinement = problem.options.refinement;
   const every = (options.checkEvery ?? 50) * refinement;
@@ -474,7 +519,11 @@ async function solveGrid(
       if (!Number.isFinite(drag)) {
         throw new NotConverged(refinement, 'not-finite', 'the drag is not finite');
       }
-      options.onProgress?.(what, refinement, steps, drag);
+      options.onProgress?.(
+        role.what === 'grid'
+          ? { what: 'grid', refinement, steps, drag }
+          : { ...role, refinement: 1, steps, drag },
+      );
       recent.push(drag);
       if (recent.length > 3) recent.shift();
       remaining = geometricRemaining(recent);
