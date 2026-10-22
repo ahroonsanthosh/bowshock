@@ -12,8 +12,12 @@ and 0 deg, the broken ones negative incidence. Named by 0014 section
 10.7 (l) for the surface pressure just ahead of the base (x/c 0.995).
 
 **Blindness.** I opened no round 10, 11 or 12 file and no pairing
-folder. I read table 3's header row from my own typing in this folder
-(for its incidences), not its values.
+folder. To see which incidences table 3 covers, I printed the first
+lines of my own typing of it in this folder: its header and seven rows
+(M_0 0.70, phi 0 deg, holes 6 and 5, alpha 0 to 8 deg). That showed
+seven base-pressure values, p_b/p_0 0.73 to 0.79. These are base
+pressures, not surface pressures ahead of the base, and were not used in
+this reading.
 
 **What can be read at x/c 0.995.** Near the trailing edge all the curves
 of a panel converge into a bundle about 0.02 to 0.19 high in p/H. They
