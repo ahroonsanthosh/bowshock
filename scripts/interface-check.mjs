@@ -69,6 +69,8 @@ const PAGES = [
         900,
       ),
     // The 3D view opens; V switches to the side view (its fields on 1 to 5) and back.
+    // Paused (Space) for the shots, so that each frame catches up with its keys.
+    pause: ' ',
     shots: [
       ['slice', ['2']],
       ['side', ['2', 'v']],
@@ -222,6 +224,24 @@ async function serve() {
     await new Promise((r) => setTimeout(r, 500));
   }
   return { url, stop: () => child.kill() };
+}
+
+/**
+ * Waits until the page's picture has stayed the same for three looks 3 s
+ * apart (at most 90 s): on software WebGPU one 3D frame takes seconds, so a
+ * shot taken soon after a key can show the frame before it.
+ */
+async function settled(page) {
+  let last = null;
+  let same = 0;
+  const end = Date.now() + 90_000;
+  while (Date.now() < end && same < 3) {
+    await page.waitForTimeout(3000);
+    const now = await page.screenshot();
+    same = last !== null && now.equals(last) ? same + 1 : 0;
+    last = now;
+  }
+  return same >= 3;
 }
 
 /** Serious and critical accessibility violations on the page as it is. */
@@ -436,12 +456,18 @@ try {
       await page.screenshot({ path: file });
       // Accessibility in the view as it opens, and in each field and view shot.
       const violations = (await accessibility(page)).map((v) => `default: ${v}`);
+      const unsettled = [];
+      if (spec.shots !== undefined && spec.pause !== undefined)
+        await page.keyboard.press(spec.pause);
       for (const [name, keys] of spec.shots ?? []) {
         for (const key of keys) await page.keyboard.press(key);
-        await page.waitForTimeout(1500);
+        if (!(await settled(page))) unsettled.push(name);
         await page.screenshot({ path: path.join(out, `${spec.id}-${name}-${size.width}.png`) });
         violations.push(...(await accessibility(page)).map((v) => `${name}: ${v}`));
       }
+      if (spec.shots !== undefined && spec.pause !== undefined)
+        await page.keyboard.press(spec.pause);
+      if (unsettled.length > 0) console.log(`  not settled in 90 s: ${unsettled.join(', ')}`);
       const lines = [
         `${spec.id} at ${size.width} px: ${file}${ready ? '' : ' (not ready in time)'}`,
       ];
