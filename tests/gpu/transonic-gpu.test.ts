@@ -2,12 +2,15 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { solveTransonic, transonicProblem } from '../../src/analysis/transonic-flow';
 import { Euler2D } from '../../src/engine-cpu/euler2d';
 import { GpuEuler2D, gpuPrimitive2D, type GpuState2D } from '../../src/engine-gpu/euler2d-gpu';
+import { GpuEuler2DTwoFloat } from '../../src/engine-gpu/euler2d-two-float';
 import type { Body } from '../../src/geometry/body';
+import { pressureFromConserved2D } from '../../src/scheme/gas';
 import { requireDevice } from './device';
 
 /**
- * The transonic domain on the GPU engine (design record 0013, "The GPU
- * solve", G1): the far-field boundary of euler2d.wgsl against the CPU's.
+ * The transonic domain on the GPU (design record 0013, "The GPU solve"):
+ * the far-field boundary and the implicit steps of the 32-bit engine
+ * against the CPU's (G1, G2), and the two-float solver (step 4b).
  */
 
 const gamma = 1.4;
@@ -111,4 +114,74 @@ describe('GpuEuler2D: far-field boundaries (transonic domain)', () => {
       s.destroy();
     }
   }, 1_200_000);
+});
+
+describe('GpuEuler2DTwoFloat: the transonic solve in two-float', () => {
+  /** An Euler2D holding conserved variables read back from the GPU. */
+  function evaluator(q: Float64Array): Euler2D {
+    const { ni } = problem.config.grid;
+    const ev = new Euler2D(problem.config);
+    ev.setCellPrimitives((i, j) => {
+      const c = 4 * (i + j * ni);
+      const rho = q[c]!;
+      return {
+        rho,
+        u: q[c + 1]! / rho,
+        v: q[c + 2]! / rho,
+        p: pressureFromConserved2D(rho, q[c + 1]!, q[c + 2]!, q[c + 3]!, gamma),
+      };
+    });
+    return ev;
+  }
+
+  it("its residual is the CPU's double one, on a rough state", async () => {
+    const rough = new Euler2D(problem.config);
+    rough.setInitialCondition(() => problem.freeStream.state);
+    rough.iterate(60);
+    const s = await GpuEuler2DTwoFloat.create(device, problem.config);
+    try {
+      s.setCellPrimitives((i, j) => rough.primitive(i, j));
+      const gpu = await s.residual();
+      const cpu = rough.residualVector();
+      let worst = 0;
+      let largest = 0;
+      for (let k = 0; k < cpu.length; k++) {
+        worst = Math.max(worst, Math.abs(gpu[k]! - cpu[k]!));
+        largest = Math.max(largest, Math.abs(cpu[k]!));
+      }
+      // Measured when written: 2.2e-9 of the largest (1.4e-10), on cells
+      // whose faces carry fluxes times areas of order 1e3: about 1e-13 of
+      // them, the two-float precision.
+      expect(worst).toBeLessThan(1e-8 * largest);
+    } finally {
+      s.destroy();
+    }
+  }, 600_000);
+
+  it("holds the CPU's converged solution, its drag within 1e-10, with no wander", async () => {
+    const cpu = solveTransonic(problem, {
+      noise: 1e-12,
+      maxSteps: 40000,
+      checkEvery: 50,
+      cfl: 1000,
+      depth: 8,
+      plainSteps: 200,
+    });
+    expect(cpu.converged).toBe(true);
+    const s = await GpuEuler2DTwoFloat.create(device, problem.config);
+    try {
+      s.setCellPrimitives((i, j) => cpu.solver.primitive(i, j));
+      await s.setImplicitCfl(1000);
+      const drags: number[] = [];
+      for (let k = 0; k < 4; k++) {
+        await s.iterateImplicit(250, { cfl: 1000, sweeps: 2 });
+        drags.push(problem.drag(evaluator(await s.readConserved())) / cpu.drag - 1);
+      }
+      // Measured when written, every 250 steps over 3,000: -4.5e-12 to
+      // -9.5e-12 (the 32-bit engine: up to 7.1e-5).
+      for (const d of drags) expect(Math.abs(d)).toBeLessThan(1e-10);
+    } finally {
+      s.destroy();
+    }
+  }, 1_800_000);
 });

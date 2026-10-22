@@ -453,6 +453,29 @@ export class Euler2D {
     return this.primitiveAt(this.state, this.index(i, j));
   }
 
+  /**
+   * The residual of the current state, the net inflow of each conserved
+   * quantity into each interior cell (with the axisymmetric source), four
+   * values per cell, cell (i, j) at 4 (i + j ni): for checking the GPU
+   * engines' residuals against this one.
+   */
+  residualVector(): Float64Array {
+    const { ni, nj } = this.metrics;
+    this.computeResidual(this.state);
+    const r = new Float64Array(4 * ni * nj);
+    for (let j = 0; j < nj; j++) {
+      for (let i = 0; i < ni; i++) {
+        const k = this.index(i, j);
+        const c = 4 * (i + j * ni);
+        r[c] = this.residual.rho[k]!;
+        r[c + 1] = this.residual.mu[k]!;
+        r[c + 2] = this.residual.mv[k]!;
+        r[c + 3] = this.residual.energy[k]!;
+      }
+    }
+    return r;
+  }
+
   /** Root-mean-square of the density residual d(rho)/dt over the interior cells. */
   densityResidualNorm(): number {
     const { ni, nj, volume } = this.metrics;
