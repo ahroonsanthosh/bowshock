@@ -1623,3 +1623,56 @@ and final.
   section 3) and has no hold-out of its own, from range A or elsewhere: it
   stays "estimated on component data", served outside the class as
   amendment (i) has it. Range A is not run again (rule 3 of 10.1).
+
+**2026-10-23 (r): R&M 3348 figs. 47 to 52 become a check that sets
+nothing** (the coordinator's decision, on independent advice, after W7's
+first reading at 15f4bc2 and its method note at 8e9263e; precedent:
+amendment (g)). Amendment (l) registered figs. 47 to 52 of Rogers, Berry
+and Quincey (ARC R&M 3348, AERADE 1826.2/3929, PDF pp. 81 to 86) for one
+quantity: the surface pressure p/H just ahead of the base, at x/c 0.995,
+one value per incidence, for the local M' and p' with which table 3's base
+pressures are compared.
+
+- _That quantity cannot be read._ The figures are faired curves with no
+  points plotted. Near the trailing edge the curves of a panel converge
+  into one bundle and turn up into the frame line at x/c 1.0; x/c 0.995
+  lies 2 to 3 px (at 300 dpi) from the frame line's centre, so no curve can
+  be told from another or followed to it; several broken curves stop
+  short, at x/c 0.93 to 0.97. No value per incidence exists to read.
+- _What was read instead, and why it sets nothing._ The first reader then
+  read the envelope of the curves' ink over x/c 0.975 to 0.990, the least
+  and greatest p/H across all incidences, in each of the 30 panels
+  (`docs/research/total-drag/audit/w7-fins/rm3348_figs47_52_te_first.csv`).
+  That quantity was defined after the ink had been seen. By the rule of
+  10.1 and as amendment (g) ruled for a set examined before it was
+  registered, figs. 47 to 52 are therefore a check that sets nothing: not
+  a band, not a band's end, not an allowance, and not a value for M' or
+  p'. The envelope reading is kept as the record of what was done, labelled
+  so. No second reading of it is arranged, and no other quantity of these
+  figures is registered in its place.
+- _Table 3, seen while checking incidences._ To see which incidences table
+  3 covers, the reader printed seven rows of its own typing of table 3
+  (M_0 0.70, phi 0 deg, alpha 0 to 8 deg; p_b/p_0 0.73 to 0.79). Those
+  values were already read twice and paired (amendment (k); round 8's
+  blind typing), so seeing them leaks nothing new, and they were not used
+  in the figure reading.
+- _Physics, for whoever reads the check._ Table 3 is used at alpha 0 deg
+  only (0019 section 3.4: the code serves zero incidence). The envelope's
+  height (0.02 to 0.19 in p/H in a panel, 0.07 to 0.18 at phi 0 deg; 0.14
+  to 0.23 over a figure's five sweeps, the figure as the method note
+  summarises it) is the spread of the incidence sweep (positive and
+  negative incidence on the upper-surface holes; over a figure, the sweep
+  angle too), not an uncertainty in the surface pressure at zero lift, and
+  must not be read as one. And near Mach 1 the flow at the last holes is
+  subsonic or barely sonic, so the corner's upstream influence reaches
+  them: the pressure there is not an undisturbed local state independent
+  of the base. Chapman's local Mach number M' ahead of the base is a
+  supersonic idea (the base flow cannot reach upstream through a
+  supersonic layer); at M_0 0.7 to 1.2 a local M' from the last holes
+  would carry the base's own effect. This is one reason 0019 section 3.4
+  now forms F4's band on the free-stream M_0 and p_0 (as R&M 3348 fig.
+  30, Goin and TN 3548 report base pressure) and not on M' and p'.
+- _What does not change._ Table 3 (alpha 0 deg) and figs. 30a and 30b stay
+  band-setting under (k), on M_0 and p_0. R&M 3427 fig. 13's hole 4
+  ((m)) stays named; whether it is used, given the same upstream
+  influence, is for 0019 section 3.4 to decide before it sets anything.

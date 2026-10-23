@@ -68,3 +68,15 @@ a greatest p/H over x/c 0.975 to 0.990.
   done here.
 
 Read once.
+
+**Status, 2026-10-23: a check that sets nothing** (0014 section 10.7
+(r)). The coordinator, on independent advice, ruled that (l)'s quantity
+(p/H at x/c 0.995, one value per incidence) cannot be read from these
+figures, and that the envelope above was defined after the ink was seen,
+so by the precedent of amendment (g) figs. 47 to 52 set nothing: no band,
+no band's end, no M' or p'. This reading is kept as the record of what
+was done; no second reading is arranged. The seven table 3 values seen
+while checking incidences were already read twice and paired, and were
+not used. (r) also records that the envelope's height is the incidence
+sweep, not an uncertainty at zero lift, and that near Mach 1 the last
+holes are within the corner's upstream influence.
