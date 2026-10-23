@@ -1031,8 +1031,14 @@ F2 last.
    - a check that sets nothing: R&M 3348 figs. 47 to 52 (10.7 (r): the
      registered quantity, p/H at x/c 0.995 per incidence, cannot be read;
      the envelope read instead was defined after the ink was seen);
-   - not yet read: R&M 3323 figs. 4, 5 (their sources traced first);
-     Johnston's figs. 4 to 12; RM L8B13 fig. 4(c) to 4(e).
+   - R&M 3323 figs. 4 and 5: sources traced (2026-10-23; refs. 31 to 35
+     and 38 to 41, of which 31, 34, 35 and 38 are counted once with their
+     own reports); fig. 4 read once (61 symbols; three heavy triangles at
+     h/c 0.14 of untraced source, set nothing); fig. 5 not read, stopped:
+     its h/c 0.10 and 0.06 solid curves meet near M 1.0 and cannot be told
+     apart beyond it (`method_rm3323_figs4_5.md`), the coordinator to
+     decide;
+   - not yet read: Johnston's figs. 4 to 12; RM L8B13 fig. 4(c) to 4(e).
 
    Then `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the
    data (each set's points inside the band, the step at 1.5), the record.

@@ -59,3 +59,92 @@ in 0019 section 3.4, before a band is set):
   coefficient on the free stream's pressure and dynamic pressure, so the
   sets are on M_0 and p_0 as 0019 section 3.4 requires; Reynolds numbers
   and layer states are those of each source and are not in R&M 3323.
+
+## 2. Fig. 4: first reading (2026-10-23)
+
+**Method.** The page rendered at 300 dpi (`pdftoppm -r 300 -f 23 -l 23`,
+2421 by 3221 px) and cut into its four panels (crops in
+`scripts/rm3323_fig4_run.py`). Grid lines every 5% in h/c and 0.2 in Cp_b,
+found from column and row profiles (`scripts/gridfind.py`,
+`scripts/lines.py`) and listed per panel in `rm3323_fig4{A..D}_grid.json`;
+`scripts/calib.py` traces each along its length (it drifts 3 to 5 px over
+a panel's height, so the trace matters) and interpolates between the two
+lines either side of a point. The symbols are small (about 12 px) and of
+nine kinds, several half-circles and flagged triangles that the outline
+templates of `symfit.py` do not cover, so each was placed by eye:
+`scripts/blobs.py` lists the ink blobs with the grid lines blanked, and
+each blob was viewed at 6x to 14x with a pixel ruler; a centre is the
+centre of the symbol body's bounding box, flags left out
+(`rm3323_fig4_place.csv`, with a placement error of 1 px for a clear
+symbol, 1.5 for one touching another or a grid line, 2 to 2.5 where two
+overlap). `scripts/rm3323_fig4_run.py` turns the placements into values
+and draws an overlay; every placement was checked on it by eye. One
+placement was corrected on the overlay check: B03 (the circle at M 0.8)
+had been put 3.5 px left of its centre, misled by the grid line through
+it.
+
+**Errors** (in the CSV, per row): the placement and 0.5 px of grid trace
+in quadrature, and for triangles 2 px more in Cp_b (the bounding box's
+centre against the centroid). At about 29.3 px per 1% in h/c and 585 to
+590 px per unit in Cp_b: 0.04 to 0.09% in h/c, 0.002 to 0.006 in Cp_b.
+
+**Reading** (`rm3323_fig4_first.csv`): 61 symbols, 16 at M 0.6, 21 at
+0.8, 15 at 1.0 and 9 at 1.2. By reference: 32 (RM A51J11) 18, at h/c
+about 1.2, 2.4 and 4.0%, flagged and not; 33 (RM A52E01) 13, at about 1.5,
+1.6 and 3.0%; 34 (TN 3548, filled) 4, at 6.0%; 35 (R&M 3348) 3 open
+triangles at 13.9 to 14.0%; 38 (R&M 3427) 4 circles at 9.8 to 10.0%; 39
+(Pearcey) 6 squares at 6.0%; 40 (Holder, Pearcey and Nash, all flagged)
+9, at 0.0 to 0.26% and about 2.4 to 2.5%; 41 (X-15, filled) 1, at M 1.2,
+h/c 10.0%, Cp_b -0.42. No symbol of ref. 31 (Sawyer and Daum) was found on
+any panel, though the legend lists it (its wedge may lie beyond h/c 15%,
+the axis's end; not checked, RM L8B13 not opened).
+
+At M 1.0 (the panel that matters most for F4) the symbols lie at Cp_b
+-0.89 to -0.56 for h/c 1.2 to 14%, and +0.06 and +0.14 for ref. 40's two
+symbols at h/c 0.26% and 0.0%.
+
+**Uncertain calls.**
+- _Three heavy triangles_ (B02, C10, D06), one per panel at M 0.8, 1.0
+  and 1.2, at h/c 13.9 to 14.0%, each just below ref. 35's open triangle:
+  drawn partly filled, with a flag at the upper right on D06 (and a mark
+  there on C10 and B02). The legend has no such symbol. Filled means free
+  flight (caption), but no free-flight model of h/c 0.14 is among the
+  references; flagged means a roughness band. Their source is **not
+  traced**: they are kept in the CSV as "35?", source uncertain, and by
+  (k)'s own condition ("each plotted set once its source is traced") they
+  set nothing until it is. Whether R&M 3348 tested its single wedge with
+  a roughness band would decide it (R&M 3348 was not opened for this).
+- _Overlaps_: A04 and A05, A06 and A07, B11 to B13, C07 and C08 are
+  pairs or triples drawn over each other; the kinds were told apart at 12x
+  to 14x and the placements carry 1.5 to 2.5 px.
+- _B17_: a down-triangle with a stub at its upper right corner; whether
+  the stub is a flag is uncertain (flag "?").
+- Ref. 40's symbols are all flagged, consistent with fig. 5's broken
+  (roughness band) 0.025 (40) curve.
+
+## 3. Fig. 5: not read; stopped and reported (2026-10-23)
+
+Fig. 5 is faired curves with no symbols: h/c 0.14 (35), 0.10 (38) and
+0.06 (39) and 0.012 (32) solid (without a roughness band), 0.06 (39) and
+0.025 (40) broken (with one), and Korst's steady-flow theory (not data).
+The registered quantity is "each plotted set", that is each curve. At
+300 dpi (PDF p. 24; M 0.2 per 198.7 px, Cp_b 0.2 per 199 px) the curves
+are drawn about 3 px wide and can be followed one by one left of M 0.95.
+Near M 1.0 they converge, as the text says they do ("to a value of Cp_b
+around -0.7"), and the solid curves of h/c 0.10 and 0.06 meet at about
+M 1.00, Cp_b -0.77 (page px 1333, 1100), in a knot that the rising broken
+0.025 curve and the M 1.0 grid line also pass through. Two curves enter
+it and two leave it nearly parallel, so the ink does not show which
+leaving line is which: the 0.06 (39) solid curve beyond M 1.0 (its only
+copy, ref. 39 being unpublished) cannot be assigned. The other curves
+(0.14, both broken curves, 0.012) can be followed through the region.
+
+Reading the curves only where they can be assigned, or reading the pair
+as an envelope beyond M 1.0, would each be a quantity chosen after
+seeing the ink (0014 10.7 (r)). So fig. 5 is not read: no value of it is
+recorded, and the coordinator decides whether a partial reading is
+registered first. A tracker was tried on the page to see whether the
+curves could be followed (it lost the broken curves in their gaps and
+could not settle the knot); its output was not kept.
+
+Read once (fig. 4); fig. 5 not read.
