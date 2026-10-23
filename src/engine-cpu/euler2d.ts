@@ -80,6 +80,22 @@ export interface Euler2DConfig {
   readonly source?: Float64Array;
 }
 
+/**
+ * How an implicit step (iterateImplicit) solves its linear system
+ * (D + L + U) dQ = R: by LU-SGS's forward and backward sweeps (`sweeps`,
+ * the default), which approximate it by (D + L) D^-1 (D + U); or, in the
+ * data-parallel forms a GPU can run cell by cell (design record 0013, "The
+ * GPU solve"), by `sweeps` Jacobi iterations (every cell from the previous
+ * iterate) or red-black Gauss-Seidel iterations (the cells with i + j even
+ * from the odd ones, then the odd from the even), starting from dQ = 0.
+ * Only the path to the steady state differs.
+ */
+export type ImplicitRelaxation =
+  { readonly kind: 'sweeps' } | { readonly kind: 'jacobi' | 'redBlack'; readonly sweeps: number };
+
+/** LU-SGS's sweeps (ImplicitRelaxation). */
+export const LU_SGS: ImplicitRelaxation = { kind: 'sweeps' };
+
 export interface BoundaryFaceFlux {
   /** Midpoint of the face. */
   readonly x: number;
@@ -437,6 +453,29 @@ export class Euler2D {
     return this.primitiveAt(this.state, this.index(i, j));
   }
 
+  /**
+   * The residual of the current state, the net inflow of each conserved
+   * quantity into each interior cell (with the axisymmetric source), four
+   * values per cell, cell (i, j) at 4 (i + j ni): for checking the GPU
+   * engines' residuals against this one.
+   */
+  residualVector(): Float64Array {
+    const { ni, nj } = this.metrics;
+    this.computeResidual(this.state);
+    const r = new Float64Array(4 * ni * nj);
+    for (let j = 0; j < nj; j++) {
+      for (let i = 0; i < ni; i++) {
+        const k = this.index(i, j);
+        const c = 4 * (i + j * ni);
+        r[c] = this.residual.rho[k]!;
+        r[c + 1] = this.residual.mu[k]!;
+        r[c + 2] = this.residual.mv[k]!;
+        r[c + 3] = this.residual.energy[k]!;
+      }
+    }
+    return r;
+  }
+
   /** Root-mean-square of the density residual d(rho)/dt over the interior cells. */
   densityResidualNorm(): number {
     const { ni, nj, volume } = this.metrics;
@@ -539,9 +578,14 @@ export class Euler2D {
    * down where it would change its density or pressure by more than half,
    * which only acts during the transient.
    */
-  iterateImplicit(count: number, cfl: number, omega = 1.5): void {
+  iterateImplicit(
+    count: number,
+    cfl: number,
+    omega = 1.5,
+    relaxation: ImplicitRelaxation = LU_SGS,
+  ): void {
     if (!(cfl > 0 && omega >= 1)) throw new RangeError('LU-SGS needs cfl > 0 and omega >= 1');
-    for (let n = 0; n < count; n++) this.implicitStep(cfl, omega);
+    for (let n = 0; n < count; n++) this.implicitStep(cfl, omega, relaxation);
   }
 
   /**
@@ -817,8 +861,11 @@ export class Euler2D {
       }
     | undefined;
 
-  private implicitStep(cfl: number, omega: number): void {
-    this.applyImplicitUpdate(this.implicitCorrection(cfl, omega));
+  /** The previous iterate of the Jacobi relaxation, allocated on first use. */
+  private jacobiWork: Float64Array | undefined;
+
+  private implicitStep(cfl: number, omega: number, relaxation: ImplicitRelaxation): void {
+    this.applyImplicitUpdate(this.implicitCorrection(cfl, omega, relaxation));
   }
 
   /**
@@ -828,8 +875,18 @@ export class Euler2D {
    * is reused by the next call. For accelerating the iteration from
    * outside (src/solver/anderson.ts).
    */
-  implicitCorrection(cfl: number, omega = 1.5): Float64Array {
+  implicitCorrection(
+    cfl: number,
+    omega = 1.5,
+    relaxation: ImplicitRelaxation = LU_SGS,
+  ): Float64Array {
     if (!(cfl > 0 && omega >= 1)) throw new RangeError('LU-SGS needs cfl > 0 and omega >= 1');
+    if (
+      relaxation.kind !== 'sweeps' &&
+      !(Number.isInteger(relaxation.sweeps) && relaxation.sweeps >= 1)
+    ) {
+      throw new RangeError('a relaxation needs a whole number of sweeps, at least one');
+    }
     const { ni, nj, iFaces, jFaces, planarArea } = this.metrics;
     const gamma = this.config.gamma;
     const u = this.state;
@@ -918,16 +975,19 @@ export class Euler2D {
     // cell being solved) for its change dQ, `lambdaA` the face's lambda
     // times area.
     const sum = new Float64Array(4);
+    // The neighbours' changes are read from `from`: dq itself in the
+    // sweeps, the previous iterate in the Jacobi relaxation.
+    let from = dq;
     const neighbour = (c: number, nx: number, ny: number, area: number, lambdaA: number) => {
       const b = 4 * c;
       const rho = q[b]!;
       const mx = q[b + 1]!;
       const my = q[b + 2]!;
       const e = q[b + 3]!;
-      const d0 = dq[b]!;
-      const d1 = dq[b + 1]!;
-      const d2 = dq[b + 2]!;
-      const d3 = dq[b + 3]!;
+      const d0 = from[b]!;
+      const d1 = from[b + 1]!;
+      const d2 = from[b + 2]!;
+      const d3 = from[b + 3]!;
       const p0 = pc[c]!;
       const un0 = (mx * nx + my * ny) / rho;
       const rho1 = rho + d0;
@@ -943,6 +1003,57 @@ export class Euler2D {
       sum[2] = sum[2]! + half * (my1 * un1 + p1 * ny - (my * un0 + p0 * ny)) - damp * d2;
       sum[3] = sum[3]! + half * ((e1 + p1) * un1 - (e + p0) * un0) - damp * d3;
     };
+
+    if (relaxation.kind !== 'sweeps') {
+      // (D + L + U) dQ = R relaxed from dQ = 0, every interior neighbour
+      // on the right: Jacobi (all cells from the previous iterate) or
+      // red-black (cells with i + j even, then odd, each from the latest).
+      dq.fill(0);
+      const previous = (this.jacobiWork ??= new Float64Array(4 * n));
+      const relax = (i: number, j: number) => {
+        const c = i + j * ni;
+        sum[0] = 0;
+        sum[1] = 0;
+        sum[2] = 0;
+        sum[3] = 0;
+        if (i > 0) {
+          const f = i + j * (ni + 1);
+          neighbour(c - 1, -iFaces.nx[f]!, -iFaces.ny[f]!, iFaces.area[f]!, lambdaI[f]!);
+        }
+        if (i < ni - 1) {
+          const f = i + 1 + j * (ni + 1);
+          neighbour(c + 1, iFaces.nx[f]!, iFaces.ny[f]!, iFaces.area[f]!, lambdaI[f]!);
+        }
+        if (j > 0) {
+          neighbour(c - ni, -jFaces.nx[c]!, -jFaces.ny[c]!, jFaces.area[c]!, lambdaJ[c]!);
+        }
+        if (j < nj - 1) {
+          const f = c + ni;
+          neighbour(c + ni, jFaces.nx[f]!, jFaces.ny[f]!, jFaces.area[f]!, lambdaJ[f]!);
+        }
+        const d = diagonal[c]!;
+        dq[4 * c] = (residual[4 * c]! - sum[0]) / d;
+        dq[4 * c + 1] = (residual[4 * c + 1]! - sum[1]) / d;
+        dq[4 * c + 2] = (residual[4 * c + 2]! - sum[2]) / d;
+        dq[4 * c + 3] = (residual[4 * c + 3]! - sum[3]) / d;
+      };
+      for (let s = 0; s < relaxation.sweeps; s++) {
+        if (relaxation.kind === 'jacobi') {
+          previous.set(dq);
+          from = previous;
+          for (let j = 0; j < nj; j++) for (let i = 0; i < ni; i++) relax(i, j);
+        } else {
+          from = dq;
+          for (const colour of [0, 1]) {
+            for (let j = 0; j < nj; j++) {
+              for (let i = (j + colour) % 2; i < ni; i += 2) relax(i, j);
+            }
+          }
+        }
+      }
+      from = dq;
+      return dq;
+    }
 
     // Forward sweep: (D + L) dQ* = R.
     for (let j = 0; j < nj; j++) {

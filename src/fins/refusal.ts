@@ -20,7 +20,9 @@ export type FinRefusalReason =
   /** A square-cut leading edge: bounded, but the ordering of its bounds is not shown (0016). */
   | 'square-leading-edge'
   /** Below the Mach numbers of the ARCAS increments behind the fins' own-drag band (0014 section 10.7 (f)). */
-  | 'fins-own-drag-mach';
+  | 'fins-own-drag-mach'
+  /** A rounded leading edge below M_n 1.0 where its bounds are not argued (0019 section 3.2; not wired). */
+  | 'bounded-edge-range';
 
 export class FinRefusal extends RangeError {
   readonly reason: FinRefusalReason;

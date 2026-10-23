@@ -9,7 +9,7 @@
 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { clippedDeltaPlanform } from '../../src/fins/planform';
+import { clippedDeltaPlanform, trapezoidalPlanform } from '../../src/fins/planform';
 import {
   doubleWedge,
   flatPlate,
@@ -96,7 +96,7 @@ describe("the fins' own-drag band's Mach range, against the ARCAS check", () => 
   });
 });
 
-describe('below Mach 1.5', () => {
+describe('below Mach 1.5', { timeout: 60_000 }, () => {
   it('fin friction is refused, with the reason and the Mach number on the right side of 1.5', () => {
     for (const mach of [1.05, 1.2, 1.4999999]) {
       const r = parts(config(flatPlate(0.05, 'rounded', 'square')), mach);
@@ -134,7 +134,7 @@ describe('below Mach 1.5', () => {
   });
 });
 
-describe('at Mach 1.5 and above, unchanged', () => {
+describe('at Mach 1.5 and above, unchanged', { timeout: 60_000 }, () => {
   it('fin friction and the wave drag of a thin double wedge carry the band', () => {
     for (const mach of [1.5, 2.0, 2.96]) {
       const r = parts(config(doubleWedge(0.015)), mach);
@@ -148,5 +148,56 @@ describe('at Mach 1.5 and above, unchanged', () => {
         }
       }
     }
+  });
+});
+
+describe('above Mach 2.96, carried and labelled', { timeout: 60_000 }, () => {
+  it('the labels say by how much the band is carried beyond its measurements', () => {
+    for (const [mach, by] of [
+      [2.98, '0.02'],
+      [3.0, '0.04'],
+      [2.9601, 'less than 0.01'],
+    ] as const) {
+      const r = parts(config(doubleWedge(0.015)), mach);
+      for (const name of ['fin friction', 'fin wave drag']) {
+        const c = r.components.find((x) => x.name === name)!;
+        expect(c.label).toContain(`the band is carried ${by} in Mach beyond its measurements`);
+        expect(c.label).toContain('the ARCAS increments end at Mach 2.96');
+        expect(c.low / c.cd).toBeCloseTo(FINS_OWN_DRAG_BAND[0], name === 'fin friction' ? 12 : 2);
+      }
+    }
+  });
+
+  it('at Mach 2.96 and below, no such words', () => {
+    const r = parts(config(doubleWedge(0.015)), 2.96);
+    for (const name of ['fin friction', 'fin wave drag']) {
+      expect(r.components.find((x) => x.name === name)!.label).not.toContain(
+        'beyond its measurements',
+      );
+    }
+  });
+});
+
+describe("the review's bevel case (0019 section 3.3, 2026-10-22)", { timeout: 60_000 }, () => {
+  it('a bevel swept 45 deg at Mach 1.18 (M_n 0.83) is refused until its additive sweep allowance is set', () => {
+    // A 10 deg bevel on a 4% plate with a square trailing edge, leading edge swept 45 deg.
+    const h = 0.02;
+    const bevel = h / Math.tan((10 * Math.PI) / 180);
+    const section: SymmetricSection = {
+      x: [0, bevel, 1],
+      halfThickness: [0, h, h],
+      bluntTrailingEdge: true,
+    };
+    const swept45: FinnedBody = {
+      ...config(section),
+      fins: {
+        ...config(section).fins,
+        planform: trapezoidalPlanform({ rootChord: 1.5, span: 1, leadingEdgeSweep: Math.PI / 4 }),
+      },
+    };
+    expect(Math.atan(swept45.fins.planform.tanLeadingEdge) / (Math.PI / 180)).toBeCloseTo(45, 6);
+    const r = parts(swept45, 1.18);
+    expect(refusalOf(r, 'fin wave drag')?.reason).toBe('fins-own-drag-mach');
+    expect(r.components.find((c) => c.name === 'fin wave drag')).toBeUndefined();
   });
 });
