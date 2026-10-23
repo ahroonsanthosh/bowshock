@@ -107,7 +107,8 @@ export class FieldImage {
 
   /**
    * Draw the field's image at width x height texels and its fibres
-   * (`steps` each way along the flow, of `stepLength` texels).
+   * (`steps` each way along the flow, of `stepLength` texels, over a
+   * carrier of grains `grain` texels across).
    */
   update(
     mesh: FieldImageMesh,
@@ -115,6 +116,7 @@ export class FieldImage {
     height: number,
     steps: number,
     stepLength = 0.8,
+    grain = 1,
   ): void {
     const device = this.device;
     if (this.field.width !== width || this.field.height !== height) {
@@ -147,7 +149,7 @@ export class FieldImage {
       usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
     });
     device.queue.writeBuffer(indices, 0, mesh.indices);
-    device.queue.writeBuffer(this.params, 0, new Float32Array([steps, stepLength, 0.9, 0]));
+    device.queue.writeBuffer(this.params, 0, new Float32Array([steps, stepLength, 0.9, grain]));
     const encoder = device.createCommandEncoder({ label: '3D field image' });
     const raster = encoder.beginRenderPass({
       colorAttachments: [

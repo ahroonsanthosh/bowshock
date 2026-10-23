@@ -1327,7 +1327,13 @@ export class FlowScene3D {
       2048,
       Math.max(16, Math.round((width * box.rMax) / (box.xMax - box.xMin))),
     );
-    this.image.update(mesh, width, height, draft ? 16 : 32, 1);
+    // The carrier's grain: at least a screen pixel. The region fills about
+    // 0.7 of the view's width as fitted; a face drawn smaller than its
+    // texels would show the noise as grain, not fibres.
+    const viewWidth = this.viewRect?.width ?? this.canvas.width;
+    const grain = Math.min(Math.max(width / (0.7 * viewWidth), 1), 6);
+    // Steps of a grain each: fibres about the same length on screen whatever the grain.
+    this.image.update(mesh, width, height, draft ? 16 : 32, grain, grain);
     this.imageBox = box;
     this.schlieren = mesh.schlieren;
     // The body's colour by the surface pressure the solver computed on it.

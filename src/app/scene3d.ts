@@ -87,11 +87,12 @@ export function sceneLegend(s: SceneScale): LegendScale {
   // (sceneLegendDetails) and in the PNG.
   const notes = [
     // The advisor's item 10: the look is FluidX3D's, a 3D solver's; this flow is not 3D.
-    'The axisymmetric solution, revolved; fins are not in the airflow.',
+    'The axisymmetric solution, revolved; fins are not in the airflow, their drag computed separately.',
     s.faces === 'fibres' ? 'Texture follows the computed flow.' : '',
     s.faces === 'schlieren' ? 'Slice: computed density gradient, light where steep.' : '',
     s.bodyCp !== null ? 'Body: computed surface pressure, blue low, red high.' : '',
     'Hatched: behind the base, not simulated.',
+    'Drag to turn it; 0 resets.',
   ];
   return {
     kind: 'palette',

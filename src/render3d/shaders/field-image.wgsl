@@ -40,7 +40,9 @@ fn image_fs(v: ImageOut) -> @location(0) vec4f {
 @group(0) @binding(2) var linear_sampler: sampler;
 
 struct LicParams {
-  // x: steps each way; y: step length in texels; z: contrast gain.
+  // x: steps each way; y: step length in texels; z: contrast gain; w: the
+  // carrier's grain in texels (at least a screen pixel, so a face drawn
+  // small shows fibres, not grain finer than its pixels).
   settings: vec4f,
 };
 @group(0) @binding(3) var<uniform> lic: LicParams;
@@ -51,9 +53,19 @@ fn lic_vs(@builtin(vertex_index) i: u32) -> @builtin(position) vec4f {
   return vec4f(corners[i], 0.0, 1.0);
 }
 
+fn noise_texel(q: vec2i, size: vec2f) -> f32 {
+  return textureLoad(noise, clamp(q, vec2i(0), vec2i(size) - vec2i(1)), 0).r;
+}
+
+// The carrier at p (texels): white noise of grains `settings.w` texels
+// across, interpolated between grains.
 fn noise_at(p: vec2f, size: vec2f) -> f32 {
-  let q = clamp(vec2i(floor(p)), vec2i(0), vec2i(size) - vec2i(1));
-  return textureLoad(noise, q, 0).r;
+  let g = p / max(lic.settings.w, 1.0) - 0.5;
+  let q = vec2i(floor(g));
+  let f = g - floor(g);
+  let a = mix(noise_texel(q, size), noise_texel(q + vec2i(1, 0), size), f.x);
+  let b = mix(noise_texel(q + vec2i(0, 1), size), noise_texel(q + vec2i(1, 1), size), f.x);
+  return mix(a, b, f.y);
 }
 
 // The image's flow direction at p (texels; r up is the texture's y down), or 0 outside.
@@ -102,6 +114,8 @@ fn lic_fs(@builtin(position) pos: vec4f) -> @location(0) vec4f {
   }
   // A mean of n noise samples has 1 / sqrt(n) of its contrast: given back.
   let mean = sum / count;
-  let v = 0.5 + (mean - 0.5) * sqrt(count) * lic.settings.z;
+  // (Over grains: about one independent sample per grain passed.)
+  let independent = max(count * lic.settings.y / max(lic.settings.w, 1.0), 1.0);
+  let v = 0.5 + (mean - 0.5) * sqrt(independent) * lic.settings.z * 1.5;
   return vec4f(clamp(v, 0.0, 1.0), 0.0, 0.0, 1.0);
 }

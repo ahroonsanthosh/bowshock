@@ -89,8 +89,14 @@ describe('the app page', () => {
     );
     const shown3d = !flow3d.hidden;
     expect(flow.hidden).toBe(shown3d);
-    expect(text('#flow-note')).toContain('Hatched: behind the base, not simulated.');
-    expect(text('#flow-note')).toContain('their drag computed separately');
+    // Said once: by the 3D view's legend when it is shown, else by the airflow's note.
+    if (shown3d) {
+      await until(() => text('.legend__note') !== '', 'the 3D legend', 120_000);
+    }
+    const truth = shown3d ? text('.legend__note') : text('#flow-note');
+    expect(truth).toContain('Hatched: behind the base, not simulated.');
+    expect(truth).toContain('their drag computed separately');
+    if (shown3d) expect(text('#flow-note')).not.toContain('Hatched');
     // The phone's first screen (the sheet under the pinned line): what the picture is, and a cross.
     expect(text('.sheet__note')).toMatch(/The axisymmetric solution.*not in the airflow/);
     expect(text('.sheet__note')).toContain('Hatched: behind the base, not simulated.');
@@ -108,6 +114,7 @@ describe('the app page', () => {
     win.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'v', bubbles: true }));
     await until(() => !flow.hidden, 'the side view');
     expect(flow3d.hidden).toBe(true);
+    expect(text('#flow-note')).toContain('Hatched: behind the base, not simulated.');
     win.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'v', bubbles: true }));
     await until(() => !flow3d.hidden, 'the 3D view again');
   }, 180_000);

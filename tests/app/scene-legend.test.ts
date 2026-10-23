@@ -30,16 +30,18 @@ describe("the 3D view's legend", () => {
     const legend = sceneLegend(SCALE);
     if (legend.kind !== 'palette') throw new Error(legend.kind);
     expect(legend.note).toBe(
-      'The axisymmetric solution, revolved; fins are not in the airflow. ' +
+      'The axisymmetric solution, revolved; fins are not in the airflow, their drag computed separately. ' +
         'Texture follows the computed flow. ' +
         'Body: computed surface pressure, blue low, red high. ' +
-        'Hatched: behind the base, not simulated.',
+        'Hatched: behind the base, not simulated. ' +
+        'Drag to turn it; 0 resets.',
     );
     const plain = sceneLegend({ ...SCALE, faces: null, bodyCp: null });
     if (plain.kind !== 'palette') throw new Error(plain.kind);
     expect(plain.note).toBe(
-      'The axisymmetric solution, revolved; fins are not in the airflow. ' +
-        'Hatched: behind the base, not simulated.',
+      'The axisymmetric solution, revolved; fins are not in the airflow, their drag computed separately. ' +
+        'Hatched: behind the base, not simulated. ' +
+        'Drag to turn it; 0 resets.',
     );
   });
 

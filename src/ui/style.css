@@ -2340,6 +2340,9 @@ input[aria-invalid='true'] {
   font-size: 11px;
   line-height: 1.4;
 }
+.flow-note:empty {
+  display: none;
+}
 .flow-note {
   margin: 0;
   padding: 3px 8px;

@@ -68,12 +68,15 @@ const FLOW_SHOWN_KEY = 'bowshock:flow-view';
 
 /**
  * The note on the airflow shown (0017 section 6.2): what is simulated and
- * what is only drawn, and what of the rocket the 3D view cannot draw.
+ * what is only drawn, and what of the rocket the 3D view cannot draw. With
+ * `short`, for the box beside the 3D view's legend: only what the legend
+ * does not say (the parts not drawn), so that nothing is said twice.
  */
 function flowNoteText(
   which: FlowShown,
   missing: readonly string[],
   failure: string | null,
+  short = false,
 ): string {
   if (which === 'side') {
     return (
@@ -84,6 +87,7 @@ function flowNoteText(
   }
   const notDrawn =
     missing.length === 0 ? '' : ` Not drawn here: ${missing.join('; ')}; the drawing shows it.`;
+  if (short) return notDrawn.trim();
   return (
     'The airflow is around the body, revolved about its axis; the fins are drawn, their drag ' +
     `computed separately. Hatched: behind the base, not simulated. Drag to turn it any way; 0 resets.${notDrawn}`
@@ -460,7 +464,8 @@ const PHONE_NO_GPU =
 
 function showFlowNote(): void {
   const text = flowNoteText(shown, missing3d, sceneFailure);
-  flowNote.textContent = text;
+  // Beside the 3D view's legend, which says the rest, only what it does not.
+  flowNote.textContent = flowNoteText(shown, missing3d, sceneFailure, scene3dShown());
   viewNote.textContent = text;
   showSheetNote();
 }
