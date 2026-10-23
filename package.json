@@ -18,7 +18,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:gpu": "vitest run --config vitest.gpu.config.ts",
+    "test:gpu": "vitest run --config vitest.gpu.config.ts --exclude 'tests/gpu/*-cost.test.ts' && npm run test:gpu-cost",
+    "test:gpu-cost": "vitest run --config vitest.gpu.config.ts --no-file-parallelism tests/gpu/flow-view-cost.test.ts tests/gpu/render3d-cost.test.ts",
     "check:interface": "node scripts/interface-check.mjs",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test"
   },
