@@ -25,7 +25,7 @@ the repository; only readings, methods and scripts are here.
 | `rma51j25_fig7_below15_first.csv`, `method_rma51j25_fig7.md` | NACA RM A51J25 (NTRS 20030067332), fig. 7, PDF p. 14 | p_b/p' below M' 1.5: the curve-and-PARD-symbols band at M' 1.20 to 1.50, and four open symbols (F4; 10.7 (k)) | read once; second to arrange |
 | `rm3427_fig13_hole4_first.csv`, `method_rm3427_fig13_hole4.md` | ARC R&M 3427 (AERADE 1826.2/4011), fig. 13 lower panel, PDF p. 37 | hole 4 (x/h -0.167), surface pressure against M 0.4 to 1.05 (F4; 10.7 (m)) | read once; second to arrange |
 | `rm3323_fig4_first.csv`, `rm3323_fig4_place.csv`, `method_rm3323_figs4_5.md` | ARC R&M 3323 (AERADE 1826.2/3903), figs. 4 and 5, PDF pp. 23 and 24 | fig. 4: Cp_b against h/c at M 0.6 to 1.2, 61 symbols, sources traced (three of unknown source); fig. 5 not read (two curves cannot be told apart beyond M 1.0) (F4; 10.7 (k)) | fig. 4 read once, second to arrange; fig. 5 stopped |
-| `johnston_fig10b_first.csv`, `johnston_fig10b_rough.csv`, `method_johnston_figs4_12.md` | Johnston, NASA Memo 4-30-59L (NTRS 19980228287), fig. 10(b), PDF p. 33 | the 20% single wedge's base pressure against M 0.68 to 1.23, alpha 0 to 8 deg, 98 symbols (F4; 10.7 (k)) | read once; second to arrange |
+| `johnston_fig10{a,b,c}_first.csv`, `johnston_fig10{a,b,c}_rough.csv`, `method_johnston_figs4_12.md` | Johnston, NASA Memo 4-30-59L (NTRS 19980228287), fig. 10(a) to (c), PDF pp. 32 to 34 | the 20% single wedge's forebody drag (59 symbols), base pressure (98) and total pressure drag (57) against M 0.68 to 1.23, alpha 0 to 8 deg (F4; 10.7 (k)); figs. 4 to 9, 11, 12 not read | read once; second to arrange |
 
 **Pairings.**
 

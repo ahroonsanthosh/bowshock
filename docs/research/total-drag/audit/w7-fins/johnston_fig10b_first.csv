@@ -1,5 +1,5 @@
-# Johnston, NASA Memo 4-30-59L (NTRS 19980228287, sha256 f6af115c...497054c3), fig. 10(b), PDF p. 33: base
-# pressure coefficient C_p,b of the 20% sharp single wedge against M, alpha 0 to 8 deg. FIRST reading (0019
+# Johnston, NASA Memo 4-30-59L (NTRS 19980228287, sha256 f6af115c...497054c3), fig. 10(b), PDF p. 33:
+# base pressure coefficient C_p,b of the 20% sharp single wedge against M, alpha 0 to 8 deg. FIRST reading (0019
 # reader, W7), 2026-10-23. Method: method_johnston_figs4_12.md. px: page pixels at 300 dpi.
 id,alpha_deg,symbol,px_x,px_y,mach,cpb,mach_err,cpb_err,note
 a0_01,0,circle,726.75,1576.75,0.6894,-0.7348,0.0005,0.0005,

@@ -53,7 +53,7 @@ every fit was checked on the overlay and, in the clusters above M 1.0, at
 6x. Fourteen symbols whose fit scored low or fitted a neighbour were
 placed by eye at 6x instead (kind "eye", with their own errors). The
 triangles are placed by eye at the centre of their bounding box.
-`scripts/johnston_fig10b_run.py` reproduces the CSV from these files.
+`scripts/johnston_fig10_run.py b` reproduces the CSV from these files.
 
 **Errors** (per row, in quadrature): the placement (1 to 2.5 px; 3 px for
 the two faint triangles), 0.5 px of grid trace, and for triangles 4 px in
@@ -85,4 +85,57 @@ and 4 symbols lie within about 0.02 of each other.
 - A small mark at M 0.915, C_p,b -0.79 (an arrow-like stroke) is not a
   symbol and is not read.
 
-Read once (fig. 10(b)).
+## Figs. 10(a) and 10(c): forebody and total pressure drag (PDF pp. 32, 34)
+
+**Method.** As fig. 10(b), with two changes. The pages lean (the grid
+lines drift 4 to 6 px over the plot), which `calib.py`'s traced lines
+follow. And the triangles of both incidences are refined too (the
+outlines are clearer here): `symrefine.py`'s triangle is centred on its
+centroid, its right triangle on its bounding box. Every fit was checked
+on a contact sheet of all the symbols at 3x (each with its fitted outline);
+where a fit scored low or took a neighbour, the symbol was placed by eye
+at 5x to 6x (10 in fig. 10(a), 5 in fig. 10(c), kind "eye"). Fig.
+10(a)'s rough placements were first taken from a half-scale view; in
+fig. 10(c) that proved too coarse (several fell between symbols), so its
+placements were redone on 3x to 6x views. `scripts/johnston_fig10_run.py
+a` and `c` reproduce the CSVs. Fig. 10(a)'s grid line at c_d,f 0.10 is
+too faint to trace and is left out (the calibration interpolates across
+it, between 0.08 and 0.12).
+
+**Errors**: as fig. 10(b); 2095 and 2093 px per unit M, 10475 and 10450
+px per unit c_d. M 0.0005 to 0.0024; c_d,f 0.0001 to 0.0005; c_d,t 0.0001
+to 0.0005.
+
+**Reading.** Fig. 10(a) (`johnston_fig10a_first.csv`): 59 symbols, 12 at
+alpha 0, 2, 4 and 6 each, 11 at alpha 8, M 0.68 to 1.23; at alpha 0
+c_d,f rises from -0.008 at M 0.69 through 0.047 at 1.01 to 0.082 at 1.21.
+Fig. 10(c) (`johnston_fig10c_first.csv`): 57 symbols, 11 at alpha 0, 12
+at 2 and 4, 11 at 6 and 8; at alpha 0 c_d,t is 0.138 at M 0.69, 0.230 at
+0.94 and 0.186 at 1.23.
+
+**A check within the report** (not a test against other data): with
+the base 0.20 of the chord, c_d,t should equal c_d,f - 0.20 C_p,b at the
+same point. At alpha 0, M 1.01: 0.0471 + 0.20 x 0.9007 = 0.2272 against
+0.2270 read; at M 0.69: 0.1386 against 0.1382. The three readings agree
+to the reading's errors there.
+
+**Uncertain calls and gaps.**
+- Fig. 10(a): at M 1.01 the five symbols sit on the M 1.0 grid line;
+  the right triangle (a8_07) is placed with 3 px, the triangle (a6_07)
+  with 2.5 (faint, crossed by the faired curve).
+- Fig. 10(c): no alpha 0 circle is seen at M 1.11 (the square, a2_09,
+  stands where it would be); no alpha 6 triangle at M 0.91 (the right
+  triangle a8_05 stands there); the alpha 8 right triangle at M 0.955
+  (a8_06) is crossed by the alpha 6 triangle and two faired curves and is
+  placed with 3 px.
+
+## Figs. 4 to 9, 11 and 12: not yet read
+
+Figs. 4 and 7 (normal force and pitching moment against M, symbols) and
+the curve-only cross-plots (figs. 5, 6, 8, 9, 11, 12) have not been read.
+The cross-plots are faired curves derived from the same pressure points
+as figs. 4, 7 and 10, so they are not independent sets; whether they are
+read at all, and whether F4 or F5 needs figs. 4 and 7 (lift and moment
+are not in either term), is left to the coordinator.
+
+Read once (figs. 10(a), (b) and (c)).
