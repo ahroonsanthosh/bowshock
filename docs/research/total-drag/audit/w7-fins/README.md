@@ -26,7 +26,7 @@ the repository; only readings, methods and scripts are here.
 | `rm3427_fig13_hole4_first.csv`, `method_rm3427_fig13_hole4.md` | ARC R&M 3427 (AERADE 1826.2/4011), fig. 13 lower panel, PDF p. 37 | hole 4 (x/h -0.167), surface pressure against M 0.4 to 1.05 (F4; 10.7 (m)) | read once; second to arrange |
 | `rm3323_fig4_first.csv`, `rm3323_fig4_place.csv`, `method_rm3323_figs4_5.md` | ARC R&M 3323 (AERADE 1826.2/3903), figs. 4 and 5, PDF pp. 23 and 24 | fig. 4: Cp_b against h/c at M 0.6 to 1.2, 61 symbols, sources traced (three of unknown source); fig. 5 a check that sets nothing (two curves cannot be told apart beyond M 1.0; 10.7 (s)) (F4; 10.7 (k)) | fig. 4 read once, second to arrange; fig. 5 not read |
 | `johnston_fig10{a,b,c}_first.csv`, `johnston_fig10{a,b,c}_rough.csv`, `method_johnston_figs4_12.md` | Johnston, NASA Memo 4-30-59L (NTRS 19980228287), fig. 10(a) to (c), PDF pp. 32 to 34 | the 20% single wedge's forebody drag (59 symbols), base pressure (98) and total pressure drag (57) against M 0.68 to 1.23, alpha 0 to 8 deg (F4; 10.7 (k)); figs. 4 to 9, 11, 12 removed from the registration (10.7 (s)) | read once; second to arrange |
-| `method_rml8b13_fig4.md` | NACA RM L8B13 (NTRS 19930085324), fig. 4(c) to (e), PDF p. 15 | the wing-flow wedge (h/c 0.14): base and side pressures; opened, not read; (k)'s 4(d) is the swept cylinder (F4; 10.7 (k)) | not read |
+| `rml8b13_fig4e_first.csv`, `rml8b13_fig4e_place.csv`, `method_rml8b13_fig4.md` | NACA RM L8B13 (NTRS 19930085324), fig. 4(e) and 4(c), PDF p. 15 | the wing-flow wedge (h/c 0.14): face pressures p/p_0 at M 0.72 to 1.17, 25 symbols (fig. 4(e)); base, fig. 4(c), not readable in its clumps (F4; 10.7 (k), (s)) | fig. 4(e) read once, second to arrange; fig. 4(c) stopped |
 
 **Pairings.**
 

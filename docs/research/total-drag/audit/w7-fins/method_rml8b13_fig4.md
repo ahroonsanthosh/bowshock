@@ -1,4 +1,4 @@
-# NACA RM L8B13 fig. 4(c) to (e): opened, not yet read (2026-10-23)
+# NACA RM L8B13 fig. 4(c) and 4(e): fig. 4(e) read once, fig. 4(c) stopped (2026-10-23)
 
 **Source.** Sawyer and Daum, "Measurement through the speed of sound of
 static pressures on the rear of unswept and sweptback circular cylinders
@@ -51,4 +51,44 @@ Reynolds number 4e5 to 7e5 on the chord; pressure +-0.2 in of water, M
    traced") may be ref. 31's, drawn filled as a flight (wing-flow) test.
    This is a possibility, not a tracing; nothing is changed by it.
 
-Not read.
+
+## After 0014 10.7 (s) (2026-10-23)
+
+The registration is limited to figs. 4(c) and 4(e); marks the legend
+does not explain set nothing. Each was then opened for reading on the
+page rendered at 300 dpi (`pdftoppm -r 300 -f 15 -l 15`, 2355 by 3105,
+a photographed page on tinted paper). Grid lines every 0.05 in M (M 0.7 at
+x 477 to 1.2 at 1356, about 1755 px per unit) and every 0.2 in p/p_0
+(about 430 px per unit), traced along their length by `scripts/calib.py`.
+
+**Fig. 4(e), the wedge's faces: read once** (`rml8b13_fig4e_first.csv`,
+placements `rml8b13_fig4e_place.csv`, grid `rml8b13_fig4e_grid.json`,
+`scripts/rml8b13_fig4e_emit.py`). 25 symbols, M 0.72 to 1.17, p/p_0
+1.05 to 1.34, each placed by eye at the centre of its outline on views
+at 3x to 6x with a pixel ruler (1.5 to 2.5 px). Errors: M 0.0009 to
+0.0015, p/p_0 0.0037 to 0.0059. The "x" at M 1.20 is reference 5 (the
+oblique-shock theory) and is not read. _Uncertain calls:_ at this scan the
+circles (one face) and squares (the other) are both drawn as rounded
+boxes about 17 px across; 8 of the 25 cannot be told apart and are marked
+"uncertain" (the two faces are alike on a symmetric wedge free to align
+with the flow, so the value, not the face, is what is read); e08 is two
+outlines drawn over each other, placed as one; e25 is a second outline
+partly hidden under e22.
+
+**Fig. 4(c), the wedge's base: stopped, not read.** Its four series
+(orifices at 1/2, 1 1/4, 4 and 8 in: square, circle, diamond, triangle)
+read alike, so the symbols, about 15 px across and often inked solid,
+are drawn over one another in chains. From about M 0.85 to 1.0, and
+almost everywhere from M 1.05 to 1.2 (p/p_0 about 0.43 to 0.48), they
+merge into solid clumps of ink in which neither the number of symbols,
+nor their shapes, nor their centres can be read (for example page px
+1280 to 1350, 1585 to 1615, at M 1.15 to 1.19). Left of M 0.85 most
+symbols separate. Reading only the symbols that separate would leave out
+the clumps, where the four orifices agree, and so choose the data after
+seeing the ink. So the registered quantity, p/p_0 per orifice, cannot be
+read over the transonic range, and no value was recorded: the
+coordinator decides (for example, a check that sets nothing, as (g),
+(r) and (s) ruled for other figures). Its untraced "x" marks and dashes
+(see above) would set nothing in any case.
+
+Read once (fig. 4(e)); fig. 4(c) not read.
