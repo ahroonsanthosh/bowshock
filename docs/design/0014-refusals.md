@@ -849,6 +849,11 @@ state of the set's other ranges, and never again.
 |                                                                                  | B: Mach 1.0 to 1.2                         | W7 and the components at Mach 1.0 to 1.2. Values below Mach 1.0 are not used                                                                                                                                                         |
 |                                                                                  | C: above Mach 3.0 (to 3.3)                 | only if a later record extends the bases above Mach 3.0                                                                                                                                                                              |
 
+_Amended by 10.7 (u), 2026-10-23:_ the Eglin set's range A is run at the
+earlier of the commit of design record 0021's Stage A verdict (pass or
+fail) and 2027-06-30, and not before, whatever other methods are
+committed by then; the owner's decision.
+
 ### 10.6 BRL Report 934: the inputs it does not state, decided before its run
 
 Accepted by the coordinator on 2026-10-20, on this condition: every input
@@ -1731,3 +1736,70 @@ that separate would choose the data after seeing the ink. So fig. 4(c)
 sets nothing: no band, no band's end. No value of it was recorded. Fig.
 4(e) (the wedge's faces) stays registered, read once
 (`docs/research/total-drag/audit/w7-fins/rml8b13_fig4e_first.csv`).
+
+**2026-10-23 (u): Stage A of the 3D fin solve (design record 0021,
+revision 3b), registered before any 3D number exists** (the coordinator's
+allocation; the owner's answers of 2026-10-23). Written after 0021's
+revision 3a (26dd4f2: the junction tests, the upstream check's exclusion,
+the independent reference's width limit, the two-float rerun before a
+GPU-CPU failure) and its evidence rule for the Eglin set's edges were
+committed. No Stage A solver code had run, and no 3D value of any fin
+existed, when this entry was written.
+
+- _The ladder._ 0021 section 4's cases and pass criteria (4.0 to 4.5),
+  its band procedure (4.6: four grids at ratio 1.5, subject to rung (b0);
+  allowances A1 to A3 in full), its floor, floor families, test families
+  and references (4.7), its kill criteria (4.9), its judge's rules and its
+  manifest of GPU cases (5.3) are fixed as written at the commit that adds
+  this entry. "No band" is a failure where 0021 says so. None changes
+  after a rung's numbers are seen; a failure is recorded and a new record
+  decides. The blunt-edge floor (normal Mach 1.5) changes, in either
+  direction, only by a new record, and is never lowered before the Eglin
+  set's range A has run.
+- _The independent code._ SU2 8.1.0 (LGPL-2.1) with meshes from Gmsh
+  4.13.1 (GPL), run by the owner on their own machine as separate
+  programs (0021 4.4, `scripts/reference-3d/`); only their inputs and
+  results are committed. Its reference is used only within 0021 4.4's
+  width limit (its full band at most 0.035 of its value).
+- _The noise, the precision and the GPU-CPU tolerance._ 0021 section 3.5:
+  the GPU's fin drag within 1e-5 of the CPU's on every level both run; a
+  miss is rerun in two-float, and only a two-float miss fails.
+- _The model-form bands._ The fins' own-drag band is formed again with
+  Stage A's nominal on the same ARCAS increments by 0008 section 4.3's
+  arithmetic; the rounded edge's band is formed again on the Euler strip
+  from TN 2960 figs. 5(c) and 5(e), both readings (0021 6.2).
+  Band-setting, not tests. Amendment (f) is unchanged.
+- _Square edges._ Served in a total only under 10.2, the band the whole
+  gap between the bounds and the nominal Stage A's value, once (1) 10.2 is
+  amended to allow a solved nominal and (2) the ordering is shown by a
+  written argument, both recorded in a later entry before any square-edge
+  value is computed. Until then square edges are a component only.
+- _The Basic Finner._ Inside the class and the validated sub-class of (q)
+  the tested product rule is served (10.3), and the 3D value is not shown
+  there. BRL Report 934's range A is not run again, and no record computes
+  the 3D fin model at its rounds for comparison with their drag.
+- _The tests._ The PARD body's range A cannot test Stage A: its fins'
+  normal Mach number (M cos 45 deg) reaches 1.5 only from Mach 2.12,
+  beyond its data. TN 3697 fig. 5 was read once by eye for section 5.2,
+  so that set is not wholly unseen. **The owner decided (2026-10-23) that
+  the Eglin set's range A waits:** it is run at the earlier of the commit
+  of Stage A's verdict, pass or fail, and 2027-06-30, and not before
+  (10.5, amended above); the trigger does not depend on Stage A's results.
+  When it is run, it reports the total with today's fin methods and, where
+  Stage A serves and its verdict is a pass, with the fins solved, each
+  with its verdict by rule 4. Its fins' edges and sweep are decided by
+  0021 section 6.6's evidence rule (the report's text, fig. 4 and any
+  other non-drag description of the models, by a reader who does not open
+  Table D-3), recorded in a dated entry before the run; where no such
+  source states them they are not assumed, and the range cannot test
+  Stage A. Ranges B and C of the Eglin set, BRL Report 934's ranges B and
+  C, and TN 3320 cannot test Stage A (0021 6.6).
+- _Not tests._ ARCAS (TN D-4014: band-setting; TN D-4013: read, the same
+  models), RM A53D02, and RM A53D02 fig. 17 for square edges (read once,
+  not blind) set nothing for Stage A and test nothing; each may be
+  reported as a check.
+- _Labels._ 0021 section 6.3; the total where it uses Stage A: "an
+  estimate, not validated: fins solved, inviscid; friction and base
+  estimated".
+
+The next free letter is (v).

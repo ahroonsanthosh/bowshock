@@ -1156,12 +1156,43 @@ grid of the same code repeats the same code's systematic errors, and the
 exact checks below avoid the tip, the curved root and the junctions of
 fitted and captured shocks. So the families that carry those (e3, e6,
 h1, h4; at least e3 and h1) are also solved by an independent open-source
-Euler code, offline, as a separate program: candidates SU2 (LGPL-2.1) and
-NASA's CFL3D (Apache-2.0), the choice, its version, its scheme and
-settings, and the meshes (made by a separate, independent generator, not
-bowshock's) registered in a dated record before any run. No code of it is
-copied into or linked with bowshock; only its input files and results are
-committed, with its licence named. It captures shocks, so its own
+Euler code, offline, as a separate program, run by the owner on their
+own machine (the owner's decision, 2026-10-23).
+
+**The code: SU2, version 8.1.0** (pinned; the install records the version
+SU2_CFD itself prints and the SHA-256 of the archive it was installed
+from). Chosen over NASA's CFL3D for these reasons:
+
+- _Licence._ SU2 is LGPL-2.1 and CFL3D Apache-2.0; both allow running an
+  unmodified program and publishing its results. Neither is copied into or
+  linked with bowshock, so neither licence touches bowshock's AGPL.
+- _Install on the owner's machine._ SU2 publishes ready-built programs for
+  Windows, macOS and Linux with each release; CFL3D is Fortran source
+  only, built with a Fortran compiler and MPI, and has no Windows support.
+- _Independence of the mesh._ SU2 reads unstructured meshes, so its meshes
+  can come from Gmsh (GPL, also run as a separate program, pinned version
+  4.13.1, installed from its published Python wheels on all three
+  systems), a generator with nothing in common with bowshock's. CFL3D
+  needs structured multiblock grids, which bowshock's own generator would
+  be the obvious source of.
+- _Supersonic Euler on these geometries._ SU2's compressible Euler solver
+  has the needed pieces: Roe and HLLC fluxes with MUSCL reconstruction
+  and a limiter, Euler-wall, symmetry and supersonic inflow and outflow
+  markers, and forces integrated per marker. CFL3D is the more proven
+  code for supersonic aerodynamics, but the install and the mesh source
+  outweigh that here.
+
+**What is run** (`scripts/reference-3d/`): the script installs the pinned
+SU2 and Gmsh into a folder of its own, writes the registered geometry and
+four meshes for each case (Gmsh geometry scripts made from the case's
+numbers in `scripts/reference-3d/cases.json`, each finer mesh by a factor
+of 1.5), writes SU2's settings (compressible Euler, HLLC, MUSCL with the
+Venkatakrishnan limiter, second order, CFL ramped, converged to a density
+residual 10 orders below its first value; the fin's surfaces monitored),
+runs them, and collects SU2's force histories and surface files with the
+SU2 and Gmsh versions, the archive hashes and the machine (operating
+system, processor, cores) into `docs/research/solver3d/reference/`. Only
+inputs and results are committed; no code of SU2 or Gmsh. It captures shocks, so its own
 stagnation-line error is calibrated first: the same code on the planar
 2D edges of (e0), against the 2D fitted strips (which are verified
 against their own 8 L0 references and checked against TN 2960); the
@@ -1175,8 +1206,7 @@ value) must be at most half the width of TN 2960's edge band (0.99 to
 percent, 0004's +9.7% with HLLC, and any value would pass). **Pass,** for
 each such family: the reference is not too wide, and Stage A's band and
 the reference's band overlap (|Stage A minus reference| at most the sum
-of the two bands). Where it runs, how long it
-takes, and on what machine, is an owner's question (section 10); without
+of the two bands). The owner runs it on their own machine (10); without
 it, the blunt-edge classes are not served.
 
 - **(e0) The 2D strip, planar fitted families** (the 2D engine, CPU): the
@@ -1599,14 +1629,13 @@ interpolated between solved Mach numbers.
 - Rounded trailing edges: "the fins' other terms solved; the rounded
   trailing edge is refused in a total (bounded, not measured)".
 - The total, where it uses Stage A: "an estimate, not validated: fins
-  solved, inviscid; friction and base estimated". (Friction is named
-  because it is 40% to 60% of a typical total, 0002 section 1, and is a
-  correlation.)
+  solved, inviscid; friction and base estimated" (decided 2026-10-23, the
+  coordinator's choice: friction is a correlation, 40% to 60% of a
+  typical total, 0002 section 1).
 - Inside the Basic Finner's class and its validated sub-class (0014 10.7
   (q)): the tested product rule is served, with today's labels (0014
-  10.3; 0008 section 6.1). The 3D value may be shown in the details as
-  "fins solved: a different model from the one tested", with no residual
-  against any BRL or DREV value.
+  10.3; 0008 section 6.1), and the 3D value is not shown there at all
+  (decided 2026-10-23).
 
 ### 6.4 What Stage A gains for hobby rockets now
 
@@ -1740,11 +1769,10 @@ Eglin set's (flat plates of t/c 0.025); with plates in scope:
 
 **Where none, plainly:** Stage A has at most one held-back test, the
 Eglin set's range A, and only if that range runs after Stage A's verdict
-is committed and its fins' edges qualify. It waits today only for W1 and
-the edge methods (10.5), so on the present order it may run first, and
-then Stage A has no held-back test at all. Section 6.7 proposes an
-amendment of 10.5 for the owner's decision (section 10, question 4),
-whose trigger does not depend on Stage A's results.
+is committed and its fins' edges qualify. The owner decided (2026-10-23)
+that it waits for Stage A's verdict, pass or fail, or 2027-06-30,
+whichever comes first, a trigger that does not depend on Stage A's
+results; 0014 10.7 (u) amends 10.5 so.
 
 **ARCAS and RM A53D02 cannot be tests** (revision 1's finding, unchanged):
 TN D-4014's increments set the fins' own-drag band and are used again in
@@ -1754,59 +1782,12 @@ check that sets nothing. A further fins-on minus fins-off free-flight
 increment at Mach 1.5 to 3 on a cylindrical afterbody, with plate fins,
 would be a test if named in 10.7 before it is opened; none is named here.
 
-### 6.7 Proposed 0014 10.7 entry (u), for the coordinator
+### 6.7 The registration: 0014 10.7 (u)
 
-Not written into 0014; the coordinator decides, and dates it.
-
-> **(u): Stage A of the 3D fin solve (0021, revision 3), registered
-> before any 3D number exists.**
->
-> - _The ladder._ 0021 section 4's cases and pass criteria (4.0 to 4.5),
->   its band procedure (4.6), its floor, floor families, test families
->   and references (4.7), its kill criteria (4.9), its judge's rules and
->   its manifest of GPU cases (5.3) are fixed as written at the commit
->   that adds this entry. "No band" is a failure where 0021 says so. None
->   changes after a rung's numbers are seen; a failure is recorded and a
->   new record decides. The blunt-edge floor (normal Mach 1.5) changes, in either direction, only by a new record, and is never lowered before the Eglin set's range A has run.
-> - _The independent code._ The open-source Euler code of 0021 4.4, its
->   version, scheme, settings and meshes, is named in a dated entry before
->   it is run; it is used only as a separate offline program.
-> - _The noise, the precision and the GPU-CPU tolerance._ 0021 section
->   3.5 (1e-5 of the fin drag, fixed).
-> - _The model-form bands._ The fins' own-drag band formed again with
->   Stage A's nominal on the same ARCAS increments; the rounded edge's band
->   formed again on the Euler strip from TN 2960 figs. 5(c) and 5(e),
->   both readings (0021 6.2). Band-setting, not tests. Amendment (f) is
->   unchanged.
-> - _Square edges._ Served in a total only under 10.2, the band the whole
->   gap, the nominal Stage A's value, once (1) 10.2 is amended to allow a
->   solved nominal and (2) the ordering is shown by a written argument;
->   both recorded here before any square-edge value is computed.
-> - _The Basic Finner._ Inside the class and the validated sub-class of
->   (q) the product rule is served (10.3). BRL Report 934's range A is not
->   run again, and no record computes the 3D fin model at its rounds for
->   comparison with their drag.
-> - _The tests._ PARD's range A cannot test Stage A (its normal Mach
->   numbers lie below 1.5 at every Mach number of its data); TN 3697 fig.
->   5 was read by eye once for 0014 section 5.2. [If the owner chooses to
->   wait:] The Eglin set's range A is run at the earlier of: the day
->   Stage A's verdict is committed, pass or fail, or 2027-06-30; so the
->   trigger does not depend on Stage A's results. When run, it reports the
->   total with today's methods and, where Stage A serves and its verdict
->   is a pass, with the fins solved, each with its verdict by rule 4.
->   [Otherwise:] The Eglin set's range A runs as registered in 10.5, and
->   Stage A has a test from it only if its verdict is committed first.
-> - _Not tests._ ARCAS (TN D-4014: band-setting; TN D-4013: read, the
->   same models), RM A53D02, and RM A53D02 fig. 17 for square edges (read
->   once, not blind) set nothing for Stage A and test nothing; each may be
->   reported as a check.
-> - _Labels._ As 0021 section 6.3.
-
-**The amendment of 10.5, if the owner chooses to wait** (proposed text,
-for the same entry): "The Eglin 'Four-Fin Circular' set's range A is run
-at the earlier of the commit of 0021's Stage A verdict (pass or fail) and
-2027-06-30, and not before, whatever other methods are committed by then.
-The date does not move."
+Written into 0014 section 10.7 as entry (u), dated 2026-10-23, with the
+amendment of 10.5 for the Eglin set's range A, after revision 3a's
+rewordings and the Eglin evidence rule (6.6) were committed and before any
+Stage A number exists. Its text is 0014's; this record does not repeat it.
 
 ## 7. Memory and time
 
@@ -1930,38 +1911,31 @@ with their labels, wherever Stage A does not serve; a failure is recorded.
 10. **Coverage.** Most hobby rockets are blocked by the nose solve or by
     normal Mach numbers below 1.5 before the fins matter (6.4).
 
-## 10. Open questions for the owner
+## 10. The owner's answers, and what is still open
 
-1. **Your GPU.** Can you run `npm run ladder:3d` (or the page) on a
-   machine with a hardware GPU, over two or three nights with `--resume`,
-   and commit or send every results file? How much memory does its GPU
-   have? 12 to 16 GB is recommended; 8 GB runs every reference but h1's
-   and h4's same-code ones (they then rest on the independent code
-   alone); below 8 GB nothing of blunt edges can be served (4.7).
-2. **The independent code** (4.4): may an open-source Euler code (SU2,
-   LGPL-2.1, or CFL3D, Apache-2.0) be run offline as a separate program,
-   only its inputs and results committed? Where should it run (your
-   computer's CPU, a cloud machine)? Each of its four cases is hours to
-   days of a multi-core CPU (estimate). Without it the blunt edges are not
-   served.
-3. **Square leading edges in totals.** Only as "bounded, not measured",
-   the whole gap between the rounded edge and pitot pressure as the band,
-   Stage A's value as the nominal (6.2). This needs 0014 10.2 amended and
-   the ordering argued in writing; the coordinator decides. Until then,
-   square edges are a component only (totals 2.3% instead of 2.6%).
-4. **Held-back tests.** PARD's range A cannot test Stage A at all at the
-   floor of 1.5. Should the Eglin set's range A wait for Stage A's
-   verdict (pass or fail) or 2027-06-30, whichever comes first (6.7)? Or
-   run when its methods are ready, as registered, and accept that Stage A
-   may have no held-back test?
-5. **The label.** "fins solved, inviscid; friction and base estimated"
-   (6.3), against the advisor's "fins solved, inviscid; base estimated".
-6. **The Basic Finner.** Should the page show the 3D value inside its
-   class at all, even in the details?
-7. **Registration.** The proposed 10.7 (u) (6.7).
+Answered on 2026-10-23:
 
-(The floor is no longer a question: normal Mach 1.5, for the reasons of
-2.5. The floor (normal Mach 1.5) changes, in either direction, only by a new record, and is never lowered before the Eglin set's range A has run.)
+- **The independent code:** the owner runs it on their own machine; SU2,
+  for the reasons of 4.4, with `scripts/reference-3d/`.
+- **Held-back tests:** the Eglin set's range A waits for Stage A's
+  verdict, pass or fail, or 2027-06-30, whichever comes first (0014 10.7
+  (u)).
+- **The total's label:** "an estimate, not validated: fins solved,
+  inviscid; friction and base estimated".
+- **The Basic Finner:** its class and sub-class keep the tested rule; the
+  3D value is not shown there.
+- **Registration:** 10.7 (u) is written into 0014, dated 2026-10-23,
+  before any Stage A number exists.
+
+Still open:
+
+1. **Your GPU.** How much memory does the GPU that will run `npm run
+ladder:3d` have? 12 to 16 GB is recommended; 8 GB runs every reference
+   but h1's and h4's same-code ones; below 8 GB no blunt edge can be
+   served (4.7).
+2. **Square leading edges in totals:** only through 0014 10.2, once 10.2
+   is amended and the ordering argued in writing (6.2); the coordinator
+   decides. Until then a component only.
 
 ## 11. Sources
 
@@ -1970,16 +1944,14 @@ No new source was read for this record. Named only, not opened:
 - F. S. Billig's standoff and shock-shape correlation (1967), for
   cylinders as 0004 uses it for spheres: the estimates of 2.5 and the
   scope script, and a check of (e0); sets nothing;
-- an open-source Euler code (candidates SU2, LGPL-2.1; CFL3D,
-  Apache-2.0) and an independent mesh generator, for the independent
-  references of 4.4: to be named, with versions and settings, in a dated
-  record before any run;
+- SU2 8.1.0 (LGPL-2.1) and Gmsh 4.13.1 (GPL), run as separate programs
+  for the independent references of 4.4; registered in 0014 10.7 (u);
 - a published inviscid 3D solution of a finned body of revolution at zero
   incidence, and slender-body and linear theories of zero-lift fin-body
   interference: checks, to be registered if used;
 - a measurement of a flat-faced (square) edge's front-face pressure in
   supersonic flow: to be found and named in 10.7 before it is opened, if
-  the owner chooses that route for square edges (10, question 3);
+  that route is chosen for square edges (6.2);
 - a fins-on minus fins-off free-flight increment at Mach 1.5 to 3 on a
   cylindrical afterbody, with plate fins: to be found and registered
   before it is opened.
@@ -2189,7 +2161,7 @@ before any blunt-edge code. Each change below quotes revision 2.
   8.3%), plates 2.4% (was 3.3%), totals unchanged (6.4).
 - How the served curve shows the step at the floor (6.4).
 
-### Revision 3a, 2026-10-23 (this text): four registered criteria reworded
+### Revision 3a, 2026-10-23 (commit 26dd4f2): four registered criteria reworded
 
 A re-review of revision 3 (5d8ff9a) approved the blunt-edge path after
 four rewordings of registered criteria, made here before (u) is dated and
@@ -2220,3 +2192,13 @@ before J1 and J2 run. No design changes.
   the Eglin set's range A has run"); e6 gains a cylinder of radius 0.5
   span (hobby proportions); the evidence rule for the Eglin set's edges is
   registered (6.6).
+
+### Revision 3b, 2026-10-23 (this text): the owner's answers
+
+The owner's and the coordinator's answers of 2026-10-23 are written in:
+the independent code is SU2 8.1.0 with Gmsh 4.13.1, run by the owner (4.4,
+with reasons, and `scripts/reference-3d/`); the Eglin set's range A waits
+for Stage A's verdict or 2027-06-30; the total's label is fixed; the 3D
+value is not shown inside the Basic Finner's class (6.3); the proposed
+(u) is now 0014 10.7 (u) (6.7); section 10 lists what is answered and
+what is still open.
