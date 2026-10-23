@@ -1,0 +1,12 @@
+y_in,r10_u_star,r10_err_2sigma,r12_u_star_interp,r12_err_1sigma_pairer,diff_r10_minus_r12,comb_as_stated,comb_2sigma,verdict_as_stated,verdict_common_2sigma,r12_trace_gap_px,dist_to_nearest_r12_sample_px,note
+0.005,0.6373,0.0247,0.6366,0.0073,+0.0007,0.0320,0.0393,agree,agree,1.5,0.5,
+0.010,0.7359,0.0202,0.7320,0.0046,+0.0039,0.0248,0.0293,agree,agree,2.0,1.2,
+0.015,0.7925,0.0075,0.7917,0.0036,+0.0008,0.0111,0.0147,agree,agree,6.5,3.0,
+0.020,0.8279,0.0085,0.8233,0.0031,+0.0046,0.0116,0.0147,agree,agree,37.8,16.5,interpolated across a 38 px gap in round 12's trace (y 0.01691 to 0.02644)
+0.040,0.9138,0.0053,0.9131,0.0029,+0.0007,0.0082,0.0110,agree,agree,11.0,2.1,interpolated across a 11 px gap in round 12's trace (y 0.03775 to 0.04051)
+0.045,0.9287,0.0049,0.9275,0.0027,+0.0012,0.0076,0.0102,agree,agree,18.0,3.2,interpolated across a 18 px gap in round 12's trace (y 0.04126 to 0.04579)
+0.090,1.0004,0.0043,1.0005,0.0026,-0.0001,0.0069,0.0094,agree,agree,33.0,9.7,interpolated across a 33 px gap in round 12's trace (y 0.08756 to 0.09588)
+0.095,1.0007,0.0044,1.0008,0.0026,-0.0001,0.0070,0.0095,agree,agree,33.0,3.5,interpolated across a 33 px gap in round 12's trace (y 0.08756 to 0.09588)
+0.105,1.0005,0.0048,1.0001,0.0026,+0.0004,0.0074,0.0099,agree,agree,42.0,11.8,interpolated across a 42 px gap in round 12's trace (y 0.09739 to 0.10798)
+0.110,0.9991,0.0044,0.9993,0.0026,-0.0002,0.0070,0.0096,agree,agree,3.0,1.0,
+0.115,0.9971,0.0045,0.9979,0.0026,-0.0008,0.0071,0.0096,agree,agree,20.0,9.9,interpolated across a 20 px gap in round 12's trace (y 0.11251 to 0.11755)

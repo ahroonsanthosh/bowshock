@@ -1,0 +1,16 @@
+id,series,symbol,conditions,x_val,x_err,y_val,y_err,px_x,px_y,how,score,extent_x,extent_y,ink_box_px,check_fit_dx_px,check_fit_dy_px,check_fit_score,notes
+m10-01,ref (32),32_tri_down,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",4.0188,0.0616,-0.8852,0.0049,875.0,1824.5,manual,,,,,-0.75,0.25,0.838,
+m10-02,ref (32) flagged (roughness band),32_tri_down,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",3.9812,0.0764,-0.8542,0.0054,874.0,1842.5,manual,,,,,-1.0,0.0,0.822,flag from its top right corner
+m10-03,ref (32),32_tri_down,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",2.3697,0.0764,-0.7976,0.0054,827.0,1875.5,manual,,,,,0.5,-0.25,0.814,the -0.8 gridline through its top
+m10-04,ref (32) flagged (roughness band),32_tri_down,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",2.3655,0.0764,-0.7555,0.0054,827.0,1900.0,manual,,,,,-0.25,0.25,0.762,flag from its top right corner; apex merges with m10-05
+m10-05,ref (40) flagged (roughness band),40_rtri_right_angle_br,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",2.518,0.108,-0.7443,0.0066,831.5,1906.5,manual,,,,,-0.25,-0.75,0.786,merges with m10-04's apex; its flag runs up to m10-04's right corner
+m10-06,ref (32),32_tri_down,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",1.2108,0.0615,-0.6363,0.0049,793.5,1969.5,manual,,,,,-0.5,-0.5,0.844,
+m10-07,ref (32) flagged (roughness band),32_tri_down,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",1.2037,0.0615,-0.5593,0.0048,793.5,2014.5,manual,,,,,-0.5,0.25,0.843,flag from its top right corner
+m10-08,ref (39) flagged (roughness band),39_square,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",5.9962,0.0618,-0.8238,0.0049,933.0,1860.0,manual,,,,,0.0,0.0,0.767,flag from its top right corner
+m10-09,ref (34),34_diamond,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",6.0246,0.1084,-0.7756,0.0066,934.0,1888.0,manual,,,,,-0.25,0.75,0.822,open diamond with a 2 px slit inside; its lower apex merges with m10-10's top; could be a filled diamond with a gap
+m10-10,ref (39),39_square,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",6.0222,0.0618,-0.7559,0.0049,934.0,1899.5,manual,,,,,-0.25,0.0,0.826,
+m10-11,ref (38),38_circle,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",10.0174,0.0616,-0.782,0.0049,1050.5,1884.0,manual,,,,,0.0,0.5,0.878,h/c 10 gridline through it
+m10-12,ref (35),35_tri_up,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",14.0547,0.0764,-0.8418,0.0054,1168.5,1849.0,manual,,,,,-1.0,-0.75,0.88,
+m10-13,ref (31) filled (free flight),31_half_flat_bottom_f,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",14.066,0.1408,-0.7953,0.008,1169.0,1876.0,manual,,,,,-0.75,0.0,0.897,"flat-bottomed, partly filled glyph whose top half lies under the -0.8 gridline (rows 1873 and 1874); typed (31) filled by its flat bottom and its h/c, as m08-03 and m12-09; centre from the visible half"
+m10-14,ref (40) flagged (roughness band),40_rtri_right_angle_br,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",0.2807,0.0914,0.0629,0.006,768.0,2380.0,manual,,,,,-1.25,-1.0,0.765,base runs into the h/c 0 axis
+m10-15,ref (40) flagged (roughness band),40_rtri_right_angle_br,"R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",0.0194,0.0759,0.1461,0.0054,760.5,2428.0,manual,,,,,0.5,-1.0,0.726,on the h/c 0 axis; base crosses it

@@ -1,0 +1,66 @@
+# ARC R&M 3323 (AERADE 1826.2/3903, sha256 2f1976e9...38933c3a), fig. 4, PDF p. 23: Cp_b against h/c (%), zero
+# incidence, at M 0.6, 0.8, 1.0, 1.2. FIRST reading (0019 reader, W7), 2026-10-23. ref: the report's reference
+# number (method_rm3323_figs4_5.md section 1); flag 1: a flagged symbol (roughness band), ?: uncertain. err: placement,
+# grid trace and, for triangles, the centre's definition. px in the panel crop (see scripts/rm3323_fig4_run.py).
+id,mach,ref,source,symbol,flag,px_x,px_y,h_over_c_pct,cpb,h_over_c_err,cpb_err,note
+A01,0.6,38,R&M 3427,circle,0,344,241,10.003,-0.6561,0.038,0.0019,crossed by the h/c 10 line
+A02,0.6,39,Pearcey (unpublished),square,0,227.5,290,5.991,-0.5719,0.038,0.0019,
+A03,0.6,34,TN 3548,diamond_filled,0,227.5,309,5.990,-0.5393,0.038,0.0019,
+A04,0.6,32,RM A51J11,tri_down,0,169,302.5,3.993,-0.5505,0.054,0.0044,overlaps A05
+A05,0.6,32,RM A51J11,tri_down,1,168.5,313.5,3.976,-0.5317,0.054,0.0044,overlaps A04; flag to upper right
+A06,0.6,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,124.5,383,2.471,-0.4129,0.054,0.0044,overlaps A07
+A07,0.6,32,RM A51J11,tri_down,1,123.5,397.5,2.436,-0.3880,0.054,0.0044,overlaps A06
+A08,0.6,32,RM A51J11,tri_down,0,123.5,439.5,2.427,-0.3155,0.038,0.0040,
+A09,0.6,33,RM A52E01,half_flat_top,0,96,455,1.483,-0.2884,0.038,0.0019,
+A10,0.6,33,RM A52E01,half_flat_top,0,99,508.5,1.576,-0.1958,0.054,0.0027,top on the Cp -0.2 line
+A11,0.6,33,RM A52E01,half_flat_top,0,99.5,519.5,1.591,-0.1773,0.038,0.0019,
+A12,0.6,32,RM A51J11,tri_down,0,87.5,540,1.177,-0.1429,0.054,0.0043,touches A13
+A13,0.6,33,RM A52E01,half_flat_top,0,100.5,537,1.621,-0.1480,0.054,0.0027,touches A12
+A14,0.6,32,RM A51J11,tri_down,1,89.5,552.5,1.239,-0.1220,0.054,0.0043,
+A15,0.6,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,60.5,589,0.236,-0.0607,0.054,0.0043,touches the frame
+A16,0.6,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,54,646.5,0.005,0.0365,0.054,0.0044,crosses the frame
+B01,0.8,35,R&M 3348,tri_up,0,465.5,108,13.982,-0.8837,0.038,0.0040,
+B02,0.8,35?,uncertain (see method),tri_up_heavy,?,466.5,198,14.005,-0.7285,0.070,0.0050,partly filled; source uncertain (see method)
+B03,0.8,38,R&M 3427,circle,0,347.5,189,9.949,-0.7437,0.038,0.0019,crossed by the h/c 10 line
+B04,0.8,32,RM A51J11,tri_down,0,172.5,240.5,3.979,-0.6557,0.038,0.0040,
+B05,0.8,32,RM A51J11,tri_down,1,173,257,3.995,-0.6270,0.038,0.0040,
+B06,0.8,39,Pearcey (unpublished),square,1,232.5,259,6.024,-0.6229,0.038,0.0019,
+B07,0.8,39,Pearcey (unpublished),square,0,231.5,271.5,5.989,-0.6013,0.038,0.0019,crossed by the Cp -0.6 line
+B08,0.8,34,TN 3548,diamond_filled,0,232,288.5,6.004,-0.5720,0.038,0.0019,
+B09,0.8,33,RM A52E01,half_flat_top,0,144.5,312.5,3.020,-0.5311,0.038,0.0019,
+B10,0.8,33,RM A52E01,half_flat_top,0,144,325,3.001,-0.5096,0.038,0.0019,
+B11,0.8,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,126.5,363.5,2.403,-0.4432,0.087,0.0056,overlaps B12; body partly hidden
+B12,0.8,32,RM A51J11,tri_down,1,127.5,373.5,2.439,-0.4260,0.070,0.0050,overlaps B11 and B13
+B13,0.8,32,RM A51J11,tri_down,0,128,388,2.455,-0.4010,0.054,0.0044,crossed by the Cp -0.4 line
+B14,0.8,33,RM A52E01,half_flat_top,0,102,447,1.555,-0.3001,0.038,0.0019,
+B15,0.8,33,RM A52E01,half_flat_top,0,101,505,1.512,-0.2010,0.054,0.0027,crossed by the Cp -0.2 line
+B16,0.8,33,RM A52E01,half_flat_top,0,101,514.5,1.507,-0.1850,0.054,0.0027,touches B15
+B17,0.8,32,RM A51J11,tri_down,?,90.5,536.5,1.139,-0.1480,0.054,0.0043,a stub at the upper right corner: flag uncertain
+B18,0.8,33,RM A52E01,half_flat_top,0,102.5,540.5,1.546,-0.1413,0.054,0.0027,touches B19's flag
+B19,0.8,32,RM A51J11,tri_down,1,93.5,555,1.238,-0.1169,0.054,0.0043,
+B20,0.8,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,63.5,594,0.217,-0.0513,0.054,0.0043,
+B21,0.8,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,58,642.5,0.022,0.0310,0.054,0.0044,crosses the frame
+C01,1.0,32,RM A51J11,tri_down,0,175,107,4.016,-0.8855,0.038,0.0039,
+C02,1.0,32,RM A51J11,tri_down,1,173,125,3.936,-0.8547,0.038,0.0039,
+C03,1.0,39,Pearcey (unpublished),square,1,233,143.5,5.979,-0.8217,0.038,0.0019,
+C04,1.0,34,TN 3548,diamond_filled,0,234.5,171.5,6.026,-0.7738,0.054,0.0027,touches C05
+C05,1.0,39,Pearcey (unpublished),square,0,234,183,6.007,-0.7541,0.054,0.0027,touches C04
+C06,1.0,32,RM A51J11,tri_down,0,127.5,158,2.378,-0.7982,0.054,0.0044,crossed by the Cp -0.8 line
+C07,1.0,32,RM A51J11,tri_down,1,127,183.5,2.360,-0.7544,0.070,0.0049,overlaps C08
+C08,1.0,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,132,188,2.529,-0.7466,0.054,0.0044,overlaps C07
+C09,1.0,35,R&M 3348,tri_up,0,468.5,131.5,14.038,-0.8428,0.038,0.0039,
+C10,1.0,35?,uncertain (see method),tri_up_heavy,?,468.5,158,14.032,-0.7973,0.070,0.0050,partly filled; top under the Cp -0.8 line; source uncertain (see method)
+C11,1.0,38,R&M 3427,circle,0,351,166.5,10.024,-0.7821,0.038,0.0019,crossed by the h/c 10 line
+C12,1.0,32,RM A51J11,tri_down,0,93.5,252,1.208,-0.6367,0.038,0.0039,
+C13,1.0,32,RM A51J11,tri_down,1,93.5,296.5,1.197,-0.5605,0.038,0.0039,
+C14,1.0,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,68,661,0.255,0.0599,0.054,0.0044,touches the frame
+C15,1.0,40,"Holder, Pearcey and Nash (RAeS 1962)",tri_right,1,60.5,709.5,-0.001,0.1439,0.054,0.0044,crosses the frame
+D01,1.2,39,Pearcey (unpublished),square,1,231,249,6.051,-0.6385,0.038,0.0019,
+D02,1.2,33,RM A52E01,half_flat_top,0,101,287.5,1.605,-0.5727,0.038,0.0019,
+D03,1.2,33,RM A52E01,half_flat_top,0,142,281,3.008,-0.5837,0.054,0.0027,touches D04
+D04,1.2,33,RM A52E01,half_flat_top,0,142.5,291.5,3.023,-0.5659,0.054,0.0027,touches D03
+D05,1.2,35,R&M 3348,tri_up,0,463.5,296.5,13.921,-0.5573,0.038,0.0039,
+D06,1.2,35?,uncertain (see method),tri_up_heavy,1,462.5,311.5,13.887,-0.5317,0.070,0.0049,partly filled; flag at upper right; source uncertain (see method)
+D07,1.2,38,R&M 3427,circle,0,348.5,316.5,10.035,-0.5230,0.038,0.0019,crossed by the h/c 10 line
+D08,1.2,41,TN D-1056 (X-15),tri_right_filled,0,347,375.5,9.984,-0.4222,0.054,0.0044,crossed by the h/c 10 line; right angle at lower left
+D09,1.2,34,TN 3548,diamond_filled,0,230,347,6.007,-0.4708,0.038,0.0019,

@@ -1,0 +1,58 @@
+id,kind,x,y,alpha,place_px,note
+a0_01,circle,805,2065,0,1,
+a0_02,circle,897.5,1947,0,1,
+a0_03,circle,1011,1733.5,0,1,
+a0_04,circle,1127.5,1651.5,0,1,
+a0_05,circle,1221,1452.5,0,1,
+a0_06,circle,1323.5,1102,0,1,
+a0_07,circle,1467,1133,0,1.5,overlaps a2_07
+a0_08,circle,1575,1250,0,1.5,overlaps a2_08
+a0_09,circle,1785,1403,0,1.5,overlaps a2_10
+a0_10,circle,1892.5,1492,0,1.5,overlaps a2_11
+a0_11,circle,1934.5,1563,0,1,
+a2_01,square,783,1989,2,1,
+a2_02,square,897.5,1896.5,2,1,
+a2_03,square,997.5,1716,2,1,
+a2_04,square,1114.5,1598,2,1,
+a2_05,square,1221.5,1423,2,1,
+a2_06,square,1317.5,1077.5,2,1,
+a2_07,eye,1466,1121,2,2,overlaps a0_07; placed by eye at 6x (its fit took the circle)
+a2_08,square,1574,1236,2,1.5,overlaps a0_08
+a2_09,eye,1681.5,1327,2,2,faint; placed by eye at 6x (its fit scored low)
+a2_10,eye,1786,1412,2,2,overlaps a0_09; placed by eye at 6x (its fit took the circle)
+a2_11,eye,1891.5,1504,2,2,overlaps a0_10; placed by eye at 6x (its fit took the circle)
+a2_12,square,1940,1529,2,1,
+a4_01,diamond,789.5,1953,4,1,
+a4_02,diamond,894,1850,4,1,
+a4_03,diamond,1055,1675,4,1,
+a4_04,diamond,1153,1563,4,1,
+a4_05,diamond,1261.5,1326.5,4,1,
+a4_06,diamond,1364,1007,4,1,
+a4_07,diamond,1466,1007,4,1,
+a4_08,diamond,1573.5,1097.5,4,1,
+a4_09,diamond,1678.5,1198.5,4,1,
+a4_10,diamond,1785.5,1271.5,4,1,
+a4_11,diamond,1889,1335.5,4,1,
+a4_12,diamond,1939,1351,4,1,
+a6_01,triangle,897.5,1994,6,1,
+a6_02,triangle,1062,1507,6,1,
+a6_03,triangle,1117,1525,6,1,
+a6_04,triangle,1220.5,1362,6,1,
+a6_05,triangle,1365.5,687.5,6,2.5,crossed by a8_05
+a6_06,triangle,1466,649,6,1,
+a6_07,triangle,1574,738,6,1,
+a6_08,triangle,1666,821,6,1,
+a6_09,triangle,1784,892,6,1,
+a6_10,triangle,1888.5,966.5,6,1,
+a6_11,triangle,1910,1007,6,2,
+a8_01,rtri,785.5,2295.5,8,1,
+a8_02,rtri,894,2235,8,1,
+a8_03,rtri,1049.5,1925,8,1,
+a8_04,rtri,1156,1614,8,1,
+a8_05,rtri,1255,1204.5,8,1.5,
+a8_06,eye,1354.5,646.5,8,3,crossed by a6_05 and the faired curves
+a8_07,rtri,1463,519.5,8,1,
+a8_08,rtri,1569,554,8,2.5,
+a8_09,rtri,1675,600,8,1,
+a8_10,rtri,1778.5,647,8,1,
+a8_11,rtri,1881,675.5,8,1,

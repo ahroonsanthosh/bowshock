@@ -1,0 +1,22 @@
+id,series,symbol,conditions,x_val,x_err,y_val,y_err,px_x,px_y,how,score,extent_x,extent_y,ink_box_px,check_fit_dx_px,check_fit_dy_px,check_fit_score,notes
+m08-01,ref (35),35_tri_up,"R&M 3323 fig. 4, M = 0.8, zero incidence",13.9867,0.0674,-0.8834,0.0048,1804.5,486.0,manual,,,,,0.0,0.0,0.875,
+m08-02,ref (38),38_circle,"R&M 3323 fig. 4, M = 0.8, zero incidence",9.9631,0.0672,-0.744,0.0048,1687.0,567.0,manual,,,,,-0.25,0.25,0.883,h/c 10 gridline through it
+m08-03,ref (31) filled (free flight),31_half_flat_bottom_f,"R&M 3323 fig. 4, M = 0.8, zero incidence",14.0161,0.0674,-0.7279,0.0048,1806.0,576.0,manual,,,,,-0.25,0.0,0.918,"dome, flat bottom, filled but for a small hole; typed (31) filled"
+m08-04,ref (32),32_tri_down,"R&M 3323 fig. 4, M = 0.8, zero incidence",3.9833,0.0677,-0.6553,0.0048,1511.5,618.5,manual,,,,,0.0,0.25,0.764,
+m08-05,ref (32) flagged (roughness band),32_tri_down,"R&M 3323 fig. 4, M = 0.8, zero incidence",3.9969,0.0677,-0.6266,0.0048,1512.0,635.0,manual,,,,,0.25,-0.75,0.814,flag from its top right corner
+m08-06,ref (39) flagged (roughness band),39_square,"R&M 3323 fig. 4, M = 0.8, zero incidence",6.0414,0.0672,-0.6239,0.0048,1572.0,636.5,manual,,,,,0.0,0.0,0.688,flag from its top right corner
+m08-07,ref (39),39_square,"R&M 3323 fig. 4, M = 0.8, zero incidence",6.0044,0.0808,-0.6013,0.0053,1571.0,649.5,manual,,,,,-0.25,0.0,0.713,the -0.6 gridline through it
+m08-08,ref (34) filled (free flight),34_diamond_f,"R&M 3323 fig. 4, M = 0.8, zero incidence",6.0005,0.0672,-0.5721,0.0048,1571.0,666.5,manual,,,,,0.5,0.0,0.885,
+m08-09,ref (33),33_half_flat_top,"R&M 3323 fig. 4, M = 0.8, zero incidence",3.0109,0.0676,-0.5309,0.0048,1483.5,690.5,manual,,,,,-0.25,0.5,0.794,
+m08-10,ref (33),33_half_flat_top,"R&M 3323 fig. 4, M = 0.8, zero incidence",2.9914,0.0676,-0.5094,0.0048,1483.0,703.0,manual,,,,,0.0,0.0,0.755,
+m08-11,ref (40) flagged (roughness band),40_rtri_right_angle_br,"R&M 3323 fig. 4, M = 0.8, zero incidence",2.4204,0.0813,-0.4449,0.0053,1466.5,740.5,manual,,,,,0.0,-1.0,0.766,flag continues the hypotenuse
+m08-12,ref (32) flagged (roughness band),32_tri_down,"R&M 3323 fig. 4, M = 0.8, zero incidence",2.4183,0.0676,-0.4251,0.0048,1466.5,752.0,manual,,,,,-0.75,-0.5,0.755,flag from its top right corner
+m08-13,ref (32),32_tri_down,"R&M 3323 fig. 4, M = 0.8, zero incidence",2.4157,0.0813,-0.401,0.0053,1466.5,766.0,manual,,,,,-0.25,-0.75,0.785,the -0.4 gridline through it
+m08-14,ref (33),33_half_flat_top,"R&M 3323 fig. 4, M = 0.8, zero incidence",1.5348,0.0675,-0.3,0.0048,1441.0,825.0,manual,,,,,0.25,-0.25,0.763,
+m08-15,ref (33),33_half_flat_top,"R&M 3323 fig. 4, M = 0.8, zero incidence",1.5077,0.1113,-0.2,0.0064,1440.5,883.5,manual,,,,,-0.5,-0.5,0.785,"on the -0.2 gridline; its bottom merges with m08-16's top; type (33) or (39) square, called (33) by its narrowing sides"
+m08-16,ref (33),33_half_flat_top,"R&M 3323 fig. 4, M = 0.8, zero incidence",1.5064,0.0674,-0.1865,0.0047,1440.5,891.5,manual,,,,,-0.25,0.25,0.78,
+m08-17,ref (32) flagged (roughness band),32_tri_down,"R&M 3323 fig. 4, M = 0.8, zero incidence",1.1447,0.0811,-0.1477,0.0052,1430.0,914.5,manual,,,,,0.5,-0.25,0.803,flag from its top right corner
+m08-18,ref (33),33_half_flat_top,"R&M 3323 fig. 4, M = 0.8, zero incidence",1.5528,0.0811,-0.1401,0.0052,1442.0,919.0,manual,,,,,-0.25,0.0,0.769,touches m08-17 and m08-19's flag
+m08-19,ref (32) flagged (roughness band),32_tri_down,"R&M 3323 fig. 4, M = 0.8, zero incidence",1.2439,0.081,-0.1173,0.0052,1433.0,932.5,manual,,,,,-1.0,0.25,0.812,flag from its top right corner reaches m08-18
+m08-20,ref (40) flagged (roughness band),40_rtri_right_angle_br,"R&M 3323 fig. 4, M = 0.8, zero incidence",0.2332,0.127,-0.0499,0.0071,1403.5,972.5,manual,,,,,-1.75,-0.25,0.773,base runs into the h/c 0 axis
+m08-21,ref (40) flagged (roughness band),40_rtri_right_angle_br,"R&M 3323 fig. 4, M = 0.8, zero incidence",0.0218,0.0809,0.0335,0.0053,1397.5,1021.5,manual,,,,,0.5,-1.0,0.807,on the h/c 0 axis; base crosses it

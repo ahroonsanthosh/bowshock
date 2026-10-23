@@ -1,0 +1,100 @@
+id,kind,x,y,alpha,place_px,note
+a0_01,circle,727,1576,0,1,
+a0_02,circle,825,1512,0,1,coincides with a2_02
+a0_03,circle,937.5,1381,0,1,
+a0_04,circle,989,1357,0,1,
+a0_05,circle,1050,1387,0,1,
+a0_06,circle,1084,1340,0,1,
+a0_07,circle,1147,1264,0,1,
+a0_08,circle,1197,1085,0,1,
+a0_09,circle,1253,1026,0,1,
+a0_10,circle,1295,1020,0,1.5,coincides with a2_10
+a0_11,circle,1398,1225,0,1.5,cluster with a2 and a4
+a0_12,circle,1448,1343,0,1.5,cluster with a2 and a4
+a0_13,eye,1504,1461.5,0,2,cluster with a2 and a4; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a0_14,circle,1557,1553,0,1.5,cluster with a2 and a4
+a0_15,circle,1609,1648,0,1.5,cluster with a2 and a4
+a0_16,circle,1660,1730,0,1.5,cluster with a2 and a4
+a0_17,circle,1712,1802,0,1.5,cluster with a2 and a4
+a0_18,circle,1766,1881,0,1.5,cluster with a2 and a4
+a0_19,circle,1821,1954,0,1.5,cluster with a2 and a4
+a0_20,circle,1868,2005,0,1.5,cluster with a2 and a4
+a2_01,square,707,1576,2,1,
+a2_02,square,825,1512,2,1,coincides with a0_02
+a2_03,eye,925,1397.5,2,1.5,outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_04,square,991,1402,2,1,
+a2_05,eye,1040,1372.5,2,1.5,outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_06,square,1096,1369,2,1,
+a2_07,square,1147,1296,2,1,
+a2_08,square,1201.5,1153.5,2,1,
+a2_09,eye,1250.5,1041.5,2,1.5,outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_10,square,1295,1019,2,1.5,coincides with a0_10
+a2_11,square,1348.5,1112,2,1,
+a2_12,eye,1398,1226,2,2.5,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_13,square,1448,1343,2,1.5,cluster
+a2_14,eye,1509.5,1456,2,2,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_15,square,1557,1553,2,1.5,cluster
+a2_16,square,1609,1648,2,1.5,cluster
+a2_17,square,1660,1730,2,1.5,cluster
+a2_18,square,1712,1802,2,1.5,cluster
+a2_19,square,1766,1881,2,1.5,cluster
+a2_20,square,1821,1954,2,1.5,cluster
+a2_21,eye,1871,2000,2,2,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_01,diamond,715,1697,4,1,
+a4_02,diamond,822,1664,4,1,
+a4_03,diamond,928,1621,4,1,
+a4_04,diamond,978,1549,4,1,
+a4_05,diamond,1032,1487,4,1,
+a4_06,diamond,1085,1487,4,1,
+a4_07,diamond,1139,1404,4,1,
+a4_08,diamond,1190,1320,4,1,
+a4_09,diamond,1248.5,1149.5,4,1,
+a4_10,diamond,1294,1109,4,1,
+a4_11,eye,1398,1226,4,2.5,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_12,diamond,1448,1345,4,1.5,cluster
+a4_13,eye,1504,1436,4,2,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_14,eye,1557,1551,4,2.5,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_15,diamond,1607,1618,4,1.5,cluster
+a4_16,eye,1662,1713,4,1.5,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_17,eye,1713,1798,4,2.5,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_18,eye,1765,1862,4,1.5,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_19,eye,1820,1934,4,1.5,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_20,diamond,1869,1972,4,1.5,cluster
+a6_01,manual,711,2067.5,6,2,outline partly lost in the scan
+a6_02,manual,820,2119,6,2,
+a6_03,manual,930.5,1795,6,2,
+a6_04,manual,988.5,1706,6,2,
+a6_05,manual,1042.5,1755,6,2,
+a6_06,manual,1097,1649,6,2,
+a6_07,manual,1193,1429,6,2,
+a6_08,manual,1253,1174,6,2,
+a6_09,manual,1294,1121,6,2.5,apex under a4_10
+a6_10,manual,1347,1087,6,2.5,base on a2_11
+a6_11,manual,1398,1188,6,2,
+a6_12,manual,1441,1284,6,2,
+a6_13,manual,1504,1393.5,6,2,
+a6_14,manual,1556.5,1489.5,6,2,
+a6_15,manual,1608.5,1567.5,6,2,
+a6_16,manual,1661.5,1670,6,2,
+a6_17,manual,1716,1748,6,2,
+a6_18,manual,1766,1822.5,6,2,
+a6_19,manual,1820,1879,6?,3,faint fragments; kind uncertain (6 or 8)
+a6_20,manual,1842,1898,6?,3,faint fragments; kind uncertain (6 or 8)
+a8_01,manual,710.5,2322.5,8,2,outline partly lost in the scan
+a8_02,manual,818,2293.5,8,2,
+a8_03,manual,920,1953.5,8,2,
+a8_04,manual,975.5,1954,8,2,
+a8_05,manual,1025,1866.5,8,2,
+a8_06,manual,1078,1717,8,2,
+a8_07,manual,1141,1642,8,2,
+a8_08,manual,1196,1477,8,2,
+a8_09,manual,1242,1178,8,2.5,in the cluster at M 0.935
+a8_10,manual,1393,1122,8,2,
+a8_11,manual,1441.5,1236.5,8,2,
+a8_12,manual,1495.5,1336.5,8,2,
+a8_13,manual,1554,1454.5,8,2,
+a8_14,manual,1604,1532,8,2,
+a8_15,manual,1649.5,1620,8,2,
+a8_16,manual,1719,1714,8,2,
+a8_17,manual,1751.5,1763.5,8,2,
+a8_18,manual,1814,1838.5,8,2,

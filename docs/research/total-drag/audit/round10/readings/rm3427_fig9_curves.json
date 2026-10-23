@@ -1,0 +1,230 @@
+[
+ {
+  "curve": "power_law",
+  "x": 0.005,
+  "value": 0.6373254919209044,
+  "err": 0.024716070582310734,
+  "slope": 27.6222326449017,
+  "n": 73,
+  "spread": 0.017450481940232354,
+  "px": 1291.346890826122,
+  "py": 704.5563300445822,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.01,
+  "value": 0.7359307609226208,
+  "err": 0.020226561467486533,
+  "slope": 15.411359111790128,
+  "n": 47,
+  "spread": 0.02098190550626089,
+  "px": 1341.3602016198074,
+  "py": 684.4079803330999,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.015,
+  "value": 0.7924857090587165,
+  "err": 0.0075046655790691405,
+  "slope": 8.560361902925923,
+  "n": 21,
+  "spread": 0.0021163971325119935,
+  "px": 1369.9592259209687,
+  "py": 664.4042104866279,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.02,
+  "value": 0.8279011246918165,
+  "err": 0.00848639164576065,
+  "slope": 6.185735166126131,
+  "n": 12,
+  "spread": 0.005750075090971252,
+  "px": 1387.6977102191142,
+  "py": 644.4737662402468,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.025,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.03,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.035,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.04,
+  "value": 0.9138283384004691,
+  "err": 0.00525028557821898,
+  "slope": 2.8381316713123574,
+  "n": 8,
+  "spread": 0.00026695238305818325,
+  "px": 1430.3562347885536,
+  "py": 564.9430274636717,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.045,
+  "value": 0.9286566153196002,
+  "err": 0.004939156158581302,
+  "slope": 2.8170866974590214,
+  "n": 7,
+  "spread": 0.0005980382374107807,
+  "px": 1437.6552229393897,
+  "py": 545.0830661140371,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.05,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.055,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.06,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.065,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.07,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.075,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.08,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.085,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.09,
+  "value": 1.0004259690013624,
+  "err": 0.0043496947469288064,
+  "slope": 0.04178933727991038,
+  "n": 6,
+  "spread": 0.0,
+  "px": 1472.1370981532832,
+  "py": 365.9657805667528,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.095,
+  "value": 1.0007007768091407,
+  "err": 0.004433354756100769,
+  "slope": -0.008762865102451512,
+  "n": 7,
+  "spread": 0.000134000052719907,
+  "px": 1472.0735597328141,
+  "py": 346.08198489115176,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.1,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.105,
+  "value": 1.0005255198313991,
+  "err": 0.00478110305332016,
+  "slope": -0.17693456352561537,
+  "n": 15,
+  "spread": 0.0008235012185677792,
+  "px": 1471.579810817986,
+  "py": 306.3168691488833,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.11,
+  "value": 0.9990738913766075,
+  "err": 0.004398853309100923,
+  "slope": -0.41904359779460143,
+  "n": 11,
+  "spread": 6.0628693092090735e-05,
+  "px": 1470.6429658734633,
+  "py": 286.43896965569326,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.115,
+  "value": 0.997109851277138,
+  "err": 0.004541294669885892,
+  "slope": -0.24514168363018546,
+  "n": 11,
+  "spread": 0.0003454897408136093,
+  "px": 1469.4469208402948,
+  "py": 266.5628201677551,
+  "by": "y"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.12,
+  "value": null,
+  "note": "no points on both sides"
+ },
+ {
+  "curve": "power_law",
+  "x": 0.4827728581502774,
+  "value": 0.0005507063746621497,
+  "err": null,
+  "kind": "start",
+  "px": 1214.4798587454568,
+  "py": 722.7040105487322
+ },
+ {
+  "curve": "power_law",
+  "x": 0.9964787434851866,
+  "value": 0.11815499886832377,
+  "err": null,
+  "kind": "end",
+  "px": 1468.9998712379231,
+  "py": 254.01889719107626
+ }
+]

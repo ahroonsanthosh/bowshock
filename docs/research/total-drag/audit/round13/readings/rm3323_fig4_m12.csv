@@ -1,0 +1,10 @@
+id,series,symbol,conditions,x_val,x_err,y_val,y_err,px_x,px_y,how,score,extent_x,extent_y,ink_box_px,check_fit_dx_px,check_fit_dy_px,check_fit_score,notes
+m12-01,ref (33),33_half_flat_top,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",1.6146,0.1005,-0.5728,0.0047,1450.5,2004.5,manual,,,,,-1.0,0.5,0.783,
+m12-02,ref (33),33_half_flat_top,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",3.0385,0.1005,-0.583,0.0047,1492.0,1998.5,manual,,,,,0.0,0.25,0.647,its bottom merges with m12-03's top
+m12-03,ref (33),33_half_flat_top,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",3.0544,0.0897,-0.5651,0.0041,1492.5,2009.0,manual,,,,,-0.5,0.0,0.678,
+m12-04,ref (39) flagged (roughness band),39_square,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",6.0818,0.0887,-0.6379,0.0042,1581.0,1966.5,manual,,,,,-0.75,-0.25,0.754,flag from its top right corner
+m12-05,ref (34) filled (free flight),34_diamond_f,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",6.0037,0.0886,-0.4707,0.0041,1579.0,2064.5,manual,,,,,0.0,-0.25,0.929,
+m12-06,ref (38),38_circle,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",10.0414,0.0991,-0.5217,0.0047,1698.0,2034.5,manual,,,,,1.0,0.0,0.837,h/c 10 gridline through it
+m12-07,ref (41) filled (free flight),41_rtri_right_angle_bl_f,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",10.0003,0.0884,-0.4203,0.0041,1697.0,2094.0,manual,,,,,0.5,-0.25,0.865,"filled right triangle, vertical side on the left; the h/c 10 gridline is broken where it lies"
+m12-08,ref (35),35_tri_up,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",13.9325,0.0884,-0.5565,0.0041,1813.0,2014.0,manual,,,,,-0.25,0.0,0.823,
+m12-09,ref (31) filled (free flight) flagged (roughness band),31_half_flat_bottom_f,"R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",13.9642,0.0991,-0.531,0.0047,1814.0,2029.0,manual,,,,,-0.25,0.25,0.764,"flat-bottomed dome with a tail at its top right and its inside partly inked; typed (31), flagged, fill uncertain"

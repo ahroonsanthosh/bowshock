@@ -1,0 +1,218 @@
+[
+ {
+  "id": "d-1",
+  "type": "circ",
+  "approx": [
+   575.6,
+   1112.2
+  ],
+  "score": 0.962,
+  "fit_px": [
+   574.0,
+   1113.5
+  ],
+  "note": "",
+  "centre_px": [
+   574.0,
+   1113.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": -4.152291256335027,
+  "y": -0.4708874739882393,
+  "err_x": 0.009864081913117348,
+  "err_y": 0.009115805445128002,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ },
+ {
+  "id": "d-2",
+  "type": "circ",
+  "approx": [
+   823.0,
+   1076.5
+  ],
+  "score": 1.0,
+  "fit_px": [
+   823.0,
+   1076.5
+  ],
+  "note": "",
+  "centre_px": [
+   823.0,
+   1076.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": -2.7095015740896953,
+  "y": -0.31075978004996374,
+  "err_x": 0.009833914521780163,
+  "err_y": 0.00911796625333659,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ },
+ {
+  "id": "d-3",
+  "type": "circ",
+  "approx": [
+   1013.3,
+   1025.6
+  ],
+  "score": 0.808,
+  "fit_px": [
+   1013.0,
+   1026.5
+  ],
+  "note": "",
+  "centre_px": [
+   1013.0,
+   1026.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": -1.6063178807594798,
+  "y": -0.09069234352352706,
+  "err_x": 0.009788050252034785,
+  "err_y": 0.009111670870442044,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ },
+ {
+  "id": "d-4",
+  "type": "circ",
+  "approx": [
+   1094.0,
+   984.5
+  ],
+  "score": 0.737,
+  "fit_px": [
+   1093.0,
+   985.5
+  ],
+  "note": "",
+  "centre_px": [
+   1093.0,
+   985.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": -1.1427480931335943,
+  "y": 0.09088650158871384,
+  "err_x": 0.009788707061950768,
+  "err_y": 0.009072808255953337,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ },
+ {
+  "id": "d-5",
+  "type": "circ",
+  "approx": [
+   1168.9,
+   905.6
+  ],
+  "score": 0.719,
+  "fit_px": [
+   1167.0,
+   907.5
+  ],
+  "note": "",
+  "centre_px": [
+   1167.0,
+   907.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": -0.7129576770438555,
+  "y": 0.43668385379236935,
+  "err_x": 0.009797957574198877,
+  "err_y": 0.009073164040288233,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ },
+ {
+  "id": "d-6",
+  "type": "circ",
+  "approx": [
+   1230.0,
+   782.2
+  ],
+  "score": 0.868,
+  "fit_px": [
+   1228.0,
+   783.5
+  ],
+  "note": "",
+  "centre_px": [
+   1228.0,
+   783.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": -0.3563379235354289,
+  "y": 0.9812461275125945,
+  "err_x": 0.009810724094567404,
+  "err_y": 0.008955903288516804,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ },
+ {
+  "id": "d-7",
+  "type": "circ",
+  "approx": [
+   1292.0,
+   674.5
+  ],
+  "score": 0.895,
+  "fit_px": [
+   1290.0,
+   675.5
+  ],
+  "note": "",
+  "centre_px": [
+   1290.0,
+   675.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": 0.005144172835253382,
+  "y": 1.453943559383813,
+  "err_x": 0.009742137573635226,
+  "err_y": 0.00895387890712062,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ },
+ {
+  "id": "d-8",
+  "type": "circ",
+  "approx": [
+   1344.4,
+   575.6
+  ],
+  "score": 0.833,
+  "fit_px": [
+   1343.0,
+   576.5
+  ],
+  "note": "",
+  "centre_px": [
+   1343.0,
+   576.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": 0.3128952096057218,
+  "y": 1.8814593590414201,
+  "err_x": 0.009752050030317908,
+  "err_y": 0.008814942241400205,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ },
+ {
+  "id": "d-9",
+  "type": "circ",
+  "approx": [
+   1400.0,
+   432.2
+  ],
+  "score": 0.948,
+  "fit_px": [
+   1399.0,
+   433.5
+  ],
+  "note": "",
+  "centre_px": [
+   1399.0,
+   433.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": 0.6412012008476147,
+  "y": 2.50273657152614,
+  "err_x": 0.00977547935313918,
+  "err_y": 0.008883148777939921,
+  "series": "present tests, single-wedge wing, phi = 0 deg"
+ }
+]

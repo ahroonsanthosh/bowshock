@@ -1,0 +1,1936 @@
+[
+ {
+  "id": "ob-01",
+  "type": "circ",
+  "approx": [
+   875.5,
+   908.0
+  ],
+  "score": 0.726,
+  "fit_px": [
+   876.0,
+   909.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: bottom edge row 914 (merges with the Cp -0.55 gridline at 915.9), top edge about 904",
+  "centre_px": [
+   876.0,
+   909.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.6236195109456372,
+  "y": -0.5559290848876268,
+  "err_x": 0.0036689603436441103,
+  "err_y": 0.0036119984904031768,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-02",
+  "type": "circ",
+  "approx": [
+   905.0,
+   913.5
+  ],
+  "score": 0.29,
+  "fit_px": [
+   906.0,
+   914.5
+  ],
+  "note": "",
+  "centre_px": [
+   905.75,
+   914.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.841,
+  "x": 0.6506399314753054,
+  "y": -0.5514097698829037,
+  "err_x": 0.0027663547936766773,
+  "err_y": 0.0027168409674156353,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-03",
+  "type": "circ",
+  "approx": [
+   932.0,
+   892.5
+  ],
+  "score": 0.761,
+  "fit_px": [
+   934.0,
+   891.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: bottom edge row 897, top edge 887",
+  "centre_px": [
+   933.25,
+   892.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.6757196141200912,
+  "y": -0.5712244110701689,
+  "err_x": 0.0036642391101704046,
+  "err_y": 0.003613103344627881,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-04",
+  "type": "circ",
+  "approx": [
+   961.0,
+   926.0
+  ],
+  "score": 0.423,
+  "fit_px": [
+   962.0,
+   927.5
+  ],
+  "note": "",
+  "centre_px": [
+   961.25,
+   926.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.929,
+  "x": 0.7009799274665344,
+  "y": -0.5399675182799077,
+  "err_x": 0.002776007465088723,
+  "err_y": 0.0027112859359253705,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-05",
+  "type": "circ",
+  "approx": [
+   995.0,
+   902.5
+  ],
+  "score": 0.279,
+  "fit_px": [
+   996.0,
+   902.5
+  ],
+  "note": "",
+  "centre_px": [
+   995.25,
+   901.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.759,
+  "x": 0.7320571004873483,
+  "y": -0.5624920583423009,
+  "err_x": 0.0027753964262580994,
+  "err_y": 0.0027189613852184455,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-06",
+  "type": "circ",
+  "approx": [
+   1027.0,
+   903.0
+  ],
+  "score": 0.734,
+  "fit_px": [
+   1027.0,
+   902.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: bottom edge row 907, top edge about 896.5",
+  "centre_px": [
+   1026.75,
+   901.75
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.7608155860572835,
+  "y": -0.5625261986741831,
+  "err_x": 0.00369950039798476,
+  "err_y": 0.003615957022907375,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-07",
+  "type": "circ",
+  "approx": [
+   1042.5,
+   894.5
+  ],
+  "score": 0.735,
+  "fit_px": [
+   1042.0,
+   893.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: bottom edge row 899; the two glyphs are drawn almost on top of each other (ink rows 886 to 900, x 1037 to 1048), so this pair is the least certain",
+  "centre_px": [
+   1042.0,
+   893.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.7748388290514983,
+  "y": -0.5699794552592227,
+  "err_x": 0.0036996187274396814,
+  "err_y": 0.003615212292838771,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-08",
+  "type": "circ",
+  "approx": [
+   1071.5,
+   878.5
+  ],
+  "score": 0.481,
+  "fit_px": [
+   1072.0,
+   881.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 875, bottom edge about 885; on the M 0.8 gridline",
+  "centre_px": [
+   1071.5,
+   880.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.8019363621878844,
+  "y": -0.5821729222279901,
+  "err_x": 0.0036644772618924584,
+  "err_y": 0.003613788698312655,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-09",
+  "type": "circ",
+  "approx": [
+   1088.0,
+   887.0
+  ],
+  "score": 0.296,
+  "fit_px": [
+   1088.0,
+   887.5
+  ],
+  "note": "",
+  "centre_px": [
+   1087.75,
+   886.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.797,
+  "x": 0.8166537814594302,
+  "y": -0.5761038331442239,
+  "err_x": 0.0027668062655202387,
+  "err_y": 0.002716863943521315,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-10",
+  "type": "circ",
+  "approx": [
+   1136.0,
+   873.5
+  ],
+  "score": 0.309,
+  "fit_px": [
+   1136.0,
+   879.5
+  ],
+  "note": "",
+  "centre_px": [
+   1135.75,
+   873.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.548,
+  "x": 0.8603695285528311,
+  "y": -0.5885119746769798,
+  "err_x": 0.0027804911736767396,
+  "err_y": 0.0027159524446566186,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-11",
+  "type": "circ",
+  "approx": [
+   1152.5,
+   872.0
+  ],
+  "score": 0.341,
+  "fit_px": [
+   1153.0,
+   874.5
+  ],
+  "note": "",
+  "centre_px": [
+   1152.25,
+   873.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.46,
+  "x": 0.8754242460728483,
+  "y": -0.5885300769162639,
+  "err_x": 0.0027804911624322755,
+  "err_y": 0.002715974639837103,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-12",
+  "type": "circ",
+  "approx": [
+   1171.0,
+   874.5
+  ],
+  "score": 0.588,
+  "fit_px": [
+   1171.0,
+   876.5
+  ],
+  "note": "",
+  "centre_px": [
+   1171.25,
+   875.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.625,
+  "x": 0.8927445139193867,
+  "y": -0.5863008133144713,
+  "err_x": 0.0015398365517523562,
+  "err_y": 0.0014696094645692747,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-13",
+  "type": "circ",
+  "approx": [
+   1188.0,
+   862.5
+  ],
+  "score": 0.406,
+  "fit_px": [
+   1189.0,
+   862.5
+  ],
+  "note": "",
+  "centre_px": [
+   1188.5,
+   862.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.96,
+  "x": 0.9085775148608191,
+  "y": -0.5984557562272086,
+  "err_x": 0.0027838867236529598,
+  "err_y": 0.0027155779315350174,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-14",
+  "type": "circ",
+  "approx": [
+   1207.0,
+   847.5
+  ],
+  "score": 0.415,
+  "fit_px": [
+   1207.0,
+   847.5
+  ],
+  "note": "",
+  "centre_px": [
+   1206.75,
+   847.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": 0.9253256839459885,
+  "y": -0.6119033203237533,
+  "err_x": 0.002785329801004275,
+  "err_y": 0.002705992725532778,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-15",
+  "type": "circ",
+  "approx": [
+   1228.5,
+   847.0
+  ],
+  "score": 0.37,
+  "fit_px": [
+   1229.0,
+   847.5
+  ],
+  "note": "",
+  "centre_px": [
+   1229.5,
+   847.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.913,
+  "x": 0.9461176249148721,
+  "y": -0.6116739020333949,
+  "err_x": 0.0027658527447668737,
+  "err_y": 0.002707319135276783,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-16",
+  "type": "circ",
+  "approx": [
+   1251.5,
+   842.5
+  ],
+  "score": 0.493,
+  "fit_px": [
+   1252.0,
+   842.5
+  ],
+  "note": "",
+  "centre_px": [
+   1252.25,
+   842.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.537,
+  "x": 0.9667350471279095,
+  "y": -0.6163948002555591,
+  "err_x": 0.0015232930326077145,
+  "err_y": 0.0014654149559056038,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-17",
+  "type": "circ",
+  "approx": [
+   1259.0,
+   829.5
+  ],
+  "score": 0.391,
+  "fit_px": [
+   1259.0,
+   829.5
+  ],
+  "note": "",
+  "centre_px": [
+   1258.75,
+   829.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.713,
+  "x": 0.9726741715565215,
+  "y": -0.6278425724619895,
+  "err_x": 0.0027508496135647538,
+  "err_y": 0.0027084865608368335,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-18",
+  "type": "circ",
+  "approx": [
+   1262.0,
+   793.5
+  ],
+  "score": 0.396,
+  "fit_px": [
+   1263.0,
+   794.5
+  ],
+  "note": "",
+  "centre_px": [
+   1262.5,
+   793.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.887,
+  "x": 0.9762677993093812,
+  "y": -0.65991406478021,
+  "err_x": 0.002750417097549913,
+  "err_y": 0.0027030151441487338,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-19",
+  "type": "circ",
+  "approx": [
+   1269.0,
+   724.0
+  ],
+  "score": 0.742,
+  "fit_px": [
+   1269.0,
+   726.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: bottom edge row 731, top edge about 720",
+  "centre_px": [
+   1269.0,
+   725.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.9825709223670784,
+  "y": -0.7208849611711025,
+  "err_x": 0.0036453324113353146,
+  "err_y": 0.0036055970931252778,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-20",
+  "type": "circ",
+  "approx": [
+   1274.0,
+   641.0
+  ],
+  "score": 0.55,
+  "fit_px": [
+   1274.0,
+   642.5
+  ],
+  "note": "",
+  "centre_px": [
+   1274.5,
+   641.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.557,
+  "x": 0.9878551529546362,
+  "y": -0.7966049707892873,
+  "err_x": 0.0015223698256265972,
+  "err_y": 0.0014679423788743556,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-21",
+  "type": "circ",
+  "approx": [
+   1270.0,
+   607.5
+  ],
+  "score": 0.716,
+  "fit_px": [
+   1270.0,
+   609.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: bottom edge row 614.5, top edge 603.5",
+  "centre_px": [
+   1270.0,
+   609.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.9838813161644846,
+  "y": -0.8255394285823483,
+  "err_x": 0.0036380050219603937,
+  "err_y": 0.003599895244747975,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-22",
+  "type": "circ",
+  "approx": [
+   1312.5,
+   717.0
+  ],
+  "score": 0.516,
+  "fit_px": [
+   1313.0,
+   717.5
+  ],
+  "note": "",
+  "centre_px": [
+   1312.75,
+   717.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.726,
+  "x": 1.0222156466645216,
+  "y": -0.7282534406950237,
+  "err_x": 0.0015292978220714012,
+  "err_y": 0.0014664658767854317,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-23",
+  "type": "circ",
+  "approx": [
+   1344.5,
+   774.0
+  ],
+  "score": 0.482,
+  "fit_px": [
+   1345.0,
+   774.5
+  ],
+  "note": "",
+  "centre_px": [
+   1344.5,
+   774.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.67,
+  "x": 1.050538928987938,
+  "y": -0.6771087294245068,
+  "err_x": 0.001518318060767044,
+  "err_y": 0.001460761603595719,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-24",
+  "type": "circ",
+  "approx": [
+   1366.5,
+   807.5
+  ],
+  "score": 0.384,
+  "fit_px": [
+   1366.0,
+   808.5
+  ],
+  "note": "",
+  "centre_px": [
+   1365.75,
+   807.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.754,
+  "x": 1.0694562780344856,
+  "y": -0.6472165049564848,
+  "err_x": 0.0027453576579281485,
+  "err_y": 0.002709044871542391,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-25",
+  "type": "circ",
+  "approx": [
+   1401.0,
+   868.5
+  ],
+  "score": 0.484,
+  "fit_px": [
+   1400.0,
+   869.5
+  ],
+  "note": "",
+  "centre_px": [
+   1400.25,
+   867.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.777,
+  "x": 1.100245425964257,
+  "y": -0.5928997085745212,
+  "err_x": 0.001542475400558155,
+  "err_y": 0.0014679580645535243,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-26",
+  "type": "circ",
+  "approx": [
+   1434.0,
+   909.0
+  ],
+  "score": 0.449,
+  "fit_px": [
+   1434.0,
+   909.5
+  ],
+  "note": "",
+  "centre_px": [
+   1434.0,
+   910.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.848,
+  "x": 1.1308640229517897,
+  "y": -0.5548174645372107,
+  "err_x": 0.002784385055277957,
+  "err_y": 0.0027153527218836977,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-27",
+  "type": "circ",
+  "approx": [
+   1483.0,
+   963.5
+  ],
+  "score": 0.371,
+  "fit_px": [
+   1483.0,
+   963.5
+  ],
+  "note": "",
+  "centre_px": [
+   1483.0,
+   963.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.878,
+  "x": 1.175863321333916,
+  "y": -0.506506670204834,
+  "err_x": 0.002831546073259999,
+  "err_y": 0.00271090468809773,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-28",
+  "type": "circ",
+  "approx": [
+   1508.5,
+   995.5
+  ],
+  "score": 0.388,
+  "fit_px": [
+   1508.0,
+   996.5
+  ],
+  "note": "",
+  "centre_px": [
+   1508.25,
+   995.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.747,
+  "x": 1.1992064532380882,
+  "y": -0.4782146414741818,
+  "err_x": 0.0027384565999521607,
+  "err_y": 0.002698323344688191,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-29",
+  "type": "circ",
+  "approx": [
+   1550.0,
+   1027.0
+  ],
+  "score": 0.329,
+  "fit_px": [
+   1550.0,
+   1027.5
+  ],
+  "note": "",
+  "centre_px": [
+   1549.25,
+   1027.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.542,
+  "x": 1.2358749636875905,
+  "y": -0.44920285746701205,
+  "err_x": 0.0027311076256159887,
+  "err_y": 0.00274295295983604,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-30",
+  "type": "circ",
+  "approx": [
+   1585.5,
+   1055.0
+  ],
+  "score": 0.429,
+  "fit_px": [
+   1585.0,
+   1056.5
+  ],
+  "note": "",
+  "centre_px": [
+   1585.25,
+   1056.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.677,
+  "x": 1.2682531206256256,
+  "y": -0.4229893741765142,
+  "err_x": 0.0027609421368692327,
+  "err_y": 0.0027424547293979054,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-31",
+  "type": "circ",
+  "approx": [
+   1627.5,
+   1082.5
+  ],
+  "score": 0.481,
+  "fit_px": [
+   1628.0,
+   1083.5
+  ],
+  "note": "",
+  "centre_px": [
+   1627.0,
+   1083.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.62,
+  "x": 1.306088059477687,
+  "y": -0.39821263628332054,
+  "err_x": 0.0015345598365452129,
+  "err_y": 0.001467104417958605,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-32",
+  "type": "circ",
+  "approx": [
+   1671.0,
+   1101.0
+  ],
+  "score": 0.601,
+  "fit_px": [
+   1671.0,
+   1102.5
+  ],
+  "note": "",
+  "centre_px": [
+   1671.0,
+   1101.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.567,
+  "x": 1.3460442083792896,
+  "y": -0.38157668783444193,
+  "err_x": 0.0015277379565848085,
+  "err_y": 0.001469048928565044,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-33",
+  "type": "circ",
+  "approx": [
+   1717.0,
+   1111.5
+  ],
+  "score": 0.47,
+  "fit_px": [
+   1717.0,
+   1112.5
+  ],
+  "note": "",
+  "centre_px": [
+   1716.25,
+   1112.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.876,
+  "x": 1.3868670908571383,
+  "y": -0.3721885696039103,
+  "err_x": 0.001522162086529471,
+  "err_y": 0.0014711498959353298,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-34",
+  "type": "circ",
+  "approx": [
+   1761.0,
+   1127.5
+  ],
+  "score": 0.548,
+  "fit_px": [
+   1762.0,
+   1128.5
+  ],
+  "note": "",
+  "centre_px": [
+   1761.5,
+   1128.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.812,
+  "x": 1.427586710783763,
+  "y": -0.3579393964179322,
+  "err_x": 0.0015185151457606314,
+  "err_y": 0.001472955517350005,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-35",
+  "type": "circ",
+  "approx": [
+   1810.0,
+   1145.5
+  ],
+  "score": 0.49,
+  "fit_px": [
+   1810.0,
+   1146.5
+  ],
+  "note": "",
+  "centre_px": [
+   1809.75,
+   1146.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.662,
+  "x": 1.470850523536314,
+  "y": -0.34140847410935105,
+  "err_x": 0.001511259167952188,
+  "err_y": 0.001469971917216345,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-36",
+  "type": "circ",
+  "approx": [
+   1859.5,
+   1158.0
+  ],
+  "score": 0.351,
+  "fit_px": [
+   1860.0,
+   1158.5
+  ],
+  "note": "",
+  "centre_px": [
+   1859.5,
+   1158.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.749,
+  "x": 1.5157967414383822,
+  "y": -0.33075900319829443,
+  "err_x": 0.002805872367565361,
+  "err_y": 0.002718775414401324,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-37",
+  "type": "circ",
+  "approx": [
+   1909.5,
+   1173.5
+  ],
+  "score": 0.385,
+  "fit_px": [
+   1911.0,
+   1174.5
+  ],
+  "note": "",
+  "centre_px": [
+   1910.75,
+   1174.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.484,
+  "x": 1.5624566046204547,
+  "y": -0.3162444691943427,
+  "err_x": 0.002703554463876167,
+  "err_y": 0.0027172983503608557,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ob-38",
+  "type": "circ",
+  "approx": [
+   1962.0,
+   1182.0
+  ],
+  "score": 0.561,
+  "fit_px": [
+   1962.0,
+   1183.5
+  ],
+  "note": "last circle; the faired line ends beside it",
+  "centre_px": [
+   1961.5,
+   1182.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.882,
+  "x": 1.6077048665445934,
+  "y": -0.3082831842280505,
+  "err_x": 0.0015476666191305913,
+  "err_y": 0.0014670545881456723,
+  "series": "outboard slit (legend circle)"
+ },
+ {
+  "id": "ib-01",
+  "type": "sq",
+  "approx": [
+   875.5,
+   902.5
+  ],
+  "score": 0.622,
+  "fit_px": [
+   876.5,
+   907.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 898.5, bottom edge 907",
+  "centre_px": [
+   876.0,
+   902.75
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.623650408430994,
+  "y": -0.5615473376274588,
+  "err_x": 0.0036690425224339984,
+  "err_y": 0.0036075819278198365,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-02",
+  "type": "sq",
+  "approx": [
+   905.0,
+   949.0
+  ],
+  "score": 0.35,
+  "fit_px": [
+   905.5,
+   949.5
+  ],
+  "note": "",
+  "centre_px": [
+   905.25,
+   949.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.541,
+  "x": 0.6500773169611557,
+  "y": -0.5194448597232693,
+  "err_x": 0.002765863671815848,
+  "err_y": 0.0027172308355018645,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-03",
+  "type": "sq",
+  "approx": [
+   932.0,
+   887.5
+  ],
+  "score": 0.672,
+  "fit_px": [
+   933.5,
+   891.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 883, bottom edge 892",
+  "centre_px": [
+   933.25,
+   887.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.6757433580775614,
+  "y": -0.5752757487836052,
+  "err_x": 0.0036643960674505385,
+  "err_y": 0.003613107360807432,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-04",
+  "type": "sq",
+  "approx": [
+   961.0,
+   879.5
+  ],
+  "score": 0.373,
+  "fit_px": [
+   963.5,
+   884.5
+  ],
+  "note": "",
+  "centre_px": [
+   962.0,
+   880.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.498,
+  "x": 0.7018922387727174,
+  "y": -0.5816049905536269,
+  "err_x": 0.002774966964082854,
+  "err_y": 0.002718352098567237,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-05",
+  "type": "sq",
+  "approx": [
+   1026.0,
+   896.0
+  ],
+  "score": 0.722,
+  "fit_px": [
+   1027.5,
+   901.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 891, bottom edge about 900",
+  "centre_px": [
+   1026.75,
+   895.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.7608483015522315,
+  "y": -0.5681574836790556,
+  "err_x": 0.003699589562031665,
+  "err_y": 0.0036159535581981486,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-06",
+  "type": "sq",
+  "approx": [
+   1042.5,
+   891.0
+  ],
+  "score": 0.438,
+  "fit_px": [
+   1042.5,
+   894.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 887.5 (the darkest row, top of both glyphs); the two glyphs are drawn almost on top of each other, so this pair is the least certain",
+  "centre_px": [
+   1042.0,
+   891.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.7748494063199338,
+  "y": -0.5717810958948389,
+  "err_x": 0.003699647249558555,
+  "err_y": 0.0036152111730948797,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-07",
+  "type": "sq",
+  "approx": [
+   1056.0,
+   888.0
+  ],
+  "score": 0.402,
+  "fit_px": [
+   1057.5,
+   888.5
+  ],
+  "note": "",
+  "centre_px": [
+   1056.75,
+   888.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.271,
+  "x": 0.7883885662740563,
+  "y": -0.5747271238260183,
+  "err_x": 0.0027937073364328493,
+  "err_y": 0.0027178063708227975,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-08",
+  "type": "sq",
+  "approx": [
+   1071.5,
+   889.5
+  ],
+  "score": 0.651,
+  "fit_px": [
+   1072.5,
+   896.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 885, bottom edge 894; on the M 0.8 gridline",
+  "centre_px": [
+   1071.5,
+   889.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.8018853889427051,
+  "y": -0.5736184913760355,
+  "err_x": 0.003663901278858126,
+  "err_y": 0.0036137925063486702,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-09",
+  "type": "sq",
+  "approx": [
+   1104.0,
+   881.5
+  ],
+  "score": 0.485,
+  "fit_px": [
+   1103.5,
+   881.5
+  ],
+  "note": "",
+  "centre_px": [
+   1103.0,
+   881.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.275,
+  "x": 0.8305301625002436,
+  "y": -0.5808383822245015,
+  "err_x": 0.0015320099553118196,
+  "err_y": 0.0014698655872288906,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-10",
+  "type": "sq",
+  "approx": [
+   1119.5,
+   877.5
+  ],
+  "score": 0.491,
+  "fit_px": [
+   1120.5,
+   881.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 873, bottom edge 882.5; typed a square by its flat top, tentatively (see method.md)",
+  "centre_px": [
+   1120.5,
+   877.75
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.8464429708224354,
+  "y": -0.5842225496641764,
+  "err_x": 0.0036753085051061266,
+  "err_y": 0.0036121262089389944,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-11",
+  "type": "sq",
+  "approx": [
+   1119.5,
+   883.0
+  ],
+  "score": 0.5,
+  "fit_px": [
+   1121.5,
+   889.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 877.5, bottom edge 887.5; typed a square by its flat top and bottom, tentatively (see method.md)",
+  "centre_px": [
+   1120.5,
+   882.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.8464139843470999,
+  "y": -0.5799473032275881,
+  "err_x": 0.00367513925528681,
+  "err_y": 0.003612128372593619,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-12",
+  "type": "sq",
+  "approx": [
+   1136.0,
+   881.5
+  ],
+  "score": 0.265,
+  "fit_px": [
+   1136.5,
+   888.5
+  ],
+  "note": "",
+  "centre_px": [
+   1136.25,
+   881.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.504,
+  "x": 0.8607762107100185,
+  "y": -0.5813122994668833,
+  "err_x": 0.0027804934096260147,
+  "err_y": 0.0027159529712158115,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-13",
+  "type": "sq",
+  "approx": [
+   1152.5,
+   882.0
+  ],
+  "score": 0.291,
+  "fit_px": [
+   1153.5,
+   888.5
+  ],
+  "note": "",
+  "centre_px": [
+   1152.75,
+   881.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.496,
+  "x": 0.8758262988357713,
+  "y": -0.5806553163999069,
+  "err_x": 0.002780493608073773,
+  "err_y": 0.0027159751527547032,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-14",
+  "type": "sq",
+  "approx": [
+   1171.0,
+   896.0
+  ],
+  "score": 0.301,
+  "fit_px": [
+   1171.5,
+   897.5
+  ],
+  "note": "",
+  "centre_px": [
+   1171.5,
+   897.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.431,
+  "x": 0.8928365027687637,
+  "y": -0.5665001275513478,
+  "err_x": 0.0027812159201866474,
+  "err_y": 0.002716000087713466,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-15",
+  "type": "sq",
+  "approx": [
+   1189.0,
+   896.0
+  ],
+  "score": 0.429,
+  "fit_px": [
+   1188.5,
+   897.5
+  ],
+  "note": "",
+  "centre_px": [
+   1187.75,
+   897.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.55,
+  "x": 0.9076723628747526,
+  "y": -0.5665090541103722,
+  "err_x": 0.0027838390150756918,
+  "err_y": 0.002715630934417218,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-16",
+  "type": "sq",
+  "approx": [
+   1207.0,
+   891.0
+  ],
+  "score": 0.327,
+  "fit_px": [
+   1208.5,
+   890.5
+  ],
+  "note": "",
+  "centre_px": [
+   1208.0,
+   891.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.638,
+  "x": 0.9262096429685631,
+  "y": -0.5721327077737473,
+  "err_x": 0.002783847412068081,
+  "err_y": 0.0027147561506864616,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-17",
+  "type": "sq",
+  "approx": [
+   1229.5,
+   884.5
+  ],
+  "score": 0.426,
+  "fit_px": [
+   1229.5,
+   883.5
+  ],
+  "note": "",
+  "centre_px": [
+   1230.0,
+   884.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.669,
+  "x": 0.9463487875179412,
+  "y": -0.5782021762366127,
+  "err_x": 0.0027647532154400096,
+  "err_y": 0.0027138064184144012,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-18",
+  "type": "sq",
+  "approx": [
+   1252.5,
+   882.5
+  ],
+  "score": 0.405,
+  "fit_px": [
+   1252.5,
+   882.5
+  ],
+  "note": "",
+  "centre_px": [
+   1252.0,
+   882.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.675,
+  "x": 0.9662702983245138,
+  "y": -0.5800037504735885,
+  "err_x": 0.0027520274943867297,
+  "err_y": 0.002714111254908366,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-19",
+  "type": "sq",
+  "approx": [
+   1259.5,
+   868.5
+  ],
+  "score": 0.273,
+  "fit_px": [
+   1259.5,
+   868.5
+  ],
+  "note": "",
+  "centre_px": [
+   1258.75,
+   869.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": 0.9724486154195543,
+  "y": -0.5921480532365306,
+  "err_x": 0.0027519826559190452,
+  "err_y": 0.0027142938407445204,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-20",
+  "type": "sq",
+  "approx": [
+   1261.5,
+   810.5
+  ],
+  "score": 0.356,
+  "fit_px": [
+   1261.5,
+   810.5
+  ],
+  "note": "",
+  "centre_px": [
+   1261.0,
+   811.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.767,
+  "x": 0.9748045508357035,
+  "y": -0.6440007683739399,
+  "err_x": 0.002750209722829471,
+  "err_y": 0.0027085749767840218,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-21",
+  "type": "sq",
+  "approx": [
+   1269.0,
+   717.0
+  ],
+  "score": 0.474,
+  "fit_px": [
+   1269.5,
+   723.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 715, bottom edge about 723",
+  "centre_px": [
+   1269.0,
+   719.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.9826095883402463,
+  "y": -0.7267247211805117,
+  "err_x": 0.003645502375197299,
+  "err_y": 0.003605594977945405,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-22",
+  "type": "sq",
+  "approx": [
+   1274.0,
+   680.0
+  ],
+  "score": 0.541,
+  "fit_px": [
+   1275.5,
+   680.5
+  ],
+  "note": "",
+  "centre_px": [
+   1274.25,
+   680.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.354,
+  "x": 0.987536833216823,
+  "y": -0.7613184751027314,
+  "err_x": 0.0015239075716492868,
+  "err_y": 0.0014679300903924664,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-23",
+  "type": "sq",
+  "approx": [
+   1270.0,
+   601.0
+  ],
+  "score": 0.553,
+  "fit_px": [
+   1270.5,
+   607.5
+  ],
+  "note": "overlaps the other slit's symbol at the same Mach number; type from its flat or round edge; centre from the edges: top edge row 597.5, bottom edge 607.5",
+  "centre_px": [
+   1270.0,
+   602.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.9838989098119251,
+  "y": -0.8313699567091403,
+  "err_x": 0.003637327113007659,
+  "err_y": 0.003599894613830739,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-24",
+  "type": "sq",
+  "approx": [
+   1312.0,
+   745.0
+  ],
+  "score": 0.315,
+  "fit_px": [
+   1312.5,
+   751.5
+  ],
+  "note": "",
+  "centre_px": [
+   1313.25,
+   745.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.416,
+  "x": 1.022463969680299,
+  "y": -0.7026564210313183,
+  "err_x": 0.0027583207192599566,
+  "err_y": 0.0027033616153775597,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-25",
+  "type": "sq",
+  "approx": [
+   1344.0,
+   796.5
+  ],
+  "score": 0.386,
+  "fit_px": [
+   1345.5,
+   800.5
+  ],
+  "note": "",
+  "centre_px": [
+   1344.25,
+   796.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.49,
+  "x": 1.0501581577078754,
+  "y": -0.657428589405707,
+  "err_x": 0.0027445875426833793,
+  "err_y": 0.0027012070363836432,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-26",
+  "type": "sq",
+  "approx": [
+   1367.0,
+   840.0
+  ],
+  "score": 0.45,
+  "fit_px": [
+   1368.5,
+   839.5
+  ],
+  "note": "",
+  "centre_px": [
+   1367.25,
+   840.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.329,
+  "x": 1.0706638608631758,
+  "y": -0.6178059798222545,
+  "err_x": 0.002743913822429821,
+  "err_y": 0.002709038961954454,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-27",
+  "type": "sq",
+  "approx": [
+   1401.0,
+   887.5
+  ],
+  "score": 0.43,
+  "fit_px": [
+   1394.5,
+   894.5
+  ],
+  "note": "",
+  "centre_px": [
+   1401.0,
+   887.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.319,
+  "x": 1.1008275136662358,
+  "y": -0.5749172019414718,
+  "err_x": 0.0027852124069264457,
+  "err_y": 0.002712976501331109,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-28",
+  "type": "sq",
+  "approx": [
+   1434.0,
+   934.0
+  ],
+  "score": 0.4,
+  "fit_px": [
+   1434.5,
+   933.5
+  ],
+  "note": "",
+  "centre_px": [
+   1433.5,
+   934.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.355,
+  "x": 1.1303118577467217,
+  "y": -0.5329948678773677,
+  "err_x": 0.0027839791362768472,
+  "err_y": 0.0027160415381258848,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-29",
+  "type": "sq",
+  "approx": [
+   1483.0,
+   986.0
+  ],
+  "score": 0.302,
+  "fit_px": [
+   1483.5,
+   985.5
+  ],
+  "note": "",
+  "centre_px": [
+   1482.75,
+   986.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.48,
+  "x": 1.1755500087626654,
+  "y": -0.48634998708201527,
+  "err_x": 0.002830673571801884,
+  "err_y": 0.0026975092390866154,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-30",
+  "type": "sq",
+  "approx": [
+   1507.5,
+   1013.5
+  ],
+  "score": 0.499,
+  "fit_px": [
+   1508.5,
+   1020.5
+  ],
+  "note": "",
+  "centre_px": [
+   1508.25,
+   1013.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.597,
+  "x": 1.1991467763781702,
+  "y": -0.46211930415354563,
+  "err_x": 0.0015168753273217858,
+  "err_y": 0.0014600424365529888,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-31",
+  "type": "sq",
+  "approx": [
+   1550.0,
+   1042.5
+  ],
+  "score": 0.331,
+  "fit_px": [
+   1549.5,
+   1041.5
+  ],
+  "note": "",
+  "centre_px": [
+   1549.25,
+   1042.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.547,
+  "x": 1.2358298430288606,
+  "y": -0.43579546953315035,
+  "err_x": 0.002731662964978621,
+  "err_y": 0.0027429553638235564,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-32",
+  "type": "sq",
+  "approx": [
+   1584.5,
+   1073.0
+  ],
+  "score": 0.534,
+  "fit_px": [
+   1585.5,
+   1078.5
+  ],
+  "note": "",
+  "centre_px": [
+   1584.5,
+   1073.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.643,
+  "x": 1.267539130779861,
+  "y": -0.406858730023691,
+  "err_x": 0.0015301029580111528,
+  "err_y": 0.0014797402636049224,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-33",
+  "type": "sq",
+  "approx": [
+   1627.0,
+   1099.5
+  ],
+  "score": 0.521,
+  "fit_px": [
+   1627.5,
+   1099.5
+  ],
+  "note": "",
+  "centre_px": [
+   1627.25,
+   1099.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.585,
+  "x": 1.3062440015768455,
+  "y": -0.38383643930228006,
+  "err_x": 0.0015352414263044003,
+  "err_y": 0.0014671085290637426,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-34",
+  "type": "sq",
+  "approx": [
+   1671.0,
+   1118.5
+  ],
+  "score": 0.43,
+  "fit_px": [
+   1671.5,
+   1117.5
+  ],
+  "note": "",
+  "centre_px": [
+   1671.5,
+   1118.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.681,
+  "x": 1.3464430865919852,
+  "y": -0.36650633778622754,
+  "err_x": 0.0027592599372362903,
+  "err_y": 0.0027149951507251537,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-35",
+  "type": "sq",
+  "approx": [
+   1716.0,
+   1130.5
+  ],
+  "score": 0.396,
+  "fit_px": [
+   1716.5,
+   1133.5
+  ],
+  "note": "",
+  "centre_px": [
+   1716.5,
+   1131.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.63,
+  "x": 1.3870437925012478,
+  "y": -0.35507007157953335,
+  "err_x": 0.0027501823741114826,
+  "err_y": 0.00271738403015808,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-36",
+  "type": "sq",
+  "approx": [
+   1760.0,
+   1141.5
+  ],
+  "score": 0.393,
+  "fit_px": [
+   1761.5,
+   1140.5
+  ],
+  "note": "",
+  "centre_px": [
+   1760.75,
+   1140.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.754,
+  "x": 1.42687405358993,
+  "y": -0.34689523899576863,
+  "err_x": 0.0027422062468558032,
+  "err_y": 0.00271618593850349,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-37",
+  "type": "sq",
+  "approx": [
+   1809.0,
+   1162.0
+  ],
+  "score": 0.466,
+  "fit_px": [
+   1809.5,
+   1162.5
+  ],
+  "note": "",
+  "centre_px": [
+   1808.75,
+   1162.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.678,
+  "x": 1.4698990281756947,
+  "y": -0.3267804090955495,
+  "err_x": 0.001510986576811048,
+  "err_y": 0.0014699307653368036,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-38",
+  "type": "sq",
+  "approx": [
+   1858.5,
+   1175.5
+  ],
+  "score": 0.41,
+  "fit_px": [
+   1858.5,
+   1175.5
+  ],
+  "note": "",
+  "centre_px": [
+   1858.25,
+   1175.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.606,
+  "x": 1.5145807469393302,
+  "y": -0.3152198391472756,
+  "err_x": 0.0028062076810119766,
+  "err_y": 0.002718782410260777,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-39",
+  "type": "sq",
+  "approx": [
+   1909.0,
+   1188.0
+  ],
+  "score": 0.397,
+  "fit_px": [
+   1911.5,
+   1189.5
+  ],
+  "note": "",
+  "centre_px": [
+   1911.0,
+   1188.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.624,
+  "x": 1.5626314773259609,
+  "y": -0.30363747362480703,
+  "err_x": 0.002703695730292829,
+  "err_y": 0.0026993055009174797,
+  "series": "inboard slit (legend square)"
+ },
+ {
+  "id": "ib-40",
+  "type": "sq",
+  "approx": [
+   1962.0,
+   1199.0
+  ],
+  "score": 0.464,
+  "fit_px": [
+   1962.5,
+   1199.5
+  ],
+  "note": "last square",
+  "centre_px": [
+   1961.75,
+   1200.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.885,
+  "x": 1.6078665834962185,
+  "y": -0.29283983851891654,
+  "err_x": 0.001547911088804296,
+  "err_y": 0.001454473293724804,
+  "series": "inboard slit (legend square)"
+ }
+]

@@ -1,0 +1,827 @@
+[
+ {
+  "id": "te-01",
+  "type": "circ",
+  "approx": [
+   1237,
+   724
+  ],
+  "score": 0.633,
+  "fit_px": [
+   1236.5,
+   723.5
+  ],
+  "note": "on the x axis line",
+  "centre_px": [
+   1237.0,
+   724.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.641,
+  "x": 0.528224518053318,
+  "y": 0.00012214071983144875,
+  "err_x": 0.004678954848320254,
+  "err_y": 0.0005161553261442143,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-02",
+  "type": "circ",
+  "approx": [
+   1261,
+   705
+  ],
+  "score": 0.594,
+  "fit_px": [
+   1261.5,
+   705.5
+  ],
+  "note": "",
+  "centre_px": [
+   1261.5,
+   705.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.63,
+  "x": 0.5781027278377198,
+  "y": 0.00493888225324111,
+  "err_x": 0.004678954848320151,
+  "err_y": 0.00051615532614422,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-03",
+  "type": "circ",
+  "approx": [
+   1321,
+   686
+  ],
+  "score": 0.674,
+  "fit_px": [
+   1320.5,
+   685.5
+  ],
+  "note": "",
+  "centre_px": [
+   1320.5,
+   685.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.711,
+  "x": 0.6949544474825838,
+  "y": 0.009823029629313841,
+  "err_x": 0.00454885642104057,
+  "err_y": 0.0005161553261442202,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-04",
+  "type": "circ",
+  "approx": [
+   1352,
+   664
+  ],
+  "score": 0.656,
+  "fit_px": [
+   1352.5,
+   663.5
+  ],
+  "note": "",
+  "centre_px": [
+   1352.0,
+   663.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.796,
+  "x": 0.7572404551266122,
+  "y": 0.015258815751525571,
+  "err_x": 0.00454885642104057,
+  "err_y": 0.0005161553261442141,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-05",
+  "type": "circ",
+  "approx": [
+   1380,
+   646
+  ],
+  "score": 0.524,
+  "fit_px": [
+   1378.5,
+   645.5
+  ],
+  "note": "",
+  "centre_px": [
+   1379.0,
+   645.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.551,
+  "x": 0.8106972408195972,
+  "y": 0.019882005414474425,
+  "err_x": 0.00457952430785047,
+  "err_y": 0.0005161553261442144,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-06",
+  "type": "circ",
+  "approx": [
+   1394,
+   622
+  ],
+  "score": 0.593,
+  "fit_px": [
+   1394.5,
+   623.5
+  ],
+  "note": "",
+  "centre_px": [
+   1394.25,
+   623.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.622,
+  "x": 0.8412808215248504,
+  "y": 0.025345481868116134,
+  "err_x": 0.004579524307850341,
+  "err_y": 0.0005161553261442144,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-07",
+  "type": "circ",
+  "approx": [
+   1403,
+   604
+  ],
+  "score": 0.63,
+  "fit_px": [
+   1403.5,
+   603.5
+  ],
+  "note": "",
+  "centre_px": [
+   1403.0,
+   603.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.694,
+  "x": 0.8589802208482836,
+  "y": 0.030378353542229432,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005161553261442144,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-08",
+  "type": "circ",
+  "approx": [
+   1414,
+   582
+  ],
+  "score": 0.614,
+  "fit_px": [
+   1414.5,
+   582.5
+  ],
+  "note": "",
+  "centre_px": [
+   1414.0,
+   582.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.668,
+  "x": 0.881147467895813,
+  "y": 0.03565978026308126,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005161553261442144,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-09",
+  "type": "circ",
+  "approx": [
+   1421,
+   566
+  ],
+  "score": 0.633,
+  "fit_px": [
+   1421.5,
+   564.5
+  ],
+  "note": "",
+  "centre_px": [
+   1421.5,
+   564.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.693,
+  "x": 0.8963306078825611,
+  "y": 0.040126906504274445,
+  "err_x": 0.00457952430785047,
+  "err_y": 0.0005161553261442144,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-10",
+  "type": "circ",
+  "approx": [
+   1427,
+   546
+  ],
+  "score": 0.626,
+  "fit_px": [
+   1426.5,
+   545.5
+  ],
+  "note": "",
+  "centre_px": [
+   1426.75,
+   545.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.683,
+  "x": 0.9070962436549991,
+  "y": 0.044976450430301095,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005161553261442144,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-11",
+  "type": "circ",
+  "approx": [
+   1437,
+   525
+  ],
+  "score": 0.645,
+  "fit_px": [
+   1436.5,
+   524.5
+  ],
+  "note": "",
+  "centre_px": [
+   1436.0,
+   524.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.68,
+  "x": 0.9257991261025198,
+  "y": 0.05019703048061327,
+  "err_x": 0.004579524307850676,
+  "err_y": 0.0005160057423910518,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-12",
+  "type": "circ",
+  "approx": [
+   1444,
+   505
+  ],
+  "score": 0.637,
+  "fit_px": [
+   1444.5,
+   505.5
+  ],
+  "note": "",
+  "centre_px": [
+   1444.25,
+   505.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.697,
+  "x": 0.9424950423018664,
+  "y": 0.05502354495363079,
+  "err_x": 0.004579524307850367,
+  "err_y": 0.0005142462979077582,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-13",
+  "type": "circ",
+  "approx": [
+   1449,
+   484
+  ],
+  "score": 0.703,
+  "fit_px": [
+   1448.5,
+   483.5
+  ],
+  "note": "",
+  "centre_px": [
+   1448.5,
+   484.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.576,
+  "x": 0.9513241927398298,
+  "y": 0.060359761534575326,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005142462979077568,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-14",
+  "type": "circ",
+  "approx": [
+   1455,
+   464
+  ],
+  "score": 0.657,
+  "fit_px": [
+   1454.5,
+   463.5
+  ],
+  "note": "",
+  "centre_px": [
+   1454.5,
+   463.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.714,
+  "x": 0.9635975703738877,
+  "y": 0.0655044153955511,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005142462979077568,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-15",
+  "type": "circ",
+  "approx": [
+   1459,
+   445
+  ],
+  "score": 0.71,
+  "fit_px": [
+   1459.5,
+   444.5
+  ],
+  "note": "",
+  "centre_px": [
+   1458.75,
+   444.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.737,
+  "x": 0.9723763773020656,
+  "y": 0.07021199293150987,
+  "err_x": 0.00457952430785047,
+  "err_y": 0.0005142462979077568,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-16",
+  "type": "circ",
+  "approx": [
+   1462,
+   424
+  ],
+  "score": 0.671,
+  "fit_px": [
+   1462.5,
+   423.5
+  ],
+  "note": "",
+  "centre_px": [
+   1462.25,
+   423.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.583,
+  "x": 0.9797279919842804,
+  "y": 0.07561234670544145,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005142462979077568,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-17",
+  "type": "circ",
+  "approx": [
+   1466,
+   405
+  ],
+  "score": 0.664,
+  "fit_px": [
+   1466.5,
+   403.5
+  ],
+  "note": "",
+  "centre_px": [
+   1466.0,
+   404.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.717,
+  "x": 0.987528487543264,
+  "y": 0.08044650090938968,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005142462979077568,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-18",
+  "type": "circ",
+  "approx": [
+   1465,
+   384
+  ],
+  "score": 0.638,
+  "fit_px": [
+   1466.5,
+   384.5
+  ],
+  "note": "",
+  "centre_px": [
+   1466.25,
+   384.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.723,
+  "x": 0.988415356955166,
+  "y": 0.08534946103078259,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005142462979077568,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-19",
+  "type": "circ",
+  "approx": [
+   1469,
+   366
+  ],
+  "score": 0.719,
+  "fit_px": [
+   1469.5,
+   365.5
+  ],
+  "note": "",
+  "centre_px": [
+   1469.0,
+   365.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.799,
+  "x": 0.9942340580208677,
+  "y": 0.09012244904821684,
+  "err_x": 0.004579524307850573,
+  "err_y": 0.0005142462979077568,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-20",
+  "type": "circ",
+  "approx": [
+   1471,
+   327
+  ],
+  "score": 0.707,
+  "fit_px": [
+   1470.5,
+   325.5
+  ],
+  "note": "",
+  "centre_px": [
+   1470.25,
+   325.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.789,
+  "x": 0.9975105043553136,
+  "y": 0.10017855162050854,
+  "err_x": 0.004579524307850522,
+  "err_y": 0.0005142462979077595,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-21",
+  "type": "circ",
+  "approx": [
+   1471,
+   304
+  ],
+  "score": 0.644,
+  "fit_px": [
+   1472.5,
+   303.5
+  ],
+  "note": "",
+  "centre_px": [
+   1472.0,
+   303.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.725,
+  "x": 1.0014078231394763,
+  "y": 0.10564474030541174,
+  "err_x": 0.004579524307850573,
+  "err_y": 0.0005142462979077539,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "te-22",
+  "type": "circ",
+  "approx": [
+   1471,
+   267
+  ],
+  "score": 0.651,
+  "fit_px": [
+   1470.5,
+   266.5
+  ],
+  "note": "",
+  "centre_px": [
+   1470.5,
+   266.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.849,
+  "x": 0.9992028699237824,
+  "y": 0.11513973646167386,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005142462979077568,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "up-01",
+  "type": "sq",
+  "approx": [
+   1329,
+   711
+  ],
+  "score": 0.418,
+  "fit_px": [
+   1328.5,
+   711.5
+  ],
+  "note": "",
+  "centre_px": [
+   1328.25,
+   711.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.837,
+  "x": 0.7096516789747064,
+  "y": 0.0032477070628989324,
+  "err_x": 0.006746925092195936,
+  "err_y": 0.0008225849238645373,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-02",
+  "type": "sq",
+  "approx": [
+   1360,
+   675
+  ],
+  "score": 0.439,
+  "fit_px": [
+   1359.5,
+   673.5
+  ],
+  "note": "",
+  "centre_px": [
+   1360.0,
+   673.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.699,
+  "x": 0.7727486079748559,
+  "y": 0.012721292662072253,
+  "err_x": 0.006746925092195591,
+  "err_y": 0.0008225849238645367,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-03",
+  "type": "sq",
+  "approx": [
+   1392,
+   633
+  ],
+  "score": 0.462,
+  "fit_px": [
+   1390.5,
+   632.5
+  ],
+  "note": "",
+  "centre_px": [
+   1390.75,
+   633.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.627,
+  "x": 0.8341658213386272,
+  "y": 0.02289065228637041,
+  "err_x": 0.004579524307850341,
+  "err_y": 0.0005161553261442144,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-04",
+  "type": "sq",
+  "approx": [
+   1418,
+   592
+  ],
+  "score": 0.485,
+  "fit_px": [
+   1420.5,
+   593.5
+  ],
+  "note": "",
+  "centre_px": [
+   1420.0,
+   593.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.575,
+  "x": 0.892781482955596,
+  "y": 0.032810178848633346,
+  "err_x": 0.0045795243078504445,
+  "err_y": 0.0005161553261442144,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-05",
+  "type": "sq",
+  "approx": [
+   1440,
+   553
+  ],
+  "score": 0.409,
+  "fit_px": [
+   1439.5,
+   552.5
+  ],
+  "note": "",
+  "centre_px": [
+   1439.5,
+   552.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.645,
+  "x": 0.9321589736419618,
+  "y": 0.04318800052185459,
+  "err_x": 0.006792412114842894,
+  "err_y": 0.0008225849238645436,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-06",
+  "type": "sq",
+  "approx": [
+   1450,
+   515
+  ],
+  "score": 0.423,
+  "fit_px": [
+   1452.5,
+   514.5
+  ],
+  "note": "",
+  "centre_px": [
+   1453.0,
+   514.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.661,
+  "x": 0.9596104569117897,
+  "y": 0.05274558935931673,
+  "err_x": 0.006792412114842703,
+  "err_y": 0.0008195425492788324,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-07",
+  "type": "sq",
+  "approx": [
+   1462,
+   475
+  ],
+  "score": 0.5,
+  "fit_px": [
+   1460.5,
+   473.5
+  ],
+  "note": "",
+  "centre_px": [
+   1460.0,
+   474.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.598,
+  "x": 0.9742583084154548,
+  "y": 0.06285479395769554,
+  "err_x": 0.00457952430785047,
+  "err_y": 0.0005142462979077582,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-08",
+  "type": "sq",
+  "approx": [
+   1468,
+   435
+  ],
+  "score": 0.431,
+  "fit_px": [
+   1467.5,
+   434.5
+  ],
+  "note": "",
+  "centre_px": [
+   1467.25,
+   435.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.59,
+  "x": 0.9893751781998034,
+  "y": 0.0726492546040853,
+  "err_x": 0.006792412114843009,
+  "err_y": 0.0008195425492788279,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-09",
+  "type": "sq",
+  "approx": [
+   1474,
+   395
+  ],
+  "score": 0.552,
+  "fit_px": [
+   1472.5,
+   394.5
+  ],
+  "note": "",
+  "centre_px": [
+   1472.5,
+   394.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.737,
+  "x": 1.0005687338054174,
+  "y": 0.08282429411343573,
+  "err_x": 0.00457952430785047,
+  "err_y": 0.0005142462979077568,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-10",
+  "type": "sq",
+  "approx": [
+   1474,
+   354
+  ],
+  "score": 0.575,
+  "fit_px": [
+   1473.5,
+   353.5
+  ],
+  "note": "",
+  "centre_px": [
+   1473.5,
+   353.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.737,
+  "x": 1.0033660931572228,
+  "y": 0.09306941282871929,
+  "err_x": 0.0045795243078504185,
+  "err_y": 0.0005142462979077568,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "up-11",
+  "type": "sq",
+  "approx": [
+   1471,
+   315
+  ],
+  "score": 0.567,
+  "fit_px": [
+   1471.5,
+   314.5
+  ],
+  "note": "",
+  "centre_px": [
+   1471.0,
+   314.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.759,
+  "x": 0.9992246546070537,
+  "y": 0.10306901793895466,
+  "err_x": 0.004579524307850547,
+  "err_y": 0.0005142462979077568,
+  "series": "1 in. upstream of trailing edge"
+ }
+]
