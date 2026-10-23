@@ -218,6 +218,8 @@ const ISO_SURFACES = 40;
  * shock; how long a moving streak takes to run its length, seconds.
  */
 const STREAKS_FAST = 60_000;
+/** How opaque the rocket is drawn where streaks or sheets stand in front of it. */
+const BODY_SEEN_THROUGH = 0.6;
 /** The first view this much closer than the one that fits the whole region. */
 const VIEW_CLOSER = 1.25;
 const STREAKS_SOFTWARE = 40_000;
@@ -250,6 +252,7 @@ type DrawName =
   | 'cutLines'
   | 'shockCut'
   | 'freePlane'
+  | 'bodyGhost'
   | 'streaks'
   | 'outline'
   | 'wire'
@@ -284,6 +287,7 @@ class Pipelines {
     readonly storageLayout: GPUBindGroupLayout,
     readonly spriteLayout: GPUBindGroupLayout,
     readonly body: GPURenderPipeline,
+    readonly bodyGhost: GPURenderPipeline,
     readonly shell: GPURenderPipeline,
     readonly shellLit: GPURenderPipeline,
     readonly line: GPURenderPipeline,
@@ -373,150 +377,172 @@ class Pipelines {
       '3D streaks drawn',
       commonWgsl + streaksDrawWgsl,
     );
-    const [body, shell, shellLit, line, tube, slice, face, streak, sprite] = await Promise.all([
-      device.createRenderPipelineAsync({
-        label: '3D body',
-        layout: layout(drawLayout),
-        vertex: {
-          module: bodyModule,
-          entryPoint: 'body_vs',
-          buffers: [
-            {
-              arrayStride: 12,
-              attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x3' }],
-            },
-            {
-              arrayStride: 12,
-              attributes: [{ shaderLocation: 1, offset: 0, format: 'float32x3' }],
-            },
-            { arrayStride: 4, attributes: [{ shaderLocation: 2, offset: 0, format: 'float32' }] },
-          ],
-        },
-        fragment: { module: bodyModule, entryPoint: 'body_fs', targets: [{ format }] },
-        primitive,
-        depthStencil: depth(true),
-        multisample,
-      }),
-      device.createRenderPipelineAsync({
-        label: '3D shells',
-        layout: layout(storageLayout),
-        vertex: { module: shellModule, entryPoint: 'shell_vs' },
-        fragment: {
-          module: shellModule,
-          entryPoint: 'shell_fs',
-          targets: [{ format, blend: additive }],
-        },
-        primitive,
-        depthStencil: depth(false),
-        multisample,
-      }),
-      device.createRenderPipelineAsync({
-        label: '3D lit shells',
-        layout: layout(storageLayout),
-        vertex: { module: shellModule, entryPoint: 'shell_vs' },
-        fragment: { module: shellModule, entryPoint: 'shell_lit_fs', targets: [{ format }] },
-        primitive,
-        depthStencil: depth(true),
-        multisample,
-      }),
-      device.createRenderPipelineAsync({
-        label: '3D lines',
-        layout: layout(storageLayout),
-        vertex: { module: lineModule, entryPoint: 'line_vs' },
-        fragment: {
-          module: lineModule,
-          entryPoint: 'line_fs',
-          targets: [{ format, blend: additive }],
-        },
-        primitive,
-        depthStencil: depth(false, 'less-equal'),
-        multisample,
-      }),
-      device.createRenderPipelineAsync({
-        label: '3D tubes',
-        layout: layout(storageLayout),
-        vertex: { module: lineModule, entryPoint: 'line_vs' },
-        fragment: { module: lineModule, entryPoint: 'tube_fs', targets: [{ format }] },
-        primitive,
-        depthStencil: depth(true),
-        // The tube's edge smoothed over the samples (none to smooth over in a draft).
-        multisample: { count: samples, alphaToCoverageEnabled: samples > 1 },
-      }),
-      device.createRenderPipelineAsync({
-        label: '3D slices',
-        layout: layout(drawLayout),
-        vertex: {
-          module: sliceModule,
-          entryPoint: 'slice_vs',
-          buffers: [
-            {
-              arrayStride: 16,
-              attributes: [
-                { shaderLocation: 0, offset: 0, format: 'float32x3' },
-                { shaderLocation: 1, offset: 12, format: 'float32' },
-              ],
-            },
-          ],
-        },
-        fragment: {
-          module: sliceModule,
-          entryPoint: 'slice_fs',
-          targets: [{ format, blend: alpha }],
-        },
-        primitive,
-        depthStencil: depth(false),
-        multisample,
-      }),
-      device.createRenderPipelineAsync({
-        label: '3D faces',
-        layout: layout(drawLayout),
-        vertex: {
-          module: sliceModule,
-          entryPoint: 'face_vs',
-          buffers: [
-            {
-              arrayStride: 16,
-              attributes: [
-                { shaderLocation: 0, offset: 0, format: 'float32x3' },
-                { shaderLocation: 1, offset: 12, format: 'float32' },
-              ],
-            },
-          ],
-        },
-        fragment: { module: sliceModule, entryPoint: 'face_fs', targets: [{ format }] },
-        primitive,
-        depthStencil: depth(true),
-        multisample,
-      }),
-      device.createRenderPipelineAsync({
-        label: '3D streaks',
-        layout: layout(storageLayout),
-        vertex: { module: streakModule, entryPoint: 'streak_vs' },
-        fragment: { module: streakModule, entryPoint: 'streak_fs', targets: [{ format }] },
-        primitive,
-        depthStencil: depth(true),
-        multisample: { count: samples, alphaToCoverageEnabled: samples > 1 },
-      }),
-      device.createRenderPipelineAsync({
-        label: '3D sprites',
-        layout: layout(spriteLayout),
-        vertex: { module: spriteModule, entryPoint: 'sprite_vs' },
-        fragment: {
-          module: spriteModule,
-          entryPoint: 'sprite_fs',
-          targets: [{ format, blend: premultiplied }],
-        },
-        primitive,
-        depthStencil: depth(false, 'always'),
-        multisample,
-      }),
-    ]);
+    const bodyBuffers: GPUVertexBufferLayout[] = [
+      { arrayStride: 12, attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x3' }] },
+      { arrayStride: 12, attributes: [{ shaderLocation: 1, offset: 0, format: 'float32x3' }] },
+      { arrayStride: 4, attributes: [{ shaderLocation: 2, offset: 0, format: 'float32' }] },
+    ];
+    const [body, bodyGhost, shell, shellLit, line, tube, slice, face, streak, sprite] =
+      await Promise.all([
+        device.createRenderPipelineAsync({
+          label: '3D body',
+          layout: layout(drawLayout),
+          vertex: {
+            module: bodyModule,
+            entryPoint: 'body_vs',
+            buffers: [
+              {
+                arrayStride: 12,
+                attributes: [{ shaderLocation: 0, offset: 0, format: 'float32x3' }],
+              },
+              {
+                arrayStride: 12,
+                attributes: [{ shaderLocation: 1, offset: 0, format: 'float32x3' }],
+              },
+              { arrayStride: 4, attributes: [{ shaderLocation: 2, offset: 0, format: 'float32' }] },
+            ],
+          },
+          fragment: { module: bodyModule, entryPoint: 'body_fs', targets: [{ format }] },
+          primitive,
+          depthStencil: depth(true),
+          multisample,
+        }),
+        // The rocket again, last, only where something stands in front of it
+        // (the depth test reversed), see-through: so the streaks never bury it.
+        device.createRenderPipelineAsync({
+          label: '3D body seen through',
+          layout: layout(drawLayout),
+          vertex: { module: bodyModule, entryPoint: 'body_vs', buffers: bodyBuffers },
+          fragment: {
+            module: bodyModule,
+            entryPoint: 'body_fs',
+            targets: [{ format, blend: premultiplied }],
+          },
+          primitive,
+          depthStencil: depth(false, 'greater'),
+          multisample,
+        }),
+        device.createRenderPipelineAsync({
+          label: '3D shells',
+          layout: layout(storageLayout),
+          vertex: { module: shellModule, entryPoint: 'shell_vs' },
+          fragment: {
+            module: shellModule,
+            entryPoint: 'shell_fs',
+            targets: [{ format, blend: additive }],
+          },
+          primitive,
+          depthStencil: depth(false),
+          multisample,
+        }),
+        device.createRenderPipelineAsync({
+          label: '3D lit shells',
+          layout: layout(storageLayout),
+          vertex: { module: shellModule, entryPoint: 'shell_vs' },
+          fragment: { module: shellModule, entryPoint: 'shell_lit_fs', targets: [{ format }] },
+          primitive,
+          depthStencil: depth(true),
+          multisample,
+        }),
+        device.createRenderPipelineAsync({
+          label: '3D lines',
+          layout: layout(storageLayout),
+          vertex: { module: lineModule, entryPoint: 'line_vs' },
+          fragment: {
+            module: lineModule,
+            entryPoint: 'line_fs',
+            targets: [{ format, blend: additive }],
+          },
+          primitive,
+          depthStencil: depth(false, 'less-equal'),
+          multisample,
+        }),
+        device.createRenderPipelineAsync({
+          label: '3D tubes',
+          layout: layout(storageLayout),
+          vertex: { module: lineModule, entryPoint: 'line_vs' },
+          fragment: { module: lineModule, entryPoint: 'tube_fs', targets: [{ format }] },
+          primitive,
+          depthStencil: depth(true),
+          // The tube's edge smoothed over the samples (none to smooth over in a draft).
+          multisample: { count: samples, alphaToCoverageEnabled: samples > 1 },
+        }),
+        device.createRenderPipelineAsync({
+          label: '3D slices',
+          layout: layout(drawLayout),
+          vertex: {
+            module: sliceModule,
+            entryPoint: 'slice_vs',
+            buffers: [
+              {
+                arrayStride: 16,
+                attributes: [
+                  { shaderLocation: 0, offset: 0, format: 'float32x3' },
+                  { shaderLocation: 1, offset: 12, format: 'float32' },
+                ],
+              },
+            ],
+          },
+          fragment: {
+            module: sliceModule,
+            entryPoint: 'slice_fs',
+            targets: [{ format, blend: alpha }],
+          },
+          primitive,
+          depthStencil: depth(false),
+          multisample,
+        }),
+        device.createRenderPipelineAsync({
+          label: '3D faces',
+          layout: layout(drawLayout),
+          vertex: {
+            module: sliceModule,
+            entryPoint: 'face_vs',
+            buffers: [
+              {
+                arrayStride: 16,
+                attributes: [
+                  { shaderLocation: 0, offset: 0, format: 'float32x3' },
+                  { shaderLocation: 1, offset: 12, format: 'float32' },
+                ],
+              },
+            ],
+          },
+          fragment: { module: sliceModule, entryPoint: 'face_fs', targets: [{ format }] },
+          primitive,
+          depthStencil: depth(true),
+          multisample,
+        }),
+        device.createRenderPipelineAsync({
+          label: '3D streaks',
+          layout: layout(storageLayout),
+          vertex: { module: streakModule, entryPoint: 'streak_vs' },
+          fragment: { module: streakModule, entryPoint: 'streak_fs', targets: [{ format }] },
+          primitive,
+          depthStencil: depth(true),
+          multisample: { count: samples, alphaToCoverageEnabled: samples > 1 },
+        }),
+        device.createRenderPipelineAsync({
+          label: '3D sprites',
+          layout: layout(spriteLayout),
+          vertex: { module: spriteModule, entryPoint: 'sprite_vs' },
+          fragment: {
+            module: spriteModule,
+            entryPoint: 'sprite_fs',
+            targets: [{ format, blend: premultiplied }],
+          },
+          primitive,
+          depthStencil: depth(false, 'always'),
+          multisample,
+        }),
+      ]);
     return new Pipelines(
       frameLayout,
       drawLayout,
       storageLayout,
       spriteLayout,
       body,
+      bodyGhost,
       shell,
       shellLit,
       line,
@@ -677,6 +703,7 @@ export class FlowScene3D {
       'cutLines',
       'shockCut',
       'freePlane',
+      'bodyGhost',
       'streaks',
       'outline',
       'wire',
@@ -1819,6 +1846,18 @@ export class FlowScene3D {
       });
       pass.setBindGroup(1, this.groupFor('box', this.box.buffer));
       pass.draw(6 * this.box.count);
+    }
+    // The rocket seen through the streaks and sheets in front of it.
+    if (L.body === 'solid' && this.bodyBuffers !== null && (L.streaks !== 'off' || L.isosurfaces)) {
+      const b = this.bodyBuffers;
+      this.writeDraw('bodyGhost', { look: [1, 0, 0, BODY_SEEN_THROUGH] });
+      pass.setPipeline(pipelines.bodyGhost);
+      pass.setBindGroup(1, this.groupFor('bodyGhost', null));
+      pass.setVertexBuffer(0, b.position);
+      pass.setVertexBuffer(1, b.normal);
+      pass.setVertexBuffer(2, b.part);
+      pass.setIndexBuffer(b.index, 'uint32');
+      pass.drawIndexed(b.count);
     }
     // Text over the scene.
     if (L.overlay || L.help) {

@@ -53,5 +53,8 @@ fn body_fs(v: BodyOut) -> @location(0) vec4f {
   let rim = rim_edge * (0.25 + 0.75 * max(dot(n, frame.rim_light.xyz), 0.0)) * 0.55;
   let linear = albedo * (0.06 + 0.78 * key + 0.16 * fill + 0.08 * sky) + vec3f(spec + rim);
   // Linear light to the display's sRGB.
-  return vec4f(pow(clamp(linear, vec3f(0.0), vec3f(1.0)), vec3f(1.0 / 2.2)), 1.0);
+  // look.w: the opacity of the rocket seen through what stands in front of
+  // it (the second, see-through drawing); 0 for the solid one.
+  let alpha = select(1.0, draw.look.w, draw.look.w > 0.0);
+  return vec4f(pow(clamp(linear, vec3f(0.0), vec3f(1.0)), vec3f(1.0 / 2.2)) * alpha, alpha);
 }

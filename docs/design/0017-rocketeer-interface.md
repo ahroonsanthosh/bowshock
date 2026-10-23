@@ -475,6 +475,12 @@ readout says which ("grid 318 x 40 (2 of 4)") and the PNG's caption gives
 its size; the image samples it with linear interpolation at about the
 view's resolution.
 
+**The rocket in plain sight (2026-10-23).** The streaks in front of the
+rocket buried it in the page's own view; it is now drawn a second time,
+last, only where something stands in front of it (the depth test
+reversed), at 0.6 opacity, so it shows through the streaks and sheets
+from any view, while solving too.
+
 **Framing and light (2026-10-23).** A dim floor grid under the box, the
 first view 1.25 times closer than the one that fits the whole region (the
 shock's far reaches may leave the view, never the rocket), the streaks lit
