@@ -183,6 +183,24 @@ export class Euler3D {
   }
 
   /** The residual (net inflow, with the sources) of the current state: five values a cell, in cell order. */
+  private recordSide: Side3D | null = null;
+  private recorded = new Float64Array(0);
+
+  /**
+   * The flux times area through each face of a side for the current state (five values a face, in the order
+   * of boundaryFaceCount): at a wall, the momentum entries are the wall's pressure force on the fluid.
+   */
+  sideFluxes(side: Side3D): Float64Array {
+    this.recordSide = side;
+    this.recorded = new Float64Array(NV * this.boundaryFaceCount(side));
+    try {
+      this.computeResidual(this.state);
+    } finally {
+      this.recordSide = null;
+    }
+    return this.recorded;
+  }
+
   residualVector(): Float64Array {
     const { ni, nj, nk } = this.metrics;
     this.computeResidual(this.state);
@@ -344,6 +362,9 @@ export class Euler3D {
         const flux = f[n]! * area;
         r[qL + n] = r[qL + n]! - flux;
         r[qR + n] = r[qR + n]! + flux;
+      }
+      if (side !== null && side === this.recordSide) {
+        for (let n = 0; n < NV; n++) this.recorded[NV * t + n] = f[n]! * area;
       }
     };
     const si = NV;
