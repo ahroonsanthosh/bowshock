@@ -94,7 +94,9 @@ allowed), unprocessed, kept for review and taken again at each phase.
 With them, as data: the usability measured before and after
 (`usability-*.json`, `scripts/usability.mjs`, the table in
 `usability.md`) and the numbers the pages report on fixed cases before
-and after (`numbers.json`, `scripts/numbers-check.mjs`).
+and after (`numbers.json`, `scripts/numbers-check.mjs`). In `timing/`, the
+time of one point of the drag curve as the page solves it on software
+WebGPU (`scripts/time-point.mjs`; design record 0017 section 8.3).
 
 ## `wip/`: code in progress, not yet validated
 

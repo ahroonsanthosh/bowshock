@@ -572,7 +572,30 @@ export function outsideReasons(check: ClassCheck, sub: SubClassCheck): string[] 
  * that component (0014 section 10.2); none lies in the sub-class's
  * windows.
  */
-function claimOf(check: ClassCheck, sub: SubClassCheck, bounded: readonly string[]): Claim {
+/**
+ * Why a total whose nose term is not verified (its band measured but wider
+ * than the solver's tolerance) is never more than an estimate: a tested
+ * claim rests on a verified nose term, as the tests' own exact cone nose
+ * was (explicit since 2026-10-23; 0011, 0014 section 10.7 (q)).
+ */
+export const NOSE_UNVERIFIED_REASON =
+  "the nose's drag is not verified for this case (its error band, measured from the grids, is " +
+  "wider than the solver's tolerance), so a tested claim does not apply";
+/** Inside the BRL sub-class with the nose term not verified. */
+export const SUB_CLASS_UNVERIFIED_CLAIM =
+  "Estimate, not validated: this case lies inside the Basic Finner's narrow BRL sub-class, but " +
+  "the validated claim there rests on a verified nose term, and this case's is not.";
+
+function claimOf(
+  check: ClassCheck,
+  sub: SubClassCheck,
+  bounded: readonly string[],
+  noseVerified = true,
+): Claim {
+  const unverified = noseVerified ? [] : [NOSE_UNVERIFIED_REASON];
+  if (sub.inside && bounded.length === 0 && !noseVerified) {
+    return { kind: 'estimate', text: SUB_CLASS_UNVERIFIED_CLAIM, reasons: unverified };
+  }
   if (sub.inside && bounded.length === 0) {
     return {
       kind: 'validated',
@@ -581,12 +604,16 @@ function claimOf(check: ClassCheck, sub: SubClassCheck, bounded: readonly string
     };
   }
   if (check.inside) {
-    return { kind: 'estimate', text: CLASS_CLAIM, reasons: [SUSPENDED_REASON, ...bounded] };
+    return {
+      kind: 'estimate',
+      text: CLASS_CLAIM,
+      reasons: [SUSPENDED_REASON, ...bounded, ...unverified],
+    };
   }
   return {
     kind: 'estimate',
     text: ESTIMATE_CLAIM,
-    reasons: [...outsideReasons(check, sub), ...bounded],
+    reasons: [...outsideReasons(check, sub), ...bounded, ...unverified],
   };
 }
 
@@ -597,6 +624,9 @@ export interface Configuration {
   readonly conditions: FlightConditions;
   readonly inputs: DragInputs;
 }
+
+/** The input of the fins' place, as its refusal names it (the page words it "the fins reach past the base"). */
+export const FINS_AHEAD_OF_BASE = "the distance of the fins' trailing edges ahead of the base";
 
 const refusal = (component: string, message: string): ComponentRefusal => ({
   component,
@@ -647,11 +677,7 @@ export function configurationOf(form: TotalDragForm):
   if (form.section.kind !== 'flat-plate') {
     nonNegative('fins', 'the leading-edge radius', form.leadingEdgeRadius);
   }
-  nonNegative(
-    'fins',
-    "the distance of the fins' trailing edges ahead of the base",
-    form.trailingEdgeAheadOfBase,
-  );
+  nonNegative('fins', FINS_AHEAD_OF_BASE, form.trailingEdgeAheadOfBase);
   if (
     Number.isFinite(form.body.cylinderLength) &&
     form.rootChord > 0 &&
@@ -794,7 +820,17 @@ export function noseComponentOf(solve: NoseSolve): DragComponent {
 }
 
 export type NoseState =
-  | { readonly kind: 'solved'; readonly component: DragComponent }
+  | {
+      readonly kind: 'solved';
+      readonly component: DragComponent;
+      /**
+       * Whether the nose term is verified: the solve's band within the
+       * solver's tolerance, or an exact value (Taylor-Maccoll). Required, and
+       * anything but true counts as not verified (fail closed): no claim is
+       * then more than an estimate.
+       */
+      readonly verified: boolean;
+    }
   /** Solved without a band, or not solved: the total is refused. */
   | { readonly kind: 'refused'; readonly message: string }
   /** Not yet solved for this nose, body and Mach number. */
@@ -959,7 +995,9 @@ export function totalDragView(form: TotalDragForm, nose: NoseState): TotalDragVi
     withInputs: bandWithInputs(total),
     check,
     subClass,
-    claim: claimOf(check, subClass, boundedReasons(parts.base)),
+    // Fail closed: only an explicit true counts (a state read from JSON may lack the flag).
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+    claim: claimOf(check, subClass, boundedReasons(parts.base), nose.verified === true),
     notes: notesOf(parts.base),
   };
 }

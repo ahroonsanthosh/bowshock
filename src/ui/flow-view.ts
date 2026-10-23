@@ -12,9 +12,16 @@
  * are read back a few times a second for the legend (8 bytes).
  */
 
-import { FlowRenderer, type FlowDrawOptions, type FlowSource } from '../render/flow-renderer';
+import {
+  FlowRenderer,
+  type FlowDrawOptions,
+  type FlowLook,
+  type FlowPalette,
+  type FlowShape,
+  type FlowSource,
+} from '../render/flow-renderer';
 import type { FlowField } from '../render/flow-fields';
-import { colormapTable, hexToRgb } from '../render/colormap';
+import { colormapTable, hexToRgb, spectrumTable } from '../render/colormap';
 import {
   bytesPerRow,
   CanvasPresenter,
@@ -40,17 +47,25 @@ export interface FlowViewOptions {
   readonly maxFps?: number;
   /** The background, as #rrggbb (default the ground's). */
   readonly background?: string;
+  /** The colour fields' table (default the perceptual map). */
+  readonly palette?: FlowPalette;
+  /** Room left behind the flow's last line when fitted, as a fraction of its length (default 0). */
+  readonly fitAft?: number;
 }
 
 /** The scale of the colour field shown (below the axis in the split view). */
 export interface FlowScale {
   readonly field: FlowField;
   readonly split: boolean;
+  /** The glow view: the Mach number's colours, at the density gradient's brightness. */
+  readonly glow?: boolean;
   readonly min: number;
   readonly max: number;
 }
 
 export interface FlowViewState {
+  /** 'glow': the Mach number's colour at the density gradient's brightness; `field` is then not drawn. */
+  readonly look: FlowLook;
   readonly field: FlowField;
   readonly split: boolean;
   readonly grid: boolean;
@@ -58,7 +73,16 @@ export interface FlowViewState {
 }
 
 /** Schlieren's contrast k in 1 - exp(-k g): weak waves visible, shocks bright. */
-const SCHLIEREN_CONTRAST = 3;
+export const SCHLIEREN_CONTRAST = 3;
+/**
+ * The share of the time live frames may take, by their measured cost (their
+ * own GPU time and their showing): on a fast GPU a frame costs a
+ * millisecond and the view draws at its maximum rate; on a software
+ * adapter, where drawing competes with the solver for the same cores, it
+ * draws less often, so that the solver keeps over nine tenths of its
+ * steps (tests/gpu/flow-view-cost.test.ts).
+ */
+export const FRAME_BUDGET = 0.04;
 /** Grid lines are drawn at least this many CSS pixels apart (every 2^n-th line). */
 const GRID_SPACING = 5;
 /** How often the legend's range is read back, milliseconds. */
@@ -86,13 +110,21 @@ export class FlowView {
   private lastRange = 0;
   private drawing: Promise<void> | null = null;
   private bodyRadius = 0.5;
-  private state: FlowViewState = { field: 'schlieren', split: false, grid: false, shock: true };
+  private state: FlowViewState = {
+    look: 'filled',
+    field: 'schlieren',
+    split: false,
+    grid: false,
+    shock: true,
+  };
   private readonly pointers = new Map<number, { x: number; y: number }>();
   private readonly listeners: (() => void)[] = [];
   private lastScale = '';
   private destroyed = false;
   private lost = false;
   private frames = 0;
+  /** A live frame's measured cost, ms: its own GPU time and its showing, smoothed. */
+  private frameCost: number | null = null;
 
   static async create(
     device: GPUDevice,
@@ -144,7 +176,7 @@ export class FlowView {
     return this.state;
   }
 
-  /** The source drawn, if any. */
+  /** The flow drawn, if any: the live fit's buffers, or the view's own copy once frozen. */
   get source(): FlowSource | null {
     return this.renderer.source;
   }
@@ -184,6 +216,12 @@ export class FlowView {
     this.invalidate();
   }
 
+  /** Shapes drawn over the flow as they are, behind or in front of the body (the fins seen from the side). */
+  setShapes(shapes: readonly FlowShape[]): void {
+    this.renderer.setShapes(shapes);
+    this.invalidate();
+  }
+
   /** Whether the flow is changing (a solver running): then the view draws continuously. */
   setLive(live: boolean): void {
     this.live = live;
@@ -191,7 +229,11 @@ export class FlowView {
   }
 
   setField(field: FlowField): void {
-    this.update({ field });
+    this.update({ field, look: 'filled' });
+  }
+
+  setLook(look: FlowLook): void {
+    this.update({ look });
   }
 
   toggleSplit(): void {
@@ -319,12 +361,15 @@ export class FlowView {
    * readback buffer.
    */
   private async drawnScale(): Promise<FlowScale | null> {
-    const { field, split } = this.state;
-    if (field === 'schlieren' && !split) return null;
-    const shown: FlowField = split && field === 'schlieren' ? 'mach' : field;
+    const { field, split, look } = this.state;
+    const glow = look === 'glow';
+    if (!glow && field === 'schlieren' && !split) return null;
+    const shown: FlowField = glow || (split && field === 'schlieren') ? 'mach' : field;
     for (let k = 0; k < 40; k++) {
-      const range = await this.renderer.readRange(split ? 1 : 0);
-      if (range !== null) return { field: shown, split, min: range.min, max: range.max };
+      const range = await this.renderer.readRange(!glow && split ? 1 : 0);
+      if (range !== null) {
+        return { field: shown, split: split && !glow, glow, min: range.min, max: range.max };
+      }
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
     throw new Error('the colour scale could not be read');
@@ -340,7 +385,11 @@ export class FlowView {
     const lines = [...caption];
     if (colour !== null) {
       const ends = `${formatScaleValue(colour.min)} to ${formatScaleValue(colour.max)}`;
-      lines.push(`${FIELD_NAMES[colour.field]}${colour.split ? ' below the axis' : ''}: ${ends}`);
+      lines.push(
+        colour.glow === true
+          ? `Colour: Mach number, ${ends}; brightness: the density gradient; black: uniform flow`
+          : `${FIELD_NAMES[colour.field]}${colour.split ? ' below the axis' : ''}: ${ends}`,
+      );
     }
     if (lines.length === 0) return;
     const size = Math.round(12 * dpr);
@@ -362,7 +411,7 @@ export class FlowView {
     });
     if (colour !== null) {
       const top = y + pad + lines.length * line;
-      const table = colormapTable(64);
+      const table = (this.options.palette === 'spectrum' ? spectrumTable : colormapTable)(64);
       const gradient = context.createLinearGradient(x + pad, 0, x + boxWidth - pad, 0);
       for (let k = 0; k < 64; k++) {
         const [r, g, b] = [0, 1, 2].map((c) => Math.round(255 * table[4 * k + c]!));
@@ -391,9 +440,19 @@ export class FlowView {
   }
 
   private resize(): void {
+    // Hidden (no box): the size and the frame shown are kept, to show again at once.
+    if (this.hidden) return;
     const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = Math.max(1, Math.round(this.canvas.clientWidth * dpr));
-    this.canvas.height = Math.max(1, Math.round(this.canvas.clientHeight * dpr));
+    const width = Math.max(1, Math.round(this.canvas.clientWidth * dpr));
+    const height = Math.max(1, Math.round(this.canvas.clientHeight * dpr));
+    // Setting a canvas's size clears it, even to the size it has.
+    if (this.canvas.width !== width) this.canvas.width = width;
+    if (this.canvas.height !== height) this.canvas.height = height;
+  }
+
+  /** The canvas has no box (the page shows another view): nothing is drawn until it has. */
+  private get hidden(): boolean {
+    return this.canvas.clientWidth === 0 || this.canvas.clientHeight === 0;
   }
 
   private schedule(): void {
@@ -405,7 +464,15 @@ export class FlowView {
   }
 
   private tick(time: number): void {
-    const interval = 1000 / (this.options.maxFps ?? 30);
+    // Hidden, nothing is drawn: a change stays due, drawn once the canvas is shown (resized).
+    if (this.hidden) return;
+    // Live frames are paced by what they cost: at most maxFps, and no more
+    // often than keeps their measured cost within FRAME_BUDGET of the time,
+    // so that drawing never takes the solver's steps (0017 section 6.4).
+    const interval = Math.max(
+      1000 / (this.options.maxFps ?? 30),
+      (this.frameCost ?? 0) / FRAME_BUDGET,
+    );
     const due = this.dirty || (this.live && time - this.lastFrame >= interval);
     // One frame at a time: a frame being copied to the page (CopyPresenter)
     // holds its buffers until it is shown.
@@ -429,12 +496,20 @@ export class FlowView {
   private async drawFrame(time: number, asked: boolean): Promise<void> {
     const view = this.currentView();
     if (view === null) return;
+    // The frame's own cost: from the moment the work queued before it (the
+    // solver's) is done to the moment it is done and shown. Work completes
+    // in order, so this is the frame's GPU time, not the solver's.
+    const queue = this.device.queue;
+    const before = queue.onSubmittedWorkDone().then(() => performance.now());
     this.renderer.draw(this.presenter.frameTexture(), { ...this.drawOptions(), view });
     this.frames += 1;
+    const done = queue.onSubmittedWorkDone().then(() => performance.now());
+    const shown = this.presenter.present().then(() => performance.now());
     // One frame in flight: the next is drawn only once the GPU has done
-    // this one, so frames never queue up behind the solver's steps and
-    // drawing takes at most a frame per batch of steps the GPU runs.
-    await Promise.all([this.presenter.present(), this.device.queue.onSubmittedWorkDone()]);
+    // this one, so frames never queue up behind the solver's steps.
+    const [start, end, presented] = await Promise.all([before, done, shown]);
+    const cost = Math.max(0, Math.max(end, presented) - start);
+    this.frameCost = this.frameCost === null ? cost : 0.7 * this.frameCost + 0.3 * cost;
     // The legend's range: after a frame asked for (a change), and every
     // RANGE_INTERVAL while live.
     if (asked || time - this.lastRange >= RANGE_INTERVAL || this.lastScale === '') {
@@ -466,24 +541,23 @@ export class FlowView {
   }
 
   private async readScale(): Promise<void> {
-    const split = this.state.split;
-    const field: FlowField = split
-      ? this.state.field === 'schlieren'
-        ? 'mach'
-        : this.state.field
-      : this.state.field;
+    const glow = this.state.look === 'glow';
+    const split = this.state.split && !glow;
+    const field: FlowField =
+      glow || (split && this.state.field === 'schlieren') ? 'mach' : this.state.field;
     const range = await this.renderer.readRange(split ? 1 : 0);
     if (range === null || this.options.onScale === undefined) return;
-    const key = `${field} ${split} ${range.min} ${range.max}`;
+    const key = `${field} ${split} ${glow} ${range.min} ${range.max}`;
     if (key === this.lastScale) return;
     this.lastScale = key;
-    this.options.onScale({ field, split, min: range.min, max: range.max });
+    this.options.onScale({ field, split, glow, min: range.min, max: range.max });
   }
 
   private drawOptions(): Omit<FlowDrawOptions, 'view'> {
     return {
       ...this.state,
       schlierenContrast: SCHLIEREN_CONTRAST,
+      palette: this.options.palette ?? 'perceptual',
       lengthScale: this.bodyRadius,
       gridStride: this.gridStride(),
       background: this.background(),
@@ -512,9 +586,11 @@ export class FlowView {
     const source = this.renderer.source;
     if (source === null) return null;
     const b = source.bounds();
-    if (!source.mirror) return b;
+    // Room behind the last line (the region not simulated, shown as such), so the body's end is in view.
+    const xMax = b.xMax + (this.options.fitAft ?? 0) * (b.xMax - b.xMin);
+    if (!source.mirror) return { ...b, xMax };
     const y = Math.max(Math.abs(b.yMin), Math.abs(b.yMax));
-    return { xMin: b.xMin, xMax: b.xMax, yMin: -y, yMax: y };
+    return { xMin: b.xMin, xMax, yMin: -y, yMax: y };
   }
 
   private fitRectPixels(aspect: number): PixelRect {

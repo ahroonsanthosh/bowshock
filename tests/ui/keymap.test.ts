@@ -104,6 +104,18 @@ describe('the key map', () => {
     expect(resolveKey(BINDINGS, press('g', { repeat: true }), BODY)).toBeNull();
   });
 
+  it('gives a key to the binding that acts now, of two views', () => {
+    let shown: 'a' | 'b' = 'a';
+    const twoViews: KeyBinding[] = [
+      { keys: ['1'], action: 'a-one', description: 'A', when: () => shown === 'a' },
+      { keys: ['1'], action: 'b-one', description: 'B', when: () => shown === 'b' },
+    ];
+    const one = press('1');
+    expect(resolveKey(twoViews, one, null)?.action).toBe('a-one');
+    shown = 'b';
+    expect(resolveKey(twoViews, one, null)?.action).toBe('b-one');
+  });
+
   it('names keys for the help overlay', () => {
     expect(keyLabel(' ')).toBe('Space');
     expect(keyLabel('Escape')).toBe('Esc');

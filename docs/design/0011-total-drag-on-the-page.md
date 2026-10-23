@@ -293,6 +293,12 @@ of 1.19e7, and with sharp fin leading edges. So the class stays an
 estimate, its reason revised, and the sub-class at the tested conditions
 is validated. The display has the "ok" tone again for that claim only;
 every other headline ends ": an estimate, not validated".
+On 2026-10-23 a rule that was only implicit was made explicit: no claim
+is stronger than an estimate when the nose term is not verified (its
+band measured from the grids but wider than the solver's tolerance), as
+the test's own exact Taylor-Maccoll nose was; inside the sub-class such
+a case is an estimate (`SUB_CLASS_UNVERIFIED_CLAIM`), and every
+estimate names it (`NOSE_UNVERIFIED_REASON`).
 
 - **Inside the BRL sub-class** (`VALIDATED_CLAIM`): "Validated: this case
   lies inside the Basic Finner's narrow sub-class at the conditions of BRL

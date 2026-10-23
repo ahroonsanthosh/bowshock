@@ -52,7 +52,7 @@ const help = new Help({
 });
 const topBar = new TopBar({
   root: '',
-  menus: siteMenus('', 'home'),
+  menus: siteMenus('', 'about'),
   onHelp: () => {
     help.open();
   },
