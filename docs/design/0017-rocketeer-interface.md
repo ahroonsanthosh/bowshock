@@ -87,6 +87,11 @@ At 390 by 844 (phones, below 700 px, the 0012 sheet):
 │ M 2.00  C_D 0.5501  0.482-0.649  │ pinned: the current point, always in view
 │ ◆ Estimate          point 3 / 11 │
 ├──────────────────────────────────┤
+│ The axisymmetric solution, re-   │ what the picture is, and what a
+│ volved; fins are not in the air- │ cross means: always in view (the
+│ flow. Hatched: behind the base.  │ View tab has the full note)
+│ ✕ No number: the drag there ...  │
+├──────────────────────────────────┤
 │ [ Rocket ] [ Curve ] [ View ]    │ tabs
 │ Rocket: the drawing, then the    │ the sheet scrolls; the canvas and
 │ fields; Curve: chart, table, CSV;│ the pinned line do not

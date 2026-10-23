@@ -1499,6 +1499,24 @@ td.num {
   .pinned:empty {
     display: none;
   }
+  /* What the picture and the marks mean, on the first screen (the View tab has the full note). */
+  .sheet__note {
+    padding: 4px 14px 6px;
+    border-bottom: 1px solid var(--panel-border);
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+  .sheet__note:empty {
+    display: none;
+  }
+  .sheet__note p {
+    margin: 0;
+  }
+  .sheet__note .cross {
+    color: var(--bad);
+    font-weight: 700;
+  }
   .sheet__tabs {
     display: flex;
     gap: 4px;

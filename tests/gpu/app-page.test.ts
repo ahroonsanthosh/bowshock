@@ -91,6 +91,10 @@ describe('the app page', () => {
     expect(flow.hidden).toBe(shown3d);
     expect(text('#flow-note')).toContain('Hatched: behind the base, not simulated.');
     expect(text('#flow-note')).toContain('their drag computed separately');
+    // The phone's first screen (the sheet under the pinned line): what the picture is, and a cross.
+    expect(text('.sheet__note')).toMatch(/The axisymmetric solution.*fins are not in the airflow/);
+    expect(text('.sheet__note')).toContain('Hatched: behind the base, not simulated.');
+    expect(text('.sheet__note')).toContain('No number: the drag there cannot be given');
     if (!shown3d) {
       // The fallback: the side view and its field mode bar; no 3D | Side switch; and the
       // airflow's note keeps saying which step failed (0017 section 6.5).
