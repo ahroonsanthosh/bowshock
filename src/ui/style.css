@@ -2164,6 +2164,22 @@ input[aria-invalid='true'] {
   color: var(--text);
   font-weight: 500;
 }
+.point__tested,
+.curve-table__tested {
+  color: var(--ok);
+  font-size: 12px;
+}
+.point__tested {
+  margin: 4px 0 0;
+}
+.chart__window {
+  fill: var(--ok-soft);
+}
+.chart__window-label {
+  fill: var(--ok);
+  font-size: 9px;
+  text-anchor: middle;
+}
 .point__claim {
   margin: 6px 0 0;
   font-size: 12.5px;

@@ -11,6 +11,11 @@
  * with the nose at that grid's value, no band); when the solve ends it is
  * `totalDragView(form, noseStateOf(outcome))`, a number with its band and
  * claim, or no number with every reason.
+ *
+ * Where the rocket and its flight lie inside the Basic Finner's BRL
+ * sub-class (by the logic's own check, `brl934SubClass`), the curve also
+ * has a point inside each Mach window BRL Report 934's range A tested
+ * (TESTED_WINDOWS), solved and labelled like any other.
  */
 
 import type { LevelReport, VerifiedDrag } from '../analysis/verified-drag';
@@ -21,6 +26,8 @@ import type { ComponentRefusal } from '../total/total-drag';
 import type { NoseEnd } from './status-words';
 import { NO_WEBGPU, noseStateOf, type NoseSolveError } from './total-drag-display';
 import {
+  BRL934_SUB_CLASS,
+  brl934SubClass,
   noseComponentOf,
   totalDragView,
   type TotalDragForm,
@@ -41,6 +48,39 @@ export function curveMachs(step: number): number[] {
     machs.push(mach);
   }
   return machs;
+}
+
+/** A Mach window BRL Report 934's range A tested, as the logic holds it, and the curve's point in it. */
+export interface TestedWindow {
+  readonly from: number;
+  readonly to: number;
+  readonly mach: number;
+}
+
+/**
+ * The windows of the BRL sub-class, read from the logic (BRL934_SUB_CLASS),
+ * each with its point: the window's centre rounded to the curve's two
+ * decimals (the precision the curve, its table and CSV show a Mach number
+ * to, so that the point shown is the point solved), kept only where that
+ * lies strictly inside the window, away from both ends: 1.81 in 1.801 to
+ * 1.827, 2.45 in 2.423 to 2.468.
+ */
+export const TESTED_WINDOWS: readonly TestedWindow[] = BRL934_SUB_CLASS.windows.flatMap((w) => {
+  const [from, to] = w.mach;
+  const mach = Number(((from + to) / 2).toFixed(2));
+  return mach > from && mach < to ? [{ from, to, mach }] : [];
+});
+
+/**
+ * The tested windows' points this rocket gets: those where the logic's own
+ * check says the case lies inside the BRL sub-class (its shape, Reynolds
+ * number and temperature at that Mach number). None for any other rocket.
+ */
+export function testedWindowsFor(design: RocketDesign, without: boolean): TestedWindow[] {
+  return TESTED_WINDOWS.filter((w) => {
+    const asked = designForm(design, w.mach, { without });
+    return asked.kind === 'form' && brl934SubClass(asked.form).inside;
+  });
 }
 
 /**
@@ -118,6 +158,8 @@ export interface CurvePoint {
   /** Wall time of its solve, seconds, and the cell updates it took. */
   readonly seconds: number;
   readonly cellUpdates: number;
+  /** A point added inside a Mach window BRL Report 934's range A tested (TESTED_WINDOWS). */
+  readonly tested?: TestedWindow;
 }
 
 export interface CurveOptions {
@@ -147,11 +189,15 @@ export class CurveRun {
     private readonly solve: NoseSolver,
     private readonly onChange: (run: CurveRun, index: number) => void,
   ) {
-    const machs = curveMachs(options.step);
+    const tested = testedWindowsFor(options.design, options.without);
+    const machs = [...new Set([...curveMachs(options.step), ...tested.map((w) => w.mach)])].sort(
+      (a, b) => a - b,
+    );
     this.forms = [];
     this.points = machs.map((mach) => {
       const point = this.initial(mach);
-      return point;
+      const window = tested.find((w) => w.mach === mach);
+      return window === undefined ? point : { ...point, tested: window };
     });
   }
 

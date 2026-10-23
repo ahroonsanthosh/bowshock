@@ -56,6 +56,8 @@ export interface PointView {
   readonly reasons: readonly string[];
   /** "without the launch lug", or ''. */
   readonly without: string;
+  /** For a point added in a tested window: "BRL Report 934 tested Mach 2.423 to 2.468 here"; else null. */
+  readonly tested: string | null;
   /** A validated point: the logic's claim text and its caveats, word for word; else null and none. */
   readonly claim: string | null;
   readonly caveats: readonly string[];
@@ -151,7 +153,17 @@ function reasonSentence(reasons: readonly PlainReason[]): string {
 }
 
 /** One point as the page shows it; `finer` says whether a finer grid is offered. */
+/** The note of a point in a tested window. */
+export function testedNote(point: CurvePoint): string | null {
+  const w = point.tested;
+  return w === undefined ? null : `BRL Report 934 tested Mach ${w.from} to ${w.to} here`;
+}
+
 export function pointView(point: CurvePoint, finer: boolean): PointView {
+  return { ...pointViewOf(point, finer), tested: testedNote(point) };
+}
+
+function pointViewOf(point: CurvePoint, finer: boolean): Omit<PointView, 'tested'> {
   const mach = point.mach.toFixed(2);
   const none = {
     value: null,
