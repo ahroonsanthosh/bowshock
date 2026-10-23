@@ -16,7 +16,7 @@ import {
   solveOrder,
   type NoseSolver,
 } from '../../src/app/curve';
-import { CSV_HEADER, csvField, csvRow, curveCsv } from '../../src/app/curve-csv';
+import { CSV_HEADER, csvField, csvRow, curveCsv, curveRocketName } from '../../src/app/curve-csv';
 import { CLASS_CLAIM, totalDragView } from '../../src/app/total-drag';
 import { noseStateOf } from '../../src/app/total-drag-display';
 import type { Body } from '../../src/geometry/body';
@@ -24,6 +24,7 @@ import { designForm } from '../../src/rocket/adapter';
 import type { RocketDesign } from '../../src/rocket/design';
 import { preset } from '../../src/rocket/presets';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
+import { edited, withBodyLengths } from '../../src/ui/builder-edits';
 
 const basic = () => preset('basic-finner').design;
 
@@ -289,6 +290,20 @@ describe('the CSV', { timeout: 120_000 }, () => {
     const [, , low, high] = row.split(',');
     expect(Number(low)).toBeLessThanOrEqual(t.low);
     expect(Number(high)).toBeGreaterThanOrEqual(t.high);
+  });
+
+  it("an edited preset's CSV names the edited rocket, not the preset", async () => {
+    // The builder's first edit of the Basic Finner: a nose 80 mm long.
+    const d = basic();
+    const typed = edited(d, withBodyLengths(d, { nose: 0.08 }));
+    const run = new CurveRun({ ...options(), design: typed }, standIn(), () => {});
+    // A later edit while (or after) the curve runs does not rename this curve's rocket.
+    const later = edited(typed, withBodyLengths(typed, { nose: 0.09 }));
+    expect(later.name).toBe(typed.name);
+    const lines = curveCsv(run, 'bowshock test build').split('\n');
+    expect(lines[0]).toBe('# bowshock drag curve: Basic Finner (edited)');
+    // The page's header names the run's rocket too, edited since or not.
+    expect(curveRocketName(run.options.design, run.options.without)).toBe('Basic Finner (edited)');
   });
 
   it('fields quoted where they must be; unfinished points without a number', () => {

@@ -16,6 +16,7 @@
 import { excludableParts, withoutText } from '../rocket/adapter';
 import { outward } from './band';
 import type { CurvePoint, CurveRun } from './curve';
+import type { RocketDesign } from '../rocket/design';
 
 export const CSV_HEADER = 'mach,cd,cd_low,cd_high,status,reason';
 
@@ -76,12 +77,21 @@ export function csvRow(point: CurvePoint): string {
   }
 }
 
+/**
+ * The rocket a curve is of, and the parts it is computed without: the
+ * curve's header on the page, the CSV's first line and the PNG's caption.
+ * Always the run's own design, never the builder's since.
+ */
+export function curveRocketName(design: RocketDesign, without: boolean): string {
+  const parts = without ? withoutText(excludableParts(design).map((e) => e.part)) : '';
+  return `${design.name}${parts === '' ? '' : `, ${parts}`}`;
+}
+
 /** The whole curve: comment lines, the header, a row per point. */
 export function curveCsv(run: CurveRun, build: string): string {
   const d = run.options.design;
-  const without = run.options.without ? withoutText(excludableParts(d).map((e) => e.part)) : '';
   const lines = [
-    `# bowshock drag curve: ${d.name}${without === '' ? '' : `, ${without}`}`,
+    `# bowshock drag curve: ${curveRocketName(d, run.options.without)}`,
     `# altitude ${String(Number(d.flight.altitude.toPrecision(7)))} m above sea level (U.S. Standard Atmosphere, 1976); ` +
       `zero incidence, power off; nose solved to ${20 * run.options.finest} cells across`,
     `# ${build}`,

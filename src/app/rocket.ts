@@ -35,7 +35,7 @@ import { Readout, type ReadoutKind } from '../ui/readout';
 import { drawingLabel, drawRocket } from '../ui/rocket-drawing';
 import { Shell } from '../ui/shell';
 import { CurveRun, gridsTo, secondsPerPoint, type NoseSolver } from './curve';
-import { curveCsv } from './curve-csv';
+import { curveCsv, curveRocketName } from './curve-csv';
 import { importSummary, loadImporter, type ImportSummary } from './import-summary';
 import { bodyOutline, FlowControls, viewMenu } from './flow-controls';
 import { pointView, type PointView } from './point-view';
@@ -793,9 +793,9 @@ function renderFinestNote(): void {
 function renderCurve(): void {
   renderFinestNote();
   const r = run;
-  const parts = withoutText(without ? excludableParts(design).map((e) => e.part) : []);
-  curveRocket.textContent = `${design.name}${parts === '' ? '' : `, ${parts}`}`;
-  curveFlight.textContent = flightWords(design);
+  // The rocket of the curve shown (the builder's may since have been edited), as its points are.
+  curveRocket.textContent = curveTitle(r);
+  curveFlight.textContent = flightWords(r?.options.design ?? design);
   renderNotes();
   if (r === null) {
     chartBox.replaceChildren();
@@ -831,6 +831,13 @@ function renderCurve(): void {
         ? 'Done.'
         : '';
   computeButton.textContent = changed || r.done ? 'Compute the curve' : 'Compute again';
+}
+
+/** The curve's rocket, and the parts it is computed without: the run's own, where there is one. */
+function curveTitle(r: CurveRun | null): string {
+  return r === null
+    ? curveRocketName(design, without)
+    : curveRocketName(r.options.design, r.options.without);
 }
 
 function renderNotes(): void {
@@ -1119,7 +1126,7 @@ csvButton.addEventListener('click', () => {
   );
   const link = document.createElement('a');
   link.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' }));
-  link.download = `bowshock-${slug(design.name)}-drag.csv`;
+  link.download = `bowshock-${slug(run.options.design.name)}-drag.csv`;
   link.click();
   window.setTimeout(() => {
     URL.revokeObjectURL(link.href);
@@ -1134,12 +1141,10 @@ async function savePng(): Promise<void> {
   }
   // The rocket and curve of the flow drawn (the rocket shown may since have been edited).
   const drawn = flowDesign ?? design;
-  const left = run?.options.without === true ? excludableParts(drawn).map((e) => e.part) : [];
-  const parts = withoutText(left);
   const point = run?.points.find((p) => p.mach === drawnMach);
   const v = point === undefined ? null : pointView(point, finest() < 16);
   const name = `bowshock-${slug(drawn.name)}-mach-${drawnMach.toFixed(2)}.png`;
-  const rocketLine = `${drawn.name}${parts === '' ? '' : `, ${parts}`}`;
+  const rocketLine = curveRocketName(drawn, run?.options.without === true);
   const machLine = `Mach ${drawnMach.toFixed(2)}, zero incidence: the airflow around the body`;
   const result =
     v === null
