@@ -1,0 +1,4 @@
+figure,item,id,series,symbol,Re_x1e-6,Re_x1e-6_err,Cp_b,Cp_b_err,centre_from,glyph_score,conditions,notes
+R&M 3427 fig. 18,symbol,re-1,M_inf = 0.8 (circle),circ,2.3275,0.0173,-0.7451,0.00091,outline fit,0.764,"caption: ""Effect of Reynolds number on base pressure.""; M_inf = 0.8 (printed in the plot); abscissa ""Re x 10^-6""",
+R&M 3427 fig. 18,symbol,re-2,M_inf = 0.8 (circle),circ,3.3896,0.0173,-0.74331,0.00091,outline fit,0.716,"caption: ""Effect of Reynolds number on base pressure.""; M_inf = 0.8 (printed in the plot); abscissa ""Re x 10^-6""",
+R&M 3427 fig. 18,symbol,re-3,M_inf = 0.8 (circle),circ,4.5113,0.0173,-0.74117,0.00091,outline fit,0.737,"caption: ""Effect of Reynolds number on base pressure.""; M_inf = 0.8 (printed in the plot); abscissa ""Re x 10^-6""",

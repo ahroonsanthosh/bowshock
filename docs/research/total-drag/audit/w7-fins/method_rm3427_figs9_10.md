@@ -56,3 +56,32 @@ the layer parameter or delta/h, not by Mach number alone. One Reynolds
 number per Mach number (fig. 1).
 
 **Status.** First reading, by the 0019 reader, 2026-10-22. Read once.
+
+**Blindness: what can and cannot be stated** (added 2026-10-22, at the
+coordinator's request after the neutral pairing). This reading was made
+and committed (9f4d89f, 09:29 UTC) by the W7 agent of an earlier
+session. The note is written by the W7 agent of the following session,
+which did not make this reading and has no record of what that agent
+opened: this method file does not say, and that session's transcript is
+not available here. So it cannot be stated, from knowledge, whether round
+10's readings of figs. 9 and 10 were seen. What the repository shows:
+the commit adds only this folder's files; no file under
+`audit/round10/` was ever on the `w7-fins` branch's history up to it.
+Round 10's readings were on another branch (`claude/wip/round10-w7-figures`):
+its commit 5c7c746 was made in the shared local repository at 09:21,
+eight minutes before this one, and the branch was first pushed to GitHub
+at 09:35:12, six minutes after it (corrected 2026-10-22; this note first
+said "pushed at 09:21"). Being in the shared local repository before
+09:29 does not show they were not
+opened. Until the earlier agent's record shows otherwise, this reading
+is to be treated as **not shown to be blind**. The coordinator may have
+figs. 9 and 10 read again by a reader who has opened neither reading.
+
+**Status, 2026-10-23: not used** (the coordinator's decision). This
+reading stays "not shown to be blind" and is not used. Figs. 9 and 10 are
+read twice blind by two other readers, round 10 and round 12, and paired
+on `claude/wip/round10-w7-figures` at 36c5a61: every symbol and line
+agrees within the errors, except the right end of fig. 10's laminar
+flat-plate line, M 1.1787 against 1.2068, where both are kept. Those two
+readings are the record (0019 section 6); the W7 agent writing this note
+did not open them.

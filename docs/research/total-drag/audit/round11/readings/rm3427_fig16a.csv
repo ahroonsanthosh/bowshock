@@ -1,0 +1,10 @@
+figure,item,id,series,symbol,y_over_h,y_over_h_err,Cp_b,Cp_b_err,centre_from,glyph_score,conditions,notes
+R&M 3427 fig. 16a,symbol,a10-1,"M_inf = 1.0 (diamond, dashed line)",dia,-0.2696,0.0087,-0.78169,0.004,outline fit,0.644,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",
+R&M 3427 fig. 16a,symbol,a10-2,"M_inf = 1.0 (diamond, dashed line)",dia,0.0012,0.0086,-0.78608,0.004,outline fit,0.508,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",
+R&M 3427 fig. 16a,symbol,a10-3,"M_inf = 1.0 (diamond, dashed line)",dia,0.1448,0.0086,-0.78261,0.004,outline fit,0.536,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",
+R&M 3427 fig. 16a,symbol,a08-1,M_inf = 0.8 (circle),circ,-0.2626,0.0087,-0.70505,0.004,outline fit,0.591,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",
+R&M 3427 fig. 16a,symbol,a08-2,M_inf = 0.8 (circle),circ,0.0043,0.0086,-0.74776,0.004,outline fit,0.526,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",
+R&M 3427 fig. 16a,symbol,a08-3,M_inf = 0.8 (circle),circ,0.143,0.0086,-0.73479,0.004,outline fit,0.537,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",
+R&M 3427 fig. 16a,symbol,a04-1,M_inf = 0.4 (square),sq,-0.2647,0.0087,-0.60992,0.00404,outline fit,0.53,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",
+R&M 3427 fig. 16a,symbol,a04-2,M_inf = 0.4 (square),sq,0.0108,0.0086,-0.63177,0.004,outline fit,0.485,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",
+R&M 3427 fig. 16a,symbol,a04-3,M_inf = 0.4 (square),sq,0.1444,0.0121,-0.62972,0.00644,outline fit,0.393,"caption: ""Variation of pressure across base.""; panel a), alpha = 0",

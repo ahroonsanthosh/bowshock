@@ -1,0 +1,57 @@
+# ARC R&M 3348 (Rogers, Berry and Quincey; AERADE 1826.2/3929, sha256 d2f35d8a...b383e158), fig. 30(a) "Effect of wing sweep
+# on base pressures measured on single-wedge wing (eta = 0.59; alpha = 0)", plotted against stream Mach number; PDF p. 68
+# (printed p. 67). p_b/p_0 against M_0, one series per sweep phi. Named by 0014 10.7 (k) before this reading. FIRST reading
+# (0019 reader, W7), 2026-10-22, blind to round 10's reading and read as drawn (table 3 not consulted). 300 dpi render, page
+# pixels; grid every 0.1 in both traced (calib.py, rm3348_fig30a_grid.json). source: fit (symfit.py, +-1 px) or hand (no
+# template for the plus, +-1.5 px; or the fit moved more than 3 px, +-2.5 px). Method: method_rm3348_fig30.md.
+id,series,symbol,px_x,px_y,mach,pb_over_p0,mach_err,pb_over_p0_err,source
+o01,phi 0 deg (circle),circle,234.05,1413.30,0.6998,0.7025,0.0010,0.0010,fit
+o02,phi 0 deg (circle),circle,351.20,1304.05,0.7992,0.6101,0.0010,0.0009,fit
+o03,phi 0 deg (circle),circle,377.80,1293.55,0.8219,0.6013,0.0010,0.0009,fit
+o04,phi 0 deg (circle),circle,397.20,1282.70,0.8386,0.5920,0.0010,0.0009,fit
+o05,phi 0 deg (circle),circle,410.20,1270.70,0.8497,0.5817,0.0010,0.0009,fit
+o06,phi 0 deg (circle),circle,422.70,1254.00,0.8604,0.5675,0.0022,0.0021,hand
+o07,phi 0 deg (circle),circle,444.25,1184.75,0.8784,0.5090,0.0010,0.0009,fit
+o08,phi 0 deg (circle),circle,469.55,1097.25,0.8996,0.4357,0.0010,0.0009,fit
+o09,phi 0 deg (circle),circle,526.50,1080.95,0.9484,0.4219,0.0010,0.0009,fit
+o10,phi 0 deg (circle),circle,588.30,1068.55,1.0013,0.4112,0.0010,0.0009,fit
+o11,phi 0 deg (circle),circle,644.05,1091.95,1.0489,0.4305,0.0010,0.0009,fit
+o12,phi 0 deg (circle),circle,714.50,1111.00,1.1091,0.4459,0.0010,0.0009,fit
+o13,phi 0 deg (circle),circle,773.50,1142.20,1.1595,0.4717,0.0010,0.0009,fit
+x01,phi 15 deg (cross),cross,233.00,1454.25,0.7000,0.7376,0.0009,0.0010,fit
+x02,phi 15 deg (cross),cross,327.05,1364.25,0.7790,0.6608,0.0010,0.0009,fit
+x03,phi 15 deg (cross),cross,353.30,1335.00,0.8015,0.6361,0.0022,0.0021,hand
+x04,phi 15 deg (cross),cross,412.05,1310.00,0.8517,0.6148,0.0010,0.0009,fit
+x05,phi 15 deg (cross),cross,469.00,1259.25,0.9007,0.5717,0.0010,0.0009,fit
+x06,phi 15 deg (cross),cross,528.80,1133.75,0.9507,0.4661,0.0010,0.0009,fit
+x07,phi 15 deg (cross),cross,588.05,1095.25,1.0013,0.4335,0.0010,0.0009,fit
+x08,phi 15 deg (cross),cross,645.00,1108.30,1.0499,0.4442,0.0022,0.0021,hand
+x09,phi 15 deg (cross),cross,716.95,1125.70,1.1112,0.4582,0.0010,0.0009,fit
+x10,phi 15 deg (cross),cross,774.00,1153.00,1.1599,0.4807,0.0010,0.0009,fit
+t01,phi 30 deg (triangle),triangle,232.50,1517.00,0.6997,0.7914,0.0009,0.0010,fit
+t02,phi 30 deg (triangle),triangle,353.30,1432.70,0.8018,0.7185,0.0022,0.0022,hand
+t03,phi 30 deg (triangle),triangle,468.30,1381.30,0.9006,0.6745,0.0010,0.0009,fit
+t04,phi 30 deg (triangle),triangle,526.50,1393.50,0.9502,0.6845,0.0010,0.0009,fit
+t05,phi 30 deg (triangle),triangle,589.00,1254.00,1.0032,0.5669,0.0022,0.0022,hand
+t06,phi 30 deg (triangle),triangle,646.55,1067.50,1.0510,0.4101,0.0010,0.0009,fit
+t07,phi 30 deg (triangle),triangle,717.95,1049.55,1.1118,0.3944,0.0010,0.0010,fit
+t08,phi 30 deg (triangle),triangle,778.30,1122.70,1.1635,0.4555,0.0022,0.0021,hand
+t09,phi 30 deg (triangle),triangle,800.00,1126.05,1.1820,0.4583,0.0010,0.0009,fit
+p01,phi 45 deg (plus),plus,232.50,1615.00,0.7004,0.8751,0.0013,0.0013,hand
+p02,phi 45 deg (plus),plus,351.00,1567.50,0.8008,0.8338,0.0014,0.0013,hand
+p03,phi 45 deg (plus),plus,467.50,1522.50,0.9002,0.7950,0.0014,0.0014,hand
+p04,phi 45 deg (plus),plus,527.50,1500.00,0.9514,0.7753,0.0014,0.0014,hand
+p05,phi 45 deg (plus),plus,585.00,1472.50,1.0005,0.7515,0.0013,0.0014,hand
+p06,phi 45 deg (plus),plus,645.00,1429.00,1.0515,0.7139,0.0014,0.0014,hand
+p07,phi 45 deg (plus),plus,712.50,1361.00,1.1086,0.6560,0.0013,0.0013,hand
+p08,phi 45 deg (plus),plus,775.00,1335.00,1.1616,0.6341,0.0013,0.0013,hand
+p09,phi 45 deg (plus),plus,820.00,1254.00,1.1995,0.5658,0.0013,0.0013,hand
+s01,phi 60 deg (square),square,232.50,1679.00,0.7004,0.9299,0.0022,0.0022,hand
+s02,phi 60 deg (square),square,350.00,1661.00,0.8000,0.9137,0.0009,0.0010,fit
+s03,phi 60 deg (square),square,466.50,1633.50,0.9004,0.8894,0.0010,0.0010,fit
+s04,phi 60 deg (square),square,524.50,1612.50,0.9496,0.8713,0.0010,0.0010,fit
+s05,phi 60 deg (square),square,584.75,1604.00,1.0008,0.8637,0.0010,0.0010,fit
+s06,phi 60 deg (square),square,642.00,1617.00,1.0497,0.8743,0.0010,0.0010,fit
+s07,phi 60 deg (square),square,713.00,1585.00,1.1101,0.8466,0.0009,0.0010,fit
+s08,phi 60 deg (square),square,771.50,1565.50,1.1597,0.8297,0.0009,0.0010,fit
+s09,phi 60 deg (square),square,818.50,1525.50,1.1995,0.7954,0.0010,0.0010,fit
