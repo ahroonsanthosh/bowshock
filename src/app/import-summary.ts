@@ -76,6 +76,22 @@ export function importSummary(fileName: string, m: ImportMapping): ImportSummary
   };
 }
 
+/**
+ * The largest file the page reads, checked on the file's size before any
+ * of it is read (the importer's own limit, DEFAULT_MAX_INFLATED_BYTES).
+ */
+export const MAX_IMPORT_FILE_BYTES = 64 * 1024 * 1024;
+
+/** Why a file of this many bytes is not read, or null where it is small enough. */
+export function fileSizeRefusal(fileName: string, size: number): string | null {
+  if (size <= MAX_IMPORT_FILE_BYTES) return null;
+  const mib = (b: number) => `${(b / (1024 * 1024)).toFixed(1)} MiB`;
+  return (
+    `Could not import ${fileName}: it is ${mib(size)}, more than the ` +
+    `${mib(MAX_IMPORT_FILE_BYTES)} the page reads; nothing was read from it.`
+  );
+}
+
 /** The importer, if this build has it. */
 export async function loadImporter(): Promise<ImportOrk | null> {
   const found = import.meta.glob<{ importOrk: ImportOrk }>('../import/index.ts');

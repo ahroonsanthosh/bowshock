@@ -36,7 +36,7 @@ import { drawingLabel, drawRocket } from '../ui/rocket-drawing';
 import { Shell } from '../ui/shell';
 import { CurveRun, gridsTo, secondsPerPoint, type NoseSolver } from './curve';
 import { curveCsv, curveRocketName } from './curve-csv';
-import { importSummary, loadImporter, type ImportSummary } from './import-summary';
+import { fileSizeRefusal, importSummary, loadImporter, type ImportSummary } from './import-summary';
 import { bodyOutline, FlowControls, viewMenu } from './flow-controls';
 import { pointView, type PointView } from './point-view';
 import { flightWords } from './status-words';
@@ -168,6 +168,8 @@ let scale3d: SceneScale | null = null;
 let drawnMach: number | null = null;
 /** The last OpenRocket import, while its rocket is the one shown. */
 let imported: ImportSummary | null = null;
+/** The last import that failed, said beside the rocket still shown; cleared by the next rocket. */
+let importFailure: string | null = null;
 
 // ---------------------------------------------------------------- shell
 
@@ -528,6 +530,7 @@ function rocketChanged(): void {
   changed = true;
   // The file's notes no longer describe the rocket once it is edited.
   imported = null;
+  importFailure = null;
   if (presetSelect.value !== 'typed') {
     if (presetSelect.querySelector('option[value="typed"]') === null) {
       presetSelect.append(h('option', { text: 'Your rocket', attrs: { value: 'typed' } }));
@@ -551,6 +554,7 @@ presetSelect.addEventListener('change', () => {
   design = p.design;
   without = false;
   imported = null;
+  importFailure = null;
   builder.setDesign(design);
   showDrawing();
   void start();
@@ -848,6 +852,9 @@ function renderNotes(): void {
     return size === '' ? p.part : `${p.part} (${size})`;
   });
   const notes: HTMLElement[] = [];
+  if (importFailure !== null) {
+    notes.push(h('div', { className: 'note note--import' }, h('p', { text: importFailure })));
+  }
   // "it" for one part, "them" for several or for one counted ("the 2 rail buttons").
   const them = parts.length > 1 || parts.some((p) => /^the \d+ /.test(p.part)) ? 'them' : 'it';
   if (parts.length > 0 && !without) {
@@ -1196,17 +1203,30 @@ importFile.addEventListener('change', () => {
   const file = importFile.files?.[0];
   importFile.value = '';
   if (file === undefined || importer === null) return;
+  const load = importer;
+  // A failed import: the rocket shown, its notes and its curve stay as they were, and say so.
+  const failed = (message: string) => {
+    importFailure = `${message} The rocket shown is still ${design.name}, as before.`;
+    renderCurve();
+    shell.toasts.show(importFailure, 'bad', 8);
+  };
+  // Too large: refused on its size, before any of it is read.
+  const tooLarge = fileSizeRefusal(file.name, file.size);
+  if (tooLarge !== null) {
+    failed(tooLarge);
+    return;
+  }
   void (async () => {
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
-      const { mapping } = await importer(bytes, { fileName: file.name });
-      imported = importSummary(file.name, mapping);
+      const { mapping } = await load(bytes, { fileName: file.name });
+      const summary = importSummary(file.name, mapping);
       if (mapping.design === null) {
-        run?.stop();
-        renderCurve();
-        shell.toasts.show(imported.headline, 'bad', 8);
+        failed(summary.headline);
         return;
       }
+      imported = summary;
+      importFailure = null;
       design = mapping.design;
       without = false;
       if (presetSelect.querySelector('option[value="imported"]') === null) {
@@ -1220,10 +1240,8 @@ importFile.addEventListener('change', () => {
       shell.announce(imported.headline);
       await start();
     } catch (error) {
-      shell.toasts.show(
+      failed(
         `Could not import ${file.name}: ${error instanceof Error ? error.message : String(error)}`,
-        'bad',
-        8,
       );
     }
   })();

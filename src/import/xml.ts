@@ -9,6 +9,8 @@
  * A document type declaration is refused: OpenRocket never writes one,
  * and refusing it rules out entity expansion (the "billion laughs"
  * attack) without having to defend against it. Nesting is limited, and
+ * so is the number of elements (kept, and in all), so that a file of
+ * millions of tiny elements cannot exhaust the memory; and
  * the subtrees of elements named in `skip` (OpenRocket's simulation
  * results, which can run to megabytes) are checked for well-formedness
  * but not kept.
@@ -41,7 +43,20 @@ export interface XmlOptions {
   readonly skip?: ReadonlySet<string>;
   /** Deepest nesting accepted (default 256). */
   readonly maxDepth?: number;
+  /** Most elements kept (outside `skip`'s subtrees) (default MAX_KEPT_ELEMENTS). */
+  readonly maxElements?: number;
+  /** Most elements in all, kept or not (default MAX_ALL_ELEMENTS). */
+  readonly maxAllElements?: number;
 }
+
+/**
+ * The elements a document may keep: an OpenRocket design has hundreds to
+ * a few thousand outside its simulations (the largest example file, 3,623
+ * in all with its simulations).
+ */
+export const MAX_KEPT_ELEMENTS = 100_000;
+/** The elements a document may have in all, its simulations' included (each read, then dropped). */
+export const MAX_ALL_ELEMENTS = 2_000_000;
 
 interface Frame {
   readonly name: string;
@@ -95,6 +110,10 @@ export function parseXml(text: string, options: XmlOptions = {}): XmlElement {
   const source = text.includes('\r') ? text.replace(/\r\n?/g, '\n') : text;
   const skip = options.skip ?? new Set<string>();
   const maxDepth = options.maxDepth ?? 256;
+  const maxKept = options.maxElements ?? MAX_KEPT_ELEMENTS;
+  const maxAll = options.maxAllElements ?? MAX_ALL_ELEMENTS;
+  let kept = 0;
+  let all = 0;
   const n = source.length;
   let i = 0;
 
@@ -208,6 +227,9 @@ export function parseXml(text: string, options: XmlOptions = {}): XmlElement {
     i += empty ? 2 : 1;
     const parent = stack[stack.length - 1];
     const skipping = (parent?.skipping ?? false) || skip.has(name);
+    if (++all > maxAll) fail(`more than ${maxAll} elements`);
+    if (!skipping && ++kept > maxKept)
+      fail(`more than ${maxKept} elements outside the simulations`);
     const frame: Frame = { name, attributes, children: [], text: [], skipping };
     if (empty) {
       closeFrame(frame, parent);

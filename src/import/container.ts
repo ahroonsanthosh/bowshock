@@ -42,6 +42,13 @@ const MiB = (bytes: number) => `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
 export async function unpack(bytes: Uint8Array, options: UnpackOptions = {}): Promise<Unpacked> {
   const limit = options.maxInflatedBytes ?? DEFAULT_MAX_INFLATED_BYTES;
   if (bytes.length === 0) throw new OrkReadError('not-openrocket', 'The file is empty.');
+  // A file larger than the limit is refused before anything is read from it.
+  if (bytes.length > limit) {
+    throw new OrkReadError(
+      'too-large',
+      `The file is ${MiB(bytes.length)}, more than the ${MiB(limit)} this reader takes.`,
+    );
+  }
   if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
     const inner = await inflate(bytes, 'gzip', limit, 'the gzip-compressed file');
     return { container: 'gzip', bytes: inner };

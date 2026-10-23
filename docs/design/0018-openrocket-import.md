@@ -81,7 +81,9 @@ declared size (more output is damage); gzip output is counted as it
 comes and the stream cancelled at the limit. OpenRocket's own examples
 inflate to 0.26 to 1.6 MB, nearly all of it simulation results; the
 refusal tells the user to save without simulation data if a real design
-is larger.
+is larger. A file itself larger than 64 MiB is refused on its size: the
+page checks `file.size` before reading any of it, and the reader checks
+the bytes it is given before unpacking.
 
 ### 2.2 Text and XML
 
@@ -97,7 +99,9 @@ processing instructions, normalises line ends and attribute white space
 as XML 1.0 requires, and refuses anything not well-formed with the
 character offset. It refuses a document type declaration outright:
 OpenRocket never writes one, and refusing it rules out entity expansion
-attacks. Nesting is limited to 256. The simulations' time series
+attacks. Nesting is limited to 256, the elements kept to 100,000 and
+the elements in all to 2,000,000 (OpenRocket's largest example has 3,623
+in all; 12 million `<x/>` exhausted Node's heap before the limit). The simulations' time series
 (`<databranch>`, most of a file's bulk) and display settings
 (`<photostudio>`, `<docprefs>`, `<datatypes>`) are checked but not kept.
 
