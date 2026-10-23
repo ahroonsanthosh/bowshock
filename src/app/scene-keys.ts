@@ -55,14 +55,14 @@ export const SCENE_KEYS: readonly SceneKey[] = [
     action: 'scene-streamlines',
     key: '3',
     label: 'Streamlines',
-    description: 'Streamlines',
+    description: 'Streamlines, a few lit tubes',
     pressed: (s) => s.getLayers().streamlines,
   },
   {
     action: 'scene-shells',
     key: '4',
-    label: 'Shells: glowing, solid, none',
-    description: 'Shells of equal colour quantity: glowing, solid or none',
+    label: 'Shells: solid, none, glowing',
+    description: 'Shells of equal colour quantity: solid and lit, none, or glowing',
   },
   {
     action: 'scene-shock',

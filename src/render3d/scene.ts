@@ -1441,8 +1441,12 @@ export class FlowScene3D {
       if (L.overlay) {
         place(s.corner, margin, margin);
         if (s.legend !== undefined) place(s.legend, margin, h - margin - s.legend.height);
-        if (s.notes !== undefined)
-          place(s.notes, w - margin - s.notes.width, h - margin - s.notes.height);
+        if (s.notes !== undefined) {
+          // Beside the legend where they fit, else above it (a narrow view).
+          const beside = s.legend === undefined || s.legend.width + s.notes.width + 3 * margin <= w;
+          const bottom = beside ? h - margin : h - 2 * margin - s.legend!.height;
+          place(s.notes, Math.max(w - margin - s.notes.width, 0), bottom - s.notes.height);
+        }
         if (s.base !== undefined && region !== null) {
           // In the base plane, half way out to its corner on the viewer's side.
           const anchor: Vec3 = [region.xMax, 0.5 * region.rMax, 0.5 * region.rMax];
@@ -1548,9 +1552,16 @@ export class FlowScene3D {
             s.legend,
           )
         : undefined;
+    // On a narrow view the first note in two lines, so that it fits.
+    const narrow = this.canvas.width < 640 * this.pixelRatio;
     const notes = [
-      // The advisor's item 10: the glowing shells read as a 3D simulation unless this is said.
-      { text: 'The axisymmetric solution, revolved; fins are not in the airflow.' },
+      // The advisor's item 10: the shells read as a 3D simulation unless this is said.
+      ...(narrow
+        ? [
+            { text: 'The axisymmetric solution, revolved;' },
+            { text: 'fins are not in the airflow.' },
+          ]
+        : [{ text: 'The axisymmetric solution, revolved; fins are not in the airflow.' }]),
       { text: 'The fins\u2019 drag is computed separately.' },
       { text: 'Behind the base: not simulated.' },
     ];
@@ -2082,9 +2093,9 @@ function helpLines(
     { text: 'bowshock 3D view: keys', bold: true },
     { text: `1  rocket: solid, wireframe or off (now ${L.body})` },
     { text: `2  field on a slice (now ${on(L.slice)}, ${scene.getSlice()})` },
-    { text: `3  streamlines (now ${on(L.streamlines)})` },
+    { text: `3  streamlines, a few lit tubes (now ${on(L.streamlines)})` },
     {
-      text: `4  iso-surfaces of the colour quantity: glowing, solid, off (now ${L.isosurfaces ? (L.solidShells ? 'solid' : 'glowing') : 'off'})`,
+      text: `4  iso-surfaces of the colour quantity: solid and lit, off, glowing (now ${L.isosurfaces ? (L.solidShells ? 'solid' : 'glowing') : 'off'})`,
     },
     { text: `5  bow shock (now ${on(L.shock)})    6  cutaway (now ${on(L.cutaway)})` },
     { text: `Z  colour: ${scale?.label ?? ''}${unit}` },

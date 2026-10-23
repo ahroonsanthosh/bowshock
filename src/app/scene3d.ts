@@ -30,6 +30,20 @@ export function paletteGradient(colour: SceneScale['colour'], stops = 17): strin
 }
 
 /**
+ * The shells' values in a few words: a few listed; many (20 to 40, evenly
+ * spaced) as their count, spacing and ends.
+ */
+export function shellsNote(levels: readonly number[]): string {
+  if (levels.length === 0) return '';
+  if (levels.length <= 6) return `Shells at ${levels.map(formatScaleValue).join(', ')}.`;
+  const step = levels[1]! - levels[0]!;
+  return (
+    `${levels.length} shells, every ${Number(step.toPrecision(2))} ` +
+    `from ${formatScaleValue(levels[0]!)} to ${formatScaleValue(levels[levels.length - 1]!)}.`
+  );
+}
+
+/**
  * The page's legend for the 3D view's colour: the quantity, its unit and
  * range on the scene's palette, that the flow is the axisymmetric solution
  * revolved with the fins not in it, and what the scene's own legend says (the
@@ -44,7 +58,7 @@ export function sceneLegend(s: SceneScale): LegendScale {
     // The advisor's item 10: the look is FluidX3D's, a 3D solver's; this flow is not 3D.
     'The axisymmetric solution, revolved; fins are not in the airflow.',
     `Free stream ${formatScaleValue(s.freeValue)}.`,
-    s.levels.length > 0 ? `Shells at ${s.levels.map(formatScaleValue).join(', ')}.` : '',
+    shellsNote(s.levels),
     clipped
       ? `Cells from ${formatScaleValue(s.cellMin)} to ${formatScaleValue(s.cellMax)}; ` +
         'beyond the bar, its end colours.'

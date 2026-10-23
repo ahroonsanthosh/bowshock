@@ -2243,34 +2243,41 @@ input[aria-invalid='true'] {
   }
 }
 /*
- * What the airflow shows, at the top left of the view under the readout:
- * the note, then (on desktops) the colour legend, clear of the rocket
- * panel, which runs the window's height.
+ * What the airflow shows, compact in the bottom left corner of the view
+ * (clear of the rocket panel, which runs the window's height): the note,
+ * then (on desktops) the colour legend. In the corner it covers little of
+ * the flow, which the view fits between the panels' middles.
  */
 .flow-aside {
   position: fixed;
   z-index: 10;
   left: calc(2 * var(--inset) + var(--panel-width) + 4px);
-  top: calc(var(--topbar-height) + var(--inset) + 104px);
+  bottom: calc(var(--inset) + 4px);
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: flex-start;
-  gap: 8px;
-  max-width: 360px;
+  gap: 6px;
+  max-width: 300px;
   pointer-events: none;
 }
 .flow-aside .legend {
-  min-width: 260px;
+  min-width: 240px;
+  max-width: 300px;
+  padding: 6px 10px 7px;
+}
+.flow-aside .legend__note {
+  font-size: 11px;
+  line-height: 1.4;
 }
 .flow-note {
   margin: 0;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
   background: var(--panel);
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: 11px;
+  line-height: 1.4;
   pointer-events: none;
 }
 
