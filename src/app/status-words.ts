@@ -15,7 +15,13 @@ import type { BaseRefusalReason } from '../base/refusal';
 import type { FinRefusalReason } from '../fins/refusal';
 import type { ComponentRefusal } from '../total/total-drag';
 import type { RocketDesign } from '../rocket/design';
-import { BOUNDED_REASON, CLASS_CLAIM, W1_BOUNDED_REASON, type Claim } from './total-drag';
+import {
+  BOUNDED_REASON,
+  CLASS_CLAIM,
+  FINS_AHEAD_OF_BASE,
+  W1_BOUNDED_REASON,
+  type Claim,
+} from './total-drag';
 
 /** The colour family of a status: green, amber, blue, red, grey. */
 export type Tone = 'ok' | 'warn' | 'bounded' | 'bad' | 'muted';
@@ -158,6 +164,11 @@ export interface PlainReason {
   readonly reason: string;
   /** What the user could change for a number; empty where nothing about the rocket would. */
   readonly change: string;
+  /**
+   * The logic checks this before its other checks (an input it cannot
+   * take), so clearing it is a first step, never promised to give a number.
+   */
+  readonly first?: boolean;
 }
 
 /** Nothing about the rocket changes it. */
@@ -358,6 +369,15 @@ const isKey = <K extends string>(table: Readonly<Record<K, unknown>>, key: strin
 /** A refusal of the logic in plain words (any reason it does not know: its message). */
 export function refusalWords(r: ComponentRefusal): PlainReason {
   if (r.component === 'flight condition') return { reason: r.message, change: 'see the reason' };
+  // The fins' place below zero: the fins overhang the base (the only way the builder or an
+  // import gives it, since a field that is not a number is never put into the rocket).
+  if (r.reason === 'input' && r.message.startsWith(`${FINS_AHEAD_OF_BASE} must be`)) {
+    return {
+      reason: 'the fins reach past the base',
+      change: 'fins whose trailing edges are at the base or ahead of it',
+      first: true,
+    };
+  }
   if (isKey(BASE_WORDS, r.reason) && /base/.test(r.component)) return BASE_WORDS[r.reason](r);
   if (isKey(FIN_WORDS, r.reason)) return FIN_WORDS[r.reason](r);
   if (isKey(BASE_WORDS, r.reason)) return BASE_WORDS[r.reason](r);
@@ -367,8 +387,11 @@ export function refusalWords(r: ComponentRefusal): PlainReason {
 
 /** "To get a number: ..." or, where nothing about the rocket would change it, why not. */
 export function changeText(plain: PlainReason): string {
-  return plain.change === NOTHING
-    ? 'Nothing about the rocket changes this: this speed has no number yet.'
+  if (plain.change === NOTHING) {
+    return 'Nothing about the rocket changes this: this speed has no number yet.';
+  }
+  return plain.first === true
+    ? `First: ${plain.change}. The rocket's other checks are made only then.`
     : `To get a number: ${plain.change}.`;
 }
 

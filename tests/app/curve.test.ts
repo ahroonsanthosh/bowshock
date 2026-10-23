@@ -292,7 +292,7 @@ describe('the CSV', { timeout: 120_000 }, () => {
     expect(Number(high)).toBeGreaterThanOrEqual(t.high);
   });
 
-  it("an edited preset's CSV names the edited rocket, not the preset", async () => {
+  it("an edited preset's CSV names the edited rocket, not the preset", () => {
     // The builder's first edit of the Basic Finner: a nose 80 mm long.
     const d = basic();
     const typed = edited(d, withBodyLengths(d, { nose: 0.08 }));
