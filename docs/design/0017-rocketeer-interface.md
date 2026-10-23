@@ -286,16 +286,19 @@ The page owns the rocket, the curve and the GPU device; the scene
 **One key map.** The page's keys (V, Space, R, F or 0, + and -, the
 arrows, K, H) act in both views. The 3D view's (FluidX3D's: 1 rocket,
 2 slice, 3 streamlines, 4 shells, 5 shock, 6 cutaway, Z colour, T slice
-orientation, Q and E) act only while it is shown, through render3d's own
-`sceneKey`; the side view's (1 to 4 fields, 5 glow, D, G, S) only while
+orientation, Q and E; and bowshock's 7, the slice's look, and 8,
+particles) act only while it is shown, through render3d's own `sceneKey`
+and `sceneExtraKey`; the side view's (1 to 4 fields, 5 glow, D, G, S) only while
 it is. A binding has `when` and a help `group`, and the help lists each
 view's keys under its name; the View menu and the phone's View tab have
 a button for each. A test holds that every key has one action in either
 view. **The default look** (section 6.6, 2026-10-23, on the owner's
 note that the glowing look was "still pretty far off" FluidX3D's) is 20 to
-40 opaque, lit iso-surfaces of the colour quantity, the shock as one
-crisp sheet, a wedge cut away and a thin box; no slice and no
-streamlines (keys 2 and 3). With no airflow shown the 3D view follows the builder; when the
+40 opaque, lit iso-surfaces of the colour quantity with fibres along the
+flow, the shock as one crisp sheet, a 150 degree wedge cut away with one
+face textured by fibres along the computed flow (the slice, key 2), the
+body coloured by its computed surface pressure, and a thin box; no
+streamlines and no particles (keys 3 and 8). With no airflow shown the 3D view follows the builder; when the
 rocket changes the flow is cleared, so that no view shows one rocket
 with another's flow.
 
@@ -415,11 +418,40 @@ its code). What makes that look, and what bowshock takes from it:
 - **The spectrum** runs blue, azure, cyan, green, yellow, orange, red,
   with magenta at the top (FluidX3D's order); one table for the 3D view
   and the side view (`src/render/colormap.ts`).
-- **Restraint.** Black background, a thin dim box, the rocket a solid lit
-  grey (fins as geometry), no slice and no streamlines by default;
+- **Restraint.** Black background, a thin dim box, the fins a solid lit
+  grey (geometry, not in the airflow), no streamlines by default;
   streamlines (key 3) are a few lit tubes (6 a plane, 8 azimuths, also in
   the cutaway), not a mat of 1-pixel lines. The page's note and legend sit
   compact in the bottom left corner, not over the flow.
+
+**The cutaway (2026-10-23, the owner's choice after the side-by-side:
+more of the inner sheets).** The wedge opens 150 degrees, centred where
+the quarter cut was. Tried 90, 150 and 180: at 150 the nested sheets
+show from the shock to the body across most of the picture, the rocket
+and two fins are in plain sight, and the 210 degrees left still read as
+a solid of revolution; at 180 the default view is a flat half-section.
+
+**Detail from the computed field (2026-10-23, the owner: "too generic").**
+Every layer below is drawn from the solver's field; the only thing in
+them it did not compute is the noise the fibres are made from, which
+carries direction and nothing else, and the legend says so.
+
+| Layer                                                                   | What it shows                                                                           | Where it comes from                                                                                                                                                                                                                                 |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The field's image (`src/render3d/field-image.ts`, `field-image-gpu.ts`) | not drawn itself: the texture the faces and the sheets' fibres sample                   | the dual mesh rasterised on the GPU: velocity, the value shown, the schlieren, linear across each quad; square texels, about as many across as the view (512 to 1280, half in a draft)                                                              |
+| Fibres on the slice (key 7: fibres)                                     | a fine grain along the flow, coloured by the quantity                                   | line integral convolution: each texel the mean of white noise along the streamline through it, traced both ways (32 steps of a texel, second order) in the image's velocity                                                                         |
+| Fibres on the sheets                                                    | streaks along each sheet's meridians, strongest where the flow runs along the sheet     | the flow has no swirl, so on a sheet of revolution it runs along the meridians; streak noise laid along them, its strength the computed velocity's share along the sheet                                                                            |
+| Schlieren (key 7: schlieren)                                            | black to white: where the density changes fast                                          | log10 of the density gradient's magnitude times the calibre over the free stream's density, from the grid's own metric (central differences), 5th to 99.5th percentile; the fitted shock is a jump, so it is the region's white edge                |
+| The body's colour                                                       | the computed surface pressure coefficient, blue (suction) through light grey (0) to red | the pressure in the cells on the wall, along the body; the fins and the base stay grey (the fins are not in the airflow; nothing is computed behind the base)                                                                                       |
+| Particles (key 8, off by default)                                       | 2500 short streaks moving with the flow                                                 | the computed velocity, second order on the dual mesh; they start again at random points inside the region when they leave it (the starts are not the solution, the motion is); animated at most half the time, the live share while the solver runs |
+
+One face of the cutaway carries the slice's texture and the other is left
+open, so the sheets show beside it. The fins already had their real
+thickness and edge shapes (round, bevel or square, `rocket-mesh.ts`).
+**The grid drawn** is the one the solver is on, the finest so far; the
+readout says which ("grid 318 x 40 (2 of 4)") and the PNG's caption gives
+its size; the image samples it with linear interpolation at about the
+view's resolution.
 
 **What is not taken, and why.** FluidX3D's F1 shows turbulence: vortex
 tubes, wakes, fine-grained texture, all of a 3D, viscous, unsteady
@@ -440,8 +472,12 @@ old and new default frames back to back on the loaded machine (load 4 to
 7): old 1.8 to 2.6 s, new 2.2 to 2.6 s; drafts 0.7 to 0.9 s for both. Live
 frames keep `FRAME_BUDGET` (section 6.4); while the viewer turns, pans
 or zooms on a slow adapter the frames are drafts and a full frame
-follows 350 ms after the last move. `tests/gpu/render3d.test.ts` and
-`tests/gpu/render3d-cost.test.ts` pass.
+follows 350 ms after the last move. With the detail layers (the field's
+image and fibres are built once per flow, not per frame), the default
+frame measured 2.1 to 3.7 s at 1440 x 900 and 1.0 to 1.6 s at 390 x 844 on
+the same loaded machine; particles draw drafts while they move.
+`tests/gpu/render3d.test.ts` (every layer and look, full and draft),
+`tests/gpu/render3d-cost.test.ts` and `tests/gpu/app-page.test.ts` pass.
 
 ## 7. The rocket drawing
 

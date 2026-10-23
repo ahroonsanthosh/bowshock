@@ -104,6 +104,7 @@ const ALL_OFF: Partial<SceneLayers> = {
   box: false,
   overlay: false,
   help: false,
+  particles: false,
 };
 
 describe('the 3D view', () => {
@@ -236,6 +237,10 @@ describe('the 3D view', () => {
       {},
       { body: 'wireframe' },
       { solidShells: true },
+      { solidShells: false },
+      { faces: 'schlieren' },
+      { faces: 'plain' },
+      { particles: true },
       { cutaway: false },
       { help: true },
       { ...ALL_OFF },
@@ -276,14 +281,16 @@ describe('the 3D view', () => {
     expect(errors).toEqual([]);
   }, 600_000);
 
-  it('shows the rocket where it stands, light grey; the flow’s layers add colour', async () => {
+  it('shows the rocket where it stands, coloured by its surface pressure, fins grey; the flow’s layers add colour', async () => {
     scene.setLayers({ ...ALL_OFF, body: 'solid', cutaway: true });
     scene.setSlice('cutaway');
     scene.resetView();
+    // With a flow, the body carries its computed surface pressure's colours;
+    // the fins (not in the airflow) stay light grey.
     const bodyOnly = census(await scene.pixels());
-    expect(bodyOnly.grey).toBeGreaterThan(0.003);
-    expect(bodyOnly.coloured).toBeLessThan(0.0005);
-    // The middle of the body is light grey at its projected pixel.
+    expect(bodyOnly.grey).toBeGreaterThan(0.0003);
+    expect(bodyOnly.coloured).toBeGreaterThan(0.002);
+    // The middle of the body is lit at its projected pixel.
     const image = await scene.pixels();
     const orbit = scene.getOrbit()!;
     const m = viewProjection(orbit, image.width / image.height, 20);
@@ -293,10 +300,9 @@ describe('the 3D view', () => {
     const k = 4 * (px + py * image.width);
     const [r, g, b] = [image.data[k]!, image.data[k + 1]!, image.data[k + 2]!];
     expect(
-      Math.min(r, g, b),
+      Math.max(r, g, b),
       `pixel ${px}, ${py} of ${image.width} x ${image.height}`,
     ).toBeGreaterThan(90);
-    expect(Math.max(r, g, b) - Math.min(r, g, b)).toBeLessThan(18);
     // Each layer of the flow changes the picture, and all but the shock
     // (drawn near white) add the palette's colours.
     for (const layer of ['slice', 'streamlines', 'isosurfaces', 'shock'] as const) {
