@@ -63,12 +63,17 @@ describe('the app page', () => {
       const view = totalDragView(asked.form, { kind: 'pending' });
       expect(view.kind, `Mach ${mach}`).toBe('refused');
       if (view.kind !== 'refused') continue;
-      expect(rows[k]).toEqual([mach.toFixed(2), '', '', 'No number']);
-      // The point block of that point: the first refusal's plain reason, and what could change it.
+      expect(rows[k]!.slice(0, 3)).toEqual([mach.toFixed(2), '', '', '']);
+      expect(rows[k]![3]!.startsWith('No number')).toBe(true);
+      // The table row and the point block of that point: every refusal's plain reason.
       (doc.querySelectorAll('.curve-table__mach')[k] as HTMLButtonElement).click();
       await until(() => text('.point__mach') === `Mach ${mach.toFixed(2)}`, `Mach ${mach}`);
-      const plain = refusalWords(view.refusals[0]!);
-      expect(text('.point__sentence')).toContain(plain.reason);
+      const block = `${text('.point__sentence')} ${text('.point__reasons')}`;
+      for (const r of view.refusals) {
+        const plain = refusalWords(r);
+        expect(rows[k]![3]).toContain(plain.reason);
+        expect(block).toContain(plain.reason);
+      }
     }
   });
 

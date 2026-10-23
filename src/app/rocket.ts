@@ -952,6 +952,10 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
               }),
         ),
     h('p', { className: 'point__sentence', text: v.status.sentence }),
+    // Several reasons: every one, in plain words.
+    v.reasons.length > 1
+      ? h('ul', { className: 'point__reasons' }, ...v.reasons.map((text) => h('li', { text })))
+      : null,
     v.change === null ? null : h('p', { className: 'point__change', text: v.change }),
     v.without === ''
       ? null

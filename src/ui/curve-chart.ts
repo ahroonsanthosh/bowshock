@@ -265,6 +265,16 @@ export function curveTable(
     status.append(
       h('span', { className: `status-word status-word--${v.status.tone}`, text: v.status.word }),
     );
+    // A point without a number: every reason, in plain words.
+    if (v.reasons.length > 0) {
+      status.append(
+        h(
+          'ul',
+          { className: 'curve-table__reasons' },
+          ...v.reasons.map((text) => h('li', { text })),
+        ),
+      );
+    }
     for (const cell of [row.cells[1]!, row.cells[2]!]) cell.className = 'num';
   });
   return table;

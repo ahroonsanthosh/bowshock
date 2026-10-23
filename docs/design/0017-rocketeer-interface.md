@@ -196,8 +196,17 @@ follow its text and reasons. A new kind fails the build
 **Points without a number** (kind `refused`, the nose solve's outcomes,
 and the adapter's flags): the word is **No number**, the mark a red ✕ in
 the chart's "no number" row, and the sentence "The drag here cannot be
-given to a known accuracy:" with the plain reason of the first refusal (all
-of them in Details), then what the user could change.
+given to a known accuracy:" with its plain reason, or, where the logic
+gives several, "two (three, ...) reasons, each listed below" and every
+reason in plain words, each once, in the point block and the table (the
+logic's own text in Details). Then what the user could change, for all
+the reasons together: "To get a number: ..." only where there is one
+reason; "Nothing about the rocket changes this" where any reason has no
+change about the rocket ("or the browser" beside the no-WebGPU reason);
+otherwise "No one change gives a number here: each reason needs its own"
+with each change. A change is never offered as giving a number while
+another refusal stands (`tests/app/refusal-list.test.ts`, every preset,
+with and without WebGPU).
 
 | Reason (component)                                | Plain reason                                                                                                  | What you could change                                                     |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |

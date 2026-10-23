@@ -2146,6 +2146,17 @@ input[aria-invalid='true'] {
   color: var(--text);
   font-weight: 500;
 }
+.point__reasons,
+.curve-table__reasons {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.curve-table__reasons {
+  color: var(--muted);
+  font-size: 11.5px;
+}
 .point__without {
   color: var(--warn);
   font-weight: 600;

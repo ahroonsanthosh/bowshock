@@ -305,6 +305,9 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
     reason: 'a rounded leading edge is modelled only on a wedge-shaped fin, not on this one',
     change: 'bevelled leading edges',
   }),
+  // The bounded term for rounded edges below normal Mach 1.0 (0019 section 3.2) is not wired:
+  // should it ever refuse, its own message lists every condition.
+  'bounded-edge-range': asMessage,
 };
 
 /** How the nose's solve ended, where it gave the total no nose term. */

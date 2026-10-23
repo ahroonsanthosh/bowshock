@@ -46,8 +46,14 @@ export interface PointView {
   /** The band to the headline's decimals, rounded outward; null without one. */
   readonly headlineBand: string | null;
   readonly status: StatusWords;
-  /** "To get a number: ..." for a point without a number, else null. */
+  /**
+   * For a point without a number, what could change that for all its
+   * reasons together ("To get a number: ..." only where one change clears
+   * every reason), else null.
+   */
   readonly change: string | null;
+  /** Every reason a point has no number, in plain words; empty for any other point. */
+  readonly reasons: readonly string[];
   /** "without the launch lug", or ''. */
   readonly without: string;
 }
@@ -69,26 +75,68 @@ export function headlineDigits(cd: number, low: number, high: number): number {
   return Math.min(DIGITS, Math.max(0, 2 - Math.floor(Math.log10(Math.abs(cd)))));
 }
 
-/** The plain words of a point without a number. */
-function plainOf(point: CurvePoint): PlainReason | null {
+/**
+ * Every reason a point has no number, in plain words, in the logic's order
+ * and each once: the nose's end (where it is the nose that gave no term)
+ * in place of the logic's nose refusal, then every other refusal. Null for
+ * a point that is not finished or has a number. `finer` says whether a
+ * finer grid is offered.
+ */
+export function plainReasons(point: CurvePoint, finer: boolean): readonly PlainReason[] | null {
   const s = point.state;
   if (s.kind !== 'done') return null;
   const r = s.result;
   switch (r.kind) {
     case 'refused': {
-      const first = r.refusals[0];
-      const noseFirst = first === undefined || first.component === 'nose wave drag';
-      if (r.nose !== null && noseFirst) return noseWords(r.nose, false);
-      return first === undefined ? noseWords('gpu-failed', false) : refusalWords(first);
+      const out: PlainReason[] = [];
+      const add = (p: PlainReason) => {
+        if (!out.some((q) => q.reason === p.reason)) out.push(p);
+      };
+      const nose = r.nose === null ? null : noseWords(r.nose, finer);
+      if (nose !== null && !r.refusals.some((x) => x.component === 'nose wave drag')) add(nose);
+      for (const x of r.refusals) {
+        add(x.component === 'nose wave drag' && nose !== null ? nose : refusalWords(x));
+      }
+      if (out.length === 0) add(noseWords('gpu-failed', false));
+      return out;
     }
-    case 'not-modelled': {
-      const f = r.features[0]!;
-      return { reason: `bowshock does not model ${f.feature} (${f.reason})`, change: f.change };
-    }
+    case 'not-modelled':
+      return r.features.map((f) => ({
+        reason: `bowshock does not model ${f.feature} (${f.reason})`,
+        change: f.change,
+      }));
     case 'total':
     case 'choose':
       return null;
   }
+}
+
+/** The no-WebGPU reason's words, to name the browser beside the rocket. */
+const NO_WEBGPU_REASON = noseWords('no-webgpu', false).reason;
+
+/**
+ * What could give a point a number, for all its reasons together. One
+ * change is offered as giving a number only where there is one reason;
+ * where any reason has no change about the rocket, nothing does; where
+ * there are several, each is said to need its own.
+ */
+export function changeOfAll(reasons: readonly PlainReason[]): string {
+  if (reasons.length === 1) return changeText(reasons[0]!);
+  if (reasons.some((p) => p.change === '')) {
+    const browser = reasons.some((p) => p.reason === NO_WEBGPU_REASON);
+    return `Nothing about the rocket${browser ? ' or the browser' : ''} changes this: this speed has no number yet.`;
+  }
+  return `No one change gives a number here: each reason needs its own (${reasons
+    .map((p) => p.change)
+    .join('; ')}).`;
+}
+
+/** The sentence of a point without a number: its one reason, or how many there are. */
+function reasonSentence(reasons: readonly PlainReason[]): string {
+  const n = reasons.length;
+  return n === 1
+    ? reasons[0]!.reason
+    : `${n === 2 ? 'two' : n === 3 ? 'three' : n === 4 ? 'four' : String(n)} reasons, each listed below`;
 }
 
 /** One point as the page shows it; `finer` says whether a finer grid is offered. */
@@ -101,6 +149,7 @@ export function pointView(point: CurvePoint, finer: boolean): PointView {
     headline: null,
     headlineBand: null,
     change: null,
+    reasons: [] as readonly string[],
     without: '',
   };
   const s = point.state;
@@ -137,19 +186,19 @@ export function pointView(point: CurvePoint, finer: boolean): PointView {
       headlineBand: `${headLow} to ${headHigh}`,
       status: claimWords(r.view.claim),
       change: null,
+      reasons: [],
       without: withoutText(r.without),
     };
   }
   if (r.kind === 'choose') {
     return { mach, ...none, status: chooseWords(r.excludable.map((e) => e.part)) };
   }
-  const plain = plainOf(point)!;
-  // The nose's "finer grid" suggestion only where one is offered.
-  const fixed = r.kind === 'refused' && r.nose === 'no-band' ? noseWords('no-band', finer) : plain;
+  const reasons = plainReasons(point, finer)!;
   return {
     mach,
     ...none,
-    status: noNumberWords(fixed.reason),
-    change: changeText(fixed),
+    status: noNumberWords(reasonSentence(reasons)),
+    reasons: reasons.map((p) => p.reason),
+    change: changeOfAll(reasons),
   };
 }
