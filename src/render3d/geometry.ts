@@ -123,49 +123,89 @@ export function shockRadiusAt(shock: { x: number[]; r: number[] }, x: number): n
   return shock.r[shock.r.length - 1]!;
 }
 
+/** Floats per point of revolve.wgsl: (x, r, nx, nr), then (value, 0, 0, 0). */
+export const POINT_FLOATS = 8;
+
 /**
- * Segments for revolve.wgsl: per segment (x0, r0, x1, r1), the end
- * normals (nx0, nr0, nx1, nr1) and values (v0, v1, 0, 0).
+ * Lines of the meridional plane to revolve (revolve.wgsl): their points,
+ * each with its unit normal in the plane and its value, and the first
+ * point of each segment (the next point is its other end). Each point is
+ * turned to every azimuth once and shared by the quads on either side.
  */
+export interface RevolvedLines {
+  /** POINT_FLOATS per point. */
+  readonly points: Float32Array<ArrayBuffer>;
+  /** The first point of each segment. */
+  readonly segments: Uint32Array<ArrayBuffer>;
+}
+
+/**
+ * Polylines (x, r, their normals and values) for revolve.wgsl, cut at
+ * x = xEnd (the base: nothing of the flow is drawn beyond it), so that the
+ * surfaces need no test per pixel.
+ */
+export function revolvedLines(
+  lines: readonly {
+    readonly x: readonly number[];
+    readonly r: readonly number[];
+    readonly nx: readonly number[];
+    readonly nr: readonly number[];
+    readonly value: readonly number[];
+  }[],
+  xEnd = Infinity,
+): RevolvedLines {
+  const points: number[] = [];
+  const segments: number[] = [];
+  for (const l of lines) {
+    const at = (k: number) => [l.x[k]!, l.r[k]!, l.nx[k]!, l.nr[k]!, l.value[k]!];
+    // A piece of the line on the near side of xEnd, as it is walked.
+    let open = false;
+    const add = (q: number[]) => {
+      if (open) segments.push(points.length / POINT_FLOATS - 1);
+      points.push(q[0]!, q[1]!, q[2]!, q[3]!, q[4]!, 0, 0, 0);
+      open = true;
+    };
+    for (let k = 0; k < l.x.length; k++) {
+      const q = at(k);
+      const inside = q[0]! <= xEnd;
+      if (k > 0) {
+        const p = at(k - 1);
+        const was = p[0]! <= xEnd;
+        if (was !== inside) {
+          const f = (xEnd - p[0]!) / (q[0]! - p[0]!);
+          const cut = p.map((v, i) => v + f * (q[i]! - v));
+          cut[0] = xEnd;
+          add(cut);
+          if (!inside) open = false;
+        }
+      }
+      if (inside) add(q);
+    }
+  }
+  return { points: new Float32Array(points), segments: new Uint32Array(segments) };
+}
+
+/** Iso-lines for revolve.wgsl, each at its level, cut at x = xEnd. */
 export function shellSegments(
   lines: readonly IsoLine[],
   valueOf: (line: IsoLine) => number,
-): Float32Array<ArrayBuffer> {
-  const count = lines.reduce((s, l) => s + l.x.length - 1, 0);
-  const data = new Float32Array(12 * count);
-  let o = 0;
-  for (const l of lines) {
-    const v = valueOf(l);
-    for (let k = 0; k + 1 < l.x.length; k++) {
-      data.set(
-        [
-          l.x[k]!,
-          l.r[k]!,
-          l.x[k + 1]!,
-          l.r[k + 1]!,
-          l.nx[k]!,
-          l.nr[k]!,
-          l.nx[k + 1]!,
-          l.nr[k + 1]!,
-          v,
-          v,
-          0,
-          0,
-        ],
-        o,
-      );
-      o += 12;
-    }
-  }
-  return data;
+  xEnd = Infinity,
+): RevolvedLines {
+  return revolvedLines(
+    lines.map((l) => ({ ...l, value: l.x.map(() => valueOf(l)) })),
+    xEnd,
+  );
 }
 
-/** The shock's segments for revolve.wgsl, with the normals of its line. */
-export function shockSegments(shock: {
-  x: number[];
-  r: number[];
-  value: number[];
-}): Float32Array<ArrayBuffer> {
+/** The shock's line for revolve.wgsl, with its normals and the values behind it, cut at x = xEnd. */
+export function shockSegments(
+  shock: {
+    x: number[];
+    r: number[];
+    value: number[];
+  },
+  xEnd = Infinity,
+): RevolvedLines {
   const n = shock.x.length;
   const nx: number[] = [];
   const nr: number[] = [];
@@ -178,27 +218,33 @@ export function shockSegments(shock: {
     nx.push(-dr / len);
     nr.push(dx / len);
   }
-  const data = new Float32Array(12 * (n - 1));
-  for (let k = 0; k + 1 < n; k++) {
-    data.set(
-      [
-        shock.x[k]!,
-        shock.r[k]!,
-        shock.x[k + 1]!,
-        shock.r[k + 1]!,
-        nx[k]!,
-        nr[k]!,
-        nx[k + 1]!,
-        nr[k + 1]!,
-        shock.value[k]!,
-        shock.value[k + 1]!,
-        0,
-        0,
-      ],
-      12 * k,
-    );
+  return revolvedLines([{ ...shock, nx, nr }], xEnd);
+}
+
+/**
+ * The triangles of revolved lines at `sectors` azimuths (point p at sector
+ * s is vertex p * (sectors + 1) + s): two per segment and sector.
+ */
+export function revolvedIndices(
+  segments: Uint32Array<ArrayBuffer>,
+  sectors: number,
+): Uint32Array<ArrayBuffer> {
+  const s1 = sectors + 1;
+  const out = new Uint32Array(6 * segments.length * sectors);
+  let o = 0;
+  for (const p of segments) {
+    const a = p * s1;
+    const b = (p + 1) * s1;
+    for (let s = 0; s < sectors; s++) {
+      out[o++] = a + s;
+      out[o++] = b + s;
+      out[o++] = b + s + 1;
+      out[o++] = a + s;
+      out[o++] = b + s + 1;
+      out[o++] = a + s + 1;
+    }
   }
-  return data;
+  return out;
 }
 
 /** Floats per segment of ribbon.wgsl: (x, y, z, value) at each end, then each end's brightness. */

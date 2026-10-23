@@ -47,11 +47,13 @@ import {
   meridionalLineSegments,
   meridionalOutline,
   meridionalSliceTriangles,
+  revolvedIndices,
   segments3d,
   shellSegments,
   shockRadiusAt,
   shockSegments,
   type FlowGeometry,
+  type RevolvedLines,
 } from './geometry';
 import { legend, textBlock, type Canvas2D } from './overlay';
 import { QUANTITIES, type Quantity, type QuantityScale, type Units } from './quantities';
@@ -89,12 +91,17 @@ export interface SceneLayers {
   readonly help: boolean;
 }
 
+/**
+ * The default look (FluidX3D's manner): many opaque, lit iso-surfaces of
+ * the colour quantity, the shock as one crisp sheet, a wedge cut away to
+ * show the rocket, a thin box; no slice, no streamlines (keys 2 and 3).
+ */
 export const DEFAULT_LAYERS: SceneLayers = {
   body: 'solid',
-  slice: true,
-  streamlines: true,
+  slice: false,
+  streamlines: false,
   isosurfaces: true,
-  solidShells: false,
+  solidShells: true,
   shock: true,
   cutaway: true,
   box: true,
@@ -144,15 +151,25 @@ export interface FlowScene3DOptions {
 const SAMPLES = 4;
 /** A frame slower than this (ms) makes live frames drafts. */
 const DRAFT_ABOVE_MS = 150;
+/** While the viewer turns, pans or zooms (and this long after), slow frames are drafts too. */
+const MOVING_MS = 350;
 /** Live frames a second at most. */
 const MAX_LIVE_FPS = 30;
 const DEPTH_FORMAT: GPUTextureFormat = 'depth24plus';
 const FRAME_BYTES = 256;
 const DRAW_BYTES = 64;
 const PALETTE_SIZE = 256;
-/** Azimuths of the streamlines (every 10 degrees). */
-const STREAMLINE_AZIMUTHS = 36;
-const DRAFT_STREAMLINE_AZIMUTHS = 18;
+/** Azimuths of the streamlines (every 45 degrees): a few tubes, not a mat of lines. */
+const STREAMLINE_AZIMUTHS = 8;
+const DRAFT_STREAMLINE_AZIMUTHS = 8;
+/** Streamlines per meridional plane. */
+const STREAMLINES_PER_PLANE = 6;
+/**
+ * Iso-surfaces asked of the colour quantity's range: at round levels, so
+ * between half this and this many are drawn (20 to 40), as FluidX3D's
+ * dense sheets; each level is a real value of the computed field.
+ */
+const ISO_SURFACES = 40;
 /** Sectors of a full turn of the revolved surfaces. */
 const SHELL_SECTORS = 144;
 const DRAFT_SHELL_SECTORS = 64;
@@ -172,6 +189,7 @@ type DrawName =
   | 'streamlines'
   | 'freeLines'
   | 'cutLines'
+  | 'shockCut'
   | 'outline'
   | 'wire'
   | 'box'
@@ -180,6 +198,13 @@ type DrawName =
 interface LineSet {
   buffer: GPUBuffer;
   count: number;
+}
+
+/** Lines to revolve (revolve.wgsl): their points, and the triangles' indices at a number of sectors. */
+interface RevolvedSet {
+  buffer: GPUBuffer;
+  segments: Uint32Array<ArrayBuffer>;
+  index: { sectors: number; buffer: GPUBuffer; count: number } | null;
 }
 
 interface Sprite {
@@ -200,6 +225,7 @@ class Pipelines {
     readonly shell: GPURenderPipeline,
     readonly shellLit: GPURenderPipeline,
     readonly line: GPURenderPipeline,
+    readonly tube: GPURenderPipeline,
     readonly slice: GPURenderPipeline,
     readonly sprite: GPURenderPipeline,
   ) {}
@@ -273,7 +299,7 @@ class Pipelines {
     });
     const multisample = { count: samples };
     const primitive: GPUPrimitiveState = { topology: 'triangle-list', cullMode: 'none' };
-    const [body, shell, shellLit, line, slice, sprite] = await Promise.all([
+    const [body, shell, shellLit, line, tube, slice, sprite] = await Promise.all([
       device.createRenderPipelineAsync({
         label: '3D body',
         layout: layout(drawLayout),
@@ -333,6 +359,16 @@ class Pipelines {
         multisample,
       }),
       device.createRenderPipelineAsync({
+        label: '3D tubes',
+        layout: layout(storageLayout),
+        vertex: { module: lineModule, entryPoint: 'line_vs' },
+        fragment: { module: lineModule, entryPoint: 'tube_fs', targets: [{ format }] },
+        primitive,
+        depthStencil: depth(true),
+        // The tube's edge smoothed over the samples (none to smooth over in a draft).
+        multisample: { count: samples, alphaToCoverageEnabled: samples > 1 },
+      }),
+      device.createRenderPipelineAsync({
         label: '3D slices',
         layout: layout(drawLayout),
         vertex: {
@@ -380,6 +416,7 @@ class Pipelines {
       shell,
       shellLit,
       line,
+      tube,
       slice,
       sprite,
     );
@@ -421,11 +458,13 @@ export class FlowScene3D {
 
   private field: MeridionalField | null = null;
   private geometry: FlowGeometry | null = null;
-  private shells: LineSet | null = null;
-  private shock: LineSet | null = null;
+  private shells: RevolvedSet | null = null;
+  private shock: RevolvedSet | null = null;
   private streamlines: LineSet | null = null;
   private freeLines: LineSet | null = null;
   private cutLines: LineSet | null = null;
+  /** The shock's line on the cutaway's faces. */
+  private shockCut: LineSet | null = null;
   private outline: LineSet | null = null;
   private box: LineSet | null = null;
   private hatch: LineSet | null = null;
@@ -509,6 +548,7 @@ export class FlowScene3D {
       'streamlines',
       'freeLines',
       'cutLines',
+      'shockCut',
       'outline',
       'wire',
       'box',
@@ -737,6 +777,7 @@ export class FlowScene3D {
   setOrbit(orbit: Orbit): void {
     this.orbit = orbit;
     this.fittedTo = null;
+    this.moved();
     this.requestDraw();
   }
 
@@ -745,6 +786,7 @@ export class FlowScene3D {
     if (this.orbit === null) return;
     this.orbit = orbitBy(this.orbit, dx, dy);
     this.fittedTo = null;
+    this.moved();
     this.requestDraw();
   }
 
@@ -754,6 +796,7 @@ export class FlowScene3D {
     const scale = (2 * Math.tan(this.orbit.fovY / 2)) / Math.max(this.canvas.height, 1);
     this.orbit = panBy(this.orbit, dx * scale, dy * scale);
     this.fittedTo = null;
+    this.moved();
     this.requestDraw();
   }
 
@@ -763,6 +806,7 @@ export class FlowScene3D {
     const size = b === null ? 10 : Math.hypot(b.xMax - b.xMin, b.rMax);
     this.orbit = zoomBy(this.orbit, factor, 0.05 * size, 8 * size);
     this.fittedTo = null;
+    this.moved();
     this.requestDraw();
   }
 
@@ -800,8 +844,12 @@ export class FlowScene3D {
       this.redrawAfter = true;
       return this.drawing;
     }
-    const draft = this.live && this.lastFullFrameMs > DRAFT_ABOVE_MS;
-    this.drawing = this.drawFrame(undefined, draft)
+    const slow = this.lastFullFrameMs > DRAFT_ABOVE_MS;
+    const moving = performance.now() - this.movedAt < MOVING_MS;
+    // Live: the flow changes, so its geometry is built in draft too; moving: only the drawing.
+    const draft = slow && (this.live || moving);
+    if (draft && moving && !this.live) this.settleLater();
+    this.drawing = this.drawFrame(undefined, draft, draft && this.live)
       .then(() => undefined)
       .finally(() => {
         this.drawing = null;
@@ -884,15 +932,46 @@ export class FlowScene3D {
     return { buffer, count: data.length / 4 };
   }
 
+  private revolvedSet(name: string, lines: RevolvedLines): RevolvedSet | null {
+    if (lines.segments.length === 0) return null;
+    const buffer = this.device.createBuffer({
+      label: `3D ${name}`,
+      size: lines.points.byteLength,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+    });
+    this.device.queue.writeBuffer(buffer, 0, lines.points);
+    return { buffer, segments: lines.segments, index: null };
+  }
+
+  /** Draw revolved lines at `sectors` azimuths from the sweep's first (indexed, built once per count). */
+  private drawRevolved(pass: GPURenderPassEncoder, set: RevolvedSet, sectors: number): void {
+    if (set.index?.sectors !== sectors) {
+      set.index?.buffer.destroy();
+      const data = revolvedIndices(set.segments, sectors);
+      const buffer = this.device.createBuffer({
+        label: '3D revolved indices',
+        size: Math.max(data.byteLength, 16),
+        usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
+      });
+      this.device.queue.writeBuffer(buffer, 0, data);
+      set.index = { sectors, buffer, count: data.length };
+    }
+    pass.setIndexBuffer(set.index.buffer, 'uint32');
+    pass.drawIndexed(set.index.count);
+  }
+
   private rebuildGeometry(draft: boolean): void {
     this.geometryDirty = false;
     this.geometryDraft = draft;
+    for (const r of [this.shells, this.shock]) {
+      r?.buffer.destroy();
+      r?.index?.buffer.destroy();
+    }
     for (const s of [
-      this.shells,
-      this.shock,
       this.streamlines,
       this.freeLines,
       this.cutLines,
+      this.shockCut,
       this.outline,
       this.box,
       this.hatch,
@@ -905,6 +984,7 @@ export class FlowScene3D {
       this.streamlines =
       this.freeLines =
       this.cutLines =
+      this.shockCut =
       this.outline =
       this.box =
       this.hatch =
@@ -924,18 +1004,21 @@ export class FlowScene3D {
       units: this.units,
       xEnd: region.xMax,
       draft,
+      isoCount: ISO_SURFACES,
+      streamlineCount: STREAMLINES_PER_PLANE,
     });
     this.geometry = g;
     const palette = new Float32Array(4 * PALETTE_SIZE);
     for (let k = 0; k < PALETTE_SIZE; k++)
       palette.set([...g.scale.palette(k / (PALETTE_SIZE - 1)), 1], 4 * k);
     this.device.queue.writeBuffer(this.paletteBuffer, 0, palette);
-    this.shells = this.lineSet(
+    this.shells = this.revolvedSet(
       'shells',
-      shellSegments(g.isoLines, (l) => l.level),
-      48,
+      // Outer sheets first: they hide the inner ones from most views, and
+      // a pixel already covered is not shaded again (the depth test runs first).
+      shellSegments(outerFirst(g.isoLines), (l) => l.level, region.xMax),
     );
-    this.shock = this.lineSet('shock', shockSegments(g.shock), 48);
+    this.shock = this.revolvedSet('shock', shockSegments(g.shock, region.xMax));
     // The computed part of each streamline, and the free stream's part (drawn dimmer).
     const parts = g.streamlines.map((l) => splitStreamline(l));
     this.streamlines = this.lineSet(
@@ -954,6 +1037,7 @@ export class FlowScene3D {
         g.isoLines.map((l) => ({ x: l.x, r: l.r, value: l.x.map(() => l.level) })),
       ),
     );
+    this.shockCut = this.lineSet('shock cut', meridionalLineSegments([g.shock]));
     this.outline = this.lineSet(
       'outline',
       meridionalLineSegments([{ ...outline, value: outline.x.map(() => 0) }]),
@@ -1090,7 +1174,33 @@ export class FlowScene3D {
    * the CPU's time to build and encode it, and the GPU's from when the
    * queue reached it (after the work before it, the solver's) to its end.
    */
-  private async drawFrame(into?: GPUTexture, draft = false): Promise<number> {
+  /** The viewer moved the view: on a slow adapter, drafts until it stops. */
+  private moved(): void {
+    this.movedAt = performance.now();
+  }
+
+  private movedAt = -Infinity;
+  private settleTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** A full frame once the viewer has stopped moving the view. */
+  private settleLater(): void {
+    if (this.settleTimer !== null) clearTimeout(this.settleTimer);
+    this.settleTimer = setTimeout(() => {
+      this.settleTimer = null;
+      if (performance.now() - this.movedAt < MOVING_MS) this.settleLater();
+      else this.requestDraw();
+    }, MOVING_MS);
+  }
+
+  /**
+   * `draft`: one sample a pixel and fewer sectors; `draftGeometry`: the
+   * flow's geometry built quicker too (live frames, where it changes).
+   */
+  private async drawFrame(
+    into?: GPUTexture,
+    draft = false,
+    draftGeometry = draft,
+  ): Promise<number> {
     if (this.canvas.width < 2 || this.canvas.height < 2) return 0;
     const pipelines = draft
       ? await (this.draftPipelines ??= Pipelines.create(
@@ -1101,7 +1211,12 @@ export class FlowScene3D {
         ))
       : this.pipelines;
     const started = performance.now();
-    if (this.geometryDirty || this.geometryDraft !== draft) this.rebuildGeometry(draft);
+    if (
+      this.geometryDirty ||
+      (draftGeometry ? !this.geometryDraft : this.geometryDraft && !draft)
+    ) {
+      this.rebuildGeometry(draftGeometry);
+    }
     const samples = draft ? 1 : SAMPLES;
     // Fit the view to the region while the viewer has not moved it (the
     // region grows as the shock settles, and the canvas may be resized).
@@ -1165,18 +1280,49 @@ export class FlowScene3D {
       pass.setIndexBuffer(b.index, 'uint32');
       pass.drawIndexed(b.count);
     }
-    const visibleTurn = L.cutaway ? 2 * Math.PI - CUT_WIDTH : 2 * Math.PI;
-    const firstAzimuth = L.cutaway ? this.cutStart + CUT_WIDTH : 0;
-    const shellSectors = Math.round(
-      ((draft ? DRAFT_SHELL_SECTORS : SHELL_SECTORS) * visibleTurn) / (2 * Math.PI),
+    // The surfaces of revolution: all but the wedge cut away, smooth at SHELL_SECTORS a turn.
+    const visible = L.cutaway ? 2 * Math.PI - CUT_WIDTH : 2 * Math.PI;
+    const start = L.cutaway ? this.cutStart + CUT_WIDTH : 0;
+    const sectors = Math.round(
+      ((draft ? DRAFT_SHELL_SECTORS : SHELL_SECTORS) * visible) / (2 * Math.PI),
     );
+    const shellSweep: [number, number, number, number] = [start, visible / sectors, sectors, 0];
+    // The iso-surfaces, opaque and lit (FluidX3D's manner): ambient, specular, edge darkening.
     if (L.isosurfaces && L.solidShells && this.shells !== null) {
-      this.writeDraw('shells', {
-        sweep: [firstAzimuth, visibleTurn / shellSectors, shellSectors, 0],
-      });
+      this.writeDraw('shells', { look: [0.1, 0.32, 0.65, 0], sweep: shellSweep });
       pass.setPipeline(pipelines.shellLit);
       pass.setBindGroup(1, this.groupFor('shells', this.shells.buffer));
-      pass.draw(6, this.shells.count * shellSectors);
+      this.drawRevolved(pass, this.shells, sectors);
+    }
+    // Streamlines (key 3): a few thin lit tubes, opaque.
+    const azimuths = draft ? DRAFT_STREAMLINE_AZIMUTHS : STREAMLINE_AZIMUTHS;
+    const tubeSweep: [number, number, number, number] = [
+      this.cutStart + Math.PI / azimuths,
+      (2 * Math.PI) / azimuths,
+      azimuths,
+      0,
+    ];
+    if (L.streamlines && (this.streamlines !== null || this.freeLines !== null)) {
+      pass.setPipeline(pipelines.tube);
+      if (this.streamlines !== null) {
+        this.writeDraw('streamlines', {
+          look: [1, 0, 0, 0],
+          sweep: tubeSweep,
+          extra: [3 * px, 1, 1, 1],
+        });
+        pass.setBindGroup(1, this.groupFor('streamlines', this.streamlines.buffer));
+        pass.draw(6 * this.streamlines.count * azimuths);
+      }
+      // Their part in the free stream, ahead of the shock: dimmer.
+      if (this.freeLines !== null) {
+        this.writeDraw('freeLines', {
+          look: [0.45, 0, 0, 0],
+          sweep: tubeSweep,
+          extra: [2.2 * px, 1, 1, 1],
+        });
+        pass.setBindGroup(1, this.groupFor('freeLines', this.freeLines.buffer));
+        pass.draw(6 * this.freeLines.count * azimuths);
+      }
     }
     // The base plane: the end of the computed region (translucent).
     if (this.baseTriangles !== null && g !== null) {
@@ -1203,44 +1349,23 @@ export class FlowScene3D {
       pass.setVertexBuffer(0, this.sliceTriangles.buffer);
       pass.draw(this.sliceTriangles.count);
     }
-    const visible = L.cutaway ? 2 * Math.PI - CUT_WIDTH : 2 * Math.PI;
-    const start = L.cutaway ? this.cutStart + CUT_WIDTH : 0;
-    const sectors = Math.round(
-      ((draft ? DRAFT_SHELL_SECTORS : SHELL_SECTORS) * visible) / (2 * Math.PI),
-    );
-    const shellSweep: [number, number, number, number] = [start, visible / sectors, sectors, 0];
+    // The iso-surfaces as thin glowing shells (key 4's other look), as bright in all as a few.
     if (L.isosurfaces && !L.solidShells && this.shells !== null) {
-      this.writeDraw('shells', { look: [0.035, 0.42, 2.6, 0], sweep: shellSweep });
+      const dim = Math.min(1, 8 / Math.max(g?.levels.length ?? 1, 1));
+      this.writeDraw('shells', { look: [0.035 * dim, 0.42 * dim, 2.6, 0], sweep: shellSweep });
       pass.setPipeline(pipelines.shell);
       pass.setBindGroup(1, this.groupFor('shells', this.shells.buffer));
-      pass.draw(6, this.shells.count * sectors);
+      this.drawRevolved(pass, this.shells, sectors);
     }
+    // The shock: one thin sheet where the solver fits it (the density's jump), pale and
+    // brightest edge-on, as a schlieren picture shows it; crisp where the cutaway cuts it.
     if (L.shock && this.shock !== null) {
-      this.writeDraw('shock', { look: [0.035, 0.55, 3.0, 0.6], sweep: shellSweep });
+      this.writeDraw('shock', { look: [0.022, 0.6, 4.0, 0.85], sweep: shellSweep });
       pass.setPipeline(pipelines.shell);
       pass.setBindGroup(1, this.groupFor('shock', this.shock.buffer));
-      pass.draw(6, this.shock.count * sectors);
+      this.drawRevolved(pass, this.shock, sectors);
     }
     pass.setPipeline(pipelines.line);
-    const azimuths = draft ? DRAFT_STREAMLINE_AZIMUTHS : STREAMLINE_AZIMUTHS;
-    if (L.streamlines && this.streamlines !== null) {
-      this.writeDraw('streamlines', {
-        look: [0.9, 0, 0, 0],
-        sweep: [this.cutStart + Math.PI / azimuths, (2 * Math.PI) / azimuths, azimuths, 0],
-        extra: [1.3 * px, 1, 1, 1],
-      });
-      pass.setBindGroup(1, this.groupFor('streamlines', this.streamlines.buffer));
-      pass.draw(6, this.streamlines.count * azimuths);
-    }
-    if (L.streamlines && this.freeLines !== null) {
-      this.writeDraw('freeLines', {
-        look: [0.3, 0, 0, 0],
-        sweep: [this.cutStart + Math.PI / azimuths, (2 * Math.PI) / azimuths, azimuths, 0],
-        extra: [1.0 * px, 1, 1, 1],
-      });
-      pass.setBindGroup(1, this.groupFor('freeLines', this.freeLines.buffer));
-      pass.draw(6, this.freeLines.count * azimuths);
-    }
     if (L.isosurfaces && L.cutaway && this.cutLines !== null) {
       this.writeDraw('cutLines', {
         look: [1.0, 0, 0, 0],
@@ -1248,7 +1373,17 @@ export class FlowScene3D {
         extra: [1.4 * px, 1, 0, 1],
       });
       pass.setBindGroup(1, this.groupFor('cutLines', this.cutLines.buffer));
-      pass.draw(6, this.cutLines.count * 2);
+      pass.draw(6 * this.cutLines.count * 2);
+    }
+    if (L.shock && L.cutaway && this.shockCut !== null) {
+      this.writeDraw('shockCut', {
+        colour: [0.92, 0.94, 1, 1],
+        look: [0.9, 0, 0, 0],
+        sweep: [this.cutStart, CUT_WIDTH, 2, 0],
+        extra: [1.6 * px, 1, 0, 1],
+      });
+      pass.setBindGroup(1, this.groupFor('shockCut', this.shockCut.buffer));
+      pass.draw(6 * this.shockCut.count * 2);
     }
     if (L.slice && this.sliceMode === 'cutaway' && L.cutaway && this.outline !== null) {
       this.writeDraw('outline', {
@@ -1258,7 +1393,7 @@ export class FlowScene3D {
         extra: [1.1 * px, 1, 0, 1],
       });
       pass.setBindGroup(1, this.groupFor('outline', this.outline.buffer));
-      pass.draw(6, this.outline.count * 2);
+      pass.draw(6 * this.outline.count * 2);
     }
     if (L.body === 'wireframe' && this.wire !== null) {
       this.writeDraw('wire', {
@@ -1267,7 +1402,7 @@ export class FlowScene3D {
         extra: [1 * px, 1, 0, 0],
       });
       pass.setBindGroup(1, this.groupFor('wire', this.wire.buffer));
-      pass.draw(6, this.wire.count);
+      pass.draw(6 * this.wire.count);
     }
     if (this.hatch !== null && g !== null) {
       this.writeDraw('hatch', {
@@ -1276,16 +1411,17 @@ export class FlowScene3D {
         extra: [1 * px, 1, 0, 0],
       });
       pass.setBindGroup(1, this.groupFor('hatch', this.hatch.buffer));
-      pass.draw(6, this.hatch.count);
+      pass.draw(6 * this.hatch.count);
     }
     if (L.box && this.box !== null) {
       this.writeDraw('box', {
-        colour: [0.62, 0.64, 0.68, 1],
-        look: [0.8, 0, 0, 0],
+        // Thin and dim, as FluidX3D's: it frames the region, it is not the subject.
+        colour: [0.36, 0.38, 0.42, 1],
+        look: [0.7, 0, 0, 0],
         extra: [1 * px, 1, 0, 0],
       });
       pass.setBindGroup(1, this.groupFor('box', this.box.buffer));
-      pass.draw(6, this.box.count);
+      pass.draw(6 * this.box.count);
     }
     // Text over the scene.
     if (L.overlay || L.help) {
@@ -1639,13 +1775,17 @@ export class FlowScene3D {
   destroy(): void {
     this.destroyed = true;
     this.setLive(false);
+    if (this.settleTimer !== null) clearTimeout(this.settleTimer);
     this.destroyBody();
+    for (const r of [this.shells, this.shock]) {
+      r?.buffer.destroy();
+      r?.index?.buffer.destroy();
+    }
     for (const s of [
-      this.shells,
-      this.shock,
       this.streamlines,
       this.freeLines,
       this.cutLines,
+      this.shockCut,
       this.outline,
       this.box,
       this.hatch,
@@ -1664,6 +1804,15 @@ export class FlowScene3D {
     this.depth?.destroy();
     this.presenter.destroy();
   }
+}
+
+/** Lines in order of their mean radius, the largest first. */
+function outerFirst<T extends { r: readonly number[] }>(lines: readonly T[]): T[] {
+  const mean = (l: T) => l.r.reduce((s, r) => s + r, 0) / Math.max(l.r.length, 1);
+  return lines
+    .map((l) => ({ l, m: mean(l) }))
+    .sort((a, b) => b.m - a.m)
+    .map((e) => e.l);
 }
 
 /** The shock's line up to x = xEnd (the base), with the axis below its ends. */
