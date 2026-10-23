@@ -22,7 +22,9 @@
   look at a figure to see what it covers (mine or the reviewer's), and is
   marked so.
 - **Date:** 2026-10-21; sections 3.2 and 3.3 rewritten 2026-10-22, and
-  3.2's decision changed by the owner the same day
+  3.2's decision changed by the owner the same day; section 3.4's
+  variables (free-stream M_0 and p_0) decided 2026-10-23 (0014 section
+  10.7 (r))
 - **Inputs:** the owner's decision of 2026-10-21 (serve a total at Mach
   1.0 to 1.2 wherever it is accurate; 0014 W7 and section 10.5);
   [0014](0014-refusals.md) in full (section 10: what sets bands, what is
@@ -771,18 +773,61 @@ built after its figures are read twice.
 
 The largest fin term near Mach 1 (section 1.2), and the best covered.
 
+- _The variables, decided 2026-10-23_ (the coordinator's decision, on
+  independent advice; 0014 section 10.7 (r)). F4's band is formed on the
+  free-stream Mach number M_0 and the free-stream static pressure p_0,
+  never on a local M' and p' ahead of the base. That is how the
+  band-setting sets report base pressure: R&M 3348 fig. 30 and table 3
+  (p_b/p_0 against M_0), Goin's points on fig. 30(b), TN 3548 fig. 6 (free
+  flight), R&M 3427 fig. 13 (against the tunnel's M); and it is what the
+  code serves, P_B(M) at the free stream (`src/base/fin-trailing-edge.ts`,
+  0010 section 5.1). Three consequences:
+  - RM A51J25 fig. 7's curve is defined on Chapman's M' and p', the local
+    state just ahead of the base. It is served at M_0 for thin plates,
+    where M' is close to M_0 (flat faces parallel to the stream, so no
+    turning between the leading edge and the base), as the code does
+    above Mach 1.5. No set is converted to M' and none is needed.
+  - Near Mach 1, M' is not a usable variable in any case: the flow at the
+    last holes ahead of a base is subsonic or barely sonic there, so the
+    corner's upstream influence reaches them and a "local" state read
+    there carries the base's own effect (Chapman's M' assumes a
+    supersonic layer that the base cannot reach through). This is why
+    R&M 3348 figs. 47 to 52 set nothing ((r), which also records that
+    their quantity could not be read).
+  - _The single wedge against a plate: a stated widening, not a
+    correction._ R&M 3348's single-wedge section (leading-edge semi-angle
+    4.0 deg, section 2.1 above) reaches its base with its faces inclined 4.0 deg
+    to the chord line, where a fin plate's faces are parallel to the
+    stream; R&M 3427's section has a single-wedge forebody and a parallel
+    afterbody, and Johnston's single wedge a 5.7 deg semi-angle. At the
+    same M_0 the inclined face changes the pressure and the layer at the
+    base, so the wedge's p_b/p_0 is not a plate's. This physical
+    difference is carried as a stated widening of the band where a
+    wedge's points set it, written here with its basis before any code;
+    the measured values are never shifted toward a plate's. Its size is
+    not yet decided (it will be stated, and if no data separate the two
+    shapes near Mach 1, said to rest on an argument, not a measurement).
+  - R&M 3427 fig. 13's hole 4 (named for the local state ahead of the
+    base, 0014 10.7 (m)) is therefore not needed for the band's
+    coordinates; it stays named and read once, and whether it serves at
+    all (it lies 0.1 in ahead of the base, inside the same upstream
+    influence) is decided here before it sets anything.
 - _Method._ As now (0010 section 5.1): -P_B(M) n h s / A_ref with a
   two-dimensional base pressure, integrated along the span on fins of
-  varying chord (0016 W3(b)), the vacuum bound kept. The curve from Mach
-  1.0 to 1.5: RM A51J25 fig. 7's curve, read a second time below M' 1.5,
-  where it is read once from 1.167, continued to 1.0 on the independent
-  sets below (fig. 7 does not reach 1.0).
+  varying chord (0016 W3(b)), the vacuum bound kept, M the free-stream
+  Mach number. The curve from Mach 1.0 to 1.5: RM A51J25 fig. 7's curve,
+  read a second time below M' 1.5, where it is read once from 1.167,
+  served at M_0 as above, continued to 1.0 on the independent sets below
+  (fig. 7 does not reach 1.0).
 - _Band._ The envelope, over both readings, of the independent sets about
-  the curve at their own Mach numbers and h/c: Nash's section (R&M 3427
+  the curve at their own free-stream Mach numbers and h/c (each set's
+  base pressure on its own p_0, as reported): Nash's section (R&M 3427
   fig. 13, to M 1.12), R&M 3323 fig. 5's sections (their sources traced
-  first), R&M 3348's table 3 (unswept, to 1.2), TN 3548 fig. 6 (free
-  flight, to 1.7), Johnston's single wedge (to about 1.25), Sawyer and
-  Daum's wedge (wing flow) and RM A51J25 fig. 7's symbols (1.23 to 1.475).
+  first), R&M 3348's table 3 (unswept, alpha 0 deg, to 1.2), TN 3548 fig.
+  6 (free flight, to 1.7), Johnston's single wedge (to about 1.25), Sawyer
+  and Daum's wedge (wing flow, where the model's free stream is the local
+  flow over the wing) and RM A51J25 fig. 7's symbols (1.23 to 1.475),
+  widened where a wedge's points set it as stated above.
   At Mach 1.5 it must meet the present 0.93 to 1.21 without a step. Wide
   near Mach 1, where the base pressure changes fastest: from about -0.7
   near Mach 1.0 (Nash, text) to -0.43 at M' 1.167 (the curve as the code
