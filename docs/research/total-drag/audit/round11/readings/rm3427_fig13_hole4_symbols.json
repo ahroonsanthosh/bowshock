@@ -1,0 +1,276 @@
+[
+ {
+  "id": "h4-01",
+  "type": "plus",
+  "approx": [
+   1067.5,
+   2037.5
+  ],
+  "score": 0.519,
+  "fit_px": [
+   1068.0,
+   2037.5
+  ],
+  "note": "on the M 0.4 gridline, which hides its vertical arm",
+  "centre_px": [
+   1067.75,
+   2037.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.879,
+  "x": 0.400873736647409,
+  "y": -0.4071291757632466,
+  "err_x": 0.0017874546150319917,
+  "err_y": 0.0020779788010099015,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-02",
+  "type": "plus",
+  "approx": [
+   1265.0,
+   2026.0
+  ],
+  "score": 0.739,
+  "fit_px": [
+   1264.0,
+   2025.5
+  ],
+  "note": "on the M 0.6 gridline, which hides its vertical arm; the outline fit went 1.3 px left (the line touches the arm), so the centre is from the pixel map: horizontal arm x 1259 to 1268, rows 2025 to 2026",
+  "centre_px": [
+   1263.75,
+   2025.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.5992452504097843,
+  "y": -0.42125252670280844,
+  "err_x": 0.002147254856442859,
+  "err_y": 0.002413142783768905,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-03",
+  "type": "plus",
+  "approx": [
+   1365.0,
+   2019.5
+  ],
+  "score": 0.657,
+  "fit_px": [
+   1365.0,
+   2019.5
+  ],
+  "note": "",
+  "centre_px": [
+   1364.75,
+   2019.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": 0.7007704837144939,
+  "y": -0.42790255693328605,
+  "err_x": 0.0017751629140397131,
+  "err_y": 0.0020808765030711925,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-04",
+  "type": "plus",
+  "approx": [
+   1465.0,
+   2018.5
+  ],
+  "score": 0.59,
+  "fit_px": [
+   1464.0,
+   2019.5
+  ],
+  "note": "on the M 0.8 gridline, which hides its vertical arm",
+  "centre_px": [
+   1463.5,
+   2018.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.813,
+  "x": 0.8000278375935633,
+  "y": -0.42868701003043574,
+  "err_x": 0.0017679726121203033,
+  "err_y": 0.002080812591889654,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-05",
+  "type": "plus",
+  "approx": [
+   1514.0,
+   2064.5
+  ],
+  "score": 0.56,
+  "fit_px": [
+   1514.0,
+   2064.5
+  ],
+  "note": "",
+  "centre_px": [
+   1513.25,
+   2064.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.722,
+  "x": 0.8497747860806636,
+  "y": -0.3825013117585284,
+  "err_x": 0.001766637463574517,
+  "err_y": 0.0020588688907642373,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-06",
+  "type": "plus",
+  "approx": [
+   1537.5,
+   2094.5
+  ],
+  "score": 0.474,
+  "fit_px": [
+   1538.0,
+   2094.5
+  ],
+  "note": "lowest point of the dip; two rising lines pass within 6 px",
+  "centre_px": [
+   1537.75,
+   2094.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.416,
+  "x": 0.8742492054377325,
+  "y": -0.3528797082099019,
+  "err_x": 0.0017662410883679278,
+  "err_y": 0.002059078883396834,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-07",
+  "type": "plus",
+  "approx": [
+   1565.0,
+   1982.0
+  ],
+  "score": 0.574,
+  "fit_px": [
+   1564.0,
+   1980.5
+  ],
+  "note": "end of the second loop, on the vertical stroke that drops from the hole 1 cross at the top loop; typed a plus because its horizontal arm runs 3 px right of that stroke (x 1561 to 1568, rows 1980 to 1981), which a bare junction would not",
+  "centre_px": [
+   1564.0,
+   1980.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.714,
+  "x": 0.9007333675090098,
+  "y": -0.4682384814625856,
+  "err_x": 0.003097762564635349,
+  "err_y": 0.0033144744909217603,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-08",
+  "type": "plus",
+  "approx": [
+   1589.0,
+   2022.0
+  ],
+  "score": 0.496,
+  "fit_px": [
+   1589.0,
+   2022.5
+  ],
+  "note": "",
+  "centre_px": [
+   1588.5,
+   2022.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.622,
+  "x": 0.925151523741789,
+  "y": -0.42561152282637355,
+  "err_x": 0.0017678729804310996,
+  "err_y": 0.0020785757382536436,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-09",
+  "type": "plus",
+  "approx": [
+   1614.0,
+   2062.7
+  ],
+  "score": 0.521,
+  "fit_px": [
+   1613.0,
+   2062.5
+  ],
+  "note": "",
+  "centre_px": [
+   1612.5,
+   2062.7
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.673,
+  "x": 0.9490588728605437,
+  "y": -0.38471308040591273,
+  "err_x": 0.0017666725164189555,
+  "err_y": 0.0020597222077580863,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-10",
+  "type": "plus",
+  "approx": [
+   1639.0,
+   2103.0
+  ],
+  "score": 0.53,
+  "fit_px": [
+   1639.0,
+   2102.5
+  ],
+  "note": "",
+  "centre_px": [
+   1638.5,
+   2102.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.7,
+  "x": 0.9749919706501201,
+  "y": -0.3447041724947472,
+  "err_x": 0.0017661365637813055,
+  "err_y": 0.002059944559589398,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ },
+ {
+  "id": "h4-11",
+  "type": "plus",
+  "approx": [
+   1714.5,
+   2220.5
+  ],
+  "score": 0.567,
+  "fit_px": [
+   1714.0,
+   2220.5
+  ],
+  "note": "last point",
+  "centre_px": [
+   1713.5,
+   2220.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.791,
+  "x": 1.0498473433997444,
+  "y": -0.22606998124194105,
+  "err_x": 0.0017696803503655027,
+  "err_y": 0.0020610604006900805,
+  "series": "hole 4 (surface, x/h = -0.167)"
+ }
+]

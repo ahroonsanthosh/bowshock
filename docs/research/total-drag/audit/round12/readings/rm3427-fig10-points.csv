@@ -1,0 +1,6 @@
+id,symbol,station,x_px,y_px,M_inf,M_inf_err,delta_over_h,delta_over_h_err,M_inf_ticks_only,delta_over_h_ticks_only,note
+1,square,1 in. upstream of trailing edge,1171.0,1475.5,0.3966,0.0028,0.1206,0.0007,0.3983,0.1209,""
+2,circle,at trailing edge,1373.0,1430.0,0.7982,0.0028,0.1434,0.0007,0.7983,0.1435,""
+3,square,1 in. upstream of trailing edge,1375.0,1466.5,0.8018,0.0028,0.1250,0.0007,0.8019,0.1253,""
+4,square,1 in. upstream of trailing edge,1475.0,1484.5,1.0001,0.0028,0.1159,0.0007,0.9995,0.1162,"outline has a small gap on the right side"
+5,square,1 in. upstream of trailing edge,1525.0,1514.5,1.0991,0.0028,0.1008,0.0007,1.0980,0.1012,"outline has a small gap on the right side"
