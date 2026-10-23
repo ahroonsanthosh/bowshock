@@ -2,10 +2,11 @@
  * Mouse, touch and keyboard for the 3D view, after FluidX3D's (as its
  * README describes them): number keys switch layers that combine (4
  * cycles the iso-surfaces: glowing, lit solid, none), Z cycles the colour
- * quantity, T the slice and Q / E move it, H shows the help; drag orbits,
- * the wheel zooms. Also: right drag or shift drag
- * pans, two fingers pinch and pan, the arrow keys orbit (with shift,
- * pan), + and - zoom, 0 resets the view.
+ * quantity, T the slice and Q / E move it, H shows the help; a drag (or
+ * one finger) turns the view any way, as a trackball (over the top and
+ * underneath, no limit), the wheel zooms. Also: right drag or shift drag
+ * pans, two fingers pinch and pan, the arrow keys turn it the same way
+ * (with shift, pan), + and - zoom, 0 resets the view.
  */
 
 import type { FlowScene3D } from './scene';

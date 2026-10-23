@@ -740,9 +740,10 @@ export class FlowScene3D {
     this.requestDraw();
   }
 
-  orbitBy(dYaw: number, dPitch: number): void {
+  /** Turn the view as a trackball: dx about the screen's up axis, dy about its right (radians). */
+  orbitBy(dx: number, dy: number): void {
     if (this.orbit === null) return;
-    this.orbit = orbitBy(this.orbit, dYaw, dPitch);
+    this.orbit = orbitBy(this.orbit, dx, dy);
     this.fittedTo = null;
     this.requestDraw();
   }
@@ -1940,8 +1941,9 @@ function helpLines(
     { text: `Z  colour: ${scale?.label ?? ''}${unit}` },
     { text: 'T  slice: cutaway faces, plane through the axis, plane across it' },
     { text: 'Q / E  move the slice    0  reset the view    H  this help' },
-    { text: 'drag: orbit    right drag or shift drag: pan    wheel or pinch: zoom' },
-    { text: 'arrows: orbit    shift arrows: pan    + / -: zoom' },
+    { text: 'drag: turn any way, over the top and underneath    0: reset' },
+    { text: 'right drag or shift drag: pan    wheel or pinch: zoom' },
+    { text: 'arrows: turn    shift arrows: pan    + / -: zoom' },
     { text: '' },
     { text: 'What is drawn', bold: true },
     { text: 'The flow is the axisymmetric Euler solution around the body at zero' },

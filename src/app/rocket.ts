@@ -86,7 +86,7 @@ function flowNoteText(
     missing.length === 0 ? '' : ` Not drawn here: ${missing.join('; ')}; the drawing shows it.`;
   return (
     'The airflow is around the body, revolved about its axis; the fins are drawn, their drag ' +
-    `computed separately. Hatched: behind the base, not simulated. Drag to turn it.${notDrawn}`
+    `computed separately. Hatched: behind the base, not simulated. Drag to turn it any way; 0 resets.${notDrawn}`
   );
 }
 
@@ -232,7 +232,7 @@ const shell = new Shell<Action>({
           'Describe your rocket on the left, or start from a preset. The curve on the right is its drag coefficient against Mach number, from 1.0 to 3.0, each point with its error band and a status in plain words; the highest Mach number the rocket flies is marked on it.',
           'Each point needs the airflow round the nose solved on your GPU, on grids each twice as fine as the one before; the rest of the drag (friction, the base, the fins) is computed from measured correlations. A point the methods cannot give to a known accuracy shows no number, with the reason.',
           'Lengths are in millimetres or inches, each with its value in calibres (the body diameter) beside it.',
-          'The airflow shows in 3D, or from the side (key V). The number keys act on the view shown: in 3D they show and hide its layers, from the side they choose the field. In 3D, drag to turn the view, right drag or Shift drag to pan, and use the wheel or a pinch to zoom.',
+          'The airflow shows in 3D, or from the side (key V). The number keys act on the view shown: in 3D they show and hide its layers, from the side they choose the field. In 3D, drag to turn the view any way (over the top and underneath too; 0 resets it), right drag or Shift drag to pan, and use the wheel or a pinch to zoom.',
         ],
       },
       schlierenSection(),

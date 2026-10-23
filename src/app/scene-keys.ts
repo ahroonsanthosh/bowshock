@@ -163,7 +163,10 @@ const SIDE_ACTIONS = new Set<string>([
 
 /** The shared keys' words, for both views. */
 const SHARED_WORDS: Partial<Record<string, Partial<KeyBinding<ViewAction>>>> = {
-  fit: { keys: ['f', '0'], description: 'Fit the rocket to the view (also a double click)' },
+  fit: {
+    keys: ['f', '0'],
+    description: 'Fit the rocket to the view; in 3D, back to the first view (also a double click)',
+  },
   'pan-left': {
     description: 'Pan the side view, or turn the 3D view (with Shift, pan it); also a drag',
   },

@@ -4,32 +4,112 @@
  * clip-space depth from 0 to 1, as WebGPU's). Pure functions of plain
  * numbers.
  *
+ * The camera's orientation is a unit quaternion, not yaw and pitch, so a
+ * drag turns the view freely, as a trackball: over the top, underneath,
+ * nose-on, tail-on and any roll, with no limit, no flip at the poles and
+ * no NaN. Each turn is about the screen-space axis perpendicular to the
+ * drag, and the quaternion is normalised after every step.
+ *
  * The world: x along the rocket's axis (downstream), y up on the screen
  * in the default view, z towards the viewer's side.
  */
 
 export type Vec3 = readonly [number, number, number];
 export type Mat4 = Float32Array<ArrayBuffer>;
+/** A unit quaternion (w, x, y, z): the camera's turn from the world's axes. */
+export type Quat = readonly [number, number, number, number];
 
 export interface Orbit {
   readonly target: Vec3;
-  /** Azimuth of the eye about the y axis from +z, radians. */
-  readonly yaw: number;
-  /** Elevation of the eye above the x-z plane, radians. */
-  readonly pitch: number;
+  /**
+   * The camera's orientation: it takes the camera's own right (+x), up
+   * (+y) and backward (+z, from the target to the eye) to the world's.
+   */
+  readonly rotation: Quat;
   readonly distance: number;
   /** Vertical field of view, radians. */
   readonly fovY: number;
 }
 
-export const PITCH_LIMIT = Math.PI / 2 - 0.01;
+/** Rotate a vector by a unit quaternion. */
+export function rotate(q: Quat, v: Vec3): Vec3 {
+  const [w, x, y, z] = q;
+  // t = 2 (q.xyz x v); v' = v + w t + q.xyz x t
+  const tx = 2 * (y * v[2] - z * v[1]);
+  const ty = 2 * (z * v[0] - x * v[2]);
+  const tz = 2 * (x * v[1] - y * v[0]);
+  return [
+    v[0] + w * tx + (y * tz - z * ty),
+    v[1] + w * ty + (z * tx - x * tz),
+    v[2] + w * tz + (x * ty - y * tx),
+  ];
+}
+
+/** The product a b: b's turn, then a's. */
+export function quatMultiply(a: Quat, b: Quat): Quat {
+  return [
+    a[0] * b[0] - a[1] * b[1] - a[2] * b[2] - a[3] * b[3],
+    a[0] * b[1] + a[1] * b[0] + a[2] * b[3] - a[3] * b[2],
+    a[0] * b[2] - a[1] * b[3] + a[2] * b[0] + a[3] * b[1],
+    a[0] * b[3] + a[1] * b[2] - a[2] * b[1] + a[3] * b[0],
+  ];
+}
+
+/** A quaternion scaled to unit length (the identity if it has none). */
+export function quatNormalize(q: Quat): Quat {
+  const l = Math.hypot(q[0], q[1], q[2], q[3]);
+  return l > 0 && Number.isFinite(l) ? [q[0] / l, q[1] / l, q[2] / l, q[3] / l] : [1, 0, 0, 0];
+}
+
+/** The turn by `angle` radians about the unit `axis` (right-handed). */
+export function axisAngle(axis: Vec3, angle: number): Quat {
+  const s = Math.sin(angle / 2);
+  return [Math.cos(angle / 2), axis[0] * s, axis[1] * s, axis[2] * s];
+}
+
+/** The quaternion of the rotation whose matrix has these columns (an orthonormal, right-handed frame). */
+export function quatFromFrame(right: Vec3, up: Vec3, back: Vec3): Quat {
+  const [m00, m10, m20] = right;
+  const [m01, m11, m21] = up;
+  const [m02, m12, m22] = back;
+  const trace = m00 + m11 + m22;
+  let q: Quat;
+  if (trace > 0) {
+    const s = 2 * Math.sqrt(trace + 1);
+    q = [0.25 * s, (m21 - m12) / s, (m02 - m20) / s, (m10 - m01) / s];
+  } else if (m00 > m11 && m00 > m22) {
+    const s = 2 * Math.sqrt(1 + m00 - m11 - m22);
+    q = [(m21 - m12) / s, 0.25 * s, (m01 + m10) / s, (m02 + m20) / s];
+  } else if (m11 > m22) {
+    const s = 2 * Math.sqrt(1 + m11 - m00 - m22);
+    q = [(m02 - m20) / s, (m01 + m10) / s, 0.25 * s, (m12 + m21) / s];
+  } else {
+    const s = 2 * Math.sqrt(1 + m22 - m00 - m11);
+    q = [(m10 - m01) / s, (m02 + m20) / s, (m12 + m21) / s, 0.25 * s];
+  }
+  return quatNormalize(q);
+}
+
+/**
+ * The orientation of an eye at this azimuth (about the y axis from +z)
+ * and elevation (above the x-z plane), radians, the screen's up in the
+ * plane of y: how the default view is set. The elevation must lie
+ * strictly between -pi/2 and pi/2.
+ */
+export function rotationOf(yaw: number, pitch: number): Quat {
+  const cp = Math.cos(pitch);
+  const back: Vec3 = [cp * Math.sin(yaw), Math.sin(pitch), cp * Math.cos(yaw)];
+  const right = normalize(cross([0, 1, 0], back));
+  const up = cross(back, right);
+  return quatFromFrame(right, up, back);
+}
 
 export function eyeOf(o: Orbit): Vec3 {
-  const cp = Math.cos(o.pitch);
+  const back = rotate(o.rotation, [0, 0, 1]);
   return [
-    o.target[0] + o.distance * cp * Math.sin(o.yaw),
-    o.target[1] + o.distance * Math.sin(o.pitch),
-    o.target[2] + o.distance * cp * Math.cos(o.yaw),
+    o.target[0] + o.distance * back[0],
+    o.target[1] + o.distance * back[1],
+    o.target[2] + o.distance * back[2],
   ];
 }
 
@@ -45,12 +125,35 @@ const normalize = (a: Vec3): Vec3 => {
   return [a[0] / l, a[1] / l, a[2] / l];
 };
 
-/** The camera's right, up and backward unit vectors (its frame). */
+/** The camera's right, up and backward unit vectors (its frame), orthonormal. */
 export function cameraFrame(o: Orbit): { right: Vec3; up: Vec3; back: Vec3 } {
-  const back = normalize(sub(eyeOf(o), o.target));
-  const right = normalize(cross([0, 1, 0], back));
+  const back = normalize(rotate(o.rotation, [0, 0, 1]));
+  const up0 = rotate(o.rotation, [0, 1, 0]);
+  const right = normalize(cross(up0, back));
   const up = cross(back, right);
   return { right, up, back };
+}
+
+/** The view matrix of a camera at `eye` with this frame (no up hint, so no pole). */
+export function viewMatrix(eye: Vec3, right: Vec3, up: Vec3, back: Vec3): Mat4 {
+  return new Float32Array([
+    right[0],
+    up[0],
+    back[0],
+    0,
+    right[1],
+    up[1],
+    back[1],
+    0,
+    right[2],
+    up[2],
+    back[2],
+    0,
+    -dot(right, eye),
+    -dot(up, eye),
+    -dot(back, eye),
+    1,
+  ]);
 }
 
 export function lookAt(eye: Vec3, target: Vec3, upHint: Vec3): Mat4 {
@@ -127,16 +230,28 @@ export function viewProjection(o: Orbit, aspect: number, sceneRadius: number): M
   const eye = eyeOf(o);
   const near = Math.max(o.distance - 2 * sceneRadius, o.distance * 0.01, 1e-3);
   const far = o.distance + 2 * sceneRadius;
-  return multiply(perspective(o.fovY, aspect, near, far), lookAt(eye, o.target, [0, 1, 0]));
+  const { right, up, back } = cameraFrame(o);
+  return multiply(perspective(o.fovY, aspect, near, far), viewMatrix(eye, right, up, back));
 }
 
-/** Turn the orbit by these angles (radians), keeping the pitch inside its limits. */
-export function orbitBy(o: Orbit, dYaw: number, dPitch: number): Orbit {
-  return {
-    ...o,
-    yaw: o.yaw + dYaw,
-    pitch: Math.min(Math.max(o.pitch + dPitch, -PITCH_LIMIT), PITCH_LIMIT),
-  };
+/**
+ * Turn the view as a trackball, by `dx` radians about the screen's up
+ * axis (the eye moves to the right for positive dx) and `dy` about its
+ * right axis (the eye moves up for positive dy): one turn, about the
+ * screen-space axis perpendicular to the drag. No limit: the eye goes
+ * over the top and underneath; the result is normalised.
+ */
+export function orbitBy(o: Orbit, dx: number, dy: number): Orbit {
+  const angle = Math.hypot(dx, dy);
+  if (!(angle > 0) || !Number.isFinite(angle)) return o;
+  const { right, up } = cameraFrame(o);
+  // The eye turns about up by dx (towards right) and about right by -dy (towards up).
+  const axis = normalize([
+    (dx * up[0] - dy * right[0]) / angle,
+    (dx * up[1] - dy * right[1]) / angle,
+    (dx * up[2] - dy * right[2]) / angle,
+  ]);
+  return { ...o, rotation: quatNormalize(quatMultiply(axisAngle(axis, angle), o.rotation)) };
 }
 
 /** Move the target in the screen's plane by (dx, dy) in units of the distance. */
@@ -165,7 +280,7 @@ export function zoomBy(o: Orbit, factor: number, minDistance: number, maxDistanc
  * projection is centred.
  */
 export function fitOrbit(
-  angles: { yaw: number; pitch: number; fovY: number },
+  angles: { rotation: Quat; fovY: number },
   points: readonly Vec3[],
   aspect: number,
   margin = 0.9,
@@ -213,6 +328,9 @@ export function fitOrbit(
   return orbit;
 }
 
+/** The default view's orientation: from ahead (34 degrees), to the side and above (24 degrees). */
+export const DEFAULT_ROTATION: Quat = rotationOf((-34 * Math.PI) / 180, (24 * Math.PI) / 180);
+
 /**
  * The 3/4 view of a box from xMin to xMax along the axis and of radius
  * rMax about it: from ahead, to the side and above, the whole box in view.
@@ -242,7 +360,7 @@ export function threeQuarterView(
     }
   }
   const fitted = fitOrbit(
-    { yaw: (-34 * Math.PI) / 180, pitch: (24 * Math.PI) / 180, fovY: (30 * Math.PI) / 180 },
+    { rotation: DEFAULT_ROTATION, fovY: (30 * Math.PI) / 180 },
     points,
     aspect,
     0.96,
