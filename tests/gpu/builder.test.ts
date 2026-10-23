@@ -3,7 +3,7 @@
  * in Chromium, for its DOM; no GPU is used): a preset's lengths are shown
  * to 0.01 mm with their exact calibres beside them, and solved exactly as
  * the preset holds them until a field is edited; an edited field is solved
- * as typed.
+ * as typed; a field that is not a valid value is never put into the rocket.
  */
 
 import { describe, expect, it } from 'vitest';
@@ -58,12 +58,38 @@ describe('the builder', () => {
     expect(formOf(builder).body.cylinderLength).toBe(basicFinnerBodyAsTyped().cylinderLength);
   });
 
-  it('a field that is not a positive length is marked, and the logic refuses it', () => {
-    const { builder, input } = mount();
+  it('a field that is not a positive length is marked, and never put into the rocket', () => {
+    const { builder, input, changes } = mount();
     const span = input('span');
+    const before = builder.design;
     span.value = '';
     span.dispatchEvent(new Event('input'));
     expect(span.getAttribute('aria-invalid')).toBe('true');
-    expect(Number.isNaN(formOf(builder).span)).toBe(true);
+    expect(builder.design).toBe(before);
+    expect(changes.length).toBe(0);
+    expect(document.querySelector('#b-span')!.parentElement!.parentElement!.textContent).toMatch(
+      /Enter a positive length; the rocket keeps [0-9.]+ mm/,
+    );
+  });
+
+  it('clearing "Nose length" and typing 80 keeps the fins at the base', () => {
+    const { builder, input, cal } = mount();
+    const nose = input('nose-length');
+    const ahead = input('ahead');
+    expect(ahead.value).toBe('0');
+    nose.value = '';
+    nose.dispatchEvent(new Event('input'));
+    expect(nose.getAttribute('aria-invalid')).toBe('true');
+    nose.value = '80';
+    nose.dispatchEvent(new Event('input'));
+    expect(nose.getAttribute('aria-invalid')).toBe('false');
+    const d = builder.design;
+    expect(d.nose.length).toBe(0.08);
+    expect(Number.isFinite(d.finSets[0]!.rootLeadingEdge)).toBe(true);
+    // The fins' trailing edges still at the base; the logic is given them there.
+    expect(formOf(builder).trailingEdgeAheadOfBase).toBe(0);
+    expect(cal('ahead')).toBe('= 0 cal');
+    // An edited preset is named so.
+    expect(d.name).toBe('Basic Finner (edited)');
   });
 });

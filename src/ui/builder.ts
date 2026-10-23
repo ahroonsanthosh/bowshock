@@ -9,9 +9,16 @@
 
 import { noseRadius, type NoseShape } from '../geometry/nose';
 import type { FinEdge, FinSection, FinSetDesign, RocketDesign } from '../rocket/design';
-import { aheadOfBase } from '../rocket/adapter';
 import { baseStation } from '../rocket/design';
-import { calibresText, lengthText, toMetres, type LengthUnit } from '../rocket/units';
+import { calibresText, lengthText, type LengthUnit } from '../rocket/units';
+import {
+  edited,
+  finsAhead,
+  typedFinite,
+  typedLength,
+  typedNumber,
+  withBodyLengths,
+} from './builder-edits';
 import { h } from './dom';
 
 const SVG = 'http://www.w3.org/2000/svg';
@@ -207,7 +214,7 @@ export class Builder {
   // ------------------------------------------------------------ rendering
 
   private change(design: RocketDesign): void {
-    this.current = { ...design, source: { kind: 'typed' } };
+    this.current = edited(this.current, design);
     this.refreshCalibres();
     this.options.onChange(this.current);
   }
@@ -246,21 +253,13 @@ export class Builder {
         'nose-length',
         'Nose length',
         () => this.current.nose.length,
-        (m) => ({
-          ...this.current,
-          nose: { ...this.current.nose, length: m },
-          finSets: this.keepFinsAtBase((x) => ({ ...x, nose: { ...x.nose, length: m } })),
-        }),
+        (m) => withBodyLengths(this.current, { nose: m }),
       ),
       this.lengthField(
         'tube-length',
         'Body tube length',
         () => this.tube().length,
-        (m) => ({
-          ...this.current,
-          body: [{ ...this.tube(), length: m }],
-          finSets: this.keepFinsAtBase((x) => ({ ...x, body: [{ ...this.tube(), length: m }] })),
-        }),
+        (m) => withBodyLengths(this.current, { tube: m }),
       ),
       this.overall(),
       h('h3', { className: 'builder__heading', text: 'Fins' }),
@@ -352,16 +351,7 @@ export class Builder {
 
   /** How far the fins' trailing edges lie ahead of the base, m (0 within rounding, as the adapter takes it). */
   private ahead(): number {
-    const f = this.fins();
-    return aheadOfBase(this.current, f.rootLeadingEdge + this.trapezoid().rootChord);
-  }
-
-  /** The fins kept the same distance ahead of the base when the body's lengths change. */
-  private keepFinsAtBase(next: (d: RocketDesign) => RocketDesign): FinSetDesign[] {
-    const ahead = this.ahead();
-    const moved = next(this.current);
-    const f = this.fins();
-    return [{ ...f, rootLeadingEdge: baseStation(moved) - ahead - this.trapezoid().rootChord }];
+    return finsAhead(this.current);
   }
 
   private withDiameter(m: number): RocketDesign {
@@ -429,16 +419,16 @@ export class Builder {
     });
     const error = h('span', { className: 'field__error', attrs: { hidden: true } });
     input.addEventListener('input', () => {
-      const typed = input.value.trim() === '' ? Number.NaN : Number(input.value);
-      const ok = Number.isFinite(typed) && (typed > 0 || (zeroAllowed && typed === 0));
+      const m = typedLength(input.value, this.unitNow, zeroAllowed);
+      const ok = m !== null;
       input.setAttribute('aria-invalid', String(!ok));
       error.hidden = ok;
+      // Not a valid length: marked here, never put into the rocket, which keeps the last one.
       error.textContent = ok
         ? ''
-        : zeroAllowed
-          ? 'Enter zero or a positive length'
-          : 'Enter a positive length';
-      this.change(set(toMetres(typed, this.unitNow)));
+        : `${zeroAllowed ? 'Enter zero or a positive length' : 'Enter a positive length'}; ` +
+          `the rocket keeps ${lengthText(metres(), this.unitNow)} ${this.unitNow}`;
+      if (ok) this.change(set(m));
     });
     if (id === 'diameter') out.textContent = '= 1 cal (the calibre)';
     else {
@@ -480,9 +470,10 @@ export class Builder {
       },
     });
     input.addEventListener('input', () => {
-      const typed = input.value.trim() === '' ? Number.NaN : Number(input.value);
-      input.setAttribute('aria-invalid', String(!(typed >= min)));
-      this.change(set(typed));
+      const typed = typedNumber(input.value, min);
+      input.setAttribute('aria-invalid', String(typed === null));
+      // Not a valid number: marked, never put into the rocket.
+      if (typed !== null) this.change(set(typed));
     });
     return this.field(id, label, input);
   }
@@ -512,7 +503,9 @@ export class Builder {
       },
     });
     input.addEventListener('input', () => {
-      const typed = input.value.trim() === '' ? Number.NaN : Number(input.value);
+      const typed = typedFinite(input.value);
+      input.setAttribute('aria-invalid', String(typed === null));
+      if (typed === null) return;
       this.change({
         ...this.current,
         flight: { maxMach: this.current.flight.maxMach, altitude: typed * scale },
@@ -586,9 +579,15 @@ export class Builder {
         },
       });
       input.addEventListener('input', () => {
-        const x = input.value.trim() === '' ? Number.NaN : Number(input.value);
-        input.setAttribute('aria-invalid', String(!(x >= p.min && x <= p.max)));
-        this.change({ ...this.current, nose: { ...this.current.nose, shape: noseShapeOf(id, x) } });
+        const x = typedNumber(input.value, p.min);
+        const ok = x !== null && x <= p.max;
+        input.setAttribute('aria-invalid', String(!ok));
+        if (ok) {
+          this.change({
+            ...this.current,
+            nose: { ...this.current.nose, shape: noseShapeOf(id, x) },
+          });
+        }
       });
       parameterBox.replaceChildren(this.field('nose-parameter', p.label, input));
     };
@@ -644,8 +643,10 @@ export class Builder {
           },
         });
         input.addEventListener('input', () => {
-          const x = input.value.trim() === '' ? Number.NaN : Number(input.value) / 100;
-          this.change(this.withFins({ section: { kind: 'diamond', ridge: x } }));
+          const x = typedNumber(input.value, 1);
+          const ok = x !== null && x <= 99;
+          input.setAttribute('aria-invalid', String(!ok));
+          if (ok) this.change(this.withFins({ section: { kind: 'diamond', ridge: x / 100 } }));
         });
         detail.replaceChildren(
           this.field('ridge', 'Thickest at (% of the chord from the leading edge)', input),
