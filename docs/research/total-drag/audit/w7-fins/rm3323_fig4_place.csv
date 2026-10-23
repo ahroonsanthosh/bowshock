@@ -1,0 +1,62 @@
+panel,id,ref,kind,flag,x,y,place_px,note
+A,A01,38,circle,0,344,241,1,crossed by the h/c 10 line
+A,A02,39,square,0,227.5,290,1,
+A,A03,34,diamond_filled,0,227.5,309,1,
+A,A04,32,tri_down,0,169,302.5,1.5,overlaps A05
+A,A05,32,tri_down,1,168.5,313.5,1.5,overlaps A04; flag to upper right
+A,A06,40,tri_right,1,124.5,383,1.5,overlaps A07
+A,A07,32,tri_down,1,123.5,397.5,1.5,overlaps A06
+A,A08,32,tri_down,0,123.5,439.5,1,
+A,A09,33,half_flat_top,0,96,455,1,
+A,A10,33,half_flat_top,0,99,508.5,1.5,top on the Cp -0.2 line
+A,A11,33,half_flat_top,0,99.5,519.5,1,
+A,A12,32,tri_down,0,87.5,540,1.5,touches A13
+A,A13,33,half_flat_top,0,100.5,537,1.5,touches A12
+A,A14,32,tri_down,1,89.5,552.5,1.5,
+A,A15,40,tri_right,1,60.5,589,1.5,touches the frame
+A,A16,40,tri_right,1,54,646.5,1.5,crosses the frame
+B,B01,35,tri_up,0,465.5,108,1,
+B,B02,35?,tri_up_heavy,?,466.5,198,2,partly filled; source uncertain (see method)
+B,B03,38,circle,0,347.5,189,1,crossed by the h/c 10 line
+B,B04,32,tri_down,0,172.5,240.5,1,
+B,B05,32,tri_down,1,173,257,1,
+B,B06,39,square,1,232.5,259,1,
+B,B07,39,square,0,231.5,271.5,1,crossed by the Cp -0.6 line
+B,B08,34,diamond_filled,0,232,288.5,1,
+B,B09,33,half_flat_top,0,144.5,312.5,1,
+B,B10,33,half_flat_top,0,144,325,1,
+B,B11,40,tri_right,1,126.5,363.5,2.5,overlaps B12; body partly hidden
+B,B12,32,tri_down,1,127.5,373.5,2,overlaps B11 and B13
+B,B13,32,tri_down,0,128,388,1.5,crossed by the Cp -0.4 line
+B,B14,33,half_flat_top,0,102,447,1,
+B,B15,33,half_flat_top,0,101,505,1.5,crossed by the Cp -0.2 line
+B,B16,33,half_flat_top,0,101,514.5,1.5,touches B15
+B,B17,32,tri_down,?,90.5,536.5,1.5,a stub at the upper right corner: flag uncertain
+B,B18,33,half_flat_top,0,102.5,540.5,1.5,touches B19's flag
+B,B19,32,tri_down,1,93.5,555,1.5,
+B,B20,40,tri_right,1,63.5,594,1.5,
+B,B21,40,tri_right,1,58,642.5,1.5,crosses the frame
+C,C01,32,tri_down,0,175,107,1,
+C,C02,32,tri_down,1,173,125,1,
+C,C03,39,square,1,233,143.5,1,
+C,C04,34,diamond_filled,0,234.5,171.5,1.5,touches C05
+C,C05,39,square,0,234,183,1.5,touches C04
+C,C06,32,tri_down,0,127.5,158,1.5,crossed by the Cp -0.8 line
+C,C07,32,tri_down,1,127,183.5,2,overlaps C08
+C,C08,40,tri_right,1,132,188,1.5,overlaps C07
+C,C09,35,tri_up,0,468.5,131.5,1,
+C,C10,35?,tri_up_heavy,?,468.5,158,2,partly filled; top under the Cp -0.8 line; source uncertain (see method)
+C,C11,38,circle,0,351,166.5,1,crossed by the h/c 10 line
+C,C12,32,tri_down,0,93.5,252,1,
+C,C13,32,tri_down,1,93.5,296.5,1,
+C,C14,40,tri_right,1,68,661,1.5,touches the frame
+C,C15,40,tri_right,1,60.5,709.5,1.5,crosses the frame
+D,D01,39,square,1,231,249,1,
+D,D02,33,half_flat_top,0,101,287.5,1,
+D,D03,33,half_flat_top,0,142,281,1.5,touches D04
+D,D04,33,half_flat_top,0,142.5,291.5,1.5,touches D03
+D,D05,35,tri_up,0,463.5,296.5,1,
+D,D06,35?,tri_up_heavy,1,462.5,311.5,2,partly filled; flag at upper right; source uncertain (see method)
+D,D07,38,circle,0,348.5,316.5,1,crossed by the h/c 10 line
+D,D08,41,tri_right_filled,0,347,375.5,1.5,crossed by the h/c 10 line; right angle at lower left
+D,D09,34,diamond_filled,0,230,347,1,

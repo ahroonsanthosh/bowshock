@@ -1,0 +1,26 @@
+id,kind,x,y,place_px,shape_call,note
+e01,eye,513,2552,2,uncertain,rounded: circle or square
+e02,eye,552,2550,2,square,
+e03,eye,581,2549,2,circle,
+e04,eye,623.5,2553,2,uncertain,rounded: circle or square
+e05,eye,660,2555,2,square,a tick (arrowhead) below
+e06,eye,708.5,2553,2,uncertain,rounded: circle or square
+e07,eye,761,2551,2,uncertain,rounded: circle or square
+e08,eye,788,2551,2.5,uncertain,two outlines drawn over each other (circle and square?); placed as one
+e09,eye,885.5,2536,2,square,
+e10,eye,945,2530,2,uncertain,rounded: circle or square
+e11,eye,985.5,2520,2,square,
+e12,eye,1055,2500.5,2,circle,
+e13,eye,1079.5,2486,2,square,on the 1.2 grid line
+e14,eye,1121.5,2475.5,2,uncertain,rounded: circle or square
+e15,eye,1150.5,2467.5,2,square,
+e16,eye,1193,2440,1.5,square,touches e17
+e17,eye,1194,2458.5,1.5,circle,touches e16
+e18,eye,1212,2435,1.5,square,touches e19
+e19,eye,1213.5,2449.5,1.5,circle,touches e18
+e20,eye,1254,2434,2,square,inked with e21 and e22
+e21,eye,1255,2446,2,circle,inked with e20
+e22,eye,1275,2433,2,square,inked with e20 and e25
+e23,eye,1303,2431.5,2,square,touches e24
+e24,eye,1304,2444,2,circle,touches e23
+e25,eye,1275,2442,2.5,uncertain,a second outline under e22 (circle?); partly hidden

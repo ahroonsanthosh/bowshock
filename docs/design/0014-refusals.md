@@ -1623,3 +1623,108 @@ and final.
   section 3) and has no hold-out of its own, from range A or elsewhere: it
   stays "estimated on component data", served outside the class as
   amendment (i) has it. Range A is not run again (rule 3 of 10.1).
+
+**2026-10-23 (r): R&M 3348 figs. 47 to 52 become a check that sets
+nothing** (the coordinator's decision, on independent advice, after W7's
+first reading at 15f4bc2 and its method note at 8e9263e; precedent:
+amendment (g)). Amendment (l) registered figs. 47 to 52 of Rogers, Berry
+and Quincey (ARC R&M 3348, AERADE 1826.2/3929, PDF pp. 81 to 86) for one
+quantity: the surface pressure p/H just ahead of the base, at x/c 0.995,
+one value per incidence, for the local M' and p' with which table 3's base
+pressures are compared.
+
+- _That quantity cannot be read._ The figures are faired curves with no
+  points plotted. Near the trailing edge the curves of a panel converge
+  into one bundle and turn up into the frame line at x/c 1.0; x/c 0.995
+  lies 2 to 3 px (at 300 dpi) from the frame line's centre, so no curve can
+  be told from another or followed to it; several broken curves stop
+  short, at x/c 0.93 to 0.97. No value per incidence exists to read.
+- _What was read instead, and why it sets nothing._ The first reader then
+  read the envelope of the curves' ink over x/c 0.975 to 0.990, the least
+  and greatest p/H across all incidences, in each of the 30 panels
+  (`docs/research/total-drag/audit/w7-fins/rm3348_figs47_52_te_first.csv`).
+  That quantity was defined after the ink had been seen. By the rule of
+  10.1 and as amendment (g) ruled for a set examined before it was
+  registered, figs. 47 to 52 are therefore a check that sets nothing: not
+  a band, not a band's end, not an allowance, and not a value for M' or
+  p'. The envelope reading is kept as the record of what was done, labelled
+  so. No second reading of it is arranged, and no other quantity of these
+  figures is registered in its place.
+- _Table 3, seen while checking incidences._ To see which incidences table
+  3 covers, the reader printed seven rows of its own typing of table 3
+  (M_0 0.70, phi 0 deg, alpha 0 to 8 deg; p_b/p_0 0.73 to 0.79). Those
+  values were already read twice and paired (amendment (k); round 8's
+  blind typing), so seeing them leaks nothing new, and they were not used
+  in the figure reading.
+- _Physics, for whoever reads the check._ Table 3 is used at alpha 0 deg
+  only (0019 section 3.4: the code serves zero incidence). The envelope's
+  height (0.02 to 0.19 in p/H in a panel, 0.07 to 0.18 at phi 0 deg; 0.14
+  to 0.23 over a figure's five sweeps, the figure as the method note
+  summarises it) is the spread of the incidence sweep (positive and
+  negative incidence on the upper-surface holes; over a figure, the sweep
+  angle too), not an uncertainty in the surface pressure at zero lift, and
+  must not be read as one. And near Mach 1 the flow at the last holes is
+  subsonic or barely sonic, so the corner's upstream influence reaches
+  them: the pressure there is not an undisturbed local state independent
+  of the base. Chapman's local Mach number M' ahead of the base is a
+  supersonic idea (the base flow cannot reach upstream through a
+  supersonic layer); at M_0 0.7 to 1.2 a local M' from the last holes
+  would carry the base's own effect. This is one reason 0019 section 3.4
+  now forms F4's band on the free-stream M_0 and p_0 (as R&M 3348 fig.
+  30, Goin and TN 3548 report base pressure) and not on M' and p'.
+- _What does not change._ Table 3 (alpha 0 deg) and figs. 30a and 30b stay
+  band-setting under (k), on M_0 and p_0. R&M 3427 fig. 13's hole 4
+  ((m)) stays named; whether it is used, given the same upstream
+  influence, is for 0019 section 3.4 to decide before it sets anything.
+
+**2026-10-23 (s): W7's F4 registrations narrowed** (the coordinator's
+decisions on W7's reports of R&M 3323, Johnston and RM L8B13, written
+before anything further is read; each narrows (k), (l) or (m), none
+widens them).
+
+1. _R&M 3427 fig. 13's hole 4 ((m))._ It stays named and read once. It is
+   not needed for the band's coordinates, which are M_0 and p_0 ((r);
+   0019 section 3.4), and it lies 0.1 in ahead of the base, inside the
+   corner's upstream influence near Mach 1. Whether it serves at all is
+   left open. The size of the widening for a wedge's inclined faces
+   against a plate's parallel ones is decided and written in 0019 section
+   3.4 before any F4 code, not now.
+2. _R&M 3323 fig. 5 becomes a check that sets nothing._ Its solid curves
+   for h/c 0.06 (ref. 39) and 0.10 (ref. 38) meet near M 1.00, Cp_b -0.77,
+   and two nearly parallel lines leave the meeting point. The ink does not
+   show which is which, so the 0.06 curve beyond M 1.0 cannot be assigned.
+   A partial reading, or an envelope of the two, would choose the quantity
+   after the ink had been seen. By the precedent of (g) and (r), fig. 5
+   sets nothing; no value of it was recorded. Fig. 4 stays registered
+   (read once, a blind second reading needed). Fig. 4's three heavy
+   symbols at h/c 0.14 with no legend entry stay "source not traced" and
+   set nothing.
+3. _Johnston figs. 4 to 9, 11 and 12 are removed from (k)'s
+   registration._ They are lift, moment and faired cross-plots of the same
+   pressure points as figs. 4, 7 and 10, not independent data, and F4 and
+   F5 use neither lift nor moment. They are not read. Figs. 10(a), 10(b)
+   and 10(c) stay (read once).
+4. _RM L8B13: (k)'s "fig. 4(c) to 4(e) (the wedge's base and sides)" was
+   a slip._ Fig. 4(d) is the 45 deg sweptback cylinder. The registration
+   is limited to figs. 4(c) (the wedge's base) and 4(e) (its sides).
+   Marks the legend does not explain (fig. 4(c)'s "x" marks and dashes)
+   are recorded as untraced and set nothing. Figs. 4(c) and 4(e) are then
+   read once, by the same method, explained symbols only.
+
+_A correction to (r), recorded here as well._ The height of the envelope
+of figs. 47 to 52 is 0.02 to 0.19 in p/H per panel and 0.14 to 0.23 over a
+figure's five sweeps. (r) states both; the coordinator's brief had
+"0.14 to 0.22".
+
+**2026-10-23 (t): RM L8B13 fig. 4(c) becomes a check that sets nothing**
+(the coordinator's decision on W7's report at 2acdd2a; precedent: (g),
+(r), (s)). Fig. 4(c) of Sawyer and Daum (NACA RM L8B13, PDF p. 15), the
+wing-flow wedge's base pressure at four orifices, was registered under
+(k) and limited by (s). Its four series read alike, and their small,
+often solid symbols merge into clumps of ink from about M 0.85, and almost
+everywhere from M 1.05 to 1.2. In these clumps the number of symbols,
+their shapes and their centres cannot be read. Reading only the symbols
+that separate would choose the data after seeing the ink. So fig. 4(c)
+sets nothing: no band, no band's end. No value of it was recorded. Fig.
+4(e) (the wedge's faces) stays registered, read once
+(`docs/research/total-drag/audit/w7-fins/rml8b13_fig4e_first.csv`).

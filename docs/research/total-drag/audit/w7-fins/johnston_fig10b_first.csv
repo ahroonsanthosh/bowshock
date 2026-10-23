@@ -1,0 +1,103 @@
+# Johnston, NASA Memo 4-30-59L (NTRS 19980228287, sha256 f6af115c...497054c3), fig. 10(b), PDF p. 33:
+# base pressure coefficient C_p,b of the 20% sharp single wedge against M, alpha 0 to 8 deg. FIRST reading (0019
+# reader, W7), 2026-10-23. Method: method_johnston_figs4_12.md. px: page pixels at 300 dpi.
+id,alpha_deg,symbol,px_x,px_y,mach,cpb,mach_err,cpb_err,note
+a0_01,0,circle,726.75,1576.75,0.6894,-0.7348,0.0005,0.0005,
+a0_02,0,circle,824.25,1512.0,0.7359,-0.7657,0.0005,0.0005,coincides with a2_02
+a0_03,0,circle,937.0,1380.25,0.7897,-0.8284,0.0005,0.0005,
+a0_04,0,circle,989.75,1355.0,0.8149,-0.8404,0.0010,0.0010,
+a0_05,0,circle,1050.75,1386.5,0.8440,-0.8254,0.0005,0.0005,
+a0_06,0,circle,1082.75,1339.5,0.8593,-0.8477,0.0007,0.0007,
+a0_07,0,circle,1146.75,1266.25,0.8899,-0.8825,0.0010,0.0010,
+a0_08,0,circle,1196.5,1084.25,0.9137,-0.9695,0.0005,0.0005,
+a0_09,0,circle,1251.25,1026.0,0.9397,-0.9974,0.0009,0.0009,
+a0_10,0,circle,1295.0,1020.25,0.9605,-1.0001,0.0008,0.0008,coincides with a2_10
+a0_11,0,circle,1397.0,1227.25,1.0090,-0.9007,0.0010,0.0010,cluster with a2 and a4
+a0_12,0,circle,1450.25,1347.0,1.0344,-0.8438,0.0010,0.0010,cluster with a2 and a4
+a0_13,0,circle,1504.0,1461.5,1.0598,-0.7893,0.0010,0.0010,cluster with a2 and a4; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a0_14,0,circle,1555.5,1554.25,1.0843,-0.7452,0.0010,0.0010,cluster with a2 and a4
+a0_15,0,circle,1609.5,1648.5,1.1101,-0.7004,0.0007,0.0008,cluster with a2 and a4
+a0_16,0,circle,1660.5,1732.25,1.1344,-0.6604,0.0010,0.0010,cluster with a2 and a4
+a0_17,0,circle,1711.0,1803.25,1.1582,-0.6264,0.0008,0.0008,cluster with a2 and a4
+a0_18,0,circle,1766.0,1881.25,1.1840,-0.5891,0.0007,0.0008,cluster with a2 and a4
+a0_19,0,circle,1821.0,1954.0,1.2102,-0.5543,0.0007,0.0008,cluster with a2 and a4
+a0_20,0,circle,1864.25,2007.5,1.2307,-0.5287,0.0010,0.0010,cluster with a2 and a4
+a2_01,2,square,704.5,1576.0,0.6788,-0.7352,0.0010,0.0010,
+a2_02,2,square,824.0,1512.0,0.7358,-0.7657,0.0005,0.0005,coincides with a0_02
+a2_03,2,square,925.0,1397.5,0.7840,-0.8202,0.0008,0.0008,outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_04,2,square,991.0,1401.0,0.8155,-0.8185,0.0005,0.0005,
+a2_05,2,square,1040.0,1372.5,0.8389,-0.8321,0.0008,0.0008,outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_06,2,square,1095.0,1369.0,0.8651,-0.8337,0.0005,0.0005,
+a2_07,2,square,1147.5,1296.5,0.8902,-0.8682,0.0005,0.0005,
+a2_08,2,square,1199.5,1153.5,0.9150,-0.9364,0.0010,0.0010,
+a2_09,2,square,1250.5,1041.5,0.9394,-0.9899,0.0007,0.0008,outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_10,2,square,1293.0,1019.0,0.9596,-1.0007,0.0010,0.0010,coincides with a0_10
+a2_11,2,square,1348.0,1110.0,0.9856,-0.9571,0.0010,0.0010,
+a2_12,2,square,1398.0,1226.0,1.0095,-0.9013,0.0012,0.0012,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_13,2,square,1448.75,1347.0,1.0337,-0.8438,0.0010,0.0010,cluster
+a2_14,2,square,1509.5,1456.0,1.0624,-0.7919,0.0010,0.0010,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a2_15,2,square,1556.0,1557.0,1.0845,-0.7439,0.0010,0.0010,cluster
+a2_16,2,square,1610.0,1649.25,1.1104,-0.7000,0.0008,0.0008,cluster
+a2_17,2,square,1659.5,1732.5,1.1340,-0.6603,0.0010,0.0010,cluster
+a2_18,2,square,1710.5,1803.5,1.1579,-0.6263,0.0010,0.0010,cluster
+a2_19,2,square,1766.0,1881.0,1.1840,-0.5892,0.0007,0.0008,cluster
+a2_20,2,square,1820.75,1953.5,1.2101,-0.5545,0.0007,0.0008,cluster
+a2_21,2,square,1871.0,2000.0,1.2339,-0.5322,0.0010,0.0010,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_01,4,diamond,715.75,1697.5,0.6842,-0.6772,0.0005,0.0005,
+a4_02,4,diamond,822.0,1663.75,0.7348,-0.6935,0.0005,0.0005,
+a4_03,4,diamond,926.5,1621.5,0.7845,-0.7136,0.0008,0.0008,
+a4_04,4,diamond,979.0,1550.25,0.8095,-0.7476,0.0008,0.0008,
+a4_05,4,diamond,1031.25,1486.5,0.8345,-0.7779,0.0005,0.0005,
+a4_06,4,diamond,1084.75,1486.75,0.8600,-0.7777,0.0005,0.0005,
+a4_07,4,diamond,1138.75,1404.0,0.8859,-0.8171,0.0005,0.0005,
+a4_08,4,diamond,1189.5,1321.25,0.9102,-0.8564,0.0007,0.0007,
+a4_09,4,diamond,1247.0,1147.5,0.9376,-0.9392,0.0010,0.0010,
+a4_10,4,diamond,1296.75,1109.25,0.9613,-0.9574,0.0010,0.0010,
+a4_11,4,diamond,1398.0,1226.0,1.0095,-0.9013,0.0012,0.0012,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_12,4,diamond,1450.0,1347.75,1.0343,-0.8434,0.0010,0.0010,cluster
+a4_13,4,diamond,1504.0,1436.0,1.0598,-0.8014,0.0010,0.0010,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_14,4,diamond,1557.0,1551.0,1.0850,-0.7467,0.0012,0.0012,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_15,4,diamond,1607.0,1620.0,1.1089,-0.7140,0.0010,0.0010,cluster
+a4_16,4,diamond,1662.0,1713.0,1.1351,-0.6696,0.0007,0.0008,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_17,4,diamond,1713.0,1798.0,1.1591,-0.6289,0.0012,0.0012,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_18,4,diamond,1765.0,1862.0,1.1835,-0.5983,0.0007,0.0008,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_19,4,diamond,1820.0,1934.0,1.2097,-0.5639,0.0007,0.0008,cluster; outline crossed by others: placed by eye at 6x (its fit scored low or fitted a neighbour)
+a4_20,4,diamond,1868.0,1970.0,1.2325,-0.5466,0.0010,0.0010,cluster
+a6_01,6,triangle,711.0,2067.5,0.6818,-0.5002,0.0010,0.0022,outline partly lost in the scan
+a6_02,6,triangle,820.0,2119.0,0.7341,-0.4757,0.0010,0.0021,
+a6_03,6,triangle,930.5,1795.0,0.7867,-0.6306,0.0010,0.0022,
+a6_04,6,triangle,988.5,1706.0,0.8141,-0.6734,0.0010,0.0022,
+a6_05,6,triangle,1042.5,1755.0,0.8401,-0.6498,0.0010,0.0022,
+a6_06,6,triangle,1097.0,1649.0,0.8660,-0.7005,0.0010,0.0021,
+a6_07,6,triangle,1193.0,1429.0,0.9117,-0.8052,0.0010,0.0021,
+a6_08,6,triangle,1253.0,1174.0,0.9404,-0.9265,0.0010,0.0022,
+a6_09,6,triangle,1294.0,1121.0,0.9599,-0.9518,0.0012,0.0023,apex under a4_10
+a6_10,6,triangle,1347.0,1087.0,0.9851,-0.9681,0.0012,0.0023,base on a2_11
+a6_11,6,triangle,1398.0,1188.0,1.0094,-0.9195,0.0010,0.0022,
+a6_12,6,triangle,1441.0,1284.0,1.0301,-0.8737,0.0010,0.0021,
+a6_13,6,triangle,1504.0,1393.5,1.0598,-0.8216,0.0010,0.0021,
+a6_14,6,triangle,1556.5,1489.5,1.0848,-0.7760,0.0010,0.0021,
+a6_15,6,triangle,1608.5,1567.5,1.1095,-0.7390,0.0010,0.0021,
+a6_16,6,triangle,1661.5,1670.0,1.1347,-0.6902,0.0010,0.0022,
+a6_17,6,triangle,1716.0,1748.0,1.1606,-0.6529,0.0010,0.0022,
+a6_18,6,triangle,1766.0,1822.5,1.1840,-0.6172,0.0010,0.0021,
+a6_19,6?,triangle (kind uncertain),1820.0,1879.0,1.2095,-0.5902,0.0024,0.0024,faint fragments; kind uncertain (6 or 8)
+a6_20,6?,triangle (kind uncertain),1842.0,1898.0,1.2200,-0.5810,0.0024,0.0024,faint fragments; kind uncertain (6 or 8)
+a8_01,8,right triangle,710.5,2322.5,0.6815,-0.3784,0.0022,0.0022,outline partly lost in the scan
+a8_02,8,right triangle,818.0,2293.5,0.7330,-0.3923,0.0022,0.0022,
+a8_03,8,right triangle,920.0,1953.5,0.7816,-0.5548,0.0021,0.0022,
+a8_04,8,right triangle,975.5,1954.0,0.8081,-0.5545,0.0022,0.0022,
+a8_05,8,right triangle,1025.0,1866.5,0.8318,-0.5964,0.0022,0.0022,
+a8_06,8,right triangle,1078.0,1717.0,0.8569,-0.6679,0.0022,0.0022,
+a8_07,8,right triangle,1141.0,1642.0,0.8871,-0.7038,0.0022,0.0021,
+a8_08,8,right triangle,1196.0,1477.0,0.9131,-0.7824,0.0021,0.0021,
+a8_09,8,right triangle,1242.0,1178.0,0.9352,-0.9246,0.0023,0.0023,in the cluster at M 0.935
+a8_10,8,right triangle,1393.0,1122.0,1.0069,-0.9512,0.0021,0.0022,
+a8_11,8,right triangle,1441.5,1236.5,1.0303,-0.8962,0.0021,0.0021,
+a8_12,8,right triangle,1495.5,1336.5,1.0560,-0.8487,0.0021,0.0021,
+a8_13,8,right triangle,1554.0,1454.5,1.0836,-0.7927,0.0021,0.0021,
+a8_14,8,right triangle,1604.0,1532.0,1.1073,-0.7559,0.0021,0.0021,
+a8_15,8,right triangle,1649.5,1620.0,1.1290,-0.7140,0.0021,0.0021,
+a8_16,8,right triangle,1719.0,1714.0,1.1620,-0.6691,0.0021,0.0022,
+a8_17,8,right triangle,1751.5,1763.5,1.1774,-0.6454,0.0021,0.0021,
+a8_18,8,right triangle,1814.0,1838.5,1.2067,-0.6095,0.0021,0.0021,
