@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openrocket version="1.10" creator="bowshock test fixture">
+  <!-- The Basic Finner (A. D. Dupuis and W. Hathaway, DREV TM 9703, 1997;
+       src/validation/basic-finner.ts) in OpenRocket's terms, written for
+       bowshock's tests: calibre 30 mm; a 20 deg cone, 0.5 / tan(10 deg) =
+       2.8356409098088546 calibres long; a cylinder to 10 calibres overall;
+       four rectangular fins of 1 calibre chord and span at the base. The
+       lengths are 0.03 m times the calibres, each written as the shortest
+       decimal that reads back to the same double.
+
+       The fins' section cannot be written in OpenRocket's terms: the Basic
+       Finner's is a single wedge from a 0.004 calibre leading-edge radius to
+       a blunt trailing edge 0.08 calibres thick, and OpenRocket offers only
+       square, rounded and airfoil sections of uniform thickness. The square
+       section 0.08 calibres thick below is the nearest in OpenRocket's terms
+       and is not the Basic Finner's; the round-trip test compares everything
+       else. -->
+  <rocket>
+    <name>Basic Finner</name>
+    <id>00000000-0000-4000-8000-000000000301</id>
+    <subcomponents>
+      <stage>
+        <name>Basic Finner</name>
+        <id>00000000-0000-4000-8000-000000000302</id>
+        <subcomponents>
+          <nosecone>
+            <name>20 deg cone</name>
+            <id>00000000-0000-4000-8000-000000000303</id>
+            <finish>polished</finish>
+            <material type="bulk" density="7850.0" group="Metals">Steel</material>
+            <length>0.08506922729426564</length>
+            <thickness>filled</thickness>
+            <shape>conical</shape>
+            <aftradius>0.015</aftradius>
+            <aftshoulderradius>0.0</aftshoulderradius>
+            <aftshoulderlength>0.0</aftshoulderlength>
+            <aftshoulderthickness>0.0</aftshoulderthickness>
+            <aftshouldercapped>false</aftshouldercapped>
+            <isflipped>false</isflipped>
+          </nosecone>
+          <bodytube>
+            <name>Cylinder</name>
+            <id>00000000-0000-4000-8000-000000000304</id>
+            <finish>polished</finish>
+            <material type="bulk" density="7850.0" group="Metals">Steel</material>
+            <length>0.21493077270573435</length>
+            <thickness>filled</thickness>
+            <radius>auto 0.015</radius>
+            <subcomponents>
+              <trapezoidfinset>
+                <name>Fins</name>
+                <id>00000000-0000-4000-8000-000000000305</id>
+                <instancecount>4</instancecount>
+                <fincount>4</fincount>
+                <radiusoffset method="surface">0.0</radiusoffset>
+                <angleoffset method="relative">0.0</angleoffset>
+                <rotation>0.0</rotation>
+                <axialoffset method="bottom">0.0</axialoffset>
+                <position type="bottom">0.0</position>
+                <finish>polished</finish>
+                <material type="bulk" density="7850.0" group="Metals">Steel</material>
+                <thickness>0.0024</thickness>
+                <crosssection>square</crosssection>
+                <cant>0.0</cant>
+                <filletradius>0.0</filletradius>
+                <filletmaterial type="bulk" density="7850.0" group="Metals">Steel</filletmaterial>
+                <rootchord>0.03</rootchord>
+                <tipchord>0.03</tipchord>
+                <sweeplength>0.0</sweeplength>
+                <height>0.03</height>
+              </trapezoidfinset>
+            </subcomponents>
+          </bodytube>
+        </subcomponents>
+      </stage>
+    </subcomponents>
+  </rocket>
+</openrocket>

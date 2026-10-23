@@ -10,6 +10,7 @@ import { colormapTable } from '../../src/render/colormap';
 import {
   cellCentre,
   cellFieldValue,
+  freeStreamValue,
   schlierenGradient,
   type Conserved,
 } from '../../src/render/flow-fields';
@@ -245,6 +246,32 @@ describe('the flow view of a fit as it runs', () => {
     // Once the fit is released, the view still draws the flow, from its own copy.
     const after = await renderer.probe([[2, 0.6]], { ...OPTIONS, field: 'mach', split: false });
     expect(Number.isFinite(after[0])).toBe(true);
+    // Outside the fitted shock it draws the free stream: upstream of the tip,
+    // and far above the shock and (mirrored) below it.
+    const outside: [number, number][] = [
+      [-1, 0.3],
+      [2, 5],
+      [2, -5],
+    ];
+    for (const field of ['schlieren', 'mach', 'cp', 'density'] as const) {
+      const values = await renderer.probe(outside, { ...OPTIONS, field, split: false });
+      const want = freeStreamValue(field, Math.fround(gamma), problem.freeStream);
+      for (const value of values) {
+        expect(Math.abs(value - want), `${field} outside the shock`).toBeLessThanOrEqual(
+          1e-6 * Math.max(1, Math.abs(want)),
+        );
+      }
+    }
+    // In the split view, schlieren's (0) above the axis and the field's below.
+    const split = await renderer.probe(
+      [
+        [2, 5],
+        [2, -5],
+      ],
+      { ...OPTIONS, field: 'density', split: true },
+    );
+    expect(split[0]).toBe(0);
+    expect(Math.abs(split[1]! - 1)).toBeLessThanOrEqual(1e-6);
     renderer.destroy();
   }, 900_000);
 

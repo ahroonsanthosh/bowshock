@@ -1,0 +1,82 @@
+[
+  {
+    "page": "app",
+    "width": 390,
+    "words": 217,
+    "tucked": 132,
+    "controls": 31,
+    "longestParagraph": 28,
+    "height": 844,
+    "fields": 13,
+    "firstResult": 25.063,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "bandAndStatus": 0,
+      "changeMach": 2,
+      "openHelp": 1,
+      "preset": 2,
+      "import": 3,
+      "csv": 2,
+      "png": 1,
+      "side view": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "app",
+    "width": 1440,
+    "words": 340,
+    "tucked": 0,
+    "controls": 39,
+    "longestParagraph": 43,
+    "height": 900,
+    "fields": 13,
+    "firstResult": 27.44,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "bandAndStatus": 0,
+      "changeMach": 1,
+      "openHelp": 1,
+      "preset": 1,
+      "import": 2,
+      "csv": 1,
+      "png": 1,
+      "side view": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "about",
+    "width": 390,
+    "words": 113,
+    "tucked": 39,
+    "controls": 10,
+    "longestParagraph": 47,
+    "height": 906,
+    "firstResult": 0.153,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "openHelp": 1
+    },
+    "errors": []
+  },
+  {
+    "page": "about",
+    "width": 1440,
+    "words": 124,
+    "tucked": 39,
+    "controls": 12,
+    "longestParagraph": 47,
+    "height": 903,
+    "firstResult": 0.952,
+    "converged": null,
+    "actions": {
+      "result": 0,
+      "openHelp": 1
+    },
+    "errors": []
+  }
+]

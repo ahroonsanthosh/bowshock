@@ -8,6 +8,43 @@
 const CONTROL_COLOURS = ['#0b1a3a', '#1d4e89', '#1f8a8a', '#7cc47f', '#f4e9a6'] as const;
 
 /**
+ * The spectrum of the app's views (docs/design/0017-rocketeer-interface.md
+ * section 6): fully saturated, low values to high, magenta, violet, blue,
+ * cyan, green, yellow, orange, red, interpolated linearly in sRGB between
+ * neighbours (which keeps every colour on it saturated). bowshock's own
+ * control colours, the same as the 3D scene's (src/render3d/spectrum.ts);
+ * no other program's table is used.
+ */
+export const SPECTRUM_STOPS = [
+  '#ff1fd2',
+  '#8f2bff',
+  '#2b45ff',
+  '#00c8ff',
+  '#14f05a',
+  '#f2f20f',
+  '#ff8c0a',
+  '#ff1e1e',
+] as const;
+
+/** `count` colours (RGBA, 0..1) evenly spaced along the spectrum. */
+export function spectrumTable(count = 256): Float32Array<ArrayBuffer> {
+  const stops = SPECTRUM_STOPS.map(hexToRgb);
+  const table = new Float32Array(4 * count);
+  for (let k = 0; k < count; k++) {
+    const s = (k / (count - 1)) * (stops.length - 1);
+    const i = Math.min(Math.floor(s), stops.length - 2);
+    const f = s - i;
+    const a = stops[i]!;
+    const b = stops[i + 1]!;
+    table.set(
+      [a[0] + f * (b[0] - a[0]), a[1] + f * (b[1] - a[1]), a[2] + f * (b[2] - a[2]), 1],
+      4 * k,
+    );
+  }
+  return table;
+}
+
+/**
  * Numerical schlieren drawn light on dark (docs/design/0012-interface.md,
  * decision 2): uniform flow in the dark shade, the steepest density
  * gradients (shocks) in the light one, linearly between them.

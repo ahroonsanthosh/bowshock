@@ -1525,7 +1525,10 @@ and final.
     the run assumed (10.6 item 4). A rounded leading edge of any radius is
     outside it. The nose is the sharp cone the run took (its wave drag
     the exact Taylor-Maccoll value; on the page, the page's solve of that
-    cone).
+    cone). 2026-10-23: that solve must be verified (its band within the
+    solver's tolerance) for the claim to be validated; this was implicit
+    and is now explicit, and a case with an unverified nose term is an
+    estimate with that reason.
   - (As first written; superseded by the correction below.) Two disjoint
     windows of Mach and Reynolds number on length, with no
     interpolation across the gap (Mach 1.827 to 2.423 was not tested; its

@@ -9,10 +9,12 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: 'index.html',
+        about: 'about.html',
         shockTube: 'demos/shock-tube.html',
         supersonicRamp: 'demos/supersonic-ramp.html',
         noseDrag: 'demos/nose-drag.html',
         flowView: 'demos/flow-view.html',
+        flow3d: 'demos/flow-3d.html',
       },
     },
   },

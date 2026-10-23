@@ -48,7 +48,8 @@ export interface ShellOptions<A extends string> {
   /** The page's View menu (none if empty). */
   readonly view?: readonly MenuItem[];
   readonly bindings: readonly KeyBinding<A>[];
-  readonly onAction: (action: A) => void;
+  /** A binding's action, with the key press that asked for it. */
+  readonly onAction: (action: A, event?: KeyboardEvent) => void;
   readonly help: { readonly title?: string; readonly sections: readonly HelpSection[] };
 }
 
@@ -76,7 +77,14 @@ export class Shell<A extends string> {
     const viewport = document.querySelector<HTMLElement>('.viewport');
     if (viewport === null) throw new Error('the page has no .viewport');
     this.viewport = viewport;
-    const bindings = [...options.bindings, HELP_BINDING];
+    // Help's own key with the page's keys, before those of one view (grouped in the help).
+    const grouped = options.bindings.findIndex((b) => b.group !== undefined);
+    const at = grouped < 0 ? options.bindings.length : grouped;
+    const bindings = [
+      ...options.bindings.slice(0, at),
+      HELP_BINDING,
+      ...options.bindings.slice(at),
+    ];
     this.help = new Help({
       title: options.help.title ?? 'Keys and help',
       bindings,
@@ -97,9 +105,9 @@ export class Shell<A extends string> {
     });
     this.keys = new KeyMap<A | 'help'>(
       bindings,
-      (action) => {
+      (action, event) => {
         if (action === 'help') this.help.toggle();
-        else options.onAction(action);
+        else options.onAction(action, event);
         this.topBar.refresh();
       },
       () => this.help.isOpen,

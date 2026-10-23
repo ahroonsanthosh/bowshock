@@ -277,6 +277,22 @@ describe('nose profiles', () => {
     expect(Number.isFinite(noseTipSlope(longer))).toBe(true);
   });
 
+  it('a tangent ogive no longer than its radius has radius 0 at its tip, not 0 / 0', () => {
+    // Found by the OpenRocket import's profile comparison: the arc's centre
+    // lies on the axis there, and the rearranged form was 0 / 0 at the tip.
+    for (const [length, baseRadius] of [
+      [0.5, 0.5],
+      [0.01, 0.02],
+      [0.3, 0.7],
+    ] as const) {
+      const n: Nose = { shape: { kind: 'ogive', parameter: 1 }, length, baseRadius };
+      expect(noseRadius(n, 0)).toBe(0);
+      for (let k = 1; k <= 100; k++) {
+        expect(Number.isFinite(noseRadius(n, (length * k) / 100))).toBe(true);
+      }
+    }
+  });
+
   it('noses that leave the tip vertically are blunt (infinite tip slope)', () => {
     const blunt: NoseShape[] = [
       { kind: 'ellipsoid' },

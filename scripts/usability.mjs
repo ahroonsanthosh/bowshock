@@ -9,6 +9,10 @@
  * task counts only once what it is for is in view (the band and the
  * status both; the new result, changed from the one before).
  *
+ * The app (0017 section 11) adds its own tasks, each from a fresh page:
+ * another preset, an OpenRocket file imported (Import, then the file),
+ * the CSV, the PNG, the side view, and the fields its builder asks.
+ *
  *   node scripts/usability.mjs --url http://localhost:4173 --out after.json
  *   node scripts/usability.mjs --compare before.json after.json --md docs/research/interface/usability.md
  *
@@ -102,6 +106,16 @@ async function shows(page, selector, pattern, inWindow) {
 const inView = (page, selector, pattern) => shows(page, selector, pattern, true);
 const onPage = (page, selector, pattern) => shows(page, selector, pattern, false);
 
+/** Whether the text wanted is in the document at all (in a phone sheet's hidden tab, say). */
+const inDocument = (page, selector, pattern) =>
+  page.evaluate(
+    ({ selector, pattern }) =>
+      Array.from(document.querySelectorAll(selector)).some((el) =>
+        new RegExp(pattern).test(el.textContent ?? ''),
+      ),
+    { selector, pattern },
+  );
+
 async function until(test, seconds) {
   const start = Date.now();
   while ((Date.now() - start) / 1000 < seconds) {
@@ -117,8 +131,60 @@ async function until(test, seconds) {
  * their number. A task the page does not offer is null.
  */
 const PAGES = {
-  landing: {
+  app: {
+    // The Basic Finner's curve starts on opening; its first result is the
+    // first point's provisional C_D after its first grid (its band needs
+    // the finest grid, hours on software WebGPU).
     path: 'index.html',
+    result: { selector: '.point__value, .pinned__value', pattern: '\\d\\.\\d{3}' },
+    status: {
+      selector: '.point .status-word, .pinned .status-word',
+      pattern: 'Provisional|Estimate|No number',
+    },
+    // The new result: the next point of the curve, its Mach number and status.
+    machResult: { selector: '.point__mach', pattern: 'Mach \\d\\.\\d\\d' },
+    tasks: () => ({
+      mach: [{ click: '.point__step[aria-label="The point after"]' }],
+      help: [{ key: 'h' }],
+    }),
+    checks: [
+      {
+        name: 'preset',
+        steps: [{ select: ['#preset', 'example-54'] }],
+        expect: { selector: '#curve-rocket', pattern: 'Example: 54 mm' },
+        reveal: true,
+      },
+      {
+        name: 'import',
+        steps: [{ upload: ['#import', 'tests/import/fixtures/sport-four-fins-launch-lug.ork'] }],
+        expect: { selector: '#curve-notes', pattern: 'parts taken' },
+        reveal: true,
+      },
+      {
+        name: 'csv',
+        steps: [{ click: '#csv' }],
+        expect: { selector: '.toast', pattern: 'Saved bowshock-.*\\.csv' },
+        reveal: true,
+      },
+      {
+        name: 'png',
+        // Once the airflow is drawn (its first grid set up).
+        before: { selector: '.readout [data-id="grid"]', pattern: '\\d+' },
+        steps: [{ key: 'k' }],
+        expect: { selector: '.toast', pattern: 'Saved bowshock-.*\\.png' },
+        wait: 600,
+      },
+      {
+        name: 'side view',
+        steps: [{ key: 'v' }],
+        expect: { selector: '.modebar button[aria-pressed="true"]', pattern: 'Side' },
+      },
+    ],
+    // U2: the fields a rocket by hand takes (each length with its calibres beside it).
+    fields: '#builder input:not([type="radio"])',
+  },
+  about: {
+    path: 'about.html',
     // The first result: the GPU's status.
     result: { selector: '#gpu-status, #gpu-line', pattern: 'WebGPU available|No WebGPU|Adapter' },
     tasks: () => ({ help: [{ key: 'h' }] }),
@@ -167,12 +233,72 @@ const PAGES = {
     },
     tasks: () => ({ mach: [{ select: ['#mach', '3'] }], help: [{ key: 'h' }] }),
   },
+  drag: {
+    // The default case, the Basic Finner's body at Mach 2, run: its first
+    // grid's wave drag is the first result (its band needs the finest grid,
+    // 160 cells across, which software WebGPU here does not reach in hours).
+    path: 'demos/nose-drag.html',
+    runWhen: '#run:not([disabled])',
+    run: [{ click: '#run' }],
+    result: { selector: '#status, .readout [data-id="cd"]', pattern: '\\d\\.\\d{5}' },
+    // The new result: Stop, the new Mach number, Run, and its first grid's drag.
+    machResult: { selector: '#status, .readout [data-id="cd"]', pattern: '\\d\\.\\d{5}' },
+    // Before the band: the status the total states, its class.
+    status: { selector: '#total-output', pattern: 'inside the class|outside the class' },
+    tasks: () => ({
+      mach: [{ click: '#stop' }, { fill: ['#mach', '2.5'] }, { click: '#run' }],
+      help: [{ key: 'h' }],
+    }),
+  },
 };
 
+/**
+ * Brings what matches `selector` into view, if it is not: a scroll to it,
+ * or a tap on the phone sheet's tab that holds it. Whether it is in view
+ * after that one action.
+ */
+async function reveal(page, selector, pattern) {
+  await page.evaluate((selector) => {
+    const el = document.querySelector(selector);
+    if (el === null) return;
+    const panel = el.closest('[data-tab-hidden]');
+    if (panel !== null) document.getElementById(`${panel.id}-tab`)?.click();
+    else el.scrollIntoView();
+  }, selector);
+  await page.waitForTimeout(300);
+  return inView(page, selector, pattern);
+}
+
+/**
+ * Performs the steps; returns the actions they took beyond one each: a tap
+ * on the phone sheet's tab holding a control not in view, before it.
+ */
 async function act(page, steps) {
+  let extra = 0;
   for (const step of steps) {
+    if (step.upload !== undefined) {
+      // Two actions: the button, then the file in the chooser.
+      const [chooser] = await Promise.all([
+        page.waitForEvent('filechooser'),
+        page.click(step.upload[0]),
+      ]);
+      await chooser.setFiles(step.upload[1]);
+    }
     if (step.key !== undefined) await page.keyboard.press(step.key);
-    if (step.click !== undefined) await page.click(step.click);
+    if (step.click !== undefined) {
+      const hidden = await page.evaluate((selector) => {
+        const el = document.querySelector(selector);
+        const panel = el?.closest('[data-tab-hidden]');
+        if (panel === null || panel === undefined) return false;
+        document.getElementById(`${panel.id}-tab`)?.click();
+        return true;
+      }, step.click);
+      if (hidden) {
+        extra += 1;
+        await page.waitForTimeout(300);
+      }
+      await page.click(step.click);
+    }
     if (step.fill !== undefined) {
       const [selector, value] = step.fill;
       await page.evaluate(
@@ -188,6 +314,7 @@ async function act(page, steps) {
     if (step.select !== undefined) await page.selectOption(step.select[0], step.select[1]);
     await page.waitForTimeout(300);
   }
+  return extra;
 }
 
 async function measure(browser, base, id, spec, size) {
@@ -204,6 +331,7 @@ async function measure(browser, base, id, spec, size) {
   if (spec.run !== undefined) {
     await until(() => page.evaluate(() => document.readyState === 'complete'), 30);
     await page.waitForTimeout(1500);
+    if (spec.runWhen !== undefined) await page.waitForSelector(spec.runWhen, { timeout: 120_000 });
     await act(page, spec.run);
   }
   const first = await until(() => onPage(page, spec.result.selector, spec.result.pattern), 900);
@@ -219,24 +347,24 @@ async function measure(browser, base, id, spec, size) {
   }
   const counts = await page.evaluate(census);
   // The band and the status: once the run has its outcome, both in view
-  // now, or how many actions away.
-  if (spec.band !== undefined) {
+  // now, or how many actions away (a page whose band needs a solve too long
+  // for this machine: its status alone).
+  if (spec.status !== undefined) {
+    const target = spec.band ?? spec.status;
     const both = async () =>
-      (await inView(page, spec.band.selector, spec.band.pattern)) &&
+      (spec.band === undefined || (await inView(page, spec.band.selector, spec.band.pattern))) &&
       (await inView(page, spec.status.selector, spec.status.pattern));
     const outcome = await until(
       async () =>
-        (await onPage(page, spec.band.selector, spec.band.pattern)) &&
+        (await onPage(page, target.selector, target.pattern)) &&
         (await onPage(page, spec.status.selector, spec.status.pattern)),
       900,
     );
     if (outcome === null) actions.bandAndStatus = null;
     else if (await both()) actions.bandAndStatus = 0;
     else {
-      // One scroll to the band, if it is on the page at all.
-      await page.evaluate((selector) => {
-        document.querySelector(selector)?.scrollIntoView();
-      }, spec.band.selector);
+      // One scroll or tab to the band, if it is on the page at all.
+      await reveal(page, target.selector, target.pattern);
       actions.bandAndStatus = (await both()) ? 1 : null;
     }
   }
@@ -253,7 +381,7 @@ async function measure(browser, base, id, spec, size) {
         selector,
       );
     const old = await texts();
-    await act(page, tasks.mach);
+    const extra = await act(page, tasks.mach);
     const seen = await until(async () => {
       const now = await texts();
       return (
@@ -262,15 +390,80 @@ async function measure(browser, base, id, spec, size) {
         (await inView(page, selector, pattern))
       );
     }, 600);
-    actions.changeMach = seen === null ? null : tasks.mach.length;
+    actions.changeMach = seen === null ? null : tasks.mach.length + extra;
   }
   if (tasks.help !== undefined) {
     await act(page, tasks.help);
-    const open = await page.evaluate(() => document.querySelector('dialog')?.open === true);
+    // Any dialog open (the app has a closed drawer before the help).
+    const open = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('dialog')).some((d) => d.open),
+    );
     actions.openHelp = open ? tasks.help.length : null;
   }
+  const fields =
+    spec.fields === undefined
+      ? undefined
+      : await page.evaluate(
+          (selector) =>
+            Array.from(document.querySelectorAll(selector)).filter((el) => !el.closest('[hidden]'))
+              .length,
+          spec.fields,
+        );
   await page.close();
-  return { page: id, width: size.width, ...counts, firstResult, converged, actions, errors };
+  // The page's own tasks, each from a fresh page: its actions, once what it is for is in view.
+  for (const check of spec.checks ?? []) {
+    const fresh = await browser.newPage({
+      viewport: size,
+      deviceScaleFactor: 1,
+      acceptDownloads: true,
+    });
+    fresh.on('pageerror', (e) => errors.push(e.message));
+    await fresh.goto(`${base}/${spec.path}`);
+    await until(() => fresh.evaluate(() => document.readyState === 'complete'), 60);
+    await fresh.waitForTimeout(3000);
+    if (check.before !== undefined) {
+      await until(() => onPage(fresh, check.before.selector, check.before.pattern), 600);
+    }
+    const extra = await act(fresh, check.steps);
+    const steps = check.steps.reduce((n, step) => n + (step.upload !== undefined ? 2 : 1), 0);
+    // Shown, or (where a tap reveals it) in a tab not shown: the tap is then counted.
+    const seen = await until(
+      async () =>
+        (await onPage(fresh, check.expect.selector, check.expect.pattern)) ||
+        (check.reveal === true &&
+          (await inDocument(fresh, check.expect.selector, check.expect.pattern))),
+      check.wait ?? 120,
+    );
+    let count = seen === null ? null : steps + extra;
+    if (count !== null && !(await inView(fresh, check.expect.selector, check.expect.pattern))) {
+      count =
+        check.reveal && (await reveal(fresh, check.expect.selector, check.expect.pattern))
+          ? count + 1
+          : null;
+    }
+    actions[check.name] = count;
+    await fresh.close();
+  }
+  return {
+    page: id,
+    width: size.width,
+    ...counts,
+    ...(fields === undefined ? {} : { fields }),
+    firstResult,
+    converged,
+    actions,
+    errors,
+  };
+}
+
+/** The page's own tasks and fields, in words: "preset 1, import 2, fields 14". */
+function own(r) {
+  const core = new Set(['result', 'bandAndStatus', 'changeMach', 'openHelp']);
+  const parts = Object.entries(r.actions)
+    .filter(([k]) => !core.has(k))
+    .map(([k, v]) => `${k} ${v ?? 'none'}`);
+  if (r.fields !== undefined) parts.push(`fields ${r.fields}`);
+  return parts.length === 0 ? '' : parts.join(', ');
 }
 
 function table(before, after) {
@@ -278,14 +471,14 @@ function table(before, after) {
   const old = new Map((before ?? []).map((r) => [key(r), r]));
   const fmt = (v) => (v === null || v === undefined ? 'none' : String(v));
   const lines = [
-    '| Page | Width | Words | Words a tab or disclosure away | Controls | Longest paragraph | Height | First result (s) | Converged (s) | See the result (actions) | Band and status (actions) | Mach (actions) | Help (actions) |',
-    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    "| Page | Width | Words | Words a tab or disclosure away | Controls | Longest paragraph | Height | First result (s) | Converged (s) | See the result (actions) | Band and status (actions) | Mach (actions) | Help (actions) | The page's own tasks (actions) |",
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
   ];
   for (const r of after) {
     const b = old.get(key(r));
     const pair = (f) => (b === undefined ? fmt(f(r)) : `${fmt(f(b))} to ${fmt(f(r))}`);
     lines.push(
-      `| ${r.page} | ${r.width} | ${pair((x) => x.words)} | ${pair((x) => x.tucked)} | ${pair((x) => x.controls)} | ${pair((x) => x.longestParagraph)} | ${pair((x) => x.height)} | ${pair((x) => x.firstResult?.toFixed(1))} | ${pair((x) => x.converged?.toFixed(1))} | ${pair((x) => x.actions.result)} | ${pair((x) => x.actions.bandAndStatus)} | ${pair((x) => x.actions.changeMach)} | ${pair((x) => x.actions.openHelp)} |`,
+      `| ${r.page} | ${r.width} | ${pair((x) => x.words)} | ${pair((x) => x.tucked)} | ${pair((x) => x.controls)} | ${pair((x) => x.longestParagraph)} | ${pair((x) => x.height)} | ${pair((x) => x.firstResult?.toFixed(1))} | ${pair((x) => x.converged?.toFixed(1))} | ${pair((x) => x.actions.result)} | ${pair((x) => x.actions.bandAndStatus)} | ${pair((x) => x.actions.changeMach)} | ${pair((x) => x.actions.openHelp)} | ${own(r)} |`,
     );
   }
   return lines.join('\n');

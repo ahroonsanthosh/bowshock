@@ -61,6 +61,7 @@ const exactNose = (form: TotalDragForm): NoseState => {
   const n = form.body.nose;
   return {
     kind: 'solved',
+    verified: true,
     component: exactConeNoseWaveDrag(form.mach, Math.atan(n.baseRadius / n.length)),
   };
 };
@@ -664,7 +665,7 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
       grids: 4,
     });
     const a = totalOf(totalDragView(f, exact));
-    const b = totalOf(totalDragView(f, { kind: 'solved', component: solved }));
+    const b = totalOf(totalDragView(f, { kind: 'solved', verified: true, component: solved }));
     expect(b.cd - a.cd).toBeCloseTo(solved.cd - exact.component.cd, 14);
     expect(b.components[0]).toBe(solved);
     expect(b.high - b.low - (a.high - a.low)).toBeCloseTo(
@@ -681,7 +682,7 @@ describe(
     const f = basicFinnerForm(2.0, 1.6e7);
     const estimate = (form: TotalDragForm) => {
       const nose = noseComponentOf({ value: 0.09, uncertainty: 1e-5, grids: 4 });
-      const v = totalDragView(form, { kind: 'solved', component: nose });
+      const v = totalDragView(form, { kind: 'solved', verified: true, component: nose });
       if (v.kind !== 'total')
         throw new Error(`expected a total, got ${v.kind}: ${reasons(v).join(', ')}`);
       return v;

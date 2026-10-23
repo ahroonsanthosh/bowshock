@@ -106,8 +106,26 @@ Shock standoff of a sphere, to place blunt-body grid boundaries
   F. S. Billig, "Shock-wave shapes around spherical- and cylindrical-nosed
   bodies", J. Spacecraft Rockets 4, 1967.
 
-Oklab colour space for the colour map (src/render/colormap.ts)
+Oklab colour space for the colour map (src/render/colormap.ts) and the 3D
+view's palettes (src/render3d/quantities.ts)
   B. Ottosson, "A perceptual color space for image processing", 2020.
+
+The 3D view (src/render3d/): iso-lines by marching squares on the dual
+mesh, on a resampling by cubic convolution, simplified by the
+Ramer-Douglas-Peucker algorithm
+  W. E. Lorensen and H. E. Cline, "Marching cubes: a high resolution 3D
+  surface construction algorithm", Computer Graphics 21(4), 1987 (the
+  two-dimensional case, marching squares).
+  R. G. Keys, "Cubic convolution interpolation for digital image
+  processing", IEEE Trans. Acoust., Speech, Signal Process. 29(6), 1981
+  (a = -0.5, the Catmull-Rom cubic).
+  U. Ramer, "An iterative procedure for the polygonal approximation of
+  plane curves", Computer Graphics and Image Processing 1(3), 1972;
+  D. H. Douglas and T. K. Peucker, "Algorithms for the reduction of the
+  number of points required to represent a digitized line or its
+  caricature", Cartographica 10(2), 1973.
+Its look follows FluidX3D's renders as its README and the pictures it
+links show them; none of FluidX3D's code was read or used.
 
 Standard atmosphere (src/atmosphere/us-standard-1976.ts)
   U.S. Standard Atmosphere, 1976, NOAA, NASA and USAF, Washington, D.C.,

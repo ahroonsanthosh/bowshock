@@ -6,113 +6,122 @@
     <meta name="theme-color" content="#07090c" />
     <meta
       name="description"
-      content="Supersonic airflow around model rockets, simulated in your browser on your own GPU."
+      content="Your rocket's drag coefficient against Mach number, 1.0 to 3.0, each point with its error band, and the supersonic airflow around it, solved in your browser on your own GPU."
     />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M27 4 Q6 8 5 16 Q6 24 27 28%27 fill=%27none%27 stroke=%27%23ff5a6e%27 stroke-width=%273%27 stroke-linecap=%27round%27/%3E%3Cpath d=%27M11 16 L27 11.5 L27 20.5 Z%27 fill=%27%23e6e8eb%27/%3E%3C/svg%3E"
     />
-    <title>bowshock</title>
+    <title>bowshock: supersonic rocket drag</title>
     <link rel="stylesheet" href="/src/ui/style.css" />
   </head>
-  <body class="doc">
-    <main class="doc__main">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero__text">
-          <h1 id="hero-title">
-            Supersonic airflow around model rockets, simulated in your browser on your own GPU.
-          </h1>
-          <p class="lead">
-            Early development: the inviscid forebody wave drag of sharp and ellipsoid noses, with
-            its measured error band, and from it a finned rocket's total drag, as an estimate: no
-            total is validated while the one class of rocket tested awaits a new test of a corrected
-            term.
-          </p>
-          <div class="hero__actions">
-            <a class="button button--primary" href="demos/nose-drag.html"
-              >Compute a rocket's drag</a
-            >
-            <a class="button" href="demos/flow-view.html">Watch the flow live</a>
-          </div>
-          <p class="gpu-line" id="gpu-line" aria-live="polite">Checking for WebGPU…</p>
-        </div>
-        <figure class="hero__art">
-          <svg viewBox="0 0 600 320" role="img" aria-labelledby="hero-art-caption">
-            <defs>
-              <linearGradient id="shock-fade" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0" stop-color="#f2f4f7" stop-opacity="0.95" />
-                <stop offset="1" stop-color="#f2f4f7" stop-opacity="0.15" />
-              </linearGradient>
-              <linearGradient id="fan-fade" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0" stop-color="#f2f4f7" stop-opacity="0.45" />
-                <stop offset="1" stop-color="#f2f4f7" stop-opacity="0" />
-              </linearGradient>
-              <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
-                <feGaussianBlur stdDeviation="2.4" />
-              </filter>
-            </defs>
-            <g class="hero__flow">
-              <path
-                d="M70 160 Q330 2 600 -40 M70 160 Q330 318 600 360"
-                fill="none"
-                stroke="url(#shock-fade)"
-                stroke-width="5"
-                filter="url(#glow)"
-                opacity="0.6"
-              />
-              <path
-                d="M70 160 Q330 2 600 -40 M70 160 Q330 318 600 360"
-                fill="none"
-                stroke="url(#shock-fade)"
-                stroke-width="1.6"
-              />
-              <g stroke="url(#fan-fade)" stroke-width="1">
-                <path d="M240 130 l128 -122" />
-                <path d="M240 130 l138 -104" />
-                <path d="M240 130 l146 -88" />
-                <path d="M240 130 l152 -72" />
-                <path d="M240 190 l128 122" />
-                <path d="M240 190 l138 104" />
-                <path d="M240 190 l146 88" />
-                <path d="M240 190 l152 72" />
-              </g>
-            </g>
-            <path d="M70 160 L240 130 L520 130 L520 190 L240 190 Z" fill="#2a3039" />
-            <path
-              d="M70 160 L240 130 L520 130 M70 160 L240 190 L520 190"
-              fill="none"
-              stroke="#7d8796"
-              stroke-width="1.5"
-            />
-          </svg>
-          <figcaption id="hero-art-caption">Illustration of a bow shock, not a result.</figcaption>
-        </figure>
-      </section>
-
-      <section class="cards" aria-labelledby="cards-title">
-        <h2 class="cards__title" id="cards-title">The solver against exact theory</h2>
-        <a class="card" href="demos/supersonic-ramp.html">
-          <span class="card__title">Supersonic ramp</span>
-          <span class="card__text">Oblique shocks and expansion fans.</span>
-        </a>
-        <a class="card" href="demos/shock-tube.html">
-          <span class="card__title">Shock tube</span>
-          <span class="card__text">Toro's five Riemann problems.</span>
-        </a>
-      </section>
-
-      <details class="disclosure gpu-card">
-        <summary>Your GPU and its limits</summary>
-        <div id="gpu-status"><p class="muted">Checking for WebGPU…</p></div>
-      </details>
+  <body class="app app--rocket">
+    <main class="stage">
+      <h1 class="visually-hidden">Your rocket's drag curve and the airflow around it</h1>
+      <div class="viewport">
+        <canvas
+          id="flow"
+          role="img"
+          tabindex="0"
+          aria-label="The airflow around the rocket's body, mirrored about its axis, as it is solved"
+        ></canvas>
+        <canvas
+          id="flow3d"
+          role="img"
+          tabindex="0"
+          hidden
+          aria-label="The rocket in 3D with the airflow around its body, revolved about its axis, as it is solved; drag to turn it"
+        ></canvas>
+      </div>
+      <div class="flow-aside" id="flow-aside">
+        <p class="flow-note" id="flow-note">
+          The airflow is around the body; the fins are drawn, their drag computed separately.
+          Hatched: behind the base, not simulated.
+        </p>
+      </div>
     </main>
-    <footer class="doc__footer">
-      <p>
-        Free software (AGPL), no FluidX3D code:
-        <a href="https://github.com/ahroonsanthosh/bowshock">source code</a>. Not for flight
-        decisions yet.
-      </p>
-    </footer>
-    <script type="module" src="/src/app/main.ts"></script>
+    <aside class="panel panel--left" id="panel-rocket" data-title="Rocket">
+      <div class="panel__body">
+        <div class="field">
+          <label class="field__label" for="preset">Start from</label>
+          <div class="field__pair">
+            <select id="preset"></select>
+            <button id="import" class="button" type="button" hidden>Import .ork</button>
+          </div>
+          <input id="import-file" type="file" accept=".ork" hidden />
+        </div>
+        <figure class="drawing" id="drawing-figure">
+          <div class="drawing__art" id="drawing" role="img"></div>
+        </figure>
+        <div id="builder"></div>
+        <div class="compute">
+          <div class="field">
+            <label class="field__label" for="finest">Finest grid</label>
+            <select id="finest">
+              <option value="8" selected>160 cells across</option>
+              <option value="16">320 cells across</option>
+            </select>
+            <p class="field__note" id="finest-note"></p>
+          </div>
+          <div class="field">
+            <label class="field__label" for="step">Points</label>
+            <select id="step">
+              <option value="0.2" selected>Every 0.2 in Mach number</option>
+              <option value="0.1">Every 0.1 in Mach number</option>
+            </select>
+          </div>
+          <div class="panel__row">
+            <button id="compute" class="button button--primary" type="button" aria-keyshortcuts="R">
+              Compute the curve
+            </button>
+            <button id="stop" class="button" type="button" disabled>Stop</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <aside class="panel panel--right" id="panel-curve" data-title="Drag curve" data-tab="Curve">
+      <div class="panel__body">
+        <p class="curve__rocket" id="curve-rocket"></p>
+        <p class="curve__flight" id="curve-flight"></p>
+        <div class="curve__notes" id="curve-notes"></div>
+        <div class="curve__chart" id="chart"></div>
+        <section class="point" id="point" aria-label="The point shown"></section>
+        <div class="panel__row curve__actions">
+          <button id="details" class="button" type="button">Details</button>
+          <button
+            id="table-toggle"
+            class="button"
+            type="button"
+            aria-expanded="false"
+            aria-controls="table"
+          >
+            Table
+          </button>
+          <button id="csv" class="button" type="button">CSV</button>
+          <button id="png" class="button" type="button" aria-keyshortcuts="K">PNG</button>
+        </div>
+        <div id="table" hidden></div>
+        <p class="curve__progress" id="progress"></p>
+      </div>
+    </aside>
+    <aside class="panel panel--phone" id="panel-view" data-title="View">
+      <div class="panel__body">
+        <div class="view-controls" id="view-controls"></div>
+        <p class="panel__note view-note" id="view-note">
+          The airflow is around the body; the fins are drawn, their drag computed separately.
+          Hatched: behind the base, not simulated.
+        </p>
+      </div>
+    </aside>
+    <dialog class="drawer" id="drawer" aria-labelledby="drawer-title">
+      <div class="drawer__header">
+        <h2 id="drawer-title">Details</h2>
+        <button class="icon-button" id="drawer-close" type="button" aria-label="Close details">
+          ×
+        </button>
+      </div>
+      <div class="drawer__body" id="drawer-body" tabindex="0"></div>
+    </dialog>
+    <script type="module" src="/src/app/rocket.ts"></script>
   </body>
 </html>

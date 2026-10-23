@@ -9,7 +9,9 @@
  * "dual" mesh whose vertices are the cell centres, with the faces and
  * corners of the boundary added, each taking the value of the cell beside
  * it. So the value drawn at a cell's centre is the solver's value there,
- * and no value is drawn that lies outside the cells' range.
+ * and no value is drawn that lies outside the cells' range. Outside the
+ * fitted shock the view draws the free stream (freeStreamValue), whose
+ * value each field's colour range takes in as well.
  */
 
 import type { StructuredGrid } from '../grid/structured';
@@ -49,6 +51,23 @@ export function cellFieldValue(
       return (p - free.p) / (0.5 * free.rho * (free.u * free.u + free.v * free.v));
     case 'density':
       return rho / free.rho;
+  }
+}
+
+/**
+ * The free stream's value of a field: what the view fills the flow
+ * outside the fitted shock with (uniform, so its schlieren gradient is 0,
+ * its pressure coefficient 0 and its density ratio 1).
+ */
+export function freeStreamValue(field: FlowField, gamma: number, free: Primitive2D): number {
+  switch (field) {
+    case 'schlieren':
+    case 'cp':
+      return 0;
+    case 'density':
+      return 1;
+    case 'mach':
+      return Math.hypot(free.u, free.v) / Math.sqrt((gamma * free.p) / free.rho);
   }
 }
 

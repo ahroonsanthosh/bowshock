@@ -97,6 +97,8 @@ export class Sheet {
    * with every check of a run; pages announce outcomes (Shell.announce).
    */
   readonly pinned: HTMLElement;
+  /** Short notes kept in view under the pinned line (what the picture and the marks mean); empty on most pages. */
+  readonly note: HTMLElement;
   private readonly tablist: HTMLElement;
   private readonly tabs: HTMLButtonElement[];
   private active = 0;
@@ -105,6 +107,7 @@ export class Sheet {
 
   constructor(private readonly panels: readonly Panel[]) {
     this.pinned = h('div', { className: 'pinned' });
+    this.note = h('div', { className: 'sheet__note' });
     this.tabs = panels.map((panel, k) => {
       const tab = h('button', {
         className: 'sheet__tab',
@@ -138,6 +141,7 @@ export class Sheet {
       'section',
       { className: 'sheet', attrs: { 'aria-label': 'Panels' } },
       this.pinned,
+      this.note,
       this.tablist,
     );
     this.phone = window.matchMedia(PHONE_QUERY);
@@ -147,10 +151,11 @@ export class Sheet {
     // The panels start below the pinned line and the tabs, whose height
     // changes with the pinned line's text.
     const head = new ResizeObserver(() => {
-      const height = this.pinned.offsetHeight + this.tablist.offsetHeight;
+      const height = this.pinned.offsetHeight + this.note.offsetHeight + this.tablist.offsetHeight;
       document.documentElement.style.setProperty('--sheet-head', `${height}px`);
     });
     head.observe(this.pinned);
+    head.observe(this.note);
     head.observe(this.tablist);
     this.apply();
   }

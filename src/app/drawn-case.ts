@@ -11,6 +11,9 @@ import { formatFixed } from '../ui/format';
 export interface DrawnCase {
   /** The run (its generation) whose grid is drawn. */
   readonly run: number;
+  /** The body, as the caption names it, and as the file name does. */
+  readonly label: string;
+  readonly slug: string;
   readonly mach: number;
   /** The grid drawn, as the readout writes it. */
   readonly grid: string;
@@ -27,9 +30,15 @@ export class DrawnCaseRecord {
   }
 
   /** A run's grid is drawn (each grid of the run, in turn). */
-  drawnGrid(run: number, mach: number, grid: string): void {
+  drawnGrid(
+    run: number,
+    mach: number,
+    grid: string,
+    label = 'the Basic Finner',
+    slug = 'basic-finner',
+  ): void {
     const value = this.drawn?.run === run ? this.drawn.value : 'wave Cd: solving, no check yet';
-    this.drawn = { run, mach, grid, value };
+    this.drawn = { run, label, slug, mach, grid, value };
   }
 
   /** A check of a run: its drag on the grid drawn. A run not drawn is not the PNG's. */
@@ -50,13 +59,13 @@ export class DrawnCaseRecord {
 
 /** The PNG's file name: the case drawn and what is shown of it ('split' or the field). */
 export function pngName(drawn: DrawnCase, shown: string): string {
-  return `bowshock-basic-finner-M${drawn.mach}-${shown}.png`;
+  return `bowshock-${drawn.slug}-M${drawn.mach}-${shown}.png`;
 }
 
 /** The PNG's caption lines: the case drawn, its grid, and its value with its status. */
 export function pngCaption(drawn: DrawnCase): string[] {
   return [
-    `bowshock: the Basic Finner, M ${formatFixed(drawn.mach, 2)}, α 0°, grid ${drawn.grid}`,
+    `bowshock: ${drawn.label}, M ${formatFixed(drawn.mach, 2)}, α 0°, grid ${drawn.grid}`,
     drawn.value,
   ];
 }

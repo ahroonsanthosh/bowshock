@@ -23,8 +23,11 @@ struct FlowParams {
   field_0: u32,
   field_1: u32,
   _pad0: u32,
-  _pad1: u32,
-  _pad2: u32,
+  // The free stream's value of the field of slot 0 and of slot 1: the
+  // view fills the flow outside the fitted shock with it, so each slot's
+  // range takes it in.
+  free_value_0: f32,
+  free_value_1: f32,
   // Free stream (rho, u, v, p).
   free: vec4f,
   gamma: f32,
@@ -182,6 +185,8 @@ fn flow_finalize_range(
   reduction[local] = r;
   reduce_range(local);
   if (local == 0u) {
-    value_range[range_base(group.y)] = reduction[0];
+    let free = select(params.free_value_0, params.free_value_1, group.y == 1u);
+    let cells = reduction[0];
+    value_range[range_base(group.y)] = vec2f(min(cells.x, free), max(cells.y, free));
   }
 }

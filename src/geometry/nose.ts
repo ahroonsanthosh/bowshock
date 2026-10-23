@@ -119,13 +119,18 @@ function ogiveArc(p: number, L: number, R: number) {
     ((length * length + R * R) * (((2 - p) * length) ** 2 + (p * R) ** 2)) / (4 * (p * R) ** 2),
   );
   const xc = length / p;
-  return { stretch, length, rho, xc, y0: Math.sqrt(rho * rho - xc * xc) };
+  // rho^2 - xc^2 is exactly zero for parameter 1 on a nose no longer than
+  // its radius (the arc's centre on the axis: a quarter circle) and can
+  // round below zero there.
+  return { stretch, length, rho, xc, y0: Math.sqrt(Math.max(0, rho * rho - xc * xc)) };
 }
 
 function ogiveRadius(p: number, x: number, L: number, R: number): number {
   if (p < OGIVE_CONE_LIMIT) return (R * x) / L;
   const { stretch, rho, xc, y0 } = ogiveArc(p, L, R);
   const s = x * stretch;
+  // The tip: the form below is 0 / 0 there when y0 is zero.
+  if (s <= 0) return 0;
   // sqrt(rho^2 - (xc - s)^2) - y0, rearranged with rho^2 - y0^2 = xc^2 to
   // avoid cancellation: for small p the arc is huge and both terms nearly
   // equal, which would lose about four digits near the tip.
