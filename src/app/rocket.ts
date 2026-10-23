@@ -40,7 +40,7 @@ import { fileSizeRefusal, importSummary, loadImporter, type ImportSummary } from
 import { bodyOutline, FlowControls, viewMenu } from './flow-controls';
 import { pointView, resultLine, type PointView } from './point-view';
 import { flightWords } from './status-words';
-import { loadRender3D, sceneLegend, type Render3DModule } from './scene3d';
+import { loadRender3D, sceneLegend, sceneLegendDetails, type Render3DModule } from './scene3d';
 import {
   appBindings,
   isSceneAction,
@@ -1148,6 +1148,13 @@ function detailsBlocks(): HTMLElement[] {
       '.',
     ),
   );
+  // The 3D picture in full: what its short legend leaves out (0017 section 6.6).
+  if (shown === '3d' && scale3d !== null) {
+    out.push(
+      h('h3', { text: 'The 3D picture' }),
+      ...sceneLegendDetails(scale3d).map((text) => h('p', { text })),
+    );
+  }
   return out;
 }
 

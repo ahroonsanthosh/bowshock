@@ -425,7 +425,16 @@ its code). What makes that look, and what bowshock takes from it:
   grey (geometry, not in the airflow), no streamlines by default;
   streamlines (key 3) are a few lit tubes (6 a plane, 8 azimuths, also in
   the cutaway), not a mat of 1-pixel lines. The page's note and legend sit
-  compact in the bottom left corner, not over the flow.
+  compact in the bottom left corner, not over the flow. The legend is
+  short (the owner, 2026-10-23): the colour bar and its range, the two
+  honesty lines ("the axisymmetric solution, revolved; fins are not in the
+  airflow"; "hatched: behind the base, not simulated") and one line for
+  each layer shown that needs it ("texture follows the computed flow";
+  "body: computed surface pressure, blue low, red high"); a button folds
+  it to its bar. The rest (the free stream's value, the shells' count and
+  spacing, the cells beyond the bar, what black means, each layer's
+  numbers and source) is in Details under "The 3D picture", and the PNG
+  keeps the fuller text.
 
 **The cutaway (2026-10-23, the owner's choice after the side-by-side:
 more of the inner sheets).** The wedge opens 150 degrees, centred where

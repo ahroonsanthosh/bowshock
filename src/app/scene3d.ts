@@ -82,19 +82,16 @@ export function layerSentences(s: SceneScale): string[] {
  * simulated, all in real values.
  */
 export function sceneLegend(s: SceneScale): LegendScale {
-  const span = s.max - s.min;
-  const clipped = s.cellMin < s.min - 1e-9 * span || s.cellMax > s.max + 1e-9 * span;
+  // Short (the owner, 2026-10-23): the two honesty lines and a line for
+  // each layer shown that needs one; the rest is in Details
+  // (sceneLegendDetails) and in the PNG.
   const notes = [
     // The advisor's item 10: the look is FluidX3D's, a 3D solver's; this flow is not 3D.
     'The axisymmetric solution, revolved; fins are not in the airflow.',
-    `Free stream ${formatScaleValue(s.freeValue)}.`,
-    shellsNote(s.levels),
-    clipped
-      ? `Cells from ${formatScaleValue(s.cellMin)} to ${formatScaleValue(s.cellMax)}; ` +
-        'beyond the bar, its end colours.'
-      : '',
-    ...layerSentences(s),
-    'Black: no flow drawn. Hatched: behind the base, not simulated.',
+    s.faces === 'fibres' ? 'Texture follows the computed flow.' : '',
+    s.faces === 'schlieren' ? 'Slice: computed density gradient, light where steep.' : '',
+    s.bodyCp !== null ? 'Body: computed surface pressure, blue low, red high.' : '',
+    'Hatched: behind the base, not simulated.',
   ];
   return {
     kind: 'palette',
@@ -105,4 +102,26 @@ export function sceneLegend(s: SceneScale): LegendScale {
     gradient: paletteGradient(s.colour),
     note: notes.filter((n) => n !== '').join(' '),
   };
+}
+
+/**
+ * The 3D picture in full, for Details: the free stream's value, the
+ * shells' count and spacing, the cells beyond the bar, what black means,
+ * and each layer's scale and source.
+ */
+export function sceneLegendDetails(s: SceneScale): string[] {
+  const span = s.max - s.min;
+  const clipped = s.cellMin < s.min - 1e-9 * span || s.cellMax > s.max + 1e-9 * span;
+  return [
+    `Colour: ${s.label}${s.unit === '' ? '' : ` (${s.unit})`}, ${formatScaleValue(s.min)} to ` +
+      `${formatScaleValue(s.max)}; the free stream ${formatScaleValue(s.freeValue)}.`,
+    shellsNote(s.levels),
+    clipped
+      ? `Cells from ${formatScaleValue(s.cellMin)} to ${formatScaleValue(s.cellMax)}; ` +
+        'beyond the bar, its end colours.'
+      : '',
+    ...layerSentences(s),
+    'Black: no flow drawn (the free stream outside the shock). ' +
+      'Hatched: behind the base, not simulated.',
+  ].filter((n) => n !== '');
 }

@@ -94,16 +94,45 @@ export class Legend {
   private kind: LegendScale['kind'] | null = null;
   /** The palette's gradient set on the bar, if a palette is shown. */
   private gradient: string | null = null;
+  /** Folds the legend to its bar and range (its notes hidden), and back. */
+  private readonly fold = h('button', {
+    className: 'legend__fold',
+    text: '−',
+    attrs: { type: 'button', 'aria-expanded': 'true', 'aria-label': 'Hide the legend’s notes' },
+  });
+  private folded = false;
 
   constructor() {
+    this.note.id = `legend-note-${Math.random().toString(36).slice(2, 8)}`;
+    this.fold.setAttribute('aria-controls', this.note.id);
     this.element = h(
       'div',
       { className: 'legend', attrs: { role: 'group', 'aria-label': 'Colour scale', hidden: true } },
-      h('div', { className: 'legend__title' }, this.title, this.units),
+      h(
+        'div',
+        { className: 'legend__title' },
+        this.title,
+        h('span', { className: 'legend__end' }, this.units, this.fold),
+      ),
       this.bar,
       h('div', { className: 'legend__scale' }, this.low, this.high),
       this.brightness,
       this.note,
+    );
+    this.fold.addEventListener('click', () => {
+      this.setFolded(!this.folded);
+    });
+  }
+
+  /** Just the bar and its range (true), or with the notes. */
+  setFolded(folded: boolean): void {
+    this.folded = folded;
+    this.element.classList.toggle('legend--folded', folded);
+    this.fold.textContent = folded ? '+' : '−';
+    this.fold.setAttribute('aria-expanded', folded ? 'false' : 'true');
+    this.fold.setAttribute(
+      'aria-label',
+      folded ? 'Show the legend’s notes' : 'Hide the legend’s notes',
     );
   }
 
