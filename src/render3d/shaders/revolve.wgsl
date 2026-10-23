@@ -69,9 +69,13 @@ fn shell_lit_fs(v: ShellOut) -> @location(0) vec4f {
     n = -n;
   }
   let facing = max(dot(n, view), 0.0);
-  let key = max(dot(n, frame.key_light.xyz), 0.0);
+  // The light from over the viewer's shoulder (the key light drawn towards
+  // the eye): sheets facing the viewer bright, those turning away dark, so
+  // the nested sheets' ridges stand out as FluidX3D's do.
+  let light = normalize(frame.key_light.xyz + 1.2 * view);
+  let key = max(dot(n, light), 0.0);
   let fill = max(dot(n, frame.fill_light.xyz), 0.0);
-  let h = normalize(frame.key_light.xyz + view);
+  let h = normalize(light + view);
   let spec = pow(max(dot(n, h), 0.0), 36.0) * draw.look.y;
   let colour = colour_of(v.value);
   // look.x: the ambient share; look.z: how much an edge-on sheet darkens.

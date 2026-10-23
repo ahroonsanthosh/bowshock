@@ -1315,7 +1315,8 @@ export class FlowScene3D {
         this.writeDraw('streamlines', {
           look: [1, 0, 0, 0],
           sweep: tubeSweep,
-          extra: [3 * px, 1, 1, 1],
+          // Drawn in the cutaway too: there they run over the rocket, in plain sight.
+          extra: [3 * px, 1, 0, 1],
         });
         pass.setBindGroup(1, this.groupFor('streamlines', this.streamlines.buffer));
         pass.draw(6 * this.streamlines.count * azimuths);
@@ -1323,9 +1324,9 @@ export class FlowScene3D {
       // Their part in the free stream, ahead of the shock: dimmer.
       if (this.freeLines !== null) {
         this.writeDraw('freeLines', {
-          look: [0.45, 0, 0, 0],
+          look: [0.7, 0, 0, 0],
           sweep: tubeSweep,
-          extra: [2.2 * px, 1, 1, 1],
+          extra: [2.6 * px, 1, 0, 1],
         });
         pass.setBindGroup(1, this.groupFor('freeLines', this.freeLines.buffer));
         pass.draw(6 * this.freeLines.count * azimuths);
