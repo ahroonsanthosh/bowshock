@@ -183,3 +183,82 @@ at M 0.93, 1.07, 1.08 and 1.03 and the circles at M 1.11. Changing them to
   square and circle centres differ by 3 px in x.
 * The dots inside the glyphs are often not at the glyph's centre (e-12,
   e-14, e-15 by 2 to 3 px); centres are of the outlines, not the dots.
+
+## ARC R&M 3323 fig. 4 (PDF p. 23, printed p. 22)
+
+**As printed.** "FIG. 4. The variation of base-pressure coefficient with
+trailing-edge thickness at transonic speeds", "(Zero incidence)"; and "FIG. 4
+(continued). The filled symbols denote free-flight tests. The flagged
+symbols denote tests on models with a roughness band." Four panels on the
+one page: M = 0.6 (top left), 0.8 (top right), 1.0 and 1.2 (bottom). Each:
+abscissa h/c in per cent, labelled 0, 5, 10, 15 (gridlines at 5 and 10, the
+frame at 0 and 15); ordinate C_pb, labelled -1.0 (top) to +0.2 (bottom) every
+0.2, all gridlines. Legend ("Reference:"), between the two rows of panels:
+(31) a half disc, flat side down; (32) a triangle, apex down; (33) a half
+disc, flat side up; (34) a diamond; (35) a triangle, apex up; (38) a circle;
+(39) a square; (40) a right triangle with its vertical side on the right
+(right angle at the bottom right); (41) a right triangle with its vertical
+side on the left.
+
+**Calibration** (`readings/rm3323_fig4_m06_calib.json` and `_m08`, `_m10`,
+`_m12`; entries `r3323f4_m06` and so on). Per panel, 4 vertical lines
+(h/c 0, 5, 10, 15) and 7 horizontal lines (C_pb -1.0 to +0.2), ink = grey
+below 128 (bilevel scan). Line rms 0.06 to 0.39 px. The page is turned
+slightly: vertical lines tilt 0.17 to 0.42 deg, horizontal lines 0 to -0.34
+deg. Scales 29.0 to 29.4 px per 1% h/c and 580 to 585 px per unit C_pb
+(1 px = 0.034% h/c and 0.0017 in C_pb). Leave-one-out (px), h/c and C_pb:
+M 0.6: 0.43 and 0.74; M 0.8: 0.65 and 1.17; M 1.0: 0.50 and 1.20; M 1.2:
+1.07 and 0.94. The larger values come from the end lines (extrapolated in
+the check): the +0.2 line misses by 1.3 to 2.8 px, so the printed grid is
+not quite uniform; values are interpolated between the actual lines.
+
+**Symbols.** The plotted glyphs are small (11 to 16 px) in a bilevel scan
+with 3 px strokes and many have flags, so each centre was read on a pixel
+map (`pixmap.py`) as the middle of the glyph's ink bounding box, its flag
+and any gridline left out (`mk_syms_rm3323.py` holds every reading, typed
+type, sigma and note; it writes `syms_rm3323.json`). Every centre is checked
+by fitting the ideal outline of its legend glyph from it (with neighbouring
+glyphs held fixed; scores 0.65 to 0.93): 55 of 61 agree within 1 px, the
+other 6 within 1.75 px, and where the two differ by more than the stated
+sigma the sigma is raised to the difference (columns `check_fit_*`). The
+convention for the half discs and triangles is the middle of the bounding
+box (for a half disc, half its height from the flat side; the middle of the
+flat side would be 4 to 5 px, 0.007 to 0.009 in C_pb, toward the flat
+side). Overlays: `overlays/rm3323_fig4_m06.png` and so on, plus zooms of
+M 0.6 near h/c 0 to 3 and of M 1.0 at C_pb -0.75 to -0.9.
+
+**What was read** (`readings/rm3323_fig4.csv`, and one CSV a panel): 61
+symbols; M 0.6: 16, M 0.8: 21, M 1.0: 15, M 1.2: 9. By legend entry: (31)
+filled 2, filled and flagged 1; (32) 8, flagged 10; (33) 13; (34) 1,
+filled 3; (35) 3; (38) 4; (39) 3, flagged 3; (40) flagged 9; (41) filled 1.
+Errors +-0.059 to 0.141 in h/c (per cent) and +-0.0036 to 0.0080 in C_pb.
+No plotted symbol lacks a legend entry (the filled and flagged forms of a
+legend glyph are covered by the caption). No symbols merged past
+separation.
+
+**Uncertain calls.**
+* The flat-bottomed glyphs at h/c 14 (m08-03, m10-13, m12-09) are typed (31)
+  filled. m08-03 is a dome filled but for a small hole. m10-13's top half
+  lies under the -0.8 gridline, so only its flat bottom and partly filled
+  lower half are seen (sigma 2 px). m12-09 is a dome with a tail at its top
+  right (typed flagged) and its inside partly inked (fill uncertain). Each
+  has a round top, unlike the (35) triangles beside them, but a badly
+  drawn filled glyph of another entry cannot be excluded.
+* m10-09 (M 1.0, h/c 6.0, C_pb -0.776): an open diamond with only a 2 px
+  slit inside, its lower apex merged with the square m10-10; it could be a
+  filled diamond with a gap (the filled diamonds of the other panels have
+  pinholes only).
+* m08-15 (M 0.8, h/c 1.5, C_pb -0.200): on the -0.2 gridline, its bottom
+  merged with m08-16's top; typed (33) by its narrowing sides, could be a
+  (39) square (sigma 1.5 px).
+* m10-04 and m10-05 (M 1.0, h/c 2.4): a flagged (32) and a flagged (40)
+  merged at the triangle's apex; both centres read (m10-05 sigma 1.5 px).
+* m06-12 and m06-13 (M 0.6, h/c 1.2 and 1.6) are joined along their tops;
+  the fit puts m06-13 1.75 px left of the pixel-map centre (sigma raised).
+* The (40) glyphs at h/c 0 to 0.3 (m06-15, m06-16, m08-20, m08-21, m10-14,
+  m10-15) touch or cross the h/c 0 axis, which hides the left end of their
+  bases; their sigmas are 1.0 to 1.75 px.
+* Flags were typed from a tail leaving the glyph's upper right corner (or,
+  for (40), continuing its hypotenuse). Where a tail ends on the next glyph
+  (m06-07, m08-19, m10-05) it was given to the glyph it leaves from. m06-12
+  shows none.

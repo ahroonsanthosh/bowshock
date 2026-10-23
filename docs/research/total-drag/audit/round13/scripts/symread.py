@@ -67,7 +67,8 @@ def main():
     cal = calmap.Cal(sys.argv[3])
     out = sys.argv[4]
     g = np.array(Image.open(cfg["page"]).convert("L"), float)
-    pts = [s["at"] for s in cfg["symbols"] if "at" in s] + [s["merged"][:2] for s in cfg["symbols"] if "merged" in s]
+    pts = ([s["at"] for s in cfg["symbols"] if "at" in s] + [s["merged"][:2] for s in cfg["symbols"] if "merged" in s]
+           + [s["manual"][:2] for s in cfg["symbols"] if "manual" in s])
     X0 = int(min(p[0] for p in pts)) - 80
     Y0 = int(min(p[1] for p in pts)) - 80
     X1 = int(max(p[0] for p in pts)) + 80
@@ -144,6 +145,20 @@ def main():
             how = "joint fit with %s, %d neighbour(s) fixed" % (o["id"], len(others))
             res[sid] = {"x": p[0] + X0, "y": p[1] + Y0, "how": how, "score": round(sc, 3)}
             res[o["id"]] = {"x": p[2] + X0, "y": p[3] + Y0, "how": how.replace(o["id"], sid), "score": round(sc, 3)}
+    # check fits for centres read from pixel maps: the glyph's outline fitted from the manual centre,
+    # with every other glyph within 30 px held fixed at its own centre
+    checks = {}
+    for s in cfg["symbols"]:
+        sid = s["id"]
+        if sid not in res or res[sid]["how"] != "manual" or not cfg.get("check_fit"):
+            continue
+        r = res[sid]
+        others = [(shapes[t["type"]], res[t["id"]]["x"] - X0, res[t["id"]]["y"] - Y0) for t in cfg["symbols"]
+                  if t["id"] != sid and t["id"] in res and abs(res[t["id"]]["x"] - r["x"]) < 30
+                  and abs(res[t["id"]]["y"] - r["y"]) < 30]
+        sc, x, y = glyph.fit_one(ink, wm, shapes[s["type"]], r["x"] - X0, r["y"] - Y0, sw=sw, search=3.0,
+                                 others=others)
+        checks[sid] = (round(x + X0 - r["x"], 2), round(y + Y0 - r["y"], 2), round(sc, 3))
     rows = []
     for s in cfg["symbols"]:
         sid = s["id"]
@@ -173,6 +188,10 @@ def main():
         X, Y, sx, sy = cal.value(r["x"], r["y"])
         if r["how"] == "manual":
             c = r["sig"]
+            if sid in checks:
+                # where the outline fit and the pixel-map centre disagree by more than the stated sigma,
+                # the sigma is raised to the disagreement, so the error covers both
+                c = max(c, abs(checks[sid][0]), abs(checks[sid][1]))
         elif r["how"].startswith("joint") or (r["score"] is not None and r["score"] < low):
             c = cfg.get("c_low", 1.5)
         else:
@@ -182,18 +201,20 @@ def main():
         row.update({"x_val": round(X, 4), "x_err": round(float(ex), 4), "y_val": round(Y, 4),
                     "y_err": round(float(ey), 4), "px_x": round(r["x"], 2), "px_y": round(r["y"], 2),
                     "how": r["how"], "score": r["score"], "extent_x": "", "extent_y": "", "ink_box_px": "",
-                    "notes": notes})
+                    "check_fit_dx_px": checks.get(sid, ("", "", ""))[0], "check_fit_dy_px": checks.get(sid, ("", "", ""))[1],
+                    "check_fit_score": checks.get(sid, ("", "", ""))[2], "notes": notes})
         rows.append(row)
     keys = ["id", "series", "symbol", "conditions", "x_val", "x_err", "y_val", "y_err", "px_x", "px_y", "how",
-            "score", "extent_x", "extent_y", "ink_box_px", "notes"]
+            "score", "extent_x", "extent_y", "ink_box_px", "check_fit_dx_px", "check_fit_dy_px", "check_fit_score", "notes"]
     with open(out + ".csv", "w", newline="") as f:
-        w = csv.DictWriter(f, keys)
+        w = csv.DictWriter(f, keys, restval="")
         w.writeheader()
         w.writerows(rows)
     json.dump({"key": sys.argv[2], "rows": rows}, open(out + ".json", "w"), indent=1)
     for r in rows:
         print(r["id"], r["series"], r["symbol"], r["x_val"], r["x_err"], r["y_val"], r["y_err"], r["px_x"], r["px_y"],
-              r["how"], r["score"], r["extent_x"], r["extent_y"])
+              r["how"], r["score"], r["extent_x"], r["extent_y"], r.get("check_fit_dx_px", ""), r.get("check_fit_dy_px", ""),
+              r.get("check_fit_score", ""))
 
 
 if __name__ == "__main__":

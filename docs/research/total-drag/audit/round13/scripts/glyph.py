@@ -53,6 +53,21 @@ def sdist(shape, xx, yy):
             sg = 1.0 if ((cx - x1) * nx + (cy - y1) * ny) < 0 else -1.0
             ds.append(sg * ((xx - x1) * nx + (yy2 - y1) * ny) / L)
         return np.max(ds, axis=0)
+    if k == "halfup":
+        # half disc, flat side down, radius R, centred on its bounding box (R tall, 2R wide)
+        R = shape[1]
+        return np.maximum(np.hypot(xx, yy - R / 2) - R, yy - R / 2)
+    if k == "halfdown":
+        R = shape[1]
+        return np.maximum(np.hypot(xx, yy + R / 2) - R, -(yy + R / 2))
+    if k in ("rtri_r", "rtri_l"):
+        # right triangle, base at the bottom, the right angle at the bottom right (rtri_r) or left
+        b, h = shape[1], shape[2]
+        if k == "rtri_r":
+            pts = [(b, -h / 2), (-b, h / 2), (b, h / 2)]
+        else:
+            pts = [(-b, -h / 2), (-b, h / 2), (b, h / 2)]
+        return _poly(xx, yy, pts)
     if k == "plus":
         L = shape[1]
         d1 = np.maximum(np.abs(xx), np.abs(yy) - L)
@@ -66,6 +81,21 @@ def sdist(shape, xx, yy):
         d2 = np.maximum(np.abs(v), np.abs(u) - Ld)
         return np.minimum(d1, d2)
     raise ValueError(shape)
+
+
+def _poly(xx, yy, pts):
+    """Signed distance to a convex polygon (negative inside)."""
+    n = len(pts)
+    cx = sum(p[0] for p in pts) / n
+    cy = sum(p[1] for p in pts) / n
+    ds = []
+    for i in range(n):
+        (x1, y1), (x2, y2) = pts[i], pts[(i + 1) % n]
+        nx, ny = (y2 - y1), -(x2 - x1)
+        L = np.hypot(nx, ny)
+        sg = 1.0 if ((cx - x1) * nx + (cy - y1) * ny) < 0 else -1.0
+        ds.append(sg * ((xx - x1) * nx + (yy - y1) * ny) / L)
+    return np.max(ds, axis=0)
 
 
 def _box(xx, yy, ax, ay):
