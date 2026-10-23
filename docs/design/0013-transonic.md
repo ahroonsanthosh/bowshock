@@ -1,14 +1,21 @@
 # 0013: Transonic forebody drag, Mach 1 to 1.2
 
-- **Status:** Prototype on the CPU engine (`src/analysis/transonic-flow.ts`,
+- **Status:** Built on the CPU engine (`src/analysis/transonic-flow.ts`,
   `src/grid/transonic-grid.ts` with H grids for sharp noses and C grids
   for blunt ones, the far-field boundary and the implicit steps of
   `src/engine-cpu/euler2d.ts`, Anderson acceleration in
-  `src/solver/anderson.ts`), measured below; not on the drag page, and
-  not on the GPU engine. Nothing below Mach 1.2 is served (see "What
-  accuracy the evidence supports"); whether it is shown at all is the
-  owner's decision.
-- **Date:** 2026-10-18 to 20
+  `src/solver/anderson.ts`) and on the GPU engine in two-float
+  arithmetic (`src/engine-gpu/euler2d-two-float.ts`), with the page's
+  driver (`src/analysis/transonic-drag.ts`) and the router
+  (`src/analysis/nose-drag-solve.ts`); not yet wired into the drag page
+  (the interface's work), and nothing below Mach 1.05 is served (B1).
+  The owner decided on 2026-10-21 that results below Mach 1.2 are served
+  wherever they are accurate, each with its measured band. The serving
+  rules and the plan for the page follow "What accuracy the evidence
+  supports". Every certified number below is from offline CPU families;
+  the cone at Mach 1.2 is a validation case only (the driver serves
+  below 1.2, and the fitted solver from 1.2).
+- **Date:** 2026-10-18 to 21
 - **Inputs:** [0002](0002-architecture.md) section 11 (the range to serve
   is Mach 1 to 3), the measurements below, and the references in
   [docs/validation/sources.md](../validation/sources.md).
@@ -144,8 +151,8 @@ Unlike the fixed free stream that the captured-shock grids impose on
 their outer boundary, which is right only where the bow shock stays
 inside it, this lets the bow shock and the disturbances of a subsonic
 region leave the domain; it is still exact only at infinite distance, so
-the error of the far boundaries' distance is measured. The GPU engine
-refuses the kind for now.
+the error of the far boundaries' distance is measured. The GPU engines
+have the same boundary kind (G1, "Build progress").
 
 ## The shock captured, not fitted
 
@@ -264,28 +271,64 @@ At Mach 1.1 the cone's conical surface flow is still supersonic (Mach
 1.037, axial 1.029), so its drag is again exactly Taylor-Maccoll's,
 0.0944976, and the fitted solver accepts the case.
 
-| r   | Cells   | Drag      | vs Taylor-Maccoll | Steps | Time           |
-| --- | ------- | --------- | ----------------- | ----- | -------------- |
-| 1   | 3,540   | 0.0944683 | -3.10e-4          | 950   | 17 s           |
-| 2   | 14,160  | 0.0944644 | -3.51e-4          | 1,600 | 120 s          |
-| 4   | 56,640  | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s        |
-| 8   | 226,560 | 0.0944913 | -6.7e-5           | 5,600 | 4,110 s of CPU |
+| r   | Cells   | Drag      | vs Taylor-Maccoll | Steps | Time            |
+| --- | ------- | --------- | ----------------- | ----- | --------------- |
+| 1   | 3,540   | 0.0944683 | -3.10e-4          | 950   | 17 s            |
+| 2   | 14,160  | 0.0944644 | -3.51e-4          | 1,600 | 120 s           |
+| 4   | 56,640  | 0.0944821 | -1.64e-4          | 3,200 | 1,163 s         |
+| 8   | 226,560 | 0.0944913 | -6.7e-5           | 5,600 | 4,110 s of CPU  |
+| 16  | 906,240 | 0.0944950 | -2.8e-5           | 7,300 | 17,126 s of CPU |
 
-The changes (-3.9e-6, +1.77e-5, +9.1e-6) change sign at the first step
-and then fall at first order (0.95 on the finest triple, extrapolated
-0.0945010, 3.6e-5 of the value above the exact one). The procedure
-(`gridConvergence`, four grids) returns no band here: its coarser
-triple oscillates ("unresolved"). So at Mach 1.1 the four grids are
-within 3.5e-4 of the exact value and r = 8 within 6.7e-5, but the
-procedure as it stands refuses the case; a band would need a fifth grid
-(r = 16, 900,000 cells), so that both triples are the monotone ones.
+On r = 1 to 8 the changes (-3.9e-6, +1.77e-5, +9.1e-6) change sign at
+the first step, and the procedure (`gridConvergence`, the four finest
+grids) refused them: its coarser triple oscillates ("unresolved"). As
+the certification plan (below) set out before the run, r = 16 was added
+so that the four finest grids are r = 2 to 16.
 
-The fitted solver on the same cone: 0.0938653 (nj = 20) and 0.0940974
-(nj = 40), -6.69e-3 and -4.24e-3 of the exact value, ten to twenty times
-the transonic domain's errors, and falling at less than first order
-(nj = 80: see below). Near the sonic limit of its starting plane (axial
-Mach number 1.029 at the tip cone's surface) its error is far larger
-than on the supersonic families of 0006.
+**Mach 1.1 certified (2026-10-21).** With r = 16 the changes are
++1.770e-5, +9.14e-6 and +3.69e-6: observed orders 0.95 (r = 2, 4, 8) and
+1.31 (r = 4, 8, 16), within the procedure's 0.5 of each other, so it
+returns a monotone band. On the finest triple, order 1.31, the
+extrapolated drag is 0.0944975 and the procedure's band (its grid
+convergence index: 1.25 times the last change over 2^1.31 - 1) is 3.13e-6,
+3.3e-5 of the value. The exact value, 0.0944976, lies 2.6e-6 above r =
+16 (2.8e-5 of it): inside the band, at 0.83 of it; the extrapolation is
+within 1e-7 of it. The iteration error is small against all this: r = 16
+stopped on the settling test 300 steps after resuming from its
+checkpoint, with the drag still rising by 8e-9 per 100 steps and falling
+by about 0.93 each time; the geometric estimate of its remaining change
+is 1.0e-7 to 1.5e-7 (the recorded one 1.5e-7), 4 to 5% of the band and
+of the last grid change. Counting it in (r = 16 at 0.0944951) gives
+order 1.26 and a band of 3.45e-6, which still contains the error
+(2.47e-6). On r = 8 the estimate is 5e-10; r = 1 to 4 settled to 1e-7 of
+the drag. As the plan requires, the far boundaries' and the cylinder's
+largest measured change on the base grid at Mach 1.1 (+1.98e-5, 55.1 to
+224.2 radii and 5 to 20 calibers, though at this Mach number the cone's
+drag cannot depend on them: it is the grid's change with the domain) is
+above a quarter of the band and is added once: the band at Mach 1.1 was
+2.29e-5 (2.4e-4 of the value) about 0.0944950, containing the exact
+error by a factor of 9. **Superseded (review of `aed95b0`, S7):** those
+changes were the regridded domains' noise. On nested domains (test (a))
+the cone's far-boundary and cylinder changes at Mach 1.1 are below
+1.1e-8, and the band on r = 2 to 16 is **9.757e-6** (the procedure
+3.129e-6 at order 1.31, the floor 6.615e-6, the allowances 1.4e-8) by
+the allowance rule as reviewed, **9.836e-6** by the corrected rule
+(allowances 9.3e-8, below the measurability level). The exact error,
+-2.61e-6, lies inside both. On r = 1 to 8 the procedure refuses (the
+values oscillate). Cost: r = 16 took 17,126 s of CPU (1.9
+s per step, 1.1 to 1.6 GB), about 10 h of wall time on this machine.
+
+The fitted solver on the same cone: 0.0938653 (nj = 20), 0.0940974
+(nj = 40) and 0.0943618 (nj = 80), -6.69e-3, -4.24e-3 and -1.44e-3 of
+the exact value. Its changes grow (+2.32e-4, then +2.64e-4) while its
+errors fall by 1.6 and then 2.9: the family is not yet in its
+asymptotic range, and the procedure would give it no band. nj = 80
+stopped with the drag settled (remaining change estimated at 7.7e-11,
+outflow axial Mach number 1.07; 10,600 iterations, 1,080 s of CPU), so
+this is the discretisation, not the iteration. Its finest error is
+about 50 times the transonic r = 16's (2.8e-5). Near the sonic limit of
+its starting plane (axial Mach number 1.029 at the tip cone's surface)
+its error is far larger than on the supersonic families of 0006.
 
 ### Mach 1.05: first order, from the level of the whole cone's pressure
 
@@ -294,16 +337,41 @@ At Mach 1.05 the cone's conical flow would be subsonic at the surface
 shoulder reaches the whole cone, and there is no exact solution; the
 fitted solver refuses the case.
 
-| r   | Cells  | Drag      | Change    | Steps  | Wall time |
-| --- | ------ | --------- | --------- | ------ | --------- |
-| 1   | 3,540  | 0.1065105 |           | 5,050  | 81 s      |
-| 2   | 14,160 | 0.1068662 | +3.557e-4 | 8,300  | 735 s     |
-| 4   | 56,640 | 0.1070376 | +1.714e-4 | 14,200 | 4,309 s   |
+| r   | Cells   | Drag      | Change    | Steps  | Time           |
+| --- | ------- | --------- | --------- | ------ | -------------- |
+| 1   | 3,540   | 0.1065105 |           | 5,050  | 81 s           |
+| 2   | 14,160  | 0.1068662 | +3.557e-4 | 8,300  | 735 s          |
+| 4   | 56,640  | 0.1070376 | +1.714e-4 | 14,200 | 4,309 s        |
+| 8   | 226,560 | 0.1071116 | +7.41e-5  | 18,000 | 9,918 s of CPU |
 
-The changes fall by 2.08: observed order 1.05, first order. Extrapolated
-at that order the drag is 0.107197 (at order 1, 0.107209), 1.6e-4 (1.5e-3
-of the value) above the finest grid; the procedure needs a fourth grid to
-confirm the order before it gives a band (r = 8: see Open). The change
+**Mach 1.05 certified by the procedure (2026-10-21)** (r = 8 settled by the fitted-window rule after 12,000 more steps, 5.8e-8 higher: 0.1071117 with a band of 9.808e-5 by the corrected rule; see the re-review of `dd6c423`). The changes fall
+by 2.08 and 2.31: observed orders 1.05 (r = 1, 2, 4) and 1.21 (r = 2, 4,
+8), within 0.5 of each other, so `gridConvergence` returns a monotone
+band on r = 1 to 8: extrapolated (order 1.21) 0.1071680, band 7.04e-5
+(6.6e-4 of the value) about r = 8. r = 16 is not needed for a band, as
+it was at Mach 1.1 (there the coarser triple oscillated; here both are
+monotone). There is no exact value to test the band against at this Mach
+number: Taylor-Maccoll's conical solution exists (0.1082676, with the
+surface subsonic, Mach 0.982), but the shoulder reaches the cone and
+lowers the drag, by 1.0% on the extrapolation; it is context, not a
+reference. The iteration error: r = 8 stopped on the settling test with
+the drag still rising by 1e-8 per 400 steps and falling by about 0.89
+each time, so about 1e-7 remained (0.14% of the band); r = 1 to 4 ended
+with changes of 1e-9 per check (a remaining change near 1e-8). The far
+boundaries and the cylinder: the plan's Mach 1.05 entry names the change
+from 100.6 to 224.2 radii (+1.3e-5) and the cylinder's (up to 7e-6),
+both below a quarter of the band (1.76e-5), so the band stays 7.04e-5;
+read by its general rule (the largest change from 55.1 to 224.2 radii),
+the 55.1 to 100.6 change (+4.36e-5) would be added, giving 1.14e-4
+(1.07e-3 of the value). The more conservative reading was certified
+then: 0.1071116 with a band of 1.14e-4. **Superseded (review of
+`aed95b0`, S7):** the 55.1 to 100.6 change was a regridded one. On
+nested domains it is +6.41e-6, then -1.2e-7 to 224.2 radii, and the band
+is **8.435e-5** by the rule as reviewed (the procedure 7.044e-5, the
+floor 7.50e-6, the far boundaries 6.41e-6, the cylinder 6e-9) and
+**9.793e-5** by the corrected rule, whose turning bound gives the far
+boundaries 1.995e-5 (the change turns sign between 100.6 and 224.2
+radii). (The narrative of the first three grids follows.) The change
 from r = 2 to 4 is not local: integrated along the cone it is a nearly
 uniform rise of the pressure coefficient by 1.6e-4 to 2.1e-4 from x / l =
 0.2 to 0.99 (1.73e-4 of the 1.71e-4 change), with -2.9e-5 from the tip's
@@ -451,29 +519,64 @@ Mach 1.2 with 4 calibers of cylinder and the hemisphere at Mach 1.5 with
 2; and the total pressure on the stagnation streamline, which must be the
 normal shock's (the pitot pressure at the stagnation point).
 
-| Body, Mach         | r = 1     | r = 2     | r = 4     | Extrapolated | Fitted nj = 20 | nj = 40   | nj = 80   |
-| ------------------ | --------- | --------- | --------- | ------------ | -------------- | --------- | --------- |
-| 2:1 ellipsoid, 1.2 | 0.3482049 | 0.3433539 | 0.3425969 | 0.3423446    | 0.3472957      | 0.3437625 | 0.3429002 |
-| hemisphere, 1.5    | 0.6994860 | 0.6885561 | 0.6863477 | 0.6856117    | 0.6904222      | 0.6872292 |           |
-| hemisphere, 1.2    | 0.5546180 | 0.5431759 | 0.5404303 | 0.5395151    | refused        |           |           |
+| Body, Mach         | r = 1     | r = 2     | r = 4     | r = 8     | Extrapolated | Fitted nj = 20 | nj = 40   | nj = 80   | Extrapolated |
+| ------------------ | --------- | --------- | --------- | --------- | ------------ | -------------- | --------- | --------- | ------------ |
+| 2:1 ellipsoid, 1.2 | 0.3482049 | 0.3433539 | 0.3425968 | 0.3425233 | 0.3424988    | 0.3472957      | 0.3437625 | 0.3429002 | 0.3426128    |
+| hemisphere, 1.5    | 0.6994860 | 0.6885561 | 0.6863477 |           | 0.6856116    | 0.6904222      | 0.6872292 | 0.6863779 | 0.6860941    |
+| hemisphere, 1.2    | 0.5546180 | 0.5431759 | 0.5404303 |           | 0.5395151    | refused        |           |           |              |
 
-(transonic extrapolated at second order from r = 2 and 4; observed orders
-2.68, 2.31 and 2.06). The transonic families converge at about second
-order from above, as the fitted ones do (on the ellipsoid at order 2.03,
-nj = 80 stopped with the drag settled, its remaining iterative change
-estimated at 2.8e-10, and the outflow supersonic, axial Mach number 1.14
-or more). Extrapolated at second order the fitted families give 0.3426128
-(ellipsoid, from nj = 40 and 80) and 0.6861649 (hemisphere, from nj = 20
-and 40): 2.7e-4 (7.8e-4 of the value) and 5.5e-4 (8.1e-4) above the
-transonic extrapolations, while the finest grids differ by 3.0e-4
-(8.8e-4) on the ellipsoid. The two solvers thus agree on blunt noses to
-about 8e-4 of the value, the transonic domain's value the lower, and on
-the ellipsoid the gap between the extrapolations does not close from the
-finest grids to the extrapolations; its cause is not known (the
-stagnation line below would push the transonic drag up, not down). The
-drags of r = 4 lie 2.5e-4 and 7.4e-4 above the transonic extrapolations
-(7e-4 and 1.1e-3 of the value), and 9.2e-4 (1.7e-3) on the hemisphere at
-Mach 1.2.
+(each family extrapolated at second order from its two finest grids:
+r = 4 and 8 on the ellipsoid, r = 2 and 4 on the hemispheres, nj = 40
+and 80 for the fitted solver). Observed orders: transonic 2.68 and then
+3.36 on the ellipsoid, 2.31 (hemisphere, 1.5) and 2.06 (hemisphere,
+1.2); fitted 2.03 (ellipsoid) and 1.91 (hemisphere). Both solvers
+converge from above at about second order or faster. The fitted nj = 80
+grids stopped with the drag settled: remaining iterative change
+estimated at 2.8e-10 (ellipsoid) and 5.6e-10 (hemisphere), and the
+outflow supersonic (axial Mach number 1.14 or more on the ellipsoid,
+1.33 on the hemisphere). The transonic r = 8 on the ellipsoid stopped
+on the settling test after 3,200 steps (1,076 s of CPU), its remaining
+change estimated at 7e-11.
+
+**The 2:1 ellipsoid with r = 8 (2026-10-21).** On r = 1 to 8 the
+procedure refuses the family: the observed orders of its two triples,
+2.68 and 3.36, differ by more than its 0.5 ("unresolved"). r = 8
+changed the drag by -7.4e-5, where the order of r = 1 to 4 predicted
+-1.2e-4; the extrapolation from r = 2 and 4 (0.3423445) had overshot,
+and the one from r = 4 and 8 is 1.5e-4 higher. Against the fitted
+solver:
+
+- r = 8 lies 8.9e-5 (2.6e-4 of the value) below the fitted
+  extrapolation;
+- the transonic extrapolation lies 1.14e-4 (3.3e-4) below it at second
+  order, and 1.06e-4 (3.1e-4) at the observed orders;
+- with r = 2 and 4 alone that gap was 2.7e-4 (7.8e-4).
+
+So r = 8 closed more than half of the gap. Most of the earlier gap was
+the transonic family still approaching its asymptotic range, not a
+difference between the two solvers. What remains is smaller than the
+fitted family's own extrapolation (2.9e-4) and 1.5 times the transonic
+family's last change (7.4e-5). The finest grids still differ by 3.8e-4
+(1.1e-3), because the fitted nj = 80 is further from its limit than the
+transonic r = 8.
+
+**The hemisphere at Mach 1.5 with the fitted nj = 80.** The finest grids
+agree within 3.0e-5 (4.4e-5 of the value). The transonic family
+converges faster (order 2.31 against 1.91), so its extrapolation lies
+below the fitted one: by 4.8e-4 (7.0e-4) at second order, and by 2.8e-4
+(4.1e-4) at the observed orders. From nj = 20 and 40 the gap was 5.5e-4
+(8.1e-4). Whether r = 8 closes it as on the ellipsoid is not measured;
+it is queued (see the certification plan's additions).
+
+The two solvers thus agree on blunt noses to about 3e-4 of the value
+on the ellipsoid (with r = 8) and 4e-4 to 7e-4 on the hemisphere (r = 2
+and 4), with the transonic domain's value the lower. The stagnation line
+below would push the transonic drag up, not down. The ellipsoid's r = 4
+lies 9.8e-5 (2.9e-4 of the value) above its extrapolation from the two
+finest grids; the extrapolation from r = 2 and 4 had put r = 4 2.6 times
+further from its limit. The hemispheres' r = 4 lie 7.4e-4 (1.1e-3, Mach
+1.5) and 9.2e-4 (1.7e-3, Mach 1.2) above their extrapolations from r = 2
+and 4.
 
 The stagnation streamline: total pressure of the cells along the axis
 behind the bow shock, over the free stream's, against the normal shock's
@@ -542,38 +645,119 @@ total pressure along the body at first order (0.25% by x = 1 on r = 4,
 0.55% on r = 2); either could set a level of this size, neither was
 isolated. Using the observed order (2.68) instead of 2 for the transonic
 extrapolation moves it by +1.1e-4, so the gap is 1.5e-4 to 2.7e-4, of
-the size of the families' own remaining change; r = 8 is queued.
+the size of the families' own remaining change.
+
+The same comparison with r = 8 (2026-10-21), extrapolated pointwise from
+r = 4 and 8, gives transonic minus fitted:
+
+- +3.3e-5 to +4.0e-5 from r^2 = 0.05 to 0.2 (it was +1.9e-4);
+- +2.8e-5 at r^2 = 0.4;
+- falling to -1.0e-4 by r^2 = 0.9;
+- ending at -1.1e-4 (it was -2.7e-4).
+
+Both parts shrank: the stagnation region's excess by about 80%, and the
+deficit over the rest of the nose (from r^2 = 0.4 on, -1.4e-4 against
+-2.9e-4) by half. What is left, 1.1e-4 (3.3e-4 of the value), lies
+within the families' own remaining change (above). It is no longer a gap
+that refinement leaves open, so it needs no cause of its own. Most of
+the earlier stagnation excess and deficit came from extrapolating r = 2
+and 4, which were not yet in the asymptotic range.
 
 ### The ogive and the hemisphere from Mach 1.1 to 1
 
-No reference below Mach 1.2 for these; drag on r = 1 and 2 (100.6
-radii, 10 calibers) and, at Mach 1, on 408.7 radii:
+No reference below Mach 1.2 for these: the characteristics refuse the
+5-caliber ogive below 1.2, and the fitted solver refuses the hemisphere
+there. Drag on r = 1, 2 and, where run, 4 (100.6 radii, 10 calibers),
+and at Mach 1 on 408.7 radii:
 
-| Body       | Mach | r = 1     | r = 2     | Change    | 408.7 radii, r = 1 |
-| ---------- | ---- | --------- | --------- | --------- | ------------------ |
-| ogive      | 1.2  | 0.0437833 | 0.0433724 | -4.11e-4  |                    |
-| ogive      | 1.1  | 0.0435202 | 0.0433484 | -1.72e-4  |                    |
-| ogive      | 1.05 | 0.0418288 | 0.0417434 | -8.5e-5   |                    |
-| ogive      | 1.0  | 0.0171707 |           |           | 0.0186725          |
-| hemisphere | 1.2  | 0.5546180 | 0.5431759 | -1.144e-2 |                    |
-| hemisphere | 1.1  | 0.4704390 | 0.4610574 | -9.38e-3  |                    |
-| hemisphere | 1.05 | 0.4181985 | 0.4092866 | -8.91e-3  |                    |
-| hemisphere | 1.0  | 0.3595713 |           |           | 0.3594575          |
+| Body       | Mach | r = 1     | r = 2     | r = 4     | Changes             | 408.7 radii, r = 1 |
+| ---------- | ---- | --------- | --------- | --------- | ------------------- | ------------------ |
+| ogive      | 1.2  | 0.0437833 | 0.0433724 | 0.0433244 | -4.11e-4, -4.80e-5  |                    |
+| ogive      | 1.1  | 0.0435202 | 0.0433484 | 0.0434044 | -1.72e-4, +5.60e-5  |                    |
+| ogive      | 1.05 | 0.0418288 | 0.0417434 | 0.0418273 | -8.54e-5, +8.39e-5  |                    |
+| ogive      | 1.0  | 0.0171707 | 0.0170016 |           | -1.69e-4            | 0.0186725          |
+| hemisphere | 1.2  | 0.5546180 | 0.5431759 | 0.5404303 | -1.144e-2, -2.75e-3 |                    |
+| hemisphere | 1.1  | 0.4704390 | 0.4610574 |           | -9.38e-3            |                    |
+| hemisphere | 1.05 | 0.4181985 | 0.4092866 |           | -8.91e-3            |                    |
+| hemisphere | 1.0  | 0.3595713 |           |           |                     | 0.3594575          |
 
 The base grid's error, judged from the change to r = 2, falls with the
 Mach number on the ogive (from 9.4e-3 of the value at 1.2 to 2.0e-3 at
 1.05) and stays near 2% on the hemisphere, whose families converge at
-about second order where measured (Mach 1.2 and 1.5, above). At Mach 1
-the far boundaries' distance acts on the ogive as on the cone, by about
-the same amount (+1.50e-3 from 100.6 to 408.7 radii, against the cone's
-+1.38e-3), which is 8.7% of the ogive's much smaller drag; on the
-hemisphere it is -1.1e-4, 3e-4 of its drag. With the ogive on a third
-distance (0.0182824 on 224.2 radii), the power law gives q = 1.06 and,
-for boundaries at infinity, 0.019109 (with the cone's q = 1.35 instead,
-0.018985): on 100.6 radii the ogive's drag is about 10% low, on 408.7
-radii 1.7% to 2.3% low, and on the base grid its Mach 1 drag is 0.0190
-within about 0.7%; its grid error at Mach 1 is not measured (r = 2: see
-Open).
+about second order where measured (Mach 1.2 and 1.5, above).
+
+**The ogive's r = 4 at Mach 1.1 and 1.05 (2026-10-21).** Both
+oscillate: the drag falls from r = 1 to 2 and rises from r = 2 to 4, as
+the cone's did at Mach 1.1.
+
+- At Mach 1.1 the second change is 3.1 times smaller than the first.
+- At Mach 1.05 it is as large as the first (ratio 1.02), and r = 4 is
+  back within 1.5e-6 of r = 1. So these three grids give no evidence of
+  convergence at Mach 1.05.
+
+The procedure needs four grids in any case. Both runs stopped on the
+settling test with small remaining changes:
+
+- Mach 1.1: 3,400 steps, 644 s of CPU, remaining change estimated at
+  3e-11.
+- Mach 1.05: 8,800 steps, 1,620 s of CPU, remaining change estimated
+  at 1.3e-9.
+
+r = 8 at both Mach numbers was queued as an addition to the
+certification plan (below).
+
+**The ogive's r = 8 at Mach 1.1 (2026-10-21):** 0.0434468, after 5,600
+steps and 3,842 s of CPU, with a remaining change estimated at 1e-10.
+
+- The changes are -1.72e-4, +5.6e-5 and +4.2e-5. The procedure refuses
+  r = 1 to 8 (`unresolved`): its coarser triple oscillates, as the
+  cone's did at this Mach number.
+- The finer triple is monotone but converges slowly: its last two
+  changes fall only by 1.32, an observed order of 0.40.
+- As the plan's addition provides, r = 16 is queued (975,360 cells).
+  If its order agrees with 0.40 within 0.5, the band is 3.9 times its
+  last change, some 3e-3 of the value. If not, the case stays refused.
+
+**The ogive's far boundaries and cylinder at Mach 1.1 and 1.05**, on the
+base grid (domains regridded, as for the cone above):
+
+| Mach | 55.1      | 100.6     | 224.2     | 5 cal     | 10 cal    | 20 cal    |
+| ---- | --------- | --------- | --------- | --------- | --------- | --------- |
+| 1.1  | 0.0435633 | 0.0435202 | 0.0435012 | 0.0435230 | 0.0435202 | 0.0435144 |
+| 1.05 | 0.0419510 | 0.0418288 | 0.0417219 | 0.0418430 | 0.0418288 | 0.0417823 |
+
+At Mach 1.1 the far boundaries' changes fall by 0.44 per step
+(-4.3e-5, then -1.9e-5), and the cylinder's are a few 1e-6. At Mach
+1.05 they hardly fall: -1.22e-4, then -1.07e-4 (2.6e-3 of the value
+each). The cylinder's grow: -1.4e-5 from 5 to 10 calibers, then -4.7e-5
+from 10 to 20. The bow shock stands far ahead of this blunter tip (the
+characteristics refuse it: the tip flow is subsonic), so at Mach 1.05
+the ogive feels the domain much more than the cone does. A rule that
+adds the largest change once would not bound this.
+
+**The ogive's r = 2 at Mach 1 (2026-10-21).** On 100.6 radii the drag is
+0.0170016. The change from r = 1 is -1.69e-4, 1.0% of the drag; the
+cone's at Mach 1 was -1.15e-4, 0.13% of its drag. The run took 33,700
+plain steps (r = 1: 13,300; the cone's r = 2: 51,700) and 767 s of CPU.
+Its drag history is a damped oscillation:
+
+- period about 10,000 steps, each swing 0.24 times the one before;
+- the settling test stopped it 500 steps after a crest, about 8.5e-8
+  above the oscillation's limit (5e-6 of the drag), which is negligible
+  here.
+
+At Mach 1 the far boundaries' distance acts on the ogive as on the
+cone, by about the same amount (+1.50e-3 from 100.6 to 408.7 radii,
+against the cone's +1.38e-3), which is 8.7% of the ogive's much smaller
+drag; on the hemisphere it is -1.1e-4, 3e-4 of its drag. With the ogive
+on a third distance (0.0182824 on 224.2 radii), the power law gives q =
+1.06 and, for boundaries at infinity, 0.019109 (with the cone's q = 1.35
+instead, 0.018985). So on 100.6 radii the ogive's drag is about 10% low,
+on 408.7 radii 1.7% to 2.3% low, and on the base grid its Mach 1 drag
+is 0.0190 within about 0.7%. The base grid's correction added to r = 2
+gives 0.01882 to 0.01894, 0.9% below the base grid's value. The grid
+error beyond r = 2 is not measured. This is an estimate only, since the
+far-boundary rule failed its test (see the certification plan).
 
 ### Near Mach 1: the slope of the drag
 
@@ -735,49 +919,1261 @@ on the CPU engine:
   containing the error. Ogive: r = 8 within 2.2e-4 of the method of
   characteristics, the family oscillatory, its band (1.1e-3) containing
   the error, and the fitted solver within 7.9e-4 (finest grids): about
-  2e-4 on r = 8 and 3e-4 on r = 4. 2:1 ellipsoid: r = 4 within 7e-4 of its extrapolation,
-  which lies 7.8e-4 below the fitted solver's (nj = 20 to 80): about
-  1e-3. Hemisphere: second-order convergence but no reference, and the
-  stagnation line's open error. Far boundaries and cylinder: below 1e-4. The transonic
-  domain and the supersonic fitted solver agree where both apply, within
-  2.7e-5 on the cone and 1e-3 on the ogive and the ellipsoid: the two
+  2e-4 on r = 8 and 3e-4 on r = 4. 2:1 ellipsoid: the procedure refuses
+  r = 1 to 8 (orders 2.68 and 3.36). r = 8 is 2.6e-4 of the value below
+  the fitted solver's extrapolation, and its own extrapolation 3.3e-4
+  below it (with r = 2 and 4 only, 7.8e-4). Hemisphere: second-order
+  convergence but no reference, and the stagnation line's open error.
+  Far boundaries and cylinder: below 1e-4. The transonic domain and the
+  supersonic fitted solver agree where both apply, within 2.7e-5 on the
+  cone, 1e-3 on the ogive and 3e-4 to 1e-3 on the ellipsoid: the two
   definitions meet at Mach 1.2.
-- **Mach 1.1.** Cone: four grids within 3.5e-4 of the exact value, r =
-  8 within 6.7e-5; the procedure refuses a band (its coarser triple
-  oscillates); the fitted solver is 4e-3 to 7e-3 off here. Ogive and hemisphere: r = 1 and 2 only
-  (changes of 4e-3 and 2% of the value): not established.
-- **Mach 1.05.** Cone: no exact value; first order, r = 4 within about
-  1.5e-3 of its extrapolation, far boundaries at most 2e-4, cylinder
-  within the noise: about 2e-3 on r = 4, if the first order holds (the
-  band needs r = 8). Ogive and hemisphere: r = 1 and 2 only.
-- **Mach 1.0.** Cone: 0.0932 within about 0.1%: three grids converging
-  at first order (1.16), extrapolated, plus the far boundaries'
-  correction (measured on the base grid, holding on r = 2 within 6e-6);
+- **Mach 1.1.** Cone: certified by the procedure on r = 2 to 16 (a
+  monotone band of 3.13e-6 containing the exact error, 2.6e-6). With the
+  floor and the nested domains' allowances the band is 9.757e-6 by the
+  rule as reviewed and 9.836e-6 by the corrected rule (the 2.29e-5 once
+  recorded here added the regridded domains' noise; S7 of the review). Curved noses: the
+  10-caliber ogive's family against the characteristics is running. The
+  5-caliber ogive has r = 1 to 4, oscillatory, with r = 8 queued; the
+  hemisphere has r = 1 and 2. The fitted solver is 1.4e-3 off on nj = 80
+  and not yet converging.
+- **Mach 1.05.** Cone: certified by the procedure on r = 1 to 8
+  (r = 8 settled by the fitted-window rule after 12,000 more steps, 5.8e-8 higher: 0.1071117 with a band of 9.808e-5 by the corrected rule; see the re-review of `dd6c423`) (monotone, orders 1.05 and 1.21): 0.1071116 with a band of 8.435e-5 on
+  nested domains by the rule as reviewed, 9.793e-5 by the corrected rule
+  (the 1.14e-4 once recorded here added a regridded change; S7 of the
+  review); no exact value exists to test it. 5-caliber ogive: r = 1 to 4 oscillate with equal
+  steps (-8.5e-5, +8.4e-5), which shows no convergence yet; r = 8 is
+  queued. Hemisphere: r = 1 and 2 only.
+- **Mach 1.0.** (An estimate from regridded domains and an
+  extrapolation in the distance that the record has since refuted as a
+  correction; no band. On the family moved to 224.2 radii the far
+  boundaries now have a bound, "Mach 1.0: the family moved to 224.2
+  radii", but no four-grid family exists.) Cone: 0.0932 within about
+  0.1%: three grids converging at first order (1.16), extrapolated, plus
+  the far boundaries' correction (measured on the base grid, holding on r = 2 within 6e-6);
   on 100.6 radii alone 1.8% low, on 408.7 radii about 0.3% low; no band
   from the procedure, which needs a fourth grid (at Mach 1 the steps
   grew 2.9 times from r = 1 to 2 and r = 4 had not settled after 1.7
   times r = 2's, each grid with 4 times the cells). Ogive: on the base grid
   0.0190 within about 0.7% after the same extrapolation (10% low on
-  100.6 radii, 2% on 408.7), its grid error not measured. Hemisphere: far
-  boundaries 3e-4, grid error not measured at Mach 1. The wind tunnel and
-  slender-body theory confirm the cone's level to 5 to 10%, no better.
+  100.6 radii, 2% on 408.7). On r = 2 it is 0.0188 to 0.0189 (r = 1 to 2
+  changed it by 1.0%); its grid error beyond r = 2 is not measured.
+  Hemisphere: far boundaries 3e-4, grid error not measured at Mach 1.
+  The wind tunnel and slender-body theory confirm the cone's level to 5
+  to 10%, no better.
 
 So the evidence supports the transonic domain at Mach 1.2 to the
 supersonic solvers' standard on cones and on the ogive (four grids, the
-procedure's band containing the error against exact references). Blunt
-noses reach about 1e-3 (three grids each, against the fitted solver),
-which does not meet the standard: they stay unserved. Below Mach 1.2 the
-procedure gives no band: at Mach 1.1 it refuses the cone's four grids
-(the coarser triple oscillates) although r = 8 is within 6.7e-5 of the
-exact value, and the rule is not changed after seeing the result; at
-Mach 1.05 the cone's r = 8 is the last queued run (r = 4 is about 1.5e-3
-from its extrapolation, and with no exact reference r = 8 can only show
-self-consistency); at Mach 1 there are three grids and the far-boundary
-extrapolation (0.0932 within about 0.1%, r = 4 a fitted estimate).
-Nothing below Mach 1.2 is served; whether Mach 1 to 1.2 is shown at all,
-and how it is labelled, is the owner's decision.
+procedure's band containing the error against exact references), and at
+Mach 1.1 on the cone (r = 2 to 16, band 9.8e-6 on nested domains containing the exact
+error). Blunt noses reach about 1e-3 at Mach 1.2 on r = 4 and 3e-4 on
+the ellipsoid's r = 8, against the fitted solver. The procedure gives
+them no band (it refuses the ellipsoid's r = 1 to 8), so they do not
+meet the standard and stay unserved below Mach 1.5. Curved noses at
+Mach 1.1 wait on the 10-caliber ogive's family, and at 1.1 and 1.05 on
+the 5-caliber ogive's r = 8. At Mach 1.05 the cone is certified by the
+procedure (r = 8 settled by the fitted-window rule after 12,000 more steps, 5.8e-8 higher: 0.1071117 with a band of 9.808e-5 by the corrected rule; see the re-review of `dd6c423`) (band 9.8e-5 by the corrected rule, 9.1e-4 of the value; no exact reference
+exists there). At Mach 1 there are three grids, and the far-boundary
+rule written for it failed its test at Mach 1.2, so Mach 1 stays refused
+(0.0932 within about 0.1% is an estimate, not a certification). These
+are CPU measurements. Since the owner's decision of 2026-10-21 (next
+section), what the page shows below Mach 1.2 is decided by each
+request's own band.
+
+## Serving below Mach 1.2: the owner's decision (2026-10-21)
+
+The owner's decision, 2026-10-21: results below Mach 1.2 are served,
+and they must be accurate. Every number carries its measured band, and
+a case is refused only when no accurate band can be given, with the
+reason. This replaces "nothing below Mach 1.2 is shown until certified"
+(the certification plan below), whose runs now serve as the procedure's
+validation. In particular, a curved nose at Mach 1.05 that the
+procedure certifies (grid convergence plus the domain's allowances) is
+served with that band. It is labelled plainly as verified by grid
+convergence with no exact reference at that Mach number; the procedure
+itself was validated against Taylor-Maccoll on the cone at 1.1.
+
+The serving rules, which the page's transonic solve follows:
+
+1. **The band is the solve's own.** The solve that produces a number
+   also measures its band:
+   - the procedure (`gridConvergence` on the four finest grids it
+     solved, the engine's noise, observed orders within 0.5);
+   - the floor (below);
+   - the far boundaries' and the cylinder's allowances, from base-grid
+     solves made by the same request.
+
+   Nothing is borrowed from the offline runs. The procedure's noise is
+   the one measured for that case on that device (the drag's wander once
+   it has settled, rule of 2026-10-21), never an assumed value, so a
+   solve that wanders gets a wide band or a refusal rather than too
+   narrow a band.
+
+2. **The offline runs validate the procedure; they do not certify the
+   page's numbers.** Where an exact value exists, the procedure's band
+   contained the exact error. That holds for the cone at Mach 1.2 and
+   1.1 against Taylor-Maccoll and for the 5-caliber ogive at 1.2
+   against the characteristics; the 10-caliber ogive at 1.1 is running.
+   They also set the floor.
+3. **The floor** is an allowance for errors that a captured shock's
+   family cannot show. It is 7e-5 of the value, the fitted solver's
+   (`FITTED_DRAG_FLOOR`), until the transonic validation cases give a
+   reason for another. Against exact values, the procedure's own
+   extrapolation missed by 6.8e-6 of the value (5.6e-7 absolute; cone,
+   1.2) and 1.1e-6 of it (1.0e-7 absolute; cone, 1.1, r = 2 to 16), and
+   the ogive's oscillatory band contained its error. (Units corrected
+   2026-10-22: the first figure was relative, the second absolute.)
+4. **A refusal says why.** The reasons are:
+   - the procedure's own (`unresolved`: the triples' orders differ,
+     the values oscillate, or the changes do not shrink), when no finer
+     grid can be added;
+   - a far-boundary or cylinder effect that does not decay fast enough
+     to bound (the allowance rule below);
+   - a body the grids cannot take (blunt noses meeting the cylinder at
+     an angle);
+   - a grid that did not converge;
+   - the device's memory.
+
+   A slow device is not a reason to refuse. The page states the
+   expected time before it starts.
+
+5. **The label.** Every transonic number is "verified by grid
+   convergence". The label also says whether an exact solution exists
+   for that nose at that Mach number, with the same tests as the
+   references:
+   - for a cone, Taylor-Maccoll's surface flow is supersonic (for the
+     7 deg cone, down to about Mach 1.064);
+   - for a tangent ogive, the characteristics accept the tip.
+
+   Where none exists, the label says "no exact reference at this Mach
+   number; the procedure was validated against exact solutions on the
+   cone at Mach 1.1 and 1.2 and the ogive at 1.2". The exact values
+   never enter the band.
+
+6. **Blunt noses** follow the same rules; the earlier rule (unserved
+   below Mach 1.5) is withdrawn. Their measured families give no band
+   today: the 2:1 ellipsoid's r = 1 to 8 at Mach 1.2 are `unresolved`.
+   So the page refuses them with the procedure's reason, unless a
+   solve's own family gives a band.
+7. **Where each solver serves.** At Mach 1.2 and above the fitted
+   solver serves as now. Below 1.2 the transonic solve serves. At 1.2
+   the two agree within 2.7e-5 of the value on the cone and 1e-3 on the
+   ogive.
+8. **Mach 1.0** is refused with its reason until the work below is
+   done. The far boundaries' effect there (1.8% of the cone's drag on
+   100.6 radii, 10% of the ogive's) has no tested bound, and no family
+   of four grids has converged. (Decision of 2026-10-21, after the plan:
+   if the allowance rule passes its test, Mach 1.0 is served with the
+   wide band the rule gives, labelled plainly, rather than refused while
+   the 800-radius divergence is fixed; narrowing it comes later. Its
+   fourth grid's cost, about 300,000 steps, is stated on the page with
+   the measured time, and the user chooses to run it, as for any point.)
+
+   **Amended 2026-10-22 (review of `aed95b0`, B1):** the solve refused
+   only Mach 1 itself (below 1 + 1e-9), so a cone at Mach 1.001 or 1.005
+   was served as "verified" on a rule never tested there. It now
+   refuses everything below Mach 1.05 (`NEAR_SONIC_LIMIT`, reason
+   'near-sonic'), the lowest Mach number where a case is certified with
+   a negligible far-field allowance (the cone). The limit stays until
+   the corrected allowance rule (S2 and S3 of the review, below) passes
+   its pre-registered test lower down. The nested runs show why: on the
+   cone at Mach 1.01 to 1.02 the far boundaries' effect changes sign as
+   the domain grows, which the rule as tested does not bound.
+
+## The path to the page (plan, written 2026-10-21, before its build)
+
+### What a page solve does
+
+For a body and a Mach number between 1 and 1.2 (the fitted solver
+serves from 1.2), one request does the following:
+
+1. **The allowances, first.** It solves the base grid (r = 1, 1,600 to
+   5,300 cells) on nested far boundaries at 55.1, 100.6 and 224.2 radii
+   (10 calibers), and on 5 and 20 calibers of cylinder (100.6 radii). It
+   applies the allowance rule below. If the rule refuses, the request
+   stops there with the reason, which costs seconds.
+2. **The family on 100.6 radii**, r = 1, 2, 4, 8. Each grid starts from
+   the coarser one's solution and stops when its drag settles to the
+   GPU's noise (2e-6 of it), with the wall fluxes evaluated in double
+   precision from the state read back (`gpuEngine`, as now).
+3. **The procedure** on the four finest grids, with the GPU's noise and
+   orders within 0.5. It can return `unresolved` because the coarser
+   triple oscillates while the finer one is monotone (the cone at Mach
+   1.1). Then the solve adds r = 16 (906,240 cells for the cone) if the
+   device's memory allows, after stating the expected time; otherwise it
+   refuses with the procedure's reason.
+4. **The band** is the procedure's band, plus the floor times the value,
+   plus the far-boundary allowance, plus the cylinder allowance.
+5. **It returns** the value, the band and each of its parts, the grids'
+   values, observed orders, steps and times, the label (rule 5 above)
+   and, if refused, the reason. The interface takes this as it takes the
+   fitted solve's result.
+
+The offline runs (r = 16 on the CPU) are not used by it: they validated
+the procedure.
+
+### The allowance rule (written before its test)
+
+The far boundaries' and the cylinder's changes measured so far come from
+grids that differ with the domain. At Mach 1.2, where the cone's drag
+cannot depend on the domain, those regridded domains moved it by 6e-6,
+and at 1.1 by 2e-5. That noise is why the Mach 1 far-boundary rule
+failed its test (above). So first:
+
+- **Nested domains.** A grid option whose nodes inside the smallest
+  domain are the same, node for node, on every larger one. The rows
+  continue the same geometric growth outward, and the lines' lean is
+  fixed by the smallest domain. Its tests:
+  - node identity inside 55.1 radii;
+  - the cone's drag at Mach 1.2 and 1.1 on 55.1, 100.6 and 224.2
+    radii equal within 10 times the settling noise.
+
+Then, on the base grid, with C(D) the drag on far boundaries at D:
+
+- c1 = C(100.6) - C(55.1) and c2 = C(224.2) - C(100.6).
+- If the larger of |c1| and |c2| is at most a quarter of the
+  procedure's band, or below the measurable level (10 times the noise
+  times the drag), the effect is negligible. The allowance is then that
+  larger change, added whatever its sign.
+- Otherwise, if c1 and c2 have the same sign and rho = |c2| / |c1| is at
+  most 0.6, the effect is taken to keep falling at least geometrically
+  beyond 224.2 radii. The allowance for the family's 100.6 radii is then
+  |c2| / (1 - rho): c2 plus every later change, each at most rho times
+  the one before. (The change from 55.1 to 100.6 radii is not part of
+  the error at 100.6. The certification plan added it, which was
+  cautious but not a bound.)
+- Otherwise the rule refuses, with both changes as the reason: the
+  effect does not decay fast enough to bound from these distances.
+  (Moving the family to 224.2 radii, with 408.7 as the third distance,
+  is the next step if refusals here matter. It costs about 1.2 times
+  the cells.)
+- The cylinder: the same rule on 5, 10 and 20 calibers, with the
+  columns along the cylinder nested in the same way.
+- On the regridded domains measured so far, for orientation only:
+  - cone at Mach 1.05: far boundaries +4.4e-5 and +1.3e-5 (rho = 0.30),
+    allowance 1.9e-5; cylinder -3.3e-6 and +6.6e-6, negligible,
+    allowance 6.6e-6;
+  - 5-caliber ogive at Mach 1.1: far boundaries -4.3e-5 and -1.9e-5
+    (rho = 0.44), allowance 3.4e-5.
+
+**Its test** uses runs made after this commit, on the base grid with
+nested domains:
+
+- (a) At Mach 1.2 and 1.1 on the cone, both allowances must be below
+  1e-6 of the drag (the drag cannot depend on the domain there).
+- (b) Where the domain matters, the bound from 55.1, 100.6 and 224.2
+  radii must contain C(408.7) - C(100.6). The cases are the cone at
+  Mach 1.05, 1.02, 1.01 and 1.0 and the 5-caliber ogive at 1.1, 1.05 and
+  1.0.
+
+If any case fails, the rule is withdrawn. The page then refuses wherever
+the far boundaries' change exceeds a quarter of the band. Measured so
+far on the regridded domains (not nested), for orientation only: the
+5-caliber ogive at Mach 1.05 has c1 = -1.22e-4 and c2 = -1.07e-4 (rho =
+0.87), and its cylinder changes -1.4e-5 and then -4.7e-5. That case
+would be refused on 100.6 radii.
+
+### The GPU solve
+
+- **G1. The far-field boundary** as a boundary kind of `euler2d.wgsl`:
+  the state outside each face from the Riemann invariants, as
+  `farFieldState` does on the CPU. Test: GPU against CPU on the cone's
+  base grid at Mach 1.1 after the same explicit steps, states within
+  1e-5 and the drag within the GPU's noise.
+- **G2. The iteration.** The CPU's LU-SGS sweeps are sequential: each
+  cell waits for its lower neighbours. A GPU needs one of two
+  data-parallel forms of the same implicit system, the same scalar
+  diagonal with the axis term and the same CFL ramp:
+  - Jacobi sweeps, a few per step: the data-parallel lower-upper
+    relaxation, "Data-parallel lower-upper relaxation method for the
+    Navier-Stokes equations", AIAA J. 34(7), 1996, 1371-1377 (found,
+    not read; its authors to be confirmed when it is read and entered
+    in sources.md);
+  - a red-black ordering of the Gauss-Seidel sweeps.
+
+  Both are built first on the CPU engine, opt-in, and tested like
+  LU-SGS (the explicit scheme's drag within 1e-12 on the Mach 2 cone).
+  Their steps are measured on the cone at Mach 1.2, 1.1 and 1.05, r = 1
+  to 4, against LU-SGS and the explicit steps. The cheaper one per unit
+  of work goes to WGSL; if neither is, the explicit steps (already on
+  the GPU) stay. Anderson acceleration needs reductions on the GPU and
+  comes only if the measured counts show it pays.
+
+- **G3. The driver**, `verifiedTransonicDrag`, engine-agnostic as
+  `verifiedDrag` is, so one code runs on the CPU (tests) and the GPU
+  (the page). Tested on the CPU on small grids, and on SwiftShader on
+  the cone's r = 1 and 2 against the CPU.
+- **G4. The page:** Mach numbers below 1.2 go to it, and its result
+  type goes to the interface agent; Mach 1.0 is refused with the reason
+  (rule 8 above).
+
+### The band at page sizes (measured, CPU families)
+
+The procedure with the GPU's noise (2e-6) on the four finest grids up
+to r = 8 (r = 16 where solved). The GPU reproduces the CPU's drag within
+its noise on cones and ogives at Mach 1.3 to 5 (0005); on these grids
+that is G1's and G3's test.
+
+| Case               | Grids    | Procedure (GPU noise)        | Band, of the value | Against exact      |
+| ------------------ | -------- | ---------------------------- | ------------------ | ------------------ |
+| cone 7 deg, 1.2    | r = 1-8  | monotone                     | 3.7e-5             | 1.9e-6 inside      |
+| cone 7 deg, 1.1    | r = 1-8  | unresolved (oscillates)      |                    |                    |
+| cone 7 deg, 1.1    | r = 2-16 | monotone                     | 3.3e-5             | 2.6e-6 inside      |
+| cone 7 deg, 1.05   | r = 1-8  | monotone                     | 6.6e-4             | no exact value     |
+| 5-cal. ogive, 1.2  | r = 1-8  | oscillatory                  | 1.1e-3             | inside             |
+| 5-cal. ogive, 1.1  | r = 1-8  | unresolved (oscillates)      | r = 16 queued      | none               |
+| 5-cal. ogive, 1.05 | r = 1-8  | unresolved (oscillates)      | r = 16 needed      | none               |
+| 10-cal. ogive, 1.1 | r = 1-8  | r = 16 paused at 2,200 steps |                    | r = 8: +2e-7       |
+| 2:1 ellipsoid, 1.2 | r = 1-8  | unresolved (orders differ)   |                    | fitted: about 3e-4 |
+| hemisphere, 1.2    | r = 1-4  | three grids                  |                    | none               |
+| cone 7 deg, 1.0    | r = 1-4  | r = 4 not settled            |                    | none               |
+
+To these the floor (7e-5) and the allowances add. On the regridded
+domains the allowances were 6e-6 (cone, 1.2), 2.0e-5 (1.1) and 4.4e-5
+(1.05), to be measured again on nested domains.
+
+### Time per Mach number
+
+Measured here, on one shared machine (4 cores, load average 10 to 29
+during these runs). CPU rates are in process CPU seconds; SwiftShader
+rates are in wall seconds.
+
+- **Steps per grid** (CPU, LU-SGS with Anderson) are as in the tables
+  above. In cells times steps, the families are:
+  - cone at Mach 1.2: 7.8e8;
+  - cone at 1.1, to r = 16: 8.2e9;
+  - cone at 1.05: 5.1e9;
+  - 5-caliber ogive at 1.2: 3.5e9 (its r = 8 stalled after a
+    transient, 13,600 steps).
+- **The explicit steps** (SSPRK2, CFL 0.8: the GPU engine's iteration
+  now) need more steps to settle the drag to the GPU's noise. On the
+  cone at Mach 1.2 they took 1,550 and 2,600 steps on r = 1 and 2,
+  against LU-SGS's 700 and 700 (`tests/tmp-transonic`, measuring;
+  Mach 1.1 and 1.05 are running). They reach the same drags (within
+  2e-8).
+- **Cost per cell and step, one CPU core:**
+  - explicit step: 2.7e-6 s;
+  - plain LU-SGS step: 1.5e-6 s;
+  - LU-SGS with Anderson and the drag checks, as the families ran: 2.5
+    to 3.6e-6 s.
+
+  A family on the CPU therefore takes 0.6 hours (cone, 1.2) to 6.5 hours
+  (cone, 1.1 with r = 16). The CPU is not a page engine for these.
+
+- **SwiftShader** (software WebGPU, the GPU engine's explicit step on
+  these grids, `tests/tmp-transonic/gpu-rate.test.ts`): 5.7e4, 2.8e4,
+  4.2e4 and 5.2e4 cell-steps a second on r = 1, 2, 4 and 8, under a load
+  average of 27. 0012 measured 1.3e5 for the page's fitted solver. A
+  family would take hours to days, so software WebGPU is not a page
+  engine for this either. The page states the expected time, and the
+  user decides.
+- **A mid-range GPU: estimated, not measured.** There is no hardware GPU
+  here. The explicit step reads and writes about 0.7 kB per cell (two
+  stages, each reading neighbouring states and face geometry and
+  writing fluxes and states). A mid-range discrete GPU sustains about
+  150 to 300 GB/s, which gives 1e8 to 3e8 cell-steps a second on grids
+  of 50,000 cells or more. Small grids are bound by the dispatches
+  instead, at about 5,000 to 10,000 steps a second. A Jacobi or
+  red-black implicit step moves about twice the data, so 5e7 to 1.5e8.
+  The page shows its own rate (0012's throughput readout), and step 7
+  of the build replaces this estimate with a hardware measurement.
+
+| Case                      | Cells times steps | One CPU core | Mid-range GPU, estimated |
+| ------------------------- | ----------------- | ------------ | ------------------------ |
+| cone, Mach 1.2 (r = 1-8)  | 7.8e8             | 0.6 h        | 5 to 16 s                |
+| cone, Mach 1.1 (r = 1-16) | 8.2e9             | 6.5 h        | 1 to 3 min               |
+| cone, Mach 1.05 (r = 1-8) | 5.1e9             | 4.0 h        | 0.5 to 2 min             |
+| ogive, Mach 1.2 (r = 1-8) | 3.5e9             | 2.8 h        | 0.4 to 1.2 min           |
+| allowances (5 base grids) | 5e7               | 2 min        | a few seconds            |
+
+The GPU column assumes the GPU's implicit step needs as many steps as
+LU-SGS with Anderson. G2 measures that. Explicit steps instead would
+take 2 to 4 times the steps at a rate about twice as high. Memory is
+not the limit: r = 16 needs about 50 MB of geometry and 15 MB per state
+copy, within WebGPU's default 128 MiB per buffer.
+
+### What each body and Mach number would get
+
+Measured on the CPU families. On the GPU each request measures its own
+band, and these are what the same grids gave. Each band is the
+procedure's band plus the floor (7e-5) and the allowances, all as
+fractions of the value.
+
+- **Cones** (the 7 deg cone measured; other angles get their own
+  request's band):
+  - Mach 1.2: about 1.1e-4, from r = 1 to 8. An exact solution exists
+    there.
+  - Mach 1.1: about 1.0e-4, if the nested domains remove the
+    regridding noise as test (a) requires. It needs r = 16, since r = 1
+    to 8 are `unresolved`. The request says so and offers r = 16, as
+    the fitted page offers 320 cells across. An exact solution exists.
+  - Mach 1.05: about 1.0e-3 (6.6e-4 from the family, the rest the
+    floor and the allowances, 1.9e-5 and 6.6e-6 on the regridded
+    domains). Labelled with no exact reference.
+- **The 5-caliber ogive:**
+  - Mach 1.2: about 1.2e-3 (oscillatory).
+  - Mach 1.1: refused on r = 1 to 8, as the cone was (r = 8 finished
+    2026-10-21: 0.0434468). The coarser triple oscillates, and the
+    finer one is monotone at order 0.40 (changes +5.6e-5 and then
+    +4.2e-5). So r = 16 is needed, and it is queued. If r = 16's order
+    agrees with 0.40 within 0.5, the band will be about 1.25 / (2^0.4 -
+    1), or 3.9 times its last change: some 3e-3 of the value. If not, it
+    stays refused (r = 32 would be 3.9 million cells).
+  - Mach 1.05: refused on r = 1 to 8, as at 1.1 (r = 8 finished:
+    0.0418747; changes -8.54e-5, +8.39e-5, +4.75e-5, the coarser triple
+    oscillating, the finer monotone at order 0.82), so r = 16 would be
+    offered. On nested domains its far boundaries are not the obstacle
+    (3.1e-6, "Build progress").
+- **The 10-caliber ogive at Mach 1.1:** r = 8 (0.0114532) is within
+  about 2e-7 of the characteristics' 0.011453; r = 16 was paused at
+  2,200 steps by the container restart of 2026-10-22.
+- **Other sharp noses the H grid takes** (secant ogives, power-law and
+  parabolic noses): whatever their own families give.
+- **Blunt noses:** refused today by the procedure's own result (the
+  2:1 ellipsoid's orders differ at Mach 1.2). Each request decides on
+  its own family.
+- **Mach 1.0 to 1.05:** each request's allowance rule decides. At Mach
+  1.01 the cone's far boundaries moved its drag by +2.3e-3 from 100.6 to
+  408.7 radii, and at 1.02 by -8e-5. Mach 1.0 itself is refused (below).
+
+### Mach 1.0 itself
+
+Two things are missing, and both are measured.
+
+**A bound on the far boundaries.**
+
+- On 100.6 radii the far boundaries move the cone's drag by 1.8% and
+  the ogive's by about 10%.
+- The extrapolation rule written for this failed its test at Mach 1.2.
+  The regridded domains carried grid noise, and the rule read that
+  noise as a correction.
+- The allowance rule above is the remedy. It uses nested domains, so
+  the changes carry no grid noise, and it bounds the effect instead of
+  correcting for it.
+- On the regridded base grids of the cone at Mach 1 the changes are
+  c1 = +1.88e-3 and c2 = +1.08e-3 (rho = 0.57). The rule gives an
+  allowance of 2.5e-3 (2.7% of the drag) on 100.6 radii, and the
+  408.7-radius solve (+1.38e-3 from 100.6) lies inside it.
+- A band of that width would be accurate but wide. Narrowing it needs
+  the family on a larger domain, with the third distance at 800 radii
+  or more, where the implicit steps diverge at present (the near-sonic
+  axis cells upstream of the tip, above).
+- Time: the nested grids and the rule's test take about two days of
+  work and a day of base-grid runs (step 1 of the build). The
+  800-radius divergence is open, with no estimate.
+
+**A fourth grid that converges.**
+
+- At Mach 1 the iteration's slow mode is a damped oscillation of the
+  whole near-sonic region, with a period of 22,600 steps on r = 4. r = 4
+  did not settle in 89,200 LU-SGS steps; its value is a fitted
+  estimate.
+- r = 8 would need several hundred thousand steps: 6.8e10 cell-steps at
+  300,000 steps. At the 2.0e-6 s per cell and step that r = 2's plain
+  steps took, that is about 40 hours on one CPU core here, and on a
+  mid-range GPU some 8 to 25 minutes at the rates estimated above.
+- A Newton-Krylov iteration (GMRES on the steady residual, with LU-SGS
+  as its preconditioner) would converge that mode without stepping
+  through it. It is untried here: about a week to build and measure on
+  the CPU, with no guarantee.
+
+Until both are done the page refuses Mach 1.0, and gives this reason.
+(Superseded in part by the decision recorded under rule 8: once the
+allowance rule passes its test, the wide band is served, and the fourth
+grid's cost is the user's choice.)
+
+### Order of the build
+
+Each step comes with its tests and is committed on this branch. The
+lanes keep running at their nice levels, and the build's tests run
+briefly at nice 0.
+
+1. The nested-domain grids, the allowance rule and its test runs (base
+   grid, CPU).
+2. The data-parallel implicit steps on the CPU, and their step counts.
+3. G1, the far-field boundary on the GPU, with its test against the CPU.
+4. G2, the chosen iteration on the GPU, with its test against the CPU
+   twin.
+5. G3, the driver, with CPU tests and a SwiftShader test.
+6. G4, the page's routing and result type, with the interface agent.
+7. The record: the GPU measurements (SwiftShader here; a hardware GPU's
+   rate from the benchmark in `tests/gpu`, run by whoever has one) and
+   the GPU families against Taylor-Maccoll at page sizes.
+
+### Build progress
+
+**Step 1, done (2026-10-21; `cbc5e6a`).** `transonicGrid`'s `nested`
+option and `domainAllowance` (`src/verification/domain-allowance.ts`).
+
+- Cut back, the grid keeps its own lines. Continued, the columns
+  upstream and downstream are vertical lines with the grid's own
+  geometric spacing, and the rows beyond the far radius are horizontal,
+  with the axis's growth.
+- Tested: every shared node is bit for bit the same, the domain asked
+  for is reached in whole base cells, and the families still nest.
+- The continuation leaves neighbouring cells up to 20 times different
+  in size at the old grid's upstream top corner. The grid's leaning
+  lines squeeze its top-left cells to 1.1 radii there, beside new
+  columns 20 radii wide. Test (a) below shows this does not reach the
+  drag.
+
+The rule's pre-registered test, on the base grid (runs of 2026-10-21,
+`tests/tmp-transonic/queue-nest.txt`):
+
+- **(a) passes.** On the cone at Mach 1.2 and 1.1 every change is
+  below 1.1e-7 of the drag: -3.5e-9 and +8.7e-9 (1.2), -3.4e-9 and
+  -1.8e-9 (1.1); the cylinder's are below 1.1e-8. On regridded domains
+  the same changes were 6e-6 and 2e-5. The nested grids remove the
+  grid's noise from the test, as intended.
+- **(b), the cases run so far** (far boundaries; allowance against
+  C(408.7) - C(100.6)):
+
+| Case                | c1 (55.1 to 100.6) | c2 (100.6 to 224.2) | Rule                     | C(408.7) - C(100.6) |
+| ------------------- | ------------------ | ------------------- | ------------------------ | ------------------- |
+| cone, 1.05          | +6.4e-6            | -1.2e-7             | negligible, 6.4e-6       | -1.2e-7, inside     |
+| ogive, 1.1          | -5.9e-11           | -4.1e-9             | negligible, 4.1e-9       | +2.6e-9, inside     |
+| ogive, 1.05         | +1.10e-5           | +2.41e-6            | rho 0.22, 3.09e-6        | +2.41e-6, inside    |
+| cone, 1.02          | +7.69e-4           | -1.03e-4            | refused (sign change)    | -1.01e-4            |
+| cone, 1.01          | +2.86e-3           | +9.03e-4            | rho 0.32, 1.32e-3 (1.3%) | +8.63e-4, inside    |
+| cone and ogive, 1.0 | running            |                     |                          |                     |
+
+Every bound the rule gave contains the larger domain's change. At
+Mach 1.02 it refuses: the effect overshoots (up from 55.1 to 100.6
+radii, down beyond), and a sign change gives it nothing to bound
+with. Measured there, the drag moves by 2e-6 between 224.2 and 408.7
+radii.
+
+- **What the regridded domains had hidden.** On nested domains the
+  5-caliber ogive at Mach 1.05 is not domain-limited: 3.1e-6 (7.4e-5 of
+  its drag), where the regridded domains had shown -1.22e-4 and then
+  -1.07e-4, which were the grid's noise. On the cone at 1.05 the
+  effect beyond 100.6 radii is 1.2e-7. At Mach 1.01 the change from
+  100.6 to 408.7 radii is +8.6e-4, not the +2.3e-3 of the regridded
+  domains. The cylinder's changes are below 1e-8 everywhere measured.
+  (The far-boundary rule refuted earlier read the regridded noise as a
+  correction; these numbers show how large that noise was.)
+
+**Step 2, built (2026-10-21; `35f7e3a`); counts running.** Jacobi and
+red-black relaxations of the implicit system (`ImplicitRelaxation`).
+
+- The default stays bit for bit LU-SGS: 300 steps with and without
+  Anderson give identical states against the previous commit.
+- Both reach the explicit scheme's drag within 1e-12 on the Mach 2
+  cone.
+- Steps on the 7 deg cone with Anderson (depth 8), against LU-SGS's:
+  - Mach 1.2: Jacobi with 4 sweeps 850 and 900 on r = 1 and 2, red-black
+    with 2 sweeps 900 and 1,000, against LU-SGS's 700 and 700;
+  - Mach 1.1: Jacobi 1,000 on r = 1, against 950.
+
+  They reach the same drags within 7e-9. CPU cost per cell and step is
+  2.5e-6 s (Jacobi) and 2.0e-6 s (red-black), against LU-SGS's 1.5e-6
+  without Anderson. The rest (1.1, 1.05, and without Anderson) is
+  running.
+
+- A third data-parallel form needs no new iteration: LU-SGS's own
+  sweeps run by diagonals. Cell (i, j) of the forward sweep waits only
+  for (i - 1, j) and (i, j - 1), so every cell with the same i + j can
+  be solved at once. That is the same iteration as on the CPU, at
+  ni + nj dispatches per sweep (2,370 per step on r = 8), each with at
+  most nj cells, which is a dispatch-bound cost to measure on hardware.
+
+**Step 3 (G1), done (2026-10-21).** The far-field boundary in
+`euler2d.wgsl`, `tests/gpu/transonic-gpu.test.ts`. On SwiftShader, on
+the cone's base grid at Mach 1.1:
+
+- From the free stream, after 100 explicit steps, the GPU's pressures
+  are within 4.9e-6 of the CPU's.
+- From the CPU's converged solution, the GPU's drag wanders about the
+  CPU's: +1.5e-6, -6.2e-6, -2.9e-6, +3.3e-6 and +4.8e-6 of it after
+  100, 500, 1,500, 3,000 and 5,000 explicit steps. Its density
+  residual stays near 3e-6 throughout.
+
+**What the wander means for the page.** It is three times the GPU's
+noise on supersonic flows (2e-6, 0005). It comes from the 32-bit
+residual, not the 32-bit state: on the CPU, rounding the state to 32
+bits after every step (the residual still in double) freezes the drag
+within 4e-8 of its converged value, with explicit, LU-SGS and Jacobi
+steps alike (`tests/tmp-transonic/f32-wander.test.ts`).
+
+The procedure with a noise of 1e-5 refuses cases it certifies at 2e-6.
+The cone at Mach 1.1 on r = 2 to 16 becomes `unresolved`, its changes
+too small to measure against that noise, and so does the 5-caliber
+ogive at 1.2. So the page cannot serve those with the 32-bit residual
+as it is.
+
+The next steps, in order:
+
+- measure the wander under the GPU's implicit steps (step 4), which
+  damp the slow modes the noise excites far faster than explicit
+  steps;
+- if it stays above about 2e-6, evaluate the residual on the GPU in
+  two-float (double-single) arithmetic, at several times the cost of a
+  step, or finish each grid's last steps on the CPU in double.
+
+This is the plan's main open risk.
+
+**Step 4 (G2), the red-black implicit step on the GPU, built
+(2026-10-21).** `GpuEuler2D.iterateImplicit` and `setImplicitCfl`, in
+`src/engine-gpu/shaders/euler2d-implicit.wgsl`, the twin of the CPU's
+red-black relaxation. On SwiftShader, on the cone's base grid:
+
+- From the free stream, after 30 steps with the CFL number ramped from
+  1, the GPU's pressures are within 2.8e-6 (Mach 1.1) and 3.3e-6 (1.05)
+  of the CPU twin's.
+- One step with two sweeps takes 22 to 26 ms on these 3,540 cells, under
+  the shared machine's load.
+
+**The wander under the implicit steps is larger, not smaller.** From
+the CPU's converged solution, sampled every 250 steps over 3,000:
+
+| Mach | Implicit (CFL 1000) | Explicit     |
+| ---- | ------------------- | ------------ |
+| 1.1  | up to 7.1e-5        | up to 1.7e-5 |
+| 1.05 | up to 7.6e-5        | up to 6.0e-5 |
+
+The implicit step turns the 32-bit residual's noise into changes of the
+state far larger than the explicit step's small local steps do. Under
+the rule of 2026-10-21 (above), a wander above about 2e-6 means the
+two-float residual. So the 32-bit transonic solve is not used for the
+page.
+
+**Next, step 4b: the two-float path.**
+
+- The state is held in two-float (a high and a low 32-bit part).
+- The residual, with the reconstruction, HLLC, the far-field and wall
+  states and the axisymmetric source, is evaluated in two-float
+  arithmetic. Its fixed point is then that of a residual accurate to
+  about 1e-14.
+- The implicit operator can stay in 32 bits, since it changes only the
+  path.
+- Cost measured on a small kernel of the flux's operations (add,
+  multiply, divide, square root; `tests/tmp-transonic/gpu-df-cost.test.ts`):
+  5.5 times the 32-bit arithmetic on SwiftShader, before the doubled
+  memory traffic. The page's times above grow by about that factor.
+- Its test: the GPU's two-float residual against the CPU's double one
+  on the same state, to about 1e-12.
+
+**Step 4b, done (2026-10-22; `6ee3849`).** `GpuEuler2DTwoFloat`
+(`src/engine-gpu/euler2d-two-float.ts`, `two-float.wgsl`,
+`euler2d-two-float.wgsl`). Measured on SwiftShader, the cone's base
+grid:
+
+- **The residual.** On a rough state (60 explicit steps from the free
+  stream), the GPU's residual is the CPU's double one within 1.4e-10
+  at Mach 1.1 and 1.0e-10 at 1.05. That is 2e-9 of the largest
+  residual, about 1e-13 of the face fluxes times areas, which reach
+  1e3 on the far cells: two-float precision.
+- **No wander.** From the CPU's converged solution, the GPU's drag
+  stays between -4.5e-12 and -9.5e-12 of the CPU's at Mach 1.1, and
+  between -6.3e-12 and -9.5e-12 at 1.05, sampled every 250 steps over
+  3,000. The 32-bit engine wandered by up to 7.6e-5 there.
+- **Two things had to change on the way.**
+  - SwiftShader does not fuse `fma`, and a two-float product came out
+    3.4e-9 off. Products now use Dekker's splitting. A self-test, run
+    once per device, refuses a GPU whose compiler loses the low parts.
+  - With the neighbours' terms of the 32-bit implicit operator as the
+    CPU's difference of fluxes, F(Q + dQ) - F(Q), the drag still
+    wandered by 1e-5. That difference carries a 32-bit noise of the
+    size of the flux, which does not shrink as dQ does. As the flux
+    Jacobian applied to dQ, which is linear, the noise shrinks with dQ,
+    and the wander went with it. The path then differs from the CPU
+    twin's at second order in dQ: 1.3e-4 of the pressure after 30
+    steps from the free stream, at the same fixed point.
+- **Cost.** 89 to 96 ms per step on 3,540 cells, 3.7 times the 32-bit
+  implicit step, under the shared machine's load.
+
+**Step 5, done (2026-10-22; `aed95b0`).** `verifiedTransonicDrag`
+(`src/analysis/transonic-drag.ts`) does what "What a page solve does"
+describes, with `gpuTransonicEngine` (`src/analysis/gpu-transonic.ts`)
+on the page.
+
+- **Each grid's noise** is the largest of the settling test's noise
+  (1e-7), its remaining change estimated geometrically, and the drag's
+  spread over 4 checks after settling. The procedure uses the largest
+  noise of the four grids.
+- **The label** names Taylor-Maccoll for cones whose conical surface
+  flow is supersonic. Otherwise it says "no exact reference at this
+  Mach number" and names the validation cases.
+- **Refusals** carry their reason: an unresolved family, with r = 16
+  offered where the coarser triple oscillates and the finer one is
+  monotone; far boundaries or a cylinder whose effect does not fall
+  fast enough to bound; Mach 1.0 until the rule passes its test there;
+  blunt noses, which have no nested domains yet; a grid that does not
+  settle.
+- **Tests:** on a synthetic engine (`tests/analysis/transonic-drag.test.ts`).
+
+**Step 6, done (2026-10-22; `61100c9`).** The routing, outside the page
+files: `solveNoseDrag` (`src/analysis/nose-drag-solve.ts`) picks the
+transonic solve from Mach 1 to below 1.2 and the fitted solver from 1.2
+(`solverFor`), and returns one shape for both (`NoseDragOutcome`: the
+status, the value and its band, the text, the grids, a finer grid
+offered, the solver's own result). Below Mach 1 it refuses. A fitted
+solver's refusal by throwing becomes a refusal; a failed GPU is thrown.
+`gpuNoseDragSolvers(device)` gives the page both solvers on its device.
+The choice is pinned at Mach 0.999, 1, 1.1999, 1.2 and 1.2001.
+
+**The interface's review of the result type (2026-10-22), one commit
+each.**
+
+1. Refusals and non-convergence carry a code (`reason`: 'mach-1',
+   'blunt-nose', 'no-band', 'far-field', 'cylinder'; 'not-settled',
+   'not-finite') and the sentence apart (`message`) (`55de905`).
+2. `transonicNoseTerm` gives the total drag the transonic nose in the
+   shape the fitted one has ({ value, uncertainty, grids }), so the
+   page never combines bands itself. `band` is a half-width, as
+   VerifiedDrag's `uncertainty` (`eef1ea5`).
+3. A grid that does not converge comes back with the grids solved
+   before it (`17a7424`).
+4. The offered r = 16 grid carries its expected work, for the page to
+   divide by its own measured rate: its steps (r = 8's times their
+   growth from r = 4, which on the cone at Mach 1.1 gives 9,800 against
+   the 7,300 measured), its cell updates, and the cell updates of the
+   solve so far, which a solve to r = 16 repeats (`943d6be`).
+5. Each grid, of the family and of the allowances, is given to
+   `onLive` to draw as it converges, and null just before its buffers
+   are released. The source is a 32-bit view of the two-float state
+   (its high parts), refreshed after each batch of steps, on the
+   grid's nodes, for drawing only. The fitted solver's fits come
+   through the same hook (`df544c9`).
+6. Progress is typed: a grid of the family, or an allowance's base grid
+   with which allowance and which domain (`fc062b0`).
+7. The range error's text and type are pinned, and the transonic
+   solve's range is the router's (`4aef318`).
+
+**The independent review of `aed95b0` (2026-10-22).** It verified the
+two-float formulas, that no 32-bit quantity lies on the path to the
+fixed point, that the implicit parts change only the path, that the GPU
+equals the CPU, that the nested grids share their nodes, and that no
+number is given without a settled grid. Its findings, one commit each:
+
+- **B1**, Mach numbers just above 1 served on an untested rule: the
+  solve refuses below Mach 1.05 (serving rule 8, amended).
+- **S4**, long noses failing after the whole family was solved: the
+  nested 50 radii lay inside the four nose lengths the grid needs for
+  any nose 12.5 to 25 radii long, the 10-caliber ogive among them.
+  - The far boundaries now lie at the larger of 100 radii and 10 nose
+    lengths (`transonicDomains`), and the nested ones at half and twice
+    that. This is unchanged for every body validated here: the cone,
+    and the 3- and 5-caliber ogives, are at 100 radii. The 10-caliber
+    ogive's family is at 200 radii, with its allowances at 100 and 400.
+  - Every base grid is built, and the finest grid's size is checked
+    against the engine's device, before any solve. A body the domains
+    do not fit is refused ('domain'), and so is a device too small
+    ('device-memory', also when a grid runs out of memory mid-solve).
+    Neither throws, and the router turns any remaining
+    `GpuMemoryLimitError` into a refusal too.
+  - The allowances are solved right after the base grid, as the plan
+    said, before the finer grids.
+  - r = 16 is offered only where the device can hold it.
+- **S1**, settling that a slow oscillation could pass. The settling
+  test passed at the oscillation's turning points with the drag still
+  3e-6 to 4e-6 from its limit, on the nested cone runs at Mach 1.0 and
+  1.02 (periods of about 6,000 steps).
+  - A damped-oscillation fit to the last third and the last quarter of
+    each grid's history (`dampedOscillationBound`) must now decay and
+    lie within 1e-7 before the grid counts as settled, and its bound
+    enters the grid's noise.
+  - Growing changes are not settling.
+  - Each family grid passes its rate on to the next.
+  - The residual must have fallen to half the largest seen on the
+    grid, and still be changing. A residual 100 times its first value
+    stops the grid as 'diverging'.
+  - (WIP: the GPU engine's residual is not yet run on SwiftShader.)
+- **The GPU's sweeps (found while measuring, 2026-10-22).** The page
+  engine's red-black relaxation with 4 sweeps does not converge.
+  - From the free stream at Mach 1.1 the drag came within 1.4e-5 of the
+    CPU's by step 500, then fell into a limit cycle between 0.067 and
+    0.164, with a period of about 4,700 steps on r = 1. The same
+    happened on r = 2 (`tests/tmp-transonic/df-settle-rb4.txt`).
+  - The CPU twin (red-black, no Anderson) behaves the same way, so the
+    method fails, not the GPU. On the cone's base grid at Mach 1.1:
+    1 sweep converged in 2,350 steps, 2 in 1,200, 3 in 800, and 4
+    never did (residual near 1.5 after 8,000 steps). Jacobi with 2
+    sweeps took 2,500.
+  - Why: for the near-sonic acoustic wave the scalar operator's
+    neighbour terms sum to the diagonal (both about 1.5 times the wave
+    speed), so the relaxation's own iteration is not contracting there.
+    Each extra sweep amplifies that wave, and between 3 and 4 sweeps the
+    outer iteration fails.
+  - With 2 sweeps, measured on the CPU twin: the cone at Mach 1.2
+    (650 steps), 1.1 (1,200; r = 2: 2,100) and 1.05 (7,400), the
+    5-caliber ogive at 1.1 (1,100) and the 3-caliber ogive at 1.2 (650).
+    On SwiftShader: the cone at 1.1 settles in 1,200 steps (r = 1,
+    4.9e-8 from the CPU) and 2,100 (r = 2), and at 1.2 in 650 (-4.9e-10
+    from the CPU), at 110 to 120 ms per step on r = 1 and 560 ms on r =
+    2 (`tests/tmp-transonic/df-settle2.txt`). The setting must become 2.
+    Its margin on finer grids and other bodies is not yet measured.
+
+**Mach 1.0: the family moved to 224.2 radii (owner's decision 7.3,
+2026-10-22).** The allowance rule's own pre-registered next step ("The
+allowance rule", above: "Moving the family to 224.2 radii, with 408.7 as
+the third distance, is the next step if refusals here matter"), taken as
+the advisor recommended (`advice/fable-2026-10-22.md` section 2 on the
+handoff branch). DECAY_LIMIT stays 0.6. Below Mach 1.05 the family's own
+grid is now the 100.6-radius grid continued, node for node, to 224.2
+radii (`transonicDomains(body, mach)`; the base grid's `nested` far
+field at twice the family's), and its far-boundary neighbours are the
+100.6-radius grid itself and the same grid continued to 408.7 radii. The
+cylinder's neighbours are 5 and 20 calibers on the moved grid. From Mach
+1.05 nothing changes. Nothing below 1.05 is served yet (B1): the moved
+family only changes what the offline solve (`allowNearSonic`) gives.
+
+The evidence, in the order the advisor lists it. All on the base grid,
+nested domains, plain LU-SGS steps, from `tests/tmp-transonic/results/
+n-*.jsonl` (runs of 2026-10-22, settled by the test before S1, which
+can leave a value up to about 4e-6 from its limit at these Mach numbers;
+every change below is at least 25 times that, except where said).
+
+1. **The nested changes and their ratios.** Drag at 55.1, 100.6, 224.2
+   and 408.7 radii; c1, c2, c3 the three successive changes:
+
+   | Case       | 55.1      | 100.6     | 224.2     | 408.7     | c1        | c2        | c3       | c2/c1 | c3/c2  |
+   | ---------- | --------- | --------- | --------- | --------- | --------- | --------- | -------- | ----- | ------ |
+   | cone, 1.0  | 0.0897885 | 0.0917153 | 0.0929283 | 0.0932884 | +1.927e-3 | +1.213e-3 | +3.60e-4 | 0.630 | 0.297  |
+   | ogive, 1.0 | 0.0155313 | 0.0171707 | 0.0184068 | 0.0188677 | +1.639e-3 | +1.236e-3 | +4.61e-4 | 0.754 | 0.373  |
+   | cone, 1.01 | 0.0997535 | 0.1026103 | 0.1035135 | 0.1034732 | +2.857e-3 | +9.03e-4  | -4.02e-5 | 0.316 | -0.045 |
+
+   At Mach 1.0 the ratios fall outward (0.63 then 0.30 on the cone, 0.75
+   then 0.37 on the ogive), as a power law with an exponent above about 1
+   and these distance ratios implies: the exponents through three
+   successive radii are 1.09 and 1.29 (cone) and 0.82 and 0.98 (ogive).
+   With the family on 224.2 radii the rule's two changes are c2 and c3,
+   of one sign, rho = 0.297 (cone) and 0.373 (ogive), both within 0.6:
+   **the rule as written gives the cone at Mach 1.0 an allowance of
+   |c3| / (1 - rho) = 5.12e-4 (0.55% of its 224.2-radius base-grid drag,
+   0.0929283) and the ogive 7.35e-4 (4.0% of 0.0184068).** On 100.6
+   radii the rule refused both (rho 0.63 and 0.75). **These two are not
+   bounds** (re-review of `dd6c423`, below): on these uneven distance
+   ratios the geometric remainder understates every pure power law.
+
+   **At Mach 1.01 the moved family is worse, not better.** On 100.6
+   radii the rule gave 1.32e-3 (rho 0.32), and C(408.7) - C(100.6) =
+   +8.63e-4 lay inside it (test (b)). On 224.2 radii the rule's changes
+   are +9.03e-4 and then -4.02e-5: the effect turns between 224.2 and
+   408.7 radii, and the rule as written refuses a sign change. That is
+   the sign-reversal case of the review's S2, which the next entry's
+   rule handles.
+
+2. **A consistency check, not the registered test.** The registered
+   test (b) for the moved family would need a fourth distance beyond
+   408.7 radii (about 800), where the implicit steps diverge ("Mach 1
+   without the extrapolation"), so it cannot be run as written. Instead:
+   the geometric bound from 55.1, 100.6 and 224.2 radii, computed with
+   the measured rho although the rule refuses it there, must contain
+   C(408.7) - C(100.6). Cone: |c2| / (1 - 0.630) = 3.27e-3 against
+   +1.573e-3, contained. Ogive: |c2| / (1 - 0.754) = 5.03e-3 against
+   +1.697e-3, contained. So the decay's form that the rule rests on
+   holds one domain further out. This is a consistency check, and it is
+   labelled so wherever it is quoted: it is not the rule's registered
+   test, and it does not lift the near-sonic refusal (B1).
+
+3. **Why the decay continues beyond 408.7 radii (the ordering).** A
+   free-stream condition at a distance D is wrong by the perturbation
+   there, which falls at least as fast as the measured local exponents
+   (0.39 to 0.47 between 19 and 62 radii on 408.7 radii) and, in the
+   far field's asymptotic forms, faster ("Mach 1 without the
+   extrapolation"). The drag's own error falls faster still over these
+   four distances (the exponents above, 0.8 to 1.3). That is the reason
+   the remainder beyond the family's domain is taken to keep falling.
+
+4. **The grid band.** Mach 1.0 needs four grids (r = 1 to 8) on the
+   moved family for the procedure's band, and none of them beyond the
+   base grid has been solved on 224.2 radii. r = 8 at Mach 1 is about
+   300,000 steps ("Mach 1.0 itself"). Until a four-grid family exists a
+   Mach 1.0 point has no band and is refused ('no-band' offline,
+   'near-sonic' on the page), as rule 8 of "Serving below Mach 1.2"
+   says. The cost would be stated on the page and the user would choose.
+
+5. **Two cheap checks, not bands.**
+   - Bryson's stationarity (TR 1094 eq. 43, as 0019 section 3.2 uses
+     it) gives a forebody's drag a positive slope through Mach 1, so
+     C_D(1.00) must lie below C_D(1.01). On every nested domain it does:
+     0.0897885 < 0.0997535 (55.1 radii), 0.0917153 < 0.1026103 (100.6),
+     0.0929283 < 0.1035135 (224.2), 0.0932884 < 0.1034732 (408.7).
+   - Slender-body theory's slope at Mach 1, 1.64 (Spreiter and
+     Alksne's eq. 80, "Near Mach 1"), against the one-sided three-point
+     estimate from Mach 1.00, 1.01 and 1.02 on the nested domains: 1.28
+     (224.2 radii) and 1.22 (408.7 radii), 22 to 26% below the theory.
+     The secant from 1.00 to 1.01 is 1.06 and 1.02. The earlier figure
+     of 1.49 to 1.54 ("Near Mach 1") came from the regridded domains,
+     whose 408.7-radius grid put the drag at Mach 1.01 1.5e-3 higher
+     than the nested one does. Since the drag curve bends over within a
+     few hundredths of Mach 1, differences over 0.01 underestimate the
+     slope at Mach 1, so the check says the sign and the order of
+     magnitude agree, no more.
+
+**Outcome.** rho is 0.30 and 0.37 at Mach 1.0 on the moved family,
+within the limit of 0.6, so the rule as written no longer refuses Mach
+1.0 offline; but its allowances there are not bounds (re-review of
+`dd6c423`, below), and Mach 1.0 is still refused on the page (B1, and no
+four-grid family). Mach 1.01 on the moved family is refused by the rule as written
+(sign change) until the corrected rule below.
+
+**The allowance rule corrected for sign reversal (review S2 and S3;
+written 2026-10-22, before its code and before the runs of its test).**
+The rule above has three faults the review found:
+
+- S2: a change that reverses sign beyond the family's domain is not
+  bounded. On the cone at Mach 1.01 to 1.02 the effect rises, peaks and
+  falls back as the domain grows. The reviewer's synthetic A1 (c1 =
+  +1.5e-3, c2 = +2e-6, and the true remainder -6e-5) passes as
+  "decaying" with an allowance of 2e-6, 30 times too small: a tiny c2
+  after a large c1 is the effect turning, not decaying.
+- S3 (a): the negligible branch (the larger change within a quarter of
+  the band) gives the larger change alone, which does not cover a slow
+  decay beyond the largest domain.
+- S3 (b): through the noise, more noise can turn a refusal into a pass.
+
+The corrected rule, for three nested domains D0 < D1 < D2 (the family's
+own is D1), with drags C0, C1, C2:
+
+- **Inputs.** a = C1 - C0 and b = C2 - C1. The distances are the grids'
+  own (their far radii; for the cylinder, its length in calibers), not
+  the sizes asked for. The noise nu is the largest of the three grids'
+  measured noises (relative).
+- **The measurability level** m = 2 nu max(|C0|, |C1|, |C2|). It is
+  added to every allowance, so no allowance is below it, and more noise
+  only ever widens an allowance.
+- **The slowest decay admitted**, Q_SLOW = 0.35: below every exponent
+  measured here, the drag's (0.8 to 1.35 over four distances) and the
+  far field's local pressure decay (0.39 to 0.47, "Mach 1 without the
+  extrapolation"). A part of the effect that decays as D^-q with q at
+  least Q_SLOW leaves, beyond D2, at most T times its change from D1 to
+  D2, with T = 1 / ((D2 / D1)^Q_SLOW - 1): 3.09 for 100.6 and 224.2
+  radii, 4.28 for 224.2 and 408.7, 3.64 for 10 and 20 calibers.
+- **The fastest decay admitted**, Q_FAST = 3: a disturbance of a closed
+  body in a subsonic stream falls off as a doublet's, the velocity as
+  D^-3, and nothing that acts on the drag from far away falls faster.
+  rho_fast is the ratio of successive changes that a single power law of
+  exponent 3 gives over these distances: 0.179 for 55.1, 100.6 and
+  224.2 radii, 0.083 for 100.6, 224.2 and 408.7, 0.125 for 5, 10 and 20
+  calibers. A change falling faster than that is two parts of opposite
+  sign cancelling, which is the effect turning.
+- **The turning bound** U = |b| + T max(|a|, |b|) + m: the change to D2,
+  plus a remainder beyond D2 that decays no slower than Q_SLOW from a
+  size no larger than the larger measured change.
+
+The branches, in order:
+
+1. **Unmeasurable**: max(|a|, |b|) <= m. The allowance is U.
+2. **Refused**: a = 0, or rho = |b| / |a| > DECAY_LIMIT (0.6) whatever
+   the signs. The effect does not fall fast enough to bound.
+3. **Decaying**: a and b of one sign and rho_fast <= rho <= 0.6. The
+   allowance is |b| / (1 - rho) + m, the registered geometric bound
+   plus the measurability level.
+4. **Turning**: every other case, that is b opposite in sign to a with
+   |b| <= 0.6 |a|, or one sign with rho below rho_fast. The allowance is
+   U.
+
+The negligible branch against a quarter of the band is withdrawn: the
+allowance no longer depends on the family's band, so it is decided
+right after the base grids and a refusal costs seconds. What the
+turning bound assumes, said plainly: that the part of the effect still
+to come after the turn changes, from D1 to D2, by no more than the
+larger change measured, and decays no slower than D^-0.35 beyond. It is
+an assumption about the far field's form, as the geometric bound is,
+and the test below is what checks it.
+
+**On the cases already seen (construction checks, not the test).** On
+the reviewer's table, family on 100.6 radii (55.1, 100.6 and 224.2):
+the cone at Mach 1.01 is decaying (rho 0.316), 1.32e-3 + m, against
+C(408.7) - C(100.6) = +8.63e-4; 1.017, 1.019 and 1.02 are turning, U =
+|b| + 3.09 |a| + m = 5.07e-3, 3.32e-3 and 2.48e-3, against -5.96e-5,
+-1.01e-4 and -1.01e-4. All contain it (1.015 has no 55.1-radius run).
+On the family moved to 224.2 radii (no larger domain to check against):
+Mach 1.0 decaying, 5.12e-4 + m (cone) and 7.35e-4 + m (ogive); 1.01
+turning, 4.02e-5 + 4.28 x 9.03e-4 + m = 3.90e-3 (3.8% of the drag);
+1.015, 1.017, 1.019 and 1.02 turning, 3.0e-4, 2.6e-4, 4.4e-4 and
+4.4e-4. Synthetic A1 (55.1, 100.6, 224.2): rho = 0.0013, below
+rho_fast, so turning, U = 2e-6 + 3.09 x 1.5e-3 + m = 4.6e-3, against
+the true -6e-5. The turning bound is wide: up to 5% of the drag at
+Mach 1.017 on 100.6 radii, where the registered rule refused.
+
+**Its test (pre-registered; the runs are made after this commit,
+`tests/tmp-transonic/queue-s2test.txt`).** Six cases not run before, on
+the base grid with nested far boundaries at 55.1, 100.6, 224.2 and
+408.7 radii (10 calibers): the 7 deg cone at Mach 1.005, 1.0125 and
+1.025, and the 5-caliber ogive at Mach 1.01, 1.02 and 1.03.
+
+- For each, the rule applied to 55.1, 100.6 and 224.2 radii, with
+  nu max|C| = 3.5e-6 (so m = 7e-6: the largest distance from its limit
+  that S1 found on the nested runs settled by the old test, 3.4e-6,
+  rounded up), must contain C(408.7) - C(100.6) wherever it gives an
+  allowance. A refusal is not a failure; it is reported.
+- If any case fails, the correction is withdrawn: sign changes and
+  changes falling faster than rho_fast are refused, as the registered
+  rule refuses sign changes, and B1 stays.
+- If every case passes, B1 still stays on this branch. The evidence goes
+  to the owner, through the re-review, with the proposal to lower
+  NEAR_SONIC_LIMIT; a Mach number below 1.05 also needs its four-grid
+  family, which the page's own request solves.
+- The family moved to 224.2 radii has no test of this kind (it needs a
+  domain near 800 radii, where the steps diverge). Its allowances are
+  the rule's, with the consistency check of the previous entry.
+
+**The corrected rule, coded (after the entry above was committed in
+`20ab07a`).** `domainAllowance(values, distances, noise)`
+(`src/verification/domain-allowance.ts`), with kinds 'unmeasurable',
+'decaying', 'turning' and 'refused'; the driver passes the grids' own
+far radii and cylinder lengths, and stops with the refusal right after
+the base grids. Its tests (`tests/verification/domain-allowance.test.ts`,
+`tests/analysis/transonic-drag.test.ts`) pin the constants, the
+reviewer's table on both families as listed above, A1 directly and
+through the driver, and that an allowance never narrows as the noise
+grows. One limit of S3 (b) remains, said plainly: more noise can still
+move a case whose changes do not fall from 'refused' to
+'unmeasurable', once both changes are below the measurability level.
+Its allowance is then the turning bound, at least (1 + T) times the
+larger change plus m, which holds any remainder decaying no slower than
+D^-0.35 from changes of that size; it is not refused.
+
+**S5, the device's precision, and the sweeps pinned (owner's decision
+7.4: 2 sweeps).**
+
+- **Once per solve**, after the first batch of steps on the family's
+  base grid, the engine's residual on the GPU is compared with the CPU's
+  double one on the same state read back (`checkPrecision`,
+  `residualPrecision` in `src/analysis/gpu-transonic.ts`). A difference
+  above 1e-6 of the largest residual refuses the solve,
+  'device-precision', with the measured figure in the message.
+  Two-float arithmetic measured 2.2e-9 of it on SwiftShader (step 4b);
+  32-bit face fluxes of order 1e3 would lose about 1e-4 against residuals
+  of order 0.1, some 1e-3 of it. The per-device self-test now throws
+  the same kind of error (`GpuPrecisionError`), so a GPU whose compiler
+  loses the low parts is also a 'device-precision' refusal, in the
+  driver and in the router, and never an exception.
+- **The refusal paths are tested without a GPU**
+  (`tests/engine-gpu/two-float-checks.test.ts`): the self-test's
+  verdict on results with each low part dropped, or a NaN; the residual
+  check on two-float and 32-bit sized differences.
+  `tests/analysis/transonic-drag.test.ts` checks that the driver calls
+  the check exactly once per solve and refuses on it, and on a self-test
+  failing at creation; `tests/analysis/nose-drag-solve.test.ts` the
+  router.
+- **G3** (`tests/gpu/transonic-gpu.test.ts`): `gpuNoseDragSolvers` on
+  SwiftShader, the cone at Mach 1.1, stopped after r = 2. Its r = 1 and
+  r = 2 drags must be the CPU driver's within 3e-7, each settled in fewer
+  than 6,000 steps (4,000 before the fitted-window rule of the re-review
+  of `dd6c423`) under a cap of 8,000 a grid, which a limit cycle
+  (4 sweeps) cannot meet. It pins `GPU_TRANSONIC_SWEEPS` at 2 by
+  behaviour, not only by value. Also on SwiftShader: the precision check
+  passes on a rough state of the cone.
+- **Measured on SwiftShader (2026-10-22, 10:56 to 11:26 UTC):**
+  `tests/gpu/transonic-gpu.test.ts`, 8 of 8 pass, among them the
+  precision check and G3. 2 sweeps on r = 4 and 8 are not measured on
+  the GPU: r = 4 is about 2 s a step there, some hours for a settled
+  grid on this shared machine, and was not run. On the CPU twin the
+  margin on r = 4 and 8 is not measured either.
+
+**The corrected rule's pre-registered test: passed (runs of 2026-10-22,
+10:41 to 11:59 UTC, `tests/tmp-transonic/results/t-*.jsonl`, evaluated
+by `tests/tmp-transonic/s2test-eval.test.ts`).** The rule on 55.1, 100.6
+and 224.2 radii with m = 7e-6, against C(408.7) - C(100.6):
+
+| Case         | a         | b         | Rule                                     | Allowance | C(408.7) - C(100.6) | Verdict                |
+| ------------ | --------- | --------- | ---------------------------------------- | --------- | ------------------- | ---------------------- |
+| cone, 1.005  | +2.648e-3 | +1.819e-3 | refused (rho 0.69)                       |           | +2.152e-3           | refused, not a failure |
+| cone, 1.0125 | +2.625e-3 | +3.942e-4 | turning (rho 0.15, below rho_fast 0.179) | 8.51e-3   | +3.731e-4           | contained              |
+| cone, 1.025  | -6.655e-5 | -3.909e-5 | decaying                                 | 1.018e-4  | -3.877e-5           | contained              |
+| ogive, 1.01  | +2.038e-3 | +5.723e-4 | decaying                                 | 8.028e-4  | +5.367e-4           | contained              |
+| ogive, 1.02  | +8.586e-4 | -8.778e-5 | turning                                  | 2.747e-3  | -8.674e-5           | contained              |
+| ogive, 1.03  | -1.914e-4 | -3.523e-5 | decaying                                 | 5.018e-5  | -3.497e-5           | contained              |
+
+Every allowance given contains the larger domain's change, so the rule
+stands. Said plainly:
+
+- the runs were settled by the test before S1, which can leave a value
+  some 3e-6 from its limit; every containment above has a margin larger
+  than that (the smallest, the ogive at 1.03, is 1.5e-5);
+- the turning bounds are wide (8.5e-3 is 8% of the cone's drag at Mach
+  1.0125, where the change actually was 3.7e-4): the bound is honest, not
+  tight;
+- the family moved to 224.2 radii, which the driver uses below Mach
+  1.05, is not tested by this (it needs about 800 radii); there the rule
+  gives, for these cases, 4.1e-4 (cone 1.005, decaying), 1.7e-3, 1.7e-4,
+  2.5e-3, 3.8e-4 and 1.6e-4 (turning).
+
+As registered, B1 stays on this branch: lowering NEAR_SONIC_LIMIT is a
+proposal for the owner after the re-review, and any Mach number below
+1.05 would still need its own four-grid family.
+
+**The moved family's cylinder (base grid, 5, 10 and 20 calibers on 224.2
+radii):** cone at Mach 1.0: changes -3.8e-10 and +1e-12; ogive 1.0:
++2.7e-12 and -2.7e-12; cone 1.01: below 1.2e-12. All below the
+measurability level.
+
+**S6, the labels (2026-10-22).**
+
+- The driver now computes Taylor-Maccoll's drag itself for a cone whose
+  conical surface flow is supersonic (`exactDrag`), and the label names
+  the exact solution only with that check: "checked here against the
+  exact solution (Taylor-Maccoll's, surface Mach number ...): exact ...,
+  the solve's error ..., inside the band" (`reference.check`). A band
+  that does not contain that error is refused ('no-band', with both
+  figures). The exact value never enters the band.
+- Where the domain's allowances are larger than the procedure's band
+  and the floor together, the label adds: "most of the band (X of Y) is
+  the allowance for the truncated domain, which assumes its effect keeps
+  decaying beyond the largest domain solved and is checked against no
+  reference" (the reviewer's A6 case and the near-sonic cases).
+- Where no exact solution exists, the validation cases are named as
+  measured: Taylor-Maccoll's exact solution on the 7 deg cone at Mach
+  1.1 and 1.2, and the method of characteristics (not an exact
+  solution) on the 5-caliber ogive at 1.2.
+
+**Minor items (2026-10-22).** The floor's comment and serving rule 3
+now give units (6.8e-6 of the value at Mach 1.2, 1.0e-7 absolute at
+1.1); Dekker (1971) and Knuth are in `docs/validation/sources.md`; Haack
+noses and power-law noses below exponent 1 are refused with their own
+reason, 'vertical-tip', not 'blunt-nose'.
+
+**Before and after: every certified and recorded number**
+(`tests/tmp-transonic/before-after.test.ts`; offline CPU families,
+nested base grids, noise 1e-7; "before" is the rule as reviewed, which
+the reviewer's recomputation matches, "after" the corrected rule):
+
+| Case                                 | Value                | Grids    | Floor    | Far, before | Far, after         | Cylinder, before | Cylinder, after | Band, before | Band, after              | Exact                             |
+| ------------------------------------ | -------------------- | -------- | -------- | ----------- | ------------------ | ---------------- | --------------- | ------------ | ------------------------ | --------------------------------- |
+| cone, 1.2 (r = 1-8; validation only) | 0.0830132            | 3.076e-6 | 5.811e-6 | 8.7e-9      | 5.2e-8             | 7.8e-9           | 4.9e-8          | 8.903e-6     | 8.988e-6                 | 0.0830113, error +1.90e-6, inside |
+| cone, 1.1 (r = 2-16)                 | 0.0944950            | 3.129e-6 | 6.615e-6 | 3.4e-9      | 3.1e-8             | 1.0e-8           | 6.2e-8          | 9.757e-6     | 9.836e-6                 | 0.0944976, error -2.61e-6, inside |
+| cone, 1.1 (r = 1-8)                  | refused (oscillates) |          |          |             |                    |                  |                 | refused      | refused (r = 16 offered) |                                   |
+| cone, 1.05 (r = 1-8)                 | 0.1071116            | 7.044e-5 | 7.498e-6 | 6.41e-6     | 1.995e-5 (turning) | 6.0e-9           | 4.1e-8          | 8.435e-5     | 9.793e-5                 | none                              |
+
+Far boundaries alone (base grids): the ogive at 1.1, 4.1e-9 before and
+2.5e-8 after; the ogive at 1.05, 3.09e-6 and 3.10e-6; the cone at 1.02
+on 100.6 radii, refused before and 2.48e-3 (turning) after; the cone at
+1.01 on 100.6 radii 1.32e-3 both; on the moved family at Mach 1.0, the
+cone 5.12e-4 and the ogive 7.35e-4 both, and at 1.01 refused before and
+3.90e-3 (turning) after. The page serves none of these yet; below 1.05
+all stay refused (B1).
+
+**Case A, the subtip cross-check: the 3-caliber tangent ogive at Mach
+1.2 (r = 8 landed 2026-10-22, 11:37 UTC).** r = 1 to 8: 0.1095230,
+0.1089110, 0.1088724, 0.1088983 (4,400 steps on r = 8). The procedure:
+oscillatory (changes -6.12e-4, -3.86e-5, +2.59e-5), band 3.86e-5; the
+floor 7.6e-6; the far boundaries 1.4e-7 and the cylinder 9.3e-8 (nested
+base grids, corrected rule). **0.1088983 +- 4.65e-5, confirmed** (r = 8 settled by the fitted-window rule after 12,000 more steps, within 4e-11; see the re-review of `dd6c423`). This is a
+validation-style offline number (the driver serves below 1.2); it was
+computed without seeing the subtip work's value.
+
+**The re-review of `dd6c423` (2026-10-22): merge after fixes.** Its
+findings and what was done, one by one.
+
+1. **S1 was half fixed (blocking).** `dampedOscillationBound` fits
+   only windows of at least 10 thinned values (the last third and
+   quarter of the history), so a history shorter than about 30 checks
+   fitted nothing and counted as decaying with a bound of 0. The finer
+   grids, started from the coarser solution, settle in a few checks, so
+   the check was skipped on the grids that set the band. Fixed: a grid
+   is not settled until at least one window is fitted (`fitted` in
+   `OscillationBound`); the solve keeps iterating until one is. The test
+   (`tests/analysis/transonic-drag.test.ts`, after the reviewer's case):
+   the 10-caliber ogive at Mach 1.1, r = 2, 4 and 8 starting paused and
+   then moving away by up to 1e-3. Before the fix the family was served
+   (measured); now r = 2 does not settle. The reviewer's own stub (the
+   drag v (1 + 1e-3 cos(2 pi (check - 6) / 1200)) on r = 2, 4 and 8) was
+   served on `dd6c423` (0.1001125 +- 2.27e-5, 1e-3 from its limit) and
+   is not converged on `0613b3f`, by the re-reviewer's check. (A note of
+   mine outside this record said that stub did not settle even before the
+   fix; that was wrong: my version of it differed.)
+
+   **The certified offline numbers against this rule.** They come from
+   `family.test.ts` (not the driver), whose grids stopped on the
+   settling test. Their recorded histories (`tests/tmp-transonic/
+s1-recheck.md`) have fewer than 30 checks on every grid of the cone
+   at Mach 1.2 and 1.1 and of case A, and 3 on the cone's r = 8 at 1.05
+   (resumed from a checkpoint); only the cone's r = 1 to 4 at 1.05 have
+   fitted windows (bounds 6e-8 to 9e-8 of the drag, decaying). So under
+   the fixed rule these grids are unverified, not refuted. The cone at
+   Mach 1.2 and 1.1 is checked independently: Taylor-Maccoll's exact
+   value lies inside its band (errors +1.90e-6 and -2.61e-6), which a
+   grid stopped 1e-3 from its limit would not give. The cone at 1.05 (r = 8) and case A have no such check: their values stand as recorded but
+   their grids' settling is not confirmed by the fitted-window rule.
+   **Continued since (2026-10-22, 22:36 to 23:47 UTC,
+   `tests/tmp-transonic/continue.test.ts`, results on
+   `claude/wip/results`):** each r = 8 was run on from its saved state
+   (plain LU-SGS, CFL 1000) until a fitted window existed, decaying,
+   within 1e-7 of the drag (31 checks, 12,000 steps). Case A moved by
+   3.9e-11 (bound 2.4e-14): **0.1088983 +- 4.65e-5 is confirmed.** The
+   cone at Mach 1.05 moved by +5.75e-8 (bound 4.4e-9) to 0.10711168:
+   **0.1071117 with a band of 9.808e-5** by the corrected rule (procedure
+   7.059e-5 at order 1.21, floor 7.50e-6, far boundaries 1.995e-5,
+   cylinder 4e-8), against 0.1071116 and 9.793e-5 before; the change is
+   0.06% of the band.
+   Continuing each from its saved state for 30 checks would settle it
+   (some hours each on one core); not done.
+
+2. **The "decaying" branch is not a bound on the moved family.** With
+   the uneven distance ratios of 100.6, 224.2 and 408.7 radii (2.23 then
+   1.82), |b| / (1 - rho) understates every pure power law of exponent
+   0.35 to 2: the allowance over the true remainder is 0.46 at exponent
+   0.35, 0.66 at 0.8, 0.71 at 1, 0.78 at 1.35 and 0.85 at 2, and the rule
+   never refuses there. **So the moved family's Mach 1.0 allowances
+   (5.12e-4 on the cone, 7.35e-4 on the ogive) are not bounds;** on the
+   cone's measured exponent near 1.3 the remainder would be about 6.6e-4,
+   not 5.1e-4. Said where the numbers appear above. On the served family
+   (55.1, 100.6 and 224.2 radii, ratios 1.83 then 2.23) the branch holds:
+   wherever rho is at most 0.6 (exponents from about 1.2) the allowance is
+   1.2 to 1.4 times the true remainder. The cylinder (5, 10, 20
+   calibers, ratios 2 and 2) is exact for a pure power law at m = 0: a
+   ratio of 1.00, with no margin. **Pre-registered next step (written
+   2026-10-22, before any code for it):** the decaying branch is used
+   only where D2 / D1 >= D1 / D0; elsewhere the case is bounded as
+   turning or refused. Its test, before any proposal to serve below Mach
+   1.05: the pure power laws of exponent 0.35 to 3 on every distance set
+   the driver uses, each allowance at least the true remainder, and the
+   six cases of the test above re-evaluated. No code yet.
+
+3. **What the turning bound really assumes.** Its T uses D^-0.35, but
+   that alone does not make it a bound: two parts of opposite sign
+   decaying as D^-0.5 and D^-1 break it (allowance over truth 0.94, 0.74
+   and 0.60 for b = -0.1 a, -0.3 a and -0.55 a), and one-signed D^-0.5 +
+   D^-2 gives 0.96 to 0.97 in the decaying branch. With exponents at or
+   above the measured 0.8 it held in every mix the reviewer tried. The
+   assumption, stated now in the constants' comments, here and in the
+   label: **both parts of the effect decay as D^-0.8 or faster, or what
+   remains beyond the largest domain is no larger than the largest
+   change measured.** The label carries it for every turning allowance
+   (the cone at Mach 1.05, whose far boundaries are turning, 1.995e-5),
+   and for the others where they are most of the band; "assumes its
+   effect keeps decaying" is gone.
+
+4. **The pre-registered test's data, in this record** (base grid,
+   nested domains; m = 7e-6; runs `t-*` on `claude/wip/results` at
+   `e703a02`, evaluated by `s2test-eval.test.ts` there):
+
+   | Case         | C(55.1)   | C(100.6)  | C(224.2)  | C(408.7)  | a         | b         | Rule     | Allowance | C(408.7) - C(100.6) | Margin  |
+   | ------------ | --------- | --------- | --------- | --------- | --------- | --------- | -------- | --------- | ------------------- | ------- |
+   | cone, 1.005  | 0.0945430 | 0.0971910 | 0.0990099 | 0.0993428 | +2.648e-3 | +1.819e-3 | refused  |           | +2.152e-3           |         |
+   | cone, 1.0125 | 0.1025498 | 0.1051750 | 0.1055692 | 0.1055481 | +2.625e-3 | +3.942e-4 | turning  | 8.509e-3  | +3.731e-4           | 8.14e-3 |
+   | cone, 1.025  | 0.1103603 | 0.1102938 | 0.1102547 | 0.1102550 | -6.655e-5 | -3.909e-5 | decaying | 1.018e-4  | -3.877e-5           | 6.30e-5 |
+   | ogive, 1.01  | 0.0246432 | 0.0266810 | 0.0272533 | 0.0272177 | +2.038e-3 | +5.723e-4 | decaying | 8.028e-4  | +5.367e-4           | 2.66e-4 |
+   | ogive, 1.02  | 0.0354020 | 0.0362606 | 0.0361728 | 0.0361739 | +8.586e-4 | -8.778e-5 | turning  | 2.747e-3  | -8.674e-5           | 2.66e-3 |
+   | ogive, 1.03  | 0.0393246 | 0.0391332 | 0.0390980 | 0.0390983 | -1.914e-4 | -3.523e-5 | decaying | 5.018e-5  | -3.497e-5           | 1.52e-5 |
+
+   The smallest margin, 1.5e-5 (the ogive at 1.03), survives a likely
+   settling error of these runs (about 3e-6 on each of the four values),
+   but not a strict worst case (about 1.7e-5, the errors all adding up).
+
+5. **allowNearSonic** is off the page-facing request (`NoseDragRequest`):
+   only the driver's own options carry it, for offline tests.
+6. **Smaller.** `RESIDUAL_PRECISION` is 1e-8 (two-float measured 2.2e-9,
+   a margin of 4.5; 32-bit some 1e-3); `checkPrecision` is required of
+   every engine (the CPU's passes at once); only the grids' own refusals
+   are 'domain' refusals, and any other RangeError is thrown. The
+   reviewer's finding that more noise can turn a refusal into
+   'unmeasurable' stays as disclosed above.
+
+No served number changes (nothing is served below Mach 1.2 yet). The
+recorded numbers that change in meaning, not value: the moved family's
+Mach 1.0 allowances, now stated not to be bounds; and the cone at 1.05
+and case A, whose grids are unconfirmed by the fitted-window rule.
 
 ## Certification plan below Mach 1.2 (written 2026-10-20, before its runs)
+
+(Superseded as a serving rule by the owner's decision of 2026-10-21,
+above. Its runs now validate the procedure, and its rule that the
+procedure is not changed after seeing results still holds.)
 
 The owner's decision: nothing below Mach 1.2 is shown until the
 procedure as it stands (`gridConvergence`, the supersonic page's rule)
@@ -810,14 +2206,17 @@ else be added to it (their largest measured change, once). An
   r = 1 to 16 at Mach 1.1, certified as the cone. (The characteristics
   refuse it at Mach 1.05.)
 - First the cost of r = 16 is measured on its first steps (time per step
-  and memory) and reported before the runs are committed.
+  and memory) and reported before the runs are committed. (Measured: 1.1
+  to 1.6 GB, 1.9 s of CPU per step; the cone's r = 16 certified Mach 1.1,
+  above.)
 
 **Mach 1.05.** The cone's r = 8 and r = 16, certified by the procedure
-alone (no exact reference exists for any nose here: Taylor-Maccoll's
+(r = 8 settled by the fitted-window rule after 12,000 more steps, 5.8e-8 higher: 0.1071117 with a band of 9.808e-5 by the corrected rule; see the re-review of `dd6c423`) alone (no exact reference exists for any nose here: Taylor-Maccoll's
 conical flow is subsonic at the cone's surface, and the characteristics
 refuse the ogives). The far boundaries' change from 100.6 to 224.2
 radii on the base grid (+1.3e-5) and the cylinder's (up to 7e-6) are
-added to the band if above a quarter of it.
+added to the band if above a quarter of it. (Result: r = 1 to 8 already
+give a monotone band, so r = 16 was not needed; certified, above.)
 
 **Mach 1.** Two parts, both needed:
 
@@ -859,6 +2258,28 @@ added to the band if above a quarter of it.
   of period about 22,600 steps on r = 4); until then Mach 1 stays
   refused. Option B (a domain large enough to need no rule) waits on the
   divergence near the axis at 800 radii.
+
+**Additions (written 2026-10-21, before their runs).** The procedure and
+the rules above are unchanged. These runs only give it more cases.
+
+- _The 5-caliber ogive at Mach 1.1 and 1.05._ r = 8 at both, so that
+  each family has four grids (r = 1 to 8). They are judged by the
+  procedure as it stands. Neither Mach number has a reference for this
+  ogive, since the characteristics refuse it below 1.2. At Mach 1.1 the
+  10-caliber ogive (running) is the curved nose with a reference, and at
+  Mach 1.05 no nose has one, as for the cone. On the base grid at each
+  Mach number, the far boundaries (55.1 and 224.2 radii) and the
+  cylinder (5 and 20 calibers) are measured. Their largest change is
+  added to the band if it exceeds a quarter of it. If the procedure
+  returns `unresolved`, the case stays refused; r = 16 would be
+  considered only as at Mach 1.1 on the cone, that is if the finer
+  triple is monotone. (2026-10-21: at Mach 1.1 it is, at order 0.40, so
+  r = 16 is queued.)
+- _The hemisphere at Mach 1.5._ r = 8, to see whether the gap between
+  its extrapolation and the fitted solver's (7.0e-4 of the value at
+  second order) closes as the ellipsoid's did with r = 8. This is not a
+  certification: blunt noses stay unserved below Mach 1.5, and at 1.5
+  the fitted solver serves them.
 
 ## What did not work
 
@@ -911,12 +2332,16 @@ grid unless stated:
 
 ## Open
 
-- **Runs queued, not yet done** (in this order): the cone's r = 8 at
-  Mach 1.05; the ogive at Mach 1 on r = 2; the fitted
-  solver's nj = 80 on the hemisphere at Mach 1.5 and the cone at Mach
-  1.1; the ogive's r = 4 at Mach 1.1 and 1.05; the 2:1 ellipsoid's r = 8
-  at Mach 1.2. The job scripts save their state every 10 minutes and
-  resume from it, so each survives the container's restarts.
+- **Runs queued or running** (each saves its state every 10 minutes and
+  resumes from it, so it survives the container's restarts):
+  - paused at the container restart of 2026-10-22 (checkpointed, to be
+    restarted when the machine is otherwise idle): the 10-caliber
+    ogive's r = 16 at Mach 1.1 (2,200 steps) and the 5-caliber ogive's
+    r = 16 at 1.1 (800 steps);
+  - running: the 3-caliber ogive's r = 8 at Mach 1.2 (the cross-check
+    of the subtip work's case A), and the corrected allowance rule's
+    pre-registered test (`queue-s2test.txt`);
+  - the hemisphere's r = 8 at Mach 1.5 (the plan's additions, above).
 - **The stagnation line on blunt noses**: the captured shock's
   pointwise total-pressure error (above); removing it needs the shock
   fitted or aligned with the cells on the axis.
@@ -927,16 +2352,18 @@ grid unless stated:
   radii.
 - **First order at Mach 1.05** on the cone: consistent with the captured
   bow shock setting the pressure level, not isolated.
-- **GPU**: the far-field boundary kind, and so the transonic domain, is on
-  the CPU engine only.
+- **GPU**: the transonic domain runs on the GPU in two-float arithmetic
+  (steps 3 to 5), with 2 red-black sweeps; only SwiftShader has run it,
+  and its margin beyond r = 2 is not measured on the GPU.
 - **Blunt noses meeting the cylinder at an angle** (blunted cones) are
   refused by the C grid; the sharp H grid takes cones and ogives.
 - **The base**: the sting stands for whatever lies behind the nose; a
   subsonic base (blunt noses with short cylinders near Mach 1.2) belongs
   to the total-drag work, and the quantity here does not depend on it.
-- **Serving**: not on the drag page. It needs the procedure's band at
-  every Mach number served (four grids each), the far-boundary
-  extrapolation at Mach 1 made part of the procedure, the stagnation-line
-  error resolved or bounded for blunt noses, and a cost the page can
-  afford (Mach 1 needs 17,850 plain steps on the base grid and 51,700 on
-  r = 2).
+- **Serving**: the driver and the router are built ("The path to the
+  page", steps 5 and 6); the page's wiring is the interface's. Below
+  Mach 1.05 nothing is served (B1) until the corrected allowance rule
+  passes its test and the owner decides; Mach 1 also needs a four-grid
+  family on the moved domain (about 300,000 steps on r = 8). Blunt noses
+  wait on nested domains for the C grid and on the stagnation line's
+  error.
