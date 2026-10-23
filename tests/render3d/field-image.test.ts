@@ -59,6 +59,13 @@ describe('the field image', () => {
     const p = rayFlow(x, 0.2 + 0.05 * x).p;
     expect(wall.cp[32]).toBeCloseTo((p - FREE.p) / q, 2);
     expect(wall.min).toBeLessThanOrEqual(wall.max);
+    // A body longer than the field: nothing computed past the field's end.
+    const longer = wallPressure(field, 6, 61);
+    const end = field.x[field.ni]!;
+    for (let n = 0; n < 61; n++) {
+      const x = (6 * n) / 60;
+      expect(Number.isNaN(longer.cp[n]!), `x ${x}`).toBe(x > end + 1e-9);
+    }
   });
 
   it('makes streaks: neighbours along them alike, across them not', () => {

@@ -415,8 +415,9 @@ its code). What makes that look, and what bowshock takes from it:
   the colour range (`ISO_SURFACES` = 40 asked; round steps give between
   half and all of that), each an iso-surface of the computed field,
   revolved; where the cutaway cuts them, each sheet's edge is a line of
-  its colour, so neighbouring sheets read as separate. The legend says
-  how many and how far apart ("28 shells, every 0.01 from 1.66 to 1.93").
+  its colour, so neighbouring sheets read as separate. Details ("The 3D
+  picture") and the PNG say how many and how far apart ("28 shells, every
+  0.01 from 1.66 to 1.93").
 - **The shock** is one thin pale sheet where the solver fits it (the
   density's jump), brightest edge-on as in a schlieren picture, with a
   crisp white line where the wedge cuts it.
@@ -429,14 +430,16 @@ its code). What makes that look, and what bowshock takes from it:
   the cutaway), not a mat of 1-pixel lines. The page's note and legend sit
   compact in the bottom left corner, not over the flow. The legend is
   short (the owner, 2026-10-23): the colour bar and its range, the two
-  honesty lines ("the axisymmetric solution, revolved; fins are not in the
-  airflow"; "hatched: behind the base, not simulated") and one line for
-  each layer shown that needs it ("texture follows the computed flow";
-  "body: computed surface pressure, blue low, red high"); a button folds
-  it to its bar. Beside it the airflow's note box says only what the
-  legend does not (the rocket's parts the 3D view cannot draw), so the
-  base line is said once; the drag hint ("Drag to turn it; 0 resets") is
-  the legend's last line. The rest (the free stream's value, the shells' count and
+  honesty lines of section 6.2 ("the axisymmetric solution, revolved;
+  fins are not in the airflow, their drag computed separately";
+  "hatched: behind the base, not simulated"), always shown, and one line
+  for each layer shown that needs it ("texture follows the computed
+  flow"; "body: computed surface pressure, blue low, red high";
+  "particles move with the computed flow; start points random") and the
+  drag hint ("Drag to turn it; 0 resets"). A button folds the layer lines
+  and the hint away; the honesty lines stay, folded or not. Beside it the
+  airflow's note box says only what the legend does not (the rocket's
+  parts the 3D view cannot draw), so the base line is said once. The rest (the free stream's value, the shells' count and
   spacing, the cells beyond the bar, what black means, each layer's
   numbers and source) is in Details under "The 3D picture", and the PNG
   keeps the fuller text.
@@ -458,7 +461,7 @@ carries direction and nothing else, and the legend says so.
 | The field's image (`src/render3d/field-image.ts`, `field-image-gpu.ts`) | not drawn itself: the texture the faces and the sheets' fibres sample                   | the dual mesh rasterised on the GPU: velocity, the value shown, the schlieren, linear across each quad; square texels, about as many across as the view (512 to 1280, half in a draft)                                                                                                                                                                   |
 | Fibres on the slice (key 7: fibres)                                     | a fine grain along the flow, coloured by the quantity                                   | line integral convolution: each texel the mean of white noise along the streamline through it, traced both ways (32 steps of a grain each, second order) in the image's velocity; the noise's grains are at least a screen pixel (texels per pixel of the fitted view, 1 to 6), so a small face (a phone, the live view's draft) shows fibres, not grain |
 | Fibres on the sheets                                                    | streaks along each sheet's meridians, strongest where the flow runs along the sheet     | the flow has no swirl, so on a sheet of revolution it runs along the meridians; streak noise laid along them, its strength the computed velocity's share along the sheet                                                                                                                                                                                 |
-| Schlieren (key 7: schlieren)                                            | black to white: where the density changes fast                                          | log10 of the density gradient's magnitude times the calibre over the free stream's density, from the grid's own metric (central differences), 5th to 99.5th percentile; the fitted shock is a jump, so it is the region's white edge                                                                                                                     |
+| Schlieren (key 7: schlieren)                                            | black to white: where the density changes fast                                          | log10 of the density gradient's magnitude times the calibre over the free stream's density, from the grid's own metric (central differences), 5th to 99.5th percentile; the shock's jump is not in it (the computed region starts at the shock, which is fitted), and the shock is drawn separately as a line where the solver fits it (key 5)           |
 | The body's colour                                                       | the computed surface pressure coefficient, blue (suction) through light grey (0) to red | the pressure in the cells on the wall, along the body; the fins and the base stay grey (the fins are not in the airflow; nothing is computed behind the base)                                                                                                                                                                                            |
 | Particles (key 8, off by default)                                       | 2500 short streaks moving with the flow                                                 | the computed velocity, second order on the dual mesh; they start again at random points inside the region when they leave it (the starts are not the solution, the motion is); animated at most half the time, the live share while the solver runs                                                                                                      |
 

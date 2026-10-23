@@ -10,7 +10,7 @@
  * Layers (each switchable; keys of ./controls.ts):
  *  1 the rocket, solid or as a wireframe; the fins are geometry only (the
  *    flow solved is the body's; the fins' drag is computed separately);
- *  2 the field on a slice: the faces of a cutaway quarter, a plane
+ *  2 the field on a slice: a face of the 150 degree cutaway, a plane
  *    through the axis, or a plane across it;
  *  3 streamlines, a few lit tubes, seeded upstream in the free stream,
  *    straight to the shock, then traced through the field;
@@ -88,7 +88,7 @@ export interface SceneLayers {
   readonly shock: boolean;
   /** Iso-surfaces as lit, opaque shells (else thin glowing ones). */
   readonly solidShells: boolean;
-  /** A quarter cut away from the surfaces and streamlines, facing the default view. */
+  /** A wedge (CUT_DEGREES) cut away from the surfaces, facing the default view. */
   readonly cutaway: boolean;
   readonly box: boolean;
   /** The text readout, legend and notes drawn into the scene. */
@@ -212,8 +212,7 @@ const SHELL_SECTORS = 144;
 const DRAFT_SHELL_SECTORS = 64;
 /**
  * The cutaway: an opening of CUT_WIDTH from azimuth `cutStart` towards +z,
- * centred where the old quarter cut was (from the first fin, a quarter
- * turn on), which faces the default view.
+ * centred an eighth of a turn past the first fin, facing the default view.
  */
 const CUT_WIDTH = (CUT_DEGREES * Math.PI) / 180;
 
@@ -1342,7 +1341,12 @@ export class FlowScene3D {
     const m = Math.max(Math.abs(wall.min), Math.abs(wall.max), 1e-6);
     const colours = new Float32Array(4 * PALETTE_SIZE);
     for (let k = 0; k < PALETTE_SIZE; k++) {
-      colours.set([...PRESSURE_PALETTE(0.5 + (0.5 * wall.cp[k]!) / m), 1], 4 * k);
+      const cp = wall.cp[k]!;
+      // Where the solver computed nothing (past a field that ends before the base): the body's grey.
+      colours.set(
+        Number.isNaN(cp) ? [0.8, 0.81, 0.83, 1] : [...PRESSURE_PALETTE(0.5 + (0.5 * cp) / m), 1],
+        4 * k,
+      );
     }
     this.device.queue.writeBuffer(this.paletteBuffer, 16 * PALETTE_SIZE, colours);
     this.bodyCp = { min: -m, max: m };
@@ -2464,7 +2468,7 @@ export function layerNotes(s: SceneScale): string[] {
   } else if (s.faces === 'schlieren' && s.schlieren !== null) {
     notes.push(
       `slice: schlieren, brightness log10(|grad density| x calibre / free-stream density), ` +
-        `${s.schlieren.lo.toFixed(1)} black to ${s.schlieren.hi.toFixed(1)} white; the shock: its white edge`,
+        `${s.schlieren.lo.toFixed(1)} black to ${s.schlieren.hi.toFixed(1)} white; the shock is not in it (drawn as a line, key 5)`,
     );
   }
   if (s.bodyCp !== null) {

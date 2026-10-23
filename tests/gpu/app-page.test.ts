@@ -97,6 +97,22 @@ describe('the app page', () => {
     expect(truth).toContain('Hatched: behind the base, not simulated.');
     expect(truth).toContain('their drag computed separately');
     if (shown3d) expect(text('#flow-note')).not.toContain('Hatched');
+    if (shown3d) {
+      // Folding the legend hides its layer lines, never the honesty lines (0017 section 6.2).
+      const win = frame.contentWindow as Window & typeof globalThis;
+      const fold = doc.querySelector('.legend__fold') as HTMLButtonElement;
+      const shownNow = (el: Element | null) =>
+        el !== null && win.getComputedStyle(el).display !== 'none';
+      fold.click();
+      expect(fold.getAttribute('aria-expanded')).toBe('false');
+      const honest = doc.querySelector('.legend__note:not(.legend__more)');
+      expect(shownNow(honest)).toBe(true);
+      expect(honest?.textContent).toContain('not in the airflow');
+      expect(honest?.textContent).toContain('Hatched: behind the base, not simulated.');
+      expect(shownNow(doc.querySelector('.legend__more'))).toBe(false);
+      fold.click();
+      expect(shownNow(doc.querySelector('.legend__more'))).toBe(true);
+    }
     // The phone's first screen (the sheet under the pinned line): what the picture is, and a cross.
     expect(text('.sheet__note')).toMatch(/The axisymmetric solution.*not in the airflow/);
     expect(text('.sheet__note')).toContain('Hatched: behind the base, not simulated.');

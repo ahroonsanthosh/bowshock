@@ -100,7 +100,15 @@ fn field_at(x: f32, r: f32) -> vec4f {
   if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
     return vec4f(0.0, 0.0, 0.0, -1.0);
   }
-  return textureSampleLevel(field_tex, clamp_sampler, uv, 0.0);
+  let f = textureSampleLevel(field_tex, clamp_sampler, uv, 0.0);
+  if (f.w >= 0.0) {
+    return f;
+  }
+  // At the region's edge the linear sample mixes in the outside (w = -1,
+  // its values 0): the nearest texel instead, inside or not.
+  let size = vec2f(textureDimensions(field_tex));
+  let q = clamp(vec2i(floor(uv * size)), vec2i(0), vec2i(size) - vec2i(1));
+  return textureLoad(field_tex, q, 0);
 }
 
 fn image_uv(x: f32, r: f32) -> vec2f {

@@ -57,7 +57,7 @@ export function layerSentences(s: SceneScale): string[] {
     out.push(
       `The slice is a schlieren: brightness is the density gradient on a log scale, ` +
         `${s.schlieren.lo.toFixed(1)} to ${s.schlieren.hi.toFixed(1)} (log10 of the gradient times ` +
-        'the calibre over the free stream’s density); the shock is its white edge.',
+        'the calibre over the free stream’s density); the shock’s jump is not in it (the computed region starts at the shock); the shock is drawn separately, as a line where the solver fits it (key 5).',
     );
   }
   if (s.bodyCp !== null) {
@@ -82,16 +82,20 @@ export function layerSentences(s: SceneScale): string[] {
  * simulated, all in real values.
  */
 export function sceneLegend(s: SceneScale): LegendScale {
-  // Short (the owner, 2026-10-23): the two honesty lines and a line for
-  // each layer shown that needs one; the rest is in Details
+  // Short (the owner, 2026-10-23): the two honesty lines, always shown
+  // (0017 section 6.2), and a line for each layer shown that needs one,
+  // which the legend's fold hides; the rest is in Details
   // (sceneLegendDetails) and in the PNG.
-  const notes = [
+  const honest = [
     // The advisor's item 10: the look is FluidX3D's, a 3D solver's; this flow is not 3D.
     'The axisymmetric solution, revolved; fins are not in the airflow, their drag computed separately.',
+    'Hatched: behind the base, not simulated.',
+  ];
+  const layers = [
     s.faces === 'fibres' ? 'Texture follows the computed flow.' : '',
     s.faces === 'schlieren' ? 'Slice: computed density gradient, light where steep.' : '',
     s.bodyCp !== null ? 'Body: computed surface pressure, blue low, red high.' : '',
-    'Hatched: behind the base, not simulated.',
+    s.particles ? 'Particles move with the computed flow; start points random.' : '',
     'Drag to turn it; 0 resets.',
   ];
   return {
@@ -101,7 +105,8 @@ export function sceneLegend(s: SceneScale): LegendScale {
     min: s.min,
     max: s.max,
     gradient: paletteGradient(s.colour),
-    note: notes.filter((n) => n !== '').join(' '),
+    note: honest.join(' '),
+    more: layers.filter((n) => n !== '').join(' '),
   };
 }
 

@@ -1110,10 +1110,11 @@ td.num {
 .legend__fold:hover {
   color: var(--text);
 }
-.legend:not(:has(.legend__note:not(:empty))) .legend__fold {
+.legend:not(:has(.legend__more:not(:empty))) .legend__fold {
   display: none;
 }
-.legend--folded .legend__note,
+/* Folded: the layer notes go; the honesty lines (.legend__note) stay. */
+.legend--folded .legend__more,
 .legend--folded .legend__channel {
   display: none;
 }

@@ -77,7 +77,7 @@ export const SCENE_KEYS: readonly SceneKey[] = [
     action: 'scene-cutaway',
     key: '6',
     label: 'Cutaway',
-    description: 'A quarter of the flow cut away, to see the rocket',
+    description: 'A wedge of the flow cut away, to see the rocket',
     pressed: (s) => s.getLayers().cutaway,
   },
   {

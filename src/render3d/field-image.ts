@@ -123,8 +123,9 @@ export function fieldImageMesh(
 /**
  * The pressure coefficient on the body's wall, as the solver has it (the
  * cells next to the wall), at `count` points evenly spaced from x = 0 to
- * x = length; ahead of the first cell, the first cell's; past the last,
- * the last's.
+ * x = length; ahead of the first cell, the first cell's; past the last
+ * cell's centre to the field's end, the last's; beyond the field's end
+ * (a field that stops before the base), NaN: not computed there.
  */
 export function wallPressure(
   field: MeridionalField,
@@ -144,6 +145,10 @@ export function wallPressure(
   let k = 0;
   for (let n = 0; n < count; n++) {
     const x = (length * n) / Math.max(count - 1, 1);
+    if (x > field.x[ni]! + 1e-9 * length) {
+      cp[n] = NaN;
+      continue;
+    }
     while (k + 1 < xs.length && xs[k + 1]! < x) k++;
     if (x <= xs[0]!) cp[n] = cps[0]!;
     else if (k + 1 >= xs.length) cp[n] = cps[cps.length - 1]!;

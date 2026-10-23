@@ -29,20 +29,26 @@ describe("the 3D view's legend", () => {
   it('is short: the two honesty lines and a line for each layer shown', () => {
     const legend = sceneLegend(SCALE);
     if (legend.kind !== 'palette') throw new Error(legend.kind);
+    // The honesty lines, always shown; the layers' lines, which the fold hides.
     expect(legend.note).toBe(
       'The axisymmetric solution, revolved; fins are not in the airflow, their drag computed separately. ' +
-        'Texture follows the computed flow. ' +
+        'Hatched: behind the base, not simulated.',
+    );
+    expect(legend.more).toBe(
+      'Texture follows the computed flow. ' +
         'Body: computed surface pressure, blue low, red high. ' +
-        'Hatched: behind the base, not simulated. ' +
         'Drag to turn it; 0 resets.',
     );
+    const moving = sceneLegend({ ...SCALE, particles: true });
+    if (moving.kind !== 'palette') throw new Error(moving.kind);
+    expect(moving.more).toContain('Particles move with the computed flow; start points random.');
     const plain = sceneLegend({ ...SCALE, faces: null, bodyCp: null });
     if (plain.kind !== 'palette') throw new Error(plain.kind);
     expect(plain.note).toBe(
       'The axisymmetric solution, revolved; fins are not in the airflow, their drag computed separately. ' +
-        'Hatched: behind the base, not simulated. ' +
-        'Drag to turn it; 0 resets.',
+        'Hatched: behind the base, not simulated.',
     );
+    expect(plain.more).toBe('Drag to turn it; 0 resets.');
   });
 
   it('gives the rest in Details: free stream, shells, cells beyond the bar, each layer', () => {
