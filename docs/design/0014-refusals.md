@@ -1676,3 +1676,42 @@ pressures are compared.
   band-setting under (k), on M_0 and p_0. R&M 3427 fig. 13's hole 4
   ((m)) stays named; whether it is used, given the same upstream
   influence, is for 0019 section 3.4 to decide before it sets anything.
+
+**2026-10-23 (s): W7's F4 registrations narrowed** (the coordinator's
+decisions on W7's reports of R&M 3323, Johnston and RM L8B13, written
+before anything further is read; each narrows (k), (l) or (m), none
+widens them).
+
+1. _R&M 3427 fig. 13's hole 4 ((m))._ It stays named and read once. It is
+   not needed for the band's coordinates, which are M_0 and p_0 ((r);
+   0019 section 3.4), and it lies 0.1 in ahead of the base, inside the
+   corner's upstream influence near Mach 1. Whether it serves at all is
+   left open. The size of the widening for a wedge's inclined faces
+   against a plate's parallel ones is decided and written in 0019 section
+   3.4 before any F4 code, not now.
+2. _R&M 3323 fig. 5 becomes a check that sets nothing._ Its solid curves
+   for h/c 0.06 (ref. 39) and 0.10 (ref. 38) meet near M 1.00, Cp_b -0.77,
+   and two nearly parallel lines leave the meeting point. The ink does not
+   show which is which, so the 0.06 curve beyond M 1.0 cannot be assigned.
+   A partial reading, or an envelope of the two, would choose the quantity
+   after the ink had been seen. By the precedent of (g) and (r), fig. 5
+   sets nothing; no value of it was recorded. Fig. 4 stays registered
+   (read once, a blind second reading needed). Fig. 4's three heavy
+   symbols at h/c 0.14 with no legend entry stay "source not traced" and
+   set nothing.
+3. _Johnston figs. 4 to 9, 11 and 12 are removed from (k)'s
+   registration._ They are lift, moment and faired cross-plots of the same
+   pressure points as figs. 4, 7 and 10, not independent data, and F4 and
+   F5 use neither lift nor moment. They are not read. Figs. 10(a), 10(b)
+   and 10(c) stay (read once).
+4. _RM L8B13: (k)'s "fig. 4(c) to 4(e) (the wedge's base and sides)" was
+   a slip._ Fig. 4(d) is the 45 deg sweptback cylinder. The registration
+   is limited to figs. 4(c) (the wedge's base) and 4(e) (its sides).
+   Marks the legend does not explain (fig. 4(c)'s "x" marks and dashes)
+   are recorded as untraced and set nothing. Figs. 4(c) and 4(e) are then
+   read once, by the same method, explained symbols only.
+
+_A correction to (r), recorded here as well._ The height of the envelope
+of figs. 47 to 52 is 0.02 to 0.19 in p/H per panel and 0.14 to 0.23 over a
+figure's five sweeps. (r) states both; the coordinator's brief had
+"0.14 to 0.22".

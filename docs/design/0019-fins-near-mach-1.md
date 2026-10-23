@@ -1031,20 +1031,23 @@ F2 last.
    - a check that sets nothing: R&M 3348 figs. 47 to 52 (10.7 (r): the
      registered quantity, p/H at x/c 0.995 per incidence, cannot be read;
      the envelope read instead was defined after the ink was seen);
-   - R&M 3323 figs. 4 and 5: sources traced (2026-10-23; refs. 31 to 35
-     and 38 to 41, of which 31, 34, 35 and 38 are counted once with their
-     own reports); fig. 4 read once (61 symbols; three heavy triangles at
-     h/c 0.14 of untraced source, set nothing); fig. 5 not read, stopped:
-     its h/c 0.10 and 0.06 solid curves meet near M 1.0 and cannot be told
-     apart beyond it (`method_rm3323_figs4_5.md`), the coordinator to
-     decide;
-   - Johnston: figs. 10(a), 10(b) and 10(c) read once (59, 98 and 57
-     symbols); figs. 4 to 9, 11 and 12 (lift, moment, and cross-plots of
-     the same points) not read, the coordinator to say whether they are
-     needed (`method_johnston_figs4_12.md`);
-   - RM L8B13 fig. 4: opened, not read; (k) names "fig. 4(c) to 4(e) (the
-     wedge's base and sides)" but fig. 4(d) is the swept cylinder, so
-     which was meant is for the coordinator (`method_rml8b13_fig4.md`).
+   - R&M 3323 fig. 4: sources traced (2026-10-23; refs. 31 to 35 and 38
+     to 41, of which 31, 34, 35 and 38 are counted once with their own
+     reports); read once (61 symbols), a blind second to arrange; its
+     three heavy symbols at h/c 0.14 have no legend entry, stay "source
+     not traced" and set nothing (0014 10.7 (s));
+   - R&M 3323 fig. 5: a check that sets nothing (10.7 (s)): its h/c 0.10
+     and 0.06 solid curves cannot be told apart beyond M 1.0; not read;
+   - Johnston figs. 10(a), 10(b) and 10(c): read once (59, 98 and 57
+     symbols), a blind second to arrange; figs. 4 to 9, 11 and 12 removed
+     from the registration (10.7 (s)), not read;
+   - RM L8B13: limited to figs. 4(c) (the wedge's base) and 4(e) (its
+     sides) (10.7 (s); fig. 4(d) is the swept cylinder); marks its legend
+     does not explain set nothing; to be read once
+     (`method_rml8b13_fig4.md`);
+   - R&M 3427 fig. 13's hole 4: left open (10.7 (s)); the size of the
+     wedge-against-plate widening is decided in section 3.4 before any F4
+     code.
 
    Then `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the
    data (each set's points inside the band, the step at 1.5), the record.

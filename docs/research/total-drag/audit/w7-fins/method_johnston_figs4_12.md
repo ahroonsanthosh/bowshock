@@ -139,3 +139,8 @@ read at all, and whether F4 or F5 needs figs. 4 and 7 (lift and moment
 are not in either term), is left to the coordinator.
 
 Read once (figs. 10(a), (b) and (c)).
+
+**Status, 2026-10-23 (0014 10.7 (s)).** Figs. 4 to 9, 11 and 12 are
+removed from the registration (lift, moment and cross-plots of the same
+points, not used by F4 or F5) and are not read. Figs. 10(a), 10(b) and
+10(c) stay, read once, a blind second reading needed.

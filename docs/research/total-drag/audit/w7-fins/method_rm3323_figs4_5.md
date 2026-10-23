@@ -155,3 +155,9 @@ D06); they may be ref. 31's half circles, drawn filled as a flight
 (wing-flow) test. A possibility only: they stay "source not traced".
 
 Read once (fig. 4); fig. 5 not read.
+
+**Status, 2026-10-23 (0014 10.7 (s)).** Fig. 5 is a check that sets
+nothing (its 0.06 and 0.10 solid curves cannot be told apart beyond M
+1.0); it is not read. Fig. 4 stays registered, read once, a blind second
+reading needed. Its three heavy symbols at h/c 0.14 stay "source not
+traced" and set nothing.
