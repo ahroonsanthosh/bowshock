@@ -218,6 +218,12 @@ const ISO_SURFACES = 40;
  * shock; how long a moving streak takes to run its length, seconds.
  */
 const STREAKS_FAST = 60_000;
+/**
+ * A software adapter's frame counted this many times its wall time in the
+ * live pacing: it runs on all the CPU's cores at once, the solver's too
+ * (tests/gpu/render3d-cost.test.ts measures what it takes from the solver).
+ */
+const SOFTWARE_FRAME_SHARE = 2;
 /** How opaque the rocket is drawn where streaks or sheets stand in front of it. */
 const BODY_SEEN_THROUGH = 0.6;
 /** The first view this much closer than the one that fits the whole region. */
@@ -611,8 +617,12 @@ export class FlowScene3D {
   /** The field's image: its box, and the schlieren's scale. */
   private imageBox: ImageBox | null = null;
   schlieren: SchlierenScale | null = null;
+  /** Whether the field's image has its fibres (built only while the slice shows them). */
+  private fibresBuilt = false;
   /** The dense streaks (key 8): traced on the GPU; how many; the moving ones' timer. */
   private streakCount: number;
+  /** Frames drawn on the CPU (a software adapter, its frames copied to the page). */
+  private readonly software: boolean;
   private streaksStale = true;
   private particleTimer: ReturnType<typeof setTimeout> | null = null;
   /** The body's surface pressure coefficient, its least and largest, when coloured by it. */
@@ -667,7 +677,8 @@ export class FlowScene3D {
     options: FlowScene3DOptions,
   ) {
     // Fewer streaks where frames are drawn on the CPU (a software adapter's copy).
-    this.streakCount = options.presentation === 'canvas' ? STREAKS_FAST : STREAKS_SOFTWARE;
+    this.software = options.presentation !== 'canvas';
+    this.streakCount = this.software ? STREAKS_SOFTWARE : STREAKS_FAST;
     this.pixelRatio =
       options.pixelRatio ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
     this.units = options.units ?? {};
@@ -767,7 +778,8 @@ export class FlowScene3D {
     const box = this.imageBox;
     if (box === null || this.geometry === null) return;
     this.streaks.trace(this.image.field, {
-      count: this.streakCount,
+      // A quarter while live on a slow adapter (draft geometry): the flow changes every frame.
+      count: this.geometryDraft ? Math.round(this.streakCount / 4) : this.streakCount,
       steps: STREAK_STEPS,
       step: STREAK_STEP * (box.xMax - box.xMin),
       phase,
@@ -923,6 +935,9 @@ export class FlowScene3D {
     if (before.cutaway !== this.layers.cutaway) {
       this.geometryDirty = true;
       this.streaksStale = true;
+    }
+    if (this.layers.slice && this.layers.faces === 'fibres' && !this.fibresBuilt) {
+      this.geometryDirty = true;
     }
     const g = this.geometry;
     if (
@@ -1397,7 +1412,11 @@ export class FlowScene3D {
     const viewWidth = this.viewRect?.width ?? this.canvas.width;
     const grain = Math.min(Math.max(width / (0.7 * viewWidth), 1), 6);
     // Steps of a grain each: fibres about the same length on screen whatever the grain.
-    this.image.update(mesh, width, height, draft ? 16 : 32, grain, grain);
+    // The fibres (a line integral convolution, the image's dearest pass)
+    // only when the slice shows them; built when it comes to.
+    const fibres = this.layers.slice && this.layers.faces === 'fibres';
+    this.image.update(mesh, width, height, draft ? 16 : 32, grain, grain, fibres);
+    this.fibresBuilt = fibres;
     this.imageBox = box;
     this.schlieren = mesh.schlieren;
     this.streaks.setEdges(regionEdges(g.mesh, box.xMin, box.xMax));
@@ -1582,6 +1601,10 @@ export class FlowScene3D {
         ))
       : this.pipelines;
     const started = performance.now();
+    // When the work queued before this frame (the solver's) is done: from
+    // here on, the GPU's time is the frame's, including the field's image,
+    // its fibres and the streaks traced for it below.
+    const reached = this.device.queue.onSubmittedWorkDone().then(() => performance.now());
     if (
       this.geometryDirty ||
       (draftGeometry ? !this.geometryDraft : this.geometryDraft && !draft)
@@ -1903,7 +1926,6 @@ export class FlowScene3D {
     }
     pass.end();
     // When the queue has done the work before this frame, and this frame.
-    const reached = this.device.queue.onSubmittedWorkDone().then(() => performance.now());
     const submitted = performance.now();
     this.device.queue.submit([encoder.finish()]);
     const done = this.device.queue.onSubmittedWorkDone().then(() => performance.now());
@@ -2057,7 +2079,10 @@ export class FlowScene3D {
   private async liveFrame(): Promise<void> {
     await this.readSource();
     await this.render();
-    const cost = this.lastFrameMs;
+    // On a software adapter a frame is drawn on all the CPU's cores, which
+    // the solver needs too: its wall time undercounts what it takes from
+    // the solver, so it is counted SOFTWARE_FRAME_SHARE times over.
+    const cost = this.lastFrameMs * (this.software ? SOFTWARE_FRAME_SHARE : 1);
     this.scheduleLive(Math.max(1000 / MAX_LIVE_FPS, (cost * (1 - this.liveDuty)) / this.liveDuty));
   }
 

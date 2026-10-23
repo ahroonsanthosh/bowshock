@@ -117,6 +117,8 @@ export class FieldImage {
     steps: number,
     stepLength = 0.8,
     grain = 1,
+    /** Whether the fibres are wanted (the slice shows them): else only the field's image. */
+    fibres = true,
   ): void {
     const device = this.device;
     if (this.field.width !== width || this.field.height !== height) {
@@ -166,6 +168,12 @@ export class FieldImage {
     raster.setIndexBuffer(indices, 'uint32');
     raster.drawIndexed(mesh.indices.length);
     raster.end();
+    if (!fibres) {
+      device.queue.submit([encoder.finish()]);
+      vertices.destroy();
+      indices.destroy();
+      return;
+    }
     const group = device.createBindGroup({
       layout: this.licPipeline.getBindGroupLayout(0),
       entries: [
