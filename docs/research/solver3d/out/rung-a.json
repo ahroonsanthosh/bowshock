@@ -1,0 +1,240 @@
+{
+  "date": "2026-10-23T22:10:31.272Z",
+  "engine": "CPU, double",
+  "cases": [
+    {
+      "case": "3-caliber tangent ogive, Mach 2 (sharp, H grid)",
+      "grid2D": "171 x 20",
+      "fit": {
+        "converged": true,
+        "iterations": 2112,
+        "maxSpeed": 9.93669986024125e-13
+      },
+      "residual2D": {
+        "first": 7.414131600732317,
+        "afterFit": 3.288538360279674e-12,
+        "final": 2.770427343047972e-12,
+        "finalOverFirst": 3.7366848772610515e-13,
+        "steps": 10500
+      },
+      "startColumn": 163,
+      "startX": 3.171430425343971,
+      "layouts": [
+        {
+          "layout": "K = 1",
+          "identityConverged": 1.618524975243397e-15,
+          "identityUnconverged": 1.2042896801979054e-15,
+          "stateDifference": 3.552713678800501e-15,
+          "wOverSoundSpeed": 0,
+          "steps3D": 200,
+          "residual3D": {
+            "start": 6.452379875545112e-15,
+            "end": 5.121363250550276e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 4",
+          "identityConverged": 1.33759631813269e-15,
+          "identityUnconverged": 1.9183636559163274e-15,
+          "stateDifference": 3.1086244689504383e-15,
+          "wOverSoundSpeed": 0,
+          "steps3D": 400,
+          "residual3D": {
+            "start": 7.119173526488655e-15,
+            "end": 3.866613680362879e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 16",
+          "identityConverged": 1.337596318132689e-15,
+          "identityUnconverged": 1.918363655916325e-15,
+          "stateDifference": 4.6629367034256575e-15,
+          "wOverSoundSpeed": 1.093478459613281e-15,
+          "steps3D": 0,
+          "residual3D": {
+            "start": 8.674954366728364e-15,
+            "end": 9.644157700202032e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 6, non-uniform",
+          "identityConverged": 1.618524975243397e-15,
+          "identityUnconverged": 1.2042896801979054e-15,
+          "stateDifference": 4.6629367034256575e-15,
+          "wOverSoundSpeed": 1.2024674876166704e-15,
+          "steps3D": 0,
+          "residual3D": {
+            "start": 9.441209455375373e-15,
+            "end": 1.667847507398042e-14
+          },
+          "pass": true
+        }
+      ],
+      "aPrime": {
+        "steps": 1000,
+        "thetaVariation": 3.1086244689504383e-15,
+        "pass": true
+      },
+      "seconds": 209.23
+    },
+    {
+      "case": "3:1 ellipsoid, Mach 2 (blunt, C grid)",
+      "grid2D": "66 x 20",
+      "fit": {
+        "converged": true,
+        "iterations": 4760,
+        "maxSpeed": 9.942329718519006e-13
+      },
+      "residual2D": {
+        "first": 12.735778090583507,
+        "afterFit": 8.74061359962018e-13,
+        "final": 8.74061359962018e-13,
+        "finalOverFirst": 6.863038549708051e-14,
+        "steps": 0
+      },
+      "startColumn": 55,
+      "startX": 1.6075359330420291,
+      "layouts": [
+        {
+          "layout": "K = 1",
+          "identityConverged": 6.929164077603592e-16,
+          "identityUnconverged": 9.998611891499612e-16,
+          "stateDifference": 3.749485612986217e-13,
+          "wOverSoundSpeed": 0,
+          "steps3D": 200,
+          "residual3D": {
+            "start": 5.009701578936305e-14,
+            "end": 5.218421884381788e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 4",
+          "identityConverged": 9.42756240505288e-16,
+          "identityUnconverged": 1.1352449969945401e-15,
+          "stateDifference": 3.7532388518380546e-13,
+          "wOverSoundSpeed": 0,
+          "steps3D": 200,
+          "residual3D": {
+            "start": 5.056206896989219e-14,
+            "end": 5.692611405928986e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 16",
+          "identityConverged": 2.4866912407288593e-15,
+          "identityUnconverged": 1.1352449969945387e-15,
+          "stateDifference": 3.7532388518380546e-13,
+          "wOverSoundSpeed": 6.298656222483726e-16,
+          "steps3D": 200,
+          "residual3D": {
+            "start": 5.0882604791036866e-14,
+            "end": 9.411574242108417e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 6, non-uniform",
+          "identityConverged": 1.6168049514408373e-15,
+          "identityUnconverged": 9.998611891499612e-16,
+          "stateDifference": 3.7569920906898927e-13,
+          "wOverSoundSpeed": 6.075911687156108e-16,
+          "steps3D": 200,
+          "residual3D": {
+            "start": 5.116969502750046e-14,
+            "end": 1.7944734526357174e-14
+          },
+          "pass": true
+        }
+      ],
+      "aPrime": {
+        "steps": 1000,
+        "thetaVariation": 2.6272671962866384e-15,
+        "pass": true
+      },
+      "seconds": 81.439
+    },
+    {
+      "case": "5 deg cone, Mach 1.3",
+      "grid2D": "69 x 20",
+      "fit": {
+        "converged": true,
+        "iterations": 1737,
+        "maxSpeed": 9.95546605450044e-13
+      },
+      "residual2D": {
+        "first": 0.25814280567766323,
+        "afterFit": 8.908216039335849e-13,
+        "final": 3.1536407149764757e-13,
+        "finalOverFirst": 1.221665158049902e-12,
+        "steps": 14500
+      },
+      "startColumn": 66,
+      "startX": 6.167376260159126,
+      "layouts": [
+        {
+          "layout": "K = 1",
+          "identityConverged": 6.036608335591593e-16,
+          "identityUnconverged": 6.037006432394565e-16,
+          "stateDifference": 1.6889574833271246e-15,
+          "wOverSoundSpeed": 0,
+          "steps3D": 400,
+          "residual3D": {
+            "start": 1.659874669222994e-15,
+            "end": 1.3204942105733194e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 4",
+          "identityConverged": 7.001616421735998e-16,
+          "identityUnconverged": 7.259185660396218e-16,
+          "stateDifference": 2.6272671962866384e-15,
+          "wOverSoundSpeed": 0,
+          "steps3D": 200,
+          "residual3D": {
+            "start": 1.7226709546162725e-15,
+            "end": 1.08948009024306e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 16",
+          "identityConverged": 1.853068909516567e-15,
+          "identityUnconverged": 1.0717080031779204e-15,
+          "stateDifference": 2.4396052536947356e-15,
+          "wOverSoundSpeed": 4.615884118977394e-16,
+          "steps3D": 0,
+          "residual3D": {
+            "start": 1.9021137071071325e-15,
+            "end": 4.255133471466923e-15
+          },
+          "pass": true
+        },
+        {
+          "layout": "K = 6, non-uniform",
+          "identityConverged": 2.0939485164083336e-15,
+          "identityUnconverged": 5.659348111173667e-16,
+          "stateDifference": 2.251943311102833e-15,
+          "wOverSoundSpeed": 3.2343770561158607e-16,
+          "steps3D": 0,
+          "residual3D": {
+            "start": 1.99408780410482e-15,
+            "end": 8.96695589436052e-15
+          },
+          "pass": true
+        }
+      ],
+      "aPrime": {
+        "steps": 1000,
+        "thetaVariation": 1.5012955407352219e-15,
+        "pass": true
+      },
+      "seconds": 83.505
+    }
+  ]
+}

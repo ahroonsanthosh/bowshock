@@ -72,6 +72,12 @@ export interface ConvergenceEstimateOptions {
    * forebody drag within about 1.3e-6 of the CPU's up to Mach 5, 2e-6.
    */
   readonly noise: number;
+  /**
+   * Refinement ratio between successive grids (default 2). The 3D fins use
+   * 1.5 (docs/design/0021-3d-euler-fins.md section 4.6), after rung (b0)
+   * tests the order rule at that ratio.
+   */
+  readonly ratio?: number;
 }
 
 export type ConvergenceEstimate =
@@ -116,14 +122,21 @@ export function gridConvergence(
   if (n < 4) {
     return { kind: 'unresolved', value, reason: 'four grids are needed to confirm the order' };
   }
+  const ratio = options.ratio ?? RATIO;
   const finest = values.slice(n - 3);
-  const fine = observedOrder(finest[0]!, finest[1]!, value, options.noise);
+  const fine = observedOrder(finest[0]!, finest[1]!, value, options.noise, ratio);
   if (fine === OSCILLATES) {
     return { kind: 'oscillatory', value, uncertainty: Math.max(...finest) - Math.min(...finest) };
   }
-  const coarse = observedOrder(values[n - 4]!, values[n - 3]!, values[n - 2]!, options.noise);
+  const coarse = observedOrder(
+    values[n - 4]!,
+    values[n - 3]!,
+    values[n - 2]!,
+    options.noise,
+    ratio,
+  );
   if (fine === TOO_SMALL && typeof coarse === 'number') {
-    return withinNoise(values.slice(n - 4), coarse, options.noise);
+    return withinNoise(values.slice(n - 4), coarse, options.noise, ratio);
   }
   for (const triple of [fine, coarse]) {
     if (typeof triple === 'string') return { kind: 'unresolved', value, reason: triple };
@@ -138,7 +151,7 @@ export function gridConvergence(
   }
   const p = Math.min(order, FORMAL_ORDER);
   const e21 = values[n - 2]! - value;
-  const gain = RATIO ** p - 1;
+  const gain = ratio ** p - 1;
   return {
     kind: 'monotone',
     value,
@@ -165,10 +178,11 @@ function withinNoise(
   values: readonly number[],
   coarseOrder: number,
   relativeNoise: number,
+  ratio: number,
 ): ConvergenceEstimate {
   const value = values[3]!;
   const e21 = values[2]! - value;
-  const predicted = (values[1]! - values[2]!) / RATIO ** coarseOrder;
+  const predicted = (values[1]! - values[2]!) / ratio ** coarseOrder;
   if (!(Math.abs(e21 - predicted) <= unmeasurable(values, relativeNoise))) {
     return {
       kind: 'unresolved',
@@ -176,7 +190,7 @@ function withinNoise(
       reason: `the finest change (${e21.toExponential(2)}) is below the noise but not the one the coarser grids predict (${predicted.toExponential(2)})`,
     };
   }
-  const gain = RATIO ** Math.min(coarseOrder, FORMAL_ORDER) - 1;
+  const gain = ratio ** Math.min(coarseOrder, FORMAL_ORDER) - 1;
   // Each value is uncertain by its noise, so a change by twice that.
   const noise = relativeNoise * Math.max(...values.map(Math.abs));
   const bound = Math.max(Math.abs(e21), Math.abs(predicted)) + 2 * noise;
@@ -195,6 +209,7 @@ function observedOrder(
   medium: number,
   fine: number,
   relativeNoise: number,
+  ratio: number,
 ): number | string {
   const e21 = medium - fine;
   const e32 = coarse - medium;
@@ -204,7 +219,7 @@ function observedOrder(
   if (Math.abs(e21) <= noise || Math.abs(e32) <= noise) return TOO_SMALL;
   if (e32 / e21 < 0) return OSCILLATES;
   if (Math.abs(e32 / e21) <= 1) return 'the changes do not shrink under refinement';
-  return Math.log(Math.abs(e32 / e21)) / Math.log(RATIO);
+  return Math.log(Math.abs(e32 / e21)) / Math.log(ratio);
 }
 
 export interface VerifiedValue {

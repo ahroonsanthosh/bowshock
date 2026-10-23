@@ -165,3 +165,60 @@ export function reconstruct3D(
     p: centre.p + k * (next.p - prev.p),
   };
 }
+
+/**
+ * reconstruct3D on packed primitives (rho, u, v, w, p at q, q + 1, ...): the same arithmetic, written into
+ * out[0..4]; for the engine's inner loop, which allocates nothing.
+ */
+export function reconstructPacked(
+  P: Float64Array,
+  qPrev: number,
+  qC: number,
+  qNext: number,
+  side: 1 | -1,
+  gamma: number,
+  out: Float64Array,
+): void {
+  const rho = Math.min(P[qPrev]!, P[qC]!, P[qNext]!);
+  const sRho = 1 / rho;
+  const rhoA2 = gamma * Math.min(P[qPrev + 4]!, P[qC + 4]!, P[qNext + 4]!);
+  const sU = Math.sqrt(rho / rhoA2);
+  const sP = 1 / rhoA2;
+  const aRho = (P[qC]! - P[qPrev]!) * sRho;
+  const aU = (P[qC + 1]! - P[qPrev + 1]!) * sU;
+  const aV = (P[qC + 2]! - P[qPrev + 2]!) * sU;
+  const aP = (P[qC + 4]! - P[qPrev + 4]!) * sP;
+  const aW = (P[qC + 3]! - P[qPrev + 3]!) * sU;
+  const bRho = (P[qNext]! - P[qC]!) * sRho;
+  const bU = (P[qNext + 1]! - P[qC + 1]!) * sU;
+  const bV = (P[qNext + 2]! - P[qC + 2]!) * sU;
+  const bP = (P[qNext + 4]! - P[qC + 4]!) * sP;
+  const bW = (P[qNext + 3]! - P[qC + 3]!) * sU;
+  const ab = aRho * bRho + aU * bU + aV * bV + aP * bP + aW * bW;
+  const aa = aRho * aRho + aU * aU + aV * aV + aP * aP + aW * aW;
+  const bb = bRho * bRho + bU * bU + bV * bV + bP * bP + bW * bW;
+  const eps = VAN_ALBADA_EPSILON;
+  const k = 0.25 * side * Math.max(0, (2 * (ab + eps)) / (aa + bb + 2 * eps));
+  for (let n = 0; n < 5; n++) out[n] = P[qC + n]! + k * (P[qNext + n]! - P[qPrev + n]!);
+}
+
+/** hllc3D on packed states l[0..4], r[0..4] (rho, u, v, w, p): the same arithmetic. */
+export function hllc3DPacked(
+  l: Float64Array,
+  r: Float64Array,
+  nx: number,
+  ny: number,
+  nz: number,
+  gamma: number,
+  out: Float64Array,
+): void {
+  hllc3D(
+    { rho: l[0]!, u: l[1]!, v: l[2]!, w: l[3]!, p: l[4]! },
+    { rho: r[0]!, u: r[1]!, v: r[2]!, w: r[3]!, p: r[4]! },
+    nx,
+    ny,
+    nz,
+    gamma,
+    out,
+  );
+}

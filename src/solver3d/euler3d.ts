@@ -27,7 +27,7 @@ import {
   type GridMetrics3D,
   type StructuredGrid3D,
 } from './grid3d';
-import { hllc3D, reconstruct3D, totalEnergy3D, type Primitive3D } from './flux3d';
+import { hllc3DPacked, reconstructPacked, totalEnergy3D, type Primitive3D } from './flux3d';
 
 export type Side3D = 'iMin' | 'iMax' | 'jMin' | 'jMax' | 'kMin' | 'kMax';
 export const SIDES_3D: readonly Side3D[] = ['iMin', 'iMax', 'jMin', 'jMax', 'kMin', 'kMax'];
@@ -79,6 +79,9 @@ export class Euler3D {
   private readonly residual: Float64Array;
   private readonly dt: Float64Array;
   private readonly fluxOut = new Float64Array(NV);
+  private readonly left = new Float64Array(NV);
+  private readonly right = new Float64Array(NV);
+  private readonly prim: Float64Array;
   private readonly imposed = new Map<Side3D, Float64Array>();
   private faceStateLayers = new Map<Side3D, [readonly Primitive3D[], readonly Primitive3D[]]>();
 
@@ -93,6 +96,7 @@ export class Euler3D {
     this.stageA = new Float64Array(size);
     this.stageB = new Float64Array(size);
     this.residual = new Float64Array(size);
+    this.prim = new Float64Array(size);
     this.dt = new Float64Array(ni * nj * nk);
     for (const side of SIDES_3D) {
       const bc = config.boundaries[side];
@@ -279,6 +283,20 @@ export class Euler3D {
     this.fillGhosts(u);
     r.fill(0);
     const f = this.fluxOut;
+    // Primitive variables of every padded cell that holds a state (ghost corners hold none).
+    const P = this.prim;
+    for (let q = 0; q < u.length; q += NV) {
+      const rho = u[q]!;
+      if (!(rho > 0)) continue;
+      const uu = u[q + 1]! / rho;
+      const v = u[q + 2]! / rho;
+      const w = u[q + 3]! / rho;
+      P[q] = rho;
+      P[q + 1] = uu;
+      P[q + 2] = v;
+      P[q + 3] = w;
+      P[q + 4] = (gamma - 1) * (u[q + 4]! - 0.5 * rho * (uu * uu + v * v + w * w));
+    }
     const face = (
       set: typeof iFaces,
       fq: number,
@@ -300,31 +318,27 @@ export class Euler3D {
         const nx = sx / area;
         const ny = sy / area;
         const nz = sz / area;
-        const wLL = this.load(u, qL - step);
-        const wL = this.load(u, qL);
-        const wR = this.load(u, qR);
-        const wRR = this.load(u, qR + step);
-        let left = reconstruct3D(wLL, wL, wR, 1, gamma);
-        let right = reconstruct3D(wL, wR, wRR, -1, gamma);
-        if (!(left.rho > 0 && left.p > 0 && right.rho > 0 && right.p > 0)) {
-          left = wL;
-          right = wR;
+        const left = this.left;
+        const right = this.right;
+        reconstructPacked(P, qL - step, qL, qR, 1, gamma, left);
+        reconstructPacked(P, qL, qR, qR + step, -1, gamma, right);
+        if (!(left[0]! > 0 && left[4]! > 0 && right[0]! > 0 && right[4]! > 0)) {
+          for (let n = 0; n < NV; n++) {
+            left[n] = P[qL + n]!;
+            right[n] = P[qR + n]!;
+          }
         }
         if (side !== null && this.config.boundaries[side].kind === 'wall') {
-          const mirror = (w: Primitive3D): Primitive3D => {
-            const un = w.u * nx + w.v * ny + w.w * nz;
-            return {
-              rho: w.rho,
-              u: w.u - 2 * un * nx,
-              v: w.v - 2 * un * ny,
-              w: w.w - 2 * un * nz,
-              p: w.p,
-            };
-          };
-          if (side.endsWith('Min')) left = mirror(right);
-          else right = mirror(left);
+          // The state outside the wall: the inside state, its velocity reflected about the face normal.
+          const [inside, outside] = side.endsWith('Min') ? [right, left] : [left, right];
+          const un = inside[1]! * nx + inside[2]! * ny + inside[3]! * nz;
+          outside[0] = inside[0]!;
+          outside[1] = inside[1]! - 2 * un * nx;
+          outside[2] = inside[2]! - 2 * un * ny;
+          outside[3] = inside[3]! - 2 * un * nz;
+          outside[4] = inside[4]!;
         }
-        hllc3D(left, right, nx, ny, nz, gamma, f);
+        hllc3DPacked(left, right, nx, ny, nz, gamma, f);
       }
       for (let n = 0; n < NV; n++) {
         const flux = f[n]! * area;
