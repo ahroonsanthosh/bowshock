@@ -280,7 +280,11 @@ describe('the 3D view', () => {
     await scene.render();
     scene.setLive(false);
     expect(errors).toEqual([]);
-  }, 600_000);
+    // As long as the file's first test may take: on CI it ran 87.6 s alone (5759a65) and timed
+    // out at 600 s beside the transonic GPU suite (b7742b5), where this file's other tests took
+    // 5.3 to 5.8 times as long as before; a timeout left its loop changing the layers under the
+    // next test.
+  }, 1_800_000);
 
   it('shows the rocket where it stands, coloured by its surface pressure, fins grey; the flow’s layers add colour', async () => {
     scene.setLayers({ ...ALL_OFF, body: 'solid', cutaway: true });
