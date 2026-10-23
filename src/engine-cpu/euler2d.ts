@@ -388,6 +388,17 @@ export class Euler2D {
     this.boundaryFluxOverrides.set(side, Float64Array.from(fluxes));
   }
 
+  /** The states outside the faces of a 'faceStates' side, as last set (for the 3D engine's rung (a), 0021). */
+  faceStatesOf(side: Side): readonly Primitive2D[] | undefined {
+    return this.boundaryStates.get(side);
+  }
+
+  /** The fluxes imposed on a side's faces (setFaceFluxes), or undefined. */
+  faceFluxesOf(side: Side): Float64Array | undefined {
+    const f = this.boundaryFluxOverrides.get(side);
+    return f === undefined ? undefined : Float64Array.from(f);
+  }
+
   /** Copy an imposed flux for boundary face t of a side into fluxOut; false if none. */
   private imposedFlux(side: Side | null, t: number): boolean {
     if (side === null) return false;

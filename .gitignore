@@ -12,3 +12,6 @@ tests/tmp*
 tests/gpu/tmp*
 # Agent worktrees (local only)
 .claude/worktrees/
+
+# The independent reference code, installed by scripts/reference-3d (not committed)
+.reference-3d/

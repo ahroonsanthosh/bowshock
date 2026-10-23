@@ -1192,7 +1192,16 @@ residual 10 orders below its first value; the fin's surfaces monitored),
 runs them, and collects SU2's force histories and surface files with the
 SU2 and Gmsh versions, the archive hashes and the machine (operating
 system, processor, cores) into `docs/research/solver3d/reference/`. Only
-inputs and results are committed; no code of SU2 or Gmsh. It captures shocks, so its own
+inputs and results are committed; no code of SU2 or Gmsh.
+The cases' dimensions the sections above leave open (chords of 20 plate
+thicknesses for e3 and e6, e6's swept tip chord, the domains' extents and
+the mesh sizes) are those of `scripts/reference-3d/cases.json` and of the
+script, committed (revision 3c, 2026-10-23) before any reference or Stage
+A number exists. The script's convergence test is on the fin's drag (its
+mean relative change over 300 iterations below 1e-9), not on the density
+residual: in a small unregistered trial (a rounded planar edge at Mach
+2.5, not one of the cases) the residual stalled near a limiter cycle while
+the drag held its first six digits. It captures shocks, so its own
 stagnation-line error is calibrated first: the same code on the planar
 2D edges of (e0), against the 2D fitted strips (which are verified
 against their own 8 L0 references and checked against TN 2960); the
@@ -2193,7 +2202,7 @@ before J1 and J2 run. No design changes.
   span (hobby proportions); the evidence rule for the Eglin set's edges is
   registered (6.6).
 
-### Revision 3b, 2026-10-23 (this text): the owner's answers
+### Revision 3b, 2026-10-23 (commit b8080a6): the owner's answers
 
 The owner's and the coordinator's answers of 2026-10-23 are written in:
 the independent code is SU2 8.1.0 with Gmsh 4.13.1, run by the owner (4.4,
@@ -2202,3 +2211,10 @@ for Stage A's verdict or 2027-06-30; the total's label is fixed; the 3D
 value is not shown inside the Basic Finner's class (6.3); the proposed
 (u) is now 0014 10.7 (u) (6.7); section 10 lists what is answered and
 what is still open.
+
+### Revision 3c, 2026-10-23 (this text): the reference cases' open dimensions
+
+Before any reference or Stage A number exists: the independent
+reference's case dimensions that 4.4 left open (chords, the domains, the
+mesh sizes) are fixed in `scripts/reference-3d/cases.json` and the script,
+and its convergence test is the fin drag's, not the residual's (4.4).
