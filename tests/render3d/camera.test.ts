@@ -7,7 +7,9 @@ import {
   lookAt,
   multiply,
   orbitBy,
+  panBy,
   perspective,
+  rocketCentre,
   rotationOf,
   threeQuarterView,
   transform,
@@ -193,5 +195,68 @@ describe('turning the view freely (a trackball)', () => {
     const reset = threeQuarterView(0, 10, 6, 1.6);
     expect(reset).toEqual(first);
     expect(reset.rotation).toEqual(DEFAULT_ROTATION);
+  });
+});
+
+describe('the view turns about the rocket', () => {
+  /** A rocket 10 long with a flow region (its shock, revolved) from the tip to the base. */
+  const L = 10;
+  const outline = {
+    x: Array.from({ length: 41 }, (_, k) => (k * L) / 40),
+    r: Array.from({ length: 41 }, (_, k) => 0.5 + (k * 0.55 * L) / 40),
+  };
+  const fitted = () => threeQuarterView(0, L, 0.55 * L + 0.5, 1.6, outline, rocketCentre(L));
+  const drag = (o: Orbit, dx: number, dy: number, steps = 200): Orbit => {
+    for (let k = 0; k < steps; k++) o = orbitBy(o, dx / steps, dy / steps);
+    return o;
+  };
+  /** Where the rocket's centre lands on the screen (clip units, 0 the centre). */
+  const onScreen = (o: Orbit) => {
+    const c = transform(viewProjection(o, 1.6, 2 * L), rocketCentre(L));
+    return [c[0] / c[3], c[1] / c[3], c[3]] as const;
+  };
+
+  it('the default view: the pivot is the rocket centre, at the centre of the view, the region in view', () => {
+    const o = fitted();
+    expect(o.target).toEqual([5, 0, 0]);
+    expect(o.rotation).toEqual(DEFAULT_ROTATION);
+    const [x, y, w] = onScreen(o);
+    expect(Math.abs(x)).toBeLessThan(1e-6);
+    expect(Math.abs(y)).toBeLessThan(1e-6);
+    expect(w).toBeGreaterThan(0);
+    // The nose tip and the base on screen.
+    const m = viewProjection(o, 1.6, 2 * L);
+    for (const p of [
+      [0, 0, 0],
+      [L, 0, 0],
+    ] as Vec3[]) {
+      const c = transform(m, p);
+      expect(Math.abs(c[0] / c[3])).toBeLessThan(1);
+      expect(Math.abs(c[1] / c[3])).toBeLessThan(1);
+    }
+  });
+
+  it('nose-on, from above and from below: the rocket centre stays at the centre of the view', () => {
+    const level = drag(fitted(), 0, (-24 * Math.PI) / 180);
+    const views = {
+      noseOn: drag(level, (-56 * Math.PI) / 180, 0),
+      above: drag(level, 0, Math.PI / 2),
+      below: drag(level, 0, -Math.PI / 2),
+    };
+    expect(cameraFrame(views.noseOn).back[0]).toBeCloseTo(-1, 9);
+    expect(cameraFrame(views.above).back[1]).toBeCloseTo(1, 9);
+    expect(cameraFrame(views.below).back[1]).toBeCloseTo(-1, 9);
+    for (const [name, o] of Object.entries(views)) {
+      const [x, y, w] = onScreen(o);
+      expect(Math.abs(x), name).toBeLessThan(1e-6);
+      expect(Math.abs(y), name).toBeLessThan(1e-6);
+      expect(w, name).toBeGreaterThan(0);
+    }
+  });
+
+  it('pan moves the pivot; reset brings it back to the rocket', () => {
+    const o = panBy(fitted(), 0.2, -0.1);
+    expect(o.target).not.toEqual([5, 0, 0]);
+    expect(fitted().target).toEqual([5, 0, 0]);
   });
 });

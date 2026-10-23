@@ -417,6 +417,9 @@ export interface Configuration {
   readonly inputs: DragInputs;
 }
 
+/** The input of the fins' place, as its refusal names it (the page words it "the fins reach past the base"). */
+export const FINS_AHEAD_OF_BASE = "the distance of the fins' trailing edges ahead of the base";
+
 const refusal = (component: string, message: string): ComponentRefusal => ({
   component,
   reason: 'input',
@@ -466,11 +469,7 @@ export function configurationOf(form: TotalDragForm):
   if (form.section.kind !== 'flat-plate') {
     nonNegative('fins', 'the leading-edge radius', form.leadingEdgeRadius);
   }
-  nonNegative(
-    'fins',
-    "the distance of the fins' trailing edges ahead of the base",
-    form.trailingEdgeAheadOfBase,
-  );
+  nonNegative('fins', FINS_AHEAD_OF_BASE, form.trailingEdgeAheadOfBase);
   if (
     Number.isFinite(form.body.cylinderLength) &&
     form.rootChord > 0 &&

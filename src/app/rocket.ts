@@ -442,10 +442,30 @@ function showFlow(which: FlowShown): void {
   shell.topBar.refresh();
 }
 
+/** The phone's short note on the airflow shown (the full note is on the View tab). */
+const PHONE_FLOW_NOTE: Readonly<Record<'3d' | 'side', string>> = {
+  '3d':
+    'The axisymmetric solution, revolved; fins are not in the airflow. Hatched: behind the ' +
+    'base, not simulated.',
+  side:
+    'The axisymmetric solution; fins are drawn, not in the airflow. Hatched: behind the base, ' +
+    'not simulated.',
+};
+
 function showFlowNote(): void {
   const text = flowNoteText(shown, missing3d, sceneFailure);
   flowNote.textContent = text;
   viewNote.textContent = text;
+  // On phones, in the first screen: what the picture is, and what a cross on the curve means.
+  shell.sheet.note.replaceChildren(
+    h('p', { text: PHONE_FLOW_NOTE[shown] }),
+    h(
+      'p',
+      {},
+      h('span', { className: 'cross', text: '\u2715' }),
+      ' No number: the drag there cannot be given to a known accuracy; the Curve tab says why.',
+    ),
+  );
 }
 
 /** Fit the 3D view into the part of the window the panels leave free (device pixels). */

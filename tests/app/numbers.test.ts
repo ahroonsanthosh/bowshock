@@ -125,8 +125,8 @@ describe('the numbers the page shows are the logic’s', { timeout: 600_000 }, (
         if (logic.kind !== 'refused') return;
         expect([shown.value, shown.band]).toEqual([null, null]);
         expect(shown.status.word).toBe('No number');
-        const plain = refusalWords(logic.refusals[0]!);
-        expect(shown.status.sentence).toContain(plain.reason);
+        // Every one of the logic's refusals, in its plain words.
+        for (const r of logic.refusals) expect(shown.reasons).toContain(refusalWords(r).reason);
         expect(row[4]).toBe('refused');
         const reason = csvRow(point).slice(row.slice(0, 5).join(',').length + 1);
         for (const r of logic.refusals)
