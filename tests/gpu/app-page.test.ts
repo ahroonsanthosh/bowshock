@@ -63,7 +63,7 @@ describe('the app page', () => {
       const view = totalDragView(asked.form, { kind: 'pending' });
       expect(view.kind, `Mach ${mach}`).toBe('refused');
       if (view.kind !== 'refused') continue;
-      expect(rows[k]!.slice(0, 3)).toEqual([mach.toFixed(2), '', '', '']);
+      expect(rows[k]!.slice(0, 3)).toEqual([mach.toFixed(2), '', '']);
       expect(rows[k]![3]!.startsWith('No number')).toBe(true);
       // The table row and the point block of that point: every refusal's plain reason.
       (doc.querySelectorAll('.curve-table__mach')[k] as HTMLButtonElement).click();
@@ -92,7 +92,7 @@ describe('the app page', () => {
     expect(text('#flow-note')).toContain('Hatched: behind the base, not simulated.');
     expect(text('#flow-note')).toContain('their drag computed separately');
     // The phone's first screen (the sheet under the pinned line): what the picture is, and a cross.
-    expect(text('.sheet__note')).toMatch(/The axisymmetric solution.*fins are not in the airflow/);
+    expect(text('.sheet__note')).toMatch(/The axisymmetric solution.*not in the airflow/);
     expect(text('.sheet__note')).toContain('Hatched: behind the base, not simulated.');
     expect(text('.sheet__note')).toContain('No number: the drag there cannot be given');
     if (!shown3d) {
