@@ -1481,7 +1481,9 @@ td.num {
   .legend__scale > :last-child {
     order: 4;
   }
-  .legend__note {
+  .legend__note,
+  .legend__fold {
+    /* On phones the notes are under the sheet's header: nothing to fold. */
     display: none;
   }
   .modebar {
