@@ -276,18 +276,23 @@ export function zoomBy(o: Orbit, factor: number, minDistance: number, maxDistanc
 /**
  * The orbit at these angles that shows every point as large as fits,
  * within `margin` of the edges (in clip units, 1 the whole half-width):
- * the distance by bisection, the target moved so that the points'
- * projection is centred.
+ * the distance by bisection. Without a `pivot`, the target is moved so
+ * that the points' projection is centred; with one, the target is the
+ * pivot (the view turns about it and it stays at the centre of the view)
+ * and every point fits within the margin about it.
  */
 export function fitOrbit(
   angles: { rotation: Quat; fovY: number },
   points: readonly Vec3[],
   aspect: number,
   margin = 0.9,
+  pivot?: Vec3,
 ): Orbit {
-  const centre: Vec3 = [0, 1, 2].map(
-    (k) => points.reduce((s, p) => s + p[k]!, 0) / points.length,
-  ) as unknown as Vec3;
+  const centre: Vec3 =
+    pivot ??
+    ([0, 1, 2].map(
+      (k) => points.reduce((s, p) => s + p[k]!, 0) / points.length,
+    ) as unknown as Vec3);
   const radius = Math.max(
     ...points.map((p) => Math.hypot(p[0] - centre[0], p[1] - centre[1], p[2] - centre[2])),
     1e-9,
@@ -309,6 +314,18 @@ export function fitOrbit(
     }
     return { x0, x1, y0, y1 };
   };
+  if (pivot !== undefined) {
+    let lo = 0.1 * radius;
+    let hi = 50 * radius;
+    for (let k = 0; k < 60; k++) {
+      const d = 0.5 * (lo + hi);
+      const e = extent({ ...orbit, distance: d });
+      const fits = Math.max(-e.x0, e.x1) <= margin && Math.max(-e.y0, e.y1) <= margin;
+      if (fits) hi = d;
+      else lo = d;
+    }
+    return { ...orbit, distance: hi };
+  }
   for (let pass = 0; pass < 4; pass++) {
     let lo = 0.5 * radius;
     let hi = 50 * radius;
@@ -331,9 +348,16 @@ export function fitOrbit(
 /** The default view's orientation: from ahead (34 degrees), to the side and above (24 degrees). */
 export const DEFAULT_ROTATION: Quat = rotationOf((-34 * Math.PI) / 180, (24 * Math.PI) / 180);
 
+/** The rocket's centre on its axis, the pivot the view turns about: midway from the nose's tip (x = 0) to the base. */
+export function rocketCentre(length: number): Vec3 {
+  return [0.5 * length, 0, 0];
+}
+
 /**
  * The 3/4 view of a box from xMin to xMax along the axis and of radius
- * rMax about it: from ahead, to the side and above, the whole box in view.
+ * rMax about it: from ahead, to the side and above, the whole box in view,
+ * turning about `pivot` (the rocket's centre; by default the box's centre
+ * on the axis), which stays at the centre of the view.
  */
 export function threeQuarterView(
   xMin: number,
@@ -341,6 +365,7 @@ export function threeQuarterView(
   rMax: number,
   aspect: number,
   outline?: { x: readonly number[]; r: readonly number[] },
+  pivot: Vec3 = [0.5 * (xMin + xMax), 0, 0],
 ): Orbit {
   // Fitted to the computed region itself (its outline revolved) where
   // known, so that the flow fills the view and the box may run past its
@@ -364,6 +389,7 @@ export function threeQuarterView(
     points,
     aspect,
     0.96,
+    pivot,
   );
   // A little closer than the whole region, towards the rocket: the far
   // reaches of the shock may leave the view.

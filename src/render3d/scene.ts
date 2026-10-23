@@ -30,6 +30,7 @@ import {
   multiply,
   orbitBy,
   panBy,
+  rocketCentre,
   threeQuarterView,
   transform,
   viewProjection,
@@ -719,12 +720,18 @@ export class FlowScene3D {
     const b = this.regionBox();
     if (b === null) return;
     const g = this.field !== null ? shockLine(this.field) : undefined;
+    // The view turns about the rocket's centre on its axis (the box's, without a rocket).
+    const pivot =
+      this.rocket !== null
+        ? rocketCentre(bodyLength(this.rocket.body))
+        : ([0.5 * (b.xMin + b.xMax), 0, 0] as const);
     this.orbit = threeQuarterView(
       b.xMin,
       b.xMax,
       b.rMax,
       this.aspect(),
       g === undefined ? undefined : clipOutline(g, b.xMax),
+      pivot,
     );
     this.fittedTo = regionKey(b, this.aspect());
     this.requestDraw();
