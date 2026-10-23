@@ -31,6 +31,21 @@ export class Particles {
     this.r = new Float64Array(count);
     this.phi = new Float64Array(count);
     this.at = new Array<Location | null>(count).fill(null);
+    // Each dual quad's share of the region's volume (area times radius), cumulative.
+    const quads = (mesh.ni + 1) * (mesh.nj + 1);
+    this.cumulative = new Float64Array(quads);
+    let sum = 0;
+    for (let q = 0; q < quads; q++) {
+      const I = q % (mesh.ni + 1);
+      const J = Math.floor(q / (mesh.ni + 1));
+      const [a, b, c, d] = quadVertices(mesh, I, J);
+      const X = mesh.x;
+      const R = mesh.r;
+      const area =
+        0.5 * Math.abs((X[c]! - X[a]!) * (R[d]! - R[b]!) - (X[d]! - X[b]!) * (R[c]! - R[a]!));
+      sum += area * 0.25 * (R[a]! + R[b]! + R[c]! + R[d]!);
+      this.cumulative[q] = sum;
+    }
     for (let k = 0; k < count; k++) this.respawn(k);
   }
 
@@ -46,12 +61,27 @@ export class Particles {
     return s / 4294967296;
   }
 
-  /** A new start inside the computed region: a random point of a random dual quad. */
+  private readonly cumulative: Float64Array;
+
+  /**
+   * A new start inside the computed region: a random point of a dual quad
+   * picked by its share of the volume, so that the particles fill the
+   * region evenly in 3D.
+   */
   private respawn(k: number): void {
     const m = this.mesh;
+    const total = this.cumulative[this.cumulative.length - 1]!;
     for (let tries = 0; tries < 20; tries++) {
-      const I = Math.floor(this.random() * (m.ni + 1));
-      const J = Math.floor(this.random() * (m.nj + 1));
+      const target = this.random() * total;
+      let lo = 0;
+      let hi = this.cumulative.length - 1;
+      while (lo < hi) {
+        const mid = (lo + hi) >> 1;
+        if (this.cumulative[mid]! < target) lo = mid + 1;
+        else hi = mid;
+      }
+      const I = lo % (m.ni + 1);
+      const J = Math.floor(lo / (m.ni + 1));
       const s = this.random();
       const t = this.random();
       const [x, r] = quadPoint(m, I, J, s, t);
