@@ -1715,3 +1715,16 @@ _A correction to (r), recorded here as well._ The height of the envelope
 of figs. 47 to 52 is 0.02 to 0.19 in p/H per panel and 0.14 to 0.23 over a
 figure's five sweeps. (r) states both; the coordinator's brief had
 "0.14 to 0.22".
+
+**2026-10-23 (t): RM L8B13 fig. 4(c) becomes a check that sets nothing**
+(the coordinator's decision on W7's report at 2acdd2a; precedent: (g),
+(r), (s)). Fig. 4(c) of Sawyer and Daum (NACA RM L8B13, PDF p. 15), the
+wing-flow wedge's base pressure at four orifices, was registered under
+(k) and limited by (s). Its four series read alike, and their small,
+often solid symbols merge into clumps of ink from about M 0.85, and almost
+everywhere from M 1.05 to 1.2. In these clumps the number of symbols,
+their shapes and their centres cannot be read. Reading only the symbols
+that separate would choose the data after seeing the ink. So fig. 4(c)
+sets nothing: no band, no band's end. No value of it was recorded. Fig.
+4(e) (the wedge's faces) stays registered, read once
+(`docs/research/total-drag/audit/w7-fins/rml8b13_fig4e_first.csv`).

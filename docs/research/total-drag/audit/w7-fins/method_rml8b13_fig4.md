@@ -92,3 +92,6 @@ coordinator decides (for example, a check that sets nothing, as (g),
 (see above) would set nothing in any case.
 
 Read once (fig. 4(e)); fig. 4(c) not read.
+
+**Status, 2026-10-23 (0014 10.7 (t)).** Fig. 4(c) is a check that sets
+nothing; it is not read. Fig. 4(e) stays registered, read once.

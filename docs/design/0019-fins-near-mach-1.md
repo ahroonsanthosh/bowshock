@@ -1044,9 +1044,9 @@ F2 last.
    - RM L8B13: limited to figs. 4(c) (the wedge's base) and 4(e) (its
      sides) (10.7 (s); fig. 4(d) is the swept cylinder); marks its legend
      does not explain set nothing; fig. 4(e) read once (25 symbols);
-     fig. 4(c) stopped, not read: its four series merge into clumps of
-     ink from about M 0.85, so p/p_0 per orifice cannot be read there
-     (`method_rml8b13_fig4.md`), the coordinator to decide;
+     fig. 4(c) a check that sets nothing (10.7 (t)): its four series
+     merge into clumps of ink from about M 0.85; not read
+     (`method_rml8b13_fig4.md`);
    - R&M 3427 fig. 13's hole 4: left open (10.7 (s)); the size of the
      wedge-against-plate widening is decided in section 3.4 before any F4
      code.
