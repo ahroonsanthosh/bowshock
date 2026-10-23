@@ -20,6 +20,16 @@ import { requireDevice } from './device';
  * to 34.4 steps a second without the view, 25.9 to 32.5 with it, a cost
  * of 5.6% (best of each, and the median of the five pairs), 6 frames
  * drawn in 168 s (drafts: a full frame there costs seconds).
+ *
+ * That it drew live is checked as at least one frame in the measured
+ * windows. The count itself is not a property of the view: each live
+ * frame waits for the solver's batch of steps (checkEvery 250), then for
+ * its own pacing (cost x (1 - duty) / duty), and the windows run from the
+ * first progress report to the last, so the count follows the machine's
+ * speed. It was asked to exceed 3, which held when written (6 in 168 s)
+ * but not on CI's runner: 2 in 145 s at 5759a65 and 3 in 405 s at
+ * b7742b5, both with the cost itself well inside (median of the pairs
+ * 6.2% and 2.8%); locally on 2026-10-23, 5 in 122 s.
  */
 
 const LIVE_DUTY = 0.06;
@@ -121,7 +131,7 @@ describe('the 3D view drawing live', () => {
         `median of the pairs ${((1 - median) * 100).toFixed(1)}%`,
     );
     // The view did draw, live, while the solver ran.
-    expect(frames).toBeGreaterThan(3);
+    expect(frames).toBeGreaterThan(0);
     expect(bestDrawn / best).toBeGreaterThan(0.9);
   }, 3_600_000);
 });
