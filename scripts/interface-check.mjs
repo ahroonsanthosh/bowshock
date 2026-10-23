@@ -8,7 +8,7 @@
  * (axe-core), in each field the flow page shows.
  *
  *   npm run build
- *   node scripts/interface-check.mjs [--out docs/research/interface] [--pages ramp,shock-tube]
+ *   node scripts/interface-check.mjs [--out docs/research/interface] [--pages ramp,shock-tube] [--widths 390,1440]
  *
  * Without BASE_URL it serves dist/ with `vite preview`; with it (for
  * example a dev server's http://localhost:5173) it checks that site.
@@ -55,8 +55,46 @@ async function until(page, test, seconds) {
 /** The pages, how to tell each is ready to be seen, and the keys to try on it. */
 const PAGES = [
   {
-    id: 'landing',
+    id: 'app',
     path: 'index.html',
+    // The Basic Finner's curve starts on opening: ready once its first
+    // point's first grid is solved (a provisional value), a minute or two
+    // on software WebGPU; its finest grid would take hours.
+    ready: (page) =>
+      until(
+        page,
+        async () =>
+          (await page.evaluate(() => document.querySelector('.point__value') !== null)) &&
+          (await readoutValue(page, 'cd')) !== '',
+        900,
+      ),
+    // The 3D view opens; V switches to the side view (its fields on 1 to 5) and back.
+    // Paused (Space) for the shots, so that each frame catches up with its keys.
+    pause: ' ',
+    shots: [
+      ['slice', ['2']],
+      ['side', ['2', 'v']],
+      ['mach', ['2']],
+      ['glow', ['5']],
+      ['3d', ['v']],
+    ],
+    keys: [
+      { press: 'v', expect: { pressed: 'Side' } },
+      { press: '2', expect: { pressed: 'Mach' } },
+      { press: '5', expect: { pressed: 'Glow' } },
+      { press: 'g', expect: { pressed: 'Grid' } },
+      { press: 'g', expect: { notPressed: 'Grid' } },
+      { press: 'v', expect: { pressed: '3D' } },
+      { press: ' ', expect: { text: ['.readout [data-id="state"] .readout__value', 'Paused'] } },
+      { press: ' ', expect: { text: ['.readout [data-id="state"] .readout__value', 'Solving'] } },
+      { press: 'h', expect: 'dialog-open' },
+    ],
+    // V in the focused preset select shows the side view, and leaves the preset.
+    select: { focus: '#preset', press: 'v', pressed: 'Side' },
+  },
+  {
+    id: 'about',
+    path: 'about.html',
     ready: (page) => until(page, async () => (await page.$('#gpu-line .badge')) !== null, 30),
     keys: [{ press: 'h', expect: 'dialog-open' }],
   },
@@ -134,6 +172,35 @@ const PAGES = [
     // still drawn (Mach 2), not of the case being set up.
     png: { select: '#mach', value: '3', expect: '-M2-' },
   },
+  {
+    id: 'drag',
+    path: 'demos/nose-drag.html',
+    // Run the default case (the Basic Finner's body at Mach 2) until its
+    // first grid is drawn and checked: its finest grid, 160 cells across,
+    // would take hours on software WebGPU.
+    ready: async (page) => {
+      await until(page, async () => !(await page.isDisabled('#run')), 120);
+      await page.click('#run');
+      return until(page, async () => (await readoutValue(page, 'cd')) !== '', 900);
+    },
+    shots: [
+      ['mach', ['2']],
+      ['split', ['d']],
+    ],
+    keys: [
+      { press: '1', expect: { pressed: 'Schlieren' } },
+      { press: 'd', expect: { notPressed: 'Split' } },
+      { press: 'g', expect: { pressed: 'Grid' } },
+      { press: 'g', expect: { notPressed: 'Grid' } },
+      { press: ' ', expect: { text: ['#pause', 'Resume'] } },
+      { press: ' ', expect: { text: ['#pause', 'Pause'] } },
+      { press: 'h', expect: 'dialog-open' },
+    ],
+    // 2 in the focused Nose select shows Mach, and leaves the nose.
+    select: { focus: '#shape', press: '2', pressed: 'Mach' },
+    // Another Mach number typed and K pressed: the PNG is of the flow drawn (Mach 2).
+    png: { fill: '#mach', value: '3', expect: '-M2-' },
+  },
 ];
 
 function argument(name, fallback) {
@@ -157,6 +224,24 @@ async function serve() {
     await new Promise((r) => setTimeout(r, 500));
   }
   return { url, stop: () => child.kill() };
+}
+
+/**
+ * Waits until the page's picture has stayed the same for three looks 3 s
+ * apart (at most 90 s): on software WebGPU one 3D frame takes seconds, so a
+ * shot taken soon after a key can show the frame before it.
+ */
+async function settled(page) {
+  let last = null;
+  let same = 0;
+  const end = Date.now() + 90_000;
+  while (Date.now() < end && same < 3) {
+    await page.waitForTimeout(3000);
+    const now = await page.screenshot();
+    same = last !== null && now.equals(last) ? same + 1 : 0;
+    last = now;
+  }
+  return same >= 3;
 }
 
 /** Serious and critical accessibility violations on the page as it is. */
@@ -223,7 +308,12 @@ const modePressed = (page, label) =>
  */
 async function helpByKeyboard(page, key) {
   const problems = [];
-  const isOpen = () => page.evaluate(() => document.querySelector('dialog')?.open === true);
+  // The help dialog (a page may have others, such as the app's Details drawer).
+  const isOpen = () =>
+    page.evaluate(
+      () =>
+        (document.querySelector('dialog.help') ?? document.querySelector('dialog'))?.open === true,
+    );
   const focusBack = () =>
     page.evaluate(() => document.activeElement?.hasAttribute('data-check-focus') === true);
   const marked = await page.evaluate(() => {
@@ -245,7 +335,9 @@ async function helpByKeyboard(page, key) {
     if (!(await isOpen())) problems.push(`${open} did not open the help`);
     for (let k = 0; k < 8; k++) await page.keyboard.press('Tab');
     const inside = await page.evaluate(() =>
-      document.querySelector('dialog')?.contains(document.activeElement),
+      (document.querySelector('dialog.help') ?? document.querySelector('dialog'))?.contains(
+        document.activeElement,
+      ),
     );
     if (!inside) problems.push('Tab left the help dialog');
     await page.keyboard.press(close);
@@ -289,14 +381,17 @@ async function selectKeys(page, spec) {
 async function pngOfDrawnCase(page, spec) {
   await page.evaluate(() => document.activeElement?.blur());
   const download = page.waitForEvent('download', { timeout: 30_000 }).catch(() => null);
-  await page.selectOption(spec.select, spec.value);
+  if (spec.select !== undefined) await page.selectOption(spec.select, spec.value);
+  else await page.fill(spec.fill, spec.value);
+  // K from outside the field typed in (keys do not act in a text field).
+  await page.evaluate(() => document.activeElement?.blur());
   await page.keyboard.press('k');
   const file = await download;
   const name = file?.suggestedFilename() ?? 'none';
   const ok = name.includes(spec.expect);
   return {
     problems: ok ? 0 : 1,
-    line: `${spec.select} set to ${spec.value}, then K: saved ${name}${ok ? '' : `, expected a name with ${spec.expect}`}`,
+    line: `${spec.select ?? spec.fill} set to ${spec.value}, then K: saved ${name}${ok ? '' : `, expected a name with ${spec.expect}`}`,
   };
 }
 
@@ -332,6 +427,7 @@ async function keyboard(page, keys) {
 
 const out = argument('out', 'docs/research/interface');
 const only = argument('pages', null)?.split(',');
+const widths = argument('widths', null)?.split(',').map(Number);
 await mkdir(out, { recursive: true });
 const server = await serve();
 const browser = await chromium.launch({
@@ -346,25 +442,32 @@ const browser = await chromium.launch({
 let failures = 0;
 try {
   for (const spec of PAGES.filter((p) => only === undefined || only.includes(p.id))) {
-    for (const size of WIDTHS) {
+    for (const size of WIDTHS.filter((w) => widths === undefined || widths.includes(w.width))) {
       const page = await browser.newPage({ viewport: size, deviceScaleFactor: 1 });
       const errors = [];
       page.on('console', (m) => {
         if (m.type() === 'error') errors.push(m.text());
       });
       page.on('pageerror', (e) => errors.push(e.message));
-      await page.goto(`${server.url}/${spec.path}`);
+      // A loaded machine (solver runs beside it) can take its time to load the page.
+      await page.goto(`${server.url}/${spec.path}`, { timeout: 180_000 });
       const ready = await spec.ready(page);
       const file = path.join(out, `${spec.id}-${size.width}.png`);
       await page.screenshot({ path: file });
       // Accessibility in the view as it opens, and in each field and view shot.
       const violations = (await accessibility(page)).map((v) => `default: ${v}`);
+      const unsettled = [];
+      if (spec.shots !== undefined && spec.pause !== undefined)
+        await page.keyboard.press(spec.pause);
       for (const [name, keys] of spec.shots ?? []) {
         for (const key of keys) await page.keyboard.press(key);
-        await page.waitForTimeout(1500);
+        if (!(await settled(page))) unsettled.push(name);
         await page.screenshot({ path: path.join(out, `${spec.id}-${name}-${size.width}.png`) });
         violations.push(...(await accessibility(page)).map((v) => `${name}: ${v}`));
       }
+      if (spec.shots !== undefined && spec.pause !== undefined)
+        await page.keyboard.press(spec.pause);
+      if (unsettled.length > 0) console.log(`  not settled in 90 s: ${unsettled.join(', ')}`);
       const lines = [
         `${spec.id} at ${size.width} px: ${file}${ready ? '' : ' (not ready in time)'}`,
       ];

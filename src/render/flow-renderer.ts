@@ -4,9 +4,10 @@
  * src/render/flow-fields.ts are computed per cell on the GPU
  * (shaders/flow-fields.wgsl) and drawn on the dual mesh of the cell
  * centres (shaders/flow-draw.wgsl), so the value drawn at a cell's centre
- * is the solver's value in that cell. An axisymmetric flow is drawn
- * mirrored about the axis, the body as a solid, with grid lines and the
- * fitted shock as a line on request.
+ * is the solver's value in that cell. Outside the fitted shock, where the
+ * flow is the free stream, it is filled with the free stream's value. An
+ * axisymmetric flow is drawn mirrored about the axis, the body as a solid,
+ * with grid lines and the fitted shock as a line on request.
  *
  * The grid is the moving grid of a fitted shock: its nodes are placed on
  * the GPU each frame from the line grid's own buffers
@@ -16,15 +17,21 @@
 import gasWgsl from '../engine-gpu/shaders/gas.wgsl?raw';
 import { BufferSet, compileShader } from '../engine-gpu/gpu-common';
 import type { Primitive2D } from '../scheme/flux';
-import { colormapTable, hexToRgb, SCHLIEREN_DARK, SCHLIEREN_LIGHT } from './colormap';
-import { FLOW_FIELD_CODES, type FlowField } from './flow-fields';
+import {
+  colormapTable,
+  hexToRgb,
+  SCHLIEREN_DARK,
+  SCHLIEREN_LIGHT,
+  spectrumTable,
+} from './colormap';
+import { FLOW_FIELD_CODES, freeStreamValue, type FlowField } from './flow-fields';
 import flowDrawWgsl from './shaders/flow-draw.wgsl?raw';
 import flowFieldsWgsl from './shaders/flow-fields.wgsl?raw';
 import { clipTransform, type Bounds, type View } from './view';
 
 const WORKGROUP_SIZE = 64;
 const FLOW_PARAMS_BYTES = 64;
-const DRAW_PARAMS_BYTES = 112;
+const DRAW_PARAMS_BYTES = 128;
 const LINE_PARAMS_BYTES = 32;
 /** What a probe reads where no field is drawn. */
 const NOTHING_DRAWN = -3e38;
@@ -75,13 +82,28 @@ export interface FlowDrawOptions {
   /** Draw every stride-th grid line. */
   readonly gridStride: number;
   readonly background: GPUColor;
+  /**
+   * 'filled': the field's colour (or schlieren's grey); 'glow': the Mach
+   * number's colour on the spectrum at the density gradient's brightness
+   * (docs/design/0017-rocketeer-interface.md section 6). Default 'filled'.
+   */
+  readonly look?: FlowLook;
+  /** The colour fields' table. Default 'perceptual'. */
+  readonly palette?: FlowPalette;
 }
+
+export type FlowLook = 'filled' | 'glow';
+export type FlowPalette = 'perceptual' | 'spectrum';
+
+/** The glow view's brightness where the flow is uniform: near black. */
+export const GLOW_BASE = 0.04;
 
 /** The colours of what is drawn over the field, as RGBA from 0 to 1. */
 const COLOURS = {
   grid: [1, 1, 1, 0.16],
   shock: [0.95, 0.96, 0.98, 0.92],
-  body: [...hexToRgb('#2a3039'), 1],
+  // Lit as a solid of revolution (fs_body_shaded): the colour at full light.
+  body: [...hexToRgb('#a7afba'), 1],
   bodyEdge: [...hexToRgb('#7d8796'), 1],
 } as const;
 
@@ -136,8 +158,9 @@ class FlowPipelines {
         entry(0, VF, 'uniform'),
         entry(1, GPUShaderStage.VERTEX, 'read-only-storage'),
         entry(2, GPUShaderStage.VERTEX, 'read-only-storage'),
-        entry(3, GPUShaderStage.FRAGMENT, 'read-only-storage'),
-        entry(4, GPUShaderStage.FRAGMENT, 'read-only-storage'),
+        // The ranges and the colour tables: the glow's shock line takes its colour per vertex.
+        entry(3, VF, 'read-only-storage'),
+        entry(4, VF, 'read-only-storage'),
       ],
     });
     const lineLayout = device.createBindGroupLayout({
@@ -217,23 +240,73 @@ class FlowPipelines {
         },
         primitive: { topology },
       });
-    const [field, probe, grid, body, line] = await Promise.all([
+    const [
+      field,
+      probe,
+      free,
+      freeProbe,
+      grid,
+      body,
+      line,
+      shape,
+      unsimulated,
+      glow,
+      freeGlow,
+      shockGlow,
+    ] = await Promise.all([
       make('flow field', 'vs_field', 'fs_field', 'triangle-list', false),
       make('flow probe', 'vs_field', 'fs_probe', 'triangle-list', false, 'r32float'),
+      make('flow free stream', 'vs_free', 'fs_field', 'triangle-list', false),
+      make('flow free stream probe', 'vs_free', 'fs_probe', 'triangle-list', false, 'r32float'),
       make('flow grid', 'vs_grid', 'fs_grid', 'line-list', true),
-      make('flow body', 'vs_body', 'fs_body', 'triangle-strip', false),
+      make('flow body', 'vs_body_shaded', 'fs_body_shaded', 'triangle-strip', false),
       make('flow line', 'vs_line', 'fs_line', 'triangle-list', true),
+      make('flow shape', 'vs_shape', 'fs_body', 'triangle-list', true),
+      make('flow not simulated', 'vs_unsimulated', 'fs_unsimulated', 'triangle-list', false),
+      make('flow glow', 'vs_glow', 'fs_glow', 'triangle-list', false),
+      make('flow free stream glow', 'vs_free_glow', 'fs_glow', 'triangle-list', false),
+      make('flow shock glow', 'vs_shock_glow', 'fs_shock_glow', 'triangle-list', true),
     ]);
-    return { field, probe, grid, body, line };
+    return {
+      field,
+      probe,
+      free,
+      freeProbe,
+      grid,
+      body,
+      line,
+      shape,
+      unsimulated,
+      glow,
+      freeGlow,
+      shockGlow,
+    };
   }
 }
 
 interface DrawPipelines {
   readonly field: GPURenderPipeline;
   readonly probe: GPURenderPipeline;
+  readonly free: GPURenderPipeline;
+  readonly freeProbe: GPURenderPipeline;
   readonly grid: GPURenderPipeline;
   readonly body: GPURenderPipeline;
   readonly line: GPURenderPipeline;
+  readonly shape: GPURenderPipeline;
+  readonly unsimulated: GPURenderPipeline;
+  readonly glow: GPURenderPipeline;
+  readonly freeGlow: GPURenderPipeline;
+  readonly shockGlow: GPURenderPipeline;
+}
+
+/** A convex polygon drawn over the flow as it is (not mirrored): a fin seen from the side. */
+export interface FlowShape {
+  readonly points: readonly (readonly [number, number])[];
+  /** RGBA, 0 to 1. */
+  readonly fill: readonly number[];
+  readonly edge: readonly number[];
+  /** Drawn behind the body (a fin on the far side) or in front of it. */
+  readonly behind: boolean;
 }
 
 /** The buffers of one source (one grid size). */
@@ -268,6 +341,16 @@ export class FlowRenderer {
     readonly edge: GPUBindGroup;
   } | null = null;
   private readonly bodyBuffers: BufferSet;
+  /** The body's base, x: behind it the flow is not simulated (hatched). */
+  private baseX: number | null = null;
+  private shapes: {
+    readonly behind: boolean;
+    readonly count: number;
+    readonly fill: GPUBindGroup;
+    readonly edgeCount: number;
+    readonly edge: GPUBindGroup;
+  }[] = [];
+  private readonly shapeBuffers: BufferSet;
   private mapping = false;
 
   /** A renderer able to draw into textures of `format`, and of rgba8unorm (for PNGs). */
@@ -284,12 +367,16 @@ export class FlowRenderer {
     const usage = GPUBufferUsage;
     this.buffers = new BufferSet(device);
     this.bodyBuffers = new BufferSet(device);
+    this.shapeBuffers = new BufferSet(device);
     this.drawParams = this.buffers.create(
       'flow draw params',
       DRAW_PARAMS_BYTES,
       usage.UNIFORM | usage.COPY_DST,
     );
-    this.colormap = this.buffers.createWith('colormap', colormapTable(256), usage.STORAGE);
+    const tables = new Float32Array(4 * 512);
+    tables.set(colormapTable(256), 0);
+    tables.set(spectrumTable(256), 4 * 256);
+    this.colormap = this.buffers.createWith('colour tables', tables, usage.STORAGE);
     this.rangeReadback = this.buffers.create(
       'flow range readback',
       16,
@@ -351,6 +438,8 @@ export class FlowRenderer {
   setBody(outline: readonly (readonly [number, number])[] | null): void {
     this.bodyBuffers.destroyAll();
     this.body = null;
+    this.baseX =
+      outline === null || outline.length === 0 ? null : Math.max(...outline.map(([x]) => x));
     if (outline === null || outline.length < 2) return;
     const usage = GPUBufferUsage;
     const points = this.bodyBuffers.createWith(
@@ -381,6 +470,50 @@ export class FlowRenderer {
     };
   }
 
+  /** Convex shapes drawn as they are over the flow, behind or in front of the body (the fins). */
+  setShapes(shapes: readonly FlowShape[]): void {
+    this.shapeBuffers.destroyAll();
+    this.shapes = [];
+    const usage = GPUBufferUsage;
+    const dpr = window.devicePixelRatio || 1;
+    for (const shape of shapes) {
+      const p = shape.points;
+      if (p.length < 3) continue;
+      // A fan of triangles, then the closed outline.
+      const triangles: number[] = [];
+      for (let k = 1; k + 1 < p.length; k++) triangles.push(...p[0]!, ...p[k]!, ...p[k + 1]!);
+      const outline = [...p, p[0]!].flatMap(([x, y]) => [x, y]);
+      const points = this.shapeBuffers.createWith(
+        'shape points',
+        new Float32Array([...triangles, ...outline]),
+        usage.STORAGE,
+      );
+      const group = (first: number, count: number, colour: readonly number[], width: number) => {
+        const params = new ArrayBuffer(LINE_PARAMS_BYTES);
+        new Uint32Array(params, 0, 2).set([first, count]);
+        new Float32Array(params, 8, 1).set([width]);
+        new Float32Array(params, 16, 4).set(colour);
+        const buffer = this.shapeBuffers.createWith(
+          'shape params',
+          new Uint8Array(params),
+          usage.UNIFORM,
+        );
+        return this.device.createBindGroup({
+          layout: this.pipelines.lineLayout,
+          entries: [buffer, points].map((b, binding) => ({ binding, resource: { buffer: b } })),
+        });
+      };
+      const count = triangles.length / 2;
+      this.shapes.push({
+        behind: shape.behind,
+        count,
+        fill: group(0, count, shape.fill, 0),
+        edgeCount: p.length + 1,
+        edge: group(count, p.length + 1, shape.edge, 1.0 * dpr),
+      });
+    }
+  }
+
   /**
    * Draw the source into `target` (cleared to the background), computing
    * its fields from the solver's current state: no readback. The target's
@@ -405,10 +538,32 @@ export class FlowRenderer {
       this.writeDrawParams(r, options, slots, target.width, target.height, options.view);
       const instances = r.source.mirror ? 2 : 1;
       const { ni, nj } = r.source;
+      const glow = options.look === 'glow';
       pass.setBindGroup(0, r.drawGroup);
       pass.setBindGroup(1, r.shockGroup);
-      pass.setPipeline(pipelines.field);
+      if (r.source.fittedShock) {
+        // Outside the fitted shock: the free stream.
+        pass.setPipeline(glow ? pipelines.freeGlow : pipelines.free);
+        pass.draw(6 * (ni + 1), instances);
+      }
+      pass.setPipeline(glow ? pipelines.glow : pipelines.field);
       pass.draw(6 * (ni + 1) * (nj + 1), instances);
+      if (this.baseX !== null && r.source.fittedShock) {
+        // Behind the base the solver computes nothing: hatched, not painted.
+        pass.setPipeline(pipelines.unsimulated);
+        pass.draw(6);
+      }
+      const drawShapes = (behind: boolean) => {
+        for (const shape of this.shapes.filter((sh) => sh.behind === behind)) {
+          pass.setBindGroup(1, shape.fill);
+          pass.setPipeline(pipelines.shape);
+          pass.draw(shape.count);
+          pass.setBindGroup(1, shape.edge);
+          pass.setPipeline(pipelines.line);
+          pass.draw(6 * (shape.edgeCount - 1), 1);
+        }
+      };
+      drawShapes(true);
       if (this.body !== null) {
         pass.setBindGroup(1, this.body.fill);
         pass.setPipeline(pipelines.body);
@@ -422,7 +577,7 @@ export class FlowRenderer {
       }
       if (options.shock && r.source.fittedShock) {
         pass.setBindGroup(1, r.shockGroup);
-        pass.setPipeline(pipelines.line);
+        pass.setPipeline(glow ? pipelines.shockGlow : pipelines.line);
         pass.draw(6 * ni, instances);
       }
       if (this.body !== null) {
@@ -430,6 +585,7 @@ export class FlowRenderer {
         pass.setPipeline(pipelines.line);
         pass.draw(6 * (this.body.count - 1), 2);
       }
+      drawShapes(false);
     }
     pass.end();
     this.device.queue.submit([encoder.finish()]);
@@ -483,6 +639,10 @@ export class FlowRenderer {
         pass.setViewport(k, 0, 1, 1, 0, 1);
         pass.setBindGroup(0, r.drawGroup);
         pass.setBindGroup(1, r.shockGroup);
+        if (r.source.fittedShock) {
+          pass.setPipeline(pipelines.freeProbe);
+          pass.draw(6 * (r.source.ni + 1), r.source.mirror ? 2 : 1);
+        }
         pass.setPipeline(pipelines.probe);
         pass.draw(6 * (r.source.ni + 1) * (r.source.nj + 1), r.source.mirror ? 2 : 1);
         pass.end();
@@ -539,6 +699,8 @@ export class FlowRenderer {
     this.resources = null;
     this.bodyBuffers.destroyAll();
     this.body = null;
+    this.shapeBuffers.destroyAll();
+    this.shapes = [];
     this.buffers.destroyAll();
   }
 
@@ -606,13 +768,16 @@ export class FlowRenderer {
   private computeFields(
     encoder: GPUCommandEncoder,
     r: SourceResources,
-    options: Pick<FlowDrawOptions, 'field' | 'split' | 'lengthScale'>,
+    options: Pick<FlowDrawOptions, 'field' | 'split' | 'lengthScale' | 'look'>,
   ): [FlowField, FlowField] {
     const { source } = r;
-    const slots: [FlowField, FlowField] = options.split
-      ? ['schlieren', options.field === 'schlieren' ? 'mach' : options.field]
-      : [options.field, options.field];
-    const count = options.split ? 2 : 1;
+    const glow = options.look === 'glow';
+    const slots: [FlowField, FlowField] = glow
+      ? ['mach', 'schlieren']
+      : options.split
+        ? ['schlieren', options.field === 'schlieren' ? 'mach' : options.field]
+        : [options.field, options.field];
+    const count = options.split || glow ? 2 : 1;
     const params = new ArrayBuffer(FLOW_PARAMS_BYTES);
     new Uint32Array(params, 0, 5).set([
       source.ni,
@@ -622,6 +787,7 @@ export class FlowRenderer {
       FLOW_FIELD_CODES[slots[1]],
     ]);
     const w = source.freeStream;
+    new Float32Array(params, 24, 2).set(this.freeValues(source, slots));
     new Float32Array(params, 32, 6).set([w.rho, w.u, w.v, w.p, source.gamma, options.lengthScale]);
     this.device.queue.writeBuffer(r.flowParams, 0, params);
 
@@ -668,7 +834,10 @@ export class FlowRenderer {
 
   private writeDrawParams(
     r: SourceResources,
-    options: Pick<FlowDrawOptions, 'split' | 'schlierenContrast' | 'gridStride'>,
+    options: Pick<
+      FlowDrawOptions,
+      'split' | 'schlierenContrast' | 'gridStride' | 'look' | 'palette'
+    >,
     slots: [FlowField, FlowField],
     width: number,
     height: number,
@@ -694,8 +863,19 @@ export class FlowRenderer {
       6,
     );
     floats[14] = options.schlierenContrast;
+    words[15] = options.palette === 'spectrum' ? 1 : 0;
     floats.set([...hexToRgb(SCHLIEREN_DARK), 1, ...hexToRgb(SCHLIEREN_LIGHT), 1], 16);
     floats.set(COLOURS.grid, 24);
+    const free = this.freeValues(r.source, slots);
+    floats.set([free[0], free[lower], GLOW_BASE, this.baseX ?? 0], 28);
     this.device.queue.writeBuffer(this.drawParams, 0, params);
+  }
+
+  /** The free stream's value of each slot's field (the fill outside the shock). */
+  private freeValues(source: FlowSource, slots: [FlowField, FlowField]): [number, number] {
+    return [
+      freeStreamValue(slots[0], source.gamma, source.freeStream),
+      freeStreamValue(slots[1], source.gamma, source.freeStream),
+    ];
   }
 }

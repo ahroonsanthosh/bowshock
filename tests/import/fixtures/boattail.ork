@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openrocket version="1.10" creator="bowshock test fixture">
+  <!-- A rocket with a boat-tail: an ogive on a 38 mm tube with three fins,
+       then a conical transition narrowing to a 29 mm base. Written for
+       bowshock's tests in OpenRocket's format. The boat-tail cannot be
+       represented, so the import gives no design. -->
+  <rocket>
+    <name>Boat-tail</name>
+    <id>00000000-0000-4000-8000-000000000201</id>
+    <subcomponents>
+      <stage>
+        <name>Sustainer</name>
+        <id>00000000-0000-4000-8000-000000000202</id>
+        <subcomponents>
+          <nosecone>
+            <name>Nose cone</name>
+            <id>00000000-0000-4000-8000-000000000203</id>
+            <finish>normal</finish>
+            <material type="bulk" density="1050.0" group="Plastics">Polystyrene</material>
+            <length>0.2</length>
+            <thickness>0.002</thickness>
+            <shape>ogive</shape>
+            <shapeparameter>1.0</shapeparameter>
+            <aftradius>0.019</aftradius>
+            <aftshoulderradius>0.018</aftshoulderradius>
+            <aftshoulderlength>0.03</aftshoulderlength>
+            <aftshoulderthickness>0.002</aftshoulderthickness>
+            <aftshouldercapped>false</aftshouldercapped>
+            <isflipped>false</isflipped>
+          </nosecone>
+          <bodytube>
+            <name>Body tube</name>
+            <id>00000000-0000-4000-8000-000000000204</id>
+            <finish>normal</finish>
+            <material type="bulk" density="680.0" group="PaperProducts">Cardboard</material>
+            <length>0.5</length>
+            <thickness>0.001</thickness>
+            <radius>0.019</radius>
+            <subcomponents>
+              <trapezoidfinset>
+                <name>Fins</name>
+                <id>00000000-0000-4000-8000-000000000205</id>
+                <instancecount>3</instancecount>
+                <fincount>3</fincount>
+                <radiusoffset method="surface">0.0</radiusoffset>
+                <angleoffset method="relative">0.0</angleoffset>
+                <rotation>0.0</rotation>
+                <axialoffset method="bottom">0.0</axialoffset>
+                <position type="bottom">0.0</position>
+                <finish>normal</finish>
+                <material type="bulk" density="680.0" group="Woods">Plywood</material>
+                <thickness>0.003</thickness>
+                <crosssection>square</crosssection>
+                <cant>0.0</cant>
+                <filletradius>0.0</filletradius>
+                <filletmaterial type="bulk" density="1250.0" group="Other">Epoxy</filletmaterial>
+                <rootchord>0.08</rootchord>
+                <tipchord>0.04</tipchord>
+                <sweeplength>0.04</sweeplength>
+                <height>0.05</height>
+              </trapezoidfinset>
+            </subcomponents>
+          </bodytube>
+          <transition>
+            <name>Boat-tail</name>
+            <id>00000000-0000-4000-8000-000000000206</id>
+            <finish>normal</finish>
+            <material type="bulk" density="1050.0" group="Plastics">Polystyrene</material>
+            <length>0.03</length>
+            <thickness>0.002</thickness>
+            <shape>conical</shape>
+            <foreradius>auto 0.019</foreradius>
+            <aftradius>0.0145</aftradius>
+            <foreshoulderradius>0.0</foreshoulderradius>
+            <foreshoulderlength>0.0</foreshoulderlength>
+            <foreshoulderthickness>0.0</foreshoulderthickness>
+            <foreshouldercapped>false</foreshouldercapped>
+            <aftshoulderradius>0.0</aftshoulderradius>
+            <aftshoulderlength>0.0</aftshoulderlength>
+            <aftshoulderthickness>0.0</aftshoulderthickness>
+            <aftshouldercapped>false</aftshouldercapped>
+          </transition>
+        </subcomponents>
+      </stage>
+    </subcomponents>
+  </rocket>
+</openrocket>

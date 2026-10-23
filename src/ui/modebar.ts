@@ -29,6 +29,8 @@ export interface ModeBarOptions<M extends string, T extends string> {
   readonly toggles?: readonly ToggleOption<T>[];
   readonly onMode: (mode: M) => void;
   readonly onToggle?: (toggle: T) => void;
+  /** The modes' group's name for assistive technology (default "Field shown"). */
+  readonly label?: string;
 }
 
 export class ModeBar<M extends string, T extends string = never> {
@@ -39,7 +41,7 @@ export class ModeBar<M extends string, T extends string = never> {
   constructor(options: ModeBarOptions<M, T>) {
     const modes = h('div', {
       className: 'modebar__group',
-      attrs: { role: 'group', 'aria-label': 'Field shown' },
+      attrs: { role: 'group', 'aria-label': options.label ?? 'Field shown' },
     });
     for (const mode of options.modes) {
       const button = modeButton(mode.label, mode.key, mode.name, mode.hint);
