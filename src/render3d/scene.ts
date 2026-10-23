@@ -172,15 +172,17 @@ const STREAMLINES_PER_PLANE = 6;
  * dense sheets; each level is a real value of the computed field.
  */
 const ISO_SURFACES = 40;
+/** The cutaway's opening, degrees. */
+const CUT_DEGREES = 150;
 /** Sectors of a full turn of the revolved surfaces. */
 const SHELL_SECTORS = 144;
 const DRAFT_SHELL_SECTORS = 64;
 /**
- * The cutaway: a quarter turn from azimuth `cutStart` towards +z, facing
- * the default view; it starts at the first fin, so that fins lie on its
- * faces rather than behind them.
+ * The cutaway: an opening of CUT_WIDTH from azimuth `cutStart` towards +z,
+ * centred where the old quarter cut was (from the first fin, a quarter
+ * turn on), which faces the default view.
  */
-const CUT_WIDTH = Math.PI / 2;
+const CUT_WIDTH = (CUT_DEGREES * Math.PI) / 180;
 
 type DrawName =
   | 'body'
@@ -1557,7 +1559,14 @@ export class FlowScene3D {
     s.legend =
       g !== null
         ? this.sprite(
-            legend(g.scale, g.range, this.layers.isosurfaces ? g.levels : [], px),
+            legend(
+              g.scale,
+              g.range,
+              this.layers.isosurfaces ? g.levels : [],
+              px,
+              // Within the view, its margins kept.
+              this.canvas.width - Math.round(28 * this.pixelRatio),
+            ),
             s.legend,
           )
         : undefined;
@@ -1945,13 +1954,13 @@ function squareAt(x: number, h: number, value: number): Float32Array<ArrayBuffer
   ]);
 }
 
-/** The cutaway's first azimuth: the fin nearest azimuth 0, so that fins lie on its faces. */
+/** The cutaway's first azimuth: centred a quarter turn past the fin nearest azimuth 0 (facing the default view). */
 function cutStartFor(rocket: Rocket | null): number {
   const fins = rocket?.fins;
-  if (fins === undefined || fins.count < 1) return 0;
+  if (fins === undefined || fins.count < 1) return Math.PI / 4 - CUT_WIDTH / 2;
   const step = (2 * Math.PI) / fins.count;
   const roll = fins.roll ?? 0;
-  return roll + step * Math.round(-roll / step);
+  return roll + step * Math.round(-roll / step) + Math.PI / 4 - CUT_WIDTH / 2;
 }
 
 /** A region and aspect, to the precision that changes the fitted view visibly. */

@@ -110,6 +110,10 @@ export function legend(
   range: ColourRange,
   levels: readonly number[],
   px: number,
+  /** The widest the legend may be (a narrow view): its fine print wraps at "; ". */
+  maxWidth = Infinity,
+  /** More fine print, a line each (wrapped the same way). */
+  extra: readonly string[] = [],
 ): Canvas2D {
   const barWidth = Math.round(px * 22);
   const barHeight = Math.round(px * 0.8);
@@ -133,10 +137,12 @@ export function legend(
   const notesFont = `400 ${Math.round(px * 0.85)}px ${OVERLAY_FONT}`;
   const probe = context(makeCanvas(1, 1));
   probe.font = notesFont;
+  const fine = [notes, clipped, ...extra]
+    .filter((t) => t !== '')
+    .flatMap((t) => wrapAt(t, (u) => probe.measureText(u).width, maxWidth - 2 * pad));
   const width =
-    Math.max(barWidth + 2 * px, probe.measureText(notes).width, probe.measureText(clipped).width) +
-    2 * pad;
-  const c = makeCanvas(width, (clipped === '' ? 3.6 : 4.6) * lineHeight + barHeight + 2 * pad);
+    Math.max(barWidth + 2 * px, ...fine.map((t) => probe.measureText(t).width)) + 2 * pad;
+  const c = makeCanvas(width, (2.6 + fine.length) * lineHeight + barHeight + 2 * pad);
   const ctx = context(c);
   backing(ctx, c.width, c.height, px);
   ctx.textBaseline = 'middle';
@@ -179,9 +185,10 @@ export function legend(
   ctx.fill();
   ctx.font = notesFont;
   ctx.fillStyle = 'rgba(200, 204, 212, 0.85)';
-  ctx.fillText(notes, pad, y0 + barHeight + Math.round(px * 0.35) + 2.1 * lineHeight);
+  fine.forEach((t, k) => {
+    ctx.fillText(t, pad, y0 + barHeight + Math.round(px * 0.35) + (2.1 + k) * lineHeight);
+  });
   if (clipped !== '') {
-    ctx.fillText(clipped, pad, y0 + barHeight + Math.round(px * 0.35) + 3.1 * lineHeight);
     // Arrows at the ends that clip.
     ctx.fillStyle = 'rgba(236, 238, 242, 0.9)';
     const mid = y0 + barHeight / 2;
@@ -203,4 +210,26 @@ export function legend(
     }
   }
   return c;
+}
+
+/**
+ * A line of text in lines no wider than `max` (by `measure`), broken after
+ * "; " or ", " where it can be, else at spaces; a word wider than `max`
+ * stays whole.
+ */
+export function wrapAt(text: string, measure: (t: string) => number, max: number): string[] {
+  if (!(measure(text) > max)) return [text];
+  const parts = text.split(/(?<=; |, | )/);
+  const lines: string[] = [];
+  let line = '';
+  for (const part of parts) {
+    if (line !== '' && measure((line + part).trimEnd()) > max) {
+      lines.push(line.trimEnd());
+      line = part;
+    } else {
+      line += part;
+    }
+  }
+  if (line.trim() !== '') lines.push(line.trimEnd());
+  return lines;
 }
