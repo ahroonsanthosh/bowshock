@@ -1062,9 +1062,10 @@ from -0.3 to 1.2, 1.4 chords high).
 - **(b1) identity:** the double wedge of t/c 0.08 at Mach 1.5 on 0009's
   60 x 28 grid equals the 2D planar engine on that grid, CPU within 1e-12
   and GPU within 2 eps_2D.
-- **(b2) convergence**, four-grid families at ratio 1.5 (L0 32 cells over
-  the chord) and, being cheap in planar mode, to L5 (every segment's count
-  on L0 a multiple of 32), each against `exactSectionDrag` (0009):
+- **(b2) convergence**, four-grid families at ratio 1.5 (on L0 at least
+  32 cells over the chord, and every segment's count a multiple of 32, so
+  that L4 and L5 are whole; revision 3d) and, being cheap in planar mode,
+  to L5, each against `exactSectionDrag` (0009):
 
   | Case | Section                                  | Mach |
   | ---- | ---------------------------------------- | ---- |
@@ -1455,22 +1456,25 @@ ladder is split.
 
 ### 5.2 On this container's CPU (niced, one process at a time)
 
-| Work                                                                                      | Sizes (estimate)                                      | Time on one core (estimate) |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------- | --------------------------- |
-| 4.0 code checks, junction tests J1 and J2                                                 | 1e3 to 3e4 cells                                      | a few hours                 |
-| (a0), (a), (a')                                                                           | revolved 2D grids, up to 16 layers, about 2.5e4 cells | 6 to 10 hours               |
-| (b0): 14 captured 2D families at ratio 1.5                                                | nj 32 to 108                                          | about 28 hours              |
-| (b1), (b2): seven families to L5                                                          | planar, two layers, up to about 8e4 cells             | about 15 hours              |
-| (b3): five hexagons to L5, the planar MOC, and its check against the planar fitted engine | as (b2)                                               | about 16 hours              |
-| (e0): seven 2D strip families, their 8 L0 references, the 1.3 strips                      | 2D fitted                                             | about 6 hours               |
-| (e1), (e2), square versions: identities                                                   | planar 3D, 2e4 to 5e4 cells, to round-off             | about 8 hours               |
-| L0 of every GPU family (about 38)                                                         | 4e4 to 1.7e5 cells, about 3,000 steps                 | about 30 hours              |
-| L1 of the reference families (about 14)                                                   | 1.3e5 to 5.7e5 cells                                  | about 35 hours              |
-| L2 of d1 and e3                                                                           | 4.6e5 and 5.1e5 cells, 6,750 steps                    | about 9 hours               |
-| The spike (2.11)                                                                          | grid generation only                                  | minutes                     |
+| Work                                                                                      | Sizes (estimate)                                                 | Time on one core (estimate)  |
+| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------- |
+| 4.0 code checks, junction tests J1 and J2                                                 | 1e3 to 3e4 cells                                                 | a few hours                  |
+| (a0), (a), (a')                                                                           | revolved 2D grids, up to 16 layers, about 2.5e4 cells            | 6 to 10 hours                |
+| (b0): 14 captured 2D families at ratio 1.5                                                | nj 32 to 108                                                     | about 28 hours               |
+| (b1), (b2): seven families to L5                                                          | planar, two layers, up to about 0.35 to 0.47 million cells on L5 | 40 to 60 hours (revision 3d) |
+| (b3): five hexagons to L5, the planar MOC, and its check against the planar fitted engine | as (b2)                                                          | 25 to 40 hours (revision 3d) |
+| (e0): seven 2D strip families, their 8 L0 references, the 1.3 strips                      | 2D fitted                                                        | about 6 hours                |
+| (e1), (e2), square versions: identities                                                   | planar 3D, 2e4 to 5e4 cells, to round-off                        | about 8 hours                |
+| L0 of every GPU family (about 38)                                                         | 4e4 to 1.7e5 cells, about 3,000 steps                            | about 30 hours               |
+| L1 of the reference families (about 14)                                                   | 1.3e5 to 5.7e5 cells                                             | about 35 hours               |
+| L2 of d1 and e3                                                                           | 4.6e5 and 5.1e5 cells, 6,750 steps                               | about 9 hours                |
+| The spike (2.11)                                                                          | grid generation only                                             | minutes                      |
 
-About 150 core-hours: about a week and a half of one niced core on the
-shared machine, in pieces that each commit their results. SwiftShader
+About 200 to 250 core-hours (revision 3d; revision 3 said 150): two weeks
+or so of one niced core on the shared machine, run in the background over
+days, in pieces that each checkpoint and commit their results. The engine's
+measured rate is 3.6e-6 s a cell-step on one niced core
+(`docs/research/solver3d/out/speed.json`). SwiftShader
 runs only the GPU code checks and the GPU sides of (a0), (a), (b1), (e1)
 and J1, J2 on their small grids.
 
@@ -2212,9 +2216,53 @@ value is not shown inside the Basic Finner's class (6.3); the proposed
 (u) is now 0014 10.7 (u) (6.7); section 10 lists what is answered and
 what is still open.
 
-### Revision 3c, 2026-10-23 (this text): the reference cases' open dimensions
+### Revision 3c, 2026-10-23 (commit 5a3fdbd): the reference cases' open dimensions
 
 Before any reference or Stage A number exists: the independent
 reference's case dimensions that 4.4 left open (chords, the domains, the
 mesh sizes) are fixed in `scripts/reference-3d/cases.json` and the script,
 and its convergence test is the fin drag's, not the residual's (4.4).
+
+### Revision 3d, 2026-10-23 (this text): (b2)'s layout, the CPU cost
+
+Before any (b) number exists.
+
+- (b2)'s layout read "L0 32 cells over the chord" and "every segment's
+  count on L0 a multiple of 32": a double wedge has two segments over the
+  chord, so both cannot hold. Now: on L0 at least 32 cells over the chord,
+  and every segment's count a multiple of 32 (4.2). This removes a
+  contradiction and changes no tolerance and no case.
+- The CPU estimate of 5.2 is corrected: (b2) and (b3) to L5 on two layers
+  reach 0.35 to 0.47 million cells a level, at the measured 3.6e-6 s a
+  cell-step about 65 to 100 core-hours for (b), about 200 to 250 for the
+  CPU plan in all (was 150). The two layers are kept, as registered.
+
+### Deviation, 2026-10-23: rung (a)'s 2D references (reported, not reworded)
+
+Rung (a) (4.1) asks that the 2D reference be "converged until its density
+residual is below 1e-13 of its first value". Measured on the CPU
+(`docs/research/solver3d/out/rung-a.json`, commit 7ec2320 and the lane's
+rerun): the 3:1 ellipsoid reached 6.9e-14 of its first residual; **the
+3-caliber tangent ogive stopped at 3.7e-13 and the 5 deg cone at 1.2e-12,
+so the criterion was not met as worded for those two.** The criterion is
+not reworded after the result. The evidence that these are the
+arithmetic's floors, not slow convergence:
+
+- neither fell any further over 10,000 more steps (20 checks of 500 steps
+  without a 10% fall);
+- the cone's first residual is small (0.26, its starting flow at Mach 1.3
+  being close to the free stream), so a floor of about 3e-13 in absolute
+  terms is 1.2e-12 of it;
+- the CPU engine works in double precision, and the stopped residuals are
+  about half the residual of the same state with every cell perturbed at
+  random by 4e-16 of its value, a few units in the last place (ogive 2.7e-12
+  against 5.7e-12; ellipsoid 1.0e-13 against 1.8e-13; cone 3.3e-13 against
+  7.1e-13 to 7.6e-13; `out/rung-a-floor.json`, evidence, not a criterion).
+
+Every registered identity of rung (a) holds regardless: the residual
+identities to 6.9e-16 to 2.5e-15 (converged) and 8.9e-16 to 1.7e-15 (on an
+unconverged state, which needs no converged reference at all), the 3D
+converged states within 2.3e-15 to 3.8e-13 of the 2D (limit 1e-12), |w|
+within 1.4e-15 of the sound speed, and (a') within 2.6e-15. Rung (a)'s CPU
+part is reported as **passed, with one precondition not met as worded,
+disclosed here.** Its GPU part has not run yet.

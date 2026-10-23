@@ -15,6 +15,10 @@ python3 scripts/reference-3d/reference3d.py all --cases e3,h1 --threads 8
   SU2's release for your system (its SHA-256 is checked) and installs Gmsh
   into `.reference-3d/` in the repository (not committed).
 - On Apple silicon the macOS build runs under Rosetta.
+- On Linux, Gmsh's Python wheel needs the OpenGL and X libraries even without
+  a display. On Ubuntu 24.04 (the container this was checked in):
+  `sudo apt-get install libglu1-mesa libxcursor1 libxinerama1 libxft2`.
+  Windows and macOS need nothing extra.
 - Each level that finishes is collected into
   `docs/research/solver3d/reference/<case>/L<n>/`; an interrupted run
   continues where it stopped. Commit that folder (all of it, the
