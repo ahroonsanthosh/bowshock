@@ -67,8 +67,12 @@ export function layerSentences(s: SceneScale): string[] {
         'the fins are grey, not in the airflow.',
     );
   }
-  if (s.particles) {
-    out.push('Particles move with the computed velocity; where they start is random.');
+  if (s.streaks !== 'off') {
+    out.push(
+      'The streaks are short pieces of the computed streamlines (brighter at their heads), ' +
+        'through the whole revolved flow; where each starts is spread by the page (more near ' +
+        'the body and the shock), not computed.',
+    );
   }
   return out;
 }
@@ -95,7 +99,7 @@ export function sceneLegend(s: SceneScale): LegendScale {
     s.faces === 'fibres' ? 'Texture follows the computed flow.' : '',
     s.faces === 'schlieren' ? 'Slice: computed density gradient, light where steep.' : '',
     s.bodyCp !== null ? 'Body: computed surface pressure, blue low, red high.' : '',
-    s.particles ? 'Particles move with the computed flow; start points random.' : '',
+    s.streaks !== 'off' ? 'Streaks follow the computed flow; start points spread by the page.' : '',
     'Drag to turn it; 0 resets.',
   ];
   return {

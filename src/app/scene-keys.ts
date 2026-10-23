@@ -110,9 +110,9 @@ export const SCENE_KEYS: readonly SceneKey[] = [
   {
     action: 'scene-particles',
     key: '8',
-    label: 'Particles',
-    description: 'Particles carried by the computed flow (draws continuously)',
-    pressed: (s) => s.getLayers().particles,
+    label: 'Streaks: still, moving, off',
+    description:
+      'Dense streaks along the computed flow: still, moving (draws continuously), or off',
   },
 ];
 

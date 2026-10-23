@@ -104,7 +104,7 @@ const ALL_OFF: Partial<SceneLayers> = {
   box: false,
   overlay: false,
   help: false,
-  particles: false,
+  streaks: 'off',
 };
 
 describe('the 3D view', () => {
@@ -240,7 +240,8 @@ describe('the 3D view', () => {
       { solidShells: false },
       { faces: 'schlieren' },
       { faces: 'plain' },
-      { particles: true },
+      { streaks: 'still' },
+      { streaks: 'moving' },
       { cutaway: false },
       { help: true },
       { ...ALL_OFF },

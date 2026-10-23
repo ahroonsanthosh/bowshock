@@ -35,7 +35,7 @@ describe("the 3D view's legend fold", () => {
         faces: 'fibres',
         schlieren: null,
         bodyCp: { min: -0.1, max: 0.1 },
-        particles: true,
+        streaks: 'still',
       }),
     );
     const shown = (el: Element | null) => el !== null && getComputedStyle(el).display !== 'none';
@@ -54,7 +54,7 @@ describe("the 3D view's legend fold", () => {
     expect(shown(more)).toBe(false);
     fold.click();
     expect(shown(more)).toBe(true);
-    expect(more?.textContent).toContain('Particles move with the computed flow');
+    expect(more?.textContent).toContain('Streaks follow the computed flow');
     aside.remove();
   });
 });

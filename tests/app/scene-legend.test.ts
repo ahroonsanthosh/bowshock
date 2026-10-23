@@ -22,7 +22,7 @@ const SCALE: SceneScale = {
   faces: 'fibres',
   schlieren: null,
   bodyCp: { min: -0.08, max: 0.08 },
-  particles: false,
+  streaks: 'off',
 };
 
 describe("the 3D view's legend", () => {
@@ -39,9 +39,11 @@ describe("the 3D view's legend", () => {
         'Body: computed surface pressure, blue low, red high. ' +
         'Drag to turn it; 0 resets.',
     );
-    const moving = sceneLegend({ ...SCALE, particles: true });
+    const moving = sceneLegend({ ...SCALE, streaks: 'moving' });
     if (moving.kind !== 'palette') throw new Error(moving.kind);
-    expect(moving.more).toContain('Particles move with the computed flow; start points random.');
+    expect(moving.more).toContain(
+      'Streaks follow the computed flow; start points spread by the page.',
+    );
     const plain = sceneLegend({ ...SCALE, faces: null, bodyCp: null });
     if (plain.kind !== 'palette') throw new Error(plain.kind);
     expect(plain.note).toBe(

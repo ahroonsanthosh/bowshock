@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dualMesh, locate } from '../../src/render3d/field';
+import { dualMesh } from '../../src/render3d/field';
 import {
   densityGradient,
   fieldImageMesh,
@@ -7,13 +7,12 @@ import {
   streakNoise,
   wallPressure,
 } from '../../src/render3d/field-image';
-import { Particles } from '../../src/render3d/particles';
 import { FREE, rayField, rayFlow } from './synthetic';
 
 /**
  * The field's images (src/render3d/field-image.ts): the density gradient
  * from the grid's metric, the image's vertices, the body's surface
- * pressure, the streaks' noise, and particles moved by the field.
+ * pressure and the streaks' noise.
  */
 describe('the field image', () => {
   const field = rayField(48, 14);
@@ -80,23 +79,5 @@ describe('the field image', () => {
       }
     }
     expect(along * 3).toBeLessThan(across);
-  });
-
-  it('moves particles along the flow (rays from (-3, 0)) and keeps them in the region', () => {
-    const p = new Particles(mesh, 200, 0, Math.PI, 4);
-    for (let step = 0; step < 20; step++) p.advance(0.02);
-    const lines = p.streaks(0.05, mesh.mach);
-    for (let k = 0; k < 200; k++) {
-      const o = 12 * k;
-      const x = lines[o + 4]!;
-      const r = Math.hypot(lines[o + 5]!, lines[o + 6]!);
-      expect(locate(mesh, x, r)).not.toBeNull();
-      // The streak lies along the ray through its head.
-      const xt = lines[o]!;
-      const rt = Math.hypot(lines[o + 1]!, lines[o + 2]!);
-      const cross = (x + 3) * rt - r * (xt + 3);
-      // Sine of the angle between the rays through the head and the tail.
-      expect(Math.abs(cross) / (Math.hypot(x + 3, r) * Math.hypot(xt + 3, rt))).toBeLessThan(2e-3);
-    }
   });
 });
