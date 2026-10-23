@@ -189,7 +189,8 @@ export class CurveRun {
     private readonly solve: NoseSolver,
     private readonly onChange: (run: CurveRun, index: number) => void,
   ) {
-    const tested = testedWindowsFor(options.design, options.without);
+    // Without WebGPU no window point could ever be solved: none is added.
+    const tested = options.noGpu === true ? [] : testedWindowsFor(options.design, options.without);
     const machs = [...new Set([...curveMachs(options.step), ...tested.map((w) => w.mach)])].sort(
       (a, b) => a - b,
     );

@@ -206,10 +206,12 @@ everywhere else (the class's own claim stays suspended, 0010 section
 11.7); the words follow its text and reasons. The curve's regular points
 never fall in the sub-class's Mach windows (1.801 to 1.827 and 2.423 to
 2.468), so a rocket the logic places inside the sub-class gets a point in
-each window (section 8.1), noted "BRL Report 934 tested Mach ... here"
-in the point block, the table, the chart (a green band, "BRL 934") and
-the CSV row; the point block then shows the logic's claim text and
-caveats word for word (`tests/app/tested-windows.test.ts`,
+each window (section 8.1), noted "Mach window BRL Report 934 tested
+(a to b)" in the table, the chart (a green band, "BRL 934 tested") and
+the CSV row, and in the point block beside the logic's claim (alone on a
+point without a number), so that it never reads as a result; the point
+block shows the logic's claim text and caveats word for word. With a nose
+term not verified, no claim is more than an estimate (0011 section 4) (`tests/app/tested-windows.test.ts`,
 `tests/app/numbers.test.ts`). A new kind fails the build
 (`src/app/status-words.ts`) until it is worded here and there.
 
@@ -421,7 +423,8 @@ curve's two decimals, the precision every Mach number is shown to, so
 that the point shown is the point solved, kept only strictly inside the
 window (1.81 in 1.801 to 1.827, 2.45 in 2.423 to 2.468). They are solved
 and labelled like any point, Validated only where the logic says so; no
-point is added for any other rocket. The flight's highest Mach
+point is added for any other rocket, nor without WebGPU (it could never
+be solved there). The flight's highest Mach
 number is marked on the chart and said beside it with where it came from
 (an OpenRocket file's own simulation is often subsonic: 15 of its 16
 examples fly below Mach 1). At
