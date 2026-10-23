@@ -383,6 +383,8 @@ export function noseEnd(outcome: VerifiedDrag | NoseSolveError): NoseEnd | null 
 export function provisionalTotal(form: TotalDragForm, drag: number, grids: number): number | null {
   const view = totalDragView(form, {
     kind: 'solved',
+    // A provisional value: no band, never a claim; not verified.
+    verified: false,
     component: noseComponentOf({ value: drag, uncertainty: 0, grids }),
   });
   return view.kind === 'total' ? view.total.cd : null;

@@ -177,6 +177,7 @@ describe('the numbers the page shows are the logic’s', { timeout: 600_000 }, (
     };
     const nose: NoseState = {
       kind: 'solved',
+      verified: true,
       component: exactConeNoseWaveDrag(
         mach,
         Math.atan(form.body.nose.baseRadius / form.body.nose.length),

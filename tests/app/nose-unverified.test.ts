@@ -23,15 +23,15 @@ import {
 import { noseStateOf } from '../../src/app/total-drag-display';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 
-const nose = (form: TotalDragForm, verified?: boolean): NoseState => ({
+const nose = (form: TotalDragForm, verified: boolean): NoseState => ({
   kind: 'solved',
+  verified,
   component: exactConeNoseWaveDrag(
     form.mach,
     Math.atan(form.body.nose.baseRadius / form.body.nose.length),
   ),
-  ...(verified === undefined ? {} : { verified }),
 });
-const claimAt = (form: TotalDragForm, verified?: boolean) => {
+const claimAt = (form: TotalDragForm, verified: boolean) => {
   const view = totalDragView(form, nose(form, verified));
   if (view.kind !== 'total') throw new Error(view.kind);
   return view.claim;
@@ -53,7 +53,6 @@ describe('a nose term not verified', () => {
     });
     expect(claimWords(claimAt(sub(), false))).toBe(NOSE_UNVERIFIED_WORDS);
     expect(claimAt(sub(), true).kind).toBe('validated');
-    expect(claimAt(sub()).kind).toBe('validated');
     const v = claimAt(sub(), true);
     if (v.kind === 'validated') expect(v.text).toBe(VALIDATED_CLAIM);
     expect(claimWords(claimAt(sub(), true))).toBe(VALIDATED_WORDS);
@@ -79,8 +78,7 @@ describe('a nose term not verified', () => {
 
   it("the page's nose state carries the solve's verification: a wide band, not verified", () => {
     const form = sub();
-    const value =
-      nose(form).kind === 'solved' ? (nose(form) as { component: { cd: number } }).component.cd : 0;
+    const value = exactConeNoseWaveDrag(form.mach, Math.atan(0.5 / form.body.nose.length)).cd;
     const state = noseStateOf({
       kind: 'solved',
       estimate: { kind: 'monotone', value, extrapolated: value, order: 2, uncertainty: 0.5 },
@@ -95,5 +93,24 @@ describe('a nose term not verified', () => {
     const view = totalDragView(form, state);
     if (view.kind !== 'total') throw new Error(view.kind);
     expect(view.claim.kind).toBe('estimate');
+  });
+
+  it('a nose state without the flag (as from JSON) counts as not verified: an estimate', () => {
+    const form = sub();
+    const parsed = JSON.parse(
+      JSON.stringify({
+        kind: 'solved',
+        component: exactConeNoseWaveDrag(form.mach, Math.atan(0.5 / form.body.nose.length)),
+      }),
+    ) as NoseState;
+    expect('verified' in parsed).toBe(false);
+    const view = totalDragView(form, parsed);
+    if (view.kind !== 'total') throw new Error(view.kind);
+    expect(view.claim.kind).toBe('estimate');
+    expect(view.claim).toEqual({
+      kind: 'estimate',
+      text: SUB_CLASS_UNVERIFIED_CLAIM,
+      reasons: [NOSE_UNVERIFIED_REASON],
+    });
   });
 });
