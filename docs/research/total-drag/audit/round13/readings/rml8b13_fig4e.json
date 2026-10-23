@@ -63,6 +63,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -81,6 +84,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -191,6 +197,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -209,6 +218,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -227,6 +239,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": "single square, thin stroke, square inner field: no circle seen at this Mach number"
   },
   {
@@ -314,6 +329,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -332,6 +350,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -396,6 +417,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -414,6 +438,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -432,6 +459,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -450,6 +480,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -468,6 +501,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -486,6 +522,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -504,6 +543,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -522,6 +564,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -540,6 +585,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   },
   {
@@ -558,6 +606,9 @@
    "extent_x": "",
    "extent_y": "",
    "ink_box_px": "",
+   "check_fit_dx_px": "",
+   "check_fit_dy_px": "",
+   "check_fit_score": "",
    "notes": ""
   }
  ]

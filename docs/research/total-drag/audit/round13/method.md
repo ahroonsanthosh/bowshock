@@ -27,7 +27,8 @@ Opened:
   19930085324. The heading lines of the other 10.7 entries were printed
   (90 characters each) by the search for entry (k).
 * The three PDFs, fetched by me (below), their pages extracted, and their
-  text layers (`pdftotext`), searched for the figures' captions.
+  text layers (`pdftotext`), searched for the figures' captions. The
+  decisions file changed on disk during my run; I did not read it again.
 
 Not opened, listed, grepped or read: anything under
 `docs/research/total-drag/audit/w7-fins/` on any branch (the folder is
@@ -262,3 +263,90 @@ separation.
   for (40), continuing its hypotenuse). Where a tail ends on the next glyph
   (m06-07, m08-19, m10-05) it was given to the glyph it leaves from. m06-12
   shows none.
+
+## Johnston, NASA Memo 4-30-59L, figs. 10(a), 10(b) and 10(c) (PDF pp. 32 to 34, printed pp. 30 to 32)
+
+**As printed.** "Figure 10. Pressure drag results for the sharp-leading-edge
+single-wedge airfoil": (a) "Section forebody drag coefficient" (c_d,f, -.02
+to .16 by .02), (b) "Base pressure coefficient" (C_p,b, -.3 at the bottom to
+-1.3 at the top by .1; also a dashed "Pressure coefficient for a vacuum"
+curve, not read), (c) "Total-pressure drag coefficient" (c_d,t, .10 to .30 by
+.02). Abscissa "Mach number, M", .6 to 1.3, gridlines every .1. Legend
+"alpha, deg" in each: 0 circle, 2 square, 4 diamond, 6 triangle (apex up),
+8 right triangle (vertical side on the right, right angle at the bottom
+right). Each symbol carries a centre dot; faired curves join the symbols
+(not read). All five incidences shown were read.
+
+**Calibration** (`readings/johnston_fig10a_calib.json`, `_fig10b_`,
+`_fig10c_`; entries `j10a`, `j10b`, `j10c`). Every gridline, 8 in M and 10
+or 11 in the ordinate, followed over the whole plot (ink = grey below 128,
+bilevel scans). Line rms 0.25 to 0.62 px; tilts under 0.27 deg.
+Leave-one-out (px), M and ordinate: (a) 0.17 and 0.66; (b) 0.60 and 0.78;
+(c) 0.23 and 0.30. Scales 2099 to 2103 px per unit M (1 px = 0.00048 M) and
+10480 px per unit c_d in (a) and (c) (1 px = 0.0001), 2092 px per unit C_p,b
+in (b) (1 px = 0.00048).
+
+**Symbols.** Plotted glyph sizes, measured on isolated glyphs of (a)
+(`sizescan.py`): circle radius 13.5 px, square half side 11.75, diamond half
+diagonal 17, triangle half base 12.5 and height 21, right triangle half base
+14 and height 26 (to the stroke centre; stroke half width 1.2). The plotted
+circles and squares are larger than the legend's. Candidates were listed by
+`detect.py` (FFT outline scores) and drawn on the page (`candov.py`), but
+every symbol was typed and placed by eye on 1:1 to 2.5:1 crops with a pixel
+ruler and on pixel maps; the lists are in `mk_syms_johnston.py`. Centres are
+outline fits (search +-6 px), jointly for touching pairs, with neighbours
+held fixed. The scans are thin-stroked and many outlines are broken into
+dots (especially the triangles of (b)), so fit scores run 0.18 to 0.85; any
+score below 0.6, and every joint fit, takes the 1.5 px centre sigma. Every
+fit was checked on the overlays.
+
+**What was read.**
+* (a) `readings/johnston_fig10a.csv`: 59 symbols, all as points: 12 each
+  for alpha 0, 2, 4 and 6, 11 for alpha 8; M 0.680 to 1.235. Errors
+  +-0.0008 to 0.0014 in M and +-0.0002 to 0.0003 in c_d,f.
+* (b) `readings/johnston_fig10b.csv`: 100 symbols: 21 each for alpha 0, 2,
+  4 and 6, 16 for alpha 8. 77 read as points (errors +-0.0010 to 0.0020 in
+  M and +-0.0011 to 0.0021 in C_p,b); 23 in 11 clusters of merged ink, not
+  separated (no point; the row gives where every centre in the cluster must
+  lie): the circle and square at M about 0.73, 0.955, 0.98, 1.01, 1.03,
+  1.085, 1.11, 1.135, 1.16, 1.185 and 1.21 (c02, c10 to c13, c15 to c20,
+  with s of the same numbers), and a diamond d11 at M about 0.98.
+* (c) `readings/johnston_fig10c.csv`: 58 symbols, all as points: 11 for
+  alpha 0, 12 each for alpha 2, 4 and 6, 11 for alpha 8; errors +-0.0008 to
+  0.0029 in M and +-0.0002 to 0.0006 in c_d,t.
+
+**Uncertain calls.**
+* (b), merged clusters: on the descending branch (M 0.955 to 1.21) the
+  alpha 0 circle and alpha 2 square are drawn over each other at nearly
+  every Mach number: a square outline with a round inner field, the
+  circle's bottom just showing below the square. Their ink boxes were read
+  on pixel maps (columns and rows in `mk_syms_johnston.py`); the extents in
+  the CSV are those boxes shrunk by 10 px (less than any glyph's outer half
+  size). At M about 0.73 (c02, s02) the same.
+* (b), d11: no diamond is seen apart at M about 0.98; the right side of
+  merged cluster 11 is thickened as by a diamond's right vertex, so a
+  diamond is listed in that cluster. It may be absent.
+* (b), diamonds d12, d13 and d15 to d20 (M 1.01 to 1.21): each diamond's
+  lower half lies inside a merged circle and square; its centre was read on
+  a pixel map from its top apex (apex row + 18.5 px, the glyph's half
+  diagonal) and the apex column, sigma 2 px. d14 from its apex and side
+  vertices, sigma 1.5 px.
+* (b), alpha 8: no right triangle was found between M 0.914 (r07) and 1.007
+  (r08); around M 0.93 to 0.98 only triangles (alpha 6) are seen. The
+  alpha 8 series has 16 symbols against 21 for the others.
+* (b), triangles on the descending branch (t12 to t21) and several right
+  triangles (r13, r14, r16) have dotted outlines crossed by curves (scores
+  0.18 to 0.29); the overlays show each fitted outline on its dots. t20 and
+  t21 (M 1.21 and 1.22) are faint.
+* (b), t10 lies mostly inside diamond d10 (joint fit); t11's base merges
+  with the top of merged cluster 11.
+* (a), t11 and t12 (M 1.210 and 1.220) touch and were fitted jointly; the
+  circle and square pairs at M 1.0 to 1.23 overlap and were fitted jointly
+  (scores 0.38 to 0.63).
+* (c), t01 (M 0.686): only the right part of a triangle shows beside the
+  square s01, its apex at diamond d01's lower vertex; centre sigma raised to
+  3 px.
+* (c), no circle was found at M about 1.10: the square s09 stands alone
+  there, its upper left crossed by curves. Alpha 0 has 11 symbols.
+* (c), d04 (M 0.860), t05 (0.891), t12 (1.221) and r05 (0.908) fit with
+  scores 0.24 to 0.29 (broken outlines on curves).

@@ -196,6 +196,8 @@ def main():
             c = cfg.get("c_low", 1.5)
         else:
             c = cfg.get("c_good", 0.8)
+        if "sigma_px" in s:  # a raised centre sigma stated in the symbol list (an uncertain call)
+            c = max(c, s["sigma_px"])
         ex = np.hypot(2 * c, 2 * cal.loo_x) * sx
         ey = np.hypot(2 * c, 2 * cal.loo_y) * sy
         row.update({"x_val": round(X, 4), "x_err": round(float(ex), 4), "y_val": round(Y, 4),
