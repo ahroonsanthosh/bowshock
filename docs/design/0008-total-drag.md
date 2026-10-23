@@ -765,7 +765,9 @@ above it the fins-on-base factor the gate tested rested on one of Love's
 predictions in TN 3819 fig. 35, and the corrected factor has no hold-out
 there. The Mach 1.8 to 3.0 below is the plan as first written.
 
-**Suspended 2026-10-21 (0010 section 11.7).** By the hold-out rule above
+**Suspended 2026-10-21 (0010 section 11.7)**, as written on 2026-10-21;
+the route back below was run on 2026-10-22 (next paragraph). By the
+hold-out rule above
 (6.1), the class's validated claim is suspended: the correction changed a
 term the gate tested inside the class too, moving the total by -0.07% to
 +0.17% at the three shots there (by 0.7% to 3.0% above it). Nothing is
@@ -778,6 +780,22 @@ BRL Report 934's range A (Mach 1.5 to 2.47; 0014 sections 10.5 and
 as the test of the corrected factor; if it passes, the class is
 validated over what that range supports. The second run and the
 correction's residuals are kept as history (0010 sections 4.2 and 11.6).
+
+**Range A run, and a narrow sub-class validated, 2026-10-22 (0014
+section 10.7 (q); 0020).** Range A was run once as registered: the
+present model passed at all seven rounds it serves, measured over
+modelled +3.9% to +11.0% (mean +7.3%, the model low at every round),
+inside tolerances of +-25% to +-28%, which are wide (6.3). The
+rounds overlap the class in nothing: inside its Mach range they flew at
+Reynolds numbers of 7.96e6 to 8.87e6 on length, below its 1.2e7, and with
+sharp fin leading edges, not its 0.004 cal radius. So the class stays
+suspended, "an estimate, not validated", now because nothing has tested
+the corrected factor inside it, and the owner validated instead a narrow
+sub-class at exactly the tested conditions: the Basic Finner with sharp
+fin leading edges, at Mach 1.801 to 1.827 or 2.423 to 2.468 (nothing between), with the Reynolds number on length 4.423e6 to 4.855e6 times the Mach number (the run's range at every round, from the diameter and the air), at 288 to 298 K. The diameter, air and trailing-edge area at the
+test were assumed (0014 section 10.6). The rebuilt factor (W1) was refused
+at every round and has no hold-out. This is the only total claimed as
+validated; the "May claim" list below is the plan as first written.
 
 May claim:
 
@@ -822,7 +840,9 @@ May not claim:
 
 - Sharp-edged fins at the base, the class the first draft named: no
   hold-out tests it, since the Basic Finner's fins are blunt-edged in the
-  model's sense (section 4.1).
+  model's sense (section 4.1). (Since 2026-10-22 the Basic Finner with
+  sharp fin leading edges is validated at BRL Report 934's conditions
+  only, the sub-class above; no other sharp-edged fins.)
 - Mach 1.5 to 1.8: the Basic Finner has no shot there (none between 1.38 and
   1.80); Mach 1 to 1.5 reported only.
 - Fins clear of the base: no total-drag case found; the base and fin bands

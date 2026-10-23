@@ -10,6 +10,13 @@ export class GpuMemoryLimitError extends RangeError {}
 export class GpuExecutionError extends Error {}
 
 /**
+ * A GPU whose arithmetic loses the low parts of two-float numbers: its
+ * compiler reassociates or contracts them (twoFloatSelfTest), or its
+ * residual differs from the CPU's double one on the same state.
+ */
+export class GpuPrecisionError extends GpuExecutionError {}
+
+/**
  * Throws GpuMemoryLimitError if one invocation per item, in workgroups of
  * `size` along one dimension, needs more workgroups than the device
  * allows: such a dispatch fails validation, which throws nothing in

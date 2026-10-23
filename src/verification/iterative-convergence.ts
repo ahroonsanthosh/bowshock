@@ -124,3 +124,151 @@ export class SettlingValue {
 const MEASURABLE = 10;
 /** The rate is measured on this many of the last such changes. */
 const RATE_POINTS = 8;
+
+/**
+ * A bound on what an iterated value still has to move, from a damped
+ * oscillation fitted to its history (review of aed95b0, S1): the settling
+ * test above looks at the last few changes only, and a slow oscillation
+ * passes it at every turning point, where the value pauses. On the
+ * nested runs of the cone at Mach 1.0 to 1.02 (periods of about 6,000
+ * steps, checks every 50) it passed with the drag still 3e-6 to 4e-6
+ * from its limit.
+ *
+ * Each window (the last third and the last quarter of the history),
+ * thinned to about OSCILLATION_SAMPLES values ending with the last one,
+ * is fitted by least squares with the recurrence of a constant plus two
+ * modes, v(k+1) = p v(k) + q v(k-1) + r: a damped oscillation when the
+ * modes are complex, two geometric decays when they are real. Its limit
+ * is r / (1 - p - q). The window's bound is the larger of the last
+ * value's distance from that limit and the modes' amplitude there (the
+ * envelope), plus three times the fit's own rms misfit; the bound is the
+ * largest of the windows'. A window whose values span less than `quiet`
+ * has converged and bounds by its span. A mode of magnitude 1 or more in
+ * any window means the value is not decaying. A window of fewer than
+ * OSCILLATION_MIN_SAMPLES values is not fitted, and `fitted` counts the
+ * windows that were (fitted or quiet). With none, the bound is 0 and says
+ * nothing: a caller must not take a value as settled until `fitted` is at
+ * least 1 (re-review of dd6c423: a grid started from a coarser solution
+ * could settle in a few checks paused at a turning point, with no window
+ * fitted).
+ */
+export interface OscillationBound {
+  /** Whether every fitted window decays. */
+  readonly decaying: boolean;
+  /** The bound, absolute. */
+  readonly bound: number;
+  /** How many windows had enough values to be fitted (or were quiet). */
+  readonly fitted: number;
+}
+
+/** The windows, as fractions of the history: its last third and last quarter. */
+const OSCILLATION_WINDOWS = [3, 4] as const;
+/** About this many values per window after thinning. */
+const OSCILLATION_SAMPLES = 20;
+/** The fewest values a window is fitted with. */
+const OSCILLATION_MIN_SAMPLES = 10;
+
+export function dampedOscillationBound(values: readonly number[], quiet: number): OscillationBound {
+  let bound = 0;
+  let decaying = true;
+  let fitted = 0;
+  for (const fraction of OSCILLATION_WINDOWS) {
+    const window = values.slice(values.length - Math.floor(values.length / fraction));
+    const step = Math.max(1, Math.floor(window.length / OSCILLATION_SAMPLES));
+    const xs: number[] = [];
+    for (let k = window.length - 1; k >= 0; k -= step) xs.unshift(window[k]!);
+    if (xs.length < OSCILLATION_MIN_SAMPLES) continue;
+    fitted++;
+    const last = xs[xs.length - 1]!;
+    const spread = Math.max(...xs) - Math.min(...xs);
+    if (!(spread > quiet)) {
+      bound = Math.max(bound, spread);
+      continue;
+    }
+    const fit = fitTwoModes(xs.map((x) => (x - last) / spread));
+    if (fit === null || !(fit.modulus < 1)) {
+      decaying = false;
+      continue;
+    }
+    bound = Math.max(bound, (Math.max(fit.distance, fit.envelope) + 3 * fit.rms) * spread);
+  }
+  return { decaying, bound, fitted };
+}
+
+/**
+ * The least-squares fit of y(k+1) = p y(k) + q y(k-1) + r to y (scaled,
+ * its last value 0): the larger mode's magnitude, the last value's
+ * distance from the limit, the modes' amplitude there, and the rms
+ * misfit; null if the fit is singular.
+ */
+function fitTwoModes(
+  y: readonly number[],
+): { modulus: number; distance: number; envelope: number; rms: number } | null {
+  const a = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
+  ];
+  const b = [0, 0, 0];
+  for (let k = 1; k + 1 < y.length; k++) {
+    const row = [y[k]!, y[k - 1]!, 1];
+    for (let i = 0; i < 3; i++) {
+      b[i]! += row[i]! * y[k + 1]!;
+      for (let j = 0; j < 3; j++) a[i]![j]! += row[i]! * row[j]!;
+    }
+  }
+  const solution = solve3(a, b);
+  if (solution === null) return null;
+  const [p, q, r] = solution;
+  let misfit = 0;
+  for (let k = 1; k + 1 < y.length; k++) {
+    misfit += (y[k + 1]! - (p * y[k]! + q * y[k - 1]! + r)) ** 2;
+  }
+  const rms = Math.sqrt(misfit / (y.length - 2));
+  const denominator = 1 - p - q;
+  if (denominator === 0) return { modulus: 1, distance: Infinity, envelope: Infinity, rms };
+  const limit = r / denominator;
+  const u1 = y[y.length - 1]! - limit;
+  const u0 = y[y.length - 2]! - limit;
+  const discriminant = p * p + 4 * q;
+  if (discriminant < 0) {
+    // Complex modes rho e^(+-i theta): u(k) = a cos(k theta + phi) rho^k.
+    const modulus = Math.sqrt(-q);
+    const cos = p / (2 * modulus);
+    const sin = Math.sqrt(Math.max(0, 1 - cos * cos));
+    const across = sin > 0 ? (modulus * u0 - u1 * cos) / sin : 0;
+    return { modulus, distance: Math.abs(u1), envelope: Math.hypot(u1, across), rms };
+  }
+  const root = Math.sqrt(discriminant);
+  const z1 = (p + root) / 2;
+  const z2 = (p - root) / 2;
+  const modulus = Math.max(Math.abs(z1), Math.abs(z2));
+  // u1 = A1 + A2 and z1 z2 u0 = A1 z2 + A2 z1 (the modes one sample back).
+  const envelope =
+    Math.abs(z2 - z1) > 1e-12
+      ? (() => {
+          const a1 = (z1 * (z2 * u0 - u1)) / (z2 - z1);
+          return Math.abs(a1) + Math.abs(u1 - a1);
+        })()
+      : Math.abs(u1) + Math.abs(u1 - z1 * u0);
+  return { modulus, distance: Math.abs(u1), envelope, rms };
+}
+
+/** Solve the 3 x 3 system a x = b by Gaussian elimination with partial pivoting; null if singular. */
+function solve3(a: number[][], b: number[]): [number, number, number] | null {
+  const m = a.map((row, i) => [...row, b[i]!]);
+  for (let col = 0; col < 3; col++) {
+    let pivot = col;
+    for (let row = col + 1; row < 3; row++) {
+      if (Math.abs(m[row]![col]!) > Math.abs(m[pivot]![col]!)) pivot = row;
+    }
+    if (!(Math.abs(m[pivot]![col]!) > 1e-300)) return null;
+    [m[col], m[pivot]] = [m[pivot]!, m[col]!];
+    for (let row = 0; row < 3; row++) {
+      if (row === col) continue;
+      const f = m[row]![col]! / m[col]![col]!;
+      for (let k = col; k < 4; k++) m[row]![k]! -= f * m[col]![k]!;
+    }
+  }
+  return [m[0]![3]! / m[0]![0]!, m[1]![3]! / m[1]![1]!, m[2]![3]! / m[2]![2]!];
+}

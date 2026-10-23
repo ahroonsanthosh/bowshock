@@ -17,7 +17,12 @@
  * errors (transonicGrid's farField and cylinder).
  */
 
-import { Euler2D, type Euler2DConfig } from '../engine-cpu/euler2d';
+import {
+  Euler2D,
+  LU_SGS,
+  type Euler2DConfig,
+  type ImplicitRelaxation,
+} from '../engine-cpu/euler2d';
 import type { Body } from '../geometry/body';
 import { transonicGrid, type TransonicGrid, type TransonicSpacing } from '../grid/transonic-grid';
 import { AndersonMixing } from '../solver/anderson';
@@ -37,6 +42,8 @@ export interface TransonicOptions {
   readonly cylinder: number;
   /** The base grid's spacings (transonicGrid), for studies of the grid itself. */
   readonly spacing?: Partial<TransonicSpacing>;
+  /** The domain cut back or continued node for node (transonicGrid), for the allowances. */
+  readonly nested?: { readonly farField?: number; readonly cylinder?: number };
 }
 
 export interface TransonicProblem {
@@ -95,6 +102,8 @@ export interface SolveOptions {
   readonly depth: number;
   /** Plain steps before the acceleration starts. */
   readonly plainSteps: number;
+  /** How each implicit step solves its system (default LU-SGS's sweeps). */
+  readonly relaxation?: ImplicitRelaxation;
   /** Rate per check known from the coarser grid (SettlingValue). */
   readonly knownRate?: number;
   /**
@@ -160,6 +169,7 @@ export function solveTransonic(
   const t0 = performance.now();
   const settling = new SettlingValue(options.noise, options.knownRate ?? Number.NaN);
   const n = 4 * problem.config.grid.ni * problem.config.grid.nj;
+  const relaxation = options.relaxation ?? LU_SGS;
   const anderson = options.depth > 0 ? new AndersonMixing(n, options.depth) : null;
   let cfl = start === undefined ? 1 : options.cfl;
   let restarts = 0;
@@ -172,10 +182,10 @@ export function solveTransonic(
   while (steps < options.maxSteps) {
     for (let m = 0; m < options.checkEvery; m++) {
       if (anderson === null || steps < options.plainSteps) {
-        solver.iterateImplicit(1, cfl);
+        solver.iterateImplicit(1, cfl, 1.5, relaxation);
       } else {
         const x = solver.conserved();
-        const f = Float64Array.from(solver.implicitCorrection(cfl));
+        const f = Float64Array.from(solver.implicitCorrection(cfl, 1.5, relaxation));
         let norm = 0;
         for (let k = 0; k < n; k++) norm += f[k]! * f[k]!;
         if (norm > 100 * best) {
@@ -189,7 +199,7 @@ export function solveTransonic(
         } catch (error) {
           if (!(error instanceof NonPhysicalStateError)) throw error;
           solver.setConserved(x);
-          solver.iterateImplicit(1, cfl);
+          solver.iterateImplicit(1, cfl, 1.5, relaxation);
           anderson.reset();
           restarts++;
         }

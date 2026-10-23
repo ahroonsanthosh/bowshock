@@ -253,6 +253,24 @@ describe('implicit steps reach the steady state of the explicit scheme', () => {
     expect(Math.abs(drag(s) / drag(explicit) - 1)).toBeLessThan(1e-12);
   }, 120_000);
 
+  it.each([
+    ['Jacobi, 4 sweeps', { kind: 'jacobi', sweeps: 4 }],
+    ['red-black, 2 sweeps', { kind: 'redBlack', sweeps: 2 }],
+  ] as const)(
+    'the data-parallel relaxation (%s) gives the same drag within 1e-12',
+    (_, relaxation) => {
+      const s = make();
+      let cfl = 1;
+      for (let n = 0; n < 3000 && s.densityResidualNorm() > 1e-13; n++) {
+        s.iterateImplicit(1, cfl, 1.5, relaxation);
+        cfl = Math.min(1000, cfl * 1.2);
+      }
+      expect(s.densityResidualNorm()).toBeLessThan(1e-12);
+      expect(Math.abs(drag(s) / drag(explicit) - 1)).toBeLessThan(1e-12);
+    },
+    300_000,
+  );
+
   it('block LU-SGS gives the same drag within 1e-12', () => {
     const s = make();
     let cfl = 1;

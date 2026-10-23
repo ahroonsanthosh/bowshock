@@ -1,0 +1,228 @@
+BRL Report 934, range A (Mach 1.5 to 2.47), run once: 2026-10-22T08:50:19.176Z
+
+== The rounds of range A (0014 section 10.6 item 5; no drag value used)
+round 3254, M 1.506: in, mean squared yaw 3.7 deg^2 printed, at most 5; not marked laminar by either reading of Graph I
+round 2593, M 1.733: out, mean squared yaw 53.4 deg^2, above 5 (Table III, both readings)
+round 2594, M 1.745: out, mean squared yaw 36.2 deg^2, above 5 (Table III, both readings)
+round 2595, M 1.784: in, mean squared yaw 0.6 deg^2 printed, at most 5; not marked laminar by either reading of Graph I
+round 2599, M 1.788: in, mean squared yaw 1.5 deg^2 printed, at most 5; not marked laminar by either reading of Graph I
+round 2598, M 1.798: out, mean squared yaw 5.6 deg^2, above 5 (Table III, both readings)
+round 2591, M 1.801: in, mean squared yaw 0.2 deg^2 printed, at most 5; not marked laminar by either reading of Graph I
+round 2588, M 1.802: in, mean squared yaw 0.4 deg^2 printed, at most 5; not marked laminar by either reading of Graph I
+round 2590, M 1.803: in, mean squared yaw 0.1 deg^2 printed, at most 5; not marked laminar by either reading of Graph I
+round 2596, M 1.814: in, mean squared yaw 1.5 deg^2 printed, at most 5; not marked laminar by either reading of Graph I
+round 2589, M 1.827: in, mean squared yaw 0.7 deg^2 printed, at most 5; not marked laminar by either reading of Graph I
+round 3256, M 1.993: out, mean squared yaw 6.6 deg^2, above 5 (Table III, both readings)
+round 3255, M 2.032: out, no mean squared yaw printed (Table III, both readings; Table II average yaw 0, "Model Magnet de-magnetized")
+round 3249, M 2.050: out, marked laminar on Graph I (an open circle, "corrected for yaw and full turbulent B.L.") by both readings
+round 3263, M 2.423: in, mean squared yaw 2.9 deg^2 printed, at most 5; not marked laminar by either reading of Graph I; round 7's blind call of its lower symbol (an open circle at low confidence) was resolved to a dot on that reader's third look, the first reading's call
+round 3264, M 2.468: in, mean squared yaw 0.2 deg^2 printed, at most 5; not marked laminar by either reading of Graph I; used at Table III's values, which round 9 reads alike (Graph I's mark at M 2.47 lies at C_D 0.471 to 0.474 in both readings, nothing near 0.449)
+
+== The present model (present fins-on-base factor), the rounds at Mach 1.798 to 2.47
+Verdict by rule 4: pass: every round inside its tolerance
+
+round 2591, M 1.801: CD0 0.6033 (Graph II readings 0.6033, 0.6033); Re on 10 cal 8.346e+6 (7.964e+6 to 8.745e+6); cluster spread -2.6% to +3.9%
+  C_D 0.5804 (0.4980 to 0.6974), residual +3.9%, tolerance -27.1% to +27.0% (high end without the wall +24.3%): inside
+    nose wave drag: 0.11047 (0.11046 to 0.11048)
+    body friction: 0.08538 (0.07513 to 0.10160)
+    fin friction: 0.03872 (0.03910 to 0.06156)
+    fin wave drag: 0.02041 (0.02061 to 0.03245)
+    body base: 0.21842 (0.15321 to 0.26179)
+    fin trailing-edge base: 0.10701 (0.09952 to 0.12948)
+    input transition: -0.05876 to 0.00000
+    input wall temperature: 0.00000 to 0.01619
+    input roughness: 0.00000 to 0.00000
+    input diameter and air: -0.00102 to 0.00104
+    body base: correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6032, spread -2.6% to +3.9%): C_D 0.5804 (0.4980 to 0.6974), residual +3.9%, tolerance -27.1% to +27.1% (high end without the wall +24.3%): inside
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 6677 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)
+  sensitivity, the trailing-edge term halved: C_D 0.5269 (0.4483 to 0.6326), residual +14.5%, tolerance -26.9% to +27.3% (high end without the wall +24.2%): inside
+  reading alternative, the spread over all seven admitted rounds at M 1.78 to 1.83: C_D 0.5804 (0.4980 to 0.6974), residual +3.9%, tolerance -28.0% to +28.2% (high end without the wall +25.4%): inside
+
+round 2588, M 1.802: CD0 0.6145 (Graph II readings 0.6145, 0.6145); Re on 10 cal 8.351e+6 (7.969e+6 to 8.749e+6); cluster spread -2.6% to +3.9%
+  C_D 0.5800 (0.4977 to 0.6968), residual +6.0%, tolerance -27.1% to +27.0% (high end without the wall +24.3%): inside
+    nose wave drag: 0.11044 (0.11043 to 0.11044)
+    body friction: 0.08535 (0.07511 to 0.10157)
+    fin friction: 0.03871 (0.03909 to 0.06154)
+    fin wave drag: 0.02040 (0.02060 to 0.03243)
+    body base: 0.21819 (0.15308 to 0.26148)
+    fin trailing-edge base: 0.10692 (0.09943 to 0.12937)
+    input transition: -0.05871 to 0.00000
+    input wall temperature: 0.00000 to 0.01620
+    input roughness: 0.00000 to 0.00000
+    input diameter and air: -0.00102 to 0.00104
+    body base: correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6145, spread -2.6% to +3.9%): C_D 0.5800 (0.4977 to 0.6968), residual +5.9%, tolerance -27.1% to +27.1% (high end without the wall +24.3%): inside
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 6681 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)
+  sensitivity, the trailing-edge term halved: C_D 0.5265 (0.4480 to 0.6322), residual +16.7%, tolerance -26.9% to +27.3% (high end without the wall +24.2%): inside
+  reading alternative, the spread over all seven admitted rounds at M 1.78 to 1.83: C_D 0.5800 (0.4977 to 0.6968), residual +6.0%, tolerance -28.0% to +28.2% (high end without the wall +25.4%): inside
+
+round 2590, M 1.803: CD0 0.6436 (Graph II readings 0.6436, 0.6436); Re on 10 cal 8.355e+6 (7.973e+6 to 8.754e+6); cluster spread -2.6% to +3.9%
+  C_D 0.5796 (0.4974 to 0.6963), residual +11.0%, tolerance -27.1% to +27.0% (high end without the wall +24.2%): inside
+    nose wave drag: 0.11040 (0.11039 to 0.11041)
+    body friction: 0.08533 (0.07509 to 0.10154)
+    fin friction: 0.03870 (0.03908 to 0.06153)
+    fin wave drag: 0.02038 (0.02059 to 0.03241)
+    body base: 0.21796 (0.15294 to 0.26118)
+    fin trailing-edge base: 0.10683 (0.09935 to 0.12926)
+    input transition: -0.05866 to 0.00000
+    input wall temperature: 0.00000 to 0.01621
+    input roughness: 0.00000 to 0.00000
+    input diameter and air: -0.00102 to 0.00104
+    body base: correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6436, spread -2.6% to +3.9%): C_D 0.5796 (0.4974 to 0.6963), residual +11.0%, tolerance -27.0% to +27.1% (high end without the wall +24.3%): inside
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 6684 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)
+  sensitivity, the trailing-edge term halved: C_D 0.5262 (0.4478 to 0.6317), residual +22.3%, tolerance -26.9% to +27.3% (high end without the wall +24.2%): inside
+  reading alternative, the spread over all seven admitted rounds at M 1.78 to 1.83: C_D 0.5796 (0.4974 to 0.6963), residual +11.0%, tolerance -27.9% to +28.2% (high end without the wall +25.4%): inside
+
+round 2596, M 1.814: CD0 0.6236 (Graph II readings 0.6236, 0.6236); Re on 10 cal 8.406e+6 (8.022e+6 to 8.808e+6); cluster spread -2.6% to +3.9%
+  C_D 0.5752 (0.4942 to 0.6907), residual +8.4%, tolerance -27.0% to +27.0% (high end without the wall +24.2%): inside
+    nose wave drag: 0.11003 (0.11002 to 0.11004)
+    body friction: 0.08506 (0.07485 to 0.10122)
+    fin friction: 0.03857 (0.03896 to 0.06133)
+    fin wave drag: 0.02023 (0.02043 to 0.03216)
+    body base: 0.21543 (0.15148 to 0.25784)
+    fin trailing-edge base: 0.10585 (0.09844 to 0.12808)
+    input transition: -0.05812 to 0.00000
+    input wall temperature: 0.00000 to 0.01633
+    input roughness: 0.00000 to 0.00000
+    input diameter and air: -0.00102 to 0.00104
+    body base: correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6233, spread -2.6% to +3.9%): C_D 0.5752 (0.4942 to 0.6907), residual +8.4%, tolerance -26.9% to +27.0% (high end without the wall +24.2%): inside
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): at d 0.78 in, 298 K: Reynolds number 6417 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)
+  sensitivity, the trailing-edge term halved: C_D 0.5222 (0.4450 to 0.6266), residual +19.4%, tolerance -26.7% to +27.2% (high end without the wall +24.1%): inside
+  reading alternative, the spread over all seven admitted rounds at M 1.78 to 1.83: C_D 0.5752 (0.4942 to 0.6907), residual +8.4%, tolerance -27.8% to +28.1% (high end without the wall +25.3%): inside
+
+round 2589, M 1.827: CD0 0.6115 (Graph II readings 0.6115, 0.6115); Re on 10 cal 8.467e+6 (8.079e+6 to 8.871e+6); cluster spread -2.6% to +3.9%
+  C_D 0.5700 (0.4904 to 0.6840), residual +7.3%, tolerance -26.8% to +27.0% (high end without the wall +24.1%): inside
+    nose wave drag: 0.10959 (0.10959 to 0.10960)
+    body friction: 0.08475 (0.07458 to 0.10085)
+    fin friction: 0.03843 (0.03882 to 0.06111)
+    fin wave drag: 0.02005 (0.02025 to 0.03187)
+    body base: 0.21246 (0.14978 to 0.25390)
+    fin trailing-edge base: 0.10472 (0.09738 to 0.12671)
+    input transition: -0.05749 to 0.00000
+    input wall temperature: 0.00000 to 0.01646
+    input roughness: 0.00000 to 0.00000
+    input diameter and air: -0.00101 to 0.00103
+    body base: correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6114, spread -2.6% to +3.9%): C_D 0.5700 (0.4904 to 0.6840), residual +7.3%, tolerance -26.8% to +27.0% (high end without the wall +24.1%): inside
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): at d 0.78 in, 298 K: Reynolds number 6463 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)
+  sensitivity, the trailing-edge term halved: C_D 0.5176 (0.4417 to 0.6207), residual +18.1%, tolerance -26.6% to +27.2% (high end without the wall +24.0%): inside
+  reading alternative, the spread over all seven admitted rounds at M 1.78 to 1.83: C_D 0.5700 (0.4904 to 0.6840), residual +7.3%, tolerance -27.7% to +28.1% (high end without the wall +25.2%): inside
+
+round 3263, M 2.423: CD0 0.4698 (Graph II readings 0.4698, 0.4698); Re on 10 cal 1.123e+7 (1.071e+7 to 1.176e+7); cluster spread -2.3% to +2.3%
+  C_D 0.4314 (0.3725 to 0.5188), residual +8.9%, tolerance -24.9% to +27.9% (high end without the wall +22.8%): inside
+    nose wave drag: 0.09543 (0.09542 to 0.09543)
+    body friction: 0.07166 (0.06306 to 0.08527)
+    fin friction: 0.03257 (0.03289 to 0.05178)
+    fin wave drag: 0.01452 (0.01467 to 0.02309)
+    body base: 0.14645 (0.10067 to 0.17759)
+    fin trailing-edge base: 0.07078 (0.06582 to 0.08564)
+    input transition: -0.03786 to 0.00000
+    input wall temperature: 0.00000 to 0.02188
+    input roughness: 0.00000 to 0.00000
+    input diameter and air: -0.00085 to 0.00087
+    body base: correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.4703, spread -2.4% to +2.4%): C_D 0.4314 (0.3725 to 0.5188), residual +9.0%, tolerance -25.0% to +27.9% (high end without the wall +22.8%): inside
+  sensitivity, DREV's 0.004 cal edge: C_D 0.4752 (0.4144 to 0.5651), residual -1.1%, tolerance -23.3% to +26.0% (high end without the wall +21.4%): inside
+  sensitivity, the trailing-edge term halved: C_D 0.3960 (0.3396 to 0.4760), residual +18.6%, tolerance -24.9% to +28.3% (high end without the wall +22.7%): inside
+
+round 3264, M 2.468: CD0 0.4484 (Graph II readings 0.4484, 0.4484); Re on 10 cal 1.144e+7 (1.091e+7 to 1.198e+7); cluster spread -2.3% to +2.3%
+  C_D 0.4240 (0.3663 to 0.5097), residual +5.8%, tolerance -24.8% to +28.0% (high end without the wall +22.8%): inside
+    nose wave drag: 0.09466 (0.09466 to 0.09467)
+    body friction: 0.07077 (0.06228 to 0.08422)
+    fin friction: 0.03217 (0.03249 to 0.05115)
+    fin wave drag: 0.01424 (0.01439 to 0.02265)
+    body base: 0.14327 (0.09846 to 0.17375)
+    fin trailing-edge base: 0.06884 (0.06402 to 0.08330)
+    input transition: -0.03684 to 0.00000
+    input wall temperature: 0.00000 to 0.02221
+    input roughness: 0.00000 to 0.00000
+    input diameter and air: -0.00084 to 0.00085
+    body base: correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.4485, spread -2.4% to +2.4%): C_D 0.4240 (0.3663 to 0.5097), residual +5.8%, tolerance -24.9% to +28.0% (high end without the wall +22.8%): inside
+  sensitivity, DREV's 0.004 cal edge: C_D 0.4679 (0.4083 to 0.5562), residual -4.2%, tolerance -23.1% to +26.1% (high end without the wall +21.4%): inside
+  sensitivity, the trailing-edge term halved: C_D 0.3895 (0.3343 to 0.4681), residual +15.1%, tolerance -24.8% to +28.4% (high end without the wall +22.7%): inside
+  reading alternative, 3263 out: C_D 0.4240 (0.3663 to 0.5097), residual +5.8%, tolerance -22.5% to +25.7% (high end without the wall +20.4%): inside
+
+== The rebuilt-factor total (W1), every admitted round
+Verdict by rule 4: refused at every round (3254, 2595, 2599, 2591, 2588, 2590, 2596, 2589, 3263, 3264)
+
+round 3254, M 1.506: CD0 0.6936 (Graph II readings 0.6936, 0.6936); Re on 10 cal 6.979e+6 (6.660e+6 to 7.312e+6); cluster spread +0.0% to +0.0%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them; the present factor (0010 section 1.3) refuses it too: the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded to 3 (TN 3819 fig. 35), asked Mach 1.506
+  sensitivity, the text's C_D' (CD0 0.6938, spread +0.0% to +0.0%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 5583 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31); body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 2595, M 1.784: CD0 0.6218 (Graph II readings 0.6218, 0.6218); Re on 10 cal 8.267e+6 (7.889e+6 to 8.662e+6); cluster spread -3.5% to +5.0%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them; the present factor (0010 section 1.3) refuses it too: the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded to 3 (TN 3819 fig. 35), asked Mach 1.784
+  sensitivity, the text's C_D' (CD0 0.6217, spread -3.5% to +5.0%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 6614 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31); body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 2599, M 1.788: CD0 0.6565 (Graph II readings 0.6565, 0.6565); Re on 10 cal 8.286e+6 (7.907e+6 to 8.681e+6); cluster spread -3.5% to +5.0%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them; the present factor (0010 section 1.3) refuses it too: the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded to 3 (TN 3819 fig. 35), asked Mach 1.788
+  sensitivity, the text's C_D' (CD0 0.6562, spread -3.5% to +5.0%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 6629 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31); body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 2591, M 1.801: CD0 0.6033 (Graph II readings 0.6033, 0.6033); Re on 10 cal 8.346e+6 (7.964e+6 to 8.745e+6); cluster spread -3.5% to +5.0%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6032, spread -3.5% to +5.0%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 6677 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31); body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 2588, M 1.802: CD0 0.6145 (Graph II readings 0.6145, 0.6145); Re on 10 cal 8.351e+6 (7.969e+6 to 8.749e+6); cluster spread -3.5% to +5.0%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6145, spread -3.5% to +5.0%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 6681 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31); body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 2590, M 1.803: CD0 0.6436 (Graph II readings 0.6436, 0.6436); Re on 10 cal 8.355e+6 (7.973e+6 to 8.754e+6); cluster spread -3.5% to +5.0%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6436, spread -3.5% to +5.0%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: fin leading edges (leading-edge-range): Reynolds number 6684 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31); body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 2596, M 1.814: CD0 0.6236 (Graph II readings 0.6236, 0.6236); Re on 10 cal 8.406e+6 (8.022e+6 to 8.808e+6); cluster spread -3.5% to +5.0%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6233, spread -3.5% to +5.0%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 2589, M 1.827: CD0 0.6115 (Graph II readings 0.6115, 0.6115); Re on 10 cal 8.467e+6 (8.079e+6 to 8.871e+6); cluster spread -3.5% to +5.0%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.6114, spread -3.5% to +5.0%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 3263, M 2.423: CD0 0.4698 (Graph II readings 0.4698, 0.4698); Re on 10 cal 1.123e+7 (1.071e+7 to 1.176e+7); cluster spread -2.3% to +2.3%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.4703, spread -2.4% to +2.4%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+
+round 3264, M 2.468: CD0 0.4484 (Graph II readings 0.4484, 0.4484); Re on 10 cal 1.144e+7 (1.091e+7 to 1.198e+7); cluster spread -2.3% to +2.3%
+  refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  library as routed: served, the body base on the present factor
+  sensitivity, the text's C_D' (CD0 0.4485, spread -2.4% to +2.4%): refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, DREV's 0.004 cal edge: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+  sensitivity, the trailing-edge term halved: refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them
+

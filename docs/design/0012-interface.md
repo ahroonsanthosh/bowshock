@@ -120,10 +120,12 @@ button. Focus order follows the layout; overlays trap focus and return it.
    pauses).
 2. **Schlieren is light on dark.**
 3. **The default rocket is the Basic Finner**, the one configuration whose
-   total drag is validated. (Since 2026-10-21 that claim is suspended,
-   every total an estimate, until BRL Report 934's range A tests the
-   corrected fins-on-base factor: 0010 section 11.7. The Basic Finner
-   stays the default, as the class kept for that test.)
+   total drag is validated. (Since 2026-10-21 that claim is suspended:
+   0010 section 11.7. BRL Report 934's range A then tested the corrected
+   factor on 2026-10-22 and passed, at conditions outside the class, so
+   only a narrow sub-class at the tested conditions is validated and the
+   class's totals stay estimates: 0014 10.7 (q). The Basic Finner stays
+   the default.)
 4. **Inter and JetBrains Mono**, self-hosted.
 
 ## 7. Information architecture

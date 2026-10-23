@@ -31,6 +31,9 @@ const PERIODIC: u32 = 3u;
 // A state per face, from the boundary buffer: the post-shock state of a
 // fitted shock, or a given inflow profile.
 const FACE_STATES: u32 = 4u;
+// A far field in the free stream held in Params.inflow: the state outside
+// each face from the Riemann invariants of the flow normal to it.
+const FAR_FIELD: u32 = 5u;
 
 // Sides, in the order of Params.bc and Params.inflow.
 const I_MIN: u32 = 0u;
@@ -147,6 +150,36 @@ fn cell_geometry(c: u32) -> vec4f {
   return geometry[n_i_faces() + params.ni * (params.nj + 1u) + c];
 }
 
+// The state outside a far-field face of outward unit normal n, as
+// farFieldState in euler2d.ts: the Riemann invariant u_n + 2a / (gamma - 1)
+// from inside where that wave leaves (u_n + a > 0), else from the free
+// stream, and u_n - 2a / (gamma - 1) likewise; the entropy and tangential
+// velocity from the upwind side.
+fn far_field_state(inside: Primitive2D, free: Primitive2D, n: vec2f, g: f32) -> Primitive2D {
+  let k = 2.0 / (g - 1.0);
+  let a_in = sqrt(g * inside.p / inside.rho);
+  let a_free = sqrt(g * free.p / free.rho);
+  let un_in = inside.u * n.x + inside.v * n.y;
+  let un_free = free.u * n.x + free.v * n.y;
+  let plus = select(un_free + k * a_free, un_in + k * a_in, un_in + a_in > 0.0);
+  let minus = select(un_free - k * a_free, un_in - k * a_in, un_in - a_in > 0.0);
+  let un = 0.5 * (plus + minus);
+  let a = (plus - minus) / (2.0 * k);
+  var upwind = free;
+  if (un_in > 0.0) {
+    upwind = inside;
+  }
+  let entropy = upwind.p / pow(upwind.rho, g);
+  let un_upwind = upwind.u * n.x + upwind.v * n.y;
+  let rho = pow(a * a / (g * entropy), 1.0 / (g - 1.0));
+  return Primitive2D(
+    rho,
+    upwind.u + (un - un_upwind) * n.x,
+    upwind.v + (un - un_upwind) * n.y,
+    rho * a * a / g,
+  );
+}
+
 // Conserved state of cell (i, j) of `src`, for i in [-2, ni + 1] with j in
 // range, or j in [-2, nj + 1] with i in range. Out-of-range cells are the
 // ghost cells of the CPU engine: ghost layer g mirrors interior layer g
@@ -191,6 +224,31 @@ fn load_cell(i: i32, j: i32) -> vec4f {
   if (kind == INFLOW) {
     let w = params.inflow[side];
     return to_conserved_2d(Primitive2D(w.x, w.y, w.z, w.w), params.gamma);
+  }
+  if (kind == FAR_FIELD) {
+    // Both ghost layers take the face's state, from the cell next to it
+    // (the first interior layer) and the outward normal.
+    var inside = mirror;
+    var outward = normal;
+    if (side == I_MIN) {
+      inside = vec2i(0, j);
+      outward = -normal;
+    } else if (side == I_MAX) {
+      inside = vec2i(ni - 1, j);
+    } else if (side == J_MIN) {
+      inside = vec2i(i, 0);
+      outward = -normal;
+    } else {
+      inside = vec2i(i, nj - 1);
+    }
+    let w = params.inflow[side];
+    let state = far_field_state(
+      to_primitive_2d(src[u32(inside.x + inside.y * ni)], params.gamma),
+      Primitive2D(w.x, w.y, w.z, w.w),
+      outward,
+      params.gamma,
+    );
+    return to_conserved_2d(state, params.gamma);
   }
   if (kind == PERIODIC) {
     return src[u32(wrap.x + wrap.y * ni)];
