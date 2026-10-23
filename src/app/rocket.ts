@@ -452,13 +452,25 @@ const PHONE_FLOW_NOTE: Readonly<Record<'3d' | 'side', string>> = {
     'not simulated.',
 };
 
+/** The phone's line where this browser solves nothing. */
+const PHONE_NO_GPU =
+  'This browser has no WebGPU, so no airflow is solved here: open the page in a recent Chrome ' +
+  'or Edge.';
+
 function showFlowNote(): void {
   const text = flowNoteText(shown, missing3d, sceneFailure);
   flowNote.textContent = text;
   viewNote.textContent = text;
-  // On phones, in the first screen: what the picture is, and what a cross on the curve means.
+  showSheetNote();
+}
+
+/**
+ * On phones, in the first screen: what the picture is (or that this
+ * browser solves nothing), and what a cross on the curve means.
+ */
+function showSheetNote(): void {
   shell.sheet.note.replaceChildren(
-    h('p', { text: PHONE_FLOW_NOTE[shown] }),
+    h('p', { text: noGpu ? PHONE_NO_GPU : PHONE_FLOW_NOTE[shown] }),
     h(
       'p',
       {},
@@ -468,8 +480,13 @@ function showFlowNote(): void {
   );
 }
 
-/** Fit the 3D view into the part of the window the panels leave free (device pixels). */
-function fitScene(): void {
+/**
+ * Fit the 3D view into the part of the window the panels leave free
+ * (device pixels): the one fit, at opening, on a change of layout and by
+ * F or 0, so that 0 goes back to the first view exactly. `untouched`:
+ * only if the user has not moved the view since its last fit.
+ */
+function fitScene(untouched = false): void {
   if (scene === null) return;
   const dpr = window.devicePixelRatio || 1;
   // A three-quarter view is about 1.4 times as wide as tall: between the panels, as a rule.
@@ -479,12 +496,14 @@ function fitScene(): void {
   // so that the whole rocket stays clear of the panels.
   const dx = 0.12 * r.width;
   const dy = 0.04 * r.height;
-  scene.fit({
+  const rect = {
     x: (r.x + dx) * dpr,
     y: (r.y + dy) * dpr,
     width: (r.width - 2 * dx) * dpr,
     height: (r.height - 2 * dy) * dpr,
-  });
+  };
+  if (untouched) scene.refit(rect);
+  else scene.fit(rect);
 }
 
 /** The 3D view's colour scale in the page's legend. */
@@ -1374,6 +1393,12 @@ async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
       made.requestDraw();
     }).observe(canvas3d);
     scene = made;
+    // The free part of the window changes as the readout and the legend fill in: the opening
+    // view follows it (until the user moves it), so that it is the view F and 0 give.
+    const free = new ResizeObserver(() => {
+      fitScene(true);
+    });
+    for (const e of document.querySelectorAll('.readout, .hud-bottom')) free.observe(e);
     flowSwitch.element.hidden = false;
     showSceneRocket();
   } catch (error) {
@@ -1398,4 +1423,6 @@ function failScene(why: string): void {
 showDrawing();
 preview();
 await startGpu();
+// Without WebGPU no view is set up: the phone's first screen still says what is (not) solved.
+showSheetNote();
 await start();

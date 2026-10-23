@@ -99,6 +99,11 @@ At 390 by 844 (phones, below 700 px, the 0012 sheet):
 └──────────────────────────────────┘
 ```
 
+Without WebGPU the note's first line says instead that this browser has
+no WebGPU, so no airflow is solved here, and to open the page in a recent
+Chrome or Edge; the cross's line stays (`scripts/app-view-checks.mjs`
+checks both at 390 px).
+
 ## 3. Components
 
 | Module                                    | What                                                                                                                                                                                                                | DOM |

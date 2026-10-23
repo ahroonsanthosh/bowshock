@@ -169,6 +169,8 @@ export interface PlainReason {
    * take), so clearing it is a first step, never promised to give a number.
    */
   readonly first?: boolean;
+  /** The whole line to show where this is the one reason, in place of "To get a number: ...". */
+  readonly line?: string;
 }
 
 /** Nothing about the rocket changes it. */
@@ -220,9 +222,9 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   }),
   'fin-trailing-edge': () => ({
     reason:
-      'the base drag with fins at the base is measured here only for flat fins with square ' +
-      'trailing edges or fins with sharp ones, not for this trailing edge (a wedge thickening ' +
-      'to it, or a rounded one)',
+      'at this speed, the base drag with fins at the base is measured only for flat fins with ' +
+      'square trailing edges or fins with sharp ones, not for this trailing edge (a wedge ' +
+      'thickening to it, or a rounded one)',
     change:
       'flat fins with square trailing edges, sharp trailing edges, or fins a root chord or more ' +
       'ahead of the base',
@@ -349,7 +351,9 @@ export function noseWords(end: NoseEnd, finer: boolean): PlainReason {
     case 'no-webgpu':
       return {
         reason: 'this browser cannot run the airflow solver (it has no WebGPU)',
-        change: 'a recent Chrome or Edge',
+        change: 'a browser with WebGPU (a recent Chrome or Edge)',
+        // Not a promise of a number: the solve itself may still not settle.
+        line: 'Needs a browser with WebGPU (a recent Chrome or Edge); then the airflow is solved here.',
       };
     case 'gpu-failed':
       return { reason: 'the GPU failed', change: 'reload the page' };
@@ -390,6 +394,7 @@ export function changeText(plain: PlainReason): string {
   if (plain.change === NOTHING) {
     return 'Nothing about the rocket changes this: this speed has no number yet.';
   }
+  if (plain.line !== undefined) return plain.line;
   return plain.first === true
     ? `First: ${plain.change}. The rocket's other checks are made only then.`
     : `To get a number: ${plain.change}.`;

@@ -125,9 +125,9 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         'body base',
         {
           reason:
-            'the base drag with fins at the base is measured here only for flat fins with square ' +
-            'trailing edges or fins with sharp ones, not for this trailing edge (a wedge ' +
-            'thickening to it, or a rounded one)',
+            'at this speed, the base drag with fins at the base is measured only for flat fins ' +
+            'with square trailing edges or fins with sharp ones, not for this trailing edge (a ' +
+            'wedge thickening to it, or a rounded one)',
           change:
             'flat fins with square trailing edges, sharp trailing edges, or fins a root chord or ' +
             'more ahead of the base',
