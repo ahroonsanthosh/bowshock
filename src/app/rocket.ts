@@ -38,7 +38,7 @@ import { CurveRun, gridsTo, secondsPerPoint, type NoseSolver } from './curve';
 import { curveCsv, curveRocketName } from './curve-csv';
 import { fileSizeRefusal, importSummary, loadImporter, type ImportSummary } from './import-summary';
 import { bodyOutline, FlowControls, viewMenu } from './flow-controls';
-import { pointView, type PointView } from './point-view';
+import { pointView, resultLine, type PointView } from './point-view';
 import { flightWords } from './status-words';
 import { loadRender3D, sceneLegend, type Render3DModule } from './scene3d';
 import {
@@ -1005,6 +1005,11 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
               }),
         ),
     h('p', { className: 'point__sentence', text: v.status.sentence }),
+    // Validated: the logic's own claim and caveats, word for word.
+    v.claim === null ? null : h('p', { className: 'point__claim', text: v.claim }),
+    v.caveats.length === 0
+      ? null
+      : h('ul', { className: 'point__reasons' }, ...v.caveats.map((text) => h('li', { text }))),
     // Several reasons: every one, in plain words.
     v.reasons.length > 1
       ? h('ul', { className: 'point__reasons' }, ...v.reasons.map((text) => h('li', { text })))
@@ -1192,10 +1197,7 @@ async function savePng(): Promise<void> {
   const name = `bowshock-${slug(drawn.name)}-mach-${drawnMach.toFixed(2)}.png`;
   const rocketLine = curveRocketName(drawn, run?.options.without === true);
   const machLine = `Mach ${drawnMach.toFixed(2)}, zero incidence: the airflow around the body`;
-  const result =
-    v === null
-      ? ''
-      : `C_D ${v.headline ?? 'none'}${v.headlineBand === null ? '' : `, band ${v.headlineBand}`}: ${v.status.word}`;
+  const result = v === null ? '' : resultLine(v);
   try {
     if (scene !== null && shown === '3d') {
       // The scene's PNG has its own readout (grid, steps, Mach number), legend and notes.

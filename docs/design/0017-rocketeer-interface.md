@@ -185,8 +185,9 @@ Each point shows one word and one sentence, beside its colour and mark;
 Details shows the logic's own text, word for word (the claim, every
 reason with its component and type, the class conditions, the notes, the
 component table). The wording below must say the same as the logic's
-claim, no more and no less; that word of the logic's for a tested total
-is its alone, and appears only inside its own text in Details.
+claim, no more and no less. The word "Validated" is the logic's alone: it
+appears only for its validated claim, and the point block then shows that
+claim's text and caveats word for word.
 
 **Points with a number** (`totalDragView` kind `total`):
 
@@ -196,11 +197,17 @@ is its alone, and appears only inside its own text in Details.
 | claim `estimate`, text `CLASS_CLAIM` (inside the class, suspended)  | Estimate, tested class | An estimate: this rocket and speed lie inside the one class tested in free flight (the Basic Finner), but that test's claim is suspended until a corrected part is tested again. | amber, ◆        |
 | claim `estimate`, `BOUNDED_REASON` among its reasons (above M 2.56) | Estimate, bounded      | An estimate with one part bounded, not measured: the fins' effect on the base drag, whose band runs from no effect to its value at the last speed measured.                      | blue, ■         |
 | claim `estimate`, `W1_BOUNDED_REASON` (the rebuilt factor, W1)      | Estimate, bounded      | An estimate with one part bounded, not measured: the fins' effect on the base drag, whose band the rebuilt factor sets from bounds, not from a measurement of these fins.        | blue, ■         |
+| claim `validated` (the BRL sub-class, main's cb632df)               | Validated              | Tested once in free flight at these conditions (BRL Report 934, seven rounds) and passed, inside a wide tolerance; only for this narrow sub-class of the Basic Finner.           | green, ●        |
 | our own: the nose still solving                                     | Provisional            | Not finished: the nose is solved on grid k of n; no band yet.                                                                                                                    | grey, ○, no bar |
 
-The logic makes one kind of claim today, an estimate: the Basic Finner's
-tested claim is suspended (design record 0010 section 11.7), and the words
-follow its text and reasons. A new kind fails the build
+The logic makes two kinds of claim: validated, only inside the Basic
+Finner's narrow BRL sub-class (0014 section 10.7 (q)), and an estimate
+everywhere else (the class's own claim stays suspended, 0010 section
+11.7); the words follow its text and reasons. The curve's points (Mach
+1.0 to 3.0 by 0.1 or 0.2) never fall in the sub-class's Mach windows
+(1.801 to 1.827 and 2.423 to 2.468), so today the curve shows no
+validated point; the display is tested at Mach 2.423 directly
+(`tests/app/numbers.test.ts`). A new kind fails the build
 (`src/app/status-words.ts`) until it is worded here and there.
 
 **Points without a number** (kind `refused`, the nose solve's outcomes,

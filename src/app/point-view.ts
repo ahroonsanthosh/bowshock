@@ -56,6 +56,17 @@ export interface PointView {
   readonly reasons: readonly string[];
   /** "without the launch lug", or ''. */
   readonly without: string;
+  /** A validated point: the logic's claim text and its caveats, word for word; else null and none. */
+  readonly claim: string | null;
+  readonly caveats: readonly string[];
+}
+
+/**
+ * The result line of a point, as the PNG's caption gives it: its C_D, the
+ * band and the status word ("C_D 0.552, band 0.48 to 0.65: Validated").
+ */
+export function resultLine(v: PointView): string {
+  return `C_D ${v.headline ?? 'none'}${v.headlineBand === null ? '' : `, band ${v.headlineBand}`}: ${v.status.word}`;
 }
 
 /** C_D's decimals, as the drag page shows it (total-drag-display.ts). */
@@ -151,6 +162,8 @@ export function pointView(point: CurvePoint, finer: boolean): PointView {
     change: null,
     reasons: [] as readonly string[],
     without: '',
+    claim: null,
+    caveats: [] as readonly string[],
   };
   const s = point.state;
   switch (s.kind) {
@@ -188,6 +201,8 @@ export function pointView(point: CurvePoint, finer: boolean): PointView {
       change: null,
       reasons: [],
       without: withoutText(r.without),
+      claim: r.view.claim.kind === 'validated' ? r.view.claim.text : null,
+      caveats: r.view.claim.kind === 'validated' ? r.view.claim.caveats : [],
     };
   }
   if (r.kind === 'choose') {

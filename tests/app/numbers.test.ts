@@ -12,12 +12,24 @@
 import { describe, expect, it } from 'vitest';
 import type { LevelReport, VerifiedDrag } from '../../src/analysis/verified-drag';
 import { outward } from '../../src/app/band';
-import { CurveRun, type NoseSolver } from '../../src/app/curve';
-import { csvRow } from '../../src/app/curve-csv';
-import { pointView } from '../../src/app/point-view';
-import { claimWords, refusalWords } from '../../src/app/status-words';
-import { totalDragView } from '../../src/app/total-drag';
-import { noseStateOf } from '../../src/app/total-drag-display';
+import { CurveRun, type CurvePoint, type NoseSolver } from '../../src/app/curve';
+import { csvField, csvRow } from '../../src/app/curve-csv';
+import { pointView, resultLine } from '../../src/app/point-view';
+import { claimWords, refusalWords, VALIDATED_WORDS } from '../../src/app/status-words';
+import {
+  ASSUMED_CAVEAT,
+  basicFinnerForm,
+  ROUNDED_EDGE_CAVEAT,
+  totalDragView,
+  VALIDATED_CLAIM,
+  type NoseState,
+  type TotalDragForm,
+} from '../../src/app/total-drag';
+import {
+  noseStateOf,
+  totalDragDisplay,
+  VALIDATED_HEADLINE,
+} from '../../src/app/total-drag-display';
 import { designForm } from '../../src/rocket/adapter';
 import type { RocketDesign } from '../../src/rocket/design';
 import { preset } from '../../src/rocket/presets';
@@ -148,7 +160,75 @@ describe('the numbers the page shows are the logic’s', { timeout: 600_000 }, (
         logic.claim.kind,
       ]);
       expect(csvRow(point)).toContain(logic.claim.text.slice(0, 60));
-      for (const r of logic.claim.reasons) expect(csvRow(point)).toContain(r.slice(0, 40));
+      if (logic.claim.kind === 'estimate') {
+        for (const r of logic.claim.reasons) expect(csvRow(point)).toContain(r.slice(0, 40));
+      }
     });
   }
+
+  it("the BRL sub-class: a sharp-edged Basic Finner at Mach 2.423, Re/M 4.634e6, 293 K, shown 'Validated' as the logic says", () => {
+    // As tests/app/brl934-sub-class.test.ts takes it: the Basic Finner with sharp fin leading
+    // edges, the Reynolds number on length 4.634e6 times the Mach number, 293 K, an exact cone nose.
+    const mach = 2.423;
+    const form: TotalDragForm = {
+      ...basicFinnerForm(mach, 4.634e6 * mach),
+      leadingEdgeRadius: 0,
+      temperature: 293,
+    };
+    const nose: NoseState = {
+      kind: 'solved',
+      component: exactConeNoseWaveDrag(
+        mach,
+        Math.atan(form.body.nose.baseRadius / form.body.nose.length),
+      ),
+    };
+    const logic = totalDragView(form, nose);
+    if (logic.kind !== 'total') throw new Error(logic.kind);
+    expect(logic.claim.kind).toBe('validated');
+    if (logic.claim.kind !== 'validated') return;
+    // The point as the curve holds a finished one.
+    const point: CurvePoint = {
+      mach,
+      state: { kind: 'done', result: { kind: 'total', view: logic, without: [] } },
+      nose: null,
+      seconds: 0,
+      cellUpdates: 0,
+    };
+    const shown = pointView(point, true);
+    const [low, high] = outward(logic.total.low, logic.total.high, 4);
+    // The point block, the pinned line and the table (its C_D, band and status word).
+    expect(shown.value).toBe(logic.total.cd.toFixed(4));
+    expect(shown.band).toBe(`${low} to ${high}`);
+    expect(shown.status).toBe(VALIDATED_WORDS);
+    expect(shown.status.word).toBe('Validated');
+    expect(shown.status.tone).toBe('ok');
+    expect(shown.claim).toBe(logic.claim.text);
+    expect(shown.caveats).toEqual(logic.claim.caveats);
+    expect(shown.claim).toBe(VALIDATED_CLAIM);
+    expect(shown.caveats).toEqual([ASSUMED_CAVEAT, ROUNDED_EDGE_CAVEAT]);
+    // The CSV: status 'validated', the logic's text and caveats word for word.
+    const row = csvRow(point);
+    expect(row.split(',').slice(0, 5)).toEqual([
+      '2.42',
+      logic.total.cd.toFixed(4),
+      low,
+      high,
+      'validated',
+    ]);
+    expect(row).toContain(csvField(`${VALIDATED_CLAIM} ${ASSUMED_CAVEAT} ${ROUNDED_EDGE_CAVEAT}`));
+    // The PNG's caption.
+    expect(resultLine(shown)).toBe(`C_D ${shown.headline}, band ${shown.headlineBand}: Validated`);
+    // Details: the logic's own display, its validated headline and the box in the 'ok' tone.
+    const details = totalDragDisplay(logic);
+    const head = details[0]!;
+    expect(
+      head.kind === 'paragraph' && head.tone === 'ok' && head.text.endsWith(VALIDATED_HEADLINE),
+    ).toBe(true);
+    // The same Basic Finner with its rounded edges (DREV's 0.004 cal): not in the sub-class.
+    const rounded = totalDragView(
+      { ...form, leadingEdgeRadius: basicFinnerForm(mach).leadingEdgeRadius },
+      nose,
+    );
+    if (rounded.kind === 'total') expect(rounded.claim.kind).toBe('estimate');
+  });
 });

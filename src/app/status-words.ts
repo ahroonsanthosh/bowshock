@@ -4,8 +4,9 @@
  * sentence for each claim the logic makes, and for each reason it refuses,
  * the reason in plain words and what the user could change. Each wording
  * says what the logic's own text says, no more and no less; the logic's
- * text itself is shown in Details, word for word, and the word
- * "validated" appears only there.
+ * text itself is shown in Details, word for word. The word "Validated"
+ * is used only for the logic's own validated claim (the BRL sub-class),
+ * whose text and caveats the point block shows beside it.
  *
  * The tables are keyed by the logic's own types, so that a new claim or a
  * new reason fails the build here until it is worded.
@@ -84,7 +85,25 @@ export const W1_BOUNDED_WORDS: StatusWords = {
   mark: 'square',
 };
 
-const CLAIM_KINDS: Readonly<Record<Claim['kind'], (claim: Claim) => StatusWords>> = {
+/**
+ * The one validated claim (main's BRL Report 934 run, 0014 section 10.7
+ * (q)): the Basic Finner's narrow sub-class at that range's conditions,
+ * tested once and passed. Its word is the logic's; its text and caveats
+ * are shown beside it in the point block and in full in Details.
+ */
+export const VALIDATED_WORDS: StatusWords = {
+  word: 'Validated',
+  sentence:
+    'Tested once in free flight at these conditions (BRL Report 934, seven rounds) and passed, ' +
+    'inside a wide tolerance; only for this narrow sub-class of the Basic Finner.',
+  tone: 'ok',
+  mark: 'circle',
+};
+
+type ClaimOf<K extends Claim['kind']> = Extract<Claim, { kind: K }>;
+
+const CLAIM_KINDS: { readonly [K in Claim['kind']]: (claim: ClaimOf<K>) => StatusWords } = {
+  validated: () => VALIDATED_WORDS,
   estimate: (claim) =>
     claim.reasons.includes(BOUNDED_REASON)
       ? BOUNDED_WORDS
@@ -97,7 +116,7 @@ const CLAIM_KINDS: Readonly<Record<Claim['kind'], (claim: Claim) => StatusWords>
 
 /** A claim of the logic in plain words. */
 export function claimWords(claim: Claim): StatusWords {
-  return CLAIM_KINDS[claim.kind](claim);
+  return claim.kind === 'validated' ? CLAIM_KINDS.validated(claim) : CLAIM_KINDS.estimate(claim);
 }
 
 /** A point while its nose is still being solved: the latest grid's value, no band. */
