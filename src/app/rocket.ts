@@ -368,7 +368,8 @@ function scene3dShown(): boolean {
 /** A 3D view's key or menu item: what render3d's own key does. */
 function sceneAct(action: SceneAction): void {
   if (scene === null || render3d === null) return;
-  render3d.sceneKey(scene, sceneKeyOf(action));
+  const key = sceneKeyOf(action);
+  if (!render3d.sceneKey(scene, key)) render3d.sceneExtraKey(scene, key);
   shell.topBar.refresh();
   refreshSceneButtons();
 }
@@ -1360,8 +1361,8 @@ async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
       liveDuty: FRAME_BUDGET,
     });
     // The page's own legend, notes and readout stand in for the scene's text (a PNG has it).
-    // The look: glowing shells of the colour quantity with streamlines, the shock and a cutaway.
-    made.setLayers({ overlay: false, slice: false });
+    // The look is the scene's own default (0017 section 6.6).
+    made.setLayers({ overlay: false });
     made.onScale((s) => {
       scale3d = s;
       if (shown === '3d') showScale3d(s);

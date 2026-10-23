@@ -68,6 +68,10 @@ import ribbonWgsl from './shaders/ribbon.wgsl?raw';
 import sliceWgsl from './shaders/slice.wgsl?raw';
 import spriteWgsl from './shaders/sprite.wgsl?raw';
 import gatherWgsl from './shaders/gather.wgsl?raw';
+import { FieldImage } from './field-image-gpu';
+import { Particles } from './particles';
+import { fieldImageMesh, wallPressure, type ImageBox, type SchlierenScale } from './field-image';
+import { PRESSURE_PALETTE } from './quantities';
 
 export type BodyLayer = 'solid' | 'wireframe' | 'off';
 export type SliceMode = 'cutaway' | 'axial' | 'cross';
@@ -91,16 +95,31 @@ export interface SceneLayers {
   readonly overlay: boolean;
   /** Key H. */
   readonly help: boolean;
+  /**
+   * Key 7: what the faces through the axis (the slice on the cutaway's
+   * faces, or through the axis) show: fibres along the computed flow
+   * coloured by the quantity, the numerical schlieren (the density
+   * gradient, log scale), or the plain colour.
+   */
+  readonly faces: FaceLook;
+  /** Fibres along the flow on the sheets (with the faces' fibres). */
+  readonly sheetFibres: boolean;
+  /** Key 8: particles carried by the computed flow, moving (off by default: it draws continuously). */
+  readonly particles: boolean;
 }
+
+export type FaceLook = 'fibres' | 'schlieren' | 'plain';
 
 /**
  * The default look (FluidX3D's manner): many opaque, lit iso-surfaces of
  * the colour quantity, the shock as one crisp sheet, a wedge cut away to
- * show the rocket, a thin box; no slice, no streamlines (keys 2 and 3).
+ * show the rocket, one face of the wedge textured with fibres along the
+ * computed flow (the slice, key 2; key 7 its look), the body coloured by
+ * its surface pressure, a thin box; no streamlines, no particles (keys 3, 8).
  */
 export const DEFAULT_LAYERS: SceneLayers = {
   body: 'solid',
-  slice: false,
+  slice: true,
   streamlines: false,
   isosurfaces: true,
   solidShells: true,
@@ -109,6 +128,9 @@ export const DEFAULT_LAYERS: SceneLayers = {
   box: true,
   overlay: true,
   help: false,
+  faces: 'fibres',
+  sheetFibres: true,
+  particles: false,
 };
 
 /** What the readout says of the solve. */
@@ -136,6 +158,14 @@ export interface SceneScale {
   readonly levels: readonly number[];
   /** The palette, t in [0, 1] of the range. */
   readonly colour: (t: number) => [number, number, number];
+  /** What the slice's faces show, when the slice is on (null when it is off). */
+  readonly faces: FaceLook | null;
+  /** The schlieren's range: log10 of |grad rho| times the calibre over the free stream's density. */
+  readonly schlieren: { readonly lo: number; readonly hi: number } | null;
+  /** The body's colour: its surface pressure coefficient, blue to red over this range (null: plain grey). */
+  readonly bodyCp: { readonly min: number; readonly max: number } | null;
+  /** Particles shown (key 8). */
+  readonly particles: boolean;
 }
 
 export interface FlowScene3DOptions {
@@ -172,6 +202,9 @@ const STREAMLINES_PER_PLANE = 6;
  * dense sheets; each level is a real value of the computed field.
  */
 const ISO_SURFACES = 40;
+/** Particles (key 8), and how long the free stream takes to cross the region, seconds. */
+const PARTICLE_COUNT = 2500;
+const PARTICLE_CROSSING_S = 4;
 /** The cutaway's opening, degrees. */
 const CUT_DEGREES = 150;
 /** Sectors of a full turn of the revolved surfaces. */
@@ -194,6 +227,8 @@ type DrawName =
   | 'freeLines'
   | 'cutLines'
   | 'shockCut'
+  | 'freePlane'
+  | 'particles'
   | 'outline'
   | 'wire'
   | 'box'
@@ -231,6 +266,7 @@ class Pipelines {
     readonly line: GPURenderPipeline,
     readonly tube: GPURenderPipeline,
     readonly slice: GPURenderPipeline,
+    readonly face: GPURenderPipeline,
     readonly sprite: GPURenderPipeline,
   ) {}
 
@@ -248,6 +284,11 @@ class Pipelines {
         entries: [
           { binding: 0, visibility: VF, buffer: { type: 'uniform' } },
           { binding: 1, visibility: VF, buffer: { type: 'read-only-storage' } },
+          { binding: 2, visibility: VF, texture: { sampleType: 'float' } },
+          { binding: 3, visibility: VF, texture: { sampleType: 'float' } },
+          { binding: 4, visibility: VF, texture: { sampleType: 'float' } },
+          { binding: 5, visibility: VF, sampler: { type: 'filtering' } },
+          { binding: 6, visibility: VF, sampler: { type: 'filtering' } },
         ],
       });
     const drawLayout =
@@ -303,7 +344,7 @@ class Pipelines {
     });
     const multisample = { count: samples };
     const primitive: GPUPrimitiveState = { topology: 'triangle-list', cullMode: 'none' };
-    const [body, shell, shellLit, line, tube, slice, sprite] = await Promise.all([
+    const [body, shell, shellLit, line, tube, slice, face, sprite] = await Promise.all([
       device.createRenderPipelineAsync({
         label: '3D body',
         layout: layout(drawLayout),
@@ -398,6 +439,27 @@ class Pipelines {
         multisample,
       }),
       device.createRenderPipelineAsync({
+        label: '3D faces',
+        layout: layout(drawLayout),
+        vertex: {
+          module: sliceModule,
+          entryPoint: 'face_vs',
+          buffers: [
+            {
+              arrayStride: 16,
+              attributes: [
+                { shaderLocation: 0, offset: 0, format: 'float32x3' },
+                { shaderLocation: 1, offset: 12, format: 'float32' },
+              ],
+            },
+          ],
+        },
+        fragment: { module: sliceModule, entryPoint: 'face_fs', targets: [{ format }] },
+        primitive,
+        depthStencil: depth(true),
+        multisample,
+      }),
+      device.createRenderPipelineAsync({
         label: '3D sprites',
         layout: layout(spriteLayout),
         vertex: { module: spriteModule, entryPoint: 'sprite_vs' },
@@ -422,6 +484,7 @@ class Pipelines {
       line,
       tube,
       slice,
+      face,
       sprite,
     );
   }
@@ -438,7 +501,9 @@ interface DrawLook {
 export class FlowScene3D {
   private readonly frameBuffer: GPUBuffer;
   private readonly paletteBuffer: GPUBuffer;
-  private readonly frameGroup: GPUBindGroup;
+  private frameGroup: GPUBindGroup;
+  private frameGroupVersion = -1;
+  private readonly repeatSampler: GPUSampler;
   private readonly draws = new Map<DrawName, { uniform: GPUBuffer; group?: GPUBindGroup }>();
   private readonly sampler: GPUSampler;
   private msaa: GPUTexture | null = null;
@@ -473,6 +538,19 @@ export class FlowScene3D {
   private box: LineSet | null = null;
   private hatch: LineSet | null = null;
   private sliceTriangles: { buffer: GPUBuffer; count: number } | null = null;
+  /** Faces through the axis textured from the field's image, and the free stream beside them. */
+  private faceTriangles: { buffer: GPUBuffer; count: number } | null = null;
+  private freePlane: { buffer: GPUBuffer; count: number } | null = null;
+  /** The field's image: its box, and the schlieren's scale. */
+  private imageBox: ImageBox | null = null;
+  schlieren: SchlierenScale | null = null;
+  /** The particles (key 8), their streaks, and the animation's clock. */
+  private particles: Particles | null = null;
+  private particleLines: LineSet | null = null;
+  private particleTimer: ReturnType<typeof setTimeout> | null = null;
+  private particleClock = 0;
+  /** The body's surface pressure coefficient, its least and largest, when coloured by it. */
+  private bodyCp: { min: number; max: number } | null = null;
   private baseTriangles: { buffer: GPUBuffer; count: number } | null = null;
   private geometryDirty = true;
 
@@ -518,6 +596,7 @@ export class FlowScene3D {
     private readonly canvas: HTMLCanvasElement | OffscreenCanvas,
     private readonly presenter: Presenter,
     private readonly pipelines: Pipelines,
+    private readonly image: FieldImage,
     options: FlowScene3DOptions,
   ) {
     this.pixelRatio =
@@ -532,17 +611,18 @@ export class FlowScene3D {
     });
     this.paletteBuffer = device.createBuffer({
       label: '3D palette',
-      size: 16 * PALETTE_SIZE,
+      // The colour quantity's palette, then the body's colours by its surface pressure.
+      size: 2 * 16 * PALETTE_SIZE,
       usage: usage.STORAGE | usage.COPY_DST,
     });
-    this.frameGroup = device.createBindGroup({
-      layout: pipelines.frameLayout,
-      entries: [
-        { binding: 0, resource: { buffer: this.frameBuffer } },
-        { binding: 1, resource: { buffer: this.paletteBuffer } },
-      ],
-    });
     this.sampler = device.createSampler({ magFilter: 'linear', minFilter: 'linear' });
+    this.repeatSampler = device.createSampler({
+      magFilter: 'linear',
+      minFilter: 'linear',
+      addressModeU: 'repeat',
+      addressModeV: 'repeat',
+    });
+    this.frameGroup = this.makeFrameGroup();
     for (const name of [
       'body',
       'slice',
@@ -553,6 +633,8 @@ export class FlowScene3D {
       'freeLines',
       'cutLines',
       'shockCut',
+      'freePlane',
+      'particles',
       'outline',
       'wire',
       'box',
@@ -584,11 +666,105 @@ export class FlowScene3D {
         : p === 'copy'
           ? new CopyPresenter(device, canvas as HTMLCanvasElement)
           : p;
-    const pipelines = await Pipelines.create(device, presenter.format, SAMPLES);
-    return new FlowScene3D(device, canvas, presenter, pipelines, options);
+    const [pipelines, image] = await Promise.all([
+      Pipelines.create(device, presenter.format, SAMPLES),
+      FieldImage.create(device),
+    ]);
+    return new FlowScene3D(device, canvas, presenter, pipelines, image, options);
   }
 
   // ---------------------------------------------------------------- inputs
+
+  // ------------------------------------------------------------- particles
+
+  private stopParticles(): void {
+    if (this.particleTimer !== null) clearTimeout(this.particleTimer);
+    this.particleTimer = null;
+    this.particleLines?.buffer.destroy();
+    this.particleLines = null;
+    this.particles = null;
+  }
+
+  private scheduleParticles(delay: number): void {
+    if (this.particleTimer !== null || this.destroyed) return;
+    this.particleTimer = setTimeout(() => {
+      this.particleTimer = null;
+      void this.particleFrame();
+    }, delay);
+  }
+
+  /**
+   * One frame of the particles: moved by the flow for the time since the
+   * last (the free stream crosses the region in PARTICLE_CROSSING_S),
+   * drawn, and the next put off so that drawing takes at most half the
+   * time (the live share, FRAME_BUDGET's, while the solver runs).
+   */
+  private async particleFrame(): Promise<void> {
+    if (!this.layers.particles || this.destroyed) return;
+    const g = this.geometry;
+    const field = this.field;
+    const region = this.regionBox();
+    const now = performance.now();
+    const seconds = Math.min((now - this.particleClock) / 1000, 0.25);
+    this.particleClock = now;
+    if (g !== null && field !== null && region !== null) {
+      const f = field.freeStream;
+      const speed = Math.hypot(f.u, f.v) || 1;
+      const length = region.xMax - region.xMin;
+      if (this.particles === null || this.particlesMesh !== g.mesh) {
+        const cut = this.layers.cutaway;
+        this.particles = new Particles(
+          g.mesh,
+          PARTICLE_COUNT,
+          cut ? this.cutStart : 0,
+          cut ? CUT_WIDTH : 2 * Math.PI,
+          region.xMax,
+        );
+        this.particlesMesh = g.mesh;
+      }
+      const timeScale = length / (PARTICLE_CROSSING_S * speed);
+      this.particles.advance(seconds * timeScale);
+      this.particleLines?.buffer.destroy();
+      this.particleLines = this.lineSet(
+        'particles',
+        this.particles.streaks((0.03 * length) / speed, g.values),
+      );
+      await this.render();
+    }
+    const duty = this.live ? this.liveDuty : 0.5;
+    const cost = this.lastFrameMs;
+    this.scheduleParticles(Math.max(1000 / MAX_LIVE_FPS, (cost * (1 - duty)) / duty));
+  }
+
+  private particlesMesh: object | null = null;
+
+  /** The colour channel's scale and what the other layers show, for a legend. */
+  private scale(g: FlowGeometry): SceneScale {
+    const L = this.layers;
+    return sceneScale(g, {
+      faces: L.slice && this.sliceMode !== 'cross' ? L.faces : null,
+      schlieren: this.schlieren,
+      bodyCp: L.body === 'solid' ? this.bodyCp : null,
+      particles: L.particles,
+    });
+  }
+
+  /** The frame's bind group: its uniforms, the palettes, the field's images (made anew with them). */
+  private makeFrameGroup(): GPUBindGroup {
+    this.frameGroupVersion = this.image.version;
+    return this.device.createBindGroup({
+      layout: this.pipelines.frameLayout,
+      entries: [
+        { binding: 0, resource: { buffer: this.frameBuffer } },
+        { binding: 1, resource: { buffer: this.paletteBuffer } },
+        { binding: 2, resource: this.image.field.createView() },
+        { binding: 3, resource: this.image.lic.createView() },
+        { binding: 4, resource: this.image.streak.createView() },
+        { binding: 5, resource: this.sampler },
+        { binding: 6, resource: this.repeatSampler },
+      ],
+    });
+  }
 
   /** The rocket to draw: its body (the solver's) and fins (geometry only). */
   setRocket(rocket: Rocket | null): void {
@@ -689,6 +865,25 @@ export class FlowScene3D {
     const before = this.layers;
     this.layers = { ...this.layers, ...layers };
     if (before.cutaway !== this.layers.cutaway) this.geometryDirty = true;
+    const g = this.geometry;
+    if (
+      g !== null &&
+      (before.faces !== this.layers.faces ||
+        before.slice !== this.layers.slice ||
+        before.body !== this.layers.body ||
+        before.particles !== this.layers.particles)
+    ) {
+      const scale = this.scale(g);
+      for (const l of this.scaleListeners) l(scale);
+    }
+    if (before.particles !== this.layers.particles) {
+      if (this.layers.particles) {
+        this.particleClock = performance.now();
+        this.scheduleParticles(0);
+      } else {
+        this.stopParticles();
+      }
+    }
     this.overlayDirty = true;
     this.requestDraw();
   }
@@ -751,7 +946,7 @@ export class FlowScene3D {
   onScale(listener: (scale: SceneScale) => void): () => void {
     this.scaleListeners.push(listener);
     const g = this.geometry;
-    if (g !== null) listener(sceneScale(g));
+    if (g !== null) listener(this.scale(g));
     return () => {
       this.scaleListeners = this.scaleListeners.filter((l) => l !== listener);
     };
@@ -857,7 +1052,7 @@ export class FlowScene3D {
     const slow = this.lastFullFrameMs > DRAFT_ABOVE_MS;
     const moving = performance.now() - this.movedAt < MOVING_MS;
     // Live: the flow changes, so its geometry is built in draft too; moving: only the drawing.
-    const draft = slow && (this.live || moving);
+    const draft = slow && (this.live || moving || this.layers.particles);
     if (draft && moving && !this.live) this.settleLater();
     this.drawing = this.drawFrame(undefined, draft, draft && this.live)
       .then(() => undefined)
@@ -989,6 +1184,8 @@ export class FlowScene3D {
       s?.buffer.destroy();
     this.sliceTriangles?.buffer.destroy();
     this.baseTriangles?.buffer.destroy();
+    this.faceTriangles?.buffer.destroy();
+    this.freePlane?.buffer.destroy();
     this.shells =
       this.shock =
       this.streamlines =
@@ -999,7 +1196,7 @@ export class FlowScene3D {
       this.box =
       this.hatch =
         null;
-    this.sliceTriangles = this.baseTriangles = null;
+    this.sliceTriangles = this.baseTriangles = this.faceTriangles = this.freePlane = null;
     const field = this.field;
     const region = this.regionBox();
     if (region !== null) {
@@ -1054,6 +1251,15 @@ export class FlowScene3D {
     );
     const slice = this.sliceGeometry(g);
     this.sliceTriangles = slice === null ? null : this.triangleSet('slice', slice);
+    this.rebuildImage(field, g, region, draft);
+    const phis = this.facePhis();
+    if (phis !== null) {
+      this.faceTriangles = this.triangleSet('faces', halfPlanes(phis, region));
+      this.freePlane =
+        this.sliceMode === 'axial'
+          ? this.triangleSet('free plane', freeStreamPlane(g, phis))
+          : null;
+    }
     // The base: the end of the computed region, hatched.
     const h = region.rMax;
     const xb = region.xMax;
@@ -1071,8 +1277,59 @@ export class FlowScene3D {
       ]);
     }
     this.hatch = this.lineSet('hatch', segments3d(hatch));
-    const scale = sceneScale(g);
+    const scale = this.scale(g);
     for (const l of this.scaleListeners) l(scale);
+  }
+
+  /** The azimuths of the faces through the axis the slice shows, or null (across the axis). */
+  private facePhis(): number[] | null {
+    switch (this.sliceMode) {
+      case 'cutaway':
+        // One face of the cutaway, the other left open so the sheets show beside it.
+        return this.layers.cutaway
+          ? [this.cutStart]
+          : [this.slicePosition.axial, this.slicePosition.axial + Math.PI];
+      case 'axial':
+        return [this.slicePosition.axial, this.slicePosition.axial + Math.PI];
+      case 'cross':
+        return null;
+    }
+  }
+
+  /**
+   * The field's image (the faces' texture, the sheets' fibres) and the
+   * body's colours by its surface pressure, from this field.
+   */
+  private rebuildImage(
+    field: MeridionalField,
+    g: FlowGeometry,
+    region: { xMin: number; xMax: number; rMax: number },
+    draft: boolean,
+  ): void {
+    const box: ImageBox = { xMin: g.bounds.xMin, xMax: region.xMax, rMax: g.bounds.rMax };
+    const calibre = 2 * (this.rocket?.body.nose.baseRadius ?? 0.5);
+    const mesh = fieldImageMesh(g.mesh, field, g.values, box, calibre);
+    // Square texels, about as many across as the view is wide (so the fibres
+    // are not finer than its pixels), fewer in a draft.
+    const across = Math.min(Math.max(Math.round(0.9 * this.canvas.width), 512), 1280);
+    const width = draft ? Math.round(across / 2) : across;
+    const height = Math.min(
+      2048,
+      Math.max(16, Math.round((width * box.rMax) / (box.xMax - box.xMin))),
+    );
+    this.image.update(mesh, width, height, draft ? 16 : 32, 1);
+    this.imageBox = box;
+    this.schlieren = mesh.schlieren;
+    // The body's colour by the surface pressure the solver computed on it.
+    const L = this.rocket !== null ? bodyLength(this.rocket.body) : region.xMax;
+    const wall = wallPressure(field, L, PALETTE_SIZE);
+    const m = Math.max(Math.abs(wall.min), Math.abs(wall.max), 1e-6);
+    const colours = new Float32Array(4 * PALETTE_SIZE);
+    for (let k = 0; k < PALETTE_SIZE; k++) {
+      colours.set([...PRESSURE_PALETTE(0.5 + (0.5 * wall.cp[k]!) / m), 1], 4 * k);
+    }
+    this.device.queue.writeBuffer(this.paletteBuffer, 16 * PALETTE_SIZE, colours);
+    this.bodyCp = { min: -m, max: m };
   }
 
   private sliceGeometry(g: FlowGeometry): Float32Array<ArrayBuffer> | null {
@@ -1150,6 +1407,15 @@ export class FlowScene3D {
     data.set([this.cutStart, CUT_WIDTH, this.layers.cutaway ? 1 : 0, 0], 40);
     const region = this.regionBox();
     data.set([region?.xMax ?? 0, region !== null ? 1 : 0, 0, 0], 44);
+    const box = this.imageBox;
+    data.set(
+      box === null || this.geometry === null
+        ? [0, 0, 0, 0]
+        : [box.xMin, 1 / (box.xMax - box.xMin), 1 / box.rMax, 1],
+      48,
+    );
+    const L = this.rocket !== null ? bodyLength(this.rocket.body) : 1;
+    data.set([1 / L, this.bodyCp !== null && this.geometry !== null ? 1 : 0, 0, 0], 52);
     this.device.queue.writeBuffer(this.frameBuffer, 0, data);
   }
 
@@ -1274,6 +1540,7 @@ export class FlowScene3D {
         depthStoreOp: 'discard',
       },
     });
+    if (this.frameGroupVersion !== this.image.version) this.frameGroup = this.makeFrameGroup();
     pass.setBindGroup(0, this.frameGroup);
     const L = this.layers;
     const px = this.pixelRatio;
@@ -1299,7 +1566,12 @@ export class FlowScene3D {
     const shellSweep: [number, number, number, number] = [start, visible / sectors, sectors, 0];
     // The iso-surfaces, opaque and lit (FluidX3D's manner): ambient, specular, edge darkening.
     if (L.isosurfaces && L.solidShells && this.shells !== null) {
-      this.writeDraw('shells', { look: [0.1, 0.32, 0.65, 0], sweep: shellSweep });
+      this.writeDraw('shells', {
+        look: [0.1, 0.32, 0.65, 0],
+        sweep: shellSweep,
+        // Fibres: strength, streak repeats round a turn, streaks a unit length along.
+        extra: [L.sheetFibres && L.faces === 'fibres' ? 1.5 : 0, 4, 0.3, 0],
+      });
       pass.setPipeline(pipelines.shellLit);
       pass.setBindGroup(1, this.groupFor('shells', this.shells.buffer));
       this.drawRevolved(pass, this.shells, sectors);
@@ -1347,8 +1619,26 @@ export class FlowScene3D {
       pass.setVertexBuffer(0, this.baseTriangles.buffer);
       pass.draw(this.baseTriangles.count);
     }
-    // The field on the slice.
-    if (L.slice && this.sliceTriangles !== null) {
+    // The field on the slice: faces through the axis textured from the field's image.
+    const textured = L.faces !== 'plain' && this.faceTriangles !== null && this.imageBox !== null;
+    if (L.slice && textured) {
+      this.writeDraw('slice', { look: [1, L.faces === 'schlieren' ? 1 : 0, 0, 0] });
+      pass.setPipeline(pipelines.face);
+      pass.setBindGroup(1, this.groupFor('slice', null));
+      pass.setVertexBuffer(0, this.faceTriangles!.buffer);
+      pass.draw(this.faceTriangles!.count);
+      if (this.freePlane !== null) {
+        this.writeDraw('freePlane', {
+          look: [L.faces === 'schlieren' ? 0 : 0.85, 0, 0, 0],
+          extra: [1, 1, 0, 0],
+        });
+        pass.setPipeline(pipelines.slice);
+        pass.setBindGroup(1, this.groupFor('freePlane', null));
+        pass.setVertexBuffer(0, this.freePlane.buffer);
+        pass.draw(this.freePlane.count);
+      }
+    }
+    if (L.slice && !(textured && this.sliceMode !== 'cross') && this.sliceTriangles !== null) {
       // Nearly opaque alone; translucent over the other layers.
       const alone = !L.streamlines && !L.isosurfaces;
       this.writeDraw('slice', {
@@ -1377,14 +1667,25 @@ export class FlowScene3D {
       this.drawRevolved(pass, this.shock, sectors);
     }
     pass.setPipeline(pipelines.line);
+    if (L.particles && this.particleLines !== null) {
+      this.writeDraw('particles', {
+        look: [1.3, 0, 0, 0],
+        extra: [2 * px, 1, 0, 1],
+      });
+      pass.setBindGroup(1, this.groupFor('particles', this.particleLines.buffer));
+      pass.draw(6 * this.particleLines.count);
+    }
+    // The sheets' edges on the cut faces; on the open face only when the
+    // other carries the slice's texture (which they would cover).
     if (L.isosurfaces && L.cutaway && this.cutLines !== null) {
+      const covered = L.slice && this.sliceMode === 'cutaway' && textured;
       this.writeDraw('cutLines', {
         look: [1.0, 0, 0, 0],
-        sweep: [this.cutStart, CUT_WIDTH, 2, 0],
+        sweep: covered ? [this.cutStart + CUT_WIDTH, 0, 1, 0] : [this.cutStart, CUT_WIDTH, 2, 0],
         extra: [1.4 * px, 1, 0, 1],
       });
       pass.setBindGroup(1, this.groupFor('cutLines', this.cutLines.buffer));
-      pass.draw(6 * this.cutLines.count * 2);
+      pass.draw(6 * this.cutLines.count * (covered ? 1 : 2));
     }
     if (L.shock && L.cutaway && this.shockCut !== null) {
       this.writeDraw('shockCut', {
@@ -1565,7 +1866,8 @@ export class FlowScene3D {
               this.layers.isosurfaces ? g.levels : [],
               px,
               // Within the view, its margins kept.
-              this.canvas.width - Math.round(28 * this.pixelRatio),
+              Math.min(this.canvas.width - 28 * this.pixelRatio, 600 * this.pixelRatio),
+              layerNotes(this.scale(g)),
             ),
             s.legend,
           )
@@ -1805,6 +2107,7 @@ export class FlowScene3D {
     this.destroyed = true;
     this.setLive(false);
     if (this.settleTimer !== null) clearTimeout(this.settleTimer);
+    this.stopParticles();
     this.destroyBody();
     for (const r of [this.shells, this.shock]) {
       r?.buffer.destroy();
@@ -1822,6 +2125,8 @@ export class FlowScene3D {
       s?.buffer.destroy();
     this.sliceTriangles?.buffer.destroy();
     this.baseTriangles?.buffer.destroy();
+    this.faceTriangles?.buffer.destroy();
+    this.freePlane?.buffer.destroy();
     for (const d of this.draws.values()) d.uniform.destroy();
     for (const s of Object.values(this.sprites)) {
       s?.texture.destroy();
@@ -1829,6 +2134,7 @@ export class FlowScene3D {
     }
     this.frameBuffer.destroy();
     this.paletteBuffer.destroy();
+    this.image.destroy();
     this.msaa?.destroy();
     this.depth?.destroy();
     this.presenter.destroy();
@@ -1941,6 +2247,33 @@ function freeStreamDisc(g: FlowGeometry, x: number, sectors: number): Float32Arr
   return out;
 }
 
+/** Half-planes through the axis at these azimuths over the region (x, y, z, 0), two triangles each. */
+function halfPlanes(
+  phis: readonly number[],
+  region: { xMin: number; xMax: number; rMax: number },
+): Float32Array<ArrayBuffer> {
+  const out = new Float32Array(phis.length * 6 * 4);
+  let o = 0;
+  for (const phi of phis) {
+    const c = Math.cos(phi);
+    const sn = Math.sin(phi);
+    const p = (x: number, r: number) => [x, r * c, r * sn, 0];
+    const { xMin, xMax, rMax } = region;
+    for (const q of [
+      p(xMin, 0),
+      p(xMax, 0),
+      p(xMax, rMax),
+      p(xMin, 0),
+      p(xMax, rMax),
+      p(xMin, rMax),
+    ]) {
+      out.set(q, o);
+      o += 4;
+    }
+  }
+  return out;
+}
+
 /** Two triangles (x, y, z, value) of the square [-h, h]^2 in the plane at x. */
 function squareAt(x: number, h: number, value: number): Float32Array<ArrayBuffer> {
   const corner = (y: number, z: number) => [x, y, z, value];
@@ -1968,8 +2301,12 @@ function regionKey(b: { xMin: number; xMax: number; rMax: number }, aspect: numb
   return [b.xMin, b.xMax, b.rMax, aspect].map((v) => v.toPrecision(3)).join(' ');
 }
 
-function sceneScale(g: FlowGeometry): SceneScale {
+function sceneScale(
+  g: FlowGeometry,
+  more: Pick<SceneScale, 'faces' | 'schlieren' | 'bodyCp' | 'particles'>,
+): SceneScale {
   return {
+    ...more,
     quantity: g.scale.quantity,
     label: g.scale.label,
     unit: g.scale.unit,
@@ -2099,6 +2436,32 @@ function wireframe(rocket: Rocket): Float32Array<ArrayBuffer> {
   return segments3d(pairs);
 }
 
+/**
+ * What the layers beyond the colour show, in plain words, with their
+ * scales: the slice's fibres or schlieren, the body's surface pressure,
+ * the particles. For the scene's legend and the page's.
+ */
+export function layerNotes(s: SceneScale): string[] {
+  const notes: string[] = [];
+  if (s.faces === 'fibres') {
+    notes.push('slice texture: follows the computed flow direction (its grain is only a carrier)');
+  } else if (s.faces === 'schlieren' && s.schlieren !== null) {
+    notes.push(
+      `slice: schlieren, brightness log10(|grad density| x calibre / free-stream density), ` +
+        `${s.schlieren.lo.toFixed(1)} black to ${s.schlieren.hi.toFixed(1)} white; the shock: its white edge`,
+    );
+  }
+  if (s.bodyCp !== null) {
+    notes.push(
+      `body: computed surface pressure coefficient, blue ${s.bodyCp.min.toFixed(3)} to red +${s.bodyCp.max.toFixed(3)}; fins grey`,
+    );
+  }
+  if (s.particles) {
+    notes.push('particles: carried by the computed velocity; their start points are random');
+  }
+  return notes;
+}
+
 /** The help (key H): the keys, the colour scale and its units, the simulation. */
 function helpLines(
   scene: FlowScene3D,
@@ -2118,6 +2481,8 @@ function helpLines(
     { text: `5  bow shock (now ${on(L.shock)})    6  cutaway (now ${on(L.cutaway)})` },
     { text: `Z  colour: ${scale?.label ?? ''}${unit}` },
     { text: 'T  slice: cutaway faces, plane through the axis, plane across it' },
+    { text: `7  slice: fibres along the flow, schlieren, plain (now ${L.faces})` },
+    { text: `8  particles carried by the flow (now ${on(L.particles)}; draws continuously)` },
     { text: 'Q / E  move the slice    0  reset the view    H  this help' },
     { text: 'drag: turn any way, over the top and underneath    0: reset' },
     { text: 'right drag or shift drag: pan    wheel or pinch: zoom' },
@@ -2130,6 +2495,9 @@ function helpLines(
     { text: 'the flow is the undisturbed free stream. FluidX3D draws Q-criterion' },
     { text: 'iso-surfaces (vortices); this smooth inviscid flow has no vortices, so the' },
     { text: 'iso-surfaces here are of the quantity coloured (Mach number by default).' },
+    { text: 'The slice’s fibres follow the computed flow (their grain is noise, a carrier' },
+    { text: 'only); the schlieren is the computed density gradient. The body is coloured' },
+    { text: 'by its computed surface pressure; particles move with the computed velocity.' },
     { text: 'Not computed: the fins’ flow (fins are geometry; their drag comes from' },
     { text: 'correlations), the base and wake, boundary layers, turbulence.' },
   ];

@@ -20,12 +20,19 @@ describe("the 3D view's legend", () => {
       cellMax: 1.91,
       levels: [1.7, 1.75, 1.8],
       colour: () => [0, 0, 0],
+      faces: 'fibres',
+      schlieren: null,
+      bodyCp: { min: -0.08, max: 0.08 },
+      particles: false,
     });
     if (legend.kind !== 'palette') throw new Error(legend.kind);
     expect(legend.note).toMatch(
       /^The axisymmetric solution, revolved; fins are not in the airflow\. Free stream 1\.8/,
     );
     expect(legend.note).toContain('Hatched: behind the base, not simulated.');
+    expect(legend.note).toContain('follows the computed flow direction');
+    expect(legend.note).toContain('computed surface pressure coefficient');
+    expect(legend.note).toContain('the fins are grey, not in the airflow');
   });
 
   it('lists a few shells; many as their count, spacing and ends', () => {

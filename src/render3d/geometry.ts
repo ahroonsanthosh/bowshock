@@ -123,7 +123,7 @@ export function shockRadiusAt(shock: { x: number[]; r: number[] }, x: number): n
   return shock.r[shock.r.length - 1]!;
 }
 
-/** Floats per point of revolve.wgsl: (x, r, nx, nr), then (value, 0, 0, 0). */
+/** Floats per point of revolve.wgsl: (x, r, nx, nr), then (value, length along its line, 0, 0). */
 export const POINT_FLOATS = 8;
 
 /**
@@ -157,12 +157,17 @@ export function revolvedLines(
   const points: number[] = [];
   const segments: number[] = [];
   for (const l of lines) {
-    const at = (k: number) => [l.x[k]!, l.r[k]!, l.nx[k]!, l.nr[k]!, l.value[k]!];
+    // Each point with its length along the line from its start.
+    const along: number[] = [0];
+    for (let k = 1; k < l.x.length; k++) {
+      along.push(along[k - 1]! + Math.hypot(l.x[k]! - l.x[k - 1]!, l.r[k]! - l.r[k - 1]!));
+    }
+    const at = (k: number) => [l.x[k]!, l.r[k]!, l.nx[k]!, l.nr[k]!, l.value[k]!, along[k]!];
     // A piece of the line on the near side of xEnd, as it is walked.
     let open = false;
     const add = (q: number[]) => {
       if (open) segments.push(points.length / POINT_FLOATS - 1);
-      points.push(q[0]!, q[1]!, q[2]!, q[3]!, q[4]!, 0, 0, 0);
+      points.push(q[0]!, q[1]!, q[2]!, q[3]!, q[4]!, q[5]!, 0, 0);
       open = true;
     };
     for (let k = 0; k < l.x.length; k++) {

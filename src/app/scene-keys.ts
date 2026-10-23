@@ -23,7 +23,9 @@ export type SceneAction =
   | 'scene-colour'
   | 'scene-slice-turn'
   | 'scene-slice-back'
-  | 'scene-slice-on';
+  | 'scene-slice-on'
+  | 'scene-faces'
+  | 'scene-particles';
 
 interface SceneKey {
   readonly action: SceneAction;
@@ -98,6 +100,20 @@ export const SCENE_KEYS: readonly SceneKey[] = [
     description: 'Move the slice (turn it about the axis, or along it)',
   },
   { action: 'scene-slice-on', key: 'e', label: 'Move the slice on', description: '' },
+  {
+    action: 'scene-faces',
+    key: '7',
+    label: 'Slice: fibres, schlieren, plain',
+    description:
+      'The slice: fibres along the computed flow, the schlieren (density gradient), or plain colour',
+  },
+  {
+    action: 'scene-particles',
+    key: '8',
+    label: 'Particles',
+    description: 'Particles carried by the computed flow (draws continuously)',
+    pressed: (s) => s.getLayers().particles,
+  },
 ];
 
 const BY_ACTION = new Map(SCENE_KEYS.map((k) => [k.action, k]));

@@ -7,7 +7,7 @@
 struct Point {
   // (x, r, nx, nr): the point in the meridional plane and its unit normal there.
   at: vec4f,
-  // (value, 0, 0, 0).
+  // (value, length along the line from its start, 0, 0).
   value: vec4f,
 };
 
@@ -18,6 +18,10 @@ struct ShellOut {
   @location(0) world: vec3f,
   @location(1) normal: vec3f,
   @location(2) value: f32,
+  // The azimuth, the length along the sheet's meridian, and its normal in the meridional plane.
+  @location(3) phi: f32,
+  @location(4) along: f32,
+  @location(5) meridional_normal: vec2f,
 };
 
 // Vertex p * (sectors + 1) + s is point p turned to azimuth s (an indexed
@@ -33,6 +37,9 @@ fn shell_vs(@builtin(vertex_index) index: u32) -> ShellOut {
   out.world = vec3f(p.at.x, p.at.y * c, p.at.y * s);
   out.normal = vec3f(p.at.z, p.at.w * c, p.at.w * s);
   out.value = p.value.x;
+  out.phi = phi;
+  out.along = p.value.y;
+  out.meridional_normal = p.at.zw;
   out.clip = frame.view_proj * vec4f(out.world, 1.0);
   return out;
 }
@@ -81,5 +88,22 @@ fn shell_lit_fs(v: ShellOut) -> @location(0) vec4f {
   // look.x: the ambient share; look.z: how much an edge-on sheet darkens.
   let diffuse = draw.look.x + (1.0 - draw.look.x) * (0.85 * key + 0.15 * fill);
   let edge = mix(1.0, facing, draw.look.z);
-  return vec4f(colour * diffuse * edge + vec3f(spec), 1.0);
+  // Fibres along the flow on the sheet (extra.x their strength): the flow
+  // has no swirl, so on a sheet of revolution it runs along the meridians;
+  // streaks laid along them, as strong as the computed velocity lies along
+  // the sheet (none where it crosses it). The streaks' noise only carries
+  // the direction.
+  var fibre = 1.0;
+  if (draw.extra.x > 0.0) {
+    let f = field_at(v.world.x, length(v.world.yz));
+    let speed = length(f.xy);
+    if (f.w > -0.5 && speed > 1e-6) {
+      let tangent = vec2f(v.meridional_normal.y, -v.meridional_normal.x);
+      let along = abs(dot(f.xy / speed, tangent));
+      let uv = vec2f(v.phi / TAU * draw.extra.y, v.along * draw.extra.z);
+      let streak = textureSampleLevel(streak_tex, repeat_sampler, uv, 0.0).r;
+      fibre = 1.0 + draw.extra.x * along * (streak - 0.5);
+    }
+  }
+  return vec4f(colour * diffuse * edge * fibre + vec3f(spec), 1.0);
 }

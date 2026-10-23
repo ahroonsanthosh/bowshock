@@ -18,6 +18,11 @@ struct Frame {
   cut: vec4f,
   // x: nothing is drawn of the flow beyond this x (the base); y: 1 to clip.
   clip: vec4f,
+  // The field's image (field-image.wgsl) in the meridional plane: xMin,
+  // 1 / (xMax - xMin), 1 / rMax, 1 if there is one.
+  image: vec4f,
+  // The body's colour by its surface pressure: 1 / its length, 1 if on.
+  body: vec4f,
 };
 
 struct Draw {
@@ -32,16 +37,28 @@ struct Draw {
 };
 
 @group(0) @binding(0) var<uniform> frame: Frame;
+// The colour quantity's palette (PALETTE_N entries), then the body's
+// colours by surface pressure along it (PALETTE_N more).
 @group(0) @binding(1) var<storage, read> palette: array<vec4f>;
+// The field's image: (u, v) over the free stream's speed, the value shown,
+// the schlieren's brightness (0 to 1; -1 outside the computed region).
+@group(0) @binding(2) var field_tex: texture_2d<f32>;
+// Fibres along the flow (line integral convolution of the image's velocity).
+@group(0) @binding(3) var lic_tex: texture_2d<f32>;
+// Streaks for the fibres on the sheets (noise smeared along one axis).
+@group(0) @binding(4) var streak_tex: texture_2d<f32>;
+@group(0) @binding(5) var clamp_sampler: sampler;
+@group(0) @binding(6) var repeat_sampler: sampler;
 @group(1) @binding(0) var<uniform> draw: Draw;
 
 const TAU: f32 = 6.283185307179586;
+const PALETTE_N: u32 = 256u;
 
 // The palette's colour of a value (linear between its entries): the twin
 // of the palette functions of src/render3d/quantities.ts, as tabulated.
 fn palette_colour(value: f32) -> vec3f {
   let t = clamp((value - frame.range.x) * frame.range.z, 0.0, 1.0);
-  let n = arrayLength(&palette);
+  let n = PALETTE_N;
   let f = t * f32(n - 1u);
   let k = min(u32(f), n - 2u);
   return mix(palette[k].rgb, palette[k + 1u].rgb, f - f32(k));
@@ -71,4 +88,21 @@ fn beyond_base(x: f32) -> bool {
 // A point turned about the x axis by phi (y towards z).
 fn turn(p: vec3f, c: f32, s: f32) -> vec3f {
   return vec3f(p.x, p.y * c - p.z * s, p.y * s + p.z * c);
+}
+
+// The field's image at meridional (x, r): the texture's u along x, v down
+// from r = rMax at its top; w < -0.5 outside the computed region.
+fn field_at(x: f32, r: f32) -> vec4f {
+  if (frame.image.w < 0.5) {
+    return vec4f(0.0, 0.0, 0.0, -1.0);
+  }
+  let uv = vec2f((x - frame.image.x) * frame.image.y, 1.0 - r * frame.image.z);
+  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+    return vec4f(0.0, 0.0, 0.0, -1.0);
+  }
+  return textureSampleLevel(field_tex, clamp_sampler, uv, 0.0);
+}
+
+fn image_uv(x: f32, r: f32) -> vec2f {
+  return vec2f((x - frame.image.x) * frame.image.y, 1.0 - r * frame.image.z);
 }

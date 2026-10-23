@@ -36,6 +36,13 @@ fn body_fs(v: BodyOut) -> @location(0) vec4f {
   var albedo = vec3f(0.80, 0.81, 0.83);
   if (v.part > 1.5) {
     albedo = vec3f(0.55, 0.56, 0.58);
+  } else if (v.part < 0.5 && frame.body.y > 0.5) {
+    // The body (not the fins, not the base) by its computed surface
+    // pressure, the colours along it (palette's second half), in linear light.
+    let t = clamp(v.world.x * frame.body.x, 0.0, 1.0) * f32(PALETTE_N - 1u);
+    let k = min(u32(t), PALETTE_N - 2u);
+    let c = mix(palette[PALETTE_N + k].rgb, palette[PALETTE_N + k + 1u].rgb, t - f32(k));
+    albedo = pow(c, vec3f(2.2)) * 0.9;
   }
   let key = max(dot(n, frame.key_light.xyz), 0.0);
   let fill = max(dot(n, frame.fill_light.xyz), 0.0);

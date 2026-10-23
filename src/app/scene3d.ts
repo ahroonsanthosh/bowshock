@@ -44,6 +44,36 @@ export function shellsNote(levels: readonly number[]): string {
 }
 
 /**
+ * What the 3D view's other layers show, in plain sentences (the scene's
+ * own legend, render3d's layerNotes, says the same in its PNG).
+ */
+export function layerSentences(s: SceneScale): string[] {
+  const out: string[] = [];
+  if (s.faces === 'fibres') {
+    out.push(
+      'The slice’s texture follows the computed flow direction; its grain is only a carrier.',
+    );
+  } else if (s.faces === 'schlieren' && s.schlieren !== null) {
+    out.push(
+      `The slice is a schlieren: brightness is the density gradient on a log scale, ` +
+        `${s.schlieren.lo.toFixed(1)} to ${s.schlieren.hi.toFixed(1)} (log10 of the gradient times ` +
+        'the calibre over the free stream’s density); the shock is its white edge.',
+    );
+  }
+  if (s.bodyCp !== null) {
+    out.push(
+      `The body is coloured by its computed surface pressure coefficient, blue ` +
+        `${formatScaleValue(s.bodyCp.min)} through light grey 0 to red ${formatScaleValue(s.bodyCp.max)}; ` +
+        'the fins are grey, not in the airflow.',
+    );
+  }
+  if (s.particles) {
+    out.push('Particles move with the computed velocity; where they start is random.');
+  }
+  return out;
+}
+
+/**
  * The page's legend for the 3D view's colour: the quantity, its unit and
  * range on the scene's palette, that the flow is the axisymmetric solution
  * revolved with the fins not in it, and what the scene's own legend says (the
@@ -63,6 +93,7 @@ export function sceneLegend(s: SceneScale): LegendScale {
       ? `Cells from ${formatScaleValue(s.cellMin)} to ${formatScaleValue(s.cellMax)}; ` +
         'beyond the bar, its end colours.'
       : '',
+    ...layerSentences(s),
     'Black: no flow drawn. Hatched: behind the base, not simulated.',
   ];
   return {
