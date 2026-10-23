@@ -260,6 +260,7 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     };
     const view = totalDragView(form, {
       kind: 'solved',
+      verified: true,
       component: exactConeNoseWaveDrag(mach, Math.atan(0.5 / form.body.nose.length)),
     });
     if (view.kind !== 'total') throw new Error(view.kind);
@@ -292,6 +293,7 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
       const form = basicFinnerForm(mach);
       const view = totalDragView(form, {
         kind: 'solved',
+        verified: true,
         component: exactConeNoseWaveDrag(mach, Math.atan(0.5 / form.body.nose.length)),
       });
       if (view.kind !== 'total') throw new Error(`M ${mach}: ${view.kind}`);
@@ -324,6 +326,7 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     };
     const view = totalDragView(form, {
       kind: 'solved',
+      verified: true,
       component: exactConeNoseWaveDrag(mach, Math.atan(0.5 / form.body.nose.length)),
     });
     if (view.kind !== 'total') throw new Error(view.kind);

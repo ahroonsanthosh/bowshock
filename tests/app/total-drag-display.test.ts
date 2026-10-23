@@ -95,6 +95,7 @@ const BODY: Body = {
 
 const exactNose = (form: TotalDragForm): NoseState => ({
   kind: 'solved',
+  verified: true,
   component: exactConeNoseWaveDrag(
     form.mach,
     Math.atan(form.body.nose.baseRadius / form.body.nose.length),

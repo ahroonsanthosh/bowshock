@@ -824,11 +824,12 @@ export type NoseState =
       readonly kind: 'solved';
       readonly component: DragComponent;
       /**
-       * Whether the solve verified its band (within the solver's tolerance);
-       * false: the band is measured but wider, and no claim is more than an
-       * estimate. Absent: verified (an exact or published nose term).
+       * Whether the nose term is verified: the solve's band within the
+       * solver's tolerance, or an exact value (Taylor-Maccoll). Required, and
+       * anything but true counts as not verified (fail closed): no claim is
+       * then more than an estimate.
        */
-      readonly verified?: boolean;
+      readonly verified: boolean;
     }
   /** Solved without a band, or not solved: the total is refused. */
   | { readonly kind: 'refused'; readonly message: string }
@@ -994,7 +995,9 @@ export function totalDragView(form: TotalDragForm, nose: NoseState): TotalDragVi
     withInputs: bandWithInputs(total),
     check,
     subClass,
-    claim: claimOf(check, subClass, boundedReasons(parts.base), nose.verified !== false),
+    // Fail closed: only an explicit true counts (a state read from JSON may lack the flag).
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+    claim: claimOf(check, subClass, boundedReasons(parts.base), nose.verified === true),
     notes: notesOf(parts.base),
   };
 }
