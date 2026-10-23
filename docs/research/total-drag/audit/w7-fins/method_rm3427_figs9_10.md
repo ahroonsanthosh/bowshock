@@ -76,3 +76,12 @@ said "pushed at 09:21"). Being in the shared local repository before
 opened. Until the earlier agent's record shows otherwise, this reading
 is to be treated as **not shown to be blind**. The coordinator may have
 figs. 9 and 10 read again by a reader who has opened neither reading.
+
+**Status, 2026-10-23: not used** (the coordinator's decision). This
+reading stays "not shown to be blind" and is not used. Figs. 9 and 10 are
+read twice blind by two other readers, round 10 and round 12, and paired
+on `claude/wip/round10-w7-figures` at 36c5a61: every symbol and line
+agrees within the errors, except the right end of fig. 10's laminar
+flat-plate line, M 1.1787 against 1.2068, where both are kept. Those two
+readings are the record (0019 section 6); the W7 agent writing this note
+did not open them.

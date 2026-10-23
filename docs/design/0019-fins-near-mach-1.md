@@ -1011,21 +1011,28 @@ F2 last.
    `tests/total/fins-own-drag-guard.test.ts`; the Basic Finner's gated
    shots unchanged in number).
 2. **F4, the trailing edges.** Readings, each with its state on
-   2026-10-22 (the second readings are the coordinator's to arrange, and
+   2026-10-23 (the second readings are the coordinator's to arrange, and
    round 10's are paired by a neutral party):
    - read once, second to arrange: R&M 3427 fig. 39 (10.7 (l)) and fig.
-     13's hole 4 (10.7 (m)); TN 3548 fig. 6; RM A51J25 fig. 7 below M' 1.5
-     (the curve-and-symbols band; the earlier reading there is audit
-     round 4's); R&M 3427 figs. 15, 16 and 18;
-   - read once, round 10's blind reading to pair: R&M 3427 figs. 9, 10 and
-     13 (holes 5 to 7);
+     13's hole 4 (10.7 (m); whether it serves, section 3.4); TN 3548 fig.
+     6; RM A51J25 fig. 7 below M' 1.5 (the curve-and-symbols band; the
+     earlier reading there is audit round 4's); R&M 3427 figs. 15, 16 and
+     18;
+   - read once, round 10's blind reading to pair: R&M 3427 fig. 13 (holes
+     5 to 7); R&M 3348 figs. 30a and 30b (the fig. 30 against table 3
+     inconsistency raised at the pairing);
    - read twice and paired: R&M 3348 table 3 (typed, 852 of 852
-     identical);
-   - not yet read: R&M 3348 figs. 30a, 30b (round 10 has read them blind;
-     W7's first reading to make, the fig. 30 against table 3 inconsistency
-     raised at the pairing) and figs. 47 to 52 (10.7 (l)); R&M 3323 figs.
-     4, 5 (their sources traced first); Johnston's figs. 4 to 12; RM L8B13
-     fig. 4(c) to 4(e).
+     identical); R&M 3427 figs. 9 and 10, on the two blind readings of
+     round 10 and round 12 (paired on `claude/wip/round10-w7-figures` at
+     36c5a61: every symbol and line agrees within the errors but the
+     laminar flat-plate line's right end, M 1.1787 against 1.2068, both
+     kept). W7's earlier first reading of figs. 9 and 10 (9f4d89f) is
+     "not shown to be blind" (its method note) and is not used;
+   - a check that sets nothing: R&M 3348 figs. 47 to 52 (10.7 (r): the
+     registered quantity, p/H at x/c 0.995 per incidence, cannot be read;
+     the envelope read instead was defined after the ink was seen);
+   - not yet read: R&M 3323 figs. 4, 5 (their sources traced first);
+     Johnston's figs. 4 to 12; RM L8B13 fig. 4(c) to 4(e).
 
    Then `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the
    data (each set's points inside the band, the step at 1.5), the record.
@@ -1037,7 +1044,8 @@ F2 last.
    them; read them; form the band as 0008 section 4.3 formed ARCAS's.
 4. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13, 14, 15 and
    16, R&M 3348 figs. 31a, 31b and 32 (31b and 32 read blind by round 10,
-   W7's first readings to make); Knechtel's tunnel and corrections recorded
+   and once by W7 at 818d9f2 and 3c5a9f5, to pair; CR-149372 fig. 8a, F2's
+   check, likewise at e94adb7); Knechtel's tunnel and corrections recorded
    before his curve sets anything (3.3, N4). Then a bevel term in
    `src/fins` (beside `rounded-leading-edge.ts`), `finned-body.ts`'s
    bevel-leading-edge and hexagonal paths below Mach 1.5, tests against
