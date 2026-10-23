@@ -992,6 +992,7 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
       next,
       chip,
     ),
+    v.tested === null ? null : h('p', { className: 'point__tested', text: `${v.tested}.` }),
     v.value === null
       ? null
       : h(

@@ -203,11 +203,14 @@ claim's text and caveats word for word.
 The logic makes two kinds of claim: validated, only inside the Basic
 Finner's narrow BRL sub-class (0014 section 10.7 (q)), and an estimate
 everywhere else (the class's own claim stays suspended, 0010 section
-11.7); the words follow its text and reasons. The curve's points (Mach
-1.0 to 3.0 by 0.1 or 0.2) never fall in the sub-class's Mach windows
-(1.801 to 1.827 and 2.423 to 2.468), so today the curve shows no
-validated point; the display is tested at Mach 2.423 directly
-(`tests/app/numbers.test.ts`). A new kind fails the build
+11.7); the words follow its text and reasons. The curve's regular points
+never fall in the sub-class's Mach windows (1.801 to 1.827 and 2.423 to
+2.468), so a rocket the logic places inside the sub-class gets a point in
+each window (section 8.1), noted "BRL Report 934 tested Mach ... here"
+in the point block, the table, the chart (a green band, "BRL 934") and
+the CSV row; the point block then shows the logic's claim text and
+caveats word for word (`tests/app/tested-windows.test.ts`,
+`tests/app/numbers.test.ts`). A new kind fails the build
 (`src/app/status-words.ts`) until it is worded here and there.
 
 **Points without a number** (kind `refused`, the nose solve's outcomes,
@@ -500,7 +503,16 @@ scale bar of a round length in the user's units (10, 20, 50 or 100 mm, or
 ### 8.1 Points and order
 
 Mach 1.0 to 3.0 whatever the rocket flies to, every 0.2 by default (11
-points), every 0.1 as the other choice (21). The flight's highest Mach
+points), every 0.1 as the other choice (21). Where the rocket and its
+flight lie inside the Basic Finner's BRL sub-class (the logic's own
+check, `brl934SubClass`, at that Mach number), the curve adds a point in
+each Mach window BRL Report 934's range A tested, the windows read from
+the logic (`BRL934_SUB_CLASS`): the window's centre rounded to the
+curve's two decimals, the precision every Mach number is shown to, so
+that the point shown is the point solved, kept only strictly inside the
+window (1.81 in 1.801 to 1.827, 2.45 in 2.423 to 2.468). They are solved
+and labelled like any point, Validated only where the logic says so; no
+point is added for any other rocket. The flight's highest Mach
 number is marked on the chart and said beside it with where it came from
 (an OpenRocket file's own simulation is often subsonic: 15 of its 16
 examples fly below Mach 1). At

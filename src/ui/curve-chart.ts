@@ -184,6 +184,23 @@ export function curveChart(o: ChartOptions): SVGSVGElement {
     );
   }
 
+  // The Mach windows BRL Report 934's range A tested, where the curve has a point in them.
+  for (const p of o.points) {
+    if (p.tested === undefined) continue;
+    const a = X(p.tested.from);
+    const b = X(p.tested.to);
+    root.append(
+      svg('rect', {
+        x: a,
+        y: m.top,
+        width: Math.max(b - a, 2),
+        height: axisY - m.top,
+        class: 'chart__window',
+      }),
+      svg('text', { x: (a + b) / 2, y: axisY - 4, class: 'chart__window-label' }, 'BRL 934'),
+    );
+  }
+
   if (o.selected !== null && o.points[o.selected] !== undefined) {
     const x = X(o.points[o.selected]!.mach);
     root.append(svg('line', { x1: x, x2: x, y1: m.top, y2: laneY + 8, class: 'chart__selected' }));
@@ -259,6 +276,11 @@ export function curveTable(
       onSelect(k);
     });
     row.insertCell().append(show);
+    if (v.tested !== null) {
+      row.cells[0]!.append(
+        h('span', { className: 'curve-table__tested', text: ' BRL 934 tested' }),
+      );
+    }
     row.insertCell().textContent = v.value ?? '';
     row.insertCell().textContent = v.band ?? '';
     const status = row.insertCell();

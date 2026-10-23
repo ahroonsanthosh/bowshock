@@ -28,8 +28,11 @@ export function csvField(text: string): string {
 /** One point's row. */
 export function csvRow(point: CurvePoint): string {
   const mach = point.mach.toFixed(2);
+  // A point in a tested window says so first.
+  const w = point.tested;
+  const note = w === undefined ? '' : `BRL Report 934 tested Mach ${w.from} to ${w.to} here. `;
   const row = (cd: string, low: string, high: string, status: string, reason: string) =>
-    [mach, cd, low, high, status, csvField(reason)].join(',');
+    [mach, cd, low, high, status, csvField(note + reason)].join(',');
   const s = point.state;
   if (s.kind !== 'done') return row('', '', '', 'not-finished', 'not computed');
   const r = s.result;
