@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-23T22:36:20.900Z",
+  "adapter": {},
+  "codeChecks": {
+    "freeStreamRelative": 2.750711505468353e-7,
+    "freeStreamPass": true,
+    "residualAgainstCpuRelative": 0.0000010300280696154185,
+    "float32Epsilon": 1.1920928955078125e-7
+  },
+  "cases": [
+    {
+      "case": "3-caliber tangent ogive, Mach 2",
+      "a0": {
+        "eps2D": 0.000004925474772710103,
+        "pass": true
+      },
+      "a": [
+        {
+          "layers": 1,
+          "steps": 1200,
+          "eps3D": 9.715460960180167e-7,
+          "limit": 0.000009850949545420207,
+          "bodyForceRelative": 1.8664708009075185e-8,
+          "pass": true
+        },
+        {
+          "layers": 4,
+          "steps": 1200,
+          "eps3D": 9.902603377298647e-7,
+          "limit": 0.000009850949545420207,
+          "bodyForceRelative": 2.798358190184791e-7,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "3:1 ellipsoid, Mach 2",
+      "a0": {
+        "eps2D": 0.000009710701240894792,
+        "pass": true
+      },
+      "a": [
+        {
+          "layers": 1,
+          "steps": 1200,
+          "eps3D": 9.91656095683524e-7,
+          "limit": 0.000019421402481789585,
+          "bodyForceRelative": 4.3177110514964724e-8,
+          "pass": true
+        },
+        {
+          "layers": 4,
+          "steps": 1200,
+          "eps3D": 8.987008011334592e-7,
+          "limit": 0.000019421402481789585,
+          "bodyForceRelative": 2.6192527889927724e-7,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "case": "5 deg cone, Mach 1.3",
+      "a0": {
+        "eps2D": 0.0000033673595862815375,
+        "pass": true
+      },
+      "a": [
+        {
+          "layers": 1,
+          "steps": 1600,
+          "eps3D": 7.539961168756548e-7,
+          "limit": 0.000006734719172563075,
+          "bodyForceRelative": 1.1238186109920579e-7,
+          "pass": true
+        },
+        {
+          "layers": 4,
+          "steps": 1600,
+          "eps3D": 5.944975260963048e-7,
+          "limit": 0.000006734719172563075,
+          "bodyForceRelative": 1.1545314895660398e-7,
+          "pass": true
+        }
+      ]
+    }
+  ]
+}

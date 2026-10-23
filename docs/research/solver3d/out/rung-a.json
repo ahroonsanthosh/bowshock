@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-23T22:10:31.272Z",
+  "date": "2026-10-23T22:19:03.355Z",
   "engine": "CPU, double",
   "cases": [
     {
@@ -78,7 +78,7 @@
         "thetaVariation": 3.1086244689504383e-15,
         "pass": true
       },
-      "seconds": 209.23
+      "seconds": 219.9
     },
     {
       "case": "3:1 ellipsoid, Mach 2 (blunt, C grid)",
@@ -156,7 +156,7 @@
         "thetaVariation": 2.6272671962866384e-15,
         "pass": true
       },
-      "seconds": 81.439
+      "seconds": 120.833
     },
     {
       "case": "5 deg cone, Mach 1.3",
@@ -234,7 +234,7 @@
         "thetaVariation": 1.5012955407352219e-15,
         "pass": true
       },
-      "seconds": 83.505
+      "seconds": 113.821
     }
   ]
 }
