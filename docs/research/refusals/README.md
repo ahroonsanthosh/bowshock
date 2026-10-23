@@ -67,6 +67,13 @@ The fin terms near Mach 1 (0019):
 ONLY=./w7-fins.test.ts nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
 ```
 
+The 3D fins' Stage A scope (0021, revision 2; an upper bound, about a
+minute; writes `out/stage-a-scope.out`):
+
+```sh
+ONLY=./stage-a-scope.test.ts nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
+```
+
 The OpenRocket survey: clone `https://github.com/openrocket/openrocket`
 (sparse: `core/src/main/resources/datafiles`) into its own directory
 outside the repository, then
