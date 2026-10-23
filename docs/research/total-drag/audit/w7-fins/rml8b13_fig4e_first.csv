@@ -1,0 +1,30 @@
+# NACA RM L8B13 (NTRS 19930085324, sha256 9104583c...7679d824), fig. 4(e), PDF p. 15: p/p_0 at midchord on
+# the two faces of the wing-flow wedge (orifices 4 in from the wing; legend circle and square) against M.
+# FIRST reading (0019 reader, W7), 2026-10-23. shape_call: the symbol as read (uncertain where circle and square
+# cannot be told apart at this scan). The x of reference 5 (theory) is not read. Method: method_rml8b13_fig4.md.
+id,shape_call,px_x,px_y,mach,p_over_p0,mach_err,p_over_p0_err,note
+e01,uncertain,513,2552,0.7200,1.0566,0.0012,0.0048,rounded: circle or square
+e02,square,552,2550,0.7419,1.0618,0.0012,0.0048,
+e03,circle,581,2549,0.7583,1.0650,0.0012,0.0048,
+e04,uncertain,623.5,2553,0.7826,1.0558,0.0012,0.0048,rounded: circle or square
+e05,square,660,2555,0.8035,1.0512,0.0012,0.0048,a tick (arrowhead) below
+e06,uncertain,708.5,2553,0.8313,1.0559,0.0012,0.0048,rounded: circle or square
+e07,uncertain,761,2551,0.8614,1.0606,0.0012,0.0048,rounded: circle or square
+e08,uncertain,788,2551,0.8767,1.0606,0.0015,0.0059,two outlines drawn over each other (circle and square?); placed as one
+e09,square,885.5,2536,0.9325,1.0955,0.0012,0.0048,
+e10,uncertain,945,2530,0.9664,1.1103,0.0012,0.0048,rounded: circle or square
+e11,square,985.5,2520,0.9894,1.1336,0.0012,0.0048,
+e12,circle,1055,2500.5,1.0289,1.1801,0.0012,0.0048,
+e13,square,1079.5,2486,1.0428,1.2139,0.0012,0.0048,on the 1.2 grid line
+e14,uncertain,1121.5,2475.5,1.0667,1.2382,0.0012,0.0048,rounded: circle or square
+e15,square,1150.5,2467.5,1.0832,1.2567,0.0012,0.0048,
+e16,square,1193,2440,1.1073,1.3202,0.0009,0.0037,touches e17
+e17,circle,1194,2458.5,1.1080,1.2774,0.0009,0.0037,touches e16
+e18,square,1212,2435,1.1182,1.3318,0.0009,0.0037,touches e19
+e19,circle,1213.5,2449.5,1.1191,1.2982,0.0009,0.0037,touches e18
+e20,square,1254,2434,1.1424,1.3341,0.0012,0.0048,inked with e21 and e22
+e21,circle,1255,2446,1.1429,1.3063,0.0012,0.0048,inked with e20
+e22,square,1275,2433,1.1544,1.3364,0.0012,0.0048,inked with e20 and e25
+e23,square,1303,2431.5,1.1704,1.3398,0.0012,0.0048,touches e24
+e24,circle,1304,2444,1.1709,1.3109,0.0012,0.0048,touches e23
+e25,uncertain,1275,2442,1.1544,1.3155,0.0015,0.0059,a second outline under e22 (circle?); partly hidden

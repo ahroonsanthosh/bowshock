@@ -16,6 +16,7 @@
 import { excludableParts, withoutText } from '../rocket/adapter';
 import { outward } from './band';
 import type { CurvePoint, CurveRun } from './curve';
+import { testedNote } from './point-view';
 import type { RocketDesign } from '../rocket/design';
 
 export const CSV_HEADER = 'mach,cd,cd_low,cd_high,status,reason';
@@ -28,13 +29,18 @@ export function csvField(text: string): string {
 /** One point's row. */
 export function csvRow(point: CurvePoint): string {
   const mach = point.mach.toFixed(2);
-  // A point in a tested window says so first.
-  const w = point.tested;
-  const note = w === undefined ? '' : `BRL Report 934 tested Mach ${w.from} to ${w.to} here. `;
+  // A point in a tested window says so first, apart from the logic's words.
+  const note = testedNote(point);
   const row = (cd: string, low: string, high: string, status: string, reason: string) =>
-    [mach, cd, low, high, status, csvField(note + reason)].join(',');
+    [mach, cd, low, high, status, csvField(note === null ? reason : `${note}; ${reason}`)].join(
+      ',',
+    );
   const s = point.state;
-  if (s.kind !== 'done') return row('', '', '', 'not-finished', 'not computed');
+  if (s.kind !== 'done') {
+    // Not finished: the window's note alone where there is one.
+    const text = note ?? 'not computed';
+    return [mach, '', '', '', 'not-finished', csvField(text)].join(',');
+  }
   const r = s.result;
   switch (r.kind) {
     case 'total': {

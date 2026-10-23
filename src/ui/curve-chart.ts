@@ -197,7 +197,7 @@ export function curveChart(o: ChartOptions): SVGSVGElement {
         height: axisY - m.top,
         class: 'chart__window',
       }),
-      svg('text', { x: (a + b) / 2, y: axisY - 4, class: 'chart__window-label' }, 'BRL 934'),
+      svg('text', { x: (a + b) / 2, y: axisY - 4, class: 'chart__window-label' }, 'BRL 934 tested'),
     );
   }
 
@@ -277,9 +277,7 @@ export function curveTable(
     });
     row.insertCell().append(show);
     if (v.tested !== null) {
-      row.cells[0]!.append(
-        h('span', { className: 'curve-table__tested', text: ' BRL 934 tested' }),
-      );
+      row.cells[0]!.append(h('span', { className: 'curve-table__tested', text: ` ${v.tested}` }));
     }
     row.insertCell().textContent = v.value ?? '';
     row.insertCell().textContent = v.band ?? '';

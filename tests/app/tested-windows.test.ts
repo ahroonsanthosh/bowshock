@@ -142,13 +142,13 @@ describe('the tested windows', { timeout: 120_000 }, () => {
         expect(v.status.word).toBe('Validated');
         expect(v.claim).toBe(VALIDATED_CLAIM);
         expect(v.tested).toBe(
-          `BRL Report 934 tested Mach ${p.tested!.from} to ${p.tested!.to} here`,
+          `Mach window BRL Report 934 tested (${p.tested!.from} to ${p.tested!.to})`,
         );
         expect(resultLine(v)).toMatch(/: Validated$/);
         const row = csvRow(p);
         expect(row.split(',')[4]).toBe('validated');
         expect(row).toContain(
-          `BRL Report 934 tested Mach ${p.tested!.from} to ${p.tested!.to} here.`,
+          `Mach window BRL Report 934 tested (${p.tested!.from} to ${p.tested!.to}); Validated:`,
         );
       }
       // Every other point of the same rocket: what the logic says there, never Validated.
@@ -156,6 +156,27 @@ describe('the tested windows', { timeout: 120_000 }, () => {
         expect(pointView(p, true).status.word).not.toBe('Validated');
       }
     }
+  });
+
+  it('without WebGPU none is added (it could never be solved there)', () => {
+    const run = new CurveRun(
+      { design: brlFinner(), without: false, step: 0.2, finest: 8, noGpu: true },
+      solver,
+      () => {},
+    );
+    expect(run.points.map((p) => p.mach)).toEqual(curveMachs(0.2));
+  });
+
+  it('before it is solved, the CSV says only the window, with no run-on', () => {
+    const run = new CurveRun(
+      { design: brlFinner(), without: false, step: 0.2, finest: 8 },
+      solver,
+      () => {},
+    );
+    const p = run.points.find((q) => q.tested !== undefined)!;
+    expect(csvRow(p)).toBe(
+      `${p.mach.toFixed(2)},,,,not-finished,Mach window BRL Report 934 tested (${p.tested!.from} to ${p.tested!.to})`,
+    );
   });
 
   it('a rocket outside it gets none: rounded edges, another size, another altitude', () => {

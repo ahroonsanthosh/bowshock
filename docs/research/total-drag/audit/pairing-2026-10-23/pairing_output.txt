@@ -1,0 +1,86 @@
+=== R&M 3427 fig. 9 (u*, y in.), round 10 against round 12: symbols
+  axes x = u*, y = y_in; 1 px = 0.00199 and 0.000252; gate 6 px
+  round 10: 33 (22 circle, 11 square); round 12: 33 (22 circle, 11 square)
+  matched pairs 33; round 10 only 0; round 12 only 0; type disagreements 0
+  largest pair distance 1.3 px
+  test as stated (e10 + e12): same type and within errors 33; outside errors 0
+    largest |difference| / combined error: x 0.32, y 0.22
+  test common 2 sigma (e10 + 2 x e12): same type and within errors 33; outside errors 0
+    largest |difference| / combined error: x 0.24, y 0.16
+
+=== R&M 3427 fig. 10 (M_inf, delta/h), round 10 against round 12: symbols
+  axes x = M_inf, y = delta_over_h; 1 px = 0.00199 and 0.000503; gate 6 px
+  round 10: 5 (4 square, 1 circle); round 12: 5 (4 square, 1 circle)
+  matched pairs 5; round 10 only 0; round 12 only 0; type disagreements 0
+  largest pair distance 2.2 px
+  test as stated (e10 + e12): same type and within errors 5; outside errors 0
+    largest |difference| / combined error: x 0.19, y 0.34
+  test common 2 sigma (e10 + 2 x e12): same type and within errors 5; outside errors 0
+    largest |difference| / combined error: x 0.15, y 0.28
+
+=== R&M 3427 fig. 9: the line labelled "1/7 th power law", round 10 against round 12
+  round 10: 11 values of u* at fixed y (about 2 sigma errors); round 12: 76 committed trace samples (73 distinct y), no per-value error stated
+  round 12 error used for this comparison (pairer's construction, not stated by round 12): sqrt(0.0026^2 + (du/dy x 0.00032)^2) in u*, du/dy from round 12's trace
+  y 0.005: round 10 u* 0.6373 +-0.0247; round 12 0.6366 +-0.0073 (1 sigma, pairer's); difference +0.0007; as stated agree (comb 0.0320), common 2 sigma agree (comb 0.0393); nearest round 12 sample 0.5 px
+  y 0.010: round 10 u* 0.7359 +-0.0202; round 12 0.7320 +-0.0046 (1 sigma, pairer's); difference +0.0039; as stated agree (comb 0.0248), common 2 sigma agree (comb 0.0293); nearest round 12 sample 1.2 px
+  y 0.015: round 10 u* 0.7925 +-0.0075; round 12 0.7917 +-0.0036 (1 sigma, pairer's); difference +0.0008; as stated agree (comb 0.0111), common 2 sigma agree (comb 0.0147); nearest round 12 sample 3.0 px
+  y 0.020: round 10 u* 0.8279 +-0.0085; round 12 0.8233 +-0.0031 (1 sigma, pairer's); difference +0.0046; as stated agree (comb 0.0116), common 2 sigma agree (comb 0.0147); nearest round 12 sample 16.5 px; interpolated across a 38 px gap in round 12's trace (y 0.01691 to 0.02644)
+  y 0.040: round 10 u* 0.9138 +-0.0053; round 12 0.9131 +-0.0029 (1 sigma, pairer's); difference +0.0007; as stated agree (comb 0.0082), common 2 sigma agree (comb 0.0110); nearest round 12 sample 2.1 px; interpolated across a 11 px gap in round 12's trace (y 0.03775 to 0.04051)
+  y 0.045: round 10 u* 0.9287 +-0.0049; round 12 0.9275 +-0.0027 (1 sigma, pairer's); difference +0.0012; as stated agree (comb 0.0076), common 2 sigma agree (comb 0.0102); nearest round 12 sample 3.2 px; interpolated across a 18 px gap in round 12's trace (y 0.04126 to 0.04579)
+  y 0.090: round 10 u* 1.0004 +-0.0043; round 12 1.0005 +-0.0026 (1 sigma, pairer's); difference -0.0001; as stated agree (comb 0.0069), common 2 sigma agree (comb 0.0094); nearest round 12 sample 9.7 px; interpolated across a 33 px gap in round 12's trace (y 0.08756 to 0.09588)
+  y 0.095: round 10 u* 1.0007 +-0.0044; round 12 1.0008 +-0.0026 (1 sigma, pairer's); difference -0.0001; as stated agree (comb 0.0070), common 2 sigma agree (comb 0.0095); nearest round 12 sample 3.5 px; interpolated across a 33 px gap in round 12's trace (y 0.08756 to 0.09588)
+  y 0.105: round 10 u* 1.0005 +-0.0048; round 12 1.0001 +-0.0026 (1 sigma, pairer's); difference +0.0004; as stated agree (comb 0.0074), common 2 sigma agree (comb 0.0099); nearest round 12 sample 11.8 px; interpolated across a 42 px gap in round 12's trace (y 0.09739 to 0.10798)
+  y 0.110: round 10 u* 0.9991 +-0.0044; round 12 0.9993 +-0.0026 (1 sigma, pairer's); difference -0.0002; as stated agree (comb 0.0070), common 2 sigma agree (comb 0.0096); nearest round 12 sample 1.0 px
+  y 0.115: round 10 u* 0.9971 +-0.0045; round 12 0.9979 +-0.0026 (1 sigma, pairer's); difference -0.0008; as stated agree (comb 0.0071), common 2 sigma agree (comb 0.0096); nearest round 12 sample 9.9 px; interpolated across a 20 px gap in round 12's trace (y 0.11251 to 0.11755)
+  within errors: as stated 11 of 11; common 2 sigma 11 of 11
+  page distance from each round 10 line point to the nearest round 12 trace sample: median 3.2 px, largest 16.5 px (round 12's thinned trace samples are 3 px apart where it is dense)
+
+  power-law check: model u* = min(1, (y/delta)^n), grid search (n step 0.0005, delta step 0.0005 in.), unweighted rms u*
+  round 10 line points (11): n = 1/7 forced: delta 0.0805 in., rms 0.0118, residuals -0.035 -0.006 +0.006 +0.008 +0.009 +0.008 +0.000 +0.001 +0.000 -0.001 -0.003
+      n free: n 0.1645 (1/n 6.08), delta 0.0675 in., rms 0.0069
+      forced 1/7 residual larger than round 10's own stated error (about 2 sigma) at 3 of 11 points: y 0.005 residual -0.0351 vs +-0.0247; y 0.040 residual +0.0089 vs +-0.0053; y 0.045 residual +0.0084 vs +-0.0049
+  round 10 line points plus its lower line end (0.0007 in., 0.47): n = 1/7 forced: delta 0.0835 in., rms 0.0154, residuals -0.032 -0.003 +0.010 +0.013 +0.014 +0.013 +0.000 +0.001 +0.000 -0.001 -0.003 -0.035
+      n free: n 0.1650 (1/n 6.06), delta 0.0670 in., rms 0.0067
+  round 10 line points below y 0.05 in. only (6; the near-wall part): n = 1/7 forced: delta 0.0805 in., rms 0.0159, residuals -0.035 -0.006 +0.006 +0.008 +0.009 +0.008
+      n free: n 0.1645 (1/n 6.08), delta 0.0675 in., rms 0.0093
+  round 12 committed thinned trace (76 rows; fit-code check): n = 1/7 forced: delta 0.0920 in., rms 0.0245, residuals -0.028 -0.034 -0.038 -0.045 -0.043 -0.042 -0.045 -0.042 -0.048 -0.045 -0.045 -0.041 -0.047 -0.031 -0.032 -0.033 -0.031 -0.025 -0.031 -0.024 -0.023 -0.023 -0.022 -0.014 -0.014 -0.014 -0.012 -0.009 -0.010 -0.001 -0.001 +0.003 +0.003 +0.004 +0.005 +0.008 +0.011 +0.020 +0.021 +0.021 +0.023 +0.022 +0.021 +0.024 +0.023 +0.026 +0.026 +0.024 +0.026 +0.026 +0.027 +0.028 +0.028 +0.027 +0.026 +0.024 +0.024 +0.024 +0.022 +0.020 +0.007 +0.001 +0.001 +0.001 -0.000 -0.000 -0.000 -0.001 -0.002 -0.002 -0.002 -0.002 -0.003 -0.003 -0.003 -0.004
+      n free: n 0.1725 (1/n 5.80), delta 0.0675 in., rms 0.0089
+  round 12's trace interpolated at round 10's 11 y values (sampling check: same y as round 10, round 12's u*): n = 1/7 forced: delta 0.0820 in., rms 0.0118, residuals -0.034 -0.008 +0.007 +0.006 +0.011 +0.010 +0.000 +0.001 +0.000 -0.001 -0.002
+      n free: n 0.1650 (1/n 6.06), delta 0.0680 in., rms 0.0063
+  round 12's own figures (summary.json): forced 1/7 delta 0.092 in., rms 0.0244; free n 0.1725, delta 0.0675, rms 0.0088 (its json also lists 'free_exponent' 0.1740: in its read9.py a straight-line fit of log u* on log y over trace samples with u* < 0.99; its method.md quotes 0.1725)
+  log-log straight-line slope (round 12's 'free_exponent' recipe, u* < 0.99), round 10 line points: n 0.1682 from 6 points
+  log-log straight-line slope (round 12's 'free_exponent' recipe, u* < 0.99), round 10 line points plus its lower end: n 0.1663 from 7 points
+  log-log straight-line slope (round 12's 'free_exponent' recipe, u* < 0.99), round 12 committed trace: n 0.1738 from 57 points
+
+=== R&M 3427 fig. 10: the two dashed flat-plate lines, round 10 against round 12
+  turbulent: 20 common M values (0.20 to 1.15); round 10 only []; round 12 only []
+    within errors: as stated 20 of 20; common 2 sigma 20 of 20; largest |difference| 0.00078 at M 0.30 (-0.00078, round 10 minus round 12); mean difference -0.00017
+    round 12's dash centres inside round 10's M range: 17; round 10 (interpolated) minus round 12: mean -0.00018, largest |difference| 0.00038 (0.7 px)
+  laminar: 20 common M values (0.20 to 1.15); round 10 only []; round 12 only [1.2]
+    within errors: as stated 20 of 20; common 2 sigma 20 of 20; largest |difference| 0.00035 at M 0.40 (+0.00035, round 10 minus round 12); mean difference +0.00007
+    round 12's dash centres inside round 10's M range: 17; round 10 (interpolated) minus round 12: mean +0.00008, largest |difference| 0.00034 (0.7 px)
+
+=== Line ends (page pixels; the end of a line is a judgement, so ends are compared, not paired as symbols)
+  fig9 lower end (meets the x axis): round 10 (0.47, 0.0007), round 12 (0.4767, 0.0009); difference -3.4 px in x, -0.9 px in y; errors px round 10 (5.0, 2.0), round 12 (1.3, 1.3): as stated agree, common 2 sigma agree; round 12 states no end error (pairer uses its 1 px plus calibration); both say the line merges with the axis there
+  fig9 upper end: round 10 (0.996, 0.1207), round 12 (0.9958, 0.1208); difference +0.1 px in x, -0.5 px in y; errors px round 10 (2.0, 2.0), round 12 (1.3, 1.3): as stated agree, common 2 sigma agree; round 12 states no end error (pairer's, as above)
+  fig10 turbulent left end: round 10 (0.1965, 0.24962), round 12 (0.1929, 0.2501); difference +1.8 px in x, -1.0 px in y; errors px round 10 (5.0, 5.0), round 12 (1.4, 1.4): as stated agree, common 2 sigma agree; round 10: 5 px each axis, 'where the tracked line ends'; round 12: 0.0007 in delta/h stated, M error not stated for ends (pairer uses its symbol M error 0.0028)
+  fig10 turbulent right end: round 10 (1.1832, 0.19379), round 12 (1.1845, 0.1946); difference -0.7 px in x, -1.6 px in y; errors px round 10 (5.0, 5.0), round 12 (1.4, 1.4): as stated agree, common 2 sigma agree; round 10: 5 px each axis, 'where the tracked line ends'; round 12: 0.0007 in delta/h stated, M error not stated for ends (pairer uses its symbol M error 0.0028)
+  fig10 laminar left end: round 10 (0.1674, 0.06035), round 12 (0.1669, 0.0598); difference +0.3 px in x, +1.1 px in y; errors px round 10 (5.0, 5.0), round 12 (1.4, 1.4): as stated agree, common 2 sigma agree; round 10: 5 px each axis, 'where the tracked line ends'; round 12: 0.0007 in delta/h stated, M error not stated for ends (pairer uses its symbol M error 0.0028)
+  fig10 laminar right end: round 10 (1.1787, 0.0318), round 12 (1.2068, 0.0317); difference -14.1 px in x, +0.2 px in y; errors px round 10 (5.0, 5.0), round 12 (1.4, 1.4): as stated outside errors, common 2 sigma outside errors; round 10: 5 px each axis, 'where the tracked line ends'; round 12: 0.0007 in delta/h stated, M error not stated for ends (pairer uses its symbol M error 0.0028)
+
+=== Summary (symbols): figure, round 10, round 12, matched, type disagreements, within errors as stated, within errors common 2 sigma, round 10 only, round 12 only
+  rm3427_fig9, 33, 33, 33, 0, 33, 33, 0, 0
+  rm3427_fig10, 5, 5, 5, 0, 5, 5, 0, 0
+
+=== Blindness (checked by the pairer on 2026-10-23; recorded here as text, not recomputed)
+  round 10: figs. 9 and 10 committed in 5c7c746 (2026-10-22 09:21 UTC); its method.md says it did not open W7's
+    readings or scripts (w7-fins worktree, audit/w7-fins/, w7scripts/, w7img/, w7-review/). Round 12 was committed
+    13.5 hours later (9882f87 22:58 UTC, 84b0cc6 23:01 UTC) and no round 10 fig. 9 or 10 file changed after
+    5c7c746, so round 10 could not have seen round 12. Verdict: blind to round 12 (and, by its statement, to W7).
+  round 12: its method.md lists what it opened; it names audit/round10/, round11/, pairing-*/ and w7-fins/ as not
+    opened. Its scripts and readings contain no path or name of round 10, 11, the pairings or W7 (searched).
+    status/round10-reader.md on origin/claude/wip/handoff (68958d3) has 50 lines and three headings: the title,
+    'The fig. 30 against table 3 observation (for the pairing, not yet shown to W7)', 'Uncertain calls (full list
+    in round10/method.md)'; none carries a fig. 9 or 10 value. Verdict: blind to round 10 on the evidence available
+    (its own statement plus these checks; what an agent read cannot be proved from the repository alone).
+  W7's first reading of these figures is marked not shown to be blind and is not part of this pairing.

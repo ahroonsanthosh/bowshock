@@ -370,6 +370,7 @@ export function noseStateOf(outcome: VerifiedDrag | NoseSolveError): NoseState |
               uncertainty: outcome.uncertainty,
               grids: outcome.levels.length,
             }),
+            verified: outcome.verified,
           };
   }
 }

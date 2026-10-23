@@ -1,0 +1,127 @@
+[
+ {
+  "id": "d-01",
+  "type": "sq",
+  "approx": [
+   1167,
+   1475
+  ],
+  "score": 0.468,
+  "fit_px": [
+   1170.5,
+   1475.5
+  ],
+  "note": "",
+  "centre_px": [
+   1170.0,
+   1476.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.832,
+  "x": 0.395531370469954,
+  "y": 0.12063235969567479,
+  "err_x": 0.007732380526881796,
+  "err_y": 0.002178590841917052,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "d-02",
+  "type": "circ",
+  "approx": [
+   1373,
+   1425
+  ],
+  "score": 0.381,
+  "fit_px": [
+   1372.5,
+   1429.5
+  ],
+  "note": "",
+  "centre_px": [
+   1372.5,
+   1428.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.935,
+  "x": 0.7974345742137487,
+  "y": 0.14451326725747762,
+  "err_x": 0.009166455416158958,
+  "err_y": 0.0025214237687349863,
+  "series": "at trailing edge"
+ },
+ {
+  "id": "d-03",
+  "type": "sq",
+  "approx": [
+   1374,
+   1466
+  ],
+  "score": 0.464,
+  "fit_px": [
+   1374.5,
+   1466.5
+  ],
+  "note": "",
+  "centre_px": [
+   1374.0,
+   1466.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.898,
+  "x": 0.7999820593877884,
+  "y": 0.12537947518038017,
+  "err_x": 0.007669999070236174,
+  "err_y": 0.002178590841917149,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "d-04",
+  "type": "sq",
+  "approx": [
+   1474,
+   1484
+  ],
+  "score": 0.571,
+  "fit_px": [
+   1474.5,
+   1485.5
+  ],
+  "note": "",
+  "centre_px": [
+   1474.75,
+   1485.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.78,
+  "x": 0.9990545059006245,
+  "y": 0.11593648823189212,
+  "err_x": 0.0076699990702361305,
+  "err_y": 0.002178590841917149,
+  "series": "1 in. upstream of trailing edge"
+ },
+ {
+  "id": "d-05",
+  "type": "sq",
+  "approx": [
+   1525,
+   1513
+  ],
+  "score": 0.55,
+  "fit_px": [
+   1524.5,
+   1514.5
+  ],
+  "note": "",
+  "centre_px": [
+   1524.5,
+   1514.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.891,
+  "x": 1.0971393133128822,
+  "y": 0.10139887170533655,
+  "err_x": 0.007669999070236089,
+  "err_y": 0.002197167252792525,
+  "series": "1 in. upstream of trailing edge"
+ }
+]

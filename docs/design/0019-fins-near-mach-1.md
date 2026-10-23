@@ -22,7 +22,9 @@
   look at a figure to see what it covers (mine or the reviewer's), and is
   marked so.
 - **Date:** 2026-10-21; sections 3.2 and 3.3 rewritten 2026-10-22, and
-  3.2's decision changed by the owner the same day
+  3.2's decision changed by the owner the same day; section 3.4's
+  variables (free-stream M_0 and p_0) decided 2026-10-23 (0014 section
+  10.7 (r))
 - **Inputs:** the owner's decision of 2026-10-21 (serve a total at Mach
   1.0 to 1.2 wherever it is accurate; 0014 W7 and section 10.5);
   [0014](0014-refusals.md) in full (section 10: what sets bands, what is
@@ -771,18 +773,61 @@ built after its figures are read twice.
 
 The largest fin term near Mach 1 (section 1.2), and the best covered.
 
+- _The variables, decided 2026-10-23_ (the coordinator's decision, on
+  independent advice; 0014 section 10.7 (r)). F4's band is formed on the
+  free-stream Mach number M_0 and the free-stream static pressure p_0,
+  never on a local M' and p' ahead of the base. That is how the
+  band-setting sets report base pressure: R&M 3348 fig. 30 and table 3
+  (p_b/p_0 against M_0), Goin's points on fig. 30(b), TN 3548 fig. 6 (free
+  flight), R&M 3427 fig. 13 (against the tunnel's M); and it is what the
+  code serves, P_B(M) at the free stream (`src/base/fin-trailing-edge.ts`,
+  0010 section 5.1). Three consequences:
+  - RM A51J25 fig. 7's curve is defined on Chapman's M' and p', the local
+    state just ahead of the base. It is served at M_0 for thin plates,
+    where M' is close to M_0 (flat faces parallel to the stream, so no
+    turning between the leading edge and the base), as the code does
+    above Mach 1.5. No set is converted to M' and none is needed.
+  - Near Mach 1, M' is not a usable variable in any case: the flow at the
+    last holes ahead of a base is subsonic or barely sonic there, so the
+    corner's upstream influence reaches them and a "local" state read
+    there carries the base's own effect (Chapman's M' assumes a
+    supersonic layer that the base cannot reach through). This is why
+    R&M 3348 figs. 47 to 52 set nothing ((r), which also records that
+    their quantity could not be read).
+  - _The single wedge against a plate: a stated widening, not a
+    correction._ R&M 3348's single-wedge section (leading-edge semi-angle
+    4.0 deg, section 2.1 above) reaches its base with its faces inclined 4.0 deg
+    to the chord line, where a fin plate's faces are parallel to the
+    stream; R&M 3427's section has a single-wedge forebody and a parallel
+    afterbody, and Johnston's single wedge a 5.7 deg semi-angle. At the
+    same M_0 the inclined face changes the pressure and the layer at the
+    base, so the wedge's p_b/p_0 is not a plate's. This physical
+    difference is carried as a stated widening of the band where a
+    wedge's points set it, written here with its basis before any code;
+    the measured values are never shifted toward a plate's. Its size is
+    not yet decided (it will be stated, and if no data separate the two
+    shapes near Mach 1, said to rest on an argument, not a measurement).
+  - R&M 3427 fig. 13's hole 4 (named for the local state ahead of the
+    base, 0014 10.7 (m)) is therefore not needed for the band's
+    coordinates; it stays named and read once, and whether it serves at
+    all (it lies 0.1 in ahead of the base, inside the same upstream
+    influence) is decided here before it sets anything.
 - _Method._ As now (0010 section 5.1): -P_B(M) n h s / A_ref with a
   two-dimensional base pressure, integrated along the span on fins of
-  varying chord (0016 W3(b)), the vacuum bound kept. The curve from Mach
-  1.0 to 1.5: RM A51J25 fig. 7's curve, read a second time below M' 1.5,
-  where it is read once from 1.167, continued to 1.0 on the independent
-  sets below (fig. 7 does not reach 1.0).
+  varying chord (0016 W3(b)), the vacuum bound kept, M the free-stream
+  Mach number. The curve from Mach 1.0 to 1.5: RM A51J25 fig. 7's curve,
+  read a second time below M' 1.5, where it is read once from 1.167,
+  served at M_0 as above, continued to 1.0 on the independent sets below
+  (fig. 7 does not reach 1.0).
 - _Band._ The envelope, over both readings, of the independent sets about
-  the curve at their own Mach numbers and h/c: Nash's section (R&M 3427
+  the curve at their own free-stream Mach numbers and h/c (each set's
+  base pressure on its own p_0, as reported): Nash's section (R&M 3427
   fig. 13, to M 1.12), R&M 3323 fig. 5's sections (their sources traced
-  first), R&M 3348's table 3 (unswept, to 1.2), TN 3548 fig. 6 (free
-  flight, to 1.7), Johnston's single wedge (to about 1.25), Sawyer and
-  Daum's wedge (wing flow) and RM A51J25 fig. 7's symbols (1.23 to 1.475).
+  first), R&M 3348's table 3 (unswept, alpha 0 deg, to 1.2), TN 3548 fig.
+  6 (free flight, to 1.7), Johnston's single wedge (to about 1.25), Sawyer
+  and Daum's wedge (wing flow, where the model's free stream is the local
+  flow over the wing) and RM A51J25 fig. 7's symbols (1.23 to 1.475),
+  widened where a wedge's points set it as stated above.
   At Mach 1.5 it must meet the present 0.93 to 1.21 without a step. Wide
   near Mach 1, where the base pressure changes fastest: from about -0.7
   near Mach 1.0 (Nash, text) to -0.43 at M' 1.167 (the curve as the code
@@ -966,21 +1011,45 @@ F2 last.
    `tests/total/fins-own-drag-guard.test.ts`; the Basic Finner's gated
    shots unchanged in number).
 2. **F4, the trailing edges.** Readings, each with its state on
-   2026-10-22 (the second readings are the coordinator's to arrange, and
+   2026-10-23 (the second readings are the coordinator's to arrange, and
    round 10's are paired by a neutral party):
    - read once, second to arrange: R&M 3427 fig. 39 (10.7 (l)) and fig.
-     13's hole 4 (10.7 (m)); TN 3548 fig. 6; RM A51J25 fig. 7 below M' 1.5
-     (the curve-and-symbols band; the earlier reading there is audit
-     round 4's); R&M 3427 figs. 15, 16 and 18;
-   - read once, round 10's blind reading to pair: R&M 3427 figs. 9, 10 and
-     13 (holes 5 to 7);
+     13's hole 4 (10.7 (m); whether it serves, section 3.4); TN 3548 fig.
+     6; RM A51J25 fig. 7 below M' 1.5 (the curve-and-symbols band; the
+     earlier reading there is audit round 4's); R&M 3427 figs. 15, 16 and
+     18;
+   - read once, round 10's blind reading to pair: R&M 3427 fig. 13 (holes
+     5 to 7); R&M 3348 figs. 30a and 30b (the fig. 30 against table 3
+     inconsistency raised at the pairing);
    - read twice and paired: R&M 3348 table 3 (typed, 852 of 852
-     identical);
-   - not yet read: R&M 3348 figs. 30a, 30b (round 10 has read them blind;
-     W7's first reading to make, the fig. 30 against table 3 inconsistency
-     raised at the pairing) and figs. 47 to 52 (10.7 (l)); R&M 3323 figs.
-     4, 5 (their sources traced first); Johnston's figs. 4 to 12; RM L8B13
-     fig. 4(c) to 4(e).
+     identical); R&M 3427 figs. 9 and 10, on the two blind readings of
+     round 10 and round 12 (paired on `claude/wip/round10-w7-figures` at
+     36c5a61: every symbol and line agrees within the errors but the
+     laminar flat-plate line's right end, M 1.1787 against 1.2068, both
+     kept). W7's earlier first reading of figs. 9 and 10 (9f4d89f) is
+     "not shown to be blind" (its method note) and is not used;
+   - a check that sets nothing: R&M 3348 figs. 47 to 52 (10.7 (r): the
+     registered quantity, p/H at x/c 0.995 per incidence, cannot be read;
+     the envelope read instead was defined after the ink was seen);
+   - R&M 3323 fig. 4: sources traced (2026-10-23; refs. 31 to 35 and 38
+     to 41, of which 31, 34, 35 and 38 are counted once with their own
+     reports); read once (61 symbols), a blind second to arrange; its
+     three heavy symbols at h/c 0.14 have no legend entry, stay "source
+     not traced" and set nothing (0014 10.7 (s));
+   - R&M 3323 fig. 5: a check that sets nothing (10.7 (s)): its h/c 0.10
+     and 0.06 solid curves cannot be told apart beyond M 1.0; not read;
+   - Johnston figs. 10(a), 10(b) and 10(c): read once (59, 98 and 57
+     symbols), a blind second to arrange; figs. 4 to 9, 11 and 12 removed
+     from the registration (10.7 (s)), not read;
+   - RM L8B13: limited to figs. 4(c) (the wedge's base) and 4(e) (its
+     sides) (10.7 (s); fig. 4(d) is the swept cylinder); marks its legend
+     does not explain set nothing; fig. 4(e) read once (25 symbols);
+     fig. 4(c) a check that sets nothing (10.7 (t)): its four series
+     merge into clumps of ink from about M 0.85; not read
+     (`method_rml8b13_fig4.md`);
+   - R&M 3427 fig. 13's hole 4: left open (10.7 (s)); the size of the
+     wedge-against-plate widening is decided in section 3.4 before any F4
+     code.
 
    Then `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the
    data (each set's points inside the band, the step at 1.5), the record.
@@ -992,7 +1061,8 @@ F2 last.
    them; read them; form the band as 0008 section 4.3 formed ARCAS's.
 4. **F3, bevelled leading edges.** Readings: TR 1094 figs. 13, 14, 15 and
    16, R&M 3348 figs. 31a, 31b and 32 (31b and 32 read blind by round 10,
-   W7's first readings to make); Knechtel's tunnel and corrections recorded
+   and once by W7 at 818d9f2 and 3c5a9f5, to pair; CR-149372 fig. 8a, F2's
+   check, likewise at e94adb7); Knechtel's tunnel and corrections recorded
    before his curve sets anything (3.3, N4). Then a bevel term in
    `src/fins` (beside `rounded-leading-edge.ts`), `finned-body.ts`'s
    bevel-leading-edge and hexagonal paths below Mach 1.5, tests against

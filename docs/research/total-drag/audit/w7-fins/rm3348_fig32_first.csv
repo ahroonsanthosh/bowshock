@@ -1,0 +1,19 @@
+# ARC R&M 3348 (Rogers, Berry and Quincey; AERADE 1826.2/3929, sha256 d2f35d8a...b383e158), fig. 32 "Variation of chordwise
+# pressure-force coefficient with Mach number for phi = 0 deg plotted in transonic similarity form (single-wedge models)",
+# PDF p. 70 (printed p. 69): the reduced coefficient C~_cf = [(gamma+1) M_0^2]^(1/3) / (t/c)^(5/3) C_cf against xi_0 =
+# (M_0^2 - 1) / [(gamma+1) M_0^2 (t/c)]^(2/3). The present tests' circles only; Knechtel's two-dimensional curve (ref. 19) and
+# the theory curve (ref. 30) not read (0019 3.3, N4: Knechtel's curve sets nothing until its tunnel and corrections are
+# recorded). Named by 0014 10.7 (k) before this reading. FIRST reading (0019 reader, W7), 2026-10-22, blind to round 10's
+# reading. 300 dpi render; grid every 1.0 in xi_0 and 0.5 in C~_cf, traced on the crop at page (380, 280) (calib.py,
+# rm3348_fig32_grid.json in crop pixels); px_x, px_y are page pixels. All nine fitted (symfit.py, +-1 px). Method:
+# method_rm3348_fig31b_32.md.
+id,series,symbol,px_x,px_y,xi0,ccf_reduced,xi0_err,ccf_reduced_err,source
+o01,"phi 0 deg, present tests (circle)",circle,575.55,1115.85,-4.1432,-0.4718,0.0065,0.0050,fit
+o02,"phi 0 deg, present tests (circle)",circle,824.25,1078.50,-2.7037,-0.3110,0.0065,0.0050,fit
+o03,"phi 0 deg, present tests (circle)",circle,1015.00,1028.75,-1.5961,-0.0906,0.0065,0.0050,fit
+o04,"phi 0 deg, present tests (circle)",circle,1094.50,987.50,-1.1359,0.0914,0.0065,0.0050,fit
+o05,"phi 0 deg, present tests (circle)",circle,1168.50,909.25,-0.7080,0.4379,0.0065,0.0050,fit
+o06,"phi 0 deg, present tests (circle)",circle,1229.75,786.50,-0.3493,0.9770,0.0065,0.0049,fit
+o07,"phi 0 deg, present tests (circle)",circle,1291.75,677.25,0.0126,1.4560,0.0064,0.0049,fit
+o08,"phi 0 deg, present tests (circle)",circle,1344.50,579.00,0.3174,1.8799,0.0064,0.0048,fit
+o09,"phi 0 deg, present tests (circle)",circle,1401.75,433.25,0.6526,2.5128,0.0064,0.0047,fit

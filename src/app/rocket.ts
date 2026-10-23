@@ -992,7 +992,6 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
       next,
       chip,
     ),
-    v.tested === null ? null : h('p', { className: 'point__tested', text: `${v.tested}.` }),
     v.value === null
       ? null
       : h(
@@ -1009,6 +1008,8 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
     h('p', { className: 'point__sentence', text: v.status.sentence }),
     // Validated: the logic's own claim and caveats, word for word.
     v.claim === null ? null : h('p', { className: 'point__claim', text: v.claim }),
+    // Beside the logic's claim (or alone, without a number): the tested window, not a result.
+    v.tested === null ? null : h('p', { className: 'point__tested', text: `${v.tested}.` }),
     v.caveats.length === 0
       ? null
       : h('ul', { className: 'point__reasons' }, ...v.caveats.map((text) => h('li', { text }))),

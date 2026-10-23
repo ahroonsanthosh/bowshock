@@ -20,6 +20,7 @@ import {
   BOUNDED_REASON,
   CLASS_CLAIM,
   FINS_AHEAD_OF_BASE,
+  NOSE_UNVERIFIED_REASON,
   W1_BOUNDED_REASON,
   type Claim,
 } from './total-drag';
@@ -100,18 +101,30 @@ export const VALIDATED_WORDS: StatusWords = {
   mark: 'circle',
 };
 
+/** Any estimate whose nose term is not verified: no tested claim applies. */
+export const NOSE_UNVERIFIED_WORDS: StatusWords = {
+  word: 'Estimate',
+  sentence:
+    "An estimate: the nose's drag is not verified for this case (its band is wider than the " +
+    "solver's tolerance), so no tested claim applies here.",
+  tone: 'warn',
+  mark: 'diamond',
+};
+
 type ClaimOf<K extends Claim['kind']> = Extract<Claim, { kind: K }>;
 
 const CLAIM_KINDS: { readonly [K in Claim['kind']]: (claim: ClaimOf<K>) => StatusWords } = {
   validated: () => VALIDATED_WORDS,
   estimate: (claim) =>
-    claim.reasons.includes(BOUNDED_REASON)
-      ? BOUNDED_WORDS
-      : claim.reasons.includes(W1_BOUNDED_REASON)
-        ? W1_BOUNDED_WORDS
-        : claim.text === CLASS_CLAIM
-          ? CLASS_WORDS
-          : ESTIMATE_WORDS,
+    claim.reasons.includes(NOSE_UNVERIFIED_REASON)
+      ? NOSE_UNVERIFIED_WORDS
+      : claim.reasons.includes(BOUNDED_REASON)
+        ? BOUNDED_WORDS
+        : claim.reasons.includes(W1_BOUNDED_REASON)
+          ? W1_BOUNDED_WORDS
+          : claim.text === CLASS_CLAIM
+            ? CLASS_WORDS
+            : ESTIMATE_WORDS,
 };
 
 /** A claim of the logic in plain words. */

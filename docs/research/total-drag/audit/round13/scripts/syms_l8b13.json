@@ -1,0 +1,39 @@
+{
+ "l8b13f4e": {
+  "page": "/tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/round13-img/rml8b13/p-015-014.png",
+  "shapes": {"circle_dot": ["circle", 7.5], "square_dot": ["square", 6.75]},
+  "sw": 2.0,
+  "merged_shrink": 6.0,
+  "conditions": "RM L8B13 fig. 4(e) Wedge; orifice height 4 in",
+  "symbols": [
+   {"id": "e-01", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [513, 2551], "note": "circle top protrudes about 2 px above the square; the two outlines are not separable"},
+   {"id": "e-02", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [552, 2549], "note": "square outline with a round inner field (circle inside, concentric within about 1 px)"},
+   {"id": "e-03c", "series": "circle_dot (sketch: arrow on the upper face)", "type": "circle_dot", "at": [580, 2545], "pair": "e-03s"},
+   {"id": "e-03s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [580, 2550]},
+   {"id": "e-04", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [620, 2552], "note": "dome top (circle) over a square bottom; not separable"},
+   {"id": "e-05", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [650, 2545, 668, 2563], "note": "square outline with a round inner field; gridline M 0.80 on its left edge, so the ink box (columns 650 to 668, rows 2545 to 2563) was read from a pixel map"},
+   {"id": "e-06", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [705, 2551], "note": "dome top (circle) over a square bottom; not separable"},
+   {"id": "e-07", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [757, 2549], "note": "square outline with a round inner field"},
+   {"id": "e-08c", "series": "circle_dot (sketch: arrow on the upper face)", "type": "circle_dot", "at": [787, 2546], "pair": "e-08s"},
+   {"id": "e-08s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [787, 2552]},
+   {"id": "e-09s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [885, 2535], "note": "single square, thin stroke, square inner field: no circle seen at this Mach number"},
+   {"id": "e-10", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [941, 2529], "note": "rounded-square outline, thick lower stroke, round inner field, no dot visible; read as both symbols superposed, not separable"},
+   {"id": "e-11", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [981, 2516], "note": "circle top over a square bottom (pentagon-like outline); not separable"},
+   {"id": "e-12", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [1044, 2490, 1061, 2508], "note": "square outline with a round inner field; its top edge lies on the 1.2 gridline, so the ink box (columns 1044 to 1061, rows 2490 to 2508) was read from a pixel map"},
+   {"id": "e-13c", "series": "circle_dot (sketch: arrow on the upper face)", "type": "circle_dot", "at": [1073, 2480], "pair": "e-13s"},
+   {"id": "e-13s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [1073, 2486]},
+   {"id": "e-14", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [1120, 2474], "note": "square outline with a round inner field"},
+   {"id": "e-15", "series": "both (circle_dot and square_dot superposed)", "type": "square_dot", "merged": [1148, 2466], "note": "square outline with a round inner field"},
+   {"id": "e-16s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [1191, 2440], "pair": "e-16c"},
+   {"id": "e-16c", "series": "circle_dot (sketch: arrow on the upper face)", "type": "circle_dot", "at": [1192, 2459]},
+   {"id": "e-17s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [1206, 2437], "pair": "e-17c"},
+   {"id": "e-17c", "series": "circle_dot (sketch: arrow on the upper face)", "type": "circle_dot", "at": [1207, 2455]},
+   {"id": "e-18s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [1251, 2437], "pair": "e-18c"},
+   {"id": "e-18c", "series": "circle_dot (sketch: arrow on the upper face)", "type": "circle_dot", "at": [1251, 2449]},
+   {"id": "e-19s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [1267, 2435], "pair": "e-19c"},
+   {"id": "e-19c", "series": "circle_dot (sketch: arrow on the upper face)", "type": "circle_dot", "at": [1267, 2447]},
+   {"id": "e-20s", "series": "square_dot (sketch: arrow on the lower face)", "type": "square_dot", "at": [1300, 2433], "pair": "e-20c"},
+   {"id": "e-20c", "series": "circle_dot (sketch: arrow on the upper face)", "type": "circle_dot", "at": [1300, 2446]}
+  ]
+ }
+}
