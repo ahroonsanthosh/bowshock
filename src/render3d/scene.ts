@@ -4,18 +4,19 @@
  * (exact at zero incidence: src/render3d/field.ts), in the manner of
  * FluidX3D's renders (learnt from its README's pictures and descriptions
  * only; none of its code): a black background, a thin bounding box of
- * the computed region, luminous shells and filaments on a saturated
- * palette, and a small text readout.
+ * the computed region, opaque lit sheets on a saturated palette, and a
+ * small text readout.
  *
  * Layers (each switchable; keys of ./controls.ts):
  *  1 the rocket, solid or as a wireframe; the fins are geometry only (the
  *    flow solved is the body's; the fins' drag is computed separately);
  *  2 the field on a slice: the faces of a cutaway quarter, a plane
  *    through the axis, or a plane across it;
- *  3 streamlines, seeded upstream in the free stream at many radii and
- *    azimuths, straight to the shock, then traced through the field;
- *  4 iso-surfaces of the quantity shown, revolved iso-lines, cut away;
- *  the fitted bow shock as a translucent surface; the bounding box.
+ *  3 streamlines, a few lit tubes, seeded upstream in the free stream,
+ *    straight to the shock, then traced through the field;
+ *  4 20 to 40 iso-surfaces of the quantity shown, revolved iso-lines,
+ *    opaque and lit (or glowing), a wedge cut away;
+ *  the fitted bow shock as one thin pale sheet; the bounding box.
  * Behind the base nothing is computed: the flow's region ends there, at a
  * hatched plane labelled "not simulated", and nothing of the flow is
  * drawn beyond it.

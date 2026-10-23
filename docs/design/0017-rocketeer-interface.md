@@ -279,9 +279,11 @@ orientation, Q and E) act only while it is shown, through render3d's own
 it is. A binding has `when` and a help `group`, and the help lists each
 view's keys under its name; the View menu and the phone's View tab have
 a button for each. A test holds that every key has one action in either
-view. **The default look** is glowing shells of the colour quantity with
-streamlines, the shock and a cutaway (no slice), unless the owner says
-otherwise. With no airflow shown the 3D view follows the builder; when the
+view. **The default look** (section 6.6, 2026-10-23, on the owner's
+note that the glowing look was "still pretty far off" FluidX3D's) is 20 to
+40 opaque, lit iso-surfaces of the colour quantity, the shock as one
+crisp sheet, a wedge cut away and a thin box; no slice and no
+streamlines (keys 2 and 3). With no airflow shown the 3D view follows the builder; when the
 rocket changes the flow is cleared, so that no view shows one rocket
 with another's flow.
 
@@ -294,8 +296,8 @@ the base the solver computes nothing, and that region is marked "not
 simulated", never painted, and never in the colour that means uniform
 flow; the fins are drawn as geometry, with the note "The axisymmetric
 solution, revolved; fins are not in the airflow" on the 3D legend and in
-the 3D PNG (the advisor's item 10, 2026-10-22: the glowing-shell look is a
-3D solver's, so the page says this flow is not 3D), and "the fins' drag is
+the 3D PNG (the advisor's item 10, 2026-10-22: the shells look like a
+3D solver's picture, so the page says this flow is not 3D), and "the fins' drag is
 computed separately"; every colour or brightness channel has a legend with
 real values and units, and says what dark means.
 
@@ -375,6 +377,59 @@ toast ("The 3D view could not be set up: its code could not be fetched
 (...)" with the GPU's own message), the airflow's note, which stays, and
 the console as an error, so that `scripts/interface-check.mjs` fails on
 a page whose 3D view did not set up instead of taking its picture.
+
+### 6.6 The look: opaque lit sheets of the real field (2026-10-23)
+
+The owner's reference is FluidX3D's F1 render (its pictures only, never
+its code). What makes that look, and what bowshock takes from it:
+
+- **Opaque, lit surfaces.** FluidX3D's structures are opaque surfaces
+  shaded per pixel by a directional light, so their ridges band light and
+  dark and the picture has depth. The 3D view's iso-surfaces are now
+  opaque and depth-tested (`shell_lit_fs`, `src/render3d/shaders/revolve.wgsl`):
+  the palette's colour times an ambient share and the diffuse light from
+  over the viewer's shoulder, a little specular, darker where a sheet
+  turns from the eye. The additive glowing shells stay as key 4's third
+  state (solid, none, glowing).
+- **Density from the real field.** 20 to 40 levels at round values of
+  the colour range (`ISO_SURFACES` = 40 asked; round steps give between
+  half and all of that), each an iso-surface of the computed field,
+  revolved; where the cutaway cuts them, each sheet's edge is a line of
+  its colour, so neighbouring sheets read as separate. The legend says
+  how many and how far apart ("28 shells, every 0.01 from 1.66 to 1.93").
+- **The shock** is one thin pale sheet where the solver fits it (the
+  density's jump), brightest edge-on as in a schlieren picture, with a
+  crisp white line where the wedge cuts it.
+- **The spectrum** runs blue, azure, cyan, green, yellow, orange, red,
+  with magenta at the top (FluidX3D's order); one table for the 3D view
+  and the side view (`src/render/colormap.ts`).
+- **Restraint.** Black background, a thin dim box, the rocket a solid lit
+  grey (fins as geometry), no slice and no streamlines by default;
+  streamlines (key 3) are a few lit tubes (6 a plane, 8 azimuths, also in
+  the cutaway), not a mat of 1-pixel lines. The page's note and legend sit
+  compact in the bottom left corner, not over the flow.
+
+**What is not taken, and why.** FluidX3D's F1 shows turbulence: vortex
+tubes, wakes, fine-grained texture, all of a 3D, viscous, unsteady
+solution. This flow is axisymmetric, inviscid and steady at zero
+incidence: it has no vortices and no turbulence, and every surface
+drawn is a sheet of the computed field, smooth because the field is
+smooth. So the 3D view looks cleaner than FluidX3D's, on purpose. Nothing
+is drawn behind the base (hatched, "not simulated"), and the legend and
+PNG keep "the axisymmetric solution, revolved; fins are not in the
+airflow".
+
+**Cost.** The revolved surfaces are one indexed draw (each point turned
+once per azimuth, 144 sectors a turn, 64 in a draft), cut at the base on
+the CPU so the depth test runs before shading; lines are one draw of six
+vertices a quad, not an instance a quad (SwiftShader pays per instance).
+Outer sheets are drawn first. Measured on SwiftShader at 1440 x 900, the
+old and new default frames back to back on the loaded machine (load 4 to
+7): old 1.8 to 2.6 s, new 2.2 to 2.6 s; drafts 0.7 to 0.9 s for both. Live
+frames keep `FRAME_BUDGET` (section 6.4); while the viewer turns, pans
+or zooms on a slow adapter the frames are drafts and a full frame
+follows 350 ms after the last move. `tests/gpu/render3d.test.ts` and
+`tests/gpu/render3d-cost.test.ts` pass.
 
 ## 7. The rocket drawing
 
@@ -690,8 +745,9 @@ Curve tab).
 
 ## 13. Open questions for the owner
 
-1. **The 3D view's default look**: glowing shells with streamlines, the
-   shock and a cutaway, as built; or with the slice (key 2).
+1. **The 3D view's default look**: opaque lit iso-surfaces, the shock
+   sheet, a wedge cut away (section 6.6, 2026-10-23); or with the slice
+   (key 2) or streamlines (key 3).
 2. **The real-GPU timing**: an estimate until the owner reads the cell
    rate off the readout on a real GPU (section 8.3).
 
