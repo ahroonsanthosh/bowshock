@@ -444,8 +444,13 @@ block's side of a fitted face is a supersonic outflow whose ghost cells
 take the same 2D state, so the two sides use the same upstream state.
 Checked on every level: in the main block, the second and third cells
 upstream of every fitted face (along its normal) equal the 2D field
-within the outer-row tolerance of 3.8. Where they do not, a neighbour's
-wave has arrived and the case is refused: "a neighbouring fin's wave
+within the outer-row tolerance of 3.8, except on the faces within n_ex
+cells of a free edge (the tip row, the downstream line), where the
+captured continuation's own smearing can reach those cells; n_ex is sized
+by J1 and J2 and fixed before any blunt-edge family runs (4.0). The
+exclusion changes only the check, not the rule: those faces' upstream
+state is still the 2D field. Where the check fails outside the exclusion,
+a neighbour's wave has arrived and the case is refused: "a neighbouring fin's wave
 reaches this fin's leading-edge shock; Stage A does not fit a shock in a
 disturbed stream". (Revision 2 served that interference; it is now
 refused, and its share is measured on d5, h10 and the population runs of
@@ -479,22 +484,22 @@ leaves out at the edge (6.5).
 
 ### 2.7 Classes: served, and refused with reasons
 
-| Class (`src/fins/section.ts`; population share, 0014 section 3)                                   | Stage A                                                                                                                                                          | Why                                                                                                                                                                                                                                                                    |
-| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Flat plate, rounded leading edge, square trailing edge (28.4%)                                    | served from normal Mach number 1.5 (block L, rounded), within the spacing and downstream-line rules (2.5)                                                        | the edge's stagnation line is inside block L, its shock fitted                                                                                                                                                                                                         |
-| Flat plate, both edges rounded (15.5%)                                                            | leading edge and faces solved from normal Mach 1.5; the domain ends where the trailing-edge rounding begins; **total refused** as now                            | the rounding's real flow separates; its drag is the trailing-edge term, "bounded, not measured" without its ordering (0016 section 6, W11)                                                                                                                             |
-| Flat plate, both edges square (15.3%)                                                             | solved from normal Mach number 1.5 (block L, square); in a total only as "bounded, not measured", Stage A's value the nominal inside 0014 10.2's whole gap (6.2) | the front face's pressure is set by the subsonic pocket ahead of the sonic corners, which inviscid flow gives; no measurement of a square fin edge is among the band-setting sources                                                                                   |
-| Bevel to a sharp edge both ends (hexagon, 20.6%)                                                  | served where the leading-edge shock attaches; short bevels (a reflected wave reaches the surface) only after rung (b3) passes                                    | captured oblique shocks with supersonic flow on both sides; short bevels wait for an independent reference (4.2)                                                                                                                                                       |
-| Bevel to a sharp leading edge, square trailing edge (9.1%)                                        | as the hexagon                                                                                                                                                   | the square trailing edge as in 2.8                                                                                                                                                                                                                                     |
-| Bevel ending in a radius the user gives                                                           | served from normal Mach number 1.5 (block L, rounded wedge)                                                                                                      | as the rounded edge; the population draws bevels as sharp, real ones end in a land or radius (assumption)                                                                                                                                                              |
-| Sharp double wedge, symmetric (11.3%)                                                             | served where the leading-edge shock attaches                                                                                                                     | as revision 1                                                                                                                                                                                                                                                          |
-| Any blunt leading edge at normal Mach number 1.0 to 1.5                                           | not by Stage A; 0016's terms stay (W4(e) for rounded edges; square edges refused)                                                                                | the strip's subsonic region reaches sideways about 33 thicknesses at normal Mach 1.3 and 8.5 at 1.5 (Billig's correlation, an estimate; 2.5): below 1.5 it would cross the mirror plane between fins on most hobby rockets. The floor moves only by a new record (4.9) |
-| Any blunt leading edge below normal Mach number 1.0                                               | refused                                                                                                                                                          | the owner's decision (until NASA TM X-653, 0014 10.7 (o), is read); inviscid flow would attach around the edge, the real pressures are set by separation (0016 section 6)                                                                                              |
-| Blunt edges whose subsonic region reaches the plane between fins, or runs past half the tip chord | refused                                                                                                                                                          | the spacing and downstream-line rules (2.5)                                                                                                                                                                                                                            |
-| Blunt edges reached by a neighbouring fin's wave at the fitted shock                              | refused (found on the solve)                                                                                                                                     | the junction rule (2.5): no shock is fitted in a disturbed stream                                                                                                                                                                                                      |
-| Sharp section with a detached leading-edge shock, or subsonic flow behind it                      | refused                                                                                                                                                          | a stagnation line at a sharp apex; no reference is registered for it here. A later option                                                                                                                                                                              |
-| Asymmetric sections (one-sided bevels, cambered airfoils)                                         | refused                                                                                                                                                          | the plane theta = 0 is a mirror plane only for symmetric sections; a 360/N sector with periodic faces would serve them at twice the cost: a later option                                                                                                               |
-| Fins on a boat-tail or a transition (the body under the fins not a cylinder)                      | refused                                                                                                                                                          | section 1. A boat-tail that begins at or behind the trailing edges is not refused for the fins' solve (section 1); the population's boat-tails are all of that kind (`population.ts`), so revision 2's scope script refused them wrongly                               |
+| Class (`src/fins/section.ts`; population share, 0014 section 3)                                   | Stage A                                                                                                                                                          | Why                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Flat plate, rounded leading edge, square trailing edge (28.4%)                                    | served from normal Mach number 1.5 (block L, rounded), within the spacing and downstream-line rules (2.5)                                                        | the edge's stagnation line is inside block L, its shock fitted                                                                                                                                                                                                                                                                                                                |
+| Flat plate, both edges rounded (15.5%)                                                            | leading edge and faces solved from normal Mach 1.5; the domain ends where the trailing-edge rounding begins; **total refused** as now                            | the rounding's real flow separates; its drag is the trailing-edge term, "bounded, not measured" without its ordering (0016 section 6, W11)                                                                                                                                                                                                                                    |
+| Flat plate, both edges square (15.3%)                                                             | solved from normal Mach number 1.5 (block L, square); in a total only as "bounded, not measured", Stage A's value the nominal inside 0014 10.2's whole gap (6.2) | the front face's pressure is set by the subsonic pocket ahead of the sonic corners, which inviscid flow gives; no measurement of a square fin edge is among the band-setting sources                                                                                                                                                                                          |
+| Bevel to a sharp edge both ends (hexagon, 20.6%)                                                  | served where the leading-edge shock attaches; short bevels (a reflected wave reaches the surface) only after rung (b3) passes                                    | captured oblique shocks with supersonic flow on both sides; short bevels wait for an independent reference (4.2)                                                                                                                                                                                                                                                              |
+| Bevel to a sharp leading edge, square trailing edge (9.1%)                                        | as the hexagon                                                                                                                                                   | the square trailing edge as in 2.8                                                                                                                                                                                                                                                                                                                                            |
+| Bevel ending in a radius the user gives                                                           | served from normal Mach number 1.5 (block L, rounded wedge)                                                                                                      | as the rounded edge; the population draws bevels as sharp, real ones end in a land or radius (assumption)                                                                                                                                                                                                                                                                     |
+| Sharp double wedge, symmetric (11.3%)                                                             | served where the leading-edge shock attaches                                                                                                                     | as revision 1                                                                                                                                                                                                                                                                                                                                                                 |
+| Any blunt leading edge at normal Mach number 1.0 to 1.5                                           | not by Stage A; 0016's terms stay (W4(e) for rounded edges; square edges refused)                                                                                | the strip's subsonic region reaches sideways about 33 thicknesses at normal Mach 1.3 and 8.5 at 1.5 (Billig's correlation, an estimate; 2.5): below 1.5 it would cross the mirror plane between fins on most hobby rockets. The floor (normal Mach 1.5) changes, in either direction, only by a new record, and is never lowered before the Eglin set's range A has run (4.4) |
+| Any blunt leading edge below normal Mach number 1.0                                               | refused                                                                                                                                                          | the owner's decision (until NASA TM X-653, 0014 10.7 (o), is read); inviscid flow would attach around the edge, the real pressures are set by separation (0016 section 6)                                                                                                                                                                                                     |
+| Blunt edges whose subsonic region reaches the plane between fins, or runs past half the tip chord | refused                                                                                                                                                          | the spacing and downstream-line rules (2.5)                                                                                                                                                                                                                                                                                                                                   |
+| Blunt edges reached by a neighbouring fin's wave at the fitted shock                              | refused (found on the solve)                                                                                                                                     | the junction rule (2.5): no shock is fitted in a disturbed stream                                                                                                                                                                                                                                                                                                             |
+| Sharp section with a detached leading-edge shock, or subsonic flow behind it                      | refused                                                                                                                                                          | a stagnation line at a sharp apex; no reference is registered for it here. A later option                                                                                                                                                                                                                                                                                     |
+| Asymmetric sections (one-sided bevels, cambered airfoils)                                         | refused                                                                                                                                                          | the plane theta = 0 is a mirror plane only for symmetric sections; a 360/N sector with periodic faces would serve them at twice the cost: a later option                                                                                                                                                                                                                      |
+| Fins on a boat-tail or a transition (the body under the fins not a cylinder)                      | refused                                                                                                                                                          | section 1. A boat-tail that begins at or behind the trailing edges is not refused for the fins' solve (section 1); the population's boat-tails are all of that kind (`population.ts`), so revision 2's scope script refused them wrongly                                                                                                                                      |
 
 **Square leading edges: what inviscid Euler can and cannot claim.** In
 reality the flow ahead of a square edge is a detached shock, a subsonic
@@ -816,7 +821,9 @@ GPU's difference from the CPU is not part of it; it has its own tolerance,
 fixed now: **on L0, L1 and L2 where the CPU runs them, the GPU's fin drag
 within 1e-5 of the CPU's** (five times the 2D engines' measured 2e-6,
 allowing for the third direction and the fitted surface; set before any
-3D number). Measured on rung (b) and on the rung (d) families.
+3D number). Measured on rung (b) and on the rung (d) families. A family
+that misses it is first run again in two-float; only a two-float miss
+too is a failure (4.9).
 
 **Registered rule.** If the noise exceeds 1e-4 of the fin drag (a tenth of
 the floor), the state, residual and metrics go to two-float as in 0013
@@ -881,8 +888,9 @@ reason:
   and on every block interface, the flux the two blocks used is the same
   stored flux (asserted, not measured);
 - **the upstream of every fitted face** (blunt edges): the main block's
-  second and third cells upstream of each fitted face equal the 2D field
-  within the outer-row tolerance (2.5's junction rule); otherwise refused;
+  second and third cells upstream of each fitted face, outside the
+  exclusion of n_ex cells at the free edges, equal the 2D field within the
+  outer-row tolerance (2.5's junction rule); otherwise refused;
 - **the strip check** (blunt edges): at every span row farther than both
   8 standoffs and 4 y* (2.5) from the root and the tip, the edge's drag
   per unit span equals the 2D strip's at that row within the family's
@@ -960,12 +968,28 @@ grids) is a failure wherever this section says "a band contains".
   oblique shock is exact and uniform. J1: the shock fitted over the inner
   part of the span and captured beyond a junction row (the tip's case).
   J2: the shock fitted up to a column line and captured behind it (the
-  downstream line's case). Pass: on every fitted face, those next to the
-  junction included, the shock angle within 1e-10 rad of the exact one and
-  the post-shock state within 1e-10 (CPU; GPU within 2 eps_2D). A planted
-  breach, the upstream state taken from the adjacent main-block cell as
-  revision 2 had it, must fail J1 and J2: the test's own check that it can
-  see the error.
+  downstream line's case). Each on three grids, each halving the last's
+  spacing. The captured continuation is smeared over two or three cells
+  beside block L's post-shock cells, so a correct code is not exact next
+  to the junction; the criteria are (fixed now):
+  - **away from the junction,** on every fitted face more than k = 4
+    cells (of that grid) from the junction row (J1) or column (J2): the
+    shock angle within 1e-10 rad of the exact one and the post-shock state
+    within 1e-10 (CPU; GPU within 2 eps_2D);
+  - **near the junction,** on the fitted faces within k cells of it: the
+    error of their integrated pressure force against the exact uniform
+    state falls with each refinement, and on the finest grid it is at most
+    a tenth of the same error with the planted breach (below);
+  - **the planted breach,** the upstream state taken from the adjacent
+    main-block cell as revision 2 had it, must fail the near-junction
+    criterion on the finest grid: the test's own check that it can see
+    the error.
+    J1 and J2 also size the exclusion zone of 2.5's upstream check: on each
+    finest grid, the largest distance from the junction, in cells, at which
+    a main-block cell upstream of a fitted face differs from the exact
+    upstream state by more than 3.8's outer-row tolerance, plus two cells.
+    That number, n_ex, is recorded with the J1/J2 results and fixed before
+    any blunt-edge family runs.
 - GPU kernels against the CPU's at a few units in the last place.
 - Mutation checks: planted errors in the face vectors, the source, each
   boundary, each interface, the fitted surface's motion, its root
@@ -1143,9 +1167,15 @@ stagnation-line error is calibrated first: the same code on the planar
 against their own 8 L0 references and checked against TN 2960); the
 largest difference over those, at the reference's resolution, is added to
 its band. It is run on four meshes refined by 1.5 or more, its band formed
-by 0005's procedure plus that allowance. **Pass,** for each such family:
-Stage A's band and the reference's band overlap (|Stage A minus
-reference| at most the sum of the two bands). Where it runs, how long it
+by 0005's procedure plus that allowance. **Its width is limited:** the
+reference's full band (from its low end to its high end, relative to its
+value) must be at most half the width of TN 2960's edge band (0.99 to
+1.06: 0.07, so at most 0.035); a wider reference counts as no reference
+(a captured code's stagnation allowance could otherwise be several
+percent, 0004's +9.7% with HLLC, and any value would pass). **Pass,** for
+each such family: the reference is not too wide, and Stage A's band and
+the reference's band overlap (|Stage A minus reference| at most the sum
+of the two bands). Where it runs, how long it
 takes, and on what machine, is an owner's question (section 10); without
 it, the blunt-edge classes are not served.
 
@@ -1183,16 +1213,15 @@ it, the blunt-edge classes are not served.
   Mach 2.0: a test family.
 - **(e6) The root on a curved body** (review of revision 2, item 2). A
   rounded-edge plate on a cylinder in a uniform stream (the start plane
-  uniform; no nose), span 12 thicknesses, the cylinder's radius 3 spans,
-  unswept and swept 30 deg, Mach 2.0: two test families, each solved by
-  the independent code. Reported beside them: h10's large-radius body.
+  uniform; no nose), span 12 thicknesses, Mach 2.0: the cylinder's radius
+  3 spans, unswept and swept 30 deg, and 0.5 span (hobby proportions; the
+  population's span is about one to two body radii), unswept: three test
+  families, each solved by the independent code. Reported beside them: h10's large-radius body.
 - **Pass, (e3) to (e6):** each family's band exists and contains its
   same-code offline reference's extrapolation where that runs (4.7), and
   overlaps the independent reference's band where that runs. If any family
   at the floor (e3f, e4 at 45 deg and Mach 2.12) fails, the blunt-edge
-  classes are not served at all; the floor is never raised by a result
-  (that would choose the served range after seeing it), only by a new
-  record.
+  classes are not served at all. The floor (normal Mach 1.5) changes, in either direction, only by a new record, and is never lowered before the Eglin set's range A has run.
 
 ### 4.5 Rung (d): twenty registered 3D families on bodies
 
@@ -1305,14 +1334,14 @@ the blunt edges' (fitted, but new in 3D).
   For e3 the reference is the farther of the same-code and the
   independent references from the page's value.
 - **Test families** (their references test the bands and set nothing):
-  d1, (e3f), (e4) at 45 deg (both Mach numbers), (e5), (e6) (both), h1,
+  d1, (e3f), (e4) at 45 deg (both Mach numbers), (e5), (e6) (all three), h1,
   h4.
 - **Same-code references:** each a family at ratio 2 of four grids,
   0.75, 1.5, 3 and 6 times L0 (the finest 1.8 times finer in each
   direction than the page's L3), the same mapping as the page's, run once
   on hardware that holds the finest grid; 8 L0 where the device holds it.
   Below 6 L0 there is no same-code reference.
-- **Independent references:** 4.4, on e3, e6 (both), h1 and h4.
+- **Independent references:** 4.4, on e3, e6 (all three), h1 and h4.
 
 **Memory of the references** (estimates; review of revision 2, item 7).
 At 275 bytes a cell (3.10, with block L's line data), and by section 7's
@@ -1326,7 +1355,7 @@ GB GPU holds about 14.5 million cells, a 12 GB GPU 22 million, a 16 GB GPU
 | d7 (sharp, body)                    | 6 L0        | 10.8 million        | 3.0 GB        | 8 GB             |
 | e3, e3f, e5 (plane wall, span 12 t) | 6 L0        | 9.7 to 10.8 million | 2.7 to 3.0 GB | 8 GB             |
 | e4 (three families)                 | 6 L0        | 11.9 million        | 3.3 GB        | 8 GB             |
-| e6 (two families)                   | 6 L0        | 13 million          | 3.6 GB        | 8 GB (only just) |
+| e6 (three families)                 | 6 L0        | 13 million          | 3.6 GB        | 8 GB (only just) |
 | h1, h4 (hobby body)                 | 6 L0        | 22 to 28 million    | 6 to 7.7 GB   | 16 GB            |
 
 **What an 8 GB GPU can do.** Every same-code reference except h1's and
@@ -1360,15 +1389,17 @@ new record decides what follows, if:
 - an (e0) family or an (e3) to (e6) family fails, or the floor families
   at normal Mach 1.5 (e3f, e4 at Mach 2.12) fail: the blunt edges (all of
   them, if a floor family fails; else the edge class it belongs to);
-- the independent reference is not run for e3 and h1: the blunt edges;
+- the independent reference is not run for e3 and h1, or is wider than
+  4.4 allows: the blunt edges;
 - a solved square edge lies outside 0014 10.2's bounds: square edges;
 - in rung (d), fewer than 7 of the 10 sharp families give a band, or d1's
   band misses its reference: sharp sections; fewer than two thirds of the
   hobby families run give a band, or h1's or h4's band misses a reference
   it has: the class of the family that failed;
-- the noise of 3.5 exceeds 1e-4 of the fin drag even in two-float, or the
-  GPU and CPU differ by more than 1e-5 of the fin drag on any level both
-  ran: all.
+- the noise of 3.5 exceeds 1e-4 of the fin drag even in two-float: all;
+- the GPU and CPU differ by more than 1e-5 of the fin drag on a level both
+  ran: that family is run again on the GPU in two-float (3.5); only if
+  the two-float run also differs by more than 1e-5, all.
 
 ## 5. Compute: what runs where, and the owner's one command
 
@@ -1673,8 +1704,7 @@ Eglin set's (flat plates of t/c 0.025); with plates in scope:
   for PARD's range A, so the choice of 1.5 is now made with that mapping
   in view. It is made on the review's physical grounds (2.5: the subsonic
   region's reach against the fins' spacing), its consequence for PARD is
-  that PARD tests nothing of Stage A, and the floor can change only by a
-  new record on rung (e)'s results, never toward a held-back set. Also
+  that PARD tests nothing of Stage A. The floor (normal Mach 1.5) changes, in either direction, only by a new record, and is never lowered before the Eglin set's range A has run. Also
   said: TN 3697 fig. 5 (PARD totals) was read once by eye for 0014 (its
   section 5.2), so the set is not wholly unseen. Its fin-drag increments
   (RM L52E06 figs. 9 to 12) stay held back.
@@ -1686,6 +1716,18 @@ Eglin set's (flat plates of t/c 0.025); with plates in scope:
   to 48 deg at Mach 2.25), within the spacing rule, and the nose is
   served and Stage A's verdict committed before the run, Stage A can face
   it. If the edges cannot be decided, it cannot.
+
+  **The evidence rule for its edges** (registered here, before (u) is
+  dated): the edges' shape (sharp, bevelled, rounded or square, and any
+  radius) and the leading edges' sweep are decided only from the report's
+  text, its fig. 4 and any other part of AFRL-MN-EG-TR-2001-7082 or its
+  cited model drawings that describe the models without drag (photographs,
+  drawings, fabrication notes), by a reader who does not open Table D-3,
+  and recorded in a dated 10.7 entry before the range is run. Where no
+  such source states them, they are not assumed (not taken as the most
+  common hobby shape, not inferred from a similar model), and the range
+  cannot test Stage A.
+
 - **Eglin range B (1.42 to 1.47):** below Mach 1.5 no total serves a fin
   term (amendment (f)): none. **Range C (above 3.0):** outside Stage A:
   none.
@@ -1725,8 +1767,7 @@ Not written into 0014; the coordinator decides, and dates it.
 >   its manifest of GPU cases (5.3) are fixed as written at the commit
 >   that adds this entry. "No band" is a failure where 0021 says so. None
 >   changes after a rung's numbers are seen; a failure is recorded and a
->   new record decides. The blunt-edge floor (normal Mach 1.5) is raised
->   only by a new record, never lowered by a result.
+>   new record decides. The blunt-edge floor (normal Mach 1.5) changes, in either direction, only by a new record, and is never lowered before the Eglin set's range A has run.
 > - _The independent code._ The open-source Euler code of 0021 4.4, its
 >   version, scheme, settings and meshes, is named in a dated entry before
 >   it is run; it is used only as a separate offline program.
@@ -1920,7 +1961,7 @@ with their labels, wherever Stage A does not serve; a failure is recorded.
 7. **Registration.** The proposed 10.7 (u) (6.7).
 
 (The floor is no longer a question: normal Mach 1.5, for the reasons of
-2.5, moved only by a new record.)
+2.5. The floor (normal Mach 1.5) changes, in either direction, only by a new record, and is never lowered before the Eglin set's range A has run.)
 
 ## 11. Sources
 
@@ -2054,7 +2095,7 @@ several smaller ones. Each change below quotes what revision 1 said.
   minutes a Mach number (estimates), from revision 1's 0.94 million and 1
   to 3 minutes (7).
 
-### Revision 3, 2026-10-23 (this text)
+### Revision 3, 2026-10-23 (commit 5d8ff9a)
 
 **Why.** An independent review of revision 2 (3a2239a) approved it after
 changes. It reproduced the scope output byte for byte, and allowed the
@@ -2147,3 +2188,35 @@ before any blunt-edge code. Each change below quotes revision 2.
   numbers changed: fins solved 4.7% (was 5.3%), 8.5% after (b3) (was
   8.3%), plates 2.4% (was 3.3%), totals unchanged (6.4).
 - How the served curve shows the step at the floor (6.4).
+
+### Revision 3a, 2026-10-23 (this text): four registered criteria reworded
+
+A re-review of revision 3 (5d8ff9a) approved the blunt-edge path after
+four rewordings of registered criteria, made here before (u) is dated and
+before J1 and J2 run. No design changes.
+
+- **A. J1 and J2.** Revision 3 required "on every fitted face, those next
+  to the junction included, the shock angle within 1e-10 rad"; the
+  captured continuation is smeared over two or three cells beside block
+  L's post-shock cells, so a correct code would fail and 4.9 would stop
+  every blunt edge. Now: 1e-10 beyond k = 4 cells from the junction; within
+  them, the face-force error must fall with refinement and be at most a
+  tenth of the planted breach's (4.0).
+- **B. The upstream check.** Revision 3 checked the second and third
+  cells upstream of every fitted face; near the free edges the captured
+  shock's smearing can reach them and would refuse every finite blunt fin.
+  Now an exclusion of n_ex cells at the free edges, sized by J1 and J2 and
+  fixed before any blunt-edge family runs (2.5, 3.8, 4.0).
+- **C. The independent reference's width.** Revision 3's overlap pass had
+  no limit on the reference's band. Now its full band must be at most half
+  the width of TN 2960's edge band (0.035 of the value); wider counts as no
+  reference (4.4, 4.9).
+- **D. GPU against CPU.** Revision 3's kill rule ("the GPU and CPU differ
+  by more than 1e-5 ... : all") ignored the precision switch. Now a miss
+  triggers a two-float rerun of that family; only a two-float miss too
+  kills (3.5, 4.9).
+- Non-blocking: the floor rule is said the same way everywhere ("changes,
+  in either direction, only by a new record, and is never lowered before
+  the Eglin set's range A has run"); e6 gains a cylinder of radius 0.5
+  span (hobby proportions); the evidence rule for the Eglin set's edges is
+  registered (6.6).
