@@ -1038,7 +1038,13 @@ F2 last.
      its h/c 0.10 and 0.06 solid curves meet near M 1.0 and cannot be told
      apart beyond it (`method_rm3323_figs4_5.md`), the coordinator to
      decide;
-   - not yet read: Johnston's figs. 4 to 12; RM L8B13 fig. 4(c) to 4(e).
+   - Johnston: figs. 10(a), 10(b) and 10(c) read once (59, 98 and 57
+     symbols); figs. 4 to 9, 11 and 12 (lift, moment, and cross-plots of
+     the same points) not read, the coordinator to say whether they are
+     needed (`method_johnston_figs4_12.md`);
+   - RM L8B13 fig. 4: opened, not read; (k) names "fig. 4(c) to 4(e) (the
+     wedge's base and sides)" but fig. 4(d) is the swept cylinder, so
+     which was meant is for the coordinator (`method_rml8b13_fig4.md`).
 
    Then `src/base/fin-trailing-edge.ts` below Mach 1.5, tests against the
    data (each set's points inside the band, the step at 1.5), the record.

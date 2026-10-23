@@ -147,4 +147,11 @@ registered first. A tracker was tried on the page to see whether the
 curves could be followed (it lost the broken curves in their gaps and
 could not settle the knot); its output was not kept.
 
+_Added 2026-10-23, after opening RM L8B13 (`method_rml8b13_fig4.md`)._
+Sawyer and Daum's wedge (ref. 31) has h/c 0.14 (chord 2.5 in, included
+angle 8 deg). So ref. 31's symbols, not found above, would plot at h/c
+0.14, where the three heavy symbols of untraced source stand (B02, C10,
+D06); they may be ref. 31's half circles, drawn filled as a flight
+(wing-flow) test. A possibility only: they stay "source not traced".
+
 Read once (fig. 4); fig. 5 not read.
