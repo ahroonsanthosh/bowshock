@@ -11,6 +11,7 @@ import {
   changeText,
   claimWords,
   W1_BOUNDED_WORDS,
+  VALIDATED_WORDS,
   CLASS_WORDS,
   ESTIMATE_WORDS,
   noNumberWords,
@@ -26,6 +27,7 @@ import {
   CLASS_CLAIM,
   ESTIMATE_CLAIM,
   totalDragView,
+  VALIDATED_CLAIM,
   W1_BOUNDED_REASON,
 } from '../../src/app/total-drag';
 import { designForm } from '../../src/rocket/adapter';
@@ -50,6 +52,15 @@ describe('the words', () => {
       expect(`${w.word} ${w.sentence}`).not.toMatch(/validated/i);
       expect(`${w.word} ${w.sentence}`).not.toMatch(/—|–/);
     }
+  });
+
+  it("the validated claim: the logic's word, one sentence, green", () => {
+    expect(VALIDATED_WORDS.word).toBe('Validated');
+    expect(words(VALIDATED_WORDS.sentence)).toBeLessThanOrEqual(32);
+    expect(VALIDATED_WORDS.tone).toBe('ok');
+    expect(claimWords({ kind: 'validated', text: VALIDATED_CLAIM, caveats: [] })).toBe(
+      VALIDATED_WORDS,
+    );
   });
 
   it('a mark and a colour for each, the claims apart from the provisional and the refused', () => {
@@ -125,9 +136,9 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         'body base',
         {
           reason:
-            'the base drag with fins at the base is measured here only for flat fins with square ' +
-            'trailing edges or fins with sharp ones, not for this trailing edge (a wedge ' +
-            'thickening to it, or a rounded one)',
+            'at this speed, the base drag with fins at the base is measured only for flat fins ' +
+            'with square trailing edges or fins with sharp ones, not for this trailing edge (a ' +
+            'wedge thickening to it, or a rounded one)',
           change:
             'flat fins with square trailing edges, sharp trailing edges, or fins a root chord or ' +
             'more ahead of the base',

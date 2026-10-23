@@ -2164,6 +2164,12 @@ input[aria-invalid='true'] {
   color: var(--text);
   font-weight: 500;
 }
+.point__claim {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ok);
+}
 .point__reasons,
 .curve-table__reasons {
   margin: 4px 0 0;

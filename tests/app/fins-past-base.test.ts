@@ -11,6 +11,8 @@ import { describe, expect, it } from 'vitest';
 import { CurveRun } from '../../src/app/curve';
 import { csvRow } from '../../src/app/curve-csv';
 import { pointView } from '../../src/app/point-view';
+import { FINS_AHEAD_OF_BASE, totalDragView } from '../../src/app/total-drag';
+import { designForm } from '../../src/rocket/adapter';
 import { finsAhead } from '../../src/ui/builder-edits';
 import type { RocketDesign } from '../../src/rocket/design';
 import { preset } from '../../src/rocket/presets';
@@ -61,5 +63,15 @@ describe('fins past the base', () => {
     for (const p of curve(preset('basic-finner').design, false).points) {
       expect(pointView(p, true).reasons).not.toContain('the fins reach past the base');
     }
+  });
+
+  it("the logic's refusal still starts with the words the page matches (no reason code of its own)", () => {
+    const asked = designForm(past('basic-finner', 0.005), 2, { without: true });
+    if (asked.kind !== 'form') throw new Error(asked.kind);
+    const view = totalDragView(asked.form, { kind: 'pending' });
+    if (view.kind !== 'refused') throw new Error(view.kind);
+    const fins = view.refusals.filter((r) => r.component === 'fins' && r.reason === 'input');
+    expect(fins).toHaveLength(1);
+    expect(fins[0]!.message.startsWith(`${FINS_AHEAD_OF_BASE} must be`)).toBe(true);
   });
 });

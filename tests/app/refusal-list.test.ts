@@ -69,6 +69,8 @@ function check(run: CurveRun) {
       expect(v.reasons, `${p.mach}: ${x.component} (${x.reason})`).toContain(words.reason);
     }
     if (r.nose !== null) expect(v.reasons).toContain(noseWords(r.nose, true).reason);
+    // A browser is never promised a number: the solve itself may not settle.
+    expect(v.change!).not.toMatch(/To get a number: .*Chrome/);
     // A change is offered as giving a number only where it is the one reason.
     if (v.change!.startsWith('To get a number')) expect(v.reasons).toHaveLength(1);
     // A reason nothing about the rocket clears: no change is offered.
@@ -136,5 +138,14 @@ describe('every refusal shown, no false promise', { timeout: 600_000 }, () => {
     expect(v.reasons.some((t) => /rounded trailing edge/.test(t))).toBe(true);
     expect(v.reasons.some((t) => /base drag with fins at the base/.test(t))).toBe(true);
     expect(v.change!.startsWith('To get a number')).toBe(false);
+  });
+
+  it('without WebGPU and nothing else refused: needs a browser with WebGPU, no number promised', async () => {
+    const views = check(await curve(preset('basic-finner').design, false));
+    const v = views.get(2)!;
+    expect(v.reasons).toEqual([noseWords('no-webgpu', false).reason]);
+    expect(v.change).toBe(
+      'Needs a browser with WebGPU (a recent Chrome or Edge); then the airflow is solved here.',
+    );
   });
 });

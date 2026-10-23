@@ -975,6 +975,16 @@ export class FlowScene3D {
     this.requestDraw();
   }
 
+  /**
+   * As fit, unless the view was turned, panned or zoomed since it was last
+   * fitted: for a change of the free part of the window (the page's
+   * readout or legend growing) that must not undo the user's view.
+   */
+  refit(rect: { x: number; y: number; width: number; height: number } | null): void {
+    if (this.orbit !== null && this.fittedTo === null) return;
+    this.fit(rect);
+  }
+
   getOrbit(): Orbit | null {
     return this.orbit;
   }

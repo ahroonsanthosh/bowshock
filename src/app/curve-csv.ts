@@ -39,7 +39,15 @@ export function csvRow(point: CurvePoint): string {
       const [low, high] = outward(t.low, t.high, 4);
       const without = withoutText(r.without);
       const c = r.view.claim;
-      const claim = c.reasons.length === 0 ? c.text : `${c.text} Because: ${c.reasons.join('; ')}.`;
+      // The logic's text, then its reasons (an estimate) or its caveats (validated), word for word.
+      const claim =
+        c.kind === 'validated'
+          ? c.caveats.length === 0
+            ? c.text
+            : `${c.text} ${c.caveats.join(' ')}`
+          : c.reasons.length === 0
+            ? c.text
+            : `${c.text} Because: ${c.reasons.join('; ')}.`;
       return row(
         t.cd.toFixed(4),
         low,

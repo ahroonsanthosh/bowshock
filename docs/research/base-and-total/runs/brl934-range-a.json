@@ -1,0 +1,1787 @@
+{
+  "date": "2026-10-22T08:50:19.176Z",
+  "rounds": [
+    {
+      "round": 2591,
+      "mach": 1.801,
+      "model": "present",
+      "cd0": 0.6032718059656514,
+      "cd0ByReading": [
+        0.6032711114379343,
+        0.6032725004933686
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8346077.252155805,
+        "low": 7964152.511449423,
+        "high": 8744600.366026372
+      },
+      "spread": {
+        "lo": -0.02588907506225535,
+        "hi": 0.03928805471262797
+      },
+      "outcome": {
+        "refused": false,
+        "cd": 0.5804003197640171,
+        "low": 0.4980379965099853,
+        "high": 0.6973547445563372,
+        "residual": 0.03940639834749504,
+        "tolerance": [
+          -0.27079690298396786,
+          0.27047864141069256
+        ],
+        "highWithoutWall": 0.24258585222253282,
+        "inside": true
+      },
+      "components": [
+        {
+          "name": "nose wave drag",
+          "cd": 0.11047042615432176,
+          "low": 0.11046269322449095,
+          "high": 0.11047815908415257
+        },
+        {
+          "name": "body friction",
+          "cd": 0.08537593984481723,
+          "low": 0.07513082706343917,
+          "high": 0.1015973684153325
+        },
+        {
+          "name": "fin friction",
+          "cd": 0.038717612469176106,
+          "low": 0.039104788593867866,
+          "high": 0.06156100382599001
+        },
+        {
+          "name": "fin wave drag",
+          "cd": 0.020410376646370132,
+          "low": 0.020614476330758504,
+          "high": 0.03245250294980384
+        },
+        {
+          "name": "body base",
+          "cd": 0.21841934487951198,
+          "low": 0.15320905491149642,
+          "high": 0.2617877003595763
+        },
+        {
+          "name": "fin trailing-edge base",
+          "cd": 0.1070066197698198,
+          "low": 0.09951615638593242,
+          "high": 0.12947800992148195
+        }
+      ],
+      "inputs": [
+        {
+          "name": "transition",
+          "low": -0.05875999066973747,
+          "high": 0
+        },
+        {
+          "name": "wall temperature",
+          "low": 0,
+          "high": 0.0161889837639183
+        },
+        {
+          "name": "roughness",
+          "low": 0,
+          "high": 0
+        },
+        {
+          "name": "diameter and air",
+          "low": -0.0010222677147035952,
+          "high": 0.0010396818897490112
+        }
+      ],
+      "bodyBaseLabel": "correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)",
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6032351726747479,
+          "spread": {
+            "lo": -0.02577706509044886,
+            "hi": 0.03944100804731421
+          },
+          "outcome": {
+            "refused": false,
+            "cd": 0.5804003197640171,
+            "low": 0.4980379965099853,
+            "high": 0.6973547445563372,
+            "residual": 0.03934328106506757,
+            "tolerance": [
+              -0.27068489301216137,
+              0.2706315947453788
+            ],
+            "highWithoutWall": 0.24273880555721905,
+            "inside": true
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 6677 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": false,
+          "cd": 0.5268970098791071,
+          "low": 0.4482799183170191,
+          "high": 0.6326157395955962,
+          "residual": 0.14495203930663414,
+          "tolerance": [
+            -0.2688030382094162,
+            0.27263042156030814
+          ],
+          "highWithoutWall": 0.2419052827563648,
+          "inside": true
+        },
+        "sevenRoundSpread": {
+          "refused": false,
+          "cd": 0.5804003197640171,
+          "low": 0.4980379965099853,
+          "high": 0.6973547445563372,
+          "residual": 0.03940639834749504,
+          "tolerance": [
+            -0.2796346670983444,
+            0.28163854541602173
+          ],
+          "highWithoutWall": 0.253745756227862,
+          "inside": true
+        }
+      }
+    },
+    {
+      "round": 2588,
+      "mach": 1.802,
+      "model": "present",
+      "cd0": 0.6145444679062525,
+      "cd0ByReading": [
+        0.6145428625724503,
+        0.6145460732400548
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8350711.387220858,
+        "low": 7968574.583915526,
+        "high": 8749455.779888684
+      },
+      "spread": {
+        "lo": -0.02588907506225535,
+        "hi": 0.03928805471262797
+      },
+      "outcome": {
+        "refused": false,
+        "cd": 0.5799960694892725,
+        "low": 0.4977394434447776,
+        "high": 0.6968383858709042,
+        "residual": 0.05956660783477763,
+        "tolerance": [
+          -0.270699189637563,
+          0.27046430872192695
+        ],
+        "highWithoutWall": 0.2425337060443784,
+        "inside": true
+      },
+      "components": [
+        {
+          "name": "nose wave drag",
+          "cd": 0.11043613423871006,
+          "low": 0.11042840370931335,
+          "high": 0.11044386476810676
+        },
+        {
+          "name": "body friction",
+          "cd": 0.08535162318209912,
+          "low": 0.07510942840024722,
+          "high": 0.10156843158669794
+        },
+        {
+          "name": "fin friction",
+          "cd": 0.03870660234977406,
+          "low": 0.0390936683732718,
+          "high": 0.061543497736140755
+        },
+        {
+          "name": "fin wave drag",
+          "cd": 0.02039606253317295,
+          "low": 0.020600019079292174,
+          "high": 0.0324297435069575
+        },
+        {
+          "name": "body base",
+          "cd": 0.21818880342229396,
+          "low": 0.15307525918285625,
+          "high": 0.2614834673195023
+        },
+        {
+          "name": "fin trailing-edge base",
+          "cd": 0.10691684376322239,
+          "low": 0.09943266469979682,
+          "high": 0.1293693809534991
+        }
+      ],
+      "inputs": [
+        {
+          "name": "transition",
+          "low": -0.05871032499528601,
+          "high": 0
+        },
+        {
+          "name": "wall temperature",
+          "low": 0,
+          "high": 0.016199639771444736
+        },
+        {
+          "name": "roughness",
+          "low": 0,
+          "high": 0
+        },
+        {
+          "name": "diameter and air",
+          "low": -0.001021953185115998,
+          "high": 0.0010393625315706645
+        }
+      ],
+      "bodyBaseLabel": "correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)",
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6144710886160001,
+          "spread": {
+            "lo": -0.02577706509044886,
+            "hi": 0.03944100804731421
+          },
+          "outcome": {
+            "refused": false,
+            "cd": 0.5799960694892725,
+            "low": 0.4977394434447776,
+            "high": 0.6968383858709042,
+            "residual": 0.0594400909597288,
+            "tolerance": [
+              -0.2705871796657565,
+              0.2706172620566132
+            ],
+            "highWithoutWall": 0.24268665937906464,
+            "inside": true
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 6681 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": false,
+          "cd": 0.5265376476076613,
+          "low": 0.4480231110948792,
+          "high": 0.6321536953941547,
+          "residual": 0.16714250291209498,
+          "tolerance": [
+            -0.268702713210769,
+            0.2726142957662434
+          ],
+          "highWithoutWall": 0.24184794915257135,
+          "inside": true
+        },
+        "sevenRoundSpread": {
+          "refused": false,
+          "cd": 0.5799960694892725,
+          "low": 0.4977394434447776,
+          "high": 0.6968383858709042,
+          "residual": 0.05956660783477763,
+          "tolerance": [
+            -0.27953695375193954,
+            0.28162421272725613
+          ],
+          "highWithoutWall": 0.2536936100497076,
+          "inside": true
+        }
+      }
+    },
+    {
+      "round": 2590,
+      "mach": 1.803,
+      "model": "present",
+      "cd0": 0.6436363309703006,
+      "cd0ByReading": [
+        0.643635875567258,
+        0.6436367863733431
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8355345.522285908,
+        "low": 7972996.656381626,
+        "high": 8754311.193750998
+      },
+      "spread": {
+        "lo": -0.02588907506225535,
+        "hi": 0.03928805471262797
+      },
+      "outcome": {
+        "refused": false,
+        "cd": 0.5795921512497851,
+        "low": 0.49744124796615036,
+        "high": 0.6963223587356535,
+        "residual": 0.11049870082335622,
+        "tolerance": [
+          -0.2706012798009534,
+          0.2704498159331461
+        ],
+        "highWithoutWall": 0.24248137013125604,
+        "inside": true
+      },
+      "components": [
+        {
+          "name": "nose wave drag",
+          "cd": 0.1104018909932226,
+          "low": 0.11039416286085307,
+          "high": 0.11040961912559213
+        },
+        {
+          "name": "body friction",
+          "cd": 0.08532731421595484,
+          "low": 0.07508803651004026,
+          "high": 0.10153950391698625
+        },
+        {
+          "name": "fin friction",
+          "cd": 0.03869559619157898,
+          "low": 0.03908255215349477,
+          "high": 0.06152599794461058
+        },
+        {
+          "name": "fin wave drag",
+          "cd": 0.020381773182844197,
+          "low": 0.020585586838318005,
+          "high": 0.03240702343707691
+        },
+        {
+          "name": "body base",
+          "cd": 0.21795837562834613,
+          "low": 0.15294161263825456,
+          "high": 0.2611793010556031
+        },
+        {
+          "name": "fin trailing-edge base",
+          "cd": 0.10682720103783837,
+          "low": 0.09934929696518968,
+          "high": 0.12926091325578443
+        }
+      ],
+      "inputs": [
+        {
+          "name": "transition",
+          "low": -0.05866073110107341,
+          "high": 0
+        },
+        {
+          "name": "wall temperature",
+          "low": 0,
+          "high": 0.01621029166943045
+        },
+        {
+          "name": "roughness",
+          "low": 0,
+          "high": 0
+        },
+        {
+          "name": "diameter and air",
+          "low": -0.0010216387968716711,
+          "high": 0.0010390433171904023
+        }
+      ],
+      "bodyBaseLabel": "correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)",
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6436179579706262,
+          "spread": {
+            "lo": -0.02577706509044886,
+            "hi": 0.03944100804731421
+          },
+          "outcome": {
+            "refused": false,
+            "cd": 0.5795921512497851,
+            "low": 0.49744124796615036,
+            "high": 0.6963223587356535,
+            "residual": 0.11046700094675366,
+            "tolerance": [
+              -0.2704892698291469,
+              0.27060276926783233
+            ],
+            "highWithoutWall": 0.24263432346594227,
+            "inside": true
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 6684 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": false,
+          "cd": 0.526178550730866,
+          "low": 0.4477665994835555,
+          "high": 0.6316919021077613,
+          "residual": 0.22322798995946314,
+          "tolerance": [
+            -0.2686021657312706,
+            0.272597995212859
+          ],
+          "highWithoutWall": 0.2417904078512796,
+          "inside": true
+        },
+        "sevenRoundSpread": {
+          "refused": false,
+          "cd": 0.5795921512497851,
+          "low": 0.49744124796615036,
+          "high": 0.6963223587356535,
+          "residual": 0.11049870082335622,
+          "tolerance": [
+            -0.2794390439153299,
+            0.2816097199384753
+          ],
+          "highWithoutWall": 0.2536412741365852,
+          "inside": true
+        }
+      }
+    },
+    {
+      "round": 2596,
+      "mach": 1.814,
+      "model": "present",
+      "cd0": 0.6235802735211791,
+      "cd0ByReading": [
+        0.6235645209928584,
+        0.6235960260494998
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8406321.008001462,
+        "low": 8021639.453508747,
+        "high": 8807720.746236447
+      },
+      "spread": {
+        "lo": -0.02588907506225535,
+        "hi": 0.03928805471262797
+      },
+      "outcome": {
+        "refused": false,
+        "cd": 0.5751708321786625,
+        "low": 0.49418452079500313,
+        "high": 0.6906678326227225,
+        "residual": 0.0841653272978895,
+        "tolerance": [
+          -0.26951129333949253,
+          0.2702798302023428
+        ],
+        "highWithoutWall": 0.2418931510479767,
+        "inside": true
+      },
+      "components": [
+        {
+          "name": "nose wave drag",
+          "cd": 0.11002839259230254,
+          "low": 0.11002069060482109,
+          "high": 0.110036094579784
+        },
+        {
+          "name": "body friction",
+          "cd": 0.0850604228355089,
+          "low": 0.07485317209524783,
+          "high": 0.10122190317425558
+        },
+        {
+          "name": "fin friction",
+          "cd": 0.03857478925389115,
+          "low": 0.03896053714643006,
+          "high": 0.06133391491368693
+        },
+        {
+          "name": "fin wave drag",
+          "cd": 0.020226207089098683,
+          "low": 0.020428465114748252,
+          "high": 0.032159673316908326
+        },
+        {
+          "name": "body base",
+          "cd": 0.21543117167074696,
+          "low": 0.15148129650823972,
+          "high": 0.25783792966617947
+        },
+        {
+          "name": "fin trailing-edge base",
+          "cd": 0.10584984873711419,
+          "low": 0.0984403593255162,
+          "high": 0.12807831697190816
+        }
+      ],
+      "inputs": [
+        {
+          "name": "transition",
+          "low": -0.05811989281549299,
+          "high": 0
+        },
+        {
+          "name": "wall temperature",
+          "low": 0,
+          "high": 0.01632718987200537
+        },
+        {
+          "name": "roughness",
+          "low": 0,
+          "high": 0
+        },
+        {
+          "name": "diameter and air",
+          "low": -0.0010181898245779086,
+          "high": 0.0010355414187807055
+        }
+      ],
+      "bodyBaseLabel": "correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)",
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6233000293026931,
+          "spread": {
+            "lo": -0.02577706509044886,
+            "hi": 0.03944100804731421
+          },
+          "outcome": {
+            "refused": false,
+            "cd": 0.5751708321786625,
+            "low": 0.49418452079500313,
+            "high": 0.6906678326227225,
+            "residual": 0.08367809080603816,
+            "tolerance": [
+              -0.26939928336768604,
+              0.27043278353702904
+            ],
+            "highWithoutWall": 0.24204610438266294,
+            "inside": true
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "at d 0.78 in, 298 K: Reynolds number 6417 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": false,
+          "cd": 0.5222459078101054,
+          "low": 0.44496434113224503,
+          "high": 0.6266286741367684,
+          "residual": 0.19403572952058434,
+          "tolerance": [
+            -0.2674814536119413,
+            0.2724071577956091
+          ],
+          "highWithoutWall": 0.2411437440898534,
+          "inside": true
+        },
+        "sevenRoundSpread": {
+          "refused": false,
+          "cd": 0.5751708321786625,
+          "low": 0.49418452079500313,
+          "high": 0.6906678326227225,
+          "residual": 0.0841653272978895,
+          "tolerance": [
+            -0.27834905745386906,
+            0.281439734207672
+          ],
+          "highWithoutWall": 0.2530530550533059,
+          "inside": true
+        }
+      }
+    },
+    {
+      "round": 2589,
+      "mach": 1.827,
+      "model": "present",
+      "cd0": 0.6114923248839085,
+      "cd0ByReading": [
+        0.6114821105150737,
+        0.6115025392527431
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8466564.763847118,
+        "low": 8079126.395568069,
+        "high": 8870841.126446517
+      },
+      "spread": {
+        "lo": -0.02588907506225535,
+        "hi": 0.03928805471262797
+      },
+      "outcome": {
+        "refused": false,
+        "cd": 0.5699965151076459,
+        "low": 0.49039021513618464,
+        "high": 0.6840361652402184,
+        "residual": 0.0728001113628316,
+        "tolerance": [
+          -0.2681924162347371,
+          0.270053968164788
+        ],
+        "highWithoutWall": 0.241168368214147,
+        "inside": true
+      },
+      "components": [
+        {
+          "name": "nose wave drag",
+          "cd": 0.10959434050814379,
+          "low": 0.10958666890430822,
+          "high": 0.10960201211197936
+        },
+        {
+          "name": "body friction",
+          "cd": 0.08474620144714919,
+          "low": 0.07457665727349129,
+          "high": 0.10084797972210753
+        },
+        {
+          "name": "fin friction",
+          "cd": 0.03843263100552635,
+          "low": 0.038816957315581616,
+          "high": 0.0611078832987869
+        },
+        {
+          "name": "fin wave drag",
+          "cd": 0.020046085584892646,
+          "low": 0.020246542431524454,
+          "high": 0.031873280089196425
+        },
+        {
+          "name": "body base",
+          "cd": 0.2124622075546307,
+          "low": 0.14977839363448706,
+          "high": 0.2538998007193113
+        },
+        {
+          "name": "fin trailing-edge base",
+          "cd": 0.10471504900730325,
+          "low": 0.09738499557679202,
+          "high": 0.1267052092988369
+        }
+      ],
+      "inputs": [
+        {
+          "name": "transition",
+          "low": -0.05749162448680163,
+          "high": 0
+        },
+        {
+          "name": "wall temperature",
+          "low": 0,
+          "high": 0.01646469130865895
+        },
+        {
+          "name": "roughness",
+          "low": 0,
+          "high": 0
+        },
+        {
+          "name": "diameter and air",
+          "low": -0.0010141356089906628,
+          "high": 0.0010314250321324936
+        }
+      ],
+      "bodyBaseLabel": "correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)",
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6113569229875625,
+          "spread": {
+            "lo": -0.02577706509044886,
+            "hi": 0.03944100804731421
+          },
+          "outcome": {
+            "refused": false,
+            "cd": 0.5699965151076459,
+            "low": 0.49039021513618464,
+            "high": 0.6840361652402184,
+            "residual": 0.07256256272392392,
+            "tolerance": [
+              -0.2680804062629306,
+              0.27020692149947423
+            ],
+            "highWithoutWall": 0.24132132154883323,
+            "inside": true
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "at d 0.78 in, 298 K: Reynolds number 6463 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": false,
+          "cd": 0.5176389906039943,
+          "low": 0.4416977173477886,
+          "high": 0.6206835605908,
+          "residual": 0.18131040355055883,
+          "tolerance": [
+            -0.2661222361800163,
+            0.27215437374116
+          ],
+          "highWithoutWall": 0.24034708795411475,
+          "inside": true
+        },
+        "sevenRoundSpread": {
+          "refused": false,
+          "cd": 0.5699965151076459,
+          "low": 0.49039021513618464,
+          "high": 0.6840361652402184,
+          "residual": 0.0728001113628316,
+          "tolerance": [
+            -0.27703018034911364,
+            0.2812138721701172
+          ],
+          "highWithoutWall": 0.2523282722194762,
+          "inside": true
+        }
+      }
+    },
+    {
+      "round": 3263,
+      "mach": 2.423,
+      "model": "present",
+      "cd0": 0.4698246291214021,
+      "cd0ByReading": [
+        0.4698356381673781,
+        0.46981362007542604
+      ],
+      "reynoldsOnLength": {
+        "nominal": 11228509.262617167,
+        "low": 10714681.58536477,
+        "high": 11764667.788385285
+      },
+      "spread": {
+        "lo": -0.023289442274370464,
+        "hi": 0.023289442274370353
+      },
+      "outcome": {
+        "refused": false,
+        "cd": 0.4314048687808397,
+        "low": 0.37253372841410703,
+        "high": 0.5188100639008668,
+        "residual": 0.08905731743162182,
+        "tolerance": [
+          -0.2494943541910868,
+          0.27862224701979676
+        ],
+        "highWithoutWall": 0.2279014070135723,
+        "inside": true
+      },
+      "components": [
+        {
+          "name": "nose wave drag",
+          "cd": 0.09542599968150745,
+          "low": 0.09541931986152974,
+          "high": 0.09543267950148515
+        },
+        {
+          "name": "body friction",
+          "cd": 0.07165897958057818,
+          "low": 0.0630599020309088,
+          "high": 0.08527418570088803
+        },
+        {
+          "name": "fin friction",
+          "cd": 0.03256588174461491,
+          "low": 0.03289154056206106,
+          "high": 0.05177975197393771
+        },
+        {
+          "name": "fin wave drag",
+          "cd": 0.014524306264906781,
+          "low": 0.014669546422694597,
+          "high": 0.023093649866063038
+        },
+        {
+          "name": "body base",
+          "cd": 0.14645143680979794,
+          "low": 0.10066963336643882,
+          "high": 0.17758809657217725
+        },
+        {
+          "name": "fin trailing-edge base",
+          "cd": 0.07077826469943446,
+          "low": 0.06582378617047405,
+          "high": 0.0856417002863157
+        }
+      ],
+      "inputs": [
+        {
+          "name": "transition",
+          "low": -0.03786416087716313,
+          "high": 0
+        },
+        {
+          "name": "wall temperature",
+          "low": 0,
+          "high": 0.021881217327339143
+        },
+        {
+          "name": "roughness",
+          "low": 0,
+          "high": 0
+        },
+        {
+          "name": "diameter and air",
+          "low": -0.0008505990991165557,
+          "high": 0.0008654026792781488
+        }
+      ],
+      "bodyBaseLabel": "correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)",
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.4702617640848937,
+          "spread": {
+            "lo": -0.02370485432777425,
+            "hi": 0.02370485432777425
+          },
+          "outcome": {
+            "refused": false,
+            "cd": 0.4314048687808397,
+            "low": 0.37253372841410703,
+            "high": 0.5188100639008668,
+            "residual": 0.09007059983783772,
+            "tolerance": [
+              -0.24990976624449057,
+              0.27903765907320066
+            ],
+            "highWithoutWall": 0.2283168190669762,
+            "inside": true
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": false,
+          "cd": 0.47515313397317227,
+          "low": 0.4143931788051817,
+          "high": 0.5651068249139342,
+          "residual": -0.011214289606413574,
+          "tolerance": [
+            -0.2326424024715914,
+            0.2604767886041588
+          ],
+          "highWithoutWall": 0.2144259141326572,
+          "inside": true
+        },
+        "taperedTrailingEdge": {
+          "refused": false,
+          "cd": 0.3960157364311225,
+          "low": 0.33962183532887,
+          "high": 0.475989213757709,
+          "residual": 0.1863786862497998,
+          "tolerance": [
+            -0.24911725654418926,
+            0.2826733199427507
+          ],
+          "highWithoutWall": 0.2274199163165922,
+          "inside": true
+        }
+      }
+    },
+    {
+      "round": 3264,
+      "mach": 2.468,
+      "model": "present",
+      "cd0": 0.44843878631493145,
+      "cd0ByReading": [
+        0.44843875102529074,
+        0.44843882160457216
+      ],
+      "reynoldsOnLength": {
+        "nominal": 11437045.340544436,
+        "low": 10913674.846339352,
+        "high": 11983161.412189389
+      },
+      "spread": {
+        "lo": -0.023289442274370464,
+        "hi": 0.023289442274370353
+      },
+      "outcome": {
+        "refused": false,
+        "cd": 0.4239537503045583,
+        "low": 0.3662921392154386,
+        "high": 0.5097293526046437,
+        "residual": 0.05775402621815151,
+        "tolerance": [
+          -0.2481779629735018,
+          0.2800233184414678
+        ],
+        "highWithoutWall": 0.22762791696197837,
+        "inside": true
+      },
+      "components": [
+        {
+          "name": "nose wave drag",
+          "cd": 0.09466330147261112,
+          "low": 0.09465667504150804,
+          "high": 0.0946699279037142
+        },
+        {
+          "name": "body friction",
+          "cd": 0.07077052618542554,
+          "low": 0.06227806304317447,
+          "high": 0.08421692616065639
+        },
+        {
+          "name": "fin friction",
+          "cd": 0.03217043802969703,
+          "low": 0.032492142409994006,
+          "high": 0.05115099646721828
+        },
+        {
+          "name": "fin wave drag",
+          "cd": 0.014244498469732943,
+          "low": 0.014386940605530578,
+          "high": 0.022648755415775074
+        },
+        {
+          "name": "body base",
+          "cd": 0.14326502325943613,
+          "low": 0.09845715262971191,
+          "high": 0.17374639156321672
+        },
+        {
+          "name": "fin trailing-edge base",
+          "cd": 0.06883996288765547,
+          "low": 0.06402116548551959,
+          "high": 0.08329635509406311
+        }
+      ],
+      "inputs": [
+        {
+          "name": "transition",
+          "low": -0.036840900369637,
+          "high": 0
+        },
+        {
+          "name": "wall temperature",
+          "low": 0,
+          "high": 0.02221322695594248
+        },
+        {
+          "name": "roughness",
+          "low": 0,
+          "high": 0
+        },
+        {
+          "name": "diameter and air",
+          "low": -0.0008398202920842923,
+          "high": 0.0008544603752390634
+        }
+      ],
+      "bodyBaseLabel": "correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.82 to 1.08 measured over curve, estimated on its tunnel points and Herrin and Dutton, tested only in the total; an analogy, not a measurement: the fins-on-base factor measured on circular-arc fins (TN 3819 fig. 35), applied by analogy to these fins (0008 section 3.4)",
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.4484830520539252,
+          "spread": {
+            "lo": -0.02370485432777425,
+            "hi": 0.02370485432777425
+          },
+          "outcome": {
+            "refused": false,
+            "cd": 0.4239537503045583,
+            "low": 0.3662921392154386,
+            "high": 0.5097293526046437,
+            "residual": 0.05785843793514189,
+            "tolerance": [
+              -0.2485933750269056,
+              0.28043873049487167
+            ],
+            "highWithoutWall": 0.22804332901538227,
+            "inside": true
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": false,
+          "cd": 0.4678737952680474,
+          "low": 0.40831912197767084,
+          "high": 0.5562395915921916,
+          "residual": -0.041538998656638904,
+          "tolerance": [
+            -0.23111342159424475,
+            0.2614594034526512
+          ],
+          "highWithoutWall": 0.21398244026171964,
+          "inside": true
+        },
+        "taperedTrailingEdge": {
+          "refused": false,
+          "cd": 0.38953376886073054,
+          "low": 0.3342815564726788,
+          "high": 0.46808117505761215,
+          "residual": 0.15121928357194925,
+          "tolerance": [
+            -0.24786081465014276,
+            0.2841528170345531
+          ],
+          "highWithoutWall": 0.22712765328325757,
+          "inside": true
+        },
+        "without3263": {
+          "refused": false,
+          "cd": 0.4239537503045583,
+          "low": 0.3662921392154386,
+          "high": 0.5097293526046437,
+          "residual": 0.05775402621815151,
+          "tolerance": [
+            -0.22488852069913134,
+            0.2567338761670974
+          ],
+          "highWithoutWall": 0.20433847468760802,
+          "inside": true
+        }
+      }
+    },
+    {
+      "round": 3254,
+      "mach": 1.506,
+      "model": "rebuilt",
+      "cd0": 0.6935987797453214,
+      "cd0ByReading": [
+        0.6935907774457036,
+        0.6936067820449392
+      ],
+      "reynoldsOnLength": {
+        "nominal": 6979007.407965932,
+        "low": 6659641.133949377,
+        "high": 7312253.276643929
+      },
+      "spread": {
+        "lo": 0,
+        "hi": 0
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them; the present factor (0010 section 1.3) refuses it too: the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded to 3 (TN 3819 fig. 35), asked Mach 1.506",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6938225060092837,
+          "spread": {
+            "lo": 0,
+            "hi": 0
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 5583 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            },
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 2595,
+      "mach": 1.784,
+      "model": "rebuilt",
+      "cd0": 0.6217973921611386,
+      "cd0ByReading": [
+        0.6217970220509735,
+        0.6217977622713036
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8267296.956049953,
+        "low": 7888977.27952569,
+        "high": 8662058.330367044
+      },
+      "spread": {
+        "lo": -0.034726839176631885,
+        "hi": 0.05044795871795715
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them; the present factor (0010 section 1.3) refuses it too: the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded to 3 (TN 3819 fig. 35), asked Mach 1.784",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6216865647283847,
+          "spread": {
+            "lo": -0.03457995175962203,
+            "hi": 0.05022928390098369
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 6614 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            },
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 2599,
+      "mach": 1.788,
+      "model": "rebuilt",
+      "cd0": 0.6565039440112161,
+      "cd0ByReading": [
+        0.6565021505761571,
+        0.656505737446275
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8285833.496310152,
+        "low": 7906665.569390098,
+        "high": 8681479.985816298
+      },
+      "spread": {
+        "lo": -0.034726839176631885,
+        "hi": 0.05044795871795715
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "refused: body base (fin-trailing-edge): faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them; the present factor (0010 section 1.3) refuses it too: the fins-on-base factor is read at Mach 1.8 to 2.56 and bounded to 3 (TN 3819 fig. 35), asked Mach 1.788",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6562275608185258,
+          "spread": {
+            "lo": -0.03457995175962203,
+            "hi": 0.05022928390098369
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 6629 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            },
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 2591,
+      "mach": 1.801,
+      "model": "rebuilt",
+      "cd0": 0.6032718059656514,
+      "cd0ByReading": [
+        0.6032711114379343,
+        0.6032725004933686
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8346077.252155805,
+        "low": 7964152.511449423,
+        "high": 8744600.366026372
+      },
+      "spread": {
+        "lo": -0.034726839176631885,
+        "hi": 0.05044795871795715
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6032351726747479,
+          "spread": {
+            "lo": -0.03457995175962203,
+            "hi": 0.05022928390098369
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 6677 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            },
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 2588,
+      "mach": 1.802,
+      "model": "rebuilt",
+      "cd0": 0.6145444679062525,
+      "cd0ByReading": [
+        0.6145428625724503,
+        0.6145460732400548
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8350711.387220858,
+        "low": 7968574.583915526,
+        "high": 8749455.779888684
+      },
+      "spread": {
+        "lo": -0.034726839176631885,
+        "hi": 0.05044795871795715
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6144710886160001,
+          "spread": {
+            "lo": -0.03457995175962203,
+            "hi": 0.05022928390098369
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 6681 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            },
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 2590,
+      "mach": 1.803,
+      "model": "rebuilt",
+      "cd0": 0.6436363309703006,
+      "cd0ByReading": [
+        0.643635875567258,
+        0.6436367863733431
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8355345.522285908,
+        "low": 7972996.656381626,
+        "high": 8754311.193750998
+      },
+      "spread": {
+        "lo": -0.034726839176631885,
+        "hi": 0.05044795871795715
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6436179579706262,
+          "spread": {
+            "lo": -0.03457995175962203,
+            "hi": 0.05022928390098369
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "fin leading edges",
+              "reason": "leading-edge-range",
+              "message": "Reynolds number 6684 on the edge's diameter is below 6700, the lowest at which a front-side pressure measurement shows no Reynolds-number effect (RM A55H31)"
+            },
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 2596,
+      "mach": 1.814,
+      "model": "rebuilt",
+      "cd0": 0.6235802735211791,
+      "cd0ByReading": [
+        0.6235645209928584,
+        0.6235960260494998
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8406321.008001462,
+        "low": 8021639.453508747,
+        "high": 8807720.746236447
+      },
+      "spread": {
+        "lo": -0.034726839176631885,
+        "hi": 0.05044795871795715
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6233000293026931,
+          "spread": {
+            "lo": -0.03457995175962203,
+            "hi": 0.05022928390098369
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 2589,
+      "mach": 1.827,
+      "model": "rebuilt",
+      "cd0": 0.6114923248839085,
+      "cd0ByReading": [
+        0.6114821105150737,
+        0.6115025392527431
+      ],
+      "reynoldsOnLength": {
+        "nominal": 8466564.763847118,
+        "low": 8079126.395568069,
+        "high": 8870841.126446517
+      },
+      "spread": {
+        "lo": -0.034726839176631885,
+        "hi": 0.05044795871795715
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.6113569229875625,
+          "spread": {
+            "lo": -0.03457995175962203,
+            "hi": 0.05022928390098369
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 3263,
+      "mach": 2.423,
+      "model": "rebuilt",
+      "cd0": 0.4698246291214021,
+      "cd0ByReading": [
+        0.4698356381673781,
+        0.46981362007542604
+      ],
+      "reynoldsOnLength": {
+        "nominal": 11228509.262617167,
+        "low": 10714681.58536477,
+        "high": 11764667.788385285
+      },
+      "spread": {
+        "lo": -0.023289442274370464,
+        "hi": 0.023289442274370353
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.4702617640848937,
+          "spread": {
+            "lo": -0.02370485432777425,
+            "hi": 0.02370485432777425
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "round": 3264,
+      "mach": 2.468,
+      "model": "rebuilt",
+      "cd0": 0.44843878631493145,
+      "cd0ByReading": [
+        0.44843875102529074,
+        0.44843882160457216
+      ],
+      "reynoldsOnLength": {
+        "nominal": 11437045.340544436,
+        "low": 10913674.846339352,
+        "high": 11983161.412189389
+      },
+      "spread": {
+        "lo": -0.023289442274370464,
+        "hi": 0.023289442274370353
+      },
+      "outcome": {
+        "refused": true,
+        "refusals": [
+          {
+            "component": "body base",
+            "reason": "fin-trailing-edge",
+            "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+          }
+        ]
+      },
+      "library": "served, the body base on the present factor",
+      "sensitivities": {
+        "cdPrimeText": {
+          "cd0": 0.4484830520539252,
+          "spread": {
+            "lo": -0.02370485432777425,
+            "hi": 0.02370485432777425
+          },
+          "outcome": {
+            "refused": true,
+            "refusals": [
+              {
+                "component": "body base",
+                "reason": "fin-trailing-edge",
+                "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+              }
+            ]
+          }
+        },
+        "drevLeadingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        },
+        "taperedTrailingEdge": {
+          "refused": true,
+          "refusals": [
+            {
+              "component": "body base",
+              "reason": "fin-trailing-edge",
+              "message": "faces that diverge to a blunt trailing edge (thickest at the edge, as the Basic Finner's wedges) at the base: no band-setting source measures their effect on the body base, and the ordering of 0015 section 4 does not reach them"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "verdict": {
+    "present": "pass: every round inside its tolerance",
+    "rebuilt": "refused at every round (3254, 2595, 2599, 2591, 2588, 2590, 2596, 2589, 3263, 3264)"
+  }
+}
