@@ -40,7 +40,7 @@ import { fileSizeRefusal, importSummary, loadImporter, type ImportSummary } from
 import { bodyOutline, FlowControls, viewMenu } from './flow-controls';
 import { pointView, resultLine, type PointView } from './point-view';
 import { flightWords } from './status-words';
-import { loadRender3D, sceneLegend, type Render3DModule } from './scene3d';
+import { loadRender3D, sceneLegend, sceneLegendDetails, type Render3DModule } from './scene3d';
 import {
   appBindings,
   isSceneAction,
@@ -68,12 +68,15 @@ const FLOW_SHOWN_KEY = 'bowshock:flow-view';
 
 /**
  * The note on the airflow shown (0017 section 6.2): what is simulated and
- * what is only drawn, and what of the rocket the 3D view cannot draw.
+ * what is only drawn, and what of the rocket the 3D view cannot draw. With
+ * `short`, for the box beside the 3D view's legend: only what the legend
+ * does not say (the parts not drawn), so that nothing is said twice.
  */
 function flowNoteText(
   which: FlowShown,
   missing: readonly string[],
   failure: string | null,
+  short = false,
 ): string {
   if (which === 'side') {
     return (
@@ -84,6 +87,7 @@ function flowNoteText(
   }
   const notDrawn =
     missing.length === 0 ? '' : ` Not drawn here: ${missing.join('; ')}; the drawing shows it.`;
+  if (short) return notDrawn.trim();
   return (
     'The airflow is around the body, revolved about its axis; the fins are drawn, their drag ' +
     `computed separately. Hatched: behind the base, not simulated. Drag to turn it any way; 0 resets.${notDrawn}`
@@ -368,7 +372,8 @@ function scene3dShown(): boolean {
 /** A 3D view's key or menu item: what render3d's own key does. */
 function sceneAct(action: SceneAction): void {
   if (scene === null || render3d === null) return;
-  render3d.sceneKey(scene, sceneKeyOf(action));
+  const key = sceneKeyOf(action);
+  if (!render3d.sceneKey(scene, key)) render3d.sceneExtraKey(scene, key);
   shell.topBar.refresh();
   refreshSceneButtons();
 }
@@ -459,7 +464,8 @@ const PHONE_NO_GPU =
 
 function showFlowNote(): void {
   const text = flowNoteText(shown, missing3d, sceneFailure);
-  flowNote.textContent = text;
+  // Beside the 3D view's legend, which says the rest, only what it does not.
+  flowNote.textContent = flowNoteText(shown, missing3d, sceneFailure, scene3dShown());
   viewNote.textContent = text;
   showSheetNote();
 }
@@ -1148,6 +1154,13 @@ function detailsBlocks(): HTMLElement[] {
       '.',
     ),
   );
+  // The 3D picture in full: what its short legend leaves out (0017 section 6.6).
+  if (shown === '3d' && scale3d !== null) {
+    out.push(
+      h('h3', { text: 'The 3D picture' }),
+      ...sceneLegendDetails(scale3d).map((text) => h('p', { text })),
+    );
+  }
   return out;
 }
 
@@ -1383,8 +1396,8 @@ async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
       liveDuty: FRAME_BUDGET,
     });
     // The page's own legend, notes and readout stand in for the scene's text (a PNG has it).
-    // The look: glowing shells of the colour quantity with streamlines, the shock and a cutaway.
-    made.setLayers({ overlay: false, slice: false });
+    // The look is the scene's own default (0017 section 6.6).
+    made.setLayers({ overlay: false });
     made.onScale((s) => {
       scale3d = s;
       if (shown === '3d') showScale3d(s);

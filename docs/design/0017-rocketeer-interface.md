@@ -291,14 +291,21 @@ The page owns the rocket, the curve and the GPU device; the scene
 **One key map.** The page's keys (V, Space, R, F or 0, + and -, the
 arrows, K, H) act in both views. The 3D view's (FluidX3D's: 1 rocket,
 2 slice, 3 streamlines, 4 shells, 5 shock, 6 cutaway, Z colour, T slice
-orientation, Q and E) act only while it is shown, through render3d's own
-`sceneKey`; the side view's (1 to 4 fields, 5 glow, D, G, S) only while
+orientation, Q and E; and bowshock's 7, the slice's look, and 8,
+the dense streaks) act only while it is shown, through render3d's own `sceneKey`
+and `sceneExtraKey`; the side view's (1 to 4 fields, 5 glow, D, G, S) only while
 it is. A binding has `when` and a help `group`, and the help lists each
 view's keys under its name; the View menu and the phone's View tab have
 a button for each. A test holds that every key has one action in either
-view. **The default look** is glowing shells of the colour quantity with
-streamlines, the shock and a cutaway (no slice), unless the owner says
-otherwise. With no airflow shown the 3D view follows the builder; when the
+view. **The default look** (section 6.6, 2026-10-23, after the owner's
+"still not detailed enough, make it look more like fluidx3d") is
+FluidX3D's particle mode as far as this flow allows: tens of thousands of
+short lit streaks along the computed flow through the whole revolved
+region (key 8: still, moving, off), the 20 to 40 iso-surfaces of the
+colour quantity as thin glowing sheets behind them (key 4: solid, none,
+glowing), the shock as one crisp sheet, the body coloured by its computed
+surface pressure, and a thin box over a dim floor grid; the slice (key 2,
+its fibres or schlieren by key 7) and streamlines (key 3) are off. With no airflow shown the 3D view follows the builder; when the
 rocket changes the flow is cleared, so that no view shows one rocket
 with another's flow.
 
@@ -311,8 +318,8 @@ the base the solver computes nothing, and that region is marked "not
 simulated", never painted, and never in the colour that means uniform
 flow; the fins are drawn as geometry, with the note "The axisymmetric
 solution, revolved; fins are not in the airflow" on the 3D legend and in
-the 3D PNG (the advisor's item 10, 2026-10-22: the glowing-shell look is a
-3D solver's, so the page says this flow is not 3D), and "the fins' drag is
+the 3D PNG (the advisor's item 10, 2026-10-22: the shells look like a
+3D solver's picture, so the page says this flow is not 3D), and "the fins' drag is
 computed separately"; every colour or brightness channel has a legend with
 real values and units, and says what dark means.
 
@@ -392,6 +399,123 @@ toast ("The 3D view could not be set up: its code could not be fetched
 (...)" with the GPU's own message), the airflow's note, which stays, and
 the console as an error, so that `scripts/interface-check.mjs` fails on
 a page whose 3D view did not set up instead of taking its picture.
+
+### 6.6 The look: opaque lit sheets of the real field (2026-10-23)
+
+The owner's reference is FluidX3D's F1 render (its pictures only, never
+its code). What makes that look, and what bowshock takes from it:
+
+- **Opaque, lit surfaces.** FluidX3D's structures are opaque surfaces
+  shaded per pixel by a directional light, so their ridges band light and
+  dark and the picture has depth. The 3D view's iso-surfaces are now
+  opaque and depth-tested (`shell_lit_fs`, `src/render3d/shaders/revolve.wgsl`):
+  the palette's colour times an ambient share and the diffuse light from
+  over the viewer's shoulder, a little specular, darker where a sheet
+  turns from the eye. The additive glowing shells stay as key 4's third
+  state (solid, none, glowing).
+- **Density from the real field.** 20 to 40 levels at round values of
+  the colour range (`ISO_SURFACES` = 40 asked; round steps give between
+  half and all of that), each an iso-surface of the computed field,
+  revolved; where the cutaway cuts them, each sheet's edge is a line of
+  its colour, so neighbouring sheets read as separate. Details ("The 3D
+  picture") and the PNG say how many and how far apart ("28 shells, every
+  0.01 from 1.66 to 1.93").
+- **The shock** is one thin pale sheet where the solver fits it (the
+  density's jump), brightest edge-on as in a schlieren picture, with a
+  crisp white line where the wedge cuts it.
+- **The spectrum** runs blue, azure, cyan, green, yellow, orange, red,
+  with magenta at the top (FluidX3D's order); one table for the 3D view
+  and the side view (`src/render/colormap.ts`).
+- **Restraint.** Black background, a thin dim box, the fins a solid lit
+  grey (geometry, not in the airflow), no streamlines by default;
+  streamlines (key 3) are a few lit tubes (6 a plane, 8 azimuths, also in
+  the cutaway), not a mat of 1-pixel lines. The page's note and legend sit
+  compact in the bottom left corner, not over the flow. The legend is
+  short (the owner, 2026-10-23): the colour bar and its range, the two
+  honesty lines of section 6.2 ("the axisymmetric solution, revolved;
+  fins are not in the airflow, their drag computed separately";
+  "hatched: behind the base, not simulated"), always shown, and one line
+  for each layer shown that needs it ("texture follows the computed
+  flow"; "body: computed surface pressure, blue low, red high";
+  "streaks follow the computed flow; start points spread by the page") and the
+  drag hint ("Drag to turn it; 0 resets"). A button folds the layer lines
+  and the hint away; the honesty lines stay, folded or not. Beside it the
+  airflow's note box says only what the legend does not (the rocket's
+  parts the 3D view cannot draw), so the base line is said once. The rest (the free stream's value, the shells' count and
+  spacing, the cells beyond the bar, what black means, each layer's
+  numbers and source) is in Details under "The 3D picture", and the PNG
+  keeps the fuller text.
+
+**The cutaway (2026-10-23, the owner's choice after the side-by-side:
+more of the inner sheets).** The wedge opens 150 degrees, centred where
+the quarter cut was. Tried 90, 150 and 180: at 150 the nested sheets
+show from the shock to the body across most of the picture, the rocket
+and two fins are in plain sight, and the 210 degrees left still read as
+a solid of revolution; at 180 the default view is a flat half-section.
+
+**Detail from the computed field (2026-10-23, the owner: "too generic").**
+Every layer below is drawn from the solver's field; the only thing in
+them it did not compute is the noise the fibres are made from, which
+carries direction and nothing else, and the legend says so.
+
+| Layer                                                                   | What it shows                                                                                                                                                          | Where it comes from                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The field's image (`src/render3d/field-image.ts`, `field-image-gpu.ts`) | not drawn itself: the texture the faces and the sheets' fibres sample                                                                                                  | the dual mesh rasterised on the GPU: velocity, the value shown, the schlieren, linear across each quad; square texels, about as many across as the view (512 to 1280, half in a draft)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Fibres on the slice (key 7: fibres)                                     | a fine grain along the flow, coloured by the quantity                                                                                                                  | line integral convolution: each texel the mean of white noise along the streamline through it, traced both ways (32 steps of a grain each, second order) in the image's velocity; the noise's grains are at least a screen pixel (texels per pixel of the fitted view, 1 to 6), so a small face (a phone, the live view's draft) shows fibres, not grain                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Fibres on the sheets                                                    | streaks along each sheet's meridians, strongest where the flow runs along the sheet                                                                                    | the flow has no swirl, so on a sheet of revolution it runs along the meridians; streak noise laid along them, its strength the computed velocity's share along the sheet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Schlieren (key 7: schlieren)                                            | black to white: where the density changes fast                                                                                                                         | log10 of the density gradient's magnitude times the calibre over the free stream's density, from the grid's own metric (central differences), 5th to 99.5th percentile; the shock's jump is not in it (the computed region starts at the shock, which is fitted), and the shock is drawn separately as a line where the solver fits it (key 5)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| The body's colour                                                       | the computed surface pressure coefficient, blue (suction) through light grey (0) to red                                                                                | the pressure in the cells on the wall, along the body; the fins and the base stay grey (the fins are not in the airflow; nothing is computed behind the base)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Dense streaks (key 8: still by default, moving, off)                    | tens of thousands of short lit streaks, coloured by the quantity, brighter at their heads, through the whole revolved region (few in the cutaway, so the rocket shows) | traced on the GPU in the field's image (`streaks-compute.wgsl`): from each start, 6 steps of 0.9% of the region's length along the computed velocity, second order; the steady flow's pathlines are its streamlines. The starts are the page's: 25% near the body, 15% near the shock, the rest even in volume, each at an azimuth of its own. 60 000 streaks on a hardware adapter, 40 000 on a software one, fewer (down to 4 000) if a frame takes over 4 s; moving, the starts slide along their streamlines at one pace (not the flow's speed) and the streaks are traced again each frame, at most half the time (the live share while the solver runs). The count only goes down. `tests/gpu/streaks.test.ts` holds them to a synthetic field's exact streamlines (circular arcs: downstream, every step one step long, on its arc to second order), with the moving lead, the cutaway's thinning and the stop at the base |
+
+One face of the cutaway carries the slice's texture and the other is left
+open, so the sheets show beside it. The fins already had their real
+thickness and edge shapes (round, bevel or square, `rocket-mesh.ts`).
+**The grid drawn** is the one the solver is on, the finest so far; the
+readout says which ("grid 318 x 40 (2 of 4)") and the PNG's caption gives
+its size; the image samples it with linear interpolation at about the
+view's resolution.
+
+**The rocket in plain sight (2026-10-23).** The streaks in front of the
+rocket buried it in the page's own view; it is now drawn a second time,
+last, its near side only, where something stands in front of it (the depth test
+reversed), at 0.6 opacity, so it shows through the streaks and sheets
+from any view, while solving too.
+
+**Framing and light (2026-10-23).** A dim floor grid under the box, the
+first view 1.25 times closer than the one that fits the whole region (the
+shock's far reaches may leave the view, never the rocket), the streaks lit
+as thin tubes and dimmed with distance from the eye (a depth cue). Not
+done: screen-space ambient occlusion and shadows. Both need the depth of
+the frame as a texture (a depth pass of its own, as the frame is
+multisampled), about doubling a frame's cost on a software adapter, where
+frames already take seconds; a later pass can add them for hardware
+adapters only.
+
+**What is not taken, and why.** FluidX3D's F1 shows turbulence: vortex
+tubes, wakes, fine-grained texture, all of a 3D, viscous, unsteady
+solution. This flow is axisymmetric, inviscid and steady at zero
+incidence: it has no vortices and no turbulence, and every surface
+drawn is a sheet of the computed field, smooth because the field is
+smooth. So the 3D view looks cleaner than FluidX3D's, on purpose. Nothing
+is drawn behind the base (hatched, "not simulated"), and the legend and
+PNG keep "the axisymmetric solution, revolved; fins are not in the
+airflow".
+
+**Cost.** The revolved surfaces are one indexed draw (each point turned
+once per azimuth, 144 sectors a turn, 64 in a draft), cut at the base on
+the CPU so the depth test runs before shading; lines are one draw of six
+vertices a quad, not an instance a quad (SwiftShader pays per instance).
+Outer sheets are drawn first. Measured on SwiftShader at 1440 x 900, the
+old and new default frames back to back on the loaded machine (load 4 to
+7): old 1.8 to 2.6 s, new 2.2 to 2.6 s; drafts 0.7 to 0.9 s for both. Live
+frames keep `FRAME_BUDGET` (section 6.4); while the viewer turns, pans
+or zooms on a slow adapter the frames are drafts and a full frame
+follows 350 ms after the last move. With the detail layers (the field's
+image and fibres are built once per flow, not per frame), the default
+frame measured 2.1 to 3.7 s at 1440 x 900 and 1.0 to 1.6 s at 390 x 844 on
+the same loaded machine; moving streaks draw drafts.
+`tests/gpu/render3d.test.ts` (every layer and look, full and draft),
+`tests/gpu/render3d-cost.test.ts` and `tests/gpu/app-page.test.ts` pass.
 
 ## 7. The rocket drawing
 
@@ -717,8 +841,9 @@ Curve tab).
 
 ## 13. Open questions for the owner
 
-1. **The 3D view's default look**: glowing shells with streamlines, the
-   shock and a cutaway, as built; or with the slice (key 2).
+1. **The 3D view's default look**: opaque lit iso-surfaces, the shock
+   sheet, a wedge cut away (section 6.6, 2026-10-23); or with the slice
+   (key 2) or streamlines (key 3).
 2. **The real-GPU timing**: an estimate until the owner reads the cell
    rate off the readout on a real GPU (section 8.3).
 

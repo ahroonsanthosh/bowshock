@@ -80,11 +80,11 @@ describe('the quantities coloured', () => {
     expect(r.max).toBeCloseTo(r.cellMax, 9);
   });
 
-  it('palettes: the spectrum runs magenta to red, fully saturated; every palette in range', () => {
-    expect(spectrum(0)[0]).toBeGreaterThan(0.9);
-    expect(spectrum(0)[2]).toBeGreaterThan(0.7);
+  it('palettes: the spectrum runs blue to magenta, fully saturated; every palette in range', () => {
+    expect(spectrum(0)[2]).toBeGreaterThan(0.9);
+    expect(Math.max(spectrum(0)[0], spectrum(0)[1])).toBeLessThan(0.2);
     spectrum(1).forEach((c, k) => {
-      expect(c).toBeCloseTo([1, 30 / 255, 30 / 255][k]!, 12);
+      expect(c).toBeCloseTo([1, 31 / 255, 210 / 255][k]!, 12);
     });
     const table = spectrumTable(64);
     for (let k = 0; k < 64; k++) {

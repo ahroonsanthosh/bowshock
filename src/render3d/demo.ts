@@ -11,6 +11,7 @@ import { liveFitSource } from '../render/flow-source';
 import { presentationFor } from '../render/presenter';
 import { basicFinnerBodyAsTyped } from '../validation/basic-finner';
 import { attachControls } from './controls';
+import { sceneExtraKey } from './extra-keys';
 import { fieldFromCells, type MeridionalField } from './field';
 import { FlowScene3D } from './scene';
 import { basicFinnerRocket } from './presets';
@@ -113,6 +114,10 @@ async function main(): Promise<void> {
     caption: haack ? 'Von Karman nose, 3 calibres, three fins, Mach 2' : 'Basic Finner, Mach 2',
   });
   attachControls(scene, canvas);
+  // Keys 7 and 8 (./extra-keys.ts), beside the controls' own.
+  canvas.addEventListener('keydown', (e) => {
+    if (sceneExtraKey(scene, e.key)) e.preventDefault();
+  });
   new ResizeObserver(() => {
     resize();
     scene.requestDraw();
