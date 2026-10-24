@@ -383,7 +383,8 @@ describe('item 5: the rung verdicts', () => {
     // Every registered rung must pass to release its box: with only Mach
     // 0.6 judged, the other four rungs keep their boxes out as "not run".
     const onlyGood = rowsKeptOut([good], rows);
-    expect(onlyGood.map((r) => r.mach)).toEqual([0.797, 0.8, 0.85, 0.899, 0.901]);
+    // 0.851 lies within 0.05 of the 0.901 rung, so it stays out too.
+    expect(onlyGood.map((r) => r.mach)).toEqual([0.797, 0.8, 0.85, 0.851, 0.899, 0.901]);
     expect(onlyGood[0]!.reason).toMatch(/not judged: not run/);
     expect(rowsKeptOut([good], rows, [], [0.6])).toEqual([]);
   });
