@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-24T00:04:50.330Z",
+  "adapter": {
+    "vendor": "google",
+    "architecture": "swiftshader",
+    "device": "",
+    "description": ""
+  },
+  "grid": "60 x 28",
+  "steps2DCpu": 27000,
+  "residual2DCpu": 1.4671614482284136e-14,
+  "eps2D": 0.00000415506845441449,
+  "steps3DGpu": 1200,
+  "eps3D": 0.0000027971389240377675,
+  "limit": 0.00000831013690882898,
+  "pass": true
+}
