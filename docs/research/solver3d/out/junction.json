@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-24T04:23:52.216Z",
+  "fittedSurface": {
+    "stays": {
+      "maxSpeed": 1.3136335981433192e-15,
+      "awayAngle": 4.440892098500626e-16,
+      "awayState": 1.3322676295501878e-15,
+      "pass": true
+    },
+    "returns": {
+      "steps": 770,
+      "converged": true,
+      "awayAngle": 5.44286837822483e-13,
+      "awayState": 7.256417688950023e-13,
+      "pass": true
+    }
+  }
+}
