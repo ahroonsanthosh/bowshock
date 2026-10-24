@@ -302,14 +302,20 @@ it('solves the transonic family on this GPU at each TN 4233 row below indicated 
     await matchTest(engine, device);
     return;
   }
-  const matched = await exists(`${KIT}/match/gpu-M${MATCH_MACH.toFixed(3)}.json`);
-  const list = (await machs()).filter((m) => {
-    if (m < 1.078 && (m < 1 || m < NEAR_SONIC_LIMIT) && !matched && !SOFTWARE) {
-      void log(`M${m.toFixed(3)} REFUSED: the hardware match test has not passed on this checkout (MATCH=1 first; README.txt)`);
-      return false;
-    }
-    return true;
-  });
+  // (y) item 6 (h): no row below Mach 1.078 is solved on hardware unless the
+  // match file of this checkout records a passed test on hardware.
+  const matchFile = `${KIT}/match/gpu-M${MATCH_MACH.toFixed(3)}.json`;
+  let matched = false;
+  if (await exists(matchFile)) {
+    const m = JSON.parse(await commands.readFile(matchFile)) as { passed?: boolean; software?: boolean };
+    matched = m.passed === true && m.software !== true;
+  }
+  const all = await machs();
+  const list = all.filter((m) => m < FIRST_MACH && (matched || SOFTWARE));
+  if (list.length < all.length)
+    await log(
+      `${all.length - list.length} Mach number(s) REFUSED: the hardware match test has not passed on this checkout (MATCH=1 first; README.txt)`,
+    );
   await log(
     `Mach numbers (${list.length}): ${list.join(', ')}; finest r = ${FINEST}; out ${outDir}; Y_REVIEWED=${REVIEWED ? '1' : 'unset'}`,
   );

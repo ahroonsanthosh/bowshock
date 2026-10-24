@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  applyOrdering,
   CP_STATION_TOLERANCE,
   far800Contained,
   gridConvergenceScaled,
@@ -14,11 +15,13 @@ import {
   subsonicScale,
   totalPressureRatio,
   wallLossTolerance,
+  ZERO_DRAG_BAND_CAP,
   ZERO_DRAG_TOLERANCE,
   type RungInput,
   type RungLevel,
 } from '../../src/validation/subsonic-verification';
 import { domainAllowance, tailFactor } from '../../src/verification/domain-allowance';
+import { gridConvergence } from '../../src/verification/grid-convergence';
 
 // Synthetic families only: no solver value and no measured value (0014
 // 10.7 (y) is checked here before any subsonic grid is solved).
@@ -105,7 +108,7 @@ describe('the scale, the loss tolerance and the station tools', () => {
     });
   });
 
-  it('the shifted procedure gives the unshifted family’s band and extrapolation', () => {
+  it('the procedure on the scale S gives the family’s band and extrapolation, its noise acting on S', () => {
     // A second-order family converging to a near-zero value.
     const values = [1, 2, 4, 8].map((r) => 3e-5 + 4e-4 / r ** 2);
     const est = gridConvergenceScaled(values, 1e-7);
@@ -114,6 +117,21 @@ describe('the scale, the loss tolerance and the station tools', () => {
     expect(est.value).toBeCloseTo(values[3]!, 15);
     expect(est.extrapolated).toBeCloseTo(3e-5, 9);
     expect(est.uncertainty).toBeCloseTo((1.25 * (4e-4 / 16 - 4e-4 / 64)) / 3, 12);
+    // Changes of 1e-8 on a drag near 1e-4: measurable on the value (1e-7 x
+    // 1e-4 x 10 = 1e-10), too small on S (1e-7 x 0.01 x 10 = 1e-8).
+    const tiny = [1e-4 + 1.6e-8, 1e-4 + 8e-9, 1e-4 + 4e-9, 1e-4 + 2e-9];
+    expect(gridConvergence(tiny, { noise: 1e-7, orderTolerance: 0.5 }).kind).toBe('monotone');
+    expect(gridConvergenceScaled(tiny, 1e-7).kind).toBe('unresolved');
+    // S is max(|CD|, 0.01), not |CD| + 0.01: a drag of 0.05 keeps its own scale.
+    const big = [1, 2, 4, 8].map((r) => 0.05 + 4e-4 / r ** 2);
+    expect(gridConvergenceScaled(big, 1e-7)).toEqual(
+      gridConvergence(big, { noise: 1e-7, orderTolerance: 0.5, scale: 0.05 + 4e-4 }),
+    );
+  });
+
+  it('the loss tolerance carries p_inf / p_wall: at twice the pressure, half the loss', () => {
+    expect(wallLossTolerance(0.6, 2)).toBeCloseTo(wallLossTolerance(0.6, 1) / 2, 15);
+    expect(wallLossTolerance(0.9, 0.8)).toBeCloseTo(wallLossTolerance(0.9, 1) / 0.8, 15);
   });
 
   it('the station allowance is the drag’s allowance plus T times the deviation from a uniform shift', () => {
@@ -142,6 +160,8 @@ function rung(
   const far = domainAllowance([0.1 - 2e-5, 0.1, 0.1 + 4e-6], [100.6, 224.2, 408.7], 1e-7);
   const cyl = domainAllowance([0.1, 0.1 + 1e-9, 0.1 + 1e-9], [5, 10, 20], 1e-7);
   const stationFar = far.kind === 'refused' ? null : Array.from({ length: n }, () => far.allowance);
+  const stationCylinder =
+    cyl.kind === 'refused' ? null : Array.from({ length: n }, () => cyl.allowance);
   const { mach: machOf, ...rest } = over;
   return {
     mach: machOf,
@@ -149,6 +169,7 @@ function rung(
     farField: far,
     cylinder: cyl,
     stationFar,
+    stationCylinder,
     floor: null,
     linear: Array.from({ length: n }, (_, j) => 0.1 - 0.02 * j),
     ...rest,
@@ -174,7 +195,17 @@ describe('item 5: the rung verdicts', () => {
     );
   });
 
-  it('Mach 0.6 fails the exact check when the finest drag exceeds 2e-4 plus the band', () => {
+  it('Mach 0.6 fails the exact check just past 2e-4 plus the band, and passes just inside', () => {
+    // The band of this synthetic family does not depend on the limit, so
+    // it is read off a passing verdict and the limit set against it.
+    const probe = judgeRung(rung({ mach: 0.6, limit: 5e-5 }));
+    const band = probe.band! - probe.parts.floor;
+    const r8 = 4e-4 / 64;
+    const over = judgeRung(rung({ mach: 0.6, limit: ZERO_DRAG_TOLERANCE + band - r8 + 1e-8 }));
+    expect(Math.abs(over.value)).toBeGreaterThan(ZERO_DRAG_TOLERANCE + band);
+    expect(over.criteria.b.status).toBe('fail');
+    const under = judgeRung(rung({ mach: 0.6, limit: ZERO_DRAG_TOLERANCE + band - r8 - 1e-8 }));
+    expect(under.criteria.b.status).toBe('pass');
     const v = judgeRung(rung({ mach: 0.6, limit: 3e-3 }));
     expect(v.criteria.b.status).toBe('fail');
     expect(v.verdict).toBe('fail');
@@ -188,6 +219,54 @@ describe('item 5: the rung verdicts', () => {
     const w = judgeRung({ ...pocket, levels });
     expect(w.criteria.b.status).toBe('fail');
     expect(w.criteria.b.detail).toMatch(/bubble/);
+  });
+
+  it('Mach 0.6: a procedure band above the cap fails (b), since a pass could not show the error', () => {
+    const base = rung({ mach: 0.6, limit: 5e-5 });
+    // A first-order family with changes of 8e-4: the finest band 1.25 x 2e-4, above the cap.
+    const levels = base.levels.map((l) => ({ ...l, drag: 5e-5 + 1.6e-3 / l.refinement }));
+    const v = judgeRung({ ...base, levels });
+    expect(v.parts.grids!).toBeGreaterThan(ZERO_DRAG_BAND_CAP);
+    expect(v.criteria.b.status).toBe('fail');
+    expect(v.criteria.b.detail).toMatch(/cap/);
+  });
+
+  it('the station band carries the floor and the cylinder term: dropping either would pass a wide band', () => {
+    const base = rung({ mach: 0.8, limit: 1e-3, floor: 4.5e-4 });
+    const v = judgeRung(base);
+    // Grid and domain parts are tiny here; the floor alone takes the station band past 5e-4.
+    expect(v.stationBands.every((b) => b.band < 1e-4)).toBe(true);
+    expect(v.criteria.d.status).toBe('reported');
+    const noFloor = judgeRung({ ...base, floor: 1e-5 });
+    expect(noFloor.criteria.d.status).toBe('pass');
+    const wideCylinder = judgeRung({
+      ...base,
+      floor: 1e-5,
+      stationCylinder: base.stationCylinder!.map(() => 6e-4),
+    });
+    expect(wideCylinder.criteria.d.status).toBe('reported');
+    expect(judgeRung({ ...base, floor: 1e-5, stationCylinder: null }).criteria.d.status).toBe(
+      'fail',
+    );
+  });
+
+  it('a station whose changes do not shrink gets no band and fails (d)', () => {
+    const base = rung({ mach: 0.8, limit: 1e-3, floor: 1e-5 });
+    const levels = base.levels.map((l, k) => ({
+      ...l,
+      stationCp: l.stationCp.map((cp, j) => (j === 1 ? cp + 1e-2 * k : cp)),
+    }));
+    const v = judgeRung({ ...base, levels });
+    expect(v.stationBands[1]!.kind).toBe('not-shrinking');
+    expect(v.criteria.d.status).toBe('fail');
+  });
+
+  it('(e): a flat loss far below the tolerance needs no order; above it the order must be 0.8', () => {
+    const base = rung({ mach: 0.6, limit: 5e-5 });
+    const flatTiny = base.levels.map((l) => ({ ...l, loss: { ...l.loss, ahead: 1e-9 } }));
+    expect(judgeRung({ ...base, levels: flatTiny }).criteria.e.status).toBe('pass');
+    const flatBig = base.levels.map((l) => ({ ...l, loss: { ...l.loss, ahead: 5e-5 } }));
+    expect(judgeRung({ ...base, levels: flatBig }).criteria.e.status).toBe('fail');
   });
 
   it('a confidently negative drag fails the sign check', () => {
@@ -217,7 +296,7 @@ describe('item 5: the rung verdicts', () => {
     const base = rung({ mach: 0.6, limit: 5e-5 });
     const big = base.levels.map((l) => ({ ...l, loss: { ...l.loss, ahead: 2e-3 / l.refinement } }));
     expect(judgeRung({ ...base, levels: big }).criteria.e.status).toBe('fail');
-    const flat = base.levels.map((l) => ({ ...l, loss: { ...l.loss, ahead: 1e-6 } }));
+    const flat = base.levels.map((l) => ({ ...l, loss: { ...l.loss, ahead: 1e-5 } }));
     expect(judgeRung({ ...base, levels: flat }).criteria.e.status).toBe('fail');
   });
 
@@ -235,14 +314,32 @@ describe('item 5: the rung verdicts', () => {
     );
   });
 
-  it('R5: within the sum of the bands plus the margin passes; a wide code band is no reference', () => {
+  it('R5: within the procedure bands plus the margin passes; domain allowances do not enter; a wide or missing code band is no reference', () => {
     const base = rung({ mach: 0.901, limit: 2e-3, floor: 1e-5 });
     const v = judgeRung({ ...base, code: { drag: 2.3e-3, band: 2e-4, levels: 3 } });
     expect(v.criteria.r5.status).toBe('pass');
     const far = judgeRung({ ...base, code: { drag: 4e-3, band: 2e-4, levels: 3 } });
     expect(far.criteria.r5.status).toBe('fail');
+    // A gap inside the full band (with a large far-field allowance) but
+    // outside the procedure bands plus the margin fails: the codes share
+    // the domain.
+    const wideFar = {
+      ...base,
+      farField: {
+        kind: 'turning' as const,
+        allowance: 5e-3,
+        changes: [1e-3, 1e-4] as const,
+        measurability: 1e-9,
+      },
+      stationFar: base.stationFar!.map(() => 5e-3),
+    };
+    const g = judgeRung({ ...wideFar, code: { drag: 3.5e-3, band: 2e-4, levels: 3 } });
+    expect(g.band!).toBeGreaterThan(Math.abs(g.value - 3.5e-3));
+    expect(g.criteria.r5.status).toBe('fail');
     const wide = judgeRung({ ...base, code: { drag: 2e-3, band: 2e-3, levels: 3 } });
     expect(wide.criteria.r5.status).toBe('not-applicable');
+    const none = judgeRung({ ...base, code: { drag: Number.NaN, band: null, levels: 3 } });
+    expect(none.criteria.r5.status).toBe('not-applicable');
   });
 
   it('the ordering across rungs: the drag must not fall as Mach rises beyond the bands', () => {
@@ -259,6 +356,26 @@ describe('item 5: the rung verdicts', () => {
     ]);
     expect(bad.ok).toBe(false);
     expect(bad.violations).toHaveLength(2);
+    expect(bad.violations[0]!.machs).toEqual([0.6, 0.8]);
+    // The top rung: CD + band must lie below the Mach 1.0 estimate, so
+    // 0.090 with a band of 0.005 violates (0.095 is not below 0.0932).
+    const top = orderingCheck([{ mach: 0.991, drag: 0.09, band: 5e-3 }]);
+    expect(top.ok).toBe(false);
+    expect(top.violations[0]!.machs).toEqual([0.991]);
+    expect(orderingCheck([{ mach: 0.991, drag: 0.09, band: 2e-3 }]).ok).toBe(true);
+  });
+
+  it('applyOrdering fails the rungs a violation names, and leaves the others', () => {
+    const a = judgeRung(rung({ mach: 0.6, limit: 5e-5 }));
+    const b = judgeRung(rung({ mach: 0.8, limit: 3e-3, floor: a.floorSet }));
+    const c = judgeRung(rung({ mach: 0.901, limit: 2e-3, floor: a.floorSet }));
+    expect([a, b, c].map((v) => v.verdict)).toEqual(['pass', 'pass', 'pass']);
+    const judged = applyOrdering([a, b, c]);
+    expect(judged[0]!.verdict).toBe('pass');
+    expect(judged[1]!.verdict).toBe('fail');
+    expect(judged[2]!.verdict).toBe('fail');
+    expect(judged[1]!.criteria.c.status).toBe('fail');
+    expect(judged[1]!.criteria.c.detail).toMatch(/ordering/);
   });
 
   it('the 800-radius test: the moved family’s allowance must contain C(800) - C(224.2)', () => {

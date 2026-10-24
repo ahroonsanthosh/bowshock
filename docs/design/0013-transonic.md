@@ -2349,7 +2349,17 @@ the allowance rule is used only where the distance ratios do not shrink
 outward (the re-review of `dd6c423`, item 2), so on the moved family
 every allowance is the turning bound or refused; the Mach 1.0
 allowances once quoted as 5.12e-4 and 7.35e-4 become 5.55e-3 and
-5.75e-3 (nothing served changes: below 1.05 nothing is served).
+5.75e-3. This does change served bands (the review of 84474a6..69711ee,
+finding 1; `a608828`'s message "nothing served changes" was wrong): the
+served family's far boundary is 10 nose lengths for noses longer than 5
+calibers (`transonicDomains`), whose grids' own radii then shrink in
+ratio outward too (5.5 calibers: 55.1, 122.9, 224.2; 8: 82.3, 183.5,
+334.6; 10: 100.6, 224.2, 408.7), so a decaying far-field effect on such
+a nose now takes the wider turning bound (a 5.5-caliber nose at Mach 1.1
+with changes 1e-3 and 4e-4: 4.7e-3 instead of 6.7e-4). Wider, never
+narrower; the page's bands for long noses change by it, and that change
+needs its own review before it reaches main. The cone and the 3- and
+5-caliber ogives (far boundary 100 radii) are unchanged.
 
 ## Open
 

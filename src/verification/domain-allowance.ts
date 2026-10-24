@@ -109,12 +109,16 @@ export function powerLawRatio(d0: number, d1: number, d2: number, q = Q_FAST): n
 /**
  * The allowance from the drag on the smaller, the family's own and the
  * larger nested domain, at the domains' own distances (radii, or calibers
- * of cylinder), given the values' noise (relative, as the engine's).
+ * of cylinder), given the values' noise (relative, as the engine's) and
+ * the scale it is relative to (by default the largest |value|; below Mach
+ * 1 the scale S of 0014 10.7 (y), so that m does not collapse with a drag
+ * near zero).
  */
 export function domainAllowance(
   values: readonly [number, number, number],
   distances: readonly [number, number, number],
   noise: number,
+  scale = Math.max(...values.map(Math.abs)),
 ): DomainAllowance {
   if (!values.every(Number.isFinite)) throw new RangeError('the values must be finite');
   const [d0, d1, d2] = distances;
@@ -122,10 +126,11 @@ export function domainAllowance(
     throw new RangeError('the distances must be positive and increasing');
   }
   if (!(noise >= 0)) throw new RangeError('the noise must be at least 0');
+  if (!(scale >= 0)) throw new RangeError('the scale must be at least 0');
   const [smaller, own, larger] = values;
   const changes = [own - smaller, larger - own] as const;
   const [a, b] = changes;
-  const measurability = MEASURABILITY * noise * Math.max(...values.map(Math.abs));
+  const measurability = MEASURABILITY * noise * scale;
   const turning = Math.abs(b) + tailFactor(d1, d2) * Math.max(Math.abs(a), Math.abs(b));
   const allow = (kind: DomainAllowanceKind, allowance: number): DomainAllowance => ({
     kind,

@@ -2085,13 +2085,14 @@ without `Y_REVIEWED=1`, which asserts that).
      of at least 0.8. Otherwise the rung fails.
    - (f) The allowances: `domainAllowance` must not refuse the far field
      or the cylinder; a refusal fails the rung. The decaying branch is
-     used only where the distance ratios do not shrink outward (D2 / D1
-     > = D1 / D0), the pre-registered step of the re-review of `dd6c423`
-     > (0013, item 2), coded with this entry and tested on pure power laws
-     > of exponent 0.35 to 3 on every distance set the driver uses; on the
-     > moved family (ratios 2.23 then 1.82) every case is therefore the
-     > turning bound or refused. Reported, not pass or fail: the far-field
-     > changes' decay exponent at Mach 0.6 and 0.8, expected near 2 (a
+     used only where the distance ratios do not shrink outward (the outer
+     ratio D2 / D1 at least the inner D1 / D0), the pre-registered step of
+     the re-review of `dd6c423` (0013, item 2), coded with this entry and
+     tested on pure power laws of exponent 0.35 to 3 on every distance set
+     the driver uses; on the moved family (ratios 2.23 then 1.82) every
+     case is therefore the turning bound or refused. Reported, not pass
+     or fail: the far-field changes' decay exponent at Mach 0.6 and 0.8,
+     expected near 2 (a
      > source-like far field); below 1 it is flagged.
    - (g) R3 and R4: reported; a miss is investigated, never a pass or
      fail.
@@ -2198,6 +2199,76 @@ without `Y_REVIEWED=1`, which asserts that).
     machine. The settling scale S is a choice made now; it is recorded
     with every grid.
 15. _Not changed:_ every served number, B1, the page, (w)'s registered
-    text, every other band and test.
+    text, every other band and test. (Corrected by the revision below: the
+    distance condition of 6 (f) does change served bands for long noses.)
+
+_Revised 2026-10-24 after the independent review of 84474a6..69711ee,
+before any result (no subsonic or near-sonic value exists). Each change
+to the rules above, in the review's numbering:_
+
+1. _Item 15 was false._ The served family's far boundary is 10 nose
+   lengths for noses longer than 5 calibers (`transonicDomains`), so served
+   long noses have distance ratios that shrink outward too: the grids' own
+   radii are 55.1, 122.9, 224.2 for a 5.5-caliber nose, 82.3, 183.5, 334.6
+   for 8 calibers and 100.6, 224.2, 408.7 for 10 (served at Mach 1.05 and
+   above), and 122.9, 224.2, 499.3; 183.5, 334.6, 745.0; 224.2, 408.7,
+   910.0 for the same noses below 1.05. The distance condition of 6 (f)
+   therefore widens the far-field allowance of every served nose longer
+   than 5 calibers whose changes decay: a 5.5-caliber nose at Mach 1.1 with
+   a = 1e-3 and b = 4e-4 (rho 0.4) had 4e-4 / 0.6 = 6.7e-4 and now takes
+   the turning bound 4e-4 + 4.27 x 1e-3 = 4.7e-3. The direction is safe
+   (wider), and the page change needs its own review before it reaches
+   main. The power-law test now covers those served sets and the real
+   cylinder distances 5.5251, 10, 21.9986 calibers (`a608828`'s commit
+   message, "nothing served changes", is corrected here and in 0013).
+2. _The GPU match gates._ The kit unlocks only on a match file that
+   records `passed: true` on hardware (not on the file's existence, not on
+   a software run), and refuses every row below Mach 1.078 without it (6
+   (h) and item 1 said 1.078; the code said 1.05). The evaluation judges
+   nothing from a GPU run whose match did not pass.
+3. _Ordering, 6 (c)._ The top rung's condition is CD + band below 0.0932
+   (the whole band under the estimate; the code had it inverted), and a
+   violation fails every rung it names (`applyOrdering`), not only prints.
+4. _The measurability level below Mach 1_ is m = 2 nu S, not 2 nu max|C|:
+   `domainAllowance` and the procedure (`gridConvergence`) take the scale
+   S as an option, and the solves pass it below Mach 1.
+5. _The per-station band, 6 (d),_ adds the cylinder's (outlet's)
+   per-station allowance, formed as item 9 forms the far field's.
+6. _A station whose changes do not shrink has no band_ (0005): it fails 6
+   (d) for that rung; the independent code's levels likewise give no band
+   where they do not shrink (R5 then "not applicable").
+7. _R5 compares procedure bands only_ (both codes share the domain, so
+   the far-field and cylinder allowances do not enter the margin), and
+   the SU2 kit records whether each level stopped on its Cauchy criterion
+   or hit ITER: a level that hit ITER gives no value.
+8. _u_num is coded_ (`inviscidUncertainty` in `nose-model-form.ts`: the
+   largest station band of 6 (d) over the bias area, in the measure's
+   units), and a published floor (relative) never widens an absolute box.
+9. _S is max(|CD|, 0.01)_ everywhere (the procedure's scale option, not a
+   shift); the station noise is nu S; the near-sonic rows keep 0013's
+   floor of 7e-5 of the value (item 10).
+10. _6 (e)_ excludes the tip: the deviation is taken from the first
+    station (x/l 0.082) to x/l 0.9; and below 1e-6 of p0 on r = 8 the
+    order test is not required (`WALL_LOSS_ORDER_FLOOR`).
+11. _6 (b)_ caps the procedure's own band at Mach 0.6 at 2e-4
+    (`ZERO_DRAG_BAND_CAP`): above it the pass could not show the error is
+    at most the tolerance, so (b) fails.
+12. _The 800-radius test, item 8:_ the explicit steps run first under
+    their own cap of 2,000,000 steps (about 8 hours of one core on the
+    5,300-cell grid); the implicit steps at CFL 10 only after the explicit
+    steps fail to settle; a failure is written to its own file and never
+    blocks a retry; the grid asked for 800 radii has its first row at
+    910.0 radii (129 x 41 cells), and that is the distance recorded.
+13. _Item 9's m is counted twice_ (inside the drag's allowance and again
+    per station): on the safe side, left so. _6 (a)'s r = 16_ is solved by
+    the CPU script with `FINEST=16`, which extends a finished family from
+    its checkpoints.
+
+_Tests added for the errors the review planted:_ the floor and the
+cylinder term in the station band, p_inf / p_wall in the loss tolerance,
+the top rung's ordering condition, the zero-drag fail just past the
+limit, the band cap, the not-shrinking station, the loss order floor,
+R5 on procedure bands only, `applyOrdering`, the scale in the procedure
+and the allowance rule, the served long-nose distance sets.
 
 The next free letter is (z); (x) is reserved for the W6 probe.

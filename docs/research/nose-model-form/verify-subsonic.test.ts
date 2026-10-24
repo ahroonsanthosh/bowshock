@@ -24,7 +24,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, it } from 'vitest';
 import { TN4233_CONE_HALF_ANGLE } from '../../../src/validation/cone-cylinder-tn4233';
+import { TRANSONIC_DRAG_FLOOR } from '../../../src/analysis/transonic-drag';
 import {
+  applyOrdering,
   far800Contained,
   judgeRung,
   linearisedConeCylinderCp,
@@ -64,10 +66,11 @@ interface Far800 {
 
 interface Code {
   readonly mach: number;
-  /** The finest level's nose pressure drag on the base area and the family's band (su2/README.txt). */
-  readonly drag: number;
-  readonly band: number;
+  /** The finest level's nose pressure drag on the base area and the family's band (su2/README.txt); null where the levels give none or SU2 did not converge. */
+  readonly drag: number | null;
+  readonly band: number | null;
   readonly levels: number;
+  readonly converged?: boolean;
 }
 
 function readJson<T>(file: string): T | null {
@@ -97,8 +100,16 @@ function inputOf(solve: Solve, floor: number | null): RungInput | string {
     stationFar: far.stationAllowance,
     floor,
     linear: STATIONS_RADII.map((x) => linearisedConeCylinderCp(tau, L, solve.mach, x).cp),
-    code: readJson<Code>(join(here, 'su2', 'results', `M${solve.mach.toFixed(3)}.json`)) ?? undefined,
+    stationCylinder: solve.allowances.cylinder.stationAllowance,
+    code: codeOf(solve.mach),
   };
+}
+
+function codeOf(mach: number): RungInput['code'] {
+  const c = readJson<Code>(join(here, 'su2', 'results', `M${mach.toFixed(3)}.json`));
+  if (c === null) return undefined;
+  if (c.converged === false || c.drag === null) return { drag: Number.NaN, band: null, levels: c.levels };
+  return { drag: c.drag, band: c.band, levels: c.levels };
 }
 
 function lines(v: RungVerdict): string[] {
@@ -123,12 +134,22 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   ];
   const json: Record<string, unknown> = { solves: solvesDir };
   if (gpu) {
-    const match = readJson<{ passed: boolean }>(join(here, 'owner-kit', 'match', 'gpu-M0.800.json'));
+    const match = readJson<{ passed?: boolean; software?: boolean }>(
+      join(here, 'owner-kit', 'match', 'gpu-M0.800.json'),
+    );
+    const matched = match !== null && match.passed === true && match.software !== true;
     out.push(
-      `GPU match test (item 5 (h)): ${match === null ? 'NOT RUN: no GPU row counts' : match.passed ? 'passed' : 'FAILED: no GPU row counts'}`,
+      `GPU match test (item 6 (h)): ${match === null ? 'NOT RUN' : matched ? 'passed' : 'FAILED or on software'}${matched ? '' : ': no GPU row counts; nothing judged'}`,
       '',
     );
     json.match = match;
+    if (!matched) {
+      mkdirSync(join(here, 'out'), { recursive: true });
+      writeFileSync(join(here, 'out', 'verify-subsonic.out'), out.join('\n') + '\n');
+      writeFileSync(join(here, 'out', 'verify-subsonic.json'), JSON.stringify(json, null, 1) + '\n');
+      console.log(out.join('\n'));
+      return;
+    }
   }
 
   // The zero-drag rung first: it sets the floor.
@@ -159,9 +180,11 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   const ordering = orderingCheck(
     verdicts.filter((v) => v.band !== null).map((v) => ({ mach: v.mach, drag: v.value, band: v.band! })),
   );
+  const judged = applyOrdering(verdicts);
   out.push(
-    `ordering across rungs (item 5 (c)): ${ordering.ok ? 'pass' : 'FAIL'}`,
-    ...ordering.violations.map((s) => `  ${s}`),
+    `ordering across rungs (item 6 (c)): ${ordering.ok ? 'pass' : 'FAIL (the rungs named fail)'}`,
+    ...ordering.violations.map((x) => `  ${x.detail}`),
+    ...judged.filter((v, k) => v.verdict !== verdicts[k]!.verdict).map((v) => `  Mach ${v.mach.toFixed(3)} now: ${v.verdict.toUpperCase()}`),
     '',
   );
   if (skipped.length > 0) out.push('not judged:', ...skipped.map((s) => `  ${s}`), '');
@@ -201,7 +224,9 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   for (const file of existsSync(solvesDir) ? readdirSorted(solvesDir) : []) {
     const solve = readJson<Solve>(join(solvesDir, file))!;
     if (solve.mach >= 1.078) continue;
-    const input = inputOf(solve, solve.mach < 1 ? floor : 0);
+    // Near Mach 1 the floor is 0013's, 7e-5 of the value; below Mach 1 the absolute floor set above.
+    const finestDrag = solve.levels[solve.levels.length - 1]?.drag ?? 0;
+    const input = inputOf(solve, solve.mach < 1 ? floor : TRANSONIC_DRAG_FLOOR * Math.abs(finestDrag));
     if (typeof input === 'string') {
       out.push(`  Mach ${solve.mach.toFixed(3)}: ${input}`);
       rows[solve.mach] = { reason: input };
@@ -213,7 +238,12 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
     }
     const v = judgeRung(input);
     rows[solve.mach] = v;
-    const worst = Math.max(...v.stationBands.map((b, j) => b.band + (input.stationFar?.[j] ?? Infinity) + v.parts.floor));
+    const worst = Math.max(
+      ...v.stationBands.map(
+        (b, j) =>
+          b.band + (input.stationFar?.[j] ?? Infinity) + (input.stationCylinder?.[j] ?? Infinity) + v.parts.floor,
+      ),
+    );
     out.push(
       `  Mach ${solve.mach.toFixed(3)}: CD_r8 ${v.value.toExponential(5)}, band ${v.band?.toExponential(3) ?? 'none'} (${v.estimate.kind}; far ${input.farField.kind}), largest station band ${worst.toExponential(2)}; ${solve.mach < 1 ? `rung rules: ${v.verdict}` : `near-sonic: far-field allowance ${v.parts.farField?.toExponential(3) ?? 'refused'}${solve.mach < 1.05 ? ' (moved family; subject to the 800-radius test)' : ''}`}`,
     );
@@ -222,7 +252,7 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   writeFileSync(join(here, 'out', 'verify-subsonic.out'), out.join('\n') + '\n');
   writeFileSync(
     join(here, 'out', 'verify-subsonic.json'),
-    JSON.stringify({ ...json, floor, verdicts, ordering, far800, far800Pass, rows }, null, 1) + '\n',
+    JSON.stringify({ ...json, floor, verdicts: judged, ordering, far800, far800Pass, rows }, null, 1) + '\n',
   );
   console.log(out.join('\n'));
   expect(out.length).toBeGreaterThan(3);

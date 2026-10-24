@@ -72,6 +72,14 @@ export interface ConvergenceEstimateOptions {
    * forebody drag within about 1.3e-6 of the CPU's up to Mach 5, 2e-6.
    */
   readonly noise: number;
+  /**
+   * The value the noise is relative to: by default the largest |value| of
+   * the family. A quantity whose true value is near zero (the subsonic nose
+   * drag of 0014 10.7 (y)) gives the scale S it is measured on instead, so
+   * that the measurable level is MEASURABLE x noise x S, never collapsing
+   * with the value.
+   */
+  readonly scale?: number;
 }
 
 export type ConvergenceEstimate =
@@ -117,13 +125,21 @@ export function gridConvergence(
     return { kind: 'unresolved', value, reason: 'four grids are needed to confirm the order' };
   }
   const finest = values.slice(n - 3);
-  const fine = observedOrder(finest[0]!, finest[1]!, value, options.noise);
+  const scale = options.scale ?? Math.max(...values.map(Math.abs));
+  if (!(scale >= 0)) throw new RangeError('the scale must be at least 0');
+  const fine = observedOrder(finest[0]!, finest[1]!, value, options.noise, scale);
   if (fine === OSCILLATES) {
     return { kind: 'oscillatory', value, uncertainty: Math.max(...finest) - Math.min(...finest) };
   }
-  const coarse = observedOrder(values[n - 4]!, values[n - 3]!, values[n - 2]!, options.noise);
+  const coarse = observedOrder(
+    values[n - 4]!,
+    values[n - 3]!,
+    values[n - 2]!,
+    options.noise,
+    scale,
+  );
   if (fine === TOO_SMALL && typeof coarse === 'number') {
-    return withinNoise(values.slice(n - 4), coarse, options.noise);
+    return withinNoise(values.slice(n - 4), coarse, options.noise, scale);
   }
   for (const triple of [fine, coarse]) {
     if (typeof triple === 'string') return { kind: 'unresolved', value, reason: triple };
@@ -151,9 +167,9 @@ export function gridConvergence(
 const OSCILLATES = 'the values oscillate under refinement';
 const TOO_SMALL = 'the changes between grids are too small to measure';
 
-/** The largest change between grids that cannot be measured against the values' noise. */
-function unmeasurable(values: readonly number[], relativeNoise: number): number {
-  return MEASURABLE * relativeNoise * Math.max(...values.map(Math.abs));
+/** The largest change between grids that cannot be measured against the values' noise on the scale. */
+function unmeasurable(relativeNoise: number, scale: number): number {
+  return MEASURABLE * relativeNoise * scale;
 }
 
 /**
@@ -165,11 +181,12 @@ function withinNoise(
   values: readonly number[],
   coarseOrder: number,
   relativeNoise: number,
+  scale: number,
 ): ConvergenceEstimate {
   const value = values[3]!;
   const e21 = values[2]! - value;
   const predicted = (values[1]! - values[2]!) / RATIO ** coarseOrder;
-  if (!(Math.abs(e21 - predicted) <= unmeasurable(values, relativeNoise))) {
+  if (!(Math.abs(e21 - predicted) <= unmeasurable(relativeNoise, scale))) {
     return {
       kind: 'unresolved',
       value,
@@ -178,7 +195,7 @@ function withinNoise(
   }
   const gain = RATIO ** Math.min(coarseOrder, FORMAL_ORDER) - 1;
   // Each value is uncertain by its noise, so a change by twice that.
-  const noise = relativeNoise * Math.max(...values.map(Math.abs));
+  const noise = relativeNoise * scale;
   const bound = Math.max(Math.abs(e21), Math.abs(predicted)) + 2 * noise;
   return {
     kind: 'monotone',
@@ -195,12 +212,13 @@ function observedOrder(
   medium: number,
   fine: number,
   relativeNoise: number,
+  scale: number,
 ): number | string {
   const e21 = medium - fine;
   const e32 = coarse - medium;
   // Changes close to the values' own uncertainty carry no order (Celik et
   // al., step 3: the procedure fails when a change is close to zero).
-  const noise = unmeasurable([coarse, medium, fine], relativeNoise);
+  const noise = unmeasurable(relativeNoise, scale);
   if (Math.abs(e21) <= noise || Math.abs(e32) <= noise) return TOO_SMALL;
   if (e32 / e21 < 0) return OSCILLATES;
   if (Math.abs(e32 / e21) <= 1) return 'the changes do not shrink under refinement';

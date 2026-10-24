@@ -62,6 +62,19 @@ describe('grid convergence index (Celik et al., ratio 2)', () => {
     expect(longer.kind).toBe('monotone');
   });
 
+  it('the scale option: the noise acts on the scale given, not on the values', () => {
+    // Changes of 1e-8 on values near 1e-4 are measurable on the values
+    // (10 x 1e-7 x 1e-4) but not on a scale of 0.01 (10 x 1e-7 x 0.01).
+    const tiny = [1e-4 + 1.6e-8, 1e-4 + 8e-9, 1e-4 + 4e-9, 1e-4 + 2e-9];
+    expect(gridConvergence(tiny, { noise: 1e-7, orderTolerance: 0.5 }).kind).toBe('monotone');
+    expect(gridConvergence(tiny, { noise: 1e-7, orderTolerance: 0.5, scale: 0.01 }).kind).toBe(
+      'unresolved',
+    );
+    expect(() => gridConvergence(tiny, { noise: 1e-7, orderTolerance: 0.5, scale: -1 })).toThrow(
+      /scale/,
+    );
+  });
+
   it('bounds an oscillation by the range of the three finest values', () => {
     const estimate = gridConvergence([1, 1.1, 1.05, 1.07], options);
     expect(estimate.kind).toBe('oscillatory');

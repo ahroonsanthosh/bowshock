@@ -24,8 +24,9 @@ says when). Then, in this order, from the repository root:
      G3 test at Mach 1.1, repeated below Mach 1). On FAILED no subsonic or
      near-sonic row from this GPU counts; send the file.
 
-  3. The rows (the one command below, with Y_REVIEWED=1). Without a passed
-     match file the kit refuses every row below Mach 1.078 on hardware.
+  3. The rows (the one command below, with Y_REVIEWED=1). Without a match
+     file that records a PASSED test on hardware the kit refuses every row
+     below Mach 1.078 on hardware (every row it has).
 
   4. The independent code (R5), separately: docs/research/nose-model-form/su2/README.txt.
 

@@ -71,6 +71,7 @@ RUNGS = [0.901, 0.960, 0.991]
 LEVELS = 3
 STATIONS = [0.082, 0.183, 0.285, 0.385, 0.486, 0.589, 0.688, 0.79, 0.891, 0.942]  # x/l, TN 4233 orifices 1 to 10
 FREESTREAM = {'pressure': 101325.0, 'temperature': 288.15, 'gamma': 1.4, 'gas_constant': 287.058}
+ITER = 100000
 
 
 # ----------------------------------------------------------------------------- install
@@ -241,7 +242,7 @@ def write_config(mach, out):
         'LINEAR_SOLVER_PREC': 'ILU',
         'LINEAR_SOLVER_ERROR': '1e-6',
         'LINEAR_SOLVER_ITER': '10',
-        'ITER': '100000',
+        'ITER': f'{ITER}',
         'CONV_FIELD': 'DRAG',
         'CONV_CAUCHY_ELEMS': '500',
         'CONV_CAUCHY_EPS': '1e-9',
@@ -312,7 +313,8 @@ def band_of(values):
     if e21 * e32 < 0:
         return {'kind': 'oscillatory', 'band': max(values) - min(values)}
     if abs(e21) < 1e-12 or abs(e32) <= abs(e21):
-        return {'kind': 'not-shrinking', 'band': abs(e21) + abs(e32)}
+        # 0005: changes that do not shrink give no band.
+        return {'kind': 'not-shrinking', 'band': None}
     p = min(2.0, math.log2(abs(e32 / e21)))
     return {'kind': 'monotone', 'order': p, 'band': 1.25 * abs(e21) / (2 ** p - 1)}
 
@@ -322,6 +324,21 @@ def band_of(values):
 def machine():
     return {'system': platform.platform(), 'processor': platform.processor() or platform.machine(),
             'cores': os.cpu_count(), 'python': platform.python_version()}
+
+
+def converged_from_history(path, iters):
+    """Whether SU2 stopped on its Cauchy criterion: the last inner iteration well short of ITER. None if unreadable."""
+    if not path.exists():
+        return None
+    rows = path.read_text().splitlines()
+    if len(rows) < 2:
+        return None
+    head = [h.strip().strip('"') for h in rows[0].split(',')]
+    col = next((i for i, h in enumerate(head) if h in ('Inner_Iter', 'Iter', 'Time_Iter')), None)
+    if col is None:
+        return None
+    last = int(float(rows[-1].split(',')[col]))
+    return last < iters - 2
 
 
 def run_level(mach, level, threads, base, results):
@@ -349,15 +366,18 @@ def run_level(mach, level, threads, base, results):
     log_lines = (work / 'su2.log').read_text(errors='replace').splitlines()
     (dest / 'su2-log-head-tail.txt').write_text('\n'.join(log_lines[:60] + ['...'] + log_lines[-40:]) + '\n')
     pts = wall_pressure(work / 'surface_flow.csv', fs) if (work / 'surface_flow.csv').exists() else []
+    converged = converged_from_history(work / 'history.csv', ITER) if rc == 0 else False
+    # A level that hit ITER, or whose convergence cannot be read, gives no value.
+    usable = bool(pts) and converged is True
     result = {
         'mach': mach, 'level': level, 'returncode': rc, 'seconds': round(seconds, 1), 'cells': meta['cells'],
-        'mesh_sha256': sha256(work / 'mesh.su2'), 'freestream': fs,
-        'noseDrag': nose_drag(pts) if pts else None, 'stationCp': station_cp(pts) if pts else None,
+        'mesh_sha256': sha256(work / 'mesh.su2'), 'freestream': fs, 'converged': converged,
+        'noseDrag': nose_drag(pts) if usable else None, 'stationCp': station_cp(pts) if usable else None,
         'install': json.loads((WORK / 'install.json').read_text()), 'machine': machine(),
         'note': 'noseDrag and stationCp are computed here from surface_flow.csv (Cp against r^2 over the cone, base area 1), not from SU2 force conventions',
     }
     (dest / 'result.json').write_text(json.dumps(result, indent=2))
-    print(f'{tag} L{level}: return code {rc}, {seconds:.0f} s, nose drag {result["noseDrag"]}')
+    print(f'{tag} L{level}: return code {rc}, {seconds:.0f} s, converged {converged}, nose drag {result["noseDrag"]}')
     return result
 
 
@@ -365,7 +385,10 @@ def collect_rung(mach, levels, results):
     tag = f'M{mach:.3f}'
     drags = [lv['noseDrag'] for lv in levels]
     if any(d is None for d in drags) or len(drags) < LEVELS:
-        print(f'{tag}: incomplete, no rung file written')
+        out = {'mach': mach, 'code': f'SU2 {SU2_VERSION}, axisymmetric Euler', 'converged': False, 'drag': None, 'band': None,
+               'levels': len(levels), 'drags': drags, 'note': 'a level did not converge or gave no wall pressure: no value'}
+        (results / f'{tag}.json').write_text(json.dumps(out, indent=2))
+        print(f'{tag}: a level did not converge: no value (recorded)')
         return
     band = band_of(drags)
     stations = []
@@ -373,13 +396,14 @@ def collect_rung(mach, levels, results):
         stations.append(band_of([lv['stationCp'][j] for lv in levels]))
     out = {
         'mach': mach, 'code': f'SU2 {SU2_VERSION}, axisymmetric Euler, HLLC, MUSCL, Venkatakrishnan limiter',
+        'converged': True,
         'drag': drags[-1], 'band': band['band'], 'bandKind': band['kind'], 'levels': LEVELS, 'drags': drags,
         'cells': [lv['cells'] for lv in levels], 'stationCp': levels[-1]['stationCp'], 'stationBands': stations,
         'stations_x_over_l': STATIONS, 'domain': {'farRadii': FAR, 'cylinderCalibers': CYLINDER / 2},
         'install': levels[-1]['install'], 'machine': levels[-1]['machine'],
     }
     (results / f'{tag}.json').write_text(json.dumps(out, indent=2))
-    print(f'{tag}: drag {drags[-1]:.6f}, band {band["band"]:.2e} ({band["kind"]})')
+    print(f'{tag}: drag {drags[-1]:.6f}, band {band["band"]} ({band["kind"]})')
 
 
 def main():

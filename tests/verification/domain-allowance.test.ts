@@ -55,6 +55,36 @@ describe('domain allowance (design record 0013, "The allowance rule corrected fo
     }
   });
 
+  it('the served long noses: a decaying case on shrinking ratios now takes the turning bound (wider, the safe way)', () => {
+    // A 5.5-caliber nose's served family (55.1, 122.9, 224.2 radii): a =
+    // 1e-3, b = 4e-4 (rho 0.4) was 'decaying', 4e-4 / 0.6 = 6.7e-4; it is
+    // now 'turning', |b| + T |a| = 4e-4 + 4.27e-3 = 4.7e-3. Every served
+    // nose longer than 5 calibers is affected the same way: wider bands.
+    const long = [55.1, 122.94, 224.21] as const;
+    expect(ratiosNotShrinking(...long)).toBe(false);
+    const a = domainAllowance([0.05, 0.051, 0.0514], long, 1e-9);
+    expect(a.kind).toBe('turning');
+    if (a.kind === 'refused') return;
+    expect(a.allowance - a.measurability).toBeCloseTo(
+      4e-4 + tailFactor(long[1], long[2]) * 1e-3,
+      9,
+    );
+    expect(a.allowance).toBeGreaterThan(4.6e-3);
+    expect(a.allowance).toBeLessThan(4.8e-3);
+  });
+
+  it('the scale: m = 2 nu scale, so a near-zero drag with noise on S is not refused for its noise', () => {
+    // Pure noise about a drag near 1e-4, nu = 1e-7 on S = 0.01: the three
+    // values differ by 1e-9, which is below m = 2e-9 only on the scale S.
+    const values = [1e-4, 1e-4 + 1e-9, 1e-4 - 5e-10] as const;
+    const onValue = domainAllowance(values, family224, 1e-7);
+    const onScale = domainAllowance(values, family224, 1e-7, 0.01);
+    expect(onValue.kind).not.toBe('unmeasurable');
+    expect(onScale.kind).toBe('unmeasurable');
+    expect(onScale.measurability).toBeCloseTo(2e-9, 15);
+    expect(() => domainAllowance(values, family224, 1e-7, -1)).toThrow(/scale/);
+  });
+
   it('changes below the measurability level: the turning bound, never below m', () => {
     const noise = 1e-6;
     const values = [0.1, 0.1 + 1e-7, 0.1 - 5e-8] as const;
@@ -177,8 +207,24 @@ describe('domain allowance (design record 0013, "The allowance rule corrected fo
 
   it('a pure power law on every distance set the driver uses: the allowance is at least the true remainder', () => {
     // The pre-registered test of the re-review's item 2 (0014 10.7 (y)):
-    // exponents 0.35 to 3, each allowance at least C(inf) - C(D1).
-    for (const distances of [family100, family224, [5, 10, 20] as const]) {
+    // exponents 0.35 to 3, each allowance at least C(inf) - C(D1). The
+    // distance sets are the grids' own (transonicGrid): the cone's served
+    // and moved families, the served families of 5.5, 8 and 10 caliber
+    // noses (whose far boundary is 10 nose lengths, so their ratios shrink
+    // outward too: the revision of (y), finding 1), and the real cylinder
+    // distances 5.5251, 10, 21.9986 calibers.
+    const sets: readonly (readonly [number, number, number])[] = [
+      family100,
+      family224,
+      [55.1, 122.94, 224.21],
+      [82.32, 183.52, 334.61],
+      [100.61, 224.21, 408.75],
+      [122.94, 224.21, 499.3],
+      [183.52, 334.61, 744.99],
+      [224.21, 408.75, 909.99],
+      [5.5251, 10, 21.9986],
+    ];
+    for (const distances of sets) {
       for (const q of [0.35, 0.5, 0.8, 1, 1.35, 2, 3]) {
         const C = (d: number) => 1 - d ** -q;
         const [d0, d1, d2] = distances;

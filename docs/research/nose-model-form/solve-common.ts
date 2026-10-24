@@ -125,6 +125,7 @@ export async function solveGrid(
   tag: string,
   log: Log,
   checkPrecision = false,
+  maxSteps = MAX_STEPS,
 ): Promise<{ result: GridResult; conserved: Float64Array }> {
   const refinement = problem.options.refinement;
   const mach = problem.options.mach;
@@ -153,7 +154,7 @@ export async function solveGrid(
     let largestResidual = 0;
     let lastResidual = Number.NaN;
     let settled = false;
-    while (steps < MAX_STEPS) {
+    while (steps < maxSteps) {
       await solver.iterate(every);
       steps += every;
       if (checkPrecision && steps === every) await solver.checkPrecision();
@@ -184,7 +185,7 @@ export async function solveGrid(
         break;
       }
     }
-    if (!settled) throw new NotConverged(`the drag did not settle within ${MAX_STEPS} steps`);
+    if (!settled) throw new NotConverged(`the drag did not settle within ${maxSteps} steps`);
     let low = drag;
     let high = drag;
     for (let k = 0; k < WANDER_CHECKS; k++) {
@@ -253,7 +254,8 @@ export function gridRecords(problem: TransonicProblem, conserved: Float64Array):
   const supersonic = wallCells.filter((c) => c.mach > 1);
   const firstSupersonic = supersonic.length > 0 ? Math.min(...supersonic.map((c) => c.x)) : Infinity;
   const aheadLimit = Math.min(0.9 * L, firstSupersonic);
-  const ahead = wallCells.filter((c) => c.x < aheadLimit);
+  // From the first station (the tip's stagnation spike excluded, (y) item 6 (e)).
+  const ahead = wallCells.filter((c) => c.x >= STATIONS_RADII[0]! && c.x < aheadLimit);
   // The largest deviation of the wall's total pressure from the free
   // stream's, either way (a gain is as much an error as a loss), with its
   // sign recorded.
@@ -352,7 +354,9 @@ export async function solveAllowance(
     distanceOf(kind, largerProblem),
   ] as const;
   const noise = Math.max(smaller.result.noise, own.result.noise, larger.result.noise);
-  const result = domainAllowance(values, distances, noise);
+  // The noise is relative to the grids' scale (S below Mach 1), so m = 2 nu S there.
+  const scale = Math.max(...values.map((v) => thresholdScale(mach, v)));
+  const result = domainAllowance(values, distances, noise, scale);
   let stationAllowance: number[] | null = null;
   if (result.kind !== 'refused') {
     const T = tailFactor(distances[1], distances[2]);

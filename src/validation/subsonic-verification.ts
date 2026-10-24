@@ -70,6 +70,10 @@ export const CODE_WIDTH_LIMIT_ABSOLUTE = 5e-4;
 export const CODE_COMPARISON_MARGIN = 5e-4;
 /** Item 5 (c): CD(0.99) must lie below 0013's Mach 1.0 estimate by more than its band. */
 export const SONIC_DRAG_ESTIMATE = 0.0932;
+/** Item 6 (e): below this deviation of p0 on r = 8 the order test is not required (far below the tolerance). */
+export const WALL_LOSS_ORDER_FLOOR = 1e-6;
+/** Item 6 (b): the procedure's own band at Mach 0.6 must be at most the tolerance, or the pass shows nothing. */
+export const ZERO_DRAG_BAND_CAP = ZERO_DRAG_TOLERANCE;
 /** The subsonic absolute floor is this times the larger of |CD_r8| and |extrapolated| at the zero-drag rung. */
 export const FLOOR_FACTOR = 2;
 /** 0022's dated rule: rows at indicated Mach below this use the absolute measure. */
@@ -198,33 +202,27 @@ export function pointwiseBand(values: readonly number[], noise: number): Pointwi
 }
 
 /**
- * The procedure of 0005 on a family whose values may be near zero: the
- * values are shifted by SUBSONIC_SCALE so that the procedure's relative
- * noise acts on the scale S, and shifted back. The differences, orders and
- * bands are unchanged by the shift.
+ * The procedure of 0005 on a family whose values may be near zero: its
+ * relative noise acts on the scale S = max(largest |value|, SUBSONIC_SCALE)
+ * (the procedure's `scale` option), never on a value that collapses.
  */
 export function gridConvergenceScaled(
   values: readonly number[],
   noise: number,
-  shift = SUBSONIC_SCALE,
 ): ConvergenceEstimate {
-  const est = gridConvergence(
-    values.map((v) => v + shift),
-    { noise, orderTolerance: ORDER_TOLERANCE },
-  );
-  if (est.kind === 'monotone') {
-    return { ...est, value: est.value - shift, extrapolated: est.extrapolated - shift };
-  }
-  return { ...est, value: est.value - shift };
+  const scale = Math.max(...values.map(Math.abs), SUBSONIC_SCALE);
+  return gridConvergence(values, { noise, orderTolerance: ORDER_TOLERANCE, scale });
 }
 
 /**
- * Addendum item 5: the per-station Cp allowance for the far boundaries. A
- * uniform shift of Cp by d is exactly d in CD on the base area, so each
- * station takes the drag's allowance plus a non-uniformity term: T times
- * the station's deviation from the mean of the changes between the
- * family's own domain and the larger one (base grids), plus the
- * measurability level m.
+ * (y) item 9: the per-station Cp allowance of a domain (the far boundaries,
+ * and likewise the cylinder). A uniform shift of Cp by d is exactly d in
+ * CD on the base area, so each station takes the drag's allowance plus a
+ * non-uniformity term: T times the station's deviation from the mean of
+ * the changes between the family's own domain and the larger one (base
+ * grids), plus the measurability level m (so m is counted twice, once
+ * inside the drag's allowance and once here: on the safe side, noted in
+ * the revision of (y)).
  */
 export function stationCpAllowance(
   own: readonly number[],
@@ -242,7 +240,12 @@ export function stationCpAllowance(
 // ------------------------------------------------------------ the rungs
 
 export interface WallLoss {
-  /** Largest deviation of the wall's total pressure from the free stream's (fraction of p0, either way) ahead of x/l 0.9 and of any supersonic wall cell. */
+  /**
+   * Largest deviation of the wall's total pressure from the free stream's
+   * (fraction of p0, either way) on the cone from the first station (x/l
+   * 0.082, the tip's spike excluded) to x/l 0.9, and ahead of any
+   * supersonic wall cell.
+   */
   readonly ahead: number;
   /** That deviation with its sign: positive a loss, negative a gain. */
   readonly aheadSigned?: number;
@@ -273,13 +276,15 @@ export interface RungInput {
   readonly cylinder: DomainAllowance;
   /** The per-station far-field allowance (stationCpAllowance), or null if the rule refused. */
   readonly stationFar: readonly number[] | null;
+  /** The per-station cylinder (outlet) allowance, or null if the rule refused. */
+  readonly stationCylinder: readonly number[] | null;
   /** The subsonic absolute floor set at the zero-drag rung, or null at that rung. */
   readonly floor: number | null;
   /** R3 at the stations, for the level check. */
   readonly linear: readonly number[];
-  /** R5, if run: the independent code's finest value and its own band. */
+  /** R5, if run: the independent code's finest value and its own band (null where its levels give none). */
   readonly code?:
-    { readonly drag: number; readonly band: number; readonly levels: number } | undefined;
+    { readonly drag: number; readonly band: number | null; readonly levels: number } | undefined;
 }
 
 export type Criterion =
@@ -312,6 +317,7 @@ export function judgeRung(input: RungInput): RungVerdict {
   const finest = levels[levels.length - 1]!;
   const value = finest.drag;
   const noise = Math.max(...levels.map((l) => l.noise));
+  const scale = Math.max(...levels.map((l) => Math.abs(l.drag)), SUBSONIC_SCALE);
   const estimate = gridConvergenceScaled(
     levels.map((l) => l.drag),
     noise,
@@ -354,7 +360,12 @@ export function judgeRung(input: RungInput): RungVerdict {
       const pocket =
         finest.loss.supersonicCells > 0 &&
         finest.loss.behind >= POCKET_LOSS_RATIO * finest.loss.ahead;
-      if (miss <= limit) {
+      if (grids! > ZERO_DRAG_BAND_CAP) {
+        c_b = {
+          status: 'fail',
+          detail: `the procedure's band ${grids!.toExponential(2)} exceeds the cap ${ZERO_DRAG_BAND_CAP}: a pass could not show the error is at most the tolerance`,
+        };
+      } else if (miss <= limit) {
         floorSet = FLOOR_FACTOR * Math.max(miss, extrapolated);
         floor = floorSet;
         c_b = {
@@ -395,29 +406,39 @@ export function judgeRung(input: RungInput): RungVerdict {
     stationBands.push(
       pointwiseBand(
         three.map((l) => l.stationCp[j]!),
-        noise * SUBSONIC_SCALE,
+        noise * scale,
       ),
     );
   }
   const stationTotal = stationBands.map(
-    (b, j) => b.band + (input.stationFar === null ? Infinity : input.stationFar[j]!) + floor,
+    (b, j) =>
+      b.band +
+      (input.stationFar === null ? Infinity : input.stationFar[j]!) +
+      (input.stationCylinder === null ? Infinity : input.stationCylinder[j]!) +
+      floor,
   );
   const worst = Math.max(...stationTotal);
+  const notShrinking = stationBands.filter((b) => b.kind === 'not-shrinking').length;
   const c_d: Criterion =
-    worst <= CP_STATION_TOLERANCE
+    notShrinking > 0
       ? {
-          status: 'pass',
-          detail: `largest station band ${worst.toExponential(2)} within ${CP_STATION_TOLERANCE}`,
+          status: 'fail',
+          detail: `${notShrinking} station(s) whose changes do not shrink under refinement: no band (0005)`,
         }
-      : worst <= CP_STATION_LIMIT
+      : worst <= CP_STATION_TOLERANCE
         ? {
-            status: 'reported',
-            detail: `largest station band ${worst.toExponential(2)} above ${CP_STATION_TOLERANCE}: verified, band too wide for the use; it enters 0022 as u_num`,
+            status: 'pass',
+            detail: `largest station band ${worst.toExponential(2)} within ${CP_STATION_TOLERANCE}`,
           }
-        : {
-            status: 'fail',
-            detail: `largest station band ${worst.toExponential(2)} above ${CP_STATION_LIMIT}: the rows stay out`,
-          };
+        : worst <= CP_STATION_LIMIT
+          ? {
+              status: 'reported',
+              detail: `largest station band ${worst.toExponential(2)} above ${CP_STATION_TOLERANCE}: verified, band too wide for the use; it enters 0022 as u_num`,
+            }
+          : {
+              status: 'fail',
+              detail: `largest station band ${worst.toExponential(2)} above ${CP_STATION_LIMIT}: the rows stay out`,
+            };
 
   // (e) the wall loss and its order.
   const lossTol = wallLossTolerance(mach, finest.loss.pressureRatio);
@@ -425,7 +446,9 @@ export function judgeRung(input: RungInput): RungVerdict {
   const lossOrder =
     losses[1]! > 0 && losses[2]! > 0 ? Math.log2(losses[0]! / losses[1]!) : Infinity;
   const lossOrder2 = losses[2]! > 0 ? Math.log2(losses[1]! / losses[2]!) : Infinity;
-  const orderOk = Math.min(lossOrder, lossOrder2) >= WALL_LOSS_ORDER;
+  const orderOk =
+    finest.loss.ahead <= WALL_LOSS_ORDER_FLOOR ||
+    Math.min(lossOrder, lossOrder2) >= WALL_LOSS_ORDER;
   const c_e: Criterion =
     finest.loss.ahead <= lossTol && orderOk
       ? {
@@ -450,8 +473,10 @@ export function judgeRung(input: RungInput): RungVerdict {
   // R5, the independent code.
   if (input.code === undefined) {
     c_r5 = { status: 'not-applicable', detail: 'not run' };
-  } else if (fullBand === null) {
-    c_r5 = { status: 'fail', detail: 'no band to compare' };
+  } else if (input.code.band === null) {
+    c_r5 = { status: 'not-applicable', detail: 'the code’s levels give no band: not a reference' };
+  } else if (grids === null) {
+    c_r5 = { status: 'fail', detail: 'no procedure band to compare' };
   } else {
     const widthLimit = Math.max(
       CODE_WIDTH_LIMIT_ABSOLUTE,
@@ -463,8 +488,9 @@ export function judgeRung(input: RungInput): RungVerdict {
         detail: `the code’s band ${input.code.band.toExponential(2)} exceeds its width limit ${widthLimit.toExponential(2)}: not a reference`,
       };
     } else {
+      // Both codes share the domain, so only the procedure bands enter.
       const gap = Math.abs(value - input.code.drag);
-      const limit = fullBand + input.code.band + CODE_COMPARISON_MARGIN;
+      const limit = grids + input.code.band + CODE_COMPARISON_MARGIN;
       c_r5 =
         gap <= limit
           ? {
@@ -503,26 +529,55 @@ export function judgeRung(input: RungInput): RungVerdict {
  * the sum of its bands, and CD at the highest rung must lie below 0013's
  * Mach 1.0 estimate by more than its band.
  */
+export interface OrderingViolation {
+  readonly machs: readonly number[];
+  readonly detail: string;
+}
+
 export function orderingCheck(
   rungs: readonly { readonly mach: number; readonly drag: number; readonly band: number }[],
   sonic = SONIC_DRAG_ESTIMATE,
-): { readonly ok: boolean; readonly violations: readonly string[] } {
+): { readonly ok: boolean; readonly violations: readonly OrderingViolation[] } {
   const sorted = [...rungs].sort((a, b) => a.mach - b.mach);
-  const violations: string[] = [];
+  const violations: OrderingViolation[] = [];
   for (let k = 0; k + 1 < sorted.length; k++) {
     const lo = sorted[k]!;
     const hi = sorted[k + 1]!;
     if (hi.drag + hi.band + lo.band < lo.drag)
-      violations.push(
-        `CD(${hi.mach}) = ${hi.drag.toExponential(3)} lies below CD(${lo.mach}) = ${lo.drag.toExponential(3)} by more than the bands`,
-      );
+      violations.push({
+        machs: [lo.mach, hi.mach],
+        detail: `CD(${hi.mach}) = ${hi.drag.toExponential(3)} lies below CD(${lo.mach}) = ${lo.drag.toExponential(3)} by more than the bands`,
+      });
   }
   const top = sorted[sorted.length - 1];
-  if (top !== undefined && top.mach < 1 && top.drag - top.band >= sonic)
-    violations.push(
-      `CD(${top.mach}) = ${top.drag.toExponential(3)} is not below the Mach 1.0 estimate ${sonic} by more than its band`,
-    );
+  // CD + band must lie below the Mach 1.0 estimate: the whole band under it.
+  if (top !== undefined && top.mach < 1 && top.drag + top.band >= sonic)
+    violations.push({
+      machs: [top.mach],
+      detail: `CD(${top.mach}) + band = ${(top.drag + top.band).toExponential(3)} is not below the Mach 1.0 estimate ${sonic}`,
+    });
   return { ok: violations.length === 0, violations };
+}
+
+/** Item 6 (c): a violation fails every rung it names; the verdicts come back with (c) failed. */
+export function applyOrdering(verdicts: readonly RungVerdict[]): RungVerdict[] {
+  const check = orderingCheck(
+    verdicts
+      .filter((v) => v.band !== null)
+      .map((v) => ({ mach: v.mach, drag: v.value, band: v.band! })),
+  );
+  return verdicts.map((v) => {
+    const hits = check.violations.filter((x) => x.machs.some((m) => Math.abs(m - v.mach) < 1e-9));
+    if (hits.length === 0) return v;
+    return {
+      ...v,
+      criteria: {
+        ...v.criteria,
+        c: { status: 'fail', detail: `ordering: ${hits.map((h) => h.detail).join('; ')}` },
+      },
+      verdict: 'fail',
+    };
+  });
 }
 
 /**

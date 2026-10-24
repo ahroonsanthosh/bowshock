@@ -33,7 +33,9 @@
  * Progress goes to $LOG (one line per check). Run:
  *   ONLY=./blind-run-3-solve.test.ts npx vitest run --config docs/research/nose-model-form/vitest.config.ts
  * MACHS=1.064,1.062 limits the Mach numbers; FINEST=2 stops early (probes only:
- * written to ./out/blind-run-3/probe/ instead).
+ * written to ./out/blind-run-3/probe/ instead); FINEST=16 adds r = 16 to a
+ * finished family from its checkpoints, where (y) item 6 (a) asks for it
+ * (the unresolved case with the finer triple monotone), rewriting its file.
  */
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -59,7 +61,7 @@ import {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const FINEST = Number(process.env.FINEST ?? 8);
-const PROBE = FINEST !== 8;
+const PROBE = FINEST < 8;
 const outDir = join(here, 'out', 'blind-run-3', PROBE ? 'probe' : 'solves');
 const checkpoints = process.env.CHECKPOINTS ?? '';
 const reviewed = process.env.Y_REVIEWED === '1';
@@ -93,8 +95,13 @@ async function solveMach(mach: number): Promise<void> {
   const tag = `M${mach.toFixed(3)}`;
   const file = join(outDir, `${tag}.json`);
   if (existsSync(file)) {
-    log(`${tag} done before: skipped`);
-    return;
+    const done = JSON.parse(readFileSync(file, 'utf8')) as { finest?: number; converged?: boolean };
+    if ((done.finest ?? 0) >= FINEST || done.converged === false) {
+      log(`${tag} done before: skipped`);
+      return;
+    }
+    // (y) item 6 (a): r = 16 added once, from the family's checkpoints (FINEST=16).
+    log(`${tag} extended to r = ${FINEST} from its checkpoints`);
   }
   if (mach < NEAR_SONIC_LIMIT && !reviewed) {
     log(

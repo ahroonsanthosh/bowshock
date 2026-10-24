@@ -328,3 +328,40 @@ describe('0022 section 8 item 10: the absolute measure below Mach 1', () => {
     expect(noseBand(0.09, only, 0)).toEqual(noseBand(0.09, 0.1, 0));
   });
 });
+
+describe('0022 section 8 item 10 and (y) item 11: u_num, and floors stay in the ratio boxes', () => {
+  it('u_num = inviscidUncertainty x A_bias over D_inv (ratio) or in CD (absolute), added linearly', () => {
+    const base = coneCase({ readings: [{ label: 'x', stations: uniform(0.1) }] });
+    const r1 = 0.5 * (0.4 / 4);
+    const aBias = 1 - (r1 / 0.5) ** 2;
+    const ratio = evaluateCase({ ...base, inviscidUncertainty: 5e-4 });
+    const e = ratio.evaluations[0]!;
+    expect(e.uNum).toBeCloseTo((5e-4 * aBias) / e.inviscidDrag, 12);
+    expect(e.halfWidth).toBeCloseTo(Math.abs(e.r) + e.uMeas + e.uUnc + e.uNum, 14);
+    const abs = evaluateCase({
+      ...base,
+      mach: 0.8,
+      measure: 'absolute',
+      inviscidUncertainty: 5e-4,
+    });
+    expect(abs.evaluations[0]!.uNum).toBeCloseTo(5e-4 * aBias, 12);
+    expect(evaluateCase(base).evaluations[0]!.uNum).toBe(0);
+  });
+
+  it('a floor never widens an absolute box: units differ', () => {
+    const absBox: Box = {
+      id: 'a',
+      family: 'cone',
+      fineness: 4,
+      mach: 0.98,
+      reynolds: '',
+      seen: true,
+      measure: 'absolute',
+      halfWidth: 4e-3,
+      floor: 0.144,
+    };
+    const al = allowanceAt([absBox], 'cone', 4, 0.98)!;
+    expect(al.absolute).toBe(4e-3);
+    expect(al.halfWidth).toBe(0);
+  });
+});

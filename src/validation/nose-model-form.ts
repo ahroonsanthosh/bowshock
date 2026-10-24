@@ -65,6 +65,13 @@ export interface MeasuredCase {
   readonly inviscidCp: (x: number) => number;
   /** The report's stated uncertainty of each Cp (4.3 item 5). */
   readonly cpUncertainty: number;
+  /**
+   * The inviscid solution's own numerical band in Cp at the stations (the
+   * largest per-station band of 0014 10.7 (y) item 6 (d)), entering as the
+   * term u_num beside u_meas, over the same bias area (0022 section 8 item
+   * 10); 0 or absent where the solution is exact to far below e.
+   */
+  readonly inviscidUncertainty?: number;
   readonly readings: readonly Reading[];
   /** Seen before registration (0014 10.7 (w) item 3): widening only, never a test. */
   readonly seen: boolean;
@@ -107,6 +114,8 @@ export interface Evaluation {
   /** In the measure's units: relative to D_inv for 'ratio', CD for 'absolute'. */
   readonly uMeas: number;
   readonly uUnc: number;
+  /** u_num: the inviscid solution's numerical band over the bias area, in the measure's units. */
+  readonly uNum: number;
   /** |r| + u_meas + u_unc ('ratio'), or |d| + u_meas + u_unc ('absolute'), in the measure's units. */
   readonly halfWidth: number;
   /** The largest |Cp_meas - Cp_inv| over the stations. */
@@ -261,6 +270,7 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
       const over = measure === 'ratio' ? Math.abs(inviscidDrag) : 1;
       const uMeas = (c.cpUncertainty * biasArea) / over;
       const uUnc = ((1 - area) * largest) / over;
+      const uNum = ((c.inviscidUncertainty ?? 0) * biasArea) / over;
       evaluations.push({
         reading: reading.label,
         cps,
@@ -270,7 +280,8 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
         difference,
         uMeas,
         uUnc,
-        halfWidth: (measure === 'ratio' ? Math.abs(r) : Math.abs(difference)) + uMeas + uUnc,
+        uNum,
+        halfWidth: (measure === 'ratio' ? Math.abs(r) : Math.abs(difference)) + uMeas + uUnc + uNum,
         largestStationDifference: largest,
       });
     }
@@ -380,12 +391,14 @@ export function allowanceAt(
     (b) => boxContains(b, family, fineness, mach) && (b.halfWidth !== null || b.floor !== null),
   );
   if (inside.length === 0) return null;
+  // A published floor (section 5) is relative to the nose term, so it
+  // enters the ratio boxes only; an absolute box carries its half-width alone.
   const widest = (measure: Measure) =>
     Math.max(
       0,
       ...inside
         .filter((b) => b.measure === measure)
-        .map((b) => Math.max(b.halfWidth ?? 0, b.floor ?? 0)),
+        .map((b) => Math.max(b.halfWidth ?? 0, measure === 'ratio' ? (b.floor ?? 0) : 0)),
     );
   return {
     halfWidth: widest('ratio'),
