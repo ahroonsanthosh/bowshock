@@ -2437,7 +2437,7 @@ same faces); the absolute error is recorded beside it as data only and
 decides nothing. The blunt-edge path is stopped; the coordinator is
 taking independent advice and will rule. No criterion is changed here.
 
-### Revision 3g, 2026-10-24: the 3D solver frozen
+### Revision 3g, 2026-10-24 (commit fc38e67): the 3D solver frozen
 
 The owner's decision of 2026-10-24, on independent advice, relayed by the
 coordinator. The 3D solver is frozen: nothing here is built further, and
