@@ -515,6 +515,54 @@ export function distanceOf(kind: 'farField' | 'cylinder', problem: TransonicProb
  * stream, the rule on the three drags at the grids' own distances with the
  * largest noise, and the per-station far-field allowance.
  */
+/**
+ * Where a script keeps its allowance base grids across restarts
+ * (infrastructure, no rule): a finished grid by its key (its result and
+ * state, never re-solved), and a mid-grid checkpoint per path for the
+ * running one, so that a restart resumes exactly where it was, with
+ * item 18's path order and caps per grid. Null (the GPU kit) keeps nothing.
+ */
+export interface GridStore {
+  readonly done: (key: string) => { result: GridResult; conserved: Float64Array } | null;
+  readonly keep: (key: string, result: GridResult, conserved: Float64Array) => void;
+  readonly midFor: (key: string, path: SolvePath) => MidCheckpoint | null;
+  /** Called once a grid is kept: its mid states are no longer needed. */
+  readonly clearMid: (key: string) => void;
+}
+
+/** solveGridStably through a store: a kept grid comes back at once, a running one resumes from its path's mid state. */
+export async function solveGridKept(
+  store: GridStore | null,
+  key: string,
+  engine: TransonicEngine,
+  problem: TransonicProblem,
+  start: { problem: TransonicProblem; cells: TransonicCells; rate: number } | null,
+  tag: string,
+  log: Log,
+  fallback: FallbackEngines | null,
+): Promise<{ result: GridResult; conserved: Float64Array }> {
+  const kept = store?.done(key) ?? null;
+  if (kept !== null) {
+    await log(`${tag} kept from before: drag ${kept.result.drag} (${kept.result.path} steps, ${kept.result.steps} steps)`);
+    return kept;
+  }
+  const solved = await solveGridStably(
+    engine,
+    problem,
+    start,
+    tag,
+    log,
+    false,
+    fallback,
+    store === null ? () => null : (path) => store.midFor(key, path),
+  );
+  if (store !== null) {
+    store.keep(key, solved.result, solved.conserved);
+    store.clearMid(key);
+  }
+  return solved;
+}
+
 export async function solveAllowance(
   engine: TransonicEngine,
   mach: number,
@@ -523,6 +571,7 @@ export async function solveAllowance(
   tag: string,
   log: Log,
   fallback: FallbackEngines | null = null,
+  store: GridStore | null = null,
 ): Promise<AllowanceRecord> {
   const domains = transonicDomains(body, mach);
   const sizes = kind === 'farField' ? domains.farField : domains.cylinder;
@@ -530,22 +579,25 @@ export async function solveAllowance(
     kind === 'farField' ? { farField: size } : { cylinder: size };
   const smallerProblem = problemOf(mach, 1, nestedOf(sizes[0]));
   const largerProblem = problemOf(mach, 1, nestedOf(sizes[2]));
-  const smaller = await solveGridStably(
+  const keyOf = (size: number) => `M${mach.toFixed(3)}-${kind}-${size}`;
+  const smaller = await solveGridKept(
+    store,
+    keyOf(sizes[0]),
     engine,
     smallerProblem,
     null,
     `${tag} ${kind} ${sizes[0]}`,
     log,
-    false,
     fallback,
   );
-  const larger = await solveGridStably(
+  const larger = await solveGridKept(
+    store,
+    keyOf(sizes[2]),
     engine,
     largerProblem,
     null,
     `${tag} ${kind} ${sizes[2]}`,
     log,
-    false,
     fallback,
   );
   const smallerRecords = gridRecords(smallerProblem, smaller.conserved);

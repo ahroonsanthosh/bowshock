@@ -4,18 +4,25 @@ import { Euler2D } from '../../src/engine-cpu/euler2d';
 import { mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fileMidCheckpoint } from '../../docs/research/nose-model-form/mid-checkpoint';
+import {
+  fileGridStore,
+  fileMidCheckpoint,
+} from '../../docs/research/nose-model-form/mid-checkpoint';
 import {
   cpuFallback,
   explicitEngine,
   FALLBACK_CFL,
   fallbackPaths,
+  gridRecords,
+  solveAllowance,
   MAX_STEPS,
   MAX_STEPS_EXPLICIT,
   NotConverged,
   problemOf,
   solveGrid,
   solveGridStably,
+  type GridResult,
+  type GridStore,
   type MidCheckpoint,
   type MidState,
 } from '../../docs/research/nose-model-form/solve-common';
@@ -381,6 +388,130 @@ describe('(y) item 18: solveGridStably', () => {
     expect(seen[0]!.firstResidual).toBe(1e-2);
     expect(seen[0]!.steps).toBeGreaterThan(100);
   }, 120_000);
+
+  it('allowance base grids are kept: a restart re-solves nothing finished and resumes a running path', async () => {
+    // An in-memory GridStore standing for the file store.
+    const kept = new Map<string, { result: GridResult; conserved: Float64Array }>();
+    const mids = new Map<string, MidState>();
+    const store: GridStore = {
+      done: (key) => kept.get(key) ?? null,
+      keep: (key, result, conserved) => kept.set(key, { result, conserved }),
+      midFor: (key, path) => ({
+        everySeconds: 1e9,
+        load: () => mids.get(`${key}-${path}`) ?? null,
+        save: (st) => mids.set(`${key}-${path}`, st),
+      }),
+      clearMid: (key) => {
+        for (const k of [...mids.keys()]) if (k.startsWith(key)) mids.delete(k);
+      },
+    };
+    const ownProblem = problemOf(1.1, 1);
+    const ownSolve = await solveGrid(
+      engineOf({ limit: 0.1 }, { count: 0 }),
+      ownProblem,
+      null,
+      'own',
+      quiet,
+    );
+    const own = {
+      result: ownSolve.result,
+      records: gridRecords(ownProblem, ownSolve.conserved),
+      problem: ownProblem,
+    };
+    // First run: both base grids solved and kept, with their paths.
+    const implicit = { count: 0 };
+    const first = await solveAllowance(
+      engineOf({ limit: 0.1 }, implicit),
+      1.1,
+      'farField',
+      own,
+      't',
+      quiet,
+      null,
+      store,
+    );
+    expect(implicit.count).toBe(2);
+    expect([...kept.keys()].sort()).toEqual(['M1.100-farField-200', 'M1.100-farField-50']);
+    expect(first.grids[0].path).toBe('implicit');
+    // Second run (a restart): nothing is solved, the same values come back.
+    const again = { count: 0 };
+    const second = await solveAllowance(
+      engineOf({ limit: 0.1 }, again),
+      1.1,
+      'farField',
+      own,
+      't',
+      quiet,
+      null,
+      store,
+    );
+    expect(again.count).toBe(0);
+    expect(second.values).toEqual(first.values);
+    expect(second.result).toEqual(first.result);
+    // A restart while the larger grid's explicit path was running: the
+    // implicit path is not tried again, the explicit one resumes from its
+    // saved step count, and the kept grid records the explicit path.
+    kept.delete('M1.100-farField-200');
+    const largerProblem = problemOf(1.1, 1, { farField: 200 });
+    const holder = new Euler2D(largerProblem.config);
+    holder.setCellPrimitives(() => largerProblem.freeStream.state);
+    mids.set('M1.100-farField-200-explicit', {
+      conserved: holder.conserved(),
+      steps: 777,
+      firstResidual: 1e-2,
+      largestResidual: 1e-2,
+    });
+    const counts = [{ count: 0 }, { count: 0 }, { count: 0 }];
+    const third = await solveAllowance(
+      engineOf({ limit: 0.1, divergeAt: 400 }, counts[0]!),
+      1.1,
+      'farField',
+      own,
+      't',
+      quiet,
+      {
+        explicit: engineOf({ limit: 0.1 }, counts[1]!),
+        implicit10: engineOf({ limit: 0.1 }, counts[2]!),
+      },
+      store,
+    );
+    expect(counts.map((c) => c.count)).toEqual([0, 1, 0]);
+    expect(third.grids[2].path).toBe('explicit');
+    expect(third.grids[2].steps).toBeGreaterThan(777);
+    expect(kept.get('M1.100-farField-200')!.result.path).toBe('explicit');
+    expect([...mids.keys()].filter((k) => k.startsWith('M1.100-farField-200'))).toEqual([]);
+  }, 120_000);
+
+  it('the file grid store: kept grids and mid states round-trip; a half-kept grid is not kept', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'store-'));
+    const store = fileGridStore(dir);
+    expect(store.done('k')).toBeNull();
+    const result = {
+      refinement: 1,
+      ni: 2,
+      nj: 2,
+      drag: 0.1,
+      steps: 5,
+      seconds: 1,
+      noise: 1e-7,
+      rate: 0.9,
+      scale: 0.1,
+      path: 'explicit' as const,
+    };
+    store.keep('k', result, new Float64Array([1, 2]));
+    const back = store.done('k')!;
+    expect(back.result).toEqual(result);
+    expect([...back.conserved]).toEqual([1, 2]);
+    const mid = store.midFor('k', 'implicit10')!;
+    mid.save({ conserved: new Float64Array([3]), steps: 9, firstResidual: 1, largestResidual: 2 });
+    expect(mid.load()!.steps).toBe(9);
+    store.clearMid('k');
+    expect(mid.load()).toBeNull();
+    // The json alone (a crash between the two writes) is not a kept grid.
+    writeFileSync(join(dir, 'h.json'), JSON.stringify(result));
+    expect(store.done('h')).toBeNull();
+    expect(readdirSync(dir).sort()).toEqual(['h.json', 'k.bin', 'k.json']);
+  });
 
   it('the registered constants and the CPU fallback engines', () => {
     expect(MAX_STEPS_EXPLICIT).toBe(2_000_000);

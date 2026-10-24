@@ -59,7 +59,7 @@ import {
   type GridRecords,
   type GridResult,
 } from './solve-common';
-import { fileMidCheckpoint } from './mid-checkpoint';
+import { fileGridStore, fileMidCheckpoint } from './mid-checkpoint';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const FINEST = Number(process.env.FINEST ?? 8);
@@ -155,8 +155,11 @@ async function solveMach(mach: number): Promise<void> {
       if (r === 1) {
         // The allowances on base grids, right after the base grid, as the driver does.
         const own = { result: solved.result, records, problem };
-        const farField = await solveAllowance(engine, mach, 'farField', own, tag, log, fallback);
-        const cylinder = await solveAllowance(engine, mach, 'cylinder', own, tag, log, fallback);
+        // Every allowance base grid is kept in $CHECKPOINTS (finished: never
+        // re-solved; running: its mid state per path), so a restart resumes.
+        const store = checkpoints === '' ? null : fileGridStore(checkpoints);
+        const farField = await solveAllowance(engine, mach, 'farField', own, tag, log, fallback, store);
+        const cylinder = await solveAllowance(engine, mach, 'cylinder', own, tag, log, fallback, store);
         allowances = { farField, cylinder };
         for (const a of [farField, cylinder])
           log(

@@ -8,8 +8,8 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
-import type { MidCheckpoint } from './solve-common';
+import { dirname, join } from 'node:path';
+import type { GridResult, GridStore, MidCheckpoint, SolvePath } from './solve-common';
 
 export const MID_EVERY_SECONDS = Number(process.env.MID_EVERY_SECONDS ?? 900);
 
@@ -56,6 +56,41 @@ export function fileMidCheckpoint(path: string): MidCheckpoint & { readonly clea
     },
     clear: () => {
       for (const f of [file, meta]) if (existsSync(f)) unlinkSync(f);
+    },
+  };
+}
+
+const PATHS: readonly SolvePath[] = ['implicit', 'explicit', 'implicit10'];
+
+/**
+ * A file-based GridStore in `dir`: a kept grid is <key>.json (its result)
+ * and <key>.bin (its state), each written to a temporary name and renamed,
+ * the json last, so that both exist or the grid counts as not kept; a
+ * running grid's mid states are <key>-<path>-mid.* (fileMidCheckpoint).
+ */
+export function fileGridStore(dir: string): GridStore {
+  const at = (key: string) => join(dir, key);
+  return {
+    done: (key) => {
+      const base = at(key);
+      if (!existsSync(`${base}.json`) || !existsSync(`${base}.bin`)) return null;
+      const buf = readFileSync(`${base}.bin`);
+      return {
+        result: JSON.parse(readFileSync(`${base}.json`, 'utf8')) as GridResult,
+        conserved: new Float64Array(buf.buffer, buf.byteOffset, buf.byteLength / 8).slice(),
+      };
+    },
+    keep: (key, result, conserved) => {
+      mkdirSync(dir, { recursive: true });
+      const base = at(key);
+      writeFileSync(`${base}.bin.tmp`, Buffer.from(conserved.buffer));
+      renameSync(`${base}.bin.tmp`, `${base}.bin`);
+      writeFileSync(`${base}.json.tmp`, JSON.stringify(result));
+      renameSync(`${base}.json.tmp`, `${base}.json`);
+    },
+    midFor: (key, path) => fileMidCheckpoint(`${at(key)}-${path}`),
+    clearMid: (key) => {
+      for (const path of PATHS) fileMidCheckpoint(`${at(key)}-${path}`).clear();
     },
   };
 }
