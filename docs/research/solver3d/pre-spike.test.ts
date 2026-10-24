@@ -2,7 +2,7 @@
  * A sharp-only pre-spike: AN UNREGISTERED LOOK, not 0021 2.11's spike, and used for no criterion (the
  * coordinator's ruling of 2026-10-24). The sector generator (src/solver3d/sector-grid.ts) on the first 24
  * sharp-sectioned rockets of the refusal population (docs/research/refusals/population.ts: bevel-both,
- * bevel-LE square-TE, double wedge), at Mach 1.5, 2 and 3, on L0, with revision 3f's slab exemption and sweep
+ * bevel-LE square-TE, double wedge), at Mach 1.5, 2 and 3, on L0, with revision 3f's slab exemption (N_TIP = 32) and sweep
  * refusal. Stand-ins of a look: the envelope's slope is the tip's leading-wedge shock at the free-stream Mach
  * number (the local 2D flow is not solved), and the bow-shock refusal is not checked.
  *

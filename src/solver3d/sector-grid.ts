@@ -38,7 +38,7 @@ export const N_S = 4;
  * chord (1.5^l times as many on level l), are exempt from the aspect and size-ratio gates (2.4 weakened, bounded
  * by the tip allowance A_tip).
  */
-export const N_TIP = 24;
+export const N_TIP = 32;
 /** Revision 3f: root sweeps above this are refused until the bent columns are built. */
 export const MAX_SWEEP_DEG = 40;
 /** Cells next to the fin, the slab or block L are at most this many slab widths (2.4). */

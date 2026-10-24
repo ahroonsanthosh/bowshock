@@ -248,9 +248,10 @@ export function stretchedCount(
 }
 
 /**
- * A segment's nodes with end spacings (null: free): two-sided by Vinokur's stretching (stretchedNodes), one-sided
- * by geometric growth from the exact first cell to a plateau (clusteredNodes), so that a one-sided segment's
- * clustered end matches its neighbour's exactly.
+ * A segment's nodes with end spacings (null: free), by Vinokur's stretching (stretchedNodes), its asked end
+ * spacings corrected (a few fixed-point passes) so that the first and last cells are those asked for: smooth in
+ * the segment's length (rows of different lengths keep smooth column lines) and exact at the ends (neighbouring
+ * segments meet with matching cells).
  */
 export function segmentNodes(
   length: number,
@@ -258,10 +259,23 @@ export function segmentNodes(
   hStart: number | null,
   hEnd: number | null,
 ): number[] {
-  if (hStart !== null && hEnd !== null) return stretchedNodes(length, n, hStart, hEnd);
-  if (hStart === null && hEnd === null) return stretchedNodes(length, n, null, null);
-  const h = Math.min((hStart ?? hEnd)!, length / n);
-  return clusteredNodes(length, n, h, hStart !== null, hEnd !== null);
+  const mean = length / n;
+  const want0 = hStart === null ? null : Math.min(hStart, mean);
+  const want1 = hEnd === null ? null : Math.min(hEnd, mean);
+  let a0 = want0;
+  let a1 = want1;
+  let nodes = stretchedNodes(length, n, a0, a1);
+  for (let it = 0; it < 30; it++) {
+    const got0 = nodes[1]! - nodes[0]!;
+    const got1 = nodes[n]! - nodes[n - 1]!;
+    const off0 = want0 === null ? 0 : Math.abs(got0 / want0 - 1);
+    const off1 = want1 === null ? 0 : Math.abs(got1 / want1 - 1);
+    if (off0 < 1e-6 && off1 < 1e-6) break;
+    if (want0 !== null && a0 !== null) a0 = Math.min(mean, a0 * (want0 / got0));
+    if (want1 !== null && a1 !== null) a1 = Math.min(mean, a1 * (want1 / got1));
+    nodes = stretchedNodes(length, n, a0, a1);
+  }
+  return nodes;
 }
 
 /** The smallest count, a multiple of 8, for segmentNodes: growth at most GROWTH, cells at most `cap`. */
@@ -271,7 +285,15 @@ export function segmentCount(
   hEnd: number | null,
   cap: number,
 ): number {
-  if (hStart !== null && hEnd !== null) return stretchedCount(length, hStart, hEnd, cap);
-  if (hStart === null && hEnd === null) return stretchedCount(length, null, null, cap);
-  return countFor(length, (hStart ?? hEnd)!, hStart !== null, hEnd !== null, cap);
+  for (let n = 8; n < 100_000; n += 8) {
+    const nodes = segmentNodes(length, n, hStart, hEnd);
+    let ok = largestCell(nodes) <= cap * (1 + 1e-12);
+    for (let i = 2; ok && i < nodes.length; i++) {
+      const a = nodes[i - 1]! - nodes[i - 2]!;
+      const b = nodes[i]! - nodes[i - 1]!;
+      if (!(a > 0 && b > 0) || Math.max(a / b, b / a) > GROWTH * (1 + 1e-9)) ok = false;
+    }
+    if (ok) return n;
+  }
+  throw new RangeError('no count fits the segment');
 }
