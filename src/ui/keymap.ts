@@ -38,6 +38,14 @@ export interface KeyBinding<A extends string = string> {
   readonly label?: readonly string[];
   /** Act on the repeats of a held key (panning, zooming); otherwise only on the first press. */
   readonly repeat?: boolean;
+  /**
+   * Whether the binding acts now (by default always): a page with two
+   * views gives each its own keys, the same key acting on the view shown,
+   * so that no key ever does two things at once.
+   */
+  readonly when?: () => boolean;
+  /** The heading it is listed under in the help (by default the page's own keys, first). */
+  readonly group?: string;
 }
 
 /** Input types that take typed text. */
@@ -115,7 +123,9 @@ export function resolveKey<A extends string>(
   if (input.ctrlKey || input.metaKey || input.altKey) return null;
   if (usedByControl(target, input.key)) return null;
   const key = normalizeKey(input.key);
-  const binding = bindings.find((b) => b.keys.some((k) => normalizeKey(k) === key));
+  const binding = bindings.find(
+    (b) => b.when?.() !== false && b.keys.some((k) => normalizeKey(k) === key),
+  );
   if (binding === undefined) return null;
   if (input.repeat && binding.repeat !== true) return null;
   return binding;

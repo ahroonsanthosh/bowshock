@@ -22,7 +22,10 @@
   the page's numbers, labels and gate table with it (0010 section 11);
   the Basic Finner's validated claim suspended the same day, every total
   an estimate until the registered test of the corrected factor (section
-  4; 0010 section 11.7)
+  4; 0010 section 11.7); on 2026-10-22 that test, BRL Report 934's range
+  A, run and passed at conditions outside the class, and a narrow BRL
+  sub-class at exactly those conditions labelled validated, the class
+  still an estimate (sections 3 and 4; 0014 section 10.7 (q))
 - **Inputs:** [0010](0010-base-drag-and-total.md) section 7 (what may be
   claimed), section 4.2 (the gate) and section 10 (the round 5 audit),
   [0008](0008-total-drag.md) sections
@@ -122,13 +125,24 @@ total's headline show the same interval for the same shot: 0.5155 to
 0.7048 at DA95021308). Its caption says that the re-run is a recorded correction made
 after the residuals were known, not a new test.
 
+Beside it, since 2026-10-22, the BRL sub-class in words
+(`SUB_CLASS_DESCRIPTION`) and BRL Report 934's range A as run
+(`PUBLISHED_BRL934`, 0020 section 2): the seven rounds, each with its
+zero-yaw CD0, the modelled C_D and band (rounded outward, so 0.5189, not
+0020's 0.5188, at round 3263), the residual and the tolerance, held to
+the run's recorded output and to the page's own total at each round
+(`tests/app/brl934-sub-class.test.ts`), and a paragraph with the
+sensitivities beside the verdict.
+
 ## 3. The class rule
 
 0010 section 7 opens one claim class, the Basic Finner's; since
-2026-10-21 its validated claim is suspended (0010 section 11.7), and the
-class is kept for its next registered test, BRL Report 934's range A,
-which covers its Mach range at BRL's conditions (0014 section 10.6). The
-page
+2026-10-21 its validated claim is suspended (0010 section 11.7). The
+registered test of the corrected factor, BRL Report 934's range A, was
+run on 2026-10-22 and passed at conditions outside the class (0020), so
+the class stays suspended, and a narrow sub-class at the tested
+conditions is validated instead (below, "The BRL sub-class"; 0014 section
+10.7 (q)). The page
 decides in code whether a case lies in it (`basicFinnerClass`): the
 Basic Finner as transcribed (`src/validation/basic-finner.ts`), at the conditions the gate
 covered. What the gate did not test is outside. Every condition is listed
@@ -209,6 +223,47 @@ its limits are unchanged. In the standard atmosphere every altitude from
 4,896 m below sea level to the top served, 51 km', lies inside these
 temperatures.
 
+**The BRL sub-class** (`brl934SubClass`, `BRL934_SUB_CLASS`; 0014
+section 10.7 (q)), since 2026-10-22 the only cases labelled validated:
+BRL Report 934's range A as it was run (0020), every bound the run's and
+none wider. Disjoint from the class: its fin leading edges are sharp.
+
+| Condition                 | Inside                                                                             | Why                                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Shape                     | the class's, each dimension within 0.5%, except the fin leading edges              | the Basic Finner as transcribed; the trailing edge constant across the span, 0.32 cal^2 as run |
+| Fin leading edges         | sharp (radius 0); any rounded edge, DREV's 0.004 cal included, is outside          | 0014 section 10.6 item 3: sharp, from period drawings of the model                             |
+| Mach number               | 1.801 to 1.827, or 2.423 to 2.468                                                  | the rounds' Mach numbers                                                                       |
+| Reynolds number on length | 4.423e6 to 4.855e6 times the Mach number                                           | the run's range at every round (it depends only on the diameter and the air), rounded inward   |
+| Between the windows       | outside: Mach 1.827 to 2.423 was not tested, and nothing is interpolated across it | its rounds 3249, 3255 and 3256 were out by the admission rule                                  |
+| Static temperature        | 288 to 298 K                                                                       | the range's air as the run took it (0014 section 10.6 item 2)                                  |
+
+The Reynolds number per unit Mach number is the run's, 4.422072e6 to
+4.855414e6 over its four corners of diameter and air, the same at all
+seven rounds (`docs/research/base-and-total/runs/brl934-range-a.json`),
+rounded inward to four figures. As first written (a2e8211) the rule took
+boxes of Reynolds number over each window, 7.965e6 to 8.870e6 and
+1.072e7 to 1.198e7, whose corners lay up to 1.44% and 1.77% beyond any
+round's; the independent review found it, and the rule was corrected
+(0014 section 10.7 (q)). The Reynolds number and the temperature are
+checked apart, so the page accepts pairs the run never had (288 K at the
+lowest Reynolds number per unit Mach number); at a given Reynolds number
+the temperature moves the total by at most 9.4e-5 of its value from 293
+K to either end of 288 to 298 K at the windows' ends (so at most about
+2e-4 from one end to the other). The 0.5% tolerance on each dimension is
+the class's, for typing, and was not tested. A sharp Basic Finner
+outside the sub-class is an estimate whose reasons name both the
+class's conditions and the sub-class's.
+
+On the page's own path, with the run's nose (Taylor-Maccoll with the
+fitted solver's allowance), the total at each of the seven rounds, its
+model-form band and every component and input band equal the run's
+recorded values exactly; with the page's solve of the cone they should
+lie within about 4e-6 in C_D of them, a bound from 0006's measured
+agreement on cones, not a difference measured on the page (the 7e-5
+allowance alone is under 8e-6), below the fourth decimal shown (as for
+the class, below). The page's Basic Finner typed to six
+decimals moves them by 6e-9.
+
 **Not part of the rule:** the inputs (transition, wall temperature,
 roughness), which move no nominal value and are shown apart; and the
 nose term, which inside the class is the page's solve of the cone. The gate
@@ -222,61 +277,88 @@ nose term lies within its own band of the gate's, of order 1e-5 in C_D
 
 ## 4. The labels
 
-Every total is an estimate, not validated, since 2026-10-21: the Basic
-Finner's validated claim is suspended (0010 section 11.7). The
-fins-on-base factor was corrected after the gate (0010 section 11), a
-change to a term the gate tested, inside the class as well as above it
-(the body base by +0.0011, -0.0003 and -0.0004 in C_D at the three shots
-inside it), and by 0008 section 6.1 a term changed after a test is not
-validated by it. The class rule (section 3) is kept for the registered
-test of the corrected factor, BRL Report 934's range A (Mach 1.5 to 2.47,
-0014 section 10.5). That test covers the class's Mach range at BRL's
-conditions, not the whole class: BRL's Reynolds numbers (about 0.7 times
-DREV's, at or below the class's floor of 1.19e7) and its sharp leading
-edges lie outside it (0014 section 10.6). If it passes, the class is
-validated over what that range supports. Until then nothing on the page
-says validated: there is no validated claim in `src/app/total-drag.ts`,
-no green status in the display (`Tone` has none), and the headline of
-every total ends ": an estimate, not validated".
+Since 2026-10-22 one set of cases is labelled validated, the BRL
+sub-class (section 3; 0014 section 10.7 (q)); every other total is an
+estimate, not validated. From 2026-10-21 to then every total was an
+estimate: the Basic Finner's validated claim was suspended (0010 section
+11.7), because the fins-on-base factor was corrected after the gate (0010
+section 11), a change to a term the gate tested, inside the class as well
+as above it (the body base by +0.0011, -0.0003 and -0.0004 in C_D at the
+three shots inside it), and by 0008 section 6.1 a term changed after a
+test is not validated by it. The registered test of the corrected factor,
+BRL Report 934's range A, was then run once and passed (0020), but its
+rounds overlap the class in nothing: inside the class's Mach range they
+flew at Reynolds numbers of 7.96e6 to 8.87e6 on length, below its floor
+of 1.19e7, and with sharp fin leading edges. So the class stays an
+estimate, its reason revised, and the sub-class at the tested conditions
+is validated. The display has the "ok" tone again for that claim only;
+every other headline ends ": an estimate, not validated".
+On 2026-10-23 a rule that was only implicit was made explicit: no claim
+is stronger than an estimate when the nose term is not verified (its
+band measured from the grids but wider than the solver's tolerance), as
+the test's own exact Taylor-Maccoll nose was; inside the sub-class such
+a case is an estimate (`SUB_CLASS_UNVERIFIED_CLAIM`), and every
+estimate names it (`NOSE_UNVERIFIED_REASON`).
 
-- **Inside the class:** "Estimate, not validated: this case lies inside
-  the Basic Finner's class, whose total drag passed a hold-out test in
-  free flight (DREV TM 9703: 11 shots at Mach 1.80 to 2.97; design record
-  0010, section 4.2), but that claim is suspended: the fins-on-base factor
-  was corrected after the test (design record 0010, section 11), and a
-  term changed after a test is not validated by it (design record 0008,
-  section 6.1). The class is kept for its next registered test, BRL
-  Report 934's range A (Mach 1.5 to 2.47), which covers its Mach range, at
-  BRL's conditions (design record 0014, section 10.6)." Under "Not
-  validated because:", the reason: "the fins-on-base factor was corrected
-  after the Basic Finner gate (design record 0010, section 11), so by
-  design record 0008 section 6.1 the claim is suspended until the
-  registered test of the corrected factor, BRL Report 934's range A, is
-  run and passes"; then the gate's tolerance, as corrected ("The Basic Finner's test
-  was wide: with the corrected fins-on-base factor its tolerance is -20.0%
-  to -27.0% and +23.3% to +28.6% of the modelled total over the 11 shots
-  (-24.0% to -24.6% and +23.3% to +23.5% at the three inside the
-  class)."). Before the suspension the claim inside
-  the class was "Validated on the Basic Finner: ...", with the residuals,
-  the tolerance, the temperature sensitivity and, beside it, caveats on
-  the tolerance's width, the fin-edge terms' share (24% to 25%) and the
-  offset at Mach 2.97 (5.4% and 7.6% below the model at the second run,
-  2.6% and 4.8% after the correction); it is kept here as history and
-  shown nowhere.
-- **Outside it:** "Estimate, not validated: this case lies outside the
-  Basic Finner's class, the one class whose total drag has been tested
-  against free flight (its claim is suspended meanwhile; design record
-  0010, section 11.7). Each component is inside the domain of its own
-  band, so the total is computed, but no total-drag measurement tests
-  this configuration or condition, and the component bands are estimates
-  here." With every condition of section 3 the case fails, and the gate's
-  tolerance. Above Mach 2.15 the reason is "Mach M is outside 1.799 to
-  2.15 (above Mach 2.15 the gate tested a fins-on-base factor read from
-  one of Love's estimates in TN 3819 fig. 35, not from its free-flight
-  curve; the factor corrected since has no hold-out there)"; above 2.56,
-  also "the body base's fins-on-base factor is bounded, not measured,
-  above Mach 2.56, where the free-flight curve of TN 3819 fig. 35 ends"
-  (0014 section 10.2: the claim names the bounded component).
+- **Inside the BRL sub-class** (`VALIDATED_CLAIM`): "Validated: this case
+  lies inside the Basic Finner's narrow sub-class at the conditions of BRL
+  Report 934's range A, where this model was tested once, against seven
+  rounds in free flight, and passed (design records 0020 and 0014,
+  section 10.7 (q)). Measured over modelled was +3.9% to +11.0%: the
+  model reads low at every round (mean +7.3%), inside tolerances of
+  +-25% to +-28%. That tolerance is wide, so the pass alone says little (design
+  record 0008, section 6.3)." Beside it, two caveats: the models'
+  diameter, the range's air and the fins' trailing-edge area at the test
+  were assumed, not printed in the report (0014 section 10.6), and with
+  the trailing-edge area halved, the run's largest sensitivity, the
+  residuals rise to +14.5% to +22.3%; and DREV's rounded fin leading edge
+  (0.004 cal) was refused in the run at the five rounds at Mach 1.80 to
+  1.83 and at Mach 2.42 and 2.47 lowers the residuals to -1.1% and -4.2%,
+  a sensitivity, not a verdict. The
+  headline ends ": validated, on one test (BRL Report 934's range A)". The
+  full list, each round with its residual and tolerance and the other
+  sensitivities, is in the page's details (section 2) and in 0020.
+- **Inside the class** (`CLASS_CLAIM`): an estimate, not validated: the
+  case lies inside the Basic Finner's class, whose total drag passed a
+  hold-out test in free flight (DREV TM 9703), but that claim is
+  suspended, since the fins-on-base factor was corrected after it; the
+  corrected factor has since passed its registered test, BRL Report 934's
+  range A, but at conditions outside this class, so that test does not
+  validate it. Under "Not validated because:", the reason
+  (`SUSPENDED_REASON`), which until 2026-10-22 ended "until the registered
+  test of the corrected factor, BRL Report 934's range A, is run and
+  passes" and now says that the test has been run and passed, at
+  conditions outside the class (inside its Mach range at Reynolds numbers
+  of 7.96e6 to 8.87e6, below its 1.19e7, with sharp fin leading edges, not
+  its 0.004 cal), that nothing has tested the corrected factor inside the
+  class, and that the test validates only the sub-class; then the gate's
+  tolerance, as corrected ("The Basic Finner's test was wide: with the
+  corrected fins-on-base factor its tolerance is -20.0% to -27.0% and
+  +23.3% to +28.6% of the modelled total over the 11 shots (-24.0% to
+  -24.6% and +23.3% to +23.5% at the three inside the class)."). Before
+  the suspension the claim inside the class was "Validated on the Basic
+  Finner: ...", with the residuals, the tolerance, the temperature
+  sensitivity and, beside it, caveats on the tolerance's width, the
+  fin-edge terms' share (24% to 25%) and the offset at Mach 2.97 (5.4% and
+  7.6% below the model at the second run, 2.6% and 4.8% after the
+  correction); it is kept here as history and shown nowhere.
+- **Outside both** (`ESTIMATE_CLAIM`): "Estimate, not validated: this case
+  lies outside the Basic Finner's class (whose validated claim is
+  suspended; design record 0010, section 11.7) and outside its narrow
+  validated sub-class at the conditions of BRL Report 934's range A
+  (design record 0014, section 10.7 (q)). Each component is inside the
+  domain of its own band, so the total is computed, but no total-drag
+  measurement tests this configuration or condition, and the component
+  bands are estimates here." With every condition of section 3's class
+  the case fails, and, for a Basic Finner with sharp fin leading edges,
+  every condition of the sub-class it fails too (`outsideReasons`), and
+  the gate's tolerance. Above Mach 2.15 the reason is "Mach M is outside
+  1.799 to 2.15 (above Mach 2.15 the gate tested a fins-on-base factor
+  read from one of Love's estimates in TN 3819 fig. 35, not from its
+  free-flight curve; the factor corrected since has no hold-out there)";
+  above 2.56, also "the body base's fins-on-base factor is bounded, not
+  measured, above Mach 2.56, where the free-flight curve of TN 3819 fig.
+  35 ends" (0014 section 10.2: the claim names the bounded component).
 - **Refused:** no number, every reason.
 - **The components**, the nose as the page labels its solve, "solved on
   this page: the inviscid forebody pressure drag, bow shock fitted, finest
@@ -391,6 +473,17 @@ shots at Mach 1.06 to 1.33 are refused, as in the gate.
   claim, with its reasons, and no total shown as validated at Mach 1.8,
   2.0, 2.15, 2.3 or 2.9); the gate as published, corrected, with the
   second run beside it.
+- `tests/app/brl934-sub-class.test.ts`: the BRL sub-class (0014 section
+  10.7 (q)): its bounds held to the run's recorded output; inside at every
+  corner of both windows and both ends of the air, outside just beyond
+  each bound, in the gap and at the other window's Reynolds number; the
+  shape within 0.5%, any rounded edge outside; disjoint from the class;
+  validated inside, with the label's plain words; sharp against rounded
+  at each round (rounded refused at Mach 1.801 to 1.803, an estimate at
+  the other four); the class's values unchanged, an estimate, its reason
+  revised; the page's total at each of the seven rounds equal to the
+  run's, with every band, component and input; the published table; the
+  display in the "ok" tone, the pending texts, and the details.
 - `tests/app/band.test.ts`: intervals rounded outward, never inward.
 - `tests/atmosphere/us-standard-1976.test.ts` and
   `tests/app/flight-condition.test.ts`: the standard atmosphere against

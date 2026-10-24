@@ -4,14 +4,17 @@
   additions to `src/fins/`); the total is on the drag page since
   [0011](0011-total-drag-on-the-page.md), labelled by section 7 (every
   total an estimate, not validated, since 2026-10-21: the claim is
-  suspended, section 11.7). Steps B3, B4's
+  suspended, section 11.7; since 2026-10-22 a narrow sub-class at BRL
+  Report 934's conditions is validated, the class still suspended,
+  section 11.7 and 0014 section 10.7 (q)). Steps B3, B4's
   rounded-edge term and B5 of [0008](0008-total-drag.md), whose rules
   (section 6.1) govern everything here.
 - **Date:** 2026-10-19; revised 2026-10-20 after the round 5 audit
   (section 10); the class narrowed to Mach 1.8 to 2.15 on 2026-10-20 and
   the fins-on-base factor corrected to TN 3819 fig. 35's free-flight curve
   on 2026-10-21 (section 11), and the validated claim suspended the same
-  day (section 11.7)
+  day (section 11.7); BRL Report 934's range A run and a narrow sub-class
+  validated on 2026-10-22 (section 11.7)
 - **Inputs:** 0008 sections 3, 4.1, 6.1 to 6.4 and its data files
   (`docs/research/total-drag/data/`: `love_tn3819_fig18.csv`,
   `love_fig35_tn3819.csv`, `love_fig35_factor.csv`,
@@ -52,9 +55,12 @@ above its end, and the gate re-run as a recorded correction, not a
 validation (residuals -5.1% to +7.5%, mean -0.4%; every shot inside its
 tolerance). Because the correction changes a tested term, inside the
 class too (by +0.0011 to -0.0004 in C_D at its three shots), the
-validated claim is suspended by 0008 section 6.1: every total is an
-estimate, not validated, until BRL Report 934's range A, registered as
-the test of the corrected factor, is run and passes (section 11.7).
+validated claim is suspended by 0008 section 6.1. BRL Report 934's range
+A, registered as the test of the corrected factor, was run on 2026-10-22
+and passed, but at conditions outside the class (lower Reynolds numbers,
+sharp fin leading edges): the class stays an estimate, not validated, and
+a narrow sub-class at exactly the tested conditions is validated instead
+(section 11.7; 0014 section 10.7 (q)).
 
 ## 1. B3: base drag (`src/base/`)
 
@@ -884,11 +890,12 @@ and the configuration then has no hold-out.
 
 **Suspended since 2026-10-21 (section 11.7).** The fins-on-base factor
 was corrected after the gate (section 11), a change to a tested term, so
-by 0008 section 6.1 nothing below may be claimed as validated until BRL
-Report 934's range A tests the corrected factor; the class is kept for
-that test, which covers its Mach range at BRL's conditions (0014 section
-10.6). The section stands as the claim the second
-run opened:
+by 0008 section 6.1 nothing below may be claimed as validated. BRL Report
+934's range A, the registered test of the corrected factor, passed on
+2026-10-22 at conditions outside this class, so the class stays
+suspended; only a narrow sub-class at the tested conditions is validated
+(section 11.7; 0014 section 10.7 (q)). The section stands as the claim the
+second run opened:
 
 The gate has passed at every shot (section 4.2), so 0008 section 6.4's
 claim class opens, and no more:
@@ -1492,7 +1499,7 @@ first recorded, the signs swapped; corrected 2026-10-21 with section
 -6.5%. The offset at M 2.97, -6.5% at the second run, is -3.7% after the
 correction, which was not aimed at it: it follows from the figure.
 
-### 11.7 What may be claimed after the correction: nothing validated
+### 11.7 What may be claimed after the correction: nothing validated, then a narrow sub-class
 
 **The validated claim is suspended.** Decided by the owner on 2026-10-21,
 by the rule of 0008 section 6.1: the hold-out is used, and "any later
@@ -1504,6 +1511,30 @@ everywhere until a held-back set tests the corrected factor. Nothing on
 the page or in the library is labelled validated meanwhile (the claim
 inside the class carries the reason; `src/app/total-drag.ts` has no
 validated claim to show).
+
+**Since 2026-10-22: range A run, the class still suspended, a narrow
+sub-class validated** (0014 section 10.7 (q); the run, 0020). Range A was
+run once as registered and the present model passed at all seven rounds
+it serves: measured over modelled +3.9% to +11.0% (mean +7.3%, the model
+low at every round), inside tolerances of +-25% to +-28%. It overlaps the
+class in nothing: inside the class's Mach range its rounds flew at
+Reynolds numbers of 7.96e6 to 8.87e6 on length, below the floor of
+1.19e7, and every round was run with sharp fin leading edges, where the
+class has DREV's 0.004 cal. So the class stays "an estimate, not
+validated" (its values unchanged); its reason now says that the test was
+run and passed at conditions outside it, so nothing has tested the
+corrected factor inside it. By the owner's decision a new, narrow
+sub-class is validated at exactly the tested conditions, and is the only
+total labelled validated: the Basic Finner as transcribed, each dimension
+within 0.5%, with sharp fin leading edges; Mach 1.801 to 1.827 or 2.423 to 2.468 (nothing between), with the Reynolds number on length 4.423e6 to 4.855e6 times the Mach number (the run's range at every round, from the diameter and the air); 288 to 298 K
+(`brl934SubClass` in `src/app/total-drag.ts`). Its label says the test
+was made once, that the model reads low at every round, that the
+tolerance is wide, that the diameter, air and trailing-edge area at the
+test were assumed (0014 section 10.6), that halving the trailing-edge
+area raises the residuals to +14.5% to +22.3%, and that DREV's rounded
+edge was refused at the five rounds at Mach 1.80 to 1.83 and lowers the
+residuals at Mach 2.42 and 2.47 to -1.1% and -4.2%, a sensitivity. The rebuilt factor (W1) was refused at every round and has
+no hold-out.
 
 - **What moved inside the class, and why.** Below M 2.15 the superseded
   readings followed the free-flight curve too, but the corrected factor
@@ -1540,7 +1571,10 @@ validated claim to show).
   suspended. Above the class the total falls by 0.7% to 1.0% at M 2.35
   to 2.41 and by 2.6% to 3.0% at M 2.66 to 2.97 (section 11.6).
 
-- **The class is kept for the registered test:** Mach 1.799 to 2.15
+- **The class is kept for the registered test** (as written on
+  2026-10-21; that test has since run and covers nothing inside the
+  class, so the class is kept for a test that covers it, none registered,
+  0014 section 10.7 (q)): Mach 1.799 to 2.15
   with its other limits (0011 section 3). That test covers its Mach range
   at BRL's conditions, not the whole class: BRL's Reynolds numbers (about
   0.7 times DREV's, at or below the class's floor of 1.19e7) and its sharp
@@ -1559,7 +1593,10 @@ validated claim to show).
   If it passes, the class is validated over what that range supports; if
   it fails, the claim is withdrawn (0014 section 10.3). It covers 2.15 to
   2.47 beyond the class; no registered range of the Basic Finner covers
-  2.47 to 2.56. Not run.
+  2.47 to 2.56. Not run (as written on 2026-10-21). Run on 2026-10-22: it
+  passed, but supports nothing inside the class, so the class stays
+  suspended and the sub-class above is validated instead (0014 section
+  10.7 (q)). No other registered test covers the class.
 - **History, kept.** The second run (section 4.2) passed at all 11 shots
   and opened the class; round 5 re-derived its tolerances (section 10);
   the correction's re-run (section 11.6) is recorded beside both. At M
@@ -1567,8 +1604,8 @@ validated claim to show).
   shots (mean +1.5%), inside the tolerance, as the second run's -0.9% to
   +3.2% did: a comparison made after the residuals were known, labelled
   so, and not evidence for any claim.
-- **Served:** the Basic Finner everywhere as "estimate, not validated",
-  with the corrected band, never refused (tests at M 1.8, 2.0 and 2.15
+- **Served:** the Basic Finner, outside the BRL sub-class, as "estimate,
+  not validated", with the corrected band, never refused (tests at M 1.8, 2.0 and 2.15
   inside the class and 2.3, 2.5 and 2.9 above it, in
   `tests/app/total-drag.test.ts`, `tests/app/total-drag-display.test.ts`
   and `tests/gpu/nose-drag-page.test.ts`); above M 2.56 its claim also

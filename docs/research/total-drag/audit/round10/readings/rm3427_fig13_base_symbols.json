@@ -1,0 +1,876 @@
+[
+ {
+  "id": "h6-01",
+  "type": "circ",
+  "approx": [
+   867.5,
+   1837
+  ],
+  "score": 0.616,
+  "fit_px": [
+   869.5,
+   1838.5
+  ],
+  "note": "",
+  "centre_px": [
+   868.5,
+   1838.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.637,
+  "x": 0.20082712603095787,
+  "y": -0.6101314183456814,
+  "err_x": 0.0017754006443558292,
+  "err_y": 0.002098608217956258,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-02",
+  "type": "circ",
+  "approx": [
+   1066,
+   1822
+  ],
+  "score": 0.494,
+  "fit_px": [
+   1068.5,
+   1821.5
+  ],
+  "note": "",
+  "centre_px": [
+   1067.25,
+   1822.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.449,
+  "x": 0.40064437833554045,
+  "y": -0.6269883555713733,
+  "err_x": 0.0017852134697171468,
+  "err_y": 0.0020916789647025423,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-03",
+  "type": "circ",
+  "approx": [
+   1163,
+   1808
+  ],
+  "score": 0.63,
+  "fit_px": [
+   1166.5,
+   1812.5
+  ],
+  "note": "",
+  "centre_px": [
+   1166.0,
+   1812.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.584,
+  "x": 0.5004659765809226,
+  "y": -0.6381847143116118,
+  "err_x": 0.0017850807262485056,
+  "err_y": 0.0020862345707360177,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-04",
+  "type": "circ",
+  "approx": [
+   1266,
+   1793
+  ],
+  "score": 0.64,
+  "fit_px": [
+   1266.5,
+   1792.5
+  ],
+  "note": "",
+  "centre_px": [
+   1265.5,
+   1793.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.449,
+  "x": 0.6010234400306019,
+  "y": -0.6574685657305004,
+  "err_x": 0.001776687722521672,
+  "err_y": 0.0020808081873270787,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-05",
+  "type": "circ",
+  "approx": [
+   1363,
+   1745
+  ],
+  "score": 0.608,
+  "fit_px": [
+   1365.5,
+   1750.5
+  ],
+  "note": "",
+  "centre_px": [
+   1366.0,
+   1743.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.43,
+  "x": 0.7021770408008682,
+  "y": -0.7087546881383164,
+  "err_x": 0.001777916836153583,
+  "err_y": 0.0020779904623818846,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-06",
+  "type": "circ",
+  "approx": [
+   1463,
+   1706
+  ],
+  "score": 0.385,
+  "fit_px": [
+   1463.5,
+   1706.5
+  ],
+  "note": "",
+  "centre_px": [
+   1463.25,
+   1706.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.482,
+  "x": 0.8001643390106549,
+  "y": -0.7461925927207637,
+  "err_x": 0.0031133384643965063,
+  "err_y": 0.0033085042471021004,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-07",
+  "type": "circ",
+  "approx": [
+   1512,
+   1700
+  ],
+  "score": 0.603,
+  "fit_px": [
+   1514.5,
+   1699.5
+  ],
+  "note": "",
+  "centre_px": [
+   1513.75,
+   1700.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.487,
+  "x": 0.8510366966589966,
+  "y": -0.7528207614641212,
+  "err_x": 0.001778581216977043,
+  "err_y": 0.0020740083918224517,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-08",
+  "type": "circ",
+  "approx": [
+   1539,
+   1734
+  ],
+  "score": 0.611,
+  "fit_px": [
+   1539.5,
+   1734.5
+  ],
+  "note": "",
+  "centre_px": [
+   1539.25,
+   1734.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.598,
+  "x": 0.8765961969342284,
+  "y": -0.7175830540523789,
+  "err_x": 0.0017776630736574908,
+  "err_y": 0.0020733807102998963,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-09",
+  "type": "circ",
+  "approx": [
+   1563,
+   1735
+  ],
+  "score": 0.641,
+  "fit_px": [
+   1563.5,
+   1735.5
+  ],
+  "note": "",
+  "centre_px": [
+   1563.0,
+   1735.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.378,
+  "x": 0.9004980010939796,
+  "y": -0.7165921967015519,
+  "err_x": 0.0017776378736814172,
+  "err_y": 0.0020727916956310368,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-10",
+  "type": "circ",
+  "approx": [
+   1572,
+   1726
+  ],
+  "score": 0.63,
+  "fit_px": [
+   1572.5,
+   1726.5
+  ],
+  "note": "",
+  "centre_px": [
+   1572.0,
+   1726.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.373,
+  "x": 0.9095955223850105,
+  "y": -0.7264881076239231,
+  "err_x": 0.0017778958519817664,
+  "err_y": 0.002072566606974777,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-11",
+  "type": "circ",
+  "approx": [
+   1588,
+   1699
+  ],
+  "score": 0.655,
+  "fit_px": [
+   1588.5,
+   1698.5
+  ],
+  "note": "",
+  "centre_px": [
+   1588.0,
+   1698.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.522,
+  "x": 0.9258192550229367,
+  "y": -0.7546365086646079,
+  "err_x": 0.001778629627449587,
+  "err_y": 0.0020721640881497584,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-12",
+  "type": "circ",
+  "approx": [
+   1613,
+   1579
+  ],
+  "score": 0.564,
+  "fit_px": [
+   1613.5,
+   1579.5
+  ],
+  "note": "",
+  "centre_px": [
+   1612.75,
+   1580.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.467,
+  "x": 0.9512875458177069,
+  "y": -0.8745014206262608,
+  "err_x": 0.0017817589067586372,
+  "err_y": 0.0020715233958182597,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-13",
+  "type": "circ",
+  "approx": [
+   1626,
+   1560
+  ],
+  "score": 0.617,
+  "fit_px": [
+   1626.5,
+   1559.5
+  ],
+  "note": "",
+  "centre_px": [
+   1626.5,
+   1559.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.407,
+  "x": 0.9652568183855065,
+  "y": -0.8950097667915735,
+  "err_x": 0.0017822949395580833,
+  "err_y": 0.0020711764793982027,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-14",
+  "type": "circ",
+  "approx": [
+   1639,
+   1630
+  ],
+  "score": 0.594,
+  "fit_px": [
+   1639.5,
+   1630.5
+  ],
+  "note": "",
+  "centre_px": [
+   1638.75,
+   1630.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.783,
+  "x": 0.9772690776923109,
+  "y": -0.8238168001632586,
+  "err_x": 0.001780434308839782,
+  "err_y": 0.00207088885407414,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-15",
+  "type": "circ",
+  "approx": [
+   1663,
+   1671
+  ],
+  "score": 0.53,
+  "fit_px": [
+   1662.5,
+   1670.5
+  ],
+  "note": "",
+  "centre_px": [
+   1662.25,
+   1671.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.821,
+  "x": 1.000735883532772,
+  "y": -0.7822808568193653,
+  "err_x": 0.0017658468401820428,
+  "err_y": 0.002070353992934749,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-16",
+  "type": "circ",
+  "approx": [
+   1711,
+   1759
+  ],
+  "score": 0.634,
+  "fit_px": [
+   1711.5,
+   1759.5
+  ],
+  "note": "",
+  "centre_px": [
+   1711.0,
+   1759.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": 1.0490555462305962,
+  "y": -0.6927612390483915,
+  "err_x": 0.001767394945575739,
+  "err_y": 0.002070136987901001,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h6-17",
+  "type": "circ",
+  "approx": [
+   1782,
+   1849
+  ],
+  "score": 0.628,
+  "fit_px": [
+   1783.5,
+   1849.5
+  ],
+  "note": "",
+  "centre_px": [
+   1783.0,
+   1849.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.748,
+  "x": 1.1207415642284353,
+  "y": -0.6018071103788861,
+  "err_x": 0.0017689692029079155,
+  "err_y": 0.002072873008023526,
+  "series": "hole 6 (base centre-line)"
+ },
+ {
+  "id": "h5-01",
+  "type": "sq",
+  "approx": [
+   1364,
+   1755
+  ],
+  "score": 0.673,
+  "fit_px": [
+   1365.0,
+   1751.5
+  ],
+  "note": "",
+  "centre_px": [
+   1365.0,
+   1751.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.315,
+  "x": 0.7011619483154182,
+  "y": -0.7001113333096444,
+  "err_x": 0.001777710332213495,
+  "err_y": 0.002078018939763038,
+  "series": "hole 5 (base, towards the upper surface)"
+ },
+ {
+  "id": "h5-02",
+  "type": "sq",
+  "approx": [
+   1464,
+   1719
+  ],
+  "score": 0.577,
+  "fit_px": [
+   1465.0,
+   1718.5
+  ],
+  "note": "",
+  "centre_px": [
+   1464.5,
+   1719.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.495,
+  "x": 0.8013924040465557,
+  "y": -0.7329937905621378,
+  "err_x": 0.0017780631038248624,
+  "err_y": 0.0020752355577567647,
+  "series": "hole 5 (base, towards the upper surface)"
+ },
+ {
+  "id": "h5-03",
+  "type": "sq",
+  "approx": [
+   1514,
+   1713
+  ],
+  "score": 0.552,
+  "fit_px": [
+   1515.0,
+   1712.5
+  ],
+  "note": "",
+  "centre_px": [
+   1514.5,
+   1713.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": 0.8517515943691321,
+  "y": -0.7396294937915514,
+  "err_x": 0.001778237168202907,
+  "err_y": 0.002073991744016133,
+  "series": "hole 5 (base, towards the upper surface)"
+ },
+ {
+  "id": "h5-04",
+  "type": "sq",
+  "approx": [
+   1539,
+   1750
+  ],
+  "score": 0.67,
+  "fit_px": [
+   1540.0,
+   1749.5
+  ],
+  "note": "",
+  "centre_px": [
+   1539.0,
+   1750.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.381,
+  "x": 0.8762907490430838,
+  "y": -0.7018588283659929,
+  "err_x": 0.0017772534993998651,
+  "err_y": 0.0020733895669794193,
+  "series": "hole 5 (base, towards the upper surface)"
+ },
+ {
+  "id": "h5-05",
+  "type": "sq",
+  "approx": [
+   1611,
+   1617
+  ],
+  "score": 0.612,
+  "fit_px": [
+   1614.0,
+   1617.5
+  ],
+  "note": "",
+  "centre_px": [
+   1612.75,
+   1617.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.422,
+  "x": 0.9511141326095309,
+  "y": -0.8362402899500642,
+  "err_x": 0.0017807589538932867,
+  "err_y": 0.0020715319478715557,
+  "series": "hole 5 (base, towards the upper surface)"
+ },
+ {
+  "id": "h5-06",
+  "type": "sq",
+  "approx": [
+   1628,
+   1579
+  ],
+  "score": 0.603,
+  "fit_px": [
+   1628.0,
+   1578.5
+  ],
+  "note": "",
+  "centre_px": [
+   1628.0,
+   1578.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.475,
+  "x": 0.9666800811169264,
+  "y": -0.8760077181186726,
+  "err_x": 0.0017817979304232713,
+  "err_y": 0.0020711436053938628,
+  "series": "hole 5 (base, towards the upper surface)"
+ },
+ {
+  "id": "h7-01",
+  "type": "tri",
+  "approx": [
+   1067,
+   1842
+  ],
+  "score": 0.663,
+  "fit_px": [
+   1071.0,
+   1842.5
+  ],
+  "note": "the M 0.4 gridline runs through it and its base touches the Cp -0.6 gridline: centre from the pixel map (apex y 1834, base 1845, x 1062 to 1076)",
+  "centre_px": [
+   1069.0,
+   1839.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 0.4023982511356586,
+  "y": -0.6095998627242425,
+  "err_x": 0.00312560011411334,
+  "err_y": 0.0033343423298424204,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-02",
+  "type": "tri",
+  "approx": [
+   1163,
+   1831
+  ],
+  "score": 0.629,
+  "fit_px": [
+   1166.0,
+   1832.5
+  ],
+  "note": "",
+  "centre_px": [
+   1165.5,
+   1832.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": 0.4999553948669582,
+  "y": -0.6170018834582738,
+  "err_x": 0.001785321593494603,
+  "err_y": 0.0020862626268633114,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-03",
+  "type": "tri",
+  "approx": [
+   1266,
+   1814
+  ],
+  "score": 0.449,
+  "fit_px": [
+   1265.0,
+   1812.5
+  ],
+  "note": "",
+  "centre_px": [
+   1265.0,
+   1811.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.774,
+  "x": 0.6005275369578785,
+  "y": -0.6388874801820792,
+  "err_x": 0.0031095508441918635,
+  "err_y": 0.00331736300337203,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-04",
+  "type": "tri",
+  "approx": [
+   1367,
+   1780
+  ],
+  "score": 0.544,
+  "fit_px": [
+   1364.0,
+   1778.5
+  ],
+  "note": "",
+  "centre_px": [
+   1363.75,
+   1778.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.687,
+  "x": 0.6998782582720204,
+  "y": -0.6734203419481173,
+  "err_x": 0.0017770729843309247,
+  "err_y": 0.0020780553621320237,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-05",
+  "type": "tri",
+  "approx": [
+   1463,
+   1748
+  ],
+  "score": 0.372,
+  "fit_px": [
+   1465.0,
+   1748.5
+  ],
+  "note": "",
+  "centre_px": [
+   1464.0,
+   1746.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.625,
+  "x": 0.8008255911889445,
+  "y": -0.7055786401584941,
+  "err_x": 0.003111484009446797,
+  "err_y": 0.0033084818979682634,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-06",
+  "type": "tri",
+  "approx": [
+   1513,
+   1735
+  ],
+  "score": 0.509,
+  "fit_px": [
+   1513.0,
+   1734.5
+  ],
+  "note": "",
+  "centre_px": [
+   1513.0,
+   1734.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.598,
+  "x": 0.8501741976490372,
+  "y": -0.7175572848615839,
+  "err_x": 0.0017776617308109333,
+  "err_y": 0.002074032324025522,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-07",
+  "type": "tri",
+  "approx": [
+   1538,
+   1766
+  ],
+  "score": 0.664,
+  "fit_px": [
+   1539.0,
+   1768.5
+  ],
+  "note": "",
+  "centre_px": [
+   1538.75,
+   1768.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.612,
+  "x": 0.8759776448673113,
+  "y": -0.6838519638032282,
+  "err_x": 0.0017767846978571683,
+  "err_y": 0.0020733988004332186,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-08",
+  "type": "tri",
+  "approx": [
+   1565,
+   1752
+  ],
+  "score": 0.629,
+  "fit_px": [
+   1565.0,
+   1750.5
+  ],
+  "note": "",
+  "centre_px": [
+   1564.0,
+   1750.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.413,
+  "x": 0.9014478185545508,
+  "y": -0.7016345217390582,
+  "err_x": 0.001777248421089931,
+  "err_y": 0.002072769689713043,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-09",
+  "type": "tri",
+  "approx": [
+   1575,
+   1737
+  ],
+  "score": 0.615,
+  "fit_px": [
+   1574.0,
+   1735.5
+  ],
+  "note": "",
+  "centre_px": [
+   1573.75,
+   1735.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.421,
+  "x": 0.9113192893100658,
+  "y": -0.71685637657156,
+  "err_x": 0.0017776450312476592,
+  "err_y": 0.0020725250720373023,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-10",
+  "type": "tri",
+  "approx": [
+   1590,
+   1709
+  ],
+  "score": 0.602,
+  "fit_px": [
+   1589.0,
+   1707.5
+  ],
+  "note": "",
+  "centre_px": [
+   1588.0,
+   1707.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.524,
+  "x": 0.9257813710216499,
+  "y": -0.7455118427431773,
+  "err_x": 0.001778391816764331,
+  "err_y": 0.0020721659546943127,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-11",
+  "type": "tri",
+  "approx": [
+   1612,
+   1628
+  ],
+  "score": 0.555,
+  "fit_px": [
+   1615.0,
+   1627.5
+  ],
+  "note": "",
+  "centre_px": [
+   1614.0,
+   1627.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.507,
+  "x": 0.952330727217828,
+  "y": -0.8266112292458468,
+  "err_x": 0.0017805074642976157,
+  "err_y": 0.0020715030347960095,
+  "series": "hole 7 (base, towards the lower surface)"
+ },
+ {
+  "id": "h7-12",
+  "type": "tri",
+  "approx": [
+   1626,
+   1599
+  ],
+  "score": 0.431,
+  "fit_px": [
+   1620.0,
+   1598.5
+  ],
+  "note": "",
+  "centre_px": [
+   1626.5,
+   1597.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.515,
+  "x": 0.9650743111475545,
+  "y": -0.856501697920668,
+  "err_x": 0.003118381374557835,
+  "err_y": 0.0033020002158778068,
+  "series": "hole 7 (base, towards the lower surface)"
+ }
+]

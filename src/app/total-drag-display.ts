@@ -22,9 +22,12 @@ import {
   CLASS_DESCRIPTION,
   NOT_REPRESENTED,
   noseComponentOf,
+  outsideReasons,
   parseNumber,
   parseNumberList,
+  PUBLISHED_BRL934,
   PUBLISHED_GATE,
+  SUB_CLASS_DESCRIPTION,
   type NoseState,
   type PlanformInput,
   type SectionInput,
@@ -368,14 +371,15 @@ export function noseStateOf(outcome: VerifiedDrag | NoseSolveError): NoseState |
               grids: outcome.levels.length,
               floor: outcome.floor,
             }),
+            verified: outcome.verified,
           };
   }
 }
 
 // ------------------------------------------------------------ the display
 
-/** No 'ok' tone: no total is shown as validated while the Basic Finner's claim is suspended (0010 section 11.7). */
-export type Tone = 'plain' | 'warn' | 'muted';
+/** 'ok' only for a total inside the BRL sub-class, the one validated claim (0014 section 10.7 (q)). */
+export type Tone = 'plain' | 'ok' | 'warn' | 'muted';
 
 /** What the page lays out, every string final. */
 export type DisplayBlock =
@@ -395,10 +399,10 @@ export type DisplayBlock =
       /** Columns of numbers, which do not wrap. */
       readonly numeric: readonly number[];
     }
-  /** The claim, set apart: always an estimate (0010 section 11.7). */
+  /** The claim, set apart: validated only inside the BRL sub-class (0014 section 10.7 (q)). */
   | {
       readonly kind: 'box';
-      readonly tone: 'warn';
+      readonly tone: 'ok' | 'warn';
       readonly blocks: readonly DisplayBlock[];
     };
 
@@ -418,13 +422,21 @@ export const PENDING_TEXT =
   'No total yet: run the solve above for this nose, body and Mach number. The total takes its ' +
   'nose wave drag and band; the other components are computed here and none of them is refused.';
 export const INSIDE_PENDING_TEXT =
-  "This case lies inside the Basic Finner's class, kept for its next registered test: the total " +
-  'will be an estimate, not validated, while the claim is suspended (the ' +
-  'fins-on-base factor was corrected after the test; design record 0010, section 11.7).';
+  "This case lies inside the Basic Finner's class: the total will be an estimate, not " +
+  'validated, while the claim is suspended (the fins-on-base factor was corrected after the ' +
+  "test, and the corrected factor's own test passed at conditions outside the class; design " +
+  'record 0010, section 11.7, and design record 0014, section 10.7 (q)).';
+export const SUB_CLASS_PENDING_TEXT =
+  "This case lies inside the Basic Finner's narrow BRL sub-class, the conditions at which BRL " +
+  "Report 934's range A tested this model once and it passed: the total will be labelled " +
+  'validated, with what that test can and cannot say (design record 0014, section 10.7 (q)).';
 export const ESTIMATE_TOLERANCE_TEXT =
   "The Basic Finner's test was wide: with the corrected fins-on-base factor its tolerance is " +
   '-20.0% to -27.0% and +23.3% to +28.6% of the modelled total over the 11 shots (-24.0% to ' +
   '-24.6% and +23.3% to +23.5% at the three inside the class).';
+
+/** The end of a validated total's headline: what it rests on, in a few words. */
+export const VALIDATED_HEADLINE = "validated, on one test (BRL Report 934's range A)";
 
 /** The total-drag output for a view. */
 export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
@@ -435,35 +447,42 @@ export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
         list(view.refusals.map((r) => `${r.component} (${r.reason}): ${r.message}.`)),
       ];
     case 'pending':
+      if (view.subClass.inside) {
+        return [p(PENDING_TEXT, 'plain', true), p(SUB_CLASS_PENDING_TEXT, 'muted')];
+      }
       return view.check.inside
         ? [p(PENDING_TEXT, 'plain', true), p(INSIDE_PENDING_TEXT, 'muted')]
         : [
             p(PENDING_TEXT, 'plain', true),
             p(
-              "This case lies outside the Basic Finner's class, so the total will be an " +
-                'estimate, not validated:',
+              "This case lies outside the Basic Finner's class and its BRL sub-class, so the " +
+                'total will be an estimate, not validated:',
               'muted',
             ),
-            list(view.check.outside),
+            list(outsideReasons(view.check, view.subClass)),
           ];
     case 'total': {
-      // Every total is an estimate (0010 section 11.7): there is no other claim to show.
+      // Validated only inside the BRL sub-class (0014 section 10.7 (q)); an estimate elsewhere.
       const { total, claim } = view;
-      const claimBlocks: DisplayBlock[] = [
-        p(claim.text),
-        p('Not validated because:'),
-        list(claim.reasons),
-        p(ESTIMATE_TOLERANCE_TEXT),
-      ];
+      const validated = claim.kind === 'validated';
+      const claimBlocks: DisplayBlock[] =
+        claim.kind === 'validated'
+          ? [p(claim.text), ...claim.caveats.map((c) => p(c))]
+          : [
+              p(claim.text),
+              p('Not validated because:'),
+              list(claim.reasons),
+              p(ESTIMATE_TOLERANCE_TEXT),
+            ];
       return [
         p(
           `Total C_D = ${total.cd.toFixed(DIGITS)}, model-form band ${interval(total.low, total.high)} ` +
-            `(${outwardPercent(total.low / total.cd - 1, total.high / total.cd - 1)}): an ` +
-            'estimate, not validated',
-          'warn',
+            `(${outwardPercent(total.low / total.cd - 1, total.high / total.cd - 1)}): ` +
+            (validated ? VALIDATED_HEADLINE : 'an estimate, not validated'),
+          validated ? 'ok' : 'warn',
           true,
         ),
-        { kind: 'box', tone: 'warn', blocks: claimBlocks },
+        { kind: 'box', tone: validated ? 'ok' : 'warn', blocks: claimBlocks },
         p(BAND_CAVEAT, 'muted'),
         {
           kind: 'table',
@@ -512,7 +531,10 @@ export function failureDisplay(message: string): DisplayBlock[] {
 
 const signedPercent = (x: number) => `${x > 0 ? '+' : ''}${x.toFixed(1)}%`;
 
-/** The class in words and the gate's 11 shots, corrected, with the second run's residuals (0010 sections 4.2, 11). */
+/**
+ * The class in words and the gate's 11 shots, corrected, with the second run's residuals (0010
+ * sections 4.2, 11); then the BRL sub-class in words and range A's seven rounds (0020).
+ */
 export function gateDisplay(): DisplayBlock[] {
   return [
     p(CLASS_DESCRIPTION, 'muted'),
@@ -549,6 +571,41 @@ export function gateDisplay(): DisplayBlock[] {
         'run to Re_T 5e5, 1.6e6 and 3e6 and the wall from adiabatic to the air temperature; the ' +
         "tolerance adds those input bands and each Mach cluster's own shot-to-shot spread to the " +
         'model-form band. The five shots at Mach 1.06 to 1.33 are refused, as on this page.',
+      'muted',
+    ),
+    p(SUB_CLASS_DESCRIPTION, 'muted'),
+    {
+      kind: 'table',
+      caption:
+        "BRL Report 934's range A, run once as registered (design record 0020): the present " +
+        'model at its seven rounds, with sharp fin leading edges; residual: zero-yaw CD0 over ' +
+        'modelled, minus 1; each band rounded outward, other values to the nearest last digit ' +
+        'shown',
+      head: ['Round', 'Mach', 'CD0 measured', 'Modelled C_D (band)', 'Residual', 'Tolerance'],
+      rows: PUBLISHED_BRL934.map((r) => [
+        String(r.round),
+        r.mach.toFixed(3),
+        r.cd0.toFixed(4),
+        `${r.cd.toFixed(4)} (${r.low.toFixed(4)} to ${r.high.toFixed(4)})`,
+        signedPercent(r.residual),
+        `${signedPercent(r.tolerance[0])} to ${signedPercent(r.tolerance[1])}`,
+      ]),
+      numeric: [1, 2, 3, 4, 5],
+    },
+    p(
+      'Every round lies inside its tolerance, and every residual is positive: the model reads ' +
+        'low at every round, by 7.3% on average in both groups. In the run the nose was the ' +
+        'exact Taylor-Maccoll value (on this page it is the solve, within its band of it), the ' +
+        "models' diameter 0.78 to 0.82 in and the range's air 288 to 298 K were run at both ends " +
+        'as an input band, and the inputs and the spread of each group of rounds were added as ' +
+        "for the Basic Finner gate. Beside the verdict, not part of it: with DREV's 0.004 cal " +
+        'rounded edge the rounds at Mach 1.80 to 1.83 are refused (the Reynolds number on the ' +
+        "edge's diameter below 6.7e3, the lowest at which a rounded edge is served, at the " +
+        'nominal or at an end of the diameter and air) and those at Mach 2.42 and 2.47 move to ' +
+        '-1.1% and -4.2%; with the trailing-edge term halved (a tapered trailing edge, 0.16 ' +
+        'cal^2) the residuals rise to +14.5% to +22.3%, every round still inside. The rebuilt ' +
+        "fins-on-base factor refuses the Basic Finner's wedges at every round: it has no " +
+        'hold-out (design record 0020).',
       'muted',
     ),
   ];

@@ -1,0 +1,170 @@
+[
+ {
+  "id": "pard-1",
+  "type": "pard",
+  "approx": [
+   719.5,
+   872.0
+  ],
+  "score": 0.689,
+  "fit_px": [
+   719.0,
+   873.0
+  ],
+  "note": "first filled circle at the top left end of the band; centre from its free top and left outline (x 711 to 727, y 864 to 880, 16 px like the legend's); its lower right merges with the band",
+  "centre_px": [
+   719.5,
+   872.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 1.1841340749089688,
+  "y": 0.5849521531878593,
+  "err_x": 0.022273312708763822,
+  "err_y": 0.006757548465913847,
+  "series": "Langley, PARD, rect. AR 2.7 (filled circle)"
+ },
+ {
+  "id": "sq-1",
+  "type": "sq",
+  "approx": [
+   737.0,
+   925.0
+  ],
+  "score": 0.649,
+  "fit_px": [
+   736.5,
+   924.0
+  ],
+  "note": "a square and a triangle drawn over each other; square from its flat top (rows 916 to 919) and sides (stroke centres x 730 and 743.5), taken 19 px tall like the legend's; its bottom edge is hidden by the triangle",
+  "centre_px": [
+   736.75,
+   925.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 1.2465657646161148,
+  "y": 0.5044691345459021,
+  "err_x": 0.02227331270876422,
+  "err_y": 0.006757548465913772,
+  "series": "Ames 1 x 3-ft, rect. AR 3 (square, the second profile)"
+ },
+ {
+  "id": "tri-1",
+  "type": "tri",
+  "approx": [
+   738.0,
+   932.5
+  ],
+  "score": 0.709,
+  "fit_px": [
+   738.5,
+   932.5
+  ],
+  "note": "the triangle inside square sq-1: apex row 924, base rows 938 to 941, x 728 to 748; bounding-box centre",
+  "centre_px": [
+   738.0,
+   932.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 1.2509887234067425,
+  "y": 0.49309439990219983,
+  "err_x": 0.022273312708763822,
+  "err_y": 0.006757548465913946,
+  "series": "Ames 1 x 3-ft, rect. AR 3 (triangle, the first profile)"
+ },
+ {
+  "id": "delta-1",
+  "type": "delta",
+  "approx": [
+   780.75,
+   905.0
+  ],
+  "score": 0.549,
+  "fit_px": [
+   780.5,
+   905.5
+  ],
+  "note": "flagged glyph (slanted stroke from x 773, y 894) with its box (x 777 to 788, top row 900); its bottom edge (rows 914 to 916) merges with the band; bounding-box centre, as for the legend glyph",
+  "centre_px": [
+   780.75,
+   905.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 1.4100982662165369,
+  "y": 0.534230608182291,
+  "err_x": 0.022273312708763687,
+  "err_y": 0.006757548465913946,
+  "series": "Langley 9 x 12 in, delta AR 4 (flagged glyph)"
+ },
+ {
+  "id": "dia-1",
+  "type": "dia",
+  "approx": [
+   783.5,
+   951.5
+  ],
+  "score": 0.966,
+  "fit_px": [
+   783.5,
+   951.5
+  ],
+  "note": "isolated, below the band",
+  "centre_px": [
+   783.5,
+   951.5
+  ],
+  "centre_from": "legend-glyph correlation",
+  "x": 1.4190001468055307,
+  "y": 0.46376758635754844,
+  "err_x": 0.01765501577757642,
+  "err_y": 0.003851246880299205,
+  "series": "Langley 9 x 12 in, rect. AR 2.7 (diamond)"
+ },
+ {
+  "id": "sq-2",
+  "type": "sq",
+  "approx": [
+   804.0,
+   925.0
+  ],
+  "score": 0.448,
+  "fit_px": [
+   803.5,
+   922.0
+  ],
+  "note": "at M' 1.50, the limit of this reading; a square and a triangle drawn over each other at the band's end, as sq-1 and tri-1: flat top rows 914 to 918, stroke centres x 797 and 811",
+  "centre_px": [
+   804.0,
+   925.0
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 1.4956660042445855,
+  "y": 0.5036576561503348,
+  "err_x": 0.022273312708763687,
+  "err_y": 0.006757548465913847,
+  "series": "Ames 1 x 3-ft, rect. AR 3 (square, the second profile)"
+ },
+ {
+  "id": "tri-2",
+  "type": "tri",
+  "approx": [
+   807.5,
+   929.5
+  ],
+  "score": 0.453,
+  "fit_px": [
+   806.5,
+   930.5
+  ],
+  "note": "at M' 1.50; the triangle inside square sq-2: apex (805.5, 921), base rows 935 to 938, merging with a filled circle below",
+  "centre_px": [
+   807.5,
+   929.5
+  ],
+  "centre_from": "pixel map (manual)",
+  "x": 1.5085060346710555,
+  "y": 0.49679963223269596,
+  "err_x": 0.024891428024522905,
+  "err_y": 0.00814316462228983,
+  "series": "Ames 1 x 3-ft, rect. AR 3 (triangle, the first profile)"
+ }
+]

@@ -80,6 +80,98 @@ describe('transonic grids (design record 0013)', () => {
     }
   });
 
+  const nestedCases: [string, { readonly farField?: number; readonly cylinder?: number }][] = [
+    ['far boundaries cut back to 50', { farField: 50 }],
+    ['far boundaries continued to 200', { farField: 200 }],
+    ['cylinder cut back to 5', { cylinder: 5 }],
+    ['cylinder continued to 20', { cylinder: 20 }],
+  ];
+  it.each(nestedCases)(
+    'nested domains (%s): every shared node the same, and nested again under refinement',
+    (_, nested) => {
+      const own = { farField: 100, cylinder: 10 };
+      for (const refinement of [1, 2]) {
+        const plain = transonicGrid(cone, { refinement, ...own });
+        const g = transonicGrid(cone, { refinement, ...own, nested });
+        // The domain asked for is reached, by whole base cells.
+        const far = nested.farField ?? own.farField;
+        expect(g.farRadius).toBeGreaterThanOrEqual(far);
+        expect(-g.xUpstream).toBeGreaterThanOrEqual(far);
+        expect(g.xEnd).toBeGreaterThanOrEqual(
+          cone.nose.length + 2 * (nested.cylinder ?? own.cylinder),
+        );
+        expect(g.grid.nj % refinement).toBe(0);
+        expect(g.iTip % refinement).toBe(0);
+        expect(g.grid.x[nodeIndex(g.grid, g.iTip, 0)]).toBe(0);
+        // Every node in both grids is bit for bit the same.
+        const offset = plain.iTip - g.iTip;
+        let shared = 0;
+        for (let j = 0; j <= Math.min(plain.grid.nj, g.grid.nj); j++) {
+          for (let i = 0; i <= g.grid.ni; i++) {
+            const p = i + offset;
+            if (p < 0 || p > plain.grid.ni) continue;
+            expect(g.grid.x[nodeIndex(g.grid, i, j)]).toBe(
+              plain.grid.x[nodeIndex(plain.grid, p, j)],
+            );
+            expect(g.grid.y[nodeIndex(g.grid, i, j)]).toBe(
+              plain.grid.y[nodeIndex(plain.grid, p, j)],
+            );
+            shared++;
+          }
+        }
+        const smaller = Math.min(plain.grid.ni, g.grid.ni) + 1;
+        expect(shared).toBe(smaller * (Math.min(plain.grid.nj, g.grid.nj) + 1));
+        // Positive volumes, and the near-body gates as on the grid itself.
+        computeMetrics(g.grid, 'axisymmetric');
+        const q = gridQuality(g.grid);
+        expect(q.minWallAngle).toBeGreaterThan(60 * deg);
+        expect(q.minAngle).toBeGreaterThan(30 * deg);
+      }
+      const coarse = transonicGrid(cone, { refinement: 1, ...own, nested }).grid;
+      const fine = transonicGrid(cone, { refinement: 2, ...own, nested }).grid;
+      expect(fine.ni).toBe(2 * coarse.ni);
+      expect(fine.nj).toBe(2 * coarse.nj);
+      let worst = 0;
+      for (let j = 0; j <= coarse.nj; j++) {
+        for (let i = 0; i <= coarse.ni; i++) {
+          const c = nodeIndex(coarse, i, j);
+          const f = nodeIndex(fine, 2 * i, 2 * j);
+          worst = Math.max(
+            worst,
+            Math.abs(coarse.x[c]! - fine.x[f]!),
+            Math.abs(coarse.y[c]! - fine.y[f]!),
+          );
+        }
+      }
+      expect(worst).toBeLessThan(1e-9);
+    },
+  );
+
+  it('nested domains: the grid itself when nothing changes, and none on blunt noses yet', () => {
+    const plain = transonicGrid(cone, { refinement: 1, farField: 100, cylinder: 10 });
+    const same = transonicGrid(cone, {
+      refinement: 1,
+      farField: 100,
+      cylinder: 10,
+      nested: { farField: 100, cylinder: 10 },
+    });
+    expect(same.grid.x).toEqual(plain.grid.x);
+    expect(same.grid.y).toEqual(plain.grid.y);
+    expect(same.farRadius).toBe(plain.farRadius);
+    const body: Body = {
+      nose: { shape: { kind: 'ellipsoid' }, length: 2, baseRadius: 1 },
+      cylinderLength: 0,
+    };
+    expect(() =>
+      transonicGrid(body, {
+        refinement: 1,
+        farField: 100,
+        cylinder: 10,
+        nested: { farField: 200 },
+      }),
+    ).toThrow(/blunt/);
+  });
+
   it.each([1, 2, 3])(
     'blunt noses (ellipsoid %d:1): a C grid from the axis ahead to the end of the cylinder',
     (L) => {

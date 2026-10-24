@@ -1,0 +1,377 @@
+[
+ {
+  "id": "bm-1",
+  "type": "circ",
+  "approx": [
+   2159.5,
+   1319.5
+  ],
+  "score": 0.626,
+  "fit_px": [
+   2159.5,
+   1319.5
+  ],
+  "note": "",
+  "centre_px": [
+   2159.5,
+   1319.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": -1.6620360597195944,
+  "y": -0.22502711587032043,
+  "err_x": 0.010419005669071054,
+  "err_y": 0.001989113536298297,
+  "series": "basic model (solid line, labelled)"
+ },
+ {
+  "id": "bm-2",
+  "type": "circ",
+  "approx": [
+   2405.0,
+   1266.5
+  ],
+  "score": 0.624,
+  "fit_px": [
+   2404.5,
+   1266.5
+  ],
+  "note": "",
+  "centre_px": [
+   2404.25,
+   1266.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.694,
+  "x": -0.6812320499648021,
+  "y": -0.2774736867104757,
+  "err_x": 0.010369882149519966,
+  "err_y": 0.0019891135362982582,
+  "series": "basic model (solid line, labelled)"
+ },
+ {
+  "id": "bm-3",
+  "type": "circ",
+  "approx": [
+   2495.0,
+   1194.0
+  ],
+  "score": 0.524,
+  "fit_px": [
+   2500.5,
+   1195.5
+  ],
+  "note": "",
+  "centre_px": [
+   2494.0,
+   1194.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.297,
+  "x": -0.32267614829336644,
+  "y": -0.3483006900383064,
+  "err_x": 0.010369882149519996,
+  "err_y": 0.0019891135362982582,
+  "series": "basic model (solid line, labelled)"
+ },
+ {
+  "id": "bm-4",
+  "type": "circ",
+  "approx": [
+   2536.5,
+   1115.0
+  ],
+  "score": 0.449,
+  "fit_px": [
+   2536.5,
+   1114.5
+  ],
+  "note": "",
+  "centre_px": [
+   2536.0,
+   1115.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.415,
+  "x": -0.15484925576267794,
+  "y": -0.4270864942792195,
+  "err_x": 0.014501342803410325,
+  "err_y": 0.0031732700827650285,
+  "series": "basic model (solid line, labelled)"
+ },
+ {
+  "id": "bm-5",
+  "type": "circ",
+  "approx": [
+   2576.0,
+   796.5
+  ],
+  "score": 0.285,
+  "fit_px": [
+   2575.5,
+   796.5
+  ],
+  "note": "on the Cp axis (x/h = 0); the solid line ends here",
+  "centre_px": [
+   2575.25,
+   796.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.584,
+  "x": 0.0021721264614646962,
+  "y": -0.7417296732002651,
+  "err_x": 0.014501342803410325,
+  "err_y": 0.0032160631694279577,
+  "series": "basic model (solid line, labelled)"
+ },
+ {
+  "id": "sp-1",
+  "type": "cross",
+  "approx": [
+   2157.5,
+   1311.0
+  ],
+  "score": 0.462,
+  "fit_px": [
+   2157.5,
+   1311.0
+  ],
+  "note": "its lower arms run into circle bm-1",
+  "centre_px": [
+   2158.0,
+   1312.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": -1.6680506617456685,
+  "y": -0.2322268819807375,
+  "err_x": 0.0180287642401544,
+  "err_y": 0.004147480133914326,
+  "series": "model with 1 x h splitter plate (dashed line, labelled)"
+ },
+ {
+  "id": "sp-2",
+  "type": "cross",
+  "approx": [
+   2403.5,
+   1259.0
+  ],
+  "score": 0.525,
+  "fit_px": [
+   2402.5,
+   1258.0
+  ],
+  "note": "its lower arms run into circle bm-2",
+  "centre_px": [
+   2403.5,
+   1259.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.844,
+  "x": -0.6842224535709951,
+  "y": -0.2846721788014966,
+  "err_x": 0.01794376223701192,
+  "err_y": 0.004147480133914316,
+  "series": "model with 1 x h splitter plate (dashed line, labelled)"
+ },
+ {
+  "id": "sp-3",
+  "type": "cross",
+  "approx": [
+   2495.0,
+   1207.5
+  ],
+  "score": 0.521,
+  "fit_px": [
+   2488.5,
+   1202.0
+  ],
+  "note": "its upper arms run into circle bm-3",
+  "centre_px": [
+   2493.0,
+   1207.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.269,
+  "x": -0.3266801645902262,
+  "y": -0.335645212122115,
+  "err_x": 0.01794376223701197,
+  "err_y": 0.004147480133914316,
+  "series": "model with 1 x h splitter plate (dashed line, labelled)"
+ },
+ {
+  "id": "sp-4",
+  "type": "cross",
+  "approx": [
+   2535.0,
+   1177.5
+  ],
+  "score": 0.362,
+  "fit_px": [
+   2533.5,
+   1175.0
+  ],
+  "note": "",
+  "centre_px": [
+   2533.25,
+   1175.75
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.595,
+  "x": -0.16587956504507084,
+  "y": -0.36709569130290415,
+  "err_x": 0.014501342803410283,
+  "err_y": 0.0032098511132236983,
+  "series": "model with 1 x h splitter plate (dashed line, labelled)"
+ },
+ {
+  "id": "sp-5",
+  "type": "cross",
+  "approx": [
+   2574.0,
+   1111.0
+  ],
+  "score": 0.326,
+  "fit_px": [
+   2572.5,
+   1108.0
+  ],
+  "note": "on the Cp axis (x/h = 0), which hides its middle; the dashed line ends here",
+  "centre_px": [
+   2573.5,
+   1110.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.519,
+  "x": -0.005053842011372156,
+  "y": -0.4314398472453679,
+  "err_x": 0.014501342803410242,
+  "err_y": 0.0031732700827650103,
+  "series": "model with 1 x h splitter plate (dashed line, labelled)"
+ },
+ {
+  "id": "st-1",
+  "type": "sq",
+  "approx": [
+   2159.0,
+   1347.0
+  ],
+  "score": -0.006,
+  "fit_px": [
+   2159.0,
+   1347.0
+  ],
+  "note": "",
+  "centre_px": [
+   2157.5,
+   1347.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 1.0,
+  "x": -1.6700839112042256,
+  "y": -0.19724334982142808,
+  "err_x": 0.01457003760499388,
+  "err_y": 0.0031994181792679766,
+  "series": "backward-facing step (solid line, labelled)"
+ },
+ {
+  "id": "st-2",
+  "type": "sq",
+  "approx": [
+   2404.0,
+   1334.0
+  ],
+  "score": 0.284,
+  "fit_px": [
+   2405.0,
+   1334.0
+  ],
+  "note": "",
+  "centre_px": [
+   2404.25,
+   1334.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.781,
+  "x": -0.6812828594080504,
+  "y": -0.21021692473080922,
+  "err_x": 0.014501342803410283,
+  "err_y": 0.0032098511132236983,
+  "series": "backward-facing step (solid line, labelled)"
+ },
+ {
+  "id": "st-3",
+  "type": "sq",
+  "approx": [
+   2492.5,
+   1312.5
+  ],
+  "score": 0.192,
+  "fit_px": [
+   2494.0,
+   1312.0
+  ],
+  "note": "",
+  "centre_px": [
+   2494.0,
+   1312.0
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.638,
+  "x": -0.32276408050326844,
+  "y": -0.2319043012247877,
+  "err_x": 0.014501342803410283,
+  "err_y": 0.003209851113223689,
+  "series": "backward-facing step (solid line, labelled)"
+ },
+ {
+  "id": "st-4",
+  "type": "sq",
+  "approx": [
+   2535.0,
+   1290.0
+  ],
+  "score": 0.342,
+  "fit_px": [
+   2537.0,
+   1289.0
+  ],
+  "note": "",
+  "centre_px": [
+   2534.75,
+   1290.25
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.379,
+  "x": -0.15997375332087405,
+  "y": -0.2534267337191406,
+  "err_x": 0.014501342803410242,
+  "err_y": 0.0032098511132236983,
+  "series": "backward-facing step (solid line, labelled)"
+ },
+ {
+  "id": "st-5",
+  "type": "sq",
+  "approx": [
+   2573.5,
+   1302.5
+  ],
+  "score": 0.336,
+  "fit_px": [
+   2574.0,
+   1301.0
+  ],
+  "note": "on the Cp axis (x/h = 0)",
+  "centre_px": [
+   2573.0,
+   1301.5
+  ],
+  "centre_from": "outline fit",
+  "glyph_ncc": 0.528,
+  "x": -0.007194310579871521,
+  "y": -0.24219366172224588,
+  "err_x": 0.014501342803410242,
+  "err_y": 0.00320985111322377,
+  "series": "backward-facing step (solid line, labelled)"
+ }
+]

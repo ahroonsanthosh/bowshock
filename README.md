@@ -30,7 +30,7 @@ guessing.
 | **Solver checks**                                                             | **Verified** against exact solutions: shock tube, oblique shocks, expansions, cones                                                                                                                                                                                                        |
 | **Skin friction**                                                             | **Validated**: within -12% to +19% of all 23 wind-tunnel and flight measurements                                                                                                                                                                                                           |
 | **Fin and base drag**                                                         | **Estimated** from component wind-tunnel data, with bands                                                                                                                                                                                                                                  |
-| **Total drag** (nose, body and fins)                                          | **An estimate, not validated yet.** Refused for most realistic rockets until the missing components are built                                                                                                                                                                              |
+| **Total drag** (nose, body and fins)                                          | **Validated** only for the Basic Finner with sharp fins at the conditions of the one test it passed; elsewhere **an estimate, not validated**. Refused for most realistic rockets until the missing components are built                                                                   |
 | **Mach 1 to 1.2**                                                             | Prototype, not served                                                                                                                                                                                                                                                                      |
 | **Viscous flow (RANS)**, angle of attack, motor plume                         | Not built yet                                                                                                                                                                                                                                                                              |
 
@@ -39,10 +39,14 @@ What the labels mean: **verified** means the numerical error was measured;
 means a band from component data, not yet tested on a whole rocket;
 **refused** means no number, with the reason.
 
-The total drag passed its first hold-out test (the Basic Finner reference
-rocket, 11 free-flight shots at Mach 1.8 to 3.0, all within tolerance).
-One input was later corrected, so that result no longer counts. The next
-registered test (BRL Report 934) will decide whether the claim comes back.
+After a corrected input voided its first hold-out test (the Basic Finner
+reference rocket, 11 free-flight shots), the total drag was tested once
+against BRL Report 934, as registered beforehand, and passed at all seven
+rounds: measured drag 3.9% to 11.0% above the model, so it reads low every
+time. Those rounds flew outside the class the page serves, so "validated"
+is given only to a narrow class at exactly the tested conditions, and every
+other total stays an estimate. The newer model for fins at the base has
+not passed a hold-out test yet.
 
 ## How accuracy is kept honest
 

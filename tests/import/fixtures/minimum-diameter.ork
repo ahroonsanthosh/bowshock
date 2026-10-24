@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openrocket version="1.10" creator="bowshock test fixture">
+  <!-- A minimum-diameter rocket: a Von Karman nose on a 54 mm tube that is
+       also the motor mount, three trapezoidal fins of square section at the
+       base. Written for bowshock's tests in OpenRocket's format (element
+       order of OpenRocket's savers). Every external component is
+       representable, so the import is exact. -->
+  <rocket>
+    <name>Minimum diameter</name>
+    <id>00000000-0000-4000-8000-000000000001</id>
+    <axialoffset method="absolute">0.0</axialoffset>
+    <position type="absolute">0.0</position>
+    <designer>bowshock tests</designer>
+    <referencetype>maximum</referencetype>
+    <subcomponents>
+      <stage>
+        <name>Sustainer</name>
+        <id>00000000-0000-4000-8000-000000000002</id>
+        <subcomponents>
+          <nosecone>
+            <name>Von Karman nose</name>
+            <id>00000000-0000-4000-8000-000000000003</id>
+            <finish>smooth</finish>
+            <material type="bulk" density="1850.0" group="Composites">Fiberglass</material>
+            <length>0.25</length>
+            <thickness>0.002</thickness>
+            <shape>haack</shape>
+            <shapeparameter>0.0</shapeparameter>
+            <aftradius>auto 0.0275</aftradius>
+            <aftshoulderradius>0.0265</aftshoulderradius>
+            <aftshoulderlength>0.05</aftshoulderlength>
+            <aftshoulderthickness>0.002</aftshoulderthickness>
+            <aftshouldercapped>true</aftshouldercapped>
+            <isflipped>false</isflipped>
+            <subcomponents>
+              <masscomponent>
+                <name>Altimeter</name>
+                <id>00000000-0000-4000-8000-000000000004</id>
+                <axialoffset method="bottom">0.0</axialoffset>
+                <position type="bottom">0.0</position>
+                <packedlength>0.04</packedlength>
+                <packedradius>0.012</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <mass>0.03</mass>
+                <masscomponenttype>altimeter</masscomponenttype>
+              </masscomponent>
+            </subcomponents>
+          </nosecone>
+          <bodytube>
+            <name>Airframe and motor case</name>
+            <id>00000000-0000-4000-8000-000000000005</id>
+            <finish>smooth</finish>
+            <material type="bulk" density="1850.0" group="Composites">Fiberglass</material>
+            <length>0.6</length>
+            <thickness>0.0015</thickness>
+            <radius>0.0275</radius>
+            <motormount>
+              <ignitionevent>automatic</ignitionevent>
+              <ignitiondelay>0.0</ignitiondelay>
+              <overhang>0.0</overhang>
+              <motor configid="00000000-0000-4000-8000-000000000006">
+                <type>reload</type>
+                <manufacturer>Example</manufacturer>
+                <designation>J350</designation>
+                <diameter>0.054</diameter>
+                <length>0.41</length>
+                <delay>none</delay>
+              </motor>
+            </motormount>
+            <subcomponents>
+              <parachute>
+                <name>Parachute</name>
+                <id>00000000-0000-4000-8000-000000000007</id>
+                <axialoffset method="top">0.0</axialoffset>
+                <position type="top">0.0</position>
+                <packedlength>0.08</packedlength>
+                <packedradius>0.02</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <cd>auto</cd>
+                <material type="surface" density="0.067" group="Fabrics">Ripstop nylon</material>
+                <deployevent>apogee</deployevent>
+                <deployaltitude>200.0</deployaltitude>
+                <deploydelay>0.0</deploydelay>
+                <diameter>0.9</diameter>
+                <linecount>6</linecount>
+                <linelength>0.9</linelength>
+                <linematerial type="line" density="0.0018" group="Custom">Elastic cord</linematerial>
+              </parachute>
+              <trapezoidfinset>
+                <name>Fins</name>
+                <id>00000000-0000-4000-8000-000000000008</id>
+                <instancecount>3</instancecount>
+                <fincount>3</fincount>
+                <radiusoffset method="surface">0.0</radiusoffset>
+                <angleoffset method="relative">0.0</angleoffset>
+                <rotation>0.0</rotation>
+                <axialoffset method="bottom">0.0</axialoffset>
+                <position type="bottom">0.0</position>
+                <finish>smooth</finish>
+                <material type="bulk" density="1850.0" group="Composites">Fiberglass</material>
+                <thickness>0.003</thickness>
+                <crosssection>square</crosssection>
+                <cant>0.0</cant>
+                <filletradius>0.0</filletradius>
+                <filletmaterial type="bulk" density="1250.0" group="Other">Epoxy</filletmaterial>
+                <rootchord>0.12</rootchord>
+                <tipchord>0.04</tipchord>
+                <sweeplength>0.07</sweeplength>
+                <height>0.06</height>
+              </trapezoidfinset>
+            </subcomponents>
+          </bodytube>
+        </subcomponents>
+      </stage>
+    </subcomponents>
+  </rocket>
+  <simulations>
+  </simulations>
+</openrocket>

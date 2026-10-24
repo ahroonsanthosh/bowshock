@@ -1,0 +1,209 @@
+Pairing of W7's first readings (A, origin/claude/wip/w7-fins at 59d3780) with round 13's blind readings (B),
+by a neutral party who made neither. Gate 6 px; same type first, then across types; nothing resolved.
+How each reader defines its errors:
+  W7: per row, a placement error judged by eye (1 to 3 px) and 0.5 px of grid trace in quadrature, plus 2 px (R&M
+    3323) or 4 px (Johnston) for a triangle's centre definition; not stated as 1 sigma or as a bound. The
+    2026-10-22 pairing took it as a placement half range.
+  Round 13: about 2 sigma per axis, sqrt((2 c)^2 + (2 loo)^2) px (c the centre sigma, loo the calibration's
+    leave-one-out rms). Its merged-ink boxes are bounds (ink box shrunk by 6 px, 10 px in Johnston 10(b)).
+Verdicts are given on three bases: as stated (e_A + e_B); common 2 sigma with W7 read as 1 sigma (2 e_A + e_B);
+common 2 sigma with W7 read as a uniform half range ((2 / sqrt 3) e_A + e_B).
+
+=== ARC R&M 3323 fig. 4 (h/c %, Cp_b), W7 against round 13
+  axes x = h_over_c_pct, y = Cp_b; 1 px = 0.0342 and 0.00172; gate 6 px
+  W7: 61 symbols (4 ref (38), 6 ref (39), 4 ref (34), 18 ref (32), 9 ref (40), 13 ref (33), 3 ref (35), 3 35? (heavy glyph, W7: no legend entry, source not traced), 1 ref (41))
+  round 13: 61 points (4 ref (38), 6 ref (39), 4 ref (34), 18 ref (32), 9 ref (40), 13 ref (33), 3 ref (35), 3 ref (31), 1 ref (41))
+  point pairs 61; same type 58; type disagreements 3; W7 only 0; round 13 only 0
+  same type and within errors: as stated 58; 2 sigma, W7 as 1 sigma 58; 2 sigma, W7 as half range 58 (of 58)
+  largest |difference| / combined error as stated, same-type pairs: x 0.40, y 0.42
+    y offset W7 - round 13 in px, ref (32) (18): median -0.2, range -0.7 to +2.1
+    y offset W7 - round 13 in px, ref (33) (13): median -0.1, range -0.7 to +1.6
+    y offset W7 - round 13 in px, ref (34) (4): median +0.1, range -0.1 to +1.0
+    y offset W7 - round 13 in px, ref (35) (3): median -0.5, range -0.6 to -0.2
+    y offset W7 - round 13 in px, ref (38) (4): median +0.2, range -0.8 to +0.8
+    y offset W7 - round 13 in px, ref (39) (6): median +0.6, range -0.3 to +1.2
+    y offset W7 - round 13 in px, ref (40) (9): median -1.3, range -2.1 to +1.0
+    y offset W7 - round 13 in px, ref (41) (1): median -1.1, range -1.1 to -1.1
+    TYPE: B02 35? (heavy glyph, W7: no legend entry, source not traced) (tri_up_heavy) against m08-03 ref (31) (31_half_flat_bottom_f), 0.8: A (14.005, -0.7285) B (14.0161, -0.7279); dx -0.01110, dy -0.00060; values as stated: values within errors
+    TYPE: C10 35? (heavy glyph, W7: no legend entry, source not traced) (tri_up_heavy) against m10-13 ref (31) (31_half_flat_bottom_f), 1.0: A (14.032, -0.7973) B (14.066, -0.7953); dx -0.03400, dy -0.00200; values as stated: values within errors
+    TYPE: D06 35? (heavy glyph, W7: no legend entry, source not traced) (tri_up_heavy) against m12-09 ref (31) (31_half_flat_bottom_f), 1.2: A (13.887, -0.5317) B (13.9642, -0.531); dx -0.07720, dy -0.00070; values as stated: values within errors
+    ATTRIBUTE: B17 / m08-17 (ref (32), M 0.8): fill W7 open, round 13 open; flag W7 uncertain, round 13 yes
+    ATTRIBUTE: C04 / m10-09 (ref (34), M 1.0): fill W7 filled, round 13 open; flag W7 no, round 13 no
+
+=== Johnston fig. 10(a) (M, c_d,f), W7 against round 13
+  axes x = M, y = c_d,f; 1 px = 0.000476 and 9.54e-05; gate 6 px
+  W7: 59 symbols (12 circle, 12 square, 12 diamond, 12 triangle, 11 right triangle)
+  round 13: 59 points (12 circle, 12 square, 12 diamond, 12 triangle, 11 right triangle)
+  point pairs 58; same type 58; type disagreements 0; W7 only 1; round 13 only 1
+  same type and within errors: as stated 58; 2 sigma, W7 as 1 sigma 58; 2 sigma, W7 as half range 58 (of 58)
+  largest |difference| / combined error as stated, same-type pairs: x 0.77, y 0.60
+    y offset W7 - round 13 in px, circle (12): median +0.0, range -1.0 to +1.0
+    y offset W7 - round 13 in px, diamond (12): median +0.0, range -1.0 to +1.0
+    y offset W7 - round 13 in px, right triangle (11): median -1.0, range -2.1 to +1.0
+    y offset W7 - round 13 in px, square (11): median +0.0, range -1.0 to +3.1
+    y offset W7 - round 13 in px, triangle (12): median -3.1, range -4.2 to +0.0
+    W7 ONLY: a2_07 square (alpha 2, all) at (1.0095, 0.0485); nearest round 13: 10a-s07 (square, alpha 2) at 7.9 px; nearest of an allowed type (paired elsewhere or beyond the gate): 10a-s07 at 7.9 px, values within the stated errors (dx +0.00280, comb 0.00290; dy +0.00050, comb 0.00060)
+    ROUND 13 ONLY: 10a-s07 square (alpha 2, all) at (1.0067, 0.048); nearest W7: a2_07 (square, alpha 2) at 7.9 px; nearest of an allowed type (paired elsewhere or beyond the gate): a2_07 at 7.9 px, values within the stated errors (dx +0.00280, comb 0.00290; dy +0.00050, comb 0.00060)
+
+=== Johnston fig. 10(b) (M, C_p,b), W7 against round 13
+  axes x = M, y = C_p,b; 1 px = 0.000476 and 0.000478; gate 6 px
+  W7: 99 symbols (20 circle, 21 square, 20 diamond, 18 triangle, 2 triangle or right triangle (W7: kind uncertain), 18 right triangle)
+  round 13: 77 points (10 circle, 10 square, 20 diamond, 21 triangle, 16 right triangle); 11 boxes of merged ink holding 23 centres
+  point pairs 75; same type 74; type disagreements 1; W7 only 3; round 13 only 2
+  same type and within errors: as stated 74; 2 sigma, W7 as 1 sigma 74; 2 sigma, W7 as half range 74 (of 74)
+  largest |difference| / combined error as stated, same-type pairs: x 0.84, y 0.92
+    y offset W7 - round 13 in px, circle (10): median +0.0, range -1.0 to +3.8
+    y offset W7 - round 13 in px, diamond (20): median -0.4, range -4.6 to +1.3
+    y offset W7 - round 13 in px, right triangle (16): median -0.8, range -3.1 to +0.8
+    y offset W7 - round 13 in px, square (10): median -0.2, range -4.2 to +5.0
+    y offset W7 - round 13 in px, triangle (18): median -1.3, range -4.4 to +3.3
+    TYPE: a8_07 right triangle (alpha 8) against 10b-t07 triangle (alpha 6), all: A (0.8871, -0.7038) B (0.8873, -0.7023); dx -0.00020, dy -0.00150; values as stated: values within errors
+  W7 points against round 13's boxes: 21 assigned; inside 21; outside 0
+    BOX 10b-c02+10b-s02 (M 0.734..0.7378, y -0.7678..-0.7644): W7 a0_02 circle (0.7359, -0.7657): inside
+    BOX 10b-c02+10b-s02 (M 0.734..0.7378, y -0.7678..-0.7644): W7 a2_02 square (0.7358, -0.7657): inside
+    BOX 10b-c10+10b-s10 (M 0.9583..0.963, y -1.0023..-0.998): W7 a2_10 square (0.9596, -1.0007): inside
+    BOX 10b-c10+10b-s10 (M 0.9583..0.963, y -1.0023..-0.998): W7 a0_10 circle (0.9605, -1.0001): inside
+    BOX 10b-c11+10b-s11+10b-d11 (M 0.9839..0.9891, y -0.9578..-0.9535): W7 a2_11 square (0.9856, -0.9571): inside
+    BOX 10b-c12+10b-s12 (M 1.0066..1.0114, y -0.9028..-0.898): W7 a2_12 square (1.0095, -0.9013): inside
+    BOX 10b-c12+10b-s12 (M 1.0066..1.0114, y -0.9028..-0.898): W7 a0_11 circle (1.009, -0.9007): inside
+    BOX 10b-c13+10b-s13 (M 1.031..1.0367, y -0.8453..-0.8415): W7 a0_12 circle (1.0344, -0.8438): inside
+    BOX 10b-c13+10b-s13 (M 1.031..1.0367, y -0.8453..-0.8415): W7 a2_13 square (1.0337, -0.8438): inside
+    BOX 10b-c15+10b-s15 (M 1.0826..1.0883, y -0.7464..-0.7425): W7 a0_14 circle (1.0843, -0.7452): inside
+    BOX 10b-c15+10b-s15 (M 1.0826..1.0883, y -0.7464..-0.7425): W7 a2_15 square (1.0845, -0.7439): inside
+    BOX 10b-c16+10b-s16 (M 1.1087..1.1135, y -0.7029..-0.6967): W7 a0_15 circle (1.1101, -0.7004): inside
+    BOX 10b-c16+10b-s16 (M 1.1087..1.1135, y -0.7029..-0.6967): W7 a2_16 square (1.1104, -0.7): inside
+    BOX 10b-c17+10b-s17 (M 1.1319..1.1371, y -0.6628..-0.659): W7 a0_16 circle (1.1344, -0.6604): inside
+    BOX 10b-c17+10b-s17 (M 1.1319..1.1371, y -0.6628..-0.659): W7 a2_17 square (1.134, -0.6603): inside
+    BOX 10b-c18+10b-s18 (M 1.155..1.1616, y -0.6279..-0.6236): W7 a0_17 circle (1.1582, -0.6264): inside
+    BOX 10b-c18+10b-s18 (M 1.155..1.1616, y -0.6279..-0.6236): W7 a2_18 square (1.1579, -0.6263): inside
+    BOX 10b-c19+10b-s19 (M 1.1819..1.1866, y -0.5906..-0.5873): W7 a2_19 square (1.184, -0.5892): inside
+    BOX 10b-c19+10b-s19 (M 1.1819..1.1866, y -0.5906..-0.5873): W7 a0_18 circle (1.184, -0.5891): inside
+    BOX 10b-c20+10b-s20 (M 1.2088..1.2135, y -0.5561..-0.5523): W7 a2_20 square (1.2101, -0.5545): inside
+    BOX 10b-c20+10b-s20 (M 1.2088..1.2135, y -0.5561..-0.5523): W7 a0_19 circle (1.2102, -0.5543): inside
+    BOX MEMBER WITH NO W7 SYMBOL: 10b-c11+10b-s11+10b-d11 circle (M 0.9839..0.9891)
+    BOX MEMBER WITH NO W7 SYMBOL: 10b-c11+10b-s11+10b-d11 diamond (M 0.9839..0.9891)
+    W7 ONLY: a6_15 triangle (alpha 6, all) at (1.1095, -0.739); nearest round 13: 10b-t16 (triangle, alpha 6) at 7.6 px; nearest of an allowed type (paired elsewhere or beyond the gate): 10b-t16 at 7.6 px, values within the stated errors (dx -0.00170, comb 0.00250; dy +0.00320, comb 0.00370)
+    W7 ONLY: a6_19 triangle or right triangle (W7: kind uncertain) (alpha 6 or 8, all) at (1.2095, -0.5902); nearest round 13: 10b-t20 (triangle, alpha 6) at 8.2 px; nearest of an allowed type (paired elsewhere or beyond the gate): 10b-t20 at 8.2 px, values within the stated errors (dx +0.00300, comb 0.00390; dy -0.00250, comb 0.00400)
+    W7 ONLY: a8_09 right triangle (alpha 8, all) at (0.9352, -0.9246); nearest round 13: 10b-t09 (triangle, alpha 6) at 9.4 px
+    ROUND 13 ONLY: 10b-t16 triangle (alpha 6, all) at (1.1112, -0.7422); nearest W7: a6_15 (triangle, alpha 6) at 7.6 px; nearest of an allowed type (paired elsewhere or beyond the gate): a6_15 at 7.6 px, values within the stated errors (dx -0.00170, comb 0.00250; dy +0.00320, comb 0.00370)
+    ROUND 13 ONLY: 10b-t20 triangle (alpha 6, all) at (1.2065, -0.5877); nearest W7: a6_19 (triangle or right triangle (W7: kind uncertain), alpha 6 or 8) at 8.2 px; nearest of an allowed type (paired elsewhere or beyond the gate): a6_19 at 8.2 px, values within the stated errors (dx +0.00300, comb 0.00390; dy -0.00250, comb 0.00400)
+
+=== Johnston fig. 10(c) (M, c_d,t), W7 against round 13
+  axes x = M, y = c_d,t; 1 px = 0.000476 and 9.54e-05; gate 6 px
+  W7: 57 symbols (11 circle, 12 square, 12 diamond, 11 triangle, 11 right triangle)
+  round 13: 58 points (11 circle, 12 square, 12 diamond, 12 triangle, 11 right triangle)
+  point pairs 55; same type 55; type disagreements 0; W7 only 2; round 13 only 3
+  same type and within errors: as stated 55; 2 sigma, W7 as 1 sigma 55; 2 sigma, W7 as half range 55 (of 55)
+  largest |difference| / combined error as stated, same-type pairs: x 0.90, y 1.00
+    y offset W7 - round 13 in px, circle (11): median +0.0, range -1.0 to +2.1
+    y offset W7 - round 13 in px, diamond (12): median +0.0, range -1.0 to +2.1
+    y offset W7 - round 13 in px, right triangle (9): median +0.0, range -5.2 to +1.0
+    y offset W7 - round 13 in px, square (12): median +1.0, range -3.1 to +5.2
+    y offset W7 - round 13 in px, triangle (11): median -2.1, range -5.2 to +0.0
+    W7 ONLY: a8_07 right triangle (alpha 8, all) at (1.0089, 0.2852); nearest round 13: 10c-r07 (right triangle, alpha 8) at 7.1 px; nearest of an allowed type (paired elsewhere or beyond the gate): 10c-r07 at 7.1 px, values within the stated errors (dx +0.00230, comb 0.00350; dy -0.00050, comb 0.00070)
+    W7 ONLY: a8_11 right triangle (alpha 8, all) at (1.208, 0.2702); nearest round 13: 10c-r11 (right triangle, alpha 8) at 6.3 px; nearest of an allowed type (paired elsewhere or beyond the gate): 10c-r11 at 6.3 px, values within the stated errors (dx +0.00170, comb 0.00350; dy -0.00050, comb 0.00070)
+    ROUND 13 ONLY: 10c-t01 triangle (alpha 6, all) at (0.6857, 0.146); nearest W7: a2_01 (square, alpha 2) at 12.2 px
+    ROUND 13 ONLY: 10c-r07 right triangle (alpha 8, all) at (1.0066, 0.2857); nearest W7: a8_07 (right triangle, alpha 8) at 7.1 px; nearest of an allowed type (paired elsewhere or beyond the gate): a8_07 at 7.1 px, values within the stated errors (dx +0.00230, comb 0.00350; dy -0.00050, comb 0.00070)
+    ROUND 13 ONLY: 10c-r11 right triangle (alpha 8, all) at (1.2063, 0.2707); nearest W7: a8_11 (right triangle, alpha 8) at 6.3 px; nearest of an allowed type (paired elsewhere or beyond the gate): a8_11 at 6.3 px, values within the stated errors (dx +0.00170, comb 0.00350; dy -0.00050, comb 0.00070)
+
+=== NACA RM L8B13 fig. 4(e) (M, p/p0), W7 against round 13
+  axes x = M, y = p_over_p0; 1 px = 0.000562 and 0.00234; gate 6 px
+  W7: 25 symbols (8 circle or square (W7: uncertain), 11 square, 6 circle)
+  round 13: 17 points (8 circle, 9 square); 11 boxes of merged ink holding 22 centres
+  point pairs 14; same type 14; type disagreements 0; W7 only 0; round 13 only 3
+  same type and within errors: as stated 14; 2 sigma, W7 as 1 sigma 14; 2 sigma, W7 as half range 14 (of 14)
+  largest |difference| / combined error as stated, same-type pairs: x 0.94, y 0.54
+    y offset W7 - round 13 in px, circle (6): median -0.0, range -1.1 to +2.5
+    y offset W7 - round 13 in px, square (8): median +1.0, range -0.6 to +2.0
+  W7 points against round 13's boxes: 11 assigned; inside 11; outside 0
+    BOX e-01 (M 0.7187..0.7215, y 1.0482..1.0669): W7 e01 circle or square (W7: uncertain) (0.72, 1.0566): inside; W7 left the type open; either box member
+    BOX e-02 (M 0.7407..0.7446, y 1.0554..1.0671): W7 e02 square (0.7419, 1.0618): inside
+    BOX e-04 (M 0.7812..0.7841, y 1.0441..1.0627): W7 e04 circle or square (W7: uncertain) (0.7826, 1.0558): inside; W7 left the type open; either box member
+    BOX e-05 (M 0.8019..0.8053, y 1.0442..1.0582): W7 e05 square (0.8035, 1.0512): inside
+    BOX e-06 (M 0.83..0.8323, y 1.0444..1.0654): W7 e06 circle or square (W7: uncertain) (0.8313, 1.0559): inside; W7 left the type open; either box member
+    BOX e-07 (M 0.8598..0.8632, y 1.0517..1.068): W7 e07 circle or square (W7: uncertain) (0.8614, 1.0606): inside; W7 left the type open; either box member
+    BOX e-10 (M 0.9647..0.9676, y 1.106..1.1176): W7 e10 circle or square (W7: uncertain) (0.9664, 1.1103): inside; W7 left the type open; either box member
+    BOX e-11 (M 0.9875..0.9903, y 1.1294..1.1434): W7 e11 square (0.9894, 1.1336): inside
+    BOX e-12 (M 1.0268..1.0296, y 1.1738..1.1878): W7 e12 circle (1.0289, 1.1801): inside
+    BOX e-14 (M 1.0649..1.0677, y 1.2343..1.2436): W7 e14 circle or square (W7: uncertain) (1.0667, 1.2382): inside; W7 left the type open; either box member
+    BOX e-15 (M 1.0814..1.0842, y 1.2506..1.2645): W7 e15 square (1.0832, 1.2567): inside
+    BOX MEMBER WITH NO W7 SYMBOL: e-01 circle or square (the other one) (M 0.7187..0.7215)
+    BOX MEMBER WITH NO W7 SYMBOL: e-02 circle (M 0.7407..0.7446)
+    BOX MEMBER WITH NO W7 SYMBOL: e-04 circle or square (the other one) (M 0.7812..0.7841)
+    BOX MEMBER WITH NO W7 SYMBOL: e-05 circle (M 0.8019..0.8053)
+    BOX MEMBER WITH NO W7 SYMBOL: e-06 circle or square (the other one) (M 0.83..0.8323)
+    BOX MEMBER WITH NO W7 SYMBOL: e-07 circle or square (the other one) (M 0.8598..0.8632)
+    BOX MEMBER WITH NO W7 SYMBOL: e-10 circle or square (the other one) (M 0.9647..0.9676)
+    BOX MEMBER WITH NO W7 SYMBOL: e-11 circle (M 0.9875..0.9903)
+    BOX MEMBER WITH NO W7 SYMBOL: e-12 square (M 1.0268..1.0296)
+    BOX MEMBER WITH NO W7 SYMBOL: e-14 circle or square (the other one) (M 1.0649..1.0677)
+    BOX MEMBER WITH NO W7 SYMBOL: e-15 circle (M 1.0814..1.0842)
+    ROUND 13 ONLY: e-03s square (square, all) at (0.7586, 1.0584); nearest W7: e03 (circle, circle) at 2.9 px
+    ROUND 13 ONLY: e-08c circle (circle, all) at (0.8768, 1.0681); nearest W7: e08 (circle or square (W7: uncertain), face uncertain) at 3.2 px; nearest of an allowed type (paired elsewhere or beyond the gate): e08 at 3.2 px, values within the stated errors (dx -0.00010, comb 0.00330; dy -0.00750, comb 0.01310)
+    ROUND 13 ONLY: e-13c circle (circle, all) at (1.042, 1.2192); nearest W7: e13 (square, square) at 2.7 px
+
+=== Summary: figure, W7 symbols, R13 points, R13 boxes, centres in boxes, point pairs, agree as stated, agree 2 sigma (W7 as 1 sigma), agree 2 sigma (W7 as half range), type disagreements, W7 only, R13 only, W7 points on boxes, inside, box members with no W7 symbol
+  rm3323_fig4, 61, 61, 0, 0, 61, 58, 58, 58, 3, 0, 0, 0, 0, 0
+  johnston_fig10a, 59, 59, 0, 0, 58, 58, 58, 58, 0, 1, 1, 0, 0, 0
+  johnston_fig10b, 99, 77, 11, 23, 75, 74, 74, 74, 1, 3, 2, 21, 21, 2
+  johnston_fig10c, 57, 58, 0, 0, 55, 55, 55, 55, 0, 2, 3, 0, 0, 0
+  rml8b13_fig4e, 25, 17, 11, 22, 14, 14, 14, 14, 0, 0, 3, 11, 11, 11
+
+=== R&M 3323 fig. 4: the three heavy glyphs at h/c 0.14, a disagreement on identity (kept, not resolved)
+  M 0.8: W7 B02 'tri_up_heavy', ref 35?, fill partly filled, flag uncertain (partly filled; source uncertain (see method)) at (14.005, -0.7285); round 13 m08-03 31_half_flat_bottom_f, fill filled, flag no at (14.0161, -0.7279); 0.5 px apart
+  M 1.0: W7 C10 'tri_up_heavy', ref 35?, fill partly filled, flag uncertain (partly filled; top under the Cp -0.8 line; source uncertain (see method)) at (14.032, -0.7973); round 13 m10-13 31_half_flat_bottom_f, fill filled, flag no at (14.066, -0.7953); 1.5 px apart
+  M 1.2: W7 D06 'tri_up_heavy', ref 35?, fill partly filled, flag yes (partly filled; flag at upper right; source uncertain (see method)) at (13.887, -0.5317); round 13 m12-09 31_half_flat_bottom_f, fill filled, flag yes at (13.9642, -0.531); 2.3 px apart
+  W7 (375e8de): drawn partly filled, no legend entry matches; kept as '35?', source not traced, sets nothing. Its
+  later note (after opening RM L8B13, 2acdd2a) says they may be ref. 31's half circles drawn filled as a wing-flow
+  test: a possibility only, still 'source not traced'. Round 13 (dc99784): typed (31) filled (a round top, flat
+  bottom), with the caveat that a badly drawn filled glyph of another entry cannot be excluded; m12-09 flagged.
+  The positions agree within the stated errors; the identity (glyph and so the source) does not. Flags also
+  differ: W7 '?' on B02 and C10 (a mark at the upper right) against round 13 unflagged; both flag D06 / m12-09.
+
+=== Notes on the readings (no resolution)
+  * W7's Johnston fig. 10(b) CSV holds 99 symbol rows (20, 21, 20, 18 + 2 uncertain, 18); its method text says 98.
+  * Centre conventions. R&M 3323: both readers take the middle of the glyph's bounding box, flags left out. Johnston:
+    round 13 centres triangles on the bounding box; W7 centres them on the centroid in figs. 10(a) and 10(c) (its
+    symrefine.py) and on the bounding box in 10(b). For a 21 px triangle the two differ by 3.5 px (W7 lower on the
+    page); the median triangle y offsets above (-3.1 px in 10(a), -2.1 px in 10(c), -1.3 px in 10(b)) show it. W7's
+    stated triangle errors include 4 px for this; all triangle pairs are within the stated errors.
+  * RM L8B13 fig. 4(e): at e-03, e-08 and e-13 round 13 fitted a circle and a square 3 to 5 px apart; W7 placed
+    one symbol (e08 'two outlines drawn over each other; placed as one'); the other symbol is round 13 only. At the
+    11 merged stations W7 placed one symbol each; round 13 holds two centres in each box.
+  * Johnston fig. 10(b): at M about 0.985 W7 places only a square (no circle or diamond seen) and round 13 lists
+    a circle, a square and a possible diamond in one box (d11 'may be absent'). Between M 0.914 and 1.007 round 13
+    finds no alpha 8 symbol; W7 places a8_09 at M 0.935 and types a8_07 at M 0.887 as alpha 8 where round 13 has
+    a triangle (alpha 6), t07.
+
+=== Blindness audit
+  Commit times (committer, UTC):
+    375e8de 2026-10-23 07:27:15 +0000  W7, R&M 3323 fig. 4
+    c7c46cf 2026-10-23 07:40:43 +0000  W7, Johnston fig. 10(b)
+    b519c47 2026-10-23 07:52:00 +0000  W7, Johnston figs. 10(a), 10(c)
+    2acdd2a 2026-10-23 07:59:21 +0000  W7, RM L8B13 fig. 4(e)
+    90db015 2026-10-23 08:16:27 +0000  round 13, RM L8B13 fig. 4(e)
+    dc99784 2026-10-23 08:27:05 +0000  round 13, R&M 3323 fig. 4
+    79caf7a 2026-10-23 08:45:47 +0000  round 13, Johnston figs. 10(a) to 10(c)
+  W7's commits are on origin/claude/wip/w7-fins only (git branch -r --contains: origin/claude/wip/w7-fins); none is an ancestor of round 13's commits,
+  and no file of these three figures exists under audit/w7-fins/ on round 13's branch before 90db015 or at 79caf7a.
+  Main (origin/claude/eloquent-dirac-ek9hcf) was last committed at 2026-10-23 07:08:50 +0000, before W7's first reading of these figures; its 0014 section 10.7
+  runs to entry (q); the entries that name these figures, (k) and the headings, hold registrations, not readings.
+  (r), (s) and (t) are on w7-fins only. The handoff branch was last committed at 2026-10-22 10:50:40 +0000.
+  Decisions file (scratchpad decisions.md), every line naming R&M 3323, Johnston or RM L8B13, as read on 2026-10-23:
+    27: W7 23 Oct: amendment (r) done (8e19865). Amendment (s) allocated: R&M 3323 fig 5 -> check; Johnston figs
+        4-9,11,12 removed; RM L8B13 limited to 4(c),4(e), untraced marks set nothing; hole 4 left open. Next free (t).
+    28: (s) done 12bdb52. (t) allocated: RM L8B13 fig 4(c) -> check. Next free (u). Round 13 blind reader started
+        for R&M 3323 fig 4, Johnston 10(a,b,c), RM L8B13 4(e).
+    No value, symbol count or symbol identity of any of these figures.
+  W7: its method files (method_rm3323_figs4_5.md, method_johnston_figs4_12.md) say no other reading was known and
+  that it opened nothing under round10/, round11/, round12/ or pairing-*; RM L8B13's method names no other reading.
+  Round 13 did not exist until 08:16, after all four W7 commits.
+  Round 13: its method.md lists what it opened (the brief, HANDOFF.md, its status file, the decisions file once,
+  rounds 10 and 11's method.md and scripts listing, sources.md by grep, 0014 at entry (k) and the 10.7 heading
+  lines on main, the three PDFs) and says it never entered audit/w7-fins/ or the w7-fins branch. Everything it
+  lists either predates W7's readings or holds no values of these figures (checked above).
+  Verdicts: W7's readings: blind (no other reading existed). Round 13's readings: blind as far as can be checked; nothing
+  it lists opening held W7's values, and W7's values were on no branch it worked from. Its own statement that it
+  did not open the w7-fins branch (reachable by fetch) cannot be checked from the repository. One observation, not
+  evidence either way: on the heavy glyphs round 13 reached the identity W7's later note offered only as a
+  possibility (ref. 31); round 13 gives its own reasons (round top, flat bottom), and W7's note was on w7-fins only.

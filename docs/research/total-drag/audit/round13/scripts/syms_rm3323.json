@@ -1,0 +1,905 @@
+{
+ "r3323f4_m06": {
+  "page": "/tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/round13-img/rm3323/p-023-022.png",
+  "shapes": {
+   "31_half_flat_bottom": [
+    "halfup",
+    5.75
+   ],
+   "31_half_flat_bottom_f": [
+    "halfup_f",
+    5.75
+   ],
+   "32_tri_down": [
+    "tri_down",
+    5.75,
+    9.0
+   ],
+   "33_half_flat_top": [
+    "halfdown",
+    5.75
+   ],
+   "34_diamond": [
+    "diamond",
+    6.0
+   ],
+   "34_diamond_f": [
+    "diamond_f",
+    6.0
+   ],
+   "35_tri_up": [
+    "tri_up",
+    6.25,
+    10.0
+   ],
+   "38_circle": [
+    "circle",
+    5.25
+   ],
+   "39_square": [
+    "square",
+    4.75
+   ],
+   "40_rtri_right_angle_br": [
+    "rtri_r",
+    4.5,
+    8.5
+   ],
+   "41_rtri_right_angle_bl_f": [
+    "rtri_l_f",
+    5.5,
+    10.0
+   ]
+  },
+  "sw": 1.5,
+  "check_fit": true,
+  "conditions": "R&M 3323 fig. 4, M = 0.6, zero incidence",
+  "symbols": [
+   {
+    "id": "m06-01",
+    "series": "ref (38)",
+    "type": "38_circle",
+    "manual": [
+     1043.5,
+     618.0,
+     0.75
+    ],
+    "note": "h/c 10 gridline through it"
+   },
+   {
+    "id": "m06-02",
+    "series": "ref (39)",
+    "type": "39_square",
+    "manual": [
+     927.5,
+     667.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m06-03",
+    "series": "ref (34) filled (free flight)",
+    "type": "34_diamond_f",
+    "manual": [
+     927.0,
+     687.0,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m06-04",
+    "series": "ref (32)",
+    "type": "32_tri_down",
+    "manual": [
+     869.5,
+     680.5,
+     1.0
+    ],
+    "note": "apex merges with the top of m06-05"
+   },
+   {
+    "id": "m06-05",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     869.0,
+     691.5,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m06-06",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     824.5,
+     761.0,
+     0.75
+    ],
+    "note": "flag continues the hypotenuse beyond the apex"
+   },
+   {
+    "id": "m06-07",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     823.0,
+     776.0,
+     0.75
+    ],
+    "note": "flag from its top right corner toward m06-06's base"
+   },
+   {
+    "id": "m06-08",
+    "series": "ref (32)",
+    "type": "32_tri_down",
+    "manual": [
+     824.0,
+     817.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m06-09",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     796.5,
+     833.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m06-10",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     798.5,
+     886.5,
+     1.0
+    ],
+    "note": "its top lies on the -0.2 gridline"
+   },
+   {
+    "id": "m06-11",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     799.0,
+     898.0,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m06-12",
+    "series": "ref (32)",
+    "type": "32_tri_down",
+    "manual": [
+     788.5,
+     916.5,
+     1.0
+    ],
+    "note": "its top edge joins m06-13's; no flag seen"
+   },
+   {
+    "id": "m06-13",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     801.0,
+     914.0,
+     1.0
+    ],
+    "note": "joined to m06-12 along the top"
+   },
+   {
+    "id": "m06-14",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     790.0,
+     930.0,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m06-15",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     761.0,
+     966.5,
+     0.75
+    ],
+    "note": "base runs into the h/c 0 axis"
+   },
+   {
+    "id": "m06-16",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     754.0,
+     1026.5,
+     1.0
+    ],
+    "note": "on the h/c 0 axis; base crosses it"
+   }
+  ]
+ },
+ "r3323f4_m08": {
+  "page": "/tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/round13-img/rm3323/p-023-022.png",
+  "shapes": {
+   "31_half_flat_bottom": [
+    "halfup",
+    5.75
+   ],
+   "31_half_flat_bottom_f": [
+    "halfup_f",
+    5.75
+   ],
+   "32_tri_down": [
+    "tri_down",
+    5.75,
+    9.0
+   ],
+   "33_half_flat_top": [
+    "halfdown",
+    5.75
+   ],
+   "34_diamond": [
+    "diamond",
+    6.0
+   ],
+   "34_diamond_f": [
+    "diamond_f",
+    6.0
+   ],
+   "35_tri_up": [
+    "tri_up",
+    6.25,
+    10.0
+   ],
+   "38_circle": [
+    "circle",
+    5.25
+   ],
+   "39_square": [
+    "square",
+    4.75
+   ],
+   "40_rtri_right_angle_br": [
+    "rtri_r",
+    4.5,
+    8.5
+   ],
+   "41_rtri_right_angle_bl_f": [
+    "rtri_l_f",
+    5.5,
+    10.0
+   ]
+  },
+  "sw": 1.5,
+  "check_fit": true,
+  "conditions": "R&M 3323 fig. 4, M = 0.8, zero incidence",
+  "symbols": [
+   {
+    "id": "m08-01",
+    "series": "ref (35)",
+    "type": "35_tri_up",
+    "manual": [
+     1804.5,
+     486.0,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m08-02",
+    "series": "ref (38)",
+    "type": "38_circle",
+    "manual": [
+     1687.0,
+     567.0,
+     0.75
+    ],
+    "note": "h/c 10 gridline through it"
+   },
+   {
+    "id": "m08-03",
+    "series": "ref (31) filled (free flight)",
+    "type": "31_half_flat_bottom_f",
+    "manual": [
+     1806.0,
+     576.0,
+     0.75
+    ],
+    "note": "dome, flat bottom, filled but for a small hole; typed (31) filled"
+   },
+   {
+    "id": "m08-04",
+    "series": "ref (32)",
+    "type": "32_tri_down",
+    "manual": [
+     1511.5,
+     618.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m08-05",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     1512.0,
+     635.0,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m08-06",
+    "series": "ref (39) flagged (roughness band)",
+    "type": "39_square",
+    "manual": [
+     1572.0,
+     636.5,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m08-07",
+    "series": "ref (39)",
+    "type": "39_square",
+    "manual": [
+     1571.0,
+     649.5,
+     1.0
+    ],
+    "note": "the -0.6 gridline through it"
+   },
+   {
+    "id": "m08-08",
+    "series": "ref (34) filled (free flight)",
+    "type": "34_diamond_f",
+    "manual": [
+     1571.0,
+     666.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m08-09",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1483.5,
+     690.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m08-10",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1483.0,
+     703.0,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m08-11",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     1466.5,
+     740.5,
+     1.0
+    ],
+    "note": "flag continues the hypotenuse"
+   },
+   {
+    "id": "m08-12",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     1466.5,
+     752.0,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m08-13",
+    "series": "ref (32)",
+    "type": "32_tri_down",
+    "manual": [
+     1466.5,
+     766.0,
+     1.0
+    ],
+    "note": "the -0.4 gridline through it"
+   },
+   {
+    "id": "m08-14",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1441.0,
+     825.0,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m08-15",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1440.5,
+     883.5,
+     1.5
+    ],
+    "note": "on the -0.2 gridline; its bottom merges with m08-16's top; type (33) or (39) square, called (33) by its narrowing sides"
+   },
+   {
+    "id": "m08-16",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1440.5,
+     891.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m08-17",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     1430.0,
+     914.5,
+     1.0
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m08-18",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1442.0,
+     919.0,
+     1.0
+    ],
+    "note": "touches m08-17 and m08-19's flag"
+   },
+   {
+    "id": "m08-19",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     1433.0,
+     932.5,
+     0.75
+    ],
+    "note": "flag from its top right corner reaches m08-18"
+   },
+   {
+    "id": "m08-20",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     1403.5,
+     972.5,
+     1.0
+    ],
+    "note": "base runs into the h/c 0 axis"
+   },
+   {
+    "id": "m08-21",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     1397.5,
+     1021.5,
+     1.0
+    ],
+    "note": "on the h/c 0 axis; base crosses it"
+   }
+  ]
+ },
+ "r3323f4_m10": {
+  "page": "/tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/round13-img/rm3323/p-023-022.png",
+  "shapes": {
+   "31_half_flat_bottom": [
+    "halfup",
+    5.75
+   ],
+   "31_half_flat_bottom_f": [
+    "halfup_f",
+    5.75
+   ],
+   "32_tri_down": [
+    "tri_down",
+    5.75,
+    9.0
+   ],
+   "33_half_flat_top": [
+    "halfdown",
+    5.75
+   ],
+   "34_diamond": [
+    "diamond",
+    6.0
+   ],
+   "34_diamond_f": [
+    "diamond_f",
+    6.0
+   ],
+   "35_tri_up": [
+    "tri_up",
+    6.25,
+    10.0
+   ],
+   "38_circle": [
+    "circle",
+    5.25
+   ],
+   "39_square": [
+    "square",
+    4.75
+   ],
+   "40_rtri_right_angle_br": [
+    "rtri_r",
+    4.5,
+    8.5
+   ],
+   "41_rtri_right_angle_bl_f": [
+    "rtri_l_f",
+    5.5,
+    10.0
+   ]
+  },
+  "sw": 1.5,
+  "check_fit": true,
+  "conditions": "R&M 3323 fig. 4 (continued), M = 1.0, zero incidence",
+  "symbols": [
+   {
+    "id": "m10-01",
+    "series": "ref (32)",
+    "type": "32_tri_down",
+    "manual": [
+     875.0,
+     1824.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m10-02",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     874.0,
+     1842.5,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m10-03",
+    "series": "ref (32)",
+    "type": "32_tri_down",
+    "manual": [
+     827.0,
+     1875.5,
+     1.0
+    ],
+    "note": "the -0.8 gridline through its top"
+   },
+   {
+    "id": "m10-04",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     827.0,
+     1900.0,
+     1.0
+    ],
+    "note": "flag from its top right corner; apex merges with m10-05"
+   },
+   {
+    "id": "m10-05",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     831.5,
+     1906.5,
+     1.5
+    ],
+    "note": "merges with m10-04's apex; its flag runs up to m10-04's right corner"
+   },
+   {
+    "id": "m10-06",
+    "series": "ref (32)",
+    "type": "32_tri_down",
+    "manual": [
+     793.5,
+     1969.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m10-07",
+    "series": "ref (32) flagged (roughness band)",
+    "type": "32_tri_down",
+    "manual": [
+     793.5,
+     2014.5,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m10-08",
+    "series": "ref (39) flagged (roughness band)",
+    "type": "39_square",
+    "manual": [
+     933.0,
+     1860.0,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m10-09",
+    "series": "ref (34)",
+    "type": "34_diamond",
+    "manual": [
+     934.0,
+     1888.0,
+     1.5
+    ],
+    "note": "open diamond with a 2 px slit inside; its lower apex merges with m10-10's top; could be a filled diamond with a gap"
+   },
+   {
+    "id": "m10-10",
+    "series": "ref (39)",
+    "type": "39_square",
+    "manual": [
+     934.0,
+     1899.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m10-11",
+    "series": "ref (38)",
+    "type": "38_circle",
+    "manual": [
+     1050.5,
+     1884.0,
+     0.75
+    ],
+    "note": "h/c 10 gridline through it"
+   },
+   {
+    "id": "m10-12",
+    "series": "ref (35)",
+    "type": "35_tri_up",
+    "manual": [
+     1168.5,
+     1849.0,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m10-13",
+    "series": "ref (31) filled (free flight)",
+    "type": "31_half_flat_bottom_f",
+    "manual": [
+     1169.0,
+     1876.0,
+     2.0
+    ],
+    "note": "flat-bottomed, partly filled glyph whose top half lies under the -0.8 gridline (rows 1873 and 1874); typed (31) filled by its flat bottom and its h/c, as m08-03 and m12-09; centre from the visible half"
+   },
+   {
+    "id": "m10-14",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     768.0,
+     2380.0,
+     1.0
+    ],
+    "note": "base runs into the h/c 0 axis"
+   },
+   {
+    "id": "m10-15",
+    "series": "ref (40) flagged (roughness band)",
+    "type": "40_rtri_right_angle_br",
+    "manual": [
+     760.5,
+     2428.0,
+     1.0
+    ],
+    "note": "on the h/c 0 axis; base crosses it"
+   }
+  ]
+ },
+ "r3323f4_m12": {
+  "page": "/tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/round13-img/rm3323/p-023-022.png",
+  "shapes": {
+   "31_half_flat_bottom": [
+    "halfup",
+    5.75
+   ],
+   "31_half_flat_bottom_f": [
+    "halfup_f",
+    5.75
+   ],
+   "32_tri_down": [
+    "tri_down",
+    5.75,
+    9.0
+   ],
+   "33_half_flat_top": [
+    "halfdown",
+    5.75
+   ],
+   "34_diamond": [
+    "diamond",
+    6.0
+   ],
+   "34_diamond_f": [
+    "diamond_f",
+    6.0
+   ],
+   "35_tri_up": [
+    "tri_up",
+    6.25,
+    10.0
+   ],
+   "38_circle": [
+    "circle",
+    5.25
+   ],
+   "39_square": [
+    "square",
+    4.75
+   ],
+   "40_rtri_right_angle_br": [
+    "rtri_r",
+    4.5,
+    8.5
+   ],
+   "41_rtri_right_angle_bl_f": [
+    "rtri_l_f",
+    5.5,
+    10.0
+   ]
+  },
+  "sw": 1.5,
+  "check_fit": true,
+  "conditions": "R&M 3323 fig. 4 (continued), M = 1.2, zero incidence",
+  "symbols": [
+   {
+    "id": "m12-01",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1450.5,
+     2004.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m12-02",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1492.0,
+     1998.5,
+     1.0
+    ],
+    "note": "its bottom merges with m12-03's top"
+   },
+   {
+    "id": "m12-03",
+    "series": "ref (33)",
+    "type": "33_half_flat_top",
+    "manual": [
+     1492.5,
+     2009.0,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m12-04",
+    "series": "ref (39) flagged (roughness band)",
+    "type": "39_square",
+    "manual": [
+     1581.0,
+     1966.5,
+     0.75
+    ],
+    "note": "flag from its top right corner"
+   },
+   {
+    "id": "m12-05",
+    "series": "ref (34) filled (free flight)",
+    "type": "34_diamond_f",
+    "manual": [
+     1579.0,
+     2064.5,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m12-06",
+    "series": "ref (38)",
+    "type": "38_circle",
+    "manual": [
+     1698.0,
+     2034.5,
+     0.75
+    ],
+    "note": "h/c 10 gridline through it"
+   },
+   {
+    "id": "m12-07",
+    "series": "ref (41) filled (free flight)",
+    "type": "41_rtri_right_angle_bl_f",
+    "manual": [
+     1697.0,
+     2094.0,
+     0.75
+    ],
+    "note": "filled right triangle, vertical side on the left; the h/c 10 gridline is broken where it lies"
+   },
+   {
+    "id": "m12-08",
+    "series": "ref (35)",
+    "type": "35_tri_up",
+    "manual": [
+     1813.0,
+     2014.0,
+     0.75
+    ],
+    "note": ""
+   },
+   {
+    "id": "m12-09",
+    "series": "ref (31) filled (free flight) flagged (roughness band)",
+    "type": "31_half_flat_bottom_f",
+    "manual": [
+     1814.0,
+     2029.0,
+     1.0
+    ],
+    "note": "flat-bottomed dome with a tail at its top right and its inside partly inked; typed (31), flagged, fill uncertain"
+   }
+  ]
+ }
+}

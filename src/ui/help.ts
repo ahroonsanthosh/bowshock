@@ -46,9 +46,28 @@ export class Help {
     const titleId = 'help-title';
     const keys = h('table', { className: 'help__keys' });
     const tbody = h('tbody');
+    const escape = h(
+      'tr',
+      {},
+      h('th', { attrs: { scope: 'row' } }, h('kbd', { text: 'Esc' })),
+      h('td', { text: 'Close this help, or an open menu' }),
+    );
     // A binding without a description is listed with another (the four arrows as one).
+    let group: string | undefined;
     for (const binding of options.bindings.filter((b) => b.description !== '')) {
       const labels = bindingLabels(binding);
+      // The keys of one view of a page with two, under its name, after the page's own.
+      if (binding.group !== undefined && binding.group !== group) {
+        if (escape.parentNode === null) tbody.append(escape);
+        tbody.append(
+          h(
+            'tr',
+            { className: 'help__group' },
+            h('th', { text: binding.group, attrs: { scope: 'colgroup', colspan: '2' } }),
+          ),
+        );
+      }
+      group = binding.group;
       tbody.append(
         h(
           'tr',
@@ -58,14 +77,7 @@ export class Help {
         ),
       );
     }
-    tbody.append(
-      h(
-        'tr',
-        {},
-        h('th', { attrs: { scope: 'row' } }, h('kbd', { text: 'Esc' })),
-        h('td', { text: 'Close this help, or an open menu' }),
-      ),
-    );
+    if (escape.parentNode === null) tbody.append(escape);
     keys.append(
       h('caption', { className: 'visually-hidden', text: 'Keys and what they do' }),
       tbody,
@@ -207,8 +219,8 @@ export function bandSection(): HelpSection {
   return {
     title: 'The band and the status',
     body: [
-      'bowshock shows no drag value without its band and its status. The wave drag’s band is measured from nested grids, each twice as fine as the one before, and includes an allowance of 7e-5 of the value for an error the grids cannot show; where no band can be measured, the value is marked not verified.',
-      'The status is written in words as well as colour. On the live flow and ramp pages: green for a value verified (its band measured) or a run converged; amber for a value not verified, or a run stopped at its limit; red where there is no value (refused, not converged, or a failure of the GPU), with the reason. The drag page keeps its own wording until it moves to this layout.',
+      'bowshock shows no drag value without its band and its status. The wave drag’s band is measured from nested grids, each twice as fine as the one before, and includes an allowance of 7e-5 of the value (8e-4 on Von Karman noses) for an error the grids cannot show; where no band can be measured, the value is marked not verified.',
+      'The status is written in words as well as colour: green for a value verified (its band measured) or a run converged; amber for a value not verified, or a run stopped at its limit; red where there is no value (refused, not converged, or a failure of the GPU), with the reason. The total drag’s badge takes the colour of its own label, the claim beside it, and red where it is refused.',
     ],
   };
 }

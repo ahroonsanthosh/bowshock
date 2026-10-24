@@ -87,3 +87,17 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   `tests/validation/basic-finner.test.ts` holds the corrected values from
   the `.json` beside round 5's. `base-rows.test.ts` and its output are the
   superseded factor's, kept as they came out.
+- `brl934-range-a.out` and `.json`: BRL Report 934's range A (Mach 1.5 to
+  2.47), run once on 2026-10-22 at the pre-run commit 1af3786, as
+  registered in 0014 section 10 and its amendment 10.7 (n). The runner is
+  the committed test `tests/validation/brl934-range-a.test.ts` itself,
+  run with `BRL934_RUN_OUT` naming a folder, which writes both files
+  there; they are copied here unchanged. They list the rounds of range A
+  with each one's admission, then per model (the present factor at the
+  seven rounds at M 1.798 and above; the rebuilt factor at all ten
+  admitted) and round: CD0, the Reynolds number, the cluster spread, the
+  total with its components and input bands, the residual and the
+  tolerance, or the refusals; the library's own routing; the registered
+  sensitivities and the two reading alternatives of 10.7 (n). The test
+  holds the recorded values. The result:
+  [0020](../../design/0020-brl934-range-a.md).

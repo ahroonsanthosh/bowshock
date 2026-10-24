@@ -50,6 +50,7 @@ import {
   PUBLISHED_GATE,
   totalDragView,
   SUSPENDED_REASON,
+  type Claim,
   type NoseState,
   type TotalDragForm,
   type TotalDragView,
@@ -63,6 +64,7 @@ const exactNose = (form: TotalDragForm): NoseState => {
   const n = form.body.nose;
   return {
     kind: 'solved',
+    verified: true,
     component: exactConeNoseWaveDrag(form.mach, Math.atan(n.baseRadius / n.length)),
   };
 };
@@ -77,6 +79,11 @@ const totalOf = (view: TotalDragView): TotalDrag => {
 };
 const reasons = (view: TotalDragView) =>
   view.kind === 'refused' ? view.refusals.map((r) => `${r.component}: ${r.reason}`) : [];
+/** An estimate's reasons; a validated claim has none (it has caveats). */
+const reasonsOf = (claim: Claim): readonly string[] => {
+  if (claim.kind !== 'estimate') throw new Error(`expected an estimate, got ${claim.kind}`);
+  return claim.reasons;
+};
 
 describe('the class rule', { timeout: 60_000 }, () => {
   it('the Basic Finner at its gated shots to Mach 2.15, and the default at Mach 2, are inside; the shots above, outside by their Mach number alone', () => {
@@ -371,7 +378,7 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
       expect(v.claim.kind).toBe('estimate');
       expect(basicFinnerClass(form).inside).toBe(mach <= 2.15);
       expect(v.claim.text).toBe(mach <= 2.15 ? CLASS_CLAIM : ESTIMATE_CLAIM);
-      expect(v.claim.reasons).toEqual(
+      expect(reasonsOf(v.claim)).toEqual(
         mach <= 2.15
           ? [SUSPENDED_REASON]
           : [
@@ -406,17 +413,20 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
       if (v.kind !== 'total') throw new Error(`refused at M ${mach}: ${reasons(v).join(', ')}`);
       expect(v.claim.kind).toBe('estimate');
       // The reason says plainly why: inside the class, the suspension; above it, the class.
-      expect(v.claim.reasons[0]).toBe(
+      expect(reasonsOf(v.claim)[0]).toBe(
         mach <= 2.15 ? SUSPENDED_REASON : `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
       );
       // Nowhere in what the page shows is the total called validated.
       const said = displayText(totalDragDisplay(v));
       expect(said).toContain(': an estimate, not validated');
-      // (The one other use of the word is body friction's band, validated on friction data.)
+      // (The other uses of the word are body friction's band, validated on friction data, and,
+      // outside the class, the BRL sub-class it lies outside, 0014 section 10.7 (q).)
       expect(
         said
           .replace(/not validated/gi, '')
-          .replace("friction's band is validated on wind-tunnel and flight data of friction", ''),
+          .replace("friction's band is validated on wind-tunnel and flight data of friction", '')
+          .replace('(whose validated claim is suspended;', '')
+          .replace('outside its narrow validated sub-class', ''),
       ).not.toMatch(/validated/i);
       const base = v.total.components.find((c) => c.name === 'body base')!;
       expect(base.label).toContain(
@@ -583,12 +593,12 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       expect(v.claim.kind).toBe('estimate');
       if (mach <= 2.15) {
         expect(v.claim.text).toBe(CLASS_CLAIM);
-        expect(v.claim.reasons).toEqual([SUSPENDED_REASON]);
+        expect(reasonsOf(v.claim)).toEqual([SUSPENDED_REASON]);
         return;
       }
       expect(v.claim.text).toBe(ESTIMATE_CLAIM);
       // The five above M 2.56 also carry the bounded factor (0014 section 10.2).
-      expect(v.claim.reasons).toEqual([
+      expect(reasonsOf(v.claim)).toEqual([
         `Mach ${mach} is outside 1.799 to 2.15${ABOVE_THE_CLASS}`,
         ...(mach > 2.56 ? [BOUNDED_REASON] : []),
       ]);
@@ -631,14 +641,23 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
     const vk = { value: 0.0804, uncertainty: 8.7e-5, grids: 4, floor: TWO_SCALE_DRAG_FLOOR };
     expect(noseComponentOf(vk).band).toContain('an allowance of 8e-4 of the value');
     // Its four-grid band is not checked against a reference yet: said so.
-    expect(noseComponentOf(vk).band).toContain('a band from four grids has not yet been checked');
+    expect(noseComponentOf(vk).band).toContain(
+      'a band from four grids has been checked against a reference on one nose only',
+    );
     expect(usual.band).not.toContain('four grids');
     expect(bandCaveat(FITTED_DRAG_FLOOR)).toBe('');
   });
 
   it('before the solve: the other components are checked, no number is given', () => {
     const v = totalDragView(basicFinnerForm(), { kind: 'pending' });
-    expect(v).toEqual({ kind: 'pending', check: { inside: true, outside: [] } });
+    expect(v.kind).toBe('pending');
+    if (v.kind !== 'pending') return;
+    expect(v.check).toEqual({ inside: true, outside: [] });
+    // DREV's rounded edge, at the class's conditions: outside the BRL sub-class by both.
+    expect(v.subClass.inside).toBe(false);
+    expect(v.subClass.shape).toEqual([
+      'the fin leading edges are rounded (0.004 cal radius), not sharp',
+    ]);
   });
 
   it('a nose without a band refuses the total, with any other reason beside it', () => {
@@ -664,7 +683,7 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
       grids: 4,
     });
     const a = totalOf(totalDragView(f, exact));
-    const b = totalOf(totalDragView(f, { kind: 'solved', component: solved }));
+    const b = totalOf(totalDragView(f, { kind: 'solved', verified: true, component: solved }));
     expect(b.cd - a.cd).toBeCloseTo(solved.cd - exact.component.cd, 14);
     expect(b.components[0]).toBe(solved);
     expect(b.high - b.low - (a.high - a.low)).toBeCloseTo(
@@ -681,7 +700,7 @@ describe(
     const f = basicFinnerForm(2.0, 1.6e7);
     const estimate = (form: TotalDragForm) => {
       const nose = noseComponentOf({ value: 0.09, uncertainty: 1e-5, grids: 4 });
-      const v = totalDragView(form, { kind: 'solved', component: nose });
+      const v = totalDragView(form, { kind: 'solved', verified: true, component: nose });
       if (v.kind !== 'total')
         throw new Error(`expected a total, got ${v.kind}: ${reasons(v).join(', ')}`);
       return v;
@@ -695,7 +714,7 @@ describe(
       });
       expect(v.claim.kind).toBe('estimate');
       expect(v.claim.text).toBe(ESTIMATE_CLAIM);
-      expect(v.claim.reasons).toEqual([
+      expect(reasonsOf(v.claim)).toEqual([
         "the nose is not a cone (the Basic Finner's is a 20 deg cone)",
         'the Reynolds number on length, 4.00e7, is outside 1.19e7 to 2.0e7',
       ]);
@@ -718,7 +737,7 @@ describe(
       ]);
       const base = v.total.components.find((c) => c.name === 'body base')!;
       expect(base.label).toContain('not validated with fins');
-      expect(v.claim.reasons.length).toBe(3);
+      expect(reasonsOf(v.claim).length).toBe(3);
     });
   },
 );

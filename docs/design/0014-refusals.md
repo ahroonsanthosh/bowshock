@@ -986,7 +986,11 @@ section 6.4).
   at its rounds at Mach 1.798 to 2.47, as 10.3's last bullet registers.
   If it passes by rule 4 of 10.1, the class is validated over what that
   range supports; if it fails, the claim is withdrawn, as registered.
-  Not run.
+  Not run (as written on 2026-10-21). Run once on 2026-10-22, as
+  registered in amendment (n): the present model passed at all seven
+  rounds (0020). Range A supports nothing inside the class, so the class
+  stays suspended, and a narrow sub-class at the tested conditions is
+  validated instead: amendment (q).
 - _History._ The second run (0010 section 4.2), round 5's tolerances
   (0010 section 10) and the correction's residuals (0010 section 11.6)
   are kept in the record as they were.
@@ -1191,3 +1195,539 @@ and fin friction refuses every case (the six totals at Mach 1.2 to 1.5,
 double wedges, are refused for it); totals of all bands 1.9% (Mach 1.5 to
 1.8: 2.5%; 1.8 to 3.0: 5.2%), the cross-check agreeing on all 1200
 cases.
+
+**2026-10-21 (j): the fins' own-drag band above Mach 2.96 labelled** (the
+coordinator's decision on amendment (f)). Above the ARCAS increments'
+highest Mach number, 2.96, the band is carried, not refused, and the
+labels of fin friction and of the wave drag of sharp sections now say so:
+"at Mach M the band is carried d in Mach beyond its measurements (the
+ARCAS increments end at Mach 2.96)", d at most 0.04 for a total (the body
+base and the fins at the base refuse above Mach 3.0). The Basic Finner's
+gated shot at Mach 2.97 carries the words; no number changes. First
+lettered (g); re-lettered (j) on 2026-10-22, the letters (g) to (i) being
+W1's.
+
+**2026-10-21 (k): the band-setting data of W7's fin terms, named before
+any is read** (rule 2 of 10.1; the coordinator's decisions of 2026-10-21
+on design record 0019). No figure below has been read for a value; each
+was opened only to see what it covers (0019 section 2). Each is read
+twice, by this record's reader and blind by a second, before it sets a
+band. First lettered (h); re-lettered (k) on 2026-10-22, as (j).
+
+| Source                                                        | Sets bands with                                                                                                                                                                                                                                  | Not used to set bands                                                                                              |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Bryson, NACA TR 1094 (NTRS 19930092136)                       | figs. 13 and 14 (the thin wedges' forebody drag against Mach number, and in transonic similarity variables); figs. 15 and 16 (the 26.57 deg wedge at Mach 1.44, for whether the similarity reaches bevels of 10 to 15 deg); fig. 1 (the models)  | figs. 22 and 23 (the 12% biconvex airfoil): a check of 0019's ordering for rounded edges only; the rest            |
+| Rogers, Berry and Quincey, ARC R&M 3348 (AERADE 1826.2/3929)  | table 3 (base pressures, typed twice); figs. 30a and 30b (base pressure against Mach number and M cos(sweep)); figs. 31a, 31b and 32 to 36 (forebody and complete chordwise forces, single and double wedge); figs. 2 and 3 (planform, sections) | the normal-force and shock-position figures                                                                        |
+| Nash, Quincey and Callinan, ARC R&M 3427 (AERADE 1826.2/4011) | figs. 9, 10, 13, 15 and 16 (the layers; base pressure against Mach number; its spanwise and sectionwise variation); figs. 2 and 3 (the model, the tappings)                                                                                      | the splitter plates, the step and the cavity; its semicircular trailing edge (W11's, for a later record)           |
+| Nash, ARC R&M 3323 (AERADE 1826.2/3903)                       | figs. 4 and 5, each plotted set once its source is traced; a set that appears elsewhere in this table is counted once                                                                                                                            | the rest                                                                                                           |
+| Morrow and Katz, NACA TN 3548 (NTRS 19930084307)              | fig. 6, as 10.1 names it; it appears to be RM A51J25 fig. 7's PARD set (0016's `fin_edges_w34.md` section 6), so the two are counted as one set                                                                                                  | figs. 7 to 10: they carry the PARD standard body's totals (its fig. 4 is that body), so they are held back with it |
+| RM A51J25                                                     | fig. 7, as 10.1 names it, below M' 1.5 too                                                                                                                                                                                                       |                                                                                                                    |
+| Johnston, NASA Memo 4-30-59L (NTRS 19980228287)               | figs. 4 to 12 (the sharp single wedge: forces from pressures, base pressure and drag), 13 (the leading-edge radius), 16 to 23 (the diamond, and the two compared)                                                                                | figs. 14 and 15 (pressure pulsations)                                                                              |
+| Sawyer and Daum, NACA RM L8B13 (NTRS 19930085324)             | fig. 4(c) to 4(e) (the wedge's base and sides)                                                                                                                                                                                                   | the cylinders' figs. 4(a) and 4(b)                                                                                 |
+| Humphreys, NACA TN 3306 (NTRS 19930084050)                    | figs. 7 to 9 (zero-lift pressure drag, its fore and aft parts, in transonic similarity variables)                                                                                                                                                | the rest                                                                                                           |
+| McDevitt, NACA TR 1253 (NTRS 19930092253)                     | figs. 6 to 8 (the symmetrical wings' minimum pressure drag: its correlation, against Mach number, its summary)                                                                                                                                   | the cambered wings                                                                                                 |
+| Nelson, Allen and Krumm, NACA TN 3529 (NTRS 19930084232)      | fig. 14 (minimum pressure drag against Mach number) and the basic drag data at zero lift it is formed from (figs. 4 to 32)                                                                                                                       | lift and moments                                                                                                   |
+| Few and Fournier, NACA RM L54B25 (NTRS 19930093723)           | figs. 5 to 20 at zero lift (the basic drag data), figs. 21 and 22 (the summary and the pressure-drag rise)                                                                                                                                       | lift and moments                                                                                                   |
+| Howell and Braslow, NACA RM L55H09 (NTRS 20050019382)         | the fins-on minus fins-off pressure-drag increments and the tunnel's base pressures, their figures named here before they are read, and only once its text and fig. 1 (the model) show its body is neither the PARD standard body nor the RM-10  | its airplane model; everything, if its body is a held-back one                                                     |
+| NASA CR-149372 (Macha)                                        | as 10.1 names it for W4                                                                                                                                                                                                                          | fig. 8a (subsonic front sides): a check of 0019's ordering for rounded edges only                                  |
+
+Checks, which set nothing: TN 3469, TR 1359, ARC CP 145, TN 1211, ARC
+R&M 3465, TN D-3634 (the blunt extensions' minimum-drag increments, a
+check of the rounded-edge bounds), RM L53L24a, and Pepper's blunt-nosed
+65A009 wing (its abstract). Not used: the PARD wing tests whose wing
+increments are formed on the PARD standard body (RM L50G31, RM L52F02a and
+the like), unless a later record shows the body is another.
+
+Decisions recorded with this registration (the coordinator's, under the
+owner's rule):
+
+1. **Rounded leading edges of flat plates below M_n 1.0** are served
+   "bounded, not measured" (10.2): from no drag on the nose to the term at
+   M_n 1.0 at its band's high end, both orderings written in 0019 section
+   3.2 with their physics and the data that check them, and served only
+   after an independent review of that argument. Where the written
+   argument finds a bound can be crossed, that bound is widened to what
+   the argument supports, or the range it cannot support is refused,
+   before the review.
+2. **Bevelled leading edges at M_n 0.9 to 1.2**, where TR 1094 has no
+   points, only "bounded, not measured" between measured values, its
+   ordering written in 0019 section 3.3; transonic small-disturbance
+   theory is never the nominal. Bevels of 10 to 15 deg only if TR 1094's
+   26.57 deg wedge supports the similarity in the data; otherwise refused.
+3. **Swept blunt trailing edges at Mach 1.0 to 1.2** are served if R&M
+   3348's swept single-wedge wings, read twice (table 3, figs. 30a and
+   30b), set the band directly. This changes 0016 section 6's ruling
+   (W3(c)) for Mach 1.0 to 1.2 only. It concerns the edge's own base drag:
+   the fins-on-base factor (W1), which refuses swept trailing edges at the
+   base, where nothing measures them, is a separate term and is not
+   changed by it.
+
+**2026-10-21 (l): further band-setting figures for W7's fin terms, named
+before they are read** (rule 2 of 10.1, as (k)). Found while typing R&M
+3348 table 3 and opening R&M 3427; none has been read for a value. First
+lettered (i); re-lettered (l) on 2026-10-22, as (j).
+
+| Source                                                        | Sets bands with                                                                                                                                                                                                                                                     | Not used to set bands      |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Rogers, Berry and Quincey, ARC R&M 3348 (AERADE 1826.2/3929)  | figs. 47 to 52, the single-wedge section's pressure distributions at the pressure-plotting station, Mach 0.70 to 1.20: the surface pressure just ahead of the base (x/c 0.995), for the local M' and p' with which table 3's base pressures are compared            | the rest of figs. 40 to 58 |
+|                                                               | tables 4 and 5 and fig. 59, the balance results (single and double wedge; the report notes the single wedge's drag includes its raked tip edge): candidates for the fins' own drag near Mach 1 (F1) and for F5, what each sets decided by a later record before use |                            |
+| Nash, Quincey and Callinan, ARC R&M 3427 (AERADE 1826.2/4011) | fig. 18 (the Reynolds number's effect on base pressure); fig. 39 (the base conditions' effect on the surface pressures upstream of the base)                                                                                                                        |                            |
+
+**2026-10-22 (m): R&M 3427 fig. 13's hole 4, named before it is read**
+(rule 2 of 10.1, as (k)). Fig. 13 of Nash, Quincey and Callinan (ARC R&M
+3427, AERADE 1826.2/4011, PDF p. 37) is named by (k) for its base
+pressures (holes 5, 6 and 7), read once (0019's reader) with a blind
+second reading queued. Its lower panel holds the surface pressure on the
+parallel afterbody at four holes; hole 4, at x/h -0.167 (0.1 in ahead of
+the base, fig. 3), is now named band-setting, for the local Mach number
+and static pressure just ahead of the base, with which the section's base
+pressures are compared with RM A51J25 fig. 7's curve (on M', p') and with
+R&M 3348's table 3 (on its own local values, from figs. 47 to 52, (l)).
+Holes 1 to 3 (x/h -0.330, -0.667, -1.667) are not used to set bands. No
+value of hole 4 has been read; it is read twice before use.
+
+**2026-10-22 (n): BRL Report 934's range A: its readings, rounds and
+inputs, fixed before its run** (10.3, 10.5, 10.6; letters (j) to (m) are
+reserved for another branch). Written and committed by the run's
+operator before any model value was computed for any BRL 934 round; no
+comparison of a BRL value with a model value exists before this commit.
+The run follows once this commit exists, at this commit, once, and its
+result is recorded whatever it is (rule 3 of 10.1), in
+`docs/design/0020-brl934-range-a.md`.
+
+- _Readings: 10.4's line on BRL 934 brought up to date._ 10.4 listed
+  "BRL 934's Graph I (its tables were read twice by the same reader; a
+  second reader is pending, 0010 section 9)" as read once. Now: Tables II
+  and III are read twice, the second blind by a second reader (round 9,
+  `docs/research/total-drag/audit/round9/`), paired by the coordinator on
+  2026-10-22 with 0 differences on M, mean squared yaw, C_D and -C_Ma
+  (Table III) and on M and average yaw (Table II), all 27 rounds (the
+  pairing repeated by `tests/validation/brl934-readings.test.ts`); Graph
+  I's symbols are read by two readers (the transcription's section 7, the
+  csv's graph1 column; round 7, `audit/round7/method.md` item 5, paired in
+  `readings/brl934_graph1_pairing.csv`); Graph II is read twice by two
+  methods, by one reader (the transcription's section 7). Every value the
+  run uses is read twice (rule 5 of 10.1).
+- _Rounds_ (10.6 item 5's rule, `admission` in `src/validation/brl934.ts`;
+  no drag value used). Of the 16 rounds of Table III in range A, ten are
+  in: 3254 (M 1.506, 3.7 deg^2), 2595 (1.784, 0.6), 2599 (1.788, 1.5),
+  2591 (1.801, 0.2), 2588 (1.802, 0.4), 2590 (1.803, 0.1), 2596 (1.814,
+  1.5), 2589 (1.827, 0.7), 3263 (2.423, 2.9) and 3264 (2.468, 0.2), each
+  with its mean squared yaw printed and at most 5 deg^2 in both readings
+  of Table III, and marked laminar by neither reading of Graph I (the
+  phase-1 rounds carry only the consolidation symbol; 3254 a plus and a
+  dot in both; 3263 and 3264 below). Six are out: 2593 (53.4 deg^2), 2594
+  (36.2), 2598 (5.6) and 3256 (6.6) for their yaw; 3255, no mean squared
+  yaw printed (blank in both readings; Table II average yaw 0, "Model
+  Magnet de-magnetized"); 3249, marked laminar (an open circle,
+  "corrected for yaw and full turbulent B.L.") by both readings. 3264 is
+  used at Table III's values (C_D 0.449), round 9 reading them alike;
+  Graph I's only mark at M 2.47 lies at C_D 0.471 to 0.474 in both
+  readings, nothing near 0.449. The present model is run at the seven at
+  M 1.798 and above (2591, 2588, 2590, 2596, 2589, 3263, 3264), the
+  rebuilt factor at all ten.
+- _Inputs_, each with its item of 10.6:
+  - Item 1, model diameter: 0.78 to 0.82 in, run at both ends; the
+    nominal at the midpoint, 0.80 in. No BRL or BuOrd source stating it
+    was reached.
+  - Item 2, range air: 288 to 298 K at 101325 Pa, run at both ends; the
+    nominal at the midpoint, 293 K. With the diameter: the total at the
+    four corners (0.78 and 0.82 in, 288 and 298 K) against the total at
+    the nominal, as one input band ("diameter and air"). The Reynolds
+    number on the diameter is rho M a d / mu, a = (1.4 x 287.05 T)^0.5,
+    rho = p / (287.05 T), mu by Sutherland's law (1.458e-6, 110.4 K). No
+    BRL record of the range air was reached.
+  - Item 3, fin leading edge: sharp, no rounded-edge term. Sensitivity
+    beside the verdict: DREV's 0.004 cal edge, computed in full (its
+    nominal, corners and tolerance) and reported where the library
+    serves it.
+  - Item 4, trailing-edge area: constant thickness, 0.32 cal^2 (0.08 cal
+    over the 1 cal span, four fins). Sensitivity beside the verdict: the
+    tapered alternative as the trailing-edge term halved by hand: its
+    nominal, its model-form band ends, its laminar change in every
+    transition state and its value at every corner, each times 0.5.
+  - Item 5, rounds: above.
+  - Item 5, zero-yaw value: CD0 = C_D - C_D'(M) dbar^2 (dbar^2 in rad^2),
+    C_D' the mean of Graph II's two readings, each linear between its
+    points. Each reading alone moves no admitted round's CD0 by 1e-4.
+    Beside it, the text's rounded C_D' (report p. 8): the line through 15.0
+    at M 1.4 and 8.9 at 2.4, continued beyond 2.4 for 3263 and 3264 (as
+    the transcription's section 7 computes it), with the cluster spreads
+    recomputed from those values.
+  - Item 5, transition: fully turbulent nominal; 0008's transition input
+    as for the DREV gate, laminar runs to Re_T 5e5, 1.6e6 and 3e6, each a
+    state of the boundary layer with the body also taken turbulent, the
+    fins' trailing-edge laminar term in the states that reach it (0010
+    section 10.1).
+  - Item 5, wall: adiabatic nominal; the input the wall at the nominal
+    air temperature, 293 K.
+  - Item 5, nose: a sharp 10 deg cone, 0.5 / tan 10 deg = 2.836 cal long,
+    its wave drag the exact Taylor-Maccoll value; the cylinder to 10.0
+    cal; four rectangular fins of 1 cal chord and span at the base,
+    unswept and uncanted, an 8% single wedge 0.08 cal thick at the
+    trailing edge. Free-stream edge conditions for friction, as for DREV.
+  - Item 5, tolerance: rule 4 of 10.1 as the DREV gate builds it
+    (`tests/validation/basic-finner.test.ts`; 0010 sections 4.1, 6.2 and
+    10.3): over the modelled total, the model-form band, the input bands
+    (transition, wall, roughness at zero, and diameter and air) and the
+    spread of the round's Mach cluster (its least and greatest CD0 over
+    its mean, minus 1). Clusters: M 1.50 to 1.51, 1.78 to 1.83, 2.42 to
+    2.47. Each model's spread is taken over the rounds it is run at: for
+    the present model the five at M 1.80 to 1.83 (CD0 0.6033 to 0.6436)
+    and the two at 2.42 to 2.47; for the rebuilt factor one, seven and
+    two. The residual is CD0 / modelled - 1; a round passes inside its
+    tolerance, and a model passes when every one of its rounds does.
+- _What is known before the run, from the records alone._ 0015 sections
+  1, 4, 6 and 9 state that the rebuilt factor refuses fins whose faces
+  diverge to a blunt trailing edge, "the Basic Finner's wedges among
+  them", so that range A "tests the present factor (10.3) and records the
+  rebuilt one's refusal". The run asks the rebuilt factor at every
+  admitted round all the same and records what it gives. W2 serves the
+  body base below Mach 1.5 only; every admitted round lies at M 1.506 or
+  above, so it serves none. The library itself serves the present factor
+  from M 1.798, so its own total at 3254, 2595 and 2599 goes to the
+  rebuilt factor; the run reports that routing beside each round.
+- _Where the text leaves a choice, decided now._
+  - "Which neither reading of Graph I marks laminar" (item 5) and "3249
+    is out if both readings mark it laminar" differ in wording; on the
+    readings as recorded only 3249 is marked, by both, so they admit the
+    same rounds. Round 7 first called 3263's lower symbol an open circle,
+    at low confidence ("could be a dot"); its third look, after the
+    pairing, found it a dot (the "hole" the wedge between the blob and
+    the faired curve) and is recorded as replacing that call for any use;
+    the first reading calls it a dot. Graph I's laminar groups show a
+    dot and an open circle beneath the plus, and 3263's group has one
+    mark there. 3263 is admitted on the readings as recorded. Since the
+    blind call was not a dot, the run also reports, beside the verdict
+    and not as it, 3264 with 3263 out (3264's cluster then one round, its
+    spread zero).
+  - The present model's spread at M 1.80 to 1.83 is the five rounds' it
+    is run at, the transcription's section 9 item 9 as 10.6 item 5
+    adopts it, and the narrower: 2595 and 2599, admitted for the rebuilt
+    factor, would widen it (-3.5% to +5.0% for -2.6% to +3.9%). The
+    seven-round spread is reported beside the verdict, not as it.
+  - The air range is item 2's 288 to 298 K, not the transcription
+    script's 288.15 to 298.15 K; the nominals are the ranges' midpoints,
+    the band covering both ends.
+- _The harness._ `src/validation/hold-out-run.ts`, validated on the DREV
+  gate's 11 shots, whose recorded values it reproduces, and its rebuilt
+  body base held equal to the library's wherever the library routes to
+  the rebuilt factor (`tests/validation/hold-out-run.test.ts`); the data,
+  readings and admission in `src/validation/brl934.ts` and
+  `tests/validation/brl934-readings.test.ts`; the run,
+  `tests/validation/brl934-range-a.test.ts`, its expectations placeholders
+  until the run's values are recorded.
+
+**2026-10-22 (o): NASA TM X-653, named before it is opened for F2, and
+rounded leading edges below M_n 1.0 refused until it is read** (rule 2 of
+10.1, as (k); the owner's decision 7.5 of 2026-10-22, which supersedes
+(k)'s decision 1). Jorgensen, Spahr and Hill, "Comparison of the
+effectiveness of flares with that of fins for stabilizing low fineness
+ratio bodies at Mach numbers from 0.6 to 5.8", NASA TM X-653 (A-575), May
+1962, NTRS 19720065133 (the catalogue record and its abstract only: tunnel
+tests at Mach 0.6 to 3.8 of normal force, centre of pressure and drag of
+conical noses with cylindrical midsections and finned or flared
+aftersections, among them "fin leading-edge bluntness"). It is named a
+candidate band-setting source for F2 (0019 section 3.2), for the drag of
+fins with blunt or rounded leading edges against the same fins with
+sharp ones, at subsonic normal Mach numbers of the leading edge. Which of
+its figures or tables set what is decided by a further dated entry, made
+after its model drawings and list of figures are seen and before any
+value is read: the fins' sections, edge shape and radius, sweep and
+Reynolds numbers, and whether its drag includes the base, decide whether
+it measures a rounded plate edge at all. Its body is a low-fineness
+conical-nosed cylinder, not a held-back body; if a figure carries a
+held-back set it is not used. A record kept honestly: the total-drag
+validation search (`docs/research/total-drag/data/validation_candidates.md`)
+lists TM X-653 as set aside after opening, for its totals ("tunnel, drag
+without base drag"); no fin-edge value from it was read or recorded there
+or anywhere in this repository. Until it is read (twice, as (k)), rounded
+leading edges of flat plates below M_n 1.0 are refused, with that reason;
+the bounded term of 0019 section 3.2 is kept as a recorded candidate,
+not wired. If TM X-653 measures such an edge, the term becomes
+"estimated on component data"; if it does not, the bounded term is put
+to the owner again with its ordering (U3)'s weakness named in its label.
+
+_A note on (k), item 3._ Its last sentence describes the fins-on-base
+factor (W1) as it stood on 2026-10-21, before W1 was on the main branch.
+Since W1's merge (b86c308), 0015 section 3.4 governs: sharp sections with
+the trailing edge swept at the base are refused, fins with the leading
+edge swept 45 to 60 deg are served with the trailing edge unswept, or
+swept aft no more than the leading edge only 0.9 to 1 root chord ahead of
+the base, and the present factor refuses swept fins at the base (0015
+section 5). Item 3's decision on the edge's own base drag is unchanged,
+and it remains a term separate from that factor.
+
+_A check that sets nothing, added to (k)'s list_ (the re-review of
+2026-10-22, N7): Barrowman's 1967 thesis (NTRS 20010047838; eqs. 4-17 to
+4-19 and fig. 4-5, PDF p. 60), the rounded leading-edge curve OpenRocket
+uses. 0019 section 3.2 (U5) sets it beside the bounds; it sets no band.
+
+**2026-10-22 (p): RM L9I30 and RM L51F29, named before they are opened
+for F1** (rule 2 of 10.1, as (k)). Neither has been opened; each is known
+here from its NTRS catalogue record only.
+
+- Hart and Katz, "Flight investigations at high-subsonic, transonic, and
+  supersonic speeds to determine zero-lift drag of fin-stabilized bodies
+  of revolution having fineness ratios of 12.5, 8.91, and 6.04 and varying
+  positions of maximum diameter", NACA RM L9I30, 1949, NTRS 20050019251:
+  rocket-powered free flight, cut-off sterns, equal base, frontal and
+  exposed fin areas. RM L55H09's body is scaled from it (0019 section
+  2.3), so it is first a geometry source: whether that body is the RM-10
+  (TN 3320, held back whole) or the PARD standard body is settled from
+  its model drawings before any of its drag figures is opened.
+- Katz and Stoney, "Base pressures measured on several parabolic-arc
+  bodies of revolution in free flight at Mach numbers from 0.8 to 1.4 and
+  at large Reynolds numbers", NACA RM L51F29, 1951, NTRS 19930086750: the
+  base pressures with which a free-flight fin-stabilized total of such a
+  body is split into its base and the rest.
+
+Both are candidate band-setting sources for F1 (0019 section 3.1, the
+fins' own drag near Mach 1, base separated), with RM L55H09. Which
+figures or tables set what is decided by a further dated entry, after
+the model drawings are seen and before any value is read. Any body in
+them that is the RM-10 or the PARD standard body is held back with its
+set, and nothing flown on it is used.
+
+**2026-10-22 (q): the Basic Finner after BRL Report 934's range A: a
+narrow validated sub-class at the tested conditions, the class still
+suspended** (10.3; amendment (b)'s route back; the run's record,
+`docs/design/0020-brl934-range-a.md`; letters (o) and (p) are reserved for
+another branch). The owner's decision, made on 2026-10-22 after the run
+and final.
+
+- _What the run found, and why it does not reopen the class._ The present
+  model passed range A by rule 4 of 10.1 at all seven rounds it serves
+  (0020 section 2). Amendment (b) registered that on a pass "the class is
+  validated over what that range supports". Range A supports nothing
+  inside the class as the page decides it (Mach 1.799 to 2.15, Reynolds
+  number 1.19e7 to 2.0e7 on length, DREV's 0.004 cal fin leading edge;
+  0011 section 3): the five rounds inside its Mach range (M 1.801 to
+  1.827) flew at Reynolds numbers of 7.96e6 to 8.87e6 on length, wholly
+  below its floor, the two at M 2.423 and 2.468 lie above its Mach range,
+  and every round was run with sharp fin leading edges (10.6 item 3). The
+  test and the class overlap in nothing.
+- _The decision._ A new, narrow sub-class is validated at exactly the
+  tested conditions, and nowhere else. The class itself is unchanged in
+  its limits and its values, and stays "an estimate, not validated"
+  (amendment (b)); only its stated reason changes, since the registered
+  test has now been run and passed, at conditions outside it.
+- _The sub-class_, every bound from the run's inputs (10.6, amendment
+  (n)) and its output (`docs/research/base-and-total/runs/brl934-range-a.json`),
+  none wider than tested:
+  - Geometry: the Basic Finner as transcribed, each dimension within 0.5%
+    as the class takes it (a cone 0.5 / tan 10 deg = 2.836 cal long, sharp,
+    on a cylinder to a flat base, 10.0 cal overall; four rectangular fins
+    of 1.0 cal root chord and span, unswept, their trailing edges at the
+    base), with sharp fin leading edges (radius 0, 10.6 item 3) and
+    single-wedge sections to a blunt trailing edge 0.08 cal thick, its
+    thickness constant across the span, 0.32 cal^2 over the four fins, as
+    the run assumed (10.6 item 4). A rounded leading edge of any radius is
+    outside it. The nose is the sharp cone the run took (its wave drag
+    the exact Taylor-Maccoll value; on the page, the page's solve of that
+    cone). 2026-10-23: that solve must be verified (its band within the
+    solver's tolerance) for the claim to be validated; this was implicit
+    and is now explicit, and a case with an unverified nose term is an
+    estimate with that reason.
+  - (As first written; superseded by the correction below.) Two disjoint
+    windows of Mach and Reynolds number on length, with no
+    interpolation across the gap (Mach 1.827 to 2.423 was not tested; its
+    rounds 3249, 3255 and 3256 were out by 10.6 item 5): Mach 1.801 to
+    1.827 with Reynolds number 7.965e6 to 8.870e6, and Mach 2.423 to 2.468
+    with 1.072e7 to 1.198e7. The Mach ends are the rounds' own. The
+    Reynolds ends are the least and greatest over the run's four corners
+    (diameter 0.78 and 0.82 in, air 288 and 298 K) at the rounds in each
+    window, 7.9642e6 to 8.8708e6 and 1.07147e7 to 1.19832e7 in the json,
+    rounded inward to four significant figures: 0020 section 2's 7.96e6
+    and 1.20e7, rounded outward to three, lie 0.05% and 0.14% beyond what
+    was run, so they are not used. The windows are boxes over those
+    ranges: the run's Reynolds number rises with its Mach number within a
+    window, so a box's corners (M 1.801 at 8.87e6, say) lie up to 1.4%
+    (first window) and 1.8% (second) beyond the Reynolds numbers the
+    nearest round reached,
+    as the class's own box has corners no shot flew (0011 section 3).
+  - _Correction, 2026-10-22, after the independent review of bee550c_
+    (made before this amendment reached the main branch, and before any
+    new data were looked at): the boxes are replaced. Their corners were
+    validated though no round flew there: Mach 1.801 at 8.87e6, 1.44%
+    above the highest Reynolds number round 2591 reached at any corner
+    (8.7446e6), and Mach 2.468 at 1.072e7, 1.77% below the lowest of round
+    3264 (1.0914e7). In the run the Reynolds number on length over the
+    Mach number is one range at all seven rounds, 4.422072e6 to
+    4.855414e6, since it depends only on the diameter and the air. The
+    rule keeps the two Mach windows, 1.801 to 1.827 and 2.423 to 2.468,
+    nothing between, and takes the Reynolds number on length within
+    4.423e6 to 4.855e6 times the Mach number (the json's range rounded
+    inward to four figures): at Mach 1.801, 7.966e6 to 8.744e6; at 2.468,
+    1.092e7 to 1.198e7. Every case it admits lies within the Reynolds
+    numbers the run's corners spanned at that Mach number. The Reynolds
+    number and the temperature are still checked apart, so the page
+    accepts pairs the run never had (288 K at the lowest Reynolds number
+    per unit Mach number, where the run's 288 K corners lay at the
+    higher end); at a given Reynolds number the temperature moves the
+    total by at most 9.4e-5 of its value from 293 K to either end of
+    288 to 298 K at the windows' ends (about 2e-4 end to end) (`tests/app/brl934-sub-class.test.ts`), and by at most
+    0.13% over the class's 216.65 to 320 K (0011 section 3). The 0.5%
+    tolerance on each dimension is the class's, for typing; the run tested
+    the nominal shape only.
+  - Static temperature 288 to 298 K, the run's air range (10.6 item 2).
+  - Zero incidence, power off, as the page computes every total.
+  - The inputs (transition, wall temperature, roughness) are not part of
+    the rule, as for the class: they move no nominal value and are shown
+    apart.
+- _Checked before the code._ The page's own path (`totalDragView` in
+  `src/app/total-drag.ts`) serves a total at all seven rounds, on the
+  present factor, with sharp edges at the run's nominal conditions (0.80
+  in, 293 K), and with the run's nose (Taylor-Maccoll with the fitted
+  solver's allowance) its total, model-form band and every component and
+  input band equal the run's recorded values exactly (difference 0 in
+  double precision). On the page the nose term is the page's solve of the
+  cone. Its difference from the Taylor-Maccoll value was not measured on
+  the page at these rounds; it is bounded from 0006's measured agreement:
+  on cones of 5 to 30 deg at Mach 1.3 to 3 the fitted solve's converged
+  value lies at most 3.4e-5 of the value from it (the page's GPU solver
+  matches the CPU within 8e-7 there, 0011 section 3), so at these rounds
+  (nose terms 0.0947 to 0.1105) the page's total should lie within about
+  4e-6 in C_D of the run's (the 7e-5 allowance alone is under 8e-6),
+  below the fourth decimal shown. A GPU page test drives the page's own
+  solve at round 3263's conditions (`tests/gpu/nose-drag-page.test.ts`),
+  asserting the validated label and the run's total inside the page's
+  band; on software WebGPU it did not finish in two hours, so it runs
+  only when asked (`VITE_SLOW_GPU=1`) and has not yet been run to the
+  end. The page's Basic Finner body, typed to six
+  decimals, moves the total by under 1e-8 (6e-9).
+- _The label for a case inside it_, plainly and in a few sentences:
+  "validated", tested once against BRL Report 934's range A (seven
+  rounds); measured over modelled +3.9% to +11.0%, so the model reads low
+  at every round (mean +7.3%), inside tolerances of about +-27%, a width
+  at which a pass alone says little (0008 section 6.3); the diameter, the
+  air and the trailing-edge area at the test were assumed, not printed in
+  the report (10.6); with DREV's 0.004 cal edge in place of the sharp one
+  the residuals at Mach 2.42 and 2.47 fall to -1.1% and -4.2%, a
+  sensitivity, not a verdict. (Corrected with the windows, after the same
+  review: the tolerances are said as +-25% to +-28%, as 0008 has them;
+  the label also says that halving the trailing-edge area, the run's
+  largest sensitivity, raises the residuals to +14.5% to +22.3%, and that
+  DREV's edge was refused at the five rounds at Mach 1.80 to 1.83.) The full list (each round's residual and
+  tolerance, the trailing-edge term halved, the alternative readings) is
+  in the page's details and in 0020.
+- _The class's reason, revised._ "Until ... is run and passes" is no
+  longer true. The class's reason now says that the factor was corrected
+  after the DREV gate, so by 0008 section 6.1 the gate no longer validates
+  it, and that the corrected factor's registered test, range A, was run
+  and passed at conditions outside the class (its Reynolds numbers below
+  the floor, its fin leading edges sharp), so nothing has tested the
+  corrected factor inside it; it validates only the sub-class. The class
+  stays kept, with its limits, for a test that covers it; none is
+  registered.
+- _What does not change._ No method, band, factor or tolerance; no value
+  of any total, inside the class, the sub-class or outside both. The
+  rebuilt factor (W1) is refused at every round of range A (in 0020,
+  section 3) and has no hold-out of its own, from range A or elsewhere: it
+  stays "estimated on component data", served outside the class as
+  amendment (i) has it. Range A is not run again (rule 3 of 10.1).
+
+**2026-10-23 (r): R&M 3348 figs. 47 to 52 become a check that sets
+nothing** (the coordinator's decision, on independent advice, after W7's
+first reading at 15f4bc2 and its method note at 8e9263e; precedent:
+amendment (g)). Amendment (l) registered figs. 47 to 52 of Rogers, Berry
+and Quincey (ARC R&M 3348, AERADE 1826.2/3929, PDF pp. 81 to 86) for one
+quantity: the surface pressure p/H just ahead of the base, at x/c 0.995,
+one value per incidence, for the local M' and p' with which table 3's base
+pressures are compared.
+
+- _That quantity cannot be read._ The figures are faired curves with no
+  points plotted. Near the trailing edge the curves of a panel converge
+  into one bundle and turn up into the frame line at x/c 1.0; x/c 0.995
+  lies 2 to 3 px (at 300 dpi) from the frame line's centre, so no curve can
+  be told from another or followed to it; several broken curves stop
+  short, at x/c 0.93 to 0.97. No value per incidence exists to read.
+- _What was read instead, and why it sets nothing._ The first reader then
+  read the envelope of the curves' ink over x/c 0.975 to 0.990, the least
+  and greatest p/H across all incidences, in each of the 30 panels
+  (`docs/research/total-drag/audit/w7-fins/rm3348_figs47_52_te_first.csv`).
+  That quantity was defined after the ink had been seen. By the rule of
+  10.1 and as amendment (g) ruled for a set examined before it was
+  registered, figs. 47 to 52 are therefore a check that sets nothing: not
+  a band, not a band's end, not an allowance, and not a value for M' or
+  p'. The envelope reading is kept as the record of what was done, labelled
+  so. No second reading of it is arranged, and no other quantity of these
+  figures is registered in its place.
+- _Table 3, seen while checking incidences._ To see which incidences table
+  3 covers, the reader printed seven rows of its own typing of table 3
+  (M_0 0.70, phi 0 deg, alpha 0 to 8 deg; p_b/p_0 0.73 to 0.79). Those
+  values were already read twice and paired (amendment (k); round 8's
+  blind typing), so seeing them leaks nothing new, and they were not used
+  in the figure reading.
+- _Physics, for whoever reads the check._ Table 3 is used at alpha 0 deg
+  only (0019 section 3.4: the code serves zero incidence). The envelope's
+  height (0.02 to 0.19 in p/H in a panel, 0.07 to 0.18 at phi 0 deg; 0.14
+  to 0.23 over a figure's five sweeps, the figure as the method note
+  summarises it) is the spread of the incidence sweep (positive and
+  negative incidence on the upper-surface holes; over a figure, the sweep
+  angle too), not an uncertainty in the surface pressure at zero lift, and
+  must not be read as one. And near Mach 1 the flow at the last holes is
+  subsonic or barely sonic, so the corner's upstream influence reaches
+  them: the pressure there is not an undisturbed local state independent
+  of the base. Chapman's local Mach number M' ahead of the base is a
+  supersonic idea (the base flow cannot reach upstream through a
+  supersonic layer); at M_0 0.7 to 1.2 a local M' from the last holes
+  would carry the base's own effect. This is one reason 0019 section 3.4
+  now forms F4's band on the free-stream M_0 and p_0 (as R&M 3348 fig.
+  30, Goin and TN 3548 report base pressure) and not on M' and p'.
+- _What does not change._ Table 3 (alpha 0 deg) and figs. 30a and 30b stay
+  band-setting under (k), on M_0 and p_0. R&M 3427 fig. 13's hole 4
+  ((m)) stays named; whether it is used, given the same upstream
+  influence, is for 0019 section 3.4 to decide before it sets anything.
+
+**2026-10-23 (s): W7's F4 registrations narrowed** (the coordinator's
+decisions on W7's reports of R&M 3323, Johnston and RM L8B13, written
+before anything further is read; each narrows (k), (l) or (m), none
+widens them).
+
+1. _R&M 3427 fig. 13's hole 4 ((m))._ It stays named and read once. It is
+   not needed for the band's coordinates, which are M_0 and p_0 ((r);
+   0019 section 3.4), and it lies 0.1 in ahead of the base, inside the
+   corner's upstream influence near Mach 1. Whether it serves at all is
+   left open. The size of the widening for a wedge's inclined faces
+   against a plate's parallel ones is decided and written in 0019 section
+   3.4 before any F4 code, not now.
+2. _R&M 3323 fig. 5 becomes a check that sets nothing._ Its solid curves
+   for h/c 0.06 (ref. 39) and 0.10 (ref. 38) meet near M 1.00, Cp_b -0.77,
+   and two nearly parallel lines leave the meeting point. The ink does not
+   show which is which, so the 0.06 curve beyond M 1.0 cannot be assigned.
+   A partial reading, or an envelope of the two, would choose the quantity
+   after the ink had been seen. By the precedent of (g) and (r), fig. 5
+   sets nothing; no value of it was recorded. Fig. 4 stays registered
+   (read once, a blind second reading needed). Fig. 4's three heavy
+   symbols at h/c 0.14 with no legend entry stay "source not traced" and
+   set nothing.
+3. _Johnston figs. 4 to 9, 11 and 12 are removed from (k)'s
+   registration._ They are lift, moment and faired cross-plots of the same
+   pressure points as figs. 4, 7 and 10, not independent data, and F4 and
+   F5 use neither lift nor moment. They are not read. Figs. 10(a), 10(b)
+   and 10(c) stay (read once).
+4. _RM L8B13: (k)'s "fig. 4(c) to 4(e) (the wedge's base and sides)" was
+   a slip._ Fig. 4(d) is the 45 deg sweptback cylinder. The registration
+   is limited to figs. 4(c) (the wedge's base) and 4(e) (its sides).
+   Marks the legend does not explain (fig. 4(c)'s "x" marks and dashes)
+   are recorded as untraced and set nothing. Figs. 4(c) and 4(e) are then
+   read once, by the same method, explained symbols only.
+
+_A correction to (r), recorded here as well._ The height of the envelope
+of figs. 47 to 52 is 0.02 to 0.19 in p/H per panel and 0.14 to 0.23 over a
+figure's five sweeps. (r) states both; the coordinator's brief had
+"0.14 to 0.22".
+
+**2026-10-23 (t): RM L8B13 fig. 4(c) becomes a check that sets nothing**
+(the coordinator's decision on W7's report at 2acdd2a; precedent: (g),
+(r), (s)). Fig. 4(c) of Sawyer and Daum (NACA RM L8B13, PDF p. 15), the
+wing-flow wedge's base pressure at four orifices, was registered under
+(k) and limited by (s). Its four series read alike, and their small,
+often solid symbols merge into clumps of ink from about M 0.85, and almost
+everywhere from M 1.05 to 1.2. In these clumps the number of symbols,
+their shapes and their centres cannot be read. Reading only the symbols
+that separate would choose the data after seeing the ink. So fig. 4(c)
+sets nothing: no band, no band's end. No value of it was recorded. Fig.
+4(e) (the wedge's faces) stays registered, read once
+(`docs/research/total-drag/audit/w7-fins/rml8b13_fig4e_first.csv`).
