@@ -327,6 +327,22 @@ export async function solveGrid(
   }
 }
 
+/** The paths of (y) item 18 in their registered order, each with its cap (the explicit path's by default MAX_STEPS_EXPLICIT). */
+export function fallbackPaths(
+  engine: TransonicEngine,
+  fallback: FallbackEngines | null,
+  explicitCap = MAX_STEPS_EXPLICIT,
+): { path: SolvePath; engine: TransonicEngine; maxSteps: number }[] {
+  const paths: { path: SolvePath; engine: TransonicEngine; maxSteps: number }[] = [
+    { path: 'implicit', engine, maxSteps: MAX_STEPS },
+  ];
+  if (fallback !== null) {
+    paths.push({ path: 'explicit', engine: fallback.explicit, maxSteps: explicitCap });
+    paths.push({ path: 'implicit10', engine: fallback.implicit10, maxSteps: MAX_STEPS });
+  }
+  return paths;
+}
+
 /**
  * (y) item 18: solveGrid by the implicit steps and, if they diverge (never
  * on a step-cap miss), the same grid from the same start by the fallback
@@ -349,13 +365,7 @@ export async function solveGridStably(
   midFor: (path: SolvePath) => MidCheckpoint | null = () => null,
   explicitCap = MAX_STEPS_EXPLICIT,
 ): Promise<{ result: GridResult; conserved: Float64Array }> {
-  const paths: { path: SolvePath; engine: TransonicEngine; maxSteps: number }[] = [
-    { path: 'implicit', engine, maxSteps: MAX_STEPS },
-  ];
-  if (fallback !== null) {
-    paths.push({ path: 'explicit', engine: fallback.explicit, maxSteps: explicitCap });
-    paths.push({ path: 'implicit10', engine: fallback.implicit10, maxSteps: MAX_STEPS });
-  }
+  const paths = fallbackPaths(engine, fallback, explicitCap);
   // A fallback path with a saved state was running before a restart: the earlier paths had failed.
   let first = 0;
   for (let k = paths.length - 1; k > 0; k--) {

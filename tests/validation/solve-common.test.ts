@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { TransonicEngine } from '../../src/analysis/transonic-drag';
 import { Euler2D } from '../../src/engine-cpu/euler2d';
+import { mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileMidCheckpoint } from '../../docs/research/nose-model-form/mid-checkpoint';
 import {
   cpuFallback,
   explicitEngine,
   FALLBACK_CFL,
+  fallbackPaths,
   MAX_STEPS,
   MAX_STEPS_EXPLICIT,
   NotConverged,
@@ -320,6 +325,62 @@ describe('(y) item 18: solveGridStably', () => {
     expect(solved.result.path).toBe('explicit');
     expect(counts.map((c) => c.count)).toEqual([0, 1, 0]);
   });
+
+  it('without an explicit cap given, the explicit path runs under the registered MAX_STEPS_EXPLICIT', () => {
+    const f = cpuFallback();
+    const paths = fallbackPaths(f.implicit10, f);
+    expect(paths.map((p) => p.path)).toEqual(['implicit', 'explicit', 'implicit10']);
+    expect(paths[1]!.maxSteps).toBe(MAX_STEPS_EXPLICIT);
+    expect(paths[0]!.maxSteps).toBe(MAX_STEPS);
+    expect(paths[2]!.maxSteps).toBe(MAX_STEPS);
+    expect(fallbackPaths(f.implicit10, null)).toHaveLength(1);
+  });
+
+  it('the file checkpoint: a state without its step count is not continued from; what is saved is loaded; the save is atomic', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'mid-'));
+    const ck = fileMidCheckpoint(join(dir, 'g'));
+    expect(ck.load()).toBeNull();
+    const state = new Float64Array([1, 2, 3, 4]);
+    writeFileSync(join(dir, 'g-mid.bin'), Buffer.from(state.buffer));
+    // The bin alone (the old code's save): refused.
+    expect(ck.load()).toBeNull();
+    ck.save({ conserved: state, steps: 1234, firstResidual: 2e-3, largestResidual: 5e-3 });
+    const loaded = ck.load()!;
+    expect([...loaded.conserved]).toEqual([1, 2, 3, 4]);
+    expect(loaded.steps).toBe(1234);
+    expect(loaded.firstResidual).toBe(2e-3);
+    expect(loaded.largestResidual).toBe(5e-3);
+    // No temporary file is left behind, and both files exist by their final names.
+    expect(readdirSync(dir).sort()).toEqual(['g-mid.bin', 'g-mid.json']);
+    ck.clear();
+    expect(readdirSync(dir)).toEqual([]);
+  });
+
+  it('the largest residual is restored and carried into the next save', async () => {
+    const holder = new Euler2D(problem.config);
+    holder.setCellPrimitives(() => problem.freeStream.state);
+    const saved = holder.conserved();
+    const seen: MidState[] = [];
+    const mid: MidCheckpoint = {
+      everySeconds: 0,
+      load: () => ({ conserved: saved, steps: 100, firstResidual: 1e-2, largestResidual: 7.5 }),
+      save: (st) => seen.push(st),
+    };
+    await solveGrid(
+      engineOf({ limit: 0.1 }, { count: 0 }),
+      problem,
+      null,
+      't',
+      quiet,
+      false,
+      MAX_STEPS,
+      mid,
+    );
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen[0]!.largestResidual).toBe(7.5);
+    expect(seen[0]!.firstResidual).toBe(1e-2);
+    expect(seen[0]!.steps).toBeGreaterThan(100);
+  }, 120_000);
 
   it('the registered constants and the CPU fallback engines', () => {
     expect(MAX_STEPS_EXPLICIT).toBe(2_000_000);

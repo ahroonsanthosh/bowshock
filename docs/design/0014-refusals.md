@@ -2369,7 +2369,8 @@ to the rules above, in the review's numbering:_
     wall cells), its 100.6-radius allowance base grid had settled by
     18:54:25 (about 0.0087222), and its 408.7-radius allowance base grid
     had started at 18:54:25. That grid diverged at 18:59:11 (residual
-    from 0.0102 to 1.162 at step 32,350), after 1f3b511 and before
+    from 0.0102 to 1.162 at step 32,400; the last logged check, 32,350,
+    read 0.752), after 1f3b511 and before
     c02eaff, and Mach 0.800 was recorded as not converged like 0.600.
     Both non-converged records are kept in the branch under a superseded
     name, never deleted. Its finding 2: the text says the explicit steps

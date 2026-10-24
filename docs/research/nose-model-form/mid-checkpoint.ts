@@ -7,7 +7,7 @@
  * continued from (the cap is per grid, across restarts).
  */
 
-import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import type { MidCheckpoint } from './solve-common';
 
@@ -37,12 +37,12 @@ export function fileMidCheckpoint(path: string): MidCheckpoint & { readonly clea
     },
     save: (state) => {
       mkdirSync(dirname(file), { recursive: true });
-      writeFileSync(`${file}.tmp`, Buffer.from(state.conserved.buffer));
-      // Rename is atomic on one file system, so a restart never reads a half-written state.
-      writeFileSync(file, readFileSync(`${file}.tmp`));
-      unlinkSync(`${file}.tmp`);
+      // Each file is written whole to a temporary name and renamed into
+      // place (atomic on one file system); the json first, so that a crash
+      // between the two leaves a step count at or above the state's (an
+      // overcount, on the safe side of the cap), never below it.
       writeFileSync(
-        meta,
+        `${meta}.tmp`,
         JSON.stringify({
           steps: state.steps,
           firstResidual: state.firstResidual,
@@ -50,6 +50,9 @@ export function fileMidCheckpoint(path: string): MidCheckpoint & { readonly clea
           saved: new Date().toISOString(),
         }),
       );
+      renameSync(`${meta}.tmp`, meta);
+      writeFileSync(`${file}.tmp`, Buffer.from(state.conserved.buffer));
+      renameSync(`${file}.tmp`, file);
     },
     clear: () => {
       for (const f of [file, meta]) if (existsSync(f)) unlinkSync(f);
