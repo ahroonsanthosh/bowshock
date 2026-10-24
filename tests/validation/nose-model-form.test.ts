@@ -6,6 +6,8 @@ import {
   boxOf,
   COVERAGE_LIMIT,
   evaluateCase,
+  measureFor,
+  MEASURE_BOUNDARY_MACH,
   noseBand,
   publishedFloor,
   type Box,
@@ -200,6 +202,7 @@ describe('0022 4.4: the union of boxes, the floor a lower limit only', () => {
     mach: 1.98,
     reynolds: 'x',
     seen: true,
+    measure: 'ratio',
     halfWidth: 0.1,
     floor: null,
     ...over,
@@ -251,5 +254,77 @@ describe('0022 4.3, the sign rule: the nose band in the total', () => {
     const { low, high } = noseBand(0.1, 0.15, 1e-5);
     expect(low).toBeCloseTo(0.085 - 1e-5, 14);
     expect(high).toBeCloseTo(0.115 + 1e-5, 14);
+  });
+});
+
+describe('0022 section 8 item 10: the absolute measure below Mach 1', () => {
+  it('the boundary is fixed at indicated Mach 1.000: below it absolute, at and above it the ratio', () => {
+    expect(MEASURE_BOUNDARY_MACH).toBe(1);
+    expect(measureFor(0.991)).toBe('absolute');
+    expect(measureFor(1)).toBe('ratio');
+    expect(measureFor(1.001)).toBe('ratio');
+  });
+
+  it('d = D_meas - D_inv in CD, u_meas = e A_bias and u_unc = A_unc max|dCp|, none divided by D_inv', () => {
+    // An inviscid cone pressure near zero (as below Mach 1), measured 0.02 above it everywhere.
+    const res = evaluateCase(
+      coneCase({
+        mach: 0.8,
+        measure: 'absolute',
+        inviscidCp: () => 1e-4,
+        readings: [{ label: 'x', stations: uniform(1e-4 + 0.02) }],
+      }),
+    );
+    expect(res.measure).toBe('absolute');
+    const e = res.evaluations[0]!;
+    const r1 = 0.5 * (0.4 / 4);
+    const aBias = 1 - (r1 / 0.5) ** 2;
+    // The tip stretch carries no difference; the held value behind the last station (at the shoulder) none either.
+    expect(e.difference).toBeCloseTo(0.02 * aBias, 12);
+    expect(e.uMeas).toBeCloseTo(0.002 * aBias, 12);
+    expect(e.uUnc).toBeCloseTo((1 - res.coveredArea) * 0.02, 12);
+    expect(e.halfWidth).toBeCloseTo(Math.abs(e.difference) + e.uMeas + e.uUnc, 14);
+    // The ratio would have been 200: ill-conditioned, kept only for information.
+    expect(Math.abs(e.r)).toBeGreaterThan(100);
+    // Coverage by area: the uncovered base area is below a tenth, so the body sets something.
+    expect(1 - res.coveredArea).toBeLessThan(COVERAGE_LIMIT);
+    expect(res.sets).toBe(true);
+    expect(res.halfWidth).toBe(e.halfWidth);
+  });
+
+  it('a body whose orifices leave more than a tenth of the base area uncovered sets nothing (absolute)', () => {
+    const stations = [2.2, 2.8, 3.4, 4].map((x) => ({ x, cp: 0.1 }));
+    const res = evaluateCase(
+      coneCase({ measure: 'absolute', readings: [{ label: 'x', stations }] }),
+    );
+    expect(1 - res.coveredArea).toBeGreaterThan(COVERAGE_LIMIT);
+    expect(res.sets).toBe(false);
+    expect(res.halfWidth).toBeNull();
+  });
+
+  it('a box mixing the two measures: the band in CD is the wider of a x D and the absolute half-width', () => {
+    const ratioBox: Box = {
+      id: 'r',
+      family: 'cone',
+      fineness: 4,
+      mach: 1.001,
+      reynolds: '',
+      seen: true,
+      measure: 'ratio',
+      halfWidth: 0.1,
+      floor: null,
+    };
+    const absBox: Box = { ...ratioBox, id: 'a', mach: 0.98, measure: 'absolute', halfWidth: 4e-3 };
+    const al = allowanceAt([ratioBox, absBox], 'cone', 4, 1.0)!;
+    expect(al.halfWidth).toBe(0.1);
+    expect(al.absolute).toBe(4e-3);
+    // At a nose term of 0.02 the ratio gives 2e-3 and the absolute 4e-3: the absolute is wider.
+    expect(noseBand(0.02, al, 1e-5)).toEqual({ low: 0.02 - 4e-3 - 1e-5, high: 0.02 + 4e-3 + 1e-5 });
+    // At 0.09 the ratio gives 9e-3: wider.
+    expect(noseBand(0.09, al, 0)).toEqual({ low: 0.09 - 9e-3, high: 0.09 + 9e-3 });
+    // Only the ratio box: as before.
+    const only = allowanceAt([ratioBox], 'cone', 4, 1.0)!;
+    expect(only.absolute).toBe(0);
+    expect(noseBand(0.09, only, 0)).toEqual(noseBand(0.09, 0.1, 0));
   });
 });

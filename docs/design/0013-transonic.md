@@ -2330,6 +2330,27 @@ grid unless stated:
 - **The 3-caliber ogive data of NASA TN D-3516** were not digitised (see
   sources.md), so the ogive has no wind-tunnel comparison here.
 
+## Below Mach 1: registered, not run (2026-10-24)
+
+Nothing below Mach 1 has been solved or recorded here. 0014 10.7 (y)
+registers, before any such value exists, the verification of this solver
+at Mach 0.6 to 0.99 on TN 4233's cone-cylinder and the bound of the far
+boundaries' effect for the rows at Mach 1.001 to 1.041 (the 800-radius
+test of the moved family): the rungs, the exact references (zero nose
+drag of a nose on a semi-infinite cylinder in shock-free subsonic flow;
+total pressure conserved on the cone wall), the level checks, the
+independent code (SU2, the owner's machine), the absolute scale S below
+Mach 1, the absolute floor, the tolerances and what a fail means. Its
+rules are `src/validation/subsonic-verification.ts`; its evaluation
+`docs/research/nose-model-form/verify-subsonic.test.ts`; its results,
+when they exist, are recorded here as a dated section in the form of the
+Mach 1.2 and 1.1 sections above. Coded with it: the decaying branch of
+the allowance rule is used only where the distance ratios do not shrink
+outward (the re-review of `dd6c423`, item 2), so on the moved family
+every allowance is the turning bound or refused; the Mach 1.0
+allowances once quoted as 5.12e-4 and 7.35e-4 become 5.55e-3 and
+5.75e-3 (nothing served changes: below 1.05 nothing is served).
+
 ## Open
 
 - **Runs queued or running** (each saves its state every 10 minutes and

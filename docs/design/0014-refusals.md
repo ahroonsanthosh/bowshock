@@ -1924,4 +1924,280 @@ the transonic solver of 0013 on its finest grid (0022 section 4.3 item 2),
 widening only. Recorded in 0022 section 8, item 8's note and item 9.
 (w)'s registered text above is unchanged.
 
-The next free letter is (y); (x) is reserved for the W6 probe.
+**2026-10-24 (y): the transonic solver below Mach 1 and near Mach 1,
+its verification registered before any such value is looked at** (the
+owner's decisions of 2026-10-24: verify the solver first, with the
+independent code; the advisor's plan and addendum of the same day). Design
+record 0013's captured-shock solver is verified for Mach 1.0 to 1.2 (exact
+references at 1.2 and 1.1, the procedure at 1.05). Amendment (w) and 0022
+section 8 item 9 want its wall pressures at TN 4233's 30 rows below
+indicated Mach 1.078, 16 of them below Mach 1 and 10 at 1.001 to 1.041
+where the driver refuses (B1) and the far boundaries' effect had no tested
+bound. This entry fixes, before any subsonic or near-sonic grid is solved:
+the rungs, the quantities, the references, the tolerances, the pass or
+fail rules and their consequences, the compute, and the labels. The rules
+are coded in `src/validation/subsonic-verification.ts` (its constants are
+this entry's numbers) and the evaluation in
+`docs/research/nose-model-form/verify-subsonic.test.ts`, both committed
+with this entry; the solves record what the rules need
+(`docs/research/nose-model-form/solve-common.ts`). No measured TN 4233
+value is read, compared or quoted in the verification: TN 4233's rows are
+what the verified solver will later be compared against under (w), and
+using them here would be circular. Nothing below Mach 1.05 is solved until
+this entry is committed and independently reviewed (the scripts refuse
+without `Y_REVIEWED=1`, which asserts that).
+
+1. _What is verified, on what._ The CPU engine's transonic domain
+   (LU-SGS, CFL to 1000, the driver's settling tests as `solve-common.ts`
+   carries them) on TN 4233's cone-cylinder (6 deg 59 min, nose 8.169
+   radii, base radius 1), on the family `transonicDomains` gives: below
+   Mach 1.05 the moved family (224.2 radii, neighbours 100.6 and 408.7;
+   10 calibers of cylinder, neighbours 5 and 20), from 1.05 the served
+   family (100.6 radii, neighbours 55.1 and 224.2). Grids r = 1, 2, 4, 8;
+   r = 16 only as item 5 (a) says. The owner's GPU (the page's two-float
+   engine, 2 red-black sweeps) may solve the rows only after item 5 (h).
+2. _The absolute scale S._ Below Mach 1 the inviscid drag is near zero,
+   so every threshold the solve and the procedure take relative to the
+   drag (the settling test's noise 1e-7, the geometric remainder 1e-9,
+   the oscillation bound, the grids' noise, the procedure's noise) is
+   taken relative to S = max(|CD|, 0.01) instead (`SUBSONIC_SCALE`; the
+   settling test sees the drag shifted by 0.01, which changes no
+   difference). 0.01 is about a tenth of the cone's drag at Mach 1. At
+   Mach 1 and above nothing changes. The floor (0013's 7e-5 of the value)
+   is replaced below Mach 1 by an absolute floor set by item 5 (b).
+3. _The rungs._ Below Mach 1: indicated 0.600, 0.800, 0.901, 0.960 and
+   0.991 (`SUBSONIC_RUNGS`; 0.6 is where the exact reference applies, 0.8
+   the top of the range where the shoulder's sonic bubble is still small
+   and the linear level check means something, the three others the drag
+   rise, where no theory holds). Near Mach 1: 1.001, 1.020 and 1.041
+   (`NEAR_SONIC_RUNGS`, item 8). The other rows get the same family, the
+   same records and the same band rules, which the rungs validate, as
+   0013's Mach 1.1 and 1.2 validated the procedure for 1.05.
+4. _Quantities, recorded for every grid of every row:_ Q1 CD, the nose
+   pressure drag on the base area (the driver's); Q2 Cp at the ten cone
+   stations x/l 0.082 to 0.942 (TN 4233's orifices 1 to 10, positions
+   only), interpolated on the grid, with a per-station band from r = 2, 4,
+   8 (Richardson at the observed order capped at 2; the range where they
+   oscillate; flagged where they do not shrink); Q3 the loss of total
+   pressure on the cone wall ahead of x/l 0.9 and of any supersonic wall
+   cell, and 3 calibers behind the shoulder; Q4 the far-field and
+   cylinder allowances by `domainAllowance` on the nested base grids, with
+   the base grids' station Cp; Q5 the pocket diagnostic: the largest wall
+   Mach number and the supersonic wall cells.
+5. _References, with the Mach range where each holds._
+   - R1, exact (Mach 0.6 only as a pass or fail; an ordering check above
+     it): the nose pressure drag of a nose on a semi-infinite cylinder in
+     shock-free subsonic inviscid flow is exactly zero. The momentum
+     balance on a large sphere pierced by the body: the zeroth-order
+     term, minus rho U^2 pi R^2 from the missing disk, is cancelled by rho
+     U times the net outflow, which mass conservation fixes at U pi R^2
+     (the source-like far field); Lagally's theorem gives the same.
+     Checked on the Rankine half-body (incompressible): Cp from 1 at the
+     nose to a minimum of exactly -1/3, and the drag on the base area zero
+     to 1e-14. The cylinder's faces add nothing, so the cone-face sum the
+     driver computes must be zero. Validity: where the shoulder's sonic
+     bubble carries no drag. An estimate from the convex-corner
+     singularity (velocity like s^-0.037 for a 7 deg corner; the local
+     flow reaching Cp* at distance s) puts the bubble at about 3e-4 radii
+     at Mach 0.6 (drag below 1e-5), 1e-2 radii at 0.7, 0.2 at 0.8, 2 at
+     0.9. So R1 is exact at 0.6 and an ordering check from 0.7.
+   - R2, exact (every rung, ahead of the bubble): the total pressure is
+     conserved on the cone wall ahead of the shoulder and of any
+     supersonic wall cell (loss zero in shock-free flow). A loss d of p0
+     is a Cp error of d (p / p_inf) / (gamma M^2 / 2): at Mach 0.6 a loss
+     of 1e-4 of p0 is 4e-4 in Cp. This is where numerical dissipation
+     shows; 0013 saw first-order wall losses of 0.25% on blunt noses at
+     Mach 1.2, which would be 0.01 in Cp at Mach 0.6.
+   - R3, a level check that sets nothing (Mach 0.6 to 0.8): the
+     linearised compressible axisymmetric solution (Goethert's rule on the
+     von Karman-Moore source integral: f(xi) = U tau^2 xi on the cone,
+     none on the cylinder, the subsonic kernel), in closed form in
+     `linearisedConeCylinderCp`, tested against its slender-body log form
+     tau^2 [ln(4 (L - x) / (beta^2 tau^2 x)) - x / (L - x) - 2], which it
+     matches to O(tau^4). Second-order terms make it a few percent of Cp
+     from the Euler solution on a 7 deg cone, so it is a gross-error
+     check only: the finest-grid Cp at the stations within 20% of it or
+     0.01 absolute, reported, never a pass or fail. Its pedigree is C. W.
+     Matthews, NACA Report 1155 (linearised theory against measured
+     subsonic pressures on bodies of revolution; its data are not needed
+     and not read). The subsonic limit of the transonic small-disturbance
+     equation is this same linear equation wherever the flow is subsonic,
+     so it adds nothing.
+   - R4, published computations, checks that set nothing: Spreiter and
+     Alksne, NASA TR R-2 (verified in sources.md; cone-cylinder results
+     for subsonic streams per its abstract; whether it gives subsonic
+     cone-cylinder formulas is to be confirmed when it is opened for this;
+     its equations only, never its figure 20, which plots Page's measured
+     points). Bailey, TN D-6582: no cone-cylinder (sources.md), not
+     usable. Not required by this entry.
+   - R5, an independent code, the only reference at Mach 0.9 to 0.99:
+     SU2 8.1.0, axisymmetric Euler (AXISYMMETRIC = YES, an Euler wall,
+     symmetry on the axis, far-field boundaries), on Gmsh 4.13.1 meshes,
+     run by the owner on their own machine as separate programs
+     (`docs/research/nose-model-form/su2/`, after
+     `scripts/reference-3d/` of 0021 4.4 and (u)); only inputs and results
+     are committed. The same body and domain (224.2 radii, 10 calibers),
+     three mesh levels refined by 2 near the body, at the rungs 0.901,
+     0.960 and 0.991. Its nose drag and station Cp are computed from its
+     wall pressure by the script, not from SU2's force conventions. The
+     comparison rule: the code's own band (0005's rule on its three
+     levels) at most the larger of 0.035 of its value and 5e-4 absolute,
+     else it is no reference ("not applicable"); then the two codes'
+     finest values within the sum of the two bands plus 5e-4 absolute
+     (`CODE_COMPARISON_MARGIN`), else the rung fails. The owner decided
+     (2026-10-24) to run it.
+6. _Tolerances and pass or fail_ (`judgeRung`; each rung judged on its
+   own; a fail keeps the TN 4233 rows of that rung's box, +-0.05 Mach,
+   out of (w)'s allowance, and the label says why):
+   - (a) The family must give a band by `gridConvergence` (four grids,
+     orders within 0.5, the measured noise on S). "Unresolved" with the
+     finer triple monotone: r = 16 is added once (the cost stated before
+     it runs); still unresolved, the rung fails.
+   - (b) Mach 0.6, the exact check: |CD_r8| <= 2e-4 + the band
+     (procedure + far field + cylinder). 2e-4 is a tenth of the
+     measurement side's own term in 0022 (e = 0.002 in Cp over the base
+     area is 2e-3 in CD), so a solver error of that size is immaterial
+     for the use. A pass sets the subsonic absolute floor F = 2 times the
+     larger of |CD_r8| and |extrapolated CD| at this rung (as 0005 set its
+     floors at twice the measured miss against exact values), added to
+     every subsonic band as an absolute term. A fail fails the rung.
+     Written now, an exception that does not lift the fail: if Q5 shows
+     supersonic wall cells at the shoulder on r = 8 and the loss behind
+     the shoulder is at least 5 times the loss ahead of it, the drag is
+     the bubble's; the check is recorded "not applicable at this Mach
+     number", the rung still fails for want of a reference, and the owner
+     decides by a new dated entry.
+   - (c) Sign and ordering: CD_r8 + band >= 0 at every rung (entropy
+     production can only add drag; a confidently negative drag is
+     numerical); and across the rungs CD must not fall as Mach rises,
+     each pair within the sum of its bands, and CD(0.991) must lie below
+     0013's Mach 1.0 estimate 0.0932 by more than its band. A violation
+     fails the rungs involved.
+   - (d) The stations, the use: the per-station band on r = 8 (the grid
+     band plus the per-station far-field allowance of item 9 plus the
+     floor) at most 5e-4 in Cp, a quarter of TN 4233's stated 0.002.
+     Above 5e-4 the rung is "verified, band too wide for the use" and the
+     band enters 0022 as its own term u_num (item 11); above 2e-3 the rows
+     stay out.
+   - (e) R2: on r = 8 the largest loss ahead of x/l 0.9 at most 5e-4
+     times gamma M^2 / 2 times p_inf / p_wall of p0 (1.3e-4 at Mach 0.6,
+     2.8e-4 at 0.9), and falling across r = 2, 4, 8 at an observed order
+     of at least 0.8. Otherwise the rung fails.
+   - (f) The allowances: `domainAllowance` must not refuse the far field
+     or the cylinder; a refusal fails the rung. The decaying branch is
+     used only where the distance ratios do not shrink outward (D2 / D1
+     > = D1 / D0), the pre-registered step of the re-review of `dd6c423`
+     > (0013, item 2), coded with this entry and tested on pure power laws
+     > of exponent 0.35 to 3 on every distance set the driver uses; on the
+     > moved family (ratios 2.23 then 1.82) every case is therefore the
+     > turning bound or refused. Reported, not pass or fail: the far-field
+     > changes' decay exponent at Mach 0.6 and 0.8, expected near 2 (a
+     > source-like far field); below 1 it is flagged.
+   - (g) R3 and R4: reported; a miss is investigated, never a pass or
+     fail.
+   - (h) The GPU: no GPU family counts until the hardware match test
+     passes on the owner's checkout: Mach 0.8, r = 1 and 2, the GPU's
+     drag within 3e-7 absolute of the CPU engine's (as 0013's G3 test at
+     Mach 1.1), the two-float self-test and the precision check on that
+     hardware (`owner-kit/match-cpu.test.ts`, `MATCH=1` of the kit). The
+     red-black 2-sweep relaxation's margin beyond r = 2 is unmeasured on
+     any device, and never measured below Mach 1.05.
+7. _Labels._ A rung that passes (a), (c), (d), (e), (f) at Mach 0.9 to
+   0.99 with R5 passed: "verified by grid convergence and against an
+   independent inviscid code; no exact reference at this Mach number; the
+   procedure was checked against the exact zero-drag and total-pressure
+   results at Mach 0.6". Without R5: "verified by grid convergence only;
+   no exact reference ...; most of the band may be the far-field
+   allowance". Page's appendix puts wall interference between indicated
+   0.99 and 1.05 in both tunnels; that is 0022's problem with the 0.989
+   and 0.991 rows, not the solver's, and the row's label says so.
+8. _The rows at Mach 1.001 to 1.064 (14 rows, 11 Mach numbers)._ The
+   four rows at 1.050, 1.062 and 1.064 are in the driver's served range
+   (the served family, the rule tested at 1.05): nothing new, no wait.
+   The ten rows at 1.001 to 1.041 are on the moved family, below B1,
+   whose far-field allowance had these holes: the registered test (b) for
+   the moved family was never run (it needs a fourth distance near 800
+   radii, where the implicit steps diverged at Mach 1), and the decaying
+   branch is not a bound there. For them: the allowance is the corrected
+   rule with the distance condition of 6 (f) (turning or refused on the
+   moved family; from the numbers on record, about 5.5e-3 at Mach 1.0, 6%
+   of the drag; 3.9e-3 at 1.01; 4.4e-4 at 1.02; small from 1.025), and
+   its pre-registered test is the fourth distance: the base grid on about
+   800 radii (`FAR_800`, asked as 800; the grid's own radius recorded) at
+   the three near-sonic rungs, solved by a path that does not diverge,
+   tried in this order and the choice recorded (`far-800.test.ts`): (i)
+   the engine's explicit SSPRK2 steps at CFL 0.8 (stable where the
+   implicit steps were not; hours on one core), (ii) the implicit steps
+   with the CFL number capped at 10. The value must settle under the
+   fitted-window rule. Pass: the allowance from 100.6, 224.2 and 408.7
+   radii contains C(800) - C(224.2) at every rung. A miss at any rung
+   withdraws the moved family's allowance for all ten rows, which stay
+   out until a rule that passes is registered; a value that settles by
+   neither path keeps them out too (0013's consistency check, already
+   labelled not a test, does not lift this). The ten rows wait for this
+   test and for the review of this entry, and for nothing larger. The
+   owner decided (2026-10-24) that all 14 rows are run, the large
+   allowances at 1.001 to 1.011 (4e-3 to 6e-3 in Cp, two to three times
+   the measurement's own term) being honest under widening only.
+9. _The per-station Cp allowance for the far field_ (every row). 0013
+   measured the far field's effect at Mach 1 as a nearly uniform shift of
+   Cp (+0.0006 to +0.0007 from 224.2 to 408.7 radii, rms 0.0008). A
+   uniform shift d in Cp is exactly d in CD on the base area, so each
+   station's allowance is the drag's allowance plus a non-uniformity term:
+   T (the rule's tail factor) times the station's deviation from the mean
+   of the base-grid changes between the family's own domain and the larger
+   one, plus the measurability level m (`stationCpAllowance`).
+10. _The grid band near Mach 1_ is unchanged (four grids, the measured
+    noise). r = 8 at Mach 1.001 and 1.008 is about 300,000 steps (0013's
+    estimate), near the scripts' cap of 400,000, which is not raised after
+    the fact: a grid that does not settle makes the row "not converged"
+    and it stays out, never a value.
+11. _Into 0022._ The verified rows' station bands (6 (d)) enter the
+    allowance as a term u_num beside u_meas and u_unc, in the measure's
+    units; and the rows below Mach 1 use the absolute measure of 0022
+    section 8 item 10 (dated 2026-10-24, before any such row is
+    evaluated): d = D_meas - D_inv in CD on the base area with u in the
+    same units, boxes in absolute CD, the boundary fixed at indicated Mach
+    1.000 (below it absolute, at and above it the ratio), and a box mixing
+    the two forms giving at a nose term D the wider of a D and the
+    absolute half-width (`noseBand`). Coverage below the boundary is by
+    the uncovered base area (at most a tenth), since the share of a
+    near-zero drag means nothing.
+12. _Compute._ Step counts grow fast below Mach 1 (r = 1: 5,350 at Mach
+    1.064, 25,800 at 0.8); a rung r = 1 to 8 is about 15 to 25 hours of
+    one CPU core here, r = 16 four to five times that; the nested base
+    grids about 10 to 30 minutes per Mach number. Plan: the CPU here for
+    Mach 0.6 first (the floor), then 0.8, and the nested base grids and
+    the 800-radius runs; the owner's GPU, after 6 (h), for the other rungs
+    and rows (0013's unmeasured estimate: 15 to 40 minutes a family). The
+    page's rate is measured, never assumed.
+13. _Order._ (1) This entry, the rules' code and tests, the evaluation
+    script, the solve scripts' records and scale, the fix of 6 (f), the
+    match test, the SU2 kit: committed before any subsonic or near-sonic
+    grid is solved; the running CPU job is stopped by its own process
+    group after Mach 1.064 and restarted restricted to 1.062 and 1.050.
+    (2) An independent review of this entry and its code; `Y_REVIEWED=1`
+    only after it passes. (3) Mach 0.6 on the CPU; (b) and (e); the floor.
+    (4) The other rungs, the rows, the 800-radius runs, the SU2 runs.
+    (5) The results recorded in 0013 as a dated section "Below Mach 1" in
+    the form of its Mach 1.2 and 1.1 sections; an independent review of
+    the results before any row enters (w). (6) Only then does
+    `blind-run-3.test.ts` evaluate the rows below Mach 1.078, under item 11.
+14. _Risks, said now._ Numerical wall dissipation at low Mach turns a small
+    total-pressure loss into a large Cp error, so (e) may fail honestly at
+    0.6 (then the rows stay out until the wall treatment is improved). The
+    Mach 1 runs settled in slow damped oscillations and Anderson wandered
+    there; subsonic acoustic modes may be slower still, and the 408.7 and
+    800-radius grids sit near the divergence seen at Mach 1. At Mach 0.6
+    the drag is a cancellation between the cone's positive pressures and
+    the shoulder's suction in the last 1% of r^2, at reduced order; a fail
+    there is likelier a grid-spacing finding than a solver bug. The GPU
+    path below Mach 1.05 is untested on any device. R1 and R2 are the only
+    exact references and apply at 0.6 (R2 ahead of the bubble elsewhere);
+    nothing at 0.9 to 0.99 is exact, and R5 depends on the owner's
+    machine. The settling scale S is a choice made now; it is recorded
+    with every grid.
+15. _Not changed:_ every served number, B1, the page, (w)'s registered
+    text, every other band and test.
+
+The next free letter is (z); (x) is reserved for the W6 probe.

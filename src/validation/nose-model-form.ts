@@ -68,6 +68,21 @@ export interface MeasuredCase {
   readonly readings: readonly Reading[];
   /** Seen before registration (0014 10.7 (w) item 3): widening only, never a test. */
   readonly seen: boolean;
+  /**
+   * The measure (0022 section 8 item 10, the dated rule of 2026-10-24):
+   * 'ratio' (the default), r = D_meas / D_inv - 1 with u relative to D_inv;
+   * or 'absolute', d = D_meas - D_inv in CD on the base area with u in the
+   * same units, for rows below MEASURE_BOUNDARY_MACH, where the inviscid
+   * nose drag is near zero and the ratio is ill-conditioned.
+   */
+  readonly measure?: Measure;
+}
+
+export type Measure = 'ratio' | 'absolute';
+/** 0022 section 8 item 10: rows at indicated Mach below this take the absolute measure. */
+export const MEASURE_BOUNDARY_MACH = 1;
+export function measureFor(mach: number): Measure {
+  return mach < MEASURE_BOUNDARY_MACH ? 'absolute' : 'ratio';
 }
 
 /** 4.3 item 3: a body whose inviscid drag lies more than this share outside its orifices sets nothing. */
@@ -85,11 +100,14 @@ export interface Evaluation {
   readonly cps: readonly number[];
   readonly measuredDrag: number;
   readonly inviscidDrag: number;
-  /** r = D_meas / D_inv - 1. */
+  /** r = D_meas / D_inv - 1 (ill-conditioned where D_inv is near zero; the absolute measure uses d). */
   readonly r: number;
+  /** d = D_meas - D_inv, in CD on the base area. */
+  readonly difference: number;
+  /** In the measure's units: relative to D_inv for 'ratio', CD for 'absolute'. */
   readonly uMeas: number;
   readonly uUnc: number;
-  /** |r| + u_meas + u_unc. */
+  /** |r| + u_meas + u_unc ('ratio'), or |d| + u_meas + u_unc ('absolute'), in the measure's units. */
   readonly halfWidth: number;
   /** The largest |Cp_meas - Cp_inv| over the stations. */
   readonly largestStationDifference: number;
@@ -102,6 +120,7 @@ export interface CaseResult {
   readonly mach: number;
   readonly reynolds: string;
   readonly seen: boolean;
+  readonly measure: Measure;
   /** Nose stations used (0 < x <= fineness), in order. */
   readonly stations: readonly number[];
   /** The inviscid drag of the whole nose, by the fine quadrature. */
@@ -116,7 +135,12 @@ export interface CaseResult {
    * last orifice carries the same bias (u_meas).
    */
   readonly biasArea: number;
-  /** Whether the body sets anything (uncoveredShare <= COVERAGE_LIMIT). */
+  /**
+   * Whether the body sets anything: uncoveredShare <= COVERAGE_LIMIT for the
+   * ratio measure; for the absolute measure the uncovered fraction of the
+   * base area (1 - coveredArea) <= COVERAGE_LIMIT, since the share of a
+   * near-zero drag means nothing.
+   */
   readonly sets: boolean;
   readonly evaluations: readonly Evaluation[];
   /** a_b: the largest half-width over the evaluations; null when the body sets nothing. */
@@ -186,6 +210,7 @@ function stationDrag(
 
 /** 0022 section 4.3, items 1 to 6, for one measured body at one Mach number. */
 export function evaluateCase(c: MeasuredCase): CaseResult {
+  const measure: Measure = c.measure ?? 'ratio';
   const L = c.fineness;
   const R2 = c.radius(L) ** 2;
   if (c.readings.length === 0) throw new RangeError(`${c.id}: no reading`);
@@ -212,7 +237,8 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
       const full = integrateAgainstAreaFine(c.inviscidCp, c.radius, 0, L) / R2;
       const tip = integrateAgainstAreaFine(c.inviscidCp, c.radius, 0, xs[0]!);
       const aft = integrateAgainstAreaFine(c.inviscidCp, c.radius, xs[xs.length - 1]!, L);
-      const share = (Math.abs(tip) + Math.abs(aft)) / R2 / Math.abs(full);
+      const share =
+        Math.abs(full) > 0 ? (Math.abs(tip) + Math.abs(aft)) / R2 / Math.abs(full) : Infinity;
       const rf = c.radius(xs[0]!);
       const rl = c.radius(xs[xs.length - 1]!);
       shareAndArea = {
@@ -229,24 +255,28 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
     for (const cps of combinations(onNose)) {
       const measuredDrag = stationDrag(xs, cps, tip, c.radius, L);
       const r = measuredDrag / inviscidDrag - 1;
+      const difference = measuredDrag - inviscidDrag;
       const largest = Math.max(...cps.map((v, i) => Math.abs(v - inv[i]!)));
-      const uMeas = (c.cpUncertainty * biasArea) / Math.abs(inviscidDrag);
-      const uUnc = ((1 - area) * largest) / Math.abs(inviscidDrag);
+      // The ratio measure divides by D_inv; the absolute one does not.
+      const over = measure === 'ratio' ? Math.abs(inviscidDrag) : 1;
+      const uMeas = (c.cpUncertainty * biasArea) / over;
+      const uUnc = ((1 - area) * largest) / over;
       evaluations.push({
         reading: reading.label,
         cps,
         measuredDrag,
         inviscidDrag,
         r,
+        difference,
         uMeas,
         uUnc,
-        halfWidth: Math.abs(r) + uMeas + uUnc,
+        halfWidth: (measure === 'ratio' ? Math.abs(r) : Math.abs(difference)) + uMeas + uUnc,
         largestStationDifference: largest,
       });
     }
   }
   const { share, area, biasArea, full } = shareAndArea!;
-  const sets = share <= COVERAGE_LIMIT;
+  const sets = measure === 'ratio' ? share <= COVERAGE_LIMIT : 1 - area <= COVERAGE_LIMIT;
   return {
     id: c.id,
     family: c.family,
@@ -254,6 +284,7 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
     mach: c.mach,
     reynolds: c.reynolds,
     seen: c.seen,
+    measure,
     stations: stations!,
     inviscidNoseDrag: full,
     uncoveredShare: share,
@@ -287,7 +318,9 @@ export interface Box {
   readonly mach: number;
   readonly reynolds: string;
   readonly seen: boolean;
-  /** a_b, or null when the body set nothing (4.3 item 3). */
+  /** The measure of halfWidth: relative to the nose term ('ratio') or CD on the base area ('absolute'). */
+  readonly measure: Measure;
+  /** a_b in the measure's units, or null when the body set nothing (4.3 item 3). */
   readonly halfWidth: number | null;
   /** The published floor (section 5), or null. */
   readonly floor: number | null;
@@ -301,6 +334,7 @@ export function boxOf(result: CaseResult, floor: number | null = null): Box {
     mach: result.mach,
     reynolds: result.reynolds,
     seen: result.seen,
+    measure: result.measure,
     halfWidth: result.halfWidth,
     floor,
   };
@@ -317,8 +351,14 @@ export function boxContains(box: Box, family: NoseFamily, fineness: number, mach
 }
 
 export interface Allowance {
-  /** The half-width a, relative to the nose term. */
+  /** The half-width a, relative to the nose term, from the ratio boxes (0 if none). */
   readonly halfWidth: number;
+  /**
+   * The half-width in CD on the base area from the absolute boxes (0 if
+   * none). Where a box of each measure contains the case, the band at a
+   * nose term D is the wider of halfWidth x D and this (noseBand).
+   */
+  readonly absolute: number;
   /** The boxes that contain the case and carry a value. */
   readonly boxes: readonly Box[];
   /** True when every one of those boxes is a seen set's: the label says so (section 5 (c)). */
@@ -340,8 +380,19 @@ export function allowanceAt(
     (b) => boxContains(b, family, fineness, mach) && (b.halfWidth !== null || b.floor !== null),
   );
   if (inside.length === 0) return null;
-  const halfWidth = Math.max(...inside.map((b) => Math.max(b.halfWidth ?? 0, b.floor ?? 0)));
-  return { halfWidth, boxes: inside, seenOnly: inside.every((b) => b.seen) };
+  const widest = (measure: Measure) =>
+    Math.max(
+      0,
+      ...inside
+        .filter((b) => b.measure === measure)
+        .map((b) => Math.max(b.halfWidth ?? 0, b.floor ?? 0)),
+    );
+  return {
+    halfWidth: widest('ratio'),
+    absolute: widest('absolute'),
+    boxes: inside,
+    seenOnly: inside.every((b) => b.seen),
+  };
 }
 
 /**
@@ -351,11 +402,14 @@ export function allowanceAt(
  */
 export function noseBand(
   drag: number,
-  allowance: number,
+  allowance: number | Pick<Allowance, 'halfWidth' | 'absolute'>,
   numerical: number,
 ): { low: number; high: number } {
-  return {
-    low: drag * (1 - allowance) - numerical,
-    high: drag * (1 + allowance) + numerical,
-  };
+  // 0022 section 8 item 10: in a box mixing the two measures, whichever
+  // form gives the wider band in CD at this nose term.
+  const a =
+    typeof allowance === 'number'
+      ? allowance * Math.abs(drag)
+      : Math.max(allowance.halfWidth * Math.abs(drag), allowance.absolute);
+  return { low: drag - a - numerical, high: drag + a + numerical };
 }

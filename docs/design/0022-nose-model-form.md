@@ -1,6 +1,8 @@
 # 0022: The nose's model error, against measured pressures
 
-- **Status:** adopted with Route 1, revision 3 (the coordinator, after an
+- **Status:** revision 5 (2026-10-24, before any row below Mach 1 is
+  evaluated): the absolute measure below Mach 1 and the u_num term,
+  section 8 item 10, under 0014 10.7 (y). Before that: adopted with Route 1, revision 3 (the coordinator, after an
   independent review of revision 1, df6e284, and a re-check of revision
   2, 37d154f; the owner chose Route 1). Registered as 0014 10.7 (w).
   Revision 4 (2026-10-24, before any reading, on the independent review
@@ -283,7 +285,9 @@ For each measured body b at Mach number M and each reading k:
    hide. This matters most for blunted families (TR 1386), whose cap
    carries a large share of the drag on few orifices.
 4. **The difference.** r_bk = D_meas / D_inv - 1, from the two
-   quadratures of item 2.
+   quadratures of item 2. (Below indicated Mach 1.000 the difference is
+   absolute, d = D_meas - D_inv, and items 3 and 5 follow section 8 item
+   10, dated 2026-10-24, before any such row was evaluated.)
 5. **The uncertainty terms**, each relative to D_inv, summed linearly:
    - _measurement:_ the report's stated uncertainty e in Cp, taken as a
      bias common to every orifice (the worst case, and what a
@@ -662,6 +666,31 @@ Decided by the owner on 2026-10-24, after the second blind run
    driver's settling tests unchanged); the files record the GPU used. No
    row below Mach 1 is evaluated until a verification plan for the solver
    below Mach 1 is registered.
+
+Decided by the owner on 2026-10-24, before any row below Mach 1 is
+evaluated (0014 10.7 (y), item 11; the solver's verification registered
+there comes first):
+
+10. **Below Mach 1 the measure is absolute, in CD on the base area.** The
+    inviscid nose drag of a cone-cylinder in subsonic flow is near zero
+    (exactly zero where shock-free, (y) R1), so the ratio r = D_meas /
+    D_inv - 1 of 4.3 item 4 is ill-conditioned there. For a row at
+    indicated Mach below 1.000 (`MEASURE_BOUNDARY_MACH`, fixed now, not
+    after seeing values): d = D_meas - D_inv from the same two quadratures
+    of 4.3 item 2; u_meas = e A_bias and u_unc = A_unc max|Cp_meas -
+    Cp_inv|, in CD, not divided by D_inv; the half-width a_abs = max(|d| +
+    u_meas + u_unc) over readings and alternatives, in CD; the box of 4.4
+    carries it in absolute CD. Coverage (4.3 item 3) is by the uncovered
+    base area, 1 - A_cov at most a tenth, since the share of a near-zero
+    drag means nothing. At and above indicated Mach 1.000 the ratio form
+    stands. A Mach number inside boxes of both forms (0.95 to 1.05 can be)
+    takes, at a nose term D, the wider of a D (the ratio boxes) and a_abs
+    (the absolute boxes): the band is D - max(a D, a_abs) - n to D +
+    max(a D, a_abs) + n, both lines shown. The verified solver's own
+    station band enters as a third term u_num ((y) item 11) in the
+    measure's units. Coded in `src/validation/nose-model-form.ts`
+    (`measure`, `measureFor`, `allowanceAt`'s `absolute`, `noseBand`),
+    tested on synthetic bodies before any reading reached it.
 
 ## 9. Order of work after the decisions
 
