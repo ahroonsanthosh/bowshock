@@ -733,6 +733,10 @@ reach the fins:
   stream at or above (L5)'s floor (item 4 below, and at least Mach 1.06
   for any leading edge), where linear theory gives the base no upstream
   influence (`closedSectionFailures`); below it the floor is withheld.
+  For an unswept leading edge (L5) sets no floor at all, so only the
+  boundary layer's Mach 1.06 is applied there: that the base is not felt
+  at a thick unswept fin just above Mach 1.06 is not shown, and the
+  first-order argument above (a drag) is what carries that case.
 - the nose's and the body's own flow (the pressure recovering along the
   cylinder behind an ogive's shoulder, rising toward the free stream's):
   a thrust of first order in V dp/dx. This is fin-body interference,
