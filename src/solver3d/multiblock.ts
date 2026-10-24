@@ -32,6 +32,8 @@ export interface Box3D {
 
 export type SideRole =
   | { readonly kind: 'boundary'; readonly side: Side3D }
+  /** Faces cells in no block (a solid: the fin, under the slab), across its whole extent. */
+  | { readonly kind: 'hole' }
   | { readonly kind: 'linked' }
   | { readonly kind: 'cut'; readonly with: number };
 
@@ -125,6 +127,8 @@ export function decompose(
   global: StructuredGrid3D,
   boxes: readonly Box3D[],
   cuts: readonly (readonly [number, number])[] = [],
+  /** Allow cells in no box (holes: solids inside the global index space). */
+  holes = false,
 ): Decomposition {
   const owner = (i: number, j: number, k: number): number => {
     for (let b = 0; b < boxes.length; b++) {
@@ -140,7 +144,8 @@ export function decompose(
         let n = 0;
         for (const x of boxes)
           if (i >= x.i0 && i < x.i1 && j >= x.j0 && j < x.j1 && k >= x.k0 && k < x.k1) n++;
-        if (n !== 1) throw new RangeError(`cell (${i}, ${j}, ${k}) lies in ${n} boxes`);
+        if (n > 1 || (n === 0 && !holes))
+          throw new RangeError(`cell (${i}, ${j}, ${k}) lies in ${n} boxes`);
       }
   const isCut = (a: number, b: number) =>
     cuts.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
@@ -152,10 +157,21 @@ export function decompose(
     for (const side of SIDES_3D) {
       const n = faceCount(box, side);
       const across = new Int32Array(n);
+      let inGrid = 0;
       for (let t = 0; t < n; t++) {
         const c = faceCell(box, side, t);
-        across[t] = owner(c.i + c.d[0], c.j + c.d[1], c.k + c.d[2]);
+        const [i, j, k] = [c.i + c.d[0], c.j + c.d[1], c.k + c.d[2]];
+        const inside =
+          i >= 0 && i < global.ni && j >= 0 && j < global.nj && k >= 0 && k < global.nk;
+        if (inside) inGrid++;
+        across[t] = inside ? owner(i, j, k) : -1;
       }
+      if (inGrid === n && Array.from(across).every((x) => x === -1)) {
+        role[side] = { kind: 'hole' };
+        continue;
+      }
+      if (inGrid !== 0 && inGrid !== n)
+        throw new RangeError(`side ${side} of block ${b} reaches the grid's edge part way`);
       const outside = Array.from(across).every((x) => x === -1);
       const cutWith = Array.from(across).filter((x) => x !== -1 && isCut(b, x));
       if (outside) {
@@ -225,6 +241,7 @@ export function blockBoundaries(
   cut: (side: Side3D, other: number) => BoundaryCondition3D = () => {
     throw new RangeError('a cut side needs its condition');
   },
+  hole: (side: Side3D) => BoundaryCondition3D = () => ({ kind: 'wall' }),
 ): Record<Side3D, BoundaryCondition3D> {
   const box = dec.boxes[b]!;
   const whole: Box3D = {
@@ -244,6 +261,10 @@ export function blockBoundaries(
     }
     if (role.kind === 'cut') {
       out[side] = cut(side, role.with);
+      continue;
+    }
+    if (role.kind === 'hole') {
+      out[side] = hole(side);
       continue;
     }
     const bc = global[side];
