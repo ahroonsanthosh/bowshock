@@ -38,6 +38,7 @@
  * (the unresolved case with the finer triple monotone), rewriting its file.
  */
 
+import { execSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -93,6 +94,24 @@ const log = (s: string) => {
 
 const engine = cpuTransonicEngine(CFL);
 const fallback = cpuFallback();
+const ENGINE = `CPU, LU-SGS, CFL to ${CFL} (cpuTransonicEngine)`;
+
+/** The solve code's commit, "-dirty" if the research scripts or src differ from it (the kept grids' fingerprint). */
+function solveCodeCommit(): string {
+  try {
+    const head = execSync('git rev-parse --short HEAD', { cwd: here, encoding: 'utf8' }).trim();
+    const dirty =
+      execSync('git status --porcelain -- docs/research/nose-model-form src', {
+        cwd: here,
+        encoding: 'utf8',
+      })
+        .split('\n')
+        .filter((l) => l.trim() !== '' && !l.includes('/out/')).length > 0;
+    return dirty ? `${head}-dirty` : head;
+  } catch {
+    return 'unknown';
+  }
+}
 
 async function solveMach(mach: number): Promise<void> {
   const tag = `M${mach.toFixed(3)}`;
@@ -158,8 +177,9 @@ async function solveMach(mach: number): Promise<void> {
         // Every allowance base grid is kept in $CHECKPOINTS (finished: never
         // re-solved; running: its mid state per path), so a restart resumes.
         const store = checkpoints === '' ? null : fileGridStore(checkpoints);
-        const farField = await solveAllowance(engine, mach, 'farField', own, tag, log, fallback, store);
-        const cylinder = await solveAllowance(engine, mach, 'cylinder', own, tag, log, fallback, store);
+        const code = { engine: ENGINE, commit: solveCodeCommit() };
+        const farField = await solveAllowance(engine, mach, 'farField', own, tag, log, fallback, store, code);
+        const cylinder = await solveAllowance(engine, mach, 'cylinder', own, tag, log, fallback, store, code);
         allowances = { farField, cylinder };
         for (const a of [farField, cylinder])
           log(
@@ -183,7 +203,7 @@ async function solveMach(mach: number): Promise<void> {
         mach,
         converged: true,
         finest: FINEST,
-        engine: `CPU, LU-SGS, CFL to ${CFL} (cpuTransonicEngine)`,
+        engine: ENGINE,
         domain: {
           farRadius: last!.problem.grid.farRadius,
           cylinderCalibers: problemOf(mach, 1).options.cylinder,

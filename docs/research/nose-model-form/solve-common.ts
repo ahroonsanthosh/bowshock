@@ -522,9 +522,79 @@ export function distanceOf(kind: 'farField' | 'cylinder', problem: TransonicProb
  * running one, so that a restart resumes exactly where it was, with
  * item 18's path order and caps per grid. Null (the GPU kit) keeps nothing.
  */
+/**
+ * What a kept grid was made with: its grid, the engine and settling
+ * constants, the caps, the scale and the solve code's commit. A kept grid
+ * whose fingerprint differs from the current one is not used (the code or
+ * the constants changed under it).
+ */
+export interface GridFingerprint {
+  readonly ni: number;
+  readonly nj: number;
+  readonly farRadius: number;
+  readonly xEnd: number;
+  readonly mach: number;
+  readonly refinement: number;
+  readonly engine: string;
+  readonly cfl: number;
+  readonly checkEvery: number;
+  readonly maxSteps: number;
+  readonly maxStepsExplicit: number;
+  readonly fallbackCfl: number;
+  readonly settleNoise: number;
+  readonly geometricNoise: number;
+  readonly wanderChecks: number;
+  readonly residualDivergence: number;
+  readonly residualFall: number;
+  readonly subsonicScale: number;
+  /** The solve code's commit (git rev-parse HEAD of the worktree), with "-dirty" if the research or src files differed. */
+  readonly commit: string;
+}
+
+export function gridFingerprint(
+  problem: TransonicProblem,
+  engine: string,
+  commit: string,
+): GridFingerprint {
+  return {
+    ni: problem.config.grid.ni,
+    nj: problem.config.grid.nj,
+    farRadius: problem.grid.farRadius,
+    xEnd: problem.grid.xEnd,
+    mach: problem.options.mach,
+    refinement: problem.options.refinement,
+    engine,
+    cfl: CFL,
+    checkEvery: CHECK_EVERY,
+    maxSteps: MAX_STEPS,
+    maxStepsExplicit: MAX_STEPS_EXPLICIT,
+    fallbackCfl: FALLBACK_CFL,
+    settleNoise: SETTLE_NOISE,
+    geometricNoise: GEOMETRIC_NOISE,
+    wanderChecks: WANDER_CHECKS,
+    residualDivergence: RESIDUAL_DIVERGENCE,
+    residualFall: RESIDUAL_FALL,
+    subsonicScale: SUBSONIC_SCALE,
+    commit,
+  };
+}
+
+export function sameFingerprint(a: GridFingerprint, b: GridFingerprint): boolean {
+  return (Object.keys(a) as (keyof GridFingerprint)[]).every((k) => a[k] === b[k]);
+}
+
 export interface GridStore {
-  readonly done: (key: string) => { result: GridResult; conserved: Float64Array } | null;
-  readonly keep: (key: string, result: GridResult, conserved: Float64Array) => void;
+  /** The kept grid under this key, if its fingerprint is the one given (a mismatch counts as not kept, and is logged by the caller). */
+  readonly done: (
+    key: string,
+    fingerprint: GridFingerprint,
+  ) => { result: GridResult; conserved: Float64Array } | { mismatch: GridFingerprint } | null;
+  readonly keep: (
+    key: string,
+    result: GridResult,
+    conserved: Float64Array,
+    fingerprint: GridFingerprint,
+  ) => void;
   readonly midFor: (key: string, path: SolvePath) => MidCheckpoint | null;
   /** Called once a grid is kept: its mid states are no longer needed. */
   readonly clearMid: (key: string) => void;
@@ -540,10 +610,20 @@ export async function solveGridKept(
   tag: string,
   log: Log,
   fallback: FallbackEngines | null,
+  fingerprint: GridFingerprint = gridFingerprint(problem, 'unspecified', 'unspecified'),
 ): Promise<{ result: GridResult; conserved: Float64Array }> {
-  const kept = store?.done(key) ?? null;
-  if (kept !== null) {
-    await log(`${tag} kept from before: drag ${kept.result.drag} (${kept.result.path} steps, ${kept.result.steps} steps)`);
+  const kept = store?.done(key, fingerprint) ?? null;
+  if (kept !== null && 'mismatch' in kept) {
+    const differ = (Object.keys(fingerprint) as (keyof GridFingerprint)[]).filter(
+      (k) => fingerprint[k] !== kept.mismatch[k],
+    );
+    await log(
+      `${tag} kept grid refused: its fingerprint differs in ${differ.join(', ')} (kept ${differ.map((k) => String(kept.mismatch[k])).join(', ')}; now ${differ.map((k) => String(fingerprint[k])).join(', ')}); solved again`,
+    );
+  } else if (kept !== null) {
+    await log(
+      `${tag} kept from before: drag ${kept.result.drag} (${kept.result.path} steps, ${kept.result.steps} steps)`,
+    );
     return kept;
   }
   const solved = await solveGridStably(
@@ -557,7 +637,7 @@ export async function solveGridKept(
     store === null ? () => null : (path) => store.midFor(key, path),
   );
   if (store !== null) {
-    store.keep(key, solved.result, solved.conserved);
+    store.keep(key, solved.result, solved.conserved, fingerprint);
     store.clearMid(key);
   }
   return solved;
@@ -572,6 +652,7 @@ export async function solveAllowance(
   log: Log,
   fallback: FallbackEngines | null = null,
   store: GridStore | null = null,
+  code: { engine: string; commit: string } = { engine: 'unspecified', commit: 'unspecified' },
 ): Promise<AllowanceRecord> {
   const domains = transonicDomains(body, mach);
   const sizes = kind === 'farField' ? domains.farField : domains.cylinder;
@@ -589,6 +670,7 @@ export async function solveAllowance(
     `${tag} ${kind} ${sizes[0]}`,
     log,
     fallback,
+    gridFingerprint(smallerProblem, code.engine, code.commit),
   );
   const larger = await solveGridKept(
     store,
@@ -599,6 +681,7 @@ export async function solveAllowance(
     `${tag} ${kind} ${sizes[2]}`,
     log,
     fallback,
+    gridFingerprint(largerProblem, code.engine, code.commit),
   );
   const smallerRecords = gridRecords(smallerProblem, smaller.conserved);
   const largerRecords = gridRecords(largerProblem, larger.conserved);

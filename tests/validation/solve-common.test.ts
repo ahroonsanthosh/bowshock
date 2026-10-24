@@ -7,20 +7,25 @@ import { join } from 'node:path';
 import {
   fileGridStore,
   fileMidCheckpoint,
+  writeKept,
 } from '../../docs/research/nose-model-form/mid-checkpoint';
 import {
   cpuFallback,
   explicitEngine,
   FALLBACK_CFL,
   fallbackPaths,
+  gridFingerprint,
   gridRecords,
+  sameFingerprint,
   solveAllowance,
+  solveGridKept,
   MAX_STEPS,
   MAX_STEPS_EXPLICIT,
   NotConverged,
   problemOf,
   solveGrid,
   solveGridStably,
+  type GridFingerprint,
   type GridResult,
   type GridStore,
   type MidCheckpoint,
@@ -396,6 +401,7 @@ describe('(y) item 18: solveGridStably', () => {
     const store: GridStore = {
       done: (key) => kept.get(key) ?? null,
       keep: (key, result, conserved) => kept.set(key, { result, conserved }),
+      // (the fingerprint is not checked by this in-memory store; the file store's test does)
       midFor: (key, path) => ({
         everySeconds: 1e9,
         load: () => mids.get(`${key}-${path}`) ?? null,
@@ -482,10 +488,11 @@ describe('(y) item 18: solveGridStably', () => {
     expect([...mids.keys()].filter((k) => k.startsWith('M1.100-farField-200'))).toEqual([]);
   }, 120_000);
 
-  it('the file grid store: kept grids and mid states round-trip; a half-kept grid is not kept', () => {
+  it('the file grid store: kept grids and mid states round-trip; a half-kept grid is not kept; a changed fingerprint refuses', () => {
     const dir = mkdtempSync(join(tmpdir(), 'store-'));
     const store = fileGridStore(dir);
-    expect(store.done('k')).toBeNull();
+    const fp = gridFingerprint(problem, 'CPU test', 'abc1234');
+    expect(store.done('k', fp)).toBeNull();
     const result = {
       refinement: 1,
       ni: 2,
@@ -498,20 +505,123 @@ describe('(y) item 18: solveGridStably', () => {
       scale: 0.1,
       path: 'explicit' as const,
     };
-    store.keep('k', result, new Float64Array([1, 2]));
-    const back = store.done('k')!;
+    store.keep('k', result, new Float64Array([1, 2]), fp);
+    const back = store.done('k', fp);
+    expect(back).not.toBeNull();
+    if (back === null || 'mismatch' in back) throw new Error('kept grid expected');
     expect(back.result).toEqual(result);
     expect([...back.conserved]).toEqual([1, 2]);
+    // The same grid under other code, or other constants, is a mismatch, not a kept grid.
+    const other = store.done('k', { ...fp, commit: 'def5678' });
+    expect(other !== null && 'mismatch' in other && other.mismatch.commit === 'abc1234').toBe(true);
+    expect(store.done('k', { ...fp, settleNoise: 2e-7 })).toMatchObject({
+      mismatch: { commit: 'abc1234' },
+    });
+    expect(store.done('k', { ...fp, nj: fp.nj + 1 })).toMatchObject({ mismatch: { nj: fp.nj } });
+    // A kept grid without a fingerprint (f4d0f74's store) is a mismatch too.
+    writeFileSync(join(dir, 'k.json'), JSON.stringify(result));
+    expect(store.done('k', fp)).toMatchObject({ mismatch: { commit: 'none recorded' } });
     const mid = store.midFor('k', 'implicit10')!;
     mid.save({ conserved: new Float64Array([3]), steps: 9, firstResidual: 1, largestResidual: 2 });
     expect(mid.load()!.steps).toBe(9);
     store.clearMid('k');
     expect(mid.load()).toBeNull();
     // The json alone (a crash between the two writes) is not a kept grid.
-    writeFileSync(join(dir, 'h.json'), JSON.stringify(result));
-    expect(store.done('h')).toBeNull();
+    writeFileSync(join(dir, 'h.json'), JSON.stringify({ ...result, fingerprint: fp }));
+    expect(store.done('h', fp)).toBeNull();
     expect(readdirSync(dir).sort()).toEqual(['h.json', 'k.bin', 'k.json']);
   });
+
+  it('a kept grid is written bin first and json last, each through a temporary name and a rename', () => {
+    const calls: string[] = [];
+    const fp = gridFingerprint(problem, 'CPU test', 'abc1234');
+    const result = {
+      refinement: 1,
+      ni: 2,
+      nj: 2,
+      drag: 0.1,
+      steps: 5,
+      seconds: 1,
+      noise: 1e-7,
+      rate: 0.9,
+      scale: 0.1,
+      path: 'implicit' as const,
+    };
+    writeKept('/x/g', result, new Float64Array([1]), fp, {
+      write: (path) => calls.push(`write ${path}`),
+      rename: (from, to) => calls.push(`rename ${from} -> ${to}`),
+    });
+    expect(calls).toEqual([
+      'write /x/g.bin.tmp',
+      'rename /x/g.bin.tmp -> /x/g.bin',
+      'write /x/g.json.tmp',
+      'rename /x/g.json.tmp -> /x/g.json',
+    ]);
+  });
+
+  it('solveGridKept refuses a kept grid whose fingerprint differs and solves it again', async () => {
+    const kept = new Map<
+      string,
+      { result: GridResult; conserved: Float64Array; fp: GridFingerprint }
+    >();
+    const store: GridStore = {
+      done: (key, fp) => {
+        const k = kept.get(key);
+        if (k === undefined) return null;
+        return sameFingerprint(k.fp, fp)
+          ? { result: k.result, conserved: k.conserved }
+          : { mismatch: k.fp };
+      },
+      keep: (key, result, conserved, fp) => kept.set(key, { result, conserved, fp }),
+      midFor: () => null,
+      clearMid: () => undefined,
+    };
+    const fpA = gridFingerprint(problem, 'CPU test', 'aaaa');
+    const fpB = gridFingerprint(problem, 'CPU test', 'bbbb');
+    const first = { count: 0 };
+    await solveGridKept(
+      store,
+      'k',
+      engineOf({ limit: 0.1 }, first),
+      problem,
+      null,
+      't',
+      quiet,
+      null,
+      fpA,
+    );
+    const same = { count: 0 };
+    await solveGridKept(
+      store,
+      'k',
+      engineOf({ limit: 0.1 }, same),
+      problem,
+      null,
+      't',
+      quiet,
+      null,
+      fpA,
+    );
+    expect([first.count, same.count]).toEqual([1, 0]);
+    const other = { count: 0 };
+    const lines: string[] = [];
+    await solveGridKept(
+      store,
+      'k',
+      engineOf({ limit: 0.1 }, other),
+      problem,
+      null,
+      't',
+      (l) => void lines.push(l),
+      null,
+      fpB,
+    );
+    expect(other.count).toBe(1);
+    expect(lines.some((l) => /kept grid refused: its fingerprint differs in commit/.test(l))).toBe(
+      true,
+    );
+    expect(kept.get('k')!.fp.commit).toBe('bbbb');
+  }, 120_000);
 
   it('the registered constants and the CPU fallback engines', () => {
     expect(MAX_STEPS_EXPLICIT).toBe(2_000_000);
