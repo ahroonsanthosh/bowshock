@@ -60,7 +60,7 @@ import {
   type GridRecords,
   type GridResult,
 } from './solve-common';
-import { fileGridStore, fileMidCheckpoint } from './mid-checkpoint';
+import { fileGridStore, fileMidCheckpoint, numericsHash } from './mid-checkpoint';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const FINEST = Number(process.env.FINEST ?? 8);
@@ -177,7 +177,7 @@ async function solveMach(mach: number): Promise<void> {
         // Every allowance base grid is kept in $CHECKPOINTS (finished: never
         // re-solved; running: its mid state per path), so a restart resumes.
         const store = checkpoints === '' ? null : fileGridStore(checkpoints);
-        const code = { engine: ENGINE, commit: solveCodeCommit() };
+        const code = { engine: ENGINE, numerics: numericsHash(), commit: solveCodeCommit() };
         const farField = await solveAllowance(engine, mach, 'farField', own, tag, log, fallback, store, code);
         const cylinder = await solveAllowance(engine, mach, 'cylinder', own, tag, log, fallback, store, code);
         allowances = { farField, cylinder };

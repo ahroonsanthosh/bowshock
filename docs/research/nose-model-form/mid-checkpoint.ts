@@ -7,8 +7,9 @@
  * continued from (the cap is per grid, across restarts).
  */
 
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import {
   sameFingerprint,
   type GridFingerprint,
@@ -111,7 +112,7 @@ export function fileGridStore(dir: string): GridStore {
       };
       // A kept grid without a fingerprint (f4d0f74's store) counts as a mismatch too.
       if (kept === undefined || !sameFingerprint(kept, fingerprint))
-        return { mismatch: kept ?? ({ commit: 'none recorded' } as GridFingerprint) };
+        return { mismatch: kept ?? ({ numerics: 'none recorded' } as GridFingerprint) };
       const buf = readFileSync(`${base}.bin`);
       return {
         result,
@@ -127,4 +128,55 @@ export function fileGridStore(dir: string): GridStore {
       for (const path of PATHS) fileMidCheckpoint(`${at(key)}-${path}`).clear();
     },
   };
+}
+
+const here = dirname(new URL(import.meta.url).pathname);
+/** The repository root (docs/research/nose-model-form is three below it). */
+const root = resolve(here, '..', '..', '..');
+
+/**
+ * The files that determine a grid's numbers: solve-numerics.ts and every
+ * file it imports, transitively, by a relative path (the src engines, the
+ * grid, the scheme, the body; a bare module such as vitest or node:fs is
+ * not followed). Paths relative to the repository root, sorted.
+ */
+export function numericsFiles(entry = join(here, 'solve-numerics.ts')): string[] {
+  const seen = new Set<string>();
+  const walk = (file: string): void => {
+    if (seen.has(file)) return;
+    seen.add(file);
+    const text = readFileSync(file, 'utf8');
+    // Value imports and re-exports by a relative path; a type-only import
+    // (import type, export type) carries no numerics and is not followed,
+    // nor is a non-TypeScript asset (a shader imported ?raw).
+    for (const m of text.matchAll(/^(?:import|export)\s+(type\s+)?[^;]*?from\s+'(\.[^']*)'/gms)) {
+      if (m[1] !== undefined) continue;
+      const spec = m[2]!;
+      if (spec.includes('?')) continue;
+      const target = resolve(dirname(file), spec);
+      const candidates = [target, `${target}.ts`, join(target, 'index.ts')];
+      const found = candidates.find((c) => c.endsWith('.ts') && existsSync(c));
+      if (found === undefined) throw new Error(`numericsFiles: ${spec} from ${file} not found`);
+      walk(found);
+    }
+  };
+  walk(entry);
+  return [...seen].map((f) => relative(root, f)).sort();
+}
+
+/**
+ * The content hash of the numerics files (sha256 over each file's path and
+ * text, in sorted order; the first 16 hex digits): the compared code part
+ * of a kept grid's fingerprint. A commit that leaves these files as they
+ * were leaves the hash as it was, so the grids kept under it stay kept.
+ */
+export function numericsHash(entry?: string): string {
+  const h = createHash('sha256');
+  for (const f of numericsFiles(entry)) {
+    h.update(f);
+    h.update('\0');
+    h.update(readFileSync(join(root, f)));
+    h.update('\0');
+  }
+  return h.digest('hex').slice(0, 16);
 }

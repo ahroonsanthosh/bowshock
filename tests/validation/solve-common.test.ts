@@ -7,6 +7,8 @@ import { join } from 'node:path';
 import {
   fileGridStore,
   fileMidCheckpoint,
+  numericsFiles,
+  numericsHash,
   writeKept,
 } from '../../docs/research/nose-model-form/mid-checkpoint';
 import {
@@ -491,7 +493,7 @@ describe('(y) item 18: solveGridStably', () => {
   it('the file grid store: kept grids and mid states round-trip; a half-kept grid is not kept; a changed fingerprint refuses', () => {
     const dir = mkdtempSync(join(tmpdir(), 'store-'));
     const store = fileGridStore(dir);
-    const fp = gridFingerprint(problem, 'CPU test', 'abc1234');
+    const fp = gridFingerprint(problem, 'CPU test', { numerics: 'n111', commit: 'abc1234' });
     expect(store.done('k', fp)).toBeNull();
     const result = {
       refinement: 1,
@@ -511,16 +513,19 @@ describe('(y) item 18: solveGridStably', () => {
     if (back === null || 'mismatch' in back) throw new Error('kept grid expected');
     expect(back.result).toEqual(result);
     expect([...back.conserved]).toEqual([1, 2]);
-    // The same grid under other code, or other constants, is a mismatch, not a kept grid.
-    const other = store.done('k', { ...fp, commit: 'def5678' });
-    expect(other !== null && 'mismatch' in other && other.mismatch.commit === 'abc1234').toBe(true);
+    // The same grid under other numerics, or other constants, is a mismatch, not a kept grid.
+    const other = store.done('k', { ...fp, numerics: 'n222' });
+    expect(other !== null && 'mismatch' in other && other.mismatch.numerics === 'n111').toBe(true);
     expect(store.done('k', { ...fp, settleNoise: 2e-7 })).toMatchObject({
-      mismatch: { commit: 'abc1234' },
+      mismatch: { numerics: 'n111' },
     });
     expect(store.done('k', { ...fp, nj: fp.nj + 1 })).toMatchObject({ mismatch: { nj: fp.nj } });
+    // Another commit, or a note, with the same numerics keeps the grid (the commit is informational).
+    const sameNumerics = store.done('k', { ...fp, commit: 'def5678-dirty', note: 'tagged later' });
+    expect(sameNumerics !== null && !('mismatch' in sameNumerics)).toBe(true);
     // A kept grid without a fingerprint (f4d0f74's store) is a mismatch too.
     writeFileSync(join(dir, 'k.json'), JSON.stringify(result));
-    expect(store.done('k', fp)).toMatchObject({ mismatch: { commit: 'none recorded' } });
+    expect(store.done('k', fp)).toMatchObject({ mismatch: { numerics: 'none recorded' } });
     const mid = store.midFor('k', 'implicit10')!;
     mid.save({ conserved: new Float64Array([3]), steps: 9, firstResidual: 1, largestResidual: 2 });
     expect(mid.load()!.steps).toBe(9);
@@ -534,7 +539,7 @@ describe('(y) item 18: solveGridStably', () => {
 
   it('a kept grid is written bin first and json last, each through a temporary name and a rename', () => {
     const calls: string[] = [];
-    const fp = gridFingerprint(problem, 'CPU test', 'abc1234');
+    const fp = gridFingerprint(problem, 'CPU test', { numerics: 'n111', commit: 'abc1234' });
     const result = {
       refinement: 1,
       ni: 2,
@@ -576,8 +581,8 @@ describe('(y) item 18: solveGridStably', () => {
       midFor: () => null,
       clearMid: () => undefined,
     };
-    const fpA = gridFingerprint(problem, 'CPU test', 'aaaa');
-    const fpB = gridFingerprint(problem, 'CPU test', 'bbbb');
+    const fpA = gridFingerprint(problem, 'CPU test', { numerics: 'naaa', commit: 'aaaa' });
+    const fpB = gridFingerprint(problem, 'CPU test', { numerics: 'nbbb', commit: 'bbbb' });
     const first = { count: 0 };
     await solveGridKept(
       store,
@@ -617,11 +622,39 @@ describe('(y) item 18: solveGridStably', () => {
       fpB,
     );
     expect(other.count).toBe(1);
-    expect(lines.some((l) => /kept grid refused: its fingerprint differs in commit/.test(l))).toBe(
-      true,
-    );
-    expect(kept.get('k')!.fp.commit).toBe('bbbb');
+    expect(
+      lines.some((l) => /kept grid refused: its fingerprint differs in numerics/.test(l)),
+    ).toBe(true);
+    expect(kept.get('k')!.fp.numerics).toBe('nbbb');
   }, 120_000);
+
+  it('the numerics hash covers solve-numerics.ts and the src files it imports, not the store or the scripts', () => {
+    const files = numericsFiles();
+    expect(files).toContain('docs/research/nose-model-form/solve-numerics.ts');
+    expect(files).toContain('src/analysis/transonic-drag.ts');
+    expect(files).toContain('src/analysis/transonic-flow.ts');
+    expect(files).toContain('src/engine-cpu/euler2d.ts');
+    expect(files.some((f) => f.startsWith('src/grid/'))).toBe(true);
+    expect(files.some((f) => f.startsWith('src/scheme/'))).toBe(true);
+    expect(files).not.toContain('docs/research/nose-model-form/solve-common.ts');
+    expect(files).not.toContain('docs/research/nose-model-form/mid-checkpoint.ts');
+    expect(files).not.toContain('docs/research/nose-model-form/blind-run-3-solve.test.ts');
+    expect(files.some((f) => /^src\/(render|app|ui)\//.test(f))).toBe(false);
+    expect(files.every((f) => f.endsWith('.ts'))).toBe(true);
+    const hash = numericsHash();
+    expect(hash).toMatch(/^[0-9a-f]{16}$/);
+    expect(numericsHash()).toBe(hash);
+    // A change to one of the files changes the hash; a change elsewhere does not.
+    const dir = mkdtempSync(join(tmpdir(), 'numerics-'));
+    writeFileSync(join(dir, 'a.ts'), "import { b } from './b';\nexport const a = b + 1;\n");
+    writeFileSync(join(dir, 'b.ts'), 'export const b = 1;\n');
+    writeFileSync(join(dir, 'c.ts'), 'export const c = 1;\n');
+    const h1 = numericsHash(join(dir, 'a.ts'));
+    writeFileSync(join(dir, 'c.ts'), 'export const c = 2;\n');
+    expect(numericsHash(join(dir, 'a.ts'))).toBe(h1);
+    writeFileSync(join(dir, 'b.ts'), 'export const b = 2;\n');
+    expect(numericsHash(join(dir, 'a.ts'))).not.toBe(h1);
+  });
 
   it('the registered constants and the CPU fallback engines', () => {
     expect(MAX_STEPS_EXPLICIT).toBe(2_000_000);
