@@ -50,7 +50,33 @@ export type BoundaryCondition3D =
   /** Slip wall; also a mirror plane. */
   | { readonly kind: 'wall' }
   /** Periodic, paired with the opposite side. */
-  | { readonly kind: 'periodic' };
+  | { readonly kind: 'periodic' }
+  /**
+   * A block interface: the ghost cells hold the neighbouring blocks' cells, written by Euler3D.iterateCoupled
+   * at every stage (and by fillLinkedGhosts for a residual outside it).
+   */
+  | { readonly kind: 'linked' };
+
+/**
+ * The ghost cells of one linked side: for face t and ghost layer g (entry 2 t + g), the block and cell whose
+ * state they hold (four integers: block, i, j, k).
+ */
+export interface GhostLink3D {
+  readonly block: number;
+  readonly side: Side3D;
+  readonly sources: Int32Array;
+}
+
+/**
+ * A side whose faces take the flux another block computed on the same faces (a block interface, 0021 3.8:
+ * the two blocks use the same stored flux): for face t, the owner's block, side (index in SIDES_3D) and face
+ * (three integers). The owner's face must have the same area vector, bit for bit (checked).
+ */
+export interface FluxShare3D {
+  readonly block: number;
+  readonly side: Side3D;
+  readonly owners: Int32Array;
+}
 
 export interface Euler3DConfig {
   readonly grid: StructuredGrid3D;
@@ -182,23 +208,176 @@ export class Euler3D {
     return { rho, u: uu, v, w, p };
   }
 
-  /** The residual (net inflow, with the sources) of the current state: five values a cell, in cell order. */
-  private recordSide: Side3D | null = null;
-  private recorded = new Float64Array(0);
+  /** Sides whose face fluxes computeResidual records: flux per unit area (five a face), and flux times area. */
+  private recording = new Map<Side3D, { perArea: Float64Array; times: Float64Array }>();
 
   /**
    * The flux times area through each face of a side for the current state (five values a face, in the order
    * of boundaryFaceCount): at a wall, the momentum entries are the wall's pressure force on the fluid.
    */
   sideFluxes(side: Side3D): Float64Array {
-    this.recordSide = side;
-    this.recorded = new Float64Array(NV * this.boundaryFaceCount(side));
+    const n = NV * this.boundaryFaceCount(side);
+    const buffers = { perArea: new Float64Array(n), times: new Float64Array(n) };
+    this.recording = new Map([[side, buffers]]);
     try {
       this.computeResidual(this.state);
     } finally {
-      this.recordSide = null;
+      this.recording = new Map();
     }
-    return this.recorded;
+    return buffers.times;
+  }
+
+  /** The padded state index (times 5) of a cell, for the coupled driver. */
+  private paddedIndex(i: number, j: number, k: number): number {
+    return this.at(i, j, k);
+  }
+
+  /** Write the linked sides' ghost cells of this block's current state from the blocks given (outside a step). */
+  static fillLinkedGhosts(blocks: readonly Euler3D[], links: readonly GhostLink3D[]): void {
+    Euler3D.writeLinks(
+      blocks,
+      links,
+      blocks.map((b) => b.state),
+    );
+  }
+
+  private static writeLinks(
+    blocks: readonly Euler3D[],
+    links: readonly GhostLink3D[],
+    arrays: readonly Float64Array[],
+  ): void {
+    for (const link of links) {
+      const b = blocks[link.block]!;
+      const dst = arrays[link.block]!;
+      const n = b.boundaryFaceCount(link.side);
+      for (let t = 0; t < n; t++)
+        for (let g = 0; g < GHOSTS; g++) {
+          const e = 4 * (GHOSTS * t + g);
+          const src = blocks[link.sources[e]!]!;
+          const from = src.paddedIndex(
+            link.sources[e + 1]!,
+            link.sources[e + 2]!,
+            link.sources[e + 3]!,
+          );
+          const ghost = b.ghostCells(link.side, t, g)[0];
+          const a = arrays[link.sources[e]!]!;
+          for (let v = 0; v < NV; v++) dst[ghost + v] = a[from + v]!;
+        }
+    }
+  }
+
+  /**
+   * Area vector of face t of a side (for the coupled driver's check that shared faces coincide).
+   */
+  sideFaceVector(side: Side3D, t: number): [number, number, number] {
+    const { ni, nj, nk, iFaces, jFaces, kFaces } = this.metrics;
+    let set: typeof iFaces;
+    let fq: number;
+    if (side[0] === 'i') {
+      set = iFaces;
+      fq = (side === 'iMin' ? 0 : ni) + (ni + 1) * ((t % nj) + nj * Math.floor(t / nj));
+    } else if (side[0] === 'j') {
+      set = jFaces;
+      fq = (t % ni) + ni * ((side === 'jMin' ? 0 : nj) + (nj + 1) * Math.floor(t / ni));
+    } else {
+      set = kFaces;
+      fq = (t % ni) + ni * (Math.floor(t / ni) + nj * (side === 'kMin' ? 0 : nk));
+    }
+    return [set.s0[fq]!, set.s1[fq]!, set.s2[fq]!];
+  }
+
+  /**
+   * Advance several blocks together, `count` steps, each with its own local time steps: at every Runge-Kutta
+   * stage the linked ghost cells are written from the neighbouring blocks' states of that stage, the owners
+   * of shared faces compute and store their fluxes, and the followers use those stored fluxes, so that the
+   * two blocks of an interface use the same flux (conservative across it). Owners must come before their
+   * followers in `blocks`.
+   */
+  static iterateCoupled(
+    blocks: readonly Euler3D[],
+    links: readonly GhostLink3D[],
+    shares: readonly FluxShare3D[],
+    count: number,
+  ): void {
+    const stages = RUNGE_KUTTA_STAGES[blocks[0]!.config.timeIntegrator];
+    for (const b of blocks) {
+      if (RUNGE_KUTTA_STAGES[b.config.timeIntegrator] !== stages)
+        throw new RangeError('coupled blocks need the same time integrator');
+    }
+    // Owners' sides to record, and each follower's buffer.
+    const ownerSides = new Map<number, Set<Side3D>>();
+    for (const sh of shares) {
+      for (let t = 0; t < sh.owners.length / 3; t++) {
+        const ob = sh.owners[3 * t]!;
+        if (ob >= sh.block) throw new RangeError('an owner must come before its follower');
+        const side = SIDES_3D[sh.owners[3 * t + 1]!]!;
+        if (!ownerSides.has(ob)) ownerSides.set(ob, new Set());
+        ownerSides.get(ob)!.add(side);
+      }
+    }
+    for (let n = 0; n < count; n++) {
+      for (const b of blocks) b.computeTimeSteps();
+      const u0s = blocks.map((b) => b.state);
+      const previous = [...u0s];
+      stages.forEach(({ a, b: coef }, s) => {
+        const outs = blocks.map((b) =>
+          s === stages.length - 1 ? b.state : s % 2 === 0 ? b.stageA : b.stageB,
+        );
+        Euler3D.writeLinks(blocks, links, previous);
+        blocks.forEach((blk, bi) => {
+          const sides = ownerSides.get(bi);
+          blk.recording = new Map();
+          if (sides) {
+            for (const side of sides) {
+              const m = NV * blk.boundaryFaceCount(side);
+              blk.recording.set(side, { perArea: new Float64Array(m), times: new Float64Array(m) });
+            }
+          }
+          for (const sh of shares) {
+            if (sh.block !== bi) continue;
+            const nf = blk.boundaryFaceCount(sh.side);
+            const imposed = new Float64Array(NV * nf);
+            for (let t = 0; t < nf; t++) {
+              const owner = blocks[sh.owners[3 * t]!]!;
+              const rec = owner.recording.get(SIDES_3D[sh.owners[3 * t + 1]!]!)!;
+              const to = sh.owners[3 * t + 2]!;
+              for (let v = 0; v < NV; v++) imposed[NV * t + v] = rec.perArea[NV * to + v]!;
+            }
+            blk.imposed.set(sh.side, imposed);
+          }
+          blk.computeResidual(previous[bi]!);
+        });
+        for (const blk of blocks) blk.recording = new Map();
+        blocks.forEach((blk, bi) => {
+          blk.update(u0s[bi]!, previous[bi]!, a, coef, outs[bi]!);
+        });
+        outs.forEach((o, bi) => {
+          previous[bi] = o;
+        });
+      });
+      for (const b of blocks) {
+        b.steps += 1;
+        b.checkPhysical(b.state);
+      }
+    }
+  }
+
+  /** Check that every shared face has the same area vector as its owner's, bit for bit. */
+  static checkShares(blocks: readonly Euler3D[], shares: readonly FluxShare3D[]): void {
+    for (const sh of shares) {
+      const blk = blocks[sh.block]!;
+      for (let t = 0; t < blk.boundaryFaceCount(sh.side); t++) {
+        const mine = blk.sideFaceVector(sh.side, t);
+        const theirs = blocks[sh.owners[3 * t]!]!.sideFaceVector(
+          SIDES_3D[sh.owners[3 * t + 1]!]!,
+          sh.owners[3 * t + 2]!,
+        );
+        if (mine[0] !== theirs[0] || mine[1] !== theirs[1] || mine[2] !== theirs[2])
+          throw new RangeError(
+            `shared face ${t} of ${sh.side} of block ${sh.block} differs from its owner's`,
+          );
+      }
+    }
   }
 
   residualVector(): Float64Array {
@@ -253,6 +432,17 @@ export class Euler3D {
     out: Float64Array,
   ): void {
     this.computeResidual(src);
+    this.update(u0, src, a, b, out);
+  }
+
+  /** out = a u0 + b (src + dt / V R), R the residual last computed (of src). */
+  private update(
+    u0: Float64Array,
+    src: Float64Array,
+    a: number,
+    b: number,
+    out: Float64Array,
+  ): void {
     const { ni, nj, nk, volume } = this.metrics;
     for (let k = 0; k < nk; k++)
       for (let j = 0; j < nj; j++)
@@ -363,8 +553,12 @@ export class Euler3D {
         r[qL + n] = r[qL + n]! - flux;
         r[qR + n] = r[qR + n]! + flux;
       }
-      if (side !== null && side === this.recordSide) {
-        for (let n = 0; n < NV; n++) this.recorded[NV * t + n] = f[n]! * area;
+      const rec = side === null ? undefined : this.recording.get(side);
+      if (rec !== undefined) {
+        for (let n = 0; n < NV; n++) {
+          rec.perArea[NV * t + n] = f[n]!;
+          rec.times[NV * t + n] = f[n]! * area;
+        }
       }
     };
     const si = NV;
@@ -495,6 +689,7 @@ export class Euler3D {
             this.store(u, ghost, this.faceStateLayers.get(side)![g]![t]!);
             continue;
           }
+          if (bc.kind === 'linked') continue;
           const source = bc.kind === 'periodic' ? wrap : mirror;
           for (let v = 0; v < NV; v++) u[ghost + v] = u[source + v]!;
           if (normal !== null) {

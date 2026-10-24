@@ -33,6 +33,8 @@ export const BOUNDARY_KINDS_3D: Readonly<Record<BoundaryCondition3D['kind'], num
   wall: 2,
   periodic: 3,
   faceStates: 4,
+  // Block interfaces are coupled on the CPU only so far (Euler3D.iterateCoupled); refused in create.
+  linked: -1,
 };
 
 /** A dispatch over `items` invocations, as a two-dimensional grid of workgroups. */
@@ -93,6 +95,8 @@ export class GpuEuler3D {
     }
     if (config.source !== undefined)
       throw new RangeError('the 3D GPU engine takes no manufactured source');
+    if (Object.values(config.boundaries).some((b) => b.kind === 'linked'))
+      throw new RangeError('the 3D GPU engine does not couple blocks yet');
     const metrics = computeMetrics3D(config.grid, config.geometry);
     const { ni, nj, nk } = metrics;
     const nCells = ni * nj * nk;
