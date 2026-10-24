@@ -1916,4 +1916,12 @@ widest counting; every TN 4233 row of tables I(a) and I(b) is run; RM
 E51H17, which states no Cp uncertainty, takes the largest stated among
 TN 3716, RM A53E01 and TN 4233. (w)'s registered text above is unchanged.
 
+_Added 2026-10-24 to (w), after the second blind run (944f46f) and
+before the rows below were run._ The owner clarified that RM E51H17's e is
+the literal largest stated, +-0.006 (a clarification, not a change), and
+decided that TN 4233's 30 rows below indicated Mach 1.078 are run against
+the transonic solver of 0013 on its finest grid (0022 section 4.3 item 2),
+widening only. Recorded in 0022 section 8, item 8's note and item 9.
+(w)'s registered text above is unchanged.
+
 The next free letter is (y); (x) is reserved for the W6 probe.

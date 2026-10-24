@@ -641,6 +641,20 @@ Both widen only:
    on record (one value, no station) stays in the envelope only as 4.2
    allows; if it cannot enter the script for lack of a station, the run
    records that and says so.
+   _Clarified by the owner on 2026-10-24, after the run at 944f46f (a
+   clarification, not a change):_ "the largest stated" is meant
+   literally. For RM E51H17 that is +-0.006, RM A53E01's stated
+   uncertainty off the plane of symmetry (p. 6), and it stays.
+
+Decided by the owner on 2026-10-24, after the second blind run
+(944f46f) and before the rows below were run. Widening only:
+
+9. **TN 4233's rows below indicated Mach 1.078** (30 rows of tables I(a)
+   and I(b), indicated Mach 0.600 to 1.064), where Taylor-Maccoll is not
+   the inviscid solution, are run against the transonic solver of 0013 on
+   its finest grid, as 4.3 item 2 allows ("otherwise the finest fitted
+   grid"). Their result may only widen the cone allowance, in their own
+   boxes and where those overlap the boxes already formed.
 
 ## 9. Order of work after the decisions
 
