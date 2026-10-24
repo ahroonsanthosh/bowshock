@@ -108,6 +108,12 @@ export interface SectorInput {
   readonly tanTipShock: number;
   /** The 2D bow shock's radius at x, for the envelope's refusal (2.4); omitted: not checked. */
   readonly bowShock?: (x: number) => number;
+  /**
+   * Rung (c)'s plane wall (4.3) in place of the body: planar coordinates (x, y, z), the wall at y = 0, the fin
+   * in the mirror plane z = 0, a mirror face at z = zMax beyond the envelope; bodyRadius, fins and shoulder are
+   * then not used.
+   */
+  readonly planeWall?: { readonly zMax: number };
 }
 
 export interface SectorGrid {
@@ -131,13 +137,23 @@ export interface SectorGrid {
     readonly theta: number;
   };
   readonly startPlane: number;
+  readonly geometry: 'cylindrical' | 'planar';
 }
 
 /** Refusals of the layout (each with its reason). */
 export class SectorRefusal extends RangeError {}
 
 export function sectorGrid(input: SectorInput, level: number): SectorGrid {
-  const { bodyRadius: R, fins: N, planform: p, section } = input;
+  const { fins: N, planform: p, section } = input;
+  const planar = input.planeWall !== undefined;
+  const R = planar ? 0 : input.bodyRadius;
+  const zMax = input.planeWall?.zMax ?? 0;
+  // The angle (cylindrical) or the distance (planar) of the fin's face, and of a point s along the arc from it.
+  const angleOf = (z: number, r: number) => (planar ? z : Math.asin(z / r));
+  const arcOf = (r: number, theta0: number) =>
+    planar ? zMax - theta0 : r * (Math.PI / N - theta0);
+  const along = (theta0: number, sArc: number, r: number) =>
+    planar ? theta0 + sArc : theta0 + sArc / r;
   const span = p.span;
   const rTip = R + span;
   const chordAt = (y: number) => p.rootChord + y * (p.tanTrailingEdge - p.tanLeadingEdge);
@@ -153,7 +169,7 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
   const xTipLE = leAt(span);
   // The start plane: a quarter root chord ahead, at least 0.25 R, on the cylinder 0.1 R behind the shoulder.
   const xs = input.rootLeadingEdge - Math.max(p.rootChord / 4, 0.25 * R);
-  if (xs < input.shoulder + 0.1 * R)
+  if (!planar && xs < input.shoulder + 0.1 * R)
     throw new SectorRefusal(
       'the start plane would lie less than 0.1 body radius behind the nose shoulder',
     );
@@ -368,7 +384,7 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
           j > 0 ? r - rs[j - 1]! : Infinity,
           j + 1 < rs.length ? rs[j + 1]! - r : Infinity,
         );
-        const arc = r * (Math.PI / N);
+        const arc = arcOf(r, 0);
         need = Math.max(
           need,
           countFor(
@@ -398,10 +414,11 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
       const r = below ? rowsBelow[j]! : rowsAboveAt(x)[j - NB]!;
       const y = Math.min(r - R, span);
       const z = below || (i >= iTipLE && i <= iSlabEnd) ? zAt(x, y) : 0;
-      if (z >= r) throw new SectorRefusal('the fin is thicker than its radius');
-      const theta0 = Math.asin(z / r);
+      if (!planar && z >= r) throw new SectorRefusal('the fin is thicker than its radius');
+      if (planar && z >= zMax) throw new SectorRefusal('the fin reaches the mirror face');
+      const theta0 = angleOf(z, r);
       const slab = !below || j === NB ? i >= iTipLE && i <= iSlabEnd : false;
-      const arc = r * (Math.PI / N - theta0);
+      const arc = arcOf(r, theta0);
       const thetas = atLevel(
         clusteredNodes(arc, nt0, Math.min(thetaFirst, arc / nt0), true, false),
         level,
@@ -409,7 +426,7 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
       for (let k = 0; k <= NK; k++) {
         let th: number;
         if (k <= N_S) th = slab ? (theta0 * k) / N_S : theta0;
-        else th = theta0 + thetas[k - N_S]! / r;
+        else th = along(theta0, thetas[k - N_S]!, r);
         if (k === N_S) th = theta0;
         const q = nodeIndex3D(g, i, j, k);
         c0[q] = x;
@@ -460,6 +477,7 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
     w,
     counts: { columns: counts0, rowsBelow: nb0, rowsAbove: na0, theta: nt0 },
     startPlane: xs,
+    geometry: planar ? 'planar' : 'cylindrical',
   };
 }
 
@@ -472,7 +490,7 @@ export function sectorQuality(s: SectorGrid, onFail?: QualityOptions['onFail']):
     const a = g.c2[nodeIndex3D(g, i, j, N_S)]! - g.c2[nodeIndex3D(g, i, j, 0)]!;
     return a;
   };
-  return quality3D(g, 'cylindrical', {
+  return quality3D(g, s.geometry, {
     inDomain: inBox,
     walls: (i, j, k) => {
       const out: WallSide[] = [];

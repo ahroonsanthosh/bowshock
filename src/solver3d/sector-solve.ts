@@ -31,8 +31,10 @@ export interface SectorProblem {
   readonly sector: SectorGrid;
   readonly dec: Decomposition;
   readonly blocks: Euler3D[];
-  /** The fins' pressure drag coefficient on the body's cross-section (3.9). */
+  /** The fins' pressure drag coefficient on the body's cross-section (3.9; on a body). */
   finDrag(): number;
+  /** The pressure drag on the sector's fin faces (one side of one fin), sum of -(p - p_inf) A_x. */
+  finForce(): number;
   iterate(steps: number): void;
   /** Root-mean-square density residual over all the blocks' cells. */
   residual(): number;
@@ -63,7 +65,7 @@ export function sectorProblem(o: SectorProblemOptions): SectorProblem {
   };
   const xs = sector.startPlane;
   const blocks = dec.grids.map((g, b) => {
-    const m = computeMetrics3D(g, 'cylindrical');
+    const m = computeMetrics3D(g, sector.geometry);
     // Ghost layers of a boundary side from the 2D field at the mirrored centroids of the first two cells.
     const ghosts = (side: Side3D): BoundaryCondition3D => {
       const layer = (gl: number) => {
@@ -113,7 +115,7 @@ export function sectorProblem(o: SectorProblemOptions): SectorProblem {
     }
     const config: Euler3DConfig = {
       grid: g,
-      geometry: 'cylindrical',
+      geometry: sector.geometry,
       gamma,
       timeIntegrator: 'ssprk2',
       cfl: o.cfl ?? 0.8,
@@ -142,7 +144,7 @@ export function sectorProblem(o: SectorProblemOptions): SectorProblem {
     sector,
     dec,
     blocks,
-    finDrag() {
+    finForce() {
       Euler3D.fillLinkedGhosts(blocks, dec.links);
       const e = blocks[below]!;
       const f = e.sideFluxes('kMin');
@@ -157,7 +159,10 @@ export function sectorProblem(o: SectorProblemOptions): SectorProblem {
           // the fin); the fin's drag is -(p - p_inf) S_x.
           sum -= f[5 * t + 1]! - 1 * kFaces.s0[i + ni * j]!;
         }
-      return (2 * o.input.fins * sum) / (q * Math.PI * R * R);
+      return sum;
+    },
+    finDrag() {
+      return (2 * o.input.fins * this.finForce()) / (q * Math.PI * R * R);
     },
     iterate(steps) {
       Euler3D.iterateCoupled(blocks, dec.links, dec.shares, steps);
