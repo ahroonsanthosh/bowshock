@@ -318,7 +318,10 @@ these cells; the thin-limit families (c1 to c9) and the tip-cone pressure
 comparison do, and both are reported with their bands. If a thin-limit
 family gives no band, the exemption is the first suspect and rung (c)
 fails (4.9). The slab's edge wedges are never exempted from the positive
-volume or the size-ratio gates.
+volume gate. **Revision 3f weakens this:** the slab cells over a sharp
+tip's bevels, at most N_TIP = 32 L0 columns from a sharp end of the tip
+chord, are exempt from the aspect and size-ratio gates too, bounded by
+the measured tip allowance A_tip (section 12, revision 3f).
 
 **No tip vortex** is drawn or expected: a symmetric section at zero
 incidence carries no lift (aerodynamic reasoning). The flow over the tip
@@ -644,8 +647,12 @@ The fitted grids' gates of 0006, applied to every cell of every block, in
 every direction: positive volumes; neighbouring cells within 1.3 in size,
 across block interfaces too; aspect ratio at most 13; cell angles at least
 12 deg, and at least 50 deg at the walls (the fin's faces, block L's edge
-surface, the body, the tip face). One exemption: the zero-height ends of
-the slab for sharp tip sections (2.4), from the angle gate only. Block L's
+surface, the body, the tip face). Exemptions: the zero-height ends of
+the slab for sharp tip sections (2.4), from the angle gate; and (revision
+3f) the slab cells over a sharp tip's bevels within N_TIP = 32 L0
+columns of a sharp end, from the aspect and size-ratio gates, their
+worst values reported apart. Edges swept more than 40 deg are refused
+(revision 3f). Block L's
 corner fan (square edges) and its outer surface are not walls; its cells
 there meet the 12 deg gate. A grid that fails is refused with the reason,
 never solved.
@@ -1585,7 +1592,7 @@ decides nothing. `npm run ladder:3d:judge`, a CPU script, applies section
 the page families about 5 to 11 minutes each on the hobby layouts, 3 to
 7 on the others, about 3 to 6 hours for the 38; the references about 1 to
 3 hours each, 12 to 30 hours for the twelve. Two or three nights, with
-`--resume`. **Memory:** the page's hobby families need about 1.8 GB at L3
+`--resume`. **Memory** (superseded by revision 3f's recomputation, section 12): the page's hobby families need about 1.8 GB at L3
 (6.5 million cells); the references 2.4 to 7.7 GB, so 12 to 16 GB is
 recommended and 8 GB is the least that can run the plane-wall references
 (4.7 says what 8 GB leaves out). The independent references (4.4) are a
@@ -1852,7 +1859,8 @@ million cells at 250 bytes, and gave 8 GB for references of 20 to 22
 million cells, which its own rule puts at about 11 to 12 GB; corrected.)
 
 **Peak memory of a family** (the level being solved plus the previous
-level's state), estimates:
+level's state), estimates (revision 1 to 3e; **revision 3f recomputes
+them from measured counts, larger: section 12, revision 3f**):
 
 | Family                                               | Finest cells | 32 bits       | Two-float | Smallest GPU, 32 bits |
 | ---------------------------------------------------- | ------------ | ------------- | --------- | --------------------- |
@@ -2274,7 +2282,7 @@ Before any (b) number exists.
   cell-step about 65 to 100 core-hours for (b), about 200 to 250 for the
   CPU plan in all (was 150). The two layers are kept, as registered.
 
-### Revision 3e, 2026-10-24 (this text): (b3)'s cases and its checks
+### Revision 3e, 2026-10-24 (commit 7fa7e95): (b3)'s cases and its checks
 
 The coordinator's rulings of 2026-10-24, written before any fitted-engine
 number for the affected cases exists (4.2):
@@ -2311,6 +2319,110 @@ number for the affected cases exists (4.2):
   any check ran.
 - **(b3)'s verdict is provisional** until FIN_DRAG_FLOOR's other terms
   ((c-x), (e0), the floor families) are measured.
+
+### Revision 3f, 2026-10-24 (this text): the layout's findings, ruled
+
+The coordinator's rulings of 2026-10-24 on the sector generator's
+findings (commits 8128cbc to 3edc987), written before the spike or any
+registered number:
+
+- **Sharp tips: the slab over the bevels exempted, bounded and measured
+  (a weakening of 2.4).** 2.4 said the slab's edge wedges are never
+  exempted from the size-ratio gate. Measured: with the main block's
+  first theta cell 1.3 w (2.4), the slab thins over a sharp tip's
+  bevels, and its top cells meet the main block's at size ratios of up to
+  130 and aspect ratios of up to 420, across the whole bevel (16 L0
+  columns on a hexagon of 12 deg bevels, 32 on a double wedge, whose
+  bevel is its whole half-chord). Grading the main block's first cell
+  with the slab was tried and moved the failures into the main block.
+  Now: the slab cells over a sharp tip's bevels, at most **N_TIP = 32 L0
+  columns** from a sharp end of the tip chord (1.5^l times as many on
+  level l), are exempt from the aspect and size-ratio gates; never from
+  the volume gate; their worst values are reported apart. This is a
+  weakening of 2.4. It is bounded by a measured allowance: **A_tip**, the
+  change in the fin drag between a family with the exemption and the
+  same planform with a finite square tip chord of 1 to 2 slab cells,
+  which needs no exemption, on rung (c)'s rectangle (planform D) and on
+  one clipped delta with a sharp tip; the larger change, relative, is
+  carried in every sharp-tip band. **If A_tip exceeds a quarter of
+  FIN_DRAG_FLOOR, sharp tips are refused.** (The comparison's geometry
+  is the coordinator's wording; its reading, whether the square ends are
+  the tip section's edges cut square at 1 to 2 slab cells of
+  thickness, which would make the comparison's leading edge blunt and
+  block L's, is asked in the report of 2026-10-24 and is fixed before
+  any of these families runs.)
+- **Swept roots: refused above 40 deg until the bent-column layout is
+  built and passes 2.11.** The columns sheared with a swept edge leave
+  the body at 90 deg less the sweep (48.0 deg at 42 deg), against the
+  wall gate of 50 deg, which is not lowered. The layout change ruled
+  (columns bent to meet the body normally, with a smooth transition to
+  the sheared columns, and the 1 / cos(sweep) jump at the tip row
+  resolved) is not built. Two findings bear on it, reported for a
+  ruling: the column through the leading edge must pass through the
+  edge at every row (2.3), so its first edge off the body is swept with
+  the edge whatever the other columns do, and its wall angle is 90 deg
+  less the sweep however they bend; and above the tip the columns must
+  stay unsheared, since the slab spans the tip chord at every radius,
+  so the leading edge's column jumps by 1 / cos(sweep) at the tip row
+  however the rows are spaced. Up to 40 deg both stay within the gates
+  (the wall angle at least 50 deg; the jump at most 1.31, split between
+  the rows below and above the tip as sqrt(cos(sweep)) each side). Refused
+  meanwhile: "the fin's edges are swept more than 40 deg; above that the
+  grid's columns meet the body at less than the 50 deg its gates allow".
+  The edges' first cell is now the same on every row (1% of the shorter
+  chord), so the columns next to an edge shear with it, not more.
+  **What the refusal reaches, plainly:** planform H's leading edge is
+  swept 41 deg, so h1 to h7 are refused as registered; so are d7 (71.6
+  deg) and e4's two families swept 45 deg. e4 at 45 deg and Mach 2.12 is
+  a floor family, and 4.4 leaves the blunt-edge classes unserved if a
+  floor family fails: as it stands, the refusal decides the blunt path.
+  Reported for a ruling (with the J1 finding of the same day).
+- **Counts, measured.** The theta count is set by the aspect gate (each main-block
+  cell at most 13 times the smaller of its line's x and r spacings),
+  not by 2.4's "about 20": 32 to 56 cells on L0 on the layouts measured.
+  L0 cells, measured on sharp sections (unregistered looks, commits
+  8128cbc to aacbd5d; the pre-spike's full distribution will replace
+  these): hobby fins on a 54 mm body at Mach 2 and 3, 150,000 to 520,000
+  (2.10's table: 130,000); at Mach 1.5 up to about 1.1 million, the tip
+  shock steep and the envelope tall at the base; rung (c)'s planform D at
+  t/c 0.06, 104,448 (2.10: 30,000 to 60,000). Blunt layouts (block L) are
+  not built, so nothing of them is measured. **Section 7's memory,
+  recomputed** by scaling its estimates with these measured ratios (1.2
+  to 4 for hobby and body layouts at Mach 2 and 3, 1.7 to 3.5 for the
+  plane-wall layouts, about 8.5 for hobby layouts at Mach 1.5), at 275
+  bytes a cell and the half-device rule (3.6 million cells a GB of the
+  device: 22 million on 12 GB, 29 million on 16 GB); estimates, to be
+  replaced by the spike's counts:
+
+  | Family                           | Finest cells (estimate) | Fits 12 GB | Fits 16 GB |
+  | -------------------------------- | ----------------------- | ---------- | ---------- |
+  | Page, hobby, Mach 2 and 3 (L3)   | 5.8 to 20 million       | yes        | yes        |
+  | Page, hobby, Mach 1.5 (L3)       | up to about 42 million  | no         | no         |
+  | d1 at 6 L0                       | 10 to 35 million        | low end    | low end    |
+  | d1 at 8 L0                       | 25 to 82 million        | no         | no         |
+  | d7 at 6 L0                       | 13 to 43 million        | low end    | low end    |
+  | e3, e3f, e5 at 6 L0 (plane wall) | 16 to 38 million        | low end    | lower half |
+  | e4 (three) at 6 L0               | 20 to 42 million        | low end    | lower half |
+  | e6 (three) at 6 L0               | 16 to 52 million        | low end    | lower half |
+  | h1, h4 at 6 L0                   | 26 to 112 million       | no         | no         |
+
+  **Plainly:** h1's and h4's same-code references fit neither 12 GB nor 16
+  GB at this layout's counts; those two test families then rest on the
+  independent reference alone (as 4.7 already allowed for 8 GB), and the
+  record of a run says so. Most other references fit only if their counts
+  fall at the low end of these ranges. A page family the adapter cannot
+  hold is refused with the reason, or offered 4.6's preview without a
+  band; at Mach 1.5 that may be most hobby families on 12 to 16 GB
+  devices. Whether the layout's counts can come down (the far field's
+  theta cells, the tall envelope at low Mach numbers) is a question for
+  the spike and a later revision, not changed here.
+
+- **Other changes found by the pre-spike** (an unregistered look,
+  `docs/research/solver3d/out/pre-spike.json`, used for no criterion):
+  the envelope keeps 2.4's form with its kink at the tip's leading edge
+  rounded off (a softplus of width half the tip chord) and a floor of a
+  quarter of its height at the base; both only move it farther out, and
+  3.8's outer-row check applies unchanged.
 
 ### Deviation, 2026-10-23: rung (a)'s 2D references (reported, not reworded)
 
