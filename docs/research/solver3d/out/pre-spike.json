@@ -1,0 +1,488 @@
+{
+  "date": "2026-10-24T04:22:53.747Z",
+  "label": "an unregistered look, not the spike; used for no criterion",
+  "results": [
+    {
+      "id": "rocket 0 (bevel-le-square-te, clipped-delta, 3 fins, t 3.16 mm, root 75 mm, span 36 mm, LE 42.3 deg) M 1.5",
+      "refused": "the tip leading-edge shock detaches (2.7: sharp sections with a detached shock are refused)"
+    },
+    {
+      "id": "rocket 0 (bevel-le-square-te, clipped-delta, 3 fins, t 3.16 mm, root 75 mm, span 36 mm, LE 42.3 deg) M 2",
+      "refused": "the fin's edges are swept 42.3 deg; above 40 deg the grid's columns meet the body at less than the 50 deg its gates allow, and the layout that bends them (revision 3f) is not built yet"
+    },
+    {
+      "id": "rocket 0 (bevel-le-square-te, clipped-delta, 3 fins, t 3.16 mm, root 75 mm, span 36 mm, LE 42.3 deg) M 3",
+      "refused": "the fin's edges are swept 42.3 deg; above 40 deg the grid's columns meet the body at less than the 50 deg its gates allow, and the layout that bends them (revision 3f) is not built yet"
+    },
+    {
+      "id": "rocket 1 (double-wedge, clipped-delta, 3 fins, t 3.09 mm, root 78 mm, span 60 mm, LE 31.7 deg) M 1.5",
+      "cells": 1097728,
+      "counts": {
+        "columns": [
+          32,
+          32,
+          32,
+          64
+        ],
+        "rowsBelow": 32,
+        "rowsAbove": 88,
+        "theta": 56
+      },
+      "failing": {
+        "volume": 0,
+        "angle": 0,
+        "wallAngle": 0,
+        "sizeRatio": 0,
+        "aspectRatio": 0
+      },
+      "failures": [],
+      "exempt": {
+        "cells": 22528,
+        "maxAspectRatio": 416.7934330552038,
+        "maxSizeRatio": 129.99995548935715
+      },
+      "worst": {
+        "minAngleDeg": {
+          "i": 158,
+          "j": 119,
+          "k": 18,
+          "value": 42.92413728889876
+        },
+        "minWallAngleDeg": {
+          "i": 33,
+          "j": 0,
+          "k": 59,
+          "value": 58.314897004310254
+        },
+        "maxSizeRatio": {
+          "i": 159,
+          "j": 119,
+          "k": 4,
+          "value": 1.1999999408529374,
+          "direction": "k"
+        },
+        "maxAspectRatio": {
+          "i": 31,
+          "j": 15,
+          "k": 10,
+          "value": 8.965880058300996
+        }
+      },
+      "passes": true,
+      "seconds": 136.375
+    },
+    {
+      "id": "rocket 1 (double-wedge, clipped-delta, 3 fins, t 3.09 mm, root 78 mm, span 60 mm, LE 31.7 deg) M 2",
+      "cells": 656384,
+      "counts": {
+        "columns": [
+          32,
+          32,
+          32,
+          56
+        ],
+        "rowsBelow": 32,
+        "rowsAbove": 56,
+        "theta": 48
+      },
+      "failing": {
+        "volume": 0,
+        "angle": 0,
+        "wallAngle": 0,
+        "sizeRatio": 0,
+        "aspectRatio": 0
+      },
+      "failures": [],
+      "exempt": {
+        "cells": 14336,
+        "maxAspectRatio": 465.86170077336516,
+        "maxSizeRatio": 129.99994072388935
+      },
+      "worst": {
+        "minAngleDeg": {
+          "i": 151,
+          "j": 87,
+          "k": 17,
+          "value": 56.17561027975033
+        },
+        "minWallAngleDeg": {
+          "i": 33,
+          "j": 0,
+          "k": 51,
+          "value": 58.314897004310254
+        },
+        "maxSizeRatio": {
+          "i": 151,
+          "j": 87,
+          "k": 4,
+          "value": 1.1999998977573387,
+          "direction": "k"
+        },
+        "maxAspectRatio": {
+          "i": 96,
+          "j": 87,
+          "k": 51,
+          "value": 9.06707758853316
+        }
+      },
+      "passes": true,
+      "seconds": 62.672
+    },
+    {
+      "id": "rocket 1 (double-wedge, clipped-delta, 3 fins, t 3.09 mm, root 78 mm, span 60 mm, LE 31.7 deg) M 3",
+      "cells": 424960,
+      "counts": {
+        "columns": [
+          32,
+          32,
+          32,
+          48
+        ],
+        "rowsBelow": 32,
+        "rowsAbove": 40,
+        "theta": 40
+      },
+      "failing": {
+        "volume": 0,
+        "angle": 0,
+        "wallAngle": 0,
+        "sizeRatio": 0,
+        "aspectRatio": 0
+      },
+      "failures": [],
+      "exempt": {
+        "cells": 10240,
+        "maxAspectRatio": 471.21635811079966,
+        "maxSizeRatio": 129.9999263431701
+      },
+      "worst": {
+        "minAngleDeg": {
+          "i": 32,
+          "j": 16,
+          "k": 43,
+          "value": 58.31489698576752
+        },
+        "minWallAngleDeg": {
+          "i": 33,
+          "j": 0,
+          "k": 43,
+          "value": 58.314897004310254
+        },
+        "maxSizeRatio": {
+          "i": 143,
+          "j": 71,
+          "k": 4,
+          "value": 1.1999998426884397,
+          "direction": "k"
+        },
+        "maxAspectRatio": {
+          "i": 96,
+          "j": 71,
+          "k": 43,
+          "value": 10.981277768599925
+        }
+      },
+      "passes": true,
+      "seconds": 31.334
+    },
+    {
+      "id": "rocket 3 (bevel-both, clipped-delta, 3 fins, t 3.10 mm, root 103 mm, span 58 mm, LE 40.0 deg) M 1.5",
+      "cells": 539136,
+      "counts": {
+        "columns": [
+          48,
+          16,
+          56,
+          16
+        ],
+        "rowsBelow": 32,
+        "rowsAbove": 48,
+        "theta": 48
+      },
+      "failing": {
+        "volume": 0,
+        "angle": 0,
+        "wallAngle": 532,
+        "sizeRatio": 0,
+        "aspectRatio": 0
+      },
+      "failures": [
+        "wall cell angle 48.5 deg below 50 deg"
+      ],
+      "exempt": {
+        "cells": 6144,
+        "maxAspectRatio": 425.09436693646916,
+        "maxSizeRatio": 48.917615511977104
+      },
+      "worst": {
+        "minAngleDeg": {
+          "i": 135,
+          "j": 79,
+          "k": 17,
+          "value": 39.54227913923529
+        },
+        "minWallAngleDeg": {
+          "i": 53,
+          "j": 0,
+          "k": 51,
+          "value": 48.46099458407521
+        },
+        "maxSizeRatio": {
+          "i": 119,
+          "j": 79,
+          "k": 3,
+          "value": 1.2999865930569965,
+          "direction": "k"
+        },
+        "maxAspectRatio": {
+          "i": 119,
+          "j": 79,
+          "k": 3,
+          "value": 9.772248401169263
+        }
+      },
+      "passes": false,
+      "seconds": 42.095
+    },
+    {
+      "id": "rocket 3 (bevel-both, clipped-delta, 3 fins, t 3.10 mm, root 103 mm, span 58 mm, LE 40.0 deg) M 2",
+      "cells": 295936,
+      "counts": {
+        "columns": [
+          40,
+          16,
+          40,
+          16
+        ],
+        "rowsBelow": 32,
+        "rowsAbove": 32,
+        "theta": 40
+      },
+      "failing": {
+        "volume": 0,
+        "angle": 0,
+        "wallAngle": 0,
+        "sizeRatio": 0,
+        "aspectRatio": 0
+      },
+      "failures": [],
+      "exempt": {
+        "cells": 4096,
+        "maxAspectRatio": 402.7790463952703,
+        "maxSizeRatio": 48.91760818354471
+      },
+      "worst": {
+        "minAngleDeg": {
+          "i": 56,
+          "j": 20,
+          "k": 43,
+          "value": 50.031602644436724
+        },
+        "minWallAngleDeg": {
+          "i": 57,
+          "j": 0,
+          "k": 43,
+          "value": 50.03160266825994
+        },
+        "maxSizeRatio": {
+          "i": 95,
+          "j": 63,
+          "k": 3,
+          "value": 1.2999797385148986,
+          "direction": "k"
+        },
+        "maxAspectRatio": {
+          "i": 95,
+          "j": 63,
+          "k": 3,
+          "value": 9.401950598470053
+        }
+      },
+      "passes": true,
+      "seconds": 25.94
+    },
+    {
+      "id": "rocket 3 (bevel-both, clipped-delta, 3 fins, t 3.10 mm, root 103 mm, span 58 mm, LE 40.0 deg) M 3",
+      "cells": 239872,
+      "counts": {
+        "columns": [
+          32,
+          16,
+          40,
+          16
+        ],
+        "rowsBelow": 32,
+        "rowsAbove": 24,
+        "theta": 40
+      },
+      "failing": {
+        "volume": 0,
+        "angle": 0,
+        "wallAngle": 0,
+        "sizeRatio": 0,
+        "aspectRatio": 0
+      },
+      "failures": [],
+      "exempt": {
+        "cells": 3072,
+        "maxAspectRatio": 383.8059993141281,
+        "maxSizeRatio": 48.917602085371456
+      },
+      "worst": {
+        "minAngleDeg": {
+          "i": 30,
+          "j": 15,
+          "k": 4,
+          "value": 50.03160262893369
+        },
+        "minWallAngleDeg": {
+          "i": 49,
+          "j": 0,
+          "k": 43,
+          "value": 50.03160266825994
+        },
+        "maxSizeRatio": {
+          "i": 87,
+          "j": 55,
+          "k": 3,
+          "value": 1.2999742691338436,
+          "direction": "k"
+        },
+        "maxAspectRatio": {
+          "i": 87,
+          "j": 55,
+          "k": 3,
+          "value": 9.106695287880015
+        }
+      },
+      "passes": true,
+      "seconds": 22.406
+    },
+    {
+      "id": "rocket 4 (double-wedge, clipped-delta, 3 fins, t 4.65 mm, root 311 mm, span 162 mm, LE 56.7 deg) M 1.5",
+      "refused": "the fin's edges are swept 56.7 deg; above 40 deg the grid's columns meet the body at less than the 50 deg its gates allow, and the layout that bends them (revision 3f) is not built yet"
+    },
+    {
+      "id": "rocket 4 (double-wedge, clipped-delta, 3 fins, t 4.65 mm, root 311 mm, span 162 mm, LE 56.7 deg) M 2",
+      "refused": "the fin's edges are swept 56.7 deg; above 40 deg the grid's columns meet the body at less than the 50 deg its gates allow, and the layout that bends them (revision 3f) is not built yet"
+    },
+    {
+      "id": "rocket 4 (double-wedge, clipped-delta, 3 fins, t 4.65 mm, root 311 mm, span 162 mm, LE 56.7 deg) M 3",
+      "refused": "the fin's edges are swept 56.7 deg; above 40 deg the grid's columns meet the body at less than the 50 deg its gates allow, and the layout that bends them (revision 3f) is not built yet"
+    },
+    {
+      "id": "rocket 10 (bevel-both, clipped-delta, 3 fins, t 4.17 mm, root 159 mm, span 135 mm, LE 35.5 deg) M 1.5",
+      "cells": 1409280,
+      "counts": {
+        "columns": [
+          80,
+          16,
+          88,
+          16
+        ],
+        "rowsBelow": 40,
+        "rowsAbove": 56,
+        "theta": 72
+      },
+      "failing": {
+        "volume": 0,
+        "angle": 0,
+        "wallAngle": 0,
+        "sizeRatio": 0,
+        "aspectRatio": 0
+      },
+      "failures": [],
+      "exempt": {
+        "cells": 7168,
+        "maxAspectRatio": 365.7339976078036,
+        "maxSizeRatio": 41.59997452415059
+      },
+      "worst": {
+        "minAngleDeg": {
+          "i": 199,
+          "j": 95,
+          "k": 75,
+          "value": 28.33334172768155
+        },
+        "minWallAngleDeg": {
+          "i": 86,
+          "j": 0,
+          "k": 75,
+          "value": 53.496610376689205
+        },
+        "maxSizeRatio": {
+          "i": 183,
+          "j": 95,
+          "k": 3,
+          "value": 1.29999280556774,
+          "direction": "k"
+        },
+        "maxAspectRatio": {
+          "i": 96,
+          "j": 18,
+          "k": 10,
+          "value": 11.01962239241465
+        }
+      },
+      "passes": true,
+      "seconds": 155.322
+    },
+    {
+      "id": "rocket 10 (bevel-both, clipped-delta, 3 fins, t 4.17 mm, root 159 mm, span 135 mm, LE 35.5 deg) M 2",
+      "cells": 508928,
+      "counts": {
+        "columns": [
+          56,
+          16,
+          56,
+          16
+        ],
+        "rowsBelow": 40,
+        "rowsAbove": 32,
+        "theta": 48
+      },
+      "failing": {
+        "volume": 0,
+        "angle": 0,
+        "wallAngle": 0,
+        "sizeRatio": 0,
+        "aspectRatio": 0
+      },
+      "failures": [],
+      "exempt": {
+        "cells": 4096,
+        "maxAspectRatio": 284.64256519933366,
+        "maxSizeRatio": 41.59998836067734
+      },
+      "worst": {
+        "minAngleDeg": {
+          "i": 143,
+          "j": 71,
+          "k": 17,
+          "value": 51.2885956835127
+        },
+        "minWallAngleDeg": {
+          "i": 73,
+          "j": 0,
+          "k": 51,
+          "value": 54.49442944075376
+        },
+        "maxSizeRatio": {
+          "i": 127,
+          "j": 71,
+          "k": 3,
+          "value": 1.2999871949446715,
+          "direction": "k"
+        },
+        "maxAspectRatio": {
+          "i": 72,
+          "j": 19,
+          "k": 12,
+          "value": 10.764883045292645
+        }
+      },
+      "passes": true,
+      "seconds": 52.894
+    }
+  ]
+}

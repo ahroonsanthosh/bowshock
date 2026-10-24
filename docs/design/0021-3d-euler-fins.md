@@ -2437,6 +2437,54 @@ same faces); the absolute error is recorded beside it as data only and
 decides nothing. The blunt-edge path is stopped; the coordinator is
 taking independent advice and will rule. No criterion is changed here.
 
+### Revision 3g, 2026-10-24: the 3D solver frozen
+
+The owner's decision of 2026-10-24, on independent advice, relayed by the
+coordinator. The 3D solver is frozen: nothing here is built further, and
+nothing from this branch merges to main.
+
+- **J1 failed as registered.** The registered reading is the relative
+  one, as `junctionMeasures` computed it before any number was seen: the
+  near-junction error relative to the exact force on the same faces. It
+  rose from 2.67e-2 on level 0 to 3.18e-2 on level 1, where it had to
+  fall, and the away criterion failed: the shock angle was 2.4e-2 rad off
+  at 4 or more cells from the junction, against 1e-10. The verdict change
+  of commit a29a7f0 (to the absolute measure) was reverted in commit
+  55af760; both measures stay in the record as data.
+- **By 4.9 the blunt edges are not served.** A failed junction test stops
+  the blunt edges only. The block L path is stopped: block L, the 2D edge
+  strips' coupling and the blunt families (e0 to e6, h-families with
+  blunt edges) are not built or run. Flat-plate fins keep 0016's measured
+  edge terms, as today.
+- **A future blunt-edge attempt needs a new revision** with a criterion
+  reviewed independently before it runs. The sketch the advice gave, not
+  registered: fit the whole bow shock over the tip rather than join a
+  fitted strip to a captured field; an edge-normal grid for swept edges;
+  and the SU2 reference first, before any same-code family.
+- **Findings recorded with the freeze:**
+  - the 40 deg sweep refusal (revision 3f) empties the registered hobby
+    families: planform H's leading edge is swept 41 deg, so h1 to h7 are
+    refused, as are d7 and e4's two families swept 45 deg;
+  - at Mach 1.5 a hobby family's L3 is about 42 million cells, which fits
+    neither 12 nor 16 GB;
+  - the measured L0 counts are 1.2 to 8.5 times 2.10's estimates (1.2 to
+    4 for hobby and body layouts at Mach 2 and 3, 1.7 to 3.5 for the
+    plane-wall layouts, about 8.5 for hobby layouts at Mach 1.5);
+  - rung (b0)'s run ended with 13 of 14 families
+    (`docs/research/solver3d/out/rung-b0.json`): every band given (9 of
+    13) contains its true error; 4 gave no band. The 14th, the parabolic
+    nose (K = 0.5, 3 calibers, Mach 3), has no exact value: the method of
+    characteristics refuses the corner where the nose meets 0005's 2
+    calibers of cylinder. Not resolved; frozen with the rest.
+- **Stage A, if it ever ships,** is sharp sections only, at Mach 1.8 and
+  above, on GPUs of 8 GB or more, and only after rungs (b) and (c) pass
+  and a run on a hardware GPU exists. None of these has happened.
+- The CPU research runs already started (the junction runs, the
+  sharp-only pre-spike, and the queued lane of rung (c-x), (b3)'s
+  reference, (b1), (b2) and (b3)) finish unattended and write their
+  results files under `docs/research/solver3d/out/` only. Their results
+  change no criterion and no verdict here without a new revision.
+
 ### Deviation, 2026-10-23: rung (a)'s 2D references (reported, not reworded)
 
 Rung (a) (4.1) asks that the 2D reference be "converged until its density
