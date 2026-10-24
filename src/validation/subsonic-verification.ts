@@ -582,27 +582,69 @@ export function applyOrdering(verdicts: readonly RungVerdict[]): RungVerdict[] {
 }
 
 /**
- * (y) item 6: a failed rung keeps the TN 4233 rows of its box, +-BOX_MACH
- * in Mach, out of (w)'s allowance. Given the judged verdicts and the rows'
- * Mach numbers, the rows kept out, each with the rung and its reason.
+ * (y) item 6: a rung that did not pass keeps the TN 4233 rows of its box,
+ * +-BOX_MACH in Mach, out of (w)'s allowance. Every registered rung counts:
+ * one judged 'fail' with its failed criteria; one not judged (not run, not
+ * converged, waiting for the floor) with that reason, given in `pending`
+ * or "not run" by default. Only a rung judged 'pass' or 'pass, band too
+ * wide for the use' releases its box.
  */
 export const BOX_MACH = 0.05;
+export interface RowKeptOut {
+  readonly mach: number;
+  readonly rung: number;
+  readonly reason: string;
+}
 export function rowsKeptOut(
   verdicts: readonly Pick<RungVerdict, 'mach' | 'verdict' | 'criteria'>[],
   rows: readonly number[],
-): { readonly mach: number; readonly rung: number; readonly reason: string }[] {
-  const failed = verdicts.filter((v) => v.verdict === 'fail');
-  const out: { mach: number; rung: number; reason: string }[] = [];
+  pending: readonly { readonly mach: number; readonly reason: string }[] = [],
+  rungs: readonly number[] = SUBSONIC_RUNGS,
+): RowKeptOut[] {
+  const same = (a: number, b: number) => Math.abs(a - b) < 1e-9;
+  const blocking: { rung: number; reason: string }[] = [];
+  for (const rung of rungs) {
+    const v = verdicts.find((x) => same(x.mach, rung));
+    if (v === undefined) {
+      const why = pending.find((p) => same(p.mach, rung))?.reason ?? 'not run';
+      blocking.push({ rung, reason: `rung Mach ${rung} not judged: ${why}` });
+      continue;
+    }
+    if (v.verdict === 'fail') {
+      const reasons = Object.entries(v.criteria)
+        .filter(([, c]) => c.status === 'fail')
+        .map(([k, c]) => `(${k}) ${c.detail}`)
+        .join('; ');
+      blocking.push({ rung, reason: `rung Mach ${rung} failed: ${reasons}` });
+    }
+  }
+  const out: RowKeptOut[] = [];
   for (const mach of rows) {
-    const hit = failed.find((v) => Math.abs(mach - v.mach) <= BOX_MACH + 1e-9);
-    if (hit === undefined) continue;
-    const reasons = Object.entries(hit.criteria)
-      .filter(([, c]) => c.status === 'fail')
-      .map(([k, c]) => `(${k}) ${c.detail}`)
-      .join('; ');
-    out.push({ mach, rung: hit.mach, reason: `rung Mach ${hit.mach} failed: ${reasons}` });
+    const hit = blocking.find((b) => Math.abs(mach - b.rung) <= BOX_MACH + 1e-9);
+    if (hit !== undefined) out.push({ mach, rung: hit.rung, reason: hit.reason });
   }
   return out;
+}
+
+/**
+ * (y) item 8: the rows at Mach 1.001 to 1.041 (the moved family, below
+ * NEAR_SONIC_LIMIT) wait for the 800-radius test and for the results'
+ * review; rows at 1.05 and above are the served family's and do not wait.
+ * The reason a row is held, or null if it may be evaluated.
+ */
+export function nearSonicHold(
+  mach: number,
+  far800Pass: boolean | null,
+  resultsReviewed: boolean,
+  nearSonicLimit = 1.05,
+): string | null {
+  if (mach < 1 || mach >= nearSonicLimit) return null;
+  if (far800Pass !== true)
+    return far800Pass === null
+      ? 'the 800-radius test of (y) item 8 has not run'
+      : 'the 800-radius test of (y) item 8 failed: the moved family\u2019s allowance is withdrawn';
+  if (!resultsReviewed) return 'the results of (y) are not yet reviewed (Y_RESULTS_REVIEWED)';
+  return null;
 }
 
 /**

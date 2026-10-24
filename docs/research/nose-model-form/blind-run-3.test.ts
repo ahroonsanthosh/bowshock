@@ -35,6 +35,7 @@ import {
   TN4233_ORIFICES,
   TN4233_ROWS,
 } from '../../../src/validation/cone-cylinder-tn4233';
+import { nearSonicHold } from '../../../src/validation/subsonic-verification';
 import {
   allowanceAt,
   boxOf,
@@ -172,14 +173,16 @@ interface RowCase {
  * item 6); null until that evaluation has run, which also holds every row
  * below Mach 1.
  */
-const keptOut: readonly { mach: number; reason: string }[] | null = (() => {
+const verification = (() => {
   const file = join(here, 'out', 'verify-subsonic.json');
   if (!existsSync(file)) return null;
-  const v = JSON.parse(readFileSync(file, 'utf8')) as {
+  return JSON.parse(readFileSync(file, 'utf8')) as {
     keptOut?: { mach: number; reason: string }[];
+    far800Pass?: boolean | null;
   };
-  return v.keptOut ?? null;
 })();
+const keptOut = verification?.keptOut ?? null;
+const resultsReviewed = process.env.Y_RESULTS_REVIEWED === '1';
 
 function rows(): {
   cases: RowCase[];
@@ -220,10 +223,16 @@ function rows(): {
           held.push(`${what}: KEPT OUT by (y) item 6: ${kept.reason}`);
           continue;
         }
-        if (keptOut === null || process.env.Y_RESULTS_REVIEWED !== '1') {
+        if (keptOut === null || !resultsReviewed) {
           held.push(what);
           continue;
         }
+      }
+      // (y) item 8: 1.001 to 1.041 wait for the 800-radius test and the results' review.
+      const nearSonic = nearSonicHold(mach, verification?.far800Pass ?? null, resultsReviewed);
+      if (nearSonic !== null) {
+        held.push(`${what}: HELD by (y) item 8: ${nearSonic}`);
+        continue;
       }
       const solve = solveOf(mach);
       if (solve === null) {
@@ -413,7 +422,7 @@ it('runs TN 4233 rows below Mach 1.078 against the transonic solver (0022 sectio
     json.push({ label: LABEL, result: r, solverDrag, belowMach1: r.mach < 1 });
   }
   out.push(
-    `HELD, NOT EVALUATED (below Mach 1, until a verification plan for the solver there is registered; the owner, 2026-10-24; ${held.length}):`,
+    `HELD, NOT EVALUATED (below Mach 1 until (y)'s verification has run and been reviewed, and 1.001 to 1.041 until its 800-radius test has passed; rows a rung keeps out are marked; ${held.length}):`,
     ...held.map((s) => `  ${s}`),
     '',
   );

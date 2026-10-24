@@ -2280,6 +2280,19 @@ to the rules above, in the review's numbering:_
     stale comment on `pointwiseBand` are fixed; the not-shrinking test
     isolates the rule with changes of 1e-5.
 
+15. _Re-check of 88e5d4c, R1 and R2 (2026-10-24, before any result; gates
+    only, no criterion changes)._ R1: a box is released only by a rung
+    judged a pass (or a pass with a band too wide for the use): a rung
+    missing, not converged, or waiting for the floor keeps its box out with
+    that reason ("not run", "not converged", "no floor"), so if Mach 0.6
+    fails every row from 0.701 up stays out, and a Mach 0.8 that did not
+    converge keeps 0.797, 0.800 and 0.850 out (`rowsKeptOut` over every
+    registered rung, with the pending reasons from the evaluation). R2:
+    `blind-run-3.test.ts` holds the rows at Mach 1.001 to 1.041 unless the
+    evaluation records the 800-radius test passed and the results' review
+    is asserted (`nearSonicHold`), with the reason in its held list; the
+    rows at 1.05 and above (the served family) do not wait. Both tested.
+
 _Tests added for the errors the review planted:_ the floor and the
 cylinder term in the station band, p_inf / p_wall in the loss tolerance,
 the top rung's ordering condition, the zero-drag fail just past the

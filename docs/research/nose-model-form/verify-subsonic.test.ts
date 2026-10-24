@@ -157,21 +157,25 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   // The zero-drag rung first: it sets the floor.
   const verdicts: RungVerdict[] = [];
   const skipped: string[] = [];
+  const pending: { mach: number; reason: string }[] = [];
   let floor: number | null = null;
   const ordered = [ZERO_DRAG_RUNG, ...SUBSONIC_RUNGS.filter((m) => m !== ZERO_DRAG_RUNG)];
   for (const mach of ordered) {
     const solve = readJson<Solve>(join(solvesDir, `M${mach.toFixed(3)}.json`));
     if (solve === null) {
       skipped.push(`Mach ${mach.toFixed(3)}: no solve yet`);
+      pending.push({ mach, reason: 'not run' });
       continue;
     }
     if (mach !== ZERO_DRAG_RUNG && floor === null) {
       skipped.push(`Mach ${mach.toFixed(3)}: waits for the floor from the Mach ${ZERO_DRAG_RUNG} rung`);
+      pending.push({ mach, reason: 'no floor (the Mach 0.6 rung did not pass)' });
       continue;
     }
     const input = inputOf(solve, floor);
     if (typeof input === 'string') {
       skipped.push(`Mach ${mach.toFixed(3)}: ${input}`);
+      pending.push({ mach, reason: input });
       continue;
     }
     const v = judgeRung(input);
@@ -220,11 +224,12 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
     '',
   );
 
-  // (y) item 6: a failed rung keeps the rows of its box out. Every TN 4233
+  // (y) item 6: a rung not judged a pass (failed, not run, not converged,
+  // waiting for the floor) keeps the rows of its box out. Every TN 4233
   // Mach number below 1.078 (from the readers' files) is checked here, and
   // blind-run-3.test.ts refuses the ones listed.
   const allRows = tn4233Machs();
-  const keptOut = rowsKeptOut(judged, allRows);
+  const keptOut = rowsKeptOut(judged, allRows, pending);
   out.push(
     `rows kept out by a failed rung ((y) item 6, +-${BOX_MACH} Mach): ${keptOut.length === 0 ? 'none' : ''}`,
     ...keptOut.map((r) => `  Mach ${r.mach.toFixed(3)}: ${r.reason}`),

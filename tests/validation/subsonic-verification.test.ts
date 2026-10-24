@@ -7,6 +7,7 @@ import {
   interpolateWall,
   judgeRung,
   linearisedConeCylinderCp,
+  nearSonicHold,
   orderingCheck,
   pointwiseBand,
   rowsKeptOut,
@@ -375,11 +376,52 @@ describe('item 5: the rung verdicts', () => {
     const bad = judgeRung(rung({ mach: 0.8, limit: -2e-3, floor: good.floorSet }));
     expect(bad.verdict).toBe('fail');
     const rows = [0.6, 0.601, 0.701, 0.797, 0.8, 0.85, 0.851, 0.899, 0.901];
-    const out = rowsKeptOut([good, bad], rows);
+    const out = rowsKeptOut([good, bad], rows, [], [0.6, 0.8]);
     expect(out.map((r) => r.mach)).toEqual([0.797, 0.8, 0.85]);
     expect(out[0]!.rung).toBe(0.8);
     expect(out[0]!.reason).toMatch(/\(c\)/);
-    expect(rowsKeptOut([good], rows)).toEqual([]);
+    // Every registered rung must pass to release its box: with only Mach
+    // 0.6 judged, the other four rungs keep their boxes out as "not run".
+    const onlyGood = rowsKeptOut([good], rows);
+    expect(onlyGood.map((r) => r.mach)).toEqual([0.797, 0.8, 0.85, 0.899, 0.901]);
+    expect(onlyGood[0]!.reason).toMatch(/not judged: not run/);
+    expect(rowsKeptOut([good], rows, [], [0.6])).toEqual([]);
+  });
+
+  it('a rung not converged, or waiting for the floor, keeps its box out with that reason', () => {
+    const rows = [
+      0.6, 0.601, 0.701, 0.797, 0.8, 0.85, 0.899, 0.901, 0.92, 0.939, 0.96, 0.964, 0.98, 0.981,
+      0.989, 0.991,
+    ];
+    const good = judgeRung(rung({ mach: 0.6, limit: 5e-5 }));
+    const notConverged = rowsKeptOut(
+      [good],
+      rows,
+      [{ mach: 0.8, reason: 'not converged: the drag did not settle' }],
+      [0.6, 0.8],
+    );
+    expect(notConverged.map((r) => r.mach)).toEqual([0.797, 0.8, 0.85]);
+    expect(notConverged[0]!.reason).toMatch(/not converged/);
+    // Mach 0.6 fails: no floor, so every other rung waits and every row from 0.701 up stays out.
+    const bad = judgeRung(rung({ mach: 0.6, limit: 3e-3 }));
+    const pending = [0.8, 0.901, 0.96, 0.991].map((mach) => ({ mach, reason: 'no floor' }));
+    const noFloor = rowsKeptOut([bad], rows, pending);
+    expect(noFloor.map((r) => r.mach)).toEqual(rows.filter((m) => m !== 0.701));
+    expect(noFloor.find((r) => r.mach === 0.8)!.reason).toMatch(/no floor/);
+    expect(noFloor.find((r) => r.mach === 0.6)!.reason).toMatch(/failed/);
+  });
+
+  it('the rows at Mach 1.001 to 1.041 wait for the 800-radius test and the results’ review', () => {
+    expect(nearSonicHold(1.02, null, true)).toMatch(/has not run/);
+    expect(nearSonicHold(1.02, false, true)).toMatch(/failed/);
+    expect(nearSonicHold(1.02, true, false)).toMatch(/not yet reviewed/);
+    expect(nearSonicHold(1.02, true, true)).toBeNull();
+    expect(nearSonicHold(1.001, null, false)).not.toBeNull();
+    expect(nearSonicHold(1.041, null, false)).not.toBeNull();
+    // The served family's rows (1.05 and above) and the subsonic rows (their own hold) are not this gate's.
+    expect(nearSonicHold(1.05, null, false)).toBeNull();
+    expect(nearSonicHold(1.064, false, false)).toBeNull();
+    expect(nearSonicHold(0.991, null, false)).toBeNull();
   });
 
   it('applyOrdering fails the rungs a violation names, and leaves the others', () => {
