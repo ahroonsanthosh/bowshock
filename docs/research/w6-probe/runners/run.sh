@@ -4,7 +4,7 @@
 # the runners in tests/w6/). Each family: nj = 20, 40, 80 (or up to MAXREF),
 # each finer grid seeded from the saved coarser one; finished grids skip
 # (their save exists), unfinished ones resume from their checkpoint.
-# Usage: run.sh LANE   (lane1 | lane2 | grids)
+# Usage: run.sh LANE   (lane1 | lane2 | lane3)
 TREE=${TREE:-/home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475/tests/tmp-w6/hm}
 cd "$TREE" || exit 1
 D=$TREE/../out
@@ -44,6 +44,14 @@ case "$1" in
     family 0.15 2 2
     family 0.03 3 2
     family 0.15 3 2
+    ;;
+  lane3)
+    # Item 4 in reverse order, on the core lane 1 freed; lane 2 skips
+    # whatever this lane has saved by the time it gets there.
+    family 0.15 3 2
+    family 0.03 3 2
+    family 0.15 2 2
+    family 0.03 2 2
     ;;
 esac
 echo "$(date -u +%FT%TZ) $1 finished" >> "$QUEUE"
