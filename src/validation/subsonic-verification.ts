@@ -30,6 +30,7 @@
 import { gridConvergence, type ConvergenceEstimate } from '../verification/grid-convergence';
 import { MEASURABILITY, type DomainAllowance } from '../verification/domain-allowance';
 import { ORDER_TOLERANCE } from '../analysis/verified-drag';
+import { NEAR_SONIC_LIMIT } from '../analysis/transonic-drag';
 
 // ------------------------------------------------------------- constants
 
@@ -668,13 +669,31 @@ export interface VerificationSummary {
   readonly rowResults: readonly RowResultSummary[];
 }
 
+export type EngineKind = 'cpu' | 'gpu' | 'unknown';
+
+/**
+ * Which engine a solve file records, from its own fields (never from the
+ * directory it sits in): the CPU job writes `engine: 'CPU, ...'`, the GPU
+ * kit `engine: 'GPU two-float ...'` with a `device`; a file with neither
+ * is 'unknown' and is refused.
+ */
+export function engineKind(solve: {
+  readonly engine?: string;
+  readonly device?: unknown;
+}): EngineKind {
+  const e = (solve.engine ?? '').toLowerCase();
+  if (e.startsWith('gpu') || solve.device !== undefined) return 'gpu';
+  if (e.startsWith('cpu')) return 'cpu';
+  return 'unknown';
+}
+
 export interface RowGateInput {
   readonly mach: number;
   /** The solves blind-run-3 is evaluating: their directory's name and their hash now. */
   readonly solvesTag: string;
   readonly solvesHash: string;
-  /** Whether those solves come from the owner's GPU, and that kit's match record. */
-  readonly gpu: boolean;
+  /** The engine this row's solve file records (engineKind), and the GPU kit's match record. */
+  readonly engine: EngineKind;
   readonly gpuMatch: { readonly passed?: boolean; readonly software?: boolean } | null;
   readonly verification: VerificationSummary | null;
   readonly resultsReviewed: boolean;
@@ -688,20 +707,28 @@ export type RowGate =
  * Every gate a TN 4233 row below Mach 1.078 passes before 0022's script
  * evaluates it, in one tested place ((y) items 6, 8 and 11 and 6 (h); the
  * re-check of 602d8f7):
- * 1. GPU solves need the kit's match record passed on hardware (6 (h)),
- *    for every row;
- * 2. rows at Mach 1.05 and above (the served family) then pass, with
- *    u_num from the evaluation's per-row result where it exists;
- * 3. rows below 1.05 need the evaluation, made on these same solves (the
+ * 1. a solve file that records no engine is refused; a GPU solve needs the
+ *    kit's match record passed on hardware (6 (h)), for every row;
+ * 2. rows at NEAR_SONIC_LIMIT (Mach 1.05) and above (the served family)
+ *    then pass, with u_num from the evaluation's per-row result where it
+ *    exists;
+ * 3. rows below it need the evaluation, made on these same solves (the
  *    same directory, the same hash), the results' review, not to be kept
  *    out by a rung, the 800-radius test where (y) item 8 applies, a judged
- *    per-row result, and 6 (d) not failed for the row; then they pass with
+ *    per-row result whose own verdict is not 'fail' ((y) item 3: the rung
+ *    rules apply per row, so an unresolved family, a negative drag, a wall
+ *    loss or a station band failing refuses the row); then they pass with
  *    u_num = that row's largest station band.
  */
 export function rowGate(input: RowGateInput): RowGate {
   const { mach, verification } = input;
   const same = (a: number, b: number) => Math.abs(a - b) < 1e-9;
-  if (input.gpu && !(input.gpuMatch?.passed === true && input.gpuMatch.software !== true))
+  if (input.engine === 'unknown')
+    return { allowed: false, reason: '(y): the solve file records no engine; refused' };
+  if (
+    input.engine === 'gpu' &&
+    !(input.gpuMatch?.passed === true && input.gpuMatch.software !== true)
+  )
     return {
       allowed: false,
       reason:
@@ -713,7 +740,7 @@ export function rowGate(input: RowGateInput): RowGate {
     verification.solvesHash === input.solvesHash
       ? (verification.rowResults.find((r) => same(r.mach, mach)) ?? null)
       : null;
-  if (mach >= 1.05) {
+  if (mach >= NEAR_SONIC_LIMIT) {
     return {
       allowed: true,
       inviscidUncertainty: row?.largestStationBand ?? 0,
@@ -747,11 +774,12 @@ export function rowGate(input: RowGateInput): RowGate {
       allowed: false,
       reason: '(y): no judged per-row result for this row (not solved, not converged, or no floor)',
     };
-  if (row.stationFailed)
+  if (row.verdict === 'fail' || row.stationFailed)
     return {
       allowed: false,
-      reason:
-        '(y) 6 (d) failed for this row: its station band is above 2e-3 or a station has no band',
+      reason: row.stationFailed
+        ? '(y) 6 (d) failed for this row: its station band is above 2e-3 or a station has no band'
+        : '(y) item 3: the row\u2019s own verdict is a fail (its family, sign, wall loss or allowances), so it is refused as a rung would be',
     };
   return {
     allowed: true,

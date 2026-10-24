@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { NEAR_SONIC_LIMIT } from '../../src/analysis/transonic-drag';
 import {
   applyOrdering,
   CP_STATION_TOLERANCE,
+  engineKind,
   far800Contained,
   gridConvergenceScaled,
   interpolateWall,
@@ -442,24 +444,51 @@ describe('item 5: the rung verdicts', () => {
     const base = {
       solvesTag: 'solves',
       solvesHash: 'abc',
-      gpu: false,
+      engine: 'cpu' as const,
       gpuMatch: null,
       verification,
       resultsReviewed: true,
     };
-    // A GPU run without a passed hardware match: every row, 1.064 included (6 (h)).
-    const noMatch = rowGate({ ...base, mach: 1.064, gpu: true, gpuMatch: null });
+    // A GPU solve without a passed hardware match: every row, 1.064 included (6 (h)).
+    const noMatch = rowGate({ ...base, mach: 1.064, engine: 'gpu', gpuMatch: null });
     expect(noMatch).toMatchObject({ allowed: false });
     expect((noMatch as { reason: string }).reason).toMatch(/6 \(h\)/);
-    expect(rowGate({ ...base, mach: 1.064, gpu: true, gpuMatch: { passed: false } })).toMatchObject(
-      { allowed: false },
-    );
     expect(
-      rowGate({ ...base, mach: 1.064, gpu: true, gpuMatch: { passed: true, software: true } }),
+      rowGate({ ...base, mach: 1.064, engine: 'gpu', gpuMatch: { passed: false } }),
     ).toMatchObject({ allowed: false });
     expect(
-      rowGate({ ...base, mach: 1.064, gpu: true, gpuMatch: { passed: true, software: false } }),
+      rowGate({ ...base, mach: 1.064, engine: 'gpu', gpuMatch: { passed: true, software: true } }),
+    ).toMatchObject({ allowed: false });
+    expect(
+      rowGate({ ...base, mach: 1.064, engine: 'gpu', gpuMatch: { passed: true, software: false } }),
     ).toMatchObject({ allowed: true, inviscidUncertainty: 1e-4 });
+    // The engine comes from the file, never from the directory: GPU files copied to another
+    // directory still need the match, and a file without an engine is refused outright.
+    expect(
+      engineKind({
+        engine: 'GPU two-float (gpuTransonicEngine), red-black implicit, 2 sweeps',
+        device: { vendor: 'x' },
+      }),
+    ).toBe('gpu');
+    expect(engineKind({ engine: 'CPU, LU-SGS, CFL to 1000 (cpuTransonicEngine)' })).toBe('cpu');
+    expect(engineKind({})).toBe('unknown');
+    const renamed = { ...base, solvesTag: 'solves-gpu2', engine: 'gpu' as const };
+    expect(rowGate({ ...renamed, mach: 1.064 })).toMatchObject({ allowed: false });
+    expect(
+      (rowGate({ ...base, mach: 1.064, engine: 'unknown' }) as { reason: string }).reason,
+    ).toMatch(/no engine/);
+    expect(
+      (rowGate({ ...base, mach: 0.6, engine: 'unknown' }) as { reason: string }).reason,
+    ).toMatch(/no engine/);
+    // The served family starts at NEAR_SONIC_LIMIT: 1.041 is held by item 8, 1.05 is served.
+    const noFar = { ...verification, far800Pass: null };
+    expect(
+      (rowGate({ ...base, mach: 1.041, verification: noFar }) as { reason: string }).reason,
+    ).toMatch(/item 8/);
+    expect(rowGate({ ...base, mach: NEAR_SONIC_LIMIT, verification: noFar })).toMatchObject({
+      allowed: true,
+    });
+    expect(NEAR_SONIC_LIMIT).toBe(1.05);
     // The served family passes on the CPU, with u_num where the evaluation has the row.
     expect(rowGate({ ...base, mach: 1.064 })).toMatchObject({
       allowed: true,
@@ -479,7 +508,7 @@ describe('item 5: the rung verdicts', () => {
           ...base,
           mach: 0.6,
           solvesTag: 'solves-gpu',
-          gpu: true,
+          engine: 'gpu',
           gpuMatch: { passed: true },
         }) as { reason: string }
       ).reason,
@@ -516,6 +545,52 @@ describe('item 5: the rung verdicts', () => {
       allowed: true,
       inviscidUncertainty: 4e-3,
     });
+  });
+
+  it('a row whose own verdict fails on (a), (c) or (e) is refused, as a rung would be ((y) item 3)', () => {
+    const floor = judgeRung(rung({ mach: 0.6, limit: 5e-5 })).floorSet;
+    const base = rung({ mach: 0.8, limit: 1e-3, floor });
+    const unresolved = base.levels.map((l, k) => ({
+      ...l,
+      drag: 1e-3 + [4e-4, 2e-4, 1.9e-4, 1e-4][k]!,
+    }));
+    const negative = rung({ mach: 0.8, limit: -2e-3, floor });
+    const wallLoss = base.levels.map((l) => ({
+      ...l,
+      loss: { ...l.loss, ahead: 2e-3 / l.refinement },
+    }));
+    const cases = {
+      a: judgeRung({ ...base, levels: unresolved }),
+      c: judgeRung(negative),
+      e: judgeRung({ ...base, levels: wallLoss }),
+    };
+    for (const [k, v] of Object.entries(cases)) {
+      expect(v.criteria[k as 'a' | 'c' | 'e'].status, k).toBe('fail');
+      expect(v.criteria.d.status, k).not.toBe('fail');
+      const summary = {
+        mach: 0.8,
+        largestStationBand: Math.max(...v.stationBands.map((b) => b.band)),
+        stationFailed: v.criteria.d.status === 'fail',
+        verdict: v.verdict,
+      };
+      const gate = rowGate({
+        mach: 0.8,
+        solvesTag: 'solves',
+        solvesHash: 'h',
+        engine: 'cpu',
+        gpuMatch: null,
+        verification: {
+          solvesTag: 'solves',
+          solvesHash: 'h',
+          keptOut: [],
+          far800Pass: true,
+          rowResults: [summary],
+        },
+        resultsReviewed: true,
+      });
+      expect(gate.allowed, k).toBe(false);
+      expect((gate as { reason: string }).reason, k).toMatch(/item 3/);
+    }
   });
 
   it('applyOrdering fails the rungs a violation names, and leaves the others', () => {

@@ -35,7 +35,11 @@ import {
   TN4233_ORIFICES,
   TN4233_ROWS,
 } from '../../../src/validation/cone-cylinder-tn4233';
-import { rowGate, type VerificationSummary } from '../../../src/validation/subsonic-verification';
+import {
+  engineKind,
+  rowGate,
+  type VerificationSummary,
+} from '../../../src/validation/subsonic-verification';
 import { solvesHash, solvesTag } from './solves-hash';
 import {
   allowanceAt,
@@ -123,6 +127,8 @@ function station(x: number, values: number[]): ReadingStation {
 
 interface Solve {
   readonly mach: number;
+  readonly engine?: string;
+  readonly device?: unknown;
   readonly converged: boolean;
   readonly reason?: string;
   readonly finest: number;
@@ -186,7 +192,6 @@ const verification: VerificationSummary | null = (() => {
     rowResults: v.rowResults ?? [],
   };
 })();
-const gpu = solvesTag(solves) === 'solves-gpu';
 const gpuMatch = (() => {
   const file = join(here, 'owner-kit', 'match', 'gpu-M0.800.json');
   if (!existsSync(file)) return null;
@@ -195,7 +200,6 @@ const gpuMatch = (() => {
 const gateInput = {
   solvesTag: solvesTag(solves),
   solvesHash: solvesHash(solves),
-  gpu,
   gpuMatch,
   verification,
   resultsReviewed: process.env.Y_RESULTS_REVIEWED === '1',
@@ -236,14 +240,15 @@ function rows(): {
       // the evaluation on these same solves, the results' review, the
       // rows a rung keeps out, the 800-radius test, the per-row result
       // and 6 (d); the row's u_num comes from it.
-      const gate = rowGate({ ...gateInput, mach });
-      if (!gate.allowed) {
-        held.push(`${what}: HELD: ${gate.reason}`);
-        continue;
-      }
       const solve = solveOf(mach);
       if (solve === null) {
         pending.push(what);
+        continue;
+      }
+      // The engine from the solve file's own record, never from the directory's name.
+      const gate = rowGate({ ...gateInput, mach, engine: engineKind(solve) });
+      if (!gate.allowed) {
+        held.push(`${what}: HELD: ${gate.reason}`);
         continue;
       }
       if (!solve.converged) {

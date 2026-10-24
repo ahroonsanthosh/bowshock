@@ -2309,6 +2309,18 @@ to the rules above, in the review's numbering:_
     `inviscidUncertainty`). Each gate has a unit test with a case that
     would otherwise release a row.
 
+17. _Re-check of 3c3f6c7 (2026-10-24, before any result; stricter, gates
+    only)._ (1) Item 3's "same band rules" apply per row: any row below
+    Mach 1.05 whose own verdict is a fail (an unresolved family (a), a
+    negative drag (c), a wall loss (e), a refused allowance (f), as well as
+    6 (d)) is refused, as a rung would be, whatever its pointwise bands.
+    (2) Whether a solve came from the GPU is read from each solve file's
+    own engine record (`engineKind`), never from its directory's name, in
+    the evaluation and in the script; a file without an engine is refused;
+    every GPU-engine file needs the passed hardware match. (3) The served
+    family starts at `NEAR_SONIC_LIMIT` in the gate (no hard-coded 1.05),
+    tested at 1.041 (held) and 1.05 (served).
+
 _Tests added for the errors the review planted:_ the floor and the
 cylinder term in the station band, p_inf / p_wall in the loss tolerance,
 the top rung's ordering condition, the zero-drag fail just past the

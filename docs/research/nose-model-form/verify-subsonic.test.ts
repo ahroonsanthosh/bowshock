@@ -28,6 +28,7 @@ import { TRANSONIC_DRAG_FLOOR } from '../../../src/analysis/transonic-drag';
 import {
   applyOrdering,
   BOX_MACH,
+  engineKind,
   far800Contained,
   judgeRung,
   linearisedConeCylinderCp,
@@ -47,13 +48,15 @@ import type { AllowanceRecord, GridRecords, GridResult } from './solve-common';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const solvesDir = join(here, 'out', 'blind-run-3', process.env.SOLVES ?? 'solves');
-const gpu = (process.env.SOLVES ?? 'solves') === 'solves-gpu';
+/** Set once the match record is read: why a solve file may not be judged, or null. */
+let engineBlockOf: (solve: Solve) => string | null = () => 'the match record has not been read';
 
 interface Solve {
   readonly mach: number;
   readonly converged: boolean;
   readonly reason?: string;
   readonly engine?: string;
+  readonly device?: unknown;
   readonly levels: readonly (GridResult & { readonly records?: GridRecords })[];
   readonly allowances?: { readonly farField: AllowanceRecord; readonly cylinder: AllowanceRecord } | null;
 }
@@ -85,6 +88,8 @@ const tau = Math.tan(TN4233_CONE_HALF_ANGLE);
 const L = body.nose.length;
 
 function inputOf(solve: Solve, floor: number | null): RungInput | string {
+  const blocked = engineBlockOf(solve);
+  if (blocked !== null) return blocked;
   if (!solve.converged) return `not converged: ${solve.reason ?? ''}`;
   if (solve.levels.length < 4) return 'fewer than four grids';
   if (solve.levels.some((l) => l.records === undefined)) return 'a grid without the records of (y) (solved before the registration)';
@@ -133,7 +138,7 @@ function lines(v: RungVerdict): string[] {
 it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   const out: string[] = [
     '# 0014 10.7 (y): the transonic solver below and near Mach 1, judged by the registered rules',
-    `# solves: ${solvesDir}${gpu ? ' (the owner’s GPU run)' : ' (the CPU job)'}; written ${new Date().toISOString()}`,
+    `# solves: ${solvesDir} (each file's engine from its own record); written ${new Date().toISOString()}`,
     '',
   ];
   const json: Record<string, unknown> = {
@@ -142,24 +147,24 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
     solvesHash: solvesHash(solvesDir),
   };
   const rowResults: RowResultSummary[] = [];
-  if (gpu) {
-    const match = readJson<{ passed?: boolean; software?: boolean }>(
-      join(here, 'owner-kit', 'match', 'gpu-M0.800.json'),
-    );
-    const matched = match !== null && match.passed === true && match.software !== true;
-    out.push(
-      `GPU match test (item 6 (h)): ${match === null ? 'NOT RUN' : matched ? 'passed' : 'FAILED or on software'}${matched ? '' : ': no GPU row counts; nothing judged'}`,
-      '',
-    );
-    json.match = match;
-    if (!matched) {
-      mkdirSync(join(here, 'out'), { recursive: true });
-      writeFileSync(join(here, 'out', 'verify-subsonic.out'), out.join('\n') + '\n');
-      writeFileSync(join(here, 'out', 'verify-subsonic.json'), JSON.stringify(json, null, 1) + '\n');
-      console.log(out.join('\n'));
-      return;
-    }
-  }
+  // (y) 6 (h): the GPU kit's match record, read always; a solve file that
+  // records the GPU engine (from its own fields, engineKind, never from
+  // the directory's name) is judged only if the match passed on hardware.
+  const match = readJson<{ passed?: boolean; software?: boolean }>(
+    join(here, 'owner-kit', 'match', 'gpu-M0.800.json'),
+  );
+  const matched = match !== null && match.passed === true && match.software !== true;
+  json.match = match;
+  out.push(
+    `GPU match test (item 6 (h)): ${match === null ? 'not run' : matched ? 'passed' : 'FAILED or on software'}; GPU-engine solve files ${matched ? 'count' : 'are not judged'}, CPU-engine files are judged either way, files without an engine are refused`,
+    '',
+  );
+  engineBlockOf = (solve: Solve): string | null => {
+    const kind = engineKind(solve);
+    if (kind === 'unknown') return 'the solve file records no engine';
+    if (kind === 'gpu' && !matched) return 'a GPU solve without a passed hardware match (6 (h))';
+    return null;
+  };
 
   // The zero-drag rung first: it sets the floor.
   const verdicts: RungVerdict[] = [];
