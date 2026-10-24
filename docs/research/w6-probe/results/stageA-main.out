@@ -1,0 +1,10 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475/tests/tmp-w6/main
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  06:53:50
+   Duration  195.90s (tests 100%)
+
+exit 0
