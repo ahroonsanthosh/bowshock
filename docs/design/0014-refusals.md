@@ -1891,4 +1891,13 @@ this band".
 8. _Not changed:_ the nose's numerical band and its floor (0006), every
    other component's band, and every registered test.
 
+_Added 2026-10-24 to (w): the owner settled its item 6._ NACA RM E51H17
+counts like the other seen sets of item 3: fig. 4(a) is re-read twice,
+the second blind, by readers working without the repository; its result
+may only widen the allowance, and only inside its own measured box (its
+nose shape, Mach number and fineness, 0022 section 4.4); its label names
+its stated tunnel Reynolds number as far below flight and says "formed
+from data seen before registration"; it is never a test. Recorded in
+0022 section 8, item 6. Nothing of it has been read again.
+
 The next free letter is (y); (x) is reserved for the W6 probe.

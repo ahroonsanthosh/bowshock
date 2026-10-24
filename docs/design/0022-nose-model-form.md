@@ -219,7 +219,7 @@ what it covers, before any value is read (as 0014 10.1 does for TN 3548).
 | RM E52C10: its zero-incidence plotted points (figure named when it is opened for coverage)           | Cone-cylinders, Mach 3.12                      | Opened, no value recorded; whether the plots were looked at is not recorded, so treated as possibly seen                                       | Band-setting, read twice; disclosed in (w)                                                                     |
 | TN D-3516: fig. 5 and its table of orifices, the smooth model                                        | 3-caliber tangent ogive, Mach 1.1 and 1.2      | Fig. 5 read for the transonic work (its stagnation pressures' scatter, about 0.005 in Cp, noted), not digitised, never compared with the model | Band-setting for Mach 1.1 to 1.2, read twice, used only once the nose is served there (0013); disclosed in (w) |
 | TN 4233: table I(a) and (b)                                                                          | 7 deg cone, Mach 1.078 to 1.4                  | Typed once and compared (0013)                                                                                                                 | As TN 3716 (seen)                                                                                              |
-| RM E51H17: fig. 4(a)                                                                                 | 4.77 deg cone, Mach 3.85                       | One value digitised; the result public                                                                                                         | Not settled: an open question for the owner (section 8)                                                        |
+| RM E51H17: fig. 4(a)                                                                                 | 4.77 deg cone, Mach 3.85                       | One value digitised; the result public                                                                                                         | Seen: widening only, in its own box (the owner, 2026-10-24; section 8)                                         |
 
 Never used, by 0014 10.1: the PARD standard body's fore drag (RM L52E06
 figs. 9 to 12) and every other held-back set. The search for further
@@ -597,13 +597,18 @@ Decided by the owner: Route 1 (section 5). Decided by the coordinator on
    coverage threshold of a tenth** (4.3) stand.
 5. **The interim label** may merge on its own (d83b336, b7d74ad).
 
-Open, the owner's:
+Decided by the owner on 2026-10-24, settling the one question (w) left
+open (its item 6), recorded in 0014 as a dated addition under (w):
 
-- **RM E51H17** (a 4.77 deg cone at Mach 3.85, read about 34% above
-  Taylor-Maccoll, which its report puts down to Reynolds number): does a
-  set whose tunnel Reynolds number lies far below flight set anything?
-  Deciding it now, with the value seen, is itself a choice after seeing;
-  whichever way it goes, the dated entry that decides it says so.
+6. **RM E51H17 counts, widening only, like the other seen sets.** Fig.
+   4(a) (a 4.77 deg cone, about 6.0 calibers, at Mach 3.85) is re-read
+   twice, the second blind, by readers working without the repository,
+   as TN 3716 and RM A53E01 are. Its result may only widen the allowance,
+   and only inside its own measured box (cones, its fineness and Mach
+   number, 4.4). Its label names its stated tunnel Reynolds number as far
+   below flight, and says "formed from data seen before registration". It
+   is never a test. It has no published integrated figure, so it carries
+   no floor of section 5 beyond what 4.3 gives from its readings.
 
 ## 9. Order of work after the decisions
 
