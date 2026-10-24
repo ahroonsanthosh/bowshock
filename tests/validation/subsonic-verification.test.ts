@@ -472,6 +472,29 @@ describe('item 5: the rung verdicts', () => {
     ).toBe('gpu');
     expect(engineKind({ engine: 'CPU, LU-SGS, CFL to 1000 (cpuTransonicEngine)' })).toBe('cpu');
     expect(engineKind({})).toBe('unknown');
+    // A device record decides: a CPU engine string with a device set is a GPU file.
+    expect(engineKind({ engine: 'CPU, LU-SGS', device: { vendor: 'nvidia' } })).toBe('gpu');
+    // SwiftShader or a fallback adapter is software, refused outright.
+    expect(
+      engineKind({
+        engine: 'GPU two-float',
+        device: { vendor: 'google', architecture: 'swiftshader' },
+      }),
+    ).toBe('software');
+    expect(
+      engineKind({ engine: 'GPU two-float', device: { vendor: 'x', isFallbackAdapter: true } }),
+    ).toBe('software');
+    expect(
+      engineKind({ engine: 'GPU two-float', device: { description: 'SwiftShader device' } }),
+    ).toBe('software');
+    const software = rowGate({
+      ...base,
+      mach: 1.064,
+      engine: 'software',
+      gpuMatch: { passed: true, software: false },
+    });
+    expect(software).toMatchObject({ allowed: false });
+    expect((software as { reason: string }).reason).toMatch(/software adapter/);
     const renamed = { ...base, solvesTag: 'solves-gpu2', engine: 'gpu' as const };
     expect(rowGate({ ...renamed, mach: 1.064 })).toMatchObject({ allowed: false });
     expect(

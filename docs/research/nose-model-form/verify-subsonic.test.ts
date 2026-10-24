@@ -162,6 +162,7 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   engineBlockOf = (solve: Solve): string | null => {
     const kind = engineKind(solve);
     if (kind === 'unknown') return 'the solve file records no engine';
+    if (kind === 'software') return 'the solve file records a software adapter (6 (h))';
     if (kind === 'gpu' && !matched) return 'a GPU solve without a passed hardware match (6 (h))';
     return null;
   };

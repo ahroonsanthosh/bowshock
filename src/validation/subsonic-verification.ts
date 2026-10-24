@@ -669,7 +669,7 @@ export interface VerificationSummary {
   readonly rowResults: readonly RowResultSummary[];
 }
 
-export type EngineKind = 'cpu' | 'gpu' | 'unknown';
+export type EngineKind = 'cpu' | 'gpu' | 'software' | 'unknown';
 
 /**
  * Which engine a solve file records, from its own fields (never from the
@@ -682,7 +682,17 @@ export function engineKind(solve: {
   readonly device?: unknown;
 }): EngineKind {
   const e = (solve.engine ?? '').toLowerCase();
-  if (e.startsWith('gpu') || solve.device !== undefined) return 'gpu';
+  if (solve.device !== undefined) {
+    // A device record means a GPU run; one naming SwiftShader or a fallback
+    // adapter is software rendering, never hardware (6 (h)).
+    const d = JSON.stringify(solve.device).toLowerCase();
+    const fallback =
+      typeof solve.device === 'object' &&
+      solve.device !== null &&
+      (solve.device as { isFallbackAdapter?: unknown }).isFallbackAdapter === true;
+    return d.includes('swiftshader') || fallback ? 'software' : 'gpu';
+  }
+  if (e.startsWith('gpu')) return 'gpu';
   if (e.startsWith('cpu')) return 'cpu';
   return 'unknown';
 }
@@ -725,6 +735,12 @@ export function rowGate(input: RowGateInput): RowGate {
   const same = (a: number, b: number) => Math.abs(a - b) < 1e-9;
   if (input.engine === 'unknown')
     return { allowed: false, reason: '(y): the solve file records no engine; refused' };
+  if (input.engine === 'software')
+    return {
+      allowed: false,
+      reason:
+        '(y) 6 (h): the solve file records a software adapter (SwiftShader or a fallback); refused',
+    };
   if (
     input.engine === 'gpu' &&
     !(input.gpuMatch?.passed === true && input.gpuMatch.software !== true)
