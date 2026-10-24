@@ -1820,4 +1820,75 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
-The next free letter is (w).
+**2026-10-24 (w): measured nose pressures, named for the nose's
+model-form allowance before they are read** (rule 2 of 10.1; design
+record 0022 as adopted at commit 305557f; the advisor's report of
+2026-10-22, section 6 item 4; the owner's choice of 0022's Route 1). The
+nose's band (0006) is the numerical error of the inviscid solve. An
+allowance "inviscid model against measured pressures" is formed per nose
+family and Mach number by 0022 sections 4.3 and 4.4, fixed and reviewed
+before any value below is read. It is symmetric about the served value
+(one body per box cannot show the error's direction; a one-sided band or
+a sign per family only by a later dated entry, before any reading, for a
+family with several bodies in one box), half-width a times the nose
+term, a the largest |r| + u of every measured case whose box (+-0.05
+Mach, +-0.25 calibers; the union of boxes, not their hull) contains the
+case; it enters the total's model-form band linearly, as its own line,
+beside the numerical band. Outside every box the nose is labelled
+"numerical error of the inviscid solve; the model's own error is not in
+this band".
+
+1. _Band-setting, no value recorded:_ NACA TR 1386 (Perkins, Jorgensen
+   and Sommer, 1958; NTRS 19930091022), its zero-incidence pressure
+   distributions and foredrags of blunted cones and Karman ogives, the
+   figures and tables named by a later dated entry when it is opened to
+   see what it covers, before any value is read (not read before); NACA
+   RM E52C10 (Jack and Gould), its zero-incidence plotted pressures on
+   the five cone-cylinders at Mach 3.12, the figure named likewise
+   (opened by the first session; whether its plots were looked at for values is not
+   recorded, so it is disclosed as possibly seen); NASA TN D-3516
+   (Czarnecki and Monta), fig. 5 and table II, the smooth model at Mach
+   1.1 and 1.2, used only once the nose is served there (fig. 5 was read
+   for the transonic work and its stagnation pressures' scatter, about
+   0.005 in Cp, noted; no value recorded or compared with the model).
+   This widens 10.1's "a check of the nose solve" for TR 1386 to
+   band-setting for this allowance only.
+2. _Each is read twice_, the second reading blind, paired by a neutral
+   party; ambiguous cells keep every reading; the envelope, never
+   resolved toward the narrower.
+3. _Seen before this entry, widening only:_ NACA TN 3716 (table I(a) and
+   fig. 3, zero incidence; typed once 2026-10-15, integrated once
+   2026-10-17; every value public in the repository), NACA RM A53E01
+   (table II(a), zero incidence; read once 2026-10-17) and NACA TN 4233
+   (tables I(a) and (b); typed and compared in 0013). Registered after
+   they were seen, as (g) records NSWCDD/TR-92/509. Each is read again
+   twice, the second blind, by readers who work from the source file
+   alone, without this repository, and whose briefs name no earlier
+   value. The result may only widen the allowance of its box. It is never
+   a test or a validation, and no claim rests on it as one. Where a box
+   rests only on these sets the label says "formed from data seen before
+   registration". This departs from (r)'s "not a band's end, not an
+   allowance" for these sets only, because their use can only widen.
+4. _The floor, a lower limit only:_ in TN 3716's box the half-width is
+   never below 14.4% (published 0.1068 to 0.1080 against 0.09880, plus
+   0.005 / 0.09880), and in RM A53E01's never below 16.1% (0.0298
+   against 0.03074, plus 0.004 / 0.03074). Fresh readings enter under
+   0022 section 4.3 beside the floor and can raise the half-width; they
+   never replace or lower it. TN 4233 has no published integrated
+   figure; its existing typing is carried in the envelope and does the
+   floor's job. In TN 3716 the shoulder cell (x/d 2.95) counts as
+   ambiguous, its first typing's -0.038 (5fcc92b) kept beside -0.036.
+5. _Fixed first:_ the quantity, the integration script, the coverage
+   threshold (a tenth of the drag outside the orifices, with its own
+   term below that), the boxes and the sign rule are committed and
+   reviewed before any reading reaches them. The script's first run is
+   on the existing TN 3716 typing and is recorded as a run on seen data.
+6. _Not settled here:_ NACA RM E51H17 (fig. 4(a); one value digitised
+   and seen). Whether it sets anything is the owner's open question,
+   decided by a later dated entry before it is read again.
+7. _Never used:_ every held-back set of 10.1, the PARD standard body's
+   fore drag (RM L52E06 figs. 9 to 12) included.
+8. _Not changed:_ the nose's numerical band and its floor (0006), every
+   other component's band, and every registered test.
+
+The next free letter is (y); (x) is reserved for the W6 probe.
