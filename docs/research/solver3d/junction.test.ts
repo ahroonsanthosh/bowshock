@@ -30,6 +30,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from 'vitest';
 import {
+  exactWedgeFlow,
+  junctionCounts,
   junctionMeasures,
   runJunction,
   type JunctionKind,
@@ -41,7 +43,9 @@ const OUT = join(here, 'out');
 const RUNS = join(OUT, 'junction-runs.jsonl');
 const TOLERANCE = 1e-5;
 
-interface Run extends JunctionMeasures {
+interface Run extends Omit<JunctionMeasures, 'nearForceAbsolute'> {
+  /** Absent on runs recorded before it was stored. */
+  readonly nearForceAbsolute?: number;
   readonly id: string;
   readonly steps: number;
   readonly converged: boolean;
@@ -87,7 +91,20 @@ test('the fitted surface and the junction tests (4.0)', { timeout: 86_400_000 * 
     const breach = [0, 1, 2].map((l) => run(kind, l, { breach: true, maxSteps: 40_000 * 2 ** l }));
     const converged = [...code, ...breach].every((r) => r.converged);
     const away = code.every((r) => r.awayAngle <= 1e-10 && r.awayState <= 1e-10);
-    const falls = code[1]!.nearForce < code[0]!.nearForce && code[2]!.nearForce < code[1]!.nearForce;
+    // 4.0's "the error of their integrated pressure force ... falls with each refinement": the absolute error,
+    // the region being k cells of each grid. Runs recorded before it was stored: the relative error times the
+    // exact force over the near faces, p_post times their area on the exact plane shock (x from 0.1 to 1;
+    // J1: k rows of the span, J2: k columns over the span of 1).
+    const exactNear = (level: number) => {
+      const c = junctionCounts(level);
+      const e = exactWedgeFlow();
+      const width = kind === 'J1' ? (4 * 1) / c.nj : 1;
+      const length = kind === 'J1' ? 0.9 : (4 * 0.9) / c.ni;
+      return (e.post.p * width * length) / Math.cos(e.beta);
+    };
+    const absolute = (r: Run, level: number) => r.nearForceAbsolute ?? r.nearForce * exactNear(level);
+    const abs = code.map((r, l) => absolute(r, l));
+    const falls = abs[1]! < abs[0]! && abs[2]! < abs[1]!;
     const tenth = code[2]!.nearForce <= 0.1 * breach[2]!.nearForce;
     const sees = breach[2]!.nearForce >= 10 * code[2]!.nearForce;
     const ok = converged && away && falls && tenth && sees;
@@ -102,6 +119,8 @@ test('the fitted surface and the junction tests (4.0)', { timeout: 86_400_000 * 
       nearFalls: falls,
       nearWithinTenthOfBreach: tenth,
       breachSeen: sees,
+      nearAbsolute: abs,
+      nearRelative: code.map((r) => r.nearForce),
       breachFalls: breach[1]!.nearForce < breach[0]!.nearForce && breach[2]!.nearForce < breach[1]!.nearForce,
       pass: ok,
     });

@@ -451,8 +451,13 @@ export interface JunctionMeasures {
   /** ... and the largest post-shock state error (relative to the free stream's density, sound speed, pressure). */
   readonly awayState: number;
   readonly awayFaces: number;
-  /** Over the fitted faces within k cells of it: their integrated pressure force's error, relative. */
+  /** Over the fitted faces within k cells of it: their integrated pressure force's error, relative to the exact force. */
   readonly nearForce: number;
+  /**
+   * ... and absolute (in the free stream's pressure times the domain's unit area): 4.0's "the error of their
+   * integrated pressure force", whose region shrinks with the grid (k cells of that grid).
+   */
+  readonly nearForceAbsolute: number;
   readonly nearFaces: number;
   /**
    * The largest distance from the junction, in cells, of a main-block cell second or third upstream of a fitted
@@ -521,14 +526,15 @@ export function junctionMeasures(
       nearFaces++;
     }
   }
+  const nearForceAbsolute = Math.hypot(
+    force[0]! - forceExact[0]!,
+    force[1]! - forceExact[1]!,
+    force[2]! - forceExact[2]!,
+  );
   const nearForce =
     nearFaces === 0
       ? 0
-      : Math.hypot(
-          force[0]! - forceExact[0]!,
-          force[1]! - forceExact[1]!,
-          force[2]! - forceExact[2]!,
-        ) / Math.hypot(forceExact[0]!, forceExact[1]!, forceExact[2]!);
+      : nearForceAbsolute / Math.hypot(forceExact[0]!, forceExact[1]!, forceExact[2]!);
   let upstreamReach = -1;
   for (let j = 0; j < M1.metrics.nj; j++)
     for (let i = 0; i < M1.metrics.ni; i++)
@@ -538,5 +544,13 @@ export function junctionMeasures(
         const dev = Math.max(Math.abs(p.rho - f.rho), Math.abs(p.p - f.p));
         if (dev > tolerance) upstreamReach = Math.max(upstreamReach, distance(i, j));
       }
-  return { awayAngle, awayState, awayFaces, nearForce, nearFaces, upstreamReach };
+  return {
+    awayAngle,
+    awayState,
+    awayFaces,
+    nearForce,
+    nearForceAbsolute,
+    nearFaces,
+    upstreamReach,
+  };
 }
