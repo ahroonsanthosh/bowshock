@@ -219,3 +219,73 @@
 2026-10-24T13:54:47.777Z ogive5 rn0.03 M3 cyl2 nj20x2: 3000 iterations, maxSpeed 1.04e-6, residual 7.07e-9, drag 0.0362695483813, rate 0.208, remaining 7.55e-7
 2026-10-24T13:59:54.219Z ogive5 rn0.03 M3 cyl2 nj20x2: 4000 iterations, maxSpeed 1.21e-7, residual 8.62e-10, drag 0.0362695537078, rate 0.103, remaining 1.69e-8
 2026-10-24T14:05:07.960Z ogive5 rn0.03 M3 cyl2 nj20x2: 5000 iterations, maxSpeed 1.39e-8, residual 9.95e-11, drag 0.0362695546672, rate 0.113, remaining 3.39e-9
+2026-10-24T14:10:40.885Z ogive5 rn0.03 M3 cyl2 nj20x2: 6000 iterations, maxSpeed 1.60e-9, residual 1.15e-11, drag 0.0362695547770, rate 0.116, remaining 3.97e-10
+2026-10-24T14:16:42.377Z ogive5 rn0.03 M3 cyl2 nj20x2: 7000 iterations, maxSpeed 1.84e-10, residual 1.32e-12, drag 0.0362695547897, rate 0.116, remaining 4.57e-11
+2026-10-24T14:22:40.981Z ogive5 rn0.03 M3 cyl2 nj20x2: settled early after 8000 iterations (2789s), drag 0.0362695547911, cap drag 0.00076336740 (125 faces), stagnation 7.546e-4% of pitot, standoff 0.2150 r_n (Billig 0.2050), fitted grid wall 86.2 angle 61.2 size 1.046 aspect 3.68; page checks: pass
+2026-10-24T14:22:43.782Z ogive5 rn0.15 M2 cyl2 nj20x1: start
+2026-10-24T14:24:13.769Z ogive5 rn0.15 M2 cyl2 nj20x1: problem built in 90s (133x20)
+2026-10-24T14:24:33.020Z ogive5 rn0.05 M3 cyl2 nj20x4: 4000 iterations, maxSpeed 2.55e-6, residual 1.59e-8, drag 0.0364863985015, rate NaN, remaining 0.00e+0
+2026-10-24T14:24:33.192Z ogive5 rn0.15 M2 cyl2 nj20x1: 500 iterations, maxSpeed 7.47e-4, residual 6.12e-5, drag 0.0483712599313, rate NaN, remaining 0.00e+0
+2026-10-24T14:24:50.826Z ogive5 rn0.15 M2 cyl2 nj20x1: 1000 iterations, maxSpeed 6.21e-5, residual 1.04e-6, drag 0.0483450523513, rate NaN, remaining 0.00e+0
+2026-10-24T14:25:08.453Z ogive5 rn0.15 M2 cyl2 nj20x1: 1500 iterations, maxSpeed 5.90e-6, residual 1.02e-7, drag 0.0483431998076, rate 0.0707, remaining 2.91e-6
+2026-10-24T14:25:25.263Z ogive5 rn0.15 M2 cyl2 nj20x1: 2000 iterations, maxSpeed 5.61e-7, residual 9.67e-9, drag 0.0483430198606, rate 0.0829, remaining 3.36e-7
+2026-10-24T14:25:41.232Z ogive5 rn0.15 M2 cyl2 nj20x1: 2500 iterations, maxSpeed 5.33e-8, residual 9.19e-10, drag 0.0483430027501, rate 0.0877, remaining 3.40e-8
+2026-10-24T14:25:58.071Z ogive5 rn0.15 M2 cyl2 nj20x1: 3000 iterations, maxSpeed 5.07e-9, residual 8.74e-11, drag 0.0483430011239, rate 0.0902, remaining 3.33e-9
+2026-10-24T14:26:11.477Z ogive5 rn0.15 M2 cyl2 nj20x1: 3500 iterations, maxSpeed 4.81e-10, residual 8.31e-12, drag 0.0483430009693, rate 0.0916, remaining 3.22e-10
+2026-10-24T14:26:26.480Z ogive5 rn0.15 M2 cyl2 nj20x1: 4000 iterations, maxSpeed 4.58e-11, residual 7.89e-13, drag 0.0483430009547, rate 0.0916, remaining 3.06e-11
+2026-10-24T14:26:45.576Z ogive5 rn0.15 M2 cyl2 nj20x1: settled early after 4500 iterations (242s), drag 0.0483430009533, cap drag 0.017860114 (43 faces), stagnation 7.289e-3% of pitot, standoff 0.3496 r_n (Billig 0.3215), fitted grid wall 84.4 angle 54.3 size 1.120 aspect 4.60; page checks: pass
+2026-10-24T14:26:48.950Z ogive5 rn0.15 M2 cyl2 nj20x2: start
+2026-10-24T14:28:08.714Z ogive5 rn0.15 M2 cyl2 nj20x2: problem built in 80s (266x40)
+2026-10-24T14:28:08.715Z ogive5 rn0.15 M2 cyl2 nj20x2: resumed from checkpoint at 0 iterations
+2026-10-24T14:30:39.383Z ogive5 rn0.15 M2 cyl2 nj20x2: 1000 iterations, maxSpeed 5.13e-5, residual 1.73e-6, drag 0.0478948836807, rate NaN, remaining 0.00e+0
+2026-10-24T14:33:12.173Z ogive5 rn0.15 M2 cyl2 nj20x2: 2000 iterations, maxSpeed 2.84e-6, residual 3.98e-8, drag 0.0478963963048, rate NaN, remaining 0.00e+0
+2026-10-24T14:35:37.541Z ogive5 rn0.15 M2 cyl2 nj20x2: 3000 iterations, maxSpeed 2.74e-7, residual 2.93e-9, drag 0.0478964750469, rate 0.0521, remaining 9.03e-8
+2026-10-24T14:38:13.437Z ogive5 rn0.15 M2 cyl2 nj20x2: 4000 iterations, maxSpeed 2.63e-8, residual 2.84e-10, drag 0.0478964840536, rate 0.0772, remaining 1.57e-8
+2026-10-24T14:40:59.037Z ogive5 rn0.15 M2 cyl2 nj20x2: 5000 iterations, maxSpeed 2.53e-9, residual 2.73e-11, drag 0.0478964849224, rate 0.0858, remaining 1.70e-9
+2026-10-24T14:43:46.013Z ogive5 rn0.15 M2 cyl2 nj20x2: 6000 iterations, maxSpeed 2.44e-10, residual 2.62e-12, drag 0.0478964850060, rate 0.0897, remaining 1.72e-10
+2026-10-24T14:46:19.497Z ogive5 rn0.15 M2 cyl2 nj20x2: 7000 iterations, maxSpeed 2.34e-11, residual 2.52e-13, drag 0.0478964850140, rate 0.0897, remaining 1.65e-11
+2026-10-24T14:48:56.201Z ogive5 rn0.15 M2 cyl2 nj20x2: settled early after 8000 iterations (1327s), drag 0.0478964850148, cap drag 0.017815895 (86 faces), stagnation 1.366e-3% of pitot, standoff 0.3494 r_n (Billig 0.3215), fitted grid wall 83.7 angle 54.5 size 1.058 aspect 4.73; page checks: pass
+2026-10-24T14:49:00.271Z ogive5 rn0.03 M2 cyl2 nj20x1: start
+2026-10-24T14:50:38.894Z ogive5 rn0.03 M2 cyl2 nj20x1: problem built in 99s (183x20)
+2026-10-24T14:50:58.836Z ogive5 rn0.03 M2 cyl2 nj20x1: 500 iterations, maxSpeed 1.60e-3, residual 6.05e-5, drag 0.0395138408128, rate NaN, remaining 0.00e+0
+2026-10-24T14:51:20.042Z ogive5 rn0.03 M2 cyl2 nj20x1: 1000 iterations, maxSpeed 8.21e-5, residual 1.09e-6, drag 0.0395074091231, rate NaN, remaining 0.00e+0
+2026-10-24T14:51:44.817Z ogive5 rn0.03 M2 cyl2 nj20x1: 1500 iterations, maxSpeed 8.51e-6, residual 1.13e-7, drag 0.0395069103347, rate 0.0776, remaining 1.06e-6
+2026-10-24T14:52:13.537Z ogive5 rn0.03 M2 cyl2 nj20x1: 2000 iterations, maxSpeed 8.64e-7, residual 1.15e-8, drag 0.0395068471091, rate 0.0991, remaining 1.76e-7
+2026-10-24T14:52:36.187Z ogive5 rn0.03 M2 cyl2 nj20x1: 2500 iterations, maxSpeed 8.76e-8, residual 1.16e-9, drag 0.0395068407045, rate 0.102, remaining 1.85e-8
+2026-10-24T14:52:56.467Z ogive5 rn0.03 M2 cyl2 nj20x1: 3000 iterations, maxSpeed 8.88e-9, residual 1.18e-10, drag 0.0395068400551, rate 0.103, remaining 1.88e-9
+2026-10-24T14:53:22.149Z ogive5 rn0.03 M2 cyl2 nj20x1: 3500 iterations, maxSpeed 9.00e-10, residual 1.20e-11, drag 0.0395068399893, rate 0.103, remaining 1.91e-10
+2026-10-24T14:53:51.174Z ogive5 rn0.03 M2 cyl2 nj20x1: 4000 iterations, maxSpeed 9.13e-11, residual 1.21e-12, drag 0.0395068399826, rate 0.103, remaining 1.93e-11
+2026-10-24T14:54:17.797Z ogive5 rn0.03 M2 cyl2 nj20x1: settled early after 4500 iterations (318s), drag 0.0395068399819, cap drag 0.00071466902 (42 faces), stagnation 6.346e-3% of pitot, standoff 0.3496 r_n (Billig 0.3215), fitted grid wall 84.3 angle 55.1 size 1.119 aspect 4.28; page checks: pass
+2026-10-24T14:54:22.754Z ogive5 rn0.03 M2 cyl2 nj20x2: start
+2026-10-24T14:56:26.625Z ogive5 rn0.03 M2 cyl2 nj20x2: problem built in 124s (366x40)
+2026-10-24T14:56:26.626Z ogive5 rn0.03 M2 cyl2 nj20x2: resumed from checkpoint at 0 iterations
+2026-10-24T14:59:49.829Z ogive5 rn0.03 M2 cyl2 nj20x2: 1000 iterations, maxSpeed 8.13e-5, residual 1.27e-6, drag 0.0392820469159, rate NaN, remaining 0.00e+0
+2026-10-24T15:03:19.153Z ogive5 rn0.03 M2 cyl2 nj20x2: 2000 iterations, maxSpeed 5.51e-6, residual 4.64e-8, drag 0.0392820410983, rate NaN, remaining 0.00e+0
+2026-10-24T15:06:48.181Z ogive5 rn0.03 M2 cyl2 nj20x2: 3000 iterations, maxSpeed 3.17e-7, residual 3.22e-9, drag 0.0392821138219, rate 12.5, remaining Infinity
+2026-10-24T15:10:22.339Z ogive5 rn0.03 M2 cyl2 nj20x2: 4000 iterations, maxSpeed 3.25e-8, residual 3.29e-10, drag 0.0392821174349, rate 0.788, remaining 1.72e-6
+2026-10-24T15:14:00.985Z ogive5 rn0.03 M2 cyl2 nj20x2: 5000 iterations, maxSpeed 3.34e-9, residual 3.37e-11, drag 0.0392821178168, rate 0.327, remaining 4.73e-9
+2026-10-24T15:17:52.774Z ogive5 rn0.03 M2 cyl2 nj20x2: 6000 iterations, maxSpeed 3.43e-10, residual 3.46e-12, drag 0.0392821178560, rate 0.327, remaining 4.85e-10
+2026-10-24T15:21:23.612Z ogive5 rn0.03 M2 cyl2 nj20x2: settled early after 7000 iterations (1621s), drag 0.0392821178600, cap drag 0.00071284155 (85 faces), stagnation 1.107e-3% of pitot, standoff 0.3494 r_n (Billig 0.3215), fitted grid wall 83.9 angle 55.3 size 1.058 aspect 4.40; page checks: pass
+2026-10-24T15:22:28.027Z ogive5 rn0.05 M3 cyl2 nj20x4: 6000 iterations, maxSpeed 1.95e-7, residual 1.21e-9, drag 0.0364864193288, rate 3.16, remaining Infinity
+2026-10-24T17:15:24.578Z ogive5 rn0.05 M3 cyl2 nj20x4: start
+2026-10-24T17:17:02.892Z ogive5 rn0.05 M3 cyl2 nj20x4: problem built in 98s (1056x80)
+2026-10-24T17:17:03.650Z ogive5 rn0.05 M3 cyl2 nj20x4: resumed from checkpoint at 6000 iterations
+2026-10-24T18:16:42.566Z ogive5 rn0.05 M3 cyl2 nj20x4: start
+2026-10-24T18:18:16.483Z ogive5 rn0.05 M3 cyl2 nj20x4: problem built in 94s (1056x80)
+2026-10-24T18:18:16.546Z ogive5 rn0.05 M3 cyl2 nj20x4: resumed from checkpoint at 6000 iterations
+2026-10-24T18:49:28.420Z ogive5 rn0.05 M3 cyl2 nj20x4: start
+2026-10-24T18:50:55.220Z ogive5 rn0.05 M3 cyl2 nj20x4: problem built in 87s (1056x80)
+2026-10-24T18:50:55.232Z ogive5 rn0.05 M3 cyl2 nj20x4: resumed from checkpoint at 6000 iterations
+2026-10-24T19:54:53.212Z ogive5 rn0.05 M3 cyl2 nj20x4: start
+2026-10-24T19:56:32.546Z ogive5 rn0.05 M3 cyl2 nj20x4: problem built in 99s (1056x80)
+2026-10-24T19:56:32.609Z ogive5 rn0.05 M3 cyl2 nj20x4: resumed from checkpoint at 6000 iterations
+2026-10-24T20:27:51.712Z ogive5 rn0.05 M3 cyl2 nj20x4: start
+2026-10-24T20:29:11.424Z ogive5 rn0.05 M3 cyl2 nj20x4: problem built in 80s (1056x80)
+2026-10-24T20:29:11.437Z ogive5 rn0.05 M3 cyl2 nj20x4: resumed from checkpoint at 6000 iterations
+2026-10-24T20:51:33.738Z ogive5 rn0.05 M3 cyl2 nj20x4: start
+2026-10-24T20:53:04.064Z ogive5 rn0.05 M3 cyl2 nj20x4: problem built in 90s (1056x80)
+2026-10-24T20:53:04.073Z ogive5 rn0.05 M3 cyl2 nj20x4: resumed from checkpoint at 6000 iterations
+2026-10-24T21:29:57.086Z ogive5 rn0.05 M3 cyl2 nj20x4: 8000 iterations, maxSpeed 1.91e-8, residual 1.20e-10, drag 0.0364864216927, rate NaN, remaining 0.00e+0
+2026-10-24T22:08:02.593Z ogive5 rn0.05 M3 cyl2 nj20x4: 10000 iterations, maxSpeed 2.21e-9, residual 1.38e-11, drag 0.0364864219106, rate NaN, remaining 0.00e+0
+2026-10-24T22:43:37.541Z ogive5 rn0.05 M3 cyl2 nj20x4: 12000 iterations, maxSpeed 2.54e-10, residual 1.59e-12, drag 0.0364864219358, rate NaN, remaining 0.00e+0
+2026-10-24T23:18:06.235Z ogive5 rn0.05 M3 cyl2 nj20x4: settled early after 14000 iterations (8792s), drag 0.0364864219387, cap drag 0.0021202512 (252 faces), stagnation 1.632e-4% of pitot, standoff 0.2149 r_n (Billig 0.2050), fitted grid wall 85.9 angle 61.2 size 1.031 aspect 3.70; page checks: pass
