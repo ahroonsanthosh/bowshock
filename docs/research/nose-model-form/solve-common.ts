@@ -179,9 +179,17 @@ export type Log = (line: string) => Promise<void> | void;
  * checks, nothing else), `save` is called with the current state every
  * `everySeconds` of wall time.
  */
+export interface MidState {
+  readonly conserved: Float64Array;
+  /** The steps taken on this grid so far (the step cap is per grid, across restarts). */
+  readonly steps: number;
+  /** The first check's residual (the 100 times divergence test) and the largest seen (the settling test). */
+  readonly firstResidual: number;
+  readonly largestResidual: number;
+}
 export interface MidCheckpoint {
-  readonly load: () => Float64Array | null;
-  readonly save: (conserved: Float64Array) => void;
+  readonly load: () => MidState | null;
+  readonly save: (state: MidState) => void;
   readonly everySeconds: number;
 }
 
@@ -214,9 +222,11 @@ export async function solveGrid(
     const saved = mid?.load() ?? null;
     if (saved !== null) {
       const holder = new Euler2D(problem.config);
-      holder.setConserved(saved);
+      holder.setConserved(saved.conserved);
       await solver.start((i, j) => holder.primitive(i, j), CFL);
-      await log(`${tag} r=${refinement} continued from its mid-grid checkpoint`);
+      await log(
+        `${tag} r=${refinement} continued from its mid-grid checkpoint at step ${saved.steps} (first residual ${saved.firstResidual.toExponential(3)})`,
+      );
     } else if (start === null) await solver.start(() => free, 1);
     else {
       const ratio = refinement / start.problem.options.refinement;
@@ -226,13 +236,15 @@ export async function solveGrid(
     let lastSave = performance.now();
     const settling = new SettlingValue(SETTLE_NOISE, start?.rate ?? Number.NaN);
     const history: number[] = [];
-    let steps = 0;
+    // The step count and the residual marks carry across restarts, so the
+    // cap and the divergence test are per grid, not per process.
+    let steps = saved?.steps ?? 0;
     let drag = Number.NaN;
     let passes = 0;
     let remaining = Infinity;
     let oscillation = 0;
-    let firstResidual = Number.NaN;
-    let largestResidual = 0;
+    let firstResidual = saved?.firstResidual ?? Number.NaN;
+    let largestResidual = saved?.largestResidual ?? 0;
     let lastResidual = Number.NaN;
     let settled = false;
     while (steps < maxSteps) {
@@ -259,7 +271,7 @@ export async function solveGrid(
       if (mid !== null && performance.now() - lastSave > 1000 * mid.everySeconds) {
         const copy = new Euler2D(problem.config);
         copy.setCellPrimitives(await solver.cells());
-        mid.save(copy.conserved());
+        mid.save({ conserved: copy.conserved(), steps, firstResidual, largestResidual });
         lastSave = performance.now();
         await log(`${tag} r=${refinement} mid-grid checkpoint saved at step ${steps}`);
       }
@@ -335,15 +347,16 @@ export async function solveGridStably(
   checkPrecision = false,
   fallback: FallbackEngines | null = null,
   midFor: (path: SolvePath) => MidCheckpoint | null = () => null,
+  explicitCap = MAX_STEPS_EXPLICIT,
 ): Promise<{ result: GridResult; conserved: Float64Array }> {
   const paths: { path: SolvePath; engine: TransonicEngine; maxSteps: number }[] = [
     { path: 'implicit', engine, maxSteps: MAX_STEPS },
   ];
   if (fallback !== null) {
-    paths.push({ path: 'explicit', engine: fallback.explicit, maxSteps: MAX_STEPS_EXPLICIT });
+    paths.push({ path: 'explicit', engine: fallback.explicit, maxSteps: explicitCap });
     paths.push({ path: 'implicit10', engine: fallback.implicit10, maxSteps: MAX_STEPS });
   }
-  // A fallback path with a saved state was running before a restart: the earlier paths had diverged.
+  // A fallback path with a saved state was running before a restart: the earlier paths had failed.
   let first = 0;
   for (let k = paths.length - 1; k > 0; k--) {
     if (midFor(paths[k]!.path)?.load() !== null && midFor(paths[k]!.path) !== null) {
@@ -370,11 +383,16 @@ export async function solveGridStably(
       if (!(error instanceof NotConverged)) throw error;
       reasons.push(`${path}: ${error.message}`);
       const last = k === paths.length - 1;
-      if (error.kind !== 'diverged' || last) {
+      // The implicit path falls back on a divergence only (a cap miss is
+      // final); the explicit path goes on to CFL 10 on any failure, a
+      // divergence or its cap (item 18 and the far-800 order); the last
+      // path's failure is final.
+      const goOn = path === 'implicit' ? error.kind === 'diverged' : true;
+      if (!goOn || last) {
         throw new NotConverged(reasons.join('; '), error.kind);
       }
       await log(
-        `${tag} r=${problem.options.refinement}: the ${path} steps diverged (${error.message}); re-solving by the ${paths[k + 1]!.path} steps from the same start ((y) item 18)`,
+        `${tag} r=${problem.options.refinement}: the ${path} steps ${error.kind === 'diverged' ? 'diverged' : 'did not settle'} (${error.message}); re-solving by the ${paths[k + 1]!.path} steps from the same start ((y) item 18)`,
       );
     }
   }

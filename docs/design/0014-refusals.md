@@ -2361,6 +2361,31 @@ to the rules above, in the review's numbering:_
     "superseded" name, never deleted, and the family is solved again only
     after an independent review of this item and its code.
 
+    _Addendum, dated 2026-10-24, after the re-review of 1f3b511 and
+    c02eaff (its finding 1): the disclosure above was inaccurate at
+    1f3b511's commit time (18:56:26 UTC). Mach 0.800 was not "running":
+    its r = 1 had settled at 18:52:55 (drag 0.0087001196 in 25,400 steps,
+    wall loss ahead 2.99e-3 of p0, largest wall Mach 1.226, 4 supersonic
+    wall cells), its 100.6-radius allowance base grid had settled by
+    18:54:25 (about 0.0087222), and its 408.7-radius allowance base grid
+    had started at 18:54:25. That grid diverged at 18:59:11 (residual
+    from 0.0102 to 1.162 at step 32,350), after 1f3b511 and before
+    c02eaff, and Mach 0.800 was recorded as not converged like 0.600.
+    Both non-converged records are kept in the branch under a superseded
+    name, never deleted. Its finding 2: the text says the explicit steps
+    are followed by CFL 10 when they "do not settle"; the code at c02eaff
+    fell back on a divergence only; the code now matches the text (an
+    implicit-path cap miss is final; on the explicit path any failure,
+    a divergence or its cap, goes on to CFL 10; the last path's failure
+    is final). Its finding 3: the step count restarted at zero when a grid
+    continued from a mid-grid checkpoint, so the cap was per process, not
+    per grid; the step count, the first residual (the 100 times divergence
+    test) and the largest residual are now saved and restored with the
+    state, and a state without them is not continued from. For lane A's
+    explicit 910-radius grid at Mach 1.001, running on the old code: how
+    it was restarted is recorded in the run log (`y-runs/lanes.log`) and
+    in the results commit._
+
 _Tests added for the errors the review planted:_ the floor and the
 cylinder term in the station band, p_inf / p_wall in the loss tolerance,
 the top rung's ordering condition, the zero-drag fail just past the

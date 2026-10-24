@@ -12,6 +12,7 @@ import {
   solveGrid,
   solveGridStably,
   type MidCheckpoint,
+  type MidState,
 } from '../../docs/research/nose-model-form/solve-common';
 
 // (y) item 18: the stable stepping path. Synthetic engines on a real
@@ -195,6 +196,87 @@ describe('(y) item 18: solveGridStably', () => {
     expect(counts[1]!.count).toBe(0);
   }, 120_000);
 
+  it('on the explicit path a cap miss goes on to CFL 10; on the implicit path it is final', async () => {
+    const counts = [{ count: 0 }, { count: 0 }, { count: 0 }];
+    // The implicit steps diverge; the explicit steps wander and hit their
+    // cap (3,000 here in place of the registered 2,000,000, the test's only
+    // override); the implicit steps at CFL 10 settle.
+    const solved = await solveGridStably(
+      engineOf({ limit: 0.1, divergeAt: 400 }, counts[0]!),
+      problem,
+      null,
+      't',
+      quiet,
+      false,
+      {
+        explicit: engineOf({ limit: 0.1, wander: 1e-3 }, counts[1]!),
+        implicit10: engineOf({ limit: 0.1 }, counts[2]!),
+      },
+      () => null,
+      3000,
+    );
+    expect(solved.result.path).toBe('implicit10');
+    expect(counts.map((c) => c.count)).toEqual([1, 1, 1]);
+  });
+
+  it('the step count and the residual marks carry across a restart: the cap is per grid', async () => {
+    const counts = [{ count: 0 }];
+    const holder = new Euler2D(problem.config);
+    holder.setCellPrimitives(() => problem.freeStream.state);
+    const saved = holder.conserved();
+    // A wandering grid continued at step 1,900 of a cap of 2,000 stops
+    // after about 100 more steps, as 'cap'.
+    const mid: MidCheckpoint = {
+      everySeconds: 1e9,
+      load: () => ({ conserved: saved, steps: 1900, firstResidual: 1e-2, largestResidual: 1e-2 }),
+      save: () => undefined,
+    };
+    let taken = 0;
+    const counting: TransonicEngine = async (p) => {
+      const inner = await engineOf({ limit: 0.1, wander: 1e-3 }, counts[0]!)(p);
+      return {
+        ...inner,
+        iterate: (n) => {
+          taken += n;
+          return inner.iterate(n);
+        },
+      };
+    };
+    await expect(
+      solveGrid(counting, problem, null, 't', quiet, false, 2000, mid),
+    ).rejects.toMatchObject({ kind: 'cap' });
+    expect(taken).toBeLessThanOrEqual(150);
+    // The first residual restored: a residual of 1e-2 against a saved first
+    // residual of 1e-6 is a divergence at the first check.
+    const low: MidCheckpoint = {
+      ...mid,
+      load: () => ({ conserved: saved, steps: 100, firstResidual: 1e-6, largestResidual: 1e-6 }),
+    };
+    await expect(
+      solveGrid(engineOf({ limit: 0.1 }, counts[0]!), problem, null, 't', quiet, false, 2000, low),
+    ).rejects.toMatchObject({ kind: 'diverged' });
+    // And the save carries them: what is saved is what is loaded.
+    const seen: MidState[] = [];
+    const recording: MidCheckpoint = {
+      everySeconds: 0,
+      load: () => null,
+      save: (st) => seen.push(st),
+    };
+    await solveGrid(
+      engineOf({ limit: 0.1 }, counts[0]!),
+      problem,
+      null,
+      't',
+      quiet,
+      false,
+      MAX_STEPS,
+      recording,
+    );
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen[seen.length - 1]!.steps).toBeGreaterThan(seen[0]!.steps);
+    expect(seen[0]!.firstResidual).toBeCloseTo(1e-2 * 0.99 ** 50, 10);
+  }, 120_000);
+
   it('without fallback engines (the GPU kit) a divergence is thrown at once', async () => {
     await expect(
       solveGridStably(
@@ -216,7 +298,10 @@ describe('(y) item 18: solveGridStably', () => {
       (loadFor: string): ((path: string) => MidCheckpoint | null) =>
       (path) => ({
         everySeconds: 1e9,
-        load: () => (path === loadFor ? saved : null),
+        load: () =>
+          path === loadFor
+            ? { conserved: saved, steps: 500, firstResidual: 1e-2, largestResidual: 1e-2 }
+            : null,
         save: () => undefined,
       });
     const solved = await solveGridStably(
