@@ -12,6 +12,7 @@ import {
   type TransonicLevel,
 } from '../../src/analysis/transonic-drag';
 import { GpuMemoryLimitError, GpuPrecisionError } from '../../src/engine-gpu/gpu-common';
+import { tailFactor } from '../../src/verification/domain-allowance';
 import type { FlowSource } from '../../src/render/flow-renderer';
 import { noseComponentOf } from '../../src/app/total-drag';
 import type { TransonicProblem } from '../../src/analysis/transonic-flow';
@@ -690,11 +691,21 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     if (result.kind !== 'solved') return;
     expect(result.allowances.farField.domains).toEqual([100, 200, 400]);
     const [c1, c2] = [measured[200]! - measured[100]!, measured[400]! - measured[200]!];
-    expect(result.allowances.farField.result.kind).toBe('decaying');
-    // rho 0.297: the allowance |c2| / (1 - rho), 5.12e-4, at least.
+    // rho 0.297 decays, but on the moved family's ratios (2.23 then 1.82)
+    // the geometric remainder is not a bound (re-review of dd6c423, item
+    // 2, coded for 0014 10.7 (y)): the turning bound |c2| + T |c1|, 5.55e-3.
     expect(c2 / c1).toBeCloseTo(0.297, 3);
-    expect(result.parts.farField).toBeGreaterThanOrEqual(Math.abs(c2) / (1 - c2 / c1));
-    expect(result.parts.farField).toBeLessThan(5.2e-4);
+    const far = result.allowances.farField.result;
+    expect(far.kind).toBe('turning');
+    const [d1, d2] = [
+      result.allowances.farField.distances[1],
+      result.allowances.farField.distances[2],
+    ];
+    expect(d2 / d1).toBeLessThan(d1 / result.allowances.farField.distances[0]);
+    expect(result.parts.farField).toBeGreaterThanOrEqual(
+      Math.abs(c2) + tailFactor(d1, d2) * Math.abs(c1),
+    );
+    expect(result.parts.farField).toBeLessThan(5.7e-3);
   });
 
   it('the moved family at Mach 1.01: the effect turns beyond 224.2 radii, and the turning bound holds it', async () => {

@@ -4,6 +4,7 @@ import {
   domainAllowance,
   powerLawRatio,
   Q_FAST,
+  ratiosNotShrinking,
   Q_SLOW,
   tailFactor,
 } from '../../src/verification/domain-allowance';
@@ -146,10 +147,19 @@ describe('domain allowance (design record 0013, "The allowance rule corrected fo
     }
   });
 
-  it('the family moved to 224.2 radii (decision 7.3): Mach 1.0 decays, 1.01 to 1.02 turn', () => {
+  it('the family moved to 224.2 radii (decision 7.3): every case turns, Mach 1.0 included', () => {
+    // The re-review of dd6c423, item 2, coded for 0014 10.7 (y): on the
+    // moved family's ratios (2.23 then 1.82) the geometric remainder is
+    // not a bound, so Mach 1.0, which decays (rho 0.30 and 0.37), takes
+    // the turning bound |b| + T max(|a|, |b|): 5.55e-3 on the cone (6% of
+    // its drag) and 5.75e-3 on the ogive, instead of 5.12e-4 and 7.35e-4.
+    expect(ratiosNotShrinking(...family224)).toBe(false);
+    expect(ratiosNotShrinking(...family100)).toBe(true);
+    expect(ratiosNotShrinking(5, 10, 20)).toBe(true);
+    const T = tailFactor(D[2], D[3]);
     const expected: Record<string, [string, number]> = {
-      'cone 1.0': ['decaying', 5.123e-4],
-      'ogive 1.0': ['decaying', 7.35e-4],
+      'cone 1.0': ['turning', 3.6018e-4 + T * 1.21295e-3],
+      'ogive 1.0': ['turning', 4.6092e-4 + T * 1.23597e-3],
       'cone 1.01': ['turning', 3.902e-3],
       'cone 1.017': ['turning', 2.588e-4],
       'cone 1.019': ['turning', 4.42e-4],
@@ -162,6 +172,20 @@ describe('domain allowance (design record 0013, "The allowance rule corrected fo
       expect(a.kind, name).toBe(kind);
       if (a.kind === 'refused') continue;
       expect(Math.abs(a.allowance - a.measurability - allowance), name).toBeLessThan(1e-6);
+    }
+  });
+
+  it('a pure power law on every distance set the driver uses: the allowance is at least the true remainder', () => {
+    // The pre-registered test of the re-review's item 2 (0014 10.7 (y)):
+    // exponents 0.35 to 3, each allowance at least C(inf) - C(D1).
+    for (const distances of [family100, family224, [5, 10, 20] as const]) {
+      for (const q of [0.35, 0.5, 0.8, 1, 1.35, 2, 3]) {
+        const C = (d: number) => 1 - d ** -q;
+        const [d0, d1, d2] = distances;
+        const a = domainAllowance([C(d0), C(d1), C(d2)], distances, 1e-12);
+        if (a.kind === 'refused') continue;
+        expect(a.allowance, `q ${q} on ${distances.join(', ')}`).toBeGreaterThanOrEqual(d1 ** -q);
+      }
     }
   });
 });

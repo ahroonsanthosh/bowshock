@@ -26,10 +26,18 @@
  * 1. max(|a|, |b|) <= m: 'unmeasurable', allowance U;
  * 2. a = 0, or |b| / |a| > DECAY_LIMIT: 'refused' (the effect does not
  *    fall fast enough to bound);
- * 3. a, b of one sign and rho_fast <= |b| / |a| <= DECAY_LIMIT:
+ * 3. a, b of one sign, rho_fast <= |b| / |a| <= DECAY_LIMIT, and the
+ *    distances' ratios not shrinking outward (D2 / D1 >= D1 / D0):
  *    'decaying', allowance |b| / (1 - rho) + m (the geometric remainder);
- * 4. otherwise (b against a, or a fall faster than rho_fast): 'turning',
+ * 4. otherwise (b against a, a fall faster than rho_fast, or ratios that
+ *    shrink outward, as on the family moved to 224.2 radii): 'turning',
  *    allowance U.
+ *
+ * The distance condition of branch 3 is the pre-registered step of the
+ * re-review of dd6c423 (0013, item 2), coded for 0014 10.7 (y): on uneven
+ * ratios that shrink outward the geometric remainder understates every
+ * pure power law (0.46 to 0.85 of the truth on 100.6, 224.2, 408.7 radii),
+ * so there the turning bound is used instead.
  *
  * The allowance bounds the effect; it is not a correction (the rule that
  * extrapolated the far boundaries' effect as a correction failed its test
@@ -82,6 +90,17 @@ export function tailFactor(d1: number, d2: number, q = Q_SLOW): number {
   return 1 / ((d2 / d1) ** q - 1);
 }
 
+/**
+ * Whether the geometric remainder can be a bound on these distances: the
+ * outer ratio D2 / D1 at least the inner one D1 / D0 (within round-off).
+ * On 55.1, 100.6, 224.2 radii (1.83 then 2.23) and on 5, 10, 20 calibers
+ * (2 then 2) it holds; on 100.6, 224.2, 408.7 radii (2.23 then 1.82) it
+ * does not.
+ */
+export function ratiosNotShrinking(d0: number, d1: number, d2: number): boolean {
+  return d2 / d1 >= (d1 / d0) * (1 - 1e-9);
+}
+
 /** The ratio of successive changes a single power law D^-q gives over d0, d1, d2. */
 export function powerLawRatio(d0: number, d1: number, d2: number, q = Q_FAST): number {
   return (d1 ** -q - d2 ** -q) / (d0 ** -q - d1 ** -q);
@@ -124,7 +143,7 @@ export function domainAllowance(
       measurability,
     };
   }
-  if (a * b > 0 && rho >= powerLawRatio(d0, d1, d2)) {
+  if (a * b > 0 && rho >= powerLawRatio(d0, d1, d2) && ratiosNotShrinking(d0, d1, d2)) {
     return allow('decaying', Math.abs(b) / (1 - rho));
   }
   return allow('turning', turning);
