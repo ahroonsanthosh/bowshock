@@ -959,7 +959,7 @@ const UNSOLVED_NOSE: DragComponent = {
 };
 
 /** Why a nose gives no part to a refused total's floor (0011 section 10.4). */
-export const NOSE_NOT_SOLVED_FLOOR = 'the nose wave drag is not solved yet';
+export const NOSE_NOT_SOLVED_FLOOR = 'the nose wave drag has not been solved at this Mach number';
 export const NOSE_REFUSED_FLOOR = 'the nose wave drag has no number (its reason is listed)';
 
 function noseForFloor(nose: NoseState): NoseForFloor {

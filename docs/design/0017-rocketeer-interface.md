@@ -430,18 +430,21 @@ number is marked on the chart and said beside it with where it came from
 examples fly below Mach 1). At
 the start every point is put to the logic with the nose pending
 (`totalDragView` with `{ kind: 'pending' }`): a point refused for reasons
-other than the nose is final at once, with its reasons, and costs no GPU
-time. The others are solved one at a time, coarse to fine (1.0 and the top
-first, then the middle, then the middles between), so that a curve stopped
-early still spans its range; the chart marks the point being solved. If
-every point is refused before solving, the top point is solved for the
-airflow alone, and labelled so. Amended 2026-10-24 (0011 section 10, the
-owner's decision 7.8): after those, the points refused for reasons other
-than the nose are solved too, in the same coarse-to-fine order, so that
-each shows its nose wave drag among the parts served and, where 0011
-section 10.3 allows, a floor; while solving such a point shows as
-solving, before and after as a cross with its reasons. Without WebGPU
-none is solved.
+other than the nose is final at once, with its reasons. The others are
+solved one at a time, coarse to fine (1.0 and the top first, then the
+middle, then the middles between), so that a curve stopped early still
+spans its range; the chart marks the point being solved. Amended
+2026-10-24 (0011 section 10, the owner's decision 7.8): after those, the
+points refused for reasons other than the nose are solved too, in the
+same coarse-to-fine order, for their nose's part alone, so that each
+shows its nose wave drag among the parts served and, where 0011 section
+10.3 allows, a floor; while solving such a point shows as solving, before
+and after as a cross with its reasons, and the selection does not follow
+it (a finished curve shows the last point with a number, as before). A
+stop or a failed GPU leaves such a point's refusal as it was. Without
+WebGPU none is solved. (This section said until 2026-10-24 that a curve
+refused at every point solved its top point for the airflow alone; the
+code never did, and does not.)
 
 ### 8.2 One point
 

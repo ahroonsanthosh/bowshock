@@ -146,6 +146,46 @@ describe('the Basic Finner with a stand-in nose', { timeout: 120_000 }, () => {
     expect(at14.state.result.parts?.served[0]?.name).toBe('nose wave drag');
   });
 
+  it('a refused point solved last for its nose: a failed GPU or a stop leaves its refusal as it was', async () => {
+    // The GPU fails at Mach 1.6, a point refused before any solve: it keeps its refusals and
+    // parts, and nothing more is solved.
+    const failing: NoseSolver = async (body, mach, hooks) =>
+      mach === 1.6
+        ? { kind: 'error', message: 'device lost', gpuFailed: true }
+        : standIn()(body, mach, hooks);
+    const run = new CurveRun(options(), failing, () => {});
+    const k16 = run.points.findIndex((p) => p.mach === 1.6);
+    const before = run.points[k16]!.state;
+    expect(before.kind === 'done' && before.result.kind).toBe('refused');
+    await run.run();
+    expect(run.points[k16]!.state).toEqual(before);
+    // Mach 1.2 and 1.4 come after 1.6 in the order: not solved, still as they were.
+    for (const mach of [1.2, 1.4]) {
+      const p = run.points.find((q) => q.mach === mach)!;
+      expect(p.state.kind === 'done' && p.state.result.kind).toBe('refused');
+      expect(p.nose).toBeNull();
+    }
+    expect(run.done).toBe(true);
+
+    // Stopped while solving Mach 1.6: the point stays done and refused, as it was.
+    let stopping: CurveRun | null = null;
+    const stopped = new CurveRun(
+      options(),
+      standIn({
+        onStart: (mach) => {
+          if (mach === 1.6) stopping?.stop();
+        },
+      }),
+      () => {},
+    );
+    stopping = stopped;
+    const was = stopped.points[k16]!.state;
+    await stopped.run();
+    expect(stopped.points[k16]!.state).toEqual(was);
+    expect(stopped.points[k16]!.state.kind).toBe('done');
+    expect(stopped.done).toBe(true);
+  });
+
   it("every finished point is exactly the logic's view of its form and the nose's outcome", async () => {
     const outcomes = new Map<number, VerifiedDrag>();
     const solver = standIn();

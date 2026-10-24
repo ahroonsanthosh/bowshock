@@ -706,16 +706,46 @@ and the PNG.
 
 ### 10.3 Each refused part, and why it is not negative
 
-| Refused part                                                                                    | Not negative?                      | The argument                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| ----------------------------------------------------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Fin friction                                                                                    | Always                             | The shear on a fin's faces at zero incidence acts along the stream, laminar or turbulent: every model of 0007 and every measurement its band rests on give a positive skin-friction coefficient. Refused below Mach 1.5 for its band (0014 section 10.7 (f)), not for its sign.                                                                                                                                                                                                                                                                                                               |
-| Fin trailing-edge base                                                                          | Always                             | A blunt or rounded trailing edge's base lies in a separated wake whose pressure is below the free stream's. Every base pressure in the band-setting sources is below free-stream static (TR 1109 figs. 8 and 29, RM A51J25 fig. 7, TN D-1056 table II, 0010 section 5.1; near Mach 1 a pressure coefficient of -0.43 to -0.7, 0019 section 1.2), and a rounded trailing edge's rear side carries more, not less (TN 2960's cylinder, 1.35 and 1.16 times a square base, 0016 section 6). Refused for its band or its regime (swept, laminar, thick layer, rounded, Mach range), not its sign. |
-| Fin wave drag, a closed section (double wedge, hexagonal: sharp at both edges)                  | Always                             | A closed body: its pressure drag in steady inviscid flow is zero without shocks (d'Alembert) and the entropy flux through its shocks with them, positive by the second law (0019 section 3.2 (L1) and (L2), written there for a half-body; the same momentum balance closes on a closed body), and viscosity adds to it ((L3)). Refused for its band below Mach 1.5 or for the section method's domain (0009), not its sign.                                                                                                                                                                  |
-| Fin wave drag, a single wedge (a blunt trailing edge)                                           | Only with supersonic edges (below) | Its faces form a half-body with a base: where the flow normal to an edge is subsonic, the base's low pressure is felt on the faces ahead of it (as the trailing edge's sink at a plate's nose, 0019 section 3.2 (L4)); linear theory gives a strip of constant slope in subsonic flow a face pressure that falls below the free stream's toward the base, its drag zero to first order, so the sign is not shown. With supersonic edges the faces lie behind the leading edge's compression and nothing downstream reaches them.                                                              |
-| Fin leading edges, a flat plate (rounded or square-cut)                                         | Only with supersonic edges (below) | A half-body whose faces lie parallel to the stream: its nose carries the body's whole drag, zero without shocks and positive with them ((L1), (L2)), viscosity adding ((L3)). The trailing edge lowers it below zero by its upstream influence where its normal flow is subsonic ((L4); the advisor: "slightly below zero by the trailing edge's sink, a few thousandths of C_D"), and the body's base where the flow along the body is not supersonic with a margin ((L5)). With supersonic edges neither reaches the nose.                                                                  |
-| Fin leading edges, any other section (a rounded edge on a wedge, double wedge or hexagonal fin) | Not argued                         | `src/total` then computes the sharp section's faces (10.1), not the fin's; the sign of the rounded nose and the rounded wedge's faces together is not argued in the records.                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Body base                                                                                       | Not argued                         | 10.2: the fins-on-base factor moves it both ways, and an afterbody other than a cylinder to a flat base (a boat-tail, a flare) is not computed at all.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Nose wave drag                                                                                  | Not argued here                    | A nose not solved, not solved to a band, or refused gives no part, and this record does not argue its sign near Mach 1, where the base's influence reaches forward along the body.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Refused part                                                                                    | Not negative?                                            | The argument                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fin friction                                                                                    | Always                                                   | The shear on a fin's faces at zero incidence acts along the stream, laminar or turbulent: every model of 0007 and every measurement its band rests on give a positive skin-friction coefficient. Refused below Mach 1.5 for its band (0014 section 10.7 (f)), not for its sign.                                                                                                                                                                                                                                                                                                               |
+| Fin trailing-edge base                                                                          | Always                                                   | A blunt or rounded trailing edge's base lies in a separated wake whose pressure is below the free stream's. Every base pressure in the band-setting sources is below free-stream static (TR 1109 figs. 8 and 29, RM A51J25 fig. 7, TN D-1056 table II, 0010 section 5.1; near Mach 1 a pressure coefficient of -0.43 to -0.7, 0019 section 1.2), and a rounded trailing edge's rear side carries more, not less (TN 2960's cylinder, 1.35 and 1.16 times a square base, 0016 section 6). Refused for its band or its regime (swept, laminar, thick layer, rounded, Mach range), not its sign. |
+| Fin wave drag, a closed section (double wedge, hexagonal: sharp at both edges)                  | Wherever the body's base is not felt at the fins (below) | A closed body in a uniform stream: its pressure drag in steady inviscid flow is zero without shocks (d'Alembert) and the entropy flux through its shocks with them, positive by the second law (0019 section 3.2 (L1) and (L2), written there for a half-body; the same momentum balance closes on a closed body), and viscosity adds to it ((L3)). Refused for its band below Mach 1.5 or for the section method's domain (0009), not its sign. The fins sit in the body's flow, not a uniform stream: see "Closed sections in the body's flow" below.                                       |
+| Fin wave drag, a single wedge (a blunt trailing edge)                                           | Only with supersonic edges (below)                       | Its faces form a half-body with a base: where the flow normal to an edge is subsonic, the base's low pressure is felt on the faces ahead of it (as the trailing edge's sink at a plate's nose, 0019 section 3.2 (L4)); linear theory gives a strip of constant slope in subsonic flow a face pressure that falls below the free stream's toward the base, its drag zero to first order, so the sign is not shown. With supersonic edges the faces lie behind the leading edge's compression and nothing downstream reaches them.                                                              |
+| Fin leading edges, a flat plate (rounded or square-cut)                                         | Only with supersonic edges (below)                       | A half-body whose faces lie parallel to the stream: its nose carries the body's whole drag, zero without shocks and positive with them ((L1), (L2)), viscosity adding ((L3)). The trailing edge lowers it below zero by its upstream influence where its normal flow is subsonic ((L4); the advisor: "slightly below zero by the trailing edge's sink, a few thousandths of C_D"), and the body's base where the flow along the body is not supersonic with a margin ((L5)). With supersonic edges neither reaches the nose.                                                                  |
+| Fin leading edges, any other section (a rounded edge on a wedge, double wedge or hexagonal fin) | Not argued                                               | `src/total` then computes the sharp section's faces (10.1), not the fin's; the sign of the rounded nose and the rounded wedge's faces together is not argued in the records.                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Body base                                                                                       | Not argued                                               | 10.2: the fins-on-base factor moves it both ways, and an afterbody other than a cylinder to a flat base (a boat-tail, a flare) is not computed at all.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Nose wave drag                                                                                  | Not argued here                                          | A nose not solved, not solved to a band, or refused gives no part, and this record does not argue its sign near Mach 1, where the base's influence reaches forward along the body.                                                                                                                                                                                                                                                                                                                                                                                                            |
+
+**Closed sections in the body's flow** (added 2026-10-24 after the
+independent review). (L1) and (L2) assume a uniform stream; a fin sits
+in the body's flow. To first order, a closed body in a stream whose
+pressure changes along it feels, besides its own drag in a uniform
+stream, a force -V dp/dx along the stream (V its volume): a drag where the
+pressure falls downstream, a thrust where it rises. Two such gradients
+reach the fins:
+
+- the base's upstream influence: a falling pressure ahead of the base,
+  so a drag, on the safe side; it reaches the fins only where the flow
+  along the body is not supersonic with a margin. The class is narrowed
+  there all the same, since the argument above is first order: a closed
+  section's refused wave drag counts as not negative only with the free
+  stream at or above (L5)'s floor (item 4 below, and at least Mach 1.06
+  for any leading edge), where linear theory gives the base no upstream
+  influence (`closedSectionFailures`); below it the floor is withheld.
+- the nose's and the body's own flow (the pressure recovering along the
+  cylinder behind an ogive's shoulder, rising toward the free stream's):
+  a thrust of first order in V dp/dx. This is fin-body interference,
+  which `src/total` does not represent for any part or any total
+  (`src/total/finned-body.ts`, "Not represented"; 0010 section 3). The
+  fin wave drag is defined there as the isolated fin's in the free
+  stream, for a served total as for this floor, and the floor is a floor
+  of the same model's total: the term not represented is no more and no
+  less missing from the one than from the other. It is said here so that
+  the floor is not read as a bound on interference the model leaves out.
+
+The same holds for the other classes below: each term is the isolated
+fin's, as `src/total` defines it.
 
 **Supersonic edges**, all four of:
 
@@ -755,9 +785,13 @@ supersonic. The formulas are re-implemented in
 
 Every reason is listed, each once:
 
-- the nose wave drag is not solved yet, cannot be solved here (no
-  WebGPU), or is refused (not solved to a band, not converged, a case the
-  solver does not serve);
+- the nose wave drag has not been solved at this Mach number (not yet,
+  or the curve was stopped or the GPU failed first), cannot be solved here
+  (no WebGPU), or is refused (not solved to a band, not converged, a case
+  the solver does not serve). The owner decided on 2026-10-24 that no
+  floor is given when the nose is refused, as built;
+- a closed section's fin wave drag is refused where the body's base is
+  felt at the fins (below (L5)'s floor, 10.3);
 - the body base is refused, for any reason (a boat-tail or flare, the
   fins-on-base factor, its Mach range, a laminar layer at the base);
 - a single wedge's fin wave drag, or a flat plate's leading edges, are
@@ -805,13 +839,13 @@ view (`parts`); the page only lays it out (`totalDragDisplay`,
   rockets, each at one Mach number and altitude in each of its four
   bands, 1600 cases, with a served stand-in nose) gets every part
   `finnedBodyComponents` serves and a floor exactly where every refused
-  part is in a non-negative class: 1472 cases are refused, 138 of them
-  (9.4%) with a floor, none with the body base refused or a boat-tail;
+  part is in a non-negative class: 1472 cases are refused, 134 of them
+  (9.1%; 138 before closed sections were narrowed to (L5)'s floor) with a floor, none with the body base refused or a boat-tail;
   and a property test that the floor computed as if any set of the
   non-negative-class parts were refused never exceeds the total's low end
   with the input bands, over the 128 served totals of the same sample and
   400 random cases (fast-check). In the population the nose is often
-  refused itself (0014), which withholds the floor; the 9.4% is an upper
+  refused itself (0014), which withholds the floor; the 9.1% is an upper
   share, with every nose served.
 - `tests/app/refused-parts.test.ts`: every preset, with and without the
   parts it is computed without, at every Mach number of the curve where
@@ -820,8 +854,10 @@ view (`parts`); the page only lays it out (`totalDragDisplay`,
   view, the table's line, the CSV row and its column, and the PNG's
   caption, the labels word for word; the refused points without a value,
   band or headline. Of the presets, the 54 mm example gets a floor from
-  Mach 1.0 to 1.5 (its fin friction and its bevelled, closed sections'
-  wave drag refused); the Basic Finner none (its wedges' faces and its
+  Mach 1.1 to 1.5 once its nose is solved (its fin friction and its
+  bevelled, closed sections' wave drag refused; at Mach 1.0 the solver
+  refuses the nose, `src/analysis/fitted-flow.ts`, so the page gives
+  none there); the Basic Finner none (its wedges' faces and its
   body base refused below Mach 1.8); the 98 mm example none (its rounded
   plates' leading edges refused at subsonic normal Mach numbers up to
   Mach 1.5); its rounded-trailing-edge variant none at any Mach number

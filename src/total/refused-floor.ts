@@ -10,9 +10,10 @@
  *
  * - fin friction and the fins' trailing-edge base: always (shear along the
  *   stream; a base pressure below the free stream's);
- * - fin wave drag of a closed section (sharp at both edges): always (a
- *   closed body's drag in steady flow, design record 0019 section 3.2
- *   (L1) to (L3));
+ * - fin wave drag of a closed section (sharp at both edges): wherever the
+ *   body's base is not felt at the fins (`closedSectionFailures`; a closed
+ *   body's drag in steady flow, design record 0019 section 3.2 (L1) to
+ *   (L3));
  * - fin wave drag of a single wedge (a half-body with a base) and the
  *   leading edges of a flat plate (a half-body with parallel faces): only
  *   with supersonic edges (`supersonicEdgeFailures`), where neither the
@@ -103,23 +104,13 @@ export function supersonicEdgeFailures(config: FinnedBody, conditions: FlightCon
   if (!(machLe >= 1)) {
     out.push(`the Mach number normal to the leading edge, ${fixed(machLe, 3)}, is below 1`);
   }
-  // The trailing edge's thickness at the shortest chord, and the largest (for the body's flow).
-  const root = fins.planform.rootChord;
-  const tip = tipChord(fins.planform);
-  const shortest = Math.min(root, tip);
-  const plate = isFlatPlate(fins.section) ? fins.section : undefined;
-  let tShort: number;
-  let tLargest: number;
-  if (plate !== undefined) {
-    tShort = plate.thickness;
-    tLargest = plate.thickness;
-  } else {
-    const s = fins.section as SymmetricSection;
-    const h = s.bluntTrailingEdge === true ? s.halfThickness[s.halfThickness.length - 1]! : 0;
-    const maxH = Math.max(...s.halfThickness);
-    tShort = 2 * h * shortest;
-    tLargest = 2 * maxH * Math.max(root, tip);
-  }
+  // The trailing edge's thickness at the shortest chord.
+  const shortest = Math.min(fins.planform.rootChord, tipChord(fins.planform));
+  const tShort = isFlatPlate(fins.section)
+    ? fins.section.thickness
+    : fins.section.bluntTrailingEdge === true
+      ? 2 * fins.section.halfThickness[fins.section.halfThickness.length - 1]! * shortest
+      : 0;
   const cosTe = Math.cos(Math.atan(tanTe));
   const machTe = mach * cosTe;
   const tau = tShort / (shortest * cosTe);
@@ -135,23 +126,64 @@ export function supersonicEdgeFailures(config: FinnedBody, conditions: FlightCon
         ')',
     );
   }
-  if (tanLe > 0) {
-    const theta =
-      BOUNDARY_LAYER_TURNING +
-      (fins.count * tLargest) / (2 * Math.PI * config.body.nose.baseRadius * tanLe);
-    const floor = Math.max(
-      FREE_STREAM_FLOOR,
-      Math.sqrt(1 + 2 * ((3 * (GAMMA + 1) * theta) / 2) ** (2 / 3)),
-    );
-    if (!(mach >= floor)) {
-      out.push(
-        `the Mach number ${mach} is below ${fixed(floor, 3)}, the lowest at which the flow along ` +
-          "the body stays supersonic past these fins' swept leading edges (design record 0019, " +
-          'section 3.2 (L5))',
-      );
-    }
-  }
+  const body = bodyFlowFailure(config, mach, largestThickness(config));
+  if (body !== null) out.push(body);
   return out;
+}
+
+/**
+ * 0019 section 3.2 (L5): the free stream above which the flow along the body
+ * stays supersonic past the fins, so that the body's base is not felt
+ * ahead of it: Mach 1.06 for the boundary layer alone, and for a swept
+ * leading edge M^2 - 1 >= 2 (3 (gamma + 1) theta / 2)^(2/3) with the fins'
+ * thickness in theta. Null where the free stream is above it, else the
+ * condition in words. `tLargest` is the fins' largest thickness.
+ */
+function bodyFlowFailure(config: FinnedBody, mach: number, tLargest: number): string | null {
+  const tanLe = Math.abs(config.fins.planform.tanLeadingEdge);
+  const swept = tanLe > 0;
+  const floor = swept
+    ? Math.max(
+        FREE_STREAM_FLOOR,
+        Math.sqrt(
+          1 +
+            2 *
+              ((3 *
+                (GAMMA + 1) *
+                (BOUNDARY_LAYER_TURNING +
+                  (config.fins.count * tLargest) /
+                    (2 * Math.PI * config.body.nose.baseRadius * tanLe))) /
+                2) **
+                (2 / 3),
+        ),
+      )
+    : FREE_STREAM_FLOOR;
+  if (mach >= floor) return null;
+  return (
+    `the Mach number ${mach} is below ${fixed(floor, 3)}, the lowest at which the flow along ` +
+    `the body stays supersonic past these fins${swept ? "' swept leading edges" : ''}, so that ` +
+    "the body's base is not felt ahead of it (design record 0019, section 3.2 (L5))"
+  );
+}
+
+/** The fins' largest thickness, in the body's length unit. */
+function largestThickness(config: FinnedBody): number {
+  const { fins } = config;
+  if (isFlatPlate(fins.section)) return fins.section.thickness;
+  const s = fins.section;
+  return (
+    2 * Math.max(...s.halfThickness) * Math.max(fins.planform.rootChord, tipChord(fins.planform))
+  );
+}
+
+/**
+ * Where a closed section's refused wave drag counts as not negative (0011
+ * section 10.3): wherever the body's base is not felt at the fins, (L5)'s
+ * floor. Every condition it fails, in words; empty where it holds.
+ */
+export function closedSectionFailures(config: FinnedBody, conditions: FlightConditions): string[] {
+  const failure = bodyFlowFailure(config, conditions.mach, largestThickness(config));
+  return failure === null ? [] : [failure];
 }
 
 /**
@@ -172,7 +204,15 @@ export function refusedPartWithholds(
     case 'fin wave drag': {
       if (plate !== undefined) return null; // zero by the geometry; never refused
       const s = config.fins.section as SymmetricSection;
-      if (s.bluntTrailingEdge !== true) return null; // a closed section
+      if (s.bluntTrailingEdge !== true) {
+        // A closed section: not negative wherever the body's base is not felt at the fins.
+        const closed = closedSectionFailures(config, conditions);
+        return closed.length === 0
+          ? null
+          : 'the fin wave drag of a closed section is refused, and it is shown not to be negative ' +
+              "only where the body's base is not felt at the fins (design record 0011, section " +
+              `10.3): ${closed.join('; ')}`;
+      }
       const failed = edges();
       return failed.length === 0
         ? null

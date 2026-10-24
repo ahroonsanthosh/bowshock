@@ -751,12 +751,18 @@ async function start(): Promise<void> {
   await running;
   changed = false;
   clearFlow();
+  // Points refused before any solve, solved last only for their nose's part (0011 section 10):
+  // the selection does not follow them, so a finished curve shows the last point with a number.
+  const refusedAtStart = new Set<number>();
   const mine = new CurveRun(curveOptions(), gpuSolver, (r, k) => {
     if (r !== run) return;
     // Follow each point as its solve starts; between, the user's choice holds.
     const s = k >= 0 ? r.points[k]?.state : undefined;
-    if (s?.kind === 'solving' && s.grid === 0) selected = k;
+    if (s?.kind === 'solving' && s.grid === 0 && !refusedAtStart.has(k)) selected = k;
     renderCurve();
+  });
+  mine.points.forEach((p, k) => {
+    if (p.state.kind === 'done') refusedAtStart.add(k);
   });
   run = mine;
   selected = defaultSelection(mine);

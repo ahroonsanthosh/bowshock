@@ -29,6 +29,7 @@ import {
   type FlightConditions,
 } from '../../src/total/finned-body';
 import {
+  closedSectionFailures,
   FLOOR_EDGE_MACH,
   FLOOR_XI_MIN,
   floorLabel,
@@ -153,6 +154,24 @@ describe('each refused part, and the floor', () => {
     }
   });
 
+  it("a closed section where the body's base is felt (below Mach 1.06, or (L5)'s floor): withheld", () => {
+    const c = rocket({ section: doubleWedge(0.05) });
+    const { parts, view } = refused(c, 1.03);
+    expect(refusedOf(parts)).toContain('fin wave drag');
+    expect(view.floor.kind === 'withheld' && view.floor.reasons).toContain(
+      'the fin wave drag of a closed section is refused, and it is shown not to be negative ' +
+        "only where the body's base is not felt at the fins (design record 0011, section 10.3): " +
+        'the Mach number 1.03 is below 1.060, the lowest at which the flow along the body stays ' +
+        "supersonic past these fins, so that the body's base is not felt ahead of it (design " +
+        'record 0019, section 3.2 (L5))',
+    );
+    expect(closedSectionFailures(c, at(1.06))).toEqual([]);
+    // Six thick fins swept 55 deg: (L5)'s floor above Mach 1.3.
+    const swept = rocket({ section: doubleWedge(0.1), sweepLe: 55, count: 6 });
+    expect(closedSectionFailures(swept, at(1.3)).length).toBe(1);
+    expect(closedSectionFailures(swept, at(1.7))).toEqual([]);
+  });
+
   it("a single wedge's faces refused below Mach 1.5: withheld, the conditions named", () => {
     const c = rocket({ section: singleWedge(0.05) });
     const { parts, view } = refused(c, 1.3);
@@ -239,13 +258,13 @@ describe('each refused part, and the floor', () => {
     const parts = finnedBodyComponents(c, at(1.4), NOSE);
     const view = refusedTotalParts(c, at(1.4), parts, {
       kind: 'not-solved',
-      reason: 'the nose wave drag is not solved yet',
+      reason: 'the nose wave drag has not been solved at this Mach number',
     });
     expect(names(view.served)).not.toContain('nose wave drag');
     expect(view.served).toEqual(parts.components.slice(1));
     expect(view.floor).toEqual({
       kind: 'withheld',
-      reasons: ['the nose wave drag is not solved yet'],
+      reasons: ['the nose wave drag has not been solved at this Mach number'],
     });
   });
 
@@ -283,17 +302,44 @@ describe('the supersonic edges (0011 section 10.3)', () => {
     expect(near.some((f) => f.startsWith('the flow normal to the trailing edge'))).toBe(true);
     // Unswept at Mach 2: far outside.
     expect(supersonicEdgeFailures(plate(0, 0), at(2))).toEqual([]);
-    // The limit itself: xi = -1.175 exactly at M_TE with (1 - M^2) = -1.175 [(gamma+1) M^2 tau]^(2/3).
-    const tau = 0.06 / 1.2;
-    const xiAt = (m: number) => (1 - m * m) / (2.4 * m * m * tau) ** (2 / 3);
-    let lo = 1.0001;
-    let hi = 2;
-    for (let k = 0; k < 80; k++) {
+  });
+
+  it('the limit xi_TE = -1.175, set by a swept trailing edge at Mach 2, with tau = t / (c cos(sweep))', () => {
+    // Written out here, not taken from the module: (4 / pi)^(2/3), and tau on the chord normal to
+    // the edge. A 0.06 plate on a 1.2 chord (the shortest: the tip is longer), its leading edge
+    // unswept (normal Mach 2, and no (L5) floor), its trailing edge swept by `sweep` (rad).
+    const limit = (4 / Math.PI) ** (2 / 3);
+    const xiAt = (sweep: number) => {
+      const m = 2 * Math.cos(sweep);
+      const tau = 0.06 / (1.2 * Math.cos(sweep));
+      return (1 - m * m) / (2.4 * m * m * tau) ** (2 / 3);
+    };
+    // xi rises toward 0 as the sweep grows (the normal Mach number falls toward 1).
+    let lo = 0;
+    let hi = Math.acos(0.5);
+    for (let k = 0; k < 100; k++) {
       const mid = (lo + hi) / 2;
-      if (xiAt(mid) > -FLOOR_XI_MIN) lo = mid;
+      if (xiAt(mid) <= -limit) lo = mid;
       else hi = mid;
     }
-    expect(supersonicEdgeFailures(plate(), at(Math.max(1.5, hi * 1.0001)))).toEqual([]);
+    const sweep = lo / DEG;
+    expect(sweep).toBeGreaterThan(45);
+    expect(sweep).toBeLessThan(60);
+    const failsAt = (deg: number) =>
+      supersonicEdgeFailures(plate(0, deg), at(2)).some((f) =>
+        f.startsWith('the flow normal to the trailing edge'),
+      );
+    // Just below the limit's sweep xi is under -1.175: passes; just above: fails.
+    expect(failsAt(sweep * (1 - 1e-3))).toBe(false);
+    expect(failsAt(sweep * (1 + 1e-3))).toBe(true);
+    // tau's cosine decides: with tau = t cos(sweep) / c the limit would lie at another sweep.
+    const xiWrong = (s: number) => {
+      const m = 2 * Math.cos(s);
+      return (1 - m * m) / (2.4 * m * m * ((0.06 * Math.cos(s)) / 1.2)) ** (2 / 3);
+    };
+    expect(xiWrong(sweep * (1 + 1e-3) * DEG)).toBeLessThan(-limit);
+    // Every other condition holds there: Mach 2, an unswept leading edge.
+    expect(supersonicEdgeFailures(plate(0, sweep * (1 - 1e-3)), at(2))).toEqual([]);
   });
 
   it("a swept leading edge: the free stream above (L5)'s floor", () => {
