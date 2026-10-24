@@ -1,9 +1,11 @@
-# 0022: The nose's model error, against measured pressures (draft)
+# 0022: The nose's model error, against measured pressures
 
-- **Status:** draft, revision 2. The independent review of revision 1
-  (df6e284) asked for the changes made here; the owner chose Route 1
-  (section 5). Design and registration only: no code, and no value of any
-  source was read for this record.
+- **Status:** adopted with Route 1, revision 3 (the coordinator, after an
+  independent review of revision 1, df6e284, and a re-check of revision
+  2, 37d154f; the owner chose Route 1). Registered as 0014 10.7 (w).
+  Design and registration only: no code, and no value of any source was
+  read or computed for this record beyond the published figures it
+  quotes.
 - **Date:** 2026-10-24.
 - **Concerns:** the nose wave drag's band (0005, 0006), its place in the
   total (0008 section 6.3, 0011 section 1), the labels (0014 section
@@ -236,9 +238,17 @@ for values.
   public), and the brief names no earlier value or percentage. Without
   that, the reading is recorded as not blind.
 - Where a cell or point is ambiguous, every plausible reading is kept.
-- The band uses the envelope of both readings, and of any earlier reading
-  on record (TN 3716's typing of 2026-10-15). A disagreement is kept as an
-  envelope, never resolved toward the narrower value.
+- The band uses the envelope of both readings and of every earlier
+  reading on record, never resolved toward the narrower value:
+  - TN 3716's typing of 2026-10-15 as it stands in
+    `src/validation/ogive-cylinder-tn3716.ts`, and its first version's
+    -0.038 at x/d 2.95 (5fcc92b), so that the shoulder cell counts as
+    ambiguous in 4.3 (both -0.036 and -0.038, and whatever the fresh
+    readings give);
+  - TN 4233's existing typing (`src/validation/cone-cylinder-tn4233.ts`).
+    TN 4233 has no published integrated figure, so no floor of section 5
+    can be computed for it; its earlier typing, carried in the envelope,
+    does the floor's job.
 - The model's geometry is read from the report (stations, nose length,
   ogive radius, tip) and checked as `tests/validation/ogive-cylinder-tn3716.test.ts`
   checks TN 3716's (the ogive radius from the nose length).
@@ -286,11 +296,15 @@ For each measured body b at Mach number M and each reading k:
    over all readings k and ambiguous alternatives, of |r_bk| + u_bk.
 
 **The sign: symmetric.** The band is symmetric about the served value,
-with half-width a (relative) times the nose term. The two seen ogives of
-one family at one Mach number differ from the model in opposite
-directions (8 to 9% above, 3% below), so the sign belongs to the
-particular tunnel model and tunnel, not to the inviscid model; a
-one-sided band would claim to know it. In the total (0008 section 6.3,
+with half-width a (relative) times the nose term. One body per box cannot
+show the direction of the model's error: a single tunnel model's
+difference mixes the inviscid model's error with that model's geometry
+and that tunnel (the two seen ogives, one family at one Mach number but
+different boxes, differ in opposite directions, 8 to 9% above and 3%
+below). A one-sided band would assume a direction nobody measured. A
+one-sided band, or a sign per family, may be adopted only by a later
+dated entry, made before any reading, for a family with several bodies
+in one box. In the total (0008 section 6.3,
 the linear sum of the components' bands) the nose component's low and
 high become D_nose (1 - a) - n and D_nose (1 + a) + n, with n the
 numerical band (0006), and they add to the other components' lows and
@@ -444,7 +458,10 @@ outcome, for three reasons:
     0.03074 = 13.0%; floor 3.1% + 13.0% = **16.1%**.
 
   These are computed from the figures already public (sources.md), not
-  from any new reading.
+  from any new reading. The floor is a lower limit only: fresh readings
+  enter under 4.3 beside it and can raise the half-width, never replace
+  or lower the floor. TN 4233 has no published integrated figure; its
+  earlier typing, carried in the envelope (4.2), does the floor's job.
 
 - **(b) Everything fixed and reviewed first.** The quantity (4.3), the
   integration script, the thresholds, the cover (4.4) and the sign rule
@@ -485,22 +502,25 @@ b7d74ad, which also corrects a test comment that called the CPU engine
 "validated" against TN 3716). Text only; no number, band or claim
 changes.
 
-## 7. Draft amendment (w), for 0014 section 10.7
+## 7. Amendment (w), for 0014 section 10.7
 
-Not yet in 0014. The coordinator adds it after main's (v), dated when it
-is committed there, before any set below is read for this purpose, and
-fills in the commit of 0022 it adopts. Letter (w) is this record's; (x)
-is reserved for the W6 probe.
+Written into 0014 10.7 after (v), in the commit that follows this
+revision, with this revision's commit filled in as the one it adopts. The
+text below is the registered text; 0014 holds the record.
 
 > **2026-10-24 (w): measured nose pressures, named for the nose's
 > model-form allowance before they are read** (rule 2 of 10.1; design
-> record 0022 as adopted at commit <filled in when (w) is committed>;
+> record 0022 as adopted at commit <this revision's commit, filled in
+> in 0014>;
 > the advisor's report of 2026-10-22, section 6 item 4; the owner's
 > choice of 0022's Route 1). The nose's band (0006) is the numerical error
 > of the inviscid solve. An allowance "inviscid model against measured
 > pressures" is formed per nose family and Mach number by 0022 sections
 > 4.3 and 4.4, fixed and reviewed before any value below is read. It is
-> symmetric about the served value, half-width a times the nose term, a
+> symmetric about the served value (one body per box cannot show the
+> error's direction; a one-sided band or a sign per family only by a
+> later dated entry, before any reading, for a family with several
+> bodies in one box), half-width a times the nose term, a
 > the largest |r| + u of every measured case whose box (+-0.05 Mach,
 > +-0.25 calibers; the union of boxes, not their hull) contains the case;
 > it enters the total's model-form band linearly, as its own line, beside
@@ -515,7 +535,7 @@ is reserved for the W6 probe.
 >    see what it covers, before any value is read (not read before); NACA
 >    RM E52C10 (Jack and Gould), its zero-incidence plotted pressures on
 >    the five cone-cylinders at Mach 3.12, the figure named likewise
->    (opened in 2026-10; whether its plots were looked at for values is not
+>    (opened by the first session; whether its plots were looked at for values is not
 >    recorded, so it is disclosed as possibly seen); NASA TN D-3516
 >    (Czarnecki and Monta), fig. 5 and table II, the smooth model at Mach
 >    1.1 and 1.2, used only once the nose is served there (fig. 5 was read
@@ -539,10 +559,15 @@ is reserved for the W6 probe.
 >    rests only on these sets the label says "formed from data seen before
 >    registration". This departs from (r)'s "not a band's end, not an
 >    allowance" for these sets only, because their use can only widen.
-> 4. _The floor:_ in TN 3716's box the half-width is never below 14.4%
->    (published 0.1068 to 0.1080 against 0.09880, plus 0.005 / 0.09880),
->    and in RM A53E01's never below 16.1% (0.0298 against 0.03074, plus
->    0.004 / 0.03074), whatever the fresh readings give.
+> 4. _The floor, a lower limit only:_ in TN 3716's box the half-width is
+>    never below 14.4% (published 0.1068 to 0.1080 against 0.09880, plus
+>    0.005 / 0.09880), and in RM A53E01's never below 16.1% (0.0298
+>    against 0.03074, plus 0.004 / 0.03074). Fresh readings enter under
+>    0022 section 4.3 beside the floor and can raise the half-width; they
+>    never replace or lower it. TN 4233 has no published integrated
+>    figure; its existing typing is carried in the envelope and does the
+>    floor's job. In TN 3716 the shoulder cell (x/d 2.95) counts as
+>    ambiguous, its first typing's -0.038 (5fcc92b) kept beside -0.036.
 > 5. _Fixed first:_ the quantity, the integration script, the coverage
 >    threshold (a tenth of the drag outside the orifices, with its own
 >    term below that), the boxes and the sign rule are committed and
@@ -556,37 +581,35 @@ is reserved for the W6 probe.
 > 8. _Not changed:_ the nose's numerical band and its floor (0006), every
 >    other component's band, and every registered test.
 
-## 8. Open questions for the owner
+## 8. Decisions, and the one question left open
 
-Decided: Route 1 (the owner); the interim label may merge (the
-coordinator, after review).
+Decided by the owner: Route 1 (section 5). Decided by the coordinator on
+2026-10-24, after the independent re-check:
 
-1. **The measurement's uncertainty inside the allowance** (4.3, item 5):
-   recommended, since a band narrower than the data's resolution claims
-   what the data cannot show. With the floors of section 5 it makes the
-   allowance 14 to 16% of the term in the two seen boxes.
-2. **Outside the cover** (4.4): label "numerical error only" (recommended
-   for now), or serve a pooled allowance (the largest half-width of every
-   measured case) labelled "estimated, outside the measured noses", or
-   refuse the total. Recommendation: the label now; reconsider the pooled
-   allowance once TR 1386 is read.
-3. **RM E51H17** (a 4.77 deg cone at Mach 3.85, read about 34% above
-   Taylor-Maccoll, which its report puts down to Reynolds number): does a
-   set whose tunnel Reynolds number lies far below flight set anything?
-   Left open, not settled here. Deciding it now, with the value seen, is
-   itself a choice after seeing; whichever way it goes, the entry says so.
-4. **The BRL sub-class** (4.5): show the tested band and the widened band
-   side by side, or the tested band with a note? Recommendation: both, the
-   tested one marked as the band that passed.
-5. **The margins** of the boxes (+-0.05 Mach, +-0.25 calibers; 4.4) and
-   the coverage threshold of a tenth (4.3): accept, or set others before
-   any reading.
+1. **The measurement's uncertainty counts inside the allowance** (4.3,
+   item 5). With the floors of section 5 the allowance is at least 14 to
+   16% of the term in the two seen boxes.
+2. **Outside the cover the nose keeps "numerical error only"** (4.4,
+   section 6). No pooled allowance; the total is not refused for this.
+3. **The BRL sub-class** (4.5) shows the tested band and the widened band,
+   the tested one marked as the band that passed.
+4. **The box margins** (+-0.05 Mach, +-0.25 calibers; 4.4) and **the
+   coverage threshold of a tenth** (4.3) stand.
+5. **The interim label** may merge on its own (d83b336, b7d74ad).
+
+Open, the owner's:
+
+- **RM E51H17** (a 4.77 deg cone at Mach 3.85, read about 34% above
+  Taylor-Maccoll, which its report puts down to Reynolds number): does a
+  set whose tunnel Reynolds number lies far below flight set anything?
+  Deciding it now, with the value seen, is itself a choice after seeing;
+  whichever way it goes, the dated entry that decides it says so.
 
 ## 9. Order of work after the decisions
 
-1. The owner's answers to section 8; this record revised; the
-   independent reviewer's re-check.
-2. (w) committed to 0014 10.7 by the coordinator, dated.
+1. Done: the decisions of section 8; this record revised; the
+   independent re-check.
+2. Done: (w) written into 0014 10.7, dated 2026-10-24.
 3. TR 1386, RM E52C10 and TN D-3516 opened for coverage only; their
    figures named in a dated entry (a letter from the coordinator).
 4. The integration script (4.3) written, reviewed and committed before
