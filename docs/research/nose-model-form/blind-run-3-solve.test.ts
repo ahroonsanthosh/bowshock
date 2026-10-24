@@ -50,6 +50,7 @@ import {
   CFL,
   FIRST_MACH,
   gridRecords,
+  MAX_STEPS,
   NotConverged,
   problemOf,
   solveAllowance,
@@ -58,6 +59,7 @@ import {
   type GridRecords,
   type GridResult,
 } from './solve-common';
+import { fileMidCheckpoint } from './mid-checkpoint';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const FINEST = Number(process.env.FINEST ?? 8);
@@ -127,12 +129,14 @@ async function solveMach(mach: number): Promise<void> {
         };
         log(`${tag} r=${r} resumed from its checkpoint`);
       } else {
-        const s = await solveGrid(engine, problem, previous, tag, log);
+        const mid = ck === '' ? null : fileMidCheckpoint(ck);
+        const s = await solveGrid(engine, problem, previous, tag, log, false, MAX_STEPS, mid);
         solved = s;
         if (ck !== '') {
           mkdirSync(checkpoints, { recursive: true });
           writeFileSync(`${ck}.bin`, Buffer.from(s.conserved.buffer));
           writeFileSync(`${ck}.json`, JSON.stringify(s.result));
+          mid?.clear();
         }
       }
       const records = gridRecords(problem, solved.conserved);

@@ -114,6 +114,19 @@ function geometricRemaining(values: readonly number[]): number {
 export type Log = (line: string) => Promise<void> | void;
 
 /**
+ * A mid-grid checkpoint (the container restarts every few hours and a
+ * fine grid takes longer): `load` gives a saved state to continue from
+ * (the settling test then starts afresh on it, which costs its window of
+ * checks, nothing else), `save` is called with the current state every
+ * `everySeconds` of wall time.
+ */
+export interface MidCheckpoint {
+  readonly load: () => Float64Array | null;
+  readonly save: (conserved: Float64Array) => void;
+  readonly everySeconds: number;
+}
+
+/**
  * verifiedTransonicDrag's solveGrid on any engine, its tests unchanged
  * except for the scale below Mach 1 (thresholdScale). `start` is the
  * coarser grid's solution, or null to start from the free stream.
@@ -126,6 +139,7 @@ export async function solveGrid(
   log: Log,
   checkPrecision = false,
   maxSteps = MAX_STEPS,
+  mid: MidCheckpoint | null = null,
 ): Promise<{ result: GridResult; conserved: Float64Array }> {
   const refinement = problem.options.refinement;
   const mach = problem.options.mach;
@@ -137,12 +151,19 @@ export async function solveGrid(
   const solver = await engine(problem);
   const t0 = performance.now();
   try {
-    if (start === null) await solver.start(() => free, 1);
+    const saved = mid?.load() ?? null;
+    if (saved !== null) {
+      const holder = new Euler2D(problem.config);
+      holder.setConserved(saved);
+      await solver.start((i, j) => holder.primitive(i, j), CFL);
+      await log(`${tag} r=${refinement} continued from its mid-grid checkpoint`);
+    } else if (start === null) await solver.start(() => free, 1);
     else {
       const ratio = refinement / start.problem.options.refinement;
       const coarse = start.cells;
       await solver.start((i, j) => coarse(Math.floor(i / ratio), Math.floor(j / ratio)), CFL);
     }
+    let lastSave = performance.now();
     const settling = new SettlingValue(SETTLE_NOISE, start?.rate ?? Number.NaN);
     const history: number[] = [];
     let steps = 0;
@@ -172,6 +193,13 @@ export async function solveGrid(
       );
       const scale = thresholdScale(mach, drag);
       history.push(drag);
+      if (mid !== null && performance.now() - lastSave > 1000 * mid.everySeconds) {
+        const copy = new Euler2D(problem.config);
+        copy.setCellPrimitives(await solver.cells());
+        mid.save(copy.conserved());
+        lastSave = performance.now();
+        await log(`${tag} r=${refinement} mid-grid checkpoint saved at step ${steps}`);
+      }
       remaining = geometricRemaining(history);
       passes = remaining <= GEOMETRIC_NOISE * scale ? passes + 1 : 0;
       const settlingPassed = settling.add(drag + shift);

@@ -28,7 +28,7 @@
  * MACHS=1.02 limits the rungs; LOG as blind-run-3-solve.
  */
 
-import { appendFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, it } from 'vitest';
@@ -45,10 +45,14 @@ import {
   CFL,
   distanceOf,
   gridRecords,
+  MAX_STEPS,
+  NotConverged,
   problemOf,
   solveGrid,
   thresholdScale,
+  type GridResult,
 } from './solve-common';
+import { fileMidCheckpoint } from './mid-checkpoint';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const outDir = join(here, 'out', 'far-800');
@@ -115,20 +119,39 @@ async function runRung(mach: number): Promise<void> {
       JSON.stringify({ mach, converged: false, failedAt: size, how, reason, grids }) + '\n',
     );
   };
+  // Each finished grid is kept (out/far-800/ckpt/M<mach>-<size>.json and .bin), and
+  // each running one saves a mid-grid state, so a restart resumes where it was.
+  const ckDir = join(outDir, 'ckpt');
   for (const size of [...domains.farField, FAR_800]) {
     const problem = problemOf(mach, 1, { farField: size });
     const distance = distanceOf('farField', problem);
+    const ck = join(ckDir, `M${mach.toFixed(3)}-${size}`);
     let solved: Awaited<ReturnType<typeof solveGrid>> | null = null;
-    if (size !== FAR_800) {
+    if (existsSync(`${ck}.json`) && existsSync(`${ck}.bin`)) {
+      const buf = readFileSync(`${ck}.bin`);
+      const done = JSON.parse(readFileSync(`${ck}.json`, 'utf8')) as { result: GridResult; path: string };
+      solved = {
+        result: done.result,
+        conserved: new Float64Array(buf.buffer, buf.byteOffset, buf.byteLength / 8).slice(),
+      };
+      if (size === FAR_800) path = done.path;
+      log(`${tag} ${size} radii resumed from its checkpoint`);
+    } else if (size !== FAR_800) {
       try {
-        solved = await solveGrid(implicit, problem, null, `${tag} ${size}`, log);
+        const mid = fileMidCheckpoint(`${ck}-implicit`);
+        solved = await solveGrid(implicit, problem, null, `${tag} ${size}`, log, false, MAX_STEPS, mid);
+        mid.clear();
       } catch (error) {
         failed(size, 'the implicit steps', (error as Error).message);
         return;
       }
     } else {
       // The registered order: explicit first, the implicit steps at CFL 10 only after it fails.
+      const midExplicit = fileMidCheckpoint(`${ck}-explicit`);
+      const midImplicit = fileMidCheckpoint(`${ck}-implicit10`);
+      const explicitFailed = existsSync(`${ck}-explicit.failed`);
       try {
+        if (explicitFailed) throw new NotConverged('the explicit steps failed before (recorded)');
         solved = await solveGrid(
           explicitEngine(),
           problem,
@@ -137,19 +160,28 @@ async function runRung(mach: number): Promise<void> {
           log,
           false,
           MAX_STEPS_EXPLICIT,
+          midExplicit,
         );
         path = 'explicit';
+        midExplicit.clear();
       } catch (error) {
         log(`${tag} ${size} radii: the explicit steps did not settle (${(error as Error).message}); trying the implicit steps at CFL 10`);
+        mkdirSync(ckDir, { recursive: true });
+        writeFileSync(`${ck}-explicit.failed`, `${(error as Error).message}\n`);
+        midExplicit.clear();
         try {
-          solved = await solveGrid(cpuTransonicEngine(10), problem, null, `${tag} ${size} implicit10`, log);
+          solved = await solveGrid(cpuTransonicEngine(10), problem, null, `${tag} ${size} implicit10`, log, false, MAX_STEPS, midImplicit);
           path = 'implicit10';
+          midImplicit.clear();
         } catch (error2) {
           failed(size, 'explicit steps, then the implicit steps at CFL 10', (error2 as Error).message);
           return;
         }
       }
     }
+    mkdirSync(ckDir, { recursive: true });
+    writeFileSync(`${ck}.bin`, Buffer.from(solved.conserved.buffer));
+    writeFileSync(`${ck}.json`, JSON.stringify({ result: solved.result, path }));
     const records = gridRecords(problem, solved.conserved);
     grids[size] = { ...solved.result, distance, stationCp: records.stationCp, loss: records.loss };
     drags.push(solved.result.drag);
