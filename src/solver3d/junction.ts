@@ -453,10 +453,7 @@ export interface JunctionMeasures {
   readonly awayFaces: number;
   /** Over the fitted faces within k cells of it: their integrated pressure force's error, relative to the exact force. */
   readonly nearForce: number;
-  /**
-   * ... and absolute (in the free stream's pressure times the domain's unit area): 4.0's "the error of their
-   * integrated pressure force", whose region shrinks with the grid (k cells of that grid).
-   */
+  /** ... and absolute (in the free stream's pressure times unit area): recorded as data; the verdict uses the relative. */
   readonly nearForceAbsolute: number;
   readonly nearFaces: number;
   /**

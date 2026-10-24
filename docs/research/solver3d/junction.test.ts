@@ -91,9 +91,11 @@ test('the fitted surface and the junction tests (4.0)', { timeout: 86_400_000 * 
     const breach = [0, 1, 2].map((l) => run(kind, l, { breach: true, maxSteps: 40_000 * 2 ** l }));
     const converged = [...code, ...breach].every((r) => r.converged);
     const away = code.every((r) => r.awayAngle <= 1e-10 && r.awayState <= 1e-10);
-    // 4.0's "the error of their integrated pressure force ... falls with each refinement": the absolute error,
-    // the region being k cells of each grid. Runs recorded before it was stored: the relative error times the
-    // exact force over the near faces, p_post times their area on the exact plane shock (x from 0.1 to 1;
+    // The verdict follows the measure registered with the script (commit 46421f1): the near-junction error
+    // relative to the exact force on the same faces (the coordinator's interim ruling of 2026-10-24: a verdict
+    // is decided by the record and a reviewer, not by the builder after seeing numbers). The absolute error
+    // is recorded beside it as data only; for runs recorded before it was stored, the relative error times
+    // the exact force over the near faces, p_post times their area on the exact plane shock (x from 0.1 to 1;
     // J1: k rows of the span, J2: k columns over the span of 1).
     const exactNear = (level: number) => {
       const c = junctionCounts(level);
@@ -104,7 +106,7 @@ test('the fitted surface and the junction tests (4.0)', { timeout: 86_400_000 * 
     };
     const absolute = (r: Run, level: number) => r.nearForceAbsolute ?? r.nearForce * exactNear(level);
     const abs = code.map((r, l) => absolute(r, l));
-    const falls = abs[1]! < abs[0]! && abs[2]! < abs[1]!;
+    const falls = code[1]!.nearForce < code[0]!.nearForce && code[2]!.nearForce < code[1]!.nearForce;
     const tenth = code[2]!.nearForce <= 0.1 * breach[2]!.nearForce;
     const sees = breach[2]!.nearForce >= 10 * code[2]!.nearForce;
     const ok = converged && away && falls && tenth && sees;
@@ -119,7 +121,7 @@ test('the fitted surface and the junction tests (4.0)', { timeout: 86_400_000 * 
       nearFalls: falls,
       nearWithinTenthOfBreach: tenth,
       breachSeen: sees,
-      nearAbsolute: abs,
+      nearAbsoluteDataOnly: abs,
       nearRelative: code.map((r) => r.nearForce),
       breachFalls: breach[1]!.nearForce < breach[0]!.nearForce && breach[2]!.nearForce < breach[1]!.nearForce,
       pass: ok,

@@ -2320,7 +2320,7 @@ number for the affected cases exists (4.2):
 - **(b3)'s verdict is provisional** until FIN_DRAG_FLOOR's other terms
   ((c-x), (e0), the floor families) are measured.
 
-### Revision 3f, 2026-10-24 (this text): the layout's findings, ruled
+### Revision 3f, 2026-10-24 (commit 35b30d9): the layout's findings, ruled
 
 The coordinator's rulings of 2026-10-24 on the sector generator's
 findings (commits 8128cbc to 3edc987), written before the spike or any
@@ -2423,6 +2423,19 @@ registered number:
   rounded off (a softplus of width half the tip chord) and a floor of a
   quarter of its height at the base; both only move it farther out, and
   3.8's outer-row check applies unchanged.
+
+### Result, 2026-10-24: junction test J1, level 1, not passed as registered
+
+Recorded at the coordinator's interim ruling of 2026-10-24
+(`docs/research/solver3d/out/junction-runs.jsonl`, commit e1865c6): **J1
+level 1 is not passed as registered: the relative near-junction error
+rose (2.67e-2 on level 0 to 3.18e-2 on level 1) and the away criterion
+failed (the shock angle 2.42e-2 rad off at 4 or more cells from the
+junction, against 1e-10).** The verdict follows the measure registered
+with the research script (the error relative to the exact force on the
+same faces); the absolute error is recorded beside it as data only and
+decides nothing. The blunt-edge path is stopped; the coordinator is
+taking independent advice and will rule. No criterion is changed here.
 
 ### Deviation, 2026-10-23: rung (a)'s 2D references (reported, not reworded)
 
