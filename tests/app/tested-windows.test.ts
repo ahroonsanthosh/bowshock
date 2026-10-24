@@ -81,7 +81,13 @@ function brlFinner(): RocketDesign {
 }
 
 const solver: NoseSolver = async (body, mach, hooks) => {
-  const value = exactConeNoseWaveDrag(mach, Math.atan(0.5 / body.nose.length)).cd;
+  let value: number;
+  try {
+    value = exactConeNoseWaveDrag(mach, Math.atan(0.5 / body.nose.length)).cd;
+  } catch (e) {
+    // As the solver refuses a case it does not serve (Mach 1.0: the cone's shock detaches).
+    return { kind: 'error', message: String(e), gpuFailed: false };
+  }
   const reports: LevelReport[] = [0, 1, 2, 3].map((k) => ({
     refinement: 2 ** k,
     cells: { ni: 191 * 2 ** k, nj: 20 * 2 ** k },
@@ -175,7 +181,7 @@ describe('the tested windows', { timeout: 120_000 }, () => {
     );
     const p = run.points.find((q) => q.tested !== undefined)!;
     expect(csvRow(p)).toBe(
-      `${p.mach.toFixed(2)},,,,not-finished,Mach window BRL Report 934 tested (${p.tested!.from} to ${p.tested!.to})`,
+      `${p.mach.toFixed(2)},,,,not-finished,Mach window BRL Report 934 tested (${p.tested!.from} to ${p.tested!.to}),`,
     );
   });
 

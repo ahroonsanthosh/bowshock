@@ -41,6 +41,11 @@ import {
   type FlightConditions,
 } from '../total/finned-body';
 import {
+  refusedTotalParts,
+  type NoseForFloor,
+  type RefusedTotalParts,
+} from '../total/refused-floor';
+import {
   bandWithInputs,
   combineComponents,
   type ComponentRefusal,
@@ -839,7 +844,16 @@ export type NoseState =
 // ----------------------------------------------------------------- the view
 
 export type TotalDragView =
-  | { readonly kind: 'refused'; readonly refusals: readonly ComponentRefusal[] }
+  | {
+      readonly kind: 'refused';
+      readonly refusals: readonly ComponentRefusal[];
+      /**
+       * The parts served, each with its band and label, and the floor or why
+       * none is given (0011 section 10); null where nothing is computed (the
+       * inputs refused, or a method failed).
+       */
+      readonly parts: RefusedTotalParts | null;
+    }
   | { readonly kind: 'pending'; readonly check: ClassCheck; readonly subClass: SubClassCheck }
   | {
       readonly kind: 'total';
@@ -944,6 +958,21 @@ const UNSOLVED_NOSE: DragComponent = {
   band: 'none',
 };
 
+/** Why a nose gives no part to a refused total's floor (0011 section 10.4). */
+export const NOSE_NOT_SOLVED_FLOOR = 'the nose wave drag is not solved yet';
+export const NOSE_REFUSED_FLOOR = 'the nose wave drag has no number (its reason is listed)';
+
+function noseForFloor(nose: NoseState): NoseForFloor {
+  switch (nose.kind) {
+    case 'solved':
+      return { kind: 'served' };
+    case 'pending':
+      return { kind: 'not-solved', reason: NOSE_NOT_SOLVED_FLOOR };
+    case 'refused':
+      return { kind: 'not-solved', reason: NOSE_REFUSED_FLOOR };
+  }
+}
+
 /**
  * What the page shows for these inputs and this state of the nose solve:
  * refused (every reason, no number), awaiting the nose (no number), or
@@ -956,7 +985,7 @@ export function totalDragView(form: TotalDragForm, nose: NoseState): TotalDragVi
       ? [{ component: 'nose wave drag', reason: 'not-verified', message: nose.message }]
       : [];
   if (configuration.kind === 'refused') {
-    return { kind: 'refused', refusals: [...noseRefusal, ...configuration.refusals] };
+    return { kind: 'refused', refusals: [...noseRefusal, ...configuration.refusals], parts: null };
   }
   const { config, conditions, inputs } = configuration.value;
   const noseTerm = nose.kind === 'solved' ? nose.component : UNSOLVED_NOSE;
@@ -970,6 +999,7 @@ export function totalDragView(form: TotalDragForm, nose: NoseState): TotalDragVi
         ...noseRefusal,
         { component: 'computation', reason: 'not-computed', message: e.message },
       ],
+      parts: null,
     };
   };
   let parts: ReturnType<typeof finnedBodyComponents>;
@@ -979,7 +1009,13 @@ export function totalDragView(form: TotalDragForm, nose: NoseState): TotalDragVi
     return failed(e);
   }
   const refusals = [...noseRefusal, ...parts.refusals];
-  if (refusals.length > 0) return { kind: 'refused', refusals };
+  if (refusals.length > 0) {
+    return {
+      kind: 'refused',
+      refusals,
+      parts: refusedTotalParts(config, conditions, parts, noseForFloor(nose)),
+    };
+  }
   const check = basicFinnerClass(form);
   const subClass = brl934SubClass(form);
   if (nose.kind !== 'solved') return { kind: 'pending', check, subClass };

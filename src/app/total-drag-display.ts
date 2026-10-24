@@ -11,7 +11,9 @@
 import type { VerifiedDrag } from '../analysis/verified-drag';
 import { bodyLength, type Body } from '../geometry/body';
 import { BASIC_FINNER_GEOMETRY, BASIC_FINNER_LENGTHS } from '../validation/basic-finner';
+import type { RefusedTotalParts } from '../total/refused-floor';
 import { outward, outwardPercent } from './band';
+import { floorText, notShownLine, PARTS_CAPTION } from './refused-parts';
 import { FOOT, flightConditionOf, type AltitudeUnit } from './flight-condition';
 import {
   BAND_CAVEAT,
@@ -444,6 +446,7 @@ export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
       return [
         p('Total drag refused: no number is given. Every reason:', 'warn', true),
         list(view.refusals.map((r) => `${r.component} (${r.reason}): ${r.message}.`)),
+        ...(view.parts === null ? [] : refusedPartsBlocks(view.parts)),
       ];
     case 'pending':
       if (view.subClass.inside) {
@@ -521,6 +524,46 @@ export function totalDragDisplay(view: TotalDragView): DisplayBlock[] {
       ];
     }
   }
+}
+
+/**
+ * A refused total's parts served, each with its band and label, the input
+ * bands where any is not zero, the parts not shown, and the floor or why
+ * none is given (0011 section 10).
+ */
+function refusedPartsBlocks(parts: RefusedTotalParts): DisplayBlock[] {
+  const out: DisplayBlock[] = [];
+  if (parts.served.length > 0) {
+    out.push({
+      kind: 'table',
+      caption: PARTS_CAPTION,
+      head: ['Component', 'C_D', 'Band', 'What it is', 'Band from'],
+      rows: parts.served.map((c) => [
+        c.name,
+        c.cd.toFixed(DIGITS),
+        interval(c.low, c.high),
+        c.label,
+        c.band,
+      ]),
+      numeric: [1, 2],
+    });
+  }
+  if (parts.inputs.some((i) => i.low !== 0 || i.high !== 0)) {
+    out.push({
+      kind: 'table',
+      caption: "Input bands: each the change of the served parts between its input's ends",
+      head: ['Input', 'Change of C_D', 'What it is'],
+      rows: parts.inputs.map((i) => [
+        i.name,
+        i.low === 0 && i.high === 0 ? 'none' : interval(i.low, i.high),
+        i.label,
+      ]),
+      numeric: [1],
+    });
+  }
+  if (parts.notShown.length > 0) out.push(list(parts.notShown.map((x) => `${notShownLine(x)}.`)));
+  out.push(p(floorText(parts.floor), parts.floor.kind === 'floor' ? 'plain' : 'muted'));
+  return out;
 }
 
 /** When the computation itself fails unexpectedly: no number. */
