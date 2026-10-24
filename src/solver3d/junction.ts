@@ -279,7 +279,6 @@ export function runJunction(options: JunctionOptions): JunctionState {
   let steps = 0;
   let maxSpeed = Infinity;
   let residual = Infinity;
-  let first = NaN;
   let converged = false;
   let fitted!: FittedSide;
   const upstreamOf = (blocks: Euler3D[]) => (t: number) => {
@@ -299,8 +298,8 @@ export function runJunction(options: JunctionOptions): JunctionState {
       blocks[1]!.setFaceStates('kMin', up, up);
     }
   };
-  const residualNorm = (blocks: Euler3D[]) => {
-    Euler3D.fillLinkedGhosts(blocks, built.dec.links);
+  const residualNorm = (blocks: Euler3D[], dec: Decomposition) => {
+    Euler3D.fillLinkedGhosts(blocks, dec.links);
     let s = 0;
     let n = 0;
     for (const b of blocks) {
@@ -311,6 +310,15 @@ export function runJunction(options: JunctionOptions): JunctionState {
     }
     return Math.sqrt(s / n);
   };
+  // The residual's scale (as 0006's): the larger of the start's and the free stream's on the first grid; an
+  // exact start's own residual is round-off.
+  const reference = (() => {
+    const free = buildBlocks(kind, c, h, exact, () => exact.free);
+    applyBoundary(free.blocks);
+    const rFree = residualNorm(free.blocks, free.dec);
+    applyBoundary(built.blocks);
+    return Math.max(rFree, residualNorm(built.blocks, built.dec));
+  })();
   const LNI = built.blocks[0]!.metrics.ni;
   while (steps < options.maxSteps) {
     const { blocks, dec } = built;
@@ -370,9 +378,8 @@ export function runJunction(options: JunctionOptions): JunctionState {
     });
     if (steps % 100 === 0 || maxSpeed < speedTolerance) {
       applyBoundary(built.blocks);
-      const r = residualNorm(built.blocks);
-      if (Number.isNaN(first)) first = r;
-      residual = r / first;
+      const r = residualNorm(built.blocks, built.dec);
+      residual = r / reference;
       options.onProgress?.(steps, maxSpeed, residual);
       if (maxSpeed < speedTolerance && residual < residualTolerance) {
         converged = true;
