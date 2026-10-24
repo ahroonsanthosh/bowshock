@@ -183,9 +183,10 @@ export type PointwiseBand =
 /**
  * A per-station band from three grids (coarse to fine, r = 2, 4, 8):
  * Richardson's index on the finest change at the observed order capped at
- * 2 (as 0005), the range of the three where they oscillate, the sum of the
- * two changes where they do not shrink (flagged), and twice the noise
- * where the changes are below it.
+ * 2 (as 0005), the range of the three where they oscillate, and twice the
+ * noise where the changes are below it. Where the changes do not shrink
+ * there is no band (0005): the kind 'not-shrinking' carries the sum of the
+ * two changes for the record only, and judgeRung fails (d) on it.
  */
 export function pointwiseBand(values: readonly number[], noise: number): PointwiseBand {
   if (values.length < 3) throw new RangeError('three grids are needed');
@@ -578,6 +579,30 @@ export function applyOrdering(verdicts: readonly RungVerdict[]): RungVerdict[] {
       verdict: 'fail',
     };
   });
+}
+
+/**
+ * (y) item 6: a failed rung keeps the TN 4233 rows of its box, +-BOX_MACH
+ * in Mach, out of (w)'s allowance. Given the judged verdicts and the rows'
+ * Mach numbers, the rows kept out, each with the rung and its reason.
+ */
+export const BOX_MACH = 0.05;
+export function rowsKeptOut(
+  verdicts: readonly Pick<RungVerdict, 'mach' | 'verdict' | 'criteria'>[],
+  rows: readonly number[],
+): { readonly mach: number; readonly rung: number; readonly reason: string }[] {
+  const failed = verdicts.filter((v) => v.verdict === 'fail');
+  const out: { mach: number; rung: number; reason: string }[] = [];
+  for (const mach of rows) {
+    const hit = failed.find((v) => Math.abs(mach - v.mach) <= BOX_MACH + 1e-9);
+    if (hit === undefined) continue;
+    const reasons = Object.entries(hit.criteria)
+      .filter(([, c]) => c.status === 'fail')
+      .map(([k, c]) => `(${k}) ${c.detail}`)
+      .join('; ');
+    out.push({ mach, rung: hit.mach, reason: `rung Mach ${hit.mach} failed: ${reasons}` });
+  }
+  return out;
 }
 
 /**

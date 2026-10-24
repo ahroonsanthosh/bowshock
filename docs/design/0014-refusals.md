@@ -2092,8 +2092,7 @@ without `Y_REVIEWED=1`, which asserts that).
      the driver uses; on the moved family (ratios 2.23 then 1.82) every
      case is therefore the turning bound or refused. Reported, not pass
      or fail: the far-field changes' decay exponent at Mach 0.6 and 0.8,
-     expected near 2 (a
-     > source-like far field); below 1 it is flagged.
+     expected near 2 for a source-like far field; below 1 it is flagged.
    - (g) R3 and R4: reported; a miss is investigated, never a pass or
      fail.
    - (h) The GPU: no GPU family counts until the hardware match test
@@ -2263,6 +2262,23 @@ to the rules above, in the review's numbering:_
     per station): on the safe side, left so. _6 (a)'s r = 16_ is solved by
     the CPU script with `FINEST=16`, which extends a finished family from
     its checkpoints.
+
+14. _Re-review of cb2d8f7, N1 to N3 (2026-10-24, still before any
+    result)._ N1: cb2d8f7 had changed the procedure's default scale to
+    the largest |value| of the whole family, which changed served output
+    (`refineUntilVerified`, the fitted solver, and the transonic driver:
+    five levels 1 + 1.6e-4 / 2^k gave a band of 1.5e-5 instead of
+    1.25e-5). Restored: without a scale each test uses the largest
+    |value| among the values it looks at (its triple, or the four
+    finest), as before, so served output is bit-identical; a test pins
+    that case to the old result; the scale option acts only where given
+    (the subsonic rules). N2: item 6's consequence is coded: a failed rung
+    keeps the TN 4233 rows within +-0.05 Mach out (`rowsKeptOut`; the
+    evaluation lists them and `blind-run-3.test.ts` refuses them, and
+    holds every row below Mach 1 until the results' review,
+    `Y_RESULTS_REVIEWED=1`). N3: the last blockquote in 6 (f) and the
+    stale comment on `pointwiseBand` are fixed; the not-shrinking test
+    isolates the rule with changes of 1e-5.
 
 _Tests added for the errors the review planted:_ the floor and the
 cylinder term in the station band, p_inf / p_wall in the loss tolerance,

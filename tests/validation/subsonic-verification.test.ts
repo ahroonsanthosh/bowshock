@@ -9,6 +9,7 @@ import {
   linearisedConeCylinderCp,
   orderingCheck,
   pointwiseBand,
+  rowsKeptOut,
   slenderConeCylinderCp,
   stationCpAllowance,
   SUBSONIC_SCALE,
@@ -254,10 +255,14 @@ describe('item 5: the rung verdicts', () => {
     const base = rung({ mach: 0.8, limit: 1e-3, floor: 1e-5 });
     const levels = base.levels.map((l, k) => ({
       ...l,
-      stationCp: l.stationCp.map((cp, j) => (j === 1 ? cp + 1e-2 * k : cp)),
+      // Station 1 changes by 1e-5 at every refinement: no band by 0005,
+      // though the sum of its changes (2e-5) is far inside the tolerance,
+      // so only the rule fails it.
+      stationCp: l.stationCp.map((cp, j) => (j === 1 ? 0.08 + 1e-5 * k * (1 + 0.1 * k) : cp)),
     }));
     const v = judgeRung({ ...base, levels });
     expect(v.stationBands[1]!.kind).toBe('not-shrinking');
+    expect(v.stationBands[1]!.band).toBeLessThan(CP_STATION_TOLERANCE);
     expect(v.criteria.d.status).toBe('fail');
   });
 
@@ -363,6 +368,18 @@ describe('item 5: the rung verdicts', () => {
     expect(top.ok).toBe(false);
     expect(top.violations[0]!.machs).toEqual([0.991]);
     expect(orderingCheck([{ mach: 0.991, drag: 0.09, band: 2e-3 }]).ok).toBe(true);
+  });
+
+  it('a failed rung keeps the rows within +-0.05 Mach out, with the rung and its reasons', () => {
+    const good = judgeRung(rung({ mach: 0.6, limit: 5e-5 }));
+    const bad = judgeRung(rung({ mach: 0.8, limit: -2e-3, floor: good.floorSet }));
+    expect(bad.verdict).toBe('fail');
+    const rows = [0.6, 0.601, 0.701, 0.797, 0.8, 0.85, 0.851, 0.899, 0.901];
+    const out = rowsKeptOut([good, bad], rows);
+    expect(out.map((r) => r.mach)).toEqual([0.797, 0.8, 0.85]);
+    expect(out[0]!.rung).toBe(0.8);
+    expect(out[0]!.reason).toMatch(/\(c\)/);
+    expect(rowsKeptOut([good], rows)).toEqual([]);
   });
 
   it('applyOrdering fails the rungs a violation names, and leaves the others', () => {

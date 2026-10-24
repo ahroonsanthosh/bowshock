@@ -73,11 +73,12 @@ export interface ConvergenceEstimateOptions {
    */
   readonly noise: number;
   /**
-   * The value the noise is relative to: by default the largest |value| of
-   * the family. A quantity whose true value is near zero (the subsonic nose
-   * drag of 0014 10.7 (y)) gives the scale S it is measured on instead, so
-   * that the measurable level is MEASURABLE x noise x S, never collapsing
-   * with the value.
+   * The value the noise is relative to. Left out (every served solve), each
+   * test uses the largest |value| among the values it looks at, its triple
+   * or the four finest, as the procedure always has. A quantity whose true
+   * value is near zero (the subsonic nose drag of 0014 10.7 (y)) gives the
+   * scale S it is measured on instead, so that the measurable level is
+   * MEASURABLE x noise x S, never collapsing with the value.
    */
   readonly scale?: number;
 }
@@ -125,21 +126,26 @@ export function gridConvergence(
     return { kind: 'unresolved', value, reason: 'four grids are needed to confirm the order' };
   }
   const finest = values.slice(n - 3);
-  const scale = options.scale ?? Math.max(...values.map(Math.abs));
-  if (!(scale >= 0)) throw new RangeError('the scale must be at least 0');
-  const fine = observedOrder(finest[0]!, finest[1]!, value, options.noise, scale);
+  if (options.scale !== undefined && !(options.scale >= 0))
+    throw new RangeError('the scale must be at least 0');
+  // Without a scale given, each test uses the largest |value| of the values
+  // it looks at (its triple, or the four finest), as it always has.
+  const scaleOf = (own: readonly number[]) => options.scale ?? Math.max(...own.map(Math.abs));
+  const fine = observedOrder(finest[0]!, finest[1]!, value, options.noise, scaleOf(finest));
   if (fine === OSCILLATES) {
     return { kind: 'oscillatory', value, uncertainty: Math.max(...finest) - Math.min(...finest) };
   }
+  const coarser = values.slice(n - 4, n - 1);
   const coarse = observedOrder(
-    values[n - 4]!,
-    values[n - 3]!,
-    values[n - 2]!,
+    coarser[0]!,
+    coarser[1]!,
+    coarser[2]!,
     options.noise,
-    scale,
+    scaleOf(coarser),
   );
   if (fine === TOO_SMALL && typeof coarse === 'number') {
-    return withinNoise(values.slice(n - 4), coarse, options.noise, scale);
+    const four = values.slice(n - 4);
+    return withinNoise(four, coarse, options.noise, scaleOf(four));
   }
   for (const triple of [fine, coarse]) {
     if (typeof triple === 'string') return { kind: 'unresolved', value, reason: triple };

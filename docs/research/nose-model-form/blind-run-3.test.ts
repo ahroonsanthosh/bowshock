@@ -167,6 +167,20 @@ interface RowCase {
   readonly solve: Solve;
 }
 
+/**
+ * The rows a failed rung keeps out, from verify-subsonic's output ((y)
+ * item 6); null until that evaluation has run, which also holds every row
+ * below Mach 1.
+ */
+const keptOut: readonly { mach: number; reason: string }[] | null = (() => {
+  const file = join(here, 'out', 'verify-subsonic.json');
+  if (!existsSync(file)) return null;
+  const v = JSON.parse(readFileSync(file, 'utf8')) as {
+    keptOut?: { mach: number; reason: string }[];
+  };
+  return v.keptOut ?? null;
+})();
+
 function rows(): {
   cases: RowCase[];
   pending: string[];
@@ -199,8 +213,17 @@ function rows(): {
       // (verify-subsonic.test.ts) and its results reviewed; then this hold
       // is lifted by a dated note, row by row as the rungs allow.
       if (mach < 1) {
-        held.push(what);
-        continue;
+        // Lifted only by the results' review (Y_RESULTS_REVIEWED=1) and
+        // never for a row a failed rung keeps out ((y) item 6).
+        const kept = keptOut?.find((r) => Math.abs(r.mach - mach) < 1e-9);
+        if (kept !== undefined) {
+          held.push(`${what}: KEPT OUT by (y) item 6: ${kept.reason}`);
+          continue;
+        }
+        if (keptOut === null || process.env.Y_RESULTS_REVIEWED !== '1') {
+          held.push(what);
+          continue;
+        }
       }
       const solve = solveOf(mach);
       if (solve === null) {

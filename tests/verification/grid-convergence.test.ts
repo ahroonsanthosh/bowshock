@@ -62,6 +62,22 @@ describe('grid convergence index (Celik et al., ratio 2)', () => {
     expect(longer.kind).toBe('monotone');
   });
 
+  it('without a scale, each test uses its own values’ largest magnitude, as before (served output unchanged)', () => {
+    // The re-review of cb2d8f7, N1: five levels 1 + 1.6e-4 / 2^k with the
+    // noise set so that the finest change is just below the measurable
+    // level on the finest triple's own largest value (1 + 1.6e-4 / 4) but
+    // not on the family's (1 + 1.6e-4). The band must be the old 1.25e-5,
+    // which the family-wide maximum would turn into 1.5e-5.
+    const values = [0, 1, 2, 3, 4].map((k) => 1 + 1.6e-4 / 2 ** k);
+    const e21 = values[3]! - values[4]!;
+    const noise = e21 / (10 * (1 + 0.6 * 1.6e-4));
+    const est = gridConvergence(values, { noise, orderTolerance: 0.5 });
+    expect(est.kind).toBe('monotone');
+    if (est.kind !== 'monotone') return;
+    expect(est.uncertainty).toBeCloseTo(1.25e-5, 9);
+    expect(est.uncertainty).toBeLessThan(1.3e-5);
+  });
+
   it('the scale option: the noise acts on the scale given, not on the values', () => {
     // Changes of 1e-8 on values near 1e-4 are measurable on the values
     // (10 x 1e-7 x 1e-4) but not on a scale of 0.01 (10 x 1e-7 x 0.01).

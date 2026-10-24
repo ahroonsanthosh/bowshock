@@ -27,11 +27,13 @@ import { TN4233_CONE_HALF_ANGLE } from '../../../src/validation/cone-cylinder-tn
 import { TRANSONIC_DRAG_FLOOR } from '../../../src/analysis/transonic-drag';
 import {
   applyOrdering,
+  BOX_MACH,
   far800Contained,
   judgeRung,
   linearisedConeCylinderCp,
   NEAR_SONIC_RUNGS,
   orderingCheck,
+  rowsKeptOut,
   SUBSONIC_RUNGS,
   ZERO_DRAG_RUNG,
   type RungInput,
@@ -218,6 +220,17 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
     '',
   );
 
+  // (y) item 6: a failed rung keeps the rows of its box out. Every TN 4233
+  // Mach number below 1.078 (from the readers' files) is checked here, and
+  // blind-run-3.test.ts refuses the ones listed.
+  const allRows = tn4233Machs();
+  const keptOut = rowsKeptOut(judged, allRows);
+  out.push(
+    `rows kept out by a failed rung ((y) item 6, +-${BOX_MACH} Mach): ${keptOut.length === 0 ? 'none' : ''}`,
+    ...keptOut.map((r) => `  Mach ${r.mach.toFixed(3)}: ${r.reason}`),
+    '',
+  );
+
   // Every row's own band, by the same rules, for 0022 (u_num and the labels).
   out.push('every TN 4233 row below Mach 1.078 with a solve, by the same rules (the floor as set above):');
   const rows: Record<string, unknown> = {};
@@ -252,11 +265,29 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   writeFileSync(join(here, 'out', 'verify-subsonic.out'), out.join('\n') + '\n');
   writeFileSync(
     join(here, 'out', 'verify-subsonic.json'),
-    JSON.stringify({ ...json, floor, verdicts: judged, ordering, far800, far800Pass, rows }, null, 1) + '\n',
+    JSON.stringify(
+      { ...json, floor, verdicts: judged, ordering, keptOut, far800, far800Pass, rows },
+      null,
+      1,
+    ) + '\n',
   );
   console.log(out.join('\n'));
   expect(out.length).toBeGreaterThan(3);
 });
+
+/** Every indicated Mach number below 1.078 in either table, from both readers' files. */
+function tn4233Machs(): number[] {
+  const all = new Set<string>();
+  for (const reader of ['A', 'B'])
+    for (const table of ['tn4233_table1a.csv', 'tn4233_table1b.csv']) {
+      const lines = readFileSync(join(here, 'blind-readings', reader, table), 'utf8')
+        .split('\n')
+        .slice(1)
+        .filter((l) => l.trim() !== '');
+      for (const l of lines) all.add(Number(l.split(',')[2]).toFixed(3));
+    }
+  return [...all].map(Number).filter((m) => m < 1.078).sort((a, b) => a - b);
+}
 
 function readdirSorted(dir: string): string[] {
   return readdirSync(dir)
