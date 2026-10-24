@@ -179,7 +179,17 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
   // Columns: above the tip the rows follow the envelope, sloped at tan(beta), so a cell's x edges are longer
   // than its column spacing by up to sqrt(1 + tan^2 beta): the columns are capped at the cap over that.
   const capX = cap / Math.hypot(1, input.tanTipShock);
-  const rOut = (x: number) => rTip + Math.max(0, x - xTipLE) * input.tanTipShock + margin;
+  // The envelope: 2.4's r_tip + e(x - x_tip,LE) + 3 L0 cells, with two changes that only move it farther out
+  // (outside the domain of influence is all it needs; 3.8's outer-row check still applies): the kink at the tip's
+  // leading edge rounded off (a softplus of width half the tip chord: the x edges of the rows above the tip tilt
+  // with it, and an abrupt tilt failed the size gate), and a floor of a quarter of the height at the base (the
+  // rows above the tip are one count everywhere; where the envelope was only the margin high they were squeezed
+  // flat, failing the aspect gate at low Mach numbers, whose tip shocks are steep).
+  const rampWidth = Math.max(tipChord / 2, cap);
+  const softplus = (z: number) => (z > 30 ? z : Math.log1p(Math.exp(z)));
+  const ramp = (x: number) => input.tanTipShock * rampWidth * softplus((x - xTipLE) / rampWidth);
+  const floor = (margin + ramp(input.base)) / 4;
+  const rOut = (x: number) => rTip + margin + floor + ramp(x);
   if (input.bowShock) {
     for (let q = 0; q <= 100; q++) {
       const x = xs + ((input.base - xs) * q) / 100;
@@ -208,7 +218,10 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
     return xs2;
   };
   const segCount = rowBreaks(0).length - 1;
-  const chordFirst = (y: number) => 0.01 * chordAt(y);
+  // The first cell at the edges and breakpoints: 1% of the shorter of the root and tip chords, the same on every
+  // row, so that the columns next to an edge shear exactly with it (a first cell following the local chord made
+  // them shear more than the edge, and the body wall angle fell below 50 deg at 40 deg of sweep).
+  const chordFirst = () => 0.01 * Math.min(p.rootChord, chordAt(span));
   // Which segment ends are clustered: the edges and the breakpoints (both ends of chord segments).
   const clusterOf = (k: number): [boolean, boolean] => {
     if (k === 0) return [false, true];
@@ -227,7 +240,7 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
       const [a, e] = clusterOf(k);
       n = Math.max(
         n,
-        segmentCount(b[k + 1]! - b[k]!, a ? chordFirst(y) : null, e ? chordFirst(y) : null, capX),
+        segmentCount(b[k + 1]! - b[k]!, a ? chordFirst() : null, e ? chordFirst() : null, capX),
       );
     }
     counts0.push(n);
@@ -239,7 +252,7 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
     // segment's mean cell is smaller (an over-resolved short segment), so that the cells match across it.
     const mean = (k: number) => (b[k + 1]! - b[k]!) / counts0[k]!;
     const at = (q: number) => {
-      let h = chordFirst(y);
+      let h = chordFirst();
       if (q > 0) h = Math.min(h, mean(q - 1));
       if (q < segCount) h = Math.min(h, mean(q));
       return h;
