@@ -36,6 +36,14 @@ export interface BluntGridOptions {
    * gated once the shock has settled (FITTED_QUALITY_LIMITS).
    */
   readonly gated?: boolean;
+  /**
+   * The outer boundary's distance ahead of the tip and its arc's radius, where the defaults (twice Billig's
+   * sphere standoff, an arc of twice the nose's length scale) do not contain the shock: the planar strips of
+   * a fin's blunt edge (docs/design/0021-3d-euler-fins.md 3.4), whose cylinder shocks stand off about 2.7
+   * times farther than a sphere's and are far flatter.
+   */
+  readonly outerStandoff?: number;
+  readonly outerArcRadius?: number;
 }
 
 /** A straight grid line from the body: its body point, direction and length. */
@@ -184,9 +192,10 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // hemisphere-cylinder at Mach 3 still 14 deg above it 8 radii behind the
   // tip. And it flattens away from the nose, so the arc is wider than the
   // nose (docs/design/0004-grids.md).
-  const outerStandoff = OUTER_STANDOFF_FACTOR * billigStandoff(mach, scale);
+  const outerStandoff =
+    options.outerStandoff ?? OUTER_STANDOFF_FACTOR * billigStandoff(mach, scale);
   const outerAngle = (Math.PI / 2 + Math.asin(1 / mach)) / 2;
-  const arcRadius = OUTER_ARC_RADIUS * scale;
+  const arcRadius = options.outerArcRadius ?? OUTER_ARC_RADIUS * scale;
   const centre = arcRadius - outerStandoff;
   const yJoin = arcRadius * Math.cos(outerAngle);
   const xJoin = centre - arcRadius * Math.sin(outerAngle);

@@ -43,6 +43,8 @@ export interface Quality3D {
     aspectRatio: number;
   };
   readonly failures: string[];
+  /** The cells exempt from the size gates: how many, and their worst aspect and size ratio. */
+  readonly exempt: { cells: number; maxAspectRatio: number; maxSizeRatio: number };
 }
 
 export type WallSide = 'iMin' | 'iMax' | 'jMin' | 'jMax' | 'kMin' | 'kMax';
@@ -54,8 +56,19 @@ export interface QualityOptions {
   readonly walls: (i: number, j: number, k: number) => readonly WallSide[];
   /** Cells exempt from the angle gate (the slab's zero-height ends). */
   readonly angleExempt?: (i: number, j: number, k: number) => boolean;
+  /**
+   * Cells exempt from the aspect and size-ratio gates (revision 3f: the slab over a sharp tip's bevels); their
+   * worst values are reported apart (Quality3D.exempt), not in the gates.
+   */
+  readonly sizeExempt?: (i: number, j: number, k: number) => boolean;
   /** Diagnostics: each failing cell with the gate it fails. */
-  readonly onFail?: (i: number, j: number, k: number, gate: keyof Quality3D['failing'], detail?: string) => void;
+  readonly onFail?: (
+    i: number,
+    j: number,
+    k: number,
+    gate: keyof Quality3D['failing'],
+    detail?: string,
+  ) => void;
 }
 
 type V3 = [number, number, number];
@@ -89,6 +102,7 @@ export function quality3D(
   const size = new Float64Array(3 * ni * nj * nk);
   const cell = (i: number, j: number, k: number) => i + ni * (j + nj * k);
   let cells = 0;
+  const exemptInfo = { cells: 0, maxAspectRatio: 1, maxSizeRatio: 1 };
   const failing = { volume: 0, angle: 0, wallAngle: 0, sizeRatio: 0, aspectRatio: 0 };
   let minVolume: CellRef = { i: -1, j: -1, k: -1, value: Infinity };
   let minAngle: CellRef = { i: -1, j: -1, k: -1, value: 180 };
@@ -149,7 +163,10 @@ export function quality3D(
         const c = cell(i, j, k);
         const vol = metrics.volume[c]!;
         if (vol < minVolume.value) minVolume = { i, j, k, value: vol };
-        if (!(vol > 0)) failing.volume++;
+        if (!(vol > 0)) {
+          failing.volume++;
+          o.onFail?.(i, j, k, 'volume');
+        }
         const edge = (d: 0 | 1 | 2) => {
           let s = 0;
           for (const a of [0, 1])
@@ -168,8 +185,12 @@ export function quality3D(
         const s3 = [edge(0), edge(1), edge(2)];
         size.set(s3, 3 * c);
         const aspect = Math.max(...s3) / Math.min(...s3);
-        if (aspect > maxAspect.value) maxAspect = { i, j, k, value: aspect };
-        if (!(aspect <= GATES_3D.maxAspectRatio)) {
+        const sizeFree = o.sizeExempt?.(i, j, k) ?? false;
+        if (sizeFree) {
+          exemptInfo.cells++;
+          exemptInfo.maxAspectRatio = Math.max(exemptInfo.maxAspectRatio, aspect);
+        } else if (aspect > maxAspect.value) maxAspect = { i, j, k, value: aspect };
+        if (!sizeFree && !(aspect <= GATES_3D.maxAspectRatio)) {
           failing.aspectRatio++;
           o.onFail?.(i, j, k, 'aspectRatio');
         }
@@ -242,9 +263,13 @@ export function quality3D(
           const r = Math.max(x / y, y / x);
           if (r > cellRatio) cellDir = `${name} ${r.toFixed(2)}`;
           cellRatio = Math.max(cellRatio, r);
+          if (o.sizeExempt?.(i, j, k) ?? false) {
+            exemptInfo.maxSizeRatio = Math.max(exemptInfo.maxSizeRatio, r);
+            continue;
+          }
           if (r > maxRatio.value) maxRatio = { i, j, k, value: r, direction: name };
         }
-        if (cellRatio > GATES_3D.maxSizeRatio) {
+        if (cellRatio > GATES_3D.maxSizeRatio && !(o.sizeExempt?.(i, j, k) ?? false)) {
           failing.sizeRatio++;
           o.onFail?.(i, j, k, 'sizeRatio', cellDir);
         }
@@ -273,5 +298,6 @@ export function quality3D(
     maxAspectRatio: maxAspect,
     failing,
     failures,
+    exempt: exemptInfo,
   };
 }

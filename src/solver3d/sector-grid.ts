@@ -33,6 +33,14 @@ import { type Box3D } from './multiblock';
 import { quality3D, type Quality3D, type QualityOptions, type WallSide } from './quality3d';
 
 export const N_S = 4;
+/**
+ * Revision 3f: the slab cells over a sharp tip's bevels, at most this many L0 columns from a sharp end of the tip
+ * chord (1.5^l times as many on level l), are exempt from the aspect and size-ratio gates (2.4 weakened, bounded
+ * by the tip allowance A_tip).
+ */
+export const N_TIP = 24;
+/** Revision 3f: root sweeps above this are refused until the bent columns are built. */
+export const MAX_SWEEP_DEG = 40;
 /** Cells next to the fin, the slab or block L are at most this many slab widths (2.4). */
 export const SIZE_CAP = 13;
 
@@ -113,6 +121,8 @@ export interface SectorGrid {
   readonly jTip: number;
   /** The fin's planform at each node column: inside it at node (i, j) (rows up to the tip). */
   readonly onFin: (i: number, j: number) => boolean;
+  /** Is slab column i over a sharp tip's bevel, within N_TIP L0 columns of a sharp end (revision 3f)? */
+  readonly overTipBevel: (i: number) => boolean;
   readonly w: number;
   readonly counts: {
     readonly columns: readonly number[];
@@ -134,6 +144,12 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
   const leAt = (y: number) => input.rootLeadingEdge + y * p.tanLeadingEdge;
   const teAt = (y: number) => leAt(y) + chordAt(y);
   const tipChord = chordAt(span);
+  const sweep =
+    (Math.atan(Math.max(Math.abs(p.tanLeadingEdge), Math.abs(p.tanTrailingEdge))) * 180) / Math.PI;
+  if (sweep > MAX_SWEEP_DEG)
+    throw new SectorRefusal(
+      `the fin's edges are swept ${sweep.toFixed(1)} deg; above ${MAX_SWEEP_DEG} deg the grid's columns meet the body at less than the 50 deg its gates allow, and the layout that bends them (revision 3f) is not built yet`,
+    );
   const xTipLE = leAt(span);
   // The start plane: a quarter root chord ahead, at least 0.25 R, on the cylinder 0.1 R behind the shoulder.
   const xs = input.rootLeadingEdge - Math.max(p.rootChord / 4, 0.25 * R);
@@ -156,8 +172,13 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
   for (const s of [...tipBps, tipChord / 2])
     tTipHalf = Math.max(tTipHalf, section.halfThickness(s, tipChord));
   const w = tTipHalf / N_S;
-  const cap = SIZE_CAP * w;
+  // At most 13 w, generated at 0.95 of it so that cells next to the slab's w-wide cells stay below the aspect
+  // gate's 13 in floating point.
+  const cap = 0.95 * SIZE_CAP * w;
   const margin = 3 * cap;
+  // Columns: above the tip the rows follow the envelope, sloped at tan(beta), so a cell's x edges are longer
+  // than its column spacing by up to sqrt(1 + tan^2 beta): the columns are capped at the cap over that.
+  const capX = cap / Math.hypot(1, input.tanTipShock);
   const rOut = (x: number) => rTip + Math.max(0, x - xTipLE) * input.tanTipShock + margin;
   if (input.bowShock) {
     for (let q = 0; q <= 100; q++) {
@@ -206,7 +227,7 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
       const [a, e] = clusterOf(k);
       n = Math.max(
         n,
-        segmentCount(b[k + 1]! - b[k]!, a ? chordFirst(y) : null, e ? chordFirst(y) : null, cap),
+        segmentCount(b[k + 1]! - b[k]!, a ? chordFirst(y) : null, e ? chordFirst(y) : null, capX),
       );
     }
     counts0.push(n);
@@ -234,6 +255,36 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
     }
     return out;
   };
+  // The counts hold with the breakpoint spacings actually used (columnsAt's, which can be smaller than 1% of
+  // the chord where a neighbouring segment is short): grown by 8 until every sampled row's cells are at most
+  // the cap and grow by at most 1.2 (GROWTH).
+  for (let pass = 0; pass < 50; pass++) {
+    let grown = false;
+    for (let q = 0; q <= 8; q++) {
+      const y = (span * q) / 8;
+      const b = rowBreaks(y);
+      const xsRow = columnsAt(y, 0);
+      let at = 0;
+      for (let k = 0; k < segCount; k++) {
+        const seg = xsRow.slice(at, at + counts0[k]! + 1);
+        at += counts0[k]!;
+        let bad = false;
+        for (let m = 1; m < seg.length && !bad; m++) {
+          const h1 = seg[m]! - seg[m - 1]!;
+          if (h1 > capX * (1 + 1e-12)) bad = true;
+          if (m > 1) {
+            const h0 = seg[m - 1]! - seg[m - 2]!;
+            if (Math.max(h0 / h1, h1 / h0) > 1.2 * (1 + 1e-9)) bad = true;
+          }
+        }
+        if (bad && b.length > 0) {
+          counts0[k] = counts0[k]! + 8;
+          grown = true;
+        }
+      }
+    }
+    if (!grown) break;
+  }
   // Rows.
   // The tip row's spacing is shared by the rows below and above it: 1% of the span, or less where the rows
   // above (whose height varies with x) are shorter on average.
@@ -268,10 +319,21 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
   const iTipLE = iSeg(1);
   const iTE = iSeg(segCount - (aft ? 1 : 0));
   const iSlabEnd = section.bluntTrailingEdge && aft ? NI : iTE;
+  // Half-thickness of the fin (or the fictitious plate, or the slab's top) at x on the row of span position y.
+  const zAt = (x: number, y: number): number => {
+    const le = leAt(y);
+    const c = chordAt(y);
+    if (x < le - eps) return 0;
+    if (x <= le + c + eps) return section.halfThickness(Math.min(Math.max(x - le, 0), c), c);
+    return section.bluntTrailingEdge ? section.halfThickness(c, c) : 0;
+  };
   // Theta: the main block's first cell 1.3 w, growth at most 1.2, and every cell at most 13 times the smaller
   // of its line's x and r spacings (the aspect gate, which sets the count: 2.4); the count on L0 from the line
   // that needs most.
   const thetaFirst = 1.3 * w;
+  // The main block's first cell is 1.3 w everywhere (2.4), over the slab too: where the slab thins over a
+  // sharp tip's bevels the two then differ by more than the size gate allows, the cells revision 3f exempts.
+  // (Grading it with the slab's local cell was tried: it moved the failures into the main block.)
   const nt0 = (() => {
     const nb = rowsBelowAt(0).length - 1;
     const rows0 = rowsBelowAt(0);
@@ -283,7 +345,7 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
       const cols = below ? columnsAt(rows0[j]! - R, 0) : tip0;
       for (let i = 0; i < cols.length; i++) {
         const x = cols[i]!;
-        const rs = below ? rows0 : [...rows0.slice(0, nb), ...rowsAboveAt(x, 0)];
+        const rs = j < nb ? rows0 : [...rows0.slice(0, nb), ...rowsAboveAt(x, 0)];
         const r = rs[j]!;
         const dx = Math.min(
           i > 0 ? x - cols[i - 1]! : Infinity,
@@ -310,14 +372,6 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
   })();
   const NM = Math.round(nt0 * 1.5 ** level);
   const NK = N_S + NM;
-  // Half-thickness of the fin (or the fictitious plate, or the slab's top) at x on the row of span position y.
-  const zAt = (x: number, y: number): number => {
-    const le = leAt(y);
-    const c = chordAt(y);
-    if (x < le - eps) return 0;
-    if (x <= le + c + eps) return section.halfThickness(Math.min(Math.max(x - le, 0), c), c);
-    return section.bluntTrailingEdge ? section.halfThickness(c, c) : 0;
-  };
   const n = (NI + 1) * (NJ + 1) * (NK + 1);
   const c0 = new Float64Array(n);
   const c1 = new Float64Array(n);
@@ -369,9 +423,21 @@ export function sectorGrid(input: SectorInput, level: number): SectorGrid {
     const x = columnsAt(y)[i]!;
     return x >= leAt(y) - eps && x <= cut(teAt(y)) + eps;
   };
+  // The tip's bevels: from a sharp end of the tip chord to the nearest breakpoint.
+  const tipLE = leAt(span);
+  const leadBevelEnd = tipLE + tipBps[0]!;
+  const trailBevelStart = section.bluntTrailingEdge ? Infinity : tipLE + tipBps[tipBps.length - 1]!;
+  const nTip = Math.round(N_TIP * 1.5 ** level);
+  const overTipBevel = (i: number) => {
+    if (i < iTipLE || i >= iSlabEnd) return false;
+    const xm = 0.5 * (tipColumns[i]! + tipColumns[i + 1]!);
+    if (xm < leadBevelEnd && i - iTipLE < nTip) return true;
+    return xm > trailBevelStart && iTE - 1 - i < nTip && i < iTE;
+  };
   return {
     level,
     grid,
+    overTipBevel,
     boxes,
     names,
     iTipLE,
@@ -411,6 +477,7 @@ export function sectorQuality(s: SectorGrid, onFail?: QualityOptions['onFail']):
       return out;
     },
     angleExempt: (i, j, k) => k < N_S && (height(i, j) === 0 || height(i + 1, j) === 0),
+    sizeExempt: (i, j, k) => k < N_S && j >= s.jTip && s.overTipBevel(i),
     ...(onFail ? { onFail } : {}),
   });
 }
