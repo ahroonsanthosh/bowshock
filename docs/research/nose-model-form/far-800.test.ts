@@ -32,23 +32,23 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, it } from 'vitest';
-import {
-  cpuTransonicEngine,
-  transonicDomains,
-  type TransonicEngine,
-} from '../../../src/analysis/transonic-drag';
-import { Euler2D } from '../../../src/engine-cpu/euler2d';
+import { cpuTransonicEngine, transonicDomains } from '../../../src/analysis/transonic-drag';
 import { far800Contained, FAR_800, NEAR_SONIC_RUNGS } from '../../../src/validation/subsonic-verification';
 import { domainAllowance } from '../../../src/verification/domain-allowance';
 import {
   body,
   CFL,
+  cpuFallback,
   distanceOf,
+  explicitEngine,
+  FALLBACK_CFL,
   gridRecords,
   MAX_STEPS,
+  MAX_STEPS_EXPLICIT,
   NotConverged,
   problemOf,
   solveGrid,
+  solveGridStably,
   thresholdScale,
   type GridResult,
 } from './solve-common';
@@ -56,45 +56,13 @@ import { fileMidCheckpoint } from './mid-checkpoint';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const outDir = join(here, 'out', 'far-800');
-/**
- * The explicit path's cap: the explicit steps converge at about 0.997 per
- * step on these grids (0013, "Solving to a steady state"), so a settled
- * drag to 1e-7 of S takes a few hundred thousand steps; 2,000,000 steps of
- * about 5,300 cells are about 8 hours of one core. Registered in (y).
- */
-export const MAX_STEPS_EXPLICIT = 2_000_000;
+// The explicit path's cap, MAX_STEPS_EXPLICIT, and the explicit engine are solve-common's ((y) items 8 and 18).
 
 const log = (s: string) => {
   const line = `${new Date().toISOString()} ${s}\n`;
   if (process.env.LOG) appendFileSync(process.env.LOG, line);
   else process.stdout.write(line);
 };
-
-/** The engine's explicit steps (SSPRK2, local time steps, CFL 0.8 as configured). */
-function explicitEngine(): TransonicEngine {
-  return (problem) => {
-    const solver = new Euler2D(problem.config);
-    return Promise.resolve({
-      start: (cells) => {
-        solver.setCellPrimitives(cells);
-        return Promise.resolve();
-      },
-      iterate: (steps) => {
-        solver.iterate(steps);
-        return Promise.resolve();
-      },
-      drag: () => Promise.resolve(problem.drag(solver)),
-      residual: () => Promise.resolve(solver.densityResidualNorm()),
-      checkPrecision: () => Promise.resolve(),
-      cells: () => {
-        const copy = new Euler2D(problem.config);
-        copy.setConserved(solver.conserved());
-        return Promise.resolve((i: number, j: number) => copy.primitive(i, j));
-      },
-      destroy: () => undefined,
-    });
-  };
-}
 
 async function runRung(mach: number): Promise<void> {
   const tag = `far800 M${mach.toFixed(3)}`;
@@ -138,9 +106,14 @@ async function runRung(mach: number): Promise<void> {
       log(`${tag} ${size} radii resumed from its checkpoint`);
     } else if (size !== FAR_800) {
       try {
-        const mid = fileMidCheckpoint(`${ck}-implicit`);
-        solved = await solveGrid(implicit, problem, null, `${tag} ${size}`, log, false, MAX_STEPS, mid);
-        mid.clear();
+        // (y) item 18: a divergence of the implicit steps falls back to the far-800 path.
+        const mids = new Map<string, ReturnType<typeof fileMidCheckpoint>>();
+        const midFor = (p: string) => {
+          if (!mids.has(p)) mids.set(p, fileMidCheckpoint(`${ck}-${p}`));
+          return mids.get(p)!;
+        };
+        solved = await solveGridStably(implicit, problem, null, `${tag} ${size}`, log, false, cpuFallback(), midFor);
+        for (const m of mids.values()) m.clear();
       } catch (error) {
         failed(size, 'the implicit steps', (error as Error).message);
         return;
@@ -161,6 +134,7 @@ async function runRung(mach: number): Promise<void> {
           false,
           MAX_STEPS_EXPLICIT,
           midExplicit,
+          'explicit',
         );
         path = 'explicit';
         midExplicit.clear();
@@ -170,7 +144,7 @@ async function runRung(mach: number): Promise<void> {
         writeFileSync(`${ck}-explicit.failed`, `${(error as Error).message}\n`);
         midExplicit.clear();
         try {
-          solved = await solveGrid(cpuTransonicEngine(10), problem, null, `${tag} ${size} implicit10`, log, false, MAX_STEPS, midImplicit);
+          solved = await solveGrid(cpuTransonicEngine(FALLBACK_CFL), problem, null, `${tag} ${size} implicit10`, log, false, MAX_STEPS, midImplicit, 'implicit10');
           path = 'implicit10';
           midImplicit.clear();
         } catch (error2) {

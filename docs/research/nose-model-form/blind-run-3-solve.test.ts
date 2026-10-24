@@ -48,13 +48,13 @@ import { Euler2D } from '../../../src/engine-cpu/euler2d';
 import {
   body,
   CFL,
+  cpuFallback,
   FIRST_MACH,
   gridRecords,
-  MAX_STEPS,
   NotConverged,
   problemOf,
   solveAllowance,
-  solveGrid,
+  solveGridStably,
   type AllowanceRecord,
   type GridRecords,
   type GridResult,
@@ -92,6 +92,7 @@ const log = (s: string) => {
 };
 
 const engine = cpuTransonicEngine(CFL);
+const fallback = cpuFallback();
 
 async function solveMach(mach: number): Promise<void> {
   const tag = `M${mach.toFixed(3)}`;
@@ -129,26 +130,33 @@ async function solveMach(mach: number): Promise<void> {
         };
         log(`${tag} r=${r} resumed from its checkpoint`);
       } else {
-        const mid = ck === '' ? null : fileMidCheckpoint(ck);
-        const s = await solveGrid(engine, problem, previous, tag, log, false, MAX_STEPS, mid);
+        // (y) item 18: a divergence of the implicit steps falls back to the explicit
+        // steps, then the implicit steps at CFL 10, each path with its own mid state.
+        const mids = new Map<string, ReturnType<typeof fileMidCheckpoint>>();
+        const midFor = (path: string) => {
+          if (ck === '') return null;
+          if (!mids.has(path)) mids.set(path, fileMidCheckpoint(`${ck}-${path}`));
+          return mids.get(path)!;
+        };
+        const s = await solveGridStably(engine, problem, previous, tag, log, false, fallback, midFor);
         solved = s;
         if (ck !== '') {
           mkdirSync(checkpoints, { recursive: true });
           writeFileSync(`${ck}.bin`, Buffer.from(s.conserved.buffer));
           writeFileSync(`${ck}.json`, JSON.stringify(s.result));
-          mid?.clear();
+          for (const m of mids.values()) m.clear();
         }
       }
       const records = gridRecords(problem, solved.conserved);
       levels.push({ result: solved.result, records });
       log(
-        `${tag} r=${r} settled: drag ${solved.result.drag} in ${solved.result.steps} steps; wall loss ahead ${records.loss.ahead.toExponential(2)}, max wall Mach ${records.loss.maxMach.toFixed(3)}, supersonic wall cells ${records.loss.supersonicCells}`,
+        `${tag} r=${r} settled by the ${solved.result.path} steps: drag ${solved.result.drag} in ${solved.result.steps} steps; wall loss ahead ${records.loss.ahead.toExponential(2)}, max wall Mach ${records.loss.maxMach.toFixed(3)}, supersonic wall cells ${records.loss.supersonicCells}`,
       );
       if (r === 1) {
         // The allowances on base grids, right after the base grid, as the driver does.
         const own = { result: solved.result, records, problem };
-        const farField = await solveAllowance(engine, mach, 'farField', own, tag, log);
-        const cylinder = await solveAllowance(engine, mach, 'cylinder', own, tag, log);
+        const farField = await solveAllowance(engine, mach, 'farField', own, tag, log, fallback);
+        const cylinder = await solveAllowance(engine, mach, 'cylinder', own, tag, log, fallback);
         allowances = { farField, cylinder };
         for (const a of [farField, cylinder])
           log(

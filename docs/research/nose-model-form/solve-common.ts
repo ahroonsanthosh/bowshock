@@ -14,6 +14,7 @@
  */
 
 import {
+  cpuTransonicEngine,
   GEOMETRIC_NOISE,
   RESIDUAL_DIVERGENCE,
   RESIDUAL_FALL,
@@ -65,7 +66,63 @@ export function thresholdScale(mach: number, drag: number): number {
   return mach < 1 ? Math.max(Math.abs(drag), SUBSONIC_SCALE) : Math.abs(drag);
 }
 
-export class NotConverged extends Error {}
+/** Why a grid gave no value: the iteration diverged (the residual past 100 times its first value, or a drag not finite), or it ran to its step cap, or something else. */
+export type NotConvergedKind = 'diverged' | 'cap' | 'other';
+export class NotConverged extends Error {
+  constructor(
+    message: string,
+    readonly kind: NotConvergedKind = 'other',
+  ) {
+    super(message);
+  }
+}
+
+/** The iteration path a grid settled by ((y) item 18). */
+export type SolvePath = 'implicit' | 'explicit' | 'implicit10';
+/**
+ * The explicit path's cap: the explicit steps converge at about 0.997 per
+ * step on these grids (0013, "Solving to a steady state"), so a settled
+ * drag to 1e-7 of S takes a few hundred thousand steps; 2,000,000 steps of
+ * about 5,300 cells are about 8 hours of one core. Registered in (y).
+ */
+export const MAX_STEPS_EXPLICIT = 2_000_000;
+/** The capped CFL number of the second fallback path. */
+export const FALLBACK_CFL = 10;
+
+/** The engine's explicit steps (SSPRK2, local time steps, CFL 0.8 as configured). */
+export function explicitEngine(): TransonicEngine {
+  return (problem) => {
+    const solver = new Euler2D(problem.config);
+    return Promise.resolve({
+      start: (cells) => {
+        solver.setCellPrimitives(cells);
+        return Promise.resolve();
+      },
+      iterate: (steps) => {
+        solver.iterate(steps);
+        return Promise.resolve();
+      },
+      drag: () => Promise.resolve(problem.drag(solver)),
+      residual: () => Promise.resolve(solver.densityResidualNorm()),
+      checkPrecision: () => Promise.resolve(),
+      cells: () => {
+        const copy = new Euler2D(problem.config);
+        copy.setConserved(solver.conserved());
+        return Promise.resolve((i: number, j: number) => copy.primitive(i, j));
+      },
+      destroy: () => undefined,
+    });
+  };
+}
+
+/** The fallback engines of (y) item 18, in their registered order; null where no fallback applies (the GPU kit). */
+export interface FallbackEngines {
+  readonly explicit: TransonicEngine;
+  readonly implicit10: TransonicEngine;
+}
+export function cpuFallback(): FallbackEngines {
+  return { explicit: explicitEngine(), implicit10: cpuTransonicEngine(FALLBACK_CFL) };
+}
 
 export interface WallCell {
   /** Centroid along the axis, body radii. */
@@ -87,6 +144,8 @@ export interface GridResult {
   readonly rate: number;
   /** The scale the thresholds used. */
   readonly scale: number;
+  /** The iteration path that settled it ((y) item 18). */
+  readonly path: SolvePath;
 }
 
 export interface GridRecords {
@@ -140,6 +199,7 @@ export async function solveGrid(
   checkPrecision = false,
   maxSteps = MAX_STEPS,
   mid: MidCheckpoint | null = null,
+  path: SolvePath = 'implicit',
 ): Promise<{ result: GridResult; conserved: Float64Array }> {
   const refinement = problem.options.refinement;
   const mach = problem.options.mach;
@@ -180,11 +240,14 @@ export async function solveGrid(
       steps += every;
       if (checkPrecision && steps === every) await solver.checkPrecision();
       drag = await solver.drag();
-      if (!Number.isFinite(drag)) throw new NotConverged('the drag is not finite');
+      if (!Number.isFinite(drag)) throw new NotConverged('the drag is not finite', 'diverged');
       const residual = await solver.residual();
       if (Number.isNaN(firstResidual)) firstResidual = residual;
       if (residual > RESIDUAL_DIVERGENCE * firstResidual)
-        throw new NotConverged(`the residual grew from ${firstResidual} to ${residual}`);
+        throw new NotConverged(
+          `the residual grew from ${firstResidual} to ${residual}`,
+          'diverged',
+        );
       largestResidual = Math.max(largestResidual, residual);
       const moving = residual !== lastResidual;
       lastResidual = residual;
@@ -213,7 +276,7 @@ export async function solveGrid(
         break;
       }
     }
-    if (!settled) throw new NotConverged(`the drag did not settle within ${maxSteps} steps`);
+    if (!settled) throw new NotConverged(`the drag did not settle within ${maxSteps} steps`, 'cap');
     let low = drag;
     let high = drag;
     for (let k = 0; k < WANDER_CHECKS; k++) {
@@ -243,12 +306,79 @@ export async function solveGrid(
         noise,
         rate: settling.rateToPassOn,
         scale,
+        path,
       },
       conserved: copy.conserved(),
     };
   } finally {
     solver.destroy();
   }
+}
+
+/**
+ * (y) item 18: solveGrid by the implicit steps and, if they diverge (never
+ * on a step-cap miss), the same grid from the same start by the fallback
+ * engines in their registered order: the explicit steps under their own
+ * cap, then the implicit steps at CFL 10 under the ordinary cap. A
+ * divergence or a cap miss of the last path is thrown as it is. With
+ * `fallback` null (the GPU kit) a divergence is thrown at once. `midFor`
+ * gives each path its own mid-grid checkpoint; a saved fallback state
+ * found at the start means the implicit path had already diverged before
+ * a restart, so that path is skipped.
+ */
+export async function solveGridStably(
+  engine: TransonicEngine,
+  problem: TransonicProblem,
+  start: { problem: TransonicProblem; cells: TransonicCells; rate: number } | null,
+  tag: string,
+  log: Log,
+  checkPrecision = false,
+  fallback: FallbackEngines | null = null,
+  midFor: (path: SolvePath) => MidCheckpoint | null = () => null,
+): Promise<{ result: GridResult; conserved: Float64Array }> {
+  const paths: { path: SolvePath; engine: TransonicEngine; maxSteps: number }[] = [
+    { path: 'implicit', engine, maxSteps: MAX_STEPS },
+  ];
+  if (fallback !== null) {
+    paths.push({ path: 'explicit', engine: fallback.explicit, maxSteps: MAX_STEPS_EXPLICIT });
+    paths.push({ path: 'implicit10', engine: fallback.implicit10, maxSteps: MAX_STEPS });
+  }
+  // A fallback path with a saved state was running before a restart: the earlier paths had diverged.
+  let first = 0;
+  for (let k = paths.length - 1; k > 0; k--) {
+    if (midFor(paths[k]!.path)?.load() !== null && midFor(paths[k]!.path) !== null) {
+      first = k;
+      break;
+    }
+  }
+  const reasons: string[] = [];
+  for (let k = first; k < paths.length; k++) {
+    const { path, engine: e, maxSteps } = paths[k]!;
+    try {
+      return await solveGrid(
+        e,
+        problem,
+        start,
+        path === 'implicit' ? tag : `${tag} ${path}`,
+        log,
+        checkPrecision && path === 'implicit',
+        maxSteps,
+        midFor(path),
+        path,
+      );
+    } catch (error) {
+      if (!(error instanceof NotConverged)) throw error;
+      reasons.push(`${path}: ${error.message}`);
+      const last = k === paths.length - 1;
+      if (error.kind !== 'diverged' || last) {
+        throw new NotConverged(reasons.join('; '), error.kind);
+      }
+      await log(
+        `${tag} r=${problem.options.refinement}: the ${path} steps diverged (${error.message}); re-solving by the ${paths[k + 1]!.path} steps from the same start ((y) item 18)`,
+      );
+    }
+  }
+  throw new NotConverged(reasons.join('; '), 'other');
 }
 
 /** The records of 0014 10.7 (y) items 3 Q2, Q3 and Q5 from a grid's converged state. */
@@ -364,6 +494,7 @@ export async function solveAllowance(
   own: { result: GridResult; records: GridRecords; problem: TransonicProblem },
   tag: string,
   log: Log,
+  fallback: FallbackEngines | null = null,
 ): Promise<AllowanceRecord> {
   const domains = transonicDomains(body, mach);
   const sizes = kind === 'farField' ? domains.farField : domains.cylinder;
@@ -371,8 +502,24 @@ export async function solveAllowance(
     kind === 'farField' ? { farField: size } : { cylinder: size };
   const smallerProblem = problemOf(mach, 1, nestedOf(sizes[0]));
   const largerProblem = problemOf(mach, 1, nestedOf(sizes[2]));
-  const smaller = await solveGrid(engine, smallerProblem, null, `${tag} ${kind} ${sizes[0]}`, log);
-  const larger = await solveGrid(engine, largerProblem, null, `${tag} ${kind} ${sizes[2]}`, log);
+  const smaller = await solveGridStably(
+    engine,
+    smallerProblem,
+    null,
+    `${tag} ${kind} ${sizes[0]}`,
+    log,
+    false,
+    fallback,
+  );
+  const larger = await solveGridStably(
+    engine,
+    largerProblem,
+    null,
+    `${tag} ${kind} ${sizes[2]}`,
+    log,
+    false,
+    fallback,
+  );
   const smallerRecords = gridRecords(smallerProblem, smaller.conserved);
   const largerRecords = gridRecords(largerProblem, larger.conserved);
   const values = [smaller.result.drag, own.result.drag, larger.result.drag] as const;
