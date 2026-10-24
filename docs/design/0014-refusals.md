@@ -2321,6 +2321,46 @@ to the rules above, in the review's numbering:_
     family starts at `NEAR_SONIC_LIMIT` in the gate (no hard-coded 1.05),
     tested at 1.041 (held) and 1.05 (served).
 
+18. _The stable stepping path for grids that diverge (the owner's
+    decision of 2026-10-24; written AFTER a result was seen, disclosed
+    here in full)._ At 18:20 UTC on 2026-10-24 the Mach 0.600 family's
+    far-field allowance base grid at 408.7 radii (asked 400, r = 1,
+    solved from the free stream by the implicit LU-SGS steps at CFL 1000)
+    diverged: it converged to about 0.002941 by step 3,000, held there to
+    about step 6,000, then its drag wandered and its residual grew from
+    the first check's 4.49e-3 to 0.568 at step 9,750 (past 100 times, the
+    registered divergence test), the same signature as 0013's 800-radius
+    divergence at Mach 1. The registered scripts then recorded Mach 0.600
+    as not converged. What had been seen when this item was written, and
+    nothing else below Mach 1: the Mach 0.600 r = 1 record (drag
+    0.0029476 in 35,450 steps, wall loss ahead 2.12e-3 of p0, largest wall
+    Mach 0.732, no supersonic wall cell), the 100.6-radius allowance base
+    grid's drag 0.00298282 (18,000 steps), and the divergence above; of
+    Mach 0.800, its r = 1 and its 100.6-radius allowance base grid were
+    running. No r = 2 or finer grid, no band, no station band and no
+    allowance existed for any subsonic Mach number. The rule, from this
+    item on: any grid of the CPU path (a family grid or an allowance base
+    grid, at every rung and every row, the 800-radius test's three
+    implicit base grids included) that diverges under the implicit CFL
+    1000 steps (the residual growing past 100 times its first value, the
+    registered test; never a step-cap miss, which stays "not converged")
+    is re-solved from the same start by the far-800 path in its registered
+    order: the explicit SSPRK2 steps at CFL 0.8 under their registered
+    cap of 2,000,000 steps, then, if those do not settle, the implicit
+    steps with the CFL number capped at 10 under the ordinary cap. A
+    divergence or a step-cap miss of both still means "not converged".
+    The path each grid settled by is recorded in its result (`path`). The
+    steady state is the same whichever path reaches it (0013: the
+    implicit steps change only the path), so no criterion, tolerance,
+    cap, floor, allowance rule or label changes; a grid solved by the
+    fallback carries the same settling tests, the same scale S and the
+    same noise rules. The GPU kit's red-black path is NOT covered: a
+    divergence there stays "not converged" (the kit runs no CPU fallback;
+    a row the kit cannot converge is solved here on the CPU, if at all).
+    The non-converged record of Mach 0.600 is kept in the branch under a
+    "superseded" name, never deleted, and the family is solved again only
+    after an independent review of this item and its code.
+
 _Tests added for the errors the review planted:_ the floor and the
 cylinder term in the station band, p_inf / p_wall in the loss tolerance,
 the top rung's ordering condition, the zero-drag fail just past the
