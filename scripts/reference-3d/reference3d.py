@@ -150,7 +150,7 @@ def mesh_case(case, level, ratio, out):
     mn = case['mach'] * math.cos(math.radians(case.get('sweepDeg', 0.0)))
     delta, _ = billig(max(mn, 1.05))
     standoff = delta * r
-    dim = 2 if kind == 'planar-edge' else 3
+    dim = 2 if kind in ('planar-edge', 'planar-section') else 3
 
     def fin_solid(x0, y0, root, tip, span, sweep):
         """The fin: a plate of thickness t about z = 0, its leading edge at x0 where y = y0 (the root), its
@@ -205,6 +205,18 @@ def mesh_case(case, level, ratio, out):
         h_edge, h_far = 0.03 * f, 0.5 * f
         sizes = {'edge': h_edge, 'far': h_far}
         lim = {'x_in': -x_up, 'x_out': x_out, 'top': y_top}
+    elif kind == 'planar-section':
+        # Rung (b3) (0021 4.2, revision 3e): the upper half of a symmetric hexagon of chord 1 (lengths in chords),
+        # sharp edges, in 0009 section 2.4's domain: x from -0.3 to 1.2, 1.4 chords high; the plane y = 0 ahead
+        # of and behind the section a symmetry plane.
+        b, h = case['bevel'], case['thicknessRatio'] / 2
+        pts = [(-0.3, 0.0), (0.0, 0.0), (b, h), (1.0 - b, h), (1.0, 0.0), (1.2, 0.0), (1.2, 1.4), (-0.3, 1.4)]
+        tags = [occ.addPoint(px, py, 0) for px, py in pts]
+        lines = [occ.addLine(tags[k], tags[(k + 1) % len(tags)]) for k in range(len(tags))]
+        occ.addPlaneSurface([occ.addCurveLoop(lines)])
+        occ.synchronize()
+        sizes = {'edge': 0.002 * f, 'far': 0.01 * f, 'distMin': 0.02, 'distMax': 0.2}
+        lim = {'x_in': -0.3, 'x_out': 1.2, 'top': 1.4}
     elif kind in ('plane-wall-fin', 'cylinder-fin'):
         c, ct, s, sw = case['rootChord'], case['tipChord'], case['span'], case['sweepDeg']
         x_up = r + 1.6 * standoff + 2.0
@@ -323,8 +335,8 @@ def mesh_case(case, level, ratio, out):
     fd.setNumber(thr, 'InField', dist)
     fd.setNumber(thr, 'SizeMin', sizes['edge'])
     fd.setNumber(thr, 'SizeMax', sizes['far'])
-    fd.setNumber(thr, 'DistMin', max(standoff, 0.5 * t) * 1.5)
-    fd.setNumber(thr, 'DistMax', max(standoff, 0.5 * t) * 1.5 + 30 * sizes['far'])
+    fd.setNumber(thr, 'DistMin', sizes.get('distMin', max(standoff, 0.5 * t) * 1.5))
+    fd.setNumber(thr, 'DistMax', sizes.get('distMax', max(standoff, 0.5 * t) * 1.5 + 30 * sizes['far']))
     fields = [thr]
     if 'wall' in markers and 'body' in sizes:
         d2 = fd.add('Distance')

@@ -1,13 +1,16 @@
 {
-  "registered": "docs/design/0021-3d-euler-fins.md section 4.4 and 0014 10.7 (u)",
-  "units": "lengths in plate thicknesses for kinds planar-edge, plane-wall-fin and cylinder-fin; in body calibers (diameter 1) for body-fins",
+  "registered": "docs/design/0021-3d-euler-fins.md section 4.4 (the b3-* cases: section 4.2, revision 3e) and 0014 10.7 (u)",
+  "units": "lengths in plate thicknesses for kinds planar-edge, plane-wall-fin and cylinder-fin; in body calibers (diameter 1) for body-fins; in chords for planar-section",
   "freestream": {
     "pressure": 101325.0,
     "temperature": 288.15,
     "gamma": 1.4,
     "gas_constant": 287.058
   },
-  "levels": { "count": 4, "ratio": 1.5 },
+  "levels": {
+    "count": 4,
+    "ratio": 1.5
+  },
   "cases": [
     {
       "id": "cal-rounded-1.5",
@@ -125,6 +128,46 @@
       "tipChord": 0.9,
       "span": 1.5,
       "thickness": 0.06
+    },
+    {
+      "id": "b3-hex-0.08-0.15-M2.0",
+      "role": "rung (b3): independent check of the characteristics reference if the fitted check is inconclusive (4.2, revision 3e); the CD columns are of the upper half, so the section cd (chord 1) is twice them",
+      "kind": "planar-section",
+      "thicknessRatio": 0.08,
+      "bevel": 0.15,
+      "mach": 2.0
+    },
+    {
+      "id": "b3-hex-0.05-0.1-M2.0",
+      "role": "rung (b3): independent check of the characteristics reference if the fitted check is inconclusive (4.2, revision 3e); the CD columns are of the upper half, so the section cd (chord 1) is twice them",
+      "kind": "planar-section",
+      "thicknessRatio": 0.05,
+      "bevel": 0.1,
+      "mach": 2.0
+    },
+    {
+      "id": "b3-hex-0.05-0.15-M1.5",
+      "role": "rung (b3): independent check of the characteristics reference if the fitted check is inconclusive (4.2, revision 3e); the CD columns are of the upper half, so the section cd (chord 1) is twice them",
+      "kind": "planar-section",
+      "thicknessRatio": 0.05,
+      "bevel": 0.15,
+      "mach": 1.5
+    },
+    {
+      "id": "b3-hex-0.05-0.15-M2.0",
+      "role": "rung (b3): independent check of the characteristics reference if the fitted check is inconclusive (4.2, revision 3e); the CD columns are of the upper half, so the section cd (chord 1) is twice them",
+      "kind": "planar-section",
+      "thicknessRatio": 0.05,
+      "bevel": 0.15,
+      "mach": 2.0
+    },
+    {
+      "id": "b3-hex-0.03-0.05-M2.0",
+      "role": "rung (b3): independent check of the characteristics reference if the fitted check is inconclusive (4.2, revision 3e); the CD columns are of the upper half, so the section cd (chord 1) is twice them",
+      "kind": "planar-section",
+      "thicknessRatio": 0.03,
+      "bevel": 0.05,
+      "mach": 2.0
     }
   ]
 }

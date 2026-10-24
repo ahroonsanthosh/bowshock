@@ -10,15 +10,17 @@
  *   the drag has no reflected wave on its surface: its reference is the finest value, which must equal
  *   shock-expansion theory within 1e-7.
  * - Against a different method, the 2D fitted engine (0006) in planar geometry
- *   (src/analysis/planar-fitted-flow.ts): base grid 16 cells from the surface to the shock and 48 columns a
+ *   (src/analysis/planar-fitted-flow.ts), on the two cases of revision 3e (t/c 0.08 with 15% bevels at Mach 2,
+ *   t/c 0.03 with 5% bevels at Mach 2): base grid 16 cells from the surface to the shock and 48 columns a
  *   chord (each segment at least two), refined by 2 to 8 times; the fitted family's band is 0005's procedure
  *   at ratio 2 (order tolerance 0.5, noise 1e-12) plus 0006's floor of 7e-5 of the value, placed on the
- *   finest value. Pass: the band contains the characteristics reference. Recorded: shock-expansion theory's
- *   distance from the reference against the band (whether the check can tell them apart).
+ *   finest value. Each case: pass where the band contains the characteristics reference and not
+ *   shock-expansion theory's value; inconclusive (never a pass) where it contains both; fail where it does
+ *   not contain the reference. The check: fail if any case fails, else inconclusive if any is, else pass.
+ *   If it is inconclusive, (b3) waits for SU2 on the planar hexagons (scripts/reference-3d, cases b3-*).
  *
- * The cases: the hexagons of 0021 4.2 whose leading-edge shock attaches. t/c 0.05 with 10% bevels at Mach 1.5
- * (a 14.04 deg bevel, beyond the 12.1 deg attachment limit) is detached and not run; it is also the record's
- * second case for the fitted check, which waits for a ruling (FITTED_CASES holds only the first until then).
+ * The cases: the five hexagons of 0021 4.2 (revision 3e); t/c 0.05 with 10% bevels at Mach 1.5 (a 14.04 deg
+ * bevel, beyond the 12.1 deg attachment limit) detaches and was removed as impossible.
  *
  * Levels are appended to out/rung-b3-reference.jsonl as they finish (a restart skips those done); verdicts in
  * out/rung-b3-reference.json. Run (hours, one core):
@@ -49,8 +51,8 @@ const FITTED_NJ = 16;
 const FITTED_COLUMNS = 48;
 const FITTED_FLOOR = 7e-5;
 
-/** The record's two reflected-wave cases for the fitted check; the second awaits a ruling (header). */
-const FITTED_CASES: readonly B3Case[] = [B3_CASES[0]!];
+/** The two reflected-wave cases of the fitted check (revision 3e). */
+const FITTED_CASES: readonly B3Case[] = [B3_CASES[0]!, B3_CASES[4]!];
 
 const upper = (s: SymmetricSection) => ({ x: s.x, y: s.halfThickness });
 
@@ -124,6 +126,9 @@ test('rung (b3) reference: the planar characteristics on the double wedges and t
     const band = estimate.kind === 'unresolved' ? null : estimate.uncertainty + FITTED_FLOOR * Math.abs(finest);
     const reference = hexagons.find((h) => h.case === c.id)!.reference;
     const se = exactSectionDrag(s, c.mach, { neglectReflectedWaves: true }).cd;
+    const containsReference = band !== null && Math.abs(finest - reference) <= band;
+    const containsShockExpansion = band !== null && Math.abs(finest - se) <= band;
+    const verdict: 'pass' | 'inconclusive' | 'fail' = !containsReference ? 'fail' : containsShockExpansion ? 'inconclusive' : 'pass';
     return {
       case: c.id,
       refinements: FITTED_REFINEMENTS,
@@ -131,13 +136,24 @@ test('rung (b3) reference: the planar characteristics on the double wedges and t
       estimate,
       band,
       reference,
+      shockExpansion: se,
       distance: Math.abs(finest - reference),
-      pass: band !== null && Math.abs(finest - reference) <= band,
       shockExpansionDistance: Math.abs(finest - se),
-      bandTellsThemApart: band !== null && Math.abs(finest - se) > band,
+      containsReference,
+      containsShockExpansion,
+      verdict,
     };
   });
-  const pass = wedges.every((w) => w.pass) && hexagons.every((h) => h.pass) && fitted.every((f) => f.pass);
-  write({ hexagons, fitted, fittedAwaitingRuling: 'the second fitted case (record: t/c 0.05, 10% bevels, Mach 1.5) is detached', pass });
+  const fittedCheck = fitted.some((f) => f.verdict === 'fail') ? 'fail' : fitted.some((f) => f.verdict === 'inconclusive') ? 'inconclusive' : 'pass';
+  const referenceVerified = wedges.every((w) => w.pass) && hexagons.every((h) => h.pass);
+  const pass = referenceVerified && fittedCheck === 'pass';
+  write({
+    hexagons,
+    fitted,
+    referenceVerified,
+    fittedCheck,
+    next: fittedCheck === 'inconclusive' ? 'SU2 on the planar hexagons (scripts/reference-3d, cases b3-*), run by the owner (0021 4.2, revision 3e)' : null,
+    pass,
+  });
   expect(pass).toBe(true);
 });

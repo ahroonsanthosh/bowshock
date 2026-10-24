@@ -25,3 +25,8 @@ python3 scripts/reference-3d/reference3d.py all --cases e3,h1 --threads 8
   `run-*.json` files of interrupted runs included) when it is done.
 - The cases and their numbers are in `cases.json`, fixed with the
   registration (0014 10.7 (u)); do not edit them.
+- The five `b3-*` cases (planar hexagons, 0021 4.2, revision 3e) are
+  needed only if rung (b3)'s fitted check is inconclusive
+  (`docs/research/solver3d/out/rung-b3-reference.json` says so); then run
+  `python3 scripts/reference-3d/reference3d.py all --cases` with their five
+  names (from `list`).

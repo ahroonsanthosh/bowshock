@@ -1091,23 +1091,57 @@ from -0.3 to 1.2, 1.4 chords high).
   served until (b3) passes. **The reference:** a planar method of
   characteristics with the leading-edge shock fitted, the extension of
   `src/validation/characteristics.ts` to planar flow that 0009 section 7
-  names. It is verified before use: on the double wedge it must reproduce
-  shock-expansion theory (exact there) within 1e-7 of the drag; its own
-  refinement (320 to 2560 intervals, as 0006's march) must converge at an
-  observed order between 1.5 and 2.5, its extrapolation then the
-  reference; and, since the double wedge has no reflected wave, it is
-  checked on two cases that have them, where waves reflected from the
-  leading-edge shock land on the flat and on the rear bevel and meet the
-  rear bevel's own expansion (t/c 0.08 with 15% bevels at Mach 2; t/c
-  0.05 with 10% bevels at Mach 1.5), against a different method: the 2D
-  fitted engine (0006) in planar geometry, its leading-edge shock the
-  fitted outer boundary, to 8 times its coarsest grid. The two must agree
-  within the fitted family's band. **The cases:** hexagons of t/c 0.08 with 15% bevels at Mach
-  2 (0009's case), t/c 0.05 with 10% and 15% bevels at Mach 1.5 and 2.0,
-  and t/c 0.03 with 5% bevels at Mach 2.0 (bevels of hobby stock's
-  proportions). **Pass:** for every case, the Euler family to L5 gives a
-  band (L2 to L5, the floor included) that contains the characteristics
-  reference. A failure leaves the reflected-wave sections refused.
+  names (`src/validation/characteristics-planar.ts`). It is verified
+  before use: on the double wedge it must reproduce shock-expansion
+  theory (exact there) within 1e-7 of the drag; its own refinement (320
+  to 2560 intervals, as 0006's march) must converge at an observed order
+  between 1.5 and 2.5, its extrapolation then the reference.
+  **The cases** (revision 3e): hexagons of t/c 0.08 with 15% bevels at
+  Mach 2 (0009's case), t/c 0.05 with 10% bevels at Mach 2.0, t/c 0.05
+  with 15% bevels at Mach 1.5 and 2.0, and t/c 0.03 with 5% bevels at
+  Mach 2.0 (bevels of hobby stock's proportions): five. Revision 3's list
+  also named t/c 0.05 with 10% bevels at Mach 1.5; its bevel (14.04 deg)
+  is beyond the attachment limit at Mach 1.5 (12.1 deg), so its shock
+  detaches and the case is impossible: removed.
+  **Checked against a different method,** since the double wedge has no
+  reflected wave, on two cases whose waves reflected from the
+  leading-edge shock land on the surface: t/c 0.08 with 15% bevels at
+  Mach 2, and t/c 0.03 with 5% bevels at Mach 2 (revision 3e; see section
+  12 for why it was chosen). The method: the 2D fitted engine (0006) in
+  planar geometry (`src/analysis/planar-fitted-flow.ts`), its leading-edge
+  shock the fitted outer boundary, on a base grid of 16 cells from the
+  surface to the shock and 48 columns a chord (each segment at least
+  two), refined by 2 to 8 times; its band is 0005's procedure at ratio 2
+  plus 0006's floor of 7e-5 of the value, placed on the finest value
+  (fixed in `docs/research/solver3d/rung-b3-reference.test.ts`'s header at
+  commit 1c34151, before any check ran). **Outcomes:** pass where the band
+  contains the characteristics reference and does not contain
+  shock-expansion theory's value; **inconclusive, never a pass,** where
+  it contains both (it cannot tell them apart); fail where it does not
+  contain the reference.
+  **If the fitted check is inconclusive,** (b3) needs a check that can
+  tell them apart: SU2 (4.4's registered offline code, run by the owner)
+  on the five planar hexagons (`scripts/reference-3d/cases.json`, cases
+  `b3-*`), four meshes refined by 1.5, its band 0005's procedure. Its
+  width rule is 4.4's: its full band at most 0.035 of its value, or it
+  counts as no reference. It passes for a case where it is not too wide,
+  its band contains the characteristics reference and does not contain
+  shock-expansion theory's value; where its band contains both, it too is
+  inconclusive. No stagnation allowance is added: these sections have no
+  stagnation line. The fitted check passes when both its cases pass;
+  SU2's when it passes on each of the four cases whose reflected waves
+  reach the surface (on t/c 0.05 with 15% bevels at Mach 2, which has
+  none, its band must contain the reference). Either check is inconclusive
+  if any of its cases is, and fails if any fails.
+  **Pass:** the characteristics reference is verified (above), a check
+  that can tell it from shock-expansion theory has passed (the fitted
+  engine's, or else SU2's), and, for every case, the Euler family to L5
+  gives a band (L2 to L5, the floor included) that contains the
+  characteristics reference. The floor is FIN_DRAG_FLOOR (4.7); until all
+  its terms are measured ((b2) L3 to L5, (c-x), (e0) and the floor
+  families), (b3)'s verdict is provisional and says so. Short-bevel
+  hexagons stay refused until (b3) passes on a check that can tell them
+  apart. A failure leaves the reflected-wave sections refused.
 
 ### 4.3 Rung (c): fins on a plane wall (review findings 4 and 6)
 
@@ -1194,6 +1228,9 @@ runs them, and collects SU2's force histories and surface files with the
 SU2 and Gmsh versions, the archive hashes and the machine (operating
 system, processor, cores) into `docs/research/solver3d/reference/`. Only
 inputs and results are committed; no code of SU2 or Gmsh.
+The same script also holds rung (b3)'s five planar hexagons (cases
+`b3-*`, revision 3e), run only if the fitted engine's check of the
+characteristics reference is inconclusive (4.2).
 The cases' dimensions the sections above leave open (chords of 20 plate
 thicknesses for e3 and e6, e6's swept tip chord, the domains' extents and
 the mesh sizes) are those of `scripts/reference-3d/cases.json` and of the
@@ -1456,19 +1493,19 @@ ladder is split.
 
 ### 5.2 On this container's CPU (niced, one process at a time)
 
-| Work                                                                                      | Sizes (estimate)                                                 | Time on one core (estimate)  |
-| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------- |
-| 4.0 code checks, junction tests J1 and J2                                                 | 1e3 to 3e4 cells                                                 | a few hours                  |
-| (a0), (a), (a')                                                                           | revolved 2D grids, up to 16 layers, about 2.5e4 cells            | 6 to 10 hours                |
-| (b0): 14 captured 2D families at ratio 1.5                                                | nj 32 to 108                                                     | about 28 hours               |
-| (b1), (b2): seven families to L5                                                          | planar, two layers, up to about 0.35 to 0.47 million cells on L5 | 40 to 60 hours (revision 3d) |
-| (b3): five hexagons to L5, the planar MOC, and its check against the planar fitted engine | as (b2)                                                          | 25 to 40 hours (revision 3d) |
-| (e0): seven 2D strip families, their 8 L0 references, the 1.3 strips                      | 2D fitted                                                        | about 6 hours                |
-| (e1), (e2), square versions: identities                                                   | planar 3D, 2e4 to 5e4 cells, to round-off                        | about 8 hours                |
-| L0 of every GPU family (about 38)                                                         | 4e4 to 1.7e5 cells, about 3,000 steps                            | about 30 hours               |
-| L1 of the reference families (about 14)                                                   | 1.3e5 to 5.7e5 cells                                             | about 35 hours               |
-| L2 of d1 and e3                                                                           | 4.6e5 and 5.1e5 cells, 6,750 steps                               | about 9 hours                |
-| The spike (2.11)                                                                          | grid generation only                                             | minutes                      |
+| Work                                                                                                                                    | Sizes (estimate)                                                 | Time on one core (estimate)  |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------- |
+| 4.0 code checks, junction tests J1 and J2                                                                                               | 1e3 to 3e4 cells                                                 | a few hours                  |
+| (a0), (a), (a')                                                                                                                         | revolved 2D grids, up to 16 layers, about 2.5e4 cells            | 6 to 10 hours                |
+| (b0): 14 captured 2D families at ratio 1.5                                                                                              | nj 32 to 108                                                     | about 28 hours               |
+| (b1), (b2): seven families to L5                                                                                                        | planar, two layers, up to about 0.35 to 0.47 million cells on L5 | 40 to 60 hours (revision 3d) |
+| (b3): five hexagons to L5 (the six of revision 3 less the detached one, 3e), the planar MOC, its check against the planar fitted engine | as (b2)                                                          | 25 to 40 hours (revision 3d) |
+| (e0): seven 2D strip families, their 8 L0 references, the 1.3 strips                                                                    | 2D fitted                                                        | about 6 hours                |
+| (e1), (e2), square versions: identities                                                                                                 | planar 3D, 2e4 to 5e4 cells, to round-off                        | about 8 hours                |
+| L0 of every GPU family (about 38)                                                                                                       | 4e4 to 1.7e5 cells, about 3,000 steps                            | about 30 hours               |
+| L1 of the reference families (about 14)                                                                                                 | 1.3e5 to 5.7e5 cells                                             | about 35 hours               |
+| L2 of d1 and e3                                                                                                                         | 4.6e5 and 5.1e5 cells, 6,750 steps                               | about 9 hours                |
+| The spike (2.11)                                                                                                                        | grid generation only                                             | minutes                      |
 
 About 200 to 250 core-hours (revision 3d; revision 3 said 150): two weeks
 or so of one niced core on the shared machine, run in the background over
@@ -2223,7 +2260,7 @@ reference's case dimensions that 4.4 left open (chords, the domains, the
 mesh sizes) are fixed in `scripts/reference-3d/cases.json` and the script,
 and its convergence test is the fin drag's, not the residual's (4.4).
 
-### Revision 3d, 2026-10-23 (this text): (b2)'s layout, the CPU cost
+### Revision 3d, 2026-10-23 (commit 9bd9067): (b2)'s layout, the CPU cost
 
 Before any (b) number exists.
 
@@ -2236,6 +2273,44 @@ Before any (b) number exists.
   reach 0.35 to 0.47 million cells a level, at the measured 3.6e-6 s a
   cell-step about 65 to 100 core-hours for (b), about 200 to 250 for the
   CPU plan in all (was 150). The two layers are kept, as registered.
+
+### Revision 3e, 2026-10-24 (this text): (b3)'s cases and its checks
+
+The coordinator's rulings of 2026-10-24, written before any fitted-engine
+number for the affected cases exists (4.2):
+
+- **A case removed as impossible.** Revision 3 listed t/c 0.05 with 10%
+  bevels at Mach 1.5 among (b3)'s cases and as the second case of the
+  check against the planar fitted engine. Its bevel is 14.04 deg; the
+  attachment limit at Mach 1.5 is 12.1 deg, so its leading-edge shock
+  detaches: removed (both the characteristics and the fitted engine
+  refuse it, commits 4962132 and 1c34151). "Five hexagons" in 5.2's cost
+  row means the six listed less this one.
+- **Its replacement in the fitted check: t/c 0.03 with 5% bevels at Mach 2.** It was chosen after the characteristics survey of the cases
+  (commit 4962132: the reflected waves change the drag by +2.2e-4 on t/c
+  0.08 with 15% bevels at Mach 2, +1.2e-3 on t/c 0.05 with 10% at Mach 2,
+  -1.5e-5 on t/c 0.05 with 15% at Mach 1.5, +3.1e-3 on t/c 0.03 with 5% at
+  Mach 2, and nothing on t/c 0.05 with 15% at Mach 2, whose reflected
+  waves miss the surface), on one ground only: the size of the
+  reflected-wave effect, the largest, so that the check can tell the
+  reference from shock-expansion theory. No fitted-engine number for it
+  existed when it was chosen.
+- **Inconclusive is not a pass.** If the fitted check's band contains
+  both the reference and shock-expansion theory's value, the check is
+  inconclusive. The fitted engine converges at about first order on
+  these sections (the captured fan at the corner; measured on coarse
+  unregistered grids, commit 1c34151), so its band may well be wider than
+  the reflected waves' effect on the first case. Then (b3) needs another
+  independent check that can tell them apart: SU2 on the five planar
+  hexagons, registered here with 4.4's width rule (full band at most
+  0.035 of the value). Short-bevel hexagons stay refused until a check
+  that can tell them apart passes.
+- **The fitted engine's grid,** registered: 16 cells from the surface to
+  the shock and 48 columns a chord, refined 1 to 8 times, 0006's floor of
+  7e-5; fixed in the research script's header at commit 1c34151, before
+  any check ran.
+- **(b3)'s verdict is provisional** until FIN_DRAG_FLOOR's other terms
+  ((c-x), (e0), the floor families) are measured.
 
 ### Deviation, 2026-10-23: rung (a)'s 2D references (reported, not reworded)
 
