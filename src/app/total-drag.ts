@@ -536,7 +536,8 @@ export const BAND_CAVEAT =
   'error can exceed it. The input bands are kept apart from it.';
 /** The breakdown, as 0010 section 7 allows it to be claimed. */
 export const BREAKDOWN_NOTE =
-  'The breakdown: the nose wave drag is solved, its band measured from the grids; body ' +
+  'The breakdown: the nose wave drag is solved, its band the numerical error measured from the ' +
+  "grids, without the inviscid model's own error (docs/validation/sources.md); body " +
   "friction's band is validated on wind-tunnel and flight data of friction (0007); the bands " +
   'of the fin and base terms are estimated on data of each component and tested only in the ' +
   'total (0010 section 7).';
@@ -814,8 +815,9 @@ export function noseComponentOf(solve: NoseSolve): DragComponent {
       'solved on this page: the inviscid forebody pressure drag, bow shock fitted, finest of ' +
       `${solve.grids} grids (0006)`,
     band:
-      `measured from the grids, with an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the ` +
-      'value (0006)',
+      'numerical error of the inviscid solve, measured from the grids, with an allowance of ' +
+      `${FITTED_DRAG_FLOOR.toExponential(0)} of the value (0006); the model's own error is not in ` +
+      'this band (docs/validation/sources.md)',
   };
 }
 
