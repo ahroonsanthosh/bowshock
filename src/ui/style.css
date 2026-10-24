@@ -2233,6 +2233,57 @@ input[aria-invalid='true'] {
   color: var(--warn);
   font-weight: 600;
 }
+/* A refused point's parts served and its floor (0011 section 10): text, never a value. */
+.point__known {
+  margin: 8px 0 0;
+  padding-top: 6px;
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+}
+.point__known-head {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.point__parts {
+  margin: 4px 0 0;
+  padding-left: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.point__fold > summary {
+  cursor: pointer;
+}
+.point__fold[open] > summary {
+  margin-bottom: 2px;
+}
+.point__part {
+  display: list-item;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.point__part-label {
+  display: block;
+  color: var(--muted);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+}
+.point__floor {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.point__floor--none {
+  color: var(--muted);
+}
+.curve-table__known,
+.curve-table__floor {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
 .status-word {
   display: inline-flex;
   align-items: center;

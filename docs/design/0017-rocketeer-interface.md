@@ -554,12 +554,21 @@ number is marked on the chart and said beside it with where it came from
 examples fly below Mach 1). At
 the start every point is put to the logic with the nose pending
 (`totalDragView` with `{ kind: 'pending' }`): a point refused for reasons
-other than the nose is final at once, with its reasons, and costs no GPU
-time. The others are solved one at a time, coarse to fine (1.0 and the top
-first, then the middle, then the middles between), so that a curve stopped
-early still spans its range; the chart marks the point being solved. If
-every point is refused before solving, the top point is solved for the
-airflow alone, and labelled so.
+other than the nose is final at once, with its reasons. The others are
+solved one at a time, coarse to fine (1.0 and the top first, then the
+middle, then the middles between), so that a curve stopped early still
+spans its range; the chart marks the point being solved. Amended
+2026-10-24 (0011 section 10, the owner's decision 7.8): after those, the
+points refused for reasons other than the nose are solved too, in the
+same coarse-to-fine order, for their nose's part alone, so that each
+shows its nose wave drag among the parts served and, where 0011 section
+10.3 allows, a floor; while solving such a point shows as solving, before
+and after as a cross with its reasons, and the selection does not follow
+it (a finished curve shows the last point with a number, as before). A
+stop or a failed GPU leaves such a point's refusal as it was. Without
+WebGPU none is solved. (This section said until 2026-10-24 that a curve
+refused at every point solved its top point for the airflow alone; the
+code never did, and does not.)
 
 ### 8.2 One point
 
@@ -623,7 +632,12 @@ mach,cd,cd_low,cd_high,status,reason
 `status` is the logic's kind (`estimate` today, or `refused`, or no number
 for a point not modelled, asking about its parts, or not finished);
 `reason` the logic's claim text and its reasons, prefixed "Computed without
-..." when parts were left out. A test pins the format.
+..." when parts were left out. A test pins the format. Since 2026-10-24
+(0011 section 10) a refused row's `reason` also carries the parts served,
+each with its band and label, and the floor with its label (or why none
+is given), and a seventh column, `floor`, holds the floor alone; it is
+never written in `cd`, `cd_low` or `cd_high`, and the chart draws no mark
+for it.
 
 ### 8.5 The points near Mach 1 (1.0 to 1.2): planned, not wired
 

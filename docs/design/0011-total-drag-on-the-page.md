@@ -25,7 +25,10 @@
   4; 0010 section 11.7); on 2026-10-22 that test, BRL Report 934's range
   A, run and passed at conditions outside the class, and a narrow BRL
   sub-class at exactly those conditions labelled validated, the class
-  still an estimate (sections 3 and 4; 0014 section 10.7 (q))
+  still an estimate (sections 3 and 4; 0014 section 10.7 (q)); on
+  2026-10-24, the owner's decision 7.8: a refused total shows every part
+  that is served, each with its band and label, and a one-sided floor
+  where every refused part is shown not to be negative (section 10)
 - **Inputs:** [0010](0010-base-drag-and-total.md) section 7 (what may be
   claimed), section 4.2 (the gate) and section 10 (the round 5 audit),
   [0008](0008-total-drag.md) sections
@@ -91,7 +94,9 @@ by `totalDragDisplay`:
 
 - **Refused:** "Total drag refused: no number is given", and every reason,
   each as `component (reason): message`, from the nose solve, the inputs
-  and every component `src/total` refuses.
+  and every component `src/total` refuses. Since 2026-10-24 (section 10)
+  also every part that is served, with its band and label, and the floor
+  or why none is given.
 - **Waiting for the nose:** no number; whether the case lies inside the
   class, and if not, every reason.
 - **The total:** C_D to four decimals and its model-form band, the band's
@@ -623,3 +628,241 @@ before: it switches to "Reynolds number directly" with 6.62e6 times the
 Mach number (to three figures) and 293.95 K, and sets the diameter to 30
 mm. The gate's equality tests (section 5) build their forms directly and
 are unchanged.
+
+## 10. When the total is refused: the parts served, and a floor (2026-10-24)
+
+The owner's decision 7.8 of 2026-10-22, on the advisor's design
+(`advice/fable-2026-10-22.md` on `claude/wip/handoff`, section 1, "The
+curve, and what a refusal shows"), to go through an independent review
+before it is merged. Until now a refused total showed only its reasons
+(section 2). The nose wave drag, the one part no other hobby tool gives,
+is served for about 16.5% of the population's cases where the total is
+not (0014's `impact.out`), and the page threw it away. This section was
+written before the code.
+
+### 10.1 What is shown
+
+When the total is refused, the page shows, beside every reason (each
+still said in full: in plain words in the point block and the table, as
+`component (reason): message` in Details and the CSV):
+
+- **Every part that is served**, each as a total would show it: its
+  value, its band (rounded outward), its label and the source of its band,
+  as `src/total` reports them, unchanged. The parts are those of
+  `finnedBodyComponents`: the nose wave drag (only once the nose is solved
+  with a band), body friction, fin friction, fin wave drag, the fin
+  leading edges, the body base and the fins' trailing-edge base, whichever
+  are not refused. The input bands are shown where any is not zero.
+- **Not a part computed for another fin.** Where a rounded leading edge
+  on a section that is not a flat plate is refused, `src/total` computes
+  the fin wave drag of the sharp section (it has no rounded wedge to take
+  the faces from), which is not the fin as drawn: the faces of a rounded
+  wedge are less steep than the sharp wedge's. That value is not shown as
+  served; it is named, with that reason, as a part not shown.
+- **Nothing** where the inputs themselves are refused (the body, the
+  flight condition, the fins' place or shape) or a method failed (section
+  1): there are no parts, and no floor.
+- **The floor**, or every reason none is given (10.2 to 10.4).
+
+The curve shows no floor: a refused point stays a red cross in the "no
+number" row (0017 section 8.4), with no mark, bar or value at any height,
+since the floor is not an estimate and a mark would read as one. The
+floor is shown in the point block, the table, the CSV, the PNG's caption
+and Details, always with its label.
+
+To have the nose's part, a point refused for reasons other than the nose
+is now solved too, after every point that can have a number (0017 section
+8.1, amended the same day): the numbers come first, and a curve stopped
+early loses only parts of refused points. While its nose is being solved
+the point shows as solving; before and after, as a cross. Without WebGPU
+no nose is solved, and no floor is given (10.4).
+
+### 10.2 The floor
+
+**At least F, where F is the sum of the served parts' low ends and of the
+input bands' low ends.** Each input band's low end is zero or below
+(`src/total` forms each from zero, and the page refuses a roughness band
+that does not contain zero, section 1). The floor is offered only where
+every refused part is shown not to be negative (10.3): then the drag of
+the parts served is at least the sum of their low ends, as far as each
+band holds, and the refused parts add zero or more. It is one-sided: no
+upper end is given, and it is not an estimate of the total, which may lie
+well above it.
+
+The base is never taken below its own band. Where the body base is
+served, its low end is its band's, which already runs down to the
+fins-on-base factor's lowest member (0015 section 3.6: the zero member,
+0.838 below Mach 1.62 and 0.938 above, 0015 section 3.5), or the present
+factor's band (0010 section 1.3). The fins-on-base factor is not
+non-negative as an increment (it lowers the base drag where it is below
+1, to 0.838 of the bare body's on RM L52E06's plates), so it is never
+treated as a refused part that adds zero or more: where the body base is
+refused, for the factor or for anything else, the floor is withheld
+(10.4).
+
+Shown to four decimals rounded down (never up) in Details, the table and
+the CSV, and to three significant figures rounded down in the point block
+and the PNG.
+
+### 10.3 Each refused part, and why it is not negative
+
+| Refused part                                                                                    | Not negative?                                            | The argument                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fin friction                                                                                    | Always                                                   | The shear on a fin's faces at zero incidence acts along the stream, laminar or turbulent: every model of 0007 and every measurement its band rests on give a positive skin-friction coefficient. Refused below Mach 1.5 for its band (0014 section 10.7 (f)), not for its sign.                                                                                                                                                                                                                                                                                                               |
+| Fin trailing-edge base                                                                          | Always                                                   | A blunt or rounded trailing edge's base lies in a separated wake whose pressure is below the free stream's. Every base pressure in the band-setting sources is below free-stream static (TR 1109 figs. 8 and 29, RM A51J25 fig. 7, TN D-1056 table II, 0010 section 5.1; near Mach 1 a pressure coefficient of -0.43 to -0.7, 0019 section 1.2), and a rounded trailing edge's rear side carries more, not less (TN 2960's cylinder, 1.35 and 1.16 times a square base, 0016 section 6). Refused for its band or its regime (swept, laminar, thick layer, rounded, Mach range), not its sign. |
+| Fin wave drag, a closed section (double wedge, hexagonal: sharp at both edges)                  | Wherever the body's base is not felt at the fins (below) | A closed body in a uniform stream: its pressure drag in steady inviscid flow is zero without shocks (d'Alembert) and the entropy flux through its shocks with them, positive by the second law (0019 section 3.2 (L1) and (L2), written there for a half-body; the same momentum balance closes on a closed body), and viscosity adds to it ((L3)). Refused for its band below Mach 1.5 or for the section method's domain (0009), not its sign. The fins sit in the body's flow, not a uniform stream: see "Closed sections in the body's flow" below.                                       |
+| Fin wave drag, a single wedge (a blunt trailing edge)                                           | Only with supersonic edges (below)                       | Its faces form a half-body with a base: where the flow normal to an edge is subsonic, the base's low pressure is felt on the faces ahead of it (as the trailing edge's sink at a plate's nose, 0019 section 3.2 (L4)); linear theory gives a strip of constant slope in subsonic flow a face pressure that falls below the free stream's toward the base, its drag zero to first order, so the sign is not shown. With supersonic edges the faces lie behind the leading edge's compression and nothing downstream reaches them.                                                              |
+| Fin leading edges, a flat plate (rounded or square-cut)                                         | Only with supersonic edges (below)                       | A half-body whose faces lie parallel to the stream: its nose carries the body's whole drag, zero without shocks and positive with them ((L1), (L2)), viscosity adding ((L3)). The trailing edge lowers it below zero by its upstream influence where its normal flow is subsonic ((L4); the advisor: "slightly below zero by the trailing edge's sink, a few thousandths of C_D"), and the body's base where the flow along the body is not supersonic with a margin ((L5)). With supersonic edges neither reaches the nose.                                                                  |
+| Fin leading edges, any other section (a rounded edge on a wedge, double wedge or hexagonal fin) | Not argued                                               | `src/total` then computes the sharp section's faces (10.1), not the fin's; the sign of the rounded nose and the rounded wedge's faces together is not argued in the records.                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Body base                                                                                       | Not argued                                               | 10.2: the fins-on-base factor moves it both ways, and an afterbody other than a cylinder to a flat base (a boat-tail, a flare) is not computed at all.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Nose wave drag                                                                                  | Not argued here                                          | A nose not solved, not solved to a band, or refused gives no part, and this record does not argue its sign near Mach 1, where the base's influence reaches forward along the body.                                                                                                                                                                                                                                                                                                                                                                                                            |
+
+**Closed sections in the body's flow** (added 2026-10-24 after the
+independent review). (L1) and (L2) assume a uniform stream; a fin sits
+in the body's flow. To first order, a closed body in a stream whose
+pressure changes along it feels, besides its own drag in a uniform
+stream, a force -V dp/dx along the stream (V its volume): a drag where the
+pressure falls downstream, a thrust where it rises. Two such gradients
+reach the fins:
+
+- the base's upstream influence: a falling pressure ahead of the base,
+  so a drag, on the safe side; it reaches the fins only where the flow
+  along the body is not supersonic with a margin. The class is narrowed
+  there all the same, since the argument above is first order: a closed
+  section's refused wave drag counts as not negative only with the free
+  stream at or above (L5)'s floor (item 4 below, and at least Mach 1.06
+  for any leading edge), where linear theory gives the base no upstream
+  influence (`closedSectionFailures`); below it the floor is withheld.
+  For an unswept leading edge (L5) sets no floor at all, so only the
+  boundary layer's Mach 1.06 is applied there: that the base is not felt
+  at a thick unswept fin just above Mach 1.06 is not shown, and the
+  first-order argument above (a drag) is what carries that case.
+- the nose's and the body's own flow (the pressure recovering along the
+  cylinder behind an ogive's shoulder, rising toward the free stream's):
+  a thrust of first order in V dp/dx. This is fin-body interference,
+  which `src/total` does not represent for any part or any total
+  (`src/total/finned-body.ts`, "Not represented"; 0010 section 3). The
+  fin wave drag is defined there as the isolated fin's in the free
+  stream, for a served total as for this floor, and the floor is a floor
+  of the same model's total: the term not represented is no more and no
+  less missing from the one than from the other. It is said here so that
+  the floor is not read as a bound on interference the model leaves out.
+
+The same holds for the other classes below: each term is the isolated
+fin's, as `src/total` defines it.
+
+**Supersonic edges**, all four of:
+
+1. **The free stream at Mach 1.5 or above:** the lowest Mach number at
+   which any fin term's band is measured (0008 section 4.3); 0019 is
+   still writing the fin terms below it, and its one sign argument there,
+   for a plate's rounded edge (section 3.2), finds the term can be
+   negative.
+2. **The leading edge's normal Mach number, M cos(leading-edge sweep), at
+   least 1:** the edge's own flow sonic or faster, a shock standing at the
+   edge ((L2)).
+3. **The trailing edge's normal flow supersonic outside the transonic
+   range:** M_TE = M cos(trailing-edge sweep) above 1, with the transonic
+   similarity parameter xi_TE = (1 - M_TE^2) / [(gamma + 1) M_TE^2
+   tau]^(2/3) at most -1.175 (0019 section 3.2 (L5), `TRANSONIC_XI_MIN`),
+   tau = t / (c cos(trailing-edge sweep)) at the shortest chord, t the
+   trailing edge's thickness (the plate's, or the wedge's at that chord):
+   linear theory gives such an edge no upstream influence, and the
+   nonlinear term takes at most half of M_TE^2 - 1.
+4. **For a swept leading edge, the free stream above (L5)'s floor:**
+   M^2 - 1 at least 2 (3 (gamma + 1) theta / 2)^(2/3), theta = 0.004 + n t
+   / (2 pi r tan(leading-edge sweep)), and at least Mach 1.06
+   (`freeStreamFloor`): the flow along the body stays supersonic with the
+   fins' thickness and the boundary layer's growth, so the body's base is
+   not felt at the fins' noses. An unswept leading edge adds the fins'
+   thickness at its own shock, which (1) and (2) place in supersonic flow.
+
+These are the conditions of 0019 section 3.2's lower bound, made
+stricter: that section's bound (written, not wired) reaches normal Mach
+numbers down to 0.8, where it finds the term can lie below zero; here a
+refused edge counts as not negative only where both edges are
+supersonic. The formulas are re-implemented in
+`src/total/refused-floor.ts` from 0019, not imported:
+`src/fins/rounded-edge-bounded.ts` stays unwired, as its test pins.
+
+### 10.4 When the floor is withheld
+
+Every reason is listed, each once:
+
+- the nose wave drag has not been solved at this Mach number (not yet,
+  or the curve was stopped or the GPU failed first), cannot be solved here
+  (no WebGPU), or is refused (not solved to a band, not converged, a case
+  the solver does not serve). The owner decided on 2026-10-24 that no
+  floor is given when the nose is refused, as built;
+- a closed section's fin wave drag is refused where the body's base is
+  felt at the fins (below (L5)'s floor, 10.3);
+- the body base is refused, for any reason (a boat-tail or flare, the
+  fins-on-base factor, its Mach range, a laminar layer at the base);
+- a single wedge's fin wave drag, or a flat plate's leading edges, are
+  refused without supersonic edges (10.3), with each condition that fails;
+- a rounded leading edge on a section that is not a flat plate is
+  refused (10.1, 10.3);
+- the inputs are refused or a method failed (there are no parts).
+
+### 10.5 The labels, exactly
+
+- The parts' heading: "Known here, though the total has no number:" (the
+  point block, the table); "The parts served, each with its band (the
+  total is refused)" (Details).
+- Each part: its name, its C_D to four decimals and its band rounded
+  outward; then its label and band source, `src/total`'s, word for word
+  (Details and the CSV; in the point block folded beneath it, opened by a
+  click on the part, since the body base's label runs to a paragraph; the
+  table and the PNG, short of room, give the name, value and band).
+- The floor: "At least F: a floor, not an estimate: the sum of the served
+  parts' low ends; the refused parts (fin friction, ...) are not
+  negative." Where an input band is not zero, before the full stop: "; the
+  input bands' low ends are added". In the CSV, F also in its own column,
+  `floor`, never in `cd`, `cd_low` or `cd_high`.
+- Withheld: "No floor is given: " and every reason of 10.4, joined by
+  "; ", ending with a full stop.
+- A part not shown (10.1): "fin wave drag: not shown: it is computed for
+  the sharp section, and the faces of the rounded wedge are not computed
+  while its rounded leading edge is refused".
+
+### 10.6 In the code, and the tests
+
+The rule is decided in `src/total/refused-floor.ts` (`refusedTotalParts`:
+the served parts, the parts not shown, and the floor or every reason it
+is withheld, from the configuration, the flight condition and
+`finnedBodyComponents`' result) and carried by `totalDragView`'s refused
+view (`parts`); the page only lays it out (`totalDragDisplay`,
+`pointView`, `curveCsv`, the table, the PNG's caption). Tests:
+
+- `tests/total/refused-floor.test.ts`: each refused part's class; the
+  floor where every refused part is not negative, withheld otherwise, with
+  every reason; boat-tails and every base refusal withheld; the rounded
+  wedge's sharp-section wave drag not shown; the supersonic-edge
+  conditions at their limits; every refused case of a sample of 0014's
+  population (`docs/research/refusals/population.ts`: its first 400
+  rockets, each at one Mach number and altitude in each of its four
+  bands, 1600 cases, with a served stand-in nose) gets every part
+  `finnedBodyComponents` serves and a floor exactly where every refused
+  part is in a non-negative class: 1472 cases are refused, 134 of them
+  (9.1%; 138 before closed sections were narrowed to (L5)'s floor) with a floor, none with the body base refused or a boat-tail;
+  and a property test that the floor computed as if any set of the
+  non-negative-class parts were refused never exceeds the total's low end
+  with the input bands, over the 128 served totals of the same sample and
+  400 random cases (fast-check). In the population the nose is often
+  refused itself (0014), which withholds the floor; the 9.1% is an upper
+  share, with every nose served.
+- `tests/app/refused-parts.test.ts`: every preset, with and without the
+  parts it is computed without, at every Mach number of the curve where
+  its total is refused, with the nose solved (a stand-in) and without
+  WebGPU: the parts and the floor as the logic gives them, in the point
+  view, the table's line, the CSV row and its column, and the PNG's
+  caption, the labels word for word; the refused points without a value,
+  band or headline. Of the presets, the 54 mm example gets a floor from
+  Mach 1.1 to 1.5 once its nose is solved (its fin friction and its
+  bevelled, closed sections' wave drag refused; at Mach 1.0 the solver
+  refuses the nose, `src/analysis/fitted-flow.ts`, so the page gives
+  none there); the Basic Finner none (its wedges' faces and its
+  body base refused below Mach 1.8); the 98 mm example none (its rounded
+  plates' leading edges refused at subsonic normal Mach numbers up to
+  Mach 1.5); its rounded-trailing-edge variant none at any Mach number
+  (its body base refused: a rounded trailing edge at the base).
