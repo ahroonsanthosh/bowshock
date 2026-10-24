@@ -1046,6 +1046,9 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
   );
 }
 
+/** The parts whose label the user opened in the point block, by Mach number and part. */
+const openLabels = new Set<string>();
+
 /** A refused point's parts and floor, for the point block: none for any other point. */
 function knownLines(v: PointView): HTMLElement[] {
   if (v.floor === null) return [];
@@ -1055,14 +1058,22 @@ function knownLines(v: PointView): HTMLElement[] {
       : h(
           'ul',
           { className: 'point__parts' },
-          ...v.parts.map((p) =>
-            h(
-              'li',
-              {},
-              h('span', { className: 'point__part', text: p.line }),
+          ...v.parts.map((p) => {
+            // The label, word for word, folded under its part (it can run to a paragraph); the
+            // block is redrawn as other points solve, so a part opened stays open.
+            const key = `${v.mach} ${p.line}`;
+            const fold = h(
+              'details',
+              { className: 'point__fold', attrs: { open: openLabels.has(key) } },
+              h('summary', { className: 'point__part', text: p.line }),
               h('span', { className: 'point__part-label', text: p.label }),
-            ),
-          ),
+            );
+            fold.addEventListener('toggle', () => {
+              if (fold.open) openLabels.add(key);
+              else openLabels.delete(key);
+            });
+            return h('li', {}, fold);
+          }),
           ...v.notShown.map((text) => h('li', { className: 'point__part-label', text })),
         );
   return [

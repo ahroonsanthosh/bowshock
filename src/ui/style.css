@@ -2214,12 +2214,19 @@ input[aria-invalid='true'] {
 }
 .point__parts {
   margin: 4px 0 0;
-  padding-left: 18px;
+  padding-left: 0;
+  list-style: none;
   font-size: 12px;
   line-height: 1.45;
 }
+.point__fold > summary {
+  cursor: pointer;
+}
+.point__fold[open] > summary {
+  margin-bottom: 2px;
+}
 .point__part {
-  display: block;
+  display: list-item;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;

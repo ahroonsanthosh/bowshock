@@ -773,8 +773,9 @@ Every reason is listed, each once:
   total is refused)" (Details).
 - Each part: its name, its C_D to four decimals and its band rounded
   outward; then its label and band source, `src/total`'s, word for word
-  (Details and the CSV; in the point block the label beneath it; the table
-  and the PNG, short of room, give the name, value and band).
+  (Details and the CSV; in the point block folded beneath it, opened by a
+  click on the part, since the body base's label runs to a paragraph; the
+  table and the PNG, short of room, give the name, value and band).
 - The floor: "At least F: a floor, not an estimate: the sum of the served
   parts' low ends; the refused parts (fin friction, ...) are not
   negative." Where an input band is not zero, before the full stop: "; the
@@ -800,14 +801,28 @@ view (`parts`); the page only lays it out (`totalDragDisplay`,
   every reason; boat-tails and every base refusal withheld; the rounded
   wedge's sharp-section wave drag not shown; the supersonic-edge
   conditions at their limits; every refused case of a sample of 0014's
-  population (`docs/research/refusals/population.ts`, at its Mach bands)
-  gets every part `finnedBodyComponents` serves and a floor exactly where
-  every refused part is in a non-negative class; and a property test that
-  the floor computed as if any set of the non-negative-class parts were
-  refused never exceeds the total's low end with the input bands, over
-  the served totals of the same population and random cases.
-- `tests/app/refused-parts.test.ts`: every preset at every Mach number of
-  the curve where its total is refused, with the nose solved and pending:
-  the parts and the floor as the logic gives them, in the point view, the
-  CSV and the PNG's caption, the labels word for word; the chart's
-  refused points without a value.
+  population (`docs/research/refusals/population.ts`: its first 400
+  rockets, each at one Mach number and altitude in each of its four
+  bands, 1600 cases, with a served stand-in nose) gets every part
+  `finnedBodyComponents` serves and a floor exactly where every refused
+  part is in a non-negative class: 1472 cases are refused, 138 of them
+  (9.4%) with a floor, none with the body base refused or a boat-tail;
+  and a property test that the floor computed as if any set of the
+  non-negative-class parts were refused never exceeds the total's low end
+  with the input bands, over the 128 served totals of the same sample and
+  400 random cases (fast-check). In the population the nose is often
+  refused itself (0014), which withholds the floor; the 9.4% is an upper
+  share, with every nose served.
+- `tests/app/refused-parts.test.ts`: every preset, with and without the
+  parts it is computed without, at every Mach number of the curve where
+  its total is refused, with the nose solved (a stand-in) and without
+  WebGPU: the parts and the floor as the logic gives them, in the point
+  view, the table's line, the CSV row and its column, and the PNG's
+  caption, the labels word for word; the refused points without a value,
+  band or headline. Of the presets, the 54 mm example gets a floor from
+  Mach 1.0 to 1.5 (its fin friction and its bevelled, closed sections'
+  wave drag refused); the Basic Finner none (its wedges' faces and its
+  body base refused below Mach 1.8); the 98 mm example none (its rounded
+  plates' leading edges refused at subsonic normal Mach numbers up to
+  Mach 1.5); its rounded-trailing-edge variant none at any Mach number
+  (its body base refused: a rounded trailing edge at the base).
