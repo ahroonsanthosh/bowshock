@@ -63,12 +63,12 @@ fn trace(@builtin(global_invocation_id) id: vec3u) {
   let base = i * (steps + 1u);
   // The start: x even along the region; r by the share near the body, near
   // the shock, or even in volume (r^2 even) between them.
-  let phi = hash(4u * i) * 6.283185307179586;
+  let phi = hash(8u * i) * 6.283185307179586;
   let xEnd = params.image.w;
-  let x0 = params.image.x + hash(4u * i + 1u) * (xEnd - params.image.x);
+  let x0 = params.image.x + hash(8u * i + 1u) * (xEnd - params.image.x);
   let e = edges_at(x0);
-  let u = hash(4u * i + 2u);
-  let v = hash(4u * i + 3u);
+  let u = hash(8u * i + 2u);
+  let v = hash(8u * i + 3u);
   var f: f32;
   if (u < params.seeding.x) {
     f = 0.25 * v * v;
@@ -79,9 +79,9 @@ fn trace(@builtin(global_invocation_id) id: vec3u) {
     f = (sqrt(max(r2, 0.0)) - e.x) / max(e.y - e.x, 1e-9);
   }
   var x = x0;
-  var r = e.x + clamp(f, 0.002, 0.998) * (e.y - e.x);
+  var r = e.x + clamp(f, 0.02, 0.98) * (e.y - e.x);
   // Moving (key 8): the start carried along the streamline by the time's phase.
-  let lead = u32(params.run.w * f32(steps) * 3.0 + hash(4u * i + 5u) * f32(steps) * 3.0) % (3u * steps);
+  let lead = u32(params.run.w * f32(steps) * 3.0 + hash(8u * i + 5u) * f32(steps) * 3.0) % (3u * steps);
   for (var k = 0u; k < lead; k++) {
     let a = sample_field(x, r);
     if (a.w < -0.5) {
@@ -97,7 +97,7 @@ fn trace(@builtin(global_invocation_id) id: vec3u) {
   var alive = true;
   if (params.seeding.w > 0.0) {
     let d = fract((phi - params.seeding.z) / 6.283185307179586) * 6.283185307179586;
-    if (d < params.seeding.w && hash(4u * i + 6u) > CUT_KEEP) {
+    if (d < params.seeding.w && hash(8u * i + 6u) > CUT_KEEP) {
       alive = false;
     }
   }

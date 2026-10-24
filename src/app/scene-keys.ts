@@ -112,7 +112,8 @@ export const SCENE_KEYS: readonly SceneKey[] = [
     key: '8',
     label: 'Streaks: still, moving, off',
     description:
-      'Dense streaks along the computed flow: still, moving (draws continuously), or off',
+      'Dense streaks along the computed flow: still, moving (at one pace along their ' +
+      'streamlines, not the flow’s speed; draws continuously), or off',
   },
 ];
 

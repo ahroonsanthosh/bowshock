@@ -218,12 +218,8 @@ const ISO_SURFACES = 40;
  * shock; how long a moving streak takes to run its length, seconds.
  */
 const STREAKS_FAST = 60_000;
-/**
- * A software adapter's frame counted this many times its wall time in the
- * live pacing: it runs on all the CPU's cores at once, the solver's too
- * (tests/gpu/render3d-cost.test.ts measures what it takes from the solver).
- */
-const SOFTWARE_FRAME_SHARE = 2;
+/** The see-through rocket's culled faces (its mesh winds its outward faces counter-clockwise). */
+const GHOST_CULL: GPUCullMode = 'back';
 /** How opaque the rocket is drawn where streaks or sheets stand in front of it. */
 const BODY_SEEN_THROUGH = 0.6;
 /** The first view this much closer than the one that fits the whole region. */
@@ -424,7 +420,9 @@ class Pipelines {
             entryPoint: 'body_fs',
             targets: [{ format, blend: premultiplied }],
           },
-          primitive,
+          // Its near side only: the far side (behind the near, so also
+          // passing the reversed test) would show through it.
+          primitive: { topology: 'triangle-list', cullMode: GHOST_CULL },
           depthStencil: depth(false, 'greater'),
           multisample,
         }),
@@ -621,8 +619,10 @@ export class FlowScene3D {
   private fibresBuilt = false;
   /** The dense streaks (key 8): traced on the GPU; how many; the moving ones' timer. */
   private streakCount: number;
-  /** Frames drawn on the CPU (a software adapter, its frames copied to the page). */
+  /** Frames drawn on the CPU (a software adapter, its frames copied to the page): fewer streaks. */
   private readonly software: boolean;
+  /** What the last live read-back cost the CPU (ms), counted with the frame in the live pacing. */
+  private lastReadMs = 0;
   private streaksStale = true;
   private particleTimer: ReturnType<typeof setTimeout> | null = null;
   /** The body's surface pressure coefficient, its least and largest, when coloured by it. */
@@ -1935,6 +1935,8 @@ export class FlowScene3D {
     const cost = submitted - started + (tDone - Math.max(tReached, submitted));
     if (!draft) this.lastFullFrameMs = cost;
     // Too slow a frame: fewer streaks next time (down to STREAKS_LEAST).
+    // The count only ever goes down (never back up within a scene), and on
+    // a hardware adapter, where a frame takes milliseconds, this never fires.
     if (
       !draft &&
       cost > STREAK_SLOW_MS &&
@@ -2079,10 +2081,9 @@ export class FlowScene3D {
   private async liveFrame(): Promise<void> {
     await this.readSource();
     await this.render();
-    // On a software adapter a frame is drawn on all the CPU's cores, which
-    // the solver needs too: its wall time undercounts what it takes from
-    // the solver, so it is counted SOFTWARE_FRAME_SHARE times over.
-    const cost = this.lastFrameMs * (this.software ? SOFTWARE_FRAME_SHARE : 1);
+    // The frame's cost and the read-back's own (its copy and conversion on
+    // the CPU, not the wait for the solver's queued steps before it).
+    const cost = this.lastFrameMs + this.lastReadMs;
     this.scheduleLive(Math.max(1000 / MAX_LIVE_FPS, (cost * (1 - this.liveDuty)) / this.liveDuty));
   }
 
@@ -2160,6 +2161,9 @@ export class FlowScene3D {
     device.queue.submit([encoder.finish()]);
     try {
       await Promise.all([stateRead.mapAsync(GPUMapMode.READ), nodesRead.mapAsync(GPUMapMode.READ)]);
+      // From here the read-back is the view's own work (before, the solver's
+      // steps queued ahead of it were finishing).
+      const mapped = performance.now();
       const state = new Float32Array(stateRead.getMappedRange().slice(0));
       const placed = new Float32Array(nodesRead.getMappedRange().slice(0));
       if (this.source !== source) return;
@@ -2170,6 +2174,7 @@ export class FlowScene3D {
         r[k] = placed[2 * k + 1]!;
       }
       this.setField(fieldFromConserved(ni, nj, x, r, state, source.gamma, source.freeStream));
+      this.lastReadMs = performance.now() - mapped;
     } finally {
       for (const b of [params, stateOut, nodesOut, dummy, stateRead, nodesRead]) b.destroy();
     }
@@ -2679,6 +2684,7 @@ function helpLines(
     { text: 'T  slice: cutaway faces, plane through the axis, plane across it' },
     { text: `7  slice: fibres along the flow, schlieren, plain (now ${L.faces})` },
     { text: `8  dense streaks: still, moving (draws continuously), off (now ${L.streaks})` },
+    { text: '   (moving streaks slide at one pace along their streamlines, not the flow’s speed)' },
     { text: 'Q / E  move the slice    0  reset the view    H  this help' },
     { text: 'drag: turn any way, over the top and underneath    0: reset' },
     { text: 'right drag or shift drag: pan    wheel or pinch: zoom' },
