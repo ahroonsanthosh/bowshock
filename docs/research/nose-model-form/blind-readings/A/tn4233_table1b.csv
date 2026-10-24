@@ -1,0 +1,196 @@
+source,item,mach,tunnel,orifice,station,station_unit,cp,alternatives,flag,page,note
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.092,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.077,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.067,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.058,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.048,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.038,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.025,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.004,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,-0.034,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,-0.078,,ok,23,
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.247,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.057,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.600,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.022,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.100,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.082,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.073,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.064,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.054,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.044,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.030,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.008,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,-0.032,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,-0.079,,ok,23,
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.300,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.066,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.797,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.031,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.113,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.097,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.088,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.078,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.068,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.058,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.044,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.025,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,-0.011,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,-0.048,,ok,23,
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.217,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.076,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.899,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.043,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.130,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.113,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.103,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.095,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.087,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.079,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.067,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.057,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.030,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.007,,ok,23,
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.129,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.091,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.964,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.066,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.136,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.117,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.108,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.100,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.093,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.087,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.077,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.064,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.042,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.021,,ok,23,
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.104,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.100,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.980,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.076,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.141,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.123,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.113,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.107,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.102,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.093,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.083,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.074,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.052,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.030,,ok,23,
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.091,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.107,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),.991,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.084,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.152,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.136,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.127,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.121,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.113,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.107,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.098,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.088,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.069,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.049,,ok,23,
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.072,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.119,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.001,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.097,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.159,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.145,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.137,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.131,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.120,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.116,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.111,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.100,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.082,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.062,,ok,23,
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.059,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.129,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.008,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.109,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.138,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.130,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.125,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.124,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.119,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.115,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.110,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.103,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.091,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.074,,ok,23,
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.043,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.124,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.020,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.111,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.121,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.118,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.115,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.116,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.112,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.112,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.108,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.104,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.094,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.080,,ok,23,
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.033,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.113,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.032,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.107,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.109,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.107,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.108,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.110,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.109,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.111,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.109,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.108,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.095,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.089,,ok,23,
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.023,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.108,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.041,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.108,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.113,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.111,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.105,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.105,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.104,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.106,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.103,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.100,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.099,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.089,,ok,23,
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.015,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.108,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.050,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.103,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.100,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.099,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.099,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.100,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.100,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.102,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.097,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.094,,ok,23,
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,-0.001,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.098,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.064,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.101,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.098,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.094,,ok,23,
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,0.008,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.094,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.078,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.095,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),1,.082,x/l,0.098,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),2,.183,x/l,0.096,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),3,.285,x/l,0.095,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),4,.385,x/l,0.095,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),5,.486,x/l,0.094,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),6,.589,x/l,0.094,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),7,.688,x/l,0.093,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),8,.790,x/l,0.092,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),9,.891,x/l,0.091,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),10,.942,x/l,0.090,,ok,23,
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),11,.994,x/l,0.016,,ok,23,"x/l=.994, last cone orifice before shoulder at x/l=1"
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),16,.385,x/l,0.094,,check,23,check orifice on opposite side (figure 1 asterisk)
+TN 4233,table I(b),1.100,Ames 14-foot transonic wind tunnel (0.005-percent blockage),17,.688,x/l,0.092,,check,23,check orifice on opposite side (figure 1 asterisk)
