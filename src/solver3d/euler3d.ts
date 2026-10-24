@@ -94,8 +94,14 @@ const GHOSTS = 2;
 const NV = 5;
 
 export class Euler3D {
-  readonly config: Euler3DConfig;
-  readonly metrics: GridMetrics3D;
+  private configValue: Euler3DConfig;
+  private metricsValue: GridMetrics3D;
+  get config(): Euler3DConfig {
+    return this.configValue;
+  }
+  get metrics(): GridMetrics3D {
+    return this.metricsValue;
+  }
   steps = 0;
   private readonly pi: number;
   private readonly pj: number;
@@ -112,8 +118,8 @@ export class Euler3D {
   private faceStateLayers = new Map<Side3D, [readonly Primitive3D[], readonly Primitive3D[]]>();
 
   constructor(config: Euler3DConfig) {
-    this.config = config;
-    this.metrics = computeMetrics3D(config.grid, config.geometry);
+    this.configValue = config;
+    this.metricsValue = computeMetrics3D(config.grid, config.geometry);
     const { ni, nj, nk } = this.metrics;
     this.pi = ni + 2 * GHOSTS;
     this.pj = nj + 2 * GHOSTS;
@@ -138,6 +144,18 @@ export class Euler3D {
     if (config.source !== undefined && config.source.length !== NV * ni * nj * nk) {
       throw new RangeError('the source needs five values per cell');
     }
+  }
+
+  /**
+   * Move the grid's nodes (the same counts): the metrics are recomputed and every cell keeps its state, as a
+   * fitted shock's moving grid does with its fixed fractions along each line (0006).
+   */
+  setGrid(grid: StructuredGrid3D): void {
+    const m = this.metricsValue;
+    if (grid.ni !== m.ni || grid.nj !== m.nj || grid.nk !== m.nk)
+      throw new RangeError('a moved grid keeps its counts');
+    this.configValue = { ...this.configValue, grid };
+    this.metricsValue = computeMetrics3D(grid, this.configValue.geometry);
   }
 
   /** Faces on a side: nj nk on i sides, ni nk on j sides, ni nj on k sides; face t in that order. */

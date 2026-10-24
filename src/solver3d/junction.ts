@@ -30,7 +30,7 @@ import { Euler3D, type BoundaryCondition3D, type Euler3DConfig, type Side3D } fr
 import { fittedSide, type FittedSide } from './fitted-surface';
 import type { Primitive3D } from './flux3d';
 import { cellIndex3D, computeMetrics3D, nodeIndex3D, type StructuredGrid3D } from './grid3d';
-import { blockBoundaries, decompose, type Box3D, type Decomposition } from './multiblock';
+import { blockBoundaries, decompose, subGrid, type Box3D, type Decomposition } from './multiblock';
 
 export const JUNCTION_MACH = 2.5;
 export const JUNCTION_DELTA = (10 * Math.PI) / 180;
@@ -50,6 +50,12 @@ export interface JunctionOptions {
   /** Start with the shock displaced by this fraction of its exact height (0: at its exact position). */
   readonly displaced?: number;
   readonly maxSteps: number;
+  /**
+   * Flow steps between moves of the shock (default 1), as 0006's option: the shock boundary follows the flow at
+   * every step, the shock moves one step's worth once per this many steps, and the blocks are rebuilt only
+   * then; the converged state does not depend on it.
+   */
+  readonly stepsPerMove?: number;
   /** Stop when every shock face moves slower than this times the free-stream sound speed ... */
   readonly speedTolerance?: number;
   /** ... and the density residual is below this, relative to its first value. */
@@ -187,12 +193,28 @@ function buildBlocks(
   h: Float64Array,
   exact: ExactWedgeFlow,
   cell: (i: number, j: number, k: number) => Primitive3D,
+  /** The decomposition of an earlier build (the topology does not change as the shock moves). */
+  known?: Decomposition,
 ): { blocks: Euler3D[]; dec: Decomposition; grid: StructuredGrid3D } {
   const grid = globalGrid(kind, c, h);
   const boxes = boxesFor(kind, c);
-  const dec = decompose(grid, boxes, [[0, 1]]);
-  const metrics = computeMetrics3D(grid, 'planar');
+  const dec = known
+    ? { ...known, grids: known.boxes.map((x) => subGrid(grid, x)) }
+    : decompose(grid, boxes, [[0, 1]]);
   const nk = grid.nk;
+  // A cell's centroid in x and z, as the mean of its eight nodes (the inflow ghosts' only use of the metrics).
+  const centroid = (i: number, j: number, k: number): [number, number] => {
+    let x = 0;
+    let z = 0;
+    for (const a of [0, 1])
+      for (const b of [0, 1])
+        for (const d of [0, 1]) {
+          const q = nodeIndex3D(grid, i + a, j + b, k + d);
+          x += grid.c0[q]!;
+          z += grid.c2[q]!;
+        }
+    return [x / 8, z / 8];
+  };
   // The inflow plane: block L's ghost cells take the post-shock state, M1's the free stream (each block's
   // region of the exact flow), and the captured block M2's the exact flow at each ghost cell's centroid (the
   // first two columns mirrored).
@@ -203,14 +225,8 @@ function buildBlocks(
     for (let k = 0; k < nk; k++)
       for (let j = 0; j < c.nj; j++) {
         const b = blockOf(0, j, k);
-        const q = cellIndex3D(metrics, g, j, k);
-        out.push(
-          b === 0
-            ? exact.post
-            : b === 1
-              ? exact.free
-              : exactAt(exact, 2 * X0 - metrics.centroid0[q]!, metrics.centroid2[q]!),
-        );
+        const [cx, cz] = b > 1 ? centroid(g, j, k) : [0, 0];
+        out.push(b === 0 ? exact.post : b === 1 ? exact.free : exactAt(exact, 2 * X0 - cx, cz));
       }
     return out;
   };
@@ -242,8 +258,33 @@ function buildBlocks(
     e.setCellPrimitives((i, j, k) => cell(i + x.i0, j + x.j0, k + x.k0));
     return e;
   });
-  Euler3D.checkShares(blocks, dec.shares);
+  if (!known) Euler3D.checkShares(blocks, dec.shares);
   return { blocks, dec, grid };
+}
+
+/** A captured block's inflow ghost layers: the exact flow at each ghost cell's centroid (its first two columns mirrored). */
+function capturedInflow(
+  g: StructuredGrid3D,
+  exact: ExactWedgeFlow,
+): [Primitive3D[], Primitive3D[]] {
+  const layer = (col: number) => {
+    const out: Primitive3D[] = [];
+    for (let k = 0; k < g.nk; k++)
+      for (let j = 0; j < g.nj; j++) {
+        let x = 0;
+        let z = 0;
+        for (const a of [0, 1])
+          for (const b of [0, 1])
+            for (const d of [0, 1]) {
+              const q = nodeIndex3D(g, col + a, j + b, k + d);
+              x += g.c0[q]!;
+              z += g.c2[q]!;
+            }
+        out.push(exactAt(exact, 2 * X0 - x / 8, z / 8));
+      }
+    return out;
+  };
+  return [layer(0), layer(1)];
 }
 
 /** Run a junction problem (or 'full') to convergence. */
@@ -333,8 +374,10 @@ export function runJunction(options: JunctionOptions): JunctionState {
     maxSpeed = 0;
     for (let t = 0; t < fitted.speeds.length; t++)
       maxSpeed = Math.max(maxSpeed, Math.abs(fitted.speeds[t]!) / aFree);
+    const stepsPerMove = options.stepsPerMove ?? 1;
+    const move = steps % stepsPerMove === 0;
     const next = Float64Array.from(h);
-    for (let j = 0; j <= c.nj; j++)
+    for (let j = 0; move && j <= c.nj; j++)
       for (let i = 1; i <= c.ni; i++) {
         if (!fittedNode(kind, c, i, j)) continue;
         // Faces upstream of node (i, j): (i - 1, j - 1) and (i - 1, j), where fitted; at the wall and the
@@ -365,17 +408,18 @@ export function runJunction(options: JunctionOptions): JunctionState {
             Math.sqrt((GAMMA * cellState.p) / cellState.rho));
         next[i + (c.ni + 1) * j] = h[i + (c.ni + 1) * j]! + (w * dt) / nz;
       }
-    h.set(next);
-    // Rebuild on the moved grid; every cell keeps its state (the fractions along each line are fixed).
-    const old = built;
-    built = buildBlocks(kind, c, h, exact, (i, j, k) => {
-      for (let b = 0; b < old.dec.boxes.length; b++) {
-        const x = old.dec.boxes[b]!;
-        if (i >= x.i0 && i < x.i1 && j >= x.j0 && j < x.j1 && k >= x.k0 && k < x.k1)
-          return old.blocks[b]!.primitive(i - x.i0, j - x.j0, k - x.k0);
-      }
-      throw new RangeError('cell outside the blocks');
-    });
+    if (move) {
+      h.set(next);
+      // Move every block's nodes; every cell keeps its state (the fractions along each line are fixed).
+      const grid = globalGrid(kind, c, h);
+      built.blocks.forEach((e, b) => {
+        const box = built.dec.boxes[b]!;
+        const g = subGrid(grid, box);
+        e.setGrid(g);
+        // The captured block's inflow ghosts take the exact flow at their (moved) centroids.
+        if (b > 1 && box.i0 === 0) e.setFaceStates('iMin', ...capturedInflow(g, exact));
+      });
+    }
     if (steps % 100 === 0 || maxSpeed < speedTolerance) {
       applyBoundary(built.blocks);
       const r = residualNorm(built.blocks, built.dec);
