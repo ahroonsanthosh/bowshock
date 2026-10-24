@@ -152,12 +152,25 @@ function edgeGrid(
   };
   const r = refinement;
   const lines: { x: number; y: number; dx: number; dy: number; h: number }[] = [];
+  // The lines from the stagnation line to the plate turn evenly through 90 deg, as a C grid's do: the front
+  // face's tilt progressively from upstream, the corner's continue the turn. (Parallel front lines, only an
+  // eighth of the half-thickness apart under a shock standing several half-thicknesses off, let a shock face
+  // turn towards its line, n . line tend to 0, and the fit run away at normal Mach 1.5.)
   const nf = SQUARE_FRONT * r;
-  for (let i = 0; i <= nf; i++)
-    lines.push({ x: 0, y: i / nf, dx: -1, dy: 0, h: reach(0, i / nf, -1, 0) });
   const nc = SQUARE_FAN * r;
+  const turn = (k: number) => Math.PI - (Math.PI / 2) * (k / (nf + nc));
+  for (let i = 0; i <= nf; i++) {
+    const a = turn(i);
+    lines.push({
+      x: 0,
+      y: i / nf,
+      dx: Math.cos(a),
+      dy: Math.sin(a),
+      h: reach(0, i / nf, Math.cos(a), Math.sin(a)),
+    });
+  }
   for (let i = 1; i <= nc; i++) {
-    const a = Math.PI - (Math.PI / 2) * (i / nc);
+    const a = turn(nf + i);
     lines.push({
       x: 0,
       y: 1,
