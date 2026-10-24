@@ -1,8 +1,9 @@
 # 0022: The nose's model error, against measured pressures (draft)
 
-- **Status:** draft for the owner's decision and an independent review.
-  Design and registration only: no code, and no value of any source was
-  read for this record.
+- **Status:** draft, revision 2. The independent review of revision 1
+  (df6e284) asked for the changes made here; the owner chose Route 1
+  (section 5). Design and registration only: no code, and no value of any
+  source was read for this record.
 - **Date:** 2026-10-24.
 - **Concerns:** the nose wave drag's band (0005, 0006), its place in the
   total (0008 section 6.3, 0011 section 1), the labels (0014 section
@@ -48,8 +49,9 @@ reads a value: the measured pressures carry a stated uncertainty of
 +-0.004 to +-0.005 in Cp, which is 5 to 13% of these noses' drag
 (`docs/validation/sources.md`). An allowance formed from such data cannot
 be finer than that. Where it applies, the nose's band will grow from
-about 1e-4 of the term to about a tenth of it. That is the price of a
-band that covers the model, and section 4.8 says what it does to totals.
+about 1e-4 of the term to a tenth or more of it (14 to 16% in the two
+boxes seen so far, section 5). That is the price of a band that covers
+the model, and section 4.8 says what it does to totals.
 
 ## 2. What is known today
 
@@ -85,6 +87,34 @@ So, exactly what is known:
 5. Nothing else measures a nose's pressures or fore drag against the
    model on record (section 4.1 lists what the records name and what
    state each is in).
+6. A test already holds the solver to TN 3716's measured pressures:
+   `tests/engine-cpu/body-validation.test.ts` lines 173 to 183 require
+   the Euler solution within 0.025 in Cp of every unambiguous measured
+   station. It calls itself "a regression bound, not an accuracy claim";
+   its tolerance was set when it was written, after the differences
+   (0.002 to 0.022) were seen. It is a comparison, not a validation, and
+   sets nothing here.
+
+Further facts the readings must allow for:
+
+- **Every TN 3716 value is public in this repository**:
+  `src/validation/ogive-cylinder-tn3716.ts` holds the whole typed table,
+  and 0004 quotes seven stations. A reader is blind to them only if the
+  reader's brief and working copy exclude the repository (and with it the
+  README history, sources.md, 0004 and this record). Section 4.2 makes
+  that a condition.
+- **Three uncertain cells, not two.** sources.md says the integration
+  read three cells uncertainly: x/d 0.56 and 3.62 (both readings kept in
+  the file) and x/d 2.95, at the shoulder, where the first typing noted
+  "possibly" another last digit (5fcc92b); the later revision (399c8de)
+  dropped that note and keeps one value. The shoulder carries the largest
+  difference, so that cell matters.
+- **The audit integration probably differs from 4.3.** Its method is not
+  recorded; it is unlikely to have used the same stations and quadrature
+  for the inviscid value, or to have kept every ambiguous reading. The
+  8 to 9% and 3.1% are therefore not 4.3's quantity, and a fresh reading
+  formed by 4.3 may land elsewhere. That is why section 5's floor takes
+  the published figures as they stand.
 
 ### 2.2 Other measured sets seen, not about this question
 
@@ -96,10 +126,17 @@ So, exactly what is known:
 - **NACA RM E51H17** (a 4.77 deg cone at Mach 3.85): one value digitised
   from fig. 4(a), about 34% above Taylor-Maccoll, which its report puts
   down to Reynolds-number effects; "not used" (sources.md). Seen.
-- **NACA RM E52C10** (five cone-cylinders at Mach 3.12): opened; "not
-  used" because zero incidence is only plotted. No value recorded.
-- **NASA TN D-3516** (a 3-caliber tangent ogive, Mach 0.7 to 1.2):
-  opened; "not digitised" (0013, sources.md). No value recorded.
+- **NACA RM E52C10** (five cone-cylinders at Mach 3.12): opened by the
+  first session; "not used" because zero incidence is only plotted
+  (sources.md). No value is recorded. Whether its zero-incidence plots
+  were looked at for values is not recorded either, so it is treated as
+  possibly seen (section 4.1).
+- **NASA TN D-3516** (a 3-caliber tangent ogive, Mach 0.7 to 1.2): its
+  text, figure 1, figure 5 (the smooth model's pressures, plotted only)
+  and table II (the orifices) were read for the transonic work; not
+  digitised. sources.md records that figure 5's four stagnation pressures
+  scatter by about 0.005 in Cp. So fig. 5 was looked at, but no value was
+  recorded and none was compared with the model.
 - **NACA TR 1386** (Perkins, Jorgensen and Sommer, 1958: blunted cones
   and Karman ogives, nose pressures and foredrags, Mach 1.24 to 7.4):
   named in 0014 10.1 as "a check of the nose solve, as 0006 uses TN 3716,
@@ -172,15 +209,15 @@ its state. Draft (w) (section 7) names them; the figures of a source not
 yet opened are named by a later dated entry made when it is opened to see
 what it covers, before any value is read (as 0014 10.1 does for TN 3548).
 
-| Set                                                                                                  | Covers                                         | State                                                                                                                                       | Proposed role                                                                                     |
-| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| TN 3716, table I(a) zero-incidence column, and fig. 3's zero-incidence points                        | 3-caliber tangent ogive, Mach 1.98             | Typed once (2026-10-15); integrated once (2026-10-17); the result public                                                                    | See section 5: a floor on the allowance (recommended) or a check                                  |
-| RM A53E01, table II(a) zero-incidence column; fig. 1 for the model                                   | 5.75-caliber tangent ogive, Mach 1.98          | Read once (2026-10-17), not typed; the integrated result public                                                                             | As TN 3716                                                                                        |
-| TR 1386: its pressure distributions and foredrags at zero incidence, figures named when it is opened | Blunted cones, Karman ogives, Mach 1.24 to 7.4 | Not read                                                                                                                                    | Band-setting, read twice                                                                          |
-| RM E52C10: its zero-incidence plotted points (figure named when it is opened for coverage)           | Cone-cylinders, Mach 3.12                      | Opened, no value recorded                                                                                                                   | Band-setting, read twice                                                                          |
-| TN D-3516: fig. 5 and its table of orifices, the smooth model                                        | 3-caliber tangent ogive, Mach 1.1 and 1.2      | Opened and looked at (sources.md notes its stagnation pressures scatter by about 0.005 in Cp), not digitised, never compared with the model | Band-setting for Mach 1.1 to 1.2, read twice, used only once the nose is served there (0013)      |
-| TN 4233: table I(a) and (b)                                                                          | 7 deg cone, Mach 1.078 to 1.4                  | Typed once and compared (0013)                                                                                                              | As TN 3716 (seen)                                                                                 |
-| RM E51H17: fig. 4(a)                                                                                 | 4.77 deg cone, Mach 3.85                       | One value digitised; the result public                                                                                                      | As TN 3716 (seen); the owner decides whether a low-Reynolds tunnel set applies at all (section 8) |
+| Set                                                                                                  | Covers                                         | State                                                                                                                                          | Proposed role                                                                                                  |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| TN 3716, table I(a) zero-incidence column, and fig. 3's zero-incidence points                        | 3-caliber tangent ogive, Mach 1.98             | Typed once (2026-10-15); integrated once (2026-10-17); every value public in the repository                                                    | Seen: widening only, with a floor (section 5, Route 1)                                                         |
+| RM A53E01, table II(a) zero-incidence column; fig. 1 for the model                                   | 5.75-caliber tangent ogive, Mach 1.98          | Read once (2026-10-17), not typed; the integrated result public                                                                                | As TN 3716                                                                                                     |
+| TR 1386: its pressure distributions and foredrags at zero incidence, figures named when it is opened | Blunted cones, Karman ogives, Mach 1.24 to 7.4 | Not read                                                                                                                                       | Band-setting, read twice                                                                                       |
+| RM E52C10: its zero-incidence plotted points (figure named when it is opened for coverage)           | Cone-cylinders, Mach 3.12                      | Opened, no value recorded; whether the plots were looked at is not recorded, so treated as possibly seen                                       | Band-setting, read twice; disclosed in (w)                                                                     |
+| TN D-3516: fig. 5 and its table of orifices, the smooth model                                        | 3-caliber tangent ogive, Mach 1.1 and 1.2      | Fig. 5 read for the transonic work (its stagnation pressures' scatter, about 0.005 in Cp, noted), not digitised, never compared with the model | Band-setting for Mach 1.1 to 1.2, read twice, used only once the nose is served there (0013); disclosed in (w) |
+| TN 4233: table I(a) and (b)                                                                          | 7 deg cone, Mach 1.078 to 1.4                  | Typed once and compared (0013)                                                                                                                 | As TN 3716 (seen)                                                                                              |
+| RM E51H17: fig. 4(a)                                                                                 | 4.77 deg cone, Mach 3.85                       | One value digitised; the result public                                                                                                         | Not settled: an open question for the owner (section 8)                                                        |
 
 Never used, by 0014 10.1: the PARD standard body's fore drag (RM L52E06
 figs. 9 to 12) and every other held-back set. The search for further
@@ -193,6 +230,11 @@ for values.
 - Each named figure or table is read twice: a first reading, and a blind
   second by a reader who never opens the first. A neutral party, never a
   reader, pairs them. Each reading is committed before the pairing.
+- For a seen set (TN 3716, RM A53E01, TN 4233), both readers work from
+  the source file alone: their briefs and working copies exclude this
+  repository (where TN 3716's values and both integrated results are
+  public), and the brief names no earlier value or percentage. Without
+  that, the reading is recorded as not blind.
 - Where a cell or point is ambiguous, every plausible reading is kept.
 - The band uses the envelope of both readings, and of any earlier reading
   on record (TN 3716's typing of 2026-10-15). A disagreement is kept as an
@@ -218,47 +260,81 @@ For each measured body b at Mach number M and each reading k:
    orifice, both take the inviscid Cp of the solution there (so that
    stretch carries no difference); from the last orifice to the shoulder,
    each is held at its last station's value.
-3. **Coverage.** The share of the inviscid nose drag that lies ahead of
-   the first orifice is reported. If it exceeds a quarter, that body sets
-   nothing (the measurement covers too little of the drag).
+3. **Coverage.** The share of the inviscid nose drag that lies outside
+   the orifices (ahead of the first, and between the last and the
+   shoulder) is reported. If it exceeds a tenth, that body sets nothing
+   (the measurement covers too little of the drag). Below a tenth, the
+   uncovered part carries its own term (item 5): it is integrated with
+   the inviscid Cp in both quadratures, so it shows no difference by
+   construction, and the term stands in for the difference it could
+   hide. This matters most for blunted families (TR 1386), whose cap
+   carries a large share of the drag on few orifices.
 4. **The difference.** r_bk = D_meas / D_inv - 1, from the two
    quadratures of item 2.
-5. **The measurement's uncertainty.** The report's stated uncertainty e in
-   Cp, taken as a bias common to every orifice (the worst case, and what a
-   reference-pressure error does): it moves the integrated drag by e
-   times the covered share of the projected area, u_b = e A_cov / D_inv,
-   with A_cov the covered fraction of the base area (1 when the stations
-   reach the shoulder).
-6. **The interval for that body and Mach number.** The envelope over all
-   readings k (and ambiguous alternatives) of [r_bk - u_b, r_bk + u_b],
-   widened to include zero, since the model's value is what is served.
+5. **The uncertainty terms**, each relative to D_inv, summed linearly:
+   - _measurement:_ the report's stated uncertainty e in Cp, taken as a
+     bias common to every orifice (the worst case, and what a
+     reference-pressure error does): u_meas = e A_cov / D_inv, with A_cov
+     the covered fraction of the base area (projected, in r^2);
+   - _uncovered part:_ u_unc = A_unc max_j |Cp_meas,j - Cp_inv,j| /
+     D_inv, with A_unc the uncovered fraction of the base area and the
+     largest station difference of that reading (over every ambiguous
+     alternative): the share times the largest station difference,
+     written in area so that no station near Cp = 0 divides anything;
+   - u_bk = u_meas + u_unc.
+6. **The half-width for that body and Mach number.** a_b = the largest,
+   over all readings k and ambiguous alternatives, of |r_bk| + u_bk.
 
-Disclosed: the coverage threshold of a quarter (item 3) was written by an
+**The sign: symmetric.** The band is symmetric about the served value,
+with half-width a (relative) times the nose term. The two seen ogives of
+one family at one Mach number differ from the model in opposite
+directions (8 to 9% above, 3% below), so the sign belongs to the
+particular tunnel model and tunnel, not to the inviscid model; a
+one-sided band would claim to know it. In the total (0008 section 6.3,
+the linear sum of the components' bands) the nose component's low and
+high become D_nose (1 - a) - n and D_nose (1 + a) + n, with n the
+numerical band (0006), and they add to the other components' lows and
+highs as every band does. The allowance and n are shown as separate
+lines.
+
+Disclosed: the coverage threshold of a tenth (item 3) was written by an
 author who knows from 0004 that TN 3716's first orifice is at x/d 0.22,
 but not what share of its drag lies ahead of it.
+
+**Fixed before any reading** (Route 1's condition (b), section 5): this
+quantity, the integration script that implements it, the thresholds, the
+cover rule (4.4) and the sign rule are committed and independently
+reviewed before any new reading reaches them. The script's first run is
+on the existing TN 3716 typing and is recorded as a run on seen data: it
+checks the script, and its result is labelled so; it is not a reading.
 
 ### 4.4 Per family and Mach number
 
 - **Families** as the page serves them: cones, tangent ogives, secant
   ogives, parabolic, ellipsoid, Haack and Von Karman, power series, and
   each blunted variant separately.
-- **The cover of a family** is the set of measured (fineness, Mach)
-  pairs of that family, each widened by a margin fixed here: +-0.05 in
-  Mach and +-0.25 calibers in fineness, and the convex hull of those
-  boxes. Nothing is extrapolated beyond it.
-- **The allowance** at any case inside the cover is the envelope of the
-  intervals (4.3, item 6) of every measured case in that family's cover,
-  not interpolated: a narrow case never narrows a wide one.
+- **The cover of a family** is the union of boxes, one per measured
+  (fineness, Mach) pair of that family: +-0.05 in Mach and +-0.25
+  calibers in fineness about it. Not the convex hull: a hull would span
+  finenesses and Mach numbers nobody measured (with the two seen ogives,
+  every tangent ogive from 3 to 5.75 calibers). Nothing is extrapolated
+  beyond the boxes.
+- **The allowance** at a case is the largest half-width a_b (4.3, item 6) of every measured case whose box contains it, and never less than
+  section 5's floor where a seen set's box contains it. Not
+  interpolated: a narrow case never narrows a wide one.
 - **Inside the cover**, the nose's band is the numerical band (unchanged)
   plus the allowance, shown as two lines: "numerical error of the
   inviscid solve" and "inviscid model against measured pressures (n
-  bodies, Mach range, sources)".
+  bodies, Mach range, sources, tunnel Reynolds number)". The Reynolds
+  number is each report's own (for TN 3716, 0.44e6 on the diameter), so a
+  reader sees how far the tunnel lay from flight.
 - **Outside the cover**, the nose stays labelled as section 6's interim
   label says it: numerical error only, the model's own error not in the
   band.
 
-With the two sets seen today the cover would be two narrow boxes of
-tangent ogives near Mach 1.98, and cones nowhere until TR 1386, RM
+With the two sets seen today the cover would be two small boxes of
+tangent ogives at Mach 1.93 to 2.03 (2.75 to 3.25 and 5.5 to 6.0
+calibers), and cones nowhere until TR 1386, RM
 E52C10 or another set is read. Coverage of the allowance will be small
 at first. That is the honest consequence, and section 8 asks the owner
 whether a pooled allowance should be offered outside the cover.
@@ -281,7 +357,10 @@ whether a pooled allowance should be offered outside the cover.
 ### 4.6 Labels
 
 - The nose with an allowance: "verified (numerical error); model error
-  bounded by measured pressures on <n> bodies of this family". The word
+  bounded by measured pressures on <n> bodies of this family, tunnel
+  Reynolds number <Re>". Where a cover rests only on sets seen before
+  registration (Route 1's condition (c)), the label adds "formed from
+  data seen before registration" and never calls them a test. The word
   "validated" is not used for the nose: a few tunnel bodies at one Mach
   number are component data, which the project's labels call
   "estimated on component data".
@@ -293,12 +372,13 @@ whether a pooled allowance should be offered outside the cover.
 
 - No held-back set, ever.
 - A set examined against the model before its dated entry, except as
-  section 5 decides.
+  section 5's Route 1 allows: widening only, never a test, never a
+  validation.
 - A quantity defined after its ink was seen (precedent (r)).
 
 ### 4.8 What it costs
 
-- Where the allowance applies, the nose's band grows by about a tenth of
+- Where the allowance applies, the nose's band grows to a tenth or more of
   the nose term (section 1). The nose term is a part of the total; the
   growth of the total's band is measured by re-running
   `docs/research/refusals/` before and after, not guessed here.
@@ -327,37 +407,59 @@ sets nothing: not a band, not a band's end, not an allowance". (s) and
 (t) followed (r). Read strictly, TN 3716 and RM A53E01 (and TN 4233 and
 RM E51H17, also seen) become checks that set nothing.
 
-**Why this case differs, and what is proposed.** The precedents guard
-against a band or a method chosen after seeing data, which can only make
-the model look better than it is. Here the seen data would be used only
-to widen: an allowance can never be made narrower by including a body,
-because 4.4 takes the envelope. Excluding them would serve a nose band
-that leaves out a discrepancy everyone has seen, which is the opposite of
-what the rule is for. So two routes:
+**Route 1, the owner's choice, and what it breaks.** Route 1 lets the
+seen sets set the allowance's width, by a floor and by fresh readings,
+widening only. That breaks (r)'s words twice, not once: the seen data
+become "an allowance", and through the floor they set "a band's end" (the
+band cannot be narrower than they say). It is still the more honest
+outcome, for three reasons:
 
-- **Route 1 (recommended): a floor, never a test.** The seen sets are
-  named in (w) as widening-only: each is read again from the source,
-  twice, the second blind, by readers who have not seen the earlier
-  typing or the integrated figures (the first reader may not have the
-  earlier typing; neither has the 8 to 9% or 3% if that can be arranged,
-  which for an agent is a matter of what its brief contains); the
-  quantity is formed by 4.3, fixed here before these readings; and the
-  result may only widen the allowance of its family and Mach number. It
-  is never a test of the allowance, never a band's narrow end, and no
-  claim rests on it as a validation. The entry says it was registered
-  after it was seen, as (g) did. This departs from (r)'s words "not an
-  allowance", so it needs the owner's decision.
-- **Route 2 (the strict precedent).** The seen sets are checks that set
-  nothing. The allowance is formed only from unseen sets (TR 1386, RM
-  E52C10, TN D-3516 and any found later). Each seen set is then shown
-  beside the allowance of its family and Mach number: if it falls outside,
-  that is recorded as the allowance failing its check, and by rule 3 of
-  10.1 (a failure refuses, does not widen) that family and Mach range stay
-  "numerical error only". Today no unseen set covers tangent ogives near
-  Mach 1.98, so under Route 2 the two ogives would stay numerical only.
+- **Widening only cannot flatter the width.** The precedents guard
+  against a band, a quantity or a method chosen after seeing data, which
+  can make the model look better than it is. Under Route 1 a seen set can
+  only make the band wider (4.4 takes the largest half-width; the floor
+  only raises it). No choice informed by the seen values can narrow
+  anything.
+- **Route 2 would keep a known discrepancy out of every band.** Under the
+  strict precedent the seen sets set nothing, and no unseen set covers
+  tangent ogives near Mach 1.98. The page would go on serving those noses
+  with a band of 1e-4 beside a published 8 to 9% difference, merely
+  labelled. That is the juxtaposition this record exists to remove.
+- **Rule 3 of 10.1 was written for held-back tests, not checks.** "A
+  failure refuses the configuration it tests and does not widen a band"
+  governs the registered free-flight sets, so that a failed test cannot be
+  absorbed by widening. A seen tunnel set tests nothing here; applying
+  that rule to it (Route 2's "falls outside, stays numerical only")
+  borrows a guard against flattery to keep out data that can only widen.
 
-Both are honest. Route 1 gives a number where Route 2 gives a label;
-Route 1 needs a new rule, Route 2 does not.
+**Route 1's conditions**, all in (w):
+
+- **(a) A floor.** In each seen set's family and Mach number (its box,
+  4.4), the half-width is never less than the published integrated
+  difference plus its measurement term, taken as they stand, whatever the
+  fresh readings give:
+  - TN 3716: 0.1068 to 0.1080 against 0.09880, r = +8.1% to +9.3%;
+    u_meas = 0.005 / 0.09880 = 5.1%; floor 9.3% + 5.1% = **14.4%**;
+  - RM A53E01: 0.0298 against 0.03074, r = -3.1%; u_meas = 0.004 /
+    0.03074 = 13.0%; floor 3.1% + 13.0% = **16.1%**.
+
+  These are computed from the figures already public (sources.md), not
+  from any new reading.
+
+- **(b) Everything fixed and reviewed first.** The quantity (4.3), the
+  integration script, the thresholds, the cover (4.4) and the sign rule
+  are committed and independently reviewed before any reading reaches
+  them; the script's first run is on the existing TN 3716 typing and is
+  recorded as a run on seen data.
+- **(c) Labelled for what it is.** Where a family's cover rests only on
+  seen sets, the label says "formed from data seen before registration".
+  No seen set is ever called a test or a validation, and no claim rests on
+  one as such. The entry says the sets were registered after they were
+  seen, as (g) did.
+
+**Route 2, not chosen,** is recorded for the reviewer: the seen sets as
+checks that set nothing, the allowance from unseen sets alone, and a seen
+set falling outside it leaving its family "numerical error only".
 
 ## 6. The interim label
 
@@ -370,99 +472,120 @@ it is shown:
 with a link to the comparison (`docs/validation/sources.md`, "Bodies of
 revolution"), and in the README's table, in its short plain style:
 
-> **Verified**, Mach 1.2 to 5, for the numerical error only: each result
-> carries an error band measured from nested grids. The inviscid model's
-> own error is not in that band; wind-tunnel pressures on two ogives
-> differ from it by 3% and 8 to 9% ([details](docs/validation/sources.md#bodies-of-revolution))
+> **Verified**, Mach 1.2 to 5, for the numerical error only, not the
+> model's: tunnel pressures on two ogives at Mach 1.98 lie 8 to 9% above
+> and 3% below it ([why](docs/validation/sources.md#bodies-of-revolution))
 
 Done as a separate commit on this branch, apart from this record: the
 README line, `src/ui/help.ts` `bandSection`, `src/app/total-drag.ts`
 `noseComponentOf` (the nose's band line in the breakdown) and
 `BREAKDOWN_NOTE`, and the static notes of `demos/nose-drag.html` and
-`demos/flow-view.html`. Text only; no number, band or claim changes.
+`demos/flow-view.html` (d83b336; the direction and Mach number added in
+b7d74ad, which also corrects a test comment that called the CPU engine
+"validated" against TN 3716). Text only; no number, band or claim
+changes.
 
 ## 7. Draft amendment (w), for 0014 section 10.7
 
-Not yet in 0014. The coordinator adds it, dated when it is committed
-there, before any set below is read for this purpose. The owner's choice
-between Route 1 and Route 2 (section 5) is written into item 3 before it
-is committed; the text below is Route 1, with Route 2's wording in
-brackets.
+Not yet in 0014. The coordinator adds it after main's (v), dated when it
+is committed there, before any set below is read for this purpose, and
+fills in the commit of 0022 it adopts. Letter (w) is this record's; (x)
+is reserved for the W6 probe.
 
 > **2026-10-24 (w): measured nose pressures, named for the nose's
 > model-form allowance before they are read** (rule 2 of 10.1; design
-> record 0022; the advisor's report of 2026-10-22, section 6 item 4). The
-> nose's band (0006) is the numerical error of the inviscid solve. An
-> allowance "inviscid model against measured pressures" is formed per
-> nose family and Mach number by 0022 section 4.3 and 4.4, fixed before
-> any value below is read, and carried linearly in the total's model-form
-> band as its own line; outside its cover the nose is labelled "numerical
+> record 0022 as adopted at commit <filled in when (w) is committed>;
+> the advisor's report of 2026-10-22, section 6 item 4; the owner's
+> choice of 0022's Route 1). The nose's band (0006) is the numerical error
+> of the inviscid solve. An allowance "inviscid model against measured
+> pressures" is formed per nose family and Mach number by 0022 sections
+> 4.3 and 4.4, fixed and reviewed before any value below is read. It is
+> symmetric about the served value, half-width a times the nose term, a
+> the largest |r| + u of every measured case whose box (+-0.05 Mach,
+> +-0.25 calibers; the union of boxes, not their hull) contains the case;
+> it enters the total's model-form band linearly, as its own line, beside
+> the numerical band. Outside every box the nose is labelled "numerical
 > error of the inviscid solve; the model's own error is not in this
 > band".
 >
-> 1. _Band-setting, no value read:_ NACA TR 1386 (Perkins, Jorgensen and
->    Sommer, 1958; NTRS 19930091022), its zero-incidence pressure
->    distributions and foredrags of blunted cones and Karman ogives,
->    the figures and tables named by a later dated entry when it is
->    opened to see what it covers, before any value is read; NACA RM E52C10
->    (Jack and Gould), its zero-incidence plotted pressures on the five
->    cone-cylinders at Mach 3.12, the figure named likewise; NASA TN D-3516
->    (Czarnecki and Monta), fig. 5 and its orifice table, the smooth model
->    at Mach 1.1 and 1.2, used only once the nose is served there. This
->    widens 10.1's "a check of the nose solve" for TR 1386 to band-setting
->    for this allowance only.
+> 1. _Band-setting, no value recorded:_ NACA TR 1386 (Perkins, Jorgensen
+>    and Sommer, 1958; NTRS 19930091022), its zero-incidence pressure
+>    distributions and foredrags of blunted cones and Karman ogives, the
+>    figures and tables named by a later dated entry when it is opened to
+>    see what it covers, before any value is read (not read before); NACA
+>    RM E52C10 (Jack and Gould), its zero-incidence plotted pressures on
+>    the five cone-cylinders at Mach 3.12, the figure named likewise
+>    (opened in 2026-10; whether its plots were looked at for values is not
+>    recorded, so it is disclosed as possibly seen); NASA TN D-3516
+>    (Czarnecki and Monta), fig. 5 and table II, the smooth model at Mach
+>    1.1 and 1.2, used only once the nose is served there (fig. 5 was read
+>    for the transonic work and its stagnation pressures' scatter, about
+>    0.005 in Cp, noted; no value recorded or compared with the model).
+>    This widens 10.1's "a check of the nose solve" for TR 1386 to
+>    band-setting for this allowance only.
 > 2. _Each is read twice_, the second reading blind, paired by a neutral
->    party; ambiguous cells keep every reading; the envelope of both, never
+>    party; ambiguous cells keep every reading; the envelope, never
 >    resolved toward the narrower.
-> 3. _Seen before this entry:_ NACA TN 3716 (table I(a) and fig. 3, zero
->    incidence; typed once 2026-10-15, integrated once 2026-10-17), NACA RM
->    A53E01 (table II(a), zero incidence; read once 2026-10-17), NACA TN
->    4233 (tables I(a) and (b); typed and compared in 0013) and NACA RM
->    E51H17 (fig. 4(a); one value digitised). By the precedent of (g) they
->    are never a test, and no claim rests on any of them as one. Each is
->    read again twice, the second blind, by readers whose briefs omit the
->    earlier readings and their integrated results, and the result may
->    only widen the allowance of its family and Mach number, never set its
->    narrow end. [Route 2: by the precedent of (g) and (r) they are checks
->    that set nothing, not an allowance; each is shown beside the
->    allowance of its family and Mach number, and one falling outside it
->    leaves that family and Mach range "numerical error only".]
-> 4. _Never used:_ every held-back set of 10.1, the PARD standard body's
+> 3. _Seen before this entry, widening only:_ NACA TN 3716 (table I(a) and
+>    fig. 3, zero incidence; typed once 2026-10-15, integrated once
+>    2026-10-17; every value public in the repository), NACA RM A53E01
+>    (table II(a), zero incidence; read once 2026-10-17) and NACA TN 4233
+>    (tables I(a) and (b); typed and compared in 0013). Registered after
+>    they were seen, as (g) records NSWCDD/TR-92/509. Each is read again
+>    twice, the second blind, by readers who work from the source file
+>    alone, without this repository, and whose briefs name no earlier
+>    value. The result may only widen the allowance of its box. It is never
+>    a test or a validation, and no claim rests on it as one. Where a box
+>    rests only on these sets the label says "formed from data seen before
+>    registration". This departs from (r)'s "not a band's end, not an
+>    allowance" for these sets only, because their use can only widen.
+> 4. _The floor:_ in TN 3716's box the half-width is never below 14.4%
+>    (published 0.1068 to 0.1080 against 0.09880, plus 0.005 / 0.09880),
+>    and in RM A53E01's never below 16.1% (0.0298 against 0.03074, plus
+>    0.004 / 0.03074), whatever the fresh readings give.
+> 5. _Fixed first:_ the quantity, the integration script, the coverage
+>    threshold (a tenth of the drag outside the orifices, with its own
+>    term below that), the boxes and the sign rule are committed and
+>    reviewed before any reading reaches them. The script's first run is
+>    on the existing TN 3716 typing and is recorded as a run on seen data.
+> 6. _Not settled here:_ NACA RM E51H17 (fig. 4(a); one value digitised
+>    and seen). Whether it sets anything is the owner's open question,
+>    decided by a later dated entry before it is read again.
+> 7. _Never used:_ every held-back set of 10.1, the PARD standard body's
 >    fore drag (RM L52E06 figs. 9 to 12) included.
-> 5. _Not changed:_ the nose's numerical band and its floor (0006), every
+> 8. _Not changed:_ the nose's numerical band and its floor (0006), every
 >    other component's band, and every registered test.
 
 ## 8. Open questions for the owner
 
-1. **Route 1 or Route 2** (section 5): may the seen sets widen the
-   allowance (a new rule, departing from (r)'s "not an allowance"), or
-   are they checks only? Recommendation: Route 1.
-2. **The measurement's uncertainty inside the allowance** (4.3, item 5):
+Decided: Route 1 (the owner); the interim label may merge (the
+coordinator, after review).
+
+1. **The measurement's uncertainty inside the allowance** (4.3, item 5):
    recommended, since a band narrower than the data's resolution claims
-   what the data cannot show. It makes the allowance at least 5 to 13% of
-   the term wherever these sets apply.
-3. **Outside the cover** (4.4): label "numerical error only" (recommended
-   for now), or serve a pooled allowance (the envelope of every measured
-   case, all families and Mach numbers) labelled "estimated, outside the
-   measured noses", or refuse the total. Recommendation: the label now;
-   reconsider the pooled allowance once TR 1386 is read.
-4. **Low-Reynolds tunnel sets** (RM E51H17's 34%): do sets whose Reynolds
-   number lies far below rockets' flight values set the allowance at all?
-   Deciding this now, with E51H17 seen, is itself a choice after seeing,
-   so the recommendation is to let it widen like any other seen set, and
-   say why.
-5. **The BRL sub-class** (4.5): show the tested band and the widened band
-   side by side, or the tested band with a note? Recommendation: both,
-   the tested one marked as the band that passed.
-6. **The margins** of the cover (+-0.05 Mach, +-0.25 calibers; 4.4) and
-   the coverage threshold of a quarter (4.3): accept, or set others before
+   what the data cannot show. With the floors of section 5 it makes the
+   allowance 14 to 16% of the term in the two seen boxes.
+2. **Outside the cover** (4.4): label "numerical error only" (recommended
+   for now), or serve a pooled allowance (the largest half-width of every
+   measured case) labelled "estimated, outside the measured noses", or
+   refuse the total. Recommendation: the label now; reconsider the pooled
+   allowance once TR 1386 is read.
+3. **RM E51H17** (a 4.77 deg cone at Mach 3.85, read about 34% above
+   Taylor-Maccoll, which its report puts down to Reynolds number): does a
+   set whose tunnel Reynolds number lies far below flight set anything?
+   Left open, not settled here. Deciding it now, with the value seen, is
+   itself a choice after seeing; whichever way it goes, the entry says so.
+4. **The BRL sub-class** (4.5): show the tested band and the widened band
+   side by side, or the tested band with a note? Recommendation: both, the
+   tested one marked as the band that passed.
+5. **The margins** of the boxes (+-0.05 Mach, +-0.25 calibers; 4.4) and
+   the coverage threshold of a tenth (4.3): accept, or set others before
    any reading.
-7. **The interim label** (section 6) can merge before any of this: does
-   the owner want it on main now?
 
 ## 9. Order of work after the decisions
 
-1. The owner's answers; this record revised; an independent review.
+1. The owner's answers to section 8; this record revised; the
+   independent reviewer's re-check.
 2. (w) committed to 0014 10.7 by the coordinator, dated.
 3. TR 1386, RM E52C10 and TN D-3516 opened for coverage only; their
    figures named in a dated entry (a letter from the coordinator).
