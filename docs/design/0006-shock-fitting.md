@@ -1182,11 +1182,25 @@ the others' by more (2.6 times or more with the earlier 5e-4).
 
 These are bands of three grids (nj = 20, 40 and 80). The page gives a
 band only from four (to nj = 160), when the orders of the two finest
-triples agree (0005), and no band of four grids has been measured on a
-Von Karman nose yet: the page's band on these noses is not yet checked,
-and says so. The checks under way: the 1-caliber nose at Mach 2 and the
-3-caliber nose at Mach 2 (whose fitted drag converges at 1.49 and its
-march at 1.16 to 1.31) on nj = 160 (`docs/research/two-scale-noses`). Only the
+triples agree (0005), so its band on these noses is checked on four
+grids as follows. The first such check (2026-10-24, the 1-caliber nose
+at Mach 2, `runners/tmp-haackmoc/lane160.sh` and `check160.test.ts`,
+`fits/check160-L1c1M2.json`): the fit on nj = 160 settled at 21000
+iterations (gates passed: wall cells at 77.8 deg, neighbours within
+1.18, aspect 3.0), and the four drags 0.42909806, 0.42869654,
+0.42858454 and 0.42855449 give orders of 1.84 and 1.90 on the two
+triples, so the page verifies it: the value 0.42855449, extrapolated to
+0.42854347 (within 3.5e-7 of the references, 0.42854045 to 0.42854332),
+with a band of 1.38e-5 from the grids and 3.57e-4 (8.32e-4 of the
+value) with the allowance. Its error against the lowest bound of the
+marches is 5.06e-5 of the value: the band contains it 16 times, but the
+grids' part alone (3.2e-5 of the value) would not. The second check,
+the 3-caliber nose at Mach 2 (whose fitted drag converges at 1.49 and
+its march at 1.16 to 1.31) on nj = 160, is running; until it lands the
+page says that four-grid bands on Von Karman noses have been checked on
+one nose only.
+
+Only the
 Von Karman nose is served (`bluntNoseRefusal`), and only inside the
 outline of the (calibers, Mach) points referenced
 (`VON_KARMAN_REFERENCES`, `insideOutline`): (1, 1.5), (1, 2), (1, 3),

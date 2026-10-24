@@ -102,10 +102,13 @@ band of four grids has been measured on a Von Karman nose yet. Lanes
 (`runners/tmp-haackmoc/`, started 2026-10-22):
 
 - `lane160.sh`: the 1-caliber nose at Mach 2 on nj = 160, seeded from
-  its nj = 80 fit (about 30 minutes per 1000 iterations on a shared
-  core; nj = 80 took 13000).
+  its nj = 80 fit. Finished 2026-10-24 (settled at 21000 iterations,
+  `fits/saved/L1c1M2r8.json`); its check, `fits/check160-L1c1M2.json`:
+  orders 1.84 and 1.90, band 8.32e-4 of the value, containing the
+  references and the lowest bound (error 5.06e-5). The first four-grid
+  check on a Von Karman nose (0006).
 - `lane160b.sh`: the 3-caliber nose at Mach 2 on nj = 160 (fitted order
-  1.49, the riskier case), started once the transonic lanes end.
+  1.49, the riskier case): running (7000 iterations on 2026-10-24).
 - `lanecyl.sh`: the 3-caliber nose at Mach 2 with 0 and 30 calibers of
   cylinder on nj = 20 and 40, against the 2-caliber family: the page
   accepts 0 to 30 calibers of body, the references have 1 or 2.
