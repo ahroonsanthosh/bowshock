@@ -10,6 +10,7 @@ import {
   nearSonicHold,
   orderingCheck,
   pointwiseBand,
+  rowGate,
   rowsKeptOut,
   slenderConeCylinderCp,
   stationCpAllowance,
@@ -423,6 +424,98 @@ describe('item 5: the rung verdicts', () => {
     expect(nearSonicHold(1.05, null, false)).toBeNull();
     expect(nearSonicHold(1.064, false, false)).toBeNull();
     expect(nearSonicHold(0.991, null, false)).toBeNull();
+  });
+
+  it('the row gate: every gate of (y) in order, each refusing with its reason', () => {
+    const verification = {
+      solvesTag: 'solves',
+      solvesHash: 'abc',
+      keptOut: [{ mach: 0.85, reason: 'rung Mach 0.8 failed: (c) ...' }],
+      far800Pass: true,
+      rowResults: [
+        { mach: 0.6, largestStationBand: 3e-4, stationFailed: false, verdict: 'pass' },
+        { mach: 0.92, largestStationBand: 2.5e-3, stationFailed: true, verdict: 'fail' },
+        { mach: 1.02, largestStationBand: 4e-3, stationFailed: false, verdict: 'pass' },
+        { mach: 1.064, largestStationBand: 1e-4, stationFailed: false, verdict: 'pass' },
+      ],
+    };
+    const base = {
+      solvesTag: 'solves',
+      solvesHash: 'abc',
+      gpu: false,
+      gpuMatch: null,
+      verification,
+      resultsReviewed: true,
+    };
+    // A GPU run without a passed hardware match: every row, 1.064 included (6 (h)).
+    const noMatch = rowGate({ ...base, mach: 1.064, gpu: true, gpuMatch: null });
+    expect(noMatch).toMatchObject({ allowed: false });
+    expect((noMatch as { reason: string }).reason).toMatch(/6 \(h\)/);
+    expect(rowGate({ ...base, mach: 1.064, gpu: true, gpuMatch: { passed: false } })).toMatchObject(
+      { allowed: false },
+    );
+    expect(
+      rowGate({ ...base, mach: 1.064, gpu: true, gpuMatch: { passed: true, software: true } }),
+    ).toMatchObject({ allowed: false });
+    expect(
+      rowGate({ ...base, mach: 1.064, gpu: true, gpuMatch: { passed: true, software: false } }),
+    ).toMatchObject({ allowed: true, inviscidUncertainty: 1e-4 });
+    // The served family passes on the CPU, with u_num where the evaluation has the row.
+    expect(rowGate({ ...base, mach: 1.064 })).toMatchObject({
+      allowed: true,
+      inviscidUncertainty: 1e-4,
+    });
+    expect(rowGate({ ...base, mach: 1.05, verification: null })).toMatchObject({
+      allowed: true,
+      inviscidUncertainty: 0,
+    });
+    // Below 1.05: the evaluation must exist, be of these solves, and be current.
+    expect(
+      (rowGate({ ...base, mach: 0.6, verification: null }) as { reason: string }).reason,
+    ).toMatch(/has not run/);
+    expect(
+      (
+        rowGate({
+          ...base,
+          mach: 0.6,
+          solvesTag: 'solves-gpu',
+          gpu: true,
+          gpuMatch: { passed: true },
+        }) as { reason: string }
+      ).reason,
+    ).toMatch(/evaluated solves, not solves-gpu/);
+    expect(
+      (rowGate({ ...base, mach: 0.6, solvesHash: 'changed' }) as { reason: string }).reason,
+    ).toMatch(/hash mismatch/);
+    // Kept out by a rung; the 800-radius test; the review.
+    expect((rowGate({ ...base, mach: 0.85 }) as { reason: string }).reason).toMatch(/item 6/);
+    expect(
+      (
+        rowGate({ ...base, mach: 1.02, verification: { ...verification, far800Pass: null } }) as {
+          reason: string;
+        }
+      ).reason,
+    ).toMatch(/item 8/);
+    expect(
+      (rowGate({ ...base, mach: 0.6, resultsReviewed: false }) as { reason: string }).reason,
+    ).toMatch(/not yet reviewed/);
+    // No judged per-row result (0.701 outside every box when 0.6 failed, or not solved): refused.
+    expect((rowGate({ ...base, mach: 0.701 }) as { reason: string }).reason).toMatch(
+      /no judged per-row result/,
+    );
+    // 6 (d) failed for the row: refused.
+    expect((rowGate({ ...base, mach: 0.92 }) as { reason: string }).reason).toMatch(
+      /6 \(d\) failed/,
+    );
+    // The happy path wires u_num.
+    expect(rowGate({ ...base, mach: 0.6 })).toMatchObject({
+      allowed: true,
+      inviscidUncertainty: 3e-4,
+    });
+    expect(rowGate({ ...base, mach: 1.02 })).toMatchObject({
+      allowed: true,
+      inviscidUncertainty: 4e-3,
+    });
   });
 
   it('applyOrdering fails the rungs a violation names, and leaves the others', () => {

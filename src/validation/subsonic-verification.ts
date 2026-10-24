@@ -647,6 +647,119 @@ export function nearSonicHold(
   return null;
 }
 
+/** What the evaluation records per row, as the row gate reads it. */
+export interface RowResultSummary {
+  readonly mach: number;
+  /** The largest per-station band (grid + domain allowances + floor), the row's u_num in Cp. */
+  readonly largestStationBand: number;
+  /** Whether 6 (d) failed for the row (a station band above 2e-3, or a station without a band). */
+  readonly stationFailed: boolean;
+  readonly verdict: string;
+}
+
+/** What verify-subsonic.json carries for the row gate. */
+export interface VerificationSummary {
+  /** The solves it evaluated: the directory's name ('solves' or 'solves-gpu'). */
+  readonly solvesTag: string;
+  /** A hash of every solve file it read (solvesHash), so stale or swapped solves are refused. */
+  readonly solvesHash: string;
+  readonly keptOut: readonly { readonly mach: number; readonly reason: string }[];
+  readonly far800Pass: boolean | null;
+  readonly rowResults: readonly RowResultSummary[];
+}
+
+export interface RowGateInput {
+  readonly mach: number;
+  /** The solves blind-run-3 is evaluating: their directory's name and their hash now. */
+  readonly solvesTag: string;
+  readonly solvesHash: string;
+  /** Whether those solves come from the owner's GPU, and that kit's match record. */
+  readonly gpu: boolean;
+  readonly gpuMatch: { readonly passed?: boolean; readonly software?: boolean } | null;
+  readonly verification: VerificationSummary | null;
+  readonly resultsReviewed: boolean;
+}
+
+export type RowGate =
+  | { readonly allowed: true; readonly inviscidUncertainty: number; readonly note: string }
+  | { readonly allowed: false; readonly reason: string };
+
+/**
+ * Every gate a TN 4233 row below Mach 1.078 passes before 0022's script
+ * evaluates it, in one tested place ((y) items 6, 8 and 11 and 6 (h); the
+ * re-check of 602d8f7):
+ * 1. GPU solves need the kit's match record passed on hardware (6 (h)),
+ *    for every row;
+ * 2. rows at Mach 1.05 and above (the served family) then pass, with
+ *    u_num from the evaluation's per-row result where it exists;
+ * 3. rows below 1.05 need the evaluation, made on these same solves (the
+ *    same directory, the same hash), the results' review, not to be kept
+ *    out by a rung, the 800-radius test where (y) item 8 applies, a judged
+ *    per-row result, and 6 (d) not failed for the row; then they pass with
+ *    u_num = that row's largest station band.
+ */
+export function rowGate(input: RowGateInput): RowGate {
+  const { mach, verification } = input;
+  const same = (a: number, b: number) => Math.abs(a - b) < 1e-9;
+  if (input.gpu && !(input.gpuMatch?.passed === true && input.gpuMatch.software !== true))
+    return {
+      allowed: false,
+      reason:
+        '(y) 6 (h): the GPU kit\u2019s match test has not passed on hardware; no GPU row counts',
+    };
+  const row =
+    verification !== null &&
+    verification.solvesTag === input.solvesTag &&
+    verification.solvesHash === input.solvesHash
+      ? (verification.rowResults.find((r) => same(r.mach, mach)) ?? null)
+      : null;
+  if (mach >= 1.05) {
+    return {
+      allowed: true,
+      inviscidUncertainty: row?.largestStationBand ?? 0,
+      note:
+        row === null
+          ? 'served family; no per-row result of (y) for these solves, u_num 0'
+          : `served family; u_num ${row.largestStationBand.toExponential(2)} from (y)`,
+    };
+  }
+  if (verification === null)
+    return { allowed: false, reason: '(y): the verification (verify-subsonic) has not run' };
+  if (verification.solvesTag !== input.solvesTag)
+    return {
+      allowed: false,
+      reason: `(y): the verification evaluated ${verification.solvesTag}, not ${input.solvesTag}`,
+    };
+  if (verification.solvesHash !== input.solvesHash)
+    return {
+      allowed: false,
+      reason:
+        '(y): the solve files changed since the verification ran (hash mismatch); run it again',
+    };
+  const kept = verification.keptOut.find((r) => same(r.mach, mach));
+  if (kept !== undefined) return { allowed: false, reason: `(y) item 6: ${kept.reason}` };
+  const near = nearSonicHold(mach, verification.far800Pass, input.resultsReviewed);
+  if (near !== null) return { allowed: false, reason: `(y) item 8: ${near}` };
+  if (mach < 1 && !input.resultsReviewed)
+    return { allowed: false, reason: '(y): the results are not yet reviewed (Y_RESULTS_REVIEWED)' };
+  if (row === null)
+    return {
+      allowed: false,
+      reason: '(y): no judged per-row result for this row (not solved, not converged, or no floor)',
+    };
+  if (row.stationFailed)
+    return {
+      allowed: false,
+      reason:
+        '(y) 6 (d) failed for this row: its station band is above 2e-3 or a station has no band',
+    };
+  return {
+    allowed: true,
+    inviscidUncertainty: row.largestStationBand,
+    note: `u_num ${row.largestStationBand.toExponential(2)} from (y); row verdict ${row.verdict}`,
+  };
+}
+
 /**
  * Addendum item 4: whether the moved family's allowance from 100.6, 224.2
  * and 408.7 radii contains C(800) - C(224.2); `m` is the measurability

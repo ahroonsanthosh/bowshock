@@ -35,7 +35,8 @@ import {
   TN4233_ORIFICES,
   TN4233_ROWS,
 } from '../../../src/validation/cone-cylinder-tn4233';
-import { nearSonicHold } from '../../../src/validation/subsonic-verification';
+import { rowGate, type VerificationSummary } from '../../../src/validation/subsonic-verification';
+import { solvesHash, solvesTag } from './solves-hash';
 import {
   allowanceAt,
   boxOf,
@@ -173,16 +174,32 @@ interface RowCase {
  * item 6); null until that evaluation has run, which also holds every row
  * below Mach 1.
  */
-const verification = (() => {
+const verification: VerificationSummary | null = (() => {
   const file = join(here, 'out', 'verify-subsonic.json');
   if (!existsSync(file)) return null;
-  return JSON.parse(readFileSync(file, 'utf8')) as {
-    keptOut?: { mach: number; reason: string }[];
-    far800Pass?: boolean | null;
+  const v = JSON.parse(readFileSync(file, 'utf8')) as Partial<VerificationSummary>;
+  return {
+    solvesTag: v.solvesTag ?? '',
+    solvesHash: v.solvesHash ?? '',
+    keptOut: v.keptOut ?? [],
+    far800Pass: v.far800Pass ?? null,
+    rowResults: v.rowResults ?? [],
   };
 })();
-const keptOut = verification?.keptOut ?? null;
-const resultsReviewed = process.env.Y_RESULTS_REVIEWED === '1';
+const gpu = solvesTag(solves) === 'solves-gpu';
+const gpuMatch = (() => {
+  const file = join(here, 'owner-kit', 'match', 'gpu-M0.800.json');
+  if (!existsSync(file)) return null;
+  return JSON.parse(readFileSync(file, 'utf8')) as { passed?: boolean; software?: boolean };
+})();
+const gateInput = {
+  solvesTag: solvesTag(solves),
+  solvesHash: solvesHash(solves),
+  gpu,
+  gpuMatch,
+  verification,
+  resultsReviewed: process.env.Y_RESULTS_REVIEWED === '1',
+};
 
 function rows(): {
   cases: RowCase[];
@@ -215,23 +232,13 @@ function rows(): {
       // verification registered as 0014 10.7 (y) has been run
       // (verify-subsonic.test.ts) and its results reviewed; then this hold
       // is lifted by a dated note, row by row as the rungs allow.
-      if (mach < 1) {
-        // Lifted only by the results' review (Y_RESULTS_REVIEWED=1) and
-        // never for a row a failed rung keeps out ((y) item 6).
-        const kept = keptOut?.find((r) => Math.abs(r.mach - mach) < 1e-9);
-        if (kept !== undefined) {
-          held.push(`${what}: KEPT OUT by (y) item 6: ${kept.reason}`);
-          continue;
-        }
-        if (keptOut === null || !resultsReviewed) {
-          held.push(what);
-          continue;
-        }
-      }
-      // (y) item 8: 1.001 to 1.041 wait for the 800-radius test and the results' review.
-      const nearSonic = nearSonicHold(mach, verification?.far800Pass ?? null, resultsReviewed);
-      if (nearSonic !== null) {
-        held.push(`${what}: HELD by (y) item 8: ${nearSonic}`);
+      // Every gate of (y) in one tested place (rowGate): the GPU match,
+      // the evaluation on these same solves, the results' review, the
+      // rows a rung keeps out, the 800-radius test, the per-row result
+      // and 6 (d); the row's u_num comes from it.
+      const gate = rowGate({ ...gateInput, mach });
+      if (!gate.allowed) {
+        held.push(`${what}: HELD: ${gate.reason}`);
         continue;
       }
       const solve = solveOf(mach);
@@ -289,6 +296,7 @@ function rows(): {
           ),
         });
       } else notes.push('  no earlier typing of this row (0022 4.2): fresh readings only');
+      notes.push(`  gate: ${gate.note}`);
       const finest = solve.levels[solve.levels.length - 1]!;
       notes.unshift(
         `  inviscid: the transonic solver of 0013, CPU engine, r = 8 (${finest.ni} x ${finest.nj} cells), far boundary ${solve.domain!.farRadius.toFixed(1)} radii, ${solve.domain!.cylinderCalibers} calibers of cylinder; drag by level ${solve.levels.map((l) => `r=${l.refinement} ${l.drag.toFixed(7)}`).join(', ')}; r = 8 settled in ${finest.steps} steps (${Math.round(finest.seconds)} s), noise ${finest.noise.toExponential(1)}. No grid-convergence band or domain allowance computed.` +
@@ -311,6 +319,8 @@ function rows(): {
           radius: (x: number) => (0.5 * Math.min(Math.max(x, 0), L)) / L,
           inviscidCp: inviscidCpOf(solve),
           cpUncertainty: e,
+          // (y) item 11: the row's largest station band, as its u_num.
+          inviscidUncertainty: gate.inviscidUncertainty,
           readings: readingsHere,
           seen: true,
           // 0022 section 8 item 10: absolute in CD below indicated Mach 1.000.

@@ -36,11 +36,13 @@ import {
   rowsKeptOut,
   SUBSONIC_RUNGS,
   ZERO_DRAG_RUNG,
+  type RowResultSummary,
   type RungInput,
   type RungVerdict,
 } from '../../../src/validation/subsonic-verification';
 import type { DomainAllowance } from '../../../src/verification/domain-allowance';
 import { body, STATIONS_RADII } from './solve-common';
+import { solvesHash, solvesTag } from './solves-hash';
 import type { AllowanceRecord, GridRecords, GridResult } from './solve-common';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -134,7 +136,12 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
     `# solves: ${solvesDir}${gpu ? ' (the owner’s GPU run)' : ' (the CPU job)'}; written ${new Date().toISOString()}`,
     '',
   ];
-  const json: Record<string, unknown> = { solves: solvesDir };
+  const json: Record<string, unknown> = {
+    solves: solvesDir,
+    solvesTag: solvesTag(solvesDir),
+    solvesHash: solvesHash(solvesDir),
+  };
+  const rowResults: RowResultSummary[] = [];
   if (gpu) {
     const match = readJson<{ passed?: boolean; software?: boolean }>(
       join(here, 'owner-kit', 'match', 'gpu-M0.800.json'),
@@ -262,6 +269,12 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
           b.band + (input.stationFar?.[j] ?? Infinity) + (input.stationCylinder?.[j] ?? Infinity) + v.parts.floor,
       ),
     );
+    rowResults.push({
+      mach: solve.mach,
+      largestStationBand: worst,
+      stationFailed: v.criteria.d.status === 'fail',
+      verdict: v.verdict,
+    });
     out.push(
       `  Mach ${solve.mach.toFixed(3)}: CD_r8 ${v.value.toExponential(5)}, band ${v.band?.toExponential(3) ?? 'none'} (${v.estimate.kind}; far ${input.farField.kind}), largest station band ${worst.toExponential(2)}; ${solve.mach < 1 ? `rung rules: ${v.verdict}` : `near-sonic: far-field allowance ${v.parts.farField?.toExponential(3) ?? 'refused'}${solve.mach < 1.05 ? ' (moved family; subject to the 800-radius test)' : ''}`}`,
     );
@@ -271,7 +284,7 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
   writeFileSync(
     join(here, 'out', 'verify-subsonic.json'),
     JSON.stringify(
-      { ...json, floor, verdicts: judged, ordering, keptOut, far800, far800Pass, rows },
+      { ...json, floor, verdicts: judged, ordering, keptOut, far800, far800Pass, rows, rowResults },
       null,
       1,
     ) + '\n',

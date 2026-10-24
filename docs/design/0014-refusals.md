@@ -2293,6 +2293,22 @@ to the rules above, in the review's numbering:_
     is asserted (`nearSonicHold`), with the reason in its held list; the
     rows at 1.05 and above (the served family) do not wait. Both tested.
 
+16. _Re-check of 602d8f7 (2026-10-24, before any result; gates only)._
+    Every gate a TN 4233 row passes before 0022's script evaluates it is
+    one tested function, `rowGate`: (1) GPU solves count only with the
+    kit's match record passed on hardware, for every row, 1.05 to 1.064
+    included (6 (h)); (2) rows at 1.05 and above then pass, with u_num
+    from the evaluation's per-row result where it exists; (3) rows below
+    1.05 need the evaluation made on these same solves (the directory's
+    name and a hash of every solve file, recorded by the evaluation and
+    checked by the script), the results' review, not to be kept out by a
+    rung, the 800-radius test where item 8 applies, a judged per-row
+    result (so a row outside every rung's box, or not solved, or without
+    a floor, is refused), and 6 (d) not failed for the row; then u_num is
+    that row's largest station band (item 11, now wired as
+    `inviscidUncertainty`). Each gate has a unit test with a case that
+    would otherwise release a row.
+
 _Tests added for the errors the review planted:_ the floor and the
 cylinder term in the station band, p_inf / p_wall in the loss tolerance,
 the top rung's ordering condition, the zero-drag fail just past the
