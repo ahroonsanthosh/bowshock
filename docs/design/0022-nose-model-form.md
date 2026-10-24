@@ -3,6 +3,9 @@
 - **Status:** adopted with Route 1, revision 3 (the coordinator, after an
   independent review of revision 1, df6e284, and a re-check of revision
   2, 37d154f; the owner chose Route 1). Registered as 0014 10.7 (w).
+  Revision 4 (2026-10-24, before any reading, on the independent review
+  of the script at 3e26e9a): u_meas acts over the area from the first
+  orifice to the shoulder (4.3 item 5), not the orifices' span only.
   Design and registration only: no code, and no value of any source was
   read or computed for this record beyond the published figures it
   quotes.
@@ -284,8 +287,12 @@ For each measured body b at Mach number M and each reading k:
 5. **The uncertainty terms**, each relative to D_inv, summed linearly:
    - _measurement:_ the report's stated uncertainty e in Cp, taken as a
      bias common to every orifice (the worst case, and what a
-     reference-pressure error does): u_meas = e A_cov / D_inv, with A_cov
-     the covered fraction of the base area (projected, in r^2);
+     reference-pressure error does): u_meas = e A_bias / D_inv, with
+     A_bias = (R^2 - r(x_first)^2) / R^2 the fraction of the base area
+     from the first orifice to the shoulder (projected, in r^2): the value
+     held behind the last orifice (item 2) carries the same bias, so the
+     bias acts up to the shoulder. (Revision 3 had A_cov, the orifices'
+     span only; changed before any reading, revision 4.)
    - _uncovered part:_ u_unc = A_unc max_j |Cp_meas,j - Cp_inv,j| /
      D_inv, with A_unc the uncovered fraction of the base area and the
      largest station difference of that reading (over every ambiguous
@@ -608,7 +615,9 @@ open (its item 6), recorded in 0014 as a dated addition under (w):
    number, 4.4). Its label names its stated tunnel Reynolds number as far
    below flight, and says "formed from data seen before registration". It
    is never a test. It has no published integrated figure, so it carries
-   no floor of section 5 beyond what 4.3 gives from its readings.
+   no floor of section 5 beyond what 4.3 gives from its readings; by 4.2
+   its one digitised value on record (sources.md) stays in the envelope
+   as an earlier reading.
 
 ## 9. Order of work after the decisions
 

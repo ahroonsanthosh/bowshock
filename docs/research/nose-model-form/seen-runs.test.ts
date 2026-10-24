@@ -2,9 +2,11 @@
  * The integration script's first runs (design record 0022 section 4.3,
  * "Fixed before any reading"; 0014 section 10.7 (w) item 5): on the
  * typings already in the repository, TN 3716 and TN 4233, and on nothing
- * else. These are RUNS ON SEEN DATA: they check the script, and their
- * results are labelled so. They are not readings, not tests, and set no
- * band. No source was opened for them.
+ * else. These are RUNS ON SEEN DATA: a check of the script, labelled so.
+ * The typings enter the final envelope only as 0022 4.2's earlier
+ * readings (so in practice they are lower limits on the final allowance);
+ * they are not readings under (w), and never a test. No source was opened
+ * for them.
  *
  * Writes ./out/seen-runs.out (the table) and ./out/seen-runs.json. Run:
  *   npx vitest run --config docs/research/nose-model-form/vitest.config.ts
@@ -41,7 +43,16 @@ import { taylorMaccoll } from '../../../src/validation/taylor-maccoll';
 
 const gamma = 1.4;
 const here = dirname(fileURLToPath(import.meta.url));
-const LABEL = 'RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test';
+const LABEL =
+  'RUN ON SEEN DATA (0022 section 5 (b)): a check of the script; the typings enter the final ' +
+  "envelope only as 0022 4.2's earlier readings (so in practice they are lower limits on the " +
+  'final allowance); not a reading under (w), never a test';
+const TN4233_NOTE = [
+  '  Disclosed (independent review of 3e26e9a): the trapezoid spreads the drop at x/l 0.994',
+  "  (inside the shoulder's expansion) over x/d 3.845 to 4.057, far more area than the expansion",
+  "  reaches, so this cone's r is probably overstated (safe: it widens). It must not be quoted as",
+  "  the cone's error. Every orifice on the nose counts: the rule fixed before reading (0022 4.3).",
+];
 
 /** TN 3716: the 3-caliber tangent ogive at Mach 1.98, against the method of characteristics. */
 function tn3716(): { input: MeasuredCase; floor: number } {
@@ -158,7 +169,7 @@ it('runs the script on the seen typings and records the result as runs on seen d
 
   for (const c of tn4233()) {
     const r = evaluateCase(c);
-    out.push(...describeResult(r, null), '');
+    out.push(...describeResult(r, null), ...TN4233_NOTE, '');
     boxes.push(boxOf(r));
     json.push({ label: LABEL, result: r, floor: null });
   }

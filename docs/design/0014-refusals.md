@@ -1898,6 +1898,13 @@ may only widen the allowance, and only inside its own measured box (its
 nose shape, Mach number and fineness, 0022 section 4.4); its label names
 its stated tunnel Reynolds number as far below flight and says "formed
 from data seen before registration"; it is never a test. Recorded in
-0022 section 8, item 6. Nothing of it has been read again.
+0022 section 8, item 6. By 0022 section 4.2 its one digitised value on
+record (`docs/validation/sources.md`, Cp about 0.031) stays in the
+envelope as an earlier reading. Nothing of it has been read again. Also
+before any reading, on the independent review of the integration script
+(3e26e9a), 0022 section 4.3 item 5 was revised (revision 4): the
+measurement term acts over the area from the first orifice to the
+shoulder, since the value held behind the last orifice carries the same
+bias.
 
 The next free letter is (y); (x) is reserved for the W6 probe.

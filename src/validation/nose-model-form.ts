@@ -108,8 +108,14 @@ export interface CaseResult {
   readonly inviscidNoseDrag: number;
   /** Share of that drag outside the orifices (ahead of the first, behind the last). */
   readonly uncoveredShare: number;
-  /** Covered fraction of the base area, (r(x_last)^2 - r(x_first)^2) / R^2. */
+  /** Covered fraction of the base area, (r(x_last)^2 - r(x_first)^2) / R^2 (u_unc's complement). */
   readonly coveredArea: number;
+  /**
+   * The fraction of the base area a common bias acts on, (R^2 - r(x_first)^2) / R^2:
+   * from the first orifice to the shoulder, since the value held behind the
+   * last orifice carries the same bias (u_meas).
+   */
+  readonly biasArea: number;
   /** Whether the body sets anything (uncoveredShare <= COVERAGE_LIMIT). */
   readonly sets: boolean;
   readonly evaluations: readonly Evaluation[];
@@ -185,7 +191,13 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
   if (c.readings.length === 0) throw new RangeError(`${c.id}: no reading`);
   let stations: number[] | null = null;
   const evaluations: Evaluation[] = [];
-  let shareAndArea: { share: number; area: number; full: number; tip: number } | null = null;
+  let shareAndArea: {
+    share: number;
+    area: number;
+    biasArea: number;
+    full: number;
+    tip: number;
+  } | null = null;
   for (const reading of c.readings) {
     // Item 1: the orifices on the nose, from the tip to the shoulder.
     const onNose = reading.stations
@@ -203,16 +215,22 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
       const share = (Math.abs(tip) + Math.abs(aft)) / R2 / Math.abs(full);
       const rf = c.radius(xs[0]!);
       const rl = c.radius(xs[xs.length - 1]!);
-      shareAndArea = { share, area: (rl * rl - rf * rf) / R2, full, tip };
+      shareAndArea = {
+        share,
+        area: (rl * rl - rf * rf) / R2,
+        biasArea: (R2 - rf * rf) / R2,
+        full,
+        tip,
+      };
     }
-    const { area, tip } = shareAndArea;
+    const { area, biasArea, tip } = shareAndArea;
     const inv = xs.map((x) => c.inviscidCp(x));
     const inviscidDrag = stationDrag(xs, inv, tip, c.radius, L);
     for (const cps of combinations(onNose)) {
       const measuredDrag = stationDrag(xs, cps, tip, c.radius, L);
       const r = measuredDrag / inviscidDrag - 1;
       const largest = Math.max(...cps.map((v, i) => Math.abs(v - inv[i]!)));
-      const uMeas = (c.cpUncertainty * area) / Math.abs(inviscidDrag);
+      const uMeas = (c.cpUncertainty * biasArea) / Math.abs(inviscidDrag);
       const uUnc = ((1 - area) * largest) / Math.abs(inviscidDrag);
       evaluations.push({
         reading: reading.label,
@@ -227,7 +245,7 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
       });
     }
   }
-  const { share, area, full } = shareAndArea!;
+  const { share, area, biasArea, full } = shareAndArea!;
   const sets = share <= COVERAGE_LIMIT;
   return {
     id: c.id,
@@ -240,6 +258,7 @@ export function evaluateCase(c: MeasuredCase): CaseResult {
     inviscidNoseDrag: full,
     uncoveredShare: share,
     coveredArea: area,
+    biasArea,
     sets,
     evaluations,
     halfWidth: sets ? Math.max(...evaluations.map((e) => e.halfWidth)) : null,

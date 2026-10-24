@@ -104,7 +104,7 @@ describe('0022 4.3 items 3 and 5: coverage and the uncertainty terms', () => {
     expect(res.evaluations).toHaveLength(1);
   });
 
-  it('u_meas = e A_cov / D_inv and u_unc = A_unc max|dCp| / D_inv', () => {
+  it('u_meas = e A_bias / D_inv and u_unc = A_unc max|dCp| / D_inv', () => {
     const stations = uniform(0.1).map((s, i) => (i === 3 ? { ...s, cp: 0.13 } : s));
     const res = evaluateCase(coneCase({ readings: [{ label: 'x', stations }] }));
     const e = res.evaluations[0]!;
@@ -113,6 +113,39 @@ describe('0022 4.3 items 3 and 5: coverage and the uncertainty terms', () => {
     expect(e.uMeas).toBeCloseTo((0.002 * aCov) / 0.1, 10);
     expect(e.uUnc).toBeCloseTo(((1 - aCov) * 0.03) / 0.1, 10);
     expect(e.halfWidth).toBeCloseTo(Math.abs(e.r) + e.uMeas + e.uUnc, 14);
+  });
+
+  it('the stretch behind the last orifice counts in the uncovered share', () => {
+    // Ahead of the first orifice 1% of the drag, behind the last 9.75%:
+    // neither alone exceeds a tenth, together they do.
+    const stations = [0.4, 1, 2, 3, 3.8].map((x) => ({ x, cp: 0.1 }));
+    const res = evaluateCase(coneCase({ readings: [{ label: 'x', stations }] }));
+    expect(res.uncoveredShare).toBeCloseTo((0.4 / 4) ** 2 + (1 - (3.8 / 4) ** 2), 10);
+    expect(res.uncoveredShare).toBeGreaterThan(COVERAGE_LIMIT);
+    expect(res.sets).toBe(false);
+  });
+
+  it('u_meas acts from the first orifice to the shoulder: the held value carries the bias too', () => {
+    // Stations end at 3 of 4 calibers; a uniform bias e on every reading
+    // moves the like-for-like drag by e (R^2 - r1^2) / R^2, and u_meas is
+    // exactly that over D_inv.
+    const e = 0.002;
+    const stations = [0.4, 1, 2, 3].map((x) => ({ x, cp: 0.1 }));
+    const base = evaluateCase(coneCase({ readings: [{ label: 'x', stations }] }));
+    const biased = evaluateCase(
+      coneCase({
+        readings: [{ label: 'x', stations: stations.map((s) => ({ ...s, cp: s.cp + e })) }],
+      }),
+    );
+    const area = 1 - (0.4 / 4) ** 2;
+    expect(base.biasArea).toBeCloseTo(area, 12);
+    expect(base.coveredArea).toBeCloseTo((3 / 4) ** 2 - (0.4 / 4) ** 2, 12);
+    const shift = biased.evaluations[0]!.measuredDrag - base.evaluations[0]!.measuredDrag;
+    expect(shift).toBeCloseTo(e * area, 12);
+    expect(base.evaluations[0]!.uMeas).toBeCloseTo(
+      (e * area) / base.evaluations[0]!.inviscidDrag,
+      12,
+    );
   });
 
   it('takes every ambiguous cell each way and every reading, and keeps the largest', () => {

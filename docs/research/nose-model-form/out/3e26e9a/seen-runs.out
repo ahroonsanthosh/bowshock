@@ -1,0 +1,61 @@
+# 0022 integration script: first runs, ON SEEN DATA ONLY
+# RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test.
+# Inputs: the typings already in the repository (TN 3716, TN 4233); no source opened.
+
+TN 3716, 3-caliber tangent ogive, Mach 1.98, 3.000 cal, Re 0.44e6 on the diameter
+  stations on the nose: 0.220, 0.560, 0.890, 1.220, 1.610, 2.060, 2.500, 2.950
+  inviscid nose drag (fine quadrature) 0.098804; at the stations 0.099011
+  measured, like for like: 0.106641 to 0.107903 over 4 evaluation(s)
+  r 7.71% to 8.98%; u_meas 4.94%; u_unc up to 0.47%
+  outside the orifices 5.81% of the inviscid drag (limit 10%): sets
+  largest |r| + u: 14.39%; published floor 14.37%
+
+TN 4233, 7 deg cone, 14ft tunnel, Mach 1.078, 4.082 cal, Re 2.4e6 on the cone length
+  stations on the nose: 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.099016; at the stations 0.099016
+  measured, like for like: 0.090370 to 0.090370 over 1 evaluation(s)
+  r -8.73% to -8.73%; u_meas 1.98%; u_unc up to 1.72%
+  outside the orifices 1.87% of the inviscid drag (limit 10%): sets
+  largest |r| + u: 12.43%; no published floor (the typing is the earlier reading, 4.2)
+
+TN 4233, 7 deg cone, 14ft tunnel, Mach 1.1, 4.082 cal, Re 2.4e6 on the cone length
+  stations on the nose: 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.094498; at the stations 0.094498
+  measured, like for like: 0.088164 to 0.088164 over 1 evaluation(s)
+  r -6.70% to -6.70%; u_meas 2.08%; u_unc up to 1.55%
+  outside the orifices 1.87% of the inviscid drag (limit 10%): sets
+  largest |r| + u: 10.33%; no published floor (the typing is the earlier reading, 4.2)
+
+TN 4233, 7 deg cone, 2ft tunnel, Mach 1.1, 4.082 cal, Re 2.4e6 on the cone length
+  stations on the nose: 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.094498; at the stations 0.094498
+  measured, like for like: 0.090617 to 0.090617 over 1 evaluation(s)
+  r -4.11% to -4.11%; u_meas 2.08%; u_unc up to 1.43%
+  outside the orifices 1.87% of the inviscid drag (limit 10%): sets
+  largest |r| + u: 7.62%; no published floor (the typing is the earlier reading, 4.2)
+
+TN 4233, 7 deg cone, 2ft tunnel, Mach 1.151, 4.082 cal, Re 2.4e6 on the cone length
+  stations on the nose: 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.087531; at the stations 0.087531
+  measured, like for like: 0.083125 to 0.083125 over 1 evaluation(s)
+  r -5.03% to -5.03%; u_meas 2.24%; u_unc up to 1.14%
+  outside the orifices 1.87% of the inviscid drag (limit 10%): sets
+  largest |r| + u: 8.42%; no published floor (the typing is the earlier reading, 4.2)
+
+TN 4233, 7 deg cone, 2ft tunnel, Mach 1.2, 4.082 cal, Re 2.4e6 on the cone length
+  stations on the nose: 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.083011; at the stations 0.083011
+  measured, like for like: 0.078086 to 0.078086 over 1 evaluation(s)
+  r -5.93% to -5.93%; u_meas 2.36%; u_unc up to 0.99%
+  outside the orifices 1.87% of the inviscid drag (limit 10%): sets
+  largest |r| + u: 9.29%; no published floor (the typing is the earlier reading, 4.2)
+
+Allowance at the measured cases (union of boxes; floor a lower limit):
+  TN 3716, 3-caliber tangent ogive, Mach 1.98: 14.39% from 1 box(es), formed from data seen before registration
+  TN 4233, 7 deg cone, 14ft tunnel, Mach 1.078: 12.43% from 3 box(es), formed from data seen before registration
+  TN 4233, 7 deg cone, 14ft tunnel, Mach 1.1: 12.43% from 3 box(es), formed from data seen before registration
+  TN 4233, 7 deg cone, 2ft tunnel, Mach 1.1: 12.43% from 3 box(es), formed from data seen before registration
+  TN 4233, 7 deg cone, 2ft tunnel, Mach 1.151: 9.29% from 2 box(es), formed from data seen before registration
+  TN 4233, 7 deg cone, 2ft tunnel, Mach 1.2: 9.29% from 2 box(es), formed from data seen before registration
+
+# RUN ON SEEN DATA (0022 section 5 (b)): a check of the script, not a reading or a test.
