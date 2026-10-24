@@ -435,7 +435,13 @@ time. The others are solved one at a time, coarse to fine (1.0 and the top
 first, then the middle, then the middles between), so that a curve stopped
 early still spans its range; the chart marks the point being solved. If
 every point is refused before solving, the top point is solved for the
-airflow alone, and labelled so.
+airflow alone, and labelled so. Amended 2026-10-24 (0011 section 10, the
+owner's decision 7.8): after those, the points refused for reasons other
+than the nose are solved too, in the same coarse-to-fine order, so that
+each shows its nose wave drag among the parts served and, where 0011
+section 10.3 allows, a floor; while solving such a point shows as
+solving, before and after as a cross with its reasons. Without WebGPU
+none is solved.
 
 ### 8.2 One point
 
@@ -499,7 +505,12 @@ mach,cd,cd_low,cd_high,status,reason
 `status` is the logic's kind (`estimate` today, or `refused`, or no number
 for a point not modelled, asking about its parts, or not finished);
 `reason` the logic's claim text and its reasons, prefixed "Computed without
-..." when parts were left out. A test pins the format.
+..." when parts were left out. A test pins the format. Since 2026-10-24
+(0011 section 10) a refused row's `reason` also carries the parts served,
+each with its band and label, and the floor with its label (or why none
+is given), and a seventh column, `floor`, holds the floor alone; it is
+never written in `cd`, `cd_low` or `cd_high`, and the chart draws no mark
+for it.
 
 ### 8.5 The points near Mach 1 (1.0 to 1.2): planned, not wired
 
