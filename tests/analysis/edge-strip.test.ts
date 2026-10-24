@@ -28,4 +28,23 @@ describe('rounded edge strip', () => {
       expect(s.yStar).toBeLessThan(6);
     },
   );
+
+  it(
+    "converges on a square edge at normal Mach 2, its shock standing farther off than the rounded edge's",
+    { timeout: 300_000 },
+    () => {
+      const s = edgeStrip({
+        edge: 'square',
+        mach: 2,
+        gamma: 1.4,
+        nj: 12,
+        refinement: 1,
+        maxIterations: 100_000,
+      });
+      expect(s.fit.converged).toBe(true);
+      // Measured on 16 cells across: standoff 2.356 half-thicknesses (the rounded edge's 1.329), y* 5.61.
+      expect(s.standoff).toBeGreaterThan(1.5 * billigCylinder(2).standoff);
+      expect(s.standoff).toBeLessThan(3 * billigCylinder(2).standoff);
+    },
+  );
 });
