@@ -619,6 +619,29 @@ open (its item 6), recorded in 0014 as a dated addition under (w):
    its one digitised value on record (sources.md) stays in the envelope
    as an earlier reading.
 
+Decided by the owner on 2026-10-24, after the blind readings were paired
+(6019bbd) and before TN 4233 and RM E51H17 were run (the questions in
+`docs/research/nose-model-form/out/blind-run-questions.txt`, cce5621).
+Both widen only:
+
+7. **Two values at one station enter as alternatives.** TN 4233's check
+   orifices 16 and 17 (the opposite surface, at the stations of orifices
+   4 and 7) and RM E51H17's two meridian symbols at each station are
+   each an alternative of that station's value: the script takes every
+   combination and the widest counts (4.3 item 6). Every TN 4233 row of
+   tables I(a) and I(b) is run, the 1.080 and 1.400 rows included; a
+   cell a reader flagged "typo?" enters with its alternative, where the
+   reader gave one.
+8. **A report that states no Cp uncertainty** (RM E51H17) takes the
+   largest stated Cp uncertainty among the other nose reports of the set
+   (TN 3716, RM A53E01, TN 4233) as its e in 4.3 item 5; the run says
+   which value that is and where it comes from. A listed station with no
+   plotted point is absent (recorded). RM E51H17's Reynolds-number basis
+   conflict is recorded in the label, not resolved. Its earlier reading
+   on record (one value, no station) stays in the envelope only as 4.2
+   allows; if it cannot enter the script for lack of a station, the run
+   records that and says so.
+
 ## 9. Order of work after the decisions
 
 1. Done: the decisions of section 8; this record revised; the

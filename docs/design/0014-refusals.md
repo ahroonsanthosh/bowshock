@@ -1907,4 +1907,13 @@ measurement term acts over the area from the first orifice to the
 shoulder, since the value held behind the last orifice carries the same
 bias.
 
+_Added 2026-10-24 to (w): the owner's decisions after the blind readings
+were paired (6019bbd) and before TN 4233 and RM E51H17 were run (cce5621
+stopped on both)._ Widening only, recorded in 0022 section 8, items 7 and
+8: two values at one station (TN 4233's check orifices, RM E51H17's two
+meridian symbols) enter as alternatives, every combination taken and the
+widest counting; every TN 4233 row of tables I(a) and I(b) is run; RM
+E51H17, which states no Cp uncertainty, takes the largest stated among
+TN 3716, RM A53E01 and TN 4233. (w)'s registered text above is unchanged.
+
 The next free letter is (y); (x) is reserved for the W6 probe.
