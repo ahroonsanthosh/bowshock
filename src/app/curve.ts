@@ -4,13 +4,17 @@
  * to, every 0.2 (or 0.1), each point what the logic returns there.
  *
  * At the start every point is put to the logic with the nose pending: a
- * point refused for reasons other than the nose is final at once and costs
- * no GPU time. The others are solved one at a time, coarse to fine, by the
+ * point refused for reasons other than the nose is final at once, with its
+ * reasons and the parts served without the nose. The others are solved one
+ * at a time, coarse to fine, by the
  * nose solve the drag page uses (passed in, so that it is tested with a
  * stand-in): after each grid the point is provisional (the logic's total
  * with the nose at that grid's value, no band); when the solve ends it is
  * `totalDragView(form, noseStateOf(outcome))`, a number with its band and
- * claim, or no number with every reason.
+ * claim, or no number with every reason. Then (0011 section 10) the points
+ * refused before solving are solved too, coarse to fine, for their nose
+ * wave drag alone: each stays refused, now with the nose among its parts
+ * and, where 0011 section 10.3 allows, a floor.
  *
  * Where the rocket and its flight lie inside the Basic Finner's BRL
  * sub-class (by the logic's own check, `brl934SubClass`), the curve also
@@ -22,6 +26,7 @@ import type { LevelReport, VerifiedDrag } from '../analysis/verified-drag';
 import type { Body } from '../geometry/body';
 import { designForm, type Excludable, type NotModelled } from '../rocket/adapter';
 import type { RocketDesign } from '../rocket/design';
+import type { RefusedTotalParts } from '../total/refused-floor';
 import type { ComponentRefusal } from '../total/total-drag';
 import type { NoseEnd } from './status-words';
 import { NO_WEBGPU, noseStateOf, type NoseSolveError } from './total-drag-display';
@@ -133,6 +138,8 @@ export type PointResult =
       readonly refusals: readonly ComponentRefusal[];
       /** How the nose's solve ended, where it is the nose that gave no term. */
       readonly nose: NoseEnd | null;
+      /** The parts served and the floor (0011 section 10); null where nothing is computed. */
+      readonly parts: RefusedTotalParts | null;
     }
   | { readonly kind: 'not-modelled'; readonly features: readonly NotModelled[] }
   | { readonly kind: 'choose'; readonly excludable: readonly Excludable[] };
@@ -180,6 +187,10 @@ export const gridsTo = (finest: number) => Math.round(Math.log2(finest)) + 1;
 export class CurveRun {
   readonly points: CurvePoint[];
   private readonly forms: (TotalDragForm | null)[];
+  /** Points refused before solving whose nose can still be solved for its part (0011 section 10). */
+  private readonly noseLater = new Set<number>();
+  /** The point whose nose is being solved, whatever its state shows. */
+  private solving: number | null = null;
   private readonly controller = new AbortController();
   private finished = false;
   private began = false;
@@ -212,16 +223,23 @@ export class CurveRun {
     return this.began && !this.finished;
   }
 
-  /** The indices still to solve, in the order they will be. */
+  /**
+   * The indices still to solve, in the order they will be: the points that
+   * can have a number, coarse to fine; then the points refused before
+   * solving, for their nose's part, coarse to fine.
+   */
   get queue(): number[] {
     const waiting = this.points.flatMap((p, k) => (p.state.kind === 'waiting' ? [k] : []));
-    return solveOrder(waiting.length).map((k) => waiting[k]!);
+    const later = [...this.noseLater].sort((a, b) => a - b);
+    return [
+      ...solveOrder(waiting.length).map((k) => waiting[k]!),
+      ...solveOrder(later.length).map((k) => later[k]!),
+    ];
   }
 
   /** The point being solved, if any. */
   get current(): number | null {
-    const k = this.points.findIndex((p) => p.state.kind === 'solving');
-    return k < 0 ? null : k;
+    return this.solving;
   }
 
   /** Stop the solve under way and every point after it. */
@@ -237,6 +255,10 @@ export class CurveRun {
       if (this.controller.signal.aborted) break;
       const form = this.forms[k]!;
       const mach = this.points[k]!.mach;
+      // A point refused before solving keeps its result if its nose's solve does not end.
+      const before = this.points[k]!;
+      const later = this.noseLater.delete(k);
+      this.solving = k;
       this.set(k, { state: { kind: 'solving', grid: 0, grids, provisional: null } });
       const started = Date.now();
       let cellUpdates = 0;
@@ -260,17 +282,28 @@ export class CurveRun {
         },
       });
       const seconds = (Date.now() - started) / 1000;
+      this.solving = null;
       if (outcome.kind === 'cancelled') {
-        this.set(k, { state: { kind: 'stopped' }, nose: outcome, seconds, cellUpdates });
+        this.set(
+          k,
+          later
+            ? { state: before.state, seconds, cellUpdates }
+            : { state: { kind: 'stopped' }, nose: outcome, seconds, cellUpdates },
+        );
         break;
       }
       const nose = noseStateOf(outcome);
+      if (nose === null && later) {
+        // The GPU failed: the point keeps its refusal, and nothing more can be solved.
+        this.set(k, { state: before.state, nose: outcome, seconds, cellUpdates });
+        break;
+      }
       if (nose === null) {
         // The GPU failed: this point has no number, and nothing more can be solved.
         this.set(k, {
           state: {
             kind: 'done',
-            result: { kind: 'refused', refusals: [], nose: 'gpu-failed' },
+            result: { kind: 'refused', refusals: [], nose: 'gpu-failed', parts: null },
           },
           nose: outcome,
           seconds,
@@ -319,6 +352,7 @@ export class CurveRun {
               nose: view.refusals.some((r) => r.component === 'nose wave drag')
                 ? 'no-webgpu'
                 : null,
+              parts: view.parts,
             },
           },
         };
@@ -326,9 +360,14 @@ export class CurveRun {
     }
     const view = totalDragView(asked.form, { kind: 'pending' });
     if (view.kind === 'refused') {
+      // Its nose is solved last, for its part (0011 section 10), where anything is computed.
+      if (o.noGpu !== true && view.parts !== null) this.noseLater.add(this.forms.length - 1);
       return {
         ...blank,
-        state: { kind: 'done', result: { kind: 'refused', refusals: view.refusals, nose: null } },
+        state: {
+          kind: 'done',
+          result: { kind: 'refused', refusals: view.refusals, nose: null, parts: view.parts },
+        },
       };
     }
     return { ...blank, state: { kind: 'waiting' } };
@@ -350,7 +389,7 @@ export class CurveRun {
       // A solved nose never leaves the total pending.
       throw new Error('the total is pending after the nose was solved');
     }
-    return { kind: 'refused', refusals: view.refusals, nose: noseEnd(outcome) };
+    return { kind: 'refused', refusals: view.refusals, nose: noseEnd(outcome), parts: view.parts };
   }
 
   private set(k: number, change: Partial<CurvePoint>): void {

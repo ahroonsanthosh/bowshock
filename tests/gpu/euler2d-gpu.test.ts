@@ -384,8 +384,9 @@ describe('GpuEuler2D: axisymmetric validation', () => {
 
 describe('GpuEuler2D: generated body grid', () => {
   it('ogive-cylinder (M = 1.98): converges, and matches the CPU engine', async () => {
-    // The CPU engine is validated on this body against NACA TN 3716
-    // (tests/engine-cpu/body-validation.test.ts); the GPU must agree with it.
+    // The CPU engine is compared on this body with NACA TN 3716's measured
+    // pressures (tests/engine-cpu/body-validation.test.ts, a regression
+    // bound, not a validation); the GPU must agree with the CPU.
     const body: Body = {
       nose: { shape: { kind: 'ogive', parameter: 1 }, length: 3, baseRadius: 0.5 },
       cylinderLength: 7,

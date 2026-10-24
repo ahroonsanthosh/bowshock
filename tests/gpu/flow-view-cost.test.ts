@@ -12,8 +12,8 @@ import { requireDevice } from './device';
  * phase U1: under 10%): the steps per second of the drag page's first grid
  * on the Basic Finner's body at Mach 2, with and without the flow view
  * drawing it at 1280 x 720 at its live frame rate. Each is timed
- * three times, alternately, and the fastest of each kept, so that other
- * work on the machine counts against neither.
+ * three times, alternately, and each drawn run is compared with the run
+ * without the view just before it; the median of those ratios is held.
  */
 
 const gamma = 1.4;
@@ -113,14 +113,21 @@ describe('the flow view drawing live', () => {
     canvas.remove();
     const best = Math.max(...without);
     const bestDrawn = Math.max(...drawn);
+    // Each drawn run against the run without the view just before it.
+    const ratios = drawn.map((d, k) => d / without[k]!).sort((a, b) => a - b);
+    const median = ratios[Math.floor(ratios.length / 2)]!;
     console.log(
       `steps per second without the view ${without.map((r) => r.toFixed(0)).join(', ')}; ` +
         `drawn live ${drawn.map((r) => r.toFixed(0)).join(', ')}, ` +
         `${(frames / seconds).toFixed(1)} frames drawn a second; ` +
-        `cost ${((1 - bestDrawn / best) * 100).toFixed(1)}%`,
+        `cost, best of each ${((1 - bestDrawn / best) * 100).toFixed(1)}%, ` +
+        `median of the pairs ${((1 - median) * 100).toFixed(1)}%`,
     );
     // The view did draw, live, while the solver ran.
     expect(frames).toBeGreaterThan(10);
-    expect(bestDrawn / best).toBeGreaterThan(0.9);
+    // The median of the paired ratios, as the 3D view's test
+    // (tests/gpu/render3d-cost.test.ts, which gives the numbers): the
+    // fastest run of each lets one lucky run decide on a shared machine.
+    expect(median).toBeGreaterThan(0.9);
   }, 3_600_000);
 });

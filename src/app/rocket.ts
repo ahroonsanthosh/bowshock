@@ -38,9 +38,10 @@ import { CurveRun, gridsTo, secondsPerPoint, type NoseSolver } from './curve';
 import { curveCsv, curveRocketName } from './curve-csv';
 import { fileSizeRefusal, importSummary, loadImporter, type ImportSummary } from './import-summary';
 import { bodyOutline, FlowControls, viewMenu } from './flow-controls';
-import { pointView, resultLine, type PointView } from './point-view';
+import { captionLines, pointView, type PointView } from './point-view';
+import { KNOWN_HEADING } from './refused-parts';
 import { flightWords } from './status-words';
-import { loadRender3D, sceneLegend, type Render3DModule } from './scene3d';
+import { loadRender3D, sceneLegend, sceneLegendDetails, type Render3DModule } from './scene3d';
 import {
   appBindings,
   isSceneAction,
@@ -68,12 +69,15 @@ const FLOW_SHOWN_KEY = 'bowshock:flow-view';
 
 /**
  * The note on the airflow shown (0017 section 6.2): what is simulated and
- * what is only drawn, and what of the rocket the 3D view cannot draw.
+ * what is only drawn, and what of the rocket the 3D view cannot draw. With
+ * `short`, for the box beside the 3D view's legend: only what the legend
+ * does not say (the parts not drawn), so that nothing is said twice.
  */
 function flowNoteText(
   which: FlowShown,
   missing: readonly string[],
   failure: string | null,
+  short = false,
 ): string {
   if (which === 'side') {
     return (
@@ -84,6 +88,7 @@ function flowNoteText(
   }
   const notDrawn =
     missing.length === 0 ? '' : ` Not drawn here: ${missing.join('; ')}; the drawing shows it.`;
+  if (short) return notDrawn.trim();
   return (
     'The airflow is around the body, revolved about its axis; the fins are drawn, their drag ' +
     `computed separately. Hatched: behind the base, not simulated. Drag to turn it any way; 0 resets.${notDrawn}`
@@ -368,7 +373,8 @@ function scene3dShown(): boolean {
 /** A 3D view's key or menu item: what render3d's own key does. */
 function sceneAct(action: SceneAction): void {
   if (scene === null || render3d === null) return;
-  render3d.sceneKey(scene, sceneKeyOf(action));
+  const key = sceneKeyOf(action);
+  if (!render3d.sceneKey(scene, key)) render3d.sceneExtraKey(scene, key);
   shell.topBar.refresh();
   refreshSceneButtons();
 }
@@ -459,7 +465,8 @@ const PHONE_NO_GPU =
 
 function showFlowNote(): void {
   const text = flowNoteText(shown, missing3d, sceneFailure);
-  flowNote.textContent = text;
+  // Beside the 3D view's legend, which says the rest, only what it does not.
+  flowNote.textContent = flowNoteText(shown, missing3d, sceneFailure, scene3dShown());
   viewNote.textContent = text;
   showSheetNote();
 }
@@ -750,12 +757,18 @@ async function start(): Promise<void> {
   await running;
   changed = false;
   clearFlow();
+  // Points refused before any solve, solved last only for their nose's part (0011 section 10):
+  // the selection does not follow them, so a finished curve shows the last point with a number.
+  const refusedAtStart = new Set<number>();
   const mine = new CurveRun(curveOptions(), gpuSolver, (r, k) => {
     if (r !== run) return;
     // Follow each point as its solve starts; between, the user's choice holds.
     const s = k >= 0 ? r.points[k]?.state : undefined;
-    if (s?.kind === 'solving' && s.grid === 0) selected = k;
+    if (s?.kind === 'solving' && s.grid === 0 && !refusedAtStart.has(k)) selected = k;
     renderCurve();
+  });
+  mine.points.forEach((p, k) => {
+    if (p.state.kind === 'done') refusedAtStart.add(k);
   });
   run = mine;
   selected = defaultSelection(mine);
@@ -861,15 +874,17 @@ function renderCurve(): void {
   );
   renderPoint(r, pointViews);
   if (!tableBox.hidden) tableBox.replaceChildren(curveTable(pointViews, selected, select));
-  const queue = r.points.filter((p) => p.state.kind === 'solving' || p.state.kind === 'waiting');
+  // The points still to solve, the one under way among them (refused points solved last for
+  // their nose's part, 0011 section 10).
   const solving = r.current;
+  const toGo = r.queue.length + (solving === null ? 0 : 1);
   // Changed: the way to the new curve beside the curve itself (Compute is at the builder's
   // foot, often scrolled out of view, or on another tab on phones).
   progressCompute.hidden = !changed;
   progressText.textContent = changed
     ? 'The rocket or the grids changed since this curve.'
     : solving !== null
-      ? `Solving Mach ${r.points[solving]!.mach.toFixed(2)}; ${queue.length} point${queue.length === 1 ? '' : 's'} to go${paused ? ' (paused: Space resumes)' : ''}.`
+      ? `Solving Mach ${r.points[solving]!.mach.toFixed(2)}; ${toGo} point${toGo === 1 ? '' : 's'} to go${paused ? ' (paused: Space resumes)' : ''}.`
       : r.done
         ? 'Done.'
         : '';
@@ -1017,6 +1032,8 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
       ? h('ul', { className: 'point__reasons' }, ...v.reasons.map((text) => h('li', { text })))
       : null,
     v.change === null ? null : h('p', { className: 'point__change', text: v.change }),
+    // A refused point: the parts served, each with its band and label, and the floor (0011 section 10).
+    ...knownLines(v),
     v.without === ''
       ? null
       : h('p', { className: 'point__without', text: `Computed ${v.without}.` }),
@@ -1039,6 +1056,52 @@ function renderPoint(r: CurveRun, pointViews: readonly PointView[]): void {
     ),
     chip.cloneNode(true),
   );
+}
+
+/** The parts whose label the user opened in the point block, by Mach number and part. */
+const openLabels = new Set<string>();
+
+/** A refused point's parts and floor, for the point block: none for any other point. */
+function knownLines(v: PointView): HTMLElement[] {
+  if (v.floor === null) return [];
+  const parts =
+    v.parts.length === 0 && v.notShown.length === 0
+      ? null
+      : h(
+          'ul',
+          { className: 'point__parts' },
+          ...v.parts.map((p) => {
+            // The label, word for word, folded under its part (it can run to a paragraph); the
+            // block is redrawn as other points solve, so a part opened stays open.
+            const key = `${v.mach} ${p.line}`;
+            const fold = h(
+              'details',
+              { className: 'point__fold', attrs: { open: openLabels.has(key) } },
+              h('summary', { className: 'point__part', text: p.line }),
+              h('span', { className: 'point__part-label', text: p.label }),
+            );
+            fold.addEventListener('toggle', () => {
+              if (fold.open) openLabels.add(key);
+              else openLabels.delete(key);
+            });
+            return h('li', {}, fold);
+          }),
+          ...v.notShown.map((text) => h('li', { className: 'point__part-label', text })),
+        );
+  return [
+    h(
+      'div',
+      { className: 'point__known' },
+      h('p', { className: 'point__known-head', text: KNOWN_HEADING }),
+      parts,
+      h('p', {
+        className: v.floor.startsWith('At least')
+          ? 'point__floor'
+          : 'point__floor point__floor--none',
+        text: v.floor,
+      }),
+    ),
+  ];
 }
 
 function select(k: number): void {
@@ -1077,7 +1140,15 @@ function detailsBlocks(): HTMLElement[] {
       out.push(blocks(totalDragDisplay(result.view)));
     } else if (result.kind === 'refused') {
       if (result.refusals.length > 0) {
-        out.push(blocks(totalDragDisplay({ kind: 'refused', refusals: result.refusals })));
+        out.push(
+          blocks(
+            totalDragDisplay({
+              kind: 'refused',
+              refusals: result.refusals,
+              parts: result.parts,
+            }),
+          ),
+        );
       }
       if (p.nose !== null && p.nose.kind === 'error') {
         out.push(h('p', { text: `The airflow solve: ${p.nose.message}.` }));
@@ -1148,6 +1219,13 @@ function detailsBlocks(): HTMLElement[] {
       '.',
     ),
   );
+  // The 3D picture in full: what its short legend leaves out (0017 section 6.6).
+  if (shown === '3d' && scale3d !== null) {
+    out.push(
+      h('h3', { text: 'The 3D picture' }),
+      ...sceneLegendDetails(scale3d).map((text) => h('p', { text })),
+    );
+  }
   return out;
 }
 
@@ -1199,14 +1277,15 @@ async function savePng(): Promise<void> {
   const name = `bowshock-${slug(drawn.name)}-mach-${drawnMach.toFixed(2)}.png`;
   const rocketLine = curveRocketName(drawn, run?.options.without === true);
   const machLine = `Mach ${drawnMach.toFixed(2)}, zero incidence: the airflow around the body`;
-  const result = v === null ? '' : resultLine(v);
+  // The result line, and for a refused point its parts and floor (0011 section 10).
+  const result = v === null ? [] : captionLines(v);
   try {
     if (scene !== null && shown === '3d') {
       // The scene's PNG has its own readout (grid, steps, Mach number), legend and notes.
-      const caption = [rocketLine, result].filter((line) => line !== '');
+      const caption = [rocketLine, ...result].filter((line) => line !== '');
       download(await scene.pngBlob(caption), name);
     } else if (view !== null) {
-      const caption = [rocketLine, machLine, result].filter((line) => line !== '');
+      const caption = [rocketLine, machLine, ...result].filter((line) => line !== '');
       await view.savePng(name, caption);
     }
     shell.toasts.show(`Saved ${name}`);
@@ -1383,8 +1462,8 @@ async function startScene(gpu: GPUDevice, info: GPUAdapterInfo): Promise<void> {
       liveDuty: FRAME_BUDGET,
     });
     // The page's own legend, notes and readout stand in for the scene's text (a PNG has it).
-    // The look: glowing shells of the colour quantity with streamlines, the shock and a cutaway.
-    made.setLayers({ overlay: false, slice: false });
+    // The look is the scene's own default (0017 section 6.6).
+    made.setLayers({ overlay: false });
     made.onScale((s) => {
       scale3d = s;
       if (shown === '3d') showScale3d(s);

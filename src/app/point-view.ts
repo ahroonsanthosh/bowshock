@@ -14,6 +14,7 @@
 import { withoutText } from '../rocket/adapter';
 import { outward, outwardPercent } from './band';
 import type { CurvePoint } from './curve';
+import { floorText, KNOWN_HEADING, notShownLine, partLabel, partLine } from './refused-parts';
 import {
   changeText,
   chooseWords,
@@ -61,6 +62,19 @@ export interface PointView {
   /** A validated point: the logic's claim text and its caveats, word for word; else null and none. */
   readonly claim: string | null;
   readonly caveats: readonly string[];
+  /**
+   * A refused point's parts served (0011 section 10): each "name value (low
+   * to high)" and its label, word for word; empty for any other point.
+   */
+  readonly parts: readonly { readonly line: string; readonly label: string }[];
+  /** Parts computed for another fin, with why they are not shown. */
+  readonly notShown: readonly string[];
+  /** The floor with its label, three significant figures rounded down, or why none is given; null where nothing is computed. */
+  readonly floor: string | null;
+  /** The same to four decimals (the table). */
+  readonly floorFull: string | null;
+  /** The table's line of the parts: the heading, then each "name value (low to high)". */
+  readonly known: string | null;
 }
 
 /**
@@ -69,6 +83,18 @@ export interface PointView {
  */
 export function resultLine(v: PointView): string {
   return `C_D ${v.headline ?? 'none'}${v.headlineBand === null ? '' : `, band ${v.headlineBand}`}: ${v.status.word}`;
+}
+
+/**
+ * The PNG caption's lines of a point: its result line, and for a refused
+ * point its parts served (name, value, band) and its floor with its label
+ * ("No floor is given." where none is: the reasons are on the page).
+ */
+export function captionLines(v: PointView): string[] {
+  const lines = [resultLine(v)];
+  if (v.parts.length > 0) lines.push(`Known: ${v.parts.map((p) => p.line).join(', ')}`);
+  if (v.floor !== null) lines.push(v.floor.startsWith('At least') ? v.floor : 'No floor is given.');
+  return lines;
 }
 
 /** C_D's decimals, as the drag page shows it (total-drag-display.ts). */
@@ -176,6 +202,11 @@ function pointViewOf(point: CurvePoint, finer: boolean): Omit<PointView, 'tested
     without: '',
     claim: null,
     caveats: [] as readonly string[],
+    parts: [] as PointView['parts'],
+    notShown: [] as readonly string[],
+    floor: null,
+    floorFull: null,
+    known: null,
   };
   const s = point.state;
   switch (s.kind) {
@@ -215,17 +246,34 @@ function pointViewOf(point: CurvePoint, finer: boolean): Omit<PointView, 'tested
       without: withoutText(r.without),
       claim: r.view.claim.kind === 'validated' ? r.view.claim.text : null,
       caveats: r.view.claim.kind === 'validated' ? r.view.claim.caveats : [],
+      parts: [],
+      notShown: [],
+      floor: null,
+      floorFull: null,
+      known: null,
     };
   }
   if (r.kind === 'choose') {
     return { mach, ...none, status: chooseWords(r.excludable.map((e) => e.part)) };
   }
   const reasons = plainReasons(point, finer)!;
+  const parts = r.kind === 'refused' ? r.parts : null;
   return {
     mach,
     ...none,
     status: noNumberWords(reasonSentence(reasons)),
     reasons: reasons.map((p) => p.reason),
     change: changeOfAll(reasons),
+    ...(parts === null
+      ? {}
+      : {
+          parts: parts.served.map((c) => ({ line: partLine(c), label: partLabel(c) })),
+          notShown: parts.notShown.map(notShownLine),
+          floor: floorText(parts.floor, true),
+          floorFull: floorText(parts.floor),
+          known: `${KNOWN_HEADING} ${
+            parts.served.length === 0 ? 'no part is served' : parts.served.map(partLine).join('; ')
+          }.`,
+        }),
   };
 }

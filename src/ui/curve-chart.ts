@@ -295,6 +295,14 @@ export function curveTable(
         ),
       );
     }
+    // A refused point: the parts served, each with its band, and the floor (0011 section 10).
+    if (v.floorFull !== null) {
+      status.append(
+        h('p', { className: 'curve-table__known', text: v.known ?? '' }),
+        ...v.notShown.map((text) => h('p', { className: 'curve-table__known', text: `${text}.` })),
+        h('p', { className: 'curve-table__floor', text: v.floorFull }),
+      );
+    }
     for (const cell of [row.cells[1]!, row.cells[2]!]) cell.className = 'num';
   });
   return table;

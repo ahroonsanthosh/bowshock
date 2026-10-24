@@ -7,6 +7,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { sceneKey } from '../../src/render3d/controls';
+import { sceneExtraKey } from '../../src/render3d/extra-keys';
 import { DEFAULT_LAYERS, type FlowScene3D, type SceneLayers } from '../../src/render3d/scene';
 import { appBindings, SCENE_KEYS, sceneMenu } from '../../src/app/scene-keys';
 import { HELP_BINDING } from '../../src/ui/help';
@@ -82,10 +83,10 @@ describe("the app's key map", () => {
     });
   }
 
-  it("binds each 3D key to an action render3d's sceneKey takes", () => {
+  it("binds each 3D key to an action render3d's sceneKey (or sceneExtraKey) takes", () => {
     for (const k of SCENE_KEYS) {
       const { scene, calls } = standInScene();
-      expect(sceneKey(scene, k.key), k.key).toBe(true);
+      expect(sceneKey(scene, k.key) || sceneExtraKey(scene, k.key), k.key).toBe(true);
       expect(calls.length, k.key).toBeGreaterThan(0);
     }
   });

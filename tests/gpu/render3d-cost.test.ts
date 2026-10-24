@@ -12,9 +12,17 @@ import { requireDevice } from './device';
  * of the drag page's first grid on the Basic Finner's body at Mach 2, with
  * and without the 3D view drawing it at 1280 x 720, every layer of its
  * default on, at its live rate (at most LIVE_DUTY of the time drawing; in
- * draft on a slow adapter). Each is timed three times, alternately, and
- * the fastest of each kept, so that other work on the machine counts
- * against neither. As the 2D view's (tests/gpu/flow-view-cost.test.ts).
+ * draft on a slow adapter). Each is timed ROUNDS times, alternately, and
+ * each drawn run is compared with the run without the view just before
+ * it; the median of those ratios is held (see the assertion for why, not
+ * the fastest of each). As the 2D view's (tests/gpu/flow-view-cost.test.ts).
+ *
+ * What it measures: the software path. Headless Chromium here draws WebGPU
+ * on SwiftShader and cannot present to a canvas, so the scene is given a
+ * presenter of its own (an offscreen texture) and takes the software
+ * adapter's settings (src/render3d/scene.ts: 40 000 streaks, a quarter of
+ * them in a live draft). The hardware path (60 000 streaks, frames
+ * presented to a canvas) is not measured by this test.
  *
  * Measured when written, on SwiftShader on a loaded 4-core machine: 26.9
  * to 34.4 steps a second without the view, 25.9 to 32.5 with it, a cost
@@ -132,6 +140,12 @@ describe('the 3D view drawing live', () => {
     );
     // The view did draw, live, while the solver ran.
     expect(frames).toBeGreaterThan(0);
-    expect(bestDrawn / best).toBeGreaterThan(0.9);
+    // The median of the paired ratios, not the fastest run of each: on a
+    // machine shared with other runs one lucky run decided the best-of
+    // statistic (on the same code, 2026-10-23 and 24, it swung from -14% to
+    // +35%, from a single run without the view at 35.9 to 46.5 steps a second
+    // against 26 to 30 in the other four), while the median of the five
+    // pairs stayed between -2.8% and 5.8% in every run. Best-of is logged.
+    expect(median).toBeGreaterThan(0.9);
   }, 3_600_000);
 });

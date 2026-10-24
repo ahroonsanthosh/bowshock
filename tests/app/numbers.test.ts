@@ -62,6 +62,8 @@ const noseValue = (design: RocketDesign, mach: number) =>
 const solver =
   (design: RocketDesign): NoseSolver =>
   async (_body, mach, hooks) => {
+    // As the solver refuses a case it does not serve (Mach 1.0: the cone's shock detaches).
+    if (!(mach > 1)) return { kind: 'error', message: 'the tip shock detaches', gpuFailed: false };
     const outcome = outcomeFor(noseValue(design, mach));
     await Promise.resolve();
     for (const r of outcome.kind === 'solved' ? outcome.reports : []) hooks.onLevel(r);

@@ -1,24 +1,14 @@
 /**
- * The 3D view's colour map: a fully saturated spectrum from magenta
- * through violet, blue, cyan, green and yellow to orange and red, low
- * values magenta, high values red. The control colours are bowshock's own
- * choice, interpolated linearly in sRGB between neighbours (which keeps
+ * The 3D view's colour map: a fully saturated spectrum, low values blue,
+ * then azure, cyan, green, yellow, orange and red, high values magenta
+ * (src/render/colormap.ts holds the control colours, shared with the side
+ * view), interpolated linearly in sRGB between neighbours (which keeps
  * every colour on the spectrum fully saturated).
  */
 
-import { hexToRgb } from '../render/colormap';
+import { hexToRgb, SPECTRUM_STOPS } from '../render/colormap';
 
-/** Low to high. */
-export const SPECTRUM_STOPS = [
-  '#ff1fd2', // magenta
-  '#8f2bff', // violet
-  '#2b45ff', // blue
-  '#00c8ff', // cyan
-  '#14f05a', // green
-  '#f2f20f', // yellow
-  '#ff8c0a', // orange
-  '#ff1e1e', // red
-] as const;
+export { SPECTRUM_STOPS };
 
 const STOPS = SPECTRUM_STOPS.map(hexToRgb);
 

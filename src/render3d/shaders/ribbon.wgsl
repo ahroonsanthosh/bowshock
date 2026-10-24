@@ -24,7 +24,10 @@ struct LineOut {
 };
 
 @vertex
-fn line_vs(@builtin(vertex_index) vi: u32, @builtin(instance_index) ii: u32) -> LineOut {
+fn line_vs(@builtin(vertex_index) index: u32) -> LineOut {
+  // One draw of 6 vertices per quad (see revolve.wgsl).
+  let ii = index / 6u;
+  let vi = index % 6u;
   let count = u32(draw.sweep.z);
   let line = lines[ii / count];
   let k = ii % count;
@@ -85,4 +88,22 @@ fn line_fs(v: LineOut) -> @location(0) vec4f {
   let glow = exp(-1.6 * a * a);
   let intensity = draw.look.x * v.brightness * (0.65 * core + 0.35 * glow);
   return vec4f(colour_of(v.value) * intensity, 1.0);
+}
+
+// A streamline drawn as a thin lit tube, opaque and written to the depth
+// buffer: across the quad the tube's surface turns from the eye, so the
+// shading follows a cylinder's (brightest a little off its middle, dark at
+// its sides); its edge is smoothed by the multisampling (the alpha sets
+// the samples covered).
+@fragment
+fn tube_fs(v: LineOut) -> @location(0) vec4f {
+  if (draw.extra.w > 0.5 && beyond_base(v.x)) {
+    discard;
+  }
+  let a = abs(v.across);
+  let s = sqrt(max(1.0 - a * a, 0.0));
+  let lit = 0.25 + 0.75 * s;
+  let spec = pow(max(1.0 - abs(v.across + 0.35), 0.0), 10.0) * 0.4;
+  let colour = colour_of(v.value) * lit * draw.look.x * v.brightness + vec3f(spec);
+  return vec4f(colour, clamp((1.15 - a) * 4.0, 0.0, 1.0));
 }

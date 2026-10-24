@@ -51,7 +51,10 @@ export type LegendScale =
       readonly min: number;
       readonly max: number;
       readonly gradient: string;
+      /** Always shown (the honesty lines). */
       readonly note?: string;
+      /** Shown unless the legend is folded to its bar (what each layer means). */
+      readonly more?: string;
     };
 
 /** The density gradients marked on the glow view's brightness bar. */
@@ -89,21 +92,57 @@ export class Legend {
   private readonly low = h('span');
   private readonly high = h('span');
   private readonly note = h('p', { className: 'legend__note' });
+  /** Notes the fold hides (never the honesty lines, which are `note`). */
+  private readonly more = h('p', { className: 'legend__note legend__more' });
   /** The glow view's second channel: the brightness. */
   private readonly brightness = h('div', { className: 'legend__channel', attrs: { hidden: true } });
   private kind: LegendScale['kind'] | null = null;
   /** The palette's gradient set on the bar, if a palette is shown. */
   private gradient: string | null = null;
+  /** Folds the legend to its bar and range (its notes hidden), and back. */
+  private readonly fold = h('button', {
+    className: 'legend__fold',
+    text: '−',
+    attrs: {
+      type: 'button',
+      'aria-expanded': 'true',
+      'aria-label': 'Hide the legend’s layer notes',
+    },
+  });
+  private folded = false;
 
   constructor() {
+    this.more.id = `legend-more-${Math.random().toString(36).slice(2, 8)}`;
+    this.fold.setAttribute('aria-controls', this.more.id);
     this.element = h(
       'div',
       { className: 'legend', attrs: { role: 'group', 'aria-label': 'Colour scale', hidden: true } },
-      h('div', { className: 'legend__title' }, this.title, this.units),
+      h(
+        'div',
+        { className: 'legend__title' },
+        this.title,
+        h('span', { className: 'legend__end' }, this.units, this.fold),
+      ),
       this.bar,
       h('div', { className: 'legend__scale' }, this.low, this.high),
       this.brightness,
       this.note,
+      this.more,
+    );
+    this.fold.addEventListener('click', () => {
+      this.setFolded(!this.folded);
+    });
+  }
+
+  /** Just the bar, its range and the lines always shown (true), or with every note. */
+  setFolded(folded: boolean): void {
+    this.folded = folded;
+    this.element.classList.toggle('legend--folded', folded);
+    this.fold.textContent = folded ? '+' : '−';
+    this.fold.setAttribute('aria-expanded', folded ? 'false' : 'true');
+    this.fold.setAttribute(
+      'aria-label',
+      folded ? 'Show the legend’s layer notes' : 'Hide the legend’s layer notes',
     );
   }
 
@@ -165,12 +204,14 @@ export class Legend {
       setText(this.low, formatScaleValue(scale.min));
       setText(this.high, formatScaleValue(scale.max));
       setText(this.note, 'Black: uniform flow. Hatched: behind the base, not simulated.');
+      setText(this.more, '');
       this.showBrightness(scale.contrast, scale.base);
       this.element.hidden = false;
       return;
     }
     setText(this.title, scale.title);
     setText(this.note, scale.note ?? '');
+    setText(this.more, scale.kind === 'palette' ? (scale.more ?? '') : '');
     if (scale.kind === 'colormap' || scale.kind === 'spectrum' || scale.kind === 'palette') {
       setText(this.units, scale.units ?? '');
       setText(this.low, formatScaleValue(scale.min));

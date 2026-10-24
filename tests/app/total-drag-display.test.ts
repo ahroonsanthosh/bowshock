@@ -405,7 +405,19 @@ describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
 
   it('without WebGPU the total is refused, with every other reason beside it', () => {
     const form = formOf(BODY, 1.6, DEFAULT_FIELDS);
-    expect(displayText(totalDragDisplay(totalDragView(form, NO_WEBGPU)))).toBe(
+    const text = displayText(totalDragDisplay(totalDragView(form, NO_WEBGPU)));
+    // Then the parts served, each with its band and label, and why no floor is given (0011
+    // section 10): the nose is not solved, and the body base is refused.
+    expect(text).toContain('The parts served, each with its band (the total is refused)');
+    expect(text).not.toContain('nose wave drag0.');
+    expect(
+      text.endsWith(
+        'No floor is given: the nose wave drag has no number (its reason is listed); the body ' +
+          'base is refused, and its sign with these fins or this afterbody is not argued (design ' +
+          'record 0011, section 10.2).',
+      ),
+    ).toBe(true);
+    expect(text.slice(0, text.indexOf('The parts served'))).toBe(
       'Total drag refused: no number is given. Every reason:' +
         'nose wave drag (not-verified): the nose wave drag is solved on the GPU, and this ' +
         'browser provides no WebGPU.' +

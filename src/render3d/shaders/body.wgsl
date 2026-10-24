@@ -26,6 +26,22 @@ fn body_vs(v: BodyIn) -> BodyOut {
 
 @fragment
 fn body_fs(v: BodyOut) -> @location(0) vec4f {
+  return shade(v);
+}
+
+// The rocket seen through what stands in front of it: its near side only,
+// by its stored outward normals (the mesh's winding is not the same
+// everywhere: the body's near side winds clockwise on screen, the fins'
+// counter-clockwise, so culling by winding would keep the wrong side).
+@fragment
+fn body_ghost_fs(v: BodyOut) -> @location(0) vec4f {
+  if (dot(v.normal, frame.eye.xyz - v.world) < 0.0) {
+    discard;
+  }
+  return shade(v);
+}
+
+fn shade(v: BodyOut) -> vec4f {
   let view = normalize(frame.eye.xyz - v.world);
   var n = normalize(v.normal);
   // Two-sided: the side facing the eye.
@@ -36,6 +52,13 @@ fn body_fs(v: BodyOut) -> @location(0) vec4f {
   var albedo = vec3f(0.80, 0.81, 0.83);
   if (v.part > 1.5) {
     albedo = vec3f(0.55, 0.56, 0.58);
+  } else if (v.part < 0.5 && frame.body.y > 0.5) {
+    // The body (not the fins, not the base) by its computed surface
+    // pressure, the colours along it (palette's second half), in linear light.
+    let t = clamp(v.world.x * frame.body.x, 0.0, 1.0) * f32(PALETTE_N - 1u);
+    let k = min(u32(t), PALETTE_N - 2u);
+    let c = mix(palette[PALETTE_N + k].rgb, palette[PALETTE_N + k + 1u].rgb, t - f32(k));
+    albedo = pow(c, vec3f(2.2)) * 0.9;
   }
   let key = max(dot(n, frame.key_light.xyz), 0.0);
   let fill = max(dot(n, frame.fill_light.xyz), 0.0);
@@ -46,5 +69,8 @@ fn body_fs(v: BodyOut) -> @location(0) vec4f {
   let rim = rim_edge * (0.25 + 0.75 * max(dot(n, frame.rim_light.xyz), 0.0)) * 0.55;
   let linear = albedo * (0.06 + 0.78 * key + 0.16 * fill + 0.08 * sky) + vec3f(spec + rim);
   // Linear light to the display's sRGB.
-  return vec4f(pow(clamp(linear, vec3f(0.0), vec3f(1.0)), vec3f(1.0 / 2.2)), 1.0);
+  // look.w: the opacity of the rocket seen through what stands in front of
+  // it (the second, see-through drawing); 0 for the solid one.
+  let alpha = select(1.0, draw.look.w, draw.look.w > 0.0);
+  return vec4f(pow(clamp(linear, vec3f(0.0), vec3f(1.0)), vec3f(1.0 / 2.2)) * alpha, alpha);
 }

@@ -84,7 +84,13 @@
           </p>
           <p class="panel__note">
             The value shown is the finest grid's; its band is measured from the grids and includes
-            an allowance of 7e-5 of the value for an error the grids cannot show.
+            an allowance of 7e-5 of the value for an error the grids cannot show. That band is the
+            numerical error of the inviscid solve; the model's own error is not in it: wind-tunnel
+            pressures on two ogives at Mach 1.98 lie 8 to 9% above and 3% below the inviscid value
+            (<a
+              href="https://github.com/ahroonsanthosh/bowshock/blob/HEAD/docs/validation/sources.md#bodies-of-revolution"
+              >the comparison</a
+            >).
           </p>
         </details>
       </div>
