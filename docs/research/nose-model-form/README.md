@@ -18,6 +18,8 @@ must be independently reviewed before any fresh reading reaches it
 | `out/blind-run.out`, `out/blind-run.json`, `out/blind-run-questions.txt` | Its results per reading and combination, the floors, the boxes, and the questions stopped on |
 | `blind-run-2.test.ts` | The second blind run, after the owner's answers (0022 section 8 items 7 and 8): TN 4233 (rows at indicated Mach 1.078 and above, check orifices as alternatives) and RM E51H17 (both meridians as alternatives; e the largest stated among the other reports). Run with `ONLY=./blind-run-2.test.ts` |
 | `out/blind-run-2.out`, `out/blind-run-2.json`, `out/blind-run-2-combinations.txt` | Its results, the cone boxes, the TN 4233 rows not run and the question about them; every combination in the .txt |
+| `blind-run-3-solve.test.ts`, `blind-run-3.test.ts` | The third run (0022 section 8 item 9): TN 4233's rows below Mach 1.078 against the transonic solver of 0013 at r = 8 (the CPU job writes `out/blind-run-3/solves/`), and their evaluation (rows below Mach 1 held until a verification plan is registered; `SOLVES=solves-gpu` for the owner's GPU run) |
+| `owner-kit/` | The owner's GPU run of those solves: `README.txt` (the one command), `gpu-solve.test.ts`, its config, and `check-swiftshader.txt` (the GPU path against the CPU engine at r = 1) |
 | `reader-brief.md` | The blind readers' brief for the fresh readings under (w): sources, what to read, the CSV form; readers work without the repository |
 | `vitest.config.ts` | The runs' config (one file, one worker, no time limit) |
 

@@ -1,0 +1,21 @@
+The kit's own check, 2026-10-24: the GPU path against the CPU engine, r = 1, Mach 1.064
+
+Command (this container, no hardware GPU):
+  SOFTWARE=1 FINEST=1 MACHS=1.064 CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome \
+    npx vitest run --config docs/research/nose-model-form/owner-kit/vitest.config.ts
+
+Adapter: vendor google, architecture swiftshader (software WebGPU), HeadlessChrome 141.
+
+TN 4233 7 deg cone-cylinder, indicated Mach 1.064, r = 1 (118 x 30 cells), the driver's domain
+(100 radii, 10 calibers of cylinder), the driver's settling tests:
+
+  engine                                         drag                  steps   time    noise
+  GPU two-float, red-black, 2 sweeps (this kit)  0.10249138822443872   5,250   356 s   1e-7
+  CPU, LU-SGS (blind-run-3-solve.test.ts)        0.10249138836927248   5,350    61 s   1e-7
+
+Difference: 1.45e-10 absolute, 1.4e-9 of the value, against the grids' own noise of 1e-7 each
+(the settling tolerance SETTLE_NOISE): a match, 70 times inside it. The two-float precision check
+(the GPU residual against the CPU's double one) passed on the first grid.
+
+SwiftShader rate here: about 5.2e4 cells times steps a second (including the read-backs at each check),
+on a shared machine under a load average of 5 to 10. Not a measure of any hardware GPU.

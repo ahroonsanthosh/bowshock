@@ -655,6 +655,13 @@ Decided by the owner on 2026-10-24, after the second blind run
    its finest grid, as 4.3 item 2 allows ("otherwise the finest fitted
    grid"). Their result may only widen the cone allowance, in their own
    boxes and where those overlap the boxes already formed.
+   _Added by the owner on 2026-10-24, before any of these rows was
+   evaluated:_ the finest grid is r = 8, and the owner runs the r = 8
+   solves on their own machine's GPU (12 GB or more) with the kit in
+   `docs/research/nose-model-form/owner-kit/` (the page's GPU engine, the
+   driver's settling tests unchanged); the files record the GPU used. No
+   row below Mach 1 is evaluated until a verification plan for the solver
+   below Mach 1 is registered.
 
 ## 9. Order of work after the decisions
 

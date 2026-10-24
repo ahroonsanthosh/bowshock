@@ -8,6 +8,11 @@
  * grid (r = 8), solved by ./blind-run-3-solve.test.ts into
  * ./out/blind-run-3/solves/.
  *
+ * The 16 rows below Mach 1 are held, not evaluated, until a verification
+ * plan for the solver there is registered (the owner, 2026-10-24); they are
+ * listed as held. The owner runs the r = 8 solves on a GPU (./owner-kit/);
+ * SOLVES=solves-gpu evaluates those.
+ *
  * Seen set ((w) item 3): widening only, never a test or a validation,
  * formed from data seen before registration. Below Mach 1 the inviscid side
  * lies outside 0013's verified range (Mach 1 to 1.2), and every such row is
@@ -45,7 +50,11 @@ import {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const readings = join(here, 'blind-readings');
-const solves = join(here, 'out', 'blind-run-3', 'solves');
+/**
+ * The solves to evaluate: SOLVES=solves-gpu for the owner's GPU run (owner-kit/),
+ * the CPU job's ./out/blind-run-3/solves/ by default.
+ */
+const solves = join(here, 'out', 'blind-run-3', process.env.SOLVES ?? 'solves');
 const LABEL =
   'Seen sets (0014 10.7 (w) item 3): widening only, never a test or a validation; ' +
   'formed from data seen before registration';
@@ -156,7 +165,12 @@ interface RowCase {
   readonly solve: Solve;
 }
 
-function rows(): { cases: RowCase[]; pending: string[]; notConverged: string[] } {
+function rows(): {
+  cases: RowCase[];
+  pending: string[];
+  notConverged: string[];
+  held: string[];
+} {
   const angle = TN4233_CONE_HALF_ANGLE;
   const L = 0.5 / Math.tan(angle);
   const e = 0.002; // stated, p. 8 (both readers); as the second run
@@ -166,6 +180,7 @@ function rows(): { cases: RowCase[]; pending: string[]; notConverged: string[] }
   ];
   const cases: RowCase[] = [];
   const pending: string[] = [];
+  const held: string[] = [];
   const notConverged: string[] = [];
   for (const t of tables) {
     const byReader = (['A', 'B'] as const).map((reader) => ({
@@ -177,6 +192,12 @@ function rows(): { cases: RowCase[]; pending: string[]; notConverged: string[] }
       .sort((a, b) => a - b);
     for (const mach of machs) {
       const what = `${t.name}, indicated Mach ${mach.toFixed(3)}`;
+      // The owner, 2026-10-24: no row below Mach 1 is evaluated until a
+      // verification plan for the solver there is registered.
+      if (mach < 1) {
+        held.push(what);
+        continue;
+      }
       const solve = solveOf(mach);
       if (solve === null) {
         pending.push(what);
@@ -260,7 +281,7 @@ function rows(): { cases: RowCase[]; pending: string[]; notConverged: string[] }
       });
     }
   }
-  return { cases, pending, notConverged };
+  return { cases, pending, notConverged, held };
 }
 
 // ------------------------------------------------------------------ output
@@ -338,7 +359,7 @@ function alongMach(before: readonly Box[], after: readonly Box[], fineness: numb
 }
 
 it('runs TN 4233 rows below Mach 1.078 against the transonic solver (0022 section 8 item 9)', () => {
-  const { cases, pending, notConverged } = rows();
+  const { cases, pending, notConverged, held } = rows();
   const out: string[] = [
     '# 0022 integration script on the blind readings A and B, third run (2026-10-24):',
     "# TN 4233's 30 rows below indicated Mach 1.078 against the transonic solver of 0013, r = 8",
@@ -362,6 +383,11 @@ it('runs TN 4233 rows below Mach 1.078 against the transonic solver (0022 sectio
     newBoxes.push(boxOf(r));
     json.push({ label: LABEL, result: r, solverDrag, belowMach1: r.mach < 1 });
   }
+  out.push(
+    `HELD, NOT EVALUATED (below Mach 1, until a verification plan for the solver there is registered; the owner, 2026-10-24; ${held.length}):`,
+    ...held.map((s) => `  ${s}`),
+    '',
+  );
   if (pending.length > 0)
     out.push(`PENDING (no solve yet, ${pending.length}):`, ...pending.map((s) => `  ${s}`), '');
   if (notConverged.length > 0)
@@ -407,7 +433,7 @@ it('runs TN 4233 rows below Mach 1.078 against the transonic solver (0022 sectio
     '',
     `# ${LABEL}.`,
   );
-  json.push({ boxes: after, pending, notConverged });
+  json.push({ boxes: after, pending, notConverged, held });
 
   mkdirSync(join(here, 'out'), { recursive: true });
   writeFileSync(join(here, 'out', 'blind-run-3.out'), out.join('\n') + '\n');
