@@ -1,5 +1,35 @@
 Owner's GPU run kit: TN 4233 rows below indicated Mach 1.078 at r = 8
-(design record 0022 section 8 item 9; 0014 10.7 (w))
+(design record 0022 section 8 item 9; 0014 10.7 (w) and (y))
+
+READ FIRST: THE ORDER FIXED BY 0014 10.7 (y), 2026-10-24
+
+Nothing below Mach 1.05 is solved, on any machine, until (y) is committed
+AND independently reviewed. The kit refuses those Mach numbers unless
+Y_REVIEWED=1 is set, which asserts that both have happened (the coordinator
+says when). Then, in this order, from the repository root:
+
+  1. The CPU side of the hardware match test (10 to 40 minutes, one core):
+
+       Y_REVIEWED=1 ONLY=./owner-kit/match-cpu.test.ts npx vitest run --config docs/research/nose-model-form/vitest.config.ts
+
+     It writes owner-kit/match/cpu-M0.800.json (Mach 0.8, r = 1 and 2 on
+     the CPU engine).
+
+  2. The GPU side (the same two grids on this GPU; minutes):
+
+       Y_REVIEWED=1 MATCH=1 npx vitest run --config docs/research/nose-model-form/owner-kit/vitest.config.ts
+
+     It writes owner-kit/match/gpu-M0.800.json and prints MATCH PASSED or
+     MATCH FAILED: each grid's drag must be within 3e-7 of the CPU's (0013's
+     G3 test at Mach 1.1, repeated below Mach 1). On FAILED no subsonic or
+     near-sonic row from this GPU counts; send the file.
+
+  3. The rows (the one command below, with Y_REVIEWED=1). Without a passed
+     match file the kit refuses every row below Mach 1.078 on hardware.
+
+  4. The independent code (R5), separately: docs/research/nose-model-form/su2/README.txt.
+
+Send back owner-kit/match/*.json with the results.
 
 WHAT IT DOES
 
@@ -17,10 +47,13 @@ For each Mach number it writes
 
   docs/research/nose-model-form/out/blind-run-3/solves-gpu/M<mach>.json
 
-with each grid's drag, steps, time and noise, the finest grid's wall
-pressures, the engine, and the WebGPU adapter (vendor, architecture, device,
-description, browser). Rows below Mach 1 are solved but NOT evaluated until
-the owner's verification plan for the solver below Mach 1 is registered.
+with each grid's drag, steps, time and noise, every grid's wall pressures,
+station pressures, wall Mach numbers and total pressures (what 0014 10.7 (y)
+asks), the domain allowances from the nested base grids, the engine, and
+the WebGPU adapter (vendor, architecture, device, description, browser).
+Below Mach 1 the settling thresholds act on the scale S = max(|CD|, 0.01)
+of (y). Rows below Mach 1 are solved but NOT evaluated until (y)'s
+verification has run and been reviewed.
 
 NEEDS
 
@@ -37,7 +70,7 @@ ONE-TIME SETUP
 
 THE ONE COMMAND (from the repository root)
 
-  npx vitest run --config docs/research/nose-model-form/owner-kit/vitest.config.ts
+  Y_REVIEWED=1 npx vitest run --config docs/research/nose-model-form/owner-kit/vitest.config.ts
 
 It runs until every Mach number is done (from 1.064 down). Leave it running.
 If it stops (Ctrl-C, sleep, reboot), run the same command again: finished

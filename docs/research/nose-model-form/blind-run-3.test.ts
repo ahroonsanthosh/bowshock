@@ -8,9 +8,10 @@
  * grid (r = 8), solved by ./blind-run-3-solve.test.ts into
  * ./out/blind-run-3/solves/.
  *
- * The 16 rows below Mach 1 are held, not evaluated, until a verification
- * plan for the solver there is registered (the owner, 2026-10-24); they are
- * listed as held. The owner runs the r = 8 solves on a GPU (./owner-kit/);
+ * The 16 rows below Mach 1 are held, not evaluated, until the verification
+ * registered as 0014 10.7 (y) has run and been reviewed (the owner,
+ * 2026-10-24); they are listed as held. Below indicated Mach 1.000 they take
+ * the absolute measure of 0022 section 8 item 10 (measureFor). The owner runs the r = 8 solves on a GPU (./owner-kit/);
  * SOLVES=solves-gpu evaluates those.
  *
  * Seen set ((w) item 3): widening only, never a test or a validation,
@@ -38,6 +39,7 @@ import {
   allowanceAt,
   boxOf,
   evaluateCase,
+  measureFor,
   BOX_FINENESS,
   BOX_MACH,
   COVERAGE_LIMIT,
@@ -192,8 +194,10 @@ function rows(): {
       .sort((a, b) => a - b);
     for (const mach of machs) {
       const what = `${t.name}, indicated Mach ${mach.toFixed(3)}`;
-      // The owner, 2026-10-24: no row below Mach 1 is evaluated until a
-      // verification plan for the solver there is registered.
+      // The owner, 2026-10-24: no row below Mach 1 is evaluated until the
+      // verification registered as 0014 10.7 (y) has been run
+      // (verify-subsonic.test.ts) and its results reviewed; then this hold
+      // is lifted by a dated note, row by row as the rungs allow.
       if (mach < 1) {
         held.push(what);
         continue;
@@ -277,6 +281,8 @@ function rows(): {
           cpUncertainty: e,
           readings: readingsHere,
           seen: true,
+          // 0022 section 8 item 10: absolute in CD below indicated Mach 1.000.
+          measure: measureFor(mach),
         },
       });
     }

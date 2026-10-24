@@ -6,60 +6,62 @@
  * page's GPU engine (gpuTransonicEngine: two-float state and residual,
  * red-black implicit steps with GPU_TRANSONIC_SWEEPS sweeps, CFL up to 1000;
  * the drag and residual evaluated in double precision on the CPU from the
- * state read back at each check). The grid solve is the driver's
- * (src/analysis/transonic-drag.ts, solveGrid), copied with its tests and
- * constants unchanged, including the two-float precision check on the first
- * grid; the domain is the driver's (transonicDomains).
+ * state read back at each check). The grid solve, the records of every grid
+ * and the domain allowances are the shared ../solve-common.ts (the driver's
+ * solveGrid with its tests and constants unchanged; below Mach 1 the
+ * thresholds act on the scale S of 0014 10.7 (y)); the domain is the
+ * driver's (transonicDomains).
  *
  * Writes ../out/blind-run-3/solves-gpu/M<mach>.json (the CPU files' format,
  * plus the engine and the WebGPU adapter), skips a Mach number already
  * written, and keeps each finished grid's state in ./checkpoints/ so that a
  * stopped run resumes at the next grid. Progress: ./progress.txt (rewritten at
  * every check). See ./README.txt.
+ *
+ * Two gates of 0014 10.7 (y):
+ * - MATCH=1 runs the hardware match test first and only: Mach 0.8, r = 1
+ *   and 2, this GPU against the CPU engine's values in ./match/cpu-M0.800.json
+ *   (written by ./match-cpu.test.ts on the same checkout), each within 3e-7
+ *   absolute, as 0013's G3 test at Mach 1.1. No subsonic or near-sonic row
+ *   counts until it has passed (./match/gpu-M0.800.json records it).
+ * - Y_REVIEWED=1 asserts that (y) is committed and independently reviewed;
+ *   without it nothing below Mach 1.05 is solved.
  */
 
 import { expect, inject, it } from 'vitest';
 import { commands } from 'vitest/browser';
 import { GPU_TRANSONIC_SWEEPS } from '../../../../src/analysis/gpu-nose-drag';
 import { gpuTransonicEngine } from '../../../../src/analysis/gpu-transonic';
-import {
-  GEOMETRIC_NOISE,
-  RESIDUAL_DIVERGENCE,
-  RESIDUAL_FALL,
-  SETTLE_NOISE,
-  transonicDomains,
-  WANDER_CHECKS,
-  type TransonicCells,
-  type TransonicEngine,
-} from '../../../../src/analysis/transonic-drag';
-import { transonicProblem, type TransonicProblem } from '../../../../src/analysis/transonic-flow';
+import { NEAR_SONIC_LIMIT, type TransonicEngine } from '../../../../src/analysis/transonic-drag';
+import type { TransonicProblem } from '../../../../src/analysis/transonic-flow';
 import { Euler2D } from '../../../../src/engine-cpu/euler2d';
-import type { Body } from '../../../../src/geometry/body';
-import { TN4233_CONE_HALF_ANGLE } from '../../../../src/validation/cone-cylinder-tn4233';
 import {
-  dampedOscillationBound,
-  SettlingValue,
-} from '../../../../src/verification/iterative-convergence';
+  body,
+  CFL,
+  FIRST_MACH,
+  gridRecords,
+  NotConverged,
+  problemOf,
+  solveAllowance,
+  solveGrid,
+  type AllowanceRecord,
+  type GridRecords,
+  type GridResult,
+} from '../solve-common';
 
-const gamma = 1.4;
 const KIT = 'docs/research/nose-model-form/owner-kit';
 const OUT = 'docs/research/nose-model-form/out/blind-run-3/solves-gpu';
-const FIRST_MACH = 1.078;
 const FINEST = inject('kitFinest');
 const SOFTWARE = inject('kitSoftware');
+const MATCH = inject('kitMatch');
+const REVIEWED = inject('kitReviewed');
+/** The match test's Mach number and grids (0014 10.7 (y), item 5 (h)). */
+export const MATCH_MACH = 0.8;
+export const MATCH_GRIDS = [1, 2] as const;
+export const MATCH_TOLERANCE = 3e-7;
 // A check run (FINEST below 8, or SwiftShader) writes elsewhere and never into the results.
 const outDir = FINEST === 8 && !SOFTWARE ? OUT : `${KIT}/check`;
 const ckDir = `${KIT}/checkpoints`;
-
-// The driver's grid-solve settings, as blind-run-3-solve.test.ts.
-const CHECK_EVERY = 50;
-const MAX_STEPS = 400_000;
-const CFL = 1000;
-
-const body: Body = {
-  nose: { shape: { kind: 'conical' }, length: 1 / Math.tan(TN4233_CONE_HALF_ANGLE), baseRadius: 1 },
-  cylinderLength: 0,
-};
 
 const progress: string[] = [];
 async function log(s: string): Promise<void> {
@@ -100,129 +102,6 @@ async function machs(): Promise<number[]> {
     .sort((a, b) => b - a);
 }
 
-class NotConverged extends Error {}
-
-interface GridResult {
-  readonly refinement: number;
-  readonly ni: number;
-  readonly nj: number;
-  readonly drag: number;
-  readonly steps: number;
-  readonly seconds: number;
-  readonly noise: number;
-  readonly rate: number;
-}
-
-/** As transonic-drag.ts. */
-function geometricRemaining(values: readonly number[]): number {
-  if (values.length < 3) return Infinity;
-  const [a, b, c] = values.slice(-3) as [number, number, number];
-  const d1 = b - a;
-  const d2 = c - b;
-  if (Math.abs(d2) <= 1e-12 * Math.abs(c)) return Math.abs(d2);
-  if (d1 === 0) return Infinity;
-  const r = Math.abs(d2 / d1);
-  return r < 1 ? (Math.abs(d2) * r) / (1 - r) : Infinity;
-}
-
-/** verifiedTransonicDrag's solveGrid, its tests unchanged (transonic-drag.ts). */
-async function solveGrid(
-  engine: TransonicEngine,
-  problem: TransonicProblem,
-  start: { problem: TransonicProblem; cells: TransonicCells; rate: number } | null,
-  tag: string,
-  checkPrecision: boolean,
-): Promise<{ result: GridResult; conserved: Float64Array }> {
-  const refinement = problem.options.refinement;
-  const every = CHECK_EVERY * refinement;
-  const free = problem.freeStream.state;
-  const solver = await engine(problem);
-  const t0 = performance.now();
-  try {
-    if (start === null) await solver.start(() => free, 1);
-    else {
-      const ratio = refinement / start.problem.options.refinement;
-      const coarse = start.cells;
-      await solver.start((i, j) => coarse(Math.floor(i / ratio), Math.floor(j / ratio)), CFL);
-    }
-    const settling = new SettlingValue(SETTLE_NOISE, start?.rate ?? Number.NaN);
-    const history: number[] = [];
-    let steps = 0;
-    let drag = Number.NaN;
-    let passes = 0;
-    let remaining = Infinity;
-    let oscillation = 0;
-    let firstResidual = Number.NaN;
-    let largestResidual = 0;
-    let lastResidual = Number.NaN;
-    let settled = false;
-    while (steps < MAX_STEPS) {
-      await solver.iterate(every);
-      steps += every;
-      if (checkPrecision && steps === every) await solver.checkPrecision();
-      drag = await solver.drag();
-      if (!Number.isFinite(drag)) throw new NotConverged('the drag is not finite');
-      const residual = await solver.residual();
-      if (Number.isNaN(firstResidual)) firstResidual = residual;
-      if (residual > RESIDUAL_DIVERGENCE * firstResidual)
-        throw new NotConverged(`the residual grew from ${firstResidual} to ${residual}`);
-      largestResidual = Math.max(largestResidual, residual);
-      const moving = residual !== lastResidual;
-      lastResidual = residual;
-      await log(
-        `${tag} r=${refinement} steps=${steps} drag=${drag.toPrecision(9)} residual=${residual.toExponential(3)} s=${((performance.now() - t0) / 1000).toFixed(0)}`,
-      );
-      history.push(drag);
-      remaining = geometricRemaining(history);
-      passes = remaining <= GEOMETRIC_NOISE * Math.abs(drag) ? passes + 1 : 0;
-      const settlingPassed = settling.add(drag);
-      if (!(settlingPassed || passes >= 2)) continue;
-      if (!Number.isFinite(remaining)) continue;
-      if (!(moving && residual <= RESIDUAL_FALL * largestResidual)) continue;
-      const fit = dampedOscillationBound(history, 10 * GEOMETRIC_NOISE * Math.abs(drag));
-      oscillation = fit.bound;
-      if (fit.fitted > 0 && fit.decaying && oscillation <= SETTLE_NOISE * Math.abs(drag)) {
-        settled = true;
-        break;
-      }
-    }
-    if (!settled) throw new NotConverged(`the drag did not settle within ${MAX_STEPS} steps`);
-    let low = drag;
-    let high = drag;
-    for (let k = 0; k < WANDER_CHECKS; k++) {
-      await solver.iterate(every);
-      steps += every;
-      drag = await solver.drag();
-      low = Math.min(low, drag);
-      high = Math.max(high, drag);
-    }
-    const scale = Math.abs(drag);
-    const noise = Math.max(
-      SETTLE_NOISE,
-      (high - low) / scale,
-      remaining / scale,
-      oscillation / scale,
-    );
-    const copy = new Euler2D(problem.config);
-    copy.setCellPrimitives(await solver.cells());
-    return {
-      result: {
-        refinement,
-        ni: problem.config.grid.ni,
-        nj: problem.config.grid.nj,
-        drag,
-        steps,
-        seconds: (performance.now() - t0) / 1000,
-        noise,
-        rate: settling.rateToPassOn,
-      },
-      conserved: copy.conserved(),
-    };
-  } finally {
-    solver.destroy();
-  }
-}
-
 function toBase64(q: Float64Array): string {
   const bytes = new Uint8Array(q.buffer, q.byteOffset, q.byteLength);
   let s = '';
@@ -238,21 +117,6 @@ function fromBase64(s: string): Float64Array {
   return new Float64Array(bytes.buffer);
 }
 
-/** The wall pressure coefficient on the cone and the first calibers of cylinder, finest grid. */
-function wallCp(problem: TransonicProblem, conserved: Float64Array) {
-  const solver = new Euler2D(problem.config);
-  solver.setConserved(conserved);
-  const { pressure, dynamicPressure } = problem.freeStream;
-  const L = body.nose.length;
-  return solver
-    .boundaryFluxes('jMin')
-    .filter((f) => f.x >= 0 && f.x <= L + 4 && f.y > 1e-12)
-    .map((f) => {
-      const p = f.flux[1] * f.nx + f.flux[2] * f.ny;
-      return { x: f.x, y: f.y, cp: (p - pressure) / dynamicPressure };
-    });
-}
-
 async function solveMach(
   engine: TransonicEngine,
   device: Record<string, string | boolean>,
@@ -264,23 +128,25 @@ async function solveMach(
     await log(`${tag} done before: skipped`);
     return;
   }
-  const domains = transonicDomains(body, mach);
-  const problemOf = (refinement: number) =>
-    transonicProblem(body, {
-      mach,
-      gamma,
-      refinement,
-      farField: domains.family.farField,
-      cylinder: domains.family.cylinder,
-      ...(domains.family.nested === undefined ? {} : { nested: domains.family.nested }),
-    });
+  if (mach < NEAR_SONIC_LIMIT && !REVIEWED) {
+    await log(
+      `${tag} REFUSED: below Mach ${NEAR_SONIC_LIMIT} nothing is solved until 0014 10.7 (y) is committed and independently reviewed (Y_REVIEWED=1 once it is; README.txt)`,
+    );
+    return;
+  }
   const engineName = `GPU two-float (gpuTransonicEngine), red-black implicit, ${GPU_TRANSONIC_SWEEPS} sweeps, CFL to ${CFL}`;
-  const levels: GridResult[] = [];
-  let previous: { problem: TransonicProblem; cells: TransonicCells; rate: number } | null = null;
+  const levels: { result: GridResult; records: GridRecords }[] = [];
+  let allowances: { farField: AllowanceRecord; cylinder: AllowanceRecord } | null = null;
+  let previous: {
+    problem: TransonicProblem;
+    cells: (i: number, j: number) => ReturnType<Euler2D['primitive']>;
+    rate: number;
+  } | null = null;
   let last: { problem: TransonicProblem; conserved: Float64Array } | null = null;
+  const plain = { mach, finest: FINEST, engine: engineName, device };
   try {
     for (let r = 1; r <= FINEST; r *= 2) {
-      const problem = problemOf(r);
+      const problem = problemOf(mach, r);
       const ck = `${ckDir}/${SOFTWARE ? 'software-' : ''}${tag}-r${r}`;
       let solved: { result: GridResult; conserved: Float64Array };
       if ((await exists(`${ck}.json`)) && (await exists(`${ck}.b64`))) {
@@ -290,34 +156,51 @@ async function solveMach(
         };
         await log(`${tag} r=${r} resumed from its checkpoint`);
       } else {
-        solved = await solveGrid(engine, problem, previous, tag, r === 1);
+        solved = await solveGrid(engine, problem, previous, tag, log, r === 1);
         await commands.writeFile(`${ck}.b64`, toBase64(solved.conserved));
         await commands.writeFile(`${ck}.json`, JSON.stringify(solved.result));
       }
-      levels.push(solved.result);
+      const records = gridRecords(problem, solved.conserved);
+      levels.push({ result: solved.result, records });
       await log(
-        `${tag} r=${r} settled: drag ${solved.result.drag} in ${solved.result.steps} steps (${Math.round(solved.result.seconds)} s)`,
+        `${tag} r=${r} settled: drag ${solved.result.drag} in ${solved.result.steps} steps (${Math.round(solved.result.seconds)} s); wall loss ahead ${records.loss.ahead.toExponential(2)}, max wall Mach ${records.loss.maxMach.toFixed(3)}, supersonic wall cells ${records.loss.supersonicCells}`,
       );
+      if (r === 1) {
+        const ckA = `${ck}-allowances.json`;
+        if (await exists(ckA)) {
+          allowances = JSON.parse(await commands.readFile(ckA)) as typeof allowances;
+          await log(`${tag} allowances resumed from their checkpoint`);
+        } else {
+          const own = { result: solved.result, records, problem };
+          const farField = await solveAllowance(engine, mach, 'farField', own, tag, log);
+          const cylinder = await solveAllowance(engine, mach, 'cylinder', own, tag, log);
+          allowances = { farField, cylinder };
+          await commands.writeFile(ckA, JSON.stringify(allowances));
+        }
+        for (const a of [allowances!.farField, allowances!.cylinder])
+          await log(
+            `${tag} ${a.kind}: drags ${a.values.map((v) => v.toPrecision(7)).join(', ')} at ${a.distances.map((d) => d.toFixed(1)).join(', ')}: ${a.result.kind}${a.result.kind === 'refused' ? ` (${a.result.reason})` : ` ${a.result.allowance.toExponential(3)}`}`,
+          );
+      }
       const holder = new Euler2D(problem.config);
       holder.setConserved(solved.conserved);
       previous = { problem, cells: (i, j) => holder.primitive(i, j), rate: solved.result.rate };
       last = { problem, conserved: solved.conserved };
     }
+    const finest = levels[levels.length - 1]!;
     await commands.writeFile(
       file,
       JSON.stringify({
-        mach,
+        ...plain,
         converged: true,
-        finest: FINEST,
-        engine: engineName,
-        device,
         domain: {
           farRadius: last!.problem.grid.farRadius,
-          cylinderCalibers: domains.family.cylinder,
+          cylinderCalibers: problemOf(mach, 1).options.cylinder,
         },
         noseLengthRadii: body.nose.length,
-        levels,
-        wall: wallCp(last!.problem, last!.conserved),
+        levels: levels.map((l) => ({ ...l.result, records: l.records })),
+        allowances,
+        wall: finest.records.wall,
       }) + '\n',
     );
   } catch (error) {
@@ -326,16 +209,68 @@ async function solveMach(
     await commands.writeFile(
       file,
       JSON.stringify({
-        mach,
+        ...plain,
         converged: false,
         reason: error.message,
-        finest: FINEST,
-        engine: engineName,
-        device,
-        levels,
+        levels: levels.map((l) => ({ ...l.result, records: l.records })),
+        allowances,
       }) + '\n',
     );
   }
+}
+
+/** The hardware match test (0014 10.7 (y), item 5 (h)): Mach 0.8, r = 1 and 2, against the CPU engine. */
+async function matchTest(
+  engine: TransonicEngine,
+  device: Record<string, string | boolean>,
+): Promise<void> {
+  const cpuFile = `${KIT}/match/cpu-M${MATCH_MACH.toFixed(3)}.json`;
+  if (!(await exists(cpuFile)))
+    throw new Error(`${cpuFile} is missing: run the CPU side first (README.txt, step 1)`);
+  const cpu = JSON.parse(await commands.readFile(cpuFile)) as {
+    levels: { refinement: number; drag: number; steps: number }[];
+  };
+  const tag = `match M${MATCH_MACH.toFixed(3)}`;
+  const out: Record<string, unknown>[] = [];
+  let previous: {
+    problem: TransonicProblem;
+    cells: (i: number, j: number) => ReturnType<Euler2D['primitive']>;
+    rate: number;
+  } | null = null;
+  let passed = true;
+  for (const r of MATCH_GRIDS) {
+    const problem = problemOf(MATCH_MACH, r);
+    const solved = await solveGrid(engine, problem, previous, tag, log, r === 1);
+    const reference = cpu.levels.find((l) => l.refinement === r);
+    if (reference === undefined) throw new Error(`the CPU file has no r = ${r}`);
+    const difference = solved.result.drag - reference.drag;
+    const ok = Math.abs(difference) <= MATCH_TOLERANCE;
+    passed = passed && ok;
+    out.push({
+      refinement: r,
+      gpu: solved.result,
+      cpu: reference,
+      difference,
+      tolerance: MATCH_TOLERANCE,
+      pass: ok,
+    });
+    await log(
+      `${tag} r=${r}: GPU ${solved.result.drag} (${solved.result.steps} steps) against CPU ${reference.drag} (${reference.steps}): ${difference.toExponential(2)}, ${ok ? 'within' : 'OUTSIDE'} ${MATCH_TOLERANCE}`,
+    );
+    const holder = new Euler2D(problem.config);
+    holder.setConserved(solved.conserved);
+    previous = { problem, cells: (i, j) => holder.primitive(i, j), rate: solved.result.rate };
+  }
+  await commands.writeFile(
+    `${KIT}/match/${SOFTWARE ? 'software-' : ''}gpu-M${MATCH_MACH.toFixed(3)}.json`,
+    JSON.stringify({ mach: MATCH_MACH, device, software: SOFTWARE, grids: out, passed }, null, 1) + '\n',
+  );
+  await log(
+    passed
+      ? 'MATCH PASSED: this GPU reproduces the CPU engine at Mach 0.8 on r = 1 and 2; the rows may be run'
+      : 'MATCH FAILED: no subsonic or near-sonic row from this GPU counts (README.txt)',
+  );
+  expect(passed).toBe(true);
 }
 
 it('solves the transonic family on this GPU at each TN 4233 row below indicated Mach 1.078', async () => {
@@ -362,17 +297,28 @@ it('solves the transonic family on this GPU at each TN 4233 row below indicated 
     },
   });
   const engine = gpuTransonicEngine(gpu, { sweeps: GPU_TRANSONIC_SWEEPS, cfl: CFL });
-  const list = await machs();
   await log(`adapter ${JSON.stringify(device)}`);
+  if (MATCH) {
+    await matchTest(engine, device);
+    return;
+  }
+  const matched = await exists(`${KIT}/match/gpu-M${MATCH_MACH.toFixed(3)}.json`);
+  const list = (await machs()).filter((m) => {
+    if (m < 1.078 && (m < 1 || m < NEAR_SONIC_LIMIT) && !matched && !SOFTWARE) {
+      void log(`M${m.toFixed(3)} REFUSED: the hardware match test has not passed on this checkout (MATCH=1 first; README.txt)`);
+      return false;
+    }
+    return true;
+  });
   await log(
-    `Mach numbers (${list.length}): ${list.join(', ')}; finest r = ${FINEST}; out ${outDir}`,
+    `Mach numbers (${list.length}): ${list.join(', ')}; finest r = ${FINEST}; out ${outDir}; Y_REVIEWED=${REVIEWED ? '1' : 'unset'}`,
   );
   expect(list.length).toBeGreaterThan(0);
   for (const m of list) await solveMach(engine, device, m);
   await log('all done');
   await log(
     outDir === OUT
-      ? `Send the results back: commit ${OUT}/*.json (not the checkpoints) to claude/wip/nose-model-form and push, or zip that folder and send it (README.txt).`
+      ? `Send the results back: commit ${OUT}/*.json and ${KIT}/match/*.json (not the checkpoints) to claude/wip/nose-model-form and push, or zip those folders and send them (README.txt).`
       : `Check run only: results in ${outDir}, not in ${OUT}.`,
   );
 });

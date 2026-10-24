@@ -8,7 +8,9 @@ import { defineConfig } from 'vitest/config';
  * SOFTWARE=1 uses SwiftShader instead (the kit's own check, not a run).
  * HEADED=1 opens a window, for systems whose headless Chromium has no
  * hardware adapter. CHROMIUM_PATH picks a Chromium binary. MACHS=1.064,1.062
- * limits the Mach numbers; FINEST=1 stops at r = 1 (a check only).
+ * limits the Mach numbers; FINEST=1 stops at r = 1 (a check only). MATCH=1
+ * runs only the hardware match test at Mach 0.8 (0014 10.7 (y), item 5 (h));
+ * Y_REVIEWED=1 asserts that (y) is committed and reviewed (README.txt).
  */
 const software = process.env.SOFTWARE === '1';
 const root = fileURLToPath(new URL('../../../../', import.meta.url));
@@ -26,6 +28,8 @@ export default defineConfig({
       kitMachs: process.env.MACHS ?? '',
       kitFinest: Number(process.env.FINEST ?? 8),
       kitSoftware: software,
+      kitMatch: process.env.MATCH === '1',
+      kitReviewed: process.env.Y_REVIEWED === '1',
     },
     browser: {
       enabled: true,
@@ -59,5 +63,7 @@ declare module 'vitest' {
     kitMachs: string;
     kitFinest: number;
     kitSoftware: boolean;
+    kitMatch: boolean;
+    kitReviewed: boolean;
   }
 }
