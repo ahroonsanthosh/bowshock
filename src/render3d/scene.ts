@@ -218,8 +218,6 @@ const ISO_SURFACES = 40;
  * shock; how long a moving streak takes to run its length, seconds.
  */
 const STREAKS_FAST = 60_000;
-/** The see-through rocket's culled faces (its mesh winds its outward faces counter-clockwise). */
-const GHOST_CULL: GPUCullMode = 'back';
 /** How opaque the rocket is drawn where streaks or sheets stand in front of it. */
 const BODY_SEEN_THROUGH = 0.6;
 /** The first view this much closer than the one that fits the whole region. */
@@ -417,12 +415,13 @@ class Pipelines {
           vertex: { module: bodyModule, entryPoint: 'body_vs', buffers: bodyBuffers },
           fragment: {
             module: bodyModule,
-            entryPoint: 'body_fs',
+            entryPoint: 'body_ghost_fs',
             targets: [{ format, blend: premultiplied }],
           },
-          // Its near side only: the far side (behind the near, so also
-          // passing the reversed test) would show through it.
-          primitive: { topology: 'triangle-list', cullMode: GHOST_CULL },
+          // Its near side only (the far side, behind the near, also passes
+          // the reversed test): chosen by normal in body_ghost_fs, not by
+          // winding, which differs between the body and the fins.
+          primitive,
           depthStencil: depth(false, 'greater'),
           multisample,
         }),

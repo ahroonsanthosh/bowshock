@@ -26,6 +26,22 @@ fn body_vs(v: BodyIn) -> BodyOut {
 
 @fragment
 fn body_fs(v: BodyOut) -> @location(0) vec4f {
+  return shade(v);
+}
+
+// The rocket seen through what stands in front of it: its near side only,
+// by its stored outward normals (the mesh's winding is not the same
+// everywhere: the body's near side winds clockwise on screen, the fins'
+// counter-clockwise, so culling by winding would keep the wrong side).
+@fragment
+fn body_ghost_fs(v: BodyOut) -> @location(0) vec4f {
+  if (dot(v.normal, frame.eye.xyz - v.world) < 0.0) {
+    discard;
+  }
+  return shade(v);
+}
+
+fn shade(v: BodyOut) -> vec4f {
   let view = normalize(frame.eye.xyz - v.world);
   var n = normalize(v.normal);
   // Two-sided: the side facing the eye.

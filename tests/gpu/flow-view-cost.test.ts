@@ -12,8 +12,8 @@ import { requireDevice } from './device';
  * phase U1: under 10%): the steps per second of the drag page's first grid
  * on the Basic Finner's body at Mach 2, with and without the flow view
  * drawing it at 1280 x 720 at its live frame rate. Each is timed
- * three times, alternately, and the fastest of each kept, so that other
- * work on the machine counts against neither.
+ * three times, alternately, and each drawn run is compared with the run
+ * without the view just before it; the median of those ratios is held.
  */
 
 const gamma = 1.4;

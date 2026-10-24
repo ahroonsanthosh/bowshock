@@ -5,7 +5,7 @@ import { bodyLength } from '../../src/geometry/body';
 import type { FlowSource } from '../../src/render/flow-renderer';
 import { liveFitSource } from '../../src/render/flow-source';
 import type { Presenter } from '../../src/render/presenter';
-import { transform, viewProjection } from '../../src/render3d/camera';
+import { cameraFrame, eyeOf, transform, viewProjection } from '../../src/render3d/camera';
 import { basicFinnerRocket } from '../../src/render3d/presets';
 import { QUANTITIES } from '../../src/render3d/quantities';
 import { FlowScene3D, type SceneLayers, type SliceMode } from '../../src/render3d/scene';
@@ -315,6 +315,51 @@ describe('the 3D view', () => {
       const seen = await scene.pixels();
       expect(changed(image, seen), layer).toBeGreaterThan(0.01);
       if (layer !== 'shock') expect(census(seen).coloured, layer).toBeGreaterThan(0.005);
+    }
+    // Hidden behind opaque sheets, the rocket shows through them: its near
+    // side, seen through at BODY_SEEN_THROUGH (0.6), over the sheets. At a
+    // point of the near side off the axis's line (where the far side, lit
+    // from its own side, would shade differently), the picture is 0.6 of
+    // the rocket alone and 0.4 of the sheets alone.
+    const at = (img: ImageData, x: number, y: number) => {
+      const q = 4 * (x + y * img.width);
+      return [img.data[q]!, img.data[q + 1]!, img.data[q + 2]!];
+    };
+    scene.setLayers({ ...ALL_OFF, body: 'solid', cutaway: false });
+    const alone = await scene.pixels();
+    scene.setLayers({ ...ALL_OFF, isosurfaces: true, solidShells: true, cutaway: false });
+    const sheets = await scene.pixels();
+    scene.setLayers({
+      ...ALL_OFF,
+      body: 'solid',
+      isosurfaces: true,
+      solidShells: true,
+      cutaway: false,
+    });
+    const through = await scene.pixels();
+    const eye = eyeOf(orbit);
+    const { up } = cameraFrame(orbit);
+    const xm = bodyLength(rocket.body) / 2;
+    const R = rocket.body.nose.baseRadius;
+    // The near side's point a third of the way from the middle towards the
+    // screen's top edge.
+    const toEye = [0, eye[1], eye[2]];
+    const n0 = Math.hypot(toEye[1]!, toEye[2]!);
+    const dir = [0, toEye[1]! / n0 + 0.8 * up[1], toEye[2]! / n0 + 0.8 * up[2]];
+    const nd = Math.hypot(dir[1]!, dir[2]!);
+    const near = transform(m, [xm, (R * dir[1]!) / nd, (R * dir[2]!) / nd]);
+    const qx = Math.round((0.5 + (0.5 * near[0]) / near[3]) * through.width);
+    const qy = Math.round((0.5 - (0.5 * near[1]) / near[3]) * through.height);
+    const a = at(alone, qx, qy);
+    const sh = at(sheets, qx, qy);
+    const t = at(through, qx, qy);
+    // The sheets do cover the rocket there.
+    expect(Math.max(...sh.map((v, c) => Math.abs(v - a[c]!)))).toBeGreaterThan(20);
+    for (let c = 0; c < 3; c++) {
+      expect(
+        Math.abs(t[c]! - (0.6 * a[c]! + 0.4 * sh[c]!)),
+        `channel ${c} at ${qx}, ${qy}`,
+      ).toBeLessThan(12);
     }
     scene.destroy();
   }, 600_000);
