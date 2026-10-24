@@ -1,0 +1,297 @@
+# 0022 integration script on the blind readings A and B, second run (2026-10-24):
+# TN 4233 and RM E51H17, after the owner answered the questions of the first run
+# (0022 section 8 items 7 and 8; dated addition under 0014 10.7 (w); commit c4908d3).
+# Seen sets (0014 10.7 (w) item 3): widening only, never a test or a validation; formed from data seen before registration.
+# Inviscid side as the seen runs for a cone: Taylor-Maccoll. Earlier typings enter as 0022 4.2's
+# earlier readings (labelled EARLIER READING; lower limits). Unchanged: the script, the one-tenth
+# rule, the floors, the boxes, the quadrature. The first run (blind-run.out) is not touched.
+
+TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.08, 4.082 cal
+  Re: 2.4e6 on the 5.50 in. cone length (text p. 7); the report does not say whether the 14-foot run used the same value (B)
+  no earlier typing of this row (0022 4.2): fresh readings only
+  stations on the nose (x/d): 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.098540; at the stations 0.098540
+  uncovered share of the inviscid drag 1.87% (limit 10.00%): not refused by the one-tenth rule
+  covered area 98.13%; bias area (first orifice to shoulder) 99.33%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -6.74%   2.02%   1.72%  10.47%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.096 0.104 0.1 0.098 0.099 0.099 0.096 0.098 0.096 0.093 0.008
+     -6.46%   2.02%   1.72%  10.19%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.096 0.104 0.1 0.098 0.099 0.099 0.098 0.098 0.096 0.093 0.008
+     -6.97%   2.02%   1.72%  10.71%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.096 0.104 0.1 0.095 0.099 0.099 0.096 0.098 0.096 0.093 0.008
+     -6.69%   2.02%   1.72%  10.43%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.096 0.104 0.1 0.095 0.099 0.099 0.098 0.098 0.096 0.093 0.008
+     -6.74%   2.02%   1.72%  10.47%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.096 0.104 0.1 0.098 0.099 0.099 0.096 0.098 0.096 0.093 0.008
+     -6.46%   2.02%   1.72%  10.19%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.096 0.104 0.1 0.098 0.099 0.099 0.098 0.098 0.096 0.093 0.008
+     -6.97%   2.02%   1.72%  10.71%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.096 0.104 0.1 0.095 0.099 0.099 0.096 0.098 0.096 0.093 0.008
+     -6.69%   2.02%   1.72%  10.43%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.096 0.104 0.1 0.095 0.099 0.099 0.098 0.098 0.096 0.093 0.008
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -6.97% to -6.46%, u_meas 2.02%, u_unc 1.72% to 1.72%, largest |r| + u 10.71%
+    reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -6.97% to -6.46%, u_meas 2.02%, u_unc 1.72% to 1.72%, largest |r| + u 10.71%
+  a = max |r| + u over every reading and combination: 10.71%
+  floor: none published for this set (0022 section 5 (a)); no earlier reading of this row could enter
+
+TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.1, 4.082 cal
+  Re: 2.4e6 on the 5.50 in. cone length (text p. 7); the report does not say whether the 14-foot run used the same value (B)
+  stations on the nose (x/d): 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.094498; at the stations 0.094498
+  uncovered share of the inviscid drag 1.87% (limit 10.00%): not refused by the one-tenth rule
+  covered area 98.13%; bias area (first orifice to shoulder) 99.33%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -4.11%   2.10%   1.43%   7.64%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.092 0.091 0.094 0.089 0.093 0.097 0.099 0.098 0.095 0.093 0.022
+     -3.96%   2.10%   1.43%   7.50%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.092 0.091 0.094 0.089 0.093 0.097 0.1 0.098 0.095 0.093 0.022
+     -4.19%   2.10%   1.43%   7.72%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.092 0.091 0.094 0.088 0.093 0.097 0.099 0.098 0.095 0.093 0.022
+     -4.04%   2.10%   1.43%   7.58%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.092 0.091 0.094 0.088 0.093 0.097 0.1 0.098 0.095 0.093 0.022
+     -4.11%   2.10%   1.43%   7.64%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.092 0.091 0.094 0.089 0.093 0.097 0.099 0.098 0.095 0.093 0.022
+     -3.96%   2.10%   1.43%   7.50%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.092 0.091 0.094 0.089 0.093 0.097 0.1 0.098 0.095 0.093 0.022
+     -4.19%   2.10%   1.43%   7.72%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.092 0.091 0.094 0.088 0.093 0.097 0.099 0.098 0.095 0.093 0.022
+     -4.04%   2.10%   1.43%   7.58%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.092 0.091 0.094 0.088 0.093 0.097 0.1 0.098 0.095 0.093 0.022
+     -4.11%   2.10%   1.43%   7.64%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.092 0.091 0.094 0.089 0.093 0.097 0.099 0.098 0.095 0.093 0.022
+     -3.96%   2.10%   1.43%   7.50%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.092 0.091 0.094 0.089 0.093 0.097 0.1 0.098 0.095 0.093 0.022
+     -4.19%   2.10%   1.43%   7.72%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.092 0.091 0.094 0.088 0.093 0.097 0.099 0.098 0.095 0.093 0.022
+     -4.04%   2.10%   1.43%   7.58%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.092 0.091 0.094 0.088 0.093 0.097 0.1 0.098 0.095 0.093 0.022
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -4.19% to -3.96%, u_meas 2.10%, u_unc 1.43% to 1.43%, largest |r| + u 7.72%
+    reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -4.19% to -3.96%, u_meas 2.10%, u_unc 1.43% to 1.43%, largest |r| + u 7.72%
+    EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts: 4 combination(s), r -4.19% to -3.96%, u_meas 2.10%, u_unc 1.43% to 1.43%, largest |r| + u 7.72%
+  a = max |r| + u over every reading and combination: 7.72%
+  floor: none published for this set (0022 section 5 (a)); the earlier typing, carried in the envelope above, does its job
+
+TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.151, 4.082 cal
+  Re: 2.4e6 on the 5.50 in. cone length (text p. 7); the report does not say whether the 14-foot run used the same value (B)
+  stations on the nose (x/d): 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.087531; at the stations 0.087531
+  uncovered share of the inviscid drag 1.87% (limit 10.00%): not refused by the one-tenth rule
+  covered area 98.13%; bias area (first orifice to shoulder) 99.33%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -5.03%   2.27%   1.14%   8.45%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.084 0.085 0.084 0.085 0.085 0.086 0.086 0.089 0.087 0.087 0.034
+     -4.72%   2.27%   1.14%   8.13%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.084 0.085 0.084 0.085 0.085 0.086 0.088 0.089 0.087 0.087 0.034
+     -5.12%   2.27%   1.14%   8.54%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.084 0.085 0.084 0.084 0.085 0.086 0.086 0.089 0.087 0.087 0.034
+     -4.81%   2.27%   1.14%   8.22%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.084 0.085 0.084 0.084 0.085 0.086 0.088 0.089 0.087 0.087 0.034
+     -5.03%   2.27%   1.14%   8.45%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.084 0.085 0.084 0.085 0.085 0.086 0.086 0.089 0.087 0.087 0.034
+     -4.72%   2.27%   1.14%   8.13%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.084 0.085 0.084 0.085 0.085 0.086 0.088 0.089 0.087 0.087 0.034
+     -5.12%   2.27%   1.14%   8.54%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.084 0.085 0.084 0.084 0.085 0.086 0.086 0.089 0.087 0.087 0.034
+     -4.81%   2.27%   1.14%   8.22%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.084 0.085 0.084 0.084 0.085 0.086 0.088 0.089 0.087 0.087 0.034
+     -5.03%   2.27%   1.14%   8.45%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.084 0.085 0.084 0.085 0.085 0.086 0.086 0.089 0.087 0.087 0.034
+     -4.72%   2.27%   1.14%   8.13%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.084 0.085 0.084 0.085 0.085 0.086 0.088 0.089 0.087 0.087 0.034
+     -5.12%   2.27%   1.14%   8.54%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.084 0.085 0.084 0.084 0.085 0.086 0.086 0.089 0.087 0.087 0.034
+     -4.81%   2.27%   1.14%   8.22%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.084 0.085 0.084 0.084 0.085 0.086 0.088 0.089 0.087 0.087 0.034
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -5.12% to -4.72%, u_meas 2.27%, u_unc 1.14% to 1.14%, largest |r| + u 8.54%
+    reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -5.12% to -4.72%, u_meas 2.27%, u_unc 1.14% to 1.14%, largest |r| + u 8.54%
+    EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts: 4 combination(s), r -5.12% to -4.72%, u_meas 2.27%, u_unc 1.14% to 1.14%, largest |r| + u 8.54%
+  a = max |r| + u over every reading and combination: 8.54%
+  floor: none published for this set (0022 section 5 (a)); the earlier typing, carried in the envelope above, does its job
+
+TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.2, 4.082 cal
+  Re: 2.4e6 on the 5.50 in. cone length (text p. 7); the report does not say whether the 14-foot run used the same value (B)
+  stations on the nose (x/d): 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.083011; at the stations 0.083011
+  uncovered share of the inviscid drag 1.87% (limit 10.00%): not refused by the one-tenth rule
+  covered area 98.13%; bias area (first orifice to shoulder) 99.33%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -5.93%   2.39%   0.99%   9.32%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.079 0.078 0.079 0.081 0.08 0.079 0.08 0.083 0.081 0.082 0.039
+     -5.60%   2.39%   0.99%   8.98%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.079 0.078 0.079 0.081 0.08 0.079 0.082 0.083 0.081 0.082 0.039
+     -6.03%   2.39%   0.99%   9.41%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.079 0.078 0.079 0.08 0.08 0.079 0.08 0.083 0.081 0.082 0.039
+     -5.69%   2.39%   0.99%   9.08%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.079 0.078 0.079 0.08 0.08 0.079 0.082 0.083 0.081 0.082 0.039
+     -5.93%   2.39%   0.99%   9.32%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.079 0.078 0.079 0.081 0.08 0.079 0.08 0.083 0.081 0.082 0.039
+     -5.60%   2.39%   0.99%   8.98%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.079 0.078 0.079 0.081 0.08 0.079 0.082 0.083 0.081 0.082 0.039
+     -6.03%   2.39%   0.99%   9.41%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.079 0.078 0.079 0.08 0.08 0.079 0.08 0.083 0.081 0.082 0.039
+     -5.69%   2.39%   0.99%   9.08%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.079 0.078 0.079 0.08 0.08 0.079 0.082 0.083 0.081 0.082 0.039
+     -5.93%   2.39%   0.99%   9.32%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.079 0.078 0.079 0.081 0.08 0.079 0.08 0.083 0.081 0.082 0.039
+     -5.60%   2.39%   0.99%   8.98%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.079 0.078 0.079 0.081 0.08 0.079 0.082 0.083 0.081 0.082 0.039
+     -6.03%   2.39%   0.99%   9.41%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.079 0.078 0.079 0.08 0.08 0.079 0.08 0.083 0.081 0.082 0.039
+     -5.69%   2.39%   0.99%   9.08%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.079 0.078 0.079 0.08 0.08 0.079 0.082 0.083 0.081 0.082 0.039
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -6.03% to -5.60%, u_meas 2.39%, u_unc 0.99% to 0.99%, largest |r| + u 9.41%
+    reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -6.03% to -5.60%, u_meas 2.39%, u_unc 0.99% to 0.99%, largest |r| + u 9.41%
+    EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts: 4 combination(s), r -6.03% to -5.60%, u_meas 2.39%, u_unc 0.99% to 0.99%, largest |r| + u 9.41%
+  a = max |r| + u over every reading and combination: 9.41%
+  floor: none published for this set (0022 section 5 (a)); the earlier typing, carried in the envelope above, does its job
+
+TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.299, 4.082 cal
+  Re: 2.4e6 on the 5.50 in. cone length (text p. 7); the report does not say whether the 14-foot run used the same value (B)
+  no earlier typing of this row (0022 4.2): fresh readings only
+  stations on the nose (x/d): 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.076727; at the stations 0.076727
+  uncovered share of the inviscid drag 1.87% (limit 10.00%): not refused by the one-tenth rule
+  covered area 98.13%; bias area (first orifice to shoulder) 99.33%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -4.26%   2.59%   0.97%   7.82%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.077 0.078 0.078 0.078 0.078 0.072 0.073 0.08 0.075 0.073 0.037
+     -3.90%   2.59%   0.97%   7.45%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.077 0.078 0.078 0.078 0.078 0.072 0.075 0.08 0.075 0.073 0.037
+     -4.26%   2.59%   0.97%   7.82%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.077 0.078 0.078 0.078 0.078 0.072 0.073 0.08 0.075 0.073 0.037
+     -3.90%   2.59%   0.97%   7.45%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.077 0.078 0.078 0.078 0.078 0.072 0.075 0.08 0.075 0.073 0.037
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 2 combination(s), r -4.26% to -3.90%, u_meas 2.59%, u_unc 0.97% to 0.97%, largest |r| + u 7.82%
+    reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 2 combination(s), r -4.26% to -3.90%, u_meas 2.59%, u_unc 0.97% to 0.97%, largest |r| + u 7.82%
+  a = max |r| + u over every reading and combination: 7.82%
+  floor: none published for this set (0022 section 5 (a)); no earlier reading of this row could enter
+
+TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.4, 4.082 cal
+  Re: 2.4e6 on the 5.50 in. cone length (text p. 7); the report does not say whether the 14-foot run used the same value (B)
+  reader A, orifice 4: flagged "typo?", no alternative given: enters as printed
+  no earlier typing of this row (0022 4.2): fresh readings only
+  stations on the nose (x/d): 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.072259; at the stations 0.072259
+  uncovered share of the inviscid drag 1.87% (limit 10.00%): not refused by the one-tenth rule
+  covered area 98.13%; bias area (first orifice to shoulder) 99.33%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -1.48%   2.75%   0.70%   4.94%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.074 0.074 0.072 0.079 0.072 0.071 0.071 0.075 0.072 0.072 0.045
+     -0.72%   2.75%   0.70%   4.17%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.074 0.074 0.072 0.079 0.072 0.071 0.075 0.075 0.072 0.072 0.045
+     -2.13%   2.75%   0.70%   5.58%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.074 0.074 0.072 0.073 0.072 0.071 0.071 0.075 0.072 0.072 0.045
+     -1.36%   2.75%   0.70%   4.81%   reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.074 0.074 0.072 0.073 0.072 0.071 0.075 0.075 0.072 0.072 0.045
+     -1.48%   2.75%   0.70%   4.94%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.074 0.074 0.072 0.079 0.072 0.071 0.071 0.075 0.072 0.072 0.045
+     -0.72%   2.75%   0.70%   4.17%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.074 0.074 0.072 0.079 0.072 0.071 0.075 0.075 0.072 0.072 0.045
+     -2.13%   2.75%   0.70%   5.58%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.074 0.074 0.072 0.073 0.072 0.071 0.071 0.075 0.072 0.072 0.045
+     -1.36%   2.75%   0.70%   4.81%   reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24); 0.074 0.074 0.072 0.073 0.072 0.071 0.075 0.075 0.072 0.072 0.045
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -2.13% to -0.72%, u_meas 2.75%, u_unc 0.70% to 0.70%, largest |r| + u 5.58%
+    reader B, table I(a), Ames 2- by 2-foot (blind reading, 2026-10-24): 4 combination(s), r -2.13% to -0.72%, u_meas 2.75%, u_unc 0.70% to 0.70%, largest |r| + u 5.58%
+  a = max |r| + u over every reading and combination: 5.58%
+  floor: none published for this set (0022 section 5 (a)); no earlier reading of this row could enter
+
+TN 4233, 7 deg cone, table I(b), Ames 14-foot, Mach 1.078, 4.082 cal
+  Re: 2.4e6 on the 5.50 in. cone length (text p. 7); the report does not say whether the 14-foot run used the same value (B)
+  stations on the nose (x/d): 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.099016; at the stations 0.099016
+  uncovered share of the inviscid drag 1.87% (limit 10.00%): not refused by the one-tenth rule
+  covered area 98.13%; bias area (first orifice to shoulder) 99.33%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -8.73%   2.01%   1.72%  12.46%   reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.096 0.096 0.096 0.096 0.096 0.096 0.096 0.094 0.008
+     -8.87%   2.01%   1.72%  12.60%   reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.096 0.096 0.096 0.096 0.095 0.096 0.096 0.094 0.008
+     -8.89%   2.01%   1.72%  12.61%   reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.096 0.094 0.096 0.096 0.096 0.096 0.096 0.094 0.008
+     -9.03%   2.01%   1.72%  12.75%   reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.096 0.094 0.096 0.096 0.095 0.096 0.096 0.094 0.008
+     -8.73%   2.01%   1.72%  12.46%   reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.096 0.096 0.096 0.096 0.096 0.096 0.096 0.094 0.008
+     -8.87%   2.01%   1.72%  12.60%   reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.096 0.096 0.096 0.096 0.095 0.096 0.096 0.094 0.008
+     -8.89%   2.01%   1.72%  12.61%   reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.096 0.094 0.096 0.096 0.096 0.096 0.096 0.094 0.008
+     -9.03%   2.01%   1.72%  12.75%   reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.096 0.094 0.096 0.096 0.095 0.096 0.096 0.094 0.008
+     -8.73%   2.01%   1.72%  12.46%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.098 0.096 0.096 0.096 0.096 0.096 0.096 0.096 0.096 0.094 0.008
+     -8.87%   2.01%   1.72%  12.60%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.098 0.096 0.096 0.096 0.096 0.096 0.095 0.096 0.096 0.094 0.008
+     -8.89%   2.01%   1.72%  12.61%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.098 0.096 0.096 0.094 0.096 0.096 0.096 0.096 0.096 0.094 0.008
+     -9.03%   2.01%   1.72%  12.75%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.098 0.096 0.096 0.094 0.096 0.096 0.095 0.096 0.096 0.094 0.008
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24): 4 combination(s), r -9.03% to -8.73%, u_meas 2.01%, u_unc 1.72% to 1.72%, largest |r| + u 12.75%
+    reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24): 4 combination(s), r -9.03% to -8.73%, u_meas 2.01%, u_unc 1.72% to 1.72%, largest |r| + u 12.75%
+    EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts: 4 combination(s), r -9.03% to -8.73%, u_meas 2.01%, u_unc 1.72% to 1.72%, largest |r| + u 12.75%
+  a = max |r| + u over every reading and combination: 12.75%
+  floor: none published for this set (0022 section 5 (a)); the earlier typing, carried in the envelope above, does its job
+
+TN 4233, 7 deg cone, table I(b), Ames 14-foot, Mach 1.1, 4.082 cal
+  Re: 2.4e6 on the 5.50 in. cone length (text p. 7); the report does not say whether the 14-foot run used the same value (B)
+  stations on the nose (x/d): 0.335, 0.747, 1.163, 1.572, 1.984, 2.404, 2.808, 3.225, 3.637, 3.845, 4.057
+  inviscid nose drag (fine quadrature) 0.094498; at the stations 0.094498
+  uncovered share of the inviscid drag 1.87% (limit 10.00%): not refused by the one-tenth rule
+  covered area 98.13%; bias area (first orifice to shoulder) 99.33%
+  per reading and combination (values at the nose stations, in order):
+    r        u_meas   u_unc    |r|+u    reading; Cp values
+     -6.70%   2.10%   1.55%  10.36%   reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.095 0.095 0.094 0.094 0.093 0.092 0.091 0.09 0.016
+     -6.85%   2.10%   1.55%  10.50%   reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.095 0.095 0.094 0.094 0.092 0.092 0.091 0.09 0.016
+     -6.78%   2.10%   1.55%  10.44%   reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.095 0.094 0.094 0.094 0.093 0.092 0.091 0.09 0.016
+     -6.93%   2.10%   1.55%  10.59%   reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.095 0.094 0.094 0.094 0.092 0.092 0.091 0.09 0.016
+     -6.70%   2.10%   1.55%  10.36%   reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.095 0.095 0.094 0.094 0.093 0.092 0.091 0.09 0.016
+     -6.85%   2.10%   1.55%  10.50%   reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.095 0.095 0.094 0.094 0.092 0.092 0.091 0.09 0.016
+     -6.78%   2.10%   1.55%  10.44%   reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.095 0.094 0.094 0.094 0.093 0.092 0.091 0.09 0.016
+     -6.93%   2.10%   1.55%  10.59%   reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24); 0.098 0.096 0.095 0.094 0.094 0.094 0.092 0.092 0.091 0.09 0.016
+     -6.70%   2.10%   1.55%  10.36%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.098 0.096 0.095 0.095 0.094 0.094 0.093 0.092 0.091 0.09 0.016
+     -6.85%   2.10%   1.55%  10.50%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.098 0.096 0.095 0.095 0.094 0.094 0.092 0.092 0.091 0.09 0.016
+     -6.78%   2.10%   1.55%  10.44%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.098 0.096 0.095 0.094 0.094 0.094 0.093 0.092 0.091 0.09 0.016
+     -6.93%   2.10%   1.55%  10.59%   EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts; 0.098 0.096 0.095 0.094 0.094 0.094 0.092 0.092 0.091 0.09 0.016
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, table I(b), Ames 14-foot (blind reading, 2026-10-24): 4 combination(s), r -6.93% to -6.70%, u_meas 2.10%, u_unc 1.55% to 1.55%, largest |r| + u 10.59%
+    reader B, table I(b), Ames 14-foot (blind reading, 2026-10-24): 4 combination(s), r -6.93% to -6.70%, u_meas 2.10%, u_unc 1.55% to 1.55%, largest |r| + u 10.59%
+    EARLIER READING (0022 4.2, a lower limit): the typing in src/validation/cone-cylinder-tn4233.ts: 4 combination(s), r -6.93% to -6.70%, u_meas 2.10%, u_unc 1.55% to 1.55%, largest |r| + u 10.59%
+  a = max |r| + u over every reading and combination: 10.59%
+  floor: none published for this set (0022 section 5 (a)); the earlier typing, carried in the envelope above, does its job
+
+TN 4233 rows NOT RUN (30): indicated Mach below 1.078, where the seen runs'
+  inviscid path (Taylor-Maccoll) is not the inviscid solution (0013 calls it exact at indicated Mach
+  1.078 and above only); 0022 4.3 item 2 would need the finest fitted grid of the transonic solver,
+  which the seen runs did not use. See the question at the end of this file.
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.601
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.701
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.800
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.850
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.901
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.920
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.939
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.960
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.981
+    table I(a), Ames 2- by 2-foot, indicated Mach 0.989
+    table I(a), Ames 2- by 2-foot, indicated Mach 1.001
+    table I(a), Ames 2- by 2-foot, indicated Mach 1.011
+    table I(a), Ames 2- by 2-foot, indicated Mach 1.020
+    table I(a), Ames 2- by 2-foot, indicated Mach 1.031
+    table I(a), Ames 2- by 2-foot, indicated Mach 1.040
+    table I(a), Ames 2- by 2-foot, indicated Mach 1.050
+    table I(a), Ames 2- by 2-foot, indicated Mach 1.062
+    table I(b), Ames 14-foot, indicated Mach 0.600
+    table I(b), Ames 14-foot, indicated Mach 0.797
+    table I(b), Ames 14-foot, indicated Mach 0.899
+    table I(b), Ames 14-foot, indicated Mach 0.964
+    table I(b), Ames 14-foot, indicated Mach 0.980
+    table I(b), Ames 14-foot, indicated Mach 0.991
+    table I(b), Ames 14-foot, indicated Mach 1.001
+    table I(b), Ames 14-foot, indicated Mach 1.008
+    table I(b), Ames 14-foot, indicated Mach 1.020
+    table I(b), Ames 14-foot, indicated Mach 1.032
+    table I(b), Ames 14-foot, indicated Mach 1.041
+    table I(b), Ames 14-foot, indicated Mach 1.050
+    table I(b), Ames 14-foot, indicated Mach 1.064
+
+RM E51H17, 4.77 deg cone, Mach 3.85, 5.992 cal
+  Re: 3.85e6 in the summary (basis not stated) and 1.1e6 per foot in the text, both far below flight; the basis conflict is recorded, not resolved
+  geometry (A and B agree): half-angle 4.77 deg, cone 21 in., diameter 3.5 in. (6.000 cal; the half-angle gives 5.992 cal, used as for TN 4233), Mach 3.85 (+-0.04 stated; not an alternative). B's boundary-layer remark (displacement raises cone Cp to about 0.025, p. 7) is recorded only.
+  e = +-0.006: 0022 section 8 item 8, the largest stated Cp uncertainty among the other nose reports, RM A53E01's "Cp uncertainty (other than in plane of symmetry)" (p. 6). Stated values found: TN 3716 +-0.005, RM A53E01 +-0.004, RM A53E01 +-0.006, TN 4233 +-0.002. The +-0.006 is the largest stated, as item 8 says; it is RM A53E01's figure off the plane of symmetry (its in-plane figure is +-0.004), and the largest in-plane figure is TN 3716's +-0.005. Disclosed for the coordinator, not chosen between.
+  stations: fig. 2's list on the cone (3, 5, 6, 9, 11, 12, 15, 18, 19, 19.5, 20, 20.5 in.), x/d = in. / 3.5. Each plotted point at its nearest listed station; circle (meridian 0 deg) and square (90 deg) and every reader alternative enter as alternatives (0022 section 8 item 7).
+  absent (listed in fig. 2, no plotted point; 0022 section 8 item 8): 19 in.
+  earlier reading on record (sources.md, one value, Cp about 0.031, no station): it cannot enter the script, which needs a station for every value, so it is recorded here and does not enter the envelope (0022 4.2 allows no more for it).
+  only inside its own box (0022 section 8 item 6): cones, its fineness and Mach number; no other box is touched.
+  stations on the nose (x/d): 0.857, 1.429, 1.714, 2.571, 3.143, 3.429, 4.286, 5.143, 5.571, 5.714, 5.857
+  inviscid nose drag (fine quadrature) 0.023601; at the stations 0.023601
+  uncovered share of the inviscid drag 6.50% (limit 10.00%): not refused by the one-tenth rule
+  covered area 93.50%; bias area (first orifice to shoulder) 97.95%
+  per reading (every combination is in blind-run-2-combinations.txt):
+    reader A, fig. 4(a), both meridians (blind reading, 2026-10-24): 2048 combination(s), r 30.59% to 37.02%, u_meas 24.90%, u_unc 3.00% to 4.38%, largest |r| + u 66.29%
+    reader B, fig. 4(a), both meridians (blind reading, 2026-10-24): 2304 combination(s), r 31.03% to 37.13%, u_meas 24.90%, u_unc 3.08% to 4.46%, largest |r| + u 66.49%
+  a = max |r| + u over every reading and combination: 66.49%
+  floor: none published for this set (0022 section 5 (a)); no earlier reading of this row could enter
+
+Cone boxes (0022 4.4: union of boxes, largest a_b; symmetric about the served value):
+  cone, 3.83 to 4.33 cal, Mach 1.030 to 1.130 (TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.08): a_b 10.71%; allowance at its centre 12.75% from 4 box(es), formed from data seen before registration
+  cone, 3.83 to 4.33 cal, Mach 1.050 to 1.150 (TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.1): a_b 7.72%; allowance at its centre 12.75% from 4 box(es), formed from data seen before registration
+  cone, 3.83 to 4.33 cal, Mach 1.101 to 1.201 (TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.151): a_b 8.54%; allowance at its centre 9.41% from 2 box(es), formed from data seen before registration
+  cone, 3.83 to 4.33 cal, Mach 1.150 to 1.250 (TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.2): a_b 9.41%; allowance at its centre 9.41% from 2 box(es), formed from data seen before registration
+  cone, 3.83 to 4.33 cal, Mach 1.249 to 1.349 (TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.299): a_b 7.82%; allowance at its centre 7.82% from 1 box(es), formed from data seen before registration
+  cone, 3.83 to 4.33 cal, Mach 1.350 to 1.450 (TN 4233, 7 deg cone, table I(a), Ames 2- by 2-foot, Mach 1.4): a_b 5.58%; allowance at its centre 5.58% from 1 box(es), formed from data seen before registration
+  cone, 3.83 to 4.33 cal, Mach 1.028 to 1.128 (TN 4233, 7 deg cone, table I(b), Ames 14-foot, Mach 1.078): a_b 12.75%; allowance at its centre 12.75% from 4 box(es), formed from data seen before registration
+  cone, 3.83 to 4.33 cal, Mach 1.050 to 1.150 (TN 4233, 7 deg cone, table I(b), Ames 14-foot, Mach 1.1): a_b 10.59%; allowance at its centre 12.75% from 4 box(es), formed from data seen before registration
+  cone, 5.74 to 6.24 cal, Mach 3.800 to 3.900 (RM E51H17, 4.77 deg cone, Mach 3.85): a_b 66.49%; allowance at its centre 66.49% from 1 box(es), formed from data seen before registration
+  the allowance along Mach for a 4.082 cal cone (TN 4233's boxes, 3.83 to 4.33 cal):
+    Mach 1.028 to 1.030: 12.75%
+    Mach 1.030 to 1.050: 12.75%
+    Mach 1.050 to 1.101: 12.75%
+    Mach 1.101 to 1.128: 12.75%
+    Mach 1.128 to 1.130: 10.71%
+    Mach 1.130 to 1.150: 10.59%
+    Mach 1.150 to 1.201: 9.41%
+    Mach 1.201 to 1.249: 9.41%
+    Mach 1.249 to 1.250: 9.41%
+    Mach 1.250 to 1.349: 7.82%
+    Mach 1.349 to 1.350: none (numerical error only)
+    Mach 1.350 to 1.450: 5.58%
+  RM E51H17's box stands alone (cones 5.74 to 6.24 cal, Mach 3.80 to 3.90); it widens nothing else.
+  Every cone box is formed from data seen before registration; never a test. Outside every box the nose
+  stays "numerical error of the inviscid solve; the model's own error is not in this band".
+
+Question for the coordinator (these rows were not run; nothing was chosen for them):
+  The owner asked for every row of tables I(a) and I(b). 30 rows lie below indicated Mach 1.078,
+  where the seen runs' inviscid path does not apply. Should they be run against the transonic solver's
+  finest fitted grid (0022 4.3 item 2), which needs that solve for this body at each row? They would
+  add cone boxes from Mach 0.55 to 1.114 and could raise the allowance where those overlap the boxes
+  above (Mach 1.028 to 1.114). Until then no cone box below Mach 1.028 exists.
+
+# Seen sets (0014 10.7 (w) item 3): widening only, never a test or a validation; formed from data seen before registration.
