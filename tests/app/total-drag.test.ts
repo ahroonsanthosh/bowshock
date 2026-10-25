@@ -645,7 +645,17 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
       'a band from four grids has been checked against a reference on two noses',
     );
     expect(usual.band).not.toContain('four grids');
-    expect(bandCaveat(FITTED_DRAG_FLOOR)).toBe('');
+    expect(bandCaveat(FITTED_DRAG_FLOOR, 4)).toBe('');
+    expect(bandCaveat(FITTED_DRAG_FLOOR, 5)).toBe('');
+    // The sentences in full: which noses were checked, and that a band of
+    // five grids (320 cells across) was not.
+    expect(bandCaveat(TWO_SCALE_DRAG_FLOOR, 4)).toBe(
+      'On Von Karman noses a band from four grids has been checked against a reference on two noses so far (1 and 3 calibers at Mach 2).',
+    );
+    expect(bandCaveat(TWO_SCALE_DRAG_FLOOR, 5)).toBe(
+      'On Von Karman noses a band from four grids has been checked against a reference on two noses (1 and 3 calibers at Mach 2); a band from 5 grids, as here, has not been checked on any.',
+    );
+    expect(noseComponentOf({ ...vk, grids: 5 }).band).toContain('a band from 5 grids, as here');
   });
 
   it('before the solve: the other components are checked, no number is given', () => {

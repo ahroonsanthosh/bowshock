@@ -144,11 +144,33 @@ export const FITTED_DRAG_FLOOR = 7e-5;
  * criterion only on nj = 80's mass balance (4.6e-5 against 3.5e-5), give
  * misses of up to 3.64e-4, with the march's orders scattered from 0.53 to
  * 1.92 and the references spread over 2.2e-4 of the value. The allowance
- * is twice the largest of these, 3.64e-4, rounded up. The bands it gives
- * are of three grids; the page's four-grid bands on these noses have not
- * been checked against a reference yet.
+ * is twice the largest of these, 3.64e-4, rounded up. The bands it was
+ * set from are of three grids; the page's bands of four grids have been
+ * checked against a reference on two of these noses (1 and 3 calibers at
+ * Mach 2, 0006), its bands of five grids (320 cells across) on none.
  */
 export const TWO_SCALE_DRAG_FLOOR = 8e-4;
+
+/** An allowance as the pages state it: 7e-5, 8e-4. */
+export function allowanceText(floor: number): string {
+  return Number(floor.toPrecision(2)).toExponential();
+}
+
+/**
+ * What a band with the given allowance, from the given number of grids,
+ * has been checked on, as the pages state it after the band, or '' if
+ * nothing needs saying. A Von Karman nose's allowance was set from bands
+ * of three grids (nj = 20 to 80) against the method of characteristics;
+ * the page's bands of four grids (to nj = 160) have been checked on two
+ * Von Karman noses (1 and 3 calibers at Mach 2), its bands of five (to nj
+ * = 320) on none (docs/design/0006-shock-fitting.md, "Two-scale noses").
+ */
+export function bandCaveat(floor: number, grids: number): string {
+  if (floor < TWO_SCALE_DRAG_FLOOR) return '';
+  return grids > 4
+    ? `On Von Karman noses a band from four grids has been checked against a reference on two noses (1 and 3 calibers at Mach 2); a band from ${grids} grids, as here, has not been checked on any.`
+    : 'On Von Karman noses a band from four grids has been checked against a reference on two noses so far (1 and 3 calibers at Mach 2).';
+}
 /**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).

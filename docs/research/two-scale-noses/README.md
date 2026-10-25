@@ -32,8 +32,10 @@ nose at Mach 2 on nj = 20 and 40, against the values recorded here) and
   Mach 2 and 3 on nj = 20 and 40, besides saved copies of the families
   above. The cell states (`.bin`, 40 KB to 4.3 MB each) are not kept; the
   runners rebuild them.
-- `queue.log`, `lanex.log`, `marches.log`: when each run started and
-  ended. `log-tmp-haack.txt`, `log-tmp-haackmoc.txt`: the runners' own
+- `queue-log.txt`, `queue-haackmoc-log.txt`, `lanex-log.txt`,
+  `marches-log.txt`, `lane160-log.txt`, `lane160b-log.txt`,
+  `lanecyl-log.txt`: when each run started and ended (the lanes' `.log`
+  files, renamed because `*.log` is not tracked). `log-tmp-haack.txt`, `log-tmp-haackmoc.txt`: the runners' own
   progress logs. `geometry.txt`: the tip geometry
   (`runners/tmp-haack/geometry.test.ts`).
 
@@ -97,9 +99,11 @@ nose at Mach 2 on nj = 20 and 40, against the values recorded here) and
 
 ## The four-grid checks and the body length
 
-The page verifies a value only from four grids (nj = 20 to 160), and no
-band of four grids has been measured on a Von Karman nose yet. Lanes
-(`runners/tmp-haackmoc/`, started 2026-10-22):
+The page verifies a value only from four grids or more (nj = 20 to
+160, or 320), and before these checks no band of four grids had been
+measured on a Von Karman nose. Both checks below passed; no band of
+five grids has been checked. Lanes (`runners/tmp-haackmoc/`, started
+2026-10-22):
 
 - `lane160.sh`: the 1-caliber nose at Mach 2 on nj = 160, seeded from
   its nj = 80 fit. Finished 2026-10-24 (settled at 21000 iterations,
@@ -123,6 +127,13 @@ When a nj = 160 fit is saved, `check160.test.ts` (`TAG=L1c1M2` or
 `TAG=L3M2`) gives the page's verdict on the four drags (orders of the
 two finest triples, band with the allowance of 8e-4) against the
 marches' references and lowest bound.
+
+## The code the fits ran on
+
+Branch haack-grid at a076072 (`docs/research/wip/haack-grid.diff`: the
+diff from its base 6185a47 to a076072, to apply at 6185a47). Neither
+commit is on main; both are on the branches `claude/wip/haack-grid` and
+`claude/wip/archive`, which keep them reachable.
 
 ## `runners/`
 

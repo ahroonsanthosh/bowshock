@@ -21,7 +21,9 @@
  *   condition it fails.
  */
 
-import { FITTED_DRAG_FLOOR, TWO_SCALE_DRAG_FLOOR } from '../analysis/verified-drag';
+import { FITTED_DRAG_FLOOR, allowanceText, bandCaveat } from '../analysis/verified-drag';
+
+export { allowanceText, bandCaveat };
 import type { BodyBaseDrag } from '../base/base-drag';
 import { FIG35_FREE_FLIGHT_END } from '../base/tn3819-fig35';
 import { clippedDeltaPlanform, trapezoidalPlanform, type Planform } from '../fins/planform';
@@ -811,25 +813,6 @@ export interface NoseSolve {
   readonly floor?: number;
 }
 
-/** An allowance as the page states it: 7e-5, 2.5e-4. */
-export function allowanceText(floor: number): string {
-  return Number(floor.toPrecision(2)).toExponential();
-}
-
-/**
- * What a band with the given allowance has been checked on, where the
- * page says so after the band, or '' if nothing. A Von Karman nose's
- * allowance was set from bands of three grids (nj = 20 to 80) against the
- * method of characteristics; the page's bands come from four (to nj =
- * 160), and those have been checked on two Von Karman noses so far (1
- * and 3 calibers at Mach 2; 0006, "Two-scale noses").
- */
-export function bandCaveat(floor: number): string {
-  return floor >= TWO_SCALE_DRAG_FLOOR
-    ? 'On Von Karman noses a band from four grids has been checked against a reference on two noses so far (1 and 3 calibers at Mach 2).'
-    : '';
-}
-
 /** The nose term src/total is given: the page's solved value and band, unchanged. */
 export function noseComponentOf(solve: NoseSolve): DragComponent {
   return {
@@ -844,9 +827,9 @@ export function noseComponentOf(solve: NoseSolve): DragComponent {
       'numerical error of the inviscid solve, measured from the grids, with an allowance of ' +
       `${allowanceText(solve.floor ?? FITTED_DRAG_FLOOR)} of the value (0006); the model's own error ` +
       'is not in this band (docs/validation/sources.md)' +
-      (bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR) === ''
+      (bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR, solve.grids) === ''
         ? ''
-        : `. ${bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR)}`),
+        : `. ${bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR, solve.grids)}`),
   };
 }
 

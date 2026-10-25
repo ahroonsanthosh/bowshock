@@ -1206,8 +1206,11 @@ value 0.08038366, extrapolated to 0.08037366 (inside the references,
 7.68e-5 (9.55e-4 of the value) with the allowance. Its error against
 the lowest bound of the marches is 3.41e-4 of the value: the band
 contains it 2.8 times, but the grids' part alone (1.55e-4 of the value)
-would cover less than half of it. On both noses checked the allowance, not the
-grids' estimate, carries the band.
+would cover less than half of it. On both noses checked the allowance,
+not the grids' estimate, carries the band. The page's option of 320
+cells across gives a band of five grids, which has not been checked on
+any Von Karman nose: the result says so (`bandCaveat`), and is not
+refused.
 
 Only the
 Von Karman nose is served (`bluntNoseRefusal`), and only inside the
@@ -1227,8 +1230,9 @@ the same value, and far inside the allowance: the body length is not
 restricted. With 30 calibers of body the fitted grids fail the
 aspect-ratio gate (14.0 and 14.7, against 13), so the page refuses that
 case on that ground, with the reason. A reference at the open corner (5
-calibers at Mach 3) is in progress; if it passes it extends the outline and resets the
-allowance. On the GPU the page's path gives the 1-caliber nose at Mach 2
+calibers at Mach 3) is not done: its fit on nj = 80 stopped at 4000
+iterations and was not resumed. If one passes, it extends the outline
+and resets the allowance. On the GPU the page's path gives the 1-caliber nose at Mach 2
 within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
 against 0.42909806331220435; measured again on the merged code on
 2026-10-22, SwiftShader, `tests/gpu/fitted-flow-gpu.test.ts`).
@@ -1264,7 +1268,7 @@ grids, with no third grid and no reference; the parabolic nose on nj =
   the march can start from (40% of the 3:1 ellipsoid's at Mach 2, 76% of
   the 1-caliber Von Karman nose's at Mach 1.5) still has only the fitted
   family's own convergence, and the stagnation-point checks. Two-scale noses: the
-  outline's corners at 5 calibers, Mach 2 and 3 (in progress); the other
+  outline's corner at 5 calibers and Mach 3 (not done); the other
   Haack noses and the power series (no reference); sharp tips whose
   shock detaches (no third grid, no reference).
 - The blunt grid's lines near a slender tip at low Mach numbers: on the

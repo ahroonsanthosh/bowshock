@@ -271,7 +271,7 @@ function showOutcome(
     settle(
       withBand(e.value, outcome.uncertainty),
       VERIFIED,
-      `The band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${notes}${bandCaveat(outcome.floor) === '' ? '' : ` ${bandCaveat(outcome.floor)}`}`,
+      `The band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${notes}${bandCaveat(outcome.floor, outcome.levels.length) === '' ? '' : ` ${bandCaveat(outcome.floor, outcome.levels.length)}`}`,
     );
     return;
   }
