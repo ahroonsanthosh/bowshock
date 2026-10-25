@@ -1,0 +1,1074 @@
+{
+ "solves": "/home/user/bowshock/.claude/worktrees/agent-nmf-y/docs/research/nose-model-form/out/blind-run-3/solves",
+ "solvesTag": "solves",
+ "solvesHash": "d7cb7dbdcb3f7b6d61dafbe516f3ae5f59ace76565d5a78388230dc8e6d10f04",
+ "match": null,
+ "floor": null,
+ "verdicts": [
+  {
+   "mach": 0.6,
+   "value": 0.0005990864845719221,
+   "estimate": {
+    "kind": "monotone",
+    "value": 0.0005990864845719221,
+    "extrapolated": 0.00032382662044547954,
+    "order": 1.045398827314366,
+    "uncertainty": 0.0003440748301580532
+   },
+   "band": 0.0008129215106994763,
+   "parts": {
+    "grids": 0.0003440748301580532,
+    "floor": 0,
+    "farField": 0.00015660576828739964,
+    "cylinder": 0.00031224091225402344
+   },
+   "stationBands": [
+    {
+     "kind": "monotone",
+     "band": 0.00010282664099216358,
+     "order": 2
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00003160876648861403,
+     "order": 1.711875428191032
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000016721692115570074,
+     "order": 1.654127858887448
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000009553049809286104,
+     "order": 1.7356053752642415
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000006441437024717413,
+     "order": 1.7897588033143985
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000003772956126028732,
+     "order": 2
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000003986745239604011,
+     "order": 1.8417149509164337
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000004330510666160105,
+     "order": 1.6429272390063623
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00007917340530429392,
+     "order": 0.5961116423116858
+    },
+    {
+     "kind": "monotone",
+     "band": 0.0001452534432886237,
+     "order": 0.7722263833478566
+    }
+   ],
+   "criteria": {
+    "a": {
+     "status": "pass",
+     "detail": "monotone, band 3.44e-4"
+    },
+    "b": {
+     "status": "fail",
+     "detail": "the procedure's band 3.44e-4 exceeds the cap 0.0002: a pass could not show the error is at most the tolerance"
+    },
+    "c": {
+     "status": "pass",
+     "detail": "CD_r8 + band = 1.41e-3 >= 0 (ordering across rungs: orderingCheck)"
+    },
+    "d": {
+     "status": "reported",
+     "detail": "largest station band 7.60e-4 above 0.0005: verified, band too wide for the use; it enters 0022 as u_num"
+    },
+    "e": {
+     "status": "fail",
+     "detail": "loss ahead 1.11e-3 of p0 (limit 1.23e-4), orders 0.33 and 0.55 (at least 0.8 needed)"
+    },
+    "f": {
+     "status": "pass",
+     "detail": "far field turning 1.57e-4, cylinder decaying 3.12e-4"
+    },
+    "g": {
+     "status": "reported",
+     "detail": "R3: largest station difference 2.49e-2; 2 station(s) outside the gross-error check (sets nothing)"
+    },
+    "r5": {
+     "status": "not-applicable",
+     "detail": "not run"
+    }
+   },
+   "floorSet": null,
+   "verdict": "fail"
+  }
+ ],
+ "ordering": {
+  "ok": true,
+  "violations": []
+ },
+ "keptOut": [
+  {
+   "mach": 0.6,
+   "rung": 0.6,
+   "reason": "rung Mach 0.6 failed: (b) the procedure's band 3.44e-4 exceeds the cap 0.0002: a pass could not show the error is at most the tolerance; (e) loss ahead 1.11e-3 of p0 (limit 1.23e-4), orders 0.33 and 0.55 (at least 0.8 needed)"
+  },
+  {
+   "mach": 0.601,
+   "rung": 0.6,
+   "reason": "rung Mach 0.6 failed: (b) the procedure's band 3.44e-4 exceeds the cap 0.0002: a pass could not show the error is at most the tolerance; (e) loss ahead 1.11e-3 of p0 (limit 1.23e-4), orders 0.33 and 0.55 (at least 0.8 needed)"
+  },
+  {
+   "mach": 0.797,
+   "rung": 0.8,
+   "reason": "rung Mach 0.8 not judged: no floor (the Mach 0.6 rung did not pass)"
+  },
+  {
+   "mach": 0.8,
+   "rung": 0.8,
+   "reason": "rung Mach 0.8 not judged: no floor (the Mach 0.6 rung did not pass)"
+  },
+  {
+   "mach": 0.85,
+   "rung": 0.8,
+   "reason": "rung Mach 0.8 not judged: no floor (the Mach 0.6 rung did not pass)"
+  },
+  {
+   "mach": 0.899,
+   "rung": 0.901,
+   "reason": "rung Mach 0.901 not judged: not run"
+  },
+  {
+   "mach": 0.901,
+   "rung": 0.901,
+   "reason": "rung Mach 0.901 not judged: not run"
+  },
+  {
+   "mach": 0.92,
+   "rung": 0.901,
+   "reason": "rung Mach 0.901 not judged: not run"
+  },
+  {
+   "mach": 0.939,
+   "rung": 0.901,
+   "reason": "rung Mach 0.901 not judged: not run"
+  },
+  {
+   "mach": 0.96,
+   "rung": 0.96,
+   "reason": "rung Mach 0.96 not judged: not run"
+  },
+  {
+   "mach": 0.964,
+   "rung": 0.96,
+   "reason": "rung Mach 0.96 not judged: not run"
+  },
+  {
+   "mach": 0.98,
+   "rung": 0.96,
+   "reason": "rung Mach 0.96 not judged: not run"
+  },
+  {
+   "mach": 0.981,
+   "rung": 0.96,
+   "reason": "rung Mach 0.96 not judged: not run"
+  },
+  {
+   "mach": 0.989,
+   "rung": 0.96,
+   "reason": "rung Mach 0.96 not judged: not run"
+  },
+  {
+   "mach": 0.991,
+   "rung": 0.96,
+   "reason": "rung Mach 0.96 not judged: not run"
+  },
+  {
+   "mach": 1.001,
+   "rung": 0.96,
+   "reason": "rung Mach 0.96 not judged: not run"
+  },
+  {
+   "mach": 1.008,
+   "rung": 0.96,
+   "reason": "rung Mach 0.96 not judged: not run"
+  },
+  {
+   "mach": 1.011,
+   "rung": 0.991,
+   "reason": "rung Mach 0.991 not judged: not run"
+  },
+  {
+   "mach": 1.02,
+   "rung": 0.991,
+   "reason": "rung Mach 0.991 not judged: not run"
+  },
+  {
+   "mach": 1.031,
+   "rung": 0.991,
+   "reason": "rung Mach 0.991 not judged: not run"
+  },
+  {
+   "mach": 1.032,
+   "rung": 0.991,
+   "reason": "rung Mach 0.991 not judged: not run"
+  },
+  {
+   "mach": 1.04,
+   "rung": 0.991,
+   "reason": "rung Mach 0.991 not judged: not run"
+  },
+  {
+   "mach": 1.041,
+   "rung": 0.991,
+   "reason": "rung Mach 0.991 not judged: not run"
+  }
+ ],
+ "far800": {
+  "1.001": {
+   "mach": 1.001,
+   "path": "explicit",
+   "converged": true,
+   "grids": {
+    "100": {
+     "refinement": 1,
+     "ni": 118,
+     "nj": 30,
+     "drag": 0.09280773227305739,
+     "steps": 24950,
+     "seconds": 190.510464688,
+     "noise": 0.0000010895194102740535,
+     "rate": 0.9413408257544267,
+     "scale": 0.09280773227305739,
+     "distance": 100.60719837318378,
+     "stationCp": [
+      0.14954010990504224,
+      0.13222793809523536,
+      0.12346271854690487,
+      0.11667427087781498,
+      0.11038205749536434,
+      0.10385245580189911,
+      0.09683469335137938,
+      0.08781284220250456,
+      0.07415594032673972,
+      0.06208467959162588
+     ],
+     "loss": {
+      "ahead": 0.00395384970130197,
+      "aheadSigned": 0.00395384970130197,
+      "pressureRatio": 1.104723765400037,
+      "behind": 0.011087269060579885,
+      "supersonicCells": 25,
+      "maxMach": 1.2947117114665079
+     }
+    },
+    "200": {
+     "refinement": 1,
+     "ni": 122,
+     "nj": 34,
+     "drag": 0.09419499610486987,
+     "steps": 26650,
+     "seconds": 225.34427438,
+     "noise": 0.000001299773306803413,
+     "rate": 0.985711783480075,
+     "scale": 0.09419499610486987,
+     "distance": 224.2118229126046,
+     "stationCp": [
+      0.15162462130928955,
+      0.1342686349357919,
+      0.1254325707603585,
+      0.11855539961505977,
+      0.11215318068528242,
+      0.10548811401877309,
+      0.09831275381767934,
+      0.08908800286951615,
+      0.07514998187139617,
+      0.06286365386627689
+     ],
+     "loss": {
+      "ahead": 0.003945607944006002,
+      "aheadSigned": 0.003945607944006002,
+      "pressureRatio": 1.1061857349478026,
+      "behind": 0.011083050289878216,
+      "supersonicCells": 24,
+      "maxMach": 1.2946421190702564
+     }
+    },
+    "400": {
+     "refinement": 1,
+     "ni": 125,
+     "nj": 37,
+     "drag": 0.09467354268132383,
+     "steps": 36650,
+     "seconds": 362.21025088400006,
+     "noise": 4.3613943651499725e-7,
+     "rate": 0.9588312924652732,
+     "scale": 0.09467354268132383,
+     "distance": 408.7461074989818,
+     "stationCp": [
+      0.15245800650100189,
+      0.13505783040567693,
+      0.12616919457374481,
+      0.1192367574585035,
+      0.11277554501638193,
+      0.10604703845707773,
+      0.09880624507348995,
+      0.08950544659686233,
+      0.07547060023943368,
+      0.06311349318386875
+     ],
+     "loss": {
+      "ahead": 0.003942266960042851,
+      "aheadSigned": 0.003942266960042851,
+      "pressureRatio": 1.106770103990283,
+      "behind": 0.011081589179088414,
+      "supersonicCells": 24,
+      "maxMach": 1.2946199097268598
+     }
+    },
+    "800": {
+     "refinement": 1,
+     "ni": 129,
+     "nj": 41,
+     "drag": 0.09498349010499238,
+     "steps": 290300,
+     "seconds": 1735.7090944979998,
+     "noise": 1.6858923922462318e-7,
+     "rate": null,
+     "scale": 0.09498349010499238,
+     "path": "explicit",
+     "distance": 909.9875768330896,
+     "stationCp": [
+      0.1530558820800993,
+      0.13560916842572554,
+      0.12667092906965663,
+      0.11969053332332238,
+      0.11318183795139433,
+      0.10640561677404199,
+      0.09911844509281813,
+      0.08976643245980354,
+      0.07566923969705103,
+      0.06326773522514847
+     ],
+     "loss": {
+      "ahead": 0.003939843362126716,
+      "aheadSigned": 0.003939843362126716,
+      "pressureRatio": 1.1071892600675923,
+      "behind": 0.011080616056145742,
+      "supersonicCells": 24,
+      "maxMach": 1.2946062730460939
+     }
+    }
+   },
+   "distances": [
+    100.60719837318378,
+    224.2118229126046,
+    408.7461074989818,
+    909.9875768330896
+   ],
+   "drags": [
+    0.09280773227305739,
+    0.09419499610486987,
+    0.09467354268132383,
+    0.09498349010499238
+   ],
+   "noise": 0.000001299773306803413,
+   "allowance": {
+    "kind": "turning",
+    "allowance": 0.006409925688293891,
+    "changes": [
+     0.0013872638318124797,
+     0.00047854657645396426
+    ],
+    "measurability": 2.461082872753967e-7
+   },
+   "verdict": {
+    "contained": true,
+    "change": 0.0007884940001225138,
+    "detail": "turning allowance 6.410e-3 (m = 2.46e-7, 2 nu max|C|) against C(800) - C(224.2) = 7.885e-4: contained"
+   }
+  },
+  "1.02": {
+   "mach": 1.02,
+   "path": "explicit",
+   "converged": true,
+   "grids": {
+    "100": {
+     "refinement": 1,
+     "ni": 118,
+     "nj": 30,
+     "drag": 0.10980123229840508,
+     "steps": 24700,
+     "seconds": 176.35921504499996,
+     "noise": 0.0000018038802003322884,
+     "rate": 0.9063665743066225,
+     "scale": 0.10980123229840508,
+     "path": "implicit",
+     "distance": 100.60719837318378,
+     "stationCp": [
+      0.146479709267464,
+      0.13687304663206193,
+      0.13232044973558796,
+      0.12814880938184214,
+      0.12382771418053079,
+      0.11908577201326781,
+      0.11383687248362157,
+      0.10690854736472777,
+      0.09598245754777796,
+      0.08591589744548209
+     ],
+     "loss": {
+      "ahead": 0.004210040104096202,
+      "aheadSigned": 0.004210040104096202,
+      "pressureRatio": 1.10656710815062,
+      "behind": 0.01116713304725192,
+      "supersonicCells": 28,
+      "maxMach": 1.2952079323070707
+     }
+    },
+    "200": {
+     "refinement": 1,
+     "ni": 122,
+     "nj": 34,
+     "drag": 0.10969835036565115,
+     "steps": 24900,
+     "seconds": 191.91846785400017,
+     "noise": 0.0000012774978079117897,
+     "rate": 0.9128541237826732,
+     "scale": 0.10969835036565115,
+     "path": "implicit",
+     "distance": 224.2118229126046,
+     "stationCp": [
+      0.14625129507938342,
+      0.13667687827084976,
+      0.13215189792015575,
+      0.12800254369254552,
+      0.12369854219493137,
+      0.11897070476360799,
+      0.11373466226255381,
+      0.10682129951203362,
+      0.09591532843801163,
+      0.0858637966754439
+     ],
+     "loss": {
+      "ahead": 0.004210179963453853,
+      "aheadSigned": 0.004210179963453853,
+      "pressureRatio": 1.1064009950160285,
+      "behind": 0.011167119009946935,
+      "supersonicCells": 28,
+      "maxMach": 1.2952124531245317
+     }
+    },
+    "400": {
+     "refinement": 1,
+     "ni": 125,
+     "nj": 37,
+     "drag": 0.10970038160365757,
+     "steps": 24900,
+     "seconds": 233.63079047999997,
+     "noise": 0.0000011179853658431276,
+     "rate": 0.9125944657336175,
+     "scale": 0.10970038160365757,
+     "path": "implicit",
+     "distance": 408.7461074989818,
+     "stationCp": [
+      0.14625629370444737,
+      0.13668090999344606,
+      0.13215523045265268,
+      0.12800536021270945,
+      0.12370099923569523,
+      0.11897290011628361,
+      0.11373664199380762,
+      0.1068230311158115,
+      0.09591669954687411,
+      0.08586487612738024
+     ],
+     "loss": {
+      "ahead": 0.004210178134829379,
+      "aheadSigned": 0.004210178134829379,
+      "pressureRatio": 1.1064046276896466,
+      "behind": 0.01116712056194824,
+      "supersonicCells": 28,
+      "maxMach": 1.295212357703041
+     }
+    },
+    "800": {
+     "refinement": 1,
+     "ni": 129,
+     "nj": 41,
+     "drag": 0.1097003628568714,
+     "steps": 74250,
+     "seconds": 1382.6629433249998,
+     "noise": 1e-7,
+     "rate": 0.9869320279131119,
+     "scale": 0.1097003628568714,
+     "path": "explicit",
+     "distance": 909.9875768330896,
+     "stationCp": [
+      0.14625624189815098,
+      0.13668087302782767,
+      0.13215520366880237,
+      0.12800534018463766,
+      0.12370098304848806,
+      0.11897288531241348,
+      0.11373662651879891,
+      0.10682301346630478,
+      0.09591668010112034,
+      0.08586485804383011
+     ],
+     "loss": {
+      "ahead": 0.004210178143943533,
+      "aheadSigned": 0.004210178143943533,
+      "pressureRatio": 1.1064045900704118,
+      "behind": 0.01116712059785363,
+      "supersonicCells": 28,
+      "maxMach": 1.2952123593798073
+     }
+    }
+   },
+   "distances": [
+    100.60719837318378,
+    224.2118229126046,
+    408.7461074989818,
+    909.9875768330896
+   ],
+   "drags": [
+    0.10980123229840508,
+    0.10969835036565115,
+    0.10970038160365757,
+    0.1097003628568714
+   ],
+   "noise": 0.0000018038802003322884,
+   "allowance": {
+    "kind": "turning",
+    "allowance": 0.00044229065997919724,
+    "changes": [
+     -0.00010288193275392876,
+     0.000002031238006419689
+    ],
+    "measurability": 3.961365378303582e-7
+   },
+   "verdict": {
+    "contained": true,
+    "change": 0.0000020124912202545975,
+    "detail": "turning allowance 4.423e-4 (m = 3.96e-7, 2 nu max|C|) against C(800) - C(224.2) = 2.012e-6: contained"
+   }
+  },
+  "1.041": {
+   "mach": 1.041,
+   "path": "explicit",
+   "converged": true,
+   "grids": {
+    "100": {
+     "refinement": 1,
+     "ni": 118,
+     "nj": 30,
+     "drag": 0.10866217219242966,
+     "steps": 11650,
+     "seconds": 83.58442591500003,
+     "noise": 1e-7,
+     "rate": 0.9445863023716872,
+     "scale": 0.10866217219242966,
+     "path": "implicit",
+     "distance": 100.60719837318378,
+     "stationCp": [
+      0.11698670385572035,
+      0.11262721594539975,
+      0.11228326296321912,
+      0.11218361017198357,
+      0.11215350979067462,
+      0.11201655577596488,
+      0.11158205406368799,
+      0.11035426288287915,
+      0.1067120749537794,
+      0.10177464424467972
+     ],
+     "loss": {
+      "ahead": 0,
+      "aheadSigned": 0,
+      "pressureRatio": 1,
+      "behind": 0.011243965357333852,
+      "supersonicCells": 29,
+      "maxMach": 1.2964606914681838
+     }
+    },
+    "200": {
+     "refinement": 1,
+     "ni": 122,
+     "nj": 34,
+     "drag": 0.10866545318303353,
+     "steps": 11650,
+     "seconds": 98.7605822350001,
+     "noise": 1e-7,
+     "rate": 0.9445987798182751,
+     "scale": 0.10866545318303353,
+     "path": "implicit",
+     "distance": 224.2118229126046,
+     "stationCp": [
+      0.11698755457234783,
+      0.11262838087211745,
+      0.11228486795296419,
+      0.11218576872385043,
+      0.11215634345074095,
+      0.11202013894984386,
+      0.11158626282184746,
+      0.11035873445980168,
+      0.10671603947016098,
+      0.10177782984239846
+     ],
+     "loss": {
+      "ahead": 0,
+      "aheadSigned": 0,
+      "pressureRatio": 1,
+      "behind": 0.01124395194833705,
+      "supersonicCells": 29,
+      "maxMach": 1.2964604541571845
+     }
+    },
+    "400": {
+     "refinement": 1,
+     "ni": 125,
+     "nj": 37,
+     "drag": 0.10866544910907605,
+     "steps": 11650,
+     "seconds": 104.13177797600022,
+     "noise": 1e-7,
+     "rate": 0.9445987715473076,
+     "scale": 0.10866544910907605,
+     "path": "implicit",
+     "distance": 408.7461074989818,
+     "stationCp": [
+      0.11698755190907781,
+      0.11262837769349847,
+      0.11228486423121722,
+      0.11218576448862119,
+      0.11215633876894439,
+      0.11202013396752164,
+      0.11158625780168134,
+      0.1103587298134609,
+      0.10671603579058296,
+      0.10177782701857659
+     ],
+     "loss": {
+      "ahead": 0,
+      "aheadSigned": 0,
+      "pressureRatio": 1,
+      "behind": 0.011243951956663167,
+      "supersonicCells": 29,
+      "maxMach": 1.2964604543586036
+     }
+    },
+    "800": {
+     "refinement": 1,
+     "ni": 129,
+     "nj": 41,
+     "drag": 0.10866544756074027,
+     "steps": 38100,
+     "seconds": 739.8854285350004,
+     "noise": 1e-7,
+     "rate": 0.9827806203368488,
+     "scale": 0.10866544756074027,
+     "path": "explicit",
+     "distance": 909.9875768330896,
+     "stationCp": [
+      0.1169875518905915,
+      0.11262837767073901,
+      0.11228486419976061,
+      0.1121857644300509,
+      0.11215633862752258,
+      0.11202013361007362,
+      0.11158625698629475,
+      0.11035872803512264,
+      0.10671603209302251,
+      0.10177782243394784
+     ],
+     "loss": {
+      "ahead": 0,
+      "aheadSigned": 0,
+      "pressureRatio": 1,
+      "behind": 0.011243952488877107,
+      "supersonicCells": 29,
+      "maxMach": 1.296460454664674
+     }
+    }
+   },
+   "distances": [
+    100.60719837318378,
+    224.2118229126046,
+    408.7461074989818,
+    909.9875768330896
+   ],
+   "drags": [
+    0.10866217219242966,
+    0.10866545318303353,
+    0.10866544910907605,
+    0.10866544756074027
+   ],
+   "noise": 1e-7,
+   "allowance": {
+    "kind": "turning",
+    "allowance": 0.00001405341391618944,
+    "changes": [
+     0.0000032809906038711034,
+     -4.073957476924406e-9
+    ],
+    "measurability": 2.1733090636606705e-8
+   },
+   "verdict": {
+    "contained": true,
+    "change": -5.6222932559579775e-9,
+    "detail": "turning allowance 1.405e-5 (m = 2.17e-8, 2 nu max|C|) against C(800) - C(224.2) = -5.622e-9: contained"
+   }
+  }
+ },
+ "far800Pass": true,
+ "rows": {
+  "1.05": {
+   "mach": 1.05,
+   "value": 0.10711167251772608,
+   "estimate": {
+    "kind": "monotone",
+    "value": 0.10711167251772608,
+    "extrapolated": 0.1071681449952802,
+    "order": 1.2093578029822296,
+    "uncertainty": 0.00007059059694265832
+   },
+   "band": 0.00009805227157887834,
+   "parts": {
+    "grids": 0.00007059059694265832,
+    "floor": 0.000007497817076240824,
+    "farField": 0.000019942555404362265,
+    "cylinder": 2.1302155616921698e-8
+   },
+   "stationBands": [
+    {
+     "kind": "monotone",
+     "band": 0.000025426837106292538,
+     "order": 2
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000047103404760067164,
+     "order": 1.3895939428923136
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000056740720572039315,
+     "order": 1.3483452374932612
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000054766932132723497,
+     "order": 1.4021839841307076
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000053601690437681424,
+     "order": 1.4176957170368891
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000052429703624540396,
+     "order": 1.42778763687278
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000051325403104622463,
+     "order": 1.438046728217949
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00004810766637538124,
+     "order": 1.4654954842034553
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000047253467348000566,
+     "order": 1.405706431997594
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00005208187803931548,
+     "order": 1.3147330336075174
+    }
+   ],
+   "criteria": {
+    "a": {
+     "status": "pass",
+     "detail": "monotone, band 7.06e-5"
+    },
+    "b": {
+     "status": "not-applicable",
+     "detail": "the exact zero-drag check is Mach 0.6’s"
+    },
+    "c": {
+     "status": "pass",
+     "detail": "CD_r8 + band = 1.07e-1 >= 0 (ordering across rungs: orderingCheck)"
+    },
+    "d": {
+     "status": "pass",
+     "detail": "largest station band 8.45e-5 within 0.0005"
+    },
+    "e": {
+     "status": "pass",
+     "detail": "loss ahead 0.00e+0 of p0 within 3.86e-4, orders Infinity and Infinity"
+    },
+    "f": {
+     "status": "pass",
+     "detail": "far field turning 1.99e-5, cylinder unmeasurable 2.13e-8"
+    },
+    "g": {
+     "status": "not-applicable",
+     "detail": "R3 is defined below Mach 1 only (sets nothing)"
+    },
+    "r5": {
+     "status": "not-applicable",
+     "detail": "not run"
+    }
+   },
+   "floorSet": null,
+   "verdict": "pass"
+  },
+  "1.062": {
+   "mach": 1.062,
+   "value": 0.1034639295492973,
+   "estimate": {
+    "kind": "monotone",
+    "value": 0.1034639295492973,
+    "extrapolated": 0.10349894803950566,
+    "order": 1.2384891135901233,
+    "uncertainty": 0.00004377311276044595
+   },
+   "band": 0.00005370929830944731,
+   "parts": {
+    "grids": 0.00004377311276044595,
+    "floor": 0.00000724247506845081,
+    "farField": 0.0000026730972452284955,
+    "cylinder": 2.0613235322054555e-8
+   },
+   "stationBands": [
+    {
+     "kind": "monotone",
+     "band": 0.00003502149408626809,
+     "order": 2
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000031849464254272835,
+     "order": 1.36138654975543
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000033082699666233695,
+     "order": 1.3952113434352824
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00003402394494025655,
+     "order": 1.4400900042767768
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000032988048110662084,
+     "order": 1.4736202136718461
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00003266604574161215,
+     "order": 1.479800970591322
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000032323555398605465,
+     "order": 1.4842314196838218
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00002857504707772386,
+     "order": 1.5951489226010205
+    },
+    {
+     "kind": "monotone",
+     "band": 0.0000316750742745636,
+     "order": 1.4792315454585363
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000030113450404824295,
+     "order": 1.5042293289791113
+    }
+   ],
+   "criteria": {
+    "a": {
+     "status": "pass",
+     "detail": "monotone, band 4.38e-5"
+    },
+    "b": {
+     "status": "not-applicable",
+     "detail": "the exact zero-drag check is Mach 0.6’s"
+    },
+    "c": {
+     "status": "pass",
+     "detail": "CD_r8 + band = 1.04e-1 >= 0 (ordering across rungs: orderingCheck)"
+    },
+    "d": {
+     "status": "pass",
+     "detail": "largest station band 4.52e-5 within 0.0005"
+    },
+    "e": {
+     "status": "pass",
+     "detail": "loss ahead 0.00e+0 of p0 within 3.95e-4, orders Infinity and Infinity"
+    },
+    "f": {
+     "status": "pass",
+     "detail": "far field turning 2.67e-6, cylinder unmeasurable 2.06e-8"
+    },
+    "g": {
+     "status": "not-applicable",
+     "detail": "R3 is defined below Mach 1 only (sets nothing)"
+    },
+    "r5": {
+     "status": "not-applicable",
+     "detail": "not run"
+    }
+   },
+   "floorSet": null,
+   "verdict": "pass"
+  },
+  "1.064": {
+   "mach": 1.064,
+   "value": 0.10284932435080223,
+   "estimate": {
+    "kind": "monotone",
+    "value": 0.10284932435080223,
+    "extrapolated": 0.10288036463307401,
+    "order": 1.2532626683102366,
+    "uncertainty": 0.000038800352839728295
+   },
+   "band": 0.00004822576158370746,
+   "parts": {
+    "grids": 0.000038800352839728295,
+    "floor": 0.000007199452704556155,
+    "farField": 0.0000022054577234778176,
+    "cylinder": 2.049831594519413e-8
+   },
+   "stationBands": [
+    {
+     "kind": "monotone",
+     "band": 0.000036022127527061965,
+     "order": 2
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00003054045046082842,
+     "order": 1.3358020186124577
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00003071010177207669,
+     "order": 1.3984788248798758
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00003175869221986262,
+     "order": 1.4462297641189068
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00003100270483010999,
+     "order": 1.4760385973553007
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00003051998820704212,
+     "order": 1.4877248955250868
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000030385167969917727,
+     "order": 1.487498373871963
+    },
+    {
+     "kind": "monotone",
+     "band": 0.000027262362564593397,
+     "order": 1.6053097789073223
+    },
+    {
+     "kind": "monotone",
+     "band": 0.0000294107903861003,
+     "order": 1.4958666461767
+    },
+    {
+     "kind": "monotone",
+     "band": 0.00002858334834867371,
+     "order": 1.5017990923931122
+    }
+   ],
+   "criteria": {
+    "a": {
+     "status": "pass",
+     "detail": "monotone, band 3.88e-5"
+    },
+    "b": {
+     "status": "not-applicable",
+     "detail": "the exact zero-drag check is Mach 0.6’s"
+    },
+    "c": {
+     "status": "pass",
+     "detail": "CD_r8 + band = 1.03e-1 >= 0 (ordering across rungs: orderingCheck)"
+    },
+    "d": {
+     "status": "pass",
+     "detail": "largest station band 4.57e-5 within 0.0005"
+    },
+    "e": {
+     "status": "pass",
+     "detail": "loss ahead 0.00e+0 of p0 within 3.96e-4, orders Infinity and Infinity"
+    },
+    "f": {
+     "status": "pass",
+     "detail": "far field turning 2.21e-6, cylinder unmeasurable 2.05e-8"
+    },
+    "g": {
+     "status": "not-applicable",
+     "detail": "R3 is defined below Mach 1 only (sets nothing)"
+    },
+    "r5": {
+     "status": "not-applicable",
+     "detail": "not run"
+    }
+   },
+   "floorSet": null,
+   "verdict": "pass"
+  }
+ },
+ "rowResults": [
+  {
+   "mach": 1.05,
+   "largestStationBand": 0.00008451531699511554,
+   "stationFailed": false,
+   "verdict": "pass"
+  },
+  {
+   "mach": 1.062,
+   "largestStationBand": 0.00004524557082987717,
+   "stationFailed": false,
+   "verdict": "pass"
+  },
+  {
+   "mach": 1.064,
+   "largestStationBand": 0.00004566377561358393,
+   "stationFailed": false,
+   "verdict": "pass"
+  }
+ ]
+}

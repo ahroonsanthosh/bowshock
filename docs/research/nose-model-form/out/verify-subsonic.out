@@ -1,0 +1,63 @@
+# 0014 10.7 (y): the transonic solver below and near Mach 1, judged by the registered rules
+# solves: /home/user/bowshock/.claude/worktrees/agent-nmf-y/docs/research/nose-model-form/out/blind-run-3/solves (each file's engine from its own record); written 2026-10-25T19:19:16.119Z
+
+GPU match test (item 6 (h)): not run; GPU-engine solve files are not judged, CPU-engine files are judged either way, files without an engine are refused
+
+Mach 0.600: FAIL
+  CD_r8 5.990865e-4; procedure monotone (order 1.05, extrapolated 3.238266e-4)
+  band 8.129e-4 = grids 3.441e-4 + floor 0.000e+0 + far 1.566e-4 + cylinder 3.122e-4
+  (a) pass: monotone, band 3.44e-4
+  (b) fail: the procedure's band 3.44e-4 exceeds the cap 0.0002: a pass could not show the error is at most the tolerance
+  (c) pass: CD_r8 + band = 1.41e-3 >= 0 (ordering across rungs: orderingCheck)
+  (d) reported: largest station band 7.60e-4 above 0.0005: verified, band too wide for the use; it enters 0022 as u_num
+  (e) fail: loss ahead 1.11e-3 of p0 (limit 1.23e-4), orders 0.33 and 0.55 (at least 0.8 needed)
+  (f) pass: far field turning 1.57e-4, cylinder decaying 3.12e-4
+  (g) reported: R3: largest station difference 2.49e-2; 2 station(s) outside the gross-error check (sets nothing)
+  (r5) not-applicable: not run
+  station bands (r = 2, 4, 8): monotone 1.03e-4; monotone 3.16e-5; monotone 1.67e-5; monotone 9.55e-6; monotone 6.44e-6; monotone 3.77e-6; monotone 3.99e-6; monotone 4.33e-6; monotone 7.92e-5; monotone 1.45e-4
+
+ordering across rungs (item 6 (c)): pass
+
+not judged:
+  Mach 0.800: waits for the floor from the Mach 0.6 rung
+  Mach 0.901: no solve yet
+  Mach 0.960: no solve yet
+  Mach 0.991: no solve yet
+
+the 800-radius test (addendum item 4):
+  Mach 1.001 (explicit): turning allowance 6.410e-3 (m = 2.46e-7, 2 nu max|C|) against C(800) - C(224.2) = 7.885e-4: contained
+  Mach 1.020 (explicit): turning allowance 4.423e-4 (m = 3.96e-7, 2 nu max|C|) against C(800) - C(224.2) = 2.012e-6: contained
+  Mach 1.041 (explicit): turning allowance 1.405e-5 (m = 2.17e-8, 2 nu max|C|) against C(800) - C(224.2) = -5.622e-9: contained
+  verdict: pass; the moved family’s allowance stands for the rows at Mach 1.001 to 1.041
+
+rows kept out by a failed rung ((y) item 6, +-0.05 Mach): 
+  Mach 0.600: rung Mach 0.6 failed: (b) the procedure's band 3.44e-4 exceeds the cap 0.0002: a pass could not show the error is at most the tolerance; (e) loss ahead 1.11e-3 of p0 (limit 1.23e-4), orders 0.33 and 0.55 (at least 0.8 needed)
+  Mach 0.601: rung Mach 0.6 failed: (b) the procedure's band 3.44e-4 exceeds the cap 0.0002: a pass could not show the error is at most the tolerance; (e) loss ahead 1.11e-3 of p0 (limit 1.23e-4), orders 0.33 and 0.55 (at least 0.8 needed)
+  Mach 0.797: rung Mach 0.8 not judged: no floor (the Mach 0.6 rung did not pass)
+  Mach 0.800: rung Mach 0.8 not judged: no floor (the Mach 0.6 rung did not pass)
+  Mach 0.850: rung Mach 0.8 not judged: no floor (the Mach 0.6 rung did not pass)
+  Mach 0.899: rung Mach 0.901 not judged: not run
+  Mach 0.901: rung Mach 0.901 not judged: not run
+  Mach 0.920: rung Mach 0.901 not judged: not run
+  Mach 0.939: rung Mach 0.901 not judged: not run
+  Mach 0.960: rung Mach 0.96 not judged: not run
+  Mach 0.964: rung Mach 0.96 not judged: not run
+  Mach 0.980: rung Mach 0.96 not judged: not run
+  Mach 0.981: rung Mach 0.96 not judged: not run
+  Mach 0.989: rung Mach 0.96 not judged: not run
+  Mach 0.991: rung Mach 0.96 not judged: not run
+  Mach 1.001: rung Mach 0.96 not judged: not run
+  Mach 1.008: rung Mach 0.96 not judged: not run
+  Mach 1.011: rung Mach 0.991 not judged: not run
+  Mach 1.020: rung Mach 0.991 not judged: not run
+  Mach 1.031: rung Mach 0.991 not judged: not run
+  Mach 1.032: rung Mach 0.991 not judged: not run
+  Mach 1.040: rung Mach 0.991 not judged: not run
+  Mach 1.041: rung Mach 0.991 not judged: not run
+
+every TN 4233 row below Mach 1.078 with a solve, by the same rules (the floor as set above):
+  Mach 0.600: waits for the floor
+  Mach 0.800: waits for the floor
+  Mach 1.050: CD_r8 1.07112e-1, band 9.805e-5 (monotone; far turning), largest station band 8.45e-5; near-sonic: far-field allowance 1.994e-5
+  Mach 1.062: CD_r8 1.03464e-1, band 5.371e-5 (monotone; far turning), largest station band 4.52e-5; near-sonic: far-field allowance 2.673e-6
+  Mach 1.064: CD_r8 1.02849e-1, band 4.823e-5 (monotone; far turning), largest station band 4.57e-5; near-sonic: far-field allowance 2.205e-6
