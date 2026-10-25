@@ -2422,6 +2422,39 @@ to the rules above, in the review's numbering:_
     Y_REVIEWED=1, no results review asserted) and its outputs committed;
     any difference from the scratch run's verdicts is reported with them.
 
+20. _Clarification and one gate, dated 2026-10-25, after the independent
+    results review of `e412609` (which recomputed every verdict by hand
+    and confirmed them: 0.600 FAIL on (b) and (e), 0.800 not judged,
+    the 800-radius test pass at all three; the results are recorded in
+    0013, "Below Mach 1: results")._ (i) The review found item 8 (the rows
+    at 1.001 to 1.041 wait for the 800-radius test and the results'
+    review only) and item 6 with revision 15 R1 (an unrun rung's box
+    keeps its rows out, and the 0.960 and 0.991 boxes reach 1.041) in
+    conflict. The owner decided that the stricter reading holds: those
+    rows stay out until the 0.960 and 0.991 rungs pass, whatever the
+    800-radius test says; item 8 is a further condition on them, not a
+    release. The code already did this (`rowsKeptOut` before
+    `nearSonicHold` in `rowGate`); the text now says so. (ii) The review
+    found a gap: TN 4233's row at indicated Mach 0.701 lies outside every
+    rung's box (0.600 and 0.800, +-0.05), so it was kept out by no rung,
+    and a future solve of it would have got a per-row result and, once
+    the results were reviewed, could have been released with no rung
+    verifying its neighbourhood, against item 16's intent. `rowGate` now
+    refuses any row below `NEAR_SONIC_LIMIT` that no registered rung's
+    box covers (`rungCovering`), after the kept-out check and before the
+    near-sonic hold, and the evaluation's per-row section gives such a
+    row no result; a test covers 0.701 refused with a passing per-row
+    result and the results reviewed, 0.600 released, and the covering
+    rung at 0.85, 1.041 and none at 1.045. Gate only: no rung, criterion,
+    threshold, box or verdict changes, and no solve of 0.701 exists.
+    (iii) The review's notes, as record not rule, are in 0013's results
+    section: the early grids without a `path` field, the solve files
+    without a numerics fingerprint and item 19's change to a hashed file
+    (a re-run will refuse the kept base grids), the restarts missing from
+    `lanes.log`, `far-800.test.ts`'s noise over the 800-radius grid, and
+    (g)'s miss near the shoulder at Mach 0.6. `Y_RESULTS_REVIEWED` is not
+    set; nothing is released.
+
 _Tests added for the errors the review planted:_ the floor and the
 cylinder term in the station band, p_inf / p_wall in the loss tolerance,
 the top rung's ordering condition, the zero-drag fail just past the

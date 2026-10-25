@@ -635,6 +635,18 @@ export function rowsKeptOut(
 }
 
 /**
+ * The registered rung whose box (+-BOX_MACH) covers a Mach number, or null
+ * where none does ((y) item 16 and its clarification of 2026-10-25: a row
+ * that no rung covers is never released; TN 4233's row at 0.701 is one).
+ */
+export function rungCovering(
+  mach: number,
+  rungs: readonly number[] = SUBSONIC_RUNGS,
+): number | null {
+  return rungs.find((r) => Math.abs(mach - r) <= BOX_MACH + 1e-9) ?? null;
+}
+
+/**
  * (y) item 8: the rows at Mach 1.001 to 1.041 (the moved family, below
  * NEAR_SONIC_LIMIT) wait for the 800-radius test and for the results'
  * review; rows at 1.05 and above are the served family's and do not wait.
@@ -731,7 +743,8 @@ export type RowGate =
  *    exists;
  * 3. rows below it need the evaluation, made on these same solves (the
  *    same directory, the same hash), the results' review, not to be kept
- *    out by a rung, the 800-radius test where (y) item 8 applies, a judged
+ *    out by a rung, a registered rung's box covering them (item 16; the
+ *    row at 0.701 has none), the 800-radius test where (y) item 8 applies, a judged
  *    per-row result whose own verdict is not 'fail' ((y) item 3: the rung
  *    rules apply per row, so an unresolved family, a negative drag, a wall
  *    loss or a station band failing refuses the row); then they pass with
@@ -788,6 +801,11 @@ export function rowGate(input: RowGateInput): RowGate {
     };
   const kept = verification.keptOut.find((r) => same(r.mach, mach));
   if (kept !== undefined) return { allowed: false, reason: `(y) item 6: ${kept.reason}` };
+  if (rungCovering(mach) === null)
+    return {
+      allowed: false,
+      reason: `(y) item 16: no registered rung\u2019s box (+-${BOX_MACH} Mach) covers Mach ${mach.toFixed(3)}; a row no rung verifies is not released`,
+    };
   const near = nearSonicHold(mach, verification.far800Pass, input.resultsReviewed);
   if (near !== null) return { allowed: false, reason: `(y) item 8: ${near}` };
   if (mach < 1 && !input.resultsReviewed)

@@ -692,6 +692,21 @@ there comes first):
     (`measure`, `measureFor`, `allowanceAt`'s `absolute`, `noseBand`),
     tested on synthetic bodies before any reading reached it.
 
+_Results, dated 2026-10-25 (after the independent results review of
+`e412609`; recorded in 0013, "Below Mach 1: results"):_ no TN 4233 row
+below indicated Mach 1.050 enters the allowance. The Mach 0.600 rung of
+(y) failed on (b) and (e), so no floor was set and the 0.800 rung was not
+judged; the 0.901, 0.960 and 0.991 rungs and R5 await the owner's GPU and
+SU2 runs; by (y) item 6 every row from 0.600 to 1.041 is kept out, and the
+row at 0.701, which no rung's box covers, is refused by (y) item 16 as
+clarified the same day. The rows at 1.001 to 1.041 passed the 800-radius
+test but stay out by the owner's decision of 2026-10-25 (the stricter of
+(y) items 6 and 8: until the 0.960 and 0.991 rungs pass). The rows at
+1.050, 1.062 and 1.064 are the served family's (0013's verified solver
+at and above Mach 1.05) and do enter, by item 9, with u_num 8.45e-5,
+4.52e-5 and 4.57e-5 from (y)'s per-row results. Nothing is released by
+this note; `Y_RESULTS_REVIEWED` is not set.
+
 ## 9. Order of work after the decisions
 
 1. Done: the decisions of section 8; this record revised; the

@@ -14,6 +14,7 @@ import {
   pointwiseBand,
   rowGate,
   rowsKeptOut,
+  rungCovering,
   slenderConeCylinderCp,
   stationCpAllowance,
   SUBSONIC_SCALE,
@@ -461,6 +462,27 @@ describe('item 5: the rung verdicts', () => {
       verification,
       resultsReviewed: true,
     };
+    // (y) item 16, clarified 2026-10-25: a row below Mach 1 that no registered rung's box
+    // covers (TN 4233's 0.701) is refused even with a judged per-row result and the
+    // results reviewed; a covered row with a passing result is released.
+    expect(rungCovering(0.701)).toBeNull();
+    expect(rungCovering(0.85)).toBe(0.8);
+    expect(rungCovering(1.041)).toBe(0.991);
+    expect(rungCovering(1.045)).toBeNull();
+    const uncovered = rowGate({
+      ...base,
+      mach: 0.701,
+      verification: {
+        ...verification,
+        rowResults: [
+          ...verification.rowResults,
+          { mach: 0.701, largestStationBand: 1e-4, stationFailed: false, verdict: 'pass' },
+        ],
+      },
+    });
+    expect(uncovered).toMatchObject({ allowed: false });
+    expect((uncovered as { reason: string }).reason).toMatch(/item 16.*no registered rung/);
+    expect(rowGate({ ...base, mach: 0.6 })).toMatchObject({ allowed: true });
     // A GPU solve without a passed hardware match: every row, 1.064 included (6 (h)).
     const noMatch = rowGate({ ...base, mach: 1.064, engine: 'gpu', gpuMatch: null });
     expect(noMatch).toMatchObject({ allowed: false });
@@ -563,8 +585,9 @@ describe('item 5: the rung verdicts', () => {
     expect(
       (rowGate({ ...base, mach: 0.6, resultsReviewed: false }) as { reason: string }).reason,
     ).toMatch(/not yet reviewed/);
-    // No judged per-row result (0.701 outside every box when 0.6 failed, or not solved): refused.
-    expect((rowGate({ ...base, mach: 0.701 }) as { reason: string }).reason).toMatch(
+    // No judged per-row result (a covered row not solved, or without a floor): refused.
+    // (0.701 is now refused earlier, by the coverage gate above.)
+    expect((rowGate({ ...base, mach: 0.8 }) as { reason: string }).reason).toMatch(
       /no judged per-row result/,
     );
     // 6 (d) failed for the row: refused.

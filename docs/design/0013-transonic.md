@@ -2361,6 +2361,113 @@ narrower; the page's bands for long noses change by it, and that change
 needs its own review before it reaches main. The cone and the 3- and
 5-caliber ogives (far boundary 100 radii) are unchanged.
 
+## Below Mach 1: results (2026-10-25, after the independent results review)
+
+0014 10.7 (y)'s runs on this machine's CPU (lanes A, B and C of
+2026-10-24 and 25; the solve files in
+`docs/research/nose-model-form/out/blind-run-3/solves/` and
+`out/far-800/`, the evaluation's report and record
+`out/verify-subsonic.out` and `.json`, written by the committed
+`verify-subsonic.test.ts` at `cfc79da` on the solves as committed) and
+the independent results review of `e412609`, which recomputed every
+verdict by hand and confirmed them. The owner's GPU runs of the Mach
+0.901, 0.960 and 0.991 rungs and the SU2 runs (R5) have not been made;
+nothing below Mach 1.05 is released by this section, and
+`Y_RESULTS_REVIEWED` is not set.
+
+**The Mach 0.600 rung: FAIL** on (b) and (e); no floor set. The family
+on the served domain (far boundary 224.2 radii, outlet 10 calibers):
+CD 2.9475608e-3, 1.4963883e-3, 8.9194560e-4, 5.9908648e-4 at r = 1, 2,
+4, 8 (35,450, 10,700, 19,600 and 37,600 implicit steps), monotone, order
+1.05, extrapolated 3.238266e-4; the procedure's band 3.441e-4. The band
+8.129e-4 = grids 3.441e-4 + floor 0 + far field 1.566e-4 (turning:
+2.982816e-3, 2.947561e-3, 2.941692e-3 at 100.6, 224.2 and 408.7 radii)
+
+- cylinder 3.122e-4 (decaying: 3.332803e-3, 2.947561e-3, 2.775102e-3 at
+  5.5, 10 and 22 calibers). (a) pass; (b) fail, the procedure's band
+  3.44e-4 above the cap 2e-4, so a pass could not show the drag is zero
+  to the tolerance; (c) pass, CD + band 1.41e-3 at or above 0, and the
+  ordering across rungs pass; (d) reported, largest station band 7.60e-4
+  above 5e-4, "verified, band too wide for the use"; (e) fail, the wall's
+  total-pressure loss ahead of the shoulder 1.11e-3 of p0 on r = 8
+  against the limit 1.23e-4, falling at orders 0.33 (r = 1, 2, 4) and
+  0.55 (2, 4, 8) where 0.8 is needed; (f) pass; (g) reported, R3's largest
+  station difference 2.49e-2 with 2 stations outside the gross-error
+  check (sets nothing); R5 not run. Station bands at r = 2, 4, 8 all
+  monotone: 1.03e-4, 3.16e-5, 1.67e-5, 9.55e-6, 6.44e-6, 3.77e-6,
+  3.99e-6, 4.33e-6, 7.92e-5, 1.45e-4 (first to tenth station).
+
+What the review found behind the two fails, from the records, as
+record not rule: the station Cp converge at order 0.6 to 0.77 at the
+two shoulder stations (the ninth and tenth) and at 1.6 to 2 at
+mid-cone, so the shoulder corner, not the cone, sets the drag's order
+(1.05) and the band; the wall loss is largest at the first station (the
+tip) and is still 1.9e-4 of p0 at x/l 0.9 on r = 8, so it is not a
+tip-cell artefact alone; (g)'s miss at Mach 0.6 is near the shoulder,
+where the linearised solution has its logarithmic singularity, and
+sets nothing. The implicit steps (LU-SGS at CFL 1000) have an unstable
+mode on the 408.7-radius far-field base grid at both Mach 0.6 and 0.8
+(the residual grew a hundredfold, at step 32,400 at Mach 0.8; the same
+signature as the 800-radius grid at Mach 1, "What did not work"); item
+18's explicit path converged those grids (24,150 and 42,500 steps) and
+every other grid went by the implicit path.
+
+**The Mach 0.800 rung: not judged** (no floor, since the 0.600 rung
+did not pass). Its family, for the record: CD 8.7001196e-3,
+8.6037919e-3, 8.7609440e-3, 8.8745535e-3 at r = 1 to 8 (the r = 8 grid
+100,800 implicit steps), not monotone; a supersonic pocket on the wall
+on every grid, growing with refinement (largest wall Mach 1.226, 1.270,
+1.292, 1.305; 4, 7, 15, 30 supersonic wall cells); wall loss ahead
+2.99e-3 down to 1.49e-3 of p0. Far field turning 9.69e-5 (8.722177e-3,
+8.700120e-3, 8.697552e-3; the 408.7 grid by the explicit path), cylinder
+decaying 2.87e-4. Once a floor exists and it is judged, (y) item 6 (a)
+would ask for r = 16 (the unresolved case with the finer triple
+monotone).
+
+**The 800-radius test (addendum item 4): PASS** at all three, by the
+explicit path on the 910-radius grid (own radius; 129 x 41 cells).
+Mach 1.001: turning allowance 6.410e-3 (m = 2.46e-7) against C(800) -
+C(224.2) = 7.885e-4, contained. Mach 1.020: 4.423e-4 (m = 3.96e-7)
+against 2.012e-6, contained. Mach 1.041: 1.405e-5 (m = 2.17e-8) against
+-5.622e-9, contained. The moved family's allowance stands for the rows
+at Mach 1.001 to 1.041 as far as this test goes; those rows are still
+kept out, below.
+
+**The served family's rows, 1.050, 1.062, 1.064** (lane C, on the
+current code with the records of (y)): per-row results, each monotone
+with the far-field effect turning: CD_r8 1.07112e-1, band 9.805e-5,
+largest station band 8.45e-5; 1.03464e-1, 5.371e-5, 4.52e-5;
+1.02849e-1, 4.823e-5, 4.57e-5. These rows are the served family's and
+enter 0022 as 4.3 item 2 allows, with u_num from these station bands.
+
+**Rows kept out** ((y) item 6, boxes of 0.05 Mach): every TN 4233 row
+from 0.600 to 1.041. 0.600 and 0.601 by the 0.600 rung's fail; 0.797,
+0.800 and 0.850 by the 0.800 rung not judged; 0.899 to 0.939 by the
+0.901 rung not run; 0.960 to 1.008 by the 0.960 rung not run; 1.011 to
+1.041 by the 0.991 rung not run. The row at 0.701 is covered by no
+rung's box and is refused by that alone ((y) item 16, clarified
+2026-10-25). The rows at 1.001 to 1.041: the review found (y) item 8
+(they wait for the 800-radius test and the review only) and item 6
+with revision 15 (an unrun rung's box keeps its rows out) in conflict;
+the owner decided on 2026-10-25 that the stricter reading holds, so
+they stay out until the 0.960 and 0.991 rungs pass.
+
+Record, not rule (the review's notes): the r = 1 grids of the 0.600
+and 0.800 families and the "own" allowance grids carry no `path` field
+(solved before item 18 added it; the logs show the implicit path with
+no divergence on them); the solve files carry no fingerprint of the
+numerics, and item 19 changed `subsonic-verification.ts`, which the
+kept-grid fingerprint hashes, so a re-run on the same machine will
+refuse the kept allowance base grids and solve them again (the solves
+themselves are unaffected, the fingerprint is the store's);
+`y-runs/lanes.log` does not record the container restarts at about
+18:49, 20:17 and 20:51:33 on 2026-10-24, nor lane A's resume at
+19:12:45 on bookkeeping code not yet reviewed at that time (the
+transcript and the vitest logs do); `far-800.test.ts` line 163 takes the
+noise over the 800-radius grid too, which the registered rule did not
+ask for and which changed nothing here (the allowance is the base
+grids' and the 800 grid's noise was not the largest).
+
 ## Open
 
 - **Runs queued or running** (each saves its state every 10 minutes and

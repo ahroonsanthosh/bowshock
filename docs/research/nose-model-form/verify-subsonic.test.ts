@@ -35,6 +35,7 @@ import {
   NEAR_SONIC_RUNGS,
   orderingCheck,
   rowsKeptOut,
+  rungCovering,
   SUBSONIC_RUNGS,
   ZERO_DRAG_RUNG,
   type RowResultSummary,
@@ -265,6 +266,12 @@ it('judges the subsonic and near-sonic rungs by 0014 10.7 (y)', () => {
     if (typeof input === 'string') {
       out.push(`  Mach ${solve.mach.toFixed(3)}: ${input}`);
       rows[solve.mach] = { reason: input };
+      continue;
+    }
+    if (solve.mach < NEAR_SONIC_LIMIT && rungCovering(solve.mach) === null) {
+      const reason = `no registered rung's box (+-${BOX_MACH} Mach) covers it ((y) item 16): no per-row result`;
+      out.push(`  Mach ${solve.mach.toFixed(3)}: ${reason}`);
+      rows[solve.mach] = { reason };
       continue;
     }
     if (solve.mach < 1 && floor === null) {
