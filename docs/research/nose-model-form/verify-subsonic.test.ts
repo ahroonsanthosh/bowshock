@@ -108,7 +108,11 @@ function inputOf(solve: Solve, floor: number | null): RungInput | string {
     cylinder: solve.allowances.cylinder.result,
     stationFar: far.stationAllowance,
     floor,
-    linear: STATIONS_RADII.map((x) => linearisedConeCylinderCp(tau, L, solve.mach, x).cp),
+    // R3 is defined below Mach 1 only ((y) revision item 19): null above, and (g) not applicable.
+    linear:
+      solve.mach < 1
+        ? STATIONS_RADII.map((x) => linearisedConeCylinderCp(tau, L, solve.mach, x).cp)
+        : null,
     stationCylinder: solve.allowances.cylinder.stationAllowance,
     code: codeOf(solve.mach),
   };

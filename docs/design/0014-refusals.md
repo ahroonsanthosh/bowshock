@@ -2387,6 +2387,41 @@ to the rules above, in the review's numbering:_
     it was restarted is recorded in the run log (`y-runs/lanes.log`) and
     in the results commit._
 
+19. _Evaluation script defect (coordinator's decision of 2026-10-25;
+    written AFTER the results existed and after a scratch run's verdicts
+    had been seen, disclosed here in full)._ The committed evaluation
+    (`verify-subsonic.test.ts`), run on the CPU solves on 2026-10-25
+    once every lane had finished, crashed before writing anything: its
+    last section, every TN 4233 row below Mach 1.078 with a solve, built
+    each row's input with R3's linearised Cp at the stations, and R3
+    (`linearisedConeCylinderCp`) is defined below Mach 1 only and throws
+    above it, so the lane C solves at Mach 1.050, 1.062 and 1.064, which
+    did not exist when the script was reviewed, stopped it. The rung
+    judgements, the ordering check, the 800-radius test and the kept-out
+    list come before that section and were not affected. To see the
+    registered verdicts, a scratch copy of the script was run once from
+    the same solves, with that section skipping rows at Mach 1 and above
+    and its outputs written outside the repository; the copy was deleted
+    and nothing from it committed. Its verdicts, seen before this item
+    was written: the Mach 0.600 rung FAILED on (b) (the procedure's band
+    3.44e-4 against the cap 2e-4) and (e) (wall total-pressure loss ahead
+    1.11e-3 of p0 against 1.23e-4, falling at orders 0.33 and 0.55), so no
+    floor was set; the Mach 0.800 rung was not judged (no floor); the
+    800-radius test PASSED at Mach 1.001, 1.020 and 1.041 (contained at
+    each); every row from 0.600 to 1.041 kept out. The change, the least
+    that removes the defect: (g) R3 becomes "not applicable (R3 is
+    defined below Mach 1 only)" for a rung input at Mach 1 and above, or
+    one without R3 values (`RungInput.linear` may be null; the script
+    passes null above Mach 1); the per-row section keeps every row below
+    1.078 as registered. No other criterion, threshold, floor, band or row
+    selection changes. (g) is registered as reported only and sets no
+    verdict (item 5 (g): "sets nothing"), so this change cannot move a
+    verdict; the test added shows the same input judged with and without
+    R3 gives the same verdict and band, and (g) not applicable at Mach
+    1.05. The committed script was then run exactly (SOLVES=solves,
+    Y_REVIEWED=1, no results review asserted) and its outputs committed;
+    any difference from the scratch run's verdicts is reported with them.
+
 _Tests added for the errors the review planted:_ the floor and the
 cylinder term in the station band, p_inf / p_wall in the loss tolerance,
 the top rung's ordering condition, the zero-drag fail just past the

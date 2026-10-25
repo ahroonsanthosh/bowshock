@@ -282,8 +282,8 @@ export interface RungInput {
   readonly stationCylinder: readonly number[] | null;
   /** The subsonic absolute floor set at the zero-drag rung, or null at that rung. */
   readonly floor: number | null;
-  /** R3 at the stations, for the level check. */
-  readonly linear: readonly number[];
+  /** R3 at the stations, for the level check; null at Mach 1 and above, where R3 is not defined (then (g) is not applicable). */
+  readonly linear: readonly number[] | null;
   /** R5, if run: the independent code's finest value and its own band (null where its levels give none). */
   readonly code?:
     { readonly drag: number; readonly band: number | null; readonly levels: number } | undefined;
@@ -462,15 +462,22 @@ export function judgeRung(input: RungInput): RungVerdict {
           detail: `loss ahead ${finest.loss.ahead.toExponential(2)} of p0 (limit ${lossTol.toExponential(2)}), orders ${lossOrder.toFixed(2)} and ${lossOrder2.toFixed(2)} (at least ${WALL_LOSS_ORDER} needed)`,
         };
 
-  // (g) R3, reported.
-  const misses = finest.stationCp.map((cp, j) => Math.abs(cp - input.linear[j]!));
-  const outside = misses.filter(
-    (m, j) => m > LINEAR_CHECK_RELATIVE * Math.abs(input.linear[j]!) && m > LINEAR_CHECK_ABSOLUTE,
-  ).length;
-  const c_g: Criterion = {
-    status: 'reported',
-    detail: `R3: largest station difference ${Math.max(...misses).toExponential(2)}; ${outside} station(s) outside the gross-error check (sets nothing)`,
-  };
+  // (g) R3, reported; it sets nothing, and is defined below Mach 1 only
+  // ((y) revision item 19: not applicable at Mach 1 and above).
+  const linear = input.linear;
+  let c_g: Criterion;
+  if (mach >= 1 || linear === null) {
+    c_g = { status: 'not-applicable', detail: 'R3 is defined below Mach 1 only (sets nothing)' };
+  } else {
+    const misses = finest.stationCp.map((cp, j) => Math.abs(cp - linear[j]!));
+    const outside = misses.filter(
+      (m, j) => m > LINEAR_CHECK_RELATIVE * Math.abs(linear[j]!) && m > LINEAR_CHECK_ABSOLUTE,
+    ).length;
+    c_g = {
+      status: 'reported',
+      detail: `R3: largest station difference ${Math.max(...misses).toExponential(2)}; ${outside} station(s) outside the gross-error check (sets nothing)`,
+    };
+  }
 
   // R5, the independent code.
   if (input.code === undefined) {

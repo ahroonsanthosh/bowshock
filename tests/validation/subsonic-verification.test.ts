@@ -182,6 +182,18 @@ function rung(
 }
 
 describe('item 5: the rung verdicts', () => {
+  it('(g) R3 is reported below Mach 1 and not applicable at Mach 1 and above, and sets nothing either way (revision item 19)', () => {
+    const below = judgeRung(rung({ mach: 0.8, limit: 5e-5 }));
+    expect(below.criteria.g.status).toBe('reported');
+    const above = judgeRung(rung({ mach: 1.05, limit: 5e-5, linear: null }));
+    expect(above.criteria.g.status).toBe('not-applicable');
+    expect(above.criteria.g.detail).toMatch(/below Mach 1 only/);
+    // The same input with and without R3 gives the same verdict and band: (g) moves nothing.
+    const withR3 = judgeRung(rung({ mach: 0.8, limit: 5e-5 }));
+    const withoutR3 = judgeRung(rung({ mach: 0.8, limit: 5e-5, linear: null }));
+    expect(withoutR3.criteria.g.status).toBe('not-applicable');
+    expect([withoutR3.verdict, withoutR3.band]).toEqual([withR3.verdict, withR3.band]);
+  });
   it('Mach 0.6 passes the exact zero-drag check and sets the floor at twice the larger miss', () => {
     const v = judgeRung(rung({ mach: 0.6, limit: 5e-5 }));
     expect(v.criteria.a.status).toBe('pass');
