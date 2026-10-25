@@ -219,7 +219,7 @@ export function bandSection(): HelpSection {
   return {
     title: 'The band and the status',
     body: [
-      'bowshock shows no drag value without its band and its status. The wave drag’s band is measured from nested grids, each twice as fine as the one before, and includes an allowance of 7e-5 of the value (8e-4 on Von Karman noses) for an error the grids cannot show; where no band can be measured, the value is marked not verified.',
+      'bowshock shows no drag value without its band and its status. The wave drag’s band is measured from nested grids, each twice as fine as the one before, and includes an allowance of 7e-5 of the value (8e-4 on Von Karman noses) for an error the grids cannot show; where no band can be measured, the value is marked not verified. That band is the numerical error of the inviscid solve; the model’s own error is not in it: wind-tunnel pressures on two ogives at Mach 1.98 lie 8 to 9% above and 3% below the inviscid value (docs/validation/sources.md in the repository).',
       'The status is written in words as well as colour: green for a value verified (its band measured) or a run converged; amber for a value not verified, or a run stopped at its limit; red where there is no value (refused, not converged, or a failure of the GPU), with the reason. The total drag’s badge takes the colour of its own label, the claim beside it, and red where it is refused.',
     ],
   };

@@ -640,9 +640,9 @@ describe('the nose term and the states of the solve', { timeout: 60_000 }, () =>
     expect(usual.band).toContain('an allowance of 7e-5 of the value');
     const vk = { value: 0.0804, uncertainty: 8.7e-5, grids: 4, floor: TWO_SCALE_DRAG_FLOOR };
     expect(noseComponentOf(vk).band).toContain('an allowance of 8e-4 of the value');
-    // Its four-grid band is not checked against a reference yet: said so.
+    // Where its four-grid band has been checked against a reference: said so.
     expect(noseComponentOf(vk).band).toContain(
-      'a band from four grids has been checked against a reference on one nose only',
+      'a band from four grids has been checked against a reference on two noses',
     );
     expect(usual.band).not.toContain('four grids');
     expect(bandCaveat(FITTED_DRAG_FLOOR)).toBe('');

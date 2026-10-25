@@ -23,7 +23,9 @@ export type SceneAction =
   | 'scene-colour'
   | 'scene-slice-turn'
   | 'scene-slice-back'
-  | 'scene-slice-on';
+  | 'scene-slice-on'
+  | 'scene-faces'
+  | 'scene-particles';
 
 interface SceneKey {
   readonly action: SceneAction;
@@ -55,14 +57,14 @@ export const SCENE_KEYS: readonly SceneKey[] = [
     action: 'scene-streamlines',
     key: '3',
     label: 'Streamlines',
-    description: 'Streamlines',
+    description: 'Streamlines, a few lit tubes',
     pressed: (s) => s.getLayers().streamlines,
   },
   {
     action: 'scene-shells',
     key: '4',
-    label: 'Shells: glowing, solid, none',
-    description: 'Shells of equal colour quantity: glowing, solid or none',
+    label: 'Shells: solid, none, glowing',
+    description: 'Shells of equal colour quantity: solid and lit, none, or glowing',
   },
   {
     action: 'scene-shock',
@@ -75,7 +77,7 @@ export const SCENE_KEYS: readonly SceneKey[] = [
     action: 'scene-cutaway',
     key: '6',
     label: 'Cutaway',
-    description: 'A quarter of the flow cut away, to see the rocket',
+    description: 'A wedge of the flow cut away, to see the rocket',
     pressed: (s) => s.getLayers().cutaway,
   },
   {
@@ -98,6 +100,21 @@ export const SCENE_KEYS: readonly SceneKey[] = [
     description: 'Move the slice (turn it about the axis, or along it)',
   },
   { action: 'scene-slice-on', key: 'e', label: 'Move the slice on', description: '' },
+  {
+    action: 'scene-faces',
+    key: '7',
+    label: 'Slice: fibres, schlieren, plain',
+    description:
+      'The slice: fibres along the computed flow, the schlieren (density gradient), or plain colour',
+  },
+  {
+    action: 'scene-particles',
+    key: '8',
+    label: 'Streaks: still, moving, off',
+    description:
+      'Dense streaks along the computed flow: still, moving (at one pace along their ' +
+      'streamlines, not the flow’s speed; draws continuously), or off',
+  },
 ];
 
 const BY_ACTION = new Map(SCENE_KEYS.map((k) => [k.action, k]));

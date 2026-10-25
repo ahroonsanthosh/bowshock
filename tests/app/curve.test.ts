@@ -44,7 +44,13 @@ function standIn(
     if (options.fail === 'case') {
       return { kind: 'error', message: 'the tip shock detaches', gpuFailed: false };
     }
-    const exact = exactConeNoseWaveDrag(mach, Math.atan(0.5 / body.nose.length)).cd;
+    let exact: number;
+    try {
+      exact = exactConeNoseWaveDrag(mach, Math.atan(0.5 / body.nose.length)).cd;
+    } catch (e) {
+      // As the solver refuses a case it does not serve (Mach 1.0: the cone's shock detaches).
+      return { kind: 'error', message: String(e), gpuFailed: false };
+    }
     const reports: LevelReport[] = [];
     for (let k = 0; k < 4; k++) {
       await Promise.resolve();
@@ -107,7 +113,7 @@ describe('the points', { timeout: 60_000 }, () => {
 });
 
 describe('the Basic Finner with a stand-in nose', { timeout: 120_000 }, () => {
-  it('refuses Mach 1.0 to 1.6 at once, with no solve; solves the rest coarse to fine', async () => {
+  it('refuses Mach 1.0 to 1.6 at once; solves the rest coarse to fine, then those for their nose', async () => {
     const calls: number[] = [];
     const run = new CurveRun(options(), standIn({ calls }), () => {});
     expect(run.points.slice(0, 4).map((p) => p.state.kind)).toEqual([
@@ -116,10 +122,69 @@ describe('the Basic Finner with a stand-in nose', { timeout: 120_000 }, () => {
       'done',
       'done',
     ]);
-    expect(run.queue.map((k) => run.points[k]!.mach)).toEqual([1.8, 3, 2.4, 2, 2.6, 2.2, 2.8]);
+    // The refused points last, coarse to fine among themselves (0011 section 10).
+    const later = solveOrder(4).map((k) => [1, 1.2, 1.4, 1.6][k]!);
+    expect(later).toEqual([1, 1.6, 1.2, 1.4]);
+    expect(run.queue.map((k) => run.points[k]!.mach)).toEqual([
+      1.8,
+      3,
+      2.4,
+      2,
+      2.6,
+      2.2,
+      2.8,
+      ...later,
+    ]);
     await run.run();
-    expect(calls).toEqual([1.8, 3, 2.4, 2, 2.6, 2.2, 2.8]);
+    expect(calls).toEqual([1.8, 3, 2.4, 2, 2.6, 2.2, 2.8, ...later]);
     expect(run.done).toBe(true);
+    // Refused before and after: a cross with its reasons, now with the nose among its parts.
+    for (const p of run.points.slice(0, 4)) {
+      expect(p.state.kind === 'done' && p.state.result.kind).toBe('refused');
+    }
+    const at14 = run.points[2]!;
+    if (at14.state.kind !== 'done' || at14.state.result.kind !== 'refused') throw new Error();
+    expect(at14.state.result.parts?.served[0]?.name).toBe('nose wave drag');
+  });
+
+  it('a refused point solved last for its nose: a failed GPU or a stop leaves its refusal as it was', async () => {
+    // The GPU fails at Mach 1.6, a point refused before any solve: it keeps its refusals and
+    // parts, and nothing more is solved.
+    const failing: NoseSolver = async (body, mach, hooks) =>
+      mach === 1.6
+        ? { kind: 'error', message: 'device lost', gpuFailed: true }
+        : standIn()(body, mach, hooks);
+    const run = new CurveRun(options(), failing, () => {});
+    const k16 = run.points.findIndex((p) => p.mach === 1.6);
+    const before = run.points[k16]!.state;
+    expect(before.kind === 'done' && before.result.kind).toBe('refused');
+    await run.run();
+    expect(run.points[k16]!.state).toEqual(before);
+    // Mach 1.2 and 1.4 come after 1.6 in the order: not solved, still as they were.
+    for (const mach of [1.2, 1.4]) {
+      const p = run.points.find((q) => q.mach === mach)!;
+      expect(p.state.kind === 'done' && p.state.result.kind).toBe('refused');
+      expect(p.nose).toBeNull();
+    }
+    expect(run.done).toBe(true);
+
+    // Stopped while solving Mach 1.6: the point stays done and refused, as it was.
+    let stopping: CurveRun | null = null;
+    const stopped = new CurveRun(
+      options(),
+      standIn({
+        onStart: (mach) => {
+          if (mach === 1.6) stopping?.stop();
+        },
+      }),
+      () => {},
+    );
+    stopping = stopped;
+    const was = stopped.points[k16]!.state;
+    await stopped.run();
+    expect(stopped.points[k16]!.state).toEqual(was);
+    expect(stopped.points[k16]!.state.kind).toBe('done');
+    expect(stopped.done).toBe(true);
   });
 
   it("every finished point is exactly the logic's view of its form and the nose's outcome", async () => {
@@ -143,6 +208,16 @@ describe('the Basic Finner with a stand-in nose', { timeout: 120_000 }, () => {
         continue;
       }
       const view = totalDragView(form.form, noseStateOf(outcome)!);
+      if (view.kind === 'refused') {
+        // Refused whatever the nose, solved last for its part (0011 section 10).
+        expect(p.state.result).toEqual({
+          kind: 'refused',
+          refusals: view.refusals,
+          nose: null,
+          parts: view.parts,
+        });
+        continue;
+      }
       expect(p.state.result).toEqual({ kind: 'total', view, without: [] });
       if (p.state.result.kind === 'total') {
         // An estimate everywhere while the Basic Finner's claim is suspended; inside its class, said so.
@@ -273,9 +348,24 @@ describe('the CSV', { timeout: 120_000 }, () => {
     expect(lines[2]).toBe('# bowshock test build');
     expect(lines[3]).toBe(CSV_HEADER);
     expect(lines.length).toBe(4 + 11);
-    // A refused row: no number, every refusal in the reason.
-    expect(lines[4]).toMatch(/^1\.00,,,,refused,"fin friction \(fins-own-drag-mach\): /);
+    // A refused row: no number, every refusal in the reason (the nose's too: the stand-in
+    // refuses Mach 1.0), the parts served with their labels, and why no floor is given.
+    expect(lines[4]).toMatch(/^1\.00,,,,refused,"nose wave drag \(not-verified\): /);
+    expect(lines[4]).toMatch(/fin friction \(fins-own-drag-mach\): /);
     expect(lines[4]).toMatch(/fin leading edges \(leading-edge-range\): /);
+    expect(lines[4]).toContain(
+      'Known here, though the total has no number: body friction 0.1004 (0.0883 to 0.1196): ' +
+        'correlation: van Driest II, momentum integral, adiabatic wall (0007); band: 0007: ' +
+        'measured over modelled 0.88 to 1.19 on TN 3097 and RM L54G14.',
+    );
+    expect(lines[4]).toMatch(/No floor is given: the nose wave drag has no number/);
+    // The floor's own column: empty where none is given, never in cd, cd_low or cd_high.
+    expect(lines[4]!.endsWith('",')).toBe(true);
+    // Mach 1.6, its nose solved: the nose among the parts; no floor (the body base is refused).
+    const row16 = lines[4 + 3]!;
+    expect(row16).toMatch(/^1\.60,,,,refused,"/);
+    expect(row16).toMatch(/Known here, though the total has no number: nose wave drag 0\.\d{4} \(/);
+    expect(row16).toMatch(/No floor is given: the body base is refused/);
     // A row with a number: C_D to four decimals, the band outward, the logic's claim.
     const at2 = run.points.find((p) => p.mach === 2)!;
     if (at2.state.kind !== 'done' || at2.state.result.kind !== 'total') throw new Error('no total');
@@ -312,7 +402,7 @@ describe('the CSV', { timeout: 120_000 }, () => {
     expect(csvField('plain')).toBe('plain');
     expect(
       csvRow({ mach: 1.2, state: { kind: 'waiting' }, nose: null, seconds: 0, cellUpdates: 0 }),
-    ).toBe('1.20,,,,not-finished,not computed');
+    ).toBe('1.20,,,,not-finished,not computed,');
     expect(
       csvRow({
         mach: 1.2,
@@ -321,6 +411,6 @@ describe('the CSV', { timeout: 120_000 }, () => {
         seconds: 0,
         cellUpdates: 0,
       }),
-    ).toBe('1.20,,,,not-finished,not computed');
+    ).toBe('1.20,,,,not-finished,not computed,');
   });
 });

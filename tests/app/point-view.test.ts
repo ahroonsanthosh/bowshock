@@ -15,6 +15,8 @@ import { exactConeNoseWaveDrag } from '../../src/total/nose';
 const solver =
   (band = true): NoseSolver =>
   async (body, mach, hooks) => {
+    // As the solver refuses a case it does not serve (Mach 1.0: the cone's shock detaches).
+    if (!(mach > 1)) return { kind: 'error', message: 'the tip shock detaches', gpuFailed: false };
     const value = exactConeNoseWaveDrag(mach, Math.atan(0.5 / body.nose.length)).cd;
     const reports: LevelReport[] = [0, 1, 2, 3].map((k) => ({
       refinement: 2 ** k,

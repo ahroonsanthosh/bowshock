@@ -9,21 +9,23 @@ const CONTROL_COLOURS = ['#0b1a3a', '#1d4e89', '#1f8a8a', '#7cc47f', '#f4e9a6'] 
 
 /**
  * The spectrum of the app's views (docs/design/0017-rocketeer-interface.md
- * section 6): fully saturated, low values to high, magenta, violet, blue,
- * cyan, green, yellow, orange, red, interpolated linearly in sRGB between
- * neighbours (which keeps every colour on it saturated). bowshock's own
- * control colours, the same as the 3D scene's (src/render3d/spectrum.ts);
- * no other program's table is used.
+ * section 6): fully saturated, low values to high, blue, azure, cyan,
+ * green, yellow, orange, red and magenta at the top (the order of
+ * FluidX3D's rainbow, which the owner chose as the look, learnt from its
+ * pictures only), interpolated linearly in sRGB between neighbours (which
+ * keeps every colour on it saturated). bowshock's own control colours,
+ * shared with the 3D scene (src/render3d/spectrum.ts); no other program's
+ * table is used.
  */
 export const SPECTRUM_STOPS = [
-  '#ff1fd2',
-  '#8f2bff',
-  '#2b45ff',
-  '#00c8ff',
-  '#14f05a',
-  '#f2f20f',
-  '#ff8c0a',
-  '#ff1e1e',
+  '#1e2bff', // blue
+  '#0a8cff', // azure
+  '#00e1ff', // cyan
+  '#14f046', // green
+  '#f2f20f', // yellow
+  '#ff8c0a', // orange
+  '#ff1e1e', // red
+  '#ff1fd2', // magenta
 ] as const;
 
 /** `count` colours (RGBA, 0..1) evenly spaced along the spectrum. */

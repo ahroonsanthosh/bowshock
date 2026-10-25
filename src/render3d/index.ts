@@ -30,6 +30,7 @@
 export {
   FlowScene3D,
   DEFAULT_LAYERS,
+  type FaceLook,
   type BodyLayer,
   type FlowScene3DOptions,
   type SceneLayers,
@@ -38,6 +39,7 @@ export {
   type SliceMode,
 } from './scene';
 export { attachControls, sceneKey, type ControlsOptions } from './controls';
+export { sceneExtraKey } from './extra-keys';
 export {
   fieldFromCells,
   fieldFromConserved,
