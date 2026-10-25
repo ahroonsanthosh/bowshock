@@ -95,7 +95,7 @@ nose at Mach 2 on nj = 20 and 40, against the values recorded here) and
   its base, 0.34 to 0.40 along the cylinder: the numbers quoted in 0004,
   0006 and `secondCapture`'s comment.
 
-## The four-grid checks and the body length (running)
+## The four-grid checks and the body length
 
 The page verifies a value only from four grids (nj = 20 to 160), and no
 band of four grids has been measured on a Von Karman nose yet. Lanes
@@ -108,7 +108,11 @@ band of four grids has been measured on a Von Karman nose yet. Lanes
   references and the lowest bound (error 5.06e-5). The first four-grid
   check on a Von Karman nose (0006).
 - `lane160b.sh`: the 3-caliber nose at Mach 2 on nj = 160 (fitted order
-  1.49, the riskier case): running (7000 iterations on 2026-10-24).
+  1.49, the riskier case). Finished 2026-10-25 (settled at 23000
+  iterations, `fits/saved/L3M2r8.json`); its check,
+  `fits/check160-L3M2.json`: orders 1.49 and 1.65, band 9.55e-4 of the
+  value, containing the references and the lowest bound (error
+  3.41e-4). The cell states (`.bin`, 9.8 MB) are not kept.
 - `lanecyl.sh`: the 3-caliber nose at Mach 2 with 0 and 30 calibers of
   cylinder on nj = 20 and 40, against the 2-caliber family: the page
   accepts 0 to 30 calibers of body, the references have 1 or 2.

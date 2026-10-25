@@ -397,3 +397,32 @@
 2026-10-24T05:55:25.036Z haack C0 L1 M2 cyl1 nj20x8: quality {"wall":77.75572251451412,"minAngle":50.43265074991912,"sizeRatio":1.1849475659184514,"aspect":3.044512981234661,"gates":[],"stagnationError":-0.00006235316503444555,"standoff":0.016896344294313904}
 2026-10-24T05:55:25.051Z haack C0 L1 M2 cyl1 nj20x8: settled early at 21000 iterations, remaining 0.00e+0, maxSpeed 5.69e-10, drag 0.42855448927602957, from the wall strip 0.42855448927602957; saved
 2026-10-24T06:00:10.054Z haack C0 L3 M2 cyl2 nj20x8: 7000 iterations, maxSpeed 2.56e-7, drag 0.0803836553495, remaining 0.00e+0
+2026-10-24T08:35:39.773Z haack C0 L3 M2 cyl2 nj20x8: 8000 iterations, maxSpeed 2.57e-7, drag 0.0803836575237, remaining 3.89e-8
+2026-10-24T11:00:23.618Z haack C0 L3 M2 cyl2 nj20x8: 9000 iterations, maxSpeed 2.28e-7, drag 0.0803836587445, remaining 2.09e-8
+2026-10-24T13:28:52.313Z haack C0 L3 M2 cyl2 nj20x8: 10000 iterations, maxSpeed 1.67e-7, drag 0.0803836594253, remaining 1.13e-8
+2026-10-24T15:54:00.949Z haack C0 L3 M2 cyl2 nj20x8: 11000 iterations, maxSpeed 1.11e-7, drag 0.0803836598317, remaining 6.60e-9
+2026-10-24T17:15:12.624Z haack C0 L3 M2 cyl2 nj20x8: start, save to tests/tmp-haackmoc/L3M2r8
+2026-10-24T17:16:47.017Z haack C0 L3 M2 cyl2 nj20x8: resumed from checkpoint at 11000 iterations
+2026-10-24T18:16:42.472Z haack C0 L3 M2 cyl2 nj20x8: start, save to tests/tmp-haackmoc/L3M2r8
+2026-10-24T18:18:08.589Z haack C0 L3 M2 cyl2 nj20x8: resumed from checkpoint at 11000 iterations
+2026-10-24T18:49:28.504Z haack C0 L3 M2 cyl2 nj20x8: start, save to tests/tmp-haackmoc/L3M2r8
+2026-10-24T18:51:07.516Z haack C0 L3 M2 cyl2 nj20x8: resumed from checkpoint at 11000 iterations
+2026-10-24T19:54:53.123Z haack C0 L3 M2 cyl2 nj20x8: start, save to tests/tmp-haackmoc/L3M2r8
+2026-10-24T19:56:29.114Z haack C0 L3 M2 cyl2 nj20x8: resumed from checkpoint at 11000 iterations
+2026-10-24T20:27:51.780Z haack C0 L3 M2 cyl2 nj20x8: start, save to tests/tmp-haackmoc/L3M2r8
+2026-10-24T20:29:10.264Z haack C0 L3 M2 cyl2 nj20x8: resumed from checkpoint at 11000 iterations
+2026-10-24T20:51:33.708Z haack C0 L3 M2 cyl2 nj20x8: start, save to tests/tmp-haackmoc/L3M2r8
+2026-10-24T20:53:07.862Z haack C0 L3 M2 cyl2 nj20x8: resumed from checkpoint at 11000 iterations
+2026-10-24T22:36:41.819Z haack C0 L3 M2 cyl2 nj20x8: 12000 iterations, maxSpeed 7.07e-8, drag 0.0803836600840, remaining 0.00e+0
+2026-10-25T00:15:47.393Z haack C0 L3 M2 cyl2 nj20x8: 13000 iterations, maxSpeed 4.43e-8, drag 0.0803836602384, remaining 0.00e+0
+2026-10-25T01:52:28.042Z haack C0 L3 M2 cyl2 nj20x8: 14000 iterations, maxSpeed 2.77e-8, drag 0.0803836603318, remaining 1.78e-9
+2026-10-25T03:30:28.682Z haack C0 L3 M2 cyl2 nj20x8: 15000 iterations, maxSpeed 1.74e-8, drag 0.0803836603887, remaining 1.08e-9
+2026-10-25T05:10:34.381Z haack C0 L3 M2 cyl2 nj20x8: 16000 iterations, maxSpeed 1.10e-8, drag 0.0803836604235, remaining 6.59e-10
+2026-10-25T06:54:13.370Z haack C0 L3 M2 cyl2 nj20x8: 17000 iterations, maxSpeed 7.00e-9, drag 0.0803836604443, remaining 4.00e-10
+2026-10-25T08:45:00.906Z haack C0 L3 M2 cyl2 nj20x8: 18000 iterations, maxSpeed 4.48e-9, drag 0.0803836604564, remaining 2.37e-10
+2026-10-25T10:42:42.712Z haack C0 L3 M2 cyl2 nj20x8: 19000 iterations, maxSpeed 2.88e-9, drag 0.0803836604632, remaining 1.36e-10
+2026-10-25T12:43:55.389Z haack C0 L3 M2 cyl2 nj20x8: 20000 iterations, maxSpeed 1.86e-9, drag 0.0803836604668, remaining 7.48e-11
+2026-10-25T14:33:58.997Z haack C0 L3 M2 cyl2 nj20x8: 21000 iterations, maxSpeed 1.21e-9, drag 0.0803836604689, remaining 4.11e-11
+2026-10-25T16:25:29.841Z haack C0 L3 M2 cyl2 nj20x8: 22000 iterations, maxSpeed 7.83e-10, drag 0.0803836604701, remaining 2.38e-11
+2026-10-25T18:15:42.989Z haack C0 L3 M2 cyl2 nj20x8: quality {"wall":77.56977066080967,"minAngle":57.69603242176066,"sizeRatio":1.1693993038381063,"aspect":3.8862434609600283,"gates":[],"stagnationError":-0.00006819254841416988,"standoff":0.0006557287334660332}
+2026-10-25T18:15:43.088Z haack C0 L3 M2 cyl2 nj20x8: settled early at 23000 iterations, remaining 1.49e-11, maxSpeed 5.09e-10, drag 0.080383660470932761, from the wall strip 0.080383660470932761; saved

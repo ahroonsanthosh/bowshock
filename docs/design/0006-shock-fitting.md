@@ -1194,11 +1194,20 @@ triples, so the page verifies it: the value 0.42855449, extrapolated to
 with a band of 1.38e-5 from the grids and 3.57e-4 (8.32e-4 of the
 value) with the allowance. Its error against the lowest bound of the
 marches is 5.06e-5 of the value: the band contains it 16 times, but the
-grids' part alone (3.2e-5 of the value) would not. The second check,
-the 3-caliber nose at Mach 2 (whose fitted drag converges at 1.49 and
-its march at 1.16 to 1.31) on nj = 160, is running; until it lands the
-page says that four-grid bands on Von Karman noses have been checked on
-one nose only.
+grids' part alone (3.2e-5 of the value) would not. The second check
+(2026-10-25, `lane160b.sh`, `fits/check160-L3M2.json`), on the
+3-caliber nose at Mach 2, whose fitted drag converges at 1.49 and its
+march at 1.16 to 1.31: the fit on nj = 160 settled at 23000 iterations
+(gates passed: wall cells at 77.6 deg, neighbours within 1.17, aspect
+3.9), and the four drags 0.08065843, 0.08047165, 0.08040496 and
+0.08038366 give orders of 1.49 and 1.65, so the page verifies it: the
+value 0.08038366, extrapolated to 0.08037366 (inside the references,
+0.08036084 to 0.08037794), with a band of 1.25e-5 from the grids and
+7.68e-5 (9.55e-4 of the value) with the allowance. Its error against
+the lowest bound of the marches is 3.41e-4 of the value: the band
+contains it 2.8 times, but the grids' part alone (1.55e-4 of the value)
+would cover less than half of it. On both noses checked the allowance, not the
+grids' estimate, carries the band.
 
 Only the
 Von Karman nose is served (`bluntNoseRefusal`), and only inside the
