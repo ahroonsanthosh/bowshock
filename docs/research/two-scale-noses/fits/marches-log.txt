@@ -1,0 +1,10 @@
+2026-10-21T18:53:01Z start marches-L3M3
+2026-10-21T19:36:20Z done marches-L3M3
+2026-10-21T19:36:20Z start marches-L1c1M3
+2026-10-21T20:41:22Z done marches-L1c1M3
+2026-10-22T21:40:12Z start scan-L5c2M2
+2026-10-22T21:41:11Z done scan-L5c2M2
+2026-10-22T21:41:11Z start marches-L5c2M2
+2026-10-22T22:03:01Z stopped marches-L5c2M2: lines 90 to 138 lie at x 6e-3 to 3e-2 on this grid (293 lines), not as on the 5-caliber Mach 1.5 grid; kept as moc-L5c2M2-tiplines
+2026-10-22T22:03:01Z start marches-L5c2M2
+2026-10-22T22:26:58Z done marches-L5c2M2

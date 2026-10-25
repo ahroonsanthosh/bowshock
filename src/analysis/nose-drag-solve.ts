@@ -21,7 +21,7 @@ import type {
   TransonicFinerGrid,
   TransonicLevel,
 } from './transonic-drag';
-import { FITTED_DRAG_FLOOR, type LevelReport, type VerifiedDrag } from './verified-drag';
+import { allowanceText, bandCaveat, type LevelReport, type VerifiedDrag } from './verified-drag';
 
 /** The lowest Mach number of each solver's range. */
 export const TRANSONIC_FROM = 1;
@@ -241,7 +241,7 @@ function fromFitted(result: VerifiedDrag): NoseDragOutcome {
           status: 'band',
           value: e.value,
           band: result.uncertainty,
-          text: `verified by grid convergence on ${result.levels.length} grids with the bow shock fitted, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value`,
+          text: `verified by grid convergence on ${result.levels.length} grids with the bow shock fitted, including an allowance of ${allowanceText(result.floor)} of the value${bandCaveat(result.floor, result.levels.length) === '' ? '' : `. ${bandCaveat(result.floor, result.levels.length)}`}`,
           levels: fittedLevels(result.reports),
           detail,
         };

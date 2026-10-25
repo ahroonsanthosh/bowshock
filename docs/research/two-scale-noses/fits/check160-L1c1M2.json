@@ -1,0 +1,25 @@
+{
+ "drags": [
+  0.42909806331220435,
+  0.4286965392556282,
+  0.4285845399184869,
+  0.42855448927602957
+ ],
+ "estimate": {
+  "kind": "monotone",
+  "value": 0.42855448927602957,
+  "extrapolated": 0.42854346968486245,
+  "order": 1.8980224538599069,
+  "uncertainty": 0.000013774488958911126
+ },
+ "band": 0.0003566180803797348,
+ "relativeBand": 0.0008321417446406426,
+ "errorAgainstLowestBound": 0.00005061801141371991,
+ "containsLowestBound": true,
+ "containsReferences": true,
+ "references": {
+  "low": 0.428540445,
+  "high": 0.4285433189,
+  "lowestBound": 0.4285327967
+ }
+}

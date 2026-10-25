@@ -37,6 +37,37 @@ function recording(): { solvers: NoseDragSolvers; ran: string[] } {
   };
 }
 
+describe('the fitted solve as the page states it', () => {
+  const solvedWith = (floor: number, grids: number): VerifiedDrag => ({
+    kind: 'solved',
+    estimate: { kind: 'monotone', value: 0.08, extrapolated: 0.0799, order: 2, uncertainty: 1e-5 },
+    uncertainty: 1e-5 + floor * 0.08,
+    verified: true,
+    floor,
+    levels: Array.from({ length: grids }, (_, k) => ({ refinement: 2 ** k, value: 0.08 })),
+    reports: [],
+  });
+  const run = (result: VerifiedDrag) =>
+    solveNoseDrag(
+      cone,
+      { mach: 2, gamma: 1.4, finest: 8 },
+      {
+        transonic: () => Promise.resolve({ kind: 'cancelled', levels: [] }),
+        fitted: () => Promise.resolve(result),
+      },
+    );
+
+  it("states the solve's own allowance, and on a Von Karman nose what its band was checked on", async () => {
+    expect((await run(solvedWith(7e-5, 4))).text).toContain('an allowance of 7e-5 of the value');
+    const vk = await run(solvedWith(8e-4, 4));
+    expect(vk.text).toContain('an allowance of 8e-4 of the value');
+    expect(vk.text).toContain(
+      'On Von Karman noses a band from four grids has been checked against a reference on two noses so far (1 and 3 calibers at Mach 2).',
+    );
+    expect((await run(solvedWith(8e-4, 5))).text).toContain('a band from 5 grids, as here');
+  });
+});
+
 describe('the nose drag solver for a Mach number (design record 0013, serving rule 7)', () => {
   it('pins the ranges: [1, 1.2) transonic, 1.2 and up fitted, below 1 none', () => {
     expect(solverFor(0.999)).toBeNull();

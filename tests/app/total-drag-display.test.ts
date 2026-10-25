@@ -8,7 +8,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import type { VerifiedDrag } from '../../src/analysis/verified-drag';
+import {
+  FITTED_DRAG_FLOOR,
+  TWO_SCALE_DRAG_FLOOR,
+  type VerifiedDrag,
+} from '../../src/analysis/verified-drag';
 import {
   altitudeInUnit,
   BASIC_FINNER_NOSE_FIELDS,
@@ -351,6 +355,7 @@ describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
         ? { kind: 'unresolved', value: 0.1045, reason: 'four grids are needed' }
         : { kind: 'monotone', value: 0.1045, extrapolated: 0.10449, order: 2, uncertainty },
     uncertainty,
+    floor: FITTED_DRAG_FLOOR,
     verified: false,
     levels: [
       { refinement: 1, value: 0.1 },
@@ -377,6 +382,19 @@ describe('the nose solve, as the total takes it', { timeout: 60_000 }, () => {
       message:
         'the nose wave drag has no measured error band (not verified), and the total needs one',
     });
+  });
+
+  it("a Von Karman nose's band: its own allowance, 8e-4, and what it was checked on", () => {
+    const s = noseStateOf({ ...solved(1e-5), floor: TWO_SCALE_DRAG_FLOOR } as VerifiedDrag);
+    expect(s?.kind).toBe('solved');
+    if (s?.kind === 'solved') {
+      expect(s.component.band).toContain('an allowance of 8e-4 of the value');
+      expect(s.component.band).toContain(
+        'On Von Karman noses a band from four grids has been checked against a reference on two noses so far (1 and 3 calibers at Mach 2).',
+      );
+    }
+    const usual = noseStateOf(solved(1e-5));
+    if (usual?.kind === 'solved') expect(usual.component.band).toContain('an allowance of 7e-5');
   });
 
   it('not converged, invalid or refused: the total refused; stopped or a failed GPU: no result', () => {

@@ -1,0 +1,128 @@
+2026-10-17T14:58:10Z start L3M2r2
+2026-10-17T15:57:33Z done L3M2r2
+2026-10-17T15:57:33Z start hemiM2r1
+2026-10-17T15:58:46Z done hemiM2r1
+2026-10-17T15:58:46Z start L5M1.5r1
+2026-10-17T16:02:41Z done L5M1.5r1
+2026-10-17T16:02:41Z start L3M3r1
+2026-10-17T16:12:25Z done L3M3r1
+2026-10-17T16:12:25Z start LVL3M2r1
+2026-10-17T16:17:13Z done LVL3M2r1
+2026-10-17T16:17:13Z start P075L3M2r1
+2026-10-17T16:24:01Z done P075L3M2r1
+2026-10-17T16:24:01Z start L3M2r4
+2026-10-17T20:00:31Z start nesting
+2026-10-17T20:02:14Z done nesting
+2026-10-17T20:02:14Z start fit-L3M2r4
+2026-10-18T08:32:32Z start fit-L3M2r4
+2026-10-18T08:32:34Z start fit-L3M2n10r1
+2026-10-18T08:33:19Z done fit-L3M2n10r1
+2026-10-18T08:33:19Z start fit-L3M2n10r2
+2026-10-18T08:34:13Z done fit-L3M2n10r2
+2026-10-18T08:34:13Z start fit-L5M1.5r2
+2026-10-18T09:58:23Z done fit-L5M1.5r2
+2026-10-18T09:58:23Z start fit-L3M3r2
+2026-10-18T14:57:35Z start fit-OG1M1.5r1
+2026-10-18T14:57:37Z done fit-OG1M1.5r1
+2026-10-18T14:57:37Z start fit-PB1M1.2r1
+2026-10-18T14:57:39Z done fit-PB1M1.2r1
+2026-10-18T14:57:39Z start fit-OG1.5M1.2r1
+2026-10-18T14:57:40Z done fit-OG1.5M1.2r1
+2026-10-18T14:57:40Z start repo tests
+2026-10-18T15:06:51Z start fit-OG1M1.5r1
+2026-10-18T15:07:07Z done fit-OG1M1.5r1
+2026-10-18T15:07:07Z start fit-PB1M1.2r1
+2026-10-18T15:07:16Z done fit-PB1M1.2r1
+2026-10-18T15:07:16Z start fit-OG1.5M1.2r1
+2026-10-18T15:07:26Z done fit-OG1.5M1.2r1
+2026-10-18T15:07:26Z start fit-L3M2r4
+2026-10-18T15:30:53Z start fit-OG1M1.5r1
+2026-10-18T15:32:37Z done fit-OG1M1.5r1
+2026-10-18T15:32:37Z start fit-PB1M1.2c5r1
+2026-10-18T15:33:42Z done fit-PB1M1.2c5r1
+2026-10-18T15:33:42Z start fit-OG1.5M1.2c5r1
+2026-10-18T15:35:05Z done fit-OG1.5M1.2c5r1
+2026-10-18T15:35:05Z sharp1 finished
+2026-10-18T15:36:01Z start fit-OG1M1.5r2
+2026-10-18T15:49:27Z done fit-OG1M1.5r2
+2026-10-18T15:49:27Z start fit-PB1M1.2c5r2
+2026-10-18T15:50:04Z done fit-PB1M1.2c5r2
+2026-10-18T15:50:04Z start fit-OG1.5M1.2c5r2
+2026-10-18T15:58:13Z done fit-OG1.5M1.2c5r2
+2026-10-18T15:58:13Z sharp2 finished
+2026-10-18T15:59:54Z start fit-PB1M1.2c5r2u
+2026-10-18T16:06:44Z done fit-PB1M1.2c5r2u
+2026-10-18T16:51:31Z switched lane2 to lane4 after a checkpoint
+2026-10-18T16:51:31Z start fit-L3M2r4
+2026-10-18T16:53:20Z done fit-L3M2r4
+2026-10-18T16:53:20Z start fit-LVL3M2r2
+2026-10-18T20:05:20Z start fit-L3M2r1b
+2026-10-18T20:13:36Z done fit-L3M2r1b
+2026-10-18T20:13:36Z start fit-L3M2r2b
+2026-10-18T21:29:03Z done fit-L3M2r2b
+2026-10-18T21:29:03Z start fit-L3M2r4b
+2026-10-19T05:25:11Z start fit-L3M2r4b
+2026-10-19T12:58:04Z start fit-L3M2r4b
+2026-10-19T14:05:25Z restarted lane5 after a checkpoint (stopping test corrected)
+2026-10-19T14:05:25Z start fit-L3M2r4b
+2026-10-19T20:29:55Z restarted lane5 by main after a container restart (the agent's model limit)
+2026-10-19T20:29:55Z start fit-L3M2r4b
+2026-10-19T21:44:24Z done fit-L3M2r4b
+2026-10-19T21:44:24Z start fit-L5M1.5r1b
+2026-10-19T21:49:20Z done fit-L5M1.5r1b
+2026-10-19T21:49:20Z start fit-L5M1.5r2b
+2026-10-19T22:25:23Z done fit-L5M1.5r2b
+2026-10-19T22:25:23Z start fit-L3M3r1b
+2026-10-19T22:36:40Z done fit-L3M3r1b
+2026-10-19T22:36:40Z start fit-L3M3r2b
+2026-10-20T05:19:57Z restarted lane5 by the Haack agent after a container restart (killed during fit-L3M3r2b at 6000 iterations)
+2026-10-20T05:19:58Z start fit-L3M3r2b
+2026-10-20T06:09:24Z stopped lane5 during fit-L3M3r2b (3000 of about 14000 steps): lane6 runs it again with its fields saved, started from the saved nj = 20 fit (told main)
+seeded tests/tmp-haack/ckpt-L3M3r2b (840 x 40) from tests/tmp-haackmoc/L3M3r1 (420 x 20)
+2026-10-20T06:10:24Z start fit-L3M3r2b
+2026-10-20T11:16:29Z restarted lane6 (nice 10) after a container restart; fit-L3M3r2b resumes from its checkpoint
+2026-10-20T11:16:29Z start fit-L3M3r2b
+2026-10-20T11:44:43Z done fit-L3M3r2b
+seeded tests/tmp-haack/ckpt-L5M1.5r4 (672 x 80) from tests/tmp-haackmoc/L5M1.5r2 (336 x 40)
+2026-10-20T11:44:43Z start fit-L5M1.5r4
+2026-10-20T11:46:54Z done fit-L5M1.5r4
+seeded tests/tmp-haack/ckpt-L3M3r4 (1680 x 80) from tests/tmp-haackmoc/L3M3r2 (840 x 40)
+2026-10-20T11:46:54Z start fit-L3M3r4
+2026-10-20T14:06:59Z start fit-L5M1.5r4u
+2026-10-20T17:39:58Z restarted lane6 (nice 10) after a container restart; fit-L3M3r4 resumes from its checkpoint (6000)
+2026-10-20T17:39:58Z start fit-L5M1.5r4u
+2026-10-20T17:39:58Z start fit-L5M1.5r4
+2026-10-20T17:42:14Z done fit-L5M1.5r4
+2026-10-20T17:42:14Z start fit-L3M3r4
+2026-10-20T20:38:14Z done fit-L5M1.5r4u
+2026-10-20T22:45:25Z restarted lane6 (nice 10) after a container restart; fit-L3M3r4 resumes from its checkpoint (11000)
+2026-10-20T22:45:25Z start fit-L3M3r4
+2026-10-21T04:26:39Z restarted lane6 (nice 10) after a container restart; fit-L3M3r4 resumes from its checkpoint (13000)
+2026-10-21T04:26:39Z start fit-L3M3r4
+2026-10-21T06:33:51Z done fit-L3M3r4
+2026-10-21T06:33:51Z start fit-LVL3M2r1b
+2026-10-21T09:50:58Z restarted lane6 (nice 10) after a container restart (by the coordinator)
+2026-10-21T09:50:58Z start fit-LVL3M2r1b
+2026-10-21T09:59:32Z done fit-LVL3M2r1b
+2026-10-21T09:59:32Z start fit-LVL3M2r2b
+2026-10-21T11:43:04Z done fit-LVL3M2r2b
+2026-10-21T11:43:04Z start fit-P075L3M2r1b
+2026-10-21T12:00:53Z done fit-P075L3M2r1b
+2026-10-21T12:00:53Z start fit-P075L3M2r2b
+2026-10-21T17:48:13Z restarted lane6 (nice 10) after a container restart (by the coordinator)
+2026-10-21T17:48:14Z start fit-P075L3M2r2b
+2026-10-21T18:40:16Z done fit-P075L3M2r2b
+2026-10-21T18:40:16Z lane6 finished
+2026-10-21T18:40:16Z start L5c2M3r1
+2026-10-21T18:51:41Z done L5c2M3r1
+seeded tests/tmp-haackmoc/ckpt-L5c2M3r2 (1026 x 40) from tests/tmp-haackmoc/L5c2M3r1 (513 x 20)
+2026-10-21T18:51:41Z start L5c2M3r2
+2026-10-21T20:04:25Z done L5c2M3r2
+seeded tests/tmp-haackmoc/ckpt-L5c2M3r4 (2052 x 80) from tests/tmp-haackmoc/L5c2M3r2 (1026 x 40)
+2026-10-21T20:04:26Z start L5c2M3r4
+2026-10-22T03:55:31Z lane6 restarted after a container restart (by the coordinator)
+2026-10-22T03:55:31Z lane6 finished
+2026-10-22T03:55:31Z start L5c2M3r4
+2026-10-22T08:42:53Z lane6 restarted after a container restart (by the coordinator)
+2026-10-22T08:42:54Z lane6 finished
+2026-10-22T08:42:54Z start L5c2M3r4

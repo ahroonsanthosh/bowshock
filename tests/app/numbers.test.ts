@@ -45,6 +45,7 @@ function outcomeFor(value: number): VerifiedDrag {
   }));
   return {
     kind: 'solved',
+    floor: 7e-5,
     estimate: { kind: 'monotone', value, extrapolated: value, order: 2, uncertainty: 2e-4 },
     uncertainty: 2e-4 + 7e-5 * value,
     verified: true,

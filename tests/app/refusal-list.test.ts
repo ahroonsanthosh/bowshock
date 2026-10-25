@@ -30,6 +30,7 @@ const solver: NoseSolver = async (body, mach, hooks) => {
   for (const r of reports) hooks.onLevel(r);
   return {
     kind: 'solved',
+    floor: 7e-5,
     estimate: { kind: 'monotone', value, extrapolated: value, order: 2, uncertainty: 1e-5 },
     uncertainty: 1e-5 + 7e-5 * value,
     verified: true,

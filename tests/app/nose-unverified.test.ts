@@ -81,6 +81,7 @@ describe('a nose term not verified', () => {
     const value = exactConeNoseWaveDrag(form.mach, Math.atan(0.5 / form.body.nose.length)).cd;
     const state = noseStateOf({
       kind: 'solved',
+      floor: 7e-5,
       estimate: { kind: 'monotone', value, extrapolated: value, order: 2, uncertainty: 0.5 },
       uncertainty: 0.5,
       verified: false,

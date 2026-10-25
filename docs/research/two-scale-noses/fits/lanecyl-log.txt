@@ -1,0 +1,13 @@
+2026-10-22T22:47:31Z waiting for process group 20677
+2026-10-22T23:28:31Z waiting for process group 20678
+2026-10-22T23:28:31Z start L3c0M2r1
+2026-10-22T23:31:09Z done L3c0M2r1
+seeded tests/tmp-haackmoc/ckpt-L3c0M2r2 (472 x 40) from tests/tmp-haackmoc/L3c0M2r1 (236 x 20)
+2026-10-22T23:31:09Z start L3c0M2r2
+2026-10-22T23:41:51Z done L3c0M2r2
+2026-10-22T23:41:51Z start L3c30M2r1
+2026-10-22T23:44:49Z done L3c30M2r1
+seeded tests/tmp-haackmoc/ckpt-L3c30M2r2 (560 x 40) from tests/tmp-haackmoc/L3c30M2r1 (280 x 20)
+2026-10-22T23:44:49Z start L3c30M2r2
+2026-10-22T23:57:16Z done L3c30M2r2
+2026-10-22T23:57:16Z lanecyl finished
