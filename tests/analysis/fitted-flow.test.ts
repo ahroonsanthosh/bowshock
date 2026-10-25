@@ -5,20 +5,25 @@ import {
   bluntFitFamily,
   bluntFitProblem,
   bluntFittedFlow,
+  bluntNoseRefusal,
   bluntStart,
   bluntStartInChunks,
+  fittedDragFloor,
   fittedFlow,
+  insideOutline,
   sharpFitProblem,
   sharpFittedFlow,
   solvedBluntBody,
   verifiedFittedDrag,
+  VON_KARMAN_REFERENCES,
   wallDrag,
   type BluntStart,
 } from '../../src/analysis/fitted-flow';
 import { startedFrom } from '../../src/analysis/gpu-fitted-flow';
 import type { GpuShockFit } from '../../src/engine-gpu/shock-fitting-gpu';
+import { TWO_SCALE_DRAG_FLOOR } from '../../src/analysis/verified-drag';
 import type { Body } from '../../src/geometry/body';
-import { gridOnLines } from '../../src/grid/blunt-grid';
+import { bluntBodyGrid, gridOnLines } from '../../src/grid/blunt-grid';
 import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../../src/grid/quality';
 import { normalShock, stagnationPressureRatio } from '../../src/validation/gas-dynamics';
 import { taylorMaccoll } from '../../src/validation/taylor-maccoll';
@@ -170,6 +175,117 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
       coarse = fine;
     }
   }, 300_000);
+
+  it('a two-scale family nests exactly at refinements 2, 4 and 8 on its outer boundary (Haack)', () => {
+    // A two-scale nose keeps solvedBody's cylinder (its family's grid is
+    // built on the captured shock, not the generator's), and every grid
+    // of its family shares the start's outer boundary (secondCapture's;
+    // here, and the start's heights, made up).
+    const asked: Body = {
+      nose: { shape: { kind: 'haack', parameter: 0 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const familyOptions = { mach: 2, gamma, nj: 20 };
+    const { body, base: first } = solvedBluntBody(asked, familyOptions);
+    expect(first.twoScale).toBe(true);
+    expect(body).toEqual(asked);
+    const outerBoundary = first.lines.map((l) => ({
+      x: l.x + 0.4 * l.h * l.dx,
+      y: l.y + 0.4 * l.h * l.dy,
+    }));
+    const base = bluntBodyGrid(body, { nj: 20, mach: 2, outerBoundary, gated: false });
+    const start: BluntStart = {
+      body,
+      lines: base.lines,
+      heights: base.lines.map((l) => 0.6 * l.h),
+      grid: base.grid,
+      cell: () => ({ rho: 1, u: 2 * Math.sqrt(gamma), v: 0, p: 1 }),
+      outerBoundary,
+    };
+    const family = bluntFitFamily(asked, familyOptions, start);
+    let coarse = family(1);
+    expect(coarse.lines).toHaveLength(base.lines.length);
+    for (const refinement of [2, 4, 8]) {
+      const fine = family(refinement);
+      expect(fine.lines.length - 1).toBe(2 * (coarse.lines.length - 1));
+      expect(fine.nj).toBe(2 * coarse.nj);
+      coarse.lines.forEach((a, k) => {
+        const b = fine.lines[2 * k]!;
+        expect(b.x).toBe(a.x);
+        expect(b.y).toBe(a.y);
+        expect(fine.heights[2 * k]).toBe(coarse.heights[k]);
+        a.fractions!.forEach((f, j) => {
+          expect(b.fractions![2 * j]).toBe(f);
+        });
+      });
+      const fit = { heights: coarse.heights, cell: coarse.initial } as unknown as GpuShockFit;
+      expect(startedFrom(fine, coarse, fit)).not.toBeNull();
+      coarse = fine;
+    }
+  }, 600_000);
+
+  it('serves ellipsoids, and Von Karman noses inside the outline of their references only', () => {
+    const nose = (shape: Body['nose']['shape'], calibers: number): Body => ({
+      nose: { shape, length: calibers, baseRadius: 0.5 },
+      cylinderLength: 1,
+    });
+    const vonKarman = { kind: 'haack', parameter: 0 } as const;
+    expect(bluntNoseRefusal(nose({ kind: 'ellipsoid' }, 6), 1.2)).toBeUndefined();
+    for (const [calibers, mach] of VON_KARMAN_REFERENCES) {
+      expect(bluntNoseRefusal(nose(vonKarman, calibers), mach)).toBeUndefined();
+    }
+    expect(bluntNoseRefusal(nose(vonKarman, 8), 1.2)).toMatch(/outside the referenced range/);
+    // The outline's edge from 5 calibers at Mach 2 to 3 at Mach 3.
+    expect(bluntNoseRefusal(nose(vonKarman, 4), 2.5)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(vonKarman, 4.1), 2.5)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(vonKarman, 5), 2.1)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose({ kind: 'haack', parameter: 1 / 3 }, 3), 2)).toMatch(
+      /only the Von Karman/,
+    );
+    expect(bluntNoseRefusal(nose({ kind: 'power', exponent: 0.75 }, 3), 2)).toMatch(
+      /only the Von Karman/,
+    );
+    // Sharp tips are the sharp problem's to refuse (a detached shock).
+    expect(bluntNoseRefusal(nose({ kind: 'ogive', parameter: 1 }, 1), 1.2)).toBeUndefined();
+    // The outline: a point, a segment, a polygon.
+    expect(insideOutline([[3, 2]], [3, 2])).toBe(true);
+    expect(insideOutline([[3, 2]], [3, 2.1])).toBe(false);
+    expect(
+      insideOutline(
+        [
+          [1, 2],
+          [3, 2],
+        ],
+        [2, 2],
+      ),
+    ).toBe(true);
+    expect(
+      insideOutline(
+        [
+          [1, 2],
+          [3, 2],
+        ],
+        [2, 2.01],
+      ),
+    ).toBe(false);
+    const quad: [number, number][] = [
+      [1, 2],
+      [3, 2],
+      [3, 3],
+      [5, 1.5],
+    ];
+    expect(insideOutline(quad, [3, 2])).toBe(true);
+    expect(insideOutline(quad, [4, 2])).toBe(true);
+    expect(insideOutline(quad, [5, 1.5])).toBe(true);
+    expect(insideOutline(quad, [5, 2])).toBe(false);
+    expect(insideOutline(quad, [1, 1.5])).toBe(false);
+    // The allowance: raised on a two-scale start only.
+    const start = (outerBoundary?: { x: number; y: number }[]) =>
+      ({ ...(outerBoundary ? { outerBoundary } : {}) }) as unknown as BluntStart;
+    expect(fittedDragFloor(7e-5, null)).toBe(7e-5);
+    expect(fittedDragFloor(7e-5, start())).toBe(7e-5);
+    expect(fittedDragFloor(7e-5, start([{ x: -1, y: 0 }]))).toBe(TWO_SCALE_DRAG_FLOOR);
+  });
 
   it('a blunt start computed in chunks is the same start, and stops when aborted', async () => {
     const body: Body = {

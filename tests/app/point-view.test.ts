@@ -28,6 +28,7 @@ const solver =
     for (const r of reports) hooks.onLevel(r);
     const outcome: VerifiedDrag = {
       kind: 'solved',
+      floor: 7e-5,
       estimate: band
         ? { kind: 'monotone', value, extrapolated: value, order: 2, uncertainty: 1e-5 }
         : { kind: 'unresolved', value, reason: 'no order' },

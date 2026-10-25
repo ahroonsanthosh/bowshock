@@ -125,22 +125,89 @@ describe('body grids (C topology, blunt noses)', () => {
     }
   }, 120_000);
 
-  it('refuses sharp noses, noses meeting the body at an angle, and grids that fail the gates', () => {
+  it('a Haack nose has two scales: its tip scale, 2.88 (1 + 1.5 C)^2 R^4 / L^3 (6.7e-3 of the diameter at 3 calibers)', () => {
+    // r = c x^(3/4) at the tip crosses r = x at (64 / pi^2) (2/3 + C)^2
+    // R^4 / L^3; the higher terms of the series lower it on the 3-caliber
+    // nose by 0.13% (C = 0) and 0.70% (C = 1/3).
+    for (const parameter of [0, 1 / 3]) {
+      const haack: Body = {
+        nose: { shape: { kind: 'haack', parameter }, length: 3, baseRadius: 0.5 },
+        cylinderLength: 2,
+      };
+      const g = bluntBodyGrid(haack, { nj: 20, mach: 2, gated: false });
+      const asymptotic = ((64 / Math.PI ** 2) * (2 / 3 + parameter) ** 2 * 0.5 ** 4) / 3 ** 3;
+      expect(Math.abs(g.tipScale / asymptotic - 1)).toBeLessThan(1e-2);
+      expect(g.twoScale).toBe(true);
+      expect(g.scale).toBe(2 * g.tipScale);
+    }
+    // Ellipsoids keep one scale, the base radius, whatever their length:
+    // the grids their families were measured on (0006).
+    for (const length of [0.5, 3, 6]) {
+      const ellipsoid: Body = {
+        ...hemisphereCylinder,
+        nose: { ...hemisphereCylinder.nose, length },
+      };
+      const g = bluntBodyGrid(ellipsoid, { nj: 20, mach: 2, gated: false });
+      expect(g.twoScale).toBe(false);
+      expect(g.scale).toBe(Math.max(0.5, 0.25 / length));
+    }
+  }, 120_000);
+
+  it('keeps every node of its coarser grids exactly on an outer boundary given (a two-scale family)', () => {
+    // The family's grids are built on the shock captured on the first,
+    // pushed out (secondCapture); here a boundary made up from the
+    // generator's own lines.
+    const haack: Body = {
+      nose: { shape: { kind: 'haack', parameter: 0 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    const first = bluntBodyGrid(haack, { nj: 20, mach: 2, gated: false });
+    const outerBoundary = first.lines.map((l) => ({
+      x: l.x + 0.4 * l.h * l.dx,
+      y: l.y + 0.4 * l.h * l.dy,
+    }));
+    const options = { nj: 20, mach: 2, outerBoundary, gated: false };
+    const coarse = bluntBodyGrid(haack, options).grid;
+    expect(Math.abs(coarse.x[nodeIndex(coarse, 0, coarse.nj)]! - outerBoundary[0]!.x)).toBeLessThan(
+      1e-15,
+    );
+    for (const refinement of [2, 4]) {
+      const fine = bluntBodyGrid(haack, { ...options, refinement }).grid;
+      expect(fine.ni).toBe(refinement * coarse.ni);
+      expect(fine.nj).toBe(refinement * coarse.nj);
+      for (let j = 0; j <= coarse.nj; j++) {
+        for (let i = 0; i <= coarse.ni; i++) {
+          const c = nodeIndex(coarse, i, j);
+          const f = nodeIndex(fine, refinement * i, refinement * j);
+          expect(fine.x[f]).toBe(coarse.x[c]);
+          expect(fine.y[f]).toBe(coarse.y[c]);
+        }
+      }
+    }
+  }, 300_000);
+
+  it('serves sharp tips as the limit of two-scale noses, refuses noses meeting the body at an angle, and grids that fail the gates', () => {
     const sharp: Body = {
       ...hemisphereCylinder,
       nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 },
     };
-    expect(() => bluntBodyGrid(sharp, { nj: 20, mach: 3 })).toThrow(/sharp/);
+    // A sharp tip is served as the limit of a two-scale nose (its shock
+    // detaches at low Mach numbers): the generator's own grid only has to
+    // contain the shock, and the family's grid is built on it (0006).
+    expect(bluntBodyGrid(sharp, { nj: 20, mach: 3, gated: false }).twoScale).toBe(true);
+    // A paraboloid half as long as its radius meets the cylinder at 26.6 deg.
     const power: Body = {
       ...hemisphereCylinder,
-      nose: { shape: { kind: 'power', exponent: 0.5 }, length: 1, baseRadius: 0.5 },
+      nose: { shape: { kind: 'power', exponent: 0.5 }, length: 0.5, baseRadius: 0.5 },
     };
-    expect(() => bluntBodyGrid(power, { nj: 20, mach: 3 })).toThrow(/tangentially/);
+    expect(() => bluntBodyGrid(power, { nj: 20, mach: 3 })).toThrow(
+      /meeting the body at more than/,
+    );
     // A hemisphere with no cylinder at Mach 1.5: the lines must turn
     // vertical by the end of the body, too fast for the gates.
     const stub: Body = { ...hemisphereCylinder, cylinderLength: 0 };
     expect(() => bluntBodyGrid(stub, { nj: 20, mach: 1.5 })).toThrow(GridQualityError);
-  });
+  }, 60_000);
 
   it('fixed node fractions reproduce the grid at the reference heights and scale with new ones', () => {
     const { grid, lines } = bluntBodyGrid(hemisphereCylinder, { nj: 20, mach: 3 });

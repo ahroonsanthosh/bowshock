@@ -1,0 +1,29 @@
+r 1 (293 x 20) from tests/tmp-haackmoc/L5c2M2r1: drag 0.032780330068002010, mach 2.00000003236, rebuilt in 53 s
+  line 90 (x 6.06342e-3): min Mach 1.2253, wall K -3.52e-2, fitted downstream 0.0327332212775 (99.856% of the drag)
+    MOC 640: 0.0325962991822, fitted - MOC 1.369e-4 (4.177e-3 of the drag), mass 4.12e-4, penetration 0.0e+0, 8 s
+    MOC 1280: 0.0325858037315, fitted - MOC 1.474e-4 (4.497e-3 of the drag), mass 1.93e-4, penetration 0.0e+0, 33 s
+    MOC 2560: 0.0325810642867, fitted - MOC 1.522e-4 (4.642e-3 of the drag), mass 8.82e-5, penetration 0.0e+0, 135 s
+  line 102 (x 9.12205e-3): min Mach 1.3084, wall K -4.64e-2, fitted downstream 0.0327039846871 (99.767% of the drag)
+    MOC 640: 0.0325594169719, fitted - MOC 1.446e-4 (4.410e-3 of the drag), mass 3.80e-4, penetration 0.0e+0, 11 s
+    MOC 1280: 0.0325554533437, fitted - MOC 1.485e-4 (4.531e-3 of the drag), mass 1.86e-4, penetration 0.0e+0, 31 s
+    MOC 2560: 0.0325510339027, fitted - MOC 1.530e-4 (4.666e-3 of the drag), mass 8.98e-5, penetration 0.0e+0, 116 s
+  line 114 (x 1.35116e-2): min Mach 1.3851, wall K -5.76e-2, fitted downstream 0.0326595515680 (99.632% of the drag)
+    MOC 640: 0.0325126571528, fitted - MOC 1.469e-4 (4.481e-3 of the drag), mass 2.56e-4, penetration 0.0e+0, 8 s
+    MOC 1280: 0.0325074557984, fitted - MOC 1.521e-4 (4.640e-3 of the drag), mass 1.10e-4, penetration 0.0e+0, 27 s
+    MOC 2560: 0.0325047666398, fitted - MOC 1.548e-4 (4.722e-3 of the drag), mass 4.39e-5, penetration 0.0e+0, 114 s
+  line 126 (x 1.99389e-2): min Mach 1.4572, wall K -6.86e-2, fitted downstream 0.0325910265098 (99.423% of the drag)
+    MOC 640: 0.0324459890124, fitted - MOC 1.450e-4 (4.425e-3 of the drag), mass 2.67e-4, penetration 0.0e+0, 6 s
+    MOC 1280: 0.0324399993459, fitted - MOC 1.510e-4 (4.607e-3 of the drag), mass 1.22e-4, penetration 0.0e+0, 21 s
+    MOC 2560: 0.0324369744624, fitted - MOC 1.541e-4 (4.700e-3 of the drag), mass 5.32e-5, penetration 0.0e+0, 85 s
+  line 138 (x 2.95541e-2): min Mach 1.5230, wall K -7.91e-2, fitted downstream 0.0324834437951 (99.094% of the drag)
+    MOC 640: 0.0323320824353, fitted - MOC 1.514e-4 (4.617e-3 of the drag), mass 2.38e-4, penetration 0.0e+0, 5 s
+    MOC 1280: 0.0323298548296, fitted - MOC 1.536e-4 (4.685e-3 of the drag), mass 1.14e-4, penetration 0.0e+0, 21 s
+    MOC 2560: 0.0323285170578, fitted - MOC 1.549e-4 (4.726e-3 of the drag), mass 5.28e-5, penetration 0.0e+0, 93 s
+r 2 (586 x 40) from tests/tmp-haackmoc/L5c2M2r2: drag 0.032675569120795687, mach 2.00000003236, rebuilt in 75 s
+  line 90 (x 6.06342e-3): min Mach 1.2041, wall K -2.41e-2, fitted downstream 0.0326284985371 (99.856% of the drag)
+    MOC 640: 0.0325994877033, fitted - MOC 2.901e-5 (8.878e-4 of the drag), mass 4.75e-4, penetration 0.0e+0, 12 s
+    MOC 1280: 0.0325877654595, fitted - MOC 4.073e-5 (1.247e-3 of the drag), mass 2.25e-4, penetration 0.0e+0, 41 s
+    MOC 2560: 0.0325819588400, fitted - MOC 4.654e-5 (1.424e-3 of the drag), mass 1.04e-4, penetration 0.0e+0, 188 s
+  line 102 (x 9.12205e-3): min Mach 1.2853, wall K -3.41e-2, fitted downstream 0.0325992934774 (99.767% of the drag)
+    MOC 640: 0.0325587736344, fitted - MOC 4.052e-5 (1.240e-3 of the drag), mass 4.45e-4, penetration 0.0e+0, 12 s
+    MOC 1280: 0.0325565326812, fitted - MOC 4.276e-5 (1.309e-3 of the drag), mass 2.19e-4, penetration 0.0e+0, 42 s

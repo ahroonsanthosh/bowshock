@@ -1,0 +1,11 @@
+2026-10-22T10:31:40Z waiting for process group 2296
+seeded tests/tmp-haackmoc/ckpt-L1c1M2r8 (904 x 160) from tests/tmp-haackmoc/L1c1M2r4 (452 x 80)
+2026-10-22T11:56:41Z start L1c1M2r8
+2026-10-22T21:37:49Z lane160 restarted after a container restart (lanex had finished at 11:56)
+2026-10-22T21:37:49Z start L1c1M2r8
+2026-10-23T07:02:05Z start L1c1M2r8
+2026-10-23T12:32:51Z start L1c1M2r8
+2026-10-23T20:26:08Z start L1c1M2r8
+2026-10-24T01:34:40Z start L1c1M2r8
+2026-10-24T05:55:26Z done L1c1M2r8
+2026-10-24T05:55:26Z lane160 finished

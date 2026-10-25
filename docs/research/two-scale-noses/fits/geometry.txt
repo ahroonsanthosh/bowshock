@@ -1,0 +1,113 @@
+2026-10-17T14:08:29.863Z C=0 L=1: l45=1.6248e-1 theory=1.8000e-1
+2026-10-17T14:08:29.864Z   x=0.01 l: r/l=0.0324 slope=2.4323 (asym 2.3717) delta=67.65 deg
+2026-10-17T14:08:29.864Z   x=0.1 l: r/l=0.1820 slope=1.3607 (asym 1.3337) delta=53.69 deg
+2026-10-17T14:08:29.864Z   x=0.316 l: r/l=0.4291 slope=1.0076 (asym 1.0003) delta=45.22 deg
+2026-10-17T14:08:29.864Z   x=1 l: r/l=1.0000 slope=0.7227 (asym 0.7500) delta=35.86 deg
+2026-10-17T14:08:29.864Z   x=2 l: r/l=1.6335 slope=0.5617 (asym 0.6307) delta=29.32 deg
+2026-10-17T14:08:29.864Z   x=5 l: r/l=2.8705 slope=0.2664 (asym 0.5016) delta=14.92 deg
+2026-10-17T14:08:29.864Z   x=0.05: r=0.06836 delta=45.42 deg
+2026-10-17T14:08:29.864Z   x=0.1: r=0.11407 delta=39.94 deg
+2026-10-17T14:08:29.864Z   x=0.2: r=0.18867 delta=34.01 deg
+2026-10-17T14:08:29.864Z   x=0.3: r=0.25116 delta=30.15 deg
+2026-10-17T14:08:29.864Z   x=0.5: r=0.35355 delta=24.24 deg
+2026-10-17T14:08:29.864Z   x=1: r=0.50000 delta=0.01 deg
+2026-10-17T14:08:29.864Z C=0 L=2: l45=2.2365e-2 theory=2.2500e-2
+2026-10-17T14:08:29.864Z   x=0.01 l: r/l=0.0317 slope=2.3756 (asym 2.3717) delta=67.17 deg
+2026-10-17T14:08:29.864Z   x=0.1 l: r/l=0.1781 slope=1.3354 (asym 1.3337) delta=53.17 deg
+2026-10-17T14:08:29.864Z   x=0.316 l: r/l=0.4220 slope=1.0008 (asym 1.0003) delta=45.02 deg
+2026-10-17T14:08:29.864Z   x=1 l: r/l=1.0000 slope=0.7483 (asym 0.7500) delta=36.81 deg
+2026-10-17T14:08:29.864Z   x=2 l: r/l=1.6789 slope=0.6267 (asym 0.6307) delta=32.08 deg
+2026-10-17T14:08:29.864Z   x=5 l: r/l=3.3208 slope=0.4923 (asym 0.5016) delta=26.21 deg
+2026-10-17T14:08:29.864Z   x=10 l: r/l=5.5356 slope=0.4051 (asym 0.4218) delta=22.06 deg
+2026-10-17T14:08:29.864Z   x=50 l: r/l=16.9542 slope=0.2084 (asym 0.2820) delta=11.77 deg
+2026-10-17T14:08:29.864Z   x=0.05: r=0.04080 delta=31.34 deg
+2026-10-17T14:08:29.864Z   x=0.1: r=0.06836 delta=26.90 deg
+2026-10-17T14:08:29.864Z   x=0.2: r=0.11407 delta=22.71 deg
+2026-10-17T14:08:29.864Z   x=0.3: r=0.15335 delta=20.33 deg
+2026-10-17T14:08:29.864Z   x=0.5: r=0.22108 delta=17.31 deg
+2026-10-17T14:08:29.864Z   x=1: r=0.35355 delta=12.68 deg
+2026-10-17T14:08:29.864Z   x=1.5: r=0.44847 delta=8.74 deg
+2026-10-17T14:08:29.864Z   x=2: r=0.50000 delta=0.00 deg
+2026-10-17T14:08:29.864Z C=0 L=3: l45=6.6625e-3 theory=6.6667e-3
+2026-10-17T14:08:29.864Z   x=0.01 l: r/l=0.0316 slope=2.3725 (asym 2.3717) delta=67.14 deg
+2026-10-17T14:08:29.864Z   x=0.1 l: r/l=0.1779 slope=1.3341 (asym 1.3337) delta=53.14 deg
+2026-10-17T14:08:29.864Z   x=0.316 l: r/l=0.4216 slope=1.0004 (asym 1.0003) delta=45.01 deg
+2026-10-17T14:08:29.864Z   x=1 l: r/l=1.0000 slope=0.7497 (asym 0.7500) delta=36.86 deg
+2026-10-17T14:08:29.864Z   x=2 l: r/l=1.6812 slope=0.6299 (asym 0.6307) delta=32.21 deg
+2026-10-17T14:08:29.864Z   x=5 l: r/l=3.3392 slope=0.4998 (asym 0.5016) delta=26.55 deg
+2026-10-17T14:08:29.864Z   x=10 l: r/l=5.6064 slope=0.4186 (asym 0.4218) delta=22.71 deg
+2026-10-17T14:08:29.864Z   x=50 l: r/l=18.4867 slope=0.2707 (asym 0.2820) delta=15.14 deg
+2026-10-17T14:08:29.864Z   x=100 l: r/l=30.5139 slope=0.2169 (asym 0.2372) delta=12.24 deg
+2026-10-17T14:08:29.864Z   x=450 l: r/l=75.0463 slope=0.0053 (asym 0.1628) delta=0.31 deg
+2026-10-17T14:08:29.864Z   x=0.05: r=0.03014 delta=24.26 deg
+2026-10-17T14:08:29.864Z   x=0.1: r=0.05057 delta=20.64 deg
+2026-10-17T14:08:29.864Z   x=0.2: r=0.08460 delta=17.37 deg
+2026-10-17T14:08:29.864Z   x=0.3: r=0.11407 delta=15.59 deg
+2026-10-17T14:08:29.864Z   x=0.5: r=0.16549 delta=13.44 deg
+2026-10-17T14:08:29.864Z   x=1: r=0.27009 delta=10.49 deg
+2026-10-17T14:08:29.864Z   x=1.5: r=0.35355 delta=8.53 deg
+2026-10-17T14:08:29.864Z   x=2: r=0.42078 delta=6.78 deg
+2026-10-17T14:08:29.864Z   x=2.5: r=0.47182 delta=4.79 deg
+2026-10-17T14:08:29.864Z   x=2.9: r=0.49744 delta=2.19 deg
+2026-10-17T14:08:29.864Z   x=3: r=0.50000 delta=0.00 deg
+2026-10-17T14:08:29.865Z C=0 L=5: l45=1.4408e-3 theory=1.4400e-3
+2026-10-17T14:08:29.865Z   x=0.01 l: r/l=0.0316 slope=2.3718 (asym 2.3717) delta=67.14 deg
+2026-10-17T14:08:29.865Z   x=0.1 l: r/l=0.1778 slope=1.3338 (asym 1.3337) delta=53.14 deg
+2026-10-17T14:08:29.865Z   x=0.316 l: r/l=0.4215 slope=1.0003 (asym 1.0003) delta=45.01 deg
+2026-10-17T14:08:29.865Z   x=1 l: r/l=1.0000 slope=0.7500 (asym 0.7500) delta=36.87 deg
+2026-10-17T14:08:29.865Z   x=2 l: r/l=1.6817 slope=0.6306 (asym 0.6307) delta=32.23 deg
+2026-10-17T14:08:29.865Z   x=5 l: r/l=3.3431 slope=0.5013 (asym 0.5016) delta=26.63 deg
+2026-10-17T14:08:29.865Z   x=10 l: r/l=5.6212 slope=0.4213 (asym 0.4218) delta=22.85 deg
+2026-10-17T14:08:29.865Z   x=50 l: r/l=18.7630 slope=0.2806 (asym 0.2820) delta=15.68 deg
+2026-10-17T14:08:29.865Z   x=100 l: r/l=31.4864 slope=0.2348 (asym 0.2372) delta=13.21 deg
+2026-10-17T14:08:29.865Z   x=450 l: r/l=95.7409 slope=0.1550 (asym 0.1628) delta=8.81 deg
+2026-10-17T14:08:29.865Z   x=0.05: r=0.02057 delta=17.12 deg
+2026-10-17T14:08:29.865Z   x=0.1: r=0.03454 delta=14.47 deg
+2026-10-17T14:08:29.865Z   x=0.2: r=0.05792 delta=12.16 deg
+2026-10-17T14:08:29.865Z   x=0.3: r=0.07826 delta=10.93 deg
+2026-10-17T14:08:29.865Z   x=0.5: r=0.11407 delta=9.51 deg
+2026-10-17T14:08:29.865Z   x=1: r=0.18867 delta=7.69 deg
+2026-10-17T14:08:29.865Z   x=1.5: r=0.25116 delta=6.63 deg
+2026-10-17T14:08:29.865Z   x=2: r=0.30559 delta=5.83 deg
+2026-10-17T14:08:29.865Z   x=2.5: r=0.35355 delta=5.14 deg
+2026-10-17T14:08:29.865Z   x=2.9: r=0.38776 delta=4.63 deg
+2026-10-17T14:08:29.865Z   x=3: r=0.39575 delta=4.51 deg
+2026-10-17T14:08:29.865Z   x=4: r=0.46304 delta=3.15 deg
+2026-10-17T14:08:29.865Z   x=5: r=0.50000 delta=0.00 deg
+2026-10-17T14:08:29.865Z C=0.3333333333333333 L=3: l45=1.4906e-2 theory=1.5000e-2
+2026-10-17T14:08:29.865Z   x=0.01 l: r/l=0.0317 slope=2.3757 (asym 2.3717) delta=67.17 deg
+2026-10-17T14:08:29.865Z   x=0.1 l: r/l=0.1781 slope=1.3355 (asym 1.3337) delta=53.17 deg
+2026-10-17T14:08:29.865Z   x=0.316 l: r/l=0.4220 slope=1.0008 (asym 1.0003) delta=45.02 deg
+2026-10-17T14:08:29.865Z   x=1 l: r/l=1.0000 slope=0.7483 (asym 0.7500) delta=36.81 deg
+2026-10-17T14:08:29.865Z   x=2 l: r/l=1.6789 slope=0.6266 (asym 0.6307) delta=32.07 deg
+2026-10-17T14:08:29.865Z   x=5 l: r/l=3.3204 slope=0.4922 (asym 0.5016) delta=26.21 deg
+2026-10-17T14:08:29.865Z   x=10 l: r/l=5.5350 slope=0.4053 (asym 0.4218) delta=22.06 deg
+2026-10-17T14:08:29.865Z   x=50 l: r/l=17.1779 slope=0.2241 (asym 0.2820) delta=12.63 deg
+2026-10-17T14:08:29.865Z   x=100 l: r/l=26.0280 slope=0.1372 (asym 0.2372) delta=7.81 deg
+2026-10-17T14:08:29.865Z   x=0.05: r=0.03679 delta=28.70 deg
+2026-10-17T14:08:29.865Z   x=0.1: r=0.06152 delta=24.42 deg
+2026-10-17T14:08:29.865Z   x=0.2: r=0.10223 delta=20.36 deg
+2026-10-17T14:08:29.865Z   x=0.3: r=0.13690 delta=18.03 deg
+2026-10-17T14:08:29.865Z   x=0.5: r=0.19589 delta=15.06 deg
+2026-10-17T14:08:29.865Z   x=1: r=0.30851 delta=10.71 deg
+2026-10-17T14:08:29.865Z   x=1.5: r=0.38926 delta=7.76 deg
+2026-10-17T14:08:29.865Z   x=2: r=0.44641 delta=5.33 deg
+2026-10-17T14:08:29.865Z   x=2.5: r=0.48332 delta=3.12 deg
+2026-10-17T14:08:29.865Z   x=2.9: r=0.49867 delta=1.17 deg
+2026-10-17T14:08:29.865Z   x=3: r=0.50000 delta=0.00 deg
+2026-10-17T14:08:32.296Z haack 0 L3 M1.5: the generated grid fails its quality checks: wall cell angle 42.9 deg below 60.0 deg; neighbouring cells differ in size by 1.74 (limit 1.3)
+2026-10-17T14:08:37.392Z haack 0 L3 M2: the generated grid fails its quality checks: wall cell angle 47.1 deg below 60.0 deg; neighbouring cells differ in size by 1.64 (limit 1.3)
+2026-10-17T14:08:46.398Z haack 0 L3 M3: the generated grid fails its quality checks: wall cell angle 50.2 deg below 60.0 deg; neighbouring cells differ in size by 1.30 (limit 1.3)
+2026-10-17T14:08:58.134Z haack 0 L3 M5: the generated grid fails its quality checks: wall cell angle 51.9 deg below 60.0 deg
+2026-10-17T14:09:00.128Z haack 0 L2 M1.5: the generated grid fails its quality checks: wall cell angle 51.3 deg below 60.0 deg; neighbouring cells differ in size by 1.32 (limit 1.3)
+2026-10-17T14:09:04.052Z haack 0 L2 M2: the generated grid fails its quality checks: wall cell angle 55.9 deg below 60.0 deg; neighbouring cells differ in size by 1.73 (limit 1.3)
+2026-10-17T14:09:10.935Z haack 0 L2 M3: the generated grid fails its quality checks: wall cell angle 59.4 deg below 60.0 deg
+2026-10-17T14:09:18.440Z haack 0 L2 M5: the generated grid fails its quality checks: neighbouring cells differ in size by 1.36 (limit 1.3)
+2026-10-17T14:09:24.564Z haack 0 L5 M1.5: the generated grid fails its quality checks: wall cell angle 34.3 deg below 60.0 deg; neighbouring cells differ in size by 2.08 (limit 1.3)
+2026-10-17T14:09:35.393Z haack 0 L5 M2: the generated grid fails its quality checks: wall cell angle 37.5 deg below 60.0 deg; neighbouring cells differ in size by 1.44 (limit 1.3)
+2026-10-17T14:09:51.293Z haack 0 L5 M3: the generated grid fails its quality checks: wall cell angle 40.1 deg below 60.0 deg; neighbouring cells differ in size by 1.45 (limit 1.3)
+2026-10-17T14:10:12.996Z haack 0 L5 M5: the generated grid fails its quality checks: wall cell angle 41.5 deg below 60.0 deg; neighbouring cells differ in size by 1.38 (limit 1.3)
+2026-10-17T14:10:13.013Z power 0.75 L3 M1.5: blunt noses that do not meet the body tangentially are not supported yet
+2026-10-17T14:10:13.024Z power 0.75 L3 M2: blunt noses that do not meet the body tangentially are not supported yet
+2026-10-17T14:10:13.045Z power 0.75 L3 M3: blunt noses that do not meet the body tangentially are not supported yet
+2026-10-17T14:10:13.062Z power 0.75 L3 M5: blunt noses that do not meet the body tangentially are not supported yet

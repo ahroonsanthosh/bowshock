@@ -21,7 +21,9 @@
  *   condition it fails.
  */
 
-import { FITTED_DRAG_FLOOR } from '../analysis/verified-drag';
+import { FITTED_DRAG_FLOOR, allowanceText, bandCaveat } from '../analysis/verified-drag';
+
+export { allowanceText, bandCaveat };
 import type { BodyBaseDrag } from '../base/base-drag';
 import { FIG35_FREE_FLIGHT_END } from '../base/tn3819-fig35';
 import { clippedDeltaPlanform, trapezoidalPlanform, type Planform } from '../fins/planform';
@@ -807,6 +809,8 @@ export interface NoseSolve {
   readonly uncertainty: number;
   /** Grids solved. */
   readonly grids: number;
+  /** The allowance included in the band, relative (FITTED_DRAG_FLOOR if not given). */
+  readonly floor?: number;
 }
 
 /** The nose term src/total is given: the page's solved value and band, unchanged. */
@@ -821,8 +825,11 @@ export function noseComponentOf(solve: NoseSolve): DragComponent {
       `${solve.grids} grids (0006)`,
     band:
       'numerical error of the inviscid solve, measured from the grids, with an allowance of ' +
-      `${FITTED_DRAG_FLOOR.toExponential(0)} of the value (0006); the model's own error is not in ` +
-      'this band (docs/validation/sources.md)',
+      `${allowanceText(solve.floor ?? FITTED_DRAG_FLOOR)} of the value (0006); the model's own error ` +
+      'is not in this band (docs/validation/sources.md)' +
+      (bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR, solve.grids) === ''
+        ? ''
+        : `. ${bandCaveat(solve.floor ?? FITTED_DRAG_FLOOR, solve.grids)}`),
   };
 }
 

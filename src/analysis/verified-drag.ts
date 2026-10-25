@@ -82,6 +82,8 @@ export type VerifiedDrag =
       readonly reports: readonly LevelReport[];
       /** The column density of the family solved, where not the usual layout's (onFallback). */
       readonly columnDensity?: number;
+      /** The allowance included in the band, relative (the caller's floor, or a larger one). */
+      readonly floor: number;
     })
   | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string }
   | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] }
@@ -128,6 +130,47 @@ export const DRAG_FLOOR = 1e-3;
  * finest grid's value, still contain its error (by 1.56 to 2.05 times).
  */
 export const FITTED_DRAG_FLOOR = 7e-5;
+/**
+ * The allowance for the fitted drag of a two-scale nose (Von Karman),
+ * relative, in place of FITTED_DRAG_FLOOR. Against references from the
+ * method of characteristics started from the fitted flow, on the families
+ * that set the served region (VON_KARMAN_REFERENCES in fitted-flow.ts), the
+ * procedure's extrapolation from nj = 20, 40 and 80 misses by up to
+ * 3.33e-4 of the value: on the 5-caliber nose at Mach 2, whose march
+ * converges more slowly than its fitted drag (on the 5-caliber nose at
+ * Mach 1.5, whose observed order of 2.28 is capped at 2, by up to
+ * 2.44e-4; docs/design/0006-shock-fitting.md, "Two-scale noses"). That
+ * reference rests on one line; the lines next to it, which fail the line
+ * criterion only on nj = 80's mass balance (4.6e-5 against 3.5e-5), give
+ * misses of up to 3.64e-4, with the march's orders scattered from 0.53 to
+ * 1.92 and the references spread over 2.2e-4 of the value. The allowance
+ * is twice the largest of these, 3.64e-4, rounded up. The bands it was
+ * set from are of three grids; the page's bands of four grids have been
+ * checked against a reference on two of these noses (1 and 3 calibers at
+ * Mach 2, 0006), its bands of five grids (320 cells across) on none.
+ */
+export const TWO_SCALE_DRAG_FLOOR = 8e-4;
+
+/** An allowance as the pages state it: 7e-5, 8e-4. */
+export function allowanceText(floor: number): string {
+  return Number(floor.toPrecision(2)).toExponential();
+}
+
+/**
+ * What a band with the given allowance, from the given number of grids,
+ * has been checked on, as the pages state it after the band, or '' if
+ * nothing needs saying. A Von Karman nose's allowance was set from bands
+ * of three grids (nj = 20 to 80) against the method of characteristics;
+ * the page's bands of four grids (to nj = 160) have been checked on two
+ * Von Karman noses (1 and 3 calibers at Mach 2), its bands of five (to nj
+ * = 320) on none (docs/design/0006-shock-fitting.md, "Two-scale noses").
+ */
+export function bandCaveat(floor: number, grids: number): string {
+  if (floor < TWO_SCALE_DRAG_FLOOR) return '';
+  return grids > 4
+    ? `On Von Karman noses a band from four grids has been checked against a reference on two noses (1 and 3 calibers at Mach 2); a band from ${grids} grids, as here, has not been checked on any.`
+    : 'On Von Karman noses a band from four grids has been checked against a reference on two noses so far (1 and 3 calibers at Mach 2).';
+}
 /**
  * Agreement required between the observed orders of the two finest
  * triples of grids, set on the measured cone families (0005).
@@ -255,7 +298,7 @@ export async function verifiedForebodyDrag(
       lastRefinement = refinement;
       return solveAt(refinement);
     }, options);
-    return { ...result, kind: 'solved', reports };
+    return { ...result, kind: 'solved', reports, floor: options.floor };
   } catch (error) {
     if (error instanceof IterationStalled) {
       return { kind: 'not-converged', refinement: lastRefinement, reason: error.message };

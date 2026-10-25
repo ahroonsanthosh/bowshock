@@ -67,6 +67,7 @@ function standIn(
     const value = reports[3]!.drag;
     const outcome: VerifiedDrag = {
       kind: 'solved',
+      floor: 7e-5,
       estimate:
         options.band === false
           ? { kind: 'unresolved', value, reason: 'the observed orders differ' }

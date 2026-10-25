@@ -23,6 +23,7 @@ import { liveFitSource } from '../render/flow-source';
 import { presentationFor } from '../render/presenter';
 import { basicFinnerBodyAsTyped } from '../validation/basic-finner';
 import { withBand } from './band';
+import { allowanceText, bandCaveat } from './total-drag';
 import { DrawnCaseRecord, pngCaption, pngName } from './drawn-case';
 import {
   GPU_FAILED,
@@ -270,7 +271,7 @@ function showOutcome(
     settle(
       withBand(e.value, outcome.uncertainty),
       VERIFIED,
-      `The band from ${outcome.levels.length} grids, including an allowance of ${FITTED_DRAG_FLOOR.toExponential(0)} of the value.${notes}`,
+      `The band from ${outcome.levels.length} grids, including an allowance of ${allowanceText(outcome.floor)} of the value.${notes}${bandCaveat(outcome.floor, outcome.levels.length) === '' ? '' : ` ${bandCaveat(outcome.floor, outcome.levels.length)}`}`,
     );
     return;
   }

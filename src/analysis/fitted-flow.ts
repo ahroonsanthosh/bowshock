@@ -18,8 +18,10 @@ import { noseBaseSlope, noseTipSlope } from '../geometry/nose';
 import {
   bluntBodyGrid,
   gridOnLines,
+  outerCellHeight,
   withFixedFractions,
   type BluntGrid,
+  type BluntGridOptions,
   type GridLine,
 } from '../grid/blunt-grid';
 import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
@@ -31,7 +33,13 @@ import { normalShock } from '../validation/gas-dynamics';
 import { coneFlowField, taylorMaccoll } from '../validation/taylor-maccoll';
 import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
 import { forebodyPressureDrag } from './forces';
-import { CPU_NOISE, ORDER_TOLERANCE, freeStreamAt, outflowMach } from './verified-drag';
+import {
+  CPU_NOISE,
+  ORDER_TOLERANCE,
+  TWO_SCALE_DRAG_FLOOR,
+  freeStreamAt,
+  outflowMach,
+} from './verified-drag';
 
 export interface FittedFlowOptions {
   readonly mach: number;
@@ -167,6 +175,10 @@ function* solvedBluntSteps(
     // Not gated: only the start, the grids solved for the drag are (as
     // bluntFitFamily's lines).
     const base = bluntBodyGrid(body, { nj: options.nj, mach: options.mach, gated: false });
+    // A two-scale nose's family is built on its captured shock
+    // (secondCapture), so the generator's own grid says nothing of it: its
+    // cylinder is solvedBody's, and the fitted grids' gates decide.
+    if (base.twoScale) return { body, base };
     if (gridQuality(base.grid).maxSizeRatio <= FITTED_QUALITY_LIMITS.maxSizeRatio) {
       return { body, base };
     }
@@ -468,16 +480,30 @@ export interface BluntStart {
   readonly grid: StructuredGrid;
   /** The captured solution in each cell of the base grid. */
   readonly cell: (i: number, j: number) => Primitive2D;
+  /**
+   * The outer boundary of the family's grids where it is not the
+   * generator's own: on a two-scale nose, the shock captured on the
+   * generator's grid pushed out by a margin (secondCapture).
+   */
+  readonly outerBoundary?: OuterBoundary;
 }
+
+type OuterBoundary = NonNullable<BluntGridOptions['outerBoundary']>;
 
 /**
  * The captured solution that starts a blunt family, on the CPU engine:
- * CAPTURED_START_STEPS steps from the free stream on the base grid.
+ * CAPTURED_START_STEPS steps from the free stream on the base grid; on a
+ * two-scale nose, again on the base grid built on that shock.
  */
 export function bluntStart(asked: Body, options: BluntFamilyOptions): BluntStart {
-  const { solver, start } = bluntCapture(solvedBluntBody(asked, options), options);
-  solver.iterate(CAPTURED_START_STEPS);
-  return start();
+  let stage = bluntCapture(solvedBluntBody(asked, options), options);
+  stage.solver.iterate(CAPTURED_START_STEPS);
+  const second = secondCapture(options, stage);
+  if (second) {
+    second.solver.iterate(CAPTURED_START_STEPS);
+    stage = second;
+  }
+  return stage.start();
 }
 
 /**
@@ -503,26 +529,51 @@ export async function bluntStartInChunks(
     await run.pause();
     step = steps.next();
   }
-  const { solver, start } = bluntCapture(step.value, options);
-  for (let done = 0; done < CAPTURED_START_STEPS;) {
-    run.signal?.throwIfAborted();
-    const steps = Math.min(run.chunk, CAPTURED_START_STEPS - done);
-    solver.iterate(steps);
-    done += steps;
-    run.onProgress?.(done, CAPTURED_START_STEPS);
-    await run.pause();
+  let stage = bluntCapture(step.value, options);
+  const total = (stage.grid.twoScale ? 2 : 1) * CAPTURED_START_STEPS;
+  let done = 0;
+  const capture = async (s: CaptureStage) => {
+    for (let n = 0; n < CAPTURED_START_STEPS;) {
+      run.signal?.throwIfAborted();
+      const chunk = Math.min(run.chunk, CAPTURED_START_STEPS - n);
+      s.solver.iterate(chunk);
+      n += chunk;
+      done += chunk;
+      run.onProgress?.(done, total);
+      await run.pause();
+    }
+  };
+  await capture(stage);
+  const second = secondCapture(options, stage);
+  if (second) {
+    await capture(second);
+    stage = second;
   }
   run.signal?.throwIfAborted();
-  return start();
+  return stage.start();
 }
 
 export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'>;
 
-/** The captured-shock problem on a blunt family's base grid, from the free stream. */
+/** A captured-shock problem on a blunt family's base grid, and the start it gives. */
+interface CaptureStage {
+  readonly body: Body;
+  readonly grid: BluntGrid;
+  readonly solver: Euler2D;
+  readonly start: () => BluntStart;
+}
+
+/**
+ * The captured-shock problem on a blunt family's base grid, from the free
+ * stream: the generator's own grid, or on a two-scale nose the grid built
+ * on the first captured shock (secondCapture), whose boundary the
+ * family's grids then share.
+ */
 function bluntCapture(
   { body, base }: SolvedBluntBody,
   options: BluntFamilyOptions,
-): { solver: Euler2D; start: () => BluntStart } {
+  outerBoundary?: OuterBoundary,
+): CaptureStage {
   const { mach, gamma } = options;
   const free = freeStreamAt(mach, gamma).state;
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
@@ -537,6 +588,8 @@ function bluntCapture(
   });
   solver.setInitialCondition(() => free);
   return {
+    body,
+    grid: base,
     solver,
     start: () => ({
       body,
@@ -544,8 +597,79 @@ function bluntCapture(
       heights: capturedShockHeights(solver, base.grid, base.lines, free),
       grid: base.grid,
       cell: (i, j) => solver.primitive(i, j),
+      ...(outerBoundary ? { outerBoundary } : {}),
     }),
   };
+}
+
+/**
+ * The second stage of a two-scale nose's start, or null on a nose whose
+ * generator's boundary is at the body scale (spheres and ellipsoids). The
+ * generator's boundary is placed at the scale of the tip's blunt part, so
+ * that the lines near the tip are sized for it, but is generous at the
+ * body scale, where it keeps the angle the blunt bodies need: on a
+ * 3-caliber Haack nose at Mach 2 (nj = 20) the first captured shock lies
+ * at 0.126 of the boundary's height at the tip and at 0.40 to 0.54 of it
+ * past the first percent of the nose (0.42 at its middle,
+ * docs/research/two-scale-noses/ratio), and the lines' spacing and
+ * node fractions are sized from the boundary. So the grid the family
+ * starts on is built on that captured shock, pushed out by
+ * BOUNDARY_MARGIN of its height along each line and at least
+ * BOUNDARY_CELLS cells of the base grid (along the cylinder, where the
+ * lines are long and their outer cells stretched, the fraction alone
+ * leaves two), and the shock captured on it is the family's start. Not
+ * gated: only the start; the grids solved for the drag are
+ * (fittedCaseFailure).
+ */
+function secondCapture(options: BluntFamilyOptions, first: CaptureStage): CaptureStage | null {
+  if (!first.grid.twoScale) return null;
+  const { body } = first;
+  const R = body.nose.baseRadius;
+  const free = freeStreamAt(options.mach, options.gamma).state;
+  const heights = capturedShockHeights(first.solver, first.grid.grid, first.grid.lines, free);
+  const distances = heights.map((shock) => {
+    let d = (1 + BOUNDARY_MARGIN) * shock;
+    for (let k = 0; k < 20; k++) {
+      d = Math.max(d, shock + BOUNDARY_CELLS * outerCellHeight(d, options.nj, R));
+    }
+    return d;
+  });
+  // The boundary only has to contain the shock, so it is smoothed further
+  // than the start is (BOUNDARY_SMOOTHING passes of 1-2-1, mirrored at the
+  // axis): a captured shock far from the body, as at Mach 1.2, is stepped
+  // enough after the start's smoothing to bend the outer cells.
+  for (let pass = 0; pass < BOUNDARY_SMOOTHING; pass++) {
+    const copy = [...distances];
+    const n = copy.length - 1;
+    distances[0] = 0.5 * (copy[0]! + copy[1]!);
+    for (let i = 1; i < n; i++) {
+      distances[i] = 0.25 * copy[i - 1]! + 0.5 * copy[i]! + 0.25 * copy[i + 1]!;
+    }
+    distances[n] = 0.5 * (copy[n]! + copy[n - 1]!);
+  }
+  const outerBoundary = first.grid.lines.map((l, i) => {
+    const d = distances[i]!;
+    return { x: l.x + d * l.dx, y: l.y + d * l.dy };
+  });
+  // The captured shock's last height is its last column's, so the
+  // boundary's last segment would bend flat where the shock still rises
+  // (at Mach 1.2 by 30 deg, which jumps the last outer cells' widths by
+  // 1.6): the last point continues the segment before it to the last line.
+  const n = outerBoundary.length - 1;
+  if (n >= 2) {
+    const a = outerBoundary[n - 2]!;
+    const b = outerBoundary[n - 1]!;
+    const last = first.grid.lines[n]!;
+    const y = b.y + ((last.x - b.x) * (b.y - a.y)) / (b.x - a.x);
+    if (y > b.y) outerBoundary[n] = { x: last.x, y };
+  }
+  const base = bluntBodyGrid(body, {
+    nj: options.nj,
+    mach: options.mach,
+    outerBoundary,
+    gated: false,
+  });
+  return bluntCapture({ body, base }, options, outerBoundary);
 }
 
 /**
@@ -567,10 +691,17 @@ export function bluntFitFamily(
   const free = freeStreamAt(mach, gamma).state;
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
   return (refinement) => {
+    // Not gated: the grid each fit settles on is (fittedCaseFailure).
     const fine =
       refinement === 1
         ? start.lines
-        : bluntBodyGrid(body, { nj: baseNj, refinement, mach, gated: false }).lines;
+        : bluntBodyGrid(body, {
+            nj: baseNj,
+            refinement,
+            mach,
+            outerBoundary: start.outerBoundary,
+            gated: false,
+          }).lines;
     const heights = nestedHeights(start.lines, start.heights, fine, refinement);
     const nj = baseNj * refinement;
     // Each line keeps the node fractions of the captured shock's height.
@@ -718,8 +849,112 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
   return fittedFlow(bluntFitProblem(body, options), options.maxIterations);
 }
 
+/**
+ * Why a blunt nose the fitted solver could solve is not served, or
+ * undefined if it is. Ellipsoids are served (0006). Of the noses solved as
+ * two-scale families (docs/design/0004-grids.md), only the Von Karman
+ * (LD-Haack, C = 0) nose has been checked against a reference, the method
+ * of characteristics from the fitted flow (0006), and it is served only
+ * inside the outline of the lengths and Mach numbers checked
+ * (VON_KARMAN_REFERENCES); other two-scale noses (the other Haack noses,
+ * the power series) are refused, as are sharp tips whose shock detaches
+ * (by sharpFitProblem).
+ */
+export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
+  const { shape, length, baseRadius } = body.nose;
+  if (Number.isFinite(noseTipSlope(body.nose)) || shape.kind === 'ellipsoid') return undefined;
+  if (!(shape.kind === 'haack' && shape.parameter === 0)) {
+    return 'of the blunt noses whose tip curvature is unbounded, only the Von Karman (LD-Haack) nose has been checked against a reference so far';
+  }
+  const calibers = length / (2 * baseRadius);
+  if (insideOutline(VON_KARMAN_REFERENCES, [calibers, mach])) return undefined;
+  const checked = VON_KARMAN_REFERENCES.map(([c, m]) => `${c} at Mach ${m}`).join(', ');
+  return `a Von Karman nose of ${calibers} ${calibers === 1 ? 'caliber' : 'calibers'} at Mach ${mach} lies outside the referenced range (the outline of the noses checked against a reference, in calibers: ${checked})`;
+}
+
+/**
+ * The Von Karman noses checked against the method of characteristics
+ * (0006, "Two-scale noses"): nose length in calibers, Mach number.
+ */
+export const VON_KARMAN_REFERENCES: readonly (readonly [number, number])[] = [
+  [1, 1.5],
+  [1, 2],
+  [1, 3],
+  [3, 2],
+  [3, 3],
+  [5, 1.5],
+  [5, 2],
+];
+
+/**
+ * Whether a point lies inside the outline (the convex hull) of the given
+ * points, or on it: a point, a segment or a polygon. Within 1e-9 of the
+ * points' extent in each coordinate.
+ */
+export function insideOutline(
+  points: readonly (readonly [number, number])[],
+  [x, y]: readonly [number, number],
+): boolean {
+  const xs = points.map((p) => p[0]);
+  const ys = points.map((p) => p[1]);
+  const sx = Math.max(...xs) - Math.min(...xs) || 1;
+  const sy = Math.max(...ys) - Math.min(...ys) || 1;
+  // Scaled to the points' extent, so that calibers and Mach numbers count alike.
+  const scaled = points.map(([px, py]) => [px / sx, py / sy] as const);
+  const p = [x / sx, y / sy] as const;
+  const tolerance = 1e-9;
+  const cross = (o: readonly number[], a: readonly number[], b: readonly number[]) =>
+    (a[0]! - o[0]!) * (b[1]! - o[1]!) - (a[1]! - o[1]!) * (b[0]! - o[0]!);
+  // The hull, counterclockwise (Andrew's monotone chain).
+  const sorted = [...scaled].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const half = (list: (readonly [number, number])[]) => {
+    const h: (readonly [number, number])[] = [];
+    for (const q of list) {
+      while (h.length >= 2 && cross(h[h.length - 2]!, h[h.length - 1]!, q) <= tolerance) h.pop();
+      h.push(q);
+    }
+    h.pop();
+    return h;
+  };
+  const hull = [...half(sorted), ...half([...sorted].reverse())];
+  if (hull.length <= 2) {
+    // A point or a segment: within the tolerance of it.
+    const [a, b] = [hull[0] ?? sorted[0]!, hull[1] ?? hull[0] ?? sorted[0]!];
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const t =
+      dx * dx + dy * dy > 0 ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy) : 0;
+    const u = Math.min(Math.max(t, 0), 1);
+    return Math.hypot(p[0] - a[0] - u * dx, p[1] - a[1] - u * dy) <= tolerance;
+  }
+  return hull.every((a, k) => cross(a, hull[(k + 1) % hull.length]!, p) >= -tolerance);
+}
+
 /** Steps of the captured solution on the base grid that places the first shock. */
 const CAPTURED_START_STEPS = 3000;
+/**
+ * Margin of a two-scale nose's outer boundary over the shock captured on
+ * the generator's grid, as a fraction of the shock's height along each
+ * line (secondCapture). The captured shock then lies about two thirds of
+ * the way up each line.
+ */
+const BOUNDARY_MARGIN = 0.5;
+/** ... and at least this many cells of the base grid above the captured shock. */
+const BOUNDARY_CELLS = 3;
+/** Passes of 1-2-1 smoothing of that boundary's distances along the lines. */
+const BOUNDARY_SMOOTHING = 50;
+
+/**
+ * The allowance for an error the grid family cannot show, relative: the
+ * caller's (FITTED_DRAG_FLOOR on the page), raised to TWO_SCALE_DRAG_FLOOR
+ * on a two-scale nose (a start with its own outer boundary), whose
+ * extrapolation from three grids misses its references by up to 3.33e-4,
+ * and by up to 3.64e-4 on lines next to the one referenced (0006,
+ * "Two-scale noses").
+ */
+export function fittedDragFloor(floor: number, start: BluntStart | null): number {
+  return start?.outerBoundary ? Math.max(floor, TWO_SCALE_DRAG_FLOOR) : floor;
+}
 
 export interface VerifiedFittedDragOptions {
   readonly mach: number;
@@ -742,6 +977,8 @@ export type VerifiedFittedDrag =
       readonly kind: 'solved';
       /** The column density of the family solved, where not the usual layout's. */
       readonly columnDensity?: number;
+      /** The allowance included in the band, relative (fittedDragFloor). */
+      readonly floor: number;
     })
   | {
       readonly kind: 'not-converged' | 'invalid';
@@ -766,9 +1003,12 @@ export async function verifiedFittedDrag(
   body: Body,
   options: VerifiedFittedDragOptions,
 ): Promise<VerifiedFittedDrag> {
-  const blunt = !Number.isFinite(noseTipSlope(body.nose))
-    ? bluntFitFamily(body, { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ })
-    : null;
+  const refusal = bluntNoseRefusal(body, options.mach);
+  if (refusal !== undefined) return { kind: 'invalid', refinement: 1, reason: refusal };
+  const familyOptions = { mach: options.mach, gamma: options.gamma, nj: FITTED_BASE_NJ };
+  const start = Number.isFinite(noseTipSlope(body.nose)) ? null : bluntStart(body, familyOptions);
+  const blunt = start ? bluntFitFamily(body, familyOptions, start) : null;
+  const floor = fittedDragFloor(options.floor, start);
   const family = (columnDensity?: number) =>
     refineUntilVerified(
       (refinement) => {
@@ -798,20 +1038,20 @@ export async function verifiedFittedDrag(
       {
         orderTolerance: ORDER_TOLERANCE,
         noise: CPU_NOISE,
-        floor: options.floor,
+        floor,
         tolerance: options.tolerance,
         maxRefinement: options.maxRefinement,
       },
     );
   try {
     try {
-      return { ...(await family()), kind: 'solved' };
+      return { ...(await family()), kind: 'solved', floor };
     } catch (error) {
       if (blunt !== null || !(error instanceof GridRefused)) throw error;
       options.onFallback?.(error.refinement, error.message);
       try {
         const result = await family(FALLBACK_COLUMN_DENSITY);
-        return { ...result, kind: 'solved', columnDensity: FALLBACK_COLUMN_DENSITY };
+        return { ...result, kind: 'solved', columnDensity: FALLBACK_COLUMN_DENSITY, floor };
       } catch (fallbackError) {
         if (!(fallbackError instanceof FitRefused)) throw fallbackError;
         throw new FitRefused(
