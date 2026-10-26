@@ -37,7 +37,11 @@ import type { Primitive2D } from '../scheme/flux';
 import { capturedShockHeights, fitShock, type ShockFit } from '../solver/shock-fitting';
 import { normalShock } from '../validation/gas-dynamics';
 import { coneFlowField, taylorMaccoll } from '../validation/taylor-maccoll';
-import { refineUntilVerified, type VerifiedValue } from '../verification/grid-convergence';
+import {
+  gridConvergence,
+  refineUntilVerified,
+  type VerifiedValue,
+} from '../verification/grid-convergence';
 import { forebodyPressureDrag } from './forces';
 import {
   CPU_NOISE,
@@ -1116,6 +1120,45 @@ export function fittedDragFloor(floor: number, start: BluntStart | null): number
   return start?.outerBoundary ? Math.max(floor, TWO_SCALE_DRAG_FLOOR) : floor;
 }
 
+/**
+ * The boat-tail term's band from its values on a family's grids (coarsest
+ * first, refined by 2): the procedure of src/verification/grid-convergence.ts
+ * (four grids, the two finest triples' orders agreeing within
+ * ORDER_TOLERANCE, the order capped at 2) plus BOAT_TAIL_DRAG_FLOOR of the
+ * value, verified (as refineUntilVerified) when that band is known and
+ * within the tolerance. Its order is set by the shoulder's centred fan,
+ * a singularity of the flow whose error integrated over the boat-tail is
+ * of first order (0023 section 2.3).
+ */
+export function boatTailVerified(
+  levels: readonly { readonly refinement: number; readonly value: number }[],
+  tolerance: number,
+): VerifiedValue & { readonly floor: number } {
+  const estimate = gridConvergence(
+    levels.map((l) => l.value),
+    { orderTolerance: ORDER_TOLERANCE, noise: CPU_NOISE },
+  );
+  const uncertainty =
+    estimate.kind === 'unresolved'
+      ? undefined
+      : estimate.uncertainty + BOAT_TAIL_DRAG_FLOOR * Math.abs(estimate.value);
+  return {
+    estimate,
+    uncertainty,
+    verified: uncertainty !== undefined && uncertainty <= tolerance,
+    levels: [...levels],
+    floor: BOAT_TAIL_DRAG_FLOOR,
+  };
+}
+
+/**
+ * The allowance for an error of the boat-tail term the grid family cannot
+ * show, relative. Provisional: set from the lane's four-grid families
+ * against the method of characteristics (0023 section 2.3) when they are
+ * finished; the term is served nowhere until then.
+ */
+export const BOAT_TAIL_DRAG_FLOOR = 1e-3;
+
 export interface VerifiedFittedDragOptions {
   readonly mach: number;
   readonly gamma: number;
@@ -1139,6 +1182,12 @@ export type VerifiedFittedDrag =
       readonly columnDensity?: number;
       /** The allowance included in the band, relative (fittedDragFloor). */
       readonly floor: number;
+      /**
+       * On a body with a boat-tail, the boat-tail's own pressure drag on the
+       * same grids, with its own band (boatTailVerified): inviscid, before
+       * the viscous allowance of 0023 section 3.
+       */
+      readonly boatTail?: VerifiedValue & { readonly floor: number };
     })
   | {
       readonly kind: 'not-converged' | 'invalid';
@@ -1169,8 +1218,11 @@ export async function verifiedFittedDrag(
   const start = Number.isFinite(noseTipSlope(body.nose)) ? null : bluntStart(body, familyOptions);
   const blunt = start ? bluntFitFamily(body, familyOptions, start) : null;
   const floor = fittedDragFloor(options.floor, start);
-  const family = (columnDensity?: number) =>
-    refineUntilVerified(
+  // The boat-tail's drag on each grid the family solves, coarsest first.
+  let tails: { refinement: number; value: number }[] = [];
+  const family = (columnDensity?: number) => {
+    tails = [];
+    return refineUntilVerified(
       (refinement) => {
         const flowOptions = {
           mach: options.mach,
@@ -1192,6 +1244,12 @@ export async function verifiedFittedDrag(
         if (gridFailure !== undefined) throw new GridRefused(refinement, gridFailure);
         const failure = fittedCaseFailure(problem, fit.grid, (i, j) => fit.solver.primitive(i, j));
         if (failure !== undefined) throw new FitRefused(refinement, failure);
+        if (problem.boatTailDrag) {
+          tails.push({
+            refinement,
+            value: problem.boatTailDrag(fit.solver.boundaryFluxes('jMin')),
+          });
+        }
         options.onLevel?.(refinement, drag, fit);
         return drag;
       },
@@ -1203,15 +1261,23 @@ export async function verifiedFittedDrag(
         maxRefinement: options.maxRefinement,
       },
     );
+  };
+  const withTail = <T extends object>(result: T) =>
+    tails.length > 0 ? { ...result, boatTail: boatTailVerified(tails, options.tolerance) } : result;
   try {
     try {
-      return { ...(await family()), kind: 'solved', floor };
+      return withTail({ ...(await family()), kind: 'solved' as const, floor });
     } catch (error) {
       if (blunt !== null || !(error instanceof GridRefused)) throw error;
       options.onFallback?.(error.refinement, error.message);
       try {
         const result = await family(FALLBACK_COLUMN_DENSITY);
-        return { ...result, kind: 'solved', columnDensity: FALLBACK_COLUMN_DENSITY, floor };
+        return withTail({
+          ...result,
+          kind: 'solved' as const,
+          columnDensity: FALLBACK_COLUMN_DENSITY,
+          floor,
+        });
       } catch (fallbackError) {
         if (!(fallbackError instanceof FitRefused)) throw fallbackError;
         throw new FitRefused(
