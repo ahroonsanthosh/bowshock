@@ -124,14 +124,26 @@ export interface TransonicEvidencePoint {
   readonly properties: TransonicSetProperties;
 }
 
-const points = (
-  groups: typeof TRANSONIC_TE_READINGS,
-  sets: Readonly<Record<string, TransonicSetProperties>>,
-): TransonicEvidencePoint[] =>
-  groups.flatMap((g) => {
-    const properties = sets[g.set];
-    if (properties === undefined) throw new Error(`no properties for the set ${g.set}`);
-    return g.points.map(([id, series, mach, machErr, cpLow, cpHigh]: TransonicPoint) => ({
+/**
+ * Sets whose properties change from series to series (a report's several
+ * trailing-edge thicknesses or wings): the properties of each series, by
+ * its name as read; undefined for a series the method does not take.
+ */
+export const TRANSONIC_SERIES_SETS: Readonly<
+  Record<string, (series: string) => TransonicSetProperties | undefined>
+> = {};
+
+/** A point's set and series properties; throws for a set or series the method does not know. */
+export function propertiesOf(set: string, series: string): TransonicSetProperties {
+  const bySeries = TRANSONIC_SERIES_SETS[set];
+  const p = bySeries === undefined ? TRANSONIC_SETS[set] : bySeries(series);
+  if (p === undefined) throw new Error(`no properties for ${set}, ${series}`);
+  return p;
+}
+
+const points = (groups: typeof TRANSONIC_TE_READINGS): TransonicEvidencePoint[] =>
+  groups.flatMap((g) =>
+    g.points.map(([id, series, mach, machErr, cpLow, cpHigh]: TransonicPoint) => ({
       set: g.set,
       reading: g.reading,
       id,
@@ -141,15 +153,13 @@ const points = (
       machHigh: mach + machErr,
       cpLow,
       cpHigh,
-      properties,
-    }));
-  });
+      properties: propertiesOf(g.set, series),
+    })),
+  );
 
 /** Every band-setting point of every reading. */
-export const TRANSONIC_TE_EVIDENCE: readonly TransonicEvidencePoint[] = points(
-  TRANSONIC_TE_READINGS,
-  TRANSONIC_SETS,
-);
+export const TRANSONIC_TE_EVIDENCE: readonly TransonicEvidencePoint[] =
+  points(TRANSONIC_TE_READINGS);
 
 /** The domain below the band of ./fin-trailing-edge.ts. */
 export const TRANSONIC_TE_MACH_RANGE = [1.0, 1.5] as const;
