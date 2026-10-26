@@ -14,10 +14,9 @@ import { clippedDeltaPlanform } from '../../src/fins/planform';
 import { standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
 import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
 import { doubleWedge, flatPlate } from '../../src/fins/section';
-import { squareLeadingEdgeDrag } from '../../src/fins/square-leading-edge';
 import {
   finnedBodyComponents,
-  SQUARE_EDGE_BOUNDED_REASON,
+  SQUARE_EDGE_REFUSAL,
   SWEPT_EDGE_BOUNDED_REASON,
   type FinnedBody,
 } from '../../src/total/finned-body';
@@ -122,8 +121,16 @@ describe('refusals of flat plates', () => {
   const reasons = (c: FinnedBody, mach: number) =>
     parts(c, mach).refusals.map((x) => `${x.component}: ${x.reason}`);
 
-  it('a rounded trailing edge: bounded, the ordering not shown (the square-cut leading edge is served, below)', () => {
-    expect(reasons(config(flatPlate(0.05, 'square', 'square')), 2.8)).toEqual([]);
+  it('a square-cut leading edge (its computed check not passed, 0016 section 21.3) and a rounded trailing edge', () => {
+    expect(reasons(config(flatPlate(0.05, 'square', 'square')), 2.8)).toEqual([
+      'fin leading edges: square-leading-edge',
+    ]);
+    const s = parts(config(flatPlate(0.05, 'square', 'square')), 2.8).refusals[0]!.message;
+    expect(s).toBe(SQUARE_EDGE_REFUSAL);
+    expect(s).toMatch(/did not pass: on the finest grid at Mach 2\.0/);
+    expect(s).toMatch(
+      /\(0\.553 of the pitot pressure\) was not clear of the sonic pressure \(0\.528\)/,
+    );
     expect(reasons(config(flatPlate(0.05, 'rounded', 'rounded')), 2.8)).toEqual([
       'fin trailing-edge base: rounded-trailing-edge',
     ]);
@@ -143,33 +150,6 @@ describe('refusals of flat plates', () => {
 });
 
 describe('bounded, not measured (0016 section 21)', () => {
-  it("a square-cut leading edge: the library's bounded term, the gap in C_D, named for the claim", () => {
-    const r = parts(config(flatPlate(0.05, 'square', 'square')), 2.8);
-    const c = named(r, 'fin leading edges');
-    const e = squareLeadingEdgeDrag({
-      mach: 2.8,
-      thickness: 0.05,
-      tanLeadingEdgeSweep: planform.tanLeadingEdge,
-      reynoldsOnThickness: 2e6 * 0.05,
-    });
-    const cd = (3 * e.dragPerSpan * planform.span) / area;
-    expect(c.cd).toBeCloseTo(cd, 15);
-    expect(c.low).toBeCloseTo(e.band.low * cd, 15);
-    expect(c.high).toBeCloseTo(e.band.high * cd, 15);
-    expect(c.label).toBe(e.label);
-    expect(c.bounded).toBe(SQUARE_EDGE_BOUNDED_REASON);
-    expect(c.band).toBe(
-      'bounded, not measured: the whole gap between the sonic and the pitot pressure on the ' +
-        `whole face, C_D ${c.low.toFixed(4)} to ${c.high.toFixed(4)}, a gap of ` +
-        (c.high - c.low).toFixed(4),
-    );
-    // The faces still carry no wave drag; nothing else is bounded.
-    expect(named(r, 'fin wave drag').cd).toBe(0);
-    expect(r.components.filter((x) => x.bounded !== undefined).map((x) => x.name)).toEqual([
-      'fin leading edges',
-    ]);
-  });
-
   it('a rounded leading edge swept 66.4 deg at M 2.8 (M_n 1.12): bounded between its sweep and 60 deg', () => {
     const steep = clippedDeltaPlanform({ rootChord: 2, span: 0.7, taperRatio: 0.2 });
     const r = parts(config(undefined, steep), 2.8);

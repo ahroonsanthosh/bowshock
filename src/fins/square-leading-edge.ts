@@ -28,6 +28,15 @@
  * 10.2), labelled "bounded, not measured". The root (the body's boundary
  * layer, the junction's separation) and the tip are not represented.
  *
+ * **Kept unwired** (0016 section 21.3): the computed check of the argument,
+ * registered before it was run, did not pass (on the finest grid at Mach
+ * 2.0, the corner rounded to 0.02 of the half-thickness, the inviscid
+ * solution did not settle, and the face's least pressure was not clear of
+ * the sonic pressure by its change between the two finest grids), so the
+ * total refuses square-cut edges (src/total/finned-body.ts,
+ * `SQUARE_EDGE_REFUSAL`) and nothing under src/ but this module computes
+ * the term.
+ *
  * **Domain.** M_n 1.0 to 3.0 (below, no shock stands in the normal flow and
  * p* falls below the free stream's pressure; above, beyond every fin edge
  * served), sweep up to 60 deg (the yawed-cylinder checks), the Reynolds

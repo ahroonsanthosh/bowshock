@@ -3,9 +3,12 @@
  * (src/fins/square-leading-edge.ts; docs/design/0016-fin-edges-of-flat-plates.md
  * section 21.1; 0014 section 10.7 (aa)): the bounds from the normal-shock
  * relations written out here independently, the band the whole gap and its
- * midpoint, the sweep allowance on both bounds, the domain and every reason.
+ * midpoint, the sweep allowance on both bounds, the domain and every reason;
+ * and that it stays unwired, its computed check (section 21.3) not passed.
  */
 
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { FinRefusal } from '../../src/fins/refusal';
 import { SMALLEST_TESTED_SWEEP, SWEEP_ALLOWANCE_SERVED } from '../../src/fins/rounded-leading-edge';
@@ -199,5 +202,22 @@ describe('the domain: every reason given', () => {
   it('bad inputs', () => {
     expect(failure(() => edge(2, NaN)).message).toMatch(/bad leading-edge sweep/);
     expect(failure(() => edge(2, 0, 0)).message).toMatch(/bad plate thickness/);
+  });
+});
+
+describe('kept unwired: its computed check did not pass (0016 section 21.3)', () => {
+  const sources = (dir: string): string[] =>
+    readdirSync(dir).flatMap((f) => {
+      const p = join(dir, f);
+      return statSync(p).isDirectory() ? sources(p) : p.endsWith('.ts') ? [p] : [];
+    });
+
+  it('no module under src/ imports the bounded term', () => {
+    const importers = sources('src').filter(
+      (p) =>
+        !p.endsWith('square-leading-edge.ts') &&
+        /from '[^']*square-leading-edge'/.test(readFileSync(p, 'utf8')),
+    );
+    expect(importers).toEqual([]);
   });
 });

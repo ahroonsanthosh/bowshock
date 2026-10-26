@@ -19,13 +19,12 @@ import {
   provisionalWords,
   refusalWords,
   SEVERAL_BOUNDED_WORDS,
-  SQUARE_EDGE_BOUNDED_WORDS,
   STOPPED,
   SWEPT_EDGE_BOUNDED_WORDS,
   WAITING,
   type NoseEnd,
 } from '../../src/app/status-words';
-import { SQUARE_EDGE_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/finned-body';
+import { SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/finned-body';
 import {
   BOUNDED_REASON,
   CLASS_CLAIM,
@@ -46,7 +45,6 @@ describe('the words', () => {
       CLASS_WORDS,
       BOUNDED_WORDS,
       W1_BOUNDED_WORDS,
-      SQUARE_EDGE_BOUNDED_WORDS,
       SWEPT_EDGE_BOUNDED_WORDS,
       SEVERAL_BOUNDED_WORDS,
       provisionalWords(2, 4),
@@ -95,18 +93,15 @@ describe('the words', () => {
     expect(claimWords(claim(CLASS_CLAIM, [BOUNDED_REASON]))).toBe(BOUNDED_WORDS);
     // The rebuilt fins-on-base factor's bounded values (main's W1).
     expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_REASON]))).toBe(W1_BOUNDED_WORDS);
-    // The fins' leading edges, bounded (0016 section 21).
-    expect(claimWords(claim(ESTIMATE_CLAIM, [SQUARE_EDGE_BOUNDED_REASON]))).toBe(
-      SQUARE_EDGE_BOUNDED_WORDS,
-    );
+    // The fins' rounded leading edges swept beyond 60 deg, bounded (0016 section 21.2).
     expect(claimWords(claim(CLASS_CLAIM, ['x', SWEPT_EDGE_BOUNDED_REASON]))).toBe(
       SWEPT_EDGE_BOUNDED_WORDS,
     );
     // Two bounded parts: neither part's words alone.
-    expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_REASON, SQUARE_EDGE_BOUNDED_REASON]))).toBe(
+    expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_REASON]))).toBe(
       SEVERAL_BOUNDED_WORDS,
     );
-    for (const w of [SQUARE_EDGE_BOUNDED_WORDS, SWEPT_EDGE_BOUNDED_WORDS, SEVERAL_BOUNDED_WORDS]) {
+    for (const w of [SWEPT_EDGE_BOUNDED_WORDS, SEVERAL_BOUNDED_WORDS]) {
       expect(w.tone).toBe('bounded');
       expect(w.mark).toBe('square');
     }

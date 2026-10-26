@@ -1,0 +1,36 @@
+M     rho   grid     steps  residual  | face: max M  min p/p02  max p/p02 | mean min-max   | sonic point
+2     0.04   36x24   20000   6.4e-03  |       0.874    0.608      1.015     | 0.803-0.935    | on the rounding, 11 deg into its turn; on the rounding, 34 deg into its turn 
+2     0.04   72x48    6000   8.9e-04  |       0.789    0.663      0.993     | 0.891-0.897    | on the rounding, 17 deg into its turn; on the rounding, 6 deg into its turn 
+2     0.04  144x96    4000   3.3e-04  |       0.822    0.642      0.999     | 0.899-0.901    | on the rounding, 8 deg into its turn 
+2     0.02   36x24   20000   1.9e-03  |       0.953    0.558      1.009     | 0.787-0.944    | on the rounding, 11 deg into its turn 
+2     0.02   72x48    6000   1.7e-05  |       0.796    0.658      0.991     | 0.908-0.909    | on the rounding, 6 deg into its turn 
+2     0.02  144x96    4000   6.5e-02  |       0.960    0.553      1.074     | 0.862-0.942    | on the rounding, 3 deg into its turn; on the rounding, 8 deg into its turn 
+3     0.04   36x24    9700   9.4e-10  |       0.000    none      0.000     | none-none    |  
+3     0.04   72x48    6000   1.1e-06  |       0.786    0.665      0.995     | 0.906-0.906    | on the rounding, 6 deg into its turn 
+3     0.04  144x96    4000   2.5e-01  |       0.995    0.531      1.023     | 0.844-0.949    | on the rounding, 8 deg into its turn; on the rounding, 3 deg into its turn 
+3     0.02   36x24   20000   3.1e-04  |       0.920    0.578      1.010     | 0.734-0.935    | on the rounding, 11 deg into its turn; on the rounding, 34 deg into its turn 
+3     0.02   72x48    6000   4.0e-01  |       1.061    0.491      1.224     | 0.732-0.966    | on the rounding, 6 deg into its turn; on the rounding, 17 deg into its turn; on the face at y 0.9750 
+3     0.02  144x96    4000   9.3e-02  |       1.141    0.445      1.187     | 0.819-0.991    | on the rounding, 3 deg into its turn; on the rounding, 8 deg into its turn; on the face at y 0.9613 
+1.5   0.04   36x24   10300   9.6e-10  |       0.684    0.731      1.002     | 0.901-0.901    | on the rounding, 34 deg into its turn 
+1.5   0.04   72x48    6000   2.2e-05  |       0.766    0.678      0.999     | 0.889-0.890    | on the rounding, 17 deg into its turn 
+1.5   0.04  144x96    4000   5.3e-04  |       0.813    0.648      0.999     | 0.887-0.888    | on the rounding, 8 deg into its turn 
+1.5   0.02   36x24   10500   8.7e-10  |       0.704    0.718      1.003     | 0.917-0.917    | on the rounding, 11 deg into its turn 
+1.5   0.02   72x48    6000   6.8e-06  |       0.784    0.667      1.000     | 0.908-0.909    | on the rounding, 6 deg into its turn 
+1.5   0.02  144x96    4000   3.2e-04  |       0.831    0.636      1.001     | 0.907-0.908    | on the rounding, 3 deg into its turn 
+1.2   0.04   36x24   10000   9.6e-10  |       0.000    none      0.000     | none-none    |  
+1.2   0.04   72x48    6000   7.7e-05  |       0.761    0.682      1.005     | 0.871-0.877    | on the rounding, 17 deg into its turn 
+1.2   0.04  144x96    4000   2.3e-03  |       0.806    0.652      1.015     | 0.865-0.888    | on the rounding, 8 deg into its turn 
+1.2   0.02   36x24   10600   9.2e-10  |       0.700    0.721      1.003     | 0.902-0.902    | on the rounding, 11 deg into its turn 
+1.2   0.02   72x48    6000   7.1e-05  |       0.780    0.669      1.004     | 0.891-0.897    | on the rounding, 6 deg into its turn 
+1.2   0.02  144x96    4000   1.4e-03  |       0.828    0.638      1.013     | 0.886-0.907    | on the rounding, 3 deg into its turn 
+
+The registered pass criterion (0016 section 21.3, as amended before the runs), on the finest grid:
+  M 1.2 rho 0.02: max wall Mach 0.828, least p/p02 0.638 (p* 0.528, margin 0.110 against the change 0.031), largest p/p02 1.013: pass
+  M 1.2 rho 0.04: max wall Mach 0.806, least p/p02 0.652 (p* 0.528, margin 0.124 against the change 0.030), largest p/p02 1.015: pass
+  M 1.5 rho 0.02: max wall Mach 0.831, least p/p02 0.636 (p* 0.528, margin 0.108 against the change 0.031), largest p/p02 1.001: pass
+  M 1.5 rho 0.04: max wall Mach 0.813, least p/p02 0.648 (p* 0.528, margin 0.119 against the change 0.030), largest p/p02 0.999: pass
+  M 2 rho 0.02: max wall Mach 0.960, least p/p02 0.553 (p* 0.528, margin 0.025 against the change 0.105), largest p/p02 1.074: FAIL
+  M 2 rho 0.04: max wall Mach 0.822, least p/p02 0.642 (p* 0.528, margin 0.114 against the change 0.021), largest p/p02 0.999: pass
+  M 3 rho 0.02: max wall Mach 1.141, least p/p02 0.445 (p* 0.528, margin -0.083 against the change 0.047), largest p/p02 1.187: FAIL
+  M 3 rho 0.04: max wall Mach 0.995, least p/p02 0.531 (p* 0.528, margin 0.003 against the change 0.134), largest p/p02 1.023: FAIL
+Verdict: fail

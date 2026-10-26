@@ -137,8 +137,7 @@ describe('every refusal shown, no false promise', { timeout: 600_000 }, () => {
       section: { kind: 'flat', leadingEdge: { kind: 'square' }, trailingEdge: { kind: 'rounded' } },
     });
     const v = check(await curve(d, true)).get(2)!;
-    // The square-cut leading edge is served bounded since 0016 section 21.1: not a reason here.
-    expect(v.reasons.some((t) => /square-cut leading edge/.test(t))).toBe(false);
+    expect(v.reasons.some((t) => /square-cut leading edge/.test(t))).toBe(true);
     expect(v.reasons.some((t) => /rounded trailing edge/.test(t))).toBe(true);
     expect(v.reasons.some((t) => /base drag with fins at the base/.test(t))).toBe(true);
     expect(v.change!.startsWith('To get a number')).toBe(false);

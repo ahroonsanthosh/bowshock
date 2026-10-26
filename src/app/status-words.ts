@@ -14,7 +14,7 @@
 
 import type { BaseRefusalReason } from '../base/refusal';
 import type { FinRefusalReason } from '../fins/refusal';
-import { SQUARE_EDGE_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_REASON } from '../total/finned-body';
+import { SWEPT_EDGE_BOUNDED_REASON } from '../total/finned-body';
 import type { ComponentRefusal } from '../total/total-drag';
 import type { RocketDesign } from '../rocket/design';
 import {
@@ -87,16 +87,6 @@ export const W1_BOUNDED_WORDS: StatusWords = {
   mark: 'square',
 };
 
-/** The fins' square-cut leading edges, bounded (0016 section 21.1). */
-export const SQUARE_EDGE_BOUNDED_WORDS: StatusWords = {
-  word: 'Estimate, bounded',
-  sentence:
-    "An estimate with one part bounded, not measured: the fins' square-cut leading edges, whose " +
-    'band runs from the sonic to the pitot pressure on the edge.',
-  tone: 'bounded',
-  mark: 'square',
-};
-
 /** The fins' rounded leading edges swept beyond 60 deg, bounded (0016 section 21.2). */
 export const SWEPT_EDGE_BOUNDED_WORDS: StatusWords = {
   word: 'Estimate, bounded',
@@ -121,7 +111,6 @@ export const SEVERAL_BOUNDED_WORDS: StatusWords = {
 const BOUNDED_PARTS: readonly (readonly [string, StatusWords])[] = [
   [BOUNDED_REASON, BOUNDED_WORDS],
   [W1_BOUNDED_REASON, W1_BOUNDED_WORDS],
-  [SQUARE_EDGE_BOUNDED_REASON, SQUARE_EDGE_BOUNDED_WORDS],
   [SWEPT_EDGE_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_WORDS],
 ];
 
@@ -387,10 +376,9 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
   }),
   'square-leading-edge': () => ({
     reason:
-      "a square-cut leading edge's drag is bounded only where the Mach number across the edge is " +
-      '1.0 to 3.0, the edge is swept no more than 60 degrees, and the plate is thick enough for ' +
-      'its speed and air (its Reynolds number at least 6,700)',
-    change: 'less sweep, a thicker plate, or rounded or bevelled leading edges',
+      "a square-cut leading edge's drag has bounds, but the computed check behind them has not " +
+      'passed, and no measurement covers it',
+    change: 'rounded or bevelled leading edges',
   }),
   'leading-edge-geometry': () => ({
     reason: 'a rounded leading edge is modelled only on a wedge-shaped fin, not on this one',
