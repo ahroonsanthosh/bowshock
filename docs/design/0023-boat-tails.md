@@ -152,13 +152,46 @@ only. Slender-body theory proper, the limit of this near the axis, puts u
 of order 1 / (x - x_s) just behind the shoulder and gives an unbounded
 boat-tail drag, so it cannot be used as it stands. On the first case the
 linearised drag is 0.0350158 (the integrals converged to 1e-7), 1.3%
-above the march's.
+above the march's. Over the thirteen cases of section 2.3 it is a poor
+check: within 1.3% to 15% of the march on the seven cases with an angle
+of 8 deg or less and a boat-tail at least 1.8 beta R long (where the
+misplaced expansion still falls well on the boat-tail); 28% to 70% high at 12
+and 16 deg, where the expansion is far from small; and 64% and 80% low
+where the boat-tail is 1.4 beta R long or shorter (8 deg at Mach 3, a
+half-caliber boat-tail at Mach 2), where the expansion lands at or past
+the base. It confirms the size and the trends with angle and length on
+small, long boat-tails and nothing else; the references are the march's.
 
 ### 2.3 Measurements
 
-(Being measured: families on nj = 20 to 160 against the march, over
-boat-tail angle, length and Mach number. The served range is decided
-from them in section 2.5.)
+Thirteen cases (`docs/research/boat-tails/cases.ts`): a 3-caliber tangent
+ogive (and on one case a 3-caliber cone) with 3 or 5 calibers of
+cylinder; boat-tails of 4, 6, 8, 12 and 16 deg, 0.5 to 2 calibers long;
+Mach 1.5, 2 and 3. For each, the march on 640, 1280 and 2560 intervals
+(order 1.89 to 2.09; the extrapolated value's distance from the finest
+at most 3.1e-5 of it), linearised theory, and the fitted family, each
+grid's boat-tail drag against the march's extrapolation (being run: the
+lane solves every case on nj = 20 and 40, four on nj = 80 and 160, the
+rest on nj = 80; `table.py` writes this table from the results):
+
+| Case                 | Characteristics | Linearised | nj = 20 | nj = 40 | nj = 80 | nj = 160 |
+| -------------------- | --------------- | ---------- | ------- | ------- | ------- | -------- |
+| `c3-c5-bt8-l1-m2`    | 0.0538782       | +9.7%      | +0.377% |         |         |          |
+| `o3-c3-bt6-l1-m2`    | 0.0345663       | +1.3%      | +0.813% |         |         |          |
+| `o3-c5-bt12-l1.5-m3` | 0.0732364       | +48.5%     | +1.086% |         |         |          |
+| `o3-c5-bt16-l1-m1.5` | 0.2174419       | +28.3%     | -0.724% |         |         |          |
+| `o3-c5-bt16-l1-m2`   | 0.1507984       | +41.9%     | +0.206% |         |         |          |
+| `o3-c5-bt16-l1-m3`   | 0.0885470       | +70.4%     | +0.310% |         |         |          |
+| `o3-c5-bt4-l1-m2`    | 0.0162227       | -10.1%     | +0.807% |         |         |          |
+| `o3-c5-bt4-l2-m1.5`  | 0.0310000       | +6.0%      | +1.064% |         |         |          |
+| `o3-c5-bt8-l0.5-m2`  | 0.0324917       | -79.6%     | +0.119% |         |         |          |
+| `o3-c5-bt8-l1-m1.5`  | 0.0750218       | +13.5%     | +0.041% |         |         |          |
+| `o3-c5-bt8-l1-m2`    | 0.0534472       | +9.6%      | +0.796% |         |         |          |
+| `o3-c5-bt8-l1-m3`    | 0.0335828       | -63.8%     | +0.993% |         |         |          |
+| `o3-c5-bt8-l2-m2`    | 0.0700987       | +15.0%     | +1.736% |         |         |          |
+
+Every grid so far meets the fitted grids' gates. The served range is
+decided from the finished families in section 2.5.
 
 ### 2.4 The shoulder's pressure
 
