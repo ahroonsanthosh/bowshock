@@ -5,7 +5,9 @@
 // Env: SHAPE, CAL, RATIO, M, CYL; MOC_R (refinements, e.g. 1,2,4),
 // MOC_FILES (saved states, same order), MOC_LINES (base-grid line
 // indices, "scan", or "auto"), MOC_RUN (intervals), MOC_OUT (text log),
-// MOC_JSONL (records).
+// MOC_JSONL (records), MOC_ENTROPY ("cells", the first march, default; or
+// "shock", the second march of README section 6: each starting point's
+// entropy from its streamline's crossing of the fitted shock, entropy.ts).
 //
 // "auto" chooses the lines once, on the first grid (refinement 1), before
 // any march: the lines of the nose behind its sonic line whose least Mach
@@ -16,6 +18,7 @@ import { appendFileSync } from 'node:fs';
 import { it } from 'vitest';
 import { characteristicsFrom } from '../../src/validation/characteristics';
 import { caseFromEnv } from './common';
+import { shockEntropyLine } from './entropy';
 import { downstreamDrag, effectiveMach, fittedDragFrom, gamma, lineData, loadFit } from './fitdata';
 
 const OUT = process.env.MOC_OUT ?? 'moc.txt';
@@ -29,6 +32,8 @@ it('moc', () => {
   const runs = (process.env.MOC_RUN ?? '640,1280,2560').split(',').map(Number);
   const linesArg = process.env.MOC_LINES ?? 'auto';
   const count = Number(process.env.MOC_COUNT ?? 7);
+  const entropy = process.env.MOC_ENTROPY ?? 'cells';
+  if (entropy !== 'cells' && entropy !== 'shock') throw new Error(`MOC_ENTROPY ${entropy}`);
   let lines: number[] = [];
   rs.forEach((r, n) => {
     const t0 = performance.now();
@@ -71,18 +76,33 @@ it('moc', () => {
       const i = base * r;
       const d = lineData(f, i);
       const fitted = fittedDragFrom(f, i);
+      let start = d.start;
+      let massRatio = Number.NaN;
+      let entropyChange = Number.NaN;
+      if (entropy === 'shock') {
+        const s = shockEntropyLine(f, i, d.start);
+        start = s.start;
+        massRatio = s.massRatio;
+        entropyChange = s.largestEntropyChange;
+        log(
+          `  line ${base}: entropy from the shock; the line's mass flux over the shock's ${massRatio.toFixed(6)}, largest entropy change ${entropyChange.toExponential(2)}`,
+        );
+      }
       log(
         `  line ${base} (x ${d.x.toExponential(5)}): min Mach ${d.minMach.toFixed(4)}, wall K ${d.wallEntropyError.toExponential(2)}, fitted downstream ${fitted.toPrecision(12)} (${((100 * fitted) / f.drag).toFixed(3)}% of the drag)`,
       );
       for (const intervals of runs) {
         const t1 = performance.now();
         try {
-          const sol = characteristicsFrom(f.body, d.start, { mach, gamma, intervals });
+          const sol = characteristicsFrom(f.body, start, { mach, gamma, intervals });
           const drag = downstreamDrag(f.body, mach, sol.wall);
           appendFileSync(
             JSONL,
             JSON.stringify({
               case: tag,
+              entropy,
+              massRatio,
+              entropyChange,
               r,
               line: base,
               x: d.x,
