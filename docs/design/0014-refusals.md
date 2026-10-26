@@ -1917,7 +1917,7 @@ ahead of the base (`fins-near-base`).
 
 What it costs and gains is recorded below this entry from
 `docs/research/refusals/` run before and after, with the cross-check
-against `src/total` required to agree (0015 section 3.3).
+against `src/total` required to agree (0015 section 8).
 
 What it costs and gains (0015 section 8; `docs/research/refusals/out/impact.out`,
 the run before reproducing main's committed output byte for byte): the
