@@ -1061,6 +1061,29 @@ formed on two of them, and the shape widening's size on two of them.
      in fig. 8(a) at M 0.9 at Cp -1.79, likely a slip, do not enter;
      they are noted).
 
+   _The shape-ordering check's scope, the coordinator's decision (dated
+   2026-10-26, made before the check was computed, the wider choice on
+   each point)._ The registered fallback above is tested as follows:
+
+   1. Every Mach number in the figures: RM A51J11 0.6 to 1.10, RM A52E01
+      0.6 to 1.7, not only the term's range.
+   2. RM A51J11: both roughness states.
+   3. A contradiction is any reversal of the ordering, of any size,
+      compared within each single reading (one reader, one panel, the
+      same Mach number and roughness state), so that calibration
+      differences between readers can neither make nor hide one: if any
+      one reading shows the more closed-in profile with more base drag
+      than the flatter one, that is a contradiction. Its size against
+      that reader's errors is reported as information only.
+   4. RM A52E01: wing 3 against wing 4 in every panel where both curves
+      pass the three-reading rule's wing and alpha 0 tests. A pair with a
+      curve that is "any of wings 2, 3 and 4" is not testable (neither a
+      contradiction nor support) and is listed, to show how little of the
+      supersonic range the ordering is tested on.
+
+   Any contradiction makes the widening two-sided, as above; the result
+   is reported either way, with every pair compared.
+
 7. **What is refused below Mach 1.5**, each with its reason in plain
    words, at every station along the span on fins of varying chord: a
    layer parameter beyond the data (X above what the points of each of the
