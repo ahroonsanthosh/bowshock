@@ -1133,10 +1133,11 @@ export function fittedDragFloor(floor: number, start: BluntStart | null): number
 export function boatTailVerified(
   levels: readonly { readonly refinement: number; readonly value: number }[],
   tolerance: number,
+  noise = CPU_NOISE,
 ): VerifiedValue & { readonly floor: number } {
   const estimate = gridConvergence(
     levels.map((l) => l.value),
-    { orderTolerance: ORDER_TOLERANCE, noise: CPU_NOISE },
+    { orderTolerance: ORDER_TOLERANCE, noise },
   );
   const uncertainty =
     estimate.kind === 'unresolved'

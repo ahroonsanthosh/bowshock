@@ -84,6 +84,12 @@ export type VerifiedDrag =
       readonly columnDensity?: number;
       /** The allowance included in the band, relative (the caller's floor, or a larger one). */
       readonly floor: number;
+      /**
+       * On a body with a boat-tail (fitted solve only), the boat-tail's own
+       * pressure drag on the same grids, with its own band
+       * (boatTailVerified, src/analysis/fitted-flow.ts).
+       */
+      readonly boatTail?: VerifiedValue & { readonly floor: number };
     })
   | { readonly kind: 'not-converged'; readonly refinement: number; readonly reason: string }
   | { readonly kind: 'cancelled'; readonly reports: readonly LevelReport[] }

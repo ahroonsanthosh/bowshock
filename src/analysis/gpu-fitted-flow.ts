@@ -15,6 +15,7 @@ import { refineUntilVerified } from '../verification/grid-convergence';
 import {
   bluntFitFamily,
   bluntNoseRefusal,
+  boatTailVerified,
   bluntStartInChunks,
   FALLBACK_COLUMN_DENSITY,
   fittedCaseFailure,
@@ -218,6 +219,8 @@ export async function verifiedFittedDragGpu(
   // Blunt noses: the family of problems, once its captured start is computed.
   let blunt: ((refinement: number) => FitProblem) | null = null;
   let reports: LevelReport[] = [];
+  // On a body with a boat-tail, its drag on each grid solved, coarsest first.
+  let tails: { refinement: number; value: number }[] = [];
   let lastRefinement = 1;
   // The last grid's problem and converged fit, to start the next from.
   let previous: { problem: FitProblem; fit: GpuShockFit } | null = null;
@@ -235,7 +238,7 @@ export async function verifiedFittedDragGpu(
     const fresh = blunt ? blunt(refinement) : sharpFitProblem(body, problemOptions);
     const problem = (previous && startedFrom(fresh, previous.problem, previous.fit)) ?? fresh;
     const checkEvery = CHECK_EVERY * refinement;
-    const { fit, drag } = await gpuFittedFlow(device, problem, {
+    const { fit, drag, boatTailDrag } = await gpuFittedFlow(device, problem, {
       maxIterations: MAX_CHECKS * checkEvery,
       stepsPerMove: 1,
       checkEvery,
@@ -266,6 +269,7 @@ export async function verifiedFittedDragGpu(
     const failure = fittedCaseFailure(problem, fit.grid, fit.cell);
     if (failure !== undefined) throw new InvalidCase(failure);
     previous = { problem, fit };
+    if (boatTailDrag !== undefined) tails.push({ refinement, value: boatTailDrag });
     const report = {
       refinement,
       cells: { ni: fit.grid.ni, nj: fit.grid.nj },
@@ -314,8 +318,23 @@ export async function verifiedFittedDragGpu(
               ? `its fit did not converge (${error.message})`
               : undefined,
       });
+    // The fit settles the sum of the forebody's and the boat-tail's drags
+    // to the GPU's noise: relative to the boat-tail's alone that noise is
+    // larger by the sum over it.
+    const withTail = <T extends object>(result: T) => {
+      if (tails.length === 0) return result;
+      const scale = Math.max(
+        ...tails.map(
+          (t, k) => (Math.abs(reports[k]!.drag) + Math.abs(t.value)) / Math.abs(t.value),
+        ),
+      );
+      return {
+        ...result,
+        boatTail: boatTailVerified(tails, options.tolerance, GPU_NOISE * scale),
+      };
+    };
     try {
-      return { ...(await verified()), kind: 'solved', reports, floor };
+      return withTail({ ...(await verified()), kind: 'solved' as const, reports, floor });
     } catch (error) {
       // A sharp nose whose grid fails only the quality gates: its whole
       // family again, with more columns; refused only if that one is too.
@@ -324,9 +343,10 @@ export async function verifiedFittedDragGpu(
       columnDensity = FALLBACK_COLUMN_DENSITY;
       previous = null;
       reports = [];
+      tails = [];
       try {
         const result = await verified();
-        return { ...result, kind: 'solved', reports, columnDensity, floor };
+        return withTail({ ...result, kind: 'solved' as const, reports, columnDensity, floor });
       } catch (fallbackError) {
         if (!(fallbackError instanceof InvalidCase)) throw fallbackError;
         throw new InvalidCase(

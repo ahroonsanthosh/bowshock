@@ -1,0 +1,4 @@
+{"case":"e51f26-o6-bt9.33-r0.506","kind":"linear","tail":0.10148368106162674}
+{"case":"e51f26-o6-bt9.33-r0.506","kind":"moc","intervals":640,"tail":0.08541329307739674,"corner":[0.9874043044033576,0.5737970185158378],"lastWallX":12.370007259119454,"massBalance":0.0000046273131722297506,"penetration":0,"seconds":14.825}
+{"case":"e51f26-o6-bt9.33-r0.506","kind":"moc","intervals":1280,"tail":0.0854257268688922,"corner":[0.9874045637680673,0.5737971878455045],"lastWallX":12.370371479410295,"massBalance":0.0000011460390905738043,"penetration":0,"seconds":48.82}
+{"case":"e51f26-o6-bt9.33-r0.506","kind":"moc","intervals":2560,"tail":0.08542883394261548,"corner":[0.9874048081787167,0.5737973474122352],"lastWallX":12.3934983063549,"massBalance":2.8748417216969233e-7,"penetration":0,"seconds":212.149}

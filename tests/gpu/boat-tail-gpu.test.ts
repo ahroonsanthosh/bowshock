@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { fittedFlow, sharpFitProblem } from '../../src/analysis/fitted-flow';
-import { gpuFittedFlow } from '../../src/analysis/gpu-fitted-flow';
-import { GPU_NOISE } from '../../src/analysis/verified-drag';
+import { gpuFittedFlow, verifiedFittedDragGpu } from '../../src/analysis/gpu-fitted-flow';
+import { FITTED_DRAG_FLOOR, GPU_NOISE, ORDER_TOLERANCE } from '../../src/analysis/verified-drag';
 import type { Body } from '../../src/geometry/body';
 import { requireDevice } from './device';
 
@@ -48,5 +48,21 @@ describe('a boat-tail on the GPU', () => {
       Math.abs(gpu.boatTailDrag! / cpuTail - 1),
       `GPU ${gpu.boatTailDrag}, CPU ${cpuTail}`,
     ).toBeLessThan(3 * GPU_NOISE);
+
+    // The page's path carries the boat-tail's term, grid by grid, beside
+    // the forebody's: on one grid, the same values, and no band yet.
+    const page = await verifiedFittedDragGpu(device, body, {
+      mach: 2,
+      gamma,
+      tolerance: 0,
+      maxRefinement: 1,
+      floor: FITTED_DRAG_FLOOR,
+      orderTolerance: ORDER_TOLERANCE,
+    });
+    expect(page.kind).toBe('solved');
+    if (page.kind !== 'solved') return;
+    expect(page.boatTail?.levels).toHaveLength(1);
+    expect(Math.abs(page.boatTail!.levels[0]!.value / cpuTail - 1)).toBeLessThan(3 * GPU_NOISE);
+    expect(page.boatTail?.uncertainty).toBeUndefined();
   }, 1_800_000);
 });
