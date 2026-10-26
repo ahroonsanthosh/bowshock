@@ -20,6 +20,8 @@ import {
   busemannSectionDrag,
   exactSectionDrag,
 } from '../../src/fins/section-drag';
+import { finWaveDrag } from '../../src/fins/fin-wave-drag';
+import { trapezoidalPlanform } from '../../src/fins/planform';
 import {
   deflectionAngle,
   machFromPrandtlMeyer,
@@ -326,5 +328,55 @@ describe('exact section drag: what it refuses', () => {
     expect(x).toBeLessThan(0.85);
     expect(py - Math.tan(steepest) * (x - px)).toBeCloseTo(0.025, 12);
     expect(r.exact).toBe(false);
+  });
+
+  it('a wave that lands only on flat faces leaves the drag exact: a wedge-flat to a square trailing edge is served, the hexagon with the same front wedge is refused (0009 section 8)', () => {
+    // A 3% plate bevelled at the leading edge to 10 deg (the bevel ends at x/c 0.085), square trailing
+    // edge: the first fan's reflection lands on the flat ahead of the trailing edge at M 1.5 to 2.5.
+    const h = 0.015;
+    const b = h / Math.tan((10 * Math.PI) / 180);
+    const wedgeFlat: SymmetricSection = {
+      x: [0, b, 1],
+      halfThickness: [0, h, h],
+      bluntTrailingEdge: true,
+    };
+    for (const mach of [1.5, 2, 2.5]) {
+      let r;
+      try {
+        r = exactSectionDrag(wedgeFlat, mach);
+      } catch (e) {
+        throw new Error(`M ${mach}: ${(e as Error).message}`, { cause: e });
+      }
+      expect(r.exact).toBe(true);
+      expect(r.upper.firstReflection).toBeGreaterThan(b);
+      expect(r.upper.firstReflection).toBeLessThan(1);
+      expect(r.upper.lastSlopedFaceEnd).toBeCloseTo(b, 15);
+      expect(r.lower.lastSlopedFaceEnd).toBeCloseTo(b, 15);
+      // The value is the shock-expansion value (the same as with the reflections neglected), and by
+      // hand the front wedge's oblique-shock pressure on its rise, both surfaces.
+      expect(r.cd).toBe(exactSectionDrag(wedgeFlat, mach, { neglectReflectedWaves: true }).cd);
+      const s = obliqueShock(mach, Math.atan(h / b), 1.4);
+      const cp = (s.pressureRatio - 1) / (0.7 * mach * mach);
+      expect(r.cd).toBeCloseTo(2 * cp * h, 15);
+      // The same front wedge with a rear bevel (a hexagon): the rear bevel has slope and lies behind
+      // the landing point, so it is refused, the message naming the end of the last face with slope.
+      const e = refusal(() => exactSectionDrag(hexagonal(2 * h, b, b), mach));
+      expect(e.reason).toBe('reflected-wave');
+      expect(e.message).toContain('ahead of the end of its last face with slope (x/c = 1.000)');
+      const hex = exactSectionDrag(hexagonal(2 * h, b, b), mach, { neglectReflectedWaves: true });
+      expect(hex.exact).toBe(false);
+      expect(hex.upper.lastSlopedFaceEnd).toBe(1);
+      // A rear bevel of any length is a face with slope: still refused.
+      expect(refusal(() => exactSectionDrag(hexagonal(2 * h, b, 0.01), mach)).reason).toBe(
+        'reflected-wave',
+      );
+    }
+    // Sections with no flat behind the landing point keep their verdicts: the double wedge's last
+    // sloped face ends at the trailing edge.
+    expect(exactSectionDrag(doubleWedge(0.05), 2).upper.lastSlopedFaceEnd).toBe(1);
+    expect(refusal(() => exactSectionDrag(hexagonal(0.02, 0.05), 2)).reason).toBe('reflected-wave');
+    // Through the fin: the product with the linear 3D ratio is labelled exact.
+    const planform = trapezoidalPlanform({ rootChord: 1, span: 1, leadingEdgeSweep: 0 });
+    expect(finWaveDrag(planform, wedgeFlat, 2).exactSection).toBe(true);
   });
 });
