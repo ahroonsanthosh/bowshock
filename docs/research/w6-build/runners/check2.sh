@@ -1,7 +1,8 @@
 #!/bin/bash
+# Run from the repository root (or set ROOT to it).
 # The fixed geometry (tree2: the branch's src after the review's fixes)
 # against the lanes' first grids: two nj 20 fits from the free stream.
-cd /home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475/tests/tmp-w6b/tree2 || exit 1
+cd "${ROOT:-$PWD}/tests/tmp-w6b/tree2" || exit 1
 D=../out
 for c in "vk 5 0.03 1.3" "ogive 3 0.15 3"; do
   set -- $c

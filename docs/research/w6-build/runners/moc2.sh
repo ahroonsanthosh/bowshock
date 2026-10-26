@@ -1,9 +1,10 @@
 #!/bin/bash
+# Run from the repository root (or set ROOT to it).
 # The second march (README section 6) on cases whose three grids are saved:
 # the same lines as the first (auto, chosen on nj 20), entropy from the
 # fitted shock. Results: tests/tmp-w6b/out/moc2-<case>.{txt,jsonl}, .done.
 # Usage: moc2.sh "SHAPE CAL RATIO M" ...
-W=/home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475
+W=${ROOT:-$PWD}
 TREE=$W/tests/tmp-w6b/tree
 D=$W/tests/tmp-w6b/out
 cd "$TREE" || exit 1

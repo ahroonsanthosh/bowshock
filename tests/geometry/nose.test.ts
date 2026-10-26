@@ -518,6 +518,107 @@ describe('rounded tips (a sphere cap tangent to the profile)', () => {
     expect(() => {
       validateNose({ ...base, tipRadius: 0.05 });
     }).not.toThrow();
+    // An out-of-range parameter with a tip radius: both reasons.
+    expect(() => {
+      validateNose({
+        shape: { kind: 'ogive', parameter: 1.5 },
+        length: 3,
+        baseRadius: 0.5,
+        tipRadius: 0.05,
+      });
+    }).toThrow(/the ogive parameter must lie in \[0, 1\], got 1.5; a tip radius is offered on/);
+  });
+
+  it('takes a tip radius on the cone by any of its names, with the cone’s cap', () => {
+    const cone = cappedNose({
+      shape: { kind: 'conical' },
+      length: 3,
+      baseRadius: 0.5,
+      tipRadius: 0.05,
+    });
+    for (const shape of [
+      { kind: 'ogive', parameter: 0.0005 },
+      { kind: 'parabolic', parameter: 0 },
+      { kind: 'power', exponent: 1 },
+    ] as const) {
+      const n: Nose = { shape, length: 3, baseRadius: 0.5, tipRadius: 0.05 };
+      expect(() => {
+        validateNose(n);
+      }, shape.kind).not.toThrow();
+      const c = cappedNose(n);
+      expect(Math.abs(c.offset - cone.offset), shape.kind).toBeLessThan(1e-14);
+      expect(Math.abs(c.tangentX - cone.tangentX), shape.kind).toBeLessThan(1e-12);
+    }
+  });
+
+  it('refuses a tip radius too close to R for its parent’s length to be resolved, with that reason', () => {
+    // r_n within 5e-10 of R: the uncapped ogive behind it would be about
+    // 1e5 calibers long, and the overall length is no longer kept to
+    // 1e-12 in double precision (without the check, off by 1.1e-7).
+    expect(() => {
+      validateNose({
+        shape: { kind: 'ogive', parameter: 1 },
+        length: 3,
+        baseRadius: 0.5,
+        tipRadius: 0.4999999995,
+      });
+    }).toThrow(
+      /too close to the base radius: the uncapped profile behind it would be about .* calibers long/,
+    );
+  });
+
+  /**
+   * The Haack series' area function A(theta) = theta - sin(2 theta) / 2 +
+   * C sin^3 theta by its full Taylor series, summed until the terms
+   * vanish: sum over k >= 1 of (-1)^(k+1) 2^(2k) theta^(2k+1) / (2k+1)!,
+   * accurate to rounding for theta <= 1, independent of the series the
+   * code truncates at theta^11 below 0.1 and of the formula it uses above.
+   */
+  const haackArea = (theta: number, c: number) => {
+    let term = (4 * theta ** 3) / 6;
+    let sum = 0;
+    for (let k = 1; Math.abs(term) > 1e-30 * Math.abs(sum) || k === 1; k++) {
+      sum += term;
+      term *= (-4 * theta * theta) / ((2 * k + 2) * (2 * k + 3));
+    }
+    return sum + c * Math.sin(theta) ** 3;
+  };
+
+  it('a capped Von Karman nose behind its cap: radius and slope against the full series, theta 0.01 to 1', () => {
+    for (const [length, ratio] of [
+      [3, 1e-4],
+      [5, 1e-4],
+      [3, 1e-3],
+    ] as const) {
+      const n: Nose = {
+        shape: { kind: 'haack', parameter: 0 },
+        length,
+        baseRadius: 0.5,
+        tipRadius: 0.5 * ratio,
+      };
+      const c = cappedNose(n);
+      const Lp = c.parent.length;
+      for (const theta of [0.01, 0.02, 0.05, 0.09, 0.0999, 0.1, 0.1001, 0.11, 0.2, 0.5, 0.68, 1]) {
+        const xp = Lp * Math.sin(theta / 2) ** 2;
+        const x = xp - c.offset;
+        expect(x, `${length} ${ratio} ${theta}`).toBeGreaterThan(c.tangentX);
+        const area = haackArea(theta, 0);
+        const r = 0.5 * Math.sqrt(area / Math.PI);
+        // The code's error: below theta 0.1 its series to theta^11 (1e-16);
+        // above, theta - sin(2 theta) / 2 itself, which cancels to about
+        // 1e-16 / theta^2 of A.
+        const tolerance = theta < 0.1 ? 4e-16 : 4e-16 / (theta * theta);
+        expect(Math.abs(noseRadius(n, x) / r - 1), `${length} ${ratio} ${theta}`).toBeLessThan(
+          tolerance,
+        );
+        // dr/dx = R sin(theta) (2 + 3 C cos(theta)) / (Lp sqrt(pi A)), here by
+        // central differences of the capped profile.
+        const slope = (0.5 * Math.sin(theta) * 2) / (Lp * Math.sqrt(Math.PI * area));
+        const h = 1e-5 * x;
+        const fd = (noseRadius(n, x + h) - noseRadius(n, x - h)) / (2 * h);
+        expect(Math.abs(fd / slope - 1), `${length} ${ratio} ${theta}`).toBeLessThan(1e-8);
+      }
+    }
   });
 });
 

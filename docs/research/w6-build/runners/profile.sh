@@ -1,6 +1,7 @@
 #!/bin/bash
+# Run from the repository root (or set ROOT to it).
 # Diagnostic: the fitted flow across lines on nj 20, 40, 80. Usage: profile.sh SHAPE CAL RATIO M LINES
-W=/home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475
+W=${ROOT:-$PWD}
 cd "$W/tests/tmp-w6b/tree" || exit 1
 D=$W/tests/tmp-w6b/out
 tag=$1$2rn$3M$4

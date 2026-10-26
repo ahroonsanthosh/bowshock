@@ -1,6 +1,7 @@
 #!/bin/bash
+# Run from the repository root (or set ROOT to it).
 # Copy the lanes' records (not the cell states) into docs/research/w6-build/results/lanes.
-W=/home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475
+W=${ROOT:-$PWD}
 O=$W/tests/tmp-w6b/out
 R=$W/docs/research/w6-build/results/lanes
 mkdir -p "$R/saved"

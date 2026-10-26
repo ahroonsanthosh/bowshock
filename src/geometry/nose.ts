@@ -47,27 +47,19 @@ export interface Nose {
   readonly tipRadius?: number;
 }
 
-/** Throw a RangeError if the nose or its shape parameter is out of range. */
+/**
+ * Throw a RangeError if the nose, its shape parameter or its tip radius is
+ * out of range, with every reason that applies.
+ */
 export function validateNose(nose: Nose): void {
   const { shape, length, baseRadius } = nose;
   if (!(length > 0 && baseRadius > 0)) {
     throw new RangeError('a nose needs a positive length and base radius');
   }
-  if (nose.tipRadius !== undefined) {
-    if (!(nose.tipRadius > 0 && nose.tipRadius < baseRadius)) {
-      throw new RangeError(
-        `a tip radius must lie between 0 and the base radius, got ${nose.tipRadius}`,
-      );
-    }
-    if (!takesTipRadius(nose)) {
-      throw new RangeError(
-        `a tip radius is offered on ${CAPPED_SHAPES} only${shape.kind === 'ellipsoid' || (shape.kind === 'ogive' && length <= baseRadius) ? ': this nose is already rounded at its tip' : ''}`,
-      );
-    }
-  }
+  const reasons: string[] = [];
   const inRange = (value: number, min: number, max: number, what: string) => {
     if (!(value >= min && value <= max)) {
-      throw new RangeError(`${what} must lie in [${min}, ${max}], got ${value}`);
+      reasons.push(`${what} must lie in [${min}, ${max}], got ${value}`);
     }
   };
   switch (shape.kind) {
@@ -78,7 +70,7 @@ export function validateNose(nose: Nose): void {
       // OpenRocket allows n = 0, a flat face; that is a blunt body and is
       // refused here.
       if (!(shape.exponent > 0 && shape.exponent <= 1)) {
-        throw new RangeError(`the power-series exponent must lie in (0, 1], got ${shape.exponent}`);
+        reasons.push(`the power-series exponent must lie in (0, 1], got ${shape.exponent}`);
       }
       break;
     case 'parabolic':
@@ -91,6 +83,20 @@ export function validateNose(nose: Nose): void {
     case 'ellipsoid':
       break;
   }
+  if (nose.tipRadius !== undefined) {
+    if (!(nose.tipRadius > 0 && nose.tipRadius < baseRadius)) {
+      reasons.push(`a tip radius must lie between 0 and the base radius, got ${nose.tipRadius}`);
+    }
+    if (!takesTipRadius(nose)) {
+      const rounded =
+        shape.kind === 'ellipsoid' ||
+        (shape.kind === 'ogive' && shape.parameter === 1 && length <= baseRadius);
+      reasons.push(
+        `a tip radius is offered on ${CAPPED_SHAPES} only${rounded ? ': this nose is already rounded at its tip' : ''}`,
+      );
+    }
+  }
+  if (reasons.length > 0) throw new RangeError(reasons.join('; '));
   // The cap must fit on the profile: computed (and cached) here, so that
   // an impossible cap is refused when the nose is validated.
   if (nose.tipRadius !== undefined) cappedNose(nose);
@@ -246,7 +252,23 @@ export interface CappedNose {
 
 /** The shapes that take a tip radius, in words. */
 export const CAPPED_SHAPES =
-  'the tangent ogive (longer than its radius), the Von Karman nose, the parabola of parameter 1 and the cone';
+  'the tangent ogive (longer than its radius), the Von Karman nose, the parabola of parameter 1 and the cone (by any of its names: the ogive below parameter 0.001, the parabola of parameter 0, the power series of exponent 1)';
+
+/** Whether a shape is the cone, by any of its names. */
+function isCone(shape: NoseShape): boolean {
+  switch (shape.kind) {
+    case 'conical':
+      return true;
+    case 'ogive':
+      return shape.parameter < OGIVE_CONE_LIMIT;
+    case 'parabolic':
+      return shape.parameter === 0;
+    case 'power':
+      return shape.exponent === 1;
+    default:
+      return false;
+  }
+}
 
 /**
  * Whether a nose's shape takes a tip radius: the noses W6 caps (the
@@ -257,9 +279,8 @@ export const CAPPED_SHAPES =
  */
 function takesTipRadius(nose: Nose): boolean {
   const { shape, length, baseRadius } = nose;
+  if (isCone(shape)) return true;
   switch (shape.kind) {
-    case 'conical':
-      return true;
     case 'ogive':
       return shape.parameter === 1 && length > baseRadius;
     case 'haack':
@@ -284,9 +305,8 @@ function takesTipRadius(nose: Nose): boolean {
 function uncappedProfile(nose: Nose, x: number): { r: number; slope: number } {
   const { shape, length: L, baseRadius: R } = nose;
   const t = x / L;
+  if (isCone(shape)) return { r: noseRadius(nose, x), slope: R / L };
   switch (shape.kind) {
-    case 'conical':
-      return { r: R * t, slope: R / L };
     case 'ogive': {
       const { rho, xc } = ogiveArc(1, L, R);
       const root = Math.sqrt(Math.max(0, rho * rho - (xc - x) ** 2));
@@ -390,8 +410,14 @@ export function cappedNose(nose: Nose): CappedNose {
   }
   const length = Math.abs(g(lo)) <= Math.abs(g(hi)) ? lo : hi;
   const t = tangency(uncapped(length));
-  // The overall length kept to rounding, or refused.
-  if (!(Math.abs(length - t.offset - nose.length) <= 1e-12 * length)) throw fails();
+  // The overall length kept to rounding, or refused: as r_n tends to R
+  // the parent grows without bound (1e5 to 1e8 calibers for r_n within
+  // 1e-9 of R), and its length is no longer resolved in double precision.
+  if (!(Math.abs(length - t.offset - nose.length) <= 1e-12 * length)) {
+    throw new RangeError(
+      `a tip radius of ${rn} is too close to the base radius: the uncapped profile behind it would be about ${(length / (2 * nose.baseRadius)).toPrecision(2)} calibers long, too long to place the cap in double precision`,
+    );
+  }
   if (!(t.offset >= 0 && t.xt - t.offset > 0 && t.xt - t.offset < nose.length)) throw fails();
   const result: CappedNose = {
     parent: uncapped(length),
@@ -407,9 +433,10 @@ function cappedRadius(nose: Nose, x: number): number {
   const c = cappedNose(nose);
   const xx = Math.min(Math.max(x, 0), nose.length);
   if (xx < c.tangentX) {
+    // r^2 = r_n^2 - (x - r_n)^2 = x (2 r_n - x), without the cancellation
+    // of the squares near the tip.
     const rn = nose.tipRadius!;
-    const d = xx - c.centreX;
-    return Math.sqrt(Math.max(0, rn * rn - d * d));
+    return Math.sqrt(Math.max(0, xx * (2 * rn - xx)));
   }
   // The parent's profile shifted by the offset; at the base the parent's
   // own end, so that the radius there is the base radius exactly.

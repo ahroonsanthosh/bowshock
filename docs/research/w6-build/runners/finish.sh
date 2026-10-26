@@ -1,9 +1,10 @@
 #!/bin/bash
+# Run from the repository root (or set ROOT to it).
 # A grid whose fit stalls short of the early stop (the drag oscillating
 # about a value instead of settling): resumed from its checkpoint and run
 # to MAXIT iterations per refinement, then saved as not converged, its
 # last changes recorded in the log. Usage: finish.sh SHAPE CAL RATIO M REF MAXIT
-W=/home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475
+W=${ROOT:-$PWD}
 cd "$W/tests/tmp-w6b/tree" || exit 1
 D=$W/tests/tmp-w6b/out
 name=$1$2rn$3M$4r$5

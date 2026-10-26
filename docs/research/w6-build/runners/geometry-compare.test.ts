@@ -11,8 +11,8 @@ import {
   noseRadius as lanesNoseRadius,
 } from '../tmp-w6b/tree/src/geometry/nose';
 
-const OUT =
-  process.env.OUT ?? '/home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475/tests/tmp-w6b/out/geometry-compare.json';
+// Relative to the repository root, where vitest runs.
+const OUT = process.env.OUT ?? 'tests/tmp-w6b/out/geometry-compare.json';
 
 it('geometry against the lanes', () => {
   const rows: object[] = [];

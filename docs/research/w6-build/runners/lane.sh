@@ -1,4 +1,5 @@
 #!/bin/bash
+# Run from the repository root (or set ROOT to it).
 # W6 build lanes (docs/research/w6-build). Runs the jobs of a job file in
 # order, from the frozen tree (tests/tmp-w6b/tree: src of the commit in its
 # COMMIT file, the runners in tests/w6b/), results in tests/tmp-w6b/out.
@@ -8,7 +9,7 @@
 # Job lines:  fam SHAPE CAL RATIO M MAXREF   (nj 20 to 20 * MAXREF)
 #             moc SHAPE CAL RATIO M          (marches on nj 20, 40, 80)
 # Usage: lane.sh JOBFILE NAME
-W=/home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475
+W=${ROOT:-$PWD}
 TREE=$W/tests/tmp-w6b/tree
 D=$W/tests/tmp-w6b/out
 PROBE=$W/tests/tmp-w6/out
