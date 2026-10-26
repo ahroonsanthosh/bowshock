@@ -2035,6 +2035,15 @@ What it costs and gains is recorded below from `docs/research/refusals/`
 run before (245a88e) and after, with the cross-check required to agree
 (0015 section 8).
 
+What it costs (the same 2000 rockets, `out/impact.out` after this
+narrowing, against main's at 3389a04): the position refusal is 6.0% of
+the cases at Mach 1.0 to 1.2 and 1.2 to 1.5 (as on main), 7.4% at 1.5 to
+1.8 (0% on main) and 12.6% at 1.8 to 3.0 (11.5%), 8.0% over all bands
+(5.9%); as the sole blocker of a total, 0.15% (0.11%). The chord rule
+costs three totals: 150 of 8000 are served (153 on main), 47 at Mach 1.5
+to 1.8 (49) and 103 at 1.8 to 3.0 (104), none below 1.5. The
+cross-check agrees on all 1200 cases.
+
 **2026-10-26, how TN 3819 fig. 32's three readings are used** (the
 coordinator's decision, made before any of them is set against a
 method). Fig. 32 now has three blind readings (round 6; round 14, commit

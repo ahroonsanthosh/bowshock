@@ -1233,13 +1233,24 @@ factor still refuses) appears in 72.0% of the cases below Mach 1.5, from
 build, to a chord ahead, commit 5c81b5b.)
 
 **As narrowed to x/c 0.4 the same day** (section 3.3; `out/impact.out`
-now, against main's at 3389a04): the position refusal falls from 6.0% to
+at commit 245a88e, against main's at 3389a04): the position refusal falls from 6.0% to
 4.4% of the cases at Mach 1.0 to 1.2 and at 1.2 to 1.5 (about 32 rockets
 in each band take the bounded value; those ending 0.4 to 1 chord ahead
 stay refused), stays 0% at 1.5 to 1.8 and 11.5% at 1.8 to 3.0, and goes
 from 5.9% to 5.1% over all bands; as the sole blocker of a total it stays
 0.11%. Totals unchanged (153 of 8000, 1.9%), the cross-check 1200 of 1200. W1's package appears in 76.5% of the cases below Mach 1.5, from
 78.0%. Every other line of `impact.out` is as on main.
+
+**After the independent review (2026-10-26; section 3.3, 0014 section
+10.7 (ad))**: below Mach 1.5 every position ahead of the base refused,
+and at Mach 1.5 to 2.0 positions served only with TN 2360's root chord of
+1.5 body diameters (`out/impact.out` now, against main's at 3389a04). The
+position refusal is 6.0% of the cases at Mach 1.0 to 1.2 and 1.2 to 1.5
+(as on main), 7.4% at 1.5 to 1.8 (0% on main) and 12.6% at 1.8 to 3.0
+(11.5%), 8.0% over all bands (5.9%), and the sole blocker of a total in
+0.15% (0.11%). The chord rule costs three totals: 150 of 8000 served
+(153 on main), 47 at Mach 1.5 to 1.8 (49) and 103 at 1.8 to 3.0 (104),
+none below 1.5. The cross-check agrees on all 1200 cases.
 
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in
@@ -1257,7 +1268,7 @@ The rebuilt factor's own refusals, as a share of each band's cases (now):
 | sweep not measured (below M 1.5 every swept sharp section; a swept trailing edge on a sharp section at the base) | 55.0%      | 55.0%      | 45.0%      | 18.4%      |
 | rounded or diverging blunt trailing edge                                                                         | 14.8%      | 14.8%      | 14.8%      | 14.8%      |
 | section outside the 10% arc (steep bevels)                                                                       | 2.3%       | 2.3%       | 6.5%       | 13.0%      |
-| fins within a chord of the base, above M 2.0, and below 1.5 beyond x/c 0.4 (6.0% below 1.5 until 2026-10-26)     | 4.4%       | 4.4%       | 0%         | 11.5%      |
+| fins within a chord of the base: below M 1.5, above 2.0, or another root chord (since the review of 2026-10-26)  | 6.0%       | 6.0%       | 7.4%       | 12.6%      |
 | fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2)                               | 0%         | 0%         | 0%         | 0%         |
 | fewer than two or more than four fins                                                                            | 0%         | 0%         | 0%         | 0%         |
 
