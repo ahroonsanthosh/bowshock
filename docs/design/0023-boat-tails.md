@@ -260,8 +260,11 @@ any grid of nj = 160 and before nj = 80 on all but two cases
 (`o3-c3-bt6-l1-m2` and `o3-c5-bt8-l2-m2`, section 2.3):
 
 - **Mach number:** 1.8 to 2.0, where the viscous allowance is measured
-  (section 3, `BOAT_TAIL_MACH_RANGE` in `src/analysis/boat-tail.ts`);
-  widening it is the owner's question (section 7).
+  (section 3, `BOAT_TAIL_MACH_RANGE` in `src/analysis/boat-tail.ts`). If
+  the sets 0014 10.7 (ag) names pass its criteria, the allowance's Mach
+  span as (ag) item 4 carries it, within Mach 1.5 to 3, where this
+  section's cases are; the angles and lengths below then come from the
+  first set's cases in that span.
 - **The floor** (`BOAT_TAIL_DRAG_FLOOR`, a provisional 1e-3 until then):
   about twice the largest distance, relative to the value, between the
   procedure's extrapolation (order capped at 2) and the march over the
@@ -300,10 +303,36 @@ settled gets no verified band there, as for the forebody (0006).
   Mach 2, an 8 deg boat-tail one caliber long behind 3 calibers of
   cylinder converges with every gate passed: behind a 2:1 ellipsoid its
   term is 0.0549845, behind a 3-caliber Von Karman nose 0.0558872. No
-  reference checks them yet: the method of characteristics needs a data
-  line from the fitted flow behind the subsonic nose region (as for the
-  two-scale noses in 0006), measured as in section 2.3 before the term is
-  served there; until then they are refused with that reason.
+  reference checks them yet, so they are refused with that reason. The
+  check, registered 2026-10-26 before it is run
+  (`docs/research/boat-tails/blunt-lane.test.ts`, `summary-blunt.py`;
+  a trial of the runner on nj = 20 with 40 to 160 intervals, in scratch,
+  sets nothing):
+  - **Cases** (`BLUNT_CASES`): the 3-caliber Von Karman nose and the 2:1
+    ellipsoid, each with 3 calibers of cylinder and an 8 deg boat-tail one
+    caliber long, at Mach 2.
+  - **Fits:** nj = 20, 40 and 80, then 160 when the CPU allows; the
+    decision below waits for the four grids, as section 2.5's does.
+  - **The reference:** the march of characteristics from a line of each
+    grid's fitted flow, its data taken as 0006 took them for the two-scale
+    noses, over the shoulder's fan and the boat-tail to the base, on 640,
+    1280 and 2560 intervals. The lines: of those the scan on nj = 20
+    finds usable (Mach number at least 1.05 everywhere on the line, the
+    shoulder outside the line's own domain of dependence), the first, the
+    one nearest half the nose's length, and the last (`registeredLines`).
+    Each line's march is extrapolated in intervals as in section 2.3,
+    then over the grids at its observed order capped at 2 (where the three
+    grids do not converge steadily, the finest grid's, with the last change
+    as its uncertainty); the reference is the mean over the lines, its
+    uncertainty the largest distance of a line from that mean plus the
+    largest extrapolation over the grids.
+  - **The decision:** the term is served behind a blunt nose, within
+    section 2.5's range, only if on both cases the procedure's band on the
+    fitted family, with the floor, contains the reference with its
+    uncertainty. Blunt noses take a floor of their own, as the forebody's
+    two-scale noses do in 0006: about twice the largest distance of the
+    procedure's extrapolation from these references, and at least the
+    sharp noses'. Otherwise they stay refused with the present reason.
 - **The GPU** carries the step limit (`step_aspect` in
   `src/engine-gpu/shaders/line-grid.wgsl`) and the boat-tail term's levels
   and band (`verifiedFittedDragGpu`); `tests/gpu/boat-tail-gpu.test.ts`
@@ -326,7 +355,13 @@ measured side pressure drag to part 1's inviscid value for that
 configuration; the boat-tail term is served between S_min and
 max(S_max, 1) times the inviscid value, widened by part 1's own band.
 Measured at Mach 1.91 only: outside Mach 1.8 to 2.0 the term stays
-refused until data at other Mach numbers are named (section 7).
+refused until data at other Mach numbers are read. 0014 10.7 (ag) names
+five further sets of jet-off side pressures (RM L54C16 at Mach 1.59, RM
+L54I22 at 1.62, 1.93 and 2.41, RM E57E06 at 1.91 and 3.12, TN D-6789 at
+1.83 and 2.20, TM X-1960 up to 1.30), when each counts, and how the
+allowance is carried between measured Mach numbers (the envelope of the
+two neighbouring bands, only where they overlap, never beyond the
+outermost), before any of them is read.
 
 ## 4. Part 2: the base behind a boat-tail (Love's method)
 
@@ -357,7 +392,8 @@ them. The readers' brief is `docs/research/boat-tails/readers/brief.md`
 (the coordinator hands it to readers, who do not open the repository);
 each figure is read twice, the second time blind, and a neutral party
 pairs the readings. This workstream computes part 1 and does not read
-them.
+them. The further sets of 0014 10.7 (ag) have their own brief,
+`docs/research/boat-tails/readers/brief-ag.md`, under the same rules.
 
 ## 6. Coverage
 
@@ -408,13 +444,12 @@ solve itself is served on 21.5%.
 
 ## 7. Open
 
-- **The viscous allowance away from Mach 1.91.** RM E51F26 is the only
-  named source of boat-tail side pressures, at Mach 1.91. Serving the
-  boat-tail term at other Mach numbers needs side pressures measured
-  there (named in a further dated entry before they are read), or the
-  owner's decision to carry the Mach 1.91 allowance to other Mach numbers
-  with a label saying where it was measured. Until then the term is
-  refused outside Mach 1.8 to 2.0.
+- **The viscous allowance away from Mach 1.91.** 0014 10.7 (ag) names
+  side pressures measured at Mach 1.59 to 3.12 (and up to 1.30) before
+  they are read, with the rule that carries the allowance between them.
+  If none of them counts, or they disagree with RM E51F26 at Mach 1.9,
+  the question returns to the owner. Until they are read and paired the
+  term is refused outside Mach 1.8 to 2.0.
 - **RM E51F26's nose.** Its 6-caliber nose is defined by equation (14) of
   its reference 1, not yet opened; failing that, the allowance carries
   the spread between a tangent ogive and a cone of that length (0014 10.7
