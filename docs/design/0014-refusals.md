@@ -1949,6 +1949,16 @@ of 8000 (1.9%), 0% below Mach 1.5 by (f); the cross-check agrees on all
 term below Mach 1.5 for those cases, until the fin terms near Mach 1
 (0019) let a total through.
 
+What it costs and gains as narrowed (x/c up to 0.4 below Mach 1.5; the
+same population and run, `out/impact.out` now, against main's at
+3389a04): the position refusal falls from 6.0% of the cases to 4.4% at
+Mach 1.0 to 1.2 and at 1.2 to 1.5 (about 32 of 2000 rockets in each band
+now take the bounded value), stays 0% at 1.5 to 1.8 and 11.5% at 1.8 to
+3.0; 5.9% to 5.1% over all bands; sole blocker of a total 0.11%,
+unchanged. W1's package appears in 76.5% of the cases below Mach 1.5,
+from 78.0%. No total moves (153 of 8000, 1.9%); the cross-check agrees on
+all 1200 cases; no case is newly refused against main.
+
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.
