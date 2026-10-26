@@ -1820,7 +1820,7 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
-**2026-10-26 (aa): fins ending within a chord ahead of the base (A5 of
+**2026-10-26 (ad): fins ending within a chord ahead of the base (A5 of
 the refusal plan): bounded, not measured, below Mach 1.5; TN 3819 fig.
 32's Langley symbols to be read a second time for Mach 2.0 to 3.0; and
 NSWCDD/TR-92/509's fins ahead of the base a check only** (a recorded
@@ -1929,7 +1929,10 @@ of 8000 (1.9%), 0% below Mach 1.5 by (f); the cross-check agrees on all
 term below Mach 1.5 for those cases, until the fin terms near Mach 1
 (0019) let a total through.
 
-Letters (w) to (z) are allocated by the coordinator on other branches;
-(aa) was taken here as the next after them, to be re-lettered if the
-coordinator allocated it elsewhere. The next free letter is the
-coordinator's to allocate.
+_Relabelled 2026-10-26:_ this entry was first written as (aa), which the
+coordinator's registry had given to another branch; it is (ad) by that
+registry, its content unchanged by the relabelling.
+
+Letters (w) to (ac) are allocated by the coordinator on other branches
+(the registry in the coordinator's letters file); the next free letter is
+the coordinator's to allocate.

@@ -78,7 +78,7 @@
  * no ratio member and no position ahead of the base is measured, and
  * swept fins are served only with flat faces (RM L52E06's plates are
  * swept 45 deg). Fins ending ahead of the base there are "bounded, not
- * measured" (since 2026-10-26; 0015 section 3.3, 0014 section 10.7 (aa)):
+ * measured" (since 2026-10-26; 0015 section 3.3, 0014 section 10.7 (ad)):
  * between the zero member and the upper member of the same fins' bracket at
  * the base, the ordering TN 2360 fig. 6's (at M 1.5 and 2.0 the increment
  * ahead of the base is no larger than at it and its relief lies within the
@@ -150,7 +150,7 @@ export const W1_THICKNESSES = [0.05, 0.1] as const;
 export const W1_STATIONS = [0, 0.2, 0.4, 0.6, 0.8, 1.0] as const;
 /**
  * Below this Mach number fins ending ahead of the base (0 < x/c < 1) are bounded, not measured: between the zero
- * member and the upper member of the same fins' bracket at the base (0015 section 3.3; 0014 section 10.7 (aa)).
+ * member and the upper member of the same fins' bracket at the base (0015 section 3.3; 0014 section 10.7 (ad)).
  * TN 2360 fig. 6 measures, at both its Mach numbers, the increment ahead of the base no larger than at it (within
  * the reading errors) and its relief within the zero member, and its text (pp. 7, 9 to 11) and data put the fins'
  * reach toward the base less far forward as the Mach number falls: so the bound is carried down from its lower

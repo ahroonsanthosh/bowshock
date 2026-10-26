@@ -1086,7 +1086,7 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
           }
         }
       }
-      // 0014 section 10.7 (aa): at M 1.5 inside by 0.015 to 0.076; at 2.0 by 0.005 and 0.010, and four 10% fins
+      // 0014 section 10.7 (ad): at M 1.5 inside by 0.015 to 0.076; at 2.0 by 0.005 and 0.010, and four 10% fins
       // level with the base to 0.0002 (the symbols one reader alone found set none of these).
       expect(margin).toEqual(
         withSingle

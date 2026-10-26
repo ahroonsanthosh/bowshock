@@ -48,7 +48,7 @@
 | nose: tip shock detaches | 20.5% | 0.0% | 0.0% | 0.0% | 5.1% | 0.00% |
 | nose: axially subsonic tip flow (at a corner, or subsonic on the surface) | 14.8% | 2.1% | 0.0% | 0.0% | 4.2% | 0.00% |
 | fins: rounded leading edge swept beyond 60 deg | 3.0% | 3.0% | 3.0% | 3.0% | 3.0% | 0.00% |
-| base: fins ending within a chord of the base, above Mach 2.0 (below 1.5 bounded since 0014 section 10.7 (aa)) | 0.0% | 0.0% | 0.0% | 11.5% | 2.9% | 0.11% |
+| base: fins ending within a chord of the base, above Mach 2.0 (below 1.5 bounded since 0014 section 10.7 (ad)) | 0.0% | 0.0% | 0.0% | 11.5% | 2.9% | 0.11% |
 | te: thick boundary layer, c/[h Re_c^(1/5)] > 4.5 anywhere along the span (> 1 above M 3.1) | 1.1% | 0.7% | 0.7% | 0.4% | 0.7% | 0.01% |
 | fins: rounded leading edge outside Re_D 6.7e3 to 1e6 (normal component) | 1.0% | 1.1% | 0.5% | 0.2% | 0.7% | 0.01% |
 | nose: tip steeper than 40 deg (fitted grids wall gate) | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |

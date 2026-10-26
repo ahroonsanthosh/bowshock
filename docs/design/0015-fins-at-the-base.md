@@ -39,7 +39,7 @@
   swept-trailing-edge threshold at 0.9 root chords and forward sweeps
   refused (section 3.4), and the labels of members and swept plates
   corrected (section 3.6); no served number changed (section 8). On
-  2026-10-26 (A5; 0014 section 10.7 (aa)): fins ending within a chord
+  2026-10-26 (A5; 0014 section 10.7 (ad)): fins ending within a chord
   ahead of the base served below Mach 1.5 as "bounded, not measured",
   between the zero member and the same fins at the base, the ordering
   TN 2360 fig. 6's (section 3.3); above Mach 2.0 still refused, TN 3819
@@ -267,7 +267,7 @@ are refused. A chord or more ahead keeps 0010 section 1.4's plain curve,
 labelled not validated with fins.
 
 **Below M 1.5: bounded, not measured (2026-10-26, A5; 0014 section 10.7
-(aa)).** At M 1.0 to 1.5 no position ahead of the base is measured, and
+(ad)).** At M 1.0 to 1.5 no position ahead of the base is measured, and
 until this date such fins were refused. They are now served as "bounded,
 not measured" (0014 section 10.2): between the zero member there (RM
 L52E06's relief, F 0.838; for flat-faced fins the same relief, section 4) and the same fins at the base, that is the upper member of their
@@ -1147,7 +1147,7 @@ moves, 45.0% to 45.1% at Mach 1.5 to 1.8 and 18.4% to 18.5% at 1.8 to
 carries on members, the plates' lower bound named), the numbers did not.
 
 **A5, fins within a chord ahead of the base below Mach 1.5 (2026-10-26;
-section 3.3, 0014 section 10.7 (aa)):** run before (main at 3389a04,
+section 3.3, 0014 section 10.7 (ad)):** run before (main at 3389a04,
 which reproduced the committed `out/impact.out` and `.json` byte for
 byte) and after, the same 2000 rockets. The position refusal falls from
 6.0% to 0% of the cases at Mach 1.0 to 1.2 and at 1.2 to 1.5 (about 120
@@ -1223,12 +1223,12 @@ hold-out of its own yet.
 - Rounded and diverging trailing edges at the base.
 - Fins ahead of the base above M 2.0 (TN 3819 fig. 32's Langley symbols
   at M 2.41, x/c 0 to 1, are band-setting and read once, by round 6; a
-  blind second reading is requested, 0014 section 10.7 (aa), and the
+  blind second reading is requested, 0014 section 10.7 (ad), and the
   method that uses them is written here after the pairing, before its
   code). NSWCDD/TR-92/509's fins one and two chords ahead were
   transcribed and examined before any registration, so they are a check
   that sets nothing, and only after Table 2's second transcription (0014
-  section 10.7 (aa)). Below M 1.5 they are bounded since 2026-10-26
+  section 10.7 (ad)). Below M 1.5 they are bounded since 2026-10-26
   (section 3.3); the relief side there is re-examined first if fig. 32's
   pair finds a relief beyond the zero member a chord ahead at M 2.41.
 - Whether the rebuilt factor replaces the present one inside the Basic
