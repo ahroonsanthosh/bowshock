@@ -1039,4 +1039,110 @@ describe('refusals', () => {
       }
     }
   });
+
+  describe('flat-faced fins with the trailing edge unswept: every leading-edge sweep (0015 section 12)', () => {
+    const tanDeg = (d: number) => Math.tan((d * Math.PI) / 180);
+    const sweeps = [20, 44, 45, 59, 61, 70, 85];
+    // A plate of one thickness (square trailing edge) and a plate bevelled at the leading edge only: both
+    // have flat faces at the trailing edge.
+    const sections: [string, SymmetricSection][] = [
+      [
+        'square plate',
+        { x: [0, 1e-3, 1], halfThickness: [0, 0.012, 0.012], bluntTrailingEdge: true },
+      ],
+      ['bevelled plate', plate(0.024)],
+      ['thick bevelled plate', plate(0.08)],
+    ];
+    it("served at the base at M 1.0 to 3.0 and within a chord at M 1.5 to 2.0, with the unswept plate's bracket to 1e-12", () => {
+      for (const [name, section] of sections) {
+        for (const mach of [1.0, 1.2, 1.49, 1.5, 1.8, 1.99, 2.0, 2.5, 2.56, 2.6, 3.0]) {
+          for (const xc of mach >= 1.5 && mach <= 2.0 ? [0, 0.5] : [0]) {
+            const unswept = finsOnBaseFactorW1(
+              mach,
+              fins({ section, tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: xc }),
+            );
+            for (const le of sweeps) {
+              const where = `${name}, M ${mach}, x/c ${xc}, ${le} deg`;
+              let r;
+              try {
+                r = finsOnBaseFactorW1(
+                  mach,
+                  fins({ section, tanLeadingEdgeSweep: tanDeg(le), trailingEdgeAheadOfBase: xc }),
+                );
+              } catch (e) {
+                throw new Error(`${where}: ${(e as Error).message}`, { cause: e });
+              }
+              // The ordering says it is the same bracket: the same bounds, the same nominal.
+              expect(r.low, where).toBeCloseTo(unswept.low, 12);
+              expect(r.high, where).toBeCloseTo(unswept.high, 12);
+              expect(r.nominal, where).toBeCloseTo(unswept.nominal, 12);
+              expect(r.low, where).toBe(W1_FLAT_RELIEF_LOW);
+              expect(r.bounded, where).toBe(true);
+              expect(r.swept, where).toBe(true);
+              expect(r.label.startsWith(W1_BOUNDED_PREFIX), where).toBe(true);
+              expect(r.label, where).toContain(
+                `the leading edge swept ${le.toFixed(1)} deg with the trailing edge unswept, with flat faces`,
+              );
+              expect(r.label, where).toContain('0015 section 12');
+              if (le > 60) {
+                expect(r.label, where).toContain(
+                  'no fin of any section is measured at the base swept beyond 60 deg',
+                );
+              } else {
+                expect(r.label, where).not.toContain('swept beyond 60 deg');
+              }
+            }
+          }
+        }
+      }
+    });
+    it('the same fins as a sharp section keep 0015 section 3.4: refused at 20 and 44 deg below M 2.0 and at 70 deg', () => {
+      for (const mach of [1.2, 1.8, 1.99]) {
+        for (const le of [20, 44]) {
+          expect(
+            reason(() => finsOnBaseFactorW1(mach, fins({ tanLeadingEdgeSweep: tanDeg(le) }))),
+            `M ${mach}, ${le} deg`,
+          ).toBe('fin-sweep');
+        }
+      }
+      for (const mach of [1.8, 2.0, 3.0]) {
+        expect(
+          reason(() => finsOnBaseFactorW1(mach, fins({ tanLeadingEdgeSweep: tanDeg(70) }))),
+        ).toBe('fin-sweep');
+      }
+      // W1b unchanged: 44 deg with the trailing edge unswept at M 2.0 to 3.0.
+      expect(reason(() => finsOnBaseFactorW1(2, fins({ tanLeadingEdgeSweep: tanDeg(44) })))).toBe(
+        'served',
+      );
+    });
+    it("a plate with a swept trailing edge keeps section 4's sweeps: refused outside 45 to 60 deg of leading edge, or beyond it", () => {
+      const p = (le: number, te: number) =>
+        reason(() =>
+          finsOnBaseFactorW1(
+            2,
+            fins({
+              section: plate(0.024),
+              tanLeadingEdgeSweep: tanDeg(le),
+              tanTrailingEdgeSweep: tanDeg(te),
+            }),
+          ),
+        );
+      expect(p(30, 10)).toBe('fin-sweep');
+      expect(p(0, 10)).toBe('fin-sweep');
+      expect(p(50, 52)).toBe('fin-sweep');
+      expect(p(70, 30)).toBe('fin-sweep');
+      expect(p(45, 45)).toBe('served');
+      expect(p(45, -45)).toBe('served');
+      expect(p(60, 30)).toBe('served');
+    });
+    it('the present factor is not reached: a plate goes to the rebuilt factor whatever its sweep (0014 10.7 (i))', () => {
+      // `baseFinsOf` marks every flat-faced fin `flatFaced`; the routing is held by fins-on-base-routing.test.ts
+      // and flat-plates.test.ts. Here: the unswept plate itself is served by the rebuilt factor as before.
+      expect(
+        reason(() =>
+          finsOnBaseFactorW1(1.8, fins({ section: plate(0.024), tanLeadingEdgeSweep: 0 })),
+        ),
+      ).toBe('served');
+    });
+  });
 });

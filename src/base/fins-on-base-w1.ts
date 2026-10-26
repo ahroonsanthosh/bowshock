@@ -80,6 +80,9 @@
  * swept 45 deg).
  *
  * Fins with flat faces at a square trailing edge (flat plates) are
+ * served at every leading-edge sweep when the trailing edge is unswept
+ * (0015 section 12, 2026-10-26: neither bound below uses the leading
+ * edge), and with the trailing edge swept at the sweeps above. They are
  * "bounded, not measured" (0014 section 10.2): between the lowest relief
  * measured with such fins at the base (RM L52E06 fig. 7, M 1.06 to 1.10:
  * W1_FLAT_RELIEF_LOW) and the unswept circular-arc member at least as
@@ -821,8 +824,14 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     le < W1_MODERATE_SWEEP.leadingEdge + 1e-9 &&
     mach >= W1_MODERATE_SWEEP.mach[0] - 1e-12 &&
     mach <= W1_MODERATE_SWEEP.mach[1] + 1e-12;
+  // Flat faces at a square trailing edge with the trailing edge unswept: served at every leading-edge sweep
+  // (0015 section 12; 0014 section 10.7 (z)). Neither bound of the flat-plate value uses the leading edge:
+  // the upper rests on the faces' slope near the trailing edge (zero on a flat face at any sweep), the lower
+  // on RM L52E06's relief at the fin-body junctures and the square edge in the base plane, which the
+  // leading-edge sweep does not move when the trailing edge is unswept.
+  const plateAnyLeadingEdgeSweep = bounded && swept && tes <= 1e-9;
   const deg = (a: number) => ((a * 180) / Math.PI).toFixed(1);
-  if (swept && !measuredSwept && !moderate) {
+  if (swept && !measuredSwept && !moderate && !plateAnyLeadingEdgeSweep) {
     throw new BaseRefusal(
       'fin-sweep',
       `fins with a leading edge swept ${deg(le)} deg and a trailing edge ${deg(tes)} deg at M ${mach}: ` +
@@ -970,7 +979,20 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         `${tr.tauEq.toFixed(3)}), not measured on this section`,
     );
   }
-  if (swept && bounded) {
+  if (plateAnyLeadingEdgeSweep) {
+    // Flat faces, the trailing edge unswept: the bounds are set at the trailing edge, which the leading-edge
+    // sweep does not move (0015 section 12).
+    reasons.push(
+      `the leading edge swept ${deg(le)} deg with the trailing edge unswept, with flat faces: bracketed ` +
+        "between RM L52E06's relief with flat plates at the base (F " +
+        `${W1_FLAT_RELIEF_LOW.toFixed(3)}, its plates swept 45 deg) and unswept circular-arc fins; both ` +
+        'bounds are set at the trailing edge, in the base plane, which the leading-edge sweep does not ' +
+        'move, and the faces carry no slope for the sweep to act on (0015 section 12)' +
+        (le > W1_SWEPT_RANGE[1] + 1e-9
+          ? '; no fin of any section is measured at the base swept beyond 60 deg'
+          : ''),
+    );
+  } else if (swept && bounded) {
     // Flat faces: the lower bound is RM L52E06's relief with swept plates, not the zero member (0015 section 4).
     reasons.push(
       `the leading edge swept ${deg(le)} deg and the trailing edge ${deg(tes)} deg, with flat faces: ` +
