@@ -130,7 +130,7 @@ export interface CharacteristicsSolution {
   readonly penetration: number;
 }
 
-interface Point {
+export interface Point {
   x: number;
   y: number;
   /** Flow angle to the axis. */
@@ -150,14 +150,48 @@ interface MarchRecord {
   penetration: number;
 }
 
-/** The unit processes of the network on a body in a free stream (p = rho = 1). */
-function network(body: Body, mach: number, gamma: number) {
+/**
+ * A body given by its profile alone, for verification of the march on
+ * shapes no served body has (a concave turn far from the axis): its radius,
+ * the scale of its slope's differences, its end, and the positions where
+ * its slope may jump.
+ */
+export interface ProfileBody {
+  readonly radius: (x: number) => number;
+  readonly scale: number;
+  readonly end: number;
+  readonly breakpoints: readonly number[];
+}
+
+/** Options of the network for verification only. */
+export interface NetworkOptions {
+  /**
+   * Planar flow: the axisymmetric source terms of the compatibility
+   * relations left out (the stream function is still per radian of y, so
+   * mass balances are those of a thin annulus).
+   */
+  readonly planar?: boolean;
+}
+
+/**
+ * The unit processes of the network on a body in a free stream (p = rho =
+ * 1). Exported for the march that fits an embedded shock
+ * (characteristics-shocked.ts); not part of the module's interface.
+ */
+export function characteristicNetwork(
+  body: Body | ProfileBody,
+  mach: number,
+  gamma: number,
+  networkOptions: NetworkOptions = {},
+) {
   // Free stream: p = rho = 1, so a^2 = gamma.
   const vInf = mach * Math.sqrt(gamma);
   const cp = gamma / (gamma - 1);
   const enthalpy = cp + 0.5 * vInf * vInf;
-  const xEnd = bodyLength(body);
-  const L = body.nose.length;
+  const profile = 'nose' in body ? null : body;
+  const xEnd = profile ? profile.end : bodyLength(body as Body);
+  const L = profile ? profile.scale : (body as Body).nose.length;
+  const planar = networkOptions.planar === true;
 
   /** Mach number of a point from its pressure and entropy (NaN where none). */
   const machOf = (pt: Pick<Point, 'p' | 'k'>) => {
@@ -182,19 +216,21 @@ function network(body: Body, mach: number, gamma: number) {
     const d = derived(pt);
     return {
       q: 1 / (Math.tan(d.mu) * d.rho * d.v * d.v),
-      s: Math.sin(pt.theta) / d.m,
+      s: planar ? 0 : Math.sin(pt.theta) / d.m,
       angle: pt.theta + sign * d.mu,
       rho: d.rho,
       v: d.v,
     };
   };
 
-  const radius = (x: number) => bodyRadius(body, x);
+  const radius = profile ? profile.radius : (x: number) => bodyRadius(body as Body, x);
   const slope = (x: number) => {
     const h = 1e-6 * L;
     return Math.atan((radius(x + h) - radius(x - h)) / (2 * h));
   };
-  const corners = bodyBreakpoints(body).filter((x) => x > 0 && x < xEnd);
+  const corners = (profile ? profile.breakpoints : bodyBreakpoints(body as Body)).filter(
+    (x) => x > 0 && x < xEnd,
+  );
   for (const x of corners) {
     if (Math.abs(slope(x - 1e-4 * L) - slope(x + 1e-4 * L)) > 1e-3) {
       // Nearer the breakpoint a continuous slope differs across it by
@@ -286,7 +322,7 @@ function network(body: Body, mach: number, gamma: number) {
     return { point, beta: b1 };
   };
 
-  const interiorPoint = (a: Point, b: Point): Point => {
+  const interiorPoint = (a: Point, b: Point, kOf: (psi: number) => number = entropyAt): Point => {
     const ca = coefficients(a, -1);
     const cb = coefficients(b, 1);
     const c: Point = { ...b };
@@ -312,7 +348,7 @@ function network(body: Body, mach: number, gamma: number) {
       );
       Object.assign(c, { x, y, p, theta });
       c.psi = a.psi - massFlux(c, a);
-      c.k = entropyAt(c.psi);
+      c.k = kOf(c.psi);
       return change;
     });
     return c;
@@ -368,11 +404,15 @@ function network(body: Body, mach: number, gamma: number) {
     vInf,
     cp,
     enthalpy,
+    xEnd,
     machOf,
     derived,
+    coefficients,
+    converge,
     radius,
     slope,
     entropy,
+    entropyAt,
     massFlux,
     behindShock,
     shockPoint,
@@ -381,7 +421,7 @@ function network(body: Body, mach: number, gamma: number) {
   };
 }
 
-type Network = ReturnType<typeof network>;
+type Network = ReturnType<typeof characteristicNetwork>;
 
 /**
  * The march from a C- line from the shock to the body (`first`, whose
@@ -445,7 +485,7 @@ export function characteristics(
         : 'the march from the tip needs a sharp tip: this nose leaves the axis vertically, with subsonic flow at its nose; march from a line behind the sonic line instead',
     );
   }
-  const net = network(body, mach, gamma);
+  const net = characteristicNetwork(body, mach, gamma);
   const { cp, enthalpy, vInf, derived, radius, slope, entropy, massFlux, behindShock } = net;
   const L = body.nose.length;
 
@@ -621,7 +661,7 @@ export function characteristicsFrom(
   const given = start.points;
   const last = given.length - 1;
   if (last < 3) throw new RangeError('the starting line needs at least four points');
-  const net = network(body, mach, gamma);
+  const net = characteristicNetwork(body, mach, gamma);
   const { vInf, machOf, radius, slope, entropy, massFlux, behindShock } = net;
   const { interiorPoint, wallPoint } = net;
 
