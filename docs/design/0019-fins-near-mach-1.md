@@ -1039,6 +1039,28 @@ formed on two of them, and the shape widening's size on two of them.
      theirs (wing 2's) and its shape widening the largest (upward by S at
      6.88 deg), the wider choice in each.
 
+   _Three readings of RM A52E01 fig. 8, the coordinator's rule (dated
+   2026-10-26, decided before it was applied to the band)._ The rules
+   above were written for two readings; a third blind reading (round 17) and a three-way neutral pairing
+   (`audit/pairing-2026-10-26-a52e01-three/`) followed. With three:
+
+   - _Wing identity._ A drawn curve takes a wing's properties only if
+     every reader who names a wing for it names the same wing, at least
+     two readers name one, and none of them flags it uncertain.
+     Otherwise, any firm dissent included (such as one reader's
+     systematic swap of wings 2 and 4), it is "any of wings 2, 3 and 4":
+     the least layer reach and the widest shape allowance. No majority
+     vote.
+   - _Values at alpha 0._ A curve's value sets the band only if at least
+     two readings give one and at least one pair of them agrees (their
+     errors summed). It then enters as the envelope of every reading's
+     value for that curve, a third that disagrees included. Values read
+     once, values no pair agrees on, and curves not linked across the
+     readings set nothing.
+   - _Away from alpha 0._ Not used, as above (so round 17's six box rows
+     in fig. 8(a) at M 0.9 at Cp -1.79, likely a slip, do not enter;
+     they are noted).
+
 7. **What is refused below Mach 1.5**, each with its reason in plain
    words, at every station along the span on fins of varying chord: a
    layer parameter beyond the data (X above what the points of each of the
