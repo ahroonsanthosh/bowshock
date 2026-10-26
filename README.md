@@ -1,92 +1,82 @@
 # bowshock
 
-**Supersonic CFD for model rockets, in your browser, on your own GPU.**
-bowshock computes the drag of rockets flying faster than sound, for amateur
-and student teams going past Mach 1. Nothing to install, no cluster, no
-licence fee.
+**Drag for supersonic model rockets, worked out in your browser on your own GPU.**
 
-**[Try it in your browser](https://ahroonsanthosh.github.io/bowshock/)**
-(needs WebGPU, for example a recent Chrome or Edge).
+Build your rocket, pick a Mach number, and bowshock solves the airflow
+around it and tells you the drag, along with how sure it is about that number.
+Nothing to install and nothing to pay.
 
-![The live flow page: the Basic Finner's nose cone and body at Mach 2, schlieren above the axis and Mach number below](docs/images/hero.webp)
+**[Try it](https://ahroonsanthosh.github.io/bowshock/)** (needs WebGPU, such
+as a recent Chrome or Edge).
 
-> Early development. Don't use it for flight decisions yet.
+![The Basic Finner at Mach 2: schlieren above the axis, Mach number below](docs/images/hero.webp)
 
-## Why it matters
+> Early days. Please don't use it for flight decisions yet.
 
-Teams flying supersonic rockets need a drag curve, and today they get one
-from expensive commercial CFD or from rough empirical tools that never say
-how wrong they might be. bowshock solves the flow properly on the GPU you
-already have, and every number it shows says how far it has been checked.
-Where its methods don't reach, it refuses and tells you why, instead of
-guessing.
+## The idea
 
-## What works today
+Most rocket tools give you a drag number without saying how wrong it might
+be. bowshock does the opposite: every number comes with a band, and every
+band has been checked against exact theory or wind-tunnel data. If a part of
+your rocket hasn't been checked yet, bowshock says so and gives no total,
+rather than guessing.
 
-| Capability                                                                    | Status                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Nose wave drag** (cones, ogives, parabolic, ellipsoid and Von Karman noses) | **Verified**, Mach 1.2 to 5, for the numerical error only, not the model's: tunnel pressures on two ogives at Mach 1.98 lie 8 to 9% above and 3% below it ([why](docs/validation/sources.md#bodies-of-revolution)). Von Karman noses only at Mach 1.5 to 3, 1 to 5 calibers long up to Mach 2 and falling to 3 at Mach 3; their band from four grids checked against a reference on two of them (1 and 3 calibers at Mach 2) |
-| **Live flow view**                                                            | The same solve, drawn as it converges (schlieren, Mach, pressure, density)                                                                                                                                                                                                                                                                                                                                                   |
-| **Solver checks**                                                             | **Verified** against exact solutions: shock tube, oblique shocks, expansions, cones                                                                                                                                                                                                                                                                                                                                          |
-| **Skin friction**                                                             | **Validated**: within -12% to +19% of all 23 wind-tunnel and flight measurements                                                                                                                                                                                                                                                                                                                                             |
-| **Fin and base drag**                                                         | **Estimated** from component wind-tunnel data, with bands                                                                                                                                                                                                                                                                                                                                                                    |
-| **Total drag** (nose, body and fins)                                          | **Validated** only for the Basic Finner with sharp fins at the conditions of the one test it passed; elsewhere **an estimate, not validated**. Refused for most realistic rockets until the missing components are built                                                                                                                                                                                                     |
-| **Mach 1 to 1.2**                                                             | Prototype, not served                                                                                                                                                                                                                                                                                                                                                                                                        |
-| **Viscous flow (RANS)**, angle of attack, motor plume                         | Not built yet                                                                                                                                                                                                                                                                                                                                                                                                                |
+## Where it stands
 
-What the labels mean: **verified** means the numerical error was measured;
-**validated** means it was compared with real measurements; **estimated**
-means a band from component data, not yet tested on a whole rocket;
-**refused** means no number, with the reason.
+**Solid:**
 
-After a corrected input voided its first hold-out test (the Basic Finner
-reference rocket, 11 free-flight shots), the total drag was tested once
-against BRL Report 934, as registered beforehand, and passed at all seven
-rounds: measured drag 3.9% to 11.0% above the model, so it reads low every
-time. Those rounds flew outside the class the page serves, so "validated"
-is given only to a narrow class at exactly the tested conditions, and every
-other total stays an estimate. The newer model for fins at the base has
-not passed a hold-out test yet.
+- **Nose drag** for cones, ogives, parabolic and ellipsoid noses from Mach
+  1.2 to 5, and Von Kármán noses from Mach 1.5 to 3. The band covers the
+  numerical error; tunnel tests sit from a few percent to about a third off the
+  inviscid answer, and that gap isn't on the page yet.
+- **Skin friction**, within -12% to +19% of 23 measurements.
+- **The solver itself**, against exact shock, expansion and cone solutions.
 
-## How accuracy is kept honest
+**The honest catch:** a total needs every part checked, and most real
+rockets have at least one part that isn't yet. Swept fins, boat-tails,
+square or rounded fin edges and anything below Mach 1.5 are the usual
+blockers. In our test set of 1,600 typical rockets, only 128 get a total
+today. For those, bowshock still shows the parts it can work out, and a
+"drag is at least this much" floor where that is safe.
 
-- **Tests are registered before they're run.** Validation data is held
-  back, and how it will be used is committed before any model sees it.
-- **Every figure is read twice**, independently, from the source.
-- **Independent audits** of the method, the readings and the code.
-- **Refusals over guesses.** No measured band, no number.
+**Not built yet:** viscous (RANS) flow, angle of attack, motor plume.
 
-The full record, with every measurement behind every claim, is in
-[docs/design/](docs/design/) and [docs/validation/sources.md](docs/validation/sources.md).
+## What's next
+
+Checking the parts that block the most rockets, starting with base drag
+behind swept fins, fin shock reflections and square fin edges, then the fins
+below Mach 1.5. Each fix is measured against theory or wind-tunnel data
+before it goes live.
+
+## How we keep it honest
+
+- Tests are written down before they're run, against data held back for
+  the purpose.
+- Every figure taken from a report is read twice, independently.
+- Every change to the method gets an independent review.
+- No checked band, no number.
+
+The details are in [docs/design/](docs/design/) and
+[docs/validation/sources.md](docs/validation/sources.md).
 
 ## Run it locally
 
-Requires Node.js 22.12 or newer.
+You need Node.js 22.12 or newer.
 
 ```sh
 npm ci
-npm run dev        # serve the pages, open the address Vite prints
+npm run dev        # serve the pages
 npm run check      # formatting, lint, types and unit tests
 npm run test:gpu   # WebGPU tests in headless Chromium
 ```
 
-## What's next
-
-- A viscous (RANS) solver with a turbulence model, for friction, base and
-  fin drag computed directly
-- A total drag validated for the rockets teams actually fly, including
-  swept fins and Von Kármán noses
-- Mach 1 to 1.2
-- Whole-rocket grids with fins, no meshing needed
-- Export drag versus Mach as a file for flight simulators
-
 ## Contributing
 
-Correctness first: published methods only, written from scratch and cited
-in the code, every change tested. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Accuracy comes first: published methods only, written from scratch, cited
+and tested. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-AGPL-3.0-or-later. See [LICENSE](LICENSE) and [NOTICE](NOTICE). bowshock
-is an independent implementation of published methods and contains no
-FluidX3D code; its interface is inspired by FluidX3D's look.
+AGPL-3.0-or-later. See [LICENSE](LICENSE) and [NOTICE](NOTICE). bowshock is
+an independent implementation of published methods. Its look is inspired by
+FluidX3D, but it contains none of FluidX3D's code.
