@@ -11,8 +11,8 @@ import csv
 A = 'docs/research/total-drag/audit/'
 OUT = 'src/base/fin-te-transonic-data.ts'
 # Points whose Mach number lies in this window are kept: the term's range, 1.0 to 1.5, with room
-# for each point's Mach interval and for the checks just above 1.5.
-M_LO, M_HI = 0.97, 1.65
+# for each point's Mach interval and for the checks above 1.5 (RM A52E01 at 1.7).
+M_LO, M_HI = 0.97, 1.75
 
 
 def rows(path):
@@ -155,35 +155,59 @@ for reader, folder in ROUND15.items():
             f"h/t {ht_of(r['series'])}, 2y/b {float(r['x']):.3f}", mach, 0.0, lo, hi)
 
 
-# RM A52E01 fig. 8 (0014 10.7 (ac)): from the neutral pairing, never from one reading (0019 3.4.1
-# item 6). A curve's point is its value at alpha 0 where both readings give one (verdict agree or
-# DISAGREE: both values, unresolved); a value read once sets nothing. A curve's wing is the one both
-# readings give it (the identity map's label check), else 'any' (any of wings 2, 3 and 4). The
-# panel's Mach number from the series. The two-reader pairing gives no supersonic value read twice,
-# so no point is written from it; a three-way pairing is read the same way when it lands.
-A52E01_PAIRING = 'pairing-2026-10-26-a51j11-a52e01'
+# RM A52E01 fig. 8 (0014 10.7 (ac)): from the three-way neutral pairing of rounds 15-A, 15-B and 17
+# (pairing-2026-10-26-a52e01-three/identity_map.csv, one row per drawn curve), never from one
+# reading, under 0019 3.4.1 item 6 and the coordinator's rule for three readings recorded there:
+# - wing: the one every reader naming a wing names, if at least two name one and none flags it
+#   uncertain; otherwise 'any wing' (any of wings 2, 3 and 4);
+# - alpha 0: only a drawn curve whose status is two or more agreeing readings; it enters as every
+#   reading's value (a bound as its range), the one that disagrees included; read-once, unagreed
+#   and unlinked values set nothing; stations away from alpha 0 are not used;
+# - Mach number: the panel's, or in the supersonic panel the Mach group all readers giving one
+#   agree on (the pairing's mach_check); the report states no Mach accuracy.
+A52E01_PAIRING = 'pairing-2026-10-26-a52e01-three'
+
+
+def parse_alpha0(text):
+    """'-0.5727 +-0.0060 (bound, flagged)' -> (low, high); None for 'no value ...'."""
+    t = text.strip()
+    if not t or t.startswith('no '):
+        return None
+    value, rest = t.split('+-')
+    err = float(rest.split()[0])
+    v = float(value)
+    return (v - err, v + err) if 'bound' in rest else (v, v)
+
+
+def wing_of(r):
+    calls = [(r[f'{k}_wing'], r[f'{k}_wing_uncertain']) for k in 'ABC']
+    named = [(w, u) for w, u in calls if w not in ('', 'none')]
+    if len(named) >= 2 and len({w for w, _ in named}) == 1 and all(u != 'yes' for _, u in named):
+        return f'wing {named[0][0]}'
+    return 'any wing'
+
+
+def mach_of(r):
+    if not r['group'].startswith('M=1'):
+        return float(r['group'].replace('M=', ''))
+    machs = {r[f'{k}_mach'] for k in 'ABC' if r[f'{k}_mach']}
+    if len(machs) != 1:
+        raise ValueError(f"readers differ on the Mach number of {r['figure']} {r['drawn_curve']}: {machs}")
+    return float(machs.pop())
 
 
 def a52e01_points(figure, set_name):
     with open(A + f'{A52E01_PAIRING}/identity_map.csv', newline='') as f:
-        idmap = {(r['figure'], r['group'], r['A_series']): r for r in csv.DictReader(f)}
-    with open(A + f'{A52E01_PAIRING}/pairs_{figure}.csv', newline='') as f:
-        pairs = list(csv.DictReader(f))
-    for r in pairs:
-        if r['category'] != 'alpha 0' or r['verdict'] not in ('agree', 'DISAGREE'):
+        curves = [r for r in csv.DictReader(f) if r['figure'] == figure]
+    for r in curves:
+        if not r['alpha0_status'].startswith('TWO OR MORE AGREEING READINGS'):
             continue
-        ident = idmap.get((figure, r['group'], r['A_series']))
-        check = ident['label_check'] if ident else ''
-        wing = check.split('same ')[-1] if check.startswith('agree: same wing') else 'any wing'
-        series = r['B_series'] if 'M =' in r['B_series'] else r['A_series']
-        if r['group'].startswith('M=1'):
-            mach = float(series.split('M')[1].replace('=', '').split(';')[0].split()[0])
-        else:
-            mach = float(r['group'].replace('M=', ''))
-        for side in ('A', 'B'):
-            x, xe = float(r[f'{side}_x']), float(r[f'{side}_x_err'])
-            lo, hi = (x - xe, x + xe) if r[f'{side}_basis'] == 'bound' else (x, x)
-            add(set_name, f'paired, reader {side}', r[f'{side}_id'], wing, mach, 0.0, lo, hi)
+        mach, wing = mach_of(r), wing_of(r)
+        for k in 'ABC':
+            v = parse_alpha0(r[f'alpha0_{k}'])
+            if v is not None:
+                add(set_name, f'three-way pairing, reader {k}', f"{r['drawn_curve']} ({k})", wing, mach, 0.0,
+                    v[0], v[1])
 
 
 a52e01_points('a52e01_fig8a', 'RM A52E01 fig. 8(a)')
@@ -206,7 +230,7 @@ lines = [
     ' * here from p_b / p_0 where a source plots that. Generated by',
     ' * docs/research/total-drag/audit/te-below-1.5/scripts/gen_data.py from the',
     ' * reading files under docs/research/total-drag/audit/ (do not edit; re-run',
-    ' * the script). Kept: points at M 0.97 to 1.65. Each point is [id, series,',
+    ' * the script). Kept: points at M 0.97 to 1.75. Each point is [id, series,',
     ' * M, half-width of its Mach interval, Cp_b low, Cp_b high]. The interval is',
     ' * the reading\'s error, or the report\'s stated Mach accuracy where wider',
     ' * (TN 3548 +-0.01, Johnston +-0.010); the two Cp_b differ only for a box of',

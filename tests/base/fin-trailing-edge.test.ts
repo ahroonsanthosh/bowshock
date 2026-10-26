@@ -307,8 +307,8 @@ describe('the term', () => {
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, mach: 0.99 }))).toBe('mach-range');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, mach: 3.25 }))).toBe('mach-range');
     // Below Mach 1.5 (0019 section 3.4.1; tests/base/fin-trailing-edge-transonic.test.ts): this
-    // edge's c / [h Re^(1/5)] = 1 / (0.06 x 1.5e6^0.2) = 0.97 lies beyond what the sets reach there.
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, mach: 1.45 }))).toBe('thick-layer');
+    // edge's c / [h Re^(1/5)] = 1 / (0.06 x 1.5e6^0.2) = 0.97 lies beyond what the sets reach at 1.3.
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, mach: 1.3 }))).toBe('thick-layer');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, tanSweep: 0.1 }))).toBe(
       'swept-trailing-edge',
     );

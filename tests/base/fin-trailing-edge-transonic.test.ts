@@ -14,6 +14,7 @@ import {
   buildTransonicTrailingEdge,
   layerParameterRange,
   propertiesOf,
+  SHAPE_WIDENING_TWO_SIDED,
   setValue,
   shapeAllowanceNpl,
   TRANSONIC_SETS,
@@ -77,7 +78,7 @@ const records = (path: string): Record<string, string>[] => {
 };
 
 const cpOf = (ratio: number, mach: number) => ((ratio - 1) * 2) / (1.4 * mach * mach);
-const inWindow = (m: number) => m >= 0.97 && m <= 1.65;
+const inWindow = (m: number) => m >= 0.97 && m <= 1.75;
 type Expected = [string, string, number, number, number, number];
 const point = (
   id: string,
@@ -202,23 +203,57 @@ function expectedGroups(): Map<string, Expected[]> {
       add('RM A51J11 fig. 15', `round 15 reader ${reader}`, point(r.id!, series, mach, 0, lo, hi));
     }
   }
+  // RM A52E01 fig. 8 from the three-way pairing under the three-reading rule (0019 3.4.1 item 6).
+  for (const [figure, set] of [
+    ['a52e01_fig8a', 'RM A52E01 fig. 8(a)'],
+    ['a52e01_fig8b', 'RM A52E01 fig. 8(b)'],
+  ] as const) {
+    for (const r of curvesOf(figure).filter((c) => c.alpha0_status!.startsWith('TWO OR MORE'))) {
+      for (const k of ['A', 'B', 'C']) {
+        const v = alpha0Of(r[`alpha0_${k}`]!);
+        if (v === undefined) continue;
+        add(
+          set,
+          `three-way pairing, reader ${k}`,
+          point(`${r.drawn_curve} (${k})`, wingOf(r), machOf(r), 0, v[0], v[1]),
+        );
+      }
+    }
+  }
   return g;
 }
 
-/**
- * RM A52E01 fig. 8's points as the neutral pairing gives them (0019 3.4.1 item 6): the alpha 0
- * rows both readings give (agree or DISAGREE), both values; the wing both readings agree on, else
- * any. Values read once give none.
- */
-function a52e01Expected(figure: string) {
-  const dir = 'pairing-2026-10-26-a51j11-a52e01';
-  const idmap = records(`${dir}/identity_map.csv`);
-  const pairs = records(`${dir}/pairs_${figure}.csv`);
-  const twice = pairs.filter(
-    (r) => r.category === 'alpha 0' && (r.verdict === 'agree' || r.verdict === 'DISAGREE'),
-  );
-  const once = pairs.filter((r) => r.category === 'alpha 0' && /READ ONCE/.test(r.verdict!));
-  return { twice, once, idmap };
+/** The three-way pairing's drawn curves of one figure (identity_map.csv). */
+const curvesOf = (figure: string) =>
+  records('pairing-2026-10-26-a52e01-three/identity_map.csv').filter((r) => r.figure === figure);
+
+/** '-0.5727 +-0.0060 (bound, flagged)' as its range (a bound) or value; undefined for none. */
+function alpha0Of(text: string): [number, number] | undefined {
+  const t = text.trim();
+  if (t === '' || t.startsWith('no ')) return undefined;
+  const [value, rest] = t.split('+-') as [string, string];
+  const v = Number(value);
+  const e = Number(rest.trim().split(' ')[0]);
+  return rest.includes('bound') ? [v - e, v + e] : [v, v];
+}
+
+/** The three-reading rule: a wing only if two or more name the same one and none is uncertain. */
+function wingOf(r: Record<string, string>): string {
+  const named = ['A', 'B', 'C']
+    .map((k) => [r[`${k}_wing`]!, r[`${k}_wing_uncertain`]!] as const)
+    .filter(([w]) => w !== '' && w !== 'none');
+  const same = new Set(named.map(([w]) => w)).size === 1;
+  return named.length >= 2 && same && named.every(([, u]) => u !== 'yes')
+    ? `wing ${named[0]![0]}`
+    : 'any wing';
+}
+
+/** The panel's Mach number, or the supersonic group every reader giving one agrees on. */
+function machOf(r: Record<string, string>): number {
+  if (!r.group!.startsWith('M=1')) return Number(r.group!.replace('M=', ''));
+  const m = new Set(['A', 'B', 'C'].map((k) => r[`${k}_mach`]!).filter((x) => x !== ''));
+  if (m.size !== 1) throw new Error(`readers differ on the Mach number of ${r.drawn_curve}`);
+  return Number([...m][0]);
 }
 
 describe('the readings, held to their files', () => {
@@ -227,20 +262,28 @@ describe('the readings, held to their files', () => {
   it('holds every group of every reading, and nothing else', () => {
     const held = new Set(TRANSONIC_TE_READINGS.map((g) => `${g.set}|${g.reading}`));
     expect([...held].sort()).toEqual([...expected.keys()].sort());
-    expect(TRANSONIC_TE_READINGS.reduce((n, g) => n + g.points.length, 0)).toBe(542);
+    expect(TRANSONIC_TE_READINGS.reduce((n, g) => n + g.points.length, 0)).toBe(562);
   });
 
-  it('takes RM A52E01 from the pairing only: no value read once, so none from two readers', () => {
-    for (const figure of ['a52e01_fig8a', 'a52e01_fig8b']) {
-      const { twice, once } = a52e01Expected(figure);
-      // Every supersonic alpha 0 value is read once (reader B) or by neither (the pairing).
-      const supersonic = twice.filter((r) => r.group!.startsWith('M=1'));
-      expect(supersonic, figure).toEqual([]);
-      expect(once.filter((r) => r.group!.startsWith('M=1')).length).toBeGreaterThan(0);
-      // The values read twice are all subsonic, below the term's range: none is held.
-      for (const r of twice) expect(Number(r.group!.replace('M=', ''))).toBeLessThan(0.97);
+  it('takes RM A52E01 from the three-way pairing only, under the three-reading rule', () => {
+    const held = (set: string) =>
+      TRANSONIC_TE_READINGS.filter((g) => g.set === set).flatMap((g) => g.points);
+    for (const [figure, set, curves] of [
+      ['a52e01_fig8a', 'RM A52E01 fig. 8(a)', ['#2', '#3', '#6', '#9']],
+      ['a52e01_fig8b', 'RM A52E01 fig. 8(b)', ['#1', '#2', '#3', '#4', '#5', '#6']],
+    ] as const) {
+      const supersonic = curvesOf(figure).filter((r) => r.group!.startsWith('M=1'));
+      // Reader B flags every supersonic wing call uncertain: every supersonic curve is any wing.
+      for (const r of supersonic) expect(wingOf(r), r.drawn_curve).toBe('any wing');
+      // Held: the supersonic curves with two or more agreeing alpha 0 values, B's and C's.
+      const set2 = new Set(held(set).map((p) => p[0].replace(/ \([ABC]\)$/, '')));
+      expect([...set2].map((x) => x.split(' ').at(-1)).sort()).toEqual([...curves].sort());
+      for (const p of held(set)) expect(p[0]).toMatch(/\((B|C)\)$/);
+      // Not held: values read once, values no pair agrees on, curves nobody reads at alpha 0.
+      for (const r of supersonic.filter((c) => !c.alpha0_status!.startsWith('TWO OR MORE'))) {
+        expect([...set2]).not.toContain(r.drawn_curve);
+      }
     }
-    expect(TRANSONIC_TE_READINGS.some((g) => g.set.startsWith('RM A52E01'))).toBe(false);
   });
 
   it('holds each point as read (to 1e-6), both readings of each set', () => {
@@ -350,21 +393,12 @@ const pointsOutside = (t: TransonicTrailingEdge, evidence: readonly TransonicEvi
       return lo < b.low - 1e-12 || hi > b.high + 1e-12;
     });
 
-/** Nodes where a diverging set sets the high end above its own measured ratio (widened up). */
-const wedgesWidenedUp = (t: TransonicTrailingEdge) =>
-  t.nodes.filter((n) => {
-    const r = t.ratios.find(
-      (x) => `${x.point.set}, ${x.point.reading}, ${x.point.id}` === n.highBy,
-    )!;
-    return r.point.properties.shape === 'diverging' && n.high > r.measuredHigh + 1e-12;
-  });
-
 /** The step at Mach 1.5 in a method's nominal (Cp_b), against the curve above. */
 const stepAt15 = (t: TransonicTrailingEdge) =>
   Math.abs(t.nominal(1.5) - thinLayerBasePressure(1.5));
 
 /** The band-setting points at Mach 1.0 to 1.5, every reading. */
-const USED_POINTS = 367;
+const USED_POINTS = 383;
 
 const deps = {
   cpAt15: thinLayerBasePressure(1.5),
@@ -436,14 +470,18 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
       expect(b.low).toBeLessThanOrEqual(0.93);
       expect(b.high).toBeGreaterThanOrEqual(1.21);
     }
-    // Wide near Mach 1 (RM A51J11's thick layers and faces converging to the base below, its flat
-    // section above), narrowing to 0.93 to 1.21 by Mach 1.3.
-    expect(trailingEdgeBasis(1.0).band.low).toBeCloseTo(0.912, 3);
-    expect(trailingEdgeBasis(1.0).band.high).toBeCloseTo(1.442, 3);
-    expect(trailingEdgeBasis(1.1).band.low).toBeCloseTo(0.557, 3);
-    expect(trailingEdgeBasis(1.15).band.high).toBeCloseTo(1.271, 3);
-    expect(trailingEdgeBasis(1.2).band.high).toBeCloseTo(1.246, 3);
-    expect(trailingEdgeBasis(1.45).band.low).toBeCloseTo(0.921, 3);
+    // Wide near Mach 1 (RM A51J11's thick layers and converging faces below, its flat section
+    // above) and where RM A52E01's unidentified wings are (1.15 to 1.25, 1.35 to 1.45); 0.93 to
+    // 1.21 at 1.3, where only TN 3548 and RM A51J25 are, and at 1.5.
+    const band = (m: number) => {
+      const b = trailingEdgeBasis(m).band;
+      return [+b.low.toFixed(3), +b.high.toFixed(3)];
+    };
+    expect(band(1.0)).toEqual([0.869, 1.442]);
+    expect(band(1.1)).toEqual([0.53, 1.429]);
+    expect(band(1.2)).toEqual([0.93, 1.557]);
+    expect(band(1.3)).toEqual([0.93, 1.21]);
+    expect(band(1.4)).toEqual([0.86, 1.535]);
   });
 
   it('has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides', () => {
@@ -488,26 +526,42 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
     }
   });
 
-  it('widens a diverging set only downward and a converging one only upward, by S(angle) = S_NPL angle / 4 deg', () => {
+  it('widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted', () => {
+    // The check (ordering-check.out): RM A51J11 fig. 15 at Mach 1.06, h/t 0.6 (faces closing about
+    // 1.0 deg) above the flat h/t 1.0 in base drag, in each reading on its own.
+    for (const reader of ['A', 'B']) {
+      const f15 = records(`round15-${reader}/readings/a51j11_fig15.csv`).filter(
+        (r) => r.series!.includes('1.06') && r.kind === 'curve',
+      );
+      const at = (ht: string) =>
+        new Map(
+          f15
+            .filter((r) => r.series!.includes(`h/t = ${ht}`) || r.series!.includes(`h/t, ${ht}`))
+            .map((r) => [(+r.x!).toFixed(3), -Number(r.y)]),
+        );
+      const [closed, flat] = [at('0.6'), at('1.0')];
+      const reversed = [...closed].filter(([x, d]) => flat.has(x) && d > flat.get(x)! + 0.05);
+      expect(reversed.length, reader).toBeGreaterThan(0);
+    }
+    expect(SHAPE_WIDENING_TWO_SIDED).toBe(true);
     for (const r of t.ratios) {
       const s = (t.shapeAllowance * r.point.properties.faceAngleDeg) / 4;
-      if (r.point.properties.shape === 'diverging') {
-        expect(r.low).toBeCloseTo(r.measuredLow * (1 - s), 12);
-        expect(r.high).toBe(r.measuredHigh);
-      } else if (r.point.properties.shape === 'converging') {
-        expect(r.low).toBe(r.measuredLow);
-        expect(r.high).toBeCloseTo(r.measuredHigh * (1 + s), 12);
-      } else {
+      if (r.point.properties.shape === 'flat') {
         expect([r.low, r.high]).toEqual([r.measuredLow, r.measuredHigh]);
+      } else {
+        expect(r.low).toBeCloseTo(r.measuredLow * (1 - s), 12);
+        expect(r.high).toBeCloseTo(r.measuredHigh * (1 + s), 12);
       }
     }
-    expect(wedgesWidenedUp(t)).toEqual([]);
-    // RM A51J11's flat section sets the high end from Mach 1.0 to 1.15, Johnston's wedge at 1.2 and 1.25.
-    for (const n of t.nodes.filter((x) => x.mach <= 1.15)) {
+    // Who sets the high end: RM A51J11's flat section to Mach 1.10, RM A52E01 at 1.15 to 1.25 and
+    // 1.35 to 1.45.
+    for (const n of t.nodes.filter((x) => x.mach <= 1.1)) {
       expect(n.highBy).toMatch(/^RM A51J11 fig. 14/);
     }
-    for (const n of t.nodes.filter((x) => x.mach >= 1.2 && x.mach <= 1.25)) {
-      expect(n.highBy).toMatch(/^Johnston/);
+    for (const n of t.nodes.filter(
+      (x) => (x.mach >= 1.15 && x.mach <= 1.25) || (x.mach >= 1.35 && x.mach <= 1.45),
+    )) {
+      expect(n.highBy).toMatch(/^RM A52E01/);
     }
   });
 });
@@ -563,30 +617,38 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
     const reach = transonicTrailingEdge().nodes.map((n) => +n.layerReached.toFixed(3));
     const tn = +(1 / (0.06 * 9.8e6 ** 0.2)).toFixed(3);
     const a51 = (hc: number) => +layerParameterRange(hc, 1.7e6, 2.2e6)[0].toFixed(3);
+    // RM A52E01's lines, any wing at once, reach wing 2's at Re 1.5e6 (1.939) at 1.2 and 1.4.
+    const a52 = +layerParameterRange(0.03, 1.5e6, 1.5e6)[0].toFixed(3);
     expect(reach).toEqual([
       a51(0.012),
       a51(0.012),
       a51(0.012),
-      a51(0.04),
+      a52,
+      a52,
+      a52,
       tn,
-      tn,
-      tn,
-      tn,
-      tn,
-      tn,
+      a52,
+      a52,
+      a52,
       tn,
     ]);
-    // 0.75 at Mach 1.2, inside TN 3548's range at its lowest Reynolds number, is refused.
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, reynoldsPerLength: 4.2e6 }))).toBe(
-      'thick-layer',
-    );
-    // A hobby fin: 3 mm plate, 100 mm chord, Re' 1.5e7: c/[h Re^(1/5)] 1.9, h/c 0.03. Served from
-    // Mach 1.0 to 1.10 on RM A51J11's thick layers; refused where nothing reaches 1.9.
-    const hobby = { ...edge, thickness: 0.003, reynoldsPerLength: 1.5e7 };
+    // 0.75 at Mach 1.3, inside TN 3548's range at its lowest Reynolds number, is refused there.
+    expect(
+      reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 1.3, reynoldsPerLength: 4.2e6 })),
+    ).toBe('thick-layer');
+    // A hobby fin: 3 mm plate, 100 mm chord, Re' 1.2e7: c/[h Re^(1/5)] 2.03, h/c 0.03. Served from
+    // Mach 1.0 to 1.10 on RM A51J11's thick layers; refused where nothing reaches 2.03.
+    const hobby = { ...edge, thickness: 0.003, reynoldsPerLength: 1.2e7 };
     expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.0 }))).toBe('none');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.1 }))).toBe('none');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.12 }))).toBe('thick-layer');
     expect(reason(() => finTrailingEdgeBaseDrag(hobby))).toBe('thick-layer');
+    // At Re' 2.2e7 (1.80): served at 1.2 and 1.4 on RM A52E01, refused at 1.3 and 1.47.
+    const thinner = { ...hobby, reynoldsPerLength: 2.2e7 };
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach: 1.2 }))).toBe('none');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach: 1.4 }))).toBe('none');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach: 1.3 }))).toBe('thick-layer');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach: 1.47 }))).toBe('thick-layer');
     // Beyond what any set reaches at Mach 1.05: c/[h Re^(1/5)] 4.6 (h/c 0.012 at Re' 5e5).
     expect(
       reason(() =>
@@ -663,10 +725,12 @@ describe('planted errors: the checks catch them', () => {
     expect(pointsOutside(wrong, TRANSONIC_TE_EVIDENCE).length).toBeGreaterThan(0);
   });
 
-  it('the shape widening on the wrong side widens a wedge upward', () => {
-    const wrong = buildTransonicTrailingEdge(deps, TRANSONIC_TE_EVIDENCE, { twoSided: true });
-    expect(wedgesWidenedUp(wrong).length).toBeGreaterThan(0);
-    expect(wedgesWidenedUp(t)).toEqual([]);
+  it('the fallback ignored (one-sided after the contradiction) leaves inclined points unwidened', () => {
+    const wrong = buildTransonicTrailingEdge(deps, TRANSONIC_TE_EVIDENCE, { twoSided: false });
+    const bothWays = (x: TransonicTrailingEdge) =>
+      x.ratios.filter((r) => r.low < r.measuredLow && r.high > r.measuredHigh).length;
+    expect(bothWays(wrong)).toBe(0);
+    expect(bothWays(t)).toBeGreaterThan(0);
   });
 
   it('a nominal not joined to the curve at 1.5 shows a step', () => {

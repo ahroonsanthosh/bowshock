@@ -255,9 +255,14 @@ export const SHAPE_REFERENCE_ANGLE_DEG = 4;
 /**
  * The shape ordering's fallback (0019 section 3.4.1 item 6): false while no
  * pair measured in one facility contradicts the ordering; then the widening
- * is two-sided for every inclined set.
+ * is two-sided for every inclined set. True since the check of 2026-10-26
+ * (docs/research/total-drag/audit/te-below-1.5/ordering-check.out): in RM
+ * A51J11 fig. 15 at Mach 1.06, both readings show h/t 0.6 (faces closing
+ * about 1.0 deg) with more base drag than the flat h/t 1.0 at the stations
+ * from 2y/b 0.40 to 0.875, by up to 0.13 in Cp_b, beyond the readings'
+ * summed errors from 0.45 out.
  */
-export const SHAPE_WIDENING_TWO_SIDED = false;
+export const SHAPE_WIDENING_TWO_SIDED = true;
 
 /** The mean over values, undefined when there are none. */
 const mean = (v: readonly number[]) =>

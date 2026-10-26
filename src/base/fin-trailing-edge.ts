@@ -650,10 +650,11 @@ export const FIN_TRAILING_EDGE_LABEL_FREE =
 const TRANSONIC_SETS_WORDS =
   'the base pressure of square trailing edges near Mach 1 on the free-stream Mach number, ' +
   'centred on flat-sided sections measured in flight and in a tunnel (TN 3548, R&M 3427); band ' +
-  'the spread of every set about it: wedges (R&M 3348, Johnston), thickened airfoils with ' +
-  'thick boundary layers (RM A51J11) and others (RM A51J25), each section whose faces are not ' +
-  'flat at the base widened on the side its shape does not bound; never narrower than above ' +
-  'Mach 1.5 (0019 section 3.4.1)';
+  'the spread of every set about it: wedges (R&M 3348, Johnston), thickened airfoils and wings ' +
+  'with thick boundary layers (RM A51J11, RM A52E01) and others (RM A51J25), each section whose ' +
+  'faces are not flat at the base widened both ways for its shape (one such pair measured in ' +
+  'one tunnel contradicts the expected order); never narrower than above Mach 1.5 (0019 ' +
+  'section 3.4.1)';
 export const FIN_TRAILING_EDGE_LABEL_TRANSONIC_ANALOGY =
   `an analogy, not a measurement: ${TRANSONIC_SETS_WORDS}, carried to edges ending in the ` +
   "body's base plane, which no opened source measures; tested only in the total";

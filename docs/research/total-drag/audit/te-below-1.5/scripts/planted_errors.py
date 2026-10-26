@@ -7,8 +7,11 @@ TESTS = ['tests/base/fin-trailing-edge-transonic.test.ts', 'tests/base/fin-trail
 MUTATIONS = [
     ('window cut to the node and the next one', 'src/base/fin-te-transonic.ts',
      'const a = TRANSONIC_TE_NODES[Math.max(0, k - 1)]!;', 'const a = TRANSONIC_TE_NODES[k]!;'),
-    ('shape widening on the wrong side', 'src/base/fin-te-transonic.ts',
-     "const down = p.properties.shape === 'diverging'", "const down = p.properties.shape === 'converging'"),
+    ('the two-sided fallback ignored after the contradiction', 'src/base/fin-te-transonic.ts',
+     'export const SHAPE_WIDENING_TWO_SIDED = true;', 'export const SHAPE_WIDENING_TWO_SIDED = false;'),
+    ('the shape allowance halved', 'src/base/fin-te-transonic.ts',
+     'const s = (allowance * p.properties.faceAngleDeg) / SHAPE_REFERENCE_ANGLE_DEG;',
+     'const s = (0.5 * allowance * p.properties.faceAngleDeg) / SHAPE_REFERENCE_ANGLE_DEG;'),
     ('a Johnston reading misread by 0.05 in Cp_b', 'src/base/fin-te-transonic-data.ts',
      "['a0_11', 'alpha 0 deg', 1.009, 0.01, -0.9007, -0.9007]",
      "['a0_11', 'alpha 0 deg', 1.009, 0.01, -0.9507, -0.9507]"),
