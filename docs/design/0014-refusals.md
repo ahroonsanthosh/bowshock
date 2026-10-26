@@ -1959,6 +1959,82 @@ unchanged. W1's package appears in 76.5% of the cases below Mach 1.5,
 from 78.0%. No total moves (153 of 8000, 1.9%); the cross-check agrees on
 all 1200 cases; no case is newly refused against main.
 
+**2026-10-26, narrowing (ad) after the independent review of
+3389a04..245a88e** (the coordinator's decision, accuracy first, under the
+owner's rule of no unverified estimates; this narrows (ad), whose text
+above stands as written, the runs it quotes being those at commits
+5c81b5b and 245a88e).
+
+- _The review's finding (blocking), quoted:_ "the basis for serving x/c up
+  to 0.4 below Mach 1.5 contradicts the record's own Mach direction.
+  TN 2360's relief crossing for four 5% fins moves from x/c 0.88 at M 2.0
+  to 0.51 at M 1.5. That is faster than sqrt(M^2-1) scaling, which
+  predicts 0.57. Carried down, the crossing falls inside 0.4 below about M
+  1.35: about 0.38 at M 1.3, 0.30 at M 1.2 and 0.21 at M 1.1. For four
+  10% fins it is about 0.45 at M 1.2 and 0.31 at M 1.1." And TN 2360 p. 7,
+  which (ad) left out: "In addition, the airfoil pressure coefficient at
+  any chord location decreases with increasing Mach number." So as the
+  Mach number falls the fins' pressures grow as well as their isobars
+  steepen, "no relief at all" up to x/c 0.4 is measured at Mach 1.5 and
+  2.0 only, and below about Mach 1.35 the low side would rest on the
+  unmeasured relief carry the first narrowing meant to avoid. The revisit
+  trigger above (relief at x/c 0.4 or closer at Mach 2.41) pointed where
+  TN 3819 fig. 32 shows none, so it could not fire.
+- _Decided: below Mach 1.5 every position ahead of the base (x/c > 0) is
+  refused._ No measurement with fins ahead of the base below Mach 1.5 is
+  known, and the ordering's direction, the relief carry and a reach
+  scaled by beta are all carries, not measurements; none is used. The
+  refusal names what is missing: any measurement below Mach 1.5 with fins
+  ahead of the base. Finding one is the revisit trigger, replacing the one
+  above. It costs no served total today: below Mach 1.5 the fins' own
+  drag refuses every total ((f)).
+- _At Mach 1.5 to 2.0,_ where TN 2360 measured positions (x/c 0 to 1.0),
+  the measured brackets of 0015 sections 3.2 and 3.3 stay, inside the
+  chord rule below. Above Mach 2.0 fins ahead of the base stay refused:
+  TN 3819 fig. 32 now has two readings (round 6, round 14; pairing
+  `docs/research/total-drag/audit/pairing-2026-10-26-fig32/`) that
+  disagree on 3 of its 12 symbols, a third blind reading is under way, and
+  it sets nothing until they are settled and its method is written in 0015.
+- _The chord rule (the review's second finding)._ TN 2360 measured
+  positions on one geometry: a tail chord of 1.875 in on a 1.250 in body
+  (its fig. 2 and p. 4), a root chord of 1.5 body diameters. In its
+  superposition model (pp. 6 and 7, fig. 4) the fins' pressure field
+  reaches the dead-air region behind the base along isobars inclined at
+  the Mach angle, so where it reaches depends on the body radius times
+  beta against the chord; the review finds the at-base upper bound holds
+  in that model only while the body radius times beta stays under half
+  the chord. At Mach 2.0 TN 2360's own geometry is past that limit (0.625
+  in times 1.732, 1.08 in, against 0.94 in), and there its four 10% fins
+  keep their at-base increment to x/c 0.4, as the model leads one to
+  expect: the bound at that geometry rests on the measurement. Nothing
+  measured shows how the position effect carries to a shorter or longer
+  chord. So the served domain for fins ahead of the base is no wider than
+  what TN 2360 measured in chord over diameter at each Mach number: a
+  root chord of 1.5 body diameters, within 0.5% (the precedent of 0011
+  section 3, each dimension within 0.5% of the configuration measured),
+  at Mach 1.5 to 2.0. Every other chord is refused there, at every
+  position 0 < x/c < 1 (the swept fins served from 0.9 root chords ahead
+  among them, whose members there are TN 2360's), in plain words; so is a
+  chord the caller does not give.
+- _Below about Mach 1.2_ the at-base upper bound rests on its margin, not
+  on TN 2360's mechanism (the review): the linear superposition loses its
+  meaning as the Mach number nears 1, beta tending to zero and the
+  airfoil pressures it superposes growing without bound. Moot below Mach
+  1.5 after this decision, and recorded so that the record stays true.
+- _Also from the review, not blocking, fixed with this:_ the refusal's
+  words below Mach 1.5 name the missing measurement instead of fig. 32,
+  which at Mach 2.41 cannot settle them; above Mach 2.0 they say fig.
+  32's readings disagree, not that a second reading is awaited; a plate
+  with a rounded trailing edge within a chord ahead of the base is refused
+  for its trailing edge in words that say near the base, not at it, with
+  its position's reasons beside; and 0015 section 3.3's figure "on the
+  curve itself" is corrected (on Love's curve the zero member is 0.8379
+  times 1.065, 0.892).
+
+What it costs and gains is recorded below from `docs/research/refusals/`
+run before (245a88e) and after, with the cross-check required to agree
+(0015 section 8).
+
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.
