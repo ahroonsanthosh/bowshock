@@ -124,8 +124,8 @@ describe('the rebuilt factor only where the present one refuses', () => {
     expect(() => base(1.8, { ...f, rootChordOverDiameter: 2.5 })).toThrow(
       /root chord is 2\.50 body diameters/,
     );
-    const { rootChordOverDiameter, ...noChord } = f;
-    void rootChordOverDiameter;
+    const noChord = { ...f };
+    delete noChord.rootChordOverDiameter;
     expect(() => base(1.8, noChord)).toThrow(/is not given/);
     // Below M 1.5 (0015 section 3.3): every position ahead of the base refused.
     for (const xc of [0.2, 0.4, 0.5]) {

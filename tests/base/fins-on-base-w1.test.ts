@@ -498,9 +498,9 @@ const fins = (over: Partial<FinsNearBase> = {}): FinsNearBase => ({
 });
 /** The same fins with no root chord over body diameter given. */
 const withoutChord = (f: FinsNearBase): FinsNearBase => {
-  const { rootChordOverDiameter, ...rest } = f;
-  void rootChordOverDiameter;
-  return rest;
+  const copy = { ...f };
+  delete copy.rootChordOverDiameter;
+  return copy;
 };
 
 describe(
