@@ -1859,5 +1859,12 @@ At the audit's default size (2,000 rockets, 8,000 cases,
 (Mach 1.5 to 1.8: 2.5% to 4.1%; 1.8 to 3.0: 5.2% to 5.4%), the cross-check
 agreeing on all 1,200 cases checked.
 
+_A2 of the same plan (2026-10-26), noted here, recorded in 0009 section
+8:_ shock-expansion theory is taken as exact when no reflected wave can
+reach a face with slope, since faces parallel to the chord carry no drag;
+a wedge followed by a flat to a square trailing edge is served exactly,
+hexagons stay refused. No data enter and no band moves, so it takes no
+letter.
+
 Letters (w) to (y) are allocated by the coordinator on other branches;
 the next free letter is the coordinator's to allocate.

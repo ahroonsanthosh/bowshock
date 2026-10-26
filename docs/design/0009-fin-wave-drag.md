@@ -3,7 +3,7 @@
 - **Status:** Draft. A library with tests (`src/fins/`); on the drag page
   only as part of the total drag ([0011](0011-total-drag-on-the-page.md)).
   (0008 is reserved for the total-drag record.)
-- **Date:** 2026-10-19
+- **Date:** 2026-10-19 (section 8 added 2026-10-26)
 - **Inputs:** section 4 and step B4 of the total-drag research draft, its fin
   computations and scripts (`docs/research/total-drag/`: `draft.md`,
   `data/fin_computations.md`, `scripts/finwave.py`, `section2d.py`,
@@ -81,9 +81,11 @@ change the reflected waves themselves make to the states they cross.
 - a compression corner after the leading edge (its shock would overtake the
   fans ahead of it near the surface; not modelled);
 - expansion beyond the Prandtl-Meyer limit, and subsonic free streams;
-- a reflected wave that can land ahead of the trailing edge, unless the
-  caller asks for the value with the reflections neglected, which is then
-  labelled `exact: false`.
+- a reflected wave that can land ahead of the trailing edge (since
+  2026-10-26, ahead of the end of the last face with slope: a wave that
+  lands only on faces parallel to the chord changes no drag, section 8),
+  unless the caller asks for the value with the reflections neglected,
+  which is then labelled `exact: false`.
 
 Exact drag over Ackeret's, or the refusal (det: detached; sub: subsonic
 behind the shock; R x: a reflected wave can land at x/c = x, value with the
@@ -384,3 +386,63 @@ bound.
   characteristics solution, before any of them is served.
 - TN D-4014 fig. 4 (the ARCAS chamber force), to be digitised, as the audit
   asked, before the ARCAS increments are used to set a fin band.
+
+## 8. Reflected waves that reach no inclined face (2026-10-26)
+
+Written before the code (A2 of the refusal plan, noted under 0014
+section 10.7 (z); no data enter and no band moves, so no letter of its
+own). Section 2.1 refuses a section whenever a wave reflected
+from the leading-edge shock can land on the surface ahead of the trailing
+edge. That is stricter than exactness needs. The drag is the sum over
+faces of Cp times the face's rise (section 2.2's definition): a face
+parallel to the chord contributes nothing whatever its pressure. So the
+shock-expansion value is exact for the inviscid flow as long as no
+reflected wave reaches a face with slope; waves that land only on flat
+faces, and whatever they do after, change pressures that carry no drag.
+
+**The argument.** In steady supersonic flow nothing travels upstream
+along the surface: a face's pressure is fixed by the states ahead of it
+(the shock, the corners before it) and by the waves that land on it, and
+a wave that lands on the surface at x can change only what lies at and
+behind x. Section 2.1's bound gives the earliest point x_1 at which any
+wave reflected from the leading-edge shock can land, the head of the
+first corner's fan meeting the straight shock at P and descending at the
+steepest angle the surface's states allow; everything the fan reflects
+lands at x_1 or behind it, and every later reflection (off the surface,
+off the shock again) lands further behind. If every face from x_1 to the
+trailing edge is flat (its rise zero), the faces with slope all lie ahead
+of x_1, their pressures are shock-expansion's exactly, and the drag is
+exact. The bound's own caveat stands as in section 2.1: it neglects the
+change the reflected waves make to the states they cross; so does the
+exactness it already claimed for the double wedges.
+
+**What this reaches.** A wedge followed by a flat to a square trailing
+edge (the plate bevelled at the leading edge only, `bevel-le-square-te`
+in 0014's population): its one corner's fan reflects onto the flat, and
+nothing with slope lies behind. Its faces' drag is the front wedge's
+alone, exact. Its base is a separate term at the free-stream Mach number
+(0010 section 5.1), which never used the local state ahead of the edge,
+so the reflected waves change nothing it uses. A hexagon is not reached
+by this section: its rear bevel has slope and lies behind x_1, and
+whether the fan's later waves, or the second landing after a reflection
+off the flat, reach it is not bounded here (section 7 keeps it open; the
+earlier Euler check of section 2.4 is not a band). A double wedge is
+reached only where the bound already clears the chord. Sections with a
+compression corner stay refused as before.
+
+**In the code.** `solveSurface` records the end of the last face with
+slope (`lastSlopedFaceEnd`); `exactSectionDrag` takes a surface as exact
+when `firstReflection` is at or beyond that end, and refuses, as before,
+when a reflected wave can land ahead of it (the message now says the
+wave reaches a face with slope). `exact` keeps its meaning: cd is exact
+for the inviscid flow. The `neglectReflectedWaves` option is unchanged.
+`fin-wave-drag.ts` and `src/total` are untouched: the label "exact
+section drag times the linear 3D ratio" stays true. Tests
+(`tests/fins/section-drag.test.ts`): a wedge-flat section with a square
+trailing edge whose first reflection lands on the flat at x/c about 0.6
+is served, `exact` true, its cd equal to the value with reflections
+neglected and to the front wedge's oblique-shock face drag by hand; the
+same front wedge with a rear bevel added (a hexagon) is refused with the
+reason; the reflection bound's by-hand case is unchanged; a wedge-flat
+section whose bound lands on the front wedge itself cannot occur (the
+landing lies behind the first corner), asserted.
