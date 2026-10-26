@@ -1,0 +1,240 @@
+READER B NOTES, NACA Report 1386 (Perkins, Jorgensen and Sommer, 1958)
+
+Reader id: B. Both Part A and Part B of the brief were read. All page numbers below are PDF pages (1 to 21).
+In quotations, a long printed dash is written as " - " (no em dashes in this file); subscripts are written inline
+(C_DF, P_t) and "x10^6" stands for the printed "×10" with a superscript 6.
+
+1. FILE CHECK, RENDER AND TOOLS
+
+PDF checked before starting: 18189447 bytes.
+SHA-256 computed: 96b125ca12dda9df9acd5e372f8b4ef7589710f7034fee5c059ee718e7e4a25b (matches the brief).
+The PDF pages are 300 ppi JPEG scans (pdfimages -list). Every page was rendered at 400 dpi with pdftoppm
+(poppler), PNG. All pixel coordinates in my files are in these 400 dpi renders (page size about 3670 x 4730 px).
+Digitising tool: my own Python 3 scripts (Pillow and NumPy only): grid-line finder, affine least-squares axis
+fit, hollow-symbol template matching, joint fits for overlapping symbols, column scans for curves. No
+commercial or web digitiser was used and nothing outside the PDF was consulted. Details in method.md.
+
+Files: readerB_pressures.csv (140 rows), readerB_drag.csv (279 rows), readerB_geometry.csv (14 rows),
+readerB_calibration.csv (472 rows), this notes file, and method.md.
+
+2. STATEMENTS OF UNCERTAINTY OR PRECISION IN THE REPORT (word for word)
+
+p. 9, PRECISION:
+"The uncertainty of the experimental data from tunnels No. 1 and No. 2 was calculated by considering the
+possible errors in the individual measurements which entered into the determination of the stream
+characteristics, pressure distributions, and drag. The final uncertainty in a quantity was taken as the square
+root of the sum of the squares of the possible errors in the individual measurements. The resulting
+uncertainties in the final quantities are as follows:
+Quantity  Uncertainty
+P         ±0. 004
+C_DF      ±0. 004
+alpha     ±0. 15°"
+(printed with a space after the decimal point; the quantity alpha is printed as the Greek letter.)
+
+p. 9: "The variation of the free-stream Mach number over the length of each model tested was less than ±0.01
+for all test Mach numbers. The uncertainty in the Mach number at a given point in the stream is ±0.003."
+
+p. 9: "The magnitude of the calculated uncertainty in the drag coefficient appears rather large relative to the
+observed scatter of the data. Drag coefficients for repeated tests generally agreed within ±0.002. It is
+therefore believed that the drags of models relative to one another are sufficiently accurate for comparative
+purposes, although the absolute magnitudes of the drag coefficients for the models at a particular Mach number
+may be in error by the magnitude of the uncertainty."
+
+p. 9: "Since there are no known systematic errors in the data from the free-flight tunnel, the accuracy of the
+results is indicated by the repeatability of the data. Examination of these data shows that repeat firings of
+similar models under almost identical conditions of Reynolds number and Mach number yielded results for which
+the average deviation from the faired curve was 1 percent and the maximum deviation was 4 percent."
+
+p. 9, REDUCTION OF DATA: "All the experimental data have been reduced to coefficient form and the data from
+wind tunnels Nos. 1 and 2 have been corrected for the effects of the small nonuniformities in the wind-tunnel
+flow. The free-stream static-pressure variations in the model-free tunnel have been applied as corrections to
+the drag and pressure-distribution data by simple linear superposition. Corrections due to the effects of
+stream-angle variation were well within the limits of accuracy of the data and have therefore been neglected.
+No corrections were necessary for the data obtained in the free-flight tunnel"
+
+Reynolds number, p. 8: "Because of the operating characteristics of the tunnels, it was not possible to
+maintain a constant Reynolds number throughout the Mach number range of 1.24 to 3.67; however, an attempt was
+made to keep the Reynolds number constant for all models at each Mach number. In the following table the
+average Reynolds number (based on model length) and its limit of variation for all models tested at each Mach
+number are listed:"
+M      Re x 10^-6     Tunnel No.
+1. 24  2. 42 ± 0. 14  1
+1. 44  1. 17 ± 0. 01  1
+       3. 14 ± 0. 20
+1. 54  4. 10 ± 0. 10  2
+1. 96  4. 14 ± 0. 12  2
+1. 99  2. 01 ± 0. 01  1
+2. 86  4. 00 ± 0. 10  2
+3. 06  4. 00 ± 0. 19  2
+3. 67  3. 45 ± 0. 07  2
+
+p. 8: "The pressure-distribution tests were all made in tunnel No. 2 at Mach numbers of 1.5, 2, 3, and 3.7 and
+at an average Reynolds number of about 4×10^6."
+
+p. 8, free flight: "With no air flow through the wind tunnel, Mach numbers varied from 1.2 to 4.2, depending on
+the model launching velocity. This condition is referred to as "air off." Reynolds number varied linearly with
+Mach number from 1.0×10^6 to 3.3×10^6, as shown in figure 3. With air flow established in the wind tunnel,
+referred to as "air on," the combined velocities of the model and Mach number 2 air stream, with the reduced
+speed of sound in the test section, provided test Mach numbers from 3.8 to 7.4. In this region of testing,
+Reynolds number was held approximately at 4×10^6 by controlling test-section static pressure. In addition,
+some models were tested at approximate Reynolds numbers of 3×10^6 at Mach number 6."
+
+p. 8: "This report includes only the data from models which had maximum observed angles of attack of less than
+3°, since larger angles measurably increased the drag."
+
+p. 10: "The data are referred to the free-stream Mach number ahead of the normal shock wave at the nose of each
+model. Although these Mach numbers were approximately the same for each model, they differed slightly because
+of the differences in positions of the models within the test section."
+
+Model dimensions: the only statement is the figure 1 caption, p. 7: "FIGURE 1. - Model profiles. (Dimensions are
+in inches.)". No tolerance on model dimensions is stated.
+Reynolds number basis: p. 6 symbol list, "Re free-stream Reynolds number based on body length"; p. 8, "average
+Reynolds number (based on model length)".
+
+3. HOW EACH TRANSCRIBED DRAG QUANTITY WAS OBTAINED (word for word, with pages)
+
+Definitions, p. 6 (symbol list):
+"C_D total drag coefficient, total drag / qA"
+"C_DF foredrag coefficient based on base area, (total drag - base drag) / qA"
+"C_DW wave drag coefficient, wave drag / qA"
+"A model base area, sq in."
+
+(a) Wind-tunnel foredrag C_DF (figure 7(a); figure 8 circles "Foredrag"; figure 10 circles; figure 16).
+p. 7: "Wind tunnels No. 1 and No. 2. - The total drag was measured by means of a strain-gage balance located in
+the model support housing. The base pressure was determined through the use of a liquid manometer connected to
+two holes in the supporting sting at the base of the model. Experimental values of foredrag were then taken as
+the difference between" p. 8: "the measured total drag and base pressure drag."
+Measured: yes (balance). Base drag: removed, by the measured base pressure (manometer, two holes in the sting at
+the base). Friction: not stated in words; the foredrag is the balance total drag minus base pressure drag, so
+skin friction is not removed by any stated step.
+p. 13: "The data from figure 7(a) are replotted in figure 8 to show the variation of foredrag with nose
+bluntness at constant Mach numbers and provide comparisons with the estimated foredrag characteristics."
+p. 15 (figure 10): "In order to verify these results, tests have been made at Mach numbers 1.44 and 1.99 for a
+series of hemispherically blunted cones, formed by progressively blunting an L/D=3 cone. Both the experimental
+foredrag results and the estimated values of foredrag are plotted in figure 10." (Which tunnel is not stated
+for figure 10; the p. 8 table lists M=1.44 and 1.99 as tunnel No. 1.)
+p. 19 (figure 16): "In figure 16 a comparison of the variation of foredrag coefficient with Mach number for all
+the force models tested is shown."
+
+(b) Free-flight total drag C_D (figure 7(b)).
+p. 8: "Drag coefficient was obtained by recording the time-distance history of the flight of the model with the
+aid of a chronograph and four shadowgraph stations at 5-foot intervals along the test section. From these data,
+deceleration was computed and converted to drag coefficient."
+Measured: yes (free flight). Base drag: not removed; the axis is "Total drag coefficient, C_D", defined on p. 6
+as total drag / qA. Friction: not stated (included in the total by that definition).
+p. 13, footnote 4: "No attempt has been made to join the air-off data and air-on data because of the
+differences in Reynolds number, recovery temperature, and stream turbulence,"
+
+(c) Wave drag from the pressure-distribution models (figure 8 squares, Part A; figure 5 symbols).
+p. 8: "Pressure distributions for the hemisphere-cone pressure models (models 4p, 5p, and 6p) were determined
+through the use of a liquid manometer system connected to two rows of orifices along the models and spaced 180°
+apart. The models were rotated and a longitudinal pressure distribution at each 30° increment in circumferential
+angle was obtained. The resulting pressure coefficients at each longitudinal station were averaged to obtain the
+values presented."
+p. 11 (figure 5): "Values computed from this equation are compared in figure 5 with estimates of the wave drag
+from total drag measurements (refs. 16 and 17) and with the experimental pressure drag determined from the
+pressure distributions of figure 4."
+p. 15 (figure 8): "The estimated wave drag coefficients for the d/D=0.30 [p. 14] and 0.50 models at Mach numbers
+of 3.06 and 1.96 are in very good agreement with the wave drag determined from the pressure distribution models
+(see fig. 8)."
+Measured: the pressures are measured; the wave drag is derived from them. Method of integration: not stated.
+Friction: not stated (a pressure drag cannot contain friction, but the report does not say so). Base: not
+stated.
+
+(d) Figure 5 curves (estimates, not measurements of this report).
+Solid line, key "Estimated from experiment, ref. 16 and 17": described on p. 11 as "estimates of the wave drag
+from total drag measurements (refs. 16 and 17)". How friction and base drag were removed in those estimates:
+not stated.
+Dashed line, key "Empirical formula, C_DW = (2P_t - 1)/3": p. 11, "A simple expression for the wave drag
+coefficient of the hemisphere results from this empirical equation for the pressure distribution. Thus, based
+upon the maximum cross-section area, C_DW = (2P_t - 1)/3 (1)". Friction and base: not applicable (pressure
+expression).
+
+(e) Figure 8 and figure 10 "Estimate" curves (not transcribed). pp. 9 to 10: "Values of the foredrag have been
+calculated by the addition of the estimated or theoretical wave drag and the theoretical skin-friction drag.
+Since the skin-friction drag for laminar-boundary-layer flow contributes so little to the foredrag, the
+inclusion of the small effects of body shape and compressibility on the skin-friction drag was not considered
+justified. Therefore, the laminar-skin-friction drag coefficients were calculated by the Blasius formula for
+flat-plate incompressible boundary-layer flow (ref. 13)."
+
+4. PART B: WHAT EACH SERIES IS (no values)
+
+Figure 7(a), p. 14, "(a) Wind tunnel results." Measured foredrag coefficient against Mach number for the
+hemisphere-cone series of constant L/D=3 (models 1 through 5, p. 13), one curve per bluntness, each curve on its
+own shifted y scale. The points are the wind-tunnel balance foredrags at the five test Mach numbers; the Re for
+each Mach number is printed at the top of the panel.
+Figure 7(b), p. 14, "(b) Free-flight results." Measured total drag coefficient (base drag included) from the
+free-flight tunnel against Mach number for the same series (free-flight models, figure 1 note), each curve on
+its own shifted y scale; circles are air-off shots, diamonds, squares and triangles are air-on shots at the
+Reynolds numbers printed in the key.
+Figure 8, p. 14, key "Experiment, o Foredrag". The figure 7(a) foredrag data replotted against bluntness d/D at
+each test Mach number (text p. 13). Flagged circles in the M=1.44 panel denote Re=1.17x10^6 (key).
+Figure 8, Part A series, key "Experiment, square Wave drag (press. distr. models)": wave drag derived from the
+measured pressure distributions of models 4p and 5p (text pp. 8, 11, 15); plotted at d/D=0.3 and 0.5 in the
+M=1.96 and M=3.06 panels only.
+Figure 10, p. 15: measured foredrag of the constant cone angle series (models 1, 7, 8, 9, formed by blunting an
+L/D=3 cone) against bluntness at M=1.44 and M=1.99 (text p. 15); the figure has no key, the circles are the
+experiment and the two lines are the estimates (text p. 15 "Both the experimental foredrag results and the
+estimated values of foredrag are plotted in figure 10").
+Figure 16, p. 20: measured foredrag coefficient against Mach number of all force models (text p. 19); only the
+hemisphere-tipped models 2, 3, 4, 5, 7, 8, 9 were transcribed; each model has its own symbol in the key.
+Figure 5, p. 11: wave drag coefficient of a hemisphere against Mach number. Circles "Model 4p" and squares
+"Model 6p" are the experimental pressure drag from the figure 4 pressure distributions (text p. 11), based on
+the hemisphere's maximum cross-section area (eq. (1) basis, p. 11; not stated separately for the symbols). The
+solid line is an estimate from total drag measurements of other reports (refs. 16 and 17); the dashed line is
+the empirical expression eq. (1).
+
+5. JUDGEMENT CALLS, DISAGREEMENTS AND THINGS NOT READ
+
+- Figure 5 curves: the general rule says not to transcribe estimate curves, but Part B asks for "every plotted
+  series" of figure 5 and section 4 says how to read a curve with no symbols, so I read both figure 5 lines as
+  source_kind=curve, measured_or_estimate=estimate, flagged CURVE and NOSOURCE (a curve has no single Mach or
+  Reynolds number). Between about M=2.2 and M=5 the two lines lie on top of each other; I give the same reading
+  for both there and flag OVERLAP. Near M=2 the lines pass under the symbols and near M=1.5 under the model 4p
+  circle; no readings were made under symbols.
+- Figure 4(a): the panel prints no x tick labels and no x axis title. I used the x grid of panel (a) with the
+  labels printed under panel (b) (same grid spacing, same 0 to 1.0 range). Every 4(a) point carries AXIS.
+- Figure 4(c), DISAGREE: the panel prints M=3.80 (and M=3.04, M=1.97); text p. 8 says the pressure tests were
+  made "at Mach numbers of 1.5, 2, 3, and 3.7"; text p. 10 says "between 1.5 and 3.8". Both recorded; not
+  resolved.
+- Figure 4 versus figure 8 Mach numbers, DISAGREE: figure 4(a) and 4(b) print M=1.97 and M=3.10 (4p) and 3.06
+  (5p) for the pressure models; the figure 8 wave drag squares sit in panels printed M=1.96 and M=3.06. Text p. 15
+  says "at Mach numbers of 3.06 and 1.96". Recorded as printed in each place.
+- Figure 4(c) M=3.80: 14 points, not 15. The other two series have a symbol at the second station (X/D about
+  0.007, pixel 2120,794); no diamond outline is visible there. It may be hidden under the square or not
+  plotted. Not invented.
+- Figure 4 Reynolds number is not printed; 4x10^6 taken from text p. 8 ("about 4×10^6").
+- Figure 4: the "Pitot-tube pressure coefficient" and "Cone exact theory, ref. 9" lines (and in 4(c) the
+  "Incompressible potential theory" and "Newtonian theory" lines) exist and were not transcribed.
+- Figure 7: the sharp cone (d/D=0) curves were skipped as the brief says. Figure 8 and figure 10 d/D=0 circles
+  skipped for the same reason. Figure 16 models 1 and 10 to 18 skipped (not hemisphere-tipped).
+- Figure 8 "Estimate" curves (wave drag and foredrag) and figure 10 estimate curves exist and were not read.
+- Figure 8, M=1.44 panel: the panel prints "Re=1.17x10^6 & 3.14x10^6" and the key says "Flagged symbols denote
+  Re=1.17x10^6". At d/D=0.075 and 0.15 only one circle is clearly visible and it carries the flag tick, so those
+  are Re=1.17x10^6; at d/D=0.15 a joint two-circle fit suggests a second circle almost on top (given as a separate
+  row with SERIES and the alternative "no second point"). At d/D=0.30 two touching circles are seen and I cannot
+  tell which one carries the flag tick: both rows have Re blank and SERIES. At d/D=0.50 the lower circle carries
+  the flag (1.17x10^6) and the upper does not (3.14x10^6).
+- Figure 8, M=3.06 panel, d/D=0.075: the outline looks like two almost coincident circles; given as two rows
+  with the alternative of one circle.
+- Figure 7(a): at M=1.24 d/D=0.15, M=3.06 d/D=0.15 and M=1.96 d/D=0.50 the outline is doubled; two rows each.
+  The text does not explain repeat points; they may be repeat runs.
+- Figure 7(b): Mach number per point is not printed; the mach column holds the x value read. Air-off points have
+  no single printed Reynolds number (key Re=0.8M x 10^6), so the reynolds column is blank for them (flag OTHER,
+  with the key text and the p. 8 range quoted). The x grid of 7(b) is drawn with slightly uneven spacing (fit rms
+  0.008 in M, largest residual 0.021), which is included in the x uncertainty.
+- Figure 16: no open square for model 2 was found at M=1.44 (expected near the model 3 diamond); left out, not
+  invented. At M=1.96 the model 3 diamond sits in a pile-up with half-filled symbols; flagged OVERLAP and SERIES
+  with an alternative centre.
+- Figures 7, 8 and 10 do not print model numbers; the model column is blank and the note names the figure 1
+  model numbers for that d/D (flag OTHER, not NOSOURCE, because figure 1 gives them). Figure 8 Part A squares:
+  model blank, the key and figure 1 point to 4p (d/D 0.3) and 5p (d/D 0.5).
+- Figure 1: L is not printed for any transcribed model (only L/D: 3 for figure 1(a) by its caption; 2.81, 2.62,
+  2.24 for models 7, 8, 9 in the figure 1(b) table). L_in left blank. Force model role (models 2 to 5 and 7 to 9)
+  is inferred, not printed in figure 1; the figure 1 note on p. 7 reads: "Note: 4p, 5p, and 6p are pressure
+  distribution models. Models 1f through 5f, are free-flight models."
+- Figure 10 caption p. 15 gives "constant cone angle=18°56'"; figure 1(b) prints omega=9°28' (cone half angle,
+  p. 6 symbol list "omega cone half angle, deg"). These agree if the caption gives the full angle; not flagged.
+- d_over_D in figures 8 and 10 is the nominal bluntness of the station; the x column holds the value read.
+- Points left out: none that I could see, other than the missing model 2 symbol in figure 16 at M=1.44 and the
+  missing figure 4(c) M=3.80 symbol at the second station, which I did not find.
