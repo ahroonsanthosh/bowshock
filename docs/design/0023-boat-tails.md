@@ -3,11 +3,13 @@
 - **Status:** In progress on `claude/wip/boat-tails`. Nothing is served:
   every boat-tail is still refused (`base: boat-tail`, 0014 B2). Part 1,
   the boat-tail's own pressure drag from the fitted solve, is built on the
-  CPU for sharp noses and is being measured against the method of
-  characteristics (section 2). Part 2, the base behind a boat-tail, and
-  the viscous allowance on part 1 wait for their figures, named in 0014
-  10.7 (ae) before anyone reads them, to be read twice, the second time
-  blind (sections 3 to 5).
+  CPU and the GPU for sharp noses, and solved but not yet checked behind
+  blunt ones; it is being measured against the method of characteristics
+  (section 2), and the rule that will set its served range is written
+  down ahead of the results (section 2.5). Part 2, the base behind a
+  boat-tail, and the viscous allowance on part 1 wait for their figures,
+  named in 0014 10.7 (ae) before anyone reads them, to be read twice, the
+  second time blind (sections 3 to 5).
 - **Date:** 2026-10-26
 - **Inputs:** [0006](0006-shock-fitting.md) (the fitted solve, its
   verification and its references), [0008](0008-total-drag.md) section 3.2
@@ -253,7 +255,34 @@ not a sharper test of the drag than the march's profile itself.
 
 ### 2.5 The served range
 
-(To be decided from section 2.3.)
+Not decided yet. The rule that decides it, written on 2026-10-26 before
+any grid of nj = 160 and before nj = 80 on all but two cases
+(`o3-c3-bt6-l1-m2` and `o3-c5-bt8-l2-m2`, section 2.3):
+
+- **Mach number:** 1.8 to 2.0, where the viscous allowance is measured
+  (section 3, `BOAT_TAIL_MACH_RANGE` in `src/analysis/boat-tail.ts`);
+  widening it is the owner's question (section 7).
+- **The floor** (`BOAT_TAIL_DRAG_FLOOR`, a provisional 1e-3 until then):
+  about twice the largest distance, relative to the value, between the
+  procedure's extrapolation (order capped at 2) and the march over the
+  four-grid families, as 0006 set the forebody's; and at least enough
+  that every one of their bands, placed on the finest grid's value,
+  contains the march.
+- **Angles and lengths:** from the smallest to the largest angle, and from
+  the shortest to the longest boat-tail, among the first set's cases in
+  that Mach range whose band, with the floor, contains the march: the
+  procedure's band on the four-grid cases, and on the rest the band from
+  nj = 20, 40 and 80 (the order of that triple, capped at 2). A case with
+  no such band (its errors not falling steadily) or whose band misses
+  sets no end of the range, and the range stops short of it. The second
+  set (nj = 20 and 40 only) sets nothing: its configurations are served
+  where they fall inside the range.
+- **Noses:** sharp ones only, until the blunt noses have their references
+  (section 2.6).
+
+The procedure on the page still calls a band verified only when its four
+grids' orders agree, so a rocket inside the range whose family has not
+settled gets no verified band there, as for the forebody (0006).
 
 ### 2.6 Not yet
 

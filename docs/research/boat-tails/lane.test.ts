@@ -19,6 +19,7 @@ import {
   sharpFitProblem,
   type FitProblem,
 } from '../../../src/analysis/fitted-flow';
+import { BOAT_TAIL_MACH_RANGE } from '../../../src/analysis/boat-tail';
 import { freeStreamAt } from '../../../src/analysis/verified-drag';
 import { bodyLength, bodyRadius, shoulderPosition, type Body } from '../../../src/geometry/body';
 import { gridQuality } from '../../../src/grid/quality';
@@ -263,16 +264,22 @@ it('the boat-tail reference lane', () => {
     if (process.env.SKIP_MOC !== '1') runMoc(c, results(c));
   }
   if (process.env.SKIP_FIT === '1') return;
-  // Every case on nj = 20 and 40; then the four-grid cases on nj = 80 and
-  // 160; then the rest on nj = 80.
+  // Every case on nj = 20 and 40; the four-grid cases on nj = 80; then,
+  // the cases at the Mach numbers served (BOAT_TAIL_MACH_RANGE) before the
+  // others, the rest on nj = 80 and the four-grid cases on nj = 160; then
+  // the others likewise. A case under way resumes whatever the order.
+  const [low, high] = BOAT_TAIL_MACH_RANGE;
+  const served = (c: BoatTailCase) => c.mach >= low && c.mach <= high;
   const first = cases.filter((c) => FOUR_GRIDS.includes(c.name));
   const rest = cases.filter((c) => !FOUR_GRIDS.includes(c.name));
   const schedule: [readonly BoatTailCase[], number][] = [
     [cases, 1],
     [cases, 2],
     [first, 4],
-    [first, 8],
-    [rest, 4],
+    [rest.filter(served), 4],
+    [first.filter(served), 8],
+    [first.filter((c) => !served(c)), 8],
+    [rest.filter((c) => !served(c)), 4],
     [rest, 8],
   ];
   for (const [list, upTo] of schedule) {

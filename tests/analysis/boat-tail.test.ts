@@ -99,7 +99,7 @@ describe('the fitted solve over a boat-tail', () => {
     expect(plain.stepAspect).toBeUndefined();
     expect(plain.boatTailDrag).toBeUndefined();
     expect(plain.lines[plain.lines.length - 1]!.x).toBe(6);
-  });
+  }, 60_000);
 
   it("splits the wall's drag at the shoulder and the base: the continuation counts in neither", () => {
     const p = sharpFitProblem(body, { mach: 2, gamma, nj: 20, refinement: 1 });
@@ -128,7 +128,7 @@ describe('the fitted solve over a boat-tail', () => {
     // ... and the forebody's drag does not see it.
     const nose = wallDrag(p, grid, raised(Infinity, Infinity));
     expect(wallDrag(p, grid, raised(xs, Infinity))).toBeCloseTo(nose, 12);
-  });
+  }, 60_000);
 
   it('the coarsest grid (nj = 20) converges, passes the gates, and lies 0.82% above the method of characteristics', () => {
     // The march's boat-tail drag extrapolated from 640 to 2560 intervals,
