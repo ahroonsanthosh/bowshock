@@ -1820,7 +1820,7 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
-**2026-10-26 (w): RM A51J11 and RM A52E01, named before they are opened,
+**2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
 10.1, as (k); 0019 section 3.4, "Layers and h/c"). Neither has been
 opened. Each is known here from its NTRS catalogue record (title, number,
@@ -1882,10 +1882,11 @@ by 0019 section 3.4's shape widening, written with its basis before any
 of these values is read, as the single wedge's is; the measured values
 are never shifted toward a plate's.
 
-_The letter._ (w) is the next free letter after those on the main line,
-as the coordinator allocated it. Letters (w) to (y) are also in use on
-other branches (`nose-model-form`, `w6-build`), so one of the two (w)
-entries is re-lettered when both reach the main line, as (j) to (m) were.
+_Relabelled, 2026-10-26:_ first written as (w) (commit 9699737), which
+another branch already holds; relabelled (ac) by the coordinator's
+allocation before any value of either report was read (by then only RM
+A51J11's model and test sections had been seen, as text, as item 1
+allows); content unchanged.
 
-The next letter after (w) is for the coordinator to allocate: (x) and (y)
-are in use on other branches.
+Letters are allocated by the coordinator; (w) to (ab) are held by other
+branches.
