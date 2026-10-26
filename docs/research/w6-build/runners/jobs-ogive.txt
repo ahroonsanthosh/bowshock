@@ -1,0 +1,50 @@
+# W6 build, ogive: the box's corners (calibers 3 and 5, r_n/R 0.03 and 0.15, Mach 1.3 and 3),
+# then interior points; every case on nj 20 first, then 40, then 80 and its marches.
+fam ogive 5 0.03 1.3 1
+fam ogive 5 0.15 1.3 1
+fam ogive 3 0.03 1.3 1
+fam ogive 3 0.15 1.3 1
+fam ogive 5 0.03 3 1
+fam ogive 5 0.15 3 1
+fam ogive 3 0.03 3 1
+fam ogive 3 0.15 3 1
+fam ogive 5 0.05 2 1
+fam ogive 3 0.15 2 1
+fam ogive 5 0.05 1.3 1
+fam ogive 5 0.05 3 1
+fam ogive 5 0.03 1.3 2
+fam ogive 5 0.15 1.3 2
+fam ogive 3 0.03 1.3 2
+fam ogive 3 0.15 1.3 2
+fam ogive 5 0.03 3 2
+fam ogive 5 0.15 3 2
+fam ogive 3 0.03 3 2
+fam ogive 3 0.15 3 2
+fam ogive 5 0.05 2 2
+fam ogive 3 0.15 2 2
+fam ogive 5 0.05 1.3 2
+fam ogive 5 0.05 3 2
+fam ogive 5 0.03 1.3 4
+moc ogive 5 0.03 1.3
+fam ogive 5 0.15 1.3 4
+moc ogive 5 0.15 1.3
+fam ogive 3 0.03 1.3 4
+moc ogive 3 0.03 1.3
+fam ogive 3 0.15 1.3 4
+moc ogive 3 0.15 1.3
+fam ogive 5 0.03 3 4
+moc ogive 5 0.03 3
+fam ogive 5 0.15 3 4
+moc ogive 5 0.15 3
+fam ogive 3 0.03 3 4
+moc ogive 3 0.03 3
+fam ogive 3 0.15 3 4
+moc ogive 3 0.15 3
+fam ogive 5 0.05 2 4
+moc ogive 5 0.05 2
+fam ogive 3 0.15 2 4
+moc ogive 3 0.15 2
+fam ogive 5 0.05 1.3 4
+moc ogive 5 0.05 1.3
+fam ogive 5 0.05 3 4
+moc ogive 5 0.05 3

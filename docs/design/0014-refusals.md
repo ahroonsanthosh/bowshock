@@ -1820,4 +1820,54 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
-The next free letter is (w).
+**2026-10-26 (x): NACA TR 1386 named as the measured check of W6's
+rounded nose tips, before it is opened** (the coordinator's allocation;
+the owner's decision of 2026-10-26 to build W6). Perkins, Jorgensen and
+Sommer, NACA TR 1386, 1958 (NTRS 19930091022): only its summary has been
+read in this project (section 8: blunted cones and Karman ogives, Mach
+1.24 to 7.4). When this entry was written nobody working on W6 had
+opened the report, and no W6 reference family existed.
+
+- _What is named._ Every figure and table of TR 1386 that gives, at zero
+  incidence, (1) the measured surface pressure distribution, or (2) the
+  measured pressure foredrag (from integrated pressures, or a forebody
+  drag with the friction removed by a method the report states), of a
+  model whose tip is a hemisphere or sphere cap tangent to the nose
+  profile. Nothing else of the report is named: balance forces that
+  include friction or the base, schlieren photographs, and every model
+  with a sharp or flat tip are not used.
+- _How the figure numbers are fixed._ A neutral party (not a reader, and
+  not W6's agent) opens only the report's list of figures and tables and
+  their captions, and lists, by the rule above, the numbers that are
+  named, in a dated addendum to this entry, before any reader sees a
+  figure. If a caption does not say whether a model's tip is rounded or
+  what its pressures are, the item is named and the readers say what it
+  shows. Pages of text are not opened for this step.
+- _Two readings._ Each named figure or table is read twice, the second
+  time blind, by readers who never see each other's reading or any W6
+  computed value (section 10.1's rule, as for the blind rounds 6 to
+  13); a neutral party pairs them. Where the two readings or the report's
+  table and figure disagree, the comparison uses the envelope of both.
+- _How it is used: a check, not a band._ For every named model whose
+  shape the W6 solver takes, at every reported Mach number inside the
+  outline of W6's references, the computed inviscid value on the finest
+  grid with its band and allowance is set against the measured one with
+  its reading envelope and the report's stated uncertainty. Models whose
+  nose meets the cylinder at a corner (blunted cones) are served by
+  nothing (W6 refuses capped cones), and are compared only ahead of the
+  corner, on the surface pressure, where the computed surface flow is
+  supersonic ahead of the corner, as a check of the cap and the flow just
+  behind it; that comparison is labelled as such and serves no cone. The
+  outcome is reported either way, as 0004 reports TN 3716: agreement,
+  or the measured difference with its sign, its size against both
+  envelopes, and no claimed cause unless one is shown. The check sets no
+  band, no allowance and no served range, and nothing is tuned to it; a
+  difference beyond both envelopes goes to the nose's model-form
+  allowance (0022, reserved letter (w)) as evidence, under that record's
+  own rules, not this entry's.
+- _Not a hold-out._ TR 1386 is not held back and tests no total; W6's
+  served noses carry the labels of the other fitted noses until a
+  hold-out of their own is registered.
+
+The next letters are allocated by the coordinator; (w) is reserved for
+the nose's model-form allowance.
