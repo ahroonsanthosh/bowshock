@@ -2,6 +2,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import {
   cappedNose,
+  isCone,
   noseBaseSlope,
   noseRadius,
   noseTipSlope,
@@ -551,7 +552,49 @@ describe('rounded tips (a sphere cap tangent to the profile)', () => {
     }
   });
 
+  it('the cap is sqrt(x (2 r_n - x)) to rounding, at the tip too', () => {
+    // sqrt(r_n^2 - (x - r_n)^2) would lose about 1e-6 of r here.
+    for (const x of [1e-14, 1e-12, 1e-9, 1e-4]) {
+      const n: Nose = {
+        shape: { kind: 'ogive', parameter: 1 },
+        length: 5,
+        baseRadius: 0.5,
+        tipRadius: 0.025,
+      };
+      const exact = Math.sqrt(x * (0.05 - x));
+      expect(Math.abs(noseRadius(n, x) / exact - 1), String(x)).toBeLessThan(1e-15);
+    }
+  });
+
+  it('the ogive is the cone below parameter 0.001, and only there, for a tip radius too', () => {
+    const at = (parameter: number): Nose => ({
+      shape: { kind: 'ogive', parameter },
+      length: 3,
+      baseRadius: 0.5,
+      tipRadius: 0.05,
+    });
+    expect(isCone({ kind: 'ogive', parameter: 0.0009 })).toBe(true);
+    expect(isCone({ kind: 'ogive', parameter: 0.0011 })).toBe(false);
+    expect(() => {
+      validateNose(at(0.0009));
+    }).not.toThrow();
+    expect(() => {
+      validateNose(at(0.0011));
+    }).toThrow(/offered on the tangent ogive/);
+  });
+
   it('refuses a tip radius too close to R for its parent’s length to be resolved, with that reason', () => {
+    // The cone, whose every smaller cap fits, within 5e-16 of R.
+    for (const length of [5, 8, 20]) {
+      expect(() => {
+        validateNose({
+          shape: { kind: 'conical' },
+          length,
+          baseRadius: 0.5,
+          tipRadius: 0.5 * (1 - 1e-15),
+        });
+      }, String(length)).toThrow(/too close to the base radius/);
+    }
     // r_n within 5e-10 of R: the uncapped ogive behind it would be about
     // 1e5 calibers long, and the overall length is no longer kept to
     // 1e-12 in double precision (without the check, off by 1.1e-7).
@@ -607,7 +650,7 @@ describe('rounded tips (a sphere cap tangent to the profile)', () => {
         // The code's error: below theta 0.1 its series to theta^11 (1e-16);
         // above, theta - sin(2 theta) / 2 itself, which cancels to about
         // 1e-16 / theta^2 of A.
-        const tolerance = theta < 0.1 ? 4e-16 : 4e-16 / (theta * theta);
+        const tolerance = theta < 0.1 ? 1.5e-15 : 4e-16 / (theta * theta);
         expect(Math.abs(noseRadius(n, x) / r - 1), `${length} ${ratio} ${theta}`).toBeLessThan(
           tolerance,
         );

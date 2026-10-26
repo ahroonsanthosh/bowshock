@@ -165,6 +165,19 @@ describe('the class rule', { timeout: 60_000 }, () => {
         body: { ...f.body, nose: { ...f.body.nose, tipRadius: 0.02 } },
       }),
     ).toEqual(["the cone's tip is rounded (the Basic Finner's is sharp)"]);
+    // The same cone under another name: a cone (sharp: inside on its
+    // nose; capped: the rounded tip alone), and every reason given.
+    const n1 = { kind: 'power', exponent: 1 } as const;
+    expect(outside({ ...f, body: { ...f.body, nose: { ...f.body.nose, shape: n1 } } })).toEqual([]);
+    expect(
+      outside({ ...f, body: { ...f.body, nose: { ...f.body.nose, shape: n1, tipRadius: 0.02 } } }),
+    ).toEqual(["the cone's tip is rounded (the Basic Finner's is sharp)"]);
+    expect(
+      outside({
+        ...f,
+        body: { ...f.body, nose: { ...f.body.nose, length: 4, tipRadius: 0.02 } },
+      }),
+    ).toHaveLength(3);
     expect(outside({ ...f, finCount: 3 })).toEqual(['3 fins, not 4']);
     expect(
       outside({

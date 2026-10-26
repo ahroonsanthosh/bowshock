@@ -255,7 +255,7 @@ export const CAPPED_SHAPES =
   'the tangent ogive (longer than its radius), the Von Karman nose, the parabola of parameter 1 and the cone (by any of its names: the ogive below parameter 0.001, the parabola of parameter 0, the power series of exponent 1)';
 
 /** Whether a shape is the cone, by any of its names. */
-function isCone(shape: NoseShape): boolean {
+export function isCone(shape: NoseShape): boolean {
   switch (shape.kind) {
     case 'conical':
       return true;
@@ -359,7 +359,15 @@ export function cappedNose(nose: Nose): CappedNose {
     length,
     baseRadius: nose.baseRadius,
   });
-  const fails = () => new RangeError(`a tip radius of ${rn} does not fit on this nose`);
+  // Near R the cap cannot be placed in double precision (the parent grows
+  // without bound); on the shapes offered every smaller cap fits, so a
+  // failure there is that, and is said so.
+  const fails = () =>
+    new RangeError(
+      rn > (1 - 1e-6) * nose.baseRadius
+        ? `a tip radius of ${rn} is too close to the base radius to place the cap in double precision`
+        : `a tip radius of ${rn} does not fit on this nose`,
+    );
   /**
    * On the uncapped nose `parent`, the point xt where the tangent sphere's
    * radius f sqrt(1 + f'^2), which grows from 0 at the tip along these

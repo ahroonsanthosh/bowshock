@@ -36,6 +36,7 @@ import {
   type SymmetricSection,
 } from '../fins/section';
 import { bodyLength, validateBody, type Body } from '../geometry/body';
+import { isCone } from '../geometry/nose';
 import {
   finnedBodyComponents,
   type DragInputs,
@@ -254,15 +255,20 @@ function shapeOutside(form: TotalDragForm, leadingEdge: 'drev' | 'sharp'): strin
   const pct = `${100 * c.dimensionTolerance}%`;
   const out: string[] = [];
   const nose = form.body.nose;
-  if (nose.shape.kind !== 'conical') {
+  // The cone by any of its names (an ogive below parameter 0.001, the
+  // parabola K = 0, the power series n = 1): every reason it differs.
+  if (!isCone(nose.shape)) {
     out.push(`the nose is not a cone (the Basic Finner's is a 20 deg cone)`);
-  } else if (nose.tipRadius !== undefined) {
-    out.push(`the cone's tip is rounded (the Basic Finner's is sharp)`);
-  } else if (!near(nose.length, c.noseLength)) {
-    out.push(
-      `the cone is ${fmt(nose.length)} cal long, not the Basic Finner's ${c.noseLength.toFixed(3)} ` +
-        `(a 20 deg cone) within ${pct}`,
-    );
+  } else {
+    if (nose.tipRadius !== undefined) {
+      out.push(`the cone's tip is rounded (the Basic Finner's is sharp)`);
+    }
+    if (!near(nose.length, c.noseLength)) {
+      out.push(
+        `the cone is ${fmt(nose.length)} cal long, not the Basic Finner's ${c.noseLength.toFixed(3)} ` +
+          `(a 20 deg cone) within ${pct}`,
+      );
+    }
   }
   const length = bodyLength(form.body);
   if (!near(length, c.length)) {
