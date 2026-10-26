@@ -1907,5 +1907,134 @@ face stayed subsonic and above p* by 0.11 to 0.12 of p02. By (aa),
 square-cut leading edges stay refused; the bounded term is kept unwired.
 (ab) is unaffected: its bounds are measured terms, not this computation.
 
+**2026-10-26 (af): measured flat-face pressures, named before they are
+read, to test the premises of (aa)'s bounds** (route (c) of 0016 section
+21.3, the coordinator's decision of 2026-10-26; the owner's rule admits
+no unverified estimate, so (aa)'s argument is not served on its own).
+Written before any figure or table below is read by anyone for this
+repository.
+
+_What was seen in choosing them._ The sets were found by searching NTRS
+and the open web for measured pressures on a flat face normal to a
+supersonic stream. Each is named from its title, its summary or abstract
+and its figure and table captions; the search engine's excerpts also
+showed parts of their summaries and text (for example the qualitative
+statements that a flat face's pressure distribution changed little with
+Mach or Reynolds number over the ranges tested). No plotted or tabulated
+pressure of any of them has been looked at.
+
+_No planar or swept set exists in the range._ No open report found
+measures the pressure across a planar flat face, a square-cut leading
+edge or a swept flat face at Mach 1.0 to 3.0. The nearest planar one,
+NACA TN 4142 (Creager, 1957: a 1 in slab with a square leading edge),
+is at Mach 4 in a low-density stream with one orifice on the face, at
+its centre, so it gives no distribution; it is not used. Flat-faced fins
+on plates (blunt-fin interaction studies) are at Mach 4.9 and measure the
+plate. Swept blunt slabs (AD0255893, Mach 1.71 to 7.6) have cylindrical
+leading edges. Every set below is axisymmetric: flat-faced cylinders.
+
+_Why an axisymmetric flat face tests the premises of 0016 section 21.1_
+(argued before any reading). The band needs only two things of the face,
+not its mean:
+
+- (P1) _p at most p02 on the face_: the face is wetted by the streamline
+  that crosses the bow shock where it is normal. On a flat-faced
+  cylinder that streamline is the axis, and the same holds. Every face
+  orifice tests it.
+- (P2) _p at least p\* on the face_: the face lies in the subsonic region
+  behind the shock, the sonic line attached at its sharp corner. The
+  corner's choking is a property of the flow near the corner, which is
+  planar in the meridian plane (the edge's radius of curvature, the
+  body's radius, is large against the region where the flow turns), so a
+  flat-faced cylinder's corner is the same test. Every face orifice
+  tests it, the outermost ones (nearest the corner) most closely; and
+  they do so in a real flow, with its boundary layer, so they also test
+  item 4's corner reach at the Reynolds numbers of the tests.
+- What they do not test: where the planar face's pressure lies between
+  the bounds (its mean, which the band does not use); the corner's reach
+  at Reynolds numbers far below those tested (they are of order 1e6 on
+  the diameter; the served floor, 6.7e3 on the thickness, rests on item
+  4's estimate); sweep (no swept face is measured).
+
+_The sets named_ (each read twice, the second blind, then paired by a
+neutral party; zero incidence only; measured symbols only, not faired
+curves or theory):
+
+1. NACA TN 4300 (Stoney and Markley, "Heat-transfer and pressure
+   measurements on flat-faced cylinders at a Mach number of 2", 1958;
+   NTRS 19930085034). Mach 2 free jet, 4 in and 12 in models, sea-level
+   Reynolds numbers. Fig. 7, "Pressure distribution and velocity
+   distribution over flat face" (the pressures only); fig. 16, "Pressure
+   measured on 12-inch model"; fig. 3, "Location of pressure orifices
+   and thermocouples"; table I; the text's model and test conditions.
+   Tests P1 and P2 at Mach 2 on two sizes (the summary reports a laminar
+   face on one and a turbulent one on the other).
+2. NACA RM L57C18 (Carter and Bressette, "Heat-transfer and pressure
+   distribution on six blunt noses at a Mach number of 2", 1957; NTRS
+   19930089669). Fig. 1, "Drawings and photographs of the six blunt-nose
+   models", to identify the flat-faced ones and their corners; fig. 5,
+   "Pressure distributions for the six models", the flat-faced models
+   only, at zero incidence; table I, "Sequence of tests". Tests P1 and P2
+   at Mach 2 with the corner designs the report compares.
+3. NASA TM X-19 (Burbank and Stallings, "Heat-transfer and pressure
+   measurements on a flat-face cylinder at a Mach number range of 2.49
+   to 4.44", 1959; NTRS 19980223601). Fig. 2, "Details of model and
+   thermocouple location"; fig. 5, the local pressures on the flat face
+   (its caption is not legible in the file's text layer; the text says
+   fig. 5 presents them at Mach 2.49, Reynolds number 0.90e6, incidence
+   up to 15 deg: zero incidence only). Tests P1 and P2 at Mach 2.49.
+4. NASA TN D-5392 (Stallings and Howell, "Experimental pressure
+   distributions for a family of blunt bodies at Mach numbers from 2.49
+   to 4.63 and angles of attack from 0 deg to 15 deg", 1969; NTRS
+   19690025922). Fig. 1, "Model geometry", to identify the flat-face
+   cylinder (zero shoulder radius, flat nose) and its orifices; table I,
+   "Tabulation of pressure measurements at M = 2.49", and tables II
+   (Mach 4.06) and III (Mach 4.63), that model's face orifices at zero
+   incidence only. Tests P1 and P2 at Mach 2.49, and at 4.06 and 4.63,
+   beyond the domain, whether they hold as the Mach number rises.
+   NASA TR R-274 (Stallings, 1967) plots the same tests and is not read.
+
+_The criteria_, applied to the readings converted to p / p02, p02 from
+Rayleigh's formula at the free-stream Mach number each report states
+(or the report's own measured stagnation-point pressure where it
+normalises by that, as stated), with p*/p02 = 0.5283; "face" means the
+orifices on the flat face, not on a corner radius, shoulder or
+afterbody; a is the report's stated pressure accuracy as a fraction of
+p02, or 0.01 where it states none:
+
+- (i) P1: every face reading, the higher of the two readings, at most
+  1 + a;
+- (ii) P2: every face reading, the lower of the two readings, at least
+  0.5283 - a;
+- (iii) item 4's margin: the mean of the face distribution over the
+  radius (trapezoids through the lower readings, the outermost reading
+  held to the corner), with zero pressure in place of the readings over
+  the outer fifth of the radius (a tenth of a planar face's height at
+  each corner, on the half-height), at least 0.5283;
+- each at every set, model and Mach number read. **Pass** if all hold;
+  **fail** otherwise. No criterion changes after any value is seen.
+
+_On a pass_, square-cut leading edges are wired (the term of 0016
+section 21.1, its band the whole gap between the physical bounds,
+unchanged: the readings set no band and no nominal) with:
+
+- the domain narrowed to the normal Mach numbers between the lowest
+  measured, 2.0, and 3.0 (inside the measured 2.0 to 4.63); below 2.0
+  refused, no flat face being measured there;
+- swept edges to 60 deg with 21.1 item 6's sweep allowance, labelled an
+  analogy: no swept flat face is measured, as no swept rounded edge's
+  shape is;
+- the Reynolds floor of 21.1 item 7 (6.7e3 on the thickness), labelled
+  "extrapolated in Reynolds number" below the lowest Reynolds number of
+  the sets;
+- the label naming the sets as tests of the bounds' premises, not of
+  the value.
+
+_On a fail_, square-cut leading edges stay refused, the term unwired,
+the result recorded in 0016 section 21; route (b) of 21.3 stays open.
+
+The readers' brief, with identifiers and what to read only, is
+`docs/research/square-edge/readers/brief.md`.
+
 The letters (w) to (z) are allocated to other branches; the next free
 letter is the coordinator's to allocate.

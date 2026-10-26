@@ -1634,6 +1634,16 @@ section 10.7 and read twice; or the owner's decision that the argument of
 (`src/fins/square-leading-edge.ts`) and its tests are kept, unwired, as
 0019 section 3.2's bounded term is.
 
+_The route taken (2026-10-26):_ the measured one. The owner's rule
+admits no unverified estimate, so the argument is not served on its own;
+0014 section 10.7 (af) names four sets of measured pressures on
+flat-faced cylinders at Mach 2.0 to 4.63 (no planar or swept flat face
+is measured at Mach 1 to 3), argues why they test the bounds' premises,
+and registers the pass and fail criteria and what is served on each,
+before any of them is read. The readers' brief is
+`docs/research/square-edge/readers/brief.md`. The term stays unwired
+until the readings are paired and judged under (af).
+
 ### 21.4 In the code, on the page, and the coverage
 
 - `src/fins/rounded-leading-edge.ts`: beyond 60 deg of sweep
