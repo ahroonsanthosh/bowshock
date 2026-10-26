@@ -644,26 +644,25 @@ export interface CharacteristicsFromOptions {
 }
 
 /**
- * The method of characteristics from given data on a curve from the body
- * to the shock (see the file's header), marched to the end of the body.
- * The wall points start at the curve's body point, the shock points at its
- * shock point.
+ * The march's starting points from given data (see characteristicsFrom):
+ * the curve's flow interpolated onto m + 1 points from the shock (0) to the
+ * body (m), checked, with the stream function along it and the network's
+ * entropy table filled from it. Shared with the march that fits an
+ * embedded shock (characteristics-shocked.ts).
  */
-export function characteristicsFrom(
-  body: Body,
+export function startingData(
+  net: Network,
   start: StartingLine,
-  options: CharacteristicsFromOptions,
-): CharacteristicsSolution {
-  const { mach, gamma, intervals: n } = options;
+  options: { readonly gamma: number; readonly intervals: number },
+) {
+  const { gamma, intervals: n } = options;
   if (!(Number.isInteger(n) && n >= 4 && n % 2 === 0)) {
     throw new RangeError('an even number of intervals, at least four, is needed');
   }
   const given = start.points;
   const last = given.length - 1;
   if (last < 3) throw new RangeError('the starting line needs at least four points');
-  const net = characteristicNetwork(body, mach, gamma);
   const { vInf, machOf, radius, slope, entropy, massFlux, behindShock } = net;
-  const { interiorPoint, wallPoint } = net;
 
   // Arc length along the given points, and the variables the march uses.
   const sigma = [0];
@@ -749,6 +748,25 @@ export function characteristicsFrom(
   const startPsi = data[m]!.psi;
   const startMassDefect = Math.abs(startPsi) / data[0]!.psi;
   const width = data[0]!.y - radius(data[0]!.x);
+
+  return { data, kWall, startPsi, startMassDefect, width, m };
+}
+
+/**
+ * The method of characteristics from given data on a curve from the body
+ * to the shock (see the file's header), marched to the end of the body.
+ * The wall points start at the curve's body point, the shock points at its
+ * shock point.
+ */
+export function characteristicsFrom(
+  body: Body,
+  start: StartingLine,
+  options: CharacteristicsFromOptions,
+): CharacteristicsSolution {
+  const { mach, gamma } = options;
+  const net = characteristicNetwork(body, mach, gamma);
+  const { radius, interiorPoint, wallPoint } = net;
+  const { data, kWall, startPsi, startMassDefect, width, m } = startingData(net, start, options);
 
   const record: MarchRecord = {
     wall: [{ x: data[m]!.x, p: data[m]!.p }],
