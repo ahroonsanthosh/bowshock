@@ -141,23 +141,25 @@ function expectedGroups(): Map<string, Expected[]> {
       point(r.id!, 'phi 0 deg', m, +r.M0_err!, cpOf(+r.pb_p0!, m)),
     );
   }
+  // Johnston states the test region's Mach number uniform to about +-0.010 (PDF p. 6).
+  const johnston = (err: number) => Math.max(err, 0.01);
   for (const r of records('w7-fins/johnston_fig10b_first.csv')) {
     if (r.alpha_deg !== '0') continue;
     add(
       'Johnston fig. 10(b)',
       'first (W7)',
-      point(r.id!, 'alpha 0 deg', +r.mach!, +r.mach_err!, +r.cpb!),
+      point(r.id!, 'alpha 0 deg', +r.mach!, johnston(+r.mach_err!), +r.cpb!),
     );
   }
   for (const r of records('round13/readings/johnston_fig10b.csv')) {
     if (r.series !== 'alpha 0 deg') continue;
     if (r.x_val !== '') {
-      const p = point(r.id!, 'alpha 0 deg', +r.x_val!, +r.x_err!, +r.y_val!);
+      const p = point(r.id!, 'alpha 0 deg', +r.x_val!, johnston(+r.x_err!), +r.y_val!);
       add('Johnston fig. 10(b)', 'second (round 13)', p);
     } else {
       const [m0, m1] = r.extent_x!.split('..').map(Number) as [number, number];
       const [c0, c1] = r.extent_y!.split('..').map(Number) as [number, number];
-      const p = point(r.id!, 'alpha 0 deg', (m0 + m1) / 2, (m1 - m0) / 2, c0, c1);
+      const p = point(r.id!, 'alpha 0 deg', (m0 + m1) / 2, johnston((m1 - m0) / 2), c0, c1);
       add('Johnston fig. 10(b)', 'second (round 13), box', p);
     }
   }
@@ -338,7 +340,7 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
       expect(b.low).toBeLessThanOrEqual(0.93);
       expect(b.high).toBeGreaterThanOrEqual(1.21);
     }
-    expect(trailingEdgeBasis(1.15).band.high).toBeCloseTo(1.229, 3);
+    expect(trailingEdgeBasis(1.15).band.high).toBeCloseTo(1.246, 3);
     expect(trailingEdgeBasis(1.1).band.low).toBeCloseTo(0.927, 3);
     expect(trailingEdgeBasis(1.45).band.low).toBeCloseTo(0.921, 3);
   });

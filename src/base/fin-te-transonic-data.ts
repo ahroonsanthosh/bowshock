@@ -6,10 +6,10 @@
  * docs/research/total-drag/audit/te-below-1.5/scripts/gen_data.py from the
  * reading files under docs/research/total-drag/audit/ (do not edit; re-run
  * the script). Kept: points at M 0.97 to 1.65. Each point is [id, series,
- * M, half-width of its Mach interval (the reading's error, or TN 3548's
- * stated accuracy, +-0.01), Cp_b low, Cp_b high]; the two Cp_b differ only
- * for a box of merged ink. RM A51J25 fig. 7's symbols are on M' and p',
- * taken at M = M'.
+ * M, half-width of its Mach interval, Cp_b low, Cp_b high]. The interval is
+ * the reading's error, or the report's stated Mach accuracy where wider
+ * (TN 3548 +-0.01, Johnston +-0.010); the two Cp_b differ only for a box of
+ * merged ink. RM A51J25 fig. 7's symbols are on M' and p', taken at M = M'.
  */
 
 export type TransonicPoint = readonly [
@@ -220,39 +220,39 @@ export const TRANSONIC_TE_READINGS: readonly TransonicReadingGroup[] = [
     set: 'Johnston fig. 10(b)',
     reading: 'first (W7)',
     points: [
-      ['a0_11', 'alpha 0 deg', 1.009, 0.001, -0.9007, -0.9007],
-      ['a0_12', 'alpha 0 deg', 1.0344, 0.001, -0.8438, -0.8438],
-      ['a0_13', 'alpha 0 deg', 1.0598, 0.001, -0.7893, -0.7893],
-      ['a0_14', 'alpha 0 deg', 1.0843, 0.001, -0.7452, -0.7452],
-      ['a0_15', 'alpha 0 deg', 1.1101, 0.0007, -0.7004, -0.7004],
-      ['a0_16', 'alpha 0 deg', 1.1344, 0.001, -0.6604, -0.6604],
-      ['a0_17', 'alpha 0 deg', 1.1582, 0.0008, -0.6264, -0.6264],
-      ['a0_18', 'alpha 0 deg', 1.184, 0.0007, -0.5891, -0.5891],
-      ['a0_19', 'alpha 0 deg', 1.2102, 0.0007, -0.5543, -0.5543],
-      ['a0_20', 'alpha 0 deg', 1.2307, 0.001, -0.5287, -0.5287],
+      ['a0_11', 'alpha 0 deg', 1.009, 0.01, -0.9007, -0.9007],
+      ['a0_12', 'alpha 0 deg', 1.0344, 0.01, -0.8438, -0.8438],
+      ['a0_13', 'alpha 0 deg', 1.0598, 0.01, -0.7893, -0.7893],
+      ['a0_14', 'alpha 0 deg', 1.0843, 0.01, -0.7452, -0.7452],
+      ['a0_15', 'alpha 0 deg', 1.1101, 0.01, -0.7004, -0.7004],
+      ['a0_16', 'alpha 0 deg', 1.1344, 0.01, -0.6604, -0.6604],
+      ['a0_17', 'alpha 0 deg', 1.1582, 0.01, -0.6264, -0.6264],
+      ['a0_18', 'alpha 0 deg', 1.184, 0.01, -0.5891, -0.5891],
+      ['a0_19', 'alpha 0 deg', 1.2102, 0.01, -0.5543, -0.5543],
+      ['a0_20', 'alpha 0 deg', 1.2307, 0.01, -0.5287, -0.5287],
     ],
   },
   {
     set: 'Johnston fig. 10(b)',
     reading: 'second (round 13), box',
     points: [
-      ['10b-c11', 'alpha 0 deg', 0.9865, 0.0026, -0.9578, -0.9535],
-      ['10b-c12', 'alpha 0 deg', 1.009, 0.0024, -0.9028, -0.898],
-      ['10b-c13', 'alpha 0 deg', 1.03385, 0.00285, -0.8453, -0.8415],
-      ['10b-c15', 'alpha 0 deg', 1.08545, 0.00285, -0.7464, -0.7425],
-      ['10b-c16', 'alpha 0 deg', 1.1111, 0.0024, -0.7029, -0.6967],
-      ['10b-c17', 'alpha 0 deg', 1.1345, 0.0026, -0.6628, -0.659],
-      ['10b-c18', 'alpha 0 deg', 1.1583, 0.0033, -0.6279, -0.6236],
-      ['10b-c19', 'alpha 0 deg', 1.18425, 0.00235, -0.5906, -0.5873],
-      ['10b-c20', 'alpha 0 deg', 1.21115, 0.00235, -0.5561, -0.5523],
+      ['10b-c11', 'alpha 0 deg', 0.9865, 0.01, -0.9578, -0.9535],
+      ['10b-c12', 'alpha 0 deg', 1.009, 0.01, -0.9028, -0.898],
+      ['10b-c13', 'alpha 0 deg', 1.03385, 0.01, -0.8453, -0.8415],
+      ['10b-c15', 'alpha 0 deg', 1.08545, 0.01, -0.7464, -0.7425],
+      ['10b-c16', 'alpha 0 deg', 1.1111, 0.01, -0.7029, -0.6967],
+      ['10b-c17', 'alpha 0 deg', 1.1345, 0.01, -0.6628, -0.659],
+      ['10b-c18', 'alpha 0 deg', 1.1583, 0.01, -0.6279, -0.6236],
+      ['10b-c19', 'alpha 0 deg', 1.18425, 0.01, -0.5906, -0.5873],
+      ['10b-c20', 'alpha 0 deg', 1.21115, 0.01, -0.5561, -0.5523],
     ],
   },
   {
     set: 'Johnston fig. 10(b)',
     reading: 'second (round 13)',
     points: [
-      ['10b-c14', 'alpha 0 deg', 1.0602, 0.0015, -0.7911, -0.7911],
-      ['10b-c21', 'alpha 0 deg', 1.2307, 0.0015, -0.5284, -0.5284],
+      ['10b-c14', 'alpha 0 deg', 1.0602, 0.01, -0.7911, -0.7911],
+      ['10b-c21', 'alpha 0 deg', 1.2307, 0.01, -0.5284, -0.5284],
     ],
   },
   {

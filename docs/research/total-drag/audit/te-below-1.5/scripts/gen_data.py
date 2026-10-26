@@ -35,6 +35,9 @@ def add(set_, reading, id_, series, mach, mach_err, cp_low, cp_high=None):
              cp_low=cp_low, cp_high=cp_low if cp_high is None else cp_high))
 
 
+# Each point's Mach interval: the reading's error, or the report's stated Mach accuracy where it
+# states one and it is wider (0019 section 3.4.1 item 2). Stated: TN 3548 (+-0.01) and Johnston
+# (+-0.010). Stating none: R&M 3427 ("slight inaccuracies", no number), R&M 3348, RM A51J25.
 # TN 3548 fig. 6: both slits. The report's Mach accuracy (+-0.01, PDF p. 6) is wider than either
 # reading's error and is carried as each point's Mach interval.
 for r in rows('w7-fins/tn3548_fig6_first.csv'):
@@ -78,21 +81,24 @@ for r in rows('round10/readings/rm3348_fig30a.csv'):
         add('R&M 3348 fig. 30a', 'second (round 10)', r['id'], 'phi 0 deg', m, float(r['M0_err']),
             cp_from_ratio(float(r['pb_p0']), m))
 
-# Johnston fig. 10(b), alpha 0. Round 13's merged ink is a box: its Mach and Cp_b extents.
+# Johnston fig. 10(b), alpha 0. Round 13's merged ink is a box: its Mach and Cp_b extents. The
+# report states the test region's Mach number uniform within +-0.002 across and about +-0.010 up
+# and down (PDF p. 6): the wider, +-0.010, is carried where it exceeds the reading's error.
+JOHNSTON_MACH = 0.010
 for r in rows('w7-fins/johnston_fig10b_first.csv'):
     if r['alpha_deg'] == '0':
-        add('Johnston fig. 10(b)', 'first (W7)', r['id'], 'alpha 0 deg', float(r['mach']), float(r['mach_err']),
-            float(r['cpb']))
+        add('Johnston fig. 10(b)', 'first (W7)', r['id'], 'alpha 0 deg', float(r['mach']),
+            max(float(r['mach_err']), JOHNSTON_MACH), float(r['cpb']))
 for r in rows('round13/readings/johnston_fig10b.csv'):
     if r['series'] == 'alpha 0 deg':
         if r['x_val']:
             add('Johnston fig. 10(b)', 'second (round 13)', r['id'], 'alpha 0 deg', float(r['x_val']),
-                float(r['x_err']), float(r['y_val']))
+                max(float(r['x_err']), JOHNSTON_MACH), float(r['y_val']))
         else:
             m_lo, m_hi = map(float, r['extent_x'].split('..'))
             c_lo, c_hi = map(float, r['extent_y'].split('..'))
             add('Johnston fig. 10(b)', 'second (round 13), box', r['id'], 'alpha 0 deg', (m_lo + m_hi) / 2,
-                (m_hi - m_lo) / 2, c_lo, c_hi)
+                max((m_hi - m_lo) / 2, JOHNSTON_MACH), c_lo, c_hi)
 
 # RM A51J25 fig. 7 below M' 1.5, the open symbols, at M = M' (as the code serves the curve above
 # 1.5). The filled PARD circles are TN 3548's flights, counted there (0014 10.7 (k)): W7's f1 and
@@ -126,10 +132,10 @@ lines = [
     ' * docs/research/total-drag/audit/te-below-1.5/scripts/gen_data.py from the',
     ' * reading files under docs/research/total-drag/audit/ (do not edit; re-run',
     ' * the script). Kept: points at M 0.97 to 1.65. Each point is [id, series,',
-    ' * M, half-width of its Mach interval (the reading\'s error, or TN 3548\'s',
-    ' * stated accuracy, +-0.01), Cp_b low, Cp_b high]; the two Cp_b differ only',
-    ' * for a box of merged ink. RM A51J25 fig. 7\'s symbols are on M\' and p\',',
-    ' * taken at M = M\'.',
+    ' * M, half-width of its Mach interval, Cp_b low, Cp_b high]. The interval is',
+    ' * the reading\'s error, or the report\'s stated Mach accuracy where wider',
+    ' * (TN 3548 +-0.01, Johnston +-0.010); the two Cp_b differ only for a box of',
+    ' * merged ink. RM A51J25 fig. 7\'s symbols are on M\' and p\', taken at M = M\'.',
     ' */',
     '',
     'export type TransonicPoint = readonly [',

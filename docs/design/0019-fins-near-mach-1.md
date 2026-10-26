@@ -883,7 +883,12 @@ formed on two of them, and the shape widening's size on two of them.
      (faired parallel); RM A52E01 fig. 8, wing 2; RM A51J25 fig. 7's open
      symbols at M' 1.23 to 1.50, taken at M = M' as the code serves the
      curve above Mach 1.5 (its filled PARD circles are TN 3548's flights,
-     counted there).
+     counted there). Chapman warns that for airfoils the correction from
+     the free stream to M' and p' "is important at low-supersonic Mach
+     numbers where the bow wave is detached" (RM A51J25 p. 14), and gives
+     no free-stream values, so below 1.5 these symbols' places are an
+     approximation. They are kept, the wider choice: they set the band's
+     low end at 1.35 to 1.45 (0.921, against the floor's 0.93).
    - _Faces diverging toward the base_ (single wedges): R&M 3348 table 3
      (unswept, alpha 0 deg, all six holes) and fig. 30a's unswept circles,
      kept as one envelope where they disagree (M 1.11 to 1.20; the
@@ -903,10 +908,23 @@ formed on two of them, and the shape widening's size on two of them.
      above 1.5, 10.7 (ac)); Sawyer and Daum's fig. 4(c) sets nothing (10.7
      (t)).
    - Each set's layer parameter X = c / [h Re_c^(1/5)] and h/c are from
-     its report: TN 3548 h/c 0.06; R&M 3427 0.10 (X 0.52 to 0.66); R&M
-     3348 0.14 (0.35 to 0.43); Johnston 0.20 (0.30); RM A51J11 and RM
-     A52E01 as 10.7 (ac) gives them. TN 3548's X is formed from its
-     report's chord and Reynolds numbers when the code is written.
+     its report: TN 3548 h/c 0.06 (X 0.67 to 0.86, chord 9.582 in, Re 2.8e6
+     to 9.8e6); R&M 3427 0.10 (X 0.52 to 0.66); R&M 3348 0.14 (0.35 to
+     0.43); Johnston 0.20 (0.30); RM A51J11 and RM A52E01 as 10.7 (ac)
+     gives them.
+   - _Each point's Mach interval_ (the coordinator's decision of
+     2026-10-26: the wider, safer choice): the reading's error, or the
+     report's stated Mach accuracy where it states one and it is wider.
+     Stated: TN 3548, +-0.01 (PDF p. 6); Johnston, the test region's Mach
+     number uniform to +-0.002 across and about +-0.010 up and down (PDF
+     p. 6), so +-0.010. Stating none: R&M 3427 (its free-stream Mach
+     numbers "may therefore be subject to slight inaccuracies", uncorrected
+     for the slotted walls, no number); R&M 3348 (the Mach number from a
+     calibrated hole upstream, no accuracy); RM A51J25 (a conference
+     summary, none); RM A51J11 (the Mach number an average over the
+     model's region on the bump, its contours in a figure not read, no
+     accuracy stated); RM A52E01 (corrections stated, no accuracy). Sets
+     stating none carry their readers' errors only.
 
 3. **The nominal, flat faces, thin layer.** Not RM A51J25 fig. 7's curve
    below Mach 1.5. TN 3548's own points, on M_0 and p_0, are the flights
@@ -915,7 +933,13 @@ formed on two of them, and the shape widening's size on two of them.
    11% at 1.24 and 3% to 7% at 1.27, and lie within -4% to +5% of it from
    1.31 to 1.47: below
    about Mach 1.3, M' and p' ahead of this slab's base are not the free
-   stream's, so the curve on M' does not serve at M_0 there. The nominal
+   stream's, so the curve on M' does not serve at M_0 there. Chapman says
+   as much of fig. 7 itself: "The filled point situated at the extreme
+   left in this figure actually was taken at a flight Mach number of 1.0,
+   but, on this graph, it plots in the position shown because of the
+   large effect of profile shape on base pressure in the region of bow
+   wave detachment" (RM A51J25 p. 16; that point lies at M' about 1.16 to
+   1.19). The nominal
    is therefore piecewise linear in M_0 through nodes every 0.05 from 1.00
    to 1.45, each node the mean of the flat-faced thin-layer sets that
    reach it (TN 3548 and R&M 3427, each set the mean over its readings and
