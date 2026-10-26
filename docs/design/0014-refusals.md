@@ -1821,3 +1821,120 @@ range A has been run; it depends on no result of that range. The rest of
 resumes Stage A, which would then need a held-back test of its own.
 
 The next free letter is (w).
+
+**2026-10-26 (ae): boat-tails (C2, W10): the figures that set the bands
+of the boat-tail's viscous allowance and of the base behind a boat-tail,
+named before they are read** (rule 2 of 10.1; design record 0023; the
+letter from the coordinator's registry). It narrows 10.1's "figs. 19 to
+26 (W10)" of TN 3819 and its RM E51F26 row, and adds RM A52E20.
+
+_What has been opened, and what was seen._ RM E51F26 (Cortright and
+Schroeder, 1951, NTRS 19930086724), TN 3819 (Love, 1957, 19930084517),
+TN 3372 (Peck, 1955, 19930084618), TR 1051 (Chapman, 1951, 19930090963)
+and RM A52E20 (Reller and Hamaker, 1952, 19930087153; its 1955 edition,
+TN 3393, 19930084104, was downloaded and not used) were opened on
+2026-10-26 by the boat-tail workstream for their summaries, model
+descriptions, lists of figures and captions, through their text layers.
+No figure was looked at and no value was read from one. Seen in the
+text, and recorded here so that nothing is hidden: RM E51F26's summary
+(the method of characteristics overestimates the side pressure drag by
+about 20%, already in section 5.6); RM A52E20's summary (a 6-caliber
+ogival boat-tail raised the turbulent base pressure coefficient by about
+87% at Mach 1.50 and 22% at 4.48, and the laminar by 38% and 28%); TN
+3372's summary (the converging afterbody decreased the base drag
+markedly, below zero under Mach 1.07); TN 3819 pp. 12 to 18 (the method,
+and its qualitative comparisons with figs. 19 to 26).
+
+**1. The viscous allowance on the boat-tail's own pressure drag** (0023
+section 3). RM E51F26, no jet flow, zero incidence, Mach 1.91, Reynolds
+number 3.24e6 per foot on an 18 in body of fineness ratio 12:
+
+- **Geometry** (not band data): fig. 6 and the text's model description
+  (pp. 5 and 6): six boat-tailed configurations, 5.63, 7.03 and 9.33 deg
+  to bases of 0.506 and 0.704 of the body's diameter; a 6-caliber nose
+  "contoured according to equation (14) of reference 1" and 6 calibers
+  of cylinder. The nose is taken from that reference if it can be
+  opened; if not, each configuration is computed with a 6-caliber tangent
+  ogive and with a 6-caliber cone, and half the difference of their
+  inviscid side drags is added to the allowance on each side.
+- **Band-setting:** figs. 7 and 8 (the side pressure coefficients
+  against axial station, no jet), integrated over the boat-tail by the
+  trapezoidal rule in r^2, the pressure at the shoulder and the base
+  extrapolated from the two nearest orifices; and figs. 29 and 30 (the
+  components of the boat-tail drag coefficient against boat-tail angle,
+  no jet), whose side component is read directly. Points with the
+  layer tripped at the tip and without are kept apart in the readings
+  and both enter the envelope.
+- **How they set the band.** For each configuration, figure route and
+  reading, S = (measured side pressure drag) / (part 1's inviscid side
+  pressure drag of that configuration, extrapolated over its grids).
+  The boat-tail term is served between S_min and max(S_max, 1) times
+  the inviscid value, widened by part 1's numerical band; a difference
+  between the two routes (figs. 7 and 8 integrated, figs. 29 and 30) is
+  kept as an envelope, never resolved.
+- **Mach number.** The allowance is measured at Mach 1.91 only. Outside
+  Mach 1.8 to 2.0 the boat-tail term stays refused until a further dated
+  entry names side pressures at other Mach numbers, or the owner decides
+  otherwise (0023 section 7).
+- **Checks that set nothing:** RM E51F26 fig. 9 (its mean pressures
+  against its characteristics and linearised theory: its characteristics
+  against part 1's); TN 3819 fig. 15 (a 1957 characteristics calculation
+  over a 10.33 deg conical boat-tail at Mach 2.00) and fig. 16 (the
+  measured recompression over a 10 deg conical afterbody).
+
+**2. The base behind a boat-tail** (0023 section 4): Love's method, the
+Mach number M_0 and pressure p_0 just ahead of the base from part 1
+(the inviscid wall values, as Love took them from the method of
+characteristics), delta_e(M_0) from fig. 18's curve as 0010 serves it
+(both its readings), K linear in the base-to-body diameter ratio h/D
+from 0.85 at 0 to 1 at 1. Turbulent layers only, no jet flow, zero
+incidence, no fins within a root chord of the base:
+
+- **Band-setting:** TN 3819 fig. 19 (15 deg cone-cylinders of varying
+  afterbody length, Langley 9 in tunnel) and fig. 21 (10 deg
+  cone-cylinders of fineness ratio 5 against Mach number, Chapman's
+  compilation): cylindrical bases whose M_0 and p_0 differ from the free
+  stream's, the method's first ingredient; TN 3819 fig. 23 (conical
+  boat-tailing, several configurations, Mach about 2.9), fig. 24 (conical
+  boat-tailing and cut-off length, Mach 1.91, RM E51F26's points) and
+  fig. 25(b) (conical boat-tailing at Mach 3.24, Kurzweg's experiments;
+  25(a) is calculated and sets nothing); RM E51F26 fig. 24 (base pressure
+  coefficients against boat-tail angle, no jet) and the base components
+  of figs. 29 and 30, its "completely boat-tailed" bases being the open
+  nozzle exit (0.5 of the diameter) inside a base of 0.506, kept as Love
+  kept them and flagged in the ratios; RM A52E20 fig. 15 (with and
+  without boat-tailing; model 8, a 6-caliber ogival boat-tail to 0.604 of
+  the diameter, geometry from fig. 1(c)), only once part 1 computes M_0
+  and p_0 over that ogival profile, until then setting nothing; TN 3372
+  figs. 10 and 12 (configuration D, the converging afterbody in flight,
+  geometry from fig. 1), only at free-stream Mach numbers of 1.2 or more,
+  where part 1 serves and M_0 exceeds 1, and only if fig. 1 shows its
+  fins ending a root chord or more ahead of the base.
+- **How they set the band.** For each point and reading, the ratio of
+  the measured base pressure coefficient to Love's for that model's
+  geometry and Mach number. The boat-tail's base term is served as
+  Love's value times the envelope of the ratios over both readings,
+  enveloped with the cylinder base band of 0010 at M_0; only within the
+  boat-tail angles, base ratios and Mach numbers spanned by points with
+  a boat-tail, refused elsewhere.
+- **Not used.** TN 3819 fig. 26 (the RM-10 body without fins, tunnel
+  data from its refs. 14, 27, 35 and 36): the RM-10 boat-tailed in flight
+  with fins (TN 3320) is W10's held-back test (10.1, 10.5), and a base band
+  set on the same body's base pressures would leave that test less
+  independent. Fig. 26 sets nothing and is not read. Figs. 20 and 22
+  (shadowgraphs; pressures across a base) set nothing. TR 1051: its 26
+  figures were checked through its text layer and the text's references
+  to them; fig. 8 sketches the inviscid flow at a boat-tailed base
+  (theory, no data), and no experimental figure is of a boat-tailed body
+  (its text says the models of figs. 25 and 26 had a very small amount of
+  boat-tailing). It sets nothing for C2; its figs. 22 and 23 keep their
+  role in 0008.
+
+**3. Readings.** Each band-setting figure above, and the geometry
+figures, are read twice, the second time blind, by readers the
+coordinator arranges, from the briefs in
+`docs/research/boat-tails/readers/`; a neutral party pairs the two
+readings, and the band is the envelope of both. The workstream that
+computes part 1 does not read them. Until both readings exist and
+the comparisons are committed, nothing of items 1 and 2 is served and
+every boat-tail stays refused (B2). TN 3320 stays held back whole.

@@ -1,3 +1,4 @@
 {"case":"o3-c5-bt8-l1-m2","kind":"linear","tail":0.05857280220643178}
 {"case":"o3-c5-bt8-l1-m2","kind":"moc","intervals":640,"tail":0.05344475639379664,"corner":[0.9830311654252355,0.6107628415318146],"lastWallX":9.445993583085539,"massBalance":0.0000018900894059156578,"penetration":0,"seconds":42.113}
 {"case":"o3-c5-bt8-l1-m2","kind":"moc","intervals":1280,"tail":0.05344657192854825,"corner":[0.9830316458557276,0.6107631721416699],"lastWallX":9.478783609205017,"massBalance":5.778812323270856e-7,"penetration":0,"seconds":139.741}
+{"case":"o3-c5-bt8-l1-m2","kind":"moc","intervals":2560,"tail":0.05344702323688,"corner":[0.9830318093718059,0.6107632846658165],"lastWallX":9.49521434601235,"massBalance":2.891440298294418e-7,"penetration":0,"seconds":536.342}

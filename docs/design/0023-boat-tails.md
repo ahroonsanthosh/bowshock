@@ -6,13 +6,13 @@
   CPU for sharp noses and is being measured against the method of
   characteristics (section 2). Part 2, the base behind a boat-tail, and
   the viscous allowance on part 1 wait for their figures, named in 0014
-  10.7 (aa) before anyone reads them, to be read twice, the second time
+  10.7 (ae) before anyone reads them, to be read twice, the second time
   blind (sections 3 to 5).
 - **Date:** 2026-10-26
 - **Inputs:** [0006](0006-shock-fitting.md) (the fitted solve, its
   verification and its references), [0008](0008-total-drag.md) section 3.2
   (boat-tails not quantified by any opened source), [0010](0010-base-drag-and-total.md)
-  (the base), [0014](0014-refusals.md) sections 5.6 and W10 and 10.7 (aa).
+  (the base), [0014](0014-refusals.md) sections 5.6 and W10 and 10.7 (ae).
 
 ## 1. What a boat-tail changes, and the plan
 
@@ -169,46 +169,73 @@ from them in section 2.5.)
 
 ## 3. The viscous allowance on part 1 (RM E51F26)
 
-To be set from RM E51F26's measured side pressures and side pressure
-drags with no jet (figures named in 0014 10.7 (aa)), against the
-inviscid side pressure drag this solver gives for the same model (a
-6-caliber contoured nose, 6 calibers of cylinder with the boat-tails, at
-Mach 1.91; boat-tail angles 5.63, 7.03 and 9.33 deg to bases of 0.506 and
-0.704 diameters). How the band is set is registered in (aa), before
-either reading.
+RM E51F26 measured the side pressures of six conical boat-tails (5.63,
+7.03 and 9.33 deg, to bases of 0.506 and 0.704 of the diameter) at Mach
+1.91 with no jet flow, behind a 6-caliber contoured nose and 6 calibers
+of cylinder (18 in long, Reynolds number 3.24e6 per foot). Its summary
+says its method of characteristics overestimated the side pressure drag
+by about 20%. The allowance is set as 0014 10.7 (ae) item 1 registers,
+before either reading: for each configuration, figure route (figs. 7 and
+8 integrated, figs. 29 and 30 read) and reading, the ratio S of the
+measured side pressure drag to part 1's inviscid value for that
+configuration; the boat-tail term is served between S_min and
+max(S_max, 1) times the inviscid value, widened by part 1's own band.
+Measured at Mach 1.91 only: outside Mach 1.8 to 2.0 the term stays
+refused until data at other Mach numbers are named (section 7).
 
 ## 4. Part 2: the base behind a boat-tail (Love's method)
 
-Love's method for boat-tails (TN 3819 pp. 14 to 18): the base pressure of
-a cylindrical afterbody depends on the Mach number M_0 and pressure p_0
-just ahead of the base through an effective two-dimensional expansion
-angle delta_e(M_0), 0.85 of the measured wake convergence (his fig. 14),
-which the cylinder's base curve (fig. 18, already read twice and served,
-`src/base/tn3819-fig18.ts`) defines; a boat-tail of angle beta reduces it
-to delta_e - K beta, K linear in the base-to-body diameter ratio h / D from
-0.85 at 0 to 1 at 1. M_0 and p_0 come from part 1 (the flow in the column
-of cells just ahead of the base, integrated across the boundary layer's
-thickness as Love's "integrated average", or the wall value; which is
-registered in (aa)). Its band is set on measured base pressures behind
-boat-tails, named in (aa).
+Love's method (TN 3819 pp. 14 to 18): a cylindrical afterbody's base
+pressure depends on the Mach number M_0 and pressure p_0 just ahead of the
+base through an effective two-dimensional expansion angle delta_e(M_0),
+0.85 of the measured wake convergence (his fig. 14), which defines his
+basic curve (fig. 18, already read twice and served, 0010); a boat-tail of
+angle beta reduces it to delta_e - K beta, K linear in the base-to-body
+diameter ratio h/D from 0.85 at 0 to 1 at 1, and the base pressure is the
+Prandtl-Meyer expansion of the flow at M_0 and p_0 through that angle.
+M_0 and p_0 are the inviscid wall values at the base from part 1, as Love
+took them from the method of characteristics. Its band is set as 0014
+10.7 (ae) item 2 registers: the envelope, over both readings, of the
+measured base pressure coefficients over Love's for each model, on
+cone-cylinders with short afterbodies (TN 3819 figs. 19 and 21) and on
+boat-tails (TN 3819 figs. 23, 24 and 25(b); RM E51F26 fig. 24 and the
+base components of figs. 29 and 30; RM A52E20 fig. 15 once part 1
+computes its ogival boat-tail; TN 3372 configuration D at Mach 1.2 and
+above), enveloped with the cylinder's band of 0010 at M_0, and served only
+within the angles, base ratios and Mach numbers the boat-tailed points
+span.
 
 ## 5. Readings
 
-Named in 0014 10.7 (aa) with how each sets the band, before anyone reads
-them; each read twice, the second time blind, by readers the coordinator
-arranges, from briefs prepared on this branch.
+Named in 0014 10.7 (ae), with how each sets its band, before anyone reads
+them. The readers' brief is `docs/research/boat-tails/readers/brief.md`
+(the coordinator hands it to readers, who do not open the repository);
+each figure is read twice, the second time blind, and a neutral party
+pairs the readings. This workstream computes part 1 and does not read
+them.
 
 ## 6. Coverage
 
 (The population's boat-tails are a boolean, 15.8% of rockets; their
-angle, length and base ratio are drawn in a separate seeded stream so that
-the rest of the population is unchanged; the run before and after is
-recorded when anything is served.)
+angle, length and base ratio are to be drawn in a separate seeded stream
+so that the rest of the population is unchanged; the run before and
+after is recorded when anything is served.)
 
 ## 7. Open
 
-- Whether the friction model of 0007 holds on the boat-tail's cone (an
-  adverse pressure gradient after the expansion).
-- TN 3819 fig. 26 is the RM-10 body (tunnel data, no fins), whose flight
-  totals with fins (TN 3320) are the hold-out for W10: (aa) proposes it
-  sets nothing.
+- **The viscous allowance away from Mach 1.91.** RM E51F26 is the only
+  named source of boat-tail side pressures, at Mach 1.91. Serving the
+  boat-tail term at other Mach numbers needs side pressures measured
+  there (named in a further dated entry before they are read), or the
+  owner's decision to carry the Mach 1.91 allowance to other Mach numbers
+  with a label saying where it was measured. Until then the term is
+  refused outside Mach 1.8 to 2.0.
+- **RM E51F26's nose.** Its 6-caliber nose is defined by equation (14) of
+  its reference 1, not yet opened; failing that, the allowance carries
+  the spread between a tangent ogive and a cone of that length (0014 10.7
+  (ae) item 1).
+- **Whether the friction model of 0007 holds on the boat-tail's cone** (an
+  adverse pressure gradient behind the expansion).
+- **TN 3819 fig. 26** is the RM-10 body (tunnel data, no fins), whose
+  flight totals with fins (TN 3320) are the hold-out for W10: (ae) decides
+  it sets nothing and is not read, narrowing 10.1's "figs. 19 to 26".
