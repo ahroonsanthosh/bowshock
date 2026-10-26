@@ -140,3 +140,60 @@ families, and 15 to 50 hours for each nj = 160 fit.
 The page's tip-radius input (0014 P4) and the OpenRocket import of it
 (OpenRocket has no nose tip radius), the population re-run with capped
 noses served, and the labels: after the references and the allowance.
+
+## 6. The second march: streamline entropy from the fitted shock (registered 2026-10-26, before it runs)
+
+**Why.** On the 5-caliber tangent ogive at Mach 1.3 (r_n/R 0.03 and
+0.15), the first march (W5's) passes the line criterion only on the line
+nearest the end of the nose (x 3.7 to 3.8, -9% to -10% of the drag); the
+lines from x 0.02 to 0.6 (98% to 54% of the drag downstream) fail it
+(mass balance 2.4e-4 to 7.9e-4, not falling with the intervals and
+growing with the grid) and lie 2.6% to 3.0% of the drag below the fitted
+drag downstream on nj = 20, 40 and 80 alike. On W5's Von Karman noses the
+same comparison near the tip falls with the grid (for example 2.2e-3,
+5.7e-4, 1.1e-4 of the drag on the 3-caliber nose at Mach 3, x = 0.018).
+The lines that fail cross the cap's entropy layer, thin and steep on
+these grids; the first march takes each streamline's entropy from the
+line's interpolated cells.
+
+**The method.** As the first march in every respect (`characteristicsFrom`,
+the lines chosen on nj = 20 by `MOC_LINES=auto` before any march, 640,
+1280 and 2560 intervals, the row next to the wall left out, the same
+drag downstream), except each starting point's entropy: the stream
+function at each point of the line from the line's own mass flux,
+integrated from the wall (psi = integral of rho (V . n) r ds); the height
+y_s at which that streamline crossed the fitted shock, from
+psi = rho_inf U_inf y_s^2 / 2; and the entropy behind the fitted shock
+there, from its angle (three-point differences of the shock's nodes,
+interpolated in y). The wall point takes the normal shock's entropy (the
+stagnation streamline). Each point keeps its pressure and flow direction;
+its density follows from the pressure and the new entropy, its speed
+from the total enthalpy. Entropy is constant along streamlines in steady
+inviscid flow and is set at the shock, the best-resolved part of a
+fitted solution; this march does not depend on how the cells resolve the
+entropy layer, only on the shock and the mass flux.
+
+**What it is judged by** (fixed now; nothing is changed after its numbers
+are seen except to fix a demonstrated bug, recorded as such):
+
+1. W5's line criterion, unchanged: on every grid, the march's mass
+   balance on 2560 intervals, and its change from 1280 intervals, below
+   3.5e-5 of the nose's drag.
+2. A control: on lines where both marches pass the criterion, they agree
+   within the larger of their changes from 1280 to 2560 intervals plus
+   1e-5 of the drag; otherwise the second march is not used anywhere
+   until the disagreement is explained.
+3. The reference covers the forward region of a case if at least two
+   lines carrying 50% or more of the drag downstream pass the criterion,
+   and on each of them the fitted drag downstream minus the march falls
+   with the grid (each of nj = 40 and 80 smaller in size than the grid
+   before by a factor of 2 or more). Its references and misses then
+   enter the allowance as section 3 says.
+4. If it does not: the forward region stays unreferenced; W6 serves no
+   capped nose whose referenced lines carry less than half its drag
+   downstream; the disagreement is recorded as a finding. If the second
+   march passes the criterion on the forward lines and converges with
+   the grid to a value that differs from the fitted family's
+   extrapolation by more than the family's band, the fitted solver is
+   the suspect: that is reported at once, with the numbers, since it
+   would bear on W5's Von Karman noses.
