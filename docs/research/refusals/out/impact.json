@@ -43,7 +43,7 @@
   "all bands": {
    "cases": 8000,
    "noseServed": 743,
-   "withPageSection": 748
+   "withPageSection": 966
   },
   "M 1.0-1.2": {
    "cases": 2000,
@@ -58,12 +58,12 @@
   "M 1.5-1.8": {
    "cases": 2000,
    "noseServed": 323,
-   "withPageSection": 324
+   "withPageSection": 428
   },
   "M 1.8-3.0": {
    "cases": 2000,
    "noseServed": 420,
-   "withPageSection": 424
+   "withPageSection": 538
   }
  },
  "lenientTip": {

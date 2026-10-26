@@ -62,7 +62,8 @@ a script is a test now. Differences are relative unless stated.
 
 On a convex polygon the theory gives the pressure on each straight face
 exactly until a wave reflected from the leading-edge shock reaches the
-surface. Such waves arise where a corner's expansion fan overtakes the
+surface (and the drag exactly until one reaches a face with slope,
+section 8). Such waves arise where a corner's expansion fan overtakes the
 shock. The research and the audit call the theory exact without this
 condition; it matters for hexagonal sections with short bevels. The library
 bounds where the first reflected wave can land: the head of the first
@@ -445,25 +446,44 @@ neglected and to the front wedge's oblique-shock face drag by hand; the
 same front wedge with a rear bevel added (a hexagon) is refused with the
 reason; the reflection bound's by-hand case is unchanged; a wedge-flat
 section whose bound lands on the front wedge itself cannot occur (the
-landing lies behind the first corner), asserted.
+landing lies behind the first corner), asserted. Since the check of
+2026-10-26 (A2's, before its review), each surface is held to its own
+verdict: a section flat to the edge above and closing over its last 20%
+below is refused for the lower surface, and its mirror for the upper (a
+check of the upper surface alone, planted, passed every other test of
+`tests/fins` and `tests/total`).
 
 **Coverage** (0014's population at 400 rockets, 1,600 cases, the run of
-0015 section 12 as the "before", `docs/research/refusals/out/2026-10-26-a1-plates-any-sweep/after/`,
-and `out/2026-10-26-a2-reflected-flat/after/` after this section; the
-cross-check against `src/total` agreeing on all 400 cases checked in
-each). The reflected-wave refusal falls from 13.9% of cases to 8.7%
-(Mach 1.5 to 1.8: 24.8% to 15.5%; 1.8 to 3.0: 27.3% to 17.5%): every
-plate bevelled at the leading edge only is now served by the library,
-the hexagons stay refused. Totals served on the page do not move (2.9%
-of all bands; 144 of 1,600 with the nose assumed served), because the
-page does not offer the wedge-flat section with a square trailing edge
-(0014 W12, `pageSection` in the audit); with that one input added they
-would go from 145 to 193 of the 1,600. Hexagons whose first reflection
-lands on the flat ahead of the rear bevel (127 of the 206 reflected-wave
-cases of the plan's count) wait on a bound for the fan's later waves and
-the second landing, or on the planar Euler or characteristics measurement
-of section 7.
-At the audit's default size (2,000 rockets, 8,000 cases, `out/impact.out`):
-the reflected-wave refusal 14.6% to 10.2% of cases (Mach 1.5 to 1.8:
-25.9% to 18.0%; 1.8 to 3.0: 29.0% to 20.1%), totals unchanged at 2.4%,
-the cross-check agreeing on all 1,200 cases checked.
+0015 section 12 as the "before",
+`docs/research/refusals/out/2026-10-26-a1-plates-any-sweep/after/`, and
+`out/2026-10-26-a2-reflected-flat/after/` after this section, both made
+with `N_ROCKETS=400 CROSS_CHECK=100`, so the cross-check against
+`src/total` covers the first 100 rockets' 400 cases, and agrees on all
+400 in each). The reflected-wave refusal falls from 13.9% of cases to
+8.7%, 223 to 139 (Mach 1.5 to 1.8: 24.8% to 15.5%; 1.8 to 3.0: 27.3% to
+17.5%): every plate bevelled at the leading edge only is now served by
+the library (84 cases), the hexagons stay refused. Totals served on the
+page do not move (2.9% of all bands; 144 of 1,600 with the nose assumed
+served), because the page does not offer the wedge-flat section with a
+square trailing edge (0014 W12, `pageSection` in the audit); with that
+one input added, and the nose assumed served, they would go from 145 to
+193 of the 1,600 (each run's table "Totals with the nose assumed
+served", printed since A1's review of 2026-10-26). What still refuses
+(`out/2026-10-26-a2-reflected-flat/after/reflected-split.out`, from
+`reflected-split.test.ts`, which re-solves the audit's own cases and
+agrees with its verdict on all 648 sharp sections): of the 139, 133 are
+hexagons whose first reflection lands on the flat ahead of the rear
+bevel, 5 hexagons whose first reflection lands on the rear bevel itself,
+and one double wedge below Mach 1.2. (This record said "127 of the 206
+reflected-wave cases of the plan's count" before the check of
+2026-10-26; neither number is on these cases.) The hexagons wait on a
+bound for the fan's later waves and the second landing, or on the planar
+Euler or characteristics measurement of section 7. At the audit's
+default size (2,000 rockets, 8,000 cases, `out/impact.out` and
+`out/reflected-split.out`): the reflected-wave refusal 14.6% to 10.2% of
+cases (Mach 1.5 to 1.8: 25.9% to 18.0%; 1.8 to 3.0: 29.0% to 20.1%),
+1,172 to 815 (357 wedge-flat plates served; 802 hexagons landing on the
+flat, 9 on the rear bevel, 4 double wedges below Mach 1.2 still
+refused); totals unchanged at 190 (2.4%), 743 with the nose assumed
+served; with the page's section offered too, 748 to 966; the cross-check
+agreeing on all 1,200 cases checked.

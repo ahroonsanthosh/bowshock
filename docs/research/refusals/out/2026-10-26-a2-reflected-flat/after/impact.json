@@ -39,6 +39,33 @@
   "W12 page: the wedge-flat section with a blunt trailing edge",
   "W8 steep, detached and subsonic sharp tips"
  ],
+ "noseServed": {
+  "all bands": {
+   "cases": 1600,
+   "noseServed": 144,
+   "withPageSection": 193
+  },
+  "M 1.0-1.2": {
+   "cases": 400,
+   "noseServed": 0,
+   "withPageSection": 0
+  },
+  "M 1.2-1.5": {
+   "cases": 400,
+   "noseServed": 0,
+   "withPageSection": 0
+  },
+  "M 1.5-1.8": {
+   "cases": 400,
+   "noseServed": 59,
+   "withPageSection": 83
+  },
+  "M 1.8-3.0": {
+   "cases": 400,
+   "noseServed": 85,
+   "withPageSection": 110
+  }
+ },
  "lenientTip": {
   "all bands": {
    "total": 76,
