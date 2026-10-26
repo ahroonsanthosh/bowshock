@@ -1915,13 +1915,33 @@ ahead of the base (`fins-near-base`).
   and every total: below Mach 1.5 every total is still refused by (f), so
   this serves the body base term only. No held-back set is opened or run.
 
+_Narrowed the same day, 2026-10-26, before review or merge (the
+coordinator's decision, accuracy first):_ below Mach 1.5 the bounded
+value serves only fins ending at most **0.4 root chords** ahead of the
+base. Up to x/c 0.4 TN 2360 fig. 6 measures no relief at all with the
+fins ahead of the base: every symbol at x/c 0.2 and 0.4, at both Mach
+numbers and for every member, moved by its reading error toward relief,
+still shows a suction (dPb at most -0.0028, F at least 1.014), so the zero
+member's lower bound has its whole 0.162 to spare there. Relief appears
+from x/c 0.6 (four 5% fins at Mach 1.5) and grows toward a chord ahead
+and as the Mach number falls; below Mach 1.5 its size rests only on the
+linear carry above, and the by-eye note on fig. 32 suggests it can be
+larger. So fins ending more than 0.4 root chords ahead (0.4 < x/c < 1)
+stay refused below Mach 1.5 (`fins-near-base`), the words saying why.
+After fig. 32's pairing this is revisited, before route (i) is served:
+if the paired reading shows relief beyond the zero member at x/c 0.4 or
+closer at Mach 2.41, the bounded value at x/c up to 0.4 below Mach 1.5 is
+re-examined; and whether the measured relief there bounds positions
+beyond 0.4 below Mach 1.5 is decided then, not now.
+
 What it costs and gains is recorded below this entry from
 `docs/research/refusals/` run before and after, with the cross-check
 against `src/total` required to agree (0015 section 8).
 
-What it costs and gains (0015 section 8; `docs/research/refusals/out/impact.out`,
-the run before reproducing main's committed output byte for byte): the
-position refusal falls from 6.0% of the cases to 0% at Mach 1.0 to 1.2
+What it cost and gained as first built (0 < x/c < 1 below Mach 1.5;
+0015 section 8; `docs/research/refusals/out/impact.out` at commit
+5c81b5b, the run before reproducing main's committed output byte for
+byte): the position refusal falls from 6.0% of the cases to 0% at Mach 1.0 to 1.2
 and at 1.2 to 1.5, and stays 11.5% at 1.8 to 3.0 (all above Mach 2.0)
 and 0% at 1.5 to 1.8; 5.9% to 2.9% over all bands. No total moves: 153
 of 8000 (1.9%), 0% below Mach 1.5 by (f); the cross-check agrees on all

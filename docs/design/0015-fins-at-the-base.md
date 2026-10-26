@@ -39,10 +39,12 @@
   swept-trailing-edge threshold at 0.9 root chords and forward sweeps
   refused (section 3.4), and the labels of members and swept plates
   corrected (section 3.6); no served number changed (section 8). On
-  2026-10-26 (A5; 0014 section 10.7 (ad)): fins ending within a chord
-  ahead of the base served below Mach 1.5 as "bounded, not measured",
-  between the zero member and the same fins at the base, the ordering
-  TN 2360 fig. 6's (section 3.3); above Mach 2.0 still refused, TN 3819
+  2026-10-26 (A5; 0014 section 10.7 (ad)): fins ending up to 0.4 root
+  chords ahead of the base served below Mach 1.5 as "bounded, not
+  measured", between the zero member and the same fins at the base, the
+  ordering TN 2360 fig. 6's (section 3.3; first built to a chord ahead
+  and narrowed to 0.4 the same day, where TN 2360 measures no relief);
+  farther ahead below Mach 1.5, and above Mach 2.0, still refused, TN 3819
   fig. 32's Mach 2.41 symbols to be read a second time (section 10).
 - **Date:** 2026-10-20 (revised 2026-10-21, 2026-10-22 and 2026-10-26)
 - **Inputs:** 0014 sections 5.1, 6.2 (W1) and 10; [0010](0010-base-drag-and-total.md)
@@ -76,10 +78,11 @@ of 0014 section 10.1 cover:
   decision of 2026-10-21, section 11.2), the factor stated on W2's body
   base so that the free-flight excess is not counted twice (since the
   review of 2026-10-21).
-- **Fins ending within a chord ahead of the base below Mach 1.5**
+- **Fins ending up to 0.4 root chords ahead of the base below Mach 1.5**
   (since 2026-10-26, A5): "bounded, not measured", between the zero
   member and the same fins at the base, the ordering TN 2360 fig. 6's
-  measured fall of the increment with distance ahead (section 3.3).
+  measured fall of the increment with distance ahead, which measures no
+  relief that close (section 3.3).
 - **Flat faces at a square trailing edge** (flat plates, at every Mach
   number from 1.0, since 2026-10-21 also where the present factor would
   have served them; 0014 section 10.7, amendment i), the same counts,
@@ -98,8 +101,9 @@ of 0014 section 10.1 cover:
   measured (sharp sections with the trailing edge swept aft within 0.9
   root chords of the base, or swept forward anywhere; 0 to 45 deg below Mach 2.0, above 60 deg; swept sharp sections
   below 1.5), fins at the base below
-  Mach 1.0 or above 3.0, positions ahead of the base above Mach 2.0
-  (below 1.5 too until 2026-10-26; section 6).
+  Mach 1.0 or above 3.0, positions ahead of the base above Mach 2.0, and
+  below Mach 1.5 more than 0.4 root chords ahead (every position below
+  1.5 until 2026-10-26; section 6).
 
 **Routing (0014 sections 10.3 and 10.7).** The present factor is kept for
 the fin families it was measured on, so the Basic Finner's gated total is
@@ -322,6 +326,24 @@ twice (section 10). At M 1.5 to 2.0 nothing changes. Sweeps are checked
 first, as before: below M 1.5 only flat-faced fins are served swept
 (section 11.2), so the bounded position value reaches unswept fins of a
 sharp section and flat-faced fins swept as section 4 allows.
+
+**Narrowed to x/c 0.4 the same day (2026-10-26, the coordinator's
+decision, before review; 0014 section 10.7 (ad)).** The lower side above
+rests, beyond the stations where TN 2360 measures relief, on two tunnel
+Mach numbers and a linear carry. So below M 1.5 the bounded value serves
+only fins ending at most 0.4 root chords ahead of the base
+(`W1_POSITION_BOUNDED_MAX`). Up to x/c 0.4 TN 2360 measures no relief at
+all: every symbol at x/c 0.2 and 0.4, at M 1.5 and 2.0 and for every
+member, moved by its reading error toward relief, still shows a suction
+(dPb at most -0.0028, four 5% fins at x/c 0.4 and M 1.5; F at least
+1.014), so the zero member's 0.838 lies 0.16 below anything measured
+there. Relief appears from x/c 0.6 and grows toward a chord ahead and as
+the Mach number falls, and nothing measured below M 1.5 says how far.
+Fins ending more than 0.4 root chords ahead (0.4 < x/c < 1) stay refused
+below M 1.5 (`fins-near-base`), in plain words. After TN 3819 fig. 32's
+pairing both are revisited (0014 section 10.7 (ad)): the bound at x/c up
+to 0.4 if the pair shows relief beyond the zero member that close at M
+2.41, and positions beyond 0.4.
 
 What it gives (`fins-on-base-w1.test.ts`, `base-w2.test.ts`): on W2's
 term, +-31.7% to +-34.9% on F at M 1.0 to 1.5, the same members as at the
@@ -836,6 +858,7 @@ fin input's construction, not the base factor's routing.
 | a sharp section with the trailing edge swept aft within 0.9 root chords of the base, or forward anywhere | not measured there (RM L52J21a's edge is swept aft, 0.85 +-0.05 chords ahead); linear theory raises the pressures behind the edge (3.4) |
 | Mach below 1.0 or above 3.0                                                                              | fig. 35's free-flight curve starts at M 1.0; the body base below 1.0 (11)                                                               |
 | fins ending ahead of the base above M 2.0 (below 1.5 bounded since 2026-10-26, 3.3)                      | TN 2360 measures positions at M 1.5 and 2.0 only, and its fall with distance weakens as the Mach number rises; fig. 32 not read twice   |
+| fins ending more than 0.4 root chords ahead of the base below M 1.5                                      | TN 2360 measures relief there, growing as the Mach number falls; nothing below M 1.5 bounds it; fig. 32 not read twice (3.3)            |
 
 ## 7. Readings
 
@@ -1228,9 +1251,10 @@ hold-out of its own yet.
   code). NSWCDD/TR-92/509's fins one and two chords ahead were
   transcribed and examined before any registration, so they are a check
   that sets nothing, and only after Table 2's second transcription (0014
-  section 10.7 (ad)). Below M 1.5 they are bounded since 2026-10-26
-  (section 3.3); the relief side there is re-examined first if fig. 32's
-  pair finds a relief beyond the zero member a chord ahead at M 2.41.
+  section 10.7 (ad)). Below M 1.5 fins up to 0.4 root chords ahead are
+  bounded since 2026-10-26 (section 3.3), and after fig. 32's pairing
+  both that bound (if the pair shows relief beyond the zero member that
+  close at M 2.41) and positions beyond 0.4 below M 1.5 are revisited.
 - Whether the rebuilt factor replaces the present one inside the Basic
   Finner's class: the owner's decision after BRL 934's run (0014 section
   10.3). It would not today: it refuses the Basic Finner's wedges.
@@ -1368,8 +1392,9 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
   are bracketed between the zero member and the reference, three fins
   between zero and four, flat plates bounded between 0.838 and the
   reference (section 4's ordering). Fins ending ahead of the base were
-  refused until 2026-10-26; since then they are bounded, not measured,
-  between the zero member and the same fins at the base (section 3.3).
+  refused until 2026-10-26; since then, up to 0.4 root chords ahead, they
+  are bounded, not measured, between the zero member and the same fins
+  at the base, and farther ahead still refused (section 3.3).
 - **Sweep:** RM L52E06's flat plates are swept 45 deg at the leading
   edge, so flat-faced fins are served swept (45 to 60 deg, as above M 1.5);
   swept fins of sharp sections are refused, since none is measured below
