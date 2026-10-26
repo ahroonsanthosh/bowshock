@@ -18,6 +18,9 @@ they can trust, so correctness comes before features.
    published solutions. Bug fixes need a test that failed before the fix.
 5. **Readable over clever.** Prefer clear names and straightforward loops.
    Explain the physics and the reason for each numerical choice.
+6. **Decide the test before you see the result.** Comparisons with measured
+   data are written down (in `docs/design/0014-refusals.md`) before anyone
+   looks at the numbers, and changes to the method get an independent review.
 
 ## Development
 
