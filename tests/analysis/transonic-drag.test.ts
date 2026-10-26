@@ -7,6 +7,7 @@ import {
   verifiedTransonicDrag,
   transonicDomains,
   exactDrag,
+  referenceNote,
   VALIDATION_CASES,
   type TransonicEngine,
   type TransonicLevel,
@@ -203,6 +204,17 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     };
     const exact = exactDrag(cone10, 1.19, 1.4)!;
     expect(exact).not.toBeNull();
+    // A rounded tip is no cone: no exact drag, and the transonic driver
+    // refuses it as a blunt nose.
+    const capped: Body = { ...cone10, nose: { ...cone10.nose, tipRadius: 0.05 } };
+    expect(exactDrag(capped, 1.19, 1.4)).toBeNull();
+    expect(referenceNote(capped, 1.19, 1.4).exact).toBe(false);
+    const refusedCap = await verifiedTransonicDrag(
+      capped,
+      { ...options, mach: 1.19 },
+      synthetic({ converged: () => 0.1 }),
+    );
+    expect(refusedCap).toMatchObject({ kind: 'refused', reason: 'blunt-nose' });
     const result = await verifiedTransonicDrag(
       cone10,
       { ...options, mach: 1.19 },

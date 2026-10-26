@@ -862,6 +862,12 @@ export function bluntFittedFlow(body: Body, options: FittedFlowOptions): FittedF
  */
 export function bluntNoseRefusal(body: Body, mach: number): string | undefined {
   const { shape, length, baseRadius } = body.nose;
+  // A rounded tip (a sphere cap tangent to the profile): solved on the
+  // two-scale grid, but no capped nose has been checked against a
+  // reference yet (docs/research/w6-build).
+  if (body.nose.tipRadius !== undefined) {
+    return 'a rounded (blunted) tip has not been checked against a reference yet, so its error is not known';
+  }
   if (Number.isFinite(noseTipSlope(body.nose)) || shape.kind === 'ellipsoid') return undefined;
   if (!(shape.kind === 'haack' && shape.parameter === 0)) {
     return 'of the blunt noses whose tip curvature is unbounded, only the Von Karman (LD-Haack) nose has been checked against a reference so far';

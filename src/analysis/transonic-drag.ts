@@ -451,7 +451,7 @@ export async function verifiedTransonicDrag(
     };
   }
   if (!Number.isFinite(noseTipSlope(body.nose))) {
-    return body.nose.shape.kind === 'ellipsoid'
+    return body.nose.shape.kind === 'ellipsoid' || body.nose.tipRadius !== undefined
       ? {
           kind: 'refused',
           reason: 'blunt-nose',
@@ -793,7 +793,7 @@ function finerMayResolve(values: readonly number[]): boolean {
 export function referenceNote(body: Body, mach: number, gamma: number): ReferenceNote {
   const exact = exactDrag(body, mach, gamma);
   if (exact !== null) return { exact: true, note: exact.note };
-  if (body.nose.shape.kind === 'conical') {
+  if (body.nose.shape.kind === 'conical' && body.nose.tipRadius === undefined) {
     try {
       taylorMaccoll(mach, Math.atan(body.nose.baseRadius / body.nose.length), gamma);
       return { exact: false, note: 'the cone’s conical surface flow would be subsonic' };
@@ -815,7 +815,7 @@ export function exactDrag(
   mach: number,
   gamma: number,
 ): { readonly value: number; readonly note: string } | null {
-  if (body.nose.shape.kind !== 'conical') return null;
+  if (body.nose.shape.kind !== 'conical' || body.nose.tipRadius !== undefined) return null;
   try {
     const flow = taylorMaccoll(mach, Math.atan(body.nose.baseRadius / body.nose.length), gamma);
     if (!(flow.surfaceMach > 1)) return null;

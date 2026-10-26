@@ -256,6 +256,8 @@ function shapeOutside(form: TotalDragForm, leadingEdge: 'drev' | 'sharp'): strin
   const nose = form.body.nose;
   if (nose.shape.kind !== 'conical') {
     out.push(`the nose is not a cone (the Basic Finner's is a 20 deg cone)`);
+  } else if (nose.tipRadius !== undefined) {
+    out.push(`the cone's tip is rounded (the Basic Finner's is sharp)`);
   } else if (!near(nose.length, c.noseLength)) {
     out.push(
       `the cone is ${fmt(nose.length)} cal long, not the Basic Finner's ${c.noseLength.toFixed(3)} ` +

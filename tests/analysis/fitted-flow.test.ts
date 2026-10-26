@@ -247,6 +247,15 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     );
     // Sharp tips are the sharp problem's to refuse (a detached shock).
     expect(bluntNoseRefusal(nose({ kind: 'ogive', parameter: 1 }, 1), 1.2)).toBeUndefined();
+    // A rounded tip, on any shape and inside the Von Karman outline too:
+    // no capped nose has a reference yet (W6).
+    for (const shape of [vonKarman, { kind: 'ogive', parameter: 1 } as const]) {
+      const capped: Body = {
+        nose: { shape, length: 3, baseRadius: 0.5, tipRadius: 0.025 },
+        cylinderLength: 1,
+      };
+      expect(bluntNoseRefusal(capped, 2)).toMatch(/rounded \(blunted\) tip/);
+    }
     // The outline: a point, a segment, a polygon.
     expect(insideOutline([[3, 2]], [3, 2])).toBe(true);
     expect(insideOutline([[3, 2]], [3, 2.1])).toBe(false);
