@@ -463,3 +463,7 @@ lands on the flat ahead of the rear bevel (127 of the 206 reflected-wave
 cases of the plan's count) wait on a bound for the fan's later waves and
 the second landing, or on the planar Euler or characteristics measurement
 of section 7.
+At the audit's default size (2,000 rockets, 8,000 cases, `out/impact.out`):
+the reflected-wave refusal 14.6% to 10.2% of cases (Mach 1.5 to 1.8:
+25.9% to 18.0%; 1.8 to 3.0: 29.0% to 20.1%), totals unchanged at 2.4%,
+the cross-check agreeing on all 1,200 cases checked.
