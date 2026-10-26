@@ -34,7 +34,7 @@ const CKPT = process.env.CKPT ?? here('./ckpt');
 const REFINEMENTS = (process.env.REFINEMENTS ?? '1,2,4,8').split(',').map(Number);
 const MOC_INTERVALS = (process.env.MOC ?? '640,1280,2560').split(',').map(Number);
 /** Fit steps per chunk on the base grid, times the refinement. */
-const CHUNK = Number(process.env.CHUNK ?? 3000);
+const CHUNK = Number(process.env.CHUNK ?? 100);
 /** Steps allowed per grid on the base grid, times the refinement. */
 const MAX_STEPS = Number(process.env.MAX_STEPS ?? 60000);
 
@@ -175,13 +175,13 @@ function runMoc(c: BoatTailCase, done: Record<string, unknown>[]): void {
   }
 }
 
-function runFamily(c: BoatTailCase, done: Record<string, unknown>[]): void {
+function runFamily(c: BoatTailCase, done: Record<string, unknown>[], upTo: number): void {
   const body = caseBody(c);
   const xs = shoulderPosition(body);
   const xb = bodyLength(body);
   const free = freeStreamAt(c.mach, GAMMA);
   let coarse: FitProblem | null = null;
-  for (const r of REFINEMENTS) {
+  for (const r of REFINEMENTS.filter((k) => k <= upTo)) {
     const problem = sharpFitProblem(body, { mach: c.mach, gamma: GAMMA, nj: 20, refinement: r });
     const converged = `${CKPT}/${c.name}-r${r}-converged`;
     const chunk = `${CKPT}/${c.name}-r${r}-chunk`;
@@ -247,16 +247,20 @@ it('the boat-tail reference lane', () => {
   mkdirSync(OUT, { recursive: true });
   mkdirSync(CKPT, { recursive: true });
   const only = process.env.CASES?.split(',');
-  for (const c of CASES.filter((k) => !only || only.includes(k.name))) {
-    let done = results(c);
-    if (!done.some((d) => d.kind === 'linear')) {
+  const cases = CASES.filter((k) => !only || only.includes(k.name));
+  // The references first (minutes a case), then each grid of every case
+  // before the next finer grid of any (nj = 160 takes hours a case).
+  for (const c of cases) {
+    if (!results(c).some((d) => d.kind === 'linear')) {
       record(c, {
         kind: 'linear',
         tail: linearBoatTailDrag(caseBody(c), { mach: c.mach, intervals: 3200 }),
       });
-      done = results(c);
     }
-    if (process.env.SKIP_MOC !== '1') runMoc(c, done);
-    if (process.env.SKIP_FIT !== '1') runFamily(c, results(c));
+    if (process.env.SKIP_MOC !== '1') runMoc(c, results(c));
+  }
+  if (process.env.SKIP_FIT === '1') return;
+  for (const upTo of REFINEMENTS) {
+    for (const c of cases) runFamily(c, results(c), upTo);
   }
 });
