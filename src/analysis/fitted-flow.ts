@@ -30,6 +30,7 @@ import {
   type BluntGridOptions,
   type GridLine,
 } from '../grid/blunt-grid';
+import { BOAT_TAIL_CONTINUATION_COLUMNS, boatTailBaseSpacing } from '../grid/boat-tail-columns';
 import { FITTED_QUALITY_LIMITS, gridQuality, qualityFailures } from '../grid/quality';
 import { columnPositions } from '../grid/spacing';
 import { gridFromFunction, nodeIndex, type StructuredGrid } from '../grid/structured';
@@ -540,24 +541,13 @@ function facesBetween(wall: readonly BoundaryFaceFlux[], a: number, b: number): 
 }
 
 /**
- * The columns over a boat-tail (sharpFitProblem): its shoulder and base, a
- * spacing along the body that resolves it, and the length its cone is
- * solved past the base. The usual layout sizes columns to the shock layer,
- * whose outer cells far along a long body are a body radius or more long: a
- * few over the whole boat-tail. Over the boat-tail the columns are
- * BOAT_TAIL_SPACING times the smaller of its length and the body's radius,
- * over nj, growing ahead of the shoulder by BOAT_TAIL_GRADING over nj per
- * unit length (so that neighbouring columns of the base grid differ in
- * width by about that over nj); never narrower than the base grid's outer
- * cell on the first guess of the shock over BOAT_TAIL_ASPECT (so that under
- * a far shock the outer cells stay within the fitted grids' aspect gate,
- * FITTED_QUALITY_LIMITS); and never wider than the boat-tail's length over
- * BOAT_TAIL_MIN_COLUMNS (so that rounding its count of columns changes their
- * width little). Past the base the columns keep the base's width, and the
- * cone is continued by BOAT_TAIL_CONTINUATION_COLUMNS of them on the base
- * grid, or nine tenths of its run to the axis if that is shorter, so the
- * base is never the outflow plane. Every width scales with the refinement
- * exactly, and the continuation does not depend on it, so the grids nest.
+ * The columns over a boat-tail on a sharp nose's grid (sharpFitProblem):
+ * its shoulder and base, the width of the columns along x
+ * (src/grid/boat-tail-columns.ts, the outer cells on the first guess of the
+ * shock), and the length its cone is solved past the base:
+ * BOAT_TAIL_CONTINUATION_COLUMNS columns of the base's width on the base
+ * grid (at the family's column density), or nine tenths of the cone's run
+ * to the axis if that is shorter, so the base is never the outflow plane.
  * Where the flow at the base is axially supersonic (`baseMach`), nothing
  * past the base reaches the body ahead of it. Undefined without a
  * boat-tail.
@@ -576,16 +566,15 @@ function boatTailColumns(
   const R = asked.nose.baseRadius;
   const shoulder = shoulderPosition(asked);
   const base = bodyLength(asked);
-  const finest = BOAT_TAIL_SPACING * Math.min(tail.length, R);
   // On the base grid; every grid's is this over its refinement.
-  const baseSpacing = (x: number) =>
-    Math.min(
-      Math.max(
-        (finest + BOAT_TAIL_GRADING * Math.max(shoulder - x, 0)) / baseNj,
-        outerCellHeight(guess(Math.min(x, base)), baseNj, R) / BOAT_TAIL_ASPECT,
-      ),
-      x >= shoulder ? tail.length / BOAT_TAIL_MIN_COLUMNS : Infinity,
-    );
+  const baseSpacing = boatTailBaseSpacing({
+    length: tail.length,
+    radius: R,
+    shoulder,
+    base,
+    baseNj,
+    outerHeight: (x) => outerCellHeight(guess(x), baseNj, R),
+  });
   const slope = (R - tail.baseRadius) / tail.length;
   return {
     shoulder,
@@ -598,23 +587,6 @@ function boatTailColumns(
   };
 }
 
-/** Columns over a boat-tail: their length times nj, in the smaller of its length and the body's radius. */
-const BOAT_TAIL_SPACING = 2;
-/** ... growing ahead of its shoulder by this over nj per unit length. */
-const BOAT_TAIL_GRADING = 3;
-/**
- * ... and at least the base grid's outer cell on the first guess over
- * this: without it the outer cells over the boat-tail of a long body
- * reached aspect ratios of 13.3 to 23.1 at Mach 1.5 to 2 (nj = 20), above
- * the gate of 13. The first guess (the tip's conical shock) lies above
- * the converged shock, so the converged outer cells are smaller still
- * (aspect ratios of 7.0 to 7.8 on four of those cases).
- */
-const BOAT_TAIL_ASPECT = 10;
-/** ... and at most the boat-tail's length over this, on the base grid. */
-const BOAT_TAIL_MIN_COLUMNS = 4;
-/** Columns of the base grid over which the boat-tail's cone is continued past the base. */
-const BOAT_TAIL_CONTINUATION_COLUMNS = 4;
 /**
  * Limit of the shock nodes' step over a boat-tail, in widths of the shock
  * face (ShockFitOptions.stepAspect): without it the shock over the
