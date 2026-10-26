@@ -352,7 +352,7 @@ What it gives, up to x/c 0.4 (`fins-on-base-w1.test.ts`,
 for sharp sections and plates, so the same widths; four 10% arcs, a
 member at the base (about +-7% there, section 3.6), take the whole gap
 ahead of it. At M 1.2, F 0.8379 to 1.6211, nominal 1.2295, on W2's term
-(on Love's curve itself 0.8924 to 1.7265, nominal 1.3094: the zero member,
+(on Love's curve itself 0.8924 to 1.7265, nominal 1.3095: the zero member,
 a ratio to the body without fins, is 0.8379 times 1.065 there; this
 record said 0.8379 to 1.7265, mixing the two bases, until the review of
 2026-10-26). The step at M 1.5, where
@@ -662,16 +662,24 @@ its midpoint (0008 section 6.3). Every row is asserted by
 | 1.8 | double wedge 2.4%, three fins, 45 deg, x/c 0.5          | zero; four fins t/c 0.05 at 0.4 and 1.0   | 0.9040 | 1.0897    | 1.2755 | 17.0%      |
 | 2.0 | double wedge 2.4%, four fins, 30 deg, TE unswept (W1b)  | zero; four fins t/c 0.05                  | 0.9378 | 1.1330    | 1.3282 | 17.2%      |
 | 2.5 | double wedge 2.4%, three fins, 30 deg, TE unswept (W1b) | zero; the reference                       | 0.9378 | 1.1602    | 1.3826 | 19.2%      |
-| 1.2 | double wedge 2.4%, three fins, unswept (W2)             | zero below M 1.62; the reference          | 0.8379 | 1.2822    | 1.7265 | 34.7%      |
-| 1.2 | flat plate 2.4%, three fins, 45 deg (W2, bounded)       | RM L52E06 relief; the reference           | 0.8379 | 1.2822    | 1.7265 | 34.7%      |
-| 1.0 | double wedge 2.4%, three fins, unswept (W2, from M 1.0) | zero below M 1.62; the reference          | 0.8379 | 1.3437    | 1.8496 | 37.6%      |
+| 1.2 | double wedge 2.4%, three fins, unswept (W2)             | zero below M 1.62; the reference          | 0.8379 | 1.2295    | 1.6211 | 31.9%      |
+| 1.2 | flat plate 2.4%, three fins, 45 deg (W2, bounded)       | RM L52E06 relief; the reference           | 0.8379 | 1.2295    | 1.6211 | 31.9%      |
+| 1.0 | double wedge 2.4%, three fins, unswept (W2, from M 1.0) | zero below M 1.62; the reference          | 0.8379 | 1.2873    | 1.7367 | 34.9%      |
 
-The rows are the rebuilt factor's F over Love's curve. Below M 1.5
-`bodyBaseDrag` states it on W2's body base, 1.065 times the curve, so its
-members built on fig. 35's free-flight line are divided by 1.065 there
-and the zero members are not (section 11.2): the double wedge at M 1.2
-becomes 0.8379 to 1.6211 on W2's term (nominal 1.2295, +-31.9%), at M 1.0
-0.8379 to 1.7367 (1.2873, +-34.9%). The first row's 27.5% (22.2% before
+The rows from M 1.5 are the rebuilt factor's F over Love's curve. The
+last three, below M 1.5, are on W2's body base, 1.065 times the curve, as
+`bodyBaseDrag` serves them: there the members built on fig. 35's
+free-flight line are divided by 1.065 and the zero members, ratios to the
+body without fins, are not (section 11.2). On Love's curve the same bands
+are 0.8924 to 1.7265 (nominal 1.3095) at M 1.2 and 0.8924 to 1.8496
+(1.3710) at M 1.0, with the same half-widths (`base-w2.test.ts` holds
+both bases). The factor function's own output below M 1.5, which
+`fins-on-base-w1.test.ts` asserts, holds its two members on those two
+bases (0.8379 to 1.7265 at M 1.2, 0.8379 to 1.8496 at M 1.0) and is not a
+factor on one curve until `bodyBaseDrag` puts both on W2's term. Until
+2026-10-26 this table quoted that mixed output as F over the curve
+(nominal 1.2822 and 1.3437, +-34.7% and +-37.6%); corrected after the
+review of A5, whose finding (4) found the same mixing in section 3.3. The first row's 27.5% (22.2% before
 the review) is the zero member below M 1.62 (3.5); just above M 1.5 the
 same fins reach 1.5420 (+-29.6%), where the ratio range becomes the
 envelope of both tunnel Mach numbers' (3.2), and from 1.62 they give
@@ -1323,15 +1331,35 @@ hold-out of its own yet.
   (round 14) and a third (round 16), and a three-way neutral pairing
   (`pairing-2026-10-26-fig32-three/`): readings 2 and 3 agree on all 12
   symbols, reading 1 differs at three symbols and the curve's left end;
-  the values are used as (ad)'s note of 2026-10-26 says (agreed values
-  where all three agree, the envelope of all three where reading 1
-  differs). Route (i)'s method is still to be written here before its
-  code; a case (ad)'s rules do not cover goes to the coordinator. Below M
-  1.5 every position
-  ahead of the base is refused (section 3.3); what would reopen it is any
-  measurement below M 1.5 with fins ahead of the base. At M 1.5 to 2.0
-  other root chords than TN 2360's 1.5 body diameters need a measurement
-  at another chord.
+  were they used, it would be as (ad)'s note of 2026-10-26 says (agreed
+  values where all three agree, the envelope of all three where reading
+  1 differs). Below M 1.5 every position ahead of the base is refused
+  (section 3.3); what would reopen it is any measurement below M 1.5 with
+  fins ahead of the base. At M 1.5 to 2.0 other root chords than TN
+  2360's 1.5 body diameters need a measurement at another chord.
+- **Route (i), fig. 32 at Mach 2.0 to 3.0: deferred** (the coordinator's
+  decision of 2026-10-26). Nothing uses fig. 32, and any future route (i)
+  needs a fresh registration in 0014 section 10.7, written before it is
+  used. Four questions are open, and (ad)'s rules as written do not
+  answer them:
+  1. _The lower bound, the most important._ The three-way pairing's
+     values were seen while the readings were being paired and checked,
+     and were used for nothing. Its symbols a chord ahead of the base
+     (x/c 1.0) read about -0.06 to -0.076 in P_B, where fig. 33 gives the
+     body alone at Mach 2.41 as about -0.122: far on the relief side of
+     the zero member (F 0.938 from Mach 1.62). So at Mach 2.41 fins ahead
+     of the base can lower the base drag well past what the zero member
+     allows, and whether the zero member still bounds thinner fins from
+     below there is open.
+  2. _Mach numbers._ Fig. 32 is at Mach 2.41 only: how it would cover
+     Mach 2.0 to 2.41 (with TN 2360 at 2.0) and 2.41 to 3.0, where no
+     carry is allowed now, is open.
+  3. _Chord._ The chord rule names TN 2360's 1.5 body diameters at Mach
+     1.5 to 2.0; fig. 32's model may have another root chord over
+     diameter, and whether that sets its own domain is open.
+  4. _Fin families._ Which fins fig. 32 measures, and whether section
+     3.6's outward widening would reach the families it does not, is
+     open.
 - Whether the rebuilt factor replaces the present one inside the Basic
   Finner's class: the owner's decision after BRL 934's run (0014 section
   10.3). It would not today: it refuses the Basic Finner's wedges.
@@ -1499,9 +1527,10 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
     levels off by 1.05 (0.850 in round 6's reading, 0.847 with its errors,
     above 0.838).
   - Example: a 2.4% double wedge, three unswept fins, at M 1.0: the
-    rebuilt factor's F over the curve 0.838 to 1.850, nominal 1.344
-    (+-37.6%); on W2's term (below) 0.838 to 1.737, nominal 1.287
-    (+-34.9%), the body base term on the base area 0.2535, band 0.1067 to
+    rebuilt factor's F on W2's term (below) 0.838 to 1.737, nominal 1.287
+    (+-34.9%), on Love's curve 0.892 to 1.850, nominal 1.371 (this record
+    gave 0.838 to 1.850, nominal 1.344, +-37.6%, as F over the curve until
+    2026-10-26, mixing two bases; section 3.6), the body base term on the base area 0.2535, band 0.1067 to
     0.4003 in C_D (0.265, 0.104 to 0.425 before the review; 0.197, band
     0.152 to 0.242, without fins: W2's body base serves M 1.0 to 1.5,
     section 11.1).
@@ -1538,8 +1567,10 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
   here (section 10).
 
 Example (section 3.6): a 2.4% double wedge, three unswept fins, at M 1.2:
-the rebuilt factor's F over the curve 0.838 to 1.727, nominal 1.282
-(+-34.7%); on W2's term 0.838 to 1.621, nominal 1.230 (+-31.9%), the term
+the rebuilt factor's F on W2's term 0.838 to 1.621, nominal 1.230
+(+-31.9%), on Love's curve 0.892 to 1.727, nominal 1.309 (this record
+gave 0.838 to 1.727, nominal 1.282, +-34.7%, as F over the curve until
+2026-10-26, mixing two bases; section 3.6), the term
 on the base area 0.2404 with a band of 0.1085 to 0.3723 in C_D (0.251,
 about 0.11 to 0.40, before the review).
 

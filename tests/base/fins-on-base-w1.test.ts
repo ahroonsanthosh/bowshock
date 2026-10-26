@@ -672,7 +672,9 @@ describe('the bands (0015 section 3.6)', () => {
       1.3826,
       true,
     ],
-    // W2's part, below M 1.5: the zero member down to RM L52E06's relief; the reference from fig. 35's line.
+    // W2's part, below M 1.5: the zero member down to RM L52E06's relief; the reference from fig. 35's line. This
+    // is the factor function's own output, its zero member a ratio to the body without fins and its reference
+    // over Love's curve, two bases; 0015 section 3.6 gives these rows on W2's term as served (base-w2.test.ts).
     [
       1.2,
       'double wedge 2.4%, three fins, unswept',

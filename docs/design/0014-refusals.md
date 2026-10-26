@@ -2066,6 +2066,15 @@ below Mach 1.5. (ad)'s rules apply to it as written; a case they do not
 cover is stopped and taken to the coordinator, not decided after seeing
 values.
 
+**2026-10-26, route (i) deferred** (the coordinator's decision, on the
+cases above that (ad)'s rules do not cover). Fig. 32 at Mach 2.0 to 3.0
+is not pursued now, and nothing uses it; any future route (i) needs a
+fresh registration here, written before it is used. Its four open
+questions are in 0015 section 10, in plain words. The first is the
+lower bound: the three-way pairing's values were seen while the pairing
+was checked and were used for nothing, and its symbols a chord ahead of
+the base lie far on the relief side of the zero member.
+
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.

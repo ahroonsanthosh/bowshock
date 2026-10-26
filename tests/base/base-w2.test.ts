@@ -336,4 +336,54 @@ describe('the term (bodyBaseDrag)', () => {
     expect(ahead.finsOnBase).toBeUndefined();
     expect(ahead.cd).toBeCloseTo(curve(1.3) * 1.065, 12);
   });
+
+  it("0015 section 3.6's rows below M 1.5, on one basis: W2's term as served, and Love's curve", () => {
+    // The factor function's raw output below M 1.5 holds the zero member as a ratio to the body without fins
+    // (W2's term) and the reference over Love's curve: two bases. bodyBaseDrag serves both on W2's term.
+    const r4 = (x: number) => Math.round(1e4 * x) / 1e4;
+    const plate: SymmetricSection = {
+      x: [0, 0.1, 1],
+      halfThickness: [0, 0.012, 0.012],
+      bluntTrailingEdge: true,
+    };
+    const finsOf = (section: SymmetricSection, tanLe: number, flatFaced: boolean) => ({
+      count: 3,
+      thicknessRatio: 0.024,
+      section: 'other' as const,
+      tanLeadingEdge: tanLe,
+      tanTrailingEdge: 0,
+      trailingEdgeAheadOfBase: 0,
+      ...(flatFaced ? { flatFaced: true } : {}),
+      nearBase: {
+        section,
+        sectionFamily: 'other' as const,
+        tanLeadingEdgeSweep: tanLe,
+        tanTrailingEdgeSweep: 0,
+      },
+    });
+    const rows: [number, ReturnType<typeof finsOf>, number[], number[], number][] = [
+      // M, fins, on W2's term [low, nominal, high], on Love's curve [low, nominal, high], half-width %
+      [
+        1.2,
+        finsOf(doubleWedge(0.024, 0.5), 0, false),
+        [0.8379, 1.2295, 1.6211],
+        [0.8924, 1.3095, 1.7265],
+        31.9,
+      ],
+      [1.2, finsOf(plate, 1, true), [0.8379, 1.2295, 1.6211], [0.8924, 1.3095, 1.7265], 31.9],
+      [
+        1.0,
+        finsOf(doubleWedge(0.024, 0.5), 0, false),
+        [0.8379, 1.2873, 1.7367],
+        [0.8924, 1.371, 1.8496],
+        34.9,
+      ],
+    ];
+    for (const [m, fins, w2, love, hw] of rows) {
+      const f = bodyBaseDrag({ ...base, mach: m, fins }).finsOnBase!;
+      expect([f.low, f.nominal, f.high].map(r4)).toEqual(w2);
+      expect([f.low, f.nominal, f.high].map((x) => r4(1.065 * x))).toEqual(love);
+      expect(Math.round((1000 * (f.high - f.low)) / 2 / f.nominal) / 10).toBe(hw);
+    }
+  });
 });
