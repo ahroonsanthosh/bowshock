@@ -362,3 +362,83 @@ models, Mach numbers and stations, not its pressures.
 - **When.** After the Mach 2 and 3 families, or alongside them once the
   machine has a core free (at 17:00 UTC its load was 15 to 17 on 4
   cores, from other lanes).
+
+## 9. The third march: characteristics fitting the embedded shock (registered 2026-10-27, before any code or run)
+
+The coordinator's decision of 2026-10-26: build the open route of section 7
+now. Everything below is fixed before the code exists; nothing is changed
+after its numbers are seen except to fix a demonstrated bug, recorded as
+such.
+
+**The method.** `characteristicsFrom`'s march (C- lines from the bow shock
+to the wall, each from the one before), with one addition: an embedded
+shock of the C+ family, fitted as a discontinuity on each C- line.
+
+- _Formation._ Where two C+ characteristics of the march would cross
+  (the points of a new C- line out of order along it), a shock of zero
+  strength starts between them, at the crossing.
+- _The shock point._ On each new C- line, the shock point is where that
+  line meets the shock continued from its point on the line before at
+  the mean of the two lines' shock angles. Its upstream state comes from
+  the march on the outer side (the C- line from the bow shock and the
+  C+ from the old line's last point upstream of the shock); its
+  downstream state from the oblique-shock relations at the shock's angle
+  relative to the upstream flow, with the angle fixed (secant, as the bow
+  shock's) by the compatibility relation along the C+ arriving from the
+  old line's first point downstream of the shock. The C- line continues
+  to the wall from the downstream state; streamlines crossing the shock
+  take the entropy jump, carried into K(psi) behind it.
+- _Merging._ Where the embedded shock reaches the bow shock, the march
+  continues with the bow shock alone (its angle from the usual
+  compatibility relation); the weak reflected wave of the interaction
+  is neglected and the neglect is stated.
+- _Data._ The starting lines, the lines chosen and the drag downstream
+  are those of the first march (section 3, `MOC_LINES=auto` on nj = 20),
+  so the three marches are compared line for line.
+
+**Verification, in this order, each passing before the next runs:**
+
+- **V0, the unit process.** With uniform upstream and downstream states
+  of an exact oblique shock (Mach 2 and 3; deflections 2, 5 and 10 deg),
+  the embedded-shock point returns the exact shock angle and downstream
+  pressure, density and flow angle to 1e-10 relative.
+- **V1, a compression turn in the planar limit**, the exact solution
+  available: a body far from the axis (a cylinder of radius 1e4 times the
+  turn's length; the axisymmetric terms then change pressures by about
+  1e-4) at Mach 2, turning the flow by 5 deg along a circular concave arc
+  and straight after it. (The test body is given to the march as a
+  profile function, a verification-only option; no served body has a
+  concave profile.) Pass, on march resolutions n and 2n (n chosen so that
+  the turn spans at least 20 C+ lines on the coarser):
+  (a) the wall pressure behind the turn equals the isentropic
+  Prandtl-Meyer value for 5 deg to within 5e-4 of it;
+  (b) the shock forms where the planar simple-wave solution's first C+
+  characteristics cross (the envelope's start, computed in the test from
+  the arc), within 5% of the turn's length on the finer resolution;
+  (c) the errors of (a) and of (b) fall with the resolution at an
+  observed order between 0.8 and 3.
+- **V2, the capped noses' own lines.** On the families of sections 3 and
+  7 (first the 5-caliber ogive, r_n/R 0.03, Mach 1.3), from the same
+  lines as the first march, on nj = 20, 40 and 80, and 640, 1280, 2560
+  intervals: W5's line criterion unchanged (mass balance on 2560
+  intervals and its change from 1280 below 3.5e-5 of the nose's drag,
+  every grid); the control of section 6 item 2 against the first march
+  on the lines behind the merge where both pass (within the larger of
+  their changes from 1280 to 2560 intervals plus 1e-5 of the drag); and
+  the coverage rule of section 6 item 3 (two or more lines carrying half
+  the drag or more pass, and on each the fitted drag downstream minus
+  the march falls by a factor of 2 or more per grid). Failing V2 on a
+  case leaves its forward region unreferenced, as section 6 item 4 says.
+- **Its own resolution.** On every line used, the march at 2560 and 5120
+  intervals as well: the change from 2560 to 5120 below 3.5e-5 of the
+  drag, the observed order over 1280, 2560 and 5120 between 0.8 and 3.
+
+**What it then sets.** Where V2 passes, the references and misses of
+those lines enter the allowance as section 3 says (twice the largest
+miss over the references and the lines next to the ones used), and the
+served region follows the coverage rule. Nothing is served before the
+whole build's independent review.
+
+**Cost.** Code and V0 to V1: little CPU (seconds to minutes per march).
+V2: as the first march, about ten minutes per family on a shared core.
+The lanes keep running.
