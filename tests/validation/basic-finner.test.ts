@@ -755,10 +755,11 @@ describe(
         const le = r.refusals.find((x) => x.component === 'fin leading edges');
         if (s.mach < 1.3) expect(le?.message).toMatch(/^Reynolds number .* is below 6700/);
         else expect(le).toBeUndefined();
-        // The wedges' trailing edges: below Mach 1.5 their c/[h Re^(1/5)] lies beyond what the
-        // sets near Mach 1 reach (0019 section 3.4.1).
+        // The wedges' trailing edges (c/[h Re^(1/5)] about 0.8, 0019 section 3.4.1): to Mach 1.15
+        // RM A51J11's thick layers reach them, and the transition input that leaves them laminar
+        // is refused there (shots at 1.056, 1.058, 1.116); above, the sets reach only 0.666.
         expect(r.refusals.find((x) => x.component === 'fin trailing-edge base')?.reason).toBe(
-          'thick-layer',
+          s.mach < 1.15 ? 'laminar-trailing-edge' : 'thick-layer',
         );
         expect(reasons.length).toBeGreaterThan(0);
         // Below M 1.5 fin friction and the wedges' wave drag are refused first: the fins' own-drag

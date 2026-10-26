@@ -24,6 +24,11 @@ MUTATIONS = [
      'if ((input.transitionReynolds ?? []).some((reT) => reT >= reChord)) void 0;'),
     ('the layer reach taken at each set\'s greatest X', 'src/base/fin-te-transonic.ts',
      '.map((r) => r.point.properties.layer?.[0])', '.map((r) => r.point.properties.layer?.[1])'),
+    ('a layer without roughness counted toward the reach (item 6)', 'src/base/fin-te-transonic.ts',
+     'layer: turbulent ? layer : undefined,', 'layer,'),
+    ('a disputed wing taken as a flat wing 2 (item 6)', 'src/base/fin-te-transonic.ts',
+     "        shape: 'converging',\n        faceAngleDeg: 6.88,\n        hOverC: 0.03,",
+     "        shape: 'flat',\n        faceAngleDeg: 0,\n        hOverC: 0.03,"),
 ]
 
 for name, path, old, new in MUTATIONS:

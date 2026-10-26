@@ -13,6 +13,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildTransonicTrailingEdge,
   layerParameterRange,
+  propertiesOf,
   setValue,
   shapeAllowanceNpl,
   TRANSONIC_SETS,
@@ -175,7 +176,49 @@ function expectedGroups(): Map<string, Expected[]> {
     const p = point(r.id!, r.series!, m, +r.M_prime_err!, cpOf(+r.pb_over_pprime!, m));
     add('RM A51J25 fig. 7 symbols', 'second (round 11)', p);
   }
+  // RM A51J11 figs. 14 and 15, round 15's two readings (0019 3.4.1 item 6): every curve, curve end
+  // and box a point; a bound as its range, a 2-sigma row as its value.
+  const ht = (series: string) => /h\/t(?: =|,) (0\.3|0\.6|1\.0)/.exec(series)![1]!;
+  const range = (r: Record<string, string>): [number, number] => {
+    const y = +r.y!;
+    const e = +r.y_err!;
+    return r.kind === 'box' || r.err_basis === 'bound' ? [y - e, y + e] : [y, y];
+  };
+  const curveRow = (r: Record<string, string>) => ['curve', 'curve_end', 'box'].includes(r.kind!);
+  for (const reader of ['A', 'B']) {
+    for (const r of records(`round15-${reader}/readings/a51j11_fig14.csv`).filter(curveRow)) {
+      const rough = r.series!.toLowerCase().includes('without') ? 'without' : 'with';
+      const [lo, hi] = range(r);
+      add(
+        'RM A51J11 fig. 14',
+        `round 15 reader ${reader}`,
+        point(r.id!, `h/t ${ht(r.series!)}, ${rough} roughness`, +r.x!, +r.x_err!, lo, hi),
+      );
+    }
+    for (const r of records(`round15-${reader}/readings/a51j11_fig15.csv`).filter(curveRow)) {
+      const mach = Number(r.series!.split('M').at(-1)!.replace('=', '').trim());
+      const [lo, hi] = range(r);
+      const series = `h/t ${ht(r.series!)}, 2y/b ${(+r.x!).toFixed(3)}`;
+      add('RM A51J11 fig. 15', `round 15 reader ${reader}`, point(r.id!, series, mach, 0, lo, hi));
+    }
+  }
   return g;
+}
+
+/**
+ * RM A52E01 fig. 8's points as the neutral pairing gives them (0019 3.4.1 item 6): the alpha 0
+ * rows both readings give (agree or DISAGREE), both values; the wing both readings agree on, else
+ * any. Values read once give none.
+ */
+function a52e01Expected(figure: string) {
+  const dir = 'pairing-2026-10-26-a51j11-a52e01';
+  const idmap = records(`${dir}/identity_map.csv`);
+  const pairs = records(`${dir}/pairs_${figure}.csv`);
+  const twice = pairs.filter(
+    (r) => r.category === 'alpha 0' && (r.verdict === 'agree' || r.verdict === 'DISAGREE'),
+  );
+  const once = pairs.filter((r) => r.category === 'alpha 0' && /READ ONCE/.test(r.verdict!));
+  return { twice, once, idmap };
 }
 
 describe('the readings, held to their files', () => {
@@ -184,7 +227,20 @@ describe('the readings, held to their files', () => {
   it('holds every group of every reading, and nothing else', () => {
     const held = new Set(TRANSONIC_TE_READINGS.map((g) => `${g.set}|${g.reading}`));
     expect([...held].sort()).toEqual([...expected.keys()].sort());
-    expect(TRANSONIC_TE_READINGS.reduce((n, g) => n + g.points.length, 0)).toBe(171);
+    expect(TRANSONIC_TE_READINGS.reduce((n, g) => n + g.points.length, 0)).toBe(542);
+  });
+
+  it('takes RM A52E01 from the pairing only: no value read once, so none from two readers', () => {
+    for (const figure of ['a52e01_fig8a', 'a52e01_fig8b']) {
+      const { twice, once } = a52e01Expected(figure);
+      // Every supersonic alpha 0 value is read once (reader B) or by neither (the pairing).
+      const supersonic = twice.filter((r) => r.group!.startsWith('M=1'));
+      expect(supersonic, figure).toEqual([]);
+      expect(once.filter((r) => r.group!.startsWith('M=1')).length).toBeGreaterThan(0);
+      // The values read twice are all subsonic, below the term's range: none is held.
+      for (const r of twice) expect(Number(r.group!.replace('M=', ''))).toBeLessThan(0.97);
+    }
+    expect(TRANSONIC_TE_READINGS.some((g) => g.set.startsWith('RM A52E01'))).toBe(false);
   });
 
   it('holds each point as read (to 1e-6), both readings of each set', () => {
@@ -204,7 +260,7 @@ describe('the readings, held to their files', () => {
   });
 
   it('has both readings of every set', () => {
-    for (const set of Object.keys(TRANSONIC_SETS)) {
+    for (const set of [...Object.keys(TRANSONIC_SETS), 'RM A51J11 fig. 14', 'RM A51J11 fig. 15']) {
       const readings = new Set(
         TRANSONIC_TE_READINGS.filter((g) => g.set === set).map((g) => g.reading),
       );
@@ -227,15 +283,52 @@ describe('the readings, held to their files', () => {
       if (p.formsNominal) expect(p.shape).toBe('flat');
     }
   });
+
+  it('takes RM A51J11 and RM A52E01 as item 6 says, series by series', () => {
+    // RM A51J11: h/c 0.04 h/t; with roughness its layer sets the reach, without it does not.
+    const rough = propertiesOf('RM A51J11 fig. 14', 'h/t 0.3, with roughness');
+    expect([rough.hOverC, rough.shape, rough.faceAngleDeg]).toEqual([0.012, 'converging', 2.1]);
+    expect(rough.layer).toEqual(layerParameterRange(0.012, 1.7e6, 2.2e6));
+    const smooth = propertiesOf('RM A51J11 fig. 14', 'h/t 0.3, without roughness');
+    expect(smooth.layer).toBeUndefined();
+    expect(smooth.ratioLayer).toEqual([0, layerParameterRange(0.012, 1.7e6, 2.2e6)[1]]);
+    expect(propertiesOf('RM A51J11 fig. 15', 'h/t 1.0, 2y/b 0.250').layer).toBeUndefined();
+    expect(propertiesOf('RM A51J11 fig. 14', 'h/t 1.0, with roughness').shape).toBe('flat');
+    expect(propertiesOf('RM A51J11 fig. 14', 'h/t 0.6, with roughness').faceAngleDeg).toBe(1.0);
+    // RM A52E01: each wing; a line whose wing is disputed is any of them at once.
+    const any = propertiesOf('RM A52E01 fig. 8(a)', 'any wing');
+    expect([any.shape, any.faceAngleDeg, any.hOverC]).toEqual(['converging', 6.88, 0.03]);
+    expect(any.layer).toEqual(layerParameterRange(0.03, 1.5e6, 1.5e6));
+    expect(any.ratioLayer).toEqual([
+      layerParameterRange(0.03, 1.5e6, 1.5e6)[0],
+      layerParameterRange(0.015, 1.5e6, 1.5e6)[1],
+    ]);
+    expect(propertiesOf('RM A52E01 fig. 8(b)', 'wing 3').faceAngleDeg).toBe(6.88);
+    expect(propertiesOf('RM A52E01 fig. 8(b)', 'wing 2').shape).toBe('flat');
+    expect(() => propertiesOf('RM A52E01 fig. 8(a)', 'wing 5')).toThrow();
+  });
 });
 
 // ---------------------------------------------------------------------------
 // The checks, as functions, so that the planted errors below can show they catch errors.
 
-/** A point's ratio range against a method's nominal at its own Mach number (K = 1: thin sets). */
+/** K at Mach 1.5 over a set's layer range (1 for a thin layer), least and greatest. */
+const kRangeOf = (p: TransonicEvidencePoint): [number, number] => {
+  const range = p.properties.ratioLayer ?? p.properties.layer;
+  if (range === undefined) return [1, 1];
+  const ks = Array.from({ length: 9 }, (_, i) => {
+    const x = Math.min(range[0] + ((range[1] - range[0]) * i) / 8, THICK_LAYER_LIMIT);
+    return x <= THIN_LAYER_LIMIT ? 1 : thickLayerFactor(1.5, x).nominal;
+  });
+  return [Math.min(...ks), Math.max(...ks)];
+};
+
+/** A point's ratio range against a method's nominal times K at its own Mach number. */
 const ratioAt = (t: TransonicTrailingEdge, p: TransonicEvidencePoint) => {
   const n = t.nominal(p.mach);
-  return [p.cpLow / n, p.cpHigh / n].sort((a, b) => a - b) as [number, number];
+  const [k0, k1] = kRangeOf(p);
+  const r = [p.cpLow, p.cpHigh].flatMap((cp) => [cp / (n * k0), cp / (n * k1)]);
+  return [Math.min(...r), Math.max(...r)] as [number, number];
 };
 
 /** The band served at M by a method (0019 section 3.4.1 item 5), thin layer. */
@@ -269,6 +362,9 @@ const wedgesWidenedUp = (t: TransonicTrailingEdge) =>
 /** The step at Mach 1.5 in a method's nominal (Cp_b), against the curve above. */
 const stepAt15 = (t: TransonicTrailingEdge) =>
   Math.abs(t.nominal(1.5) - thinLayerBasePressure(1.5));
+
+/** The band-setting points at Mach 1.0 to 1.5, every reading. */
+const USED_POINTS = 367;
 
 const deps = {
   cpAt15: thinLayerBasePressure(1.5),
@@ -323,7 +419,7 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
 
   it('holds every band-setting point of every reading at its own Mach number', () => {
     const used = TRANSONIC_TE_EVIDENCE.filter((p) => p.mach >= 1 && p.mach <= 1.5);
-    expect(used.length).toBe(134);
+    expect(used.length).toBe(USED_POINTS);
     expect(pointsOutside(t, TRANSONIC_TE_EVIDENCE)).toEqual([]);
     // And the served band holds them (trailingEdgeBasis, as the term uses it).
     for (const p of used) {
@@ -340,8 +436,13 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
       expect(b.low).toBeLessThanOrEqual(0.93);
       expect(b.high).toBeGreaterThanOrEqual(1.21);
     }
-    expect(trailingEdgeBasis(1.15).band.high).toBeCloseTo(1.246, 3);
-    expect(trailingEdgeBasis(1.1).band.low).toBeCloseTo(0.927, 3);
+    // Wide near Mach 1 (RM A51J11's thick layers and faces converging to the base below, its flat
+    // section above), narrowing to 0.93 to 1.21 by Mach 1.3.
+    expect(trailingEdgeBasis(1.0).band.low).toBeCloseTo(0.912, 3);
+    expect(trailingEdgeBasis(1.0).band.high).toBeCloseTo(1.442, 3);
+    expect(trailingEdgeBasis(1.1).band.low).toBeCloseTo(0.557, 3);
+    expect(trailingEdgeBasis(1.15).band.high).toBeCloseTo(1.271, 3);
+    expect(trailingEdgeBasis(1.2).band.high).toBeCloseTo(1.246, 3);
     expect(trailingEdgeBasis(1.45).band.low).toBeCloseTo(0.921, 3);
   });
 
@@ -387,19 +488,27 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
     }
   });
 
-  it('widens a diverging set only downward, by S(angle) = S_NPL angle / 4 deg', () => {
+  it('widens a diverging set only downward and a converging one only upward, by S(angle) = S_NPL angle / 4 deg', () => {
     for (const r of t.ratios) {
       const s = (t.shapeAllowance * r.point.properties.faceAngleDeg) / 4;
       if (r.point.properties.shape === 'diverging') {
         expect(r.low).toBeCloseTo(r.measuredLow * (1 - s), 12);
         expect(r.high).toBe(r.measuredHigh);
+      } else if (r.point.properties.shape === 'converging') {
+        expect(r.low).toBe(r.measuredLow);
+        expect(r.high).toBeCloseTo(r.measuredHigh * (1 + s), 12);
       } else {
         expect([r.low, r.high]).toEqual([r.measuredLow, r.measuredHigh]);
       }
     }
     expect(wedgesWidenedUp(t)).toEqual([]);
-    // Johnston's wedge sets the high end from Mach 1.0 to 1.25.
-    for (const n of t.nodes.filter((x) => x.mach <= 1.25)) expect(n.highBy).toMatch(/^Johnston/);
+    // RM A51J11's flat section sets the high end from Mach 1.0 to 1.15, Johnston's wedge at 1.2 and 1.25.
+    for (const n of t.nodes.filter((x) => x.mach <= 1.15)) {
+      expect(n.highBy).toMatch(/^RM A51J11 fig. 14/);
+    }
+    for (const n of t.nodes.filter((x) => x.mach >= 1.2 && x.mach <= 1.25)) {
+      expect(n.highBy).toMatch(/^Johnston/);
+    }
   });
 });
 
@@ -448,21 +557,54 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
   it('refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge', () => {
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 0.99 }))).toBe('mach-range');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 1.0 }))).toBe('none');
-    // The sets are sure to reach c/[h Re^(1/5)] 0.666 only (TN 3548 at its highest Reynolds
-    // number): 0.75, inside TN 3548's range at its lowest, is refused.
-    for (const n of transonicTrailingEdge().nodes) {
-      expect(n.layerReached).toBeCloseTo(1 / (0.06 * 9.8e6 ** 0.2), 12);
-    }
+    // What the sets are sure to reach, each counted at the least c/[h Re^(1/5)] of its test: RM
+    // A51J11's h/t 0.3 with roughness (4.49) to Mach 1.10, its h/t 1.0 (1.35) in the window of
+    // 1.15, then TN 3548 at its highest Reynolds number (0.666).
+    const reach = transonicTrailingEdge().nodes.map((n) => +n.layerReached.toFixed(3));
+    const tn = +(1 / (0.06 * 9.8e6 ** 0.2)).toFixed(3);
+    const a51 = (hc: number) => +layerParameterRange(hc, 1.7e6, 2.2e6)[0].toFixed(3);
+    expect(reach).toEqual([
+      a51(0.012),
+      a51(0.012),
+      a51(0.012),
+      a51(0.04),
+      tn,
+      tn,
+      tn,
+      tn,
+      tn,
+      tn,
+      tn,
+    ]);
+    // 0.75 at Mach 1.2, inside TN 3548's range at its lowest Reynolds number, is refused.
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, reynoldsPerLength: 4.2e6 }))).toBe(
       'thick-layer',
     );
-    // A hobby fin: 3 mm plate, 100 mm chord, Re' 1.5e7: c/[h Re^(1/5)] 1.9, h/c 0.03.
+    // A hobby fin: 3 mm plate, 100 mm chord, Re' 1.5e7: c/[h Re^(1/5)] 1.9, h/c 0.03. Served from
+    // Mach 1.0 to 1.10 on RM A51J11's thick layers; refused where nothing reaches 1.9.
     const hobby = { ...edge, thickness: 0.003, reynoldsPerLength: 1.5e7 };
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.0 }))).toBe('none');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.1 }))).toBe('none');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.12 }))).toBe('thick-layer');
     expect(reason(() => finTrailingEdgeBaseDrag(hobby))).toBe('thick-layer');
-    // h/c 0.03 with a thin layer (Re' so high that c/[h Re^(1/5)] is 0.6): thinner than the sets.
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, reynoldsPerLength: 1.6e9 }))).toBe(
-      'thick-layer',
-    );
+    // Beyond what any set reaches at Mach 1.05: c/[h Re^(1/5)] 4.6 (h/c 0.012 at Re' 5e5).
+    expect(
+      reason(() =>
+        finTrailingEdgeBaseDrag({
+          ...hobby,
+          mach: 1.05,
+          thickness: 0.0012,
+          reynoldsPerLength: 5e6,
+        }),
+      ),
+    ).toBe('thick-layer');
+    // h/c 0.01 with a thin layer (Re' so high that c/[h Re^(1/5)] is 0.6): thinner than any set
+    // (RM A51J11's 0.012).
+    expect(
+      reason(() =>
+        finTrailingEdgeBaseDrag({ ...edge, thickness: 0.001, reynoldsPerLength: 1.1e12 }),
+      ),
+    ).toBe('thick-layer');
     // h/c 0.25, thicker than any set.
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, thickness: 0.025 }))).toBe(
       'beyond-read-range',

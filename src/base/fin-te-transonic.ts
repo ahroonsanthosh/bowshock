@@ -44,6 +44,14 @@ export interface TransonicSetProperties {
   readonly layer: readonly [number, number] | undefined;
   /** True for the flat-faced thin-layer sets the nominal is formed on. */
   readonly formsNominal: boolean;
+  /**
+   * The layer parameters the set's ratio is formed over (K at Mach 1.5 at
+   * each), where they differ from `layer`: a set whose layer may be laminar
+   * or turbulent counts toward no layer reach (`layer` undefined) but its
+   * ratio is formed over K from 1 (thin) to its turbulent value (0019
+   * section 3.4.1 item 6).
+   */
+  readonly ratioLayer?: readonly [number, number];
 }
 
 /** c / [h Re_c^(1/5)] over a range of chord Reynolds numbers, least first. */
@@ -131,7 +139,82 @@ export interface TransonicEvidencePoint {
  */
 export const TRANSONIC_SERIES_SETS: Readonly<
   Record<string, (series: string) => TransonicSetProperties | undefined>
-> = {};
+> = {
+  'RM A51J11 fig. 14': (series) => a51j11(series, !series.includes('without roughness')),
+  'RM A51J11 fig. 15': (series) => a51j11(series, false),
+  'RM A52E01 fig. 8(a)': (series) => a52e01(series, 1.5e6),
+  'RM A52E01 fig. 8(b)': (series) => a52e01(series, 3.8e6),
+};
+
+/**
+ * RM A51J11 (0014 10.7 (ac)): the 4% circular arc built up to h/t 0.3, 0.6
+ * and 1.0 of the maximum thickness (h/c 0.012, 0.024, 0.040), faired back
+ * by straight lines that meet the base parallel at h/t 1.0 and converging
+ * by about 2.1 and 1.0 deg at 0.3 and 0.6; Re 1.7e6 to 2.2e6 on the chord.
+ * With surface roughness its layer is turbulent and sets the layer reach;
+ * without, and in fig. 15, the layer state is not known: no reach, the
+ * ratio formed over K from 1 to the turbulent value (0019 3.4.1 item 6).
+ */
+function a51j11(series: string, turbulent: boolean): TransonicSetProperties | undefined {
+  const ht = /h\/t (0\.3|0\.6|1\.0)/.exec(series)?.[1];
+  if (ht === undefined) return undefined;
+  const hOverC = 0.04 * Number(ht);
+  const layer = layerParameterRange(hOverC, 1.7e6, 2.2e6);
+  const faceAngleDeg = ht === '1.0' ? 0 : ht === '0.6' ? 1.0 : 2.1;
+  return {
+    shape: faceAngleDeg === 0 ? 'flat' : 'converging',
+    faceAngleDeg,
+    hOverC,
+    layer: turbulent ? layer : undefined,
+    ratioLayer: [0, layer[1]],
+    formsNominal: false,
+  };
+}
+
+/**
+ * RM A52E01 (0014 10.7 (ac)): the 3% biconvex wing; wing 2 h/c 0.030 with
+ * faces parallel at the base, wings 4 and 3 h/c 0.015 with boattails of
+ * 2.02 and 6.88 deg; Re 1.5e6 or 3.8e6 on the mean aerodynamic chord. A
+ * line whose wing the paired readings do not agree on is any of the three
+ * at once: wing 2's layer reach, the layers of all three in its ratio, and
+ * the 6.88 deg widening, and wing 2's h/c (0019 3.4.1 item 6).
+ */
+function a52e01(series: string, reynolds: number): TransonicSetProperties | undefined {
+  const wing2 = layerParameterRange(0.03, reynolds, reynolds);
+  const wing34 = layerParameterRange(0.015, reynolds, reynolds);
+  switch (series) {
+    case 'wing 2':
+      return { shape: 'flat', faceAngleDeg: 0, hOverC: 0.03, layer: wing2, formsNominal: false };
+    case 'wing 4':
+      return {
+        shape: 'converging',
+        faceAngleDeg: 2.02,
+        hOverC: 0.015,
+        layer: wing34,
+        formsNominal: false,
+      };
+    case 'wing 3':
+      return {
+        shape: 'converging',
+        faceAngleDeg: 6.88,
+        hOverC: 0.015,
+        layer: wing34,
+        formsNominal: false,
+      };
+    case 'any wing':
+      // Its h/c taken as wing 2's, the larger: the least it is sure to reach toward thin edges.
+      return {
+        shape: 'converging',
+        faceAngleDeg: 6.88,
+        hOverC: 0.03,
+        layer: wing2,
+        ratioLayer: [wing2[0], wing34[1]],
+        formsNominal: false,
+      };
+    default:
+      return undefined;
+  }
+}
 
 /** A point's set and series properties; throws for a set or series the method does not know. */
 export function propertiesOf(set: string, series: string): TransonicSetProperties {
@@ -338,8 +421,9 @@ export function buildTransonicTrailingEdge(
   const { allowance } = shapeAllowanceNpl(evidence);
 
   const kRange = (p: TransonicSetProperties) => {
-    if (p.layer === undefined) return [1, 1];
-    const [x0, x1] = p.layer;
+    const range = p.ratioLayer ?? p.layer;
+    if (range === undefined) return [1, 1];
+    const [x0, x1] = range;
     const ks: number[] = [];
     for (let i = 0; i <= 8; i++) {
       const x = Math.min(x0 + ((x1 - x0) * i) / 8, deps.thickLayerLimit);

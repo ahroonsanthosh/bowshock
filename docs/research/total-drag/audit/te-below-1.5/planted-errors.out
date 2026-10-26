@@ -1,26 +1,35 @@
-CAUGHT: window cut to the node and the next one: Tests  5 failed | 37 passed (42)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 10ms
-     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 4ms
-     × widens a diverging set only downward, by S(angle) = S_NPL angle / 4 deg 11ms
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 1ms
-     × a window that leaves out the neighbouring nodes leaves points outside 11ms
-CAUGHT: shape widening on the wrong side: Tests  1 failed | 41 passed (42)
-     × widens a diverging set only downward, by S(angle) = S_NPL angle / 4 deg 65ms
-CAUGHT: a Johnston reading misread by 0.05 in Cp_b: Tests  1 failed | 41 passed (42)
-     × holds each point as read (to 1e-6), both readings of each set 36ms
-CAUGHT: the floor 0.93 to 1.21 dropped below 1.5: Tests  2 failed | 40 passed (42)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 45ms
-     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 9ms
-CAUGHT: the nominal not joined to the curve at 1.5: Tests  5 failed | 37 passed (42)
-     × has its nodes every 0.05 from 1.00, from the flat-faced sets, joined to the curve at 1.5 56ms
-     × serves the curve at and above 1.5, and its own nominal below, with no step 13ms
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 45ms
-     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 7ms
-     × a nominal not joined to the curve at 1.5 shows a step 18ms
-CAUGHT: the Mach floor moved to 0.95: Tests  2 failed | 40 passed (42)
-     × refuses Mach numbers outside 1.0 to 3.2, swept and laminar edges, thick layers 35ms
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 239ms
-CAUGHT: the laminar refusal below 1.5 removed: Tests  1 failed | 41 passed (42)
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 11ms
-CAUGHT: the layer reach taken at each set's greatest X: Tests  1 failed | 41 passed (42)
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 14ms
+CAUGHT: window cut to the node and the next one: Tests  7 failed | 37 passed (44)
+     × holds every band-setting point of every reading at its own Mach number 42ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 14ms
+     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 18ms
+     × widens a diverging set only downward and a converging one only upward, by S(angle) = S_NPL angle / 4 deg 24ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 2ms
+     × a misread point (moved 15% up) falls outside the band 9ms
+     × a window that leaves out the neighbouring nodes leaves points outside 115ms
+CAUGHT: shape widening on the wrong side: Tests  2 failed | 42 passed (44)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 17ms
+     × widens a diverging set only downward and a converging one only upward, by S(angle) = S_NPL angle / 4 deg 2ms
+CAUGHT: a Johnston reading misread by 0.05 in Cp_b: Tests  1 failed | 43 passed (44)
+     × holds each point as read (to 1e-6), both readings of each set 53ms
+CAUGHT: the floor 0.93 to 1.21 dropped below 1.5: Tests  2 failed | 42 passed (44)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 41ms
+     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 1ms
+CAUGHT: the nominal not joined to the curve at 1.5: Tests  5 failed | 39 passed (44)
+     × has its nodes every 0.05 from 1.00, from the flat-faced sets, joined to the curve at 1.5 36ms
+     × serves the curve at and above 1.5, and its own nominal below, with no step 2ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 19ms
+     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 2ms
+     × a nominal not joined to the curve at 1.5 shows a step 46ms
+CAUGHT: the Mach floor moved to 0.95: Tests  3 failed | 41 passed (44)
+     × refuses Mach numbers outside 1.0 to 3.2, swept and laminar edges, thick layers 65ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 25ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 7ms
+CAUGHT: the laminar refusal below 1.5 removed: Tests  1 failed | 43 passed (44)
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 29ms
+CAUGHT: the layer reach taken at each set's greatest X: Tests  1 failed | 43 passed (44)
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 12ms
+CAUGHT: a layer without roughness counted toward the reach (item 6): Tests  2 failed | 42 passed (44)
+     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 37ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 4ms
+CAUGHT: a disputed wing taken as a flat wing 2 (item 6): Tests  1 failed | 43 passed (44)
+     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 11ms

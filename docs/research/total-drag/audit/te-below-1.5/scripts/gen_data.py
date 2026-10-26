@@ -114,6 +114,81 @@ for r in rows('round11/readings/rma51j25_fig7.csv'):
         add('RM A51J25 fig. 7 symbols', 'second (round 11)', r['id'], r['series'], m, float(r['M_prime_err']),
             cp_from_ratio(float(r['pb_over_pprime']), m))
 
+# RM A51J11 figs. 14 and 15 (0014 10.7 (ac)): round 15's two blind readings, paired 2026-10-26
+# (pairing-2026-10-26-a51j11-a52e01/, every station, end and identity agreeing). Faired curves, no
+# symbols: every curve, curve_end and box row is a point (0019 3.4.1 item 6). P_b = (p_b - p)/q on
+# the free stream (its NOTATION). A row read as a bound (a box, or a curve row whose error is a
+# bound) enters as its range; a 2-sigma row as its value. The report states no Mach accuracy.
+# Fig. 14: Mach number on the abscissa, its error the interval. Fig. 15: the panel's Mach number
+# from the series (1.06 here; 0.98 lies below the term's range), exact.
+ROUND15 = {'A': 'round15-A', 'B': 'round15-B'}
+
+
+def ht_of(series):
+    for v in ('0.3', '0.6', '1.0'):
+        if f'h/t = {v}' in series or f'h/t, {v}' in series:
+            return v
+    raise ValueError(series)
+
+
+def a51_point(r):
+    y, ye = float(r['y']), float(r['y_err'])
+    if r['kind'] == 'box' or r['err_basis'] == 'bound':
+        return y - ye, y + ye
+    return y, y
+
+
+for reader, folder in ROUND15.items():
+    for r in rows(f'{folder}/readings/a51j11_fig14.csv'):
+        if r['kind'] not in ('curve', 'curve_end', 'box'):
+            continue
+        rough = 'with roughness' if r['series'].lower().find('without') < 0 else 'without roughness'
+        lo, hi = a51_point(r)
+        add('RM A51J11 fig. 14', f'round 15 reader {reader}', r['id'], f"h/t {ht_of(r['series'])}, {rough}",
+            float(r['x']), float(r['x_err']), lo, hi)
+    for r in rows(f'{folder}/readings/a51j11_fig15.csv'):
+        if r['kind'] not in ('curve', 'curve_end', 'box'):
+            continue
+        mach = float(r['series'].split('M')[-1].replace('=', '').strip())
+        lo, hi = a51_point(r)
+        add('RM A51J11 fig. 15', f'round 15 reader {reader}', r['id'],
+            f"h/t {ht_of(r['series'])}, 2y/b {float(r['x']):.3f}", mach, 0.0, lo, hi)
+
+
+# RM A52E01 fig. 8 (0014 10.7 (ac)): from the neutral pairing, never from one reading (0019 3.4.1
+# item 6). A curve's point is its value at alpha 0 where both readings give one (verdict agree or
+# DISAGREE: both values, unresolved); a value read once sets nothing. A curve's wing is the one both
+# readings give it (the identity map's label check), else 'any' (any of wings 2, 3 and 4). The
+# panel's Mach number from the series. The two-reader pairing gives no supersonic value read twice,
+# so no point is written from it; a three-way pairing is read the same way when it lands.
+A52E01_PAIRING = 'pairing-2026-10-26-a51j11-a52e01'
+
+
+def a52e01_points(figure, set_name):
+    with open(A + f'{A52E01_PAIRING}/identity_map.csv', newline='') as f:
+        idmap = {(r['figure'], r['group'], r['A_series']): r for r in csv.DictReader(f)}
+    with open(A + f'{A52E01_PAIRING}/pairs_{figure}.csv', newline='') as f:
+        pairs = list(csv.DictReader(f))
+    for r in pairs:
+        if r['category'] != 'alpha 0' or r['verdict'] not in ('agree', 'DISAGREE'):
+            continue
+        ident = idmap.get((figure, r['group'], r['A_series']))
+        check = ident['label_check'] if ident else ''
+        wing = check.split('same ')[-1] if check.startswith('agree: same wing') else 'any wing'
+        series = r['B_series'] if 'M =' in r['B_series'] else r['A_series']
+        if r['group'].startswith('M=1'):
+            mach = float(series.split('M')[1].replace('=', '').split(';')[0].split()[0])
+        else:
+            mach = float(r['group'].replace('M=', ''))
+        for side in ('A', 'B'):
+            x, xe = float(r[f'{side}_x']), float(r[f'{side}_x_err'])
+            lo, hi = (x - xe, x + xe) if r[f'{side}_basis'] == 'bound' else (x, x)
+            add(set_name, f'paired, reader {side}', r[f'{side}_id'], wing, mach, 0.0, lo, hi)
+
+
+a52e01_points('a52e01_fig8a', 'RM A52E01 fig. 8(a)')
+a52e01_points('a52e01_fig8b', 'RM A52E01 fig. 8(b)')
+
 
 def ts_str(s):
     return "'" + s.replace('\\', '\\\\').replace("'", "\\'") + "'"
