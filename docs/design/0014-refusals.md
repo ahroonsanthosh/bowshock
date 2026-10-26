@@ -1986,5 +1986,27 @@ report. It fixes the figure numbers as (x) asks.
   against Mach number of the power-law family: cone, hypersonic
   optimum, paraboloid and 1/4 power: no sphere-cap tip).
 
-The next letters are allocated by the coordinator; (w) is reserved for
-the nose's model-form allowance.
+**2026-10-26 (x), the coordinator's decision on the ambiguous items,
+before any reading.** Written by the coordinator, who has seen no reading
+of the report, no W6 computed value for any TR 1386 model, and of the
+report only the neutral party's addendum above. (x)'s rule for a silent
+caption applies: figures 5, 7 (rounded-tip models only), 8 ("Foredrag"
+series, rounded-tip models only), 10 and 16 (rounded-tip models only)
+are read now, twice, the second blind, as the named items are. For each
+of them the readers also quote, from the report's text, how its values
+were obtained (measured or not; integrated pressures, balance or
+free-flight deceleration; whether friction and base are in it and, if
+removed, by what stated method). Before any reading is set against a W6
+value, the neutral pairing party decides from those quotations alone,
+never from a value, which series are a measured pressure foredrag under
+(x) item (2); the rest are recorded and not compared. Every TR 1386
+model with a rounded tip is a hemisphere-cone (figure 1), so (x)'s rule
+for blunted cones governs every comparison exactly as written (surface
+pressure only, ahead of the corner, labelled, serving no shape); the
+foredrag series read under this decision are recorded, and are used
+only if a later dated entry, written before any of them is set against
+a W6 value, says how. Nothing in this decision widens (x).
+
+The next letters are allocated by the coordinator (registry:
+scratchpad/letters.txt); (w) is reserved for the nose's model-form
+allowance.
