@@ -446,6 +446,14 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
   it('refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge', () => {
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 0.99 }))).toBe('mach-range');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 1.0 }))).toBe('none');
+    // The sets are sure to reach c/[h Re^(1/5)] 0.666 only (TN 3548 at its highest Reynolds
+    // number): 0.75, inside TN 3548's range at its lowest, is refused.
+    for (const n of transonicTrailingEdge().nodes) {
+      expect(n.layerReached).toBeCloseTo(1 / (0.06 * 9.8e6 ** 0.2), 12);
+    }
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, reynoldsPerLength: 4.2e6 }))).toBe(
+      'thick-layer',
+    );
     // A hobby fin: 3 mm plate, 100 mm chord, Re' 1.5e7: c/[h Re^(1/5)] 1.9, h/c 0.03.
     const hobby = { ...edge, thickness: 0.003, reynoldsPerLength: 1.5e7 };
     expect(reason(() => finTrailingEdgeBaseDrag(hobby))).toBe('thick-layer');
