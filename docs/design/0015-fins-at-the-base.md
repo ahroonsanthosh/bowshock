@@ -1130,6 +1130,21 @@ moves, 45.0% to 45.1% at Mach 1.5 to 1.8 and 18.4% to 18.5% at 1.8 to
 3.0, on cases refused for other reasons too. The labels changed (the
 carries on members, the plates' lower bound named), the numbers did not.
 
+**A5, fins within a chord ahead of the base below Mach 1.5 (2026-10-26;
+section 3.3, 0014 section 10.7 (aa)):** run before (main at 3389a04,
+which reproduced the committed `out/impact.out` and `.json` byte for
+byte) and after, the same 2000 rockets. The position refusal falls from
+6.0% to 0% of the cases at Mach 1.0 to 1.2 and at 1.2 to 1.5 (about 120
+rockets in each band, whose body base term is now served where nothing
+else refuses it), and stays 0% at 1.5 to 1.8 and 11.5% at 1.8 to 3.0 (all
+above Mach 2.0), 5.9% to 2.9% over all bands; its share as the sole
+blocker of a total stays 0.11%, all above Mach 2.0. No total moves: 153
+of 8000 served (1.9%; 0% below Mach 1.5, where amendment (f) refuses the
+fins' own drag; 2.5% at 1.5 to 1.8; 5.2% at 1.8 to 3.0), and the
+cross-check agrees on all 1200 cases. W1's package (what the rebuilt
+factor still refuses) appears in 72.0% of the cases below Mach 1.5, from
+78.0%. Every other line of `impact.out` is unchanged.
+
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in
 12.2%, 20.4%, 31.4% and 45.8% of the four bands, from 0%, 0%, 31.4% and
@@ -1146,7 +1161,7 @@ The rebuilt factor's own refusals, as a share of each band's cases (now):
 | sweep not measured (below M 1.5 every swept sharp section; a swept trailing edge on a sharp section at the base) | 55.0%      | 55.0%      | 45.0%      | 18.4%      |
 | rounded or diverging blunt trailing edge                                                                         | 14.8%      | 14.8%      | 14.8%      | 14.8%      |
 | section outside the 10% arc (steep bevels)                                                                       | 2.3%       | 2.3%       | 6.5%       | 13.0%      |
-| fins within a chord of the base, above M 2.0 or below 1.5                                                        | 6.0%       | 6.0%       | 0%         | 11.5%      |
+| fins within a chord of the base, above M 2.0 (below 1.5 too until 2026-10-26: 6.0% at M 1.0 to 1.5)              | 0%         | 0%         | 0%         | 11.5%      |
 | fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2)                               | 0%         | 0%         | 0%         | 0%         |
 | fewer than two or more than four fins                                                                            | 0%         | 0%         | 0%         | 0%         |
 

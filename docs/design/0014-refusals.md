@@ -1919,6 +1919,16 @@ What it costs and gains is recorded below this entry from
 `docs/research/refusals/` run before and after, with the cross-check
 against `src/total` required to agree (0015 section 3.3).
 
+What it costs and gains (0015 section 8; `docs/research/refusals/out/impact.out`,
+the run before reproducing main's committed output byte for byte): the
+position refusal falls from 6.0% of the cases to 0% at Mach 1.0 to 1.2
+and at 1.2 to 1.5, and stays 11.5% at 1.8 to 3.0 (all above Mach 2.0)
+and 0% at 1.5 to 1.8; 5.9% to 2.9% over all bands. No total moves: 153
+of 8000 (1.9%), 0% below Mach 1.5 by (f); the cross-check agrees on all
+1200 cases. No case is newly refused. What it serves is the body base
+term below Mach 1.5 for those cases, until the fin terms near Mach 1
+(0019) let a total through.
+
 Letters (w) to (z) are allocated by the coordinator on other branches;
 (aa) was taken here as the next after them, to be re-lettered if the
 coordinator allocated it elsewhere. The next free letter is the

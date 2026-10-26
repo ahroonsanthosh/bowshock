@@ -29,7 +29,7 @@
  "order": [
   "W5 Haack and power-series noses (in progress)",
   "W6 blunted nose tips",
-  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)",
   "W11 square-cut leading edges and rounded trailing edges",
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
@@ -150,7 +150,7 @@
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%) order": [
   "W5 Haack and power-series noses (in progress)",
   "W6 blunted nose tips",
-  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)",
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W11 square-cut leading edges and rounded trailing edges",
@@ -188,7 +188,7 @@
   }
  },
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%) order": [
-  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)",
   "W11 square-cut leading edges and rounded trailing edges",
   "W5 Haack and power-series noses (in progress)",
   "W9 sharp sections: reflected waves and detached bevel shocks",
