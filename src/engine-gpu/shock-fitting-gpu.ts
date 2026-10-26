@@ -51,6 +51,8 @@ export interface GpuShockFitOptions {
   readonly freeStream: Primitive2D;
   /** The shock's first node: on the axis, normal to it ('symmetry'), or not moved ('fixed'). */
   readonly firstNode: 'symmetry' | 'fixed';
+  /** Limit of the shock nodes' step in widths of their faces (ShockFitOptions.stepAspect); none if unset. */
+  readonly stepAspect?: number | undefined;
   readonly stepsPerMove: number;
   /** Steps between convergence checks. */
   readonly checkEvery: number;
@@ -122,6 +124,7 @@ export async function fitShockGpu(options: GpuShockFitOptions): Promise<GpuShock
       target: gpu.geometryBuffer,
       boundary: gpu.boundaryBuffer,
       firstNode: options.firstNode,
+      stepAspect: options.stepAspect,
     });
   } catch (error) {
     gpu.destroy();

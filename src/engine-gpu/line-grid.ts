@@ -35,6 +35,11 @@ export interface GpuLineGridOptions {
   readonly boundary?: GPUBuffer;
   /** The shock's first node in encodeShockMove: normal to the axis, or not moved. */
   readonly firstNode?: 'symmetry' | 'fixed';
+  /**
+   * Limit of each shock node's step in widths of its face, as the CPU's
+   * ShockFitOptions.stepAspect (src/solver/shock-fitting.ts); none if unset.
+   */
+  readonly stepAspect?: number | undefined;
 }
 
 export class GpuLineGrid {
@@ -171,11 +176,13 @@ export class GpuLineGrid {
     const usage = GPUBufferUsage;
     this.buffers = new BufferSet(device);
     const b = this.buffers;
-    // LineGridParams: (ni, nj, axisymmetric) as u32, gamma as f32, symmetry.
+    // LineGridParams: (ni, nj, axisymmetric) as u32, gamma as f32, symmetry,
+    // the step limit as f32 (0 for none).
     const params = new ArrayBuffer(32);
     new Uint32Array(params, 0, 3).set([ni, nj, options.geometry === 'axisymmetric' ? 1 : 0]);
     new Float32Array(params, 12, 1)[0] = options.gamma;
     new Uint32Array(params, 16, 1)[0] = options.firstNode === 'symmetry' ? 1 : 0;
+    new Float32Array(params, 20, 1)[0] = options.stepAspect ?? 0;
     const paramsBuffer = b.createWith('line grid params', new Uint8Array(params), usage.UNIFORM);
     const heightsBytes = 4 * (4 * ni + 3);
     this.heightsBuffer = b.create(

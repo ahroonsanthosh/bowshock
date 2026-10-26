@@ -89,6 +89,7 @@ export async function gpuFittedFlow(
     initial: problem.initial,
     freeStream: problem.freeStream,
     firstNode: problem.firstNode,
+    stepAspect: problem.stepAspect,
     stepsPerMove: options.stepsPerMove,
     checkEvery: options.checkEvery,
     // The wall's fluxes in double precision, by the CPU engine's scheme.

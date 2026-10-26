@@ -21,7 +21,8 @@ struct LineGridParams {
   gamma: f32,
   // 1 if the shock's first node keeps it normal to the axis, 0 if fixed.
   symmetry: u32,
-  pad0: u32,
+  // Limit of each shock node's step in widths of its face; 0 for none.
+  step_aspect: f32,
   pad1: u32,
   pad2: u32,
 }
@@ -263,7 +264,8 @@ fn shock_face(i: u32) -> vec4f {
 
 // The move of shock node k >= 1 along its line, as fitShock in
 // src/solver/shock-fitting.ts: by the speed of the face on its axis side
-// over a pseudo-time step of half its cell's height per signal speed. The
+// over a pseudo-time step of half its cell's height per signal speed (at
+// most step_aspect widths of its face, if set). The
 // signal speed is that of the cell at the start of the step, where the
 // CPU takes it after the step: the path differs, not the fixed point,
 // where every move vanishes.
@@ -274,7 +276,11 @@ fn node_move(k: u32) -> f32 {
   let n = vec2f(v.y, -v.x) / sqrt(dot(v, v));
   let d = lines[k].zw;
   let size = height(k) * eta_along(k, params.nj - 1u) * sqrt(dot(d, d));
-  let dt = 0.5 * size / shock_face(min(k, params.ni - 1u)).z;
+  var step = size;
+  if (params.step_aspect > 0.0) {
+    step = min(size, params.step_aspect * sqrt(dot(v, v)));
+  }
+  let dt = 0.5 * step / shock_face(min(k, params.ni - 1u)).z;
   return shock_face(f).x * dt / dot(d, n);
 }
 
