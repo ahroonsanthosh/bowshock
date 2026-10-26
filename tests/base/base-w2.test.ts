@@ -244,6 +244,20 @@ describe('the term (bodyBaseDrag)', () => {
     expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.1051, 0.2649]);
     expect(term(wedges, 1.62)).toEqual([0.2031, 0.1203, 0.2655]);
     expect(term(arcs, 1.62 - 1e-9)[0]).toBeCloseTo(term(arcs, 1.62)[0]!, 3);
+    // Fins within a chord ahead of the base (0015 section 3.3): bounded just below M 1.5, measured at it; the
+    // measured band lies inside the bounded one at the step.
+    const w5 = { ...wedges, trailingEdgeAheadOfBase: 0.5 };
+    const a2 = { ...arcs, trailingEdgeAheadOfBase: 0.2 };
+    const a5 = { ...arcs, trailingEdgeAheadOfBase: 0.5 };
+    for (const f of [w5, a2, a5]) {
+      expect(term(f, 1.5 - 1e-9)).toEqual([0.2301, 0.1017, 0.3585]);
+      const [, lo, hi] = term(f, 1.5);
+      expect(lo).toBeGreaterThanOrEqual(0.1017);
+      expect(hi).toBeLessThanOrEqual(0.3585);
+    }
+    expect(term(w5, 1.5)).toEqual([0.1629, 0.1159, 0.1935]);
+    expect(term(a2, 1.5)).toEqual([0.2262, 0.1698, 0.26]);
+    expect(term(a5, 1.5)).toEqual([0.1875, 0.1463, 0.2099]);
     // Below M 1.5, on W2's term, +-31.7% to +-34.9% on F (sharp sections and plates alike).
     const hw = Array.from({ length: 501 }, (_, k) => 1.0 + k * 0.000999).map((m) => {
       const f = bodyBaseDrag({ ...base, mach: m, fins: wedges }).finsOnBase!;
