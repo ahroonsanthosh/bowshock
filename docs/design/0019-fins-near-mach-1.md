@@ -1008,19 +1008,43 @@ formed on two of them, and the shape widening's size on two of them.
    widening becomes two-sided for every inclined set, [r (1 - S), r (1 +
    S)].
 
-7. **What is refused below Mach 1.5**, each with its reason in plain
-   words, at every station along the span on fins of varying chord: a
-   layer parameter beyond the data (X above what the points of each of the
-   two bracketing nodes' windows reach, each set counted at the least X of
-   its test, and above 4.5; where no thick-layer set reaches a window,
-   edges with X above the thin sets' are refused there); h/c outside the
-   least and greatest h/c of all the band-setting sets below Mach 1.5 (h/c
-   acts through the layer, which the rule before it bounds window by
-   window; Nash finds little effect of h/c itself above about 2% near Mach
-   1, and the band above 1.5 has no h/c limit); a laminar edge (item 1); a
-   swept edge. (The h/c rule amended 2026-10-26 before any value of RM
-   A51J11 or RM A52E01 was read: first written window by window, which
-   above Mach 1.25 would have served TN 3548's h/c 0.06 alone.)
+6a. **How RM A51J11's and RM A52E01's readings enter** (written
+2026-10-26 after round 15's two blind readings were committed, from
+their method notes' account of the figures' axes, legends and series,
+before their values were looked at and before the neutral pairing). - _What the figures are._ Faired curves, no symbols, in every panel.
+The readings' curve rows (RM A51J11 fig. 14 every 0.01 in Mach
+number; fig. 15 at the four orifice stations and between; RM A52E01
+fig. 8 at fixed angles of attack) are the data; boxes of merged or
+hidden ink enter as boxes. - _RM A51J11's layer._ Fig. 14 has each thickness with and without
+surface roughness (No. 60 carborundum to 0.10 chord). With roughness
+the layer is turbulent from 0.10 chord: those curves set the band and
+the layer reach. Without roughness, and in fig. 15 (no roughness
+stated), the layer at Re about 2e6 may be laminar or transitional,
+so the turbulent layer parameter would overstate what they reach:
+they set the band (the wider choice) and not the layer reach. - _RM A52E01's zero incidence._ The ordinate is the body axis's
+nominal angle of attack (the wings have no incidence), so each
+curve's value at alpha 0 (the readings' curve_at_zero rows) is its
+point; a reading that gives no such row for a curve gives no point
+for it. Its panels' Mach numbers are as printed (1.2, 1.4, 1.7);
+the report states no Mach accuracy. - _RM A52E01's wings in the supersonic panels._ The two readers did
+not both identify the wings there (one names a wing for every line,
+the other none). Where both readings, as paired, give a line the
+same wing, it takes that wing's properties. Otherwise the line is
+taken as any of wings 2, 3 and 4 at once: its layer reach the least
+of theirs (wing 2's) and its shape widening the largest (upward by
+S at 6.88 deg), the wider choice in each.
+words, at every station along the span on fins of varying chord: a
+layer parameter beyond the data (X above what the points of each of the
+two bracketing nodes' windows reach, each set counted at the least X of
+its test, and above 4.5; where no thick-layer set reaches a window,
+edges with X above the thin sets' are refused there); h/c outside the
+least and greatest h/c of all the band-setting sets below Mach 1.5 (h/c
+acts through the layer, which the rule before it bounds window by
+window; Nash finds little effect of h/c itself above about 2% near Mach
+1, and the band above 1.5 has no h/c limit); a laminar edge (item 1); a
+swept edge. (The h/c rule amended 2026-10-26 before any value of RM
+A51J11 or RM A52E01 was read: first written window by window, which
+above Mach 1.25 would have served TN 3548's h/c 0.06 alone.)
 
 8. **Labels.** Free edges: "estimated on component data", naming the
    flat-faced sets, the inclined sets with their widening, the thick-layer
