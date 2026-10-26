@@ -27,7 +27,17 @@
  *   alone; the weak reflected wave of that interaction is neglected.
  */
 
-import { characteristicNetwork, type Point } from './characteristics';
+import type { Body } from '../geometry/body';
+import {
+  characteristicNetwork,
+  startingData,
+  type CharacteristicsFromOptions,
+  type CharacteristicsSolution,
+  type NetworkOptions,
+  type Point,
+  type ProfileBody,
+  type StartingLine,
+} from './characteristics';
 import { deflectionAngle, normalShock } from './gas-dynamics';
 
 type Network = ReturnType<typeof characteristicNetwork>;
@@ -158,6 +168,9 @@ export function embeddedShockPoint(
       return change;
     });
     const down = behindEmbeddedShock(net, gamma, up, beta);
+    // A wave angle past the weak branch's sonic point is too steep: the
+    // residual grows with the wave angle, so it counts as positive.
+    if (!(net.machOf(down).m > 1)) return { up, down, residual: Infinity };
     const foot = plusFoot(net, s.down, downB, down);
     const cf = net.coefficients(foot, 1);
     const cd = net.coefficients(down, 1);
@@ -168,18 +181,266 @@ export function embeddedShockPoint(
     const residual = qp * (down.p - foot.p) + (down.theta - foot.theta) + rp;
     return { up, down, residual };
   };
-  // Secant on the wave angle, from the old one.
+  // Secant on the wave angle, from the old one, kept inside the bracket
+  // the residuals so far give (the residual grows with the wave angle): a
+  // step that leaves it, or one from an infinite residual, bisects
+  // instead; with no wave angle yet too steep it steps up, and with none
+  // yet too shallow it goes halfway to the upstream Mach angle. Below the
+  // Mach angle the shock has no strength and the residual no longer
+  // changes: a positive one there leaves the shock a Mach wave.
+  let lo = -Infinity;
+  let hi = Infinity;
+  const bracket = (beta: number, residual: number) => {
+    if (residual < 0) lo = Math.max(lo, beta);
+    else hi = Math.min(hi, beta);
+  };
   let b0 = s.beta;
+  let e0 = at(b0);
+  bracket(b0, e0.residual);
   let b1 = s.beta * (1 - 1e-4);
-  let r0 = at(b0).residual;
-  let r1 = at(b1).residual;
-  for (let it = 0; it < 60 && Math.abs(b1 - b0) > 1e-15 && r1 !== r0; it++) {
-    const b2 = b1 - (r1 * (b1 - b0)) / (r1 - r0);
+  let e1 = at(b1);
+  bracket(b1, e1.residual);
+  for (let it = 0; it < 120; it++) {
+    if (Math.abs(b1 - b0) <= 1e-15 || e1.residual === 0) break;
+    const flat = e1.residual === e0.residual;
+    if (flat && Number.isFinite(e1.residual) && e1.residual > 0) break;
+    let b2 = flat ? NaN : b1 - (e1.residual * (b1 - b0)) / (e1.residual - e0.residual);
+    if (!(b2 > lo && b2 < hi)) {
+      if (Number.isFinite(lo) && Number.isFinite(hi)) b2 = 0.5 * (lo + hi);
+      else if (Number.isFinite(hi)) {
+        const mach = Math.asin(1 / net.machOf(e1.up).m) + e1.up.theta;
+        b2 = 0.5 * (Math.min(hi, b1) + mach);
+      } else b2 = lo + 2 * Math.abs(b1 - b0) + 1e-6;
+    }
     b0 = b1;
-    r0 = r1;
+    e0 = e1;
     b1 = b2;
-    r1 = at(b1).residual;
+    e1 = at(b1);
+    bracket(b1, e1.residual);
   }
-  const { up, down } = at(b1);
+  const { up, down } = e1;
   return { x: up.x, y: up.y, beta: b1, up, down };
+}
+
+/** A C- line of the march, from its top to the body, and its embedded shock if any. */
+interface Line {
+  readonly points: Point[];
+  /** Index of the shock's upstream side; the downstream side follows it. */
+  readonly shock: { readonly index: number; readonly beta: number } | null;
+}
+
+export interface ShockedSolution extends CharacteristicsSolution {
+  /** The embedded shock's points, in order: position, wave angle, pressure ratio across it. */
+  readonly embedded: readonly {
+    readonly x: number;
+    readonly y: number;
+    readonly beta: number;
+    readonly pressureRatio: number;
+  }[];
+  /** Where it formed, or null if it did not. */
+  readonly formed: { readonly x: number; readonly y: number } | null;
+  /** Where it reached the bow shock, or null if it did not. */
+  readonly merged: { readonly x: number; readonly y: number } | null;
+}
+
+export interface ShockedOptions extends CharacteristicsFromOptions {
+  /** Verification only (characteristicNetwork). */
+  readonly network?: NetworkOptions;
+}
+
+/** Signed distance of c from the line through a at the given angle (positive above-left). */
+function side(a: { x: number; y: number }, angle: number, c: { x: number; y: number }) {
+  return (c.y - a.y) * Math.cos(angle) - (c.x - a.x) * Math.sin(angle);
+}
+
+/**
+ * The march of characteristicsFrom with an embedded shock fitted (see the
+ * file's header), from the same starting data.
+ */
+export function characteristicsFromShocked(
+  body: Body | ProfileBody,
+  start: StartingLine,
+  options: ShockedOptions,
+): ShockedSolution {
+  const { mach, gamma } = options;
+  const net = characteristicNetwork(body, mach, gamma, options.network);
+  const { radius, interiorPoint, wallPoint, shockPoint, entropy, entropyAt } = net;
+  const { data, kWall, startPsi, startMassDefect, width, m } = startingData(net, start, options);
+
+  // The entropy behind the embedded shock by stream function; elsewhere the
+  // network's (the data's, then the bow shock's history).
+  const behind: { psi: number; k: number }[] = [];
+  const kAll = (psi: number) => {
+    const n = behind.length;
+    if (n === 0 || psi < behind[0]!.psi || psi > behind[n - 1]!.psi) return entropyAt(psi);
+    if (n === 1) return behind[0]!.k;
+    let lo = 0;
+    let hi = n - 1;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if (behind[mid]!.psi <= psi) lo = mid;
+      else hi = mid;
+    }
+    const a = behind[lo]!;
+    const b = behind[hi]!;
+    return a.k + ((b.k - a.k) * (psi - a.psi)) / (b.psi - a.psi);
+  };
+
+  const wall: { x: number; p: number }[] = [{ x: data[m]!.x, p: data[m]!.p }];
+  const shock: { x: number; y: number; angle: number }[] = [
+    { x: data[0]!.x, y: data[0]!.y, angle: start.shockAngle },
+  ];
+  const embedded: { x: number; y: number; beta: number; pressureRatio: number }[] = [];
+  let formed: { x: number; y: number } | null = null;
+  let merged: { x: number; y: number } | null = null;
+  let massBalance = 0;
+  let penetration = 0;
+
+  /** Is b ahead of a along the C- line through a (farther from its top)? */
+  const ahead = (a: Point, b: Point) => {
+    const angle = net.coefficients(a, -1).angle;
+    return (b.x - a.x) * Math.cos(angle) + (b.y - a.y) * Math.sin(angle) > 0;
+  };
+
+  /** Records an embedded shock point and the entropy behind it. */
+  const recordShock = (sides: ShockSides) => {
+    embedded.push({
+      x: sides.x,
+      y: sides.y,
+      beta: sides.beta,
+      pressureRatio: sides.down.p / sides.up.p,
+    });
+    if (behind.length === 0 || sides.up.psi > behind[behind.length - 1]!.psi) {
+      behind.push({ psi: sides.up.psi, k: sides.down.k });
+    }
+  };
+
+  /**
+   * A new C- line from `head`, meeting the C+ lines from the old line's
+   * points from index `first` on, then the body; null where it reaches
+   * beyond the body's end.
+   */
+  const step = (head: Point, old: Line, first: number): Line | null => {
+    const points: Point[] = [head];
+    let shockIndex: number | null = null;
+    let shockBeta = 0;
+    const u = old.shock?.index ?? -1;
+    let j = first;
+    while (j < old.points.length) {
+      const prev = points[points.length - 1]!;
+      if (old.shock && j === u) {
+        // The embedded shock's new point, from the last upstream point.
+        const s: ShockSides = {
+          x: old.points[u]!.x,
+          y: old.points[u]!.y,
+          beta: old.shock.beta,
+          up: old.points[u]!,
+          down: old.points[u + 1]!,
+        };
+        const upA = old.points[Math.max(u - 1, 0)]!;
+        const downB = old.points[Math.min(u + 2, old.points.length - 1)]!;
+        const next = embeddedShockPoint(net, gamma, s, prev, upA, downB, kAll);
+        recordShock(next);
+        shockIndex = points.length;
+        shockBeta = next.beta;
+        points.push(next.up, next.down);
+        j = u + 2;
+        continue;
+      }
+      const q = interiorPoint(prev, old.points[j]!, kAll);
+      if (old.shock && j < u) {
+        // Upstream: a C+ that reaches the shock (its old line continued)
+        // before the new line is absorbed.
+        if (side(old.points[u]!, old.shock.beta, q) < 0) {
+          j++;
+          continue;
+        }
+      } else if (shockIndex !== null) {
+        // Downstream: a C+ that reaches the shock before the new line meets
+        // it is absorbed (it falls behind the line's last point).
+        if (!ahead(prev, q)) {
+          j++;
+          continue;
+        }
+      } else if (!ahead(prev, q) && points.length >= 2) {
+        // No shock yet: two C+ lines cross. A shock forms where they do, at
+        // zero strength, between the old points j - 1 and j.
+        const a = old.points[j - 1]!;
+        const b = old.points[j]!;
+        const ca = net.coefficients(a, 1);
+        const cb = net.coefficients(b, 1);
+        const ta = Math.tan(ca.angle);
+        const tb = Math.tan(cb.angle);
+        const x = (b.y - a.y + ta * a.x - tb * b.x) / (ta - tb);
+        const y = a.y + ta * (x - a.x);
+        const at: Point = { ...lerp(a, b, 0.5), x, y };
+        const s: ShockSides = { x, y, beta: 0.5 * (ca.angle + cb.angle), up: at, down: at };
+        formed ??= { x, y };
+        // The new line's last point came from a's C+, which ends at the
+        // shock: drop it and meet the shock from the point before.
+        points.pop();
+        const from = points[points.length - 1]!;
+        const next = embeddedShockPoint(net, gamma, s, from, a, b, kAll);
+        recordShock(next);
+        shockIndex = points.length;
+        shockBeta = next.beta;
+        points.push(next.up, next.down);
+        j++;
+        continue;
+      }
+      penetration = Math.max(penetration, (radius(q.x) - q.y) / width);
+      points.push(q);
+      j++;
+    }
+    const w = wallPoint(points[points.length - 1]!, kWall);
+    if (w === null) return null;
+    points.push(w);
+    massBalance = Math.max(massBalance, Math.abs(w.psi - startPsi) / data[0]!.psi);
+    wall.push({ x: w.x, p: w.p });
+    return {
+      points,
+      shock: shockIndex === null ? null : { index: shockIndex, beta: shockBeta },
+    };
+  };
+
+  const result = () => ({
+    wall,
+    shock,
+    massBalance,
+    startMassDefect,
+    penetration,
+    embedded,
+    formed,
+    merged,
+  });
+  // The triangle of the data's dependence, as characteristicsFrom.
+  let line: Line = { points: [data[m]!], shock: null };
+  for (let a = m - 1; a >= 0; a--) {
+    const next = step(data[a]!, line, 0);
+    if (next === null) return result();
+    line = next;
+  }
+  options.onLine?.(line.points);
+  // The march, each new line from a bow-shock point.
+  let beta = start.shockAngle;
+  for (;;) {
+    if (line.shock && line.shock.index <= 1) {
+      // The embedded shock has reached the bow shock: the bow shock goes on
+      // alone, the shock's upstream side dropped.
+      const at = line.points[line.shock.index]!;
+      merged ??= { x: at.x, y: at.y };
+      const points = [...line.points];
+      points.splice(line.shock.index, 1);
+      line = { points, shock: null };
+    }
+    const s = shockPoint(line.points[0]!, beta, line.points[1]!);
+    beta = s.beta;
+    entropy.push({ psi: s.point.psi, k: s.point.k });
+    const next = step(s.point, line, 2);
+    if (next === null) break;
+    shock.push({ x: s.point.x, y: s.point.y, angle: beta });
+    options.onLine?.(next.points);
+    line = next;
+  }
+  return result();
 }
