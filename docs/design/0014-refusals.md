@@ -1854,6 +1854,10 @@ cases checked in each run. No case is newly refused; no served number
 moves: a swept plate at the base takes the unswept plate's bracket
 exactly (its test holds the three band values to 1e-12). What still
 refuses most of the plates reached is listed in 0015 section 12.
+At the audit's default size (2,000 rockets, 8,000 cases,
+`out/impact.out`, the run 0014 quotes): totals of all bands 1.9% to 2.4%
+(Mach 1.5 to 1.8: 2.5% to 4.1%; 1.8 to 3.0: 5.2% to 5.4%), the cross-check
+agreeing on all 1,200 cases checked.
 
 Letters (w) to (y) are allocated by the coordinator on other branches;
 the next free letter is the coordinator's to allocate.
