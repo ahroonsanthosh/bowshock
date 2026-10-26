@@ -1869,5 +1869,122 @@ opened the report, and no W6 reference family existed.
   served noses carry the labels of the other fitted noses until a
   hold-out of their own is registered.
 
+**2026-10-26 (x), addendum by a neutral party, before any reading.**
+Written by a neutral party (not a reader and not W6's agent) who has
+seen no W6 computed value, no W6 result file and no reading of the
+report. It fixes the figure numbers as (x) asks.
+
+- _The report._ Perkins, Jorgensen and Sommer, "Investigation of the
+  drag of various axially symmetric nose shapes of fineness ratio 3 for
+  Mach numbers from 1.24 to 7.4", NACA Report 1386, Ames Aeronautical
+  Laboratory, 1958. NTRS 19930091022 (its record lists NACA-TR-1386).
+  Title, authors and report number checked on the title page (PDF p. 3),
+  the year on the cover (PDF p. 1) and in the record. The PDF, from
+  https://ntrs.nasa.gov/api/citations/19930091022/downloads/19930091022.pdf
+  on 2026-10-26: 21 pages, 18189447 bytes, SHA-256
+  96b125ca12dda9df9acd5e372f8b4ef7589710f7034fee5c059ee718e7e4a25b.
+  Page numbers below are PDF pages.
+- _What was opened._ The report has no list of figures and no numbered
+  table. Its only tables are the model tables inside figure 1, and an
+  untitled list of Mach number, Reynolds number and tunnel in the text
+  of p. 8, which is not a figure or table and was not read past its
+  heading. So the numbers were fixed from the captions and sub-captions,
+  viewed in crops of the scan, with figure 1 (model profiles and their
+  tables: geometry, no measured quantity) viewed whole, and the model
+  and series names in the keys of figures 7, 8, 12, 13 and 15 seen
+  through the scan's text layer with every digit masked. The request to
+  the neutral party also allowed the text describing the models; (x)
+  does not, and (x)'s narrower rule was kept: no page of text was read,
+  with two exceptions, both without a number: the two lines of p. 8's
+  text that head the untitled list, and about twenty lines of the text
+  of p. 12, on the schlieren pictures, shown by a digit-masked listing
+  while figure 6's caption was being found. No plotted or tabulated
+  value was read or noted; two numerals at the edge of figure 4 that
+  showed in caption crops were not recorded.
+- _The models_ (figure 1, pp. 7 and 8; d is the diameter of the
+  hemispherical tip, D the base diameter, the tip tangent to the cone).
+  (a) Hemisphere-cone series for constant L/D = 3: model 1 (d/D 0, the
+  sharp cone), models 2 to 5 (d/D 0.075, 0.150, 0.300, 0.500, D 1.75
+  in.), free-flight models 1f to 5f (the same d/D, D 0.45 in.), and the
+  pressure distribution models 4p and 5p (d/D 0.300 and 0.500, D 2.00
+  in.) and 6p (d/D 1.000, cone half-angle 0, D 4.00 in.). Figure 1's
+  note: "4p, 5p, and 6p are pressure distribution models. Models 1f
+  through 5f are free-flight models." (b) Hemisphere-cone series for
+  constant cone angle (half-angle 9 deg 28 min): models 7, 8 and 9 (d/D
+  0.075, 0.150, 0.300), with model 1. (c) to (e): power-law profiles
+  (models 1, 10, 11, 12), Haack noses (13, 14, 15), an L-V ogive (16), a
+  D-V cone (17) and an ellipsoid (18), each defined by its own formula;
+  none has a hemisphere or sphere-cap tip. So the models (x) can name
+  are 2 to 5, 7 to 9, 2f to 5f and 4p to 6p (models 1 and 1f are sharp
+  cones).
+- _Named_ (the caption with figure 1, and for figure 8 its key, meets
+  (x)'s rule):
+  - Figure 4, p. 10: "Longitudinal distribution of pressure coefficient
+    for hemisphere-cones at 0 deg angle of attack"; (a) model 4p, d/D
+    0.30; (b) model 5p, d/D 0.50; (c) model 6p, d/D 1.00. The measured
+    surface pressure coefficient along each model at zero incidence,
+    item (1) of (x), every station shown. The caption gives no Mach or
+    Reynolds number; each panel carries its own Mach numbers, which the
+    readers record. The key also lists a Pitot-tube pressure coefficient
+    and exact cone theory (ref. 9): not measured, not named.
+  - Figure 8, p. 14 (right column, top): "Variation of foredrag
+    coefficient with bluntness for hemisphere-cone series, constant L/D
+    = 3", in part: the series its key lists under "Experiment" as "Wave
+    drag (press. distr. models)", the pressure foredrag of models 4p to
+    6p from their measured pressures, item (2) of (x). The readers quote
+    how the report obtains it. The caption gives no Mach or Reynolds
+    number; the readers record those shown.
+- _Ambiguous, not decided here._ Each caption names rounded-tip models
+  and a drag, but does not say whether the drag is a pressure foredrag,
+  a foredrag with the friction in it, or a total with the base, nor
+  whether friction was removed by a method the report states:
+  - Figure 7, p. 14 (left column): "Variation of drag coefficient with
+    Mach number for hemisphere-cone series, constant L/D = 3"; (a) wind
+    tunnel results, (b) free-flight results. Its rounded-tip models only
+    (by figure 1, from 2 to 5 and 2f to 5f; the sharp models 1 and 1f
+    are not named).
+  - Figure 8, its other "Experiment" series, labelled "Foredrag", for
+    its rounded-tip models. The estimate it is set beside is labelled
+    wave drag plus Blasius laminar skin friction. Figure 8's "Estimate"
+    curves are not measured and are not named.
+  - Figure 10, p. 15: "Variation of foredrag coefficient with bluntness
+    for hemisphere-cone series, constant cone angle = 18 deg 56 min";
+    models 7 to 9 (model 1 is not named).
+  - Figure 16, p. 20: "Variation of foredrag coefficient with Mach
+    number for all the force models tested"; its models with a
+    hemisphere tip only. "Force models" suggests balance forces, which
+    (x) excludes when they include friction or the base; the caption
+    does not say whether friction is in the foredrag.
+  - Figure 5, p. 11: "Variation of wave drag coefficient with Mach
+    number for a hemisphere". The tip is a hemisphere, but the caption
+    does not say whether the values are measured, computed or taken from
+    other reports, nor on which model.
+- _What happens to the ambiguous items._ (x)'s rule for a silent caption
+  ("the item is named and the readers say what it shows") may cover
+  them. Whether it does, so that they are read now with the readers
+  saying what each series is, is for the coordinator to settle before
+  any reader starts; the reader brief carries them as a separate part
+  that can be dropped. Whether any of their points is a measured
+  pressure foredrag under (x) is decided from what the report states,
+  never from a value, and before any reading is set against a W6 value.
+- _Not named._ Figure 1, pp. 7 and 8 (model profiles: geometry, no
+  measured quantity; the readers copy from it the geometry of the named
+  models). Figure 2, p. 8 (profiles of minimum drag noses: geometry).
+  Figure 3, p. 8 (range of Mach and Reynolds numbers of the free-flight
+  tests: test conditions). Figure 6, p. 12 (schlieren pictures of model
+  5: photographs, excluded by (x)). The unnumbered flow sketch on p. 13
+  (no measurement). Figure 9, p. 14 (estimated wave drag against
+  fineness ratio for a sharp cone and a 7.5-percent hemispherically
+  blunted cone at Mach 2 and 3: estimates, not measured). Figure 11,
+  p. 16 (experimental and theoretical foredrag of models 1, 16, 13, 14,
+  15 and 10: no rounded tip). Figure 12, p. 18 (foredrag of Haack
+  models and others with the same two parameters; the keys name the
+  L-D, D-V and L-V Haack noses, the hypersonic optimum, the paraboloid,
+  the D-V cone and the L-V ogive: no sphere-cap tip; the paraboloid's
+  tip is blunt but not a sphere cap). Figures 13 and 14, p. 18
+  (theoretical minimum drag shapes: theory). Figure 15, p. 19 (foredrag
+  against Mach number of the power-law family: cone, hypersonic
+  optimum, paraboloid and 1/4 power: no sphere-cap tip).
+
 The next letters are allocated by the coordinator; (w) is reserved for
 the nose's model-form allowance.
