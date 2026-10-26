@@ -130,6 +130,17 @@ reference): `runners/lane.sh runners/jobs-ogive.txt` and
 its marches, so a case that fails is seen early. Results land in
 `tests/tmp-w6b/out` and are copied to `results/` as they finish.
 
+**A fit that stalls** (added 2026-10-26, before its march): the
+3-caliber ogive with r_n/R 0.15 at Mach 1.3 on nj = 80 did not reach the
+early stop: from 6000 to 24000 iterations its drag oscillated within
+0.100929446 to 0.100929543 (about 5e-7 of it) with the residual at 1e-6
+to 3e-6 and the shock speeds near 1e-8, never settling. Its process was
+stopped and the grid finished by `runners/finish.sh` at 28000 iterations
+(7000 per refinement), saved as not converged with that oscillation; its
+march then ran (`jobs-extra.txt`). The analysis marks it ("checks
+false": not converged), and its iterative error, about 5e-7 of the drag,
+is stated wherever it is used.
+
 Estimated cost (the probe's times on a shared core): nj = 20 two to eight
 minutes, nj = 40 8 to 42 minutes, nj = 80 1.4 to 7 hours, a family's
 marches up to an hour; about 40 CPU-hours per shape for the twelve
