@@ -985,11 +985,17 @@ formed on two of them, and the shape widening's size on two of them.
 
 7. **What is refused below Mach 1.5**, each with its reason in plain
    words, at every station along the span on fins of varying chord: a
-   layer parameter beyond the data (X above the largest X of any point in
-   either bracketing node's window, at most 4.5; where no thick-layer set
-   reaches a window, edges with X above the thin sets' largest are
-   refused there); h/c outside the least and greatest of the points in
-   either window; a laminar edge (item 1); a swept edge.
+   layer parameter beyond the data (X above what the points of each of the
+   two bracketing nodes' windows reach, each set counted at the least X of
+   its test, and above 4.5; where no thick-layer set reaches a window,
+   edges with X above the thin sets' are refused there); h/c outside the
+   least and greatest h/c of all the band-setting sets below Mach 1.5 (h/c
+   acts through the layer, which the rule before it bounds window by
+   window; Nash finds little effect of h/c itself above about 2% near Mach
+   1, and the band above 1.5 has no h/c limit); a laminar edge (item 1); a
+   swept edge. (The h/c rule amended 2026-10-26 before any value of RM
+   A51J11 or RM A52E01 was read: first written window by window, which
+   above Mach 1.25 would have served TN 3548's h/c 0.06 alone.)
 
 8. **Labels.** Free edges: "estimated on component data", naming the
    flat-faced sets, the inclined sets with their widening, the thick-layer
