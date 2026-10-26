@@ -1084,6 +1084,15 @@ describe('refusals', () => {
                 `the leading edge swept ${le.toFixed(1)} deg with the trailing edge unswept, with flat faces`,
               );
               expect(r.label, where).toContain('0015 section 12');
+              // The trailing edge is placed where it is: in the base plane only for fins at the base.
+              if (xc === 0) {
+                expect(r.label, where).toContain('set at the trailing edge, in the base plane');
+              } else {
+                expect(r.label, where).not.toContain('in the base plane');
+                expect(r.label, where).toContain(
+                  `set at the trailing edge, in one plane parallel to the base, ${xc} root chords ahead of it`,
+                );
+              }
               if (le > 60) {
                 expect(r.label, where).toContain(
                   'no fin of any section is measured at the base swept beyond 60 deg',
@@ -1095,6 +1104,43 @@ describe('refusals', () => {
           }
         }
       }
+    });
+    it("fins ahead of the base: the label does not put their trailing edge in the base plane (the review's case)", () => {
+      // The review of 2026-10-26: a plate t/c 0.024, three fins, the leading edge swept 20 deg, the trailing
+      // edge unswept and 0.5 root chords ahead of the base, at M 1.8, was labelled "in the base plane".
+      const ahead = finsOnBaseFactorW1(
+        1.8,
+        fins({
+          count: 3,
+          section: plate(0.024),
+          tanLeadingEdgeSweep: tanDeg(20),
+          tanTrailingEdgeSweep: 0,
+          trailingEdgeAheadOfBase: 0.5,
+        }),
+      );
+      expect(ahead.label).not.toContain('base plane');
+      expect(ahead.label).toContain(
+        'both bounds are set at the trailing edge, in one plane parallel to the base, 0.5 root chords ' +
+          'ahead of it, which the leading-edge sweep does not move',
+      );
+      expect(ahead.label).toContain(
+        'the position bracketed between the stations of TN 2360 fig. 6',
+      );
+      const atBase = finsOnBaseFactorW1(
+        1.8,
+        fins({
+          count: 3,
+          section: plate(0.024),
+          tanLeadingEdgeSweep: tanDeg(20),
+          tanTrailingEdgeSweep: 0,
+          trailingEdgeAheadOfBase: 0,
+        }),
+      );
+      expect(atBase.label).toContain(
+        'both bounds are set at the trailing edge, in the base plane, which the leading-edge sweep does ' +
+          'not move',
+      );
+      expect(atBase.label).not.toContain('parallel to the base');
     });
     it('the same fins as a sharp section keep 0015 section 3.4: refused at 20 and 44 deg below M 2.0 and at 70 deg', () => {
       for (const mach of [1.2, 1.8, 1.99]) {

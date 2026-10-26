@@ -249,8 +249,8 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   'fin-sweep': () => ({
     reason:
       'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
-      'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square ' +
-      'trailing edge are taken at any leading-edge sweep',
+      'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
+      'unswept trailing edge are taken at any leading-edge sweep',
     change:
       'flat fins with a square, unswept trailing edge; unswept fins of constant chord; or fins a ' +
       'root chord or more ahead of the base',
