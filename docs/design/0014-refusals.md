@@ -1820,4 +1820,29 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
-The next free letter is (w).
+**2026-10-26 (z): flat-faced fins at the base served at every
+leading-edge sweep with the trailing edge unswept (A1 of the refusal
+plan)** (the owner's decision of 2026-10-26 to lift refusals by verified
+work only; the coordinator's allocation of this letter). Written before
+the code, with no new data: the bounds are section 4's of design record
+0015 as they stand (RM L52E06 fig. 7's relief and the unswept circular-arc
+member at least as thick), and the ordering, in 0015 section 12, is that
+neither bound uses the leading edge: the upper rests on TN 2360's
+mechanism (the increment follows the faces' slope near the trailing edge,
+zero on a flat face at any sweep) and the lower on a relief Hart traces to
+the fin-body junctures and the square edge in the base plane, which the
+leading-edge sweep does not move when the trailing edge is unswept. 0015
+section 3.4's refusal of leading-edge sweeps 0 to 45 deg below Mach 2.0
+and above 60 deg was written for sharp sections, whose face pressures the
+sweep moves through a swept edge; it is kept for them and no longer
+applied to flat faces. A plate with a swept trailing edge keeps section
+4's sweeps (45 to 60 deg, the trailing edge aft no more than the leading
+edge); sharp sections, rounded and diverging trailing edges and the
+present factor are untouched. The label stays "bounded, not measured",
+and names the sweep. No held-back set is opened or run. What it costs and
+gains is recorded below this entry from `docs/research/refusals/` run
+before and after (400 rockets, 1,600 cases), with the cross-check
+against `src/total` required to agree.
+
+Letters (w) to (y) are allocated by the coordinator on other branches;
+the next free letter is the coordinator's to allocate.
