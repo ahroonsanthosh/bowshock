@@ -943,14 +943,18 @@ formed on two of them, and the shape widening's size on two of them.
    of every band-setting point whose Mach interval meets [M_(k-1),
    M_(k+1)] (at 1.00, [1.00, 1.05]; at 1.50, [1.45, 1.50]); between nodes
    they are linear in M, so every point lies inside the band at its own
-   Mach number (both nodes either side hold it). The band served is
-   [min(0.93 K_low/K_nom, low(M)), max(1.21 K_high/K_nom, high(M))]: never
-   narrower than the band above Mach 1.5 (0.93 to 1.21, with K's ends),
-   which its evidence (orifice position, facilities, flight) shows is the
-   least spread a correlation of base pressure carries; and equal to it at
-   Mach 1.5 unless points at 1.45 to 1.50 lie outside it. In that case the
-   step at 1.5 is reported, not hidden, and the band above 1.5 is not
-   changed (10.7 (ac)).
+   Mach number (both nodes either side hold it). The band served has the
+   form of the band above Mach 1.5 (0.93 to 1.21 times K's ends): [min(0.93,
+   low(M)) K_low/K_nom, max(1.21, high(M)) K_high/K_nom]. It is never
+   narrower than the band above 1.5, whose evidence (orifice position,
+   facilities, flight) shows the least spread a correlation of base
+   pressure carries, and it equals that band at Mach 1.5 unless points at
+   1.45 to 1.50 lie outside 0.93 to 1.21. In that case the step at 1.5 is
+   reported, not hidden, and the band above 1.5 is not changed (10.7
+   (ac)). K's ends multiply the thick-layer points' ratios, which already
+   carry K's error once: a double count, kept because it can only widen
+   the band. (Amended 2026-10-26 before any value of RM A51J11 or RM
+   A52E01 was read; first written with K's ends on 0.93 and 1.21 only.)
 
 6. **The shape widening** (0014 10.7 (s), item 1; decided here). _The
    ordering, an argument:_ at a blunt base the flow leaving each face
