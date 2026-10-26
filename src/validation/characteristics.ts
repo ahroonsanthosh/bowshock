@@ -434,6 +434,17 @@ export function characteristics(
 ): CharacteristicsSolution {
   const { mach, gamma, intervals: n } = options;
   if (!(Number.isInteger(n) && n >= 2)) throw new RangeError('at least two intervals are needed');
+  // The march starts from the conical flow of a sharp tip; a rounded or
+  // blunt tip has subsonic flow at its nose, which characteristics do not
+  // cover: such noses are marched from a line behind the sonic line
+  // (characteristicsFrom).
+  if (!Number.isFinite(noseTipSlope(body.nose))) {
+    throw new RangeError(
+      body.nose.tipRadius !== undefined
+        ? 'the march from the tip needs a sharp tip: a rounded tip has subsonic flow at its nose; march from a line behind the sonic line instead'
+        : 'the march from the tip needs a sharp tip: this nose leaves the axis vertically, with subsonic flow at its nose; march from a line behind the sonic line instead',
+    );
+  }
   const net = network(body, mach, gamma);
   const { cp, enthalpy, vInf, derived, radius, slope, entropy, massFlux, behindShock } = net;
   const L = body.nose.length;

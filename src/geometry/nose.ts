@@ -42,7 +42,7 @@ export interface Nose {
    * The capped nose keeps `length` overall, the cap included: behind the
    * cap its profile is that of the uncapped shape of length
    * `length + offset`, shifted forward by the offset the cap cuts off
-   * (cappedNose). Not on ellipsoids, whose tip is already rounded.
+   * (cappedNose). Offered on the shapes CAPPED_SHAPES names only.
    */
   readonly tipRadius?: number;
 }
@@ -59,9 +59,9 @@ export function validateNose(nose: Nose): void {
         `a tip radius must lie between 0 and the base radius, got ${nose.tipRadius}`,
       );
     }
-    if (shape.kind === 'ellipsoid') {
+    if (!takesTipRadius(nose)) {
       throw new RangeError(
-        'an ellipsoid nose is already rounded at its tip: it takes no tip radius',
+        `a tip radius is offered on ${CAPPED_SHAPES} only${shape.kind === 'ellipsoid' || (shape.kind === 'ogive' && length <= baseRadius) ? ': this nose is already rounded at its tip' : ''}`,
       );
     }
   }
@@ -244,6 +244,86 @@ export interface CappedNose {
   readonly centreX: number;
 }
 
+/** The shapes that take a tip radius, in words. */
+export const CAPPED_SHAPES =
+  'the tangent ogive (longer than its radius), the Von Karman nose, the parabola of parameter 1 and the cone';
+
+/**
+ * Whether a nose's shape takes a tip radius: the noses W6 caps (the
+ * tangent ogive, the Von Karman nose and the parabola K = 1, which meet
+ * the cylinder without a corner) and the cone, as geometry only (a capped
+ * cone meets the cylinder at a corner, and nothing serves it). Their
+ * profiles and slopes are written out below (uncappedProfile).
+ */
+function takesTipRadius(nose: Nose): boolean {
+  const { shape, length, baseRadius } = nose;
+  switch (shape.kind) {
+    case 'conical':
+      return true;
+    case 'ogive':
+      return shape.parameter === 1 && length > baseRadius;
+    case 'haack':
+      return shape.parameter === 0;
+    case 'parabolic':
+      return shape.parameter === 1;
+    default:
+      return false;
+  }
+}
+
+/**
+ * The radius and slope dr/dx at x of an uncapped nose of a shape that
+ * takes a tip radius, from each shape's formula. The Haack series uses
+ * theta = 2 asin(sqrt(x / L)) and a series for its area function at small
+ * theta, where theta - sin(2 theta) / 2 cancels: near the tip, where a
+ * small cap meets it, noseRadius's formula (acos(1 - 2 t)) loses digits,
+ * and below t of about 1e-16 returns 0. A capped nose's profile behind the
+ * cap is this one (cappedRadius); on the other shapes it is noseRadius's,
+ * value for value.
+ */
+function uncappedProfile(nose: Nose, x: number): { r: number; slope: number } {
+  const { shape, length: L, baseRadius: R } = nose;
+  const t = x / L;
+  switch (shape.kind) {
+    case 'conical':
+      return { r: R * t, slope: R / L };
+    case 'ogive': {
+      const { rho, xc } = ogiveArc(1, L, R);
+      const root = Math.sqrt(Math.max(0, rho * rho - (xc - x) ** 2));
+      return { r: noseRadius(nose, x), slope: (xc - x) / root };
+    }
+    case 'parabolic': {
+      const k = shape.parameter;
+      return {
+        r: (R * (2 * t - k * t * t)) / (2 - k),
+        slope: (R * (2 - 2 * k * t)) / ((2 - k) * L),
+      };
+    }
+    case 'haack': {
+      const c = shape.parameter;
+      const theta = 2 * Math.asin(Math.sqrt(t));
+      const th2 = theta * theta;
+      // theta - sin(2 theta) / 2 by its series below 0.1 (terms to theta^11:
+      // the next is below 1e-16 of the first there), where the formula
+      // itself cancels to 1e-14.
+      const base =
+        theta < 0.1
+          ? theta *
+            th2 *
+            (2 / 3 - th2 * (2 / 15 - th2 * (4 / 315 - th2 * (2 / 2835 - (4 / 155925) * th2))))
+          : theta - Math.sin(2 * theta) / 2;
+      const area = base + c * Math.sin(theta) ** 3;
+      const sqrtArea = Math.sqrt(Math.PI * area);
+      return {
+        r: (R * sqrtArea) / Math.PI,
+        slope: (R * Math.sin(theta) * (2 + 3 * c * Math.cos(theta))) / (L * sqrtArea),
+      };
+    }
+    default:
+      throw new RangeError(`a tip radius is offered on ${CAPPED_SHAPES} only`);
+  }
+}
+
 const capCache = new WeakMap<Nose, CappedNose>();
 
 /** The cap of a nose with a tip radius; throws a RangeError if it does not fit. */
@@ -252,59 +332,67 @@ export function cappedNose(nose: Nose): CappedNose {
   if (cached) return cached;
   const rn = nose.tipRadius;
   if (rn === undefined) throw new RangeError('the nose has no tip radius');
+  if (!takesTipRadius(nose))
+    throw new RangeError(`a tip radius is offered on ${CAPPED_SHAPES} only`);
   const uncapped = (length: number): Nose => ({
     shape: nose.shape,
     length,
     baseRadius: nose.baseRadius,
   });
+  const fails = () => new RangeError(`a tip radius of ${rn} does not fit on this nose`);
+  /**
+   * On the uncapped nose `parent`, the point xt where the tangent sphere's
+   * radius f sqrt(1 + f'^2), which grows from 0 at the tip along these
+   * convex profiles, equals r_n; and the offset xc - r_n of the sphere's
+   * centre xc. The centre comes from the sphere through the profile's
+   * point (xt, f(xt)) as the profile behind the cap uses it, which keeps the radius
+   * continuous at the tangent point to rounding.
+   */
   const tangency = (parent: Nose) => {
     const L = parent.length;
-    const f = (x: number) => noseRadius(parent, x);
-    // Central differences with a step relative to x (one-sided at the
-    // ends): near a Haack tip, where r ~ x^(3/4), the curvature grows as
-    // x^(-5/4) and a step fixed in L would lose the slope at a small cap.
-    const slope = (x: number) => {
-      const h = Math.max(1e-6 * x, 1e-12 * L);
-      if (x < h) return (f(x + h) - f(x)) / h;
-      if (x > L - h) return (f(x) - f(x - h)) / h;
-      return (f(x + h) - f(x - h)) / (2 * h);
+    const radiusAt = (x: number) => {
+      const { r, slope } = uncappedProfile(parent, x);
+      return r * Math.sqrt(1 + slope * slope);
     };
-    // The radius of the sphere tangent at x, from 0 at the tip; it grows
-    // along the convex profiles capped here.
-    const radiusAt = (x: number) => f(x) * Math.sqrt(1 + slope(x) ** 2);
-    const end = L * (1 - 1e-6);
-    if (!(radiusAt(end) > rn)) {
-      throw new RangeError(
-        `a tip radius of ${rn} does not fit on this nose (at most about ${radiusAt(end).toPrecision(3)})`,
-      );
-    }
     let low = 0;
-    let high = end;
-    for (let k = 0; k < 200; k++) {
+    let high = L;
+    if (!(radiusAt(high) > rn)) throw fails();
+    for (let k = 0; k < 1100 && high - low > 0; k++) {
       const mid = 0.5 * (low + high);
+      if (mid === low || mid === high) break;
       if (radiusAt(mid) < rn) low = mid;
       else high = mid;
     }
     const xt = 0.5 * (low + high);
-    // The centre from the sphere through the profile's point at xt, which
-    // keeps the radius continuous there to rounding; xt + f f' would carry
-    // the slope's error into the radius (on a small cap of a Haack nose,
-    // whose profile loses digits near the tip, a step of 8e-10 in r).
-    const r = f(xt);
-    const xc = xt + Math.sqrt(Math.max(0, rn * rn - r * r));
+    const r = uncappedProfile(parent, xt).r;
+    const xc = xt + Math.sqrt(Math.max(0, (rn - r) * (rn + r)));
     return { xt, offset: xc - rn };
   };
-  let length = nose.length;
-  let t = tangency(uncapped(length));
-  for (let k = 0; k < 100; k++) {
-    const next = nose.length + t.offset;
-    if (Math.abs(next - length) <= 1e-14 * nose.length) break;
-    length = next;
-    t = tangency(uncapped(length));
+  // The parent's length Lp solves g(Lp) = Lp - offset(Lp) - length = 0;
+  // g increases with Lp (the offset grows more slowly than the length:
+  // near r_n = R only just, where a fixed-point iteration stalls short of
+  // the root), so the root is bracketed and bisected.
+  const g = (lp: number) => lp - tangency(uncapped(lp)).offset - nose.length;
+  let lo = nose.length;
+  let step = Math.max(tangency(uncapped(lo)).offset, 1e-12 * nose.length);
+  let hi = lo + step;
+  for (let k = 0; g(hi) <= 0; k++) {
+    if (k === 200) throw fails();
+    lo = hi;
+    step *= 2;
+    hi = lo + step;
   }
-  if (!(t.offset >= 0 && t.xt - t.offset > 0 && t.xt - t.offset < nose.length)) {
-    throw new RangeError(`a tip radius of ${rn} does not fit on this nose`);
+  for (let k = 0; k < 1100; k++) {
+    const mid = 0.5 * (lo + hi);
+    if (mid === lo || mid === hi) break;
+    if (g(mid) <= 0) lo = mid;
+    else hi = mid;
   }
+  const length = Math.abs(g(lo)) <= Math.abs(g(hi)) ? lo : hi;
+  const t = tangency(uncapped(length));
+  // The overall length kept to rounding, or refused.
+  if (!(Math.abs(length - t.offset - nose.length) <= 1e-12 * length)) throw fails();
+  if (!(t.offset >= 0 && t.xt - t.offset > 0 && t.xt - t.offset < nose.length)) throw fails();
   const result: CappedNose = {
     parent: uncapped(length),
     offset: t.offset,
@@ -325,5 +413,5 @@ function cappedRadius(nose: Nose, x: number): number {
   }
   // The parent's profile shifted by the offset; at the base the parent's
   // own end, so that the radius there is the base radius exactly.
-  return xx >= nose.length ? nose.baseRadius : noseRadius(c.parent, xx + c.offset);
+  return xx >= nose.length ? nose.baseRadius : uncappedProfile(c.parent, xx + c.offset).r;
 }

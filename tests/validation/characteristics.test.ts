@@ -500,6 +500,23 @@ describe('method of characteristics from given data on a line behind the tip', (
     expect(run(haack)).toThrow(/begin on the body/);
     expect(run({ ...cone(20), cylinderLength: 2 })).toThrow(/corners in the profile/);
   });
+
+  it('the march from the tip refuses rounded and blunt tips with that reason, before any corner', () => {
+    const march = (body: Body) => () =>
+      characteristics(body, { mach: 2, gamma, intervals: 40, start: 1e-3 });
+    for (const shape of [{ kind: 'ogive', parameter: 1 }, { kind: 'conical' }] as const) {
+      const capped: Body = {
+        nose: { shape, length: 3, baseRadius: 0.5, tipRadius: 0.025 },
+        cylinderLength: 2,
+      };
+      expect(march(capped), shape.kind).toThrow(/a rounded tip has subsonic flow at its nose/);
+    }
+    const vonKarman: Body = {
+      nose: { shape: { kind: 'haack', parameter: 0 }, length: 3, baseRadius: 0.5 },
+      cylinderLength: 2,
+    };
+    expect(march(vonKarman)).toThrow(/leaves the axis vertically/);
+  });
 });
 
 describe('method of characteristics from the fitted flow behind a blunt nose', () => {

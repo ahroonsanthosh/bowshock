@@ -15,22 +15,51 @@ is set from them, and an independent review has passed. Until then every
 capped nose is refused (`bluntNoseRefusal`: "a rounded (blunted) tip has
 not been checked against a reference yet").
 
-## 1. Geometry (done: ae794e4)
+## 1. Geometry (ae794e4; the review's fixes after it)
 
 `Nose.tipRadius` (`src/geometry/nose.ts`): a sphere cap centred on the
 axis and tangent to the shape's profile; the capped nose keeps its
 overall length, cap included (the uncapped profile is that of length
-`length + offset`, shifted forward). Any shape but the ellipsoid takes
-one as geometry; W6 serves, once referenced, only the tangent ogive
-(ogive parameter 1), the Von Karman nose (Haack C = 0) and the parabola
-K = 1, the noses that meet the cylinder without a corner. Capped cones,
-secant ogives, other Haack and power-series noses stay refused.
+`length + offset`, shifted forward). Offered on the tangent ogive longer
+than its radius, the Von Karman nose, the parabola K = 1 (the noses W6
+serves once referenced: they meet the cylinder without a corner) and the
+cone (geometry only: a capped cone meets the cylinder at a corner, and
+nothing serves it); refused on every other shape with that reason.
 
-Reproduced: the probe's first fit (5-caliber tangent ogive, 0.05 R, Mach
-1.3, nj = 20) on main 3389a04 with this geometry gives 0.042357534465754701
-against the probe's 0.042357534465754756 on haack-merge ee4b57a
-(1.3e-15), on the same 76 x 20 grid in the same 5000 iterations
-(`results/check.jsonl`).
+The independent review of ae794e4 (Fable, 2026-10-26) found the parent's
+length came from a fixed-point iteration that stalls as r_n tends to R
+(above r_n/R about 0.8 to 0.93 a flat stretch appeared inside the nose,
+without a refusal), the slope from finite differences whose step exceeded
+the tangent point of tiny caps on a Von Karman nose, the shapes wider than
+stated, an untested class-check branch and a misleading message from the
+march of characteristics. Fixed after it: the parent's length is bisected
+on g(Lp) = Lp - offset(Lp) - length, which increases with Lp, and refused
+unless g is met to 1e-12; the slopes are each shape's formula (the Haack
+series with theta = 2 asin(sqrt(t)) and a series for its area function
+below theta = 0.1, where noseRadius's formula cancels; the capped Von
+Karman profile behind the cap is that precise one); the tests take r_n up
+to 0.999 R and check the tangent ogive against its closed form (to 1e-12,
+the review's case of r_n 0.499 on 3 calibers giving a parent of 55.926).
+
+**The lanes stand.** The lanes run the geometry of ae794e4 (r_n/R 0.03 to
+0.15, where its iteration converged). Against the fixed geometry at their
+twelve shape, length and ratio points (`results/geometry-compare.json`,
+`runners/geometry-compare.test.ts`): the radius along the nose differs
+by at most 3.1e-15 of R, the offset by at most 1.2e-15, the parent's
+length by 2e-14 (the tangent point's position, where radius and slope
+are continuous, by up to 2.3e-11). Two of the lanes' grids fitted again
+from the free stream with the fixed geometry (`runners/check2.sh`,
+`results/check2.jsonl`): the Von Karman 5-caliber nose with r_n/R 0.03 at
+Mach 1.3, 0.035384396445193748 against the lane's 0.035384396445192652
+(3.1e-14), and the 3-caliber ogive with 0.15 at Mach 3,
+0.091072746574589261 against 0.091072746574589664 (4.4e-15), on the same
+grids in the same iterations.
+
+Reproduced as well: the probe's first fit (5-caliber tangent ogive, 0.05
+R, Mach 1.3, nj = 20) on main 3389a04 with ae794e4's geometry gives
+0.042357534465754701 against the probe's 0.042357534465754756 on
+haack-merge ee4b57a (1.3e-15), on the same 76 x 20 grid in the same 5000
+iterations (`results/check.jsonl`).
 
 ## 2. The measured check: NACA TR 1386 (0014 10.7 (x))
 

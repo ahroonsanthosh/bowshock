@@ -158,6 +158,13 @@ describe('the class rule', { timeout: 60_000 }, () => {
         body: { ...f.body, nose: { ...f.body.nose, shape: { kind: 'ogive', parameter: 1 } } },
       }),
     ).toEqual(["the nose is not a cone (the Basic Finner's is a 20 deg cone)"]);
+    // The Basic Finner's cone with a rounded tip: outside, by that alone.
+    expect(
+      outside({
+        ...f,
+        body: { ...f.body, nose: { ...f.body.nose, tipRadius: 0.02 } },
+      }),
+    ).toEqual(["the cone's tip is rounded (the Basic Finner's is sharp)"]);
     expect(outside({ ...f, finCount: 3 })).toEqual(['3 fins, not 4']);
     expect(
       outside({

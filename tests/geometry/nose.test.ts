@@ -314,6 +314,8 @@ describe('nose profiles', () => {
 });
 
 describe('rounded tips (a sphere cap tangent to the profile)', () => {
+  // r_n from 0.001 to 0.499 of R = 0.5: up to just below the base radius,
+  // where the parent's length grows without bound (the review's cases).
   const capped: fc.Arbitrary<Nose> = fc.record({
     shape: fc.oneof(
       fc.constant({ kind: 'ogive', parameter: 1 } as const),
@@ -323,35 +325,46 @@ describe('rounded tips (a sphere cap tangent to the profile)', () => {
     ),
     length: value(1, 8),
     baseRadius: fc.constant(0.5),
-    tipRadius: value(0.005, 0.1),
+    tipRadius: fc.integer({ min: 5, max: 4995 }).map((n) => n / 10000),
   });
+
+  /** The cap's continuity and the parent's profile behind it, on one nose. */
+  const checkCap = (n: Nose) => {
+    validateNose(n);
+    const rn = n.tipRadius!;
+    const c = cappedNose(n);
+    // The tip on the axis, exactly; the curvature there 1 / r_n.
+    expect(noseRadius(n, 0)).toBe(0);
+    expect(c.centreX).toBe(rn);
+    const x = 1e-6 * Math.min(rn, c.tangentX);
+    expect(noseRadius(n, x) ** 2 / (2 * x)).toBeCloseTo(rn, 6);
+    // Every point of the cap at r_n from its centre.
+    for (let k = 1; k < 10; k++) {
+      const xx = (c.tangentX * k) / 10;
+      expect(Math.abs(Math.hypot(xx - rn, noseRadius(n, xx)) - rn)).toBeLessThan(
+        1e-12 * rn + 1e-15,
+      );
+    }
+    // At the tangent point the radius and slope are continuous.
+    const e = 1e-6 * c.tangentX;
+    const left = (noseRadius(n, c.tangentX) - noseRadius(n, c.tangentX - e)) / e;
+    const right = (noseRadius(n, c.tangentX + e) - noseRadius(n, c.tangentX)) / e;
+    expect(Math.abs(left - right)).toBeLessThan(1e-4 * (1 + Math.abs(left)));
+    // Behind it the parent's profile, shifted by the offset.
+    const xb = 0.5 * (c.tangentX + n.length);
+    // (value for value but on the Haack series, whose profile behind the
+    // cap is computed without the cancellation of noseRadius's formula).
+    const behind = noseRadius(c.parent, xb + c.offset);
+    expect(Math.abs(noseRadius(n, xb) - behind)).toBeLessThanOrEqual(
+      n.shape.kind === 'haack' ? 1e-12 * behind : 0,
+    );
+    return c;
+  };
 
   it('property: the cap is a sphere on the axis that meets the profile without a kink', () => {
     fc.assert(
       fc.property(capped, (n) => {
-        validateNose(n);
-        const rn = n.tipRadius!;
-        const c = cappedNose(n);
-        // The tip on the axis, exactly; the curvature there 1 / r_n.
-        expect(noseRadius(n, 0)).toBe(0);
-        expect(c.centreX).toBe(rn);
-        const x = 1e-6 * rn;
-        expect(noseRadius(n, x) ** 2 / (2 * x)).toBeCloseTo(rn, 6);
-        // Every point of the cap at r_n from its centre.
-        for (let k = 1; k < 10; k++) {
-          const xx = (c.tangentX * k) / 10;
-          expect(Math.hypot(xx - rn, noseRadius(n, xx))).toBeCloseTo(rn, 12);
-        }
-        // At the tangent point the radius and slope are continuous.
-        const e = 1e-6 * c.tangentX;
-        const left = (noseRadius(n, c.tangentX) - noseRadius(n, c.tangentX - e)) / e;
-        const right = (noseRadius(n, c.tangentX + e) - noseRadius(n, c.tangentX)) / e;
-        expect(Math.abs(left - right)).toBeLessThan(1e-4 * (1 + Math.abs(left)));
-        const inner = Math.sqrt(Math.max(0, rn * rn - (c.tangentX - rn) ** 2));
-        expect(noseRadius(n, c.tangentX)).toBeCloseTo(inner, 9);
-        // Behind it the parent's profile, shifted by the offset.
-        const xb = 0.5 * (c.tangentX + n.length);
-        expect(noseRadius(n, xb)).toBe(noseRadius(c.parent, xb + c.offset));
+        checkCap(n);
       }),
       { seed: 202 },
     );
@@ -361,7 +374,9 @@ describe('rounded tips (a sphere cap tangent to the profile)', () => {
     fc.assert(
       fc.property(capped, (n) => {
         const c = cappedNose(n);
-        expect(Math.abs(c.parent.length - n.length - c.offset)).toBeLessThan(1e-9 * n.length);
+        expect(Math.abs(c.parent.length - n.length - c.offset)).toBeLessThan(
+          1e-12 * c.parent.length,
+        );
         expect(c.offset).toBeGreaterThan(0);
         expect(noseRadius(n, n.length)).toBe(n.baseRadius);
         expect(noseBaseSlope(n)).toBe(noseBaseSlope(c.parent));
@@ -377,23 +392,101 @@ describe('rounded tips (a sphere cap tangent to the profile)', () => {
     );
   });
 
-  it('a 5-caliber tangent ogive with a 0.05 R cap: the geometry of the W6 probe', () => {
-    const n: Nose = {
+  /**
+   * The tangent ogive's cap in closed form, independent of cappedNose: the
+   * sphere centred on the axis at a and internally tangent to the arc of
+   * radius rho = (R^2 + Lp^2) / (2 R) centred at (Lp, R - rho) has
+   * (Lp - a)^2 = (rho - r_n)^2 - (rho - R)^2 = (R - r_n) (2 rho - r_n - R)
+   * (written so, without the cancellation of the squares when rho is
+   * large); the tangent point lies on the line of the two centres, rho from
+   * the arc's; the parent's length solves Lp - (a - r_n) = length, by
+   * bisection here. They agree with cappedNose to 1e-12.
+   */
+  const ogiveCap = (length: number, R: number, rn: number) => {
+    const at = (lp: number) => {
+      const rho = (R * R + lp * lp) / (2 * R);
+      const a = lp - Math.sqrt((R - rn) * (2 * rho - rn - R));
+      return { offset: a - rn, xt: lp + ((a - lp) * rho) / (rho - rn) };
+    };
+    let lo = length;
+    let hi = 2 * length;
+    while (hi - at(hi).offset < length) hi *= 2;
+    for (let k = 0; k < 200; k++) {
+      const mid = 0.5 * (lo + hi);
+      if (mid - at(mid).offset < length) lo = mid;
+      else hi = mid;
+    }
+    const { offset, xt } = at(0.5 * (lo + hi));
+    return { parentLength: 0.5 * (lo + hi), offset, tangentX: xt - offset };
+  };
+
+  it('the tangent ogive against its closed form, from small caps to r_n just below R', () => {
+    // The W6 probe's case (a 5-caliber ogive, 0.05 R): offset 0.1054666264,
+    // tangent point 0.02026925579.
+    const probe = cappedNose({
       shape: { kind: 'ogive', parameter: 1 },
       length: 5,
       baseRadius: 0.5,
       tipRadius: 0.025,
-    };
-    const c = cappedNose(n);
-    // docs/research/w6-probe/results/grids.jsonl: offset 0.10546662643917631,
-    // tangent point 0.020269255793005703, the profile at 10.9 deg there.
-    expect(c.offset).toBeCloseTo(0.105466626439, 9);
-    expect(c.tangentX).toBeCloseTo(0.020269255793, 9);
-    const slope = (noseRadius(n, c.tangentX + 1e-5) - noseRadius(n, c.tangentX)) / 1e-5;
-    expect((Math.atan(slope) * 180) / Math.PI).toBeCloseTo(10.9, 1);
+    });
+    expect(probe.offset).toBeCloseTo(0.1054666264, 10);
+    expect(probe.tangentX).toBeCloseTo(0.02026925579, 10);
+    for (const [length, rn] of [
+      [5, 0.025],
+      [3, 0.0005],
+      [3, 0.075],
+      [3, 0.4],
+      [3, 0.49],
+      [3, 0.499],
+      [8, 0.4995],
+      [1, 0.45],
+    ] as const) {
+      const c = cappedNose({
+        shape: { kind: 'ogive', parameter: 1 },
+        length,
+        baseRadius: 0.5,
+        tipRadius: rn,
+      });
+      const exact = ogiveCap(length, 0.5, rn);
+      expect(Math.abs(c.parent.length / exact.parentLength - 1), `${length} ${rn}`).toBeLessThan(
+        1e-12,
+      );
+      expect(Math.abs(c.offset - exact.offset), `${length} ${rn}`).toBeLessThan(
+        1e-12 * exact.parentLength,
+      );
+      expect(Math.abs(c.tangentX - exact.tangentX), `${length} ${rn}`).toBeLessThan(
+        1e-12 * exact.parentLength,
+      );
+    }
+    // The review's case: r_n 0.499 on a 3-caliber ogive needs a parent of
+    // 55.926 calibers; no flat stretch inside the nose.
+    const big = cappedNose({
+      shape: { kind: 'ogive', parameter: 1 },
+      length: 3,
+      baseRadius: 0.5,
+      tipRadius: 0.499,
+    });
+    expect(big.parent.length).toBeCloseTo(55.926, 2);
   });
 
-  it('refuses tip radii outside (0, R) and on ellipsoids', () => {
+  it('small caps on a Von Karman nose: the slope from its formula, down to r_n / R of 2e-8', () => {
+    for (const ratio of [2e-8, 2e-6, 2e-4, 2e-2]) {
+      const n: Nose = {
+        shape: { kind: 'haack', parameter: 0 },
+        length: 5,
+        baseRadius: 0.5,
+        tipRadius: 0.5 * ratio,
+      };
+      const c = checkCap(n);
+      // The sphere tangent at the tangent point has radius r_n: f sqrt(1 + f'^2)
+      // with the slope from the cap's own geometry, (r_n - x) / r there.
+      const r = noseRadius(n, c.tangentX);
+      const capSlope = (c.centreX - c.tangentX) / r;
+      expect(r * Math.sqrt(1 + capSlope * capSlope)).toBeCloseTo(n.tipRadius!, 12);
+    }
+  });
+
+  it('refuses tip radii outside (0, R), and on shapes other than the four offered', () => {
     const base = { shape: { kind: 'ogive', parameter: 1 } as const, length: 3, baseRadius: 0.5 };
     expect(() => {
       validateNose({ ...base, tipRadius: 0 });
@@ -407,6 +500,20 @@ describe('rounded tips (a sphere cap tangent to the profile)', () => {
     expect(() => {
       validateNose({ shape: { kind: 'ellipsoid' }, length: 3, baseRadius: 0.5, tipRadius: 0.05 });
     }).toThrow(/already rounded/);
+    expect(() => {
+      validateNose({ ...base, length: 0.5, tipRadius: 0.05 });
+    }).toThrow(/already rounded/);
+    for (const shape of [
+      { kind: 'ogive', parameter: 0.5 },
+      { kind: 'power', exponent: 0.4 },
+      { kind: 'power', exponent: 0.75 },
+      { kind: 'haack', parameter: 1 / 3 },
+      { kind: 'parabolic', parameter: 0.5 },
+    ] as const) {
+      expect(() => {
+        validateNose({ shape, length: 3, baseRadius: 0.5, tipRadius: 0.05 });
+      }, shape.kind).toThrow(/offered on the tangent ogive/);
+    }
     expect(() => cappedNose(base)).toThrow(/no tip radius/);
     expect(() => {
       validateNose({ ...base, tipRadius: 0.05 });
