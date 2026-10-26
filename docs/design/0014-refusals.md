@@ -1897,5 +1897,15 @@ normal component in range at both sweeps.
   beside the component; a total that contains it is at best an estimate,
   not validated, and names it.
 
+_(aa)'s computed check, recorded 2026-10-26._ It failed as registered
+(0016 section 21.3, its protocol amended before the registered runs): the
+finest-grid solutions at Mach 2.0 with the smaller corner radius and at
+Mach 3.0 with both did not settle, and in their oscillation the face's
+pressure was not shown clear of p* (at Mach 3.0 it fell below it). Where
+the solutions settled (Mach 1.2, 1.5, and 2.0 with the larger radius) the
+face stayed subsonic and above p* by 0.11 to 0.12 of p02. By (aa),
+square-cut leading edges stay refused; the bounded term is kept unwired.
+(ab) is unaffected: its bounds are measured terms, not this computation.
+
 The letters (w) to (z) are allocated to other branches; the next free
 letter is the coordinator's to allocate.

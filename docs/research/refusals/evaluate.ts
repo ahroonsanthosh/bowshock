@@ -58,9 +58,11 @@ export const REASONS = {
   noseEllipsoid: 'nose: ellipsoid outside the measured domain',
   // Fin sections and leading edges.
   squareLe:
-    EDGES !== 'before'
-      ? 'fins: square-cut (blunt) leading edge (bounded; the ordering not shown, 0016)'
-      : 'fins: square-cut (blunt) leading edge not represented',
+    EDGES === 'w4e'
+      ? 'fins: square-cut (blunt) leading edge (bounded between the sonic and the pitot pressure, its computed check not passed, 0016 section 21.3)'
+      : EDGES === 'w34'
+        ? 'fins: square-cut (blunt) leading edge (bounded; the ordering not shown, 0016)'
+        : 'fins: square-cut (blunt) leading edge not represented',
   roundedTe:
     EDGES !== 'before'
       ? 'fins: rounded trailing edge (bounded; the ordering not shown, 0016)'
@@ -74,7 +76,11 @@ export const REASONS = {
       ? 'fins: rounded leading edge on fins of varying chord (lifted by 0016)'
       : 'fins: rounded leading edge on fins of varying chord',
   roundedLeSwept:
-    EDGES !== 'before' ? 'fins: rounded leading edge swept beyond 60 deg' : 'fins: swept rounded leading edge',
+    EDGES === 'w4e'
+      ? 'fins: rounded leading edge swept beyond 60 deg (lifted by 0016 section 21.2: bounded where the term at its sweep and at 60 deg are both served)'
+      : EDGES === 'w34'
+        ? 'fins: rounded leading edge swept beyond 60 deg'
+        : 'fins: swept rounded leading edge',
   roundedLeMach:
     EDGES === 'w4e'
       ? 'fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.0 to 3.0 (on a flat plate, 0016)'
@@ -241,6 +247,7 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   // own (baseFinsOf), asked through finsOnBaseReason below.
 
   // Sections and edges.
+  // 0016 section 21: the bounded term exists but stays unwired, its registered computed check (21.3) failed.
   if (r.section === 'square-both') out.push('squareLe');
   if (r.section === 'rounded-both') out.push('roundedTe');
   if (roundedLeadingEdge(r) && EDGES === 'before') {
@@ -251,13 +258,21 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     const reD = rePerMetre * r.thickness;
     if (!(reD >= 6.7e3 && reD <= 1e6)) out.push('roundedLeReynolds');
   } else if (roundedLeadingEdge(r)) {
-    // 0016: on the normal components, to 60 deg of sweep.
+    // 0016: on the normal components, to 60 deg of sweep; beyond it (EDGES=w4e, 0016 section 21.2) bounded
+    // between the term at the sweep and at 60 deg, each with its own domain.
     const cos = Math.cos(r.leadingEdgeSweepDeg * DEG);
-    if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('roundedLeSwept');
+    if (r.leadingEdgeSweepDeg > 60 + 1e-9 && EDGES !== 'w4e') out.push('roundedLeSwept');
     else {
       if (!(mach * cos >= LE_NORMAL_MACH_FLOOR && mach * cos <= 3.0)) out.push('roundedLeMach');
       const reN = rePerMetre * r.thickness * cos;
-      if (!(reN >= 6.7e3 && reN <= 1e6)) out.push('roundedLeReynolds');
+      const reN60 = rePerMetre * r.thickness * Math.cos(60 * DEG);
+      const beyond = r.leadingEdgeSweepDeg > 60 + 1e-9;
+      if (!(reN >= 6.7e3 && reN <= 1e6) || (beyond && !(reN60 >= 6.7e3 && reN60 <= 1e6))) {
+        out.push('roundedLeReynolds');
+      }
+      if (beyond && !(mach * 0.5 >= LE_NORMAL_MACH_FLOOR && mach * 0.5 <= 3.0) && !out.includes('roundedLeMach')) {
+        out.push('roundedLeMach');
+      }
     }
   }
   if (r.section === 'bevel-le-square-te') out.push('pageSection');

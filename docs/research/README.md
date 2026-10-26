@@ -94,6 +94,18 @@ puts it through every refusal of the page and its libraries, its outputs,
 and the survey and download helpers behind
 [0014](../design/0014-refusals.md). Its README says how to re-run each.
 
+## `square-edge/`: the flat face's Euler check behind 0016 section 21.3
+
+Planar Euler solutions of half a flat-faced plate, its corner rounded to
+0.04 and 0.02 of the half-thickness, at Mach 1.2 to 3.0 on three nested
+grids: whether the face stays subsonic and above the sonic pressure, and
+its mean pressure against the bounds of the square-cut leading edge
+([0016](../design/0016-fin-edges-of-flat-plates.md) section 21). Run, one
+solve at a time, with
+`MAX_STEPS_BY_LEVEL=20000,6000,4000 SCHEME=explicit nice -n 10 npx vitest run --config docs/research/square-edge/vitest.config.ts`;
+it writes `out/flat-face.jsonl`. `trials/` keeps the trial solves (and
+notes on the first ones) that led to 21.3's amended protocol.
+
 ## `interface/`: screenshots of the interface's phase checks
 
 Every page at 390, 768 and 1440 px wide, as `scripts/interface-check.mjs`

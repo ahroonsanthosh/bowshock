@@ -43,6 +43,13 @@ square-cut leading edges and rounded trailing edges. The Basic Finner's
 gated numbers are unchanged, bit for bit; its reported shots, still
 refused, change only their reasons (section 12).
 
+_Since section 21 (2026-10-26):_ rounded leading edges swept beyond 60
+deg are served "bounded, not measured", between the term at their sweep
+and the term at 60 deg, the band the whole gap. Square-cut leading edges
+were argued bounded between the sonic and the pitot pressure on the
+whole face, but the computed check registered for that argument failed
+(section 21.3), so they stay refused, as do rounded trailing edges.
+
 ## 1. What is served, and on what
 
 The table as of section 18 (the sections below record how each row came to be).
@@ -282,7 +289,12 @@ before. Neither is shown:
 
 Both are refused with these reasons (`square-leading-edge`,
 `rounded-trailing-edge`); the page offers the plates so that users see
-them.
+them. _Since section 21 (2026-10-26; 0014 section 10.7 (aa)):_ the
+square-cut edge's lower bound is the sonic pressure on the whole face,
+which needs no ordering against the rounded edge; but the computed check
+registered for that argument failed (section 21.3), so the edge stays
+refused, with that reason. The rounded trailing edge stays refused as
+above.
 
 ## 7. In the code
 
@@ -1576,3 +1588,77 @@ stricter at each point than one settled solution:
 - _the margin of items 4 and 5_: the face mean's least value over the
   envelope, against the lower bound less the vacuum zone as registered;
 - _fail_: otherwise, and then square-cut edges stay refused.
+
+**The result (2026-10-26): fail. Square-cut leading edges stay
+refused.** The 24 solves (`docs/research/square-edge/out/flat-face.jsonl`,
+`summary.out`, from `summary.py`), on the finest grid (144 x 96):
+
+| M   | Radius | Residual | Largest wall Mach | Least p / p02 | Its change from the middle grid | Largest p / p02 | Face mean, gauge over pitot | Verdict |
+| --- | ------ | -------- | ----------------- | ------------- | ------------------------------- | --------------- | --------------------------- | ------- |
+| 1.2 | 0.04   | 2.3e-3   | 0.806             | 0.652         | 0.030                           | 1.015           | 0.865 to 0.888              | pass    |
+| 1.2 | 0.02   | 1.4e-3   | 0.828             | 0.638         | 0.031                           | 1.013           | 0.886 to 0.907              | pass    |
+| 1.5 | 0.04   | 5.3e-4   | 0.813             | 0.648         | 0.030                           | 0.999           | 0.887 to 0.888              | pass    |
+| 1.5 | 0.02   | 3.2e-4   | 0.831             | 0.636         | 0.031                           | 1.001           | 0.907 to 0.908              | pass    |
+| 2.0 | 0.04   | 3.3e-4   | 0.822             | 0.642         | 0.021                           | 0.999           | 0.899 to 0.901              | pass    |
+| 2.0 | 0.02   | 6.5e-2   | 0.960             | 0.553         | 0.105                           | 1.074           | 0.862 to 0.942              | fail    |
+| 3.0 | 0.04   | 2.5e-1   | 0.995             | 0.531         | 0.134                           | 1.023           | 0.844 to 0.949              | fail    |
+| 3.0 | 0.02   | 9.3e-2   | 1.141             | 0.445         | 0.047                           | 1.187           | 0.819 to 0.991              | fail    |
+
+(p* is 0.528 of p02; the residual is the density residual over its start.)
+Where the finest solution settled, the straight face stayed subsonic, its
+least pressure 0.636 to 0.652 of p02, clear of p* by 0.108 to 0.124
+against grid changes of 0.021 to 0.031, its largest within 1.5% of p02, the
+sonic point on the rounding (3 to 8 deg into its turn on the finest grid),
+and the face mean 0.87 to 0.91 of the pitot term. Where it did not settle
+(M 2.0 with the smaller radius, M 3.0 with both), the oscillation carried
+the face's pressure to within 0.003 of p*, or below it (0.445 at M 3.0,
+the sonic point then seen on the face, at y 0.96 to 0.975), and above p02
+(up to 1.19). Those are excursions of an unsettled inviscid solution, not
+a steady flow; but the registration asked for the face to be shown above p*
+on the finest grid at every Mach number, and it was not, so the check fails
+and square-cut edges stay refused (`SQUARE_EDGE_REFUSAL`, every reason in
+words). The margin item (4 and 5) would have held everywhere: the face
+mean's least value less a whole p02 over a tenth of the face's height at
+each corner is 0.63 to 0.73 of p02 (against 0.528), and the layer's
+thickness at the corner at Re 6.7e3, from the computed stagnation-point
+velocity gradient (beta t / U 0.41 to 0.66 where settled), is 0.03 of the
+thickness, so a tenth of the height is more than twice it.
+
+What would lift the refusal, for a later record (none is done here): a
+check that gives settled solutions at the small radii and Mach 3 (a
+time-accurate solve averaged over its oscillation, or a viscous one in
+which the corner separates as the real one does), registered before it
+is run; or a measured flat-face pressure distribution, named in 0014
+section 10.7 and read twice; or the owner's decision that the argument of
+21.1 stands without its computed check. The term
+(`src/fins/square-leading-edge.ts`) and its tests are kept, unwired, as
+0019 section 3.2's bounded term is.
+
+### 21.4 In the code, on the page, and the coverage
+
+- `src/fins/rounded-leading-edge.ts`: beyond 60 deg of sweep
+  `roundedLeadingEdgeDrag` returns the bounded term (`bounded`: the band's
+  ends per unit span), the midpoint served; where either term is refused,
+  the refusal carries both terms' reasons ("at 62.0 deg, ...; and at 60
+  deg, ..."), under the first one's reason code. At 60 deg and below
+  nothing changes.
+- `src/total/finned-body.ts`: the leading edges' component carries the
+  gap in C_D in its band text and `bounded` (`SWEPT_EDGE_BOUNDED_REASON`)
+  for the total's claim; `DragComponent.bounded` is a new optional field
+  (`src/total/total-drag.ts`). Square-cut edges: `SQUARE_EDGE_REFUSAL`.
+- `src/app/total-drag.ts`: `boundedReasons` names every bounded component
+  once in the claim, after the fins-on-base factor's.
+  `src/app/status-words.ts`: "Estimate, bounded" with "An estimate with
+  one part bounded, not measured: the fins' rounded leading edges, swept
+  past 60 degrees, whose band runs from the drag at their sweep to that at
+  60."; with more than one bounded part, words that say so; the square-cut
+  edge's refusal words say its bounds' check has not passed.
+- Tests: `tests/fins/rounded-leading-edge-beyond-60.test.ts` and
+  `tests/fins/square-leading-edge.test.ts`; seven planted errors each fail
+  them (the sonic exponent, the allowance swapped, cos for cos^2, the M_n
+  floor, the upper bound at the actual sweep, the upper end served for
+  the midpoint, the lower bound at its nominal).
+
+The hobby example of section 16 with its edges square-cut, had the term
+been served, at M 1.8: 0.188 in C_D, between 0.066 and 0.311 (a gap of
+0.245), against 0.161 (0.137 to 0.225) for its rounded edges.
