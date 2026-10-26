@@ -1938,3 +1938,165 @@ readings, and the band is the envelope of both. The workstream that
 computes part 1 does not read them. Until both readings exist and
 the comparisons are committed, nothing of items 1 and 2 is served and
 every boat-tail stays refused (B2). TN 3320 stays held back whole.
+
+**2026-10-26 (ag): boat-tails (C2, W10): side pressures at Mach numbers
+other than 1.91, named before they are read, and how they would carry
+the viscous allowance between Mach numbers** (rule 2 of 10.1; design
+record 0023 section 3; the letter from the coordinator's registry). It
+adds to (ae) item 1, which measured the allowance at Mach 1.91 only and
+refused the boat-tail term outside Mach 1.8 to 2.0. Nothing in it is
+served until its readings are paired and the criteria of item 5 are
+applied.
+
+_What has been opened, and what was seen._ On 2026-10-26 the boat-tail
+workstream searched the NASA Technical Reports Server (queries on
+boattail, boat-tail, afterbody and conical afterbody pressures and drag
+at supersonic speeds, jet effects on afterbodies, and the authors and
+Mach-number sets these turned up) and the web (for Army and AEDC
+reports). Of the reports found it opened, through their text layers
+only, the NTRS abstracts, the reports' own summaries, their title pages
+and section headings, and their figure captions; no figure was looked
+at and no plotted or tabulated value was read. Seen, and recorded so
+that nothing is hidden: RM L54C16's summary (its power-off boat-tail
+pressure drags 15 percent lower than its characteristics predicted;
+with the jet at its ideal pressure ratio the base drag 33 to 110 percent
+above power-off), and one sentence of its results section met while
+locating its model description (for model 1, a quantity with the jet
+0.175 below its power-off value; the quantity was not seen); TN 3054's summary (the
+measured wave drag of minimum-drag boat-tail bodies below theory, more so
+at higher Mach numbers); TN D-6789's and TM X-1960's summaries (jet
+effects confined to the rear of the boat-tail at low jet pressure
+ratios; no jet-off value); RM E57E06's summary (base pressures only); a
+search engine's description of the Mach 6 report TN D-2761 (pressures
+nearly constant along its conical afterbodies) and of a low-speed study
+(neither used).
+
+**1. The sets that may set the allowance.** All at zero incidence, with
+no jet and no secondary flow; each read twice, the second time blind
+(item 7). For each: what it tests, its geometry (not band data), and
+its band-setting figures.
+
+- **NACA RM L54C16** (de Moraes and Nowitzky, 1954; NTRS 19930088187),
+  Mach 1.59: a series of conical boat-tails on one body, power off.
+  Geometry: the text's model and test description (PDF pp. 4 to 6) and
+  figs. 1 to 3. Band-setting: fig. 5 (power-off boat-tail pressure
+  distributions and drag coefficients), the measured points only.
+- **NACA RM L54I22** (O'Donnell and McDearmon, 1954; NTRS 19930093718),
+  Mach 1.62, 1.93 and 2.41: the boat-tails of two shrouds (d/D_B 0.82 and
+  0.73 in the captions) on one body
+  of revolution, turbulent layers, wing-supported in the Langley 9 in
+  tunnel. Geometry and support: the text's apparatus, tests and
+  precision (PDF pp. 4 to 6) and fig. 1. Band-setting: fig. 2 (both
+  shrouds' boat-tail pressures against the characteristics at the three
+  Mach numbers), the measured points only and only if its legend or text
+  gives them as jet off; otherwise the jet-off points of figs. 7, 14
+  and 16.
+- **NACA RM E57E06** (Baughman and Kochendorfer, 1957; NTRS
+  19930089763), Mach 1.91 and 3.12: conical boat-tails of the Lewis
+  afterbody models, strut-supported. Geometry and support: the text's
+  models, tunnel installation and support struts (PDF pp. 7 to 9) and
+  figs. 1, 2 and 5; fig. 6 (the struts' effect on boat-tail and base
+  pressures, 5.63 deg, Mach 1.91) and fig. 7 (on a cylindrical
+  afterbody). Band-setting: fig. 14 (jet-off pressure distributions on
+  conical boat-tails, 5.63 deg), every point with its Mach number.
+- **NASA TN D-6789** (Compton, 1972; NTRS 19720019347), Mach 1.83 and
+  2.20: truncated conical boat-tails of 3, 5 and 10 deg, 0.6 to 1.0
+  maximum diameters long, and a reference nozzle, on a strut-supported
+  air-powered nacelle in the Langley 4 by 4 ft tunnel. Geometry and
+  support: the text's apparatus and procedure (PDF pp. 6 to 9), figs. 1
+  to 4 and 17, tables I and II; fig. 5 (jet-off boat-tail pressures at
+  several meridians). Band-setting: the jet-off points of fig. 7, fig.
+  12 (jet-off boat-tail pressure drag against Mach number), fig. 18 and
+  fig. 20 (the reference nozzle, jet off).
+- **NASA TM X-1960** (Compton and Runckel, 1970; NTRS 19700013329), Mach
+  0.30 to 1.30, of which only free-stream Mach numbers of 1.15 and above
+  are read: the same family of boat-tails (3 to 20 deg) in the Langley
+  16 ft transonic tunnel. Geometry and support: the text's apparatus and
+  procedure (PDF pp. 8 to 12), figs. 1 to 4 and 17, appendix B
+  (calibration bodies). Band-setting: the jet-off points of figs. 5, 6,
+  8 and 18 at those Mach numbers, and any figure giving jet-off boat-tail
+  axial force against Mach number.
+
+**2. How each sets the allowance.** For each configuration, Mach number,
+figure route and reading, S = (measured boat-tail pressure drag) / (part
+1's inviscid boat-tail pressure drag of that configuration at that Mach
+number, the method of characteristics' extrapolated value as in 0023
+section 2.3), the measured drag both from the pressure distribution
+integrated as (ae) item 1 integrates RM E51F26's (trapezoidal rule in
+r^2, the shoulder and base pressures extrapolated from the two nearest
+orifices) and, where the figure gives it, the reported pressure-drag
+coefficient read directly; a difference between the routes is kept as
+an envelope. A nose given only by reference is computed as (ae) item 1
+computes RM E51F26's.
+
+**3. When a set counts.** A set sets anything only if, from its paired
+readings: (a) the whole body is given (nose, cylinder, the boat-tail's
+angle and length or base ratio) and is one part 1 computes: a body of
+revolution, a nose part 1 solves at that Mach number, a straight
+conical boat-tail meeting the cylinder at a sharp shoulder (a flapped
+or faceted boat-tail, or a rounded shoulder, does not count); (b) the
+points are jet off with no secondary flow, at zero incidence, with a
+turbulent layer ahead of the shoulder (stated by the report, a trip, or
+transition shown ahead of it); (c) the support is a sting through the
+base, or the report shows (a figure, or the text with its grounds) that
+its strut or wing support changes the boat-tail pressures by no more
+than the two readings differ (RM E57E06 fig. 6, TN D-6789 fig. 5); and
+(d) the figures are legible in both readings. A set that fails (a), (b)
+or (d) sets nothing; one that fails only (c) is a check that sets
+nothing.
+
+**4. Carrying between Mach numbers.** The measured Mach numbers of the
+sets that count, with RM E51F26's 1.91, are pooled where they lie within
+0.05 of each other (so 1.59 with 1.62, and 1.91 with 1.93). At each
+pooled Mach number the band is [S_min, max(S_max, 1)] over its
+configurations, routes and readings, as (ae) item 1. Between two
+neighbouring pooled Mach numbers the band is the envelope of their two
+bands, and it is carried only if those two bands overlap; where they do
+not, the Mach numbers between them are refused. Never beyond the lowest
+or the highest pooled Mach number. The boat-tail term is also served
+only where part 1 itself is verified (0023 section 2.5): section 2.3's
+cases span Mach 1.5 to 3, so below 1.5 (TM X-1960) and above 3.0 (RM
+E57E06's 3.12) the allowance sets the span only once part 1 has cases
+there.
+
+**5. Pass and fail.** The extension is made if at least one set beside
+RM E51F26 counts (item 3) and every set that counts at Mach 1.9 (RM
+L54I22 at 1.93, RM E57E06 at 1.91) has an S band overlapping RM
+E51F26's. If a set that counts at Mach 1.9 does not overlap RM E51F26,
+the facilities disagree where they measure the same thing: nothing is
+extended, the term stays at Mach 1.8 to 2.0 with RM E51F26's band
+widened to the envelope of all the sets at Mach 1.9, and the
+disagreement goes to the owner, unresolved. If no set counts, nothing
+changes and the carry question goes to the owner (0023 section 7).
+
+**6. Checks that set nothing, and what is not used.** Checks: RM L54I22
+fig. 2's characteristics curves, TN D-6789 figs. 6 and 19 and TM X-1960
+fig. 10 (characteristics calculations of these boat-tails, against part
+1's). Not used, with the reason: RM E54B12 (Englert, Vargo and
+Cubbison, 1954; parabolic boat-tails at Mach 1.6 and 2.0) until part 1
+computes curved boat-tails, as RM A52E20's ogival one in (ae); TN 3054
+and TN 3708 (Bromm and Goodwin; minimum-wave-drag boat-tail bodies at
+Mach 1.62 to 2.41, no cylinder, not a body part 1 computes); RM E53H25
+(Cortright and Kochendorfer, 1953; a summary of other reports); TN
+D-2046 (Charczenko and Hayes, 1963; cylindrical and flared afterbodies,
+Mach 2.30 to 4.65); NTRS 19930090240 (Cubbage, 1955; a 16 deg afterbody
+at Mach 0.6 to 1.26 with ejector nozzles running throughout); TM X-1785
+(Harrington, 1969; Mach 0.60 to 1.47, 15 deg boat-tails rounded at the
+shoulder and jet-off points with secondary flow, by their captions);
+NTRS 19680009768 (Shrewsbury, 1968; Mach 0.56 to 1.00); the Reubush
+reports (Mach up to 1.3, circular-arc afterbodies, jets or plume
+simulators); TN D-2761 (Goldberg and Staylor, 1965; Mach 6). DTIC
+AD0855156 (by a search engine's description: pressures along six
+one-caliber boat-tails and the base of a strut-mounted body with a
+tangent-ogive nose, at Mach 2.50, 3.00 and 3.50) could not be opened
+here (the download was refused); it sets nothing until it is obtained
+and a further dated entry names its figures. AEDC's Spratley (1977,
+Mach 0.6 to 1.4, sting-mounted) was not opened.
+
+**7. Readings.** Each band-setting and geometry figure of item 1, and
+the support evidence, is read twice, the second time blind, by readers
+the coordinator arranges, from `docs/research/boat-tails/readers/brief-ag.md`;
+a neutral party pairs the readings; the band is the envelope of both.
+The workstream that computes part 1 does not read them. Until the
+readings are paired and items 3 to 5 applied, the boat-tail term stays
+refused outside Mach 1.8 to 2.0, as (ae) item 1 left it.

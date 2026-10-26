@@ -260,8 +260,11 @@ any grid of nj = 160 and before nj = 80 on all but two cases
 (`o3-c3-bt6-l1-m2` and `o3-c5-bt8-l2-m2`, section 2.3):
 
 - **Mach number:** 1.8 to 2.0, where the viscous allowance is measured
-  (section 3, `BOAT_TAIL_MACH_RANGE` in `src/analysis/boat-tail.ts`);
-  widening it is the owner's question (section 7).
+  (section 3, `BOAT_TAIL_MACH_RANGE` in `src/analysis/boat-tail.ts`). If
+  the sets 0014 10.7 (ag) names pass its criteria, the allowance's Mach
+  span as (ag) item 4 carries it, within Mach 1.5 to 3, where this
+  section's cases are; the angles and lengths below then come from the
+  first set's cases in that span.
 - **The floor** (`BOAT_TAIL_DRAG_FLOOR`, a provisional 1e-3 until then):
   about twice the largest distance, relative to the value, between the
   procedure's extrapolation (order capped at 2) and the march over the
@@ -352,7 +355,13 @@ measured side pressure drag to part 1's inviscid value for that
 configuration; the boat-tail term is served between S_min and
 max(S_max, 1) times the inviscid value, widened by part 1's own band.
 Measured at Mach 1.91 only: outside Mach 1.8 to 2.0 the term stays
-refused until data at other Mach numbers are named (section 7).
+refused until data at other Mach numbers are read. 0014 10.7 (ag) names
+five further sets of jet-off side pressures (RM L54C16 at Mach 1.59, RM
+L54I22 at 1.62, 1.93 and 2.41, RM E57E06 at 1.91 and 3.12, TN D-6789 at
+1.83 and 2.20, TM X-1960 up to 1.30), when each counts, and how the
+allowance is carried between measured Mach numbers (the envelope of the
+two neighbouring bands, only where they overlap, never beyond the
+outermost), before any of them is read.
 
 ## 4. Part 2: the base behind a boat-tail (Love's method)
 
@@ -383,7 +392,8 @@ them. The readers' brief is `docs/research/boat-tails/readers/brief.md`
 (the coordinator hands it to readers, who do not open the repository);
 each figure is read twice, the second time blind, and a neutral party
 pairs the readings. This workstream computes part 1 and does not read
-them.
+them. The further sets of 0014 10.7 (ag) have their own brief,
+`docs/research/boat-tails/readers/brief-ag.md`, under the same rules.
 
 ## 6. Coverage
 
@@ -434,13 +444,12 @@ solve itself is served on 21.5%.
 
 ## 7. Open
 
-- **The viscous allowance away from Mach 1.91.** RM E51F26 is the only
-  named source of boat-tail side pressures, at Mach 1.91. Serving the
-  boat-tail term at other Mach numbers needs side pressures measured
-  there (named in a further dated entry before they are read), or the
-  owner's decision to carry the Mach 1.91 allowance to other Mach numbers
-  with a label saying where it was measured. Until then the term is
-  refused outside Mach 1.8 to 2.0.
+- **The viscous allowance away from Mach 1.91.** 0014 10.7 (ag) names
+  side pressures measured at Mach 1.59 to 3.12 (and up to 1.30) before
+  they are read, with the rule that carries the allowance between them.
+  If none of them counts, or they disagree with RM E51F26 at Mach 1.9,
+  the question returns to the owner. Until they are read and paired the
+  term is refused outside Mach 1.8 to 2.0.
 - **RM E51F26's nose.** Its 6-caliber nose is defined by equation (14) of
   its reference 1, not yet opened; failing that, the allowance carries
   the spread between a tangent ogive and a cone of that length (0014 10.7
