@@ -250,6 +250,17 @@ describe('the term (bodyBaseDrag)', () => {
       return Math.round((1000 * (f.high - f.low)) / 2 / f.nominal) / 10;
     });
     expect([Math.min(...hw), Math.max(...hw)]).toEqual([31.7, 34.9]);
+    // Fins ending within a chord ahead of the base (0015 section 3.3): bounded between the zero member and the
+    // same fins at the base, so the same widths for the double wedges, and the 10% arcs (+-6% to 7% at the
+    // base, a member) take the whole gap too.
+    for (const f of [wedges, arcs]) {
+      const ahead = { ...f, trailingEdgeAheadOfBase: 0.5 };
+      const hwA = Array.from({ length: 101 }, (_, k) => 1.0 + k * 0.004999).map((m) => {
+        const g = bodyBaseDrag({ ...base, mach: m, fins: ahead }).finsOnBase!;
+        return Math.round((1000 * (g.high - g.low)) / 2 / g.nominal) / 10;
+      });
+      expect([Math.min(...hwA), Math.max(...hwA)]).toEqual([31.7, 34.9]);
+    }
   }, 120_000);
 
   it('fins at the base below Mach 1.5: the rebuilt factor, since the present one refuses', () => {
@@ -280,7 +291,7 @@ describe('the term (bodyBaseDrag)', () => {
     expect(g.nominal).toBeCloseTo(0.5 * (f.lower.band.low + f.upper.band.high / 1.065), 12);
     expect(r.cd).toBeCloseTo(curve(1.3) * 1.065 * g.nominal, 12);
     expect(r.labels[1]).toContain("apply to Love's curve itself");
-    // Swept fins of a sharp section below M 1.5, and fins ahead of the base, are refused.
+    // Swept fins of a sharp section below M 1.5 are refused.
     const swept = {
       ...fins,
       tanLeadingEdge: 1,
@@ -288,8 +299,26 @@ describe('the term (bodyBaseDrag)', () => {
     };
     expect(() => bodyBaseDrag({ ...base, mach: 1.3, fins: swept })).toThrow(/below M 1.5/);
     expect(() =>
-      bodyBaseDrag({ ...base, mach: 1.3, fins: { ...fins, trailingEdgeAheadOfBase: 0.5 } }),
+      bodyBaseDrag({
+        ...base,
+        mach: 1.3,
+        fins: { ...swept, trailingEdgeAheadOfBase: 0.5 },
+      }),
     ).toThrow(BaseRefusal);
+    // Fins within a chord ahead (since 2026-10-26, 0015 section 3.3): bounded, not measured, between the zero
+    // member and the same fins at the base, stated on W2's term like the at-base bracket.
+    const near = bodyBaseDrag({
+      ...base,
+      mach: 1.3,
+      fins: { ...fins, trailingEdgeAheadOfBase: 0.5 },
+    });
+    const n = near.finsOnBase as typeof f;
+    expect(n.bounded).toBe(true);
+    expect(n.low).toBe(f.lower.band.low);
+    expect(n.high).toBeCloseTo(f.upper.band.high / 1.065, 12);
+    expect(near.cd).toBeCloseTo(curve(1.3) * 1.065 * n.nominal, 12);
+    expect(near.labels[1]).toMatch(/^bounded, not measured/);
+    expect(near.labels[1]).toContain('the gap between the bounds is');
     // Fins a chord or more ahead: the curve alone.
     const ahead = bodyBaseDrag({
       ...base,

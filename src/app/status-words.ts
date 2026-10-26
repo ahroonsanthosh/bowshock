@@ -238,8 +238,9 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
   }),
   'fins-near-base': () => ({
     reason:
-      "fins ending less than a root chord ahead of the base: the base drag isn't measured with " +
-      'fins there',
+      'fins ending less than a root chord ahead of the base: above Mach 2.0, the base drag ' +
+      "with fins there isn't measured yet (the one measurement found waits for a second, " +
+      'independent reading)',
     change: "the fins' trailing edges at the base, or a root chord or more ahead of it",
   }),
   'fin-count': () => ({

@@ -93,7 +93,7 @@ export const REASONS = {
   // Body base.
   baseMach: 'base: Mach outside 1.0 to 3.0 (below 1.5: W2, 0015 section 11)',
   boatTail: 'base: boat-tail',
-  finsNearBase: 'base: fins ending within a chord of the base',
+  finsNearBase: 'base: fins ending within a chord of the base, above Mach 2.0 (below 1.5 bounded since 0014 section 10.7 (aa))',
   finsAtBaseCount: 'base: fins at the base, not four',
   finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10 (since 0016 section 18 above 0.10 only)',
   finsAtBaseSwept: 'base: fins at the base, a swept leading or trailing edge (factor measured on unswept fins; 2026-10-21)',

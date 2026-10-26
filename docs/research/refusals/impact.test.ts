@@ -45,7 +45,7 @@ const CROSS_CHECK = Number(process.env.CROSS_CHECK ?? 300);
 export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
   // Since W1, W1b and W2 (0015): what the rebuilt fins-on-base factor still refuses at M 1.0 to 3.0 (the present
   // factor's refusals no longer arise there; below M 1.5 they belong to W2).
-  'W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)': [
+  'W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0)': [
     'finsW1Sweep',
     'finsW1Thickness',
     'finsW1TrailingEdge',

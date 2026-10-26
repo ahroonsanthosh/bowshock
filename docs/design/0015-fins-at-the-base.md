@@ -297,7 +297,7 @@ its Mach numbers (`fins-on-base-w1.test.ts` holds each number):
   by the tail surfaces at tail positions farther forward than at lower
   Mach numbers", and with the tail well forward no effect is expected. The
   data agree: at x/c 0.4 the three members measured at both Mach numbers
-  keep 6% to 64% of their at-base increment at M 1.5 and 64% to 98% at
+  keep 6% to 63% of their largest at-base increment at M 1.5 and 64% to 98% at
   2.0. So below M 1.5 the same fins at the base bound the increment, with
   a margin that grows as the Mach number falls.
 - _Lower side._ The most relief ahead of the base, as F with both errors

@@ -105,12 +105,20 @@ describe('the rebuilt factor only where the present one refuses', () => {
     expect(r.labels[1]).toContain("extended below the data's 5% thickness");
   });
 
-  it('fins ending within a chord of the base: rebuilt where measured (M 1.5 to 2.0), else refused', () => {
+  it('fins ending within a chord of the base: rebuilt where measured (M 1.5 to 2.0), bounded below, refused above', () => {
     const f = fins({ trailingEdgeAheadOfBase: 0.5, nearBase: near(doubleWedge(0.08)) });
     const r = base(1.8, f);
     expect(r.finsOnBaseSource).toBe('rebuilt');
     expect(r.labels[1]).toContain('it takes fins at the base only');
+    expect((r.finsOnBase as FinsOnBaseFactorW1).bounded).toBe(false);
+    // Below M 1.5 (0015 section 3.3): bounded, not measured, between the zero member and the same fins at the base.
+    const b = base(1.3, f);
+    expect(b.finsOnBaseSource).toBe('rebuilt');
+    expect((b.finsOnBase as FinsOnBaseFactorW1).bounded).toBe(true);
+    expect(b.labels[1]).toMatch(/^bounded, not measured/);
+    expect(b.labels[1]).toContain('it takes fins at the base only');
     expect(() => base(2.2, f)).toThrow(BaseRefusal);
+    expect(() => base(2.2, f)).toThrow(/above Mach 2\.0 no measurement of fins there/);
     // Without the section the rebuilt factor cannot run: refused as before.
     expect(() => base(1.8, fins({ trailingEdgeAheadOfBase: 0.5 }))).toThrow(/root chords ahead/);
   });
@@ -320,6 +328,23 @@ describe('fins thinner than 5% at some station (0016 section 18) in the rebuilt 
     const rounded = baseFinsOf({ ...plateFins, section: flatPlate(0.03, 'rounded', 'rounded') });
     expect(rounded.nearBase).toBeUndefined();
     expect(() => base(2.0, rounded)).toThrow(BaseRefusal);
+    // Within a chord ahead of the base it is refused for its trailing edge too, not for its position, at
+    // every Mach number (since 2026-10-26: the position refusal's words now name Mach 2.0).
+    for (const mach of [1.3, 1.8, 2.5]) {
+      const ahead = baseFinsOf({
+        ...plateFins,
+        section: flatPlate(0.03, 'rounded', 'rounded'),
+        trailingEdgeAheadOfBase: 0.5,
+      });
+      try {
+        base(mach, ahead);
+        throw new Error('served');
+      } catch (e) {
+        expect(e).toBeInstanceOf(BaseRefusal);
+        expect((e as BaseRefusal).reason).toBe('fin-trailing-edge');
+        expect((e as BaseRefusal).message).toContain('a rounded trailing edge has no measurement');
+      }
+    }
   });
 });
 

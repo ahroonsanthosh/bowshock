@@ -1865,7 +1865,7 @@ ahead of the base (`fins-near-base`).
   expected, and the decrease "was small for the tail located well forward
   of the base but, for the normal tail position, x/c ~ 0, ... nearly the
   maximum". The data agree in direction: at x/c 0.4 the three members
-  measured at both Mach numbers keep 6% to 64% of their at-base increment
+  measured at both Mach numbers keep 6% to 63% of their largest at-base increment
   at Mach 1.5 and 64% to 98% at 2.0. So going down from Mach 1.5 the
   at-base upper bound holds with a growing margin. The relief side rests
   on less: the relief a chord ahead grows from Mach 2.0 to 1.5 (1 - F

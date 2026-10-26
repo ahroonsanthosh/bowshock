@@ -252,11 +252,14 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     };
     const rebuilt = (): FinsOnBaseFactorW1 => {
       const near = fins.nearBase;
-      if (near === undefined && fins.flatFaced === true && presentRefusal !== undefined) {
+      // A plate whose trailing edge is not square (rounded) has no section the rebuilt factor takes, at the base
+      // or ahead of it: refused for its trailing edge, not for its position (0015 section 4).
+      if (near === undefined && fins.flatFaced === true) {
         throw new BaseRefusal(
           'fin-trailing-edge',
-          `${presentRefusal.message}; the rebuilt factor's flat-plate value covers square trailing edges ` +
-            'only: a rounded trailing edge has no measurement at the base (0015 section 4)',
+          `${presentRefusal === undefined ? '' : `${presentRefusal.message}; `}the rebuilt factor's ` +
+            'flat-plate value covers square trailing edges only: a rounded trailing edge has no ' +
+            'measurement at or near the base (0015 section 4)',
         );
       }
       if (near === undefined) {

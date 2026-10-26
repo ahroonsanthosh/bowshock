@@ -915,7 +915,7 @@ export const BOUNDED_REASON =
 /** The rebuilt factor's bounded values (0015 sections 3.1 and 4), named in the claim as 0014 section 10.2 asks. */
 export const W1_BOUNDED_REASON =
   "the body base's rebuilt fins-on-base factor is bounded, not measured (flat faces at a square " +
-  'trailing edge, or above Mach ' +
+  'trailing edge, fins ending ahead of the base below Mach 1.5, or above Mach ' +
   `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; 0015)`;
 
 /** The bounded components a total contains, named in its claim (0014 section 10.2). */
