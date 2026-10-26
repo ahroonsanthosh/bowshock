@@ -15,7 +15,11 @@ import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
 import { doubleWedge, singleWedge } from '../../src/fins/section';
 import { bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
-import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
+import {
+  finnedBodyComponents,
+  SQUARE_EDGE_BOUNDED_REASON,
+  type FinnedBody,
+} from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents, type TotalDrag } from '../../src/total/total-drag';
 import {
@@ -958,11 +962,21 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     expect(v.total.components.find((c) => c.name === 'fin wave drag')!.cd).toBe(0);
   });
 
-  it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {
+  it('square-cut leading edges: a total, its claim naming them bounded (0016 section 21.1)', () => {
     const a = plate('square', 'square');
-    expect(reasons(totalDragView(a, exactNose(a)))).toEqual([
-      'fin leading edges: square-leading-edge',
-    ]);
+    const v = totalDragView(a, exactNose(a));
+    if (v.kind !== 'total') throw new Error(JSON.stringify(v));
+    expect(v.claim.kind).toBe('estimate');
+    if (v.claim.kind !== 'estimate') return;
+    expect(v.claim.reasons).toContain(SQUARE_EDGE_BOUNDED_REASON);
+    const le = v.total.components.find((c) => c.name === 'fin leading edges')!;
+    expect(le.bounded).toBe(SQUARE_EDGE_BOUNDED_REASON);
+    expect(le.label.startsWith('bounded, not measured')).toBe(true);
+    // The claim names each bounded part once.
+    expect(boundedReasons(undefined, [le, le])).toEqual([SQUARE_EDGE_BOUNDED_REASON]);
+  });
+
+  it('rounded trailing edges: refused, with the reasons', () => {
     const b = plate('rounded', 'rounded');
     expect(reasons(totalDragView(b, exactNose(b)))).toEqual([
       'fin trailing-edge base: rounded-trailing-edge',

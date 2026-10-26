@@ -14,7 +14,13 @@ import { clippedDeltaPlanform } from '../../src/fins/planform';
 import { standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
 import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
 import { doubleWedge, flatPlate } from '../../src/fins/section';
-import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
+import { squareLeadingEdgeDrag } from '../../src/fins/square-leading-edge';
+import {
+  finnedBodyComponents,
+  SQUARE_EDGE_BOUNDED_REASON,
+  SWEPT_EDGE_BOUNDED_REASON,
+  type FinnedBody,
+} from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents } from '../../src/total/total-drag';
 
@@ -116,10 +122,8 @@ describe('refusals of flat plates', () => {
   const reasons = (c: FinnedBody, mach: number) =>
     parts(c, mach).refusals.map((x) => `${x.component}: ${x.reason}`);
 
-  it('a square-cut leading edge and a rounded trailing edge: bounded, the ordering not shown', () => {
-    expect(reasons(config(flatPlate(0.05, 'square', 'square')), 2.8)).toEqual([
-      'fin leading edges: square-leading-edge',
-    ]);
+  it('a rounded trailing edge: bounded, the ordering not shown (the square-cut leading edge is served, below)', () => {
+    expect(reasons(config(flatPlate(0.05, 'square', 'square')), 2.8)).toEqual([]);
     expect(reasons(config(flatPlate(0.05, 'rounded', 'rounded')), 2.8)).toEqual([
       'fin trailing-edge base: rounded-trailing-edge',
     ]);
@@ -135,6 +139,60 @@ describe('refusals of flat plates', () => {
     const m = parts(config(undefined, steep), 1.6).refusals[0]!.message;
     expect(m).toMatch(/is below 1\.0/);
     expect(m).toMatch(/RM L53L24a, NASA TP 2204, NASA TN D-3634/);
+  });
+});
+
+describe('bounded, not measured (0016 section 21)', () => {
+  it("a square-cut leading edge: the library's bounded term, the gap in C_D, named for the claim", () => {
+    const r = parts(config(flatPlate(0.05, 'square', 'square')), 2.8);
+    const c = named(r, 'fin leading edges');
+    const e = squareLeadingEdgeDrag({
+      mach: 2.8,
+      thickness: 0.05,
+      tanLeadingEdgeSweep: planform.tanLeadingEdge,
+      reynoldsOnThickness: 2e6 * 0.05,
+    });
+    const cd = (3 * e.dragPerSpan * planform.span) / area;
+    expect(c.cd).toBeCloseTo(cd, 15);
+    expect(c.low).toBeCloseTo(e.band.low * cd, 15);
+    expect(c.high).toBeCloseTo(e.band.high * cd, 15);
+    expect(c.label).toBe(e.label);
+    expect(c.bounded).toBe(SQUARE_EDGE_BOUNDED_REASON);
+    expect(c.band).toBe(
+      'bounded, not measured: the whole gap between the sonic and the pitot pressure on the ' +
+        `whole face, C_D ${c.low.toFixed(4)} to ${c.high.toFixed(4)}, a gap of ` +
+        (c.high - c.low).toFixed(4),
+    );
+    // The faces still carry no wave drag; nothing else is bounded.
+    expect(named(r, 'fin wave drag').cd).toBe(0);
+    expect(r.components.filter((x) => x.bounded !== undefined).map((x) => x.name)).toEqual([
+      'fin leading edges',
+    ]);
+  });
+
+  it('a rounded leading edge swept 66.4 deg at M 2.8 (M_n 1.12): bounded between its sweep and 60 deg', () => {
+    const steep = clippedDeltaPlanform({ rootChord: 2, span: 0.7, taperRatio: 0.2 });
+    const r = parts(config(undefined, steep), 2.8);
+    expect(r.refusals).toEqual([]);
+    const c = named(r, 'fin leading edges');
+    const n = roundedLeadingEdgeDrag({
+      mach: 2.8,
+      radius: 0.025,
+      faceAngle: 0,
+      tanLeadingEdgeSweep: steep.tanLeadingEdge,
+      reynoldsOnDiameter: 2e6 * 0.05,
+    });
+    expect(n.bounded).toBeDefined();
+    const cd = (3 * n.dragPerSpan * steep.span) / area;
+    expect(c.cd).toBeCloseTo(cd, 15);
+    expect(c.low).toBeCloseTo(n.band.low * cd, 15);
+    expect(c.high).toBeCloseTo(n.band.high * cd, 15);
+    expect(c.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
+    expect(c.label.startsWith('bounded, not measured: swept 66.4 deg')).toBe(true);
+    expect(c.label).toMatch(/; on a flat plate, a semicircular nose \(0016\)$/);
+    expect(c.band).toMatch(
+      /^bounded, not measured: the whole gap between the term at the sweep and the term at 60 deg, C_D /,
+    );
   });
 });
 

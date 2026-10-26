@@ -187,11 +187,17 @@ describe('each refused part, and the floor', () => {
   });
 
   it("a flat plate's square-cut leading edge: not negative with supersonic edges only", () => {
-    const square = (sweepLe: number) =>
-      rocket({ section: flatPlate(0.06, 'square', 'square'), sweepLe });
-    // Mach 2, unswept: every condition holds.
+    // Since 0016 section 21.1 a square-cut edge is served bounded; a plate 0.002 thick is refused
+    // for its Reynolds number (below 6.7e3 on the thickness), and a sweep beyond 60 deg.
+    const square = (sweepLe: number, t = 0.002) =>
+      rocket({ section: flatPlate(t, 'square', 'square'), sweepLe });
+    expect(refusedOf(refused(square(0, 0.06), 2).parts)).toEqual([]);
+    // Mach 2, unswept: every condition holds; the thin layer's trailing edge is refused too.
     const ok = refused(square(0), 2);
-    expect(refusedOf(ok.parts)).toEqual(['fin leading edges']);
+    expect(refusedOf(ok.parts)).toEqual(['fin leading edges', 'fin trailing-edge base']);
+    expect(ok.parts.refusals[0]!.message).toMatch(
+      /Reynolds number 5600 on the plate's thickness is below 6700/,
+    );
     expect(ok.view.floor.kind).toBe('floor');
     // Mach 1.4: below 1.5, and the friction and trailing edge refused besides (not negative).
     const low = refused(square(0), 1.4);

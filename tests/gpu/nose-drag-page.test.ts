@@ -227,12 +227,13 @@ describe('the drag page: total drag before a nose solve', () => {
     expect(out).toContain('since sweep changes the factor');
     expect(out).not.toContain('fin trailing-edge base (');
     before = out;
-    // A flat plate (0016): its thickness asked, no radius; square-cut edges refused.
+    // A flat plate (0016): its thickness asked, no radius; square-cut edges served bounded
+    // (0016 section 21.1), so no leading-edge refusal.
     set('#section', 'plate-square-square');
     expect(hidden('#le-radius-field')).toBe(true);
     expect(text('#thickness-label')).toBe('Plate thickness');
     out = await settled(before);
-    expect(out).toContain('fin leading edges (square-leading-edge)');
+    expect(out).not.toContain('fin leading edges (');
     before = out;
     set('#section', 'single-wedge');
     expect(hidden('#le-radius-field')).toBe(false);

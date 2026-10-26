@@ -14,6 +14,7 @@
 
 import type { BaseRefusalReason } from '../base/refusal';
 import type { FinRefusalReason } from '../fins/refusal';
+import { SQUARE_EDGE_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_REASON } from '../total/finned-body';
 import type { ComponentRefusal } from '../total/total-drag';
 import type { RocketDesign } from '../rocket/design';
 import {
@@ -86,6 +87,51 @@ export const W1_BOUNDED_WORDS: StatusWords = {
   mark: 'square',
 };
 
+/** The fins' square-cut leading edges, bounded (0016 section 21.1). */
+export const SQUARE_EDGE_BOUNDED_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    "An estimate with one part bounded, not measured: the fins' square-cut leading edges, whose " +
+    'band runs from the sonic to the pitot pressure on the edge.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
+/** The fins' rounded leading edges swept beyond 60 deg, bounded (0016 section 21.2). */
+export const SWEPT_EDGE_BOUNDED_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    "An estimate with one part bounded, not measured: the fins' rounded leading edges, swept past " +
+    '60 degrees, whose band runs from the drag at their sweep to that at 60.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
+/** More than one part bounded: Details names each. */
+export const SEVERAL_BOUNDED_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    'An estimate with more than one part bounded, not measured: each band runs between two ' +
+    'limits, not from a measurement; Details names each part.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
+/** Each bounded part's reason, as the logic names it in a claim, and its words. */
+const BOUNDED_PARTS: readonly (readonly [string, StatusWords])[] = [
+  [BOUNDED_REASON, BOUNDED_WORDS],
+  [W1_BOUNDED_REASON, W1_BOUNDED_WORDS],
+  [SQUARE_EDGE_BOUNDED_REASON, SQUARE_EDGE_BOUNDED_WORDS],
+  [SWEPT_EDGE_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_WORDS],
+];
+
+/** The words of a claim with bounded parts, or undefined where it has none. */
+function boundedWords(reasons: readonly string[]): StatusWords | undefined {
+  const found = BOUNDED_PARTS.filter(([reason]) => reasons.includes(reason));
+  if (found.length === 0) return undefined;
+  return found.length === 1 ? found[0]![1] : SEVERAL_BOUNDED_WORDS;
+}
+
 /**
  * The one validated claim (main's BRL Report 934 run, 0014 section 10.7
  * (q)): the Basic Finner's narrow sub-class at that range's conditions,
@@ -118,13 +164,8 @@ const CLAIM_KINDS: { readonly [K in Claim['kind']]: (claim: ClaimOf<K>) => Statu
   estimate: (claim) =>
     claim.reasons.includes(NOSE_UNVERIFIED_REASON)
       ? NOSE_UNVERIFIED_WORDS
-      : claim.reasons.includes(BOUNDED_REASON)
-        ? BOUNDED_WORDS
-        : claim.reasons.includes(W1_BOUNDED_REASON)
-          ? W1_BOUNDED_WORDS
-          : claim.text === CLASS_CLAIM
-            ? CLASS_WORDS
-            : ESTIMATE_WORDS,
+      : (boundedWords(claim.reasons) ??
+        (claim.text === CLASS_CLAIM ? CLASS_WORDS : ESTIMATE_WORDS)),
 };
 
 /** A claim of the logic in plain words. */
@@ -332,9 +373,11 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
     change: 'a longer bevel or thinner fins',
   }),
   planform: asMessage,
+  // Thrown only for a sweep that is not a usable number: past 60 deg a rounded edge is bounded
+  // (0016 section 21.2), and where that fails the reason is the term's own (leading-edge-range).
   'swept-leading-edge': () => ({
-    reason: "a swept rounded leading edge's drag is not measured",
-    change: 'unswept leading edges, or bevelled ones',
+    reason: "the leading edge's sweep is not a usable number",
+    change: 'a sweep of zero or more',
   }),
   'leading-edge-range': () => ({
     reason:
@@ -343,8 +386,11 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
     change: 'bevelled leading edges',
   }),
   'square-leading-edge': () => ({
-    reason: "a square-cut leading edge's drag cannot yet be bounded from measurements",
-    change: 'rounded or bevelled leading edges',
+    reason:
+      "a square-cut leading edge's drag is bounded only where the Mach number across the edge is " +
+      '1.0 to 3.0, the edge is swept no more than 60 degrees, and the plate is thick enough for ' +
+      'its speed and air (its Reynolds number at least 6,700)',
+    change: 'less sweep, a thicker plate, or rounded or bevelled leading edges',
   }),
   'leading-edge-geometry': () => ({
     reason: 'a rounded leading edge is modelled only on a wedge-shaped fin, not on this one',

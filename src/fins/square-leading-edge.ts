@@ -92,7 +92,7 @@ export interface SquareLeadingEdge {
 
 /** A number printed with the digits that keep a stated inequality true at its boundary. */
 function shown(x: number, limit: number, side: 'below' | 'above'): string {
-  for (let digits = 3; digits <= 15; digits++) {
+  for (let digits = 4; digits <= 15; digits++) {
     const text = x.toPrecision(digits);
     const v = Number(text);
     if (side === 'below' ? v < limit : v > limit) return text;

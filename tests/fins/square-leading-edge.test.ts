@@ -182,9 +182,9 @@ describe('the domain: every reason given', () => {
 
   it('above 3.0, and the Reynolds number below 6.7e3: both, joined', () => {
     const e = failure(() => edge(3.1, 0, 0.003, 5e3));
-    expect(e.message).toMatch(/the Mach number 3\.10 is above 3\.0/);
+    expect(e.message).toMatch(/the Mach number 3\.100 is above 3\.0/);
     expect(e.message).toMatch(
-      /; and the Reynolds number 5\.00e\+3|; and the Reynolds number 5000 on the plate's thickness is below 6700/,
+      /; and the Reynolds number 5000 on the plate's thickness is below 6700/,
     );
     expect(SQUARE_EDGE_REYNOLDS_FLOOR).toBe(6.7e3);
   });

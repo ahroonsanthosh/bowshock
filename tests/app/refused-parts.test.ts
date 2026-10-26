@@ -167,7 +167,7 @@ describe("a refused point's parts and floor", { timeout: 600_000 }, () => {
     expect(at14.floor).toMatch(/; the body base is refused, and its sign/);
   });
 
-  it('flat plates a chord ahead of the base, square-cut at Mach 2: a floor', async () => {
+  it('flat plates a chord ahead of the base, square-cut at Mach 2: a total, bounded; too thin: a floor', async () => {
     const b = preset('basic-finner').design;
     const d: RocketDesign = {
       ...fins(b, {
@@ -184,14 +184,27 @@ describe("a refused point's parts and floor", { timeout: 600_000 }, () => {
       ...d,
       finSets: [{ ...set, rootLeadingEdge: set.rootLeadingEdge - 0.06 }],
     };
-    const run = await curve(ahead, true, false);
-    expect(check(run, ahead, true, false)).toBeGreaterThan(0);
+    // Since 0016 section 21.1 the square-cut edge is served bounded: a total at Mach 2.
+    const served = await curve(ahead, true, false);
+    const at2 = pointView(
+      served.points.find((q) => q.mach === 2)!,
+      true,
+    );
+    expect(at2.value).not.toBeNull();
+    expect(at2.status.word).toBe('Estimate, bounded');
+    // Plates 0.1 mm thick: the edge's Reynolds number below 6.7e3, the edge refused, a floor.
+    const thin: RocketDesign = {
+      ...ahead,
+      finSets: [{ ...ahead.finSets[0]!, thickness: 0.0001 }],
+    };
+    const run = await curve(thin, true, false);
+    expect(check(run, thin, true, false)).toBeGreaterThan(0);
     const v = pointView(
       run.points.find((q) => q.mach === 2)!,
       true,
     );
     expect(v.floor).toMatch(
-      /^At least 0\.\d{2,4}: a floor, not an estimate: the sum of the served parts' low ends; the refused parts \(fin leading edges\) are not negative\.$/,
+      /^At least 0\.\d{2,4}: a floor, not an estimate: the sum of the served parts' low ends; the refused parts \(fin leading edges[^)]*\) are not negative\.$/,
     );
   });
 });
