@@ -164,34 +164,68 @@ small, long boat-tails and nothing else; the references are the march's.
 
 ### 2.3 Measurements
 
-Thirteen cases (`docs/research/boat-tails/cases.ts`): a 3-caliber tangent
-ogive (and on one case a 3-caliber cone) with 3 or 5 calibers of
-cylinder; boat-tails of 4, 6, 8, 12 and 16 deg, 0.5 to 2 calibers long;
-Mach 1.5, 2 and 3. For each, the march on 640, 1280 and 2560 intervals
-(order 1.89 to 2.09; the extrapolated value's distance from the finest
-at most 3.1e-5 of it), linearised theory, and the fitted family, each
-grid's boat-tail drag against the march's extrapolation (being run: the
-lane solves every case on nj = 20 and 40, four on nj = 80 and 160, the
-rest on nj = 80; `table.py` writes this table from the results):
+Two sets (`docs/research/boat-tails/cases.ts`). The first, thirteen cases
+(`CASES`): a 3-caliber tangent ogive (and on one case a 3-caliber cone)
+with 3 or 5 calibers of cylinder; boat-tails of 4, 6, 8, 12 and 16 deg,
+0.5 to 2 calibers long; Mach 1.5, 2 and 3. The second, twelve cases
+(`RM_E51F26`, names `e51f26-...`): RM E51F26's six boat-tails (5.63, 7.03
+and 9.33 deg to bases of 0.506 and 0.704 of the diameter, 0.9 to 2.5
+calibers long) behind a 6-caliber tangent ogive and a 6-caliber cone, the
+cylinder making the body 12 calibers long, at Mach 1.91; their march is the
+inviscid value section 3 divides by. For each, the march on 640, 1280 and
+2560 intervals (order 1.65 to 2.09; the extrapolated value's distance
+from the finest at most 3.1e-5 of it), linearised theory, and the fitted
+family, each grid's boat-tail drag against the march's extrapolation. The
+lane solves every case on nj = 20 and 40; four of the first set
+(`FOUR_GRIDS`) on nj = 80 and 160, the rest of the first set on nj = 80
+(being run; `table.py` writes this table from the results):
 
-| Case                 | Characteristics | Linearised | nj = 20 | nj = 40 | nj = 80 | nj = 160 |
-| -------------------- | --------------- | ---------- | ------- | ------- | ------- | -------- |
-| `c3-c5-bt8-l1-m2`    | 0.0538782       | +9.7%      | +0.377% |         |         |          |
-| `o3-c3-bt6-l1-m2`    | 0.0345663       | +1.3%      | +0.813% |         |         |          |
-| `o3-c5-bt12-l1.5-m3` | 0.0732364       | +48.5%     | +1.086% |         |         |          |
-| `o3-c5-bt16-l1-m1.5` | 0.2174419       | +28.3%     | -0.724% |         |         |          |
-| `o3-c5-bt16-l1-m2`   | 0.1507984       | +41.9%     | +0.206% |         |         |          |
-| `o3-c5-bt16-l1-m3`   | 0.0885470       | +70.4%     | +0.310% |         |         |          |
-| `o3-c5-bt4-l1-m2`    | 0.0162227       | -10.1%     | +0.807% |         |         |          |
-| `o3-c5-bt4-l2-m1.5`  | 0.0310000       | +6.0%      | +1.064% |         |         |          |
-| `o3-c5-bt8-l0.5-m2`  | 0.0324917       | -79.6%     | +0.119% |         |         |          |
-| `o3-c5-bt8-l1-m1.5`  | 0.0750218       | +13.5%     | +0.041% |         |         |          |
-| `o3-c5-bt8-l1-m2`    | 0.0534472       | +9.6%      | +0.796% |         |         |          |
-| `o3-c5-bt8-l1-m3`    | 0.0335828       | -63.8%     | +0.993% |         |         |          |
-| `o3-c5-bt8-l2-m2`    | 0.0700987       | +15.0%     | +1.736% |         |         |          |
+| Case                      | Characteristics | Linearised | nj = 20 | nj = 40 | nj = 80 | nj = 160 |
+| ------------------------- | --------------- | ---------- | ------- | ------- | ------- | -------- |
+| `c3-c5-bt8-l1-m2`         | 0.0538782       | +9.7%      | +0.377% | -0.014% |         |          |
+| `e51f26-c6-bt5.63-r0.506` | 0.0476537       | +8.8%      | +2.032% | +0.780% |         |          |
+| `e51f26-c6-bt5.63-r0.704` | 0.0394498       | +11.4%     | +1.292% | +0.490% |         |          |
+| `e51f26-c6-bt7.03-r0.506` | 0.0621091       | +12.4%     | +1.796% | +0.651% |         |          |
+| `e51f26-c6-bt7.03-r0.704` | 0.0505508       | +12.8%     | +1.022% | +0.358% |         |          |
+| `e51f26-c6-bt9.33-r0.506` | 0.0864471       | +18.8%     | +1.345% | +0.428% |         |          |
+| `e51f26-c6-bt9.33-r0.704` | 0.0681492       | +10.9%     | +0.545% | +0.117% |         |          |
+| `e51f26-o6-bt5.63-r0.506` | 0.0461394       | +8.7%      | +1.961% | +0.657% |         |          |
+| `e51f26-o6-bt5.63-r0.704` | 0.0387179       | +11.4%     | +1.300% | +0.453% |         |          |
+| `e51f26-o6-bt7.03-r0.506` | 0.0608520       | +12.4%     | +1.828% | +0.622% |         |          |
+| `e51f26-o6-bt7.03-r0.704` | 0.0499057       | +12.7%     | +1.075% | +0.381% |         |          |
+| `e51f26-o6-bt9.33-r0.506` | 0.0854299       | +18.8%     | +1.444% | +0.483% |         |          |
+| `e51f26-o6-bt9.33-r0.704` | 0.0676022       | +10.7%     | +0.733% | +0.226% |         |          |
+| `o3-c3-bt6-l1-m2`         | 0.0345663       | +1.3%      | +0.813% | +0.311% | +0.110% |          |
+| `o3-c5-bt12-l1.5-m3`      | 0.0732364       | +48.5%     | +1.086% | +0.364% |         |          |
+| `o3-c5-bt16-l1-m1.5`      | 0.2174419       | +28.3%     | -0.724% | -0.578% |         |          |
+| `o3-c5-bt16-l1-m2`        | 0.1507984       | +41.9%     | +0.206% | -0.135% |         |          |
+| `o3-c5-bt16-l1-m3`        | 0.0885470       | +70.4%     | +0.310% | -0.182% |         |          |
+| `o3-c5-bt4-l1-m2`         | 0.0162227       | -10.1%     | +0.807% | +0.319% |         |          |
+| `o3-c5-bt4-l2-m1.5`       | 0.0310000       | +6.0%      | +1.064% | +0.434% |         |          |
+| `o3-c5-bt8-l0.5-m2`       | 0.0324917       | -79.6%     | +0.119% | +0.060% |         |          |
+| `o3-c5-bt8-l1-m1.5`       | 0.0750218       | +13.5%     | +0.041% | +0.003% |         |          |
+| `o3-c5-bt8-l1-m2`         | 0.0534472       | +9.6%      | +0.796% | +0.297% |         |          |
+| `o3-c5-bt8-l1-m3`         | 0.0335828       | -63.8%     | +0.993% | +0.417% |         |          |
+| `o3-c5-bt8-l2-m2`         | 0.0700987       | +15.0%     | +1.736% | +0.629% | +0.228% |          |
 
-Every grid so far meets the fitted grids' gates. The served range is
-decided from the finished families in section 2.5.
+Every grid so far converged and meets the fitted grids' gates (aspect
+ratio at most 9.4, neighbouring sizes within 1.17, wall angles at least
+69 deg). From nj = 20 to 40 the error falls by 2.4 to 3.3 times on 18 of
+the 25 cases (observed orders 1.25 to 1.7, the shoulder's, section 2.4),
+and by 2.0 on the half-caliber boat-tail. On three it falls to 0.12% or
+less, passing near zero (the cone at Mach 2, 8 deg at Mach 1.5, and the
+shortest of RM E51F26's behind the cone). It does not fall steadily on
+the three 16 deg cases, where it changes sign at Mach 2 and 3 and falls
+by 1.25 times only at Mach 1.5: two errors of opposite sign still
+compete there, which only the four-grid families show resolved or not.
+On the two cases solved on nj = 80 so far, both at Mach 2, the order from
+the three grids is 1.32 (`o3-c3-bt6-l1-m2`) and 1.47
+(`o3-c5-bt8-l2-m2`); the band the procedure would put on the finest grid
+(5.8e-5 and 2.0e-4, 0.17% and 0.28% of the value) contains the error
+(3.8e-5 and 1.6e-4), and the extrapolation misses the march by -0.025%
+and +0.001%. The procedure needs the fourth grid to agree on the order
+before it calls a band verified; the served range is decided from the
+finished families in section 2.5.
 
 ### 2.4 The shoulder's pressure
 
