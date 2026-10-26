@@ -59,8 +59,11 @@
  * shock point, is the first line of the march. With m intervals on the
  * curve its C- lines have 2m.
  *
- * Corners in the profile (which need an expansion fan) and subsonic flow
- * are refused; a slope that is continuous across a breakpoint is accepted
+ * An expansion corner in the profile (the shoulder of a cone-cylinder, or
+ * of a boat-tail) is a centred Prandtl-Meyer fan, inserted into the
+ * network as the first line passes it (`march`); compression corners and
+ * subsonic flow are refused. A slope that is continuous across a
+ * breakpoint is accepted
  * even where the curvature is unbounded (the Haack series meets the
  * cylinder with its slope vanishing as the square root of the distance).
  * Further shock points are not spaced by control: where the shock weakens
@@ -74,7 +77,7 @@
 
 import { bodyBreakpoints, bodyLength, bodyRadius, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
-import { deflectionAngle, normalShock } from './gas-dynamics';
+import { deflectionAngle, machFromPrandtlMeyer, normalShock, prandtlMeyer } from './gas-dynamics';
 import { coneFlowField } from './taylor-maccoll';
 
 /** A point of the network: free-stream pressure and density 1. */
@@ -142,6 +145,14 @@ interface Point {
   psi: number;
 }
 
+/** An expansion corner of the profile: where, and the wall's angle either side. */
+interface Corner {
+  readonly x: number;
+  readonly y: number;
+  readonly before: number;
+  readonly after: number;
+}
+
 /** What a march accumulates: the body and shock points, and its checks. */
 interface MarchRecord {
   readonly wall: { x: number; p: number }[];
@@ -190,13 +201,17 @@ function network(body: Body, mach: number, gamma: number) {
   };
 
   const radius = (x: number) => bodyRadius(body, x);
-  const slope = (x: number) => {
+  const centralSlope = (x: number) => {
     const h = 1e-6 * L;
     return Math.atan((radius(x + h) - radius(x - h)) / (2 * h));
   };
-  const corners = bodyBreakpoints(body).filter((x) => x > 0 && x < xEnd);
-  for (const x of corners) {
-    if (Math.abs(slope(x - 1e-4 * L) - slope(x + 1e-4 * L)) > 1e-3) {
+  // Corners: breakpoints where the slope jumps. An expansion corner (the
+  // wall turning away from the flow) is a centred Prandtl-Meyer fan,
+  // inserted by the march (`cornerFan`); a compression corner would need
+  // a shock at the wall, and is refused.
+  const corners: Corner[] = [];
+  for (const x of bodyBreakpoints(body).filter((b) => b > 0 && b < xEnd)) {
+    if (Math.abs(centralSlope(x - 1e-4 * L) - centralSlope(x + 1e-4 * L)) > 1e-3) {
       // Nearer the breakpoint a continuous slope differs across it by
       // less, a corner by the same: one-sided secants at 1e-8 of the nose
       // length (on the LD-Haack nose of 2 calibers they differ by 8e-5).
@@ -204,10 +219,39 @@ function network(body: Body, mach: number, gamma: number) {
       const before = Math.atan((radius(x - e) - radius(x - 2 * e)) / e);
       const after = Math.atan((radius(x + 2 * e) - radius(x + e)) / e);
       if (Math.abs(before - after) > 1e-3) {
-        throw new RangeError('corners in the profile need an expansion fan, not implemented');
+        if (after > before) {
+          throw new RangeError(
+            'compression corners in the profile need a shock at the wall, not implemented',
+          );
+        }
+        // The slopes either side, from secants within the corner's own
+        // segments (exact on the straight parts these corners join).
+        const h = 1e-6 * L;
+        corners.push({
+          x,
+          y: radius(x),
+          before: Math.atan((radius(x) - radius(x - h)) / h),
+          after: Math.atan((radius(x + h) - radius(x)) / h),
+        });
       }
     }
   }
+  /**
+   * The body's slope at x: central differences, taken within the side of
+   * a corner on which x lies (a wall point within 1e-6 of the nose's
+   * length of a corner would otherwise take half its turn).
+   */
+  const slope = (x: number) => {
+    const h = 1e-6 * L;
+    for (const c of corners) {
+      if (Math.abs(x - c.x) < h) {
+        return x < c.x
+          ? Math.atan((radius(x) - radius(x - h)) / h)
+          : Math.atan((radius(x + h) - radius(x)) / h);
+      }
+    }
+    return centralSlope(x);
+  };
 
   // Entropy as a function of the stream function, in increasing psi: the
   // starting line's, then the shock history.
@@ -364,7 +408,89 @@ function network(body: Body, mach: number, gamma: number) {
     return c;
   };
 
+  /**
+   * The flow at a corner just ahead of its fan, by the inverse method: the
+   * C- line through the corner is the one from the point A on the C+ line
+   * from `w` (the last wall point ahead of the corner) to `b` (where that
+   * C+ line meets the next C- line, which passes above the corner), A's
+   * state linear along the segment; the compatibility relation along A's
+   * C- line, its coefficients averaged as in the other unit processes,
+   * gives the corner's pressure with the wall's angle ahead of the corner.
+   */
+  const cornerPoint = (w: Point, b: Point, corner: Corner, kWall: number): Point => {
+    const along = (t: number): Point => ({
+      x: w.x + t * (b.x - w.x),
+      y: w.y + t * (b.y - w.y),
+      theta: w.theta + t * (b.theta - w.theta),
+      p: w.p + t * (b.p - w.p),
+      k: w.k + t * (b.k - w.k),
+      psi: w.psi + t * (b.psi - w.psi),
+    });
+    const at = (t: number) => {
+      const a = along(t);
+      const ca = coefficients(a, -1);
+      const c: Point = { x: corner.x, y: corner.y, theta: corner.before, p: a.p, k: kWall, psi: 0 };
+      let gap = 0;
+      converge(() => {
+        const cm = coefficients(c, -1);
+        const angle = 0.5 * (ca.angle + cm.angle);
+        // Positive while the line from A to the corner is steeper than
+        // the C- direction: the C- line from A passes below the corner.
+        gap = Math.atan2(corner.y - a.y, corner.x - a.x) - angle;
+        const qm = 0.5 * (ca.q + cm.q);
+        const rm =
+          (0.5 * (ca.s + cm.s) * Math.hypot(corner.x - a.x, corner.y - a.y)) /
+          (0.5 * (corner.y + a.y));
+        const p = a.p + (c.theta - a.theta - rm) / qm;
+        const change = Math.abs(p - c.p);
+        c.p = p;
+        return change;
+      });
+      return { a, c, gap };
+    };
+    // At t = 0 the line from A runs along the wall to the corner, above the
+    // C- direction; at t = 1 the C- line from b passes above the corner.
+    let lo = 0;
+    let hi = 1;
+    if (!(at(lo).gap > 0 && at(hi).gap < 0)) {
+      throw new RangeError('the C- line through a corner could not be bracketed');
+    }
+    for (let it = 0; it < 100 && hi - lo > 1e-15; it++) {
+      const mid = 0.5 * (lo + hi);
+      if (at(mid).gap > 0) lo = mid;
+      else hi = mid;
+    }
+    const { a, c } = at(0.5 * (lo + hi));
+    c.psi = a.psi - massFlux(c, a);
+    return c;
+  };
+
+  /**
+   * The centred Prandtl-Meyer fan at a corner: `count` + 1 states at the
+   * corner, from the flow ahead of it (`ahead`, at the wall's angle before
+   * the corner) to the wall's angle after it in equal steps of angle. At
+   * the corner the C- relation holds over zero length, so across the fan
+   * the wall streamline expands isentropically, its Prandtl-Meyer angle
+   * growing by the turn: exact, at the wall's entropy and the free
+   * stream's total enthalpy.
+   */
+  const cornerFan = (ahead: Point, corner: Corner, count: number): Point[] => {
+    const nu0 = prandtlMeyer(machOf(ahead).m, gamma);
+    const fan: Point[] = [ahead];
+    for (let k = 1; k <= count; k++) {
+      const theta = corner.before + ((corner.after - corner.before) * k) / count;
+      const m = machFromPrandtlMeyer(nu0 + (corner.before - theta), gamma);
+      const h = enthalpy / (1 + 0.5 * (gamma - 1) * m * m);
+      const rho = (h / (cp * ahead.k)) ** (1 / (gamma - 1));
+      fan.push({ ...ahead, theta, p: ahead.k * rho ** gamma });
+    }
+    return fan;
+  };
+
   return {
+    corners,
+    cornerPoint,
+    cornerFan,
     vInf,
     cp,
     enthalpy,
@@ -384,10 +510,25 @@ function network(body: Body, mach: number, gamma: number) {
 type Network = ReturnType<typeof network>;
 
 /**
+ * Rays of the fan at a corner per interval of the march's starting line
+ * and radian of the turn: the fan is resolved with the network, so the
+ * march keeps its order (a 10 deg corner on 160 intervals takes 56 rays).
+ */
+const FAN_RAYS_PER_INTERVAL_RADIAN = 2;
+
+/**
  * The march from a C- line from the shock to the body (`first`, whose
  * shock point has wave angle beta0) to the last line that ends on the
  * body, adding its points to `record`. `startPsi` is psi at the body end
  * of the starting line, `kWall` the entropy on the body.
+ *
+ * At an expansion corner: the first line whose C- line passes above the
+ * corner takes, after the point where it crosses the C+ line from the
+ * last wall point ahead of the corner, the points where it crosses the
+ * rays of the corner's fan (the C+ lines from the fan's states at the
+ * corner, `cornerFan`), and only then meets the wall behind the corner.
+ * Every later line crosses each ray in the same way, so the lines have
+ * as many more points as the fan has rays.
  */
 function march(
   net: Network,
@@ -398,25 +539,46 @@ function march(
   record: MarchRecord,
   onLine?: (line: readonly CharacteristicPoint[]) => void,
 ): void {
-  const { radius, entropy, shockPoint, interiorPoint, wallPoint } = net;
-  const n = first.length - 1;
+  const { radius, entropy, shockPoint, interiorPoint, wallPoint, corners } = net;
+  const intervals = first.length - 1;
   let line = first;
   let beta = beta0;
+  let corner = corners.findIndex((c) => c.x > first[first.length - 1]!.x);
+  if (corner < 0) corner = corners.length;
   for (;;) {
     const next: Point[] = [];
     const s = shockPoint(line[0]!, beta, line[1]!);
     beta = s.beta;
     next.push(s.point);
     entropy.push({ psi: s.point.psi, k: s.point.k });
-    for (let i = 1; i < n; i++) {
-      const q = interiorPoint(next[i - 1]!, line[i + 1]!);
-      record.penetration = Math.max(
-        record.penetration,
-        (radius(q.x) - q.y) / (line[0]!.y - radius(line[0]!.x)),
+    let w: Point | null;
+    for (;;) {
+      // The points where the new line crosses the C+ lines from the line
+      // before (and from the fans inserted into it), then the wall.
+      while (next.length < line.length - 1) {
+        const i = next.length;
+        const q = interiorPoint(next[i - 1]!, line[i + 1]!);
+        record.penetration = Math.max(
+          record.penetration,
+          (radius(q.x) - q.y) / (line[0]!.y - radius(line[0]!.x)),
+        );
+        next.push(q);
+      }
+      w = wallPoint(next[next.length - 1]!, kWall);
+      const c = corners[corner];
+      if (c === undefined || (w !== null && !(w.x > c.x))) break;
+      // The new line passes above the corner: its fan's rays start from
+      // the corner, and the line crosses them before it meets the wall.
+      const ahead = net.cornerPoint(line[line.length - 1]!, next[next.length - 1]!, c, kWall);
+      const rays = Math.max(
+        2,
+        Math.ceil(FAN_RAYS_PER_INTERVAL_RADIAN * intervals * (c.before - c.after)),
       );
-      next.push(q);
+      const fan = net.cornerFan(ahead, c, rays);
+      record.wall.push({ x: c.x, p: fan[0]!.p }, { x: c.x, p: fan[rays]!.p });
+      line = [...line, ...fan];
+      corner++;
     }
-    const w = wallPoint(next[n - 1]!, kWall);
     // The body ends at xEnd: the march stops at the last line ending on it.
     if (w === null) break;
     next.push(w);
@@ -717,6 +879,11 @@ export function characteristicsFrom(
       next.push(q);
     }
     const w = wallPoint(next[next.length - 1]!, kWall);
+    if (net.corners.some((c) => c.x > data[m]!.x && (w === null || w.x > c.x))) {
+      throw new RangeError(
+        "a corner within the starting data's own domain of dependence is not implemented",
+      );
+    }
     // The data's own C- lines reach beyond the end of the body.
     if (w === null) return { ...record, startMassDefect };
     next.push(w);

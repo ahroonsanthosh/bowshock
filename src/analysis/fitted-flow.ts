@@ -13,7 +13,13 @@
  */
 
 import { Euler2D, type BoundaryFaceFlux, type Euler2DConfig } from '../engine-cpu/euler2d';
-import { bodyLength, bodyRadius, type Body } from '../geometry/body';
+import {
+  bodyBreakpoints,
+  bodyLength,
+  bodyRadius,
+  shoulderPosition,
+  type Body,
+} from '../geometry/body';
 import { noseBaseSlope, noseTipSlope } from '../geometry/nose';
 import {
   bluntBodyGrid,
@@ -123,9 +129,38 @@ function engineConfig(
  * it does not, the case is refused (`baseMach`).
  */
 function solvedBody(body: Body): Body {
+  const tail = body.boatTail;
+  if (tail !== undefined) {
+    // A boat-tail stays where it is: its cone is continued past the base
+    // instead (boatTailContinuation), so that the base is not the outflow
+    // plane and its last cells are not perturbed by it.
+    const extra = boatTailContinuation(body);
+    const slope = (body.nose.baseRadius - tail.baseRadius) / tail.length;
+    return {
+      ...body,
+      boatTail: { length: tail.length + extra, baseRadius: tail.baseRadius - extra * slope },
+    };
+  }
   const cylinder = SOLVED_CYLINDER * 2 * body.nose.baseRadius;
   return { ...body, cylinderLength: Math.max(body.cylinderLength, cylinder) };
 }
+
+/**
+ * Length of the boat-tail's cone solved past the base: BOAT_TAIL_CONTINUATION
+ * body radii, or half the cone's remaining run to the axis if shorter. Where
+ * the flow at the base is axially supersonic (`baseMach`), nothing behind
+ * the base reaches the body ahead of it, so the boat-tail's pressure up to
+ * the base is that of the body asked for (docs/design/0023-boat-tails.md).
+ */
+export function boatTailContinuation(body: Body): number {
+  const tail = body.boatTail;
+  if (tail === undefined) return 0;
+  const slope = (body.nose.baseRadius - tail.baseRadius) / tail.length;
+  return Math.min(BOAT_TAIL_CONTINUATION * body.nose.baseRadius, (0.5 * tail.baseRadius) / slope);
+}
+
+/** Boat-tail's cone solved past the base, in body radii (boatTailContinuation). */
+const BOAT_TAIL_CONTINUATION = 1;
 
 /** Shortest cylinder solved behind a nose, in calibers. */
 const SOLVED_CYLINDER = 1;
@@ -167,6 +202,11 @@ function* solvedBluntSteps(
   asked: Body,
   options: BluntFamilyOptions,
 ): Generator<void, SolvedBluntBody> {
+  if (asked.boatTail !== undefined) {
+    throw new RangeError(
+      "a boat-tail behind a blunt nose is not solved yet: the blunt noses' grids end in a cylinder",
+    );
+  }
   const shortest = solvedBody(asked);
   const caliber = 2 * asked.nose.baseRadius;
   let first: SolvedBluntBody | undefined;
@@ -202,14 +242,30 @@ export interface FitProblem {
   readonly configFor: (grid: StructuredGrid, shockStates: readonly Primitive2D[]) => Euler2DConfig;
   readonly initial: (i: number, j: number) => Primitive2D;
   readonly firstNode: 'symmetry' | 'fixed';
-  /** The forebody pressure drag coefficient from the fluxes through the wall. */
+  /**
+   * The forebody pressure drag coefficient from the fluxes through the
+   * wall: the nose's and the cylinder's, up to the shoulder where a
+   * boat-tail follows.
+   */
   readonly drag: (wall: readonly BoundaryFaceFlux[]) => number;
+  /**
+   * On a body with a boat-tail: the boat-tail's own pressure drag
+   * coefficient, on the body's cross-section, from the wall faces between
+   * the shoulder and the base (docs/design/0023-boat-tails.md).
+   */
+  readonly boatTailDrag?: (wall: readonly BoundaryFaceFlux[]) => number;
   /**
    * Axial position of the end of the body asked for, where the solved one
    * may go on (solvedBody): the flow must leave it supersonically for the
    * part beyond not to reach back (`baseMach`).
    */
   readonly askedEnd: number;
+  /**
+   * Limit of the shock nodes' pseudo-time step, in widths of the shock
+   * face (ShockFitOptions.stepAspect); set on bodies with a boat-tail,
+   * whose columns are narrow under a far shock.
+   */
+  readonly stepAspect?: number;
 }
 
 /** Rows of cells next to the wall that hold the stencil of the wall's fluxes, with a margin. */
@@ -383,9 +439,20 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     const b = strength(h);
     return (SHARP_ASPECT * h * b * Math.exp(b / 2)) / (Math.expm1(b) * nj);
   };
-  const breakpoints = body.cylinderLength > 0 ? [x0, L, xEnd] : [x0, L];
   const density = options.columnDensity ?? 1;
-  const xs = columnPositions(breakpoints, (x) => density / spacing(x), refinement);
+  const tail = boatTailColumns(asked, nj);
+  const breakpoints = tail
+    ? [x0, ...bodyBreakpoints(asked).slice(1), xEnd]
+    : body.cylinderLength > 0
+      ? [x0, L, xEnd]
+      : [x0, L];
+  const xs = columnPositions(
+    breakpoints,
+    tail
+      ? (x) => density / Math.min(spacing(x), x < L ? Infinity : tail.spacing(x))
+      : (x) => density / spacing(x),
+    refinement,
+  );
   // Each line keeps the node fractions of its first guess as the shock moves.
   const lines = withFixedFractions(
     xs.map((x) => ({ x, y: bodyRadius(body, x), dx: 0, dy: 1, h: guess(x) })),
@@ -455,10 +522,63 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
       return conical(Math.atan2(y!, x!));
     },
     firstNode: 'fixed',
-    drag: (wall) => forebodyDrag(wall, mach, gamma, R) + tipDrag,
+    ...(tail
+      ? {
+          drag: (wall: readonly BoundaryFaceFlux[]) =>
+            forebodyDrag(facesBetween(wall, -Infinity, tail.shoulder), mach, gamma, R) + tipDrag,
+          boatTailDrag: (wall: readonly BoundaryFaceFlux[]) =>
+            forebodyDrag(facesBetween(wall, tail.shoulder, tail.base), mach, gamma, R),
+        }
+      : {
+          drag: (wall: readonly BoundaryFaceFlux[]) => forebodyDrag(wall, mach, gamma, R) + tipDrag,
+        }),
     askedEnd: bodyLength(asked),
+    ...(tail ? { stepAspect: BOAT_TAIL_STEP_ASPECT } : {}),
   };
 }
+
+/** The wall faces whose midpoints lie between a and b in x (the ends are grid lines). */
+function facesBetween(wall: readonly BoundaryFaceFlux[], a: number, b: number): BoundaryFaceFlux[] {
+  return wall.filter((face) => face.x > a && face.x < b);
+}
+
+/**
+ * The columns over a boat-tail (sharpFitProblem): its shoulder and base,
+ * and a spacing along the body, per cell across, that resolves it. The
+ * usual layout sizes columns to the shock layer, whose outer cells far
+ * along a long body are a body radius or more long; the boat-tail is
+ * resolved by BOAT_TAIL_SPACING times the smaller of its length and the
+ * body's radius, over nj, from the shoulder to the end of the solved body,
+ * growing ahead of the shoulder by BOAT_TAIL_GRADING over nj per unit
+ * length, so that neighbouring columns differ in width by about that over
+ * nj on the base grid. Undefined without a boat-tail.
+ */
+function boatTailColumns(
+  asked: Body,
+  nj: number,
+): { shoulder: number; base: number; spacing: (x: number) => number } | undefined {
+  const tail = asked.boatTail;
+  if (tail === undefined) return undefined;
+  const shoulder = shoulderPosition(asked);
+  const finest = (BOAT_TAIL_SPACING * Math.min(tail.length, asked.nose.baseRadius)) / nj;
+  return {
+    shoulder,
+    base: bodyLength(asked),
+    spacing: (x) => finest + (BOAT_TAIL_GRADING * Math.max(shoulder - x, 0)) / nj,
+  };
+}
+
+/** Columns over a boat-tail: their length times nj, in the smaller of its length and the body's radius. */
+const BOAT_TAIL_SPACING = 2;
+/**
+ * Limit of the shock nodes' step over a boat-tail, in widths of the shock
+ * face (ShockFitOptions.stepAspect): without it the shock over the
+ * boat-tail's columns saw-tooths and the fit diverges (a 3-caliber ogive
+ * with 3 calibers of cylinder and a 6 deg boat-tail at Mach 2, nj = 20).
+ */
+const BOAT_TAIL_STEP_ASPECT = 2;
+/** ... growing ahead of its shoulder by this over nj per unit length. */
+const BOAT_TAIL_GRADING = 3;
 
 /**
  * Blunt noses: the flow between the body and the fitted shock on the C
@@ -832,6 +952,7 @@ export function fittedFlow(problem: FitProblem, maxIterations: number): FittedFl
     initial: problem.initial,
     freeStream: problem.freeStream,
     firstNode: problem.firstNode,
+    ...(problem.stepAspect === undefined ? {} : { stepAspect: problem.stepAspect }),
     speedTolerance: SPEED_TOLERANCE,
     residualTolerance: RESIDUAL_TOLERANCE,
     maxIterations,

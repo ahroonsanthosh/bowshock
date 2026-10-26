@@ -150,6 +150,14 @@ export interface ShockFitOptions {
    * sum instead, or holding the boundary between moves, is unstable.
    */
   readonly stepsPerMove?: number;
+  /**
+   * Limit of each node's pseudo-time step, in widths of the shock face on
+   * its axis side (default none: half the outer cell's height per signal
+   * speed). Under columns much narrower than the outer cells are tall (a
+   * boat-tail's, under a far shock) the step of half a height lets the
+   * nodes move by several columns' worth and the shock saw-tooths.
+   */
+  readonly stepAspect?: number;
   /** Called every so often with the progress. */
   readonly onProgress?: (iterations: number, maxSpeed: number, residual: number) => void;
 }
@@ -271,9 +279,19 @@ export function fitShock(options: ShockFitOptions): ShockFit {
       const top = nodeIndex(grid, k, nj);
       const below = nodeIndex(grid, k, nj - 1);
       const height = Math.hypot(grid.x[top]! - grid.x[below]!, grid.y[top]! - grid.y[below]!);
-      // A pseudo-time step of half a cell height per signal speed.
+      // A pseudo-time step of half a cell height per signal speed; at most
+      // stepAspect widths of the face on the node's axis side, if limited.
+      const width =
+        options.stepAspect === undefined
+          ? Infinity
+          : options.stepAspect *
+            Math.hypot(
+              grid.x[top]! - grid.x[nodeIndex(grid, k - 1, nj)]!,
+              grid.y[top]! - grid.y[nodeIndex(grid, k - 1, nj)]!,
+            );
       const dt =
-        (0.5 * height) / (Math.hypot(cell.u, cell.v) + Math.sqrt((gamma * cell.p) / cell.rho));
+        (0.5 * Math.min(height, width)) /
+        (Math.hypot(cell.u, cell.v) + Math.sqrt((gamma * cell.p) / cell.rho));
       next[k] = heights[k]! + (w * dt) / (l.dx * nx + l.dy * ny);
     }
     maxSpeed = Math.max(maxSpeed, Math.abs(speeds[0]!) / aFree);
