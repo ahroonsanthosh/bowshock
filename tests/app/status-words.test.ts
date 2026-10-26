@@ -174,16 +174,20 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     });
   });
 
-  it('fins ending within a chord ahead of the base: refused above Mach 2.0 only, said plainly', () => {
-    // Below Mach 1.5 they are bounded since 2026-10-26 (0015 section 3.3); a rounded plate there is refused
-    // for its trailing edge, so these words reach only the position refusal above Mach 2.0.
+  it('fins ending within a chord ahead of the base: where they are still refused, said plainly', () => {
+    // Below Mach 1.5 fins up to 0.4 root chords ahead are bounded since 2026-10-26 (0015 section 3.3); a
+    // rounded plate is refused for its trailing edge; so these words reach the position refusal above Mach 2.0
+    // and, below Mach 1.5, beyond 0.4 root chords ahead.
     expect(refusalWords({ component: 'body base', reason: 'fins-near-base', message: '' })).toEqual(
       {
         reason:
-          'fins ending less than a root chord ahead of the base: above Mach 2.0, the base drag ' +
-          "with fins there isn't measured yet (the one measurement found waits for a second, " +
+          'fins ending less than a root chord ahead of the base: above Mach 2.0, and below Mach ' +
+          '1.5 when they end more than 0.4 of a root chord ahead, the base drag with fins there ' +
+          "isn't pinned down by measurements yet (one that may settle it waits for a second, " +
           'independent reading)',
-        change: "the fins' trailing edges at the base, or a root chord or more ahead of it",
+        change:
+          "the fins' trailing edges at the base or a root chord or more ahead of it; below Mach " +
+          '1.5, up to 0.4 of a root chord ahead also works',
       },
     );
   });

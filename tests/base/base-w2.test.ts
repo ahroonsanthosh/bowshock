@@ -244,20 +244,23 @@ describe('the term (bodyBaseDrag)', () => {
     expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.1051, 0.2649]);
     expect(term(wedges, 1.62)).toEqual([0.2031, 0.1203, 0.2655]);
     expect(term(arcs, 1.62 - 1e-9)[0]).toBeCloseTo(term(arcs, 1.62)[0]!, 3);
-    // Fins within a chord ahead of the base (0015 section 3.3): bounded just below M 1.5, measured at it; the
-    // measured band lies inside the bounded one at the step.
-    const w5 = { ...wedges, trailingEdgeAheadOfBase: 0.5 };
+    // Fins up to 0.4 root chords ahead of the base (0015 section 3.3): bounded just below M 1.5, measured at it;
+    // the measured band lies inside the bounded one at the step. Farther ahead, refused below M 1.5.
+    const w4 = { ...wedges, trailingEdgeAheadOfBase: 0.4 };
     const a2 = { ...arcs, trailingEdgeAheadOfBase: 0.2 };
-    const a5 = { ...arcs, trailingEdgeAheadOfBase: 0.5 };
-    for (const f of [w5, a2, a5]) {
+    const a4 = { ...arcs, trailingEdgeAheadOfBase: 0.4 };
+    for (const f of [w4, a2, a4]) {
       expect(term(f, 1.5 - 1e-9)).toEqual([0.2301, 0.1017, 0.3585]);
       const [, lo, hi] = term(f, 1.5);
       expect(lo).toBeGreaterThanOrEqual(0.1017);
       expect(hi).toBeLessThanOrEqual(0.3585);
     }
-    expect(term(w5, 1.5)).toEqual([0.1629, 0.1159, 0.1935]);
+    expect(term(w4, 1.5)).toEqual([0.1629, 0.1159, 0.1935]);
     expect(term(a2, 1.5)).toEqual([0.2262, 0.1698, 0.26]);
-    expect(term(a5, 1.5)).toEqual([0.1875, 0.1463, 0.2099]);
+    expect(term(a4, 1.5)).toEqual([0.1894, 0.1497, 0.2101]);
+    expect(() => term({ ...wedges, trailingEdgeAheadOfBase: 0.5 }, 1.5 - 1e-9)).toThrow(
+      /up to 0\.4 root chords ahead/,
+    );
     // Below M 1.5, on W2's term, +-31.7% to +-34.9% on F (sharp sections and plates alike).
     const hw = Array.from({ length: 501 }, (_, k) => 1.0 + k * 0.000999).map((m) => {
       const f = bodyBaseDrag({ ...base, mach: m, fins: wedges }).finsOnBase!;
@@ -268,7 +271,7 @@ describe('the term (bodyBaseDrag)', () => {
     // same fins at the base, so the same widths for the double wedges, and the 10% arcs (+-6% to 7% at the
     // base, a member) take the whole gap too.
     for (const f of [wedges, arcs]) {
-      const ahead = { ...f, trailingEdgeAheadOfBase: 0.5 };
+      const ahead = { ...f, trailingEdgeAheadOfBase: 0.4 };
       const hwA = Array.from({ length: 101 }, (_, k) => 1.0 + k * 0.004999).map((m) => {
         const g = bodyBaseDrag({ ...base, mach: m, fins: ahead }).finsOnBase!;
         return Math.round((1000 * (g.high - g.low)) / 2 / g.nominal) / 10;
@@ -319,12 +322,16 @@ describe('the term (bodyBaseDrag)', () => {
         fins: { ...swept, trailingEdgeAheadOfBase: 0.5 },
       }),
     ).toThrow(BaseRefusal);
-    // Fins within a chord ahead (since 2026-10-26, 0015 section 3.3): bounded, not measured, between the zero
-    // member and the same fins at the base, stated on W2's term like the at-base bracket.
+    // Fins up to 0.4 root chords ahead (since 2026-10-26, 0015 section 3.3): bounded, not measured, between the
+    // zero member and the same fins at the base, stated on W2's term like the at-base bracket; farther ahead,
+    // refused.
+    expect(() =>
+      bodyBaseDrag({ ...base, mach: 1.3, fins: { ...fins, trailingEdgeAheadOfBase: 0.5 } }),
+    ).toThrow(/farther ahead it measures relief/);
     const near = bodyBaseDrag({
       ...base,
       mach: 1.3,
-      fins: { ...fins, trailingEdgeAheadOfBase: 0.5 },
+      fins: { ...fins, trailingEdgeAheadOfBase: 0.4 },
     });
     const n = near.finsOnBase as typeof f;
     expect(n.bounded).toBe(true);

@@ -33,6 +33,7 @@ import {
   W1_RELIEF_ON_ONE_CALL,
   W1_RELIEF_SINGLE_CALLS,
   W1_POSITION_BOUNDED_BELOW,
+  W1_POSITION_BOUNDED_MAX,
   W1_SWEPT_TRAILING_EDGE_AHEAD,
   W1_ZERO_MEMBER_PENDING,
   flatPlateReliefs,
@@ -972,9 +973,14 @@ describe('refusals', () => {
     expect(reason(() => finsOnBaseFactorW1(1.49, fins({ section: plate(0.024) })))).toBe('served');
     expect(
       reason(() =>
-        finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.5 })),
+        finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.4 })),
       ),
     ).toBe('served');
+    expect(
+      reason(() =>
+        finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.5 })),
+      ),
+    ).toBe('fins-near-base');
     expect(reason(() => finsOnBaseFactorW1(3.01, fins()))).toBe('mach-range');
     expect(reason(() => finsOnBaseFactorW1(3.0, fins()))).toBe('served');
     expect(reason(() => finsOnBaseFactorW1(2.2, fins({ trailingEdgeAheadOfBase: 0.5 })))).toBe(
@@ -1143,6 +1149,33 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
     expect(r4(1 - zeroMember(1.0).low)).toBe(0.1621);
   });
 
+  it('up to x/c 0.4, the reach of the bound below M 1.5, TN 2360 measures no relief at all', () => {
+    expect(W1_POSITION_BOUNDED_MAX).toBe(0.4);
+    // Every symbol at 0 < x/c <= 0.4, both Mach numbers, every member, moved by its error toward relief.
+    const near = (m: 1.5 | 2.0) =>
+      MEMBERS.flatMap(([n, t]) => pts(m, n, t)).filter(
+        (p) => p.xc > 0 && p.xc <= W1_POSITION_BOUNDED_MAX + 1e-9,
+      );
+    const towardRelief = [1.5, 2.0]
+      .flatMap((m) => near(m as 1.5 | 2.0))
+      .map((p) => p.dPb + p.error);
+    expect(r4(Math.max(...towardRelief))).toBe(-0.0028);
+    // As F over fig. 33's body alone (the largest body suction, which makes F least): at least 1.014.
+    const fNear = Math.min(
+      ...([1.5, 2.0] as const).flatMap((m) =>
+        TN3819_FIG33.filter((q) => Math.abs(q.mach - m) < 1e-9 && q.thicknessRatio === 0).flatMap(
+          (b) => near(m).map((p) => 1 - (p.dPb + p.error) / (Math.abs(b.pB) + b.error)),
+        ),
+      ),
+    );
+    expect(Math.round(1000 * fNear) / 1000).toBe(1.014);
+    // Relief appears from x/c 0.6 (four 5% fins at M 1.5), the first station beyond the bound's reach.
+    const relieving = ([1.5, 2.0] as const)
+      .flatMap((m) => MEMBERS.flatMap(([n, t]) => pts(m, n, t)))
+      .filter((p) => p.xc > 0 && p.dPb + p.error > 0);
+    expect(Math.min(...relieving.map((p) => p.xc))).toBe(0.6);
+  });
+
   it("the direction in Mach number: the fins' effect falls faster with distance at M 1.5 than at 2.0", () => {
     // At x/c 0.4, each symbol over the member's most negative at the base, for the three members measured at
     // both Mach numbers there.
@@ -1182,11 +1215,11 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
     ['flat plate 2.4%, three fins, 45 deg', fins({ section: plate(0.024) })],
   ];
 
-  it('below M 1.5: from the zero member to the same fins at the base, the whole gap, labelled bounded', () => {
+  it('below M 1.5, up to x/c 0.4: from the zero member to the same fins at the base, labelled bounded', () => {
     for (const [name, c] of CASES) {
       for (const m of [1.0, 1.05, 1.2, 1.3, 1.4, 1.49, 1.4999]) {
         const atBase = finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: 0 });
-        for (const xc of [0.001, 0.2, 0.5, 0.8, 0.999]) {
+        for (const xc of [0.001, 0.2, 0.4]) {
           const r = finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: xc });
           const what = `${name}, M ${m}, x/c ${xc}`;
           expect(r.bounded, what).toBe(true);
@@ -1210,20 +1243,48 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
     // At the base the four 10% arcs are the reference itself; ahead of it, the whole gap.
     const arcs = CASES[1]![1];
     const at = finsOnBaseFactorW1(1.2, { ...arcs, trailingEdgeAheadOfBase: 0 });
-    const ahead = finsOnBaseFactorW1(1.2, { ...arcs, trailingEdgeAheadOfBase: 0.5 });
+    const ahead = finsOnBaseFactorW1(1.2, { ...arcs, trailingEdgeAheadOfBase: 0.4 });
     expect(at.analogy).toBe(false);
     expect([r4(at.low), r4(at.high)]).toEqual([1.4875, 1.7265]);
     expect([r4(ahead.low), r4(ahead.nominal), r4(ahead.high)]).toEqual([0.8379, 1.2822, 1.7265]);
     // The flat plates name their own relief as the lower bound, as at the base.
-    const plates = finsOnBaseFactorW1(1.2, { ...CASES[3]![1], trailingEdgeAheadOfBase: 0.5 });
+    const plates = finsOnBaseFactorW1(1.2, { ...CASES[3]![1], trailingEdgeAheadOfBase: 0.4 });
     expect(plates.label).toContain("bounded between RM L52E06's relief with flat-faced fins and");
+    expect(plates.label).toContain('up to 0.4 root chords ahead, no relief at all');
   });
 
-  it('at M 1.5, where positions are measured, every measured band ahead lies inside the bound carried below', () => {
+  it('below M 1.5, more than 0.4 root chords ahead: refused, in plain words', () => {
+    for (const [name, c] of CASES) {
+      for (const m of [1.0, 1.2, 1.4, 1.4999]) {
+        for (const xc of [0.4001, 0.5, 0.6, 0.8, 0.999]) {
+          let err: unknown;
+          try {
+            finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: xc });
+          } catch (e) {
+            err = e;
+          }
+          const what = `${name}, M ${m}, x/c ${xc}`;
+          expect(err, what).toBeInstanceOf(BaseRefusal);
+          expect((err as BaseRefusal).reason, what).toBe('fins-near-base');
+          expect((err as BaseRefusal).message, what).toContain(
+            `fins ending ${Number(xc.toPrecision(3))} root chords ahead of the base at Mach ${m}: ` +
+              'below Mach 1.5 no position ahead of the base is measured; up to 0.4 root chords ahead ' +
+              'TN 2360 (at Mach 1.5 and 2.0) measures no relief of the base with fins there',
+          );
+          expect((err as BaseRefusal).message, what).toContain(
+            'farther ahead it measures relief that grows as the Mach number falls',
+          );
+          expect((err as BaseRefusal).message, what).toContain('awaiting their second reading');
+        }
+      }
+    }
+  });
+
+  it('at M 1.5, where positions are measured, every measured band up to x/c 0.4 lies inside the bound below', () => {
     const below = { low: zeroMember(1.4999).low, high: referenceBand(1.4999).high };
     let n = 0;
     for (const [c, t] of MEMBERS) {
-      for (let k = 1; k <= 100; k++) {
+      for (let k = 1; k <= 100 * W1_POSITION_BOUNDED_MAX; k++) {
         const b = memberBand(t, c, k / 100, 1.5);
         if (b === undefined) continue;
         n++;
@@ -1231,7 +1292,7 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
         expect(b.high, `${c} fins t/c ${t} x/c ${k / 100}`).toBeLessThanOrEqual(below.high);
       }
     }
-    expect(n).toBe(400);
+    expect(n).toBe(160);
   });
 
   it('at M 1.5 to 2.0 measured as before; above M 2.0 refused, in plain words', () => {

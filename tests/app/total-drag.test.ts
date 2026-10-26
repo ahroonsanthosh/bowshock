@@ -915,11 +915,13 @@ describe('a bounded fins-on-base factor is named in the claim (0014 section 10.2
     const three = { ...four, count: 3, thicknessRatio: 0.024, nearBase: near };
     expect(boundedReasons(body(2.8, three))).toEqual([W1_BOUNDED_REASON]);
     expect(boundedReasons(body(2.4, three))).toEqual([]);
-    // Fins ending within a chord ahead of the base below Mach 1.5 (0015 section 3.3): bounded, and named so.
-    expect(boundedReasons(body(1.3, { ...three, trailingEdgeAheadOfBase: 0.5 }))).toEqual([
+    // Fins ending up to 0.4 root chords ahead of the base below Mach 1.5 (0015 section 3.3): bounded, named so.
+    expect(boundedReasons(body(1.3, { ...three, trailingEdgeAheadOfBase: 0.4 }))).toEqual([
       W1_BOUNDED_REASON,
     ]);
-    expect(W1_BOUNDED_REASON).toContain('fins ending ahead of the base below Mach 1.5');
+    expect(W1_BOUNDED_REASON).toContain(
+      'fins ending up to 0.4 root chords ahead of the base below Mach 1.5',
+    );
     expect(boundedReasons(undefined)).toEqual([]);
   });
 });

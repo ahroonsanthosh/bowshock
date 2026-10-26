@@ -111,8 +111,10 @@ describe('the rebuilt factor only where the present one refuses', () => {
     expect(r.finsOnBaseSource).toBe('rebuilt');
     expect(r.labels[1]).toContain('it takes fins at the base only');
     expect((r.finsOnBase as FinsOnBaseFactorW1).bounded).toBe(false);
-    // Below M 1.5 (0015 section 3.3): bounded, not measured, between the zero member and the same fins at the base.
-    const b = base(1.3, f);
+    // Below M 1.5 (0015 section 3.3): up to 0.4 root chords ahead bounded, not measured, between the zero member
+    // and the same fins at the base; farther ahead refused.
+    expect(() => base(1.3, f)).toThrow(/below Mach 1\.5 no position ahead of the base is measured/);
+    const b = base(1.3, { ...f, trailingEdgeAheadOfBase: 0.4 });
     expect(b.finsOnBaseSource).toBe('rebuilt');
     expect((b.finsOnBase as FinsOnBaseFactorW1).bounded).toBe(true);
     expect(b.labels[1]).toMatch(/^bounded, not measured/);
