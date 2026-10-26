@@ -300,10 +300,36 @@ settled gets no verified band there, as for the forebody (0006).
   Mach 2, an 8 deg boat-tail one caliber long behind 3 calibers of
   cylinder converges with every gate passed: behind a 2:1 ellipsoid its
   term is 0.0549845, behind a 3-caliber Von Karman nose 0.0558872. No
-  reference checks them yet: the method of characteristics needs a data
-  line from the fitted flow behind the subsonic nose region (as for the
-  two-scale noses in 0006), measured as in section 2.3 before the term is
-  served there; until then they are refused with that reason.
+  reference checks them yet, so they are refused with that reason. The
+  check, registered 2026-10-26 before it is run
+  (`docs/research/boat-tails/blunt-lane.test.ts`, `summary-blunt.py`;
+  a trial of the runner on nj = 20 with 40 to 160 intervals, in scratch,
+  sets nothing):
+  - **Cases** (`BLUNT_CASES`): the 3-caliber Von Karman nose and the 2:1
+    ellipsoid, each with 3 calibers of cylinder and an 8 deg boat-tail one
+    caliber long, at Mach 2.
+  - **Fits:** nj = 20, 40 and 80, then 160 when the CPU allows; the
+    decision below waits for the four grids, as section 2.5's does.
+  - **The reference:** the march of characteristics from a line of each
+    grid's fitted flow, its data taken as 0006 took them for the two-scale
+    noses, over the shoulder's fan and the boat-tail to the base, on 640,
+    1280 and 2560 intervals. The lines: of those the scan on nj = 20
+    finds usable (Mach number at least 1.05 everywhere on the line, the
+    shoulder outside the line's own domain of dependence), the first, the
+    one nearest half the nose's length, and the last (`registeredLines`).
+    Each line's march is extrapolated in intervals as in section 2.3,
+    then over the grids at its observed order capped at 2 (where the three
+    grids do not converge steadily, the finest grid's, with the last change
+    as its uncertainty); the reference is the mean over the lines, its
+    uncertainty the largest distance of a line from that mean plus the
+    largest extrapolation over the grids.
+  - **The decision:** the term is served behind a blunt nose, within
+    section 2.5's range, only if on both cases the procedure's band on the
+    fitted family, with the floor, contains the reference with its
+    uncertainty. Blunt noses take a floor of their own, as the forebody's
+    two-scale noses do in 0006: about twice the largest distance of the
+    procedure's extrapolation from these references, and at least the
+    sharp noses'. Otherwise they stay refused with the present reason.
 - **The GPU** carries the step limit (`step_aspect` in
   `src/engine-gpu/shaders/line-grid.wgsl`) and the boat-tail term's levels
   and band (`verifiedFittedDragGpu`); `tests/gpu/boat-tail-gpu.test.ts`

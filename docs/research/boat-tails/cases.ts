@@ -115,3 +115,32 @@ export const RM_E51F26: readonly BoatTailCase[] = (['o', 'c'] as const).flatMap(
     }),
   ),
 );
+
+/**
+ * Blunt noses with a boat-tail (0023 section 2.6, registered 2026-10-26),
+ * solved by ./blunt-lane.test.ts against the march of characteristics from
+ * lines of the fitted flow past the nose's subsonic region: the 3-caliber
+ * Von Karman nose (the population's commonest, a two-scale nose) and the
+ * 1-caliber (2:1) ellipsoid, each with 3 calibers of cylinder and an 8 deg
+ * boat-tail one caliber long, at Mach 2.
+ */
+export const BLUNT_CASES: readonly BoatTailCase[] = [
+  {
+    name: 'vk3-c3-bt8-l1-m2',
+    nose: { kind: 'haack', parameter: 0 },
+    noseLength: 3,
+    cylinder: 3,
+    angle: 8,
+    length: 1,
+    mach: 2,
+  },
+  {
+    name: 'e1-c3-bt8-l1-m2',
+    nose: { kind: 'ellipsoid' },
+    noseLength: 1,
+    cylinder: 3,
+    angle: 8,
+    length: 1,
+    mach: 2,
+  },
+];
