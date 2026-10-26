@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   BOAT_TAIL_ALLOWANCE_SET,
   BOAT_TAIL_MACH_RANGE,
+  boatTailReasons,
   boatTailRefusal,
 } from '../../src/analysis/boat-tail';
 import { BOAT_TAIL_DRAG_FLOOR, boatTailVerified } from '../../src/analysis/fitted-flow';
@@ -41,6 +42,12 @@ describe('the boat-tail term: where it is served', () => {
     for (const reason of [/blunt nose/, /Mach 1.91 only/, /deg lies outside/, /calibers long/]) {
       expect(all).toMatch(reason);
     }
+    // The same reasons, keyed (the population's coverage count).
+    expect(
+      boatTailReasons(body(20, 3, { kind: 'haack', parameter: 0 }), 3).map((r) => r.key),
+    ).toEqual(['bluntNose', 'mach', 'angle', 'length', 'allowance']);
+    expect(boatTailReasons(body(8, 1), 1.9).map((r) => r.key)).toEqual(['allowance']);
+    expect(boatTailReasons({ nose: body(8, 1).nose, cylinderLength: 5 }, 3)).toEqual([]);
   });
 
   it('serves nothing until the viscous allowance is read; a body without a boat-tail has no term to refuse', () => {

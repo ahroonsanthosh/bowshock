@@ -1,0 +1,50 @@
+# The boat-tail term over the population (0023 section 6)
+
+Rockets: 2000; with a boat-tail: 316 (15.8%).
+Served range now: Mach 1.8 to 2.0; angles 4 to 16 deg and lengths 0.5 to 2 calibres (provisional until 0023 section 2.5 decides them); viscous allowance set: false.
+
+Shapes (minimum, 10, 25, 50, 75, 90th percentiles, maximum):
+
+- half-angle, deg: 1.2, 2.9, 4.1, 6.3, 9.8, 15.3, 25.8
+- length, calibres: 0.32, 0.57, 0.73, 0.99, 1.34, 1.63, 2.17
+- base diameter over the body's: 0.533, 0.587, 0.648, 0.800, 0.815, 0.921, 0.921
+- within the angles: 68.0%; within the lengths: 93.4%
+
+## Baseline (the next motor size down from the largest that fits on 33.3% of boat-tails)
+
+| Boat-tailed cases | M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 | Of these, M 1.8-2.0 | All |
+| --- | --- | --- | --- | --- | --- | --- |
+| cases | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
+| nose term served | 0 (0.0%) | 90 (28.5%) | 91 (28.8%) | 91 (28.8%) | 10 (23.3%) | 272 (21.5%) |
+| nose and term served | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| the same if the allowance were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 6 (1.9%) | 6 (14.0%) | 6 (0.5%) |
+| term refused: bluntNose | 161 (50.9%) | 161 (50.9%) | 161 (50.9%) | 161 (50.9%) | 25 (58.1%) | 644 (50.9%) |
+| term refused: mach | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 273 (86.4%) | 0 (0.0%) | 1221 (96.6%) |
+| term refused: angle | 101 (32.0%) | 101 (32.0%) | 101 (32.0%) | 101 (32.0%) | 11 (25.6%) | 404 (32.0%) |
+| term refused: length | 21 (6.6%) | 21 (6.6%) | 21 (6.6%) | 21 (6.6%) | 2 (4.7%) | 84 (6.6%) |
+| term refused: allowance | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
+| sole blocker (nose served): bluntNose | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| sole blocker (nose served): mach | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| sole blocker (nose served): angle | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| sole blocker (nose served): length | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| sole blocker (nose served): allowance | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 6 (1.9%) | 6 (14.0%) | 6 (0.5%) |
+
+## Variant: every boat-tail to the largest motor that fits (shallower)
+
+| Boat-tailed cases | M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 | Of these, M 1.8-2.0 | All |
+| --- | --- | --- | --- | --- | --- | --- |
+| cases | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
+| term refused: angle | 116 (36.7%) | 116 (36.7%) | 116 (36.7%) | 116 (36.7%) | 16 (37.2%) | 464 (36.7%) |
+| nose and term served if the allowance were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 5 (1.6%) | 5 (11.6%) | 5 (0.4%) |
+
+## Variant: every boat-tail to the next motor size down (steeper)
+
+| Boat-tailed cases | M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 | Of these, M 1.8-2.0 | All |
+| --- | --- | --- | --- | --- | --- | --- |
+| cases | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
+| term refused: angle | 58 (18.4%) | 58 (18.4%) | 58 (18.4%) | 58 (18.4%) | 2 (4.7%) | 232 (18.4%) |
+| nose and term served if the allowance were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 10 (3.2%) | 10 (23.3%) | 10 (0.8%) |
+
+The base behind a boat-tail (Love, 0023 section 4) and the total are not counted yet: the base is
+served only within the angles, base ratios and Mach numbers its band's boat-tailed points span, which
+the readings decide; ./evaluate.ts still refuses every boat-tail ('base: boat-tail').

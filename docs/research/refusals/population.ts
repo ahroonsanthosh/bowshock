@@ -277,3 +277,51 @@ export function drawAltitude(r1: number, r2: number): number {
   if (r1 < 0.9) return uniform(r2, 5, 12);
   return uniform(r2, 12, 20);
 }
+
+/**
+ * The boat-tail's shape (design record 0023 section 6, registered
+ * 2026-10-26 before its served range exists). Its length is the
+ * population's own: a boat-tail starts behind the fins, whose trailing
+ * edges lie 0.3 to 0.9 root chords ahead of the base. Its base is a motor
+ * retainer's, RETAINER_WALLS wider than the motor: the largest standard
+ * motor whose retainer fits inside the body, or the next size down
+ * (assumptions, README). Its angle follows. The size is drawn from a
+ * generator of its own for each rocket, keyed on its id, so that the
+ * population above is unchanged and a rocket's shape does not depend on
+ * which others are drawn.
+ */
+export const BOAT_TAIL_SEED = 20261026;
+
+/** Standard motor diameters, metres. */
+export const MOTOR_DIAMETERS: readonly number[] = [0.018, 0.024, 0.029, 0.038, 0.054, 0.075, 0.098];
+
+/** A motor retainer's diameter over the motor's, metres (two 3 mm walls; assumption, README). */
+export const RETAINER_WALLS = 0.006;
+
+/** Share of boat-tails ending at the next motor size down from the largest that fits (the rest at that one). */
+export const SMALLER_MOTOR = 1 / 3;
+
+export interface BoatTailShape {
+  /** From the shoulder to the base, calibres. */
+  readonly lengthCalibres: number;
+  /** Base diameter over the body's. */
+  readonly baseRatio: number;
+  /** Half-angle, degrees. */
+  readonly angleDeg: number;
+}
+
+/** A rocket's boat-tail shape, or undefined if it has none. */
+export function boatTailShape(
+  r: Rocket,
+  seed = BOAT_TAIL_SEED,
+  smallerMotor = SMALLER_MOTOR,
+): BoatTailShape | undefined {
+  if (!r.boatTail) return undefined;
+  const draw = mulberry32((seed ^ Math.imul(r.id + 1, 0x9e3779b1)) >>> 0)();
+  const fits = MOTOR_DIAMETERS.filter((m) => m + RETAINER_WALLS < r.diameter);
+  const motor = fits[Math.max(0, fits.length - (draw < smallerMotor ? 2 : 1))]!;
+  const baseRatio = (motor + RETAINER_WALLS) / r.diameter;
+  const lengthCalibres = (r.trailingEdgeAheadChords * r.rootChord) / r.diameter;
+  const angleDeg = (Math.atan((1 - baseRatio) / (2 * lengthCalibres)) * 180) / Math.PI;
+  return { lengthCalibres, baseRatio, angleDeg };
+}

@@ -361,10 +361,50 @@ them.
 
 ## 6. Coverage
 
-(The population's boat-tails are a boolean, 15.8% of rockets; their
-angle, length and base ratio are to be drawn in a separate seeded stream
-so that the rest of the population is unchanged; the run before and
-after is recorded when anything is served.)
+Registered 2026-10-26, before the served range exists (section 2.5) and
+before the readings (section 5), and not changed by them:
+
+- **The shapes.** The population's boat-tails (15.8% of its 2000
+  rockets) get a shape from a generator of their own for each rocket
+  (`boatTailShape`, `docs/research/refusals/population.ts`; seed
+  20261026, keyed on the rocket's id), so the rest of the population is
+  unchanged: the run checks population(2000)'s SHA-256 against its value
+  before the stream was added, and `evaluate.ts` is untouched, so the
+  impact run's tables cannot move. The length is the population's own (the
+  boat-tail runs from the fins' trailing edges, 0.3 to 0.9 root chords
+  ahead of the base, to the base: 0.32 to 2.17 calibers); the base is a
+  motor retainer 6 mm wider than the motor, the largest standard motor
+  that fits inside the body in two thirds of rockets and the next size
+  down in one third (0.53 to 0.92 of the diameter); the half-angle
+  follows (1.2 to 25.8 deg, median 6.3). These are assumptions, stated in
+  the population's README; no opened source gives amateur boat-tail
+  shapes.
+- **The count** (`docs/research/refusals/boat-tail-coverage.test.ts`,
+  `out/boat-tail-coverage.out`). At the impact run's conditions (each
+  rocket in each Mach band, seed 7), for each boat-tailed case: the nose
+  solve's refusals (`noseReasons`, as the impact run) and the boat-tail
+  term's own, from the library (`boatTailReasons`: blunt nose, Mach
+  number, angle, length, allowance). Reported by Mach band and over the
+  Mach numbers served: the cases whose nose and term are both served,
+  each reason's count, each reason's count as the sole blocker, and the
+  same with every base at the largest motor that fits and at the next size
+  down.
+- **Then.** When section 2.5 sets the angles and lengths, the run is
+  repeated with them. When the readings set the base's band (section 4),
+  its span of angles, base ratios and Mach numbers is added as one more
+  reason, and only then does `evaluate.ts`'s single refusal
+  (`base: boat-tail`) give way to these reasons, with the impact run
+  recorded before and after.
+
+As run on 2026-10-26, with the provisional angles (4 to 16 deg) and
+lengths (0.5 to 2 calibers) and nothing served: no boat-tailed case has
+its term served, since the allowance waits for its readings. If it were
+set, 6 of the 1264 boat-tailed cases (0.5%; 6 of the 43 between Mach 1.8
+and 2.0) would have nose and term served; 5 and 10 in the two variants.
+The term is refused by the Mach range on 96.6% of cases, behind a blunt
+nose (Haack, power-series and ellipsoid) on 50.9%, by angle on 32.0% (under
+4 deg or over 16 deg) and by length on 6.6%; the nose
+solve itself is served on 21.5%.
 
 ## 7. Open
 

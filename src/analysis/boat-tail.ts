@@ -32,40 +32,57 @@ export const BOAT_TAIL_LENGTH_RANGE: readonly [number, number] = [0.5, 2];
  */
 export const BOAT_TAIL_ALLOWANCE_SET: boolean = false;
 
-/** Why a body's boat-tail term is not served at this Mach number, in plain words, or undefined if it is. */
-export function boatTailRefusal(body: Body, mach: number): string | undefined {
+/** One reason the boat-tail term is refused: a key for counting, and the plain words shown. */
+export interface BoatTailReason {
+  readonly key: 'bluntNose' | 'mach' | 'angle' | 'length' | 'allowance';
+  readonly text: string;
+}
+
+/** Every reason a body's boat-tail term is not served at this Mach number (none if it is, or if it has no boat-tail). */
+export function boatTailReasons(body: Body, mach: number): BoatTailReason[] {
   const tail = body.boatTail;
-  if (tail === undefined) return undefined;
-  const reasons: string[] = [];
+  if (tail === undefined) return [];
+  const reasons: BoatTailReason[] = [];
   if (!Number.isFinite(noseTipSlope(body.nose))) {
-    reasons.push(
-      'a boat-tail behind a blunt nose is solved but not yet checked against a reference (the method of characteristics needs the subsonic nose region solved first)',
-    );
+    reasons.push({
+      key: 'bluntNose',
+      text: 'a boat-tail behind a blunt nose is solved but not yet checked against a reference (the method of characteristics needs the subsonic nose region solved first)',
+    });
   }
   const [low, high] = BOAT_TAIL_MACH_RANGE;
   if (!(mach >= low && mach <= high)) {
-    reasons.push(
-      `the boat-tail's allowance for the boundary layer is measured at Mach 1.91 only (NACA RM E51F26), so its drag is served at Mach ${low} to ${high} only`,
-    );
+    reasons.push({
+      key: 'mach',
+      text: `the boat-tail's allowance for the boundary layer is measured at Mach 1.91 only (NACA RM E51F26), so its drag is served at Mach ${low} to ${high} only`,
+    });
   }
   const angle = (boatTailAngle(body) * 180) / Math.PI;
   const [a0, a1] = BOAT_TAIL_ANGLE_RANGE;
   if (!(angle >= a0 - 1e-9 && angle <= a1 + 1e-9)) {
-    reasons.push(
-      `a boat-tail of ${angle.toFixed(1)} deg lies outside the angles checked against the method of characteristics (${a0} to ${a1} deg)`,
-    );
+    reasons.push({
+      key: 'angle',
+      text: `a boat-tail of ${angle.toFixed(1)} deg lies outside the angles checked against the method of characteristics (${a0} to ${a1} deg)`,
+    });
   }
   const calibers = tail.length / (2 * body.nose.baseRadius);
   const [l0, l1] = BOAT_TAIL_LENGTH_RANGE;
   if (!(calibers >= l0 - 1e-9 && calibers <= l1 + 1e-9)) {
-    reasons.push(
-      `a boat-tail ${calibers.toFixed(2)} calibers long lies outside the lengths checked against the method of characteristics (${l0} to ${l1} calibers)`,
-    );
+    reasons.push({
+      key: 'length',
+      text: `a boat-tail ${calibers.toFixed(2)} calibers long lies outside the lengths checked against the method of characteristics (${l0} to ${l1} calibers)`,
+    });
   }
   if (!BOAT_TAIL_ALLOWANCE_SET) {
-    reasons.push(
-      "the boat-tail's allowance for the boundary layer waits for its figures (NACA RM E51F26, named in design record 0014 section 10.7 (ae)) to be read twice",
-    );
+    reasons.push({
+      key: 'allowance',
+      text: "the boat-tail's allowance for the boundary layer waits for its figures (NACA RM E51F26, named in design record 0014 section 10.7 (ae)) to be read twice",
+    });
   }
-  return reasons.length > 0 ? reasons.join('; ') : undefined;
+  return reasons;
+}
+
+/** Why a body's boat-tail term is not served at this Mach number, in plain words, or undefined if it is. */
+export function boatTailRefusal(body: Body, mach: number): string | undefined {
+  const reasons = boatTailReasons(body, mach);
+  return reasons.length > 0 ? reasons.map((r) => r.text).join('; ') : undefined;
 }
