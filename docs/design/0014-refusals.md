@@ -1820,4 +1820,106 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
-The next free letter is (w).
+**2026-10-26 (aa): fins ending within a chord ahead of the base (A5 of
+the refusal plan): bounded, not measured, below Mach 1.5; TN 3819 fig.
+32's Langley symbols to be read a second time for Mach 2.0 to 3.0; and
+NSWCDD/TR-92/509's fins ahead of the base a check only** (a recorded
+decision under 10.2's "Anywhere else only by a recorded decision", on the
+coordinator's route of 2026-10-26; written before the code and before any
+new reading). The rebuilt fins-on-base factor (0015) refuses fins whose
+trailing edge ends 0 to 1 root chord ahead of the base outside Mach 1.5
+to 2.0, the only Mach numbers where TN 2360 fig. 6 measures positions
+ahead of the base (`fins-near-base`).
+
+- _Below Mach 1.5 (Mach 1.0 to 1.5): bounded, not measured._ Lower bound
+  the zero member there (RM L52E06 fig. 7's relief with flat plates at
+  the base, F 0.838, read twice; for flat-faced fins the same relief, as
+  at the base); upper bound the same fins at the base, that is the upper
+  member of their bracket at x/c = 0 (below Mach 1.5 always the
+  reference, four unswept 10% circular arcs on TN 3819 fig. 35's
+  free-flight line, read twice, stated on W2's term as 0015 section 11.2
+  states it). Served: the midpoint, the band the whole gap (about +-32%
+  to +-35% of the factor on W2's term), labelled "bounded, not measured",
+  the gap in C_D beside it.
+- _The ordering, from band-setting data already registered and read
+  twice_ (TN 2360 fig. 6, 10.1; both readings, 0015 section 7; with fig.
+  33's body alone for the factors). At both of its Mach numbers, for every
+  member it measures ahead of the base (two and four fins, t/c 0.05 and
+  0.10): (1) the increment with the trailing edge x/c ahead (0 < x/c <= 1)
+  is no larger than the same fins' at the base, within the reading
+  errors: at Mach 1.5 smaller by 0.015 to 0.076 in dPb, each end moved by
+  its error toward more suction; at Mach 2.0 smaller by 0.005 and 0.010
+  for two 10% and four 5% fins, while four 10% fins keep their at-base
+  increment to x/c 0.4 (at 0.2, -0.0642 +-0.002 against -0.0644 +-0.0002
+  and -0.064 +-0.002 at the base: equal within the errors, 0.0002 apart
+  either way); (2) the most relief ahead of the base, as F over fig. 33's
+  body alone with both errors toward more relief, is 0.910 at Mach 1.5
+  (four 10% fins at x/c 1.0) and 0.944 at 2.0 (four 5% fins at x/c 1.0),
+  above the zero member at each (0.838 below Mach 1.62, 0.938 from it).
+  TN 2360's own account (pp. 7, 9 to 11; NTRS 19930083086) gives the
+  mechanism and its direction in Mach number: the fins' pressure field
+  reaches the dead-air region behind the base along isobars inclined
+  farther rearward as the Mach number rises, so "the base pressure is
+  influenced by the tail surfaces at tail positions farther forward than
+  at lower Mach numbers"; with the tail well forward "no effect" is
+  expected, and the decrease "was small for the tail located well forward
+  of the base but, for the normal tail position, x/c ~ 0, ... nearly the
+  maximum". The data agree in direction: at x/c 0.4 the three members
+  measured at both Mach numbers keep 6% to 64% of their at-base increment
+  at Mach 1.5 and 64% to 98% at 2.0. So going down from Mach 1.5 the
+  at-base upper bound holds with a growing margin. The relief side rests
+  on less: the relief a chord ahead grows from Mach 2.0 to 1.5 (1 - F
+  0.056 to 0.090, with errors), which carried linearly to Mach 1.0 is
+  0.124, inside the zero member's 0.162; no measurement with fins ahead
+  of the base below Mach 1.5 is known.
+- _Above Mach 2.0: still refused._ The same direction says the at-base
+  bound is not safe going up (the fins reach the base from farther
+  forward as the Mach number rises), so the bounded value is not carried
+  above 2.0. The refusal's words say so.
+- _At Mach 1.5 to 2.0_ nothing changes: every member measured at a Mach
+  number has stations at x/c 0 and 1.0 there, so every position is
+  bracketed between measured stations, and a member measured at one of
+  the two Mach numbers only (two 5% fins, Mach 1.5) widens the bracket
+  outward elsewhere (0015 sections 3.2, 3.3, 3.6).
+- _TN 3819 fig. 32_ (Love; NTRS 19930084517, PDF p. 64): band-setting
+  since 10.1's registration ("figs. 32 to 35 ... location"). Amendment
+  (h) lists it as not read; that was wrong when written: round 6 read it
+  once, blind (`docs/research/total-drag/audit/round6/readings/`,
+  `tn3819_fig32.csv` and the method file there), including the Langley
+  9-in. tunnel's symbols at Mach 2.41 (plain and flagged triangles) and
+  the faired curve through them at x/c 0 to 1. Nothing has used it. Its
+  Mach 2.41 symbols are named here for the position members at Mach 2.0
+  to 3.0 (route (i) of A5), each as its increment over the same model's
+  increment at x/c 0, with fig. 33's Mach 2.41 body alone. A blind second
+  reading is requested now; the coordinator arranges the reader and a
+  neutral party pairs the two. It sets nothing until paired, and the
+  method that uses it is written in 0015 before its code. A note in
+  `docs/research/total-drag/data/w1b_w2_proposal.md` (section 1.4)
+  records a look by eye, not a reading, at a Mach 2.41 symbol one chord
+  ahead lying on the relief side of the zero member; it sets nothing, but
+  if the paired reading confirms a relief beyond the zero member a chord
+  ahead at Mach 2.41, the relief side of the bounded value below Mach 1.5
+  is to be re-examined before route (i) is served.
+- _NSWCDD/TR-92/509's fins one and two chords ahead_ (Table 1's
+  configurations 11 to 16): transcribed once (`nswc_tr92_509_table2.csv`)
+  and their factors computed (F 1.00 to 1.14 at Mach 2.0 to 3.0,
+  `w1b_w2_proposal.md` section 1.4) before any registration, as (g)
+  records for the set. So by rule 2 of 10.1 they never set or shape a
+  band: they are a check that sets nothing (the precedents (g), (r), (s),
+  (t)), and only after Table 2's blind second transcription (requested in
+  (g); round 6's was never committed). Fins two chords ahead check the
+  plain curve's use a chord or more ahead (0010 section 1.4), nothing
+  else.
+- _Not changed:_ the sweep refusals (checked before the position), the
+  present factor, any served number at the base or at Mach 1.5 to 3.0,
+  and every total: below Mach 1.5 every total is still refused by (f), so
+  this serves the body base term only. No held-back set is opened or run.
+
+What it costs and gains is recorded below this entry from
+`docs/research/refusals/` run before and after, with the cross-check
+against `src/total` required to agree (0015 section 3.3).
+
+Letters (w) to (z) are allocated by the coordinator on other branches;
+(aa) was taken here as the next after them, to be re-lettered if the
+coordinator allocated it elsewhere. The next free letter is the
+coordinator's to allocate.
