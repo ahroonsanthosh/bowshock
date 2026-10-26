@@ -525,3 +525,93 @@ measure an order (for example the planar network with the wall nearer the
 axis's origin, so the slope has no rounding floor, and the order over
 three doublings), registered anew before it runs; or whether the third
 march stops here.
+
+**The coordinator's ruling (2026-10-26):** V1 stays failed as registered;
+its criterion (c) is not reworded and V1 is not marked passed. One new
+test, V1b, is registered below as a separate entry before any run of it.
+This is the one re-test after a test-construction failure.
+
+### 9.2 V1b, the one re-test after V1's failure (registered 2026-10-26, before any run of it)
+
+**Why it exists.** V1 failed as registered, on (c): its construction could
+not measure an observed order. On the cylinder of radius 1e4 the march's
+wall-pressure error was already below two floors of the test at the
+registered resolution (the axisymmetric terms, about 7.5e-6, and the
+slope's rounding, about 1e-6 radians), and the formation error's order
+over a single doubling depended on where the wall points fell against the
+arc's start (section 9.1). V1b removes those three causes and nothing
+else: the limits and the order range are V1's. It is designed knowing
+V1's numbers, including its diagnostic runs on the planar network
+(section 9.1's tables), and says so here.
+
+**If V1b fails, the third march stops.** There is no V1c; the forward
+region of the capped noses (ahead of the merge, where the first march
+fails W5's line criterion) stays unreferenced, and that is reported
+plainly. A crash of the march, or a resolution on which no shock forms,
+is a failure.
+
+**The setup, in full.**
+
+- The network: `characteristicNetwork` with its verification option
+  `planar: true` (the axisymmetric source terms of both compatibility
+  relations left out). Mach 2, gamma 1.4, the free stream p = rho = 1.
+  (The stream function stays per radian, as the option's comment says;
+  V1b judges no mass balance.)
+- The wall, given to the march as a profile function: y = 1 for x <= x0
+  = 1; a circular concave arc of radius r_c = 1/turn, turn = 5 deg (the
+  arc's length 1), from x0 to x0 + x_arc, x_arc = r_c sin(turn), written
+  without cancellation as y = 1 + d^2 / (r_c + sqrt(r_c^2 - d^2)), d = x -
+  x0; then straight at the turn's slope, y = 1 + 2 r_c sin^2(turn/2) + (x
+  - x0 - x_arc) tan(turn), to the profile's end x = 13. Breakpoints x0 and
+  x0 + x_arc, scale 1. With the wall at y = 1 the radius's rounding
+  (2.2e-16) gives slopes (central differences over 1e-6) to about 1e-10
+  radians, against 1e-6 on V1's cylinder.
+- The starting line: vertical, in the free stream (u = 2 sqrt(1.4), v =
+  0), from the wall (y = 1) to y = 11, 41 given points equally spaced, its
+  top a Mach wave (shock angle asin(1/2), zero strength). Its position
+  depends on the resolution, which is how (b)'s wall phase is handled:
+  in the free stream the march's wall points fall at x_s + j Delta, Delta
+  = 10 cot(mu_0) / m = 20 sqrt(3) / n (m = n/2 points on the line), so
+  with x_s = x0 - (K + 1/2) Delta, K = floor(0.5 / Delta), the arc's start
+  lies halfway between two wall points at every resolution (x_s is
+  0.502, 0.491, 0.497 and 0.499). The free stream ahead of the arc makes
+  the exact solution the same for every x_s. The C- line from the line's
+  top reaches the wall near x 17.8 in the free stream (later behind the
+  turn), so the whole test lies in the triangle of the starting data's
+  dependence and the bow shock's own march never runs.
+- The resolutions: n = 800, 1600, 3200 and 6400 (three doublings; Delta
+  = 0.0433 down to 0.00541; 23 wall points on the turn on the coarsest).
+
+**The measures.**
+
+- (a) The wall pressure at x0 + x_arc + 0.5, linear between the two wall
+  points either side (the exact flow is uniform there: the turn's waves
+  have passed and the embedded shock's reflections reach the wall only
+  beyond x 8), against the isentropic Prandtl-Meyer pressure for 5 deg
+  (nu(2) - 5 deg inverted by `machFromPrandtlMeyer`, to 1e-14): the error
+  |p / p_PM - 1|.
+- (b) The march's formation point (`formed`) against the envelope's start
+  in closed form: the first C+ characteristic of the planar simple wave
+  (from x0, at the Mach angle mu_0) meets its neighbours at distance t_0 =
+  r_c sin(mu_0) / (1 + (1 + (gamma-1)/2 M^2) / (M^2 - 1)) = 3.58099 from
+  x0, at (4.10123, 1 + 1.79049); along the turn the crossings move
+  downstream (V1's sampled crossings, x 4.101 to 4.804 over the turn), so
+  this is where the shock starts. (V1 sampled the crossings in 2000 steps
+  and took the least x, which sits a half step, about 2e-4, downstream of
+  the closed form: 4% of (b) on the finest resolution here, so V1b uses
+  the closed form.) The error is the distance between the two points.
+
+**Pass, all of:**
+
+1. the march completes on all four resolutions and forms a shock on each;
+2. (a) below 5e-4 on the finest resolution (V1's limit);
+3. (b) below 0.05, 5% of the turn's length, on the finest resolution
+   (V1's limit);
+4. for each of (a) and (b), the observed order, the least-squares slope
+   of ln(error) against ln(Delta) over all four resolutions, between 0.8
+   and 3 (V1's range).
+
+The runner is `runners/v1b.test.ts`, run once; it writes every
+resolution's numbers and the verdict by these four conditions to
+`results/v1b.json`, and asserts nothing itself. The result goes into
+section 9.3 as it comes, pass or fail. V2 waits for V1b's pass.
