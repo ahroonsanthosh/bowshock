@@ -1,0 +1,166 @@
+2026-10-26T07:42:02.876Z vk5rn0.03M1.3 r 1 (84 x 20) from /home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475/tests/tmp-w6b/out/vk5rn0.03M1.3r1: drag 0.035384396445192687, mach 1.29999997066, rebuilt in 17 s
+2026-10-26T07:42:02.878Z   scan line 2 (x 9.3574e-5): min Mach 0.1017, wall K 2.83e-4, downstream fitted 0.03536826611 of 0.03538439645
+2026-10-26T07:42:02.878Z   scan line 3 (x 2.1139e-4): min Mach 0.1628, wall K 1.96e-4, downstream fitted 0.03534842277 of 0.03538439645
+2026-10-26T07:42:02.879Z   scan line 4 (x 3.7792e-4): min Mach 0.2230, wall K 1.26e-4, downstream fitted 0.03532124113 of 0.03538439645
+2026-10-26T07:42:02.879Z   scan line 5 (x 5.9478e-4): min Mach 0.2832, wall K 6.68e-5, downstream fitted 0.03528733102 of 0.03538439645
+2026-10-26T07:42:02.880Z   scan line 6 (x 8.6414e-4): min Mach 0.3424, wall K 1.24e-5, downstream fitted 0.03524748622 of 0.03538439645
+2026-10-26T07:42:02.880Z   scan line 7 (x 1.1887e-3): min Mach 0.4024, wall K -3.87e-5, downstream fitted 0.03520268251 of 0.03538439645
+2026-10-26T07:42:02.880Z   scan line 8 (x 1.5720e-3): min Mach 0.4585, wall K -8.64e-5, downstream fitted 0.03515408794 of 0.03538439645
+2026-10-26T07:42:02.880Z   scan line 9 (x 2.0183e-3): min Mach 0.5167, wall K -1.31e-4, downstream fitted 0.03510301806 of 0.03538439645
+2026-10-26T07:42:02.880Z   scan line 10 (x 2.5368e-3): min Mach 0.5730, wall K -1.69e-4, downstream fitted 0.03505062848 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 11 (x 3.1411e-3): min Mach 0.6298, wall K -1.98e-4, downstream fitted 0.03499813024 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 12 (x 3.8490e-3): min Mach 0.6848, wall K -2.41e-4, downstream fitted 0.03494713383 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 13 (x 4.6832e-3): min Mach 0.7369, wall K -4.10e-4, downstream fitted 0.03489969622 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 14 (x 5.6707e-3): min Mach 0.7856, wall K -7.94e-4, downstream fitted 0.03485867032 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 15 (x 6.8381e-3): min Mach 0.8307, wall K -1.78e-3, downstream fitted 0.03482812466 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 16 (x 8.2136e-3): min Mach 0.8715, wall K -1.17e-3, downstream fitted 0.03481149201 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 17 (x 9.8277e-3): min Mach 0.9082, wall K -2.06e-3, downstream fitted 0.03480986431 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 18 (x 1.1684e-2): min Mach 0.9409, wall K -2.34e-3, downstream fitted 0.03481258143 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 19 (x 1.3770e-2): min Mach 0.9705, wall K -2.48e-3, downstream fitted 0.03481066157 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 20 (x 1.6122e-2): min Mach 0.9967, wall K -1.87e-3, downstream fitted 0.03480132674 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 21 (x 1.8788e-2): min Mach 1.0199, wall K -1.68e-3, downstream fitted 0.03478032653 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 22 (x 2.1823e-2): min Mach 1.0404, wall K -2.07e-3, downstream fitted 0.03474705996 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 23 (x 2.5298e-2): min Mach 1.0422, wall K -1.96e-3, downstream fitted 0.03470127610 of 0.03538439645
+2026-10-26T07:42:02.881Z   scan line 24 (x 2.9297e-2): min Mach 1.0401, wall K -2.12e-3, downstream fitted 0.03464320153 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 25 (x 3.3928e-2): min Mach 1.0476, wall K -2.11e-3, downstream fitted 0.03457440150 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 26 (x 3.9221e-2): min Mach 1.0567, wall K -2.24e-3, downstream fitted 0.03449509930 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 27 (x 4.5099e-2): min Mach 1.0645, wall K -2.29e-3, downstream fitted 0.03440575199 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 28 (x 5.1488e-2): min Mach 1.0721, wall K -2.34e-3, downstream fitted 0.03430726985 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 29 (x 5.8432e-2): min Mach 1.0798, wall K -2.38e-3, downstream fitted 0.03419897744 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 30 (x 6.5973e-2): min Mach 1.0873, wall K -2.42e-3, downstream fitted 0.03408018228 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 31 (x 7.4158e-2): min Mach 1.0947, wall K -2.47e-3, downstream fitted 0.03395005610 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 32 (x 8.3046e-2): min Mach 1.1019, wall K -2.54e-3, downstream fitted 0.03380767887 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 33 (x 9.2699e-2): min Mach 1.1090, wall K -2.62e-3, downstream fitted 0.03365198363 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 34 (x 1.0319e-1): min Mach 1.1157, wall K -2.73e-3, downstream fitted 0.03348173216 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 35 (x 1.1458e-1): min Mach 1.1222, wall K -2.87e-3, downstream fitted 0.03329556263 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 36 (x 1.2696e-1): min Mach 1.1286, wall K -3.04e-3, downstream fitted 0.03309205503 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 37 (x 1.4042e-1): min Mach 1.1347, wall K -3.23e-3, downstream fitted 0.03286970147 of 0.03538439645
+2026-10-26T07:42:02.882Z   scan line 38 (x 1.5505e-1): min Mach 1.1407, wall K -3.44e-3, downstream fitted 0.03262683168 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 39 (x 1.7095e-1): min Mach 1.1464, wall K -3.69e-3, downstream fitted 0.03236156570 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 40 (x 1.8824e-1): min Mach 1.1520, wall K -3.95e-3, downstream fitted 0.03207184080 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 41 (x 2.0704e-1): min Mach 1.1574, wall K -4.24e-3, downstream fitted 0.03175547924 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 42 (x 2.2749e-1): min Mach 1.1627, wall K -4.54e-3, downstream fitted 0.03141022780 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 43 (x 2.4972e-1): min Mach 1.1678, wall K -4.86e-3, downstream fitted 0.03103372862 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 44 (x 2.7390e-1): min Mach 1.1728, wall K -5.19e-3, downstream fitted 0.03062346695 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 45 (x 3.0020e-1): min Mach 1.1777, wall K -5.52e-3, downstream fitted 0.03017675558 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 46 (x 3.2881e-1): min Mach 1.1825, wall K -5.85e-3, downstream fitted 0.02969075655 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 47 (x 3.5991e-1): min Mach 1.1872, wall K -6.17e-3, downstream fitted 0.02916251075 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 48 (x 3.9373e-1): min Mach 1.1917, wall K -6.48e-3, downstream fitted 0.02858895821 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 49 (x 4.3050e-1): min Mach 1.1961, wall K -6.77e-3, downstream fitted 0.02796695969 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 50 (x 4.7046e-1): min Mach 1.2004, wall K -7.04e-3, downstream fitted 0.02729333492 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 51 (x 5.1388e-1): min Mach 1.2046, wall K -7.29e-3, downstream fitted 0.02656491847 of 0.03538439645
+2026-10-26T07:42:02.885Z   scan line 52 (x 5.6103e-1): min Mach 1.2087, wall K -7.51e-3, downstream fitted 0.02577862231 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 53 (x 6.1222e-1): min Mach 1.2127, wall K -7.70e-3, downstream fitted 0.02493149343 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 54 (x 6.6776e-1): min Mach 1.2166, wall K -7.87e-3, downstream fitted 0.02402076254 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 55 (x 7.2801e-1): min Mach 1.2204, wall K -8.02e-3, downstream fitted 0.02304389362 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 56 (x 7.9332e-1): min Mach 1.2241, wall K -8.15e-3, downstream fitted 0.02199864315 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 57 (x 8.6411e-1): min Mach 1.2277, wall K -8.26e-3, downstream fitted 0.02088314773 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 58 (x 9.4081e-1): min Mach 1.2313, wall K -8.36e-3, downstream fitted 0.01969603803 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 59 (x 1.0239e+0): min Mach 1.2349, wall K -8.45e-3, downstream fitted 0.01843656381 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 60 (x 1.1139e+0): min Mach 1.2383, wall K -8.53e-3, downstream fitted 0.01710476781 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 61 (x 1.2115e+0): min Mach 1.2418, wall K -8.60e-3, downstream fitted 0.01570172172 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 62 (x 1.3172e+0): min Mach 1.2452, wall K -8.66e-3, downstream fitted 0.01422986469 of 0.03538439645
+2026-10-26T07:42:02.886Z   scan line 63 (x 1.4318e+0): min Mach 1.2486, wall K -8.71e-3, downstream fitted 0.01269345852 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 64 (x 1.5561e+0): min Mach 1.2520, wall K -8.75e-3, downstream fitted 0.01109919636 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 65 (x 1.6909e+0): min Mach 1.2551, wall K -8.78e-3, downstream fitted 0.009456984862 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 66 (x 1.8372e+0): min Mach 1.2581, wall K -8.80e-3, downstream fitted 0.007780891622 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 67 (x 1.9958e+0): min Mach 1.2610, wall K -8.82e-3, downstream fitted 0.006090224265 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 68 (x 2.1677e+0): min Mach 1.2637, wall K -8.83e-3, downstream fitted 0.004410682795 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 69 (x 2.3537e+0): min Mach 1.2659, wall K -8.83e-3, downstream fitted 0.002775508874 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 70 (x 2.5545e+0): min Mach 1.2676, wall K -8.83e-3, downstream fitted 0.001226473373 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 71 (x 2.7705e+0): min Mach 1.2690, wall K -8.82e-3, downstream fitted -0.0001853784354 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 72 (x 3.0015e+0): min Mach 1.2705, wall K -8.81e-3, downstream fitted -0.001400093337 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 73 (x 3.2462e+0): min Mach 1.2718, wall K -8.80e-3, downstream fitted -0.002349451003 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 74 (x 3.5053e+0): min Mach 1.2730, wall K -8.79e-3, downstream fitted -0.002979252962 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 75 (x 3.7789e+0): min Mach 1.2741, wall K -8.77e-3, downstream fitted -0.003224704537 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 76 (x 4.0677e+0): min Mach 1.2752, wall K -8.76e-3, downstream fitted -0.003030375054 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 77 (x 4.3688e+0): min Mach 1.2763, wall K -8.76e-3, downstream fitted -0.002363900233 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 78 (x 4.6802e+0): min Mach 1.2773, wall K -8.73e-3, downstream fitted -0.001268097281 of 0.03538439645
+2026-10-26T07:42:02.887Z   scan line 79 (x 5.0000e+0): min Mach 1.2782, wall K -8.66e-3, downstream fitted -4.101675310e-16 of 0.03538439645
+2026-10-26T07:42:02.888Z vk5rn0.03M1.3: lines chosen on nj = 20 (auto): 26,32,40,48,57,66,75
+2026-10-26T07:42:02.888Z   line 26 (x 3.92211e-2): min Mach 1.0567, wall K -2.24e-3, fitted downstream 0.0344950992998 (97.487% of the drag)
+2026-10-26T07:42:06.273Z     MOC 640: 0.0339165526539, fitted - MOC 1.635e-2 of the drag, mass 2.60e-2, penetration 2.3e-1, 3 s
+2026-10-26T07:42:17.803Z     MOC 1280: 0.0338560605813, fitted - MOC 1.806e-2 of the drag, mass 2.62e-2, penetration 2.3e-1, 12 s
+2026-10-26T07:43:02.683Z     MOC 2560: 0.0338419829884, fitted - MOC 1.846e-2 of the drag, mass 2.62e-2, penetration 2.3e-1, 45 s
+2026-10-26T07:43:02.683Z   line 32 (x 8.30456e-2): min Mach 1.1019, wall K -2.54e-3, fitted downstream 0.0338076788740 (95.544% of the drag)
+2026-10-26T07:43:05.949Z     MOC 640: 0.0333961405311, fitted - MOC 1.163e-2 of the drag, mass 5.80e-4, penetration 5.6e-3, 3 s
+2026-10-26T07:43:17.712Z     MOC 1280: 0.0333342301559, fitted - MOC 1.338e-2 of the drag, mass 5.57e-4, penetration 5.6e-3, 12 s
+2026-10-26T07:43:59.695Z     MOC 2560: 0.0332901655804, fitted - MOC 1.463e-2 of the drag, mass 5.47e-4, penetration 5.6e-3, 42 s
+2026-10-26T07:43:59.695Z   line 40 (x 1.88242e-1): min Mach 1.1520, wall K -3.95e-3, fitted downstream 0.0320718407984 (90.638% of the drag)
+2026-10-26T07:44:02.286Z     MOC 640: 0.0317993584530, fitted - MOC 7.701e-3 of the drag, mass 3.55e-6, penetration 0.0e+0, 3 s
+2026-10-26T07:44:11.110Z     MOC 1280: 0.0317995220492, fitted - MOC 7.696e-3 of the drag, mass 1.05e-6, penetration 0.0e+0, 9 s
+2026-10-26T07:44:45.887Z     MOC 2560: 0.0317995723839, fitted - MOC 7.695e-3 of the drag, mass 2.70e-7, penetration 0.0e+0, 35 s
+2026-10-26T07:44:45.887Z   line 48 (x 3.93733e-1): min Mach 1.1917, wall K -6.48e-3, fitted downstream 0.0285889582075 (80.795% of the drag)
+2026-10-26T07:44:47.215Z     MOC 640: 0.0283168368437, fitted - MOC 7.690e-3 of the drag, mass 3.80e-6, penetration 0.0e+0, 1 s
+2026-10-26T07:44:51.785Z     MOC 1280: 0.0283222187426, fitted - MOC 7.538e-3 of the drag, mass 9.74e-7, penetration 0.0e+0, 5 s
+2026-10-26T07:45:09.800Z     MOC 2560: 0.0283231507765, fitted - MOC 7.512e-3 of the drag, mass 5.52e-7, penetration 0.0e+0, 18 s
+2026-10-26T07:45:09.800Z   line 57 (x 8.64112e-1): min Mach 1.2277, wall K -8.26e-3, fitted downstream 0.0208831477259 (59.018% of the drag)
+2026-10-26T07:45:10.614Z     MOC 640: 0.0205925820012, fitted - MOC 8.212e-3 of the drag, mass 2.26e-5, penetration 0.0e+0, 1 s
+2026-10-26T07:45:13.414Z     MOC 1280: 0.0206280680185, fitted - MOC 7.209e-3 of the drag, mass 6.83e-6, penetration 0.0e+0, 3 s
+2026-10-26T07:45:24.268Z     MOC 2560: 0.0206376868972, fitted - MOC 6.937e-3 of the drag, mass 1.37e-6, penetration 0.0e+0, 11 s
+2026-10-26T07:45:24.268Z   line 66 (x 1.83721e+0): min Mach 1.2581, wall K -8.80e-3, fitted downstream 0.00778089162233 (21.990% of the drag)
+2026-10-26T07:45:24.941Z     MOC 640: 0.00744154291039, fitted - MOC 9.590e-3 of the drag, mass 4.36e-5, penetration 0.0e+0, 1 s
+2026-10-26T07:45:27.084Z     MOC 1280: 0.00754876259540, fitted - MOC 6.560e-3 of the drag, mass 1.52e-5, penetration 0.0e+0, 2 s
+2026-10-26T07:45:35.612Z     MOC 2560: 0.00758023126578, fitted - MOC 5.671e-3 of the drag, mass 5.67e-6, penetration 0.0e+0, 9 s
+2026-10-26T07:45:35.613Z   line 75 (x 3.77889e+0): min Mach 1.2741, wall K -8.77e-3, fitted downstream -0.00322470453677 (-9.113% of the drag)
+2026-10-26T07:45:36.203Z     MOC 640: -0.00321150174295, fitted - MOC -3.731e-4 of the drag, mass 1.08e-7, penetration 0.0e+0, 1 s
+2026-10-26T07:45:38.153Z     MOC 1280: -0.00321120215603, fitted - MOC -3.816e-4 of the drag, mass 9.56e-8, penetration 0.0e+0, 2 s
+2026-10-26T07:45:45.541Z     MOC 2560: -0.00321110232200, fitted - MOC -3.844e-4 of the drag, mass 1.67e-8, penetration 0.0e+0, 7 s
+2026-10-26T07:46:05.458Z vk5rn0.03M1.3 r 2 (168 x 40) from /home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475/tests/tmp-w6b/out/vk5rn0.03M1.3r2: drag 0.035176530791326668, mach 1.29999997066, rebuilt in 20 s
+2026-10-26T07:46:05.458Z   line 26 (x 3.92211e-2): min Mach 1.0592, wall K -1.78e-3, fitted downstream 0.0342988839691 (97.505% of the drag)
+2026-10-26T07:46:06.694Z     MOC 640: the flow is not supersonic: no characteristics solution
+2026-10-26T07:46:11.405Z     MOC 1280: the flow is not supersonic: no characteristics solution
+2026-10-26T07:46:27.741Z     MOC 2560: the flow is not supersonic: no characteristics solution
+2026-10-26T07:46:27.742Z   line 32 (x 8.30456e-2): min Mach 1.1032, wall K -1.43e-3, fitted downstream 0.0336118334147 (95.552% of the drag)
+2026-10-26T07:46:30.890Z     MOC 640: 0.0343134285722, fitted - MOC -1.994e-2 of the drag, mass 2.54e-2, penetration 2.5e-1, 3 s
+2026-10-26T07:46:41.004Z     MOC 1280: 0.0342622417215, fitted - MOC -1.849e-2 of the drag, mass 2.58e-2, penetration 2.5e-1, 10 s
+2026-10-26T07:47:23.696Z     MOC 2560: 0.0341977433983, fitted - MOC -1.666e-2 of the drag, mass 2.60e-2, penetration 2.5e-1, 43 s
+2026-10-26T07:47:23.697Z   line 40 (x 1.88242e-1): min Mach 1.1509, wall K -1.74e-3, fitted downstream 0.0318803821862 (90.630% of the drag)
+2026-10-26T07:47:26.196Z     MOC 640: 0.0318072692869, fitted - MOC 2.078e-3 of the drag, mass 6.46e-6, penetration 0.0e+0, 2 s
+2026-10-26T07:47:35.304Z     MOC 1280: 0.0318070180856, fitted - MOC 2.086e-3 of the drag, mass 1.65e-6, penetration 0.0e+0, 9 s
+2026-10-26T07:48:11.138Z     MOC 2560: 0.0318068951073, fitted - MOC 2.089e-3 of the drag, mass 4.16e-7, penetration 0.0e+0, 36 s
+2026-10-26T07:48:11.138Z   line 48 (x 3.93733e-1): min Mach 1.1899, wall K -3.91e-3, fitted downstream 0.0284117205980 (80.769% of the drag)
+2026-10-26T07:48:12.696Z     MOC 640: 0.0283373575274, fitted - MOC 2.114e-3 of the drag, mass 1.09e-5, penetration 0.0e+0, 2 s
+2026-10-26T07:48:17.499Z     MOC 1280: 0.0283385175021, fitted - MOC 2.081e-3 of the drag, mass 3.48e-6, penetration 0.0e+0, 5 s
+2026-10-26T07:48:35.580Z     MOC 2560: 0.0283396378061, fitted - MOC 2.049e-3 of the drag, mass 1.00e-6, penetration 0.0e+0, 18 s
+2026-10-26T07:48:35.580Z   line 57 (x 8.64112e-1): min Mach 1.2263, wall K -6.81e-3, fitted downstream 0.0207381429739 (58.954% of the drag)
+2026-10-26T07:48:36.476Z     MOC 640: 0.0206412857772, fitted - MOC 2.753e-3 of the drag, mass 1.57e-5, penetration 0.0e+0, 1 s
+2026-10-26T07:48:39.463Z     MOC 1280: 0.0206666075607, fitted - MOC 2.034e-3 of the drag, mass 2.90e-6, penetration 0.0e+0, 3 s
+2026-10-26T07:48:51.119Z     MOC 2560: 0.0206714172685, fitted - MOC 1.897e-3 of the drag, mass 1.93e-6, penetration 0.0e+0, 12 s
+2026-10-26T07:48:51.119Z   line 66 (x 1.83721e+0): min Mach 1.2582, wall K -8.28e-3, fitted downstream 0.00770036159395 (21.891% of the drag)
+2026-10-26T07:48:51.787Z     MOC 640: 0.00751120688494, fitted - MOC 5.377e-3 of the drag, mass 4.29e-5, penetration 0.0e+0, 1 s
+2026-10-26T07:48:54.035Z     MOC 1280: 0.00761235498825, fitted - MOC 2.502e-3 of the drag, mass 1.38e-5, penetration 0.0e+0, 2 s
+2026-10-26T07:49:02.944Z     MOC 2560: 0.00764185783750, fitted - MOC 1.663e-3 of the drag, mass 6.97e-6, penetration 0.0e+0, 9 s
+2026-10-26T07:49:02.944Z   line 75 (x 3.77889e+0): min Mach 1.2740, wall K -8.60e-3, fitted downstream -0.00320238215697 (-9.104% of the drag)
+2026-10-26T07:49:03.367Z     MOC 640: -0.00319469420557, fitted - MOC -2.186e-4 of the drag, mass 1.07e-7, penetration 0.0e+0, 0 s
+2026-10-26T07:49:05.054Z     MOC 1280: -0.00319438976322, fitted - MOC -2.272e-4 of the drag, mass 9.62e-8, penetration 0.0e+0, 2 s
+2026-10-26T07:49:11.637Z     MOC 2560: -0.00319429235734, fitted - MOC -2.300e-4 of the drag, mass 1.61e-8, penetration 0.0e+0, 7 s
+2026-10-26T07:49:31.584Z vk5rn0.03M1.3 r 4 (336 x 80) from /home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475/tests/tmp-w6b/out/vk5rn0.03M1.3r4: drag 0.035134208042056067, mach 1.29999997066, rebuilt in 20 s
+2026-10-26T07:49:31.585Z   line 26 (x 3.92211e-2): min Mach 1.0616, wall K -1.27e-3, fitted downstream 0.0342594280022 (97.510% of the drag)
+2026-10-26T07:49:32.795Z     MOC 640: the flow is not supersonic: no characteristics solution
+2026-10-26T07:49:37.171Z     MOC 1280: the flow is not supersonic: no characteristics solution
+2026-10-26T07:49:54.333Z     MOC 2560: the flow is not supersonic: no characteristics solution
+2026-10-26T07:49:54.334Z   line 32 (x 8.30456e-2): min Mach 1.1040, wall K -8.68e-4, fitted downstream 0.0335723991590 (95.555% of the drag)
+2026-10-26T07:49:55.189Z     MOC 640: the flow is not supersonic: no characteristics solution
+2026-10-26T07:49:58.235Z     MOC 1280: the flow is not supersonic: no characteristics solution
+2026-10-26T07:50:10.896Z     MOC 2560: the flow is not supersonic: no characteristics solution
+2026-10-26T07:50:10.897Z   line 40 (x 1.88242e-1): min Mach 1.1500, wall K -6.49e-4, fitted downstream 0.0318424929694 (90.631% of the drag)
+2026-10-26T07:50:13.655Z     MOC 640: 0.0318094440807, fitted - MOC 9.406e-4 of the drag, mass 1.46e-5, penetration 0.0e+0, 3 s
+2026-10-26T07:50:23.252Z     MOC 1280: 0.0318090291954, fitted - MOC 9.525e-4 of the drag, mass 3.67e-6, penetration 0.0e+0, 10 s
+2026-10-26T07:51:00.276Z     MOC 2560: 0.0318088306331, fitted - MOC 9.581e-4 of the drag, mass 9.06e-7, penetration 0.0e+0, 37 s
+2026-10-26T07:51:00.277Z   line 48 (x 3.93733e-1): min Mach 1.1872, wall K -1.78e-3, fitted downstream 0.0283774537131 (80.769% of the drag)
+2026-10-26T07:51:01.661Z     MOC 640: 0.0283439856186, fitted - MOC 9.526e-4 of the drag, mass 2.56e-5, penetration 0.0e+0, 1 s
+2026-10-26T07:51:06.207Z     MOC 1280: 0.0283439672640, fitted - MOC 9.531e-4 of the drag, mass 7.37e-6, penetration 0.0e+0, 5 s
+2026-10-26T07:51:24.188Z     MOC 2560: 0.0283445170158, fitted - MOC 9.375e-4 of the drag, mass 2.09e-6, penetration 0.0e+0, 18 s
+2026-10-26T07:51:24.188Z   line 57 (x 8.64112e-1): min Mach 1.2245, wall K -4.48e-3, fitted downstream 0.0207120714370 (58.951% of the drag)
+2026-10-26T07:51:25.067Z     MOC 640: 0.0206542510688, fitted - MOC 1.646e-3 of the drag, mass 3.25e-5, penetration 0.0e+0, 1 s
+2026-10-26T07:51:27.936Z     MOC 1280: 0.0206775416537, fitted - MOC 9.828e-4 of the drag, mass 1.07e-5, penetration 0.0e+0, 3 s
+2026-10-26T07:51:39.642Z     MOC 2560: 0.0206811558950, fitted - MOC 8.799e-4 of the drag, mass 3.16e-6, penetration 0.0e+0, 12 s
+2026-10-26T07:51:39.642Z   line 66 (x 1.83721e+0): min Mach 1.2569, wall K -6.83e-3, fitted downstream 0.00768870041983 (21.884% of the drag)
+2026-10-26T07:51:40.336Z     MOC 640: 0.00753396839046, fitted - MOC 4.404e-3 of the drag, mass 5.37e-5, penetration 0.0e+0, 1 s
+2026-10-26T07:51:43.006Z     MOC 1280: 0.00763107835125, fitted - MOC 1.640e-3 of the drag, mass 1.85e-5, penetration 0.0e+0, 3 s
+2026-10-26T07:51:51.992Z     MOC 2560: 0.00765898471329, fitted - MOC 8.458e-4 of the drag, mass 5.76e-6, penetration 0.0e+0, 9 s
+2026-10-26T07:51:51.993Z   line 75 (x 3.77889e+0): min Mach 1.2739, wall K -7.83e-3, fitted downstream -0.00319204732101 (-9.085% of the drag)
+2026-10-26T07:51:52.526Z     MOC 640: -0.00319011649509, fitted - MOC -5.496e-5 of the drag, mass 1.19e-7, penetration 0.0e+0, 1 s
+2026-10-26T07:51:54.370Z     MOC 1280: -0.00318986061680, fitted - MOC -6.224e-5 of the drag, mass 9.34e-8, penetration 0.0e+0, 2 s
+2026-10-26T07:52:02.062Z     MOC 2560: -0.00318977953748, fitted - MOC -6.455e-5 of the drag, mass 1.66e-8, penetration 0.0e+0, 8 s

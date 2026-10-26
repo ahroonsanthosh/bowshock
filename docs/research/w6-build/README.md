@@ -197,3 +197,77 @@ are seen except to fix a demonstrated bug, recorded as such):
    extrapolation by more than the family's band, the fitted solver is
    the suspect: that is reported at once, with the numbers, since it
    would bear on W5's Von Karman noses.
+
+## 7. Findings at Mach 1.3, and the second march judged (2026-10-26)
+
+**An embedded recompression shock.** On the 5-caliber tangent ogive at
+Mach 1.3, the flow overexpands round the cap (wall Cp -0.02 at x =
+0.023 with r_n/R 0.03) and recompresses (Cp +0.156 by x = 0.1), and the
+compression coalesces into a shock inside the shock layer. Across grid
+lines of the fitted flow (`runners/profile.test.ts`,
+`results/diagnostics/profile-ogive5rn0.03M1.3.json`) the steepest
+pressure gradient stays at the same place in the layer and doubles with
+each refinement, as across a discontinuity: at x = 0.13, -2.9, -6.7 and
+-13.6 (pressure over base radius) at 61% of the layer on nj = 20, 40, 80;
+the pressure falls from 1.16 at the wall to 1.04 and jumps to 1.10
+across it. It moves out through the layer with x (61% of the layer's
+height at x = 0.13, 76% at 0.25, 90% at 0.6, 99% at 1.65) and meets the
+bow shock near x = 1.6 to 2. Its entropy jump is small (about 1e-4 of
+the free stream's).
+
+**Why the march fails ahead of it.** The method of characteristics marched
+here has no internal shock: every line ahead of the merge crosses the
+embedded shock. Those lines fail W5's line criterion (mass balance 2.4e-4
+to 8e-4, not falling with the intervals, growing with the grid), and
+their drag downstream lies 2.6% to 3.0% below the fitted drag on every
+grid. On nj = 80 from the line at x = 0.022
+(`runners/wallp.test.ts`,
+`results/diagnostics/wallp-ogive5rn0.03M1.3-r4-l22-cells.json`) the
+march's wall pressure agrees with the fitted one to 3e-5 in Cp up to
+x = 0.055, then falls to 4e-3 in Cp below it where the recompression
+steepens, and the gap decays slowly downstream. Behind the merge (x =
+1.65 on, 20% of the drag downstream) the march and the fitted drag
+converge to each other at about second order (3.5e-4, 8e-5, -2e-6 of
+the drag on nj = 20, 40, 80). The fitted solver captures the embedded
+shock (it fits only the bow shock), so its error there may become first
+order on finer grids (0004, "First-order surface pressure"); the nj = 160
+runs are to show it. Nothing here points at W5's Von Karman noses: their
+profile has no curvature jump at the tip and their near-tip gaps fall
+with the grid (for example 2.2e-3, 5.7e-4, 1.1e-4 of the drag on the
+3-caliber nose at Mach 3, x = 0.018).
+
+**The second march, judged by section 6's rules** (both Mach 1.3 cases
+done; `results/lanes/moc2-*.jsonl`):
+
+- Rule 1: no line ahead of the merge passes (the same lines fail as for
+  the first march, with mass balances of 2.6e-4 to 8.0e-4); the lines
+  that pass are the same as the first march's (x = 3.79 and 3.72).
+- Rule 2, the control, fails: on the lines where both marches pass, they
+  differ by 8.2e-5, 4.1e-5 and 1.8e-5 of the drag on nj = 20, 40, 80
+  (r_n/R 0.03, line at x = 3.79) and by 4.2e-5 on nj = 20 (0.15, x =
+  3.72), against allowed differences of 1e-5 plus changes of 1e-6 or
+  less. The likely cause, not shown: the stream function comes from the
+  line's interpolated mass flux, which falls short of the shock's
+  captured mass flow by 0.5% to 2.1% (the ratio rises to 0.995 on nj =
+  80), so each point's entropy is taken from a slightly wrong place on
+  the shock. By the rule, the second march is not used anywhere.
+- Rule 3 fails (no forward line passes); so rule 4 holds: the forward
+  region of these noses stays unreferenced, and W6 serves no capped nose
+  whose referenced lines carry less than half its drag downstream. The
+  cause of the first march's failure is now shown (the embedded shock),
+  not the fitted solver's entropy layer: the entropies the second march
+  imposes differ from the cells' by 4e-4 to 9e-3, and change the march's
+  drag by at most 3.8e-4 of the nose's (on one nj = 40 line whose first
+  march failed with a mass balance of 7.9e-3, by 4.8e-3), far less than
+  the 2.7% gap.
+
+**An open route, not taken now.** A march of characteristics that fits
+the embedded shock as the fitted solver fits the bow shock (a shock-point
+unit process started where same-family characteristics first cross,
+marched with the oblique-shock relations on both sides, its entropy jump
+carried into K(psi) behind it) would cover the forward region
+independently of the finite-volume solution. Effort: about three to five
+days of code and its own verification (a compression corner's exact
+oblique shock; a cap-cone case on two march resolutions) before it is
+run on W6's families. Decided after the Mach 2 and 3 families show where
+the merge falls.

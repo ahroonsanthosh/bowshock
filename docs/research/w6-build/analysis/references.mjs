@@ -16,6 +16,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 
 const dir = process.argv[2] ?? 'results';
+// moc: the first march (W5's); moc2: the second (README section 6).
+const MARCH = process.env.MARCH ?? 'moc';
 const want = process.argv[3];
 const CRITERION = 3.5e-5;
 const read = (f) =>
@@ -60,7 +62,7 @@ for (const [tag, g] of [...fits.entries()].sort()) {
   console.log(
     `   order ${pT.toFixed(3)}, procedure's extrapolation ${procExt.toPrecision(10)} (${e((procExt - T[4]) / T[4])}), one-triple band ${e(band / T[4])} of the drag`,
   );
-  const mocFile = `${dir}/moc-${tag}.jsonl`;
+  const mocFile = `${dir}/${MARCH}-${tag}.jsonl`;
   if (!existsSync(mocFile)) {
     summary.push(row);
     continue;
