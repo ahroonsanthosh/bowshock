@@ -84,7 +84,11 @@
  * sweep, the smallest tested, up, tapered below it to none unswept
  * (sweepAllowanceAt). Swept edges are served to 60
  * deg (the checks reach 59.8 deg; at 75 deg the only points have an end
- * effect).
+ * effect). Beyond 60 deg (0016 section 21.2, 0014 section 10.7 (ab)) the
+ * edge is "bounded, not measured": between the term at its sweep at its
+ * band's low end and the term at 60 deg at its band's high end, the
+ * midpoint served and the band the whole gap, where both terms are served
+ * (M cos(sweep) at least 1.0).
  *
  * **Normal Mach numbers 1.0 to 1.49** (0016 section 11, W4(e), on flat
  * plates and rounded wedges): the same analogy, the normal flow sonic or
@@ -747,6 +751,17 @@ export interface RoundedLeadingEdge {
   readonly sweepDegrees: number;
   /** At M_n 1.0 to 1.49: kappa, the front side over modified Newtonian (0016 section 11). */
   readonly transonic?: TransonicFrontSide;
+  /**
+   * Swept beyond 60 deg: bounded, not measured (0016 section 21.2), the
+   * band's ends per unit span over q, the term at the sweep at its band's low
+   * end and the term at 60 deg at its high end; `normalMach` and `transonic`
+   * are the first's, `upperNormalMach` the second's.
+   */
+  readonly bounded?: {
+    readonly low: number;
+    readonly high: number;
+    readonly upperNormalMach: number;
+  };
 }
 
 /**
@@ -768,31 +783,101 @@ function shownBeyond(x: number, limit: number, side: 'below' | 'above'): string 
  * the edge, with the Reynolds number on its diameter 2r (on the free
  * stream; its normal component decides the domain).
  */
-export function roundedLeadingEdgeDrag(input: {
+export function roundedLeadingEdgeDrag(input: RoundedLeadingEdgeInput): RoundedLeadingEdge {
+  const tanSweep = input.tanLeadingEdgeSweep;
+  if (!(tanSweep >= 0 && Number.isFinite(tanSweep))) {
+    throw new FinRefusal('swept-leading-edge', `bad leading-edge sweep (tan ${tanSweep})`);
+  }
+  const sweepDegrees = Math.atan(tanSweep) / DEG;
+  if (sweepDegrees <= SWEEP_LIMIT_DEGREES + 1e-9) return roundedTerm(input);
+  return beyondSweepLimit(input, sweepDegrees);
+}
+
+/** The inputs of `roundedLeadingEdgeDrag`. */
+export interface RoundedLeadingEdgeInput {
   readonly mach: number;
   readonly radius: number;
   readonly faceAngle: number;
   readonly tanLeadingEdgeSweep: number;
   readonly reynoldsOnDiameter: number;
-}): RoundedLeadingEdge {
+}
+
+/**
+ * Beyond 60 deg of sweep (0016 section 21.2; 0014 section 10.7 (ab)):
+ * bounded, not measured, between the term at the actual sweep at its
+ * band's low end and the term at 60 deg, at the same Mach and Reynolds
+ * numbers, at its band's high end. The term falls strictly as the sweep
+ * grows (the principle), and the front side's drag per unit span falls
+ * with yaw on every series of RM A55H31 fig. 12 (Penland's to 75.1 deg);
+ * the lower bound's ordering beyond 60 deg rests on the principle and on
+ * that one yawed point. Both terms must be served.
+ */
+function beyondSweepLimit(
+  input: RoundedLeadingEdgeInput,
+  sweepDegrees: number,
+): RoundedLeadingEdge {
+  const failed: [FinRefusalReason, string][] = [];
+  const at = (tan: number, where: string): RoundedLeadingEdge | undefined => {
+    try {
+      return roundedTerm({ ...input, tanLeadingEdgeSweep: tan });
+    } catch (e) {
+      if (!(e instanceof FinRefusal)) throw e;
+      failed.push([e.reason, `at ${where}, ${e.message}`]);
+      return undefined;
+    }
+  };
+  const lower = at(input.tanLeadingEdgeSweep, `${sweepDegrees.toFixed(1)} deg`);
+  const upper = at(Math.tan(SWEEP_LIMIT_DEGREES * DEG), `${SWEEP_LIMIT_DEGREES} deg`);
+  if (lower === undefined || upper === undefined) {
+    throw new FinRefusal(
+      failed[0]![0],
+      `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg, beyond the ` +
+        `${SWEEP_LIMIT_DEGREES} deg the yawed-cylinder checks of the independence principle reach ` +
+        '(RM A55H31 fig. 12; at 75 deg the only point has an end effect), is served only bounded, ' +
+        `between the term at its sweep and the term at ${SWEEP_LIMIT_DEGREES} deg, and both must ` +
+        `be served (0016 section 21.2): ${failed.map(([, m]) => m).join('; and ')}`,
+    );
+  }
+  const low = lower.dragPerSpan * lower.band.low;
+  const high = upper.dragPerSpan * upper.band.high;
+  const dragPerSpan = 0.5 * (low + high);
+  return {
+    dragPerSpan,
+    band: { low: low / dragPerSpan, high: high / dragPerSpan },
+    regime: lower.regime,
+    label:
+      `bounded, not measured: swept ${sweepDegrees.toFixed(1)} deg, beyond the ` +
+      `${SWEEP_LIMIT_DEGREES} deg the yawed-cylinder checks reach; between the independence ` +
+      `principle at ${sweepDegrees.toFixed(1)} deg (the front side at the normal Mach number ` +
+      `${lower.normalMach.toFixed(3)} on the normal dynamic pressure, at its band's low end, ` +
+      `${lower.band.low.toFixed(3)} of it) and the same term at ${SWEEP_LIMIT_DEGREES} deg, the ` +
+      `largest sweep checked on yawed cylinders (at its band's high end, ` +
+      `${upper.band.high.toFixed(3)} of it), the band the whole gap; the term falls as the sweep ` +
+      'grows, and the front side measured on yawed cylinders falls with yaw on every series (RM ' +
+      "A55H31 fig. 12); the lower bound's ordering beyond 60 deg rests on one yawed point " +
+      "(Penland's at 75.1 deg, with an end effect); each term an analogy, carried to a fin edge " +
+      "whose faces replace the cylinder's wake (0016 section 21.2)",
+    reynoldsOnDiameter: lower.reynoldsOnDiameter,
+    normalMach: lower.normalMach,
+    sweepDegrees,
+    ...(lower.transonic === undefined ? {} : { transonic: lower.transonic }),
+    bounded: {
+      low,
+      high,
+      upperNormalMach: upper.normalMach,
+    },
+  };
+}
+
+/** The term at a sweep of 60 deg or less (sections 4, 5 and 11 of 0016). */
+function roundedTerm(input: RoundedLeadingEdgeInput): RoundedLeadingEdge {
   const { radius, faceAngle } = input;
   const tanSweep = input.tanLeadingEdgeSweep;
-  if (!(tanSweep >= 0 && Number.isFinite(tanSweep))) {
-    throw new FinRefusal('swept-leading-edge', `bad leading-edge sweep (tan ${tanSweep})`);
-  }
   const sweep = Math.atan(tanSweep);
   const sweepDegrees = sweep / DEG;
   // Every condition the case fails is collected and reported, not only the first (the re-review
   // of 2026-10-22, N6); the reason code is the first failed condition's.
   const failed: [FinRefusalReason, string][] = [];
-  if (sweepDegrees > SWEEP_LIMIT_DEGREES + 1e-9) {
-    failed.push([
-      'swept-leading-edge',
-      `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg is refused: the yawed-cylinder ` +
-        `checks of the independence principle reach ${SWEEP_LIMIT_DEGREES} deg (RM A55H31 fig. 12), ` +
-        'and at 75 deg the only point has an end effect (0016)',
-    ]);
-  }
   const cosSweep = Math.cos(sweep);
   const mach = input.mach * cosSweep;
   const re = input.reynoldsOnDiameter * cosSweep;
