@@ -65,6 +65,8 @@ export interface GpuFittedFlow {
   readonly fit: GpuShockFit;
   /** Forebody pressure drag coefficient on the body's cross-section. */
   readonly drag: number;
+  /** On a body with a boat-tail, the boat-tail's pressure drag coefficient (FitProblem.boatTailDrag). */
+  readonly boatTailDrag?: number;
 }
 
 export async function gpuFittedFlow(
@@ -73,6 +75,11 @@ export async function gpuFittedFlow(
   options: GpuFittedFlowOptions,
 ): Promise<GpuFittedFlow> {
   const free = Array.from({ length: problem.lines.length - 1 }, () => problem.freeStream);
+  const tailDrag = problem.boatTailDrag;
+  const monitored: FitProblem =
+    tailDrag === undefined
+      ? problem
+      : { ...problem, drag: (wall) => problem.drag(wall) + tailDrag(wall) };
   const configFor = (grid: StructuredGrid): GpuEuler2DConfig => {
     const { flux, source, ...rest } = problem.configFor(grid, free);
     if (!isGpuFlux(flux)) throw new RangeError(`the GPU engine has no ${flux} flux`);
@@ -93,7 +100,9 @@ export async function gpuFittedFlow(
     stepsPerMove: options.stepsPerMove,
     checkEvery: options.checkEvery,
     // The wall's fluxes in double precision, by the CPU engine's scheme.
-    monitor: (grid, cell) => wallDrag(problem, grid, cell),
+    // With a boat-tail, the forebody's drag and the boat-tail's settle
+    // together: the fit watches their sum.
+    monitor: (grid, cell) => wallDrag(monitored, grid, cell),
     noise: GPU_NOISE,
     speedTolerance: options.speedTolerance,
     knownRate: options.knownRate,
@@ -103,7 +112,13 @@ export async function gpuFittedFlow(
     onLive: options.onLive,
     gate: options.gate,
   });
-  return { fit, drag: fit.value };
+  const tail = problem.boatTailDrag;
+  if (tail === undefined) return { fit, drag: fit.value };
+  return {
+    fit,
+    drag: wallDrag(problem, fit.grid, fit.cell),
+    boatTailDrag: wallDrag({ ...problem, drag: tail }, fit.grid, fit.cell),
+  };
 }
 
 /**

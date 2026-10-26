@@ -77,3 +77,16 @@ export const CASES: readonly BoatTailCase[] = [
   make('o', 3, 5, 12, 1.5, 3),
   make('c', 3, 5, 8, 1, 2),
 ];
+
+/**
+ * The cases solved on nj = 160 too, before the rest are solved on nj = 80
+ * (the CPU takes hours a case there): the case of section 2.1, the
+ * steepest at the lowest Mach number, the highest Mach number, and the
+ * longest boat-tail.
+ */
+export const FOUR_GRIDS: readonly string[] = [
+  'o3-c3-bt6-l1-m2',
+  'o3-c5-bt16-l1-m1.5',
+  'o3-c5-bt8-l1-m3',
+  'o3-c5-bt8-l2-m2',
+];

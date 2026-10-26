@@ -25,7 +25,7 @@ import { gridQuality } from '../../../src/grid/quality';
 import type { Primitive2D } from '../../../src/scheme/flux';
 import { characteristics } from '../../../src/validation/characteristics';
 import { linearBoatTailDrag } from '../../../src/validation/linear-body';
-import { CASES, GAMMA, caseBody, type BoatTailCase } from './cases';
+import { CASES, FOUR_GRIDS, GAMMA, caseBody, type BoatTailCase } from './cases';
 
 const here = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 const OUT = process.env.OUT_DIR ?? here('./out');
@@ -261,7 +261,20 @@ it('the boat-tail reference lane', () => {
     if (process.env.SKIP_MOC !== '1') runMoc(c, results(c));
   }
   if (process.env.SKIP_FIT === '1') return;
-  for (const upTo of REFINEMENTS) {
-    for (const c of cases) runFamily(c, results(c), upTo);
+  // Every case on nj = 20 and 40; then the four-grid cases on nj = 80 and
+  // 160; then the rest on nj = 80.
+  const first = cases.filter((c) => FOUR_GRIDS.includes(c.name));
+  const rest = cases.filter((c) => !FOUR_GRIDS.includes(c.name));
+  const schedule: [readonly BoatTailCase[], number][] = [
+    [cases, 1],
+    [cases, 2],
+    [first, 4],
+    [first, 8],
+    [rest, 4],
+    [rest, 8],
+  ];
+  for (const [list, upTo] of schedule) {
+    if (!REFINEMENTS.includes(upTo)) continue;
+    for (const c of list) runFamily(c, results(c), upTo);
   }
 });
