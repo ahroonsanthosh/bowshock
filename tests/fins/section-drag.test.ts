@@ -379,4 +379,39 @@ describe('exact section drag: what it refuses', () => {
     const planform = trapezoidalPlanform({ rootChord: 1, span: 1, leadingEdgeSweep: 0 });
     expect(finWaveDrag(planform, wedgeFlat, 2).exactSection).toBe(true);
   });
+
+  it('each surface decides on its own faces: a wedge-flat above and a rear bevel below are refused for the lower surface, and the mirror for the upper (0009 section 8)', () => {
+    // The same 3% plate's front wedge on both surfaces, blunt trailing edge; one surface flat to the edge,
+    // the other closing by half its thickness over the last 20% of the chord (a face with slope behind the
+    // landing point). A check of one surface alone would serve this section.
+    const h = 0.015;
+    const b = h / Math.tan((10 * Math.PI) / 180);
+    const flatTo = (sign: 1 | -1) => [
+      { x: 0, y: 0 },
+      { x: b, y: sign * h },
+      { x: 1, y: sign * h },
+    ];
+    const bevelTo = (sign: 1 | -1) => [
+      { x: 0, y: 0 },
+      { x: b, y: sign * h },
+      { x: 0.8, y: sign * h },
+      { x: 1, y: (sign * h) / 2 },
+    ];
+    const below: Section = { upper: flatTo(1), lower: bevelTo(-1), bluntTrailingEdge: true };
+    const above: Section = { upper: bevelTo(1), lower: flatTo(-1), bluntTrailingEdge: true };
+    for (const mach of [1.5, 2, 2.5]) {
+      const r = exactSectionDrag(below, mach, { neglectReflectedWaves: true });
+      expect(r.exact).toBe(false);
+      // The flat surface alone would be exact; the bevelled one lands ahead of its rear bevel's end.
+      expect(r.upper.firstReflection).toBeGreaterThanOrEqual(r.upper.lastSlopedFaceEnd);
+      expect(r.lower.firstReflection).toBeLessThan(0.8);
+      expect(r.lower.lastSlopedFaceEnd).toBe(1);
+      const e = refusal(() => exactSectionDrag(below, mach));
+      expect(e.reason).toBe('reflected-wave');
+      expect(e.message).toContain('reach the lower surface');
+      const m = refusal(() => exactSectionDrag(above, mach));
+      expect(m.reason).toBe('reflected-wave');
+      expect(m.message).toContain('reach the upper surface');
+    }
+  });
 });
