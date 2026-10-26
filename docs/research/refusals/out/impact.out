@@ -32,14 +32,14 @@
 | nose: Haack (Von Karman, LV) or power-series shape not served (two-scale grids in progress) | 52.0% | 52.0% | 52.0% | 52.0% | 52.0% | 1.88% |
 | fins: below Mach 1.5, fin friction and the wave drag of sharp sections (the fins' own-drag band, ARCAS, is measured at Mach 1.5 to 2.96 only, 0014 section 10.7 (f)) | 100.0% | 100.0% | 0.0% | 0.0% | 50.0% | 0.07% |
 | nose: rounded (blunted) tip not represented | 49.7% | 49.7% | 49.7% | 49.7% | 49.7% | 1.51% |
-| base (rebuilt factor): sweep not measured (leading edge 0 to 45 or above 60 deg, or trailing edge beyond it; a sharp section with a trailing edge swept aft closer to the base than 0.9 root chords, or swept forward) | 55.0% | 55.0% | 45.1% | 18.5% | 43.4% | 1.13% |
+| base (rebuilt factor): sweep not measured (leading edge 0 to 45 or above 60 deg, or trailing edge beyond it; a sharp section with a trailing edge swept aft closer to the base than 0.9 root chords, or swept forward) | 55.0% | 55.0% | 45.1% | 18.5% | 43.4% | 1.19% |
 | te: Mach outside 1.5 to 3.2 | 52.7% | 52.7% | 0.0% | 0.0% | 26.4% | 0.00% |
 | nose: Mach below 1.2 (page input and solver; transonic solver in progress, 0013) | 100.0% | 0.0% | 0.0% | 0.0% | 25.0% | 0.00% |
-| fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.0 to 3.0 (on a flat plate, 0016) | 37.0% | 22.8% | 9.7% | 0.5% | 17.5% | 0.09% |
+| fins: rounded leading edge, normal Mach number M cos(sweep) outside 1.0 to 3.0 (on a flat plate, 0016) | 40.1% | 25.8% | 12.7% | 1.5% | 20.0% | 0.09% |
 | fins: sharp section, leading-edge shock detached or subsonic behind it | 35.3% | 26.2% | 3.5% | 0.0% | 16.2% | 0.01% |
 | base: boat-tail | 15.8% | 15.8% | 15.8% | 15.8% | 15.8% | 0.14% |
 | fins: rounded trailing edge (bounded; the ordering not shown, 0016) | 15.5% | 15.5% | 15.5% | 15.5% | 15.5% | 0.03% |
-| fins: square-cut (blunt) leading edge (bounded; the ordering not shown, 0016) | 15.3% | 15.3% | 15.3% | 15.3% | 15.3% | 0.76% |
+| fins: square-cut (blunt) leading edge (bounded between the sonic and the pitot pressure, its computed check not passed, 0016 section 21.3) | 15.3% | 15.3% | 15.3% | 15.3% | 15.3% | 0.76% |
 | base (rebuilt factor): a rounded or diverging blunt trailing edge | 14.8% | 14.8% | 14.8% | 14.8% | 14.8% | 0.00% |
 | fins: sharp section, a wave reflected from the leading-edge shock reaches the surface | 0.2% | 3.5% | 25.9% | 29.0% | 14.6% | 0.35% |
 | page: section not offered (wedge-flat with a blunt trailing edge; the library takes it) | 9.1% | 9.1% | 9.1% | 9.1% | 9.1% | 0.00% |
@@ -48,13 +48,13 @@
 | base: fins ending within a chord of the base | 6.0% | 6.0% | 0.0% | 11.5% | 5.9% | 0.11% |
 | nose: tip shock detaches | 20.5% | 0.0% | 0.0% | 0.0% | 5.1% | 0.00% |
 | nose: axially subsonic tip flow (at a corner, or subsonic on the surface) | 14.8% | 2.1% | 0.0% | 0.0% | 4.2% | 0.00% |
-| fins: rounded leading edge swept beyond 60 deg | 3.0% | 3.0% | 3.0% | 3.0% | 3.0% | 0.00% |
+| fins: rounded leading edge outside Re_D 6.7e3 to 1e6 (normal component) | 1.1% | 1.3% | 0.7% | 0.2% | 0.8% | 0.01% |
 | te: thick boundary layer, c/[h Re_c^(1/5)] > 4.5 anywhere along the span (> 1 above M 3.1) | 1.1% | 0.7% | 0.7% | 0.4% | 0.7% | 0.01% |
-| fins: rounded leading edge outside Re_D 6.7e3 to 1e6 (normal component) | 1.0% | 1.1% | 0.5% | 0.2% | 0.7% | 0.01% |
 | nose: tip steeper than 40 deg (fitted grids wall gate) | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |
 | nose: ellipsoid outside the measured domain | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |
 | fins: rounded leading edge on a flat plate (lifted by 0016) | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |
 | fins: rounded leading edge on fins of varying chord (lifted by 0016) | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |
+| fins: rounded leading edge swept beyond 60 deg (lifted by 0016 section 21.2: bounded where the term at its sweep and at 60 deg are both served) | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |
 | base: Mach outside 1.0 to 3.0 (below 1.5: W2, 0015 section 11) | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |
 | base: fins at the base, not four | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |
 | base: fins at the base, t/c outside 0.05 to 0.10 (since 0016 section 18 above 0.10 only) | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.00% |
@@ -69,10 +69,10 @@
 
 | Package | Appears in: M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 | All | Totals if lifted alone |
 | --- | --- | --- | --- | --- | --- | --- |
-| W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 78.0% | 78.0% | 66.3% | 57.6% | 70.0% | 3.4% |
+| W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 78.0% | 78.0% | 66.3% | 57.6% | 70.0% | 3.5% |
 | W2 the base below Mach 1.5 (served since 0015 section 11): what remains, the body base outside 1.0 to 3.0 and fins at the base below 1.0 | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 1.9% |
 | W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5) | 52.7% | 52.7% | 8.5% | 8.3% | 30.6% | 2.1% |
-| W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 40.1% | 26.1% | 13.0% | 3.7% | 20.7% | 2.0% |
+| W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 40.1% | 26.1% | 13.0% | 1.7% | 20.2% | 2.0% |
 | W5 Haack and power-series noses (in progress) | 52.0% | 52.0% | 52.0% | 52.0% | 52.0% | 3.8% |
 | W6 blunted nose tips | 49.7% | 49.7% | 49.7% | 49.7% | 49.7% | 3.4% |
 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 100.0% | 100.0% | 0.0% | 0.0% | 50.0% | 2.0% |
@@ -88,12 +88,12 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | W5 Haack and power-series noses (in progress) | 52.0% | 3.8% | 0.0% | 0.0% | 5.0% | 10.2% |
 | 2 | W6 blunted nose tips | 49.7% | 7.3% | 0.0% | 0.0% | 9.3% | 20.0% |
-| 3 | W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 70.0% | 12.9% | 0.0% | 0.0% | 24.0% | 27.8% |
-| 4 | W11 square-cut leading edges and rounded trailing edges | 30.8% | 24.1% | 0.0% | 0.0% | 45.1% | 51.4% |
-| 5 | W9 sharp sections: reflected waves and detached bevel shocks | 30.9% | 32.6% | 0.0% | 0.0% | 62.1% | 68.2% |
-| 6 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 50.0% | 44.7% | 17.3% | 31.2% | 62.1% | 68.2% |
-| 7 | W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5) | 30.6% | 55.2% | 27.5% | 53.6% | 66.0% | 73.6% |
-| 8 | W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 20.7% | 69.5% | 49.5% | 74.8% | 76.8% | 76.8% |
+| 3 | W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 70.0% | 13.2% | 0.0% | 0.0% | 24.0% | 28.6% |
+| 4 | W11 square-cut leading edges and rounded trailing edges | 30.8% | 24.6% | 0.0% | 0.0% | 45.1% | 53.1% |
+| 5 | W9 sharp sections: reflected waves and detached bevel shocks | 30.9% | 33.0% | 0.0% | 0.0% | 62.1% | 69.9% |
+| 6 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 50.0% | 45.1% | 17.3% | 31.2% | 62.1% | 69.9% |
+| 7 | W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5) | 30.6% | 55.7% | 27.5% | 53.6% | 66.0% | 75.5% |
+| 8 | W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 20.2% | 69.5% | 49.5% | 74.8% | 76.8% | 76.8% |
 | 9 | W10 boat-tails | 15.8% | 82.4% | 58.8% | 89.0% | 90.9% | 90.9% |
 | 10 | W8 steep, detached and subsonic sharp tips | 9.3% | 90.9% | 90.9% | 90.9% | 90.9% | 90.9% |
 | 11 | W12 page: the wedge-flat section with a blunt trailing edge | 9.1% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
@@ -102,7 +102,7 @@
 
 | After | Totals, all bands | M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 |
 | --- | --- | --- | --- | --- | --- |
-| W1 | 3.4% | 0.0% | 0.0% | 6.5% | 7.2% |
+| W1 | 3.5% | 0.0% | 0.0% | 6.5% | 7.4% |
 | W3 + W4 | 4.3% | 0.0% | 0.0% | 8.5% | 8.5% |
 | W5 | 8.5% | 0.0% | 0.0% | 17.0% | 17.1% |
 | W2 | 8.5% | 0.0% | 0.0% | 17.0% | 17.1% |
@@ -148,7 +148,7 @@
 | M 1.8-3.0 | 4.5% | 20.4% | 75.2% |
 
 - te: thick boundary layer, c/[h Re_c^(1/5)] > 4.5 anywhere along the span (> 1 above M 3.1): 8.2% of cases at 20 km
-- fins: rounded leading edge outside Re_D 6.7e3 to 1e6 (normal component): 24.7% of cases at 20 km
+- fins: rounded leading edge outside Re_D 6.7e3 to 1e6 (normal component): 27.4% of cases at 20 km
 
 ## Sensitivity: more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%)
 
@@ -167,7 +167,7 @@
 | W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 83.7% | 83.7% | 68.8% | 55.0% | 72.8% | 4.5% |
 | W2 the base below Mach 1.5 (served since 0015 section 11): what remains, the body base outside 1.0 to 3.0 and fins at the base below 1.0 | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 2.6% |
 | W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5) | 29.8% | 29.8% | 5.0% | 5.0% | 17.4% | 2.8% |
-| W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 22.4% | 14.7% | 7.8% | 2.2% | 11.8% | 2.7% |
+| W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 22.4% | 14.7% | 7.8% | 1.3% | 11.6% | 2.7% |
 | W5 Haack and power-series noses (in progress) | 52.0% | 52.0% | 52.0% | 52.0% | 52.0% | 5.2% |
 | W6 blunted nose tips | 49.7% | 49.7% | 49.7% | 49.7% | 49.7% | 4.8% |
 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 100.0% | 100.0% | 0.0% | 0.0% | 50.0% | 2.8% |
@@ -183,12 +183,12 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | W5 Haack and power-series noses (in progress) | 52.0% | 5.2% | 0.0% | 0.0% | 7.7% | 13.1% |
 | 2 | W6 blunted nose tips | 49.7% | 9.7% | 0.0% | 0.0% | 14.1% | 24.9% |
-| 3 | W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 72.8% | 17.1% | 0.0% | 0.0% | 33.0% | 35.5% |
-| 4 | W9 sharp sections: reflected waves and detached bevel shocks | 49.0% | 33.5% | 0.0% | 0.0% | 66.0% | 68.0% |
-| 5 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 50.0% | 56.9% | 37.4% | 56.1% | 66.0% | 68.0% |
-| 6 | W11 square-cut leading edges and rounded trailing edges | 13.3% | 62.7% | 38.0% | 59.3% | 74.7% | 78.8% |
-| 7 | W8 steep, detached and subsonic sharp tips | 9.3% | 68.0% | 58.0% | 60.5% | 74.7% | 78.8% |
-| 8 | W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 11.8% | 73.4% | 66.0% | 66.0% | 80.8% | 80.8% |
+| 3 | W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 72.8% | 17.3% | 0.0% | 0.0% | 33.0% | 36.2% |
+| 4 | W9 sharp sections: reflected waves and detached bevel shocks | 49.0% | 33.6% | 0.0% | 0.0% | 66.0% | 68.7% |
+| 5 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 50.0% | 57.0% | 37.4% | 56.1% | 66.0% | 68.7% |
+| 6 | W11 square-cut leading edges and rounded trailing edges | 13.3% | 62.9% | 38.0% | 59.3% | 74.7% | 79.8% |
+| 7 | W8 steep, detached and subsonic sharp tips | 9.3% | 68.2% | 58.0% | 60.5% | 74.7% | 79.8% |
+| 8 | W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 11.6% | 73.4% | 66.0% | 66.0% | 80.8% | 80.8% |
 | 9 | W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5) | 17.4% | 83.6% | 83.6% | 83.6% | 83.6% | 83.6% |
 | 10 | W12 page: the wedge-flat section with a blunt trailing edge | 11.1% | 94.2% | 94.2% | 94.2% | 94.2% | 94.2% |
 | 11 | W10 boat-tails | 5.8% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
@@ -197,7 +197,7 @@
 
 | After | Totals, all bands | M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 |
 | --- | --- | --- | --- | --- | --- |
-| W1 | 4.5% | 0.0% | 0.0% | 8.7% | 9.2% |
+| W1 | 4.5% | 0.0% | 0.0% | 8.7% | 9.3% |
 | W3 + W4 | 5.0% | 0.0% | 0.0% | 9.8% | 9.9% |
 | W5 | 10.0% | 0.0% | 0.0% | 19.9% | 20.2% |
 | W2 | 10.0% | 0.0% | 0.0% | 19.9% | 20.2% |
@@ -223,10 +223,10 @@
 
 | Package | Appears in: M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 | All | Totals if lifted alone |
 | --- | --- | --- | --- | --- | --- | --- |
-| W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 78.6% | 78.6% | 66.4% | 57.5% | 70.3% | 7.5% |
+| W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 78.6% | 78.6% | 66.4% | 57.5% | 70.3% | 7.7% |
 | W2 the base below Mach 1.5 (served since 0015 section 11): what remains, the body base outside 1.0 to 3.0 and fins at the base below 1.0 | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 4.1% |
 | W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5) | 53.7% | 53.7% | 9.2% | 9.2% | 31.4% | 4.8% |
-| W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 41.6% | 26.9% | 12.2% | 3.8% | 21.1% | 4.5% |
+| W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 41.6% | 26.9% | 12.2% | 1.6% | 20.6% | 4.5% |
 | W5 Haack and power-series noses (in progress) | 29.0% | 29.0% | 29.0% | 29.0% | 29.0% | 6.0% |
 | W6 blunted nose tips | 18.6% | 18.6% | 18.6% | 18.6% | 18.6% | 4.9% |
 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 100.0% | 100.0% | 0.0% | 0.0% | 50.0% | 4.3% |
@@ -240,14 +240,14 @@
 
 | Step | Work item lifted | Cases it appears in (still blocked) | Totals after, all bands | M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 70.3% | 7.5% | 0.0% | 0.0% | 14.1% | 16.1% |
-| 2 | W11 square-cut leading edges and rounded trailing edges | 29.8% | 13.6% | 0.0% | 0.0% | 25.6% | 28.9% |
-| 3 | W5 Haack and power-series noses (in progress) | 29.0% | 19.9% | 0.0% | 0.0% | 37.4% | 42.2% |
-| 4 | W9 sharp sections: reflected waves and detached bevel shocks | 31.3% | 26.7% | 0.0% | 0.0% | 51.1% | 55.8% |
-| 5 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 50.0% | 35.9% | 11.1% | 25.8% | 51.1% | 55.8% |
-| 6 | W6 blunted nose tips | 18.6% | 44.0% | 13.2% | 31.4% | 62.8% | 68.7% |
-| 7 | W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5) | 31.4% | 53.7% | 20.6% | 53.0% | 66.9% | 74.2% |
-| 8 | W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 21.1% | 66.8% | 37.6% | 74.8% | 77.3% | 77.3% |
+| 1 | W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5) | 70.3% | 7.7% | 0.0% | 0.0% | 14.1% | 16.6% |
+| 2 | W11 square-cut leading edges and rounded trailing edges | 29.8% | 13.8% | 0.0% | 0.0% | 25.6% | 29.8% |
+| 3 | W5 Haack and power-series noses (in progress) | 29.0% | 20.3% | 0.0% | 0.0% | 37.4% | 43.6% |
+| 4 | W9 sharp sections: reflected waves and detached bevel shocks | 31.3% | 27.1% | 0.0% | 0.0% | 51.1% | 57.3% |
+| 5 | W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5) | 50.0% | 36.3% | 11.1% | 25.8% | 51.1% | 57.3% |
+| 6 | W6 blunted nose tips | 18.6% | 44.4% | 13.2% | 31.4% | 62.8% | 70.4% |
+| 7 | W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5) | 31.4% | 54.1% | 20.6% | 53.0% | 66.9% | 76.0% |
+| 8 | W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0 | 20.6% | 66.8% | 37.6% | 74.8% | 77.3% | 77.3% |
 | 9 | W10 boat-tails | 14.4% | 78.1% | 43.5% | 87.5% | 90.6% | 90.6% |
 | 10 | W8 steep, detached and subsonic sharp tips | 13.8% | 90.6% | 90.6% | 90.6% | 90.6% | 90.6% |
 | 11 | W12 page: the wedge-flat section with a blunt trailing edge | 9.4% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
@@ -256,7 +256,7 @@
 
 | After | Totals, all bands | M 1.0-1.2 | M 1.2-1.5 | M 1.5-1.8 | M 1.8-3.0 |
 | --- | --- | --- | --- | --- | --- |
-| W1 | 7.5% | 0.0% | 0.0% | 14.1% | 16.1% |
+| W1 | 7.7% | 0.0% | 0.0% | 14.1% | 16.6% |
 | W3 + W4 | 10.0% | 0.0% | 0.0% | 19.9% | 20.1% |
 | W5 | 14.3% | 0.0% | 0.0% | 28.6% | 28.7% |
 | W2 | 14.3% | 0.0% | 0.0% | 28.6% | 28.7% |

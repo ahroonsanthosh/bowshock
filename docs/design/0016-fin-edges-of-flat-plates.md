@@ -1662,3 +1662,19 @@ section 10.7 and read twice; or the owner's decision that the argument of
 The hobby example of section 16 with its edges square-cut, had the term
 been served, at M 1.8: 0.188 in C_D, between 0.066 and 0.311 (a gap of
 0.245), against 0.161 (0.137 to 0.225) for its rounded edges.
+
+**Coverage** (the population of `docs/research/refusals/`, 2000 rockets
+at four Mach bands, 8000 cases; `evaluate.ts` mirroring this code, its
+cross-check against `src/total` agreeing on all 1200 cases). Before this
+section main's run, re-run on 3389a04 and identical to it
+(`out/2026-10-26-before-bounded-edges/`): totals served for 153 of 8000
+cases (1.9%). After (`out/impact.out`): **153 of 8000, unchanged**. The
+refusal "rounded leading edge swept beyond 60 deg" falls from 3.0% of
+cases (240) to none; most of those edges are still refused, now for
+their normal Mach number below 1.0 at their sweep (that refusal rises
+from 17.5% to 20.0% of cases) or their Reynolds number (0.7% to 0.8%),
+so about 30 cases (0.4%) have their leading edges served bounded, most
+at Mach 1.8 to 3.0, and every one of them is refused for another part
+(chiefly fins at the base the rebuilt factor does not measure, whose
+share as the sole blocker rises from 1.13% to 1.19%). Square-cut edges
+stay refused in 15.3% of cases (the sole blocker in 0.76%).
