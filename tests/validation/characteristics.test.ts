@@ -488,7 +488,7 @@ describe('method of characteristics from given data on a line behind the tip', (
     );
   });
 
-  it('accepts a shoulder whose slope is continuous with unbounded curvature (LD-Haack), not a corner', () => {
+  it('accepts a shoulder whose slope is continuous with unbounded curvature (LD-Haack), and an expansion corner (0023)', () => {
     // The profile is checked first, so data off the body show which bodies pass.
     const start = coneLine(3, half, 0.3 * L, 90 * deg, 40);
     const run = (body: Body) => () =>
@@ -498,7 +498,8 @@ describe('method of characteristics from given data on a line behind the tip', (
       cylinderLength: 2,
     };
     expect(run(haack)).toThrow(/begin on the body/);
-    expect(run({ ...cone(20), cylinderLength: 2 })).toThrow(/corners in the profile/);
+    // An expansion corner takes its fan (tests/validation/characteristics-corners.test.ts).
+    expect(run({ ...cone(20), cylinderLength: 2 })).not.toThrow();
   });
 });
 

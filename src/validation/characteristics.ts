@@ -241,7 +241,7 @@ function network(body: Body, mach: number, gamma: number) {
    * a corner on which x lies (a wall point within 1e-6 of the nose's
    * length of a corner would otherwise take half its turn).
    */
-  const slope = (x: number) => {
+  const wallSlope = (x: number) => {
     const h = 1e-6 * L;
     for (const c of corners) {
       if (Math.abs(x - c.x) < h) {
@@ -252,6 +252,7 @@ function network(body: Body, mach: number, gamma: number) {
     }
     return centralSlope(x);
   };
+  const slope = wallSlope;
 
   // Entropy as a function of the stream function, in increasing psi: the
   // starting line's, then the shock history.
@@ -364,9 +365,19 @@ function network(body: Body, mach: number, gamma: number) {
 
   /**
    * The wall point of the C- line from a, with the entropy of the body's
-   * streamline, or null if it lies beyond the body.
+   * streamline, or null if it lies beyond the body. With `ahead`, a corner
+   * the march has not passed, on the wall ahead of that corner continued
+   * straight past it: a C- line landing beyond the corner on that
+   * continuation passes above the corner (`march`), and the real wall
+   * there, behind the fan, is not reached by one step of the compatibility
+   * relation.
    */
-  const wallPoint = (a: Point, kWall: number): Point | null => {
+  const wallPoint = (a: Point, kWall: number, ahead?: Corner): Point | null => {
+    const radius = ahead
+      ? (x: number) =>
+          x <= ahead.x ? bodyRadius(body, x) : ahead.y + Math.tan(ahead.before) * (x - ahead.x)
+      : (x: number) => bodyRadius(body, x);
+    const slope = ahead ? (x: number) => (x <= ahead.x ? wallSlope(x) : ahead.before) : wallSlope;
     const ca = coefficients(a, -1);
     const c: Point = { ...a, k: kWall };
     const end = { beyond: false };
@@ -452,8 +463,16 @@ function network(body: Body, mach: number, gamma: number) {
     // C- direction; at t = 1 the C- line from b passes above the corner.
     let lo = 0;
     let hi = 1;
-    if (!(at(lo).gap > 0 && at(hi).gap < 0)) {
+    if (!(at(lo).gap > 0)) {
       throw new RangeError('the C- line through a corner could not be bracketed');
+    }
+    // The march found b's C- line landing past the corner on the wall
+    // ahead of it continued; with the coefficients averaged towards the
+    // corner instead it may pass through the corner itself: then A is b.
+    if (!(at(hi).gap < 0)) {
+      const { a, c } = at(hi);
+      c.psi = a.psi - massFlux(c, a);
+      return c;
     }
     for (let it = 0; it < 100 && hi - lo > 1e-15; it++) {
       const mid = 0.5 * (lo + hi);
@@ -564,8 +583,8 @@ function march(
         );
         next.push(q);
       }
-      w = wallPoint(next[next.length - 1]!, kWall);
       const c = corners[corner];
+      w = wallPoint(next[next.length - 1]!, kWall, c);
       if (c === undefined || (w !== null && !(w.x > c.x))) break;
       // The new line passes above the corner: its fan's rays start from
       // the corner, and the line crosses them before it meets the wall.
