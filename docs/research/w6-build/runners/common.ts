@@ -17,6 +17,8 @@ export const SHAPES: Record<string, NoseShape> = {
   ogive: { kind: 'ogive', parameter: 1 },
   vk: { kind: 'haack', parameter: 0 },
   parabolic: { kind: 'parabolic', parameter: 1 },
+  // TR 1386's hemisphere-cones (README section 8): a check only.
+  cone: { kind: 'conical' },
 };
 
 /**

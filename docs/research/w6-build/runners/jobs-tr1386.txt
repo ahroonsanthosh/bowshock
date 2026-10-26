@@ -1,0 +1,7 @@
+# TR 1386's pressure models 4p and 5p (README section 8), a check only.
+fam cone 3 0.3 1.5 4
+fam cone 3 0.3 1.97 4
+fam cone 3 0.3 3.1 4
+fam cone 3 0.5 1.54 4
+fam cone 3 0.5 1.97 4
+fam cone 3 0.5 3.06 4
