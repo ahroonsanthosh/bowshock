@@ -39,7 +39,7 @@ export function boatTailRefusal(body: Body, mach: number): string | undefined {
   const reasons: string[] = [];
   if (!Number.isFinite(noseTipSlope(body.nose))) {
     reasons.push(
-      "a boat-tail behind a blunt nose is not solved yet: the blunt noses' grids end in a cylinder",
+      'a boat-tail behind a blunt nose is solved but not yet checked against a reference (the method of characteristics needs the subsonic nose region solved first)',
     );
   }
   const [low, high] = BOAT_TAIL_MACH_RANGE;

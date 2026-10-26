@@ -160,6 +160,8 @@ export interface SolvedBluntBody {
   readonly body: Body;
   /** The base grid of the family (the captured start's), on the captured outer boundary. */
   readonly base: BluntGrid;
+  /** With a boat-tail: the axial position of the base asked for (BluntGridOptions.boatTailBase). */
+  readonly boatTailBase?: number;
 }
 
 /**
@@ -192,10 +194,23 @@ function* solvedBluntSteps(
   asked: Body,
   options: BluntFamilyOptions,
 ): Generator<void, SolvedBluntBody> {
-  if (asked.boatTail !== undefined) {
-    throw new RangeError(
-      "a boat-tail behind a blunt nose is not solved yet: the blunt noses' grids end in a cylinder",
-    );
+  const tail = asked.boatTail;
+  if (tail !== undefined) {
+    // The boat-tail stays where it is (no cylinder is added): its cone is
+    // continued past the base by BOAT_TAIL_CONTINUATION_COLUMNS of the
+    // generator's columns there, or nine tenths of its run to the axis, as
+    // on a sharp nose (boatTailColumns). The columns there depend on the
+    // outer boundary only, not on the continuation.
+    const R = asked.nose.baseRadius;
+    const boatTailBase = bodyLength(asked);
+    const slope = (R - tail.baseRadius) / tail.length;
+    const run = (0.9 * tail.baseRadius) / slope;
+    const gridFor = (b: Body) =>
+      bluntBodyGrid(b, { nj: options.nj, mach: options.mach, gated: false, boatTailBase });
+    const probe = gridFor(solvedBody(asked, Math.min(R, run))).boatTailSpacing!;
+    const along = BOAT_TAIL_CONTINUATION_COLUMNS * probe * Math.cos(Math.atan(slope));
+    const body = solvedBody(asked, Math.min(along, run));
+    return { body, base: gridFor(body), boatTailBase };
   }
   const shortest = solvedBody(asked);
   const caliber = 2 * asked.nose.baseRadius;
@@ -693,6 +708,7 @@ export type BluntFamilyOptions = Omit<FitProblemOptions, 'refinement'>;
 /** A captured-shock problem on a blunt family's base grid, and the start it gives. */
 interface CaptureStage {
   readonly body: Body;
+  readonly boatTailBase?: number;
   readonly grid: BluntGrid;
   readonly solver: Euler2D;
   readonly start: () => BluntStart;
@@ -705,7 +721,7 @@ interface CaptureStage {
  * family's grids then share.
  */
 function bluntCapture(
-  { body, base }: SolvedBluntBody,
+  { body, base, boatTailBase }: SolvedBluntBody,
   options: BluntFamilyOptions,
   outerBoundary?: OuterBoundary,
 ): CaptureStage {
@@ -724,6 +740,7 @@ function bluntCapture(
   solver.setInitialCondition(() => free);
   return {
     body,
+    ...(boatTailBase === undefined ? {} : { boatTailBase }),
     grid: base,
     solver,
     start: () => ({
@@ -798,13 +815,16 @@ function secondCapture(options: BluntFamilyOptions, first: CaptureStage): Captur
     const y = b.y + ((last.x - b.x) * (b.y - a.y)) / (b.x - a.x);
     if (y > b.y) outerBoundary[n] = { x: last.x, y };
   }
+  const { boatTailBase } = first;
+  const tailBase = boatTailBase === undefined ? {} : { boatTailBase };
   const base = bluntBodyGrid(body, {
     nj: options.nj,
     mach: options.mach,
     outerBoundary,
     gated: false,
+    ...tailBase,
   });
-  return bluntCapture({ body, base }, options, outerBoundary);
+  return bluntCapture({ body, base, ...tailBase }, options, outerBoundary);
 }
 
 /**
@@ -825,6 +845,9 @@ export function bluntFitFamily(
   const R = body.nose.baseRadius;
   const free = freeStreamAt(mach, gamma).state;
   const axis: Euler2DConfig['boundaries']['iMin'] = { kind: 'wall' };
+  const tail = asked.boatTail;
+  const shoulder = shoulderPosition(asked);
+  const base = bodyLength(asked);
   return (refinement) => {
     // Not gated: the grid each fit settles on is (fittedCaseFailure).
     const fine =
@@ -836,6 +859,7 @@ export function bluntFitFamily(
             mach,
             outerBoundary: start.outerBoundary,
             gated: false,
+            ...(tail ? { boatTailBase: base } : {}),
           }).lines;
     const heights = nestedHeights(start.lines, start.heights, fine, refinement);
     const nj = baseNj * refinement;
@@ -861,8 +885,16 @@ export function bluntFitFamily(
         ),
       initial: shockLayerStart(start, lines, refinement),
       firstNode: 'symmetry',
-      drag: (wall) => forebodyDrag(wall, mach, gamma, R),
-      askedEnd: bodyLength(asked),
+      ...(tail
+        ? {
+            drag: (wall: readonly BoundaryFaceFlux[]) =>
+              forebodyDrag(facesBetween(wall, -Infinity, shoulder), mach, gamma, R),
+            boatTailDrag: (wall: readonly BoundaryFaceFlux[]) =>
+              forebodyDrag(facesBetween(wall, shoulder, base), mach, gamma, R),
+            stepAspect: BOAT_TAIL_STEP_ASPECT,
+          }
+        : { drag: (wall: readonly BoundaryFaceFlux[]) => forebodyDrag(wall, mach, gamma, R) }),
+      askedEnd: base,
     };
   };
 }

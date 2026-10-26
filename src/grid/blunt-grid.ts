@@ -19,7 +19,8 @@
  * captured start.
  */
 
-import { validateBody, type Body } from '../geometry/body';
+import { boatTailAngle, bodyLength, validateBody, type Body } from '../geometry/body';
+import { boatTailBaseSpacing } from './boat-tail-columns';
 import { noseRadius, noseTipSlope } from '../geometry/nose';
 import { QUALITY_LIMITS, gridQuality, qualityFailures, type QualityLimits } from './quality';
 import { GridQualityError } from './body-grid';
@@ -49,6 +50,13 @@ export interface BluntGridOptions {
   readonly gated?: boolean;
   /** Overrides of the placement constants, for measurement only. */
   readonly tuning?: Partial<BluntGridTuning>;
+  /**
+   * On a body with a boat-tail: the axial position of the base asked for,
+   * where the body solved goes on as the boat-tail's cone continued
+   * (src/analysis/fitted-flow.ts). The base is then a grid line, and the
+   * columns over the boat-tail follow src/grid/boat-tail-columns.ts.
+   */
+  readonly boatTailBase?: number;
 }
 
 /** A straight grid line from the body: its body point, direction and length. */
@@ -87,6 +95,13 @@ export interface BluntGrid {
    * ellipsoids, which keep one scale.
    */
   readonly twoScale: boolean;
+  /**
+   * On a body with a boat-tail, the base grid's column width at the base,
+   * along the body (boatTailBaseSpacing): its cone is continued past the
+   * base by BOAT_TAIL_CONTINUATION_COLUMNS of these on the first grid of a
+   * family.
+   */
+  readonly boatTailSpacing?: number;
 }
 
 /**
@@ -195,7 +210,21 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     sOf[k] = sOf[k - 1]! + Math.hypot(profileX(u1) - profileX(u0), profileR(u1) - profileR(u0));
   }
   const sNose = sOf[PROFILE_SAMPLES]!;
-  const sEnd = sNose + body.cylinderLength;
+  // A boat-tail: its cone from the shoulder at sShoulder, with lines kept
+  // vertical over it (as along the cylinder), to the base asked for at
+  // sBase and the end of the body solved at sEnd.
+  const tail = body.boatTail;
+  const cosTail = Math.cos(boatTailAngle(body));
+  const sinTail = Math.sin(boatTailAngle(body));
+  const sShoulder = sNose + body.cylinderLength;
+  const xShoulder = L + body.cylinderLength;
+  const sEnd = tail ? sShoulder + tail.length / cosTail : sNose + body.cylinderLength;
+  const sBase = tail
+    ? sShoulder + ((options.boatTailBase ?? bodyLength(body)) - xShoulder) / cosTail
+    : sEnd;
+  if (tail && !(sBase > sShoulder && sBase <= sEnd * (1 + 1e-12))) {
+    throw new RangeError('the base asked for must lie on the boat-tail');
+  }
   const uAt = (s: number) => {
     let low = 0;
     let high = PROFILE_SAMPLES;
@@ -211,6 +240,10 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // The body point at arc length s (exactly on the profile) and its outward
   // normal.
   const surface = (s: number) => {
+    if (tail && s > sShoulder) {
+      const d = s - sShoulder;
+      return { x: xShoulder + d * cosTail, y: R - d * sinTail, nx: 0, ny: 1 };
+    }
     if (s >= sNose) {
       return { x: L + (s - sNose), y: R, nx: 0, ny: 1 };
     }
@@ -529,7 +562,39 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
       return densities[k]! + Math.min(Math.max(f, 0), 1) * (densities[k + 1]! - densities[k]!);
     };
   };
-  const breakpoints = body.cylinderLength > 0 ? [0, sNose, sEnd] : [0, sNose];
+  // Over a boat-tail the columns of src/grid/boat-tail-columns.ts, along
+  // the body's arc length, the outer cells those of the generator's lines;
+  // past the base the base's width.
+  const boatTail = tail
+    ? boatTailBaseSpacing({
+        length: sBase - sShoulder,
+        radius: R,
+        shoulder: sShoulder,
+        base: sBase,
+        baseNj: options.nj,
+        outerHeight: (t) => outerCellHeight(line(t).h, options.nj, R),
+      })
+    : undefined;
+  const withBoatTail = (usual: (s: number) => number) =>
+    boatTail
+      ? (s: number) =>
+          s < sNose
+            ? usual(s)
+            : s < sBase
+              ? Math.max(usual(s), refinement / boatTail(s))
+              : refinement / boatTail(sBase)
+      : usual;
+  const breakpoints = tail
+    ? [
+        0,
+        sNose,
+        ...(body.cylinderLength > 0 ? [sShoulder] : []),
+        sBase,
+        ...(sEnd > sBase * (1 + 1e-12) ? [sEnd] : []),
+      ]
+    : body.cylinderLength > 0
+      ? [0, sNose, sEnd]
+      : [0, sNose];
   // On ellipsoids the spacing's slope is limited (src/grid/spacing.ts):
   // where the lines stop turning, at the shoulder at low Mach numbers, it
   // would otherwise grow by up to 1.9 times from one cell to the next. The
@@ -537,8 +602,15 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
   // families were measured so (0006), on grids built on the captured
   // shock, which the fitted grids' gates check.
   const ss = ellipsoid
-    ? columnPositions(breakpoints, (s) => 1 / spacing(s), refinement, { maxSpacingSlope: 0.15 })
-    : columnPositions(breakpoints, tabulatedDensity(), refinement);
+    ? columnPositions(
+        breakpoints,
+        withBoatTail((s) => 1 / spacing(s)),
+        refinement,
+        {
+          maxSpacingSlope: 0.15,
+        },
+      )
+    : columnPositions(breakpoints, withBoatTail(tabulatedDensity()), refinement);
   const lines = ss.map((s) => {
     const p = surface(s);
     return { x: p.x, y: p.y, ...line(s) };
@@ -550,7 +622,16 @@ export function bluntBodyGrid(body: Body, options: BluntGridOptions): BluntGrid 
     R,
     options.gated ?? true,
   );
-  return { grid, lines, outerStandoff, outerAngle, tipScale, scale, twoScale: sharp || scale < R };
+  return {
+    grid,
+    lines,
+    outerStandoff,
+    outerAngle,
+    tipScale,
+    scale,
+    twoScale: sharp || scale < R,
+    ...(boatTail ? { boatTailSpacing: boatTail(sBase) } : {}),
+  };
 }
 
 /**

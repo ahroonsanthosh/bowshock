@@ -223,15 +223,29 @@ not a sharper test of the drag than the march's profile itself.
 
 ### 2.6 Not yet
 
-- **Blunt noses** (the Von Karman and other two-scale noses, ellipsoids):
-  their C grids end in a cylinder (`bluntBodyGrid`), and a boat-tail
-  behind one is refused (`solvedBluntSteps`). The C grid's lines are
-  vertical along the cylinder away from the nose, so the same continuation
-  is a change of its surface beyond the nose, measured as here before it
-  is served.
-- **The GPU** (the page's engine) needs the same step limit in
-  `src/engine-gpu/shaders/line-grid.wgsl`; until then the page cannot
-  solve a boat-tail.
+- **Blunt noses** (the Von Karman and other two-scale noses, ellipsoids)
+  are solved but not served. Their C grid goes on over the boat-tail's
+  cone with its lines kept vertical, as along the cylinder, the columns
+  there those of section 2.1 along the body (`bluntBodyGrid`,
+  `boatTailBase`), and the cone is continued past the base by four of the
+  base's columns, sized on a first grid of the same outer boundary
+  (`solvedBluntSteps`); no cylinder is added. Grids without a boat-tail
+  are unchanged (every node of 18 grids, three noses at Mach 1.5, 2 and 3
+  and two refinements, compared bit for bit), and
+  `tests/grid/blunt-boat-tail.test.ts` checks the shoulder and the base
+  on grid lines, the continuation, the gates and the nesting. At nj = 20,
+  Mach 2, an 8 deg boat-tail one caliber long behind 3 calibers of
+  cylinder converges with every gate passed: behind a 2:1 ellipsoid its
+  term is 0.0549845, behind a 3-caliber Von Karman nose 0.0558872. No
+  reference checks them yet: the method of characteristics needs a data
+  line from the fitted flow behind the subsonic nose region (as for the
+  two-scale noses in 0006), measured as in section 2.3 before the term is
+  served there; until then they are refused with that reason.
+- **The GPU** carries the step limit (`step_aspect` in
+  `src/engine-gpu/shaders/line-grid.wgsl`) and the boat-tail term's levels
+  and band (`verifiedFittedDragGpu`); `tests/gpu/boat-tail-gpu.test.ts`
+  checks it against the CPU path on a sharp nose. Blunt noses with a
+  boat-tail are not run on it yet.
 - **The page and the total** take the boat-tail term only with parts 2
   and 3.
 
