@@ -1526,19 +1526,22 @@ of cases to 22.4% (Mach 1.5 to 1.8: 46.0% to 20.3%; 1.8 to 3.0: 17.0% to
 of all bands (Mach 1.5 to 1.8: 3.8% to 5.0%; 1.8 to 3.0: 6.5%,
 unchanged); with the nose assumed served, as the refusal plan counts
 them, 123 to 144 of the 1,600 (Mach 1.5 to 1.8: 39 to 59; 1.8 to 3.0: 84
-to 85; none below 1.5, 0014 10.7 (f)). Those counts are not printed as
-such: they are read from each run's greedy table, the row after its
+to 85; none below 1.5, 0014 10.7 (f)). Those counts were not printed as
+such: they were read from each run's greedy table, the row after its
 first two steps, which lift W5 and W6 (the before run lifts W6 first,
 the after run W5), and with them every nose refusal at Mach 1.5 and
 above (the other nose reasons are 0% there): 7.7% and 9.0% of all bands,
 9.8% and 14.8% of the 400 cases at Mach 1.5 to 1.8, 21.0% and 21.3% at
-1.8 to 3.0, each case 0.25% of a band. The gain is small because the
-plates this section reaches at the base (304 of the 1,600 cases) are
-mostly refused for something else as well: 32 are served; 100 have a
-square-cut leading edge (0016 W11), 44 a rounded leading edge swept
-beyond 60 deg, 44 a thickness over the tip chord above 0.10
-(`fin-thickness`, section 3.6: a 1/4 in plate on a short tip), 31 a
-bevelled leading edge whose reflected wave shock-expansion theory
-refuses (0009), and below Mach 1.5 every one carries the fins' own-drag
-guard and the trailing edges' Mach range. Each of those is its own item;
-none is touched here.
+1.8 to 3.0, each case 0.25% of a band. Since the review the audit prints
+them (`impact.out`'s table "Totals with the nose assumed served"); the
+after run, re-made with that table and nothing else changed, prints 144
+of 1,600 (59 and 85), and at the default size 743 of 8,000. The gain is
+small because the plates this section reaches at the base (304 of the
+1,600 cases) are mostly refused for something else as well: 32 are
+served; 100 have a square-cut leading edge (0016 W11), 44 a rounded
+leading edge swept beyond 60 deg, 44 a thickness over the tip chord
+above 0.10 (`fin-thickness`, section 3.6: a 1/4 in plate on a short
+tip), 31 a bevelled leading edge whose reflected wave shock-expansion
+theory refuses (0009), and below Mach 1.5 every one carries the fins'
+own-drag guard and the trailing edges' Mach range. Each of those is its
+own item; none is touched here.

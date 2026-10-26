@@ -1851,7 +1851,9 @@ totals of all bands 2.6% to 2.9% (Mach 1.5 to 1.8: 3.8% to 5.0%; 1.8 to
 3.0: 6.5%, unchanged; below 1.5: 0%, amendment (f)); with the nose
 assumed served, 123 to 144 of 1,600, read from each run's greedy table
 (the row after its first two steps, W5 and W6, which lift every nose
-refusal at Mach 1.5 and above: 7.7% and 9.0% of all bands). Both runs
+refusal at Mach 1.5 and above: 7.7% and 9.0% of all bands; since the
+review of 2026-10-26 the audit prints these counts, and the after run,
+re-made with that table alone added, prints 144). Both runs
 were made with `N_ROCKETS=400 CROSS_CHECK=100`, so the cross-check
 covers the first 100 rockets' 400 cases, and agrees on all 400 in each
 run. No case is newly refused; no served number
