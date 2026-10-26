@@ -345,21 +345,24 @@ pairing both are revisited (0014 section 10.7 (ad)): the bound at x/c up
 to 0.4 if the pair shows relief beyond the zero member that close at M
 2.41, and positions beyond 0.4.
 
-What it gives (`fins-on-base-w1.test.ts`, `base-w2.test.ts`): on W2's
-term, +-31.7% to +-34.9% on F at M 1.0 to 1.5, the same members as at the
-base for sharp sections and plates, so the same widths; four 10% arcs, a
-member at the base (about +-7% there, section 3.6), take the whole gap ahead of it.
-At M 1.2, F 0.8379 to 1.6211, nominal 1.2295 (on the curve itself 0.8379
-to 1.7265, nominal 1.2822). The step at M 1.5, where positions become
-measured, on the body base term (base area ratio 1): just below, 0.2301
-(band 0.1017 to 0.3585) for every case above; at M 1.5, 0.1629 (0.1159
-to 0.1935) for three 2.4% double wedges at x/c 0.5 (-29%), 0.2262 (0.1698
-to 0.2600) for four 10% arcs at x/c 0.2 (-1.7%) and 0.1875 (0.1463 to
-0.2099) at x/c 0.5 (-18.5%). In each the measured band at M 1.5 lies
-inside the bounded band just below it, and every measured position band
-of every member at M 1.5 lies inside the bound carried below (400 checked
-on F). The steps are the method's (a bound where nothing is measured, a
-measurement where it is), not measurements; the labels name both sides.
+What it gives, up to x/c 0.4 (`fins-on-base-w1.test.ts`,
+`base-w2.test.ts`; the numbers since the narrowing): on W2's term,
++-31.7% to +-34.9% on F at M 1.0 to 1.5, the same members as at the base
+for sharp sections and plates, so the same widths; four 10% arcs, a
+member at the base (about +-7% there, section 3.6), take the whole gap
+ahead of it. At M 1.2, F 0.8379 to 1.6211, nominal 1.2295 (on the curve
+itself 0.8379 to 1.7265, nominal 1.2822). The step at M 1.5, where
+positions become measured, on the body base term (base area ratio 1):
+just below, 0.2301 (band 0.1017 to 0.3585) for every case here; at M
+1.5, 0.1629 (0.1159 to 0.1935) for three 2.4% double wedges at x/c 0.4
+(-29%), 0.2262 (0.1698 to 0.2600) for four 10% arcs at x/c 0.2 (-1.7%)
+and 0.1894 (0.1497 to 0.2101) at x/c 0.4 (-17.7%). In each the measured
+band at M 1.5 lies inside the bounded band just below it, and every
+measured position band of every member at M 1.5 up to x/c 0.4 lies inside
+the bound carried below (160 checked on F). The steps are the method's (a
+bound where nothing is measured, a measurement where it is), not
+measurements; the labels name both sides. (As first built, to a chord
+ahead, the record quoted the same steps at x/c 0.5: -29% and -18.5%.)
 
 ### 3.4 Sweep: only where measured
 
