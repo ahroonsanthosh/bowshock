@@ -144,11 +144,14 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
             'more ahead of the base',
         },
       ],
+      // Below Mach 1.5 the square trailing edge is served where the sets near Mach 1 reach
+      // (0019 section 3.4.1); the Basic Finner's c/[h Re^(1/5)] (about 0.8) lies beyond them.
       [
         'fin trailing-edge base',
         {
-          reason: "a square trailing edge's drag is measured only at other speeds",
-          change: 'bevelled (sharp) trailing edges',
+          reason:
+            "the square trailing edge is thin against the air's boundary layer there; not measured",
+          change: 'thicker trailing edges, or bevelled ones',
         },
       ],
     ]);

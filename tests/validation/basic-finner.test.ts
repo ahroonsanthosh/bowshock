@@ -755,7 +755,12 @@ describe(
         const le = r.refusals.find((x) => x.component === 'fin leading edges');
         if (s.mach < 1.3) expect(le?.message).toMatch(/^Reynolds number .* is below 6700/);
         else expect(le).toBeUndefined();
-        expect(reasons).toContain('mach-range');
+        // The wedges' trailing edges: below Mach 1.5 their c/[h Re^(1/5)] lies beyond what the
+        // sets near Mach 1 reach (0019 section 3.4.1).
+        expect(r.refusals.find((x) => x.component === 'fin trailing-edge base')?.reason).toBe(
+          'thick-layer',
+        );
+        expect(reasons.length).toBeGreaterThan(0);
         // Below M 1.5 fin friction and the wedges' wave drag are refused first: the fins' own-drag
         // band is measured only at M 1.5 to 2.96 (0014 section 10.7 (f)).
         expect(

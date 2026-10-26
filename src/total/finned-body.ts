@@ -76,7 +76,9 @@ import {
 import { trailingEdgeShape } from '../base/fins-on-base-w1';
 import {
   FIN_TRAILING_EDGE_BAND,
+  FIN_TRAILING_EDGE_MACH_RANGE,
   finTrailingEdgeBaseDrag,
+  trailingEdgeBasis,
   type FinTrailingEdgeBase,
 } from '../base/fin-trailing-edge';
 import { BaseRefusal } from '../base/refusal';
@@ -533,7 +535,10 @@ export function finnedBodyComponents(
         low: te.low,
         high: te.high,
         label: te.label,
-        band: `two-dimensional base pressure, ${FIN_TRAILING_EDGE_BAND.low} to ${FIN_TRAILING_EDGE_BAND.high} (0008 section 3.4, 0010 section 5)`,
+        band:
+          conditions.mach < FIN_TRAILING_EDGE_MACH_RANGE[0]
+            ? `two-dimensional base pressure near Mach 1, ${trailingEdgeBasis(conditions.mach).band.low.toFixed(3)} to ${trailingEdgeBasis(conditions.mach).band.high.toFixed(3)} (0019 section 3.4.1)`
+            : `two-dimensional base pressure, ${FIN_TRAILING_EDGE_BAND.low} to ${FIN_TRAILING_EDGE_BAND.high} (0008 section 3.4, 0010 section 5)`,
       });
     } catch (e) {
       te = undefined;
