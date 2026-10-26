@@ -1836,13 +1836,24 @@ section 3.4's refusal of leading-edge sweeps 0 to 45 deg below Mach 2.0
 and above 60 deg was written for sharp sections, whose face pressures the
 sweep moves through a swept edge; it is kept for them and no longer
 applied to flat faces. A plate with a swept trailing edge keeps section
-4's sweeps (45 to 60 deg, the trailing edge aft no more than the leading
+4's sweeps (45 to 60 deg, the trailing edge swept no more than the leading
 edge); sharp sections, rounded and diverging trailing edges and the
 present factor are untouched. The label stays "bounded, not measured",
 and names the sweep. No held-back set is opened or run. What it costs and
 gains is recorded below this entry from `docs/research/refusals/` run
 before and after (400 rockets, 1,600 cases), with the cross-check
 against `src/total` required to agree.
+
+What it costs and gains (0015 section 12;
+`docs/research/refusals/out/2026-10-26-a1-plates-any-sweep/`): the
+rebuilt factor's sweep refusal falls from 43.6% of cases to 22.4%;
+totals of all bands 2.6% to 2.9% (Mach 1.5 to 1.8: 3.8% to 5.0%; 1.8 to
+3.0: 6.5%, unchanged; below 1.5: 0%, amendment (f)); with the nose
+assumed served, 123 to 144 of 1,600. The cross-check agrees on all 400
+cases checked in each run. No case is newly refused; no served number
+moves: a swept plate at the base takes the unswept plate's bracket
+exactly (its test holds the three band values to 1e-12). What still
+refuses most of the plates reached is listed in 0015 section 12.
 
 Letters (w) to (y) are allocated by the coordinator on other branches;
 the next free letter is the coordinator's to allocate.
