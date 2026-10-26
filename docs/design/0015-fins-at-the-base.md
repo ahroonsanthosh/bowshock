@@ -326,7 +326,7 @@ sharp section and flat-faced fins swept as section 4 allows.
 What it gives (`fins-on-base-w1.test.ts`, `base-w2.test.ts`): on W2's
 term, +-31.7% to +-34.9% on F at M 1.0 to 1.5, the same members as at the
 base for sharp sections and plates, so the same widths; four 10% arcs, a
-member at the base (+-6.9% to 7.4% there), take the whole gap ahead of it.
+member at the base (about +-7% there, section 3.6), take the whole gap ahead of it.
 At M 1.2, F 0.8379 to 1.6211, nominal 1.2295 (on the curve itself 0.8379
 to 1.7265, nominal 1.2822). The step at M 1.5, where positions become
 measured, on the body base term (base area ratio 1): just below, 0.2301
