@@ -298,6 +298,34 @@ describe('swept fins at the base (0014 section 10.7): the rebuilt factor, not a 
     expect(c.base?.finsOnBaseSource).toBe('rebuilt');
     expect(c.base?.presentRefusal?.reason).toBe('fin-sweep');
   });
+
+  it("through the total, fins ahead of the base take the body's diameter: TN 2360's chord served, others refused", () => {
+    // Unswept double wedges half a root chord ahead of the base, on a body of diameter 1, at M 1.8.
+    const ahead = (rootChord: number): FinnedBody => ({
+      body: { nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 }, cylinderLength: 8 },
+      afterbody: 'cylinder',
+      fins: {
+        count: 4,
+        planform: trapezoidalPlanform({ rootChord, span: 1, leadingEdgeSweep: 0 }),
+        section: doubleWedge(0.08),
+        sectionFamily: 'other',
+        leadingEdgeRadius: 0,
+        trailingEdgeAheadOfBase: 0.5 * rootChord,
+      },
+    });
+    const at = (rootChord: number) =>
+      finnedBodyComponents(
+        ahead(rootChord),
+        { mach: 1.8, temperature: 290, reynoldsPerLength: 1.5e6 },
+        exactConeNoseWaveDrag(1.8, Math.atan(0.25)),
+      );
+    expect(at(1.5).base?.finsOnBaseSource).toBe('rebuilt');
+    const other = at(2.0);
+    expect(other.base).toBeUndefined();
+    const r = other.refusals.find((x) => x.component === 'body base')!;
+    expect(r.reason).toBe('fins-near-base');
+    expect(r.message).toContain("the fins' root chord is 2.00 body diameters");
+  });
 });
 
 describe('fins thinner than 5% at some station (0016 section 18) in the rebuilt factor (0015 section 3.6)', () => {
