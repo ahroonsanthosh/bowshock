@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  boatTailContinuation,
   fittedCaseFailure,
   fittedFlow,
   sharpFitProblem,
@@ -26,32 +25,65 @@ const body: Body = {
 };
 
 describe('the fitted solve over a boat-tail', () => {
-  it('solves the boat-tail where it is, its cone continued past the base, the shoulder and base on grid lines', () => {
+  it('solves the boat-tail where it is, its cone continued past the base by four columns, the shoulder and base on grid lines', () => {
     const xs = shoulderPosition(body);
     const xb = bodyLength(body);
-    // One body radius, or half the cone's remaining run to the axis if shorter.
-    expect(boatTailContinuation(body)).toBe(0.5);
-    const steep: Body = { ...body, boatTail: { length: 1, baseRadius: 0.1 } };
-    expect(boatTailContinuation(steep)).toBeCloseTo((0.5 * 0.1) / 0.4, 15);
+    const problem = (b: Body, refinement = 1, columnDensity = 1) =>
+      sharpFitProblem(b, { mach: 2, gamma, nj: 20, refinement, columnDensity });
+    let continuation = NaN;
     for (const refinement of [1, 2]) {
-      const p = sharpFitProblem(body, { mach: 2, gamma, nj: 20, refinement });
+      const p = problem(body, refinement);
       const xsLines = p.lines.map((l) => l.x);
       expect(xsLines).toContain(xs);
       expect(xsLines).toContain(xb);
-      expect(xsLines[xsLines.length - 1]).toBeCloseTo(xb + 0.5, 12);
-      // The lines follow the body: the cone continues past the base.
-      const last = p.lines[p.lines.length - 1]!;
-      expect(last.y).toBeCloseTo(0.5 - 1.5 * Math.tan(6 * deg), 12);
       expect(p.askedEnd).toBe(xb);
       expect(p.stepAspect).toBe(2);
-      // The boat-tail's columns: 2 min(l, R) / nj long.
-      const behind = xsLines.filter((x) => x >= xs);
-      for (let k = 1; k < behind.length; k++) {
-        expect(behind[k]! - behind[k - 1]!).toBeLessThanOrEqual(
-          (2 * 0.5) / (20 * refinement) + 1e-12,
-        );
+      // Past the base: 4 columns of the base's width on the base grid, 8 on
+      // the next, the same length.
+      const past = xsLines.filter((x) => x >= xb);
+      expect(past).toHaveLength(4 * refinement + 1);
+      const width = past[1]! - past[0]!;
+      past.slice(1).forEach((x, k) => {
+        expect(x - past[k]!).toBeCloseTo(width, 12);
+      });
+      if (refinement === 1) continuation = past[4]! - xb;
+      expect(past[past.length - 1]! - xb).toBeCloseTo(continuation, 12);
+      // The lines follow the body: the cone continues past the base.
+      const last = p.lines[p.lines.length - 1]!;
+      expect(last.y).toBeCloseTo(0.5 - (1 + continuation) * Math.tan(6 * deg), 12);
+      // Over the boat-tail: about 2 min(l, R) / nj or more (the count of
+      // columns is rounded), at most l / (4 refinement).
+      const over = xsLines.filter((x) => x >= xs && x <= xb);
+      for (let k = 1; k < over.length; k++) {
+        expect(over[k]! - over[k - 1]!).toBeGreaterThan((0.95 * 0.05) / refinement);
+        expect(over[k]! - over[k - 1]!).toBeLessThan(0.25 / refinement + 1e-9);
       }
     }
+    // ... of the denser family's columns where it is solved again.
+    const dense = problem(body, 1, 1.5).lines;
+    expect(dense[dense.length - 1]!.x - xb).toBeCloseTo(continuation / 1.5, 12);
+    // ... or nine tenths of the cone's run to the axis, if shorter.
+    const steep: Body = { ...body, boatTail: { length: 1, baseRadius: 0.05 } };
+    const steepLines = problem(steep).lines;
+    expect(steepLines[steepLines.length - 1]!.x - bodyLength(steep)).toBeCloseTo(
+      (0.9 * 0.05) / 0.45,
+      12,
+    );
+    // Under a far shock the columns widen to keep the outer cells within
+    // the aspect gate (a 4 deg boat-tail of 2 calibers behind 5 calibers of
+    // cylinder at Mach 1.5: 0.05 would give aspect ratios of 23).
+    const far: Body = {
+      ...body,
+      cylinderLength: 5,
+      boatTail: { length: 2, baseRadius: 0.5 - 2 * Math.tan(4 * deg) },
+    };
+    const farLines = sharpFitProblem(far, { mach: 1.5, gamma, nj: 20, refinement: 1 }).lines;
+    const farXs = shoulderPosition(far);
+    const widths = farLines
+      .filter((l) => l.x > farXs)
+      .map((l, k, all) => (k > 0 ? l.x - all[k - 1]!.x : NaN))
+      .slice(1);
+    expect(Math.min(...widths)).toBeGreaterThan(0.08);
     // The grids nest: every coarser line is one of the finer grid's.
     const coarse = sharpFitProblem(body, { mach: 2, gamma, nj: 20, refinement: 1 }).lines;
     const fine = sharpFitProblem(body, { mach: 2, gamma, nj: 20, refinement: 2 }).lines;

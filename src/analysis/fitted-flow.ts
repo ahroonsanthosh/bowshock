@@ -128,39 +128,24 @@ function engineConfig(
  * adds no pressure drag, so the drag is that of the body asked for; where
  * it does not, the case is refused (`baseMach`).
  */
-function solvedBody(body: Body): Body {
+function solvedBody(body: Body, continuation = 0): Body {
   const tail = body.boatTail;
   if (tail !== undefined) {
     // A boat-tail stays where it is: its cone is continued past the base
-    // instead (boatTailContinuation), so that the base is not the outflow
-    // plane and its last cells are not perturbed by it.
-    const extra = boatTailContinuation(body);
+    // instead (boatTailColumns), so that the base is not the outflow plane
+    // and its last cells are not perturbed by it.
     const slope = (body.nose.baseRadius - tail.baseRadius) / tail.length;
     return {
       ...body,
-      boatTail: { length: tail.length + extra, baseRadius: tail.baseRadius - extra * slope },
+      boatTail: {
+        length: tail.length + continuation,
+        baseRadius: tail.baseRadius - continuation * slope,
+      },
     };
   }
   const cylinder = SOLVED_CYLINDER * 2 * body.nose.baseRadius;
   return { ...body, cylinderLength: Math.max(body.cylinderLength, cylinder) };
 }
-
-/**
- * Length of the boat-tail's cone solved past the base: BOAT_TAIL_CONTINUATION
- * body radii, or half the cone's remaining run to the axis if shorter. Where
- * the flow at the base is axially supersonic (`baseMach`), nothing behind
- * the base reaches the body ahead of it, so the boat-tail's pressure up to
- * the base is that of the body asked for (docs/design/0023-boat-tails.md).
- */
-export function boatTailContinuation(body: Body): number {
-  const tail = body.boatTail;
-  if (tail === undefined) return 0;
-  const slope = (body.nose.baseRadius - tail.baseRadius) / tail.length;
-  return Math.min(BOAT_TAIL_CONTINUATION * body.nose.baseRadius, (0.5 * tail.baseRadius) / slope);
-}
-
-/** Boat-tail's cone solved past the base, in body radii (boatTailContinuation). */
-const BOAT_TAIL_CONTINUATION = 1;
 
 /** Shortest cylinder solved behind a nose, in calibers. */
 const SOLVED_CYLINDER = 1;
@@ -386,13 +371,11 @@ export type FitProblemOptions = Omit<FittedFlowOptions, 'maxIterations'>;
  * the end, started from the conical flow of the tip.
  */
 export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitProblem {
-  const body = solvedBody(asked);
   const { mach, gamma, nj: baseNj, refinement } = options;
-  const R = body.nose.baseRadius;
-  const L = body.nose.length;
-  const xEnd = bodyLength(body);
+  const R = asked.nose.baseRadius;
+  const L = asked.nose.length;
   const free = freeStreamAt(mach, gamma).state;
-  const tipAngle = Math.atan(noseTipSlope(body.nose));
+  const tipAngle = Math.atan(noseTipSlope(asked.nose));
   if (!Number.isFinite(tipAngle)) throw new RangeError('the nose is blunt: use bluntFitProblem');
   const cone = (() => {
     try {
@@ -429,8 +412,14 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
 
   const nj = baseNj * refinement;
   const x0 = SHARP_START * L;
+  const density = options.columnDensity ?? 1;
   // First guess: the tip's conical shock line.
-  const guess = (x: number) => Math.max(x * Math.tan(beta) - bodyRadius(body, x), 1e-12 * L);
+  const guessOn = (b: Body) => (x: number) =>
+    Math.max(x * Math.tan(beta) - bodyRadius(b, x), 1e-12 * L);
+  const tail = boatTailColumns(asked, baseNj, refinement, density, guessOn(asked));
+  const body = solvedBody(asked, tail?.continuation);
+  const xEnd = bodyLength(body);
+  const guess = guessOn(body);
   const strength = (h: number) => Math.min(Math.log1p(h / R), 2 * Math.log(10));
   // Spacing along the body: SHARP_ASPECT times the geometric mean of the
   // wall and outer cell heights (as on the other grids).
@@ -439,8 +428,6 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
     const b = strength(h);
     return (SHARP_ASPECT * h * b * Math.exp(b / 2)) / (Math.expm1(b) * nj);
   };
-  const density = options.columnDensity ?? 1;
-  const tail = boatTailColumns(asked, nj);
   const breakpoints = tail
     ? [x0, ...bodyBreakpoints(asked).slice(1), xEnd]
     : body.cylinderLength > 0
@@ -449,7 +436,13 @@ export function sharpFitProblem(asked: Body, options: FitProblemOptions): FitPro
   const xs = columnPositions(
     breakpoints,
     tail
-      ? (x) => density / Math.min(spacing(x), x < L ? Infinity : tail.spacing(x))
+      ? (x) =>
+          density /
+          (x < L
+            ? spacing(x)
+            : x < tail.base
+              ? Math.min(spacing(x), tail.spacing(x))
+              : tail.spacing(x))
       : (x) => density / spacing(x),
     refinement,
   );
@@ -543,33 +536,81 @@ function facesBetween(wall: readonly BoundaryFaceFlux[], a: number, b: number): 
 }
 
 /**
- * The columns over a boat-tail (sharpFitProblem): its shoulder and base,
- * and a spacing along the body, per cell across, that resolves it. The
- * usual layout sizes columns to the shock layer, whose outer cells far
- * along a long body are a body radius or more long; the boat-tail is
- * resolved by BOAT_TAIL_SPACING times the smaller of its length and the
- * body's radius, over nj, from the shoulder to the end of the solved body,
- * growing ahead of the shoulder by BOAT_TAIL_GRADING over nj per unit
- * length, so that neighbouring columns differ in width by about that over
- * nj on the base grid. Undefined without a boat-tail.
+ * The columns over a boat-tail (sharpFitProblem): its shoulder and base, a
+ * spacing along the body that resolves it, and the length its cone is
+ * solved past the base. The usual layout sizes columns to the shock layer,
+ * whose outer cells far along a long body are a body radius or more long: a
+ * few over the whole boat-tail. Over the boat-tail the columns are
+ * BOAT_TAIL_SPACING times the smaller of its length and the body's radius,
+ * over nj, growing ahead of the shoulder by BOAT_TAIL_GRADING over nj per
+ * unit length (so that neighbouring columns of the base grid differ in
+ * width by about that over nj); never narrower than the base grid's outer
+ * cell on the first guess of the shock over BOAT_TAIL_ASPECT (so that under
+ * a far shock the outer cells stay within the fitted grids' aspect gate,
+ * FITTED_QUALITY_LIMITS); and never wider than the boat-tail's length over
+ * BOAT_TAIL_MIN_COLUMNS (so that rounding its count of columns changes their
+ * width little). Past the base the columns keep the base's width, and the
+ * cone is continued by BOAT_TAIL_CONTINUATION_COLUMNS of them on the base
+ * grid, or nine tenths of its run to the axis if that is shorter, so the
+ * base is never the outflow plane. Every width scales with the refinement
+ * exactly, and the continuation does not depend on it, so the grids nest.
+ * Where the flow at the base is axially supersonic (`baseMach`), nothing
+ * past the base reaches the body ahead of it. Undefined without a
+ * boat-tail.
  */
 function boatTailColumns(
   asked: Body,
-  nj: number,
-): { shoulder: number; base: number; spacing: (x: number) => number } | undefined {
+  baseNj: number,
+  refinement: number,
+  density: number,
+  guess: (x: number) => number,
+):
+  | { shoulder: number; base: number; continuation: number; spacing: (x: number) => number }
+  | undefined {
   const tail = asked.boatTail;
   if (tail === undefined) return undefined;
+  const R = asked.nose.baseRadius;
   const shoulder = shoulderPosition(asked);
-  const finest = (BOAT_TAIL_SPACING * Math.min(tail.length, asked.nose.baseRadius)) / nj;
+  const base = bodyLength(asked);
+  const finest = BOAT_TAIL_SPACING * Math.min(tail.length, R);
+  // On the base grid; every grid's is this over its refinement.
+  const baseSpacing = (x: number) =>
+    Math.min(
+      Math.max(
+        (finest + BOAT_TAIL_GRADING * Math.max(shoulder - x, 0)) / baseNj,
+        outerCellHeight(guess(Math.min(x, base)), baseNj, R) / BOAT_TAIL_ASPECT,
+      ),
+      x >= shoulder ? tail.length / BOAT_TAIL_MIN_COLUMNS : Infinity,
+    );
+  const slope = (R - tail.baseRadius) / tail.length;
   return {
     shoulder,
-    base: bodyLength(asked),
-    spacing: (x) => finest + (BOAT_TAIL_GRADING * Math.max(shoulder - x, 0)) / nj,
+    base,
+    continuation: Math.min(
+      (BOAT_TAIL_CONTINUATION_COLUMNS * baseSpacing(base)) / density,
+      (0.9 * tail.baseRadius) / slope,
+    ),
+    spacing: (x) => baseSpacing(Math.min(x, base)) / refinement,
   };
 }
 
 /** Columns over a boat-tail: their length times nj, in the smaller of its length and the body's radius. */
 const BOAT_TAIL_SPACING = 2;
+/** ... growing ahead of its shoulder by this over nj per unit length. */
+const BOAT_TAIL_GRADING = 3;
+/**
+ * ... and at least the base grid's outer cell on the first guess over
+ * this: without it the outer cells over the boat-tail of a long body
+ * reached aspect ratios of 13.3 to 23.1 at Mach 1.5 to 2 (nj = 20), above
+ * the gate of 13. The first guess (the tip's conical shock) lies above
+ * the converged shock, so the converged outer cells are smaller still
+ * (aspect ratios of 7.0 to 7.8 on four of those cases).
+ */
+const BOAT_TAIL_ASPECT = 10;
+/** ... and at most the boat-tail's length over this, on the base grid. */
+const BOAT_TAIL_MIN_COLUMNS = 4;
+/** Columns of the base grid over which the boat-tail's cone is continued past the base. */
+const BOAT_TAIL_CONTINUATION_COLUMNS = 4;
 /**
  * Limit of the shock nodes' step over a boat-tail, in widths of the shock
  * face (ShockFitOptions.stepAspect): without it the shock over the
@@ -577,8 +618,6 @@ const BOAT_TAIL_SPACING = 2;
  * with 3 calibers of cylinder and a 6 deg boat-tail at Mach 2, nj = 20).
  */
 const BOAT_TAIL_STEP_ASPECT = 2;
-/** ... growing ahead of its shoulder by this over nj per unit length. */
-const BOAT_TAIL_GRADING = 3;
 
 /**
  * Blunt noses: the flow between the body and the fitted shock on the C

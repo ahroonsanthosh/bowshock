@@ -14,7 +14,6 @@ import { fileURLToPath } from 'node:url';
 import { it } from 'vitest';
 import {
   baseMach,
-  boatTailContinuation,
   fittedCaseFailure,
   fittedFlow,
   sharpFitProblem,
@@ -142,7 +141,9 @@ function profileTailDrag(
 function solvedBodyOf(c: BoatTailCase): Body {
   const asked = caseBody(c);
   const tail = asked.boatTail!;
-  const extra = boatTailContinuation(asked);
+  // The fitted problem's continuation (on the base grid): the march does not depend on it.
+  const lines = sharpFitProblem(asked, { mach: c.mach, gamma: GAMMA, nj: 20, refinement: 1 }).lines;
+  const extra = lines[lines.length - 1]!.x - bodyLength(asked);
   const slope = (asked.nose.baseRadius - tail.baseRadius) / tail.length;
   return { ...asked, boatTail: { length: tail.length + extra, baseRadius: tail.baseRadius - extra * slope } };
 }

@@ -55,28 +55,43 @@ The fitted solve of 0006 for sharp noses, continued over the boat-tail
 grid lines from the body to the fitted bow shock:
 
 - **The body solved.** The boat-tail stays where it is; its cone is
-  continued past the base by one body radius, or half its remaining run
-  to the axis if that is shorter (`boatTailContinuation`), instead of the
-  cylinder being lengthened as on bodies without one. The base is then a
-  grid line inside the domain, not the outflow plane, so its last cells
-  are not perturbed by the outflow condition (0006, "The domain extends
-  at least one caliber past the nose"). Where the flow at the base is
-  axially supersonic (`baseMach`, already checked at the end of the body
-  asked for), nothing behind the base reaches the body ahead of it, and
-  the pressure on the boat-tail is that of the body asked for. The real
-  base flow (a separated wake) differs from the continued cone; it reaches
-  the boat-tail only through the boundary layer, which part 3 covers.
+  continued past the base by four columns of the base grid (below), or
+  nine tenths of its remaining run to the axis if that is shorter,
+  instead of the cylinder being lengthened as on bodies without one
+  (`boatTailColumns`). The base is then a grid line inside the domain,
+  not the outflow plane, so its last cells are not perturbed by the
+  outflow condition (0006, "The domain extends at least one caliber past
+  the nose"). Where the flow at the base is axially supersonic
+  (`baseMach`, already checked at the end of the body asked for), nothing
+  behind the base reaches the body ahead of it, and the pressure on the
+  boat-tail is that of the body asked for. Continued by eight columns
+  instead of four, the first case's boat-tail drag (section 2.3) moves by
+  2.5e-8 on nj = 20 (7e-7 of its value). The real base flow (a separated
+  wake) differs from the continued cone; it reaches the boat-tail only
+  through the boundary layer, which part 3 covers.
 - **The shoulder** is an expansion corner, as the cone-cylinder junction
   is (0006, "Why the order dips at low Mach numbers on cone-cylinders").
-- **Columns.** The usual layout sizes columns to the shock layer: far
-  along a long body they are a body radius long or more, a few over the
-  whole boat-tail. Over the boat-tail and its continuation the columns
+- **Columns** (`boatTailColumns`). The usual layout sizes columns to the
+  shock layer: far along a long body they are a body radius long or
+  more, a few over the whole boat-tail. Over the boat-tail the columns
   are 2 min(l, R) / nj long, growing ahead of the shoulder by 3 / nj per
-  unit length until the usual layout's are shorter (`boatTailColumns`);
-  the nose's columns are the usual ones. The shoulder and the base are
-  grid lines.
+  unit length until the usual layout's are shorter; but never narrower
+  than the base grid's outer cell on the first guess of the shock over
+  10, over the refinement, and never wider than l / 4 over the
+  refinement; past the base they keep the base's width. The first
+  layout, without the lower limit, put the outer cells over a long
+  body's boat-tail at aspect ratios of 13.3 to 23.1 at Mach 1.5 and 2
+  (nj = 20), above the fitted grids' gate of 13 (0006), on 8 of the 13
+  cases of section 2.3 (`docs/research/boat-tails/out-first-layout/`);
+  with it every case's grid lies at 7.3 to 8.3. The first guess (the
+  tip's conical shock line) lies above the converged shock, so the
+  converged outer cells are smaller than it supposes. Every width scales
+  with the refinement exactly and the continuation does not depend on
+  it, so the grids nest, and every case is held to the fitted grids'
+  gates unchanged. The nose's columns are the usual ones; the shoulder
+  and the base are grid lines.
 - **The shock's step.** Under these narrow columns the far shock's outer
-  cells are tall and thin (aspect ratios of 10 to 20 at the shock), and
+  cells are tall and thin (aspect ratios of 8 to 10 at the shock), and
   the shock nodes' pseudo-time step of half the outer cell's height per
   signal speed lets a node move by several columns' worth: on the first
   case tried (a 3-caliber tangent ogive, 3 calibers of cylinder, a
