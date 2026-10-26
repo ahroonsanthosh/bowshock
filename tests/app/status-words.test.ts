@@ -174,6 +174,20 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     });
   });
 
+  it('fins ending within a chord ahead of the base: refused above Mach 2.0 only, said plainly', () => {
+    // Below Mach 1.5 they are bounded since 2026-10-26 (0015 section 3.3); a rounded plate there is refused
+    // for its trailing edge, so these words reach only the position refusal above Mach 2.0.
+    expect(refusalWords({ component: 'body base', reason: 'fins-near-base', message: '' })).toEqual(
+      {
+        reason:
+          'fins ending less than a root chord ahead of the base: above Mach 2.0, the base drag ' +
+          "with fins there isn't measured yet (the one measurement found waits for a second, " +
+          'independent reading)',
+        change: "the fins' trailing edges at the base, or a root chord or more ahead of it",
+      },
+    );
+  });
+
   it('a reason the words do not know yet: its message, plainly', () => {
     expect(
       refusalWords({ component: 'fins', reason: 'something-new', message: 'it is new' }),
