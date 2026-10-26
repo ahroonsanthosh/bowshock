@@ -1820,4 +1820,72 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
-The next free letter is (w).
+**2026-10-26 (w): RM A51J11 and RM A52E01, named before they are opened,
+for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
+10.1, as (k); 0019 section 3.4, "Layers and h/c"). Neither has been
+opened. Each is known here from its NTRS catalogue record (title, number,
+date; neither record has an abstract) and from R&M 3323's reference list,
+where they are refs. 32 and 33 (`method_rm3323_figs4_5.md`).
+
+- Cleary and Stevens, "The effects at transonic speeds of thickening the
+  trailing edge of a wing with a 4-percent-thick circular-arc airfoil",
+  NACA RM A51J11, 1951, NTRS 19930087063.
+- Dugan, "Effects of three types of blunt trailing edges on the
+  aerodynamic characteristics of a plane tapered wing of aspect ratio 3.1,
+  with a 3-percent-thick biconvex section", NACA RM A52E01, 1952, NTRS 19930087008.
+
+_Why._ Below Mach 1.5 every set that 0019 section 3.4 sets F4's band on
+measures the base with a thin layer against the edge. The layer
+parameter c/[h Re_c^(1/5)] is about 0.30 for Johnston's wedge (h/c 0.20,
+Re 1.2e6 to 1.4e6), 0.35 to 0.43 for R&M 3348's (0.14, 1.25e6 to 3.41e6)
+and 0.52 to 0.66 for R&M 3427's section (0.10, 0.8e6 to 2.7e6). The
+population's square trailing edges have 1.5 to 4.0 (5% and 95%, the
+larger of root and tip; `docs/research/refusals/out/w7-plan.out`), and
+TR 1109 fig. 29(a)'s thick-layer factor is measured from Mach 1.5 only.
+0019 section 3.4 serves such edges only where R&M 3323 fig. 4 and
+Cleary and Stevens cover them. Fig. 4 (read twice, paired 2026-10-23,
+`audit/pairing-2026-10-23b/`) plots these two reports' points at h/c 1.2%
+to 4.0% at M 0.6, 0.8, 1.0 and 1.2, but not their chords, Reynolds
+numbers or layer states, so it cannot say which layer parameters they
+cover.
+
+_What each is named for._ A candidate band-setting source for F4 at
+Mach 1.0 to 1.5, for edges thinner than the sets above or with thicker
+layers against them:
+
+1. its model description and test conditions (chord, trailing-edge
+   thickness, section, Reynolds numbers, transition and roughness), which
+   place its points, and fig. 4's points of refs. 32 and 33, in h/c and
+   in the layer parameter;
+2. its base-pressure figures or tables against Mach number for each
+   trailing-edge thickness. Which of them set what is decided in a second
+   part of this entry, dated, added after the report's list of figures,
+   its model description and its test conditions have been seen (as text
+   only, by the F4 workstream) and before any value is read.
+
+Each figure or table named there is read twice, by two readers who do not
+see each other's reading and neither of whom is the F4 workstream, and
+the two readings are paired by a neutral party before either sets
+anything. Fig. 4's points of refs. 32 and 33 are then counted once with
+their own reports, as (k) rules for a set that appears twice: the
+report's own figure sets, fig. 4's replot is a check of it.
+
+_Not used to set bands._ Lift, pitching moment and the wings' drag from
+the balance (the fins' own drag near Mach 1 is F1's, 0019 section 3.1);
+any figure that carries a held-back set.
+
+_Shape._ Both sections are airfoils (a circular arc, and a biconvex
+section) with the trailing edge thickened, by the titles; how their faces
+meet the base is taken from the model descriptions. Where they are not
+parallel to the stream, as a fin plate's are, the difference is carried
+by 0019 section 3.4's shape widening, written with its basis before any
+of these values is read, as the single wedge's is; the measured values
+are never shifted toward a plate's.
+
+_The letter._ (w) is the next free letter after those on the main line,
+as the coordinator allocated it. Letters (w) to (y) are also in use on
+other branches (`nose-model-form`, `w6-build`), so one of the two (w)
+entries is re-lettered when both reach the main line, as (j) to (m) were.
+
+The next letter after (w) is for the coordinator to allocate: (x) and (y)
+are in use on other branches.
