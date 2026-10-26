@@ -1534,3 +1534,45 @@ finest grids, the solution's own error.
 The solution is inviscid and sets no band and no nominal: the term
 served is the midpoint of the physical bounds whatever the computed mean
 is.
+
+**The protocol amended before the registered runs (2026-10-26, written
+before any of them was started).** Trial solves at M 2.0 on the coarsest
+grid only (`docs/research/square-edge/trials/`, with notes on the first runs, whose
+files were overwritten) found
+that the solutions with the registered radii do not settle: with a corner
+radius of 0.04 the flow behind the corner (its inviscid expansion toward a
+near vacuum along the plate's side, and its recompression) stays unsteady
+whatever the iteration (block implicit or explicit local time steps), the
+flux (HLLC, HLL, rotated hybrid; HLL with the implicit steps failed with
+a non-physical state), the reconstruction (second order or first) or the
+rounding's cells (4 or 12), and the face's mean gauge pressure over the
+pitot's swings with it, between 0.77 and 0.96; at a radius of 0.08 the
+residual falls to about 4e-4 of the start and the face mean holds within
+0.003 (0.889 to 0.892), at 0.06 it does not settle. At the end of every trial that ran to its end
+the straight face's least wall pressure was 0.67 to 0.80 of p02, against
+p* at 0.528, and the sonic point lay on the rounding, 11 to 34 deg into
+its turn. A trial with the side inclined after a 60 deg turn is set aside: its
+outflow line ran back into the subsonic region. A
+grid line from the rounding's end is subsonic from 1.25 to 4.4
+half-thicknesses above the plate (normal Mach number down to 0.91), so
+the domain cannot be cut there.
+So the registered "steady" solutions cannot be had, and the pass criterion
+is applied to the envelope over the oscillation instead, which is
+stricter at each point than one settled solution:
+
+- each grid runs a fixed number of explicit steps (HLLC, the registered
+  reconstruction and limiter, local time steps, CFL 0.5): 20000 on the
+  coarsest, 6000 and 4000 on the finer, each finer grid started from the
+  coarser solution; the envelope is taken over every 100 steps of the
+  second half: the straight face's largest wall Mach number (from the
+  wall pressure on p02, isentropically), its least and largest wall
+  pressure over p02, the face mean's least and largest values, every
+  place the sonic point was seen;
+- _pass_: on the finest grid, at both radii and all four Mach numbers,
+  the straight face's largest wall Mach number stays below 1 and its
+  least pressure above p* by more than the change in that least pressure
+  between the two finest grids, and its largest pressure is at most p02
+  within the same change;
+- _the margin of items 4 and 5_: the face mean's least value over the
+  envelope, against the lower bound less the vacuum zone as registered;
+- _fail_: otherwise, and then square-cut edges stay refused.
