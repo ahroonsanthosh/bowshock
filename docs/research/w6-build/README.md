@@ -302,3 +302,60 @@ days of code and its own verification (a compression corner's exact
 oblique shock; a cap-cone case on two march resolutions) before it is
 run on W6's families. Decided after the Mach 2 and 3 families show where
 the merge falls.
+
+## 8. The TR 1386 check: decisions before anything is computed (2026-10-26)
+
+Under 0014 10.7 (x), its addendum and the coordinator's decision, with
+the readings and their neutral pairing on this branch
+(`docs/research/tr1386/`). Written after reading only the models'
+geometry (`readings/*/reader*_geometry.csv`) and figure 4's panels,
+models, Mach numbers and stations, not its pressures.
+
+- **What is compared.** Figure 4's surface pressures of the pressure
+  models 4p and 5p, hemisphere-cones of 3 calibers overall with d/D =
+  0.3 and 0.5 (r_n/R 0.3 and 0.5), at the Mach numbers printed on their
+  curves: 4p at 1.50, 1.97 and 3.10; 5p at 1.54, 1.97 and 3.06. The
+  geometry is read as W6's capped cone of 3 calibers overall: it gives
+  cone half-angles of 6 deg 58.75 min and 5 deg 10.40 min against the
+  printed 6 deg 59 min and 5 deg 10 min (`results/tr1386/geometry-check.txt`,
+  a check of the reading of the geometry, not of any pressure).
+- **6p is not compared.** It is a hemisphere-cylinder (d/D 1.0, cone
+  half-angle 0). (x) names for comparison every model "whose shape the
+  W6 solver takes"; W6's shapes take a tip radius below the base radius
+  only (`validateNose`), and a hemisphere-cylinder is the ellipsoid of
+  one radius, which main's own ellipsoid path (0006) solves, not W6's.
+  So figure 4(c), with its disputed Mach number (3.80 against the text's
+  3.7), is outside this check. A check of main's ellipsoid path against
+  it would need an entry of its own.
+- **Where.** Only ahead of the corner where the cone meets the cylinder,
+  and only where the computed surface flow is supersonic ahead of it: a
+  case is compared at the stations ahead of the corner if the computed
+  surface Mach number is above 1 from the end of the cap's subsonic
+  region to the corner, so that nothing behind the corner reaches them;
+  otherwise the case is reported as not comparable. Each station's X/L
+  is the reading pair's envelope; the computed value is taken over that
+  envelope of X/L.
+- **The computed value.** The fitted solution on the two-scale C grid
+  (W6's capped cone, 2 calibers of cylinder behind it, as the
+  references), on nj = 20, 40 and 80 started as W6's families are. At
+  each station the wall pressure coefficient on nj = 80 (the wall faces'
+  pressures, linear in x between face centres), with a numerical band of
+  1.25 |Cp(80) - Cp(40)| / 3 if the three grids change monotonically
+  there (second order assumed; the order is not measured at a station),
+  or the range of the three grids if not.
+- **Agreement.** At a station: the computed value with its band overlaps
+  the reading pair's envelope widened by the report's stated uncertainty
+  in P, 0.004. Reported per station and per case: agreement, or the
+  difference (computed minus the nearer edge of the widened envelope)
+  with its sign and its size, and against the envelope without the
+  0.004 too. No cause is claimed unless one is shown. A difference
+  beyond both envelopes goes to 0022 (w) as evidence under its rules. No
+  drag series of TR 1386 (figure 8's wave drag included) is set against
+  any W6 value.
+- **Label.** "A check of the cap and the flow just behind it, on
+  hemisphere-cones the page does not serve (r_n/R 0.3 and 0.5, outside
+  W6's 0.03 to 0.15; capped cones refused)." It serves no shape and sets
+  nothing.
+- **When.** After the Mach 2 and 3 families, or alongside them once the
+  machine has a core free (at 17:00 UTC its load was 15 to 17 on 4
+  cores, from other lanes).

@@ -1,0 +1,2 @@
+d/D 0.3: cone half-angle 6.9791 deg = 6 deg 58.75 min; parent cone 4.08450 cal; tangent x 0.13177
+d/D 0.5: cone half-angle 5.1733 deg = 5 deg 10.40 min; parent cone 5.52259 cal; tangent x 0.22746
