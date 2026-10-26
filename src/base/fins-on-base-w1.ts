@@ -827,8 +827,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   // Flat faces at a square trailing edge with the trailing edge unswept: served at every leading-edge sweep
   // (0015 section 12; 0014 section 10.7 (z)). Neither bound of the flat-plate value uses the leading edge:
   // the upper rests on the faces' slope near the trailing edge (zero on a flat face at any sweep), the lower
-  // on RM L52E06's relief at the fin-body junctures and the square edge in the base plane, which the
-  // leading-edge sweep does not move when the trailing edge is unswept.
+  // on RM L52E06's relief at the fin-body junctures and the square edge, in one plane parallel to the base
+  // (the base plane at x/c 0), which the leading-edge sweep does not move when the trailing edge is unswept.
   const plateAnyLeadingEdgeSweep = bounded && swept && tes <= 1e-9;
   const deg = (a: number) => ((a * 180) / Math.PI).toFixed(1);
   if (swept && !measuredSwept && !moderate && !plateAnyLeadingEdgeSweep) {
@@ -981,12 +981,17 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   }
   if (plateAnyLeadingEdgeSweep) {
     // Flat faces, the trailing edge unswept: the bounds are set at the trailing edge, which the leading-edge
-    // sweep does not move (0015 section 12).
+    // sweep does not move (0015 section 12). That edge lies in the base plane only for fins at the base; fins
+    // within a chord have it in one plane parallel to the base, ahead of it.
+    const plane =
+      xc === 0
+        ? 'in the base plane'
+        : `in one plane parallel to the base, ${xc} root chords ahead of it`;
     reasons.push(
       `the leading edge swept ${deg(le)} deg with the trailing edge unswept, with flat faces: bracketed ` +
         "between RM L52E06's relief with flat plates at the base (F " +
         `${W1_FLAT_RELIEF_LOW.toFixed(3)}, its plates swept 45 deg) and unswept circular-arc fins; both ` +
-        'bounds are set at the trailing edge, in the base plane, which the leading-edge sweep does not ' +
+        `bounds are set at the trailing edge, ${plane}, which the leading-edge sweep does not ` +
         'move, and the faces carry no slope for the sweep to act on (0015 section 12)' +
         (le > W1_SWEPT_RANGE[1] + 1e-9
           ? '; no fin of any section is measured at the base swept beyond 60 deg'
