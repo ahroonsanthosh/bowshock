@@ -1,7 +1,8 @@
 #!/bin/bash
+# Run from the repository root (or set ROOT to it).
 # Diagnostic: the march's and the fitted wall pressure behind one line.
 # Usage: wallp.sh SHAPE CAL RATIO M REF LINE [ENTROPY]
-W=/home/user/bowshock/.claude/worktrees/agent-aebcae66a0febc475
+W=${ROOT:-$PWD}
 cd "$W/tests/tmp-w6b/tree" || exit 1
 D=$W/tests/tmp-w6b/out
 tag=$1$2rn$3M$4

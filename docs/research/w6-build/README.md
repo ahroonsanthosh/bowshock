@@ -55,6 +55,21 @@ Mach 1.3, 0.035384396445193748 against the lane's 0.035384396445192652
 0.091072746574589261 against 0.091072746574589664 (4.4e-15), on the same
 grids in the same iterations.
 
+The second review (Opus, of ae794e4 to 3e31f5e) checked the geometry
+against a 50-digit reference (parent length, offset and tangent point to
+1e-13, the radius behind the cap to 3e-16 R) and asked for tests that pin
+the Von Karman series (now: radius and slope behind the cap from theta =
+0.01 to 1 against the full Taylor series, which catches the three faults
+it planted), a test of the refusal near R with its true reason, every
+reason given together, the cone by all its names, and the cap's radius
+as sqrt(x (2 r_n - x)) in place of sqrt(r_n^2 - (x - r_n)^2), which
+cancels near the tip. **The lanes keep the old cap formula** (their frozen
+trees are ae794e4's and are not restarted): against the geometry after
+these fixes, the radius at their points differs by at most 4.3e-12 R,
+within 1e-12 of the tip (the review's bound: 1.6e-11 R absolute, 4e-8 of
+the local radius at the lanes' points); `results/geometry-compare-after-review2.json`
+holds the comparison as measured now.
+
 Reproduced as well: the probe's first fit (5-caliber tangent ogive, 0.05
 R, Mach 1.3, nj = 20) on main 3389a04 with ae794e4's geometry gives
 0.042357534465754701 against the probe's 0.042357534465754756 on
@@ -126,7 +141,9 @@ Two lanes, one per shape, each a resumable job list run from a frozen
 copy of the source (`tests/tmp-w6b/tree`, the src of the commit in its
 `COMMIT` file, so later commits on the branch do not change a running
 reference): `runners/lane.sh runners/jobs-ogive.txt` and
-`runners/jobs-vk.txt`. Every case on nj = 20 first, then 40, then 80 and
+`runners/jobs-vk.txt`. The committed runners run from the repository
+root (or with ROOT set to it); the frozen copies the lanes run hold this
+worktree's absolute paths. Every case on nj = 20 first, then 40, then 80 and
 its marches, so a case that fails is seen early. Results land in
 `tests/tmp-w6b/out` and are copied to `results/` as they finish.
 

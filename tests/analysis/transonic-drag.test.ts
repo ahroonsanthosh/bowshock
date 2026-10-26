@@ -215,6 +215,11 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
       synthetic({ converged: () => 0.1 }),
     );
     expect(refusedCap).toMatchObject({ kind: 'refused', reason: 'blunt-nose' });
+    // Every reason: no reference for a rounded tip, and no nested domains.
+    if (refusedCap.kind === 'refused') {
+      expect(refusedCap.message).toMatch(/rounded \(blunted\) tip has not been checked/);
+      expect(refusedCap.message).toMatch(/nested domains/);
+    }
     const result = await verifiedTransonicDrag(
       cone10,
       { ...options, mach: 1.19 },

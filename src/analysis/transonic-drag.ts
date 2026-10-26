@@ -456,7 +456,9 @@ export async function verifiedTransonicDrag(
           kind: 'refused',
           reason: 'blunt-nose',
           message:
-            'the far boundaries’ allowance needs nested domains, which the grids of blunt noses do not have yet',
+            body.nose.tipRadius !== undefined
+              ? 'a rounded (blunted) tip has not been checked against a reference yet, so its error is not known; and the far boundaries’ allowance needs nested domains, which the grids of blunt noses do not have yet'
+              : 'the far boundaries’ allowance needs nested domains, which the grids of blunt noses do not have yet',
           levels: [],
         }
       : {
