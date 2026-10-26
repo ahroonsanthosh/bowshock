@@ -213,7 +213,7 @@ over a length of a few cells, whose part of the drag falls in proportion
 to the cells. This is why the boat-tail's drag converges at observed
 orders of 1.3 to 1.5 (section 2.3) and not 2, as the forebody's does on
 the same grids. The check confirms the expansion's size (the fitted
-pressure two to four cells behind the shoulder is within 1e-2 of the
+pressure two to four cells behind the shoulder is within 1.3e-2 of the
 march's on every case) and shows where the band's order comes from; it is
 not a sharper test of the drag than the march's profile itself.
 
