@@ -970,7 +970,8 @@ formed on two of them, and the shape widening's size on two of them.
    1.11. Johnston's 5.7 deg wedge lies 18% to 22% above the nominal of
    item 3 at M_0 1.01 to 1.23, R&M 3348's 6% to 11%. _The size:_ S(delta)
    = S_NPL |delta| / 4.0 deg, S_NPL the largest of the NPL ratios less one
-   (0.094); linear in the face angle, an argument from one measured pair.
+   (0.090, at M_0 1.00); linear in the face angle, an argument from one
+   measured pair.
    _How it applies:_ each inclined set's point enters the envelope
    unshifted, and its range is extended by S on the side the ordering
    does not bound: downward for a diverging face, [r (1 - S), r], upward
