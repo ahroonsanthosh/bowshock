@@ -363,7 +363,7 @@ models, Mach numbers and stations, not its pressures.
   machine has a core free (at 17:00 UTC its load was 15 to 17 on 4
   cores, from other lanes).
 
-## 9. The third march: characteristics fitting the embedded shock (registered 2026-10-27, before any code or run)
+## 9. The third march: characteristics fitting the embedded shock (registered 2026-10-26, before any code or run)
 
 The coordinator's decision of 2026-10-26: build the open route of section 7
 now. Everything below is fixed before the code exists; nothing is changed
@@ -442,3 +442,86 @@ whole build's independent review.
 **Cost.** Code and V0 to V1: little CPU (seconds to minutes per march).
 V2: as the first march, about ten minutes per family on a shared core.
 The lanes keep running.
+
+(The heading's date was first written 2026-10-27 in error; the
+registration's commit, 0fc0f8f, is of 2026-10-26 22:31 UTC, before any of
+the march's code.)
+
+### 9.1 V0 and V1 results (2026-10-26)
+
+**V0** passes (tests/validation/characteristics-shocked.test.ts): the
+unit process returns the exact oblique shock's angle and downstream state
+to 1e-10 at Mach 2 and 3, deflections 2, 5 and 10 deg.
+
+**Two bugs found while running V1, fixed before its verdict and recorded
+here:**
+
+1. _The test's construction._ As first written the body ended 5 turn
+   lengths behind the turn's start and the starting line was 5 high. The
+   C- line through the envelope's start (x 4.10, 1.79 above the wall)
+   reaches the wall near x 8.4, so the march ended before any line
+   reached it and no shock could form; lengthening the body to x 13 makes
+   the march leave the starting data's triangle, where the bow "shock" (a
+   Mach wave, of zero strength) sent the bow shock's secant below the
+   Mach angle and the normal-shock relations threw. The body now ends at
+   x 13 and the starting line is 10 high, so the whole test lies inside
+   the triangle of the starting data's dependence; at the same density of
+   lines the registered n becomes 800 (24 C+ lines on the turn), the
+   n = 400 first chosen for the 5-high line.
+2. _The march (characteristics-shocked.ts)._ The embedded shock's secant
+   on its wave angle could step past the weak branch's sonic point, where
+   the downstream state is subsonic and the characteristics' coefficients
+   throw (it did at n = 1600). The secant is now kept inside the bracket
+   its residuals give (the residual grows with the wave angle), bisecting
+   when a step leaves it, a downstream state past the sonic point
+   counting as too steep; below the upstream Mach angle the shock has no
+   strength and a positive residual there leaves it a Mach wave.
+
+**V1 as registered** (runner `runners/v1.test.ts`, results
+`results/v1.json`), n = 800 and 1600 on the cylinder of radius 1e4:
+
+| | n = 800 | n = 1600 | limit | |
+|---|---|---|---|---|
+| (a) wall pressure 0.5 behind the turn, error | 1.12e-5 | 8.40e-6 | 5e-4 | pass |
+| (b) formation, distance from the envelope's start | 0.0399 | 0.0285 | 0.05 | pass |
+| (c) observed order of (a) | | 0.42 | 0.8 to 3 | **fail** |
+| (c) observed order of (b) | | 0.49 | 0.8 to 3 | **fail** |
+
+So **V1 fails as registered, on (c)**, and V2 has not run. The
+diagnostics in the same runner (n = 3200, and the planar network):
+
+| | n = 800 | 1600 | 3200 |
+|---|---|---|---|
+| (a) on the cylinder | 1.12e-5 | 8.40e-6 | 7.68e-6 |
+| (a) planar network | 3.2e-6 | 4.2e-7 | 2.5e-6 |
+| (b) on the cylinder | 0.0399 | 0.0285 | 0.0140 |
+| (b) planar network | 0.0398 | 0.0283 | 0.0138 |
+
+- (a)'s error at these resolutions is below two floors of the test, not
+  of the march: on the cylinder it tends to about 7.5e-6, the
+  axisymmetric terms the registration itself expected (it estimated 1e-4;
+  they are smaller); on the planar network it scatters by about 3e-6
+  without a trend, which is the network's slope, a central difference of
+  the radius over 1e-6 of the length: the radius is 1e4, so its rounding
+  (2e-12) gives slopes to about 1e-6 radians, and pressures to about
+  3e-6. The registered resolution (20 or more lines on the turn) already
+  puts the march's own error below both, so (c) for (a) measures the
+  floors.
+- (b)'s error is about one spacing of the wall points (0.80, 1.14 and
+  1.12 spacings at the three resolutions): the shock forms between two
+  discrete C+ lines, and where the wall points fall against the arc's
+  start (a fraction of a spacing) sets the remainder. Its order over one
+  doubling scatters with that fraction (0.49 from 800 to 1600, 1.03 from
+  1600 to 3200), though the error is first order in the spacing.
+- The march on the cylinder and on the planar network agree on (b) to
+  2e-4, and at its last point (x 7.41, n = 3200) the shock's wave angle
+  is 34.300 deg on the cylinder and 34.301 on the planar network, against
+  34.302 for the exact oblique shock of 5 deg at Mach 2 (not a registered
+  check: the last compression waves are still reaching it there).
+
+This needs the coordinator's ruling before anything else of the third
+march runs: whether V1's (c) may be judged on a construction that can
+measure an order (for example the planar network with the wall nearer the
+axis's origin, so the slope has no rounding floor, and the order over
+three doublings), registered anew before it runs; or whether the third
+march stops here.

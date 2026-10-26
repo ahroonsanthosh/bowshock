@@ -1,0 +1,188 @@
+{
+ "verdict": {
+  "pair": [
+   800,
+   1600
+  ],
+  "linesOnTurnCoarse": 24,
+  "a": {
+   "error": 0.000008399678723680637,
+   "limit": 0.0005,
+   "pass": true
+  },
+  "b": {
+   "error": 0.028497285981503917,
+   "limit": 0.05,
+   "pass": true
+  },
+  "c": {
+   "pressureOrder": 0.41863524555571147,
+   "formationOrder": 0.48644057059080686,
+   "pass": false
+  }
+ },
+ "rows": [
+  {
+   "n": 800,
+   "planar": false,
+   "linesOnTurn": 24,
+   "wallEnd": 12.993846795463268,
+   "pressure": 1.3152421014306805,
+   "pressureExact": 1.3152568685240145,
+   "pressureError": 0.000011227535614777295,
+   "formed": {
+    "x": 4.135969458272096,
+    "y": 1.810649451223071
+   },
+   "envelope": {
+    "x": 4.101435971003069,
+    "y": 1.7906148927322647
+   },
+   "formationError": 0.03992424422430093,
+   "embeddedPoints": 165,
+   "lastShock": {
+    "x": 7.424594986096139,
+    "y": 4.027083220802524,
+    "betaDeg": 34.29969082833479,
+    "pressureRatio": 1.3152640577589956
+   },
+   "merged": null,
+   "massBalance": 1.4555377800625549e-8
+  },
+  {
+   "n": 1600,
+   "planar": false,
+   "linesOnTurn": 48,
+   "wallEnd": 12.993855971799286,
+   "pressure": 1.3152458207888797,
+   "pressureExact": 1.3152568685240145,
+   "pressureError": 0.000008399678723680637,
+   "formed": {
+    "x": 4.126089587990341,
+    "y": 1.8049080546552432
+   },
+   "envelope": {
+    "x": 4.101435971003069,
+    "y": 1.7906148927322647
+   },
+   "formationError": 0.028497285981503917,
+   "embeddedPoints": 330,
+   "lastShock": {
+    "x": 7.414502012860143,
+    "y": 4.02041040174845,
+    "betaDeg": 34.29967692317765,
+    "pressureRatio": 1.3152630032898203
+   },
+   "merged": null,
+   "massBalance": 8.128333587126638e-9
+  },
+  {
+   "n": 3200,
+   "planar": false,
+   "linesOnTurn": 97,
+   "wallEnd": 12.993862197070102,
+   "pressure": 1.3152467683639215,
+   "pressureExact": 1.3152568685240145,
+   "pressureError": 0.00000767923006883553,
+   "formed": {
+    "x": 4.113517914525232,
+    "y": 1.7976041042547877
+   },
+   "envelope": {
+    "x": 4.101435971003069,
+    "y": 1.7906148927322647
+   },
+   "formationError": 0.013957880819785006,
+   "embeddedPoints": 660,
+   "lastShock": {
+    "x": 7.409423927451914,
+    "y": 4.017092236003009,
+    "betaDeg": 34.29972379809372,
+    "pressureRatio": 1.3152665579540905
+   },
+   "merged": null,
+   "massBalance": 3.84079697631967e-9
+  },
+  {
+   "n": 800,
+   "planar": true,
+   "linesOnTurn": 24,
+   "wallEnd": 12.993749590447747,
+   "pressure": 1.315252601034276,
+   "pressureExact": 1.3152568685240145,
+   "pressureError": 0.000003244605552454871,
+   "formed": {
+    "x": 4.135830058480517,
+    "y": 1.810568977267394
+   },
+   "envelope": {
+    "x": 4.101435971003069,
+    "y": 1.7906148927322647
+   },
+   "formationError": 0.03976328385635986,
+   "embeddedPoints": 165,
+   "lastShock": {
+    "x": 7.424552324583096,
+    "y": 4.027107851437904,
+    "betaDeg": 34.300561442357434,
+    "pressureRatio": 1.3153300793936635
+   },
+   "merged": null,
+   "massBalance": 2.5645555540540167e-8
+  },
+  {
+   "n": 1600,
+   "planar": true,
+   "linesOnTurn": 48,
+   "wallEnd": 12.993759825215983,
+   "pressure": 1.3152563188225221,
+   "pressureExact": 1.3152568685240145,
+   "pressureError": 4.179423088723766e-7,
+   "formed": {
+    "x": 4.125950380195766,
+    "y": 1.8048276874451403
+   },
+   "envelope": {
+    "x": 4.101435971003069,
+    "y": 1.7906148927322647
+   },
+   "formationError": 0.028336545160222926,
+   "embeddedPoints": 330,
+   "lastShock": {
+    "x": 7.414443498842601,
+    "y": 4.020444184832741,
+    "betaDeg": 34.30058597047715,
+    "pressureRatio": 1.3153319394561378
+   },
+   "merged": null,
+   "massBalance": 3.272668106042012e-8
+  },
+  {
+   "n": 3200,
+   "planar": true,
+   "linesOnTurn": 97,
+   "wallEnd": 12.993765385669539,
+   "pressure": 1.3152536432084643,
+   "pressureExact": 1.3152568685240145,
+   "pressureError": 0.0000024522324325593203,
+   "formed": {
+    "x": 4.113378678208175,
+    "y": 1.7975237164555438
+   },
+   "envelope": {
+    "x": 4.101435971003069,
+    "y": 1.7906148927322647
+   },
+   "formationError": 0.01379710479144966,
+   "embeddedPoints": 660,
+   "lastShock": {
+    "x": 7.40937469320652,
+    "y": 4.017120661408626,
+    "betaDeg": 34.30059222276035,
+    "pressureRatio": 1.3153324135911295
+   },
+   "merged": null,
+   "massBalance": 3.6576887541555476e-8
+  }
+ ]
+}
