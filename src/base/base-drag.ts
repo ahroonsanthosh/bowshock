@@ -56,7 +56,12 @@ import {
 } from './compiled-curve';
 import { W2_BAND, W2_LABEL, W2_MACH_RANGE, w2CurveBasePressure } from './base-w2';
 import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins-on-base';
-import { finsOnBaseFactorW1, type FinsNearBase, type FinsOnBaseFactorW1 } from './fins-on-base-w1';
+import {
+  finsOnBaseFactorW1,
+  nearBasePositionReasons,
+  type FinsNearBase,
+  type FinsOnBaseFactorW1,
+} from './fins-on-base-w1';
 import { BaseRefusal } from './refusal';
 import { vacuumBaseDrag } from './vacuum';
 
@@ -72,7 +77,15 @@ export interface BaseFins extends FinsAtBase {
    * The fins' section and sweeps, for the rebuilt factor (./fins-on-base-w1.ts) where the present one
    * refuses; without them the present factor's refusal stands.
    */
-  readonly nearBase?: Omit<FinsNearBase, 'count' | 'trailingEdgeAheadOfBase'>;
+  readonly nearBase?: Omit<
+    FinsNearBase,
+    'count' | 'trailingEdgeAheadOfBase' | 'rootChordOverDiameter'
+  >;
+  /**
+   * The fins' root chord over the body diameter (`baseFinsOf` sets it from the body). Fins ending ahead of the
+   * base are served only with TN 2360's 1.5; without it they are refused (0015 section 3.3).
+   */
+  readonly rootChordOverDiameter?: number;
   /**
    * The thinnest station's thickness over chord and the share of the span
    * thinner than the factor's thinnest data (a flat plate of varying chord;
@@ -92,6 +105,12 @@ export const FLAT_PLATES_AT_BASE_REFUSAL =
   'the present fins-on-base factor is measured on wedge, circular-arc and hexagonal sections, not on ' +
   'fins with flat faces at the trailing edge (plates), which lower the base drag by up to 15% at the ' +
   'base (RM L52E06 fig. 7, F 0.85 to 0.88; 0014 section 10.7)';
+
+/**
+ * How the refusal of a plate with a rounded trailing edge ending ahead of the base begins: the page words it
+ * near the base, not at it (0015 section 4).
+ */
+export const ROUNDED_PLATE_AHEAD_OF_BASE = 'a plate with a rounded trailing edge ending';
 
 /** The thinnest fins the fins-on-base factor's data hold: 5% thick (TN 2360, TN 3819 fig. 35). */
 export const FINS_ON_BASE_THINNEST_DATA = 0.05;
@@ -253,13 +272,22 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     const rebuilt = (): FinsOnBaseFactorW1 => {
       const near = fins.nearBase;
       // A plate whose trailing edge is not square (rounded) has no section the rebuilt factor takes, at the base
-      // or ahead of it: refused for its trailing edge, not for its position (0015 section 4).
+      // or ahead of it: refused for its trailing edge, and ahead of the base for its position too where that
+      // is refused (0015 sections 3.3 and 4).
       if (near === undefined && fins.flatFaced === true) {
+        const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
         throw new BaseRefusal(
           'fin-trailing-edge',
-          `${presentRefusal === undefined ? '' : `${presentRefusal.message}; `}the rebuilt factor's ` +
-            'flat-plate value covers square trailing edges only: a rounded trailing edge has no ' +
-            'measurement at or near the base (0015 section 4)',
+          x > 0
+            ? `${ROUNDED_PLATE_AHEAD_OF_BASE} ${x} root chords ahead of the base: the rebuilt factor's ` +
+                'flat-plate value covers square trailing edges only, and a rounded trailing edge has no ' +
+                'measurement at or near the base (0015 section 4)' +
+                (position.length > 0
+                  ? `; its position is refused too: ${position.join('; and ')} (0015 section 3.3)`
+                  : '')
+            : `${presentRefusal === undefined ? '' : `${presentRefusal.message}; `}the rebuilt factor's ` +
+                'flat-plate value covers square trailing edges only: a rounded trailing edge has no ' +
+                'measurement at or near the base (0015 section 4)',
         );
       }
       if (near === undefined) {
@@ -294,6 +322,9 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
             ...(spanSections === undefined ? {} : { spanSections }),
             count: fins.count,
             trailingEdgeAheadOfBase: x,
+            ...(fins.rootChordOverDiameter === undefined
+              ? {}
+              : { rootChordOverDiameter: fins.rootChordOverDiameter }),
           }),
         );
       } catch (e) {

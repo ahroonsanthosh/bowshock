@@ -32,8 +32,8 @@ import {
   W1_RELIEF_MEASURED_FROM,
   W1_RELIEF_ON_ONE_CALL,
   W1_RELIEF_SINGLE_CALLS,
-  W1_POSITION_BOUNDED_BELOW,
-  W1_POSITION_BOUNDED_MAX,
+  W1_POSITION_CHORD_OVER_DIAMETER,
+  W1_POSITION_CHORD_TOLERANCE,
   W1_SWEPT_TRAILING_EDGE_AHEAD,
   W1_ZERO_MEMBER_PENDING,
   flatPlateReliefs,
@@ -45,6 +45,7 @@ import {
   largestTunnelExcess,
   memberBand,
   memberRatio,
+  nearBasePositionReasons,
   referenceBand,
   sectionBracket,
   trailingEdgeShape,
@@ -483,6 +484,8 @@ const plate = (tc: number): SymmetricSection => ({
   bluntTrailingEdge: true,
 });
 
+// TN 2360's root chord over body diameter by default, so that positions ahead of the base are served at M 1.5 to
+// 2.0 where measured (0015 section 3.3); the chord rule's own tests set it.
 const fins = (over: Partial<FinsNearBase> = {}): FinsNearBase => ({
   count: 3,
   section: doubleWedge(0.024, 0.5),
@@ -490,8 +493,15 @@ const fins = (over: Partial<FinsNearBase> = {}): FinsNearBase => ({
   tanLeadingEdgeSweep: 1,
   tanTrailingEdgeSweep: 0,
   trailingEdgeAheadOfBase: 0,
+  rootChordOverDiameter: 1.5,
   ...over,
 });
+/** The same fins with no root chord over body diameter given. */
+const withoutChord = (f: FinsNearBase): FinsNearBase => {
+  const { rootChordOverDiameter, ...rest } = f;
+  void rootChordOverDiameter;
+  return rest;
+};
 
 describe(
   'the band widths 0015 quotes (sections 1, 3.6, 4 and 11.2), held to the code',
@@ -963,7 +973,7 @@ describe('refusals', () => {
     ).toBe('fin-sweep');
     expect(reason(() => finsOnBaseFactorW1(2, fins({ tanLeadingEdgeSweep: 0 })))).toBe('served');
     // Below M 1.5 (W2's part): from M 1.0; swept fins only with flat faces; positions ahead of the base
-    // bounded, not measured, since 2026-10-26 (0015 section 3.3), and still refused above M 2.0.
+    // refused there and above M 2.0 (0015 section 3.3; a bound built on 2026-10-26 was withdrawn after review).
     expect(reason(() => finsOnBaseFactorW1(0.99, fins({ tanLeadingEdgeSweep: 0 })))).toBe(
       'mach-range',
     );
@@ -973,9 +983,9 @@ describe('refusals', () => {
     expect(reason(() => finsOnBaseFactorW1(1.49, fins({ section: plate(0.024) })))).toBe('served');
     expect(
       reason(() =>
-        finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.4 })),
+        finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.2 })),
       ),
-    ).toBe('served');
+    ).toBe('fins-near-base');
     expect(
       reason(() =>
         finsOnBaseFactorW1(1.3, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.5 })),
@@ -1049,7 +1059,7 @@ describe('refusals', () => {
   });
 });
 
-describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, not measured (0015 section 3.3)', () => {
+describe('fins ending within a chord ahead of the base: what TN 2360 measures, and where they are served (0015 section 3.3)', () => {
   /** TN 2360 fig. 6's symbols of one member at one Mach number, both readings. */
   const pts = (m: 1.5 | 2.0, n: 2 | 4, t: 0.05 | 0.1, withSingle = true) =>
     TN2360_FIG6.filter(
@@ -1068,7 +1078,6 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
   const r4 = (x: number) => Math.round(1e4 * x) / 1e4;
 
   it('the ordering, upper side: the increment ahead of the base is no larger than at it, within the errors', () => {
-    expect(W1_POSITION_BOUNDED_BELOW).toBe(1.5);
     for (const withSingle of [true, false]) {
       const margin: Record<string, number> = {};
       for (const m of [1.5, 2.0] as const) {
@@ -1149,13 +1158,10 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
     expect(r4(1 - zeroMember(1.0).low)).toBe(0.1621);
   });
 
-  it('up to x/c 0.4, the reach of the bound below M 1.5, TN 2360 measures no relief at all', () => {
-    expect(W1_POSITION_BOUNDED_MAX).toBe(0.4);
+  it('up to x/c 0.4 TN 2360 measures no relief at all, at M 1.5 and 2.0 only (the narrowing of (ad), withdrawn)', () => {
     // Every symbol at 0 < x/c <= 0.4, both Mach numbers, every member, moved by its error toward relief.
     const near = (m: 1.5 | 2.0) =>
-      MEMBERS.flatMap(([n, t]) => pts(m, n, t)).filter(
-        (p) => p.xc > 0 && p.xc <= W1_POSITION_BOUNDED_MAX + 1e-9,
-      );
+      MEMBERS.flatMap(([n, t]) => pts(m, n, t)).filter((p) => p.xc > 0 && p.xc <= 0.4 + 1e-9);
     const towardRelief = [1.5, 2.0]
       .flatMap((m) => near(m as 1.5 | 2.0))
       .map((p) => p.dPb + p.error);
@@ -1205,8 +1211,12 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
   const CASES: [string, FinsNearBase][] = [
     ['double wedge 2.4%, three fins, unswept', fins({ tanLeadingEdgeSweep: 0 })],
     [
-      'four 10% circular arcs, unswept (a member at the base)',
+      'four 10% circular arcs, unswept',
       fins({ count: 4, section: arc(0.1), sectionFamily: 'circular-arc', tanLeadingEdgeSweep: 0 }),
+    ],
+    [
+      'four 5% circular arcs, unswept',
+      fins({ count: 4, section: arc(0.05), sectionFamily: 'circular-arc', tanLeadingEdgeSweep: 0 }),
     ],
     [
       'double wedge 5%, two fins, unswept',
@@ -1214,115 +1224,134 @@ describe('fins ending within a chord ahead of the base below Mach 1.5: bounded, 
     ],
     ['flat plate 2.4%, three fins, 45 deg', fins({ section: plate(0.024) })],
   ];
-
-  it('below M 1.5, up to x/c 0.4: from the zero member to the same fins at the base, labelled bounded', () => {
-    for (const [name, c] of CASES) {
-      for (const m of [1.0, 1.05, 1.2, 1.3, 1.4, 1.49, 1.4999]) {
-        const atBase = finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: 0 });
-        for (const xc of [0.001, 0.2, 0.4]) {
-          const r = finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: xc });
-          const what = `${name}, M ${m}, x/c ${xc}`;
-          expect(r.bounded, what).toBe(true);
-          expect(r.analogy, what).toBe(true);
-          // Lower: the zero member (RM L52E06's relief below M 1.62; the flat plates' own, the same value).
-          expect(r.low, what).toBe(W1_FLAT_RELIEF_LOW);
-          expect(r.lower.band.low, what).toBe(zeroMember(m).low);
-          // Upper: the upper member of the same fins' bracket at the base, which below M 1.5 is the reference.
-          expect(r.upper.band, what).toEqual(atBase.upper.band);
-          expect(r.high, what).toBe(referenceBand(m).high);
-          expect(r.nominal, what).toBeCloseTo(0.5 * (r.low + r.high), 12);
-          expect(r.upper.name, what).toContain('at x/c 0.00');
-          expect(r.label.startsWith(W1_BOUNDED_PREFIX), what).toBe(true);
-          expect(r.label, what).toContain('where no position is measured below Mach 1.5');
-          expect(r.label, what).toContain("the upper member of the same fins' bracket at the base");
-          expect(r.label, what).not.toContain('the position bracketed between the stations');
-          expect(r.secondReadingPending, what).toBe(false);
-        }
-      }
+  const refusal = (f: () => unknown): BaseRefusal => {
+    try {
+      f();
+    } catch (e) {
+      if (e instanceof BaseRefusal) return e;
+      throw e;
     }
-    // At the base the four 10% arcs are the reference itself; ahead of it, the whole gap.
-    const arcs = CASES[1]![1];
-    const at = finsOnBaseFactorW1(1.2, { ...arcs, trailingEdgeAheadOfBase: 0 });
-    const ahead = finsOnBaseFactorW1(1.2, { ...arcs, trailingEdgeAheadOfBase: 0.4 });
-    expect(at.analogy).toBe(false);
-    expect([r4(at.low), r4(at.high)]).toEqual([1.4875, 1.7265]);
-    expect([r4(ahead.low), r4(ahead.nominal), r4(ahead.high)]).toEqual([0.8379, 1.2822, 1.7265]);
-    // The flat plates name their own relief as the lower bound, as at the base.
-    const plates = finsOnBaseFactorW1(1.2, { ...CASES[3]![1], trailingEdgeAheadOfBase: 0.4 });
-    expect(plates.label).toContain("bounded between RM L52E06's relief with flat-faced fins and");
-    expect(plates.label).toContain('up to 0.4 root chords ahead, no relief at all');
-  });
+    throw new Error('served');
+  };
 
-  it('below M 1.5, more than 0.4 root chords ahead: refused, in plain words', () => {
+  it('below M 1.5 every position ahead of the base is refused, the words naming the missing measurement', () => {
     for (const [name, c] of CASES) {
-      for (const m of [1.0, 1.2, 1.4, 1.4999]) {
-        for (const xc of [0.4001, 0.5, 0.6, 0.8, 0.999]) {
-          let err: unknown;
-          try {
-            finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: xc });
-          } catch (e) {
-            err = e;
-          }
+      for (const m of [1.0, 1.1, 1.2, 1.3, 1.4, 1.4999]) {
+        // At the base the same fins are served, so the refusal is the position's alone.
+        expect(finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: 0 }).low).toBeGreaterThan(0);
+        for (const xc of [0.001, 0.2, 0.4, 0.6, 0.999]) {
+          const e = refusal(() => finsOnBaseFactorW1(m, { ...c, trailingEdgeAheadOfBase: xc }));
           const what = `${name}, M ${m}, x/c ${xc}`;
-          expect(err, what).toBeInstanceOf(BaseRefusal);
-          expect((err as BaseRefusal).reason, what).toBe('fins-near-base');
-          expect((err as BaseRefusal).message, what).toContain(
+          expect(e.reason, what).toBe('fins-near-base');
+          expect(e.message, what).toContain(
             `fins ending ${Number(xc.toPrecision(3))} root chords ahead of the base at Mach ${m}: ` +
-              'below Mach 1.5 no position ahead of the base is measured; up to 0.4 root chords ahead ' +
-              'TN 2360 (at Mach 1.5 and 2.0) measures no relief of the base with fins there',
+              'below Mach 1.5 no measurement with fins ahead of the base is known',
           );
-          expect((err as BaseRefusal).message, what).toContain(
-            'farther ahead it measures relief that grows as the Mach number falls',
+          expect(e.message, what).toContain(
+            "the fins' pressures grow as the Mach number falls (p. 7)",
           );
-          expect((err as BaseRefusal).message, what).toContain('awaiting their second reading');
+          expect(e.message, what).toContain('until such a measurement is found');
+          // Fig. 32, at Mach 2.41, cannot settle a case below Mach 1.5, so the words do not lean on it.
+          expect(e.message, what).not.toContain('fig. 32');
         }
       }
     }
+    // The review's case: four unswept 5% arcs at x/c 0.4, M 1.2, served before as F 0.838 to 1.621.
+    expect(
+      refusal(() => finsOnBaseFactorW1(1.2, { ...CASES[2]![1], trailingEdgeAheadOfBase: 0.4 }))
+        .reason,
+    ).toBe('fins-near-base');
   });
 
-  it('at M 1.5, where positions are measured, every measured band up to x/c 0.4 lies inside the bound below', () => {
-    const below = { low: zeroMember(1.4999).low, high: referenceBand(1.4999).high };
-    let n = 0;
-    for (const [c, t] of MEMBERS) {
-      for (let k = 1; k <= 100 * W1_POSITION_BOUNDED_MAX; k++) {
-        const b = memberBand(t, c, k / 100, 1.5);
-        if (b === undefined) continue;
-        n++;
-        expect(b.low, `${c} fins t/c ${t} x/c ${k / 100}`).toBeGreaterThanOrEqual(below.low);
-        expect(b.high, `${c} fins t/c ${t} x/c ${k / 100}`).toBeLessThanOrEqual(below.high);
+  it("the chord rule: at M 1.5 to 2.0 positions are served only with TN 2360's root chord of 1.5 diameters", () => {
+    expect(W1_POSITION_CHORD_OVER_DIAMETER).toBe(1.5);
+    expect(W1_POSITION_CHORD_TOLERANCE).toBe(0.005);
+    for (const m of [1.5, 1.8, 2.0]) {
+      for (const xc of [0.001, 0.5, 0.999]) {
+        const at = (c: number | undefined) =>
+          finsOnBaseFactorW1(
+            m,
+            c === undefined
+              ? withoutChord(fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: xc }))
+              : fins({
+                  tanLeadingEdgeSweep: 0,
+                  trailingEdgeAheadOfBase: xc,
+                  rootChordOverDiameter: c,
+                }),
+          );
+        const served = at(1.5);
+        expect(served.label).toContain(
+          'the position bracketed between the stations of TN 2360 fig. 6, measured with a root chord ' +
+            'of 1.5 body diameters, as these fins have',
+        );
+        // Within 0.5% the same numbers; beyond it refused.
+        for (const c of [1.5 * 0.996, 1.5 * 1.004]) {
+          expect(at(c).low).toBe(served.low);
+          expect(at(c).high).toBe(served.high);
+        }
+        for (const c of [1.5 * 0.994, 1.5 * 1.006, 1.0, 2.0, 3.0]) {
+          const e = refusal(() => at(c));
+          expect(e.reason, `M ${m}, x/c ${xc}, c/D ${c}`).toBe('fins-near-base');
+          expect(e.message).toContain(
+            `the fins' root chord is ${c.toFixed(2)} body diameters, and TN 2360 measures fins ahead ` +
+              'of the base only with a root chord of 1.5 body diameters',
+          );
+          expect(e.message).not.toContain('below Mach 1.5');
+          expect(e.message).not.toContain('above Mach 2.0');
+        }
+        const none = refusal(() => at(undefined));
+        expect(none.reason).toBe('fins-near-base');
+        expect(none.message).toContain("the fins' root chord over the body diameter");
+        expect(none.message).toContain('is not given');
       }
     }
-    expect(n).toBe(160);
+    // The swept fins served from 0.9 root chords ahead fall under the rule too.
+    const swept = (c: number) =>
+      fins({ tanTrailingEdgeSweep: 1, trailingEdgeAheadOfBase: 0.95, rootChordOverDiameter: c });
+    expect(finsOnBaseFactorW1(1.8, swept(1.5)).swept).toBe(true);
+    expect(refusal(() => finsOnBaseFactorW1(1.8, swept(1.18))).reason).toBe('fins-near-base');
+    // At the base the chord does not enter: any chord, or none, is served.
+    for (const c of [0.5, 1.0, 3.0]) {
+      expect(finsOnBaseFactorW1(1.8, fins({ rootChordOverDiameter: c })).low).toBeGreaterThan(0);
+    }
+    expect(finsOnBaseFactorW1(1.8, withoutChord(fins())).low).toBeGreaterThan(0);
+    expect(nearBasePositionReasons(1.2, 0, undefined)).toEqual([]);
   });
 
-  it('at M 1.5 to 2.0 measured as before; above M 2.0 refused, in plain words', () => {
-    const unswept = (xc: number) => fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: xc });
-    for (const m of [1.5, 1.8, 2.0]) {
-      const r = finsOnBaseFactorW1(m, unswept(0.5));
-      expect(r.bounded).toBe(false);
-      expect(r.label).toContain('the position bracketed between the stations of TN 2360 fig. 6');
-    }
+  it('above M 2.0 refused, its words saying what fig. 32 is now; every reason given together', () => {
     for (const m of [2.0001, 2.2, 2.41, 2.6, 3.0]) {
       for (const xc of [0.01, 0.5, 0.99]) {
-        let err: unknown;
-        try {
-          finsOnBaseFactorW1(m, unswept(xc));
-        } catch (e) {
-          err = e;
-        }
-        expect(err, `M ${m}, x/c ${xc}`).toBeInstanceOf(BaseRefusal);
-        expect((err as BaseRefusal).reason).toBe('fins-near-base');
-        expect((err as BaseRefusal).message).toContain(
+        const e = refusal(() =>
+          finsOnBaseFactorW1(m, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: xc })),
+        );
+        expect(e.reason).toBe('fins-near-base');
+        expect(e.message).toContain(
           `fins ending ${xc} root chords ahead of the base at Mach ${m}: above Mach 2.0 no ` +
-            'measurement of fins there has been read twice',
+            'measurement with fins ahead of the base is settled',
         );
-        expect((err as BaseRefusal).message).toContain(
-          "TN 3819 fig. 32's at Mach 2.41 awaits its second reading",
+        expect(e.message).toContain(
+          "TN 3819 fig. 32's, at Mach 2.41, has readings that disagree on 3 of its 12 symbols",
         );
-        expect((err as BaseRefusal).message).toContain(
-          'so the bound used below Mach 1.5 is not carried up',
-        );
+        expect(e.message).not.toContain('awaits its second reading');
       }
     }
+    // Above Mach 2.0 with another chord: both reasons.
+    const both = refusal(() =>
+      finsOnBaseFactorW1(
+        2.2,
+        fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.5, rootChordOverDiameter: 2.0 }),
+      ),
+    );
+    expect(both.message).toContain('above Mach 2.0');
+    expect(both.message).toContain("; and the fins' root chord is 2.00 body diameters");
+    // Below Mach 1.5 with no chord given: both reasons.
+    const below = refusal(() =>
+      finsOnBaseFactorW1(
+        1.2,
+        withoutChord(fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.2 })),
+      ),
+    );
+    expect(below.message).toContain('below Mach 1.5');
+    expect(below.message).toContain('is not given');
   });
 });

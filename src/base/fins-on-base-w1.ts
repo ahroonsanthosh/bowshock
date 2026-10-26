@@ -77,15 +77,16 @@
  * relief with flat plates (the lowest relief measured at or below M 1.5),
  * no ratio member and no position ahead of the base is measured, and
  * swept fins are served only with flat faces (RM L52E06's plates are
- * swept 45 deg). Fins ending up to 0.4 root chords ahead of the base there
- * are "bounded, not measured" (since 2026-10-26; 0015 section 3.3, 0014
- * section 10.7 (ad)): between the zero member and the upper member of the
- * same fins' bracket at the base, the ordering TN 2360 fig. 6's (at M 1.5
- * and 2.0 the increment ahead of the base is no larger than at it, up to
- * x/c 0.4 there is no relief at all, and the fins reach the base from less
- * far ahead as the Mach number falls), so the bound is carried down from M
- * 1.5, not up from 2.0; farther ahead, where TN 2360 measures relief that
- * nothing below M 1.5 bounds, they are refused.
+ * swept 45 deg). Fins ending ahead of the base are refused there: no
+ * measurement with fins ahead of the base below M 1.5 is known (0015
+ * section 3.3; 0014 section 10.7 (ad), narrowed after the independent
+ * review of 2026-10-26, which withdrew a bound built on carries).
+ *
+ * Positions ahead of the base (0 < x/c < 1) are served at M 1.5 to 2.0
+ * only, and only with TN 2360's geometry, a root chord of 1.5 body
+ * diameters within 0.5% (W1_POSITION_CHORD_OVER_DIAMETER): where the fins'
+ * field still reaches the base depends on the chord against the body, and
+ * no other chord is measured.
  *
  * Fins with flat faces at a square trailing edge (flat plates) are
  * "bounded, not measured" (0014 section 10.2): between the lowest relief
@@ -106,9 +107,8 @@
  * rounded, diverging (thickest at the edge) and converging blunt trailing
  * edges; sections not dominated by the 10% circular arc; sweeps other than
  * those measured; Mach numbers outside 1.0 to 3.0; fins ending ahead of the
- * base above M 2.0, where no position is measured in data read twice and the
- * bound used below M 1.5 does not hold by TN 2360's own direction; and below
- * M 1.5 fins ending more than 0.4 root chords ahead of it.
+ * base below M 1.5 or above 2.0, or with a root chord other than TN 2360's
+ * (nearBasePositionReasons).
  */
 
 import { compiledCurveValue } from './compiled-curve';
@@ -152,22 +152,64 @@ export const W1_THICKNESSES = [0.05, 0.1] as const;
 /** TN 2360 fig. 6's stations, x/c (trailing edge ahead of the base, in chords). */
 export const W1_STATIONS = [0, 0.2, 0.4, 0.6, 0.8, 1.0] as const;
 /**
- * Below this Mach number fins ending ahead of the base (0 < x/c <= W1_POSITION_BOUNDED_MAX) are bounded, not
- * measured: between the zero member and the upper member of the same fins' bracket at the base (0015 section 3.3;
- * 0014 section 10.7 (ad)). TN 2360 fig. 6 measures, at both its Mach numbers, the increment ahead of the base no
- * larger than at it (within the reading errors), and its text (pp. 7, 9 to 11) and data put the fins' reach toward
- * the base less far forward as the Mach number falls: so the bound is carried down from its lower Mach number and
- * not up from its higher one, where fins ahead of the base stay refused.
+ * TN 2360's geometry, the one on which positions ahead of the base are measured: a tail chord of 1.875 in on a
+ * 1.250 in body (its fig. 2), a root chord of 1.5 body diameters. In its superposition model (pp. 6 and 7, fig. 4)
+ * the fins' field reaches the dead-air region along isobars at the Mach angle, so where fins ahead of the base still
+ * reach it depends on the body radius times beta against the chord; no other chord is measured, so positions ahead
+ * of the base are served only with this one (0015 section 3.3; 0014 section 10.7 (ad), the review of 2026-10-26).
  */
-export const W1_POSITION_BOUNDED_BELOW = W1_TUNNEL_MACHS[0];
+export const W1_POSITION_CHORD_OVER_DIAMETER = 1.875 / 1.25;
+/** How close the root chord over the body diameter must be to TN 2360's: 0.5%, 0011 section 3's precedent. */
+export const W1_POSITION_CHORD_TOLERANCE = 0.005;
+
 /**
- * How far ahead of the base, in root chords, the bounded value reaches below M 1.5 (narrowed on 2026-10-26, 0014
- * section 10.7 (ad)): up to x/c 0.4 TN 2360 fig. 6 measures no relief at all at either Mach number (every symbol,
- * moved by its error toward relief, still a suction), so the zero member bounds the low side with its whole margin.
- * Farther ahead TN 2360 measures relief growing as the Mach number falls, which nothing below M 1.5 bounds:
- * refused there until TN 3819 fig. 32 is paired and the bound revisited.
+ * Why fins ending x/c root chords ahead of the base (x/c > 0) are refused at M, each reason in plain words, or
+ * none where TN 2360's measured positions cover them: M 1.5 to 2.0 and its root chord of 1.5 body diameters
+ * (0015 section 3.3; 0014 section 10.7 (ad), narrowed after the review of 2026-10-26).
  */
-export const W1_POSITION_BOUNDED_MAX = 0.4;
+export function nearBasePositionReasons(
+  mach: number,
+  xc: number,
+  rootChordOverDiameter: number | undefined,
+): string[] {
+  if (!(xc > 0)) return [];
+  const out: string[] = [];
+  if (mach < W1_TUNNEL_MACHS[0] - 1e-12) {
+    out.push(
+      `below Mach ${W1_TUNNEL_MACHS[0]} no measurement with fins ahead of the base is known (TN 2360 ` +
+        `measures them at Mach ${W1_TUNNEL_MACHS[0]} and ${W1_TUNNEL_MACHS[1].toFixed(1)} only), and TN ` +
+        "2360's own account says the fins' pressures grow as the Mach number falls (p. 7) while its " +
+        'measured relief moves toward the base, so nothing there says how these fins act on the base ' +
+        'until such a measurement is found',
+    );
+  } else if (mach > W1_TUNNEL_MACHS[1] + 1e-12) {
+    out.push(
+      `above Mach ${W1_TUNNEL_MACHS[1].toFixed(1)} no measurement with fins ahead of the base is settled ` +
+        `(TN 2360 measures them at Mach ${W1_TUNNEL_MACHS[0]} and ${W1_TUNNEL_MACHS[1].toFixed(1)} only; ` +
+        "TN 3819 fig. 32's, at Mach 2.41, has readings that disagree on 3 of its 12 symbols, so it sets " +
+        "nothing yet), and TN 2360 finds the fins' effect reaching the base from farther ahead as the " +
+        'Mach number rises, so its positions are not carried up',
+    );
+  }
+  const c = rootChordOverDiameter;
+  if (c === undefined || !Number.isFinite(c)) {
+    out.push(
+      "the fins' root chord over the body diameter, which decides how far ahead fins still reach the " +
+        'base, is not given',
+    );
+  } else if (
+    Math.abs(c / W1_POSITION_CHORD_OVER_DIAMETER - 1) >
+    W1_POSITION_CHORD_TOLERANCE + 1e-12
+  ) {
+    out.push(
+      `the fins' root chord is ${c.toFixed(2)} body diameters, and TN 2360 measures fins ahead of the ` +
+        `base only with a root chord of ${W1_POSITION_CHORD_OVER_DIAMETER} body diameters: how far ahead ` +
+        'fins still reach the base depends on the chord against the size of the body, and no other ' +
+        'chord is measured',
+    );
+  }
+  return out;
+}
 
 export type Thickness = 0 | 0.05 | 0.1;
 export type Count = 0 | 2 | 4;
@@ -646,6 +688,11 @@ export interface FinsNearBase {
   readonly tanTrailingEdgeSweep: number;
   /** The root trailing edge ahead of the base, in root chords: 0 at the base, up to 1. */
   readonly trailingEdgeAheadOfBase: number;
+  /**
+   * The root chord over the body diameter. Needed for fins ending ahead of the base, which are served only with
+   * TN 2360's 1.5 (W1_POSITION_CHORD_OVER_DIAMETER); without it such fins are refused.
+   */
+  readonly rootChordOverDiameter?: number;
 }
 
 export interface MemberUsed {
@@ -667,9 +714,7 @@ export interface FinsOnBaseFactorW1 {
   /**
    * "Bounded, not measured" (0014 section 10.2): fins with flat faces at a square trailing edge, between
    * the lowest relief measured with such fins (RM L52E06) and the circular-arc member at least as thick;
-   * every case above M 2.56, where the reference member is bounded (ReferenceBand.bounded); and fins ending
-   * up to 0.4 root chords ahead of the base below M 1.5, between the zero member and the same fins at the base
-   * (0015 section 3.3).
+   * and every case above M 2.56, where the reference member is bounded (ReferenceBand.bounded).
    */
   readonly bounded: boolean;
   /** Fewer than two readings of fig. 35's line at M, not counting extrapolations. */
@@ -953,15 +998,18 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     }
     return undefined;
   };
-  const measuredUpper = pick(highT, highN, xc);
-  // Below M 1.5 no position ahead of the base is measured: up to x/c 0.4, bounded, not measured, between the zero
-  // member and the upper member of the same fins' bracket at the base, the ordering TN 2360 fig. 6's; farther
-  // ahead refused (0015 section 3.3).
-  const positionUnmeasuredBelow =
-    xc > 0 && measuredUpper === undefined && mach < W1_POSITION_BOUNDED_BELOW - 1e-12;
-  const positionBounded = positionUnmeasuredBelow && xc <= W1_POSITION_BOUNDED_MAX + 1e-9;
-  const upperAt = positionBounded ? 0 : xc;
-  const upper = positionBounded ? pick(highT, highN, 0) : measuredUpper;
+  // Fins ending ahead of the base: served only where TN 2360 measured positions, M 1.5 to 2.0 and its root chord
+  // of 1.5 body diameters (0015 section 3.3); every reason they are refused, in plain words.
+  const xcText = `${Number(xc.toPrecision(3))}`;
+  const positionReasons = nearBasePositionReasons(mach, xc, fins.rootChordOverDiameter);
+  if (positionReasons.length > 0) {
+    throw new BaseRefusal(
+      'fins-near-base',
+      `fins ending ${xcText} root chords ahead of the base at Mach ${mach}: ` +
+        `${positionReasons.join('; and ')} (0015 section 3.3)`,
+    );
+  }
+  const upper = pick(highT, highN, xc);
   const lower: MemberUsed | undefined = bounded
     ? {
         thickness: 0,
@@ -972,42 +1020,23 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
           `the lowest relief measured with flat-faced fins at the base (F ${W1_FLAT_RELIEF_LOW.toFixed(3)}, ` +
           'RM L52E06 fig. 7 at M 1.06)',
       }
-    : positionBounded
-      ? { thickness: 0, count: 0, band: zeroMember(mach), name: zeroName(mach) }
-      : pick(lowT, lowN, xc);
-  const xcText = `${Number(xc.toPrecision(3))}`;
+    : pick(lowT, lowN, xc);
   if (lower === undefined || upper === undefined) {
     throw new BaseRefusal(
       'fins-near-base',
-      mach > W1_TUNNEL_MACHS[1] + 1e-12
-        ? `fins ending ${xcText} root chords ahead of the base at Mach ${mach}: above Mach ` +
-            `${W1_TUNNEL_MACHS[1].toFixed(1)} no measurement of fins there has been read twice (TN 2360 ` +
-            "measures them at Mach 1.5 and 2.0 only; TN 3819 fig. 32's at Mach 2.41 awaits its second " +
-            "reading), and TN 2360 finds the fins' effect reaching the base from farther ahead as the Mach " +
-            `number rises, so the bound used below Mach ${W1_POSITION_BOUNDED_BELOW} is not carried up ` +
-            '(0015 section 3.3)'
-        : positionUnmeasuredBelow
-          ? `fins ending ${xcText} root chords ahead of the base at Mach ${mach}: below Mach ` +
-            `${W1_POSITION_BOUNDED_BELOW} no position ahead of the base is measured; up to ` +
-            `${W1_POSITION_BOUNDED_MAX} root chords ahead TN 2360 (at Mach 1.5 and 2.0) measures no relief ` +
-            'of the base with fins there, so such fins are bounded, but farther ahead it measures relief that ' +
-            'grows as the Mach number falls, and nothing measured below Mach 1.5 says how far; refused until ' +
-            "TN 3819 fig. 32's measurements ahead of the base, awaiting their second reading, are paired " +
-            '(0015 section 3.3)'
-          : `fins ending ${xcText} root chords ahead of the base at Mach ${mach}: no measured member ` +
-            'bounds these fins at this position (0015 section 3.3)',
+      `fins ending ${xcText} root chords ahead of the base at Mach ${mach}: no measured member bounds ` +
+        'these fins at this position (0015 section 3.3)',
     );
   }
   const low = Math.min(lower.band.low, upper.band.low);
   const high = Math.max(lower.band.high, upper.band.high);
   // Above the free-flight curve's end the reference, and every bracket that uses it, is bounded, not measured.
   const aboveLine = mach > FIG35_FREE_FLIGHT_END + 1e-12;
-  const boundedResult = bounded || aboveLine || positionBounded;
+  const boundedResult = bounded || aboveLine;
   const member =
     !swept &&
     !bounded &&
     !aboveLine &&
-    !positionBounded &&
     fins.sectionFamily === 'circular-arc' &&
     lower.thickness === upper.thickness &&
     lower.count === upper.count &&
@@ -1078,21 +1107,14 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   }
   const singleEnd =
     memberEndOnSingleReader(lower.thickness, lower.count, xc, mach) ||
-    memberEndOnSingleReader(upper.thickness, upper.count, upperAt, mach);
+    memberEndOnSingleReader(upper.thickness, upper.count, xc, mach);
   if (singleEnd) reasons.push(SINGLE_END_REASON);
   if (count === 3) reasons.push('three fins bracketed between two (or none) and four');
-  if (positionBounded) {
+  if (xc > 0) {
     reasons.push(
-      `the fins end ${xcText} root chords ahead of the base, where no position is measured below Mach ` +
-        `${W1_POSITION_BOUNDED_BELOW}: bounded between ` +
-        `${bounded ? "RM L52E06's relief with flat-faced fins" : 'the zero member'} and ` +
-        "the upper member of the same fins' bracket at the base, since TN 2360 fig. 6 measures, at Mach " +
-        `${W1_TUNNEL_MACHS[0]} and ${W1_TUNNEL_MACHS[1].toFixed(1)}, the fins' effect ahead of the base no ` +
-        `larger than at it and, up to ${W1_POSITION_BOUNDED_MAX} root chords ahead, no relief at all, and ` +
-        'finds the fins reaching the base from less far ahead as the Mach number falls (0015 section 3.3)',
+      'the position bracketed between the stations of TN 2360 fig. 6, measured with a root chord of ' +
+        `${W1_POSITION_CHORD_OVER_DIAMETER} body diameters, as these fins have`,
     );
-  } else if (xc > 0) {
-    reasons.push('the position bracketed between the stations of TN 2360 fig. 6');
   }
   const label = member
     ? `estimated on component data: the rebuilt fins-on-base factor (0015), measured on ${lower.name} ` +

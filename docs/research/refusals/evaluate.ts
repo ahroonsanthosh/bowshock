@@ -93,7 +93,7 @@ export const REASONS = {
   // Body base.
   baseMach: 'base: Mach outside 1.0 to 3.0 (below 1.5: W2, 0015 section 11)',
   boatTail: 'base: boat-tail',
-  finsNearBase: 'base: fins ending within a chord of the base, above Mach 2.0, or more than 0.4 chord ahead below 1.5 (up to 0.4 bounded since 0014 section 10.7 (ad))',
+  finsNearBase: 'base: fins ending within a chord of the base, below Mach 1.5 or above 2.0, or with a root chord other than 1.5 body diameters (0014 section 10.7 (ad))',
   finsAtBaseCount: 'base: fins at the base, not four',
   finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10 (since 0016 section 18 above 0.10 only)',
   finsAtBaseSwept: 'base: fins at the base, a swept leading or trailing edge (factor measured on unswept fins; 2026-10-21)',
@@ -334,7 +334,7 @@ export function finsOnBaseReason(r: Rocket, mach: number): ReasonKey | undefined
         sectionFamily: 'other',
         leadingEdgeRadius: roundedLeadingEdge(r) ? r.thickness / 2 : 0,
         trailingEdgeAheadOfBase: r.trailingEdgeAheadChords * r.rootChord,
-      }),
+      }, r.diameter),
     });
     return undefined;
   } catch (e) {

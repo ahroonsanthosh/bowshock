@@ -6,7 +6,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { FINS_ON_BASE_ROUTING_LABEL, bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
+import {
+  FINS_ON_BASE_ROUTING_LABEL,
+  ROUNDED_PLATE_AHEAD_OF_BASE,
+  bodyBaseDrag,
+  type BaseFins,
+} from '../../src/base/base-drag';
 import { finsOnBaseFactor } from '../../src/base/fins-on-base';
 import {
   W1_FLAT_RELIEF_LOW,
@@ -105,24 +110,52 @@ describe('the rebuilt factor only where the present one refuses', () => {
     expect(r.labels[1]).toContain("extended below the data's 5% thickness");
   });
 
-  it('fins ending within a chord of the base: rebuilt where measured (M 1.5 to 2.0), bounded below, refused above', () => {
-    const f = fins({ trailingEdgeAheadOfBase: 0.5, nearBase: near(doubleWedge(0.08)) });
+  it("fins ending within a chord of the base: rebuilt where measured (M 1.5 to 2.0, TN 2360's chord), refused else", () => {
+    const f = fins({
+      trailingEdgeAheadOfBase: 0.5,
+      rootChordOverDiameter: 1.5,
+      nearBase: near(doubleWedge(0.08)),
+    });
     const r = base(1.8, f);
     expect(r.finsOnBaseSource).toBe('rebuilt');
     expect(r.labels[1]).toContain('it takes fins at the base only');
     expect((r.finsOnBase as FinsOnBaseFactorW1).bounded).toBe(false);
-    // Below M 1.5 (0015 section 3.3): up to 0.4 root chords ahead bounded, not measured, between the zero member
-    // and the same fins at the base; farther ahead refused.
-    expect(() => base(1.3, f)).toThrow(/below Mach 1\.5 no position ahead of the base is measured/);
-    const b = base(1.3, { ...f, trailingEdgeAheadOfBase: 0.4 });
-    expect(b.finsOnBaseSource).toBe('rebuilt');
-    expect((b.finsOnBase as FinsOnBaseFactorW1).bounded).toBe(true);
-    expect(b.labels[1]).toMatch(/^bounded, not measured/);
-    expect(b.labels[1]).toContain('it takes fins at the base only');
+    // Another root chord, or none given, at M 1.8: refused (0015 section 3.3, the chord rule).
+    expect(() => base(1.8, { ...f, rootChordOverDiameter: 2.5 })).toThrow(
+      /root chord is 2\.50 body diameters/,
+    );
+    const { rootChordOverDiameter, ...noChord } = f;
+    void rootChordOverDiameter;
+    expect(() => base(1.8, noChord)).toThrow(/is not given/);
+    // Below M 1.5 (0015 section 3.3): every position ahead of the base refused.
+    for (const xc of [0.2, 0.4, 0.5]) {
+      expect(() => base(1.3, { ...f, trailingEdgeAheadOfBase: xc })).toThrow(
+        /below Mach 1\.5 no measurement with fins ahead of the base is known/,
+      );
+    }
     expect(() => base(2.2, f)).toThrow(BaseRefusal);
-    expect(() => base(2.2, f)).toThrow(/above Mach 2\.0 no measurement of fins there/);
+    expect(() => base(2.2, f)).toThrow(
+      /above Mach 2\.0 no measurement with fins ahead of the base is settled/,
+    );
     // Without the section the rebuilt factor cannot run: refused as before.
     expect(() => base(1.8, fins({ trailingEdgeAheadOfBase: 0.5 }))).toThrow(/root chords ahead/);
+  });
+
+  it('the root chord over body diameter reaches the factor through baseFinsOf, from the body', () => {
+    // A double wedge on a rectangular planform of root chord 1, ending half a chord ahead of the base, at M 1.8.
+    const set = {
+      count: 4,
+      planform: trapezoidalPlanform({ rootChord: 1, span: 0.6, leadingEdgeSweep: 0 }),
+      section: doubleWedge(0.08),
+      sectionFamily: 'other' as const,
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: 0.5,
+    };
+    expect(baseFinsOf(set).rootChordOverDiameter).toBeUndefined();
+    expect(baseFinsOf(set, 1 / 1.5).rootChordOverDiameter).toBeCloseTo(1.5, 12);
+    expect(base(1.8, baseFinsOf(set, 1 / 1.5)).finsOnBaseSource).toBe('rebuilt');
+    expect(() => base(1.8, baseFinsOf(set, 0.5))).toThrow(/root chord is 2\.00 body diameters/);
+    expect(() => base(1.8, baseFinsOf(set))).toThrow(/is not given/);
   });
 
   it("where both refuse, the rebuilt factor's reason, with the present factor's beside it", () => {
@@ -330,21 +363,33 @@ describe('fins thinner than 5% at some station (0016 section 18) in the rebuilt 
     const rounded = baseFinsOf({ ...plateFins, section: flatPlate(0.03, 'rounded', 'rounded') });
     expect(rounded.nearBase).toBeUndefined();
     expect(() => base(2.0, rounded)).toThrow(BaseRefusal);
-    // Within a chord ahead of the base it is refused for its trailing edge too, not for its position, at
-    // every Mach number (since 2026-10-26: the position refusal's words now name Mach 2.0).
-    for (const mach of [1.3, 1.8, 2.5]) {
-      const ahead = baseFinsOf({
-        ...plateFins,
-        section: flatPlate(0.03, 'rounded', 'rounded'),
-        trailingEdgeAheadOfBase: 0.5,
-      });
+    // Within a chord ahead of the base it is refused for its trailing edge, at every Mach number, its message
+    // beginning so that the page words it near the base, with its position's reasons beside where they apply.
+    for (const [mach, diameter, positionToo] of [
+      [1.3, 1 / 1.5, true],
+      [1.8, 1 / 1.5, false],
+      [1.8, 0.5, true],
+      [2.5, 1 / 1.5, true],
+    ] as const) {
+      const ahead = baseFinsOf(
+        {
+          ...plateFins,
+          section: flatPlate(0.03, 'rounded', 'rounded'),
+          trailingEdgeAheadOfBase: 0.5,
+        },
+        diameter,
+      );
       try {
         base(mach, ahead);
         throw new Error('served');
       } catch (e) {
         expect(e).toBeInstanceOf(BaseRefusal);
         expect((e as BaseRefusal).reason).toBe('fin-trailing-edge');
+        expect((e as BaseRefusal).message.startsWith(ROUNDED_PLATE_AHEAD_OF_BASE)).toBe(true);
         expect((e as BaseRefusal).message).toContain('a rounded trailing edge has no measurement');
+        expect((e as BaseRefusal).message.includes('its position is refused too')).toBe(
+          positionToo,
+        );
       }
     }
   });

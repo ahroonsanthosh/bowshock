@@ -6,6 +6,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
+import { ROUNDED_PLATE_AHEAD_OF_BASE } from '../../src/base/base-drag';
 import {
   BOUNDED_WORDS,
   changeText,
@@ -174,22 +175,38 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     });
   });
 
-  it('fins ending within a chord ahead of the base: where they are still refused, said plainly', () => {
-    // Below Mach 1.5 fins up to 0.4 root chords ahead are bounded since 2026-10-26 (0015 section 3.3); a
-    // rounded plate is refused for its trailing edge; so these words reach the position refusal above Mach 2.0
-    // and, below Mach 1.5, beyond 0.4 root chords ahead.
+  it('fins ending within a chord ahead of the base: where they are refused, said plainly', () => {
+    // Refused below Mach 1.5, above 2.0, and at Mach 1.5 to 2.0 with another root chord than TN 2360's
+    // (0015 section 3.3): the words name what is measured, and so what is missing.
     expect(refusalWords({ component: 'body base', reason: 'fins-near-base', message: '' })).toEqual(
       {
         reason:
-          'fins ending less than a root chord ahead of the base: above Mach 2.0, and below Mach ' +
-          '1.5 when they end more than 0.4 of a root chord ahead, the base drag with fins there ' +
-          "isn't pinned down by measurements yet (one that may settle it waits for a second, " +
-          'independent reading)',
-        change:
-          "the fins' trailing edges at the base or a root chord or more ahead of it; below Mach " +
-          '1.5, up to 0.4 of a root chord ahead also works',
+          'fins ending less than a root chord ahead of the base: the base drag with fins there is ' +
+          'measured only at Mach 1.5 to 2.0 (no measurement is known below Mach 1.5) and only with ' +
+          'a fin root chord of 1.5 body diameters',
+        change: "the fins' trailing edges at the base, or a root chord or more ahead of it",
       },
     );
+  });
+
+  it('a rounded plate within a chord ahead of the base: refused for its trailing edge, worded near the base', () => {
+    const near = refusalWords({
+      component: 'body base',
+      reason: 'fin-trailing-edge',
+      message: `${ROUNDED_PLATE_AHEAD_OF_BASE} 0.5 root chords ahead of the base: ...`,
+    });
+    expect(near).toEqual({
+      reason:
+        'with fins near the base, the base drag is measured only for fins with square or sharp ' +
+        'trailing edges, not for a rounded one',
+      change: 'square or sharp trailing edges, or fins a root chord or more ahead of the base',
+    });
+    expect(near.reason).not.toContain('at the base');
+    expect(near.reason).not.toContain('at this speed');
+    // At the base the words stay as they were.
+    expect(
+      refusalWords({ component: 'body base', reason: 'fin-trailing-edge', message: 'x' }).reason,
+    ).toMatch(/^at this speed, the base drag with fins at the base/);
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {

@@ -207,7 +207,10 @@ function withBodyBase(
     throw new RangeError('the rebuilt body base is composed for cylindrical afterbodies only');
   }
   try {
-    const r = rebuiltBodyBase(mach, baseFinsOf(config.body.fins));
+    const r = rebuiltBodyBase(
+      mach,
+      baseFinsOf(config.body.fins, 2 * config.body.body.nose.baseRadius),
+    );
     const components = parts.components.map((c) => (c.name === 'body base' ? r.component : c));
     if (!components.includes(r.component)) {
       // The library refused its own body base (the factor): put the rebuilt one where it stands.
