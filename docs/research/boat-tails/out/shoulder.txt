@@ -1,0 +1,12 @@
+== o3-c3-bt6-l1-m2: Cp ahead of the shoulder -0.012484, behind (Prandtl-Meyer) -0.115180
+  nj 20: first face x - xs 2.46e-2 Cp -0.106458 (PM 8.72e-3, march there 7.46e-3); worst 7.46e-3 at x - xs 0.025; mid -1.30e-3; last -1.18e-3
+  nj 40: first face x - xs 1.23e-2 Cp -0.106799 (PM 8.38e-3, march there 7.75e-3); worst 7.75e-3 at x - xs 0.012; mid -4.07e-4; last -4.48e-4
+== o3-c5-bt16-l1-m2: Cp ahead of the shoulder -0.006060, behind (Prandtl-Meyer) -0.228680
+  nj 20: first face x - xs 3.47e-2 Cp -0.226266 (PM 2.41e-3, march there -2.67e-4); worst 1.19e-2 at x - xs 0.105; mid -2.33e-3; last -4.82e-3
+  nj 40: first face x - xs 1.73e-2 Cp -0.226366 (PM 2.31e-3, march there 9.91e-4); worst 1.26e-2 at x - xs 0.052; mid -6.72e-4; last -1.86e-3
+== o3-c5-bt8-l2-m2: Cp ahead of the shoulder -0.006060, behind (Prandtl-Meyer) -0.139013
+  nj 20: first face x - xs 3.51e-2 Cp -0.129004 (PM 1.00e-2, march there 7.90e-3); worst 7.90e-3 at x - xs 0.035; mid -1.80e-3; last -3.09e-3
+  nj 40: first face x - xs 1.75e-2 Cp -0.129677 (PM 9.34e-3, march there 8.29e-3); worst 8.29e-3 at x - xs 0.017; mid -6.81e-4; last -1.07e-3
+== o3-c5-bt4-l1-m2: Cp ahead of the shoulder -0.006060, behind (Prandtl-Meyer) -0.078720
+  nj 20: first face x - xs 3.54e-2 Cp -0.071123 (PM 7.60e-3, march there 6.26e-3); worst 6.26e-3 at x - xs 0.035; mid -1.20e-3; last -8.43e-4
+  nj 40: first face x - xs 1.77e-2 Cp -0.071676 (PM 7.04e-3, march there 6.38e-3); worst 6.38e-3 at x - xs 0.018; mid -3.04e-4; last -3.15e-4

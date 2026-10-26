@@ -195,7 +195,27 @@ decided from the finished families in section 2.5.
 
 ### 2.4 The shoulder's pressure
 
-(Being measured.)
+Just behind the shoulder the flow has turned through the boat-tail's
+angle in a centred Prandtl-Meyer fan, and the wall pressure there is the
+Prandtl-Meyer value from the state just ahead (the march builds it in,
+exactly). On the fitted grids the wall pressure in the first cell behind
+the shoulder does not tend to it: on four cases at Mach 2 (6, 4, 8 and 16
+deg; `docs/research/boat-tails/shoulder.test.ts`, `out/shoulder.txt`) the
+first face's pressure coefficient lies 7.0e-3 to 1.0e-2 above the
+Prandtl-Meyer value on nj = 20 and 40 alike (7% to 10% of the expansion's
+fall in pressure coefficient, 4% at 16 deg), and 6.3e-3 to 8.3e-3 above the
+march's at the same station; the largest difference from the march stays
+a few cells behind the shoulder at the same size (1.2e-2 to 1.3e-2 at
+16 deg), while halfway along the boat-tail it falls by about 3 per
+refinement (for example -1.30e-3 to -4.07e-4). The cells beside the corner
+straddle the fan's centre, whatever their size: an error of fixed size
+over a length of a few cells, whose part of the drag falls in proportion
+to the cells. This is why the boat-tail's drag converges at observed
+orders of 1.3 to 1.5 (section 2.3) and not 2, as the forebody's does on
+the same grids. The check confirms the expansion's size (the fitted
+pressure two to four cells behind the shoulder is within 1e-2 of the
+march's on every case) and shows where the band's order comes from; it is
+not a sharper test of the drag than the march's profile itself.
 
 ### 2.5 The served range
 

@@ -1,0 +1,3 @@
+{"case":"e51f26-o6-bt7.03-r0.506","kind":"linear","tail":0.0683900402947972}
+{"case":"e51f26-o6-bt7.03-r0.506","kind":"moc","intervals":640,"tail":0.060848243083785336,"corner":[0.9853690813641428,0.6584136794321829],"lastWallX":12.367638659375356,"massBalance":0.00000324249656376223,"penetration":0,"seconds":11.607}
+{"case":"e51f26-o6-bt7.03-r0.506","kind":"moc","intervals":1280,"tail":0.060851055129486985,"corner":[0.9853693224050292,0.6584138550415971],"lastWallX":12.367948488602131,"massBalance":7.984142458083458e-7,"penetration":0,"seconds":47.491}
