@@ -1,0 +1,87 @@
+source,quantity,value,unit,page,note
+RM E51F26,body length (assembled body of revolution),18,in,6,"text, Models and Instrumentation"
+RM E51F26,body fineness ratio,12,,6,"text; implies a maximum body diameter Dm of 1.5 in (18/12), a derived value the report does not print"
+RM E51F26,nose,first half of the body contoured according to equation (14) of reference 1,,6,"reference 1 is Erdmann, Widerstandsbeiwerte fuer das A4V1P ..., Peenemuende Heeresversuchsstelle Aerodynamisches Institut, Archiv Nr. 66/105, 1943 (reference list, PDF p. 22); the equation itself is not printed; nose length is half the body length, 9 in (derived from 18 in, not printed)"
+RM E51F26,cylinder,remainder of the body (second half) cylindrical except as modified by the conical boattails,,6,text
+RM E51F26,boattail angles tested,0; 5.63; 7.03; 9.33,deg,6,"text: boattail angle epsilon, angle between boattail surface and body axis (symbol list, PDF p. 5); 0 deg is the cylindrical afterbody"
+RM E51F26,base to body diameter ratio Db/Dm,0.506 (completely boattailed); 0.704 (incompletely boattailed); 1.0 (cylindrical afterbody),,6,text
+RM E51F26,nozzle exit to body diameter ratio,0.5,,6,text; constant for all models; nozzle exit diameter 0.75 in follows from Dm = 1.5 in (derived)
+RM E51F26,nozzle profile,contoured for a constant Mach number gradient based on one-dimensional considerations,,6,text
+RM E51F26,model support,half-body support with splitter plate (leading edge swept back 40 deg); air ducted through a hollow sting,,5,"text, Support System; the model is a half body on a splitter plate"
+RM E51F26,static orifice diameter,0.015,in,7,text
+RM E51F26,manometer reading accuracy,+-0.02,in of dibutylphthalate,7,text
+RM E51F26,free-stream Mach number,1.91,,7,"text: 18- by 18-inch (Mach number 1.91) supersonic wind tunnel, NACA Lewis"
+RM E51F26,Reynolds number,3.24 x 10^6,per ft,7,"text: approximately, in the test section"
+RM E51F26,test-section total temperature,150,deg F,7,text: approximately
+RM E51F26,test-section total pressure,atmospheric,,7,text: approximately
+RM E51F26,dew point,-10 to 3,deg F,7,text
+RM E51F26,angles of attack tested,0; 3; 6,deg,7,text; only 0 deg is read here
+RM E51F26,boundary-layer trip,"loop of 0.005-in-diameter wire approximately 0.5 in from the tip of the model, to induce early transition, used for selected settings",,7,"text; the figures read here do not say which, if any, of their points were taken with the wire (figure 7 and 8 legends show only the angular stations)"
+RM E51F26,boundary-layer state ahead of base (text),turbulent; thickness 0.08 to 0.09 in on the incompletely boattailed bodies (Db/Dm 0.704) except 5.63 deg; about 0.10 in on the completely boattailed bodies (Db/Dm 0.506),in,11,"text, PDF p. 11 (outside the brief's page list, opened to find what the text says about transition)"
+RM E51F26,"early transition on the 5.63 deg, Db/Dm 0.704 boattail",inadvertent early transition forward on the body (probably a leaking static orifice near the nose) gave a boundary-layer thickness of 0.20 in,in,11,"text, PDF p. 11; PDF pp. 15 and 19 call the resulting base-pressure and base-drag points inconsistent"
+RM E51F26,Mach number just ahead of the base M1,1.91 to 2.1 among the boattails,,15,"text, PDF p. 15 (outside the brief's page list)"
+RM E51F26,fig. 6(a) cylindrical afterbody: section lengths,1.50 and 4.25,in,28,"figure 6(a) dimension lines along the afterbody (all dimensions in inches, caption)"
+RM E51F26,fig. 6(a) cylindrical afterbody: orifice stations,"0.25, 1.25, 2.25, 3.25 ahead of the base",in,28,"from the chain 1.00, 1.00, 1.00, 0.25 measured forward from the base"
+RM E51F26,fig. 6(a) body radius,0.75,in,28,"labelled 0.75 r beside the side view of figure 6(a), read as radius 0.75 in (all dimensions in inches); agrees with Dm = 1.5 in from length 18 in and fineness ratio 12"
+RM E51F26,fig. 6(a) base orifice radii (cylindrical afterbody),"0.46, 0.56, 0.66",in,28,"labelled 0.46 r, 0.56 r, 0.66 r in the base view, read as radii in inches; the three rings measured on the drawing lie at 0.63, 0.74 and 0.87 of the outer radius, which matches 0.46, 0.56 and 0.66 in over 0.75 in"
+RM E51F26,angular stations theta,15; 50; 90,deg,28,"figure 6 base views show 15 and 50 deg and a vertical (90 deg) row; theta = 0 on the windward side (symbol list, PDF p. 5)"
+RM E51F26,"fig. 6(b) Db/Dm 0.704, 5.63 deg: boattail length",2.25,in,28,
+RM E51F26,"fig. 6(b) Db/Dm 0.704, 5.63 deg: orifice stations","0.25, 0.75, 1.37, 1.99, 2.74 ahead of the base",in,28,"from the chain 0.75, .62, .62, .50, .25 (forward to aft); the first station lies on the cylinder ahead of the boattail start"
+RM E51F26,"fig. 6(b) Db/Dm 0.704, 5.63 deg: afterbody section lengths",1.50 and 4.25,in,28,same split as figure 6(a)
+RM E51F26,"fig. 6(b) Db/Dm 0.704, 7.03 deg: boattail length",1.80,in,28,
+RM E51F26,"fig. 6(b) Db/Dm 0.704, 7.03 deg: orifice stations","0.25, 0.90, 1.55, 2.30 ahead of the base",in,28,"from the chain 0.75, .65, .65, .25"
+RM E51F26,"fig. 6(b) Db/Dm 0.704, 9.33 deg: boattail length",1.35,in,28,
+RM E51F26,"fig. 6(b) Db/Dm 0.704, 9.33 deg: orifice stations","0.25, 0.65, 1.05, 1.80 ahead of the base",in,28,"from the chain 0.75, .40, .40, .25"
+RM E51F26,fig. 6(b) base radius (Db/Dm 0.704),0.528,in,28,"labelled 0.528 r in the base view, read as radius 0.528 in; equals 0.704 x 0.75 in"
+RM E51F26,fig. 6(b) base orifice radius (Db/Dm 0.704),0.45,in,28,labelled 0.45 r in the base view; one ring of base orifices on the annular base
+RM E51F26,"fig. 6(c) Db/Dm 0.506, 5.63 deg: boattail length",3.75,in,28,
+RM E51F26,"fig. 6(c) Db/Dm 0.506, 5.63 deg: orifice stations","0.50, 1.25, 2.00, 2.75, 3.50, 4.00 ahead of the base",in,28,"from the chain 0.50, .75, .75, .75, .75, .50 (forward to aft); afterbody sections 1.50 and 4.25 as in figure 6(a)"
+RM E51F26,"fig. 6(c) Db/Dm 0.506, 7.03 deg: boattail length",3.00,in,28,
+RM E51F26,"fig. 6(c) Db/Dm 0.506, 7.03 deg: orifice stations","0.50, 1.06, 1.62, 2.18, 2.74, 3.49 ahead of the base",in,28,"from the chain 0.75, .56, .56, .56, .56, .50"
+RM E51F26,"fig. 6(c) Db/Dm 0.506, 9.33 deg: boattail length",2.25,in,28,
+RM E51F26,"fig. 6(c) Db/Dm 0.506, 9.33 deg: orifice stations","0.25, 0.75, 1.375, 2.00, 2.75 ahead of the base",in,28,"from the chain 0.75, .625, .625, .50, .25"
+RM E51F26,fig. 6(c) base radius (Db/Dm 0.506),0.38,in,28,"labelled 0.38 r beside the side views of figure 6(c), read as radius 0.38 in (0.506 x 0.75 in = 0.3795 in); the base view of 6(c) shows no base orifices"
+TN 3819,fig. 19 models,"cone-cylinder: cone of 15 deg (marked between the cone surface and the axis), body diameter 1 in, longest body 5 in; afterbody lengths shown dashed",,50,"figure 19 sketch; the data stations are at L/D 2, 3, 4 and 5"
+TN 3819,fig. 19 Mach numbers,2.41 (a); 1.93 (b); 1.62 (c),,50,"panel titles, M infinity"
+TN 3819,fig. 19 Reynolds numbers,R/inch 0.25 and 1.00 x 10^6 (a); 0.30 and 1.20 x 10^6 (b); 0.35 and 1.40 x 10^6 (c),per in,50,"legends; circle the lower, square the higher"
+TN 3819,fig. 21 models,10 deg cone-cylinders of fineness ratio 5 (caption); legend line L/h = 5,,52,caption; experimental points all from the compilation of ref. 2 (legend)
+TN 3819,fig. 23 models,"triangle: Ames body (sketch: pointed nose, long afterbody); circle: NOL ref. 5 (sketch: conical nose, cylinder, conical boattail); square: Ames simple cone",,54,legend sketches; Mach about 2.9 (caption)
+TN 3819,negative boattail angle,negative boattailing denotes simple cones,,19,"text, report p. 17"
+TN 3819,fig. 24 models,"conical boattails, h/D 0.506 (a) and 0.704 (b); experimental mean values from Cortright and Schroeder",,55,"caption M infinity 1.91; h = base diameter, D = maximum body diameter (symbol list, PDF p. 6)"
+TN 3819,boundary layer of the fig. 24 data at beta 5.63 deg,inadvertently thickened,,19,"text, report p. 17: for the experimental results at beta = 5.63 deg; the sentence concerns h/D = 0.704"
+TN 3819,fig. 25 model body diameter,1.97,in,56,"axis label of figure 25(a): Distance from nose of body, inches (D = 1.97 inches); figure 25(b) experimental results are from reference 5 (text, report p. 18)"
+TN 3819,fig. 25 Mach number,3.24,,20,"text, report p. 18, and caption: M infinity = 3.24"
+TN 3819,fig. 25(a) boattail angles calculated,2.50; 5.00; 10.00; 15.00; 17.50,deg,56,"labels on the calculated part (a), not read for values"
+RM A52E20,model 8 description,ogive-cylinder model with a boattailed afterbody,,6,"text, Models"
+RM A52E20,model 8 body diameter d,1.25,in,6,text
+RM A52E20,model 8 base diameter,0.604 d,,6,text; 0.755 in with d = 1.25 in (derived)
+RM A52E20,model 8 fineness ratio l/d,7.0,,26,figure 1(c) label; length 8.75 in with d = 1.25 in (derived)
+RM A52E20,model 8 boattail length and profile,not stated,,26,"neither the text nor figure 1(c) (a photograph) gives the boattail's length or profile; the photograph's inch scale gives an overall length about 9.2 in and a length-to-diameter ratio near 9, inconsistent with l/d 7.0 and d 1.25 in, so no dimension was taken from the photograph"
+RM A52E20,model 8 nose,not stated separately,,6,the text calls it an ogive-cylinder; whether its nose is the 10-caliber tangent ogive of models 1 to 4 is not said
+RM A52E20,unboattailed comparison body (model 3),"ogive-cylinder, l/d = 7, no boattail",,44,"figure 15 legend: Present tests Model 3, Ogive-cylinder l/d = 7"
+RM A52E20,models 1 to 4 (includes model 3),10-caliber tangent ogival noses and cylindrical afterbodies of 1-in diameter; overall fineness ratios 3.12 to 10,,6,"text, Models"
+RM A52E20,surface finish,about 5 microinches (average deviation from the mean surface),,6,text
+RM A52E20,Mach number range,2.73 to 4.98,,6,"text, Operating conditions"
+RM A52E20,Reynolds number,about 8.2 x 10^6 at M 2.73 and 2.1 x 10^6 at M 4.98; maximum range 3.6 to 8.6 x 10^6 at M 4.03,per ft,6,text
+RM A52E20,fig. 15 Reynolds numbers,"Re = 3.0 x 10^6 (a, laminar boundary layer); Re = 5.0 x 10^6 (b, turbulent boundary layer)",,44,"panel titles; Re is based on model length (symbol list, PDF p. 5)"
+RM A52E20,reservoir conditions,maximum 6 atm absolute; 50 to 70 deg F,,6,text
+TN 3372,basic configuration body,cylindrical body 5 in in diameter with an ogival nose and four stabilizing fins; wood with polished lacquer finish,,4,"text, Models and Tests"
+TN 3372,fins,"0.09-in-thick duralumin sheet, rounded leading edges of 0.045-in radius, square trailing edges",,4,text
+TN 3372,basic configuration overall length,55.5,in,9,"figure 1, basic configuration"
+TN 3372,nose length,17.5,in,9,"figure 1, basic configuration (ogival nose)"
+TN 3372,fin root chord,8.4,in,9,figure 1: dimension from the fin root leading edge to its trailing edge
+TN 3372,fin trailing edge ahead of the original base,0.7,in,9,"figure 1, basic configuration"
+TN 3372,fin span (tip to tip),13.4,in,9,figure 1
+TN 3372,fin tip chord,1.3,in,9,"figure 1, dimension at the fin tip"
+TN 3372,configuration D afterbody,"6.2 in added behind the original base, converging to a base diameter of 3.3 in; dummy rocket chamber with nozzle exit flush with the model base",,4,text
+TN 3372,configuration D base diameter,3.3,in,10,text and figure 1 end view
+TN 3372,configuration D afterbody profile,drawn converging with a slight outward curvature (not conical in the sketch); no equation or radius given,,10,"figure 1, configuration D side view"
+TN 3372,configuration D fin trailing edges ahead of the base,6.9,in,10,"figure 1, configuration D (0.7 + 6.2)"
+TN 3372,configuration D: rocket-chamber front bulkhead (center orifice) ahead of the base,13.5,in,10,"figure 1, configuration D: dimension from the start of the dashed rocket chamber to the base; text: the center-line orifice was on the inside of the front bulkhead of the dummy rocket chamber"
+TN 3372,configuration D end view: other diameters,2.9 and 1.5,in,10,figure 1 end view: diameters of the inner circles (presumably nozzle exit and throat of the dummy rocket chamber; the sketch does not name them)
+TN 3372,edge orifice,about 3/8 in from the circumference of the base,in,4,text; figure 1 shows .38 in
+TN 3372,center orifice (configuration D),"on the center line, inside the front bulkhead of the dummy rocket chamber",,4,text
+TN 3372,configuration D fineness ratio,12.3,,4,"text; A, B and C 11.1"
+TN 3372,number of configuration D models flown,1,,4,text
+TN 3372,angle of attack,assumed at or very near zero throughout the flights,,4,text: static margin of the order of 2 to 3 body diameters
+TN 3372,Reynolds number,"based on body length, plotted against Mach number in figure 6",,5,"text, PDF p. 5 (figure 6 not opened)"
