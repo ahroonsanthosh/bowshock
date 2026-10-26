@@ -90,3 +90,28 @@ export const FOUR_GRIDS: readonly string[] = [
   'o3-c5-bt8-l1-m3',
   'o3-c5-bt8-l2-m2',
 ];
+
+/**
+ * NACA RM E51F26's six boat-tailed models at Mach 1.91, from its text
+ * (pp. 5 and 6: an 18 in body of fineness ratio 12, its first half a
+ * contoured nose, the rest a cylinder ending in a conical boat-tail of
+ * 5.63, 7.03 or 9.33 deg to a base of 0.506 or 0.704 of the diameter):
+ * the inviscid side pressure drag that 0014 10.7 (ae) item 1 divides the
+ * measured one by. The nose is "contoured according to equation (14) of
+ * reference 1", a 1943 Peenemuende report not available here, so each
+ * model is computed behind a 6-caliber tangent ogive and a 6-caliber cone
+ * (the allowance carries their spread, (ae) item 1). The boat-tail's
+ * length follows from its angle and base ratio; the readers' fig. 6
+ * gives the drawn dimensions, against which these are checked.
+ */
+export const RM_E51F26: readonly BoatTailCase[] = (['o', 'c'] as const).flatMap((nose) =>
+  [0.506, 0.704].flatMap((ratio) =>
+    [5.63, 7.03, 9.33].map((angle) => {
+      const length = (1 - ratio) / (2 * Math.tan((angle * Math.PI) / 180));
+      return {
+        ...make(nose, 6, 6 - length, angle, length, 1.91),
+        name: `e51f26-${nose}6-bt${angle}-r${ratio}`,
+      };
+    }),
+  ),
+);

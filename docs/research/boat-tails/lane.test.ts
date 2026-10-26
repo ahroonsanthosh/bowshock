@@ -25,7 +25,7 @@ import { gridQuality } from '../../../src/grid/quality';
 import type { Primitive2D } from '../../../src/scheme/flux';
 import { characteristics } from '../../../src/validation/characteristics';
 import { linearBoatTailDrag } from '../../../src/validation/linear-body';
-import { CASES, FOUR_GRIDS, GAMMA, caseBody, type BoatTailCase } from './cases';
+import { CASES, FOUR_GRIDS, GAMMA, RM_E51F26, caseBody, type BoatTailCase } from './cases';
 
 const here = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 const OUT = process.env.OUT_DIR ?? here('./out');
@@ -248,7 +248,9 @@ it('the boat-tail reference lane', () => {
   mkdirSync(OUT, { recursive: true });
   mkdirSync(CKPT, { recursive: true });
   const only = process.env.CASES?.split(',');
-  const cases = CASES.filter((k) => !only || only.includes(k.name));
+  const set = process.env.SET === 'e51f26' ? RM_E51F26 : CASES;
+  const cases = set.filter((k) => !only || only.includes(k.name));
+
   // The references first (minutes a case), then each grid of every case
   // before the next finer grid of any (nj = 160 takes hours a case).
   for (const c of cases) {
