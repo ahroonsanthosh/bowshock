@@ -446,3 +446,20 @@ same front wedge with a rear bevel added (a hexagon) is refused with the
 reason; the reflection bound's by-hand case is unchanged; a wedge-flat
 section whose bound lands on the front wedge itself cannot occur (the
 landing lies behind the first corner), asserted.
+
+**Coverage** (0014's population at 400 rockets, 1,600 cases, the run of
+0015 section 12 as the "before", `docs/research/refusals/out/2026-10-26-a1-plates-any-sweep/after/`,
+and `out/2026-10-26-a2-reflected-flat/after/` after this section; the
+cross-check against `src/total` agreeing on all 400 cases checked in
+each). The reflected-wave refusal falls from 13.9% of cases to 8.7%
+(Mach 1.5 to 1.8: 24.8% to 15.5%; 1.8 to 3.0: 27.3% to 17.5%): every
+plate bevelled at the leading edge only is now served by the library,
+the hexagons stay refused. Totals served on the page do not move (2.9%
+of all bands; 144 of 1,600 with the nose assumed served), because the
+page does not offer the wedge-flat section with a square trailing edge
+(0014 W12, `pageSection` in the audit); with that one input added they
+would go from 145 to 193 of the 1,600. Hexagons whose first reflection
+lands on the flat ahead of the rear bevel (127 of the 206 reflected-wave
+cases of the plan's count) wait on a bound for the fan's later waves and
+the second landing, or on the planar Euler or characteristics measurement
+of section 7.
