@@ -1820,4 +1820,82 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
-The next free letter is (w).
+**2026-10-26 (aa): square-cut leading edges served "bounded, not
+measured", between the sonic and the pitot pressure on the whole face**
+(a recorded decision under 10.2's "Anywhere else only by a recorded
+decision", the coordinator's, on the advisor's plan of 2026-10-22,
+recommendation 4; it changes 10.2's "Where" for square-cut leading
+edges). 10.2 named the rounded edge of the same thickness as the lower
+bound, with the ordering still to show; 0016 section 6 could not show it,
+and the edges stayed refused. The lower bound becomes the sonic pressure
+p* (0.5283 of the pitot pressure, the sonic pressure of the streamline
+that wets the face) on the whole face, a physical limit; the upper stays
+the pitot pressure on the whole face. Both are taken on the flow normal
+to the edge (the independence principle, 0016 section 5); swept, each is
+widened by the sweep allowance served on rounded edges (0.95 to 1.22
+from 14.3 deg, tapered below it to none unswept), the lower bound's low
+end by its low end, the upper's high end by its high end.
+
+- _The ordering_ is argued in 0016 section 21.1, committed with this
+  entry and before any code: the face, wetted by the one streamline that
+  crosses the bow shock where it is normal, carries at most its total
+  pressure, and, lying inside the subsonic region behind the shock with
+  the sonic line at its corners, at least its sonic pressure; swept, the
+  allowance carries the principle's measured error.
+- _The domain_: normal Mach numbers 1.0 to 3.0, sweep up to 60 deg, the
+  Reynolds number on the thickness (normal component) at least 6.7e3.
+  Refused outside it, with every reason.
+- _A computed check that sets nothing_ (0016 section 21.3, its pass and
+  fail criteria registered there before it is run): planar Euler
+  solutions of a flat face with its corner rounded to 4% and 2% of the
+  half-thickness, at M 1.2, 1.5, 2.0 and 3.0, on three nested grids. If
+  the straight face goes sonic, or below p*, beyond the solutions' own
+  error, or the computed face mean does not clear the lower bound by the
+  margin 21.3 registers, square-cut edges stay refused and the result is
+  recorded.
+- _No measured data sets either bound_, and no figure is named or read
+  for this entry, so no blind reading is owed. RM A53D02 fig. 17 (square
+  edges on fins swept 71.6 deg, read once in 0008) lies outside the
+  domain and is not used.
+- _(u)'s item on square edges_ (a solved nominal from Stage A) does not
+  apply: Stage A is frozen ((v)). This entry is under 10.2 as written:
+  the value served is the midpoint of the band, the band the whole gap.
+- _The label_: "bounded, not measured: between the sonic pressure behind
+  a normal shock (p*) and the pitot pressure on the whole face", with the
+  gap's size in C_D beside the component; a total that contains it is at
+  best an estimate, not validated, and names it.
+
+**2026-10-26 (ab): rounded leading edges swept beyond 60 deg served
+"bounded, not measured"** (a recorded decision under 10.2's "Anywhere
+else only by a recorded decision", the coordinator's, on the advisor's
+plan of 2026-10-22). Lower bound: the rounded edge's term at the actual
+sweep (the independence principle, 0016 sections 5 and 11) at its band's
+low end, the sweep allowance's 0.95 included; upper: the same term at 60
+deg of sweep, at the case's Mach and Reynolds numbers, at its band's high
+end, the allowance's 1.22 included. Served only where both are: the
+normal Mach number at the actual sweep at least 1.0, the Reynolds number's
+normal component in range at both sweeps.
+
+- _The ordering_ is argued in 0016 section 21.2, committed with this
+  entry and before any code: the term falls strictly with sweep (the
+  principle), and the front side's drag per unit span falls with yaw on
+  every measured series; the lower ordering beyond 60 deg rests on the
+  principle and one yawed point.
+- _The data named for that use_ (rule 2 of 10.1, for a new use of
+  figures already named there): RM A55H31 fig. 12, both readings and the
+  third looks (0016 sections 5, 14 and 16), for the fall of the front
+  side's drag with yaw; and Penland's 75.1 deg point on it (RM A55H31's
+  reference 1, set apart from the sweep allowance for the end effect TN
+  3861 p. 10 reports), as evidence of the ordering only, never a band's
+  end. Every value was read twice before this entry, for 0016; nothing new
+  is read, so no blind reading is owed.
+- _The label_: "bounded, not measured: between the independence
+  principle at S deg (the front side at the normal Mach number, at its
+  band's low end) and the same term at 60 deg, the largest sweep checked
+  on yawed cylinders (at its band's high end); the lower bound's ordering
+  beyond 60 deg rests on one yawed point", with the gap's size in C_D
+  beside the component; a total that contains it is at best an estimate,
+  not validated, and names it.
+
+The letters (w) to (z) are allocated to other branches; the next free
+letter is the coordinator's to allocate.

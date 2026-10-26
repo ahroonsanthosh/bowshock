@@ -1278,3 +1278,259 @@ a rounded trailing edge, which the rebuilt factor does not take, stays
 refused, for its trailing edge, with both reasons. The 3 totals this
 section's refusal removed are served again, on the flat-plate value (0015
 section 8).
+
+## 21. Square-cut leading edges, and rounded ones swept beyond 60 deg: bounded, not measured (2026-10-26)
+
+Written before any code for either term, under 0014 section 10.7 (aa)
+and (ab) (the coordinator's decisions of 2026-10-26, on the advisor's
+plan of 2026-10-22, recommendation 4). Section 6 refused square-cut
+leading edges because the lower bound 0014 section 10.2 named, the
+rounded edge of the same thickness, was never shown to lie below the
+flat face; section 5 refused rounded edges swept beyond 60 deg because
+the yawed-cylinder checks of the independence principle stop there.
+Neither term is measured. Both are served under 10.2 as "bounded, not
+measured": the band runs from the lower bound's low end to the upper
+bound's high end, the whole gap, and the value served is its midpoint
+(as the fins-on-base factor's bounded values are, `src/base`).
+
+### 21.1 Square-cut leading edges
+
+**The term.** A plate's square-cut leading edge is a flat face of height
+t, the plate's thickness, normal to the plate and to the edge. Its
+pressure drag per unit span is (p_f - p_inf) t, with p_f the face's mean
+pressure: the plate's faces behind the corners are parallel to the
+stream and carry none (section 4), and the shear on the face acts in its
+own plane, across the stream. Swept S deg, by the independence principle
+(section 5), the flow normal to the edge is the two-dimensional flow at
+M_n = M cos(S) on the normal dynamic pressure q cos^2(S), and the drag
+per unit span is still (p_f - p_inf) t: the face's area per unit span,
+t / cos(S), times the stream's component of its normal, cos(S).
+
+**The bounds**, on the normal flow, with p02 the pitot pressure
+(Rayleigh's) at M_n and p* = 0.5283 p02 the sonic pressure on a
+streamline of that total pressure:
+
+- lower: p* on the whole face, Cp* = (p* / p_inf - 1) / (gamma M_n^2 / 2),
+  times q cos^2(S) t;
+- upper: p02 on the whole face, Cp_pitot(M_n), times q cos^2(S) t.
+
+Swept, each is widened by the sweep allowance served on rounded edges,
+0.95 to 1.22 from 14.3 deg, tapered below it to none unswept (sections 18
+and 19): the lower bound's low end takes the allowance's low end, the
+upper bound's high end its high end. Unswept, on the thickness:
+
+| M_n | Cp*   | Cp_pitot | Cp* / Cp_pitot | Midpoint |
+| --- | ----- | -------- | -------------- | -------- |
+| 1.0 | 0.000 | 1.276    | 0.000          | 0.638    |
+| 1.2 | 0.270 | 1.396    | 0.193          | 0.833    |
+| 1.5 | 0.510 | 1.532    | 0.333          | 1.021    |
+| 2.0 | 0.707 | 1.657    | 0.427          | 1.182    |
+| 2.5 | 0.801 | 1.720    | 0.466          | 1.261    |
+| 3.0 | 0.853 | 1.756    | 0.486          | 1.304    |
+
+The gap is the whole range: at M_n 2.0 the term is served between 0.43
+and 1.0 of the pitot pressure's term (Cp 0.71 to 1.66 on the thickness),
+at its midpoint, 1.18, with a band of +-40% of it. For comparison, the
+rounded edge of the same thickness is (2/3) Cp_pitot t, 1.10 at M_n 2.0;
+nothing here orders the two, and nothing needs to.
+
+**The ordering, unswept** (the argument 10.2 asks for, written before the
+number is served):
+
+1. _A bow shock stands off the face at every M_n of 1.0 or more._ The face
+   turns the flow 90 deg, and no attached shock turns it more than 45.6
+   deg (gamma = 1.4, at any Mach number). Behind the shock's normal part
+   the flow is subsonic.
+2. _The upper bound, exactly, in inviscid flow._ The face is wetted by one
+   streamline, the dividing streamline on the plate's mid-plane (by
+   symmetry), which crosses the shock where the shock is normal to it.
+   Entropy is constant along it, so the total pressure is p02 at every
+   point of the face, and p is at most p02 there, equal at the stagnation
+   point.
+3. _The lower bound, exactly, in inviscid flow._ On a streamline of total
+   pressure p02, p is at least p* exactly where the Mach number is at
+   most 1. A subsonic flow along a straight wall that reaches a sharp
+   convex corner becomes sonic at the corner and turns it by a centred
+   expansion: the sonic line runs from the corner out to the shock, and
+   the face lies inside the subsonic region behind it, whatever the Mach
+   number. That is the standard result for flat-faced bodies (the sonic
+   point at the shoulder). This record does not take it on authority: it
+   is checked by computation (21.3) at M 1.2, 1.5, 2.0 and 3.0. So p is at
+   least p* on the face, equal only at the corners. Every other
+   streamline crosses a weaker part of the shock, so none near the face
+   carries a total pressure below p02.
+4. _The face's own expansion at the corners._ The centred expansion lies
+   beyond the corner. In inviscid flow the face upstream of it stays
+   subsonic: its pressure falls toward the corner and reaches p* there,
+   not before. In the real flow the face's boundary layer is subsonic near
+   the wall, and through it the corner's expansion reaches upstream a
+   distance of the order of the layer's thickness, where the wall
+   pressure can fall below p*: the layer's displacement rounds the
+   corner, and on a rounded convex corner the sonic point lies on the
+   rounding. 21.3 computes faces with corners rounded to 4% and 2% of the
+   half-thickness, to see where the sonic point lies and how far its
+   effect reaches up the straight face. The real-flow ordering of the
+   lower bound is then shown by a margin: it holds if the computed face
+   mean exceeds the lower bound by more than a vacuum (zero pressure) in
+   place of p* over a tenth of the face's height at each corner, at every
+   Mach number computed. A tenth of the height is to be at least twice
+   the layer's thickness at the corner at the smallest Reynolds number
+   served (21.3 estimates it from the computed velocity gradient at the
+   stagnation point).
+5. _The upper bound in the real flow._ The total pressure at the edge of
+   the face's boundary layer exceeds p02 only at second order in the
+   shock's departure from normal where those streamlines crossed it (of
+   order 1e-5). The fin's root (the body's boundary layer and the
+   junction's separation ahead of the face) and its tip are not
+   represented, as for the rounded edge (section 5); a separation shock
+   ahead of a blunt fin's root can raise the pressure on the face near
+   the root above p02 locally. The margin to the upper bound (one less
+   the computed face mean, 21.3) is stated beside it; nothing more is
+   claimed for the root.
+6. _Swept edges._ The independence principle is exact for the inviscid
+   flow past an infinite swept face, so 1 to 4 hold in the normal flow.
+   A finite, real edge departs from it: on yawed cylinders by 0.95 to
+   1.22 of the front side's drag at the sweeps served (sections 5, 16, 18
+   and 19), and at the stagnation line itself by up to 1.098 of the
+   principle's pressure (RM A55H31 fig. 11, its own tests at 60 deg, M_n
+   1.95; `stagnationChecks`). So a real swept face can carry more than the
+   pitot pressure at the normal Mach number, and that pressure alone is
+   not a limit there. Each bound is widened by the sweep allowance, which
+   contains every yawed datum at the sweeps served; carried from cylinders
+   to a flat face, it is an analogy, and is labelled as one.
+7. _The domain._ Normal Mach numbers of 1.0 to 3.0: below 1.0 the normal
+   flow is subsonic, no shock stands in it, p* falls below the free
+   stream's pressure and the lower bound becomes a thrust, and no rounded
+   edge is served there either (section 11); above 3.0 lies beyond the
+   range served for every fin edge, the code taking gamma = 1.4
+   throughout. Sweep up to 60 deg, the largest yaw checked (section 5).
+   The Reynolds number on the thickness, normal component, at least
+   6.7e3, the rounded edge's floor (RM A55H31's statement), so that the
+   face's layer is thin (item 4). No upper Reynolds number: the face's
+   flow is set by its choked corners whatever the layer does on it or
+   behind them.
+
+**Against 10.2's rules.** Each bound is a physical limit on the normal
+flow, of the kind 10.2 lists (the pitot pressure, the vacuum bound): the
+total pressure of the one streamline that wets the face, and the sonic
+pressure of a subsonic streamline of that total pressure. Swept, each
+carries the sweep allowance, a measured band, so each is then a physical
+limit carried by a measured method with its own band, which 10.2 also
+allows. The ordering is shown by items 1 to 7, committed before the code;
+the computation of 21.3 checks its premise (item 3) and sets the margin
+items 4 and 5 rest on, and sets nothing else: no band, no nominal. The
+value served is the midpoint, the band the whole gap. The label names
+both bounds and their sources, with the gap's size in C_D beside the
+component, and a total that contains the term is at best an estimate and
+names it. The one change to 10.2 is its lower bound, by amendment (aa).
+Not shown: the computed face mean is inviscid, and the root and tip are
+not represented.
+
+**Refused**, with every reason: M_n below 1.0 or above 3.0, sweep beyond
+60 deg, the Reynolds number below 6.7e3 (`square-leading-edge`).
+
+### 21.2 Rounded leading edges swept beyond 60 deg
+
+**The term** at sweep S is section 5's (and section 11's below M_n 1.49),
+
+    D(S) / (q s) = kappa(M_n) Cp_pitot(M_n) cos^2(S) r 2 (cos(delta) - cos^3(delta) / 3),
+
+M_n = M cos(S). Beyond 60 deg the principle is not checked: the one yawed
+point there, Penland's at 75.1 deg, has an end effect (TN 3861 p. 10).
+
+**The bounds**, at the case's Mach and Reynolds numbers:
+
+- lower: the term at S, at its band's low end (TN 2960's or kappa's low
+  end, the +-3% Reynolds allowance where it applies, times the sweep
+  allowance's low end, 0.95);
+- upper: the same term at 60 deg of sweep, at its band's high end (times
+  the allowance's high end, 1.22), the Reynolds number's normal component
+  taken at 60 deg.
+
+Both must be served: M cos(S) at least 1.0 (so at most 60 deg at Mach
+2.0, 65.4 deg at 2.4, 70.5 deg at 3.0) and the Reynolds number's normal
+component inside the term's range at both sweeps. Elsewhere the edge is
+refused with the term's own reasons, as at any sweep.
+
+**The ordering.**
+
+- _Upper._ (i) The principle: the term falls strictly as the sweep grows,
+  since cos^2(S) falls, and M_n falls with it while kappa(M_n)
+  Cp_pitot(M_n) rises with M_n (kappa's nodes 0.765, 0.831, 0.897 and 1
+  at M_n 1.0, 1.1, 1.2 and 1.49, nominal linear between them, and
+  Cp_pitot rising; a test holds it on a fine grid of M_n). (ii) Measured:
+  the front side's drag per unit span falls with yaw on every series of
+  RM A55H31 fig. 12, both readings (gauge, converted as in section 5,
+  over the unyawed, divided by cos(yaw) to put it per unit span):
+
+  | Series                 | 14.3 deg | 29.6 or 30 deg | 45 deg         | 59.8 or 60 deg | 75.1 deg       |
+  | ---------------------- | -------- | -------------- | -------------- | -------------- | -------------- |
+  | Penland, M 6.86        | 0.934    | 0.759 to 0.763 | 0.509 to 0.510 | 0.243 to 0.249 | 0.059 to 0.068 |
+  | RM A55H31's own, M 3.9 |          | 0.794 to 0.797 | 0.549          | 0.279 to 0.291 |                |
+
+  So the drag at a sweep beyond 60 deg lies below the drag at 60 deg,
+  which the term at 60 deg contains within its served band (section 5).
+  For the ordering to fail, the principle's error at S would have to
+  exceed the upper bound's high end over the term at S, which is at
+  least 1.29 and grows with S as the term at S falls below the term at
+  60 deg; every measured ratio r at any yaw is 1.217 or less (the first
+  reading's misread 1.263 at 60 deg aside, section 16), the 75.1 deg
+  point 1.013 and 1.170.
+
+- _Lower._ The principle is exact for the inviscid flow past an infinite
+  yawed cylinder at any sweep. The departures measured, at every yaw from
+  14.3 to 75.1 deg on both readings, put the front side at 0.987 of the
+  principle or more, above the allowance's low end, 0.95. Beyond 60 deg
+  the one point is Penland's at 75.1 deg, at 1.013 and 1.170, with an
+  end effect that raised it. The lower ordering beyond 60 deg rests on
+  this one point and on the principle, and the label says so.
+- _A check that sets nothing._ At the 75.1 deg point's own conditions (M
+  6.86, M_n 1.76) the bounds are 0.055 (the term at 75.1 deg, 0.0584 of
+  the unyawed per unit span, times 0.99 and 0.95) and 0.315 (the term at
+  60 deg, 0.2434, times 1.06 and 1.22); the point's two readings, 0.059
+  and 0.068, lie inside.
+
+**Against 10.2's rules.** Both bounds are measured terms with their own
+bands (section 5's, TN 2960 or NASA CR-149372 with RM A55H31's sweep
+allowance), and the ordering is shown above, before the number is
+served. Its evidence beyond 60 deg is one yawed point with an end effect,
+named in amendment (ab); fig. 12's values were read twice (and looked at
+a third time) for sections 5, 14 and 16 before that entry, which names
+their new use and reads nothing new. The value served is the midpoint,
+the band the whole gap, the label names both bounds, and a total that
+contains it is at best an estimate and names it.
+
+### 21.3 The computed check of 21.1 (registered here, before it is run)
+
+Planar Euler solutions (`src/engine-cpu/euler2d.ts`, HLLC, steady, local
+time steps) of half a flat-faced plate above its mid-plane: the face x =
+0 from the mid-plane to y = 1 (the half-thickness), its corner rounded to
+a radius of 0.04 and 0.02, then the plate's side y = 1 downstream; at M
+1.2, 1.5, 2.0 and 3.0, on three nested grids (cells halved each way), the
+corner resolved by at least eight cells on the finest. Reported for each:
+on the straight face (y from 0 to 1 less the radius), the largest wall
+Mach number and the smallest and largest wall pressure over p02; where
+the sonic point lies; the face's mean gauge pressure over the pitot's,
+(p_f - p_inf) / (p02 - p_inf), over the whole height; the velocity
+gradient at the stagnation point; each with its change between the two
+finest grids, the solution's own error.
+
+- _Pass._ On the finest grid with the smaller radius, at every Mach
+  number, the straight face's wall Mach number stays below 1 and its
+  pressure above p* by more than the change between the two finest grids
+  allows, and its pressure is at most p02 within that change.
+- _Fail._ Otherwise. Then square-cut edges stay refused, and the result
+  is recorded here.
+- _The margin of items 4 and 5._ The computed face mean is set against
+  the lower bound less a vacuum over a tenth of the height at each
+  corner; if it does not exceed that at every Mach number computed, the
+  real-flow ordering of the lower bound is not shown and the edges stay
+  refused. The reach of the corner through the face's layer is estimated
+  from the stagnation-point velocity gradient (the laminar
+  stagnation-point layer, thickness 2.4 (nu / beta)^(1/2)) at the
+  smallest Reynolds number served; if a tenth of the height is less than
+  twice that thickness, the vacuum zone is widened to twice it.
+
+The solution is inviscid and sets no band and no nominal: the term
+served is the midpoint of the physical bounds whatever the computed mean
+is.
