@@ -854,6 +854,151 @@ The largest fin term near Mach 1 (section 1.2), and the best covered.
   measurement" (its wake meets the body's base flow); 72.2% of the
   population's blunt edges are there.
 
+The method, the band, the shape widening and the layer rule above are
+made exact in section 3.4.1 (2026-10-26). Where 3.4.1 differs from the
+bullets above (the curve below Mach 1.5, the sets that set the band, the
+layer rule), 3.4.1 holds, with its reasons.
+
+#### 3.4.1 F4's band below Mach 1.5, as built (2026-10-26)
+
+Written before any value of RM A51J11 or RM A52E01 was read (0014 section
+10.7 (ac); two blind readers were reading them while this was written).
+Every other set below was read twice and paired before this was written,
+and their values were looked at in writing it: the nominal below is
+formed on two of them, and the shape widening's size on two of them.
+
+1. **Domain.** Free-stream Mach number 1.00 to 1.50, unswept square
+   trailing edges with a turbulent layer at the edge. Below Mach 1.5 a
+   transition input that leaves the edge laminar is refused (TR 1109's
+   laminar curves start at Mach 1.5, and nothing below is measured).
+   Swept edges stay refused (the sweep bullet above is a later step).
+   Every value is on the free-stream M_0 and p_0 (0014 10.7 (r)), as Cp_b
+   = (p_b/p_0 - 1) / (0.7 M_0^2); base drag means -Cp_b.
+
+2. **The sets, each point at its own M_0, both readings, both typings.**
+   - _Flat faces at the base_ (parallel to the stream, as a fin plate's):
+     TN 3548 fig. 6 (the slab wing in free flight, both slits; its
+     report's Mach accuracy, +-0.01, is carried as an interval in M); R&M
+     3427 fig. 13 (holes 5 to 7); RM A51J11 figs. 14 and 15 at h/c 0.040
+     (faired parallel); RM A52E01 fig. 8, wing 2; RM A51J25 fig. 7's open
+     symbols at M' 1.23 to 1.50, taken at M = M' as the code serves the
+     curve above Mach 1.5 (its filled PARD circles are TN 3548's flights,
+     counted there).
+   - _Faces diverging toward the base_ (single wedges): R&M 3348 table 3
+     (unswept, alpha 0 deg, all six holes) and fig. 30a's unswept circles,
+     kept as one envelope where they disagree (M 1.11 to 1.20; the
+     coordinator's decision of 2026-10-26), face angle 4.0 deg; Johnston
+     fig. 10(b) at alpha 0 deg (round 13's boxes of merged ink entered as
+     boxes), 5.7 deg.
+   - _Faces converging toward the base_: RM A51J11 at h/c 0.024 and 0.012
+     (about 1.0 and 2.1 deg, from its description, 0014 (ac)); RM A52E01
+     wings 4 and 3 (2.02 and 6.88 deg).
+   - _Checks, which set nothing_: R&M 3323 fig. 4 (refs. 32 to 35 and 38
+     are replots of the sets above; refs. 39 and 40 state no Reynolds
+     number, layer or section, so neither the layer rule nor the shape
+     rule can place them; ref. 41 is TN D-1056 below Mach 1.5, not
+     registered for it; the three untraced glyphs set nothing, 10.7 (s));
+     RM A51J25 fig. 7's ink band below M' 1.5 (the curve with the PARD
+     circles, on M' and p'); RM A52E01 above Mach 1.5 (a check of the band
+     above 1.5, 10.7 (ac)); Sawyer and Daum's fig. 4(c) sets nothing (10.7
+     (t)).
+   - Each set's layer parameter X = c / [h Re_c^(1/5)] and h/c are from
+     its report: TN 3548 h/c 0.06; R&M 3427 0.10 (X 0.52 to 0.66); R&M
+     3348 0.14 (0.35 to 0.43); Johnston 0.20 (0.30); RM A51J11 and RM
+     A52E01 as 10.7 (ac) gives them. TN 3548's X is formed from its
+     report's chord and Reynolds numbers when the code is written.
+
+3. **The nominal, flat faces, thin layer.** Not RM A51J25 fig. 7's curve
+   below Mach 1.5. TN 3548's own points, on M_0 and p_0, are the flights
+   behind fig. 7's PARD circles, and they lie above that curve served at
+   M_0, in base drag, by 13% to 18% at M 1.18, 10% to 14% at 1.20, 7% to
+   11% at 1.24 and 3% to 7% at 1.27, and lie within -4% to +5% of it from
+   1.31 to 1.47: below
+   about Mach 1.3, M' and p' ahead of this slab's base are not the free
+   stream's, so the curve on M' does not serve at M_0 there. The nominal
+   is therefore piecewise linear in M_0 through nodes every 0.05 from 1.00
+   to 1.45, each node the mean of the flat-faced thin-layer sets that
+   reach it (TN 3548 and R&M 3427, each set the mean over its readings and
+   its series, slits or holes, of its points interpolated linearly in M;
+   R&M 3427 reaches 1.12), and at 1.50 fig. 7's curve as the code holds it
+   above 1.5, so the nominal has no step at 1.5. This changes the bullet
+   "_Method_" above (fig. 7's curve served at M_0 from its start at M'
+   1.167); fig. 7's curve below 1.5 becomes a check.
+
+4. **Thick layers.** Above Mach 1.5 a layer with X above 1 multiplies the
+   thin-layer term by TR 1109 fig. 29(a)'s factor K(M, X), measured at M
+   1.5, 2.0 and 3.1. Below 1.5, K is held at its Mach 1.5 value, nominal
+   and both readings' ends (`thickLayerFactor(1.5, X)`). That is an
+   approximation, not a measurement; its error is carried by the band,
+   because every thick-layer point (RM A51J11, RM A52E01) is compared with
+   the nominal times K(1.5, X) at its own X (at most 4.5, where fig.
+   29(a)'s readings end; X above 4.5 takes K at 4.5, which lowers that
+   point's ratio and so widens the band, never narrows it).
+
+5. **The band.** For each point, base drag measured over modelled, r =
+   Cp_b / (Cp_b,nominal(M_0) K_nom(1.5, X)), K = 1 for X up to 1, taken
+   over the point's Mach interval (its reading error, or its report's
+   stated Mach accuracy where larger), and widened by the shape rule
+   (item 6). The band's ends at each node M_k are the least and greatest r
+   of every band-setting point whose Mach interval meets [M_(k-1),
+   M_(k+1)] (at 1.00, [1.00, 1.05]; at 1.50, [1.45, 1.50]); between nodes
+   they are linear in M, so every point lies inside the band at its own
+   Mach number (both nodes either side hold it). The band served is
+   [min(0.93 K_low/K_nom, low(M)), max(1.21 K_high/K_nom, high(M))]: never
+   narrower than the band above Mach 1.5 (0.93 to 1.21, with K's ends),
+   which its evidence (orifice position, facilities, flight) shows is the
+   least spread a correlation of base pressure carries; and equal to it at
+   Mach 1.5 unless points at 1.45 to 1.50 lie outside it. In that case the
+   step at 1.5 is reported, not hidden, and the band above 1.5 is not
+   changed (10.7 (ac)).
+
+6. **The shape widening** (0014 10.7 (s), item 1; decided here). _The
+   ordering, an argument:_ at a blunt base the flow leaving each face
+   turns round the corner by the face's own inclination as well as into
+   the wake, so faces that diverge toward the base turn it further and
+   lower the base pressure, and faces that converge (a boattail) turn it
+   less and raise it. At the same M_0, h/c and layer, a diverging section's
+   base drag therefore bounds a flat-faced edge's from above, and a
+   converging section's bounds it from below. _Measured:_ in one tunnel
+   (the NPL 18 by 14 in), R&M 3348's 4.0 deg wedge (h/c 0.14) against R&M
+   3427's parallel afterbody (h/c 0.10, interpolated linearly in M): the
+   wedge's base drag is 7% to 9% higher at M_0 1.00 and 2% to 5% higher at
+   1.11. Johnston's 5.7 deg wedge lies 18% to 22% above the nominal of
+   item 3 at M_0 1.01 to 1.23, R&M 3348's 6% to 11%. _The size:_ S(delta)
+   = S_NPL |delta| / 4.0 deg, S_NPL the largest of the NPL ratios less one
+   (0.094); linear in the face angle, an argument from one measured pair.
+   _How it applies:_ each inclined set's point enters the envelope
+   unshifted, and its range is extended by S on the side the ordering
+   does not bound: downward for a diverging face, [r (1 - S), r], upward
+   for a converging one, [r, r (1 + S)]. So a wedge's point at the band's
+   high end is not widened further (a plate lies below it), and one that
+   would set the low end is. _Registered fallback:_ where a pair measured
+   in one facility contradicts the ordering (RM A52E01's wings 3 and 4,
+   the same h/c with boattails of 6.88 and 2.02 deg; RM A51J11's three
+   thickened profiles, read against each other at the same M_0), the
+   widening becomes two-sided for every inclined set, [r (1 - S), r (1 +
+   S)].
+
+7. **What is refused below Mach 1.5**, each with its reason in plain
+   words, at every station along the span on fins of varying chord: a
+   layer parameter beyond the data (X above the largest X of any point in
+   either bracketing node's window, at most 4.5; where no thick-layer set
+   reaches a window, edges with X above the thin sets' largest are
+   refused there); h/c outside the least and greatest of the points in
+   either window; a laminar edge (item 1); a swept edge.
+
+8. **Labels.** Free edges: "estimated on component data", naming the
+   flat-faced sets, the inclined sets with their widening, the thick-layer
+   factor held at its Mach 1.5 value, and "tested only in the total".
+   Edges in the base plane: "an analogy, not a measurement", as above 1.5.
+
+9. **Tests** (`tests/base/fin-trailing-edge-transonic.test.ts`): every
+   band-setting point of both readings inside the band at its own Mach
+   number; the nominal and the band equal from both sides of Mach 1.5;
+   the nominal's nodes from the data; the NPL ratio; each refusal; and
+   planted errors (a point moved, a node moved, the widening's side
+   reversed) caught.
+
 ### 3.5 F5: thin sharp sections near Mach 1
 
 Double wedges (11.3% of cases) and single wedges (the page's section, and
