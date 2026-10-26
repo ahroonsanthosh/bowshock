@@ -9,7 +9,7 @@ Nothing to install and nothing to pay.
 **[Try it](https://ahroonsanthosh.github.io/bowshock/)** (needs WebGPU, such
 as a recent Chrome or Edge).
 
-![The app: the Basic Finner at Mach 1.8 in the 3D view, flow streaks coloured by Mach number, the builder on the left and the drag curve on the right](docs/images/hero.webp)
+![The app at 2880 by 1800: the Basic Finner at Mach 1.8 in the 3D view, flow streaks coloured by Mach number around the cone, the builder on the left and the drag curve on the right](docs/images/hero.webp)
 
 > Early days. Please don't use it for flight decisions yet.
 
