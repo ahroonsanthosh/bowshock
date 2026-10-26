@@ -1888,5 +1888,71 @@ allocation before any value of either report was read (by then only RM
 A51J11's model and test sections had been seen, as text, as item 1
 allows); content unchanged.
 
+_Second part, 2026-10-26: the figures, named before any value is read._
+Written after each report's model description, test conditions and
+figure captions were seen as text (`pdftotext` of the NTRS PDFs, each
+downloaded into its own new folder: RM A51J11, 44 PDF pages, SHA-256
+e6b779125d8359e968ad6b4d2b2c43d651ef5024f42bdb5574a6f7b93a8fdf57; RM
+A52E01, 35 pages,
+3f090609fb3a170703523cc14f26aa9cab55e6afe4718b397b289bbcf33efe54). Seen:
+RM A51J11's apparatus, tests and corrections sections and its notation
+for R; RM A52E01's apparatus, models table, tests and notation, and the
+one paragraph of its discussion that says what each figure compares; the
+captions of both (fig. 8's caption, as extracted, carries its abscissa's
+tick labels, no data). No figure page was viewed, and neither report's
+summary, results or conclusions were read for their findings.
+
+- _RM A51J11_ (Ames 16 ft tunnel, transonic bump; model rectangular,
+  effective aspect ratio 4): the 4% circular arc with its trailing edge
+  built up to 0.3, 0.6 and 1.0 times the maximum thickness (h/c 0.012,
+  0.024, 0.040), faired back to the section by straight lines; M 0.60 to
+  1.10, the leading-edge shock never attached; Reynolds number 1.7e6 to
+  2.2e6 on the mean aerodynamic chord; roughness (No. 60 carborundum to
+  0.10 chord) in some force tests; base pressure at one orifice at each of
+  25, 37.5, 62.5 and 87.5% semispan. Layer parameter about 1.35 to 1.42
+  (h/c 0.040), 2.2 to 2.4 (0.024) and 4.5 to 4.7 (0.012). The fairing
+  meets the base, by the description (a straight line from the built-up
+  edge tangent to the arc, computed on a parabolic arc), parallel to the
+  chord at h/c 0.040 and converging by about 1.0 and 2.1 deg at 0.024 and
+  0.012.
+- _RM A52E01_ (Ames 6 by 6 ft supersonic tunnel, wing on a sting-mounted
+  body): a tapered wing, aspect ratio 3.1, taper 0.39, mean aerodynamic
+  chord 0.944 ft, 3% biconvex section. Wing 2 has constant thickness from
+  midchord (h/c 0.030, its faces parallel to the chord at the base);
+  wings 3 and 4 end at half the maximum thickness (h/c 0.015) with
+  boattail angles of 6.88 and 2.02 deg; M 0.6 to 0.925 and 1.2 to 1.7;
+  Reynolds number 1.5e6 and 3.8e6 on the mean aerodynamic chord; base
+  pressure at one orifice in the trailing edge at about 50% semispan.
+  Layer parameter about 1.6 to 1.9 (wing 2) and 3.2 to 3.9 (wings 3 and
+  4).
+
+Named band-setting for F4 below Mach 1.5, each to be read twice and
+paired as above before it sets anything; how each set enters the band
+(the shape and the layer, which set directly, which only with a stated
+widening, which only as a check) is written in 0019 section 3.4 before
+any of their values is read:
+
+1. RM A51J11 fig. 14 (PDF p. 36): base pressure coefficient against Mach
+   number at semispan station 0.25, alpha 0 deg, for each trailing-edge
+   thickness. Used at M 1.00 to 1.10.
+2. RM A51J11 fig. 15 (PDF p. 37): base pressure coefficient against
+   semispan station, alpha 0 deg: the spread across the four stations, so
+   that fig. 14's one station is carried with that spread, not taken as
+   the span's mean.
+3. RM A52E01 fig. 8 (a) and (b) (PDF pp. 29 and 30): the wing
+   base-pressure coefficients of wings 2, 3 and 4 at the Mach numbers
+   shown, Reynolds numbers 1.5e6 and 3.8e6, at zero lift (by the figure's
+   ordinate, read as printed). Used at M 1.2 to 1.5. Its points at M 1.5
+   to 1.7 are a check of the present band above Mach 1.5 (0.93 to 1.21,
+   with TR 1109's thick-layer factor), which sets nothing there unless a
+   later entry decides; points below Mach 1.0 are not used (the term is
+   served from 1.0).
+
+Not used: RM A51J11 figs. 13 (incidence) and 16 to 20 (the boattailed
+edge, forces, wake fluctuations), the force and moment figures of both,
+and each report's Reynolds-number figure (the text's ranges are used).
+R&M 3323 fig. 4's points of refs. 32 and 33 become checks of these
+figures, as said above.
+
 Letters are allocated by the coordinator; (w) to (ab) are held by other
 branches.
