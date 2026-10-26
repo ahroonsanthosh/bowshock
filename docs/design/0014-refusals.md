@@ -2035,6 +2035,28 @@ What it costs and gains is recorded below from `docs/research/refusals/`
 run before (245a88e) and after, with the cross-check required to agree
 (0015 section 8).
 
+**2026-10-26, how TN 3819 fig. 32's three readings are used** (the
+coordinator's decision, made before any of them is set against a
+method). Fig. 32 now has three blind readings (round 6; round 14, commit
+e15934c; round 16, commit c69858e) and a three-way neutral pairing
+(`docs/research/total-drag/audit/pairing-2026-10-26-fig32-three/`,
+commit 7f8c898): readings 2 and 3 agree on all 12 symbols, with the same
+identities; reading 1 differs from both at the open symbol at x/c 0.8,
+the flagged symbols at x/c 0.6 and 0.4, and the faired curve's left end
+at x/c 1.0, gives one value per station from 0.8 to 0.0 with no
+identities, and recorded no file hash. Where all three agree, the agreed
+values are used; where reading 1 differs, the envelope of all three
+readings is used, reading 1 not being dropped because two readings
+outvote it. That is the wider of the choices, taken on purpose. Fig. 32
+is at Mach 2.41, so after the narrowing above it bears only on what
+(ad) assigns it at higher Mach numbers: route (i), the position members
+at Mach 2.0 to 3.0, whose method is still to be written in 0015 before
+its code. It does not bear on Mach 1.5 or below, where every position
+ahead of the base is refused and the revisit trigger is a measurement
+below Mach 1.5. (ad)'s rules apply to it as written; a case they do not
+cover is stopped and taken to the coordinator, not decided after seeing
+values.
+
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.

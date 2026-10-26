@@ -186,8 +186,8 @@ export function nearBasePositionReasons(
     out.push(
       `above Mach ${W1_TUNNEL_MACHS[1].toFixed(1)} no measurement with fins ahead of the base is settled ` +
         `(TN 2360 measures them at Mach ${W1_TUNNEL_MACHS[0]} and ${W1_TUNNEL_MACHS[1].toFixed(1)} only; ` +
-        "TN 3819 fig. 32's, at Mach 2.41, has readings that disagree on 3 of its 12 symbols, so it sets " +
-        "nothing yet), and TN 2360 finds the fins' effect reaching the base from farther ahead as the " +
+        "TN 3819 fig. 32's, at Mach 2.41, is read three times but no method using it is written yet, so " +
+        "it sets nothing), and TN 2360 finds the fins' effect reaching the base from farther ahead as the " +
         'Mach number rises, so its positions are not carried up',
     );
   }

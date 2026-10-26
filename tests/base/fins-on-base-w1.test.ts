@@ -1330,7 +1330,7 @@ describe('fins ending within a chord ahead of the base: what TN 2360 measures, a
             'measurement with fins ahead of the base is settled',
         );
         expect(e.message).toContain(
-          "TN 3819 fig. 32's, at Mach 2.41, has readings that disagree on 3 of its 12 symbols",
+          "TN 3819 fig. 32's, at Mach 2.41, is read three times but no method using it is written yet",
         );
         expect(e.message).not.toContain('awaits its second reading');
       }

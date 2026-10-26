@@ -45,8 +45,8 @@
   review withdrawn: every position ahead of the base is refused below
   Mach 1.5, and at Mach 1.5 to 2.0 positions are served only with TN
   2360's root chord of 1.5 body diameters (the chord rule, section 3.3);
-  above Mach 2.0 still refused, TN 3819 fig. 32's two readings disagreeing
-  on 3 of 12 symbols (section 10).
+  above Mach 2.0 still refused, TN 3819 fig. 32 read three times but no
+  method using it written yet (section 10).
 - **Date:** 2026-10-20 (revised 2026-10-21, 2026-10-22 and 2026-10-26)
 - **Inputs:** 0014 sections 5.1, 6.2 (W1) and 10; [0010](0010-base-drag-and-total.md)
   section 1.3 (the present factor, kept) and section 10; [0008](0008-total-drag.md)
@@ -384,8 +384,9 @@ Mach number falls. So "no relief up to x/c 0.4" is measured at M 1.5 and
 fins ahead of the base; no carry is used, a reach scaled by beta
 included. At M 1.5 to 2.0 the measured brackets above stay, inside the
 chord rule; above M 2.0 fins ahead of the base stay refused (TN 3819 fig.
-32's two readings disagree on 3 of its 12 symbols and a third reading is
-under way).
+32's two readings disagreed on 3 of its 12 symbols; since then a third
+reading and a three-way pairing are in, used as 0014 section 10.7 (ad)'s
+note of the same day says, and no method uses fig. 32 yet).
 
 The chord rule: TN 2360 measured positions with one geometry, a tail
 chord of 1.875 in on a 1.250 in body, a root chord of 1.5 body diameters.
@@ -1307,10 +1308,15 @@ hold-out of its own yet.
   code). NSWCDD/TR-92/509's fins one and two chords ahead were
   transcribed and examined before any registration, so they are a check
   that sets nothing, and only after Table 2's second transcription (0014
-  section 10.7 (ad)). Fig. 32 has since had its blind second reading
-  (round 14) and a neutral pairing (`pairing-2026-10-26-fig32/`): the two
-  disagree on 3 of its 12 symbols, and a third blind reading is under
-  way; it sets nothing until they are settled. Below M 1.5 every position
+  section 10.7 (ad)). Fig. 32 has since had a blind second reading
+  (round 14) and a third (round 16), and a three-way neutral pairing
+  (`pairing-2026-10-26-fig32-three/`): readings 2 and 3 agree on all 12
+  symbols, reading 1 differs at three symbols and the curve's left end;
+  the values are used as (ad)'s note of 2026-10-26 says (agreed values
+  where all three agree, the envelope of all three where reading 1
+  differs). Route (i)'s method is still to be written here before its
+  code; a case (ad)'s rules do not cover goes to the coordinator. Below M
+  1.5 every position
   ahead of the base is refused (section 3.3); what would reopen it is any
   measurement below M 1.5 with fins ahead of the base. At M 1.5 to 2.0
   other root chords than TN 2360's 1.5 body diameters need a measurement
