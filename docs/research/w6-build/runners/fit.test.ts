@@ -28,7 +28,11 @@ import { append, caseFromEnv, deg, gamma, log } from './common';
 const { shape: SHAPE, calibers: CAL, ratio: RATIO, mach: M, cylinder: CYL, body, tag } =
   caseFromEnv();
 const REF = Number(process.env.REF ?? 1);
-const MAXIT = Number(process.env.MAXIT ?? 40000);
+// Iterations allowed per refinement (from 2026-10-26, 16:20 UTC; 40000
+// before): the families settle within 14000 on nj = 80; a fit that has
+// not by 7000 per refinement is oscillating, not converging (README
+// section 4), and is saved as not converged with its last changes.
+const MAXIT = Number(process.env.MAXIT ?? 7000);
 const CHUNK = Number(process.env.CHUNK ?? 500) * REF;
 const CHECKPOINT = process.env.CHECKPOINT;
 const SAVE = process.env.SAVE;

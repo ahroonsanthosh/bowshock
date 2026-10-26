@@ -139,7 +139,10 @@ stopped and the grid finished by `runners/finish.sh` at 28000 iterations
 (7000 per refinement), saved as not converged with that oscillation; its
 march then ran (`jobs-extra.txt`). The analysis marks it ("checks
 false": not converged), and its iterative error, about 5e-7 of the drag,
-is stated wherever it is used.
+is stated wherever it is used. From 16:20 UTC on 2026-10-26 every fit
+the lanes start stops at 7000 iterations per refinement in the same way
+(`fit.test.ts`'s default, 40000 before): the families settle within
+14000 on nj = 80, and a fit that has not by 28000 there is oscillating.
 
 Estimated cost (the probe's times on a shared core): nj = 20 two to eight
 minutes, nj = 40 8 to 42 minutes, nj = 80 1.4 to 7 hours, a family's
