@@ -817,3 +817,17 @@ come the code (the rule as an option of `characteristicsFromShocked`,
 off by default so the third march stays as recorded) and the runners, in
 small commits. Then the runs, in the order above, each recorded as it
 comes, pass or fail.
+
+### 10.1 The fourth march's results
+
+The code is 93f8f93 (the rule) and cca56a7 (the runners), committed after
+the registration (01a2add).
+
+**V0 passes:** the unit process is untouched, and its test passes.
+
+**V1b passes**, unchanged, with the fourth march (`V1B_RESEED=1`;
+`results/v1b-fourth.json`). The numbers equal the third march's to the
+last digit, as they should: the pressure is taken ahead of the shock's
+formation, and the formation is found before any point is absorbed, so
+before any is re-seeded. The orders are 1.99 and 1.00, and on the finest
+the errors are 6.0e-8 and 0.0053.
