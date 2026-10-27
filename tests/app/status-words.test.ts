@@ -23,6 +23,7 @@ import {
   WAITING,
   type NoseEnd,
 } from '../../src/app/status-words';
+import { finsOnBaseFactorW1 } from '../../src/base/fins-on-base-w1';
 import {
   BOUNDED_REASON,
   CLASS_CLAIM,
@@ -175,26 +176,53 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     });
   });
 
-  it("the fin-sweep words are 0017's row: flat fins with a square, unswept trailing edge at any leading-edge sweep (0015 section 12)", () => {
-    const row = readFileSync(
+  it("the fin-sweep words are 0017's rows: flat fins with a square, unswept trailing edge at any leading-edge sweep from Mach 1.62 (0015 section 12), and the narrowing below it (0014 10.7 (z))", () => {
+    const rows = readFileSync(
       new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
       'utf8',
     )
       .split('\n')
-      .filter((l) => l.startsWith('| `fin-sweep`'));
-    expect(row).toHaveLength(1);
-    const [, reason, change] = row[0]!
-      .split('|')
-      .slice(1, -1)
-      .map((c) => c.trim());
+      .filter((l) => l.startsWith('| `fin-sweep`'))
+      .map((l) =>
+        l
+          .split('|')
+          .slice(1, -1)
+          .map((c) => c.trim()),
+      );
+    const row = (key: string) => {
+      const found = rows.filter((r) => r[0] === key);
+      expect(found, key).toHaveLength(1);
+      return found[0]!;
+    };
+    // The record's rows are the page's words, with the record's citation after the reason.
     const words = refusalWords({ component: 'body base', reason: 'fin-sweep', message: '' });
-    // The record's row is the page's words, with the record's citation after the reason.
+    const [, reason, change] = row('`fin-sweep`');
     expect(reason).toBe(`${words.reason} (0015 section 12)`);
     expect(change).toBe(words.change);
     expect(words.reason).toContain(
-      'flat fins with a square, unswept trailing edge are taken at any leading-edge sweep',
+      'flat fins with a square, unswept trailing edge are taken at any leading-edge sweep, but ' +
+        'below Mach 1.62 only unswept or swept 45 deg or more',
     );
-    expect(words.change).toContain('flat fins with a square, unswept trailing edge');
+    // The library's own refusal of a flat plate swept 20 deg at Mach 1.55 takes the narrowing's words.
+    let message = '';
+    try {
+      finsOnBaseFactorW1(1.55, {
+        count: 3,
+        section: { x: [0, 0.1, 1], halfThickness: [0, 0.012, 0.012], bluntTrailingEdge: true },
+        sectionFamily: 'other',
+        tanLeadingEdgeSweep: Math.tan((20 * Math.PI) / 180),
+        tanTrailingEdgeSweep: 0,
+        trailingEdgeAheadOfBase: 0,
+      });
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    const narrowed = refusalWords({ component: 'body base', reason: 'fin-sweep', message });
+    const [, nReason, nChange] = row('`fin-sweep` (flat fins swept under 45 deg, below Mach 1.62)');
+    expect(nReason).toBe(`${narrowed.reason} (0014 10.7 (z), the note of 2026-10-27)`);
+    expect(nChange).toBe(narrowed.change);
+    expect(narrowed.reason).toContain('measured only with fins swept 45 deg');
+    expect(narrowed.reason).not.toBe(words.reason);
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {
