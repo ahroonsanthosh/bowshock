@@ -1888,6 +1888,21 @@ after main's audit fix (5921198): totals served 228 of 8,000 without the
 ruling and 209 with it (Mach 1.5 to 1.8: 111 to 92; 1.8 to 3.0: 117
 either way), against main's 181; with the nose assumed served 743 and 687.
 
+_2026-10-27, the second ruling under this note:_ flat-faced fins with
+the trailing edge unswept and the leading edge swept beyond 60 deg are
+refused below Mach 1.62 as well, on the same rule: the juncture vortex's
+direction is not shown, and beyond 60 deg the plate is not even between
+two measured ends, it lies past the last one, so its ordering is not
+shown. The page's words name the missing measurement (base pressures
+with plates swept beyond 60 deg at the base below Mach 1.62). Exactly 60
+deg, and 45 to 60, stay as 0015 section 4 serves them; from Mach 1.62
+these plates stay served on the same ground as those under 45 deg (RM
+L52J21a's at most 5% relief). The code went in first (b3308ed), this
+line after it. No total moves at the audit's default size (209 of 8,000;
+687 with the nose assumed served): the plates it reaches are refused for
+something else as well; the rebuilt factor's sweep refusal goes from
+36.0% to 38.0% of cases.
+
 Main's unswept plates (10.7 (i)), registered and reviewed earlier on a
 physical argument, are not changed by this ruling, and whether they stay
 served below Mach 1.62 is an open question for the owner. The review's
@@ -1901,9 +1916,9 @@ an unswept plate could relieve more than the floor allows there, and no
 base pressure with unswept plates at the base below Mach 1.62 says it
 does not. By the rule applied above it would be refused; it was
 registered and reviewed under (i) as an argument from the slope
-mechanism and the measured relief, so the owner decides. (0015 section
-12 also names the same open direction for plates swept beyond 60 deg
-below Mach 1.62, which the ruling does not reach, for the coordinator.)
+mechanism and the measured relief, so the owner decides. (Plates swept
+beyond 60 deg below Mach 1.62, which 0015 section 12 named with the same
+open direction, are refused by the second ruling above.)
 
 Letters (w) to (y) are allocated by the coordinator on other branches;
 the next free letter is the coordinator's to allocate.
