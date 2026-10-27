@@ -673,3 +673,5 @@
 2026-10-27T13:27:20.294Z cone3rn0.3M1.97 nj20x2: resumed from checkpoint at 0 iterations
 2026-10-27T13:29:00.548Z cone3rn0.3M1.97 nj20x2: 1000 iterations, maxSpeed 3.58e-5, residual 1.21e-6, drag 0.116224300316, rate NaN, remaining 0.00e+0
 2026-10-27T13:32:08.945Z cone3rn0.3M1.97 nj20x2: 2000 iterations, maxSpeed 2.60e-6, residual 2.83e-8, drag 0.116227381655, rate NaN, remaining 0.00e+0
+2026-10-27T14:41:39.757Z ogive3rn0.03M3 nj20x4: 16000 iterations, maxSpeed 5.09e-12, residual 3.19e-14, drag 0.0884209378906, rate NaN, remaining 0.00e+0
+2026-10-27T15:15:22.299Z ogive3rn0.03M3 nj20x4: converged after 17538 iterations (6655s), drag 0.0884209378907, cap drag 0.00075517205 (247 faces), stagnation 2.882e-4% of pitot, standoff 0.2149 r_n (Billig 0.2050), fitted grid wall 86.6 angle 65.5 size 1.020 aspect 3.20; page checks: pass

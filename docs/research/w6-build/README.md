@@ -989,3 +989,92 @@ them.** The population draws r_n/R and Mach continuously, so an outline
 with no extent serves nothing. **W6 can serve nothing from what is
 referenced.** The allowance (twice the largest miss over every
 reference, 7.2e-3 of the drag) is therefore moot.
+
+## 11. State at the pause (2026-10-27)
+
+The coordinator paused W6 on 2026-10-27 so the CPU could go to the Von
+Karman outline work, pending the owner's choice. Nothing of W6 is
+proposed for main.
+
+**What stands.**
+
+- Geometry. The tip radius is a real option of the nose (section 1),
+  reviewed to a pass with notes (0d035d1), with the short check's
+  follow-ups in a3190df. Every page and library path still refuses a
+  rounded tip.
+- The marches. V1 failed as registered (9.1) and V1b passed (9.3). The
+  third march failed V2 on its first family (9.4), and the fourth failed
+  V3 (10.1). By sections 9 and 10, the marches stop. The forward regions
+  of the capped noses stay unreferenced.
+- What W6 can serve: nothing (10.2). The outline has no extent in r_n/R
+  or Mach, and it serves 0 of the audit population's rounded tips.
+- The TR 1386 check: model 4p at Mach 1.50 agrees (8.1). The other five
+  cases are not compared.
+- The lanes: every family in `results/lanes`. Since 10.2, the 3-caliber
+  ogive at r_n/R 0.03, Mach 3 has three grids (converged, checks pass,
+  order 1.65), and its march has not run. The Von Karman 5-caliber nose
+  at r_n/R 0.15, Mach 3 has its march: only the aft line passes. Neither
+  changes 10.2.
+
+**Paused, and resumable.** Each was stopped by its own process group,
+and each resumes from its checkpoints when restarted:
+
+- the ogive lane (`runners/lane.sh runners/jobs-ogive.txt` from
+  `tests/tmp-w6b/tree`): next, the march of the 3-caliber ogive, r_n/R
+  0.03, Mach 3, then the rest of its job list;
+- the Von Karman lane (`jobs-vk.txt`, same tree): next, the 3-caliber
+  nose at r_n/R 0.03, Mach 3 on nj = 80, from its seeded checkpoint;
+- the TR 1386 runner (`runners/tr1386.sh` from `tests/tmp-w6b/tree3`):
+  next, 4p at Mach 1.97 on nj = 40 from its checkpoint, then the other
+  four cases and the wall-pressure step;
+- not started: the nj = 160 families (section 3), the parabola K = 1, the
+  page's tip-radius input and the allowance.
+
+**The owner's choice.** The options:
+
+- **(a) Pause.** Rounded tips stay refused, about half the population's
+  noses, and W6 stays on this branch.
+- **(b) A different independent reference for the forward region.** Two
+  candidates, each to be registered before it runs:
+  - _Measured pressures on blunted ogives or Von Karman noses._ These
+    would be named in a dated 0014 entry first, then read blind by two
+    readers and paired, as TR 1386 was. That is about 1 to 2 days, mostly
+    reading, with little CPU. It needs a source at r_n/R 0.03 to 0.15 and
+    Mach 1.3 to 3. Readings carry about 0.004 to 0.02 in P, which is of
+    the order of the 2.6% to 3.6% forward-region gap. So it may confirm
+    or reject the fitted solver there, but not set a tight band.
+  - _An independent Euler solver_ (another code and grid, with shock
+    capturing through the embedded shock), run on the families at three
+    or more resolutions. That is about 3 to 5 days of setup and
+    verification, plus 20 to 60 CPU-hours. Its own convergence through
+    the embedded shock would have to be shown.
+- **(c) Other honest routes.**
+  - _The four-grid procedure on the capped families_ (nj = 160, section
+    3): about 15 to 50 CPU-hours per family. It is not independent, so
+    serving on it would be a policy change by the owner, labelled as
+    such.
+  - _Serving rounded tips with an explicit, large band_: the measured
+    gap between the fitted solver and the first march ahead of the merge
+    (2.6% to 3.6% of the drag on the 5-caliber ogive at Mach 1.3; each
+    other case would need its own), labelled as a bound and not a
+    verified reference. This is also the owner's call.
+
+**The branch's check at the pause** (19:10 UTC, load 13 to 16 on four
+cores): formatting, lint and typecheck pass. The test run was stopped
+after 30 minutes, to free the CPU. Before that, tests in five files had
+failed:
+- `characteristics.test.ts`, at 5.5 s against the default 5 s limit;
+- `hold-out-run.test.ts`, one test, after 10.7 s (its limit not
+  confirmed);
+- `euler1d.test.ts` and `euler2d-validation.test.ts`, three tests, at 43
+  to 88 s;
+- `euler2d-cone.test.ts`, whose nine tests were skipped.
+
+The characteristics and hold-out tests pass when rerun alone, so they
+are the load's, not the code's. The engine tests' failures were not
+rerun, so their cause is not confirmed; W6 changes nothing in the
+engine. The W6 tests themselves (nose, transonic drag, total drag,
+nose-drag solve, characteristics-shocked) passed when run on their own
+on 2026-10-27. Nothing of W6 is proposed for main, so the full check,
+the build, the GPU tests and the population re-run are owed only when
+something is.
