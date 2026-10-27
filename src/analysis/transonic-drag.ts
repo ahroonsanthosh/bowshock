@@ -26,7 +26,7 @@
 
 import { Euler2D } from '../engine-cpu/euler2d';
 import type { Body } from '../geometry/body';
-import { noseTipSlope } from '../geometry/nose';
+import { isCone, noseTipSlope } from '../geometry/nose';
 import type { Primitive2D } from '../scheme/flux';
 import { taylorMaccoll } from '../validation/taylor-maccoll';
 import { domainAllowance, type DomainAllowance } from '../verification/domain-allowance';
@@ -795,7 +795,7 @@ function finerMayResolve(values: readonly number[]): boolean {
 export function referenceNote(body: Body, mach: number, gamma: number): ReferenceNote {
   const exact = exactDrag(body, mach, gamma);
   if (exact !== null) return { exact: true, note: exact.note };
-  if (body.nose.shape.kind === 'conical' && body.nose.tipRadius === undefined) {
+  if (isCone(body.nose.shape) && body.nose.tipRadius === undefined) {
     try {
       taylorMaccoll(mach, Math.atan(body.nose.baseRadius / body.nose.length), gamma);
       return { exact: false, note: 'the cone’s conical surface flow would be subsonic' };
@@ -817,7 +817,8 @@ export function exactDrag(
   mach: number,
   gamma: number,
 ): { readonly value: number; readonly note: string } | null {
-  if (body.nose.shape.kind !== 'conical' || body.nose.tipRadius !== undefined) return null;
+  // The cone by any of its names (isCone): each gets the same check.
+  if (!isCone(body.nose.shape) || body.nose.tipRadius !== undefined) return null;
   try {
     const flow = taylorMaccoll(mach, Math.atan(body.nose.baseRadius / body.nose.length), gamma);
     if (!(flow.surfaceMach > 1)) return null;

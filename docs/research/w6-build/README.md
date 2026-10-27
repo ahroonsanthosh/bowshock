@@ -67,11 +67,11 @@ cancels near the tip. **The lanes keep the old cap formula** (their frozen
 trees are ae794e4's and are not restarted): against the geometry after
 these fixes, the radius sampled at 20001 points per nose (x = L k^3 /
 20000^3, so densest at the tip) differs by at most 4.3e-12 R, at the
-samples within 1e-12 of the tip; closer to it the two formulas differ
-by up to 3.6e-11 R (near x = 1e-14, the third review). The grids
-evaluate the profile only above about x = 1e-8, where the two differ by
-at most 2e-14 R (the third review's check of the lanes' points: 2.2e-14
-R). `results/geometry-compare-after-review2.json` holds the comparison as measured now.
+samples within 1e-12 of the tip; closer to it the difference grows,
+to 3.6e-11 R near x = 1e-14 and 1.8e-9 R near x = 1e-18 (the third
+review), though no grid samples there. The grids evaluate the profile
+only above about x = 1e-8, where the two differ by at most 2.2e-14 R
+(the third review's check of the lanes' points). `results/geometry-compare-after-review2.json` holds the comparison as measured now.
 
 Reproduced as well: the probe's first fit (5-caliber tangent ogive, 0.05
 R, Mach 1.3, nj = 20) on main 3389a04 with ae794e4's geometry gives

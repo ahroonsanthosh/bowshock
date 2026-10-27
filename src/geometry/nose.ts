@@ -254,7 +254,12 @@ export interface CappedNose {
 export const CAPPED_SHAPES =
   'the tangent ogive (longer than its radius), the Von Karman nose, the parabola of parameter 1 and the cone (by any of its names: the ogive below parameter 0.001, the parabola of parameter 0, the power series of exponent 1)';
 
-/** Whether a shape is the cone, by any of its names. */
+/**
+ * Whether a shape is the cone, by any of its names. Their profiles agree
+ * to rounding. At base radius 0.5, which every app path uses, the review
+ * of 0d035d1 found them bit for bit the same (six names, one fitted drag
+ * at the Basic Finner's size); at other base radii they need not be.
+ */
 export function isCone(shape: NoseShape): boolean {
   switch (shape.kind) {
     case 'conical':

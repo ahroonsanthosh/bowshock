@@ -183,6 +183,52 @@ describe('verifiedTransonicDrag (design record 0013, "What a page solve does")',
     expect(result.label).not.toMatch(/most of the band/);
   });
 
+  it('a cone under any of its names gets the same exact-solution check, label and refusal', async () => {
+    const names = [
+      { kind: 'conical' },
+      { kind: 'ogive', parameter: 0.0005 },
+      { kind: 'parabolic', parameter: 0 },
+      { kind: 'power', exponent: 1 },
+    ] as const;
+    const plain = exactDrag(cone, 1.1, 1.4)!;
+    expect(plain).not.toBeNull();
+    for (const shape of names) {
+      const named: Body = { ...cone, nose: { ...cone.nose, shape } };
+      const exact = exactDrag(named, 1.1, 1.4);
+      expect(exact, shape.kind).not.toBeNull();
+      // The profiles agree to rounding, so the exact solution is the same.
+      expect(Math.abs(exact!.value - plain.value), shape.kind).toBeLessThan(1e-12);
+      expect(exact!.note, shape.kind).toBe(plain.note);
+      expect(referenceNote(named, 1.1, 1.4).exact, shape.kind).toBe(true);
+      const solved = await verifiedTransonicDrag(
+        named,
+        options,
+        synthetic({ converged: (r) => 0.0945 + 1e-4 / r ** 2 }),
+      );
+      expect(solved.kind, shape.kind).toBe('solved');
+      if (solved.kind === 'solved') {
+        expect(solved.label, shape.kind).toMatch(/checked here against the exact solution/);
+      }
+      const refused = await verifiedTransonicDrag(
+        named,
+        options,
+        synthetic({ converged: (r) => 0.0955 + 1e-4 / r ** 2 }),
+      );
+      expect(refused, shape.kind).toMatchObject({ kind: 'refused', reason: 'no-band' });
+      if (refused.kind === 'refused') {
+        expect(refused.message, shape.kind).toMatch(
+          /does not contain the solve's error against the exact solution/,
+        );
+      }
+    }
+    // A cone-like ogive just above the limit is no cone: no exact solution.
+    const near: Body = {
+      ...cone,
+      nose: { ...cone.nose, shape: { kind: 'ogive', parameter: 0.002 } },
+    };
+    expect(exactDrag(near, 1.1, 1.4)).toBeNull();
+  });
+
   it('a band that does not contain the error against the exact solution is refused', async () => {
     const result = await verifiedTransonicDrag(
       cone,
