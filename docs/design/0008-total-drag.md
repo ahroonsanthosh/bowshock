@@ -287,6 +287,33 @@ Every base data set opened at these conditions is used to set this band, so
 none is left to gate it: the base correlation is **band estimation**, and its
 only test is through the total (section 6.2, B5).
 
+**Corrected 2026-10-27: the band is 0.77 to 1.18** (0014 section 10.7
+(ah)). The rule above was not applied to body-alone base pressures opened
+inside this domain after the band was set, nor to one this record opened
+itself: fig. 35's no-fin tunnel symbol at M 1.50, -0.194, in section 3.4's
+table, which is TN 2360's body without fins, 1.12 times the curve. An
+independent review found it outside 0.82 to 1.08. Applied now, with every
+paired reading, against both curves, as above:
+
+- TN 2360's body alone (TN 3819 figs. 33 and 35, M 1.5 and 2.0; ogive-cylinder,
+  sting d/h 0.4, R 4.5e6): 1.003 to 1.124;
+- the Langley 9 in tunnel's body alone (the same figures, M 2.41): 0.964 to
+  1.001;
+- RM L52J21a figs. 31 to 33 (d) (unfinned, cylindrical base, sting, R near
+  8e6, three noses): 0.773 to 1.024, the radome nose at M 1.62 the low end;
+- TR 1051 fig. 23(b) at its thinnest sting, d/h 0.35 (cone- and
+  ogive-cylinders tripped turbulent, R 4e6 to 7.5e6): 0.943 to 1.178, M 2.9
+  the high end.
+
+With the tunnel symbols and Herrin and Dutton the envelope is 0.7731 to
+1.1782, rounded outward: **0.77 to 1.18**. Nothing in the domain stated here
+excludes these sets: no limit on Reynolds number, layer thickness, afterbody
+length or nose shape is stated, and every tunnel datum is sting-supported.
+Thicker stings measure the sting effect itself (the last item of the list
+above) and are not used. The text above is kept as written; its numbers are
+the band before the correction. The served value is unchanged (the curve);
+only the band widens.
+
 Below Mach 1.5 the base data opened are the free-flight curve above, TN
 D-4013 (sting-affected, boat-tailed) and TN 3372 (identical models disagree
 by up to 0.06 in P_B at subsonic speeds, p. 3): not claimable.

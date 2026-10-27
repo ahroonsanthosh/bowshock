@@ -7,9 +7,10 @@
  *   continued below 1.5 (its rows at M 1.0, 1.2, 1.4 and 1.5), linear in
  *   M as above, times the band's midpoint (a method choice, as for W1's
  *   brackets: every free-flight datum below M 1.5 lies above the curve).
- * - **Band, over the curve:** from 0.82, the band-setting low end of M 1.5
- *   to 3.0 (./compiled-curve.ts) carried down, since no finless datum
- *   below the curve was found under M 1.5, to the largest free-flight
+ * - **Band, over the curve:** from the band-setting low end of M 1.5 to
+ *   3.0 (./compiled-curve.ts; 0.77 since 0014 section 10.7 (ah), 0.82
+ *   before) carried down, since no finless datum below the curve was found
+ *   under M 1.5, to the largest free-flight
  *   datum over the curve below M 1.5 plus its reading error, rounded
  *   outward: RM L52E06 fig. 8's finless PARD body A (each reading), with
  *   TN 3819 fig. 18's free-flight curve beside it. Carried flat over M 1.3
@@ -180,8 +181,8 @@ export const W2_LABEL =
   `${W2_BAND.high.toFixed(2)} over the curve, set on free-flight data at Mach 1.0 to 1.3 (RM L52E06 fig. ` +
   "8, TN 3819 fig. 18) and carried to 1.5 (0015 section 11); the curve's rows below 1.5 and fig. 18's " +
   'free-flight curve read twice; with fins at the base, the fins-on-base members built on TN 3819 fig. ' +
-  "35's free-flight line apply to the curve itself, not on top of the 1.065 (0015 section 11.2); tested " +
-  'only in the total';
+  `35's free-flight line apply to the curve itself, not on top of the ${W2_BAND.nominal.toFixed(3)} (0015 section ` +
+  '11.2); tested only in the total';
 
 /** The curve at M 1.0 to 1.5 (below the compiled curve's own range), as ./compiled-curve.ts returns it above. */
 export function w2CurveBasePressure(mach: number): CompiledCurveBasePressure {

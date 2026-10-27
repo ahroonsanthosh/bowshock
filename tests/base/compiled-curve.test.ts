@@ -10,6 +10,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { bodyBaseDrag, COMPILED_CURVE_LABEL } from '../../src/base/base-drag';
 import {
+  BODY_ALONE_IN_DOMAIN,
   COMPILED_CURVE_BAND,
   COMPILED_CURVE_CURVATURE_BOUND,
   COMPILED_CURVE_MACH_RANGE,
@@ -19,7 +20,13 @@ import {
   interpolationErrorBound,
   twiceReadNodes,
 } from '../../src/base/compiled-curve';
+import {
+  L52J21A_FIG31_33D,
+  TN3819_FIG33,
+  TN3819_FIG35_TUNNEL_W1,
+} from '../../src/base/fins-on-base-w1-data';
 import { BaseRefusal } from '../../src/base/refusal';
+import { TN3819_FIG35_TUNNEL } from '../../src/base/tn3819-fig35';
 import {
   TN3819_FIG18_CHECKS,
   TN3819_FIG18_CURVE_READING_ERROR,
@@ -251,11 +258,39 @@ describe('the band, recomputed from the data', () => {
     expect(e.herrinDutton.max).toBeCloseTo(0.885, 3);
   });
 
-  it('rounded outward: 0.82 to 1.08', () => {
-    expect(COMPILED_CURVE_BAND).toEqual({ low: 0.82, high: 1.08 });
+  it('the body-alone sets of 0014 10.7 (ah), every reading, against both curves', () => {
+    const b = compiledCurveBandEvidence().bodyAlone;
+    expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'TN 2360')).toHaveLength(10);
+    expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'Langley 9 in')).toHaveLength(5);
+    expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'RM L52J21a')).toHaveLength(20);
+    expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'TR 1051')).toHaveLength(6);
+    // TN 2360's body alone: fig. 33's first reading at M 1.5 over the served curve sets its high end.
+    expect(b['TN 2360'].min).toBeCloseTo(1.0027, 4);
+    expect(b['TN 2360'].max).toBeCloseTo(0.1948 / 0.1733, 12);
+    expect(b['Langley 9 in'].min).toBeCloseTo(0.9639, 4);
+    expect(b['Langley 9 in'].max).toBeCloseTo(1.0006, 4);
+    // RM L52J21a: the radome nose at M 1.62, round 7's -0.1331, over the more negative curve.
+    expect(b['RM L52J21a'].min).toBeCloseTo(-0.1331 / compiledCurveValue(1.62, 'moreNegative'), 12);
+    expect(b['RM L52J21a'].min).toBeCloseTo(0.7731, 4);
+    expect(b['RM L52J21a'].max).toBeCloseTo(1.0235, 4);
+    // TR 1051 at M 2.9, the audit's -0.118, over the served curve.
+    expect(b['TR 1051'].min).toBeCloseTo(0.9425, 4);
+    expect(b['TR 1051'].max).toBeCloseTo(-0.118 / compiledCurveValue(2.9, 'lessNegative'), 12);
+    expect(b['TR 1051'].max).toBeCloseTo(1.1782, 4);
+  });
+
+  it('rounded outward: 0.77 to 1.18 (0014 10.7 (ah)); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08', () => {
+    expect(COMPILED_CURVE_BAND).toEqual({ low: 0.77, high: 1.18 });
     const e = compiledCurveBandEvidence();
+    expect(e.min).toBeCloseTo(0.7731, 4);
+    expect(e.max).toBeCloseTo(1.1782, 4);
     expect(COMPILED_CURVE_BAND.low).toBeLessThanOrEqual(e.min);
     expect(COMPILED_CURVE_BAND.high).toBeGreaterThanOrEqual(e.max);
+    const before = {
+      low: Math.floor(100 * Math.min(e.tunnel.min, e.herrinDutton.min)) / 100,
+      high: Math.ceil(100 * Math.max(e.tunnel.max, e.herrinDutton.max)) / 100,
+    };
+    expect(before).toEqual({ low: 0.82, high: 1.08 });
   });
 
   it('the more negative curve lies inside the band about the served one', () => {
@@ -265,6 +300,82 @@ describe('the band, recomputed from the data', () => {
       expect(ratio).toBeGreaterThanOrEqual(COMPILED_CURVE_BAND.low);
       expect(ratio).toBeLessThanOrEqual(1.036);
     }
+  });
+});
+
+/**
+ * 0008 section 3.3's rule, "every base data set opened at these conditions is used to set this band", applied
+ * by 0014 section 10.7 (ah): every body-alone base pressure opened in the curve's domain (Mach 1.5 to 3.0,
+ * cylindrical afterbody, turbulent, no fins, power off), each paired reading, lies inside the band served
+ * on the curve. The readings are taken from the data modules where main holds them, and typed here from
+ * docs/research/total-drag/data/base_sources.md for TR 1051, so that these tests ran, and failed, on the
+ * code before (ah).
+ */
+describe('every body-alone base pressure opened in the domain lies inside the served band (0014 10.7 (ah))', () => {
+  const served = (mach: number) =>
+    bodyBaseDrag({
+      mach,
+      afterbody: 'cylinder',
+      boundaryLayerAtBase: 'turbulent',
+      baseAreaRatio: 1,
+    });
+  const expectInside = (what: string, mach: number, pB: number) => {
+    const r = served(mach);
+    const at = `${what}: M ${mach}, P_B ${pB}, served ${r.low.toFixed(4)} to ${r.high.toFixed(4)}`;
+    expect(-pB, at).toBeGreaterThanOrEqual(r.low);
+    expect(-pB, at).toBeLessThanOrEqual(r.high);
+  };
+
+  it("TN 2360's body alone at Mach 1.5 and 2.0: TN 3819 fig. 33 (two readings), fig. 35's no-fin tunnel symbol (three)", () => {
+    const fig33 = TN3819_FIG33.filter((p) => p.thicknessRatio === 0 && p.mach <= 2.0);
+    const fig35 = [...TN3819_FIG35_TUNNEL, ...TN3819_FIG35_TUNNEL_W1].filter(
+      (p) => p.source === 'ref. 26',
+    );
+    expect(fig33).toHaveLength(4);
+    expect(fig35).toHaveLength(6);
+    // At M 1.5 these are 1.119 to 1.124 times the curve (-0.1733): outside 0.82 to 1.08, the band before (ah).
+    for (const p of fig33) expectInside(`TN 3819 fig. 33, ${p.reading}`, p.mach, p.pB);
+    for (const p of fig35) expectInside(`TN 3819 fig. 35, ${p.reading}`, p.mach, p.withoutFins);
+  });
+
+  it("the Langley 9 in tunnel's body alone at Mach 2.41 (TN 3819 figs. 33 and 35)", () => {
+    const fig33 = TN3819_FIG33.filter((p) => p.thicknessRatio === 0 && p.mach > 2.0);
+    const fig35 = [...TN3819_FIG35_TUNNEL, ...TN3819_FIG35_TUNNEL_W1].filter(
+      (p) => p.source === 'Langley 9 in',
+    );
+    expect(fig33.length + fig35.length).toBe(5);
+    for (const p of fig33) expectInside(`TN 3819 fig. 33, ${p.reading}`, p.mach, p.pB);
+    for (const p of fig35) expectInside(`TN 3819 fig. 35, ${p.reading}`, p.mach, p.withoutFins);
+  });
+
+  it("RM L52J21a's unfinned bodies (figs. 31 to 33 (d)), every nose and both readings, the radome at M 1.62 among them", () => {
+    expect(L52J21A_FIG31_33D).toHaveLength(20);
+    // The radome nose at M 1.62: 0.800 and 0.796 times the curve, below 0.82, the band's low end before (ah).
+    for (const p of L52J21A_FIG31_33D) {
+      expectInside(`RM L52J21a ${p.nose}, ${p.reading}`, p.mach, p.pB);
+    }
+  });
+
+  it('TR 1051 fig. 23(b), the thinnest sting (d/h 0.35), both readings, at M 1.5, 2.0 and 2.9', () => {
+    // base_sources.md section 2: first reading and the audit's. At M 2.9 they are 1.148 and 1.178 times the curve.
+    const readings: readonly [number, number][] = [
+      [1.5, -0.174],
+      [1.5, -0.176],
+      [2.0, -0.141],
+      [2.0, -0.147],
+      [2.9, -0.115],
+      [2.9, -0.118],
+    ];
+    for (const [mach, pB] of readings) expectInside('TR 1051 fig. 23(b)', mach, pB);
+  });
+
+  it("TN 3819 fig. 18's tunnel symbols at M 1.5 to 3.0 and Herrin and Dutton, as before", () => {
+    for (const s of TN3819_FIG18_TUNNEL.filter((t) => t.mach <= 3.0)) {
+      expectInside('fig. 18 symbol, first', s.mach, s.first);
+      expectInside('fig. 18 symbol, audit', s.mach, s.audit);
+    }
+    const q = 0.5 * 1.4 * 2.46 ** 2;
+    for (const ratio of [0.553, 0.575]) expectInside('Herrin and Dutton', 2.46, (ratio - 1) / q);
   });
 });
 
@@ -283,8 +394,8 @@ describe('body base drag: the arithmetic', () => {
       const cd = -p.pB * area;
       const e = p.interpolationError * area;
       expect(r.cd).toBeCloseTo(cd, 15);
-      expect(r.low).toBeCloseTo(0.82 * cd - e, 15);
-      expect(r.high).toBeCloseTo(1.08 * cd + e, 15);
+      expect(r.low).toBeCloseTo(0.77 * cd - e, 15);
+      expect(r.high).toBeCloseTo(1.18 * cd + e, 15);
       expect(r.labels).toEqual([COMPILED_CURVE_LABEL]);
       expect(r.finsOnBase).toBeUndefined();
     }
@@ -308,12 +419,12 @@ describe('body base drag: the arithmetic', () => {
     const f = r.finsOnBase!;
     const q = -compiledCurveValue(2.4, 'lessNegative');
     expect(r.cd).toBeCloseTo(q * f.nominal, 15);
-    expect(r.low).toBeCloseTo(r.cd - 0.18 * r.cd + (f.low - f.nominal) * q, 15);
-    expect(r.high).toBeCloseTo(r.cd + 0.08 * r.cd + (f.high - f.nominal) * q, 15);
+    expect(r.low).toBeCloseTo(r.cd - 0.23 * r.cd + (f.low - f.nominal) * q, 15);
+    expect(r.high).toBeCloseTo(r.cd + 0.18 * r.cd + (f.high - f.nominal) * q, 15);
     expect(r.labels[1]).toMatch(/^an analogy, not a measurement/);
   });
 
-  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.8840 of it (M 3.0, fins at the base; 0.9535 before the correction of 0010 section 11), 0.656 without fins', () => {
+  it('never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9557 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.717 without fins (0.656 before (ah))', () => {
     const fins = {
       count: 4,
       thicknessRatio: 0.08,
@@ -344,9 +455,9 @@ describe('body base drag: the arithmetic', () => {
       }
     }
     withFins = Math.max(withFins, at(3.0, true).high / at(3.0, true).vacuum);
-    expect(withFins).toBeCloseTo(0.884, 4);
+    expect(withFins).toBeCloseTo(0.9557, 4);
     expect(at(3.0, true).high / at(3.0, true).vacuum).toBe(withFins);
-    expect(Math.round(1000 * without) / 1000).toBe(0.656);
+    expect(Math.round(1000 * without) / 1000).toBe(0.717);
   });
 
   it('fins a chord or more ahead: the plain curve, labelled not validated with fins', () => {

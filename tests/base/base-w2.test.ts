@@ -132,14 +132,16 @@ describe('the curve below Mach 1.5: read twice, and its interpolation bound', ()
 });
 
 describe('the band and the nominal', () => {
-  it('low end 0.82 carried down; high end the largest free-flight datum plus its error, rounded outward', () => {
+  it('low end carried down (0.77 since 0014 10.7 (ah), 0.82 before); high end the largest free-flight datum plus its error, rounded outward', () => {
     expect(W2_BAND.low).toBe(COMPILED_CURVE_BAND.low);
     // The first reading at M 1.055, 0.2389 +-0.0012, where the curve runs along the 0.24 gridline.
     const largest = (0.2389 + 0.0012) / curve(1.055);
     expect(Math.max(...w2FreeFlightRatios().map((r) => r.ratio))).toBeCloseTo(largest, 12);
     expect(largest).toBeCloseTo(1.3011, 4);
     expect(W2_BAND.high).toBe(1.31);
-    expect(W2_BAND.nominal).toBeCloseTo(1.065, 12);
+    expect(W2_BAND.low).toBe(0.77);
+    // The nominal is the band's midpoint (0015 section 11.1): 1.04, 1.065 before (ah).
+    expect(W2_BAND.nominal).toBeCloseTo(1.04, 12);
     // Every free-flight datum below M 1.5 lies above the curve and inside the band.
     for (const r of w2FreeFlightRatios()) {
       expect(r.ratio).toBeGreaterThan(1);
@@ -155,13 +157,13 @@ describe('the term (bodyBaseDrag)', () => {
     baseAreaRatio: 1,
   };
 
-  it('at M 1.2: the curve times the midpoint, the band from 0.82 to 1.31 of the curve, plus interpolation', () => {
+  it('at M 1.2: the curve times the midpoint, the band from 0.77 to 1.31 of the curve, plus interpolation', () => {
     const r = bodyBaseDrag({ ...base, mach: 1.2 });
     const q = curve(1.2);
-    expect(r.cd).toBeCloseTo(q * 1.065, 12);
-    expect(r.low).toBeCloseTo(q * 0.82 - r.curve.interpolationError * 1.065, 12);
-    expect(r.high).toBeCloseTo(q * 1.31 + r.curve.interpolationError * 1.065, 12);
-    expect(r.curveBand).toMatchObject({ low: 0.82, high: 1.31, source: 'w2' });
+    expect(r.cd).toBeCloseTo(q * 1.04, 12);
+    expect(r.low).toBeCloseTo(q * 0.77 - r.curve.interpolationError * 1.04, 12);
+    expect(r.high).toBeCloseTo(q * 1.31 + r.curve.interpolationError * 1.04, 12);
+    expect(r.curveBand).toMatchObject({ low: 0.77, high: 1.31, source: 'w2' });
     expect(r.labels[0]).toBe(W2_LABEL);
     expect(r.curve.bracketReadTwice).toBe(true);
   });
@@ -169,8 +171,8 @@ describe('the term (bodyBaseDrag)', () => {
   it('the band steps at M 1.5, and so does the nominal (a method choice, 0015 section 11)', () => {
     const below = bodyBaseDrag({ ...base, mach: 1.4999 });
     const at = bodyBaseDrag({ ...base, mach: 1.5 });
-    expect(below.cd / at.cd).toBeCloseTo(1.065, 3);
-    expect(at.curveBand).toMatchObject({ low: 0.82, high: 1.08, nominal: 1, source: 'compiled' });
+    expect(below.cd / at.cd).toBeCloseTo(1.04, 3);
+    expect(at.curveBand).toMatchObject({ low: 0.77, high: 1.18, nominal: 1, source: 'compiled' });
   });
 
   it('refused below Mach 1.0', () => {
@@ -200,7 +202,7 @@ describe('the term (bodyBaseDrag)', () => {
     const f = r.finsOnBase as ReturnType<typeof finsOnBaseFactorW1>;
     expect(f.analogy).toBe(false);
     // Its high end on W2's term (0015 section 11.2) carries the M 2.41 tunnel excess (0015 section 3.1).
-    expect(f.high).toBeCloseTo(1.6211, 4);
+    expect(f.high).toBeCloseTo(1.6601, 4);
     expect(f.label).toMatch(
       /^estimated on component data: the rebuilt fins-on-base factor \(0015\), measured on/,
     );
@@ -234,22 +236,23 @@ describe('the term (bodyBaseDrag)', () => {
       const r = bodyBaseDrag({ ...base, mach, fins });
       return [r.cd, r.low, r.high].map((x) => Math.round(1e4 * x) / 1e4);
     };
-    // M 1.5, where W2's 1.065 ends and TN 2360's ratio members begin.
+    // M 1.5, where W2's 1.04 ends (1.065 before 0014 10.7 (ah)) and TN 2360's ratio members begin.
     expect(term(arcs, 1.5 - 1e-9)[0]).toBe(0.2847);
     expect(term(arcs, 1.5)[0]).toBe(0.2817);
-    expect(term(wedges, 1.5 - 1e-9)).toEqual([0.2301, 0.1017, 0.3585]);
-    expect(term(wedges, 1.5)).toEqual([0.2002, 0.1092, 0.2712]);
+    expect(term(wedges, 1.5 - 1e-9)).toEqual([0.2283, 0.0918, 0.3648]);
+    expect(term(wedges, 1.5)).toEqual([0.2002, 0.0992, 0.2912]);
     // M 1.62, where the zero member goes from RM L52E06's 0.838 to RM L52J21a's 0.938.
-    expect(term(wedges, 1.6)).toEqual([0.1967, 0.1056, 0.268]);
-    expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.1051, 0.2649]);
-    expect(term(wedges, 1.62)).toEqual([0.2031, 0.1203, 0.2655]);
+    expect(term(wedges, 1.6)).toEqual([0.1967, 0.0958, 0.2877]);
+    expect(term(wedges, 1.62 - 1e-9)).toEqual([0.1947, 0.0953, 0.2843]);
+    expect(term(wedges, 1.62)).toEqual([0.2031, 0.1101, 0.2858]);
     expect(term(arcs, 1.62 - 1e-9)[0]).toBeCloseTo(term(arcs, 1.62)[0]!, 3);
-    // Below M 1.5, on W2's term, +-31.7% to +-34.9% on F (sharp sections and plates alike).
+    // Below M 1.5, on W2's term, +-32.8% to +-35.9% on F (sharp sections and plates alike; +-31.7% to
+    // +-34.9% before 0014 10.7 (ah) moved W2's midpoint from 1.065 to 1.04).
     const hw = Array.from({ length: 501 }, (_, k) => 1.0 + k * 0.000999).map((m) => {
       const f = bodyBaseDrag({ ...base, mach: m, fins: wedges }).finsOnBase!;
       return Math.round((1000 * (f.high - f.low)) / 2 / f.nominal) / 10;
     });
-    expect([Math.min(...hw), Math.max(...hw)]).toEqual([31.7, 34.9]);
+    expect([Math.min(...hw), Math.max(...hw)]).toEqual([32.8, 35.9]);
   }, 120_000);
 
   it('fins at the base below Mach 1.5: the rebuilt factor, since the present one refuses', () => {
@@ -272,13 +275,13 @@ describe('the term (bodyBaseDrag)', () => {
     expect(r.labels.some((l) => l.includes(FINS_ON_BASE_ROUTING_LABEL))).toBe(true);
     const f = finsOnBaseFactorW1(1.3, { ...fins.nearBase, count: 4, trailingEdgeAheadOfBase: 0 });
     // The reference, built on fig. 35's free-flight line over the curve, applies to the curve itself, not
-    // on top of W2's 1.065; the zero member applies to W2's term (0015 section 11.2).
+    // on top of W2's midpoint, 1.04; the zero member applies to W2's term (0015 section 11.2).
     const g = r.finsOnBase as typeof f;
-    expect(g.upper.band.low).toBeCloseTo(f.upper.band.low / 1.065, 12);
-    expect(g.upper.band.high).toBeCloseTo(f.upper.band.high / 1.065, 12);
+    expect(g.upper.band.low).toBeCloseTo(f.upper.band.low / 1.04, 12);
+    expect(g.upper.band.high).toBeCloseTo(f.upper.band.high / 1.04, 12);
     expect(g.lower.band).toEqual(f.lower.band);
-    expect(g.nominal).toBeCloseTo(0.5 * (f.lower.band.low + f.upper.band.high / 1.065), 12);
-    expect(r.cd).toBeCloseTo(curve(1.3) * 1.065 * g.nominal, 12);
+    expect(g.nominal).toBeCloseTo(0.5 * (f.lower.band.low + f.upper.band.high / 1.04), 12);
+    expect(r.cd).toBeCloseTo(curve(1.3) * 1.04 * g.nominal, 12);
     expect(r.labels[1]).toContain("apply to Love's curve itself");
     // Swept fins of a sharp section below M 1.5, and fins ahead of the base, are refused.
     const swept = {
@@ -297,6 +300,6 @@ describe('the term (bodyBaseDrag)', () => {
       fins: { ...fins, trailingEdgeAheadOfBase: 1.2 },
     });
     expect(ahead.finsOnBase).toBeUndefined();
-    expect(ahead.cd).toBeCloseTo(curve(1.3) * 1.065, 12);
+    expect(ahead.cd).toBeCloseTo(curve(1.3) * 1.04, 12);
   });
 });

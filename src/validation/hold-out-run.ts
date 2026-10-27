@@ -153,7 +153,9 @@ export function rebuiltBodyBase(
       low: atMostVacuum(cd + curveBand[0]! - e + finsBand[0]!),
       high: atMostVacuum(cd + curveBand[1]! + e + finsBand[1]!),
       label: factor.label,
-      band: "curve 0.82 to 1.08 (0008 section 3.3), interpolation, the rebuilt fins-on-base factor's band (0015)",
+      band:
+        `curve ${COMPILED_CURVE_BAND.low.toFixed(2)} to ${COMPILED_CURVE_BAND.high.toFixed(2)} (0008 section 3.3), ` +
+        "interpolation, the rebuilt fins-on-base factor's band (0015)",
     },
     factor,
   };
