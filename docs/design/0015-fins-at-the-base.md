@@ -1281,18 +1281,22 @@ position refusal is 6.0% of the cases at Mach 1.0 to 1.2 and 1.2 to 1.5
 none below 1.5. The cross-check agrees on all 1200 cases.
 
 **Fins a chord or more ahead: the plain curve withdrawn (2026-10-27;
-section 3.3, 0014 section 10.7 (ad), its amendment of that date):** run
-before (`out/impact.out` as committed at f8f7c71) and after (the code at ef3fc52), the
-same 2000 rockets. 150 of 8000 cases served a total before, 135 after: 47
-to 40 at Mach 1.5 to 1.8 and 103 to 95 at 1.8 to 3.0, none below 1.5.
-The 15 lost are the totals the 81 rockets with fins a chord or more ahead
-carried on the plain curve; none is gained. The position refusal, now
-every position ahead of the base TN 2360 does not measure, is 23.8%,
-23.8%, 23.6% and 23.7% of the four bands' cases (6.0%, 6.0%, 7.4% and
-12.6% before), the sole blocker of a total in 0.43% (0.15%). Ahead of the
-base the position is now named before the section, so the rebuilt
-factor's sweep and section refusals fall on cases still refused for the
-position. The cross-check agrees on all 1200 cases.
+section 3.3, 0014 section 10.7 (ad), its amendment of that date):** on
+the merged head (main at 5921198, whose audit counts the Von Karman noses
+the page serves, merged at 1ec9df1), 155 of 8000 cases serve a total, 53
+at Mach 1.5 to 1.8 and 102 at 1.8 to 3.0, none below 1.5. The same head
+with fins more than a chord ahead put back on the plain curve (one line
+changed for that run, `out/impact-merged-plain-curve.out`) serves 172 (62
+and 110): the withdrawal costs 17 totals, all carried by the 81 rockets
+with fins a chord or more ahead, and gains none; main serves 181, the
+other 9 being this branch's rules within a chord. Before the merge (main
+at 3389a04) it cost 15, 150 to 135. The position refusal, now every
+position ahead of the base TN 2360 does not measure, is 23.8%, 23.8%,
+23.6% and 23.7% of the four bands' cases (20.4%, 20.4%, 20.3% and 20.4%
+with the plain curve), the sole blocker of a total in 0.57% (0.36%).
+Ahead of the base the position is now named before the section, so the
+rebuilt factor's sweep and section refusals fall on cases still refused
+for the position. The cross-check agrees on all 1200 cases in each run.
 
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in

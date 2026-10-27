@@ -2101,7 +2101,8 @@ that the increment is nearly zero a chord fore or aft.
   because nothing measures it, and the words say so plainly. The plain
   curve of 0010 section 1.4 is withdrawn (its text stays as written, with
   a dated note). Expected cost, about 15 totals; the exact count is
-  recorded below from the population run (15).
+  recorded below from the population run (15 before main's Von Karman
+  noses were counted, 17 on the merged head).
 - _Also recorded (the review's N3), for the owner, with no rule added
   now:_ TN 2360's fins are rectangular, of aspect ratio 2.33 (its
   summary), and neither span nor taper is constrained by the chord rule:
@@ -2124,21 +2125,29 @@ that the increment is nearly zero a chord fore or aft.
   blunt one is named beside the position, and the change named is a
   trailing edge served at the base. A change named never moves the fins
   further ahead.
-- _What it cost (the same 2000 rockets, `docs/research/refusals/out/impact.out`
-  run before, as committed at f8f7c71, and after, on the code at ef3fc52):_ 150 of
-  8000 cases served a total before and 135 after, 15 fewer: 47 to 40 at
-  Mach 1.5 to 1.8 and 103 to 95 at 1.8 to 3.0, none below 1.5 before or
-  after. They are the 15 the review counted on the 81 rockets with fins a
-  chord or more ahead; no total is gained. The variants move alike
-  (altitude 0 km 152 to 137, 20 km 127 to 114, the lenient tip 270 to
-  249). The position refusal now covers every position ahead of the base
-  that TN 2360 does not measure: 23.8% of the cases at Mach 1.0 to 1.2
-  and 1.2 to 1.5, 23.6% at 1.5 to 1.8 and 23.7% at 1.8 to 3.0 (6.0%,
-  6.0%, 7.4% and 12.6% before), the sole blocker of a total in 0.43%
-  (0.15%). The rebuilt factor's sweep and section refusals fall (sweep
-  43.4% to 32.7% over all bands, steep bevels 6.0% to 4.3%) because ahead
-  of the base the position is now named first. The cross-check against
-  `src/total` agrees on all 1200 cases checked.
+- _What it cost (the same 2000 rockets, `docs/research/refusals/`):_ on
+  the merged head (main at 5921198 merged at 1ec9df1, whose audit counts
+  the Von Karman noses the page serves), 155 of 8000 cases serve a total
+  (53 at Mach 1.5 to 1.8, 102 at 1.8 to 3.0, none below 1.5;
+  `out/impact.out`). The same head with fins more than a chord ahead put
+  back on the plain curve, one line changed for that run only
+  (`out/impact-merged-plain-curve.out`), serves 172 (62 and 110): the
+  withdrawal costs 17 totals there, all on the 81 rockets with fins a
+  chord or more ahead, and gains none. Main itself serves 181 (68 and
+  113), so this branch's earlier rules for fins within a chord (the chord
+  rule after the review) cost the other 9 on the merged head. Before the
+  merge, on main at 3389a04, the withdrawal cost the 15 the review counted
+  (150 to 135; the run of e69a9ff). The variants move alike (altitude 0
+  km 174 to 157, 20 km 143 to 128, the lenient tip 334 to 310). The
+  position refusal now covers every position ahead of the base that TN
+  2360 does not measure: 23.8% of the cases at Mach 1.0 to 1.2 and 1.2 to
+  1.5, 23.6% at 1.5 to 1.8 and 23.7% at 1.8 to 3.0 (20.4%, 20.4%, 20.3%
+  and 20.4% with the plain curve), the sole blocker of a total in 0.57%
+  (0.36%). The rebuilt factor's sweep and section refusals fell from the
+  run of f8f7c71 (sweep 43.4% to 32.7% over all bands, steep bevels 6.0%
+  to 4.3%, in both runs on the merged head) because ahead of the base the
+  position is now named first. The cross-check against
+  `src/total` agrees on all 1200 cases checked, in each run.
 
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
