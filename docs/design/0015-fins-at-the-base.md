@@ -1588,4 +1588,8 @@ above 0.10 (`fin-thickness`, section 3.6: a 1/4 in plate on a short
 tip), 31 a bevelled leading edge whose reflected wave shock-expansion
 theory refuses (0009), and below Mach 1.5 every one carries the fins'
 own-drag guard and the trailing edges' Mach range. Each of those is its
-own item; none is touched here.
+own item; none is touched here. On main's audit since 2026-10-27
+(5921198, which counts the Von Karman noses the page serves), this
+section's change gives 228 totals of 8,000 against main's 181 (Mach 1.5
+to 1.8: 68 to 111; 1.8 to 3.0: 113 to 117; none below 1.5),
+`out/impact.out` as re-made after merging main.
