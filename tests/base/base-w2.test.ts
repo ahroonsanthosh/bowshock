@@ -128,6 +128,13 @@ describe('the curve below Mach 1.5: read twice, and its interpolation bound', ()
     expect(W2_LABEL).toContain(
       "the curve's rows below 1.5 and fig. 18's free-flight curve read twice",
     );
+    // The low end's source, named (the review of 2026-10-27): a tunnel datum above M 1.5, carried down.
+    expect(W2_LABEL).toContain(
+      'times 1.040, the midpoint of its band 0.77 to 1.31 over the curve: its high end set on free-flight ' +
+        'data at Mach 1.0 to 1.3 (RM L52E06 fig. 8, TN 3819 fig. 18) and carried to 1.5, its low end the ' +
+        'band of Mach 1.5 to 3.0 carried down, which a sting-supported tunnel body with a radome nose sets ' +
+        'at Mach 1.62 (RM L52J21a, 0014 section 10.7 (ah); 0015 section 11)',
+    );
   });
 });
 

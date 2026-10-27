@@ -64,8 +64,8 @@ import { vacuumBaseDrag } from './vacuum';
 export const COMPILED_CURVE_LABEL =
   'correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band ' +
   `${COMPILED_CURVE_BAND.low.toFixed(2)} to ${COMPILED_CURVE_BAND.high.toFixed(2)} measured over curve, ` +
-  'set on every body-alone base pressure opened in its domain (0008 section 3.3, 0014 section 10.7 ' +
-  '(ah)), tested only in the total';
+  'set on every body-alone base pressure read twice in its domain (0008 section 3.3, 0014 section ' +
+  '10.7 (ah)), tested only in the total';
 
 export interface BaseFins extends FinsAtBase {
   /** Distance of the fins' trailing edges ahead of the base, in root chords (0: at the base). */

@@ -78,3 +78,22 @@ served-band-stale: bodyBaseDrag's high end 1.08 while the band says 1.18.
         × never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9557 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.717 without fins (0.656 before (ah)) 513ms
         × the present model, per round as recorded: the total, its band, its input bands, the residual and the tolerance 43ms
         × the sensitivities and reading alternatives beside the verdict, as recorded 2ms
+
+## After the review of 2026-10-27: the new tests, each with an error planted in the code it guards: every one caught
+
+l52-other-r-left-out: the fourteen RM L52J21a pairs outside W1's window dropped from the band again;
+l52-other-r-misread: round 7's 32-T1 typed -0.1529 for -0.1519; band-text-stale: the page's body base band
+text left at "curve 0.82 to 1.08"; label-opened: the curve's label saying "opened" again;
+w2-label-no-source: W2's label without its low end's source.
+
+== l52-other-r-left-out:       Tests  1 failed | 27 passed (28)
+        × the body-alone sets of 0014 10.7 (ah), every reading, against both curves 32ms
+== l52-other-r-misread:       Tests  2 failed | 26 passed (28)
+        × the body-alone sets of 0014 10.7 (ah), every reading, against both curves 36ms
+        × RM L52J21a's pairs outside W1's window: held to the pairing record, each within its combined error 15ms
+== band-text-stale:       Tests  1 failed | 17 passed (18)
+        × a total inside the class: an estimate, its claim suspended, the headline rounded outward, every label, the notes 959ms
+== label-opened:       Tests  1 failed | 17 passed (18)
+        × a total inside the class: an estimate, its claim suspended, the headline rounded outward, every label, the notes 624ms
+== w2-label-no-source:       Tests  1 failed | 11 passed (12)
+        × the bound from M 1.5 does not hold below; round 7's rows every 0.1 set it there 110ms

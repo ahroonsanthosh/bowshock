@@ -22,6 +22,7 @@ import {
 } from '../../src/base/compiled-curve';
 import {
   L52J21A_FIG31_33D,
+  L52J21A_FIG31_33D_OTHER_R,
   TN3819_FIG33,
   TN3819_FIG35_TUNNEL_W1,
 } from '../../src/base/fins-on-base-w1-data';
@@ -262,7 +263,8 @@ describe('the band, recomputed from the data', () => {
     const b = compiledCurveBandEvidence().bodyAlone;
     expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'TN 2360')).toHaveLength(10);
     expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'Langley 9 in')).toHaveLength(5);
-    expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'RM L52J21a')).toHaveLength(20);
+    // RM L52J21a: W1's 10 pairs about R 8.06e6 and the 14 outside that window (the review of 2026-10-27).
+    expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'RM L52J21a')).toHaveLength(48);
     expect(BODY_ALONE_IN_DOMAIN.filter((r) => r.set === 'TR 1051')).toHaveLength(6);
     // TN 2360's body alone: fig. 33's first reading at M 1.5 over the served curve sets its high end.
     expect(b['TN 2360'].min).toBeCloseTo(1.0027, 4);
@@ -272,7 +274,15 @@ describe('the band, recomputed from the data', () => {
     // RM L52J21a: the radome nose at M 1.62, round 7's -0.1331, over the more negative curve.
     expect(b['RM L52J21a'].min).toBeCloseTo(-0.1331 / compiledCurveValue(1.62, 'moreNegative'), 12);
     expect(b['RM L52J21a'].min).toBeCloseTo(0.7731, 4);
-    expect(b['RM L52J21a'].max).toBeCloseTo(1.0235, 4);
+    // The ogive nose at M 1.93, R 7.23e6, the first reading's -0.1525, over the served curve (1.0235 within
+    // W1's window alone); the fourteen pairs outside it span 0.7766 to 1.0241, so the band does not move.
+    expect(b['RM L52J21a'].max).toBeCloseTo(-0.1525 / compiledCurveValue(1.93, 'lessNegative'), 12);
+    expect(b['RM L52J21a'].max).toBeCloseTo(1.0241, 4);
+    const outside = L52J21A_FIG31_33D_OTHER_R.flatMap((p) =>
+      (['moreNegative', 'lessNegative'] as const).map((c) => p.pB / compiledCurveValue(p.mach, c)),
+    );
+    expect(Math.min(...outside)).toBeCloseTo(0.7766, 4);
+    expect(Math.max(...outside)).toBeCloseTo(1.0241, 4);
     // TR 1051 at M 2.9, the audit's -0.118, over the served curve.
     expect(b['TR 1051'].min).toBeCloseTo(0.9425, 4);
     expect(b['TR 1051'].max).toBeCloseTo(-0.118 / compiledCurveValue(2.9, 'lessNegative'), 12);
@@ -305,13 +315,13 @@ describe('the band, recomputed from the data', () => {
 
 /**
  * 0008 section 3.3's rule, "every base data set opened at these conditions is used to set this band", applied
- * by 0014 section 10.7 (ah): every body-alone base pressure opened in the curve's domain (Mach 1.5 to 3.0,
+ * by 0014 section 10.7 (ah): every body-alone base pressure read twice in the curve's domain (Mach 1.5 to 3.0,
  * cylindrical afterbody, turbulent, no fins, power off), each paired reading, lies inside the band served
  * on the curve. The readings are taken from the data modules where main holds them, and typed here from
  * docs/research/total-drag/data/base_sources.md for TR 1051, so that these tests ran, and failed, on the
  * code before (ah).
  */
-describe('every body-alone base pressure opened in the domain lies inside the served band (0014 10.7 (ah))', () => {
+describe('every body-alone base pressure read twice in the domain lies inside the served band (0014 10.7 (ah))', () => {
   const served = (mach: number) =>
     bodyBaseDrag({
       mach,
@@ -350,10 +360,73 @@ describe('every body-alone base pressure opened in the domain lies inside the se
 
   it("RM L52J21a's unfinned bodies (figs. 31 to 33 (d)), every nose and both readings, the radome at M 1.62 among them", () => {
     expect(L52J21A_FIG31_33D).toHaveLength(20);
+    expect(L52J21A_FIG31_33D_OTHER_R).toHaveLength(28);
     // The radome nose at M 1.62: 0.800 and 0.796 times the curve, below 0.82, the band's low end before (ah).
-    for (const p of L52J21A_FIG31_33D) {
-      expectInside(`RM L52J21a ${p.nose}, ${p.reading}`, p.mach, p.pB);
+    for (const p of [...L52J21A_FIG31_33D, ...L52J21A_FIG31_33D_OTHER_R]) {
+      expectInside(`RM L52J21a ${p.nose}, R ${p.reynolds}, ${p.reading}`, p.mach, p.pB);
     }
+  });
+
+  it("RM L52J21a's pairs outside W1's window: held to the pairing record, each within its combined error", () => {
+    // docs/research/total-drag/data/w1_round7_pairing_output.txt: every pair of figs. 31 to 33 (d) at R 7e6
+    // to 9.5e6, the first reading (R to 0.01e6, +-0.002) against round 7's (R to 0.01e6, its error).
+    const text = readFileSync('docs/research/total-drag/data/w1_round7_pairing_output.txt', 'utf8');
+    const block = text.slice(
+      text.indexOf('=== RM L52J21a figs. 31 to 33 (d)'),
+      text.indexOf('=== The zero'),
+    );
+    let mach = 0;
+    const pairs: {
+      mach: number;
+      nose: string;
+      r1: number;
+      p1: number;
+      r7: number;
+      p7: number;
+      e7: number;
+    }[] = [];
+    for (const line of block.split('\n')) {
+      const m = /^ {2}M ([0-9.]+)$/.exec(line);
+      if (m) mach = Number(m[1]);
+      const q =
+        /^ {4}(conical|ogive|radome) +R ([0-9.]+) (-[0-9.]+) \(score [0-9.]+\) +round 7 \S+ R ([0-9.]+) (-[0-9.]+) \+-([0-9.]+)/.exec(
+          line,
+        );
+      if (q) {
+        pairs.push({
+          mach,
+          nose: q[1]!,
+          r1: Number(q[2]) * 1e6,
+          p1: Number(q[3]),
+          r7: Number(q[4]) * 1e6,
+          p7: Number(q[5]),
+          e7: Number(q[6]),
+        });
+      }
+    }
+    expect(pairs).toHaveLength(24);
+    const all = [...L52J21A_FIG31_33D, ...L52J21A_FIG31_33D_OTHER_R];
+    const firsts = all.filter((p) => p.reading === 'w1 first');
+    const sevens = all.filter((p) => p.reading === 'round 7');
+    expect(firsts).toHaveLength(24);
+    expect(sevens).toHaveLength(24);
+    for (const p of pairs) {
+      const first = firsts.filter(
+        (x) => x.mach === p.mach && x.nose === p.nose && Math.abs(x.reynolds - p.r1) < 0.006e6,
+      );
+      const seven = sevens.filter(
+        (x) => x.mach === p.mach && x.nose === p.nose && Math.abs(x.reynolds - p.r7) < 0.006e6,
+      );
+      expect(first.map((x) => x.pB)).toEqual([p.p1]);
+      expect(seven.map((x) => [x.pB, x.error])).toEqual([[p.p7, p.e7]]);
+      expect(Math.abs(p.p1 - p.p7)).toBeLessThanOrEqual(0.002 + p.e7 + 1e-12);
+    }
+    // W1's window holds the pairs within 0.6e6 of R 8.06e6 (by the first reading's R), the rest lie outside.
+    for (const x of L52J21A_FIG31_33D_OTHER_R.filter((p) => p.reading === 'w1 first')) {
+      expect(Math.abs(x.reynolds - 8.06e6)).toBeGreaterThan(0.6e6);
+    }
+    // Read once, not used: round 7's second square at M 1.93, R 7.33e6, -0.1494.
+    expect(all.some((x) => x.pB === -0.1494)).toBe(false);
   });
 
   it('TR 1051 fig. 23(b), the thinnest sting (d/h 0.35), both readings, at M 1.5, 2.0 and 2.9', () => {

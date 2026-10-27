@@ -119,7 +119,9 @@ thickest station from 0.84 up to 1.33 to 1.54 at Mach 1.5 to 3.0
 (+-22.6% to +-29.6%), and for thicker plates, whose upper member is the
 10% arc, +-34.7% at 1.5, +-30.1% at 1.8, +-26.5% at 2.0 and +-24.4% to
 +-24.5% at 2.5 to 3.0; below Mach 1.5, where every upper member is the
-reference, on W2's body base +-31.7% to +-34.9% for both; +-7.3% to
+reference, on W2's body base +-31.7% to +-34.9% for both (+-32.8% to
++-35.9% since 2026-10-27, when 0014 section 10.7 (ah) moved W2's nominal
+from 1.065 to 1.04); +-7.3% to
 +-10.9% for the 5% circular arcs that are members themselves (section
 3.6). Wider than 0014's planning figure of +-10% to +-20%: the data
 bracket hobby fins only between families, not on them.
@@ -526,7 +528,11 @@ becomes 0.8379 to 1.6211 on W2's term (nominal 1.2295, +-31.9%), at M 1.0
 the review) is the zero member below M 1.62 (3.5); just above M 1.5 the
 same fins reach 1.5420 (+-29.6%), where the ratio range becomes the
 envelope of both tunnel Mach numbers' (3.2), and from 1.62 they give
-0.9378 to 1.4907 (+-22.8%).
+0.9378 to 1.4907 (+-22.8%). **Corrected 2026-10-27 (0014 section 10.7
+(ah)):** W2's body base is now 1.04 times the curve, so those members are
+divided by 1.04: the double wedge at M 1.2 gives 0.8379 to 1.6601 on W2's
+term (nominal 1.2490, +-32.9%), at M 1.0 0.8379 to 1.7784 (1.3082,
++-35.9%); the rows above, over Love's curve, do not change.
 
 A member served as itself (four unswept 5% arcs at M 1.5 to 2.0) carries
 +-7.3% to +-10.9%, the widest just above M 1.5, where its ratio range
@@ -559,7 +565,8 @@ where RM L52J21a's measurements begin". Every carry is named: the
 reference's tunnel excess measured at M 2.41 (0.2282) carried below M
 1.5 and at 2.41 to 2.56, and a moderate sweep's ordering, read once. A
 member's label names them too (four unswept 10% arcs below M 1.5 carry
-the excess on their high end, 1.6211 on W2's term at M 1.2; since the
+the excess on their high end, 1.6211 on W2's term at M 1.2, 1.6601 since
+0014 section 10.7 (ah) of 2026-10-27; since the
 review of 2026-10-22), and a swept flat plate's names its lower bound,
 RM L52E06's relief with swept plates at the base, not the zero member.
 Where an end of the band rests on a TN 2360 symbol that one reader alone
@@ -629,7 +636,9 @@ four fins t/c 0.05 to M 2.0 (the widest just above M 1.5, 1.54 at the high
 end); for thicker plates, whose upper member is the 10% arc, +-34.7% at M
 1.5, +-30.1% at 1.8, +-26.5% at 2.0 and +-24.4% to +-24.5% at 2.5 to 3.0;
 below M 1.5 every plate's upper member is the reference, and on W2's body
-base (section 11.2) the band is +-31.7% to +-34.9% (34.9% at M 1.0).
+base (section 11.2) the band is +-31.7% to +-34.9% (34.9% at M 1.0);
++-32.8% to +-35.9% (35.9% at M 1.0) since 2026-10-27, when 0014 section
+10.7 (ah) moved W2's nominal from 1.065 to 1.04.
 
 **Every flat-faced fin at the base takes this value** (the review of
 2026-10-21; 0014 section 10.7, amendment i, which supersedes main's
@@ -713,7 +722,8 @@ By family (the review of 2026-10-21; 0014 section 10.7, amendment i):
 - **Below Mach 1.5** the rebuilt factor's members built on fig. 35's
   free-flight line (the reference and its ratio members) apply to Love's
   curve itself, not on top of W2's 1.065: `bodyBaseDrag` divides them by
-  1.065 on W2's term, and leaves the zero members (ratios to the body
+  1.065 on W2's term (W2's nominal, 1.04 since 2026-10-27, 0014 section
+  10.7 (ah)), and leaves the zero members (ratios to the body
   without fins) as they are (section 11.2).
 
 Tests (`fins-on-base-routing.test.ts`): four fins of the present factor's
@@ -1123,7 +1133,8 @@ hold-out of its own yet.
   sections below Mach 1.5 (section 11.2); a sharp section's swept
   trailing edge at the base (refused since the review, section 3.4; a
   bounded treatment is proposed below).
-- The steps at Mach 1.5, where W2's 1.065 ends, and at 1.62, where the
+- The steps at Mach 1.5, where W2's 1.065 ends (1.04 since 2026-10-27,
+  0014 section 10.7 (ah)), and at 1.62, where the
   zero member changes (section 11.2).
 - Rounded and diverging trailing edges at the base.
 - Fins ahead of the base above M 2.0 (TN 3819 fig. 32's Langley symbols
@@ -1203,7 +1214,9 @@ the same wedges from 0.2283 (0.0918 to 0.3648) just below M 1.5 to 0.2002
 0.2843) to 0.2031 (0.1101 to 0.2858); M 1.6's 0.1967 (0.0958 to 0.2877);
 four 10% arcs 0.2847 to 0.2817 at M 1.5, as before. On W2's term the
 factor's half-width is +-32.8% to +-35.9% (`base-w2.test.ts`). No total
-is served below Mach 1.5, so no served total moves.
+is served below Mach 1.5, so no served total moves. W2's label now names
+its low end's source: the band of Mach 1.5 to 3.0 carried down, set by a
+sting-supported tunnel body with a radome nose at Mach 1.62 (RM L52J21a).
 
 - **Value:** Love's basic curve of TN 3819 fig. 18 continued below 1.5
   (its rows at M 1.0, 1.2, 1.4 and 1.5, linear in M as above 1.5, read
@@ -1258,6 +1271,11 @@ range A (Mach 1.2 and above) tests, at 1.2 to 1.3, a total whose base
 term was set on that body; its run's record says so.
 
 ### 11.2 Fins at the base, Mach 1.0 to 1.5
+
+**Moved on 2026-10-27 by 0014 section 10.7 (ah); the text below is kept
+as written.** W2's nominal is 1.04, not 1.065, so where this section says
+1.065 read 1.04; its terms and steps with the new values are in 11.1's
+note above.
 
 The rebuilt factor (sections 3 and 4) extended below its tunnel members:
 

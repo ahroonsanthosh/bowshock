@@ -122,10 +122,14 @@ total".
 
 **Corrected 2026-10-27 (0014 section 10.7 (ah); 0008 section 3.3): 0.77
 to 1.18.** 0008's rule, every base data set opened at these conditions,
-now takes the body-alone sets opened since: TN 2360's body alone at M 1.5
-and 2.0 and the Langley 9 in tunnel's at 2.41 (TN 3819 figs. 33 and 35,
-every reading), RM L52J21a figs. 31 to 33 (d) (both readings) and TR 1051
-fig. 23(b) at its thinnest sting (both readings). Against both curves they
+now takes every body-alone base pressure read twice in the domain: TN
+2360's body alone at M 1.5 and 2.0 and the Langley 9 in tunnel's at 2.41
+(TN 3819 figs. 33 and 35, every reading), RM L52J21a figs. 31 to 33 (d)
+(every symbol both readers found, R 7.0e6 to 9.1e6) and TR 1051 fig. 23(b)
+at its thinnest sting (both readings; at Mach 2.0 and 2.9 faired values
+until round 19's paired readings of its thinnest symbols, 0014 section
+10.7 (ah), addendum). The sets opened there and read once are named in
+0014's entry and set nothing. Against both curves they
 span 0.7731 (RM L52J21a's radome nose at M 1.62, round 7, over the more
 negative curve) to 1.1782 (TR 1051 at M 2.9, the audit's reading, over the
 served curve); TN 2360 at M 1.5 is 1.1241, outside the band before. The
@@ -135,7 +139,7 @@ the band `bodyBaseDrag` serves). Below Mach 1.5, W2's low end is this
 band's carried down (0015 section 11.1), so 0.77, and its nominal, the
 band's midpoint, 1.04 (1.065 before). The label is now "correlation:
 compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.77 to 1.18
-measured over curve, set on every body-alone base pressure opened in its
+measured over curve, set on every body-alone base pressure read twice in its
 domain (0008 section 3.3, 0014 section 10.7 (ah)), tested only in the
 total". This widens a band after the DREV gate and BRL 934's range A used
 it (0014 section 10.7 (ah) records what it moves there: no modelled total,

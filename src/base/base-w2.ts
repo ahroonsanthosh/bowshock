@@ -178,8 +178,10 @@ export const W2_BAND = (() => {
 export const W2_LABEL =
   `correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love) continued below Mach 1.5, ` +
   `times ${W2_BAND.nominal.toFixed(3)}, the midpoint of its band ${W2_BAND.low.toFixed(2)} to ` +
-  `${W2_BAND.high.toFixed(2)} over the curve, set on free-flight data at Mach 1.0 to 1.3 (RM L52E06 fig. ` +
-  "8, TN 3819 fig. 18) and carried to 1.5 (0015 section 11); the curve's rows below 1.5 and fig. 18's " +
+  `${W2_BAND.high.toFixed(2)} over the curve: its high end set on free-flight data at Mach 1.0 to 1.3 ` +
+  '(RM L52E06 fig. 8, TN 3819 fig. 18) and carried to 1.5, its low end the band of Mach 1.5 to 3.0 ' +
+  'carried down, which a sting-supported tunnel body with a radome nose sets at Mach 1.62 (RM L52J21a, ' +
+  "0014 section 10.7 (ah); 0015 section 11); the curve's rows below 1.5 and fig. 18's " +
   'free-flight curve read twice; with fins at the base, the fins-on-base members built on TN 3819 fig. ' +
   `35's free-flight line apply to the curve itself, not on top of the ${W2_BAND.nominal.toFixed(3)} (0015 section ` +
   '11.2); tested only in the total';

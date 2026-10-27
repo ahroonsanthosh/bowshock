@@ -530,6 +530,17 @@ describe('the display', { timeout: 60_000 }, () => {
       '0.1364 to 0.2677',
       '35%',
     ]);
+    // The body base's band and the curve's label as the page shows them, word for word (0014 10.7 (ah) and
+    // the review of 2026-10-27).
+    const baseRow = components!.rows.find((r) => r[0] === 'body base')!;
+    expect(baseRow[5]).toBe(
+      'curve 0.77 to 1.18 (0008 section 3.3), interpolation, fins-on-base band (section 3.4)',
+    );
+    expect(baseRow[4]!.split('; ')[0]).toBe(
+      'correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.77 to 1.18 measured ' +
+        'over curve, set on every body-alone base pressure read twice in its domain (0008 section 3.3, ' +
+        '0014 section 10.7 (ah)), tested only in the total',
+    );
     expect(blocks).toContainEqual({ kind: 'list', items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE] });
   });
 

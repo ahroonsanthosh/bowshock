@@ -1840,8 +1840,10 @@ curve, goes from 0.82 to 1.08 to **0.77 to 1.18** at Mach 1.5 to 3.0.
   No limit on Reynolds number, boundary-layer thickness, afterbody length
   or nose shape is stated, and the band's tunnel evidence is all
   sting-supported. Every set below lies inside it.
-- _The sets now used, each every paired reading, against both curves as
-  0008 forms the band_ (`BODY_ALONE_IN_DOMAIN`):
+- _The sets now used: every body-alone base pressure read twice inside
+  the domain, each paired reading, against both curves as 0008 forms the
+  band_ (`BODY_ALONE_IN_DOMAIN`); the sets opened there and read once are
+  named below and set nothing:
   - TN 2360's body alone (TN 3819's ref. 26: a 10-calibre-radius tangent
     ogive on a 1.250 in cylinder, turbulent, sting d/h 0.4 four diameters
     long, Ames 1 by 3 ft tunnel, R 4.5e6) at M 1.5 and 2.0: TN 3819 fig. 33
@@ -1853,9 +1855,12 @@ curve, goes from 0.82 to 1.08 to **0.77 to 1.18** at Mach 1.5 to 3.0.
     33: -0.1219, -0.1213; fig. 35: -0.120, -0.1202, -0.1202): 0.964 to
     1.001.
   - RM L52J21a figs. 31 to 33 panel (d): the unfinned bodies with
-    cylindrical bases, sting-supported, within 0.6e6 of R 8.06e6, conical,
-    ogive and radome noses at M 1.62, 1.93 and 2.41, W1's first reading
-    and round 7's (`L52J21A_FIG31_33D`, 20 values): 0.773 to 1.024. The
+    cylindrical bases, sting-supported, conical, ogive and radome noses at
+    M 1.62, 1.93 and 2.41, every symbol both W1's first reading and round
+    7's found at R 7.0e6 to 9.1e6: the 10 pairs within W1's window of 0.6e6
+    about R 8.06e6 (`L52J21A_FIG31_33D`) and the 14 outside it
+    (`L52J21A_FIG31_33D_OTHER_R`; the second addendum below), 48 values:
+    0.773 to 1.024. The
     radome nose at M 1.62 (-0.1338, first; -0.1331, round 7) sets the low
     end: round 7's value over the more negative curve, 0.7731 (0.7959
     over the served curve alone).
@@ -1880,14 +1885,19 @@ curve, goes from 0.82 to 1.08 to **0.77 to 1.18** at Mach 1.5 to 3.0.
     to 1.43 times the curve) measure the sting effect itself, which 0008
     section 3.3 lists apart and which no served rocket has; they are not
     used.
-- _Checked, not used to set the band:_ TN 2360 figs. 5 and 7 (the same
-  body, read once, round 6: 1.124 to 1.133 at M 1.5 over R 1.95e6 to
-  4.42e6, 1.172 at R 0.76e6 on a partly hidden symbol, 1.02 to 1.04 at M
-  2.0; rule 5 of 10.1 asks two readings); fig. 7's faired average of TN
-  2360's refs. 1 to 3 (a compilation, read once, 0.997 to 1.085);
-  NSWCDD/TR-92/509's configuration 1 (one transcription, strut-supported:
-  0.90 to 0.95, 0.86 to 1.00 with its +-5%). Every one lies inside 0.77
-  to 1.18.
+- _Opened in the domain and read once, so checked and not used to set
+  the band_ (against both curves, as the sets above; first stated against
+  the served curve only, corrected by the second addendum below): TN 2360
+  figs. 5 and 7 (the same body, round 6 only: fig. 5 1.100 to 1.133 at M
+  1.5 over R 1.95e6 to 4.42e6 and 1.144 to 1.172 at R 0.76e6 on a partly
+  hidden symbol, 0.987 to 1.044 at M 2.0; fig. 7's two symbols 1.007 to
+  1.123; rule 5 of 10.1 asks two readings); fig. 7's faired average of TN
+  2360's refs. 1 to 3 (a compilation, read once, 0.983 to 1.085 at M 1.5
+  to 3.0); NSWCDD/TR-92/509's configuration 1 (one transcription,
+  strut-supported: 0.886 to 0.954, 0.842 to 1.001 with its +-5%); RM
+  L52J21a's round 7 second square outline at M 1.93, R 7.33e6 (-0.1494,
+  1.003 against the served curve, 0.969 against the other). Every one lies
+  inside 0.77 to 1.18.
 - _The band._ With fig. 18's tunnel symbols (0.856 to 1.078) and Herrin
   and Dutton (0.824 to 0.885) the envelope is 0.7731 to 1.1782, rounded
   outward as 0008 rounds it: 0.77 to 1.18. TN 2360's body alone by itself
@@ -1908,7 +1918,7 @@ curve, goes from 0.82 to 1.08 to **0.77 to 1.18** at Mach 1.5 to 3.0.
   because the rule that takes these values is 0008 section 3.3's, written
   before any of them was opened for this purpose and applying to them as
   it stood; because the change only widens (no band end moves inward,
-  nothing is retuned, the served value above Mach 1.5, the curve itself,
+  nothing is retuned, the served value from Mach 1.5, the curve itself,
   is unchanged); and because no held-back value was opened, used or
   looked at to make it.
 - _The hold-outs that used this band._ The DREV gate (0010 sections 4.2
@@ -1967,5 +1977,40 @@ it.
   Mach 2.9), and the coordinator saw that value before this addendum. The
   implementer of (ah) viewed fig. 23(b) at page resolution on 2026-10-27
   to read its legend for (ah) and took no value from its symbols.
+
+**2026-10-27 (ah), second addendum: the review's other findings**
+(the independent review of 5921198..6f44814; the coordinator's rulings of
+2026-10-27). None of these moves the band.
+
+- _RM L52J21a, completeness._ (ah) took only the symbols of figs. 31 to
+  33 (d) within 0.6e6 of R 8.06e6. That window is W1's rule for pairing
+  the finned and unfinned bodies (0015 section 3.5), not a limit of the
+  compiled curve's domain. The 14 pairs outside it, at R 7.0e6 to 7.5e6
+  and 8.7e6 to 9.1e6, each within its combined reading error
+  (`w1_round7_pairing_output.txt`), now enter
+  (`L52J21A_FIG31_33D_OTHER_R`; W1's zero member is unchanged). They span
+  0.7766 to 1.0241 against both curves; the set's range becomes 0.7731 to
+  1.0241, and the band stays 0.77 to 1.18. Round 7's second square at M
+  1.93, R 7.33e6, read once, stays out; so does the first reading's
+  "radome" at M 2.41, R 7.54e6, which round 7 shows to be the conical
+  square paired at R 7.52e6.
+- _Wording._ (ah) said the band takes "every body-alone base pressure
+  opened" in the domain. What is true: every one read twice there; the
+  sets opened there and read once are named in the entry and set nothing.
+  The label, 0010 section 1.2, `compiled-curve.ts` and this entry now say
+  so.
+- _The checked sets' ranges_ were stated against the served curve only;
+  they are now against both curves, as the band is formed (above).
+- _The served value_ is unchanged from Mach 1.5 (the curve itself).
+  Below Mach 1.5 W2's nominal, the band's midpoint, goes from 1.065 to
+  1.04 (0015 section 11.1), so the body base served there falls 2.3%; no
+  total is served there.
+- _Labels._ W2's label now says its low end is the band of Mach 1.5 to
+  3.0 carried down, set by a sting-supported tunnel body with a radome
+  nose at Mach 1.62. A test pins the body base's band text the page shows
+  (`total-drag-display.test.ts`).
+- _Stale numbers._ Statements of 1.065 and of W2's old values in 0015
+  sections 3.6, 5, 10 and 11.2, and of 0.82 to 1.08 in 0008 section 6.2's
+  table, now carry a dated note giving the new values.
 
 The next free letter is (w).

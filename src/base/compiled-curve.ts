@@ -40,14 +40,17 @@
  *
  * Corrected on 2026-10-27 (0014 section 10.7 (ah)): 0008 section 3.3's rule,
  * "every base data set opened at these conditions is used to set this band",
- * now takes every body-alone base pressure opened inside this domain, each
- * paired reading, the same way (`BODY_ALONE_IN_DOMAIN`): TN 2360's body
+ * now takes every body-alone base pressure read twice inside this domain,
+ * each paired reading, the same way (`BODY_ALONE_IN_DOMAIN`): TN 2360's body
  * alone and the Langley 9 in tunnel's (TN 3819 figs. 33 and 35), RM
- * L52J21a's unfinned bodies (figs. 31 to 33 (d)) and TR 1051 fig. 23(b) at
- * its thinnest sting. The envelope becomes 0.7731 to 1.1782, rounded outward
- * 0.77 to 1.18: the low end RM L52J21a's radome nose at M 1.62 over the more
- * negative curve, the high end TR 1051 at M 2.9; TN 2360 at M 1.5, 1.124
- * times the curve, lay outside the band before.
+ * L52J21a's unfinned bodies (figs. 31 to 33 (d), every paired symbol) and TR
+ * 1051 fig. 23(b) at its thinnest sting. The sets opened in the domain and
+ * read once are named in that entry and set nothing. The envelope becomes
+ * 0.7731 to 1.1782, rounded outward 0.77 to 1.18: the low end RM L52J21a's
+ * radome nose at M 1.62 over the more negative curve, the high end TR 1051
+ * at M 2.9 (on the faired curve; its thinnest measured symbols wait for
+ * round 19, the addendum to (ah)); TN 2360 at M 1.5, 1.124 times the curve,
+ * lay outside the band before.
  *
  * Refused (0008 sections 3.3, 6.2 B3 and 6.4): Mach numbers outside 1.5
  * to 3.0 (below 1.5 the data opened are not claimable; the band is stated
@@ -58,7 +61,12 @@
  * not an input (0008 section 3.2 found no opened source to quantify it).
  */
 
-import { L52J21A_FIG31_33D, TN3819_FIG33, TN3819_FIG35_TUNNEL_W1 } from './fins-on-base-w1-data';
+import {
+  L52J21A_FIG31_33D,
+  L52J21A_FIG31_33D_OTHER_R,
+  TN3819_FIG33,
+  TN3819_FIG35_TUNNEL_W1,
+} from './fins-on-base-w1-data';
 import { BaseRefusal } from './refusal';
 import {
   HERRIN_DUTTON,
@@ -170,15 +178,20 @@ const reading = (
 });
 
 /**
- * Every body-alone base pressure opened inside the curve's domain (Mach 1.5 to 3.0, cylindrical
- * afterbody, turbulent, no fins, power off), each paired reading (0014 section 10.7 (ah)):
+ * Every body-alone base pressure read twice inside the curve's domain (Mach 1.5 to 3.0, cylindrical
+ * afterbody, turbulent, no fins, power off), each paired reading (0014 section 10.7 (ah)); the sets
+ * opened there and read once (TN 2360 figs. 5 and 7, NSWCDD/TR-92/509) are named in that entry and set
+ * nothing:
  *
  * - TN 2360's body alone (TN 3819's ref. 26; ogive-cylinder, sting d/h 0.4, R 4.5e6) at M 1.5 and 2.0,
  *   and the Langley 9 in tunnel's at M 2.41: TN 3819 fig. 33 at t/c 0 (W1's first reading and round
  *   6's) and fig. 35's no-fin tunnel symbols (0008's first reading, round 3's and round 6's);
  * - RM L52J21a figs. 31 to 33 panel (d): the unfinned bodies with cylindrical bases, sting-supported,
- *   within 0.6e6 of R 8.06e6, three noses, W1's first reading and round 7's;
- * - TR 1051 fig. 23(b) at its thinnest sting, both readings (./tn3819-fig18.ts).
+ *   three noses, every symbol W1's first reading and round 7's both read, at R 7.0e6 to 9.1e6 (W1's
+ *   window about R 8.06e6 and the fourteen pairs outside it, `L52J21A_FIG31_33D_OTHER_R`);
+ * - TR 1051 fig. 23(b) at its thinnest sting, both readings (./tn3819-fig18.ts); at Mach 2.0 and 2.9
+ *   these are faired values, read at d/h 0.35 where the first symbols lie at 0.30 (the addendum to
+ *   (ah): they stay until round 19's paired readings of the symbols).
  */
 export const BODY_ALONE_IN_DOMAIN: readonly BodyAloneReading[] = [
   ...TN3819_FIG33.filter((p) => p.thicknessRatio === 0).map((p) =>
@@ -197,8 +210,13 @@ export const BODY_ALONE_IN_DOMAIN: readonly BodyAloneReading[] = [
       p.withoutFins,
     ),
   ),
-  ...L52J21A_FIG31_33D.map((p) =>
-    reading('RM L52J21a', `RM L52J21a figs. 31 to 33 (d), ${p.nose}, ${p.reading}`, p.mach, p.pB),
+  ...[...L52J21A_FIG31_33D, ...L52J21A_FIG31_33D_OTHER_R].map((p) =>
+    reading(
+      'RM L52J21a',
+      `RM L52J21a figs. 31 to 33 (d), ${p.nose}, R ${(p.reynolds / 1e6).toFixed(2)}e6, ${p.reading}`,
+      p.mach,
+      p.pB,
+    ),
   ),
   ...TR1051_FIG23B_THINNEST.flatMap((p) => [
     reading('TR 1051', 'TR 1051 fig. 23(b), first', p.mach, p.first),
