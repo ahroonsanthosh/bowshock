@@ -436,16 +436,18 @@ smaller (less base drag), and the reflected waves change it by at most
 0.7% of its value (back toward the free stream's value at M 1.5 to 2.0,
 further below it at 3.0), so the term at the free-stream Mach number is
 at most 2.1% above the local one, inside its band of 0.93 to 1.21
-(bevels of 8 to 15 deg, M 1.5 to 3.0; A2's review of 2026-10-27, by
-shock-expansion theory with the reflected waves' turning integrated
-along the shock, a check outside the repository, re-run for this
-record). A hexagon is not reached by this section: its rear bevel has
-slope and lies behind x_1, and whether the fan's later waves, or the
-second landing after a reflection off the flat, reach it is not bounded
-here (section 7 keeps it open; the earlier Euler check of section 2.4 is
-not a band). A double wedge is reached only where the bound already
-clears the chord. Sections with a compression corner stay refused as
-before.
+(bevels of 8 to 15 deg, M 1.5 to 3.0; A2's review of 2026-10-27,
+`docs/research/refusals/scripts/flat_state.py`, by shock-expansion
+theory with the reflected waves' turning integrated along the shock, on
+RM A51J25 fig. 7's curve as `src/base/blunt-te-2d.ts` holds it; the
+largest change from the reflected waves, 0.67%, is at M 1.8 with a 15
+deg bevel, 0.9831 to 0.9898). A hexagon is not reached by this section:
+its rear bevel has slope and lies behind x_1, and whether the fan's
+later waves, or the second landing after a reflection off the flat,
+reach it is not bounded here (section 7 keeps it open; the earlier Euler
+check of section 2.4 is not a band). A double wedge is reached only
+where the bound already clears the chord. Sections with a compression
+corner stay refused as before.
 
 **In the code.** `solveSurface` records the end of the last face with
 slope (`lastSlopedFaceEnd`); `exactSectionDrag` takes a surface as exact

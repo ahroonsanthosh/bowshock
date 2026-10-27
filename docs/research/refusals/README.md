@@ -29,6 +29,7 @@ by the solver or the page.
 | `out/2026-10-21-plates-at-base/` | The same run after the present factor began refusing flat plates at the base (0014 section 10.7, amendment e; 0016 section 20): `evaluate.ts`'s default, `EDGES=w4e`. On this branch amendment i supersedes it: the library sends flat plates at the base to the rebuilt factor's flat-plate value, and `out/impact.out` is that run |
 | `out/2026-10-21-w7-guard/` | The same run after fin friction and the wave drag of sharp sections were refused below Mach 1.5, the fins' own-drag band being measured at Mach 1.5 to 2.96 only (0014 section 10.7, amendment f): `evaluate.ts`'s default, `EDGES=w4e`, with `finsOwnDragMach` in W7's package |
 | | Those runs are main's, with `evaluate.ts` mirroring the present factor alone (`EDGES`); on this branch `evaluate.ts` asks the library, which routes what the present factor refuses to the rebuilt one, and `out/impact.out` is that run |
+| `scripts/flat_state.py` | The flat's state behind a bevelled leading edge and what it does to the fin trailing-edge base term, without and with the reflected waves (0009 section 8; A2's review of 2026-10-27). Run with `python3 -I` |
 | `scripts/or_survey.py` | Survey of OpenRocket's example designs and component presets (nose shapes and fineness, fin sets, cross-sections) |
 | `out/openrocket-survey.out` | Its output, on OpenRocket commit 591c5e5 |
 | `scripts/ntrs.py`, `scripts/fetch_ntrs.py` | NTRS search and download helpers used to open the sources 0014 cites (each download in its own directory; run with `python3 -I`) |
