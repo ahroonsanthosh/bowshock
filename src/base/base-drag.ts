@@ -43,8 +43,9 @@
  * The vacuum bound (./vacuum.ts): the term and its band's ends are each at
  * most 2 / (gamma M^2) times the area ratio, clamped there (`vacuumClamped`
  * lists what was; the parts are reported unclamped). Over M 1.5 to 3.0 no
- * value reaches it (the band's high end is at most 0.8840 of it, at M 3.0
- * with fins at the base; 0.656 without fins); the clamp is a guard.
+ * value reaches it (the band's high end is at most 0.9557 of it, at M 3.0
+ * with fins at the base; 0.717 without fins; 0.8840 and 0.656 before 0014
+ * section 10.7 (ah)); the clamp is a guard.
  *
  * Blunt fin trailing edges are a further base, ./fin-trailing-edge.ts.
  */

@@ -285,8 +285,9 @@ chord or more ahead take the plain curve, labelled not validated with fins
 (0008 section 6.4); in between they were refused (TN 2360's variation not
 transcribed) and are now served by the rebuilt factor at Mach 1.5 to 2.0,
 where that variation is read (0015 section 3.3). Below Mach 1.5, down
-to 1.0, the curve is continued with a band of 0.82 to 1.31 set on
-free-flight data and the nominal at its midpoint, and fins at the base
+to 1.0, the curve is continued with a band of 0.77 to 1.31 (0.82 to 1.31
+before 0014 section 10.7 (ah)) set on free-flight data and the nominal at
+its midpoint, and fins at the base
 from Mach 1.0 take the rebuilt factor (W2, 0015 section 11), whose
 members built on fig. 35's free-flight line apply to the curve itself,
 not on top of that midpoint (0015 section 11.2). Refused with
@@ -341,7 +342,7 @@ of fins, all on the cylinder's cross-section:
 | Fin friction           | van Driest II plates of the local chord, both faces                                                   | fins' own drag, 1.01 to 1.59 (0008 section 4.3)                          |
 | Fin leading edges      | rounded and unswept: the nose of the tangent geometry at modified-Newtonian pressure (section 5.2)    | 0.99 to 1.06 (TN 2960), widened by +-0.03 where extrapolated in Reynolds |
 | Fin wave drag          | exact section drag times the linear 3D ratio (0009); with a rounded edge, the faces on their own rise | the fins' own drag band, plus the quadrature error                       |
-| Body base              | compiled curve times the fins-on-base factor (section 1)                                              | 0.82 to 1.08, interpolation, fins-on-base band                           |
+| Body base              | compiled curve times the fins-on-base factor (section 1)                                              | 0.77 to 1.18 (0014 10.7 (ah)), interpolation, fins-on-base band          |
 | Fin trailing-edge base | blunt, unswept, turbulent: thin-layer two-dimensional base pressure at M_inf (section 5.1)            | 0.93 to 1.21                                                             |
 
 Fin friction carries B4's band only and body friction 0007's, so each is
@@ -1165,7 +1166,8 @@ clamped there (`src/base/vacuum.ts`, `fin-trailing-edge.ts`,
   end at 0.72 to 0.93 of the bound;
 - the body base never reaches it over M 1.5 to 3.0: its high end is at
   most 0.9535 of the bound (M 3.0, fins at the base), 0.656 without fins;
-  0.8840 at M 3.0 since the correction of section 11.
+  0.8840 at M 3.0 since the correction of section 11; 0.9557, and 0.717
+  without fins, since the band was widened (0014 section 10.7 (ah)).
 
 The audit also found the term plus both bands' high ends beyond the bound
 from M 2.35 on, by +0.0039 to +0.0117 in C_D. That sum was the second

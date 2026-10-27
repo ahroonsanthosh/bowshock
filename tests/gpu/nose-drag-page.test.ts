@@ -269,10 +269,11 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     document.body.append(target);
     renderBlocks(target, blocks);
     expect(target.textContent).toBe(displayText(blocks));
-    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048), inside
+    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048 in the gate's
+    // table; 0.5052 to 0.7255 with the compiled curve's band widened after it, 0014 10.7 (ah)), inside
     // the class and an estimate, its claim suspended (0010 section 11.7).
     expect(target.querySelector('p.result.warn')?.textContent).toBe(
-      'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%): an estimate, ' +
+      'Total C_D = 0.5940, model-form band 0.5052 to 0.7255 (-15.0% to +22.2%): an estimate, ' +
         'not validated',
     );
     expect(target.querySelector('.claim.claim-warn')?.textContent).toContain(CLASS_CLAIM);
@@ -336,7 +337,7 @@ describe('the total as the page lays it out', { timeout: 60_000 }, () => {
     renderBlocks(target, blocks);
     expect(target.textContent).toBe(displayText(blocks));
     expect(target.querySelector('p.result.ok')?.textContent).toBe(
-      `Total C_D = 0.4314, model-form band 0.3725 to 0.5189 (-13.7% to +20.3%): ${VALIDATED_HEADLINE}`,
+      `Total C_D = 0.4314, model-form band 0.3652 to 0.5335 (-15.4% to +23.7%): ${VALIDATED_HEADLINE}`,
     );
     expect(target.querySelector('.claim.claim-ok')?.textContent).toContain(VALIDATED_CLAIM);
     expect(target.querySelector('.warn, .claim-warn')).toBeNull();

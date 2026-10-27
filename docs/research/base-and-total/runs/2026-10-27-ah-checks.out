@@ -1,0 +1,80 @@
+# 0014 section 10.7 (ah): the checks of the band correction, 2026-10-27
+
+## The new tests of tests/base/compiled-curve.test.ts on the code before (ah) (main, 5ba98ff): three fail, as they should
+
+× TN 2360's body alone at Mach 1.5 and 2.0: TN 3819 fig. 33 (two readings), fig. 35's no-fin tunnel symbol (three) 39ms
+× RM L52J21a's unfinned bodies (figs. 31 to 33 (d)), every nose and both readings, the radome at M 1.62 among them 1ms
+× TR 1051 fig. 23(b), the thinnest sting (d/h 0.35), both readings, at M 1.5, 2.0 and 2.9 13ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+AssertionError: TN 3819 fig. 33, w1 first: M 1.5, P_B -0.1948, served 0.1421 to 0.1872: expected 0.1948 to be less than or equal to 0.18716400000000002
+AssertionError: RM L52J21a radome, w1 first: M 1.62, P_B -0.1338, served 0.1371 to 0.1806: expected 0.1338 to be greater than or equal to 0.13712499298058312
+AssertionError: TR 1051 fig. 23(b): M 2.9, P_B -0.115, served 0.0818 to 0.1085: expected 0.115 to be less than or equal to 0.10847901763751049
+Tests  3 failed | 2 passed | 21 skipped (26)
+
+## Errors planted one at a time in the corrected code (restored after each): every one caught
+
+no-body-alone: no body-alone set (the band as before); no-l52j21a: RM L52J21a left out;
+no-tn2360-tr1051: TN 2360 and TR 1051 left out; served-curve-only: the envelope over the served curve
+only; tr1051-misread: TR 1051 audit at M 2.9 typed -0.108 for -0.118; w2-low-stale: W2 low end 0.82;
+served-band-stale: bodyBaseDrag's high end 1.08 while the band says 1.18.
+
+== no-body-alone:       Tests  14 failed | 25 passed (39)
+        × low end carried down (0.77 since 0014 10.7 (ah), 0.82 before); high end the largest free-flight datum plus its error, rounded outward 93ms
+        × at M 1.2: the curve times the midpoint, the band from 0.77 to 1.31 of the curve, plus interpolation 1ms
+        × the band steps at M 1.5, and so does the nominal (a method choice, 0015 section 11) 1ms
+        × four unswept 10% arcs below Mach 1.5: a member whose label names the tunnel excess it carries 22ms
+        × the steps 0015 section 11.2 quotes, at M 1.5 and 1.62, and the half-widths on W2's term 18ms
+        × fins at the base below Mach 1.5: the rebuilt factor, since the present one refuses 17ms
+        × the body-alone sets of 0014 10.7 (ah), every reading, against both curves 22ms
+        × rounded outward: 0.77 to 1.18 (0014 10.7 (ah)); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08 11ms
+        × TN 2360's body alone at Mach 1.5 and 2.0: TN 3819 fig. 33 (two readings), fig. 35's no-fin tunnel symbol (three) 15ms
+        × RM L52J21a's unfinned bodies (figs. 31 to 33 (d)), every nose and both readings, the radome at M 1.62 among them 1ms
+        × TR 1051 fig. 23(b), the thinnest sting (d/h 0.35), both readings, at M 1.5, 2.0 and 2.9 2ms
+        × without fins: -P_B times the area ratio, the curve band and the interpolation bound 1ms
+== no-l52j21a:       Tests  11 failed | 28 passed (39)
+        × low end carried down (0.77 since 0014 10.7 (ah), 0.82 before); high end the largest free-flight datum plus its error, rounded outward 100ms
+        × at M 1.2: the curve times the midpoint, the band from 0.77 to 1.31 of the curve, plus interpolation 1ms
+        × the band steps at M 1.5, and so does the nominal (a method choice, 0015 section 11) 13ms
+        × four unswept 10% arcs below Mach 1.5: a member whose label names the tunnel excess it carries 63ms
+        × the steps 0015 section 11.2 quotes, at M 1.5 and 1.62, and the half-widths on W2's term 32ms
+        × fins at the base below Mach 1.5: the rebuilt factor, since the present one refuses 12ms
+        × the body-alone sets of 0014 10.7 (ah), every reading, against both curves 72ms
+        × rounded outward: 0.77 to 1.18 (0014 10.7 (ah)); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08 3ms
+        × RM L52J21a's unfinned bodies (figs. 31 to 33 (d)), every nose and both readings, the radome at M 1.62 among them 1ms
+        × without fins: -P_B times the area ratio, the curve band and the interpolation bound 1ms
+        × fins at the base: the factor on the term, its band added linearly 5ms
+== no-tn2360-tr1051:       Tests  7 failed | 20 passed (27)
+        × the body-alone sets of 0014 10.7 (ah), every reading, against both curves 55ms
+        × rounded outward: 0.77 to 1.18 (0014 10.7 (ah)); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08 26ms
+        × TN 2360's body alone at Mach 1.5 and 2.0: TN 3819 fig. 33 (two readings), fig. 35's no-fin tunnel symbol (three) 10ms
+        × TR 1051 fig. 23(b), the thinnest sting (d/h 0.35), both readings, at M 1.5, 2.0 and 2.9 1ms
+        × without fins: -P_B times the area ratio, the curve band and the interpolation bound 1ms
+        × fins at the base: the factor on the term, its band added linearly 1ms
+        × never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9557 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.717 without fins (0.656 before (ah)) 383ms
+== served-curve-only:       Tests  4 failed | 23 passed (27)
+        × the body-alone sets of 0014 10.7 (ah), every reading, against both curves 23ms
+        × rounded outward: 0.77 to 1.18 (0014 10.7 (ah)); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08 9ms
+        × without fins: -P_B times the area ratio, the curve band and the interpolation bound 1ms
+        × fins at the base: the factor on the term, its band added linearly 5ms
+== tr1051-misread:       Tests  6 failed | 21 passed (27)
+        × the body-alone sets of 0014 10.7 (ah), every reading, against both curves 58ms
+        × rounded outward: 0.77 to 1.18 (0014 10.7 (ah)); the tunnel symbols and Herrin and Dutton alone gave 0.82 to 1.08 6ms
+        × TR 1051 fig. 23(b), the thinnest sting (d/h 0.35), both readings, at M 1.5, 2.0 and 2.9 1ms
+        × without fins: -P_B times the area ratio, the curve band and the interpolation bound 1ms
+        × fins at the base: the factor on the term, its band added linearly 1ms
+        × never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9557 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.717 without fins (0.656 before (ah)) 380ms
+== w2-low-stale:       Tests  6 failed | 6 passed (12)
+        × low end carried down (0.77 since 0014 10.7 (ah), 0.82 before); high end the largest free-flight datum plus its error, rounded outward 58ms
+        × at M 1.2: the curve times the midpoint, the band from 0.77 to 1.31 of the curve, plus interpolation 1ms
+        × the band steps at M 1.5, and so does the nominal (a method choice, 0015 section 11) 5ms
+        × four unswept 10% arcs below Mach 1.5: a member whose label names the tunnel excess it carries 70ms
+        × the steps 0015 section 11.2 quotes, at M 1.5 and 1.62, and the half-widths on W2's term 71ms
+        × fins at the base below Mach 1.5: the rebuilt factor, since the present one refuses 29ms
+== served-band-stale:       Tests  7 failed | 25 passed (32)
+        × TN 2360's body alone at Mach 1.5 and 2.0: TN 3819 fig. 33 (two readings), fig. 35's no-fin tunnel symbol (three) 111ms
+        × TR 1051 fig. 23(b), the thinnest sting (d/h 0.35), both readings, at M 1.5, 2.0 and 2.9 19ms
+        × without fins: -P_B times the area ratio, the curve band and the interpolation bound 1ms
+        × fins at the base: the factor on the term, its band added linearly 22ms
+        × never reaches the vacuum bound 2 / (gamma M^2): the high end at most 0.9557 of it (M 3.0, fins at the base; 0.8840 before 0014 10.7 (ah), 0.9535 before the correction of 0010 section 11), 0.717 without fins (0.656 before (ah)) 513ms
+        × the present model, per round as recorded: the total, its band, its input bands, the residual and the tolerance 43ms
+        × the sensitivities and reading alternatives beside the verdict, as recorded 2ms

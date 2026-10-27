@@ -78,8 +78,9 @@ of 0014 section 10.1 cover:
   measured" (0014 section 10.2), between the lowest relief measured with
   such fins and the circular-arc member at least as thick (section 4).
 - **The body base below Mach 1.5** (W2, section 11): Love's curve
-  continued to Mach 1.0 with a band of 0.82 to 1.31 set on free-flight
-  data, the nominal at its midpoint.
+  continued to Mach 1.0 with a band of 0.77 to 1.31 (0.82 to 1.31 before
+  0014 section 10.7 (ah)) set on free-flight data, the nominal at its
+  midpoint.
 - **Above Mach 2.56**, where the free-flight curve of TN 3819 fig. 35
   ends (0010 section 11), every case served is "bounded, not measured":
   the reference member there runs from the zero member's 0.938 to its
@@ -533,7 +534,8 @@ becomes the envelope of both tunnel Mach numbers' (3.2); the reference
 served as itself (four unswept 10% arcs) carries +-6.3% to +-7.5% at M
 1.0 to 1.5, up to +-12.0% at M 2.56, and +-19.1% above it, where it is
 bounded (3.1). On the body base term these widths are the fins-on-base
-part of the band; the curve's 0.82 to 1.08 and the interpolation bound
+part of the band; the curve's 0.77 to 1.18 (0.82 to 1.08 before 0014
+section 10.7 (ah)) and the interpolation bound
 add to them as in 0010 section 1.4. At these Mach numbers the body base
 is roughly 25% to 40% of a total (0014 section 6.2), so the factor's band
 alone is about +-4% to +-12% of the total.

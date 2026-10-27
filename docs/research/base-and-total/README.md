@@ -101,3 +101,9 @@ tests/tmp-total/vitest.config.ts` from the repository root; it writes its
   sensitivities and the two reading alternatives of 10.7 (n). The test
   holds the recorded values. The result:
   [0020](../../design/0020-brl934-range-a.md).
+- `2026-10-27-ah-checks.out`: the checks of the compiled curve's band
+  correction (0014 section 10.7 (ah)): the new tests of
+  `tests/base/compiled-curve.test.ts` failing on the code before it (TN
+  2360 at M 1.5, RM L52J21a's radome nose at M 1.62, TR 1051 at M 2.9),
+  and seven errors planted one at a time in the corrected code, each
+  caught by the tests named.
