@@ -1084,6 +1084,43 @@ formed on two of them, and the shape widening's size on two of them.
    Any contradiction makes the widening two-sided, as above; the result
    is reported either way, with every pair compared.
 
+   _After the independent review of 9699737^..5ec61dd, the coordinator's
+   decisions (dated 2026-10-27, made before their effect was computed
+   beyond what the reviewer showed; the items above are not reworded)._
+
+   - _Mach margin (review F1), the wider choice._ Every point of a set
+     whose report states no Mach accuracy carries at least +-0.01 in Mach
+     (R&M 3427, R&M 3348, RM A51J25, RM A52E01). RM A51J11's Mach number
+     is an average over the model's region on the bump, so its points
+     carry +-0.02 unless its allowed text states a smaller variation. It
+     does not: its Corrections section says only "The indicated test Mach
+     numbers were evaluated from the tunnel calibration for the bump and
+     represent an average of the Mach numbers over the region occupied by
+     the model. Typical Mach number contours are illustrated in figure
+     5." The band's ends follow from these intervals.
+   - _RM A52E01's layer (review F2)._ Its allowed text (apparatus,
+     models, tests and procedure, reduction of data and corrections)
+     names no transition strip, no roughness and no layer state; of the
+     surfaces it says only "The surfaces of the body and wings were
+     polished smooth." So fig. 8(a) and fig. 8(b) set the band only, not
+     the layer reach, as RM A51J11 without roughness does above: each
+     point's ratio is taken over K from 1 to the turbulent value at its
+     largest X (wings 3 and 4's for a line of any wing).
+   - _RM A52E01 above Mach 1.5 (review F4)._ Its 8(a) line #10 at Mach
+     1.7, called wing 2 by both readers who name a wing, lies well below
+     the band served above 1.5 near zero lift, but sets nothing under
+     the three-reading rule (only reader C gives its alpha 0 value).
+     Whether the turbulent band above 1.5 applies to it waits on its
+     layer state, which the text does not establish: a targeted blind
+     reading of fig. 8(a)'s Mach 1.7 panel at low angles is arranged by
+     the coordinator. Nothing above Mach 1.5 changes here.
+   - _Tests (review F3)._ Two more: every band-setting point through the
+     served term over its whole Mach interval at its own h/c and X, for
+     every wing it may be; and the nodes and the served term recomputed
+     independently of the library.
+   - _Refusals (review F10)._ An edge both beyond the layer reach and
+     left laminar by the transition input is refused with both reasons.
+
 7. **What is refused below Mach 1.5**, each with its reason in plain
    words, at every station along the span on fins of varying chord: a
    layer parameter beyond the data (X above what the points of each of the
