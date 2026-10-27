@@ -1,0 +1,115 @@
+(af) APPLIED, WITH ITS ADDENDUM OF 2026-10-27 (0014 section 10.7)
+docs/research/square-edge/af/apply_af.py, on the pairing of 2026-10-27 (eaee32b)
+
+p*/p02 as registered: 0.5283 (exact 0.52828)
+Sets that test P1 (normalisation.txt, before any comparison): RM L57C18. Not: TM X-19 (its own
+measured face-centre pressure); TN 4300 and TN D-5392 (not established).
+TN D-5392 p02 from the paired conditions (Re 1.88e6 on 7.5 in., T0, M; Sutherland): M 2.49: 1279 psf, M 4.06: 805 psf, M 4.63: 656 psf
+
+MINIMUM OF CRITERION (ii) PER SET, ITEM AND MACH NUMBER (the lower reading, p/p02; threshold 0.5283 + a)
+  RM L57C18 fig. 5(b), M 2.00: 2 face points; least lower reading 0.9313, at 1.1242 (rml57c18_fig5-02), a 0.0100, margin +0.3930: pass
+  RM L57C18 fig. 5(c), M 2.00: 2 face points; least lower reading 0.8867, at 1.5022 (rml57c18_fig5-10), a 0.0100, margin +0.3484: pass
+  RM L57C18 fig. 5(d), M 2.00: 2 face points; least lower reading 0.8223, at 1.7571 (rml57c18_fig5-18), a 0.0100, margin +0.2840: pass
+  RM L57C18 fig. 5(f), M 2.00: 2 face points; least lower reading 0.9572, at 1.6214 (rml57c18_fig5-27), a 0.0100, margin +0.4189: pass
+  TM X-19 fig. 5, M 2.49: 15 face points; least lower reading 0.5648, at 0.9749 (tmx19_fig5-15), a 0.0100, margin +0.0265: pass
+  TN 4300 fig. 16(a), M 2.00: 20 face points; least lower reading 0.7371, at 0.9883 (tn4300_fig16-22), a 0.0100, margin +0.1988: pass
+  TN 4300 fig. 16(b), M 2.00: 15 face points; least lower reading 0.9242, at 3.0000 (tn4300_fig16-32), a 0.0100, margin +0.3859: pass
+  TN 4300 fig. 7, M 2.00: 15 face points; least lower reading 0.6922, at 0.9788 (tn4300_fig7-38), a 0.0100, margin +0.1539: pass
+  TN 4300 fig. 7, M 2.01: 13 face points; least lower reading 0.9010, at 0.8494 (tn4300_fig7-24), a 0.0100, margin +0.3627: pass
+  TN 4300 fig. 7, M 2.49: 12 face points; least lower reading 0.6728, at 0.9754 (tn4300_fig7-36), a 0.0100, margin +0.1345: pass
+  TN D-5392 table I, M 2.49: 59 face points; least lower reading 0.7855, orifice 19, at 0.9600 (tnd5392_table1-19), a 0.0117, margin +0.2455: pass
+  TN D-5392 table II, M 4.06: 59 face points; least lower reading 0.5844, orifice 65*, at 0.3734 (tnd5392_table2-65), a 0.0024, margin +0.0537: pass
+  TN D-5392 table III, M 4.63: 59 face points; least lower reading 0.7776, orifice 19, at 0.9600 (tnd5392_table3-19), a 0.0227, margin +0.2266: pass
+
+CRITERION (i), P1, ON THE SETS THAT TEST IT (the higher reading, p/p02; threshold 1 + a)
+  RM L57C18 fig. 5(b), M 2.00: 2 face points; largest higher reading 0.9821 (rml57c18_fig5-01, C_p 1.6212), a 0.0100, margin +0.0279: pass
+  RM L57C18 fig. 5(c), M 2.00: 2 face points; largest higher reading 0.9770 (rml57c18_fig5-09, C_p 1.6110), a 0.0100, margin +0.0330: pass
+  RM L57C18 fig. 5(d), M 2.00: 2 face points; largest higher reading 0.9726 (rml57c18_fig5-17, C_p 1.6021), a 0.0100, margin +0.0374: pass
+  RM L57C18 fig. 5(f), M 2.00: 2 face points; largest higher reading 0.9869 (rml57c18_fig5-26, C_p 1.6309), a 0.0100, margin +0.0231: pass
+
+CRITERION (iii), INFORMATION ONLY (the face mean over the radius, zero over the outer fifth; 0.5283 for reference)
+  RM L57C18  model B, M 2.00 (face radius from A, 1.161 in.): 0.7805 over 2 points
+  RM L57C18  model B, M 2.00 (face radius from B, 1.350 in.): 0.7767 over 2 points
+  RM L57C18  model C, M 2.00 (face radius from A, 1.626 in.): 0.7700 over 2 points
+  RM L57C18  model C, M 2.00 (face radius from B, 1.650 in.): 0.7694 over 2 points
+  RM L57C18  model D, M 2.00 (face radius from A, 1.859 in.): 0.7605 over 2 points
+  RM L57C18  model D, M 2.00 (face radius from B, 1.850 in.): 0.7609 over 2 points
+  RM L57C18  model F, M 2.00: face radius from A: not computed (no radius)
+  RM L57C18  model F, M 2.00 (face radius from B, 1.300 in.): 0.7884 over 2 points
+  TM X-19  4-in. cylinder, M 2.49: 0.7820 over 15 points
+  TN 4300 fig. 16(a) 12-in. model A, fig. 16(a), M 2.00: 0.7923 over 20 points
+  TN 4300 fig. 7 3-in. ref. 3, M 2.01: 0.7827 over 12 points
+  TN 4300 fig. 7 4-in. Unitary tunnel, M 2.49: 0.7756 over 11 points
+  TN 4300 fig. 7 4-in. model D, M 2.00: 0.7798 over 14 points
+  TN 4300 fig. 7 series unclear, M 2.00: 0.7992 over 1 points
+  TN 4300 fig. 7 series unclear, M 2.01: 0.7992 over 1 points
+  TN 4300 fig. 7 series unclear, M 2.49: 0.7992 over 1 points
+  TN D-5392  model 1, phi 0, M 2.49: 0.7820 over 19 points
+  TN D-5392  model 1, phi 0, M 4.06: 0.7799 over 19 points
+  TN D-5392  model 1, phi 0, M 4.63: 0.7720 over 19 points
+  TN D-5392  model 1, phi 180, M 2.49: 0.7818 over 9 points
+  TN D-5392  model 1, phi 180, M 4.06: 0.7380 over 9 points
+  TN D-5392  model 1, phi 180, M 4.63: 0.7725 over 9 points
+  TN D-5392  model 1, phi 270, M 2.49: 0.7821 over 10 points
+  TN D-5392  model 1, phi 270, M 4.06: 0.7804 over 10 points
+  TN D-5392  model 1, phi 270, M 4.63: 0.7729 over 10 points
+  TN D-5392  model 1, phi 45, M 2.49: 0.7830 over 9 points
+  TN D-5392  model 1, phi 45, M 4.06: 0.7815 over 9 points
+  TN D-5392  model 1, phi 45, M 4.63: 0.7745 over 9 points
+  TN D-5392  model 1, phi 90, M 2.49: 0.7823 over 12 points
+  TN D-5392  model 1, phi 90, M 4.06: 0.7805 over 12 points
+  TN D-5392  model 1, phi 90, M 4.63: 0.7733 over 12 points
+  TN D-5392  model 1, all meridians pooled, M 2.49: 0.7815 over 59 points
+  TN D-5392  model 1, all meridians pooled, M 4.06: 0.7578 over 59 points
+  TN D-5392  model 1, all meridians pooled, M 4.63: 0.7712 over 59 points
+
+FACE POINTS WITH ONE READING (used as both their lower and higher reading)
+  tn4300_fig7-01 (read once (B)): 0.9990, margin (ii) +0.4607
+  tn4300_fig7-06 (read once (A)): 0.9936, margin (ii) +0.4553
+  tn4300_fig16-12 (read once (A)): 0.9121, margin (ii) +0.3738
+  tn4300_fig16-16 (read once (A)): 0.8447, margin (ii) +0.3064
+  tn4300_fig16-18 (read once (B)): 0.8501, margin (ii) +0.3118
+  tn4300_fig16-21 (illegible (A)): 0.7463, margin (ii) +0.2080
+  tn4300_fig16-22 (illegible (A)): 0.7371, margin (ii) +0.1988
+
+NOT EVALUABLE (a face point no reader gives a value)
+  tn4300_fig7-14 (illegible (A, no row of B)): 4-in. Unitary tunnel, square, at 0.5
+  tn4300_fig7-20 (illegible (A, no row of B)): 4-in. model D, open circle, at 0.75
+  tn4300_fig7-21 (illegible (A, no row of B)): 4-in. Unitary tunnel, square, at 0.75
+  tn4300_fig16-08 (illegible (A, no row of B)): model A run 2, diamond, at 0.760
+  tn4300_fig16-15 (illegible (A, no row of B)): model A, symbol not identified, at 0.863
+  tn4300_fig16-20 (illegible (A, no row of B)): model A run 1, circle, at 0.957
+
+NOT FACE POINTS (out/not_face.csv): 71 in all; those either reader calls corner or unclear:
+  rml57c18_fig5-03 model B: A corner, B corner; values A 0.8348, B 0.8329
+  rml57c18_fig5-04 model B: A corner, B unclear; values A 0.0631, B 0.0648
+  rml57c18_fig5-11 model C: A afterbody, B unclear; values A 0.1288, B 0.1300
+  rml57c18_fig5-19 model D: A corner, B corner; values A 0.5738, B 0.5734
+  rml57c18_fig5-20 model D: A afterbody, B unclear; values A 0.2702, B 0.2703
+  rml57c18_fig5-28 model F: A corner, B corner; values A 0.2914, B 0.3012
+  rml57c18_fig5-29 model F: A unclear, B unclear; values A -0.3121, B -0.3021
+
+REYNOLDS NUMBERS ON THE FACE HEIGHT (addendum (d))
+  TM X-19 4.00-in. cylinder: 9e+05 (given on the diameter by both readers)
+  TN D-5392 7.5-in. cylinder: 1.88e+06 (given on the (afterbody) diameter by both; the face spans it)
+  RM L57C18 model C: 3.79e+06 (14e6 per ft (free stream, both) x 3.252 in. (A derived 3.252, B scaled about 3.3: paired "agree"; the smaller))
+  RM L57C18 model D: 4.32e+06 (14e6 per ft (free stream, both) x 3.700 in. (A derived 3.717, B scaled about 3.7: paired "agree"; the smaller))
+  RM L57C18 model B: none (face diameters differ (A 2.323 derived, B about 2.7 scaled))
+  RM L57C18 model F: none (A gives no face diameter)
+  TN 4300 models D and A, and fig. 7's comparison series: none (the 14e6 per ft both quote is stated for the heat-transfer data; A records none for the pressure data, B writes it against the fig. 7 points: no per-foot value both give for the pressure tests (fig. 7's 4-in. Unitary series, 2.7e6 per ft, likewise stated for the heat-transfer test; the 3-in. ref. 3 series has none))
+  The range the paired sets measured: 9e+05 to 4.32e+06.
+
+DISCLOSURES (from the pairing, recorded here; they change no rule above)
+  - RM L57C18 fig. 5: neither reading is blind to table II (p. 16, C_p at every orifice): A had its
+    text layer on screen, B its text layer and page image, before reading fig. 5; both say they did
+    not use its values. Nothing here is set from table II, which neither reader read.
+  - RM L57C18 fig. 5(f), model F: all 9 points disagree because the readers' axis calibrations differ
+    by about one minor grid division; the calibration is not settled: (ii) takes the lower reading,
+    (i) the higher.
+  - The pairing party, printing 0014 to read (af), also saw the record of (aa)'s computed check in
+    words; it compared no reading with it.
+  - Face orifices nearest the corner: every set has them (TN 4300 x/r 0.98, TM X-19 0.975, TN
+    D-5392 r/R 0.96; RM L57C18's face orifices lie inboard of its rounded corners), and none is
+    excluded.
+
+VERDICT: PASS ((i) holds; (ii) holds)

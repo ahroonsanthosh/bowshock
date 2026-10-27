@@ -2126,5 +2126,39 @@ written; where this addendum differs, it governs.
   analogy, and the normal Mach numbers 2.0 to 3.0 stand as (af) wrote
   them.
 
+**2026-10-27: (af) applied, with its addendum: pass.** The sets were
+read twice, the second blind (370c1c4), and paired by a neutral party
+(eaee32b). Before any value was compared, the pairing found that RM
+L57C18 tests P1, that TM X-19 does not, and that for TN 4300 and TN
+D-5392 it is not established, so they do not test it. (af) was then
+applied by script, `docs/research/square-edge/af/apply_af.py`, with its
+rules fixed in its header before it was first run (0016 section 21.6).
+
+- _(ii)_ holds at every face orifice of every set, model and Mach number
+  read: the lower reading is at least 0.5283 + a. The least margin is
+  +0.027, at TM X-19's orifice nearest the corner. TN D-5392 table II
+  orifice 65* is at +0.054, on B's 0.5844 (A read 0.9844).
+- _(i)_ holds on RM L57C18, the one set that tests P1: the largest
+  higher reading is 0.987 of p02, against 1.01.
+- _(iii)_, information only, is 0.74 to 0.80.
+- _Disclosed:_
+  - both RM L57C18 fig. 5 readings saw its table II, and nothing is set
+    from it;
+  - fig. 5(f)'s calibrations differ and are not settled;
+  - the pairing party saw (aa)'s computed-check record in words and
+    compared nothing with it.
+- _By (af), square-cut leading edges are wired:_
+  - normal Mach numbers 2.0 to 3.0;
+  - sweep to 60 deg with the sweep allowance, an analogy;
+  - face Reynolds numbers (on the thickness, normal component) 0.90e6 to
+    4.32e6. That is TM X-19's on its diameter up to RM L57C18 model D's
+    per-foot value times its paired face diameter. TN 4300 does not
+    widen the range, its per-foot value not shown to belong to its
+    pressure tests;
+  - refused outside these, in plain words;
+  - the label names the sets as tests of the bounds' premises, not of
+    the value, and the planar face's margin an analogy, not tested.
+- No extension below 0.90e6 is made; any is the owner's to agree.
+
 The letters (w) to (z) are allocated to other branches; the next free
 letter is the coordinator's to allocate.

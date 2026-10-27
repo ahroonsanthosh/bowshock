@@ -1821,3 +1821,122 @@ found two blocking items and eight smaller ones. The fixes follow
   test is stated set by set, criterion (iii) is information only, and
   the Reynolds number is served only inside the range the paired sets
   measured.
+
+### 21.6 (af) applied: pass (2026-10-27)
+
+The measured flat-face pressures named in 0014 section 10.7 (af) were
+read twice, the second blind (`docs/research/square-edge/readers/A` and
+`B`, 370c1c4), and paired by a neutral party
+(`readers/pairing-2026-10-27/`, eaee32b). (af) was then applied exactly
+as written, with its addendum of 2026-10-27, by
+`docs/research/square-edge/af/apply_af.py`, whose rules are fixed in its
+header before it was first run. `af/out/verdict.txt` holds the result,
+`face_margins.csv` the margin at every face orifice and `not_face.csv`
+every point either reader puts off the face.
+
+**How the rules were applied.**
+
+- _Which sets test P1_ was decided in the pairing's `normalisation.txt`,
+  before any value was compared. RM L57C18 (C_p on the free stream) tests
+  it. TM X-19 (over its own face-centre pressure) does not. For TN 4300
+  and TN D-5392 it is not established, so they do not test it either.
+  One set tests P1.
+- _Conversion to p / p02:_ TN 4300's p_l/p_o (o the stagnation point,
+  "the total pressure behind the shock"), TM X-19's and TN D-5392's
+  p_l/p_t,2 are taken as read; RM L57C18's C_p through Rayleigh's formula
+  at its stated Mach number, 2.
+- _a:_ 0.01 where no pressure accuracy is stated as a number (TN 4300,
+  RM L57C18, TM X-19). TN D-5392 states 1% of full scale (1.44 psf on the
+  1-psi gage, 14.4 psf on the 10-psi gage) and 0.5 psf on its
+  manometers. Each orifice is taken with its gage's error plus 0.5 psf,
+  over p02 computed from the paired conditions alone: Re 1.88e6 on the
+  7.5 in. diameter, the stagnation temperature and the Mach number, with
+  Sutherland's law. That gives 1279, 805 and 656 psf at Mach 2.49, 4.06
+  and 4.63, so a is 0.012, 0.019 and 0.023 on the 10-psi gage.
+- _Face points:_ only points both readers (or the one reader) place on
+  the face. The seven points either reader calls corner or unclear, all
+  on RM L57C18, are not face points, and none of the seven is one either
+  reader puts on the face. The 64 afterbody points are listed too.
+- _Readings:_ the two primaries, never an alternative. No face orifice
+  is excluded, so the seven face points read once are used with their
+  one reading. The six with no value from either reader cannot be
+  evaluated; all six are TN 4300 marks that reader A lists without a
+  value, at x/r 0.5 to 0.96, hidden behind or tangled with other
+  symbols, and each is listed.
+
+**Criterion (ii), every face reading at least 0.5283 + a on the lower
+reading:**
+
+| Set, item, series                          | Mach | Face points | Least lower reading, p / p02 (where)                  | a     | Margin         |
+| ------------------------------------------ | ---- | ----------- | ----------------------------------------------------- | ----- | -------------- |
+| TN 4300 fig. 7, 4-in. model D              | 2.00 | 15          | 0.692 (x/r 0.979)                                     | 0.01  | +0.154         |
+| TN 4300 fig. 7, 3-in., ref. 3              | 2.01 | 13          | 0.901 (x/r 0.849)                                     | 0.01  | +0.363         |
+| TN 4300 fig. 7, 4-in., Unitary Plan tunnel | 2.49 | 12          | 0.673 (x/r 0.975)                                     | 0.01  | +0.135         |
+| TN 4300 fig. 16(a), 12-in. model A         | 2.0  | 20          | 0.737 (x/r 0.988; read once, A illegible)             | 0.01  | +0.199         |
+| TN 4300 fig. 16(b), 12-in. model A         | 2.0  | 15          | 0.924 (station 3)                                     | 0.01  | +0.386         |
+| RM L57C18 fig. 5, models B, C, D, F        | 2    | 2 each      | 0.931, 0.887, 0.822, 0.957                            | 0.01  | +0.284 or more |
+| TM X-19 fig. 5, 4-in.                      | 2.49 | 15          | 0.565 (x/r 0.975)                                     | 0.01  | +0.027         |
+| TN D-5392 table I, model 1                 | 2.49 | 59          | 0.786 (orifice 19, r/R 0.96)                          | 0.012 | +0.246         |
+| TN D-5392 table II, model 1                | 4.06 | 59          | 0.584 (orifice 65*, r/R 0.37: B's 0.5844, A's 0.9844) | 0.002 | +0.054         |
+| TN D-5392 table III, model 1               | 4.63 | 59          | 0.778 (orifice 19, r/R 0.96)                          | 0.023 | +0.227         |
+
+**Criterion (i), P1, on RM L57C18:** the largest higher reading is 0.987
+of p02 (model F, C_p 1.631 on B's calibration), against 1 + a = 1.01;
+margin +0.023. **Criterion (iii)** (information only): the face mean
+over the radius, zero over the outer fifth, is 0.738 to 0.799 in every
+group. It does not test a planar face's margin.
+
+**Disclosed** (from the pairing; no rule changes for them):
+
+- Neither RM L57C18 fig. 5 reading is blind to its table II: both
+  readers saw it before reading fig. 5 and say they did not use its
+  values. Nothing is set from table II.
+- RM L57C18 fig. 5(f), model F: the readers' axis calibrations differ by
+  about one minor grid division and all nine points disagree. The
+  calibration is not settled: (ii) takes the lower reading, (i) the
+  higher.
+- The pairing party, printing 0014 to read (af), also saw the record of
+  (aa)'s computed check in words. It compared no reading with it.
+
+**Verdict: pass.** P2 holds at every face orifice of every set, model
+and Mach number. The least margin is TM X-19's orifice nearest the
+corner, x/r 0.975, at +0.027. P1 holds on the one set that tests it.
+
+**What is wired, as (af) and its addendum say:**
+
+- the term of 21.1 unchanged, its band the whole gap between the
+  physical bounds; the readings set no band and no nominal;
+- normal Mach numbers 2.0 to 3.0, refused below 2.0, where no flat face
+  is measured;
+- sweep to 60 deg with the sweep allowance, labelled an analogy, since
+  no swept flat face is measured;
+- the face Reynolds number (on the thickness, its normal component) only
+  inside the range the paired sets measured, **0.90e6 to 4.32e6**, and
+  refused outside it in plain words. The ends of that range:
+  - TM X-19's 0.90e6 on its 4.00 in. diameter, as both readers give it.
+  - The top is RM L57C18's model D: the free-stream 14e6 per ft both
+    give, times the smaller of the paired face diameters, 3.70 in.
+    Model C, by the same rule, is 3.79e6.
+  - RM L57C18's models B and F are not computed, their face diameters
+    not paired.
+  - TN 4300 does not widen the range: the per-foot value both readers
+    quote is stated for its heat-transfer data, and the two differ on
+    whether it applies to the pressure tests.
+  - TN D-5392's 1.88e6 lies inside.
+- the label names the four sets as tests of the bounds' premises, not
+  of the value, and says a planar face's margin at its corners is an
+  analogy, not tested.
+
+**Caveats for the reviewer.**
+
+- The top of the Reynolds range rests on RM L57C18's models C and D,
+  whose corners are rounded (0.4 and 0.1 in.), not square. That is
+  addendum (d) as written. Without them, the range would be TM X-19's
+  and TN D-5392's, 0.90e6 to 1.88e6.
+- What the pass shows:
+  - the bounds' premises hold on measured axisymmetric flat faces, at
+    Mach 2.0 to 4.63 and face Reynolds numbers of 0.9e6 to about 4e6;
+  - P1 holds on one set only.
+- It shows neither the value nor a planar face.
+- A hobby fin's face Reynolds number, about 5e4 to 3e5, lies below
+  every measured one, so hobby fins stay refused.

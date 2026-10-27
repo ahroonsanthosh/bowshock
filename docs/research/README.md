@@ -105,6 +105,11 @@ solve at a time, with
 `MAX_STEPS_BY_LEVEL=20000,6000,4000 SCHEME=explicit nice -n 10 npx vitest run --config docs/research/square-edge/vitest.config.ts`;
 it writes `out/flat-face.jsonl`. `trials/` keeps the trial solves (and
 notes on the first ones) that led to 21.3's amended protocol.
+`readers/` holds the readers' brief, the two readings of the measured
+flat-face pressures named in 0014 section 10.7 (af) (`A`, `B`) and their
+neutral pairing (`pairing-2026-10-27/`); `af/apply_af.py` applies (af)
+to the pairing (`python3 -I docs/research/square-edge/af/apply_af.py`)
+and writes `af/out/` (0016 section 21.6).
 
 ## `interface/`: screenshots of the interface's phase checks
 
