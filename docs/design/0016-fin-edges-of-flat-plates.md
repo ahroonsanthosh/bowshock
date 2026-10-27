@@ -2149,3 +2149,21 @@ the claim.
   - fig. 16 dropped;
   - fig. 17 counted as unread;
   - the 75 deg words lost.
+
+**Coverage, merged with main 5921198.** Main's refusal audit now counts
+the Von Karman noses the page serves: 181 of 8000 totals. Its run is kept
+as the before in `docs/research/refusals/out/2026-10-27-main-5921198/`.
+The re-run on the merged head (5e0259e, `out/impact.out`) gives **181 of
+8000, unchanged**, and the cross-check against `src/total` agrees on 1200
+of 1200.
+
+- "Rounded leading edge swept beyond 60 deg" (3.0% of cases on main)
+  becomes "beyond 75.1 deg", at none: no rocket in the population is
+  swept that far.
+- Most of the cases between 60 and 75.1 deg are still refused for their
+  normal Mach number below 1.0 at their sweep (17.5% to 20.0% of cases)
+  or their Reynolds number (0.7% to 0.8%).
+- The rest have their leading edges served bounded, and every one is
+  refused for another part. The sole-blocker shares of fins at the base
+  the rebuilt factor does not measure rise slightly, for example 1.52%
+  to 1.59% for its sweep refusal.
