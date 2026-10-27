@@ -26,6 +26,7 @@ import {
 import {
   W1_BOUNDED_PREFIX,
   W1_FLAT_RELIEF_LOW,
+  W1_FLAT_UNDER_45_MARK,
   W1_MACH_RANGE,
   W1_RELIEF_LOW,
   W1_RELIEF_LOW_FIG38C,
@@ -1053,9 +1054,11 @@ describe('refusals', () => {
       ['bevelled plate', plate(0.024)],
       ['thick bevelled plate', plate(0.08)],
     ];
-    it("served at the base at M 1.0 to 3.0 and within a chord at M 1.5 to 2.0, with the unswept plate's bracket to 1e-12", () => {
+    it("served at the base at M 1.0 to 3.0 and within a chord at M 1.5 to 2.0, with the unswept plate's bracket to 1e-12; under 45 deg only from M 1.62 (the note of 2026-10-27)", () => {
       for (const [name, section] of sections) {
-        for (const mach of [1.0, 1.2, 1.49, 1.5, 1.8, 1.99, 2.0, 2.5, 2.56, 2.6, 3.0]) {
+        for (const mach of [
+          1.0, 1.2, 1.49, 1.5, 1.6, 1.62, 1.65, 1.8, 1.99, 2.0, 2.5, 2.56, 2.6, 3.0,
+        ]) {
           for (const xc of mach >= 1.5 && mach <= 2.0 ? [0, 0.5] : [0]) {
             const unswept = finsOnBaseFactorW1(
               mach,
@@ -1063,6 +1066,22 @@ describe('refusals', () => {
             );
             for (const le of sweeps) {
               const where = `${name}, M ${mach}, x/c ${xc}, ${le} deg`;
+              if (le < 45 && mach < W1_RELIEF_MEASURED_FROM) {
+                // Narrowed below M 1.62 (0014 10.7 (z), the note of 2026-10-27).
+                let message = '';
+                try {
+                  finsOnBaseFactorW1(
+                    mach,
+                    fins({ section, tanLeadingEdgeSweep: tanDeg(le), trailingEdgeAheadOfBase: xc }),
+                  );
+                } catch (e) {
+                  expect(e, where).toBeInstanceOf(BaseRefusal);
+                  expect((e as BaseRefusal).reason, where).toBe('fin-sweep');
+                  message = (e as Error).message;
+                }
+                expect(message, where).toContain(W1_FLAT_UNDER_45_MARK);
+                continue;
+              }
               let r;
               try {
                 r = finsOnBaseFactorW1(
@@ -1104,6 +1123,53 @@ describe('refusals', () => {
           }
         }
       }
+    });
+    it('the narrowing of 2026-10-27: a plate swept more than 0 and under 45 deg is refused below M 1.62 and served from it; unswept, 45 deg and beyond 60 deg plates unchanged', () => {
+      expect(W1_RELIEF_MEASURED_FROM).toBe(1.62);
+      expect(W1_FLAT_UNDER_45_MARK).toContain(`below M ${W1_RELIEF_MEASURED_FROM}`);
+      const at = (mach: number, le: number, xc = 0) =>
+        reason(() =>
+          finsOnBaseFactorW1(
+            mach,
+            fins({
+              section: plate(0.024),
+              tanLeadingEdgeSweep: tanDeg(le),
+              tanTrailingEdgeSweep: 0,
+              trailingEdgeAheadOfBase: xc,
+            }),
+          ),
+        );
+      // The review's cases: 20 deg at M 1.55 refused, at 1.65 served.
+      expect(at(1.55, 20)).toBe('fin-sweep');
+      expect(at(1.65, 20)).toBe('served');
+      // The edges of the narrowing: Mach 1.62 served, just below refused; just under 45 deg refused, 45 served.
+      expect(at(1.62, 20)).toBe('served');
+      expect(at(1.6199, 20)).toBe('fin-sweep');
+      expect(at(1.55, 44.9)).toBe('fin-sweep');
+      expect(at(1.55, 0.5)).toBe('fin-sweep');
+      expect(at(1.55, 45)).toBe('served');
+      // Within a chord, where positions are served (M 1.5 to 2.0): the same.
+      expect(at(1.55, 20, 0.5)).toBe('fin-sweep');
+      expect(at(1.7, 20, 0.5)).toBe('served');
+      // Below M 1.5, at the base: refused too (W2's range), with the narrowing's words, not the Mach range's.
+      expect(at(1.2, 30)).toBe('fin-sweep');
+      // Not narrowed: the unswept plate (0014 10.7 (i), main's), 45 to 60 deg (section 4) and beyond 60 deg.
+      for (const mach of [1.0, 1.2, 1.55]) {
+        expect(at(mach, 0), `M ${mach}, 0 deg`).toBe('served');
+        expect(at(mach, 45), `M ${mach}, 45 deg`).toBe('served');
+        expect(at(mach, 60), `M ${mach}, 60 deg`).toBe('served');
+        expect(at(mach, 70), `M ${mach}, 70 deg`).toBe('served');
+      }
+      // The message names what is not measured.
+      let message = '';
+      try {
+        finsOnBaseFactorW1(1.55, fins({ section: plate(0.024), tanLeadingEdgeSweep: tanDeg(20) }));
+      } catch (e) {
+        message = (e as Error).message;
+      }
+      expect(message).toContain('swept 20.0 deg');
+      expect(message).toContain('no base pressure is measured with such fins at the base');
+      expect(message).toContain("RM L52E06's relief with plates swept 45 deg alone");
     });
     it("fins ahead of the base: the label does not put their trailing edge in the base plane (the review's case)", () => {
       // The review of 2026-10-26: a plate t/c 0.024, three fins, the leading edge swept 20 deg, the trailing
