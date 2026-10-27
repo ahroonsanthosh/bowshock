@@ -640,3 +640,79 @@ reached by a C- line the first C+ wave has bent).
 
 **V1b passes**, so V2 may run (section 9). V1 itself stays failed as
 registered (section 9.1).
+
+### 9.4 V2 on its first family: fails (2026-10-27)
+
+The 5-caliber tangent ogive, r_n/R 0.03, Mach 1.3. `runners/moc3.sh` ran
+from 03:19 UTC out of a frozen tree of 8266e3a (`tests/tmp-w6b/tree4`:
+that commit's src and runners, extracted from its archive). The lines
+chosen on nj = 20 are the first march's: 22, 27, 34, 42, 52, 63 and 74.
+The run was stopped at 03:42 (its own process group), during nj = 40,
+when the first bug below was seen. Its partial output is kept in
+`results/v2/moc3-ogive5rn0.03M1.3-stopped.*`, but its mass balances are
+on the wrong scale and are not used.
+
+**Two bugs, demonstrated and fixed (01d5e3d):**
+
+1. _The mass balance's scale._ The third march divided every wall
+   point's stream-function error by the starting line's mass flux.
+   `characteristicsFrom`, whose definition W5's criterion uses, divides
+   by the line's own flux once the march leaves the starting data's
+   triangle. Shown on lines 52 and 63, where no embedded shock forms:
+   their drags agree with the first march's to 1e-11 of the drag at every
+   interval count, but their mass balances were 8 to 10 times the first
+   march's (line 52, nj = 20, 2560 intervals: 5.55e-6 against 6.96e-7).
+2. _Where a shock forms._ The crossing of two C+ characteristics was
+   taken from the straight lines through the two old points at their own
+   angles. When those lines are nearly parallel, the crossing can fall
+   anywhere. On line 22 (nj = 20, 640 intervals), after the bow shock had
+   merged, a second shock "formed" next to the wall at (-15.05, -24.48)
+   (`results/v2/formation-off-the-strip.jsonl`), and the march then
+   failed. Now the crossing is that of the C+ chords from the two old
+   points to the new line, which lies between the two lines as the
+   section 9 method requires.
+
+V0 and V1b were run again after both fixes. Neither result changed: V1b's
+numbers match to 1e-12 (`results/v1b-after-fixes.json`).
+
+**After the fixes, the forward lines on nj = 20** (`runners/sweep.test.ts`
+from the same tree with the fixed march;
+`results/v2/sweep-ogive5rn0.03M1.3-nj20-after-fixes.txt`):
+
+| line (share of the drag) | intervals | mass balance | fitted - march | fewest points on a line |
+|---|---|---|---|---|
+| 22 (98.8%) | 640 / 1280 / 2560 | 4.4e-4 / 9.1e-4 / 6.0e-5 | 6.2e-3 / 3.7e-4 / 1.1e-2 | 86 / 169 / 345 |
+| 27 (98.6%) | 640 / 1280 / 2560 | fails / 1.6e-4 / fails | - / 9.7e-3 / - | 4 / 209 / 6 |
+| 34 (97.2%) | 640 / 1280 / 2560 | 2.5e-4 / 3.3e-4 / 2.3e-4 | 7.0e-3 / 7.6e-3 / 7.9e-3 | 66 / 124 / 250 |
+| 42 (92.4%) | 640 / 1280 / 2560 | 5.0e-5 / 8.5e-5 / 1.9e-4 | 1.05e-2 / 1.03e-2 / 9.6e-3 | 522 / 1017 / 2006 |
+
+("fails": the state at the shock went subsonic, or a shock's normal Mach
+number fell below 1.) Lines 52, 63 and 74 form no embedded shock, and
+their march is the first march's. Line 52 (73.6% of the drag) fails the
+criterion on nj = 20 just as the first march does: its change from 1280
+to 2560 intervals is 4.5e-5.
+
+**Verdict: V2 fails on this family.** No line carrying half the drag or
+more meets W5's criterion on nj = 20. Because the criterion must hold on
+every grid, none can pass overall, so coverage fails. The family's
+forward region stays unreferenced (section 6 item 4). The nj = 40 and 80
+marches would not change this and have not been rerun.
+
+**The cause, as far as it has been seen: the method itself; no further
+bug has been demonstrated.** The embedded shock absorbs C+
+characteristics from both sides, and the registered method drops them.
+So each C- line carries fewer points as the march goes on: from n + 1 at
+the start down to 345 on line 22 at 2560 intervals, and to 4 to 6 on
+line 27. The coarse lines then pass points beneath the body (up to 0.44
+of the starting line's width), their mass balances do not fall with the
+intervals, and on two of the twelve marches the state at the shock
+fails.
+
+V1b did not exercise this. Its domain ends before the shock reaches the
+bow shock, and it judges no mass balance.
+
+A remedy would be new points on the lines where the absorbed ones were,
+as fitted-shock characteristics codes do. That is a change of method,
+not a bug fix, so it is not made here. It would need its own registration
+and verification, and that is the coordinator's decision. The other
+families of V2 have not been run.

@@ -1,0 +1,12 @@
+r 1 line 22 n 640: fitted - march 6.167e-3, mass 4.44e-4, penetration 1.3e-1, formed 0.0424, merged 1.9351, embedded 210, fewest points on a line 86
+r 1 line 22 n 1280: fitted - march 3.727e-4, mass 9.14e-4, penetration 4.4e-1, formed 0.0422, merged 1.9348, embedded 420, fewest points on a line 169
+r 1 line 22 n 2560: fitted - march 1.119e-2, mass 6.03e-5, penetration 0.0e+0, formed 0.0421, merged 1.8902, embedded 703, fewest points on a line 345
+r 1 line 27 n 640: a shock needs a supersonic normal Mach number; fewest points on a line 4
+r 1 line 27 n 1280: fitted - march 9.674e-3, mass 1.55e-4, penetration 3.1e-2, formed 0.1079, merged 1.8873, embedded 264, fewest points on a line 209
+r 1 line 27 n 2560: the flow is not supersonic: no characteristics solution; fewest points on a line 6
+r 1 line 34 n 640: fitted - march 7.011e-3, mass 2.47e-4, penetration 4.3e-2, formed 0.2819, merged 3.2294, embedded 53, fewest points on a line 66
+r 1 line 34 n 1280: fitted - march 7.576e-3, mass 3.25e-4, penetration 2.3e-1, formed 0.2832, merged 3.6007, embedded 102, fewest points on a line 124
+r 1 line 34 n 2560: fitted - march 7.917e-3, mass 2.27e-4, penetration 9.1e-2, formed 0.2813, merged 3.4149, embedded 205, fewest points on a line 250
+r 1 line 42 n 640: fitted - march 1.048e-2, mass 4.95e-5, penetration 0.0e+0, formed 0.7427, merged 1.9502, embedded 85, fewest points on a line 522
+r 1 line 42 n 1280: fitted - march 1.033e-2, mass 8.52e-5, penetration 3.8e-3, formed 0.7431, merged 2.0613, embedded 340, fewest points on a line 1017
+r 1 line 42 n 2560: fitted - march 9.640e-3, mass 1.90e-4, penetration 1.4e-2, formed 0.7429, merged 2.1148, embedded 661, fewest points on a line 2006
