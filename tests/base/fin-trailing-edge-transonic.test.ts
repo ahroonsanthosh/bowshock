@@ -691,12 +691,12 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 0.99 }))).toBe('mach-range');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 1.0 }))).toBe('none');
     // What the sets are sure to reach, each counted at the least c/[h Re^(1/5)] of its test: RM
-    // A51J11's h/t 0.3 with roughness (4.49) to Mach 1.10, its h/t 1.0 (1.35) in the window of
-    // 1.15, then TN 3548 at its highest Reynolds number (0.666).
+    // A51J11's h/t 0.3 with roughness (4.49) to Mach 1.10; RM A52E01's lines, any wing at once,
+    // wing 2's at Re 1.5e6 (1.939) at 1.15 to 1.25 and 1.35 to 1.45; TN 3548 at its highest
+    // Reynolds number (0.666) at 1.30 and 1.50.
     const reach = transonicTrailingEdge().nodes.map((n) => +n.layerReached.toFixed(3));
     const tn = +(1 / (0.06 * 9.8e6 ** 0.2)).toFixed(3);
     const a51 = (hc: number) => +layerParameterRange(hc, 1.7e6, 2.2e6)[0].toFixed(3);
-    // RM A52E01's lines, any wing at once, reach wing 2's at Re 1.5e6 (1.939) at 1.2 and 1.4.
     const a52 = +layerParameterRange(0.03, 1.5e6, 1.5e6)[0].toFixed(3);
     expect(reach).toEqual([
       a51(0.012),

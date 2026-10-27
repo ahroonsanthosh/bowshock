@@ -1110,6 +1110,99 @@ formed on two of them, and the shape widening's size on two of them.
    planted errors (a point moved, a node moved, the widening's side
    reversed) caught.
 
+10. **Results (2026-10-27, after the three-way pairing; written after the
+    values were seen, and changing no rule above).**
+
+    - _The points._ 562 held (`src/base/fin-te-transonic-data.ts`, Mach
+      0.97 to 1.75, every reading), 384 entering the band at Mach 1.0 to
+      1.5. RM A51J11 as round 15's pairing gives it (both readers, every
+      curve, curve end and box row). RM A52E01 under the three-reading
+      rule: reader A names no wing in the supersonic panels and reader B
+      flags every wing call there uncertain, so every supersonic curve is
+      any of wings 2, 3 and 4. Held at alpha 0 (readers B and C; reader A
+      gives no alpha 0 value there): fig. 8(a) curves #2 and #3 (Mach
+      1.2), #6 (1.4) and #9 (1.7, a check only); fig. 8(b) #1 and #2
+      (1.2), #3 to #5 (1.4) and #6 (1.7). Set nothing: 8(a) #4 and #5 (B
+      and C read them, no pair agrees), #7 and #10 (read once), #1 and #8
+      (no value); 8(b) #7 to #9 (read once).
+    - _The ordering check_ (`audit/te-below-1.5/ordering-check.out`,
+      scope as recorded above): 952 pairs compared within single readings,
+      23 contradictions. RM A51J11 fig. 14: 293 and 292 pairs (readers A
+      and B), none. Fig. 15: 186 and 181 pairs, 12 and 11 contradictions,
+      all at Mach 1.06, h/t 0.6 (faces closing about 1.0 deg) with more
+      base drag than the flat h/t 1.0 at 2y/b 0.40 to 0.875 in both
+      readings, by 0.001 to 0.13 in Cp_b (beyond the two rows' summed
+      errors from 2y/b 0.50 outward in reading A and from 0.45 in reading
+      B). RM A52E01: not testable in any of its 16 panels (no panel has a
+      wing 3 and a wing 4 curve that both pass the rule; every supersonic
+      curve is any wing). So the widening is two-sided for every inclined
+      set, [r (1 - S), r (1 + S)], S = 0.0903 |delta| / 4.0 deg
+      (`SHAPE_WIDENING_TWO_SIDED`).
+    - _The band served (thin layer), measured over modelled, at the
+      nodes:_
+
+      | M_0  | Band           | Low end set by                                        | High end set by                           | Layer reach X |
+      | ---- | -------------- | ----------------------------------------------------- | ----------------------------------------- | ------------- |
+      | 1.00 | 0.869 to 1.442 | RM A51J11 fig. 14, h/t 0.3 without roughness          | RM A51J11 fig. 14, h/t 1.0 with roughness | 4.49          |
+      | 1.05 | 0.530 to 1.442 | RM A51J11 fig. 15, 2y/b 0.873                         | RM A51J11 fig. 14                         | 4.49          |
+      | 1.10 | 0.530 to 1.429 | RM A51J11 fig. 15, 2y/b 0.873                         | RM A51J11 fig. 14                         | 4.49          |
+      | 1.15 | 0.858 to 1.557 | RM A51J11 fig. 14, h/t 0.3 without roughness (M 1.10) | RM A52E01 8(a) #2                         | 1.94          |
+      | 1.20 | 0.930 to 1.557 | the floor (TN 3548 0.959)                             | RM A52E01 8(a) #2                         | 1.94          |
+      | 1.25 | 0.930 to 1.557 | the floor (TN 3548 0.957)                             | RM A52E01 8(a) #2                         | 1.94          |
+      | 1.30 | 0.930 to 1.210 | the floor (TN 3548 0.957)                             | the floor (RM A51J25 symbols 1.118)       | 0.666         |
+      | 1.35 | 0.860 to 1.535 | RM A52E01 8(b) #3                                     | RM A52E01 8(a) #6                         | 1.94          |
+      | 1.40 | 0.860 to 1.535 | RM A52E01 8(b) #3                                     | RM A52E01 8(a) #6                         | 1.94          |
+      | 1.45 | 0.860 to 1.535 | RM A52E01 8(b) #3                                     | RM A52E01 8(a) #6                         | 1.94          |
+      | 1.50 | 0.930 to 1.210 | the floor (RM A51J25 symbols 0.936)                   | the floor (TN 3548 1.012)                 | 0.666         |
+
+      Linear between nodes. The 0.530 is RM A51J11 fig. 15's outboard
+      station 2y/b 0.873 at Mach 1.06 (h/t 0.3), near the tip; fig. 15
+      sets the band only (item 6). With the widening two-sided, item 2's
+      remark that fig. 7's symbols set the low end at 1.35 to 1.45 (0.921)
+      no longer holds: RM A52E01 sets it there (0.860).
+
+    - _Reach and refusals._ X up to 4.49 is served at Mach 1.00 to 1.10
+      (RM A51J11 with roughness), up to 1.94 at 1.10 to 1.25 and 1.35 to
+      1.45 (RM A52E01, wing 2's X at Re 1.5e6, the least of the three
+      wings'), and up to 0.666 near 1.30 and 1.50 (TN 3548): between two
+      nodes the lesser reach holds, so an edge with X above 0.666 is
+      refused at Mach 1.25 to 1.35 and 1.45 to 1.50. h/c is served from
+      0.012 to 0.20. The Basic Finner's wedges (X about 0.8) lie within
+      the reach at 1.00 to 1.25 and 1.35 to 1.45 and beyond it at 1.25 to
+      1.35 and 1.45 to 1.50: its reported shots at 1.254 and 1.332 stay
+      refused (thick layer), those at 1.056 to 1.116 too (their transition
+      input leaves the edge laminar).
+    - _The step at Mach 1.5._ None: the points at 1.45 to 1.50 lie at
+      0.936 to 1.012, inside 0.93 to 1.21, and the band and the nominal
+      are equal from both sides of 1.5. The band narrows from 0.860 to
+      1.535 at 1.45 to 0.93 to 1.21 at 1.50, linearly.
+    - _The check above Mach 1.5_ (`audit/te-below-1.5/check-above-1.5.out`,
+      held by a test; nothing above 1.5 changes): TN 3548 at Mach 1.51 to
+      1.61 (12 points) and RM A51J25 fig. 7's symbols at 1.50 to 1.51 (3)
+      lie inside the band there (ratios 0.946 to 1.012). RM A52E01 at Mach
+      1.7 (8(a) #9, 8(b) #6, readers B and C), any wing, so taken as each:
+      as wing 3 or 4 inside (0.940 to 1.073); as wing 2 three of the four
+      lie partly below the band's low end, 8(a) #9 B at 0.917 against
+      0.919, 8(b) #6 B at 0.891 and C at 0.897 against 0.923, by up to
+      3.5%. Reported, not acted on (10.7 (ac)); if those lines are wing 2,
+      the band's low end above 1.5 is about 3% too high there at Re 3.8e6
+      (0.2% at 1.5e6).
+    - _Planted errors_ (`audit/te-below-1.5/planted-errors.out`): 11 of 11
+      caught. Item 9's "the widening's side reversed" no longer applies (the
+      widening is two-sided); it is replaced by "the two-sided fallback
+      ignored" and "the shape allowance halved".
+    - _The population_ (`docs/research/refusals/`, 2000 rockets, before
+      `out/2026-10-26-te-below-1.5-before/`, after
+      `out/2026-10-27-te-below-1.5-after/`): the trailing edge's Mach
+      refusal, 52.7% of cases at Mach 1.0 to 1.2 and at 1.2 to 1.5 before,
+      is gone; below 1.5 the coverage refusal (X or h/c beyond the sets
+      that reach there) takes 18.3% at Mach 1.0 to 1.2 and 38.3% at 1.2 to
+      1.5 (14.1% over all bands), and W3's share in those bands falls from
+      52.7% to 26.2% and 46.1%. Totals do not change: none below Mach 1.5
+      (the fins' own-drag refusal, 100% of cases there, still blocks
+      every one), 1.9% over all bands. The library cross-check agrees on
+      1200 of 1200 cases.
+
 ### 3.5 F5: thin sharp sections near Mach 1
 
 Double wedges (11.3% of cases) and single wedges (the page's section, and
