@@ -1,0 +1,803 @@
+Pairing of the two blind readings of the (ag) boat-tail figures
+================================================================
+
+0014 10.7 (ag): NACA RM L54C16, RM L54I22, RM E57E06, NASA TN D-6789 and
+TM X-1960. Paired on 2026-10-27 by a neutral party. Boat-tails are parked
+(0014, 2026-10-27 amendment to (ae) and (ag)): this pairing is a record,
+and nothing is set from it.
+
+The pairing compares reader A with reader B and with nothing else. No
+computed result was opened. No value was averaged, chosen or settled:
+every pair keeps both readings, both stated errors and their envelope.
+No third reading was made, and no PDF page was looked at for this
+pairing (the PDFs in the readers' folders were only hashed, to confirm
+both readers used the same files).
+
+
+1. What was paired, and what was opened
+---------------------------------------
+
+Inputs: readers/ag/A/ and readers/ag/B/ as committed, unchanged from the
+readers' folders, in e8fc2f110a92d83da163d5e77c162ded868d9399 (on
+claude/wip/boat-tails after 242d7aa17ba1de8e82605a5a1b8aea45ea200bb8).
+The SHA-256 of every input CSV is in input_sha256.csv.
+
+Both readers record the same brief (SHA-256 7b050ff7...b7969) and the
+same addendum (4876c73a...1d1f84), received through a coordinator
+message and read at 03:16 UTC on 2026-10-27, after each had read RM
+L54C16; A wrote its RM L54C16 geometry rows after it, and B went back
+over its rows to add what the addendum asks for. Both fetched the five
+PDFs from https://ntrs.nasa.gov/api/citations/<id>/downloads/<id>.pdf
+and record the same SHA-256 and byte sizes; the files in the two
+readers' src/ folders hash the same:
+
+  RM L54C16  0e5692101af2c78196723f706ce1e4aa7c6ff7e8801d07f1ef0a7b4c659bfe52  13347082 bytes
+  RM L54I22  d3c4c096f44b258ef41341c698dc2c8eed9bb7163967f03a925d6980066cce89  20057086 bytes
+  RM E57E06  ad79cc256b3d222b76f1f56f59d84d343c43999331ad004cb0e9fd856d11a8e5  49956892 bytes
+  TN D-6789  e6ea63b0ab46967eab7a1bca4ac1bd5adc0794c57ac752c128c2e6bdb740f08b   3037158 bytes
+  TM X-1960  86f80d3d50b4f41f9d3031de6d2350bc180bd374beef033617092fb05e3b57a7   9914890 bytes
+
+Opened for the pairing: the brief and its addendum (scratchpad
+ag-readers/brief.md and brief-addendum.md); all of ag-readers/A/ and
+ag-readers/B/ (method notes, figure CSVs, geometry.csv, scripts, and the
+working logs A/work/opened.log and B/work/log.md); and in the repository
+only the 0014 entries marked (ag) and their dated amendments on
+origin/claude/wip/boat-tails (0014-refusals.md lines 1942 to 2336 at
+242d7aa). Nothing else in the repository or the scratchpad was opened.
+
+Files here:
+
+  pair.py                         the pairing script (standard library;
+                                  python3 -I pair.py <readers/ag> <out>)
+  pairs_<figure>.csv              every pair and every point read once,
+                                  one file per figure CSV of the brief
+  disagreements.csv, read_once.csv, illegible.csv
+                                  extracts of the pairs files
+  listings.txt                    the same items in plain text, with both
+                                  readers' notes (the reasons) verbatim
+  flags.csv                       every row either reader flagged
+                                  (ambiguous or illegible), verbatim,
+                                  with the pair it fell in
+  labels.csv                      each group's series, configuration,
+                                  Mach, meridian and axis labels, by reader
+  possible_label_differences.csv  points read once under one label that
+                                  sit where the other reader read a point
+                                  under another label
+  geometry_pairs.csv              the two geometry.csv files, row by row
+  counts.csv                      the counts of section 3
+  input_sha256.csv                hashes of the inputs
+
+
+2. How the points were paired
+-----------------------------
+
+Groups. Points are paired only inside one group: the figure, its part or
+panel, the Mach number where a figure holds several, and the series the
+legend names. The groups are:
+
+  RM L54C16 fig. 5      part; model (1, 2, 3); open or filled symbol
+  RM L54I22 fig. 2      part (Mach number); shroud
+  RM E57E06 fig. 6      part; double strut, single strut, ref. 10, other
+  RM E57E06 figs. 7, 8  part; Mach; meridian (behind strut = 0, 90 deg)
+  RM E57E06 fig. 14     part; Mach; open or solid; db/dj; 45 deg bevel
+  TN D-6789 figs. 5, 18 Mach; meridian
+  TN D-6789 fig. 7      part; l/dm panel; Mach (jet-off circle)
+  TN D-6789 fig. 12     l/dm panel; beta
+  TN D-6789 fig. 20     one group; the repeat-data flag compared as a label
+  TM X-1960 fig. 5      meridian (M 1.30)
+  TM X-1960 fig. 6      beta (M 1.30)
+  TM X-1960 fig. 7      part; beta as the legend names it
+  TM X-1960 fig. 11     balance square or computed circle; flag as a label
+  TM X-1960 fig. 18     meridian, or the solid base-pressure triangle
+
+Stations. Inside a group, the abscissae of both readers are joined into
+station clusters wherever neighbours lie within the figure's tolerance:
+0.01 in x/L (RM L54C16 fig. 5(a), RM L54I22 fig. 2), 1 deg (RM L54C16
+fig. 5(b)), 0.01 in 1 - (r/rB)^2 (RM E57E06 figs. 6(a) and 14), 0.5 in
+Pj/P0 (fig. 6(b)), 0.1 in (fig. 7), 0.008 in y/dB (fig. 8), 0.012, 0.015
+and 0.02 in x/dm (TN D-6789 figs. 5, 7, 18), 0.015 in x/dm (TM X-1960
+figs. 5, 6), 0.03 in x/dm (TM X-1960 fig. 18) and 0.02 in Mach number
+(TN D-6789 figs. 12, 20; TM X-1960 figs. 7, 11). Each tolerance is below
+the spacing of the figure's stations. Inside a cluster the pairing keeps
+as many pairs as the smaller count allows; among those, the one with the
+least summed squared distance measured in the two readers' summed errors
+(with one unit added for each pair whose repeat-data flags differ, so
+that a pairing keeping the flags together wins when the positions are
+about as near). What is left over is read once.
+
+Agreement. On each coordinate, the difference is within the two stated
+one-sigma errors summed: A's "reading error 1-sigma x .., y .." and B's
+"reading error 1 sd: x +-.., y +-.." in each row's note. Where a reader
+gives the abscissa as a category and not a reading (B: the Mach number
+as given in TN D-6789 figs. 12 and 20 and TM X-1960 figs. 7 and 11; A:
+the nominal station or Mach number of a point it could not read), x is
+not tested and the pair says so.
+
+Envelope. Each pair gives the lowest and highest of the two readings on
+each coordinate. A second y envelope also takes in every alternative
+that either reader wrote as a number in a fixed form (B: "y=N (...)" and
+"x=N y=N (...)"; A: a bare number, "x N, y N (...)" and "y N if ...").
+All alternatives are also copied verbatim. The alternatives_check column
+says where one reading agrees, within the summed errors, with one of the
+other reader's numeric alternatives, or lies inside the range of the
+other's reading and alternatives. This is a record, not a choice.
+
+
+3. Counts per figure
+--------------------
+
+A, B: rows in each reading. pairs: points matched. agree: within the
+summed errors on every coordinate tested. dis x, dis y, dis xy: outside
+them on x, on y, on both. ill A: y empty in A, read by B; ill B: the
+reverse; ill AB: empty in both. once A, once B: points read by one reader
+only (including points one reader lists as illegible that the other does
+not list at all). flag A, flag B: rows flagged ambiguous or illegible.
+
+  figure                  A    B pairs agree dis x dis y dis xy ill A ill B ill AB once A once B flag A flag B
+  rml54c16_fig5          12   12    12    12     0     0      0     0     0      0      0      0      1      0
+  rml54i22_fig2          58   61    57    57     0     0      0     0     0      0      1      4     15     54
+  rml54i22_fig7           0    0     0     0     0     0      0     0     0      0      0      0      0      0
+  rml54i22_fig14          0    0     0     0     0     0      0     0     0      0      0      0      0      0
+  rml54i22_fig16          0    0     0     0     0     0      0     0     0      0      0      0      0      0
+  rme57e06_fig6          21   14    13    13     0     0      0     0     0      0      8      1     21     14
+  rme57e06_fig7           8    8     8     8     0     0      0     0     0      0      0      0      0      0
+  rme57e06_fig8          28   28    28    28     0     0      0     0     0      0      0      0      0      4
+  rme57e06_fig14        119  116   116   113     2     1      0     0     0      0      3      0     25     65
+  tnd6789_fig5           68   68    68    10     0     9      0    49     0      0      0      0     68     66
+  tnd6789_fig7          126  126   126    81     0     5      1    36     2      1      0      0    126    119
+  tnd6789_fig12         153  152   152   141     0     6      0     5     0      0      1      0     32     31
+  tnd6789_fig18          56   51    51    31     3    15      1     1     0      0      5      0     45     46
+  tnd6789_fig20          27   27    27    24     0     3      0     0     0      0      0      0     20      7
+  tmx1960_fig5           34   34    34    13     0     7      1    13     0      0      0      0     34     34
+  tmx1960_fig6           35   33    33    26     0     1      6     0     0      0      2      0     13      5
+  tmx1960_fig7           45   45    45    42     0     3      0     0     0      0      0      0     19      0
+  tmx1960_fig8            0    0     0     0     0     0      0     0     0      0      0      0      0      0
+  tmx1960_fig11           7    7     7     7     0     0      0     0     0      0      0      0      7      3
+  tmx1960_fig18          29   23    23    22     0     1      0     0     0      0      6      0     27     22
+  all figures           826  805   800   628     5    51      9   104     2      1     26      5    453    470
+
+Of the 800 pairs, 693 have both values: 628 agree (91 percent) and 65
+disagree. 107 pairs have y empty in one reading or both. 31 points are
+read once. RM L54I22 figs. 7, 14 and 16 and TM X-1960 fig. 8 are empty
+in both readings, for the same reasons (sections 7 and 8).
+
+By figure, in words:
+
+- RM L54C16 fig. 5: all 12 points paired and agree, including the filled
+  triangle at x/L about 0.996 (A ambiguous, B ok) and both fig. 5(b)
+  drag points.
+- RM L54I22 fig. 2: 57 pairs, all agree. A 58 points, B 61. The counts
+  differ in the stacks at x/L 0.870 and 0.992 (fig. 2(b)) and 0.965
+  (fig. 2(c)): see section 5. A flags 15 rows, B 54 (B flags every point
+  in a stack).
+- RM E57E06 fig. 6: 13 pairs agree (11 in fig. 6(a), and the lowest
+  Pj/P0 point of each strut in fig. 6(b)). A read all ten fig. 6(b)
+  points; B read only the lowest Pj/P0 point of each strut and left the
+  others as jet on. B alone reads a small circle in fig. 6(a). Every row
+  of both readings is flagged for the jet state (section 7).
+- RM E57E06 figs. 7 and 8: all 8 and all 28 pairs agree.
+- RM E57E06 fig. 14: 116 pairs, 113 agree, 3 disagree (two in x, one in
+  y); A reads 3 more points.
+- TN D-6789 fig. 5: 68 pairs. A reads a meridian's symbol only where its
+  own outline can be found and leaves the rest illegible (49); B gives
+  the centre of the merged stack for every meridian, with the highest
+  and lowest possible centres as alternatives. 10 agree, 9 disagree in y;
+  in all 9, A's value agrees with one of B's alternatives or lies inside
+  B's range.
+- TN D-6789 fig. 7: 126 pairs. 81 agree, 6 disagree, 36 illegible in A,
+  2 illegible in B, 1 illegible in both. A takes the jet-off circle to
+  lie in the lowest symbol stack at each station and gives the middle of
+  the range of possible centres there, or leaves y empty where that
+  range is wider than 8 px; B gives the centre of the stack it takes as
+  holding the circle, with the highest and lowest possible centres, and
+  in places other candidate symbols, as alternatives.
+- TN D-6789 fig. 12: 152 pairs, 141 agree, 6 disagree, 5 illegible in A.
+  Four of those are open symbols A finds hidden behind the filled theory
+  symbols; B reads them at the theory symbol's centre, ambiguous, with
+  "measured point not plotted at this Mach number" as alternative. The
+  fifth (l/dm 0.6, beta 3, M 2.20) A could not separate from a merged
+  block on the right frame; B reads it, ambiguous.
+  Four of the six disagreements are consecutive Mach numbers 0.90 to
+  1.05 of one series (l/dm 0.8, beta 10), B higher by 0.0017 to 0.0021.
+- TN D-6789 fig. 18: 51 pairs, 31 agree, 19 disagree (3 in x, 15 in y,
+  1 in both), 1 illegible in A; A lists 5 more diamonds as illegible.
+- TN D-6789 fig. 20: 27 pairs, 24 agree, 3 disagree; the readers place
+  the repeat-data flag differently at M 0.90 and 2.20 (section 7).
+- TM X-1960 fig. 5(c): 34 pairs. 13 agree, 8 disagree, 13 illegible in
+  A, as in TN D-6789 fig. 5; in 6 of the 8 disagreements A's value
+  agrees with one of B's alternatives or lies inside B's range.
+- TM X-1960 fig. 6(c): 33 pairs, 26 agree, 7 disagree. Six are the beta
+  20 deg right triangle: A gives the centre of the symbol's bounding
+  square, B the triangle's centroid; A gives the centroid as its
+  alternative, which agrees with B within the summed errors at three of
+  the six stations and lies 0.00002 to 0.0003 beyond them in y (within
+  them in x) at the other three. A reads 2 more points at the cylinder
+  station.
+- TM X-1960 fig. 7: 45 pairs, 42 agree, 3 disagree in y.
+- TM X-1960 fig. 11: all 7 pairs agree.
+- TM X-1960 fig. 18 (M 1.20 panel): 23 pairs, 22 agree, 1 disagrees; A
+  reads 6 more points (3 of them illegible).
+
+
+4. Every disagreement (65)
+--------------------------
+
+One line each: the pair, the group, both readings with their flags, the
+differences against the summed errors, and what the alternatives check
+found. Both readers' notes, verbatim, are in listings.txt and
+disagreements.csv.
+
+- rme57e06_fig14-018: fig. 14(a), open / db/dj 1.40 / no bevel. A x 0.6727 y -0.0008 (ok); B x 0.6681 y -0.0009 (ambiguous). dx 0.0046 (sum 0.00353); dy 0.0001 (sum 0.00166).
+- rme57e06_fig14-045: fig. 14(b), solid / db/dj 1.11 / no bevel. A x 0.8245 y 0.0379 (ok); B x 0.8241 y 0.0371 (ok). dx 0.0004 (sum 0.00171); dy 0.0008 (sum 0.00069).
+- rme57e06_fig14-104: fig. 14(c), solid / db/dj 1.11 / no bevel. A x 0.8031 y -0.0147 (ok); B x 0.8080 y -0.0147 (ambiguous). dx -0.0049 (sum 0.00315); dy 0.0000 (sum 0.00128).
+- tnd6789_fig5-004: fig. 5 (M = 1.83), phi 0. A x 0.2490 y -0.1626 (ambiguous); B x 0.2487 y -0.1555 (ambiguous). dx 0.0003 (sum 0.00500); dy -0.0071 (sum 0.00253). A's reading agrees with B's alternative 'y=-0.1647 (lowest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tnd6789_fig5-006: fig. 5 (M = 1.83), phi 0. A x 0.7502 y -0.1178 (ambiguous); B x 0.7492 y -0.1116 (ambiguous). dx 0.0010 (sum 0.00500); dy -0.0062 (sum 0.00253). A's reading agrees with B's alternative 'y=-0.1183 (lowest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tnd6789_fig5-011: fig. 5 (M = 1.83), phi 135. A x 0.7507 y -0.1157 (ambiguous); B x 0.7492 y -0.1116 (ambiguous). dx 0.0015 (sum 0.00500); dy -0.0041 (sum 0.00253). A's y lies inside the range of B's reading and alternatives.
+- tnd6789_fig5-014: fig. 5 (M = 1.83), phi 157.5. A x 0.2491 y -0.1474 (ambiguous); B x 0.2487 y -0.1555 (ambiguous). dx 0.0004 (sum 0.00620); dy 0.0081 (sum 0.00320). A's reading agrees with B's alternative 'y=-0.1464 (highest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tnd6789_fig5-025: fig. 5 (M = 1.83), phi 45. A x 0.4996 y -0.1421 (ambiguous); B x 0.4989 y -0.1358 (ambiguous). dx 0.0007 (sum 0.00720); dy -0.0063 (sum 0.00370). A's reading agrees with B's alternative 'y=-0.1419 (lowest possible)'.
+- tnd6789_fig5-031: fig. 5 (M = 1.83), phi 90. A x 0.2498 y -0.1633 (ambiguous); B x 0.2487 y -0.1555 (ambiguous). dx 0.0011 (sum 0.00550); dy -0.0078 (sum 0.00279). A's reading agrees with B's alternative 'y=-0.1647 (lowest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tnd6789_fig5-032: fig. 5 (M = 1.83), phi 90. A x 0.4987 y -0.1391 (ambiguous); B x 0.4989 y -0.1358 (ambiguous). dx -0.0002 (sum 0.00550); dy -0.0033 (sum 0.00279). A's y lies inside the range of B's reading and alternatives.
+- tnd6789_fig5-034: fig. 5 (M = 1.83), phi 90. A x 0.9652 y -0.0961 (ambiguous); B x 0.9694 y -0.0897 (ambiguous). dx -0.0042 (sum 0.00630); dy -0.0064 (sum 0.00320). A's reading agrees with B's alternative 'y=-0.0973 (lowest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tnd6789_fig5-066: fig. 5 (M = 2.20), phi 90. A x 0.4988 y -0.1147 (ambiguous); B x 0.4989 y -0.1108 (ambiguous). dx -0.0001 (sum 0.00660); dy -0.0039 (sum 0.00360). A's reading agrees with B's alternative 'y=-0.1170 (lowest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tnd6789_fig7-035: fig. 7(b), l/dm = 0.8, jet off. A x 0.7797 y -0.0447 (ambiguous); B x 0.7802 y -0.0410 (ambiguous). dx -0.0005 (sum 0.00650); dy -0.0037 (sum 0.00360). B's reading agrees with A's alternative '-0.0432'; A's reading agrees with B's alternative 'y=-0.0443 (lowest centre within chosen group)'.
+- tnd6789_fig7-077: fig. 7(d), l/dm = 0.8, jet off. A x 0.7807 y -0.0584 (ambiguous); B x 0.7804 y -0.0620 (ok). dx 0.0003 (sum 0.00410); dy 0.0036 (sum 0.00210).
+- tnd6789_fig7-084: fig. 7(d), l/dm = 1.0, jet off. A x 0.9779 y -0.0559 (ambiguous); B x 0.9752 y -0.0601 (ok). dx 0.0027 (sum 0.00410); dy 0.0042 (sum 0.00200).
+- tnd6789_fig7-105: fig. 7(e), l/dm = 1.0, jet off. A x 0.9686 y -0.1003 (ambiguous); B x 0.9702 y -0.0959 (ok). dx -0.0016 (sum 0.00390); dy -0.0044 (sum 0.00210).
+- tnd6789_fig7-112: fig. 7(f), l/dm = 0.6, jet off. A x 0.5751 y -0.1047 (ambiguous); B x 0.5814 y -0.1111 (ok). dx -0.0063 (sum 0.00430); dy 0.0064 (sum 0.00230).
+- tnd6789_fig7-118: fig. 7(f), l/dm = 0.8, jet off. A x 0.5996 y -0.1124 (ambiguous); B x 0.6006 y -0.1082 (ok). dx -0.0010 (sum 0.00400); dy -0.0042 (sum 0.00220).
+- tnd6789_fig12-059: fig. 12, l/dm = 0.8, beta 10. A x 0.9019 y 0.1199 (ok); B x 0.90 y 0.1216 (ok). dx 0.0019 (sum n/a, x not tested); dy -0.0017 (sum 0.00169).
+- tnd6789_fig12-060: fig. 12, l/dm = 0.8, beta 10. A x 0.9515 y 0.1742 (ok); B x 0.95 y 0.1762 (ok). dx 0.0015 (sum n/a, x not tested); dy -0.0020 (sum 0.00169).
+- tnd6789_fig12-061: fig. 12, l/dm = 0.8, beta 10. A x 1.0008 y 0.1786 (ok); B x 1.00 y 0.1807 (ok). dx 0.0008 (sum n/a, x not tested); dy -0.0021 (sum 0.00169).
+- tnd6789_fig12-062: fig. 12, l/dm = 0.8, beta 10. A x 1.0499 y 0.1617 (ok); B x 1.05 y 0.1635 (ok). dx -0.0001 (sum n/a, x not tested); dy -0.0018 (sum 0.00169).
+- tnd6789_fig12-135: fig. 12, l/dm = 1.0, beta 3. A x 1.8305 y 0.0098 (ambiguous); B x 1.83 y 0.0074 (ambiguous). dx 0.0005 (sum n/a, x not tested); dy 0.0024 (sum 0.00186).
+- tnd6789_fig12-152: fig. 12, l/dm = 1.0, beta 5. A x 1.8334 y 0.0257 (ambiguous); B x 1.83 y 0.0237 (ambiguous). dx 0.0034 (sum n/a, x not tested); dy 0.0020 (sum 0.00176).
+- tnd6789_fig18-008: fig. 18 (M = 1.83), phi 0. A x 1.1038 y -0.1922 (ambiguous); B x 1.1086 y -0.1956 (ambiguous). dx -0.0048 (sum 0.00650); dy 0.0034 (sum 0.00309).
+- tnd6789_fig18-009: fig. 18 (M = 1.83), phi 0. A x 1.1887 y -0.0638 (ok); B x 1.1890 y -0.0613 (ambiguous). dx -0.0003 (sum 0.00379); dy -0.0025 (sum 0.00176).
+- tnd6789_fig18-017: fig. 18 (M = 1.83), phi 180. A x 1.1027 y -0.1920 (ambiguous); B x 1.1104 y -0.1899 (ambiguous). dx -0.0077 (sum 0.00650); dy -0.0021 (sum 0.00309).
+- tnd6789_fig18-018: fig. 18 (M = 1.83), phi 180. A x 1.1876 y -0.1225 (ok); B x 1.1877 y -0.1245 (ok). dx -0.0001 (sum 0.00289); dy 0.0020 (sum 0.00136).
+- tnd6789_fig18-021: fig. 18 (M = 1.83), phi 90. A x 0.1868 y -0.0556 (ambiguous); B x 0.1842 y -0.0513 (ambiguous). dx 0.0026 (sum 0.00560); dy -0.0043 (sum 0.00269).
+- tnd6789_fig18-023: fig. 18 (M = 1.83), phi 90. A x 0.5694 y -0.1447 (ambiguous); B x 0.5631 y -0.1349 (ambiguous). dx 0.0063 (sum 0.00470); dy -0.0098 (sum 0.00219).
+- tnd6789_fig18-026: fig. 18 (M = 1.83), phi 90. A x 1.1039 y -0.1966 (ambiguous); B x 1.1109 y -0.1941 (ambiguous). dx -0.0070 (sum 0.00560); dy -0.0025 (sum 0.00269).
+- tnd6789_fig18-027: fig. 18 (M = 1.83), phi 90. A x 1.1876 y -0.0752 (ok); B x 1.1882 y -0.0721 (ambiguous). dx -0.0006 (sum 0.00379); dy -0.0031 (sum 0.00176).
+- tnd6789_fig18-028: fig. 18 (M = 1.83), phi 90. A x 1.2728 y -0.0406 (ambiguous); B x 1.2722 y -0.0344 (ambiguous). dx 0.0006 (sum 0.00650); dy -0.0062 (sum 0.00309).
+- tnd6789_fig18-033: fig. 18 (M = 2.20), phi 0. A x 0.5632 y -0.1101 (ambiguous); B x 0.5638 y -0.1060 (ambiguous). dx -0.0006 (sum 0.00660); dy -0.0041 (sum 0.00311).
+- tnd6789_fig18-037: fig. 18 (M = 2.20), phi 0. A x 1.1877 y -0.0877 (ok); B x 1.1874 y -0.0858 (ok). dx 0.0003 (sum 0.00360); dy -0.0019 (sum 0.00158).
+- tnd6789_fig18-039: fig. 18 (M = 2.20), phi 180. A x -0.0030 y -0.0264 (ambiguous); B x 0.0001 y -0.0203 (ambiguous). dx -0.0031 (sum 0.00610); dy -0.0061 (sum 0.00290).
+- tnd6789_fig18-042: fig. 18 (M = 2.20), phi 180. A x 0.5646 y -0.0844 (ok); B x 0.5596 y -0.0839 (ok). dx 0.0050 (sum 0.00340); dy -0.0005 (sum 0.00159).
+- tnd6789_fig18-043: fig. 18 (M = 2.20), phi 180. A x 0.7453 y -0.1179 (ok); B x 0.7488 y -0.1158 (ambiguous). dx -0.0035 (sum 0.00430); dy -0.0021 (sum 0.00199).
+- tnd6789_fig18-048: fig. 18 (M = 2.20), phi 90. A x -0.0011 y -0.0206 (ambiguous); B x 0.0000 y -0.0128 (ambiguous). dx -0.0011 (sum 0.00660); dy -0.0078 (sum 0.00311).
+- tnd6789_fig18-050: fig. 18 (M = 2.20), phi 90. A x 0.3743 y -0.0791 (ambiguous); B x 0.3728 y -0.0758 (ambiguous). dx 0.0015 (sum 0.00480); dy -0.0033 (sum 0.00221).
+- tnd6789_fig18-051: fig. 18 (M = 2.20), phi 90. A x 0.5632 y -0.1095 (ambiguous); B x 0.5638 y -0.1051 (ambiguous). dx -0.0006 (sum 0.00480); dy -0.0044 (sum 0.00221).
+- tnd6789_fig18-052: fig. 18 (M = 2.20), phi 90. A x 0.7459 y -0.1329 (ambiguous); B x 0.7488 y -0.1258 (ambiguous). dx -0.0029 (sum 0.00480); dy -0.0071 (sum 0.00221).
+- tnd6789_fig18-056: fig. 18 (M = 2.20), phi 90. A x 1.2720 y -0.0536 (ambiguous); B x 1.2716 y -0.0451 (ambiguous). dx 0.0004 (sum 0.00480); dy -0.0085 (sum 0.00221).
+- tnd6789_fig20-007: fig. 20, measured (open circle). A x 0.5991 y 0.0508 (ambiguous); B x 0.6 y 0.0522 (ok). dx -0.0009 (sum n/a, x not tested); dy -0.0014 (sum 0.00095).
+- tnd6789_fig20-014: fig. 20, measured (open circle). A x 0.9037 y 0.0630 (ambiguous); B x 0.9 y 0.0646 (ambiguous). dx 0.0037 (sum n/a, x not tested); dy -0.0016 (sum 0.00115).
+- tnd6789_fig20-026: fig. 20, measured (open circle). A x 2.1989 y 0.0853 (ambiguous); B x 2.2 y 0.0831 (ambiguous). dx -0.0011 (sum n/a, x not tested); dy 0.0022 (sum 0.00095). Label: flag: A 'open circle, Measured (flag not visible)', B 'Measured (open circle), flagged: repeat data'.
+- tmx1960_fig5-003: fig. 5(c), phi 0. A x 0.0904 y -0.3045 (ambiguous); B x 0.0812 y -0.3088 (ambiguous). dx 0.0092 (sum 0.00500); dy 0.0043 (sum 0.00250).
+- tmx1960_fig5-004: fig. 5(c), phi 0. A x 0.2473 y -0.2653 (ambiguous); B x 0.2507 y -0.2614 (ambiguous). dx -0.0034 (sum 0.00600); dy -0.0039 (sum 0.00300). A's y lies inside the range of B's reading and alternatives.
+- tmx1960_fig5-006: fig. 5(c), phi 0. A x 0.7507 y -0.1515 (ambiguous); B x 0.7493 y -0.1473 (ambiguous). dx 0.0014 (sum 0.00600); dy -0.0042 (sum 0.00300). A's reading agrees with B's alternative 'y=-0.1525 (lowest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tmx1960_fig5-009: fig. 5(c), phi 135. A x 0.2498 y -0.2661 (ambiguous); B x 0.2507 y -0.2614 (ambiguous). dx -0.0009 (sum 0.00600); dy -0.0047 (sum 0.00300). A's reading agrees with B's alternative 'y=-0.2684 (lowest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tmx1960_fig5-014: fig. 5(c), phi 157.5. A x 0.2526 y -0.2506 (ambiguous); B x 0.2507 y -0.2614 (ambiguous). dx 0.0019 (sum 0.00600); dy 0.0108 (sum 0.00300).
+- tmx1960_fig5-021: fig. 5(c), phi 180. A x 0.7536 y -0.1440 (ambiguous); B x 0.7493 y -0.1473 (ambiguous). dx 0.0043 (sum 0.00600); dy 0.0033 (sum 0.00300). A's reading agrees with B's alternative 'y=-0.1421 (highest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tmx1960_fig5-024: fig. 5(c), phi 45. A x 0.2506 y -0.2541 (ambiguous); B x 0.2507 y -0.2614 (ambiguous). dx -0.0001 (sum 0.00600); dy 0.0073 (sum 0.00300). A's reading agrees with B's alternative 'y=-0.2544 (highest possible)'.
+- tmx1960_fig5-034: fig. 5(c), phi 90. A x 0.9666 y -0.0812 (ambiguous); B x 0.9685 y -0.0776 (ambiguous). dx -0.0019 (sum 0.00600); dy -0.0036 (sum 0.00300). A's reading agrees with B's alternative 'y=-0.0821 (lowest possible)'; A's y lies inside the range of B's reading and alternatives.
+- tmx1960_fig6-016: fig. 6(c), beta 20. A x 0.0230 y -0.5350 (ambiguous); B x 0.0188 y -0.5397 (ok). dx 0.0042 (sum 0.00162); dy 0.0047 (sum 0.00158). Label: meridian: A '', B '0'.
+- tmx1960_fig6-017: fig. 6(c), beta 20. A x 0.0875 y -0.5046 (ambiguous); B x 0.0839 y -0.5092 (ok). dx 0.0036 (sum 0.00162); dy 0.0046 (sum 0.00158). Label: meridian: A '', B '0'.
+- tmx1960_fig6-018: fig. 6(c), beta 20. A x 0.1722 y -0.4699 (ambiguous); B x 0.1678 y -0.4748 (ok). dx 0.0044 (sum 0.00162); dy 0.0049 (sum 0.00158). Label: meridian: A '', B '0'.
+- tmx1960_fig6-019: fig. 6(c), beta 20. A x 0.2547 y -0.3426 (ambiguous); B x 0.2508 y -0.3451 (ok). dx 0.0039 (sum 0.00162); dy 0.0025 (sum 0.00158). B's reading agrees with A's alternative 'x 0.2516, y -0.3456 (triangle centroid instead of bounding-square centre)'; B's y lies inside the range of A's reading and alternatives. Label: meridian: A '', B '0'.
+- tmx1960_fig6-020: fig. 6(c), beta 20. A x 0.4215 y -0.1398 (ambiguous); B x 0.4177 y -0.1442 (ok). dx 0.0038 (sum 0.00162); dy 0.0044 (sum 0.00158). B's reading agrees with A's alternative 'x 0.4185, y -0.1427 (triangle centroid instead of bounding-square centre)'. Label: meridian: A '', B '0'.
+- tmx1960_fig6-021: fig. 6(c), beta 20. A x 0.5457 y -0.1109 (ambiguous); B x 0.5414 y -0.1140 (ok). dx 0.0043 (sum 0.00162); dy 0.0031 (sum 0.00158). B's reading agrees with A's alternative 'x 0.5427, y -0.1139 (triangle centroid instead of bounding-square centre)'. Label: meridian: A '', B '0'.
+- tmx1960_fig6-030: fig. 6(c), beta 5. A x 0.0183 y -0.2089 (ok); B x 0.0183 y -0.2070 (ok). dx 0.0000 (sum 0.00162); dy -0.0019 (sum 0.00158). Label: meridian: A '', B '0'.
+- tmx1960_fig7-011: fig. 7(a), l/dm = 1.0, beta 5. A x 1.2528 y 0.0450 (ok); B x 1.25 y 0.0431 (ok). dx 0.0028 (sum n/a, x not tested); dy 0.0019 (sum 0.00055).
+- tmx1960_fig7-023: fig. 7(b), l/dm = 0.8, beta 5. A x 1.2487 y 0.0387 (ambiguous); B x 1.25 y 0.0381 (ok). dx -0.0013 (sum n/a, x not tested); dy 0.0006 (sum 0.00054).
+- tmx1960_fig7-040: fig. 7(c), l/dm = 0.6, beta 7.5. A x 1.2027 y 0.0693 (ambiguous); B x 1.20 y 0.0683 (ok). dx 0.0027 (sum n/a, x not tested); dy 0.0010 (sum 0.00084). B's y lies inside the range of A's reading and alternatives.
+- tmx1960_fig18-023: fig. 18 (M = 1.20), phi 90. A x 0.3755 y -0.2062 (ambiguous); B x 0.3753 y -0.2123 (ambiguous). dx 0.0002 (sum 0.00670); dy 0.0061 (sum 0.00330).
+
+
+5. Every point read once (31)
+-----------------------------
+
+The reader's reason is its note, verbatim in listings.txt and
+read_once.csv; the alternatives are quoted here.
+
+- rml54i22_fig2-020: fig. 2(b), shroud 1; read once by B at x 0.8700, y -0.1060 (ambiguous).
+- rml54i22_fig2-033: fig. 2(b), shroud 1; read once by A at x 0.9923, y -0.0939 (ambiguous); alternatives: "no separate point; or an extra circle at Cp -0.0958".
+- rml54i22_fig2-041: fig. 2(b), shroud 2; read once by B at x 0.9922, y -0.0943 (ambiguous); alternatives: "may not be a separate square (the edge could belong to the stack's other strokes)".
+- rml54i22_fig2-042: fig. 2(b), shroud 2; read once by B at x 0.9922, y -0.0963 (ambiguous); alternatives: "may not be a separate square (the edge could belong to the stack's other strokes)".
+- rml54i22_fig2-059: fig. 2(c), shroud 2; read once by B at x 0.9652, y -0.1011 (ambiguous).
+- rme57e06_fig6-005: fig. 6(a), other: small circle not in the legend; read once by B at x 0.4972, y -0.0391 (ambiguous); alternatives: "not a data point (a drafting mark at the end of the ref. 10 boattail)".
+- rme57e06_fig6-014: fig. 6(b), double strut; read once by A at x 2.593, y -0.1585 (ambiguous).
+- rme57e06_fig6-015: fig. 6(b), double strut; read once by A at x 4.805, y -0.0964 (ambiguous).
+- rme57e06_fig6-016: fig. 6(b), double strut; read once by A at x 10.293, y 0.0116 (ambiguous).
+- rme57e06_fig6-017: fig. 6(b), double strut; read once by A at x 17.027, y 0.1007 (ambiguous).
+- rme57e06_fig6-019: fig. 6(b), single strut; read once by A at x 2.612, y -0.1296 (ambiguous).
+- rme57e06_fig6-020: fig. 6(b), single strut; read once by A at x 4.810, y -0.0745 (ambiguous).
+- rme57e06_fig6-021: fig. 6(b), single strut; read once by A at x 10.292, y 0.0415 (ambiguous).
+- rme57e06_fig6-022: fig. 6(b), single strut; read once by A at x 17.029, y 0.1295 (ambiguous).
+- rme57e06_fig14-052: fig. 14(b), solid / db/dj 1.40 / no bevel; read once by A at x 0.5773, y -0.0395 (ambiguous); alternatives: "no separate point".
+- rme57e06_fig14-085: fig. 14(c), open / db/dj 1.67 / no bevel; read once by A at x 0.0480, y -0.0405 (ambiguous); alternatives: "no separate point".
+- rme57e06_fig14-106: fig. 14(c), solid / db/dj 1.67 / no bevel; read once by A at x 0.0471, y -0.0527 (ambiguous); alternatives: "solid triangle (apex up) centred x 0.0466, y -0.0504 instead of a diamond".
+- tnd6789_fig12-045: fig. 12, l/dm = 0.6, beta 5; read once by A at x 1.0523, y 0.0192 (ambiguous); alternatives: "no separate point (if the squarish outline is only the circle)".
+- tnd6789_fig18-011: fig. 18 (M = 1.83), phi 180; read once by A (illegible there) at x 0, y empty (illegible).
+- tnd6789_fig18-012: fig. 18 (M = 1.83), phi 180; read once by A (illegible there) at x 0.19, y empty (illegible).
+- tnd6789_fig18-013: fig. 18 (M = 1.83), phi 180; read once by A (illegible there) at x 0.38, y empty (illegible).
+- tnd6789_fig18-014: fig. 18 (M = 1.83), phi 180; read once by A (illegible there) at x 0.56, y empty (illegible).
+- tnd6789_fig18-041: fig. 18 (M = 2.20), phi 180; read once by A (illegible there) at x 0.38, y empty (illegible).
+- tmx1960_fig6-015: fig. 6(c), beta 20; read once by A at x -0.0134, y -0.0642 (ambiguous); alternatives: "x -0.0163, y -0.0672 (triangle centroid instead of bounding-square centre)".
+- tmx1960_fig6-029: fig. 6(c), beta 5; read once by A (illegible there) at x -0.02, y empty (illegible).
+- tmx1960_fig18-012: fig. 18 (M = 1.20), phi 180; read once by A (illegible there) at x 0, y empty (illegible).
+- tmx1960_fig18-014: fig. 18 (M = 1.20), phi 180; read once by A at x 0.3748, y -0.2119 (ambiguous).
+- tmx1960_fig18-017: fig. 18 (M = 1.20), phi 180; read once by A (illegible there) at x 0.93, y empty (illegible).
+- tmx1960_fig18-022: fig. 18 (M = 1.20), phi 90; read once by A at x 0.1890, y -0.1320 (ambiguous); alternatives: "no separate point (the square outline may be gridlines around the circle)".
+- tmx1960_fig18-024: fig. 18 (M = 1.20), phi 90; read once by A (illegible there) at x 0.56, y empty (illegible).
+- tmx1960_fig18-029: fig. 18 (M = 1.20), phi 90; read once by A at x 1.2727, y -0.0324 (ambiguous); alternatives: "no separate point (the square outline may be gridlines around the circle)".
+
+Why the counts differ, as the readers say:
+
+- RM L54I22 fig. 2: in stacks of overlapping open symbols, A counts a
+  rear symbol only where its own arc or centre dot shows (a thick or
+  doubled outline alone is not counted); B reads each symbol from its
+  visible arcs or edges at a fixed size. B's extra circle at x/L 0.870
+  in fig. 2(b) is "only its top crescent visible"; B's two extra squares
+  at 0.992 in fig. 2(b) carry the alternative "may not be a separate
+  square"; A's extra circle there carries "no separate point; or an
+  extra circle at Cp -0.0958". See section 7 for the possible label
+  difference at that station. At x/L 0.965 in fig. 2(c), A reads one
+  square at the circle's height (-0.1029); B reads "circle drawn inside
+  two overlapping squares" (-0.1011 and -0.1036), one of which is left
+  over.
+- RM E57E06 fig. 6(b): A read the eight jet-on points because the brief
+  and addendum item 4 ask for every point of the strut comparison; B
+  did not read them ("every other point of fig. 6(b) is at a higher jet
+  pressure ratio (jet on) and was not read"). B's small circle in fig.
+  6(a) is "not explained by the legend; read as plotted", alternative
+  "not a data point (a drafting mark at the end of the ref. 10
+  boattail)"; A does not mention it.
+- RM E57E06 fig. 14: A's three extra points all carry an alternative
+  that makes them not separate points, or another symbol.
+- TN D-6789 fig. 12: at M 1.05 (l/dm 0.6) A reads a square coinciding
+  with the circle; B says there is no square there (not plotted or fully
+  hidden).
+- TN D-6789 fig. 18 and TM X-1960 fig. 18: A lists diamonds and squares
+  it could not separate as illegible; B does not list them (B, TN D-6789:
+  "Some diamonds are not visible at some stations and were not read").
+- TM X-1960 fig. 6(c): at x/dm about -0.02, A reads a right triangle and
+  lists the square as illegible; B says "the square and right triangle
+  are not visible there (hidden or not plotted)".
+
+
+6. Every illegible item (107 pairs, and 9 read once)
+----------------------------------------------------
+
+One line each for the pairs in which y is empty in one reading or both;
+the nine points read once and illegible are in section 5. The reader's
+reason is its note, verbatim in listings.txt and illegible.csv.
+
+- tnd6789_fig5-002: fig. 5 (M = 1.83), phi 0; illegible in A, read by B: B x 0.0186 y -0.1614 (ambiguous); B alternatives: "y=-0.1568 (highest possible); y=-0.1660 (lowest possible)".
+- tnd6789_fig5-005: fig. 5 (M = 1.83), phi 0; illegible in A, read by B: B x 0.4989 y -0.1358 (ambiguous); B alternatives: "y=-0.1296 (highest possible); y=-0.1419 (lowest possible)".
+- tnd6789_fig5-007: fig. 5 (M = 1.83), phi 0; illegible in A, read by B: B x 0.9694 y -0.0897 (ambiguous); B alternatives: "y=-0.0822 (highest possible); y=-0.0973 (lowest possible)".
+- tnd6789_fig5-008: fig. 5 (M = 1.83), phi 135; illegible in A, read by B: B x 0.0186 y -0.1614 (ambiguous); B alternatives: "y=-0.1568 (highest possible); y=-0.1660 (lowest possible)".
+- tnd6789_fig5-009: fig. 5 (M = 1.83), phi 135; illegible in A, read by B: B x 0.2487 y -0.1555 (ambiguous); B alternatives: "y=-0.1464 (highest possible); y=-0.1647 (lowest possible)".
+- tnd6789_fig5-010: fig. 5 (M = 1.83), phi 135; illegible in A, read by B: B x 0.4989 y -0.1358 (ambiguous); B alternatives: "y=-0.1296 (highest possible); y=-0.1419 (lowest possible)".
+- tnd6789_fig5-012: fig. 5 (M = 1.83), phi 135; illegible in A, read by B: B x 0.9694 y -0.0897 (ambiguous); B alternatives: "y=-0.0822 (highest possible); y=-0.0973 (lowest possible)".
+- tnd6789_fig5-013: fig. 5 (M = 1.83), phi 157.5; illegible in A, read by B: B x 0.0186 y -0.1614 (ambiguous); B alternatives: "y=-0.1568 (highest possible); y=-0.1660 (lowest possible)".
+- tnd6789_fig5-015: fig. 5 (M = 1.83), phi 157.5; illegible in A, read by B: B x 0.4989 y -0.1358 (ambiguous); B alternatives: "y=-0.1296 (highest possible); y=-0.1419 (lowest possible)".
+- tnd6789_fig5-016: fig. 5 (M = 1.83), phi 157.5; illegible in A, read by B: B x 0.7492 y -0.1116 (ambiguous); B alternatives: "y=-0.1050 (highest possible); y=-0.1183 (lowest possible)".
+- tnd6789_fig5-017: fig. 5 (M = 1.83), phi 157.5; illegible in A, read by B: B x 0.9694 y -0.0897 (ambiguous); B alternatives: "y=-0.0822 (highest possible); y=-0.0973 (lowest possible)".
+- tnd6789_fig5-018: fig. 5 (M = 1.83), phi 180; illegible in A, read by B: B x 0.0186 y -0.1614 (ambiguous); B alternatives: "y=-0.1568 (highest possible); y=-0.1660 (lowest possible)".
+- tnd6789_fig5-019: fig. 5 (M = 1.83), phi 180; illegible in A, read by B: B x 0.2487 y -0.1555 (ambiguous); B alternatives: "y=-0.1464 (highest possible); y=-0.1647 (lowest possible)".
+- tnd6789_fig5-020: fig. 5 (M = 1.83), phi 180; illegible in A, read by B: B x 0.4989 y -0.1358 (ambiguous); B alternatives: "y=-0.1296 (highest possible); y=-0.1419 (lowest possible)".
+- tnd6789_fig5-021: fig. 5 (M = 1.83), phi 180; illegible in A, read by B: B x 0.7492 y -0.1116 (ambiguous); B alternatives: "y=-0.1050 (highest possible); y=-0.1183 (lowest possible)".
+- tnd6789_fig5-022: fig. 5 (M = 1.83), phi 180; illegible in A, read by B: B x 0.9694 y -0.0897 (ambiguous); B alternatives: "y=-0.0822 (highest possible); y=-0.0973 (lowest possible)".
+- tnd6789_fig5-023: fig. 5 (M = 1.83), phi 45; illegible in A, read by B: B x 0.0186 y -0.1614 (ambiguous); B alternatives: "y=-0.1568 (highest possible); y=-0.1660 (lowest possible)".
+- tnd6789_fig5-024: fig. 5 (M = 1.83), phi 45; illegible in A, read by B: B x 0.2487 y -0.1555 (ambiguous); B alternatives: "y=-0.1464 (highest possible); y=-0.1647 (lowest possible)".
+- tnd6789_fig5-026: fig. 5 (M = 1.83), phi 45; illegible in A, read by B: B x 0.7492 y -0.1116 (ambiguous); B alternatives: "y=-0.1050 (highest possible); y=-0.1183 (lowest possible)".
+- tnd6789_fig5-027: fig. 5 (M = 1.83), phi 45; illegible in A, read by B: B x 0.9694 y -0.0897 (ambiguous); B alternatives: "y=-0.0822 (highest possible); y=-0.0973 (lowest possible)".
+- tnd6789_fig5-028: fig. 5 (M = 1.83), phi 90; illegible in A, read by B: B x -0.0146 y -0.0108 (ambiguous).
+- tnd6789_fig5-036: fig. 5 (M = 2.20), phi 0; illegible in A, read by B: B x 0.0190 y -0.1132 (ambiguous); B alternatives: "y=-0.1104 (highest possible); y=-0.1159 (lowest possible)".
+- tnd6789_fig5-037: fig. 5 (M = 2.20), phi 0; illegible in A, read by B: B x 0.0841 y -0.1194 (ambiguous).
+- tnd6789_fig5-038: fig. 5 (M = 2.20), phi 0; illegible in A, read by B: B x 0.2489 y -0.1192 (ambiguous); B alternatives: "y=-0.1117 (highest possible); y=-0.1267 (lowest possible)".
+- tnd6789_fig5-039: fig. 5 (M = 2.20), phi 0; illegible in A, read by B: B x 0.4989 y -0.1108 (ambiguous); B alternatives: "y=-0.1046 (highest possible); y=-0.1170 (lowest possible)".
+- tnd6789_fig5-040: fig. 5 (M = 2.20), phi 0; illegible in A, read by B: B x 0.7491 y -0.0958 (ambiguous); B alternatives: "y=-0.0889 (highest possible); y=-0.1026 (lowest possible)".
+- tnd6789_fig5-042: fig. 5 (M = 2.20), phi 135; illegible in A, read by B: B x 0.0190 y -0.1132 (ambiguous); B alternatives: "y=-0.1104 (highest possible); y=-0.1159 (lowest possible)".
+- tnd6789_fig5-043: fig. 5 (M = 2.20), phi 135; illegible in A, read by B: B x 0.2489 y -0.1192 (ambiguous); B alternatives: "y=-0.1117 (highest possible); y=-0.1267 (lowest possible)".
+- tnd6789_fig5-044: fig. 5 (M = 2.20), phi 135; illegible in A, read by B: B x 0.4989 y -0.1108 (ambiguous); B alternatives: "y=-0.1046 (highest possible); y=-0.1170 (lowest possible)".
+- tnd6789_fig5-045: fig. 5 (M = 2.20), phi 135; illegible in A, read by B: B x 0.7491 y -0.0958 (ambiguous); B alternatives: "y=-0.0889 (highest possible); y=-0.1026 (lowest possible)".
+- tnd6789_fig5-046: fig. 5 (M = 2.20), phi 135; illegible in A, read by B: B x 0.9692 y -0.0838 (ambiguous); B alternatives: "y=-0.0751 (highest possible); y=-0.0924 (lowest possible)".
+- tnd6789_fig5-047: fig. 5 (M = 2.20), phi 157.5; illegible in A, read by B: B x 0.0190 y -0.1132 (ambiguous); B alternatives: "y=-0.1104 (highest possible); y=-0.1159 (lowest possible)".
+- tnd6789_fig5-048: fig. 5 (M = 2.20), phi 157.5; illegible in A, read by B: B x 0.2489 y -0.1192 (ambiguous); B alternatives: "y=-0.1117 (highest possible); y=-0.1267 (lowest possible)".
+- tnd6789_fig5-049: fig. 5 (M = 2.20), phi 157.5; illegible in A, read by B: B x 0.4989 y -0.1108 (ambiguous); B alternatives: "y=-0.1046 (highest possible); y=-0.1170 (lowest possible)".
+- tnd6789_fig5-050: fig. 5 (M = 2.20), phi 157.5; illegible in A, read by B: B x 0.7491 y -0.0958 (ambiguous); B alternatives: "y=-0.0889 (highest possible); y=-0.1026 (lowest possible)".
+- tnd6789_fig5-051: fig. 5 (M = 2.20), phi 157.5; illegible in A, read by B: B x 0.9692 y -0.0838 (ambiguous); B alternatives: "y=-0.0751 (highest possible); y=-0.0924 (lowest possible)".
+- tnd6789_fig5-052: fig. 5 (M = 2.20), phi 180; illegible in A, read by B: B x 0.0190 y -0.1132 (ambiguous); B alternatives: "y=-0.1104 (highest possible); y=-0.1159 (lowest possible)".
+- tnd6789_fig5-053: fig. 5 (M = 2.20), phi 180; illegible in A, read by B: B x 0.2489 y -0.1192 (ambiguous); B alternatives: "y=-0.1117 (highest possible); y=-0.1267 (lowest possible)".
+- tnd6789_fig5-054: fig. 5 (M = 2.20), phi 180; illegible in A, read by B: B x 0.4989 y -0.1108 (ambiguous); B alternatives: "y=-0.1046 (highest possible); y=-0.1170 (lowest possible)".
+- tnd6789_fig5-055: fig. 5 (M = 2.20), phi 180; illegible in A, read by B: B x 0.7491 y -0.0958 (ambiguous); B alternatives: "y=-0.0889 (highest possible); y=-0.1026 (lowest possible)".
+- tnd6789_fig5-056: fig. 5 (M = 2.20), phi 180; illegible in A, read by B: B x 0.9692 y -0.0838 (ambiguous); B alternatives: "y=-0.0751 (highest possible); y=-0.0924 (lowest possible)".
+- tnd6789_fig5-057: fig. 5 (M = 2.20), phi 45; illegible in A, read by B: B x 0.0190 y -0.1132 (ambiguous); B alternatives: "y=-0.1104 (highest possible); y=-0.1159 (lowest possible)".
+- tnd6789_fig5-058: fig. 5 (M = 2.20), phi 45; illegible in A, read by B: B x 0.2489 y -0.1192 (ambiguous); B alternatives: "y=-0.1117 (highest possible); y=-0.1267 (lowest possible)".
+- tnd6789_fig5-059: fig. 5 (M = 2.20), phi 45; illegible in A, read by B: B x 0.4989 y -0.1108 (ambiguous); B alternatives: "y=-0.1046 (highest possible); y=-0.1170 (lowest possible)".
+- tnd6789_fig5-060: fig. 5 (M = 2.20), phi 45; illegible in A, read by B: B x 0.7491 y -0.0958 (ambiguous); B alternatives: "y=-0.0889 (highest possible); y=-0.1026 (lowest possible)".
+- tnd6789_fig5-061: fig. 5 (M = 2.20), phi 45; illegible in A, read by B: B x 0.9692 y -0.0838 (ambiguous); B alternatives: "y=-0.0751 (highest possible); y=-0.0924 (lowest possible)".
+- tnd6789_fig5-062: fig. 5 (M = 2.20), phi 90; illegible in A, read by B: B x -0.0152 y -0.0130 (ambiguous).
+- tnd6789_fig5-065: fig. 5 (M = 2.20), phi 90; illegible in A, read by B: B x 0.2489 y -0.1192 (ambiguous); B alternatives: "y=-0.1117 (highest possible); y=-0.1267 (lowest possible)".
+- tnd6789_fig5-067: fig. 5 (M = 2.20), phi 90; illegible in A, read by B: B x 0.7491 y -0.0958 (ambiguous); B alternatives: "y=-0.0889 (highest possible); y=-0.1026 (lowest possible)".
+- tnd6789_fig7-001: fig. 7(a), l/dm = 0.6, jet off; illegible in A, read by B: B x -0.0202 y -0.0124 (ambiguous); B alternatives: "y=-0.0095 (highest possible centre); y=-0.0152 (lowest possible centre)".
+- tnd6789_fig7-003: fig. 7(a), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.0798 y -0.0549 (ambiguous); B alternatives: "y=-0.0506 (highest possible centre); y=-0.0592 (lowest possible centre)".
+- tnd6789_fig7-004: fig. 7(a), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.1498 y -0.0543 (ambiguous); B alternatives: "y=-0.0511 (highest possible centre); y=-0.0575 (lowest possible centre)".
+- tnd6789_fig7-005: fig. 7(a), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.2999 y -0.0528 (ambiguous); B alternatives: "y=-0.0482 (highest possible centre); y=-0.0575 (lowest possible centre)".
+- tnd6789_fig7-006: fig. 7(a), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.4500 y -0.0444 (ambiguous); B alternatives: "y=-0.0395 (highest possible centre); y=-0.0493 (lowest possible centre)".
+- tnd6789_fig7-009: fig. 7(a), l/dm = 0.8, jet off; illegible in A, read by B: B x 0.0195 y -0.0491 (ambiguous); B alternatives: "y=-0.0443 (highest possible centre); y=-0.0540 (lowest possible centre)".
+- tnd6789_fig7-010: fig. 7(a), l/dm = 0.8, jet off; illegible in A, read by B: B x 0.0795 y -0.0600 (ambiguous); B alternatives: "y=-0.0569 (highest possible centre); y=-0.0632 (lowest possible centre)".
+- tnd6789_fig7-016: fig. 7(a), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.0199 y -0.0616 (ambiguous); B alternatives: "y=-0.0584 (highest possible centre); y=-0.0648 (lowest possible centre)".
+- tnd6789_fig7-019: fig. 7(a), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.5000 y -0.0502 (ambiguous); B alternatives: "y=-0.0473 (highest possible centre); y=-0.0530 (lowest possible centre)".
+- tnd6789_fig7-021: fig. 7(a), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.9701 y -0.0390 (ambiguous); B alternatives: "y=-0.0197 (upper group: two joined loops, not one circle); y=-0.0361 (highest centre within chosen group); y=-0.0419 (lowest centre within chosen group)".
+- tnd6789_fig7-022: fig. 7(b), l/dm = 0.6, jet off; illegible in A, read by B: B x -0.0195 y -0.0110 (ambiguous); B alternatives: "y=-0.0087 (highest possible centre); y=-0.0132 (lowest possible centre)".
+- tnd6789_fig7-023: fig. 7(b), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.0210 y -0.0445 (ambiguous); B alternatives: "y=-0.0405 (highest possible centre); y=-0.0484 (lowest possible centre)".
+- tnd6789_fig7-025: fig. 7(b), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.1510 y -0.0470 (ambiguous); B alternatives: "y=-0.0422 (highest possible centre); y=-0.0519 (lowest possible centre)".
+- tnd6789_fig7-026: fig. 7(b), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.3009 y -0.0482 (ambiguous); B alternatives: "y=-0.0440 (highest possible centre); y=-0.0525 (lowest possible centre)".
+- tnd6789_fig7-027: fig. 7(b), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.4508 y -0.0431 (ambiguous); B alternatives: "y=-0.0394 (highest possible centre); y=-0.0468 (lowest possible centre)".
+- tnd6789_fig7-028: fig. 7(b), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.5808 y -0.0471 (ambiguous); B alternatives: "y=0.0417 (diamond with tail); y=0.0196 (D symbol); y=-0.0179 (quarter-round symbol); y=-0.0395 (highest centre within chosen group); y=-0.0548 (lowest centre within chosen group)".
+- tnd6789_fig7-034: fig. 7(b), l/dm = 0.8, jet off; illegible in A, read by B: B x 0.6002 y -0.0391 (ambiguous); B alternatives: "y=-0.0363 (highest possible centre); y=-0.0419 (lowest possible centre)".
+- tnd6789_fig7-039: fig. 7(b), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.2507 y -0.0494 (ambiguous); B alternatives: "y=-0.0471 (highest possible centre); y=-0.0516 (lowest possible centre)".
+- tnd6789_fig7-041: fig. 7(b), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.7506 y -0.0395 (ambiguous); B alternatives: "y=-0.0370 (highest possible centre); y=-0.0420 (lowest possible centre)".
+- tnd6789_fig7-043: fig. 7(c), l/dm = 0.6, jet off; illegible in A, read by B: B x -0.0202 y -0.0114 (ambiguous); B alternatives: "y=-0.0097 (highest possible centre); y=-0.0132 (lowest possible centre)".
+- tnd6789_fig7-049: fig. 7(c), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.5807 y -0.0899 (ambiguous); B alternatives: "y=-0.0460 (diamond with tail); y=-0.0748 (D symbol)".
+- tnd6789_fig7-051: fig. 7(c), l/dm = 0.8, jet off; illegible in A, read by B: B x 0.0201 y -0.0874 (ambiguous); B alternatives: "y=-0.0843 (highest possible centre); y=-0.0906 (lowest possible centre)".
+- tnd6789_fig7-056: fig. 7(c), l/dm = 0.8, jet off; illegible in A, read by B: B x 0.7806 y -0.0701 (ambiguous); B alternatives: "y=0.0725 (teardrop symbol); y=0.0400 (D symbol); y=-0.0408 (quarter-round symbol); y=-0.0681 (highest centre within chosen group); y=-0.0722 (lowest centre within chosen group)".
+- tnd6789_fig7-061: fig. 7(c), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.5004 y -0.0806 (ambiguous); B alternatives: "y=-0.0774 (highest possible centre); y=-0.0838 (lowest possible centre)".
+- tnd6789_fig7-063: fig. 7(c), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.9705 y -0.0582 (ambiguous); B alternatives: "y=0.0704 (D symbol); y=0.0283 (quarter-round symbol); y=-0.0559 (highest centre within chosen group); y=-0.0605 (lowest centre within chosen group)".
+- tnd6789_fig7-071: fig. 7(d), l/dm = 0.8, jet off; illegible in A, read by B: B x -0.0180 y -0.0116 (ambiguous); B alternatives: "y=-0.0096 (highest possible centre); y=-0.0136 (lowest possible centre)".
+- tnd6789_fig7-085: fig. 7(e), l/dm = 0.6, jet off; illegible in B, read by A: A x -0.0181 y -0.0189 (ambiguous); A alternatives: "-0.0181; -0.0198"; B (illegible) alternatives: "y=0.0121 (candidate: upper group above the zero line); y=-0.0198 (candidate: lower group)".
+- tnd6789_fig7-090: fig. 7(e), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.4498 y -0.1389 (ambiguous); B alternatives: "y=-0.0747 (diamond); y=-0.1360 (highest centre within chosen group); y=-0.1418 (lowest centre within chosen group)".
+- tnd6789_fig7-091: fig. 7(e), l/dm = 0.6, jet off; illegible in B, read by A: A x 0.5775 y -0.1449 (ambiguous); A alternatives: "-0.1449; -0.1449"; B (illegible) alternatives: "y=0.0516 (candidate: top cluster with round symbols); y=0.0080 (candidate: right triangle); y=-0.1307 (candidate: bottom cluster (triangle, square and others))".
+- tnd6789_fig7-092: fig. 7(e), l/dm = 0.8, jet off; illegible in A, read by B: B x -0.0201 y -0.0186 (ambiguous); B alternatives: "y=-0.0151 (highest possible centre); y=-0.0220 (lowest possible centre)".
+- tnd6789_fig7-098: fig. 7(e), l/dm = 0.8, jet off; illegible in both (A x 0.7701, B x 0.7702); B alternatives: "y=-0.1099 (candidate: square (fits a square outline, no circle strokes))".
+- tnd6789_fig7-099: fig. 7(e), l/dm = 1.0, jet off; illegible in A, read by B: B x -0.0203 y -0.0125 (ambiguous); B alternatives: "y=-0.0087 (highest possible centre); y=-0.0162 (lowest possible centre)".
+- tnd6789_fig7-102: fig. 7(e), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.2501 y -0.1644 (ambiguous); B alternatives: "y=-0.1609 (highest possible centre); y=-0.1679 (lowest possible centre)".
+- tnd6789_fig7-104: fig. 7(e), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.7502 y -0.1217 (ambiguous); B alternatives: "y=-0.1191 (highest possible centre); y=-0.1244 (lowest possible centre)".
+- tnd6789_fig7-106: fig. 7(f), l/dm = 0.6, jet off; illegible in A, read by B: B x -0.0208 y -0.0126 (ambiguous); B alternatives: "y=-0.0103 (highest possible centre); y=-0.0148 (lowest possible centre)".
+- tnd6789_fig7-107: fig. 7(f), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.0215 y -0.1111 (ambiguous); B alternatives: "y=-0.1099 (highest possible centre); y=-0.1122 (lowest possible centre)".
+- tnd6789_fig7-109: fig. 7(f), l/dm = 0.6, jet off; illegible in A, read by B: B x 0.1517 y -0.1210 (ambiguous); B alternatives: "y=-0.1193 (highest possible centre); y=-0.1227 (lowest possible centre)".
+- tnd6789_fig7-119: fig. 7(f), l/dm = 0.8, jet off; illegible in A, read by B: B x 0.7713 y -0.0947 (ok).
+- tnd6789_fig7-126: fig. 7(f), l/dm = 1.0, jet off; illegible in A, read by B: B x 0.9694 y -0.0889 (ok).
+- tnd6789_fig12-034: fig. 12, l/dm = 0.6, beta 3; illegible in A, read by B: B x 2.20 y 0.0084 (ambiguous).
+- tnd6789_fig12-081: fig. 12, l/dm = 0.8, beta 3; illegible in A, read by B: B x 1.20 y 0.0190 (ambiguous); B alternatives: "measured point not plotted at this Mach number".
+- tnd6789_fig12-098: fig. 12, l/dm = 0.8, beta 5; illegible in A, read by B: B x 1.20 y 0.0437 (ambiguous); B alternatives: "measured point not plotted at this Mach number".
+- tnd6789_fig12-149: fig. 12, l/dm = 1.0, beta 5; illegible in A, read by B: B x 1.20 y 0.0490 (ambiguous); B alternatives: "measured point not plotted at this Mach number".
+- tnd6789_fig12-151: fig. 12, l/dm = 1.0, beta 5; illegible in A, read by B: B x 1.30 y 0.0435 (ambiguous); B alternatives: "measured point not plotted at this Mach number".
+- tnd6789_fig18-024: fig. 18 (M = 1.83), phi 90; illegible in A, read by B: B x 0.7499 y -0.1644 (ambiguous).
+- tmx1960_fig5-002: fig. 5(c), phi 0; illegible in A, read by B: B x 0.0216 y -0.3361 (ambiguous); B alternatives: "y=-0.3279 (highest possible); y=-0.3444 (lowest possible)".
+- tmx1960_fig5-008: fig. 5(c), phi 135; illegible in A, read by B: B x 0.0216 y -0.3361 (ambiguous); B alternatives: "y=-0.3279 (highest possible); y=-0.3444 (lowest possible)".
+- tmx1960_fig5-013: fig. 5(c), phi 157.5; illegible in A, read by B: B x 0.0216 y -0.3361 (ambiguous); B alternatives: "y=-0.3279 (highest possible); y=-0.3444 (lowest possible)".
+- tmx1960_fig5-017: fig. 5(c), phi 157.5; illegible in A, read by B: B x 0.9685 y -0.0776 (ambiguous); B alternatives: "y=-0.0731 (highest possible); y=-0.0821 (lowest possible)".
+- tmx1960_fig5-018: fig. 5(c), phi 180; illegible in A, read by B: B x 0.0216 y -0.3361 (ambiguous); B alternatives: "y=-0.3279 (highest possible); y=-0.3444 (lowest possible)".
+- tmx1960_fig5-019: fig. 5(c), phi 180; illegible in A, read by B: B x 0.2507 y -0.2614 (ambiguous); B alternatives: "y=-0.2544 (highest possible); y=-0.2684 (lowest possible)".
+- tmx1960_fig5-020: fig. 5(c), phi 180; illegible in A, read by B: B x 0.5000 y -0.2027 (ambiguous); B alternatives: "y=-0.1953 (highest possible); y=-0.2102 (lowest possible)".
+- tmx1960_fig5-022: fig. 5(c), phi 180; illegible in A, read by B: B x 0.9685 y -0.0776 (ambiguous); B alternatives: "y=-0.0731 (highest possible); y=-0.0821 (lowest possible)".
+- tmx1960_fig5-025: fig. 5(c), phi 45; illegible in A, read by B: B x 0.5000 y -0.2027 (ambiguous); B alternatives: "y=-0.1953 (highest possible); y=-0.2102 (lowest possible)".
+- tmx1960_fig5-029: fig. 5(c), phi 90; illegible in A, read by B: B x 0.0216 y -0.3361 (ambiguous); B alternatives: "y=-0.3279 (highest possible); y=-0.3444 (lowest possible)".
+- tmx1960_fig5-030: fig. 5(c), phi 90; illegible in A, read by B: B x 0.0811 y -0.2998 (ambiguous).
+- tmx1960_fig5-031: fig. 5(c), phi 90; illegible in A, read by B: B x 0.2507 y -0.2614 (ambiguous); B alternatives: "y=-0.2544 (highest possible); y=-0.2684 (lowest possible)".
+- tmx1960_fig5-033: fig. 5(c), phi 90; illegible in A, read by B: B x 0.7493 y -0.1473 (ambiguous); B alternatives: "y=-0.1421 (highest possible); y=-0.1525 (lowest possible)".
+
+
+7. Labels, flags and how each figure marks jet off
+--------------------------------------------------
+
+Jet off. Both readers give the same marking for every figure: RM L54C16
+fig. 5 caption "power off"; RM L54I22 fig. 2 legend "no primary or
+secondary flow"; RM L54I22 figs. 7, 14 and 16 every panel at a primary
+jet pressure ratio, faired curves only, no symbols, so nothing read;
+RM E57E06 figs. 7 and 8 caption "no jet flow" and fig. 14 caption "jet
+off"; RM E57E06 fig. 6 states no jet condition; TN D-6789 figs. 5, 12,
+18, 20 captions and the fig. 7 legend's open circle "jet off"; TM X-1960
+captions of figs. 5 to 11 and 18 "jet off".
+
+Figure-level flags. RM E57E06 fig. 6: both flag every row. A: "Neither
+the caption, the legend nor the text discussing it (page 9) says the jet
+is off ... read all of them and flagged every row ambiguous". B: "jet
+condition not stated by the figure, its legend, caption or the text
+(rule 8); read because the brief names fig. 6 ... drop if rule 8 is
+applied strictly". They differ on fig. 6(b): A read all ten points, B
+the lowest Pj/P0 point of each strut, "probably the no-flow (jet off)
+point, but the figure, legend and text do not say so".
+
+Every flag. flags.csv holds every row either reader flagged (A 453, B
+470), with its alternatives and note verbatim and the pair it fell in.
+By figure, ambiguous / illegible:
+
+  figure            A amb  A ill   B amb  B ill
+  rml54c16_fig5         1      0       0      0
+  rml54i22_fig2        15      0      54      0
+  rme57e06_fig6        21      0      14      0
+  rme57e06_fig8         0      0       4      0
+  rme57e06_fig14       25      0      65      0
+  tnd6789_fig5         19     49      66      0
+  tnd6789_fig7         89     37     116      3
+  tnd6789_fig12        27      5      31      0
+  tnd6789_fig18        39      6      46      0
+  tnd6789_fig20        20      0       7      0
+  tmx1960_fig5         21     13      34      0
+  tmx1960_fig6         12      1       5      0
+  tmx1960_fig7         19      0       0      0
+  tmx1960_fig11         7      0       3      0
+  tmx1960_fig18        24      3      22      0
+
+No row of either reading is flagged curve or untraced.
+
+Label differences on paired points:
+
+- Meridian. TM X-1960 fig. 6(c): both notes say the phi 0 row (A: "text
+  PDF p11: only phi = 0 used for integration; meridian not stated in this
+  figure"; B: "top row, text PDF p. 13"); A leaves the meridian field
+  empty, B gives 0. All 33 pairs carry this difference.
+- Repeat-data flag, TN D-6789 fig. 20: at M 0.90 A reads two coincident
+  circles (one flagged, "may be the same point as the row above, offset
+  unresolved") where B reads two unflagged circles 0.0018 apart
+  (pairs -014, -015); at M 2.20 A sees no flag on either circle ("flag
+  not visible"), B reads one flagged (pairs -026, -027). At M 0.60 and
+  1.20 the flags pair as read.
+- No paired point differs in configuration, model, shroud, db/dj, beta,
+  l/dm or Mach number. Both readers say RM E57E06 fig. 14 does not
+  identify the model of any point.
+- Coefficient type: the same in every figure (x_quantity and y_quantity
+  in labels.csv). TM X-1960 fig. 11: both say C_A and C_A,bal include
+  the base and are not the boat-tail-only C_A,beta. RM L54C16 fig. 5(b),
+  TN D-6789 figs. 12, 20 and TM X-1960 fig. 7: both give boat-tail-only
+  coefficients on the maximum cross-section.
+
+Possible label differences among points read once
+(possible_label_differences.csv):
+
+- RM L54I22 fig. 2(b), x/L 0.992: A's extra shroud 1 circle at Cp
+  -0.0939 (alternative "no separate point; or an extra circle at Cp
+  -0.0958") sits where B reads two extra shroud 2 squares at -0.0943 and
+  -0.0963 (each "may not be a separate square"). The same strokes may be
+  read as a circle by A and as squares by B.
+
+Wording differences that change no group (labels.csv has them all):
+symbol names (RM L54C16 model 2 "triangle" in A, "right triangle" in B;
+TN D-6789 fig. 5 phi 0 "open circle (solid fairing)" and "circle with
+line"; TM X-1960 fig. 5 phi 180 "quarter-circle (D)" and "flagged
+quarter-round"); B adds configuration numbers from the fig. 4 tables (TN
+D-6789 fig. 5 configuration 5; TM X-1960 figs. 5, 6, 7, 11) and "circular-
+arc boattail" to the reference nozzle rows; A adds the nozzle divergence
+angle to TN D-6789 fig. 7 and, for RM E57E06 fig. 6(a), "db/dj about
+1.40 inferred from fig. 6(b) base-to-body area ratio 0.276, not stated
+for (a)", which B does not give.
+
+Centre conventions that bear on the values: for right triangles and
+quarter circles A gives the centre of the bounding square with the
+centroid as an alternative where it gave one; B gives the centroid (and
+the bounding-box centre for the quarter-round symbol). This is the cause
+of the six TM X-1960 fig. 6(c) beta 20 disagreements (section 3).
+
+
+8. Where the readers say the PDF differs from the brief
+-------------------------------------------------------
+
+Numbers in brackets are the sections of each reader's method.md.
+
+Both say:
+
+- RM L54I22 figs. 7, 14 and 16 have no jet-off points: every panel is
+  at a stated primary jet pressure ratio and carries faired curves only.
+  Both CSVs of each are header only. (A 5.2 and 8; B 4.2 and 6.)
+- RM L54I22 fig. 2's abscissa labels are inconsistent (section 9).
+- RM E57E06 fig. 6 never marks any point as jet off, and fig. 6(b) is
+  plotted against jet pressure ratio. (A 5.3, 7, 8; B 4.3, 6.)
+- RM E57E06 fig. 7 continues on p. 51 as a schlieren photograph (fig.
+  7(b)) with no data. (A 8; B 6.)
+- RM E57E06 fig. 14 does not identify the model (basic, rocket or tail
+  interference) of any point; the text (p. 16) says the data are for all
+  the 5.63 deg boat-tails tested. (A 5.3 and 8; B 4.3 and geometry row
+  100, not in B's own list of differences.)
+- TN D-6789's (and TM X-1960's) boat-tails are fixed conical bodies of
+  revolution that simulate positions of variable-flap nozzles; no flaps
+  or facets are described. A lists this as a difference from the brief
+  (8, item 4); B records it as a geometry judgement (5), not in its
+  list (6).
+- TM X-1960 fig. 8 has faired curves only, no points: header-only CSV.
+  Fig. 9 is curves only and not against Mach number; fig. 10 is against
+  Mach number but curves only (measured and characteristics). (A 5.5, 8;
+  B 4.5, 6.)
+- TM X-1960 fig. 11's coefficients include the base (afterbody axial
+  force, computed and balance), not the boat-tail alone; both read its 7
+  points at M 1.20 to 1.30 into tmx1960_fig11.csv and say so. (A 5.5, 8;
+  B 4.5, 6.)
+- TM X-1960 appendix B's support comparisons (strut against sting) were
+  not read, because those figures are outside the pages the brief names.
+  A: "Appendix B figures 34 to 38 ... If they are wanted, they need
+  adding to the list." B: "figs. 32 to 38 ... show calibration bodies
+  rather than the boat-tails ... The coordinator may want them read
+  separately." The two give different first figure numbers (34 and 32).
+- TM X-1960 and TN D-6789 print the same reference nozzle drawing (fig.
+  17) with different Ae/Ab: 0.980 and 0.962. (A 8, item 6; B 5.)
+- The page numbers of the brief match the PDFs (A for each report; B:
+  "Every figure page I used carries the caption of the figure the brief
+  names, at the page the brief gives, except as noted"). TM X-1960 figs.
+  7, 9, 10, 11 are on pp. 38 to 41, 46, 47 and 48 in both.
+
+One reader says:
+
+- A: RM L54I22's boat-tails are circular arcs, "not conical" (8, item 2).
+  B records the same profile (circular arc, radius 4.140 in, slope at
+  the base about 22 deg; geometry row 43) without listing it as a
+  difference from the brief.
+- A: RM L54C16 fig. 1 is on p. 18, "the page before figure 2" as the
+  brief allows. B: fig. 1 runs over pp. 16 to 18 (photographs (a) to
+  (c)) and B viewed all three.
+- A: RM L54C16 fig. 5(b) does give the boat-tail drag the brief asks for
+  "if the figure also gives" it (A calls this a brief mismatch; both
+  read the two points).
+- A: RM E57E06 gives Reynolds number per foot only. B records the same
+  (per foot) without calling it a difference.
+- A: TM X-1960 tables I and II (orifice stations) are not in the brief's
+  page list and were not opened. B opened them (pp. 26 and 27) and gives
+  table I(a)'s stations.
+- A: TM X-1960 states no Reynolds number in the pages read. B gives 8e6
+  to 16e6 on model length from the summary, p. 4, outside the brief's
+  pages.
+- B: TM X-1960's text layer loses step with the page count after the
+  first image-only page, so B located the figure pages on thumbnails.
+- B: TN D-6789 fig. 5 is configuration 5 of the report's fig. 4 (B first
+  wrote configuration 9 and corrected the field before delivery, no value
+  changed).
+- B: TN D-6789 figs. 12 and 20: the data at M 1.3 and below are from ref.
+  1, TM X-1960 (text pp. 11 and 14, outside the brief's pages).
+- B: TM X-1960 fig. 7(a)'s legend gives beta 5 deg for configuration 4,
+  whose table value is 5.02 deg.
+- B: TM X-1960's legends differ between figures: beta 20 deg is the right
+  triangle in fig. 6(c) and a quarter-round D shape in fig. 7(c), where
+  the right triangle is beta 7.5 deg. (A's rows use the same assignments.)
+- B: TM X-1960 text p. 13 says the data between M 0.95 and 1.20 exclusive
+  are in doubt (reflected shocks), outside the brief's pages.
+- B: RM L54C16 fig. 5(b): text p. 7 says the model 3 drag rests on a
+  curve drawn through the measured pressures at x/L 0.924 and 0.950
+  parallel to the theory (outside the brief's text pages).
+- B: RM E57E06 fig. 6(a) has a small circle the legend does not explain.
+- RM L54C16 fig. 5, RM L54I22 fig. 2 and RM E57E06 fig. 14 do not say
+  which nozzle was fitted for the jet-off points: A says so for all three
+  (geometry notes), B for RM L54I22 (geometry row 68).
+
+
+9. RM L54I22 fig. 2: the abscissa labels
+----------------------------------------
+
+A found that the ten evenly spaced gridlines are labelled .80, .82, .86,
+.88, .90, ... 1.00, with no .84, so .80 and .82 cannot both be right on
+an even scale. B saw the same: "the printed labels read .80, .82, .86,
+.88, .90 ... 1.00 at equal spacing, with no .84".
+
+Both calibrated on the eight labels .86 to 1.00, which agree with each
+other and put the symbols on the fig. 1 orifice stations (Z = 1.06 ...
+0.06 in from the base, x/L 0.872 to 0.993 by both readers' arithmetic).
+They differ on the other case: A gives in every row's note that if .80
+and .82 were right instead, every x would be 0.0200 lower; B says the
+first two labels "would then sit at 0.82 and 0.84" and that "no data
+point lies left of x/L = 0.87, so no reading depends on this". All 57
+pairs agree in x on the common calibration.
+
+
+10. The geometry files, row by row
+----------------------------------
+
+A has 181 rows, B 171. The readers name and split their quantities
+differently, so the rows were matched by hand into 188 topics
+(geometry_pairs.csv gives each topic with both readers' rows, values,
+pages and notes verbatim, and a comparison): 142 the same, 14 the same
+with detail added by one reader, 12 different, 10 in A only and 10 in B
+only. The twelve differences:
+
+- RM L54C16 model support: same strut position (trailing edge 6.00 in
+  ahead of the base); A says it meets the underside of the cylinder, B
+  calls it a side strut.
+- RM L54C16 jet-off base: A open nozzle exit (motor not yet burning);
+  B not stated. The same split for RM L54I22 (A open; B not stated, the
+  nozzles remain in place) and RM E57E06 (A open nozzle; B not stated).
+- RM L54C16 boundary-layer transition: A not mentioned in pp. 4 to 6; B
+  natural transition, turbulent layer, no trip, from text p. 7.
+- RM L54C16 support effect: A not mentioned in pp. 4 to 6; B not stated
+  for the boat-tail, for the base "believed small if any" (pp. 7, 8).
+- RM L54I22 model support: both scale the wing struts' junction from an
+  undimensioned sketch: A about 1.4 to 3.8 in from the nose (reaching
+  just aft of the nose-cylinder junction), B about 1.5 to 3.7 in, on the
+  conical nose; both about 3 in ahead of the boat-tail.
+- RM E57E06 tails: same tails; B adds their positions from fig. 4(a), p.
+  45 (trailing edges at the base, afterbody 6.25 in, base diameter 1.05
+  in), which A did not open.
+- TN D-6789 overall length: A 119.38, 116.33 and 113.28 cm (104.14 + l);
+  B "about 122" cm to the nozzle exit, with the example 119.38 cm.
+- TN D-6789 orifice stations (table I, p. 16): for phi 45, 135, 157.5
+  and 180, A reads the phi 0 stations without -0.02 and .08; B without
+  -0.02 only. (Neither fig. 5 reading has a symbol of those meridians at
+  x/dm 0.08.)
+- TM X-1960 orifice stations: A did not open tables I and II and gives
+  the stations as plotted; B gives table I(a) (p. 26). Where both give
+  them (l/dm 1.0 and 0.6) they are the same.
+- TM X-1960 Reynolds number: A not stated in the pages read; B 8e6 to
+  16e6 on model length (summary, p. 4).
+
+Most of the differences come from pages one reader opened outside the
+brief (section 11). The rows in one reading only are listed in
+geometry_pairs.csv; A's are restatements of what B gives in method.md
+(jet-off marking, the fig. 2 labels) or small additions (RM L54C16 model
+1 base diameter and orifice meridians, RM L54I22 temperatures, TN
+D-6789 nose coordinates); B's are mostly from pages outside the brief
+(symbol lists, summaries, incidence, the meridian convention, the boat-
+tail lengths from its own arithmetic, the ref. 1 data in TN D-6789 figs.
+12 and 20).
+
+On the geometry that 0014 (ag) item 3 and its addendum look at, the two
+files say the same: every boat-tail named is a body of revolution;
+RM L54C16, RM E57E06, TN D-6789 and TM X-1960 boat-tails are straight
+cones from a sharp corner, RM L54I22's circular arcs with no corner
+drawn, and the TN D-6789 and TM X-1960 reference nozzles circular arcs;
+every nose tip is sharp as drawn with no radius stated; every model is
+strut or wing supported with no sting; neither reading quotes from any
+report's text a number for the support's effect on the boat-tail
+pressures (RM E57E06 fig. 6 is the only plotted comparison read);
+RM E57E06's models and tunnel are not stated to be RM E51F26's, which
+is its reference 10.
+
+
+11. Pages each reader opened outside the brief
+----------------------------------------------
+
+The brief's pages: RM L54C16 text 4 to 6, figs. 1 (the page before fig.
+2), 2, 3, 5 (pp. 18 to 20, 22); RM L54I22 text 4 to 6, pp. 15, 16, 21
+to 23, 32 to 34, 36 to 38; RM E57E06 text 7 to 9, pp. 41, 42, 47 to 51,
+60, and by the addendum fig. 8 (p. 52) and any text on the boundary
+layer, on the RM E51F26 question and on which model each fig. 14 point
+comes from; TN D-6789 text 6 to 9, pp. 16 to 21, 23 to 28, 35, 46, 47,
+49; TM X-1960 text 8 to 12, appendix B pp. 19 to 22, pp. 28 to 37, 42 to
+45, 82, 83, the captions of figs. 7, 9 and 11, and any other figure of
+jet-off boat-tail axial force or pressure drag against Mach number.
+
+Reader A (method.md section 3 and work/opened.log):
+- RM L54C16: p. 21 (fig. 4, a photograph), rendered.
+- RM E57E06: text p. 10 (the boundary-layer paragraph running on from
+  p. 9; addendum item 3); string searches of the whole text layer for
+  "E51F26", "E51" and "reference 10", printing matching lines only, and
+  the reference-list lines on pp. 34 and 35 (addendum item 2); a search
+  of pp. 1 to 33 for "figure 14" and "bevel" and the one paragraph on
+  p. 16 that discusses fig. 14 (addendum item 2, which model).
+- TM X-1960: a search of the text layer of pp. 28 to 109 for caption
+  lines "Figure N.-" (to find figs. 7, 9 and 11); p. 49 rendered (the
+  method note does not say what is on it). Figs. 9 (p. 46), 10 (p. 47)
+  and 11 (p. 48) are within the brief's "captions" and "any other
+  figure".
+- TN D-6789 and RM L54I22: none.
+
+Reader B (method.md section 1 and work/log.md):
+- All five reports: the whole text layer extracted with pdftotext for
+  searching ("Only the pages listed below were read").
+- RM L54C16: text pp. 1 to 3, 7 and 8 (geometry cites pp. 2, 3, 7, 8),
+  with the bottom of p. 7 and the top of p. 8 viewed as images; pp. 4 to
+  23 rendered; fig. 1(a) and (b) on pp. 16 and 17 viewed (the brief
+  named only the page before fig. 2).
+- RM L54I22: text pp. 2, 3, 7 and 8 (geometry cites pp. 2, 3).
+- RM E57E06: text pp. 1 to 6, 10, 16 and 17 (pp. 10 and 16 fall under
+  the addendum); a search of the whole text layer for "jet off", "no
+  jet" and figure references (geometry cites the reference list, p. 35);
+  pp. 7 to 10, 41 to 53 and 60 rendered; fig. 3 (pp. 43, 44) and fig. 4
+  (pp. 45, 46) viewed, and fig. 9 (p. 53) to locate fig. 8.
+- TN D-6789: text pp. 3 to 5 and 10 to 15 (geometry cites pp. 3, 4, 5,
+  11, 14).
+- TM X-1960: text pp. 3 to 7, 13 to 18 and 23 (geometry cites pp. 4, 5,
+  6, 7, 13, 18); pp. 17, 18, 26 and 27 rendered; thumbnails of pp. 26 to
+  50; tables I and II (pp. 26, 27) viewed.
+
+Neither reader says it opened the repository, any other reader's files,
+NACA TN 3320 or any source other than the five PDFs.
+
+
+12. What this pairing does not do
+---------------------------------
+
+It does not decide between the readings, check either against the PDF,
+integrate any distribution, or apply 0014 (ag) items 3 to 5 or the
+addendum's tests. Where the readers disagree, both values stand with
+their envelope; where one left a point empty, the other's reading stands
+alone and the pair says so.
