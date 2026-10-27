@@ -2250,3 +2250,84 @@ extended (item 2). If no set counts at any Mach number, the boat-tail
 term is refused at every Mach number, with the reason in plain words
 (no measured allowance for the boundary layer on a boat-tail has passed
 its checks).
+
+**2026-10-27, to (ae) and (ag): the base band behind a boat-tail cannot
+be set, so the boat-tail stays refused everywhere; and the review's last
+changes to the (ag) addendum.**
+
+_The outcome (to (ae) item 2)._ (ae) item 2 sets the base band from the
+ratio of each measured base pressure coefficient to Love's for that
+model's geometry and Mach number, and serves it only within the
+boat-tail angles, base ratios and Mach numbers that points with a
+boat-tail span. Love's value needs the body's shape: the pressure and
+Mach number just ahead of the base from part 1, and the base-to-body
+diameter ratio for K. By the (ag) addendum's item 9, applied to base
+points too (the coordinator's ruling: a splitter plate's boundary layer
+feeds the near wake, and base pressure is more sensitive to support
+interference than side pressure), RM E51F26's points are checks, and so
+are TN 3819 fig. 24's, which are RM E51F26's replotted. Of the paired
+readings (pairing-2026-10-26: pairing.txt sections 9, 10 and 12,
+geometry_pairs.csv):
+
+| Set                                                            | Boat-tail | Geometry for Love's value                                                  | Standing                                                                       |
+| -------------------------------------------------------------- | --------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| TN 3819 fig. 19 (15 deg cone-cylinders, Mach 2.41, 1.93, 1.62) | no        | complete                                                                   | computable; not computed                                                       |
+| TN 3819 fig. 21 (10 deg cone-cylinders, fineness ratio 5)      | no        | complete                                                                   | computable; not computed                                                       |
+| TN 3819 fig. 23, squares (simple cones, Mach about 2.9)        | no        | complete (conical flow)                                                    | computable; not computed                                                       |
+| TN 3819 fig. 23, circles (NOL, ref. 5) and triangles (Ames)    | yes       | the angle only: no nose angle, cylinder or boat-tail length, or base ratio | not computable                                                                 |
+| TN 3819 fig. 25(b) (Mach 3.24, ref. 5)                         | yes       | the angle and a 1.97 in diameter only                                      | not computable                                                                 |
+| TN 3819 fig. 24                                                | yes       | RM E51F26's                                                                | check only                                                                     |
+| RM E51F26 fig. 24, and the base parts of figs. 29 and 30       | yes       | complete but for the nose (fallback)                                       | check only                                                                     |
+| RM A52E20 fig. 15                                              | yes       | model 8 not dimensioned                                                    | sets nothing, as (ae) said                                                     |
+| TN 3372 configuration D                                        | yes       | curved converging profile, not dimensioned                                 | sets nothing: its fins end 0.82 root chord ahead of the base, not a full chord |
+
+No boat-tailed point that may set the band has its geometry given, so
+the band spans no angle, base ratio or Mach number, and the base behind
+a boat-tail is refused everywhere (B2). By the coordinator's ruling the
+boat-tail term (part 1) is refused with it: nothing of a boat-tail is
+served, and nothing is set from (ag), whose readings will be paired as a
+record only. TN 3819 text pp. 18 to 20 (text only, as (ae) recorded
+opening it) states no dimensions of the ref. 5 or Ames models. The bases
+without a boat-tail (figs. 19, 21 and fig. 23's cones) were not computed.
+The route, for later and neither registered nor read: H. H. Kurzweg's
+ref. 5 (its NOL models) and the Ames source of fig. 23 (0023 section 7).
+By the coordinator's reading of the audit, boat-tails are the sole
+blocker of a total in about 0.24% of its cases, and the coordinator
+moved the CPU to work that serves more rockets.
+
+_The review's last changes to the (ag) addendum_ (the reviewer's check
+of 8cebf28; they hold for the record pairing of (ag)):
+
+- **A1, item 2.** "serves the whole of 1.8 to 2.0, as (ae) served it from
+  1.91" is replaced by: a set that counts in 1.8 to 2.0 serves the Mach
+  numbers within 0.11 of its pooled span, inside 1.8 to 2.0 (from 1.91
+  this is (ae)'s range); the part not measured is labelled as carried
+  from the Mach number measured. Carry gaps (item 4) are measured between
+  measured pooled points, never from the edge of such a span.
+- **A2, item 3.** A sting through the base also needs a comparison with
+  and without it, or a number the report states, since it moves the base
+  pressure into the last orifices.
+- **A3, items 3 and 9.** RM E57E06's strut difference is the largest
+  |S_with - S_without| over both readings and both routes; it clears
+  only the fig. 14 configurations within the like-with-like tolerances
+  of fig. 6's configuration, at Mach 1.91, and the others are checks; if
+  fig. 6 gives too few boat-tail points to integrate both states, (c)
+  fails; its raw range for tests is the fig. 14 state as tested, without
+  the difference.
+- **A4, item 4.** The angle and base-ratio limit applies at every served
+  Mach number.
+- **A5, item 8.** Every served span's label, 1.8 to 2.0 included, names
+  the set, its laboratory, the Mach number measured, the angle and base
+  ratio and the Reynolds number on length, and says when the band rests
+  on one laboratory.
+- **A6, audit.** Item 9 of the addendum amended (ae) after (ae)'s
+  readings had been paired reading against reading (e1fba74, 0ef8ae7),
+  before any S was computed, and on RM E51F26's text alone; the
+  addendum's parent (2c1d311) does not contain those readings. The
+  coordinator discloses that it made the M5 ruling after reading the
+  pairing agent's report, which listed some disagreeing reading values
+  for TN 3819 figs. 21 and 23 and TN 3372 fig. 10, none for RM E51F26 and
+  no computed S. The boat-tail workstream never opened the readers' own
+  folders, of (ae) or of (ag); it opened the pairing's report and paired
+  files only after the addendum was committed, for this entry's base
+  band.

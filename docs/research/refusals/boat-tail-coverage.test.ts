@@ -81,7 +81,7 @@ function cases(rockets: readonly Rocket[], smallerMotor: number): Case[] {
   return out;
 }
 
-const KEYS: readonly BoatTailReason['key'][] = ['bluntNose', 'mach', 'angle', 'length', 'allowance'];
+const KEYS: readonly BoatTailReason['key'][] = ['bluntNose', 'mach', 'angle', 'length', 'allowance', 'base'];
 const pct = (n: number, d: number) => (d === 0 ? '-' : `${((100 * n) / d).toFixed(1)}%`);
 const quantiles = (xs: number[]) => {
   const s = [...xs].sort((a, b) => a - b);
@@ -136,7 +136,7 @@ test('the boat-tail term over the population', () => {
     ];
     const row = (label: string, count: (cs: readonly Case[]) => number) =>
       `| ${label} | ${groups.map((cs) => `${count(cs)} (${pct(count(cs), cs.length)})`).join(' | ')} |`;
-    const allowance = (c: Case) => c.nose.length === 0 && c.tail.every((k) => k === 'allowance');
+    const allowance = (c: Case) => c.nose.length === 0 && c.tail.every((k) => k === 'allowance' || k === 'base');
     lines.push(
       `## ${title}`,
       '',
@@ -147,7 +147,7 @@ test('the boat-tail term over the population', () => {
     if (compact) {
       lines.push(
         row('term refused: angle', (cs) => cs.filter((c) => c.tail.includes('angle')).length),
-        row('nose and term served if the allowance were set', (cs) => cs.filter(allowance).length),
+        row('nose and term served if the allowance and the base were set', (cs) => cs.filter(allowance).length),
         '',
       );
       return;
@@ -155,7 +155,7 @@ test('the boat-tail term over the population', () => {
     lines.push(
       row('nose term served', (cs) => cs.filter((c) => c.nose.length === 0).length),
       row('nose and term served', (cs) => cs.filter((c) => c.nose.length === 0 && c.tail.length === 0).length),
-      row('the same if the allowance were set', (cs) => cs.filter(allowance).length),
+      row('the same if the allowance and the base were set', (cs) => cs.filter(allowance).length),
       ...KEYS.map((k) => row(`term refused: ${k}`, (cs) => cs.filter((c) => c.tail.includes(k)).length)),
       ...KEYS.map((k) =>
         row(

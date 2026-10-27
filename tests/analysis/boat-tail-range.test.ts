@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   BOAT_TAIL_ALLOWANCE_SET,
+  BOAT_TAIL_BASE_SET,
   BOAT_TAIL_MACH_RANGE,
   boatTailReasons,
   boatTailRefusal,
@@ -22,7 +23,7 @@ const body = (
 });
 
 describe('the boat-tail term: where it is served', () => {
-  it('only at Mach 1.8 to 2.0, where its viscous allowance is measured', () => {
+  it('at Mach 1.8 to 2.0 at most: no measured allowance elsewhere has passed its checks', () => {
     expect(BOAT_TAIL_MACH_RANGE).toEqual([1.8, 2.0]);
     const reasons = (mach: number) => boatTailRefusal(body(8, 1), mach) ?? '';
     expect(reasons(1.5)).toMatch(/no measurement at other Mach numbers/);
@@ -50,14 +51,17 @@ describe('the boat-tail term: where it is served', () => {
     // The same reasons, keyed (the population's coverage count).
     expect(
       boatTailReasons(body(20, 3, { kind: 'haack', parameter: 0 }), 3).map((r) => r.key),
-    ).toEqual(['bluntNose', 'mach', 'angle', 'length', 'allowance']);
-    expect(boatTailReasons(body(8, 1), 1.9).map((r) => r.key)).toEqual(['allowance']);
+    ).toEqual(['bluntNose', 'mach', 'angle', 'length', 'allowance', 'base']);
+    expect(boatTailReasons(body(8, 1), 1.9).map((r) => r.key)).toEqual(['allowance', 'base']);
     expect(boatTailReasons({ nose: body(8, 1).nose, cylinderLength: 5 }, 3)).toEqual([]);
   });
 
-  it('serves nothing until the viscous allowance is read; a body without a boat-tail has no term to refuse', () => {
+  it('serves nothing: neither the allowance nor the base behind a boat-tail can be set; a body without a boat-tail has no term to refuse', () => {
     expect(BOAT_TAIL_ALLOWANCE_SET).toBe(false);
-    expect(boatTailRefusal(body(8, 1), 1.9)).toMatch(/has passed its checks yet/);
+    expect(BOAT_TAIL_BASE_SET).toBe(false);
+    const words = boatTailRefusal(body(8, 1), 1.9) ?? '';
+    expect(words).toMatch(/splitter plate whose support was never tested/);
+    expect(words).toMatch(/base pressure behind a boat-tail cannot be set/);
     expect(boatTailRefusal({ nose: body(8, 1).nose, cylinderLength: 5 }, 1.9)).toBeUndefined();
   });
 });

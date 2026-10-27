@@ -28,15 +28,26 @@ export const BOAT_TAIL_ANGLE_RANGE: readonly [number, number] = [4, 16];
 export const BOAT_TAIL_LENGTH_RANGE: readonly [number, number] = [0.5, 2];
 
 /**
- * Whether the viscous allowance is set: false until a set named in 0014
- * 10.7 (ag) is read twice, paired, and counts by its addendum. If only one
- * angle and base ratio count, only that angle and ratio will be served.
+ * Whether the viscous allowance is set: false. RM E51F26, a half body on a
+ * splitter plate with no test of its support, is only a check (0014 10.7
+ * (ag) addendum, item 9); the further sets of (ag) set nothing while the
+ * base behind a boat-tail is refused (0023 section 4).
  */
 export const BOAT_TAIL_ALLOWANCE_SET: boolean = false;
 
+/**
+ * Whether the base behind a boat-tail (Love's method, 0023 section 4) has
+ * its band: false. Once RM E51F26 counts only as a check, no measured
+ * boat-tailed base read under 0014 10.7 (ae) has its geometry given, so
+ * none can be compared with Love's method (0014 10.7, the note of
+ * 2026-10-27 to (ae)). The boat-tail term is refused with it: the two make
+ * one boat-tail.
+ */
+export const BOAT_TAIL_BASE_SET: boolean = false;
+
 /** One reason the boat-tail term is refused: a key for counting, and the plain words shown. */
 export interface BoatTailReason {
-  readonly key: 'bluntNose' | 'mach' | 'angle' | 'length' | 'allowance';
+  readonly key: 'bluntNose' | 'mach' | 'angle' | 'length' | 'allowance' | 'base';
   readonly text: string;
 }
 
@@ -77,7 +88,13 @@ export function boatTailReasons(body: Body, mach: number): BoatTailReason[] {
   if (!BOAT_TAIL_ALLOWANCE_SET) {
     reasons.push({
       key: 'allowance',
-      text: "no measurement of the boat-tail's allowance for the boundary layer has passed its checks yet (the figures named in design record 0014 section 10.7 (ag) wait to be read twice)",
+      text: "no measurement of the boat-tail's allowance for the boundary layer has passed its checks: the one read so far (NACA RM E51F26) is a half body on a splitter plate whose support was never tested, so it counts only as a check",
+    });
+  }
+  if (!BOAT_TAIL_BASE_SET) {
+    reasons.push({
+      key: 'base',
+      text: "the base pressure behind a boat-tail cannot be set: of the measured boat-tailed bases read, none but NACA RM E51F26's gives the body's shape, which Love's method needs, and RM E51F26 counts only as a check",
     });
   }
   return reasons;

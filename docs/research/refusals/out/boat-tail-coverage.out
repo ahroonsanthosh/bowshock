@@ -17,17 +17,19 @@ Shapes (minimum, 10, 25, 50, 75, 90th percentiles, maximum):
 | cases | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
 | nose term served | 0 (0.0%) | 90 (28.5%) | 91 (28.8%) | 91 (28.8%) | 10 (23.3%) | 272 (21.5%) |
 | nose and term served | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
-| the same if the allowance were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 6 (1.9%) | 6 (14.0%) | 6 (0.5%) |
+| the same if the allowance and the base were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 6 (1.9%) | 6 (14.0%) | 6 (0.5%) |
 | term refused: bluntNose | 161 (50.9%) | 161 (50.9%) | 161 (50.9%) | 161 (50.9%) | 25 (58.1%) | 644 (50.9%) |
 | term refused: mach | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 273 (86.4%) | 0 (0.0%) | 1221 (96.6%) |
 | term refused: angle | 101 (32.0%) | 101 (32.0%) | 101 (32.0%) | 101 (32.0%) | 11 (25.6%) | 404 (32.0%) |
 | term refused: length | 21 (6.6%) | 21 (6.6%) | 21 (6.6%) | 21 (6.6%) | 2 (4.7%) | 84 (6.6%) |
 | term refused: allowance | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
+| term refused: base | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
 | sole blocker (nose served): bluntNose | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | sole blocker (nose served): mach | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | sole blocker (nose served): angle | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 | sole blocker (nose served): length | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
-| sole blocker (nose served): allowance | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 6 (1.9%) | 6 (14.0%) | 6 (0.5%) |
+| sole blocker (nose served): allowance | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
+| sole blocker (nose served): base | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) |
 
 ## Variant: every boat-tail to the largest motor that fits (shallower)
 
@@ -35,7 +37,7 @@ Shapes (minimum, 10, 25, 50, 75, 90th percentiles, maximum):
 | --- | --- | --- | --- | --- | --- | --- |
 | cases | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
 | term refused: angle | 116 (36.7%) | 116 (36.7%) | 116 (36.7%) | 116 (36.7%) | 16 (37.2%) | 464 (36.7%) |
-| nose and term served if the allowance were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 5 (1.6%) | 5 (11.6%) | 5 (0.4%) |
+| nose and term served if the allowance and the base were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 5 (1.6%) | 5 (11.6%) | 5 (0.4%) |
 
 ## Variant: every boat-tail to the next motor size down (steeper)
 
@@ -43,7 +45,7 @@ Shapes (minimum, 10, 25, 50, 75, 90th percentiles, maximum):
 | --- | --- | --- | --- | --- | --- | --- |
 | cases | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 316 (100.0%) | 43 (100.0%) | 1264 (100.0%) |
 | term refused: angle | 58 (18.4%) | 58 (18.4%) | 58 (18.4%) | 58 (18.4%) | 2 (4.7%) | 232 (18.4%) |
-| nose and term served if the allowance were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 10 (3.2%) | 10 (23.3%) | 10 (0.8%) |
+| nose and term served if the allowance and the base were set | 0 (0.0%) | 0 (0.0%) | 0 (0.0%) | 10 (3.2%) | 10 (23.3%) | 10 (0.8%) |
 
 The base behind a boat-tail (Love, 0023 section 4) and the total are not counted yet: the base is
 served only within the angles, base ratios and Mach numbers its band's boat-tailed points span, which

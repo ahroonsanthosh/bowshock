@@ -1,18 +1,19 @@
 # 0023: Boat-tails
 
-- **Status:** In progress on `claude/wip/boat-tails`. Nothing is served:
-  every boat-tail is still refused (`base: boat-tail`, 0014 B2). Part 1,
-  the boat-tail's own pressure drag from the fitted solve, is built on the
-  CPU and the GPU for sharp noses, and solved but not yet checked behind
-  blunt ones; it is being measured against the method of characteristics
-  (section 2), and the rule that will set its served range is written
-  down ahead of the results (section 2.5). Part 2, the base behind a
-  boat-tail, and the viscous allowance on part 1 wait for their figures,
-  named in 0014 10.7 (ae) and (ag) before anyone reads them, to be read
-  twice, the second time blind (sections 3 to 5). The allowance has no
-  counting set yet: RM E51F26 is now a check (section 3), and the term
-  may end up refused at every Mach number or served for one angle only.
-- **Date:** 2026-10-26
+- **Status:** Stopped on 2026-10-27 on `claude/wip/boat-tails`, with
+  every boat-tail refused (`base: boat-tail`, 0014 B2), now for a stated
+  reason: the base behind a boat-tail cannot be set (section 4), and the
+  boat-tail term is refused with it. Once RM E51F26 is only a check (its
+  half body on a splitter plate was never tested for support
+  interference), no measured boat-tailed base read so far gives the
+  body's shape Love's method needs (0014 10.7, the note of 2026-10-27).
+  Part 1, the boat-tail's own pressure drag from the fitted solve, is
+  built on the CPU and the GPU for sharp noses and solved behind blunt
+  ones; its measurements against the method of characteristics (section
+  2.3) stand as the record of the solver's verification as far as they
+  went, and the rule that would have set its served range is written
+  down (section 2.5). The route to more is in section 7.
+- **Date:** 2026-10-26; stopped 2026-10-27
 - **Inputs:** [0006](0006-shock-fitting.md) (the fitted solve, its
   verification and its references), [0008](0008-total-drag.md) section 3.2
   (boat-tails not quantified by any opened source), [0010](0010-base-drag-and-total.md)
@@ -379,7 +380,9 @@ splitter plate with no such support comparison, so it no longer sets
 the allowance: it is a check. RM E57E06, whose fig. 6 compares its
 5.63 deg boat-tail with and without its struts at Mach 1.91, may count
 there. If no set counts, the boat-tail term is refused at every Mach
-number; if only one angle counts, only that angle is served.
+number; if only one angle counts, only that angle is served. As it
+turned out (2026-10-27), nothing is set from (ag): the base behind a
+boat-tail cannot be set (section 4), and the term is refused with it.
 
 ## 4. Part 2: the base behind a boat-tail (Love's method)
 
@@ -402,6 +405,21 @@ computes its ogival boat-tail; TN 3372 configuration D at Mach 1.2 and
 above), enveloped with the cylinder's band of 0010 at M_0, and served only
 within the angles, base ratios and Mach numbers the boat-tailed points
 span.
+
+**The outcome (2026-10-27).** The band cannot be set. RM E51F26's base
+points, and TN 3819 fig. 24's (the same points replotted), are checks
+only: the support test of the (ag) addendum applies to base points too,
+since a splitter plate's boundary layer feeds the near wake. Of the
+other boat-tailed points read, TN 3819 fig. 23's circles and triangles
+and fig. 25(b)'s give only the boat-tail angle (and a 1.97 in diameter),
+not the nose, the lengths or the base ratio Love's value needs; RM
+A52E20's model 8 is not dimensioned; TN 3372's configuration D has an
+undimensioned curved afterbody and fins 0.82 root chord ahead of its
+base. Only bases without a boat-tail (TN 3819 figs. 19 and 21, and fig.
+23's simple cones) are computable, and they were not computed. With no
+boat-tailed point to span, the base behind a boat-tail is refused
+everywhere, and with it the boat-tail term (the coordinator's ruling);
+0014 10.7's note of 2026-10-27 gives the set-by-set table.
 
 ## 5. Readings
 
@@ -450,11 +468,12 @@ before the readings (section 5), and not changed by them:
   (`base: boat-tail`) give way to these reasons, with the impact run
   recorded before and after.
 
-As run on 2026-10-26, with the provisional angles (4 to 16 deg) and
+As run on 2026-10-27, with the provisional angles (4 to 16 deg) and
 lengths (0.5 to 2 calibers) and nothing served: no boat-tailed case has
-its term served, since the allowance waits for its readings. If it were
-set, 6 of the 1264 boat-tailed cases (0.5%; 6 of the 43 between Mach 1.8
-and 2.0) would have nose and term served; 5 and 10 in the two variants.
+its term served, since neither the allowance nor the base behind a
+boat-tail can be set (section 4). If both were, 6 of the 1264
+boat-tailed cases (0.5%; 6 of the 43 between Mach 1.8 and 2.0) would
+have nose and term served; 5 and 10 in the two variants.
 The term is refused by the Mach range on 96.6% of cases, behind a blunt
 nose (Haack, power-series and ellipsoid) on 50.9%, by angle on 32.0% (under
 4 deg or over 16 deg) and by length on 6.6%; the nose
@@ -462,13 +481,23 @@ solve itself is served on 21.5%.
 
 ## 7. Open
 
-- **The viscous allowance.** 0014 10.7 (ag) and its addendum name side
-  pressures measured at Mach 1.59 to 3.12 (and up to 1.30) before they
-  are read, with the rules that decide which count and how the allowance
-  is carried. RM E51F26 now only checks. The term may end up refused at
-  every Mach number, or served at Mach 1.8 to 2.0 for one angle only;
-  disagreements between laboratories, and misses by checks, go to the
-  owner. Until the readings are paired the term is refused everywhere.
+- **The base behind a boat-tail: the route.** The boat-tailed bases
+  that could set Love's band need their models' shapes: H. H. Kurzweg's
+  ref. 5 of TN 3819 (the NOL models of TN 3819 figs. 23 and 25(b)) and the
+  Ames source of fig. 23's triangles. Neither is registered or read; a
+  further dated entry would name them first. The bases without a
+  boat-tail (TN 3819 figs. 19, 21 and fig. 23's cones) are computable
+  and were not computed.
+- **The viscous allowance.** 0014 10.7 (ag), its addendum and the review's
+  last changes (the note of 2026-10-27) name side pressures measured at
+  Mach 1.59 to 3.12 (and up to 1.30) with the rules that decide which
+  count and how the allowance is carried. RM E51F26 only checks. Nothing
+  is set from (ag) while the base is refused; its readings are paired as
+  a record.
+- **Not finished:** the four-grid families (nj = 160) and the rest of the
+  first set on nj = 80, so section 2.5's rule has not been applied and the
+  floor stays provisional; the blunt noses' check (section 2.6) stopped on
+  the Von Karman case at nj = 80.
 - **RM E51F26's nose.** Its 6-caliber nose is defined by equation (14) of
   its reference 1, not yet opened; failing that, the allowance carries
   the spread between a tangent ogive and a cone of that length (0014 10.7
