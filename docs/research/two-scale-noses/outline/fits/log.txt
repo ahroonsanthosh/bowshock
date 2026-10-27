@@ -92,3 +92,14 @@
 2026-10-27T13:24:26.138Z haack C0 L5 M3 cyl2 nj20x2: start, save to /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/vk/out/L5c2M3r2, fingerprint {"case":"haack C0 L5 M3 cyl2","refinement":2,"chunk":1000,"maxIterations":80000,"settle":1e-9,"noise":1e-10,"ungated":true,"numerics":"19341f0e668a385b","runner":"860bd803d8a79029"}
 2026-10-27T13:27:35.925Z haack C0 L5 M3 cyl2 nj20x2: resumed from checkpoint at 4750 iterations (750 into the chunk, 4 chunks of history)
 2026-10-27T13:27:37.953Z haack C0 L6 M3 cyl2 nj20x2: resumed from checkpoint at 6750 iterations (750 into the chunk, 6 chunks of history)
+2026-10-27T13:30:41.441Z haack C0 L5 M3 cyl2 nj20x2: 5000 iterations, maxSpeed 6.41e-9, drag 0.0301320716128, remaining 1.28e-9
+2026-10-27T13:30:55.989Z haack C0 L6 M3 cyl2 nj20x2: 7000 iterations, maxSpeed 4.46e-10, drag 0.0217627111179, remaining 2.22e-11
+2026-10-27T13:43:53.601Z haack C0 L5 M3 cyl2 nj20x2: 6000 iterations, maxSpeed 1.41e-9, drag 0.0301320716537, remaining 1.61e-10
+2026-10-27T13:44:54.994Z haack C0 L6 M3 cyl2 nj20x2: quality {"wall":79.73912414800714,"minAngle":69.57382989284497,"sizeRatio":1.0814751507138742,"aspect":5.642647344583717,"gates":[],"stagnationError":-0.0006629319844716486,"standoff":0.000026185139473826542}
+2026-10-27T13:44:54.996Z haack C0 L6 M3 cyl2 nj20x2: settled early at 8000 iterations, remaining 2.25e-12, maxSpeed 9.43e-11, drag 0.021762711118279317, from the wall strip 0.021762711118279311; saved
+2026-10-27T13:44:58.485Z haack C0 L6 M1.5 cyl2 nj20x4: start, save to /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/vk/out/L6c2M1.5r4, fingerprint {"case":"haack C0 L6 M1.5 cyl2","refinement":4,"chunk":1000,"maxIterations":160000,"settle":1e-9,"noise":1e-10,"ungated":true,"numerics":"19341f0e668a385b","runner":"860bd803d8a79029"}
+2026-10-27T13:47:42.838Z haack C0 L6 M1.5 cyl2 nj20x4: resumed from checkpoint at 0 iterations (0 into the chunk, 0 chunks of history), a seed
+2026-10-27T13:56:58.557Z haack C0 L5 M3 cyl2 nj20x2: 7000 iterations, maxSpeed 2.98e-10, drag 0.0301320716609, remaining 2.83e-11
+2026-10-27T14:08:44.660Z haack C0 L5 M3 cyl2 nj20x2: quality {"wall":79.84313574051481,"minAngle":69.22687625773565,"sizeRatio":1.1177022184852308,"aspect":5.200189658218596,"gates":[],"stagnationError":-0.0005739839688257975,"standoff":0.00004524523055420273}
+2026-10-27T14:08:44.691Z haack C0 L5 M3 cyl2 nj20x2: settled early at 8000 iterations, remaining 2.65e-12, maxSpeed 6.19e-11, drag 0.030132071661581428, from the wall strip 0.030132071661581463; saved
+2026-10-27T14:08:48.197Z haack C0 L6 M2 cyl2 nj20x4: start, save to /tmp/claude-0/-home-user-bowshock/dd60fc51-836c-5183-86f3-15ab54467394/scratchpad/vk/out/L6c2M2r4, fingerprint {"case":"haack C0 L6 M2 cyl2","refinement":4,"chunk":1000,"maxIterations":160000,"settle":1e-9,"noise":1e-10,"ungated":true,"numerics":"19341f0e668a385b","runner":"860bd803d8a79029"}
