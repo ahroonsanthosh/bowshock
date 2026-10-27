@@ -1,0 +1,298 @@
+{
+ "name": "t3819_f24",
+ "image": "B/render/tn3819/p55r.png",
+ "page": 55,
+ "thr": 150,
+ "panels": {
+  "a": {
+   "hlines": [
+    [
+     756,
+     -0.16,
+     true
+    ],
+    [
+     855.5,
+     -0.14,
+     false
+    ],
+    [
+     954.7,
+     -0.12,
+     true
+    ],
+    [
+     1053.3,
+     -0.1,
+     false
+    ],
+    [
+     1153,
+     -0.08,
+     true
+    ],
+    [
+     1252,
+     -0.06,
+     false
+    ],
+    [
+     1351.4,
+     -0.04,
+     true
+    ],
+    [
+     1450,
+     -0.02,
+     false
+    ],
+    [
+     1549,
+     0.0,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     446,
+     0.0,
+     true
+    ],
+    [
+     545,
+     1.0,
+     false
+    ],
+    [
+     644.5,
+     2.0,
+     true
+    ],
+    [
+     742.5,
+     3.0,
+     false
+    ],
+    [
+     841,
+     4.0,
+     true
+    ],
+    [
+     939.5,
+     5.0,
+     false
+    ],
+    [
+     1040.3,
+     6.0,
+     true
+    ],
+    [
+     1137.8,
+     7.0,
+     false
+    ],
+    [
+     1236,
+     8.0,
+     true
+    ],
+    [
+     1334.4,
+     9.0,
+     false
+    ],
+    [
+     1433.2,
+     10.0,
+     true
+    ]
+   ],
+   "uspan": [
+    452,
+    1427
+   ],
+   "vspan": [
+    762,
+    1543
+   ],
+   "nstrips": 20,
+   "sizes": {
+    "circle": 12.0
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "ab563",
+     "group": "ab563",
+     "kind": "circle",
+     "u": 1004.5,
+     "v": 1154.5,
+     "series": "open circle: Exp. mean value (Cortright-Schroeder)"
+    },
+    {
+     "id": "ab703",
+     "group": "ab703",
+     "kind": "circle",
+     "u": 1145.75,
+     "v": 1259,
+     "series": "open circle: Exp. mean value (Cortright-Schroeder)"
+    },
+    {
+     "id": "ab933",
+     "group": "ab933",
+     "kind": "circle",
+     "u": 1371.75,
+     "v": 1377.5,
+     "series": "open circle: Exp. mean value (Cortright-Schroeder)"
+    }
+   ]
+  },
+  "b": {
+   "hlines": [
+    [
+     760.7,
+     -0.16,
+     true
+    ],
+    [
+     859.1,
+     -0.14,
+     false
+    ],
+    [
+     958.2,
+     -0.12,
+     true
+    ],
+    [
+     1056.7,
+     -0.1,
+     false
+    ],
+    [
+     1156.6,
+     -0.08,
+     true
+    ],
+    [
+     1255.5,
+     -0.06,
+     false
+    ],
+    [
+     1354.9,
+     -0.04,
+     true
+    ],
+    [
+     1453.6,
+     -0.02,
+     false
+    ],
+    [
+     1552.5,
+     0.0,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     1630.3,
+     0.0,
+     true
+    ],
+    [
+     1728.8,
+     1.0,
+     false
+    ],
+    [
+     1828,
+     2.0,
+     true
+    ],
+    [
+     1927,
+     3.0,
+     false
+    ],
+    [
+     2026.7,
+     4.0,
+     true
+    ],
+    [
+     2124.6,
+     5.0,
+     false
+    ],
+    [
+     2222,
+     6.0,
+     true
+    ],
+    [
+     2321,
+     7.0,
+     false
+    ],
+    [
+     2420.4,
+     8.0,
+     true
+    ],
+    [
+     2518.4,
+     9.0,
+     false
+    ],
+    [
+     2616.8,
+     10.0,
+     true
+    ]
+   ],
+   "uspan": [
+    1636,
+    2611
+   ],
+   "vspan": [
+    766,
+    1546
+   ],
+   "nstrips": 20,
+   "sizes": {
+    "circle": 12.0
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "bb563",
+     "group": "bb563",
+     "kind": "circle",
+     "u": 2190.75,
+     "v": 1141,
+     "series": "open circle: Exp. mean value (Cortright-Schroeder)"
+    },
+    {
+     "id": "bb703",
+     "group": "bb703",
+     "kind": "circle",
+     "u": 2326,
+     "v": 1106.75,
+     "series": "open circle: Exp. mean value (Cortright-Schroeder)"
+    },
+    {
+     "id": "bb933",
+     "group": "bb933",
+     "kind": "circle",
+     "u": 2555,
+     "v": 1110,
+     "series": "open circle: Exp. mean value (Cortright-Schroeder)"
+    }
+   ]
+  }
+ }
+}

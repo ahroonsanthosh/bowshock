@@ -33,6 +33,8 @@ Each PDF is an Adobe Paper Capture scan: one RGB JPEG image per page at 300 dpi 
 14. Text layer searched by script only for the word SYMBOLS or NOTATION: TN 3819 PDF pages 1 to 8, RM A52E20 pages 1 to 8, TN 3372 pages 1 to 6. Then opened, to get each base pressure coefficient's reference conditions: TN 3819 PDF page 5 (text and image; introduction end and symbol list start), TN 3819 PDF page 6 (text and image; P_B definition), RM A52E20 PDF page 4 (text layer; notation, P_b definition, Reynolds number basis), TN 3372 PDF page 3 (text layer; summary and introduction) and PDF page 5 (text layer; definition of delta p / q and Reynolds number basis). These pages are outside the brief's list; I opened them only for the coefficient definitions and say so here.
 15. RM A52E20 PDF page 26 again (inch scale and model 8 in the photograph; see section 5.3: I decided not to report photo measurements).
 
+16. After the second and third restarts, on the coordinator's targeted request: RM E51F26 PDF pages 7, 8, 11, 15 and 19 (report pp. 6, 7, 10, 14, 18), text layer and native page images, read in full for statements on boundary-layer transition, the trip wire, boundary-layer thickness and points called inconsistent or unreliable. Quotations are in `transition.md`. Pages 7 and 15 had been opened before; pages 8, 11 and 19 were new. Sentences that continue from PDF page 10 or onto PDF page 9 were not followed onto those pages.
+
 TN 3819 PDF page 57 was never extracted, listed, rendered or text-searched (every TN 3819 command named its pages explicitly). TN 3320 was never fetched.
 
 ## 3. How the figures were read
@@ -419,7 +421,7 @@ Counts per file, then each non-`ok` row (TN 3372 fig. 12 rows are all `curve` an
 
 ## 9. Files and scripts
 
-Deliverables in `B/`: `method.md`, `geometry.csv` and the 13 figure CSVs. Working material: `B/src/` (the four PDFs), `B/render/` (extracted page images, OCR text, `opened.log`), `B/view/` (crops and check overlays), `B/work/` (per-figure specifications with every grid-line guess and symbol seed, fit results in `work/out/`), `B/scripts/` (all run with `python3 -I`, paths passed as arguments):
+Deliverables in `B/`: `method.md`, `geometry.csv`, the 13 figure CSVs and `transition.md` (targeted text reading). Working material: `B/src/` (the four PDFs), `B/render/` (extracted page images, OCR text, `opened.log`), `B/view/` (crops and check overlays), `B/work/` (per-figure specifications with every grid-line guess and symbol seed, fit results in `work/out/`), `B/scripts/` (all run with `python3 -I`, paths passed as arguments):
 
 - `crop.py`, `rot.py`, `ruler.py`, `montage.py`: crops, exact 90-degree rotation, crops with a pixel ruler, tiling.
 - `grid.py`: first detection of grid lines; `figlib.py`: grid-line fitting, affine calibration, symbol templates and fitting; `readfig.py`: per-figure calibration and symbol fits; `detect.py`, `sizefit.py`: seeding symbols and measuring symbol size on isolated symbols; `zoomcheck.py`: overlays for checking; `arcfit.py`: centre from the visible arc of an overlapped ring; `dotfind.py`, `dots.py`: centre dots.

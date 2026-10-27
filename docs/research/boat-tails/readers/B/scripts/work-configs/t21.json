@@ -1,0 +1,597 @@
+{
+ "name": "t3819_f21",
+ "image": "B/render/tn3819/p52r.png",
+ "page": 52,
+ "thr": 150,
+ "panels": {
+  "main": {
+   "hlines": [
+    [
+     327.5,
+     -0.24,
+     true
+    ],
+    [
+     445.1,
+     -0.22,
+     false
+    ],
+    [
+     562.3,
+     -0.2,
+     true
+    ],
+    [
+     680.8,
+     -0.18,
+     false
+    ],
+    [
+     798.0,
+     -0.16,
+     true
+    ],
+    [
+     915.2,
+     -0.14,
+     false
+    ],
+    [
+     1033.4,
+     -0.12,
+     true
+    ],
+    [
+     1150.6,
+     -0.1,
+     false
+    ],
+    [
+     1269.2,
+     -0.08,
+     true
+    ],
+    [
+     1386.3,
+     -0.06,
+     false
+    ],
+    [
+     1504.8,
+     -0.04,
+     true
+    ],
+    [
+     1621.7,
+     -0.02,
+     false
+    ],
+    [
+     1739.5,
+     0.0,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     669,
+     1.0,
+     true
+    ],
+    [
+     785.9,
+     1.2,
+     false
+    ],
+    [
+     903.9,
+     1.4,
+     false
+    ],
+    [
+     1020.4,
+     1.6,
+     false
+    ],
+    [
+     1138.6,
+     1.8,
+     false
+    ],
+    [
+     1255,
+     2.0,
+     true
+    ],
+    [
+     1373,
+     2.2,
+     false
+    ],
+    [
+     1488,
+     2.4,
+     false
+    ],
+    [
+     1606.6,
+     2.6,
+     false
+    ],
+    [
+     1724,
+     2.8,
+     false
+    ],
+    [
+     1841,
+     3.0,
+     true
+    ],
+    [
+     1959,
+     3.2,
+     false
+    ],
+    [
+     2076,
+     3.4,
+     false
+    ],
+    [
+     2193.6,
+     3.6,
+     false
+    ],
+    [
+     2310,
+     3.8,
+     false
+    ],
+    [
+     2428,
+     4.0,
+     true
+    ]
+   ],
+   "uspan": [
+    676,
+    2420
+   ],
+   "vspan": [
+    334,
+    1733
+   ],
+   "nstrips": 24,
+   "sizes": {
+    "circle": 15.25,
+    "square": 14.0,
+    "tri": 19.75,
+    "diamond_tall": 13.25
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "p01",
+     "group": "p01",
+     "cl": "A",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 792,
+     "v": 453,
+     "series": "open circle"
+    },
+    {
+     "id": "p02",
+     "group": "p02",
+     "cl": "A",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 815.15,
+     "v": 456.11,
+     "series": "open circle",
+     "eu": 0.33,
+     "ev": 0.33,
+     "fixed": true,
+     "method_note": "centre from least-squares fit of the visible arc of its ring (other rings and grid lines excluded), radius fixed at 15.25 px"
+    },
+    {
+     "id": "p03",
+     "group": "p03",
+     "cl": "A",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 810.94,
+     "v": 470.59,
+     "series": "open circle",
+     "eu": 0.53,
+     "ev": 0.5,
+     "fixed": true,
+     "method_note": "centre from least-squares fit of the visible arc of its ring (other rings and grid lines excluded), radius fixed at 15.25 px"
+    },
+    {
+     "id": "p04",
+     "group": "p04",
+     "cl": "A",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 827,
+     "v": 494,
+     "series": "open circle"
+    },
+    {
+     "id": "p05",
+     "group": "p05",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 897.7,
+     "v": 580,
+     "series": "open circle"
+    },
+    {
+     "id": "p06",
+     "group": "p06",
+     "cl": "B",
+     "kind": "tri",
+     "sym": "tr",
+     "u": 981.7,
+     "v": 628,
+     "series": "open triangle (apex up)"
+    },
+    {
+     "id": "p07",
+     "group": "p07",
+     "cl": "B",
+     "kind": "tri",
+     "sym": "tr",
+     "u": 961.7,
+     "v": 680,
+     "series": "open triangle (apex up)"
+    },
+    {
+     "id": "p08",
+     "group": "p08",
+     "cl": "B",
+     "kind": "tri",
+     "sym": "tr",
+     "u": 961.7,
+     "v": 745,
+     "series": "open triangle (apex up)"
+    },
+    {
+     "id": "p09",
+     "group": "p09",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 991.7,
+     "v": 655.8,
+     "series": "open circle"
+    },
+    {
+     "id": "p10",
+     "group": "p10",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1021.7,
+     "v": 665,
+     "series": "open circle"
+    },
+    {
+     "id": "p11",
+     "group": "p11",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 987.5,
+     "v": 687.5,
+     "series": "open circle"
+    },
+    {
+     "id": "p12",
+     "group": "p12",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1020.8,
+     "v": 695,
+     "series": "open circle"
+    },
+    {
+     "id": "p13",
+     "group": "p13",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1006.7,
+     "v": 717.5,
+     "series": "open circle"
+    },
+    {
+     "id": "p14",
+     "group": "p14",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1071.7,
+     "v": 680,
+     "series": "open circle"
+    },
+    {
+     "id": "p15",
+     "group": "p15",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1130,
+     "v": 658.3,
+     "series": "open circle"
+    },
+    {
+     "id": "p16",
+     "group": "p16",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1136.7,
+     "v": 698.3,
+     "series": "open circle"
+    },
+    {
+     "id": "p17",
+     "group": "p17",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1145.17,
+     "v": 751.94,
+     "series": "open circle",
+     "eu": 0.51,
+     "ev": 0.42,
+     "fixed": true,
+     "method_note": "centre from least-squares fit of the visible arc of its ring (other rings and grid lines excluded), radius fixed at 15.25 px"
+    },
+    {
+     "id": "p18",
+     "group": "p18",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1140.74,
+     "v": 759.54,
+     "series": "open circle",
+     "eu": 1.12,
+     "ev": 0.75,
+     "fixed": true,
+     "method_note": "centre from least-squares fit of the visible arc of its ring (other rings and grid lines excluded), radius fixed at 15.25 px"
+    },
+    {
+     "id": "p19",
+     "group": "p19",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1150.8,
+     "v": 798.3,
+     "series": "open circle"
+    },
+    {
+     "id": "p20",
+     "group": "p20",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1182.5,
+     "v": 773.3,
+     "series": "open circle"
+    },
+    {
+     "id": "p21",
+     "group": "p21",
+     "cl": "B",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1193.3,
+     "v": 785,
+     "series": "open circle"
+    },
+    {
+     "id": "p22",
+     "group": "p22",
+     "cl": "C",
+     "kind": "square",
+     "sym": "sq",
+     "u": 1255.7,
+     "v": 853.7,
+     "series": "open square"
+    },
+    {
+     "id": "p23",
+     "group": "p23",
+     "cl": "C",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 1254.3,
+     "v": 890,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p24",
+     "group": "p24",
+     "cl": "C",
+     "kind": "square",
+     "sym": "sq",
+     "u": 1257.1,
+     "v": 940,
+     "series": "open square"
+    },
+    {
+     "id": "p25",
+     "group": "p25",
+     "cl": "C",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1254.3,
+     "v": 968.6,
+     "series": "open circle"
+    },
+    {
+     "id": "p26",
+     "group": "p26",
+     "cl": "C",
+     "kind": "tri",
+     "sym": "tr",
+     "u": 1294.3,
+     "v": 986,
+     "series": "open triangle (apex up)"
+    },
+    {
+     "id": "p27",
+     "group": "p27",
+     "cl": "C",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 1368.6,
+     "v": 902.9,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p28",
+     "group": "p28",
+     "cl": "C",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1450,
+     "v": 951.4,
+     "series": "open circle"
+    },
+    {
+     "id": "p29",
+     "group": "p29",
+     "cl": "C",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1448.26,
+     "v": 984.02,
+     "series": "open circle",
+     "eu": 0.38,
+     "ev": 0.47,
+     "fixed": true,
+     "method_note": "centre from least-squares fit of the visible arc of its ring (other rings and grid lines excluded), radius fixed at 15.25 px"
+    },
+    {
+     "id": "p30",
+     "group": "p30",
+     "cl": "C",
+     "kind": "circle",
+     "sym": "oc",
+     "u": 1437.1,
+     "v": 997,
+     "series": "open circle"
+    },
+    {
+     "id": "p31",
+     "group": "p31",
+     "cl": "D",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 1683.3,
+     "v": 1104,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p32",
+     "group": "p32",
+     "cl": "D",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 1648.3,
+     "v": 1154,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p33",
+     "group": "p33",
+     "cl": "D",
+     "kind": "diamond_tall",
+     "sym": "di",
+     "u": 1796,
+     "v": 1064.5,
+     "series": "open diamond (taller than wide)"
+    },
+    {
+     "id": "p34",
+     "group": "p34",
+     "cl": "D",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 1916.7,
+     "v": 1160.7,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p35",
+     "group": "p35",
+     "cl": "D",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 1928.3,
+     "v": 1207.3,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p36",
+     "group": "p36",
+     "cl": "E",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 2138.75,
+     "v": 1281.25,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p37",
+     "group": "p37",
+     "cl": "E",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 2196.25,
+     "v": 1328.75,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p38",
+     "group": "p38",
+     "cl": "E",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 2319,
+     "v": 1289,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p39",
+     "group": "p39",
+     "cl": "E",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 2345,
+     "v": 1300,
+     "series": "flagged circle (tick at upper right)"
+    },
+    {
+     "id": "p40",
+     "group": "p40",
+     "cl": "E",
+     "kind": "circle",
+     "sym": "fc",
+     "u": 2340,
+     "v": 1362.5,
+     "series": "flagged circle (tick at upper right)"
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,195 @@
+{
+ "name": "t3819_f25b",
+ "image": "B/render/tn3819/p56r.png",
+ "page": 56,
+ "thr": 150,
+ "panels": {
+  "b": {
+   "hlines": [
+    [
+     639.3,
+     -0.24,
+     false
+    ],
+    [
+     724.2,
+     -0.22,
+     false
+    ],
+    [
+     810.7,
+     -0.2,
+     false
+    ],
+    [
+     896.2,
+     -0.18,
+     false
+    ],
+    [
+     982.3,
+     -0.16,
+     true
+    ],
+    [
+     1067.9,
+     -0.14,
+     false
+    ],
+    [
+     1154.3,
+     -0.12,
+     true
+    ],
+    [
+     1239.9,
+     -0.1,
+     false
+    ],
+    [
+     1326.0,
+     -0.08,
+     true
+    ],
+    [
+     1411.4,
+     -0.06,
+     false
+    ],
+    [
+     1496.4,
+     -0.04,
+     true
+    ],
+    [
+     1582.9,
+     -0.02,
+     false
+    ],
+    [
+     1668.5,
+     0.0,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     1679.7,
+     0.0,
+     true
+    ],
+    [
+     1765.7,
+     2.0,
+     false
+    ],
+    [
+     1851.5,
+     4.0,
+     true
+    ],
+    [
+     1936.9,
+     6.0,
+     false
+    ],
+    [
+     2020.8,
+     8.0,
+     true
+    ],
+    [
+     2106.8,
+     10.0,
+     false
+    ],
+    [
+     2192.2,
+     12.0,
+     true
+    ],
+    [
+     2278.2,
+     14.0,
+     false
+    ],
+    [
+     2363.3,
+     16.0,
+     true
+    ],
+    [
+     2448.9,
+     18.0,
+     false
+    ],
+    [
+     2534.0,
+     20.0,
+     true
+    ]
+   ],
+   "uspan": [
+    1690,
+    2524
+   ],
+   "vspan": [
+    645,
+    1660
+   ],
+   "nstrips": 20,
+   "sizes": {
+    "circle": 11.0
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "b00",
+     "group": "b00",
+     "kind": "circle",
+     "u": 1680,
+     "v": 1272.5,
+     "series": "open circle: Exp. ref. 5"
+    },
+    {
+     "id": "b25",
+     "group": "b25",
+     "kind": "circle",
+     "u": 1787.5,
+     "v": 1297.5,
+     "series": "open circle: Exp. ref. 5"
+    },
+    {
+     "id": "b50",
+     "group": "b50",
+     "kind": "circle",
+     "u": 1894,
+     "v": 1335,
+     "series": "open circle: Exp. ref. 5"
+    },
+    {
+     "id": "b100",
+     "group": "b100",
+     "kind": "circle",
+     "u": 2110,
+     "v": 1399,
+     "series": "open circle: Exp. ref. 5"
+    },
+    {
+     "id": "b150",
+     "group": "b150",
+     "kind": "circle",
+     "u": 2322.5,
+     "v": 1427.5,
+     "series": "open circle: Exp. ref. 5"
+    }
+   ],
+   "fitbox": [
+    1650,
+    645,
+    2524,
+    1660
+   ]
+  }
+ }
+}

@@ -1,0 +1,308 @@
+{
+ "name": "a52_f15",
+ "image": "B/render/a52/p44-000.jpg",
+ "page": 44,
+ "thr": 150,
+ "panels": {
+  "a": {
+   "hlines": [
+    [
+     328,
+     -0.24,
+     true
+    ],
+    [
+     462,
+     -0.2,
+     true
+    ],
+    [
+     598.4,
+     -0.16,
+     true
+    ],
+    [
+     734.6,
+     -0.12,
+     true
+    ],
+    [
+     870.6,
+     -0.08,
+     true
+    ],
+    [
+     1006,
+     -0.04,
+     true
+    ],
+    [
+     1141,
+     0.0,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     684.8,
+     1.0,
+     true
+    ],
+    [
+     819,
+     1.5,
+     false
+    ],
+    [
+     955.5,
+     2.0,
+     true
+    ],
+    [
+     1091.8,
+     2.5,
+     false
+    ],
+    [
+     1227.8,
+     3.0,
+     true
+    ],
+    [
+     1364.3,
+     3.5,
+     false
+    ],
+    [
+     1500,
+     4.0,
+     true
+    ],
+    [
+     1635.8,
+     4.5,
+     false
+    ],
+    [
+     1771.8,
+     5.0,
+     true
+    ],
+    [
+     1907.9,
+     5.5,
+     false
+    ],
+    [
+     2043.3,
+     6.0,
+     true
+    ]
+   ],
+   "uspan": [
+    692,
+    2036
+   ],
+   "vspan": [
+    334,
+    1134
+   ],
+   "nstrips": 20,
+   "sizes": {
+    "circle": 8.5,
+    "square": 8.0
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "ac15",
+     "group": "ac15",
+     "kind": "circle",
+     "sym": "c",
+     "u": 822.3,
+     "v": 456,
+     "series": "open circle: From Ref. 4 (ogive-cylinder l/d = 7, no boattail)"
+    },
+    {
+     "id": "ac20",
+     "group": "ac20",
+     "kind": "circle",
+     "sym": "c",
+     "u": 959.3,
+     "v": 625,
+     "series": "open circle: From Ref. 4 (ogive-cylinder l/d = 7, no boattail)"
+    },
+    {
+     "id": "as15",
+     "group": "as15",
+     "kind": "square",
+     "sym": "s10",
+     "u": 822.7,
+     "v": 720.7,
+     "series": "open square: From Ref. 10 (ogive-cylinder with boattail l/d = 7)"
+    }
+   ]
+  },
+  "b": {
+   "hlines": [
+    [
+     1543.4,
+     -0.24,
+     true
+    ],
+    [
+     1679.2,
+     -0.2,
+     true
+    ],
+    [
+     1815,
+     -0.16,
+     true
+    ],
+    [
+     1951.7,
+     -0.12,
+     true
+    ],
+    [
+     2088.2,
+     -0.08,
+     true
+    ],
+    [
+     2226,
+     -0.04,
+     true
+    ],
+    [
+     2363.3,
+     0.0,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     679.6,
+     1.0,
+     true
+    ],
+    [
+     814.7,
+     1.5,
+     false
+    ],
+    [
+     950.6,
+     2.0,
+     true
+    ],
+    [
+     1087,
+     2.5,
+     false
+    ],
+    [
+     1223.2,
+     3.0,
+     true
+    ],
+    [
+     1359.7,
+     3.5,
+     false
+    ],
+    [
+     1494.7,
+     4.0,
+     true
+    ],
+    [
+     1631,
+     4.5,
+     false
+    ],
+    [
+     1767,
+     5.0,
+     true
+    ],
+    [
+     1903,
+     5.5,
+     false
+    ],
+    [
+     2039.9,
+     6.0,
+     true
+    ]
+   ],
+   "uspan": [
+    688,
+    2032
+   ],
+   "vspan": [
+    1550,
+    2356
+   ],
+   "nstrips": 20,
+   "sizes": {
+    "circle": 8.5,
+    "square": 8.0
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "bc15",
+     "group": "bc15",
+     "kind": "circle",
+     "sym": "c",
+     "u": 816.5,
+     "v": 1816,
+     "series": "open circle: From Ref. 4 (ogive-cylinder l/d = 7, no boattail)"
+    },
+    {
+     "id": "bc20",
+     "group": "bc20",
+     "kind": "circle",
+     "sym": "c",
+     "u": 951,
+     "v": 1891.5,
+     "series": "open circle: From Ref. 4 (ogive-cylinder l/d = 7, no boattail)"
+    },
+    {
+     "id": "bs15",
+     "group": "bs15",
+     "kind": "square",
+     "sym": "s11",
+     "u": 812.5,
+     "v": 2292.5,
+     "series": "open square: From Ref. 11 (ogive-cylinder with boattail l/d = 7)"
+    },
+    {
+     "id": "bfs20",
+     "group": "bfs20",
+     "kind": "square",
+     "sym": "fs",
+     "u": 937.5,
+     "v": 2192.5,
+     "series": "flagged square: From unpublished data NACA Ames 1- by 3-foot SSWT (ogive-cylinder with boattail l/d = 7)"
+    },
+    {
+     "id": "bs29",
+     "group": "bs29",
+     "kind": "square",
+     "sym": "s11",
+     "u": 1194.9,
+     "v": 2151.0,
+     "series": "open square: From Ref. 11 (ogive-cylinder with boattail l/d = 7)",
+     "eu": 0.75,
+     "ev": 1.0,
+     "fixed": true,
+     "method_note": "lower edge hidden by the dashed curve; centre from the two sides (u 1186.6, 1203.1) and top edge (v 2142.7) with half-side 8.25 px"
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,160 @@
+{
+ "sizes": {
+  "circle": 9.75,
+  "square": 10.0,
+  "diamond": 14.25
+ },
+ "radius": 4.0,
+ "points": [
+  {
+   "id": "a1c",
+   "group": "s1",
+   "kind": "circle",
+   "u": 622,
+   "v": 488,
+   "series": "theta 15 deg (open circle)"
+  },
+  {
+   "id": "a1s",
+   "group": "s1",
+   "kind": "square",
+   "u": 624,
+   "v": 461,
+   "series": "theta 50 deg (open square)"
+  },
+  {
+   "id": "a1d",
+   "group": "s1",
+   "kind": "diamond",
+   "u": 623,
+   "v": 449,
+   "series": "theta 90 deg (open diamond)"
+  },
+  {
+   "id": "a2c",
+   "group": "s2",
+   "kind": "circle",
+   "u": 740,
+   "v": 809,
+   "series": "theta 15 deg (open circle)"
+  },
+  {
+   "id": "a2s",
+   "group": "s2",
+   "kind": "square",
+   "u": 741,
+   "v": 786,
+   "series": "theta 50 deg (open square)"
+  },
+  {
+   "id": "a2d",
+   "group": "s2",
+   "kind": "diamond",
+   "u": 741,
+   "v": 792,
+   "series": "theta 90 deg (open diamond)"
+  },
+  {
+   "id": "a3c",
+   "group": "s3",
+   "kind": "circle",
+   "u": 907,
+   "v": 697,
+   "series": "theta 15 deg (open circle)"
+  },
+  {
+   "id": "a3s",
+   "group": "s3",
+   "kind": "square",
+   "u": 907,
+   "v": 710,
+   "series": "theta 50 deg (open square)"
+  },
+  {
+   "id": "a3d",
+   "group": "s3",
+   "kind": "diamond",
+   "u": 906,
+   "v": 702,
+   "series": "theta 90 deg (open diamond)"
+  },
+  {
+   "id": "a4c",
+   "group": "s4",
+   "kind": "circle",
+   "u": 1075,
+   "v": 636,
+   "series": "theta 15 deg (open circle)"
+  },
+  {
+   "id": "a4s",
+   "group": "s4",
+   "kind": "square",
+   "u": 1074,
+   "v": 612,
+   "series": "theta 50 deg (open square)"
+  },
+  {
+   "id": "a4d",
+   "group": "s4",
+   "kind": "diamond",
+   "u": 1074,
+   "v": 622,
+   "series": "theta 90 deg (open diamond)"
+  },
+  {
+   "id": "a5c",
+   "group": "s5",
+   "kind": "circle",
+   "u": 1244,
+   "v": 511,
+   "series": "theta 15 deg (open circle)"
+  },
+  {
+   "id": "a5s",
+   "group": "s5",
+   "kind": "square",
+   "u": 1241,
+   "v": 557,
+   "series": "theta 50 deg (open square)"
+  },
+  {
+   "id": "a5d",
+   "group": "s5",
+   "kind": "diamond",
+   "u": 1240,
+   "v": 574,
+   "series": "theta 90 deg (open diamond)"
+  },
+  {
+   "id": "a6c",
+   "group": "s6",
+   "kind": "circle",
+   "u": 1408,
+   "v": 494,
+   "series": "theta 15 deg (open circle)"
+  },
+  {
+   "id": "a6s",
+   "group": "s6",
+   "kind": "square",
+   "u": 1408,
+   "v": 490,
+   "series": "theta 50 deg (open square)"
+  },
+  {
+   "id": "a6d",
+   "group": "s6",
+   "kind": "diamond",
+   "u": 1408,
+   "v": 515,
+   "series": "theta 90 deg (open diamond)"
+  }
+ ],
+ "overlay_box": [
+  520,
+  330,
+  1500,
+  930
+ ]
+}
