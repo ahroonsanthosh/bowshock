@@ -292,6 +292,9 @@ function frictionCds(config: FinnedBody, conditions: FlightConditions, s: Fricti
 }
 
 function refusalOf(component: string, e: unknown): ComponentRefusal {
+  if (e instanceof BaseRefusal && e.atBase !== undefined) {
+    return { component, reason: e.reason, message: e.message, atBase: e.atBase };
+  }
   if (e instanceof BaseRefusal || e instanceof FinRefusal) {
     return { component, reason: e.reason, message: e.message };
   }

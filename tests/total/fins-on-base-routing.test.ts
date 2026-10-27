@@ -29,6 +29,7 @@ import { doubleWedge, flatPlate, singleWedge, type SymmetricSection } from '../.
 import { baseFinsOf, finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents } from '../../src/total/total-drag';
+import { refusalWords } from '../../src/app/status-words';
 import { BASIC_FINNER_GEOMETRY as G, BASIC_FINNER_SHOTS } from '../../src/validation/basic-finner';
 
 const near = (section: SymmetricSection, tanLe = 0, tanTe = 0) => ({
@@ -590,6 +591,90 @@ describe('fins a root chord or more ahead of the base: the plain curve withdrawn
       const r = base(mach, fins({ nearBase: near(doubleWedge(0.08)) }));
       expect(r.finsOnBase, `M ${mach}`).toBeDefined();
     }
+  });
+});
+
+describe('a refusal ahead of the base carries the same fins refused at the base (the review of b323511, finding 1)', () => {
+  // Fins of root chord 2.0 body diameters (body diameter 1) ending half a chord ahead of the base, at M 1.8.
+  const rocket = (
+    count: number,
+    section: SymmetricSection,
+    leadingEdgeSweepDeg: number,
+  ): FinnedBody => ({
+    body: { nose: { shape: { kind: 'conical' }, length: 2, baseRadius: 0.5 }, cylinderLength: 8 },
+    afterbody: 'cylinder',
+    fins: {
+      count,
+      planform: trapezoidalPlanform({
+        rootChord: 2,
+        span: 1,
+        leadingEdgeSweep: (leadingEdgeSweepDeg * Math.PI) / 180,
+        trailingEdgeSweep: 0,
+      }),
+      section,
+      sectionFamily: 'other',
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: 1,
+    },
+  });
+  const baseRefusal = (c: FinnedBody) =>
+    finnedBodyComponents(
+      c,
+      { mach: 1.8, temperature: 290, reynoldsPerLength: 1.5e6 },
+      exactConeNoseWaveDrag(1.8, Math.atan(0.25)),
+    ).refusals.find((r) => r.component === 'body base')!;
+
+  it("the review's case: three 5% double wedges, clipped delta, leading edge 34.2 deg, x/c 0.5, M 1.8: position and sweep named", () => {
+    const r = baseRefusal(rocket(3, doubleWedge(0.05), 34.2));
+    expect(r.reason).toBe('fins-near-base');
+    expect(r.message).toContain("the fins' root chord is 2.00 body diameters");
+    expect(r.atBase?.reason).toBe('fin-sweep');
+    expect(r.message).toContain('; at the base the same fins are refused too: ');
+    const words = refusalWords(r);
+    expect(words.reason).toMatch(/^fins ending ahead of the base: /);
+    expect(words.reason).toContain(
+      '; and with the fins at the base, with fins at the base, the base drag is measured with unswept fins only',
+    );
+    expect(words.change).toBe(
+      "the fins' trailing edges at the base, and unswept fins of constant chord",
+    );
+  });
+
+  it('where the same fins are served at the base, the position alone is named', () => {
+    // Four unswept 8% double wedges: at the base the present factor serves them at M 1.8.
+    const served = rocket(4, doubleWedge(0.08), 0);
+    const atBase: FinnedBody = { ...served, fins: { ...served.fins, trailingEdgeAheadOfBase: 0 } };
+    expect(
+      finnedBodyComponents(
+        atBase,
+        { mach: 1.8, temperature: 290, reynoldsPerLength: 1.5e6 },
+        exactConeNoseWaveDrag(1.8, Math.atan(0.25)),
+      ).base?.finsOnBaseSource,
+    ).toBe('present');
+    const r = baseRefusal(served);
+    expect(r.reason).toBe('fins-near-base');
+    expect(r.atBase).toBeUndefined();
+    expect('atBase' in r).toBe(false);
+    expect(r.message).not.toContain('at the base the same fins are refused too');
+    expect(refusalWords(r).change).toBe("the fins' trailing edges at the base");
+  });
+
+  it('more than a chord ahead too, and for a blunt trailing edge ahead of the base', () => {
+    const far = rocket(3, doubleWedge(0.05), 34.2);
+    const farther: FinnedBody = { ...far, fins: { ...far.fins, trailingEdgeAheadOfBase: 3 } };
+    const r = baseRefusal(farther);
+    expect(r.message.startsWith(MORE_THAN_A_CHORD_AHEAD)).toBe(true);
+    expect(r.atBase?.reason).toBe('fin-sweep');
+    // Five wedges thickening to a blunt trailing edge: refused for the trailing edge, and at the base for
+    // their count, which comes first there.
+    const five = rocket(5, singleWedge(0.08), 0);
+    const b = baseRefusal(five);
+    expect(b.reason).toBe('fin-trailing-edge');
+    expect(b.message.startsWith(BLUNT_AHEAD_OF_BASE)).toBe(true);
+    expect(b.atBase?.reason).toBe('fin-count');
+    expect(refusalWords(b).change).toBe(
+      'sharp trailing edges, with the fins ending at the base, and four fins',
+    );
   });
 });
 

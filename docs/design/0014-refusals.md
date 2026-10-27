@@ -2113,18 +2113,33 @@ that the increment is nearly zero a chord fore or aft.
   rounded plate near the base no longer leads into another refusal; and
   every piece of advice to move fins "a root chord or more ahead of the
   base" is removed, since that position is now refused.
-- _How the words keep off another refusal, in the code (written with it;
-  nothing more is served):_ ahead of the base the position is checked
-  before the fins' section, sweep, count or thickness, so no refusal of
-  those is named where every section would still be refused. A blunt
-  trailing edge that the faces widen or narrow to (the Basic Finner's
-  wedges), which the rebuilt factor refuses at every position, is
-  refused ahead of the base in words of its own, near the base and not
-  "at this speed", and its change is sharp trailing edges at the base.
-  More than a chord ahead, a plate's rounded trailing edge or such a
-  blunt one is named beside the position, and the change named is a
-  trailing edge served at the base. A change named never moves the fins
-  further ahead.
+- _How the refusals carry every reason, in the code (nothing more is
+  served; heading and text corrected after the review of b323511, whose
+  finding 1 showed the first wording promised more than the code did):_
+  ahead of the base the position is checked before the fins' section,
+  sweep, count or thickness, so no refusal of those is named where every
+  section would still be refused. A blunt trailing edge that the faces
+  widen or narrow to (the Basic Finner's wedges), which the rebuilt factor
+  refuses at every position, is refused ahead of the base in words of its
+  own, near the base and not "at this speed"; its words say that at the
+  base four unswept wedges like the Basic Finner's are measured from Mach
+  1.8, and its change is sharp trailing edges at the base. More than a
+  chord ahead, a plate's rounded trailing edge or such a blunt one is
+  named beside the position. Where fins ahead of the base are refused for
+  their position or for such a trailing edge, the words send the
+  rocketeer to the base, so the same fins are run at the base: refused
+  there for another reason, that refusal is carried with the first, in
+  its message and in its words, which name both and give both changes
+  (or none, where nothing about the rocket changes the second); served
+  there, the first reason alone is named. The review's case, three 5%
+  double wedges on a clipped delta with the leading edge swept 34.2 deg,
+  the trailing edge unswept, a root chord of 2.0 diameters, x/c 0.5, Mach
+  1.8, was refused for its position and told to move the fins to the
+  base, where they are refused again for their sweep; its words now name
+  both. What is run at the base is the same fins, not the fins as the
+  change would make them, so a refusal the changed fins alone would meet
+  (sharp edges swept beyond the data, say, in place of the blunt ones) is
+  not named. A change named never moves the fins further ahead.
 - _What it cost (the same 2000 rockets, `docs/research/refusals/`):_ on
   the merged head (main at 5921198 merged at 1ec9df1, whose audit counts
   the Von Karman noses the page serves), 155 of 8000 cases serve a total

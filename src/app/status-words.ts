@@ -285,7 +285,8 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
             reason:
               'with fins near the base, the base drag is measured only for fins with square or sharp ' +
               'trailing edges, not for a blunt one that the faces widen or narrow to (as the Basic ' +
-              "Finner's wedges)",
+              "Finner's wedges); at the base, four unswept wedges like the Basic Finner's are " +
+              'measured from Mach 1.8',
             change: 'sharp trailing edges, with the fins ending at the base',
           }
         : {
@@ -434,8 +435,27 @@ const PAGE_WORDS: Readonly<Record<'not-computed' | 'not-verified', Worded>> = {
 const isKey = <K extends string>(table: Readonly<Record<K, unknown>>, key: string): key is K =>
   Object.prototype.hasOwnProperty.call(table, key);
 
-/** A refusal of the logic in plain words (any reason it does not know: its message). */
+/**
+ * A refusal of the logic in plain words (any reason it does not know: its message). A body base refused for
+ * the fins' place ahead of it that carries the same fins' refusal at the base names both, and its change is
+ * both changes, or nothing where nothing about the rocket changes the second (the review of b323511).
+ */
 export function refusalWords(r: ComponentRefusal): PlainReason {
+  const own = ownWords(r);
+  if (r.atBase === undefined) return own;
+  const at = ownWords({
+    component: r.component,
+    reason: r.atBase.reason,
+    message: r.atBase.message,
+  });
+  return {
+    reason: `${own.reason}; and with the fins at the base, ${at.reason}`,
+    change:
+      own.change === NOTHING || at.change === NOTHING ? NOTHING : `${own.change}, and ${at.change}`,
+  };
+}
+
+function ownWords(r: ComponentRefusal): PlainReason {
   if (r.component === 'flight condition') return { reason: r.message, change: 'see the reason' };
   // The fins' place below zero: the fins overhang the base (the only way the builder or an
   // import gives it, since a field that is not a number is never put into the rocket).

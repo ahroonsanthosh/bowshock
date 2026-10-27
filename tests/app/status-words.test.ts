@@ -231,7 +231,8 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       reason:
         'with fins near the base, the base drag is measured only for fins with square or sharp ' +
         'trailing edges, not for a blunt one that the faces widen or narrow to (as the Basic ' +
-        "Finner's wedges)",
+        "Finner's wedges); at the base, four unswept wedges like the Basic Finner's are " +
+        'measured from Mach 1.8',
       change: 'sharp trailing edges, with the fins ending at the base',
     });
     expect(blunt.reason).not.toContain('at this speed');
@@ -251,6 +252,35 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     );
     expect(far(BLUNT_EDGE_NOTE).reason).toMatch(/, and only for square or sharp trailing edges$/);
     expect(far('').reason).not.toContain('trailing edges');
+  });
+
+  it("a refusal ahead of the base carrying the same fins' refusal at the base: both named, both changes", () => {
+    // The review of b323511, finding 1: the words must carry every reason.
+    const position = {
+      component: 'body base',
+      reason: 'fins-near-base',
+      message: 'fins ending 0.5 root chords ahead of the base at Mach 1.8: ...',
+    };
+    const alone = refusalWords(position);
+    const both = refusalWords({
+      ...position,
+      atBase: { reason: 'fin-sweep', message: 'swept fins at the base ...' },
+    });
+    expect(both.reason).toBe(
+      `${alone.reason}; and with the fins at the base, with fins at the base, the base drag is ` +
+        'measured with unswept fins only (a tapered fin has a swept edge)',
+    );
+    expect(both.change).toBe(
+      "the fins' trailing edges at the base, and unswept fins of constant chord",
+    );
+    // Where nothing about the rocket changes the reason at the base, no change is offered.
+    const speed = refusalWords({
+      ...position,
+      atBase: { reason: 'mach-range', message: 'outside the Mach numbers measured' },
+    });
+    expect(speed.change).toBe('');
+    // Without one, the position's words alone.
+    expect(alone.change).toBe("the fins' trailing edges at the base");
   });
 
   it('no advice moves the fins a chord or more ahead of the base (refused there since 2026-10-27)', () => {

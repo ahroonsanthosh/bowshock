@@ -40,12 +40,25 @@ export type BaseRefusalReason =
   /** A geometric input out of range. */
   | 'input';
 
+/** The refusal of the same fins at the base, carried by a refusal of their position ahead of it. */
+export interface AtBaseRefusal {
+  readonly reason: BaseRefusalReason;
+  readonly message: string;
+}
+
 export class BaseRefusal extends RangeError {
   readonly reason: BaseRefusalReason;
+  /**
+   * Where the fins' position ahead of the base is refused: the same fins at the base, refused too for another
+   * reason, so that the words carry every reason and never send the rocketeer to a refusal unnamed (the
+   * review of b323511, its finding 1). Undefined where the same fins are served at the base.
+   */
+  readonly atBase: AtBaseRefusal | undefined;
 
-  constructor(reason: BaseRefusalReason, message: string) {
+  constructor(reason: BaseRefusalReason, message: string, atBase?: AtBaseRefusal) {
     super(message);
     this.name = 'BaseRefusal';
     this.reason = reason;
+    this.atBase = atBase;
   }
 }

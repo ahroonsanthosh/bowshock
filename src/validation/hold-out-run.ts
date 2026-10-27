@@ -164,7 +164,11 @@ export function rebuiltBodyBase(
 }
 
 function refusalOf(component: string, e: unknown): ComponentRefusal {
-  if (e instanceof BaseRefusal) return { component, reason: e.reason, message: e.message };
+  if (e instanceof BaseRefusal) {
+    return e.atBase === undefined
+      ? { component, reason: e.reason, message: e.message }
+      : { component, reason: e.reason, message: e.message, atBase: e.atBase };
+  }
   throw e;
 }
 

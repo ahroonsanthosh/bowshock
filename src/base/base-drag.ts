@@ -297,6 +297,25 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
           "steps where W2's 1.065 ends (0015 section 11.2)",
       };
     };
+    // Where fins ahead of the base are refused for their position, or for a trailing edge nothing measures
+    // there, the words send the rocketeer to the base; so the same fins are run at the base. Refused there too
+    // for another reason, that reason is carried beside this one, in the message and for the words, so the
+    // words name both; served there, this reason alone is named (the review of b323511, its finding 1).
+    const withAtBase = (refusal: BaseRefusal): BaseRefusal => {
+      let at: BaseRefusal | undefined;
+      try {
+        bodyBaseDrag({ ...input, fins: { ...fins, trailingEdgeAheadOfBase: 0 } });
+      } catch (e) {
+        if (!(e instanceof BaseRefusal)) throw e;
+        at = e;
+      }
+      if (at === undefined || at.reason === refusal.reason) return refusal;
+      return new BaseRefusal(
+        refusal.reason,
+        `${refusal.message}; at the base the same fins are refused too: ${at.message}`,
+        { reason: at.reason, message: at.message },
+      );
+    };
     // A trailing edge that nothing measures ahead of the base (0015 section 4): a plate's rounded one, or a
     // blunt one that the faces widen or narrow to.
     const edgeNote = (): string => {
@@ -311,7 +330,7 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
       // is refused (0015 sections 3.3 and 4).
       if (near === undefined && fins.flatFaced === true) {
         const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
-        throw new BaseRefusal(
+        const refusal = new BaseRefusal(
           'fin-trailing-edge',
           x > 0
             ? `${ROUNDED_PLATE_AHEAD_OF_BASE} ${x} root chords ahead of the base: the rebuilt factor's ` +
@@ -324,12 +343,13 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
                 'flat-plate value covers square trailing edges only: a rounded trailing edge has no ' +
                 'measurement at or near the base (0015 section 4)',
         );
+        throw x > 0 ? withAtBase(refusal) : refusal;
       }
       // A blunt trailing edge that the faces widen or narrow to has no measurement ahead of the base: refused
       // for it, as the rounded plate above, its position named too where that is refused (0015 section 4).
       if (x > 0 && edgeNote() === BLUNT_EDGE_NOTE) {
         const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
-        throw new BaseRefusal(
+        const refusal = new BaseRefusal(
           'fin-trailing-edge',
           `${BLUNT_AHEAD_OF_BASE} ${Number(x.toPrecision(3))} root chords ahead of the base: no ` +
             "band-setting source measures such a trailing edge's effect on the body base ahead of it, " +
@@ -338,12 +358,13 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
               ? `; its position is refused too: ${position.join('; and ')} (0015 section 3.3)`
               : ''),
         );
+        throw withAtBase(refusal);
       }
       // Then the position: where TN 2360 measured none, no section serves the fins, so it is named before
       // any refusal of their section, sweep, count or thickness, whose words would lead to a change still
       // refused there (0014 section 10.7 (ad), 2026-10-27; 0015 section 3.3).
       const position = nearBasePositionRefusal(mach, x, fins.rootChordOverDiameter);
-      if (position !== undefined) throw position;
+      if (position !== undefined) throw withAtBase(position);
       if (near === undefined) {
         throw (
           presentRefusal ??
@@ -433,13 +454,15 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
     } else {
       // More than a root chord ahead nothing is measured; the plain curve served here until 2026-10-27 is
       // withdrawn (0014 section 10.7 (ad); 0015 section 3.3).
-      throw new BaseRefusal(
-        'fins-near-base',
-        `${MORE_THAN_A_CHORD_AHEAD} (${Number(x.toPrecision(3))} root chords): nothing measures the ` +
-          'base drag with fins that far ahead (TN 2360 measures up to one chord ahead, with a root chord ' +
-          'of 1.5 body diameters, at Mach 1.5 and 2.0), so they are refused; until 2026-10-27 they took ' +
-          "the plain curve, whose band missed TN 2360's measurement a chord ahead (0015 section 3.3)" +
-          edgeNote(),
+      throw withAtBase(
+        new BaseRefusal(
+          'fins-near-base',
+          `${MORE_THAN_A_CHORD_AHEAD} (${Number(x.toPrecision(3))} root chords): nothing measures the ` +
+            'base drag with fins that far ahead (TN 2360 measures up to one chord ahead, with a root chord ' +
+            'of 1.5 body diameters, at Mach 1.5 and 2.0), so they are refused; until 2026-10-27 they took ' +
+            "the plain curve, whose band missed TN 2360's measurement a chord ahead (0015 section 3.3)" +
+            edgeNote(),
+        ),
       );
     }
   }
