@@ -715,6 +715,12 @@ export const W1_RELIEF_MEASURED_FROM = Math.min(...L52J21A_FIG38C.map((p) => p.m
 export const W1_FLAT_UNDER_45_MARK = 'more than 0 and under 45 deg, below M 1.62';
 
 /**
+ * A phrase only the refusal of flat-faced fins swept beyond 60 deg below M 1.62 carries (the second ruling of
+ * 2026-10-27, 0014 section 10.7 (z)); the page's words for it key on this.
+ */
+export const W1_FLAT_BEYOND_60_MARK = 'beyond 60 deg, below M 1.62';
+
+/**
  * The zero member at M: from M 1.62 down to RM L52J21a's relief (W1_RELIEF_LOW), measured at 1.62 to 2.41 and
  * carried to 3.0; below 1.62 down to RM L52E06's relief with flat plates at the base (W1_FLAT_RELIEF_LOW),
  * measured at M 1.05 to 1.10 and carried over 1.0 to 1.62.
@@ -864,6 +870,24 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         "which way a lighter sweep's stronger juncture vortex moves the relief is not shown, so these fins " +
         'are not shown to lie between the unswept plate and the 45 deg ones (0015 section 12; 0014 ' +
         'section 10.7 (z), the note of 2026-10-27)',
+    );
+  }
+  // The second ruling of 2026-10-27 (the same note): beyond 60 deg the plate lies past the last sweep measured,
+  // not between two measured ends, and (2)'s direction is not shown, so below M 1.62 its ordering is not shown
+  // either. Exactly 60 deg, and 45 to 60, stay as section 4 serves them; from M 1.62 served, as under 45 deg.
+  if (
+    plateAnyLeadingEdgeSweep &&
+    le > W1_SWEPT_RANGE[1] + 1e-9 &&
+    mach < W1_RELIEF_MEASURED_FROM - 1e-12
+  ) {
+    throw new BaseRefusal(
+      'fin-sweep',
+      `flat-faced fins with the leading edge swept ${deg(le)} deg and the trailing edge unswept at M ` +
+        `${mach}, ${W1_FLAT_BEYOND_60_MARK}: no base pressure is measured with fins swept beyond 60 deg ` +
+        "at the base there (no fin of any section is measured at the base swept beyond the RM-10's 60 " +
+        "deg); the floor is RM L52E06's relief with plates swept 45 deg alone, these fins lie past the " +
+        "last sweep measured, and which way a sharper sweep's weaker juncture vortex moves the relief is " +
+        'not shown (0015 section 12; 0014 section 10.7 (z), the note of 2026-10-27)',
     );
   }
   if (swept && !bounded && mach < W1_MACH_RANGE[0] - 1e-12) {

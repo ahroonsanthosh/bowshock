@@ -176,7 +176,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     });
   });
 
-  it("the fin-sweep words are 0017's rows: flat fins with a square, unswept trailing edge at any leading-edge sweep from Mach 1.62 (0015 section 12), and the narrowing below it (0014 10.7 (z))", () => {
+  it("the fin-sweep words are 0017's rows: flat fins with a square, unswept trailing edge at any leading-edge sweep from Mach 1.62 (0015 section 12), and the narrowings below it, under 45 and beyond 60 deg (0014 10.7 (z))", () => {
     const rows = readFileSync(
       new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
       'utf8',
@@ -201,28 +201,45 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(change).toBe(words.change);
     expect(words.reason).toContain(
       'flat fins with a square, unswept trailing edge are taken at any leading-edge sweep, but ' +
-        'below Mach 1.62 only unswept or swept 45 deg or more',
+        'below Mach 1.62 only unswept or swept 45 to 60 deg',
     );
-    // The library's own refusal of a flat plate swept 20 deg at Mach 1.55 takes the narrowing's words.
-    let message = '';
-    try {
-      finsOnBaseFactorW1(1.55, {
-        count: 3,
-        section: { x: [0, 0.1, 1], halfThickness: [0, 0.012, 0.012], bluntTrailingEdge: true },
-        sectionFamily: 'other',
-        tanLeadingEdgeSweep: Math.tan((20 * Math.PI) / 180),
-        tanTrailingEdgeSweep: 0,
-        trailingEdgeAheadOfBase: 0,
-      });
-    } catch (e) {
-      message = (e as Error).message;
-    }
-    const narrowed = refusalWords({ component: 'body base', reason: 'fin-sweep', message });
-    const [, nReason, nChange] = row('`fin-sweep` (flat fins swept under 45 deg, below Mach 1.62)');
-    expect(nReason).toBe(`${narrowed.reason} (0014 10.7 (z), the note of 2026-10-27)`);
-    expect(nChange).toBe(narrowed.change);
-    expect(narrowed.reason).toContain('measured only with fins swept 45 deg');
-    expect(narrowed.reason).not.toBe(words.reason);
+    // The library's own refusals of flat plates swept 20 and 70 deg at Mach 1.55 take the narrowing's words.
+    const messageAt = (deg: number) => {
+      try {
+        finsOnBaseFactorW1(1.55, {
+          count: 3,
+          section: { x: [0, 0.1, 1], halfThickness: [0, 0.012, 0.012], bluntTrailingEdge: true },
+          sectionFamily: 'other',
+          tanLeadingEdgeSweep: Math.tan((deg * Math.PI) / 180),
+          tanTrailingEdgeSweep: 0,
+          trailingEdgeAheadOfBase: 0,
+        });
+      } catch (e) {
+        return (e as Error).message;
+      }
+      return '';
+    };
+    const under = refusalWords({
+      component: 'body base',
+      reason: 'fin-sweep',
+      message: messageAt(20),
+    });
+    const [, uReason, uChange] = row('`fin-sweep` (flat fins swept under 45 deg, below Mach 1.62)');
+    expect(uReason).toBe(`${under.reason} (0014 10.7 (z), the note of 2026-10-27)`);
+    expect(uChange).toBe(under.change);
+    expect(under.reason).toContain('measured only with fins swept 45 deg');
+    const beyond = refusalWords({
+      component: 'body base',
+      reason: 'fin-sweep',
+      message: messageAt(70),
+    });
+    const [, bReason, bChange] = row(
+      '`fin-sweep` (flat fins swept beyond 60 deg, below Mach 1.62)',
+    );
+    expect(bReason).toBe(`${beyond.reason} (0014 10.7 (z), the note of 2026-10-27)`);
+    expect(bChange).toBe(beyond.change);
+    expect(beyond.reason).toContain('not measured with fins swept beyond 60 deg');
+    expect(new Set([words.reason, under.reason, beyond.reason]).size).toBe(3);
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {

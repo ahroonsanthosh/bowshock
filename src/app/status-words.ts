@@ -13,7 +13,7 @@
  */
 
 import type { BaseRefusalReason } from '../base/refusal';
-import { W1_FLAT_UNDER_45_MARK } from '../base/fins-on-base-w1';
+import { W1_FLAT_BEYOND_60_MARK, W1_FLAT_UNDER_45_MARK } from '../base/fins-on-base-w1';
 import type { FinRefusalReason } from '../fins/refusal';
 import type { ComponentRefusal } from '../total/total-drag';
 import type { RocketDesign } from '../rocket/design';
@@ -248,27 +248,36 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
     change: 'four fins, or fins a root chord or more ahead of the base',
   }),
   'fin-sweep': (r) =>
-    // Flat fins swept more than 0 and under 45 deg below Mach 1.62 (0014 section 10.7 (z), the note of
-    // 2026-10-27): the missing measurement, named.
+    // Flat fins swept more than 0 and under 45 deg, or beyond 60 deg, below Mach 1.62 (0014 section 10.7 (z),
+    // the note of 2026-10-27): the missing measurement, named.
     r.message.includes(W1_FLAT_UNDER_45_MARK)
       ? {
           reason:
             'below Mach 1.62 the base drag behind flat fins at the base is measured only with fins ' +
             'swept 45 deg, and nothing measured shows a lighter sweep gives the same',
           change:
-            'flat fins swept 45 deg or more at the leading edge, or unswept ones; or fins a root ' +
-            'chord or more ahead of the base',
+            'flat fins swept 45 to 60 deg at the leading edge, or unswept ones; or fins a root chord ' +
+            'or more ahead of the base',
         }
-      : {
-          reason:
-            'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
-            'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
-            'unswept trailing edge are taken at any leading-edge sweep, but below Mach 1.62 only ' +
-            'unswept or swept 45 deg or more',
-          change:
-            'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 deg ' +
-            'or more); unswept fins of constant chord; or fins a root chord or more ahead of the base',
-        },
+      : r.message.includes(W1_FLAT_BEYOND_60_MARK)
+        ? {
+            reason:
+              'below Mach 1.62 the base drag behind flat fins at the base is not measured with fins ' +
+              'swept beyond 60 deg, and nothing measured shows a sharper sweep gives the same',
+            change:
+              'flat fins swept 45 to 60 deg at the leading edge, or unswept ones; or fins a root chord ' +
+              'or more ahead of the base',
+          }
+        : {
+            reason:
+              'with fins at the base, the base drag behind wedge or bevelled fins is measured only ' +
+              'unswept or at a few sweeps (a tapered fin has a swept edge); flat fins with a square, ' +
+              'unswept trailing edge are taken at any leading-edge sweep, but below Mach 1.62 only ' +
+              'unswept or swept 45 to 60 deg',
+            change:
+              'flat fins with a square, unswept trailing edge (below Mach 1.62, unswept or swept 45 to ' +
+              '60 deg); unswept fins of constant chord; or fins a root chord or more ahead of the base',
+          },
   'fin-trailing-edge': () => ({
     reason:
       'at this speed, the base drag with fins at the base is measured only for flat fins with ' +
