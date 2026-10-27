@@ -2101,7 +2101,7 @@ that the increment is nearly zero a chord fore or aft.
   because nothing measures it, and the words say so plainly. The plain
   curve of 0010 section 1.4 is withdrawn (its text stays as written, with
   a dated note). Expected cost, about 15 totals; the exact count is
-  recorded below from the population run.
+  recorded below from the population run (15).
 - _Also recorded (the review's N3), for the owner, with no rule added
   now:_ TN 2360's fins are rectangular, of aspect ratio 2.33 (its
   summary), and neither span nor taper is constrained by the chord rule:
@@ -2124,6 +2124,21 @@ that the increment is nearly zero a chord fore or aft.
   blunt one is named beside the position, and the change named is a
   trailing edge served at the base. A change named never moves the fins
   further ahead.
+- _What it cost (the same 2000 rockets, `docs/research/refusals/out/impact.out`
+  run before, as committed at f8f7c71, and after, on the code at ef3fc52):_ 150 of
+  8000 cases served a total before and 135 after, 15 fewer: 47 to 40 at
+  Mach 1.5 to 1.8 and 103 to 95 at 1.8 to 3.0, none below 1.5 before or
+  after. They are the 15 the review counted on the 81 rockets with fins a
+  chord or more ahead; no total is gained. The variants move alike
+  (altitude 0 km 152 to 137, 20 km 127 to 114, the lenient tip 270 to
+  249). The position refusal now covers every position ahead of the base
+  that TN 2360 does not measure: 23.8% of the cases at Mach 1.0 to 1.2
+  and 1.2 to 1.5, 23.6% at 1.5 to 1.8 and 23.7% at 1.8 to 3.0 (6.0%,
+  6.0%, 7.4% and 12.6% before), the sole blocker of a total in 0.43%
+  (0.15%). The rebuilt factor's sweep and section refusals fall (sweep
+  43.4% to 32.7% over all bands, steep bevels 6.0% to 4.3%) because ahead
+  of the base the position is now named first. The cross-check against
+  `src/total` agrees on all 1200 cases checked.
 
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that

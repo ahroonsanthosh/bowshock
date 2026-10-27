@@ -1280,6 +1280,20 @@ position refusal is 6.0% of the cases at Mach 1.0 to 1.2 and 1.2 to 1.5
 (153 on main), 47 at Mach 1.5 to 1.8 (49) and 103 at 1.8 to 3.0 (104),
 none below 1.5. The cross-check agrees on all 1200 cases.
 
+**Fins a chord or more ahead: the plain curve withdrawn (2026-10-27;
+section 3.3, 0014 section 10.7 (ad), its amendment of that date):** run
+before (`out/impact.out` as committed at f8f7c71) and after (the code at ef3fc52), the
+same 2000 rockets. 150 of 8000 cases served a total before, 135 after: 47
+to 40 at Mach 1.5 to 1.8 and 103 to 95 at 1.8 to 3.0, none below 1.5.
+The 15 lost are the totals the 81 rockets with fins a chord or more ahead
+carried on the plain curve; none is gained. The position refusal, now
+every position ahead of the base TN 2360 does not measure, is 23.8%,
+23.8%, 23.6% and 23.7% of the four bands' cases (6.0%, 6.0%, 7.4% and
+12.6% before), the sole blocker of a total in 0.43% (0.15%). Ahead of the
+base the position is now named before the section, so the rebuilt
+factor's sweep and section refusals fall on cases still refused for the
+position. The cross-check agrees on all 1200 cases.
+
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in
 12.2%, 20.4%, 31.4% and 45.8% of the four bands, from 0%, 0%, 31.4% and
@@ -1289,20 +1303,29 @@ own-drag guard; with it, 0% below Mach 1.5 until W7's fin terms), against
 0014's projection of 16.3% and 17.1% with every base refusal lifted;
 totals at Mach 1.0 to 1.2 stay 0% until W7.
 
-The rebuilt factor's own refusals, as a share of each band's cases (now):
+The rebuilt factor's own refusals, as a share of each band's cases (now,
+since 2026-10-27; ahead of the base the position is named first, so the
+sweep and section rows count fewer cases than before, which were 55.0%,
+55.0%, 45.1% and 18.5%, and 2.3%, 2.3%, 6.5% and 13.0%):
 
-| Refusal (rebuilt factor)                                                                                         | 1.0 to 1.2 | 1.2 to 1.5 | 1.5 to 1.8 | 1.8 to 3.0 |
-| ---------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ---------- | ---------- |
-| sweep not measured (below M 1.5 every swept sharp section; a swept trailing edge on a sharp section at the base) | 55.0%      | 55.0%      | 45.0%      | 18.4%      |
-| rounded or diverging blunt trailing edge                                                                         | 14.8%      | 14.8%      | 14.8%      | 14.8%      |
-| section outside the 10% arc (steep bevels)                                                                       | 2.3%       | 2.3%       | 6.5%       | 13.0%      |
-| fins within a chord of the base: below M 1.5, above 2.0, or another root chord (since the review of 2026-10-26)  | 6.0%       | 6.0%       | 7.4%       | 12.6%      |
-| fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2)                               | 0%         | 0%         | 0%         | 0%         |
-| fewer than two or more than four fins                                                                            | 0%         | 0%         | 0%         | 0%         |
+| Refusal (rebuilt factor)                                                                                                                              | 1.0 to 1.2 | 1.2 to 1.5 | 1.5 to 1.8 | 1.8 to 3.0 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ---------- | ---------- |
+| sweep not measured (below M 1.5 every swept sharp section; a swept trailing edge on a sharp section at the base)                                      | 41.3%      | 41.3%      | 34.1%      | 14.1%      |
+| rounded or diverging blunt trailing edge                                                                                                              | 15.5%      | 15.5%      | 15.5%      | 15.5%      |
+| section outside the 10% arc (steep bevels)                                                                                                            | 1.6%       | 1.6%       | 4.5%       | 9.6%       |
+| fins ahead of the base where TN 2360 does not measure them (below M 1.5, above 2.0, another root chord, or more than a chord ahead; since 2026-10-27) | 23.8%      | 23.8%      | 23.6%      | 23.7%      |
+| fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2)                                                                    | 0%         | 0%         | 0%         | 0%         |
+| fewer than two or more than four fins                                                                                                                 | 0%         | 0%         | 0%         | 0%         |
 
-(Sweep is checked before position: the moderate sweeps served now at Mach
-2.0 to 3.0 that end ahead of the base move from the first row to the
-fourth.) The decomposition agrees with `src/total` on all 1200 cases the
+(Until 2026-10-27 sweep was checked before position, and the moderate
+sweeps served at Mach 2.0 to 3.0 that end ahead of the base moved from
+the first row to the fourth. Since then, ahead of the base, the position
+is checked first, so a case ahead of the base that TN 2360 does not
+measure is in the fourth row whatever its sweep or section, unless its
+trailing edge is rounded or a blunt one the faces widen or narrow to,
+which is named first (second row); the rounded trailing edges a chord or
+more ahead, asked of the library since that date, add 0.7% to the
+second.) The decomposition agrees with `src/total` on all 1200 cases the
 library can represent (`impact.out`, cross-check). The flat plates'
 bounded value is in 80 of the 159 totals served (above); this record said
 before that it changed no total, which stopped being true when main's fin

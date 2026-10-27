@@ -93,7 +93,7 @@ export const REASONS = {
   // Body base.
   baseMach: 'base: Mach outside 1.0 to 3.0 (below 1.5: W2, 0015 section 11)',
   boatTail: 'base: boat-tail',
-  finsNearBase: 'base: fins ending within a chord of the base, below Mach 1.5 or above 2.0, or with a root chord other than 1.5 body diameters (0014 section 10.7 (ad))',
+  finsNearBase: 'base: fins ending ahead of the base where TN 2360 does not measure them (below Mach 1.5 or above 2.0, another root chord than 1.5 body diameters, or more than a chord ahead; 0014 section 10.7 (ad))',
   finsAtBaseCount: 'base: fins at the base, not four',
   finsAtBaseThickness: 'base: fins at the base, t/c outside 0.05 to 0.10 (since 0016 section 18 above 0.10 only)',
   finsAtBaseSwept: 'base: fins at the base, a swept leading or trailing edge (factor measured on unswept fins; 2026-10-21)',
@@ -280,7 +280,7 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
   if (!(mach >= 1.0 && mach <= 3.0)) out.push('baseMach');
   if (r.boatTail) out.push('boatTail');
   const x = r.trailingEdgeAheadChords;
-  if (x >= 0 && x < 1 && mach >= 1.0 && mach <= 3.0) {
+  if (x >= 0 && mach >= 1.0 && mach <= 3.0) {
     const k = finsOnBaseReason(r, mach);
     if (k !== undefined) out.push(k);
   }
