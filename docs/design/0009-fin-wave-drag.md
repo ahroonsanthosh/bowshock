@@ -411,25 +411,41 @@ first corner's fan meeting the straight shock at P and descending at the
 steepest angle the surface's states allow; everything the fan reflects
 lands at x_1 or behind it, and every later reflection (off the surface,
 off the shock again) lands further behind. If every face from x_1 to the
-trailing edge is flat (its rise zero), the faces with slope all lie ahead
-of x_1, their pressures are shock-expansion's exactly, and the drag is
-exact. The bound's own caveat stands as in section 2.1: it neglects the
-change the reflected waves make to the states they cross; so does the
-exactness it already claimed for the double wedges.
+trailing edge is flat (its rise zero), the faces with slope all lie
+ahead of x_1, their pressures are shock-expansion's exactly, and the
+drag is exact. The bound's own caveat stands as in section 2.1: it
+neglects the change the reflected waves make to the states they cross;
+so does the exactness it already claimed for the double wedges. For the
+wedge followed by a flat (below) the verdict does not use the bound at
+all: its one face with slope ends at its one corner, and every reflected
+wave starts in that corner's fan, so it lands behind the corner wherever
+the bound puts x_1; the bound, and its caveat, decide only sections with
+a face with slope behind the first corner, hexagons and double wedges.
 
 **What this reaches.** A wedge followed by a flat to a square trailing
 edge (the plate bevelled at the leading edge only, `bevel-le-square-te`
 in 0014's population): its one corner's fan reflects onto the flat, and
 nothing with slope lies behind. Its faces' drag is the front wedge's
 alone, exact. Its base is a separate term at the free-stream Mach number
-(0010 section 5.1), which never used the local state ahead of the edge,
-so the reflected waves change nothing it uses. A hexagon is not reached
-by this section: its rear bevel has slope and lies behind x_1, and
-whether the fan's later waves, or the second landing after a reflection
-off the flat, reach it is not bounded here (section 7 keeps it open; the
-earlier Euler check of section 2.4 is not a band). A double wedge is
-reached only where the bound already clears the chord. Sections with a
-compression corner stay refused as before.
+(0010 section 5.1), which does not use the state on the flat ahead of
+the edge. That state is not the stream's: behind the bevel's shock and
+the shoulder's expansion the flat carries a Mach number a little lower
+and a pressure up to 1.3% higher, which on the term's own
+two-dimensional base-pressure curve gives a base term 0.2% to 2.1%
+smaller (less base drag), and the reflected waves change it by at most
+0.7% of its value (back toward the free stream's value at M 1.5 to 2.0,
+further below it at 3.0), so the term at the free-stream Mach number is
+at most 2.1% above the local one, inside its band of 0.93 to 1.21
+(bevels of 8 to 15 deg, M 1.5 to 3.0; A2's review of 2026-10-27, by
+shock-expansion theory with the reflected waves' turning integrated
+along the shock, a check outside the repository, re-run for this
+record). A hexagon is not reached by this section: its rear bevel has
+slope and lies behind x_1, and whether the fan's later waves, or the
+second landing after a reflection off the flat, reach it is not bounded
+here (section 7 keeps it open; the earlier Euler check of section 2.4 is
+not a band). A double wedge is reached only where the bound already
+clears the chord. Sections with a compression corner stay refused as
+before.
 
 **In the code.** `solveSurface` records the end of the last face with
 slope (`lastSlopedFaceEnd`); `exactSectionDrag` takes a surface as exact
@@ -471,19 +487,20 @@ one input added, and the nose assumed served, they would go from 145 to
 served", printed since A1's review of 2026-10-26). What still refuses
 (`out/2026-10-26-a2-reflected-flat/after/reflected-split.out`, from
 `reflected-split.test.ts`, which re-solves the audit's own cases and
-agrees with its verdict on all 648 sharp sections): of the 139, 133 are
-hexagons whose first reflection lands on the flat ahead of the rear
-bevel, 5 hexagons whose first reflection lands on the rear bevel itself,
-and one double wedge below Mach 1.2. (This record said "127 of the 206
-reflected-wave cases of the plan's count" before the check of
-2026-10-26; neither number is on these cases.) The hexagons wait on a
-bound for the fan's later waves and the second landing, or on the planar
-Euler or characteristics measurement of section 7. At the audit's
-default size (2,000 rockets, 8,000 cases, `out/impact.out` and
-`out/reflected-split.out`): the reflected-wave refusal 14.6% to 10.2% of
-cases (Mach 1.5 to 1.8: 25.9% to 18.0%; 1.8 to 3.0: 29.0% to 20.1%),
-1,172 to 815 (357 wedge-flat plates served; 802 hexagons landing on the
-flat, 9 on the rear bevel, 4 double wedges below Mach 1.2 still
-refused); totals unchanged at 190 (2.4%), 743 with the nose assumed
-served; with the page's section offered too, 748 to 966; the cross-check
-agreeing on all 1,200 cases checked.
+agrees with its verdict on all 648 sharp sections; that agreement checks
+the audit's bookkeeping, not A2, since `evaluate.ts` calls the same
+`exactSectionDrag`): of the 139, 133 are hexagons whose first reflection
+lands on the flat ahead of the rear bevel, 5 hexagons whose first
+reflection lands on the rear bevel itself, and one double wedge below
+Mach 1.2. (This record said "127 of the 206 reflected-wave cases of the
+plan's count" before the check of 2026-10-26; neither number is on these
+cases.) The hexagons wait on a bound for the fan's later waves and the
+second landing, or on the planar Euler or characteristics measurement of
+section 7. At the audit's default size (2,000 rockets, 8,000 cases,
+`out/impact.out` and `out/reflected-split.out`): the reflected-wave
+refusal 14.6% to 10.2% of cases (Mach 1.5 to 1.8: 25.9% to 18.0%; 1.8 to
+3.0: 29.0% to 20.1%), 1,172 to 815 (357 wedge-flat plates served; 802
+hexagons landing on the flat, 9 on the rear bevel, 4 double wedges below
+Mach 1.2 still refused); totals unchanged at 190 (2.4%), 743 with the
+nose assumed served; with the page's section offered too, 748 to 966;
+the cross-check agreeing on all 1,200 cases checked.

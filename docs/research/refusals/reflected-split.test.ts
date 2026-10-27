@@ -4,7 +4,8 @@
  * landing anywhere ahead of the trailing edge), the cases the present rule refuses (one landing ahead of the
  * end of the last face with slope), and, for the hexagons still refused, whether the first landing is on the
  * flat ahead of the rear bevel or on the rear bevel itself. The present count is checked against
- * evaluate.ts's own `sectionReflected` on every case. Writes out/reflected-split.out (or into OUT_DIR).
+ * evaluate.ts's own `sectionReflected` on every case: a check of the bookkeeping, not of 0009 section 8,
+ * since both call the same exactSectionDrag. Writes out/reflected-split.out (or into OUT_DIR).
  *
  *   ONLY=./reflected-split.test.ts nice -n 10 npx vitest run --config docs/research/refusals/vitest.config.ts
  */
