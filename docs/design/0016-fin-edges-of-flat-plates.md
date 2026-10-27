@@ -1940,3 +1940,13 @@ corner, x/r 0.975, at +0.027. P1 holds on the one set that tests it.
 - It shows neither the value nor a planar face.
 - A hobby fin's face Reynolds number, about 5e4 to 3e5, lies below
   every measured one, so hobby fins stay refused.
+
+**Held (2026-10-27).** After this verdict was committed, the
+coordinator's definition of the Reynolds number arrived. It is to be on
+free-stream conditions, on the face height, normal component, with each
+report's basis converted to it. It is pinned in 0014 section 10.7 under
+(af)'s addendum, after the application rather than before it. TM X-19's
+and TN D-5392's numbers are "based on the model (afterbody) diameter" as
+the readers record them; neither reader says on which conditions.
+Square-cut leading edges stay unwired until the coordinator decides
+whether the range above stands.

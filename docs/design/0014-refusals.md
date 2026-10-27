@@ -2126,6 +2126,24 @@ written; where this addendum differs, it governs.
   analogy, and the normal Mach numbers 2.0 to 3.0 stand as (af) wrote
   them.
 
+**2026-10-27: the Reynolds number of (af) addendum (d), defined** (the
+coordinator's definition). It is taken on free-stream conditions, on the
+face height (a fin's thickness, a measured cylinder's diameter), with
+the velocity's component normal to the edge for a swept edge. Each
+report's stated basis is converted to it. _Written after (af) was
+applied:_ the request reached this branch after b0590ba had applied (af)
+and recorded its verdict, so this line does not precede the application,
+as was asked. b0590ba formed the range from three numbers:
+
+- TM X-19's 0.90e6, as both readers give it, "based on model diameter";
+- TN D-5392's 1.88e6, "based on afterbody diameter";
+- RM L57C18's free-stream 14e6 per ft, times its paired face diameters.
+
+Whether TM X-19's and TN D-5392's bases are free-stream conditions is
+not in what either reader records. Whether b0590ba's range stands under
+this definition is the coordinator's to decide. Square-cut leading edges
+stay unwired meanwhile.
+
 **2026-10-27: (af) applied, with its addendum: pass.** The sets were
 read twice, the second blind (370c1c4), and paired by a neutral party
 (eaee32b). Before any value was compared, the pairing found that RM
