@@ -2178,6 +2178,26 @@ rules fixed in its header before it was first run (0016 section 21.6).
     the value, and the planar face's margin an analogy, not tested.
 - No extension below 0.90e6 is made; any is the owner's to agree.
 
+**2026-10-27: (af)'s Reynolds range recomputed; the wiring deferred**
+(the coordinator's ruling on the entries above). The pass stands for the
+premises, criteria (i) to (iii). The range computed before the
+definition was pinned, 0.90e6 to 4.32e6, does not stand.
+
+- _Recomputed under the definition_, a set counting only where the
+  readers' paired records show its basis:
+  - TM X-19 and TN D-5392 do not count: their numbers are "based on" a
+    diameter, on conditions neither reader records;
+  - TN 4300 does not count;
+  - RM L57C18's models C and D count, on its free-stream per-foot value
+    times their paired face diameters.
+- _The range surely measured_ is 3.85e6 to 4.32e6.
+- _Coverage:_ none of the population's 1220 square-cut cases (of 8000)
+  lies in either range; the largest face Reynolds number among them is
+  2.9e5.
+- _Square-cut leading edges stay unwired and refused._ The premises
+  pass, but no hobby-scale fin face lies inside the measured Reynolds
+  range, so wiring is deferred (0016 section 21.6).
+
 **2026-10-27: second addendum to (ab), after the re-review of
 2026-10-27** (the review of 5e47532..ef7fc7d). (ab)'s text and its first
 addendum stand as written; where this one differs, it governs.

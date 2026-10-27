@@ -121,7 +121,7 @@ describe('refusals of flat plates', () => {
   const reasons = (c: FinnedBody, mach: number) =>
     parts(c, mach).refusals.map((x) => `${x.component}: ${x.reason}`);
 
-  it('a square-cut leading edge (its computed check not passed, 0016 section 21.3) and a rounded trailing edge', () => {
+  it('a square-cut leading edge (its computed check not passed; its premises measured only far above a fin, 0016 section 21.6) and a rounded trailing edge', () => {
     expect(reasons(config(flatPlate(0.05, 'square', 'square')), 2.8)).toEqual([
       'fin leading edges: square-leading-edge',
     ]);
@@ -136,7 +136,12 @@ describe('refusals of flat plates', () => {
     );
     expect(s).toMatch(/at Mach 3\.0 with 0\.04, 0\.531 against a change of 0\.134/);
     expect(s).toMatch(/at Mach 3\.0 with 0\.02, 0\.445, below the sonic pressure itself/);
-    expect(s).toMatch(/0014 section 10\.7 \(af\)/);
+    // Measured flat faces bore the premises out, at Reynolds numbers far above a fin's (0016 section 21.6).
+    expect(s).toMatch(
+      /bore out the bounds' premises at every orifice \(0014 section 10\.7\s+\(af\)\)/,
+    );
+    expect(s).toMatch(/of 3\.85 to 4\.32 million/);
+    expect(s).toMatch(/so the edge stays refused \(0016 section\s+21\.6\)$/);
     expect(reasons(config(flatPlate(0.05, 'rounded', 'rounded')), 2.8)).toEqual([
       'fin trailing-edge base: rounded-trailing-edge',
     ]);

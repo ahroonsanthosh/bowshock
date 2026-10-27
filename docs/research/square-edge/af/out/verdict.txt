@@ -97,7 +97,19 @@ REYNOLDS NUMBERS ON THE FACE HEIGHT (addendum (d))
   RM L57C18 model B: none (face diameters differ (A 2.323 derived, B about 2.7 scaled))
   RM L57C18 model F: none (A gives no face diameter)
   TN 4300 models D and A, and fig. 7's comparison series: none (the 14e6 per ft both quote is stated for the heat-transfer data; A records none for the pressure data, B writes it against the fig. 7 points: no per-foot value both give for the pressure tests (fig. 7's 4-in. Unitary series, 2.7e6 per ft, likewise stated for the heat-transfer test; the 3-in. ref. 3 series has none))
-  The range the paired sets measured: 9e+05 to 4.32e+06.
+  The range the paired sets measured, as b0590ba computed it (rule 6): 9e+05 to 4.32e+06.
+
+REYNOLDS NUMBERS UNDER THE PINNED DEFINITION (rule 6b: free-stream conditions, face height, normal component)
+  TM X-19 0.90e6 "based on model diameter": the conditions not recorded by either reader; does not count.
+  TN D-5392 1.88e6 "based on afterbody diameter": the conditions not recorded by either reader; does not count.
+  TN 4300: no per-foot value both readers give for its pressure tests; does not count.
+  RM L57C18 model C: about 14e6 per ft (free stream, both readers) x 3.252 (A) or about 3.3 (B) in.: 3.794e+06 or 3.85e+06
+  RM L57C18 model D: x 3.717 (A) or about 3.7 (B) in.: 4.336e+06 or 4.317e+06
+  RM L57C18 models B and F: their face diameters not paired; do not count.
+  The range surely measured, from the larger of model C's to the smaller of model D's: 3.85e+06 to 4.317e+06.
+  It differs from rule 6's because TM X-19 and TN D-5392, whose numbers set rule 6's lower end, do not
+  count under the definition, and model C's number is now taken at the larger of its two diameters.
+  Both ends rest on RM L57C18's models C and D, whose corners are rounded (0.4 and 0.1 in.), not square.
 
 DISCLOSURES (from the pairing, recorded here; they change no rule above)
   - RM L57C18 fig. 5: neither reading is blind to table II (p. 16, C_p at every orifice): A had its

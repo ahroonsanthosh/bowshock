@@ -1902,7 +1902,7 @@ group. It does not test a planar face's margin.
 and Mach number. The least margin is TM X-19's orifice nearest the
 corner, x/r 0.975, at +0.027. P1 holds on the one set that tests it.
 
-**What is wired, as (af) and its addendum say:**
+**What (af) and its addendum would wire** (deferred: see the end of this section):
 
 - the term of 21.1 unchanged, its band the whole gap between the
   physical bounds; the readings set no band and no nominal;
@@ -1941,12 +1941,50 @@ corner, x/r 0.975, at +0.027. P1 holds on the one set that tests it.
 - A hobby fin's face Reynolds number, about 5e4 to 3e5, lies below
   every measured one, so hobby fins stay refused.
 
-**Held (2026-10-27).** After this verdict was committed, the
-coordinator's definition of the Reynolds number arrived. It is to be on
-free-stream conditions, on the face height, normal component, with each
-report's basis converted to it. It is pinned in 0014 section 10.7 under
-(af)'s addendum, after the application rather than before it. TM X-19's
-and TN D-5392's numbers are "based on the model (afterbody) diameter" as
-the readers record them; neither reader says on which conditions.
-Square-cut leading edges stay unwired until the coordinator decides
-whether the range above stands.
+**The Reynolds range recomputed, and the wiring deferred (2026-10-27).**
+The coordinator's definition of the Reynolds number arrived after this
+verdict was committed. It takes the number on free-stream conditions, on
+the face height, with the normal component on a swept edge, and converts
+each report's basis to it. It is pinned in 0014 section 10.7, under
+(af)'s addendum.
+
+The coordinator's ruling:
+
+- the pass stands for the premises, criteria (i) to (iii), which the
+  definition does not touch;
+- the range above, computed before the definition, does not stand;
+- it is recomputed, a set counting only where the readers' paired
+  records show its number is on that basis or converts exactly to it.
+
+`apply_af.py` (its rule 6b, added after the first run and kept apart from
+the rules fixed before it) gives:
+
+- **TM X-19 and TN D-5392 do not count.** Their numbers are "based on
+  the model (afterbody) diameter", and neither reader records the
+  conditions they are on.
+- **TN 4300 does not count**, as before.
+- **RM L57C18 counts** for models C and D. It gives a free-stream value
+  of about 14e6 per ft, which both readers record. Times the flat face's
+  diameter, which neither reader prints, that is:
+  - model C: 3.79e6 or 3.85e6;
+  - model D: 4.34e6 or 4.32e6;
+  - each pair on A's derived diameter or B's scaled one.
+- **The range surely measured is 3.85e6 to 4.32e6.** It runs from the
+  larger of model C's numbers to the smaller of model D's.
+
+It differs from the 0.90e6 to 4.32e6 above in two ways. The two sets
+that set that range's lower end no longer count. Model C is taken at the
+larger of its two diameters. Both ends now rest on models C and D, whose
+corners are rounded, not square.
+
+**Coverage.** `af/coverage.test.ts` (output `af/out/coverage.out`) uses
+the refusal audit's population, with the same draws as its run. 1220 of
+the 8000 cases have square-cut leading edges, and the largest face
+Reynolds number among them is 2.9e5. None of the 1220 lies inside the
+recomputed range, and none inside the range above either.
+
+**So square-cut leading edges stay unwired, and they stay refused.** The
+premises pass. No hobby-scale fin face lies inside the measured Reynolds
+range, so wiring is deferred and the term is not wired for zero
+coverage. `SQUARE_EDGE_REFUSAL` and the page's words now say so: the bounds' premises are borne out only on flat faces far larger than a model rocket fin's. Extending the range
+downward would be the owner's to agree, and nothing here proposes it.

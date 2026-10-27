@@ -61,6 +61,23 @@ The rules, fixed in this header before the script was first run (the coordinator
    it is computed only from a per-foot value both readers give for the pressure tests times a
    diameter both readers give (geometry_pairs.csv "agree"), the smaller of their two diameters; where
    either is missing, the set does not widen the range.
+
+Added after the first run (b0590ba), and kept apart from the rules above:
+
+6b. The coordinator pinned the Reynolds number's definition after b0590ba (0014 section 10.7, under
+   (af)'s addendum): free-stream conditions, on the face height (a fin's thickness, a cylinder's
+   diameter), the component normal to a swept edge, each report's basis converted to it. Ruling of
+   2026-10-27: criteria (i) to (iii) and the PASS stand; the range is recomputed under the definition,
+   a set counting only where the readers' paired records show its Reynolds number is, or converts
+   exactly to, that basis. Rule 6's range is printed beside it, as b0590ba computed it.
+   - TM X-19 ("based on model diameter") and TN D-5392 ("based on afterbody diameter"): neither reader
+     records the conditions it is on, so neither counts.
+   - RM L57C18: both readers record a free-stream value per foot, about 14e6; times the flat face's
+     diameter, which neither prints (models C and D paired "agree": A derives 3.252 and 3.717 in., B
+     scales about 3.3 and 3.7 in.). The range is taken as surely measured: from the larger of model
+     C's two to the smaller of model D's two. Models B (diameters differ) and F (no diameter from A)
+     do not count.
+   - TN 4300: no per-foot value both readers give for the pressure tests: it does not count.
 """
 
 import csv
@@ -433,7 +450,24 @@ for s, mdl, why in no_reynolds:
     say(f'  {s} {mdl}: none ({why})')
 lo = min(r[2] for r in reynolds)
 hi = max(r[2] for r in reynolds)
-say(f'  The range the paired sets measured: {lo:.3g} to {hi:.3g}.')
+say(f'  The range the paired sets measured, as b0590ba computed it (rule 6): {lo:.3g} to {hi:.3g}.')
+say('')
+say('REYNOLDS NUMBERS UNDER THE PINNED DEFINITION (rule 6b: free-stream conditions, face height, normal component)')
+say('  TM X-19 0.90e6 "based on model diameter": the conditions not recorded by either reader; does not count.')
+say('  TN D-5392 1.88e6 "based on afterbody diameter": the conditions not recorded by either reader; does not count.')
+say('  TN 4300: no per-foot value both readers give for its pressure tests; does not count.')
+re_c = (14e6 * 3.252 / 12, 14e6 * 3.3 / 12)
+re_d = (14e6 * 3.717 / 12, 14e6 * 3.7 / 12)
+say(f'  RM L57C18 model C: about 14e6 per ft (free stream, both readers) x 3.252 (A) or about 3.3 (B) in.: '
+    f'{re_c[0]:.4g} or {re_c[1]:.4g}')
+say(f'  RM L57C18 model D: x 3.717 (A) or about 3.7 (B) in.: {re_d[0]:.4g} or {re_d[1]:.4g}')
+say('  RM L57C18 models B and F: their face diameters not paired; do not count.')
+lo_b, hi_b = max(re_c), min(re_d)
+say(f'  The range surely measured, from the larger of model C\'s to the smaller of model D\'s: '
+    f'{lo_b:.4g} to {hi_b:.4g}.')
+say('  It differs from rule 6\'s because TM X-19 and TN D-5392, whose numbers set rule 6\'s lower end, do not')
+say('  count under the definition, and model C\'s number is now taken at the larger of its two diameters.')
+say('  Both ends rest on RM L57C18\'s models C and D, whose corners are rounded (0.4 and 0.1 in.), not square.')
 say('')
 say('DISCLOSURES (from the pairing, recorded here; they change no rule above)')
 say('  - RM L57C18 fig. 5: neither reading is blind to table II (p. 16, C_p at every orifice): A had its')

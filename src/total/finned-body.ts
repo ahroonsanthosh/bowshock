@@ -671,22 +671,27 @@ function sweptBeyondLimitComponent(
 }
 
 /**
- * Why a square-cut leading edge is refused (0016 sections 21.1 and 21.3): its
- * bounded term (src/fins/square-leading-edge.ts) is kept unwired, its
- * registered computed check not having passed.
+ * Why a square-cut leading edge is refused (0016 sections 21.1, 21.3 and
+ * 21.6): its bounded term (src/fins/square-leading-edge.ts) is kept
+ * unwired. Its computed check did not pass; measured flat faces then bore
+ * out the bounds' premises, but only at face Reynolds numbers far above a
+ * model rocket fin's, so wiring is deferred.
  */
 export const SQUARE_EDGE_REFUSAL =
   'a square-cut leading edge is refused: its drag is bounded between the sonic and the pitot ' +
   'pressure on the whole face (0016 section 21.1), an argument that rests on the face staying ' +
-  'subsonic up to its corners, and the computed check of that, registered before it was run ' +
+  'subsonic up to its corners. The computed check of that, registered before it was run ' +
   '(0016 section 21.3), did not pass. On the finest grid the inviscid solution did not settle in ' +
   "three cases, and in each the face's least pressure was not clear of the sonic pressure (0.528 " +
   'of the pitot pressure) by its change between the two finest grids: at Mach 2.0 with the ' +
   'corner rounded to 0.02 of the half-thickness, 0.553 against a change of 0.105; at Mach 3.0 ' +
   'with 0.04, 0.531 against a change of 0.134; and at Mach 3.0 with 0.02, 0.445, below the ' +
-  'sonic pressure itself, the sonic point then on the face. No flat-face measurement is among ' +
-  'the sources that set bands; measured flat faces are named for reading (0014 section 10.7 ' +
-  '(af)), and the edge stays refused until they are read and judged';
+  'sonic pressure itself, the sonic point then on the face. Measured flat-faced cylinders, read ' +
+  "twice and paired, then bore out the bounds' premises at every orifice (0014 section 10.7 " +
+  "(af)), but only at Reynolds numbers on the face's height of 3.85 to 4.32 million, under the " +
+  "definition pinned for them; a model rocket fin's, on its thickness, lies far below that (in " +
+  "the refusal audit's population, 290,000 at most), so the edge stays refused (0016 section " +
+  '21.6)';
 
 /**
  * The leading edges and faces of a flat plate (0016, W4): a rounded edge's
