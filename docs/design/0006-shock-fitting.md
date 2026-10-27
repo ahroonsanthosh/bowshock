@@ -1237,6 +1237,67 @@ within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
 against 0.42909806331220435; measured again on the merged code on
 2026-10-22, SwiftShader, `tests/gpu/fitted-flow-gpu.test.ts`).
 
+**Widening the outline: registration (2026-10-27, before any run).**
+About half of the Von Karman noses of the refusal audit's population
+(4 to 6 calibers, `docs/research/refusals`) lie outside the outline
+above: 5 to 6 calibers at every Mach number, more than about 4 at Mach 2
+to 3. New references are run for them (branch `claude/wip/vk-outline`)
+and judged by the criteria above, unchanged:
+
+- Cases: the Von Karman nose with 2 calibers of cylinder, as the 3- and
+  5-caliber references, at 6 calibers and Mach 1.5, 2 and 3, and at 5
+  calibers and Mach 3. At 4 calibers and Mach 3 only if neither case at
+  Mach 3 passes (the outline then needs it). Nothing below Mach 1.5: the
+  criteria were set at Mach 1.5 to 3, and on capped noses at Mach 1.3
+  the march fails ahead of an embedded shock it cannot carry
+  (`claude/wip/w6-build`, its README section 7); that a sharp Von Karman
+  nose there is free of one has not been shown, and showing it would be a
+  new test, not these criteria.
+- Code: main at 5ba98ff, frozen for the runs. Every checkpoint and saved
+  fit carries a fingerprint (the case, the runner's settings, a sha256 of
+  the source files the fit and the march run on); a checkpoint with
+  another is not resumed. The 5-caliber nose at Mach 3 starts again from
+  nj = 20 (W5's nj = 80 checkpoint, on haack-grid's code, is not used);
+  its nj = 20 and 40 drags are compared with W5's saved ones, for
+  information.
+- Fits, as above: nj = 20, 40 and 80, each finer one started from the
+  coarser saved fit, with W5's runner (`fitsave.test.ts`) and early stop,
+  at most 40000 iterations times the refinement. They pass if every fit
+  settles within that, every fitted grid passes the fitted gates
+  (`FITTED_QUALITY_LIMITS`), and the three drags converge monotonically.
+- Lines: chosen on the nj = 20 fit before any march, by a rule fixed here
+  (W5 chose its lines by hand from that fit's scan): the nose's lines
+  behind the last one whose least Mach number is below 1.05 and ahead of
+  the first whose fitted drag downstream is below 40% of the nose's (W5's
+  lines on its 3- and 5-caliber noses carried 97% to 40%); seven targets
+  spaced evenly in log x over that range, each taking the nearest line.
+  Each grid's fitted flow is marched from them on 640, 1280 and 2560
+  intervals (`moc.test.ts`, `fitdata.ts`, unchanged).
+- The line criterion, unchanged: on every grid, the march's mass balance
+  on 2560 intervals below 3.5e-5, and its change from 1280 intervals
+  below 3.5e-5 of the nose's drag. A line whose march or upstream part
+  does not converge monotonically over the three grids gives no
+  reference and fails.
+- References, lowest bound and miss as above (`moc3.mjs`); the allowance
+  by the same rule: twice the largest miss over every reference, W5's and
+  the new, and, for a case resting on one passing line, over the marched
+  lines next to it, rounded up to one significant figure. If that is
+  above 8e-4, `TWO_SCALE_DRAG_FLOOR` rises to it for every Von Karman
+  nose, and the report says so before merge.
+- A case passes when its fits pass, at least one line passes, and its
+  band (three grids, with the allowance) contains its error against the
+  lowest bound of every passing line. It then joins
+  `VON_KARMAN_REFERENCES`, and the outline is their convex hull as before.
+- A case that fails is not added and the outline is not extended there;
+  the failure and its numbers are recorded here and in
+  `docs/research/two-scale-noses/outline`. It is not re-run with other
+  lines or settings under this registration. If a failed case would lie
+  inside the hull of the passing ones, nothing is added until the owner
+  decides.
+- Not criteria, as for W5: a four-grid run to nj = 160 (the page keeps
+  naming the two noses so checked), and the body length (W5's
+  measurement on the 3-caliber nose stands).
+
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of
 cylinder at Mach 1.2:
