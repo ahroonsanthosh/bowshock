@@ -1,0 +1,283 @@
+{
+ "name": "t3819_f23",
+ "image": "B/render/tn3819/p54r.png",
+ "page": 54,
+ "thr": 150,
+ "panels": {
+  "main": {
+   "hlines": [
+    [
+     592.3,
+     -0.24,
+     true
+    ],
+    [
+     676.6,
+     -0.22,
+     false
+    ],
+    [
+     761.0,
+     -0.2,
+     true
+    ],
+    [
+     846.3,
+     -0.18,
+     false
+    ],
+    [
+     930.6,
+     -0.16,
+     true
+    ],
+    [
+     1014.9,
+     -0.14,
+     false
+    ],
+    [
+     1099.8,
+     -0.12,
+     true
+    ],
+    [
+     1184.3,
+     -0.1,
+     false
+    ],
+    [
+     1269.3,
+     -0.08,
+     true
+    ],
+    [
+     1353.5,
+     -0.06,
+     false
+    ],
+    [
+     1438.6,
+     -0.04,
+     true
+    ],
+    [
+     1522.9,
+     -0.02,
+     false
+    ],
+    [
+     1607.3,
+     0.0,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     514.6,
+     -16.0,
+     true
+    ],
+    [
+     598.2,
+     -14.0,
+     false
+    ],
+    [
+     682.7,
+     -12.0,
+     true
+    ],
+    [
+     766.6,
+     -10.0,
+     false
+    ],
+    [
+     851.5,
+     -8.0,
+     true
+    ],
+    [
+     936,
+     -6.0,
+     false
+    ],
+    [
+     1020.8,
+     -4.0,
+     true
+    ],
+    [
+     1104.6,
+     -2.0,
+     false
+    ],
+    [
+     1188.1,
+     0.0,
+     true
+    ],
+    [
+     1272.9,
+     2.0,
+     false
+    ],
+    [
+     1356.9,
+     4.0,
+     true
+    ],
+    [
+     1441.6,
+     6.0,
+     false
+    ],
+    [
+     1525.4,
+     8.0,
+     true
+    ],
+    [
+     1609.6,
+     10.0,
+     false
+    ],
+    [
+     1694.2,
+     12.0,
+     true
+    ],
+    [
+     1780.2,
+     14.0,
+     false
+    ],
+    [
+     1864.2,
+     16.0,
+     true
+    ],
+    [
+     1948.1,
+     18.0,
+     false
+    ],
+    [
+     2032.4,
+     20.0,
+     true
+    ]
+   ],
+   "uspan": [
+    522,
+    2026
+   ],
+   "vspan": [
+    598,
+    1600
+   ],
+   "nstrips": 24,
+   "sizes": {
+    "circle": 10.9,
+    "square": 10.0,
+    "tri": 12.75
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "p01",
+     "group": "p01",
+     "kind": "square",
+     "u": 560,
+     "v": 1100,
+     "series": "open square: Ames (sketch: cone, negative boattailing)"
+    },
+    {
+     "id": "p02",
+     "group": "p02",
+     "kind": "square",
+     "u": 768.8,
+     "v": 1116,
+     "series": "open square: Ames (sketch: cone, negative boattailing)"
+    },
+    {
+     "id": "p03",
+     "group": "p03",
+     "kind": "square",
+     "u": 982,
+     "v": 1136,
+     "series": "open square: Ames (sketch: cone, negative boattailing)"
+    },
+    {
+     "id": "p04",
+     "group": "p04",
+     "kind": "circle",
+     "u": 1188.3,
+     "v": 1135,
+     "series": "open circle: NOL, ref. 5 (sketch: cone-cylinder with conical boattail)"
+    },
+    {
+     "id": "p05",
+     "group": "p05",
+     "kind": "tri",
+     "u": 1190,
+     "v": 1178.3,
+     "series": "open triangle: Ames (sketch: ogive-type body with boattail)"
+    },
+    {
+     "id": "p06",
+     "group": "p06",
+     "kind": "circle",
+     "u": 1295.7,
+     "v": 1167.3,
+     "series": "open circle: NOL, ref. 5 (sketch: cone-cylinder with conical boattail)"
+    },
+    {
+     "id": "p07",
+     "group": "p07",
+     "kind": "circle",
+     "u": 1401.7,
+     "v": 1211.7,
+     "series": "open circle: NOL, ref. 5 (sketch: cone-cylinder with conical boattail)"
+    },
+    {
+     "id": "p08",
+     "group": "p08",
+     "kind": "tri",
+     "u": 1563.3,
+     "v": 1268,
+     "series": "open triangle: Ames (sketch: ogive-type body with boattail)"
+    },
+    {
+     "id": "p09",
+     "group": "p09",
+     "kind": "circle",
+     "u": 1611.7,
+     "v": 1297.3,
+     "series": "open circle: NOL, ref. 5 (sketch: cone-cylinder with conical boattail)"
+    },
+    {
+     "id": "p10",
+     "group": "p10",
+     "kind": "circle",
+     "u": 1823.3,
+     "v": 1334,
+     "series": "open circle: NOL, ref. 5 (sketch: cone-cylinder with conical boattail)"
+    },
+    {
+     "id": "p11",
+     "group": "p11",
+     "kind": "tri",
+     "u": 1837.5,
+     "v": 1334.5,
+     "series": "open triangle: Ames (sketch: ogive-type body with boattail)",
+     "eu": 1.0,
+     "ev": 0.75,
+     "fixed": true,
+     "method_note": "centre from apex (1837.5,1321.5) and base line (v 1341) read on a character map; template fit pulled toward the overlapping circle"
+    }
+   ]
+  }
+ }
+}

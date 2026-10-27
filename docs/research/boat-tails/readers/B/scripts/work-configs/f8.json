@@ -1,0 +1,693 @@
+{
+ "name": "e51_f8",
+ "image": "B/render/e51/p30-000.jpg",
+ "page": 30,
+ "thr": 150,
+ "panels": {
+  "a": {
+   "hlines": [
+    [
+     367.1,
+     0.12,
+     false
+    ],
+    [
+     461.70000000000005,
+     0.1,
+     false
+    ],
+    [
+     556.3,
+     0.08,
+     false
+    ],
+    [
+     650.9,
+     0.06,
+     false
+    ],
+    [
+     745.5,
+     0.04,
+     true
+    ],
+    [
+     840.1,
+     0.02,
+     false
+    ],
+    [
+     934.6999999999999,
+     0.0,
+     true
+    ],
+    [
+     1029.3,
+     -0.02,
+     false
+    ],
+    [
+     1123.9,
+     -0.04,
+     true
+    ],
+    [
+     1218.5,
+     -0.06,
+     false
+    ],
+    [
+     1313.1,
+     -0.08,
+     true
+    ],
+    [
+     1407.6999999999998,
+     -0.1,
+     false
+    ],
+    [
+     1502.2999999999997,
+     -0.12,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     402.0,
+     10.0,
+     true
+    ],
+    [
+     498.4,
+     10.25,
+     false
+    ],
+    [
+     593.3,
+     10.5,
+     true
+    ],
+    [
+     688.1,
+     10.75,
+     false
+    ],
+    [
+     782.8,
+     11.0,
+     true
+    ],
+    [
+     878.2,
+     11.25,
+     false
+    ],
+    [
+     973.0,
+     11.5,
+     true
+    ],
+    [
+     1067.8,
+     11.75,
+     false
+    ],
+    [
+     1162.4,
+     12.0,
+     true
+    ]
+   ],
+   "uspan": [
+    410,
+    1155
+   ],
+   "vspan": [
+    372,
+    1497
+   ],
+   "nstrips": 16,
+   "sizes": {
+    "circle": 11.5,
+    "square": 11.5,
+    "diamond": 16.75
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "a1c",
+     "group": "s1",
+     "kind": "circle",
+     "u": 468,
+     "v": 906,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "a1s",
+     "group": "s1",
+     "kind": "square",
+     "u": 469,
+     "v": 923,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "a1d",
+     "group": "s1",
+     "kind": "diamond",
+     "u": 468,
+     "v": 933,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "a2c",
+     "group": "s2",
+     "kind": "circle",
+     "u": 652,
+     "v": 1355,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "a2s",
+     "group": "s2",
+     "kind": "square",
+     "u": 654,
+     "v": 1309,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "a2d",
+     "group": "s2",
+     "kind": "diamond",
+     "u": 653,
+     "v": 1293,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "a3c",
+     "group": "s3",
+     "kind": "circle",
+     "u": 812,
+     "v": 1252,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "a3s",
+     "group": "s3",
+     "kind": "square",
+     "u": 814,
+     "v": 1262,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "a3d",
+     "group": "s3",
+     "kind": "diamond",
+     "u": 813,
+     "v": 1288,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "a4c",
+     "group": "s4",
+     "kind": "circle",
+     "u": 972,
+     "v": 1174,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "a4s",
+     "group": "s4",
+     "kind": "square",
+     "u": 972,
+     "v": 1202,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "a4d",
+     "group": "s4",
+     "kind": "diamond",
+     "u": 972,
+     "v": 1188,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "a5c",
+     "group": "s5",
+     "kind": "circle",
+     "u": 1096,
+     "v": 1147,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "a5s",
+     "group": "s5",
+     "kind": "square",
+     "u": 1096,
+     "v": 1131,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "a5d",
+     "group": "s5",
+     "kind": "diamond",
+     "u": 1096,
+     "v": 1159,
+     "series": "theta 90 deg (open diamond)"
+    }
+   ]
+  },
+  "b": {
+   "hlines": [
+    [
+     363.5,
+     0.12,
+     false
+    ],
+    [
+     458.1,
+     0.1,
+     false
+    ],
+    [
+     552.7,
+     0.08,
+     false
+    ],
+    [
+     647.3,
+     0.06,
+     false
+    ],
+    [
+     741.9,
+     0.04,
+     true
+    ],
+    [
+     836.5,
+     0.02,
+     false
+    ],
+    [
+     931.0999999999999,
+     0.0,
+     true
+    ],
+    [
+     1025.6999999999998,
+     -0.02,
+     false
+    ],
+    [
+     1120.3,
+     -0.04,
+     true
+    ],
+    [
+     1214.9,
+     -0.06,
+     false
+    ],
+    [
+     1309.5,
+     -0.08,
+     true
+    ],
+    [
+     1404.1,
+     -0.1,
+     false
+    ],
+    [
+     1498.6999999999998,
+     -0.12,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     1257,
+     10.0,
+     true
+    ],
+    [
+     1352,
+     10.25,
+     false
+    ],
+    [
+     1446.4,
+     10.5,
+     true
+    ],
+    [
+     1540.9,
+     10.75,
+     false
+    ],
+    [
+     1635.6,
+     11.0,
+     true
+    ],
+    [
+     1730.6,
+     11.25,
+     false
+    ],
+    [
+     1825.3,
+     11.5,
+     true
+    ],
+    [
+     1920.5,
+     11.75,
+     false
+    ],
+    [
+     2015.8,
+     12.0,
+     true
+    ]
+   ],
+   "uspan": [
+    1263,
+    2010
+   ],
+   "vspan": [
+    370,
+    1494
+   ],
+   "nstrips": 16,
+   "sizes": {
+    "circle": 11.5,
+    "square": 11.5,
+    "diamond": 16.75
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "b1c",
+     "group": "s1",
+     "kind": "circle",
+     "u": 1445,
+     "v": 914,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "b1s",
+     "group": "s1",
+     "kind": "square",
+     "u": 1446,
+     "v": 942,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "b2c",
+     "group": "s2",
+     "kind": "circle",
+     "u": 1636,
+     "v": 1440,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "b2s",
+     "group": "s2",
+     "kind": "square",
+     "u": 1635,
+     "v": 1426,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "b2d",
+     "group": "s2",
+     "kind": "diamond",
+     "u": 1635,
+     "v": 1452,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "b3c",
+     "group": "s3",
+     "kind": "circle",
+     "u": 1802,
+     "v": 1309,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "b3s",
+     "group": "s3",
+     "kind": "square",
+     "u": 1802,
+     "v": 1353,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "b3d",
+     "group": "s3",
+     "kind": "diamond",
+     "u": 1802,
+     "v": 1348,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "b4c",
+     "group": "s4",
+     "kind": "circle",
+     "u": 1951,
+     "v": 1223,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "b4s",
+     "group": "s4",
+     "kind": "square",
+     "u": 1951,
+     "v": 1230,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "b4d",
+     "group": "s4",
+     "kind": "diamond",
+     "u": 1952,
+     "v": 1257,
+     "series": "theta 90 deg (open diamond)"
+    }
+   ]
+  },
+  "c": {
+   "hlines": [
+    [
+     1597.5,
+     0.04,
+     true
+    ],
+    [
+     1692.55,
+     0.02,
+     false
+    ],
+    [
+     1787.6,
+     0.0,
+     true
+    ],
+    [
+     1882.65,
+     -0.02,
+     false
+    ],
+    [
+     1977.7,
+     -0.04,
+     true
+    ],
+    [
+     2072.75,
+     -0.06,
+     false
+    ],
+    [
+     2167.8,
+     -0.08,
+     true
+    ],
+    [
+     2262.85,
+     -0.1,
+     false
+    ],
+    [
+     2357.9,
+     -0.12,
+     true
+    ],
+    [
+     2452.95,
+     -0.14,
+     false
+    ],
+    [
+     2548.0,
+     -0.16,
+     true
+    ]
+   ],
+   "vlines": [
+    [
+     399.5,
+     10.0,
+     true
+    ],
+    [
+     496.4,
+     10.25,
+     false
+    ],
+    [
+     591.2,
+     10.5,
+     true
+    ],
+    [
+     686.4,
+     10.75,
+     false
+    ],
+    [
+     781.1,
+     11.0,
+     true
+    ],
+    [
+     876,
+     11.25,
+     false
+    ],
+    [
+     971.3,
+     11.5,
+     true
+    ],
+    [
+     1066,
+     11.75,
+     false
+    ],
+    [
+     1160.8,
+     12.0,
+     true
+    ]
+   ],
+   "uspan": [
+    405,
+    1155
+   ],
+   "vspan": [
+    1602,
+    2543
+   ],
+   "nstrips": 16,
+   "sizes": {
+    "circle": 11.5,
+    "square": 11.5,
+    "diamond": 16.75
+   },
+   "radius": 4.0,
+   "points": [
+    {
+     "id": "c1c",
+     "group": "s1",
+     "kind": "circle",
+     "u": 704,
+     "v": 1788,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "c1s",
+     "group": "s1",
+     "kind": "square",
+     "u": 705,
+     "v": 1741,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "c1d",
+     "group": "s1",
+     "kind": "diamond",
+     "u": 704,
+     "v": 1789,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "c2c",
+     "group": "s2",
+     "kind": "circle",
+     "u": 896,
+     "v": 2421,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "c2s",
+     "group": "s2",
+     "kind": "square",
+     "u": 895,
+     "v": 2454,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "c2d",
+     "group": "s2",
+     "kind": "diamond",
+     "u": 895,
+     "v": 2455,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "c3c",
+     "group": "s3",
+     "kind": "circle",
+     "u": 996,
+     "v": 2345,
+     "series": "theta 15 deg (open circle)"
+    },
+    {
+     "id": "c3s",
+     "group": "s3",
+     "kind": "square",
+     "u": 998,
+     "v": 2381,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "c3d",
+     "group": "s3",
+     "kind": "diamond",
+     "u": 997,
+     "v": 2374,
+     "series": "theta 90 deg (open diamond)"
+    },
+    {
+     "id": "c4s",
+     "group": "s4",
+     "kind": "square",
+     "u": 1093,
+     "v": 2271,
+     "series": "theta 50 deg (open square)"
+    },
+    {
+     "id": "c4d",
+     "group": "s4",
+     "kind": "diamond",
+     "u": 1094,
+     "v": 2288,
+     "series": "theta 90 deg (open diamond)"
+    }
+   ]
+  }
+ }
+}
