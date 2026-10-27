@@ -1114,6 +1114,41 @@ formed on two of them, and the shape widening's size on two of them.
      layer state, which the text does not establish: a targeted blind
      reading of fig. 8(a)'s Mach 1.7 panel at low angles is arranged by
      the coordinator. Nothing above Mach 1.5 changes here.
+
+     _The decision rule for F4 (dated 2026-10-27, fixed by the
+     coordinator after the four-way pairing of fig. 8(a) at Mach 1.7,
+     `audit/pairing-2026-10-27-a52e01-m17-four/`, and before any
+     Reynolds number was compared)._ The pairing gives line #10 as wing 2
+     (named by readers B, C and D) with an alpha 0 value read twice in
+     agreement (C -0.1310, D -0.1318, D's first reading, on an end piece D
+     flagged); D's alternative ends the curve at alpha 0.34 at -0.147, as
+     B's and A's ends (-0.144 to -0.148). Then:
+     1. Establish, from the recorded readings and notes, the Reynolds
+        number (on the chord, free-stream, a stated basis converted) and
+        the stated layer state of every set that sets the square trailing
+        edge's band above Mach 1.5, and the same for RM A52E01 8(a) and
+        8(b), saying how each was converted.
+     2. If 8(a)'s Reynolds number lies inside the band-setting sets'
+        range, 8(a) is inside the band's domain; its layer not being
+        established, it cannot be excluded. #10's alpha 0 value then
+        enters the band above 1.5 as the envelope of every reading's
+        value (C, D's first reading, and D's alternative end -0.147 taken
+        as a value, the wider choice); the low end is widened where it
+        applies (Mach number and layer parameter), and the new band is
+        reported.
+     3. If 8(a)'s Reynolds number lies below every band-setting set's,
+        the band's evidence does not reach it: a lower Reynolds-number
+        limit is added to the domain served above 1.5, at the lowest
+        band-setting set's Reynolds number on the same basis, refused
+        below with plain words naming the missing measurement, and 8(a)
+        is recorded as outside the domain by Reynolds number.
+     4. If the Reynolds numbers cannot be put on a common basis from the
+        recorded material, (2) applies, the wider choice, with the reason.
+
+     It changes the term above Mach 1.5, so it is committed on its own,
+     with its tests, planted errors, the population before and after, and
+     the records in 0010 and here.
+
    - _Tests (review F3)._ Two more: every band-setting point through the
      served term over its whole Mach interval at its own h/c and X, for
      every wing it may be; and the nodes and the served term recomputed
