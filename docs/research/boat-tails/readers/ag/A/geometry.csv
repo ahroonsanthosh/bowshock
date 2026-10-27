@@ -1,0 +1,182 @@
+source,quantity,value,unit,page,note
+RM L54C16,overall length,18.90,in,4; 20,text PDF p4 'All models are 18.90 inches long'; fig. 3 (p20) dimension 18.90 in
+RM L54C16,fineness ratio,7.87,-,4,text PDF p4
+RM L54C16,maximum diameter,2.40,in,20,"fig. 3 (assembled model, drawn as model 1) dimension 2.40 in; fig. 2 table gives model 1 orifices 3 and 4 at radius 1.200 in"
+RM L54C16,nose shape,"cone, 10 deg half-angle",-,4,text PDF p4 'All models have a 10 deg half-angle conical nose'; fig. 3 labels it 'Interchangeable nose'
+RM L54C16,nose length,7.18,in,20,"fig. 3 dimension from the nose tip to the end of the nose piece (where the cylinder begins in the drawing). Not stated in the text. Note: a 10 deg half-angle cone of 2.40 in base diameter would be about 6.81 in long, so the 7.18 in may run to the nose-piece joint rather than to the cone shoulder; I could not resolve this from the drawing"
+RM L54C16,nose defining equation or reference,none; conical (10 deg half-angle),-,4,text PDF p4
+RM L54C16,nose tip,sharp (as drawn),-,20; 18,fig. 3 drawing and fig. 1(c) photograph show a pointed tip; no tip radius is stated
+RM L54C16,nose tip radius,not stated,-,,"not given in PDF pages 4 to 6, 18 to 20"
+RM L54C16,nose coordinates,not tabulated,-,,
+RM L54C16,cylinder length (model 1),11.72,in,20,"derived, not stated: 18.90 - 7.18 from fig. 3; the figure gives no cylinder dimension. For models 2 and 3 the cylinder length depends on the boat-tail length, which is not stated in the pages read"
+RM L54C16,boat-tail angle model 1,0,deg,4,"text p4 (model 1 is a cylindrical afterbody, beta = 0)"
+RM L54C16,boat-tail angle model 2,5,deg,4,text p4; fig. 2 table (p19)
+RM L54C16,boat-tail angle model 3,10,deg,4,text p4; fig. 2 table (p19)
+RM L54C16,boat-tail length models 2 and 3,not stated,-,19,fig. 2 sketches are not dimensioned; no length in text pages 4 to 6
+RM L54C16,base diameter model 1,2.40,in,20,model 1 has no boat-tail (fig. 3 drawn as model 1)
+RM L54C16,base diameter models 2 and 3,not stated,-,19,"not given; fig. 2 table gives the surface radius at the rearmost boat-tail orifice: model 2 orifice 2 at x/L 0.991 r 0.810 in, model 3 orifice 2 at x/L 0.992 r 0.828 in"
+RM L54C16,boat-tail form,"conical, body of revolution",-,4; 19,text p4 'conical boattail sections'; fig. 2 afterbody sketches (half sections about the axis)
+RM L54C16,boat-tail profile,straight cone,-,4,text p4 'conical boattail sections'; no S.T.A. or reference nozzle mentioned
+RM L54C16,shoulder,sharp (as drawn),-,19,fig. 2 sketches show a corner where the cone meets the cylinder; no radius stated
+RM L54C16,orifice stations model 1 (x/L; radius in),no.1 1.000 r0.670 (base); no.2 1.000 r0.865 (base); no.3 0.992 r1.200; no.4 0.947 r1.200; no.5 combustion chamber,-,19,fig. 2 table
+RM L54C16,orifice stations model 2 (x/L; radius in),no.1 1.000 r0.700 (base); no.2 0.991 r0.810; no.3 0.951 r0.880; no.4 0.904 r0.960; no.5 0.818 r1.100; no.6 combustion chamber,-,19,fig. 2 table; the text (p6) adds a station 0.997 measured on an identical model
+RM L54C16,orifice stations model 3 (x/L; radius in),no.1 1.000 r0.700 (base); no.2 0.992 r0.828; no.3 0.950 r0.965; no.4 0.924 r1.120; no.5 combustion chamber,-,19,fig. 2 table
+RM L54C16,orifice meridians,not stated,-,19,fig. 2 end views show the orifices at r1 (and r2 for model 1) at differing angular positions; no angle given
+RM L54C16,axial station origin,model nose (x measured from the nose; plotted as x/L),-,6; 19,text p6 'axial distance from the model nose'; fig. 2 sketch dimension x from the front end with L the body length
+RM L54C16,model support,swept strut under the cylinder,-,20; 18; 21,"fig. 3: 'Support strut' meets the underside of the cylinder; its trailing edge at the body is 6.00 in ahead of the base; strut 15.50 in high, 10.50 in chord at the base plate, edges at 75 deg and 125 deg to the plate, biconvex section as drawn. Fig. 1(c) photo (p18) and fig. 4 photo (p21) show the strut joining the body on the cylinder, ahead of the boat-tail. No sting through the base"
+RM L54C16,fins tails wings bumps,none other than the support strut,-,20,
+RM L54C16,jet-off base: nozzle exit diameter,1.044,in,19,"fig. 2 nozzles 1 to 4 all 1.044 in exit; throats 0.522 in (nozzles 1 to 3), 0.700 in (nozzle 4). Fig. 5 does not say which nozzle was fitted for the power-off points"
+RM L54C16,jet-off base: open or plugged,open nozzle exit (rocket motor not yet burning),-,4; 5,"text p5: solid-propellant rocket in the model, ignition by delay squib (fig. 3); power off as captioned in fig. 5; base orifices at r 0.67 to 0.865 in (fig. 2)"
+RM L54C16,sting diameter,none (strut support),-,20,
+RM L54C16,tunnel,"Langley preflight jet, Wallops Island: 27- by 27-inch free jet",-,5; 6,text p5 'conducted in the 27- by 27-inch jet'; p6 'preflight jet at Wallops Island'
+RM L54C16,wall or jet-boundary reflections,model nose placed 8 in upstream of the jet exit so the model lies completely within the Mach diamond of the free jet and meets the interference criteria of refs. 7 and 8,-,5,text p5
+RM L54C16,Mach number,1.59,-,5,text p5; accuracy +-0.03
+RM L54C16,Reynolds number,17.8e6,-,5,text p5 'based on model length' (L = 18.90 in)
+RM L54C16,stagnation temperature,780,deg R,5,text p5 'approximately'; free-stream static pressure standard sea level
+RM L54C16,boundary-layer transition or trip,not mentioned,-,4; 5; 6,nothing on transition or trips in PDF pages 4 to 6
+RM L54C16,support effect on boat-tail pressures,not mentioned,-,4; 5; 6,nothing on the strut's effect in PDF pages 4 to 6
+RM L54C16,pressure coefficient accuracy,0.005,-,5,text p5 (+-)
+RM L54C16,drag coefficient definition,"CD = Cp S/Smax, reference area Smax (maximum cross-section); fig. 5(b) CDbt integrates the boat-tail only (subscript bt)",-,4; 22,list of symbols p4; fig. 5(b) 'Boattail drag coefficients'
+RM L54C16,jet-off marking,fig. 5 caption 'Power-off boattail pressure distributions and drag coefficients': every point in fig. 5 is power off,-,22,
+RM L54I22,overall length,8.25,in,4; 15,text PDF p4 'The model body was 8.25 inches long'; fig. 1 dimension 8.25
+RM L54I22,maximum diameter,1.25,in,15,fig. 1 dimension '1.25' marked across the cylinder just aft of the nose; not stated in the text
+RM L54I22,nose shape,"cone, '20 deg conical nose'",-,4,"text p4. The text does not say whether 20 deg is the half-angle or the included angle; fig. 1 gives nose length 3 11/16 in with the 1.25 in body, which as drawn is a slender cone (about 19 deg included), so 20 deg is likely the included angle (my inference, not stated)"
+RM L54I22,nose length,3 11/16 (3.6875),in,15,fig. 1 dimension
+RM L54I22,nose tip,sharp (as drawn),-,15,no tip radius stated
+RM L54I22,nose tip radius,not stated,-,,
+RM L54I22,nose coordinates,not tabulated,-,,
+RM L54I22,cylinder length,3.0625 (derived),in,15,derived from fig. 1: 8.25 - 3 11/16 - 1.50 = 3 1/16 in; not stated as such
+RM L54I22,boat-tail profile,circular arc,-,4; 15,text p4 'circular-arc boattails with a slope at the base of approximately 22 deg'; fig. 1 'Orifice positions' sketch gives the arc radius 4.140R (in)
+RM L54I22,boat-tail arc radius,4.140,in,15,fig. 1 orifice-positions sketch '4.140R'
+RM L54I22,boat-tail length,1.50,in,15,fig. 1 dimension '1.50' from the start of the boat-tail to the base
+RM L54I22,boat-tail base slope (angle),approximately 22,deg,4,text p4
+RM L54I22,base diameter DB,11/16 (0.6875),in,15,fig. 1 'Base characteristics' table: DB = 11/16 for both shrouds
+RM L54I22,shroud 1 exit (inner) diameter d,9/16,in,15,"fig. 1 table: d = 9/16, d/DB = 0.82"
+RM L54I22,shroud 2 exit (inner) diameter d,1/2,in,15,"fig. 1 table: d = 1/2, d/DB = 0.73"
+RM L54I22,boat-tail form,body of revolution (two interchangeable shrouds of identical external profile),-,4; 15,text p4: the afterbodies or shrouds had the same external ordinates within machining accuracy and differed only in their secondary discharge areas
+RM L54I22,shoulder,tangent circular arc (no corner drawn; no radius other than the arc),-,15,fig. 1 shows the arc starting smoothly from the cylinder; the text does not state tangency
+RM L54I22,orifice stations,"Z = 1.06, 0.79, 0.53, 0.29, 0.06 in (orifices 1 to 5)",in,15,"fig. 1 'Orifice positions' table; the sketch dimensions Z from the base plane forward (my reading of the sketch). With L = 8.25 in this gives x/L = 0.8715, 0.9042, 0.9358, 0.9648, 0.9927 (computed, not stated)"
+RM L54I22,orifice meridian,not stated,-,4; 15,boat-tail orifices are one row (fig. 1); base orifices at 90 deg intervals with two of the four in line with the wing struts (text p5)
+RM L54I22,axial station origin,model nose (x/L with L the body length),-,16,"fig. 2 abscissa 'Body station, x/L'; fig. 1 dimensions run from the nose"
+RM L54I22,model support,two wing struts from the tunnel sidewalls,-,4; 5; 15,"text p4-p5: mounted from the tunnel sidewalls by two wing struts, one carrying primary air, the other secondary air and instrumentation, faired to a circular-arc cross section. Fig. 1 (plan sketch, not dimensioned along the body) shows both struts meeting the body from about the transition strip to just aft of the nose-cylinder junction: scaled from the sketch, about 1.4 in to 3.8 in from the nose, i.e. about 2.9 in ahead of the boat-tail start (6.75 in). Strut dimension '1.53' (in) drawn across the strut. 'Rear view of base-pressure orifices' shows the struts on opposite sides (horizontal)"
+RM L54I22,support effect on boat-tail pressures,text says only that the struts had no apparent effect on the base pressure,-,5,"text p5 'Examination of the data revealed that the support struts had no apparent effect on the base pressure and, hence, an average value obtained from the four orifices was used.' Nothing on boat-tail pressures"
+RM L54I22,fins tails wings bumps,the two wing struts only,-,15,
+RM L54I22,jet-off base: nozzle exit diameter,"sonic nozzle exit 7/16 in; supersonic nozzle (M = 3.23) exit 3/8 in, 12 deg, inserted through the sonic nozzle",in,15; 4,"fig. 1. Text p4: since the supersonic nozzle was tapered to a sharp edge at the exit, both nozzles had essentially the same exit area. Fig. 2 does not say which nozzle was fitted for the no-flow points"
+RM L54I22,jet-off base: open or plugged,open (no primary or secondary flow; nozzle and secondary annulus open),-,16; 5,fig. 2 legend 'No primary or secondary flow'; text p5 'jet-off condition'
+RM L54I22,sting diameter,none (wing-strut support),-,15,
+RM L54I22,tunnel,"Langley 9-inch supersonic tunnel, closed circuit, continuous, test section approximately 9 in square",-,4,text p4
+RM L54I22,wall or jet-boundary reflections,not stated,-,4; 5; 6,
+RM L54I22,Mach number,"1.62, 1.93, 2.41",-,5; 16,text p5; accuracy +-0.01 (p6)
+RM L54I22,Reynolds number,2.1e6 to 2.9e6,-,5,text p5 'based on body length' (8.25 in); stagnation pressure approximately 1 atmosphere
+RM L54I22,temperatures,model stagnation chamber air about 80 F; tunnel approximately 100 F,-,5,text p5
+RM L54I22,boundary-layer transition or trip,turbulent: 1/8-inch salt band approximately 1 1/4 in from the model nose,-,5; 15,text p5 'All testing was done at 0 deg angle of attack and with a turbulent boundary layer along the model ... 1/8-inch salt band placed approximately 1 1/4 inches from the model nose'; fig. 1 'Transition strip' (as drawn about 1.4 in from the nose)
+RM L54I22,angle of attack,0 (alignment within +-0.1 deg),deg,5; 6,text p5 and p6
+RM L54I22,pressure coefficient accuracy,approximately 0.003 (base pressure coefficient),-,6,text p6 (+-); no separate figure given for boat-tail coefficients
+RM L54I22,drag or axial-force coefficient,none in the figures read,-,,
+RM L54I22,jet-off marking,"fig. 2 legend: both shroud symbols bracketed 'No primary or secondary flow'; figs. 7, 14 and 16 have no jet-off data (every panel is labelled with a primary jet pressure ratio pj/ps, and carries faired curves only, no symbols)",-,16; 21-23; 32-34; 36-38,
+RM L54I22,fig. 2 x-axis labels,labels read .80 .82 .86 .88 .90 .92 .94 .96 .98 1.00 on ten evenly spaced gridlines,-,16,"the labels are not consistent with an even scale; I calibrated on .86 to 1.00 (eight labels, consistent with each other and with the fig. 1 orifice stations); see method.md"
+RM E57E06,overall length,20.44,in,7; 41,text PDF p7 'The over-all length was 20.44 inches'; fig. 1 dimension 20.44
+RM E57E06,fineness ratio L/dB,10.2,-,7,text PDF p7
+RM E57E06,maximum diameter dB,2.00,in,41; 42,fig. 1 dimension 2.00; fig. 2(a) 'dB = 2.00'
+RM E57E06,nose shape,"cone, 8 deg ('8 deg cone-cylinder forebody')",-,7; 41,"text p7; fig. 1 marks 8 deg at the tip. Whether 8 deg is the half-angle or the included angle is not stated; the fig. 1 drawing (7.54 in from tip to strut, cone reaching full diameter near the strut) is consistent with an 8 deg half-angle (a cone of 8 deg half-angle reaches 2.00 in diameter in about 7.1 in); my inference"
+RM E57E06,nose length,not stated,-,41,fig. 1 gives 7.54 in from the tip to the strut leading edge; the cone appears to end at the strut
+RM E57E06,nose tip,sharp (as drawn),-,41,no tip radius stated
+RM E57E06,nose tip radius,not stated,-,,
+RM E57E06,nose coordinates,not tabulated,-,,
+RM E57E06,cylinder and afterbody,"7.54 in tip to strut, 5.40 in strut chord at the body, 7.50 in from strut trailing edge to base",in,41,fig. 1 dimensions
+RM E57E06,boat-tail angles (basic model),"3 to 11 deg half-angle beta; fig. 2(a) lists beta 3.0, 5.6, 7.0 and 11.00 deg",deg,7; 42,text p7 'Boattails with half-angles beta from 3 to 11 deg'; fig. 2(a) list
+RM E57E06,boat-tail base diameters,"db/dj = 1.11, 1.40, 1.67, 2.00 and 2.67 with dj = 0.750 in (db = 0.83, 1.05, 1.25, 1.50, 2.00 in by product, computed)",-,42,fig. 2(a) ('db/bj' misprint for db/dj)
+RM E57E06,boat-tail profile,straight cone (conical boattails),-,7; 42,text p7 'interchangeable conical boattails'; fig. 2(a) sketch straight
+RM E57E06,boat-tail form,body of revolution,-,7; 42,
+RM E57E06,shoulder,sharp corner (as drawn),-,42,fig. 2(a) shows a corner; no radius stated
+RM E57E06,orifice stations,"two sets 90 deg apart; fig. 2(a) dimension chain, front to rear: tap 1 on the cylinder 1/4 ahead of the shoulder; tap 2 1/4 behind the shoulder; tap 3 (spacing from tap 2 not dimensioned); taps 3 to 4 1/2; taps 4-5, 5-6, 6-7 1/4 each; tap 7 1/16 ahead of the base",in,42,"fig. 2(a) 'Pressure tap locations, two sets 90 deg apart'; the drawing's dimension chain is partly ambiguous (see method.md)"
+RM E57E06,orifice meridians,behind the struts and 90 deg from the struts,-,7; 41,text p7 'The boattail and base instrumentation was located behind and 90 deg from the struts'; fig. 1 end view
+RM E57E06,axial station origin,fig. 7: body station in inches from the nose (base at 20.44); figs. 6 and 14: 1 - (r/rB)^2,-,50; 49; 60,
+RM E57E06,model support,"double struts, 9.3 percent thick, located 3.75 body diameters ahead of the base (one above and one below the body in fig. 1)",-,9; 41,"text p9; fig. 1 shows struts spanning the tunnel, 5.40 in chord at the body, trailing edge 7.50 in ahead of the base. A single-strut configuration was also run (fig. 6)"
+RM E57E06,support effect on boat-tail pressures,"text p9: boattail pressures near the base for single and double struts agreed with Van Dyke's theory and ref. 10 (fig. 6(a)); base pressure coefficients with the double strut were lower than with the single strut by 0.03; double struts used for all subsequent experiments. Boattail pressure 90 deg from the strut shows a rise near the base and pressures behind the strut show a bump just ahead of the base, from the shock of the strut leading edge / wall boundary-layer interaction (fig. 7)",-,9,
+RM E57E06,fins tails wings bumps,"tail interference model only: rectangular-planform tails, t/c 5 percent, 1 1/2-in chord, 4.5-in span, movable fore and aft in slots, on 0, 5.63 and 9.33 deg boattails",-,8,text p8; positions not given in the pages read (fig. 4 not opened)
+RM E57E06,rocket model,"propane-oxygen rocket, same nozzle and external shape as the basic model; afterbody shells give db/dj 1.40, 1.67, 2.00 with beta 5.63, 7.03, 11.00 deg; boattail taps (five, just ahead of the base) on the 5.63 deg boattail only",-,7; 8,
+RM E57E06,fig. 14 model attribution,not stated per point: fig. 14 legend gives only db/dj and strut position; text p16 says the data are shown for all the 5.63 deg boattails tested,-,60; 16,
+RM E57E06,jet-off base: nozzle exit diameter,dj = 0.750 in,in,42,fig. 2(a)/(b); one convergent-divergent nozzle with dB/dj 1.89 (dj = 1.056 in)
+RM E57E06,jet-off base: open or plugged,open nozzle (no jet flow),-,8; 60,text p8 'no-jet-flow condition'; fig. 14 'Jet off'. Which nozzle was fitted for the jet-off points is not stated in fig. 14
+RM E57E06,sting diameter,none (strut support),-,41,
+RM E57E06,tunnel,Lewis 18- by 18-inch Mach 1.91 supersonic tunnel and 12- by 12-inch Mach 3.12 supersonic tunnel (fig. 5(b) caption: 1- by 1-foot),-,9; 47; 48,
+RM E57E06,wall or jet-boundary reflections,text p9: boattail-pressure rise 90 deg from the strut and bump behind the strut near the base come from the shock from the interaction of the strut leading edge and the wall boundary layer (fig. 7(b) schlieren),-,9,
+RM E57E06,same models or tunnel as RM E51F26,"not stated in the pages read; RM E51F26 is reference 10 (Cortright and Schroeder, Mach 1.91 side and base pressures over conical boattails), cited only for comparison data ('splitter-plate model of reference 10', fig. 6) ",-,9; 34,
+RM E57E06,Mach number,1.91 and 3.12,-,9,
+RM E57E06,Reynolds number,3.2e6 per foot at Mach 1.91; 2.33e6 to 8.16e6 per foot at Mach 3.12,-,9,"text p9, per foot (unit length); with L = 20.44 in, 3.2e6/ft gives about 5.5e6 on body length (computed)"
+RM E57E06,boundary-layer transition or trip,transition forced with a 0.005-inch wire ring 1/2 inch in diameter on the nose cone,-,9,text p9
+RM E57E06,boundary-layer state and thickness,"profiles just ahead of the base in fig. 8; the difference between side and bottom profiles is due to strut shocks and the strut wake; for afterbodies with boattails the boundary layer thickened slightly, delta_a/dB approximately 0.06",-,9; 10; 52,
+RM E57E06,drag or axial-force coefficient,none in the figures read,-,,
+RM E57E06,jet-off marking,fig. 7 and fig. 8 captions 'no jet flow'; fig. 14 caption 'Jet off'; fig. 6 does not state the jet state,-,49; 50; 52; 60,
+TN D-6789,model,air-powered cone-cylinder nacelle with a rounded shoulder at the nose-cylinder junction; interchangeable afterbodies (nozzles) aft of Sta. 104.14,-,6; 19,text PDF p6; fig. 3 (p19)
+TN D-6789,maximum diameter dm,15.24,cm,19; 20,fig. 3 and fig. 4
+TN D-6789,overall length,"104.14 + l: 119.38 (l/dm 1.0), 116.33 (0.8), 113.28 (0.6) (computed); reference nozzle to Sta. 121.92",cm,19; 20; 46,"not stated as a single number; Sta. 0 at the nose tip (fig. 3), boattail from Sta. 104.14, l = (l/dm) dm (fig. 4); fig. 17 for the reference nozzle"
+TN D-6789,nose shape,"cone, 14 deg (marked between the axis and the cone surface in fig. 3, i.e. half-angle as drawn), joined to the cylinder by a 20.75 cm radius shoulder",-,19; 6,text p6 'cone-cylinder nacelle with a rounded shoulder'; fig. 3 '14 deg' and '20.75 rad.'
+TN D-6789,nose length,not dimensioned,-,19,
+TN D-6789,nose tip,sharp (as drawn),-,19; 17,no tip radius stated
+TN D-6789,nose tip radius,not stated,-,,
+TN D-6789,nose coordinates,not tabulated,-,,
+TN D-6789,cylinder length,not dimensioned (cylinder runs from the end of the shoulder radius to Sta. 104.14),-,19,
+TN D-6789,boat-tail angles tested (beta),"l/dm 1.0: 3.00, 5.02, 10.00; l/dm 0.8: 3.30, 5.00, 10.00; l/dm 0.6: 3.00, 5.00, 10.00 (configurations 3-5, 9-11, 15-17)",deg,20; 7,"fig. 4 table; text p7 gives nominal 3, 5 and 10 deg; fig. 7 captions (a),(b) 'beta approx. 3 deg'"
+TN D-6789,boat-tail length l,"l/dm = 1.0, 0.8, 0.6 (15.24, 12.19, 9.14 cm computed)",-,20; 7,fig. 4 table and text p7 (flap length to maximum diameter)
+TN D-6789,base diameter db/dm,"l/dm 1.0: .895, .825, .653; l/dm 0.8: .916, .861, .722; l/dm 0.6: .937, .895, .792 (for beta 3, 5, 10)",-,20,fig. 4 table; also Ab/Am .802 .681 .426 / .839 .741 .521 / .878 .802 .627
+TN D-6789,nozzle exit (jet-off base),"Ae/Ab .970, .965, .955 (l/dm 1.0); .968, .965, .959 (0.8); .968, .967, .962 (0.6); open convergent-divergent nozzle exit, a small rim between db and de",-,20; 8,fig. 4 table; text p8: no attempt to include forces on the small rim at the nozzle exit between db and de
+TN D-6789,boat-tail profile,straight cone (fixed boattail angle aft of the theoretical flap hinge point),-,7; 20,text p7 'fixed boattail angles'; fig. 4 sketch straight
+TN D-6789,boat-tail form,"bodies of revolution: the tested afterbodies simulate positions of variable-flap convergent-divergent nozzles, but the text and fig. 4 (end view drawn as circles) describe fixed axisymmetric boattails; no flaps, facets or steps are mentioned",-,7; 20,"text p6-7 'configurations ... simulating various positions of each of three variable-flap convergent-divergent nozzles'; external geometry varied only aft of Sta. 104.14, the theoretical hinge point for the nozzle flaps"
+TN D-6789,flaps (number; facets; orifices on flap centrelines),not applicable (no flaps on the tested models as described),-,7; 20,
+TN D-6789,shoulder,sharp corner,-,7,text p7 'The junction of the cylindrical section and the boattail was machined as a sharp corner and was at the same station for all the variable-flap nozzle configurations'
+TN D-6789,orifice stations (x/dm from boattail corner),"phi 0 and 90: l/dm 1.0: -0.02 .02 .08 .25 .50 .75 .97; l/dm 0.8 (beta 3,5): -0.02 .02 .08 .20 .40 .60 .78; l/dm 0.8 (beta 10): same but .77 last; l/dm 0.6: -0.02 .02 .08 .15 .30 .45 .58. phi 45, 135, 157.5, 180: same without -0.02 and .08",-,16,table I; divergent-wall orifices (phi 337.5) in table II
+TN D-6789,axial station origin,"boattail corner (Sta. 104.14, theoretical flap hinge point): x/dm measured from it",-,16; 20,table I heading; fig. 4
+TN D-6789,model support,"sidewall strut, 5 percent thick, swept back, leading-edge sweep 45 deg (37.5 deg trailing edge in fig. 3), 50.80 cm chord at the model centre line; its leading edge starts at the nose tip, so at the centre line it ends about 50.8 cm aft of the tip, about 53 cm (3.5 dm) ahead of the boattail corner",-,6; 19; 18,text p6; fig. 3; fig. 2 shows strut area continuing to about Sta. 145 because of the sweep. The meridian of the strut is not given in the pages read
+TN D-6789,support effect on boat-tail pressures,"text p9: a flow survey at M 2.20 with a cylindrical afterbody (ref. 3) showed the strut had very little effect on the surface pressure distribution of a cylindrical afterbody; boundary layer about 0.1 dm thick and the same at all meridians except behind the strut, where there was a large total-pressure loss",-,9,
+TN D-6789,top and bottom rows,text p9: only a slight difference between top and bottom rows of pressures (fig. 5); only the top row was used for comparison and integration into drag,-,9,
+TN D-6789,fins tails wings bumps,none besides the strut,-,19,
+TN D-6789,sting diameter,none (strut support),-,19,
+TN D-6789,tunnel,"Langley 4- by 4-foot supersonic pressure tunnel, single return, continuous flow",-,6,text p6
+TN D-6789,wall or jet-boundary reflections,not stated,-,6-9,
+TN D-6789,Mach number,"1.83, 2.20",-,7,"text p7; figs. 5, 7, 18 label 2.20 or 2.2"
+TN D-6789,Reynolds number,"14.70e6 per meter (M 1.83), 12.20e6 per meter (M 2.20); survey: 1.55e6 to 2.07e6 based on body diameter",-,7; 9,"text p7 (per meter, total pressure 124.12 kN/m2, total temperature about 316 K); text p9 (survey, on diameter)"
+TN D-6789,boundary-layer transition or trip,fixed 2.54 cm from the nose by a strip of No. 80 carborundum grit about 5 mm wide,-,6,text p6
+TN D-6789,boundary-layer thickness,"about 0.1 dm at stations 104.14 and 110.29 cm (survey, cylindrical afterbody, M 2.20)",-,9,
+TN D-6789,angle of attack,0,deg,7,
+TN D-6789,"drag coefficient C_D,beta","external pressure drag on the axially projected area from Am to Ab (boattail only, rim between db and de excluded), based on maximum cross-sectional area Am, integrated from the phi = 0 orifices with incremental areas",-,8,text p8
+TN D-6789,jet-off marking,"fig. 5 caption 'Jet off'; fig. 7 legend 'o Jet off' (open circle, first legend entry, pe/p column also 'Jet off'); fig. 12 caption 'jet-off'; figs. 18 and 20 captions 'Jet off'",-,21; 23-28; 35; 47; 49,
+TN D-6789,reference nozzle (S.T.A.) profile,"external boattail: circular arc as drawn: a radius line labelled 3.50 dm (drawn with a break) runs from the start of the external curve to a centre off the sketch; internal: elliptical contour faired into a radius of 0.25 dm (label leader points to the internal contour). From Sta. 102.32 to the exit at Sta. 121.92, L = 19.61 cm, L/dm = 1.286; db = 7.77 cm (db/dm 0.510), dth = 7.62, Ab/Am 0.260, Ae/Ab 0.962, Ath/Am 0.250, s/dth 1.000, exit epsilon 1.000; drawn dimensions .50 dm, .33 dm, .25 dm",-,46,"fig. 17 (my reading of the sketch: the text pages read do not describe the reference nozzle contour). The same drawing in TM X-1960 fig. 17 gives Ae/Ab = 0.980, not 0.962"
+TN D-6789,reference nozzle orifice stations,"external, phi 0: x/dm -0.17, 0, .19, .38, .56, .75, .93, 1.11, 1.19, 1.27 (x/L -0.13 ... .99); phi 90 and 180: 0 to 1.27 (same without -0.17); internal: rake plane x/L -0.19 (phi 0, 90, 270); phi 315: 3.81 cm from exit (x/L 0.81); base pressure 0.22 cm from exit (x/L 0.99)",-,46,fig. 17 table
+TN D-6789,reference nozzle axial origin,Sta. 102.32 (x arrow in fig. 17),-,46,
+TM X-1960,model,air-powered cone-cylinder nacelle with a rounded shoulder at the nose-cylinder junction; interchangeable variable-flap nozzle configurations aft of Sta. 104.14,-,8; 29,text PDF p8; fig. 2 (p29)
+TM X-1960,maximum diameter dm,15.24,cm,29; 31,figs. 2 and 4
+TM X-1960,overall length,"104.14 + L, with L/dm from the fig. 4 table (e.g. 119.38 cm for L/dm 1.000, computed); sting-mounted replica 119.4 cm long, fineness ratio 7.83",cm,31; 21,fig. 4 table; appendix B p21. Not stated as one number for the test model
+TM X-1960,nose shape,"cone, 14 deg marked at the tip in fig. 2 (between the axis and the cone line as drawn), joined to the cylinder by a 20.75 cm radius shoulder",-,29; 8,fig. 2; text p8 'rounded shoulder'
+TM X-1960,nose length,not dimensioned,-,29,
+TM X-1960,nose tip,sharp (as drawn and in the fig. 1 photograph),-,28; 29,no tip radius stated
+TM X-1960,nose tip radius,not stated,-,,
+TM X-1960,nose coordinates,not tabulated,-,,
+TM X-1960,cylinder length,not dimensioned (cylinder from the end of the shoulder radius to Sta. 104.14; balance gap at Sta. 52.07),-,29,
+TM X-1960,boat-tail angles and lengths read here,"config. 3 (l/dm 1.0, beta 3.00), 4 (1.0, 5.02), 5 (1.0, 10.00), 6 (1.0, 15.00), 9 (0.8, 3.30), 10 (0.8, 5.00), 11 (0.8, 10.00), 12 (0.8, 15.00), 15 (0.6, 3.00), 16 (0.6, 5.00), 17 (0.6, 10.00), 18 (0.6, 15.00), 19 (0.6, 7.50), 20 (0.6, 20.00), 21 (0.638, 15.00)",deg,31,fig. 4 table
+TM X-1960,base diameter db/dm,"config. 3 .895, 4 .825, 5 .653, 6 .482, 9 .916, 10 .861, 11 .722, 12 .586, 15 .937, 16 .895, 17 .792, 18 .698, 19 .843, 20 .590, 21 .670",-,31,fig. 4 table; Ab/Am .802 .681 .426 .233 / .839 .741 .521 .343 / .878 .802 .627 .475 .711 .347 / .449
+TM X-1960,nozzle exit (jet-off base),"Ae/Ab: config. 3 .970, 4 .965, 5 .955, 6 .939, 9 .968, 10 .965, 11 .959, 12 .950, 15 .968, 16 .967, 17 .962, 18 .957, 19 .642 (base annulus), 20 .950, 21 .956; open nozzle exit with a small rim between db and de",-,31; 11,fig. 4 table; text p11: forces on the small rim at the nozzle exit between db and de are not included. Configuration 19 has a larger base annulus (text p11)
+TM X-1960,boat-tail profile,straight cone (fixed boattail angle aft of the theoretical flap hinge point at Sta. 104.14),-,9; 31,text p9 'selected fixed boattail angles'; fig. 4 sketch straight
+TM X-1960,boat-tail form,"bodies of revolution: the configurations simulate positions of variable-flap convergent-divergent nozzles, but the models are fixed conical afterbodies (fig. 4 end view drawn as circles); no flaps, facets or steps are described",-,9; 31,
+TM X-1960,flaps (number; facets; orifices on flap centrelines),not applicable (no flaps on the tested models as described),-,9; 31,
+TM X-1960,shoulder,sharp corner,-,9,text p9 'The junction of the cylindrical section and the boattail was machined as a sharp corner'
+TM X-1960,orifice stations,"not opened: tables I and II are outside the pages named in the brief; stations as plotted in figs. 5 and 6 (x/dm about -0.02, 0.02, 0.08, 0.25, 0.50, 0.75, 0.97 for l/dm 1.0; 0.02, 0.08, 0.15, 0.30, 0.45, 0.58 for l/dm 0.6); meridians phi 0, 45, 90, 135, 157.5, 180 (fig. 5 legend)",-,32-37,
+TM X-1960,axial station origin,"boattail corner, Sta. 104.14 (x arrow in figs. 2 and 4; appendix B p19)",-,29; 31; 19,
+TM X-1960,model support,"floor-mounted strut, 5 percent thick, swept back, leading-edge sweep 45 deg, trailing edge 37.5 deg, 50.80 cm chord at the model centre line, biconvex section (30/40/30 percent chord); its leading edge starts at the nose tip, so at the model centre line it spans about Sta. 0 to 50.8, about 53 cm (3.5 dm) ahead of the boattail corner; it meets the model on the underside (phi 180: appendix B p20 gives the strut wake at phi 180). Model centre line 91.40 cm below the tunnel centre line and 153 cm above the floor",-,8; 29; 19; 20,
+TM X-1960,support effect on boat-tail pressures,"appendix B: cylindrical afterbody pressures about equal on all rows except near the base where the bottom row is lower, possibly the strut (p19); boundary layer consistent except at phi 180, total-pressure loss in the strut wake (p20); strut-mounted model pressures agree closely with a centre-line sting model except at the station nearest the base; at M 1.00 a rise just ahead of the base may be strut induced; at supersonic speeds strut-mounted pressures are generally somewhat lower than sting-mounted (p22); at M 1.3 both strut-mounted models show lower pressures than the sting model between xn/dm 6 and 8 (p22)",-,19-22,
+TM X-1960,wall or shock reflections,appendix B p21: at M 1.00 a flow-field recompression influenced by the strut; for M 1.05 to 1.30 shock reflections progress aft and at M 1.20 are far enough behind the base of the normal-length model not to influence its pressures; test section of uniform Mach number shortens above M 1.0 to about 2.44 m at M 1.30 (p20),-,20; 21,
+TM X-1960,fins tails wings bumps,none besides the strut,-,29,
+TM X-1960,sting diameter,none for the test model (strut support); a separate sting-mounted survey body was used for comparison (appendix B),-,29; 21,
+TM X-1960,tunnel,"Langley 16-foot transonic tunnel, single return, continuous, octagonal slotted test section 4.73 m across the flats; Mach number up to 1.3 by plenum suction; stagnation pressure about atmospheric",-,8,text p8
+TM X-1960,blockage,maximum blockage cross section of model and support 0.19 percent,-,19,appendix B p19
+TM X-1960,Mach number,"0.30 to 1.30 (points read here at 1.20, 1.25 and 1.30 only, per the brief)",-,10,text p10
+TM X-1960,Reynolds number,not stated in the pages read,-,8-12; 19-22,
+TM X-1960,boundary-layer transition or trip,fixed 5.08 cm from the nose by a strip of No. 100 grit about 5 mm wide,-,8,text p8 (the sting-mounted survey body used No. 80 grains 2.54 cm back; appendix B p22 says the strip had a negligible effect on afterbody pressures there)
+TM X-1960,boundary-layer thickness,"about 1.52 cm (delta/dm 0.1) approaching the corner, consistent except at phi 180 (strut wake); displacement thickness about 0.011 dm; momentum thickness 0.0080 dm at M 0.60 and 0.0092 dm at M 1.30; local Mach number at the corner 0.012 to 0.016 above free stream for M 0.9 to 1.30",-,19; 20,appendix B
+TM X-1960,angle of attack,0,deg,10,
+TM X-1960,"axial-force coefficient C_A,beta","nozzle external pressure drag on the projected area Am to Ab (boattail only, exit rim excluded, skin friction excluded), on maximum cross-sectional area Am, from the phi = 0 orifices by area summation or planimeter integration (planimeter for large boattail angles); config. 19 also given as boattail plus base annulus",-,11,text p11
+TM X-1960,fig. 11 coefficients,"C_A computed from all rows of pressures plus base axial force (on q Am); C_A,bal from the balance corrected for gap force and skin friction (gap to base); both include the base",-,11; 12; 48,
+TM X-1960,jet-off marking,"captions of figs. 5, 6, 7, 8, 9, 10, 11 and 18 all say 'jet off'",-,32-48; 83,
+TM X-1960,reference nozzle (S.T.A.) profile,"external boattail: circular arc as drawn (radius line labelled 3.50 dm with a break); internal elliptical contour faired into radius 0.25 dm; Sta. 102.32 to exit Sta. 121.92, L = 19.61 cm, L/dm 1.286, db = 7.77 cm (db/dm 0.510), dth 7.62, Ab/Am 0.260, Ae/Ab 0.980, Ath/Am 0.250, s/dth 1.000, exit epsilon 1.000",-,82,"fig. 17 (my reading of the sketch). TN D-6789 fig. 17, the same drawing, gives Ae/Ab 0.962"
+TM X-1960,reference nozzle orifices,"external phi 0: x/dm -0.17, 0, .19, .38, .56, .75, .93, 1.11, 1.19, 1.27; phi 90 and 180: 0 to 1.27; base pressure 0.22 cm from exit (x/L 0.99, phi 315 internal list)",-,82,fig. 17 table
