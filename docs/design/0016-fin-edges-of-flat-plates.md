@@ -1447,8 +1447,12 @@ not represented.
 
     D(S) / (q s) = kappa(M_n) Cp_pitot(M_n) cos^2(S) r 2 (cos(delta) - cos^3(delta) / 3),
 
-M_n = M cos(S). Beyond 60 deg the principle is not checked: the one yawed
-point there, Penland's at 75.1 deg, has an end effect (TN 3861 p. 10).
+M_n = M cos(S). Beyond 60 deg the principle's error is not measured well
+enough to set a band: the yawed cylinders there are Penland's at 75.1
+deg, which TN 3861 p. 10 flags for an end effect, and Lord and Ulmann's
+at 70 and 75 deg on TN 3861's crossflow plots, unpublished, the 75 deg
+one flagged high (p. 11). (As first committed, only Penland's point was
+named here; the review of 2026-10-27, section 21.5.)
 
 **The bounds**, at the case's Mach and Reynolds numbers:
 
@@ -1484,33 +1488,103 @@ refused with the term's own reasons, as at any sweep.
   which the term at 60 deg contains within its served band (section 5).
   For the ordering to fail, the principle's error at S would have to
   exceed the upper bound's high end over the term at S, which is at
-  least 1.29 and grows with S as the term at S falls below the term at
-  60 deg; every measured ratio r at any yaw is 1.217 or less (the first
-  reading's misread 1.263 at 60 deg aside, section 16), the 75.1 deg
-  point 1.013 and 1.170.
+  least 1.234 and grows with S as the term at S falls below the term at
+  60 deg (the least just past 60 deg at M 2.2, M_n 1.10, on kappa's 1.1
+  node; as first committed, "at least 1.29", which was wrong: the review
+  of 2026-10-27). Every measured ratio r at any yaw is 1.217 or less (the
+  first reading's misread 1.263 at 60 deg aside, section 16), the 75.1
+  deg point 1.013 and 1.170 as read. Just past 60 deg the margin is
+  thin, 1.4% over 1.217, and there, at normal Mach numbers near 1.1, no
+  yawed cylinder is measured (none below M_n 1.95 at a served sweep,
+  section 16): the upper ordering there rests on the principle and on
+  the sweep allowance extrapolated in normal Mach number, as the 60 deg
+  term's own label, carried whole into the bounded label, says.
 
 - _Lower._ The principle is exact for the inviscid flow past an infinite
-  yawed cylinder at any sweep. The departures measured, at every yaw from
-  14.3 to 75.1 deg on both readings, put the front side at 0.987 of the
-  principle or more, above the allowance's low end, 0.95. Beyond 60 deg
-  the one point is Penland's at 75.1 deg, at 1.013 and 1.170, with an
-  end effect that raised it. The lower ordering beyond 60 deg rests on
-  this one point and on the principle, and the label says so.
+  yawed cylinder at any sweep; what departs from it is the real flow,
+  the boundary layer and, on a model, its ends. The lower bound is the
+  term at S at its band's low end, 0.81 to 0.94 of the term (TN 2960's
+  or kappa's low end, the Reynolds allowance where it applies, times
+  0.95). To 60 deg the departures measured on RM A55H31 fig. 12 put the
+  front side at 0.987 of the principle or more. Beyond 60 deg the yawed
+  cylinders measured are the three crossflow points of TN 3861 figs. 15
+  to 17 below a crossflow Mach number of 3.37 (section 16, item 1(b);
+  `fin_edges_w34.md` section 4): the stagnation pressure (fig. 15) and
+  the downstream-side pressure (fig. 16), each read twice, and the front
+  side estimated from them with the drag (fig. 17, read once) as F =
+  C_D + Cp_down:
+
+  | Set, crossflow Mach number            | Sweep    | Stagnation pressure over Rayleigh's (two readings) | F over modified Newtonian (two readings of fig. 16)            | F over the term at its sweep | What TN 3861 says of it                                   |
+  | ------------------------------------- | -------- | -------------------------------------------------- | -------------------------------------------------------------- | ---------------------------- | --------------------------------------------------------- |
+  | Lord and Ulmann, M 4.04, 1.38 to 1.41 | 70 deg   | 1.067, 1.066                                       | 1.053, 1.048                                                   | 1.08 to 1.10                 | unpublished; its Reynolds number not stated               |
+  | Lord and Ulmann, M 4.04, 1.04         | 75 deg   | 1.528, 1.497                                       | 1.445, 1.445                                                   | 1.83                         | flagged high (p. 11); unpublished                         |
+  | Penland, M 6.86, 1.73 to 1.76         | 75.1 deg | 1.171, 1.172                                       | 1.166, 1.165 (1.147, 1.146 of TN 2960's integrated front side) | 1.17                         | an end effect, the shock not parallel to the body (p. 10) |
+
+  ("The term" is kappa times modified Newtonian below M_n 1.49, modified
+  Newtonian above.) Every one lies above the principle, on the
+  stagnation pressure (read twice) and on the front side estimated (read
+  once in part). The estimate is off by up to 0.086 of modified
+  Newtonian on TN 2960's own cylinders (section 16); with that taken
+  off, every one still lies above the lower bound's end (at 70 deg 0.96
+  of modified Newtonian against the bound's 0.81; at 75 deg 1.36 against
+  0.69 to 0.71; at Penland's 1.08 against 0.94). Two of the three are
+  flagged by the report, and neither flag says by how much, or which
+  way, the front side is moved; the third is unpublished. The stagnation
+  pressures alone, read twice, lie above the principle too, though the
+  stagnation line alone does not make the front side. The lower ordering
+  beyond 60 deg rests on these three points and on the principle, and
+  the label says so; beyond 75.1 deg (served only above Mach 3.9, to
+  80.4 deg at Mach 6.0) it rests on the principle alone, and the label
+  says that too. Fig. 17 has one reading; a blind second reading of its
+  three crossflow points is the coordinator's to arrange.
+
+- _RM A55H31 at 75.1 deg, disclosed._ Penland's crossflow point is the
+  same test as RM A55H31's reference-1 point at 75.1 deg. On fig. 11 its
+  stagnation-line pressure over the free stream's pitot pressure is
+  0.046 (first reading, at 75.2 deg as read) and 0.0567 (second, at
+  74.75 deg): 0.631 and 0.738 of Rayleigh's pitot pressure on the normal
+  Mach number, below the principle, against TN 3861 fig. 15's 1.171 and
+  1.172 above it. The readings' own errors (0.004 and 0.001 of the
+  ratio) move those by at most 0.06, so the two reports disagree at this
+  point, and neither says why; RM A55H31's reference-1 values were
+  formed on RM L54A14, before TN 3861's correction for its nozzle's local
+  Mach number (section 5), by an amount neither report states. On fig.
+  12 the point's r is 1.013 and 1.170 on the two readings, but there r
+  moves 0.068 for each 0.001 of fig. 12's ratio (0.021 to 0.023), so
+  within the second reading's stated error, 0.002, r spans 0.877 to
+  1.149 (within the first's 0.004, 0.90 to 1.44): the point alone cannot
+  show r of 0.95 or more. As first committed, this paragraph rested the
+  lower ordering on this one point, "with an end effect that raised it";
+  neither report says which way the end effect moved it, and that claim
+  is withdrawn (the review of 2026-10-27).
 - _A check that sets nothing._ At the 75.1 deg point's own conditions (M
   6.86, M_n 1.76) the bounds are 0.055 (the term at 75.1 deg, 0.0584 of
   the unyawed per unit span, times 0.99 and 0.95) and 0.315 (the term at
-  60 deg, 0.2434, times 1.06 and 1.22); the point's two readings, 0.059
-  and 0.068, lie inside.
+  60 deg, 0.2434, times 1.06 and 1.22), 0.94 to 5.4 of the principle at
+  75.1 deg; the term at 60 deg is taken there at M_n 3.43, beyond the 3.0
+  served, so this is a check only. The point's two readings, 0.059 and
+  0.068 (r 1.013 and 1.170), lie inside; r at the second reading's error's
+  low end, 0.877, would not. At Lord and Ulmann's points (M 4.04; M_n
+  1.38 at 70 deg and 1.05 at 75 deg; their Reynolds numbers not stated,
+  so the band of every regime the term serves there) the band is 0.81 to
+  3.09 or 3.18 of modified Newtonian at 70 deg and 0.69 or 0.71 to 6.15
+  or 6.32 at 75 deg, and the estimates, 1.048 to 1.053 and 1.445, lie
+  inside. The review of 2026-10-27 made the same checks;
+  `tests/fins/rounded-leading-edge-beyond-60.test.ts` holds them.
 
 **Against 10.2's rules.** Both bounds are measured terms with their own
 bands (section 5's, TN 2960 or NASA CR-149372 with RM A55H31's sweep
 allowance), and the ordering is shown above, before the number is
-served. Its evidence beyond 60 deg is one yawed point with an end effect,
-named in amendment (ab); fig. 12's values were read twice (and looked at
-a third time) for sections 5, 14 and 16 before that entry, which names
-their new use and reads nothing new. The value served is the midpoint,
-the band the whole gap, the label names both bounds, and a total that
-contains it is at best an estimate and names it.
+served. Its evidence beyond 60 deg is TN 3861's three crossflow points
+at 70 and 75 deg, two of them flagged by the report and one
+unpublished, named for this use in (ab)'s addendum of 2026-10-27 (as
+first committed, Penland's one point on fig. 12, named in (ab)). Fig.
+12's values were read twice (and looked at a third time) for sections
+5, 14 and 16, and TN 3861 figs. 15 and 16 twice and fig. 17 once for
+section 16, before those entries, which name their new use and read
+nothing new. The value served is the midpoint, the band the whole gap,
+the label carries both bounds whole, each with its own sources, and a
+total that contains it is at best an estimate and names it.
 
 ### 21.3 The computed check of 21.1 (registered here, before it is run)
 
@@ -1656,6 +1730,10 @@ until the readings are paired and judged under (af).
   gap in C_D in its band text and `bounded` (`SWEPT_EDGE_BOUNDED_REASON`)
   for the total's claim; `DragComponent.bounded` is a new optional field
   (`src/total/total-drag.ts`). Square-cut edges: `SQUARE_EDGE_REFUSAL`.
+  Since the review of 2026-10-27 (21.5) the band text names each bound's
+  own source, band and regime (`roundedEdgeSource`), the label carries
+  both terms whole, and `SQUARE_EDGE_REFUSAL` names all three failed
+  cases.
 - `src/app/total-drag.ts`: `boundedReasons` names every bounded component
   once in the claim, after the fins-on-base factor's.
   `src/app/status-words.ts`: "Estimate, bounded" with "An estimate with
@@ -1688,3 +1766,58 @@ at Mach 1.8 to 3.0, and every one of them is refused for another part
 (chiefly fins at the base the rebuilt factor does not measure, whose
 share as the sole blocker rises from 1.13% to 1.19%). Square-cut edges
 stay refused in 15.3% of cases (the sole blocker in 0.76%).
+
+**The refused total's floor.** In those about 30 cases the refused
+total (0011 section 10) shows the bounded edge among its served parts,
+with its band and label, and where the floor is offered the edge's low
+end, the term at its sweep at its band's low end, is in the sum. The
+floor stays a floor there only if the lower ordering of 21.2 holds, so
+for those cases the floor rests on it too. (As first committed, this
+section did not say so; the review of 2026-10-27.)
+
+### 21.5 The review of 2026-10-27
+
+An independent review of 3389a04..2fbe1a3, with 5e47532, confirmed the
+code, the numbers, the population and the square edge's verdict, and
+found two blocking items and eight smaller ones. The fixes follow
+5e47532 on this branch.
+
+- _Blocking 1, the label beyond 60 deg._ At M 2.2 on a 3 mm plate (Re_D
+  2e5) the term at 59.9 deg carried "extrapolated in Reynolds number",
+  "no yawed datum below M_n 1.95 at a served sweep" and NASA CR-149372;
+  the bounded term at 60.1 deg carried none of them, and called the 60
+  deg term "the largest sweep checked on yawed cylinders", though at its
+  normal Mach number, 1.10, no yawed cylinder is measured. Now the label
+  carries each term whole, its own label after "Lower:" and "Upper:",
+  and the component's band text names each bound's source, band and
+  regime; `RoundedLeadingEdge.bounded` keeps both terms. Tested at the
+  review's case either side of 60 deg, and the band text whole.
+- _Blocking 2, the lower ordering beyond 60 deg._ Rewritten in 21.2 on
+  TN 3861's crossflow points at 70 and 75 deg, with RM A55H31 fig. 11's
+  disagreement at 75.1 deg and fig. 12's sensitivity there disclosed; "an
+  end effect that raised it" withdrawn. Beyond 75.1 deg the label says
+  the ordering rests on the principle alone
+  (`LARGEST_YAWED_SWEEP_DEGREES`). The checks the review made (Penland's
+  point inside 0.94 to 5.4 of the principle, Lord and Ulmann's inside the
+  band at 70 and 75 deg) are in 21.2 and held by a test. (ab)'s addendum
+  of 2026-10-27 names the new use of TN 3861's figures; nothing new is
+  read.
+- _The smaller items._ (1) 21.2's "at least 1.29" corrected to 1.234,
+  with its thin margin disclosed; (2) a page test that a served total's
+  claim names the bounded edge; (3) a test of the rounded wedge's path;
+  (4) `demos/nose-drag.html` says a rounded edge beyond 60 deg is bounded;
+  (5) `SQUARE_EDGE_REFUSAL` names every failed case; (6) 21.4 says the
+  bounded edge's low end enters the refused total's floor; (7) a rounded
+  edge refused past 60 deg is offered less sweep beside a bevelled edge;
+  (8) the solver's output records its time scheme from now on (the
+  registered runs used `SCHEME=explicit`, as 21.3's protocol states),
+  and `summary.py` prints an envelope with no samples as empty.
+- _Planted errors._ The claim built from the base alone, the wedge
+  path's `bounded` dropped, the lower term's label left out of the
+  bounded label, the band text without the bounds' sources, and the
+  less-sweep change lost: each fails a test.
+- _(af)_ is amended by a dated addendum, before any reading (0014
+  section 10.7): criterion (ii) counts the error against the claim, P1's
+  test is stated set by set, criterion (iii) is information only, and
+  the Reynolds number is served only inside the range the paired sets
+  measured.

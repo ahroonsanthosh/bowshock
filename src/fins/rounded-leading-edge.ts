@@ -352,6 +352,13 @@ export const SWEEP_ALLOWANCE = (() => {
 })();
 /** The largest sweep served: the largest yaw among the checks the reports do not set apart. */
 export const SWEEP_LIMIT_DEGREES = 60;
+/**
+ * The largest sweep of a yawed cylinder measured beyond 60 deg: Penland's
+ * 75.1 deg point, on TN 3861's crossflow plots with Lord and Ulmann's at 70
+ * and 75 deg (0016 section 21.2). Beyond it the lower bound's ordering rests
+ * on the principle alone, and the label says so.
+ */
+export const LARGEST_YAWED_SWEEP_DEGREES = 75.1;
 /** The coordinator's least interim sweep allowance below M_n 3.37 (review of 2026-10-21; 0016 section 16). */
 export const INTERIM_SWEEP_FLOOR = { low: 0.95, high: 1.21 } as const;
 
@@ -813,7 +820,8 @@ export interface RoundedLeadingEdgeInput {
  * grows (the principle), and the front side's drag per unit span falls
  * with yaw on every series of RM A55H31 fig. 12 (Penland's to 75.1 deg);
  * the lower bound's ordering beyond 60 deg rests on the principle and on
- * that one yawed point. Both terms must be served.
+ * TN 3861's crossflow points at 70 and 75 deg, every one above it. Both
+ * terms must be served.
  */
 function beyondSweepLimit(
   input: RoundedLeadingEdgeInput,
@@ -835,8 +843,8 @@ function beyondSweepLimit(
     throw new FinRefusal(
       failed[0]![0],
       `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg, beyond the ` +
-        `${SWEEP_LIMIT_DEGREES} deg the yawed-cylinder checks of the independence principle reach ` +
-        '(RM A55H31 fig. 12; at 75 deg the only point has an end effect), is served only bounded, ' +
+        `${SWEEP_LIMIT_DEGREES} deg where the yawed-cylinder checks of the independence principle ` +
+        'end (RM A55H31 fig. 12), is served only bounded, ' +
         `between the term at its sweep and the term at ${SWEEP_LIMIT_DEGREES} deg, and both must ` +
         `be served (0016 section 21.2): ${failed.map(([, m]) => m).join('; and ')}`,
     );
@@ -861,7 +869,12 @@ function beyondSweepLimit(
       "on every series of RM A55H31 fig. 12; the lower bound's ordering beyond 60 deg rests on " +
       "the principle and on TN 3861's crossflow points at 70 and 75 deg (their stagnation " +
       'pressures, fig. 15, read twice; their front sides estimated with fig. 17, read once), ' +
-      'every one above the principle (0016 section 21.2)',
+      'every one above the principle' +
+      (sweepDegrees > LARGEST_YAWED_SWEEP_DEGREES
+        ? `; beyond ${LARGEST_YAWED_SWEEP_DEGREES} deg, the largest sweep among them, it rests ` +
+          'on the principle alone'
+        : '') +
+      ' (0016 section 21.2)',
     reynoldsOnDiameter: lower.reynoldsOnDiameter,
     normalMach: lower.normalMach,
     sweepDegrees,

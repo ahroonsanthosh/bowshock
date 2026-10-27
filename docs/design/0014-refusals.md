@@ -2036,5 +2036,94 @@ the result recorded in 0016 section 21; route (b) of 21.3 stays open.
 The readers' brief, with identifiers and what to read only, is
 `docs/research/square-edge/readers/brief.md`.
 
+**2026-10-27: addendum to (ab), after the review of 2026-10-27** (the
+independent review of 3389a04..2fbe1a3, which found (ab)'s label and its
+lower ordering wanting; 0016 section 21.5). (ab)'s text above stands as
+written; this addendum changes it as follows.
+
+- _The data named for the lower ordering beyond 60 deg_ (rule 2 of
+  10.1, a new use of figures already read): TN 3861 figs. 15 and 16
+  (each read twice, the second blind, for 0016 section 16) and fig. 17
+  (read once), at their three crossflow points at sweeps beyond 60 deg:
+  Lord and Ulmann's at 70 and 75 deg and Penland's at 75.1 deg. They
+  are evidence of the ordering only, never a band's end. Nothing new is
+  read, so no blind reading is owed for this use; fig. 17's second
+  reading, if wanted, is the coordinator's to arrange.
+- _Penland's point on RM A55H31 fig. 12_ stays named, but the lower
+  ordering no longer rests on it: within its reading error r spans 0.877
+  to 1.149, and RM A55H31 fig. 11 puts the same test's stagnation
+  pressure at 0.631 and 0.738 of Rayleigh's, against TN 3861's 1.17
+  (both disclosed in 0016 section 21.2). The claim that its end effect
+  raised it is withdrawn.
+- _Beyond 75.1 deg_, the largest sweep among those points, the lower
+  ordering rests on the principle alone, and the label says so.
+- _The label_ is no longer the one quoted above. It carries each term
+  whole, the lower and the upper, each with its own sources, regime and
+  limits, and no longer calls the 60 deg term "the largest sweep checked
+  on yawed cylinders" (at its own normal Mach number none may be); the
+  component's band text names each bound's source, band and regime. The
+  label was changed in 9c5e5dd, before this addendum; the change reads
+  no value and sets no band.
+- _The upper ordering's least margin_ is 1.234 of the term at the sweep
+  (M 2.2, just past 60 deg), not the 1.29 first written in 0016 section
+  21.2: 1.4% over the largest measured r, 1.217, at normal Mach numbers
+  where no yawed cylinder is measured.
+
+**2026-10-27: addendum to (af), after the review of 2026-10-27, before
+any reading.** Written after the independent review of 3389a04..2fbe1a3
+(with 5e47532) and before any reading of the sets (af) names has been
+paired, compared or seen by anyone for this repository; the readers are
+still working blind and are not told of it. (af)'s text above stands as
+written; where this addendum differs, it governs.
+
+- (a) _Criterion (ii) counts the error against the claim._ P2 passes
+  only if every face reading, the lower of the two readings, is at least
+  0.5283 + a, not 0.5283 - a. No face orifice is excluded, the ones
+  nearest the corner included. If those nearest the corner fail it, P2
+  fails, and square-cut leading edges stay refused.
+- (b) _Which sets test P1._ Where a report gives its face pressures over
+  its own measured stagnation-point pressure, P1 (at most p02) holds by
+  construction and that set does not test it; a set tests P1 only where
+  its face pressures are given over a reference not measured on the face
+  (the free stream's static or total pressure, or p02 from the stated
+  Mach number). Which sets do which is not known from the captions and
+  summaries seen; it is taken from each report's own statement, which
+  both readers record (`geometry.csv`, "what the pressures are
+  normalised by"), and the pairing's record names, before any value is
+  compared, the sets that test P1 and those that do not. P1's criterion
+  stays: every face reading, the higher of the two readings, at most 1 +
+  a, on the sets that test it. If no set tests it, P1 rests on 0016
+  section 21.1's argument alone, the record says so, and the owner
+  decides whether square-cut edges may then be wired.
+- (c) _Criterion (iii) is information only._ An axisymmetric face's mean
+  is not a planar face's, so criterion (iii) does not test the planar
+  face's margin (0016 section 21.1, items 4 and 5). It is computed and
+  recorded, and passes or fails nothing. On a pass, the label says the
+  planar face's margin is an analogy, not tested.
+- (d) _The Reynolds number._ (af)'s floor on a pass, 6.7e3 on the
+  thickness (21.1 item 7), rests on an estimate that uses the failed
+  computed check (the stagnation-point velocity gradient of 21.3's
+  solutions), which the owner's rule against unverified estimates
+  forbids; it is withdrawn. On a pass, square-cut leading edges are
+  served only where the face Reynolds number (on the face's height: a
+  fin's thickness, a set's cylinder diameter; the normal component on a
+  swept edge) lies inside the range the paired sets measured, from the
+  least to the largest. Outside it they are refused, in plain words:
+  "a square-cut leading edge is served only where the air's Reynolds
+  number across its face lies within the range measured on flat faces,
+  X to Y; this edge's is Z". No trend criterion is registered to extend
+  it: TN 4300's 4 in and 12 in models differ by a factor of three in
+  Reynolds number, far less than the gap below. Any extension below the
+  measured range is the owner's to agree later; by default there is
+  none. For scale: the sets' Reynolds numbers are of order 1e6 on the
+  diameter (the least seen in their summaries and text, 0.90e6, TM
+  X-19), while a hobby fin 1 to 6 mm thick at Mach 2 near sea level has
+  a face Reynolds number of about 5e4 to 3e5 (4.7e7 per metre), and less
+  at altitude; so a pass alone would serve no hobby fin unless a set's
+  measured range reaches down to it.
+- (e) _Sweep and Mach number stand._ Swept edges to 60 deg, labelled an
+  analogy, and the normal Mach numbers 2.0 to 3.0 stand as (af) wrote
+  them.
+
 The letters (w) to (z) are allocated to other branches; the next free
 letter is the coordinator's to allocate.

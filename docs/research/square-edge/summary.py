@@ -12,13 +12,18 @@ def f(x, fmt='%.3f'):
     return 'none' if x is None else fmt % x
 
 
+def face(e, key):
+    # An envelope with no samples (a solve that stopped before its second half) is printed empty.
+    return 'empty' if e.get('samples', 1) == 0 else f(e[key])
+
+
 print('M     rho   grid     steps  residual  | face: max M  min p/p02  max p/p02 | mean min-max   | sonic point')
 for d in rows:
     e = d['envelope']
     print('%-5s %-5s %3dx%-3d %6d  %8s  |       %s    %s      %s     | %s-%s    | %s %s' % (
         d['mach'], d['rho'], d['ni'], d['nj'], d['steps'], f(d['residual'], '%.1e'),
-        f(e['maxIsentropicMachFace']), f(e['minPOverP02Face']), f(e['maxPOverP02Face']),
-        f(e['faceMeanMin']), f(e['faceMeanMax']), '; '.join(e['sonicAt']), d['note'][:60]))
+        face(e, 'maxIsentropicMachFace'), face(e, 'minPOverP02Face'), face(e, 'maxPOverP02Face'),
+        face(e, 'faceMeanMin'), face(e, 'faceMeanMax'), '; '.join(e['sonicAt']), d['note'][:60]))
 
 print()
 print('The registered pass criterion (0016 section 21.3, as amended before the runs), on the finest grid:')

@@ -5,7 +5,7 @@ M     rho   grid     steps  residual  | face: max M  min p/p02  max p/p02 | mean
 2     0.02   36x24   20000   1.9e-03  |       0.953    0.558      1.009     | 0.787-0.944    | on the rounding, 11 deg into its turn 
 2     0.02   72x48    6000   1.7e-05  |       0.796    0.658      0.991     | 0.908-0.909    | on the rounding, 6 deg into its turn 
 2     0.02  144x96    4000   6.5e-02  |       0.960    0.553      1.074     | 0.862-0.942    | on the rounding, 3 deg into its turn; on the rounding, 8 deg into its turn 
-3     0.04   36x24    9700   9.4e-10  |       0.000    none      0.000     | none-none    |  
+3     0.04   36x24    9700   9.4e-10  |       empty    empty      empty     | empty-empty    |  
 3     0.04   72x48    6000   1.1e-06  |       0.786    0.665      0.995     | 0.906-0.906    | on the rounding, 6 deg into its turn 
 3     0.04  144x96    4000   2.5e-01  |       0.995    0.531      1.023     | 0.844-0.949    | on the rounding, 8 deg into its turn; on the rounding, 3 deg into its turn 
 3     0.02   36x24   20000   3.1e-04  |       0.920    0.578      1.010     | 0.734-0.935    | on the rounding, 11 deg into its turn; on the rounding, 34 deg into its turn 
@@ -17,7 +17,7 @@ M     rho   grid     steps  residual  | face: max M  min p/p02  max p/p02 | mean
 1.5   0.02   36x24   10500   8.7e-10  |       0.704    0.718      1.003     | 0.917-0.917    | on the rounding, 11 deg into its turn 
 1.5   0.02   72x48    6000   6.8e-06  |       0.784    0.667      1.000     | 0.908-0.909    | on the rounding, 6 deg into its turn 
 1.5   0.02  144x96    4000   3.2e-04  |       0.831    0.636      1.001     | 0.907-0.908    | on the rounding, 3 deg into its turn 
-1.2   0.04   36x24   10000   9.6e-10  |       0.000    none      0.000     | none-none    |  
+1.2   0.04   36x24   10000   9.6e-10  |       empty    empty      empty     | empty-empty    |  
 1.2   0.04   72x48    6000   7.7e-05  |       0.761    0.682      1.005     | 0.871-0.877    | on the rounding, 17 deg into its turn 
 1.2   0.04  144x96    4000   2.3e-03  |       0.806    0.652      1.015     | 0.865-0.888    | on the rounding, 8 deg into its turn 
 1.2   0.02   36x24   10600   9.2e-10  |       0.700    0.721      1.003     | 0.902-0.902    | on the rounding, 11 deg into its turn 

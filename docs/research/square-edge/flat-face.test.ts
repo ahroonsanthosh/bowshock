@@ -301,7 +301,7 @@ it('flat-faced plate, planar Euler, nested grids', () => {
             const k = at[0]! + at[1]! * (g.ni + 1);
             appendFileSync(
               OUT.replace('.jsonl', '-trace.jsonl'),
-              JSON.stringify({ mach, rho, turn: TURN, recon: process.env.RECON, limiter: process.env.LIMITER, level, steps, cfl, res, mean, worstCell: at, worstX: g.x[k], worstY: g.y[k], minUOutflow: minU, minP }) + '\n',
+              JSON.stringify({ mach, rho, turn: TURN, scheme, recon: process.env.RECON, limiter: process.env.LIMITER, level, steps, cfl, res, mean, worstCell: at, worstX: g.x[k], worstY: g.y[k], minUOutflow: minU, minP }) + '\n',
             );
           }
           if ((change < 1e-8 && res < 1e-9) || steps >= maxSteps) break;
@@ -333,6 +333,9 @@ it('flat-faced plate, planar Euler, nested grids', () => {
             mach,
             rho,
             turn: TURN,
+            // The time scheme, recorded from 2026-10-27. The registered runs (0016 section 21.3)
+            // used SCHEME=explicit, as the protocol amended before them states; their lines lack it.
+            scheme,
             flux: process.env.FLUX ?? 'hllc',
             reconstruction: process.env.RECON ?? 'sharedScaled',
             limiter: process.env.LIMITER ?? 'vanAlbada',

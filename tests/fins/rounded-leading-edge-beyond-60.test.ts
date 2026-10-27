@@ -95,7 +95,18 @@ describe('the bounds', () => {
     expect(e.label).toMatch(/fig\. 17, read once\), every one above the principle/);
     // The 60 deg term is no longer said to be checked on yawed cylinders at its own M_n.
     expect(e.label).not.toMatch(/largest sweep checked on yawed cylinders/);
-    expect(e.label).toMatch(/\(0016 section 21\.2\)$/);
+    expect(e.label).not.toMatch(/principle alone/);
+    expect(e.label).toMatch(/every one above the principle \(0016 section 21\.2\)$/);
+  });
+
+  it('beyond 75.1 deg, the largest yawed sweep measured, the label says the ordering rests on the principle alone', () => {
+    // M 5.0: M_n 1.13 at 77 deg, 2.5 at 60 deg.
+    const e = at(5.0, 77);
+    expect(e.bounded).toBeDefined();
+    expect(e.label).toMatch(
+      /every one above the principle; beyond 75\.1 deg, the largest sweep among them, it rests on the principle alone \(0016 section 21\.2\)$/,
+    );
+    expect(at(5.0, 75).label).not.toMatch(/principle alone/);
   });
 
   it("the review's case either side of 60 deg: M 2.2, a 3 mm plate, Re_D 2e5", () => {
@@ -187,7 +198,7 @@ describe('the ordering', () => {
     expect(b.perSpan).toBeCloseTo(0.2489, 3);
     expect(c.perSpan).toBeCloseTo(0.0683, 3);
     expect(d.perSpan).toBeCloseTo(0.0591, 3);
-    // r at 75.1 deg on both readings: above the allowance's low end.
+    // r at 75.1 deg on both readings: above the allowance's low end as read.
     expect(c.r).toBeCloseTo(1.17, 2);
     expect(d.r).toBeCloseTo(1.013, 3);
     // The check that sets nothing: the bounds at the point's own conditions (M 6.86, M_n 1.76).
@@ -204,6 +215,70 @@ describe('the ordering', () => {
       expect(p).toBeGreaterThan(lowEnd);
       expect(p).toBeLessThan(highEnd);
     }
+    // In units of the principle at 75.1 deg the band is 0.94 to 5.4.
+    expect(lowEnd / c.model).toBeCloseTo(0.9405, 3);
+    expect(highEnd / c.model).toBeCloseTo(5.39, 2);
+  });
+
+  it('r at 75.1 deg moves 0.068 per 0.001 of fig. 12, so the one point cannot show r >= 0.95', () => {
+    const rAt = (value: number) =>
+      sweepChecks(
+        RM_A55H31_FIG12_SECOND.map((p) =>
+          p.source === 'reference 1' && p.statedYaw === 75.1 ? { ...p, value } : p,
+        ),
+      ).find((x) => x.source === 'reference 1' && x.yaw === 75.1)!.r;
+    const read = RM_A55H31_FIG12_SECOND.find(
+      (p) => p.source === 'reference 1' && p.statedYaw === 75.1,
+    )!.value;
+    expect((rAt(read + 0.001) - rAt(read)) / 0.001).toBeCloseTo(68.2, 0);
+    // Within the second reading's stated error, 0.002: 0.877 to 1.149.
+    expect(rAt(read - 0.002)).toBeCloseTo(0.877, 3);
+    expect(rAt(read + 0.002)).toBeCloseTo(1.149, 3);
+    expect(rAt(read - 0.002)).toBeLessThan(0.95);
+  });
+
+  it("TN 3861's crossflow points at 70 and 75 deg (a check that sets nothing): above the principle, inside the band", () => {
+    // docs/research/total-drag/data/fin_edges_w34.md section 4: the front
+    // side estimated as F = C_D + Cp_down (fig. 17 read once, figs. 15 and 16
+    // twice), over modified Newtonian at the crossflow Mach number; the
+    // stagnation pressure over Rayleigh's (fig. 15, read twice).
+    const points = [
+      {
+        name: 'Lord and Ulmann, 70 deg',
+        mach: 4.04,
+        sweep: 70,
+        f: [1.053, 1.048],
+        stag: [1.067, 1.066],
+      },
+      {
+        name: 'Lord and Ulmann, 75 deg (flagged high)',
+        mach: 4.04,
+        sweep: 75,
+        f: [1.445, 1.445],
+        stag: [1.528, 1.497],
+      },
+    ];
+    for (const p of points) {
+      for (const s of p.stag) expect(s).toBeGreaterThan(1);
+      const c = Math.cos(p.sweep * deg);
+      const newtonian = (pitotPressureCoefficient(p.mach * c) * c * c * radius * 4) / 3;
+      // Reynolds numbers unstated: the bands of every regime served.
+      for (const re of [3e4, 1e5, 3e5, 1e6]) {
+        const e = at(p.mach, p.sweep, re);
+        const b = e.bounded!;
+        for (const f of p.f) {
+          // Above the term itself (kappa below M_n 1.49), so above its low end.
+          expect(f * newtonian).toBeGreaterThan(b.lower.dragPerSpan);
+          expect(f * newtonian).toBeGreaterThan(b.low);
+          expect(f * newtonian).toBeLessThan(b.high);
+          // F is off by up to 0.086 of modified Newtonian on TN 2960's own cylinders.
+          expect((f - 0.086) * newtonian).toBeGreaterThan(b.low);
+        }
+      }
+    }
+    // Penland's 75 deg point, M_c 1.73 to 1.76 (kappa 1): F 1.166 and 1.165,
+    // above the band's low end in units of the principle, 0.9405, with 0.086 off.
+    for (const f of [1.166, 1.165]) expect(f - 0.086).toBeGreaterThan(0.9405);
   });
 });
 
