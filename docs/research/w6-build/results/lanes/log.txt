@@ -644,3 +644,32 @@
 2026-10-27T08:35:39.151Z cone3rn0.3M1.5 nj20x4: problem built in 83s (272x80)
 2026-10-27T08:35:39.161Z cone3rn0.3M1.5 nj20x4: resumed from checkpoint at 0 iterations
 2026-10-27T08:51:36.190Z vk3rn0.03M3 nj20x4: start
+2026-10-27T08:56:07.887Z cone3rn0.3M1.5 nj20x4: 2000 iterations, maxSpeed 1.25e-5, residual 2.38e-7, drag 0.114272555370, rate NaN, remaining 0.00e+0
+2026-10-27T09:15:06.368Z cone3rn0.3M1.5 nj20x4: 4000 iterations, maxSpeed 6.25e-7, residual 3.72e-9, drag 0.114273821234, rate NaN, remaining 0.00e+0
+2026-10-27T09:30:39.100Z cone3rn0.3M1.5 nj20x4: 6000 iterations, maxSpeed 5.51e-8, residual 3.14e-10, drag 0.114273872002, rate 0.0401, remaining 1.86e-8
+2026-10-27T09:34:20.879Z ogive3rn0.03M3 nj20x4: 12000 iterations, maxSpeed 3.78e-10, residual 2.23e-12, drag 0.0884209378833, rate NaN, remaining 0.00e+0
+2026-10-27T09:42:50.431Z cone3rn0.3M1.5 nj20x4: 8000 iterations, maxSpeed 5.04e-9, residual 2.87e-11, drag 0.114273876441, rate 0.0592, remaining 2.45e-9
+2026-10-27T09:53:11.507Z cone3rn0.3M1.5 nj20x4: 10000 iterations, maxSpeed 4.61e-10, residual 2.63e-12, drag 0.114273876846, rate 0.0701, remaining 2.67e-10
+2026-10-27T10:03:10.955Z cone3rn0.3M1.5 nj20x4: 12000 iterations, maxSpeed 4.22e-11, residual 2.41e-13, drag 0.114273876883, rate 0.0701, remaining 2.45e-11
+2026-10-27T10:14:18.429Z cone3rn0.3M1.5 nj20x4: settled early after 14000 iterations (6002s), drag 0.114273876886, cap drag 0.062092886 (108 faces), stagnation 2.868e-4% of pitot, standoff 0.6159 r_n (Billig 0.6036), fitted grid wall 79.4 angle 45.1 size 1.310 aspect 4.85; page checks: the grid on the fitted shock fails its quality checks (neighbouring cells differ in size by 1.31 (limit 1.3)): a limit of the present grids, not of the flow
+2026-10-27T10:14:21.121Z cone3rn0.3M1.97 nj20x1: start
+2026-10-27T10:24:27.072Z ogive3rn0.03M3 nj20x4: 14000 iterations, maxSpeed 4.37e-11, residual 2.59e-13, drag 0.0884209378898, rate NaN, remaining 0.00e+0
+2026-10-27T13:24:26.947Z ogive3rn0.03M3 nj20x4: start
+2026-10-27T13:24:27.236Z cone3rn0.3M1.97 nj20x1: start
+2026-10-27T13:25:16.307Z cone3rn0.3M1.97 nj20x1: problem built in 49s (104x20)
+2026-10-27T13:25:27.897Z cone3rn0.3M1.97 nj20x1: 500 iterations, maxSpeed 5.52e-4, residual 1.95e-5, drag 0.116849015329, rate NaN, remaining 0.00e+0
+2026-10-27T13:25:38.652Z cone3rn0.3M1.97 nj20x1: 1000 iterations, maxSpeed 4.84e-5, residual 8.41e-7, drag 0.116822763018, rate NaN, remaining 0.00e+0
+2026-10-27T13:25:49.753Z cone3rn0.3M1.97 nj20x1: 1500 iterations, maxSpeed 4.24e-6, residual 7.50e-8, drag 0.116819718800, rate 0.116, remaining 3.42e-6
+2026-10-27T13:26:00.821Z cone3rn0.3M1.97 nj20x1: 2000 iterations, maxSpeed 3.72e-7, residual 6.58e-9, drag 0.116819450021, rate 0.101, remaining 2.59e-7
+2026-10-27T13:26:10.777Z cone3rn0.3M1.97 nj20x1: 2500 iterations, maxSpeed 3.27e-8, residual 5.77e-10, drag 0.116819426434, rate 0.0956, remaining 2.14e-8
+2026-10-27T13:26:21.797Z cone3rn0.3M1.97 nj20x1: 3000 iterations, maxSpeed 2.87e-9, residual 5.07e-11, drag 0.116819424364, rate 0.0930, remaining 1.82e-9
+2026-10-27T13:26:28.450Z cone3rn0.3M1.97 nj20x1: 3500 iterations, maxSpeed 2.52e-10, residual 4.45e-12, drag 0.116819424182, rate 0.0914, remaining 1.57e-10
+2026-10-27T13:26:31.794Z ogive3rn0.03M3 nj20x4: problem built in 125s (1292x80)
+2026-10-27T13:26:32.237Z ogive3rn0.03M3 nj20x4: resumed from checkpoint at 14000 iterations
+2026-10-27T13:26:35.356Z cone3rn0.3M1.97 nj20x1: 4000 iterations, maxSpeed 2.21e-11, residual 3.90e-13, drag 0.116819424166, rate 0.0914, remaining 1.37e-11
+2026-10-27T13:26:42.100Z cone3rn0.3M1.97 nj20x1: settled early after 4500 iterations (135s), drag 0.116819424165, cap drag 0.071098245 (42 faces), stagnation 6.395e-3% of pitot, standoff 0.3581 r_n (Billig 0.3295), fitted grid wall 83.7 angle 52.3 size 1.155 aspect 3.82; page checks: pass
+2026-10-27T13:26:43.610Z cone3rn0.3M1.97 nj20x2: start
+2026-10-27T13:27:20.294Z cone3rn0.3M1.97 nj20x2: problem built in 37s (208x40)
+2026-10-27T13:27:20.294Z cone3rn0.3M1.97 nj20x2: resumed from checkpoint at 0 iterations
+2026-10-27T13:29:00.548Z cone3rn0.3M1.97 nj20x2: 1000 iterations, maxSpeed 3.58e-5, residual 1.21e-6, drag 0.116224300316, rate NaN, remaining 0.00e+0
+2026-10-27T13:32:08.945Z cone3rn0.3M1.97 nj20x2: 2000 iterations, maxSpeed 2.60e-6, residual 2.83e-8, drag 0.116227381655, rate NaN, remaining 0.00e+0

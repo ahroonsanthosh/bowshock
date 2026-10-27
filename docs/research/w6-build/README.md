@@ -363,6 +363,74 @@ models, Mach numbers and stations, not its pressures.
   machine has a core free (at 17:00 UTC its load was 15 to 17 on 4
   cores, from other lanes).
 
+### 8.1 Model 4p at Mach 1.50: agrees (2026-10-27)
+
+This is a check of the cap and the flow just behind it, on
+hemisphere-cones the page does not serve (r_n/R 0.3 and 0.5, outside
+W6's 0.03 to 0.15; capped cones are refused). It serves no shape and
+sets nothing.
+
+W6's capped cone of 3 calibers, r_n/R 0.3, at Mach 1.5, with 2 calibers
+of cylinder. It was run from the frozen tree of 6d90e78
+(`tests/tmp-w6b/tree3`) by `runners/tr1386.sh`, from 08:15 to 10:14 UTC.
+The wall pressures came from `runners/wallcp.test.ts`, the comparison
+from `analysis/tr1386.mjs` (committed before any computed value
+existed). Results: `results/tr1386/wallcp-cone3rn0.3M1.5.json` and
+`compare-4p-M1.50.txt`.
+
+- The fits converged: 68 x 20 (4500 iterations), 136 x 40 (8000) and
+  272 x 80 (14000). The forebody drags are 0.115277, 0.114474 and
+  0.114274.
+- **The nj = 80 grid fails one of the page's checks**: neighbouring
+  cells on the fitted shock differ in size by 1.31, against a limit of
+  1.3. The page would refuse that grid. Section 8 does not make the
+  checks a condition of the comparison, so it stands, but it rests on
+  that grid. The nj = 20 and 40 grids pass every check.
+- It is comparable by section 8's rule. On every grid the surface Mach
+  number (the wall cells) is above 1 from the cap's sonic point (x/L
+  0.019 to 0.020) to the corner. Its least value there on nj = 80 is
+  1.008.
+- **All 16 stations of figure 4(a)'s M = 1.50 curve lie ahead of the
+  corner. All 16 agree within the readers' envelope widened by the
+  report's 0.004 in P. Against the envelope alone, 14 agree.** The two
+  others, at X/L 0.45 and 0.53, lie above it by 0.0025 and 0.0018.
+  - Near the tip the X/L envelope spans the cap's steep fall in pressure,
+    so the computed range there is wide: 0.48 to 1.53 at the first
+    station.
+  - From X/L 0.2 on, the computed value is 0.042 to 0.068 with bands of
+    1e-4 to 5e-4. The readings there are 0.012 to 0.074, each pair
+    spanning 0.034 to 0.036.
+- **No difference lies beyond both envelopes**, so nothing goes to 0022
+  (w). No cause is claimed for the two stations above the envelope
+  alone.
+
+| X/L (envelope) | P, readers' envelope | computed, nj 80 with its band | widened by 0.004 | envelope alone |
+|---|---|---|---|---|
+| -0.009 to 0.020 | 1.251 to 1.309 | 0.480 to 1.532 | agrees | agrees |
+| -0.006 to 0.010 | 1.500 to 1.534 | 0.907 to 1.532 | agrees | agrees |
+| 0.010 to 0.026 | 0.728 to 0.762 | 0.238 to 0.956 | agrees | agrees |
+| 0.039 to 0.056 | -0.121 to -0.087 | -0.224 to -0.120 | agrees | agrees |
+| 0.069 to 0.085 | -0.134 to -0.100 | -0.119 to -0.068 | agrees | agrees |
+| 0.109 to 0.126 | -0.041 to -0.007 | -0.022 to 0.000 | agrees | agrees |
+| 0.196 to 0.212 | 0.012 to 0.048 | 0.0417 to 0.0463 | agrees | agrees |
+| 0.279 to 0.296 | 0.023 to 0.059 | 0.0567 to 0.0582 | agrees | agrees |
+| 0.362 to 0.379 | 0.027 to 0.063 | 0.0621 to 0.0628 | agrees | agrees |
+| 0.445 to 0.462 | 0.026 to 0.062 | 0.0645 to 0.0649 | agrees | +0.0025 |
+| 0.529 to 0.546 | 0.028 to 0.064 | 0.0658 to 0.0661 | agrees | +0.0018 |
+| 0.612 to 0.630 | 0.038 to 0.074 | 0.0666 to 0.0668 | agrees | agrees |
+| 0.697 to 0.714 | 0.033 to 0.069 | 0.0671 to 0.0673 | agrees | agrees |
+| 0.781 to 0.798 | 0.032 to 0.068 | 0.0674 to 0.0676 | agrees | agrees |
+| 0.864 to 0.881 | 0.034 to 0.070 | 0.0677 to 0.0678 | agrees | agrees |
+| 0.950 to 0.967 | 0.032 to 0.068 | 0.0679 to 0.0680 | agrees | agrees |
+
+The other five cases (4p at 1.97 and 3.10, 5p at 1.54, 1.97 and 3.06)
+have not been compared. At the coordinator's wrap-up of 2026-10-27, the
+runner was to be stopped after the family it was on. It was stopped at
+10:14, after this family. A container restart at 13:22 relaunched it,
+because its line in `restart-all.sh` had not yet been commented out, and
+it began 4p at Mach 1.97. That family is finished under the
+coordinator's message of 13:22, then the runner is stopped.
+
 ## 9. The third march: characteristics fitting the embedded shock (registered 2026-10-26, before any code or run)
 
 The coordinator's decision of 2026-10-26: build the open route of section 7
