@@ -428,8 +428,13 @@ have not been compared. At the coordinator's wrap-up of 2026-10-27, the
 runner was to be stopped after the family it was on. It was stopped at
 10:14, after this family. A container restart at 13:22 relaunched it,
 because its line in `restart-all.sh` had not yet been commented out, and
-it began 4p at Mach 1.97. That family is finished under the
-coordinator's message of 13:22, then the runner is stopped.
+it began 4p at Mach 1.97. At the coordinator's request it was stopped
+again at 13:34 (its own process group), during that family's nj = 40
+grid, so that the CPU could go to other work. **The 4p Mach 1.97 family
+is started, resumable and not compared.** Its nj = 20 grid is saved and
+its nj = 40 grid has a checkpoint. The runner's `restart-all.sh` line is
+commented out as paused, and uncommenting it resumes the check where it
+stopped.
 
 ## 9. The third march: characteristics fitting the embedded shock (registered 2026-10-26, before any code or run)
 
