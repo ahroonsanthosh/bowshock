@@ -1090,7 +1090,7 @@ describe('refusals', () => {
               } else {
                 expect(r.label, where).not.toContain('in the base plane');
                 expect(r.label, where).toContain(
-                  `set at the trailing edge, in one plane parallel to the base, ${xc} root chords ahead of it`,
+                  `set at the trailing edge, in one plane parallel to the base, ${xc.toFixed(2)} root chords ahead of it`,
                 );
               }
               if (le > 60) {
@@ -1120,7 +1120,7 @@ describe('refusals', () => {
       );
       expect(ahead.label).not.toContain('base plane');
       expect(ahead.label).toContain(
-        'both bounds are set at the trailing edge, in one plane parallel to the base, 0.5 root chords ' +
+        'both bounds are set at the trailing edge, in one plane parallel to the base, 0.50 root chords ' +
           'ahead of it, which the leading-edge sweep does not move',
       );
       expect(ahead.label).toContain(
@@ -1141,6 +1141,22 @@ describe('refusals', () => {
           'not move',
       );
       expect(atBase.label).not.toContain('parallel to the base');
+      // A position that is not a round number is printed to two decimals (the review of 2026-10-27 found
+      // "0.33333333333333337 root chords").
+      const third = finsOnBaseFactorW1(
+        1.8,
+        fins({
+          count: 3,
+          section: plate(0.024),
+          tanLeadingEdgeSweep: tanDeg(20),
+          tanTrailingEdgeSweep: 0,
+          trailingEdgeAheadOfBase: 1 / 3,
+        }),
+      );
+      expect(third.label).toContain(
+        'in one plane parallel to the base, 0.33 root chords ahead of it, which the leading-edge',
+      );
+      expect(third.label).not.toMatch(/0\.3333/);
     });
     it('the same fins as a sharp section keep 0015 section 3.4: refused at 20 and 44 deg below M 2.0 and at 70 deg', () => {
       for (const mach of [1.2, 1.8, 1.99]) {
