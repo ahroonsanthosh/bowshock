@@ -1830,8 +1830,11 @@ member at least as thick), and the ordering, in 0015 section 12, is that
 neither bound uses the leading edge: the upper rests on TN 2360's
 mechanism (the increment follows the faces' slope near the trailing edge,
 zero on a flat face at any sweep) and the lower on a relief Hart traces to
-the fin-body junctures and the square edge in the base plane, which the
-leading-edge sweep does not move when the trailing edge is unswept. 0015
+the fin-body junctures and the square edge, which lies in one plane
+parallel to the base (the base plane itself for fins at the base; this
+entry said "in the base plane" until A1's review of 2026-10-26), and
+which the leading-edge sweep does not move when the trailing edge is
+unswept. 0015
 section 3.4's refusal of leading-edge sweeps 0 to 45 deg below Mach 2.0
 and above 60 deg was written for sharp sections, whose face pressures the
 sweep moves through a swept edge; it is kept for them and no longer
