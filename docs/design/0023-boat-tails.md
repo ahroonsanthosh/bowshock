@@ -8,8 +8,10 @@
   (section 2), and the rule that will set its served range is written
   down ahead of the results (section 2.5). Part 2, the base behind a
   boat-tail, and the viscous allowance on part 1 wait for their figures,
-  named in 0014 10.7 (ae) before anyone reads them, to be read twice, the
-  second time blind (sections 3 to 5).
+  named in 0014 10.7 (ae) and (ag) before anyone reads them, to be read
+  twice, the second time blind (sections 3 to 5). The allowance has no
+  counting set yet: RM E51F26 is now a check (section 3), and the term
+  may end up refused at every Mach number or served for one angle only.
 - **Date:** 2026-10-26
 - **Inputs:** [0006](0006-shock-fitting.md) (the fitted solve, its
   verification and its references), [0008](0008-total-drag.md) section 3.2
@@ -259,12 +261,16 @@ Not decided yet. The rule that decides it, written on 2026-10-26 before
 any grid of nj = 160 and before nj = 80 on all but two cases
 (`o3-c3-bt6-l1-m2` and `o3-c5-bt8-l2-m2`, section 2.3):
 
-- **Mach number:** 1.8 to 2.0, where the viscous allowance is measured
-  (section 3, `BOAT_TAIL_MACH_RANGE` in `src/analysis/boat-tail.ts`). If
-  the sets 0014 10.7 (ag) names pass its criteria, the allowance's Mach
-  span as (ag) item 4 carries it, within Mach 1.5 to 3, where this
-  section's cases are; the angles and lengths below then come from the
-  first set's cases in that span.
+- **Mach number:** at most 1.8 to 2.0 (`BOAT_TAIL_MACH_RANGE` in
+  `src/analysis/boat-tail.ts`), and only where the viscous allowance has
+  a set that counts (section 3; 0014 10.7 (ag) and its addendum of
+  2026-10-27). If sets count outside it, the allowance's Mach span as
+  that addendum carries it, within Mach 1.5 to 3, where this section's
+  cases are; the angles and lengths below then come from the first set's
+  cases in that span.
+- **The allowance's configurations:** only the boat-tail angles and base
+  ratios the counting sets measured (the addendum's item 4; one angle
+  and ratio if only one counts), within the range below.
 - **The floor** (`BOAT_TAIL_DRAG_FLOOR`, a provisional 1e-3 until then):
   about twice the largest distance, relative to the value, between the
   procedure's extrapolation (order capped at 2) and the march over the
@@ -341,27 +347,39 @@ settled gets no verified band there, as for the forebody (0006).
 - **The page and the total** take the boat-tail term only with parts 2
   and 3.
 
-## 3. The viscous allowance on part 1 (RM E51F26)
+## 3. The viscous allowance on part 1
 
 RM E51F26 measured the side pressures of six conical boat-tails (5.63,
 7.03 and 9.33 deg, to bases of 0.506 and 0.704 of the diameter) at Mach
 1.91 with no jet flow, behind a 6-caliber contoured nose and 6 calibers
 of cylinder (18 in long, Reynolds number 3.24e6 per foot). Its summary
 says its method of characteristics overestimated the side pressure drag
-by about 20%. The allowance is set as 0014 10.7 (ae) item 1 registers,
-before either reading: for each configuration, figure route (figs. 7 and
-8 integrated, figs. 29 and 30 read) and reading, the ratio S of the
-measured side pressure drag to part 1's inviscid value for that
+by about 20%. 0014 10.7 (ae) item 1 registered, before either reading,
+how a set gives the allowance: for each configuration, figure route
+(figs. 7 and 8 integrated, figs. 29 and 30 read) and reading, the ratio
+S of the measured side pressure drag to part 1's inviscid value for that
 configuration; the boat-tail term is served between S_min and
 max(S_max, 1) times the inviscid value, widened by part 1's own band.
-Measured at Mach 1.91 only: outside Mach 1.8 to 2.0 the term stays
-refused until data at other Mach numbers are read. 0014 10.7 (ag) names
-five further sets of jet-off side pressures (RM L54C16 at Mach 1.59, RM
-L54I22 at 1.62, 1.93 and 2.41, RM E57E06 at 1.91 and 3.12, TN D-6789 at
-1.83 and 2.20, TM X-1960 up to 1.30), when each counts, and how the
-allowance is carried between measured Mach numbers (the envelope of the
-two neighbouring bands, only where they overlap, never beyond the
-outermost), before any of them is read.
+That rule stands for the sets that count; RM E51F26 itself, as below,
+is now a check.
+0014 10.7 (ag) names five further sets of jet-off side pressures (RM
+L54C16 at Mach 1.59, RM L54I22 at 1.62, 1.93 and 2.41, RM E57E06 at 1.91
+and 3.12, TN D-6789 at 1.83 and 2.20, TM X-1960 up to 1.30) before any of
+them is read. An independent review did not pass (ag) as first written,
+and its addendum of 2026-10-27, also before any pairing, sets the rules
+that hold: a set counts only with a comparison with and without its
+support on that body at that Mach number (the difference added to its
+band), a straight conical boat-tail behind a sharp nose, no jet, no
+reflections on the boat-tail, and legible readings; agreement is tested
+on raw ranges of S; extension beyond Mach 1.8 to 2.0 needs counting sets
+there from two laboratories that agree; carrying is limited to gaps of
+0.5 in Mach number unless a point inside shows it, and to the angles and
+base ratios measured at both ends. RM E51F26 is a half body on a
+splitter plate with no such support comparison, so it no longer sets
+the allowance: it is a check. RM E57E06, whose fig. 6 compares its
+5.63 deg boat-tail with and without its struts at Mach 1.91, may count
+there. If no set counts, the boat-tail term is refused at every Mach
+number; if only one angle counts, only that angle is served.
 
 ## 4. Part 2: the base behind a boat-tail (Love's method)
 
@@ -444,12 +462,13 @@ solve itself is served on 21.5%.
 
 ## 7. Open
 
-- **The viscous allowance away from Mach 1.91.** 0014 10.7 (ag) names
-  side pressures measured at Mach 1.59 to 3.12 (and up to 1.30) before
-  they are read, with the rule that carries the allowance between them.
-  If none of them counts, or they disagree with RM E51F26 at Mach 1.9,
-  the question returns to the owner. Until they are read and paired the
-  term is refused outside Mach 1.8 to 2.0.
+- **The viscous allowance.** 0014 10.7 (ag) and its addendum name side
+  pressures measured at Mach 1.59 to 3.12 (and up to 1.30) before they
+  are read, with the rules that decide which count and how the allowance
+  is carried. RM E51F26 now only checks. The term may end up refused at
+  every Mach number, or served at Mach 1.8 to 2.0 for one angle only;
+  disagreements between laboratories, and misses by checks, go to the
+  owner. Until the readings are paired the term is refused everywhere.
 - **RM E51F26's nose.** Its 6-caliber nose is defined by equation (14) of
   its reference 1, not yet opened; failing that, the allowance carries
   the spread between a tangent ogive and a cone of that length (0014 10.7

@@ -25,11 +25,11 @@ describe('the boat-tail term: where it is served', () => {
   it('only at Mach 1.8 to 2.0, where its viscous allowance is measured', () => {
     expect(BOAT_TAIL_MACH_RANGE).toEqual([1.8, 2.0]);
     const reasons = (mach: number) => boatTailRefusal(body(8, 1), mach) ?? '';
-    expect(reasons(1.5)).toMatch(/Mach 1.91 only/);
-    expect(reasons(2.5)).toMatch(/Mach 1.91 only/);
-    expect(reasons(1.8)).not.toMatch(/Mach 1.91 only/);
-    expect(reasons(1.91)).not.toMatch(/Mach 1.91 only/);
-    expect(reasons(2.0)).not.toMatch(/Mach 1.91 only/);
+    expect(reasons(1.5)).toMatch(/no measurement at other Mach numbers/);
+    expect(reasons(2.5)).toMatch(/no measurement at other Mach numbers/);
+    expect(reasons(1.8)).not.toMatch(/no measurement at other Mach numbers/);
+    expect(reasons(1.91)).not.toMatch(/no measurement at other Mach numbers/);
+    expect(reasons(2.0)).not.toMatch(/no measurement at other Mach numbers/);
   });
 
   it('refuses blunt noses, and angles and lengths outside those checked, every reason given', () => {
@@ -39,7 +39,12 @@ describe('the boat-tail term: where it is served', () => {
     expect(boatTailRefusal(body(2, 1), 1.9)).toMatch(/2.0 deg lies outside/);
     expect(boatTailRefusal(body(8, 0.25), 1.9)).toMatch(/0.25 calibers long lies outside/);
     const all = boatTailRefusal(body(20, 3, { kind: 'haack', parameter: 0 }), 3) ?? '';
-    for (const reason of [/blunt nose/, /Mach 1.91 only/, /deg lies outside/, /calibers long/]) {
+    for (const reason of [
+      /blunt nose/,
+      /no measurement at other Mach numbers/,
+      /deg lies outside/,
+      /calibers long/,
+    ]) {
       expect(all).toMatch(reason);
     }
     // The same reasons, keyed (the population's coverage count).
@@ -52,7 +57,7 @@ describe('the boat-tail term: where it is served', () => {
 
   it('serves nothing until the viscous allowance is read; a body without a boat-tail has no term to refuse', () => {
     expect(BOAT_TAIL_ALLOWANCE_SET).toBe(false);
-    expect(boatTailRefusal(body(8, 1), 1.9)).toMatch(/read twice/);
+    expect(boatTailRefusal(body(8, 1), 1.9)).toMatch(/has passed its checks yet/);
     expect(boatTailRefusal({ nose: body(8, 1).nose, cylinderLength: 5 }, 1.9)).toBeUndefined();
   });
 });

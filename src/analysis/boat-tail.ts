@@ -2,18 +2,19 @@
  * Where the boat-tail's own pressure drag is served, and why not elsewhere
  * (design record 0023 section 2.5). The term is the fitted solve's over the
  * boat-tail (`boatTailDrag`, src/analysis/fitted-flow.ts), inviscid, with
- * the viscous allowance of 0023 section 3 set on RM E51F26's side
- * pressures, measured at Mach 1.91 only.
+ * the viscous allowance of 0023 section 3, set only by the measured side
+ * pressures that pass the checks of 0014 10.7 (ag) and its addendum of
+ * 2026-10-27 (RM E51F26 is only a check). None has passed yet.
  */
 
 import { boatTailAngle, type Body } from '../geometry/body';
 import { noseTipSlope } from '../geometry/nose';
 
 /**
- * Free-stream Mach numbers at which the boat-tail term is served: around
- * RM E51F26's Mach 1.91, where its viscous allowance is measured (0014
- * 10.7 (ae) item 1). Carrying the allowance to other Mach numbers is the
- * owner's question (0023 section 7); widening it is a change of this line.
+ * Free-stream Mach numbers at which the boat-tail term may be served, at
+ * most: those of (ae), Mach 1.8 to 2.0, and only once a set counts there
+ * (0014 10.7 (ag) addendum, items 2 and 9). Sets counting at other Mach
+ * numbers, as that addendum carries them, widen this line.
  */
 export const BOAT_TAIL_MACH_RANGE: readonly [number, number] = [1.8, 2.0];
 
@@ -27,8 +28,9 @@ export const BOAT_TAIL_ANGLE_RANGE: readonly [number, number] = [4, 16];
 export const BOAT_TAIL_LENGTH_RANGE: readonly [number, number] = [0.5, 2];
 
 /**
- * Whether the viscous allowance is set: false until RM E51F26's figures
- * named in 0014 10.7 (ae) are read twice and paired.
+ * Whether the viscous allowance is set: false until a set named in 0014
+ * 10.7 (ag) is read twice, paired, and counts by its addendum. If only one
+ * angle and base ratio count, only that angle and ratio will be served.
  */
 export const BOAT_TAIL_ALLOWANCE_SET: boolean = false;
 
@@ -53,7 +55,7 @@ export function boatTailReasons(body: Body, mach: number): BoatTailReason[] {
   if (!(mach >= low && mach <= high)) {
     reasons.push({
       key: 'mach',
-      text: `the boat-tail's allowance for the boundary layer is measured at Mach 1.91 only (NACA RM E51F26), so its drag is served at Mach ${low} to ${high} only`,
+      text: `the boat-tail's allowance for the boundary layer may be served at Mach ${low.toFixed(1)} to ${high.toFixed(1)} at most: no measurement at other Mach numbers has passed its checks`,
     });
   }
   const angle = (boatTailAngle(body) * 180) / Math.PI;
@@ -75,7 +77,7 @@ export function boatTailReasons(body: Body, mach: number): BoatTailReason[] {
   if (!BOAT_TAIL_ALLOWANCE_SET) {
     reasons.push({
       key: 'allowance',
-      text: "the boat-tail's allowance for the boundary layer waits for its figures (NACA RM E51F26, named in design record 0014 section 10.7 (ae)) to be read twice",
+      text: "no measurement of the boat-tail's allowance for the boundary layer has passed its checks yet (the figures named in design record 0014 section 10.7 (ag) wait to be read twice)",
     });
   }
   return reasons;

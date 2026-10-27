@@ -2100,3 +2100,153 @@ a neutral party pairs the readings; the band is the envelope of both.
 The workstream that computes part 1 does not read them. Until the
 readings are paired and items 3 to 5 applied, the boat-tail term stays
 refused outside Mach 1.8 to 2.0, as (ae) item 1 left it.
+
+**2026-10-27 (ag) addendum: after the review of 5451239, before any
+pairing.** An independent review of the (ag) registration as committed
+in 5451239 did not pass it: four of its tests did not do what they
+claimed, and two could have let out a band that misses the truth. This
+addendum amends (ag), and by item 9 (ae) item 1, before any reading of
+(ag)'s sets is paired. Where it and (ag) differ, it governs. The readers
+of (ag) received a brief addendum on 2026-10-27, committed as
+`docs/research/boat-tails/readers/brief-ag-addendum.md` (SHA-256
+4876c73a96d799b8622dde58b1733cd2b63beff5fbb8c16af1993c07c80d1f84); they
+do not see 0014, so this does not unblind them.
+
+_What was seen, added to (ag)'s list._ For item 9, on 2026-10-27, RM
+E51F26's text (its text layer only, no figure) on its support, pp. 5 to
+7, 11 and 12: the model is a half body on a splitter plate fed through a
+hollow sting; "Support interference phenomena were limited by the
+presence of a splitter plate to those associated with plate boundary
+layer and small disturbances from the plate leading edge, which was
+swept back at an angle of 40 deg"; "Pressure disturbances reflecting
+from the tunnel walls did not intersect the jet wake at less than 12
+exit nozzle diameters downstream of the base"; the small variation of
+the pressure coefficient with meridian angle "is an indication that no
+large disturbances were caused by the splitter-plate leading edge or
+boundary layer"; the boundary layer "was not generally constant around
+the bodies", "probably a result of the influence of the splitter plate,
+since some of the plate boundary layer would be expected to flow from
+the plate onto the lower pressure boattail", and "in the theta = 15 deg
+plane was approximately 30-percent thicker than in the theta = 90 deg
+plane" (on the 7.03 deg boat-tail); and, on angle of attack, whether a
+discrepancy near the start of the boat-tail came from the change in
+slope "or resulted from support system interference remains
+undetermined". Also disclosed: TN D-6789's and TM X-1960's abstracts
+and captions call their boat-tails positions of variable-flap
+convergent-divergent nozzles, and both test a circular-arc boat-tail, so
+item 6 below probably excludes both sets.
+
+**1. Ranges for every test (B1).** Every overlap or agreement test in
+(ag) and here is run on raw ranges: a set's raw range at a Mach number is
+[S_min, S_max] over its configurations, routes and both readings,
+widened only by part 1's numerical band; never with the max with 1 of
+the served band, and never with (ae) item 1's nose fallback widening (a
+set whose nose its report does not define enters a test with its S
+computed for each fallback nose separately, and the test must pass with
+both). Tests compare like with like where both sides have it (boat-tail
+angle within 0.5 deg and base-to-body diameter ratio within 0.05),
+otherwise all configurations; the record says which. Against RM
+E51F26, only its points with the layer tripped (turbulent) are used.
+
+**2. Pass and fail (B2, m1), replacing (ag) item 5.** The boat-tail term
+is served at a Mach number only where a set counts there (item 9: in
+Mach 1.8 to 2.0 too). A set that counts at a Mach number in 1.8 to 2.0
+serves the whole of 1.8 to 2.0, as (ae) served it from 1.91; elsewhere a
+counting set serves its pooled point (item 8) and what item 4 carries.
+Extension, meaning that a set counts at a Mach
+number in 1.5 to 3.0 outside 1.8 to 2.0, needs counting sets inside 1.8
+to 2.0 (1.83 included) from two laboratories (NACA Lewis and NACA
+Langley are two; two Langley tunnels are one laboratory and two
+facilities) whose raw ranges agree (overlap). If they disagree, nothing
+is extended, the band in 1.8 to 2.0 is the envelope of every set that
+counts there, and the disagreement goes to the coordinator for the
+owner. If there is no comparison across laboratories in 1.8 to 2.0,
+nothing is extended and it goes to the coordinator for the owner. A
+pooled Mach number measured by one facility only, where that facility
+has no counting point in 1.8 to 2.0, has its band widened on both sides
+by the largest raw difference between facilities found in 1.8 to 2.0
+(the largest |S_a - S_b| between raw values of counting sets of
+different facilities there, like with like where both have it). (ae)'s
+Mach 1.8 to 2.0 is never shrunk by an extension; what serves inside it
+is item 9's. The review's wording that the band there always takes in
+RM E51F26's is superseded by item 9: RM E51F26 is a check, and its range
+is tested against the counting sets (item 7), not added to their band.
+
+**3. Support (B3), replacing (ag) item 3(c).** (c) passes only on a
+comparison with and without the support (or with it moved), on that
+body, at the Mach number used. Both states are integrated into S (both
+readings), and |S_with - S_without| is added to that set's served band
+on both sides at that Mach number (not tested against reading noise).
+The spread over meridians only widens a band (each meridian's S is a
+member of the raw range); it never clears (c). The text counts only if
+it gives a number for the support's effect on the boat-tail pressures
+at that Mach number. Each sting's diameter is recorded against the
+base's.
+
+**4. Carrying (B4), adding to (ag) item 4.** No carrying across a gap
+wider than 0.5 in Mach number, unless a counting set has a measured
+point inside the gap that lies within the envelope of the two ends,
+configuration by configuration on raw values. Where one set counts at
+three or more Mach numbers on one model (RM L54I22: 1.62, 1.93, 2.41),
+that check is run on it (each inner point within the envelope of its
+neighbours, configuration by configuration, raw values), and its span is
+refused if it fails. In carried spans and at new Mach numbers, only
+boat-tail angles and base ratios inside those measured at both
+neighbouring points are served; wherever only one angle and base ratio
+count, only that angle and ratio are served (angle within 0.5 deg, base
+ratio within 0.05), not every angle part 1 verifies. This strict default
+is the coordinator's decision; the alternative of widening by the
+spread across configurations at Mach 1.91 and serving every verified
+angle is recorded as not adopted. Part 1's own range (0023 section 2.5)
+still bounds every span.
+
+**5. Reflections (M1), a new (ag) item 3(e).** Disturbances reflected
+from the tunnel walls or a free-jet boundary must not reach the
+boat-tail at that Mach number, shown by the text, a schlieren photograph
+or a stated construction. A set that fails (e) at a Mach number sets
+nothing there. The Langley 9 in tunnel at Mach 1.62 (RM L54I22) is the
+case of concern.
+
+**6. Geometry (M2), tightening (ag) item 3(a).** The boat-tail's profile
+is a straight cone (a circular arc does not count, including TN
+D-6789's and TM X-1960's circular-arc boat-tails and, unless shown
+otherwise, their reference nozzles); the nose has a sharp tip; there are
+no fins, tails, wings or bumps on the boat-tail or within one body
+diameter ahead of the shoulder; and for RM E57E06 the model of each fig.
+14 point is known (a point whose model is not known sets nothing).
+
+**7. Misses (M4).** A set that fails only (c), or one that counts at a
+Mach number outside 1.5 to 3, whose raw range misses a counting set's
+raw range at the same pooled Mach number goes to the coordinator for the
+owner, and the span touching that Mach number stays refused until the
+owner decides. The same holds for RM E51F26 as a check (item 9).
+
+**8. Records (m2 to m5).** A pooled point runs from its lowest to its
+highest member, its band flat across (m2). For RM L54I22, the envelope
+of fig. 2 and figs. 7, 14 and 16 where both qualify (m3). Each drag or
+axial-force coefficient is recorded with the surface it integrates and
+its reference area, and serves as route (b) only if it integrates the
+boat-tail alone on a stated area (m4). Each set's Reynolds number on
+length is recorded, and the labels of carried spans name it (m5).
+
+**9. RM E51F26's own support (M5).** Applied by the standard of item 3,
+from the text quoted above: RM E51F26 is a half body on a splitter
+plate, which cannot be tested without its plate; it has no comparison
+with and without (or with a moved) support, and its only numbers on the
+plate's effect are a meridian variation and a boundary layer about 30%
+thicker near the plate, neither an effect on the boat-tail pressures
+with the support removed. It fails (c). By the coordinator's ruling it
+becomes a check that sets nothing, under the same standard as the new
+sets, with no lower bar for a half body on a splitter plate. So (ae)
+item 1 no longer sets the allowance: the boat-tail term at Mach 1.8 to
+2.0 needs a counting set like any other Mach number. RM E57E06 can count
+at 1.91 if it passes (a), (b), (d) and (e), its fig. 6 (with and
+without struts, Mach 1.91, 5.63 deg) being the comparison (c) asks for,
+with the strut difference added to its band by item 3; RM E51F26's
+tripped points are then a check against it (item 7). If only RM E57E06
+counts, the term is served at Mach 1.8 to 2.0 for a 5.63 deg boat-tail
+(within 0.5 deg) and its base ratio only (item 4), and nothing is
+extended (item 2). If no set counts at any Mach number, the boat-tail
+term is refused at every Mach number, with the reason in plain words
+(no measured allowance for the boundary layer on a boat-tail has passed
+its checks).
