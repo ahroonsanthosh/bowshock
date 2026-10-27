@@ -615,3 +615,28 @@ The runner is `runners/v1b.test.ts`, run once; it writes every
 resolution's numbers and the verdict by these four conditions to
 `results/v1b.json`, and asserts nothing itself. The result goes into
 section 9.3 as it comes, pass or fail. V2 waits for V1b's pass.
+
+### 9.3 V1b's result (2026-10-27): passes
+
+Run once, at 03:12 UTC, from the runner committed before it (e36498f;
+the registration 47dca21 pushed before that); `results/v1b.json`. The
+march completed and formed a shock on all four resolutions; the arc's
+start lay halfway between two wall points on each (0.5000 of a spacing
+before it, 0.4996 to 0.49995 after: the first wall point on the arc is
+reached by a C- line the first C+ wave has bent).
+
+| n | Delta | (a) pressure error | (b) formation error | (b) / Delta |
+|---|---|---|---|---|
+| 800 | 0.04330 | 3.78e-6 | 0.04203 | 0.971 |
+| 1600 | 0.02165 | 9.54e-7 | 0.02105 | 0.972 |
+| 3200 | 0.01083 | 2.41e-7 | 0.01054 | 0.973 |
+| 6400 | 0.00541 | 6.02e-8 | 0.00527 | 0.974 |
+
+1. Complete, a shock on each: pass.
+2. (a) on the finest, 6.0e-8 against 5e-4: pass.
+3. (b) on the finest, 0.0053 against 0.05: pass.
+4. Observed orders (least squares over the four): (a) 1.99, (b) 1.00,
+   both within 0.8 to 3: pass.
+
+**V1b passes**, so V2 may run (section 9). V1 itself stays failed as
+registered (section 9.1).
