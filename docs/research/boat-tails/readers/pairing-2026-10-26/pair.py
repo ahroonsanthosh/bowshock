@@ -453,9 +453,9 @@ G = [
     ('boundary-layer trip wire', [17], [40], 'agree',
      'Both: 0.005 in wire loop about 0.5 in from the tip, used for selected settings; both say the data taken with it are not identified.'),
     ('boundary-layer state ahead of the base (PDF p. 11)', [18], [], 'given by A only',
-     'From PDF p. 11, outside the brief\'s page list; B did not open it.'),
+     'From PDF p. 11, outside the brief\'s page list. B\'s geometry.csv has no such row; B\'s later transition.md quotes p. 11 (pairing.txt section 12, T07 and T08).'),
     ('early transition on the 5.63 deg, Db/Dm 0.704 boat-tail (PDF p. 11)', [19], [], 'given by A only',
-     'From PDF pp. 11, 15 and 19, outside the brief\'s page list; B did not open them.'),
+     'From PDF pp. 11, 15 and 19, outside the brief\'s page list. B\'s geometry.csv has no such row; B\'s later transition.md quotes those pages (pairing.txt section 12, T07, T12 and T16).'),
     ('Mach number just ahead of the base M1 (PDF p. 15)', [20], [], 'given by A only',
      'From PDF p. 15, outside the brief\'s page list.'),
     ('boundary-layer surveys', [], [41], 'given by B only', ''),
@@ -601,7 +601,7 @@ BRIEF = [
      [('method.md', 'RM E51F26 text: it does not describe boundary-layer transition beyond the trip wire used "for selected settings".'),
       ('geometry.csv', 'the text does not say which data were taken with the wire, nor where transition occurred without it')],
      'both, with different findings',
-     'Both say the trip wire was used for selected settings. A says the figures read do not say which points, if any, were taken with it; B says the text does not say which data were taken with it. No row of either reading says whether its point was taken with the trip wire, so the readings do not keep tripped and untripped points apart, which 0014 10.7 (ae) item 1 expects. The readers differ on whether the text says more about transition: A found transition statements on PDF pp. 8, 11, 15 and 19 (outside the brief\'s pages) and carries the p. 11 early-transition note on the fig. 8(a), fig. 24 (5.63 deg, Db/Dm 0.704) and fig. 30(a) rows; B did not open those pages and says the text does not describe transition beyond the trip wire. This pairing does not settle which is right.'),
+     'Both say the trip wire was used for selected settings. A says the figures read do not say which points, if any, were taken with it; B says the text does not say which data were taken with it. No row of either reading says whether its point was taken with the trip wire, so the readings do not keep tripped and untripped points apart, which 0014 10.7 (ae) item 1 expects. In the first readings the readers differed on whether the text says more about transition: A found transition statements on PDF pp. 8, 11, 15 and 19 (outside the brief\'s pages) and carries the p. 11 early-transition note on the fig. 8(a), fig. 24 (5.63 deg, Db/Dm 0.704) and fig. 30(a) rows; B had not opened those pages and says the text does not describe transition beyond the trip wire. B has since read those pages in full on the coordinator\'s request (B/transition.md, B/method.md item 16; its section 8 sentence is unchanged); section 12 pairs the two readers\' statements of them.'),
     ('TN 3819 p. 17: the boundary layer of the fig. 24 experimental results at beta 5.63 deg was inadvertently thickened.',
      [('method.md', 'The text (p. 17) says the boundary layer of the experimental result at beta 5.63 deg was inadvertently thickened; that note is on the (b) 5.63 deg row.'),
       ('geometry.csv', 'the sentence concerns h/D = 0.704')],
@@ -691,6 +691,8 @@ PAGES = [
      "RM E51F26 PDF page 4: text layer and image (symbol list: C_p, C'_p,b definitions)."),
     ('B', 'RM E51F26', 'PDF pp. 22 and 23 (reference list): text layer',
      'RM E51F26 PDF page 22 and 23: text layer, reference list (identity of reference 1, the nose equation source, and reference 6, the figure 24 triangle).'),
+    ('B', 'RM E51F26', 'PDF pp. 8, 11, 15 and 19 (and p. 7, which the brief lists): text layer and page images, read in full (added 2026-10-27, method.md item 16)',
+     "After the second and third restarts, on the coordinator's targeted request: RM E51F26 PDF pages 7, 8, 11, 15 and 19 (report pp. 6, 7, 10, 14, 18), text layer and native page images, read in full for statements on boundary-layer transition, the trip wire, boundary-layer thickness and points called inconsistent or unreliable. Quotations are in `transition.md`. Pages 7 and 15 had been opened before; pages 8, 11 and 19 were new. Sentences that continue from PDF page 10 or onto PDF page 9 were not followed onto those pages."),
     ('B', 'TN 3819, RM A52E20, TN 3372', 'text layers searched for SYMBOLS or NOTATION (TN 3819 pp. 1 to 8, RM A52E20 pp. 1 to 8, TN 3372 pp. 1 to 6); opened TN 3819 pp. 5 and 6 (text and image), RM A52E20 p. 4 (text), TN 3372 pp. 3 and 5 (text)',
      "Text layer searched by script only for the word SYMBOLS or NOTATION: TN 3819 PDF pages 1 to 8, RM A52E20 pages 1 to 8, TN 3372 pages 1 to 6. Then opened, to get each base pressure coefficient's reference conditions: TN 3819 PDF page 5 (text and image; introduction end and symbol list start), TN 3819 PDF page 6 (text and image; P_B definition), RM A52E20 PDF page 4 (text layer; notation, P_b definition, Reynolds number basis), TN 3372 PDF page 3 (text layer; summary and introduction) and PDF page 5 (text layer; definition of delta p / q and Reynolds number basis). These pages are outside the brief's list; I opened them only for the coefficient definitions and say so here."),
 ]
@@ -709,6 +711,179 @@ STATEMENTS = [
     ('B', 'method.md', "I did not open the bowshock repository, its website or GitHub, any other reader's folder, NACA TN 3320, or PDF page 57 of TN 3819."),
     ('B', 'method.md', 'TN 3819 PDF page 57 was never extracted, listed, rendered or text-searched (every TN 3819 command named its pages explicitly). TN 3320 was never fetched.'),
 ]
+
+
+# Section: RM E51F26 transition statements (added 2026-10-27)
+#
+# One entry per report statement on RM E51F26 PDF pages 7, 8, 11, 15 and 19.
+# B: B's verbatim quotations (B/transition.md, section 1). A: A's statements of
+# the same pages (paraphrases with page citations, from A's method.md,
+# geometry.csv and row notes). B_applies: what B says the statement applies to
+# (B's sections 1 and 2). B_cross: B's own cross-reference to its rows (B's
+# section 3), which B marks as matching by parameters, not a report statement.
+# Every quote is checked against the reader's file.
+TFILE = 'transition.md'
+TRANS = [
+    dict(id='T01', pages='PDF p. 7', q='Q1', read='once, by B',
+         topic='Pitot tube rakes surveyed the boundary layer in the plane of the base.',
+         B=['Pitot tube rakes were utilized for boundary-layer surveys in the plane of the base at arbitrary angular stations theta.'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Configurations, angles, diameter ratios: not stated.'], B_cross=[], pairs=[],
+         words='A records no statement of this sentence (B also has it as its geometry.csv row 42).'),
+    dict(id='T02', pages='PDF p. 7', q='Q2', read='twice',
+         topic='Data for selected settings were taken with a trip wire near the tip.',
+         B=['For selected settings data were obtained with a loop of 0.005-inch-diameter wire approximately 0.5 inch from the tip of the model to induce early transition of the boundary layer.'],
+         A=[('geometry.csv', 'loop of 0.005-in-diameter wire approximately 0.5 in from the tip of the model, to induce early transition, used for selected settings'),
+            ('geometry.csv', 'the figures read here do not say which, if any, of their points were taken with the wire (figure 7 and 8 legends show only the angular stations)')],
+         A_points='No point: A says the figures read do not say which points, if any, were taken with the wire.',
+         B_applies=['Which settings, configurations, angles, diameter ratios: not stated ("for selected settings" only).',
+                    'Figure points (7, 8, 24, 29, 30): not stated.'], B_cross=[], pairs=[],
+         words='A paraphrases without quotation marks; the same facts (selected settings, a 0.005 in wire loop about 0.5 in from the tip, to induce early transition). Both tie it to no point.'),
+    dict(id='T03', pages='PDF p. 7', q='Q3', read='once, by B',
+         topic='The small variation of pressure with theta shows no large disturbance from the splitter plate.',
+         B=['The small variation of pressure coefficient with theta is an indication that no large disturbances were caused by the splitter-plate leading edge or boundary layer.'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Applies to: the side pressure distributions of the six boattailed configurations at zero angle of attack, no jet (figures 7 and 8, as the paragraph states).',
+                    'Transition state of these data (natural or wire): not stated.'], B_cross=[], pairs=[],
+         words='A records no statement of this sentence.'),
+    dict(id='T04', pages='PDF pp. 7 and 8', q='Q4', read='once, by B',
+         topic='Wire data in the figure 9 mean distributions depart from natural transition, "somewhat inconsistent but small".',
+         B=['Mean distributions obtained with boundary-layer transition at the tip of the body (wire data) are included and show somewhat inconsistent but small departures from the natural transition case.'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Applies to: the mean pressure distributions in figure 9 (as the paragraph states). Which configurations have wire data: not stated.',
+                    'Figure points (7, 8, 24, 29, 30): not stated. These pages do not say whether the points of figures 7, 8, 24, 29 or 30 are wire data or natural-transition data.'],
+         B_cross=[], pairs=[],
+         words='A opened PDF p. 8 as OCR text and lists it among the pages with boundary-layer statements, but records no statement from it. Here "inconsistent" describes the wire data in figure 9, not a plotted point of the figures read.'),
+    dict(id='T05', pages='PDF p. 8', q='Q5', read='once, by B',
+         topic='The method of characteristics falls slightly more negative than experiment; the body boundary layer is expected to cause it.',
+         B=['Pressure distributions predicted by the method of characteristics fall parallel to but slightly more negative than the experimental values. Presence of the body boundary layer would be qualitatively expected to cause this deviation.'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Applies to: the comparison with the method of characteristics in figure 9 (paragraph context).'], B_cross=[], pairs=[],
+         words='A records no statement of this passage.'),
+    dict(id='T06', pages='PDF p. 8', q='Q6', read='once, by B',
+         topic='With jet flow, a questionable extrapolation from the last orifice to the base was needed; an orifice was added 0.03 in ahead of the base of the 5.63 deg boat-tail.',
+         B=['a questionable extrapolation of the pressures was necessitated from the last orifice to the end of the body.',
+            '(1) a static orifice was added at a distance 0.03-inch upstream of the base in the theta = 90 deg plane of the 5.63 deg boattail'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Applies to: the "With jet" discussion (figures 11 to 13, jet pressure ratios from no jet flow to about 15, as the subsection states). Step (1) names the 5.63 deg boattail and the theta = 90 deg plane. The diameter ratio of that boattail is not stated on this page.',
+                    'Whether the extrapolation also applies to the no-jet data or to the drag integrations behind figures 29 and 30: not stated.'],
+         B_cross=[], pairs=[],
+         words='A records no statement of this passage. B notes the sentence continues on PDF p. 9, which B did not open.'),
+    dict(id='T07', pages='PDF p. 11', q='Q7', read='twice for the first two sentences; the third (the effect) once, by B',
+         topic='Boundary-layer thickness 0.08 to 0.09 in, except at epsilon 5.63, where inadvertent early transition gave 0.20 in; the main effect is an irregularity in the base pressure data.',
+         B=['The boundary-layer thickness varied between 0.08 and 0.09 inch except in the case of the boattail epsilon = 5.63. Here inadvertant early transition to turbulence forward on the body (probably due to a leaking static orifice near the nose) resulted in a thickness of 0.20 inch. The main effect of this increased thickness was to produce an irregularity in the base pressure data that will be discussed subsequently.'],
+         A=[('rme51f26_fig8.csv', 'the text (PDF p. 11) says that on the 5.63 deg boattail with Db/Dm 0.704 inadvertent early transition (probably a leaking static orifice near the nose) gave a boundary-layer thickness of 0.20 in at the base against 0.08 to 0.09 in for the other incompletely boattailed bodies'),
+            ('geometry.csv', 'inadvertent early transition forward on the body (probably a leaking static orifice near the nose) gave a boundary-layer thickness of 0.20 in')],
+         A_points='A puts this statement on all 15 points of fig. 8(a) (the 5.63 deg, Db/Dm 0.704 side pressures), on the fig. 24 Cp,b and C\'p,b points at 5.63 deg, Db/Dm 0.704, and on the fig. 30(a) base-drag point at 5.63 deg.',
+         B_applies=['Applies to: the boattail epsilon = 5.63. The diameter ratio is not stated in the visible text of PDF page 11. The bodies the 0.08 to 0.09 inch range refers to are introduced on PDF page 10, not opened, so I cannot quote them.',
+                    'Effect: "an irregularity in the base pressure data". The report names no other effect here, for example on side pressures.',
+                    'Figure points: not stated on this page. Pages 15 and 19 (Q12, Q13) do name the point (epsilon = 5.63 deg, Db/Dm = 0.704).'],
+         B_not=['Whether the epsilon = 5.63, Db/Dm = 0.704 side pressure distribution (figure 8(a)) is affected by the early transition.'],
+         B_cross=[],
+         pairs=[('A', f'rme51f26_fig8#{i:02d}') for i in range(1, 16)] + [('A', 'rme51f26_fig24#03'), ('A', 'rme51f26_fig24#04'), ('A', 'rme51f26_fig30#02')],
+         words='Same facts and numbers (0.08 to 0.09 in, 0.20 in, early transition forward on the body, probably a leaking static orifice near the nose); A paraphrases. A writes the statement with "Db/Dm 0.704", "the other incompletely boattailed bodies" and "at the base"; B says the visible text of p. 11 gives no diameter ratio and that the bodies of the 0.08 to 0.09 in range are introduced on PDF p. 10, which B did not open. The third sentence (the effect is on the base pressure data) is quoted by B only; B lists the fig. 8(a) side pressures as not stated to be affected, where A puts the statement on them. Not settled here.'),
+    dict(id='T08', pages='PDF p. 11', q='Q8', read='twice for "turbulent" and "0.10 in"; the rest once, by B',
+         topic='On the completely boat-tailed bodies the boundary layer was apparently turbulent, nearly constant at 0.10 in; profile variations probably did not greatly affect the base pressures.',
+         B=['The boundary-layer profiles on the completely boattailed bodies (fig. 18(b)) were again apparently turbulent but were all distorted from the one-seventh power profile',
+            'The boundary-layer thicknesses were nearly constant at 0.10 inch. The variations in boundary-layer profile that resulted from changing the boattail geometry probably did not greatly affect the base pressures.'],
+         A=[('geometry.csv', 'turbulent; thickness 0.08 to 0.09 in on the incompletely boattailed bodies (Db/Dm 0.704) except 5.63 deg; about 0.10 in on the completely boattailed bodies (Db/Dm 0.506)')],
+         A_points='No point (a geometry.csv row).',
+         B_applies=['Applies to: "the completely boattailed bodies" (figure 18(b)). These pages do not give the diameter ratio by number here.'],
+         B_cross=[], pairs=[],
+         words='Same facts for "turbulent" and "0.10 in"; A paraphrases. A gives the diameter ratios (0.506 for the completely, 0.704 for the incompletely boat-tailed bodies); B says these pages do not give the ratio by number. A\'s "turbulent" stands at the head of a row that also covers the incompletely boat-tailed bodies; B\'s quotation of p. 11 says "again apparently turbulent" of the completely boat-tailed bodies (the earlier statement it refers back to is not among B\'s quotations).'),
+    dict(id='T09', pages='PDF p. 11', q='Q9', read='once, by B',
+         topic='Transition forced by the wire thickened the boundary layer greatly without changing its profile.',
+         B=['When boundary-layer transition was forced at the tip of the model by means of a 0.005-inch wire, the effect was to thicken the boundary layer greatly without significantly changing the profile, as shown in figure 18(a).'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Applies to: figure 18(a). Configurations and diameter ratio: not stated.'], B_cross=[], pairs=[],
+         words='A records no statement of this sentence.'),
+    dict(id='T10', pages='PDF p. 11', q='Q10', read='once, by B',
+         topic='The boundary layer was not constant around the body (7.03 deg boat-tail).',
+         B=['The boundary layer was not generally constant around the bodies as illustrated by figure 19 which presents boundary layer profiles at theta = 15 deg, 50 deg, and 90 deg for the 7.03 deg boattail.',
+            'The boundary layer in the theta = 15 deg plane was approximately 30-percent thicker than in the theta = 90 deg plane and its profile was nearer that of the cylindrical afterbody.'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Applies to: the 7.03 deg boattail (figure 19 of the report). Diameter ratio: not stated.'], B_cross=[], pairs=[],
+         words='A records no statement of this passage.'),
+    dict(id='T11', pages='PDF p. 11', q='Q11', read='once, by B',
+         topic='With jet flow the boundary layer thickened and separated (jet on).',
+         B=['When the bodies were boattailed to a sharp edge at the nozzle exit, the effect of the expanding jet on the boundary layer was pronounced (fig. 20).'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Applies to: bodies "boattailed to a sharp edge at the nozzle exit", with jet flow (figure 20 of the report). These are jet-on conditions.'],
+         B_cross=[], pairs=[],
+         words='A records no statement of this passage; it concerns jet-on conditions, which neither reading covers.'),
+    dict(id='T12', pages='PDF p. 15', q='Q12', read='twice',
+         topic="The fig. 24 C'p,b value at epsilon 5.63 deg, Db/Dm 0.704 deviates, explained by early boundary-layer transition.",
+         B=["Deviation of the experimental value of C'p,b for the epsilon = 5.63 deg boattail with Db/Dm = 0.704 may be qualitatively explained by the fact that early boundary-layer transition resulted in a large increase in boundary-layer thickness ahead of the base."],
+         A=[('rme51f26_fig24.csv', 'the text (PDF pp. 15 and 19) calls this point inconsistent for that reason'),
+            ('geometry.csv', 'PDF pp. 15 and 19 call the resulting base-pressure and base-drag points inconsistent'),
+            ('method.md', "The 5.63 deg Db/Dm 0.704 points carry the text's statement (PDF pp. 11, 15) on early transition."),
+            ('method.md', 'inadvertent early transition on the 5.63 deg, Db/Dm 0.704 boattail (0.20 in thick) that the report calls the cause of an inconsistent base-pressure point.')],
+         A_points="A ties it to the fig. 24 C'p,b point at 5.63 deg, Db/Dm 0.704 (its \"inconsistent\" note and its p. 11 note), and its method note puts the pp. 11 and 15 statement on \"the 5.63 deg Db/Dm 0.704 points\", so on the Cp,b point at the same angle and ratio too (that row carries the p. 11 note only).",
+         B_applies=["First sentence: applies to the figure 24 point C'p,b at epsilon = 5.63 deg, Db/Dm = 0.704 (stated). The report calls it a \"Deviation\". It says the deviation \"may be qualitatively explained\" by early boundary-layer transition.",
+                    'It does not say whether the Cp,b point at the same epsilon and Db/Dm (figure 24) is also affected.'],
+         B_cross=["Q12 (C'p,b, epsilon 5.63 deg, Db/Dm 0.704, figure 24 paragraph): `rme51f26_fig24.csv`, flagged square (legend: Db/Dm .704, C'p,b) at x 5.635, y -0.0466. The open square at the same angle (legend: Db/Dm .704, Cp,b; x 5.625, y -0.0844) has the same epsilon and Db/Dm. Q12 does not name Cp,b."],
+         pairs=[('both', 'rme51f26_fig24#04'), ('A', 'rme51f26_fig24#03')],
+         words='The words differ. As B quotes p. 15, the report calls the C\'p,b value a "Deviation" that "may be qualitatively explained" by early transition; A writes that pp. 15 and 19 call the point "inconsistent". In B\'s quotations "inconsistent" occurs on p. 19 (T16, of the base pressure drag point) and on p. 8 (T04, of the wire data), not on p. 15. The pairing does not settle the wording. Both tie the statement to the same C\'p,b point; only A extends it to the Cp,b point.'),
+    dict(id='T13', pages='PDF p. 15', q='Q12', read='once, by B',
+         topic='Forced transition at the model tips raised the base pressure coefficients by about 0.015.',
+         B=['(The effect of forced boundary-layer transition at the model tips was to increase the base pressure coefficients approximately 0.015.)'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Parenthesis ("approximately 0.015"): which configurations, which coefficient (Cp,b or C\'p,b), and whether any wire points are plotted in figure 24: not stated.'],
+         B_cross=[], pairs=[],
+         words='A records no statement of this sentence. It is the only size of the trip wire\'s effect on base pressure given in either reading.'),
+    dict(id='T14', pages='PDF p. 15', q='Q12', read='once, by B',
+         topic="The fig. 24 reference 6 point is a single C'p,b value at M = 1.9.",
+         B=["A single value of C'p,b obtained from the tests of the parabolic body of revolution of reference 6 is included for comparison at M = 1.9."],
+         A=[('rme51f26_fig24.csv', 'the reference list (PDF p. 22) gives reference 6 as NACA RM E50D10, RM-10 missile at Mach numbers from 1.49 to 1.98'),
+            ('rme51f26_fig24.csv', "base pressure coefficient, Cp,b or C'p,b (axis: base pressure coefficients, Cp,b and C'p,b); the legend does not say which")],
+         A_points='A records no statement of this sentence; the A text quoted is what A says of the same point from the reference list and the figure, not of this sentence.',
+         B_applies=["This gives the Mach number (1.9) and coefficient (C'p,b) of the figure 24 \"Model from reference 6\" symbol. In my `rme51f26_fig24.csv` I left that point's Mach number empty and its coefficient type open, because the figure itself gives neither (see section 3)."],
+         B_cross=["Q12, reference 6 point: `rme51f26_fig24.csv`, right-triangle symbol at x 4.499, y -0.0698. Q12 gives it as C'p,b at M = 1.9. The figure itself gives neither, so I left the CSV row as read and give the text's values here only."],
+         pairs=[('B', 'rme51f26_fig24#02')],
+         words='Read by B only. Both readers\' rows for the point (pair rme51f26_fig24#02) still give no Mach number and leave the coefficient open, as the figure does; the pairing changes neither.'),
+    dict(id='T15', pages='PDF p. 15', q='', read='once, by A',
+         topic='M1, the Mach number just ahead of the base, varied from 1.91 to 2.1 among the boat-tails.',
+         B=[],
+         A=[('rme51f26_fig24.csv', 'the text (PDF p. 15) says M1 varied from 1.91 to 2.1 among the boattails'),
+            ('geometry.csv', '1.91 to 2.1 among the boattails')],
+         A_points='In the note of all 14 fig. 24 rows, and A\'s geometry.csv row 21.',
+         B_applies=[], B_cross=[], pairs=[],
+         words='Not a transition or boundary-layer statement, so outside B\'s targeted reading; B does not quote it.'),
+    dict(id='T16', pages='PDF p. 19', q='Q13', read='twice for the third sentence; the first two (base drag rises as the angle falls; the method overestimates it) once, by B',
+         topic='The base pressure drag point at epsilon 5.63 deg, Db/Dm 0.704 is "the point previously indicated as inconsistent", from inadvertent early transition.',
+         B=['The data point for epsilon = 5.63 deg, Db/Dm = 0.704 is the point previously indicated as inconsistent as a result of inadvertent early transition of the boundary layer on the body.',
+            'Base pressure drag was observed to increase with decreasing boattail angle for the subject base to body diameter ratios. This variation is in accordance with the method of this report, although the method overestimated the base drag as a result of the deviation of theoretical and experimental pressures ahead of the base.'],
+         A=[('rme51f26_fig30.csv', 'the text (PDF p. 19) calls the 5.63 deg, Db/Dm 0.704 base-drag point inconsistent for that reason'),
+            ('geometry.csv', 'PDF pp. 15 and 19 call the resulting base-pressure and base-drag points inconsistent')],
+         A_points="A ties it to the fig. 30(a) base-drag point at 5.63 deg and, through \"pp. 15 and 19\", to the fig. 24 C'p,b point at 5.63 deg, Db/Dm 0.704.",
+         B_applies=['Applies to: the base pressure drag data point at epsilon = 5.63 deg, Db/Dm = 0.704 (stated). The report calls it "inconsistent" and gives the cause as "inadvertent early transition of the boundary layer on the body".',
+                    'Figure number: not stated in this paragraph on PDF page 19. The figures are introduced on PDF page 18, which I did not open.',
+                    'Whether the side pressure drag or total pressure drag points at the same epsilon and Db/Dm are affected: not stated.'],
+         B_cross=['Q13 (base pressure drag, epsilon 5.63 deg, Db/Dm 0.704): the caption of figure 30 gives Db/Dm 0.704. Its panel (a), "Experimental base drag", has a circle at x 5.690, y 0.0412 in `rme51f26_fig30.csv`. Q13 names no figure.'],
+         pairs=[('both', 'rme51f26_fig30#02'), ('A', 'rme51f26_fig24#04')],
+         words='The same key word ("inconsistent") and the same cause; A paraphrases. Both tie it to the same fig. 30(a) base-drag point (B through its own cross-reference, the report naming no figure).'),
+    dict(id='T17', pages='PDF p. 19', q='Q14', read='once, by B',
+         topic='The base pressure drag at zero boat-tail angle was estimated from the cylindrical afterbody\'s base pressure, and "this indication would not be true".',
+         B=['The experimental value of base pressure drag coefficient at a boattail angle of zero was estimated by assuming that the base pressure obtained with the cylindrical afterbody would be the limiting pressure. Actually this indication would not be true since epsilon = 0 corresponds to an indefinitely long boattail with an indefinitely thick boundary layer, which would indicate that the base pressure might approach ambient pressure (that is, CD = 0).'],
+         A=[], A_points='No statement and no point.',
+         B_applies=['Applies to: the experimental base pressure drag coefficient at a boattail angle of zero (stated). The report says it was "estimated" from the cylindrical-afterbody base pressure and that "this indication would not be true".',
+                    'Figure number: not stated in this paragraph on PDF page 19.'],
+         B_cross=['Q14 (base pressure drag at epsilon zero): the epsilon 0 circles in panel (a) of figures 29 and 30 (`rme51f26_fig29.csv` x -0.005, y 0.0334; `rme51f26_fig30.csv` x -0.020, y 0.0651). Q14 names no figure.'],
+         pairs=[('B', 'rme51f26_fig29#01'), ('B', 'rme51f26_fig30#01')],
+         words='A records no statement of this paragraph; A reads both epsilon 0 points as plotted and labels them with the figure\'s Db/Dm (section 7).'),
+    dict(id='T18', pages='PDF pp. 3, 19 and 22', q='', read='once, by A',
+         topic='Base bleed is a small amount of jet air.',
+         B=[],
+         A=[('method.md', 'The text (PDF pp. 3, 19, 22) says base bleed is a small amount of jet air (jet pressure ratio 1 or less), so these are jet-flow points.')],
+         A_points='The fig. 30 base-bleed squares, which A did not read.',
+         B_applies=[], B_cross=[], pairs=[],
+         words='Not a transition statement, so outside B\'s targeted reading; B does not quote it. Both readers excluded the base-bleed points (section 10).'),
+]
+
+T14_QUOTE = "A single value of C'p,b obtained from the tests of the parabolic body of revolution of reference 6 is included for comparison at M = 1.9."
+
+B_CROSS_HEAD = ('These are rows in my CSVs whose legend or caption parameters match the epsilon and Db/Dm values '
+                'stated in Q12, Q13 and Q14. The report states the parameters. It does not state these rows.')
 
 
 def check_quote(rd, reader, fname, text):
@@ -880,12 +1055,15 @@ def main():
 
     for reader in ('A', 'B'):
         inputs.append((reader + '/method.md', sha256(os.path.join(rd, reader, 'method.md'))))
+    inputs.append(('B/transition.md', sha256(os.path.join(rd, 'B', 'transition.md'))))
 
     # Section: pairing.txt
     P = T.append
     P('Pairing of the two blind readings of the boat-tail figures')
     P('0014 10.7 (ae); readers A (first reading) and B (blind second reading)')
     P('Paired 2026-10-26 by a neutral party, written by pair.py in this folder.')
+    P('Section 12 (B\'s targeted transition reading, paired with A\'s statements of the')
+    P('same pages) and transition_pairs.csv added 2026-10-27.')
     P('')
     P('The readings are compared with each other only. The pairing party opened')
     P('the readers\' brief, both readers\' folders and the 0014 10.7 (ae) entry,')
@@ -1069,6 +1247,122 @@ def main():
            'folder; each reader\'s log of opened pages (A/work/opened_log.txt, B/render/opened.log) lists the '
            'same pages as its method note. Neither reader opened TN 3320 or TN 3819 PDF page 57, nor the '
            'other reader\'s folder, as far as their notes, logs and files show.'))
+    P('')
+    P(wrap('Repeated on 2026-10-27 for B\'s targeted reading: the files B added since the first pairing are '
+           'page images of RM E51F26 PDF pp. 8, 11, 15 and 19, crops of RM E51F26 PDF pp. 7, 8, 11, 15 and '
+           '19, transition.md, method.md item 16 and entries 28 and 29 of B/render/opened.log. None is of '
+           'another report or of TN 3819 page 57, and none names A\'s folder. A\'s folder is unchanged since '
+           'the first pairing.'))
+    P('')
+
+    # Section 12: transition statements
+    P('12. RM E51F26 transition, trip-wire and boundary-layer statements, paired (added 2026-10-27)')
+    P('')
+    for para in [
+        'B\'s targeted reading (B/transition.md; B/method.md item 16) quotes every transition, trip-wire and '
+        'boundary-layer statement of RM E51F26 PDF pages 7, 8, 11, 15 and 19 word for word (Q1 to Q14), each '
+        'checked by B against the page image, and says what each applies to as the report states it. A\'s '
+        'statements of the same pages are in A/method.md (sections 4 and 8), A/geometry.csv (rows 18 to 21) '
+        'and the notes of A\'s fig. 8, 24 and 30 rows. A read pp. 8, 15 and 19 as OCR text and p. 11 as OCR '
+        'text and scan; none of A\'s statements is in quotation marks, so each is compared with B\'s quotation '
+        'for its facts and key words. "Read twice" means both readers state it; "once" means one reader only.',
+        'B\'s section 3 is B\'s own cross-reference of statements to rows of its CSVs. B marks it as matching '
+        'by parameters only: "' + norm_ws(B_CROSS_HEAD) + '" It is shown below under that label and is not '
+        'treated as a statement of the report. Pair ids are those of the pairs_<figure>.csv files.',
+    ]:
+        P(wrap(para))
+        P('')
+    check_quote(rd, 'B', TFILE, B_CROSS_HEAD)
+    trows = []
+    for t in TRANS:
+        P(wrap(f'{t["id"]}, RM E51F26 {t["pages"]}' + (f' (B\'s {t["q"]})' if t['q'] else '') + f'. Read {t["read"]}.', indent='  '))
+        P(wrap(f'Statement: {t["topic"]}', indent='    '))
+        for q in t['B']:
+            P(wrap('Report, as B quotes it, ' + check_quote(rd, 'B', TFILE, q), indent='    '))
+        for f_, q in t['A']:
+            P(wrap('A, ' + check_quote(rd, 'A', f_, q), indent='    '))
+        P(wrap('Same words or not: ' + t['words'], indent='    '))
+        P(wrap('Points, A: ' + t['A_points'], indent='    '))
+        for q in t['B_applies']:
+            P(wrap('Points, B (what B says the report states): ' + check_quote(rd, 'B', TFILE, q), indent='    '))
+        for q in t.get('B_not', []):
+            P(wrap('B, among what these pages do not state (B section 2): ' + check_quote(rd, 'B', TFILE, q), indent='    '))
+        for q in t['B_cross']:
+            P(wrap('B\'s own cross-reference to its rows (B section 3, not a report statement): '
+                   + check_quote(rd, 'B', TFILE, q), indent='    '))
+        if t['pairs']:
+            by = defaultdict(list)
+            for who, pid in t['pairs']:
+                by[who].append(pid)
+            P(wrap('Pairs tied to it: ' + '; '.join(
+                {'both': 'by both readers', 'A': 'by A only', 'B': 'by B only (its cross-reference)'}[w]
+                + ': ' + ', '.join(by[w]) for w in ('both', 'A', 'B') if by[w]), indent='    '))
+        P('')
+        trows.append(OrderedDict([
+            ('id', t['id']), ('pages', 'RM E51F26 ' + t['pages']), ('b_quotation', t['q']),
+            ('read', t['read']), ('statement', t['topic']),
+            ('report_as_quoted_by_B', ' | '.join(norm_ws(q) for q in t['B'])),
+            ('A_statements', ' | '.join(f'{f_}: {norm_ws(q)}' for f_, q in t['A'])),
+            ('same_words_or_not', t['words']),
+            ('A_points', t['A_points']),
+            ('B_points_from_report', ' | '.join(norm_ws(q) for q in t['B_applies'])),
+            ('B_not_stated', ' | '.join(norm_ws(q) for q in t.get('B_not', []))),
+            ('B_cross_reference_not_a_report_statement', ' | '.join(norm_ws(q) for q in t['B_cross'])),
+            ('pairs_tied_by_both', ', '.join(p for w, p in t['pairs'] if w == 'both')),
+            ('pairs_tied_by_A_only', ', '.join(p for w, p in t['pairs'] if w == 'A')),
+            ('pairs_tied_by_B_only', ', '.join(p for w, p in t['pairs'] if w == 'B')),
+        ]))
+    with open(os.path.join(od, 'transition_pairs.csv'), 'w', newline='', encoding='utf-8') as f:
+        w = csv.DictWriter(f, fieldnames=list(trows[0].keys()), lineterminator='\n')
+        w.writeheader()
+        w.writerows(trows)
+
+    P('  Summary')
+    P('')
+    groups = OrderedDict([
+        ('Read twice (both readers state it)', [t for t in TRANS if t['read'].startswith('twice')]),
+        ('Read once, by B only', [t for t in TRANS if t['read'] == 'once, by B']),
+        ('Read once, by A only', [t for t in TRANS if t['read'] == 'once, by A']),
+    ])
+    for head, ts in groups.items():
+        P(wrap(f'{head}: ' + '; '.join(f'{t["id"]} ({t["pages"]}): {t["topic"].rstrip(".")}' for t in ts) + '.',
+               indent='    '))
+        P('')
+    P(wrap('Parts read once inside statements read twice: the third sentence of T07 (the effect is "an '
+           'irregularity in the base pressure data"), the rest of T08 (distorted profiles; profile variations '
+           'probably did not greatly affect base pressures) and the first two sentences of T16 are quoted by B '
+           'only.', indent='    '))
+    P('')
+    P(wrap('Points both readers tie to "inconsistent" or to early transition:', indent='    '))
+    P(wrap('- rme51f26_fig24#04, the fig. 24 C\'p,b point at epsilon 5.63 deg, Db/Dm 0.704 (A row 10, B row 3). '
+           'A: the p. 11 early-transition note and "the text (PDF pp. 15 and 19) calls this point inconsistent". '
+           'B (its cross-reference, from the report\'s p. 15 sentence naming C\'p,b at 5.63 deg, Db/Dm 0.704): a '
+           '"Deviation" that "may be qualitatively explained" by early boundary-layer transition.', indent='      '))
+    P(wrap('- rme51f26_fig30#02, the fig. 30(a) base-drag point at epsilon 5.63 deg, Db/Dm 0.704 (A row 2, B row 2). '
+           'A: the p. 11 note and "the text (PDF p. 19) calls the 5.63 deg, Db/Dm 0.704 base-drag point inconsistent". '
+           'B (its cross-reference; the report\'s p. 19 sentence names the point by angle and ratio, not by '
+           'figure): "the point previously indicated as inconsistent as a result of inadvertent early transition".',
+           indent='      '))
+    P(wrap('Tied by A only: rme51f26_fig24#03 (the fig. 24 Cp,b point at the same angle and ratio; B: "Q12 does '
+           'not name Cp,b") and the 15 points of fig. 8(a), rme51f26_fig8#01 to #15 (the 5.63 deg, Db/Dm 0.704 '
+           'side pressures; B lists their being affected among what the pages do not state). Tied by B only, to '
+           'other statements: rme51f26_fig29#01 and rme51f26_fig30#01 (the epsilon 0 base-drag points, to the '
+           'p. 19 statement that the zero-angle value was estimated, T17) and rme51f26_fig24#02 (the reference 6 '
+           'point, T14).', indent='    '))
+    P('')
+    P(wrap('The fig. 24 reference 6 point: as B quotes p. 15, "' + T14_QUOTE + '" B reads this as giving the '
+           'point\'s Mach number (1.9) and coefficient (C\'p,b), and left its own row as read (Mach number empty, '
+           'coefficient open) because the figure gives neither. A did not record the sentence; A identifies '
+           'reference 6 from the reference list as an RM-10 missile tested at M 1.49 to 1.98 and leaves the '
+           'same two fields open. Both rows of pair rme51f26_fig24#02 stay as read; the pairing settles neither.',
+           indent='    '))
+    P('')
+    P(wrap('No row of either reading says whether its point was taken with the trip wire. In B\'s quotations '
+           'the report says the wire was used "for selected settings" (T02), that wire data appear in the '
+           'figure 9 mean distributions (T04), that forced transition thickened the boundary layer greatly '
+           '(T09), and that it raised the base pressure coefficients by about 0.015 (T13), without naming the '
+           'points of figs. 7, 8, 24, 29 or 30 taken with it. B says so for each; A says the figures read do '
+           'not say which points were tripped.', indent='    '))
     P('')
 
     with open(os.path.join(od, 'pairing.txt'), 'w', encoding='utf-8') as f:
