@@ -342,7 +342,8 @@ estimate names it (`NOSE_UNVERIFIED_REASON`).
   +23.3% to +28.6% of the modelled total over the 11 shots (-24.0% to
   -24.7% and +23.3% to +23.5% at the three inside the class)."; -24.6%
   until 0019 section 3.4.1's F4 widened the trailing edges' band at the
-  Mach 1.799 shot, 2026-10-27, 0010 section 11.6). Before
+  Mach 1.799 shot, 2026-10-27: a widening made after the gate was used,
+  disclosed so in the gate table's caption, 0010 section 11.6). Before
   the suspension the claim inside the class was "Validated on the Basic
   Finner: ...", with the residuals, the tolerance, the temperature
   sensitivity and, beside it, caveats on the tolerance's width, the

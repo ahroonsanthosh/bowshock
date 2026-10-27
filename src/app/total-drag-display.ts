@@ -587,8 +587,10 @@ export function gateDisplay(): DisplayBlock[] {
         'The Basic Finner gate re-run with the corrected fins-on-base factor (design record 0010 ' +
         'section 11): a recorded correction made after the residuals were known, not a new test, ' +
         'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
-        'audit (its section 10); residual: measured CX0 over modelled, minus 1; each band rounded ' +
-        'outward, other values to the nearest last digit shown',
+        "audit (its section 10); the trailing edges' band at the Mach 1.799 shot widened since " +
+        '(design record 0019 section 3.4.1, F4), also after the gate was used; residual: measured ' +
+        'CX0 over modelled, minus 1; each band rounded outward, other values to the nearest last ' +
+        'digit shown',
       head: [
         'Shot',
         'Mach',

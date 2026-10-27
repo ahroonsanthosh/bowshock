@@ -61,6 +61,10 @@ MUTATIONS = [
      'const meets = p.mach + p.machErr >= a && p.mach - p.machErr <= b;', 'const meets = true;'),
     ('F4: the ratio at the turbulent K only, not from a thin layer', 'src/base/fin-trailing-edge.ts',
      'for (const kk of [1, k])', 'for (const kk of [k])'),
+    ("F4: #7's shape widening dropped (any wing, 6.88 deg)", 'src/base/fin-trailing-edge.ts',
+     '  const s = (transonicTrailingEdge().shapeAllowance * p.faceAngleDeg) / 4;', '  const s = 0;'),
+    ("F4: #7 taken as wing 2 (no shape widening, wing 2's layer)", 'src/base/fin-trailing-edge.ts',
+     '  hOverC: 0.015,\n  reynolds: 1.5e6,\n  faceAngleDeg: 6.88,', '  hOverC: 0.03,\n  reynolds: 1.5e6,\n  faceAngleDeg: 0,'),
 ]
 
 def f1_plant(src):

@@ -14,6 +14,7 @@ import {
   type TransonicEvidencePoint,
 } from '../../src/base/fin-te-transonic';
 import {
+  bandLowAbove,
   FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
   thickLayerFactor,
@@ -21,6 +22,7 @@ import {
   transonicTrailingEdge,
 } from '../../src/base/fin-trailing-edge';
 import { BaseRefusal } from '../../src/base/refusal';
+import { readFileSync } from 'node:fs';
 
 const linspace = (a: number, b: number, n: number) =>
   n <= 1 || b === a ? [a] : Array.from({ length: n }, (_, i) => a + ((b - a) * i) / (n - 1));
@@ -256,6 +258,53 @@ describe('the nodes and the served term, recomputed from the record (item 3 to 7
           9,
         );
       }
+    }
+  });
+});
+
+describe('the band above Mach 1.5 near 1.7, recomputed from the four-way pairing (F4)', () => {
+  const dir = '../../docs/research/total-drag/audit/pairing-2026-10-27-a52e01-m17-four';
+  const text = (f: string) => readFileSync(new URL(`${dir}/${f}`, import.meta.url), 'utf8');
+  const rows = text('identity_map.csv').trim().split('\n');
+  // The CSV's quoted fields hold commas: take each curve's alpha 0 cells by their pattern.
+  const valuesOf = (curve: string) => {
+    const row = rows.find((r) => r.includes(`"M=1.2, 1.4, 1.7 ${curve}"`))!;
+    const cells = [...row.matchAll(/"?(-0\.\d+) \+-(0\.\d+) \(([^)]*)\)"?/g)];
+    return cells.flatMap((c) => {
+      const [v, e] = [Number(c[1]), Number(c[2])];
+      return c[3]!.includes('bound') ? [v - e, v + e] : [v];
+    });
+  };
+  // #10, wing 2 as F4 takes it: C, D and D's alternative end as a value; K from 1.
+  const alt = /lowest end at alpha 0\.343 \+-0\.068, (-0\.\d+) \+-/.exec(text('pairing.txt'))!;
+  const ten = [...valuesOf('#10'), Number(alt[1])];
+  // #7, any wing: C and D; the shape allowance at 6.88 deg.
+  const seven = valuesOf('#7');
+  const s = (transonicTrailingEdge().shapeAllowance * 6.88) / 4;
+  const least = (values: number[], widening: number) => {
+    let r = Infinity;
+    for (let i = 0; i <= 200; i++) {
+      const m = 1.69 + (0.02 * i) / 200;
+      r = Math.min(r, Math.min(...values.map((v) => v / thinLayerBasePressure(m))));
+    }
+    return Math.floor(r * (1 - widening) * 100 + 1e-9) / 100;
+  };
+
+  it("gives the library's low end at every Mach number from 1.5 to 1.9", () => {
+    expect(ten.length).toBe(4);
+    expect(seven.length).toBe(3);
+    const r10 = least(ten, 0);
+    const r7 = least(seven, s);
+    expect([r10, r7]).toEqual([0.41, 0.51]);
+    // Item 5's windows: the nodes 1.65, 1.70 and 1.75 take the least ratio, 0.93 elsewhere.
+    const node = (m: number) =>
+      m >= 1.65 - 1e-9 && m <= 1.75 + 1e-9 ? Math.min(0.93, r10, r7) : 0.93;
+    for (let i = 0; i <= 80; i++) {
+      const m = 1.5 + (0.4 * i) / 80;
+      const k = Math.floor((m - 1.5) / 0.05 + 1e-9);
+      const [a, b] = [1.5 + 0.05 * k, 1.5 + 0.05 * (k + 1)];
+      const expected = node(a) + ((m - a) / (b - a)) * (node(b) - node(a));
+      expect(bandLowAbove(m), `M ${m}`).toBeCloseTo(expected, 9);
     }
   });
 });

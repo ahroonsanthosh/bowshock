@@ -34,7 +34,10 @@ import {
   thickLayerFactor,
   THIN_LAYER_LIMIT,
   thinLayerBasePressure,
+  ABOVE_BAND_POINTS,
+  aboveLeastRatio,
   bandLowAbove,
+  RM_A52E01_ANY_WING_M17,
   RM_A52E01_WING2_M17,
   TrailingEdgeRefusals,
   trailingEdgeBasis,
@@ -767,6 +770,31 @@ describe("the band above Mach 1.5 near 1.7: RM A52E01's wing 2 (0019 3.4.1 item 
         expect(r.label).toMatch(/band widened to 0\.410 near Mach 1\.7 on RM A52E01/);
       }
     }
+  });
+
+  it("takes #7 in too: any wing (B flags its call), C and D's envelope, band only; it moves nothing", () => {
+    const r7 = records(`${four}/identity_map.csv`).find(
+      (r) => r.drawn_curve === 'M=1.2, 1.4, 1.7 #7',
+    )!;
+    for (const k of ['B', 'C', 'D']) expect(r7[`${k}_wing_call`]).toMatch(/^wing 3,/);
+    expect(r7.B_wing_call).toMatch(/flagged uncertain/);
+    expect(wingOfFour(r7)).toBe('any wing');
+    expect(r7.alpha0_status).toMatch(/^TWO OR MORE AGREEING READINGS \(C-D\)/);
+    const values = [...alpha0Of(r7.alpha0_C!)!, ...alpha0Of(r7.alpha0_D!)!];
+    expect(RM_A52E01_ANY_WING_M17.cpLow).toBeCloseTo(Math.min(...values), 12);
+    expect(RM_A52E01_ANY_WING_M17.cpHigh).toBeCloseTo(Math.max(...values), 12);
+    // Any wing: wings 3 and 4's layer (h/c 0.015) for the ratio's K, the 6.88 deg widening.
+    expect([RM_A52E01_ANY_WING_M17.hOverC, RM_A52E01_ANY_WING_M17.faceAngleDeg]).toEqual([
+      0.015, 6.88,
+    ]);
+    expect(ABOVE_BAND_POINTS).toEqual([RM_A52E01_WING2_M17, RM_A52E01_ANY_WING_M17]);
+    // Its least ratio, 0.51 (0.60 before the shape widening), lies above #10's 0.41 in the same
+    // windows: the band is #10's alone.
+    expect(aboveLeastRatio(RM_A52E01_ANY_WING_M17)).toBe(0.51);
+    expect(aboveLeastRatio(RM_A52E01_WING2_M17)).toBe(0.41);
+    expect(-RM_A52E01_ANY_WING_M17.cpHigh / -thinLayerBasePressure(1.69)).toBeCloseTo(0.6046, 3);
+    // Outside the band served before F4 (0.93): 0.62 to 0.74 of the term served at Mach 1.7.
+    expect(-RM_A52E01_ANY_WING_M17.cpHigh / -thinLayerBasePressure(1.7)).toBeLessThan(0.93);
   });
 });
 

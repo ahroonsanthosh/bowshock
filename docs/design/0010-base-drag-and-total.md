@@ -668,7 +668,16 @@ row used.
   C_D, 52% of the term (`docs/research/refusals/out/f4-probe.out`); it
   changes no refusal. It reaches the Basic Finner gate's shot at Mach
   1.799, whose low end there is 0.920: its band and tolerance move
-  slightly (section 11.6's note), no verdict changes.
+  slightly (section 11.6's note), no verdict changes. **This widening was
+  made after the gate was used**, with its residuals known: a recorded
+  change to a tested term, not a new test, and the gate does not test it
+  (the coordinator's ruling, 2026-10-27, keeping 0019 item 5's windows,
+  the recorded rule and the wider choice). Fig. 8(a)'s line #7 (wing 3 by
+  B, C and D, B's call flagged, so any wing; C and D's envelope, -0.1902
+  to -0.1746; the shape allowance at 6.88 deg) also enters, band only:
+  at 0.62 to 0.74 of the term served it would have lain outside 0.93 to
+  1.21 too, the same finding as #10's, and its least ratio, 0.51, lies
+  above #10's 0.41 in the same windows, so it moves nothing.
 
 - **Label.** For edges in the body's base plane, as on fins at the base:
   "an analogy, not a measurement", since no opened source measures such
@@ -1508,10 +1517,12 @@ and `.json`).
 | DA95030603 | 2.969 | 0.385 | 0.4072         | -5.4%    | -19.5% to +24.6%    | 0.3951 (0.3459 to 0.4678) | -2.6%    | -20.0% to +25.7% |
 | DA95022205 | 2.970 | 0.376 | 0.4071         | -7.6%    | -19.5% to +24.7%    | 0.3951 (0.3458 to 0.4677) | -4.8%    | -20.0% to +25.7% |
 
-_Since F4 (2026-10-27; 0019 section 3.4.1, and section 5.1 here):_ at
-DA95021318 (Mach 1.799) the trailing edges' band low end is 0.920 of the
-term, not 0.93 (RM A52E01's wing 2 at Mach 1.7 widens it at Mach 1.60 to
-1.80), so its total is 0.6134 (0.5285 to 0.7297), its model-form low end
+_A widening made after the gate was used (F4, 2026-10-27; 0019 section
+3.4.1, and section 5.1 here), with the residuals known; like the
+correction above, a recorded change, not a new test:_ at DA95021318 (Mach
+1.799) the trailing edges' band low end is 0.920 of the term, not 0.93
+(RM A52E01's wing 2 at Mach 1.7 widens it at Mach 1.60 to 1.80), so its
+total is 0.6134 (0.5285 to 0.7297), its model-form low end
 -13.8% (-13.7% as recorded), and its tolerance -24.7% to +23.5% (-24.6%
 as recorded); the page's table shows these. Every other value, and every
 verdict, is as recorded.

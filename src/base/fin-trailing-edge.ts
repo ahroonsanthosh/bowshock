@@ -408,25 +408,52 @@ export const FIN_TRAILING_EDGE_BAND = (() => {
  * (a thin layer) to its turbulent X, the wider choice, and at every layer parameter served.
  */
 export const RM_A52E01_WING2_M17 = {
+  id: '#10',
   mach: 1.7,
   machErr: 0.01,
   cpLow: -0.1469,
   cpHigh: -0.131 + 0.0103,
   hOverC: 0.03,
   reynolds: 1.5e6,
+  faceAngleDeg: 0,
 } as const;
 
-/** The band's nodes above Mach 1.5 for this point: every 0.05, as below 1.5 (item 5). */
+/**
+ * RM A52E01 fig. 8(a) line #7 at Mach 1.7 near zero lift (the coordinator's ruling of
+ * 2026-10-27, 0019 section 3.4.1 item 11): wing 3 by every reader naming a wing (B, C, D), but
+ * reader B flags its call uncertain, so by the three-reading rule as written it is any of
+ * wings 2, 3 and 4: its ratio over K from 1 to wings 3 and 4's turbulent X (h/c 0.015, Re
+ * 1.5e6), widened both ways by the shape allowance at 6.88 deg (item 6). Its alpha 0 value is
+ * C and D's agreeing pair, entered as the envelope of every reading (C -0.1824 +-0.0078, a
+ * bound; D -0.1832); Mach +-0.01. It sets the band only, not the reach (F2). Its least ratio,
+ * 0.51, lies above #10's 0.41 in the same windows, so it moves nothing.
+ */
+export const RM_A52E01_ANY_WING_M17 = {
+  id: '#7',
+  mach: 1.7,
+  machErr: 0.01,
+  cpLow: -0.1824 - 0.0078,
+  cpHigh: -0.1824 + 0.0078,
+  hOverC: 0.015,
+  reynolds: 1.5e6,
+  faceAngleDeg: 6.88,
+} as const;
+
+/** The points that set the band above Mach 1.5 near 1.7 (F4). */
+export const ABOVE_BAND_POINTS = [RM_A52E01_WING2_M17, RM_A52E01_ANY_WING_M17] as const;
+
+/** The band's nodes above Mach 1.5 for these points: every 0.05, as below 1.5 (item 5). */
 const ABOVE_NODES = Array.from({ length: 35 }, (_, k) => Math.round(150 + 5 * k) / 100);
 
 /**
- * The point's least ratio, base drag measured over the term served (the curve times K at its
- * own Mach number), over its Mach interval and K from 1 to its turbulent value; rounded
- * outward to 0.01 as the band's other ends are.
+ * A point's least ratio, base drag measured over the term served (the curve times K at its
+ * own Mach number), over its Mach interval and K from 1 to its turbulent value, lowered by the
+ * shape allowance where its faces are inclined (item 6); rounded outward to 0.01 as the band's
+ * other ends are.
  */
-function wing2M17LeastRatio(): number {
-  const p = RM_A52E01_WING2_M17;
+export function aboveLeastRatio(p: (typeof ABOVE_BAND_POINTS)[number]): number {
   const xTurbulent = layerParameterRange(p.hOverC, p.reynolds, p.reynolds)[1];
+  const s = (transonicTrailingEdge().shapeAllowance * p.faceAngleDeg) / 4;
   let least = Infinity;
   for (let i = 0; i <= 20; i++) {
     const m = p.mach - p.machErr + (2 * p.machErr * i) / 20;
@@ -435,26 +462,29 @@ function wing2M17LeastRatio(): number {
       for (const kk of [1, k]) least = Math.min(least, cp / (thinLayerBasePressure(m) * kk));
     }
   }
-  return Math.floor(least * 100 + 1e-9) / 100;
+  return Math.floor(least * (1 - s) * 100 + 1e-9) / 100;
 }
 
 let aboveLow: readonly number[] | undefined;
 
 /**
- * The band's low end above Mach 1.5: 0.93, widened where RM A52E01's wing 2 at Mach 1.7
- * applies (0019 section 3.4.1, F4): at each node whose window, from the node before to the
- * node after, meets the point's Mach interval, the least of 0.93 and its ratio; linear
+ * The band's low end above Mach 1.5: 0.93, widened where RM A52E01's lines at Mach 1.7 apply
+ * (0019 section 3.4.1, F4): at each node whose window, from the node before to the node
+ * after, meets a point's Mach interval, the least of 0.93 and those points' ratios; linear
  * between nodes (so 0.93 up to Mach 1.60 and from 1.80).
  */
 export function bandLowAbove(mach: number): number {
   aboveLow ??= (() => {
-    const p = RM_A52E01_WING2_M17;
-    const r = wing2M17LeastRatio();
+    const least = ABOVE_BAND_POINTS.map((p) => [p, aboveLeastRatio(p)] as const);
     return ABOVE_NODES.map((_, k) => {
       const a = ABOVE_NODES[Math.max(0, k - 1)]!;
       const b = ABOVE_NODES[Math.min(ABOVE_NODES.length - 1, k + 1)]!;
-      const meets = p.mach + p.machErr >= a && p.mach - p.machErr <= b;
-      return meets ? Math.min(FIN_TRAILING_EDGE_BAND.low, r) : FIN_TRAILING_EDGE_BAND.low;
+      let low: number = FIN_TRAILING_EDGE_BAND.low;
+      for (const [p, r] of least) {
+        const meets = p.mach + p.machErr >= a && p.mach - p.machErr <= b;
+        if (meets) low = Math.min(low, r);
+      }
+      return low;
     });
   })();
   let k = 0;
