@@ -18,11 +18,13 @@
 // - section 6 item 4's check: a used line whose reference differs from
 //   the family's extrapolation by more than the family's band.
 // References and misses as references.mjs, from the 2560-interval march.
-// Usage: node v2.mjs <out dir> [case]
+// Usage: [MARCH=moc4] node v2.mjs <out dir> [case]
 import { existsSync, readFileSync } from 'node:fs';
 
 const dir = process.argv[2] ?? 'results';
 const want = process.argv[3];
+// The march judged: moc3 (the third, section 9) or moc4 (the fourth, section 10).
+const MARCH = process.env.MARCH ?? 'moc3';
 const CRITERION = 3.5e-5;
 const read = (f) =>
   readFileSync(f, 'utf8')
@@ -60,7 +62,7 @@ function lines(file) {
 const rs = [1, 2, 4];
 for (const [tag, g] of [...fits.entries()].sort()) {
   if (want && tag !== want) continue;
-  const third = lines(`${dir}/moc3-${tag}.jsonl`);
+  const third = lines(`${dir}/${MARCH}-${tag}.jsonl`);
   if (third.size === 0 || !rs.every((r) => g[r])) continue;
   const first = lines(`${dir}/moc-${tag}.jsonl`);
   const T = Object.fromEntries(rs.map((r) => [r, g[r].drag]));

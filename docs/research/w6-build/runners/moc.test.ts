@@ -8,9 +8,10 @@
 // MOC_JSONL (records), MOC_ENTROPY ("cells", the first march, default; or
 // "shock", the second march of README section 6: each starting point's
 // entropy from its streamline's crossing of the fitted shock, entropy.ts),
-// MOC_MARCH ("plain", characteristicsFrom, default; or "shocked", the third
+// MOC_MARCH ("plain", characteristicsFrom, default; "shocked", the third
 // march of README section 9, characteristicsFromShocked, which fits an
-// embedded shock; its records add where the shock formed and merged).
+// embedded shock; or "reseeded", the fourth, section 10, the third with its
+// lines re-seeded; their records add where the shock formed and merged).
 //
 // "auto" chooses the lines once, on the first grid (refinement 1), before
 // any march: the lines of the nose behind its sonic line whose least Mach
@@ -39,7 +40,9 @@ it('moc', () => {
   const entropy = process.env.MOC_ENTROPY ?? 'cells';
   if (entropy !== 'cells' && entropy !== 'shock') throw new Error(`MOC_ENTROPY ${entropy}`);
   const march = process.env.MOC_MARCH ?? 'plain';
-  if (march !== 'plain' && march !== 'shocked') throw new Error(`MOC_MARCH ${march}`);
+  if (march !== 'plain' && march !== 'shocked' && march !== 'reseeded') {
+    throw new Error(`MOC_MARCH ${march}`);
+  }
   let lines: number[] = [];
   rs.forEach((r, n) => {
     const t0 = performance.now();
@@ -101,7 +104,10 @@ it('moc', () => {
         const t1 = performance.now();
         try {
           const options = { mach, gamma, intervals };
-          const shocked = march === 'shocked' ? characteristicsFromShocked(f.body, start, options) : null;
+          const shocked =
+            march === 'plain'
+              ? null
+              : characteristicsFromShocked(f.body, start, { ...options, reseed: march === 'reseeded' });
           const sol = shocked ?? characteristicsFrom(f.body, start, options);
           const drag = downstreamDrag(f.body, mach, sol.wall);
           const embedded = shocked && {
@@ -109,6 +115,8 @@ it('moc', () => {
             merged: shocked.merged,
             points: shocked.embedded.length,
             strongest: shocked.embedded.reduce((a, q) => Math.max(a, q.pressureRatio), 1),
+            shortfall: shocked.shortfall,
+            inserted: shocked.inserted,
           };
           appendFileSync(
             JSONL,

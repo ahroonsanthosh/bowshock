@@ -67,6 +67,8 @@ function run(n: number) {
     gamma,
     intervals: n,
     network: { planar: true },
+    // The fourth march (README section 10) with V1B_RESEED=1; nothing else changes.
+    reseed: process.env.V1B_RESEED === '1',
   });
   const w = solution.wall;
   const xp = x0 + xArc + 0.5;
