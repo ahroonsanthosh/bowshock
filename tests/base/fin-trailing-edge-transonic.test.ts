@@ -397,6 +397,63 @@ const pointsOutside = (t: TransonicTrailingEdge, evidence: readonly TransonicEvi
 const stepAt15 = (t: TransonicTrailingEdge) =>
   Math.abs(t.nominal(1.5) - thinLayerBasePressure(1.5));
 
+/**
+ * The check above Mach 1.5 (0019 section 3.4.1, the results note): each point the readings hold
+ * above 1.5 against the term served there, the curve times K(M, X) and the band 0.93 to 1.21
+ * times K's spread, over the point's Mach interval (from 1.5) and its layer range. RM A52E01's
+ * lines are any wing: each is taken as wing 2 (h/c 0.030) and as wing 3 or 4 (h/c 0.015, the
+ * same layer). The ratios are as measured, with no shape widening, as the band above 1.5 has none.
+ */
+function checkAbove15(): string[] {
+  const out = [
+    '# The check above Mach 1.5, information only: nothing above 1.5 changes (0019 section 3.4.1).',
+    '# ratio: base drag measured over the term served (curve times K(M, X)); band: 0.93 to 1.21',
+    "# times K's spread over K. Written by tests/base/fin-trailing-edge-transonic.test.ts.",
+  ];
+  const line = (p: TransonicEvidencePoint, taken: string, xs: readonly number[]) => {
+    const m0 = Math.max(p.machLow, 1.5);
+    const machs = [m0, (m0 + p.machHigh) / 2, p.machHigh];
+    let [rLo, rHi, bLo, bHi] = [Infinity, -Infinity, Infinity, -Infinity];
+    let inside = true;
+    for (const m of machs) {
+      for (const x of xs) {
+        const k = thickLayerFactor(m, x);
+        const r = [p.cpLow, p.cpHigh].map((cp) => cp / (thinLayerBasePressure(m) * k.nominal));
+        const b = [
+          (FIN_TRAILING_EDGE_BAND.low * k.low) / k.nominal,
+          (FIN_TRAILING_EDGE_BAND.high * k.high) / k.nominal,
+        ] as const;
+        [rLo, rHi] = [Math.min(rLo, ...r), Math.max(rHi, ...r)];
+        [bLo, bHi] = [Math.min(bLo, b[0]), Math.max(bHi, b[1])];
+        if (Math.min(...r) < b[0] || Math.max(...r) > b[1]) inside = false;
+      }
+    }
+    const f = (x: number) => x.toFixed(3);
+    out.push(
+      [
+        p.set,
+        p.set.startsWith('RM A52E01') ? p.id : `${p.id}, reading ${p.reading}`,
+        taken,
+        `M ${p.mach} +- ${f(p.machHigh - p.mach)}`,
+        `ratio ${f(rLo)} to ${f(rHi)}`,
+        `band ${f(bLo)} to ${f(bHi)}`,
+        inside ? 'inside' : 'partly outside',
+      ].join(' | '),
+    );
+  };
+  for (const p of TRANSONIC_TE_EVIDENCE.filter((q) => q.machHigh > 1.5)) {
+    if (p.set.startsWith('RM A52E01')) {
+      const re = p.set.endsWith('(a)') ? 1.5e6 : 3.8e6;
+      line(p, 'as wing 2', [layerParameterRange(0.03, re, re)[0]]);
+      line(p, 'as wing 3 or 4', [layerParameterRange(0.015, re, re)[0]]);
+    } else {
+      const r = p.properties.ratioLayer ?? p.properties.layer;
+      line(p, p.series, r === undefined ? [1] : [r[0], (r[0] + r[1]) / 2, r[1]]);
+    }
+  }
+  return out;
+}
+
 /** The band-setting points at Mach 1.0 to 1.5, every reading. */
 const USED_POINTS = 383;
 
@@ -510,6 +567,28 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
     expect(a.cd).toBeCloseTo(b.cd, 9);
     expect(a.low).toBeCloseTo(b.low, 9);
     expect(a.high).toBeCloseTo(b.high, 9);
+  });
+
+  it('the check above Mach 1.5 (information only, nothing above 1.5 changes): check-above-1.5.out', () => {
+    const lines = checkAbove15();
+    expect(lines.join('\n') + '\n').toBe(
+      readFileSync(
+        new URL(
+          '../../docs/research/total-drag/audit/te-below-1.5/check-above-1.5.out',
+          import.meta.url,
+        ),
+        'utf8',
+      ),
+    );
+    // TN 3548 and RM A51J25 fig. 7's symbols inside; RM A52E01 at Mach 1.7 inside taken as
+    // wing 3 or 4, partly below the band's low end taken as wing 2 (8(a) #9 B, 8(b) #6 B and C).
+    const outside = lines.filter((l) => l.endsWith('partly outside'));
+    expect(outside.map((l) => l.split(' | ').slice(0, 3).join(' | '))).toEqual([
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (B) | as wing 2',
+      'RM A52E01 fig. 8(b) | M=1.2, 1.4, 1.7 #6 (B) | as wing 2',
+      'RM A52E01 fig. 8(b) | M=1.2, 1.4, 1.7 #6 (C) | as wing 2',
+    ]);
+    expect(lines.filter((l) => l.endsWith('inside')).length).toBe(20);
   });
 
   it('sizes the shape allowance on the NPL pair: R&M 3348 above R&M 3427 at every common Mach number', () => {
