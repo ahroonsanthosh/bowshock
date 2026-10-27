@@ -1929,8 +1929,11 @@ curve, goes from 0.82 to 1.08 to **0.77 to 1.18** at Mach 1.5 to 3.0.
   wider tolerance can only keep a pass a pass, so the pass says less than
   it did: the page's validated claim and the two published tables say so
   beside the run's values, which they keep.
-- _The population_ (`docs/research/refusals`): served totals are
-  unchanged, 153 of 8000 cases before and after (the band refuses
-  nothing).
+- _The population_ (`docs/research/refusals`, on main's audit at
+  5921198, which counts the Von Karman noses the page serves): served
+  totals are unchanged, 181 of 8000 cases before and after (68 at Mach 1.5
+  to 1.8, 113 at 1.8 to 3.0; `out/2026-10-27-base-band-before/` and
+  `out/impact.out`); on the audit before 5921198 also unchanged, 153. The
+  band refuses nothing.
 
 The next free letter is (w).
