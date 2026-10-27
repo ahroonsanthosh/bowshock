@@ -364,17 +364,26 @@ export function characteristicsFromShocked(
         }
       } else if (!ahead(prev, q) && points.length >= 2) {
         // No shock yet: two C+ lines cross. A shock forms where they do, at
-        // zero strength, between the old points j - 1 and j.
+        // zero strength, between the old points j - 1 and j: where the
+        // C+ chords from them to the new line (a to prev, b to q) cross,
+        // which lies between the two lines as the order of their ends
+        // reverses. (The crossing of the straight C+ lines through a and b
+        // at their own angles, used first, can lie anywhere when they are
+        // nearly parallel: README section 9.4.)
         const a = old.points[j - 1]!;
         const b = old.points[j]!;
-        const ca = net.coefficients(a, 1);
-        const cb = net.coefficients(b, 1);
-        const ta = Math.tan(ca.angle);
-        const tb = Math.tan(cb.angle);
-        const x = (b.y - a.y + ta * a.x - tb * b.x) / (ta - tb);
-        const y = a.y + ta * (x - a.x);
+        const da = { x: prev.x - a.x, y: prev.y - a.y };
+        const db = { x: q.x - b.x, y: q.y - b.y };
+        const det = da.x * db.y - da.y * db.x;
+        const t =
+          det === 0
+            ? 0.5
+            : Math.min(Math.max(((b.x - a.x) * db.y - (b.y - a.y) * db.x) / det, 0), 1);
+        const x = a.x + t * da.x;
+        const y = a.y + t * da.y;
         const at: Point = { ...lerp(a, b, 0.5), x, y };
-        const s: ShockSides = { x, y, beta: 0.5 * (ca.angle + cb.angle), up: at, down: at };
+        const beta = 0.5 * (Math.atan2(da.y, da.x) + Math.atan2(db.y, db.x));
+        const s: ShockSides = { x, y, beta, up: at, down: at };
         formed ??= { x, y };
         // The new line's last point came from a's C+, which ends at the
         // shock: drop it and meet the shock from the point before.
@@ -395,7 +404,11 @@ export function characteristicsFromShocked(
     const w = wallPoint(points[points.length - 1]!, kWall);
     if (w === null) return null;
     points.push(w);
-    massBalance = Math.max(massBalance, Math.abs(w.psi - startPsi) / data[0]!.psi);
+    // As characteristicsFrom's: relative to the starting line's mass flux
+    // in the triangle of its dependence, to the line's own (its bow-shock
+    // point's stream function) in the march.
+    const flux = first === 0 ? data[0]!.psi : head.psi;
+    massBalance = Math.max(massBalance, Math.abs(w.psi - startPsi) / flux);
     wall.push({ x: w.x, p: w.p });
     return {
       points,
