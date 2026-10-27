@@ -5,6 +5,7 @@
  * their words.
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   BOUNDED_WORDS,
@@ -172,6 +173,28 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         'is 1.0 to 3.0 and for edge sizes within its data',
       change: 'bevelled leading edges',
     });
+  });
+
+  it("the fin-sweep words are 0017's row: flat fins with a square, unswept trailing edge at any leading-edge sweep (0015 section 12)", () => {
+    const row = readFileSync(
+      new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
+      'utf8',
+    )
+      .split('\n')
+      .filter((l) => l.startsWith('| `fin-sweep`'));
+    expect(row).toHaveLength(1);
+    const [, reason, change] = row[0]!
+      .split('|')
+      .slice(1, -1)
+      .map((c) => c.trim());
+    const words = refusalWords({ component: 'body base', reason: 'fin-sweep', message: '' });
+    // The record's row is the page's words, with the record's citation after the reason.
+    expect(reason).toBe(`${words.reason} (0015 section 12)`);
+    expect(change).toBe(words.change);
+    expect(words.reason).toContain(
+      'flat fins with a square, unswept trailing edge are taken at any leading-edge sweep',
+    );
+    expect(words.change).toContain('flat fins with a square, unswept trailing edge');
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {

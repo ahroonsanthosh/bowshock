@@ -986,7 +986,7 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     const plane =
       xc === 0
         ? 'in the base plane'
-        : `in one plane parallel to the base, ${xc} root chords ahead of it`;
+        : `in one plane parallel to the base, ${xc.toFixed(2)} root chords ahead of it`;
     reasons.push(
       `the leading edge swept ${deg(le)} deg with the trailing edge unswept, with flat faces: bracketed ` +
         "between RM L52E06's relief with flat plates at the base (F " +

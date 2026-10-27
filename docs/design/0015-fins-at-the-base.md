@@ -758,7 +758,7 @@ fin input's construction, not the base factor's routing.
 | sections outside the 10% arc (tauEq above 0.10)                                                            | the thickest member; steep short bevels among them                                                                                      |
 | rounded, diverging and converging blunt trailing edges                                                     | no measurement, no ordering (section 4)                                                                                                 |
 | sharp sections: leading-edge sweep 0 to 45 deg with a swept trailing edge, or at M 1.5 to 2.0, or above 60 | not measured; ordering not shown (3.4). Flat-faced fins with the trailing edge unswept are served at every sweep (section 12)           |
-| flat-faced fins with the trailing edge swept, outside 45 to 60 deg of leading edge, or beyond it           | part of the square edge lies out of the base plane, which section 12's argument does not cover                                          |
+| flat-faced fins with the trailing edge swept, outside 45 to 60 deg of leading edge, or beyond it           | a swept trailing edge carries the square edge out of one plane parallel to the base, which section 12's argument rests on               |
 | swept fins with a sharp trailing edge below M 1.5                                                          | no swept fins of such sections measured there (section 11)                                                                              |
 | trailing edge swept more than the leading edge                                                             | outside both swept sets                                                                                                                 |
 | a sharp section with the trailing edge swept aft within 0.9 root chords of the base, or forward anywhere   | not measured there (RM L52J21a's edge is swept aft, 0.85 +-0.05 chords ahead); linear theory raises the pressures behind the edge (3.4) |
@@ -1417,60 +1417,102 @@ the same two bounds, the same label, applied to more sweeps.
   ground of the next two items.
 - _What the sweep moves, and why the ends hold it._ At a fixed root
   chord c_r and semispan b with the trailing edge unswept, sweeping the
-  leading edge by L moves three things, each one way only as L grows:
-  (1) the fin's area and tip chord, the tip chord c_r - b tan L and the
-  area b (c_r - b tan L / 2), both largest unswept; (2) the juncture
-  vortex, the horseshoe vortex the root's leading edge stands in the
-  body's boundary layer, driven by the pressure rise at that edge (the
-  pressure a rounded or square edge stagnates, the shock at a bevel),
-  which grows with the edge's normal Mach number M cos L, so strongest
-  unswept; (3) the leading-edge shock, the bow wave a rounded or square
-  edge stands off and the shock at a bevel, whose strength is set by the
-  same M cos L: strongest unswept, a detached normal shock there above M
-  1, and no shock of the edge's own once M cos L is below 1. The unswept
-  plate is the extreme of all three, and it is served on this floor, in
-  this same bracket, since 0014 10.7 (i) (section 4); RM L52E06's
-  plates, which set the floor, are swept 45 deg, and section 4 serves 45
-  to 60 deg. A plate swept 0 to 45 deg lies between those ends in each
-  of the three, so it moves nothing in a direction the ends do not span.
-  A plate swept beyond 60 deg moves each the same way as the step from 0
-  to 45 deg does, further from the unswept extreme (a smaller fin, a
-  weaker juncture vortex, a weaker edge), while the relief's sources
-  above stay where they are; that range rests on this argument alone,
-  past the last sweep measured, which the label says. The concrete case
-  is a plate swept 20 deg at M 1.2. Its root edge sees a normal Mach
-  number of 1.2 cos 20 deg = 1.13, near sonic, a state neither end has:
-  the unswept plate's edge sees 1.2 and stands off a detached shock, and
-  a 45 deg plate's sees 0.85 and stands off no shock of its own (RM
-  L52E06's own, at M 1.06 to 1.10, see 0.75 to 0.78). On each of the
-  three counts it lies between them: its tip chord and area; the
-  pressure its root edge stagnates, which drives the juncture vortex,
-  2.21 times the free stream's against 2.41 unswept and 1.60 at 45 deg
-  (the pitot pressure at the normal Mach number, gamma 1.4); and its
-  shock's jump, 0.32 of the free stream's pressure against 0.51 unswept
-  and none at 45 deg. Its bow wave stands further ahead of the edge than
-  the unswept plate's (a detached shock's stand-off grows as the normal
-  Mach number falls toward 1), but it is weaker, and it stands ahead of
-  the root's edge, a root chord forward of the trailing edge, not at the
-  trailing edge where both bounds rest.
+  leading edge by L moves three things, each one way only as L grows,
+  and each acts on F as follows. (1) The fin's area and tip chord, the
+  tip chord c_r - b tan L and the area b (c_r - b tan L / 2), both
+  largest unswept. Taking the fin's effect on the base to grow with its
+  size, shrinking the fin moves F toward 1, its value with no fin, which
+  lies inside every bracket served, whichever side of 1 the fin's own
+  effect is on. (2) The juncture vortex, the horseshoe vortex the root's
+  leading edge stands in the body's boundary layer, driven by the
+  pressure rise at that edge (the pressure a rounded or square edge
+  stagnates, the shock at a bevel), which grows with the edge's normal
+  Mach number M cos L, so strongest unswept. Which way it moves F the
+  record does not show. Hart traces the relief to the junctures'
+  low-momentum air: a stronger vortex could feed more of it into the
+  base region (F down, more relief) or carry it off (F up). RM L52E06's
+  relief weakens from M 1.06 to 1.10 while its edges' normal Mach number
+  rises from 0.75 to 0.78, which leans to the second but does not
+  separate the vortex from the Mach number. (3) The leading-edge shock:
+  the bow wave a rounded or square edge stands off, a detached shock,
+  normal at the edge, once M cos L is above 1; the shock at a bevel,
+  attached and oblique while the bevel is below the detachment angle at
+  M cos L; strongest unswept, and no shock of the edge's own once M cos
+  L is below 1. It reaches F only through what is left of it at the
+  trailing edge, a chord aft at the root, where a flat face has brought
+  the flow back to nearly the stream's pressure: a compression left
+  there would raise the base pressure (F down), an expansion lower it (F
+  up), either one largest unswept.
+
+  So in each of the three a plate swept 0 to 45 deg lies between the
+  unswept plate, the extreme of all three, and RM L52E06's 45 deg
+  plates, which set the floor (section 4 serves 45 to 60 deg), and it
+  moves nothing in a direction the ends do not span. A plate swept
+  beyond 60 deg moves each the same way as the step from 0 to 45 deg
+  does, further from the unswept extreme (a smaller fin, a weaker
+  juncture vortex, a weaker edge), while the relief's sources above stay
+  where they are; that range rests on this argument alone, past the last
+  sweep measured, which the label says.
+
+  The premise this inherits: plates swept 0 to 45 deg are as safe as the
+  unswept plate's bracket and no safer, and that bracket, served since
+  0014 10.7 (i) (section 4), is argued, not measured: no flat plate
+  swept less than 45 deg is measured at the base. The margin at the
+  floor is thin: RM L52E06's 45 deg plates measured F 0.852 at M 1.06
+  (0.866 and 0.882 at 1.08 and 1.10), and the floor, 0.838, is that
+  reading moved by its error toward relief, 0.014 below it. An open risk
+  follows from (2): if a stronger juncture vortex relieves more, the
+  unswept plate, and the plates swept less than 45 deg between it and
+  the measured ones, could lie below 0.838 below about M 1.62, where the
+  floor is RM L52E06's alone (from M 1.62 RM L52J21a measures at most 5%
+  relief with fins near the base, section 3.5, and the floor has about
+  0.1 to spare). Nothing measured says they do or do not; base pressures
+  with unswept plates at the base below M 1.62 would close it.
+
+  The concrete case is a plate swept 20 deg at M 1.2. Its root edge sees
+  a normal Mach number of 1.2 cos 20 deg = 1.13, near sonic, a state
+  neither end has: the unswept plate's edge sees 1.2 and stands off a
+  detached shock, and a 45 deg plate's sees 0.85 and stands off no shock
+  of its own (RM L52E06's own, at M 1.06 to 1.10, see 0.75 to 0.78). On
+  each of the three counts it lies between them: its tip chord and area;
+  the pressure its root edge stagnates, which drives the juncture
+  vortex, 2.21 times the free stream's against 2.41 unswept and 1.60 at
+  45 deg (the pitot pressure at the normal Mach number, gamma 1.4); and
+  its shock's jump, 0.32 of the free stream's pressure against 0.51
+  unswept and none at 45 deg. Its bow wave stands further ahead of the
+  edge than the unswept plate's (a detached shock's stand-off grows as
+  the normal Mach number falls toward 1), but it is weaker, and it
+  stands ahead of the root's edge, a root chord forward of the trailing
+  edge, not at the trailing edge where both bounds rest.
+
 - _The leading edge near the tip._ The sweep also moves the leading edge
   aft: at spanwise station y its nose lies c_r - y tan L ahead of the
   trailing edge. Above 60 deg the tip chord can reach zero (at 70 deg a
   semispan of 0.36 root chords leaves 0.01 of one), so the nose, and a
   bevel's shoulder behind it, reach the trailing edge's plane over the
-  outer span. What keeps them out of both bounds is not a chord's distance
-  but what they are and where they are. A plate's nose and a bevel's
-  shoulder carry a thickness-sized field (a rounded or square edge's bow
-  wave, a bevel's shock and the expansion at its shoulder, over a few
-  plate thicknesses, 1.6 to 6.4 mm in the population), not a face's
-  pressures. Where they reach the trailing edge's plane they are near the
-  tip, a semispan from the body, not at the root juncture that feeds the
-  relief. And in the supersonic stream their wave runs downstream from
-  there, past the base (for fins within a chord ahead, over the body behind
-  them, as the unswept plate's stronger leading-edge wave does from a chord
-  further forward): it cannot reach the juncture or the square edge inboard
-  of it, both of which lie at or ahead of that plane. So the measured
-  relief is set by what the sweep does not move.
+  outer span. What keeps them out of both bounds is not a chord's
+  distance but what they are and where they are. A plate's nose and a
+  bevel's shoulder carry a thickness-sized field (a rounded or square
+  edge's bow wave, a bevel's shock and the expansion at its shoulder,
+  over a few plate thicknesses, 1.6 to 6.4 mm in the population), not a
+  face's pressures. Where they reach the trailing edge's plane they are
+  near the tip, a semispan from the body, not at the root juncture that
+  feeds the relief. And in the supersonic stream their wave runs
+  downstream from there: it cannot reach the juncture or the square edge
+  inboard of it, both of which lie at or ahead of that plane. It can
+  reach the near wake behind the base (for fins within a chord ahead,
+  after crossing the body behind them), and through the wake's
+  recompression, which sets the base pressure, the base itself. That
+  path is open, and what bounds it is strength, not distance: those
+  waves are weaker than the unswept plate's leading-edge wave, since
+  their edge sees the normal Mach number M cos L, not M (above 60 deg
+  below 1 at every Mach number to 2.0, so no shock of its own), and the
+  unswept plate, whose stronger wave reaches the same wake from a chord
+  further forward, is an end of the bracket, with the premise above.
+  Nearer the wake, the swept plate's wave has less distance to weaken
+  over; this argument does not weigh that, one more reason the label
+  says "bounded, not measured". So the measured relief is set by what
+  the sweep does not move.
 - _Where the measurements sit._ The two bounds are measured at the two
   ends of the sweeps rockets fly: the arcs unswept (TN 2360, TN 3819 figs.
   33 and 35), the plates at 45 deg (RM L52E06); NSWCDD/TR-92/509's 43.9
@@ -1499,21 +1541,23 @@ flat faces at a square trailing edge) with the trailing edge unswept
 before the sweep check of section 3.4, and serves it at any leading-edge
 sweep; the label names the sweep and says the bounds are set at the
 trailing edge, in the base plane for fins at the base and in one plane
-parallel to it, that many root chords ahead, for fins within a chord,
-which the leading-edge sweep does not move, citing this section (the
-label said "in the base plane" for both until the review of 2026-10-26,
-wrong for fins ahead of the base). `fins-on-base-w1.test.ts` holds, for
-plates at the base and within a chord, at M 1.0 to 3.0: served at 20, 44
-and 70 deg; each label placing the trailing edge where it is (a test of
-its own on the review's case: a plate t/c 0.024, three fins, the leading
-edge swept 20 deg, 0.5 root chords ahead of the base at M 1.8); the
-band's ends and nominal at every sweep equal to the same plate's
-unswept, to 1e-12 (the ordering says the bracket is the same bracket);
-the same fins as a double wedge still refused at 20 and 44 deg below M
-2.0 and at 70 deg; a plate with the trailing edge swept beyond 45 to 60
-deg of leading edge, or swept more than the leading edge, or forward,
-still refused. `fins-on-base-routing.test.ts` and `total-drag.test.ts`
-hold the route through `bodyBaseDrag` and the total.
+parallel to it, that many root chords ahead (to two decimals), for fins
+within a chord, which the leading-edge sweep does not move, citing this
+section (the label said "in the base plane" for both until the review of
+2026-10-26, wrong for fins ahead of the base). `fins-on-base-w1.test.ts`
+holds, for plates at the base and within a chord, at M 1.0 to 3.0:
+served at 20, 44 and 70 deg; each label placing the trailing edge where
+it is (a test of its own on the review's case: a plate t/c 0.024, three
+fins, the leading edge swept 20 deg, 0.5 root chords ahead of the base
+at M 1.8, and the same at 1/3, printed 0.33, which A1's review of
+2026-10-27 found printed in full); the band's ends and nominal at every
+sweep equal to the same plate's unswept, to 1e-12 (the ordering says the
+bracket is the same bracket); the same fins as a double wedge still
+refused at 20 and 44 deg below M 2.0 and at 70 deg; a plate with the
+trailing edge swept beyond 45 to 60 deg of leading edge, or swept more
+than the leading edge, or forward, still refused.
+`fins-on-base-routing.test.ts` and `total-drag.test.ts` hold the route
+through `bodyBaseDrag` and the total.
 
 **Coverage.** Measured on the population of 0014 at 400 rockets, one
 condition per Mach band (1,600 cases), before and after this section
