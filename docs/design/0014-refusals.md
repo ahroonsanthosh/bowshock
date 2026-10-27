@@ -2062,8 +2062,9 @@ written; this addendum changes it as follows.
   limits, and no longer calls the 60 deg term "the largest sweep checked
   on yawed cylinders" (at its own normal Mach number none may be); the
   component's band text names each bound's source, band and regime. The
-  label was changed in 9c5e5dd, before this addendum; the change reads
-  no value and sets no band.
+  label was changed in 9c5e5dd, before this addendum, and its clause
+  beyond 75.1 deg added with this addendum, in 70551b3; neither change
+  reads a value or sets a band.
 - _The upper ordering's least margin_ is 1.234 of the term at the sweep
   (M 2.2, just past 60 deg), not the 1.29 first written in 0016 section
   21.2: 1.4% over the largest measured r, 1.217, at normal Mach numbers
