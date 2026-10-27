@@ -716,7 +716,6 @@ export const TRANSONIC_TE_READINGS: readonly TransonicReadingGroup[] = [
       ['M=1.2, 1.4, 1.7 #2 (B)', 'any wing', 1.2, 0.01, -0.5787, -0.5667],
       ['M=1.2, 1.4, 1.7 #3 (B)', 'any wing', 1.2, 0.01, -0.5697, -0.5567],
       ['M=1.2, 1.4, 1.7 #6 (B)', 'any wing', 1.4, 0.01, -0.4383, -0.4163],
-      ['M=1.2, 1.4, 1.7 #9 (B)', 'any wing', 1.7, 0.01, -0.2747, -0.2565],
     ],
   },
   {
@@ -726,8 +725,30 @@ export const TRANSONIC_TE_READINGS: readonly TransonicReadingGroup[] = [
       ['M=1.2, 1.4, 1.7 #2 (C)', 'any wing', 1.2, 0.01, -0.5798, -0.5642],
       ['M=1.2, 1.4, 1.7 #3 (C)', 'any wing', 1.2, 0.01, -0.5683, -0.5511],
       ['M=1.2, 1.4, 1.7 #6 (C)', 'any wing', 1.4, 0.01, -0.4363, -0.4207],
-      ['M=1.2, 1.4, 1.7 #9 (C)', 'any wing', 1.7, 0.01, -0.2782, -0.261],
     ],
+  },
+  {
+    set: 'RM A52E01 fig. 8(a)',
+    reading: 'four-way pairing, reader C',
+    points: [
+      ['M=1.2, 1.4, 1.7 #7 (C)', 'any wing', 1.7, 0.01, -0.1902, -0.1746],
+      ['M=1.2, 1.4, 1.7 #9 (C)', 'any wing', 1.7, 0.01, -0.2782, -0.261],
+      ['M=1.2, 1.4, 1.7 #10 (C)', 'any wing', 1.7, 0.01, -0.1413, -0.1207],
+    ],
+  },
+  {
+    set: 'RM A52E01 fig. 8(a)',
+    reading: 'four-way pairing, reader D',
+    points: [
+      ['M=1.2, 1.4, 1.7 #7 (D)', 'any wing', 1.7, 0.01, -0.1832, -0.1832],
+      ['M=1.2, 1.4, 1.7 #9 (D)', 'any wing', 1.7, 0.01, -0.2707, -0.2707],
+      ['M=1.2, 1.4, 1.7 #10 (D)', 'any wing', 1.7, 0.01, -0.1318, -0.1318],
+    ],
+  },
+  {
+    set: 'RM A52E01 fig. 8(a)',
+    reading: 'four-way pairing, reader B',
+    points: [['M=1.2, 1.4, 1.7 #9 (B)', 'any wing', 1.7, 0.01, -0.2747, -0.2565]],
   },
   {
     set: 'RM A52E01 fig. 8(b)',

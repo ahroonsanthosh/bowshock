@@ -217,12 +217,27 @@ function expectedGroups(): Map<string, Expected[]> {
       add('RM A51J11 fig. 15', `round 15 reader ${reader}`, point(r.id!, series, mach, 0, lo, hi));
     }
   }
-  // RM A52E01 fig. 8 from the three-way pairing under the three-reading rule (0019 3.4.1 item 6).
+  // RM A52E01 fig. 8 from the three-way pairing under the three-reading rule (0019 3.4.1 item 6),
+  // fig. 8(a)'s Mach 1.7 curves from the four-way pairing under the same rule.
   for (const [figure, set] of [
     ['a52e01_fig8a', 'RM A52E01 fig. 8(a)'],
     ['a52e01_fig8b', 'RM A52E01 fig. 8(b)'],
   ] as const) {
-    for (const r of curvesOf(figure).filter((c) => c.alpha0_status!.startsWith('TWO OR MORE'))) {
+    const four = new Map(fourWayOf(figure).map((r) => [r.drawn_curve!, r]));
+    for (const r of four.values()) {
+      if (!r.alpha0_status!.startsWith('TWO OR MORE')) continue;
+      for (const k of ['A', 'B', 'C', 'D']) {
+        const v = alpha0Of(r[`alpha0_${k}`]!);
+        if (v === undefined) continue;
+        add(
+          set,
+          `four-way pairing, reader ${k}`,
+          point(`${r.drawn_curve} (${k})`, wingOfFour(r), 1.7, 0, v[0], v[1]),
+        );
+      }
+    }
+    const three = curvesOf(figure).filter((c) => !four.has(c.drawn_curve!));
+    for (const r of three.filter((c) => c.alpha0_status!.startsWith('TWO OR MORE'))) {
       for (const k of ['A', 'B', 'C']) {
         const v = alpha0Of(r[`alpha0_${k}`]!);
         if (v === undefined) continue;
@@ -240,6 +255,20 @@ function expectedGroups(): Map<string, Expected[]> {
 /** The three-way pairing's drawn curves of one figure (identity_map.csv). */
 const curvesOf = (figure: string) =>
   records('pairing-2026-10-26-a52e01-three/identity_map.csv').filter((r) => r.figure === figure);
+
+/** The four-way pairing's drawn curves (fig. 8(a), Mach 1.7). */
+const fourWayOf = (figure: string) =>
+  records('pairing-2026-10-27-a52e01-m17-four/identity_map.csv').filter((r) => r.figure === figure);
+
+/** The rule with four readers: only "confidence high" is not uncertain. */
+function wingOfFour(r: Record<string, string>): string {
+  const named = ['A', 'B', 'C', 'D']
+    .map((k) => r[`${k}_wing_call`]!)
+    .filter((c) => c.startsWith('wing '))
+    .map((c) => [c.split(',')[0]!, !c.includes('confidence high')] as const);
+  const same = new Set(named.map(([w]) => w)).size === 1;
+  return named.length >= 2 && same && named.every(([, u]) => !u) ? named[0]![0] : 'any wing';
+}
 
 /** '-0.5727 +-0.0060 (bound, flagged)' as its range (a bound) or value; undefined for none. */
 function alpha0Of(text: string): [number, number] | undefined {
@@ -276,26 +305,31 @@ describe('the readings, held to their files', () => {
   it('holds every group of every reading, and nothing else', () => {
     const held = new Set(TRANSONIC_TE_READINGS.map((g) => `${g.set}|${g.reading}`));
     expect([...held].sort()).toEqual([...expected.keys()].sort());
-    expect(TRANSONIC_TE_READINGS.reduce((n, g) => n + g.points.length, 0)).toBe(562);
+    expect(TRANSONIC_TE_READINGS.reduce((n, g) => n + g.points.length, 0)).toBe(567);
   });
 
-  it('takes RM A52E01 from the three-way pairing only, under the three-reading rule', () => {
+  it('takes RM A52E01 from the neutral pairings only, under the three-reading rule', () => {
     const held = (set: string) =>
       TRANSONIC_TE_READINGS.filter((g) => g.set === set).flatMap((g) => g.points);
     for (const [figure, set, curves] of [
-      ['a52e01_fig8a', 'RM A52E01 fig. 8(a)', ['#2', '#3', '#6', '#9']],
+      ['a52e01_fig8a', 'RM A52E01 fig. 8(a)', ['#2', '#3', '#6', '#7', '#9', '#10']],
       ['a52e01_fig8b', 'RM A52E01 fig. 8(b)', ['#1', '#2', '#3', '#4', '#5', '#6']],
     ] as const) {
+      const four = new Map(fourWayOf(figure).map((r) => [r.drawn_curve!, r]));
       const supersonic = curvesOf(figure).filter((r) => r.group!.startsWith('M=1'));
-      // Reader B flags every supersonic wing call uncertain: every supersonic curve is any wing.
+      // Reader B flags every supersonic wing call uncertain: every supersonic curve is any wing,
+      // with three readers or four.
       for (const r of supersonic) expect(wingOf(r), r.drawn_curve).toBe('any wing');
-      // Held: the supersonic curves with two or more agreeing alpha 0 values, B's and C's.
-      const set2 = new Set(held(set).map((p) => p[0].replace(/ \([ABC]\)$/, '')));
+      for (const r of four.values()) expect(wingOfFour(r), r.drawn_curve).toBe('any wing');
+      // Held: the supersonic curves with two or more agreeing alpha 0 values (B, C and, at Mach
+      // 1.7 in fig. 8(a), D; reader A gives none there).
+      const set2 = new Set(held(set).map((p) => p[0].replace(/ \([ABCD]\)$/, '')));
       expect([...set2].map((x) => x.split(' ').at(-1)).sort()).toEqual([...curves].sort());
-      for (const p of held(set)) expect(p[0]).toMatch(/\((B|C)\)$/);
+      for (const p of held(set)) expect(p[0]).toMatch(/\((B|C|D)\)$/);
       // Not held: values read once, values no pair agrees on, curves nobody reads at alpha 0.
-      for (const r of supersonic.filter((c) => !c.alpha0_status!.startsWith('TWO OR MORE'))) {
-        expect([...set2]).not.toContain(r.drawn_curve);
+      for (const r of supersonic) {
+        const status = (four.get(r.drawn_curve!) ?? r).alpha0_status!;
+        if (!status.startsWith('TWO OR MORE')) expect([...set2]).not.toContain(r.drawn_curve);
       }
     }
   });
@@ -604,15 +638,25 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
         'utf8',
       ),
     );
-    // TN 3548 and RM A51J25 fig. 7's symbols inside; RM A52E01 at Mach 1.7 inside taken as
-    // wing 3 or 4, partly below the band's low end taken as wing 2 (8(a) #9 B, 8(b) #6 B and C).
+    // TN 3548 and RM A51J25 fig. 7's symbols inside. RM A52E01 at Mach 1.7, any wing, so taken as
+    // each: 8(a) #9 and 8(b) #6 partly below the band's low end only as wing 2; 8(a) #7 (wing 3 by
+    // every reader naming one) and #10 (wing 2 by every reader naming one), from the four-way
+    // pairing, below it taken as either.
     const outside = lines.filter((l) => l.endsWith('partly outside'));
     expect(outside.map((l) => l.split(' | ').slice(0, 3).join(' | '))).toEqual([
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #7 (C) | as wing 2',
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #7 (C) | as wing 3 or 4',
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #10 (C) | as wing 2',
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #10 (C) | as wing 3 or 4',
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #7 (D) | as wing 2',
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #7 (D) | as wing 3 or 4',
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #10 (D) | as wing 2',
+      'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #10 (D) | as wing 3 or 4',
       'RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (B) | as wing 2',
       'RM A52E01 fig. 8(b) | M=1.2, 1.4, 1.7 #6 (B) | as wing 2',
       'RM A52E01 fig. 8(b) | M=1.2, 1.4, 1.7 #6 (C) | as wing 2',
     ]);
-    expect(lines.filter((l) => l.endsWith('inside')).length).toBe(20);
+    expect(lines.filter((l) => l.endsWith('inside')).length).toBe(22);
   });
 
   it('sizes the shape allowance on the NPL pair: R&M 3348 above R&M 3427 at every common Mach number', () => {

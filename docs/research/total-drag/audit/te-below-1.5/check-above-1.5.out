@@ -16,10 +16,20 @@ TN 3548 fig. 6 | ib-40, reading second (round 11) | inboard slit | M 1.6079 +- 0
 RM A51J25 fig. 7 symbols | s4, reading first (W7) | square with a triangle inside | M 1.502 +- 0.010 | ratio 0.939 to 0.948 | band 0.930 to 1.210 | inside
 RM A51J25 fig. 7 symbols | sq-2, reading second (round 11) | Ames 1 x 3-ft, rect. AR 3 (square, the second profile) | M 1.4957 +- 0.022 | ratio 0.949 to 0.963 | band 0.930 to 1.210 | inside
 RM A51J25 fig. 7 symbols | tri-2, reading second (round 11) | Ames 1 x 3-ft, rect. AR 3 (triangle, the first profile) | M 1.5085 +- 0.025 | ratio 0.946 to 0.971 | band 0.930 to 1.210 | inside
-RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (B) | as wing 2 | M 1.7 +- 0.010 | ratio 0.910 to 0.991 | band 0.919 to 1.220 | partly outside
-RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (B) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 0.982 to 1.070 | band 0.911 to 1.229 | inside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #7 (C) | as wing 2 | M 1.7 +- 0.010 | ratio 0.619 to 0.686 | band 0.919 to 1.220 | partly outside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #7 (C) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 0.668 to 0.741 | band 0.911 to 1.229 | partly outside
 RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (C) | as wing 2 | M 1.7 +- 0.010 | ratio 0.926 to 1.004 | band 0.919 to 1.220 | inside
 RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (C) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 0.999 to 1.083 | band 0.911 to 1.229 | inside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #10 (C) | as wing 2 | M 1.7 +- 0.010 | ratio 0.428 to 0.510 | band 0.919 to 1.220 | partly outside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #10 (C) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 0.462 to 0.550 | band 0.911 to 1.229 | partly outside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #7 (D) | as wing 2 | M 1.7 +- 0.010 | ratio 0.650 to 0.661 | band 0.919 to 1.220 | partly outside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #7 (D) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 0.701 to 0.713 | band 0.911 to 1.229 | partly outside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (D) | as wing 2 | M 1.7 +- 0.010 | ratio 0.960 to 0.977 | band 0.919 to 1.220 | inside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (D) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 1.036 to 1.054 | band 0.911 to 1.229 | inside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #10 (D) | as wing 2 | M 1.7 +- 0.010 | ratio 0.467 to 0.476 | band 0.919 to 1.220 | partly outside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #10 (D) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 0.504 to 0.513 | band 0.911 to 1.229 | partly outside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (B) | as wing 2 | M 1.7 +- 0.010 | ratio 0.910 to 0.991 | band 0.919 to 1.220 | partly outside
+RM A52E01 fig. 8(a) | M=1.2, 1.4, 1.7 #9 (B) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 0.982 to 1.070 | band 0.911 to 1.229 | inside
 RM A52E01 fig. 8(b) | M=1.2, 1.4, 1.7 #6 (B) | as wing 2 | M 1.7 +- 0.010 | ratio 0.884 to 0.948 | band 0.922 to 1.217 | partly outside
 RM A52E01 fig. 8(b) | M=1.2, 1.4, 1.7 #6 (B) | as wing 3 or 4 | M 1.7 +- 0.010 | ratio 0.932 to 1.000 | band 0.909 to 1.229 | inside
 RM A52E01 fig. 8(b) | M=1.2, 1.4, 1.7 #6 (C) | as wing 2 | M 1.7 +- 0.010 | ratio 0.890 to 0.958 | band 0.922 to 1.217 | partly outside

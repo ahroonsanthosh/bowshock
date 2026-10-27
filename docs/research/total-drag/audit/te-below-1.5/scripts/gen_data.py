@@ -214,10 +214,46 @@ def mach_of(r):
     return float(machs.pop())
 
 
+# Fig. 8(a)'s Mach 1.7 curves (#7 to #10) from the four-way neutral pairing (rounds 15-A, 15-B, 17
+# and 18, pairing-2026-10-27-a52e01-m17-four/identity_map.csv), under the same rule with four
+# readers: a wing only if at least two name it, every naming reader names the same, and none
+# is uncertain (B's "flagged uncertain", C's "confidence medium"; only "confidence high" is
+# not); an alpha 0 value only from a curve whose status is two or more agreeing readings,
+# entered as every reading's value. The four-way map's own Mach group is the panel's 1.7.
+A52E01_FOUR = 'pairing-2026-10-27-a52e01-m17-four'
+
+
+def wing_of_four(r):
+    named = []
+    for k in 'ABCD':
+        call = r[f'{k}_wing_call']
+        if call.startswith('wing '):
+            named.append((call.split(',')[0], 'confidence high' not in call))
+    if len(named) >= 2 and len({w for w, _ in named}) == 1 and not any(u for _, u in named):
+        return named[0][0]
+    return 'any wing'
+
+
+def four_way_curves():
+    with open(A + f'{A52E01_FOUR}/identity_map.csv', newline='') as f:
+        return list(csv.DictReader(f))
+
+
 def a52e01_points(figure, set_name):
     with open(A + f'{A52E01_PAIRING}/identity_map.csv', newline='') as f:
         curves = [r for r in csv.DictReader(f) if r['figure'] == figure]
+    four = {r['drawn_curve']: r for r in four_way_curves() if r['figure'] == figure}
     for r in curves:
+        if r['drawn_curve'] in four:
+            r4 = four[r['drawn_curve']]
+            if not r4['alpha0_status'].startswith('TWO OR MORE AGREEING READINGS'):
+                continue
+            for k in 'ABCD':
+                v = parse_alpha0(r4[f'alpha0_{k}'])
+                if v is not None:
+                    add(set_name, f'four-way pairing, reader {k}', f"{r['drawn_curve']} ({k})",
+                        wing_of_four(r4), 1.7, 0.0, v[0], v[1])
+            continue
         if not r['alpha0_status'].startswith('TWO OR MORE AGREEING READINGS'):
             continue
         mach, wing = mach_of(r), wing_of(r)
