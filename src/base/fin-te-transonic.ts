@@ -174,23 +174,35 @@ function a51j11(series: string, turbulent: boolean): TransonicSetProperties | un
 /**
  * RM A52E01 (0014 10.7 (ac)): the 3% biconvex wing; wing 2 h/c 0.030 with
  * faces parallel at the base, wings 4 and 3 h/c 0.015 with boattails of
- * 2.02 and 6.88 deg; Re 1.5e6 or 3.8e6 on the mean aerodynamic chord. A
- * line whose wing the paired readings do not agree on is any of the three
- * at once: wing 2's layer reach, the layers of all three in its ratio, and
- * the 6.88 deg widening, and wing 2's h/c (0019 3.4.1 item 6).
+ * 2.02 and 6.88 deg; Re 1.5e6 or 3.8e6 on the mean aerodynamic chord. Its
+ * text states no transition strip and no layer state ("The surfaces of the
+ * body and wings were polished smooth."), so it sets the band only, not the
+ * layer reach, as RM A51J11 without roughness: the ratio formed over K from
+ * 1 to the turbulent value (the coordinator's decision of 2026-10-27, 0019
+ * 3.4.1 item 6). A line whose wing the readings do not agree on is any of
+ * the three at once: the layers of all three in its ratio, the 6.88 deg
+ * widening, and wing 2's h/c.
  */
 function a52e01(series: string, reynolds: number): TransonicSetProperties | undefined {
   const wing2 = layerParameterRange(0.03, reynolds, reynolds);
   const wing34 = layerParameterRange(0.015, reynolds, reynolds);
   switch (series) {
     case 'wing 2':
-      return { shape: 'flat', faceAngleDeg: 0, hOverC: 0.03, layer: wing2, formsNominal: false };
+      return {
+        shape: 'flat',
+        faceAngleDeg: 0,
+        hOverC: 0.03,
+        layer: undefined,
+        ratioLayer: [0, wing2[1]],
+        formsNominal: false,
+      };
     case 'wing 4':
       return {
         shape: 'converging',
         faceAngleDeg: 2.02,
         hOverC: 0.015,
-        layer: wing34,
+        layer: undefined,
+        ratioLayer: [0, wing34[1]],
         formsNominal: false,
       };
     case 'wing 3':
@@ -198,7 +210,8 @@ function a52e01(series: string, reynolds: number): TransonicSetProperties | unde
         shape: 'converging',
         faceAngleDeg: 6.88,
         hOverC: 0.015,
-        layer: wing34,
+        layer: undefined,
+        ratioLayer: [0, wing34[1]],
         formsNominal: false,
       };
     case 'any wing':
@@ -207,8 +220,8 @@ function a52e01(series: string, reynolds: number): TransonicSetProperties | unde
         shape: 'converging',
         faceAngleDeg: 6.88,
         hOverC: 0.03,
-        layer: wing2,
-        ratioLayer: [wing2[0], wing34[1]],
+        layer: undefined,
+        ratioLayer: [0, wing34[1]],
         formsNominal: false,
       };
     default:

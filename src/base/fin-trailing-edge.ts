@@ -493,6 +493,34 @@ const laminarBelowBand = () =>
       'laminar base pressures start at Mach 1.5, and none below is measured (0019 section 3.4.1)',
   );
 
+/**
+ * Several refusals of one edge at once (0019 section 3.4.1 item 6, the review's F10): thrown as
+ * the first, its message every message, `all` each of them, so that every reason is given.
+ */
+export class TrailingEdgeRefusals extends BaseRefusal {
+  readonly all: readonly BaseRefusal[];
+
+  constructor(all: readonly BaseRefusal[]) {
+    super(all[0]!.reason, all.map((r) => r.message).join('; also, '));
+    this.name = 'BaseRefusal';
+    this.all = all;
+  }
+}
+
+/** Below Mach 1.5: the coverage refusals and the laminar one, every one that applies. */
+function refuseBelowBand(coverage: () => void, laminar: boolean): void {
+  const all: BaseRefusal[] = [];
+  try {
+    coverage();
+  } catch (e) {
+    if (!(e instanceof BaseRefusal)) throw e;
+    all.push(e);
+  }
+  if (laminar) all.push(laminarBelowBand());
+  if (all.length === 1) throw all[0]!;
+  if (all.length > 1) throw new TrailingEdgeRefusals(all);
+}
+
 export interface LaminarRatio {
   /** Laminar over turbulent base drag: the envelope over M 1.5, 2.0 and 3.1 and both readings. */
   readonly low: number;
@@ -742,8 +770,12 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
   const thin = chord / (thickness * reChord ** 0.2);
   const basis = trailingEdgeBasis(mach);
   if (basis.belowBand) {
-    transonicCoverage(mach, thin, thickness / chord);
-    if ((input.transitionReynolds ?? []).some((reT) => reT >= reChord)) throw laminarBelowBand();
+    refuseBelowBand(
+      () => {
+        transonicCoverage(mach, thin, thickness / chord);
+      },
+      (input.transitionReynolds ?? []).some((reT) => reT >= reChord),
+    );
   }
   const k = thickLayerFactor(basis.kMach, thin);
   const pB = basis.pB;
@@ -819,11 +851,15 @@ function varyingChordTrailingEdge(
   // and below Mach 1.5 what the sets reach, 0019 section 3.4.1).
   const stations = [0, ...Array.from(rule.nodes, (n) => 0.5 * span * (n + 1)), span];
   if (basis.belowBand) {
-    for (const y of stations) transonicCoverage(mach, parameter(y), thicknessAt(y) / chordAt(y));
     const shortest = Math.min(chord, tipChord);
-    if ((input.transitionReynolds ?? []).some((reT) => reT >= reynoldsPerLength * shortest)) {
-      throw laminarBelowBand();
-    }
+    refuseBelowBand(
+      () => {
+        for (const y of stations) {
+          transonicCoverage(mach, parameter(y), thicknessAt(y) / chordAt(y));
+        }
+      },
+      (input.transitionReynolds ?? []).some((reT) => reT >= reynoldsPerLength * shortest),
+    );
   }
   const factors = stations.map((y) => thickLayerFactor(basis.kMach, parameter(y)));
   let cd = 0;

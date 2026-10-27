@@ -34,6 +34,7 @@ import {
   thickLayerFactor,
   THIN_LAYER_LIMIT,
   thinLayerBasePressure,
+  TrailingEdgeRefusals,
   trailingEdgeBasis,
   transonicTrailingEdge,
 } from '../../src/base/fin-trailing-edge';
@@ -92,10 +93,23 @@ const point = (
 /** Each group's points as the reading files give them (the rules of 0019 section 3.4.1 item 2). */
 function expectedGroups(): Map<string, Expected[]> {
   const g = new Map<string, Expected[]>();
+  // A set whose report states no Mach accuracy carries at least +-0.01, RM A51J11 +-0.02 (the
+  // coordinator's decisions of 2026-10-27, 0019 3.4.1 item 6).
+  const floor: Record<string, number> = {
+    'R&M 3427 fig. 13': 0.01,
+    'R&M 3348 table 3': 0.01,
+    'R&M 3348 fig. 30a': 0.01,
+    'RM A51J25 fig. 7 symbols': 0.01,
+    'RM A51J11 fig. 14': 0.02,
+    'RM A51J11 fig. 15': 0.02,
+    'RM A52E01 fig. 8(a)': 0.01,
+    'RM A52E01 fig. 8(b)': 0.01,
+  };
   const add = (set: string, reading: string, p: Expected) => {
     if (!inWindow(p[2])) return;
     const k = `${set}|${reading}`;
-    g.set(k, [...(g.get(k) ?? []), p]);
+    const q: Expected = [p[0], p[1], p[2], Math.max(p[3], floor[set] ?? 0), p[4], p[5]];
+    g.set(k, [...(g.get(k) ?? []), q]);
   };
   for (const r of records('w7-fins/tn3548_fig6_first.csv')) {
     add('TN 3548 fig. 6', 'first (W7)', point(r.id!, `${r.slit} slit`, +r.mach!, 0.01, +r.cp_b!));
@@ -338,13 +352,22 @@ describe('the readings, held to their files', () => {
     expect(propertiesOf('RM A51J11 fig. 15', 'h/t 1.0, 2y/b 0.250').layer).toBeUndefined();
     expect(propertiesOf('RM A51J11 fig. 14', 'h/t 1.0, with roughness').shape).toBe('flat');
     expect(propertiesOf('RM A51J11 fig. 14', 'h/t 0.6, with roughness').faceAngleDeg).toBe(1.0);
-    // RM A52E01: each wing; a line whose wing is disputed is any of them at once.
+    // RM A52E01: each wing; a line whose wing is disputed is any of them at once. Its layer state
+    // is not stated (the surfaces "polished smooth"): the band only, no layer reach, its ratio
+    // over K from 1 to the turbulent value (the decision of 2026-10-27, item 6).
     const any = propertiesOf('RM A52E01 fig. 8(a)', 'any wing');
     expect([any.shape, any.faceAngleDeg, any.hOverC]).toEqual(['converging', 6.88, 0.03]);
-    expect(any.layer).toEqual(layerParameterRange(0.03, 1.5e6, 1.5e6));
-    expect(any.ratioLayer).toEqual([
-      layerParameterRange(0.03, 1.5e6, 1.5e6)[0],
-      layerParameterRange(0.015, 1.5e6, 1.5e6)[1],
+    expect(any.layer).toBeUndefined();
+    expect(any.ratioLayer).toEqual([0, layerParameterRange(0.015, 1.5e6, 1.5e6)[1]]);
+    for (const set of ['RM A52E01 fig. 8(a)', 'RM A52E01 fig. 8(b)']) {
+      for (const wing of ['wing 2', 'wing 3', 'wing 4', 'any wing']) {
+        expect(propertiesOf(set, wing).layer, `${set} ${wing}`).toBeUndefined();
+        expect(propertiesOf(set, wing).ratioLayer![0]).toBe(0);
+      }
+    }
+    expect(propertiesOf('RM A52E01 fig. 8(b)', 'wing 2').ratioLayer).toEqual([
+      0,
+      layerParameterRange(0.03, 3.8e6, 3.8e6)[1],
     ]);
     expect(propertiesOf('RM A52E01 fig. 8(b)', 'wing 3').faceAngleDeg).toBe(6.88);
     expect(propertiesOf('RM A52E01 fig. 8(b)', 'wing 2').shape).toBe('flat');
@@ -527,18 +550,19 @@ describe('the band below Mach 1.5 (items 5 and 6)', () => {
       expect(b.low).toBeLessThanOrEqual(0.93);
       expect(b.high).toBeGreaterThanOrEqual(1.21);
     }
-    // Wide near Mach 1 (RM A51J11's thick layers and converging faces below, its flat section
-    // above) and where RM A52E01's unidentified wings are (1.15 to 1.25, 1.35 to 1.45); 0.93 to
-    // 1.21 at 1.3, where only TN 3548 and RM A51J25 are, and at 1.5.
+    // Wide near Mach 1 (RM A51J11 at +-0.02 in Mach: its outboard station at 1.06 below, its
+    // flat section above) and where RM A52E01's unidentified wings are (1.15 to 1.25, 1.35 to
+    // 1.45); 0.93 to 1.21 at 1.3, where only TN 3548 and RM A51J25 are, and at 1.5.
     const band = (m: number) => {
       const b = trailingEdgeBasis(m).band;
       return [+b.low.toFixed(3), +b.high.toFixed(3)];
     };
-    expect(band(1.0)).toEqual([0.869, 1.442]);
-    expect(band(1.1)).toEqual([0.53, 1.429]);
-    expect(band(1.2)).toEqual([0.93, 1.557]);
+    expect(band(1.0)).toEqual([0.505, 1.515]);
+    expect(band(1.1)).toEqual([0.505, 1.515]);
+    expect(band(1.15)).toEqual([0.822, 1.583]);
+    expect(band(1.2)).toEqual([0.93, 1.583]);
     expect(band(1.3)).toEqual([0.93, 1.21]);
-    expect(band(1.4)).toEqual([0.86, 1.535]);
+    expect(band(1.4)).toEqual([0.845, 1.55]);
   });
 
   it('has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides', () => {
@@ -691,24 +715,23 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 0.99 }))).toBe('mach-range');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 1.0 }))).toBe('none');
     // What the sets are sure to reach, each counted at the least c/[h Re^(1/5)] of its test: RM
-    // A51J11's h/t 0.3 with roughness (4.49) to Mach 1.10; RM A52E01's lines, any wing at once,
-    // wing 2's at Re 1.5e6 (1.939) at 1.15 to 1.25 and 1.35 to 1.45; TN 3548 at its highest
-    // Reynolds number (0.666) at 1.30 and 1.50.
+    // A51J11's h/t 0.3 with roughness (4.49) to Mach 1.15 (its points to 1.10, +-0.02 in Mach);
+    // then TN 3548 at its highest Reynolds number (0.666). RM A52E01 counts toward no reach (its
+    // layer state is not stated, the decision of 2026-10-27).
     const reach = transonicTrailingEdge().nodes.map((n) => +n.layerReached.toFixed(3));
     const tn = +(1 / (0.06 * 9.8e6 ** 0.2)).toFixed(3);
     const a51 = (hc: number) => +layerParameterRange(hc, 1.7e6, 2.2e6)[0].toFixed(3);
-    const a52 = +layerParameterRange(0.03, 1.5e6, 1.5e6)[0].toFixed(3);
     expect(reach).toEqual([
       a51(0.012),
       a51(0.012),
       a51(0.012),
-      a52,
-      a52,
-      a52,
+      a51(0.012),
       tn,
-      a52,
-      a52,
-      a52,
+      tn,
+      tn,
+      tn,
+      tn,
+      tn,
       tn,
     ]);
     // 0.75 at Mach 1.3, inside TN 3548's range at its lowest Reynolds number, is refused there.
@@ -716,18 +739,47 @@ describe('what is refused below Mach 1.5 (item 7), and the labels (item 8)', () 
       reason(() => finTrailingEdgeBaseDrag({ ...edge, mach: 1.3, reynoldsPerLength: 4.2e6 })),
     ).toBe('thick-layer');
     // A hobby fin: 3 mm plate, 100 mm chord, Re' 1.2e7: c/[h Re^(1/5)] 2.03, h/c 0.03. Served from
-    // Mach 1.0 to 1.10 on RM A51J11's thick layers; refused where nothing reaches 2.03.
+    // Mach 1.0 to 1.15 on RM A51J11's thick layers; refused above, where nothing reaches 2.03.
     const hobby = { ...edge, thickness: 0.003, reynoldsPerLength: 1.2e7 };
     expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.0 }))).toBe('none');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.1 }))).toBe('none');
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.12 }))).toBe('thick-layer');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.15 }))).toBe('none');
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...hobby, mach: 1.16 }))).toBe('thick-layer');
     expect(reason(() => finTrailingEdgeBaseDrag(hobby))).toBe('thick-layer');
-    // At Re' 2.2e7 (1.80): served at 1.2 and 1.4 on RM A52E01, refused at 1.3 and 1.47.
+    // At Re' 2.2e7 (1.80): RM A52E01 no longer reaches it, so it is refused at 1.2 to 1.47 too.
     const thinner = { ...hobby, reynoldsPerLength: 2.2e7 };
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach: 1.2 }))).toBe('none');
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach: 1.4 }))).toBe('none');
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach: 1.3 }))).toBe('thick-layer');
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach: 1.47 }))).toBe('thick-layer');
+    for (const mach of [1.2, 1.3, 1.4, 1.47]) {
+      expect(
+        reason(() => finTrailingEdgeBaseDrag({ ...thinner, mach })),
+        `${mach}`,
+      ).toBe('thick-layer');
+    }
+    // Beyond the reach and laminar: refused with both reasons (the review's F10).
+    try {
+      finTrailingEdgeBaseDrag({ ...hobby, mach: 1.3, transitionReynolds: [3e6] });
+      expect.unreachable();
+    } catch (e) {
+      expect(e).toBeInstanceOf(TrailingEdgeRefusals);
+      const all = (e as TrailingEdgeRefusals).all.map((r) => r.reason);
+      expect(all).toEqual(['thick-layer', 'laminar-trailing-edge']);
+      expect((e as BaseRefusal).message).toMatch(/c\/\[h Re_c\^\(1\/5\)\] up to 0\.67.*laminar/);
+    }
+    // Varying chord too.
+    try {
+      finTrailingEdgeBaseDrag({
+        ...hobby,
+        mach: 1.3,
+        tipChord: 0.08,
+        tipThickness: 0.003,
+        transitionReynolds: [3e6],
+      });
+      expect.unreachable();
+    } catch (e) {
+      expect((e as TrailingEdgeRefusals).all.map((r) => r.reason)).toEqual([
+        'thick-layer',
+        'laminar-trailing-edge',
+      ]);
+    }
     // Beyond what any set reaches at Mach 1.05: c/[h Re^(1/5)] 4.6 (h/c 0.012 at Re' 5e5).
     expect(
       reason(() =>

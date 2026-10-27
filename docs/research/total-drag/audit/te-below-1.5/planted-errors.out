@@ -1,42 +1,71 @@
-CAUGHT: window cut to the node and the next one: Tests  7 failed | 38 passed (45)
-     × holds every band-setting point of every reading at its own Mach number 60ms
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 12ms
-     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 55ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 59ms
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 11ms
-     × a misread point (moved 15% up) falls outside the band 44ms
-     × a window that leaves out the neighbouring nodes leaves points outside 78ms
-CAUGHT: the two-sided fallback ignored after the contradiction: Tests  3 failed | 42 passed (45)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 17ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 6ms
-     × the fallback ignored (one-sided after the contradiction) leaves inclined points unwidened 26ms
-CAUGHT: the shape allowance halved: Tests  2 failed | 43 passed (45)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 84ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 23ms
-CAUGHT: a Johnston reading misread by 0.05 in Cp_b: Tests  3 failed | 42 passed (45)
-     × holds each point as read (to 1e-6), both readings of each set 23ms
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 19ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 23ms
-CAUGHT: the floor 0.93 to 1.21 dropped below 1.5: Tests  2 failed | 43 passed (45)
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 67ms
-     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 1ms
-CAUGHT: the nominal not joined to the curve at 1.5: Tests  4 failed | 41 passed (45)
-     × has its nodes every 0.05 from 1.00, from the flat-faced sets, joined to the curve at 1.5 19ms
-     × serves the curve at and above 1.5, and its own nominal below, with no step 1ms
-     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 1ms
-     × a nominal not joined to the curve at 1.5 shows a step 22ms
-CAUGHT: the Mach floor moved to 0.95: Tests  3 failed | 42 passed (45)
-     × refuses Mach numbers outside 1.0 to 3.2, swept and laminar edges, thick layers 46ms
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 13ms
+CAUGHT: window cut to the node and the next one: Tests  10 failed | 38 passed (48)
+     × holds every band-setting point of every reading at its own Mach number 182ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 20ms
+     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 39ms
+     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 57ms
      × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 2ms
-CAUGHT: the laminar refusal below 1.5 removed: Tests  1 failed | 44 passed (45)
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 28ms
-CAUGHT: the layer reach taken at each set's greatest X: Tests  1 failed | 44 passed (45)
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 43ms
-CAUGHT: a layer without roughness counted toward the reach (item 6): Tests  2 failed | 43 passed (45)
-     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 19ms
-     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 6ms
-CAUGHT: a disputed wing taken as a flat wing 2 (item 6): Tests  3 failed | 42 passed (45)
-     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 44ms
-     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 16ms
-     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 28ms
+     × a misread point (moved 15% up) falls outside the band 104ms
+     × a window that leaves out the neighbouring nodes leaves points outside 239ms
+     × lies inside the served band, or the term is refused there, over its whole Mach interval 1075ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 2ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
+CAUGHT: the two-sided fallback ignored after the contradiction: Tests  5 failed | 43 passed (48)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 49ms
+     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 30ms
+     × the fallback ignored (one-sided after the contradiction) leaves inclined points unwidened 75ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 41ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 6ms
+CAUGHT: the shape allowance halved: Tests  4 failed | 44 passed (48)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 128ms
+     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 45ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 21ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
+CAUGHT: a Johnston reading misread by 0.05 in Cp_b: Tests  1 failed | 47 passed (48)
+     × holds each point as read (to 1e-6), both readings of each set 73ms
+CAUGHT: the floor 0.93 to 1.21 dropped below 1.5: Tests  3 failed | 45 passed (48)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 32ms
+     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 1ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 21ms
+CAUGHT: the nominal not joined to the curve at 1.5: Tests  6 failed | 42 passed (48)
+     × has its nodes every 0.05 from 1.00, from the flat-faced sets, joined to the curve at 1.5 101ms
+     × serves the curve at and above 1.5, and its own nominal below, with no step 2ms
+     × has no step at Mach 1.5: equal to 0.93 to 1.21 from both sides 1ms
+     × a nominal not joined to the curve at 1.5 shows a step 17ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 33ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 9ms
+CAUGHT: the Mach floor moved to 0.95: Tests  2 failed | 46 passed (48)
+     × refuses Mach numbers outside 1.0 to 3.2, swept and laminar edges, thick layers 230ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 49ms
+CAUGHT: the laminar refusal below 1.5 removed: Tests  2 failed | 46 passed (48)
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 61ms
+     × checks every station on fins of varying chord 61ms
+CAUGHT: only the first reason given for an edge beyond the reach and laminar (review F10): Tests  1 failed | 47 passed (48)
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 91ms
+CAUGHT: the layer reach taken at each set's greatest X: Tests  2 failed | 46 passed (48)
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 81ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 5ms
+CAUGHT: a layer without roughness counted toward the reach (item 6): Tests  1 failed | 47 passed (48)
+     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 31ms
+CAUGHT: a disputed wing taken as a flat wing 2 (item 6): Tests  3 failed | 45 passed (48)
+     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 56ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 7ms
+     × widens every inclined set both ways by S(angle) = S_NPL angle / 4 deg: the ordering is contradicted 67ms
+CAUGHT: the window by each point's nominal Mach number, its interval ignored (review P1): Tests  5 failed | 43 passed (48)
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 47ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 38ms
+     × lies inside the served band, or the term is refused there, over its whole Mach interval 1853ms
+     × gives the library's nodes: nominal, band ends, layer reach and the points in each window 2ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
+CAUGHT: K dropped from the served term below 1.5 (review P2): Tests  1 failed | 47 passed (48)
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 33ms
+CAUGHT: K read at Mach 2.0 below 1.5 (review P2b): Tests  2 failed | 46 passed (48)
+     × lies inside the served band, or the term is refused there, over its whole Mach interval 1399ms
+     × gives the term served: the nominal times K at Mach 1.5, the band times K's ends over K 1ms
+CAUGHT: RM A52E01 counted toward the layer reach (review F2): Tests  2 failed | 46 passed (48)
+     × takes RM A51J11 and RM A52E01 as item 6 says, series by series 208ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 40ms
+CAUGHT: RM A51J11 without its +-0.02 Mach margin, every point at +-0 (review F1): Tests  4 failed | 44 passed (48)
+     × holds each point as read (to 1e-6), both readings of each set 266ms
+     × is never narrower than 0.93 to 1.21, and wider where the sets near Mach 1 are 79ms
+     × refuses below Mach 1.0, a layer or an h/c beyond the sets, a laminar or swept edge 23ms
+     × lies inside the served band, or the term is refused there, over its whole Mach interval 790ms

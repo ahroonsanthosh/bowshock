@@ -27,17 +27,35 @@ def cp_from_ratio(ratio, mach):
 points = []
 
 
+# The least Mach interval of a set whose report states no Mach accuracy (the coordinator's
+# decision of 2026-10-27 after the review, 0019 section 3.4.1 item 6): +-0.01, and +-0.02 for RM
+# A51J11, whose Mach number is an average over the model's region on the bump (its Corrections
+# section states no smaller variation). A point carries the wider of this and its own interval.
+MACH_FLOOR = {
+    'R&M 3427 fig. 13': 0.01,
+    'R&M 3348 table 3': 0.01,
+    'R&M 3348 fig. 30a': 0.01,
+    'RM A51J25 fig. 7 symbols': 0.01,
+    'RM A51J11 fig. 14': 0.02,
+    'RM A51J11 fig. 15': 0.02,
+    'RM A52E01 fig. 8(a)': 0.01,
+    'RM A52E01 fig. 8(b)': 0.01,
+}
+
+
 def add(set_, reading, id_, series, mach, mach_err, cp_low, cp_high=None):
     if not (M_LO <= mach <= M_HI):
         return
     points.append(
-        dict(set=set_, reading=reading, id=id_, series=series, mach=mach, mach_err=mach_err,
+        dict(set=set_, reading=reading, id=id_, series=series, mach=mach,
+             mach_err=max(mach_err, MACH_FLOOR.get(set_, 0.0)),
              cp_low=cp_low, cp_high=cp_low if cp_high is None else cp_high))
 
 
 # Each point's Mach interval: the reading's error, or the report's stated Mach accuracy where it
 # states one and it is wider (0019 section 3.4.1 item 2). Stated: TN 3548 (+-0.01) and Johnston
-# (+-0.010). Stating none: R&M 3427 ("slight inaccuracies", no number), R&M 3348, RM A51J25.
+# (+-0.010). Stating none: R&M 3427 ("slight inaccuracies", no number), R&M 3348, RM A51J25, RM
+# A51J11, RM A52E01, each with at least MACH_FLOOR's margin.
 # TN 3548 fig. 6: both slits. The report's Mach accuracy (+-0.01, PDF p. 6) is wider than either
 # reading's error and is carried as each point's Mach interval.
 for r in rows('w7-fins/tn3548_fig6_first.csv'):
@@ -233,8 +251,10 @@ lines = [
     ' * the script). Kept: points at M 0.97 to 1.75. Each point is [id, series,',
     ' * M, half-width of its Mach interval, Cp_b low, Cp_b high]. The interval is',
     ' * the reading\'s error, or the report\'s stated Mach accuracy where wider',
-    ' * (TN 3548 +-0.01, Johnston +-0.010); the two Cp_b differ only for a box of',
-    ' * merged ink. RM A51J25 fig. 7\'s symbols are on M\' and p\', taken at M = M\'.',
+    ' * (TN 3548 +-0.01, Johnston +-0.010); where the report states none, at least',
+    ' * +-0.01 (RM A51J11 +-0.02, its Mach number an average over the model on the',
+    ' * bump). The two Cp_b differ only for a box of merged ink or a bound.',
+    ' * RM A51J25 fig. 7\'s symbols are on M\' and p\', taken at M = M\'.',
     ' */',
     '',
     'export type TransonicPoint = readonly [',

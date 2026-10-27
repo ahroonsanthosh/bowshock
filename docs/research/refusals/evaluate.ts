@@ -299,15 +299,19 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     // 0016: integrated along the span; a plate's thickness the same at every station, the
     // bevelled section's (in chord units, as the library holds it) scaled with the chord.
     if (tanTe !== 0) out.push('teSwept');
-    if (!(mach >= 1.0 && mach <= 3.2)) out.push('teMach');
-    else if (mach < 1.5 && tanTe === 0 && teBelow15Refused(r, mach, rePerMetre)) out.push('teBelow15');
     const tip = r.rootChord + r.span * (tanTe - tanLe);
     const x = (c: number) => {
       const h = r.section === 'bevel-le-square-te' ? (r.thickness * c) / r.rootChord : r.thickness;
       return c / (h * (rePerMetre * c) ** 0.2);
     };
     const xMax = Math.max(x(r.rootChord), x(tip));
-    if (xMax > 4.5 || (xMax > 1 && mach > 3.1)) out.push('teThick');
+    const thick = xMax > 4.5 || (xMax > 1 && mach > 3.1);
+    // Below Mach 1.5 an edge beyond 4.5 is counted as teThick only, not as teBelow15 too.
+    if (!(mach >= 1.0 && mach <= 3.2)) out.push('teMach');
+    else if (mach < 1.5 && tanTe === 0 && !thick && teBelow15Refused(r, mach, rePerMetre)) {
+      out.push('teBelow15');
+    }
+    if (thick) out.push('teThick');
   }
   return out;
 }
@@ -316,7 +320,8 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
  * Below Mach 1.5 (0019 section 3.4.1), the trailing-edge term's own coverage refusals, asked of the
  * library (src/base/fin-trailing-edge.ts) with the edge as src/total builds it: a plate's thickness
  * the same at every station, the bevelled section's scaled with the chord. Only its layer and h/c
- * refusals count here; Mach, sweep and the thick layer above 4.5 are counted on their own.
+ * refusals count here; Mach, sweep and the thick layer above 4.5 are counted on their own (the
+ * caller asks only for edges at 4.5 or below, so that no edge is counted under both).
  */
 export function teBelow15Refused(r: Rocket, mach: number, rePerMetre: number): boolean {
   const tip = r.rootChord + r.span * (Math.tan(r.trailingEdgeSweepDeg * DEG) - Math.tan(r.leadingEdgeSweepDeg * DEG));

@@ -145,8 +145,8 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         },
       ],
       // Below Mach 1.5 the square trailing edge is served where the sets near Mach 1 reach
-      // (0019 section 3.4.1); the Basic Finner's c/[h Re^(1/5)] (about 0.8) lies beyond them at
-      // Mach 1.3 (to 0.666), not at 1.4 (RM A52E01, to 1.94).
+      // (0019 section 3.4.1); the Basic Finner's c/[h Re^(1/5)] (about 0.8) lies beyond them
+      // from Mach 1.15 to 1.5 (to 0.666; RM A52E01 counts toward no reach).
       [
         'fin trailing-edge base',
         {
@@ -160,6 +160,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       'fin friction',
       'fin wave drag',
       'body base',
+      'fin trailing-edge base',
     ]);
   });
 

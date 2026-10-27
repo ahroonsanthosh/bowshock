@@ -78,6 +78,7 @@ import {
   FIN_TRAILING_EDGE_BAND,
   FIN_TRAILING_EDGE_MACH_RANGE,
   finTrailingEdgeBaseDrag,
+  TrailingEdgeRefusals,
   trailingEdgeBasis,
   type FinTrailingEdgeBase,
 } from '../base/fin-trailing-edge';
@@ -542,7 +543,11 @@ export function finnedBodyComponents(
       });
     } catch (e) {
       te = undefined;
-      refusals.push(refusalOf('fin trailing-edge base', e));
+      // Every reason the term gives (below Mach 1.5 an edge may be both beyond the sets' layer
+      // reach and laminar, 0019 section 3.4.1).
+      for (const one of e instanceof TrailingEdgeRefusals ? e.all : [e]) {
+        refusals.push(refusalOf('fin trailing-edge base', one));
+      }
     }
   }
 
