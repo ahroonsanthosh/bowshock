@@ -61,7 +61,7 @@ export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
     'roundedLeMach',
     'roundedLeReynolds',
   ],
-  'W5 Haack and power-series noses (in progress)': ['noseHaack'],
+  'W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)': ['noseHaack'],
   'W6 blunted nose tips': ['noseTip'],
   'W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins\' own-drag band below Mach 1.5)': [
     'noseMach',

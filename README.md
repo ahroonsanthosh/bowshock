@@ -9,7 +9,7 @@ Nothing to install and nothing to pay.
 **[Try it](https://ahroonsanthosh.github.io/bowshock/)** (needs WebGPU, such
 as a recent Chrome or Edge).
 
-![The app: the Basic Finner at Mach 1.8 in the 3D view, flow streaks coloured by Mach number, the builder on the left and the drag curve on the right](docs/images/hero.webp)
+![The app at 2880 by 1800: the Basic Finner at Mach 1.8 in the 3D view, flow streaks coloured by Mach number around the cone, the builder on the left and the drag curve on the right](docs/images/hero.webp)
 
 > Early days. Please don't use it for flight decisions yet.
 
@@ -33,10 +33,10 @@ rather than guessing.
 - **The solver itself**, against exact shock, expansion and cone solutions.
 
 **The honest catch:** a total needs every part checked, and most real
-rockets have at least one part that isn't yet. Swept fins, boat-tails,
-square or rounded fin edges and anything below Mach 1.5 are the usual
-blockers. In our test set of 1,600 typical rockets, only 128 get a total
-today. For those, bowshock still shows the parts it can work out, and a
+rockets have at least one part that isn't yet. Rounded nose tips, swept
+fins, boat-tails, square or rounded fin edges and anything below Mach 1.5
+are the usual blockers. In our test set of 2,000 typical rockets, each
+flown at four speeds (8,000 cases), only 228 cases get a total today. For those, bowshock still shows the parts it can work out, and a
 "drag is at least this much" floor where that is safe.
 
 **Not built yet:** viscous (RANS) flow, angle of attack, motor plume.
