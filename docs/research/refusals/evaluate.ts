@@ -16,7 +16,7 @@
  * wherever the documented domain serves it.
  */
 
-import { sharpFitProblem } from '../../../src/analysis/fitted-flow';
+import { bluntNoseRefusal, sharpFitProblem } from '../../../src/analysis/fitted-flow';
 import { bodyBaseDrag } from '../../../src/base/base-drag';
 import { BaseRefusal } from '../../../src/base/refusal';
 import { FinRefusal } from '../../../src/fins/refusal';
@@ -50,7 +50,8 @@ const LE_NORMAL_MACH_FLOOR = EDGES === 'w4e' ? 1.0 : 1.49;
 export const REASONS = {
   // Nose (the page's solve).
   noseMach: 'nose: Mach below 1.2 (page input and solver; transonic solver in progress, 0013)',
-  noseHaack: 'nose: Haack (Von Karman, LV) or power-series shape not served (two-scale grids in progress)',
+  noseHaack:
+    'nose: Haack or power-series shape not served (only the Von Karman nose, inside the lengths and Mach numbers checked against a reference)',
   noseTip: 'nose: rounded (blunted) tip not represented',
   noseDetached: 'nose: tip shock detaches',
   noseSubsonicTip: 'nose: axially subsonic tip flow (at a corner, or subsonic on the surface)',
@@ -161,7 +162,9 @@ export function noseReasons(r: Rocket, mach: number): ReasonKey[] {
   if (mach < 1.2) out.push('noseMach');
   if (r.tipRadiusRatio > 0) out.push('noseTip');
   if (r.nose === 'von-karman' || r.nose === 'lv-haack' || r.nose === 'power-half') {
-    out.push('noseHaack');
+    // Two-scale noses: the solver's own gate (0006 "Two-scale noses"), which
+    // serves the Von Karman nose inside its checked outline and refuses the rest.
+    if (bluntNoseRefusal(calibreBody(r), mach) !== undefined) out.push('noseHaack');
     return out;
   }
   if (r.nose === 'ellipsoid') {
