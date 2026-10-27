@@ -865,3 +865,54 @@ falls with the intervals at order 1.4. But at the resolution W5's
 criterion is applied to (2560 intervals), the mass balance is still
 twice the criterion. The drag converges in size, not in sign, so it has
 no observed order.
+
+### 10.2 What W6 can serve from the references in hand (2026-10-27)
+
+**The rule, as registered.** Section 3 limits the served region, per
+shape, to the outline (convex hull in calibers, r_n/R and Mach) of the
+cases that give a reference: three grids passing the page's checks,
+every fit converged, and at least one line passing W5's criterion.
+Section 6 item 4, kept in force by section 7, adds that W6 serves no
+capped nose whose referenced lines carry less than half its drag
+downstream. Neither the third march nor the fourth references anything
+(sections 9.4 and 10.1). So the references are the first march's.
+
+**The cases** (`results/lanes`, the families with three grids; the
+first march's lines judged by W5's criterion on every grid):
+
+| case | three grids, checks, converged | lines passing (their share of the drag) | half the drag or more |
+|---|---|---|---|
+| ogive 3 cal, 0.03, M 1.3 | yes | 7 (83.0%, 73.3%, 55.5%, 36.4%, 10.2%, -7.6%, -7.3%) | yes |
+| ogive 3 cal, 0.15, M 1.3 | no (nj 80 not converged, section 4) | 2 (-3.0%, -5.3%) | no |
+| ogive 5 cal, 0.03, M 1.3 | yes | 1 (-10.2%) | no |
+| ogive 5 cal, 0.03, M 3 | yes | 1 (-2.4%) | no |
+| ogive 5 cal, 0.15, M 1.3 | yes | 1 (-9.0%) | no |
+| ogive 5 cal, 0.15, M 3 | yes | 1 (-1.7%) | no |
+| VK 3 cal, 0.03, M 1.3 | yes | 4 (78.5%, 67.3%, 51.9%, -4.7%) | yes |
+| VK 3 cal, 0.15, M 1.3 | yes | 1 (-5.3%) | no |
+| VK 5 cal, 0.03, M 1.3 | yes | 3 (90.6%, 80.8%, -9.1%) | yes |
+| VK 5 cal, 0.03, M 3 | yes | 1 (-0.6%) | no |
+| VK 5 cal, 0.15, M 1.3 | yes | 1 (-7.9%) | no |
+| VK 5 cal, 0.15, M 3 | yes | its march restarted at 08:09 | - |
+
+On the three cases whose passing lines carry half the drag or more, each
+such line's fitted drag downstream minus the march falls by a factor of
+2 or more per grid: section 6 item 3's coverage rule holds there.
+
+**The outline.** For the tangent ogive it is a single point: 3 calibers,
+r_n/R 0.03, Mach 1.3. For the Von Karman nose it is a segment: 3 to 5
+calibers, at r_n/R 0.03 and Mach 1.3. Neither has any extent in r_n/R or
+Mach. Every case at r_n/R 0.15 fails, so the families still running
+(Mach 2 and 3, and nj = 160) cannot give the outline any extent in
+r_n/R.
+
+**The population** (`analysis/w6-served.test.ts`,
+`results/w6-served.txt`). This counts the refusal audit's population as
+its run draws it: 2000 rockets, one condition per Mach band, with
+`evaluate.ts`'s rounded-tip refusal lifted only for a capped nose inside
+the outline. Rounded tips appear in 994 rockets in each of the four Mach
+bands; 769 of those are ogives or Von Karman noses. **W6 serves 0 of
+them.** The population draws r_n/R and Mach continuously, so an outline
+with no extent serves nothing. **W6 can serve nothing from what is
+referenced.** The allowance (twice the largest miss over every
+reference, 7.2e-3 of the drag) is therefore moot.
