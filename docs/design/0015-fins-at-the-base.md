@@ -104,7 +104,8 @@ of 0014 section 10.1 cover:
   below 1.5), fins at the base below
   Mach 1.0 or above 3.0, positions ahead of the base above Mach 2.0 or
   below 1.5, and at Mach 1.5 to 2.0 with a root chord other than 1.5 body
-  diameters (section 6).
+  diameters, and fins more than a chord ahead of the base at any Mach
+  number (the plain curve withdrawn on 2026-10-27; section 6).
 
 **Routing (0014 sections 10.3 and 10.7).** The present factor is kept for
 the fin families it was measured on, so the Basic Finner's gated total is
@@ -406,6 +407,24 @@ which `baseFinsOf` sets from the body's diameter. Below about M 1.2 the
 at-base upper bound would rest on its margin, not on TN 2360's mechanism
 (the linear superposition loses meaning near M 1): moot now, recorded so
 the record stays true.
+
+**A chord or more ahead: the plain curve withdrawn (2026-10-27, the
+re-review of A5; 0014 section 10.7 (ad), its amendment of that date).**
+The first paragraph of this section kept 0010 section 1.4's plain curve
+for fins a chord or more ahead. The re-review found its band missing
+TN 2360's own measurement: four unswept 10% arcs with a root chord of 1.5
+diameters, the trailing edge exactly one chord ahead, at M 2.0, were
+served 0.1447 (band 0.1187 to 0.1563), where TN 2360's dPb of -0.0096 on
+a body alone of -0.1507 gives 1.107 times the curve (at least 1.09 with
+every error toward less suction). Fins ahead of the base are now served
+only where TN 2360 measured them: a root chord of 1.5 body diameters
+(within 0.5%), x/c 0 to 1.0 inclusive, M 1.5 to 2.0, through the members
+of sections 3.2 and 3.3; a trailing edge exactly a chord ahead takes TN
+2360's station at x/c 1.0. Every position beyond one chord ahead is
+refused at any chord, nothing measuring it (`bodyBaseDrag`, reason
+`fins-near-base`). TN 2360's fins are rectangular, of aspect ratio 2.33;
+span and taper are not constrained by the chord rule, which is recorded
+for the owner (0014 section 10.7 (ad)), not ruled on here.
 
 ### 3.4 Sweep: only where measured
 
@@ -914,6 +933,7 @@ fin input's construction, not the base factor's routing.
 | fins ending ahead of the base above M 2.0                                                                | TN 2360 measures positions at M 1.5 and 2.0 only, and its fall with distance weakens as the Mach number rises; fig. 32's readings differ |
 | fins ending ahead of the base below M 1.5 (bounded on 2026-10-26, then withdrawn after review, 3.3)      | no measurement with fins ahead of the base below M 1.5; TN 2360's relief moves toward the base as the Mach number falls (3.3)            |
 | fins ending ahead of the base at M 1.5 to 2.0 with a root chord other than 1.5 body diameters            | TN 2360 measures positions with that chord only; where fins still reach the base depends on the chord against the body (3.3)             |
+| fins ending more than a root chord ahead of the base (the plain curve until 2026-10-27)                  | nothing measures them; the plain curve's band missed TN 2360's measurement a chord ahead (3.3)                                           |
 
 ## 7. Readings
 

@@ -2075,6 +2075,44 @@ lower bound: the three-way pairing's values were seen while the pairing
 was checked and were used for nothing, and its symbols a chord ahead of
 the base lie far on the relief side of the zero member.
 
+**2026-10-27, fins a chord or more ahead of the base: the plain curve
+withdrawn** (the coordinator's decision, accuracy first, on the
+re-review of A5 at 245a88e..c7af8cf, which passed A5 and found this in
+main's rule; written before the code). 0010 section 1.4 served fins
+ending one root chord or more ahead of the base with the plain curve
+(no fin effect), labelled not validated with fins, on TN 2360's finding
+that the increment is nearly zero a chord fore or aft.
+
+- _The reviewer's case, quoted:_ "four unswept 10% circular arcs, root
+  chord 1.5 diameters, trailing edge exactly one chord ahead, M 2.0. It
+  is served 0.1447 with a band of 0.1187 to 0.1563. TN 2360 measured dPb
+  -0.0096 (both readings) on a body-alone P_B of -0.1507, which gives
+  1.107 times the curve, and at least 1.09 with every error moved toward
+  less suction. So the truth is outside the band. With a 1.0 diameter
+  chord, one chord ahead is TN 2360's x/c 0.67, where F is about 1.16 to
+  1.18." In the population, 81 of 2000 rockets have fins a chord or more
+  ahead, and they carried 15 of the 150 totals served.
+- _Decided:_ fins ending ahead of the base are served only where TN 2360
+  measured them: a root chord of 1.5 body diameters within 0.5% (the
+  chord rule above), x/c from 0 to 1.0 inclusive, and Mach 1.5 to 2.0,
+  through the measured factor (0015 sections 3.2 and 3.3), not the plain
+  curve. A trailing edge exactly one chord ahead takes TN 2360's station
+  at x/c 1.0. Every position beyond x/c 1.0, at any chord, is refused,
+  because nothing measures it, and the words say so plainly. The plain
+  curve of 0010 section 1.4 is withdrawn (its text stays as written, with
+  a dated note). Expected cost, about 15 totals; the exact count is
+  recorded below from the population run.
+- _Also recorded (the review's N3), for the owner, with no rule added
+  now:_ TN 2360's fins are rectangular, of aspect ratio 2.33 (its
+  summary), and neither span nor taper is constrained by the chord rule:
+  a fin of TN 2360's root chord with another span or a tapered planform
+  is served at the measured positions as if it were TN 2360's.
+- _And fixed with it (the review's N1, N2, N4):_ the hold-out run passes
+  the root chord over diameter to the factor; the page's advice for a
+  rounded plate near the base no longer leads into another refusal; and
+  every piece of advice to move fins "a root chord or more ahead of the
+  base" is removed, since that position is now refused.
+
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.
