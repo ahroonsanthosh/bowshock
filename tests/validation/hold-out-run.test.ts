@@ -13,6 +13,7 @@
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import { bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
+import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { doubleWedge, singleWedge, type SymmetricSection } from '../../src/fins/section';
 import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
@@ -78,7 +79,9 @@ const spreads = BASIC_FINNER_CLUSTERS.map(([a, b]) =>
 /**
  * tests/validation/basic-finner.test.ts, as recorded there: the corrected run's total, band,
  * residual and tolerance (CORRECTED), and the second run's input bands and its components
- * other than the body base (RECORDED), with the corrected body base.
+ * other than the body base (RECORDED), with the corrected body base. The compiled curve's band was
+ * 0.82 to 1.08 at that run; 0014 10.7 (ah) widened it after, to 0.77 to 1.18, which moves the body
+ * base's band ends by the change times its term (`widenedBy`), and nothing else.
  */
 const DREV_RECORDED = [
   ['DA95021318', 0.61337, 0.52964, 0.72961, -0.0316, -0.2455, 0.2347, -0.04664, 0.01551],
@@ -108,6 +111,12 @@ const DREV_COMPONENTS = [
   [0.08781, 0.05801, 0.02615, 0.04764, 0.00953, 0.11514, 0.05078],
 ] as const;
 
+/** What 0014 10.7 (ah) adds to the body base's band ends, in C_D, for a body base term `cd`. */
+const widenedBy = (cd: number) => ({
+  low: (COMPILED_CURVE_BAND.low - 0.82) * cd,
+  high: (COMPILED_CURVE_BAND.high - 1.08) * cd,
+});
+
 let present: ModelledCase[] = [];
 let rebuilt: ModelledCase[] = [];
 
@@ -135,12 +144,13 @@ describe('the harness on the DREV gate', { timeout: 1_800_000 }, () => {
       expect(m.parts.base?.finsOnBaseSource).toBe('present');
       const t = m.total!;
       const v = verdictOf(t, gated[k]!.cx0, spreads[clusterOf(m.mach)]!);
+      const w = widenedBy(DREV_COMPONENTS[k]![5]);
       expect(Math.abs(t.cd - r[1])).toBeLessThan(1e-5);
-      expect(Math.abs(t.low - r[2])).toBeLessThan(1e-5);
-      expect(Math.abs(t.high - r[3])).toBeLessThan(1e-5);
+      expect(Math.abs(t.low - (r[2] + w.low))).toBeLessThan(1e-5);
+      expect(Math.abs(t.high - (r[3] + w.high))).toBeLessThan(1e-5);
       expect(Math.abs(v.residual - r[4])).toBeLessThan(1e-4);
-      expect(Math.abs(v.tolerance[0] - r[5])).toBeLessThan(1e-4);
-      expect(Math.abs(v.tolerance[1] - r[6])).toBeLessThan(1e-4);
+      expect(Math.abs(v.tolerance[0] - (r[5] + w.low / r[1]))).toBeLessThan(1e-4);
+      expect(Math.abs(v.tolerance[1] - (r[6] + w.high / r[1]))).toBeLessThan(1e-4);
       expect(Math.abs(v.inputLow - r[7])).toBeLessThan(1e-5);
       expect(Math.abs(v.inputHigh - r[8])).toBeLessThan(1e-5);
       expect(v.inside).toBe(true);
@@ -151,15 +161,15 @@ describe('the harness on the DREV gate', { timeout: 1_800_000 }, () => {
     });
   });
 
-  it('the tolerances after the correction, as basic-finner.test.ts states them: -20.0% to -27.0%, +23.3% to +28.6% (+19.6% to +23.2% without the wall)', () => {
+  it('the tolerances after the correction, as basic-finner.test.ts states them with the band widened by 0014 10.7 (ah): -21.5% to -28.5%, +26.8% to +31.6% (+22.5% to +26.2% without the wall)', () => {
     const v = present.map((m, k) =>
       verdictOf(m.total!, gated[k]!.cx0, spreads[clusterOf(m.mach)]!),
     );
     const r = (x: number[]) =>
       [Math.min(...x), Math.max(...x)].map((y) => Math.round(1000 * y) / 10);
-    expect(r(v.map((x) => x.tolerance[0]))).toEqual([-27.0, -20.0]);
-    expect(r(v.map((x) => x.tolerance[1]))).toEqual([23.3, 28.6]);
-    expect(r(v.map((x) => x.highWithoutWall))).toEqual([19.6, 23.2]);
+    expect(r(v.map((x) => x.tolerance[0]))).toEqual([-28.5, -21.5]);
+    expect(r(v.map((x) => x.tolerance[1]))).toEqual([26.8, 31.6]);
+    expect(r(v.map((x) => x.highWithoutWall))).toEqual([22.5, 26.2]);
     expect(v.map((x) => Math.round(1000 * x.residual) / 10)).toEqual([
       -3.2, 0.5, -4.5, 3.9, -0.1, 0.7, 3.4, -5.1, 7.5, -2.6, -4.8,
     ]);

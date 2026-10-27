@@ -487,12 +487,13 @@ describe('the display', { timeout: 60_000 }, () => {
     const view = totalDragView(form, exactNose(form));
     if (view.kind !== 'total') throw new Error(view.kind);
     const blocks = totalDragDisplay(view);
-    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048), the
-    // band rounded outward as in the gate's table.
+    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048 in the gate's
+    // table, rounded outward; 0.5052 to 0.7255 with the compiled curve's band widened after it, 0014
+    // 10.7 (ah)).
     expect(blocks[0]).toEqual({
       kind: 'paragraph',
       text:
-        'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%): an estimate, ' +
+        'Total C_D = 0.5940, model-form band 0.5052 to 0.7255 (-15.0% to +22.2%): an estimate, ' +
         'not validated',
       tone: 'warn',
       headline: true,
@@ -522,9 +523,11 @@ describe('the display', { timeout: 60_000 }, () => {
     expect(components!.rows.map((r) => [r[0], r[4], r[5]])).toEqual(
       view.total.components.map((c) => [c.name, c.label, c.band]),
     );
+    // The body base's band with the compiled curve's 0.77 to 1.18 (0014 10.7 (ah); 0.1468 to 0.2470
+    // with 0.82 to 1.08 before it).
     expect(components!.rows.find((r) => r[0] === 'body base')!.slice(1, 4)).toEqual([
       '0.2073',
-      '0.1468 to 0.2470',
+      '0.1364 to 0.2677',
       '35%',
     ]);
     expect(blocks).toContainEqual({ kind: 'list', items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE] });

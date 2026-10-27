@@ -588,7 +588,10 @@ export function gateDisplay(): DisplayBlock[] {
         'section 11): a recorded correction made after the residuals were known, not a new test, ' +
         'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
         'audit (its section 10); residual: measured CX0 over modelled, minus 1; each band rounded ' +
-        'outward, other values to the nearest last digit shown',
+        'outward, other values to the nearest last digit shown; bands and tolerances as the run ' +
+        "formed them: the body base's band was widened after it (design record 0014, section 10.7 " +
+        '(ah)), so a total on this page now shows a wider band and the tolerances would be ' +
+        '-21.5% to -28.5% and +26.8% to +31.6%; no residual and no verdict changes',
       head: [
         'Shot',
         'Mach',
@@ -623,7 +626,10 @@ export function gateDisplay(): DisplayBlock[] {
         "BRL Report 934's range A, run once as registered (design record 0020): the present " +
         'model at its seven rounds, with sharp fin leading edges; residual: zero-yaw CD0 over ' +
         'modelled, minus 1; each band rounded outward, other values to the nearest last digit ' +
-        'shown',
+        "shown; bands and tolerances as the run formed them: the body base's band was widened " +
+        'after it (design record 0014, section 10.7 (ah)), so a total on this page now shows a ' +
+        'wider band and the tolerances would be -26.5% to -29.0% and +30.7% to +31.4%; no ' +
+        'residual and no verdict changes',
       head: ['Round', 'Mach', 'CD0 measured', 'Modelled C_D (band)', 'Residual', 'Tolerance'],
       rows: PUBLISHED_BRL934.map((r) => [
         String(r.round),

@@ -1820,4 +1820,117 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
+**2026-10-27 (ah): the compiled curve's band corrected, an omission found
+by review** (0008 section 3.3; 0010 section 1.2; 0015 section 11.1; the
+coordinator's decision of 2026-10-27; letter (ah) allocated by the
+coordinator). Widened only: the band of Love's basic curve, measured over
+curve, goes from 0.82 to 1.08 to **0.77 to 1.18** at Mach 1.5 to 3.0.
+
+- _The omission._ 0008 section 3.3 sets the band by a rule: "every base
+  data set opened at these conditions is used to set this band". The rule
+  was not applied to body-alone base pressures opened inside the curve's
+  domain after the band was set, nor to one 0008 opened itself (fig. 35's
+  no-fin tunnel symbol at M 1.50, -0.194, in 0008 section 3.4's table). An
+  independent review noted that this point, TN 2360's body without fins,
+  lies at 1.124 times the curve, outside 0.82 to 1.08. The served band
+  missed a valid measurement of a configuration it claims.
+- _The domain, as stated before this entry_ (0008 section 3.3,
+  `src/base/compiled-curve.ts`): Mach 1.5 to 3.0, a cylindrical
+  afterbody, a turbulent layer at the base, no fins near it, power off.
+  No limit on Reynolds number, boundary-layer thickness, afterbody length
+  or nose shape is stated, and the band's tunnel evidence is all
+  sting-supported. Every set below lies inside it.
+- _The sets now used, each every paired reading, against both curves as
+  0008 forms the band_ (`BODY_ALONE_IN_DOMAIN`):
+  - TN 2360's body alone (TN 3819's ref. 26: a 10-calibre-radius tangent
+    ogive on a 1.250 in cylinder, turbulent, sting d/h 0.4 four diameters
+    long, Ames 1 by 3 ft tunnel, R 4.5e6) at M 1.5 and 2.0: TN 3819 fig. 33
+    at t/c 0 (W1's first reading, -0.1948 and -0.1507; round 6's, -0.1947
+    and -0.1505) and fig. 35's no-fin tunnel symbol (0008's first reading,
+    -0.194 and -0.150; round 3's, -0.1941 and -0.150; round 6's, -0.194 and
+    -0.1502). Over the curves 1.003 to 1.124.
+  - The Langley 9 in tunnel's body alone at M 2.41, the same figures (fig.
+    33: -0.1219, -0.1213; fig. 35: -0.120, -0.1202, -0.1202): 0.964 to
+    1.001.
+  - RM L52J21a figs. 31 to 33 panel (d): the unfinned bodies with
+    cylindrical bases, sting-supported, within 0.6e6 of R 8.06e6, conical,
+    ogive and radome noses at M 1.62, 1.93 and 2.41, W1's first reading
+    and round 7's (`L52J21A_FIG31_33D`, 20 values): 0.773 to 1.024. The
+    radome nose at M 1.62 (-0.1338, first; -0.1331, round 7) sets the low
+    end: round 7's value over the more negative curve, 0.7731 (0.7959
+    over the served curve alone).
+  - TR 1051 fig. 23(b) at its thinnest sting, d/h 0.35 (base_sources.md
+    section 2: the first reading, revised, and the round-1 audit's, which
+    had seen the draft's values, so independent but not blind): -0.174 and
+    -0.176 at M 1.5, -0.141 and -0.147 at 2.0, -0.115 and -0.118 at 2.9.
+    Over the curves 0.943 to 1.178; the audit's value at M 2.9 sets the
+    high end. TR 1051's model description was read for this entry (PDF
+    pp. 12 and 21, its text and fig. 23(b)'s legend; SHA-256 of the copy
+    `7f1ef2fe...b5d4`): every body a cone-cylinder (10 deg semiangle) or an
+    ogive-cylinder (10-calibre ogival radius); the turbulent data on "the
+    same models with artificial roughness added in the form of a narrow
+    transition strip", which "may not bring about complete transition
+    ahead of the base at Reynolds numbers less than about 2 million"; a
+    rear sting more than 4 base diameters long; fig. 23(b)'s legend gives
+    R 4.0e6 and L/h 7.0 at M 1.5, 4.0e6 and 5.0 at 2.0, 7.5e6 and 5.0 at
+    2.9. Inside the domain by every stated limit, so used. Artificial
+    transition raises the base pressure 5 to 10% (TN 3819 p. 15; 0008
+    section 3.2), toward less base drag, so it does not explain a point
+    above the curve. Thicker stings of the same figure (to d/h 0.85, 1.31
+    to 1.43 times the curve) measure the sting effect itself, which 0008
+    section 3.3 lists apart and which no served rocket has; they are not
+    used.
+- _Checked, not used to set the band:_ TN 2360 figs. 5 and 7 (the same
+  body, read once, round 6: 1.124 to 1.133 at M 1.5 over R 1.95e6 to
+  4.42e6, 1.172 at R 0.76e6 on a partly hidden symbol, 1.02 to 1.04 at M
+  2.0; rule 5 of 10.1 asks two readings); fig. 7's faired average of TN
+  2360's refs. 1 to 3 (a compilation, read once, 0.997 to 1.085);
+  NSWCDD/TR-92/509's configuration 1 (one transcription, strut-supported:
+  0.90 to 0.95, 0.86 to 1.00 with its +-5%). Every one lies inside 0.77
+  to 1.18.
+- _The band._ With fig. 18's tunnel symbols (0.856 to 1.078) and Herrin
+  and Dutton (0.824 to 0.885) the envelope is 0.7731 to 1.1782, rounded
+  outward as 0008 rounds it: 0.77 to 1.18. TN 2360's body alone by itself
+  would give 1.13 at the high end. Every reading named above lies inside
+  the band `bodyBaseDrag` serves (`compiled-curve.test.ts`); on the code
+  before this entry the tests failed at TN 2360's M 1.5 point (0.1948
+  above the band's 0.1872), RM L52J21a's radome nose at M 1.62 (0.1338
+  below 0.1371) and TR 1051 at M 2.9 (0.115 above 0.1085).
+- _Below Mach 1.5_ (W2, 0015 section 11.1): the low end is this band's
+  carried down, 0.77 (0.82 before), and the nominal is the band's
+  midpoint, 1.04 (1.065 before), both by 0015's own rules; the high end,
+  1.31, is unchanged. No total is served below Mach 1.5.
+- _What was known when the band was widened._ Every value above was known:
+  TN 2360's and RM L52J21a's were read for W1 (0015 section 7), TR 1051's
+  for 0008's sting effect, and the review found the miss. No figure was
+  named before it was used, as 10.1 rule 2 asks; TR 1051 fig. 23(b) is
+  named here for the first time as band-setting. This is acceptable here
+  because the rule that takes these values is 0008 section 3.3's, written
+  before any of them was opened for this purpose and applying to them as
+  it stood; because the change only widens (no band end moves inward,
+  nothing is retuned, the served value above Mach 1.5, the curve itself,
+  is unchanged); and because no held-back value was opened, used or
+  looked at to make it.
+- _The hold-outs that used this band._ The DREV gate (0010 sections 4.2
+  and 11.6) and BRL 934's range A (0020) formed their tolerances with
+  0.82 to 1.08. This widens a band after both hold-outs were used. It
+  moves no modelled total and no residual, only the tolerances' ends,
+  each by the change in the body base's band end over the modelled total;
+  their records keep the values of the runs, and
+  `basic-finner.test.ts`, `hold-out-run.test.ts`, `brl934-range-a.test.ts`
+  and the page's tests check the widening against them exactly. The DREV
+  gate's tolerances go from -20.0% to -27.0% and +23.3% to +28.6% to
+  -21.5% to -28.5% and +26.8% to +31.6% (its model-form band from about
+  -13% and +19% to about -15% and +22%); BRL 934's range A's from -24.8%
+  to -27.1% and +27.0% to +28.0% to -26.5% to -29.0% and +30.7% to
+  +31.4%. No verdict changes: the DREV gate's eleven shots were inside and
+  stay inside; BRL 934's range A still passes at all seven rounds of the
+  present model and is still refused at all ten for the rebuilt factor. A
+  wider tolerance can only keep a pass a pass, so the pass says less than
+  it did: the page's validated claim and the two published tables say so
+  beside the run's values, which they keep.
+- _The population_ (`docs/research/refusals`): served totals are
+  unchanged, 153 of 8000 cases before and after (the band refuses
+  nothing).
+
 The next free letter is (w).

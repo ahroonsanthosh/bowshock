@@ -1183,6 +1183,26 @@ would carry.
 
 ### 11.1 The body base, Mach 1.0 to 1.5
 
+**Moved on 2026-10-27 by 0014 section 10.7 (ah); the text below is kept
+as written.** The band of Mach 1.5 to 3.0 is now 0.77 to 1.18 (0008
+section 3.3, corrected: RM L52J21a's unfinned radome nose at M 1.62 sets
+its low end). By this section's own rules the low end carried down is
+0.77, and the nominal, the band's midpoint, is **1.04** (1.065 before);
+the band below Mach 1.5 is **0.77 to 1.31**, about +-26% about the
+nominal. The term without fins falls 2.3% (M 1.0: 0.1923, band 0.1424 to
+0.2422). With fins at the base the members built on fig. 35's line are
+divided by 1.04, so the term with four 10% arcs is unchanged (M 1.0:
+0.3199, band 0.2148 to 0.4250); the three 2.4% double wedges of 11.2's
+example give F on W2's term 0.838 to 1.778, nominal 1.308 (+-35.9%), the
+term 0.2516 (0.0958 to 0.4073) at M 1.0, and 0.838 to 1.660, nominal 1.249
+(+-32.9%), the term 0.2385 (0.0981 to 0.3789) at M 1.2. The steps of 11.2:
+the same wedges from 0.2283 (0.0918 to 0.3648) just below M 1.5 to 0.2002
+(0.0992 to 0.2912) at 1.5, -12.3%; at M 1.62 from 0.1947 (0.0953 to
+0.2843) to 0.2031 (0.1101 to 0.2858); M 1.6's 0.1967 (0.0958 to 0.2877);
+four 10% arcs 0.2847 to 0.2817 at M 1.5, as before. On W2's term the
+factor's half-width is +-32.8% to +-35.9% (`base-w2.test.ts`). No total
+is served below Mach 1.5, so no served total moves.
+
 - **Value:** Love's basic curve of TN 3819 fig. 18 continued below 1.5
   (its rows at M 1.0, 1.2, 1.4 and 1.5, linear in M as above 1.5, read
   twice since round 7; at M 1.4 round 7's -0.1776, round 1's -0.1796

@@ -40,6 +40,7 @@ import {
   type TotalDragForm,
   type TotalDragView,
 } from '../../src/app/total-drag';
+import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import type { TotalDrag } from '../../src/total/total-drag';
 import { basicFinnerBodyAsTyped } from '../../src/validation/basic-finner';
@@ -386,12 +387,28 @@ describe('the page against the run: the seven rounds', { timeout: 120_000 }, () 
       if (v.kind !== 'total') throw new Error(`${r.round}: ${v.kind}`);
       const t = v.total;
       expect(r.outcome.refused).toBe(false);
-      expect([t.cd - r.outcome.cd, t.low - r.outcome.low, t.high - r.outcome.high]).toEqual([
-        0, 0, 0,
-      ]);
-      expect(t.components.map((c) => [c.name, c.cd, c.low, c.high])).toEqual(
-        r.components.map((c) => [c.name, c.cd, c.low, c.high]),
-      );
+      // The run's values, plus what 0014 10.7 (ah) added after it to the body base's band ends: the
+      // change in the compiled curve's band (0.82 to 1.08 at the run, 0.77 to 1.18 now) times its term.
+      const bodyBase = r.components.find((c) => c.name === 'body base')!;
+      const w = {
+        low: (COMPILED_CURVE_BAND.low - 0.82) * bodyBase.cd,
+        high: (COMPILED_CURVE_BAND.high - 1.08) * bodyBase.cd,
+      };
+      expect(
+        [
+          t.cd - r.outcome.cd,
+          t.low - (r.outcome.low + w.low),
+          t.high - (r.outcome.high + w.high),
+        ].every((d) => Math.abs(d) < 1e-12),
+      ).toBe(true);
+      expect(t.components.map((c) => c.name)).toEqual(r.components.map((c) => c.name));
+      t.components.forEach((c, j) => {
+        const run = r.components[j]!;
+        const moved = c.name === 'body base' ? w : { low: 0, high: 0 };
+        expect(c.cd).toBe(run.cd);
+        expect(Math.abs(c.low - (run.low + moved.low))).toBeLessThan(1e-12);
+        expect(Math.abs(c.high - (run.high + moved.high))).toBeLessThan(1e-12);
+      });
       // The run's "diameter and air" band is its own (the corners); the library's inputs are equal.
       expect(t.inputs.map((i) => [i.name, i.low, i.high])).toEqual(
         r.inputs.filter((i) => i.name !== 'diameter and air').map((i) => [i.name, i.low, i.high]),
@@ -443,7 +460,7 @@ describe('the display', { timeout: 60_000 }, () => {
     if (head.kind !== 'paragraph' || box.kind !== 'box') throw new Error('expected a total');
     expect(head.tone).toBe('ok');
     expect(head.text).toBe(
-      `Total C_D = 0.4314, model-form band 0.3725 to 0.5189 (-13.7% to +20.3%): ${VALIDATED_HEADLINE}`,
+      `Total C_D = 0.4314, model-form band 0.3652 to 0.5335 (-15.4% to +23.7%): ${VALIDATED_HEADLINE}`,
     );
     expect(box.tone).toBe('ok');
     expect(box.blocks.map((b) => (b.kind === 'paragraph' ? b.text : b.kind))).toEqual([

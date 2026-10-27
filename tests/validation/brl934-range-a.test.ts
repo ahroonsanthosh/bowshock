@@ -38,10 +38,18 @@
  * Run once, on 2026-10-22, at the pre-run commit 1af3786; RECORDED below holds what it gave.
  * The harness is validated on the DREV gate (tests/validation/hold-out-run.test.ts),
  * not on BRL. The run writes its output when BRL934_RUN_OUT names a folder.
+ *
+ * After the run (2026-10-27, 0014 section 10.7 (ah)) the compiled curve's band widened from 0.82 to 1.08,
+ * which the run used, to 0.77 to 1.18, by 0008 section 3.3's rule applied to body-alone base pressures it had
+ * left out: a band widened after this hold-out was used. It moves no total and no residual, only the body
+ * base's band ends (by the change in the band's end times the body base term) and with them each tolerance.
+ * RECORDED keeps what the run gave; the tests check the model against it plus that widening (`widenedBy`). The
+ * verdicts are unchanged.
  */
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { singleWedge } from '../../src/fins/section';
 import type { FinnedBody } from '../../src/total/finned-body';
@@ -631,6 +639,27 @@ beforeAll(() => {
 }, 3_600_000);
 
 const near = (a: number, b: number, tol: number) => Math.abs(a - b) < tol;
+
+/** The compiled curve's band when the run was made (0010 section 1.2), before 0014 10.7 (ah). */
+const BAND_AT_THE_RUN = { low: 0.82, high: 1.08 } as const;
+/** What 0014 10.7 (ah) adds to the body base's band ends, in C_D, for a body base term `cd`. */
+const widenedBy = (cd: number) => ({
+  low: (COMPILED_CURVE_BAND.low - BAND_AT_THE_RUN.low) * cd,
+  high: (COMPILED_CURVE_BAND.high - BAND_AT_THE_RUN.high) * cd,
+});
+/** The recorded outcome's tolerance moved by a widening `w` (C_D) of a total `cd`. */
+const widenedOutcome = (
+  r: RecordedOutcome,
+  w: { low: number; high: number },
+  cd: number,
+): RecordedOutcome =>
+  'refused' in r
+    ? r
+    : {
+        ...r,
+        tolerance: [r.tolerance[0] + w.low / cd, r.tolerance[1] + w.high / cd],
+      };
+
 function matches(o: Outcome, r: RecordedOutcome): boolean {
   if ('refused' in r)
     return o.refused && o.refusals.map((x) => x.reason).join() === r.refused.join();
@@ -671,9 +700,13 @@ describe('BRL Report 934, range A, run once as registered', { timeout: 3_600_000
       const o = x.outcome;
       if (o.refused) throw new Error(`round ${x.round} refused`);
       expect(near(x.cd0, r.cd0, 1e-5)).toBe(true);
-      expect([o.cd, o.low, o.high].map((v, i) => near(v, [r.cd, r.low, r.high][i]!, 1e-5))).toEqual(
-        [true, true, true],
-      );
+      // The run's values plus 0014 10.7 (ah)'s widening of the body base's band (its term, r.components[4]).
+      const w = widenedBy(r.components[4]!);
+      expect(
+        [o.cd, o.low, o.high].map((v, i) =>
+          near(v, [r.cd, r.low + w.low, r.high + w.high][i]!, 1e-5),
+        ),
+      ).toEqual([true, true, true]);
       const inputs = x.inputs!;
       expect(inputs.map((i) => i.name)).toEqual([
         'transition',
@@ -701,10 +734,12 @@ describe('BRL Report 934, range A, run once as registered', { timeout: 3_600_000
         near(band.high, r.conditions[1], 1e-5),
       ]).toEqual([true, true]);
       expect(near(o.residual, r.residual, 1e-4)).toBe(true);
-      expect(near(o.tolerance[0], r.tolerance[0], 1e-4)).toBe(true);
-      expect(near(o.tolerance[1], r.tolerance[1], 1e-4)).toBe(true);
-      expect(near(o.highWithoutWall, r.highWithoutWall, 1e-4)).toBe(true);
+      expect(near(o.tolerance[0], r.tolerance[0] + w.low / r.cd, 1e-4)).toBe(true);
+      expect(near(o.tolerance[1], r.tolerance[1] + w.high / r.cd, 1e-4)).toBe(true);
+      expect(near(o.highWithoutWall, r.highWithoutWall + w.high / r.cd, 1e-4)).toBe(true);
       expect(o.inside).toBe(r.inside);
+      const body = x.components!.find((c) => c.name === 'body base')!;
+      expect(near(body.cd, r.components[4]!, 1e-5)).toBe(true);
       expect(x.components!.map((c) => c.name)).toEqual([
         'nose wave drag',
         'body friction',
@@ -718,8 +753,9 @@ describe('BRL Report 934, range A, run once as registered', { timeout: 3_600_000
       );
       expect(x.library).toBe('served, the body base on the present factor');
     });
-    // Residuals +3.9, +6.0, +11.0, +8.4, +7.3, +8.9, +5.8 % (mean +7.3%); tolerances -24.8% to
-    // -27.1% and +27.0% to +28.0%.
+    // Residuals +3.9, +6.0, +11.0, +8.4, +7.3, +8.9, +5.8 % (mean +7.3%); tolerances at the run -24.8%
+    // to -27.1% and +27.0% to +28.0%, and with the band widened after it (0014 10.7 (ah)) -26.5% to
+    // -29.0% and +30.7% to +31.4%: every round still inside.
     const outcomes = rounds.map((x) => x.outcome as Served);
     const pct = (v: number[]) => v.map((y) => Math.round(1000 * y) / 10);
     expect(pct(outcomes.map((o) => o.residual))).toEqual([3.9, 6.0, 11.0, 8.4, 7.3, 8.9, 5.8]);
@@ -728,8 +764,18 @@ describe('BRL Report 934, range A, run once as registered', { timeout: 3_600_000
     const lo = outcomes.map((o) => o.tolerance[0]);
     const hi = outcomes.map((o) => o.tolerance[1]);
     expect(pct([Math.min(...lo), Math.max(...lo), Math.min(...hi), Math.max(...hi)])).toEqual([
-      -27.1, -24.8, 27.0, 28.0,
+      -29.0, -26.5, 30.7, 31.4,
     ]);
+    const tol = RECORDED.present.map((r) => r.tolerance);
+    expect(
+      pct([
+        Math.min(...tol.map((t) => t[0])),
+        Math.max(...tol.map((t) => t[0])),
+        Math.min(...tol.map((t) => t[1])),
+        Math.max(...tol.map((t) => t[1])),
+      ]),
+    ).toEqual([-27.1, -24.8, 27.0, 28.0]);
+    expect(outcomes.every((o) => o.inside)).toBe(true);
   });
 
   it('the rebuilt factor, per round as recorded: refused for the body base, the faces diverging to the trailing edge', () => {
@@ -750,14 +796,22 @@ describe('BRL Report 934, range A, run once as registered', { timeout: 3_600_000
     rounds.forEach((x, k) => {
       const r = RECORDED.present[k]!;
       const s = x.sensitivities;
-      expect(matches(s.cdPrimeText.outcome, r.text)).toBe(true);
-      expect(matches(s.drevLeadingEdge, r.drevEdge)).toBe(true);
-      expect(matches(s.taperedTrailingEdge, r.tapered)).toBe(true);
+      // Each moved by 0014 10.7 (ah)'s widening over its own total: the run's total, or, with DREV's
+      // leading edge or the trailing-edge term halved, that total (CD0 over one plus its residual);
+      // the body base term is the same in each.
+      const w = widenedBy(r.components[4]!);
+      const on = (o: RecordedOutcome) => widenedOutcome(o, w, r.cd);
+      const onOwn = (o: RecordedOutcome) =>
+        widenedOutcome(o, w, 'refused' in o ? r.cd : r.cd0 / (1 + o.residual));
+      expect(matches(s.cdPrimeText.outcome, on(r.text))).toBe(true);
+      expect(matches(s.drevLeadingEdge, onOwn(r.drevEdge))).toBe(true);
+      expect(matches(s.taperedTrailingEdge, onOwn(r.tapered))).toBe(true);
       expect(s.without3263 === undefined).toBe(r.without3263 === undefined);
-      if (s.without3263 !== undefined) expect(matches(s.without3263, r.without3263!)).toBe(true);
+      if (s.without3263 !== undefined)
+        expect(matches(s.without3263, on(r.without3263!))).toBe(true);
       expect(s.sevenRoundSpread === undefined).toBe(r.seven === undefined);
       if (s.sevenRoundSpread !== undefined)
-        expect(matches(s.sevenRoundSpread, r.seven!)).toBe(true);
+        expect(matches(s.sevenRoundSpread, on(r.seven!))).toBe(true);
     });
   });
 });

@@ -1488,6 +1488,12 @@ moves; every other component and every input band is the second run's
 (`basic-finner.test.ts`; `docs/research/base-and-total/runs/gate-corrected.out`
 and `.json`).
 
+After this re-run the compiled curve's band was widened from 0.82 to 1.08
+to 0.77 to 1.18 (2026-10-27, 0014 section 10.7 (ah); section 1.2). The
+table below keeps the re-run's bands and tolerances; with the widened band
+the tolerances are -21.5% to -28.5% and +26.8% to +31.6%, the totals and
+residuals are the same, and every shot stays inside.
+
 | Shot       | M     | CX0   | Second run C_D | Residual | Tolerance (round 5) | Corrected C_D (band)      | Residual | Tolerance        |
 | ---------- | ----- | ----- | -------------- | -------- | ------------------- | ------------------------- | -------- | ---------------- |
 | DA95021318 | 1.799 | 0.594 | 0.6123         | -3.0%    | -24.2% to +23.1%    | 0.6134 (0.5296 to 0.7297) | -3.2%    | -24.6% to +23.5% |
