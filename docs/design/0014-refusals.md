@@ -1936,4 +1936,36 @@ curve, goes from 0.82 to 1.08 to **0.77 to 1.18** at Mach 1.5 to 3.0.
   `out/impact.out`); on the audit before 5921198 also unchanged, 153. The
   band refuses nothing.
 
+**2026-10-27 (ah), addendum: TR 1051 enters at its thinnest measured
+symbol** (the coordinator's ruling of 2026-10-27, after the independent
+review of 5921198..6f44814, which did not pass). Written before any new
+reading of TR 1051 fig. 23(b) is used, and before the band is changed for
+it.
+
+- _What the review found._ In fig. 23(b) the first measured symbols at
+  Mach 2.0 and 2.9 lie at d/h 0.30; the faired curves start at 0.27 and
+  0.26. Only at Mach 1.5 is the first symbol at d/h 0.35. So the values
+  (ah) used at Mach 2.0 and 2.9, both readings at d/h 0.35, are readings
+  of the fairing, not of the thinnest measured sting, and the band's high
+  end, 1.1782, rests on the audit's faired -0.118 at Mach 2.9.
+- _The ruling._ (ah)'s criterion, the thinnest sting, stands as written,
+  applied to measured symbols: a fairing is not data, here as everywhere
+  else in the band.
+- _How TR 1051 enters._ At each Mach number, at its thinnest measured
+  sting symbol, read twice blind (round 19: two fresh blind readers of
+  every symbol in fig. 23(b), started by the coordinator) and paired by a
+  neutral party. It enters as the envelope of the paired readings, against
+  both curves, rounded outward with the other sets.
+- _Where a symbol cannot be paired._ If the thinnest symbol at a Mach
+  number cannot be paired, the present faired d/h 0.35 values stay for
+  that Mach number, labelled as faired values: undecidable, so the wider
+  choice.
+- _Until the pairing._ The band stays 0.77 to 1.18, its high end on the
+  faired values, and is not changed for TR 1051 until the paired readings
+  are sent by the coordinator.
+- _Disclosed._ The reviewer scanned the figure (about -0.113 at d/h 0.30,
+  Mach 2.9), and the coordinator saw that value before this addendum. The
+  implementer of (ah) viewed fig. 23(b) at page resolution on 2026-10-27
+  to read its legend for (ah) and took no value from its symbols.
+
 The next free letter is (w).
