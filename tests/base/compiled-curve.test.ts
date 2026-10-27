@@ -349,24 +349,47 @@ describe('body base drag: the arithmetic', () => {
     expect(Math.round(1000 * without) / 1000).toBe(0.656);
   });
 
-  it('fins a chord or more ahead: the plain curve, labelled not validated with fins', () => {
-    const r = bodyBaseDrag({
-      mach: 2.0,
-      afterbody: 'cylinder',
-      boundaryLayerAtBase: 'turbulent',
-      baseAreaRatio: 1,
-      fins: {
-        count: 4,
-        thicknessRatio: 0.05,
-        section: 'other',
-        tanLeadingEdge: 0,
-        tanTrailingEdge: 0,
-        trailingEdgeAheadOfBase: 1,
-      },
+  it('fins a chord or more ahead: the plain curve withdrawn (2026-10-27), refused', () => {
+    // Until 2026-10-27 these fins took the plain curve: 0.1447 (0.1187 to 0.1563) a chord ahead
+    // at Mach 2.0, a band that misses TN 2360's measurement there (0014 section 10.7 (ad)). Now a
+    // chord ahead takes the rebuilt factor, which needs the section (not given here), and beyond a
+    // chord nothing is measured: refused at every Mach number the curve covers.
+    const fins = (x: number) => ({
+      count: 4,
+      thicknessRatio: 0.05,
+      section: 'other' as const,
+      tanLeadingEdge: 0,
+      tanTrailingEdge: 0,
+      trailingEdgeAheadOfBase: x,
     });
-    expect(r.cd).toBeCloseTo(0.1447, 15);
-    expect(r.finsOnBase).toBeUndefined();
-    expect(r.labels[1]).toMatch(/not validated with fins/);
+    for (const mach of [1.0, 1.4, 1.5, 2.0, 2.5, 3.0]) {
+      for (const x of [1, 1.0001, 1.2, 2, 5]) {
+        refusedWith('fins-near-base', () =>
+          bodyBaseDrag({
+            mach,
+            afterbody: 'cylinder',
+            boundaryLayerAtBase: 'turbulent',
+            baseAreaRatio: 1,
+            fins: fins(x),
+          }),
+        );
+      }
+    }
+    let message = '';
+    try {
+      bodyBaseDrag({
+        mach: 2.0,
+        afterbody: 'cylinder',
+        boundaryLayerAtBase: 'turbulent',
+        baseAreaRatio: 1,
+        fins: fins(2),
+      });
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toMatch(
+      /^fins ending more than a root chord ahead of the base \(2 root chords\): /,
+    );
   });
 });
 

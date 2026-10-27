@@ -7,11 +7,16 @@
 
 import { describe, expect, it } from 'vitest';
 import {
+  BLUNT_AHEAD_OF_BASE,
+  BLUNT_EDGE_NOTE,
   FINS_ON_BASE_ROUTING_LABEL,
+  MORE_THAN_A_CHORD_AHEAD,
+  ROUNDED_EDGE_NOTE,
   ROUNDED_PLATE_AHEAD_OF_BASE,
   bodyBaseDrag,
   type BaseFins,
 } from '../../src/base/base-drag';
+import { COMPILED_CURVE_BAND, compiledCurveBasePressure } from '../../src/base/compiled-curve';
 import { finsOnBaseFactor } from '../../src/base/fins-on-base';
 import {
   W1_FLAT_RELIEF_LOW,
@@ -419,6 +424,171 @@ describe('fins thinner than 5% at some station (0016 section 18) in the rebuilt 
           positionToo,
         );
       }
+    }
+  });
+});
+
+describe('fins a root chord or more ahead of the base: the plain curve withdrawn (0014 section 10.7 (ad), 2026-10-27)', () => {
+  /** A circular arc of t/c tau (half-thickness 2 tau s (1 - s)). */
+  const arc = (tau: number): SymmetricSection => {
+    const x = Array.from({ length: 201 }, (_, k) => k / 200);
+    return { x, halfThickness: x.map((v) => 2 * tau * v * (1 - v)) };
+  };
+  const arcs10 = (over: Partial<BaseFins> = {}): BaseFins =>
+    fins({
+      thicknessRatio: 0.1,
+      nearBase: { ...near(arc(0.1)), sectionFamily: 'circular-arc' },
+      rootChordOverDiameter: 1.5,
+      trailingEdgeAheadOfBase: 1,
+      ...over,
+    });
+  const refusalOf = (f: () => unknown): BaseRefusal => {
+    try {
+      f();
+    } catch (e) {
+      if (e instanceof BaseRefusal) return e;
+      throw e;
+    }
+    throw new Error('served');
+  };
+
+  it("the reviewer's case: four unswept 10% arcs, root chord 1.5 diameters, one chord ahead, M 2.0, its band holding TN 2360's measurement", () => {
+    // Served 0.1447 (0.1187 to 0.1563) on the plain curve until 2026-10-27. TN 2360 measured dPb -0.0096
+    // (both readings) on a body-alone P_B of -0.1507: -0.1603, 1.107 times the curve, and at least 1.09
+    // times it with every error moved toward less suction. The plain curve's band misses both.
+    const curve = -compiledCurveBasePressure(2.0).pB;
+    expect(Math.round(1e4 * curve) / 1e4).toBe(0.1447);
+    expect(Math.round(1e4 * curve * COMPILED_CURVE_BAND.high) / 1e4).toBe(0.1563);
+    const measured = 0.1507 + 0.0096;
+    expect(measured / curve).toBeGreaterThan(1.107);
+    expect(curve * COMPILED_CURVE_BAND.high).toBeLessThan(1.09 * curve);
+    // Now: TN 2360's position, through the rebuilt factor.
+    const r = base(2.0, arcs10());
+    expect(r.finsOnBaseSource).toBe('rebuilt');
+    expect(r.finsOnBase).toBeDefined();
+    expect(r.labels[1]).toContain(
+      'measured on 4 unswept circular-arc fins t/c 0.10 at x/c 1.00 (TN 2360 fig. 6',
+    );
+    expect(r.low).toBeLessThanOrEqual(1.09 * curve);
+    expect(r.high).toBeGreaterThanOrEqual(measured);
+    // A trailing edge within 1e-9 of a chord counts as a chord: the same numbers.
+    const s = base(2.0, arcs10({ trailingEdgeAheadOfBase: 1 + 1e-12 }));
+    expect([s.cd, s.low, s.high]).toEqual([r.cd, r.low, r.high]);
+  });
+
+  it("the reviewer's other case: a root chord of 1.0 diameter one chord ahead (x/c 0.67 in TN 2360's terms), refused by the chord rule", () => {
+    for (const mach of [1.5, 1.8, 2.0]) {
+      const e = refusalOf(() => base(mach, arcs10({ rootChordOverDiameter: 1.0 })));
+      expect(e.reason).toBe('fins-near-base');
+      expect(e.message).toContain(
+        "the fins' root chord is 1.00 body diameters, and TN 2360 measures fins ahead of the base " +
+          'only with a root chord of 1.5 body diameters',
+      );
+    }
+  });
+
+  it('every position beyond one chord ahead is refused, at any chord, section and Mach number, in plain words', () => {
+    // Each without a chord; the chord added where given.
+    const sections: [string, BaseFins][] = [
+      [
+        'four 10% arcs',
+        fins({
+          thicknessRatio: 0.1,
+          nearBase: { ...near(arc(0.1)), sectionFamily: 'circular-arc' },
+        }),
+      ],
+      ['four 8% double wedges', fins({ nearBase: near(doubleWedge(0.08)) })],
+      ['no section given', fins({ thicknessRatio: 0.1 })],
+    ];
+    for (const [name, g] of sections) {
+      for (const chord of [1.5, 1.0, 2.0, undefined]) {
+        for (const x of [1 + 1e-6, 1.0001, 1.2, 1.5, 2, 3, 10]) {
+          for (const mach of [1.0, 1.2, 1.5, 1.8, 2.0, 2.4, 3.0]) {
+            const f: BaseFins =
+              chord === undefined
+                ? { ...g, trailingEdgeAheadOfBase: x }
+                : { ...g, trailingEdgeAheadOfBase: x, rootChordOverDiameter: chord };
+            const what = `${name}, chord ${chord}, x ${x}, M ${mach}`;
+            const e = refusalOf(() => base(mach, f));
+            expect(e.reason, what).toBe('fins-near-base');
+            expect(e.message.startsWith(`${MORE_THAN_A_CHORD_AHEAD} (`), what).toBe(true);
+            expect(e.message, what).toContain(
+              'nothing measures the base drag with fins that far ahead',
+            );
+            expect(e.message, what).toContain('until 2026-10-27 they took the plain curve');
+          }
+        }
+      }
+    }
+  });
+
+  it('ahead of the base the position is named first: no refusal of the section leads to a change still refused there', () => {
+    // At Mach 2.4 (no position measured), thick or swept fins are refused for the position, not for their
+    // thickness or sweep, whose words would send the rocketeer to fins still refused half a chord ahead.
+    const thick = fins({
+      thicknessRatio: 0.14,
+      nearBase: near(doubleWedge(0.14)),
+      rootChordOverDiameter: 1.5,
+      trailingEdgeAheadOfBase: 0.5,
+    });
+    expect(refusalOf(() => base(2.4, thick)).reason).toBe('fins-near-base');
+    const swept = fins({
+      nearBase: near(doubleWedge(0.08), 1, 1),
+      rootChordOverDiameter: 1.5,
+      trailingEdgeAheadOfBase: 0.5,
+    });
+    expect(refusalOf(() => base(2.4, swept)).reason).toBe('fins-near-base');
+    // Where the position is measured (M 1.8, TN 2360's chord) the section's own refusal stands.
+    expect(refusalOf(() => base(1.8, thick)).reason).not.toBe('fins-near-base');
+  });
+
+  it("a plate's rounded trailing edge: its words' change (square or sharp edges, at the base) is served; more than a chord ahead, both named", () => {
+    // The review's N2 (2026-10-27): the words for a rounded plate near the base once offered fins a chord or
+    // more ahead, refused now. Their change today, square trailing edges at the base, is served at every
+    // Mach number of the curve.
+    const plate = (trailingEdge: 'square' | 'rounded', x: number) => ({
+      count: 4,
+      planform: trapezoidalPlanform({ rootChord: 1, span: 0.6, leadingEdgeSweep: 0 }),
+      section: flatPlate(0.03, 'rounded', trailingEdge),
+      sectionFamily: 'other' as const,
+      leadingEdgeRadius: 0,
+      trailingEdgeAheadOfBase: x,
+    });
+    for (const mach of [1.0, 1.2, 1.5, 1.8, 2.0, 2.4, 3.0]) {
+      const r = base(mach, baseFinsOf(plate('square', 0), 1 / 1.5));
+      expect(r.finsOnBase, `M ${mach}`).toBeDefined();
+    }
+    const far = refusalOf(() => base(1.8, baseFinsOf(plate('rounded', 1.5), 1 / 1.5)));
+    expect(far.reason).toBe('fins-near-base');
+    expect(far.message.startsWith(MORE_THAN_A_CHORD_AHEAD)).toBe(true);
+    expect(far.message).toContain(ROUNDED_EDGE_NOTE);
+  });
+
+  it("a blunt trailing edge the faces widen to (the Basic Finner's wedges) ahead of the base: refused for it, the position named where refused", () => {
+    const wedges = (x: number) =>
+      fins({
+        nearBase: near(singleWedge(0.08)),
+        rootChordOverDiameter: 1.5,
+        trailingEdgeAheadOfBase: x,
+      });
+    const measured = refusalOf(() => base(1.8, wedges(0.5)));
+    expect(measured.reason).toBe('fin-trailing-edge');
+    expect(
+      measured.message.startsWith(`${BLUNT_AHEAD_OF_BASE} 0.5 root chords ahead of the base: `),
+    ).toBe(true);
+    expect(measured.message).not.toContain('its position is refused too');
+    expect(measured.message).not.toMatch(/ at the base[:;]/);
+    const unmeasured = refusalOf(() => base(2.4, wedges(0.5)));
+    expect(unmeasured.reason).toBe('fin-trailing-edge');
+    expect(unmeasured.message).toContain('its position is refused too: above Mach 2.0');
+    // More than a chord ahead: the position's refusal, the trailing edge named beside it.
+    const far = refusalOf(() => base(1.8, wedges(1.5)));
+    expect(far.reason).toBe('fins-near-base');
+    expect(far.message).toContain(BLUNT_EDGE_NOTE);
+    // The change the words name, sharp trailing edges at the base, is served at every Mach number.
+    for (const mach of [1.0, 1.2, 1.5, 1.8, 2.0, 2.4, 3.0]) {
+      const r = base(mach, fins({ nearBase: near(doubleWedge(0.08)) }));
+      expect(r.finsOnBase, `M ${mach}`).toBeDefined();
     }
   });
 });

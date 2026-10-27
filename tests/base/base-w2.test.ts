@@ -327,14 +327,20 @@ describe('the term (bodyBaseDrag)', () => {
         ).toThrow(/below Mach 1\.5 no measurement with fins ahead of the base is known/);
       }
     }
-    // Fins a chord or more ahead: the curve alone.
-    const ahead = bodyBaseDrag({
-      ...base,
-      mach: 1.3,
-      fins: { ...fins, trailingEdgeAheadOfBase: 1.2 },
-    });
-    expect(ahead.finsOnBase).toBeUndefined();
-    expect(ahead.cd).toBeCloseTo(curve(1.3) * 1.065, 12);
+    // Fins exactly a chord ahead: refused below M 1.5 like every position ahead. More than a chord
+    // ahead: refused at any chord (the curve alone served there until 2026-10-27; 0014 section 10.7 (ad)).
+    for (const c of [{}, { rootChordOverDiameter: 1.5 }]) {
+      expect(() =>
+        bodyBaseDrag({ ...base, mach: 1.3, fins: { ...fins, ...c, trailingEdgeAheadOfBase: 1 } }),
+      ).toThrow(/below Mach 1\.5 no measurement with fins ahead of the base is known/);
+      for (const x of [1.2, 3]) {
+        expect(() =>
+          bodyBaseDrag({ ...base, mach: 1.3, fins: { ...fins, ...c, trailingEdgeAheadOfBase: x } }),
+        ).toThrow(/^fins ending more than a root chord ahead of the base/);
+      }
+    }
+    // The body without fins keeps the curve alone (W2's term).
+    expect(bodyBaseDrag({ ...base, mach: 1.3 }).cd).toBeCloseTo(curve(1.3) * 1.065, 12);
   });
 
   it("0015 section 3.6's rows below M 1.5, on one basis: W2's term as served, and Love's curve", () => {

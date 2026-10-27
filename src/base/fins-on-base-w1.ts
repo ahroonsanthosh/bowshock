@@ -211,6 +211,26 @@ export function nearBasePositionReasons(
   return out;
 }
 
+/**
+ * The refusal of fins ending ahead of the base where TN 2360 measured no position (0015 section 3.3), every
+ * reason named, or undefined where it did; `note` is added to the message (src/base/base-drag.ts names a
+ * trailing edge refused there too, so that the words lead to one that is served).
+ */
+export function nearBasePositionRefusal(
+  mach: number,
+  xc: number,
+  rootChordOverDiameter: number | undefined,
+  note = '',
+): BaseRefusal | undefined {
+  const reasons = nearBasePositionReasons(mach, xc, rootChordOverDiameter);
+  if (reasons.length === 0) return undefined;
+  return new BaseRefusal(
+    'fins-near-base',
+    `fins ending ${Number(xc.toPrecision(3))} root chords ahead of the base at Mach ${mach}: ` +
+      `${reasons.join('; and ')} (0015 section 3.3)${note}`,
+  );
+}
+
 export type Thickness = 0 | 0.05 | 0.1;
 export type Count = 0 | 2 | 4;
 
@@ -1001,14 +1021,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   // Fins ending ahead of the base: served only where TN 2360 measured positions, M 1.5 to 2.0 and its root chord
   // of 1.5 body diameters (0015 section 3.3); every reason they are refused, in plain words.
   const xcText = `${Number(xc.toPrecision(3))}`;
-  const positionReasons = nearBasePositionReasons(mach, xc, fins.rootChordOverDiameter);
-  if (positionReasons.length > 0) {
-    throw new BaseRefusal(
-      'fins-near-base',
-      `fins ending ${xcText} root chords ahead of the base at Mach ${mach}: ` +
-        `${positionReasons.join('; and ')} (0015 section 3.3)`,
-    );
-  }
+  const positionRefusal = nearBasePositionRefusal(mach, xc, fins.rootChordOverDiameter);
+  if (positionRefusal !== undefined) throw positionRefusal;
   const upper = pick(highT, highN, xc);
   const lower: MemberUsed | undefined = bounded
     ? {

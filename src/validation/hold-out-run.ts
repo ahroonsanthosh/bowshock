@@ -136,6 +136,10 @@ export function rebuiltBodyBase(
     ...near,
     count: fins.count,
     trailingEdgeAheadOfBase: fins.trailingEdgeAheadOfBase,
+    // Fins ahead of the base are served only with TN 2360's root chord (0015 section 3.3).
+    ...(fins.rootChordOverDiameter === undefined
+      ? {}
+      : { rootChordOverDiameter: fins.rootChordOverDiameter }),
   });
   const curve = compiledCurveBasePressure(mach);
   const q = -curve.pB;

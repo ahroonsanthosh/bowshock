@@ -14,7 +14,7 @@ import { flightConditionOf } from '../../src/app/flight-condition';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
 import { doubleWedge, singleWedge } from '../../src/fins/section';
-import { bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
+import { BLUNT_AHEAD_OF_BASE, bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
 import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents, type TotalDrag } from '../../src/total/total-drag';
@@ -475,11 +475,20 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
     expect(at(2.56)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE]);
     expect(at(2.57)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE, FINS_ON_BASE_BOUNDED_NOTE]);
     expect(at(2.99)).toEqual([FINS_BAND_NOTE, FINS_ON_BASE_NOTE, FINS_ON_BASE_BOUNDED_NOTE]);
-    // Fins clear of the base take no factor, and no note on it.
+    // Fins a chord ahead took the plain curve, with no factor and no note on it, until 2026-10-27;
+    // refused now (0014 section 10.7 (ad)): no total, so no notes. The wedges' blunt trailing edge is
+    // named first, and the position (Mach 2.4, a chord of one diameter) beside it.
     const clear = { ...basicFinnerForm(2.4), trailingEdgeAheadOfBase: 1 };
     const v = totalDragView(clear, exactNose(clear));
-    if (v.kind !== 'total') throw new Error(v.kind);
-    expect(v.notes).toEqual([FINS_BAND_NOTE]);
+    expect(v.kind).toBe('refused');
+    expect(reasons(v)).toEqual(['body base: fin-trailing-edge']);
+    const message = v.kind === 'refused' ? v.refusals[0]!.message : '';
+    expect(message.startsWith(`${BLUNT_AHEAD_OF_BASE} 1 root chords ahead of the base: `)).toBe(
+      true,
+    );
+    expect(message).toMatch(
+      /; its position is refused too: above Mach 2\.0 .*; and the fins' root chord is 1\.00 body diameters/,
+    );
   });
 });
 
@@ -730,12 +739,15 @@ describe(
       ]);
     });
 
-    it('sharp double-wedge fins one chord ahead of the base', () => {
+    it("sharp double-wedge fins one chord ahead of the base, TN 2360's root chord: the measured factor", () => {
+      // A root chord of 1.5 calibres, as TN 2360's fins, one chord ahead at Mach 2.0: the rebuilt
+      // factor at x/c 1.0 (0015 section 3.3), not the plain curve (withdrawn 2026-10-27).
       const v = estimate({
         ...f,
         section: { kind: 'double-wedge', thickness: 0.06, ridge: 0.5 },
         leadingEdgeRadius: 0,
-        trailingEdgeAheadOfBase: 1,
+        rootChord: 1.5,
+        trailingEdgeAheadOfBase: 1.5,
       });
       expect(v.claim.kind).toBe('estimate');
       expect(v.total.components.map((c) => c.name)).toEqual([
@@ -746,8 +758,25 @@ describe(
         'body base',
       ]);
       const base = v.total.components.find((c) => c.name === 'body base')!;
-      expect(base.label).toContain('not validated with fins');
-      expect(reasonsOf(v.claim).length).toBe(3);
+      expect(base.label).not.toContain('not validated with fins');
+      expect(base.label).toContain('measured with a root chord of 1.5 body diameters');
+      expect(reasonsOf(v.claim)).toContain('the fins end 1.5 cal ahead of the base, not at it');
+    });
+
+    it("the same fins with the Basic Finner's root chord of 1 calibre, one chord ahead: refused", () => {
+      // The reviewer's second case (x/c 0.67 in TN 2360's terms, a chord of 1 diameter): served on the
+      // plain curve until 2026-10-27; refused now by the chord rule (0014 section 10.7 (ad)).
+      const form: TotalDragForm = {
+        ...f,
+        section: { kind: 'double-wedge', thickness: 0.06, ridge: 0.5 },
+        leadingEdgeRadius: 0,
+        trailingEdgeAheadOfBase: 1,
+      };
+      const v = totalDragView(form, exactNose(form));
+      expect(reasons(v)).toEqual(['body base: fins-near-base']);
+      expect(v.kind === 'refused' && v.refusals[0]!.message).toMatch(
+        /^fins ending 1 root chords ahead of the base at Mach 2: the fins' root chord is 1\.00 body diameters, and TN 2360 measures fins ahead of the base only with a root chord of 1\.5 body diameters/,
+      );
     });
   },
 );
@@ -926,7 +955,9 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     section: { kind: 'flat-plate' as const, thickness: 0.05, leadingEdge, trailingEdge },
     planform: { kind: 'clipped-delta' as const, taperRatio: 0.4 },
     rootChord: 1.5,
-    trailingEdgeAheadOfBase: 2,
+    // At the base: two calibres ahead (here until 2026-10-27) the body base is refused now
+    // (0014 section 10.7 (ad)).
+    trailingEdgeAheadOfBase: 0,
   });
 
   it('a plate is a flat plate of the thickness asked; the leading-edge radius is not used', () => {
@@ -965,6 +996,8 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     ]);
     const b = plate('rounded', 'rounded');
     expect(reasons(totalDragView(b, exactNose(b)))).toEqual([
+      // At the base, the rounded trailing edge refused for the body base too (0015 section 4).
+      'body base: fin-trailing-edge',
       'fin trailing-edge base: rounded-trailing-edge',
     ]);
   });

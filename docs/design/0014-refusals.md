@@ -2112,6 +2112,18 @@ that the increment is nearly zero a chord fore or aft.
   rounded plate near the base no longer leads into another refusal; and
   every piece of advice to move fins "a root chord or more ahead of the
   base" is removed, since that position is now refused.
+- _How the words keep off another refusal, in the code (written with it;
+  nothing more is served):_ ahead of the base the position is checked
+  before the fins' section, sweep, count or thickness, so no refusal of
+  those is named where every section would still be refused. A blunt
+  trailing edge that the faces widen or narrow to (the Basic Finner's
+  wedges), which the rebuilt factor refuses at every position, is
+  refused ahead of the base in words of its own, near the base and not
+  "at this speed", and its change is sharp trailing edges at the base.
+  More than a chord ahead, a plate's rounded trailing edge or such a
+  blunt one is named beside the position, and the change named is a
+  trailing edge served at the base. A change named never moves the fins
+  further ahead.
 
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
