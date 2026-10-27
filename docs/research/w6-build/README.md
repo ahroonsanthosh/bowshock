@@ -716,3 +716,104 @@ as fitted-shock characteristics codes do. That is a change of method,
 not a bug fix, so it is not made here. It would need its own registration
 and verification, and that is the coordinator's decision. The other
 families of V2 have not been run.
+
+**The coordinator's ruling on V2 (2026-10-27):** V2 stays failed as run
+(above). The defect is in the method, not in the test: the registered
+march drops the C+ characteristics the embedded shock absorbs. One remedy
+is justified, registered below as a new method, the fourth march. Option
+(c), completing V2 on nj = 40 and 80 for the record, is not needed and
+has not been run.
+
+## 10. The fourth march: the third with its lines re-seeded (registered 2026-10-27, before any of its code runs)
+
+**Why.** Section 9.4: the third march keeps no more points on a C- line
+than survive the embedded shock's absorption. Its lines thin out, from n
++ 1 points to as few as 4, and the coarse lines then fail. The fourth
+march is the third march (section 9, with the two fixes of 01d5e3d),
+changed in one respect: each line is re-seeded to the first march's
+number of points.
+
+**If the fourth march fails anything below (V0, V1b, V3 or V2), the
+marches stop.** The capped noses' forward regions stay unreferenced,
+which is reported plainly, and the matter goes to the coordinator for
+the owner. There is no fifth march.
+
+**The re-seeding rule.** When a new C- line is complete, from its top
+(the starting line's point in the triangle of the data's dependence, the
+bow shock's point after it) to the body:
+
+1. Count its points, the embedded shock's two sides counted as one. The
+   target is the number the first march's line has at the same step:
+   2(m - a) + 1 for the line from the starting line's point a (m = n/2
+   points on that line, a = 0 at its top), and n + 1 in the march after
+   it.
+2. While the count is below the target, take the longest gap between
+   neighbouring points of the line (straight distance), never the zero
+   gap between the shock's two sides; ties go to the gap nearest the
+   line's top. Insert a point at the gap's middle in the line's chord
+   length.
+3. The new point's x, y, flow angle, pressure and stream function come
+   from cubic Lagrange interpolation in chord length. The interpolation
+   runs through the gap's two points and their outer neighbours, on the
+   same side of the embedded shock. Where that side has fewer than four
+   points it is linear, through the gap's two points. The new point's
+   entropy is the march's entropy table at its stream function (the
+   table used for every point, with the jumps behind the embedded shock).
+4. Indices after the point, the shock's included, move up by one.
+
+The inserted points are ordinary points of the line: the next line
+meets the C+ characteristics from them as from any other.
+
+**Verification, in this order, each passing before the next runs:**
+
+- **V0 and V1b, unchanged.** The same tests with the same criteria
+  (sections 9 and 9.2), the march with re-seeding in place of the third.
+  V0 is the unit process, which the rule does not touch. V1b's runner
+  takes the fourth march by a switch; nothing in its setup or criteria
+  changes.
+- **V3, past the merge (new).** The axisymmetric network, with no
+  verification option. At Mach 2 (gamma 1.4), the body is given to the
+  march as a profile function:
+  - a sharp cone of 10 deg half-angle from the tip to x = 1;
+  - then a concave circular arc, tangent at both ends, turning the
+    surface from 10 deg to 15 deg over an arc length of 0.05 (radius
+    0.05 / (5 deg) = 0.5730, ending at x = 1.0488, r = 0.18715);
+  - then a 15 deg cone to x = 6.
+  Breakpoints at the arc's two ends, scale 1. The starting line is
+  vertical at x = 0.5, from the cone's surface to its Taylor-Maccoll
+  shock, 401 points of the Taylor-Maccoll field (as
+  `tests/validation/characteristics.test.ts`'s `coneLine` builds them).
+  The march runs on n = 640, 1280, 2560 and 5120 intervals. The concave
+  arc's compression steepens into an embedded shock that reaches the bow
+  shock well before x = 6, so the march runs past the merge, where V1b's
+  test ends. It passes if all of:
+  1. on every resolution the march completes to the body's end (its last
+     wall point beyond x = 5.5), an embedded shock forms and merges with
+     the bow shock, and no line has fewer points than the re-seeding
+     target (the rule's own check);
+  2. the mass balance (`characteristicsFrom`'s definition, W5's
+     criterion's quantity) is below 3.5e-5 on 2560 and on 5120
+     intervals;
+  3. the mass balance's observed order, the least-squares slope of
+     ln(mass balance) against ln(1/n) over the four resolutions, is
+     between 0.8 and 3;
+  4. the pressure drag of the wall from the starting line's foot to the
+     body's end changes by less than 3.5e-5 of itself from 2560 to 5120
+     intervals, at an observed order over 1280, 2560 and 5120 between 0.8
+     and 3. This is V2's own-resolution requirement. The drag is the
+     trapezoid of (p - 1) over r^2 between wall points, over the dynamic
+     pressure and the end's r^2.
+  The runner is `runners/v3.test.ts`, run once; it writes every
+  resolution's numbers and the verdict to `results/v3.json` and asserts
+  nothing itself.
+- **V2, as registered (section 9), its criteria unchanged:** the families
+  of sections 3 and 7, first the 5-caliber ogive with r_n/R 0.03 at Mach
+  1.3, from the first march's lines, on nj = 20, 40 and 80, with 640,
+  1280, 2560 and 5120 intervals, judged by `analysis/v2.mjs` as committed
+  (9526d6c).
+
+**Order of work.** This registration is committed alone and pushed. Then
+come the code (the rule as an option of `characteristicsFromShocked`,
+off by default so the third march stays as recorded) and the runners, in
+small commits. Then the runs, in the order above, each recorded as it
+comes, pass or fail.
