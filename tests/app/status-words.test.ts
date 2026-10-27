@@ -5,6 +5,7 @@
  * their words.
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   BLUNT_AHEAD_OF_BASE,
@@ -281,6 +282,46 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     expect(speed.change).toBe('');
     // Without one, the position's words alone.
     expect(alone.change).toBe("the fins' trailing edges at the base");
+  });
+
+  it("0017's table gives the base's changes as the page words them (its rows amended 2026-10-27)", () => {
+    const rows = readFileSync('docs/design/0017-rocketeer-interface.md', 'utf8').split('\n');
+    const change = (key: string) => {
+      const line = rows.find((l) => l.startsWith(`| ${key} `));
+      if (line === undefined) throw new Error(`no row ${key}`);
+      return line.split('|')[3]!.trim();
+    };
+    const words = (reason: string, message = '') =>
+      refusalWords({ component: 'body base', reason, message }).change;
+    for (const [key, reason] of [
+      ['`fin-count`', 'fin-count'],
+      ['`fin-thickness`', 'fin-thickness'],
+      ['`fin-sweep`', 'fin-sweep'],
+      ['`flat-plate-fins` (main since `e42d5d4`)', 'flat-plate-fins'],
+    ] as const) {
+      expect(change(key), key).toBe(words(reason));
+    }
+    expect(change('`fins-near-base`').startsWith(words('fins-near-base'))).toBe(true);
+    // A trailing edge refused near the base: square or sharp for a plate's rounded one, sharp for a wedge's
+    // blunt one, the fins at the base, as the page words them.
+    const te = change('`fin-trailing-edge` (main since W1, `b86c308`)');
+    expect(te).toContain('with the fins at the base: square or sharp (plates), sharp (wedges)');
+    expect(words('fin-trailing-edge', `${ROUNDED_PLATE_AHEAD_OF_BASE} 0.5 root chords ...`)).toBe(
+      'square or sharp trailing edges, with the fins ending at the base',
+    );
+    expect(words('fin-trailing-edge', `${BLUNT_AHEAD_OF_BASE} 0.5 root chords ...`)).toBe(
+      'sharp trailing edges, with the fins ending at the base',
+    );
+    for (const key of [
+      '`fins-near-base`',
+      '`fin-count`',
+      '`fin-thickness`',
+      '`fin-sweep`',
+      '`flat-plate-fins` (main since `e42d5d4`)',
+      '`fin-trailing-edge` (main since W1, `b86c308`)',
+    ]) {
+      expect(change(key), key).not.toMatch(/more ahead/);
+    }
   });
 
   it('no advice moves the fins a chord or more ahead of the base (refused there since 2026-10-27)', () => {

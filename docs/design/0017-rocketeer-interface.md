@@ -241,7 +241,7 @@ with and without WebGPU).
 | `fin-thickness`                                   | with fins at the base, the base drag is measured for fins 5% to 10% as thick as their root chord              | fins of that thickness                                                                                        |
 | `fin-sweep`                                       | with fins at the base, the base drag is measured with unswept fins only                                       | unswept fins of constant chord                                                                                |
 | `flat-plate-fins` (main since `e42d5d4`)          | flat plates at the base lower the base drag by up to 15% in the one measurement of them, not covered          | wedge or bevelled fins of constant chord at the base                                                          |
-| `fin-trailing-edge` (main since W1, `b86c308`)    | measured here only for flat fins with square trailing edges or sharp ones, not a wedge's thick end or a round | those trailing edges (near the base: square or sharp ones, the fins ending at the base)                       |
+| `fin-trailing-edge` (main since W1, `b86c308`)    | measured here only for flat fins with square trailing edges or sharp ones, not a wedge's thick end or a round | those trailing edges; near the base, with the fins at the base: square or sharp (plates), sharp (wedges)      |
 | `rounded-trailing-edge`                           | a rounded trailing edge's drag is not shown to be below a square edge's, so it cannot be bounded yet          | square or bevelled trailing edges                                                                             |
 | `square-leading-edge`                             | a square-cut leading edge's drag cannot yet be bounded from measurements                                      | rounded or bevelled leading edges                                                                             |
 | `swept-trailing-edge`                             | a swept square trailing edge's drag is not measured                                                           | an unswept trailing edge, or a bevelled one                                                                   |
@@ -273,7 +273,13 @@ give the words as `src/app/status-words.ts` now has them. Ahead of the
 base, a plate's rounded trailing edge is worded near the base, its
 change square or sharp edges with the fins at the base; a blunt one the
 faces widen or narrow to (the Basic Finner's wedges) likewise, its
-change sharp edges with the fins at the base.
+change sharp edges with the fins at the base, its reason adding that at
+the base four unswept wedges like the Basic Finner's are measured from
+Mach 1.8. Where fins ahead of the base are refused for their position or
+such a trailing edge and the same fins are refused at the base for
+another reason, the words name both and give both changes (or none,
+where nothing about the rocket changes the second). `tests/app/status-words.test.ts`
+holds these rows to the words.
 
 Below Mach 1.2 every point is computed as at any other Mach number and
 shows what the logic returns there (today: refused, with its reasons).
