@@ -114,8 +114,9 @@ const nonNegative = (name: string, c: FinnedBody, mach: number) =>
 
 describe('each refused part, and the floor', () => {
   it('fin friction and square trailing edges refused below Mach 1.5: a floor, the parts named', () => {
+    // At Mach 1.3, where only TN 3548 and RM A51J25 reach (c/[h Re^(1/5)] to 0.666).
     const c = rocket({ section: flatPlate(0.06, 'rounded', 'square') });
-    const { parts, view } = refused(c, 1.4);
+    const { parts, view } = refused(c, 1.3);
     expect(refusedOf(parts)).toEqual(['fin friction', 'fin trailing-edge base']);
     // Every part served is shown, unchanged.
     expect(view.served).toEqual(parts.components);

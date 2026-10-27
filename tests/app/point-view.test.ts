@@ -105,11 +105,12 @@ describe('a point as shown', { timeout: 120_000 }, () => {
     const v = pointView(at(run, 1.4), true);
     expect([v.value, v.band, v.percent]).toEqual([null, null, null]);
     expect(v.status.word).toBe('No number');
-    // Every one of the logic's refusals there, the fins' own drag below Mach 1.5 among them.
+    // Every one of the logic's refusals there, the fins' own drag below Mach 1.5 among them; the
+    // trailing edges are served at 1.4 since RM A52E01 entered (0019 section 3.4.1).
     expect(v.status.sentence).toBe(
-      'The drag here cannot be given to a known accuracy: three reasons, each listed below.',
+      'The drag here cannot be given to a known accuracy: two reasons, each listed below.',
     );
-    expect(v.reasons).toHaveLength(3);
+    expect(v.reasons).toHaveLength(2);
     expect(v.reasons[0]).toBe(
       "the fins' own drag (their friction, and a sharp section's wave drag) is checked against " +
         'flight measurements only from Mach 1.5 to 2.96, and its error grows below that',

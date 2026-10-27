@@ -757,7 +757,9 @@ describe(
         else expect(le).toBeUndefined();
         // The wedges' trailing edges (c/[h Re^(1/5)] about 0.8, 0019 section 3.4.1): to Mach 1.15
         // RM A51J11's thick layers reach them, and the transition input that leaves them laminar
-        // is refused there (shots at 1.056, 1.058, 1.116); above, the sets reach only 0.666.
+        // is refused there (shots at 1.056, 1.058, 1.116); the shots at 1.254 and 1.332 lie next
+        // to the node at 1.3, where the sets reach only 0.666 (RM A52E01 reaches 1.94 at 1.15 to
+        // 1.25 and 1.35 to 1.45; between two nodes the lesser of their reaches holds).
         expect(r.refusals.find((x) => x.component === 'fin trailing-edge base')?.reason).toBe(
           s.mach < 1.15 ? 'laminar-trailing-edge' : 'thick-layer',
         );
