@@ -2250,5 +2250,42 @@ addendum stand as written; where this one differs, it governs.
   measured, the edge is refused at any Mach number, after the pairing
   too: the principle alone does not show the ordering.
 
+**2026-10-27: 21.2's rule applied to the paired fig. 17: it holds; 60 to
+75.1 deg served again.**
+
+- _The readings._ TN 3861 fig. 17 was read twice afresh, the second
+  reading blind, to the brief of the second (ab) addendum (d0094f2), and
+  paired by a neutral party (3d7dd16). All 25 symbols pair and all 25
+  agree, with no label differences.
+- _The rule, applied as written, by script_
+  (`docs/research/tn3861-fig17/rule/`, out/verdict.txt). Every
+  combination of the readings is taken, and each pair's envelope in the
+  direction against the claim. Figs. 15 and 16 are as read twice for
+  0016 section 16.
+- _The estimate's error e_ is 0.0233, the largest over TN 2960's three
+  replotted cylinders (P04, P08, P12). The fig. 17 reading that does not
+  count had put it at 0.086.
+- _The 70 deg point is P03._ The pairing left it open among P01, P03 and
+  P09. By the addendum's own definition, a point's sweep is 90 deg less
+  asin(M_c / M) from its paired crossflow Mach number. That puts P01 at
+  80.1 deg, P03 at 69.7, P09 at 60.3 and P02 at 74.9 (the stated 75 deg
+  point). Only P03 is at 70 deg.
+- _The rule holds at all three points_, on the lowest combination:
+
+  | Point                               | Stagnation over Rayleigh's | F over the term | Margin of (b) |
+  | ----------------------------------- | -------------------------- | --------------- | ------------- |
+  | Lord and Ulmann's 70 deg point, P03 | 1.0656                     | 1.0774          | +0.1842       |
+  | Lord and Ulmann's 75 deg point, P02 | 1.4972                     | 1.7896          | +0.6879       |
+  | Penland's 75.1 deg point, P06       | 1.1715                     | 1.1474          | +0.1870       |
+
+  The lower bound's end is taken as the highest over the regimes the
+  term serves, which is stricter than the addendum asks where a point's
+  Reynolds number is stated.
+
+- _So rounded leading edges swept beyond 60 deg and up to 75.1 deg are
+  served bounded again_, as 0016 section 21.2 and the addenda say. The
+  label names fig. 17 as read twice. Beyond 75.1 deg they stay refused,
+  at any Mach number.
+
 The letters (w) to (z) are allocated to other branches; the next free
 letter is the coordinator's to allocate.

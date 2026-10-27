@@ -2071,3 +2071,45 @@ beyond 60 deg" is back at 3.0% of cases, and the cross-check against
 `src/total` agrees on 1200 of 1200. `impact.json` is unchanged. The run
 with the bounded edges served is kept in
 `out/2026-10-27-bounded-edges-served/`: 153 of 8000 there too.
+
+### 21.8 Fig. 17 read twice: 21.2's rule holds; 60 to 75.1 deg served again (2026-10-27)
+
+TN 3861 fig. 17 was read twice afresh to the brief of the second (ab)
+addendum, the second reading blind (d0094f2), and paired by a neutral
+party (`docs/research/tn3861-fig17/readers/pairing-2026-10-27/`, 3d7dd16).
+All 25 symbols pair and all 25 agree. 21.2's rule, as that addendum
+writes it out, is applied by `docs/research/tn3861-fig17/rule/apply.test.ts`
+(`out/verdict.txt`). It takes figs. 15 and 16 as read twice for section
+16, every combination of the readings, and each pair's envelope against
+the claim.
+
+- **The estimate's error e is 0.0233.** It is the largest over TN 2960's
+  three cylinders replotted on figs. 16 and 17 (P04, P08, P12), against
+  TN 2960's integrated front side on both readings of its fig. 5. The
+  reading that does not count gave 0.086, chiefly from its TN 2960
+  point near M_c 1.96: 1.50 then against 1.447 now.
+- **The 70 deg point is P03.** Each crossed Lord and Ulmann point's
+  sweep is 90 deg less asin(M_c / 4.04):
+  - P01: 80.1 deg;
+  - P02: 74.9 deg (the stated 75 deg point);
+  - P03: 69.7 deg;
+  - P09: 60.3 deg (the one inside the served sweep, section 16).
+- **The three points,** on the lowest combination:
+
+  | Point                         | F over modified Newtonian | Stagnation over Rayleigh's | F over the term | F/MN less e, less the lower bound's end |
+  | ----------------------------- | ------------------------- | -------------------------- | --------------- | --------------------------------------- |
+  | Lord and Ulmann, 70 deg (P03) | 1.0420                    | 1.0656                     | 1.0774          | +0.1842 (end 0.8345)                    |
+  | Lord and Ulmann, 75 deg (P02) | 1.4212                    | 1.4972                     | 1.7896          | +0.6879 (end 0.7100)                    |
+  | Penland, 75.1 deg (P06)       | 1.1503                    | 1.1715                     | 1.1474          | +0.1870 (end 0.9400)                    |
+
+  The lower bound's end is the highest over the regimes the term serves
+  (here the measured regime). That is stricter than the addendum asks
+  for Penland's point, whose Reynolds number TN 3861 states.
+
+- **Verdict: the rule holds.** Rounded leading edges swept beyond 60 deg
+  and up to 75.1 deg are served bounded again, with the label naming
+  fig. 17 as read twice. Beyond 75.1 deg they stay refused, at any Mach
+  number. 21.2's table of crossflow points stands as the record of what
+  was argued. Its F values from the reading that does not count (1.053
+  and 1.048, 1.445, 1.166 and 1.165 of modified Newtonian) are
+  superseded by the table above.
