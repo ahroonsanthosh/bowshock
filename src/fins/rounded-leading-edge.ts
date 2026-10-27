@@ -755,12 +755,15 @@ export interface RoundedLeadingEdge {
    * Swept beyond 60 deg: bounded, not measured (0016 section 21.2), the
    * band's ends per unit span over q, the term at the sweep at its band's low
    * end and the term at 60 deg at its high end; `normalMach` and `transonic`
-   * are the first's, `upperNormalMach` the second's.
+   * are the first's, `upperNormalMach` the second's; `lower` and `upper` are
+   * the two terms themselves, with their own bands, regimes and labels.
    */
   readonly bounded?: {
     readonly low: number;
     readonly high: number;
     readonly upperNormalMach: number;
+    readonly lower: RoundedLeadingEdge;
+    readonly upper: RoundedLeadingEdge;
   };
 }
 
@@ -847,16 +850,18 @@ function beyondSweepLimit(
     regime: lower.regime,
     label:
       `bounded, not measured: swept ${sweepDegrees.toFixed(1)} deg, beyond the ` +
-      `${SWEEP_LIMIT_DEGREES} deg the yawed-cylinder checks reach; between the independence ` +
-      `principle at ${sweepDegrees.toFixed(1)} deg (the front side at the normal Mach number ` +
-      `${lower.normalMach.toFixed(3)} on the normal dynamic pressure, at its band's low end, ` +
-      `${lower.band.low.toFixed(3)} of it) and the same term at ${SWEEP_LIMIT_DEGREES} deg, the ` +
-      `largest sweep checked on yawed cylinders (at its band's high end, ` +
-      `${upper.band.high.toFixed(3)} of it), the band the whole gap; the term falls as the sweep ` +
-      'grows, and the front side measured on yawed cylinders falls with yaw on every series (RM ' +
-      "A55H31 fig. 12); the lower bound's ordering beyond 60 deg rests on one yawed point " +
-      "(Penland's at 75.1 deg, with an end effect); each term an analogy, carried to a fin edge " +
-      "whose faces replace the cylinder's wake (0016 section 21.2)",
+      `${SWEEP_LIMIT_DEGREES} deg where the yawed-cylinder checks of the independence principle ` +
+      'end; the band the whole gap between two terms, each with its own sources and limits. ' +
+      `Lower: the term at ${sweepDegrees.toFixed(1)} deg (normal Mach number ` +
+      `${lower.normalMach.toFixed(3)}) at its band's low end, ${lower.band.low.toFixed(3)} of ` +
+      `it; that term is ${lower.label}. Upper: the same term at ${SWEEP_LIMIT_DEGREES} deg ` +
+      `(normal Mach number ${upper.normalMach.toFixed(3)}) at its band's high end, ` +
+      `${upper.band.high.toFixed(3)} of it; that term is ${upper.label}. The ordering: the term ` +
+      'falls as the sweep grows, and the front side measured on yawed cylinders falls with yaw ' +
+      "on every series of RM A55H31 fig. 12; the lower bound's ordering beyond 60 deg rests on " +
+      "the principle and on TN 3861's crossflow points at 70 and 75 deg (their stagnation " +
+      'pressures, fig. 15, read twice; their front sides estimated with fig. 17, read once), ' +
+      'every one above the principle (0016 section 21.2)',
     reynoldsOnDiameter: lower.reynoldsOnDiameter,
     normalMach: lower.normalMach,
     sweepDegrees,
@@ -865,6 +870,8 @@ function beyondSweepLimit(
       low,
       high,
       upperNormalMach: upper.normalMach,
+      lower,
+      upper,
     },
   };
 }

@@ -10,10 +10,10 @@
 
 import { describe, expect, it } from 'vitest';
 import { finTrailingEdgeBaseDrag } from '../../src/base/fin-trailing-edge';
-import { clippedDeltaPlanform } from '../../src/fins/planform';
+import { clippedDeltaPlanform, trapezoidalPlanform } from '../../src/fins/planform';
 import { standardAtmosphere } from '../../src/atmosphere/us-standard-1976';
 import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
-import { doubleWedge, flatPlate } from '../../src/fins/section';
+import { doubleWedge, flatPlate, singleWedge } from '../../src/fins/section';
 import {
   finnedBodyComponents,
   SQUARE_EDGE_REFUSAL,
@@ -127,10 +127,16 @@ describe('refusals of flat plates', () => {
     ]);
     const s = parts(config(flatPlate(0.05, 'square', 'square')), 2.8).refusals[0]!.message;
     expect(s).toBe(SQUARE_EDGE_REFUSAL);
-    expect(s).toMatch(/did not pass: on the finest grid at Mach 2\.0/);
+    // Every failed case named (the review of 2026-10-26).
     expect(s).toMatch(
-      /\(0\.553 of the pitot pressure\) was not clear of the sonic pressure \(0\.528\)/,
+      /did not pass\. On the finest grid the inviscid solution did not settle in three cases/,
     );
+    expect(s).toMatch(
+      /at Mach 2\.0 with the corner rounded to 0\.02 of the half-thickness, 0\.553 against a change of 0\.105/,
+    );
+    expect(s).toMatch(/at Mach 3\.0 with 0\.04, 0\.531 against a change of 0\.134/);
+    expect(s).toMatch(/at Mach 3\.0 with 0\.02, 0\.445, below the sonic pressure itself/);
+    expect(s).toMatch(/0014 section 10\.7 \(af\)/);
     expect(reasons(config(flatPlate(0.05, 'rounded', 'rounded')), 2.8)).toEqual([
       'fin trailing-edge base: rounded-trailing-edge',
     ]);
@@ -170,9 +176,41 @@ describe('bounded, not measured (0016 section 21)', () => {
     expect(c.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
     expect(c.label.startsWith('bounded, not measured: swept 66.4 deg')).toBe(true);
     expect(c.label).toMatch(/; on a flat plate, a semicircular nose \(0016\)$/);
+    // Each bound's own source in the band text (0014 section 10.2).
     expect(c.band).toMatch(
-      /^bounded, not measured: the whole gap between the term at the sweep and the term at 60 deg, C_D /,
+      /^bounded, not measured: the whole gap between the term at 66\.4 deg at its band's low end \(/,
     );
+    expect(c.band).toContain('NASA CR-149372 and TN 2960, front side over modified Newtonian');
+    expect(c.band).toContain(") and the term at 60 deg at its band's high end (");
+    expect(c.band).toContain("swept, with RM A55H31's sweep allowance");
+    expect(c.band).toMatch(/, C_D \d\.\d{4} to \d\.\d{4}, a gap of \d\.\d{4}$/);
+  });
+});
+
+describe("a rounded wedge's edge swept beyond 60 deg (finned-body's single-wedge path)", () => {
+  it('is bounded, named for the claim, its band text naming both sources', () => {
+    // A single wedge of constant chord swept 62 deg front and back, M 2.8 (M_n 1.31 at 62 deg).
+    const sweep = 62 * (Math.PI / 180);
+    const swept = trapezoidalPlanform({
+      rootChord: 1.5,
+      span: 0.5,
+      leadingEdgeSweep: sweep,
+      trailingEdgeSweep: sweep,
+    });
+    const c: FinnedBody = {
+      ...config(undefined, swept),
+      fins: {
+        ...config(undefined, swept).fins,
+        section: singleWedge(0.08),
+        leadingEdgeRadius: 0.004,
+      },
+    };
+    const r = parts(c, 2.8);
+    const le = named(r, 'fin leading edges');
+    expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
+    expect(le.label.startsWith('bounded, not measured: swept 62.0 deg')).toBe(true);
+    expect(le.band).toMatch(/^bounded, not measured: the whole gap between the term at 62\.0 deg/);
+    expect(le.band).toContain("with RM A55H31's sweep allowance");
   });
 });
 

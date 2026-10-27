@@ -78,20 +78,43 @@ describe('the bounds', () => {
     expect(high / low).toBeGreaterThan(1.5);
   });
 
-  it('the label says bounded, both bounds, and that the lower ordering rests on one point', () => {
+  it('the label says bounded, and carries each term whole: its sources, regime and limits', () => {
     const e = at(2.8, 63);
     expect(e.label.startsWith('bounded, not measured: swept 63.0 deg, beyond the 60 deg')).toBe(
       true,
     );
-    expect(e.label).toMatch(/between the independence principle at 63\.0 deg/);
-    expect(e.label).toMatch(
-      /and the same term at 60 deg, the largest sweep checked on yawed cylinders/,
+    expect(e.label).toMatch(/the band the whole gap between two terms/);
+    expect(e.label).toContain(
+      `Lower: the term at 63.0 deg (normal Mach number ${e.normalMach.toFixed(3)}) at its band's low end`,
     );
-    expect(e.label).toMatch(/the band the whole gap/);
+    expect(e.label).toContain(`that term is ${e.bounded!.lower.label}. Upper:`);
+    expect(e.label).toContain(`that term is ${e.bounded!.upper.label}. The ordering:`);
     expect(e.label).toMatch(
-      /rests on one yawed point \(Penland's at 75\.1 deg, with an end effect\)/,
+      /rests on the principle and on TN 3861's crossflow points at 70 and 75 deg/,
     );
+    expect(e.label).toMatch(/fig\. 17, read once\), every one above the principle/);
+    // The 60 deg term is no longer said to be checked on yawed cylinders at its own M_n.
+    expect(e.label).not.toMatch(/largest sweep checked on yawed cylinders/);
     expect(e.label).toMatch(/\(0016 section 21\.2\)$/);
+  });
+
+  it("the review's case either side of 60 deg: M 2.2, a 3 mm plate, Re_D 2e5", () => {
+    const below = at(2.2, 59.9);
+    const beyond = at(2.2, 60.1);
+    // Every qualifier the 59.9 deg term carries, the 60.1 deg bounded term carries too.
+    for (const q of [
+      'extrapolated in Reynolds number',
+      'no yawed datum below M_n 1.95 at a served sweep',
+      'NASA CR-149372',
+      'the sweep allowance extrapolated in normal Mach number',
+    ]) {
+      expect(below.label).toContain(q);
+      expect(beyond.label).toContain(q);
+    }
+    expect(beyond.bounded!.lower.regime).toBe('extrapolated in Reynolds number');
+    expect(beyond.bounded!.upper.regime).toBe('extrapolated in Reynolds number');
+    expect(beyond.bounded!.upper.transonic).toBeDefined();
+    expect(beyond.bounded!.lower.transonic).toBeDefined();
   });
 
   it('at 60 deg itself nothing changes: the measured term, not bounded', () => {

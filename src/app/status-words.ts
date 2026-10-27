@@ -368,11 +368,15 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
     reason: "the leading edge's sweep is not a usable number",
     change: 'a sweep of zero or more',
   }),
-  'leading-edge-range': () => ({
+  // Past 60 deg the edge is bounded only where the term at its sweep and at 60 deg are both
+  // served (0016 section 21.2); there less sweep is a change that can help too.
+  'leading-edge-range': (r) => ({
     reason:
       "a rounded leading edge's drag is measured only where the Mach number across the edge is " +
       '1.0 to 3.0 and for edge sizes within its data',
-    change: 'bevelled leading edges',
+    change: /^a rounded leading edge swept [\d.]+ deg, beyond the 60 deg/.test(r.message)
+      ? 'less sweep (60 degrees or less), or a bevelled leading edge'
+      : 'bevelled leading edges',
   }),
   'square-leading-edge': () => ({
     reason:

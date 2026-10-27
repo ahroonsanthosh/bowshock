@@ -88,6 +88,7 @@ import { FinRefusal } from '../fins/refusal';
 import {
   roundedLeadingEdgeDrag,
   roundedWedge,
+  type RoundedLeadingEdge,
   type RoundedWedge,
 } from '../fins/rounded-leading-edge';
 import {
@@ -382,7 +383,7 @@ export function finnedBodyComponents(
               label: nose.label,
               band: `${nose.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified Newtonian, ${outward(nose.band)} (${nose.regime})`,
             }
-          : sweptBeyondLimitComponent(nose.label, cd, nose.band),
+          : sweptBeyondLimitComponent(nose.label, cd, nose),
       );
     } catch (e) {
       refusals.push(refusalOf('fin leading edges', e));
@@ -617,7 +618,8 @@ export function finnedBodyComponents(
 /** The claim's words for a total with rounded leading edges swept beyond 60 deg (0016 section 21.2). */
 export const SWEPT_EDGE_BOUNDED_REASON =
   "the fins' rounded leading edges, swept beyond 60 deg, are bounded, not measured: between " +
-  'the drag at their sweep and at 60 deg, the largest sweep checked (0016 section 21.2)';
+  'the drag at their sweep and at 60 deg, the largest sweep the term is served at (0016 ' +
+  'section 21.2)';
 
 /** The gap of a bounded component in C_D, as 10.2 asks it shown beside the component. */
 function boundedBand(what: string, cd: number, band: { low: number; high: number }): string {
@@ -629,19 +631,41 @@ function boundedBand(what: string, cd: number, band: { low: number; high: number
   );
 }
 
-/** The leading edges of a rounded edge swept beyond 60 deg (0016 section 21.2). */
+/** Where a rounded edge's band comes from: its data, its band and its regime (0016 sections 4, 5, 11). */
+function roundedEdgeSource(t: RoundedLeadingEdge): string {
+  return (
+    `${t.transonic ? 'NASA CR-149372 and TN 2960' : 'TN 2960'}, front side over modified ` +
+    `Newtonian, ${outward(t.band)} (${t.regime}` +
+    (t.sweepDegrees > 0 ? ", swept, with RM A55H31's sweep allowance" : '') +
+    ')'
+  );
+}
+
+/**
+ * The leading edges of a rounded edge swept beyond 60 deg (0016 section
+ * 21.2): the band text names each bound's own source, as 0014 section 10.2
+ * asks.
+ */
 function sweptBeyondLimitComponent(
   label: string,
   cd: number,
-  band: { low: number; high: number },
+  nose: RoundedLeadingEdge,
 ): DragComponent {
+  const { band } = nose;
+  const b = nose.bounded!;
   return {
     name: 'fin leading edges',
     cd,
     low: band.low * cd,
     high: band.high * cd,
     label,
-    band: boundedBand('the term at the sweep and the term at 60 deg', cd, band),
+    band: boundedBand(
+      `the term at ${nose.sweepDegrees.toFixed(1)} deg at its band's low end (` +
+        `${roundedEdgeSource(b.lower)}) and the term at 60 deg at its band's high end (` +
+        `${roundedEdgeSource(b.upper)})`,
+      cd,
+      band,
+    ),
     bounded: SWEPT_EDGE_BOUNDED_REASON,
   };
 }
@@ -655,11 +679,14 @@ export const SQUARE_EDGE_REFUSAL =
   'a square-cut leading edge is refused: its drag is bounded between the sonic and the pitot ' +
   'pressure on the whole face (0016 section 21.1), an argument that rests on the face staying ' +
   'subsonic up to its corners, and the computed check of that, registered before it was run ' +
-  '(0016 section 21.3), did not pass: on the finest grid at Mach 2.0, the corner rounded to 0.02 ' +
-  "of the half-thickness, the inviscid solution did not settle, and the face's least pressure " +
-  '(0.553 of the pitot pressure) was not clear of the sonic pressure (0.528) by its change ' +
-  'between the two finest grids (0.105); no flat-face measurement is among the sources that set ' +
-  'bands';
+  '(0016 section 21.3), did not pass. On the finest grid the inviscid solution did not settle in ' +
+  "three cases, and in each the face's least pressure was not clear of the sonic pressure (0.528 " +
+  'of the pitot pressure) by its change between the two finest grids: at Mach 2.0 with the ' +
+  'corner rounded to 0.02 of the half-thickness, 0.553 against a change of 0.105; at Mach 3.0 ' +
+  'with 0.04, 0.531 against a change of 0.134; and at Mach 3.0 with 0.02, 0.445, below the ' +
+  'sonic pressure itself, the sonic point then on the face. No flat-face measurement is among ' +
+  'the sources that set bands; measured flat faces are named for reading (0014 section 10.7 ' +
+  '(af)), and the edge stays refused until they are read and judged';
 
 /**
  * The leading edges and faces of a flat plate (0016, W4): a rounded edge's
@@ -703,7 +730,7 @@ function platePart(
                 `Newtonian, ${outward(nose.band)} ` +
                 `(${nose.regime}${nose.sweepDegrees > 0 ? ', swept' : ''})`,
             }
-          : sweptBeyondLimitComponent(label, cd, nose.band),
+          : sweptBeyondLimitComponent(label, cd, nose),
       );
     }
   } catch (e) {

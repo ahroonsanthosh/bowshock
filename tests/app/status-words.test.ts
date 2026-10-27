@@ -24,6 +24,7 @@ import {
   WAITING,
   type NoseEnd,
 } from '../../src/app/status-words';
+import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
 import { SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/finned-body';
 import {
   BOUNDED_REASON,
@@ -189,6 +190,35 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         'is 1.0 to 3.0 and for edge sizes within its data',
       change: 'bevelled leading edges',
     });
+  });
+
+  it('a rounded edge refused past 60 deg: less sweep offered beside a bevelled edge', () => {
+    let message = '';
+    try {
+      roundedLeadingEdgeDrag({
+        mach: 2.0,
+        radius: 0.0015,
+        faceAngle: 0,
+        tanLeadingEdgeSweep: Math.tan((62 * Math.PI) / 180),
+        reynoldsOnDiameter: 2e5,
+      });
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    const w = refusalWords({
+      component: 'fin leading edges',
+      reason: 'leading-edge-range',
+      message,
+    });
+    expect(w.change).toBe('less sweep (60 degrees or less), or a bevelled leading edge');
+    // At 60 deg or less the change stays a bevelled edge.
+    expect(
+      refusalWords({
+        component: 'fin leading edges',
+        reason: 'leading-edge-range',
+        message: 'the Mach number 0.98 is below 1.0',
+      }).change,
+    ).toBe('bevelled leading edges');
   });
 
   it('a reason the words do not know yet: its message, plainly', () => {
