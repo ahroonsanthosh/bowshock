@@ -176,14 +176,23 @@ describe('bounded, not measured (0016 section 21)', () => {
     expect(c.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
     expect(c.label.startsWith('bounded, not measured: swept 66.4 deg')).toBe(true);
     expect(c.label).toMatch(/; on a flat plate, a semicircular nose \(0016\)$/);
-    // Each bound's own source in the band text (0014 section 10.2).
-    expect(c.band).toMatch(
-      /^bounded, not measured: the whole gap between the term at 66\.4 deg at its band's low end \(/,
+    // Each bound's own source in the band text (0014 section 10.2), built
+    // here from the two terms the library returns: their data, their bands
+    // rounded outward and their regimes.
+    const { lower, upper } = n.bounded!;
+    expect(lower.transonic).toBeDefined();
+    expect(upper.transonic).toBeDefined();
+    const two = (lo: number, hi: number): string =>
+      `${(Math.floor(lo * 100 + 1e-9) / 100).toFixed(2)} to ${(Math.ceil(hi * 100 - 1e-9) / 100).toFixed(2)}`;
+    const source = (t: typeof lower): string =>
+      'NASA CR-149372 and TN 2960, front side over modified Newtonian, ' +
+      `${two(t.band.low, t.band.high)} (${t.regime}, swept, with RM A55H31's sweep allowance)`;
+    expect(source(lower)).not.toBe(source(upper));
+    expect(c.band).toBe(
+      "bounded, not measured: the whole gap between the term at 66.4 deg at its band's low end (" +
+        `${source(lower)}) and the term at 60 deg at its band's high end (${source(upper)}), ` +
+        `C_D ${c.low.toFixed(4)} to ${c.high.toFixed(4)}, a gap of ${(c.high - c.low).toFixed(4)}`,
     );
-    expect(c.band).toContain('NASA CR-149372 and TN 2960, front side over modified Newtonian');
-    expect(c.band).toContain(") and the term at 60 deg at its band's high end (");
-    expect(c.band).toContain("swept, with RM A55H31's sweep allowance");
-    expect(c.band).toMatch(/, C_D \d\.\d{4} to \d\.\d{4}, a gap of \d\.\d{4}$/);
   });
 });
 
