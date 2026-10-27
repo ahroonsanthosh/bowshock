@@ -2178,5 +2178,57 @@ rules fixed in its header before it was first run (0016 section 21.6).
     the value, and the planar face's margin an analogy, not tested.
 - No extension below 0.90e6 is made; any is the owner's to agree.
 
+**2026-10-27: second addendum to (ab), after the re-review of
+2026-10-27** (the review of 5e47532..ef7fc7d). (ab)'s text and its first
+addendum stand as written; where this one differs, it governs.
+
+- _Fig. 17's reading does not count._ The lower ordering from 60 to 75.1
+  deg rests on the front side estimated with TN 3861 fig. 17's drag (0016
+  section 21.2). Fig. 17 was read once on 2026-10-21, for 0016 section
+  16, before any entry named it: 10.1 names figs. 15 and 16 only, and the
+  first addendum above named fig. 17 afterwards. That reading does not
+  count.
+- _Named now, before it is read again:_ TN 3861 fig. 17, for:
+  - its crossflow points of yawed cylinders swept beyond 60 deg: Lord
+    and Ulmann's at 70 and 75 deg, and Penland's at 75.1 deg;
+  - for the estimate's error, the cylinders normal to the stream
+    replotted on it (Gowen and Perkins, which is TN 2960).
+
+  It is to be read twice afresh, the second reading blind, and paired by
+  a neutral party, to the readers' brief
+  `docs/research/tn3861-fig17/readers/brief.md`, which gives identifiers
+  only.
+
+- _Until then_, rounded leading edges swept beyond 60 deg are refused, as
+  main refuses them. The bounded term is kept unwired
+  (`roundedLeadingEdgeBeyond60` in `src/fins/rounded-leading-edge.ts`).
+- _After the pairing_, 0016 section 21.2's rule is applied as written to
+  the paired values, by script, and 60 to 75.1 deg is served again only
+  if it holds. Written out now, before any reading:
+  - F = C_D (fig. 17) + Cp_down (fig. 16) at each point, taken on every
+    combination of the two fig. 17 readings and the two fig. 16
+    readings; figs. 15 and 16 were named and read twice before this.
+    Penland's point takes fig. 17's pressure-integrated series, as
+    section 16 did. MN is (2/3) Cp_pitot at the crossflow Mach number.
+  - The estimate's error, e, is the largest difference, over every
+    combination, between F/MN and TN 2960's integrated front side over
+    MN at TN 2960's three cylinders replotted on figs. 16 and 17.
+  - A point's sweep is 90 deg less its stated angle of attack (Penland
+    14.9 deg; Lord and Ulmann's crossflow Mach number 1.04 point 15 deg,
+    TN 3861 p. 11). Where no angle is stated (Lord and Ulmann's 70 deg
+    point), it is 90 deg less asin(M_c / M), from each paired M_c.
+  - The rule holds if, at all three points, on the lowest combination:
+    - (a) the stagnation pressure (fig. 15) and F each lie above the
+      principle: over Rayleigh's pitot pressure, and over the term at
+      the point's sweep and Mach number, respectively;
+    - (b) F/MN less e is at least the lower bound's end there over MN:
+      the term at the point's sweep and Mach number times its band's low
+      end. Where the point's Reynolds number is not stated, the highest
+      low end over the regimes the term serves there is used.
+  - If the rule fails at any point, sweeps beyond 60 deg stay refused.
+- _Beyond 75.1 deg_, the largest sweep at which a yawed cylinder is
+  measured, the edge is refused at any Mach number, after the pairing
+  too: the principle alone does not show the ordering.
+
 The letters (w) to (z) are allocated to other branches; the next free
 letter is the coordinator's to allocate.
