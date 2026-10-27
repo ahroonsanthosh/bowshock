@@ -362,20 +362,22 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
     change: 'a longer bevel or thinner fins',
   }),
   planform: asMessage,
-  // Past 60 deg a rounded edge is refused, as main refuses it, until TN 3861 fig. 17 is read twice
-  // (0014 section 10.7 (ab), second addendum); otherwise thrown only for a sweep that is not a number.
+  // Beyond 75.1 deg a rounded edge is refused at any Mach number (0016 sections 21.7 and 21.8);
+  // otherwise this reason is thrown only for a sweep that is not a number.
   'swept-leading-edge': (r) =>
     /^a rounded leading edge swept [\d.]+ deg is refused/.test(r.message)
       ? {
-          reason: "a rounded leading edge's drag is measured only up to 60 degrees of sweep",
-          change: 'less sweep (60 degrees or less), or a bevelled leading edge',
+          reason:
+            "a rounded leading edge's drag is bounded only up to 75 degrees of sweep, the most at " +
+            'which a swept cylinder has been measured',
+          change: 'less sweep (75 degrees or less), or a bevelled leading edge',
         }
       : {
           reason: "the leading edge's sweep is not a usable number",
           change: 'a sweep of zero or more',
         },
-  // Once 0016 section 21.2's bounded term is served again, a case past 60 deg refused for the term
-  // at its sweep or at 60 deg lands here, and less sweep is a change that can help too.
+  // From 60 to 75.1 deg the edge is bounded only where the term at its sweep and at 60 deg are both
+  // served (0016 section 21.2); there less sweep is a change that can help too.
   'leading-edge-range': (r) => ({
     reason:
       "a rounded leading edge's drag is measured only where the Mach number across the edge is " +

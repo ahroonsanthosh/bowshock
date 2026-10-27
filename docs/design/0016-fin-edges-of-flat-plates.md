@@ -45,10 +45,10 @@ refused, change only their reasons (section 12).
 
 _Since section 21 (2026-10-26):_ for rounded leading edges swept beyond
 60 deg, a "bounded, not measured" term was written, between the term at
-their sweep and the term at 60 deg, the band the whole gap. It was served
-until the re-review of 2026-10-27. They are now refused again, as main
-refuses them, until TN 3861 fig. 17 has been read twice afresh (section
-21.7). Square-cut leading edges were argued bounded between the sonic and
+their sweep and the term at 60 deg, the band the whole gap. The re-review
+of 2026-10-27 had it refused again until TN 3861 fig. 17 was read twice
+afresh (section 21.7). Since section 21.8 it is served from 60 to 75.1
+deg; beyond 75.1 deg the edge is refused at any Mach number. Square-cut leading edges were argued bounded between the sonic and
 the pitot pressure on the whole face. The computed check registered for
 that argument failed (section 21.3). Measured flat faces then bore out
 the bounds' premises, but only at face Reynolds numbers far above a
@@ -2113,3 +2113,39 @@ the claim.
   was argued. Its F values from the reading that does not count (1.053
   and 1.048, 1.445, 1.166 and 1.165 of modified Newtonian) are
   superseded by the table above.
+
+**In the code (section 21.8).**
+
+- `roundedLeadingEdgeDrag` serves the bounded term again from 60 to 75.1
+  deg (`beyondSweepLimit`). It is refused beyond 75.1 deg at any Mach
+  number.
+- `TN3861_FIG17_READINGS` is 2, so the label says fig. 17 was read twice.
+- The page's words for the refusal beyond 75.1 deg: "a rounded leading
+  edge's drag is bounded only up to 75 degrees of sweep, the most at
+  which a swept cylinder has been measured", change "less sweep (75
+  degrees or less), or a bevelled leading edge". From 60 to 75.1 deg, a
+  case the bounded term refuses keeps "less sweep (60 degrees or less),
+  or a bevelled leading edge".
+- `evaluate.ts` mirrors the bounded edges again, with beyond 75.1 deg
+  refused.
+- The tests go back to those of section 21.5 and the review fixes, with
+  the 21.7 items kept:
+  - the 75.1 deg refusal;
+  - the Mach 6 edge;
+  - the shortened label;
+  - fig. 16 named in the label;
+  - the lower clause.
+- `tests/total/beyond-60-dormant.test.ts` is gone, since the branches it
+  reached are served again.
+- Eleven planted errors each fail a test:
+  - the claim built from the base alone;
+  - the wedge path's `bounded` dropped;
+  - the lower term's summary left out of the label;
+  - the band text without the bounds' sources;
+  - the less-sweep change lost;
+  - served beyond 75.1 deg;
+  - the exact Mach 6 comparison;
+  - the lower clause given the upper's words;
+  - fig. 16 dropped;
+  - fig. 17 counted as unread;
+  - the 75 deg words lost.

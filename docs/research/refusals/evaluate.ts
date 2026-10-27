@@ -77,7 +77,7 @@ export const REASONS = {
       : 'fins: rounded leading edge on fins of varying chord',
   roundedLeSwept:
     EDGES === 'w4e'
-      ? 'fins: rounded leading edge swept beyond 60 deg (its bounded term, 0016 section 21.2, waits on two readings of TN 3861 fig. 17)'
+      ? 'fins: rounded leading edge swept beyond 75.1 deg (refused at any Mach number; from 60 deg bounded where the term at its sweep and at 60 deg are both served, 0016 sections 21.2 and 21.8)'
       : EDGES === 'w34'
         ? 'fins: rounded leading edge swept beyond 60 deg'
         : 'fins: swept rounded leading edge',
@@ -259,15 +259,23 @@ export function totalReasons(r: Rocket, c: Condition): ReasonKey[] {
     const reD = rePerMetre * r.thickness;
     if (!(reD >= 6.7e3 && reD <= 1e6)) out.push('roundedLeReynolds');
   } else if (roundedLeadingEdge(r)) {
-    // 0016: on the normal components, to 60 deg of sweep; beyond it refused, as main refuses it (and
-    // counted under the sweep alone, as main's run counts it), until TN 3861 fig. 17 is read twice
-    // (0014 section 10.7 (ab), second addendum).
+    // 0016: on the normal components, to 60 deg of sweep; from 60 to 75.1 deg (EDGES=w4e, 0016 sections
+    // 21.2 and 21.8) bounded between the term at the sweep and at 60 deg, each with its own domain;
+    // beyond 75.1 deg refused at any Mach number (counted under the sweep alone).
     const cos = Math.cos(r.leadingEdgeSweepDeg * DEG);
-    if (r.leadingEdgeSweepDeg > 60 + 1e-9) out.push('roundedLeSwept');
-    else {
+    if (r.leadingEdgeSweepDeg > 60 + 1e-9 && (EDGES !== 'w4e' || r.leadingEdgeSweepDeg > 75.1 + 1e-9)) {
+      out.push('roundedLeSwept');
+    } else {
       if (!(mach * cos >= LE_NORMAL_MACH_FLOOR && mach * cos <= 3.0)) out.push('roundedLeMach');
       const reN = rePerMetre * r.thickness * cos;
-      if (!(reN >= 6.7e3 && reN <= 1e6)) out.push('roundedLeReynolds');
+      const reN60 = rePerMetre * r.thickness * Math.cos(60 * DEG);
+      const beyond = r.leadingEdgeSweepDeg > 60 + 1e-9;
+      if (!(reN >= 6.7e3 && reN <= 1e6) || (beyond && !(reN60 >= 6.7e3 && reN60 <= 1e6))) {
+        out.push('roundedLeReynolds');
+      }
+      if (beyond && !(mach * 0.5 >= LE_NORMAL_MACH_FLOOR && mach * 0.5 <= 3.0) && !out.includes('roundedLeMach')) {
+        out.push('roundedLeMach');
+      }
     }
   }
   if (r.section === 'bevel-le-square-te') out.push('pageSection');

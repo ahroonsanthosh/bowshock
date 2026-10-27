@@ -363,9 +363,11 @@ export const LARGEST_YAWED_SWEEP_DEGREES = 75.1;
 /**
  * The readings of TN 3861 fig. 17 that count (0014 section 10.7 (ab),
  * second addendum): the reading of 2026-10-21 was made before any entry
- * named the figure and does not; two fresh ones, paired, are pending.
+ * named the figure and does not; two fresh ones, the second blind, were
+ * paired on 2026-10-27 (3d7dd16), and 21.2's rule holds on them (0016
+ * section 21.8).
  */
-export const TN3861_FIG17_READINGS = 0 as number;
+export const TN3861_FIG17_READINGS = 2 as number;
 /** The coordinator's least interim sweep allowance below M_n 3.37 (review of 2026-10-21; 0016 section 16). */
 export const INTERIM_SWEEP_FLOOR = { low: 0.95, high: 1.21 } as const;
 
@@ -805,7 +807,9 @@ export function roundedLeadingEdgeDrag(input: RoundedLeadingEdgeInput): RoundedL
   if (!(tanSweep >= 0 && Number.isFinite(tanSweep))) {
     throw new FinRefusal('swept-leading-edge', `bad leading-edge sweep (tan ${tanSweep})`);
   }
-  return roundedTerm(input, 'served');
+  const sweepDegrees = Math.atan(tanSweep) / DEG;
+  if (sweepDegrees <= SWEEP_LIMIT_DEGREES + 1e-9) return roundedTerm(input, 'served');
+  return beyondSweepLimit(input, sweepDegrees);
 }
 
 /** The inputs of `roundedLeadingEdgeDrag`. */
@@ -861,21 +865,14 @@ function termSummary(t: RoundedLeadingEdge, where: 'lower' | 'upper'): string {
  * grows (the principle), and the front side's drag per unit span falls
  * with yaw on every series of RM A55H31 fig. 12; the lower bound's ordering
  * from 60 to 75.1 deg rests on TN 3861's crossflow points at 70, 75 and
- * 75.1 deg. Beyond 75.1 deg it is refused at any Mach number. Both terms
- * must be served.
- *
- * **Kept unwired**: `roundedLeadingEdgeDrag` refuses sweeps beyond 60 deg,
- * as main does, until TN 3861 fig. 17 has been read twice afresh, paired,
- * and 21.2's rule holds on the paired values (0014 section 10.7 (ab),
- * second addendum). Nothing under src/ calls this function.
+ * 75.1 deg, every one above the principle on fig. 17 read twice (0016
+ * section 21.8). Beyond 75.1 deg it is refused at any Mach number. Both
+ * terms must be served.
  */
-export function roundedLeadingEdgeBeyond60(input: RoundedLeadingEdgeInput): RoundedLeadingEdge {
-  const tanSweep = input.tanLeadingEdgeSweep;
-  if (!(tanSweep >= 0 && Number.isFinite(tanSweep))) {
-    throw new FinRefusal('swept-leading-edge', `bad leading-edge sweep (tan ${tanSweep})`);
-  }
-  const sweepDegrees = Math.atan(tanSweep) / DEG;
-  if (sweepDegrees <= SWEEP_LIMIT_DEGREES + 1e-9) return roundedTerm(input, 'served');
+function beyondSweepLimit(
+  input: RoundedLeadingEdgeInput,
+  sweepDegrees: number,
+): RoundedLeadingEdge {
   if (sweepDegrees > LARGEST_YAWED_SWEEP_DEGREES + 1e-9) {
     throw new FinRefusal(
       'swept-leading-edge',
@@ -951,9 +948,9 @@ export function roundedLeadingEdgeBeyond60(input: RoundedLeadingEdgeInput): Roun
 }
 
 /**
- * The term (sections 4, 5 and 11 of 0016). Where it is served (`served`) a
- * sweep beyond 60 deg is refused, as main refuses it; the bounded term asks
- * it past 60 deg (`beyond`) for its lower bound.
+ * The term (sections 4, 5 and 11 of 0016): at 60 deg of sweep or less
+ * (`served`), or past 60 deg as the bounded term's lower bound (`beyond`),
+ * its sweep clause then saying the allowance is carried past its checks.
  */
 function roundedTerm(
   input: RoundedLeadingEdgeInput,
@@ -966,18 +963,6 @@ function roundedTerm(
   // Every condition the case fails is collected and reported, not only the first (the re-review
   // of 2026-10-22, N6); the reason code is the first failed condition's.
   const failed: [FinRefusalReason, string][] = [];
-  if (place === 'served' && sweepDegrees > SWEEP_LIMIT_DEGREES + 1e-9) {
-    failed.push([
-      'swept-leading-edge',
-      `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg is refused: the yawed-cylinder ` +
-        `checks of the independence principle reach ${SWEEP_LIMIT_DEGREES} deg (RM A55H31 fig. 12), ` +
-        (sweepDegrees > LARGEST_YAWED_SWEEP_DEGREES + 1e-9
-          ? `and beyond ${LARGEST_YAWED_SWEEP_DEGREES} deg no yawed cylinder is measured at all ` +
-            '(0016 section 21.2)'
-          : 'and past them the bounded term waits on two fresh readings of TN 3861 fig. 17 (0014 ' +
-            'section 10.7 (ab), second addendum; 0016 section 21.2)'),
-    ]);
-  }
   const cosSweep = Math.cos(sweep);
   const mach = input.mach * cosSweep;
   const re = input.reynoldsOnDiameter * cosSweep;

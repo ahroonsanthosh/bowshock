@@ -29,6 +29,7 @@ import {
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
 import { displayText, totalDragDisplay } from '../../src/app/total-drag-display';
+import { claimWords, SWEPT_EDGE_BOUNDED_WORDS } from '../../src/app/status-words';
 import {
   ABOVE_THE_CLASS,
   BASIC_FINNER_CLASS,
@@ -979,16 +980,21 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     expect(v.total.components.find((c) => c.name === 'fin wave drag')!.cd).toBe(0);
   });
 
-  it('rounded leading edges swept 66.4 deg at Mach 2.8: refused, as main refuses them, until fig. 17 is read twice', () => {
+  it('rounded leading edges swept 66.4 deg at Mach 2.8: a total whose claim names the bounded edge', () => {
     const form = {
       ...plate('rounded', 'square'),
       planform: { kind: 'clipped-delta' as const, taperRatio: 0.2 },
       rootChord: 2,
       span: 0.7,
     };
-    expect(reasons(totalDragView(form, exactNose(form)))).toEqual([
-      'fin leading edges: swept-leading-edge',
-    ]);
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'total') throw new Error(JSON.stringify(v));
+    const le = v.total.components.find((c) => c.name === 'fin leading edges')!;
+    expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
+    expect(v.claim.kind).toBe('estimate');
+    if (v.claim.kind !== 'estimate') return;
+    expect(v.claim.reasons).toContain(SWEPT_EDGE_BOUNDED_REASON);
+    expect(claimWords(v.claim)).toBe(SWEPT_EDGE_BOUNDED_WORDS);
   });
 
   it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {

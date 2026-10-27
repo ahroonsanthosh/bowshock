@@ -13,7 +13,7 @@
  * | fin friction | van Driest II flat plates of the local chord, both faces | fins' own drag, 1.01 to 1.59 (0008 section 4.3) | estimated on ARCAS, tested only in the total |
  * | fin wave drag | exact 2D section drag times the linear 3D ratio (src/fins, 0009); with a rounded leading edge, the faces of the tangent geometry on their own rise | the same, plus the quadrature error | as above |
  * | fin leading edges | rounded, unswept: modified-Newtonian front side (src/fins/rounded-leading-edge.ts) | 0.99 to 1.06 (TN 2960), +-3% more where extrapolated in Reynolds number | an analogy, not a measurement |
- * | fin leading edges, rounded, swept beyond 60 deg | refused until TN 3861 fig. 17 is read twice (0014 section 10.7 (ab), second addendum); then the midpoint between the term at the sweep and at 60 deg (0016 section 21.2) | the whole gap between the bounds | bounded, not measured; the total's claim names it (`bounded`) |
+ * | fin leading edges, rounded, swept 60 to 75.1 deg | the midpoint between the term at the sweep and at 60 deg (0016 sections 21.2 and 21.8; beyond 75.1 deg refused) | the whole gap between the bounds | bounded, not measured; the total's claim names it (`bounded`) |
  * | body base | compiled curve times the fins-on-base factor (src/base): the present factor wherever it serves (the Basic Finner's class keeps it), the rebuilt factor of 0015 only where the present one refuses | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the present factor measured on circular-arc fins, an analogy for others; the rebuilt factor estimated on component data, bracketed |
  * | fin trailing-edge base | blunt, unswept, turbulent: two-dimensional base pressure at the free-stream Mach number (src/base/fin-trailing-edge.ts) | 0.93 to 1.21 | an analogy, not a measurement, for edges in the base plane |
  *
@@ -696,8 +696,8 @@ export const SQUARE_EDGE_REFUSAL =
 /**
  * The leading edges and faces of a flat plate (0016, W4): a rounded edge's
  * nose, a radius of half the thickness, at face angle zero on any planform
- * and sweep to 60 deg (beyond it refused for now; the bounded branch below is
- * reached once `roundedLeadingEdgeDrag` serves 0016 section 21.2's term); faces parallel to
+ * and sweep to 60 deg, bounded from 60 to 75.1 deg (0016 sections 21.2 and
+ * 21.8); faces parallel to
  * the stream, no wave drag. A square-cut edge is refused (`SQUARE_EDGE_REFUSAL`).
  */
 function platePart(
