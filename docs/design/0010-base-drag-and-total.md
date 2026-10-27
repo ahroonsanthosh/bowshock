@@ -643,6 +643,33 @@ row used.
   count is 18 power-off rows at M 1.52 to 3.24 (the research note says
   19). Domain M 1.5 to 3.2.
 
+- **Widened near Mach 1.7 (2026-10-27; 0019 section 3.4.1 item 6, F4,
+  and item 11).** RM A52E01 fig. 8(a)'s line #10, wing 2 (h/c 0.030,
+  faces parallel at the base) by every reader naming a wing, at Mach 1.7
+  near zero lift, at Re 1.5e6 on the mean aerodynamic chord with its
+  layer state not stated (the wings "polished smooth", no trip), lies at
+  0.42 to 0.55 of the term served (four-way pairing,
+  `audit/pairing-2026-10-27-a52e01-m17-four/`). The band's own sets
+  cannot all be put on a common Reynolds-number basis: TR 1109's are at
+  1.7e6 to 3.5e6 on the chord (tripped, turbulent) and the X-15 fin's at
+  6.8e6 to 22.0e6 on its mean chord (turbulent), but RM A51J25 fig. 7's
+  Langley 9 by 12 in and NPL symbols state none. So, by the
+  coordinator's rule (its step 4, then step 2, the wider choice), the
+  point enters the band: every reading's value (C -0.1310 +-0.0103, a
+  bound; D -0.1318; D's alternative end -0.1469 taken as a value), Mach
+  +-0.01, its ratio over K from 1 to its turbulent value. Its least
+  ratio, 0.418, rounded outward, gives a low end of **0.41** at the nodes
+  whose window meets its Mach interval (1.65, 1.70 and 1.75, nodes every
+  0.05 as 0019 item 5's), linear to 0.93 at 1.60 and 1.80, at every layer
+  parameter served; the high end, 1.21, and the band elsewhere are
+  unchanged. The label says so where it applies. In the refusal
+  population it changes 29 of the 181 served totals (Mach 1.627 to
+  1.796), lowering the trailing-edge term's low end by up to 0.0415 in
+  C_D, 52% of the term (`docs/research/refusals/out/f4-probe.out`); it
+  changes no refusal. It reaches the Basic Finner gate's shot at Mach
+  1.799, whose low end there is 0.920: its band and tolerance move
+  slightly (section 11.6's note), no verdict changes.
+
 - **Label.** For edges in the body's base plane, as on fins at the base:
   "an analogy, not a measurement", since no opened source measures such
   an edge (0008 section 3.4), with its band "tested only in the total"
@@ -1480,6 +1507,14 @@ and `.json`).
 | DA95020916 | 2.749 | 0.452 | 0.4323         | +4.5%    | -26.1% to +27.4%    | 0.4206 (0.3672 to 0.4991) | +7.5%    | -26.8% to +28.6% |
 | DA95030603 | 2.969 | 0.385 | 0.4072         | -5.4%    | -19.5% to +24.6%    | 0.3951 (0.3459 to 0.4678) | -2.6%    | -20.0% to +25.7% |
 | DA95022205 | 2.970 | 0.376 | 0.4071         | -7.6%    | -19.5% to +24.7%    | 0.3951 (0.3458 to 0.4677) | -4.8%    | -20.0% to +25.7% |
+
+_Since F4 (2026-10-27; 0019 section 3.4.1, and section 5.1 here):_ at
+DA95021318 (Mach 1.799) the trailing edges' band low end is 0.920 of the
+term, not 0.93 (RM A52E01's wing 2 at Mach 1.7 widens it at Mach 1.60 to
+1.80), so its total is 0.6134 (0.5285 to 0.7297), its model-form low end
+-13.8% (-13.7% as recorded), and its tolerance -24.7% to +23.5% (-24.6%
+as recorded); the page's table shows these. Every other value, and every
+verdict, is as recorded.
 
 (Tolerances by round 5's arithmetic, section 10.3; the second run's own
 high ends were +26.5% to +31.4%. Corrected bands rounded outward, as the

@@ -64,6 +64,8 @@
 
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
+  bandLowAbove,
+  FIN_TRAILING_EDGE_BAND,
   finTrailingEdgeBaseDrag,
   type FinTrailingEdgeBase,
 } from '../../src/base/fin-trailing-edge';
@@ -393,6 +395,16 @@ const clusterSpread = BASIC_FINNER_CLUSTERS.map(([a, b]) => {
 });
 const clusterOf = (m: number) => BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => m >= a && m <= b);
 
+/**
+ * F4's move of a shot's trailing-edge low end (0019 section 3.4.1): the term's low end with the
+ * band's low end 0.93, as the correction ran, less its low end now. Zero outside Mach 1.60 to
+ * 1.80.
+ */
+function f4Move(s: { mach: number; total: TotalDrag }): number {
+  const te = s.total.components.find((c) => c.name === 'fin trailing-edge base')!;
+  return te.low * (FIN_TRAILING_EDGE_BAND.low / bandLowAbove(s.mach) - 1);
+}
+
 let shots: Shot[] = [];
 
 beforeAll(() => {
@@ -482,13 +494,18 @@ describe(
         const c = CORRECTED[k]!;
         expect(s.shot).toBe(r.shot);
         expect(c.shot).toBe(r.shot);
+        // Since F4 (0019 section 3.4.1, 2026-10-27) the trailing edges' band at Mach 1.60 to 1.80
+        // is widened by RM A52E01's wing 2 at Mach 1.7: at the 1.799 shot its low end, and so the
+        // total's and the tolerance's, lie below the correction's record by this much.
+        const f4 = f4Move(s);
+        expect(f4 > 0).toBe(s.mach < 1.8);
         expect(Math.abs(s.total.cd - c.cd)).toBeLessThan(1e-5);
-        expect(Math.abs(s.total.low - c.low)).toBeLessThan(1e-5);
+        expect(Math.abs(s.total.low + f4 - c.low)).toBeLessThan(1e-5);
         expect(Math.abs(s.total.high - c.high)).toBeLessThan(1e-5);
         expect(Math.abs(s.inputLow - r.inputLow)).toBeLessThan(1e-5);
         expect(Math.abs(s.inputHigh - r.inputHigh)).toBeLessThan(1e-5);
         expect(Math.abs(s.residual - c.residual)).toBeLessThan(1e-4);
-        expect(Math.abs(s.tolerance[0] - c.tolerance[0]!)).toBeLessThan(1e-4);
+        expect(Math.abs(s.tolerance[0] + f4 / s.total.cd - c.tolerance[0]!)).toBeLessThan(1e-4);
         expect(Math.abs(s.tolerance[1] - c.tolerance[1]!)).toBeLessThan(1e-4);
         s.total.components.forEach((x, j) => {
           if (x.name === 'body base') {
@@ -577,11 +594,12 @@ describe(
       expect(recordedFailed).toEqual([]);
     });
 
-    it('every residual lies inside the model-form band alone (-12.4% to -13.7%, +18.4% to +19.0%; second run -12.0% to -13.3%, +17.5% to +18.6%)', () => {
+    it('every residual lies inside the model-form band alone (-12.4% to -13.8%, +18.4% to +19.0%; second run -12.0% to -13.3%, +17.5% to +18.6%)', () => {
+      // -13.8% at the Mach 1.799 shot since F4 (0019 section 3.4.1); -13.7% before.
       for (const s of shots) {
         const lo = s.total.low / s.total.cd - 1;
         const hi = s.total.high / s.total.cd - 1;
-        expect(lo).toBeGreaterThan(-0.1375);
+        expect(lo).toBeGreaterThan(-0.1385);
         expect(lo).toBeLessThan(-0.1235);
         expect(hi).toBeGreaterThan(0.1835);
         expect(hi).toBeLessThan(0.1905);

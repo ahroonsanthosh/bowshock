@@ -50,6 +50,17 @@ MUTATIONS = [
      "        hOverC: 0.03,\n        layer: wing2,\n        ratioLayer: [0, wing34[1]],"),
     ('RM A51J11 without its +-0.02 Mach margin, every point at +-0 (review F1)', 'src/base/fin-te-transonic-data.ts',
      None, None),
+    # F4: RM A52E01's wing 2 at Mach 1.7 in the band above 1.5.
+    ("F4: wing 2 at Mach 1.7 left out of the band above 1.5", 'src/base/fin-trailing-edge.ts',
+     'band: { low: bandLowAbove(mach), high: FIN_TRAILING_EDGE_BAND.high },', 'band: FIN_TRAILING_EDGE_BAND,'),
+    ("F4: C's bound taken as its value", 'src/base/fin-trailing-edge.ts',
+     'cpHigh: -0.131 + 0.0103,', 'cpHigh: -0.131,'),
+    ("F4: D's alternative end left out", 'src/base/fin-trailing-edge.ts',
+     'cpLow: -0.1469,', 'cpLow: -0.1413,'),
+    ('F4: the widening at every Mach number above 1.5', 'src/base/fin-trailing-edge.ts',
+     'const meets = p.mach + p.machErr >= a && p.mach - p.machErr <= b;', 'const meets = true;'),
+    ('F4: the ratio at the turbulent K only, not from a thin layer', 'src/base/fin-trailing-edge.ts',
+     'for (const kk of [1, k])', 'for (const kk of [k])'),
 ]
 
 def f1_plant(src):

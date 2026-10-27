@@ -435,7 +435,7 @@ export const SUB_CLASS_PENDING_TEXT =
 export const ESTIMATE_TOLERANCE_TEXT =
   "The Basic Finner's test was wide: with the corrected fins-on-base factor its tolerance is " +
   '-20.0% to -27.0% and +23.3% to +28.6% of the modelled total over the 11 shots (-24.0% to ' +
-  '-24.6% and +23.3% to +23.5% at the three inside the class).';
+  '-24.7% and +23.3% to +23.5% at the three inside the class).';
 
 /** The end of a validated total's headline: what it rests on, in a few words. */
 export const VALIDATED_HEADLINE = "validated, on one test (BRL Report 934's range A)";
