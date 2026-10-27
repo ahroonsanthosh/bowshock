@@ -145,3 +145,46 @@ REF=1 npx vitest run --config tests/tmp-haack/vitest.config.ts`; the
 lane scripts give the environment of every run quoted. A finer grid's
 fit was started from the saved coarser one (`seed.mjs`), which shortens
 it only: the converged fit does not depend on its start.
+
+## `outline/`: widening the outline (2026-10-27)
+
+New references for the outline, registered before any run in 0006
+("Widening the outline: registration"): 6 calibers at Mach 1.5, 2 and 3
+and 5 calibers at Mach 3 (2 calibers of cylinder), judged by W5's
+criteria unchanged; 4 calibers at Mach 3 only if neither case at Mach 3
+passes. Branch `claude/wip/vk-outline`.
+
+- `runners/`: the runners as they run, from a frozen tree (the src of
+  main at 5ba98ff, its `COMMIT` file; the runners in `tests/vk/`).
+  `fitsave.test.ts`, `seed.mjs` and `moc.test.ts` are W5's (the fit, its
+  chunks and early stop, the seed, the march; `fitdata.ts` and
+  `common.ts` unchanged), with three changes. Every checkpoint and save
+  carries a fingerprint (the case, the chunk, the iteration limit, the
+  stop's tolerances, and `fingerprint.ts`'s sha256 over the source files
+  the runner reaches: the files under src/ as `numerics`, the runner's
+  own as `runner`), and a checkpoint, seed or saved fit with another one
+  is refused. The fit is checkpointed every 250 iterations inside a
+  chunk, with the early stop's history, while the stop is still judged
+  once per chunk. The march's lines are chosen by the registered rule
+  (`auto`). `lane.sh` with `jobs-a.txt` and `jobs-b.txt`: the two lanes,
+  resumable (a saved grid, or a march with its `.done` file, is skipped).
+- `fits/smoke/`: the runner checked before the lanes started, on W5's
+  1-caliber nose at Mach 2, nj = 20: stopped 300 iterations into a chunk
+  at 1300 iterations, resumed, settled at 5000 iterations with the drag
+  0.42909806331325262, against W5's 0.42909806331220435 (2.4e-11
+  relative); a checkpoint with another chunk size was refused
+  (`log-mismatch.txt`). That save carries the runner hash from before the
+  fingerprint check was moved ahead of the problem's construction, the
+  only change made to the runner since.
+- `analysis/judge.mjs`: the registered criteria applied to W5's marches
+  and to the new ones (fits, line criterion, references, misses, the
+  allowance by W5's rule, containment). On W5's `marches/moc.jsonl`
+  (`analysis/judge-w5.txt`) it gives W5's passing lines, misses and
+  containment ratios (1.73 on 5 calibers at Mach 2, 2.08 at Mach 1.5,
+  2.27 on 3 calibers at Mach 2) and the allowance of 8e-4. One
+  difference from 0006's text: the marched lines next to the one passing
+  line of 5 calibers at Mach 2 (x = 0.41) are those at x = 0.27 and 0.64
+  (misses up to 3.57e-4), not 0.18 and 0.27; the line at x = 0.18 is two
+  lines away, and fails the change from 1280 intervals on nj = 20 and 40
+  (6.7e-5 and 4.1e-5 of the drag) as well as nj = 80's mass balance. Its
+  miss of 3.64e-4 and the 3.57e-4 both give an allowance of 8e-4.
