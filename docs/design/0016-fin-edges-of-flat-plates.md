@@ -43,12 +43,17 @@ square-cut leading edges and rounded trailing edges. The Basic Finner's
 gated numbers are unchanged, bit for bit; its reported shots, still
 refused, change only their reasons (section 12).
 
-_Since section 21 (2026-10-26):_ rounded leading edges swept beyond 60
-deg are served "bounded, not measured", between the term at their sweep
-and the term at 60 deg, the band the whole gap. Square-cut leading edges
-were argued bounded between the sonic and the pitot pressure on the
-whole face, but the computed check registered for that argument failed
-(section 21.3), so they stay refused, as do rounded trailing edges.
+_Since section 21 (2026-10-26):_ for rounded leading edges swept beyond
+60 deg, a "bounded, not measured" term was written, between the term at
+their sweep and the term at 60 deg, the band the whole gap. It was served
+until the re-review of 2026-10-27. They are now refused again, as main
+refuses them, until TN 3861 fig. 17 has been read twice afresh (section
+21.7). Square-cut leading edges were argued bounded between the sonic and
+the pitot pressure on the whole face. The computed check registered for
+that argument failed (section 21.3). Measured flat faces then bore out
+the bounds' premises, but only at face Reynolds numbers far above a
+fin's (section 21.6). So square-cut edges stay refused, as do rounded
+trailing edges.
 
 ## 1. What is served, and on what
 
@@ -1988,3 +1993,72 @@ premises pass. No hobby-scale fin face lies inside the measured Reynolds
 range, so wiring is deferred and the term is not wired for zero
 coverage. `SQUARE_EDGE_REFUSAL` and the page's words now say so: the bounds' premises are borne out only on flat faces far larger than a model rocket fin's. Extending the range
 downward would be the owner's to agree, and nothing here proposes it.
+
+### 21.7 The re-review of 2026-10-27: past 60 deg refused again
+
+The re-review of 5e47532..ef7fc7d found both earlier blocking items and
+all eight smaller ones fixed, and (af)'s addendum as asked. It found two
+new blocking items.
+
+- **The lower ordering from 60 to 75.1 deg rests on TN 3861 fig. 17,
+  read once.** 21.2's front-side estimate uses fig. 17's C_D, and 21.2
+  itself says the stagnation pressures alone, and Penland's point alone,
+  cannot show the ordering. Fig. 17 was read on 2026-10-21, before any
+  entry named it (10.1 names figs. 15 and 16 only). The first (ab)
+  addendum named it only afterwards.
+- **Beyond 75.1 deg the principle alone does not show the ordering.**
+  The page reaches such sweeps (78.45 deg at Mach 5.0); the population
+  does not. Mach 5.0 at 78 deg was served from 0.869 of the term.
+
+**What changed.**
+
+- `roundedLeadingEdgeDrag` refuses sweeps beyond 60 deg again, as main
+  does. The reason code is `swept-leading-edge`, given first, with the
+  term's other reasons beside it. The words say that past 60 deg the
+  bounded term waits on two fresh readings of fig. 17, and that beyond
+  75.1 deg no yawed cylinder is measured at all.
+- The bounded term is kept unwired as `roundedLeadingEdgeBeyond60`, and
+  a test pins that nothing under `src/` calls it. It refuses beyond 75.1
+  deg (`LARGEST_YAWED_SWEEP_DEGREES`) at any Mach number. After the
+  pairing it is served again only if 21.2's rule, as the second (ab)
+  addendum writes it out, holds on the paired values.
+- The page's words for the refusal: "a rounded leading edge's drag is
+  measured only up to 60 degrees of sweep", change "less sweep (60
+  degrees or less), or a bevelled leading edge".
+- `evaluate.ts` mirrors main's counting again: past 60 deg, the sweep
+  alone.
+- The finned-body and page branches that carry the bounded edge stay. In
+  `tests/total/beyond-60-dormant.test.ts` they are reached with the
+  served term replaced by the bounded one, so they stay tested for when
+  it is served again.
+
+**The smaller items, on the bounded term:**
+
+- Past 60 deg, the lower term's own sweep clause says the allowance is
+  carried past 60 deg, where its yawed-cylinder checks end. It no longer
+  says "no yawed datum below M_n 1.95 at a served sweep", which is false
+  there. The 60 deg term says "at 60 deg of sweep or less".
+- The label is shortened from about 2,800 characters to under 1,800.
+  It now gives each term's source, band and qualifiers in short form
+  rather than its whole label.
+- It names fig. 16 beside fig. 15. It says fig. 17's two readings are
+  pending and the earlier one is not counted (`TN3861_FIG17_READINGS`).
+- The top of the normal Mach range is compared with a relative tolerance
+  of 1e-12. Mach 6.0 at 60 deg gives M cos(sweep) = 3.0000000000000004,
+  which is now served as 3.0.
+
+**Planted errors.** Seven errors were planted, one at a time, and each
+fails a test:
+
+- the refusal past 60 deg dropped;
+- the 75.1 deg refusal dropped;
+- the exact comparison at Mach 6;
+- the lower clause given the upper's words;
+- fig. 16 dropped from the label;
+- the bounded edge's `bounded` dropped in the total;
+- the less-sweep words lost.
+
+**21.2's lower ordering**, its table of crossflow points and its
+"check that sets nothing" stand as written, as the record of what was
+argued. Their front-side estimates rest on the fig. 17 reading that
+does not count. The fresh readings replace them when they are paired.

@@ -24,6 +24,7 @@ import {
   WAITING,
   type NoseEnd,
 } from '../../src/app/status-words';
+import type { FinRefusal } from '../../src/fins/refusal';
 import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
 import { SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/finned-body';
 import {
@@ -193,25 +194,56 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
   });
 
   it('a rounded edge refused past 60 deg: less sweep offered beside a bevelled edge', () => {
-    let message = '';
-    try {
-      roundedLeadingEdgeDrag({
-        mach: 2.0,
-        radius: 0.0015,
-        faceAngle: 0,
-        tanLeadingEdgeSweep: Math.tan((62 * Math.PI) / 180),
-        reynoldsOnDiameter: 2e5,
+    const refusal = (mach: number, deg: number) => {
+      try {
+        roundedLeadingEdgeDrag({
+          mach,
+          radius: 0.0015,
+          faceAngle: 0,
+          tanLeadingEdgeSweep: Math.tan((deg * Math.PI) / 180),
+          reynoldsOnDiameter: 2e5,
+        });
+      } catch (e) {
+        return e as FinRefusal;
+      }
+      throw new Error('expected a refusal');
+    };
+    // Past 60 deg refused, as main refuses it, until TN 3861 fig. 17 is read twice (0014 (ab)).
+    for (const [mach, deg] of [
+      [2.0, 62],
+      [2.8, 66.4],
+      [5.0, 78],
+    ] as const) {
+      const e = refusal(mach, deg);
+      expect(e.reason).toBe('swept-leading-edge');
+      expect(
+        refusalWords({ component: 'fin leading edges', reason: e.reason, message: e.message }),
+      ).toEqual({
+        reason: "a rounded leading edge's drag is measured only up to 60 degrees of sweep",
+        change: 'less sweep (60 degrees or less), or a bevelled leading edge',
       });
-    } catch (e) {
-      message = (e as Error).message;
     }
-    const w = refusalWords({
-      component: 'fin leading edges',
-      reason: 'leading-edge-range',
-      message,
+    // A sweep that is not a number keeps its own words.
+    expect(
+      refusalWords({
+        component: 'fin leading edges',
+        reason: 'swept-leading-edge',
+        message: 'bad leading-edge sweep (tan NaN)',
+      }),
+    ).toEqual({
+      reason: "the leading edge's sweep is not a usable number",
+      change: 'a sweep of zero or more',
     });
-    expect(w.change).toBe('less sweep (60 degrees or less), or a bevelled leading edge');
-    // At 60 deg or less the change stays a bevelled edge.
+    // Once the bounded term is served again (0016 section 21.2), a case it refuses past 60 deg is
+    // the term's own range, and less sweep is offered there too; at 60 deg or less, a bevelled edge.
+    expect(
+      refusalWords({
+        component: 'fin leading edges',
+        reason: 'leading-edge-range',
+        message:
+          'a rounded leading edge swept 62.0 deg, beyond the 60 deg where the yawed-cylinder',
+      }).change,
+    ).toBe('less sweep (60 degrees or less), or a bevelled leading edge');
     expect(
       refusalWords({
         component: 'fin leading edges',

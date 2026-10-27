@@ -408,7 +408,7 @@ describe('the nose term on flat and swept fins', () => {
     );
   });
 
-  it('bounds sweeps beyond 60 deg (0016 section 21.2); takes 60 itself as the measured term', () => {
+  it('refuses sweeps beyond 60 deg; takes 60 itself', () => {
     const at = (s: number) => () =>
       roundedLeadingEdgeDrag({
         mach: 3.0,
@@ -417,8 +417,7 @@ describe('the nose term on flat and swept fins', () => {
         tanLeadingEdgeSweep: Math.tan(s * deg),
         reynoldsOnDiameter: 2e5,
       });
-    expect(at(60.2)().bounded).toBeDefined();
-    expect(at(60)().bounded).toBeUndefined();
+    expect(failure(at(60.2)).reason).toBe('swept-leading-edge');
     expect(at(60)().normalMach).toBeCloseTo(1.5, 12);
   });
 });

@@ -17,7 +17,6 @@ import { doubleWedge, flatPlate, singleWedge } from '../../src/fins/section';
 import {
   finnedBodyComponents,
   SQUARE_EDGE_REFUSAL,
-  SWEPT_EDGE_BOUNDED_REASON,
   type FinnedBody,
 } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
@@ -160,50 +159,20 @@ describe('refusals of flat plates', () => {
   });
 });
 
-describe('bounded, not measured (0016 section 21)', () => {
-  it('a rounded leading edge swept 66.4 deg at M 2.8 (M_n 1.12): bounded between its sweep and 60 deg', () => {
+describe('rounded leading edges swept beyond 60 deg: refused, as main refuses them (0014 section 10.7 (ab), second addendum)', () => {
+  it('a plate at 66.4 deg, M 2.8: the sweep reason, its bounded term waiting on fig. 17', () => {
     const steep = clippedDeltaPlanform({ rootChord: 2, span: 0.7, taperRatio: 0.2 });
     const r = parts(config(undefined, steep), 2.8);
-    expect(r.refusals).toEqual([]);
-    const c = named(r, 'fin leading edges');
-    const n = roundedLeadingEdgeDrag({
-      mach: 2.8,
-      radius: 0.025,
-      faceAngle: 0,
-      tanLeadingEdgeSweep: steep.tanLeadingEdge,
-      reynoldsOnDiameter: 2e6 * 0.05,
-    });
-    expect(n.bounded).toBeDefined();
-    const cd = (3 * n.dragPerSpan * steep.span) / area;
-    expect(c.cd).toBeCloseTo(cd, 15);
-    expect(c.low).toBeCloseTo(n.band.low * cd, 15);
-    expect(c.high).toBeCloseTo(n.band.high * cd, 15);
-    expect(c.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
-    expect(c.label.startsWith('bounded, not measured: swept 66.4 deg')).toBe(true);
-    expect(c.label).toMatch(/; on a flat plate, a semicircular nose \(0016\)$/);
-    // Each bound's own source in the band text (0014 section 10.2), built
-    // here from the two terms the library returns: their data, their bands
-    // rounded outward and their regimes.
-    const { lower, upper } = n.bounded!;
-    expect(lower.transonic).toBeDefined();
-    expect(upper.transonic).toBeDefined();
-    const two = (lo: number, hi: number): string =>
-      `${(Math.floor(lo * 100 + 1e-9) / 100).toFixed(2)} to ${(Math.ceil(hi * 100 - 1e-9) / 100).toFixed(2)}`;
-    const source = (t: typeof lower): string =>
-      'NASA CR-149372 and TN 2960, front side over modified Newtonian, ' +
-      `${two(t.band.low, t.band.high)} (${t.regime}, swept, with RM A55H31's sweep allowance)`;
-    expect(source(lower)).not.toBe(source(upper));
-    expect(c.band).toBe(
-      "bounded, not measured: the whole gap between the term at 66.4 deg at its band's low end (" +
-        `${source(lower)}) and the term at 60 deg at its band's high end (${source(upper)}), ` +
-        `C_D ${c.low.toFixed(4)} to ${c.high.toFixed(4)}, a gap of ${(c.high - c.low).toFixed(4)}`,
+    expect(r.refusals.map((x) => `${x.component}: ${x.reason}`)).toEqual([
+      'fin leading edges: swept-leading-edge',
+    ]);
+    expect(r.refusals[0]!.message).toMatch(
+      /^a rounded leading edge swept 66\.4 deg is refused: .* waits on two fresh readings of TN 3861 fig\. 17/,
     );
+    expect(r.components.find((c) => c.name === 'fin leading edges')).toBeUndefined();
   });
-});
 
-describe("a rounded wedge's edge swept beyond 60 deg (finned-body's single-wedge path)", () => {
-  it('is bounded, named for the claim, its band text naming both sources', () => {
-    // A single wedge of constant chord swept 62 deg front and back, M 2.8 (M_n 1.31 at 62 deg).
+  it("a rounded wedge's edge at 62 deg (finned-body's single-wedge path): refused the same way", () => {
     const sweep = 62 * (Math.PI / 180);
     const swept = trapezoidalPlanform({
       rootChord: 1.5,
@@ -220,11 +189,9 @@ describe("a rounded wedge's edge swept beyond 60 deg (finned-body's single-wedge
       },
     };
     const r = parts(c, 2.8);
-    const le = named(r, 'fin leading edges');
-    expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
-    expect(le.label.startsWith('bounded, not measured: swept 62.0 deg')).toBe(true);
-    expect(le.band).toMatch(/^bounded, not measured: the whole gap between the term at 62\.0 deg/);
-    expect(le.band).toContain("with RM A55H31's sweep allowance");
+    expect(r.refusals.find((x) => x.component === 'fin leading edges')!.reason).toBe(
+      'swept-leading-edge',
+    );
   });
 });
 

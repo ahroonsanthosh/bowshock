@@ -1,17 +1,25 @@
 /**
  * Rounded leading edges swept beyond 60 deg, bounded, not measured
- * (src/fins/rounded-leading-edge.ts; docs/design/0016-fin-edges-of-flat-plates.md
- * section 21.2; 0014 section 10.7 (ab)): the lower bound is the term at the
- * sweep at its band's low end, the upper the term at 60 deg at its band's
- * high end, the midpoint served; the ordering's ingredients (the term falls
- * with sweep; fig. 12's per-span drag falls with yaw) and the domain.
+ * (src/fins/rounded-leading-edge.ts, `roundedLeadingEdgeBeyond60`;
+ * docs/design/0016-fin-edges-of-flat-plates.md section 21.2; 0014 section
+ * 10.7 (ab) and its addenda): the lower bound is the term at the sweep at
+ * its band's low end, the upper the term at 60 deg at its band's high end,
+ * the midpoint; the ordering's ingredients (the term falls with sweep;
+ * fig. 12's per-span drag falls with yaw) and the domain. Kept unwired:
+ * the served term refuses sweeps beyond 60 deg, as main does, until TN 3861
+ * fig. 17 is read twice (the re-review of 2026-10-27), and the bounded term
+ * refuses beyond 75.1 deg at any Mach number.
  */
 
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { FinRefusal } from '../../src/fins/refusal';
 import { RM_A55H31_FIG12, RM_A55H31_FIG12_SECOND } from '../../src/fins/rm-a55h31';
 import {
+  LARGEST_YAWED_SWEEP_DEGREES,
   pitotPressureCoefficient,
+  roundedLeadingEdgeBeyond60,
   roundedLeadingEdgeDrag,
   ROUNDED_EDGE_BAND,
   roundedEdgeBandLow,
@@ -22,14 +30,19 @@ import {
 const deg = Math.PI / 180;
 const radius = 0.0015;
 
+const input = (mach: number, sweepDeg: number, re: number) => ({
+  mach,
+  radius,
+  faceAngle: 0,
+  tanLeadingEdgeSweep: Math.tan(sweepDeg * deg),
+  reynoldsOnDiameter: re,
+});
+/** The bounded term (unwired); at 60 deg or less it is the served term. */
 const at = (mach: number, sweepDeg: number, re = 2e5) =>
-  roundedLeadingEdgeDrag({
-    mach,
-    radius,
-    faceAngle: 0,
-    tanLeadingEdgeSweep: Math.tan(sweepDeg * deg),
-    reynoldsOnDiameter: re,
-  });
+  roundedLeadingEdgeBeyond60(input(mach, sweepDeg, re));
+/** The served term. */
+const served = (mach: number, sweepDeg: number, re = 2e5) =>
+  roundedLeadingEdgeDrag(input(mach, sweepDeg, re));
 
 function failure(f: () => unknown): FinRefusal {
   try {
@@ -78,35 +91,69 @@ describe('the bounds', () => {
     expect(high / low).toBeGreaterThan(1.5);
   });
 
-  it('the label says bounded, and carries each term whole: its sources, regime and limits', () => {
+  it("the label says bounded, and carries each bound's source, band and qualifiers, shortened", () => {
     const e = at(2.8, 63);
-    expect(e.label.startsWith('bounded, not measured: swept 63.0 deg, beyond the 60 deg')).toBe(
-      true,
-    );
-    expect(e.label).toMatch(/the band the whole gap between two terms/);
+    const { lower, upper } = e.bounded!;
+    expect(e.label.startsWith('bounded, not measured: swept 63.0 deg, past the 60 deg')).toBe(true);
+    expect(e.label).toMatch(/the band the whole gap between two terms, each an analogy/);
     expect(e.label).toContain(
-      `Lower: the term at 63.0 deg (normal Mach number ${e.normalMach.toFixed(3)}) at its band's low end`,
+      `Lower: the term at 63.0 deg (M_n ${lower.normalMach.toFixed(3)}) at its band's low end, ` +
+        `${lower.band.low.toFixed(3)} of it: the `,
     );
-    expect(e.label).toContain(`that term is ${e.bounded!.lower.label}. Upper:`);
-    expect(e.label).toContain(`that term is ${e.bounded!.upper.label}. The ordering:`);
+    expect(e.label).toContain(
+      `Upper: the term at 60 deg (M_n ${upper.normalMach.toFixed(3)}) at its band's high end, ` +
+        `${upper.band.high.toFixed(3)} of it: the `,
+    );
+    // Each term's band and source.
+    expect(e.label).toContain(
+      `its band ${lower.band.low.toFixed(3)} to ${lower.band.high.toFixed(3)} with`,
+    );
+    expect(e.label).toContain(
+      `its band ${upper.band.low.toFixed(3)} to ${upper.band.high.toFixed(3)} with`,
+    );
+    expect(e.label).toMatch(/NASA CR-149372/);
+    // The lower term's sweep clause: the allowance carried past where it is checked, and no
+    // "no yawed datum ... at a served sweep" (the re-review of 2026-10-27).
+    const lowerPart = e.label.slice(e.label.indexOf('Lower:'), e.label.indexOf('Upper:'));
+    expect(lowerPart).toMatch(
+      /the sweep allowance 0\.950 to 1\.220 carried past 60 deg, where its yawed-cylinder checks end\. $/,
+    );
+    expect(lowerPart).not.toMatch(/no yawed datum/);
+    expect(e.label).not.toMatch(/at a served sweep/);
+    const upperPart = e.label.slice(e.label.indexOf('Upper:'), e.label.indexOf('The ordering:'));
+    expect(upperPart).toMatch(
+      /extrapolated in normal Mach number \(checked at M_n 3\.38 to 6\.65; no yawed datum below M_n 1\.95 at 60 deg of sweep or less\)\. $/,
+    );
+    // The ordering names figs. 15 and 16 (read twice) and fig. 17 (its readings pending).
     expect(e.label).toMatch(
-      /rests on the principle and on TN 3861's crossflow points at 70 and 75 deg/,
+      /rests on the principle and on TN 3861's crossflow points at 70, 75 and 75\.1 deg, every one above the principle/,
     );
-    expect(e.label).toMatch(/fig\. 17, read once\), every one above the principle/);
-    // The 60 deg term is no longer said to be checked on yawed cylinders at its own M_n.
-    expect(e.label).not.toMatch(/largest sweep checked on yawed cylinders/);
-    expect(e.label).not.toMatch(/principle alone/);
-    expect(e.label).toMatch(/every one above the principle \(0016 section 21\.2\)$/);
+    expect(e.label).toMatch(
+      /figs\. 15 and 16, read twice; their front sides estimated with fig\. 17/,
+    );
+    expect(e.label).toMatch(
+      /its two readings pending, the earlier one not counted\) \(0016 section 21\.2\)$/,
+    );
+    expect(e.label).not.toMatch(/largest sweep checked on yawed cylinders|principle alone/);
+    // Shorter than the about 2,800 characters the re-review found.
+    expect(e.label.length).toBeLessThan(1800);
+    expect(at(2.2, 60.1).label.length).toBeLessThan(1800);
   });
 
-  it('beyond 75.1 deg, the largest yawed sweep measured, the label says the ordering rests on the principle alone', () => {
-    // M 5.0: M_n 1.13 at 77 deg, 2.5 at 60 deg.
-    const e = at(5.0, 77);
-    expect(e.bounded).toBeDefined();
-    expect(e.label).toMatch(
-      /every one above the principle; beyond 75\.1 deg, the largest sweep among them, it rests on the principle alone \(0016 section 21\.2\)$/,
-    );
-    expect(at(5.0, 75).label).not.toMatch(/principle alone/);
+  it('beyond 75.1 deg, the largest sweep at which a yawed cylinder is measured: refused at any Mach number', () => {
+    expect(LARGEST_YAWED_SWEEP_DEGREES).toBe(75.1);
+    // M 5.0 at 78 deg was served from 0.869 of the term before the re-review.
+    for (const [m, sw] of [
+      [5.0, 78],
+      [4.0, 75.2],
+      [6.0, 80],
+    ] as const) {
+      const e = failure(() => at(m, sw));
+      expect(e.reason).toBe('swept-leading-edge');
+      expect(e.message).toMatch(/is refused at any Mach number: beyond 75\.1 deg/);
+      expect(e.message).toMatch(/the principle alone not sufficing \(0016 section 21\.2\)$/);
+    }
+    expect(at(5.0, 75).bounded).toBeDefined();
   });
 
   it("the review's case either side of 60 deg: M 2.2, a 3 mm plate, Re_D 2e5", () => {
@@ -115,13 +162,16 @@ describe('the bounds', () => {
     // Every qualifier the 59.9 deg term carries, the 60.1 deg bounded term carries too.
     for (const q of [
       'extrapolated in Reynolds number',
-      'no yawed datum below M_n 1.95 at a served sweep',
+      'no yawed datum below M_n 1.95',
       'NASA CR-149372',
-      'the sweep allowance extrapolated in normal Mach number',
+      'extrapolated in normal Mach number',
     ]) {
       expect(below.label).toContain(q);
       expect(beyond.label).toContain(q);
     }
+    // At 59.9 deg the served term's own words; past 60 deg, the datum clause only for the 60 deg term.
+    expect(below.label).toContain('no yawed datum below M_n 1.95 at a served sweep');
+    expect(beyond.label).toContain('no yawed datum below M_n 1.95 at 60 deg of sweep or less');
     expect(beyond.bounded!.lower.regime).toBe('extrapolated in Reynolds number');
     expect(beyond.bounded!.upper.regime).toBe('extrapolated in Reynolds number');
     expect(beyond.bounded!.upper.transonic).toBeDefined();
@@ -315,5 +365,51 @@ describe('the domain: both terms must be served', () => {
     const e = failure(() => at(3.0, 62, 1.2e4));
     expect(e.message).toMatch(/at 62\.0 deg, Reynolds number/);
     expect(e.message).toMatch(/; and at 60 deg, Reynolds number/);
+  });
+});
+
+describe('served: beyond 60 deg refused, as main refuses it, until fig. 17 is read twice', () => {
+  it('every sweep past 60 deg is refused with the sweep reason first and every other reason', () => {
+    const e = failure(() => served(2.8, 66.4));
+    expect(e.reason).toBe('swept-leading-edge');
+    expect(e.message).toMatch(
+      /^a rounded leading edge swept 66\.4 deg is refused: the yawed-cylinder checks of the independence principle reach 60 deg \(RM A55H31 fig\. 12\), and past them the bounded term waits on two fresh readings of TN 3861 fig\. 17 \(0014 section 10\.7 \(ab\), second addendum; 0016 section 21\.2\)$/,
+    );
+    // M 2.0 at 62 deg: the normal Mach number's reason too, joined.
+    const f = failure(() => served(2.0, 62));
+    expect(f.reason).toBe('swept-leading-edge');
+    expect(f.message).toMatch(
+      /; and the Mach number normal to the edge, M cos\(sweep\), 0\.9389 is below 1\.0/,
+    );
+    // Beyond 75.1 deg the words say no yawed cylinder is measured there at all.
+    expect(failure(() => served(5.0, 78)).message).toMatch(
+      /and beyond 75\.1 deg no yawed cylinder is measured at all \(0016 section 21\.2\)$/,
+    );
+    // 60 deg itself is served, the measured term.
+    expect(served(3.0, 60).bounded).toBeUndefined();
+    expect(served(3.0, 60).normalMach).toBeCloseTo(1.5, 9);
+  });
+
+  it('M 6.0 at 60 deg: M cos(sweep) 3.0000000000000004 is the top of the range, not above it', () => {
+    expect(6.0 * Math.cos(Math.atan(Math.tan(60 * deg)))).toBeGreaterThan(3.0);
+    expect(served(6.0, 60).normalMach).toBeCloseTo(3.0, 12);
+    // And the bounded term's upper bound at M 6.0 (its lower at 75 deg, M_n 1.55).
+    expect(at(6.0, 75).bounded!.upperNormalMach).toBeCloseTo(3.0, 12);
+    // Clearly above 3.0 is still refused.
+    expect(failure(() => served(3.0001, 0)).reason).toBe('leading-edge-range');
+  });
+
+  it('kept unwired: no module under src/ but its own calls the bounded term', () => {
+    const sources = (dir: string): string[] =>
+      readdirSync(dir).flatMap((f) => {
+        const p = join(dir, f);
+        return statSync(p).isDirectory() ? sources(p) : p.endsWith('.ts') ? [p] : [];
+      });
+    const callers = sources('src').filter(
+      (p) =>
+        !p.endsWith('rounded-leading-edge.ts') &&
+        /roundedLeadingEdgeBeyond60/.test(readFileSync(p, 'utf8')),
+    );
+    expect(callers).toEqual([]);
   });
 });
