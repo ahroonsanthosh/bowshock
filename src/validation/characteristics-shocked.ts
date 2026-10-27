@@ -241,11 +241,26 @@ export interface ShockedSolution extends CharacteristicsSolution {
   readonly formed: { readonly x: number; readonly y: number } | null;
   /** Where it reached the bow shock, or null if it did not. */
   readonly merged: { readonly x: number; readonly y: number } | null;
+  /**
+   * The fewest points on a line less the first march's number at the same
+   * step (the shock's two sides counted as one), over the lines: negative
+   * where absorbed points left a line shorter; with `reseed`, after it
+   * (never negative).
+   */
+  readonly shortfall: number;
+  /** Points inserted by re-seeding, over the march. */
+  readonly inserted: number;
 }
 
 export interface ShockedOptions extends CharacteristicsFromOptions {
   /** Verification only (characteristicNetwork). */
   readonly network?: NetworkOptions;
+  /**
+   * The fourth march (W6 README section 10): each new line re-seeded to
+   * the first march's number of points, the longest gaps halved first.
+   * Off, the march is the third, as recorded.
+   */
+  readonly reseed?: boolean;
 }
 
 /** Signed distance of c from the line through a at the given angle (positive above-left). */
@@ -416,6 +431,75 @@ export function characteristicsFromShocked(
     };
   };
 
+  let shortfall = 0;
+  let inserted = 0;
+  /**
+   * The re-seeding rule (README section 10): while the line has fewer
+   * points than `target` (the shock's two sides counted as one), its
+   * longest gap, never the shock's, nearest the top on a tie, takes a
+   * point at its middle in chord length, interpolated (cubic, through the
+   * gap's points and their outer neighbours on the same side of the
+   * shock; linear where that side has fewer than four), its entropy from
+   * the table at its stream function. Records the shortfall after (the
+   * third march's, without `reseed`, from absorption alone).
+   */
+  const reseed = (line: Line, target: number): Line => {
+    const count = () => points.length - (shockAt === null ? 0 : 1);
+    const points = [...line.points];
+    let shockAt = line.shock?.index ?? null;
+    while (options.reseed && count() < target) {
+      let best = -1;
+      let longest = -1;
+      for (let i = 0; i + 1 < points.length; i++) {
+        if (i === shockAt) continue;
+        const gap = Math.hypot(points[i + 1]!.x - points[i]!.x, points[i + 1]!.y - points[i]!.y);
+        if (gap > longest) {
+          longest = gap;
+          best = i;
+        }
+      }
+      // The side of the shock the gap lies on, as a range of indices.
+      const lo = shockAt === null || best > shockAt ? (shockAt === null ? 0 : shockAt + 1) : 0;
+      const hi = shockAt === null || best > shockAt ? points.length - 1 : shockAt;
+      const ids =
+        best - 1 >= lo && best + 2 <= hi ? [best - 1, best, best + 1, best + 2] : [best, best + 1];
+      const chord = [0];
+      for (let k = 1; k < ids.length; k++) {
+        const a = points[ids[k - 1]!]!;
+        const b = points[ids[k]!]!;
+        chord.push(chord[k - 1]! + Math.hypot(b.x - a.x, b.y - a.y));
+      }
+      const g = ids.length === 4 ? 1 : 0;
+      const t = 0.5 * (chord[g]! + chord[g + 1]!);
+      const weights = ids.map((_, a) => {
+        let w = 1;
+        for (let b = 0; b < ids.length; b++) {
+          if (b !== a) w *= (t - chord[b]!) / (chord[a]! - chord[b]!);
+        }
+        return w;
+      });
+      const mix = (f: (q: Point) => number) =>
+        weights.reduce((sum, w, a) => sum + w * f(points[ids[a]!]!), 0);
+      const psi = mix((q) => q.psi);
+      const q: Point = {
+        x: mix((q) => q.x),
+        y: mix((q) => q.y),
+        theta: mix((q) => q.theta),
+        p: mix((q) => q.p),
+        psi,
+        k: kAll(psi),
+      };
+      points.splice(best + 1, 0, q);
+      if (shockAt !== null && best < shockAt) shockAt++;
+      inserted++;
+    }
+    shortfall = Math.min(shortfall, count() - target);
+    return {
+      points,
+      shock: shockAt === null ? null : { index: shockAt, beta: line.shock!.beta },
+    };
+  };
+
   const result = () => ({
     wall,
     shock,
@@ -425,13 +509,15 @@ export function characteristicsFromShocked(
     embedded,
     formed,
     merged,
+    shortfall,
+    inserted,
   });
   // The triangle of the data's dependence, as characteristicsFrom.
   let line: Line = { points: [data[m]!], shock: null };
   for (let a = m - 1; a >= 0; a--) {
     const next = step(data[a]!, line, 0);
     if (next === null) return result();
-    line = next;
+    line = reseed(next, 2 * (m - a) + 1);
   }
   options.onLine?.(line.points);
   // The march, each new line from a bow-shock point.
@@ -452,8 +538,8 @@ export function characteristicsFromShocked(
     const next = step(s.point, line, 2);
     if (next === null) break;
     shock.push({ x: s.point.x, y: s.point.y, angle: beta });
-    options.onLine?.(next.points);
-    line = next;
+    line = reseed(next, 2 * m + 1);
+    options.onLine?.(line.points);
   }
   return result();
 }
