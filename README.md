@@ -36,7 +36,7 @@ rather than guessing.
 rockets have at least one part that isn't yet. Rounded nose tips, swept
 fins, boat-tails, square or rounded fin edges and anything below Mach 1.5
 are the usual blockers. In our test set of 2,000 typical rockets, each
-flown at four speeds (8,000 cases), only 228 cases get a total today. For those, bowshock still shows the parts it can work out, and a
+flown at four speeds (8,000 cases), only 209 cases get a total today. For those, bowshock still shows the parts it can work out, and a
 "drag is at least this much" floor where that is safe.
 
 **Not built yet:** viscous (RANS) flow, angle of attack, motor plume.

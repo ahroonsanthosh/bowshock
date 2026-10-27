@@ -1868,5 +1868,42 @@ At the audit's default size (2,000 rockets, 8,000 cases,
 (Mach 1.5 to 1.8: 2.5% to 4.1%; 1.8 to 3.0: 5.2% to 5.4%), the cross-check
 agreeing on all 1,200 cases checked.
 
+_2026-10-27, a note under (z): the ruling after the review of A1's
+fixes, which narrows A1._ The review asked 0015 section 12 to say which
+way each driver the sweep moves acts on F, and the record now says the
+juncture vortex's direction is not shown. Under section 10.2 ("without
+the ordering shown, the case stays refused") the coordinator ruled:
+flat-faced fins with the trailing edge unswept and the leading edge
+swept more than 0 and under 45 deg are not shown to lie between the
+unswept plate and RM L52E06's 45 deg plates below Mach 1.62, where the
+floor is those plates' relief alone, and are refused there, at the base
+term, the page's words naming the missing measurement (base pressures
+with such plates at the base below Mach 1.62). From Mach 1.62 they stay
+served: there RM L52J21a measures at most 5% relief with fins near the
+base, against a floor 16% down (F 0.838). Plates swept 45 deg or more,
+and the unswept plate, are not changed. The code went in first (ad7b970)
+and this note the same day, the ruling having come after the code was
+reviewed; no data enter and no band moves. At the audit's default size,
+after main's audit fix (5921198): totals served 228 of 8,000 without the
+ruling and 209 with it (Mach 1.5 to 1.8: 111 to 92; 1.8 to 3.0: 117
+either way), against main's 181; with the nose assumed served 743 and 687.
+
+Main's unswept plates (10.7 (i)), registered and reviewed earlier on a
+physical argument, are not changed by this ruling, and whether they stay
+served below Mach 1.62 is an open question for the owner. The review's
+reasoning: below Mach 1.62 the floor of the flat-plate bracket is RM
+L52E06's relief with plates swept 45 deg alone, measured at Mach 1.06 to
+1.10, F 0.852 at 1.06 against the floor's 0.838, a margin of 0.014; Hart
+traces that relief to the fin-body junctures' low-momentum air, and the
+unswept plate stands the strongest juncture vortex of any sweep; nothing
+measured says whether a stronger vortex adds relief or takes it away, so
+an unswept plate could relieve more than the floor allows there, and no
+base pressure with unswept plates at the base below Mach 1.62 says it
+does not. By the rule applied above it would be refused; it was
+registered and reviewed under (i) as an argument from the slope
+mechanism and the measured relief, so the owner decides. (0015 section
+12 also names the same open direction for plates swept beyond 60 deg
+below Mach 1.62, which the ruling does not reach, for the coordinator.)
+
 Letters (w) to (y) are allocated by the coordinator on other branches;
 the next free letter is the coordinator's to allocate.
