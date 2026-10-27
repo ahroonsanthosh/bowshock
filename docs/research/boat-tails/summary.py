@@ -52,7 +52,9 @@ for path in sorted(glob.glob(os.path.join(out, '*.jsonl'))):
     orders = [order(*vals[k:k + 3]) for k in range(len(vals) - 2)]
     if orders:
         print('  observed orders', [o if o is None else round(o, 3) for o in orders])
-    if len(vals) >= 3 and orders[-1] is not None:
+    if len(vals) >= 3 and orders[-1] is not None and orders[-1] <= 0:
+        print('  no band: the finest triple\'s order is not positive (the changes grow with refinement)')
+    elif len(vals) >= 3 and orders[-1] is not None:
         p = min(orders[-1], 2)
         e21 = vals[-2] - vals[-1]
         gci = 1.25 * abs(e21) / (2 ** p - 1)
