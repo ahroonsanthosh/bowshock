@@ -893,7 +893,7 @@ first march's lines judged by W5's criterion on every grid):
 | VK 5 cal, 0.03, M 1.3 | yes | 3 (90.6%, 80.8%, -9.1%) | yes |
 | VK 5 cal, 0.03, M 3 | yes | 1 (-0.6%) | no |
 | VK 5 cal, 0.15, M 1.3 | yes | 1 (-7.9%) | no |
-| VK 5 cal, 0.15, M 3 | yes | its march restarted at 08:09 | - |
+| VK 5 cal, 0.15, M 3 | yes | 1 (-0.5%; its march finished at 08:51) | no |
 
 On the three cases whose passing lines carry half the drag or more, each
 such line's fitted drag downstream minus the march falls by a factor of
