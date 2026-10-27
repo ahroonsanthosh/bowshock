@@ -7,7 +7,10 @@
 // indices, "scan", or "auto"), MOC_RUN (intervals), MOC_OUT (text log),
 // MOC_JSONL (records), MOC_ENTROPY ("cells", the first march, default; or
 // "shock", the second march of README section 6: each starting point's
-// entropy from its streamline's crossing of the fitted shock, entropy.ts).
+// entropy from its streamline's crossing of the fitted shock, entropy.ts),
+// MOC_MARCH ("plain", characteristicsFrom, default; or "shocked", the third
+// march of README section 9, characteristicsFromShocked, which fits an
+// embedded shock; its records add where the shock formed and merged).
 //
 // "auto" chooses the lines once, on the first grid (refinement 1), before
 // any march: the lines of the nose behind its sonic line whose least Mach
@@ -17,6 +20,7 @@
 import { appendFileSync } from 'node:fs';
 import { it } from 'vitest';
 import { characteristicsFrom } from '../../src/validation/characteristics';
+import { characteristicsFromShocked } from '../../src/validation/characteristics-shocked';
 import { caseFromEnv } from './common';
 import { shockEntropyLine } from './entropy';
 import { downstreamDrag, effectiveMach, fittedDragFrom, gamma, lineData, loadFit } from './fitdata';
@@ -34,6 +38,8 @@ it('moc', () => {
   const count = Number(process.env.MOC_COUNT ?? 7);
   const entropy = process.env.MOC_ENTROPY ?? 'cells';
   if (entropy !== 'cells' && entropy !== 'shock') throw new Error(`MOC_ENTROPY ${entropy}`);
+  const march = process.env.MOC_MARCH ?? 'plain';
+  if (march !== 'plain' && march !== 'shocked') throw new Error(`MOC_MARCH ${march}`);
   let lines: number[] = [];
   rs.forEach((r, n) => {
     const t0 = performance.now();
@@ -94,13 +100,22 @@ it('moc', () => {
       for (const intervals of runs) {
         const t1 = performance.now();
         try {
-          const sol = characteristicsFrom(f.body, start, { mach, gamma, intervals });
+          const options = { mach, gamma, intervals };
+          const shocked = march === 'shocked' ? characteristicsFromShocked(f.body, start, options) : null;
+          const sol = shocked ?? characteristicsFrom(f.body, start, options);
           const drag = downstreamDrag(f.body, mach, sol.wall);
+          const embedded = shocked && {
+            formed: shocked.formed,
+            merged: shocked.merged,
+            points: shocked.embedded.length,
+            strongest: shocked.embedded.reduce((a, q) => Math.max(a, q.pressureRatio), 1),
+          };
           appendFileSync(
             JSONL,
             JSON.stringify({
               case: tag,
               entropy,
+              ...(march === 'plain' ? {} : { march, embedded }),
               massRatio,
               entropyChange,
               r,
@@ -116,7 +131,7 @@ it('moc', () => {
             }) + '\n',
           );
           log(
-            `    MOC ${intervals}: ${drag.toPrecision(12)}, fitted - MOC ${((fitted - drag) / f.drag).toExponential(3)} of the drag, mass ${sol.massBalance.toExponential(2)}, penetration ${sol.penetration.toExponential(1)}, ${((performance.now() - t1) / 1000).toFixed(0)} s`,
+            `    MOC ${intervals}: ${drag.toPrecision(12)}, fitted - MOC ${((fitted - drag) / f.drag).toExponential(3)} of the drag, mass ${sol.massBalance.toExponential(2)}, penetration ${sol.penetration.toExponential(1)}${embedded ? `, embedded shock ${embedded.formed ? `formed at x ${embedded.formed.x.toExponential(4)}` : 'none'}${embedded.merged ? `, merged at x ${embedded.merged.x.toExponential(4)}` : ''}, ${embedded.points} points, pressure ratio up to ${embedded.strongest.toFixed(5)}` : ''}, ${((performance.now() - t1) / 1000).toFixed(0)} s`,
           );
         } catch (e) {
           log(`    MOC ${intervals}: ${(e as Error).message}`);
