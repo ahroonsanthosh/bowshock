@@ -831,3 +831,37 @@ last digit, as they should: the pressure is taken ahead of the shock's
 formation, and the formation is found before any point is absorbed, so
 before any is re-seeded. The orders are 1.99 and 1.00, and on the finest
 the errors are 6.0e-8 and 0.0053.
+
+**V3 fails** (run once, 08:29 to 08:38 UTC; `results/v3.json`):
+
+| n | last wall point | formed (x, r) | merged (x, r) | points inserted | mass balance | penetration | drag |
+|---|---|---|---|---|---|---|---|
+| 640 | 5.968 | 1.1639, 0.3190 | 3.6778, 2.2278 | 371 | 5.86e-4 | 0 | 0.2013147238 |
+| 1280 | 5.987 | 1.1495, 0.3061 | 3.6677, 2.2218 | 750 | 1.91e-4 | 0 | 0.2012748493 |
+| 2560 | 5.995 | 1.1468, 0.3039 | 3.6711, 2.2239 | 1500 | 7.66e-5 | 1.3e-3 | 0.2012938833 |
+| 5120 | 5.996 | 1.1455, 0.3027 | 3.6703, 2.2234 | 3005 | 3.06e-5 | 2.3e-4 | 0.2012869316 |
+
+1. Complete: pass. On every resolution the march reached the body's
+   end, the embedded shock formed near x 1.15 and merged with the bow
+   shock near x 3.67, and no line fell short of the re-seeding target.
+2. Mass balance below 3.5e-5 on 2560 and 5120 intervals: **fail**. It
+   is 7.66e-5 on 2560 (3.06e-5 on 5120).
+3. The mass balance's observed order, least squares over the four
+   resolutions, is 1.41: pass.
+4. The drag's change from 2560 to 5120 is 3.45e-5 of itself, just inside
+   3.5e-5. But its observed order over 1280, 2560 and 5120 does not
+   exist: **fail**. The changes alternate in sign (-2.0e-4, +9.5e-5,
+   -3.5e-5 of the drag from 640 on), so the ratio of successive changes
+   is negative.
+
+So the fourth march fails V3, and by section 10 **the marches stop**.
+V2 has not been run with the fourth march. The capped noses' forward
+regions, ahead of the lines where the first march passes W5's criterion,
+stay unreferenced. This goes to the coordinator for the owner.
+
+Read plainly, re-seeding cures the third march's collapse: lines keep
+their points, the march completes past the merge, and the mass balance
+falls with the intervals at order 1.4. But at the resolution W5's
+criterion is applied to (2560 intervals), the mass balance is still
+twice the criterion. The drag converges in size, not in sign, so it has
+no observed order.
