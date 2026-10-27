@@ -2062,3 +2062,12 @@ fails a test:
 "check that sets nothing" stand as written, as the record of what was
 argued. Their front-side estimates rest on the fig. 17 reading that
 does not count. The fresh readings replace them when they are paired.
+
+**Coverage.** The population re-run on d03083d (`docs/research/refusals/out/impact.out`) matches main's run
+(`out/2026-10-26-before-bounded-edges/`) line for line, apart from two
+labels: the square-cut edge's and the rounded edge's past 60 deg. Totals
+are served for 153 of 8000 cases. The refusal "rounded leading edge swept
+beyond 60 deg" is back at 3.0% of cases, and the cross-check against
+`src/total` agrees on 1200 of 1200. `impact.json` is unchanged. The run
+with the bounded edges served is kept in
+`out/2026-10-27-bounded-edges-served/`: 153 of 8000 there too.
