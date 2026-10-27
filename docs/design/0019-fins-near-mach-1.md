@@ -888,7 +888,9 @@ formed on two of them, and the shape widening's size on two of them.
      numbers where the bow wave is detached" (RM A51J25 p. 14), and gives
      no free-stream values, so below 1.5 these symbols' places are an
      approximation. They are kept, the wider choice: they set the band's
-     low end at 1.35 to 1.45 (0.921, against the floor's 0.93).
+     low end at 1.35 to 1.45 (0.921, against the floor's 0.93). (Stale,
+     corrected 2026-10-27 after the review: that held before RM A52E01
+     entered; RM A52E01 sets the low end at 1.35 to 1.45 now, item 11.)
    - _Faces diverging toward the base_ (single wedges): R&M 3348 table 3
      (unswept, alpha 0 deg, all six holes) and fig. 30a's unswept circles,
      kept as one envelope where they disagree (M 1.11 to 1.20; the
@@ -957,7 +959,11 @@ formed on two of them, and the shape widening's size on two of them.
    because every thick-layer point (RM A51J11, RM A52E01) is compared with
    the nominal times K(1.5, X) at its own X (at most 4.5, where fig.
    29(a)'s readings end; X above 4.5 takes K at 4.5, which lowers that
-   point's ratio and so widens the band, never narrows it).
+   point's ratio and so widens the band, never narrows it). (Corrected
+   2026-10-27 after the review: lowering a ratio widens the low end where
+   that point sets it, but would narrow the high end where it set that.
+   Only RM A51J11's h/t 0.3 reaches X above 4.5, and it sets no high end;
+   item 11 gives the margin.)
 
 5. **The band.** For each point, base drag measured over modelled, r =
    Cp_b / (Cp_b,nominal(M_0) K_nom(1.5, X)), K = 1 for X up to 1, taken
@@ -1183,7 +1189,9 @@ formed on two of them, and the shape widening's size on two of them.
    reversed) caught.
 
 10. **Results (2026-10-27, after the three-way pairing; written after the
-    values were seen, and changing no rule above).**
+    values were seen, and changing no rule above).** Superseded in its
+    numbers by item 11, after the independent review; kept as the record
+    of what was reviewed (9699737^..5ec61dd).
 
     - _The points._ 562 held (`src/base/fin-te-transonic-data.ts`, Mach
       0.97 to 1.75, every reading), 384 entering the band at Mach 1.0 to
@@ -1202,8 +1210,10 @@ formed on two of them, and the shape widening's size on two of them.
       23 contradictions. RM A51J11 fig. 14: 293 and 292 pairs (readers A
       and B), none. Fig. 15: 186 and 181 pairs, 12 and 11 contradictions,
       all at Mach 1.06, h/t 0.6 (faces closing about 1.0 deg) with more
-      base drag than the flat h/t 1.0 at 2y/b 0.40 to 0.875 in both
-      readings, by 0.001 to 0.13 in Cp_b (beyond the two rows' summed
+      base drag than the flat h/t 1.0 at 2y/b 0.40 to 0.875 in reading A
+      and 0.40 to 0.85 in reading B (corrected 2026-10-27 after the
+      review; first written "0.40 to 0.875 in both readings"), by 0.001
+      to 0.13 in Cp_b (beyond the two rows' summed
       errors from 2y/b 0.50 outward in reading A and from 0.45 in reading
       B). RM A52E01: not testable in any of its 16 panels (no panel has a
       wing 3 and a wing 4 curve that both pass the rule; every supersonic
