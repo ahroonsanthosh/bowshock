@@ -10,6 +10,7 @@ import {
   BLUNT_AHEAD_OF_BASE,
   BLUNT_EDGE_NOTE,
   EVERY_REASON_STEPS,
+  adviceFor,
   followAdvice,
   FINS_ON_BASE_ROUTING_LABEL,
   MORE_THAN_A_CHORD_AHEAD,
@@ -26,6 +27,9 @@ import {
   hasBevels,
   shapeLimit,
   W1_FLAT_RELIEF_LOW,
+  W1_FLAT_SUBSONIC_EDGE_MARK,
+  W1_FLAT_SWEPT_TE_MARK,
+  W1_FLAT_UNDER_45_MARK,
   W1_LONGER_BEVELS,
   W1_OUTSIDE_AT,
   W1_SECTION_SHAPE_LIMIT,
@@ -1166,6 +1170,85 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     expect(() => rebuiltBodyBase(1.8, { ...f, trailingEdgeAheadOfBase: 1.2 })).toThrow(
       /^fins ending more than a root chord ahead of the base \(1\.2 root chords\)/,
     );
+  });
+});
+
+describe("a plate's swept trailing edge, and a subsonic edge beyond 60 deg, in the chain of every reason (A1's follow-up merged with A5's)", () => {
+  const plate = (t = 0.024): SymmetricSection => ({
+    x: [0, 0.1, 1],
+    halfThickness: [0, t / 2, t / 2],
+    bluntTrailingEdge: true,
+  });
+  const tan = (d: number) => Math.tan((d * Math.PI) / 180);
+  const platedFins = (le: number, te: number, xc = 0) =>
+    fins({
+      thicknessRatio: 0.024,
+      flatFaced: true,
+      trailingEdgeAheadOfBase: xc,
+      rootChordOverDiameter: 1.5,
+      nearBase: near(plate(), tan(le), tan(te)),
+    });
+  const refusalOf = (mach: number, f: BaseFins): BaseRefusal => {
+    try {
+      base(mach, f);
+    } catch (e) {
+      if (e instanceof BaseRefusal) return e;
+      throw e;
+    }
+    throw new Error('served');
+  };
+  it("a swept trailing edge alone: the words' change, that edge unswept with the leading edge kept, is the change made, and it serves", () => {
+    for (const te of [10, -10, 45]) {
+      for (const xc of [0, 0.5]) {
+        const where = `te ${te}, x/c ${xc}`;
+        const f = platedFins(50, te, xc);
+        const e = refusalOf(1.8, f);
+        expect(e.reason, where).toBe('fin-sweep');
+        expect(e.message, where).toContain(W1_FLAT_SWEPT_TE_MARK);
+        expect(e.endedBy, where).toBe('served');
+        const a = adviceFor(e, f)!;
+        expect(a.what, where).toBe('with the trailing edges unswept');
+        expect(a.fins.tanLeadingEdge, where).toBe(tan(50));
+        expect(a.fins.nearBase!.tanLeadingEdgeSweep, where).toBe(tan(50));
+        expect(a.fins.tanTrailingEdge, where).toBe(0);
+        expect(a.fins.nearBase!.tanTrailingEdgeSweep, where).toBe(0);
+        expect(() => base(1.8, a.fins), where).not.toThrow();
+      }
+    }
+  });
+  it('a swept trailing edge whose leading edge is refused too, and a subsonic edge beyond 60 deg: the fins made unswept, and served', () => {
+    for (const [mach, le, te, mark] of [
+      [1.55, 20, 10, W1_FLAT_UNDER_45_MARK],
+      [1.8, 70, 10, W1_FLAT_SUBSONIC_EDGE_MARK],
+      [1.8, 70, 0, W1_FLAT_SUBSONIC_EDGE_MARK],
+      [1.7, 60.1, 0, W1_FLAT_SUBSONIC_EDGE_MARK],
+    ] as const) {
+      const where = `M ${mach}, ${le}/${te} deg`;
+      const f = platedFins(le, te);
+      const e = refusalOf(mach, f);
+      expect(e.reason, where).toBe('fin-sweep');
+      expect(e.message, where).toContain(mark);
+      expect(e.endedBy, where).toBe('served');
+      const a = adviceFor(e, f)!;
+      expect(a.what, where).toBe('with the fins unswept');
+      expect(() => base(mach, a.fins), where).not.toThrow();
+    }
+  });
+  it('ahead of the base where the position is refused: the position first, then the sweep with the fins at the base, then served', () => {
+    for (const [le, te, mark] of [
+      [50, 10, W1_FLAT_SWEPT_TE_MARK],
+      [50, -10, W1_FLAT_SWEPT_TE_MARK],
+      [20, 0, W1_FLAT_UNDER_45_MARK],
+    ] as const) {
+      const where = `${le}/${te} deg`;
+      const e = refusalOf(1.2, platedFins(le, te, 0.5));
+      expect(e.reason, where).toBe('fins-near-base');
+      expect(e.further?.[0]?.reason, where).toBe('fin-sweep');
+      expect(e.further?.[0]?.after, where).toBe('with the fins at the base');
+      expect(e.further?.[0]?.message, where).toContain(mark);
+      expect(e.further, where).toHaveLength(1);
+      expect(e.endedBy, where).toBe('served');
+    }
   });
 });
 
