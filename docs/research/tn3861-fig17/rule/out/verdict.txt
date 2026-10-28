@@ -1,0 +1,70 @@
+0016 SECTION 21.2'S RULE, AS THE SECOND (ab) ADDENDUM WRITES IT, ON THE PAIRED TN 3861 FIG. 17
+docs/research/tn3861-fig17/rule/apply.test.ts; fig. 17: d0094f2, pairing 3d7dd16; figs. 15 and 16: 0016 section 16
+
+THE ESTIMATE'S ERROR e: F/MN against TN 2960's integrated front side over MN (both readings of TN 2960 fig. 5)
+  P04: A (1.481, 1.491); B (1.481, 1.493); A alternative (1.459, 1.502); A box (1.459, 1.502); B box (1.459, 1.504)
+  P08: A (1.957, 1.447); B (1.964, 1.447); A alternative (1.937, 1.456); A alternative (1.965, 1.449); B alternative (1.968, 1.45); A box (1.937, 1.456); B box (1.943, 1.458)
+  P12: A (2.911, 1.339); B (2.91, 1.34); A alternative (2.889, 1.35); A box (2.889, 1.35); B box (2.888, 1.351)
+  e = 0.0341, the largest over every reading, at P08 (fig. 17 B box, fig. 16 first (re-mapped), TN 2960 fig. 5 reading 1, M 1.98)
+  (on the two primaries only, as first applied in b463654: 0.0233)
+  (as first estimated in 0016 section 16 on the fig. 17 reading that does not count: 0.086)
+
+WHICH LORD AND ULMANN POINT IS THE 70 DEG ONE: each crossed Lord and Ulmann point's sweep, 90 deg less asin(M_c / 4.04)
+  P01: 80.11 / 80.07 / 80.09 / 80.07 / 80.25 / 80.22 deg
+  P02: 74.95 / 74.91 / 74.91 / 74.91 / 75.10 / 75.11 deg
+  P03: 69.72 / 69.69 / 69.71 / 69.69 / 69.88 / 69.88 deg
+  P09: 60.41 / 60.28 / 60.57 / 60.57 / 60.56 deg
+  Only P03 lies at 70 deg (to the degree, as the record names it); P01 is at 80 deg, P02 the stated 75 deg
+  (alpha 15 deg, TN 3861 p. 11), P09 at 60 deg (the point within the served sweep, 0016 section 16).
+
+Lord and Ulmann's 70 deg point: P03
+  fig. 15 first (re-mapped): M_c 1.385, over Rayleigh's 1.0674
+  fig. 15 second (blind): M_c 1.393, over Rayleigh's 1.0656
+  fig. 17 A (M_c 1.4, C_D 1.549) + fig. 16 first (re-mapped) (M_c 1.382, Cp_down -0.5090): F 1.0400, F/MN 1.0471; sweep 69.72 deg, M_n 1.400, kappa 0.968; F over the term 1.0788; F/MN - e - lower end +0.1785 (lower end 0.8345, Re_n 1.92e+5, measured)
+  fig. 17 A (M_c 1.4, C_D 1.549) + fig. 16 second (blind) (M_c 1.407, Cp_down -0.5104): F 1.0386, F/MN 1.0420; sweep 69.72 deg, M_n 1.400, kappa 0.968; F over the term 1.0774; F/MN - e - lower end +0.1734 (lower end 0.8345, Re_n 1.92e+5, measured)
+  fig. 17 B (M_c 1.402, C_D 1.551) + fig. 16 first (re-mapped) (M_c 1.382, Cp_down -0.5090): F 1.0420, F/MN 1.0488; sweep 69.69 deg, M_n 1.402, kappa 0.969; F over the term 1.0795; F/MN - e - lower end +0.1796 (lower end 0.8351, Re_n 1.92e+5, measured)
+  fig. 17 B (M_c 1.402, C_D 1.551) + fig. 16 second (blind) (M_c 1.407, Cp_down -0.5104): F 1.0406, F/MN 1.0437; sweep 69.69 deg, M_n 1.402, kappa 0.969; F over the term 1.0781; F/MN - e - lower end +0.1745 (lower end 0.8351, Re_n 1.92e+5, measured)
+  fig. 17 A cross (M_c 1.401, C_D 1.551) + fig. 16 first (re-mapped) (M_c 1.382, Cp_down -0.5090): F 1.0420, F/MN 1.0490; sweep 69.71 deg, M_n 1.401, kappa 0.968; F over the term 1.0802; F/MN - e - lower end +0.1800 (lower end 0.8348, Re_n 1.92e+5, measured)
+  fig. 17 A cross (M_c 1.401, C_D 1.551) + fig. 16 second (blind) (M_c 1.407, Cp_down -0.5104): F 1.0406, F/MN 1.0439; sweep 69.71 deg, M_n 1.401, kappa 0.968; F over the term 1.0788; F/MN - e - lower end +0.1749 (lower end 0.8348, Re_n 1.92e+5, measured)
+  fig. 17 B cross (M_c 1.402, C_D 1.551) + fig. 16 first (re-mapped) (M_c 1.382, Cp_down -0.5090): F 1.0420, F/MN 1.0488; sweep 69.69 deg, M_n 1.402, kappa 0.969; F over the term 1.0795; F/MN - e - lower end +0.1796 (lower end 0.8351, Re_n 1.92e+5, measured)
+  fig. 17 B cross (M_c 1.402, C_D 1.551) + fig. 16 second (blind) (M_c 1.407, Cp_down -0.5104): F 1.0406, F/MN 1.0437; sweep 69.69 deg, M_n 1.402, kappa 0.969; F over the term 1.0781; F/MN - e - lower end +0.1745 (lower end 0.8351, Re_n 1.92e+5, measured)
+  fig. 17 A box (M_c 1.39, C_D 1.554) + fig. 16 first (re-mapped) (M_c 1.382, Cp_down -0.5090): F 1.0450, F/MN 1.0537; sweep 69.88 deg, M_n 1.390, kappa 0.965; F over the term 1.0910; F/MN - e - lower end +0.1852 (lower end 0.8344, Re_n 1.92e+5, measured)
+  fig. 17 A box (M_c 1.39, C_D 1.554) + fig. 16 second (blind) (M_c 1.407, Cp_down -0.5104): F 1.0436, F/MN 1.0485; sweep 69.88 deg, M_n 1.390, kappa 0.965; F over the term 1.0896; F/MN - e - lower end +0.1800 (lower end 0.8344, Re_n 1.92e+5, measured)
+  fig. 17 B box (M_c 1.39, C_D 1.554) + fig. 16 first (re-mapped) (M_c 1.382, Cp_down -0.5090): F 1.0450, F/MN 1.0537; sweep 69.88 deg, M_n 1.390, kappa 0.965; F over the term 1.0910; F/MN - e - lower end +0.1852 (lower end 0.8344, Re_n 1.92e+5, measured)
+  fig. 17 B box (M_c 1.39, C_D 1.554) + fig. 16 second (blind) (M_c 1.407, Cp_down -0.5104): F 1.0436, F/MN 1.0485; sweep 69.88 deg, M_n 1.390, kappa 0.965; F over the term 1.0896; F/MN - e - lower end +0.1800 (lower end 0.8344, Re_n 1.92e+5, measured)
+  (a) stagnation over Rayleigh's, least 1.0656: above; F over the term, least 1.0774: above
+  (b) F/MN less e at least the lower bound's end, least margin 0.1734: holds
+
+Lord and Ulmann's 75 deg point: P02
+  fig. 15 first (re-mapped): M_c 1.009, over Rayleigh's 1.5278
+  fig. 15 second (blind): M_c 1.044, over Rayleigh's 1.4972
+  fig. 17 A (M_c 1.049, C_D 2.053) + fig. 16 first (re-mapped) (M_c 1.044, Cp_down -0.8143): F 1.2387, F/MN 1.4246; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7927; F/MN - e - lower end +0.6805 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 A (M_c 1.049, C_D 2.053) + fig. 16 second (blind) (M_c 1.044, Cp_down -0.8144): F 1.2386, F/MN 1.4245; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7925; F/MN - e - lower end +0.6804 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 B (M_c 1.052, C_D 2.051) + fig. 16 first (re-mapped) (M_c 1.044, Cp_down -0.8143): F 1.2367, F/MN 1.4213; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7898; F/MN - e - lower end +0.6772 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 B (M_c 1.052, C_D 2.051) + fig. 16 second (blind) (M_c 1.044, Cp_down -0.8144): F 1.2366, F/MN 1.4212; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7896; F/MN - e - lower end +0.6771 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 A cross (M_c 1.052, C_D 2.051) + fig. 16 first (re-mapped) (M_c 1.044, Cp_down -0.8143): F 1.2367, F/MN 1.4213; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7898; F/MN - e - lower end +0.6772 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 A cross (M_c 1.052, C_D 2.051) + fig. 16 second (blind) (M_c 1.044, Cp_down -0.8144): F 1.2366, F/MN 1.4212; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7896; F/MN - e - lower end +0.6771 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 B cross (M_c 1.052, C_D 2.051) + fig. 16 first (re-mapped) (M_c 1.044, Cp_down -0.8143): F 1.2367, F/MN 1.4213; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7898; F/MN - e - lower end +0.6772 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 B cross (M_c 1.052, C_D 2.051) + fig. 16 second (blind) (M_c 1.044, Cp_down -0.8144): F 1.2366, F/MN 1.4212; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7896; F/MN - e - lower end +0.6771 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 A box (M_c 1.039, C_D 2.058) + fig. 16 first (re-mapped) (M_c 1.044, Cp_down -0.8143): F 1.2437, F/MN 1.4338; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7999; F/MN - e - lower end +0.6897 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 A box (M_c 1.039, C_D 2.058) + fig. 16 second (blind) (M_c 1.044, Cp_down -0.8144): F 1.2436, F/MN 1.4337; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7997; F/MN - e - lower end +0.6896 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 B box (M_c 1.038, C_D 2.057) + fig. 16 first (re-mapped) (M_c 1.044, Cp_down -0.8143): F 1.2427, F/MN 1.4330; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7985; F/MN - e - lower end +0.6889 (lower end 0.7100, Re_n 1.92e+5, measured)
+  fig. 17 B box (M_c 1.038, C_D 2.057) + fig. 16 second (blind) (M_c 1.044, Cp_down -0.8144): F 1.2426, F/MN 1.4328; sweep 75.00 deg, M_n 1.046, kappa 0.795; F over the term 1.7983; F/MN - e - lower end +0.6888 (lower end 0.7100, Re_n 1.92e+5, measured)
+  (a) stagnation over Rayleigh's, least 1.4972: above; F over the term, least 1.7896: above
+  (b) F/MN less e at least the lower bound's end, least margin 0.6771: holds
+
+Penland's 75.1 deg point (pressure series): P06
+  fig. 15 first (re-mapped): M_c 1.750, over Rayleigh's 1.1715
+  fig. 15 second (blind): M_c 1.733, over Rayleigh's 1.1717
+  fig. 17 A (M_c 1.751, C_D 1.453) + fig. 16 first (re-mapped) (M_c 1.729, Cp_down -0.2198): F 1.2332, F/MN 1.1534; sweep 75.10 deg, M_n 1.764, kappa 1.000; F over the term 1.1493; F/MN - e - lower end +0.1793 (lower end 0.9400, Re_n 1.01e+5, measured)
+  fig. 17 A (M_c 1.751, C_D 1.453) + fig. 16 second (blind) (M_c 1.744, Cp_down -0.2195): F 1.2335, F/MN 1.1524; sweep 75.10 deg, M_n 1.764, kappa 1.000; F over the term 1.1495; F/MN - e - lower end +0.1782 (lower end 0.9400, Re_n 1.01e+5, measured)
+  fig. 17 B (M_c 1.753, C_D 1.451) + fig. 16 first (re-mapped) (M_c 1.729, Cp_down -0.2198): F 1.2312, F/MN 1.1513; sweep 75.10 deg, M_n 1.764, kappa 1.000; F over the term 1.1474; F/MN - e - lower end +0.1772 (lower end 0.9400, Re_n 1.01e+5, measured)
+  fig. 17 B (M_c 1.753, C_D 1.451) + fig. 16 second (blind) (M_c 1.744, Cp_down -0.2195): F 1.2315, F/MN 1.1503; sweep 75.10 deg, M_n 1.764, kappa 1.000; F over the term 1.1477; F/MN - e - lower end +0.1762 (lower end 0.9400, Re_n 1.01e+5, measured)
+  fig. 17 A cross (M_c 1.748, C_D 1.452) + fig. 16 first (re-mapped) (M_c 1.729, Cp_down -0.2198): F 1.2322, F/MN 1.1527; sweep 75.10 deg, M_n 1.764, kappa 1.000; F over the term 1.1483; F/MN - e - lower end +0.1786 (lower end 0.9400, Re_n 1.01e+5, measured)
+  fig. 17 A cross (M_c 1.748, C_D 1.452) + fig. 16 second (blind) (M_c 1.744, Cp_down -0.2195): F 1.2325, F/MN 1.1517; sweep 75.10 deg, M_n 1.764, kappa 1.000; F over the term 1.1486; F/MN - e - lower end +0.1776 (lower end 0.9400, Re_n 1.01e+5, measured)
+  fig. 17 B cross (M_c 1.749, C_D 1.45) + fig. 16 first (re-mapped) (M_c 1.729, Cp_down -0.2198): F 1.2302, F/MN 1.1508; sweep 75.10 deg, M_n 1.764, kappa 1.000; F over the term 1.1465; F/MN - e - lower end +0.1766 (lower end 0.9400, Re_n 1.01e+5, measured)
+  fig. 17 B cross (M_c 1.749, C_D 1.45) + fig. 16 second (blind) (M_c 1.744, Cp_down -0.2195): F 1.2305, F/MN 1.1497; sweep 75.10 deg, M_n 1.764, kappa 1.000; F over the term 1.1467; F/MN - e - lower end +0.1756 (lower end 0.9400, Re_n 1.01e+5, measured)
+  (a) stagnation over Rayleigh's, least 1.1715: above; F over the term, least 1.1465: above
+  (b) F/MN less e at least the lower bound's end, least margin 0.1756: holds
+
+VERDICT: the rule HOLDS at all three points

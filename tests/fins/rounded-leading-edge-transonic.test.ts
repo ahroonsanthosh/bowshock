@@ -278,12 +278,16 @@ describe('refusals', () => {
     expect(e.message).toMatch(
       /; and Reynolds number 5000 on the edge's diameter \(normal component\) is below 6700/,
     );
-    // Swept beyond 60 deg and below M_n 1.0: the sweep's code, both reasons.
+    // Swept beyond 60 deg and below M_n 1.0: bounded only where both the term at the sweep and
+    // the term at 60 deg are served (0016 section 21.2); both refused here, each reason given.
     const f = failure(() => plate(1.2, 70));
-    expect(f.reason).toBe('swept-leading-edge');
-    expect(f.message).toMatch(/^a rounded leading edge swept 70\.0 deg is refused/);
+    expect(f.reason).toBe('leading-edge-range');
+    expect(f.message).toMatch(/^a rounded leading edge swept 70\.0 deg, beyond the 60 deg/);
     expect(f.message).toMatch(
-      /; and the Mach number normal to the edge, M cos\(sweep\), 0\.4104 is below 1\.0/,
+      /: at 70\.0 deg, the Mach number normal to the edge, M cos\(sweep\), 0\.4104 is below 1\.0/,
+    );
+    expect(f.message).toMatch(
+      /; and at 60 deg, the Mach number normal to the edge, M cos\(sweep\), 0\.6000 is below 1\.0/,
     );
     // Above the band's Mach numbers and the Reynolds numbers at once.
     const g = failure(() => plate(9, 0, 1e7));

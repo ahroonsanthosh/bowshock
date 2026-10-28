@@ -1,0 +1,412 @@
+PAIRING OF THE TWO BLIND READINGS OF NACA TN 3861 FIGURE 17
+0014 10.7 (ab), second addendum; readers' brief
+docs/research/tn3861-fig17/readers/brief.md (SHA-256
+f8606bb73f672e5e0b00fa675728f5faaad80b68d5bb8cf562309620e1409276, the hash
+both readers record and the hash of the repository copy)
+Made 2026-10-27 by a neutral pairing party, from the readings committed in
+d0094f2cd4fee64643d5d86453b193c14cbb6682 (readers/A and readers/B).
+
+WHAT THE PAIRING SAW AND DID NOT SEE
+
+The pairing party opened the brief, the two readers' folders (method
+notes, CSVs, scripts, and file listings of src/ and work/; the two PDFs
+only to hash them), and in the repository the second (ab) addendum of
+0014 10.7, as committed in 21a0686 (lines 2181 to 2234 of 0014 there;
+the passage is byte-identical at the branch tip). It did not open 0016,
+docs/research/tn3861-fig17/ beyond the brief, any earlier fig. 17
+reading, the code or the tests. Disclosure: before reading the addendum,
+the pairing party listed the subject lines of the five commits on the
+branch after its previous push (b0590ba, 9be5c6e, 21a0686, 3810bbb,
+d03083d); they speak of the flat-face verdict, the (af) Reynolds range
+and rounded leading edges past 60 deg being refused until fig. 17 is
+read twice. No value of either reading was compared with anything but
+the other reading. The branch was then fast-forwarded to d03083d without
+reading those commits.
+
+RULES
+
+Matching. A gives each centre in the page image as stored in the PDF
+(2364 x 3094 px, the figure on its side); B gives it in that image
+turned 90 deg clockwise (3094 x 2364 px), and B maps its de-jogged
+measurements back to the uncorrected image. A's centre (x, y) is taken
+into B's frame as (u, v) = (3093 - y, x). Points are matched on the
+nearest centre, closest first, each point used once, within 8 px.
+
+Agreement. Two readings agree when the difference in crossflow Mach
+number is at most the two readers' stated x errors summed and the
+difference in drag coefficient at most the two stated value errors
+summed, the errors those each reader gives for that point. Series (the
+legend's words, verbatim) and crossed are compared as labels.
+Alternatives do not change the status; each pair says separately
+whether any reading of A (value or numeric alternative) agrees, by the
+same rule, with any reading of B, and which. Readings given in the notes
+under a named convention (the cross-stroke intersection; the bounding
+square or box) are compared convention with convention, with the same
+errors. Envelope: the lower and higher of the two readings.
+
+COUNTS
+
+  A 25 rows, B 25 rows; 25 pairs, 0 read once, 0 illegible (neither reader left a value empty).
+  agree 25, disagree 0; series labels differ on 0 pairs, crossed labels on 0.
+    Busemann, ref. 10                                                        crossed no   agree  1  disagree  0
+    Gowen and Perkins, from pressure distribution, M = 1.49 to 2.9, ref. 8   crossed no   agree  3  disagree  0
+    Lord and Ulmann, from pressure distribution, M = 4.04 (unpublished)      crossed yes  agree  4  disagree  0
+    Present data from force tests M = 6.86                                   crossed no   agree  1  disagree  0
+    Present data from force tests M = 6.86                                   crossed yes  agree  5  disagree  0
+    Present data from pressure distribution                                  crossed no   agree  1  disagree  0
+    Present data from pressure distribution                                  crossed yes  agree  5  disagree  0
+    Walter and Lange, from pressure distribution M = 2.48 to 4.92 ref. 9     crossed no   agree  5  disagree  0
+
+PAIR TABLE (x = crossflow Mach number, value = drag coefficient C_D; errors as each reader states)
+
+  pair A    B          series (short)          crossed  x A (+-)      x B (+-)      value A (+-)  value B (+-)  status
+  P01  S01   symbol 1   Lord and Ulmann         yes/yes  0.694 (0.006)  0.697 (0.004)  2.453 (0.003)  2.450 (0.002)  agree
+  P02  S02   symbol 2   Lord and Ulmann         yes/yes  1.049 (0.008)  1.052 (0.004)  2.053 (0.004)  2.051 (0.002)  agree
+  P03  S03   symbol 3   Lord and Ulmann         yes/yes  1.400 (0.008)  1.402 (0.004)  1.549 (0.004)  1.551 (0.002)  agree
+  P04  S04   symbol 4   Gowen and Perkins       no /no   1.481 (0.008)  1.481 (0.005)  1.491 (0.004)  1.493 (0.002)  agree
+  P05  S05   symbol 5   Busemann                no /no   1.594 (0.008)  1.593 (0.004)  1.653 (0.004)  1.655 (0.002)  agree
+  P06  S07   symbol 7   present, pressure       yes/yes  1.751 (0.006)  1.753 (0.003)  1.453 (0.003)  1.451 (0.002)  agree
+  P07  S06   symbol 6   present, force          yes/yes  1.757 (0.006)  1.757 (0.003)  1.554 (0.003)  1.552 (0.002)  agree
+  P08  S09   symbol 9   Gowen and Perkins       no /no   1.957 (0.011)  1.964 (0.004)  1.447 (0.006)  1.447 (0.002)  agree
+  P09  S08   symbol 8   Lord and Ulmann         yes/yes  1.995 (0.010)  2.003 (0.005)  1.510 (0.005)  1.511 (0.002)  agree
+  P10  S10   symbol 10  Walter and Lange        no /no   2.484 (0.008)  2.482 (0.005)  1.324 (0.004)  1.324 (0.002)  agree
+  P11  S11   symbol 11  Walter and Lange        no /no   2.838 (0.010)  2.835 (0.003)  1.327 (0.005)  1.327 (0.002)  agree
+  P12  S12   symbol 12  Gowen and Perkins       no /no   2.911 (0.008)  2.910 (0.003)  1.339 (0.004)  1.340 (0.002)  agree
+  P13  S13   symbol 13  Walter and Lange        no /no   3.247 (0.006)  3.244 (0.003)  1.304 (0.003)  1.302 (0.002)  agree
+  P14  S14   symbol 14  present, force          yes/yes  3.439 (0.006)  3.440 (0.004)  1.400 (0.003)  1.398 (0.002)  agree
+  P15  S15   symbol 15  present, pressure       yes/yes  3.454 (0.008)  3.451 (0.003)  1.255 (0.004)  1.253 (0.002)  agree
+  P16  S16   symbol 16  Walter and Lange        no /no   4.191 (0.006)  4.187 (0.003)  1.287 (0.003)  1.287 (0.002)  agree
+  P17  S17   symbol 17  present, force          yes/yes  4.851 (0.006)  4.848 (0.003)  1.326 (0.003)  1.325 (0.002)  agree
+  P18  S18   symbol 18  present, pressure       yes/yes  4.856 (0.006)  4.852 (0.003)  1.257 (0.003)  1.256 (0.002)  agree
+  P19  S19   symbol 19  Walter and Lange        no /no   4.925 (0.013)  4.919 (0.005)  1.251 (0.007)  1.250 (0.002)  agree
+  P20  S21   symbol 21  present, pressure       yes/yes  5.954 (0.010)  5.952 (0.004)  1.249 (0.005)  1.250 (0.002)  agree
+  P21  S20   symbol 20  present, force          yes/yes  5.958 (0.008)  5.954 (0.003)  1.294 (0.004)  1.294 (0.002)  agree
+  P22  S22   symbol 22  present, force          yes/yes  6.638 (0.006)  6.633 (0.003)  1.273 (0.003)  1.273 (0.002)  agree
+  P23  S23   symbol 23  present, pressure       yes/yes  6.648 (0.010)  6.645 (0.003)  1.233 (0.005)  1.233 (0.002)  agree
+  P24  S25   symbol 25  present, pressure       no /no   6.848 (0.008)  6.845 (0.003)  1.249 (0.004)  1.250 (0.002)  agree
+  P25  S24   symbol 24  present, force          no /no   6.854 (0.006)  6.851 (0.003)  1.272 (0.003)  1.272 (0.002)  agree
+
+DISAGREEMENTS (every one; both readings, the envelope, alternatives and notes verbatim)
+
+LABEL DIFFERENCES
+
+  None: on all 25 pairs the series (the legend's words, verbatim) and crossed are the same.
+  Label alternatives the readers keep open (not differences between them):
+    P10 (A S10, B symbol 10): A: series: a dotted diamond the legend does not explain (see x 3.247 and 4.191)
+    P13 (A S13, B symbol 13): A: series: a dotted diamond the legend does not explain
+    P16 (A S16, B symbol 16): A: series: a dotted diamond the legend does not explain
+    P20 (A S21, B symbol 21): B: crossed=no with the same x and value
+
+CENTRE CONVENTIONS, POINT BY POINT
+
+  A: area centroid for the triangles, quarter-rounds and the D; outline centre for the rest.
+  B: centroid of the three vertices for the straight triangles; cross-stroke intersection for
+  the quarter-rounds; side and top/bottom midpoints for the arch; outline centre for the rest.
+  For each pair: (1) the two values, each under its reader's convention; (2) every other reading
+  a reader states for the point (its alternatives column, and every reading given in its note),
+  each set against the other reader's value with the same summed errors; (3) the two readers'
+  readings under a shared named convention (cross intersection; bounding square or box).
+
+  In all: 46 other readings stated; 37 of them agree with the other reader's value, 9 do not.
+  The 9 that do not: P01 (A's bounding square or box); P02 (A's bounding square or box); P04 (A's bounding square or box); P04 (B's bounding square or box); P08 (A's bounding square or box); P08 (B's bounding square or box); P09 (A's bounding square or box); P12 (A's bounding square or box); P12 (B's bounding square or box).
+  Every one of them is a bounding square or box reading (the triangles' and quarter-rounds'
+  bounding-box centre) set against the other reader's centroid or cross reading. Convention
+  against convention (box against box, cross against cross) every pair that has both agrees.
+
+  P01 (A S01, B symbol 1) quarter-round, crossed yes: values agree [A area centroid; B cross-stroke intersection]
+      other readings (3, 1 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (0.695, 2.452) against B's value: agree
+        - A note, bounding square or box: 'Centre of the bounding square would be' (0.684, 2.458) against B's value: disagree, x by 0.013 > 0.010 and value by 0.008 > 0.005
+        - B note, bounding square or box: 'the outline bounding-box centre (leg 32 px) would read' (0.686, 2.456) against A's value: agree
+      same convention, cross intersections: A (0.695, 2.452) / B (0.697, 2.450): agree
+      same convention, bounding square or box: A (0.684, 2.458) / B (0.686, 2.456): agree
+  P02 (A S02, B symbol 2) quarter-round, crossed yes: values agree [A area centroid; B cross-stroke intersection]
+      other readings (3, 1 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (1.052, 2.051) against B's value: agree
+        - A note, bounding square or box: 'Bounding-square centre would be' (1.039, 2.058) against B's value: disagree, x by 0.013 > 0.012 and value by 0.007 > 0.006
+        - B note, bounding square or box: 'Bounding-box centre (leg 32 px) would read' (1.038, 2.057) against A's value: agree
+      same convention, cross intersections: A (1.052, 2.051) / B (1.052, 2.051): agree
+      same convention, bounding square or box: A (1.039, 2.058) / B (1.038, 2.057): agree
+  P03 (A S03, B symbol 3) quarter-round, crossed yes: values agree [A area centroid; B cross-stroke intersection]
+      other readings (3, 0 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (1.401, 1.551) against B's value: agree
+        - A note, bounding square or box: 'Bounding-square centre would be' (1.390, 1.554) against B's value: agree
+        - B note, bounding square or box: 'Bounding-box centre (leg 32 px) would read' (1.390, 1.554) against A's value: agree
+      same convention, cross intersections: A (1.401, 1.551) / B (1.402, 1.551): agree
+      same convention, bounding square or box: A (1.390, 1.554) / B (1.390, 1.554): agree
+  P04 (A S04, B symbol 4) straight triangle, crossed no: values agree [A area centroid; B centroid of the three vertices]
+      other readings (2, 2 disagree):
+        - A alternative (centre of bounding square (midpoint of hypotenuse)) (1.459, 1.502) against B's value: disagree, x by 0.022 > 0.013 and value by 0.009 > 0.006
+        - B note, bounding square or box: 'Bounding-box centre would read' (1.459, 1.504) against A's value: disagree, x by 0.022 > 0.013 and value by 0.013 > 0.006
+      same convention, bounding square or box: A (1.459, 1.502) / B (1.459, 1.504): agree
+  P05 (A S05, B symbol 5) D (arch), crossed no: values agree [A area centroid; B midpoints of the sides and of bottom and top]
+      other readings (1, 0 disagree):
+        - A note, bounding square or box: 'Centre of the round top (bounding-square centre) would be' (1.594, 1.656) against B's value: agree
+      same convention, bounding square or box: A (1.594, 1.656) / B (1.593, 1.655): agree
+  P06 (A S07, B symbol 7) square, crossed yes: values agree [A outline centre; B midpoints of the sides]
+      other readings (2, 0 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (1.748, 1.452) against B's value: agree
+        - B note, cross intersection: 'Cross intersection' (1.749, 1.450) against A's value: agree
+      same convention, cross intersections: A (1.748, 1.452) / B (1.749, 1.450): agree
+  P07 (A S06, B symbol 6) circle, crossed yes: values agree [A outline centre; B circle fit]
+      other readings (2, 0 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (1.758, 1.553) against B's value: agree
+        - B note, cross intersection: 'Cross intersection agrees within 0.6 px' (1.759, 1.551) against A's value: agree
+      same convention, cross intersections: A (1.758, 1.553) / B (1.759, 1.551): agree
+  P08 (A S09, B symbol 9) straight triangle, crossed no: values agree [A area centroid; B centroid of the three vertices]
+      other readings (4, 2 disagree):
+        - A alternative (centre of bounding square (midpoint of hypotenuse)) (1.937, 1.456) against B's value: disagree, x by 0.027 > 0.015 and value by 0.009 > 0.008
+        - A alternative (area centroid again but with the triangle size fixed at 32 px like the other triangles) (1.965, 1.449) against B's value: agree
+        - B alternative (centre dot) (1.968, 1.450) against A's value: agree
+        - B note, bounding square or box: 'Bounding-box centre would read' (1.943, 1.458) against A's value: disagree, value by 0.011 > 0.008
+      same convention, bounding square or box: A (1.937, 1.456) / B (1.943, 1.458): agree
+  P09 (A S08, B symbol 8) quarter-round, crossed yes: values agree [A area centroid; B cross-stroke intersection]
+      other readings (3, 1 disagree):
+        - A alternative (centre of bounding square) (1.985, 1.515) against B's value: disagree, x by 0.018 > 0.015
+        - B note, other: 'offset of symbols 1 to 3 the vertical would be 1.2 px further left' (1.999, 1.511) against A's value: agree
+        - B note, bounding square or box: 'Bounding-box centre (leg 32 px) would read' (1.986, 1.514) against A's value: agree
+      same convention, cross intersections: only B gives it
+      same convention, bounding square or box: A (1.985, 1.515) / B (1.986, 1.514): agree
+  P10 (A S10, B symbol 10) diamond, crossed no: values agree [A outline centre; B mean of the four vertices]
+      other readings (1, 0 disagree):
+        - B alternative (possible centre dot merged with the faired line) (2.478, 1.329) against A's value: agree
+  P11 (A S11, B symbol 11) diamond, crossed no: values agree [A outline centre; B mean of the four vertices]
+      other readings (1, 0 disagree):
+        - A alternative (free-size fit to all four sides) (2.837, 1.327) against B's value: agree
+  P12 (A S12, B symbol 12) straight triangle, crossed no: values agree [A area centroid; B centroid of the three vertices]
+      other readings (3, 2 disagree):
+        - A alternative (centre of bounding square (midpoint of hypotenuse)) (2.889, 1.350) against B's value: disagree, x by 0.021 > 0.011 and value by 0.010 > 0.006
+        - B note, plotted dot: 'A small plotted dot inside, within 0.6 px of the vertex centroid' (2.907, 1.339) against A's value: agree
+        - B note, bounding square or box: 'Bounding-box centre would read' (2.888, 1.351) against A's value: disagree, x by 0.023 > 0.011 and value by 0.012 > 0.006
+      same convention, bounding square or box: A (2.889, 1.350) / B (2.888, 1.351): agree
+  P13 (A S13, B symbol 13) diamond, crossed no: values agree [A outline centre; B mean of the four vertices]
+      other readings (1, 0 disagree):
+        - B note, plotted dot: 'Clear centre dot 1.0 px above the outline centre' (3.244, 1.304) against A's value: agree
+  P14 (A S14, B symbol 14) circle, crossed yes: values agree [A outline centre; B circle fit]
+      other readings (2, 0 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (3.440, 1.398) against B's value: agree
+        - B note, cross intersection: 'cross intersection' (3.441, 1.396) against A's value: agree
+      same convention, cross intersections: A (3.440, 1.398) / B (3.441, 1.396): agree
+  P15 (A S15, B symbol 15) square, crossed yes: values agree [A outline centre; B midpoints of the sides]
+      other readings (1, 0 disagree):
+        - A note, other: 'the top side is faint, so the size is fixed at 29 px (free fit gives' (3.453, 1.254) against B's value: agree
+  P16 (A S16, B symbol 16) diamond, crossed no: values agree [A outline centre; B mean of the four vertices]
+      other readings (1, 0 disagree):
+        - B alternative (centre dot) (4.183, 1.292) against A's value: agree
+  P17 (A S17, B symbol 17) circle, crossed yes: values agree [A outline centre; B circle fit]
+      other readings (2, 0 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (4.854, 1.325) against B's value: agree
+        - B note, cross intersection: 'Cross intersection' (4.851, 1.324) against A's value: agree
+      same convention, cross intersections: A (4.854, 1.325) / B (4.851, 1.324): agree
+  P18 (A S18, B symbol 18) square, crossed yes: values agree [A outline centre; B midpoints of the sides]
+      other readings (1, 0 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (4.854, 1.258) against B's value: agree
+      same convention, cross intersections: only A gives it
+  P19 (A S19, B symbol 19) diamond, crossed no: values agree [A outline centre; B mean of the four vertices]
+      other readings (2, 0 disagree):
+        - A alternative (free-size fit to all sides) (4.923, 1.251) against B's value: agree
+        - B note, other: 'half-diagonal of diamonds 13 and 16 (20.8 px) the reading would be' (4.922, 1.249) against A's value: agree
+  P20 (A S21, B symbol 21) square, crossed yes: values agree [A outline centre; B midpoints of the sides]
+      other readings (1, 0 disagree):
+        - A alternative (free-size fit to the same sides) (5.956, 1.248) against B's value: agree
+  P21 (A S20, B symbol 20) circle, crossed yes: values agree [A outline centre; B circle fit]
+      other readings (2, 0 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (5.955, 1.291) against B's value: agree
+        - B note, cross intersection: 'Cross intersection' (5.950, 1.291) against A's value: agree
+      same convention, cross intersections: A (5.955, 1.291) / B (5.950, 1.291): agree
+  P22 (A S22, B symbol 22) circle, crossed yes: values agree [A outline centre; B circle fit]
+      other readings (2, 0 disagree):
+        - A note, cross intersection: 'Cross arms intersect at' (6.636, 1.274) against B's value: agree
+        - B note, cross intersection: 'Cross intersection' (6.631, 1.274) against A's value: agree
+      same convention, cross intersections: A (6.636, 1.274) / B (6.631, 1.274): agree
+  P23 (A S23, B symbol 23) square, crossed yes: values agree [A outline centre; B midpoints of the sides]
+      other readings (2, 0 disagree):
+        - A alternative (vertical cross stroke taken as the centre line in x) (6.656, 1.233) against B's value: agree
+        - B note, cross intersection: 'Cross intersection' (6.652, 1.233) against A's value: agree
+      same convention, cross intersections: only B gives it
+  P24 (A S25, B symbol 25) square, crossed no: values agree [A outline centre; B midpoints of the sides]
+      other readings (1, 0 disagree):
+        - A alternative (fit taking the stroke inside the circle as the top side) (6.851, 1.250) against B's value: agree
+  P25 (A S24, B symbol 24) circle, crossed no: values agree [A outline centre; B circle fit]
+      other readings: none stated by either reader
+
+FLAGS (every row flagged other than ok, verbatim; also flags.csv)
+
+  A row 4 (S04, pair P04): Gowen and Perkins, from pressure distribution, M = 1.49 to 2.9, ref. 8, crossed no, x 1.481, value 1.491, flag ambiguous
+    alternatives (verbatim): x=1.459 value=1.502 (centre of bounding square (midpoint of hypotenuse))
+    note (verbatim): S04. Right-triangle symbol, no cross: the M = 1.5 and CD = 1.5 grid lines cross it about 4 px from its centroid and no stroke passes through the centroid. A solid line (the one ending inside the Busemann symbol) crosses its top corner and runs along part of its hypotenuse. Centre = area centroid (the convention a pencil dot supports in the triangle at x 2.911). Ambiguous only in the centre convention. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 8 (S09, pair P08): Gowen and Perkins, from pressure distribution, M = 1.49 to 2.9, ref. 8, crossed no, x 1.957, value 1.447, flag ambiguous
+    alternatives (verbatim): x=1.937 value=1.456 (centre of bounding square (midpoint of hypotenuse)); x=1.965 value=1.449 (area centroid again but with the triangle size fixed at 32 px like the other triangles)
+    note (verbatim): S09. Right-triangle symbol, no cross. Its top corner touches the quarter-circle above. Its right side lies on the M = 2 grid line, so the size comes from the bottom side and hypotenuse only (fitted 29 px, smaller than the other triangles). A faint pencil mark lies 4 px from the centroid. Centre = area centroid. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 9 (S08, pair P09): Lord and Ulmann, from pressure distribution, M = 4.04 (unpublished), crossed yes, x 1.995, value 1.510, flag ambiguous
+    alternatives (verbatim): x=1.985 value=1.515 (centre of bounding square)
+    note (verbatim): S08. Quarter-circle symbol overlapping the triangle below it (they share the corner region) and touched by the upper solid curve. Horizontal cross arm clearly visible inside the outline, about 1 px above the centroid. Vertical arm not separable: it would lie on the M = 2 grid line, about 2 px right of the centroid. Right edge drawn faint. Centre = area centroid. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 10 (S10, pair P10): Walter and Lange, from pressure distribution M = 2.48 to 4.92 ref. 9, crossed no, x 2.484, value 1.324, flag ambiguous
+    alternatives (verbatim): series: a dotted diamond the legend does not explain (see x 3.247 and 4.191)
+    note (verbatim): S10. Diamond. The lower solid curve and the M = 2.5 grid line pass through it. A small dark bump on the curve near the centre may be a dot like those in the diamonds at x 3.247 and 4.191 (hidden by the curve). A short stroke about 4 px long extends below the bottom corner. Neither mark is in the legend. Outline-fit centre. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 11 (S11, pair P11): Walter and Lange, from pressure distribution M = 2.48 to 4.92 ref. 9, crossed no, x 2.838, value 1.327, flag ambiguous
+    alternatives (verbatim): x=2.837 value=1.327 (free-size fit to all four sides)
+    note (verbatim): S11. Diamond overlapped on its upper right side by the triangle at x 2.911. Centre fitted to the three free sides with the size fixed at the other diamonds size (41.6 px corner to corner). A free-size fit to all four sides gives the same reading within 0.5 px. Whether it carries a dot cannot be seen. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 12 (S12, pair P12): Gowen and Perkins, from pressure distribution, M = 1.49 to 2.9, ref. 8, crossed no, x 2.911, value 1.339, flag ambiguous
+    alternatives (verbatim): x=2.889 value=1.350 (centre of bounding square (midpoint of hypotenuse))
+    note (verbatim): S12. Right-triangle symbol, no cross. Its lower left corner lies inside the diamond at x 2.838. A faint pencil dot inside it sits within 0.5 px of the area centroid, which is the centre used. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 13 (S13, pair P13): Walter and Lange, from pressure distribution M = 2.48 to 4.92 ref. 9, crossed no, x 3.247, value 1.304, flag ambiguous
+    alternatives (verbatim): series: a dotted diamond the legend does not explain
+    note (verbatim): S13. Diamond with a solid inked dot inside (dot centre 1.2 px above the outline centre). The legend diamond has no dot. Read as Walter and Lange. Lower corner touches the lower solid curve. Outline-fit centre. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 16 (S16, pair P16): Walter and Lange, from pressure distribution M = 2.48 to 4.92 ref. 9, crossed no, x 4.191, value 1.287, flag ambiguous
+    alternatives (verbatim): series: a dotted diamond the legend does not explain
+    note (verbatim): S16. Diamond with a solid inked dot inside (dot 2.5 px above and 1 px left of the outline centre). The legend diamond has no dot. Read as Walter and Lange. Lower corner touches the CD = 1.25 grid line and the lower curve. Outline-fit centre. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 19 (S19, pair P19): Walter and Lange, from pressure distribution M = 2.48 to 4.92 ref. 9, crossed no, x 4.925, value 1.251, flag ambiguous
+    alternatives (verbatim): x=4.923 value=1.251 (free-size fit to all sides)
+    note (verbatim): S19. Diamond whose left half is hidden behind the square at x 4.856. Only its top, right and bottom corners show. Centre from the two right-hand sides only, with the size fixed at the other diamonds size. A free-size fit to all sides gives the same reading within 0.5 px. Its right corner touches the M = 5 grid line. Whether it carries a dot cannot be seen. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 20 (S21, pair P20): Present data from pressure distribution, crossed yes, x 5.954, value 1.249, flag ambiguous
+    alternatives (verbatim): x=5.956 value=1.248 (free-size fit to the same sides)
+    note (verbatim): S21. Square with cross, its top side hidden inside the circle above. Centre from the bottom and the lower parts of the sides, size fixed at 29 px. Vertical cross arm visible. Horizontal arm would lie on the CD = 1.25 grid line. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 23 (S23, pair P23): Present data from pressure distribution, crossed yes, x 6.648, value 1.233, flag ambiguous
+    alternatives (verbatim): x=6.656 value=1.233 (vertical cross stroke taken as the centre line in x)
+    note (verbatim): S23. Square with its top side hidden inside the circle above. Centre from the bottom and the lower parts of the sides, size fixed at 29 px. A heavy vertical stroke inside (its own, 5 px right of the circle cross arm and about 2 px right of the square centre) is read as the cross. Horizontal arm would lie on the lower solid curve. Uncrossed was considered and rejected because the stroke belongs to the square, not to the circle. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  A row 24 (S25, pair P24): Present data from pressure distribution, crossed no, x 6.848, value 1.249, flag ambiguous
+    alternatives (verbatim): x=6.851 value=1.250 (fit taking the stroke inside the circle as the top side)
+    note (verbatim): S25. Square, no cross, overlapping the circle above it. Centre from the bottom and the lower parts of the sides, size fixed at 29 px. Taking the stroke inside the circle as its top side gives nearly the same centre. px is in the 300 dpi page image (2364 x 3094, origin top left, x right, y down).
+  B row 8 (symbol 9, pair P08): Gowen and Perkins, from pressure distribution, M = 1.49 to 2.9, ref. 8, crossed no, x 1.964, value 1.447, flag ambiguous
+    alternatives (verbatim): x=1.968 value=1.450 (centre dot)
+    note (verbatim): symbol 9; centre: centroid of the three vertices (hypotenuse fit, bottom, right side); px in the 300 ppi page image (3094 x 2364 px, PDF page 33 in its displayed orientation). Right side lies on the Mc = 2.0 grid line (separated from it on profiles: right side 2.1 px right of the grid line); top vertex hidden behind the bottom edge of symbol 8. A small plotted dot is visible inside the triangle 0.9 px right of and 1.6 px above the vertex centroid; the alternative is the reading at the dot. Bounding-box centre would read x=1.943, value=1.458.
+  B row 10 (symbol 10, pair P10): Walter and Lange, from pressure distribution M = 2.48 to 4.92 ref. 9, crossed no, x 2.482, value 1.324, flag ambiguous
+    alternatives (verbatim): x=2.478 value=1.329 (possible centre dot merged with the faired line)
+    note (verbatim): symbol 10; centre: mean of the four vertices from line fits to the four sides; px in the 300 ppi page image (3094 x 2364 px, PDF page 33 in its displayed orientation). Mc = 2.5 grid line and the lower solid faired line cross the diamond; the diamond is drawn slightly irregular (side directions 42.6, 140.7, 47.0, 135.5 deg; the two diagonal midpoints differ by 1.8 px in x). A small bump on the upper edge of the faired line near the centre may be the plotted dot; the alternative is the reading there.
+  B row 16 (symbol 16, pair P16): Walter and Lange, from pressure distribution M = 2.48 to 4.92 ref. 9, crossed no, x 4.187, value 1.287, flag ambiguous
+    alternatives (verbatim): x=4.183 value=1.292 (centre dot)
+    note (verbatim): symbol 16; centre: mean of the four vertices from line fits to the four sides; px in the 300 ppi page image (3094 x 2364 px, PDF page 33 in its displayed orientation). Clear centre dot 1.1 px left of and 2.5 px above the outline centre; the alternative is the reading at the dot. Bottom vertex touches the lower faired line and the CD = 1.25 grid line.
+  B row 20 (symbol 21, pair P20): Present data from pressure distribution, crossed yes, x 5.952, value 1.250, flag ambiguous
+    alternatives (verbatim): crossed=no with the same x and value
+    note (verbatim): symbol 21; centre: midpoint of left and right sides; bottom minus half the mean side (29.4 px); px in the 300 ppi page image (3094 x 2364 px, PDF page 33 in its displayed orientation). Top edge not drawn (inside circle 20). A vertical stroke 0.5 px left of the side midpoint runs from circle 20 down to the bottom edge of the square, continuous with the circle's cross; the horizontal arm would lie on the CD = 1.25 grid line, where only weak extra ink is seen. Most likely crossed, but the vertical could be the circle's cross line carried through.
+
+THE POINTS THE SECOND (ab) ADDENDUM NAMES (identified from the series, the legend and the
+addendum's own words; no value is computed)
+
+  The addendum names, on fig. 17: 'its crossflow points of yawed cylinders swept beyond 60 deg:
+  Lord and Ulmann's at 70 and 75 deg, and Penland's at 75.1 deg', and 'the cylinders normal to the
+  stream replotted on it (Gowen and Perkins, which is TN 2960)'. It identifies the 75 deg point
+  as 'Lord and Ulmann's crossflow Mach number 1.04 point 15 deg, TN 3861 p. 11', states no angle
+  for the 70 deg point, gives Penland's angle of attack as 14.9 deg, and says 'Penland's point
+  takes fig. 17's pressure-integrated series'.
+
+  Both readers read 4 crossed Lord and Ulmann symbols (legend: 'Lord and Ulmann, from pressure
+  distribution, M = 4.04 (unpublished)', crossed):
+    P01 (A S01, B symbol 1): x A 0.694 / B 0.697, value A 2.453 / B 2.450, agree; flags A ok, B ok; other readings 3, of which 1 disagree with the other reader's value
+    P02 (A S02, B symbol 2): x A 1.049 / B 1.052, value A 2.053 / B 2.051, agree; flags A ok, B ok; other readings 3, of which 1 disagree with the other reader's value
+    P03 (A S03, B symbol 3): x A 1.400 / B 1.402, value A 1.549 / B 1.551, agree; flags A ok, B ok; other readings 3, of which 0 disagree with the other reader's value
+    P09 (A S08, B symbol 8): x A 1.995 / B 2.003, value A 1.510 / B 1.511, agree; flags A ambiguous, B ok; other readings 3, of which 1 disagree with the other reader's value
+  - Lord and Ulmann at 75 deg: the addendum names it by its crossflow Mach number, 1.04. Of the
+    four, the only one both readers place within 0.1 of 1.04 is P02 (A 1.049, B 1.052).
+  - Lord and Ulmann at 70 deg: no angle or Mach number is stated for it, and the addendum takes its
+    sweep from the paired M_c. From the series and legend alone it is one of the other three crossed
+    Lord and Ulmann points; the pairing does not choose among them, and gives all four above. The
+    addendum names two Lord and Ulmann points; both readers read four.
+  - Penland at 75.1 deg: the addendum gives it the pressure-integrated series, which on fig. 17 is
+    'Present data from pressure distribution' (the legend splits only the present data into force
+    and pressure), crossed. Both readers read 5 crossed present-pressure squares:
+    P06 (A S07, B symbol 7): x A 1.751 / B 1.753, value A 1.453 / B 1.451, agree; flags A ok, B ok; other readings 2, of which 0 disagree with the other reader's value
+    P15 (A S15, B symbol 15): x A 3.454 / B 3.451, value A 1.255 / B 1.253, agree; flags A ok, B ok; other readings 1, of which 0 disagree with the other reader's value
+    P18 (A S18, B symbol 18): x A 4.856 / B 4.852, value A 1.257 / B 1.256, agree; flags A ok, B ok; other readings 1, of which 0 disagree with the other reader's value
+    P20 (A S21, B symbol 21): x A 5.954 / B 5.952, value A 1.249 / B 1.250, agree; flags A ambiguous, B ambiguous; other readings 1, of which 0 disagree with the other reader's value
+    P23 (A S23, B symbol 23): x A 6.648 / B 6.645, value A 1.233 / B 1.233, agree; flags A ambiguous, B ok; other readings 2, of which 0 disagree with the other reader's value
+    Penland's angle of attack is 14.9 deg; the symbol list (as both readers quote it) defines the
+    crossflow Mach number as M sin(alpha), and all present data are at one M (legend: 6.86), so the
+    present point with the smallest angle has the smallest crossflow Mach number. That is the
+    lowest crossed square in both readings: P06 (A S07, B symbol 7).
+    Its force-test companion at the same crossflow Mach number (crossed circle), for reference:
+    P07 (A S06, B symbol 6): x A 1.757 / B 1.757, value A 1.554 / B 1.552, agree; flags A ok, B ok; other readings 2, of which 0 disagree with the other reader's value
+  - Gowen and Perkins (TN 2960), cylinders normal to the stream (legend: 'Gowen and Perkins, from
+    pressure distribution, M = 1.49 to 2.9, ref. 8', uncrossed): both readers read 3:
+    P04 (A S04, B symbol 4): x A 1.481 / B 1.481, value A 1.491 / B 1.493, agree; flags A ambiguous, B ok; other readings 2, of which 2 disagree with the other reader's value
+    P08 (A S09, B symbol 9): x A 1.957 / B 1.964, value A 1.447 / B 1.447, agree; flags A ambiguous, B ambiguous; other readings 4, of which 2 disagree with the other reader's value
+    P12 (A S12, B symbol 12): x A 2.911 / B 2.910, value A 1.339 / B 1.340, agree; flags A ambiguous, B ok; other readings 3, of which 2 disagree with the other reader's value
+
+THE READERS' DISCLOSURES (from their method notes)
+
+Reader A:
+- Opened nothing in the repository; in the scratchpad only the brief and
+  its own folder. NTRS metadata (first 3000 bytes printed: title, author,
+  abstract, download link), the PDF, pdfinfo, pdfimages -list.
+- Text layer of pages 30 to 33 filtered to lines with "figure" or "fig.";
+  the full text layer of page 33 (garbled OCR of the figure page).
+- A text-layer search of all 33 pages for "figure 17", "crossflow Mach",
+  "cross-flow Mach" or "SYMBOLS" printed one line each from pages 2, 3,
+  7, 11, 12, 13, 31, 32 and 33. A discloses: "two of the printed lines
+  were from the discussion of figures 15 and 16 (page 11, a crossflow
+  Mach number value said to apply to figure 15, and page 12, a crossflow
+  Mach number value in the pressure-coefficient discussion), and the page
+  31 and 32 hits were parts of the captions of figures 15 and 16. I did
+  not look at figures 15 or 16 and used none of this."
+- Text layer of page 12 lines 36 to 50 and page 13 lines 1 to 22 (the
+  paragraph on figure 17), page 3 lines 16 to 60 (symbol list), pages 1
+  and 2 filtered for the author and date lines.
+- The session was interrupted by a usage limit and resumed after a
+  container restart at about 13:22 UTC; files intact, PDF hash rechecked.
+
+Reader B:
+- Opened nothing in the repository, its website or issues, no other
+  reader's folder and not decisions.md. NTRS metadata (title, download
+  links, later the author field), the PDF, sha256sum, stat, pdfinfo,
+  pdfimages -list for pages 28 to 33.
+- A text-layer search of pages 1 to 33 for "figure 17", "fig 17", "17."
+  or crossflow / cross-flow / cross flow showed lines from pages 2, 3, 7,
+  11, 12, 13, 14, 31, 32 and 33: "They included the opening words of the
+  captions of figures 15 (page 31) and 16 (page 32), and one sentence of
+  the text on page 11 that mentions figure 15. I did not look at figures
+  15 or 16 and used nothing from those lines."
+- Page 3 lines 20 to 60 (symbol list), page 12 lines 34 to 60 and page
+  13 lines 1 to 20 (text on figure 17), page 33 (image and page
+  dictionary), page 1 filtered for the author. "No other page was
+  rendered or viewed."
+- Same interruption and restart at about 13:22 UTC; files kept, PDF hash
+  rechecked.
+
+Both readers fetched the same file: SHA-256
+4b3884fdbd75781c8707748aa906af00974f5e1a995d056c550f64f6c41f5957,
+16881241 bytes, from
+https://ntrs.nasa.gov/api/citations/19930084664/downloads/19930084664.pdf
+(the pairing party hashed both copies: identical). Both read PDF page 33
+(printed page 32) at the scan's native 300 ppi. Neither left a value
+empty; both read 25 symbols, 14 crossed and 11 uncrossed.
+
+WHERE THE BRIEF AND THE PDF DIFFER (as each reader records it)
+
+- Author: the brief says "P. J. Penland"; the title page and NTRS say
+  "Jim A. Penland" (both readers).
+- Page: the figure is on PDF page 33, printed page 32 (both); the page
+  is stored rotated, /Rotate 90 (B).
+- The Welsh line: the legend's "Welsh, C. J., from flight test data M =
+  .5 to 1.3, ref. 11" is drawn only as a dashed line, with no symbols, so
+  neither reader has rows for it (both). A notes the dashed curve's small
+  rounded turns near crossflow Mach number 0.7 and 0.8 are part of the
+  line, not symbols; B that its turning points are small open arcs about
+  18 px wide, not Busemann arches (closed, flat bottom, about 29 px).
+- Unexplained dots: A flags solid inked dots inside the Walter and Lange
+  diamonds at x 3.247 and 4.191 and a possible dot and a short tail on
+  the diamond at 2.484, which the legend does not explain, and keeps "a
+  dotted diamond the legend does not explain" as a series alternative.
+  B reads the same dots (and dots in two Gowen and Perkins triangles) as
+  the small plotted-point dots inside open symbols, gives the reading at
+  the dot as an alternative where it is more than 1 px from the outline
+  centre, and does not treat them as a separate series. A also notes a
+  faint pencil dot in the triangle at 2.911 and a pencil mark near the
+  triangle at 1.957; B a dot in triangle 9 and triangle 12.
+- Pressure or force: the legend splits only the present data (circle,
+  force tests; square, pressure distribution); Gowen and Perkins, Lord
+  and Ulmann and Walter and Lange are "from pressure distribution";
+  Busemann states no method (both).
+- The brief calls the crossed points yawed cylinders; the legend says
+  only "Cross indicates data obtained through crossflow study" (B).
+- Not a brief difference (A): the NTRS title gives Mach number 6.86, its
+  abstract 6.88; the legend says M = 6.86.
+
+FILES
+
+  pair.py                  this pairing (python3 -I pair.py)
+  tn3861_fig17_pairs.csv   the 25 pairs, with errors, envelopes,
+                           alternatives, convention comparisons, flags
+                           and pixel centres in both frames
+  flags.csv                every row flagged other than ok, verbatim
+  pairing.txt              this record

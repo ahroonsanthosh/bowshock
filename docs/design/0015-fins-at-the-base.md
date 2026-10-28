@@ -38,8 +38,16 @@
   (sections 1, 4), the step at M 1.62 quantified (section 11.2), the
   swept-trailing-edge threshold at 0.9 root chords and forward sweeps
   refused (section 3.4), and the labels of members and swept plates
-  corrected (section 3.6); no served number changed (section 8).
-- **Date:** 2026-10-20 (revised 2026-10-21 and 2026-10-22)
+  corrected (section 3.6); no served number changed (section 8). On
+  2026-10-26 (A5; 0014 section 10.7 (ad)): fins ending within a chord
+  ahead of the base below Mach 1.5 were first served as "bounded, not
+  measured", then narrowed to 0.4 root chords, and after the independent
+  review withdrawn: every position ahead of the base is refused below
+  Mach 1.5, and at Mach 1.5 to 2.0 positions are served only with TN
+  2360's root chord of 1.5 body diameters (the chord rule, section 3.3);
+  above Mach 2.0 still refused, TN 3819 fig. 32 read three times but no
+  method using it written yet (section 10).
+- **Date:** 2026-10-20 (revised 2026-10-21, 2026-10-22 and 2026-10-26)
 - **Inputs:** 0014 sections 5.1, 6.2 (W1) and 10; [0010](0010-base-drag-and-total.md)
   section 1.3 (the present factor, kept) and section 10; [0008](0008-total-drag.md)
   section 3.4; the first readings
@@ -64,13 +72,18 @@ of 0014 section 10.1 cover:
   the base unswept or with the leading edge swept 45 to 60 deg and the
   trailing edge unswept, and with the leading edge swept up to 45 deg and
   the trailing edge unswept at Mach 2.0 to 3.0 (W1b, section 3.4); fins
-  ending up to a chord ahead of the base at Mach 1.5 to 2.0, the trailing
+  ending up to a chord ahead of the base at Mach 1.5 to 2.0 (since 2026-10-26 with a root chord of 1.5 body diameters only, section 3.3), the trailing
   edge swept aft, no more than the leading edge, from 0.9 root chords ahead
   (RM L52J21a's position); and, below Mach 1.5 (W2, section 11), unswept
   fins at the base at Mach 1.0 to 1.5 (from 1.0 since the owner's
   decision of 2026-10-21, section 11.2), the factor stated on W2's body
   base so that the free-flight excess is not counted twice (since the
   review of 2026-10-21).
+- **Fins ending within a chord ahead of the base** are served at Mach 1.5
+  to 2.0 only, and since 2026-10-26 only with TN 2360's root chord of 1.5
+  body diameters (within 0.5%), the one geometry its positions are
+  measured on; below Mach 1.5 they are refused (A5, section 3.3: a bound
+  there was built and withdrawn after the independent review).
 - **Flat faces at a square trailing edge** (flat plates, at every Mach
   number from 1.0, since 2026-10-21 also where the present factor would
   have served them; 0014 section 10.7, amendment i), the same counts,
@@ -90,7 +103,9 @@ of 0014 section 10.1 cover:
   root chords of the base, or swept forward anywhere; 0 to 45 deg below Mach 2.0, above 60 deg; swept sharp sections
   below 1.5), fins at the base below
   Mach 1.0 or above 3.0, positions ahead of the base above Mach 2.0 or
-  below 1.5 (section 6).
+  below 1.5, and at Mach 1.5 to 2.0 with a root chord other than 1.5 body
+  diameters, and fins more than a chord ahead of the base at any Mach
+  number (the plain curve withdrawn on 2026-10-27; section 6).
 
 **Routing (0014 sections 10.3 and 10.7).** The present factor is kept for
 the fin families it was measured on, so the Basic Finner's gated total is
@@ -256,6 +271,160 @@ cruciform t/c 0.10 relieves the base a chord ahead (dPb +0.0155, F below
 1). Above M 2.0 no position ahead of the base is measured, and such fins
 are refused. A chord or more ahead keeps 0010 section 1.4's plain curve,
 labelled not validated with fins.
+
+**Below M 1.5: bounded, not measured (2026-10-26, A5; 0014 section 10.7
+(ad)).** At M 1.0 to 1.5 no position ahead of the base is measured, and
+until this date such fins were refused. They are now served as "bounded,
+not measured" (0014 section 10.2): between the zero member there (RM
+L52E06's relief, F 0.838; for flat-faced fins the same relief, section 4) and the same fins at the base, that is the upper member of their
+bracket at x/c = 0, which below M 1.5 is always the reference (no ratio
+member is measured there, section 11.2). The band is the whole gap, the
+nominal its midpoint, and below M 1.5 it is stated on W2's term as every
+factor there (section 11.2): the reference over 1.065, the zero member as
+it is. The label says "bounded, not measured", names both bounds and the
+ordering, and gives the gap in C_D (`base-drag.ts`).
+
+The ordering, shown on TN 2360 fig. 6 (read twice, section 7) with fig.
+33's body alone, for every member measured ahead of the base at both of
+its Mach numbers (`fins-on-base-w1.test.ts` holds each number):
+
+- _Upper side._ The increment with the trailing edge x/c ahead (0 < x/c
+  <= 1) is no larger than the same fins' at the base, within the reading
+  errors. At M 1.5 every reading ahead, moved by its error toward more
+  suction, lies 0.015 to 0.076 in dPb inside the at-base reading most
+  suction-ward (two fins t/c 0.05 and 0.10, four fins t/c 0.05 and 0.10).
+  At M 2.0, 0.005 and 0.010 inside for two 10% and four 5% fins; four 10%
+  fins keep their at-base increment to x/c 0.4 (at 0.2, -0.0642 +-0.002,
+  where the base reads -0.0644 +-0.0002 and -0.064 +-0.002: 0.0002 apart
+  either way, equal within the errors), then fall. TN 2360 gives the
+  mechanism and its direction in Mach number (pp. 7, 9 to 11): the fins'
+  pressure field reaches the dead-air region along isobars inclined
+  farther rearward as the Mach number rises, so the base "is influenced
+  by the tail surfaces at tail positions farther forward than at lower
+  Mach numbers", and with the tail well forward no effect is expected. The
+  data agree: at x/c 0.4 the three members measured at both Mach numbers
+  keep 6% to 63% of their largest at-base increment at M 1.5 and 64% to 98% at
+  2.0. So below M 1.5 the same fins at the base bound the increment, with
+  a margin that grows as the Mach number falls.
+- _Lower side._ The most relief ahead of the base, as F with both errors
+  toward more relief, is 0.910 at M 1.5 (four fins t/c 0.10 at x/c 1.0)
+  and 0.944 at 2.0 (four fins t/c 0.05 at x/c 1.0): above the zero member
+  at each, 0.838 below M 1.62 and 0.938 from it. The relief grows from
+  M 2.0 to 1.5 (1 - F 0.056 to 0.090), which carried linearly to M 1.0
+  is 0.124, inside the zero member's 0.162. This side rests on two tunnel
+  Mach numbers of one model and on that carry: no measurement with fins
+  ahead of the base below M 1.5 is known. TN 3819 fig. 32's Mach 2.41
+  symbols (read once, not paired, used for nothing) are to be read a
+  second time (section 10); if the pair finds a relief beyond the zero
+  member a chord ahead at M 2.41, as a look by eye recorded in
+  `w1b_w2_proposal.md` section 1.4 suggests, this side is re-examined
+  first.
+
+Above M 2.0 the direction runs the other way (the fins reach the base
+from farther forward), so the bounded value is not carried up: fins
+within a chord ahead stay refused above M 2.0 (`fins-near-base`), the
+reason saying so in plain words, until TN 3819 fig. 32's symbols are read
+twice (section 10). At M 1.5 to 2.0 nothing changes. Sweeps are checked
+first, as before: below M 1.5 only flat-faced fins are served swept
+(section 11.2), so the bounded position value reaches unswept fins of a
+sharp section and flat-faced fins swept as section 4 allows.
+
+**Narrowed to x/c 0.4 the same day (2026-10-26, the coordinator's
+decision, before review; 0014 section 10.7 (ad)).** The lower side above
+rests, beyond the stations where TN 2360 measures relief, on two tunnel
+Mach numbers and a linear carry. So below M 1.5 the bounded value serves
+only fins ending at most 0.4 root chords ahead of the base
+(`W1_POSITION_BOUNDED_MAX`). Up to x/c 0.4 TN 2360 measures no relief at
+all: every symbol at x/c 0.2 and 0.4, at M 1.5 and 2.0 and for every
+member, moved by its reading error toward relief, still shows a suction
+(dPb at most -0.0028, four 5% fins at x/c 0.4 and M 1.5; F at least
+1.014), so the zero member's 0.838 lies 0.16 below anything measured
+there. Relief appears from x/c 0.6 and grows toward a chord ahead and as
+the Mach number falls, and nothing measured below M 1.5 says how far.
+Fins ending more than 0.4 root chords ahead (0.4 < x/c < 1) stay refused
+below M 1.5 (`fins-near-base`), in plain words. After TN 3819 fig. 32's
+pairing both are revisited (0014 section 10.7 (ad)): the bound at x/c up
+to 0.4 if the pair shows relief beyond the zero member that close at M
+2.41, and positions beyond 0.4.
+
+What it gives, up to x/c 0.4 (`fins-on-base-w1.test.ts`,
+`base-w2.test.ts`; the numbers since the narrowing): on W2's term,
++-31.7% to +-34.9% on F at M 1.0 to 1.5, the same members as at the base
+for sharp sections and plates, so the same widths; four 10% arcs, a
+member at the base (about +-7% there, section 3.6), take the whole gap
+ahead of it. At M 1.2, F 0.8379 to 1.6211, nominal 1.2295, on W2's term
+(on Love's curve itself 0.8924 to 1.7265, nominal 1.3095: the zero member,
+a ratio to the body without fins, is 0.8379 times 1.065 there; this
+record said 0.8379 to 1.7265, mixing the two bases, until the review of
+2026-10-26). The step at M 1.5, where
+positions become measured, on the body base term (base area ratio 1):
+just below, 0.2301 (band 0.1017 to 0.3585) for every case here; at M
+1.5, 0.1629 (0.1159 to 0.1935) for three 2.4% double wedges at x/c 0.4
+(-29%), 0.2262 (0.1698 to 0.2600) for four 10% arcs at x/c 0.2 (-1.7%)
+and 0.1894 (0.1497 to 0.2101) at x/c 0.4 (-17.7%). In each the measured
+band at M 1.5 lies inside the bounded band just below it, and every
+measured position band of every member at M 1.5 up to x/c 0.4 lies inside
+the bound carried below (160 checked on F). The steps are the method's (a
+bound where nothing is measured, a measurement where it is), not
+measurements; the labels name both sides. (As first built, to a chord
+ahead, the record quoted the same steps at x/c 0.5: -29% and -18.5%.)
+
+**Refused below M 1.5, and the chord rule (2026-10-26, after the
+independent review of 3389a04..245a88e; 0014 section 10.7 (ad), its
+dated narrowing, which quotes the finding).** The bounded value above is
+withdrawn before it was merged: nothing below M 1.5 is served ahead of
+the base, and the two paragraphs above stay as the record of what was
+built and why it was withdrawn. The review found that TN 2360's own
+direction in Mach number works against the narrowing to x/c 0.4: the
+relief crossing of four 5% fins moves from x/c 0.88 at M 2.0 to 0.51 at
+1.5, faster than beta, and carried down falls inside 0.4 below about M
+1.35; and TN 2360 p. 7 says the airfoil pressures themselves grow as the
+Mach number falls. So "no relief up to x/c 0.4" is measured at M 1.5 and
+2.0 only. Every position ahead of the base (x/c > 0) is refused below M
+1.5, the words naming what is missing, any measurement below M 1.5 with
+fins ahead of the base; no carry is used, a reach scaled by beta
+included. At M 1.5 to 2.0 the measured brackets above stay, inside the
+chord rule; above M 2.0 fins ahead of the base stay refused (TN 3819 fig.
+32's two readings disagreed on 3 of its 12 symbols; since then a third
+reading and a three-way pairing are in, used as 0014 section 10.7 (ad)'s
+note of the same day says, and no method uses fig. 32 yet).
+
+The chord rule: TN 2360 measured positions with one geometry, a tail
+chord of 1.875 in on a 1.250 in body, a root chord of 1.5 body diameters.
+In its model the fins' field reaches the dead-air region along isobars
+at the Mach angle, so how far ahead fins still reach the base depends on
+the body radius times beta against the chord (the at-base bound holding
+in the model only while the radius times beta stays under half the
+chord, which TN 2360's own geometry passes at M 2.0, where the
+measurement holds it). No measurement shows how positions carry to other
+chords, so fins ending ahead of the base (0 < x/c < 1) are served only
+with a root chord of 1.5 body diameters within 0.5% (`W1_POSITION_CHORD_OVER_DIAMETER`,
+`W1_POSITION_CHORD_TOLERANCE`; the 0.5% is 0011 section 3's precedent for
+the same geometry as measured), the swept fins served from 0.9 root
+chords ahead included; any other chord, or none given, is refused with
+plain words. `bodyBaseDrag` takes the ratio from `BaseFins.rootChordOverDiameter`,
+which `baseFinsOf` sets from the body's diameter. Below about M 1.2 the
+at-base upper bound would rest on its margin, not on TN 2360's mechanism
+(the linear superposition loses meaning near M 1): moot now, recorded so
+the record stays true.
+
+**A chord or more ahead: the plain curve withdrawn (2026-10-27, the
+re-review of A5; 0014 section 10.7 (ad), its amendment of that date).**
+The first paragraph of this section kept 0010 section 1.4's plain curve
+for fins a chord or more ahead. The re-review found its band missing
+TN 2360's own measurement: four unswept 10% arcs with a root chord of 1.5
+diameters, the trailing edge exactly one chord ahead, at M 2.0, were
+served 0.1447 (band 0.1187 to 0.1563), where TN 2360's dPb of -0.0096 on
+a body alone of -0.1507 gives 1.107 times the curve (at least 1.09 with
+every error toward less suction). Fins ahead of the base are now served
+only where TN 2360 measured them: a root chord of 1.5 body diameters
+(within 0.5%), x/c 0 to 1.0 inclusive, M 1.5 to 2.0, through the members
+of sections 3.2 and 3.3; a trailing edge exactly a chord ahead takes TN
+2360's station at x/c 1.0. Every position beyond one chord ahead is
+refused at any chord, nothing measuring it (`bodyBaseDrag`, reason
+`fins-near-base`). TN 2360's fins are rectangular, of aspect ratio 2.33;
+span and taper are not constrained by the chord rule, which is recorded
+for the owner (0014 section 10.7 (ad)), not ruled on here.
 
 ### 3.4 Sweep: only where measured
 
@@ -512,16 +681,24 @@ its midpoint (0008 section 6.3). Every row is asserted by
 | 1.8 | double wedge 2.4%, three fins, 45 deg, x/c 0.5          | zero; four fins t/c 0.05 at 0.4 and 1.0   | 0.9040 | 1.0897    | 1.2755 | 17.0%      |
 | 2.0 | double wedge 2.4%, four fins, 30 deg, TE unswept (W1b)  | zero; four fins t/c 0.05                  | 0.9378 | 1.1330    | 1.3282 | 17.2%      |
 | 2.5 | double wedge 2.4%, three fins, 30 deg, TE unswept (W1b) | zero; the reference                       | 0.9378 | 1.1602    | 1.3826 | 19.2%      |
-| 1.2 | double wedge 2.4%, three fins, unswept (W2)             | zero below M 1.62; the reference          | 0.8379 | 1.2822    | 1.7265 | 34.7%      |
-| 1.2 | flat plate 2.4%, three fins, 45 deg (W2, bounded)       | RM L52E06 relief; the reference           | 0.8379 | 1.2822    | 1.7265 | 34.7%      |
-| 1.0 | double wedge 2.4%, three fins, unswept (W2, from M 1.0) | zero below M 1.62; the reference          | 0.8379 | 1.3437    | 1.8496 | 37.6%      |
+| 1.2 | double wedge 2.4%, three fins, unswept (W2)             | zero below M 1.62; the reference          | 0.8379 | 1.2295    | 1.6211 | 31.9%      |
+| 1.2 | flat plate 2.4%, three fins, 45 deg (W2, bounded)       | RM L52E06 relief; the reference           | 0.8379 | 1.2295    | 1.6211 | 31.9%      |
+| 1.0 | double wedge 2.4%, three fins, unswept (W2, from M 1.0) | zero below M 1.62; the reference          | 0.8379 | 1.2873    | 1.7367 | 34.9%      |
 
-The rows are the rebuilt factor's F over Love's curve. Below M 1.5
-`bodyBaseDrag` states it on W2's body base, 1.065 times the curve, so its
-members built on fig. 35's free-flight line are divided by 1.065 there
-and the zero members are not (section 11.2): the double wedge at M 1.2
-becomes 0.8379 to 1.6211 on W2's term (nominal 1.2295, +-31.9%), at M 1.0
-0.8379 to 1.7367 (1.2873, +-34.9%). The first row's 27.5% (22.2% before
+The rows from M 1.5 are the rebuilt factor's F over Love's curve. The
+last three, below M 1.5, are on W2's body base, 1.065 times the curve, as
+`bodyBaseDrag` serves them: there the members built on fig. 35's
+free-flight line are divided by 1.065 and the zero members, ratios to the
+body without fins, are not (section 11.2). On Love's curve the same bands
+are 0.8924 to 1.7265 (nominal 1.3095) at M 1.2 and 0.8924 to 1.8496
+(1.3710) at M 1.0, with the same half-widths (`base-w2.test.ts` holds
+both bases). The factor function's own output below M 1.5, which
+`fins-on-base-w1.test.ts` asserts, holds its two members on those two
+bases (0.8379 to 1.7265 at M 1.2, 0.8379 to 1.8496 at M 1.0) and is not a
+factor on one curve until `bodyBaseDrag` puts both on W2's term. Until
+2026-10-26 this table quoted that mixed output as F over the curve
+(nominal 1.2822 and 1.3437, +-34.7% and +-37.6%); corrected after the
+review of A5, whose finding (4) found the same mixing in section 3.3. The first row's 27.5% (22.2% before
 the review) is the zero member below M 1.62 (3.5); just above M 1.5 the
 same fins reach 1.5420 (+-29.6%), where the ratio range becomes the
 envelope of both tunnel Mach numbers' (3.2), and from 1.62 they give
@@ -743,17 +920,20 @@ fin input's construction, not the base factor's routing.
 
 ## 6. What stays refused
 
-| Refused                                                                                                  | Why                                                                                                                                     |
-| -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| fewer than two or more than four fins                                                                    | TN 2360 has two and four                                                                                                                |
-| sections outside the 10% arc (tauEq above 0.10)                                                          | the thickest member; steep short bevels among them                                                                                      |
-| rounded, diverging and converging blunt trailing edges                                                   | no measurement, no ordering (section 4)                                                                                                 |
-| leading-edge sweep 0 to 45 deg with a swept trailing edge, or at M 1.5 to 2.0, or above 60               | not measured; ordering not shown (3.4)                                                                                                  |
-| swept fins with a sharp trailing edge below M 1.5                                                        | no swept fins of such sections measured there (section 11)                                                                              |
-| trailing edge swept more than the leading edge                                                           | outside both swept sets                                                                                                                 |
-| a sharp section with the trailing edge swept aft within 0.9 root chords of the base, or forward anywhere | not measured there (RM L52J21a's edge is swept aft, 0.85 +-0.05 chords ahead); linear theory raises the pressures behind the edge (3.4) |
-| Mach below 1.0 or above 3.0                                                                              | fig. 35's free-flight curve starts at M 1.0; the body base below 1.0 (11)                                                               |
-| fins ending ahead of the base above M 2.0 or below 1.5                                                   | TN 2360 measures positions at M 1.5 and 2.0 only                                                                                        |
+| Refused                                                                                                  | Why                                                                                                                                      |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| fewer than two or more than four fins                                                                    | TN 2360 has two and four                                                                                                                 |
+| sections outside the 10% arc (tauEq above 0.10)                                                          | the thickest member; steep short bevels among them                                                                                       |
+| rounded, diverging and converging blunt trailing edges                                                   | no measurement, no ordering (section 4)                                                                                                  |
+| leading-edge sweep 0 to 45 deg with a swept trailing edge, or at M 1.5 to 2.0, or above 60               | not measured; ordering not shown (3.4)                                                                                                   |
+| swept fins with a sharp trailing edge below M 1.5                                                        | no swept fins of such sections measured there (section 11)                                                                               |
+| trailing edge swept more than the leading edge                                                           | outside both swept sets                                                                                                                  |
+| a sharp section with the trailing edge swept aft within 0.9 root chords of the base, or forward anywhere | not measured there (RM L52J21a's edge is swept aft, 0.85 +-0.05 chords ahead); linear theory raises the pressures behind the edge (3.4)  |
+| Mach below 1.0 or above 3.0                                                                              | fig. 35's free-flight curve starts at M 1.0; the body base below 1.0 (11)                                                                |
+| fins ending ahead of the base above M 2.0                                                                | TN 2360 measures positions at M 1.5 and 2.0 only, and its fall with distance weakens as the Mach number rises; fig. 32's readings differ |
+| fins ending ahead of the base below M 1.5 (bounded on 2026-10-26, then withdrawn after review, 3.3)      | no measurement with fins ahead of the base below M 1.5; TN 2360's relief moves toward the base as the Mach number falls (3.3)            |
+| fins ending ahead of the base at M 1.5 to 2.0 with a root chord other than 1.5 body diameters            | TN 2360 measures positions with that chord only; where fins still reach the base depends on the chord against the body (3.3)             |
+| fins ending more than a root chord ahead of the base (the plain curve until 2026-10-27)                  | nothing measures them; the plain curve's band missed TN 2360's measurement a chord ahead (3.3)                                           |
 
 ## 7. Readings
 
@@ -1064,6 +1244,60 @@ moves, 45.0% to 45.1% at Mach 1.5 to 1.8 and 18.4% to 18.5% at 1.8 to
 3.0, on cases refused for other reasons too. The labels changed (the
 carries on members, the plates' lower bound named), the numbers did not.
 
+**A5, fins within a chord ahead of the base below Mach 1.5 (2026-10-26;
+section 3.3, 0014 section 10.7 (ad)):** run before (main at 3389a04,
+which reproduced the committed `out/impact.out` and `.json` byte for
+byte) and after, the same 2000 rockets. The position refusal falls from
+6.0% to 0% of the cases at Mach 1.0 to 1.2 and at 1.2 to 1.5 (about 120
+rockets in each band, whose body base term is now served where nothing
+else refuses it), and stays 0% at 1.5 to 1.8 and 11.5% at 1.8 to 3.0 (all
+above Mach 2.0), 5.9% to 2.9% over all bands; its share as the sole
+blocker of a total stays 0.11%, all above Mach 2.0. No total moves: 153
+of 8000 served (1.9%; 0% below Mach 1.5, where amendment (f) refuses the
+fins' own drag; 2.5% at 1.5 to 1.8; 5.2% at 1.8 to 3.0), and the
+cross-check agrees on all 1200 cases. W1's package (what the rebuilt
+factor still refuses) appears in 72.0% of the cases below Mach 1.5, from
+78.0%. Every other line of `impact.out` is unchanged. (That was the first
+build, to a chord ahead, commit 5c81b5b.)
+
+**As narrowed to x/c 0.4 the same day** (section 3.3; `out/impact.out`
+at commit 245a88e, against main's at 3389a04): the position refusal falls from 6.0% to
+4.4% of the cases at Mach 1.0 to 1.2 and at 1.2 to 1.5 (about 32 rockets
+in each band take the bounded value; those ending 0.4 to 1 chord ahead
+stay refused), stays 0% at 1.5 to 1.8 and 11.5% at 1.8 to 3.0, and goes
+from 5.9% to 5.1% over all bands; as the sole blocker of a total it stays
+0.11%. Totals unchanged (153 of 8000, 1.9%), the cross-check 1200 of 1200. W1's package appears in 76.5% of the cases below Mach 1.5, from
+78.0%. Every other line of `impact.out` is as on main.
+
+**After the independent review (2026-10-26; section 3.3, 0014 section
+10.7 (ad))**: below Mach 1.5 every position ahead of the base refused,
+and at Mach 1.5 to 2.0 positions served only with TN 2360's root chord of
+1.5 body diameters (`out/impact.out` now, against main's at 3389a04). The
+position refusal is 6.0% of the cases at Mach 1.0 to 1.2 and 1.2 to 1.5
+(as on main), 7.4% at 1.5 to 1.8 (0% on main) and 12.6% at 1.8 to 3.0
+(11.5%), 8.0% over all bands (5.9%), and the sole blocker of a total in
+0.15% (0.11%). The chord rule costs three totals: 150 of 8000 served
+(153 on main), 47 at Mach 1.5 to 1.8 (49) and 103 at 1.8 to 3.0 (104),
+none below 1.5. The cross-check agrees on all 1200 cases.
+
+**Fins a chord or more ahead: the plain curve withdrawn (2026-10-27;
+section 3.3, 0014 section 10.7 (ad), its amendment of that date):** on
+the merged head (main at 5921198, whose audit counts the Von Karman noses
+the page serves, merged at 1ec9df1), 155 of 8000 cases serve a total, 53
+at Mach 1.5 to 1.8 and 102 at 1.8 to 3.0, none below 1.5. The same head
+with fins more than a chord ahead put back on the plain curve (one line
+changed for that run, `out/impact-merged-plain-curve.out`) serves 172 (62
+and 110): the withdrawal costs 17 totals, all carried by the 81 rockets
+with fins a chord or more ahead, and gains none; main serves 181, the
+other 9 being this branch's rules within a chord. Before the merge (main
+at 3389a04) it cost 15, 150 to 135. The position refusal, now every
+position ahead of the base TN 2360 does not measure, is 23.8%, 23.8%,
+23.6% and 23.7% of the four bands' cases (20.4%, 20.4%, 20.3% and 20.4%
+with the plain curve), the sole blocker of a total in 0.57% (0.36%).
+Ahead of the base the position is now named before the section, so the
+rebuilt factor's sweep and section refusals fall on cases still refused
+for the position. The cross-check agrees on all 1200 cases in each run.
+
 The body base term alone (the probe of the research record,
 `out/w1b-w2-probe.out`, whose totals agree with this run's): served in
 12.2%, 20.4%, 31.4% and 45.8% of the four bands, from 0%, 0%, 31.4% and
@@ -1073,20 +1307,29 @@ own-drag guard; with it, 0% below Mach 1.5 until W7's fin terms), against
 0014's projection of 16.3% and 17.1% with every base refusal lifted;
 totals at Mach 1.0 to 1.2 stay 0% until W7.
 
-The rebuilt factor's own refusals, as a share of each band's cases (now):
+The rebuilt factor's own refusals, as a share of each band's cases (now,
+since 2026-10-27; ahead of the base the position is named first, so the
+sweep and section rows count fewer cases than before, which were 55.0%,
+55.0%, 45.1% and 18.5%, and 2.3%, 2.3%, 6.5% and 13.0%):
 
-| Refusal (rebuilt factor)                                                                                         | 1.0 to 1.2 | 1.2 to 1.5 | 1.5 to 1.8 | 1.8 to 3.0 |
-| ---------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ---------- | ---------- |
-| sweep not measured (below M 1.5 every swept sharp section; a swept trailing edge on a sharp section at the base) | 55.0%      | 55.0%      | 45.0%      | 18.4%      |
-| rounded or diverging blunt trailing edge                                                                         | 14.8%      | 14.8%      | 14.8%      | 14.8%      |
-| section outside the 10% arc (steep bevels)                                                                       | 2.3%       | 2.3%       | 6.5%       | 13.0%      |
-| fins within a chord of the base, above M 2.0 or below 1.5                                                        | 6.0%       | 6.0%       | 0%         | 11.5%      |
-| fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2)                               | 0%         | 0%         | 0%         | 0%         |
-| fewer than two or more than four fins                                                                            | 0%         | 0%         | 0%         | 0%         |
+| Refusal (rebuilt factor)                                                                                                                              | 1.0 to 1.2 | 1.2 to 1.5 | 1.5 to 1.8 | 1.8 to 3.0 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ---------- | ---------- |
+| sweep not measured (below M 1.5 every swept sharp section; a swept trailing edge on a sharp section at the base)                                      | 41.3%      | 41.3%      | 34.1%      | 14.1%      |
+| rounded or diverging blunt trailing edge                                                                                                              | 15.5%      | 15.5%      | 15.5%      | 15.5%      |
+| section outside the 10% arc (steep bevels)                                                                                                            | 1.6%       | 1.6%       | 4.5%       | 9.6%       |
+| fins ahead of the base where TN 2360 does not measure them (below M 1.5, above 2.0, another root chord, or more than a chord ahead; since 2026-10-27) | 23.8%      | 23.8%      | 23.6%      | 23.7%      |
+| fins at the base below M 1.0 (below M 1.1 until 2026-10-21: 12.7% at M 1.0 to 1.2)                                                                    | 0%         | 0%         | 0%         | 0%         |
+| fewer than two or more than four fins                                                                                                                 | 0%         | 0%         | 0%         | 0%         |
 
-(Sweep is checked before position: the moderate sweeps served now at Mach
-2.0 to 3.0 that end ahead of the base move from the first row to the
-fourth.) The decomposition agrees with `src/total` on all 1200 cases the
+(Until 2026-10-27 sweep was checked before position, and the moderate
+sweeps served at Mach 2.0 to 3.0 that end ahead of the base moved from
+the first row to the fourth. Since then, ahead of the base, the position
+is checked first, so a case ahead of the base that TN 2360 does not
+measure is in the fourth row whatever its sweep or section, unless its
+trailing edge is rounded or a blunt one the faces widen or narrow to,
+which is named first (second row); the rounded trailing edges a chord or
+more ahead, asked of the library since that date, add 0.7% to the
+second.) The decomposition agrees with `src/total` on all 1200 cases the
 library can represent (`impact.out`, cross-check). The flat plates'
 bounded value is in 80 of the 159 totals served (above); this record said
 before that it changed no total, which stopped being true when main's fin
@@ -1125,9 +1368,45 @@ hold-out of its own yet.
   zero member changes (section 11.2).
 - Rounded and diverging trailing edges at the base.
 - Fins ahead of the base above M 2.0 (TN 3819 fig. 32's Langley symbols
-  at M 2.41, x/c 0 to 1, are band-setting and not yet read twice;
-  NSWCDD/TR-92/509's fins one and two chords ahead stay unused until they
-  are, 0014 section 10.1), and below M 1.5.
+  at M 2.41, x/c 0 to 1, are band-setting and read once, by round 6; a
+  blind second reading is requested, 0014 section 10.7 (ad), and the
+  method that uses them is written here after the pairing, before its
+  code). NSWCDD/TR-92/509's fins one and two chords ahead were
+  transcribed and examined before any registration, so they are a check
+  that sets nothing, and only after Table 2's second transcription (0014
+  section 10.7 (ad)). Fig. 32 has since had a blind second reading
+  (round 14) and a third (round 16), and a three-way neutral pairing
+  (`pairing-2026-10-26-fig32-three/`): readings 2 and 3 agree on all 12
+  symbols, reading 1 differs at three symbols and the curve's left end;
+  were they used, it would be as (ad)'s note of 2026-10-26 says (agreed
+  values where all three agree, the envelope of all three where reading
+  1 differs). Below M 1.5 every position ahead of the base is refused
+  (section 3.3); what would reopen it is any measurement below M 1.5 with
+  fins ahead of the base. At M 1.5 to 2.0 other root chords than TN
+  2360's 1.5 body diameters need a measurement at another chord.
+- **Route (i), fig. 32 at Mach 2.0 to 3.0: deferred** (the coordinator's
+  decision of 2026-10-26). Nothing uses fig. 32, and any future route (i)
+  needs a fresh registration in 0014 section 10.7, written before it is
+  used. Four questions are open, and (ad)'s rules as written do not
+  answer them:
+  1. _The lower bound, the most important._ The three-way pairing's
+     values were seen while the readings were being paired and checked,
+     and were used for nothing. Its symbols a chord ahead of the base
+     (x/c 1.0) read about -0.06 to -0.076 in P_B, where fig. 33 gives the
+     body alone at Mach 2.41 as about -0.122: far on the relief side of
+     the zero member (F 0.938 from Mach 1.62). So at Mach 2.41 fins ahead
+     of the base can lower the base drag well past what the zero member
+     allows, and whether the zero member still bounds thinner fins from
+     below there is open.
+  2. _Mach numbers._ Fig. 32 is at Mach 2.41 only: how it would cover
+     Mach 2.0 to 2.41 (with TN 2360 at 2.0) and 2.41 to 3.0, where no
+     carry is allowed now, is open.
+  3. _Chord._ The chord rule names TN 2360's 1.5 body diameters at Mach
+     1.5 to 2.0; fig. 32's model may have another root chord over
+     diameter, and whether that sets its own domain is open.
+  4. _Fin families._ Which fins fig. 32 measures, and whether section
+     3.6's outward widening would reach the families it does not, is
+     open.
 - Whether the rebuilt factor replaces the present one inside the Basic
   Finner's class: the owner's decision after BRL 934's run (0014 section
   10.3). It would not today: it refuses the Basic Finner's wedges.
@@ -1265,7 +1544,8 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
   are bracketed between the zero member and the reference, three fins
   between zero and four, flat plates bounded between 0.838 and the
   reference (section 4's ordering). Fins ending ahead of the base are
-  refused.
+  refused (a bound built on 2026-10-26 was withdrawn after the
+  independent review, section 3.3).
 - **Sweep:** RM L52E06's flat plates are swept 45 deg at the leading
   edge, so flat-faced fins are served swept (45 to 60 deg, as above M 1.5);
   swept fins of sharp sections are refused, since none is measured below
@@ -1294,9 +1574,10 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
     levels off by 1.05 (0.850 in round 6's reading, 0.847 with its errors,
     above 0.838).
   - Example: a 2.4% double wedge, three unswept fins, at M 1.0: the
-    rebuilt factor's F over the curve 0.838 to 1.850, nominal 1.344
-    (+-37.6%); on W2's term (below) 0.838 to 1.737, nominal 1.287
-    (+-34.9%), the body base term on the base area 0.2535, band 0.1067 to
+    rebuilt factor's F on W2's term (below) 0.838 to 1.737, nominal 1.287
+    (+-34.9%), on Love's curve 0.892 to 1.850, nominal 1.371 (this record
+    gave 0.838 to 1.850, nominal 1.344, +-37.6%, as F over the curve until
+    2026-10-26, mixing two bases; section 3.6), the body base term on the base area 0.2535, band 0.1067 to
     0.4003 in C_D (0.265, 0.104 to 0.425 before the review; 0.197, band
     0.152 to 0.242, without fins: W2's body base serves M 1.0 to 1.5,
     section 11.1).
@@ -1333,8 +1614,10 @@ The rebuilt factor (sections 3 and 4) extended below its tunnel members:
   here (section 10).
 
 Example (section 3.6): a 2.4% double wedge, three unswept fins, at M 1.2:
-the rebuilt factor's F over the curve 0.838 to 1.727, nominal 1.282
-(+-34.7%); on W2's term 0.838 to 1.621, nominal 1.230 (+-31.9%), the term
+the rebuilt factor's F on W2's term 0.838 to 1.621, nominal 1.230
+(+-31.9%), on Love's curve 0.892 to 1.727, nominal 1.309 (this record
+gave 0.838 to 1.727, nominal 1.282, +-34.7%, as F over the curve until
+2026-10-26, mixing two bases; section 3.6), the term
 on the base area 0.2404 with a band of 0.1085 to 0.3723 in C_D (0.251,
 about 0.11 to 0.40, before the review).
 

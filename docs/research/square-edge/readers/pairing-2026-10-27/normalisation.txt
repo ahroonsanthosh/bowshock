@@ -1,0 +1,127 @@
+Normalisation of each set (0014 10.7 (af), addendum (b))
+=========================================================
+
+Written by the pairing party on 2026-10-27, before any value of either
+reading was compared with anything. Taken only from what the two readers
+recorded (geometry.csv "pressure normalisation" rows, the value_quantity
+column of their CSVs, and their method notes), with their quotes of the
+reports. The pairing party did not read the reports to decide this.
+
+Addendum (b): a set tests P1 (p at most p02 on the face) only where its
+face pressures are given over a reference not measured on the face. A set
+whose pressures are given over its own measured stagnation (pitot)
+pressure does not test P1. Where the readers differ or the report as
+quoted is unclear, the answer here is "not established".
+
+
+1. NACA TN 4300 (figs. 7 and 16; 4-in. model D, 12-in. model A, and the
+   two comparison series of fig. 7)
+
+   Reader A, geometry.csv: "p_l/p_o" ... "text PDF p. 7: pressures
+   presented 'as fractions of the total pressure behind the shock'; axis
+   label p_l/p_o; subscript o = stagnation point".
+   Reader A, fig. 7 value_quantity: "p_l/p_o as the axis states it (p_o:
+   stagnation-point pressure, which the text calls the total pressure
+   behind the shock)".
+   Reader A, accuracy row: "the solid symbols were measured by low-range
+   cells (difference from the centre-tube pressure) and are considerably
+   more reliable than the open symbols, measured with total-pressure
+   instruments of higher range".
+
+   Reader B, geometry.csv: "p_l/p_o" ... "axes of figs. 7 and 16 read
+   p_l/p_o; subscript o = stagnation point (symbols list); text: pressures
+   presented as fractions of the total pressure behind the shock".
+   Reader B, fig. 7 value_quantity: "p_l/p_o (right-hand axis; local
+   static pressure over stagnation-point pressure; text calls it a
+   fraction of the total pressure behind the shock)".
+   Reader B, accuracy row: "solid symbols of fig. 7 were measured by
+   low-range cells (difference from the centre tube) and are considerably
+   more reliable than the open symbols (higher-range total-pressure
+   instruments)".
+
+   Finding: NOT ESTABLISHED. Both readers record the same quantity
+   (p_l/p_o, o the stagnation point, "the total pressure behind the
+   shock"), but neither records whether p_o is the pressure measured at
+   the face centre or a value from the stated Mach number and jet total
+   pressure. Both record that a centre pressure was measured (the
+   "centre-tube" pressure the low-range cells were referred to), which
+   does not say that the plotted ratio divides by it. Whether TN 4300
+   tests P1 is therefore not established from the readings. The same
+   holds for fig. 7's comparison series (4-in. model, Unitary tunnel,
+   M = 2.49; 3-in. model, ref. 3, M = 2.01), plotted on the same p_l/p_o
+   axis; neither reader records their reference.
+
+2. NACA RM L57C18 (fig. 5, models B, C, D, F)
+
+   Reader A, geometry.csv: "C_p = (p_l - p_inf)/q_inf" ... "symbols list:
+   pressure coefficient (p_l - p_inf)/q_inf; fig. 5 axis C_p".
+   Reader B, geometry.csv: "C_p = (p_l - p_inf)/q_inf" ... "symbols list;
+   figure 5 axis C_p".
+   value_quantity, A: "C_p = (p_l - p_inf)/q_inf as the axis states it";
+   B: "C_p, pressure coefficient (p_l - p_inf)/q_inf, as the axis
+   states".
+
+   Finding: the readers agree. The pressures are given over the free
+   stream (p_inf and q_inf), a reference not measured on the face. RM
+   L57C18 does NOT normalise by its own measured stagnation pressure, so
+   it TESTS P1.
+
+3. NASA TM X-19 (fig. 5, M = 2.49)
+
+   Reader A, geometry.csv: "p_l/p_t,2" ... "text PDF p. 5: local pressures
+   on the front face reduced to p_l/p_t,2, p_t,2 measured by the orifice
+   at the centre of the flat face at alpha 0; fig. 5 caption says the
+   same in words".
+   Reader B, geometry.csv: "p_l/p_t,2" ... "text: p_t,2 measured by an
+   orifice at the centre of the flat face at alpha 0; caption: ratio to
+   the local pressure at the stagnation point for alpha 0".
+   value_quantity, A: "(text: p_t,2 measured by the orifice at the face
+   centre at alpha 0)"; B: "text: p_t,2 measured by the centre orifice at
+   alpha 0".
+
+   Finding: the readers agree. TM X-19 normalises by its own measured
+   stagnation-point pressure (the face-centre orifice at alpha 0), so it
+   DOES NOT TEST P1 (P1 holds there by construction).
+
+4. NASA TN D-5392 (tables I, II, III, model 1; M = 2.49, 4.06, 4.63)
+
+   Reader A, geometry.csv: "p_l/p_t,2" ... "table heading; p_t,2 =
+   stagnation conditions behind a normal shock at the free-stream Mach
+   number (symbols); text PDF p. 8 implies p_t,2 is computed".
+   Reader A, value_quantity: "p_l/p_t,2 (table heading; p_t,2: stagnation
+   pressure behind a normal shock at the free-stream Mach number)".
+   Reader B, geometry.csv: "p_l/p_t,2" ... "table heading; p_t,2 =
+   stagnation conditions behind a normal shock at the free-stream Mach
+   number (symbols list)".
+   Reader B, accuracy row: "mercury manometers within 0.5 psf;
+   stagnation-point pressure by precision mercury manometer, 1-psi
+   differential gage readings subtracted from it".
+   Reader B, value_quantity: "p_l/p_t,2 (local surface pressure over
+   stagnation pressure behind a normal shock at the free-stream Mach
+   number), as the table heads it".
+
+   Finding: NOT ESTABLISHED. Both readers quote the same heading and the
+   same symbols-list definition. Reader A adds that the text "implies"
+   p_t,2 is computed, an inference, not a quote. Reader B draws no
+   conclusion and records that the stagnation-point pressure was measured
+   (precision mercury manometer), without saying whether the tables
+   divide by that measured value or by one from the free-stream Mach
+   number. The report as quoted is unclear on this point, so whether TN
+   D-5392 tests P1 is not established from the readings.
+
+
+Summary
+-------
+
+   Set            Reference (as both readers record it)        Own measured p_t2?   Tests P1?
+   TN 4300        p_l/p_o, o = stagnation point                not established      not established
+   RM L57C18      C_p = (p_l - p_inf)/q_inf (free stream)      no                   yes
+   TM X-19        p_l/p_t,2, p_t,2 measured at face centre     yes                  no
+   TN D-5392      p_l/p_t,2, p_t,2 behind normal shock at M    not established      not established
+
+Of the four sets, only RM L57C18 is established as testing P1; TM X-19 is
+established as not testing it; for TN 4300 and TN D-5392 it is not
+established. RM L57C18's face orifices lie on faces with corner radii of
+1.0, 0.4 and 0.1 in. (and model F's recessed face), on cone frusta, not
+cylinders (both readers); see the location pairs for which of its points
+each reader puts on the face.
