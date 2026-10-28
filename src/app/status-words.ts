@@ -34,6 +34,7 @@ import {
   FINS_AHEAD_OF_BASE,
   NOSE_UNVERIFIED_REASON,
   W1_BOUNDED_REASON,
+  W1_BOUNDED_SWEPT_REASON,
   type Claim,
 } from './total-drag';
 
@@ -98,6 +99,16 @@ export const W1_BOUNDED_WORDS: StatusWords = {
   mark: 'square',
 };
 
+/** The same, the fins' leading-edge sweep taken on 0015 section 12's argument (W1_BOUNDED_SWEPT_REASON). */
+export const W1_BOUNDED_SWEPT_WORDS: StatusWords = {
+  word: 'Estimate, bounded',
+  sentence:
+    "An estimate with one part bounded, not measured: the fins' effect on the base drag, set from " +
+    'bounds, at a fin sweep no measurement of such fins at the base covers.',
+  tone: 'bounded',
+  mark: 'square',
+};
+
 /** The fins' rounded leading edges swept beyond 60 deg, bounded (0016 section 21.2). */
 export const SWEPT_EDGE_BOUNDED_WORDS: StatusWords = {
   word: 'Estimate, bounded',
@@ -122,6 +133,7 @@ export const SEVERAL_BOUNDED_WORDS: StatusWords = {
 const BOUNDED_PARTS: readonly (readonly [string, StatusWords])[] = [
   [BOUNDED_REASON, BOUNDED_WORDS],
   [W1_BOUNDED_REASON, W1_BOUNDED_WORDS],
+  [W1_BOUNDED_SWEPT_REASON, W1_BOUNDED_SWEPT_WORDS],
   [SWEPT_EDGE_BOUNDED_REASON, SWEPT_EDGE_BOUNDED_WORDS],
 ];
 
