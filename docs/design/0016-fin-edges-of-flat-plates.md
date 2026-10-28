@@ -2200,11 +2200,15 @@ sweeps of 60 to 70.5 deg, and past 70.5 deg none within Mach 3.0. The
 estimate's claim names both bounded parts, the base's reason with the
 sweep argument of 0015 sections 4 and 12
 (`tests/app/total-drag.test.ts`: a plate swept 66.4 deg at Mach 2.8 on a
-3-calibre root chord; in the audit's population, three such plates at
-the base, swept 60.6 to 63.6 deg, at Mach 2.44 to 2.87, as the review of
-2026-10-28 traced them). The page test of the paragraph above, on a
-plate whose tip chord is short, is refused at the base for its thickness
-over the tip chord, not for its sweep. The other two points stand.
+3-calibre root chord; in the audit's population, five rockets, 112, 629,
+1159, 1317 and 1986, each with three plate fins at the base swept 60.6
+to 63.6 deg, at Mach 2.44 to 2.87, as the review of 2026-10-28 traced
+them). The page test of the paragraph above, on a plate whose tip chord
+is short, is refused at the base for its thickness over the tip chord,
+not for its sweep. The other two points stand. (Corrected 2026-10-28:
+this note first said "three such plates", miscounting the five rockets,
+whose fins number three each; the message of commit eb0a646 has the same
+slip and cannot be changed.)
 
 ### 21.9 Corrections after the re-review of ef7fc7d..5159cac (2026-10-28)
 
