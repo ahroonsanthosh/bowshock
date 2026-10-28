@@ -6,13 +6,19 @@
  * Shock-expansion theory (oblique shock or Prandtl-Meyer expansion at the
  * leading edge, Prandtl-Meyer expansions at every corner after it) gives the
  * pressure on each straight face of a convex polygon exactly, with one
- * condition: no wave reflected from the leading-edge shock may reach the
- * surface ahead of the trailing edge. Such waves arise where a corner's
- * expansion fan overtakes the shock and weakens it. `exactSectionDrag`
- * bounds where the first of them can land and refuses the case when that
- * lies on the chord (`firstReflection` below says how), unless the caller
- * asks for the shock-expansion value with the reflections neglected, which
- * is then labelled `exact: false`. It also refuses:
+ * condition: no wave reflected from the leading-edge shock may reach a
+ * face with slope. Such waves arise where a corner's expansion fan
+ * overtakes the shock and weakens it. `exactSectionDrag` bounds where the
+ * first of them can land (`firstReflection` below says how) and refuses
+ * the case when that lies ahead of the end of the surface's last face with
+ * slope (`lastSlopedFaceEnd`), unless the caller asks for the
+ * shock-expansion value with the reflections neglected, which is then
+ * labelled `exact: false`. A wave that lands only on faces parallel to the
+ * chord changes pressures that carry no drag, and in supersonic flow
+ * nothing it does reaches the faces ahead of it, so the drag stays exact
+ * (0009 section 8, 2026-10-26): a wedge followed by a flat to a square
+ * trailing edge is exact whatever the reflection; a hexagon is not, its
+ * rear bevel having slope. It also refuses:
  *
  * - a detached leading-edge shock (deflection above the detachment angle),
  * - an attached shock with subsonic flow behind it (between the sonic and
@@ -98,6 +104,13 @@ export interface SurfaceSolution {
    * reflected waves themselves make to the states they cross.
    */
   readonly firstReflection: number;
+  /**
+   * Chord fraction at which this surface's last face with slope ends (0 when
+   * every face is parallel to the chord). A reflected wave that lands at or
+   * behind it reaches only flat faces, whose pressure carries no drag, so
+   * the surface's drag is exact (0009 section 8).
+   */
+  readonly lastSlopedFaceEnd: number;
 }
 
 export interface SectionDragOptions {
@@ -115,9 +128,9 @@ export interface ExactSectionDrag {
   /** Wave drag coefficient of both surfaces, on the chord. */
   readonly cd: number;
   /**
-   * True when no reflected wave can reach either surface ahead of the
-   * trailing edge, so cd is exact for the inviscid flow; false only when
-   * the caller asked for `neglectReflectedWaves`.
+   * True when no reflected wave can reach a face with slope on either
+   * surface, so cd is exact for the inviscid flow; false only when the
+   * caller asked for `neglectReflectedWaves`.
    */
   readonly exact: boolean;
   readonly upper: SurfaceSolution;
@@ -235,7 +248,16 @@ function solveSurface(
   if (shockAngle !== undefined && firstCorner > 0) {
     firstReflection = reflectionBound(points, faces, firstCorner, shockAngle);
   }
-  return { faces, cd, shockAngle, firstReflection };
+  let lastSlopedFaceEnd = 0;
+  for (const f of faces) {
+    if (Math.abs(f.deflection) > COLLINEAR) lastSlopedFaceEnd = f.x1;
+  }
+  return { faces, cd, shockAngle, firstReflection, lastSlopedFaceEnd };
+}
+
+/** True when no reflected wave can reach a face with slope on this surface (0009 section 8). */
+function surfaceExact(s: SurfaceSolution): boolean {
+  return s.firstReflection >= s.lastSlopedFaceEnd;
 }
 
 /** Prandtl-Meyer expansion by `turn` radians from Mach m and pressure p. */
@@ -304,17 +326,17 @@ export function exactSectionDrag(
   const s = asSection(section);
   const upper = solveSurface(upperFrame(s.upper, 1), 'upper', mach, gamma);
   const lower = solveSurface(upperFrame(s.lower, -1), 'lower', mach, gamma);
-  const exact = upper.firstReflection >= 1 && lower.firstReflection >= 1;
+  // Exact when no reflected wave can reach a face with slope (0009 sections 2.1 and 8): a wave that
+  // lands only on faces parallel to the chord changes pressures that carry no drag.
+  const exact = surfaceExact(upper) && surfaceExact(lower);
   if (!exact && options.neglectReflectedWaves !== true) {
-    const [name, x] =
-      upper.firstReflection <= lower.firstReflection
-        ? ['upper', upper.firstReflection]
-        : ['lower', lower.firstReflection];
+    const [name, s] = !surfaceExact(upper) ? ['upper', upper] : ['lower', lower];
     throw new FinRefusal(
       'reflected-wave',
       `a wave reflected from the leading-edge shock can reach the ${name} surface at x/c = ` +
-        `${x.toFixed(3)}, ahead of the trailing edge, at Mach ${mach}: shock-expansion theory ` +
-        'neglects it, so the drag would not be exact',
+        `${s.firstReflection.toFixed(3)}, ahead of the end of its last face with slope (x/c = ` +
+        `${s.lastSlopedFaceEnd.toFixed(3)}), at Mach ${mach}: shock-expansion theory neglects ` +
+        'it, so the drag would not be exact',
     );
   }
   return { cd: upper.cd + lower.cd, exact, upper, lower };
