@@ -21,10 +21,13 @@
  *   label carries the gap between the bounds in C_D.
  *
  * Fins: with their trailing edges at the base, the factor applies; ending
- * one root chord or more ahead of it, the plain curve (TN 2360 found the
- * increment nearly zero one chord fore or aft), labelled not validated
- * with fins (0008 section 6.4: no total-drag case with fins clear of the
- * base was found).
+ * ahead of it, the rebuilt factor where TN 2360 measured positions (up to
+ * one root chord ahead, x/c 0 to 1.0, with its root chord of 1.5 body
+ * diameters, at Mach 1.5 to 2.0); more than a root chord ahead they are
+ * refused, nothing measuring them. (Until 2026-10-27 fins a chord or more
+ * ahead took the plain curve, withdrawn when its band was found to miss
+ * TN 2360's measurement a chord ahead: 0014 section 10.7 (ad), 0015
+ * section 3.3.)
  *
  * Which factor (0014 sections 10.3 and 10.7, docs/design/0015-fins-at-the-base.md
  * section 5): the present factor (./fins-on-base.ts) for the fin families it
@@ -56,7 +59,16 @@ import {
 } from './compiled-curve';
 import { W2_BAND, W2_LABEL, W2_MACH_RANGE, w2CurveBasePressure } from './base-w2';
 import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins-on-base';
-import { finsOnBaseFactorW1, type FinsNearBase, type FinsOnBaseFactorW1 } from './fins-on-base-w1';
+import {
+  finsOnBaseFactorW1,
+  flatPlateSweepNarrowing,
+  nearBasePositionReasons,
+  nearBasePositionRefusal,
+  W1_SWEEP_REFUSED_TOO,
+  trailingEdgeShape,
+  type FinsNearBase,
+  type FinsOnBaseFactorW1,
+} from './fins-on-base-w1';
 import { BaseRefusal } from './refusal';
 import { vacuumBaseDrag } from './vacuum';
 
@@ -72,7 +84,15 @@ export interface BaseFins extends FinsAtBase {
    * The fins' section and sweeps, for the rebuilt factor (./fins-on-base-w1.ts) where the present one
    * refuses; without them the present factor's refusal stands.
    */
-  readonly nearBase?: Omit<FinsNearBase, 'count' | 'trailingEdgeAheadOfBase'>;
+  readonly nearBase?: Omit<
+    FinsNearBase,
+    'count' | 'trailingEdgeAheadOfBase' | 'rootChordOverDiameter'
+  >;
+  /**
+   * The fins' root chord over the body diameter (`baseFinsOf` sets it from the body). Fins ending ahead of the
+   * base are served only with TN 2360's 1.5; without it they are refused (0015 section 3.3).
+   */
+  readonly rootChordOverDiameter?: number;
   /**
    * The thinnest station's thickness over chord and the share of the span
    * thinner than the factor's thinnest data (a flat plate of varying chord;
@@ -92,6 +112,35 @@ export const FLAT_PLATES_AT_BASE_REFUSAL =
   'the present fins-on-base factor is measured on wedge, circular-arc and hexagonal sections, not on ' +
   'fins with flat faces at the trailing edge (plates), which lower the base drag by up to 15% at the ' +
   'base (RM L52E06 fig. 7, F 0.85 to 0.88; 0014 section 10.7)';
+
+/**
+ * How the refusal of a plate with a rounded trailing edge ending ahead of the base begins: the page words it
+ * near the base, not at it (0015 section 4).
+ */
+export const ROUNDED_PLATE_AHEAD_OF_BASE = 'a plate with a rounded trailing edge ending';
+
+/**
+ * How the refusal of fins ending ahead of the base with a blunt trailing edge that their faces widen or narrow
+ * to (the Basic Finner's wedges) begins: nothing measures it ahead of the base (0015 section 4), and the page
+ * words it near the base, not at it.
+ */
+export const BLUNT_AHEAD_OF_BASE =
+  'fins whose faces widen or narrow to a blunt trailing edge, ending';
+
+/** How the refusal of fins ending more than a root chord ahead of the base begins (0015 section 3.3). */
+export const MORE_THAN_A_CHORD_AHEAD = 'fins ending more than a root chord ahead of the base';
+
+/** Added where fins more than a chord ahead have a trailing edge refused near the base too: a plate's rounded one. */
+export const ROUNDED_EDGE_NOTE =
+  '; their rounded trailing edge has no measurement at or near the base either (0015 section 4)';
+
+/** The same for a blunt trailing edge that the faces widen or narrow to. */
+export const BLUNT_EDGE_NOTE =
+  '; their blunt trailing edge, which the faces widen or narrow to, has no measurement ahead of the ' +
+  'base either (0015 section 4)';
+
+/** A trailing edge within this of one root chord ahead counts as one chord ahead (TN 2360's station at 1.0). */
+const WITHIN_A_CHORD = 1e-9;
 
 /** The thinnest fins the fins-on-base factor's data hold: 5% thick (TN 2360, TN 3819 fig. 35). */
 export const FINS_ON_BASE_THINNEST_DATA = 0.05;
@@ -250,15 +299,62 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
           "steps where W2's 1.065 ends (0015 section 11.2)",
       };
     };
+    // A trailing edge that nothing measures ahead of the base (0015 section 4): a plate's rounded one, or a
+    // blunt one that the faces widen or narrow to.
+    const edgeNote = (): string => {
+      if (fins.nearBase === undefined) return fins.flatFaced === true ? ROUNDED_EDGE_NOTE : '';
+      const te = trailingEdgeShape(fins.nearBase.section);
+      return te === 'diverging' || te === 'converging-blunt' ? BLUNT_EDGE_NOTE : '';
+    };
+    // A flat plate whose sweep is refused below Mach 1.62 (0014 section 10.7 (z), the note of 2026-10-27): named
+    // with any refusal of its position, so that the advice for the position, the fins at the base, does not
+    // lead into the sweep's refusal.
+    const sweepNote = (): string => {
+      const sweep =
+        fins.nearBase === undefined ? undefined : flatPlateSweepNarrowing(mach, fins.nearBase);
+      return sweep === undefined ? '' : `${W1_SWEEP_REFUSED_TOO}${sweep}`;
+    };
     const rebuilt = (): FinsOnBaseFactorW1 => {
       const near = fins.nearBase;
-      if (near === undefined && fins.flatFaced === true && presentRefusal !== undefined) {
+      // A plate whose trailing edge is not square (rounded) has no section the rebuilt factor takes, at the base
+      // or ahead of it: refused for its trailing edge, and ahead of the base for its position too where that
+      // is refused (0015 sections 3.3 and 4).
+      if (near === undefined && fins.flatFaced === true) {
+        const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
         throw new BaseRefusal(
           'fin-trailing-edge',
-          `${presentRefusal.message}; the rebuilt factor's flat-plate value covers square trailing edges ` +
-            'only: a rounded trailing edge has no measurement at the base (0015 section 4)',
+          x > 0
+            ? `${ROUNDED_PLATE_AHEAD_OF_BASE} ${x} root chords ahead of the base: the rebuilt factor's ` +
+                'flat-plate value covers square trailing edges only, and a rounded trailing edge has no ' +
+                'measurement at or near the base (0015 section 4)' +
+                (position.length > 0
+                  ? `; its position is refused too: ${position.join('; and ')} (0015 section 3.3)`
+                  : '')
+            : `${presentRefusal === undefined ? '' : `${presentRefusal.message}; `}the rebuilt factor's ` +
+                'flat-plate value covers square trailing edges only: a rounded trailing edge has no ' +
+                'measurement at or near the base (0015 section 4)',
         );
       }
+      // A blunt trailing edge that the faces widen or narrow to has no measurement ahead of the base: refused
+      // for it, as the rounded plate above, its position named too where that is refused (0015 section 4).
+      if (x > 0 && edgeNote() === BLUNT_EDGE_NOTE) {
+        const position = nearBasePositionReasons(mach, x, fins.rootChordOverDiameter);
+        throw new BaseRefusal(
+          'fin-trailing-edge',
+          `${BLUNT_AHEAD_OF_BASE} ${Number(x.toPrecision(3))} root chords ahead of the base: no ` +
+            "band-setting source measures such a trailing edge's effect on the body base ahead of it, " +
+            'and the ordering of 0015 section 4 does not reach it' +
+            (position.length > 0
+              ? `; its position is refused too: ${position.join('; and ')} (0015 section 3.3)`
+              : ''),
+        );
+      }
+      // Then the position: where TN 2360 measured none, no section serves the fins, so it is named before
+      // any refusal of their section, sweep, count or thickness, whose words would lead to a change still
+      // refused there (0014 section 10.7 (ad), 2026-10-27; 0015 section 3.3), with the sweep's refusal where a
+      // plate's sweep is refused too (sweepNote).
+      const position = nearBasePositionRefusal(mach, x, fins.rootChordOverDiameter, sweepNote());
+      if (position !== undefined) throw position;
       if (near === undefined) {
         throw (
           presentRefusal ??
@@ -290,7 +386,10 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
             ...near,
             ...(spanSections === undefined ? {} : { spanSections }),
             count: fins.count,
-            trailingEdgeAheadOfBase: x,
+            trailingEdgeAheadOfBase: Math.min(x, 1),
+            ...(fins.rootChordOverDiameter === undefined
+              ? {}
+              : { rootChordOverDiameter: fins.rootChordOverDiameter }),
           }),
         );
       } catch (e) {
@@ -333,7 +432,9 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
         source = 'rebuilt';
         labels.push(`${w1.label}${gapOf(w1)}; ${FINS_ON_BASE_ROUTING_LABEL} (${e.message})`);
       }
-    } else if (x < 1) {
+    } else if (x <= 1 + WITHIN_A_CHORD) {
+      // Up to one root chord ahead, a trailing edge exactly a chord ahead included (TN 2360's station at x/c
+      // 1.0): the rebuilt factor, where TN 2360 measured positions (0015 section 3.3).
       const w1 = rebuilt();
       factor = w1;
       source = 'rebuilt';
@@ -341,9 +442,16 @@ export function bodyBaseDrag(input: BodyBaseInput): BodyBaseDrag {
         `${w1.label}${gapOf(w1)}; ${FINS_ON_BASE_ROUTING_LABEL} (it takes fins at the base only)`,
       );
     } else {
-      labels.push(
-        'fins one chord or more ahead of the base: compiled curve without fins, not validated ' +
-          'with fins (0008 section 6.4)',
+      // More than a root chord ahead nothing is measured; the plain curve served here until 2026-10-27 is
+      // withdrawn (0014 section 10.7 (ad); 0015 section 3.3).
+      throw new BaseRefusal(
+        'fins-near-base',
+        `${MORE_THAN_A_CHORD_AHEAD} (${Number(x.toPrecision(3))} root chords): nothing measures the ` +
+          'base drag with fins that far ahead (TN 2360 measures up to one chord ahead, with a root chord ' +
+          'of 1.5 body diameters, at Mach 1.5 and 2.0), so they are refused; until 2026-10-27 they took ' +
+          "the plain curve, whose band missed TN 2360's measurement a chord ahead (0015 section 3.3)" +
+          edgeNote() +
+          sweepNote(),
       );
     }
   }

@@ -76,14 +76,26 @@
  * tunnel excess carried, the zero member reaches down to RM L52E06's
  * relief with flat plates (the lowest relief measured at or below M 1.5),
  * no ratio member and no position ahead of the base is measured, and
- * swept fins are served only with flat faces (RM L52E06's plates are
- * swept 45 deg).
+ * swept fins are served only with flat faces swept 45 to 60 deg (RM
+ * L52E06's plates are swept 45 deg; 0014 section 10.7 (z), the note of
+ * 2026-10-27). Fins ending ahead of the base are refused there: no
+ * measurement with fins ahead of the base below M 1.5 is known (0015
+ * section 3.3; 0014 section 10.7 (ad), narrowed after the independent
+ * review of 2026-10-26, which withdrew a bound built on carries).
  *
- * Fins with flat faces at a square trailing edge (flat plates) are
- * served at every leading-edge sweep when the trailing edge is unswept
- * (0015 section 12, 2026-10-26: neither bound below uses the leading
- * edge), and with the trailing edge swept at the sweeps above. They are
- * "bounded, not measured" (0014 section 10.2): between the lowest relief
+ * Positions ahead of the base (0 < x/c < 1) are served at M 1.5 to 2.0
+ * only, and only with TN 2360's geometry, a root chord of 1.5 body
+ * diameters within 0.5% (W1_POSITION_CHORD_OVER_DIAMETER): where the fins'
+ * field still reaches the base depends on the chord against the body, and
+ * no other chord is measured.
+ *
+ * Fins with flat faces at a square trailing edge (flat plates), the
+ * trailing edge unswept, are served at every leading-edge sweep from M
+ * 1.62, and below it unswept or swept 45 to 60 deg (0015 section 12,
+ * 2026-10-26: neither bound below uses the leading edge; narrowed on
+ * 2026-10-27, flatPlateSweepNarrowing); with the trailing edge swept, at
+ * the sweeps above. They are "bounded, not measured" (0014 section
+ * 10.2): between the lowest relief
  * measured with such fins at the base (RM L52E06 fig. 7, M 1.06 to 1.10:
  * W1_FLAT_RELIEF_LOW) and the unswept circular-arc member at least as
  * thick, the ordering argued in 0015 section 4 from TN 2360 (the increment
@@ -100,8 +112,9 @@
  * Refused, each with its reason: fewer than two or more than four fins;
  * rounded, diverging (thickest at the edge) and converging blunt trailing
  * edges; sections not dominated by the 10% circular arc; sweeps other than
- * those measured; Mach numbers outside 1.5 to 3.0; fins ending ahead of the
- * base where no position is measured (above M 2.0).
+ * those measured; Mach numbers outside 1.0 to 3.0; fins ending ahead of the
+ * base below M 1.5 or above 2.0, or with a root chord other than TN 2360's
+ * (nearBasePositionReasons).
  */
 
 import { compiledCurveValue } from './compiled-curve';
@@ -144,6 +157,85 @@ export const W1_TUNNEL_MACHS = [1.5, 2.0] as const;
 export const W1_THICKNESSES = [0.05, 0.1] as const;
 /** TN 2360 fig. 6's stations, x/c (trailing edge ahead of the base, in chords). */
 export const W1_STATIONS = [0, 0.2, 0.4, 0.6, 0.8, 1.0] as const;
+/**
+ * TN 2360's geometry, the one on which positions ahead of the base are measured: a tail chord of 1.875 in on a
+ * 1.250 in body (its fig. 2), a root chord of 1.5 body diameters. In its superposition model (pp. 6 and 7, fig. 4)
+ * the fins' field reaches the dead-air region along isobars at the Mach angle, so where fins ahead of the base still
+ * reach it depends on the body radius times beta against the chord; no other chord is measured, so positions ahead
+ * of the base are served only with this one (0015 section 3.3; 0014 section 10.7 (ad), the review of 2026-10-26).
+ */
+export const W1_POSITION_CHORD_OVER_DIAMETER = 1.875 / 1.25;
+/** How close the root chord over the body diameter must be to TN 2360's: 0.5%, 0011 section 3's precedent. */
+export const W1_POSITION_CHORD_TOLERANCE = 0.005;
+
+/**
+ * Why fins ending x/c root chords ahead of the base (x/c > 0) are refused at M, each reason in plain words, or
+ * none where TN 2360's measured positions cover them: M 1.5 to 2.0 and its root chord of 1.5 body diameters
+ * (0015 section 3.3; 0014 section 10.7 (ad), narrowed after the review of 2026-10-26).
+ */
+export function nearBasePositionReasons(
+  mach: number,
+  xc: number,
+  rootChordOverDiameter: number | undefined,
+): string[] {
+  if (!(xc > 0)) return [];
+  const out: string[] = [];
+  if (mach < W1_TUNNEL_MACHS[0] - 1e-12) {
+    out.push(
+      `below Mach ${W1_TUNNEL_MACHS[0]} no measurement with fins ahead of the base is known (TN 2360 ` +
+        `measures them at Mach ${W1_TUNNEL_MACHS[0]} and ${W1_TUNNEL_MACHS[1].toFixed(1)} only), and TN ` +
+        "2360's own account says the fins' pressures grow as the Mach number falls (p. 7) while its " +
+        'measured relief moves toward the base, so nothing there says how these fins act on the base ' +
+        'until such a measurement is found',
+    );
+  } else if (mach > W1_TUNNEL_MACHS[1] + 1e-12) {
+    out.push(
+      `above Mach ${W1_TUNNEL_MACHS[1].toFixed(1)} no measurement with fins ahead of the base is settled ` +
+        `(TN 2360 measures them at Mach ${W1_TUNNEL_MACHS[0]} and ${W1_TUNNEL_MACHS[1].toFixed(1)} only; ` +
+        "TN 3819 fig. 32's, at Mach 2.41, is read three times but no method using it is written yet, so " +
+        "it sets nothing), and TN 2360 finds the fins' effect reaching the base from farther ahead as the " +
+        'Mach number rises, so its positions are not carried up',
+    );
+  }
+  const c = rootChordOverDiameter;
+  if (c === undefined || !Number.isFinite(c)) {
+    out.push(
+      "the fins' root chord over the body diameter, which decides how far ahead fins still reach the " +
+        'base, is not given',
+    );
+  } else if (
+    Math.abs(c / W1_POSITION_CHORD_OVER_DIAMETER - 1) >
+    W1_POSITION_CHORD_TOLERANCE + 1e-12
+  ) {
+    out.push(
+      `the fins' root chord is ${c.toFixed(2)} body diameters, and TN 2360 measures fins ahead of the ` +
+        `base only with a root chord of ${W1_POSITION_CHORD_OVER_DIAMETER} body diameters: how far ahead ` +
+        'fins still reach the base depends on the chord against the size of the body, and no other ' +
+        'chord is measured',
+    );
+  }
+  return out;
+}
+
+/**
+ * The refusal of fins ending ahead of the base where TN 2360 measured no position (0015 section 3.3), every
+ * reason named, or undefined where it did; `note` is added to the message (src/base/base-drag.ts names a
+ * trailing edge refused there too, so that the words lead to one that is served).
+ */
+export function nearBasePositionRefusal(
+  mach: number,
+  xc: number,
+  rootChordOverDiameter: number | undefined,
+  note = '',
+): BaseRefusal | undefined {
+  const reasons = nearBasePositionReasons(mach, xc, rootChordOverDiameter);
+  if (reasons.length === 0) return undefined;
+  return new BaseRefusal(
+    'fins-near-base',
+    `fins ending ${Number(xc.toPrecision(3))} root chords ahead of the base at Mach ${mach}: ` +
+      `${reasons.join('; and ')} (0015 section 3.3)${note}`,
+  );
+}
 
 export type Thickness = 0 | 0.05 | 0.1;
 export type Count = 0 | 2 | 4;
@@ -622,6 +714,11 @@ export interface FinsNearBase {
   readonly tanTrailingEdgeSweep: number;
   /** The root trailing edge ahead of the base, in root chords: 0 at the base, up to 1. */
   readonly trailingEdgeAheadOfBase: number;
+  /**
+   * The root chord over the body diameter. Needed for fins ending ahead of the base, which are served only with
+   * TN 2360's 1.5 (W1_POSITION_CHORD_OVER_DIAMETER); without it such fins are refused.
+   */
+  readonly rootChordOverDiameter?: number;
 }
 
 export interface MemberUsed {
@@ -793,6 +890,67 @@ const tcText = (tc: number) =>
     ? `t/c ${tc.toFixed(3)}`
     : 'whose t/c grows without bound toward a tip chord of zero';
 
+/**
+ * A sweep angle (radians) in degrees for a message or label: to one decimal, or to as many as it takes for the
+ * printed value to stay on its own side of 45 and 60 deg, the bounds the sweep rules turn on (44.99 deg is never
+ * printed 45.0, nor 60.01 deg 60.0; the review of 2026-10-27).
+ */
+export function sweepDegrees(a: number): string {
+  const d = (a * 180) / Math.PI;
+  const onBound = (b: number) => Math.abs(d - b) <= (1e-9 * 180) / Math.PI;
+  for (const digits of [1, 2, 3, 4, 6, 9, 12]) {
+    const text = d.toFixed(digits);
+    const v = Number(text);
+    if ([45, 60].every((b) => onBound(b) || Math.sign(v - b) === Math.sign(d - b))) return text;
+  }
+  return String(d);
+}
+
+/** Added to a refusal of fins ahead of the base whose sweep the narrowing of 2026-10-27 refuses too. */
+export const W1_SWEEP_REFUSED_TOO =
+  '; their leading-edge sweep is refused at or near the base too: ';
+
+/**
+ * Why flat-faced fins (a square, unswept trailing edge) are refused for their leading-edge sweep below M 1.62, or
+ * undefined: swept more than 0 and under 45 deg, or beyond 60 deg (0014 section 10.7 (z), the note of 2026-10-27;
+ * 0015 section 12). Below M 1.62 the floor is RM L52E06's relief with plates swept 45 deg alone, measured at M 1.06
+ * to 1.10, and which way the juncture vortex moves F is not shown: under 45 deg the plate is not shown to lie
+ * between the unswept plate and the 45 deg ones, beyond 60 deg it lies past the last sweep measured. Exactly 60
+ * deg, and 45 to 60, stay as section 4 serves them; from M 1.62, where RM L52J21a measures at most 5% relief,
+ * these plates stay served.
+ */
+export function flatPlateSweepNarrowing(
+  mach: number,
+  fins: Pick<FinsNearBase, 'section' | 'tanLeadingEdgeSweep' | 'tanTrailingEdgeSweep'>,
+): string | undefined {
+  if (trailingEdgeShape(fins.section) !== 'flat') return undefined;
+  const le = Math.abs(Math.atan(fins.tanLeadingEdgeSweep));
+  const tes = Math.abs(Math.atan(fins.tanTrailingEdgeSweep));
+  if (!(le > 1e-9 && tes <= 1e-9 && mach < W1_RELIEF_MEASURED_FROM - 1e-12)) return undefined;
+  const head =
+    `flat-faced fins with the leading edge swept ${sweepDegrees(le)} deg and the trailing edge unswept ` +
+    `at M ${mach}`;
+  if (le < W1_SWEPT_RANGE[0] - 1e-9) {
+    return (
+      `${head}, ${W1_FLAT_UNDER_45_MARK}: no base pressure is measured with such fins at or near the base ` +
+      "there; the floor is RM L52E06's relief with plates swept 45 deg alone, measured at M 1.06 to 1.10, " +
+      "and which way a lighter sweep's stronger juncture vortex moves the relief is not shown, so these " +
+      'fins are not shown to lie between the unswept plate and the 45 deg ones (0015 section 12; 0014 ' +
+      'section 10.7 (z), the note of 2026-10-27)'
+    );
+  }
+  if (le > W1_SWEPT_RANGE[1] + 1e-9) {
+    return (
+      `${head}, ${W1_FLAT_BEYOND_60_MARK}: no base pressure is measured with fins swept beyond 60 deg ` +
+      "at or near the base there (no fin of any section is measured at the base swept beyond the RM-10's " +
+      "60 deg); the floor is RM L52E06's relief with plates swept 45 deg alone, these fins lie past the " +
+      "last sweep measured, and which way a sharper sweep's weaker juncture vortex moves the relief is " +
+      'not shown (0015 section 12; 0014 section 10.7 (z), the note of 2026-10-27)'
+    );
+  }
+  return undefined;
+}
+
 export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBaseFactorW1 {
   const { count, section } = fins;
   if (!(Number.isInteger(count) && count >= 2 && count <= 4)) {
@@ -836,13 +994,13 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     le < W1_MODERATE_SWEEP.leadingEdge + 1e-9 &&
     mach >= W1_MODERATE_SWEEP.mach[0] - 1e-12 &&
     mach <= W1_MODERATE_SWEEP.mach[1] + 1e-12;
-  // Flat faces at a square trailing edge with the trailing edge unswept: served at every leading-edge sweep
-  // (0015 section 12; 0014 section 10.7 (z)). Neither bound of the flat-plate value uses the leading edge:
+  // Flat faces at a square trailing edge with the trailing edge unswept: served at every leading-edge sweep from
+  // M 1.62, below it unswept or swept 45 to 60 deg (0015 section 12; 0014 section 10.7 (z) and its note). Neither bound of the flat-plate value uses the leading edge:
   // the upper rests on the faces' slope near the trailing edge (zero on a flat face at any sweep), the lower
   // on RM L52E06's relief at the fin-body junctures and the square edge, in one plane parallel to the base
   // (the base plane at x/c 0), which the leading-edge sweep does not move when the trailing edge is unswept.
   const plateAnyLeadingEdgeSweep = bounded && swept && tes <= 1e-9;
-  const deg = (a: number) => ((a * 180) / Math.PI).toFixed(1);
+  const deg = sweepDegrees;
   if (swept && !measuredSwept && !moderate && !plateAnyLeadingEdgeSweep) {
     throw new BaseRefusal(
       'fin-sweep',
@@ -853,41 +1011,19 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
         'sweeps are not measured and their ordering is not shown (0015 section 3.4)',
     );
   }
-  // The ruling after A1's second review (0014 section 10.7 (z), its note of 2026-10-27; 0015 section 12): below
-  // M 1.62 the floor is RM L52E06's relief with plates swept 45 deg alone, and which way the juncture vortex
-  // moves F is not shown, so a plate swept more than 0 and under 45 deg is not shown to lie between the unswept
-  // plate and the 45 deg ones there. From M 1.62 RM L52J21a measures at most 5% relief, and they stay served.
-  if (
-    plateAnyLeadingEdgeSweep &&
-    le < W1_SWEPT_RANGE[0] - 1e-9 &&
-    mach < W1_RELIEF_MEASURED_FROM - 1e-12
-  ) {
-    throw new BaseRefusal(
-      'fin-sweep',
-      `flat-faced fins with the leading edge swept ${deg(le)} deg and the trailing edge unswept at M ` +
-        `${mach}, ${W1_FLAT_UNDER_45_MARK}: no base pressure is measured with such fins at the base ` +
-        "there; the floor is RM L52E06's relief with plates swept 45 deg alone, and " +
-        "which way a lighter sweep's stronger juncture vortex moves the relief is not shown, so these fins " +
-        'are not shown to lie between the unswept plate and the 45 deg ones (0015 section 12; 0014 ' +
-        'section 10.7 (z), the note of 2026-10-27)',
-    );
-  }
-  // The second ruling of 2026-10-27 (the same note): beyond 60 deg the plate lies past the last sweep measured,
-  // not between two measured ends, and (2)'s direction is not shown, so below M 1.62 its ordering is not shown
-  // either. Exactly 60 deg, and 45 to 60, stay as section 4 serves them; from M 1.62 served, as under 45 deg.
-  if (
-    plateAnyLeadingEdgeSweep &&
-    le > W1_SWEPT_RANGE[1] + 1e-9 &&
-    mach < W1_RELIEF_MEASURED_FROM - 1e-12
-  ) {
-    throw new BaseRefusal(
-      'fin-sweep',
-      `flat-faced fins with the leading edge swept ${deg(le)} deg and the trailing edge unswept at M ` +
-        `${mach}, ${W1_FLAT_BEYOND_60_MARK}: no base pressure is measured with fins swept beyond 60 deg ` +
-        "at the base there (no fin of any section is measured at the base swept beyond the RM-10's 60 " +
-        "deg); the floor is RM L52E06's relief with plates swept 45 deg alone, these fins lie past the " +
-        "last sweep measured, and which way a sharper sweep's weaker juncture vortex moves the relief is " +
-        'not shown (0015 section 12; 0014 section 10.7 (z), the note of 2026-10-27)',
+  // The rulings after A1's second review (0014 section 10.7 (z), its note of 2026-10-27; 0015 section 12): below
+  // M 1.62 a plate swept more than 0 and under 45 deg, or beyond 60 deg, is refused (flatPlateSweepNarrowing).
+  // Ahead of the base, where its position is refused too, both reasons are named, the position first, so that
+  // neither refusal's advice leads into the other (0015 section 3.3).
+  const narrowing = flatPlateSweepNarrowing(mach, fins);
+  if (narrowing !== undefined) {
+    throw (
+      nearBasePositionRefusal(
+        mach,
+        fins.trailingEdgeAheadOfBase,
+        fins.rootChordOverDiameter,
+        `${W1_SWEEP_REFUSED_TOO}${narrowing}`,
+      ) ?? new BaseRefusal('fin-sweep', narrowing)
     );
   }
   if (swept && !bounded && mach < W1_MACH_RANGE[0] - 1e-12) {
@@ -972,17 +1108,22 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   const highT = taus.filter((t) => t >= tr.tauEq - 1e-9);
   const lowN: Count[] = count === 4 ? [4] : [2, 0];
   const highN: Count[] = count === 2 ? [2, 4] : [4];
-  const pick = (ts: Thickness[], ns: Count[]): MemberUsed | undefined => {
+  const pick = (ts: Thickness[], ns: Count[], at: number): MemberUsed | undefined => {
     for (const t of ts) {
       for (const n of ns) {
-        const b = memberBand(t, n, xc, mach);
+        const b = memberBand(t, n, at, mach);
         if (b !== undefined)
-          return { thickness: t, count: n, band: b, name: memberName(t, n, xc, mach) };
+          return { thickness: t, count: n, band: b, name: memberName(t, n, at, mach) };
       }
     }
     return undefined;
   };
-  const upper = pick(highT, highN);
+  // Fins ending ahead of the base: served only where TN 2360 measured positions, M 1.5 to 2.0 and its root chord
+  // of 1.5 body diameters (0015 section 3.3); every reason they are refused, in plain words.
+  const xcText = `${Number(xc.toPrecision(3))}`;
+  const positionRefusal = nearBasePositionRefusal(mach, xc, fins.rootChordOverDiameter);
+  if (positionRefusal !== undefined) throw positionRefusal;
+  const upper = pick(highT, highN, xc);
   const lower: MemberUsed | undefined = bounded
     ? {
         thickness: 0,
@@ -993,12 +1134,12 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
           `the lowest relief measured with flat-faced fins at the base (F ${W1_FLAT_RELIEF_LOW.toFixed(3)}, ` +
           'RM L52E06 fig. 7 at M 1.06)',
       }
-    : pick(lowT, lowN);
+    : pick(lowT, lowN, xc);
   if (lower === undefined || upper === undefined) {
     throw new BaseRefusal(
       'fins-near-base',
-      `fins ending ${xc} chords ahead of the base at M ${mach}: TN 2360 measures positions ahead of ` +
-        'the base at M 1.5 and 2.0 only (0015 section 3.3)',
+      `fins ending ${xcText} root chords ahead of the base at Mach ${mach}: no measured member bounds ` +
+        'these fins at this position (0015 section 3.3)',
     );
   }
   const low = Math.min(lower.band.low, upper.band.low);
@@ -1101,7 +1242,12 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     memberEndOnSingleReader(upper.thickness, upper.count, xc, mach);
   if (singleEnd) reasons.push(SINGLE_END_REASON);
   if (count === 3) reasons.push('three fins bracketed between two (or none) and four');
-  if (xc > 0) reasons.push('the position bracketed between the stations of TN 2360 fig. 6');
+  if (xc > 0) {
+    reasons.push(
+      'the position bracketed between the stations of TN 2360 fig. 6, measured with a root chord of ' +
+        `${W1_POSITION_CHORD_OVER_DIAMETER} body diameters, as these fins have`,
+    );
+  }
   const label = member
     ? `estimated on component data: the rebuilt fins-on-base factor (0015), measured on ${lower.name} ` +
       '(TN 2360 fig. 6, TN 3819 figs. 33 and 35)' +
