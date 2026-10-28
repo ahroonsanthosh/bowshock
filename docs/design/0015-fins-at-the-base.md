@@ -952,8 +952,11 @@ is taken by reference: no flat-faced fin is measured ahead of the base. It
 rests on this section's argument, the registered one (0014 section 10.7,
 amendment i): the relief arises at the fin-body junctures and the square
 edge, and the relief measured with fins ahead of the base, RM L52J21a's
-at 0.85 +-0.05 root chords, is at most 5% (M 1.62 to 2.41), inside it.
-This record confirms that reading; it adds no case and moves no total.
+at 0.85 +-0.05 root chords, is at most 6.2% (M 1.62 to 2.41; the zero
+member, 0.9378, section 3.5; "at most 5%" as merged from lift-near-base,
+corrected on merging it into the A1 follow-up, 2026-10-28, as section
+12's rulings of that date corrected the same phrase), inside it. This
+record confirms that reading; it adds no case and moves no total.
 
 **What it does not reach.** Rounded trailing edges: no circular arc
 bounds a rounded edge (its half-thickness falls as the square root of the
@@ -2314,3 +2317,22 @@ in Mach number on a margin, as the rulings of 2026-10-28 say. The line
 now says the plate's sweep lies inside the measured ends, not past them,
 and the label of a plate swept 45 to 60 deg says the same ("its sweep
 inside the bracket's measured ends, not past them").
+
+_Merged with A5's follow-ups (lift-near-base at b53da63), 2026-10-28:_
+the refusals of this section's rulings take part in A5's chain of every
+reason (`src/base/base-drag.ts`, `followAdvice`). Through the library a
+plate ahead of the base whose position is refused is refused for the
+position first, and its sweep is the further reason met with the fins at
+the base, worded by its own row of 0017; the factor called directly
+still names both in one refusal. A plate refused for its swept trailing
+edge alone is advised, and changed in the chain, to that edge unswept
+with its leading edge kept, as its words say; where its leading edge
+would be refused too, or the edge is subsonic beyond 60 deg, the fins
+are made unswept. A5's advice replay
+(`docs/research/refusals/advice-replay.test.ts`) ends every chain
+served: of 8,000 cases 1,829 are served at once and 6,171 refused, all
+ending served, against lift-near-base's 2,192, 5,808 and 5,808; the 363
+more refused are plates this section's rulings refuse (50 bevelled at
+the leading edge only, 208 with a rounded leading edge, 105 square-cut).
+The population is unchanged: 184 of 8,000 served, 628 with the nose
+assumed served, 809 with the page's section offered too.

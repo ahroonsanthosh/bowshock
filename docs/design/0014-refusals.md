@@ -3097,7 +3097,10 @@ argument is cited for it or it is refused under section 10.2.
   the measured positions ahead of the base (x/c 1.0 among them since
   2026-10-27), with the lower end the at-base relief, 0.838, taken by
   reference to section 4's argument (amendment i); the relief measured
-  ahead of the base, RM L52J21a's, is at most 5%, inside it. 0015 section
+  ahead of the base, RM L52J21a's, is at most 6.2% (0015 section 3.5's
+  zero member, 0.9378; "at most 5%" as merged from lift-near-base,
+  corrected on merging it into the A1 follow-up, 2026-10-28, as (z)'s
+  note of that date corrected the same phrase), inside it. 0015 section
   4 now says so in a paragraph of this date.
 - _The chord rule's 0.5% (item 4):_ 0011 section 3's tolerance is for the
   Basic Finner's own inputs, "not for other rockets", so it was no
