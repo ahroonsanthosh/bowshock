@@ -2050,10 +2050,20 @@ the standing ground for plates swept 45 to 60 deg with the trailing edge
 unswept (0015 section 4, RM L52E06's plates and the RM-10 bracketing
 that range, and the second ruling of 2026-10-27 above). The ground is
 narrowed to the trailing edge; the rule is unchanged. A plate at exactly
-60 deg with its edge below sonic is served on the RM-10's measured end
-of the bracket, not on the margin; just beyond 60 deg it lies past the
-last measured sweep, hence the step at 60 (at Mach 1.7, 60.0 deg served
-and 60.1 deg refused).
+60 deg with its edge below sonic has its sweep inside the measured ends
+of the bracket (the RM-10's 60 deg), not past them; just beyond 60 deg
+it lies past the last measured sweep, hence the step at 60 (at Mach 1.7,
+60.0 deg served and 60.1 deg refused).
+
+_Corrected 2026-10-28, after the quick look of 1796dfe..95daded:_ the
+step line above said, as e604e68 wrote it the same day, that the plate
+at 60 deg is served "on the RM-10's measured end of the bracket, not on
+the margin". That holds in sweep only: the ends are measured at Mach
+1.06 to 1.10 and 1.49 to 1.98, and from Mach 1.62 the floor is carried
+in Mach number on a margin, as the rulings of 2026-10-28 say. The line
+now says the plate's sweep lies inside the measured ends, not past them,
+and the label of a plate swept 45 to 60 deg says the same ("its sweep
+inside the bracket's measured ends, not past them").
 
 **2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
