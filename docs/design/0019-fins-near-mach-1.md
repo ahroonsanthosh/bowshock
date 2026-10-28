@@ -1000,8 +1000,13 @@ formed on two of them, and the shape widening's size on two of them.
    1.11. Johnston's 5.7 deg wedge lies 18% to 22% above the nominal of
    item 3 at M_0 1.01 to 1.23, R&M 3348's 6% to 11%. _The size:_ S(delta)
    = S_NPL |delta| / 4.0 deg, S_NPL the largest of the NPL ratios less one
-   (0.090, at M_0 1.00); linear in the face angle, an argument from one
-   measured pair.
+   (0.090, at M_0 1.00; _first registered as 0.094, changed 2026-10-26 in
+   e6bb7f5 and dated here 2026-10-28 after the review's M2: computed from
+   R&M 3348 and R&M 3427 as already read and paired, each reading at the
+   same Mach number, where the first figure mixed Mach numbers; made
+   before any value of RM A51J11 or RM A52E01 was read, round 15's
+   readings of them landing later that day_); linear in the face angle,
+   an argument from one measured pair.
    _How it applies:_ each inclined set's point enters the envelope
    unshifted, and its range is extended by S on the side the ordering
    does not bound: downward for a diverging face, [r (1 - S), r], upward
@@ -1175,6 +1180,20 @@ formed on two of them, and the shape widening's size on two of them.
    swept edge. (The h/c rule amended 2026-10-26 before any value of RM
    A51J11 or RM A52E01 was read: first written window by window, which
    above Mach 1.25 would have served TN 3548's h/c 0.06 alone.)
+   _(Narrowed 2026-10-28, after the review of B1 on main (M3); written
+   before the code.)_ The windows let a set's layer parameter reach the
+   next node beyond its last point: RM A51J11's thick layers (X to 4.49,
+   their points' Mach intervals ending at 1.10 to 1.12) reached the node
+   at 1.15, so an edge at Mach 1.12 to 1.15 with X above 0.666 was served
+   up to 0.03 in Mach beyond the data that measured its layer. Now a
+   set's X counts toward the reach only at the Mach numbers its own
+   points measured: at Mach M the reach is the lesser of the two
+   bracketing nodes' (as above) and the greatest X of the series (each
+   set's reading and series, at the least X of its test) whose points'
+   Mach intervals, from its lowest point's to its highest point's,
+   contain M. Nothing is served beyond the Mach range that measured that
+   X. The band is formed on the windows and the intervals as registered,
+   unchanged; only what is refused for the layer changes.
 
 8. **Labels.** Free edges: "estimated on component data", naming the
    flat-faced sets, the inclined sets with their widening, the thick-layer
@@ -1516,6 +1535,16 @@ formed on two of them, and the shape widening's size on two of them.
       served at 1.00 to 1.15 (to X 4.49) and again from 1.50, and refused
       between: the gap is where no set with a stated turbulent layer
       reaches them.
+    - _Reading errors (the review of B1 on main, M4; recorded
+      2026-10-28, nothing changed)._ Every reading of every point enters
+      the band, a bound as its range; the Cp_b reading error each reader
+      states for a row (2 sigma) is not carried, and the spread between
+      the readings stands in for it. Where one row sets an end, that
+      error lies outside the band: at the low end 0.505, set by RM A51J11
+      fig. 15's 2y/b 0.873 row (h/t 0.3, Mach 1.06; A -0.3704, B
+      -0.3707), the readers state 0.0029 and 0.0038, 0.8% and 1.0% of the
+      ratio, and 1.8% together (the pairing's tolerance); the review puts
+      a 2-sigma error there at about 1.5% of the ratio.
     - _The tip station (F7)._ The band's low end at Mach 1.00 to 1.10,
       0.505, is RM A51J11 fig. 15's outboard station, 2y/b 0.873, of the
       h/t 0.3 section at Mach 1.06, within 0.13 of the semispan from the

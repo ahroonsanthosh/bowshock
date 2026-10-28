@@ -1959,6 +1959,41 @@ branches. _(Corrected 2026-10-28, on merging main at 3e026a8 into the
 trailing-edge branch: (aa), (ab) and (af) are main's entries below; (w)
 to (z) remain the other branches'.)_
 
+**2026-10-28 (ac), addendum: what RM A52E01 sets above Mach 1.5, and the
+band served there** (written after the review of B1 on main, cdd26e6, its
+finding M1; it changes nothing served and points to where the decisions
+are recorded). Item 3 of the second part above says that RM A52E01's
+points at Mach 1.5 to 1.7 are a check of the band above 1.5, "which sets
+nothing there unless a later entry decides", and 10.1's table gives the
+band above 1.5 (TR 1109, RM A51J25, TN D-1056) "as now". Both stand as
+written; since then the band above 1.5 has been widened by later
+decisions:
+
+- 0019 section 3.4.1 item 6 records the coordinator's rule for F4
+  (2026-10-27): the band's own sets above 1.5 cannot all be put on a
+  common Reynolds-number basis (RM A51J25 fig. 7's Langley and NPL
+  symbols state none), so RM A52E01's lines at Mach 1.7 enter the band
+  above 1.5, the band only, not the layer reach.
+- 0019 section 3.4.1 item 11 records how they enter, and the
+  coordinator's ruling after the re-review (R1, 2026-10-28): every RM
+  A52E01 line at Mach 1.7 with an agreeing alpha 0 pair (fig. 8(a) #7,
+  #9 and #10, fig. 8(b) #6), each any wing (K from 1 to wings 3 and 4's
+  turbulent value, the shape allowance at 6.88 deg both ways, Mach
+  +-0.01), at both ends.
+- 0010 section 5.1 records the band served and what it moves at the
+  Basic Finner gate's shot at Mach 1.799 (a widening made after the gate
+  was used; section 11.6's note).
+
+The band above Mach 1.5 as served now (`bandAbove` in
+`src/base/fin-trailing-edge.ts`), base drag measured over modelled: 0.93
+to 1.21 from Mach 1.50 to 1.60 and from 1.80 to 3.2; 0.35 to 1.26 at the
+nodes 1.65, 1.70 and 1.75 (the low end set by fig. 8(a) #10, the high end
+by #9); linear between the nodes, which are every 0.05 (0.64 to 1.235 at
+1.625 and 1.775). Each end is carried with TR 1109 fig. 29(a)'s
+thick-layer factor as before. Its sets are those 10.1 lists (TR 1109
+figs. 8 and 29, RM A51J25 fig. 7, TN D-1056 table II) and RM A52E01 fig.
+8 (a) and (b) at Mach 1.7.
+
 **2026-10-26 (aa): square-cut leading edges served "bounded, not
 measured", between the sonic and the pitot pressure on the whole face**
 (a recorded decision under 10.2's "Anywhere else only by a recorded
