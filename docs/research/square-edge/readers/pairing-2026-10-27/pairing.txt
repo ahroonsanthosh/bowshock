@@ -1,0 +1,645 @@
+PAIRING OF THE TWO BLIND READINGS OF THE FLAT-FACE PRESSURE SETS
+0014 10.7 (af); readers' brief docs/research/square-edge/readers/brief.md
+(SHA-256 2c6d4d6b5db5559997f468670ca44b1f31932b8fef3927bb470d095985e9d67b,
+the hash both readers record)
+Made 2026-10-27 by a neutral pairing party, from the readings committed
+in 370c1c441ec73be7935018ac8e6e7262a9352574 (readers/A and readers/B).
+
+WHAT THE PAIRING SAW AND DID NOT SEE
+
+The pairing party opened the brief, the two readers' folders (their
+method notes, CSVs, scripts, A's working log, and file listings of their
+src, text and work folders), and in the repository the 0014 entry (af)
+and its addendum of 2026-10-27. It opened no other design record or
+research file, no solve, no summary and no test, and no PDF page.
+Disclosure: to read (af) the pairing party printed lines 1900 to 2160 of
+0014. That printout also showed the paragraph just before (af), the
+record of (aa)'s computed check, which says in words that where the
+solutions settled the computed face stayed above p* by 0.11 to 0.12 of
+p02 and that at Mach 3.0 it fell below p*; and the (ab) addendum of
+2026-10-27, which lies between (af) and (af)'s addendum. No reading was
+compared with it: the rules below are fixed and applied by pair.py to
+the two readings only.
+The pairing compares the two readings with each other only. No value is
+averaged, rounded or settled; where the readers differ, both values and
+their envelope are recorded.
+
+NORMALISATION (step 2, written before any value was compared; detail and
+quotes in normalisation.txt)
+
+  RM L57C18: C_p = (p_l - p_inf)/q_inf, a free-stream reference. It does
+    not normalise by its own measured stagnation pressure: it TESTS P1.
+  TM X-19: p_l/p_t,2 with p_t,2 measured by the face-centre orifice at
+    alpha 0. It normalises by its own measured stagnation pressure: it
+    DOES NOT TEST P1.
+  TN 4300: p_l/p_o, o the stagnation point, "the total pressure behind
+    the shock"; whether p_o is measured or from the Mach number is not
+    recorded: NOT ESTABLISHED.
+  TN D-5392: p_l/p_t,2, p_t,2 "stagnation pressure behind a normal shock
+    at the free-stream Mach number"; A says the text "implies" it is
+    computed, B draws no conclusion and records a measured stagnation-point
+    pressure: NOT ESTABLISHED.
+
+RULES
+
+Figures (tn4300_fig7, tn4300_fig16, rml57c18_fig5, tmx19_fig5).
+  Matching: both readers give each symbol's centre in native 300 dpi
+  pixels of the same page image (TM X-19 page 20 turned 90 deg clockwise
+  by both; the many pairs whose centres agree within 1 px show the frames
+  are the same). A point of A and a point of B are the same plotted mark
+  when their centres lie within 8 px (closest first, each point used
+  once, same figure part). A row with no value (illegible) is then
+  matched to an unmatched row of the other reader of the same series
+  within 12 px (or 0.02 in position where no pixel centre is given).
+  Everything left is read once. A's centre is the first "centre (x, y)
+  px" of its note, or the one "set by eye" where given, or "near (x, y)
+  px" for its illegible rows; B's is "centre px (x, y)".
+  Labels: the model or series (from the model column and the symbol in
+  the note) and the location of every matched pair are compared and every
+  difference is listed. A label difference does not unmatch a pair, and
+  a pair can agree in value while its labels differ.
+  Agreement: two values agree when, on each coordinate (position and
+  value), their difference is at most the sum of the two readers' stated
+  reading errors on that coordinate. Errors are those stated in each
+  row's note ("reading error +-x in ..."). One row (A, TN 4300 fig. 16(a),
+  the rectangle not in the legend) states its error as +-4 px; it is
+  converted with A's own stated grid scale (0.01 x/r per 9.55 px, 0.005
+  p per 9.47 px). TN 4300 fig. 16(b) positions are station numbers and
+  must be equal. Alternatives do not make figure values agree; each
+  non-agreeing pair says whether an alternative of one reader lies within
+  the summed value errors of a value or alternative of the other
+  (alt_overlap).
+  Envelope: the lower and higher of the two values; also the range over
+  both values and every numeric alternative.
+
+Tables (tnd5392_table1 to 3, model 1, alpha 0 column).
+  Matching on the orifice number. Agreement is exact equality of the
+  printed digits, or the two readers' sets of readings (value and every
+  alternative) sharing a value; the second is counted as agreement and
+  marked "agree (alternatives)", and every such row is listed below with
+  both primaries. The orifice label (with its asterisk), phi, s/d,
+  location and Mach number are compared as labels.
+
+Counting: agree (including agree by alternatives for tables), disagree,
+read once (a value from one reader, no row from the other), illegible
+(a row with no value: one reader illegible against the other's value,
+or an illegible row with no counterpart). Per location, a pair whose
+readers give different locations is counted under "x (A) / y (B)".
+
+COUNTS (agree / disagree / read once / illegible), per file and location
+
+A location written 'x (A) / y (B)' is a pair whose readers give different
+location labels. 'agree' for tables includes 'agree (alternatives)'.
+
+tn4300_fig7.csv  (A 37 rows, B 34 rows, 38 pairs or single items)
+    face                               agree  33   disagree   0   read once   2   illegible   3
+    all                                agree  33   disagree   0   read once   2   illegible   3
+    label differences: model/series 3, location 0
+
+tn4300_fig16.csv  (A 37 rows, B 33 rows, 38 pairs or single items)
+    face                               agree  25   disagree   5   read once   3   illegible   5
+    all                                agree  25   disagree   5   read once   3   illegible   5
+    label differences: model/series 1, location 0
+
+rml57c18_fig5.csv  (A 34 rows, B 34 rows, 34 pairs or single items)
+    afterbody                          agree  14   disagree   5   read once   0   illegible   0
+    afterbody (A) / unclear (B)        agree   2   disagree   0   read once   0   illegible   0
+    corner                             agree   2   disagree   1   read once   0   illegible   0
+    corner (A) / unclear (B)           agree   1   disagree   0   read once   0   illegible   0
+    face                               agree   6   disagree   2   read once   0   illegible   0
+    unclear                            agree   0   disagree   1   read once   0   illegible   0
+    all                                agree  25   disagree   9   read once   0   illegible   0
+    label differences: model/series 0, location 3
+
+tmx19_fig5.csv  (A 15 rows, B 15 rows, 15 pairs or single items)
+    face                               agree  13   disagree   2   read once   0   illegible   0
+    all                                agree  13   disagree   2   read once   0   illegible   0
+    label differences: model/series 0, location 0
+
+tnd5392_table1.csv  (A 74 rows, B 74 rows, 74 pairs or single items)
+    afterbody                          agree  15   disagree   0   read once   0   illegible   0
+    face                               agree  59   disagree   0   read once   0   illegible   0
+    all                                agree  74   disagree   0   read once   0   illegible   0
+    of the agreements, 2 by alternatives only (primary digits differ)
+    label differences (orifice, phi, s/d, location, Mach): 0
+
+tnd5392_table2.csv  (A 74 rows, B 74 rows, 74 pairs or single items)
+    afterbody                          agree  15   disagree   0   read once   0   illegible   0
+    face                               agree  58   disagree   1   read once   0   illegible   0
+    all                                agree  73   disagree   1   read once   0   illegible   0
+    of the agreements, 3 by alternatives only (primary digits differ)
+    label differences (orifice, phi, s/d, location, Mach): 0
+
+tnd5392_table3.csv  (A 74 rows, B 74 rows, 74 pairs or single items)
+    afterbody                          agree  15   disagree   0   read once   0   illegible   0
+    face                               agree  59   disagree   0   read once   0   illegible   0
+    all                                agree  74   disagree   0   read once   0   illegible   0
+    of the agreements, 1 by alternatives only (primary digits differ)
+    label differences (orifice, phi, s/d, location, Mach): 0
+
+DISAGREEMENTS (every one; both values and the envelope; nothing settled)
+
+  tn4300_fig16-07  [disagree (position)]  location face
+    A row 4: fig. 16(a) | model A run 3, triangle | face | position 0.7493 (+-0.0015) | value 0.9818 (+-0.0010) | alternatives: 0.9836 | flag ambiguous | page 40 | px (1421.45, 496.40)
+    B row 5: fig. 16(a) | model A run 3, triangle | face | position 0.7448 (+-0.0016) | value 0.9802 (+-0.0008) | alternatives: 0.9824 (vertex centroid) | flag ambiguous | page 40 | px (1416.80, 499.50)
+    difference: value 0.0016 (summed errors 0.0018); position 0.0045 (0.0031)
+    envelope of the two values: 0.9802 to 0.9818; with every numeric alternative: 0.9802 to 0.9836
+    alternatives within the summed value errors: A 0.9818 ~ B 0.9824; A 0.9836 ~ B 0.9824
+    pixel centres 5.59 px apart (same mark (pixel centres))
+    A note (verbatim): run 3 (triangle); centre (1421.45, 496.40) px; reading error +-0.0010 in p_l/p_o, +-0.0015 in x/r (at least 1.5-2 px allowed for the overlap); triangle centre taken as the middle of its bounding box; alternative 0.9836 is its centroid (x/r 0.7537); symbols of the three runs overlap heavily in this cluster; this outline was picked out by eye on a dark-stroke view and the centre fitted to it; other readers may separate the cluster differently; 27- by 27-in. preflight jet (table I)
+    B note (verbatim): triangle = run 3 (legend); cluster of six overlapping outlines at x/r about 0.75; upper-left triangle; triangle centre taken as the centre of its bounding box; the vertex-centroid reading is given in alternatives; centre px (1416.8, 499.5); reading error +-0.0016 in x/r, +-0.0008 in p_l/p_o; 27- by 27-in. jet (table I); Mach number from the text, not the figure
+
+  tn4300_fig16-09  [disagree (value)]  location face
+    A row 6: fig. 16(a) | model A run 2, diamond | face | position 0.7746 (+-0.0016) | value 0.9665 (+-0.0010) | alternatives: (none) | flag ambiguous | page 40 | px (1446.25, 524.75)
+    B row 8: fig. 16(a) | model A run 2, diamond | face | position 0.7722 (+-0.0026) | value 0.9694 (+-0.0013) | alternatives: 0.9661 | flag ambiguous | page 40 | px (1443.10, 519.80)
+    difference: value 0.0029 (summed errors 0.0023); position 0.0024 (0.0042)
+    envelope of the two values: 0.9665 to 0.9694; with every numeric alternative: 0.9661 to 0.9694
+    alternatives within the summed value errors: A 0.9665 ~ B 0.9661
+    pixel centres 5.87 px apart (same mark (pixel centres))
+    A note (verbatim): run 2 (open diamond); centre (1446.25, 524.75) px; reading error +-0.0010 in p_l/p_o, +-0.0016 in x/r (at least 1.5-2 px allowed for the overlap); symbols of the three runs overlap heavily in this cluster; this outline was picked out by eye on a dark-stroke view and the centre fitted to it; other readers may separate the cluster differently; 27- by 27-in. preflight jet (table I)
+    B note (verbatim): diamond = run 2 (legend); cluster at x/r 0.75; after removing this diamond a second, weaker diamond-like outline remained 6 px lower (0.9661); it may be a second diamond or the edges of the neighbouring triangle; centre px (1443.1, 519.8); reading error +-0.0026 in x/r, +-0.0013 in p_l/p_o; 27- by 27-in. jet (table I); Mach number from the text, not the figure
+
+  tn4300_fig16-11  [disagree (value)]  location face
+    A row 10: fig. 16(a) | model A run 3, triangle | face | position 0.8599 (+-0.0015) | value 0.9192 (+-0.0010) | alternatives: 0.9210 | flag ambiguous | page 40 | px (1528.20, 614.50)
+    B row 11: fig. 16(a) | model A run 3, triangle | face | position 0.8590 (+-0.0021) | value 0.9163 (+-0.0011) | alternatives: 0.9184 (vertex centroid) | flag ambiguous | page 40 | px (1527.06, 619.36)
+    difference: value 0.0029 (summed errors 0.0021); position 0.0009 (0.0036)
+    envelope of the two values: 0.9163 to 0.9192; with every numeric alternative: 0.9163 to 0.9210
+    alternatives within the summed value errors: A 0.9192 ~ B 0.9184
+    pixel centres 4.99 px apart (same mark (pixel centres))
+    A note (verbatim): run 3 (triangle); centre (1528.20, 614.50) px; reading error +-0.0010 in p_l/p_o, +-0.0015 in x/r (at least 1.5-2 px allowed for the overlap); triangle centre taken as the middle of its bounding box; alternative 0.9210 is its centroid (x/r 0.8645); symbols of the three runs overlap heavily in this cluster; this outline was picked out by eye on a dark-stroke view and the centre fitted to it; other readers may separate the cluster differently; 27- by 27-in. preflight jet (table I)
+    B note (verbatim): triangle = run 3 (legend); overlaps the circle below; triangle centre taken as the centre of its bounding box; the vertex-centroid reading is given in alternatives; centre px (1527.06, 619.36); reading error +-0.0021 in x/r, +-0.0011 in p_l/p_o; 27- by 27-in. jet (table I); Mach number from the text, not the figure
+
+  tn4300_fig16-23  [disagree (position)]  location face
+    A row 16: fig. 16(a) | model A run 3, triangle | face | position 0.9854 (+-0.0015) | value 0.7493 (+-0.0010) | alternatives: 0.7513 | flag ambiguous | page 40 | px (1650.75, 935.00)
+    B row 16: fig. 16(a) | model A run 3, triangle | face | position 0.9810 (+-0.0026) | value 0.7488 (+-0.0013) | alternatives: 0.7509 (vertex centroid);0.7387 (second triangle-like outline lower down) | flag ambiguous | page 40 | px (1646.82, 935.98)
+    difference: value 0.0005 (summed errors 0.0023); position 0.0044 (0.0041)
+    envelope of the two values: 0.7488 to 0.7493; with every numeric alternative: 0.7387 to 0.7513
+    alternatives within the summed value errors: A 0.7493 ~ B 0.7509; A 0.7513 ~ B 0.7509
+    pixel centres 4.05 px apart (same mark (pixel centres))
+    A note (verbatim): run 3 (triangle); centre (1650.75, 935.00) px; reading error +-0.0010 in p_l/p_o, +-0.0015 in x/r (at least 1.5-2 px allowed for the overlap); triangle centre taken as the middle of its bounding box; alternative 0.7513 is its centroid (x/r 0.9905); symbols of the three runs overlap heavily in this cluster; this outline was picked out by eye on a dark-stroke view and the centre fitted to it; other readers may separate the cluster differently; 27- by 27-in. preflight jet (table I)
+    B note (verbatim): triangle = run 3 (legend); tangle of outlines against the right frame at x/r about 0.98; the symbols cannot be separated with confidence; triangle centre taken as the centre of its bounding box; the vertex-centroid reading is given in alternatives; centre px (1646.82, 935.98); reading error +-0.0026 in x/r, +-0.0013 in p_l/p_o; 27- by 27-in. jet (table I); Mach number from the text, not the figure
+
+  tn4300_fig16-24  [disagree (value)]  location face
+    A row 25: fig. 16(b) | model A run 3, triangle | face | position 1 (station) | value 0.9713 (+-0.0001) | alternatives: 0.9717 | flag ambiguous | page 40 | px (730.75, 2025.00)
+    B row 21: fig. 16(b) | model A run 3, triangle | face | position 1 (station) | value 0.9710 (+-0.0001) | alternatives: 0.9715 (vertex centroid) | flag ok | page 40 | px (731.27, 2027.75)
+    difference: value 0.0003 (summed errors 0.0002); position 0 (station numbers must be equal)
+    envelope of the two values: 0.9710 to 0.9713; with every numeric alternative: 0.9710 to 0.9717
+    alternatives within the summed value errors: A 0.9713 ~ B 0.9715; A 0.9717 ~ B 0.9715
+    pixel centres 2.80 px apart (same mark (pixel centres))
+    A note (verbatim): run 3 (triangle); centre (730.75, 2025.00) px, plotted at station 1.053 on the axis scale; reading error +-0.0001 in p_l/p_o; triangle centre taken as the middle of its bounding box; alternative 0.9717 is its centroid; station 1 lies on the left frame line; the symbol is drawn across the frame
+    B note (verbatim): triangle = run 3 (legend); station 1 (inset: on the horizontal diameter, left); x read on the station axis = 1.0558; triangle centre taken as the centre of its bounding box; vertex-centroid reading in alternatives; centre px (731.27, 2027.75); reading error +-0.0001 in p_l/p_o
+
+  rml57c18_fig5-26  [disagree (position)]  location face
+    A row 26: fig. 5(f) | model F | face | position 0.8302 (+-0.0027) | value 1.6297 (+-0.0013) | alternatives: (none) | flag ok | page 27 | px (740.00, 498.75)
+    B row 26: fig. 5(f) | model F | face | position 0.8123 (+-0.0024) | value 1.6309 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (740.15, 498.72)
+    difference: value 0.0012 (summed errors 0.0025); position 0.0179 (0.0051)
+    envelope of the two values: 1.6297 to 1.6309; with every numeric alternative: 1.6297 to 1.6309
+    alternatives within the summed value errors: none
+    pixel centres 0.15 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (740.00, 498.75) px; reading error +-0.0013 in C_p, +-0.0027 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = .81 in. for this station; on the recessed flat face; centre px (740.15, 498.72); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  rml57c18_fig5-27  [disagree (value and position)]  location face
+    A row 27: fig. 5(f) | model F | face | position 1.6214 (+-0.0026) | value 1.5711 (+-0.0036) | alternatives: (none) | flag ok | page 27 | px (966.75, 530.00)
+    B row 27: fig. 5(f) | model F | face | position 1.6051 (+-0.0025) | value 1.5786 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (966.82, 529.98)
+    difference: value 0.0075 (summed errors 0.0048); position 0.0163 (0.0051)
+    envelope of the two values: 1.5711 to 1.5786; with every numeric alternative: 1.5711 to 1.5786
+    alternatives within the summed value errors: none
+    pixel centres 0.07 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (966.75, 530.00) px; reading error +-0.0036 in C_p, +-0.0026 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = 1.60 in. for this station; on the recessed flat face just inside the lip; centre px (966.82, 529.98); reading error +-0.0025 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  rml57c18_fig5-28  [disagree (value)]  location corner
+    A row 28: fig. 5(f) | model F | corner | position 1.9512 (+-0.0029) | value 0.2914 (+-0.0014) | alternatives: (none) | flag ok | page 27 | px (1062.75, 1265.00)
+    B row 28: fig. 5(f) | model F | corner | position 1.9506 (+-0.0024) | value 0.3012 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (1062.78, 1264.88)
+    difference: value 0.0098 (summed errors 0.0026); position 0.0006 (0.0053)
+    envelope of the two values: 0.2914 to 0.3012; with every numeric alternative: 0.2914 to 0.3012
+    alternatives within the summed value errors: none
+    pixel centres 0.12 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1062.75, 1265.00) px; reading error +-0.0014 in C_p, +-0.0029 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); location: on the lip of the depression (sketch); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = 1.95 in. for this station; inset tick drawn on the lip (0.1-in. radius); centre px (1062.78, 1264.88); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  rml57c18_fig5-29  [disagree (value)]  location unclear
+    A row 29: fig. 5(f) | model F | unclear | position 2.2511 (+-0.0030) | value -0.3121 (+-0.0013) | alternatives: (none) | flag ok | page 27 | px (1148.75, 1611.50)
+    B row 29: fig. 5(f) | model F | unclear | position 2.2527 (+-0.0024) | value -0.3021 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (1148.66, 1611.51)
+    difference: value 0.0100 (summed errors 0.0025); position 0.0016 (0.0054)
+    envelope of the two values: -0.3121 to -0.3021; with every numeric alternative: -0.3121 to -0.3021
+    alternatives within the summed value errors: none
+    pixel centres 0.09 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1148.75, 1611.50) px; reading error +-0.0013 in C_p, +-0.0030 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); location: lip or start of the cone: the sketch does not separate them; 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = 2.25 in. for this station; inset tick drawn just behind the lip where the cone begins; lip or cone; centre px (1148.66, 1611.51); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  rml57c18_fig5-30  [disagree (value)]  location afterbody
+    A row 30: fig. 5(f) | model F | afterbody | position 2.7461 (+-0.0031) | value -0.1102 (+-0.0013) | alternatives: (none) | flag ok | page 27 | px (1292.75, 1497.25)
+    B row 30: fig. 5(f) | model F | afterbody | position 2.7510 (+-0.0024) | value -0.1011 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (1292.99, 1497.30)
+    difference: value 0.0091 (summed errors 0.0025); position 0.0049 (0.0055)
+    envelope of the two values: -0.1102 to -0.1011; with every numeric alternative: -0.1102 to -0.1011
+    alternatives within the summed value errors: none
+    pixel centres 0.25 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1292.75, 1497.25) px; reading error +-0.0013 in C_p, +-0.0031 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = 2.75 in. for this station; conical afterbody (14.5 deg frustum), not a cylinder; centre px (1292.99, 1497.30); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  rml57c18_fig5-31  [disagree (value)]  location afterbody
+    A row 31: fig. 5(f) | model F | afterbody | position 3.2511 (+-0.0027) | value 0.0363 (+-0.0013) | alternatives: (none) | flag ok | page 27 | px (1437.25, 1413.50)
+    B row 31: fig. 5(f) | model F | afterbody | position 3.2505 (+-0.0024) | value 0.0464 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (1437.20, 1413.44)
+    difference: value 0.0101 (summed errors 0.0025); position 0.0006 (0.0051)
+    envelope of the two values: 0.0363 to 0.0464; with every numeric alternative: 0.0363 to 0.0464
+    alternatives within the summed value errors: none
+    pixel centres 0.08 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1437.25, 1413.50) px; reading error +-0.0013 in C_p, +-0.0027 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = 3.25 in. for this station; conical afterbody (14.5 deg frustum), not a cylinder; centre px (1437.20, 1413.44); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  rml57c18_fig5-32  [disagree (value)]  location afterbody
+    A row 32: fig. 5(f) | model F | afterbody | position 3.7525 (+-0.0031) | value 0.1289 (+-0.0014) | alternatives: (none) | flag ok | page 27 | px (1581.50, 1360.50)
+    B row 32: fig. 5(f) | model F | afterbody | position 3.7510 (+-0.0024) | value 0.1397 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (1581.33, 1360.45)
+    difference: value 0.0108 (summed errors 0.0026); position 0.0015 (0.0055)
+    envelope of the two values: 0.1289 to 0.1397; with every numeric alternative: 0.1289 to 0.1397
+    alternatives within the summed value errors: none
+    pixel centres 0.18 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1581.50, 1360.50) px; reading error +-0.0014 in C_p, +-0.0031 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = 3.75 in. for this station; conical afterbody (14.5 deg frustum), not a cylinder; centre px (1581.33, 1360.45); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  rml57c18_fig5-33  [disagree (value)]  location afterbody
+    A row 33: fig. 5(f) | model F | afterbody | position 4.7259 (+-0.0028) | value 0.1582 (+-0.0041) | alternatives: (none) | flag ok | page 27 | px (1861.50, 1342.75)
+    B row 33: fig. 5(f) | model F | afterbody | position 4.7257 (+-0.0024) | value 0.1729 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (1861.72, 1342.70)
+    difference: value 0.0147 (summed errors 0.0053); position 0.0002 (0.0052)
+    envelope of the two values: 0.1582 to 0.1729; with every numeric alternative: 0.1582 to 0.1729
+    alternatives within the summed value errors: none
+    pixel centres 0.23 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1861.50, 1342.75) px; reading error +-0.0041 in C_p, +-0.0028 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = 4.75 in. for this station; conical afterbody (14.5 deg frustum), not a cylinder; centre px (1861.72, 1342.70); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  rml57c18_fig5-34  [disagree (value)]  location afterbody
+    A row 34: fig. 5(f) | model F | afterbody | position 5.7482 (+-0.0032) | value 0.1294 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (2156.25, 1356.75)
+    B row 34: fig. 5(f) | model F | afterbody | position 5.7523 (+-0.0024) | value 0.1513 (+-0.0012) | alternatives: (none) | flag ok | page 27 | px (2156.24, 1356.67)
+    difference: value 0.0219 (summed errors 0.0024); position 0.0041 (0.0056)
+    envelope of the two values: 0.1294 to 0.1513; with every numeric alternative: 0.1294 to 0.1513
+    alternatives within the summed value errors: none
+    pixel centres 0.08 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (2156.25, 1356.75) px; reading error +-0.0012 in C_p, +-0.0032 in s; fig. 5(f) has no legend; model F was tested at alpha 0 only (table I, text); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle; figure 5(f) has no legend, model F was tested at alpha 0 deg only (table I); table II (p. 16) prints s = 5.75 in. for this station; conical afterbody (14.5 deg frustum), not a cylinder; centre px (2156.24, 1356.67); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+
+  tmx19_fig5-02  [disagree (value)]  location face
+    A row 13: fig. 5 | 4-in. flat-face cylinder, circle | face | position -0.9246 (+-0.0008) | value 0.8266 (+-0.0004) | alternatives: (none) | flag ok | page 20 | px (2421.75, 762.50)
+    B row 14: fig. 5 | 4-in. flat-face cylinder, circle | face | position -0.9233 (+-0.0015) | value 0.8287 (+-0.0007) | alternatives: (none) | flag ok | page 20 | px (2421.41, 762.97)
+    difference: value 0.0021 (summed errors 0.0011); position 0.0013 (0.0023)
+    envelope of the two values: 0.8266 to 0.8287; with every numeric alternative: 0.8266 to 0.8287
+    alternatives within the summed value errors: none
+    pixel centres 0.58 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 deg, legend); centre (2421.75, 762.50) px on the page turned upright; reading error +-0.0004 in p_l/p_t,2, +-0.0008 in x/r; Reynolds number based on model diameter (symbols list)
+    B note (verbatim): open circle = alpha 0 deg (legend); positive x/r labelled Leeward, negative Windward on the axis; figure 2 table gives orifices on the y = 0 line at |x| = 0.925 x 2.00 in.; centre px (2421.41, 762.97) on the page image rotated 90 deg clockwise; reading error +-0.0015 in x/r, +-0.0007 in p; R based on model diameter (symbols list); caption gives M and R
+
+  tmx19_fig5-03  [disagree (value)]  location face
+    A row 12: fig. 5 | 4-in. flat-face cylinder, circle | face | position -0.8744 (+-0.0008) | value 0.8737 (+-0.0004) | alternatives: (none) | flag ok | page 20 | px (2370.50, 666.25)
+    B row 13: fig. 5 | 4-in. flat-face cylinder, circle | face | position -0.8741 (+-0.0015) | value 0.8758 (+-0.0007) | alternatives: (none) | flag ok | page 20 | px (2370.80, 665.84)
+    difference: value 0.0021 (summed errors 0.0011); position 0.0003 (0.0023)
+    envelope of the two values: 0.8737 to 0.8758; with every numeric alternative: 0.8737 to 0.8758
+    alternatives within the summed value errors: none
+    pixel centres 0.51 px apart (same mark (pixel centres))
+    A note (verbatim): open circle (alpha = 0 deg, legend); centre (2370.50, 666.25) px on the page turned upright; reading error +-0.0004 in p_l/p_t,2, +-0.0008 in x/r; Reynolds number based on model diameter (symbols list)
+    B note (verbatim): open circle = alpha 0 deg (legend); positive x/r labelled Leeward, negative Windward on the axis; figure 2 table gives orifices on the y = 0 line at |x| = 0.875 x 2.00 in.; centre px (2370.80, 665.84) on the page image rotated 90 deg clockwise; reading error +-0.0015 in x/r, +-0.0007 in p; R based on model diameter (symbols list); caption gives M and R
+
+  tnd5392_table2-55  [disagree]  orifice 55, phi 90, s/d .0267, face
+    A .9928 (alternatives: none; flag ok)   B .9978 (alternatives: none; flag ok)
+    envelope 0.9928 to 0.9978
+    A note (verbatim): orifice 55 (10-psi transducer, per text); phi = 90 deg as printed; orifices 39* and 55 are both printed at phi 90, s/d .0267; read as printed; alpha = 0 column; typed from the page image (text layer not used: it is unreliable here); Reynolds number based on afterbody diameter (text)
+    B note (verbatim): orifice 55; phi = 90 deg; alpha = 0 deg column; read from the page image at 300 dpi (text layer not used for values); Reynolds number based on afterbody diameter (text)
+
+  (17 disagreements in all)
+
+TABLE VALUES THAT AGREE BY ALTERNATIVES ONLY (primary digits differ)
+
+  tnd5392_table1-13  orifice 13, phi 0, s/d .3200, face: A .9598 (alternatives .9599), B .9599 (alternatives .9598); envelope of primaries 0.9598 to 0.9599, with alternatives 0.9598 to 0.9599
+    A note (verbatim): last digit 8 or 9: upper loop and waist clear, lower-left stroke only 2 px rows long and no bottom bar; orifice 13 (10-psi transducer, per text); phi = 0 deg as printed; alpha = 0 column; typed from the page image (text layer not used: it is unreliable here); Reynolds number based on afterbody diameter (text)
+    B note (verbatim): orifice 13; phi = 0 deg; alpha = 0 deg column; digit 4: 9 with a short extra left stroke; alternative 8; read from the page image at 300 dpi (text layer not used for values); Reynolds number based on afterbody diameter (text)
+  tnd5392_table1-41  orifice 41*, phi 90, s/d .0800, face: A .9958 (alternatives .9959), B .9959 (alternatives .9958); envelope of primaries 0.9958 to 0.9959, with alternatives 0.9958 to 0.9959
+    A note (verbatim): last digit 8 or 9: lower-left stroke only 2 rows below a 2-row waist, bottom bar missing; read 8; orifice 41* (measured by the 1-psi gage, table footnote); phi = 90 deg as printed; alpha = 0 column; typed from the page image (text layer not used: it is unreliable here); Reynolds number based on afterbody diameter (text)
+    B note (verbatim): orifice 41* (asterisk: measured by 1-psi gage); phi = 90 deg; alpha = 0 deg column; digit 4: 9 with a short extra left stroke; alternative 8; read from the page image at 300 dpi (text layer not used for values); Reynolds number based on afterbody diameter (text)
+  tnd5392_table2-65  orifice 65*, phi 180, s/d .1867, face: A .9844 (alternatives .5844), B .5844 (alternatives .9844;.5944;.9944); envelope of primaries 0.5844 to 0.9844, with alternatives 0.5844 to 0.9944
+    A note (verbatim): digit 1 is a broken 9 printed like an S (loop open on the right); read 9 from the rounded, curled top, which this typeface's 5 lacks; orifice 65* (measured by the 1-psi gage, table footnote); phi = 180 deg as printed; alpha = 0 column; typed from the page image (text layer not used: it is unreliable here); Reynolds number based on afterbody diameter (text)
+    B note (verbatim): orifice 65* (asterisk: measured by 1-psi gage); phi = 180 deg; alpha = 0 deg column; digit 1: flat-topped 5 read as 5; alternative 9 (degraded); digit 2: A-shaped glyph (closed top loop, two legs) read as 8; alternative 9; read from the page image at 300 dpi (text layer not used for values); Reynolds number based on afterbody diameter (text)
+  tnd5392_table2-66  orifice 66*, phi 180, s/d .2400, face: A .9772 (alternatives none), B .9777 (alternatives .9772); envelope of primaries 0.9772 to 0.9777, with alternatives 0.9772 to 0.9777
+    A note (verbatim): orifice 66* (measured by the 1-psi gage, table footnote); phi = 180 deg as printed; alpha = 0 column; typed from the page image (text layer not used: it is unreliable here); Reynolds number based on afterbody diameter (text)
+    B note (verbatim): orifice 66* (asterisk: measured by 1-psi gage); phi = 180 deg; alpha = 0 deg column; digit 4: glyph with flat top and no bottom bar read as 7; alternative 2; read from the page image at 300 dpi (text layer not used for values); Reynolds number based on afterbody diameter (text)
+  tnd5392_table2-67  orifice 67*, phi 180, s/d .2933, face: A .9658 (alternatives none), B .9659 (alternatives .9658); envelope of primaries 0.9658 to 0.9659, with alternatives 0.9658 to 0.9659
+    A note (verbatim): digit 4 an 8 (3 rows lower-left); orifice 67* (measured by the 1-psi gage, table footnote); phi = 180 deg as printed; alpha = 0 column; typed from the page image (text layer not used: it is unreliable here); Reynolds number based on afterbody diameter (text)
+    B note (verbatim): orifice 67* (asterisk: measured by 1-psi gage); phi = 180 deg; alpha = 0 deg column; digit 4: 9 with a short extra left stroke; alternative 8; read from the page image at 300 dpi (text layer not used for values); Reynolds number based on afterbody diameter (text)
+  tnd5392_table3-42  orifice 42*, phi 90, s/d .1067, face: A .9828 (alternatives none), B .9829 (alternatives .9828); envelope of primaries 0.9828 to 0.9829, with alternatives 0.9828 to 0.9829
+    A note (verbatim): digit 4 an 8 without a full bottom bar (3 rows lower-left); orifice 42* (measured by the 1-psi gage, table footnote); phi = 90 deg as printed; alpha = 0 column; typed from the page image (text layer not used: it is unreliable here); Reynolds number based on afterbody diameter (text)
+    B note (verbatim): orifice 42* (asterisk: measured by 1-psi gage); phi = 90 deg; alpha = 0 deg column; digit 4: 9 with a short extra left stroke; alternative 8; read from the page image at 300 dpi (text layer not used for values); Reynolds number based on afterbody diameter (text)
+
+LABEL DIFFERENCES (every one)
+
+  tn4300_fig7-13  model/series: A '4-in. model D, open circle' (model column: 4-in.-diameter model D, present tests (legend: 4" dia model, present tests)), B '4-in. Unitary tunnel, square' (model column: 4-in. diameter flat face model, Langley Unitary Plan wind tunnel); position A 0.4999, B 0.5002; value A 0.9753, B 0.9760; pixel centres 3.29 px apart
+    alternatives: A '', B '0.9757'
+  tn4300_fig7-15  model/series: A '3-in. ref. 3, diamond' (model column: 3-in.-diameter model, ref. 3 figure 4 (legend)), B '4-in. model D, open circle' (model column: 4-in. diameter flat face, model D (present tests, 27- by 27-in. jet)); position A 0.5003, B 0.5000; value A 0.9790, B 0.9794; pixel centres 0.50 px apart
+    alternatives: A '', B '0.9790'
+  tn4300_fig7-22  model/series: A '3-in. ref. 3, diamond' (model column: 3-in.-diameter model, ref. 3 figure 4 (legend)), B '4-in. model D, open circle' (model column: 4-in. diameter flat face, model D (present tests, 27- by 27-in. jet)); position A 0.7501, B 0.7497; value A 0.9387, B 0.9386; pixel centres 0.36 px apart
+    alternatives: A '', B 'same value, other model: 3-in. ref. 3 diamond (M = 2.01)'
+  tn4300_fig16-01  model/series: A 'model A, symbol not in the legend' (model column: 12-in.-diameter model A (symbol not in the legend)), B 'unclear' (model column: unclear); position A 0.2563, B 0.2572; value A 0.9959, B 0.9960; pixel centres 0.50 px apart
+  rml57c18_fig5-04  location: A 'corner', B 'unclear'; model B, position A 2.3609, B 2.3638
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1265.75, 1361.75) px; reading error +-0.0017 in C_p, +-0.0027 in s; location: sketch tick where the corner arc meets the cone; the corner ends at s = 2.48 in. by the printed dimensions, so corner; open square (alpha 5 leeward) overlaps; 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle = alpha 0 deg (legend); table II (p. 16) prints s = 2.36 in. for this station; inset tick drawn at the end of the corner arc where the cone begins; corner or cone; circle overlaps the leeward (alpha = 5 deg) square; centre px (1265.90, 1360.60); reading error +-0.0042 in s, +-0.0021 in Cp; Reynolds number per foot, approximate (text)
+  rml57c18_fig5-11  location: A 'afterbody', B 'unclear'; model C, position A 2.3031, B 2.3041
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1212.50, 1412.75) px; reading error +-0.0013 in C_p, +-0.0028 in s; location: first sketch tick on the cone, just past the corner (corner ends at s = 2.15 in. by the printed dimensions); 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle = alpha 0 deg (legend); table II (p. 16) prints s = 2.30 in. for this station; inset tick drawn at the end of the corner arc where the cone begins; corner or cone; centre px (1212.73, 1412.75); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+  rml57c18_fig5-20  location: A 'afterbody', B 'unclear'; model D, position A 2.1510, B 2.1480
+    A note (verbatim): open circle (alpha = 0 per legend; table I tests 4, 9, 10, 14); centre (1130.00, 1260.50) px; reading error +-0.0016 in C_p, +-0.0028 in s; location: just past the corner by the printed dimensions; sketch crowds ticks here; 12- by 12-in. preflight jet; conical afterbody (14.5 deg)
+    B note (verbatim): open circle = alpha 0 deg (legend); table II (p. 16) prints s = 2.15 in. for this station; inset tick drawn at the end of the corner arc where the cone begins; corner or cone; centre px (1129.89, 1260.45); reading error +-0.0024 in s, +-0.0012 in Cp; Reynolds number per foot, approximate (text)
+  (7 label differences in all)
+
+  Mach and Reynolds columns of paired figure rows:
+    tn4300_fig7: mach differs on 3 pairs; reynolds column differs on 23 pairs (A '' / B '14 x 10^6'; A '' / B '2.7 x 10^6')
+    tn4300_fig16: mach differs on 0 pairs; reynolds column differs on 0 pairs
+    rml57c18_fig5: mach differs on 0 pairs; reynolds column differs on 34 pairs (A 'about 14 x 10^6 per ft' / B '14 x 10^6')
+    tmx19_fig5: mach differs on 0 pairs; reynolds column differs on 0 pairs
+    tnd5392_table1: mach differs on 0 rows
+    tnd5392_table2: mach differs on 0 rows
+    tnd5392_table3: mach differs on 0 rows
+
+READ ONCE AND ILLEGIBLE ITEMS (every one)
+
+  tn4300_fig7-01  [read once (B)]  location face
+    A: no row
+    B row 1: fig. 7 | unclear | face | position 0.0024 (+-0.0013) | value 0.9990 (+-0.0006) | alternatives: (none) | flag untraced | page 31 | px (501.50, 753.00)
+    B note (verbatim): mark not matched to a legend symbol; small closed loop in the top-left plot corner at x/r = 0, p_l/p_o = 1.00, half hidden by the axes; smaller than the legend symbols; may be a symbol (open circle?) or a drafting mark at the start of the fairing; centre px (501.5, 753.0) on the 300-dpi page; reading error +-0.0013 in x/r, +-0.0006 in p_l/p_o
+
+  tn4300_fig7-06  [read once (A)]  location face
+    A row 15: fig. 7 | 4-in. Unitary tunnel, square | face | position 0.2568 (+-0.0020) | value 0.9936 (+-0.0013) | alternatives: (none) | flag ambiguous | page 31 | px (907.75, 763.50)
+    B: no row
+    A note (verbatim): open square; centre (907.75, 763.50) px on the native 300 dpi page; reading error +-0.0013 in p_l/p_o, +-0.0020 in x/r; partly hidden behind the solid circle to its left; only the right side and top edge show; may be the flagged square of the legend
+
+  tn4300_fig7-14  [illegible (A, no row of B)]  location face
+    A row 36: fig. 7 | 4-in. Unitary tunnel, square | face | position 0.5 (no error stated) | value (empty) (no error stated) | alternatives: (none) | flag illegible | page 31 | px (none)
+    B: no row
+    A note (verbatim): no square is visible here on the pressure curve; listed because the velocity distribution in the same figure shows a square of this series at x/r about 0.5; if plotted it is hidden behind the solid circle
+
+  tn4300_fig7-20  [illegible (A, no row of B)]  location face
+    A row 35: fig. 7 | 4-in. model D, open circle | face | position 0.75 (no error stated) | value (empty) (no error stated) | alternatives: (none) | flag illegible | page 31 | px (none)
+    B: no row
+    A note (verbatim): no open circle is visible here on the pressure curve; listed because the velocity distribution in the same figure shows a open circle of this series at x/r about 0.75; if plotted it is hidden behind the solid circle
+
+  tn4300_fig7-21  [illegible (A, no row of B)]  location face
+    A row 37: fig. 7 | 4-in. Unitary tunnel, square | face | position 0.75 (no error stated) | value (empty) (no error stated) | alternatives: (none) | flag illegible | page 31 | px (none)
+    B: no row
+    A note (verbatim): no square is visible here on the pressure curve; listed because the velocity distribution in the same figure shows a square of this series at x/r about 0.75; if plotted it is hidden behind the solid circle
+
+  tn4300_fig16-08  [illegible (A, no row of B)]  location face
+    A row 18: fig. 16(a) | model A run 2, diamond | face | position 0.760 (no error stated) | value (empty) (no error stated) | alternatives: (none) | flag illegible | page 40 | px (1432.00, 522.00)
+    B: no row
+    A note (verbatim): strokes of a second diamond (run 2) near (1432, 522) px inside an overlapping cluster; outline not separable, so no value
+
+  tn4300_fig16-12  [read once (A)]  location face
+    A row 11: fig. 16(a) | model A run 3, triangle | face | position 0.8610 (+-0.0015) | value 0.9121 (+-0.0010) | alternatives: 0.9139 | flag ambiguous | page 40 | px (1529.25, 628.00)
+    B: no row
+    A note (verbatim): run 3 (triangle); centre (1529.25, 628.00) px; reading error +-0.0010 in p_l/p_o, +-0.0015 in x/r (at least 1.5-2 px allowed for the overlap); triangle centre taken as the middle of its bounding box; alternative 0.9139 is its centroid (x/r 0.8650); symbols of the three runs overlap heavily in this cluster; this outline was picked out by eye on a dark-stroke view and the centre fitted to it; other readers may separate the cluster differently; 27- by 27-in. preflight jet (table I)
+
+  tn4300_fig16-15  [illegible (A, no row of B)]  location face
+    A row 19: fig. 16(a) | model A, symbol not identified | face | position 0.863 (no error stated) | value (empty) (no error stated) | alternatives: (none) | flag illegible | page 40 | px (1531.00, 607.00)
+    B: no row
+    A note (verbatim): strokes of another symbol (small loop of strokes) near (1531, 607) px inside an overlapping cluster; outline not separable, so no value
+
+  tn4300_fig16-16  [read once (A)]  location face
+    A row 14: fig. 16(a) | model A run 3, triangle | face | position 0.9277 (+-0.0015) | value 0.8447 (+-0.0010) | alternatives: 0.8466 | flag ambiguous | page 40 | px (1594.30, 755.70)
+    B: no row
+    A note (verbatim): run 3 (triangle); centre (1594.30, 755.70) px; reading error +-0.0010 in p_l/p_o, +-0.0015 in x/r (at least 1.5-2 px allowed for the overlap); triangle centre taken as the middle of its bounding box; alternative 0.8466 is its centroid (x/r 0.9315); symbols of the three runs overlap heavily in this cluster; this outline was picked out by eye on a dark-stroke view and the centre fitted to it; other readers may separate the cluster differently; 27- by 27-in. preflight jet (table I)
+
+  tn4300_fig16-18  [read once (B)]  location face
+    A: no row
+    B row 14: fig. 16(a) | model A run 2, diamond | face | position 0.9353 (+-0.0016) | value 0.8501 (+-0.0008) | alternatives: (none) | flag ambiguous | page 40 | px (1601.23, 744.51)
+    B note (verbatim): diamond = run 2 (legend); overlaps the triangle and the circle; centre px (1601.23, 744.51); reading error +-0.0016 in x/r, +-0.0008 in p_l/p_o; 27- by 27-in. jet (table I); Mach number from the text, not the figure
+
+  tn4300_fig16-20  [illegible (A, no row of B)]  location face
+    A row 20: fig. 16(a) | model A run 1, circle | face | position 0.957 (no error stated) | value (empty) (no error stated) | alternatives: (none) | flag illegible | page 40 | px (1622.00, 750.00)
+    B: no row
+    A note (verbatim): strokes of further circle arcs near (1622, 750) px inside an overlapping cluster; outline not separable, so no value
+
+  tn4300_fig16-21  [illegible (A)]  location face
+    A row 22: fig. 16(a) | model A run 2, diamond | face | position 0.979 (no error stated) | value (empty) (no error stated) | alternatives: (none) | flag illegible | page 40 | px (1645.00, 945.00)
+    B row 17: fig. 16(a) | model A run 2, diamond | face | position 0.9884 (+-0.0042) | value 0.7463 (+-0.0021) | alternatives: may not be a separate symbol | flag ambiguous | page 40 | px (1653.97, 940.51)
+    pixel centres 10.03 px apart (illegible row matched by series and pixel position)
+    A note (verbatim): strokes of a diamond near (1645, 945) px inside an overlapping cluster; outline not separable, so no value
+    B note (verbatim): diamond = run 2 (legend); tentative: a diamond outline is suggested between the triangle and the circle, against the right frame; centre px (1653.97, 940.51); reading error +-0.0042 in x/r, +-0.0021 in p_l/p_o; 27- by 27-in. jet (table I); Mach number from the text, not the figure
+
+  tn4300_fig16-22  [illegible (A)]  location face
+    A row 21: fig. 16(a) | model A run 1, circle | face | position 0.984 (no error stated) | value (empty) (no error stated) | alternatives: (none) | flag illegible | page 40 | px (1650.00, 955.00)
+    B row 18: fig. 16(a) | model A run 1, circle | face | position 0.9883 (+-0.0026) | value 0.7371 (+-0.0013) | alternatives: (none) | flag ambiguous | page 40 | px (1653.98, 957.97)
+    pixel centres 4.97 px apart (illegible row matched by series and pixel position)
+    A note (verbatim): strokes of a circle near (1650, 955) px inside an overlapping cluster; outline not separable, so no value
+    B note (verbatim): open circle = run 1 (legend); lower part of the tangle at x/r 0.98; centre px (1653.98, 957.97); reading error +-0.0026 in x/r, +-0.0013 in p_l/p_o; 27- by 27-in. jet (table I); Mach number from the text, not the figure
+
+FLAGS (every row flagged other than ok; full rows with notes and alternatives verbatim in flags.csv)
+
+  A tn4300_fig7.csv        ambiguous 8, illegible 3
+  B tn4300_fig7.csv        ambiguous 10, untraced 1
+  A tn4300_fig16.csv       ambiguous 22, illegible 5
+  B tn4300_fig16.csv       ambiguous 17, untraced 1
+  A rml57c18_fig5.csv      ambiguous 1
+  B rml57c18_fig5.csv      ambiguous 4
+  A tmx19_fig5.csv         ambiguous 1
+  B tmx19_fig5.csv         ambiguous 4
+  A tnd5392_table1.csv     ambiguous 19
+  B tnd5392_table1.csv     ambiguous 20
+  A tnd5392_table2.csv     ambiguous 30
+  B tnd5392_table2.csv     ambiguous 42
+  A tnd5392_table3.csv     none
+  B tnd5392_table3.csv     ambiguous 3
+
+  Pairs whose two flags differ:
+    tn4300_fig7: 3
+    tn4300_fig16: 10
+    rml57c18_fig5: 3
+    tmx19_fig5: 5
+    tnd5392_table1: 5
+    tnd5392_table2: 22
+    tnd5392_table3: 3
+
+GEOMETRY (geometry_pairs.csv, every row of both files covered)
+
+  TN 4300, orifice positions on the fig. 3 sketch, model D (r/R, scaled; the sketch is schematic): differ. 21 dots both. Tolerance: the two readers' outline-fit rms summed, (0.9 + 1.0) px / 212.9 px = 0.0089 in r/R. left: agree, all within 0.0089 (largest difference 0.001); right: differ, differences over 0.0089: A 0.969 / B 0.982; A 0.974 / B 0.986 (largest 0.013); up: agree, all within 0.0089 (largest difference 0.002); down: agree, all within 0.0089 (largest difference 0.001); centre: A 0.025 (scaled; dot merged with a centre tick), B 'r/R = 0 (centre)' (not scaled): differ
+  TN 4300, comparison models in fig. 7: A only. B names the same two comparison series in its method.md 4.2 and fig. 7 CSV, not in geometry.csv
+  TN 4300, position of the models in the jet: B only. 
+  TN 4300, table I content: B only. A states the same in method.md section 7 (no pressures in table I, no tn4300_table1.csv)
+  RM L57C18, flat-face diameter, model B: differ. not printed (both). A 2.323 in. derived from printed dimensions assuming a tangent corner arc; B about 2.7 in. scaled from the drawing ('drawing may not be to scale')
+  RM L57C18, flat-face diameter, model F: A gives no value. A: not printed, no value; B: about 2.6 in. scaled
+  RM L57C18, orifice positions and inset ticks: differ (C, D). A gives no s list in geometry.csv (it points to the plotted s in its fig. 5 CSV); B lists the s printed in table II (p. 16). Inset tick counts: model B agree (2 face, 1 corner arc, 1 at the arc-cone junction, 4 cone); model C differ (A: 2 face, 6 cone; B: 2 face, 1 at the end of the corner arc, 5 cone); model D differ (A: 1 face, a crowded group at the corner, 6 cone; B: 2 face, 1 corner arc, 1 at the arc end, 5 cone); model F agree on face and cone (A: 2 face, marks on the lip, 6 cone; B: 2 face, 1 lip, 6 cone)
+  RM L57C18, model position in jet: B only. 
+  TN D-5392, angles of attack: A only. 
+  TN D-5392, pressure normalisation: agree on the heading. p_l/p_t,2 and its symbols-list definition, both; A adds 'text PDF p. 8 implies p_t,2 is computed', B draws no conclusion (see normalisation.txt)
+  All other topics: agree (52 of 62 topics).
+
+NOTES ON THE DISAGREEMENTS (descriptions of the readers' own records; nothing settled)
+
+- RM L57C18 fig. 5(f), model F: all 9 points disagree (8 on value, 2 on
+  position, one on both), while the two readers' symbol centres agree
+  within 0.25 px on every one. The difference is in the axis calibration,
+  not in the centring: the labelled C_p ticks of fig. 5(f) in the method
+  notes lie 4 to 8 px apart (A: 2.0 at 284.9, 0 at 1435.1, -0.5 at 1719.8
+  to 1722.8 px; B: 2.0 at 290.0, 0 at 1440.6, -0.5 at 1726.8 px), about
+  one minor division of the grid (0.01 in C_p per 5.77 px); the two s
+  readings at the first two points differ by about 0.02 in., one minor
+  division in s. On figs. 5(b), 5(c) and 5(d) the two readers' tick
+  positions agree within about 3 px (A gives each tick in several bands
+  across the plot, B at the middle) and every point agrees. Which
+  calibration of fig. 5(f) is right is not decided here.
+- TM X-19 fig. 5: the two points at x/r -0.92 and -0.87 differ by 0.0021
+  in p_l/p_t,2 against summed errors of 0.0011; centres agree within
+  0.6 px.
+- TN 4300 fig. 16(a): the clusters at x/r 0.75, 0.86, 0.93 to 0.95 and
+  0.98 are separated differently by the two readers (both say so and flag
+  every point there ambiguous). At 0.86 A reads two triangles, B one; B's
+  triangle centre lies between A's two (5.0 and 8.9 px) and is paired with
+  the nearer. At 0.93 to 0.95 A reads two triangles and a circle (plus
+  circle arcs it could not separate), B a triangle, a diamond and a
+  circle; A's second triangle (0.9277, 0.8447) and B's diamond (0.9353,
+  0.8501) lie 13 px apart and are not paired. At 0.75 B's alternative
+  0.9661 is a weaker outline 6 px below B's diamond, near A's diamond
+  (0.9665); A lists strokes of a second diamond near (1432, 522) px, 11 px
+  from B's diamond, as illegible.
+- TN 4300 fig. 7, x/r 0.5 and 0.75: three marks are given different
+  symbols (see the label differences). At x/r 0.5 the mark above the
+  solid circle is A's ref. 3 diamond and B's model D open circle, and the
+  mark below it is A's model D open circle and B's Unitary square; at
+  x/r 0.75 the open mark is A's ref. 3 diamond and B's model D open
+  circle (B gives the diamond as its alternative). Values agree on all
+  three. The Mach column differs on these three pairs only because of the
+  series (2.00, 2.01, 2.49).
+- TN D-5392 table II, orifice 55 (phi 90, s/d .0267, face): A .9928, B
+  .9978, neither flagged, no alternatives. It is the only table value on
+  which the readings disagree.
+- Reynolds column: on TN 4300 fig. 7 B writes the per-foot Reynolds
+  numbers of the text against the model D and Unitary points and A leaves
+  the column empty; on RM L57C18 the two write the same per-foot figure
+  in different words. Where both give a Reynolds number, it is the same.
+
+REYNOLDS AND MACH NUMBERS (step 3; also reynolds_mach.csv)
+
+  TN 4300 fig. 7, 4-in. model D (present tests)
+      Mach: A 2.00, B 2.00 (agree).
+      Reynolds: A 14 x 10^6 per ft, B 14 x 10^6 per ft (*). On the
+      diameter: given by neither.
+  TN 4300 fig. 7, 4-in. model, Unitary Plan tunnel (comparison series)
+      Mach: A 2.49, B 2.49 (agree).
+      Reynolds: A 2.7 x 10^6 per ft, B 2.7 x 10^6 per ft (agree). On the
+      diameter: given by neither.
+  TN 4300 fig. 7, 3-in. model, ref. 3 (comparison series)
+      Mach: A 2.01, B 2.01 (agree). Reynolds: given by neither.
+  TN 4300 fig. 16, 12-in. model A
+      Mach: A 2, B 2 (agree). Reynolds: A none for the pressure data,
+      B none in the fig. 16 rows. On the diameter: given by neither.
+  RM L57C18 fig. 5, models B, C, D, F
+      Mach: A 2, B 2 (agree).
+      Reynolds: about 14 x 10^6 per ft, free stream, both (agree). On a
+      diameter: given by neither (face diameters not printed, both).
+  TM X-19 fig. 5
+      Mach: A 2.49, B 2.49 (agree).
+      Reynolds: A 0.90 x 10^6, B 0.90 x 10^6, on the model diameter
+      (4.00 in.), both (agree).
+  TN D-5392 tables I, II, III, model 1
+      Mach: A 2.49, 4.06, 4.63; B 2.49, 4.06, 4.63 (agree).
+      Reynolds: A 1.88 x 10^6, B 1.88 x 10^6, on the afterbody diameter
+      (7.5 in.; the face spans the whole diameter), the same at all three
+      Mach numbers, both (agree).
+
+  (*) A: the 14 x 10^6 per ft of text p. 11 is stated for the heat-transfer
+  data ("the other data in figure 10"); "no Reynolds number is given for
+  the pressure data of figs. 7 and 16 beyond 'sea-level'". B: the same
+  sentence, read as the preflight-jet tests, and written against the
+  fig. 7 points of model D. Neither reader gives a Reynolds number on the
+  diameter for TN 4300 or RM L57C18; the pairing does not convert one.
+
+RM L57C18 TABLE II (step 4)
+
+  Reader A disclosed (method.md section 6) that the text layer of RM
+  L57C18 table II (page 16), which tabulates C_p at every orifice of every
+  model at alpha 0 and 5 deg, was on A's screen before A read fig. 5. A
+  says it did not use those numbers (values from fitted centres and the
+  grid only) and that A's fig. 5 reading "is therefore not blind to table
+  II". A did not view the page 16 image.
+
+  Reader B also saw table II before reading fig. 5: B's method note says
+  it saw the text layer of table II while reading for the conditions,
+  "before I measured figure 5", and lists the page 16 image as viewed in
+  crops (before and after the restart). B used table II "only for the
+  printed station positions s", which B quotes in the note of every fig.
+  5 row ("table II (p. 16) prints s = ... in. for this station"), and says
+  the fig. 5 values "were not compared with or adjusted to table II". B's
+  fig. 5 reading is therefore not blind to table II either.
+
+  Agreement of the two fig. 5 readings: 25 of 34 points agree (every
+  point of models B, C and D; 6 face, 2 corner, 14 cone and 3 with
+  different location labels); all 9 points of model F disagree (see the
+  notes above). Both readings having seen table II, their agreement is
+  not evidence of independence from it. Table II itself was not asked for
+  by the brief and was read by neither; A suggests the coordinator may
+  want it read.
+
+PAGES OPENED OUTSIDE THE BRIEF'S LIST (step 5, from the method notes)
+
+  The brief lists, per report, the text, and: TN 4300 table I (p. 24),
+  fig. 3 (p. 27), fig. 7 (p. 31), fig. 16 (p. 40); RM L57C18 fig. 1
+  (pp. 17, 18), table I (p. 15), fig. 5 (pp. 22 to 27, flat-faced models);
+  TM X-19 fig. 2 (p. 15), fig. 5 (p. 20); TN D-5392 fig. 1 (p. 67) and
+  tables I to III (pp. 13 to 66, model 1 only).
+
+  Reader A:
+  - TN 4300 page 29 (fig. 5, jet total pressure and temperature, read from
+    the curves) and page 28 (fig. 4, model construction), page images.
+    Pages 24 to 40 were rendered to files; A says it looked only at the
+    pages it names.
+  - RM L57C18 text layer of pages 1 to 28 printed to the terminal, which
+    includes page 16 (table II) and the text layers of figure pages the
+    brief does not list (pp. 19 to 21 and 28). Pages 21, 22 and 26 were
+    rendered but not viewed.
+  - TM X-19 text layer of all 25 pages (including figure pages other than
+    15 and 20) and a thumbnail sheet of pages 15 to 22 (schlieren and
+    shadowgraph figures and figs. 6 and 7 seen as thumbnails).
+  - TN D-5392 text layer of pages 1 to 14; page 14 lies in the brief's
+    table range but is not model 1.
+  - A's working log says text layers of all four reports were made
+    (work/text holds them in full); the method note lists the pages
+    printed to the screen.
+  - A process listing (ps) once showed a command line with a path under
+    sq-readers/B/; A says it opened nothing there.
+
+  Reader B:
+  - The NTRS citation API record of each report (title and download link
+    only), to find the PDF address.
+  - TN 4300: 50-dpi overview renders of all 40 pages, with contact sheets
+    of pages 24 to 31 and 32 to 40 viewed (figure pages not in the brief
+    seen as thumbnails); the first lines of the text layer of all 40
+    pages; page images 26 (fig. 2), 28 (fig. 4) and 29 (fig. 5) viewed
+    after the restart.
+  - RM L57C18: the text layer and the page image of page 16 (table II),
+    the image viewed in crops before and after the restart; a 40-dpi
+    contact sheet of pages 13 to 28 (pages 19 to 21 and 28, and 22 and 26,
+    seen as thumbnails).
+  - TM X-19: 40-dpi overview renders of all 25 pages, contact sheet of
+    pages 3 to 25 (every figure page seen as a thumbnail).
+  - TN D-5392: the first lines of the text layer of all 88 pages
+    (including other models' table pages and the figure pages after 67);
+    page 68 extracted but not viewed.
+  - B wrote the text layers of all four reports to B/text/.
+
+  NASA TR R-274: both readers state they did not open it. Each reader's
+  src/ folder holds exactly the four NTRS PDFs of the brief, with the same
+  SHA-256 in both; no file named for TR R-274 is in either folder; the
+  only "R-274" strings in their folders are TN D-5392's own reference
+  list (in the text layers) and the readers' statements.
+  The other reader's folder: both state they did not open it; neither
+  reader's scripts refer to the other's folder; A discloses the process
+  listing above.
+
+FILES
+
+  pair.py                     this pairing (python3 -I pair.py)
+  normalisation.txt           step 2, written before any value was compared
+  tn4300_fig7_pairs.csv, tn4300_fig16_pairs.csv, rml57c18_fig5_pairs.csv,
+  tmx19_fig5_pairs.csv        figure pairs
+  tnd5392_table1_pairs.csv, tnd5392_table2_pairs.csv,
+  tnd5392_table3_pairs.csv    table pairs
+  geometry_pairs.csv          geometry.csv compared row by row (every row
+                              of both files appears)
+  flags.csv                   every row of both readers flagged other than
+                              ok, with note and alternatives verbatim
+  reynolds_mach.csv           step 3

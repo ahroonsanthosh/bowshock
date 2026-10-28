@@ -12,7 +12,7 @@ export type BaseRefusalReason =
   | 'afterbody'
   /** A laminar boundary layer at the base: the correlation is for turbulent layers. */
   | 'laminar-base'
-  /** Fins ending between the base and one root chord ahead of it. */
+  /** Fins ending ahead of the base where no measurement covers their position (0015 section 3.3). */
   | 'fins-near-base'
   /** Fins at the base other than the four of the data. */
   | 'fin-count'

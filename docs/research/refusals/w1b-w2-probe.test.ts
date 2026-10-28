@@ -46,6 +46,7 @@ const W3_W5: readonly ReasonKey[] = [
   'teTaper',
   'teSwept',
   'teMach',
+  'teBelow15',
   'flatPlateLe',
   'roundedLeTaper',
   'roundedLeSwept',

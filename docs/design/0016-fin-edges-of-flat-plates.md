@@ -43,6 +43,18 @@ square-cut leading edges and rounded trailing edges. The Basic Finner's
 gated numbers are unchanged, bit for bit; its reported shots, still
 refused, change only their reasons (section 12).
 
+_Since section 21 (2026-10-26):_ for rounded leading edges swept beyond
+60 deg, a "bounded, not measured" term was written, between the term at
+their sweep and the term at 60 deg, the band the whole gap. The re-review
+of 2026-10-27 had it refused again until TN 3861 fig. 17 was read twice
+afresh (section 21.7). Since section 21.8 it is served from 60 to 75.1
+deg; beyond 75.1 deg the edge is refused at any Mach number. Square-cut leading edges were argued bounded between the sonic and
+the pitot pressure on the whole face. The computed check registered for
+that argument failed (section 21.3). Measured flat faces then bore out
+the bounds' premises, but only at face Reynolds numbers far above a
+fin's (section 21.6). So square-cut edges stay refused, as do rounded
+trailing edges.
+
 ## 1. What is served, and on what
 
 The table as of section 18 (the sections below record how each row came to be).
@@ -282,7 +294,12 @@ before. Neither is shown:
 
 Both are refused with these reasons (`square-leading-edge`,
 `rounded-trailing-edge`); the page offers the plates so that users see
-them.
+them. _Since section 21 (2026-10-26; 0014 section 10.7 (aa)):_ the
+square-cut edge's lower bound is the sonic pressure on the whole face,
+which needs no ordering against the rounded edge; but the computed check
+registered for that argument failed (section 21.3), so the edge stays
+refused, with that reason. The rounded trailing edge stays refused as
+above.
 
 ## 7. In the code
 
@@ -1278,3 +1295,941 @@ a rounded trailing edge, which the rebuilt factor does not take, stays
 refused, for its trailing edge, with both reasons. The 3 totals this
 section's refusal removed are served again, on the flat-plate value (0015
 section 8).
+
+## 21. Square-cut leading edges, and rounded ones swept beyond 60 deg: bounded, not measured (2026-10-26)
+
+Written before any code for either term, under 0014 section 10.7 (aa)
+and (ab) (the coordinator's decisions of 2026-10-26, on the advisor's
+plan of 2026-10-22, recommendation 4). Section 6 refused square-cut
+leading edges because the lower bound 0014 section 10.2 named, the
+rounded edge of the same thickness, was never shown to lie below the
+flat face; section 5 refused rounded edges swept beyond 60 deg because
+the yawed-cylinder checks of the independence principle stop there.
+Neither term is measured. Both are served under 10.2 as "bounded, not
+measured": the band runs from the lower bound's low end to the upper
+bound's high end, the whole gap, and the value served is its midpoint
+(as the fins-on-base factor's bounded values are, `src/base`).
+
+### 21.1 Square-cut leading edges
+
+**The term.** A plate's square-cut leading edge is a flat face of height
+t, the plate's thickness, normal to the plate and to the edge. Its
+pressure drag per unit span is (p_f - p_inf) t, with p_f the face's mean
+pressure: the plate's faces behind the corners are parallel to the
+stream and carry none (section 4), and the shear on the face acts in its
+own plane, across the stream. Swept S deg, by the independence principle
+(section 5), the flow normal to the edge is the two-dimensional flow at
+M_n = M cos(S) on the normal dynamic pressure q cos^2(S), and the drag
+per unit span is still (p_f - p_inf) t: the face's area per unit span,
+t / cos(S), times the stream's component of its normal, cos(S).
+
+**The bounds**, on the normal flow, with p02 the pitot pressure
+(Rayleigh's) at M_n and p* = 0.5283 p02 the sonic pressure on a
+streamline of that total pressure:
+
+- lower: p* on the whole face, Cp* = (p* / p_inf - 1) / (gamma M_n^2 / 2),
+  times q cos^2(S) t;
+- upper: p02 on the whole face, Cp_pitot(M_n), times q cos^2(S) t.
+
+Swept, each is widened by the sweep allowance served on rounded edges,
+0.95 to 1.22 from 14.3 deg, tapered below it to none unswept (sections 18
+and 19): the lower bound's low end takes the allowance's low end, the
+upper bound's high end its high end. Unswept, on the thickness:
+
+| M_n | Cp*   | Cp_pitot | Cp* / Cp_pitot | Midpoint |
+| --- | ----- | -------- | -------------- | -------- |
+| 1.0 | 0.000 | 1.276    | 0.000          | 0.638    |
+| 1.2 | 0.270 | 1.396    | 0.193          | 0.833    |
+| 1.5 | 0.510 | 1.532    | 0.333          | 1.021    |
+| 2.0 | 0.707 | 1.657    | 0.427          | 1.182    |
+| 2.5 | 0.801 | 1.720    | 0.466          | 1.261    |
+| 3.0 | 0.853 | 1.756    | 0.486          | 1.304    |
+
+The gap is the whole range: at M_n 2.0 the term is served between 0.43
+and 1.0 of the pitot pressure's term (Cp 0.71 to 1.66 on the thickness),
+at its midpoint, 1.18, with a band of +-40% of it. For comparison, the
+rounded edge of the same thickness is (2/3) Cp_pitot t, 1.10 at M_n 2.0;
+nothing here orders the two, and nothing needs to.
+
+**The ordering, unswept** (the argument 10.2 asks for, written before the
+number is served):
+
+1. _A bow shock stands off the face at every M_n of 1.0 or more._ The face
+   turns the flow 90 deg, and no attached shock turns it more than 45.6
+   deg (gamma = 1.4, at any Mach number). Behind the shock's normal part
+   the flow is subsonic.
+2. _The upper bound, exactly, in inviscid flow._ The face is wetted by one
+   streamline, the dividing streamline on the plate's mid-plane (by
+   symmetry), which crosses the shock where the shock is normal to it.
+   Entropy is constant along it, so the total pressure is p02 at every
+   point of the face, and p is at most p02 there, equal at the stagnation
+   point.
+3. _The lower bound, exactly, in inviscid flow._ On a streamline of total
+   pressure p02, p is at least p* exactly where the Mach number is at
+   most 1. A subsonic flow along a straight wall that reaches a sharp
+   convex corner becomes sonic at the corner and turns it by a centred
+   expansion: the sonic line runs from the corner out to the shock, and
+   the face lies inside the subsonic region behind it, whatever the Mach
+   number. That is the standard result for flat-faced bodies (the sonic
+   point at the shoulder). This record does not take it on authority: it
+   is checked by computation (21.3) at M 1.2, 1.5, 2.0 and 3.0. So p is at
+   least p* on the face, equal only at the corners. Every other
+   streamline crosses a weaker part of the shock, so none near the face
+   carries a total pressure below p02.
+4. _The face's own expansion at the corners._ The centred expansion lies
+   beyond the corner. In inviscid flow the face upstream of it stays
+   subsonic: its pressure falls toward the corner and reaches p* there,
+   not before. In the real flow the face's boundary layer is subsonic near
+   the wall, and through it the corner's expansion reaches upstream a
+   distance of the order of the layer's thickness, where the wall
+   pressure can fall below p*: the layer's displacement rounds the
+   corner, and on a rounded convex corner the sonic point lies on the
+   rounding. 21.3 computes faces with corners rounded to 4% and 2% of the
+   half-thickness, to see where the sonic point lies and how far its
+   effect reaches up the straight face. The real-flow ordering of the
+   lower bound is then shown by a margin: it holds if the computed face
+   mean exceeds the lower bound by more than a vacuum (zero pressure) in
+   place of p* over a tenth of the face's height at each corner, at every
+   Mach number computed. A tenth of the height is to be at least twice
+   the layer's thickness at the corner at the smallest Reynolds number
+   served (21.3 estimates it from the computed velocity gradient at the
+   stagnation point).
+5. _The upper bound in the real flow._ The total pressure at the edge of
+   the face's boundary layer exceeds p02 only at second order in the
+   shock's departure from normal where those streamlines crossed it (of
+   order 1e-5). The fin's root (the body's boundary layer and the
+   junction's separation ahead of the face) and its tip are not
+   represented, as for the rounded edge (section 5); a separation shock
+   ahead of a blunt fin's root can raise the pressure on the face near
+   the root above p02 locally. The margin to the upper bound (one less
+   the computed face mean, 21.3) is stated beside it; nothing more is
+   claimed for the root.
+6. _Swept edges._ The independence principle is exact for the inviscid
+   flow past an infinite swept face, so 1 to 4 hold in the normal flow.
+   A finite, real edge departs from it: on yawed cylinders by 0.95 to
+   1.22 of the front side's drag at the sweeps served (sections 5, 16, 18
+   and 19), and at the stagnation line itself by up to 1.098 of the
+   principle's pressure (RM A55H31 fig. 11, its own tests at 60 deg, M_n
+   1.95; `stagnationChecks`). So a real swept face can carry more than the
+   pitot pressure at the normal Mach number, and that pressure alone is
+   not a limit there. Each bound is widened by the sweep allowance, which
+   contains every yawed datum at the sweeps served; carried from cylinders
+   to a flat face, it is an analogy, and is labelled as one.
+7. _The domain._ Normal Mach numbers of 1.0 to 3.0: below 1.0 the normal
+   flow is subsonic, no shock stands in it, p* falls below the free
+   stream's pressure and the lower bound becomes a thrust, and no rounded
+   edge is served there either (section 11); above 3.0 lies beyond the
+   range served for every fin edge, the code taking gamma = 1.4
+   throughout. Sweep up to 60 deg, the largest yaw checked (section 5).
+   The Reynolds number on the thickness, normal component, at least
+   6.7e3, the rounded edge's floor (RM A55H31's statement), so that the
+   face's layer is thin (item 4). No upper Reynolds number: the face's
+   flow is set by its choked corners whatever the layer does on it or
+   behind them.
+
+**Against 10.2's rules.** Each bound is a physical limit on the normal
+flow, of the kind 10.2 lists (the pitot pressure, the vacuum bound): the
+total pressure of the one streamline that wets the face, and the sonic
+pressure of a subsonic streamline of that total pressure. Swept, each
+carries the sweep allowance, a measured band, so each is then a physical
+limit carried by a measured method with its own band, which 10.2 also
+allows. The ordering is shown by items 1 to 7, committed before the code;
+the computation of 21.3 checks its premise (item 3) and sets the margin
+items 4 and 5 rest on, and sets nothing else: no band, no nominal. The
+value served is the midpoint, the band the whole gap. The label names
+both bounds and their sources, with the gap's size in C_D beside the
+component, and a total that contains the term is at best an estimate and
+names it. The one change to 10.2 is its lower bound, by amendment (aa).
+Not shown: the computed face mean is inviscid, and the root and tip are
+not represented.
+
+**Refused**, with every reason: M_n below 1.0 or above 3.0, sweep beyond
+60 deg, the Reynolds number below 6.7e3 (`square-leading-edge`).
+
+### 21.2 Rounded leading edges swept beyond 60 deg
+
+**The term** at sweep S is section 5's (and section 11's below M_n 1.49),
+
+    D(S) / (q s) = kappa(M_n) Cp_pitot(M_n) cos^2(S) r 2 (cos(delta) - cos^3(delta) / 3),
+
+M_n = M cos(S). Beyond 60 deg the principle's error is not measured well
+enough to set a band: the yawed cylinders there are Penland's at 75.1
+deg, which TN 3861 p. 10 flags for an end effect, and Lord and Ulmann's
+at 70 and 75 deg on TN 3861's crossflow plots, unpublished, the 75 deg
+one flagged high (p. 11). (As first committed, only Penland's point was
+named here; the review of 2026-10-27, section 21.5.)
+
+**The bounds**, at the case's Mach and Reynolds numbers:
+
+- lower: the term at S, at its band's low end (TN 2960's or kappa's low
+  end, the +-3% Reynolds allowance where it applies, times the sweep
+  allowance's low end, 0.95);
+- upper: the same term at 60 deg of sweep, at its band's high end (times
+  the allowance's high end, 1.22), the Reynolds number's normal component
+  taken at 60 deg.
+
+Both must be served: M cos(S) at least 1.0 (so at most 60 deg at Mach
+2.0, 65.4 deg at 2.4, 70.5 deg at 3.0) and the Reynolds number's normal
+component inside the term's range at both sweeps. Elsewhere the edge is
+refused with the term's own reasons, as at any sweep.
+
+**The ordering.**
+
+- _Upper._ (i) The principle: the term falls strictly as the sweep grows,
+  since cos^2(S) falls, and M_n falls with it while kappa(M_n)
+  Cp_pitot(M_n) rises with M_n (kappa's nodes 0.765, 0.831, 0.897 and 1
+  at M_n 1.0, 1.1, 1.2 and 1.49, nominal linear between them, and
+  Cp_pitot rising; a test holds it on a fine grid of M_n). (ii) Measured:
+  the front side's drag per unit span falls with yaw on every series of
+  RM A55H31 fig. 12, both readings (gauge, converted as in section 5,
+  over the unyawed, divided by cos(yaw) to put it per unit span):
+
+  | Series                 | 14.3 deg | 29.6 or 30 deg | 45 deg         | 59.8 or 60 deg | 75.1 deg       |
+  | ---------------------- | -------- | -------------- | -------------- | -------------- | -------------- |
+  | Penland, M 6.86        | 0.934    | 0.759 to 0.763 | 0.509 to 0.510 | 0.243 to 0.249 | 0.059 to 0.068 |
+  | RM A55H31's own, M 3.9 |          | 0.794 to 0.797 | 0.549          | 0.279 to 0.291 |                |
+
+  So the drag at a sweep beyond 60 deg lies below the drag at 60 deg,
+  which the term at 60 deg contains within its served band (section 5).
+  For the ordering to fail, the principle's error at S would have to
+  exceed the upper bound's high end over the term at S, which is at
+  least 1.234 and grows with S as the term at S falls below the term at
+  60 deg (the least just past 60 deg at M 2.2, M_n 1.10, on kappa's 1.1
+  node; as first committed, "at least 1.29", which was wrong: the review
+  of 2026-10-27). Every measured ratio r at any yaw is 1.217 or less (the
+  first reading's misread 1.263 at 60 deg aside, section 16), the 75.1
+  deg point 1.013 and 1.170 as read. Just past 60 deg the margin is
+  thin, 1.4% over 1.217, and there, at normal Mach numbers near 1.1, no
+  yawed cylinder is measured (none below M_n 1.95 at a served sweep,
+  section 16): the upper ordering there rests on the principle and on
+  the sweep allowance extrapolated in normal Mach number, as the 60 deg
+  term's own label, carried whole into the bounded label, says.
+
+- _Lower._ The principle is exact for the inviscid flow past an infinite
+  yawed cylinder at any sweep; what departs from it is the real flow,
+  the boundary layer and, on a model, its ends. The lower bound is the
+  term at S at its band's low end, 0.81 to 0.94 of the term (TN 2960's
+  or kappa's low end, the Reynolds allowance where it applies, times
+  0.95). To 60 deg the departures measured on RM A55H31 fig. 12 put the
+  front side at 0.987 of the principle or more. Beyond 60 deg the yawed
+  cylinders measured are the three crossflow points of TN 3861 figs. 15
+  to 17 below a crossflow Mach number of 3.37 (section 16, item 1(b);
+  `fin_edges_w34.md` section 4): the stagnation pressure (fig. 15) and
+  the downstream-side pressure (fig. 16), each read twice, and the front
+  side estimated from them with the drag (fig. 17, read once) as F =
+  C_D + Cp_down:
+
+  | Set, crossflow Mach number            | Sweep    | Stagnation pressure over Rayleigh's (two readings) | F over modified Newtonian (two readings of fig. 16)            | F over the term at its sweep | What TN 3861 says of it                                   |
+  | ------------------------------------- | -------- | -------------------------------------------------- | -------------------------------------------------------------- | ---------------------------- | --------------------------------------------------------- |
+  | Lord and Ulmann, M 4.04, 1.38 to 1.41 | 70 deg   | 1.067, 1.066                                       | 1.053, 1.048                                                   | 1.08 to 1.10                 | unpublished; its Reynolds number not stated               |
+  | Lord and Ulmann, M 4.04, 1.04         | 75 deg   | 1.528, 1.497                                       | 1.445, 1.445                                                   | 1.83                         | flagged high (p. 11); unpublished                         |
+  | Penland, M 6.86, 1.73 to 1.76         | 75.1 deg | 1.171, 1.172                                       | 1.166, 1.165 (1.147, 1.146 of TN 2960's integrated front side) | 1.17                         | an end effect, the shock not parallel to the body (p. 10) |
+
+  ("The term" is kappa times modified Newtonian below M_n 1.49, modified
+  Newtonian above.) Every one lies above the principle, on the
+  stagnation pressure (read twice) and on the front side estimated (read
+  once in part). The estimate is off by up to 0.086 of modified
+  Newtonian on TN 2960's own cylinders (section 16); with that taken
+  off, every one still lies above the lower bound's end (at 70 deg 0.96
+  of modified Newtonian against the bound's 0.81; at 75 deg 1.36 against
+  0.69 to 0.71; at Penland's 1.08 against 0.94). Two of the three are
+  flagged by the report, and neither flag says by how much, or which
+  way, the front side is moved; the third is unpublished. The stagnation
+  pressures alone, read twice, lie above the principle too, though the
+  stagnation line alone does not make the front side. The lower ordering
+  beyond 60 deg rests on these three points and on the principle, and
+  the label says so; beyond 75.1 deg (served only above Mach 3.9, to
+  80.4 deg at Mach 6.0) it rests on the principle alone, and the label
+  says that too. Fig. 17 has one reading; a blind second reading of its
+  three crossflow points is the coordinator's to arrange.
+
+- _RM A55H31 at 75.1 deg, disclosed._ Penland's crossflow point is the
+  same test as RM A55H31's reference-1 point at 75.1 deg. On fig. 11 its
+  stagnation-line pressure over the free stream's pitot pressure is
+  0.046 (first reading, at 75.2 deg as read) and 0.0567 (second, at
+  74.75 deg): 0.631 and 0.738 of Rayleigh's pitot pressure on the normal
+  Mach number, below the principle, against TN 3861 fig. 15's 1.171 and
+  1.172 above it. The readings' own errors (0.004 and 0.001 of the
+  ratio) move those by at most 0.06, so the two reports disagree at this
+  point, and neither says why; RM A55H31's reference-1 values were
+  formed on RM L54A14, before TN 3861's correction for its nozzle's local
+  Mach number (section 5), by an amount neither report states. On fig.
+  12 the point's r is 1.013 and 1.170 on the two readings, but there r
+  moves 0.068 for each 0.001 of fig. 12's ratio (0.021 to 0.023), so
+  within the second reading's stated error, 0.002, r spans 0.877 to
+  1.149 (within the first's 0.004, 0.90 to 1.44): the point alone cannot
+  show r of 0.95 or more. As first committed, this paragraph rested the
+  lower ordering on this one point, "with an end effect that raised it";
+  neither report says which way the end effect moved it, and that claim
+  is withdrawn (the review of 2026-10-27).
+- _A check that sets nothing._ At the 75.1 deg point's own conditions (M
+  6.86, M_n 1.76) the bounds are 0.055 (the term at 75.1 deg, 0.0584 of
+  the unyawed per unit span, times 0.99 and 0.95) and 0.315 (the term at
+  60 deg, 0.2434, times 1.06 and 1.22), 0.94 to 5.4 of the principle at
+  75.1 deg; the term at 60 deg is taken there at M_n 3.43, beyond the 3.0
+  served, so this is a check only. The point's two readings, 0.059 and
+  0.068 (r 1.013 and 1.170), lie inside; r at the second reading's error's
+  low end, 0.877, would not. At Lord and Ulmann's points (M 4.04; M_n
+  1.38 at 70 deg and 1.05 at 75 deg; their Reynolds numbers not stated,
+  so the band of every regime the term serves there) the band is 0.81 to
+  3.09 or 3.18 of modified Newtonian at 70 deg and 0.69 or 0.71 to 6.15
+  or 6.32 at 75 deg, and the estimates, 1.048 to 1.053 and 1.445, lie
+  inside. The review of 2026-10-27 made the same checks;
+  `tests/fins/rounded-leading-edge-beyond-60.test.ts` holds them.
+
+**Against 10.2's rules.** Both bounds are measured terms with their own
+bands (section 5's, TN 2960 or NASA CR-149372 with RM A55H31's sweep
+allowance), and the ordering is shown above, before the number is
+served. Its evidence beyond 60 deg is TN 3861's three crossflow points
+at 70 and 75 deg, two of them flagged by the report and one
+unpublished, named for this use in (ab)'s addendum of 2026-10-27 (as
+first committed, Penland's one point on fig. 12, named in (ab)). Fig.
+12's values were read twice (and looked at a third time) for sections
+5, 14 and 16, and TN 3861 figs. 15 and 16 twice and fig. 17 once for
+section 16, before those entries, which name their new use and read
+nothing new. The value served is the midpoint, the band the whole gap,
+the label carries both bounds whole, each with its own sources, and a
+total that contains it is at best an estimate and names it.
+
+### 21.3 The computed check of 21.1 (registered here, before it is run)
+
+Planar Euler solutions (`src/engine-cpu/euler2d.ts`, HLLC, steady, local
+time steps) of half a flat-faced plate above its mid-plane: the face x =
+0 from the mid-plane to y = 1 (the half-thickness), its corner rounded to
+a radius of 0.04 and 0.02, then the plate's side y = 1 downstream; at M
+1.2, 1.5, 2.0 and 3.0, on three nested grids (cells halved each way), the
+corner resolved by at least eight cells on the finest. Reported for each:
+on the straight face (y from 0 to 1 less the radius), the largest wall
+Mach number and the smallest and largest wall pressure over p02; where
+the sonic point lies; the face's mean gauge pressure over the pitot's,
+(p_f - p_inf) / (p02 - p_inf), over the whole height; the velocity
+gradient at the stagnation point; each with its change between the two
+finest grids, the solution's own error.
+
+- _Pass._ On the finest grid with the smaller radius, at every Mach
+  number, the straight face's wall Mach number stays below 1 and its
+  pressure above p* by more than the change between the two finest grids
+  allows, and its pressure is at most p02 within that change.
+- _Fail._ Otherwise. Then square-cut edges stay refused, and the result
+  is recorded here.
+- _The margin of items 4 and 5._ The computed face mean is set against
+  the lower bound less a vacuum over a tenth of the height at each
+  corner; if it does not exceed that at every Mach number computed, the
+  real-flow ordering of the lower bound is not shown and the edges stay
+  refused. The reach of the corner through the face's layer is estimated
+  from the stagnation-point velocity gradient (the laminar
+  stagnation-point layer, thickness 2.4 (nu / beta)^(1/2)) at the
+  smallest Reynolds number served; if a tenth of the height is less than
+  twice that thickness, the vacuum zone is widened to twice it.
+
+The solution is inviscid and sets no band and no nominal: the term
+served is the midpoint of the physical bounds whatever the computed mean
+is.
+
+**The protocol amended before the registered runs (2026-10-26, written
+before any of them was started).** Trial solves at M 2.0 on the coarsest
+grid only (`docs/research/square-edge/trials/`, with notes on the first runs, whose
+files were overwritten) found
+that the solutions with the registered radii do not settle: with a corner
+radius of 0.04 the flow behind the corner (its inviscid expansion toward a
+near vacuum along the plate's side, and its recompression) stays unsteady
+whatever the iteration (block implicit or explicit local time steps), the
+flux (HLLC, HLL, rotated hybrid; HLL with the implicit steps failed with
+a non-physical state), the reconstruction (second order or first) or the
+rounding's cells (4 or 12), and the face's mean gauge pressure over the
+pitot's swings with it, between 0.77 and 0.96; at a radius of 0.08 the
+residual falls to about 4e-4 of the start and the face mean holds within
+0.003 (0.889 to 0.892), at 0.06 it does not settle. At the end of every trial that ran to its end
+the straight face's least wall pressure was 0.67 to 0.80 of p02, against
+p* at 0.528, and the sonic point lay on the rounding, 11 to 34 deg into
+its turn. A trial with the side inclined after a 60 deg turn is set aside: its
+outflow line ran back into the subsonic region. A
+grid line from the rounding's end is subsonic from 1.25 to 4.4
+half-thicknesses above the plate (normal Mach number down to 0.91), so
+the domain cannot be cut there.
+So the registered "steady" solutions cannot be had, and the pass criterion
+is applied to the envelope over the oscillation instead, which is
+stricter at each point than one settled solution:
+
+- each grid runs a fixed number of explicit steps (HLLC, the registered
+  reconstruction and limiter, local time steps, CFL 0.5): 20000 on the
+  coarsest, 6000 and 4000 on the finer, each finer grid started from the
+  coarser solution; the envelope is taken over every 100 steps of the
+  second half: the straight face's largest wall Mach number (from the
+  wall pressure on p02, isentropically), its least and largest wall
+  pressure over p02, the face mean's least and largest values, every
+  place the sonic point was seen;
+- _pass_: on the finest grid, at both radii and all four Mach numbers,
+  the straight face's largest wall Mach number stays below 1 and its
+  least pressure above p* by more than the change in that least pressure
+  between the two finest grids, and its largest pressure is at most p02
+  within the same change;
+- _the margin of items 4 and 5_: the face mean's least value over the
+  envelope, against the lower bound less the vacuum zone as registered;
+- _fail_: otherwise, and then square-cut edges stay refused.
+
+**The result (2026-10-26): fail. Square-cut leading edges stay
+refused.** The 24 solves (`docs/research/square-edge/out/flat-face.jsonl`,
+`summary.out`, from `summary.py`), on the finest grid (144 x 96):
+
+| M   | Radius | Residual | Largest wall Mach | Least p / p02 | Its change from the middle grid | Largest p / p02 | Face mean, gauge over pitot | Verdict |
+| --- | ------ | -------- | ----------------- | ------------- | ------------------------------- | --------------- | --------------------------- | ------- |
+| 1.2 | 0.04   | 2.3e-3   | 0.806             | 0.652         | 0.030                           | 1.015           | 0.865 to 0.888              | pass    |
+| 1.2 | 0.02   | 1.4e-3   | 0.828             | 0.638         | 0.031                           | 1.013           | 0.886 to 0.907              | pass    |
+| 1.5 | 0.04   | 5.3e-4   | 0.813             | 0.648         | 0.030                           | 0.999           | 0.887 to 0.888              | pass    |
+| 1.5 | 0.02   | 3.2e-4   | 0.831             | 0.636         | 0.031                           | 1.001           | 0.907 to 0.908              | pass    |
+| 2.0 | 0.04   | 3.3e-4   | 0.822             | 0.642         | 0.021                           | 0.999           | 0.899 to 0.901              | pass    |
+| 2.0 | 0.02   | 6.5e-2   | 0.960             | 0.553         | 0.105                           | 1.074           | 0.862 to 0.942              | fail    |
+| 3.0 | 0.04   | 2.5e-1   | 0.995             | 0.531         | 0.134                           | 1.023           | 0.844 to 0.949              | fail    |
+| 3.0 | 0.02   | 9.3e-2   | 1.141             | 0.445         | 0.047                           | 1.187           | 0.819 to 0.991              | fail    |
+
+(p* is 0.528 of p02; the residual is the density residual over its start.)
+Where the finest solution settled, the straight face stayed subsonic, its
+least pressure 0.636 to 0.652 of p02, clear of p* by 0.108 to 0.124
+against grid changes of 0.021 to 0.031, its largest within 1.5% of p02, the
+sonic point on the rounding (3 to 8 deg into its turn on the finest grid),
+and the face mean 0.87 to 0.91 of the pitot term. Where it did not settle
+(M 2.0 with the smaller radius, M 3.0 with both), the oscillation carried
+the face's pressure to within 0.003 of p*, or below it (0.445 at M 3.0,
+the sonic point then seen on the face, at y 0.96 to 0.975), and above p02
+(up to 1.19). Those are excursions of an unsettled inviscid solution, not
+a steady flow; but the registration asked for the face to be shown above p*
+on the finest grid at every Mach number, and it was not, so the check fails
+and square-cut edges stay refused (`SQUARE_EDGE_REFUSAL`, every reason in
+words). The margin item (4 and 5) would have held everywhere: the face
+mean's least value less a whole p02 over a tenth of the face's height at
+each corner is 0.63 to 0.73 of p02 (against 0.528), and the layer's
+thickness at the corner at Re 6.7e3, from the computed stagnation-point
+velocity gradient (beta t / U 0.41 to 0.66 where settled), is 0.03 of the
+thickness, so a tenth of the height is more than twice it.
+
+What would lift the refusal, for a later record (none is done here): a
+check that gives settled solutions at the small radii and Mach 3 (a
+time-accurate solve averaged over its oscillation, or a viscous one in
+which the corner separates as the real one does), registered before it
+is run; or a measured flat-face pressure distribution, named in 0014
+section 10.7 and read twice; or the owner's decision that the argument of
+21.1 stands without its computed check. The term
+(`src/fins/square-leading-edge.ts`) and its tests are kept, unwired, as
+0019 section 3.2's bounded term is.
+
+_The route taken (2026-10-26):_ the measured one. The owner's rule
+admits no unverified estimate, so the argument is not served on its own;
+0014 section 10.7 (af) names four sets of measured pressures on
+flat-faced cylinders at Mach 2.0 to 4.63 (no planar or swept flat face
+is measured at Mach 1 to 3), argues why they test the bounds' premises,
+and registers the pass and fail criteria and what is served on each,
+before any of them is read. The readers' brief is
+`docs/research/square-edge/readers/brief.md`. The term stays unwired
+until the readings are paired and judged under (af).
+
+### 21.4 In the code, on the page, and the coverage
+
+- `src/fins/rounded-leading-edge.ts`: beyond 60 deg of sweep
+  `roundedLeadingEdgeDrag` returns the bounded term (`bounded`: the band's
+  ends per unit span), the midpoint served; where either term is refused,
+  the refusal carries both terms' reasons ("at 62.0 deg, ...; and at 60
+  deg, ..."), under the first one's reason code. At 60 deg and below
+  nothing changes.
+- `src/total/finned-body.ts`: the leading edges' component carries the
+  gap in C_D in its band text and `bounded` (`SWEPT_EDGE_BOUNDED_REASON`)
+  for the total's claim; `DragComponent.bounded` is a new optional field
+  (`src/total/total-drag.ts`). Square-cut edges: `SQUARE_EDGE_REFUSAL`.
+  Since the review of 2026-10-27 (21.5) the band text names each bound's
+  own source, band and regime (`roundedEdgeSource`), the label carries
+  both terms whole, and `SQUARE_EDGE_REFUSAL` names all three failed
+  cases.
+- `src/app/total-drag.ts`: `boundedReasons` names every bounded component
+  once in the claim, after the fins-on-base factor's.
+  `src/app/status-words.ts`: "Estimate, bounded" with "An estimate with
+  one part bounded, not measured: the fins' rounded leading edges, swept
+  past 60 degrees, whose band runs from the drag at their sweep to that at
+  60."; with more than one bounded part, words that say so; the square-cut
+  edge's refusal words say its bounds' check has not passed.
+- Tests: `tests/fins/rounded-leading-edge-beyond-60.test.ts` and
+  `tests/fins/square-leading-edge.test.ts`; seven planted errors each fail
+  them (the sonic exponent, the allowance swapped, cos for cos^2, the M_n
+  floor, the upper bound at the actual sweep, the upper end served for
+  the midpoint, the lower bound at its nominal).
+
+The hobby example of section 16 with its edges square-cut, had the term
+been served, at M 1.8: 0.188 in C_D, between 0.066 and 0.311 (a gap of
+0.245), against 0.161 (0.137 to 0.225) for its rounded edges.
+
+**Coverage** (the population of `docs/research/refusals/`, 2000 rockets
+at four Mach bands, 8000 cases; `evaluate.ts` mirroring this code, its
+cross-check against `src/total` agreeing on all 1200 cases). Before this
+section main's run, re-run on 3389a04 and identical to it
+(`out/2026-10-26-before-bounded-edges/`): totals served for 153 of 8000
+cases (1.9%). After (`out/impact.out`): **153 of 8000, unchanged**. The
+refusal "rounded leading edge swept beyond 60 deg" falls from 3.0% of
+cases (240) to none; most of those edges are still refused, now for
+their normal Mach number below 1.0 at their sweep (that refusal rises
+from 17.5% to 20.0% of cases) or their Reynolds number (0.7% to 0.8%),
+so about 30 cases (0.4%) have their leading edges served bounded, most
+at Mach 1.8 to 3.0, and every one of them is refused for another part
+(chiefly fins at the base the rebuilt factor does not measure, whose
+share as the sole blocker rises from 1.13% to 1.19%). Square-cut edges
+stay refused in 15.3% of cases (the sole blocker in 0.76%).
+
+**The refused total's floor.** In those about 30 cases the refused
+total (0011 section 10) shows the bounded edge among its served parts,
+with its band and label, and where the floor is offered the edge's low
+end, the term at its sweep at its band's low end, is in the sum. The
+floor stays a floor there only if the lower ordering of 21.2 holds, so
+for those cases the floor rests on it too. (As first committed, this
+section did not say so; the review of 2026-10-27.)
+
+### 21.5 The review of 2026-10-27
+
+An independent review of 3389a04..2fbe1a3, with 5e47532, confirmed the
+code, the numbers, the population and the square edge's verdict, and
+found two blocking items and eight smaller ones. The fixes follow
+5e47532 on this branch.
+
+- _Blocking 1, the label beyond 60 deg._ At M 2.2 on a 3 mm plate (Re_D
+  2e5) the term at 59.9 deg carried "extrapolated in Reynolds number",
+  "no yawed datum below M_n 1.95 at a served sweep" and NASA CR-149372;
+  the bounded term at 60.1 deg carried none of them, and called the 60
+  deg term "the largest sweep checked on yawed cylinders", though at its
+  normal Mach number, 1.10, no yawed cylinder is measured. Now the label
+  carries each term whole, its own label after "Lower:" and "Upper:",
+  and the component's band text names each bound's source, band and
+  regime; `RoundedLeadingEdge.bounded` keeps both terms. Tested at the
+  review's case either side of 60 deg, and the band text whole.
+- _Blocking 2, the lower ordering beyond 60 deg._ Rewritten in 21.2 on
+  TN 3861's crossflow points at 70 and 75 deg, with RM A55H31 fig. 11's
+  disagreement at 75.1 deg and fig. 12's sensitivity there disclosed; "an
+  end effect that raised it" withdrawn. Beyond 75.1 deg the label says
+  the ordering rests on the principle alone
+  (`LARGEST_YAWED_SWEEP_DEGREES`). The checks the review made (Penland's
+  point inside 0.94 to 5.4 of the principle, Lord and Ulmann's inside the
+  band at 70 and 75 deg) are in 21.2 and held by a test. (ab)'s addendum
+  of 2026-10-27 names the new use of TN 3861's figures; nothing new is
+  read.
+- _The smaller items._ (1) 21.2's "at least 1.29" corrected to 1.234,
+  with its thin margin disclosed; (2) a page test that a served total's
+  claim names the bounded edge; (3) a test of the rounded wedge's path;
+  (4) `demos/nose-drag.html` says a rounded edge beyond 60 deg is bounded;
+  (5) `SQUARE_EDGE_REFUSAL` names every failed case; (6) 21.4 says the
+  bounded edge's low end enters the refused total's floor; (7) a rounded
+  edge refused past 60 deg is offered less sweep beside a bevelled edge;
+  (8) the solver's output records its time scheme from now on (the
+  registered runs used `SCHEME=explicit`, as 21.3's protocol states),
+  and `summary.py` prints an envelope with no samples as empty.
+- _Planted errors._ The claim built from the base alone, the wedge
+  path's `bounded` dropped, the lower term's label left out of the
+  bounded label, the band text without the bounds' sources, and the
+  less-sweep change lost: each fails a test.
+- _(af)_ is amended by a dated addendum, before any reading (0014
+  section 10.7): criterion (ii) counts the error against the claim, P1's
+  test is stated set by set, criterion (iii) is information only, and
+  the Reynolds number is served only inside the range the paired sets
+  measured.
+
+### 21.6 (af) applied: pass (2026-10-27)
+
+The measured flat-face pressures named in 0014 section 10.7 (af) were
+read twice, the second blind (`docs/research/square-edge/readers/A` and
+`B`, 370c1c4), and paired by a neutral party
+(`readers/pairing-2026-10-27/`, eaee32b). (af) was then applied exactly
+as written, with its addendum of 2026-10-27, by
+`docs/research/square-edge/af/apply_af.py`, whose rules are fixed in its
+header before it was first run. `af/out/verdict.txt` holds the result,
+`face_margins.csv` the margin at every face orifice and `not_face.csv`
+every point either reader puts off the face.
+
+**How the rules were applied.**
+
+- _Which sets test P1_ was decided in the pairing's `normalisation.txt`,
+  before any value was compared. RM L57C18 (C_p on the free stream) tests
+  it. TM X-19 (over its own face-centre pressure) does not. For TN 4300
+  and TN D-5392 it is not established, so they do not test it either.
+  One set tests P1.
+- _Conversion to p / p02:_ TN 4300's p_l/p_o (o the stagnation point,
+  "the total pressure behind the shock"), TM X-19's and TN D-5392's
+  p_l/p_t,2 are taken as read; RM L57C18's C_p through Rayleigh's formula
+  at its stated Mach number, 2.
+- _a:_ 0.01 where no pressure accuracy is stated as a number (TN 4300,
+  RM L57C18, TM X-19). TN D-5392 states 1% of full scale (1.44 psf on the
+  1-psi gage, 14.4 psf on the 10-psi gage) and 0.5 psf on its
+  manometers. Each orifice is taken with its gage's error plus 0.5 psf,
+  over p02 computed from the paired conditions alone: Re 1.88e6 on the
+  7.5 in. diameter, the stagnation temperature and the Mach number, with
+  Sutherland's law. That gives 1279, 805 and 656 psf at Mach 2.49, 4.06
+  and 4.63, so a is 0.012, 0.019 and 0.023 on the 10-psi gage.
+- _Face points:_ only points both readers (or the one reader) place on
+  the face. The seven points either reader calls corner or unclear, all
+  on RM L57C18, are not face points, and none of the seven is one either
+  reader puts on the face. The 64 afterbody points are listed too.
+- _Readings:_ the two primaries, never an alternative. No face orifice
+  is excluded, so the seven face points read once are used with their
+  one reading. The six with no value from either reader cannot be
+  evaluated; all six are TN 4300 marks that reader A lists without a
+  value, at x/r 0.5 to 0.96, hidden behind or tangled with other
+  symbols, and each is listed.
+
+**Criterion (ii), every face reading at least 0.5283 + a on the lower
+reading:**
+
+| Set, item, series                          | Mach | Face points | Least lower reading, p / p02 (where)                  | a     | Margin         |
+| ------------------------------------------ | ---- | ----------- | ----------------------------------------------------- | ----- | -------------- |
+| TN 4300 fig. 7, 4-in. model D              | 2.00 | 15          | 0.692 (x/r 0.979)                                     | 0.01  | +0.154         |
+| TN 4300 fig. 7, 3-in., ref. 3              | 2.01 | 13          | 0.901 (x/r 0.849)                                     | 0.01  | +0.363         |
+| TN 4300 fig. 7, 4-in., Unitary Plan tunnel | 2.49 | 12          | 0.673 (x/r 0.975)                                     | 0.01  | +0.135         |
+| TN 4300 fig. 16(a), 12-in. model A         | 2.0  | 20          | 0.737 (x/r 0.988; read once, A illegible)             | 0.01  | +0.199         |
+| TN 4300 fig. 16(b), 12-in. model A         | 2.0  | 15          | 0.924 (station 3)                                     | 0.01  | +0.386         |
+| RM L57C18 fig. 5, models B, C, D, F        | 2    | 2 each      | 0.931, 0.887, 0.822, 0.957                            | 0.01  | +0.284 or more |
+| TM X-19 fig. 5, 4-in.                      | 2.49 | 15          | 0.565 (x/r 0.975)                                     | 0.01  | +0.027         |
+| TN D-5392 table I, model 1                 | 2.49 | 59          | 0.786 (orifice 19, r/R 0.96)                          | 0.012 | +0.246         |
+| TN D-5392 table II, model 1                | 4.06 | 59          | 0.584 (orifice 65*, r/R 0.37: B's 0.5844, A's 0.9844) | 0.002 | +0.054         |
+| TN D-5392 table III, model 1               | 4.63 | 59          | 0.778 (orifice 19, r/R 0.96)                          | 0.023 | +0.227         |
+
+**Criterion (i), P1, on RM L57C18:** the largest higher reading is 0.987
+of p02 (model F, C_p 1.631 on B's calibration), against 1 + a = 1.01;
+margin +0.023. **Criterion (iii)** (information only): the face mean
+over the radius, zero over the outer fifth, is 0.738 to 0.799 in every
+group. It does not test a planar face's margin.
+
+**Disclosed** (from the pairing; no rule changes for them):
+
+- Neither RM L57C18 fig. 5 reading is blind to its table II: both
+  readers saw it before reading fig. 5 and say they did not use its
+  values. Nothing is set from table II.
+- RM L57C18 fig. 5(f), model F: the readers' axis calibrations differ by
+  about one minor grid division and all nine points disagree. The
+  calibration is not settled: (ii) takes the lower reading, (i) the
+  higher.
+- The pairing party, printing 0014 to read (af), also saw the record of
+  (aa)'s computed check in words. It compared no reading with it.
+
+**Verdict: pass.** P2 holds at every face orifice of every set, model
+and Mach number. The least margin is TM X-19's orifice nearest the
+corner, x/r 0.975, at +0.027. P1 holds on the one set that tests it.
+
+**What (af) and its addendum would wire** (deferred: see the end of this section):
+
+- the term of 21.1 unchanged, its band the whole gap between the
+  physical bounds; the readings set no band and no nominal;
+- normal Mach numbers 2.0 to 3.0, refused below 2.0, where no flat face
+  is measured;
+- sweep to 60 deg with the sweep allowance, labelled an analogy, since
+  no swept flat face is measured;
+- the face Reynolds number (on the thickness, its normal component) only
+  inside the range the paired sets measured, **0.90e6 to 4.32e6**, and
+  refused outside it in plain words. The ends of that range:
+  - TM X-19's 0.90e6 on its 4.00 in. diameter, as both readers give it.
+  - The top is RM L57C18's model D: the free-stream 14e6 per ft both
+    give, times the smaller of the paired face diameters, 3.70 in.
+    Model C, by the same rule, is 3.79e6.
+  - RM L57C18's models B and F are not computed, their face diameters
+    not paired.
+  - TN 4300 does not widen the range: the per-foot value both readers
+    quote is stated for its heat-transfer data, and the two differ on
+    whether it applies to the pressure tests.
+  - TN D-5392's 1.88e6 lies inside.
+- the label names the four sets as tests of the bounds' premises, not
+  of the value, and says a planar face's margin at its corners is an
+  analogy, not tested.
+
+**Caveats for the reviewer.**
+
+- The top of the Reynolds range rests on RM L57C18's models C and D,
+  whose corners are rounded (0.4 and 0.1 in.), not square. That is
+  addendum (d) as written. Without them, the range would be TM X-19's
+  and TN D-5392's, 0.90e6 to 1.88e6.
+- What the pass shows:
+  - the bounds' premises hold on measured axisymmetric flat faces, at
+    Mach 2.0 to 4.63 and face Reynolds numbers of 0.9e6 to about 4e6;
+  - P1 holds on one set only.
+- It shows neither the value nor a planar face.
+- A hobby fin's face Reynolds number, about 5e4 to 3e5, lies below
+  every measured one, so hobby fins stay refused.
+
+**The Reynolds range recomputed, and the wiring deferred (2026-10-27).**
+The coordinator's definition of the Reynolds number arrived after this
+verdict was committed. It takes the number on free-stream conditions, on
+the face height, with the normal component on a swept edge, and converts
+each report's basis to it. It is pinned in 0014 section 10.7, under
+(af)'s addendum.
+
+The coordinator's ruling:
+
+- the pass stands for the premises, criteria (i) to (iii), which the
+  definition does not touch;
+- the range above, computed before the definition, does not stand;
+- it is recomputed, a set counting only where the readers' paired
+  records show its number is on that basis or converts exactly to it.
+
+`apply_af.py` (its rule 6b, added after the first run and kept apart from
+the rules fixed before it) gives:
+
+- **TM X-19 and TN D-5392 do not count.** Their numbers are "based on
+  the model (afterbody) diameter", and neither reader records the
+  conditions they are on.
+- **TN 4300 does not count**, as before.
+- **RM L57C18 counts** for models C and D. It gives a free-stream value
+  of about 14e6 per ft, which both readers record. Times the flat face's
+  diameter, which neither reader prints, that is:
+  - model C: 3.79e6 or 3.85e6;
+  - model D: 4.34e6 or 4.32e6;
+  - each pair on A's derived diameter or B's scaled one.
+- **The range surely measured is 3.85e6 to 4.32e6.** It runs from the
+  larger of model C's numbers to the smaller of model D's.
+
+It differs from the 0.90e6 to 4.32e6 above in two ways. The two sets
+that set that range's lower end no longer count. Model C is taken at the
+larger of its two diameters. Both ends now rest on models C and D, whose
+corners are rounded, not square.
+
+**Coverage.** `af/coverage.test.ts` (output `af/out/coverage.out`) uses
+the refusal audit's population, with the same draws as its run. 1220 of
+the 8000 cases have square-cut leading edges, and the largest face
+Reynolds number among them is 2.9e5. None of the 1220 lies inside the
+recomputed range, and none inside the range above either.
+
+**So square-cut leading edges stay unwired, and they stay refused.** The
+premises pass. No hobby-scale fin face lies inside the measured Reynolds
+range, so wiring is deferred and the term is not wired for zero
+coverage. `SQUARE_EDGE_REFUSAL` and the page's words now say so: the bounds' premises are borne out only on flat faces far larger than a model rocket fin's. Extending the range
+downward would be the owner's to agree, and nothing here proposes it.
+
+### 21.7 The re-review of 2026-10-27: past 60 deg refused again
+
+The re-review of 5e47532..ef7fc7d found both earlier blocking items and
+all eight smaller ones fixed, and (af)'s addendum as asked. It found two
+new blocking items.
+
+- **The lower ordering from 60 to 75.1 deg rests on TN 3861 fig. 17,
+  read once.** 21.2's front-side estimate uses fig. 17's C_D, and 21.2
+  itself says the stagnation pressures alone, and Penland's point alone,
+  cannot show the ordering. Fig. 17 was read on 2026-10-21, before any
+  entry named it (10.1 names figs. 15 and 16 only). The first (ab)
+  addendum named it only afterwards.
+- **Beyond 75.1 deg the principle alone does not show the ordering.**
+  The page reaches such sweeps (78.45 deg at Mach 5.0); the population
+  does not. Mach 5.0 at 78 deg was served from 0.869 of the term.
+
+**What changed.**
+
+- `roundedLeadingEdgeDrag` refuses sweeps beyond 60 deg again, as main
+  does. The reason code is `swept-leading-edge`, given first, with the
+  term's other reasons beside it. The words say that past 60 deg the
+  bounded term waits on two fresh readings of fig. 17, and that beyond
+  75.1 deg no yawed cylinder is measured at all (false: fig. 17 has Lord
+  and Ulmann's point at 80.1 deg; corrected in section 21.9).
+- The bounded term is kept unwired as `roundedLeadingEdgeBeyond60`, and
+  a test pins that nothing under `src/` calls it. It refuses beyond 75.1
+  deg (`LARGEST_YAWED_SWEEP_DEGREES`) at any Mach number. After the
+  pairing it is served again only if 21.2's rule, as the second (ab)
+  addendum writes it out, holds on the paired values.
+- The page's words for the refusal: "a rounded leading edge's drag is
+  measured only up to 60 degrees of sweep", change "less sweep (60
+  degrees or less), or a bevelled leading edge".
+- `evaluate.ts` mirrors main's counting again: past 60 deg, the sweep
+  alone.
+- The finned-body and page branches that carry the bounded edge stay. In
+  `tests/total/beyond-60-dormant.test.ts` they are reached with the
+  served term replaced by the bounded one, so they stay tested for when
+  it is served again.
+
+**The smaller items, on the bounded term:**
+
+- Past 60 deg, the lower term's own sweep clause says the allowance is
+  carried past 60 deg, where its yawed-cylinder checks end. It no longer
+  says "no yawed datum below M_n 1.95 at a served sweep", which is false
+  there. The 60 deg term says "at 60 deg of sweep or less".
+- The label is shortened from about 2,800 characters to under 1,800.
+  It now gives each term's source, band and qualifiers in short form
+  rather than its whole label.
+- It names fig. 16 beside fig. 15. It says fig. 17's two readings are
+  pending and the earlier one is not counted (`TN3861_FIG17_READINGS`).
+- The top of the normal Mach range is compared with a relative tolerance
+  of 1e-12. Mach 6.0 at 60 deg gives M cos(sweep) = 3.0000000000000004,
+  which is now served as 3.0.
+
+**Planted errors.** Seven errors were planted, one at a time, and each
+fails a test:
+
+- the refusal past 60 deg dropped;
+- the 75.1 deg refusal dropped;
+- the exact comparison at Mach 6;
+- the lower clause given the upper's words;
+- fig. 16 dropped from the label;
+- the bounded edge's `bounded` dropped in the total;
+- the less-sweep words lost.
+
+**21.2's lower ordering**, its table of crossflow points and its
+"check that sets nothing" stand as written, as the record of what was
+argued. Their front-side estimates rest on the fig. 17 reading that
+does not count. The fresh readings replace them when they are paired.
+
+**Coverage.** The population re-run on d03083d (`docs/research/refusals/out/impact.out`) matches main's run
+(`out/2026-10-26-before-bounded-edges/`) line for line, apart from two
+labels: the square-cut edge's and the rounded edge's past 60 deg. Totals
+are served for 153 of 8000 cases. The refusal "rounded leading edge swept
+beyond 60 deg" is back at 3.0% of cases, and the cross-check against
+`src/total` agrees on 1200 of 1200. `impact.json` is unchanged. The run
+with the bounded edges served is kept in
+`out/2026-10-27-bounded-edges-served/`: 153 of 8000 there too.
+
+### 21.8 Fig. 17 read twice: 21.2's rule holds; 60 to 75.1 deg served again (2026-10-27)
+
+TN 3861 fig. 17 was read twice afresh to the brief of the second (ab)
+addendum, the second reading blind (d0094f2), and paired by a neutral
+party (`docs/research/tn3861-fig17/readers/pairing-2026-10-27/`, 3d7dd16).
+All 25 symbols pair and all 25 agree. 21.2's rule, as that addendum
+writes it out, is applied by `docs/research/tn3861-fig17/rule/apply.test.ts`
+(`out/verdict.txt`). It takes figs. 15 and 16 as read twice for section
+16, every combination of the readings, and each pair's envelope against
+the claim.
+
+- **The estimate's error e is 0.0233.** It is the largest over TN 2960's
+  three cylinders replotted on figs. 16 and 17 (P04, P08, P12), against
+  TN 2960's integrated front side on both readings of its fig. 5. The
+  reading that does not count gave 0.086, chiefly from its TN 2960
+  point near M_c 1.96: 1.50 then against 1.447 now.
+- **The 70 deg point is P03.** Each crossed Lord and Ulmann point's
+  sweep is 90 deg less asin(M_c / 4.04):
+  - P01: 80.1 deg;
+  - P02: 74.9 deg (the stated 75 deg point);
+  - P03: 69.7 deg;
+  - P09: 60.3 deg (the one inside the served sweep, section 16).
+- **The three points,** on the lowest combination:
+
+  | Point                         | F over modified Newtonian | Stagnation over Rayleigh's | F over the term | F/MN less e, less the lower bound's end |
+  | ----------------------------- | ------------------------- | -------------------------- | --------------- | --------------------------------------- |
+  | Lord and Ulmann, 70 deg (P03) | 1.0420                    | 1.0656                     | 1.0774          | +0.1842 (end 0.8345)                    |
+  | Lord and Ulmann, 75 deg (P02) | 1.4212                    | 1.4972                     | 1.7896          | +0.6879 (end 0.7100)                    |
+  | Penland, 75.1 deg (P06)       | 1.1503                    | 1.1715                     | 1.1474          | +0.1870 (end 0.9400)                    |
+
+  The lower bound's end is the highest over the regimes the term serves
+  (here the measured regime). That is stricter than the addendum asks
+  for Penland's point, whose Reynolds number TN 3861 states.
+
+- **Verdict: the rule holds.** Rounded leading edges swept beyond 60 deg
+  and up to 75.1 deg are served bounded again, with the label naming
+  fig. 17 as read twice. Beyond 75.1 deg they stay refused, at any Mach
+  number. 21.2's table of crossflow points stands as the record of what
+  was argued. Its F values from the reading that does not count (1.053
+  and 1.048, 1.445, 1.166 and 1.165 of modified Newtonian) are
+  superseded by the table above.
+
+**In the code (section 21.8).**
+
+- `roundedLeadingEdgeDrag` serves the bounded term again from 60 to 75.1
+  deg (`beyondSweepLimit`). It is refused beyond 75.1 deg at any Mach
+  number.
+- `TN3861_FIG17_READINGS` is 2, so the label says fig. 17 was read twice.
+- The page's words for the refusal beyond 75.1 deg: "a rounded leading
+  edge's drag is bounded only up to 75 degrees of sweep, the most at
+  which a swept cylinder has been measured", change "less sweep (75
+  degrees or less), or a bevelled leading edge". From 60 to 75.1 deg, a
+  case the bounded term refuses keeps "less sweep (60 degrees or less),
+  or a bevelled leading edge".
+- `evaluate.ts` mirrors the bounded edges again, with beyond 75.1 deg
+  refused.
+- The tests go back to those of section 21.5 and the review fixes, with
+  the 21.7 items kept:
+  - the 75.1 deg refusal;
+  - the Mach 6 edge;
+  - the shortened label;
+  - fig. 16 named in the label;
+  - the lower clause.
+- `tests/total/beyond-60-dormant.test.ts` is gone, since the branches it
+  reached are served again.
+- Eleven planted errors each fail a test:
+  - the claim built from the base alone;
+  - the wedge path's `bounded` dropped;
+  - the lower term's summary left out of the label;
+  - the band text without the bounds' sources;
+  - the less-sweep change lost;
+  - served beyond 75.1 deg;
+  - the exact Mach 6 comparison;
+  - the lower clause given the upper's words;
+  - fig. 16 dropped;
+  - fig. 17 counted as unread;
+  - the 75 deg words lost.
+
+**Coverage, merged with main 5921198.** Main's refusal audit now counts
+the Von Karman noses the page serves: 181 of 8000 totals. Its run is kept
+as the before in `docs/research/refusals/out/2026-10-27-main-5921198/`.
+The re-run on the merged head (5e0259e, `out/impact.out`) gives **181 of
+8000, unchanged**, and the cross-check against `src/total` agrees on 1200
+of 1200.
+
+- "Rounded leading edge swept beyond 60 deg" (3.0% of cases on main)
+  becomes "beyond 75.1 deg", at none: no rocket in the population is
+  swept that far.
+- Most of the cases between 60 and 75.1 deg are still refused for their
+  normal Mach number below 1.0 at their sweep (17.5% to 20.0% of cases)
+  or their Reynolds number (0.7% to 0.8%).
+- The rest have their leading edges served bounded, and every one is
+  refused for another part. The sole-blocker shares of fins at the base
+  the rebuilt factor does not measure rise slightly, for example 1.52%
+  to 1.59% for its sweep refusal.
+
+**Merged with main f88ecbe (A5, fins near the base), 2026-10-28.** Main's
+run is kept in `docs/research/refusals/out/2026-10-28-main-f88ecbe/`:
+155 totals of 8000. The run on the merged head gives 155 of 8000 too,
+and the cross-check agrees on 1200 of 1200. Since A5, no served total
+holds a rounded edge swept past 60 deg:
+
+- at the base, the fins-on-base factors measure sweeps of 60 deg or
+  less;
+- more than a chord ahead, the body base is refused;
+- within a chord, the body base is served only at Mach 1.5 to 2.0, where
+  M cos(sweep) is below 1.0 past 60 deg.
+
+So the bounded edge is served among a refused total's parts, with its
+band and label, and enters no claim. The page test that checked the
+claim through a served total now checks the edge among the refused
+total's parts, and the claim's words through `boundedReasons` directly.
+
+### 21.9 Corrections after the re-review of ef7fc7d..5159cac (2026-10-28)
+
+The re-review passed. It found three statements to correct and one
+computation to widen, each made as its own commit after the merge with
+main f88ecbe.
+
+- **75.1 deg is not the largest sweep at which a yawed cylinder is
+  measured.** The code, the page's words, 0017 and the second (ab)
+  addendum said it was. Fig. 17 has Lord and Ulmann's point at 80.1 deg
+  (P01, crossflow Mach number 0.695). What is true: 75.1 deg is the
+  largest sweep at which a yawed cylinder's front side is estimated and
+  the bounds' ordering checked. Fig. 16 has no downstream pressure for
+  the 80.1 deg point (both readings of section 16 have three Lord and
+  Ulmann points, at crossflow Mach numbers near 1.0, 1.4 and 2.0), so no
+  front side is estimated there.
+  - The constant is renamed `LARGEST_CHECKED_SWEEP_DEGREES`. Sections
+    21.5 and 21.7 name it by its old name, `LARGEST_YAWED_SWEEP_DEGREES`.
+  - The refusal's words say what is true.
+  - The page says "the most at which its bounds have been checked
+    against a measured swept cylinder".
+  - 0014 carries a dated correction under the addendum.
+- **The square-cut edge's words overstated what was tested.**
+  - The page said measurements "bear them out" (the bounds). They bore
+    out the bounds' premises, not the bounds. The words now say
+    "measurements bear out what they rest on".
+  - `SQUARE_EDGE_REFUSAL` said the premises held "at every orifice".
+    It now says exactly what was tested: on all four sets, every face
+    orifice given a value lay above the sonic pressure (six marks on TN
+    4300's figures were given none); and on RM L57C18, the one set that
+    tests it, the face lay below the pitot pressure.
+  - A test pins the page's words exactly, so inverting "far larger"
+    fails it.
+- **e was taken on the primaries only.** As ambiguous points keep every
+  reading, `docs/research/tn3861-fig17/rule/apply.test.ts` now takes
+  every reading either reader states for a fig. 17 point: the
+  primaries, the alternatives, and the cross-stroke and bounding-box
+  readings. The table of 21.8 is superseded by:
+
+  | Point                         | F over modified Newtonian | Stagnation over Rayleigh's | F over the term | F/MN less e, less the lower bound's end |
+  | ----------------------------- | ------------------------- | -------------------------- | --------------- | --------------------------------------- |
+  | Lord and Ulmann, 70 deg (P03) | 1.0420                    | 1.0656                     | 1.0774          | +0.1734 (end 0.8345)                    |
+  | Lord and Ulmann, 75 deg (P02) | 1.4212                    | 1.4972                     | 1.7896          | +0.6771 (end 0.7100)                    |
+  | Penland, 75.1 deg (P06)       | 1.1497                    | 1.1715                     | 1.1465          | +0.1756 (end 0.9400)                    |
+  - e is 0.0341, at P08 on B's bounding-box reading (1.458); on the
+    primaries it was 0.0233.
+  - The verdict does not change: the rule holds at all three points.
+    0014 carries a dated note after the verdict entry.

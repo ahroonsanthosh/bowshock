@@ -548,7 +548,9 @@ describe('the display', { timeout: 60_000 }, () => {
   });
 
   it('an estimate: said in the headline and the box, with every reason and the tolerance', () => {
-    const form = { ...basicFinnerForm(2.0), trailingEdgeAheadOfBase: 1, leadingEdgeRadius: 0 };
+    // Outside the class on two counts, both served. (The fins a chord ahead were one of them until
+    // 2026-10-27; refused there now, 0014 section 10.7 (ad).)
+    const form = { ...basicFinnerForm(2.0), span: 1.2, leadingEdgeRadius: 0 };
     const blocks = totalDragDisplay(totalDragView(form, exactNose(form)));
     const head = blocks[0]!;
     expect(head.kind === 'paragraph' && head.text.endsWith(': an estimate, not validated')).toBe(
@@ -562,7 +564,7 @@ describe('the display', { timeout: 60_000 }, () => {
     expect(box.blocks).toContainEqual({
       kind: 'list',
       items: [
-        'the fins end 1 cal ahead of the base, not at it',
+        'the span is 1.2 cal, not 1.0 within 0.5%',
         'the leading-edge radius is 0 cal, not 0.004 within 0.5%',
       ],
     });
@@ -580,15 +582,21 @@ describe('the display', { timeout: 60_000 }, () => {
     expect(displayText(blocks)).toContain(CLASS_DESCRIPTION);
     const [gate] = tables(blocks);
     expect(gate!.caption).toContain('a recorded correction made after the residuals were known');
+    // F4's widening at the Mach 1.799 shot, both ends since R1, disclosed as made after the gate
+    // was used.
+    expect(gate!.caption).toContain(
+      "the trailing edges' band at the Mach 1.799 shot widened at both ends since (design " +
+        'record 0019 section 3.4.1, F4), also after the gate was used',
+    );
     expect(gate!.head.at(-1)).toBe('Second run');
     expect(gate!.rows.length).toBe(11);
     expect(gate!.rows[0]).toEqual([
       'DA95021318',
       '1.799',
       '0.594',
-      '0.6134 (0.5296 to 0.7297)',
+      '0.6134 (0.5283 to 0.7298)',
       '-3.2%',
-      '-24.6% to +23.5%',
+      '-24.8% to +23.5%',
       '-3.0%',
     ]);
     expect(gate!.rows.map((r) => r[0])).toEqual(PUBLISHED_GATE.map((s) => s.shot));

@@ -84,7 +84,11 @@
  * sweep, the smallest tested, up, tapered below it to none unswept
  * (sweepAllowanceAt). Swept edges are served to 60
  * deg (the checks reach 59.8 deg; at 75 deg the only points have an end
- * effect).
+ * effect). Beyond 60 deg (0016 section 21.2, 0014 section 10.7 (ab)) the
+ * edge is "bounded, not measured": between the term at its sweep at its
+ * band's low end and the term at 60 deg at its band's high end, the
+ * midpoint served and the band the whole gap, where both terms are served
+ * (M cos(sweep) at least 1.0).
  *
  * **Normal Mach numbers 1.0 to 1.49** (0016 section 11, W4(e), on flat
  * plates and rounded wedges): the same analogy, the normal flow sonic or
@@ -348,6 +352,25 @@ export const SWEEP_ALLOWANCE = (() => {
 })();
 /** The largest sweep served: the largest yaw among the checks the reports do not set apart. */
 export const SWEEP_LIMIT_DEGREES = 60;
+/**
+ * The largest sweep at which a yawed cylinder's front side is estimated and
+ * the bounds' ordering checked: Penland's 75.1 deg point, on TN 3861's
+ * crossflow plots with Lord and Ulmann's at 70 and 75 deg (0016 sections
+ * 21.2 and 21.8). Fig. 17 also has Lord and Ulmann's point at 80.1 deg
+ * (crossflow Mach number 0.695), but fig. 16 has no downstream pressure for
+ * it, so no front side is estimated there. Beyond 75.1 deg the bounded term
+ * is refused at any Mach number: the principle alone does not show its
+ * ordering (0014 section 10.7 (ab), second addendum and its correction).
+ */
+export const LARGEST_CHECKED_SWEEP_DEGREES = 75.1;
+/**
+ * The readings of TN 3861 fig. 17 that count (0014 section 10.7 (ab),
+ * second addendum): the reading of 2026-10-21 was made before any entry
+ * named the figure and does not; two fresh ones, the second blind, were
+ * paired on 2026-10-27 (3d7dd16), and 21.2's rule holds on them (0016
+ * section 21.8).
+ */
+export const TN3861_FIG17_READINGS = 2 as number;
 /** The coordinator's least interim sweep allowance below M_n 3.37 (review of 2026-10-21; 0016 section 16). */
 export const INTERIM_SWEEP_FLOOR = { low: 0.95, high: 1.21 } as const;
 
@@ -747,6 +770,20 @@ export interface RoundedLeadingEdge {
   readonly sweepDegrees: number;
   /** At M_n 1.0 to 1.49: kappa, the front side over modified Newtonian (0016 section 11). */
   readonly transonic?: TransonicFrontSide;
+  /**
+   * Swept beyond 60 deg: bounded, not measured (0016 section 21.2), the
+   * band's ends per unit span over q, the term at the sweep at its band's low
+   * end and the term at 60 deg at its high end; `normalMach` and `transonic`
+   * are the first's, `upperNormalMach` the second's; `lower` and `upper` are
+   * the two terms themselves, with their own bands, regimes and labels.
+   */
+  readonly bounded?: {
+    readonly low: number;
+    readonly high: number;
+    readonly upperNormalMach: number;
+    readonly lower: RoundedLeadingEdge;
+    readonly upper: RoundedLeadingEdge;
+  };
 }
 
 /**
@@ -768,31 +805,169 @@ function shownBeyond(x: number, limit: number, side: 'below' | 'above'): string 
  * the edge, with the Reynolds number on its diameter 2r (on the free
  * stream; its normal component decides the domain).
  */
-export function roundedLeadingEdgeDrag(input: {
+export function roundedLeadingEdgeDrag(input: RoundedLeadingEdgeInput): RoundedLeadingEdge {
+  const tanSweep = input.tanLeadingEdgeSweep;
+  if (!(tanSweep >= 0 && Number.isFinite(tanSweep))) {
+    throw new FinRefusal('swept-leading-edge', `bad leading-edge sweep (tan ${tanSweep})`);
+  }
+  const sweepDegrees = Math.atan(tanSweep) / DEG;
+  if (sweepDegrees <= SWEEP_LIMIT_DEGREES + 1e-9) return roundedTerm(input, 'served');
+  return beyondSweepLimit(input, sweepDegrees);
+}
+
+/** The inputs of `roundedLeadingEdgeDrag`. */
+export interface RoundedLeadingEdgeInput {
   readonly mach: number;
   readonly radius: number;
   readonly faceAngle: number;
   readonly tanLeadingEdgeSweep: number;
   readonly reynoldsOnDiameter: number;
-}): RoundedLeadingEdge {
+}
+
+/**
+ * A term's source, band and qualifiers, shortened for the bounded label
+ * (the re-review of 2026-10-27): what each bound rests on, as its own label
+ * says it, in fewer words.
+ */
+function termSummary(t: RoundedLeadingEdge, where: 'lower' | 'upper'): string {
+  const once = MACHA_READINGS < 2 ? ', read once' : '';
+  const source =
+    t.transonic === undefined
+      ? 'the modified-Newtonian front side of a cylinder normal to the stream (TN 2960)'
+      : t.normalMach <= MEASURED_TRANSONIC_LIMIT
+        ? 'the front side of a cylinder over modified Newtonian, measured at Mach 1.0, 1.1 and 1.2 ' +
+          `(NASA CR-149372 figs. 8b and 5${once}) and interpolated (kappa ` +
+          `${t.transonic.nominal.toFixed(3)})`
+        : 'the front side of a cylinder over modified Newtonian, interpolated across an unmeasured ' +
+          `Mach range between NASA CR-149372 at 1.2 (fig. 8b${once}) and TN 2960 at 1.49 (kappa ` +
+          `${t.transonic.nominal.toFixed(3)})`;
+  const regime =
+    t.regime === 'measured'
+      ? ''
+      : t.regime === 'covered by RM A55H31'
+        ? ", beyond TN 2960's Mach or Reynolds numbers, covered by RM A55H31's statement"
+        : ', extrapolated in Reynolds number (+-3% of the term, an allowance, not data)';
+  const a = sweepAllowanceAt(t.sweepDegrees);
+  const allowance = `the sweep allowance ${a.low.toFixed(3)} to ${a.high.toFixed(3)}`;
+  const sweep =
+    where === 'lower'
+      ? `${allowance} carried past 60 deg, where its yawed-cylinder checks end`
+      : `${allowance} (RM A55H31 figs. 11, 12), extrapolated in normal Mach number (checked ` +
+        'at M_n 3.38 to 6.65; no yawed datum below M_n 1.95 at 60 deg of sweep or less)';
+  return (
+    `${source}${regime}; its band ${t.band.low.toFixed(3)} to ` +
+    `${t.band.high.toFixed(3)} with ${sweep}`
+  );
+}
+
+/**
+ * Beyond 60 deg of sweep (0016 section 21.2; 0014 section 10.7 (ab) and its
+ * addenda): bounded, not measured, between the term at the actual sweep at
+ * its band's low end and the term at 60 deg, at the same Mach and Reynolds
+ * numbers, at its band's high end. The term falls strictly as the sweep
+ * grows (the principle), and the front side's drag per unit span falls
+ * with yaw on every series of RM A55H31 fig. 12; the lower bound's ordering
+ * from 60 to 75.1 deg rests on TN 3861's crossflow points at 70, 75 and
+ * 75.1 deg, every one above the principle on fig. 17 read twice (0016
+ * section 21.8). Beyond 75.1 deg it is refused at any Mach number. Both
+ * terms must be served.
+ */
+function beyondSweepLimit(
+  input: RoundedLeadingEdgeInput,
+  sweepDegrees: number,
+): RoundedLeadingEdge {
+  if (sweepDegrees > LARGEST_CHECKED_SWEEP_DEGREES + 1e-9) {
+    throw new FinRefusal(
+      'swept-leading-edge',
+      `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg is refused at any Mach number: ` +
+        `beyond ${LARGEST_CHECKED_SWEEP_DEGREES} deg, the largest sweep at which a yawed cylinder's ` +
+        "front side is estimated and the bounds' ordering checked (TN 3861 figs. 15 to 17; fig. " +
+        "17's one point beyond it, Lord and Ulmann's at 80.1 deg, has no downstream pressure on " +
+        'fig. 16 to estimate a front side from), nothing shows the ordering of its bounds, the ' +
+        'principle alone not sufficing (0016 section 21.2)',
+    );
+  }
+  const failed: [FinRefusalReason, string][] = [];
+  const at = (
+    tan: number,
+    where: string,
+    place: 'beyond' | 'served',
+  ): RoundedLeadingEdge | undefined => {
+    try {
+      return roundedTerm({ ...input, tanLeadingEdgeSweep: tan }, place);
+    } catch (e) {
+      if (!(e instanceof FinRefusal)) throw e;
+      failed.push([e.reason, `at ${where}, ${e.message}`]);
+      return undefined;
+    }
+  };
+  const lower = at(input.tanLeadingEdgeSweep, `${sweepDegrees.toFixed(1)} deg`, 'beyond');
+  const upper = at(Math.tan(SWEEP_LIMIT_DEGREES * DEG), `${SWEEP_LIMIT_DEGREES} deg`, 'served');
+  if (lower === undefined || upper === undefined) {
+    throw new FinRefusal(
+      failed[0]![0],
+      `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg, beyond the ` +
+        `${SWEEP_LIMIT_DEGREES} deg where the yawed-cylinder checks of the independence principle ` +
+        'end (RM A55H31 fig. 12), is served only bounded, ' +
+        `between the term at its sweep and the term at ${SWEEP_LIMIT_DEGREES} deg, and both must ` +
+        `be served (0016 section 21.2): ${failed.map(([, m]) => m).join('; and ')}`,
+    );
+  }
+  const low = lower.dragPerSpan * lower.band.low;
+  const high = upper.dragPerSpan * upper.band.high;
+  const dragPerSpan = 0.5 * (low + high);
+  const fig17 =
+    TN3861_FIG17_READINGS >= 2
+      ? 'read twice'
+      : 'its two readings pending, the earlier one not counted';
+  return {
+    dragPerSpan,
+    band: { low: low / dragPerSpan, high: high / dragPerSpan },
+    regime: lower.regime,
+    label:
+      `bounded, not measured: swept ${sweepDegrees.toFixed(1)} deg, past the ` +
+      `${SWEEP_LIMIT_DEGREES} deg where the yawed-cylinder checks of the independence principle ` +
+      'end; the band the whole gap between two terms, each an analogy carried to a fin edge whose ' +
+      "faces replace the cylinder's wake, tested only in the total. " +
+      `Lower: the term at ${sweepDegrees.toFixed(1)} deg (M_n ${lower.normalMach.toFixed(3)}) ` +
+      `at its band's low end, ${lower.band.low.toFixed(3)} of it: ${termSummary(lower, 'lower')}. ` +
+      `Upper: the term at ${SWEEP_LIMIT_DEGREES} deg (M_n ${upper.normalMach.toFixed(3)}) at its ` +
+      `band's high end, ${upper.band.high.toFixed(3)} of it: ${termSummary(upper, 'upper')}. ` +
+      'The ordering: the term falls as the sweep grows, and the front side measured on yawed ' +
+      "cylinders falls with yaw on every series of RM A55H31 fig. 12; past 60 deg the lower bound's " +
+      "ordering rests on the principle and on TN 3861's crossflow points at 70, 75 and 75.1 deg, " +
+      'every one above the principle (their stagnation and downstream-side pressures, figs. 15 and ' +
+      `16, read twice; their front sides estimated with fig. 17, ${fig17}) (0016 section 21.2)`,
+    reynoldsOnDiameter: lower.reynoldsOnDiameter,
+    normalMach: lower.normalMach,
+    sweepDegrees,
+    ...(lower.transonic === undefined ? {} : { transonic: lower.transonic }),
+    bounded: {
+      low,
+      high,
+      upperNormalMach: upper.normalMach,
+      lower,
+      upper,
+    },
+  };
+}
+
+/**
+ * The term (sections 4, 5 and 11 of 0016): at 60 deg of sweep or less
+ * (`served`), or past 60 deg as the bounded term's lower bound (`beyond`),
+ * its sweep clause then saying the allowance is carried past its checks.
+ */
+function roundedTerm(
+  input: RoundedLeadingEdgeInput,
+  place: 'served' | 'beyond',
+): RoundedLeadingEdge {
   const { radius, faceAngle } = input;
   const tanSweep = input.tanLeadingEdgeSweep;
-  if (!(tanSweep >= 0 && Number.isFinite(tanSweep))) {
-    throw new FinRefusal('swept-leading-edge', `bad leading-edge sweep (tan ${tanSweep})`);
-  }
   const sweep = Math.atan(tanSweep);
   const sweepDegrees = sweep / DEG;
   // Every condition the case fails is collected and reported, not only the first (the re-review
   // of 2026-10-22, N6); the reason code is the first failed condition's.
   const failed: [FinRefusalReason, string][] = [];
-  if (sweepDegrees > SWEEP_LIMIT_DEGREES + 1e-9) {
-    failed.push([
-      'swept-leading-edge',
-      `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg is refused: the yawed-cylinder ` +
-        `checks of the independence principle reach ${SWEEP_LIMIT_DEGREES} deg (RM A55H31 fig. 12), ` +
-        'and at 75 deg the only point has an end effect (0016)',
-    ]);
-  }
   const cosSweep = Math.cos(sweep);
   const mach = input.mach * cosSweep;
   const re = input.reynoldsOnDiameter * cosSweep;
@@ -818,7 +993,8 @@ export function roundedLeadingEdgeDrag(input: {
         'decision of 2026-10-22, 0014 section 10.7 (o))',
     ]);
   }
-  if (!(mach <= mHi)) {
+  // A relative tolerance: M 6.0 at 60 deg gives 3.0000000000000004 (the re-review of 2026-10-27).
+  if (!(mach <= mHi * (1 + 1e-12))) {
     failed.push([
       'leading-edge-range',
       `the rounded-edge band covers Mach ${mLo} to ${mHi} (TN 2960 and RM A55H31), asked ` +
@@ -916,16 +1092,20 @@ export function roundedLeadingEdgeDrag(input: {
     },
     regime,
     label:
-      `${label}; swept ${sweepDegrees.toFixed(1)} deg: the independence principle, the front side ` +
-      'at the normal Mach number on the normal dynamic pressure, checked on yawed cylinders ' +
-      `(RM A55H31 figs. 11, 12${RM_A55H31_READINGS < 2 ? ', read once, the second reading pending' : ''}), ` +
-      `the band widened by ${allowance.low.toFixed(3)} to ${allowance.high.toFixed(3)} for it ` +
-      `(${SWEEP_ALLOWANCE_SERVED.low.toFixed(2)} to ${SWEEP_ALLOWANCE_SERVED.high.toFixed(2)} from ` +
-      `${SMALLEST_TESTED_SWEEP} deg, the smallest yaw tested, tapered below it to meet the unswept ` +
-      'band), the sweep allowance ' +
-      'extrapolated in normal Mach number (checked at M_n 3.38 to 6.65; widened to contain ' +
-      "RM A55H31's own tests at 45 and 60 deg, M_n 1.95 to 2.76, and TN 3861's crossflow points; " +
-      'no yawed datum below M_n 1.95 at a served sweep) (0016)',
+      place === 'beyond'
+        ? `${label}; swept ${sweepDegrees.toFixed(1)} deg: the independence principle, the band ` +
+          `widened by ${allowance.low.toFixed(3)} to ${allowance.high.toFixed(3)} for it, the sweep ` +
+          'allowance carried past 60 deg, where its yawed-cylinder checks end (0016 section 21.2)'
+        : `${label}; swept ${sweepDegrees.toFixed(1)} deg: the independence principle, the front side ` +
+          'at the normal Mach number on the normal dynamic pressure, checked on yawed cylinders ' +
+          `(RM A55H31 figs. 11, 12${RM_A55H31_READINGS < 2 ? ', read once, the second reading pending' : ''}), ` +
+          `the band widened by ${allowance.low.toFixed(3)} to ${allowance.high.toFixed(3)} for it ` +
+          `(${SWEEP_ALLOWANCE_SERVED.low.toFixed(2)} to ${SWEEP_ALLOWANCE_SERVED.high.toFixed(2)} from ` +
+          `${SMALLEST_TESTED_SWEEP} deg, the smallest yaw tested, tapered below it to meet the unswept ` +
+          'band), the sweep allowance ' +
+          'extrapolated in normal Mach number (checked at M_n 3.38 to 6.65; widened to contain ' +
+          "RM A55H31's own tests at 45 and 60 deg, M_n 1.95 to 2.76, and TN 3861's crossflow points; " +
+          'no yawed datum below M_n 1.95 at a served sweep) (0016)',
     reynoldsOnDiameter: re,
     normalMach: mach,
     sweepDegrees,

@@ -1,0 +1,37 @@
+figure,verdict,A_id,A_type,A_series,A_x,A_x_err,A_y,A_y_err,B_id,B_type,B_series,B_x,B_x_err,B_y,B_y_err,dx_A_minus_B,dy_A_minus_B,combined_x_err,combined_y_err,distance_px,note
+rm3348_fig31b,agree,o01,circle,phi 0 deg,0.59998,0.00066,-0.00569,0.0001,c0-1,circle,phi 0 deg,0.6004,0.0012,-0.00577,0.00015,-0.00042,+0.00008,0.00186,0.00025,1.2,
+rm3348_fig31b,agree,o02,circle,phi 0 deg,0.70112,0.00065,-0.00346,0.0001,c0-2,circle,phi 0 deg,0.7015,0.0012,-0.00354,0.00015,-0.00038,+0.00008,0.00185,0.00025,1.1,
+rm3348_fig31b,agree,o03,circle,phi 0 deg,0.79939,0.00148,-0.00088,0.00022,c0-3,circle,phi 0 deg,0.8002,0.0012,-0.00098,0.00015,-0.00081,+0.00010,0.00268,0.00037,1.8,
+rm3348_fig31b,agree,o04,circle,phi 0 deg,0.85016,0.00067,0.00095,0.0001,c0-4,circle,phi 0 deg,0.8508,0.0012,0.00094,0.00015,-0.00064,+0.00001,0.00187,0.00025,1.1,
+rm3348_fig31b,agree,o05,circle,phi 0 deg,0.90111,0.00065,0.00426,0.0001,c0-5,circle,phi 0 deg,0.9014,0.0012,0.00433,0.00015,-0.00029,-0.00007,0.00185,0.00025,0.9,
+rm3348_fig31b,agree,o06,circle,phi 0 deg,0.95006,0.00065,0.00904,0.0001,c0-6,circle,phi 0 deg,0.9507,0.0012,0.00897,0.00015,-0.00064,+0.00007,0.00185,0.00025,1.4,
+rm3348_fig31b,agree,o07,circle,phi 0 deg,0.9996,0.00065,0.01274,0.0001,c0-7,circle,phi 0 deg,1.0001,0.0012,0.01269,0.00015,-0.00050,+0.00005,0.00185,0.00025,1.0,
+rm3348_fig31b,agree,o08,circle,phi 0 deg,1.0493,0.00066,0.01593,0.0001,c0-8,circle,phi 0 deg,1.0496,0.0019,0.01595,0.00027,-0.00030,-0.00002,0.00256,0.00037,0.6,
+rm3348_fig31b,agree,o09,circle,phi 0 deg,1.10958,0.00067,0.0204,0.0001,c0-9,circle,phi 0 deg,1.1104,0.0019,0.02025,0.00027,-0.00082,+0.00015,0.00257,0.00037,2.2,
+rm3348_fig31b,agree,o10,circle,phi 0 deg,1.15885,0.00067,0.02395,0.0001,c0-10,circle,phi 0 deg,1.1592,0.0019,0.02392,0.00027,-0.00035,+0.00003,0.00257,0.00037,0.7,
+rm3348_fig31b,agree,x01,cross,phi 30 deg,0.61052,0.00149,-0.00517,0.00022,c30-1,cross,phi 30 deg,0.6107,0.0012,-0.00498,0.00015,-0.00018,-0.00019,0.00269,0.00037,2.2,
+rm3348_fig31b,agree,x02,cross,phi 30 deg,0.69316,0.00065,-0.00438,0.0001,c30-2,cross,phi 30 deg,0.6925,0.0019,-0.0045,0.00027,+0.00066,+0.00012,0.00255,0.00037,1.8,
+rm3348_fig31b,agree,x03,cross,phi 30 deg,0.77906,0.00065,-0.00332,0.0001,c30-3,cross,phi 30 deg,0.7795,0.0012,-0.00343,0.00015,-0.00044,+0.00011,0.00185,0.00025,1.5,
+rm3348_fig31b,agree,x04,cross,phi 30 deg,0.82373,0.00067,-0.00159,0.0001,c30-4,cross,phi 30 deg,0.8238,0.0012,-0.00168,0.00015,-0.00007,+0.00009,0.00187,0.00025,1.0,
+rm3348_fig31b,agree,x05,cross,phi 30 deg,0.8662,0.00067,0.00288,0.0001,c30-5,cross,phi 30 deg,0.866,0.0019,0.00284,0.00027,+0.00020,+0.00004,0.00257,0.00037,0.6,
+rm3348_fig31b,agree,x06,cross,phi 30 deg,0.91072,0.00065,0.00842,0.0001,c30-6,cross,phi 30 deg,0.911,0.0012,0.00841,0.00015,-0.00028,+0.00001,0.00185,0.00025,0.5,
+rm3348_fig31b,agree,x07,cross,phi 30 deg,0.96204,0.00065,0.01345,0.0001,c30-7,cross,phi 30 deg,0.962,0.0012,0.01335,0.00015,+0.00004,+0.00010,0.00185,0.00025,1.2,
+rm3348_fig31b,agree,x08,cross,phi 30 deg,1.00292,0.00066,0.01905,0.0001,c30-8,cross,phi 30 deg,1.0027,0.0012,0.01906,0.00015,+0.00022,-0.00001,0.00186,0.00025,0.4,
+rm3348_fig31b,outside errors,t01,triangle,phi 45 deg,0.49446,0.00065,-0.00992,0.0001,c45-1,triangle,phi 45 deg,0.4951,0.0012,-0.00962,0.00016,-0.00064,-0.00030,0.00185,0.00026,3.6,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00010, within errors so"
+rm3348_fig31b,outside errors,t02,triangle,phi 45 deg,0.56645,0.00066,-0.00847,0.0001,c45-2,triangle,phi 45 deg,0.5673,0.0012,-0.00821,0.00015,-0.00085,-0.00026,0.00186,0.00025,3.3,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00006, within errors so"
+rm3348_fig31b,outside errors,t03,triangle,phi 45 deg,0.63818,0.00065,-0.00733,0.0001,c45-3,triangle,phi 45 deg,0.6384,0.0012,-0.00701,0.00015,-0.00022,-0.00032,0.00185,0.00025,3.7,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00012, within errors so"
+rm3348_fig31b,outside errors,t04,triangle,phi 45 deg,0.67294,0.00065,-0.00766,0.0001,c45-4,triangle,phi 45 deg,0.6735,0.0012,-0.00735,0.00015,-0.00056,-0.00031,0.00185,0.00025,3.7,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00011, within errors so"
+rm3348_fig31b,outside errors,t05,triangle,phi 45 deg,0.70883,0.00065,-0.00744,0.0001,c45-5,triangle,phi 45 deg,0.7092,0.0012,-0.00707,0.00015,-0.00037,-0.00037,0.00185,0.00025,4.3,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00017, within errors so"
+rm3348_fig31b,outside errors,t06,triangle,phi 45 deg,0.74362,0.00065,-0.00477,0.0001,c45-6,triangle,phi 45 deg,0.7442,0.0012,-0.00445,0.00015,-0.00058,-0.00032,0.00185,0.00025,3.8,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00012, within errors so"
+rm3348_fig31b,outside errors,t07,triangle,phi 45 deg,0.78072,0.00065,0.00108,0.0001,c45-7,triangle,phi 45 deg,0.7815,0.0012,0.0014,0.00015,-0.00078,-0.00032,0.00185,0.00025,3.9,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00012, within errors so"
+rm3348_fig31b,outside errors,t08,triangle,phi 45 deg,0.79845,0.00065,0.00068,0.0001,c45-8,triangle,phi 45 deg,0.8002,0.0012,0.00114,0.00015,-0.00175,-0.00046,0.00185,0.00025,6.1,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00026, outside errors so"
+rm3348_fig31b,outside errors,t09,triangle,phi 45 deg,0.82103,0.00067,0.00891,0.0001,c45-9,triangle,phi 45 deg,0.8216,0.0012,0.00925,0.00015,-0.00057,-0.00034,0.00187,0.00025,4.0,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00014, within errors so"
+rm3348_fig31b,outside errors,t10,triangle,phi 45 deg,0.84887,0.00067,0.00959,0.0001,c45-10,triangle,phi 45 deg,0.8496,0.0012,0.01005,0.00015,-0.00073,-0.00046,0.00187,0.00025,5.4,"centre convention (W7 centroid, round 10 bounding box; round 10 states its centroid at -0.0002): dy -0.00026, outside errors so"
+rm3348_fig31b,agree,p01,plus,phi 60 deg,0.4003,0.00092,-0.00944,0.00014,c60-1,plus,phi 60 deg,0.4002,0.0012,-0.0097,0.00016,+0.00010,+0.00026,0.00212,0.00030,3.0,
+rm3348_fig31b,agree,p02,plus,phi 60 deg,0.45211,0.00092,-0.00968,0.00014,c60-2,plus,phi 60 deg,0.4516,0.0012,-0.00979,0.00016,+0.00051,+0.00011,0.00212,0.00030,1.5,
+rm3348_fig31b,agree,p03,plus,phi 60 deg,0.47662,0.00092,-0.00775,0.00014,c60-3,plus,phi 60 deg,0.4763,0.0012,-0.00781,0.00016,+0.00032,+0.00006,0.00212,0.00030,0.9,
+rm3348_fig31b,agree,p04,plus,phi 60 deg,0.4995,0.00092,-0.0041,0.00014,c60-4,plus,phi 60 deg,0.5,0.0012,-0.00417,0.00016,-0.00050,+0.00007,0.00212,0.00030,1.2,
+rm3348_fig31b,agree,p05,plus,phi 60 deg,0.52562,0.00094,-0.00982,0.00014,c60-5,plus,phi 60 deg,0.5255,0.0012,-0.00984,0.00016,+0.00012,+0.00002,0.00214,0.00030,0.3,
+rm3348_fig31b,agree,p06,plus,phi 60 deg,0.55431,0.00094,-0.01029,0.00014,c60-6,plus,phi 60 deg,0.554,0.0012,-0.01042,0.00016,+0.00031,+0.00013,0.00214,0.00030,1.6,
+rm3348_fig31b,agree,p07,plus,phi 60 deg,0.58002,0.00094,-0.00852,0.00014,c60-7,plus,phi 60 deg,0.5801,0.0012,-0.00854,0.00015,-0.00008,+0.00002,0.00214,0.00029,0.3,
+rm3348_fig31b,agree,p08,plus,phi 60 deg,0.6002,0.00092,-0.00698,0.00014,c60-8,plus,phi 60 deg,0.6002,0.0019,-0.00695,0.00027,+0.00000,-0.00003,0.00282,0.00041,0.3,

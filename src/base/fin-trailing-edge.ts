@@ -34,8 +34,17 @@
  * correlation. Both say the band is "tested only in the total" (0010
  * section 7).
  *
+ * Below Mach 1.5, down to 1.0 (docs/design/0019-fins-near-mach-1.md
+ * section 3.4.1; ./fin-te-transonic.ts): the nominal is the flat-faced
+ * sets' base pressure on the free-stream Mach number (TN 3548 in flight,
+ * R&M 3427), joined to the curve above at Mach 1.5; the band is the spread
+ * of every set near Mach 1 about it (wedges widened on the side their
+ * shape does not bound), never narrower than 0.93 to 1.21; TR 1109's
+ * thick-layer factor is held at its Mach 1.5 value; the layer parameter
+ * and h/c must lie where the sets reach, and a laminar edge is refused.
+ *
  * Refused (`BaseRefusal`):
- * - Mach numbers outside 1.5 to 3.2 (the evidence's range);
+ * - Mach numbers outside 1.0 to 3.2 (the evidence's range);
  * - swept trailing edges (base pressure 20% to 50% higher at M 1.41 and
  *   1.96 with 45 deg of sweep, RM A51J25 p. 17);
  * - a laminar layer at the trailing edge (base pressure then depends
@@ -109,6 +118,14 @@ import {
   TR1109_FIG8_SYMBOLS_SECOND,
   type Tr1109Curve,
 } from './blunt-te-2d';
+import {
+  buildTransonicTrailingEdge,
+  type FaceShape,
+  TRANSONIC_TE_EVIDENCE,
+  TRANSONIC_TE_MACH_RANGE,
+  type TransonicEvidencePoint,
+  type TransonicTrailingEdge,
+} from './fin-te-transonic';
 import { gaussLegendre } from '../fins/quadrature';
 import { BaseRefusal } from './refusal';
 import { vacuumBaseDrag } from './vacuum';
@@ -381,6 +398,330 @@ export const FIN_TRAILING_EDGE_BAND = (() => {
   };
 })();
 
+/**
+ * D's alternative end of RM A52E01 fig. 8(a) line #10 (the four-way pairing,
+ * audit/pairing-2026-10-27-a52e01-m17-four/: the end piece not part of the curve, which then
+ * ends at alpha 0.343), taken as a value by F4's rule (0019 section 3.4.1 item 6).
+ */
+export const RM_A52E01_LINE10_ALTERNATIVE_END = -0.1469;
+
+/** One RM A52E01 line at Mach 1.7 in the band above Mach 1.5 (0019 section 3.4.1, F4 and R1). */
+export interface AboveBandLine {
+  readonly set: string;
+  /** The drawn curve, as the pairing names it. */
+  readonly curve: string;
+  /** The wing by the three-reading rule as written ('any wing' where a naming reader is unsure). */
+  readonly wing: string;
+  readonly mach: number;
+  readonly machErr: number;
+  /** The envelope of every reading's alpha 0 value (and, for 8(a) #10, D's alternative end). */
+  readonly cpLow: number;
+  readonly cpHigh: number;
+  readonly readings: number;
+  /** The largest turbulent layer parameter of the wings it may be: K from 1 to K at it. */
+  readonly layerX: number;
+  readonly shape: FaceShape;
+  readonly faceAngleDeg: number;
+}
+
+/**
+ * Every RM A52E01 line above Mach 1.5 the readings hold (0019 section 3.4.1, F4, and the
+ * coordinator's ruling R1 of 2026-10-28): those at Mach 1.7 with an agreeing pair at alpha 0
+ * (./fin-te-transonic-data.ts holds no other), each the envelope of every reading's value, its
+ * wing, layer and shape as below 1.5 (./fin-te-transonic.ts: any wing is wings 3 and 4's layer
+ * for K, the 6.88 deg shape allowance, wing 2's h/c), Mach +-0.01. Band only, not reach (F2).
+ * The band's own sets cannot all be put on a common Reynolds-number basis (RM A51J25 fig. 7's
+ * Langley and NPL symbols state none), so by F4's rule they enter the band above 1.5.
+ */
+export const ABOVE_BAND_LINES: readonly AboveBandLine[] = (() => {
+  const by = new Map<string, TransonicEvidencePoint[]>();
+  for (const p of TRANSONIC_TE_EVIDENCE) {
+    if (!p.set.startsWith('RM A52E01') || !(p.machLow > FIN_TRAILING_EDGE_MACH_RANGE[0])) continue;
+    const key = `${p.set}|${p.id.replace(/ \([A-D]\)$/, '')}`;
+    by.set(key, [...(by.get(key) ?? []), p]);
+  }
+  return [...by.entries()].map(([key, pts]) => {
+    const [set, curve] = key.split('|') as [string, string];
+    const p0 = pts[0]!;
+    const alt =
+      set === 'RM A52E01 fig. 8(a)' && curve.endsWith(' #10')
+        ? [RM_A52E01_LINE10_ALTERNATIVE_END]
+        : [];
+    const range = p0.properties.ratioLayer ?? p0.properties.layer!;
+    return {
+      set,
+      curve,
+      wing: p0.series,
+      mach: p0.mach,
+      machErr: p0.machHigh - p0.mach,
+      cpLow: Math.min(...pts.map((p) => p.cpLow), ...alt),
+      cpHigh: Math.max(...pts.map((p) => p.cpHigh), ...alt),
+      readings: pts.length,
+      layerX: range[1],
+      shape: p0.properties.shape,
+      faceAngleDeg: p0.properties.faceAngleDeg,
+    };
+  });
+})();
+
+const lineOf = (set: string, curve: string) =>
+  ABOVE_BAND_LINES.find((l) => l.set === set && l.curve === `M=1.2, 1.4, 1.7 ${curve}`)!;
+
+/** Fig. 8(a) #10 (wing 2 by B, C and D; any wing, B and C unsure), which sets the low end. */
+export const RM_A52E01_M17_LINE10 = lineOf('RM A52E01 fig. 8(a)', '#10');
+/** Fig. 8(a) #7 (wing 3 by B, C and D; any wing, B unsure). */
+export const RM_A52E01_M17_LINE7 = lineOf('RM A52E01 fig. 8(a)', '#7');
+/** Fig. 8(a) #9 (wing 4 by B, C and D; any wing, B and C unsure), which sets the high end. */
+export const RM_A52E01_M17_LINE9 = lineOf('RM A52E01 fig. 8(a)', '#9');
+
+/** The band's nodes above Mach 1.5 for these lines: every 0.05, as below 1.5 (item 5). */
+const ABOVE_NODES = Array.from({ length: 35 }, (_, k) => Math.round(150 + 5 * k) / 100);
+
+/**
+ * A line's least and greatest ratio, base drag measured over the term served (the curve times
+ * K at its own Mach number), over its Mach interval and K from 1 to K at its layer, widened
+ * both ways by the shape allowance where its faces are inclined (item 6); rounded outward to
+ * 0.01 as the band's other ends are.
+ */
+export function aboveRatios(l: AboveBandLine): { readonly low: number; readonly high: number } {
+  const s = l.shape === 'flat' ? 0 : (transonicTrailingEdge().shapeAllowance * l.faceAngleDeg) / 4;
+  let [least, greatest] = [Infinity, -Infinity];
+  for (let i = 0; i <= 20; i++) {
+    const m = l.mach - l.machErr + (2 * l.machErr * i) / 20;
+    const k = thickLayerFactor(m, Math.min(l.layerX, THICK_LAYER_LIMIT)).nominal;
+    for (const cp of [l.cpLow, l.cpHigh]) {
+      for (const kk of [1, k]) {
+        const r = cp / (thinLayerBasePressure(m) * kk);
+        [least, greatest] = [Math.min(least, r), Math.max(greatest, r)];
+      }
+    }
+  }
+  return {
+    low: Math.floor(least * (1 - s) * 100 + 1e-9) / 100,
+    high: Math.ceil(greatest * (1 + s) * 100 - 1e-9) / 100,
+  };
+}
+
+let aboveNodes: readonly { readonly low: number; readonly high: number }[] | undefined;
+
+/**
+ * The band above Mach 1.5: 0.93 to 1.21, widened where RM A52E01's lines at Mach 1.7 apply
+ * (0019 section 3.4.1, F4 and R1): at each node whose window, from the node before to the node
+ * after, meets a line's Mach interval, the least of 0.93 and those lines' low ratios and the
+ * greatest of 1.21 and their high ones; linear between nodes (so 0.93 to 1.21 up to Mach 1.60
+ * and from 1.80).
+ */
+export function bandAbove(mach: number): { readonly low: number; readonly high: number } {
+  aboveNodes ??= (() => {
+    const ratios = ABOVE_BAND_LINES.map((l) => [l, aboveRatios(l)] as const);
+    return ABOVE_NODES.map((_, k) => {
+      const a = ABOVE_NODES[Math.max(0, k - 1)]!;
+      const b = ABOVE_NODES[Math.min(ABOVE_NODES.length - 1, k + 1)]!;
+      let low: number = FIN_TRAILING_EDGE_BAND.low;
+      let high: number = FIN_TRAILING_EDGE_BAND.high;
+      for (const [l, r] of ratios) {
+        const meets = l.mach + l.machErr >= a && l.mach - l.machErr <= b;
+        if (meets) [low, high] = [Math.min(low, r.low), Math.max(high, r.high)];
+      }
+      return { low, high };
+    });
+  })();
+  let k = 0;
+  while (k + 2 < ABOVE_NODES.length && mach > ABOVE_NODES[k + 1]!) k++;
+  const [a, b] = [ABOVE_NODES[k]!, ABOVE_NODES[k + 1]!];
+  const t = Math.min(1, Math.max(0, (mach - a) / (b - a)));
+  const [na, nb] = [aboveNodes[k]!, aboveNodes[k + 1]!];
+  return { low: na.low + t * (nb.low - na.low), high: na.high + t * (nb.high - na.high) };
+}
+
+/** The band's low end above Mach 1.5 (bandAbove). */
+export const bandLowAbove = (mach: number) => bandAbove(mach).low;
+/** The band's high end above Mach 1.5 (bandAbove). */
+export const bandHighAbove = (mach: number) => bandAbove(mach).high;
+
+/** Whether RM A52E01's lines widen the band above 1.5 at this basis. */
+export const widenedAbove = (band: { readonly low: number; readonly high: number }) =>
+  band.low < FIN_TRAILING_EDGE_BAND.low || band.high > FIN_TRAILING_EDGE_BAND.high;
+
+/** The label's note where RM A52E01's lines widen the band above 1.5. */
+const widenedAboveLabel = (basis: TermBasis) =>
+  !basis.belowBand && widenedAbove(basis.band)
+    ? `; band widened to ${basis.band.low.toFixed(3)} to ${basis.band.high.toFixed(3)} near ` +
+      "Mach 1.7 on RM A52E01's wings at Re 1.5e6 and 3.8e6, whose layer state is not stated " +
+      '(0019 section 3.4.1)'
+    : '';
+
+let transonic: TransonicTrailingEdge | undefined;
+
+/**
+ * The term below Mach 1.5 (0019 section 3.4.1): its nominal, the band's
+ * nodes and what the sets reach, built once from ./fin-te-transonic.ts's
+ * evidence with this module's curve at Mach 1.5 and TR 1109's thick-layer
+ * factor at Mach 1.5.
+ */
+export function transonicTrailingEdge(): TransonicTrailingEdge {
+  transonic ??= buildTransonicTrailingEdge({
+    cpAt15: thinLayerBasePressure(FIN_TRAILING_EDGE_MACH_RANGE[0]),
+    thickLayerAt15: (x) => thickLayerFactor(FIN_TRAILING_EDGE_MACH_RANGE[0], x),
+    thickLayerLimit: THICK_LAYER_LIMIT,
+    thinLayerLimit: THIN_LAYER_LIMIT,
+  });
+  return transonic;
+}
+
+/** The term's pieces at a Mach number: the thin-layer Cp_b, its band, and where K is read. */
+interface TermBasis {
+  readonly pB: number;
+  readonly band: { readonly low: number; readonly high: number };
+  /** The Mach number at which TR 1109's thick-layer factor is read: 1.5 below 1.5. */
+  readonly kMach: number;
+  readonly belowBand: boolean;
+}
+
+/**
+ * Above Mach 1.5 the curve and the band 0.93 to 1.21, its low end widened
+ * near Mach 1.7 (bandLowAbove); below, the nominal and the evidence's
+ * envelope there, never narrower than 0.93 to 1.21 (0019 section 3.4.1 item
+ * 5), K read at Mach 1.5.
+ */
+export function trailingEdgeBasis(mach: number): TermBasis {
+  const above = FIN_TRAILING_EDGE_MACH_RANGE[0];
+  if (mach >= above) {
+    return {
+      pB: thinLayerBasePressure(mach),
+      band: bandAbove(mach),
+      kMach: mach,
+      belowBand: false,
+    };
+  }
+  const t = transonicTrailingEdge();
+  const e = t.envelope(mach);
+  return {
+    pB: t.nominal(mach),
+    band: {
+      low: Math.min(FIN_TRAILING_EDGE_BAND.low, e.low),
+      high: Math.max(FIN_TRAILING_EDGE_BAND.high, e.high),
+    },
+    kMach: above,
+    belowBand: true,
+  };
+}
+
+/** A refusal and what it is about, so that every reason is given once (review R2). */
+interface Keyed {
+  readonly key: string;
+  readonly refusal: BaseRefusal;
+}
+
+/**
+ * Below Mach 1.5, what the sets reach (0019 section 3.4.1 item 7): the
+ * layer parameter, in each of the two nodes either side of the Mach number,
+ * and h / c over every set. Every reason that applies, none if covered.
+ */
+export function transonicCoverageReasons(mach: number, layer: number, hOverC: number): Keyed[] {
+  const t = transonicTrailingEdge();
+  const [a, b] = t.bracket(mach);
+  const reach = Math.min(a.layerReached, b.layerReached, THICK_LAYER_LIMIT);
+  const out: Keyed[] = [];
+  if (layer > reach * (1 + 1e-12)) {
+    out.push({
+      key: 'layer reach',
+      refusal: new BaseRefusal(
+        'thick-layer',
+        `below Mach 1.5 a square trailing edge's base pressure is measured with ` +
+          `c/[h Re_c^(1/5)] up to ${reach.toFixed(2)} near Mach ${mach.toFixed(2)} (0019 section ` +
+          `3.4.1); this edge has ${layer.toFixed(2)}: its boundary layer is thicker against the edge ` +
+          'than any measured there',
+      ),
+    });
+  }
+  const [h0, h1] = t.hOverCRange;
+  if (hOverC < h0 * (1 - 1e-12)) {
+    out.push({
+      key: 'thin edge',
+      refusal: new BaseRefusal(
+        'thick-layer',
+        `below Mach 1.5 square trailing edges are measured from h/c ${h0} (0019 section 3.4.1); ` +
+          `this edge has h/c ${hOverC.toFixed(4)}, thinner than any measured there`,
+      ),
+    });
+  }
+  if (hOverC > h1 * (1 + 1e-12)) {
+    out.push({
+      key: 'thick edge',
+      refusal: new BaseRefusal(
+        'beyond-read-range',
+        `below Mach 1.5 square trailing edges are measured up to h/c ${h1} (0019 section 3.4.1); ` +
+          `this edge has h/c ${hOverC.toFixed(4)}, thicker than any measured there`,
+      ),
+    });
+  }
+  return out; // every coverage reason
+}
+
+/** Above Mach 1.5, TR 1109 fig. 29(a)'s refusals at each layer parameter, once each. */
+function thickLayerReasons(mach: number, layers: readonly number[]): Keyed[] {
+  const out: Keyed[] = [];
+  for (const x of layers) {
+    try {
+      thickLayerFactor(mach, x);
+    } catch (e) {
+      if (!(e instanceof BaseRefusal)) throw e;
+      out.push({ key: e.message.includes('exceeds') ? 'beyond 4.5' : 'thick at Mach', refusal: e });
+    }
+  }
+  return out;
+}
+
+const sweptRefusal = () =>
+  new BaseRefusal(
+    'swept-trailing-edge',
+    'swept blunt trailing edges are refused: with 45 deg of sweep the base pressure was 20% to ' +
+      '50% higher at M 1.41 and 1.96 (RM A51J25 p. 17), which the band does not carry',
+  );
+
+const laminarLayerRefusal = () =>
+  new BaseRefusal(
+    'laminar-trailing-edge',
+    'a laminar layer at the trailing edge is refused: its base pressure depends strongly on ' +
+      'Reynolds number (TR 1109), and the band is set on turbulent layers',
+  );
+
+/** A transition input that leaves the edge laminar below Mach 1.5: not measured (item 1). */
+const laminarBelowBand = () =>
+  new BaseRefusal(
+    'laminar-trailing-edge',
+    "below Mach 1.5 a transition input that leaves the trailing edge laminar is refused: TR 1109's " +
+      'laminar base pressures start at Mach 1.5, and none below is measured (0019 section 3.4.1)',
+  );
+
+/**
+ * Several refusals of one edge at once (0019 section 3.4.1 item 6, the review's F10): thrown as
+ * the first, its message every message, `all` each of them, so that every reason is given.
+ */
+export class TrailingEdgeRefusals extends BaseRefusal {
+  readonly all: readonly BaseRefusal[];
+
+  constructor(all: readonly BaseRefusal[]) {
+    super(all[0]!.reason, all.map((r) => r.message).join('; also, '));
+    this.name = 'BaseRefusal';
+    this.all = all;
+  }
+}
+
+/** Every reason that applies, each once (by what it is about): none, one, or all together. */
+function refuseEvery(reasons: readonly Keyed[]): void {
+  const seen = new Set<string>();
+  const all: BaseRefusal[] = [];
+  for (const r of reasons) {
+    if (seen.has(r.key)) continue;
+    seen.add(r.key);
+    all.push(r.refusal);
+  }
+  if (all.length === 1) throw all[0]!;
+  if (all.length > 1) throw new TrailingEdgeRefusals(all);
+}
+
 export interface LaminarRatio {
   /** Laminar over turbulent base drag: the envelope over M 1.5, 2.0 and 3.1 and both readings. */
   readonly low: number;
@@ -534,10 +875,38 @@ export const FIN_TRAILING_EDGE_LABEL_FREE =
   'free-stream Mach number), band estimated on TR 1109, RM A51J25 and the X-15 fin, tested ' +
   'only in the total';
 
-const thickLabel = (x: number) =>
-  `; a thick layer, c/[h Re_c^(1/5)] ${x.toFixed(2)}: the thin-layer term times TR 1109 fig. ` +
-  "29(a)'s fall in base drag from 1.0, its two readings and bracketing Mach numbers in the " +
-  'band (0016)';
+/** Below Mach 1.5 (0019 section 3.4.1): the sets the band is set on, in plain words. */
+const TRANSONIC_SETS_WORDS =
+  'the base pressure of square trailing edges near Mach 1 on the free-stream Mach number, ' +
+  'centred on flat-sided sections measured in flight and in a tunnel (TN 3548, R&M 3427); band ' +
+  'the spread of every set about it: wedges (R&M 3348, Johnston), thickened airfoils and wings ' +
+  'with thick boundary layers (RM A51J11, RM A52E01) and others (RM A51J25), each section whose ' +
+  'faces are not flat at the base widened both ways for its shape (one such pair measured in ' +
+  'one tunnel contradicts the expected order); never narrower than above Mach 1.5 (0019 ' +
+  'section 3.4.1)';
+export const FIN_TRAILING_EDGE_LABEL_TRANSONIC_ANALOGY =
+  `an analogy, not a measurement: ${TRANSONIC_SETS_WORDS}, carried to edges ending in the ` +
+  "body's base plane, which no opened source measures; tested only in the total";
+export const FIN_TRAILING_EDGE_LABEL_TRANSONIC_FREE = `estimated on component data: ${TRANSONIC_SETS_WORDS}; tested only in the total`;
+
+const thickLabel = (x: number, belowBand = false) =>
+  belowBand
+    ? `; a thick layer, c/[h Re_c^(1/5)] ${x.toFixed(2)}: the thin-layer term times TR 1109 fig. ` +
+      "29(a)'s fall in base drag at Mach 1.5, held below 1.5 where it is not measured; the " +
+      'thick-layer sets near Mach 1 are in the band (0019 section 3.4.1)'
+    : `; a thick layer, c/[h Re_c^(1/5)] ${x.toFixed(2)}: the thin-layer term times TR 1109 fig. ` +
+      "29(a)'s fall in base drag from 1.0, its two readings and bracketing Mach numbers in the " +
+      'band (0016)';
+
+/** The label's first part: free edge or base plane, above or below Mach 1.5. */
+const baseLabel = (inBasePlane: boolean, belowBand: boolean) =>
+  belowBand
+    ? inBasePlane
+      ? FIN_TRAILING_EDGE_LABEL_TRANSONIC_ANALOGY
+      : FIN_TRAILING_EDGE_LABEL_TRANSONIC_FREE
+    : inBasePlane
+      ? FIN_TRAILING_EDGE_LABEL_ANALOGY
+      : FIN_TRAILING_EDGE_LABEL_FREE;
 
 export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailingEdgeBase {
   const { mach, count, thickness, span, chord, reynoldsPerLength, referenceArea } = input;
@@ -572,35 +941,36 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
       laminarStates: undefined,
     };
   }
-  const [lo, hi] = FIN_TRAILING_EDGE_MACH_RANGE;
+  const lo = TRANSONIC_TE_MACH_RANGE[0];
+  const hi = FIN_TRAILING_EDGE_MACH_RANGE[1];
   if (!(mach >= lo && mach <= hi)) {
     throw new BaseRefusal(
       'mach-range',
-      `the two-dimensional trailing-edge base pressure's band is estimated at Mach ${lo} to ${hi}, ` +
-        `asked Mach ${mach}`,
+      `the two-dimensional trailing-edge base pressure's band is estimated at Mach ${lo} to ${hi} ` +
+        `(below ${FIN_TRAILING_EDGE_MACH_RANGE[0]} on 0019 section 3.4.1's sets), asked Mach ${mach}`,
     );
   }
-  if (input.tanSweep !== 0) {
-    throw new BaseRefusal(
-      'swept-trailing-edge',
-      'swept blunt trailing edges are refused: with 45 deg of sweep the base pressure was 20% to ' +
-        '50% higher at M 1.41 and 1.96 (RM A51J25 p. 17), which the band does not carry',
-    );
-  }
-  if (input.layer !== 'turbulent') {
-    throw new BaseRefusal(
-      'laminar-trailing-edge',
-      'a laminar layer at the trailing edge is refused: its base pressure depends strongly on ' +
-        'Reynolds number (TR 1109), and the band is set on turbulent layers',
-    );
-  }
+  // Every reason the edge is refused for, not only the first (review R2): sweep and a laminar
+  // layer beside the coverage below Mach 1.5 or the thick-layer factor's limits above.
+  const early: Keyed[] = [];
+  if (input.tanSweep !== 0) early.push({ key: 'swept', refusal: sweptRefusal() });
+  if (input.layer !== 'turbulent') early.push({ key: 'laminar', refusal: laminarLayerRefusal() });
   if (tipChord !== chord || tipThickness !== thickness) {
-    return varyingChordTrailingEdge(input, tipChord, tipThickness);
+    return varyingChordTrailingEdge(input, tipChord, tipThickness, early);
   }
   const reChord = reynoldsPerLength * chord;
   const thin = chord / (thickness * reChord ** 0.2);
-  const k = thickLayerFactor(mach, thin);
-  const pB = thinLayerBasePressure(mach);
+  const basis = trailingEdgeBasis(mach);
+  const reasons = [...early];
+  if (basis.belowBand) {
+    reasons.push(...transonicCoverageReasons(mach, thin, thickness / chord));
+    if ((input.transitionReynolds ?? []).some((reT) => reT >= reChord)) {
+      reasons.push({ key: 'laminar below 1.5', refusal: laminarBelowBand() });
+    }
+  } else reasons.push(...thickLayerReasons(basis.kMach, [thin]));
+  refuseEvery(reasons);
+  const k = thickLayerFactor(basis.kMach, thin);
+  const pB = basis.pB;
   const area = (count * thickness * span) / referenceArea;
   const vacuum = vacuumBaseDrag(mach, GAMMA) * area;
   const vacuumClamped: string[] = [];
@@ -619,13 +989,15 @@ export function finTrailingEdgeBaseDrag(input: FinTrailingEdgeInput): FinTrailin
           low: atMostVacuum(laminar.low * cd, 'laminar low end'),
           high: atMostVacuum(laminar.high * cd, 'laminar high end'),
         };
-  const base = input.inBasePlane ? FIN_TRAILING_EDGE_LABEL_ANALOGY : FIN_TRAILING_EDGE_LABEL_FREE;
+  const base = baseLabel(input.inBasePlane, basis.belowBand);
   return {
     cd,
-    low: atMostVacuum(FIN_TRAILING_EDGE_BAND.low * cd * (k.low / k.nominal), 'band low end'),
-    high: atMostVacuum(FIN_TRAILING_EDGE_BAND.high * cd * (k.high / k.nominal), 'band high end'),
+    low: atMostVacuum(basis.band.low * cd * (k.low / k.nominal), 'band low end'),
+    high: atMostVacuum(basis.band.high * cd * (k.high / k.nominal), 'band high end'),
     pB,
-    label: thin > THIN_LAYER_LIMIT ? base + thickLabel(thin) : base,
+    label:
+      (thin > THIN_LAYER_LIMIT ? base + thickLabel(thin, basis.belowBand) : base) +
+      widenedAboveLabel(basis),
     thinLayerParameter: thin,
     chordReynolds: reChord,
     vacuum,
@@ -654,6 +1026,7 @@ function varyingChordTrailingEdge(
   input: FinTrailingEdgeInput,
   tipChord: number,
   tipThickness: number,
+  early: readonly Keyed[],
 ): FinTrailingEdgeBase {
   const { mach, count, thickness, span, chord, reynoldsPerLength, referenceArea } = input;
   const chordAt = (y: number) => chord + ((tipChord - chord) * y) / span;
@@ -665,12 +1038,28 @@ function varyingChordTrailingEdge(
   if (!(Math.min(thickness, tipThickness) > 0 && Math.min(chord, tipChord) > 0)) {
     throw new BaseRefusal('input', 'a blunt trailing edge needs a positive thickness and chord');
   }
-  const pB = thinLayerBasePressure(mach);
+  const basis = trailingEdgeBasis(mach);
+  const pB = basis.pB;
   const rule = gaussLegendre(VARYING_CHORD_NODES);
   const scale = count / referenceArea;
-  // Every station's parameter is checked, the ends included (the refusals of thickLayerFactor).
+  // Every station's parameter is checked, the ends included (the refusals of thickLayerFactor,
+  // and below Mach 1.5 what the sets reach, 0019 section 3.4.1).
   const stations = [0, ...Array.from(rule.nodes, (n) => 0.5 * span * (n + 1)), span];
-  const factors = stations.map((y) => thickLayerFactor(mach, parameter(y)));
+  const reasons = [...early];
+  if (basis.belowBand) {
+    // Every station's reasons, each once (review R2), not only the first station's.
+    const coverage: Keyed[] = [];
+    for (const y of stations) {
+      coverage.push(...transonicCoverageReasons(mach, parameter(y), thicknessAt(y) / chordAt(y)));
+    }
+    reasons.push(...coverage);
+    const shortest = Math.min(chord, tipChord);
+    if ((input.transitionReynolds ?? []).some((reT) => reT >= reynoldsPerLength * shortest)) {
+      reasons.push({ key: 'laminar below 1.5', refusal: laminarBelowBand() });
+    }
+  } else reasons.push(...thickLayerReasons(basis.kMach, stations.map(parameter)));
+  refuseEvery(reasons);
+  const factors = stations.map((y) => thickLayerFactor(basis.kMach, parameter(y)));
   let cd = 0;
   let lowSum = 0;
   let highSum = 0;
@@ -710,7 +1099,7 @@ function varyingChordTrailingEdge(
   let readableScan: (LaminarRatio | undefined)[] | undefined;
   const readable = () => (readableScan ??= scan.map(ratioAt));
   const vacuumOverTerm = (y: number) =>
-    vacuumBaseDrag(mach, GAMMA) / (-pB * thickLayerFactor(mach, parameter(y)).nominal);
+    vacuumBaseDrag(mach, GAMMA) / (-pB * thickLayerFactor(basis.kMach, parameter(y)).nominal);
   let sliverMax = 0;
   const laminarStates = (input.transitionReynolds ?? []).map((reT): LaminarState => {
     // The stations laminar at their trailing edge: Re' c(y) <= Re_T, an interval of the span.
@@ -750,7 +1139,7 @@ function varyingChordTrailingEdge(
         sliver += (0.5 * w * (y1 - y0)) / span;
       }
       const term =
-        0.5 * (y1 - y0) * w * -pB * h * scale * thickLayerFactor(mach, parameter(y)).nominal;
+        0.5 * (y1 - y0) * w * -pB * h * scale * thickLayerFactor(basis.kMach, parameter(y)).nominal;
       low += (ratio.low - 1) * term;
       high += (ratio.high - 1) * term;
     });
@@ -766,7 +1155,7 @@ function varyingChordTrailingEdge(
   });
   const xRoot = parameter(0);
   const xMax = Math.max(...stations.map(parameter));
-  const base = input.inBasePlane ? FIN_TRAILING_EDGE_LABEL_ANALOGY : FIN_TRAILING_EDGE_LABEL_FREE;
+  const base = baseLabel(input.inBasePlane, basis.belowBand);
   // Stations below fig. 29(a)'s lowest read abscissa take the thin-layer term unchanged.
   const belowRead = scan.filter((y) => parameter(y) < FIG29A_LOWEST_READ).length / scan.length;
   const tipLabels =
@@ -784,14 +1173,17 @@ function varyingChordTrailingEdge(
       : '');
   return {
     cd,
-    low: atMostVacuum(FIN_TRAILING_EDGE_BAND.low * lowSum, 'band low end'),
-    high: atMostVacuum(FIN_TRAILING_EDGE_BAND.high * highSum, 'band high end'),
+    low: atMostVacuum(basis.band.low * lowSum, 'band low end'),
+    high: atMostVacuum(basis.band.high * highSum, 'band high end'),
     pB,
     label:
       base +
       '; on fins of varying chord, integrated along the span with the local chord (0016)' +
-      (xMax > THIN_LAYER_LIMIT ? thickLabel(xMax).replace('c/[h', 'largest c/[h') : '') +
-      tipLabels,
+      (xMax > THIN_LAYER_LIMIT
+        ? thickLabel(xMax, basis.belowBand).replace('c/[h', 'largest c/[h')
+        : '') +
+      tipLabels +
+      widenedAboveLabel(basis),
     thinLayerParameter: xRoot,
     chordReynolds: reynoldsPerLength * chord,
     vacuum,

@@ -45,7 +45,7 @@ const CROSS_CHECK = Number(process.env.CROSS_CHECK ?? 300);
 export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
   // Since W1, W1b and W2 (0015): what the rebuilt fins-on-base factor still refuses at M 1.0 to 3.0 (the present
   // factor's refusals no longer arise there; below M 1.5 they belong to W2).
-  'W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)': [
+  'W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)': [
     'finsW1Sweep',
     'finsW1Thickness',
     'finsW1TrailingEdge',
@@ -53,7 +53,7 @@ export const WORK_ITEMS: Record<string, readonly ReasonKey[]> = {
     'finsNearBase',
   ],
   'W2 the base below Mach 1.5 (served since 0015 section 11): what remains, the body base outside 1.0 to 3.0 and fins at the base below 1.0': ['baseMach', 'finsAtBaseLowMach'],
-  'W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)': ['teThick', 'teTaper', 'teSwept', 'teMach'],
+  'W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)': ['teThick', 'teTaper', 'teSwept', 'teMach', 'teBelow15'],
   'W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0': [
     'flatPlateLe',
     'roundedLeTaper',
@@ -325,7 +325,7 @@ test('refusal impact on a population of supersonic amateur rockets', () => {
   for (const altitude of [0, 20]) {
     const at = evaluateAll(rockets, 7, altitude);
     json[`altitude${altitude}`] = outcomeTable(at, lines, `Outcome today, every condition at ${altitude} km`);
-    const k: ReasonKey[] = ['teThick', 'roundedLeReynolds'];
+    const k: ReasonKey[] = ['teThick', 'teBelow15', 'roundedLeReynolds'];
     lines.push(
       ...k.map((key) => `- ${REASONS[key]}: ${pct(at.filter((e) => e.total.includes(key)).length, at.length)} of cases at ${altitude} km`),
       '',

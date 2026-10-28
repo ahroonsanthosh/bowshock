@@ -88,7 +88,7 @@ function rocket(s: Shape): FinnedBody {
       section: s.section,
       sectionFamily: 'other',
       leadingEdgeRadius: s.leadingEdgeRadius ?? 0,
-      trailingEdgeAheadOfBase: (s.ahead ?? 2) * root,
+      trailingEdgeAheadOfBase: (s.ahead ?? 0) * root,
     },
   };
 }
@@ -112,10 +112,34 @@ const sum = (xs: readonly number[]) => xs.reduce((a, b) => a + b, 0);
 const nonNegative = (name: string, c: FinnedBody, mach: number) =>
   name !== 'nose wave drag' && refusedPartWithholds(name, c, at(mach)) === null;
 
+describe("the trailing edges' band text in the total (review R3)", () => {
+  it('names the widening near Mach 1.7 above 1.5, both ends, and nothing else elsewhere', () => {
+    const c = rocket({ section: flatPlate(0.06, 'rounded', 'square') });
+    const band = (mach: number) =>
+      finnedBodyComponents(c, at(mach), NOSE, {}).components.find(
+        (x) => x.name === 'fin trailing-edge base',
+      )!.band;
+    expect(band(1.7)).toBe(
+      'two-dimensional base pressure, 0.350 to 1.260 (0008 section 3.4, 0010 section 5; ' +
+        'widened near Mach 1.7 on RM A52E01, 0019 section 3.4.1)',
+    );
+    expect(band(1.625)).toBe(
+      'two-dimensional base pressure, 0.640 to 1.235 (0008 section 3.4, 0010 section 5; ' +
+        'widened near Mach 1.7 on RM A52E01, 0019 section 3.4.1)',
+    );
+    for (const mach of [1.5, 1.6, 1.8, 2.4]) {
+      expect(band(mach), `${mach}`).toBe(
+        'two-dimensional base pressure, 0.93 to 1.21 (0008 section 3.4, 0010 section 5)',
+      );
+    }
+  });
+});
+
 describe('each refused part, and the floor', () => {
   it('fin friction and square trailing edges refused below Mach 1.5: a floor, the parts named', () => {
+    // At Mach 1.3, where only TN 3548 and RM A51J25 reach (c/[h Re^(1/5)] to 0.666).
     const c = rocket({ section: flatPlate(0.06, 'rounded', 'square') });
-    const { parts, view } = refused(c, 1.4);
+    const { parts, view } = refused(c, 1.3);
     expect(refusedOf(parts)).toEqual(['fin friction', 'fin trailing-edge base']);
     // Every part served is shown, unchanged.
     expect(view.served).toEqual(parts.components);
@@ -182,6 +206,10 @@ describe('each refused part, and the floor', () => {
         'the fin wave drag of a single wedge (a blunt trailing edge) is refused, and its faces ' +
           'are shown not to be negative only with supersonic edges (design record 0011, section ' +
           '10.3): the Mach number 1.3 is below 1.5',
+        // The body base is refused too: these fins sat two chords ahead, on the plain curve,
+        // until 2026-10-27; now at the base, and nothing ahead of it is served below Mach 1.5.
+        'the body base is refused, and its sign with these fins or this afterbody is not ' +
+          'argued (design record 0011, section 10.2)',
       ],
     });
   });

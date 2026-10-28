@@ -340,7 +340,15 @@ estimate names it (`NOSE_UNVERIFIED_REASON`).
   tolerance, as corrected ("The Basic Finner's test was wide: with the
   corrected fins-on-base factor its tolerance is -20.0% to -27.0% and
   +23.3% to +28.6% of the modelled total over the 11 shots (-24.0% to
-  -24.6% and +23.3% to +23.5% at the three inside the class)."). Before
+  -24.8% and +23.3% to +23.5% at the three inside the class)."; -24.6%
+  until 0019 section 3.4.1's F4 widened the trailing edges' band at the
+  Mach 1.799 shot, 2026-10-27, -24.7% at its first application: a
+  widening made after the gate was used, disclosed so in the gate table's
+  caption, 0010 section 11.6; the re-review's R1, 2026-10-28, widened the
+  band's high end there too, also after the gate was used, raising the
+  shot's high end from 0.7297 to 0.7298 and its tolerance's high end
+  from +23.47% to +23.49%, so this text is unchanged and the caption now
+  says the band was widened at both ends). Before
   the suspension the claim inside the class was "Validated on the Basic
   Finner: ...", with the residuals, the tolerance, the temperature
   sensitivity and, beside it, caveats on the tolerance's width, the

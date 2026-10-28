@@ -1,0 +1,184 @@
+[
+ {
+  "figure": "15",
+  "set": "Penland",
+  "reading": "first (re-mapped)",
+  "mc": 1.7499636621472001,
+  "value": 1.8815999401680001
+ },
+ {
+  "figure": "15",
+  "set": "Penland",
+  "reading": "first (re-mapped)",
+  "mc": 3.4555864349007996,
+  "value": 1.754169370187
+ },
+ {
+  "figure": "15",
+  "set": "Lord and Ulmann",
+  "reading": "first (re-mapped)",
+  "mc": 1.0088005238624,
+  "value": 1.9571044001919997
+ },
+ {
+  "figure": "15",
+  "set": "Lord and Ulmann",
+  "reading": "first (re-mapped)",
+  "mc": 1.385351227776,
+  "value": 1.587615784664
+ },
+ {
+  "figure": "15",
+  "set": "Lord and Ulmann",
+  "reading": "first (re-mapped)",
+  "mc": 1.9758500764320006,
+  "value": 1.80967237178
+ },
+ {
+  "figure": "16",
+  "set": "Penland",
+  "reading": "first (re-mapped)",
+  "mc": 1.7293716954308003,
+  "value": -0.219777431116
+ },
+ {
+  "figure": "16",
+  "set": "Penland",
+  "reading": "first (re-mapped)",
+  "mc": 3.424446243246999,
+  "value": -0.02040892843690001
+ },
+ {
+  "figure": "16",
+  "set": "Lord and Ulmann",
+  "reading": "first (re-mapped)",
+  "mc": 1.0440682744092504,
+  "value": -0.814270360138
+ },
+ {
+  "figure": "16",
+  "set": "Lord and Ulmann",
+  "reading": "first (re-mapped)",
+  "mc": 1.3816380461846252,
+  "value": -0.5090371364559999
+ },
+ {
+  "figure": "16",
+  "set": "Lord and Ulmann",
+  "reading": "first (re-mapped)",
+  "mc": 1.990361937711125,
+  "value": -0.28836158407800005
+ },
+ {
+  "figure": "16",
+  "set": "TN 2960",
+  "reading": "first (re-mapped)",
+  "mc": 1.5014650374047493,
+  "value": -0.4738977354299998
+ },
+ {
+  "figure": "16",
+  "set": "TN 2960",
+  "reading": "first (re-mapped)",
+  "mc": 1.970194412519749,
+  "value": -0.2734011886240001
+ },
+ {
+  "figure": "16",
+  "set": "TN 2960",
+  "reading": "first (re-mapped)",
+  "mc": 2.84600748937395,
+  "value": -0.09865144633100009
+ },
+ {
+  "figure": "15",
+  "set": "Penland",
+  "reading": "second (blind)",
+  "mc": 1.733,
+  "value": 1.8771
+ },
+ {
+  "figure": "15",
+  "set": "Penland",
+  "reading": "second (blind)",
+  "mc": 3.448,
+  "value": 1.7595
+ },
+ {
+  "figure": "15",
+  "set": "Lord and Ulmann",
+  "reading": "second (blind)",
+  "mc": 1.044,
+  "value": 1.9504
+ },
+ {
+  "figure": "15",
+  "set": "Lord and Ulmann",
+  "reading": "second (blind)",
+  "mc": 1.393,
+  "value": 1.5884
+ },
+ {
+  "figure": "15",
+  "set": "Lord and Ulmann",
+  "reading": "second (blind)",
+  "mc": 2.003,
+  "value": 1.8
+ },
+ {
+  "figure": "16",
+  "set": "Penland",
+  "reading": "second (blind)",
+  "mc": 1.744,
+  "value": -0.2195
+ },
+ {
+  "figure": "16",
+  "set": "Penland",
+  "reading": "second (blind)",
+  "mc": 3.458,
+  "value": -0.0221
+ },
+ {
+  "figure": "16",
+  "set": "Lord and Ulmann",
+  "reading": "second (blind)",
+  "mc": 1.044,
+  "value": -0.8144
+ },
+ {
+  "figure": "16",
+  "set": "Lord and Ulmann",
+  "reading": "second (blind)",
+  "mc": 1.407,
+  "value": -0.5104
+ },
+ {
+  "figure": "16",
+  "set": "Lord and Ulmann",
+  "reading": "second (blind)",
+  "mc": 2.032,
+  "value": -0.2848
+ },
+ {
+  "figure": "16",
+  "set": "TN 2960",
+  "reading": "second (blind)",
+  "mc": 1.501,
+  "value": -0.4724
+ },
+ {
+  "figure": "16",
+  "set": "TN 2960",
+  "reading": "second (blind)",
+  "mc": 1.98,
+  "value": -0.2753
+ },
+ {
+  "figure": "16",
+  "set": "TN 2960",
+  "reading": "second (blind)",
+  "mc": 2.896,
+  "value": -0.0996
+ }
+]

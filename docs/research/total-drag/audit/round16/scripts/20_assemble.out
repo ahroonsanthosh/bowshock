@@ -1,0 +1,38 @@
+S01  meas_M2.41_R2.8e6    open triangle     x/c  0.9986 +- 0.0036  P_B  -0.0751 +- 0.0008  px (410.44, 1778.62) data
+S02  meas_M2.41_R11.3e6   flagged triangle  x/c  1.0005 +- 0.0036  P_B  -0.0612 +- 0.0007  px (409.17, 1822.67) data
+S03  meas_M2.41_R11.3e6   flagged triangle  x/c  0.8004 +- 0.0040  P_B  -0.1604 +- 0.0010  px (537.11, 1508.54) data
+S04  meas_M2.41_R2.8e6    open triangle     x/c  0.7988 +- 0.0040  P_B  -0.1579 +- 0.0014  px (538.15, 1516.47) data
+S05  meas_M2.41_R11.3e6   flagged triangle  x/c  0.6002 +- 0.0033  P_B  -0.1614 +- 0.0012  px (664.96, 1505.49) data
+S06  meas_M2.41_R2.8e6    open triangle     x/c  0.6007 +- 0.0033  P_B  -0.1565 +- 0.0007  px (664.62, 1520.93) data
+S07  meas_M2.41_R2.8e6    open triangle     x/c  0.3994 +- 0.0042  P_B  -0.1730 +- 0.0014  px (793.21, 1469.12) data
+S08  meas_M2.41_R11.3e6   flagged triangle  x/c  0.3994 +- 0.0034  P_B  -0.1694 +- 0.0007  px (793.15, 1480.43) data
+S09  meas_M2.41_R11.3e6   flagged triangle  x/c  0.1988 +- 0.0034  P_B  -0.1679 +- 0.0012  px (921.28, 1485.33) data
+S10  meas_M2.41_R2.8e6    open triangle     x/c  0.1981 +- 0.0034  P_B  -0.1650 +- 0.0007  px (921.68, 1494.39) data
+S11  meas_M2.41_R11.3e6   flagged triangle  x/c -0.0010 +- 0.0033  P_B  -0.1658 +- 0.0008  px (1048.81, 1492.28) data
+S12  meas_M2.41_R2.8e6    open triangle     x/c -0.0001 +- 0.0033  P_B  -0.1640 +- 0.0007  px (1048.26, 1497.77) data
+K01  meas_M2.41_R2.8e6    open triangle     x/c         +-         P_B          +-         px (985.28, 1839.51) legend key
+K02  meas_M2.41_R11.3e6   flagged triangle  x/c         +-         P_B          +-         px (985.35, 1879.22) legend key
+C01  faired_M2.41         solid line        x/c  1.0008 +- 0.0024  P_B  -0.0679 +- 0.0010  px (408.99, 1801.50) data
+C02  faired_M2.41         solid line        x/c  0.9008 +- 0.0024  P_B  -0.1406 +- 0.0005  px (472.96, 1571.27) data
+C03  faired_M2.41         solid line        x/c  0.8001 +- 0.0020  P_B  -0.1596 +- 0.0010  px (537.33, 1511.04) data
+C04  faired_M2.41         solid line        x/c  0.7004 +- 0.0020  P_B  -0.1616 +- 0.0004  px (600.94, 1504.83) data
+C05  faired_M2.41         solid line        x/c  0.5998 +- 0.0020  P_B  -0.1602 +- 0.0009  px (665.18, 1509.29) data
+C06  faired_M2.41         solid line        x/c  0.5002 +- 0.0020  P_B  -0.1628 +- 0.0004  px (728.82, 1501.15) data
+C07  faired_M2.41         solid line        x/c  0.3994 +- 0.0021  P_B  -0.1712 +- 0.0011  px (793.15, 1474.67) data
+C08  faired_M2.41         solid line        x/c  0.2998 +- 0.0020  P_B  -0.1682 +- 0.0004  px (856.79, 1484.39) data
+C09  faired_M2.41         solid line        x/c  0.1994 +- 0.0021  P_B  -0.1658 +- 0.0009  px (920.84, 1491.90) data
+C10  faired_M2.41         solid line        x/c  0.0998 +- 0.0020  P_B  -0.1646 +- 0.0004  px (984.43, 1495.89) data
+C11  faired_M2.41         solid line        x/c  0.0004 +- 0.0020  P_B  -0.1649 +- 0.0009  px (1047.95, 1495.03) data
+C12  faired_M2.41         solid line        x/c  0.0120 +- 0.0036  P_B  -0.1647 +- 0.0006  px (1040.50, 1495.60) data
+R01  ref26_M1.50          short-dash long-dash line x/c  1.0008 +- 0.0023  P_B  -0.1803 +- 0.0008  px (409.21, 1445.30) data
+R02  ref26_M1.50          short-dash long-dash line x/c  0.8001 +- 0.0020  P_B  -0.1959 +- 0.0005  px (537.40, 1395.94) data
+R03  ref26_M1.50          short-dash long-dash line x/c  0.5999 +- 0.0020  P_B  -0.2150 +- 0.0004  px (665.26, 1335.76) data
+R04  ref26_M1.50          short-dash long-dash line x/c  0.3995 +- 0.0021  P_B  -0.2195 +- 0.0006  px (793.24, 1321.43) data
+R05  ref26_M1.50          short-dash long-dash line x/c  0.0003 +- 0.0020  P_B  -0.3253 +- 0.0004  px (1048.37, 986.61) data
+R06  ref26_M1.50          short-dash long-dash line x/c  0.1995 +- 0.0020  P_B  -0.2593 +- 0.0005  px (920.99, 1195.67) data
+R07  ref26_M2.00          short-dash long-dash line x/c  1.0008 +- 0.0023  P_B  -0.1642 +- 0.0005  px (409.18, 1496.16) data
+R08  ref26_M2.00          short-dash long-dash line x/c  0.8001 +- 0.0020  P_B  -0.1696 +- 0.0004  px (537.35, 1479.34) data
+R09  ref26_M2.00          short-dash long-dash line x/c  0.5998 +- 0.0020  P_B  -0.1826 +- 0.0005  px (665.21, 1438.30) data
+R10  ref26_M2.00          short-dash long-dash line x/c  0.1995 +- 0.0021  P_B  -0.2107 +- 0.0004  px (920.91, 1349.75) data
+R11  ref26_M2.00          short-dash long-dash line x/c  0.0003 +- 0.0020  P_B  -0.2007 +- 0.0005  px (1048.05, 1381.69) data
+R12  ref26_M2.00          short-dash long-dash line x/c  0.3995 +- 0.0021  P_B  -0.2085 +- 0.0009  px (793.22, 1356.41) data

@@ -1,0 +1,7 @@
+Square-cut leading edges of the refusal audit population inside the measured face Reynolds numbers
+(free-stream conditions, on the thickness, the component normal to the leading edge)
+
+cases: 8000; with square-cut leading edges: 1220
+the largest face Reynolds number of any square-cut case: 2.898e+5 (rocket 878, M 2.885, 0.1 km, thickness 5.87 mm, LE sweep 42.3 deg)
+range as computed in b0590ba, before the definition, 9.000e+5 to 4.317e+6: 0 cases inside; 0 also at M_n 2.0 to 3.0 and sweep 60 deg or less
+range under the pinned definition, 3.850e+6 to 4.317e+6: 0 cases inside; 0 also at M_n 2.0 to 3.0 and sweep 60 deg or less

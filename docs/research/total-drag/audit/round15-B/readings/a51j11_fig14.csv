@@ -1,0 +1,419 @@
+# NACA RM A51J11, figure 14 (blind reading, reader B)
+# source: Cleary, J. W. and Stevens, G. L., NACA RM A51J11 (December 11, 1951), "The effects at transonic speeds
+#   of thickening the trailing edge of a wing with a 4-percent-thick circular-arc airfoil"; NTRS 19930087063
+# PDF page 36 (printed page 35); PDF SHA-256 e6b779125d8359e968ad6b4d2b2c43d651ef5024f42bdb5574a6f7b93a8fdf57 (checked, matches the brief)
+# caption as printed: "Figure 14.- The variation of base pressure coefficient with Mach number at semispan
+#   station 2y/b, 0.25. Angle of attack, 0 deg."
+# image read: PDF page 36 rendered with pdftoppm -r 600 to a 4692 x 6200 px PNG (the embedded scan is a
+#   2344 x 3096 px RGB JPEG at 300 dpi, so 1 render px = 0.5 scan px)
+# axes as printed: x "Mach number, M" (0.5 to 1.2, grid every 0.05, labels every 0.1); y "Base pressure
+#   coefficient, P_b" (0 at bottom to -1.2 at top, grid every 0.2, labels 0, -.4, -.8, -1.2). NOTATION:
+#   P_b base-pressure coefficient (p_b - p)/q; p_b base pressure; p free-stream static pressure; q dynamic pressure.
+#   Values below are in these units as printed (P_b negative upward).
+# panels (three, one figure): top "h/t, 1.0", middle "h/t, 0.6", bottom "h/t, 0.3" (h trailing-edge thickness,
+#   t maximum thickness). Legend (top panel): solid line "Without surface roughness", dashed line "With surface
+#   roughness". No plotted symbols: every panel shows two faired curves only.
+# test conditions and model (APPARATUS AND MODELS, TESTS, CORRECTIONS): Ames 16-foot high-speed tunnel, transonic
+#   bump technique; semispan rectangular wings, effective aspect ratio 4, steel; 4-percent-thick circular-arc
+#   section with the trailing edge built up to h/t = 0, 0.3, 0.6, 1.0 and faired by straight lines; base
+#   pressure orifices at 25, 37.5, 62.5 and 87.5 percent semispan, mercury manometer; roughness No. 60
+#   carborundum from the leading edge to 0.10 chord; Mach 0.60 to 1.10 (indicated Mach is the average over the
+#   model region of the bump); Reynolds number about 1.7 to 2.2 million (fig. 4); data corrected for flow
+#   inclination over the bump; blockage and wall interference assumed negligible. No uncertainty is stated.
+# reading: dense centre-line trace of each curve (one scan line of constant Mach per render px), stroke centre =
+#   ink-weighted centroid across the stroke; value at each 0.01 in Mach by a local straight-line fit within
+#   +-3 px (or a quadratic across gaps); two ends = centres of the round end caps. See method.md.
+# errors: x_err and y_err are about 2 sigma (err_basis 2sigma) or a bound (err_basis bound). For a curve read
+#   at a fixed abscissa, the abscissa is set by me and its error is 2x the calibration rms; the ordinate error
+#   combines in quadrature: calibration rms, the standard error of the local fit through the stroke centres,
+#   a placement term for the stroke centre line, a term for reading across a gap (dash gap or masked grid
+#   line), and slope times the abscissa uncertainty; all doubled. Bounds add the stated extra term on top.
+# calibration f14_top (h/t, 1.0): affine map from render pixels (px right, py down): M = 0.133078 + 0.000278928*px + 0.000004040*py ; P_b = -1.911118 + -0.000006585*px + 0.001128614*py
+# calibration f14_top (h/t, 1.0): scale 0.0002790 M per px (3584.78 px per unit), 0.0011286 P_b per px (886.03 px per unit); tilt of constant-M grid lines -0.830 deg (dpx/dpy), of constant-P_b lines +0.334 deg (dpy/dpx): rotation -0.582 deg, skew (non-orthogonality) -0.496 deg, both taken out by the affine fit
+# calibration f14_top (h/t, 1.0): rms residual over all grid intersections 0.00040 in M, 0.00098 in P_b; leave-one-line-out worst prediction error 0.00214 in M, 0.00503 in P_b
+#   x line 0.5: mean resid -0.00091 (px -3.26); line fit rms 0.51 px over 26 bands, tilt -0.494 deg
+#   x line 0.55: mean resid +0.00043 (px +1.55); line fit rms 0.25 px over 17 bands, tilt -0.898 deg
+#   x line 0.6: mean resid +0.00011 (px +0.40); line fit rms 0.13 px over 16 bands, tilt -0.895 deg
+#   x line 0.65: mean resid -0.00001 (px -0.04); line fit rms 0.14 px over 16 bands, tilt -0.881 deg
+#   x line 0.7: mean resid +0.00011 (px +0.39); line fit rms 0.22 px over 16 bands, tilt -0.947 deg
+#   x line 0.75: mean resid +0.00001 (px +0.04); line fit rms 0.23 px over 16 bands, tilt -0.946 deg
+#   x line 0.8: mean resid +0.00027 (px +0.96); line fit rms 0.18 px over 16 bands, tilt -0.865 deg
+#   x line 0.85: mean resid +0.00020 (px +0.73); line fit rms 0.23 px over 16 bands, tilt -0.898 deg
+#   x line 0.9: mean resid -0.00000 (px -0.00); line fit rms 0.27 px over 17 bands, tilt -0.910 deg
+#   x line 0.95: mean resid +0.00022 (px +0.78); line fit rms 0.15 px over 16 bands, tilt -0.925 deg
+#   x line 1.0: mean resid +0.00027 (px +0.98); line fit rms 0.16 px over 15 bands, tilt -0.837 deg
+#   x line 1.05: mean resid -0.00012 (px -0.44); line fit rms 0.22 px over 15 bands, tilt -0.922 deg
+#   x line 1.1: mean resid -0.00018 (px -0.66); line fit rms 0.45 px over 14 bands, tilt -0.858 deg
+#   x line 1.15: mean resid -0.00032 (px -1.16); line fit rms 0.93 px over 24 bands, tilt -0.672 deg
+#   x line 1.2: mean resid -0.00007 (px -0.26); line fit rms 0.63 px over 26 bands, tilt -0.500 deg
+#   y line -1.2: mean resid +0.00027 (px +0.24); line fit rms 0.74 px over 62 bands, tilt +0.371 deg
+#   y line -1.0: mean resid -0.00010 (px -0.09); line fit rms 0.81 px over 62 bands, tilt +0.368 deg
+#   y line -0.8: mean resid -0.00074 (px -0.65); line fit rms 0.75 px over 59 bands, tilt +0.347 deg
+#   y line -0.6: mean resid +0.00003 (px +0.03); line fit rms 0.79 px over 53 bands, tilt +0.363 deg
+#   y line -0.4: mean resid +0.00032 (px +0.28); line fit rms 0.67 px over 61 bands, tilt +0.348 deg
+#   y line -0.2: mean resid +0.00103 (px +0.92); line fit rms 0.11 px over 9 bands, tilt +0.331 deg
+#   y line 0.0: mean resid -0.00082 (px -0.73); line fit rms 0.43 px over 62 bands, tilt +0.213 deg
+#   LOO per line: x 0.5: 0.00214; x 0.55: 0.00073; x 0.6: 0.00031; x 0.65: 0.00016; x 0.7: 0.00044; x 0.75: 0.00034; x 0.8: 0.00038; x 0.85: 0.00041; x 0.9: 0.00022; x 0.95: 0.00050; x 1.0: 0.00032; x 1.05: 0.00040; x 1.1: 0.00030; x 1.15: 0.00084; x 1.2: 0.00101; y -1.2: 0.00156; y -1.0: 0.00109; y -0.8: 0.00126; y -0.6: 0.00085; y -0.4: 0.00079; y -0.2: 0.00154; y 0.0: 0.00503
+# calibration f14_mid (h/t, 0.6): affine map from render pixels (px right, py down): M = 0.133436 + 0.000279335*px + 0.000002680*py ; P_b = -3.500818 + -0.000005134*px + 0.001121733*py
+# calibration f14_mid (h/t, 0.6): scale 0.0002793 M per px (3579.76 px per unit), 0.0011217 P_b per px (891.47 px per unit); tilt of constant-M grid lines -0.550 deg (dpx/dpy), of constant-P_b lines +0.262 deg (dpy/dpx): rotation -0.406 deg, skew (non-orthogonality) -0.287 deg, both taken out by the affine fit
+# calibration f14_mid (h/t, 0.6): rms residual over all grid intersections 0.00029 in M, 0.00132 in P_b; leave-one-line-out worst prediction error 0.00088 in M, 0.00543 in P_b
+#   x line 0.5: mean resid -0.00063 (px -2.24); line fit rms 0.47 px over 26 bands, tilt -0.530 deg
+#   x line 0.55: mean resid +0.00030 (px +1.07); line fit rms 0.42 px over 26 bands, tilt -0.427 deg
+#   x line 0.6: mean resid +0.00028 (px +0.98); line fit rms 0.48 px over 26 bands, tilt -0.496 deg
+#   x line 0.65: mean resid -0.00003 (px -0.11); line fit rms 0.46 px over 26 bands, tilt -0.483 deg
+#   x line 0.7: mean resid +0.00009 (px +0.31); line fit rms 0.46 px over 26 bands, tilt -0.573 deg
+#   x line 0.75: mean resid +0.00004 (px +0.13); line fit rms 0.52 px over 26 bands, tilt -0.555 deg
+#   x line 0.8: mean resid +0.00010 (px +0.36); line fit rms 0.37 px over 26 bands, tilt -0.468 deg
+#   x line 0.85: mean resid -0.00002 (px -0.09); line fit rms 0.49 px over 26 bands, tilt -0.513 deg
+#   x line 0.9: mean resid -0.00010 (px -0.34); line fit rms 0.46 px over 26 bands, tilt -0.581 deg
+#   x line 0.95: mean resid -0.00005 (px -0.19); line fit rms 0.42 px over 26 bands, tilt -0.609 deg
+#   x line 1.0: mean resid +0.00026 (px +0.93); line fit rms 0.54 px over 26 bands, tilt -0.605 deg
+#   x line 1.05: mean resid -0.00024 (px -0.86); line fit rms 0.45 px over 26 bands, tilt -0.643 deg
+#   x line 1.1: mean resid +0.00014 (px +0.49); line fit rms 0.43 px over 21 bands, tilt -0.645 deg
+#   x line 1.15: mean resid +0.00032 (px +1.15); line fit rms 0.59 px over 24 bands, tilt -0.615 deg
+#   x line 1.2: mean resid -0.00044 (px -1.59); line fit rms 0.43 px over 26 bands, tilt -0.503 deg
+#   y line -1.2: mean resid -0.00060 (px -0.53); line fit rms 0.84 px over 62 bands, tilt +0.252 deg
+#   y line -1.0: mean resid +0.00187 (px +1.67); line fit rms 0.71 px over 62 bands, tilt +0.305 deg
+#   y line -0.8: mean resid +0.00002 (px +0.02); line fit rms 1.00 px over 62 bands, tilt +0.305 deg
+#   y line -0.6: mean resid -0.00151 (px -1.34); line fit rms 1.09 px over 62 bands, tilt +0.268 deg
+#   y line -0.4: mean resid -0.00029 (px -0.26); line fit rms 1.04 px over 62 bands, tilt +0.291 deg
+#   y line -0.2: mean resid -0.00081 (px -0.72); line fit rms 0.89 px over 62 bands, tilt +0.256 deg
+#   y line 0.0: mean resid +0.00131 (px +1.17); line fit rms 0.49 px over 62 bands, tilt +0.158 deg
+#   LOO per line: x 0.5: 0.00088; x 0.55: 0.00071; x 0.6: 0.00048; x 0.65: 0.00022; x 0.7: 0.00016; x 0.75: 0.00006; x 0.8: 0.00033; x 0.85: 0.00013; x 0.9: 0.00019; x 0.95: 0.00022; x 1.0: 0.00044; x 1.05: 0.00054; x 1.1: 0.00043; x 1.15: 0.00058; x 1.2: 0.00071; y -1.2: 0.00140; y -1.0: 0.00384; y -0.8: 0.00125; y -0.6: 0.00193; y -0.4: 0.00119; y -0.2: 0.00130; y 0.0: 0.00543
+# calibration f14_bot (h/t, 0.3): affine map from render pixels (px right, py down): M = 0.134238 + 0.000279558*px + 0.000002323*py ; P_b = -5.096042 + -0.000003842*px + 0.001120431*py
+# calibration f14_bot (h/t, 0.3): scale 0.0002796 M per px (3576.95 px per unit), 0.0011204 P_b per px (892.51 px per unit); tilt of constant-M grid lines -0.476 deg (dpx/dpy), of constant-P_b lines +0.196 deg (dpy/dpx): rotation -0.336 deg, skew (non-orthogonality) -0.280 deg, both taken out by the affine fit
+# calibration f14_bot (h/t, 0.3): rms residual over all grid intersections 0.00032 in M, 0.00148 in P_b; leave-one-line-out worst prediction error 0.00110 in M, 0.00703 in P_b
+#   x line 0.5: mean resid -0.00074 (px -2.65); line fit rms 0.51 px over 26 bands, tilt -0.521 deg
+#   x line 0.55: mean resid +0.00011 (px +0.41); line fit rms 0.51 px over 26 bands, tilt -0.390 deg
+#   x line 0.6: mean resid +0.00046 (px +1.65); line fit rms 0.60 px over 26 bands, tilt -0.444 deg
+#   x line 0.65: mean resid -0.00028 (px -1.00); line fit rms 0.46 px over 26 bands, tilt -0.448 deg
+#   x line 0.7: mean resid -0.00010 (px -0.37); line fit rms 0.44 px over 26 bands, tilt -0.466 deg
+#   x line 0.75: mean resid +0.00016 (px +0.56); line fit rms 0.56 px over 26 bands, tilt -0.439 deg
+#   x line 0.8: mean resid +0.00032 (px +1.15); line fit rms 0.59 px over 26 bands, tilt -0.419 deg
+#   x line 0.85: mean resid +0.00022 (px +0.78); line fit rms 0.52 px over 26 bands, tilt -0.490 deg
+#   x line 0.9: mean resid +0.00024 (px +0.86); line fit rms 0.58 px over 26 bands, tilt -0.546 deg
+#   x line 0.95: mean resid +0.00010 (px +0.35); line fit rms 0.48 px over 24 bands, tilt -0.485 deg
+#   x line 1.0: mean resid +0.00010 (px +0.37); line fit rms 0.52 px over 26 bands, tilt -0.445 deg
+#   x line 1.05: mean resid -0.00013 (px -0.46); line fit rms 0.56 px over 26 bands, tilt -0.534 deg
+#   x line 1.1: mean resid -0.00004 (px -0.16); line fit rms 0.47 px over 21 bands, tilt -0.478 deg
+#   x line 1.15: mean resid +0.00007 (px +0.27); line fit rms 0.38 px over 24 bands, tilt -0.450 deg
+#   x line 1.2: mean resid -0.00049 (px -1.75); line fit rms 0.51 px over 26 bands, tilt -0.585 deg
+#   y line -1.2: mean resid -0.00029 (px -0.26); line fit rms 0.68 px over 62 bands, tilt +0.249 deg
+#   y line -1.0: mean resid -0.00158 (px -1.41); line fit rms 0.90 px over 62 bands, tilt +0.236 deg
+#   y line -0.8: mean resid +0.00048 (px +0.43); line fit rms 0.85 px over 62 bands, tilt +0.202 deg
+#   y line -0.6: mean resid +0.00192 (px +1.71); line fit rms 0.82 px over 61 bands, tilt +0.192 deg
+#   y line -0.4: mean resid +0.00059 (px +0.52); line fit rms 0.96 px over 62 bands, tilt +0.219 deg
+#   y line -0.2: mean resid +0.00068 (px +0.60); line fit rms 0.75 px over 59 bands, tilt +0.208 deg
+#   y line 0.0: mean resid -0.00180 (px -1.61); line fit rms 0.45 px over 62 bands, tilt +0.068 deg
+#   LOO per line: x 0.5: 0.00110; x 0.55: 0.00038; x 0.6: 0.00064; x 0.65: 0.00040; x 0.7: 0.00014; x 0.75: 0.00027; x 0.8: 0.00050; x 0.85: 0.00027; x 0.9: 0.00046; x 0.95: 0.00013; x 1.0: 0.00020; x 1.05: 0.00031; x 1.1: 0.00006; x 1.15: 0.00017; x 1.2: 0.00095; y -1.2: 0.00203; y -1.0: 0.00335; y -0.8: 0.00075; y -0.6: 0.00235; y -0.4: 0.00135; y -0.2: 0.00128; y 0.0: 0.00703
+# columns: series = panel label and legend entry as printed; symbol = none (curve) with its line style
+id,kind,panel,series,symbol,filled,x,x_err,y,y_err,err_basis,flag,note
+A51-14-top-solid-001,curve_end,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6001,0.0025,-0.5649,0.0087,bound,uncertain,"left end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=0.5989); end lies in ink merged with the other curve, y from merged run"
+A51-14-top-solid-002,curve_end,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0982,0.0025,-0.6196,0.0048,2sigma,,"right end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=1.0994)"
+A51-14-top-solid-003,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6000,0.0008,-0.5646,0.0088,bound,uncertain,"at the curve end (within 10 px of the end-cap centre, inside the ink); read by a one-sided straight-line fit of the last 14 px of own ink; ink there merged with the other curve"
+A51-14-top-solid-004,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6100,0.0008,-0.5679,0.0066,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-top-solid-005,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6200,0.0008,-0.5730,0.0068,bound,uncertain,the other curve lies on this one within a stroke width here; single-width ink taken as this curve; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-top-solid-006,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6300,0.0008,-0.5781,0.0067,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-top-solid-007,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6400,0.0008,-0.5829,0.0066,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-top-solid-008,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6500,0.0008,-0.5881,0.0057,2sigma,,read across a 18 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-top-solid-009,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6600,0.0008,-0.5957,0.0039,2sigma,,
+A51-14-top-solid-010,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6700,0.0008,-0.6010,0.0040,2sigma,,
+A51-14-top-solid-011,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6800,0.0008,-0.6065,0.0039,2sigma,,
+A51-14-top-solid-012,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.6900,0.0008,-0.6149,0.0040,2sigma,,
+A51-14-top-solid-013,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7000,0.0008,-0.6227,0.0043,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-solid-014,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7100,0.0008,-0.6337,0.0040,2sigma,,
+A51-14-top-solid-015,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7200,0.0008,-0.6426,0.0040,2sigma,,
+A51-14-top-solid-016,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7300,0.0008,-0.6533,0.0040,2sigma,,
+A51-14-top-solid-017,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7400,0.0008,-0.6647,0.0040,2sigma,,
+A51-14-top-solid-018,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7500,0.0008,-0.6763,0.0043,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-solid-019,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7600,0.0008,-0.6906,0.0041,2sigma,,
+A51-14-top-solid-020,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7700,0.0008,-0.7044,0.0041,2sigma,,
+A51-14-top-solid-021,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7800,0.0008,-0.7183,0.0041,2sigma,,
+A51-14-top-solid-022,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.7900,0.0008,-0.7307,0.0040,2sigma,,
+A51-14-top-solid-023,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8000,0.0008,-0.7425,0.0043,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-solid-024,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8100,0.0008,-0.7496,0.0040,2sigma,,
+A51-14-top-solid-025,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8200,0.0008,-0.7563,0.0039,2sigma,,
+A51-14-top-solid-026,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8300,0.0008,-0.7623,0.0039,2sigma,,
+A51-14-top-solid-027,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8400,0.0008,-0.7683,0.0039,2sigma,,
+A51-14-top-solid-028,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8500,0.0008,-0.7740,0.0043,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-solid-029,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8600,0.0008,-0.7797,0.0039,2sigma,,
+A51-14-top-solid-030,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8700,0.0008,-0.7855,0.0039,2sigma,,
+A51-14-top-solid-031,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8800,0.0008,-0.7919,0.0039,2sigma,,
+A51-14-top-solid-032,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.8900,0.0008,-0.7974,0.0040,2sigma,,
+A51-14-top-solid-033,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9000,0.0008,-0.8090,0.0045,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-solid-034,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9100,0.0008,-0.8267,0.0043,2sigma,,
+A51-14-top-solid-035,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9200,0.0008,-0.8514,0.0048,2sigma,,
+A51-14-top-solid-036,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9300,0.0008,-0.8936,0.0059,2sigma,,
+A51-14-top-solid-037,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9400,0.0008,-0.9510,0.0054,2sigma,,
+A51-14-top-solid-038,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9500,0.0008,-0.9670,0.0042,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-solid-039,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9600,0.0008,-0.9512,0.0043,2sigma,,
+A51-14-top-solid-040,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9700,0.0008,-0.9289,0.0045,2sigma,,
+A51-14-top-solid-041,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9800,0.0008,-0.9037,0.0047,2sigma,uncertain,ink merged with dashed curve within 6 px (crossing); read from own ink either side
+A51-14-top-solid-042,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,0.9900,0.0008,-0.8768,0.0045,2sigma,,
+A51-14-top-solid-043,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0000,0.0008,-0.8510,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-solid-044,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0100,0.0008,-0.8267,0.0044,2sigma,,
+A51-14-top-solid-045,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0200,0.0008,-0.8023,0.0041,2sigma,,
+A51-14-top-solid-046,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0300,0.0008,-0.7813,0.0043,2sigma,,
+A51-14-top-solid-047,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0400,0.0008,-0.7606,0.0043,2sigma,,
+A51-14-top-solid-048,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0500,0.0008,-0.7392,0.0046,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-solid-049,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0600,0.0008,-0.7179,0.0043,2sigma,,
+A51-14-top-solid-050,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0700,0.0008,-0.6954,0.0044,2sigma,,
+A51-14-top-solid-051,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0800,0.0008,-0.6705,0.0047,2sigma,,
+A51-14-top-solid-052,curve,,"h/t, 1.0; Without surface roughness","none (curve, solid line)",,1.0900,0.0008,-0.6452,0.0046,2sigma,,
+A51-14-top-dashed-001,curve_end,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6001,0.0024,-0.5632,0.0084,bound,uncertain,"left end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=0.5989); end lies in ink merged with the other curve, y from merged run"
+A51-14-top-dashed-002,curve_end,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.1008,0.0024,-0.7588,0.0043,2sigma,,"right end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=1.1019)"
+A51-14-top-dashed-003,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6000,0.0008,-0.5631,0.0084,bound,uncertain,"at the curve end (within 10 px of the end-cap centre, inside the ink); read by a one-sided straight-line fit of the last 14 px of own ink; ink there merged with the other curve"
+A51-14-top-dashed-004,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6100,0.0008,-0.5643,0.0066,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-top-dashed-005,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6200,0.0008,-0.5684,0.0073,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-top-dashed-006,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6300,0.0008,-0.5669,0.0066,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-top-dashed-007,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6400,0.0008,-0.5714,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-top-dashed-008,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6500,0.0008,-0.5716,0.0042,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-dashed-009,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6600,0.0008,-0.5748,0.0039,2sigma,,
+A51-14-top-dashed-010,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6700,0.0008,-0.5774,0.0039,2sigma,,
+A51-14-top-dashed-011,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6800,0.0008,-0.5808,0.0039,2sigma,,
+A51-14-top-dashed-012,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.6900,0.0008,-0.5846,0.0039,2sigma,,
+A51-14-top-dashed-013,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7000,0.0008,-0.5887,0.0042,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-dashed-014,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7100,0.0008,-0.5964,0.0039,2sigma,,
+A51-14-top-dashed-015,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7200,0.0008,-0.5999,0.0039,2sigma,,
+A51-14-top-dashed-016,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7300,0.0008,-0.6046,0.0039,2sigma,,
+A51-14-top-dashed-017,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7400,0.0008,-0.6080,0.0039,2sigma,,
+A51-14-top-dashed-018,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7500,0.0008,-0.6168,0.0042,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-dashed-019,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7600,0.0008,-0.6228,0.0040,2sigma,,
+A51-14-top-dashed-020,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7700,0.0008,-0.6298,0.0040,2sigma,,
+A51-14-top-dashed-021,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7800,0.0008,-0.6370,0.0040,2sigma,,
+A51-14-top-dashed-022,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.7900,0.0008,-0.6436,0.0053,2sigma,,read across a 16 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-top-dashed-023,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8000,0.0008,-0.6499,0.0042,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-dashed-024,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8100,0.0008,-0.6559,0.0048,2sigma,,read across a 12 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-top-dashed-025,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8200,0.0008,-0.6592,0.0039,2sigma,,
+A51-14-top-dashed-026,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8300,0.0008,-0.6627,0.0047,2sigma,,read across a 12 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-top-dashed-027,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8400,0.0008,-0.6667,0.0039,2sigma,,
+A51-14-top-dashed-028,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8500,0.0008,-0.6713,0.0051,2sigma,,read across a 14 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-top-dashed-029,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8600,0.0008,-0.6764,0.0039,2sigma,,
+A51-14-top-dashed-030,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8700,0.0008,-0.6815,0.0040,2sigma,,
+A51-14-top-dashed-031,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8800,0.0008,-0.6869,0.0039,2sigma,,
+A51-14-top-dashed-032,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.8900,0.0008,-0.6918,0.0039,2sigma,,
+A51-14-top-dashed-033,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9000,0.0008,-0.7016,0.0064,2sigma,,read across a 22 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-32 px
+A51-14-top-dashed-034,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9100,0.0008,-0.7155,0.0041,2sigma,,
+A51-14-top-dashed-035,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9200,0.0008,-0.7317,0.0054,2sigma,,read across a 15 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-top-dashed-036,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9300,0.0008,-0.7531,0.0045,2sigma,,
+A51-14-top-dashed-037,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9400,0.0008,-0.7794,0.0043,2sigma,,
+A51-14-top-dashed-038,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9500,0.0008,-0.8082,0.0049,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-dashed-039,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9600,0.0008,-0.8413,0.0050,2sigma,,
+A51-14-top-dashed-040,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9700,0.0008,-0.8821,0.0059,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-top-dashed-041,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9800,0.0008,-0.9268,0.0055,2sigma,uncertain,ink merged with solid curve within 6 px (crossing); read from own ink either side
+A51-14-top-dashed-042,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,0.9900,0.0008,-0.9778,0.0057,2sigma,,
+A51-14-top-dashed-043,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0000,0.0008,-1.0144,0.0058,2sigma,,read across a 14 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-top-dashed-044,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0100,0.0008,-1.0345,0.0040,2sigma,,
+A51-14-top-dashed-045,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0200,0.0008,-1.0353,0.0047,2sigma,,read across a 11 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-top-dashed-046,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0300,0.0008,-1.0238,0.0042,2sigma,,
+A51-14-top-dashed-047,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0400,0.0008,-0.9983,0.0040,2sigma,,
+A51-14-top-dashed-048,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0500,0.0008,-0.9643,0.0063,2sigma,,read across a 12 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-top-dashed-049,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0600,0.0008,-0.9175,0.0056,2sigma,,
+A51-14-top-dashed-050,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0700,0.0008,-0.8606,0.0058,2sigma,,
+A51-14-top-dashed-051,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0800,0.0008,-0.8183,0.0048,2sigma,,
+A51-14-top-dashed-052,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.0900,0.0008,-0.7874,0.0060,2sigma,,read across a 5 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-top-dashed-053,curve,,"h/t, 1.0; With surface roughness","none (curve, dashed line)",,1.1000,0.0008,-0.7604,0.0043,2sigma,,"at the curve end (within 10 px of the end-cap centre, inside the ink); read by a one-sided straight-line fit of the last 14 px of own ink"
+A51-14-mid-solid-001,curve_end,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6009,0.0022,-0.3195,0.0043,2sigma,,"left end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=0.5998)"
+A51-14-mid-solid-002,curve_end,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0809,0.0022,-0.6550,0.0044,2sigma,,"right end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=1.0820)"
+A51-14-mid-solid-003,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6000,0.0006,-0.3193,0.0043,2sigma,,"at the curve end (within 10 px of the end-cap centre, inside the ink); read by a one-sided straight-line fit of the last 14 px of own ink"
+A51-14-mid-solid-004,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6100,0.0006,-0.3202,0.0043,2sigma,,
+A51-14-mid-solid-005,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6200,0.0006,-0.3220,0.0043,2sigma,,
+A51-14-mid-solid-006,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6300,0.0006,-0.3235,0.0043,2sigma,,
+A51-14-mid-solid-007,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6400,0.0006,-0.3248,0.0043,2sigma,,
+A51-14-mid-solid-008,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6500,0.0006,-0.3268,0.0045,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-solid-009,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6600,0.0006,-0.3283,0.0043,2sigma,,
+A51-14-mid-solid-010,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6700,0.0006,-0.3306,0.0043,2sigma,,
+A51-14-mid-solid-011,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6800,0.0006,-0.3328,0.0043,2sigma,,
+A51-14-mid-solid-012,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.6900,0.0006,-0.3345,0.0043,2sigma,,
+A51-14-mid-solid-013,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7000,0.0006,-0.3368,0.0045,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-solid-014,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7100,0.0006,-0.3389,0.0043,2sigma,,
+A51-14-mid-solid-015,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7200,0.0006,-0.3427,0.0043,2sigma,,
+A51-14-mid-solid-016,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7300,0.0006,-0.3454,0.0043,2sigma,,
+A51-14-mid-solid-017,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7400,0.0006,-0.3476,0.0043,2sigma,,
+A51-14-mid-solid-018,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7500,0.0006,-0.3501,0.0045,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-solid-019,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7600,0.0006,-0.3534,0.0043,2sigma,,
+A51-14-mid-solid-020,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7700,0.0006,-0.3571,0.0043,2sigma,,
+A51-14-mid-solid-021,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7800,0.0006,-0.3609,0.0043,2sigma,,
+A51-14-mid-solid-022,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.7900,0.0006,-0.3662,0.0043,2sigma,,
+A51-14-mid-solid-023,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8000,0.0006,-0.3721,0.0046,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-solid-024,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8100,0.0006,-0.3796,0.0043,2sigma,,
+A51-14-mid-solid-025,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8200,0.0006,-0.3901,0.0044,2sigma,,
+A51-14-mid-solid-026,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8300,0.0006,-0.3997,0.0043,2sigma,,
+A51-14-mid-solid-027,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8400,0.0006,-0.4141,0.0044,2sigma,,
+A51-14-mid-solid-028,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8500,0.0006,-0.4337,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-solid-029,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8600,0.0006,-0.4573,0.0046,2sigma,,
+A51-14-mid-solid-030,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8700,0.0006,-0.4873,0.0048,2sigma,,
+A51-14-mid-solid-031,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8800,0.0006,-0.5238,0.0049,2sigma,,
+A51-14-mid-solid-032,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.8900,0.0006,-0.5649,0.0056,2sigma,uncertain,read across a 12 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px; ink merged with dashed curve within 6 px (crossing); read from own ink either side; the other curve lies on this one within a stroke width here; single-width ink taken as this curve
+A51-14-mid-solid-033,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9000,0.0006,-0.6057,0.0065,2sigma,uncertain,read across a 19 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px; the other curve lies on this one within a stroke width here; single-width ink taken as this curve
+A51-14-mid-solid-034,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9100,0.0006,-0.6429,0.0049,2sigma,,
+A51-14-mid-solid-035,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9200,0.0006,-0.6791,0.0048,2sigma,,
+A51-14-mid-solid-036,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9300,0.0006,-0.7132,0.0048,2sigma,,
+A51-14-mid-solid-037,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9400,0.0006,-0.7461,0.0047,2sigma,,
+A51-14-mid-solid-038,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9500,0.0006,-0.7799,0.0050,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-solid-039,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9600,0.0006,-0.8112,0.0051,2sigma,,
+A51-14-mid-solid-040,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9700,0.0006,-0.8438,0.0047,2sigma,,
+A51-14-mid-solid-041,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9800,0.0006,-0.8592,0.0043,2sigma,,
+A51-14-mid-solid-042,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,0.9900,0.0006,-0.8473,0.0047,2sigma,uncertain,ink merged with dashed curve within 6 px (crossing); read from own ink either side
+A51-14-mid-solid-043,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0000,0.0006,-0.8199,0.0049,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-solid-044,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0100,0.0006,-0.7949,0.0045,2sigma,,
+A51-14-mid-solid-045,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0200,0.0006,-0.7708,0.0045,2sigma,,
+A51-14-mid-solid-046,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0300,0.0006,-0.7491,0.0045,2sigma,,
+A51-14-mid-solid-047,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0400,0.0006,-0.7292,0.0045,2sigma,,
+A51-14-mid-solid-048,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0500,0.0006,-0.7104,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-solid-049,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0600,0.0006,-0.6917,0.0044,2sigma,,
+A51-14-mid-solid-050,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0700,0.0006,-0.6730,0.0044,2sigma,,
+A51-14-mid-solid-051,curve,,"h/t, 0.6; Without surface roughness","none (curve, solid line)",,1.0800,0.0006,-0.6560,0.0044,2sigma,,
+A51-14-mid-dashed-001,curve_end,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6014,0.0022,-0.4147,0.0043,2sigma,,"left end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=0.6004)"
+A51-14-mid-dashed-002,curve_end,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0829,0.0022,-0.6973,0.0048,2sigma,,"right end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=1.0839)"
+A51-14-mid-dashed-003,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6100,0.0006,-0.4167,0.0043,2sigma,,
+A51-14-mid-dashed-004,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6200,0.0006,-0.4196,0.0054,2sigma,,read across a 15 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-mid-dashed-005,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6300,0.0006,-0.4211,0.0043,2sigma,,
+A51-14-mid-dashed-006,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6400,0.0006,-0.4240,0.0043,2sigma,,
+A51-14-mid-dashed-007,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6500,0.0006,-0.4268,0.0066,2sigma,,read across a 23 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-32 px
+A51-14-mid-dashed-008,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6600,0.0006,-0.4290,0.0043,2sigma,,
+A51-14-mid-dashed-009,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6700,0.0006,-0.4321,0.0062,2sigma,,read across a 20 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-mid-dashed-010,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6800,0.0006,-0.4351,0.0043,2sigma,,
+A51-14-mid-dashed-011,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.6900,0.0006,-0.4381,0.0051,2sigma,,read across a 12 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-mid-dashed-012,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7000,0.0006,-0.4410,0.0045,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-dashed-013,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7100,0.0006,-0.4461,0.0049,2sigma,,read across a 10 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-mid-dashed-014,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7200,0.0006,-0.4513,0.0043,2sigma,,
+A51-14-mid-dashed-015,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7300,0.0006,-0.4550,0.0053,2sigma,,read across a 13 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-mid-dashed-016,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7400,0.0006,-0.4609,0.0043,2sigma,,
+A51-14-mid-dashed-017,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7500,0.0006,-0.4663,0.0059,2sigma,,read across a 18 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-mid-dashed-018,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7600,0.0006,-0.4708,0.0043,2sigma,,
+A51-14-mid-dashed-019,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7700,0.0006,-0.4758,0.0043,2sigma,,
+A51-14-mid-dashed-020,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7800,0.0006,-0.4813,0.0043,2sigma,,
+A51-14-mid-dashed-021,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.7900,0.0006,-0.4875,0.0043,2sigma,,
+A51-14-mid-dashed-022,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8000,0.0006,-0.4962,0.0045,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-dashed-023,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8100,0.0006,-0.5019,0.0043,2sigma,,
+A51-14-mid-dashed-024,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8200,0.0006,-0.5077,0.0043,2sigma,,
+A51-14-mid-dashed-025,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8300,0.0006,-0.5167,0.0043,2sigma,,
+A51-14-mid-dashed-026,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8400,0.0006,-0.5248,0.0043,2sigma,,
+A51-14-mid-dashed-027,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8500,0.0006,-0.5337,0.0046,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-dashed-028,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8600,0.0006,-0.5425,0.0043,2sigma,,
+A51-14-mid-dashed-029,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8700,0.0006,-0.5517,0.0043,2sigma,,
+A51-14-mid-dashed-030,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8800,0.0006,-0.5596,0.0043,2sigma,,
+A51-14-mid-dashed-031,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.8900,0.0006,-0.5710,0.0104,2sigma,uncertain,read across a 42 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-45 px; ink merged with solid curve within 6 px (crossing); read from own ink either side; long gap
+A51-14-mid-dashed-032,box,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9000,0.0006,-0.5921,0.0121,bound,uncertain,"ink merged with solid curve; box = merged run extent less 0.35 stroke width each side, plus 2 sigma calibration and placement"
+A51-14-mid-dashed-033,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9100,0.0006,-0.6083,0.0048,2sigma,,
+A51-14-mid-dashed-034,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9200,0.0006,-0.6349,0.0046,2sigma,,
+A51-14-mid-dashed-035,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9300,0.0006,-0.6629,0.0045,2sigma,,
+A51-14-mid-dashed-036,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9400,0.0006,-0.6940,0.0048,2sigma,,
+A51-14-mid-dashed-037,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9500,0.0006,-0.7238,0.0058,2sigma,,read across a 10 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-mid-dashed-038,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9600,0.0006,-0.7566,0.0048,2sigma,,
+A51-14-mid-dashed-039,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9700,0.0006,-0.7952,0.0043,2sigma,,
+A51-14-mid-dashed-040,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9800,0.0006,-0.8249,0.0044,2sigma,,
+A51-14-mid-dashed-041,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,0.9900,0.0006,-0.8685,0.0051,2sigma,uncertain,ink merged with solid curve within 6 px (crossing); read from own ink either side
+A51-14-mid-dashed-042,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0000,0.0006,-0.8952,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-dashed-043,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0100,0.0006,-0.9102,0.0043,2sigma,,
+A51-14-mid-dashed-044,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0200,0.0006,-0.9053,0.0043,2sigma,,
+A51-14-mid-dashed-045,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0300,0.0006,-0.8868,0.0056,2sigma,,read across a 14 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-mid-dashed-046,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0400,0.0006,-0.8581,0.0047,2sigma,,
+A51-14-mid-dashed-047,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0500,0.0006,-0.8226,0.0051,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-mid-dashed-048,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0600,0.0006,-0.7839,0.0056,2sigma,,read across a 11 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-mid-dashed-049,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0700,0.0006,-0.7464,0.0047,2sigma,,
+A51-14-mid-dashed-050,curve,,"h/t, 0.6; With surface roughness","none (curve, dashed line)",,1.0800,0.0006,-0.7074,0.0050,2sigma,,
+A51-14-bot-solid-001,curve_end,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6003,0.0027,-0.1615,0.0098,bound,uncertain,"left end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=0.5990); end lies in ink merged with the other curve, y from merged run"
+A51-14-bot-solid-002,curve_end,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0989,0.0027,-0.5510,0.0045,2sigma,,"right end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=1.1002)"
+A51-14-bot-solid-003,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6000,0.0006,-0.1615,0.0098,bound,uncertain,"at the curve end (within 10 px of the end-cap centre, inside the ink); read by a one-sided straight-line fit of the last 14 px of own ink; ink there merged with the other curve"
+A51-14-bot-solid-004,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6100,0.0006,-0.1607,0.0075,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-005,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6200,0.0006,-0.1616,0.0045,2sigma,uncertain,the other curve lies on this one within a stroke width here; single-width ink taken as this curve
+A51-14-bot-solid-006,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6300,0.0006,-0.1615,0.0075,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-007,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6400,0.0006,-0.1621,0.0070,bound,uncertain,the other curve lies on this one within a stroke width here; single-width ink taken as this curve; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-008,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6500,0.0006,-0.1626,0.0072,bound,uncertain,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-009,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6600,0.0006,-0.1632,0.0070,bound,uncertain,the other curve lies on this one within a stroke width here; single-width ink taken as this curve; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-010,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6700,0.0006,-0.1634,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-011,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6800,0.0006,-0.1637,0.0070,bound,uncertain,the other curve lies on this one within a stroke width here; single-width ink taken as this curve; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-012,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.6900,0.0006,-0.1640,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-013,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7000,0.0006,-0.1641,0.0072,bound,uncertain,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-014,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7100,0.0006,-0.1644,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-015,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7200,0.0006,-0.1665,0.0072,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-016,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7300,0.0006,-0.1670,0.0072,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-017,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7400,0.0006,-0.1677,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-018,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7500,0.0006,-0.1680,0.0073,bound,uncertain,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-019,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7600,0.0006,-0.1688,0.0071,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-020,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7700,0.0006,-0.1695,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-021,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7800,0.0006,-0.1711,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-022,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.7900,0.0006,-0.1724,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-023,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8000,0.0006,-0.1740,0.0073,bound,uncertain,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-024,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8100,0.0006,-0.1751,0.0045,2sigma,,
+A51-14-bot-solid-025,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8200,0.0006,-0.1766,0.0045,2sigma,,
+A51-14-bot-solid-026,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8300,0.0006,-0.1782,0.0045,2sigma,,
+A51-14-bot-solid-027,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8400,0.0006,-0.1798,0.0045,2sigma,,
+A51-14-bot-solid-028,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8500,0.0006,-0.1813,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-bot-solid-029,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8600,0.0006,-0.1832,0.0045,2sigma,,
+A51-14-bot-solid-030,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8700,0.0006,-0.1845,0.0045,2sigma,,
+A51-14-bot-solid-031,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8800,0.0006,-0.1864,0.0045,2sigma,,
+A51-14-bot-solid-032,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.8900,0.0006,-0.1914,0.0045,2sigma,,
+A51-14-bot-solid-033,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9000,0.0006,-0.1936,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-bot-solid-034,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9100,0.0006,-0.2075,0.0046,2sigma,,
+A51-14-bot-solid-035,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9200,0.0006,-0.2336,0.0049,2sigma,,
+A51-14-bot-solid-036,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9300,0.0006,-0.2659,0.0051,2sigma,,
+A51-14-bot-solid-037,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9400,0.0006,-0.3125,0.0060,2sigma,,
+A51-14-bot-solid-038,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9500,0.0006,-0.3754,0.0139,bound,uncertain,read across a 14 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-039,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9600,0.0006,-0.4524,0.0159,bound,uncertain,the other curve lies on this one within a stroke width here; single-width ink taken as this curve; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-040,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9700,0.0006,-0.5504,0.0178,bound,uncertain,the other curve lies on this one within a stroke width here; single-width ink taken as this curve; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-041,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9800,0.0006,-0.6580,0.0173,bound,uncertain,read across a 12 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px; the other curve lies on this one within a stroke width here; single-width ink taken as this curve; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-solid-042,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,0.9900,0.0006,-0.7037,0.0045,2sigma,uncertain,the other curve lies on this one within a stroke width here; single-width ink taken as this curve
+A51-14-bot-solid-043,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0000,0.0006,-0.7028,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-bot-solid-044,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0100,0.0006,-0.6919,0.0046,2sigma,,
+A51-14-bot-solid-045,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0200,0.0006,-0.6800,0.0046,2sigma,,
+A51-14-bot-solid-046,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0300,0.0006,-0.6663,0.0046,2sigma,,
+A51-14-bot-solid-047,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0400,0.0006,-0.6514,0.0046,2sigma,,
+A51-14-bot-solid-048,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0500,0.0006,-0.6359,0.0049,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-bot-solid-049,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0600,0.0006,-0.6190,0.0046,2sigma,,
+A51-14-bot-solid-050,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0700,0.0006,-0.6021,0.0047,2sigma,,
+A51-14-bot-solid-051,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0800,0.0006,-0.5838,0.0047,2sigma,,
+A51-14-bot-solid-052,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.0900,0.0006,-0.5642,0.0046,2sigma,,
+A51-14-bot-solid-053,curve,,"h/t, 0.3; Without surface roughness","none (curve, solid line)",,1.1000,0.0006,-0.5486,0.0046,2sigma,,"at the curve end (within 10 px of the end-cap centre, inside the ink); read by a one-sided straight-line fit of the last 14 px of own ink"
+A51-14-bot-dashed-001,curve_end,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6005,0.0031,-0.1555,0.0107,bound,uncertain,"left end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=0.5990); end lies in ink merged with the other curve, y from merged run"
+A51-14-bot-dashed-002,curve_end,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0783,0.0031,-0.6363,0.0045,2sigma,,"right end: centre of round end cap, half a stroke width inside the outermost ink (outermost ink x=1.0798)"
+A51-14-bot-dashed-003,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6000,0.0006,-0.1552,0.0107,bound,uncertain,"at the curve end (within 10 px of the end-cap centre, inside the ink); read by a one-sided straight-line fit of the last 14 px of own ink; ink there merged with the other curve"
+A51-14-bot-dashed-004,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6100,0.0006,-0.1569,0.0075,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-005,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6200,0.0006,-0.1591,0.0089,bound,uncertain,read across a 17 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-006,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6300,0.0006,-0.1579,0.0075,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-007,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6400,0.0006,-0.1590,0.0077,bound,uncertain,read across a 11 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-008,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6500,0.0006,-0.1581,0.0072,bound,uncertain,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-009,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6600,0.0006,-0.1588,0.0083,bound,uncertain,read across a 16 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-010,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6700,0.0006,-0.1580,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-011,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6800,0.0006,-0.1594,0.0071,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-012,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.6900,0.0006,-0.1578,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-013,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7000,0.0006,-0.1575,0.0090,bound,uncertain,read across a 21 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-014,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7100,0.0006,-0.1572,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-015,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7200,0.0006,-0.1598,0.0072,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-016,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7300,0.0006,-0.1596,0.0072,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-017,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7400,0.0006,-0.1596,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-018,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7500,0.0006,-0.1596,0.0073,bound,uncertain,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-019,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7600,0.0006,-0.1598,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-020,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7700,0.0006,-0.1598,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-021,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7800,0.0006,-0.1605,0.0071,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-022,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.7900,0.0006,-0.1597,0.0070,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-023,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8000,0.0006,-0.1594,0.0087,bound,uncertain,read across a 19 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-024,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8100,0.0006,-0.1597,0.0045,2sigma,,
+A51-14-bot-dashed-025,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8200,0.0006,-0.1604,0.0062,2sigma,,read across a 19 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-bot-dashed-026,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8300,0.0006,-0.1601,0.0045,2sigma,,
+A51-14-bot-dashed-027,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8400,0.0006,-0.1609,0.0059,2sigma,,read across a 17 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-bot-dashed-028,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8500,0.0006,-0.1606,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-bot-dashed-029,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8600,0.0006,-0.1607,0.0045,2sigma,,
+A51-14-bot-dashed-030,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8700,0.0006,-0.1600,0.0045,2sigma,,
+A51-14-bot-dashed-031,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8800,0.0006,-0.1602,0.0045,2sigma,,
+A51-14-bot-dashed-032,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.8900,0.0006,-0.1587,0.0045,2sigma,,
+A51-14-bot-dashed-033,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9000,0.0006,-0.1577,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-bot-dashed-034,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9100,0.0006,-0.1740,0.0047,2sigma,,
+A51-14-bot-dashed-035,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9200,0.0006,-0.2009,0.0047,2sigma,,
+A51-14-bot-dashed-036,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9300,0.0006,-0.2369,0.0054,2sigma,,
+A51-14-bot-dashed-037,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9400,0.0006,-0.2828,0.0055,2sigma,,
+A51-14-bot-dashed-038,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9500,0.0006,-0.3496,0.0127,bound,uncertain,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-039,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9600,0.0006,-0.4439,0.0140,bound,uncertain,the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-040,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9700,0.0006,-0.5429,0.0184,bound,uncertain,read across a 20 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-32 px; the two curves overlap here; centre taken from the outer edge of the merged ink less half a single stroke width; bound adds 0.3 stroke width
+A51-14-bot-dashed-041,box,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9800,0.0006,-0.6654,0.0168,bound,uncertain,"no ink of this curve can be told apart here: it is hidden under the other curve or in a dash gap; box = full extent of the ink run where it must lie, plus 2 sigma calibration and placement"
+A51-14-bot-dashed-042,box,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,0.9900,0.0006,-0.7105,0.0116,bound,uncertain,"ink merged with solid curve; box = merged run extent less 0.35 stroke width each side, plus 2 sigma calibration and placement"
+A51-14-bot-dashed-043,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0000,0.0006,-0.7217,0.0047,2sigma,,read across a 7 px gap in this curve's ink (grid line or dash gap) by a straight-line fit over +-8 px
+A51-14-bot-dashed-044,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0100,0.0006,-0.7129,0.0054,2sigma,,read across a 12 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-14 px
+A51-14-bot-dashed-045,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0200,0.0006,-0.7034,0.0045,2sigma,,
+A51-14-bot-dashed-046,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0300,0.0006,-0.6905,0.0045,2sigma,,
+A51-14-bot-dashed-047,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0400,0.0006,-0.6813,0.0046,2sigma,,
+A51-14-bot-dashed-048,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0500,0.0006,-0.6710,0.0064,2sigma,,read across a 20 px gap in this curve's ink (grid line or dash gap) by a quadratic fit over +-22 px
+A51-14-bot-dashed-049,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0600,0.0006,-0.6585,0.0045,2sigma,,
+A51-14-bot-dashed-050,curve,,"h/t, 0.3; With surface roughness","none (curve, dashed line)",,1.0700,0.0006,-0.6458,0.0045,2sigma,,

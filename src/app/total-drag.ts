@@ -918,10 +918,24 @@ export const W1_BOUNDED_REASON =
   'trailing edge, or above Mach ' +
   `${FIG35_FREE_FLIGHT_END}, where the free-flight curve of TN 3819 fig. 35 ends; 0015)`;
 
-/** The bounded components a total contains, named in its claim (0014 section 10.2). */
-export function boundedReasons(base: BodyBaseDrag | undefined): string[] {
-  if (base?.finsOnBase?.bounded !== true) return [];
-  return [base.finsOnBaseSource === 'rebuilt' ? W1_BOUNDED_REASON : BOUNDED_REASON];
+/**
+ * The bounded components a total contains, named in its claim (0014 section
+ * 10.2): the body base's fins-on-base factor where it is bounded, and every
+ * component the library marks bounded (the fins' square-cut leading edges, or
+ * rounded ones swept beyond 60 deg; 0016 section 21), each named once.
+ */
+export function boundedReasons(
+  base: BodyBaseDrag | undefined,
+  components: readonly DragComponent[] = [],
+): string[] {
+  const out: string[] = [];
+  if (base?.finsOnBase?.bounded === true) {
+    out.push(base.finsOnBaseSource === 'rebuilt' ? W1_BOUNDED_REASON : BOUNDED_REASON);
+  }
+  for (const c of components) {
+    if (c.bounded !== undefined && !out.includes(c.bounded)) out.push(c.bounded);
+  }
+  return out;
 }
 
 /** What the components' labels do not carry. */
@@ -1040,9 +1054,14 @@ export function totalDragView(form: TotalDragForm, nose: NoseState): TotalDragVi
     withInputs: bandWithInputs(total),
     check,
     subClass,
-    // Fail closed: only an explicit true counts (a state read from JSON may lack the flag).
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
-    claim: claimOf(check, subClass, boundedReasons(parts.base), nose.verified === true),
+    claim: claimOf(
+      check,
+      subClass,
+      boundedReasons(parts.base, parts.components),
+      // Fail closed: only an explicit true counts (a state read from JSON may lack the flag).
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+      nose.verified === true,
+    ),
     notes: notesOf(parts.base),
   };
 }
@@ -1075,14 +1094,18 @@ export interface PublishedShot {
  */
 export const PUBLISHED_GATE: readonly PublishedShot[] = [
   {
+    // Since 0019 section 3.4.1's F4 (2026-10-27) and its re-review (R1, 2026-10-28), widenings
+    // made after the gate was used, the trailing edges' band at Mach 1.799 is widened at both
+    // ends by RM A52E01's lines at Mach 1.7: low end 0.5283, high end 0.7298 and tolerance
+    // -24.8% to +23.5% (0.5296, 0.7297 and -24.6% to +23.5% as the correction recorded them).
     shot: 'DA95021318',
     mach: 1.799,
     cx0: 0.594,
     cd: 0.6134,
-    low: 0.5296,
-    high: 0.7297,
+    low: 0.5283,
+    high: 0.7298,
     residual: -3.2,
-    tolerance: [-24.6, 23.5],
+    tolerance: [-24.8, 23.5],
     secondRun: -3.0,
   },
   {

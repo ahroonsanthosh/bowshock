@@ -1,0 +1,75 @@
+element,station_xc,reynolds_reading2,verdict,outside_on,r1_id,r1_x,r1_x_err,r1_y,r1_y_err,r1_basis,r2_id,r2_symbol,r2_x,r2_x_err,r2_y,r2_y_err,dx_r1_minus_r2,dy_r1_minus_r2,allowed_x,allowed_y,flags
+symbol M 2.41,1.00,2.8e6,agree,,tri_xc1.0_upper,0.9975,0.0017,-0.0757,0.0003,"upper of two at the station, paired by vertical order; Reynolds number not stated",S01,open triangle,0.9973,0.0029,-0.0752,0.0006,+0.0002,-0.0005,0.0046,0.0009,"reading 2: drawn about 2 px right of the frame line, entered as printed at x/c 0.997 (F4)"
+symbol M 2.41,1.00,11.3e6,agree,,tri_xc1.0_lower,0.9994,0.0017,-0.0617,0.0003,"lower of two at the station, paired by vertical order; Reynolds number not stated",S02,flagged triangle (flag faint),0.9997,0.0029,-0.0613,0.0006,-0.0003,-0.0004,0.0046,0.0009,"reading 2: flag faint, read as flagged R 11.3e6; alternative open R 2.8e6 (F3)"
+symbol M 2.41,0.80,11.3e6,agree,,tri_xc0.8,0.8001,0.0017,-0.1604,0.0003,"one value at the station, no overlap or second symbol noted; Reynolds number not stated; compared with each of reading 2's symbols",S03,flagged triangle,0.8004,0.0028,-0.1601,0.0015,-0.0003,-0.0003,0.0045,0.0018,"reading 2: x/c 0.8 one or two symbols, low confidence; base hidden; alternative: one flagged symbol at S04's centre (F1)"
+symbol M 2.41,0.80,2.8e6,disagree,P_B,tri_xc0.8,0.8001,0.0017,-0.1604,0.0003,"one value at the station, no overlap or second symbol noted; Reynolds number not stated; compared with each of reading 2's symbols",S04,open triangle (no flag seen),0.7997,0.0030,-0.1582,0.0008,+0.0004,-0.0022,0.0047,0.0011,"reading 2: x/c 0.8 one or two symbols, low confidence; R 2.8e6 rests only on S03 carrying the flag; alternative: the whole cluster one flagged symbol here (F1)"
+symbol M 2.41,0.60,11.3e6,disagree,P_B,tri_xc0.6,0.6007,0.0017,-0.1566,0.0003,"one value at the station, no overlap or second symbol noted; Reynolds number not stated; compared with each of reading 2's symbols",S05,flagged triangle,0.6006,0.0028,-0.1612,0.0007,+0.0001,+0.0046,0.0045,0.0010,
+symbol M 2.41,0.60,2.8e6,agree,,tri_xc0.6,0.6007,0.0017,-0.1566,0.0003,"one value at the station, no overlap or second symbol noted; Reynolds number not stated; compared with each of reading 2's symbols",S06,open triangle,0.6012,0.0028,-0.1569,0.0007,-0.0005,+0.0003,0.0045,0.0010,
+symbol M 2.41,0.40,2.8e6,agree,,tri_xc0.4,0.3996,0.0017,-0.1728,0.0020,one value for the overlapping plain and flagged triangles (reading 1's words); Reynolds number not stated; compared with each of reading 2's symbols,S07,open triangle,0.4004,0.0028,-0.1727,0.0009,-0.0008,-0.0001,0.0045,0.0029,"reading 1: plain and flagged triangles overlap, extra error"
+symbol M 2.41,0.40,11.3e6,disagree,P_B,tri_xc0.4,0.3996,0.0017,-0.1728,0.0020,one value for the overlapping plain and flagged triangles (reading 1's words); Reynolds number not stated; compared with each of reading 2's symbols,S08,flagged triangle,0.4004,0.0036,-0.1694,0.0007,-0.0008,-0.0034,0.0053,0.0027,"reading 1: plain and flagged triangles overlap, extra error"
+symbol M 2.41,0.20,11.3e6,agree,,tri_xc0.2,0.1999,0.0017,-0.1679,0.0030,one value for the overlapping plain and flagged triangles (reading 1's words); Reynolds number not stated; compared with each of reading 2's symbols,S09,flagged triangle,0.2002,0.0028,-0.1682,0.0009,-0.0003,+0.0003,0.0045,0.0039,"reading 2: vertex reading adopted; joint template fit about -0.1676 not adopted (F5); reading 1: plain and flagged triangles overlap, extra error"
+symbol M 2.41,0.20,2.8e6,agree,,tri_xc0.2,0.1999,0.0017,-0.1679,0.0030,one value for the overlapping plain and flagged triangles (reading 1's words); Reynolds number not stated; compared with each of reading 2's symbols,S10,open triangle,0.1997,0.0028,-0.1650,0.0007,+0.0002,-0.0029,0.0045,0.0037,"reading 1: plain and flagged triangles overlap, extra error"
+symbol M 2.41,0.00,11.3e6,agree,,tri_xc0.0,-0.0005,0.0017,-0.1642,0.0020,one value for the overlapping plain and flagged triangles (reading 1's words); Reynolds number not stated; compared with each of reading 2's symbols,S11,flagged triangle (assignment unsure),0.0001,0.0028,-0.1657,0.0011,-0.0006,+0.0015,0.0045,0.0031,"reading 2: x/c 0.0, which symbol carries the flag, low confidence; alternatives: (a) flag on S12, S11 open; (b) S11 not a symbol (F2); reading 1: plain and flagged triangles overlap, extra error"
+symbol M 2.41,0.00,2.8e6,agree,,tri_xc0.0,-0.0005,0.0017,-0.1642,0.0020,one value for the overlapping plain and flagged triangles (reading 1's words); Reynolds number not stated; compared with each of reading 2's symbols,S12,open triangle (assignment unsure),0.0007,0.0031,-0.1642,0.0008,-0.0012,+0.0000,0.0048,0.0028,"reading 2: x/c 0.0, which symbol carries the flag, low confidence; alternatives: (a) S12 flagged; (b) S12 the only symbol, flagged (F2); reading 1: plain and flagged triangles overlap, extra error"
+"symbol M 2.41, reading 2 alternative",0.80,11.3e6,disagree,P_B,tri_xc0.8,0.8001,0.0017,-0.1604,0.0003,as in the symbol rows,ALT-0.8-one,,0.8000,0.0030,-0.1582,0.0008,+0.0001,-0.0022,0.0047,0.0011,"x/c 0.8 as ONE symbol (flagged, R 11.3e6): reading 2 method.md call 1: one tall symbol centred (538.0, 1516.0) px, x/c 0.800, P_B -0.158; that centre is 0.1 px from S04's (538.00, 1515.90), so S04's value (-0.1582) and errors are used; reading 2 states no separate error for it"
+"symbol M 2.41, reading 2 alternative",0.00,11.3e6,agree,,tri_xc0.0,-0.0005,0.0017,-0.1642,0.0020,as in the symbol rows,S12,,0.0007,0.0031,-0.1642,0.0008,-0.0012,+0.0000,0.0048,0.0028,"x/c 0.0 as ONE symbol (S12, flagged, R 11.3e6): reading 2 method.md call 2(b): only S12 is a symbol and carries the flag; value is S12's"
+"symbol M 2.41, reading 2 alternative",0.20,11.3e6,agree,,tri_xc0.2,0.1999,0.0017,-0.1679,0.0030,as in the symbol rows,ALT-S09-template,,0.2002,0.0028,-0.1676,0.0009,-0.0003,-0.0003,0.0045,0.0039,"S09 by the joint template fit: reading 2 method.md call 5: template fit 1.9 px lower on the page, P_B about -0.1676 (not adopted by reading 2: pulled by the faired curve); S09's errors used"
+faired curve M 2.41,1.00,,disagree,P_B,M2.41_9in_faired@1,1.0000,,-0.0737,0.0011,curve; n=20,C00,,1.0000,,-0.0675,0.0014,,-0.0062,,0.0025,reading 2: left end where the ink leaves the frame line; alternative to S02's apex
+faired curve M 2.41,0.95,,reading 1 only,,M2.41_9in_faired@0.95,0.9500,,-0.1118,0.0007,curve; n=117,,,,,,,,,,,
+faired curve M 2.41,0.90,,agree,,M2.41_9in_faired@0.9,0.9000,,-0.1402,0.0007,curve; n=18,C01,,0.9000,,-0.1409,0.0015,,+0.0007,,0.0022,
+faired curve M 2.41,0.85,,reading 1 only,,M2.41_9in_faired@0.85,0.8500,,-0.1538,0.0004,curve; n=8,,,,,,,,,,,
+faired curve M 2.41,0.80,,agree,,M2.41_9in_faired@0.8,0.8000,,-0.1595,0.0004,curve; n=8,C02,,0.8000,,-0.1600,0.0011,,+0.0005,,0.0015,reading 2: bridged across the symbols
+faired curve M 2.41,0.70,,agree,,M2.41_9in_faired@0.7,0.7000,,-0.1616,0.0004,curve; n=9,C03,,0.7000,,-0.1616,0.0005,,+0.0000,,0.0009,
+faired curve M 2.41,0.60,,agree,,M2.41_9in_faired@0.6,0.6000,,-0.1601,0.0004,curve; n=4,C04,,0.6000,,-0.1601,0.0009,,+0.0000,,0.0013,reading 2: bridged across the symbols
+faired curve M 2.41,0.50,,agree,,M2.41_9in_faired@0.5,0.5000,,-0.1628,0.0004,curve; n=11,C05,,0.5000,,-0.1629,0.0006,,+0.0001,,0.0010,
+faired curve M 2.41,0.40,,agree,,M2.41_9in_faired@0.4,0.4000,,-0.1714,0.0004,curve; n=9,C06,,0.4000,,-0.1712,0.0008,,-0.0002,,0.0012,reading 2: bridged across the symbols
+faired curve M 2.41,0.30,,agree,,M2.41_9in_faired@0.3,0.3000,,-0.1681,0.0004,curve; n=10,C07,,0.3000,,-0.1681,0.0006,,+0.0000,,0.0010,
+faired curve M 2.41,0.20,,agree,,M2.41_9in_faired@0.2,0.2000,,-0.1666,0.0004,curve; n=9,C08,,0.2000,,-0.1658,0.0009,,-0.0008,,0.0013,reading 2: bridged across the symbols
+faired curve M 2.41,0.10,,agree,,M2.41_9in_faired@0.1,0.1000,,-0.1646,0.0004,curve; n=6,C09,,0.1000,,-0.1645,0.0005,,-0.0001,,0.0009,
+faired curve M 2.41,,,reading 2 only,,,,,,,,C11,,0.0117,,-0.1648,0.0005,,,,,"reading 2: right end of the curve (last ink), not at a station"
+faired curve M 2.41,0.00,,agree,,M2.41_9in_faired@0,0.0000,,-0.1657,0.0004,curve; n=6,C10,,0.0000,,-0.1648,0.0008,,-0.0009,,0.0012,"reading 2: curve ends 7 px short; value carried to the station, not ink"
+ref. 26 M 1.50 (check),1.00,,agree,,M1.50_ref26_measured@1,1.0000,,-0.1800,0.0003,column read; at the frame,R01,,1.0000,,-0.1807,0.0008,,+0.0007,,0.0011,
+ref. 26 M 1.50 (check),0.90,,reading 1 only,,M1.50_ref26_measured@0.9,0.9000,,-0.1859,0.0004,curve; n=6,,,,,,,,,,,
+ref. 26 M 1.50 (check),0.80,,agree,,M1.50_ref26_measured@0.8,0.8000,,-0.1958,0.0004,curve; n=9,R02,,0.8000,,-0.1961,0.0008,,+0.0003,,0.0012,
+ref. 26 M 1.50 (check),0.70,,reading 1 only,,M1.50_ref26_measured@0.7,0.7000,,-0.2085,0.0004,curve; n=8,,,,,,,,,,,
+ref. 26 M 1.50 (check),0.60,,agree,,M1.50_ref26_measured@0.6,0.6000,,-0.2150,0.0004,curve; n=10,R03,,0.6000,,-0.2152,0.0006,,+0.0002,,0.0010,
+ref. 26 M 1.50 (check),0.50,,reading 1 only,,M1.50_ref26_measured@0.5,0.5000,,-0.2180,0.0003,curve; n=10,,,,,,,,,,,
+ref. 26 M 1.50 (check),0.40,,agree,,M1.50_ref26_measured@0.4,0.4000,,-0.2199,0.0004,curve; n=9,R04,,0.4000,,-0.2202,0.0010,,+0.0003,,0.0014,
+ref. 26 M 1.50 (check),0.30,,reading 1 only,,M1.50_ref26_measured@0.3,0.3000,,-0.2293,0.0004,curve; n=12,,,,,,,,,,,
+ref. 26 M 1.50 (check),0.20,,agree,,M1.50_ref26_measured@0.2,0.2000,,-0.2592,0.0007,curve; n=18,R05,,0.2000,,-0.2594,0.0015,,+0.0002,,0.0022,
+ref. 26 M 1.50 (check),0.10,,reading 1 only,,M1.50_ref26_measured@0.1,0.1000,,-0.3001,0.0007,curve; n=21,,,,,,,,,,,
+ref. 26 M 1.50 (check),0.00,,agree,,M1.50_ref26_measured@0,0.0000,,-0.3251,0.0004,curve; n=10,R06,,0.0000,,-0.3250,0.0006,,-0.0001,,0.0010,
+ref. 26 M 1.50 (check),-0.10,,reading 1 only,,M1.50_ref26_measured@-0.1,-0.1000,,-0.3276,0.0004,curve; n=7,,,,,,,,,,,
+ref. 26 M 1.50 (check),-0.20,,reading 1 only,,M1.50_ref26_measured@-0.2,-0.2000,,-0.3294,0.0004,curve; n=6,,,,,,,,,,,
+ref. 26 M 1.50 (check),-0.30,,reading 1 only,,M1.50_ref26_measured@-0.3,-0.3000,,-0.3391,0.0005,curve; n=14,,,,,,,,,,,
+ref. 26 M 1.50 (check),-0.40,,reading 1 only,,M1.50_ref26_measured@-0.4,-0.4000,,-0.3650,0.0004,curve; n=10,,,,,,,,,,,
+ref. 26 M 1.50 (check),-0.50,,reading 1 only,,M1.50_ref26_measured@-0.5,-0.5000,,-0.3355,0.0006,curve; n=19,,,,,,,,,,,
+ref. 26 M 1.50 (check),-0.60,,reading 1 only,,M1.50_ref26_measured@-0.6,-0.6000,,-0.2892,0.0007,curve; n=15,,,,,,,,,,,
+ref. 26 M 1.50 (check),-0.70,,reading 1 only,,M1.50_ref26_measured@-0.7,-0.7000,,-0.2389,0.0008,curve; n=17,,,,,,,,,,,
+ref. 26 M 1.50 (check),-0.80,,reading 1 only,,M1.50_ref26_measured@-0.8,-0.8000,,-0.1878,0.0008,curve; n=18,,,,,,,,,,,
+ref. 26 M 1.50 (check),-0.90,,reading 1 only,,M1.50_ref26_measured@-0.9,-0.9000,,-0.1355,0.0010,curve; n=18,,,,,,,,,,,
+ref. 26 M 1.50 (check),-1.00,,reading 1 only,,M1.50_ref26_measured@-1,-1.0000,,-0.0999,0.0004,curve; n=4,,,,,,,,,,,
+ref. 26 M 2.00 (check),1.00,,agree,,M2.00_ref26_measured@1,1.0000,,-0.1643,0.0003,column read; at the frame,R07,,1.0000,,-0.1646,0.0008,,+0.0003,,0.0011,
+ref. 26 M 2.00 (check),0.90,,reading 1 only,,M2.00_ref26_measured@0.9,0.9000,,-0.1661,0.0003,column read,,,,,,,,,,,
+ref. 26 M 2.00 (check),0.80,,agree,,M2.00_ref26_measured@0.8,0.8000,,-0.1695,0.0004,curve; n=10,R08,,0.8000,,-0.1698,0.0006,,+0.0003,,0.0010,
+ref. 26 M 2.00 (check),0.70,,reading 1 only,,M2.00_ref26_measured@0.7,0.7000,,-0.1750,0.0004,curve; n=10,,,,,,,,,,,
+ref. 26 M 2.00 (check),0.60,,agree,,M2.00_ref26_measured@0.6,0.6000,,-0.1824,0.0004,curve; n=10,R09,,0.6000,,-0.1826,0.0007,,+0.0002,,0.0011,
+ref. 26 M 2.00 (check),0.50,,reading 1 only,,M2.00_ref26_measured@0.5,0.5000,,-0.1935,0.0004,curve; n=9,,,,,,,,,,,
+ref. 26 M 2.00 (check),0.40,,agree,,M2.00_ref26_measured@0.4,0.4000,,-0.2083,0.0004,curve; n=12,R10,,0.4000,,-0.2082,0.0015,,-0.0001,,0.0019,
+ref. 26 M 2.00 (check),0.30,,reading 1 only,,M2.00_ref26_measured@0.3,0.3000,,-0.2199,0.0009,curve; n=11,,,,,,,,,,,
+ref. 26 M 2.00 (check),0.20,,agree,,M2.00_ref26_measured@0.2,0.2000,,-0.2107,0.0004,curve; n=10,R11,,0.2000,,-0.2106,0.0006,,-0.0001,,0.0010,
+ref. 26 M 2.00 (check),0.10,,reading 1 only,,M2.00_ref26_measured@0.1,0.1000,,-0.2067,0.0004,curve; n=6,,,,,,,,,,,
+ref. 26 M 2.00 (check),0.00,,agree,,M2.00_ref26_measured@0,0.0000,,-0.2005,0.0003,column read; circles curve at -0.206 and P-M at -0.185 either side,R12,,0.0000,,-0.2005,0.0010,,+0.0000,,0.0013,
+ref. 26 M 2.00 (check),-0.10,,reading 1 only,,M2.00_ref26_measured@-0.1,-0.1000,,-0.1929,0.0020,column read; extra 0.002; crosses the P-M line here,,,,,,,,,,,reading 1: column read; extra 0.002; crosses the P-M line here
+ref. 26 M 2.00 (check),-0.20,,reading 1 only,,M2.00_ref26_measured@-0.2,-0.2000,,-0.1849,0.0004,curve; n=8,,,,,,,,,,,
+ref. 26 M 2.00 (check),-0.30,,reading 1 only,,M2.00_ref26_measured@-0.3,-0.3000,,-0.1861,0.0004,curve; n=5,,,,,,,,,,,
+ref. 26 M 2.00 (check),-0.40,,reading 1 only,,M2.00_ref26_measured@-0.4,-0.4000,,-0.1960,0.0004,curve; n=11,,,,,,,,,,,
+ref. 26 M 2.00 (check),-0.50,,reading 1 only,,M2.00_ref26_measured@-0.5,-0.5000,,-0.2027,0.0004,curve; n=6,,,,,,,,,,,
+ref. 26 M 2.00 (check),-0.60,,reading 1 only,,M2.00_ref26_measured@-0.6,-0.6000,,-0.1984,0.0020,curve; n=10; extra 0.002,,,,,,,,,,,reading 1: curve; n=10; extra 0.002
+ref. 26 M 2.00 (check),-0.70,,reading 1 only,,M2.00_ref26_measured@-0.7,-0.7000,,-0.1813,0.0021,curve; n=16; extra 0.002,,,,,,,,,,,reading 1: curve; n=16; extra 0.002
+ref. 26 M 2.00 (check),-0.80,,reading 1 only,,M2.00_ref26_measured@-0.8,-0.8000,,-0.1544,0.0021,curve; n=11; extra 0.002,,,,,,,,,,,reading 1: curve; n=11; extra 0.002
+ref. 26 M 2.00 (check),-0.90,,reading 1 only,,M2.00_ref26_measured@-0.9,-0.9000,,-0.1262,0.0020,curve; n=5; extra 0.002,,,,,,,,,,,reading 1: curve; n=5; extra 0.002
+ref. 26 M 2.00 (check),-1.00,,reading 1 only,,M2.00_ref26_measured@-1,-1.0000,,-0.0998,0.0020,curve; n=5; extra 0.002,,,,,,,,,,,reading 1: curve; n=5; extra 0.002
+"faired curve M 2.41, reading 2 alternative",1.00,,disagree,P_B,M2.41_9in_faired@1,1.0000,,-0.0737,0.0011,,ALT-C00-hidden,,1.0000,,-0.0636,0.0014,,-0.0101,,0.0025,"reading 2 method.md call 6 and C00 notes: the curve may continue hidden in the frame line to S02's apex, P_B about -0.0636; C00's error used (none stated for the alternative)"
+legend key (not data),,2.8e6,not paired (legend key),,,,,,,,K01,open triangle,,,,,,,,,reading 2's legend key; reading 1 lists none
+legend key (not data),,11.3e6,not paired (legend key),,,,,,,,K02,flagged triangle,,,,,,,,,reading 2's legend key; reading 1 lists none

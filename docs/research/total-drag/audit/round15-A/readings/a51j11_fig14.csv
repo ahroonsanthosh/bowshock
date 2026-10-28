@@ -1,0 +1,321 @@
+# Cleary and Stevens, NACA RM A51J11 (1951), NTRS 19930087063, fig. 14, PDF page 36 (printed page 35)
+# SHA-256 of the PDF: e6b779125d8359e968ad6b4d2b2c43d651ef5024f42bdb5574a6f7b93a8fdf57
+# image read: pdftoppm -r 600 -gray render of PDF page 36, 4692 x 6200 px (the embedded scan is a 2344 x 3096 px 300 dpi JPEG, so the render is a 2x upsample)
+# x: Mach number, M (printed "Mach number, M"); scale .5 to 1.2, grid every 0.05
+# y: Base pressure coefficient, P_b (printed "Base pressure coefficient, P_b"), axis runs 0 (bottom) to -1.2 (top), grid every 0.2; RM A51J11 has no NOTATION section and its symbol definitions were not opened
+# caption: "Figure 14.-The variation of base pressure coefficient with Mach number at semispan station 2y/b, 0.25. Angle of attack, 0 deg."
+# legend (top panel): solid line = "Without surface roughness"; dashed line = "With surface roughness"; panels labelled h/t, 1.0 (top), h/t, 0.6 (middle), h/t, 0.3 (bottom)
+# no plotted symbols in this figure: only faired curves
+# calibration f14_top: 15 vertical grid lines (values 0.5 to 1.2), 6 horizontal (-1.2 to 0.0); each line fitted over its length (x = a + b*y, y = c + e*x); common slopes dx/dy -0.01378, dy/dx 0.00547 (rotation and skew); x units/px 0.000279, y units/px 0.001128; residuals of the linear value fit: x max 0.00057 rms 0.00025 (leave-one-out rms 0.00030); y max 0.00143 rms 0.00091 (leave-one-out rms 0.00144)
+# per-line residuals f14_top (value: resid, loo): 0.5: +0.00057, +0.00075; 0.55: -0.00044, -0.00054; 0.6: -0.00012, -0.00014; 0.65: +0.00002, +0.00003; 0.7: -0.00001, -0.00001; 0.75: +0.00009, +0.00010; 0.8: -0.00024, -0.00026; 0.85: -0.00011, -0.00012; 0.9: +0.00014, +0.00015; 0.95: -0.00005, -0.00006; 1.0: -0.00027, -0.00030; 1.05: +0.00022, +0.00025; 1.1: +0.00030, +0.00036; 1.15: +0.00013, +0.00016; 1.2: -0.00023, -0.00031; -1.2: -0.00143, -0.00271; -1.0: +0.00083, +0.00116; -0.8: +0.00139, +0.00171; -0.6: -0.00010, -0.00012; -0.4: -0.00041, -0.00054; 0.0: -0.00028, -0.00078
+# calibration f14_mid: 15 vertical grid lines (values 0.5 to 1.2), 7 horizontal (-1.2 to 0.0); each line fitted over its length (x = a + b*y, y = c + e*x); common slopes dx/dy -0.00876, dy/dx 0.00446 (rotation and skew); x units/px 0.000279, y units/px 0.001122; residuals of the linear value fit: x max 0.00072 rms 0.00028 (leave-one-out rms 0.00035); y max 0.00213 rms 0.00131 (leave-one-out rms 0.00192)
+# per-line residuals f14_mid (value: resid, loo): 0.5: +0.00072, +0.00095; 0.55: -0.00034, -0.00043; 0.6: -0.00030, -0.00036; 0.65: +0.00000, +0.00000; 0.7: -0.00007, -0.00008; 0.75: -0.00003, -0.00003; 0.8: -0.00012, -0.00013; 0.85: -0.00001, -0.00001; 0.9: +0.00008, +0.00008; 0.95: +0.00004, +0.00004; 1.0: -0.00025, -0.00027; 1.05: +0.00028, +0.00032; 1.1: -0.00011, -0.00013; 1.15: -0.00029, -0.00036; 1.2: +0.00041, +0.00053; -1.2: +0.00045, +0.00085; -1.0: -0.00213, -0.00299; -0.8: +0.00009, +0.00011; -0.6: +0.00182, +0.00213; -0.4: +0.00067, +0.00082; -0.2: +0.00077, +0.00107; 0.0: -0.00167, -0.00313
+# calibration f14_bot: 15 vertical grid lines (values 0.5 to 1.2), 7 horizontal (-1.2 to 0.0); each line fitted over its length (x = a + b*y, y = c + e*x); common slopes dx/dy -0.00786, dy/dx 0.00348 (rotation and skew); x units/px 0.000280, y units/px 0.001121; residuals of the linear value fit: x max 0.00084 rms 0.00034 (leave-one-out rms 0.00042); y max 0.00197 rms 0.00124 (leave-one-out rms 0.00183)
+# per-line residuals f14_bot (value: resid, loo): 0.5: +0.00084, +0.00111; 0.55: -0.00015, -0.00019; 0.6: -0.00049, -0.00058; 0.65: +0.00027, +0.00031; 0.7: +0.00011, +0.00012; 0.75: -0.00018, -0.00020; 0.8: -0.00034, -0.00036; 0.85: -0.00023, -0.00025; 0.9: -0.00024, -0.00026; 0.95: -0.00009, -0.00010; 1.0: -0.00013, -0.00014; 1.05: +0.00016, +0.00019; 1.1: +0.00002, +0.00002; 1.15: -0.00012, -0.00015; 1.2: +0.00058, +0.00076; -1.2: +0.00032, +0.00060; -1.0: +0.00157, +0.00220; -0.8: -0.00053, -0.00064; -0.6: -0.00197, -0.00229; -0.4: -0.00055, -0.00067; -0.2: -0.00065, -0.00091; 0.0: +0.00180, +0.00337
+# error basis: 2sigma = about two standard deviations from calibration (2 x leave-one-out rms), centring (2 px at 600 dpi for RM A51J11, 3 px at 480 dpi for RM A52E01), local slope times the abscissa calibration error, and bridging residual where a gap was bridged; bound = a box that contains the line (merged ink, or a line hidden in a grid line)
+# columns: x and y in the plot units as printed; for fig. 8 x is the pressure coefficient and y the angle of attack
+id,kind,panel,series,symbol,filled,x,x_err,y,y_err,err_basis,flag,note
+f14_top|dashed|e0.600,curve_end,,"h/t = 1.0, with surface roughness",dashed line,,0.6004,0.0018,-0.5649,0.0040,2sigma,,"extreme ink at 0.5988 (walked 11 px past the trace, stop: ink ends); centreline end taken 5.8 px inside"
+f14_top|dashed|b0.610,box,,"h/t = 1.0, with surface roughness",dashed line,,0.6100,0.0006,-0.5672,0.0074,bound,uncertain,"ink merged with h/t = 1.0, without surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_top|dashed|b0.620,box,,"h/t = 1.0, with surface roughness",dashed line,,0.6200,0.0006,-0.5708,0.0084,bound,uncertain,"ink merged with h/t = 1.0, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.5737, other about -0.5680; which is which not certain here)"
+f14_top|dashed|b0.630,box,,"h/t = 1.0, with surface roughness",dashed line,,0.6300,0.0006,-0.5733,0.0106,bound,uncertain,"ink merged with h/t = 1.0, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.5784, other about -0.5682; which is which not certain here)"
+f14_top|dashed|b0.640,box,,"h/t = 1.0, with surface roughness",dashed line,,0.6400,0.0006,-0.5744,0.0065,bound,uncertain,"dash gap of 20 px bridged from ink either side; ink merged with h/t = 1.0, without surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_top|dashed|c0.650,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.6500,0.0006,-0.5725,0.0042,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|dashed|c0.660,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.6600,0.0006,-0.5759,0.0037,2sigma,,
+f14_top|dashed|c0.670,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.6700,0.0006,-0.5784,0.0037,2sigma,,
+f14_top|dashed|c0.680,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.6800,0.0006,-0.5816,0.0037,2sigma,,
+f14_top|dashed|c0.690,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.6900,0.0006,-0.5854,0.0037,2sigma,,
+f14_top|dashed|c0.700,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7000,0.0006,-0.5896,0.0044,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|dashed|c0.710,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7100,0.0006,-0.5970,0.0037,2sigma,,
+f14_top|dashed|c0.720,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7200,0.0006,-0.6004,0.0037,2sigma,,
+f14_top|dashed|c0.730,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7300,0.0006,-0.6052,0.0037,2sigma,,
+f14_top|dashed|c0.740,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7400,0.0006,-0.6085,0.0037,2sigma,,
+f14_top|dashed|c0.750,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7500,0.0006,-0.6176,0.0042,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|dashed|c0.760,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7600,0.0006,-0.6237,0.0037,2sigma,,
+f14_top|dashed|c0.770,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7700,0.0006,-0.6308,0.0037,2sigma,,
+f14_top|dashed|c0.780,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7800,0.0006,-0.6378,0.0037,2sigma,,
+f14_top|dashed|c0.790,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.7900,0.0006,-0.6444,0.0043,2sigma,,dash gap of 21 px bridged from ink either side
+f14_top|dashed|c0.800,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8000,0.0006,-0.6506,0.0043,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|dashed|c0.810,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8100,0.0006,-0.6561,0.0044,2sigma,,dash gap of 15 px bridged from ink either side
+f14_top|dashed|c0.820,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8200,0.0006,-0.6598,0.0037,2sigma,,
+f14_top|dashed|c0.830,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8300,0.0006,-0.6633,0.0042,2sigma,,dash gap of 19 px bridged from ink either side
+f14_top|dashed|c0.840,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8400,0.0006,-0.6674,0.0037,2sigma,,
+f14_top|dashed|c0.850,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8500,0.0006,-0.6719,0.0043,2sigma,,on grid line: bridged 19 px band from ink either side
+f14_top|dashed|c0.860,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8600,0.0006,-0.6771,0.0037,2sigma,,
+f14_top|dashed|c0.870,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8700,0.0006,-0.6821,0.0037,2sigma,,
+f14_top|dashed|c0.880,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8800,0.0006,-0.6874,0.0037,2sigma,,
+f14_top|dashed|c0.890,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.8900,0.0006,-0.6922,0.0037,2sigma,,
+f14_top|dashed|c0.900,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9000,0.0006,-0.7029,0.0049,2sigma,,on grid line: bridged 29 px band from ink either side
+f14_top|dashed|c0.910,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9100,0.0006,-0.7157,0.0038,2sigma,,
+f14_top|dashed|c0.920,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9200,0.0006,-0.7331,0.0047,2sigma,,dash gap of 16 px bridged from ink either side
+f14_top|dashed|c0.930,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9300,0.0006,-0.7538,0.0039,2sigma,,
+f14_top|dashed|c0.940,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9400,0.0006,-0.7793,0.0042,2sigma,,
+f14_top|dashed|c0.950,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9500,0.0006,-0.8092,0.0055,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|dashed|c0.960,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9600,0.0006,-0.8417,0.0042,2sigma,,
+f14_top|dashed|c0.970,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9700,0.0006,-0.8832,0.0072,2sigma,,dash gap of 12 px bridged from ink either side
+f14_top|dashed|c0.980,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9800,0.0006,-0.9266,0.0046,2sigma,,
+f14_top|dashed|c0.990,curve,,"h/t = 1.0, with surface roughness",dashed line,,0.9900,0.0006,-0.9783,0.0046,2sigma,,
+f14_top|dashed|c1.000,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0000,0.0006,-1.0124,0.0071,2sigma,,on grid line: bridged 21 px band from ink either side
+f14_top|dashed|c1.010,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0100,0.0006,-1.0345,0.0037,2sigma,,
+f14_top|dashed|c1.020,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0200,0.0006,-1.0335,0.0057,2sigma,,dash gap of 20 px bridged from ink either side
+f14_top|dashed|c1.030,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0300,0.0006,-1.0238,0.0038,2sigma,,
+f14_top|dashed|c1.040,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0400,0.0006,-0.9988,0.0038,2sigma,,
+f14_top|dashed|c1.050,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0500,0.0006,-0.9641,0.0061,2sigma,,on grid line: bridged 19 px band from ink either side
+f14_top|dashed|c1.060,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0600,0.0006,-0.9173,0.0048,2sigma,,
+f14_top|dashed|c1.070,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0700,0.0006,-0.8616,0.0046,2sigma,,
+f14_top|dashed|c1.080,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0800,0.0006,-0.8189,0.0042,2sigma,,
+f14_top|dashed|c1.090,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.0900,0.0006,-0.7867,0.0071,2sigma,,dash gap of 7 px bridged from ink either side
+f14_top|dashed|c1.100,curve,,"h/t = 1.0, with surface roughness",dashed line,,1.1000,0.0006,-0.7606,0.0049,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|dashed|e1.100,curve_end,,"h/t = 1.0, with surface roughness",dashed line,,1.1004,0.0019,-0.7599,0.0040,2sigma,,"extreme ink at 1.1021 (walked 0 px past the trace, stop: ink ends); centreline end taken 6.0 px inside"
+f14_top|solid|e0.600,curve_end,,"h/t = 1.0, without surface roughness",solid line,,0.6004,0.0018,-0.5649,0.0040,2sigma,,"extreme ink at 0.5988 (walked 11 px past the trace, stop: ink ends); centreline end taken 5.8 px inside"
+f14_top|solid|b0.610,box,,"h/t = 1.0, without surface roughness",solid line,,0.6100,0.0006,-0.5672,0.0074,bound,uncertain,"ink merged with h/t = 1.0, with surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_top|solid|b0.620,box,,"h/t = 1.0, without surface roughness",solid line,,0.6200,0.0006,-0.5708,0.0084,bound,uncertain,"ink merged with h/t = 1.0, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.5737, other about -0.5680; which is which not certain here)"
+f14_top|solid|b0.630,box,,"h/t = 1.0, without surface roughness",solid line,,0.6300,0.0006,-0.5733,0.0106,bound,uncertain,"ink merged with h/t = 1.0, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.5784, other about -0.5682; which is which not certain here)"
+f14_top|solid|c0.640,curve,,"h/t = 1.0, without surface roughness",solid line,,0.6400,0.0006,-0.5836,0.0037,2sigma,,
+f14_top|solid|c0.650,curve,,"h/t = 1.0, without surface roughness",solid line,,0.6500,0.0006,-0.5900,0.0051,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c0.660,curve,,"h/t = 1.0, without surface roughness",solid line,,0.6600,0.0006,-0.5966,0.0037,2sigma,,
+f14_top|solid|c0.670,curve,,"h/t = 1.0, without surface roughness",solid line,,0.6700,0.0006,-0.6019,0.0037,2sigma,,
+f14_top|solid|c0.680,curve,,"h/t = 1.0, without surface roughness",solid line,,0.6800,0.0006,-0.6075,0.0037,2sigma,,
+f14_top|solid|c0.690,curve,,"h/t = 1.0, without surface roughness",solid line,,0.6900,0.0006,-0.6159,0.0037,2sigma,,
+f14_top|solid|c0.700,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7000,0.0006,-0.6239,0.0045,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c0.710,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7100,0.0006,-0.6348,0.0037,2sigma,,
+f14_top|solid|c0.720,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7200,0.0006,-0.6435,0.0037,2sigma,,
+f14_top|solid|c0.730,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7300,0.0006,-0.6542,0.0037,2sigma,,
+f14_top|solid|c0.740,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7400,0.0006,-0.6656,0.0037,2sigma,,
+f14_top|solid|c0.750,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7500,0.0006,-0.6777,0.0047,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c0.760,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7600,0.0006,-0.6914,0.0038,2sigma,,
+f14_top|solid|c0.770,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7700,0.0006,-0.7052,0.0038,2sigma,,
+f14_top|solid|c0.780,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7800,0.0006,-0.7188,0.0038,2sigma,,
+f14_top|solid|c0.790,curve,,"h/t = 1.0, without surface roughness",solid line,,0.7900,0.0006,-0.7312,0.0037,2sigma,,
+f14_top|solid|c0.800,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8000,0.0006,-0.7425,0.0045,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c0.810,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8100,0.0006,-0.7499,0.0037,2sigma,,
+f14_top|solid|c0.820,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8200,0.0006,-0.7567,0.0037,2sigma,,
+f14_top|solid|c0.830,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8300,0.0006,-0.7629,0.0037,2sigma,,
+f14_top|solid|c0.840,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8400,0.0006,-0.7688,0.0037,2sigma,,
+f14_top|solid|c0.850,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8500,0.0006,-0.7742,0.0042,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c0.860,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8600,0.0006,-0.7801,0.0037,2sigma,,
+f14_top|solid|c0.870,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8700,0.0006,-0.7857,0.0037,2sigma,,
+f14_top|solid|c0.880,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8800,0.0006,-0.7924,0.0037,2sigma,,
+f14_top|solid|c0.890,curve,,"h/t = 1.0, without surface roughness",solid line,,0.8900,0.0006,-0.7980,0.0037,2sigma,,
+f14_top|solid|c0.900,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9000,0.0006,-0.8101,0.0053,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c0.910,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9100,0.0006,-0.8266,0.0039,2sigma,,
+f14_top|solid|c0.920,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9200,0.0006,-0.8514,0.0041,2sigma,,
+f14_top|solid|c0.930,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9300,0.0006,-0.8949,0.0049,2sigma,,
+f14_top|solid|c0.940,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9400,0.0006,-0.9512,0.0045,2sigma,,
+f14_top|solid|c0.950,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9500,0.0006,-0.9640,0.0080,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c0.960,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9600,0.0006,-0.9514,0.0039,2sigma,,
+f14_top|solid|c0.970,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9700,0.0006,-0.9297,0.0040,2sigma,,
+f14_top|solid|c0.980,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9800,0.0006,-0.9034,0.0041,2sigma,,
+f14_top|solid|c0.990,curve,,"h/t = 1.0, without surface roughness",solid line,,0.9900,0.0006,-0.8773,0.0040,2sigma,,
+f14_top|solid|c1.000,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0000,0.0006,-0.8514,0.0045,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c1.010,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0100,0.0006,-0.8269,0.0039,2sigma,,
+f14_top|solid|c1.020,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0200,0.0006,-0.8024,0.0039,2sigma,,
+f14_top|solid|c1.030,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0300,0.0006,-0.7813,0.0039,2sigma,,
+f14_top|solid|c1.040,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0400,0.0006,-0.7610,0.0039,2sigma,,
+f14_top|solid|c1.050,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0500,0.0006,-0.7394,0.0045,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_top|solid|c1.060,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0600,0.0006,-0.7180,0.0039,2sigma,,
+f14_top|solid|c1.070,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0700,0.0006,-0.6956,0.0039,2sigma,,
+f14_top|solid|c1.080,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0800,0.0006,-0.6702,0.0040,2sigma,,
+f14_top|solid|c1.090,curve,,"h/t = 1.0, without surface roughness",solid line,,1.0900,0.0006,-0.6449,0.0040,2sigma,,
+f14_top|solid|e1.100,curve_end,,"h/t = 1.0, without surface roughness",solid line,,1.1000,0.0017,-0.6153,0.0040,2sigma,,"extreme ink at 1.1016 (walked 12 px past the trace, stop: ink ends); centreline end taken 5.5 px inside"
+f14_mid|dashed|e0.600,curve_end,,"h/t = 0.6, with surface roughness",dashed line,,0.5997,0.0014,-0.4132,0.0048,2sigma,,"extreme ink at 0.5986 (walked 12 px past the trace, stop: ink ends); centreline end taken 4.0 px inside"
+f14_mid|dashed|c0.610,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6100,0.0007,-0.4174,0.0044,2sigma,,
+f14_mid|dashed|c0.620,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6200,0.0007,-0.4196,0.0049,2sigma,,dash gap of 23 px bridged from ink either side
+f14_mid|dashed|c0.630,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6300,0.0007,-0.4217,0.0044,2sigma,,
+f14_mid|dashed|c0.640,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6400,0.0007,-0.4245,0.0044,2sigma,,
+f14_mid|dashed|c0.650,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6500,0.0007,-0.4271,0.0049,2sigma,,on grid line: bridged 29 px band from ink either side
+f14_mid|dashed|c0.660,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6600,0.0007,-0.4295,0.0044,2sigma,,
+f14_mid|dashed|c0.670,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6700,0.0007,-0.4324,0.0049,2sigma,,dash gap of 22 px bridged from ink either side
+f14_mid|dashed|c0.680,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6800,0.0007,-0.4357,0.0045,2sigma,,
+f14_mid|dashed|c0.690,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.6900,0.0007,-0.4385,0.0049,2sigma,,dash gap of 23 px bridged from ink either side
+f14_mid|dashed|c0.700,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7000,0.0007,-0.4417,0.0049,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|dashed|c0.710,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7100,0.0007,-0.4468,0.0051,2sigma,,dash gap of 19 px bridged from ink either side
+f14_mid|dashed|c0.720,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7200,0.0007,-0.4518,0.0045,2sigma,,
+f14_mid|dashed|c0.730,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7300,0.0007,-0.4566,0.0049,2sigma,,dash gap of 23 px bridged from ink either side
+f14_mid|dashed|c0.740,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7400,0.0007,-0.4613,0.0045,2sigma,,
+f14_mid|dashed|c0.750,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7500,0.0007,-0.4663,0.0050,2sigma,,on grid line: bridged 24 px band from ink either side
+f14_mid|dashed|c0.760,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7600,0.0007,-0.4714,0.0045,2sigma,,
+f14_mid|dashed|c0.770,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7700,0.0007,-0.4764,0.0045,2sigma,,
+f14_mid|dashed|c0.780,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7800,0.0007,-0.4824,0.0045,2sigma,,
+f14_mid|dashed|c0.790,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.7900,0.0007,-0.4882,0.0045,2sigma,,
+f14_mid|dashed|c0.800,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8000,0.0007,-0.4968,0.0050,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|dashed|c0.810,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8100,0.0007,-0.5024,0.0045,2sigma,,
+f14_mid|dashed|c0.820,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8200,0.0007,-0.5082,0.0045,2sigma,,
+f14_mid|dashed|c0.830,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8300,0.0007,-0.5173,0.0045,2sigma,,
+f14_mid|dashed|c0.840,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8400,0.0007,-0.5252,0.0045,2sigma,,
+f14_mid|dashed|c0.850,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8500,0.0007,-0.5341,0.0049,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|dashed|c0.860,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8600,0.0007,-0.5429,0.0045,2sigma,,
+f14_mid|dashed|c0.870,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8700,0.0007,-0.5522,0.0045,2sigma,,
+f14_mid|dashed|c0.880,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.8800,0.0007,-0.5601,0.0045,2sigma,,
+f14_mid|dashed|b0.890,box,,"h/t = 0.6, with surface roughness",dashed line,,0.8900,0.0007,-0.5671,0.0103,bound,uncertain,"ink merged with h/t = 0.6, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.5722, other about -0.5621; which is which not certain here)"
+f14_mid|dashed|b0.900,box,,"h/t = 0.6, with surface roughness",dashed line,,0.9000,0.0007,-0.5892,0.0072,bound,uncertain,"on grid line: bridged 26 px band from ink either side; ink merged with h/t = 0.6, without surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_mid|dashed|c0.910,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9100,0.0007,-0.6079,0.0047,2sigma,,
+f14_mid|dashed|c0.920,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9200,0.0007,-0.6354,0.0048,2sigma,,
+f14_mid|dashed|c0.930,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9300,0.0007,-0.6643,0.0048,2sigma,,
+f14_mid|dashed|c0.940,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9400,0.0007,-0.6942,0.0049,2sigma,,
+f14_mid|dashed|c0.950,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9500,0.0007,-0.7255,0.0058,2sigma,,on grid line: bridged 18 px band from ink either side
+f14_mid|dashed|c0.960,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9600,0.0007,-0.7575,0.0050,2sigma,,
+f14_mid|dashed|c0.970,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9700,0.0007,-0.7961,0.0047,2sigma,,
+f14_mid|dashed|c0.980,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9800,0.0007,-0.8251,0.0050,2sigma,,
+f14_mid|dashed|c0.990,curve,,"h/t = 0.6, with surface roughness",dashed line,,0.9900,0.0007,-0.8691,0.0053,2sigma,,
+f14_mid|dashed|c1.000,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0000,0.0007,-0.8956,0.0054,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|dashed|c1.010,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0100,0.0007,-0.9108,0.0045,2sigma,,
+f14_mid|dashed|c1.020,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0200,0.0007,-0.9055,0.0045,2sigma,,
+f14_mid|dashed|c1.030,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0300,0.0007,-0.8853,0.0065,2sigma,,dash gap of 17 px bridged from ink either side
+f14_mid|dashed|c1.040,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0400,0.0007,-0.8585,0.0048,2sigma,,
+f14_mid|dashed|c1.050,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0500,0.0007,-0.8222,0.0068,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|dashed|c1.060,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0600,0.0007,-0.7841,0.0066,2sigma,,dash gap of 12 px bridged from ink either side
+f14_mid|dashed|c1.070,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0700,0.0007,-0.7450,0.0051,2sigma,,
+f14_mid|dashed|c1.080,curve,,"h/t = 0.6, with surface roughness",dashed line,,1.0800,0.0007,-0.7072,0.0052,2sigma,,
+f14_mid|dashed|e1.083,curve_end,,"h/t = 0.6, with surface roughness",dashed line,,1.0828,0.0015,-0.6979,0.0048,2sigma,,"extreme ink at 1.0840 (walked 1 px past the trace, stop: ink ends); centreline end taken 4.5 px inside"
+f14_mid|solid|e0.601,curve_end,,"h/t = 0.6, without surface roughness",solid line,,0.6008,0.0014,-0.3202,0.0048,2sigma,,"extreme ink at 0.5997 (walked 8 px past the trace, stop: ink ends); centreline end taken 4.0 px inside"
+f14_mid|solid|c0.610,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6100,0.0007,-0.3208,0.0044,2sigma,,
+f14_mid|solid|c0.620,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6200,0.0007,-0.3226,0.0044,2sigma,,
+f14_mid|solid|c0.630,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6300,0.0007,-0.3242,0.0044,2sigma,,
+f14_mid|solid|c0.640,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6400,0.0007,-0.3253,0.0044,2sigma,,
+f14_mid|solid|c0.650,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6500,0.0007,-0.3273,0.0048,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c0.660,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6600,0.0007,-0.3288,0.0044,2sigma,,
+f14_mid|solid|c0.670,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6700,0.0007,-0.3313,0.0044,2sigma,,
+f14_mid|solid|c0.680,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6800,0.0007,-0.3333,0.0044,2sigma,,
+f14_mid|solid|c0.690,curve,,"h/t = 0.6, without surface roughness",solid line,,0.6900,0.0007,-0.3349,0.0044,2sigma,,
+f14_mid|solid|c0.700,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7000,0.0007,-0.3370,0.0049,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c0.710,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7100,0.0007,-0.3389,0.0045,2sigma,,
+f14_mid|solid|c0.720,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7200,0.0007,-0.3431,0.0044,2sigma,,
+f14_mid|solid|c0.730,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7300,0.0007,-0.3458,0.0044,2sigma,,
+f14_mid|solid|c0.740,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7400,0.0007,-0.3481,0.0044,2sigma,,
+f14_mid|solid|c0.750,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7500,0.0007,-0.3505,0.0049,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c0.760,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7600,0.0007,-0.3541,0.0045,2sigma,,
+f14_mid|solid|c0.770,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7700,0.0007,-0.3578,0.0045,2sigma,,
+f14_mid|solid|c0.780,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7800,0.0007,-0.3613,0.0045,2sigma,,
+f14_mid|solid|c0.790,curve,,"h/t = 0.6, without surface roughness",solid line,,0.7900,0.0007,-0.3669,0.0045,2sigma,,
+f14_mid|solid|c0.800,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8000,0.0007,-0.3729,0.0049,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c0.810,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8100,0.0007,-0.3801,0.0045,2sigma,,
+f14_mid|solid|c0.820,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8200,0.0007,-0.3917,0.0045,2sigma,,
+f14_mid|solid|c0.830,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8300,0.0007,-0.4008,0.0045,2sigma,,
+f14_mid|solid|c0.840,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8400,0.0007,-0.4144,0.0046,2sigma,,
+f14_mid|solid|c0.850,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8500,0.0007,-0.4345,0.0053,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c0.860,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8600,0.0007,-0.4574,0.0048,2sigma,,
+f14_mid|solid|c0.870,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8700,0.0007,-0.4881,0.0050,2sigma,,
+f14_mid|solid|c0.880,curve,,"h/t = 0.6, without surface roughness",solid line,,0.8800,0.0007,-0.5254,0.0052,2sigma,,
+f14_mid|solid|b0.890,box,,"h/t = 0.6, without surface roughness",solid line,,0.8900,0.0007,-0.5671,0.0103,bound,uncertain,"ink merged with h/t = 0.6, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.5722, other about -0.5621; which is which not certain here)"
+f14_mid|solid|c0.900,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9000,0.0007,-0.6046,0.0072,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c0.910,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9100,0.0007,-0.6437,0.0051,2sigma,,
+f14_mid|solid|c0.920,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9200,0.0007,-0.6798,0.0051,2sigma,,
+f14_mid|solid|c0.930,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9300,0.0007,-0.7140,0.0050,2sigma,,
+f14_mid|solid|c0.940,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9400,0.0007,-0.7465,0.0050,2sigma,,
+f14_mid|solid|c0.950,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9500,0.0007,-0.7806,0.0059,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c0.960,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9600,0.0007,-0.8127,0.0050,2sigma,,
+f14_mid|solid|c0.970,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9700,0.0007,-0.8443,0.0048,2sigma,,
+f14_mid|solid|c0.980,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9800,0.0007,-0.8597,0.0044,2sigma,,
+f14_mid|solid|c0.990,curve,,"h/t = 0.6, without surface roughness",solid line,,0.9900,0.0007,-0.8477,0.0048,2sigma,,
+f14_mid|solid|c1.000,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0000,0.0007,-0.8196,0.0062,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c1.010,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0100,0.0007,-0.7947,0.0047,2sigma,,
+f14_mid|solid|c1.020,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0200,0.0007,-0.7710,0.0047,2sigma,,
+f14_mid|solid|c1.030,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0300,0.0007,-0.7487,0.0047,2sigma,,
+f14_mid|solid|c1.040,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0400,0.0007,-0.7296,0.0046,2sigma,,
+f14_mid|solid|c1.050,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0500,0.0007,-0.7106,0.0052,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_mid|solid|c1.060,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0600,0.0007,-0.6922,0.0046,2sigma,,
+f14_mid|solid|c1.070,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0700,0.0007,-0.6732,0.0046,2sigma,,
+f14_mid|solid|c1.080,curve,,"h/t = 0.6, without surface roughness",solid line,,1.0800,0.0007,-0.6560,0.0046,2sigma,,
+f14_mid|solid|e1.080,curve_end,,"h/t = 0.6, without surface roughness",solid line,,1.0804,0.0016,-0.6557,0.0048,2sigma,,"extreme ink at 1.0818 (walked 0 px past the trace, stop: ink ends); centreline end taken 4.8 px inside"
+f14_bot|dashed|e0.600,curve_end,,"h/t = 0.3, with surface roughness",dashed line,,0.6003,0.0020,-0.1573,0.0046,2sigma,,"extreme ink at 0.5986 (walked 11 px past the trace, stop: ink ends); centreline end taken 6.0 px inside"
+f14_bot|dashed|b0.610,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6100,0.0008,-0.1585,0.0077,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|dashed|b0.620,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6200,0.0008,-0.1614,0.0062,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|dashed|b0.630,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6300,0.0008,-0.1593,0.0082,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1615, other about -0.1570; which is which not certain here)"
+f14_bot|dashed|b0.640,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6400,0.0008,-0.1622,0.0058,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|dashed|b0.650,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6500,0.0008,-0.1604,0.0062,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, without surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|dashed|b0.660,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6600,0.0008,-0.1631,0.0062,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|dashed|b0.670,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6700,0.0008,-0.1604,0.0077,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|dashed|b0.680,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6800,0.0008,-0.1617,0.0077,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|dashed|b0.690,box,,"h/t = 0.3, with surface roughness",dashed line,,0.6900,0.0008,-0.1607,0.0087,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1635, other about -0.1579; which is which not certain here)"
+f14_bot|dashed|b0.700,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7000,0.0008,-0.1620,0.0071,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, without surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|dashed|b0.710,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7100,0.0008,-0.1610,0.0087,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1638, other about -0.1582; which is which not certain here)"
+f14_bot|dashed|b0.720,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7200,0.0008,-0.1628,0.0092,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1661, other about -0.1594; which is which not certain here)"
+f14_bot|dashed|b0.730,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7300,0.0008,-0.1629,0.0092,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1663, other about -0.1596; which is which not certain here)"
+f14_bot|dashed|b0.740,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7400,0.0008,-0.1636,0.0097,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1675, other about -0.1597; which is which not certain here)"
+f14_bot|dashed|b0.750,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7500,0.0008,-0.1652,0.0070,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, without surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|dashed|b0.760,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7600,0.0008,-0.1645,0.0102,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1689, other about -0.1600; which is which not certain here)"
+f14_bot|dashed|b0.770,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7700,0.0008,-0.1646,0.0102,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1691, other about -0.1601; which is which not certain here)"
+f14_bot|dashed|b0.780,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7800,0.0008,-0.1659,0.0102,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1703, other about -0.1614; which is which not certain here)"
+f14_bot|dashed|b0.790,box,,"h/t = 0.3, with surface roughness",dashed line,,0.7900,0.0008,-0.1660,0.0113,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1716, other about -0.1604; which is which not certain here)"
+f14_bot|dashed|b0.800,box,,"h/t = 0.3, with surface roughness",dashed line,,0.8000,0.0008,-0.1638,0.0071,bound,uncertain,"on grid line: bridged 24 px band from ink either side; ink merged with h/t = 0.3, without surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|dashed|c0.810,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8100,0.0008,-0.1598,0.0043,2sigma,,
+f14_bot|dashed|c0.820,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8200,0.0008,-0.1601,0.0048,2sigma,,dash gap of 21 px bridged from ink either side
+f14_bot|dashed|c0.830,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8300,0.0008,-0.1599,0.0043,2sigma,,
+f14_bot|dashed|c0.840,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8400,0.0008,-0.1604,0.0048,2sigma,,dash gap of 19 px bridged from ink either side
+f14_bot|dashed|c0.850,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8500,0.0008,-0.1606,0.0047,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_bot|dashed|c0.860,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8600,0.0008,-0.1607,0.0043,2sigma,,
+f14_bot|dashed|c0.870,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8700,0.0008,-0.1600,0.0043,2sigma,,
+f14_bot|dashed|c0.880,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8800,0.0008,-0.1603,0.0043,2sigma,,
+f14_bot|dashed|c0.890,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.8900,0.0008,-0.1587,0.0043,2sigma,,
+f14_bot|dashed|c0.900,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.9000,0.0008,-0.1579,0.0053,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_bot|dashed|c0.910,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.9100,0.0008,-0.1742,0.0047,2sigma,,
+f14_bot|dashed|c0.920,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.9200,0.0008,-0.2015,0.0045,2sigma,,
+f14_bot|dashed|c0.930,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.9300,0.0008,-0.2359,0.0054,2sigma,,
+f14_bot|dashed|c0.940,curve,,"h/t = 0.3, with surface roughness",dashed line,,0.9400,0.0008,-0.2824,0.0067,2sigma,,
+f14_bot|dashed|b0.950,box,,"h/t = 0.3, with surface roughness",dashed line,,0.9500,0.0008,-0.3602,0.0140,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, without surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|dashed|b0.960,box,,"h/t = 0.3, with surface roughness",dashed line,,0.9600,0.0008,-0.4502,0.0183,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.4631, other about -0.4373; which is which not certain here)"
+f14_bot|dashed|b0.970,box,,"h/t = 0.3, with surface roughness",dashed line,,0.9700,0.0008,-0.5489,0.0183,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.5618, other about -0.5360; which is which not certain here)"
+f14_bot|dashed|b0.980,box,,"h/t = 0.3, with surface roughness",dashed line,,0.9800,0.0008,-0.6634,0.0139,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.6718, other about -0.6550; which is which not certain here)"
+f14_bot|dashed|b0.990,box,,"h/t = 0.3, with surface roughness",dashed line,,0.9900,0.0008,-0.7038,0.0087,bound,uncertain,"ink merged with h/t = 0.3, without surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.7066, other about -0.7010; which is which not certain here)"
+f14_bot|dashed|c1.000,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0000,0.0008,-0.7181,0.0082,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_bot|dashed|c1.010,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0100,0.0008,-0.7141,0.0059,2sigma,,dash gap of 16 px bridged from ink either side
+f14_bot|dashed|c1.020,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0200,0.0008,-0.7034,0.0044,2sigma,,
+f14_bot|dashed|c1.030,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0300,0.0008,-0.6925,0.0052,2sigma,,dash gap of 16 px bridged from ink either side
+f14_bot|dashed|c1.040,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0400,0.0008,-0.6810,0.0044,2sigma,,
+f14_bot|dashed|c1.050,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0500,0.0008,-0.6707,0.0053,2sigma,,on grid line: bridged 26 px band from ink either side
+f14_bot|dashed|c1.060,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0600,0.0008,-0.6583,0.0044,2sigma,,
+f14_bot|dashed|c1.070,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0700,0.0008,-0.6459,0.0044,2sigma,,
+f14_bot|dashed|e1.079,curve_end,,"h/t = 0.3, with surface roughness",dashed line,,1.0790,0.0014,-0.6355,0.0046,2sigma,,"extreme ink at 1.0800 (walked 0 px past the trace, stop: ink ends); centreline end taken 3.5 px inside"
+f14_bot|dashed|c1.080,curve,,"h/t = 0.3, with surface roughness",dashed line,,1.0800,0.0008,-0.6348,0.0044,2sigma,,
+f14_bot|solid|e0.600,curve_end,,"h/t = 0.3, without surface roughness",solid line,,0.6003,0.0020,-0.1573,0.0046,2sigma,,"extreme ink at 0.5986 (walked 11 px past the trace, stop: ink ends); centreline end taken 6.0 px inside"
+f14_bot|solid|b0.610,box,,"h/t = 0.3, without surface roughness",solid line,,0.6100,0.0008,-0.1585,0.0077,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|solid|b0.620,box,,"h/t = 0.3, without surface roughness",solid line,,0.6200,0.0008,-0.1614,0.0062,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|solid|b0.630,box,,"h/t = 0.3, without surface roughness",solid line,,0.6300,0.0008,-0.1593,0.0082,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1615, other about -0.1570; which is which not certain here)"
+f14_bot|solid|b0.640,box,,"h/t = 0.3, without surface roughness",solid line,,0.6400,0.0008,-0.1622,0.0058,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|solid|b0.650,box,,"h/t = 0.3, without surface roughness",solid line,,0.6500,0.0008,-0.1604,0.0062,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, with surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|solid|b0.660,box,,"h/t = 0.3, without surface roughness",solid line,,0.6600,0.0008,-0.1631,0.0062,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|solid|b0.670,box,,"h/t = 0.3, without surface roughness",solid line,,0.6700,0.0008,-0.1604,0.0077,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|solid|b0.680,box,,"h/t = 0.3, without surface roughness",solid line,,0.6800,0.0008,-0.1617,0.0077,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (the two lines coincide within one line width here)"
+f14_bot|solid|b0.690,box,,"h/t = 0.3, without surface roughness",solid line,,0.6900,0.0008,-0.1607,0.0087,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1635, other about -0.1579; which is which not certain here)"
+f14_bot|solid|b0.700,box,,"h/t = 0.3, without surface roughness",solid line,,0.7000,0.0008,-0.1620,0.0071,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, with surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|solid|b0.710,box,,"h/t = 0.3, without surface roughness",solid line,,0.7100,0.0008,-0.1610,0.0087,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1638, other about -0.1582; which is which not certain here)"
+f14_bot|solid|b0.720,box,,"h/t = 0.3, without surface roughness",solid line,,0.7200,0.0008,-0.1628,0.0092,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1661, other about -0.1594; which is which not certain here)"
+f14_bot|solid|b0.730,box,,"h/t = 0.3, without surface roughness",solid line,,0.7300,0.0008,-0.1629,0.0092,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1663, other about -0.1596; which is which not certain here)"
+f14_bot|solid|b0.740,box,,"h/t = 0.3, without surface roughness",solid line,,0.7400,0.0008,-0.1636,0.0097,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1675, other about -0.1597; which is which not certain here)"
+f14_bot|solid|b0.750,box,,"h/t = 0.3, without surface roughness",solid line,,0.7500,0.0008,-0.1652,0.0070,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, with surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|solid|b0.760,box,,"h/t = 0.3, without surface roughness",solid line,,0.7600,0.0008,-0.1645,0.0102,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1689, other about -0.1600; which is which not certain here)"
+f14_bot|solid|b0.770,box,,"h/t = 0.3, without surface roughness",solid line,,0.7700,0.0008,-0.1646,0.0102,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1691, other about -0.1601; which is which not certain here)"
+f14_bot|solid|b0.780,box,,"h/t = 0.3, without surface roughness",solid line,,0.7800,0.0008,-0.1659,0.0102,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1703, other about -0.1614; which is which not certain here)"
+f14_bot|solid|b0.790,box,,"h/t = 0.3, without surface roughness",solid line,,0.7900,0.0008,-0.1660,0.0113,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.1716, other about -0.1604; which is which not certain here)"
+f14_bot|solid|b0.800,box,,"h/t = 0.3, without surface roughness",solid line,,0.8000,0.0008,-0.1704,0.0069,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, with surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|solid|c0.810,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8100,0.0008,-0.1751,0.0043,2sigma,,
+f14_bot|solid|c0.820,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8200,0.0008,-0.1766,0.0043,2sigma,,
+f14_bot|solid|c0.830,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8300,0.0008,-0.1781,0.0043,2sigma,,
+f14_bot|solid|c0.840,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8400,0.0008,-0.1798,0.0043,2sigma,,
+f14_bot|solid|c0.850,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8500,0.0008,-0.1814,0.0047,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_bot|solid|c0.860,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8600,0.0008,-0.1832,0.0043,2sigma,,
+f14_bot|solid|c0.870,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8700,0.0008,-0.1845,0.0043,2sigma,,
+f14_bot|solid|c0.880,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8800,0.0008,-0.1864,0.0043,2sigma,,
+f14_bot|solid|c0.890,curve,,"h/t = 0.3, without surface roughness",solid line,,0.8900,0.0008,-0.1917,0.0043,2sigma,,
+f14_bot|solid|c0.900,curve,,"h/t = 0.3, without surface roughness",solid line,,0.9000,0.0008,-0.1953,0.0064,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_bot|solid|c0.910,curve,,"h/t = 0.3, without surface roughness",solid line,,0.9100,0.0008,-0.2071,0.0046,2sigma,,
+f14_bot|solid|c0.920,curve,,"h/t = 0.3, without surface roughness",solid line,,0.9200,0.0008,-0.2341,0.0049,2sigma,,
+f14_bot|solid|c0.930,curve,,"h/t = 0.3, without surface roughness",solid line,,0.9300,0.0008,-0.2659,0.0053,2sigma,,
+f14_bot|solid|c0.940,curve,,"h/t = 0.3, without surface roughness",solid line,,0.9400,0.0008,-0.3130,0.0064,2sigma,,
+f14_bot|solid|b0.950,box,,"h/t = 0.3, without surface roughness",solid line,,0.9500,0.0008,-0.3707,0.0125,bound,uncertain,"on grid line: bridged 13 px band from ink either side; ink merged with h/t = 0.3, with surface roughness; box is the merged run (ink of both lines merged around a bridged gap)"
+f14_bot|solid|b0.960,box,,"h/t = 0.3, without surface roughness",solid line,,0.9600,0.0008,-0.4502,0.0183,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.4631, other about -0.4373; which is which not certain here)"
+f14_bot|solid|b0.970,box,,"h/t = 0.3, without surface roughness",solid line,,0.9700,0.0008,-0.5489,0.0183,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.5618, other about -0.5360; which is which not certain here)"
+f14_bot|solid|b0.980,box,,"h/t = 0.3, without surface roughness",solid line,,0.9800,0.0008,-0.6634,0.0139,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.6718, other about -0.6550; which is which not certain here)"
+f14_bot|solid|b0.990,box,,"h/t = 0.3, without surface roughness",solid line,,0.9900,0.0008,-0.7038,0.0087,bound,uncertain,"ink merged with h/t = 0.3, with surface roughness; box is the merged run (two lines can be told apart by the run edges: line on the more negative side about -0.7066, other about -0.7010; which is which not certain here)"
+f14_bot|solid|c1.000,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0000,0.0008,-0.7039,0.0076,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_bot|solid|c1.010,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0100,0.0008,-0.6917,0.0044,2sigma,,
+f14_bot|solid|c1.020,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0200,0.0008,-0.6802,0.0044,2sigma,,
+f14_bot|solid|c1.030,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0300,0.0008,-0.6665,0.0045,2sigma,,
+f14_bot|solid|c1.040,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0400,0.0008,-0.6512,0.0045,2sigma,,
+f14_bot|solid|c1.050,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0500,0.0008,-0.6358,0.0050,2sigma,,on grid line: bridged 13 px band from ink either side
+f14_bot|solid|c1.060,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0600,0.0008,-0.6186,0.0045,2sigma,,
+f14_bot|solid|c1.070,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0700,0.0008,-0.6020,0.0045,2sigma,,
+f14_bot|solid|c1.080,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0800,0.0008,-0.5835,0.0046,2sigma,,
+f14_bot|solid|c1.090,curve,,"h/t = 0.3, without surface roughness",solid line,,1.0900,0.0008,-0.5640,0.0046,2sigma,,
+f14_bot|solid|e1.099,curve_end,,"h/t = 0.3, without surface roughness",solid line,,1.0993,0.0017,-0.5496,0.0046,2sigma,,"extreme ink at 1.1007 (walked 9 px past the trace, stop: ink ends); centreline end taken 5.0 px inside"
