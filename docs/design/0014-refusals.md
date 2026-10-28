@@ -2508,6 +2508,83 @@ becomes **0.77 to 1.13** at Mach 1.5 to 3.0.
   themselves moves the bands built on them and is caught by the tests
   that hold those data, not by this one.
 
+**2026-10-28 (ah), fourth addendum: TN 2360 figs. 5 and 7 read twice
+blind (round 20), and how they enter** (the coordinator's ruling of
+2026-10-28 on the third addendum's finding). Written before any round 20
+value is used or seen, and before the band is changed for it.
+
+- _The ruling._ A body-alone value inside the domain that lies above the
+  band served cannot stay out because it was read once. TN 2360 figs. 5
+  and 7 are read again, every symbol of every panel, by two fresh blind
+  readers (round 20, started by the coordinator), and the readings are
+  paired by a neutral party.
+- _What enters._ Paired symbols of figs. 5 and 7 inside the compiled
+  curve's domain, as 0008 section 3.3 stated it before this addendum,
+  enter the band as every other set does: the plain envelope of the
+  paired readings (both readers' values, not widened by their errors),
+  against both curves, rounded outward with the other sets. Inside the
+  domain means the body alone ("tail off" in fig. 5, "without tail" in
+  fig. 7) at Mach 1.5 or 2.0, at a Reynolds number judged inside below.
+  The symbols with a tail (fig. 5's x/c -1.0 to 1.0, fig. 7's cruciform
+  tail at x/c 0) have fins at, near or behind the base, outside this
+  domain; this addendum decides nothing about them for the fins-on-base
+  factors.
+- _Not data._ Fig. 5's faired lines, and fig. 7's dashed curve of ref. 4
+  and solid average of refs. 1 to 3, are fairings and averages, not
+  measurements. They are not used, as nowhere else in the band.
+- _A partly hidden or ambiguous symbol_ keeps every reading either reader
+  gives. If it pairs on any of its readings, the envelope over all its
+  readings enters.
+- _A symbol that cannot be paired_ stays checked and not used, and is
+  recorded with both readings.
+- _The Reynolds numbers, judged now, by the domain as stated._ 0008
+  section 3.3 states no Reynolds number limit; it requires a turbulent
+  layer at the base. TN 2360's own text says where its body had one. Its
+  models carried a 1/4 in salt band on the nose "to insure local
+  transition to a turbulent boundary layer", at R 0.5e6 to 4.5e6 on the
+  body length (p. 5). On p. 8: "with roughness added to the body near the
+  nose to achieve this condition [a fully developed turbulent boundary
+  layer] the base-pressure coefficient was essentially independent of
+  Reynolds number above about 2 million for the body alone and in
+  combination with the tail surfaces"; its runs with a smooth nose showed
+  a laminar layer, the base pressure falling as R rose (fig. 5 is
+  captioned "roughness added to body"). Its conclusion 3 puts the tails'
+  increment as independent of R "from a value of 2 million to 6 million".
+  On p. 8 it compares fig. 7's body alone with previous results "obtained
+  at Reynolds numbers from about 2 to 16 million", and on p. 11 finds them
+  in essential agreement. So, for every Reynolds number the record lists
+  for these figures (round 6's readings, `audit/round6/readings/`, and the
+  third addendum), on the body length:
+
+  | Figure | M        | Stations as the record lists them                       | Judged                                                                                                                                  |
+  | ------ | -------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+  | 5(a)   | 1.5      | the lowest, about 0.56e6 to 0.80e6 (tail off at 0.76e6) | outside: below about 2 million TN 2360 does not show the layer at the base turbulent                                                    |
+  | 5(a)   | 1.5      | 1.95e6, 3.26e6, 4.42e6                                  | inside: the station at about 2 million is the first of the range the source calls independent of R                                      |
+  | 5(b)   | 2.0      | the lowest, about 0.48e6 to 0.65e6 (tail off at 0.48e6) | outside, as at M 1.5                                                                                                                    |
+  | 5(b)   | 2.0      | 1.85e6, 3.31e6, 4.42e6                                  | inside, as at M 1.5                                                                                                                     |
+  | 7      | 1.5, 2.0 | none listed                                             | inside: no R is listed, and TN 2360 offers these as turbulent results; with no limit stated, the wider choice, as in the first addendum |
+
+  No station lies between about 0.8e6 and 1.8e6: a symbol round 20 places
+  below 1.0e6 belongs to the lowest station and is outside; one above it
+  belongs to the second station (about 1.8e6 to 1.95e6) or a higher one
+  and is inside. The line is the source's, not the values'.
+
+- _Disclosed._ Round 6's values for these figures are in the repository
+  and known to the coordinator and to the implementer, as are the ratios
+  the third addendum gives at M 1.5: 1.1333 (R 1.95e6 and 4.42e6) and
+  1.1720 (R 0.76e6, the partly hidden symbol). The judgement above puts
+  the symbol at R 0.76e6 outside, and so it matters: with round 6's
+  values the stations judged inside would put the band's high end at
+  1.14, and the lowest station would put it at 1.18. It rests on TN
+  2360's text, quoted above, which the implementer read on 2026-10-28
+  for this addendum (pp. 5 to 11, the conclusions and the figure
+  captions; NTRS 19930083086, PDF SHA-256
+  `95937173fa78bdd41e24a3caded6d06779df885263b66c23f13225a18d742a59`),
+  taking no value from any figure, as TR 1051's text was read for (ah).
+- _Until the pairing._ The band stays 0.77 to 1.13 and is not changed for
+  figs. 5 and 7 until the coordinator sends the paired readings. The
+  implementer does not open the readers' folder before then.
+
 Letters (w) to (ac) are allocated by the coordinator on other branches
 (the registry in the coordinator's letters file); the next free letter is
 the coordinator's to allocate.
