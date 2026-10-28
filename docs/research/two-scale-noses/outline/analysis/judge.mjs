@@ -7,15 +7,17 @@
 // it, rounded up to one significant figure), and each band's containment
 // of its error against the lowest bound of every passing line.
 //
-// Usage: node judge.mjs <W5 moc.jsonl> <new out dir> [--json out.json]
-// The new out dir holds the saves (L<cal>c<cyl>M<mach>r<ref>.json) and the
-// marches (moc-L<cal>c<cyl>M<mach>.jsonl) of the lanes.
+// Usage: node judge.mjs <W5 moc.jsonl> <saves dir> [<marches dir>] [--json out.json]
+// The saves dir holds the new fits' heads (L<cal>c<cyl>M<mach>r<ref>.json),
+// the marches dir (by default the same) their marches
+// (moc-L<cal>c<cyl>M<mach>.jsonl).
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const LIMIT = 3.5e-5;
 const MAXIT = 40000;
-const [w5File, newDir] = process.argv.slice(2);
+const [w5File, newDir, third] = process.argv.slice(2);
+const marchDir = third && !third.startsWith('--') ? third : newDir;
 const jsonOut = process.argv.includes('--json') ? process.argv[process.argv.indexOf('--json') + 1] : undefined;
 
 const ord = (a, b, c) => Math.log2((a - b) / (b - c));
@@ -25,7 +27,7 @@ const monotone = (a, b, c) => (a - b) * (b - c) > 0;
 export const ceil1 = (v) => {
   const e = Math.floor(Math.log10(v));
   const m = v / 10 ** e;
-  return (Math.ceil(m - 1e-9) * 10 ** e);
+  return Number(`${Math.ceil(m - 1e-9)}e${e}`);
 };
 
 // W5's cases (moc3.mjs's names for rows without a case field).
@@ -121,10 +123,10 @@ if (newDir && existsSync(newDir)) {
     const head = JSON.parse(readFileSync(join(newDir, f), 'utf8'));
     (fits[m[1]] ??= {})[m[2]] = head;
   }
-  for (const f of readdirSync(newDir)) {
+  for (const f of readdirSync(marchDir)) {
     const m = /^moc-(L[\d.]+c\d+M[\d.]+)\.jsonl$/.exec(f);
     if (!m) continue;
-    const text = readFileSync(join(newDir, f), 'utf8').trim();
+    const text = readFileSync(join(marchDir, f), 'utf8').trim();
     if (!text) continue;
     for (const [n, c] of casesFrom(text.split('\n').map((l) => JSON.parse(l))))
       judged.push({ ...judgeLines(n, c), source: 'new', tag: m[1] });
