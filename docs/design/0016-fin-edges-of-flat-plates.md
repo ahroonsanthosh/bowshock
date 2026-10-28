@@ -2016,7 +2016,8 @@ new blocking items.
   does. The reason code is `swept-leading-edge`, given first, with the
   term's other reasons beside it. The words say that past 60 deg the
   bounded term waits on two fresh readings of fig. 17, and that beyond
-  75.1 deg no yawed cylinder is measured at all.
+  75.1 deg no yawed cylinder is measured at all (false: fig. 17 has Lord
+  and Ulmann's point at 80.1 deg; corrected in section 21.9).
 - The bounded term is kept unwired as `roundedLeadingEdgeBeyond60`, and
   a test pins that nothing under `src/` calls it. It refuses beyond 75.1
   deg (`LARGEST_YAWED_SWEEP_DEGREES`) at any Mach number. After the
@@ -2184,3 +2185,25 @@ So the bounded edge is served among a refused total's parts, with its
 band and label, and enters no claim. The page test that checked the
 claim through a served total now checks the edge among the refused
 total's parts, and the claim's words through `boundedReasons` directly.
+
+### 21.9 Corrections after the re-review of ef7fc7d..5159cac (2026-10-28)
+
+The re-review passed. It found three statements to correct and one
+computation to widen, each made as its own commit after the merge with
+main f88ecbe.
+
+- **75.1 deg is not the largest sweep at which a yawed cylinder is
+  measured.** The code, the page's words, 0017 and the second (ab)
+  addendum said it was. Fig. 17 has Lord and Ulmann's point at 80.1 deg
+  (P01, crossflow Mach number 0.695). What is true: 75.1 deg is the
+  largest sweep at which a yawed cylinder's front side is estimated and
+  the bounds' ordering checked. Fig. 16 has no downstream pressure for
+  the 80.1 deg point (both readings of section 16 have three Lord and
+  Ulmann points, at crossflow Mach numbers near 1.0, 1.4 and 2.0), so no
+  front side is estimated there.
+  - The constant is renamed `LARGEST_CHECKED_SWEEP_DEGREES`. Sections
+    21.5 and 21.7 name it by its old name, `LARGEST_YAWED_SWEEP_DEGREES`.
+  - The refusal's words say what is true.
+  - The page says "the most at which its bounds have been checked
+    against a measured swept cylinder".
+  - 0014 carries a dated correction under the addendum.

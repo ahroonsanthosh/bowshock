@@ -353,13 +353,16 @@ export const SWEEP_ALLOWANCE = (() => {
 /** The largest sweep served: the largest yaw among the checks the reports do not set apart. */
 export const SWEEP_LIMIT_DEGREES = 60;
 /**
- * The largest sweep of a yawed cylinder measured beyond 60 deg: Penland's
- * 75.1 deg point, on TN 3861's crossflow plots with Lord and Ulmann's at 70
- * and 75 deg (0016 section 21.2). Beyond it the bounded term is refused at
- * any Mach number: the principle alone does not show its ordering (0014
- * section 10.7 (ab), second addendum).
+ * The largest sweep at which a yawed cylinder's front side is estimated and
+ * the bounds' ordering checked: Penland's 75.1 deg point, on TN 3861's
+ * crossflow plots with Lord and Ulmann's at 70 and 75 deg (0016 sections
+ * 21.2 and 21.8). Fig. 17 also has Lord and Ulmann's point at 80.1 deg
+ * (crossflow Mach number 0.695), but fig. 16 has no downstream pressure for
+ * it, so no front side is estimated there. Beyond 75.1 deg the bounded term
+ * is refused at any Mach number: the principle alone does not show its
+ * ordering (0014 section 10.7 (ab), second addendum and its correction).
  */
-export const LARGEST_YAWED_SWEEP_DEGREES = 75.1;
+export const LARGEST_CHECKED_SWEEP_DEGREES = 75.1;
 /**
  * The readings of TN 3861 fig. 17 that count (0014 section 10.7 (ab),
  * second addendum): the reading of 2026-10-21 was made before any entry
@@ -873,13 +876,15 @@ function beyondSweepLimit(
   input: RoundedLeadingEdgeInput,
   sweepDegrees: number,
 ): RoundedLeadingEdge {
-  if (sweepDegrees > LARGEST_YAWED_SWEEP_DEGREES + 1e-9) {
+  if (sweepDegrees > LARGEST_CHECKED_SWEEP_DEGREES + 1e-9) {
     throw new FinRefusal(
       'swept-leading-edge',
       `a rounded leading edge swept ${sweepDegrees.toFixed(1)} deg is refused at any Mach number: ` +
-        `beyond ${LARGEST_YAWED_SWEEP_DEGREES} deg, the largest sweep at which a yawed cylinder is ` +
-        'measured (TN 3861), nothing shows the ordering of its bounds, the principle alone ' +
-        'not sufficing (0016 section 21.2)',
+        `beyond ${LARGEST_CHECKED_SWEEP_DEGREES} deg, the largest sweep at which a yawed cylinder's ` +
+        "front side is estimated and the bounds' ordering checked (TN 3861 figs. 15 to 17; fig. " +
+        "17's one point beyond it, Lord and Ulmann's at 80.1 deg, has no downstream pressure on " +
+        'fig. 16 to estimate a front side from), nothing shows the ordering of its bounds, the ' +
+        'principle alone not sufficing (0016 section 21.2)',
     );
   }
   const failed: [FinRefusalReason, string][] = [];

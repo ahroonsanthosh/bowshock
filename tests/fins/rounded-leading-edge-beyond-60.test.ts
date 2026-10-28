@@ -14,7 +14,7 @@ import { describe, expect, it } from 'vitest';
 import { FinRefusal } from '../../src/fins/refusal';
 import { RM_A55H31_FIG12, RM_A55H31_FIG12_SECOND } from '../../src/fins/rm-a55h31';
 import {
-  LARGEST_YAWED_SWEEP_DEGREES,
+  LARGEST_CHECKED_SWEEP_DEGREES,
   pitotPressureCoefficient,
   roundedLeadingEdgeDrag,
   ROUNDED_EDGE_BAND,
@@ -133,8 +133,8 @@ describe('the bounds', () => {
     expect(at(2.2, 60.1).label.length).toBeLessThan(1800);
   });
 
-  it('beyond 75.1 deg, the largest sweep at which a yawed cylinder is measured: refused at any Mach number', () => {
-    expect(LARGEST_YAWED_SWEEP_DEGREES).toBe(75.1);
+  it("beyond 75.1 deg, the largest sweep at which a yawed cylinder's front side is estimated: refused at any Mach number", () => {
+    expect(LARGEST_CHECKED_SWEEP_DEGREES).toBe(75.1);
     // M 5.0 at 78 deg was served from 0.869 of the term before the re-review.
     for (const [m, sw] of [
       [5.0, 78],
@@ -368,7 +368,7 @@ describe('served from 60 to 75.1 deg again (0016 section 21.8); refused beyond',
     const e = failure(() => at(4.0, 75.2));
     expect(e.reason).toBe('swept-leading-edge');
     expect(e.message).toMatch(
-      /^a rounded leading edge swept 75\.2 deg is refused at any Mach number: beyond 75\.1 deg, the largest sweep at which a yawed cylinder is measured \(TN 3861\)/,
+      /^a rounded leading edge swept 75\.2 deg is refused at any Mach number: beyond 75\.1 deg, the largest sweep at which a yawed cylinder's front side is estimated and the bounds' ordering checked \(TN 3861 figs\. 15 to 17; fig\. 17's one point beyond it, Lord and Ulmann's at 80\.1 deg, has no downstream pressure on fig\. 16 to estimate a front side from\)/,
     );
   });
 

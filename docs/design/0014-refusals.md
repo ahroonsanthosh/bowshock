@@ -2250,6 +2250,16 @@ addendum stand as written; where this one differs, it governs.
   measured, the edge is refused at any Mach number, after the pairing
   too: the principle alone does not show the ordering.
 
+_Correction, 2026-10-28_ (the re-review of ef7fc7d..5159cac). The
+addendum above calls 75.1 deg "the largest sweep at which a yawed
+cylinder is measured". That is false. Fig. 17 also has Lord and Ulmann's
+point at 80.1 deg (P01, crossflow Mach number 0.695). What is true: 75.1
+deg is the largest sweep at which a yawed cylinder's front side is
+estimated and the bounds' ordering checked. Fig. 16 has no downstream
+pressure for the 80.1 deg point, so no front side is estimated there.
+The rule and its verdict are unaffected. The code's words, the page's
+words and 0017 now say this; the addendum's text stands as written.
+
 **2026-10-27: 21.2's rule applied to the paired fig. 17: it holds; 60 to
 75.1 deg served again.**
 

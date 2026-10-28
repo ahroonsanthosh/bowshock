@@ -401,7 +401,7 @@ const FIN_WORDS: Readonly<Record<FinRefusalReason, Worded>> = {
       ? {
           reason:
             "a rounded leading edge's drag is bounded only up to 75 degrees of sweep, the most at " +
-            'which a swept cylinder has been measured',
+            'which its bounds have been checked against a measured swept cylinder',
           change: 'less sweep (75 degrees or less), or a bevelled leading edge',
         }
       : {
