@@ -1820,6 +1820,145 @@ range A has been run; it depends on no result of that range. The rest of
 (u) stays recorded as written, and applies again only if a later record
 resumes Stage A, which would then need a held-back test of its own.
 
+**2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
+for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
+10.1, as (k); 0019 section 3.4, "Layers and h/c"). Neither has been
+opened. Each is known here from its NTRS catalogue record (title, number,
+date; neither record has an abstract) and from R&M 3323's reference list,
+where they are refs. 32 and 33 (`method_rm3323_figs4_5.md`).
+
+- Cleary and Stevens, "The effects at transonic speeds of thickening the
+  trailing edge of a wing with a 4-percent-thick circular-arc airfoil",
+  NACA RM A51J11, 1951, NTRS 19930087063.
+- Dugan, "Effects of three types of blunt trailing edges on the
+  aerodynamic characteristics of a plane tapered wing of aspect ratio 3.1,
+  with a 3-percent-thick biconvex section", NACA RM A52E01, 1952, NTRS 19930087008.
+
+_Why._ Below Mach 1.5 every set that 0019 section 3.4 sets F4's band on
+measures the base with a thin layer against the edge. The layer
+parameter c/[h Re_c^(1/5)] is about 0.30 for Johnston's wedge (h/c 0.20,
+Re 1.2e6 to 1.4e6), 0.35 to 0.43 for R&M 3348's (0.14, 1.25e6 to 3.41e6)
+and 0.52 to 0.66 for R&M 3427's section (0.10, 0.8e6 to 2.7e6). The
+population's square trailing edges have 1.5 to 4.0 (5% and 95%, the
+larger of root and tip; `docs/research/refusals/out/w7-plan.out`), and
+TR 1109 fig. 29(a)'s thick-layer factor is measured from Mach 1.5 only.
+0019 section 3.4 serves such edges only where R&M 3323 fig. 4 and
+Cleary and Stevens cover them. Fig. 4 (read twice, paired 2026-10-23,
+`audit/pairing-2026-10-23b/`) plots these two reports' points at h/c 1.2%
+to 4.0% at M 0.6, 0.8, 1.0 and 1.2, but not their chords, Reynolds
+numbers or layer states, so it cannot say which layer parameters they
+cover.
+
+_What each is named for._ A candidate band-setting source for F4 at
+Mach 1.0 to 1.5, for edges thinner than the sets above or with thicker
+layers against them:
+
+1. its model description and test conditions (chord, trailing-edge
+   thickness, section, Reynolds numbers, transition and roughness), which
+   place its points, and fig. 4's points of refs. 32 and 33, in h/c and
+   in the layer parameter;
+2. its base-pressure figures or tables against Mach number for each
+   trailing-edge thickness. Which of them set what is decided in a second
+   part of this entry, dated, added after the report's list of figures,
+   its model description and its test conditions have been seen (as text
+   only, by the F4 workstream) and before any value is read.
+
+Each figure or table named there is read twice, by two readers who do not
+see each other's reading and neither of whom is the F4 workstream, and
+the two readings are paired by a neutral party before either sets
+anything. Fig. 4's points of refs. 32 and 33 are then counted once with
+their own reports, as (k) rules for a set that appears twice: the
+report's own figure sets, fig. 4's replot is a check of it.
+
+_Not used to set bands._ Lift, pitching moment and the wings' drag from
+the balance (the fins' own drag near Mach 1 is F1's, 0019 section 3.1);
+any figure that carries a held-back set.
+
+_Shape._ Both sections are airfoils (a circular arc, and a biconvex
+section) with the trailing edge thickened, by the titles; how their faces
+meet the base is taken from the model descriptions. Where they are not
+parallel to the stream, as a fin plate's are, the difference is carried
+by 0019 section 3.4's shape widening, written with its basis before any
+of these values is read, as the single wedge's is; the measured values
+are never shifted toward a plate's.
+
+_Relabelled, 2026-10-26:_ first written as (w) (commit 9699737), which
+another branch already holds; relabelled (ac) by the coordinator's
+allocation before any value of either report was read (by then only RM
+A51J11's model and test sections had been seen, as text, as item 1
+allows); content unchanged.
+
+_Second part, 2026-10-26: the figures, named before any value is read._
+Written after each report's model description, test conditions and
+figure captions were seen as text (`pdftotext` of the NTRS PDFs, each
+downloaded into its own new folder: RM A51J11, 44 PDF pages, SHA-256
+e6b779125d8359e968ad6b4d2b2c43d651ef5024f42bdb5574a6f7b93a8fdf57; RM
+A52E01, 35 pages,
+3f090609fb3a170703523cc14f26aa9cab55e6afe4718b397b289bbcf33efe54). Seen:
+RM A51J11's apparatus, tests and corrections sections and its notation
+for R; RM A52E01's apparatus, models table, tests and notation, and the
+one paragraph of its discussion that says what each figure compares; the
+captions of both (fig. 8's caption, as extracted, carries its abscissa's
+tick labels, no data). No figure page was viewed, and neither report's
+summary, results or conclusions were read for their findings.
+
+- _RM A51J11_ (Ames 16 ft tunnel, transonic bump; model rectangular,
+  effective aspect ratio 4): the 4% circular arc with its trailing edge
+  built up to 0.3, 0.6 and 1.0 times the maximum thickness (h/c 0.012,
+  0.024, 0.040), faired back to the section by straight lines; M 0.60 to
+  1.10, the leading-edge shock never attached; Reynolds number 1.7e6 to
+  2.2e6 on the mean aerodynamic chord; roughness (No. 60 carborundum to
+  0.10 chord) in some force tests; base pressure at one orifice at each of
+  25, 37.5, 62.5 and 87.5% semispan. Layer parameter about 1.35 to 1.42
+  (h/c 0.040), 2.2 to 2.4 (0.024) and 4.5 to 4.7 (0.012). The fairing
+  meets the base, by the description (a straight line from the built-up
+  edge tangent to the arc, computed on a parabolic arc), parallel to the
+  chord at h/c 0.040 and converging by about 1.0 and 2.1 deg at 0.024 and
+  0.012.
+- _RM A52E01_ (Ames 6 by 6 ft supersonic tunnel, wing on a sting-mounted
+  body): a tapered wing, aspect ratio 3.1, taper 0.39, mean aerodynamic
+  chord 0.944 ft, 3% biconvex section. Wing 2 has constant thickness from
+  midchord (h/c 0.030, its faces parallel to the chord at the base);
+  wings 3 and 4 end at half the maximum thickness (h/c 0.015) with
+  boattail angles of 6.88 and 2.02 deg; M 0.6 to 0.925 and 1.2 to 1.7;
+  Reynolds number 1.5e6 and 3.8e6 on the mean aerodynamic chord; base
+  pressure at one orifice in the trailing edge at about 50% semispan.
+  Layer parameter about 1.6 to 1.9 (wing 2) and 3.2 to 3.9 (wings 3 and
+  4).
+
+Named band-setting for F4 below Mach 1.5, each to be read twice and
+paired as above before it sets anything; how each set enters the band
+(the shape and the layer, which set directly, which only with a stated
+widening, which only as a check) is written in 0019 section 3.4 before
+any of their values is read:
+
+1. RM A51J11 fig. 14 (PDF p. 36): base pressure coefficient against Mach
+   number at semispan station 0.25, alpha 0 deg, for each trailing-edge
+   thickness. Used at M 1.00 to 1.10.
+2. RM A51J11 fig. 15 (PDF p. 37): base pressure coefficient against
+   semispan station, alpha 0 deg: the spread across the four stations, so
+   that fig. 14's one station is carried with that spread, not taken as
+   the span's mean.
+3. RM A52E01 fig. 8 (a) and (b) (PDF pp. 29 and 30): the wing
+   base-pressure coefficients of wings 2, 3 and 4 at the Mach numbers
+   shown, Reynolds numbers 1.5e6 and 3.8e6, at zero lift (by the figure's
+   ordinate, read as printed). Used at M 1.2 to 1.5. Its points at M 1.5
+   to 1.7 are a check of the present band above Mach 1.5 (0.93 to 1.21,
+   with TR 1109's thick-layer factor), which sets nothing there unless a
+   later entry decides; points below Mach 1.0 are not used (the term is
+   served from 1.0).
+
+Not used: RM A51J11 figs. 13 (incidence) and 16 to 20 (the boattailed
+edge, forces, wake fluctuations), the force and moment figures of both,
+and each report's Reynolds-number figure (the text's ranges are used).
+R&M 3323 fig. 4's points of refs. 32 and 33 become checks of these
+figures, as said above.
+
+Letters are allocated by the coordinator; (w) to (ab) are held by other
+branches. _(Corrected 2026-10-28, on merging main at 3e026a8 into the
+trailing-edge branch: (aa), (ab) and (af) are main's entries below; (w)
+to (z) remain the other branches'.)_
+
 **2026-10-26 (aa): square-cut leading edges served "bounded, not
 measured", between the sonic and the pitot pressure on the whole face**
 (a recorded decision under 10.2's "Anywhere else only by a recorded
@@ -2647,4 +2786,7 @@ registry, its content unchanged by the relabelling.
 
 Letters are allocated by the coordinator (the registry in the
 coordinator's letters file); the next free letter is the coordinator's to
-allocate.
+allocate. _(Corrected 2026-10-28, the re-review's R4: this branch's
+text here said (w) to (ac) were allocated on other branches; (ac) is this
+branch's F4 entry, above, and on merging main at 3e026a8 main's sentence
+replaces that one.)_

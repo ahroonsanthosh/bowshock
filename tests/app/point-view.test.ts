@@ -105,7 +105,8 @@ describe('a point as shown', { timeout: 120_000 }, () => {
     const v = pointView(at(run, 1.4), true);
     expect([v.value, v.band, v.percent]).toEqual([null, null, null]);
     expect(v.status.word).toBe('No number');
-    // Every one of the logic's refusals there, the fins' own drag below Mach 1.5 among them.
+    // Every one of the logic's refusals there, the fins' own drag below Mach 1.5 among them; the
+    // wedges' trailing edges lie beyond what the sets reach at 1.4 (0019 section 3.4.1).
     expect(v.status.sentence).toBe(
       'The drag here cannot be given to a known accuracy: three reasons, each listed below.',
     );
