@@ -239,6 +239,12 @@ describe('flow with the bow shock fitted (design record 0006)', () => {
     expect(bluntNoseRefusal(nose(vonKarman, 4), 2.5)).toBeUndefined();
     expect(bluntNoseRefusal(nose(vonKarman, 4.1), 2.5)).toMatch(/outside the referenced range/);
     expect(bluntNoseRefusal(nose(vonKarman, 5), 2.1)).toMatch(/outside the referenced range/);
+    // The outline's edge from 6 calibers at Mach 1.5 to 5 at Mach 2 (the
+    // registration of 2026-10-27); 6 calibers at Mach 2 failed its criteria.
+    expect(bluntNoseRefusal(nose(vonKarman, 5.5), 1.75)).toBeUndefined();
+    expect(bluntNoseRefusal(nose(vonKarman, 5.6), 1.75)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(vonKarman, 6), 2)).toMatch(/outside the referenced range/);
+    expect(bluntNoseRefusal(nose(vonKarman, 6.1), 1.5)).toMatch(/outside the referenced range/);
     expect(bluntNoseRefusal(nose({ kind: 'haack', parameter: 1 / 3 }, 3), 2)).toMatch(
       /only the Von Karman/,
     );

@@ -386,38 +386,40 @@
               from is barely supersonic. Von Karman (LD-Haack) noses, whose tip is vertical and
               blunt only over 0.16 of the nose's length at 1 caliber, 2.2e-3 at 3 and 2.9e-4 at 5,
               are solved on a grid with two length scales and converge more slowly (observed orders
-              1.49 to 2.28 on 20, 40 and 80 cells across). On seven of them (1 caliber at Mach 1.5,
-              2 and 3; 3 calibers at Mach 2 and 3; 5 calibers at Mach 1.5 and 2), against the method
-              of characteristics started from the solution behind the sonic line, the value
-              extrapolated from three grids misses by up to 3.33e-4 of the value (3.64e-4 on lines
-              next to the one used on the 5-caliber nose at Mach 2), so their band includes an
-              allowance of 8e-4, twice the larger rounded up; with it every band of three grids
-              measured contains its error. The page's band comes from four grids (up to 160 cells
-              across); on Von Karman noses a band from four grids has been checked against a
-              reference on two noses so far, both at Mach 2: on the 1-caliber nose the value's error
-              is 5.1e-5 at most against a band of 8.3e-4, and on the 3-caliber nose 3.4e-4 at most
-              against 9.6e-4. On both, the allowance, not the grids' own estimate, is what contains
-              the error. With the finest grid at 320 cells across the band comes from five grids,
-              and a band of five grids has not been checked on any Von Karman nose; the result says
-              so. They are served only inside the range those seven span: from 1 caliber up to 5 at
-              Mach 1.5 and 2, falling to 3 at Mach 3 (4 at Mach 2.5). Refused, with the reason: Von
-              Karman noses outside that range, the other Haack noses and the power series (not
-              compared with a reference yet); tips whose shock detaches; tips whose flow crosses the
-              solver's starting plane, just behind the tip, at an axial Mach number below 1, except
-              where the flow on the tip's surface is supersonic and the nose meets the body without
-              a corner (measured on tangent ogives of 3 calibers at Mach 1.35 and of 2 calibers at
-              Mach 1.6, near the least Mach number that nose is served at: two differently laid out
-              grid families agree within 1.5e-5 and 2.0e-6; the captured-shock solver's band
-              contains the first, but on the second it gives no band, so that case rests on the
-              fitted solver's own verification); of 40 noses of 1 to 3 calibers tried at Mach 1.2
-              before that exception, 19 detach their shock and 13 were refused by this test; tips
-              steeper than about 40 deg (a limit of the present grids, set on measurement); bodies
-              whose flow at their end is subsonic; sharp noses whose grids fail the quality checks
-              of fitted grids even with 1.5 times the columns along the body (a family solved again
-              that way where the usual one fails is served, with the reason); the 6-caliber
-              ellipsoid at Mach 1.2, whose wall cells near the tip are too skewed for the present
-              grids (of ellipsoids of 0.5 to 6 calibers with 1, 2 or 5 calibers of body at Mach 1.2,
-              1.3 and 1.5, the only ones refused on the coarsest grid).
+              1.49 to 2.30 on 20, 40 and 80 cells across). On eight of them (1 caliber at Mach 1.5,
+              2 and 3; 3 calibers at Mach 2 and 3; 5 calibers at Mach 1.5 and 2; 6 calibers at Mach
+              1.5), against the method of characteristics started from the solution behind the sonic
+              line, the value extrapolated from three grids misses by up to 3.33e-4 of the value
+              (3.64e-4 on lines near the one used on the 5-caliber nose at Mach 2), so their band
+              includes an allowance of 8e-4, twice the larger rounded up; with it every band of
+              three grids measured contains its error. A 6-caliber nose at Mach 2 did not pass that
+              check (no line of its method of characteristics met the limits on convergence and mass
+              balance). The page's band comes from four grids (up to 160 cells across); on Von
+              Karman noses a band from four grids has been checked against a reference on two noses
+              so far, both at Mach 2: on the 1-caliber nose the value's error is 5.1e-5 at most
+              against a band of 8.3e-4, and on the 3-caliber nose 3.4e-4 at most against 9.6e-4. On
+              both, the allowance, not the grids' own estimate, is what contains the error. With the
+              finest grid at 320 cells across the band comes from five grids, and a band of five
+              grids has not been checked on any Von Karman nose; the result says so. They are served
+              only inside the range those eight span: from 1 caliber up to 6 at Mach 1.5 and 5 at
+              Mach 2, falling to 3 at Mach 3 (4 at Mach 2.5). Refused, with the reason: Von Karman
+              noses outside that range, the other Haack noses and the power series (not compared
+              with a reference yet); tips whose shock detaches; tips whose flow crosses the solver's
+              starting plane, just behind the tip, at an axial Mach number below 1, except where the
+              flow on the tip's surface is supersonic and the nose meets the body without a corner
+              (measured on tangent ogives of 3 calibers at Mach 1.35 and of 2 calibers at Mach 1.6,
+              near the least Mach number that nose is served at: two differently laid out grid
+              families agree within 1.5e-5 and 2.0e-6; the captured-shock solver's band contains the
+              first, but on the second it gives no band, so that case rests on the fitted solver's
+              own verification); of 40 noses of 1 to 3 calibers tried at Mach 1.2 before that
+              exception, 19 detach their shock and 13 were refused by this test; tips steeper than
+              about 40 deg (a limit of the present grids, set on measurement); bodies whose flow at
+              their end is subsonic; sharp noses whose grids fail the quality checks of fitted grids
+              even with 1.5 times the columns along the body (a family solved again that way where
+              the usual one fails is served, with the reason); the 6-caliber ellipsoid at Mach 1.2,
+              whose wall cells near the tip are too skewed for the present grids (of ellipsoids of
+              0.5 to 6 calibers with 1, 2 or 5 calibers of body at Mach 1.2, 1.3 and 1.5, the only
+              ones refused on the coarsest grid).
             </p>
           </details>
         </section>

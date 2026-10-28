@@ -144,10 +144,15 @@ export const FITTED_DRAG_FLOOR = 7e-5;
  * criterion only on nj = 80's mass balance (4.6e-5 against 3.5e-5), give
  * misses of up to 3.64e-4, with the march's orders scattered from 0.53 to
  * 1.92 and the references spread over 2.2e-4 of the value. The allowance
- * is twice the largest of these, 3.64e-4, rounded up. The bands it was
- * set from are of three grids; the page's bands of four grids have been
- * checked against a reference on two of these noses (1 and 3 calibers at
- * Mach 2, 0006), its bands of five grids (320 cells across) on none.
+ * is twice the largest of these, 3.64e-4, rounded up (by the registered
+ * rule's count of the lines next to it, x = 0.27 and 0.64, the largest is
+ * 3.57e-4, which gives the same). The references added under the
+ * registration of 2026-10-27 miss by less (6 calibers at Mach 1.5: up to
+ * 1.21e-4, and the lines next to its one passing line up to 1.67e-4), so
+ * the allowance stands (docs/research/two-scale-noses/outline). The bands
+ * it was set from are of three grids; the page's bands of four grids have
+ * been checked against a reference on two of these noses (1 and 3 calibers
+ * at Mach 2, 0006), its bands of five grids (320 cells across) on none.
  */
 export const TWO_SCALE_DRAG_FLOOR = 8e-4;
 

@@ -1147,9 +1147,13 @@ its data at 1.17, as on the 3-caliber nose at Mach 2, and the
 procedure's extrapolation (order 1.79) lies 3.03e-4 to 3.33e-4 above
 the reference, the finest grid 6.8e-4 to 7.1e-4 and 7.35e-4 above the
 lowest bound. That reference rests on this one line: no second passing
-line guards it. The lines next to it, at x = 0.18 and 0.27, fail the
-criterion only on nj = 80's mass balance (4.6e-5 against 3.5e-5) and
-give misses of +3.45e-4 to +3.64e-4 and +3.56e-4 to +3.57e-4; over the
+line guards it. The lines nearest it ahead, at x = 0.18 and 0.27, fail
+the criterion on nj = 80's mass balance (4.6e-5 against 3.5e-5; the one
+at 0.18 also on the change from 1280 intervals on nj = 20 and 40, 6.7e-5
+and 4.1e-5 of the drag, corrected 2026-10-27; the line behind it, at
+0.64, fails that change on every grid, 3.5e-5 to 4.8e-5, and misses by
++3.02e-4 to +3.32e-4) and give misses of +3.45e-4 to +3.64e-4 and +3.56e-4 to
++3.57e-4; over the
 seven lines marched (x = 0.08 to 1.0) the march's orders scatter from
 0.53 to 1.92 and the references spread over 2.2e-4 of the drag
 (`marches/moc-L5c2M2.txt`, `analysis/moc3.mjs`).
@@ -1216,8 +1220,9 @@ Only the
 Von Karman nose is served (`bluntNoseRefusal`), and only inside the
 outline of the (calibers, Mach) points referenced
 (`VON_KARMAN_REFERENCES`, `insideOutline`): (1, 1.5), (1, 2), (1, 3),
-(3, 2), (3, 3), (5, 1.5), (5, 2), whose outline has the corners
-(1, 1.5), (5, 1.5), (5, 2), (3, 3) and (1, 3); a case outside is
+(3, 2), (3, 3), (5, 1.5), (5, 2) and, since the registration below,
+(6, 1.5), whose outline has the corners (1, 1.5), (6, 1.5), (5, 2),
+(3, 3) and (1, 3); a case outside is
 refused with the reason, as are the other Haack noses and the power
 series. The body's length is not a dimension of the outline: the
 references have 1 or 2 calibers of body, the page accepts 0 to 30.
@@ -1229,10 +1234,8 @@ none (solved with 1, the shortest the fit solves) the drag moves by
 the same value, and far inside the allowance: the body length is not
 restricted. With 30 calibers of body the fitted grids fail the
 aspect-ratio gate (14.0 and 14.7, against 13), so the page refuses that
-case on that ground, with the reason. A reference at the open corner (5
-calibers at Mach 3) is not done: its fit on nj = 80 stopped at 4000
-iterations and was not resumed. If one passes, it extends the outline
-and resets the allowance. On the GPU the page's path gives the 1-caliber nose at Mach 2
+case on that ground, with the reason. The references at 5 and 6
+calibers at Mach 3 are being run under the registration below. On the GPU the page's path gives the 1-caliber nose at Mach 2
 within 4.2e-8 of the CPU's value on nj = 20 (0.42909808121884696
 against 0.42909806331220435; measured again on the merged code on
 2026-10-22, SwiftShader, `tests/gpu/fitted-flow-gpu.test.ts`).
@@ -1298,6 +1301,33 @@ and judged by the criteria above, unchanged:
   naming the two noses so checked), and the body length (W5's
   measurement on the 3-caliber nose stands).
 
+**Widening the outline: results.** Judged by
+`docs/research/two-scale-noses/outline/analysis/judge.mjs`, which gives
+W5's passing lines, misses, containment and allowance from W5's marches
+unchanged (`judge-w5.txt`); `tests/analysis/von-karman-references.test.ts`
+holds the outline and the allowance to its verdicts (`judge.json`). Every
+fit settled and every fitted grid passed the gates (wall cells at 71.6
+deg or more).
+
+| Nose, Mach  | nj = 20      | nj = 40      | nj = 80      | Order | Band (no allowance) | Lines passing      | Verdict |
+| ----------- | ------------ | ------------ | ------------ | ----- | ------------------- | ------------------ | ------- |
+| 6 cal., 1.5 | 0.0247060757 | 0.0245586673 | 0.0245288358 | 2.30  | 5.07e-4             | one, x = 0.25, 91% | passes  |
+| 6 cal., 2   | 0.0235075806 | 0.0234152171 | 0.0233932940 | 2.07  | 3.90e-4             | none               | fails   |
+
+(2 calibers of cylinder; the share is the drag downstream of the line.)
+On 6 calibers at Mach 1.5 the one passing line misses by +1.11e-4 and
++1.21e-4, the marched lines next to it (x = 0.10 and 0.63) by up to
+1.67e-4, and the band with the allowance contains the error against the
+lowest bound 2.40 times; as 5 calibers at Mach 2, it rests on one line.
+On 6 calibers at Mach 2 no line passes: the five at x = 0.002 to 0.17
+fail both the mass balance (4.4e-5 to 8.6e-3 on nj = 80) and the change
+from 1280 intervals, the line at 0.54 (81% of the drag) that change on
+nj = 20 and 40 (4.91e-5 and 3.54e-5), the line at 1.78 on every grid;
+those two would miss by +3.51e-4 to +4.31e-4. So 6 calibers at Mach 1.5
+joins the references, 6 calibers at Mach 2 does not, and the allowance
+stays 8e-4 (the largest miss counted is still 5 calibers at Mach 2's,
+3.57e-4 by the registered count of the lines next to its passing line).
+
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of
 cylinder at Mach 1.2:
@@ -1329,7 +1359,9 @@ grids, with no third grid and no reference; the parabolic nose on nj =
   the march can start from (40% of the 3:1 ellipsoid's at Mach 2, 76% of
   the 1-caliber Von Karman nose's at Mach 1.5) still has only the fitted
   family's own convergence, and the stagnation-point checks. Two-scale noses: the
-  outline's corner at 5 calibers and Mach 3 (not done); the other
+  outline at Mach 3 beyond 3 calibers (5 and 6 calibers being run) and
+  at 6 calibers and Mach 2 (failed the line criterion); Von Karman
+  noses below Mach 1.5 (the criteria not shown valid there); the other
   Haack noses and the power series (no reference); sharp tips whose
   shock detaches (no third grid, no reference).
 - The blunt grid's lines near a slender tip at low Mach numbers: on the
