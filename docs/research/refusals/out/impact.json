@@ -1,8 +1,8 @@
 {
  "baseline": {
   "all bands": {
-   "total": 179,
-   "nose only": 1567,
+   "total": 184,
+   "nose only": 1562,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -21,8 +21,8 @@
    "nothing": 1297
   },
   "M 1.8-3.0": {
-   "total": 106,
-   "nose only": 460,
+   "total": 111,
+   "nose only": 455,
    "nothing": 1434
   }
  },
@@ -42,8 +42,8 @@
  "noseServed": {
   "all bands": {
    "cases": 8000,
-   "noseServed": 614,
-   "withPageSection": 797
+   "noseServed": 628,
+   "withPageSection": 811
   },
   "M 1.0-1.2": {
    "cases": 2000,
@@ -62,14 +62,14 @@
   },
   "M 1.8-3.0": {
    "cases": 2000,
-   "noseServed": 391,
-   "withPageSection": 498
+   "noseServed": 405,
+   "withPageSection": 512
   }
  },
  "lenientTip": {
   "all bands": {
-   "total": 365,
-   "nose only": 3066,
+   "total": 374,
+   "nose only": 3057,
    "nothing": 4569
   },
   "M 1.0-1.2": {
@@ -88,15 +88,15 @@
    "nothing": 595
   },
   "M 1.8-3.0": {
-   "total": 211,
-   "nose only": 897,
+   "total": 220,
+   "nose only": 888,
    "nothing": 892
   }
  },
  "altitude0": {
   "all bands": {
-   "total": 182,
-   "nose only": 1564,
+   "total": 188,
+   "nose only": 1558,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -115,15 +115,15 @@
    "nothing": 1297
   },
   "M 1.8-3.0": {
-   "total": 106,
-   "nose only": 460,
+   "total": 112,
+   "nose only": 454,
    "nothing": 1434
   }
  },
  "altitude20": {
   "all bands": {
-   "total": 142,
-   "nose only": 1604,
+   "total": 145,
+   "nose only": 1601,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -142,15 +142,15 @@
    "nothing": 1297
   },
   "M 1.8-3.0": {
-   "total": 91,
-   "nose only": 475,
+   "total": 94,
+   "nose only": 472,
    "nothing": 1434
   }
  },
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%)": {
   "all bands": {
-   "total": 233,
-   "nose only": 1513,
+   "total": 237,
+   "nose only": 1509,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -169,8 +169,8 @@
    "nothing": 1297
   },
   "M 1.8-3.0": {
-   "total": 140,
-   "nose only": 426,
+   "total": 144,
+   "nose only": 422,
    "nothing": 1434
   }
  },
@@ -189,8 +189,8 @@
  ],
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%)": {
   "all bands": {
-   "total": 373,
-   "nose only": 3318,
+   "total": 382,
+   "nose only": 3309,
    "nothing": 4309
   },
   "M 1.0-1.2": {
@@ -209,8 +209,8 @@
    "nothing": 631
   },
   "M 1.8-3.0": {
-   "total": 227,
-   "nose only": 997,
+   "total": 236,
+   "nose only": 988,
    "nothing": 776
   }
  },
@@ -218,8 +218,8 @@
   "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W11 square-cut leading edges and rounded trailing edges",
   "W9 sharp sections: reflected waves and detached bevel shocks",
-  "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
+  "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
   "W6 blunted nose tips",
   "W3 blunt trailing edges of thin fins (thick layer, tapered, swept, M 1.0 to 1.5)",
   "W4 rounded leading edges on flat plates, tapered and swept, M 1.0 to 3.0",
