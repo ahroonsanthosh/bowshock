@@ -1,0 +1,435 @@
+Four-way neutral pairing: NACA RM A52E01 fig. 8(a), supersonic panel, Mach 1.7 curves at alpha 0 to 4
+Readings A (round 15-A), B (round 15-B), C (round 17), D (round 18, targeted). Rule: agree when |X - Y| <= e_X + e_Y,
+each reader's stated error as written. Same method as cccd251 and 9f84cf4; nothing averaged, enveloped, settled or
+decided by majority; an item only one reader gives is READ ONCE.
+
+D's errors: calibration 2 sigma combined in quadrature with a reading bound, or a box half-width (D's err_basis column
+says which); used as written. D's flags are its own words (end-of-dash, merged-in-grid, uncertain-end, alternative,
+crossing, hidden); every one is listed below.
+
+Format: pairs_a52e01_fig8a_m17.csv has the three-way pairing's columns (9f84cf4) unchanged, with D's row (D_id ... D_flag)
+and the A-D, B-D and C-D comparisons appended before summary, and D_note last. identity_map.csv is one row per Mach 1.7
+drawn curve with all four readers' curves, wing calls, flags and alpha 0 values.
+
+== Mapping D's curves to the drawn curves of the three-way identity map (by D's values at alpha 2, 4, 0 and its lower end)
+   D read only alpha 0, 2 and 4, so the station rule (3 common stations) cannot hold; each comparison below is one of D's
+   values against one reader's curve in that drawn curve (stations at the same alpha, alpha 0 values, lower ends on both axes).
+   D 'D-A' (wing 3): MAPPED to M=1.2, 1.4, 1.7 #7, 5 of 8 comparisons agree (A alpha 4.0 ok, A alpha 2.0 ok, A lower end no, B alpha 4.0 ok, B alpha 2.0 ok, B lower end no, C alpha 0 ok, C lower end no); next M=1.2, 1.4, 1.7 #8 0 of 1
+       also: M=1.2, 1.4, 1.7 #1 0 of 8 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B lower end no, C alpha 2.0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #10 0 of 9 (A alpha 4.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #2 0 of 10 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #3 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #4 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #5 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #6 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #9 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+   D 'D-M' (wing 4): MAPPED to M=1.2, 1.4, 1.7 #9, 9 of 11 comparisons agree (A alpha 4.0 ok, A alpha 2.0 ok, A lower end no, B alpha 4.0 ok, B alpha 2.0 ok, B alpha 0 ok, B lower end ok, C alpha 4.0 ok, C alpha 2.0 ok, C alpha 0 ok, C lower end no); next M=1.2, 1.4, 1.7 #10 1 of 9
+       also: M=1.2, 1.4, 1.7 #8 0 of 1 (A lower end no)
+       also: M=1.2, 1.4, 1.7 #1 0 of 8 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B lower end no, C alpha 2.0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #7 0 of 8 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B lower end no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #2 0 of 10 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #3 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #4 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #5 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #6 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+   D 'D-R' (wing 2): MAPPED to M=1.2, 1.4, 1.7 #10, 6 of 9 comparisons agree (A alpha 4.0 ok, A lower end no, B alpha 4.0 ok, B alpha 2.0 ok, B lower end no, C alpha 4.0 ok, C alpha 2.0 ok, C alpha 0 ok, C lower end no); next M=1.2, 1.4, 1.7 #8 0 of 1
+       also: M=1.2, 1.4, 1.7 #1 0 of 8 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B lower end no, C alpha 2.0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #7 0 of 8 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B lower end no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #2 0 of 10 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #3 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #4 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #5 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #6 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+       also: M=1.2, 1.4, 1.7 #9 0 of 11 (A alpha 4.0 no, A alpha 2.0 no, A lower end no, B alpha 4.0 no, B alpha 2.0 no, B alpha 0 no, B lower end no, C alpha 4.0 no, C alpha 2.0 no, C alpha 0 no, C lower end no)
+
+   D's alternative lower end (R_end_alt), not used for the map, against every Mach 1.7 curve's lower end:
+     R_end_alt against M=1.2, 1.4, 1.7 #7 A 'M=1.7 line a (short dashes)' lower end (alpha 0.416 +-0.096, -0.1812 +-0.0030): differs
+     R_end_alt against M=1.2, 1.4, 1.7 #7 B 'M = 1.7; Wing 3 (short-dash line)' lower end (alpha 0.376 +-0.074, -0.1817 +-0.0037): differs
+     R_end_alt against M=1.2, 1.4, 1.7 #7 C 'a17-c1' lower end (alpha 0.237 +-0.087, -0.1823 +-0.0054): differs
+     R_end_alt against M=1.2, 1.4, 1.7 #8 A 'M=1.7 line b (diagonal stroke at bottom)' lower end (alpha 0.432 +-0.109, -0.1484 +-0.0030): agrees
+     R_end_alt against M=1.2, 1.4, 1.7 #9 A 'M=1.7 line c' lower end (alpha 0.227 +-0.096, -0.2711 +-0.0030): differs
+     R_end_alt against M=1.2, 1.4, 1.7 #9 B 'M = 1.7; Wing 4 (long-and-short-dash line)' lower end (alpha 0.176 +-0.256, -0.2693 +-0.0037): differs
+     R_end_alt against M=1.2, 1.4, 1.7 #9 C 'a17-cX' lower end (alpha 0.174 +-0.087, -0.2699 +-0.0054): differs
+     R_end_alt against M=1.2, 1.4, 1.7 #10 A 'M=1.7 line d' lower end (alpha 1.820 +-0.106, -0.2061 +-0.0030): differs
+     R_end_alt against M=1.2, 1.4, 1.7 #10 B 'M = 1.7; Wing 2 (long-dash line)' lower end (alpha 0.372 +-0.074, -0.1443 +-0.0037): agrees
+     R_end_alt against M=1.2, 1.4, 1.7 #10 C 'a17-c3' lower end (alpha 0.202 +-0.087, -0.1300 +-0.0054): differs
+
+== Wing calls for each Mach 1.7 drawn curve, all four readers, with their flags (no majority taken)
+   [M=1.2, 1.4, 1.7 #7]
+     A 'M=1.7 line a (short dashes)': names no wing (short dash; A's supersonic lines carry no wing)
+     B 'M = 1.7; Wing 3 (short-dash line)': wing 3, flagged uncertain ('curve identity: ... wing from dash lengths only')
+     C 'a17-c1': wing 3, confidence high
+     D 'D-A': wing 3, confidence high, alternative: none credible: wing 4 would need long elements of 31 px or more between the short ones and there are none in 13 consecutive elements
+     wing calls: TWO AGREE, NEITHER UNCERTAIN: wing 3 named by B (flagged or not high), C, D; no reader names another wing
+   [M=1.2, 1.4, 1.7 #8]
+     A 'M=1.7 line b (diagonal stroke at bottom)': names no wing (no line style; A's supersonic lines carry no wing)
+     B: no curve of this reading in this drawn curve
+     C: no curve of this reading in this drawn curve
+     D: no curve of this reading in this drawn curve
+     wing calls: NO WING CALL: no reader names a wing
+   [M=1.2, 1.4, 1.7 #9]
+     A 'M=1.7 line c': names no wing (no line style; A's supersonic lines carry no wing)
+     B 'M = 1.7; Wing 4 (long-and-short-dash line)': wing 4, flagged uncertain ('curve identity: ... wing from dash lengths only')
+     C 'a17-cX': wing 4, confidence medium, alternative wing 2
+     D 'D-M': wing 4, confidence high, alternative: wing 2 only if every short element were a broken long dash; rejected because each short element has clean gaps on both sides and they alternate regularly
+     wing calls: TWO AGREE, ONE OR BOTH UNCERTAIN: wing 4 named by B (flagged or not high), C (flagged or not high), D; no reader names another wing
+     D's own caveat (method.md flag 8): 'the M and R calls depend on each other: if one were wrong, the two would
+       swap' (D gives no alternative wing at high confidence and does not flag the rows).
+   [M=1.2, 1.4, 1.7 #10]
+     A 'M=1.7 line d': names no wing (no line style; A's supersonic lines carry no wing)
+     B 'M = 1.7; Wing 2 (long-dash line)': wing 2, flagged uncertain ('curve identity: ... wing from dash lengths only')
+     C 'a17-c3': wing 2, confidence medium, alternative wing 4
+     D 'D-R': wing 2, confidence high, alternative: wing 4 only if short elements were hidden; rejected because every gap is clean paper of 8 or 9 px, too short to hold a short element plus two gaps
+     wing calls: TWO AGREE, ONE OR BOTH UNCERTAIN: wing 2 named by B (flagged or not high), C (flagged or not high), D; no reader names another wing
+     D's own caveat (method.md flag 8): 'the M and R calls depend on each other: if one were wrong, the two would
+       swap' (D gives no alternative wing at high confidence and does not flag the rows).
+
+== Alpha 0, each Mach 1.7 drawn curve: which readers give a value, and each pair (errors summed)
+   [M=1.2, 1.4, 1.7 #7] TWO OR MORE AGREEING READINGS (C-D)
+       A no value (lowest end alpha 0.416 at -0.1812) | B no value (the curve does not reach alpha = 0 (lowest drawn alpha 0.34)) | C -0.1824 +-0.0078 (bound) | D -0.1832 +-0.0049 (D's error)
+       A-B neither; A-C read once (C only); A-D read once (D only); B-C read once (C only); B-D read once (D only); C-D agree (diff 0.0008, errors summed 0.0127)
+   [M=1.2, 1.4, 1.7 #8] NOT READ (no reader gives a value)
+       A no value (lowest end alpha 0.432 at -0.1484) | B no curve | C no curve | D no curve
+       A-B neither; A-C neither; A-D neither; B-C neither; B-D neither; C-D neither
+   [M=1.2, 1.4, 1.7 #9] TWO OR MORE AGREEING READINGS (B-C, B-D, C-D)
+       A no value (lowest end alpha 0.227 at -0.2711) | B -0.2656 +-0.0091 (bound, flag uncertain) | C -0.2696 +-0.0086 (bound, flag uncertain) | D -0.2707 +-0.0056 (D's error)
+       A-B read once (B only); A-C read once (C only); A-D read once (D only); B-C agree (diff 0.0040, errors summed 0.0177); B-D agree (diff 0.0051, errors summed 0.0147); C-D agree (diff 0.0011, errors summed 0.0142)
+   [M=1.2, 1.4, 1.7 #10] TWO OR MORE AGREEING READINGS (C-D)
+       A no value (lowest end alpha 1.820 at -0.2061) | B no value (the curve does not reach alpha = 0 (lowest drawn alpha 0.34)) | C -0.1310 +-0.0103 (bound, flag uncertain) | D -0.1318 +-0.0063 (D's error, flag uncertain-end)
+       A-B neither; A-C read once (C only); A-D read once (D only); B-C read once (C only); B-D read once (D only); C-D agree (diff 0.0008, errors summed 0.0166)
+
+== Wing 2 (#10) at alpha 0, C and D, with both of D's alternatives (as the coordinator asked)
+   C a17-c3: -0.1310 +-0.0103 at alpha 0 (bound, flagged uncertain; C's wing call: wing 2, confidence medium, alternative wing 4)
+   D's first reading (R_a0, the end piece on the frame): -0.1318 +-0.0063 at alpha 0, flag uncertain-end; against C: agree (diff 0.0008, errors summed 0.0166)
+   D's alternative (R_end_alt, the piece is not part of the curve): no value at alpha 0; lowest end at alpha 0.343 +-0.068, -0.1469 +-0.0063.
+     against C 'a17-c3' lower end (alpha 0.202 +-0.087, -0.1300 +-0.0054): alpha agrees, Cp differs
+     against B 'M = 1.7; Wing 2 (long-dash line)' lower end (alpha 0.372 +-0.074, -0.1443 +-0.0037): alpha agrees, Cp agrees
+     against A 'M=1.7 line b (diagonal stroke at bottom)' lower end (alpha 0.432 +-0.109, -0.1484 +-0.0030): alpha agrees, Cp agrees
+     against A 'M=1.7 line d' lower end (alpha 1.820 +-0.106, -0.2061 +-0.0030): alpha differs, Cp differs
+   Under D's alternative, C's value at alpha 0 is read once (C only) for this curve; under D's first reading, C and D agree.
+   B gives no value (its wing 2 'does not reach alpha = 0', lowest drawn alpha 0.37); A gives no value for line d or line b.
+
+== Counts (Mach 1.7 drawn curves #7 to #10, alpha 0 to 4)
+   A-B A only station 14
+   A-B B only station 1
+   A-B lower end DISAGREE 1
+   A-B lower end agree 2
+   A-B station pair DISAGREE 1
+   A-B station pair agree 10
+   A-C A only station 6
+   A-C C only station 10
+   A-C lower end DISAGREE 1
+   A-C lower end agree 2
+   A-C station pair DISAGREE 2
+   A-C station pair agree 17
+   A-D A only station 20
+   A-D D only station 3
+   A-D lower end DISAGREE 3
+   A-D lower end DISAGREE (D alternative) 1
+   A-D station pair agree 5
+   A-D station vs end agree 1
+   B-C B only station 3
+   B-C C only station 19
+   B-C lower end DISAGREE 1
+   B-C lower end agree 2
+   B-C station pair agree 9
+   B-C station vs end DISAGREE 1
+   B-D B only station 6
+   B-D D only station 3
+   B-D lower end DISAGREE 2
+   B-D lower end agree 1
+   B-D lower end agree (D alternative) 1
+   B-D station pair agree 6
+   C-D C only station 25
+   C-D D only station 5
+   C-D lower end DISAGREE 3
+   C-D lower end DISAGREE (D alternative) 1
+   C-D station pair agree 4
+
+== Every disagreement (unresolved; no winner, no average, no envelope, no majority)
+   [M=1.2, 1.4, 1.7 #7]
+     end: lower end, A-D: A a_sup|M=1.7linea(shortdashes)|e0.416 (alpha 0.416 +-0.096, -0.1812 +-0.0030) vs D A_end (alpha 0.000 +-0.083, -0.1832 +-0.0049); DISAGREE (alpha)
+     end: lower end, B-D: B A52-8a-M1.2-1.7-M1.7A-001 (alpha 0.376 +-0.074, -0.1817 +-0.0037) vs D A_end (alpha 0.000 +-0.083, -0.1832 +-0.0049); DISAGREE (alpha)
+     end: lower end, C-D: C a17-c1-021 (alpha 0.237 +-0.087, -0.1823 +-0.0054) vs D A_end (alpha 0.000 +-0.083, -0.1832 +-0.0049); DISAGREE (alpha)
+   [M=1.2, 1.4, 1.7 #9]
+     end: lower end, A-D: A a_sup|M=1.7linec|e0.227 (alpha 0.227 +-0.096, -0.2711 +-0.0030) vs D M_end (alpha 0.000 +-0.083, -0.2707 +-0.0056); DISAGREE (alpha)
+     end: lower end, C-D: C a17-cX-022 (alpha 0.174 +-0.087, -0.2699 +-0.0054) vs D M_end (alpha 0.000 +-0.083, -0.2707 +-0.0056); DISAGREE (alpha)
+   [M=1.2, 1.4, 1.7 #10]
+     station vs end: alpha 0.467, B-C: C row a17-c3-031 (-0.1505 +-0.0023) against B's end A52-8a-M1.2-1.7-M1.7C-001 at alpha 0.372 (-0.1443 +-0.0037)
+     station: alpha 0.500, A-C: A 'a_sup|M=1.7lined|b0.500' -0.2000 +-0.0050 vs C 'a17-c3-030' -0.1521 +-0.0028; diff -0.0479, errors summed 0.0078
+     station: alpha 1.000, A-B: A 'a_sup|M=1.7lined|b1.000' -0.2000 +-0.0050 vs B 'A52-8a-M1.2-1.7-M1.7C-002' -0.1762 +-0.0043; diff -0.0238, errors summed 0.0093
+     station: alpha 1.000, A-C: A 'a_sup|M=1.7lined|b1.000' -0.2000 +-0.0050 vs C 'a17-c3-027' -0.1747 +-0.0027; diff -0.0253, errors summed 0.0077
+     end: lower end, A-B: A a_sup|M=1.7lined|e1.820 (alpha 1.820 +-0.106, -0.2061 +-0.0030) vs B A52-8a-M1.2-1.7-M1.7C-001 (alpha 0.372 +-0.074, -0.1443 +-0.0037); DISAGREE (alpha, Cp_b)
+     end: lower end, A-C: A a_sup|M=1.7lined|e1.820 (alpha 1.820 +-0.106, -0.2061 +-0.0030) vs C a17-c3-032 (alpha 0.202 +-0.087, -0.1300 +-0.0054); DISAGREE (alpha, Cp_b)
+     end: lower end, A-D: A a_sup|M=1.7lined|e1.820 (alpha 1.820 +-0.106, -0.2061 +-0.0030) vs D R_end (alpha 0.000 +-0.083, -0.1318 +-0.0063); DISAGREE (alpha, Cp_b)
+     end: lower end, B-C: B A52-8a-M1.2-1.7-M1.7C-001 (alpha 0.372 +-0.074, -0.1443 +-0.0037) vs C a17-c3-032 (alpha 0.202 +-0.087, -0.1300 +-0.0054); DISAGREE (alpha, Cp_b)
+     end: lower end, B-D: B A52-8a-M1.2-1.7-M1.7C-001 (alpha 0.372 +-0.074, -0.1443 +-0.0037) vs D R_end (alpha 0.000 +-0.083, -0.1318 +-0.0063); DISAGREE (alpha, Cp_b)
+     end: lower end, C-D: C a17-c3-032 (alpha 0.202 +-0.087, -0.1300 +-0.0054) vs D R_end (alpha 0.000 +-0.083, -0.1318 +-0.0063); DISAGREE (alpha)
+     end: lower end (D's alternative), A-D: A a_sup|M=1.7lined|e1.820 (alpha 1.820 +-0.106, -0.2061 +-0.0030) vs D R_end_alt (alpha 0.343 +-0.068, -0.1469 +-0.0063); DISAGREE (alpha, Cp_b)
+     end: lower end (D's alternative), C-D: C a17-c3-032 (alpha 0.202 +-0.087, -0.1300 +-0.0054) vs D R_end_alt (alpha 0.343 +-0.068, -0.1469 +-0.0063); DISAGREE (Cp_b)
+   total: 17 (end 13, station 3, station vs end 1)
+
+== Where the curves meet at low angles, each reader's call (quoted from each method.md; see those files for the full text)
+   M 1.7 wing 4 and wing 2 near alpha 4.4 to 5.1, all four readers call a crossing:
+     A (section 8 item 11): 'the M=1.7 lines c and d meet at about alpha 4.5 and were taken as crossing (straight
+       continuation); alternative: touching, with the parts above 4.5 swapped.'
+     B (section 8 item 15): 'The wing 4 and wing 2 curves cross near alpha 4.4 (continuity call; alternative: they
+       touch and swap lower parts).'
+     C ('Where curves meet'): 'a17-c3 and a17-cX, 8(a) supersonic, alpha 4.4 to 4.9. [...] so they cross. Other way:
+       they touch and turn back.'
+     D ('Where curves meet', flag 5): 'My call: they cross. Wing 2 (R) continues straight down [...] Wing 4 (M)
+       continues on the diagonal [...] Alternative: they touch and swap (wing 4 straight down, wing 2 on the diagonal).'
+   M 1.7 wing 2's diagonal across wing 3 near alpha 1.0 to 1.6:
+     C: 'a17-c1 and a17-c3, 8(a) supersonic, alpha 1.1 to 1.6. A crossing. c1 stays vertical and c3's diagonal
+       continues down-left. Other way: they swap below the crossing.'
+     D (flag 6): 'R continues down and left to about Cp -0.13 at alpha 0, and A continues straight down to Cp -0.183.
+       [...] Alternative: swap (A takes the diagonal, R takes the column).'
+     B (section 8 item 15): wing 2 runs 'down to x -0.20 at alpha 2, then a "/" stroke to x -0.145 at alpha 0.37, not
+       reaching alpha 0'.
+     A: gives the diagonal as a separate line, 'M=1.7 line b (diagonal stroke at bottom)' (lower end alpha 0.43), and
+       continues 'M=1.7 line d' down the -0.2 grid line as boxes at -0.200 to its lower end at alpha 1.82.
+
+== Every row of every reader at alpha 0 to 4 for these drawn curves (stations, boxes, ends, alpha 0 rows)
+   [M=1.2, 1.4, 1.7 #7]
+     A 1.7linea(shortdashes)|e0.416 curve_end     alpha  0.416 +-0.096   Cp  -0.1812 +-0.0030  2sigma, flag uncertain
+     A 1.7linea(shortdashes)|c0.500 curve         alpha  0.500 +-0.044   Cp  -0.1810 +-0.0033  2sigma, flag uncertain
+     A 1.7linea(shortdashes)|b1.000 box           alpha  1.000 +-0.044   Cp  -0.1761 +-0.0047  bound, flag uncertain
+     A 1.7linea(shortdashes)|c1.500 curve         alpha  1.500 +-0.044   Cp  -0.1766 +-0.0033  2sigma, flag uncertain
+     A 1.7linea(shortdashes)|c2.000 curve         alpha  2.000 +-0.044   Cp  -0.1760 +-0.0040  2sigma, flag uncertain
+     A 1.7linea(shortdashes)|c2.500 curve         alpha  2.500 +-0.044   Cp  -0.1739 +-0.0033  2sigma, flag uncertain
+     A 1.7linea(shortdashes)|c3.000 curve         alpha  3.000 +-0.044   Cp  -0.1706 +-0.0033  2sigma, flag uncertain
+     A 1.7linea(shortdashes)|c3.500 curve         alpha  3.500 +-0.044   Cp  -0.1679 +-0.0039  2sigma, flag uncertain
+     A 1.7linea(shortdashes)|c4.000 curve         alpha  4.000 +-0.044   Cp  -0.1659 +-0.0038  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7A-012    curve_at_zero alpha  0.000 +-        Cp          +-        , flag uncertain
+     B A52-8a-M1.2-1.7-M1.7A-001    curve_end     alpha  0.376 +-0.074   Cp  -0.1817 +-0.0037  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7A-003    curve         alpha  1.000 +-0.039   Cp  -0.1795 +-0.0215  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7A-004    curve         alpha  2.000 +-0.039   Cp  -0.1770 +-0.0215  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7A-005    curve         alpha  3.000 +-0.039   Cp  -0.1708 +-0.0038  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7A-006    curve         alpha  4.000 +-0.039   Cp  -0.1660 +-0.0083  2sigma, flag uncertain
+     C a17-c1-022                   curve_at_zero alpha  0.000 +-0.079   Cp  -0.1824 +-0.0078  bound
+     C a17-c1-021                   curve_end     alpha  0.237 +-0.087   Cp  -0.1823 +-0.0054  bound
+     C a17-c1-020                   curve         alpha  0.500 +-0.030   Cp  -0.1814 +-0.0028  2sigma
+     C a17-c1-019                   curve         alpha  1.000 +-0.030   Cp  -0.1788 +-0.0027  2sigma
+     C a17-c1-018                   box           alpha  1.500 +-0.055   Cp  -0.1827 +-0.0151  bound, flag uncertain
+     C a17-c1-017                   curve         alpha  2.084 +-0.030   Cp  -0.1769 +-0.0027  2sigma
+     C a17-c1-016                   curve         alpha  2.500 +-0.030   Cp  -0.1743 +-0.0028  2sigma
+     C a17-c1-015                   curve         alpha  3.000 +-0.030   Cp  -0.1709 +-0.0028  2sigma
+     C a17-c1-014                   curve         alpha  3.604 +-0.030   Cp  -0.1682 +-0.0027  2sigma
+     C a17-c1-013                   curve         alpha  3.920 +-0.030   Cp  -0.1665 +-0.0027  2sigma
+     D A_a0                         curve_at_zero alpha  0.000 +-0.083   Cp  -0.1832 +-0.0049  D's error
+     D A_end                        curve_end     alpha  0.000 +-0.083   Cp  -0.1832 +-0.0049  D's error
+     D X_RA                         box           alpha  1.185 +-0.231   Cp  -0.1814 +-0.0142  D's error, flag crossing
+     D A_a2                         curve         alpha  2.000 +-0.054   Cp  -0.1767 +-0.0049  D's error, flag end-of-dash
+     D A_a4                         curve         alpha  4.000 +-0.054   Cp  -0.1675 +-0.0042  D's error
+   [M=1.2, 1.4, 1.7 #8]
+     A agonalstrokeatbottom)|e0.432 curve_end     alpha  0.432 +-0.109   Cp  -0.1484 +-0.0030  2sigma, flag uncertain
+     A agonalstrokeatbottom)|c0.500 curve         alpha  0.500 +-0.044   Cp  -0.1516 +-0.0040  2sigma, flag uncertain
+     A agonalstrokeatbottom)|b1.000 box           alpha  1.000 +-0.044   Cp  -0.1761 +-0.0047  bound, flag uncertain
+   [M=1.2, 1.4, 1.7 #9]
+     A a_sup|M=1.7linec|e0.227      curve_end     alpha  0.227 +-0.096   Cp  -0.2711 +-0.0030  2sigma, flag uncertain
+     A a_sup|M=1.7linec|c0.500      curve         alpha  0.500 +-0.044   Cp  -0.2781 +-0.0034  2sigma, flag uncertain
+     A a_sup|M=1.7linec|c1.000      curve         alpha  1.000 +-0.044   Cp  -0.2852 +-0.0033  2sigma, flag uncertain
+     A a_sup|M=1.7linec|c1.500      curve         alpha  1.500 +-0.044   Cp  -0.2875 +-0.0033  2sigma, flag uncertain
+     A a_sup|M=1.7linec|c2.000      curve         alpha  2.000 +-0.044   Cp  -0.2851 +-0.0047  2sigma, flag uncertain
+     A a_sup|M=1.7linec|c2.500      curve         alpha  2.500 +-0.044   Cp  -0.2791 +-0.0034  2sigma, flag uncertain
+     A a_sup|M=1.7linec|c3.000      curve         alpha  3.000 +-0.044   Cp  -0.2676 +-0.0035  2sigma, flag uncertain
+     A a_sup|M=1.7linec|c3.500      curve         alpha  3.500 +-0.044   Cp  -0.2533 +-0.0036  2sigma, flag uncertain
+     A a_sup|M=1.7linec|c4.000      curve         alpha  4.000 +-0.044   Cp  -0.2395 +-0.0049  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7B-012    curve_at_zero alpha  0.000 +-0.039   Cp  -0.2656 +-0.0091  bound, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7B-002    curve_end     alpha  0.176 +-0.256   Cp  -0.2693 +-0.0037  bound, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7B-003    curve         alpha  1.000 +-0.039   Cp  -0.2855 +-0.0037  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7B-004    curve         alpha  2.000 +-0.039   Cp  -0.2878 +-0.0051  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7B-005    curve         alpha  3.000 +-0.039   Cp  -0.2661 +-0.0040  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7B-006    curve         alpha  4.000 +-0.039   Cp  -0.2398 +-0.0068  2sigma, flag uncertain
+     C a17-cX-023                   curve_at_zero alpha  0.000 +-0.079   Cp  -0.2696 +-0.0086  bound, flag uncertain
+     C a17-cX-022                   curve_end     alpha  0.174 +-0.087   Cp  -0.2699 +-0.0054  bound, flag uncertain
+     C a17-cX-021                   curve         alpha  0.500 +-0.030   Cp  -0.2792 +-0.0028  2sigma, flag uncertain
+     C a17-cX-020                   curve         alpha  1.000 +-0.030   Cp  -0.2856 +-0.0028  2sigma, flag uncertain
+     C a17-cX-019                   curve         alpha  1.500 +-0.030   Cp  -0.2879 +-0.0027  2sigma, flag uncertain
+     C a17-cX-018                   curve         alpha  1.776 +-0.119   Cp  -0.2886 +-0.0037  bound, flag uncertain
+     C a17-cX-017                   curve         alpha  2.000 +-0.055   Cp  -0.2877 +-0.0037  bound, flag uncertain
+     C a17-cX-016                   curve         alpha  2.500 +-0.030   Cp  -0.2794 +-0.0027  2sigma, flag uncertain
+     C a17-cX-015                   curve         alpha  3.000 +-0.030   Cp  -0.2654 +-0.0028  2sigma, flag uncertain
+     C a17-cX-014                   curve         alpha  3.500 +-0.030   Cp  -0.2522 +-0.0028  2sigma, flag uncertain
+     C a17-cX-013                   curve         alpha  4.000 +-0.055   Cp  -0.2415 +-0.0086  bound, flag uncertain
+     D M_a0                         curve_at_zero alpha  0.000 +-0.083   Cp  -0.2707 +-0.0056  D's error
+     D M_end                        curve_end     alpha  0.000 +-0.083   Cp  -0.2707 +-0.0056  D's error
+     D M_a2                         curve         alpha  2.000 +-0.054   Cp  -0.2877 +-0.0042  D's error
+     D M_a4                         curve         alpha  4.000 +-0.054   Cp  -0.2360 +-0.0063  D's error, flag merged-in-grid
+   [M=1.2, 1.4, 1.7 #10]
+     A a_sup|M=1.7lined|b0.500      box           alpha  0.500 +-0.044   Cp  -0.2000 +-0.0050  bound, flag uncertain
+     A a_sup|M=1.7lined|b1.000      box           alpha  1.000 +-0.044   Cp  -0.2000 +-0.0050  bound, flag uncertain
+     A a_sup|M=1.7lined|b1.500      box           alpha  1.500 +-0.044   Cp  -0.2000 +-0.0050  bound, flag uncertain
+     A a_sup|M=1.7lined|e1.820      curve_end     alpha  1.820 +-0.106   Cp  -0.2061 +-0.0030  2sigma, flag uncertain
+     A a_sup|M=1.7lined|c2.500      curve         alpha  2.500 +-0.044   Cp  -0.2147 +-0.0033  2sigma, flag uncertain
+     A a_sup|M=1.7lined|c3.000      curve         alpha  3.000 +-0.044   Cp  -0.2171 +-0.0039  2sigma, flag uncertain
+     A a_sup|M=1.7lined|c3.500      curve         alpha  3.500 +-0.044   Cp  -0.2200 +-0.0033  2sigma, flag uncertain
+     A a_sup|M=1.7lined|c4.000      curve         alpha  4.000 +-0.044   Cp  -0.2213 +-0.0047  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7C-018    curve_at_zero alpha  0.000 +-        Cp          +-        , flag uncertain
+     B A52-8a-M1.2-1.7-M1.7C-001    curve_end     alpha  0.372 +-0.074   Cp  -0.1443 +-0.0037  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7C-002    curve         alpha  1.000 +-0.039   Cp  -0.1762 +-0.0043  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7C-003    curve         alpha  2.000 +-0.039   Cp  -0.2082 +-0.0052  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7C-004    curve         alpha  3.000 +-0.039   Cp  -0.2175 +-0.0064  2sigma, flag uncertain
+     B A52-8a-M1.2-1.7-M1.7C-005    curve         alpha  4.000 +-0.039   Cp  -0.2282 +-0.0075  2sigma, flag uncertain
+     C a17-c3-033                   curve_at_zero alpha  0.000 +-0.079   Cp  -0.1310 +-0.0103  bound, flag uncertain
+     C a17-c3-032                   curve_end     alpha  0.202 +-0.087   Cp  -0.1300 +-0.0054  bound, flag uncertain
+     C a17-c3-031                   curve         alpha  0.467 +-0.046   Cp  -0.1505 +-0.0023  2sigma, flag uncertain
+     C a17-c3-030                   curve         alpha  0.500 +-0.030   Cp  -0.1521 +-0.0028  2sigma, flag uncertain
+     C a17-c3-029                   curve         alpha  0.642 +-0.043   Cp  -0.1602 +-0.0023  2sigma, flag uncertain
+     C a17-c3-028                   curve         alpha  0.864 +-0.043   Cp  -0.1699 +-0.0023  2sigma, flag uncertain
+     C a17-c3-027                   curve         alpha  1.000 +-0.030   Cp  -0.1747 +-0.0027  2sigma, flag uncertain
+     C a17-c3-026                   curve         alpha  1.309 +-0.043   Cp  -0.1893 +-0.0023  2sigma, flag uncertain
+     C a17-c3-025                   box           alpha  1.500 +-0.055   Cp  -0.1827 +-0.0151  bound, flag uncertain
+     C a17-c3-024                   curve         alpha  2.000 +-0.055   Cp  -0.2083 +-0.0050  bound, flag uncertain
+     C a17-c3-023                   curve         alpha  2.500 +-0.030   Cp  -0.2150 +-0.0028  2sigma, flag uncertain
+     C a17-c3-022                   curve         alpha  2.974 +-0.030   Cp  -0.2173 +-0.0027  2sigma, flag uncertain
+     C a17-c3-021                   curve         alpha  3.500 +-0.030   Cp  -0.2204 +-0.0027  2sigma, flag uncertain
+     C a17-c3-020                   curve         alpha  4.000 +-0.055   Cp  -0.2215 +-0.0041  bound, flag uncertain
+     D R_a0                         curve_at_zero alpha  0.000 +-0.083   Cp  -0.1318 +-0.0063  D's error, flag uncertain-end
+     D R_end                        curve_end     alpha  0.000 +-0.083   Cp  -0.1318 +-0.0063  D's error, flag uncertain-end
+     D R_end_alt                    curve_end     alpha  0.343 +-0.068   Cp  -0.1469 +-0.0063  D's error, flag alternative
+     D X_RA                         box           alpha  1.185 +-0.231   Cp  -0.1814 +-0.0142  D's error, flag crossing
+     D H_R                          box           alpha  1.614 +-0.279   Cp  -0.2033 +-0.0101  D's error, flag hidden
+     D R_a2                         curve         alpha  2.000 +-0.054   Cp  -0.2089 +-0.0086  D's error, flag merged-in-grid
+     D R_a4                         curve         alpha  4.000 +-0.054   Cp  -0.2217 +-0.0042  D's error
+   D's box X_MR (the wing 4 / wing 2 crossing, alpha 4.909 +-0.279, Cp -0.2218 +-0.0118, flag crossing) lies above alpha 4; it is in the
+   pairs file as a D-only row.
+
+== Every flag of the four readers on these rows (flag column; notes are in the pairs file)
+   [M=1.2, 1.4, 1.7 #7] A 'M=1.7 line a (short dashes)'
+       [dashes)|e0.416] extreme ink at 0.3373 (walked 1 px past the trace, stop: ink ends)
+       [dashes)|e0.416] centreline end taken 5.0 px inside
+       [dashes)|e0.416, dashes)|c0.500, dashes)|b1.000, dashes)|c1.500, dashes)|c2.000, dashes)|c2.500, dashes)|c3.000, dashes)|c3.500, dashes)|c4.000] supersonic panel: Mach group from position and label arrows
+       [dashes)|e0.416, dashes)|c0.500, dashes)|b1.000, dashes)|c1.500, dashes)|c2.000, dashes)|c2.500, dashes)|c3.000, dashes)|c3.500, dashes)|c4.000] wing not identified
+       [dashes)|b1.000] ink merged with M=1.7 line b (diagonal stroke at bottom)
+       [dashes)|b1.000] box is the merged run (the two lines coincide within one line width here)
+       [dashes)|c2.000] on grid line: bridged 32 px band from ink either side
+       [dashes)|c3.500] dash gap of 13 px bridged from ink either side
+       [dashes)|c4.000] on grid line: bridged 30 px band from ink either side
+   [M=1.2, 1.4, 1.7 #7] B 'M = 1.7; Wing 3 (short-dash line)'
+       [-1.7-M1.7A-001] first end of chain: centre of the outermost ink
+       [-1.7-M1.7A-001, -1.7-M1.7A-003, -1.7-M1.7A-004, -1.7-M1.7A-005, -1.7-M1.7A-006, -1.7-M1.7A-012] curve identity: supersonic panel: curves of three Mach numbers overlap, run along grid lines and are crossed by the label arrows
+       [-1.7-M1.7A-001, -1.7-M1.7A-003, -1.7-M1.7A-004, -1.7-M1.7A-005, -1.7-M1.7A-006, -1.7-M1.7A-012] Mach number from the label arrows and continuity, wing from dash lengths only
+       [-1.7-M1.7A-001, -1.7-M1.7A-003, -1.7-M1.7A-004, -1.7-M1.7A-005, -1.7-M1.7A-006, -1.7-M1.7A-012] M = 1.7 (arrow)
+       [-1.7-M1.7A-001, -1.7-M1.7A-003, -1.7-M1.7A-004, -1.7-M1.7A-005, -1.7-M1.7A-006, -1.7-M1.7A-012] dashes about 35 px
+       [-1.7-M1.7A-003, -1.7-M1.7A-004] in a 86 px gap of this curve's ink (dash gap or masked grid line)
+       [-1.7-M1.7A-003, -1.7-M1.7A-004, -1.7-M1.7A-006] read on the straight line joining the facing dash ends
+       [-1.7-M1.7A-003, -1.7-M1.7A-004, -1.7-M1.7A-006] long gap
+       [-1.7-M1.7A-006] in a 30 px gap of this curve's ink (dash gap or masked grid line)
+       [-1.7-M1.7A-012] the curve does not reach alpha = 0 (lowest drawn alpha 0.34)
+   [M=1.2, 1.4, 1.7 #7] C 'a17-c1'
+       [a17-c1-018] curve label printed: 1.7 (arrow)
+       [a17-c1-018] merged ink: curves c1 and c3 cross here
+       [a17-c1-018] ink merged
+       [a17-c1-018] x_err is the half-width of the box
+   [M=1.2, 1.4, 1.7 #7] D 'D-A'
+       [A_a2] a short dash ends inside the alpha 2 line (no ink below it until row 1406)
+       [A_a2] value is where that dash meets the line
+       [A_a2] alternative: the true curve at alpha 2 lies anywhere in x 1713-1721 (next dash starts at x 1714-1718) [pixel x 1715.3, y 1394.2]
+       [X_RA] the long diagonal dash of R (wing 2) crosses the short-dash column of A (wing 3)
+       [X_RA] read as: wing 2 continues down and left to about Cp -0.13 at alpha 0, wing 3 continues straight down to about Cp -0.18
+       [X_RA] alternative: swap
+   [M=1.2, 1.4, 1.7 #8] A 'M=1.7 line b (diagonal stroke at bottom)'
+       [bottom)|e0.432] extreme ink at 0.3373 (walked 1 px past the trace, stop: ink ends)
+       [bottom)|e0.432] centreline end taken 6.0 px inside
+       [bottom)|e0.432, bottom)|c0.500, bottom)|b1.000] supersonic panel: Mach group from position and label arrows
+       [bottom)|e0.432, bottom)|c0.500, bottom)|b1.000] wing not identified
+       [bottom)|b1.000] ink merged with M=1.7 line a (short dashes)
+       [bottom)|b1.000] box is the merged run (the two lines coincide within one line width here)
+   [M=1.2, 1.4, 1.7 #9] A 'M=1.7 line c'
+       [.7linec|e0.227] extreme ink at 0.1475 (walked 1 px past the trace, stop: ink ends)
+       [.7linec|e0.227] centreline end taken 5.0 px inside
+       [.7linec|e0.227, .7linec|c0.500, .7linec|c1.000, .7linec|c1.500, .7linec|c2.000, .7linec|c2.500, .7linec|c3.000, .7linec|c3.500, .7linec|c4.000] supersonic panel: Mach group from position and label arrows
+       [.7linec|e0.227, .7linec|c0.500, .7linec|c1.000, .7linec|c1.500, .7linec|c2.000, .7linec|c2.500, .7linec|c3.000, .7linec|c3.500, .7linec|c4.000] wing not identified
+       [.7linec|c2.000] on grid line: bridged 25 px band from ink either side
+       [.7linec|c4.000] on grid line: bridged 18 px band from ink either side
+   [M=1.2, 1.4, 1.7 #9] B 'M = 1.7; Wing 4 (long-and-short-dash line)'
+       [-1.7-M1.7B-002] last end of chain: centre of the outermost ink
+       [-1.7-M1.7B-002] it stops at the alpha line 0 grid line, so the ink may go on under that line
+       [-1.7-M1.7B-002, -1.7-M1.7B-003, -1.7-M1.7B-004, -1.7-M1.7B-005, -1.7-M1.7B-006, -1.7-M1.7B-012] curve identity: supersonic panel: curves of three Mach numbers overlap, run along grid lines and are crossed by the label arrows
+       [-1.7-M1.7B-002, -1.7-M1.7B-003, -1.7-M1.7B-004, -1.7-M1.7B-005, -1.7-M1.7B-006, -1.7-M1.7B-012] Mach number from the label arrows and continuity, wing from dash lengths only
+       [-1.7-M1.7B-002, -1.7-M1.7B-003, -1.7-M1.7B-004, -1.7-M1.7B-005, -1.7-M1.7B-006, -1.7-M1.7B-012] M = 1.7
+       [-1.7-M1.7B-002, -1.7-M1.7B-003, -1.7-M1.7B-004, -1.7-M1.7B-005, -1.7-M1.7B-006, -1.7-M1.7B-012] strokes 106 49 118 58 116 45 82 px alternate
+       [-1.7-M1.7B-002, -1.7-M1.7B-003, -1.7-M1.7B-004, -1.7-M1.7B-005, -1.7-M1.7B-006, -1.7-M1.7B-012] along the x = -0.2 grid line from alpha 7.8 to 5.1
+       [-1.7-M1.7B-002, -1.7-M1.7B-003, -1.7-M1.7B-004, -1.7-M1.7B-005, -1.7-M1.7B-006, -1.7-M1.7B-012] crosses curve M1.7 C near alpha 4.4 (continuity call)
+       [-1.7-M1.7B-004] in a 14 px gap of this curve's ink (dash gap or masked grid line)
+       [-1.7-M1.7B-004, -1.7-M1.7B-006] read on the straight line joining the facing dash ends
+       [-1.7-M1.7B-006] in a 23 px gap of this curve's ink (dash gap or masked grid line)
+       [-1.7-M1.7B-006] gap next to ink shared with another curve
+       [-1.7-M1.7B-012] the curve runs into the alpha = 0 frame line
+       [-1.7-M1.7B-012] x carried from the visible end (alpha 0.18, 11 px above the frame centre) to alpha 0 along the end dash direction
+       [-1.7-M1.7B-012] bound adds that carry
+   [M=1.2, 1.4, 1.7 #9] C 'a17-cX'
+       [a17-cX-013, a17-cX-014, a17-cX-015, a17-cX-016, a17-cX-017, a17-cX-018, a17-cX-019, a17-cX-020, a17-cX-021, a17-cX-022, a17-cX-023] curve label printed: 1.7 (arrow)
+       [a17-cX-013, a17-cX-014, a17-cX-015, a17-cX-016, a17-cX-017, a17-cX-018, a17-cX-019, a17-cX-020, a17-cX-021, a17-cX-022, a17-cX-023] wing call medium confidence
+       [a17-cX-013, a17-cX-014, a17-cX-015, a17-cX-016, a17-cX-017, a17-cX-018, a17-cX-019, a17-cX-020, a17-cX-021, a17-cX-022, a17-cX-023] alternative wing 2
+       [a17-cX-013] stroke crosses the alpha 4 grid line
+       [a17-cX-013, a17-cX-017] value spans the stroke centres just above and below the line
+       [a17-cX-017] stroke crosses the alpha 2 grid line
+       [a17-cX-018] turning point: most negative x (rightmost point) of a bend or hook, read at the stroke centre
+       [a17-cX-022] lower end, centre of the last 2.5 px of stroke: reaches the alpha 0 line at x about -0.27
+       [a17-cX-023] stroke runs into the alpha 0 line
+       [a17-cX-023] x is the centre of its lowest free row 4 px above the line centre
+   [M=1.2, 1.4, 1.7 #9] D 'D-M'
+       [M_a4] short element of the diagonal branch meets the alpha 4 line
+       [M_a4] its last rows are inside the line, the long dash below starts 5 px under it
+       [M_a4] the stroke leans right about 0.5 px per row, so the value is read 2 to 5 rows above the line centre and the lean (about 1.5 px) is inside the bound [pixel x 1752.0, y 1330.2]
+   [M=1.2, 1.4, 1.7 #10] A 'M=1.7 line d'
+       [.7lined|b0.500, .7lined|b1.000, .7lined|b1.500] curve lies along the -0.2 grid line
+       [.7lined|b0.500, .7lined|b1.000, .7lined|b1.500] no ink outside the grid band: box is the band
+       [.7lined|b0.500, .7lined|b1.000, .7lined|b1.500, .7lined|e1.820, .7lined|c2.500, .7lined|c3.000, .7lined|c3.500, .7lined|c4.000] supersonic panel: Mach group from position and label arrows
+       [.7lined|b0.500, .7lined|b1.000, .7lined|b1.500, .7lined|e1.820, .7lined|c2.500, .7lined|c3.000, .7lined|c3.500, .7lined|c4.000] wing not identified
+       [.7lined|e1.820] extreme ink at 1.7292 (walked 25 px past the trace, stop: grid band)
+       [.7lined|e1.820] centreline end taken 5.8 px inside
+       [.7lined|e1.820] end near a grid line
+       [.7lined|e1.820] true end may lie inside the grid ink
+       [.7lined|c3.000] dash gap of 18 px bridged from ink either side
+       [.7lined|c4.000] on grid line: bridged 15 px band from ink either side
+   [M=1.2, 1.4, 1.7 #10] B 'M = 1.7; Wing 2 (long-dash line)'
+       [-1.7-M1.7C-001] last end of chain: centre of the outermost ink
+       [-1.7-M1.7C-001, -1.7-M1.7C-002, -1.7-M1.7C-003, -1.7-M1.7C-004, -1.7-M1.7C-005, -1.7-M1.7C-018] curve identity: supersonic panel: curves of three Mach numbers overlap, run along grid lines and are crossed by the label arrows
+       [-1.7-M1.7C-001, -1.7-M1.7C-002, -1.7-M1.7C-003, -1.7-M1.7C-004, -1.7-M1.7C-005, -1.7-M1.7C-018] Mach number from the label arrows and continuity, wing from dash lengths only
+       [-1.7-M1.7C-001, -1.7-M1.7C-002, -1.7-M1.7C-003, -1.7-M1.7C-004, -1.7-M1.7C-005, -1.7-M1.7C-018] M = 1.7
+       [-1.7-M1.7C-001, -1.7-M1.7C-002, -1.7-M1.7C-003, -1.7-M1.7C-004, -1.7-M1.7C-005, -1.7-M1.7C-018] strokes 72 to 105 px
+       [-1.7-M1.7C-001, -1.7-M1.7C-002, -1.7-M1.7C-003, -1.7-M1.7C-004, -1.7-M1.7C-005, -1.7-M1.7C-018] top (alpha 11.9 to about 13.6) merged with the third M = 1.7 arrow head
+       [-1.7-M1.7C-002] this ink is shared with another curve (crossing or touching)
+       [-1.7-M1.7C-002] curve nearly level here (dx/dalpha -0.052 per deg), x error large
+       [-1.7-M1.7C-003] in a 15 px gap of this curve's ink (dash gap or masked grid line)
+       [-1.7-M1.7C-003, -1.7-M1.7C-004, -1.7-M1.7C-005] read on the straight line joining the facing dash ends
+       [-1.7-M1.7C-004] in a 21 px gap of this curve's ink (dash gap or masked grid line)
+       [-1.7-M1.7C-005] in a 24 px gap of this curve's ink (dash gap or masked grid line)
+       [-1.7-M1.7C-005] gap next to ink shared with another curve
+       [-1.7-M1.7C-005] curve nearly level here (dx/dalpha -0.067 per deg), x error large
+       [-1.7-M1.7C-018] the curve does not reach alpha = 0 (lowest drawn alpha 0.34)
+   [M=1.2, 1.4, 1.7 #10] C 'a17-c3'
+       [a17-c3-020, a17-c3-021, a17-c3-022, a17-c3-023, a17-c3-024, a17-c3-025, a17-c3-026, a17-c3-027, a17-c3-028, a17-c3-029, a17-c3-030, a17-c3-031, a17-c3-032, a17-c3-033] curve label printed: 1.7 (arrow)
+       [a17-c3-020, a17-c3-021, a17-c3-022, a17-c3-023, a17-c3-024, a17-c3-025, a17-c3-026, a17-c3-027, a17-c3-028, a17-c3-029, a17-c3-030, a17-c3-031, a17-c3-032, a17-c3-033] wing call medium confidence
+       [a17-c3-020, a17-c3-021, a17-c3-022, a17-c3-023, a17-c3-024, a17-c3-025, a17-c3-026, a17-c3-027, a17-c3-028, a17-c3-029, a17-c3-030, a17-c3-031, a17-c3-032, a17-c3-033] alternative wing 4
+       [a17-c3-020] stroke crosses the alpha 4 grid line
+       [a17-c3-020, a17-c3-024] value spans the stroke centres just above and below the line
+       [a17-c3-022] target alpha 3.00 fell in a dash gap
+       [a17-c3-022] read at the nearest ink, at its own alpha (no bridging)
+       [a17-c3-024] stroke crosses the alpha 2 grid line
+       [a17-c3-025] merged ink: curves c1 and c3 cross here
+       [a17-c3-025] ink merged
+       [a17-c3-025] x_err is the half-width of the box
+       [a17-c3-026] read at fixed x -0.190 (column) on a flat part of the curve
+       [a17-c3-028] read at fixed x -0.170 (column) on a flat part of the curve
+       [a17-c3-029] read at fixed x -0.160 (column) on a flat part of the curve
+       [a17-c3-031] read at fixed x -0.150 (column) on a flat part of the curve
+       [a17-c3-032] lower end, centre of the last 2.5 px of stroke: diagonal down-left to the alpha 0 line at x about -0.13
+       [a17-c3-033] stroke runs into the alpha 0 line
+       [a17-c3-033] x is the centre of its lowest free row 4 px above the line centre
+   [M=1.2, 1.4, 1.7 #10] D 'D-R'
+       [R_a2] long dash crosses the alpha 2 line at its intersection with the Cp -0.2 line
+       [R_a2] left edge of the stroke may be hidden in the vertical line, so the bound is widened by 1.5 px [pixel x 1735.0, y 1394.3]
+       [R_a0] small piece (rows 1449-1452, x 1684-1690) on the frame, about 7 px below and left of the lower tip of the long diagonal dash and in line with it
+       [R_a0] every other mark on this frame is a curve end
+       [R_a0] alternative: the curve stops at the diagonal tip, see R_end_alt [pixel x 1687.3, frame centre y 1455.6]
+       [R_end] lowest end taken as the piece on the frame (same ink as R_a0) [pixel x 1687.3, frame centre y 1455.6]
+       [R_end_alt] alternative lowest end if the piece on the frame is not part of this curve: lower tip of the long diagonal dash 1413-1446 [pixel x 1696.7, y 1446]
+       [X_RA] the long diagonal dash of R (wing 2) crosses the short-dash column of A (wing 3)
+       [X_RA] read as: wing 2 continues down and left to about Cp -0.13 at alpha 0, wing 3 continues straight down to about Cp -0.18
+       [X_RA] alternative: swap
+       [H_R] R passes the Cp -0.2 grid line here
+       [H_R] its stroke is hidden in the line between the dash that ends at about row 1404 and the diagonal dash that starts at row 1413

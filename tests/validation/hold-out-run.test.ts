@@ -14,6 +14,11 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
 import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
+import {
+  bandHighAbove,
+  bandLowAbove,
+  FIN_TRAILING_EDGE_BAND,
+} from '../../src/base/fin-trailing-edge';
 import { trapezoidalPlanform } from '../../src/fins/planform';
 import { doubleWedge, singleWedge, type SymmetricSection } from '../../src/fins/section';
 import { finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
@@ -145,13 +150,21 @@ describe('the harness on the DREV gate', { timeout: 1_800_000 }, () => {
       expect(m.parts.base?.finsOnBaseSource).toBe('present');
       const t = m.total!;
       const v = verdictOf(t, gated[k]!.cx0, spreads[clusterOf(m.mach)]!);
+      // 0014 10.7 (ah)'s widening of the body base's band, and, since F4 (0019 section 3.4.1) and R1, the
+      // Mach 1.799 shot's trailing-edge low end below the record and its high end above it
+      // (basic-finner.test.ts states the same moves).
       const w = widenedBy(DREV_COMPONENTS[k]![5]);
+      const te = t.components.find((c) => c.name === 'fin trailing-edge base')!;
+      const f4 = te.low * (FIN_TRAILING_EDGE_BAND.low / bandLowAbove(m.mach) - 1);
+      const f4High = te.high * (1 - FIN_TRAILING_EDGE_BAND.high / bandHighAbove(m.mach));
+      expect(f4 > 0).toBe(m.mach < 1.8);
+      expect(f4High > 0).toBe(m.mach < 1.8);
       expect(Math.abs(t.cd - r[1])).toBeLessThan(1e-5);
-      expect(Math.abs(t.low - (r[2] + w.low))).toBeLessThan(1e-5);
-      expect(Math.abs(t.high - (r[3] + w.high))).toBeLessThan(1e-5);
+      expect(Math.abs(t.low + f4 - (r[2] + w.low))).toBeLessThan(1e-5);
+      expect(Math.abs(t.high - f4High - (r[3] + w.high))).toBeLessThan(1e-5);
       expect(Math.abs(v.residual - r[4])).toBeLessThan(1e-4);
-      expect(Math.abs(v.tolerance[0] - (r[5] + w.low / r[1]))).toBeLessThan(1e-4);
-      expect(Math.abs(v.tolerance[1] - (r[6] + w.high / r[1]))).toBeLessThan(1e-4);
+      expect(Math.abs(v.tolerance[0] + f4 / t.cd - (r[5] + w.low / r[1]))).toBeLessThan(1e-4);
+      expect(Math.abs(v.tolerance[1] - f4High / t.cd - (r[6] + w.high / r[1]))).toBeLessThan(1e-4);
       expect(Math.abs(v.inputLow - r[7])).toBeLessThan(1e-5);
       expect(Math.abs(v.inputHigh - r[8])).toBeLessThan(1e-5);
       expect(v.inside).toBe(true);
