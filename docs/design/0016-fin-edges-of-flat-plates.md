@@ -2317,7 +2317,12 @@ served changes.
     fails the rule script, both on the verdict's text and on the
     assertion alone. (af)'s sonic threshold raised to 0.9 makes
     `apply_af.py` exit non-zero. A coverage range widened down to
-    0.9e5 fails the coverage script.
+    0.9e5 fails the coverage script. Ten more planted errors each fail
+    a test: the flags or fig. 11 dropped from the label; the margin
+    constant off by 0.0001; the served label's old datum clause, or its
+    old value; 75 degrees in the words; less sweep offered past 60 deg
+    whichever term is refused, or keyed on the preamble alone; the square
+    refusal's "only at", or TM X-19's number dropped from it.
 - **75.1, not 75.** The page's words for the refusal beyond 75.1 deg
   (`status-words.ts`), the demo page and 0017 said "bounded only up to
   75 degrees" while the code serves to 75.1. They now say 75.1.
@@ -2343,3 +2348,6 @@ served changes.
 - **(af)'s outcome a deviation.** 21.6 and 0014 now record that (af)
   registered wiring on a pass. The unwired outcome is the coordinator's
   ruling, in the refusing direction, with zero coverage either way.
+
+The refusal audit's population is unchanged: 184 of 8000 totals served,
+its outputs the same, byte for byte, as main's at 76899f1.
