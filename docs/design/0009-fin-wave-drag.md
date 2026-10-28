@@ -529,4 +529,6 @@ below 1, and a forward-swept trailing edge, refused), 184 and 628 are
 unchanged and the count with the page's section offered is 809 (811
 before): two plates bevelled at the leading edge only, which this
 section serves, swept beyond 60 deg with the edge subsonic; the
-reflected-wave figures still hold.
+reflected-wave figures still hold. The strict reading the same day (a
+swept trailing edge on a plate refused either way, 0015 section 12)
+leaves 184, 628 and 809 as they are.

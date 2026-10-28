@@ -2208,3 +2208,20 @@ the RM-10's 60 deg aft trailing edge stay refused as they are (section
 3.4's note). No total is expected to move, since the trailing edge's own
 term refuses every swept square edge; the population run checks it, and
 its counts are recorded below when run.
+
+_The counts of the strict reading, 2026-10-28,_ the run after its code
+(`out/impact.out`, 2,000 rockets, 8,000 cases): no total moves, as
+expected: 184 of 8,000 served (Mach 1.5 to 1.8: 73; 1.8 to 3.0: 111),
+628 with the nose assumed served, 809 with the page's section offered
+too, the cross-check agreeing on 1,200 of 1,200 and the reflected-wave
+split unchanged. The rule refuses the base term of 632 cases, 158
+rockets at each of the four Mach bands (356 with a rounded leading edge,
+192 square-cut, 84 bevelled); some were refused for their sweep already
+(a leading edge outside 45 to 60 deg, or a trailing edge swept more than
+it), and the rebuilt factor's sweep refusal goes from 29.3% to 33.3% of
+cases, about 320 more. Every one has its swept square trailing edge
+refused by that edge's own term (0016), so none was a total; in 103 that
+term was the only other reason besides the nose, so lifting it alone
+(W3) would now serve none of them, the swept edge's share as sole
+blocker 0.24% to 0% of cases. The breakdown is from the same uncommitted
+probe of the cases.
