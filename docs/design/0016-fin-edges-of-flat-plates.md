@@ -2167,3 +2167,20 @@ of 1200.
   refused for another part. The sole-blocker shares of fins at the base
   the rebuilt factor does not measure rise slightly, for example 1.52%
   to 1.59% for its sweep refusal.
+
+**Merged with main f88ecbe (A5, fins near the base), 2026-10-28.** Main's
+run is kept in `docs/research/refusals/out/2026-10-28-main-f88ecbe/`:
+155 totals of 8000. The run on the merged head gives 155 of 8000 too,
+and the cross-check agrees on 1200 of 1200. Since A5, no served total
+holds a rounded edge swept past 60 deg:
+
+- at the base, the fins-on-base factors measure sweeps of 60 deg or
+  less;
+- more than a chord ahead, the body base is refused;
+- within a chord, the body base is served only at Mach 1.5 to 2.0, where
+  M cos(sweep) is below 1.0 past 60 deg.
+
+So the bounded edge is served among a refused total's parts, with its
+band and label, and enters no claim. The page test that checked the
+claim through a served total now checks the edge among the refused
+total's parts, and the claim's words through `boundedReasons` directly.

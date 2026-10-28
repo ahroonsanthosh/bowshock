@@ -2287,5 +2287,339 @@ addendum stand as written; where this one differs, it governs.
   label names fig. 17 as read twice. Beyond 75.1 deg they stay refused,
   at any Mach number.
 
-The letters (w) to (z) are allocated to other branches; the next free
-letter is the coordinator's to allocate.
+**2026-10-26 (ad): fins ending within a chord ahead of the base (A5 of
+the refusal plan): bounded, not measured, below Mach 1.5; TN 3819 fig.
+32's Langley symbols to be read a second time for Mach 2.0 to 3.0; and
+NSWCDD/TR-92/509's fins ahead of the base a check only** (a recorded
+decision under 10.2's "Anywhere else only by a recorded decision", on the
+coordinator's route of 2026-10-26; written before the code and before any
+new reading). The rebuilt fins-on-base factor (0015) refuses fins whose
+trailing edge ends 0 to 1 root chord ahead of the base outside Mach 1.5
+to 2.0, the only Mach numbers where TN 2360 fig. 6 measures positions
+ahead of the base (`fins-near-base`).
+
+- _Below Mach 1.5 (Mach 1.0 to 1.5): bounded, not measured._ Lower bound
+  the zero member there (RM L52E06 fig. 7's relief with flat plates at
+  the base, F 0.838, read twice; for flat-faced fins the same relief, as
+  at the base); upper bound the same fins at the base, that is the upper
+  member of their bracket at x/c = 0 (below Mach 1.5 always the
+  reference, four unswept 10% circular arcs on TN 3819 fig. 35's
+  free-flight line, read twice, stated on W2's term as 0015 section 11.2
+  states it). Served: the midpoint, the band the whole gap (about +-32%
+  to +-35% of the factor on W2's term), labelled "bounded, not measured",
+  the gap in C_D beside it.
+- _The ordering, from band-setting data already registered and read
+  twice_ (TN 2360 fig. 6, 10.1; both readings, 0015 section 7; with fig.
+  33's body alone for the factors). At both of its Mach numbers, for every
+  member it measures ahead of the base (two and four fins, t/c 0.05 and
+  0.10): (1) the increment with the trailing edge x/c ahead (0 < x/c <= 1)
+  is no larger than the same fins' at the base, within the reading
+  errors: at Mach 1.5 smaller by 0.015 to 0.076 in dPb, each end moved by
+  its error toward more suction; at Mach 2.0 smaller by 0.005 and 0.010
+  for two 10% and four 5% fins, while four 10% fins keep their at-base
+  increment to x/c 0.4 (at 0.2, -0.0642 +-0.002 against -0.0644 +-0.0002
+  and -0.064 +-0.002 at the base: equal within the errors, 0.0002 apart
+  either way); (2) the most relief ahead of the base, as F over fig. 33's
+  body alone with both errors toward more relief, is 0.910 at Mach 1.5
+  (four 10% fins at x/c 1.0) and 0.944 at 2.0 (four 5% fins at x/c 1.0),
+  above the zero member at each (0.838 below Mach 1.62, 0.938 from it).
+  TN 2360's own account (pp. 7, 9 to 11; NTRS 19930083086) gives the
+  mechanism and its direction in Mach number: the fins' pressure field
+  reaches the dead-air region behind the base along isobars inclined
+  farther rearward as the Mach number rises, so "the base pressure is
+  influenced by the tail surfaces at tail positions farther forward than
+  at lower Mach numbers"; with the tail well forward "no effect" is
+  expected, and the decrease "was small for the tail located well forward
+  of the base but, for the normal tail position, x/c ~ 0, ... nearly the
+  maximum". The data agree in direction: at x/c 0.4 the three members
+  measured at both Mach numbers keep 6% to 63% of their largest at-base increment
+  at Mach 1.5 and 64% to 98% at 2.0. So going down from Mach 1.5 the
+  at-base upper bound holds with a growing margin. The relief side rests
+  on less: the relief a chord ahead grows from Mach 2.0 to 1.5 (1 - F
+  0.056 to 0.090, with errors), which carried linearly to Mach 1.0 is
+  0.124, inside the zero member's 0.162; no measurement with fins ahead
+  of the base below Mach 1.5 is known.
+- _Above Mach 2.0: still refused._ The same direction says the at-base
+  bound is not safe going up (the fins reach the base from farther
+  forward as the Mach number rises), so the bounded value is not carried
+  above 2.0. The refusal's words say so.
+- _At Mach 1.5 to 2.0_ nothing changes: every member measured at a Mach
+  number has stations at x/c 0 and 1.0 there, so every position is
+  bracketed between measured stations, and a member measured at one of
+  the two Mach numbers only (two 5% fins, Mach 1.5) widens the bracket
+  outward elsewhere (0015 sections 3.2, 3.3, 3.6).
+- _TN 3819 fig. 32_ (Love; NTRS 19930084517, PDF p. 64): band-setting
+  since 10.1's registration ("figs. 32 to 35 ... location"). Amendment
+  (h) lists it as not read; that was wrong when written: round 6 read it
+  once, blind (`docs/research/total-drag/audit/round6/readings/`,
+  `tn3819_fig32.csv` and the method file there), including the Langley
+  9-in. tunnel's symbols at Mach 2.41 (plain and flagged triangles) and
+  the faired curve through them at x/c 0 to 1. Nothing has used it. Its
+  Mach 2.41 symbols are named here for the position members at Mach 2.0
+  to 3.0 (route (i) of A5), each as its increment over the same model's
+  increment at x/c 0, with fig. 33's Mach 2.41 body alone. A blind second
+  reading is requested now; the coordinator arranges the reader and a
+  neutral party pairs the two. It sets nothing until paired, and the
+  method that uses it is written in 0015 before its code. A note in
+  `docs/research/total-drag/data/w1b_w2_proposal.md` (section 1.4)
+  records a look by eye, not a reading, at a Mach 2.41 symbol one chord
+  ahead lying on the relief side of the zero member; it sets nothing, but
+  if the paired reading confirms a relief beyond the zero member a chord
+  ahead at Mach 2.41, the relief side of the bounded value below Mach 1.5
+  is to be re-examined before route (i) is served.
+- _NSWCDD/TR-92/509's fins one and two chords ahead_ (Table 1's
+  configurations 11 to 16): transcribed once (`nswc_tr92_509_table2.csv`)
+  and their factors computed (F 1.00 to 1.14 at Mach 2.0 to 3.0,
+  `w1b_w2_proposal.md` section 1.4) before any registration, as (g)
+  records for the set. So by rule 2 of 10.1 they never set or shape a
+  band: they are a check that sets nothing (the precedents (g), (r), (s),
+  (t)), and only after Table 2's blind second transcription (requested in
+  (g); round 6's was never committed). Fins two chords ahead check the
+  plain curve's use a chord or more ahead (0010 section 1.4), nothing
+  else.
+- _Not changed:_ the sweep refusals (checked before the position), the
+  present factor, any served number at the base or at Mach 1.5 to 3.0,
+  and every total: below Mach 1.5 every total is still refused by (f), so
+  this serves the body base term only. No held-back set is opened or run.
+
+_Narrowed the same day, 2026-10-26, before review or merge (the
+coordinator's decision, accuracy first):_ below Mach 1.5 the bounded
+value serves only fins ending at most **0.4 root chords** ahead of the
+base. Up to x/c 0.4 TN 2360 fig. 6 measures no relief at all with the
+fins ahead of the base: every symbol at x/c 0.2 and 0.4, at both Mach
+numbers and for every member, moved by its reading error toward relief,
+still shows a suction (dPb at most -0.0028, F at least 1.014), so the zero
+member's lower bound has its whole 0.162 to spare there. Relief appears
+from x/c 0.6 (four 5% fins at Mach 1.5) and grows toward a chord ahead
+and as the Mach number falls; below Mach 1.5 its size rests only on the
+linear carry above, and the by-eye note on fig. 32 suggests it can be
+larger. So fins ending more than 0.4 root chords ahead (0.4 < x/c < 1)
+stay refused below Mach 1.5 (`fins-near-base`), the words saying why.
+After fig. 32's pairing this is revisited, before route (i) is served:
+if the paired reading shows relief beyond the zero member at x/c 0.4 or
+closer at Mach 2.41, the bounded value at x/c up to 0.4 below Mach 1.5 is
+re-examined; and whether the measured relief there bounds positions
+beyond 0.4 below Mach 1.5 is decided then, not now.
+
+What it costs and gains is recorded below this entry from
+`docs/research/refusals/` run before and after, with the cross-check
+against `src/total` required to agree (0015 section 8).
+
+What it cost and gained as first built (0 < x/c < 1 below Mach 1.5;
+0015 section 8; `docs/research/refusals/out/impact.out` at commit
+5c81b5b, the run before reproducing main's committed output byte for
+byte): the position refusal falls from 6.0% of the cases to 0% at Mach 1.0 to 1.2
+and at 1.2 to 1.5, and stays 11.5% at 1.8 to 3.0 (all above Mach 2.0)
+and 0% at 1.5 to 1.8; 5.9% to 2.9% over all bands. No total moves: 153
+of 8000 (1.9%), 0% below Mach 1.5 by (f); the cross-check agrees on all
+1200 cases. No case is newly refused. What it serves is the body base
+term below Mach 1.5 for those cases, until the fin terms near Mach 1
+(0019) let a total through.
+
+What it costs and gains as narrowed (x/c up to 0.4 below Mach 1.5; the
+same population and run, `out/impact.out` now, against main's at
+3389a04): the position refusal falls from 6.0% of the cases to 4.4% at
+Mach 1.0 to 1.2 and at 1.2 to 1.5 (about 32 of 2000 rockets in each band
+now take the bounded value), stays 0% at 1.5 to 1.8 and 11.5% at 1.8 to
+3.0; 5.9% to 5.1% over all bands; sole blocker of a total 0.11%,
+unchanged. W1's package appears in 76.5% of the cases below Mach 1.5,
+from 78.0%. No total moves (153 of 8000, 1.9%); the cross-check agrees on
+all 1200 cases; no case is newly refused against main.
+
+**2026-10-26, narrowing (ad) after the independent review of
+3389a04..245a88e** (the coordinator's decision, accuracy first, under the
+owner's rule of no unverified estimates; this narrows (ad), whose text
+above stands as written, the runs it quotes being those at commits
+5c81b5b and 245a88e).
+
+- _The review's finding (blocking), quoted:_ "the basis for serving x/c up
+  to 0.4 below Mach 1.5 contradicts the record's own Mach direction.
+  TN 2360's relief crossing for four 5% fins moves from x/c 0.88 at M 2.0
+  to 0.51 at M 1.5. That is faster than sqrt(M^2-1) scaling, which
+  predicts 0.57. Carried down, the crossing falls inside 0.4 below about M
+  1.35: about 0.38 at M 1.3, 0.30 at M 1.2 and 0.21 at M 1.1. For four
+  10% fins it is about 0.45 at M 1.2 and 0.31 at M 1.1." And TN 2360 p. 7,
+  which (ad) left out: "In addition, the airfoil pressure coefficient at
+  any chord location decreases with increasing Mach number." So as the
+  Mach number falls the fins' pressures grow as well as their isobars
+  steepen, "no relief at all" up to x/c 0.4 is measured at Mach 1.5 and
+  2.0 only, and below about Mach 1.35 the low side would rest on the
+  unmeasured relief carry the first narrowing meant to avoid. The revisit
+  trigger above (relief at x/c 0.4 or closer at Mach 2.41) pointed where
+  TN 3819 fig. 32 shows none, so it could not fire.
+- _Decided: below Mach 1.5 every position ahead of the base (x/c > 0) is
+  refused._ No measurement with fins ahead of the base below Mach 1.5 is
+  known, and the ordering's direction, the relief carry and a reach
+  scaled by beta are all carries, not measurements; none is used. The
+  refusal names what is missing: any measurement below Mach 1.5 with fins
+  ahead of the base. Finding one is the revisit trigger, replacing the one
+  above. It costs no served total today: below Mach 1.5 the fins' own
+  drag refuses every total ((f)).
+- _At Mach 1.5 to 2.0,_ where TN 2360 measured positions (x/c 0 to 1.0),
+  the measured brackets of 0015 sections 3.2 and 3.3 stay, inside the
+  chord rule below. Above Mach 2.0 fins ahead of the base stay refused:
+  TN 3819 fig. 32 now has two readings (round 6, round 14; pairing
+  `docs/research/total-drag/audit/pairing-2026-10-26-fig32/`) that
+  disagree on 3 of its 12 symbols, a third blind reading is under way, and
+  it sets nothing until they are settled and its method is written in 0015.
+- _The chord rule (the review's second finding)._ TN 2360 measured
+  positions on one geometry: a tail chord of 1.875 in on a 1.250 in body
+  (its fig. 2 and p. 4), a root chord of 1.5 body diameters. In its
+  superposition model (pp. 6 and 7, fig. 4) the fins' pressure field
+  reaches the dead-air region behind the base along isobars inclined at
+  the Mach angle, so where it reaches depends on the body radius times
+  beta against the chord; the review finds the at-base upper bound holds
+  in that model only while the body radius times beta stays under half
+  the chord. At Mach 2.0 TN 2360's own geometry is past that limit (0.625
+  in times 1.732, 1.08 in, against 0.94 in), and there its four 10% fins
+  keep their at-base increment to x/c 0.4, as the model leads one to
+  expect: the bound at that geometry rests on the measurement. Nothing
+  measured shows how the position effect carries to a shorter or longer
+  chord. So the served domain for fins ahead of the base is no wider than
+  what TN 2360 measured in chord over diameter at each Mach number: a
+  root chord of 1.5 body diameters, within 0.5% (the precedent of 0011
+  section 3, each dimension within 0.5% of the configuration measured),
+  at Mach 1.5 to 2.0. Every other chord is refused there, at every
+  position 0 < x/c < 1 (the swept fins served from 0.9 root chords ahead
+  among them, whose members there are TN 2360's), in plain words; so is a
+  chord the caller does not give.
+- _Below about Mach 1.2_ the at-base upper bound rests on its margin, not
+  on TN 2360's mechanism (the review): the linear superposition loses its
+  meaning as the Mach number nears 1, beta tending to zero and the
+  airfoil pressures it superposes growing without bound. Moot below Mach
+  1.5 after this decision, and recorded so that the record stays true.
+- _Also from the review, not blocking, fixed with this:_ the refusal's
+  words below Mach 1.5 name the missing measurement instead of fig. 32,
+  which at Mach 2.41 cannot settle them; above Mach 2.0 they say fig.
+  32's readings disagree, not that a second reading is awaited; a plate
+  with a rounded trailing edge within a chord ahead of the base is refused
+  for its trailing edge in words that say near the base, not at it, with
+  its position's reasons beside; and 0015 section 3.3's figure "on the
+  curve itself" is corrected (on Love's curve the zero member is 0.8379
+  times 1.065, 0.892).
+
+What it costs and gains is recorded below from `docs/research/refusals/`
+run before (245a88e) and after, with the cross-check required to agree
+(0015 section 8).
+
+What it costs (the same 2000 rockets, `out/impact.out` after this
+narrowing, against main's at 3389a04): the position refusal is 6.0% of
+the cases at Mach 1.0 to 1.2 and 1.2 to 1.5 (as on main), 7.4% at 1.5 to
+1.8 (0% on main) and 12.6% at 1.8 to 3.0 (11.5%), 8.0% over all bands
+(5.9%); as the sole blocker of a total, 0.15% (0.11%). The chord rule
+costs three totals: 150 of 8000 are served (153 on main), 47 at Mach 1.5
+to 1.8 (49) and 103 at 1.8 to 3.0 (104), none below 1.5. The
+cross-check agrees on all 1200 cases.
+
+**2026-10-26, how TN 3819 fig. 32's three readings are used** (the
+coordinator's decision, made before any of them is set against a
+method). Fig. 32 now has three blind readings (round 6; round 14, commit
+e15934c; round 16, commit c69858e) and a three-way neutral pairing
+(`docs/research/total-drag/audit/pairing-2026-10-26-fig32-three/`,
+commit 7f8c898): readings 2 and 3 agree on all 12 symbols, with the same
+identities; reading 1 differs from both at the open symbol at x/c 0.8,
+the flagged symbols at x/c 0.6 and 0.4, and the faired curve's left end
+at x/c 1.0, gives one value per station from 0.8 to 0.0 with no
+identities, and recorded no file hash. Where all three agree, the agreed
+values are used; where reading 1 differs, the envelope of all three
+readings is used, reading 1 not being dropped because two readings
+outvote it. That is the wider of the choices, taken on purpose. Fig. 32
+is at Mach 2.41, so after the narrowing above it bears only on what
+(ad) assigns it at higher Mach numbers: route (i), the position members
+at Mach 2.0 to 3.0, whose method is still to be written in 0015 before
+its code. It does not bear on Mach 1.5 or below, where every position
+ahead of the base is refused and the revisit trigger is a measurement
+below Mach 1.5. (ad)'s rules apply to it as written; a case they do not
+cover is stopped and taken to the coordinator, not decided after seeing
+values.
+
+**2026-10-26, route (i) deferred** (the coordinator's decision, on the
+cases above that (ad)'s rules do not cover). Fig. 32 at Mach 2.0 to 3.0
+is not pursued now, and nothing uses it; any future route (i) needs a
+fresh registration here, written before it is used. Its four open
+questions are in 0015 section 10, in plain words. The first is the
+lower bound: the three-way pairing's values were seen while the pairing
+was checked and were used for nothing, and its symbols a chord ahead of
+the base lie far on the relief side of the zero member.
+
+**2026-10-27, fins a chord or more ahead of the base: the plain curve
+withdrawn** (the coordinator's decision, accuracy first, on the
+re-review of A5 at 245a88e..c7af8cf, which passed A5 and found this in
+main's rule; written before the code). 0010 section 1.4 served fins
+ending one root chord or more ahead of the base with the plain curve
+(no fin effect), labelled not validated with fins, on TN 2360's finding
+that the increment is nearly zero a chord fore or aft.
+
+- _The reviewer's case, quoted:_ "four unswept 10% circular arcs, root
+  chord 1.5 diameters, trailing edge exactly one chord ahead, M 2.0. It
+  is served 0.1447 with a band of 0.1187 to 0.1563. TN 2360 measured dPb
+  -0.0096 (both readings) on a body-alone P_B of -0.1507, which gives
+  1.107 times the curve, and at least 1.09 with every error moved toward
+  less suction. So the truth is outside the band. With a 1.0 diameter
+  chord, one chord ahead is TN 2360's x/c 0.67, where F is about 1.16 to
+  1.18." In the population, 81 of 2000 rockets have fins a chord or more
+  ahead, and they carried 15 of the 150 totals served.
+- _Decided:_ fins ending ahead of the base are served only where TN 2360
+  measured them: a root chord of 1.5 body diameters within 0.5% (the
+  chord rule above), x/c from 0 to 1.0 inclusive, and Mach 1.5 to 2.0,
+  through the measured factor (0015 sections 3.2 and 3.3), not the plain
+  curve. A trailing edge exactly one chord ahead takes TN 2360's station
+  at x/c 1.0. Every position beyond x/c 1.0, at any chord, is refused,
+  because nothing measures it, and the words say so plainly. The plain
+  curve of 0010 section 1.4 is withdrawn (its text stays as written, with
+  a dated note). Expected cost, about 15 totals; the exact count is
+  recorded below from the population run (15 before main's Von Karman
+  noses were counted, 17 on the merged head).
+- _Also recorded (the review's N3), for the owner, with no rule added
+  now:_ TN 2360's fins are rectangular, of aspect ratio 2.33 (its
+  summary), and neither span nor taper is constrained by the chord rule:
+  a fin of TN 2360's root chord with another span or a tapered planform
+  is served at the measured positions as if it were TN 2360's.
+- _And fixed with it (the review's N1, N2, N4):_ the hold-out run passes
+  the root chord over diameter to the factor; the page's advice for a
+  rounded plate near the base no longer leads into another refusal; and
+  every piece of advice to move fins "a root chord or more ahead of the
+  base" is removed, since that position is now refused.
+- _How the words keep off another refusal, in the code (written with it;
+  nothing more is served):_ ahead of the base the position is checked
+  before the fins' section, sweep, count or thickness, so no refusal of
+  those is named where every section would still be refused. A blunt
+  trailing edge that the faces widen or narrow to (the Basic Finner's
+  wedges), which the rebuilt factor refuses at every position, is
+  refused ahead of the base in words of its own, near the base and not
+  "at this speed", and its change is sharp trailing edges at the base.
+  More than a chord ahead, a plate's rounded trailing edge or such a
+  blunt one is named beside the position, and the change named is a
+  trailing edge served at the base. A change named never moves the fins
+  further ahead.
+- _What it cost (the same 2000 rockets, `docs/research/refusals/`):_ on
+  the merged head (main at 5921198 merged at 1ec9df1, whose audit counts
+  the Von Karman noses the page serves), 155 of 8000 cases serve a total
+  (53 at Mach 1.5 to 1.8, 102 at 1.8 to 3.0, none below 1.5;
+  `out/impact.out`). The same head with fins more than a chord ahead put
+  back on the plain curve, one line changed for that run only
+  (`out/impact-merged-plain-curve.out`), serves 172 (62 and 110): the
+  withdrawal costs 17 totals there, all on the 81 rockets with fins a
+  chord or more ahead, and gains none. Main itself serves 181 (68 and
+  113), so this branch's earlier rules for fins within a chord (the chord
+  rule after the review) cost the other 9 on the merged head. Before the
+  merge, on main at 3389a04, the withdrawal cost the 15 the review counted
+  (150 to 135; the run of e69a9ff). The variants move alike (altitude 0
+  km 174 to 157, 20 km 143 to 128, the lenient tip 334 to 310). The
+  position refusal now covers every position ahead of the base that TN
+  2360 does not measure: 23.8% of the cases at Mach 1.0 to 1.2 and 1.2 to
+  1.5, 23.6% at 1.5 to 1.8 and 23.7% at 1.8 to 3.0 (20.4%, 20.4%, 20.3%
+  and 20.4% with the plain curve), the sole blocker of a total in 0.57%
+  (0.36%). The rebuilt factor's sweep and section refusals fell from the
+  run of f8f7c71 (sweep 43.4% to 32.7% over all bands, steep bevels 6.0%
+  to 4.3%, in both runs on the merged head) because ahead of the base the
+  position is now named first. The cross-check against
+  `src/total` agrees on all 1200 cases checked, in each run.
+
+_Relabelled 2026-10-26:_ this entry was first written as (aa), which the
+coordinator's registry had given to another branch; it is (ad) by that
+registry, its content unchanged by the relabelling.
+
+Letters are allocated by the coordinator (the registry in the
+coordinator's letters file); the next free letter is the coordinator's to
+allocate.

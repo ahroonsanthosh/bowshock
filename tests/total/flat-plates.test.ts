@@ -31,7 +31,9 @@ const config = (p = flatPlate(0.05, 'rounded', 'square'), plan = planform): Finn
     cylinderLength: 9,
   },
   afterbody: 'cylinder',
-  // Ahead of the base by more than a root chord, so the body base is the plain curve.
+  // Ahead of the base by more than a root chord: the trailing edges off the base plane. The body base
+  // took the plain curve there until 2026-10-27; it is refused now (0014 section 10.7 (ad)), and the
+  // fins' own parts, which this file checks, are served as before.
   fins: {
     count: 3,
     planform: plan,
@@ -53,12 +55,19 @@ const parts = (c: FinnedBody, mach: number, transitionReynolds?: number[]) =>
   );
 const named = (r: ReturnType<typeof parts>, name: string) =>
   r.components.find((c) => c.name === name)!;
+const names = (r: ReturnType<typeof parts>) => r.components.map((c) => c.name);
+const FIN_PARTS = ['fin leading edges', 'fin wave drag', 'fin trailing-edge base'];
+/** The body base two chords ahead, refused since 2026-10-27 (0014 section 10.7 (ad)). */
+const BODY_BASE = 'body base: fins-near-base';
 
 describe('a clipped delta in sheet stock, rounded leading edge, square trailing edge', () => {
   const r = parts(config(), 2.8);
 
-  it('computes every component, and the total', () => {
-    expect(r.refusals).toEqual([]);
+  it('computes every fin component; the body base refused, more than a chord ahead', () => {
+    expect(r.refusals.map((x) => `${x.component}: ${x.reason}`)).toEqual([
+      'body base: fins-near-base',
+    ]);
+    expect(names(r)).toEqual(expect.arrayContaining(FIN_PARTS));
     expect(() => combineComponents(r.components, r.inputs)).not.toThrow();
   });
 
@@ -111,9 +120,12 @@ describe('a clipped delta in sheet stock, rounded leading edge, square trailing 
     expect(c.label).toMatch(/largest c\/\[h Re_c\^\(1\/5\)\]/);
   });
 
-  it('the body base takes the plate t/c at the root (here the plain curve, the fins a chord or more ahead)', () => {
-    expect(r.base).toBeDefined();
-    expect(named(r, 'body base').label).toMatch(/not validated with fins|ahead/);
+  it('the body base: refused two chords ahead (the plain curve until 2026-10-27), said plainly', () => {
+    expect(r.base).toBeUndefined();
+    expect(r.components.find((c) => c.name === 'body base')).toBeUndefined();
+    expect(r.refusals[0]!.message).toMatch(
+      /^fins ending more than a root chord ahead of the base \(1\.33 root chords\): nothing measures/,
+    );
   });
 });
 
@@ -124,6 +136,7 @@ describe('refusals of flat plates', () => {
   it('a square-cut leading edge (its computed check not passed; its premises measured only far above a fin, 0016 section 21.6) and a rounded trailing edge', () => {
     expect(reasons(config(flatPlate(0.05, 'square', 'square')), 2.8)).toEqual([
       'fin leading edges: square-leading-edge',
+      BODY_BASE,
     ]);
     const s = parts(config(flatPlate(0.05, 'square', 'square')), 2.8).refusals[0]!.message;
     expect(s).toBe(SQUARE_EDGE_REFUSAL);
@@ -143,9 +156,12 @@ describe('refusals of flat plates', () => {
     expect(s).toMatch(/of 3\.85 to 4\.32 million/);
     expect(s).toMatch(/so the edge stays refused \(0016 section\s+21\.6\)$/);
     expect(reasons(config(flatPlate(0.05, 'rounded', 'rounded')), 2.8)).toEqual([
+      BODY_BASE,
       'fin trailing-edge base: rounded-trailing-edge',
     ]);
-    const m = parts(config(flatPlate(0.05, 'rounded', 'rounded')), 2.8).refusals[0]!.message;
+    const m = parts(config(flatPlate(0.05, 'rounded', 'rounded')), 2.8).refusals.find(
+      (x) => x.component === 'fin trailing-edge base',
+    )!.message;
     expect(m).toMatch(/1\.35 and 1\.16 times a square base/);
   });
 
@@ -153,6 +169,7 @@ describe('refusals of flat plates', () => {
     const steep = clippedDeltaPlanform({ rootChord: 1.5, span: 0.7, taperRatio: 0.2 });
     expect(reasons(config(undefined, steep), 1.6)).toEqual([
       'fin leading edges: leading-edge-range',
+      BODY_BASE,
     ]);
     const m = parts(config(undefined, steep), 1.6).refusals[0]!.message;
     expect(m).toMatch(/is below 1\.0/);
@@ -164,7 +181,8 @@ describe('bounded, not measured (0016 section 21)', () => {
   it('a rounded leading edge swept 66.4 deg at M 2.8 (M_n 1.12): bounded between its sweep and 60 deg', () => {
     const steep = clippedDeltaPlanform({ rootChord: 2, span: 0.7, taperRatio: 0.2 });
     const r = parts(config(undefined, steep), 2.8);
-    expect(r.refusals).toEqual([]);
+    // The fins' own parts served; the body base refused, the fins a chord ahead (main's A5, f88ecbe).
+    expect(r.refusals.map((x) => `${x.component}: ${x.reason}`)).toEqual([BODY_BASE]);
     const c = named(r, 'fin leading edges');
     const n = roundedLeadingEdgeDrag({
       mach: 2.8,
@@ -232,7 +250,7 @@ describe('a normal Mach number of 1.0 to 1.49 (0016 section 11): M 2.0 at 42 deg
   const r = parts(config(), 2.0);
 
   it('is served, the plate flag passed: kappa, CR-149372 in the band, the sweep allowance widened', () => {
-    expect(r.refusals).toEqual([]);
+    expect(r.refusals.map((x) => `${x.component}: ${x.reason}`)).toEqual([BODY_BASE]);
     const n = roundedLeadingEdgeDrag({
       mach: 2.0,
       radius: 0.025,

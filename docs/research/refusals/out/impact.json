@@ -1,8 +1,8 @@
 {
  "baseline": {
   "all bands": {
-   "total": 181,
-   "nose only": 1565,
+   "total": 155,
+   "nose only": 1591,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -16,19 +16,19 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 68,
-   "nose only": 635,
+   "total": 53,
+   "nose only": 650,
    "nothing": 1297
   },
   "M 1.8-3.0": {
-   "total": 113,
-   "nose only": 453,
+   "total": 102,
+   "nose only": 464,
    "nothing": 1434
   }
  },
  "order": [
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W6 blunted nose tips",
-  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)",
   "W11 square-cut leading edges and rounded trailing edges",
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
   "W9 sharp sections: reflected waves and detached bevel shocks",
@@ -41,8 +41,8 @@
  ],
  "lenientTip": {
   "all bands": {
-   "total": 345,
-   "nose only": 3086,
+   "total": 310,
+   "nose only": 3121,
    "nothing": 4569
   },
   "M 1.0-1.2": {
@@ -56,20 +56,20 @@
    "nothing": 1082
   },
   "M 1.5-1.8": {
-   "total": 130,
-   "nose only": 1275,
+   "total": 110,
+   "nose only": 1295,
    "nothing": 595
   },
   "M 1.8-3.0": {
-   "total": 215,
-   "nose only": 893,
+   "total": 200,
+   "nose only": 908,
    "nothing": 892
   }
  },
  "altitude0": {
   "all bands": {
-   "total": 183,
-   "nose only": 1563,
+   "total": 157,
+   "nose only": 1589,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -83,20 +83,20 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 70,
-   "nose only": 633,
+   "total": 55,
+   "nose only": 648,
    "nothing": 1297
   },
   "M 1.8-3.0": {
-   "total": 113,
-   "nose only": 453,
+   "total": 102,
+   "nose only": 464,
    "nothing": 1434
   }
  },
  "altitude20": {
   "all bands": {
-   "total": 148,
-   "nose only": 1598,
+   "total": 128,
+   "nose only": 1618,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -110,20 +110,20 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 52,
-   "nose only": 651,
+   "total": 40,
+   "nose only": 663,
    "nothing": 1297
   },
   "M 1.8-3.0": {
-   "total": 96,
-   "nose only": 470,
+   "total": 88,
+   "nose only": 478,
    "nothing": 1434
   }
  },
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%)": {
   "all bands": {
-   "total": 258,
-   "nose only": 1488,
+   "total": 219,
+   "nose only": 1527,
    "nothing": 6254
   },
   "M 1.0-1.2": {
@@ -137,19 +137,19 @@
    "nothing": 1523
   },
   "M 1.5-1.8": {
-   "total": 106,
-   "nose only": 597,
+   "total": 81,
+   "nose only": 622,
    "nothing": 1297
   },
   "M 1.8-3.0": {
-   "total": 152,
-   "nose only": 414,
+   "total": 138,
+   "nose only": 428,
    "nothing": 1434
   }
  },
  "more four-fin, sharp-edged, high-power fins (four fins 70%; bevelled or double-wedge sections 60%; boat-tails 5%) order": [
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W6 blunted nose tips",
-  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)",
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
   "W7 Mach 1.0 to 1.2 nose solve (0013, in progress); the fin terms near Mach 1 (0019: the fins' own-drag band below Mach 1.5)",
@@ -162,8 +162,8 @@
  ],
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%)": {
   "all bands": {
-   "total": 351,
-   "nose only": 3340,
+   "total": 303,
+   "nose only": 3388,
    "nothing": 4309
   },
   "M 1.0-1.2": {
@@ -177,18 +177,18 @@
    "nothing": 902
   },
   "M 1.5-1.8": {
-   "total": 120,
-   "nose only": 1249,
+   "total": 90,
+   "nose only": 1279,
    "nothing": 631
   },
   "M 1.8-3.0": {
-   "total": 231,
-   "nose only": 993,
+   "total": 213,
+   "nose only": 1011,
    "nothing": 776
   }
  },
  "fewer Haack noses, sharper tips (Von Karman 25%, tangent ogive 45%, conical 20%; rounded tips 20%) order": [
-  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; within a chord above M 2.0 or below 1.5)",
+  "W1 fins at the base the rebuilt factor still refuses (sweeps not measured, steep bevels, rounded trailing edges; fins ahead of the base where TN 2360 does not measure them)",
   "W11 square-cut leading edges and rounded trailing edges",
   "W9 sharp sections: reflected waves and detached bevel shocks",
   "W5 Haack and power-series noses (the Von Karman nose outside its checked outline, the rest)",
