@@ -1359,7 +1359,12 @@ formed on two of them, and the shape widening's size on two of them.
       agrees on 1200 of 1200; the run differs from main's only in the
       coverage refusal's rows above. F4 changes 43 of the 184 totals (Mach
       1.624 to 1.796), the term's low end falling by up to 0.0463 in C_D
-      and its high end rising by up to 0.0041 (`out/f4-probe.out`).
+      and its high end rising by up to 0.0041 (`out/f4-probe.out`). On the
+      head merged with main at 9056ebb (A2, the reflected-wave refusal
+      only where a wave can reach a sloped face) the totals stay 184 of
+      8000, the cross-check 1200 of 1200, the reflected-wave row is main's
+      10.2%, and the run again differs from main's only in the coverage
+      refusal's rows; the F4 probe is unchanged.
 
     - _The band served (thin layer), measured over modelled, at the
       nodes:_
