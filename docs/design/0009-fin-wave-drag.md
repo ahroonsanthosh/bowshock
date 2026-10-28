@@ -503,6 +503,11 @@ section 7. At the audit's default size (2,000 rockets, 8,000 cases,
 refusal 14.6% to 10.2% of cases (Mach 1.5 to 1.8: 25.9% to 18.0%; 1.8 to
 3.0: 29.0% to 20.1%), 1,172 to 815 (357 wedge-flat plates served; 802
 hexagons landing on the flat, 9 on the rear bevel, 4 double wedges below
-Mach 1.2 still refused); totals unchanged at 190 (2.4%), 743 with the
-nose assumed served; with the page's section offered too, 748 to 966;
-the cross-check agreeing on all 1,200 cases checked.
+Mach 1.2 still refused); totals unchanged by this section. As re-made on
+2026-10-28, after main's A5 (f88ecbe) and A1's narrowing below Mach 1.62
+(0014 10.7 (z)'s note), the default run serves 179 totals of 8,000
+(2.2%), 614 with the nose assumed served, and with the page's section
+offered too 619 without this section and 797 with it (on 2026-10-26,
+before A5 and the narrowing, these read 190, 743, and 748 to 966); the
+reflected-wave figures above hold; the cross-check agreeing on all 1,200
+cases checked.
