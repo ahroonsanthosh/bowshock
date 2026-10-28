@@ -954,9 +954,9 @@ function beyondSweepLimit(
       `Upper: the term at ${SWEEP_LIMIT_DEGREES} deg (M_n ${upper.normalMach.toFixed(3)}) at its ` +
       `band's high end, ${upper.band.high.toFixed(3)} of it: ${termSummary(upper, 'upper')}. ` +
       'The ordering: the term falls with sweep, as the front side measured on yawed cylinders does ' +
-      "on every series of RM A55H31 fig. 12; past 60 deg the lower bound's rests on the principle " +
-      `and on TN 3861's crossflow points at 70, 75 and 75.1 deg (${readTwice}), every one above ` +
-      'the principle, but the report flags the 75 deg one high ' +
+      "on every series of RM A55H31 fig. 12; past 60 deg the lower bound's ordering rests on the " +
+      `principle and on TN 3861's crossflow points at 70, 75 and 75.1 deg (${readTwice}), every ` +
+      'one above the principle, but the report flags the 75 deg one high ' +
       '(p. 11) and the 75.1 deg one for an end effect (p. 10), and RM A55H31 fig. 11 puts that ' +
       "test's stagnation pressure at 0.63 to 0.74 of Rayleigh's: the unflagged 70 deg point alone " +
       `holds it, by ${TN3861_RULE_MARGINS.at70.toFixed(3)} (0016 section 21.2)`,

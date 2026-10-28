@@ -2301,7 +2301,7 @@ served changes.
   unflagged 70 deg point alone holds the ordering, by +0.173 (section
   21.9). The label was shortened elsewhere to make room: the longest on
   a grid of Mach 1.2 to 8, sweeps 60.1 to 75.1 deg and four Reynolds
-  numbers is 1,784 characters, under the test's 1,800.
+  numbers is 1,793 characters (1,706 before), under the test's 1,800.
 - **The rule's outcome asserted.**
   - `docs/research/tn3861-fig17/rule/apply.test.ts` asserts that the
     rule holds, and that the committed `out/verdict.txt` matches a fresh

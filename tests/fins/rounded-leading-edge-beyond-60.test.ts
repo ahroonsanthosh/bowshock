@@ -140,6 +140,9 @@ describe('the bounds', () => {
     // Shorter than the about 2,800 characters the re-review found.
     expect(e.label.length).toBeLessThan(1800);
     expect(at(2.2, 60.1).label.length).toBeLessThan(1800);
+    // The longest on a grid of Mach 1.2 to 8, sweeps 60.1 to 75.1 deg and four Reynolds numbers
+    // (0016 section 21.10): 1,793 characters.
+    expect(at(2.45, 60.1, 2e4).label.length).toBeLessThan(1800);
   });
 
   it("beyond 75.1 deg, the largest sweep at which a yawed cylinder's front side is estimated: refused at any Mach number", () => {
