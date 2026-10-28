@@ -1948,4 +1948,9 @@ run serves 179 totals of 8,000 against main's 155 (Mach 1.5 to 1.8: 53
 to 73; 1.8 to 3.0: 102 to 106; none below 1.5), 614 with the nose
 assumed served: A1's gain over main is 24, against 28 before A5 (181 to
 209), the 4 lost all at Mach 1.8 to 3.0; the cross-check agrees on 1,200
-of 1,200.
+of 1,200. Later on 2026-10-28, after main's A3 and A4 (3e026a8; 0014
+10.7 (aa) and (ab)), it serves 184 against main's 155 (Mach 1.5 to 1.8:
+53 to 73; 1.8 to 3.0: 102 to 111), 628 with the nose assumed served:
+A1's gain is 29, 5 more than before A3 and A4, all at Mach 1.8 to 3.0,
+where a rounded leading edge that A4 bounds past 60 deg can now meet
+this section's plates at the base (0016 section 21.8's note).

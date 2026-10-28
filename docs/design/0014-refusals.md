@@ -1910,6 +1910,13 @@ below) the audit's default run serves 179 totals of 8,000 against main's
 before A5 (181 to 209), the 4 lost all at Mach 1.8 to 3.0. The earlier
 dated counts above stay as they were measured.
 
+_2026-10-28, after main's A3 and A4 (3e026a8; (aa) and (ab)):_ 184
+totals of 8,000 against main's 155 (Mach 1.5 to 1.8: 53 to 73; 1.8 to
+3.0: 102 to 111), 628 with the nose assumed served; A1's gain is 29, 5
+more than before A3 and A4, all at Mach 1.8 to 3.0, where a rounded
+leading edge that (ab) bounds past 60 deg can now meet A1's plates at
+the base.
+
 Main's unswept plates (10.7 (i)), registered and reviewed earlier on a
 physical argument, are not changed by this ruling, and whether they stay
 served below Mach 1.62 is an open question for the owner. The review's
