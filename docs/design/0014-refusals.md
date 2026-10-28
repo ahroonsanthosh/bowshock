@@ -2010,17 +2010,21 @@ probe of the same cases, not committed.
 
 _2026-10-28, later, the ruling on (3)'s reading, under 10.2, written
 before the code:_ the strict reading. The plates' floor is RM L52E06's
-relief, measured only with the trailing edge unswept; the RM-10 is a
-sharp section and does not bracket plates; and 0015 section 12's
-argument does not cover a square edge carried out of one plane parallel
-to the base. So a plate with the trailing edge swept, aft or forward, is
-refused at the base and within a chord, the words naming why. This
-replaces (3)'s service of plates swept aft; what RM L52E06 and RM E50D28
-state stays recorded. Sharp sections with the RM-10's 60 deg aft
-trailing edge stay refused as they are; opening the RM-10's measured
-case would need its own registered procedure (readings, pairing,
-domain), recorded in 0015 section 3.4 as a possible later item. No total
-is expected to move; the run is recorded below when made.
+relief, measured only with the trailing edge unswept; the RM-10 (RM
+E50D28) gives the bracket's 60 deg end in leading-edge sweep, but its
+fins are circular arcs whose trailing edge is swept 60 deg aft and below
+sonic at its Mach numbers, so it does not show that a plate's floor
+holds with a swept trailing edge (this ground replaces the wording of
+48d95b1, the note below); and 0015 section 12's argument does not cover
+a square edge carried out of one plane parallel to the base. So a plate
+with the trailing edge swept, aft or forward, is refused at the base and
+within a chord, the words naming why. This replaces (3)'s service of
+plates swept aft; what RM L52E06 and RM E50D28 state stays recorded.
+Sharp sections with the RM-10's 60 deg aft trailing edge stay refused as
+they are; opening the RM-10's measured case would need its own
+registered procedure (readings, pairing, domain), recorded in 0015
+section 3.4 as a possible later item. No total is expected to move; the
+run is recorded below when made.
 
 _2026-10-28, what the strict reading costs,_ the run after its code
 (`out/impact.out`, 2,000 rockets, 8,000 cases): no total moves, as
@@ -2038,6 +2042,18 @@ term was the only other reason besides the nose, so lifting it alone
 (W3) would now serve none of them, the swept edge's share as sole
 blocker 0.24% to 0% of cases. The breakdown is from the same uncommitted
 probe of the cases.
+
+_2026-10-28, corrected after the quick look of 9056ebb..1796dfe:_ the
+strict reading's ground above replaces the wording of 48d95b1, which set
+the RM-10 apart from the plates' bracket altogether; that contradicted
+the standing ground for plates swept 45 to 60 deg with the trailing edge
+unswept (0015 section 4, RM L52E06's plates and the RM-10 bracketing
+that range, and the second ruling of 2026-10-27 above). The ground is
+narrowed to the trailing edge; the rule is unchanged. A plate at exactly
+60 deg with its edge below sonic is served on the RM-10's measured end
+of the bracket, not on the margin; just beyond 60 deg it lies past the
+last measured sweep, hence the step at 60 (at Mach 1.7, 60.0 deg served
+and 60.1 deg refused).
 
 **2026-10-26 (ac): RM A51J11 and RM A52E01, named before they are opened,
 for F4's thin trailing edges and thick layers below Mach 1.5** (rule 2 of
