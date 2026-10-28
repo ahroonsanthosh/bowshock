@@ -657,8 +657,10 @@ describe('the bands (0015 section 3.6)', () => {
     ],
     [
       1.8,
-      'double wedge 2.4%, three fins, 45 deg, x/c 0.5',
-      fins({ trailingEdgeAheadOfBase: 0.5 }),
+      // x/c 0.9: a sharp section swept at the leading edge, its trailing edge unswept, is served ahead of the
+      // base from 0.9 root chords only (0015 section 3.4, the note of 2026-10-28); x/c 0.5 until then.
+      'double wedge 2.4%, three fins, 45 deg, x/c 0.9',
+      fins({ trailingEdgeAheadOfBase: 0.9 }),
       0.904,
       1.0897,
       1.2755,
@@ -1009,9 +1011,19 @@ describe('refusals', () => {
     expect(reason(() => finsOnBaseFactorW1(2.2, fins({ trailingEdgeAheadOfBase: 0.5 })))).toBe(
       'fins-near-base',
     );
+    // Swept 45 deg at the leading edge, the trailing edge unswept: refused closer than 0.9 root chords ahead
+    // (the review of 86bcf73, its item 1), served from there; unswept, served at x/c 0.5.
     expect(reason(() => finsOnBaseFactorW1(1.8, fins({ trailingEdgeAheadOfBase: 0.5 })))).toBe(
+      'fin-sweep',
+    );
+    expect(reason(() => finsOnBaseFactorW1(1.8, fins({ trailingEdgeAheadOfBase: 0.9 })))).toBe(
       'served',
     );
+    expect(
+      reason(() =>
+        finsOnBaseFactorW1(1.8, fins({ tanLeadingEdgeSweep: 0, trailingEdgeAheadOfBase: 0.5 })),
+      ),
+    ).toBe('served');
   });
 
   // A sharp section with a swept trailing edge: measured only with RM L52J21a's 45 deg fins, swept aft, their

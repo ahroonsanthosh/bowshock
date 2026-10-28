@@ -159,6 +159,18 @@ export const W1_MODERATE_SWEEP = {
 export const W1_TUNNEL_MACHS = [1.5, 2.0] as const;
 /** The measured thickness ratios (circular arcs) and counts. */
 export const W1_THICKNESSES = [0.05, 0.1] as const;
+/**
+ * A position ahead of the base, in root chords, for a message: three significant digits, or as many as show
+ * which side of one chord it lies (1 + 2e-9 is not printed 1; the review of 86bcf73, its item 6).
+ */
+export function aheadText(x: number): string {
+  for (let digits = 3; digits <= 15; digits++) {
+    const v = Number(x.toPrecision(digits));
+    if (Math.sign(v - 1) === Math.sign(x - 1)) return String(v);
+  }
+  return String(x);
+}
+
 /** TN 2360 fig. 6's stations, x/c (trailing edge ahead of the base, in chords). */
 export const W1_STATIONS = [0, 0.2, 0.4, 0.6, 0.8, 1.0] as const;
 /**
@@ -169,7 +181,13 @@ export const W1_STATIONS = [0, 0.2, 0.4, 0.6, 0.8, 1.0] as const;
  * of the base are served only with this one (0015 section 3.3; 0014 section 10.7 (ad), the review of 2026-10-26).
  */
 export const W1_POSITION_CHORD_OVER_DIAMETER = 1.875 / 1.25;
-/** How close the root chord over the body diameter must be to TN 2360's: 0.5%, 0011 section 3's precedent. */
+/**
+ * How close the root chord over the body diameter must be to TN 2360's: 0.5%. Not 0011 section 3's typing
+ * tolerance, which 0011 keeps for the Basic Finner's own inputs: 0.5% of the 1.5-diameter chord is 0.0075
+ * diameters, and it moves a position given in chords by at most 0.005 chords (at x/c 1.0), a fortieth of the
+ * 0.2 chords between TN 2360's stations, across which the bracket already runs (0015 section 3.3, the note of
+ * 2026-10-28).
+ */
 export const W1_POSITION_CHORD_TOLERANCE = 0.005;
 
 /**
@@ -236,7 +254,7 @@ export function nearBasePositionRefusal(
   if (reasons.length === 0) return undefined;
   return new BaseRefusal(
     'fins-near-base',
-    `fins ending ${Number(xc.toPrecision(3))} root chords ahead of the base at Mach ${mach}: ` +
+    `fins ending ${aheadText(xc)} root chords ahead of the base at Mach ${mach}: ` +
       `${reasons.join('; and ')} (0015 section 3.3)${note}`,
   );
 }
@@ -661,10 +679,21 @@ export function memberEndOnSingleReader(
  * dominates, tauEq the thinnest that dominates it, the arcs taken as
  * 2 tau s (1 - s). Only for sections with a sharp trailing edge.
  */
-export function sectionBracket(section: SymmetricSection): { tauLow: number; tauEq: number } {
+/** Where a section's tauEq is reached: inside the chord at x/c `s`, or as the half-slope at an edge. */
+export interface Binding {
+  readonly kind: 'interior' | 'leading-edge' | 'trailing-edge';
+  readonly s: number;
+}
+
+export function sectionBracket(section: SymmetricSection): {
+  tauLow: number;
+  tauEq: number;
+  binding: Binding;
+} {
   const { x, halfThickness: h } = section;
   let lo = Infinity;
   let hi = 0;
+  let hiAt = 0.5;
   const n = 4000;
   for (let k = 1; k < n; k++) {
     const s = k / n;
@@ -673,15 +702,104 @@ export function sectionBracket(section: SymmetricSection): { tauLow: number; tau
     const hs = h[j]! + ((h[j + 1]! - h[j]!) * (s - x[j]!)) / (x[j + 1]! - x[j]!);
     const r = hs / (2 * s * (1 - s));
     lo = Math.min(lo, r);
-    hi = Math.max(hi, r);
+    if (r > hi) {
+      hi = r;
+      hiAt = s;
+    }
   }
   // The limits at the edges: the half-slopes there.
   const slopeLe = (h[1]! - h[0]!) / (x[1]! - x[0]!);
   const m = x.length - 1;
   const slopeTe = (h[m - 1]! - h[m]!) / (x[m]! - x[m - 1]!);
   lo = Math.min(lo, slopeLe / 2, slopeTe / 2);
-  hi = Math.max(hi, slopeLe / 2, slopeTe / 2);
-  return { tauLow: lo, tauEq: hi };
+  let binding: Binding = { kind: 'interior', s: hiAt };
+  if (slopeLe / 2 > hi) {
+    hi = slopeLe / 2;
+    binding = { kind: 'leading-edge', s: 0 };
+  }
+  if (slopeTe / 2 > hi) {
+    hi = slopeTe / 2;
+    binding = { kind: 'trailing-edge', s: 1 };
+  }
+  return { tauLow: lo, tauEq: hi, binding };
+}
+
+/**
+ * Where a section reaches outside the circular arc that bounds it, in words (the quick look of 5a9ce16): at an
+ * edge, where its faces are steeper than the arc's; where a bevel meets its flat middle (a hexagonal section, the
+ * bevel too steep for its thickness: checked, its binding station is that junction); at its ridge (a double wedge with the ridge off the middle); or at a
+ * named station.
+ */
+export function outsideWhere(section: SymmetricSection, binding: Binding): string {
+  if (binding.kind === 'leading-edge')
+    return "at its leading edge, where its faces are steeper than the arc's";
+  if (binding.kind === 'trailing-edge')
+    return "at its trailing edge, where its faces are steeper than the arc's";
+  const { x, halfThickness: h } = section;
+  const top = Math.max(...h);
+  const atTop = (v: number) => Math.abs(v - top) <= 1e-12 * Math.max(1, top);
+  let k = 0;
+  for (let j = 1; j < x.length; j++)
+    if (Math.abs(x[j]! - binding.s) < Math.abs(x[k]! - binding.s)) k = j;
+  if (Math.abs(x[k]! - binding.s) <= 2 / 4000 + 1e-12 && atTop(h[k]!)) {
+    const flatBeside = (k > 0 && atTop(h[k - 1]!)) || (k + 1 < h.length && atTop(h[k + 1]!));
+    return flatBeside
+      ? 'where a bevel meets its flat middle, the bevel too steep for its thickness'
+      : 'at its ridge';
+  }
+  return `at x/c ${binding.s.toFixed(2)}`;
+}
+
+/**
+ * A section refused for its shape, not its thickness (the review of 55a76d2): it does not lie inside the 10%-thick
+ * circular arc that bounds the members everywhere (a hexagonal section with bevels over a fifth of the chord,
+ * say, is refused when thicker than 6.4%; a double wedge with its ridge off the middle at its ridge). The
+ * refusal's reason is `fin-thickness`; its message carries this phrase and says where (outsideWhere).
+ */
+export const W1_SECTION_SHAPE_MARK = 'does not lie inside the 10%-thick circular arc everywhere';
+
+/** In that refusal, the words before where the section reaches outside the arc (outsideWhere). */
+export const W1_OUTSIDE_AT = 'it reaches outside the arc ';
+
+/**
+ * In that refusal, the bevels' change, offered only where it can serve: where the section has bevels (a flat
+ * middle between them) and is at most 10% thick. A bevel of length b (a fraction of the chord) ending at the flat
+ * middle reaches the 10% arc where t / (4 b (1 - b)) = 0.10, so at t/c 0.10 or less bevels each at least
+ * b* = (1 - sqrt(1 - t / 0.10)) / 2 long serve it (8% thick: 27.7% of the chord; bevels over 28% are served);
+ * thicker than 10%, no bevel length serves (the longest, a double wedge, needs an arc of its own t/c), so it is
+ * not offered (the quick look of 0e56581).
+ */
+export const W1_LONGER_BEVELS = 'or with longer bevels';
+
+/** The least bevel length, a fraction of the chord rounded up to 0.1%, at which a t/c of at most 0.10 is served. */
+export function bevelsNeeded(thickness: number): number {
+  return Math.ceil(1000 * ((1 - Math.sqrt(Math.max(0, 1 - thickness / 0.1))) / 2) - 1e-9) / 1000;
+}
+
+/**
+ * Whether a section has separate bevels: its greatest half-thickness held over a stretch of the chord (a flat
+ * middle, as a hexagonal section's), not reached at one point (a double wedge's ridge, an arc's crown).
+ */
+export function hasBevels(section: SymmetricSection): boolean {
+  const h = section.halfThickness;
+  const top = Math.max(...h);
+  for (let k = 0; k + 1 < h.length; k++) {
+    const flat = (v: number) => Math.abs(v - top) <= 1e-12 * Math.max(1, top);
+    if (flat(h[k]!) && flat(h[k + 1]!) && section.x[k + 1]! - section.x[k]! > 1e-9) return true;
+  }
+  return false;
+}
+
+/** The words before the largest t/c at which a section of the same shape is served, in that refusal. */
+export const W1_SECTION_SHAPE_LIMIT = 'with its shape it is served up to t/c';
+
+/**
+ * The largest t/c at which a section of the same shape lies inside the 10% arc: its thickness scaled by 0.1 /
+ * tauEq (sectionBracket's tauEq is proportional to the thickness), rounded down to three decimals, so that a
+ * section that thick is served.
+ */
+export function shapeLimit(thickness: number, tauEq: number): number {
+  return Math.floor((1000 * thickness * 0.1) / tauEq + 1e-9) / 1000;
 }
 
 export type TrailingEdgeShape = 'sharp' | 'flat' | 'diverging' | 'converging-blunt';
@@ -1179,7 +1297,8 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   if (!bounded && xc < W1_SWEPT_TRAILING_EDGE_AHEAD - 1e-9 && tes > 1e-9) {
     const k = (m: number) => Math.sqrt(m * m - 1) / Math.sqrt(m * m - 1 / Math.cos(tes) ** 2);
     const factor = mach * Math.cos(tes) > 1 ? `${k(mach).toFixed(2)} times` : 'more than';
-    const where = xc === 0 ? 'at the base' : `ending ${xc} root chords ahead of the base`;
+    const where =
+      xc === 0 ? 'at the base' : `ending ${aheadText(xc)} root chords ahead of the base`;
     throw new BaseRefusal(
       'fin-sweep',
       `fins of a sharp section ${where} with the trailing edge swept ${deg(tes)} deg ` +
@@ -1212,15 +1331,33 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
     tauLow: Math.min(...brackets.map((b) => b.tauLow)),
     tauEq: Math.max(...brackets.map((b) => b.tauEq)),
   };
+  // Where the station that sets tauEq reaches outside the arc (its own sectionBracket's binding).
+  const outsideAt = (): string => {
+    const k = brackets.findIndex((b) => b.tauEq === tr.tauEq);
+    const st = stations[k]!;
+    return outsideWhere(st, sectionBracket(st).binding);
+  };
   if (tr.tauEq > 0.1 + 1e-9) {
     throw new BaseRefusal(
       'fin-thickness',
       bounded
         ? `flat-faced fins ${tcText(thickness)}: the circular-arc members that bound them reach ` +
             't/c 0.10 (TN 2360, TN 3819 fig. 33)'
-        : `this section is not inside the 10%-thick circular arc near its edges (it would need an ` +
-            `arc of t/c ${tr.tauEq.toFixed(3)}); thicker fins at the base are not measured (TN 2360, ` +
-            'TN 3819 fig. 33)',
+        : // A section no steeper than a circular arc of its own thickness (a double wedge, an arc) is refused for its
+          // thickness alone; a steeper one for its shape, its bevels named only where it has them (the re-check of
+          // 174490b).
+          tr.tauEq <= thickness * (1 + 1e-9)
+          ? `this section, ${tcText(thickness)}, is thicker than the members, which reach t/c 0.10; it lies ` +
+            'inside a circular arc of its own thickness, and thicker fins at or near the base are not measured ' +
+            '(TN 2360, TN 3819 fig. 33)'
+          : `this section, ${tcText(thickness)}, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c ` +
+            `${tr.tauEq.toFixed(3)}): ${W1_OUTSIDE_AT}${outsideAt()}, so ${W1_SECTION_SHAPE_LIMIT} ` +
+            `${shapeLimit(thickness, tr.tauEq).toFixed(3)}, thinner in proportion` +
+            (stations.some(hasBevels) && thickness <= 0.1 + 1e-9
+              ? `, ${W1_LONGER_BEVELS}, each over at least ` +
+                `${(100 * bevelsNeeded(thickness)).toFixed(1)}% of the chord`
+              : '') +
+            '; fins reaching outside it at or near the base are not measured (TN 2360, TN 3819 fig. 33)',
     );
   }
   const taus: Thickness[] = [0, 0.05, 0.1];
@@ -1241,9 +1378,38 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
   };
   // Fins ending ahead of the base: served only where TN 2360 measured positions, M 1.5 to 2.0 and its root chord
   // of 1.5 body diameters (0015 section 3.3); every reason they are refused, in plain words.
-  const xcText = `${Number(xc.toPrecision(3))}`;
+  const xcText = aheadText(xc);
   const positionRefusal = nearBasePositionRefusal(mach, xc, fins.rootChordOverDiameter);
   if (positionRefusal !== undefined) throw positionRefusal;
+  // After the position, so a position TN 2360 did not measure is named first. Ahead of the base, a sharp
+  // section swept at the leading edge with the trailing edge unswept: the record
+  // serves it at the base (the RM-10) and, as a trailing edge swept no more than the leading edge, from 0.9
+  // root chords ahead (RM L52J21a's position, 0015 section 3.4). Between, and for W1b's moderate sweeps
+  // (argued at the base only, NSWCDD/TR-92/509's fins there) at any position ahead, no measurement and no
+  // registered argument covers it, so it is refused under 0014 section 10.2 (the review of 86bcf73, its
+  // items 1 and 2; 0015 section 3.4, the note of 2026-10-28).
+  if (!bounded && xc > 0 && le > 1e-9 && tes <= 1e-9) {
+    const at = `ending ${aheadText(xc)} root chords ahead of the base`;
+    if (moderate) {
+      throw new BaseRefusal(
+        'fin-sweep',
+        `fins of a sharp section ${at} with the leading edge swept ${deg(le)} deg and the trailing edge ` +
+          `unswept at M ${mach}: such sweeps (up to 45 deg, from M 2.0) are argued at the base only, on ` +
+          "NSWCDD/TR-92/509's fins there; no measurement ahead of the base covers them, so they are refused " +
+          'there (0014 section 10.2; 0015 section 3.4)',
+      );
+    }
+    if (xc < W1_SWEPT_TRAILING_EDGE_AHEAD - 1e-9) {
+      throw new BaseRefusal(
+        'fin-sweep',
+        `fins of a sharp section ${at} with the leading edge swept ${deg(le)} deg and the trailing edge ` +
+          `unswept at M ${mach}: swept fins of a sharp section are measured at the base (the RM-10) and ` +
+          "0.85 +-0.05 root chords ahead of it (RM L52J21a's 45 deg fins), and none between, so they are " +
+          `served from ${W1_SWEPT_TRAILING_EDGE_AHEAD} root chords ahead and refused closer (0014 section 10.2; ` +
+          '0015 section 3.4)',
+      );
+    }
+  }
   const upper = pick(highT, highN, xc);
   const lower: MemberUsed | undefined = bounded
     ? {

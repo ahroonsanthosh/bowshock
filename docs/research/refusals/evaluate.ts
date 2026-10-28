@@ -17,7 +17,7 @@
  */
 
 import { bluntNoseRefusal, sharpFitProblem } from '../../../src/analysis/fitted-flow';
-import { bodyBaseDrag } from '../../../src/base/base-drag';
+import { bodyBaseDrag, type BaseFins } from '../../../src/base/base-drag';
 import { finTrailingEdgeBaseDrag } from '../../../src/base/fin-trailing-edge';
 import { BaseRefusal } from '../../../src/base/refusal';
 import { FinRefusal } from '../../../src/fins/refusal';
@@ -376,27 +376,31 @@ export function teBelow15Refused(r: Rocket, mach: number, rePerMetre: number): b
  * src/total builds (baseFinsOf: a plate's largest t/c at its shorter end chord and its thinnest station, both
  * edge sweeps, the rebuilt factor's section); undefined if served.
  */
+/** The rocket's fins as the body base takes them (src/total's baseFinsOf, with the body's diameter). */
+export function rocketBaseFins(r: Rocket): BaseFins {
+  return baseFinsOf({
+    count: r.finCount,
+    planform: trapezoidalPlanform({
+      rootChord: r.rootChord,
+      span: r.span,
+      leadingEdgeSweep: r.leadingEdgeSweepDeg * DEG,
+      trailingEdgeSweep: r.trailingEdgeSweepDeg * DEG,
+    }),
+    section: librarySection(r)!,
+    sectionFamily: 'other',
+    leadingEdgeRadius: roundedLeadingEdge(r) ? r.thickness / 2 : 0,
+    trailingEdgeAheadOfBase: r.trailingEdgeAheadChords * r.rootChord,
+  }, r.diameter);
+}
+
 export function finsOnBaseReason(r: Rocket, mach: number): ReasonKey | undefined {
-  const section = librarySection(r)!;
   try {
     bodyBaseDrag({
       mach,
       afterbody: 'cylinder',
       boundaryLayerAtBase: 'turbulent',
       baseAreaRatio: 1,
-      fins: baseFinsOf({
-        count: r.finCount,
-        planform: trapezoidalPlanform({
-          rootChord: r.rootChord,
-          span: r.span,
-          leadingEdgeSweep: r.leadingEdgeSweepDeg * DEG,
-          trailingEdgeSweep: r.trailingEdgeSweepDeg * DEG,
-        }),
-        section,
-        sectionFamily: 'other',
-        leadingEdgeRadius: roundedLeadingEdge(r) ? r.thickness / 2 : 0,
-        trailingEdgeAheadOfBase: r.trailingEdgeAheadChords * r.rootChord,
-      }, r.diameter),
+      fins: rocketBaseFins(r),
     });
     return undefined;
   } catch (e) {

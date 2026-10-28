@@ -371,6 +371,18 @@ export const LARGEST_CHECKED_SWEEP_DEGREES = 75.1;
  * section 21.8).
  */
 export const TN3861_FIG17_READINGS = 2 as number;
+/**
+ * 21.2's rule on the paired fig. 17, every reading taken (0016 sections 21.8
+ * and 21.9; docs/research/tn3861-fig17/rule/out/verdict.txt): at each of TN
+ * 3861's three crossflow points past 60 deg, the least margin of F/MN, less
+ * the estimate's error, over the lower bound's end. The 75 and 75.1 deg
+ * points are flagged by the report (p. 11, high; p. 10, an end effect); the
+ * 70 deg point (69.7 deg, M_n 1.40) is not, and holds the ordering to 70
+ * deg. From 70 to 75.1 deg the ordering rests on the two flagged points
+ * too: serving to 75.1 deg rests on Penland's, which a fall of about 15% in
+ * its F/MN would fail (Fable's review, 2026-10-28).
+ */
+export const TN3861_RULE_MARGINS = { at70: 0.1734, at75: 0.6771, at751: 0.1756 } as const;
 /** The coordinator's least interim sweep allowance below M_n 3.37 (review of 2026-10-21; 0016 section 16). */
 export const INTERIM_SWEEP_FLOOR = { low: 0.95, high: 1.21 } as const;
 
@@ -664,6 +676,17 @@ export function transonicFrontSide(normalMach: number): TransonicFrontSide {
  * 16 and 17); with twice the measured allowance's deviation from 1 and the
  * interim floor of 0.95 to 1.21. No yawed datum lies below M_n 1.95 at a
  * served sweep. It holds from 14.3 deg up, tapered below: sweepAllowanceAt.
+ *
+ * Note, 2026-10-28 (Fable's review): the 0.995 to 1.079 above rests on fig.
+ * 17's 2026-10-21 reading, which the second (ab) addendum of 0014 section
+ * 10.7 ruled does not count. On the paired readings (0016 section 21.8)
+ * that point, P09, gives 1.055 to 1.062 of TN 2960's integrated front side
+ * at M 1.98 on the two readers' values (1.055 to 1.067 with their other
+ * readings too), inside 0.95 to 1.22. The allowance's ends come from RM
+ * A55H31's checks, twice SWEEP_ALLOWANCE's deviation and the interim floor,
+ * not from this point, so nothing served changes. Since 60
+ * to 75.1 deg is served, "no yawed datum below M_n 1.95" holds at 60 deg of
+ * sweep or less only: TN 3861's 70 and 75 deg points lie below it.
  */
 export const SWEEP_ALLOWANCE_SERVED = (() => {
   const looked = (c: SweepCheck) =>
@@ -846,7 +869,7 @@ function termSummary(t: RoundedLeadingEdge, where: 'lower' | 'upper'): string {
       ? ''
       : t.regime === 'covered by RM A55H31'
         ? ", beyond TN 2960's Mach or Reynolds numbers, covered by RM A55H31's statement"
-        : ', extrapolated in Reynolds number (+-3% of the term, an allowance, not data)';
+        : ', extrapolated in Reynolds number (+-3% of the term)';
   const a = sweepAllowanceAt(t.sweepDegrees);
   const allowance = `the sweep allowance ${a.low.toFixed(3)} to ${a.high.toFixed(3)}`;
   const sweep =
@@ -916,10 +939,11 @@ function beyondSweepLimit(
   const low = lower.dragPerSpan * lower.band.low;
   const high = upper.dragPerSpan * upper.band.high;
   const dragPerSpan = 0.5 * (low + high);
-  const fig17 =
+  const readTwice =
     TN3861_FIG17_READINGS >= 2
-      ? 'read twice'
-      : 'its two readings pending, the earlier one not counted';
+      ? 'figs. 15 to 17, each read twice'
+      : 'figs. 15 and 16 read twice, fig. 17 its two readings pending, the earlier one not counted';
+  const margins = TN3861_RULE_MARGINS;
   return {
     dragPerSpan,
     band: { low: low / dragPerSpan, high: high / dragPerSpan },
@@ -927,17 +951,20 @@ function beyondSweepLimit(
     label:
       `bounded, not measured: swept ${sweepDegrees.toFixed(1)} deg, past the ` +
       `${SWEEP_LIMIT_DEGREES} deg where the yawed-cylinder checks of the independence principle ` +
-      'end; the band the whole gap between two terms, each an analogy carried to a fin edge whose ' +
-      "faces replace the cylinder's wake, tested only in the total. " +
+      "end; the band the whole gap between two terms, each a cylinder's front side carried to a " +
+      'fin edge, an analogy tested only in the total. ' +
       `Lower: the term at ${sweepDegrees.toFixed(1)} deg (M_n ${lower.normalMach.toFixed(3)}) ` +
       `at its band's low end, ${lower.band.low.toFixed(3)} of it: ${termSummary(lower, 'lower')}. ` +
       `Upper: the term at ${SWEEP_LIMIT_DEGREES} deg (M_n ${upper.normalMach.toFixed(3)}) at its ` +
       `band's high end, ${upper.band.high.toFixed(3)} of it: ${termSummary(upper, 'upper')}. ` +
-      'The ordering: the term falls as the sweep grows, and the front side measured on yawed ' +
-      "cylinders falls with yaw on every series of RM A55H31 fig. 12; past 60 deg the lower bound's " +
-      "ordering rests on the principle and on TN 3861's crossflow points at 70, 75 and 75.1 deg, " +
-      'every one above the principle (their stagnation and downstream-side pressures, figs. 15 and ' +
-      `16, read twice; their front sides estimated with fig. 17, ${fig17}) (0016 section 21.2)`,
+      'The ordering: the term falls with sweep, as the front side measured on yawed cylinders does ' +
+      "on every series of RM A55H31 fig. 12; past 60 deg the lower bound's ordering rests on the " +
+      `principle and on TN 3861's crossflow points (${readTwice}), all above the principle: the ` +
+      `unflagged 70 deg point holds it to 70 deg, by ${margins.at70.toFixed(3)}; from 70 to 75.1 ` +
+      `deg it rests on the two flagged points too, by ${margins.at75.toFixed(3)} and ` +
+      `${margins.at751.toFixed(3)} (the 75 deg one flagged high, p. 11; the 75.1 deg one for an ` +
+      "end effect, p. 10, its stagnation pressure 0.63 to 0.74 of Rayleigh's on RM A55H31 fig. " +
+      '11) (0016 section 21.2)',
     reynoldsOnDiameter: lower.reynoldsOnDiameter,
     normalMach: lower.normalMach,
     sweepDegrees,
@@ -1104,8 +1131,9 @@ function roundedTerm(
           `${SMALLEST_TESTED_SWEEP} deg, the smallest yaw tested, tapered below it to meet the unswept ` +
           'band), the sweep allowance ' +
           'extrapolated in normal Mach number (checked at M_n 3.38 to 6.65; widened to contain ' +
-          "RM A55H31's own tests at 45 and 60 deg, M_n 1.95 to 2.76, and TN 3861's crossflow points; " +
-          'no yawed datum below M_n 1.95 at a served sweep) (0016)',
+          "RM A55H31's own tests at 45 and 60 deg, M_n 1.95 to 2.76, and TN 3861's crossflow point " +
+          "near 60 deg, Lord and Ulmann's, 1.055 to 1.062 of the unyawed on fig. 17 read twice; no " +
+          'yawed datum below M_n 1.95 at 60 deg of sweep or less) (0016)',
     reynoldsOnDiameter: re,
     normalMach: mach,
     sweepDegrees,

@@ -14,12 +14,14 @@
  *   python3 -I docs/research/tn3861-fig17/rule/export_figs15_16.py
  *   ONLY=../tn3861-fig17/rule/apply.test.ts nice -n 10 npx vitest run --config docs/research/square-edge/vitest.config.ts
  *
- * It writes out/verdict.txt beside this file.
+ * It checks a fresh run against the committed out/verdict.txt beside this
+ * file and asserts that the rule holds; with UPDATE=1 it rewrites
+ * out/verdict.txt instead of checking it (added 2026-10-28, Fable's review).
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { it } from 'vitest';
+import { expect, it } from 'vitest';
 import {
   pitotPressureCoefficient,
   roundedLeadingEdgeDrag,
@@ -248,7 +250,13 @@ it("21.2's rule on the paired fig. 17", () => {
   }
   say(`VERDICT: the rule ${holds ? 'HOLDS at all three points' : 'FAILS'}`);
   const text = lines.join('\n') + '\n';
-  mkdirSync(join(here, 'out'), { recursive: true });
-  writeFileSync(join(here, 'out', 'verdict.txt'), text);
   console.log(text);
+  const file = join(here, 'out', 'verdict.txt');
+  if (process.env.UPDATE === '1') {
+    mkdirSync(join(here, 'out'), { recursive: true });
+    writeFileSync(file, text);
+  } else {
+    expect(text).toBe(readFileSync(file, 'utf8'));
+  }
+  expect(holds).toBe(true);
 });

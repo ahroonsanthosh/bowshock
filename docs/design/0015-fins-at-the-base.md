@@ -73,7 +73,9 @@ Mach 1.80 to 3.0 (below 5% extended, 0016 section 18). It refuses 96% of
 of 0014 section 10.1 cover:
 
 - **Sharp trailing edges** of any section that lies inside the 10%
-  circular arc near its edges, two to four fins, at Mach 1.5 to 3.0: at
+  circular arc near its edges (corrected 2026-10-28: everywhere along the
+  chord, as `sectionBracket` tests it; 0014 10.7 (ad)), two to four fins,
+  at Mach 1.5 to 3.0: at
   the base unswept or with the leading edge swept 45 to 60 deg and the
   trailing edge unswept, and with the leading edge swept up to 45 deg and
   the trailing edge unswept at Mach 2.0 to 3.0 (W1b, section 3.4); fins
@@ -429,10 +431,17 @@ measurement holds it). No measurement shows how positions carry to other
 chords, so fins ending ahead of the base (0 < x/c < 1) are served only
 with a root chord of 1.5 body diameters within 0.5% (`W1_POSITION_CHORD_OVER_DIAMETER`,
 `W1_POSITION_CHORD_TOLERANCE`; the 0.5% is 0011 section 3's precedent for
-the same geometry as measured), the swept fins served from 0.9 root
+the same geometry as measured, corrected 2026-10-28 below), the swept fins served from 0.9 root
 chords ahead included; any other chord, or none given, is refused with
 plain words. `bodyBaseDrag` takes the ratio from `BaseFins.rootChordOverDiameter`,
-which `baseFinsOf` sets from the body's diameter. Below about M 1.2 the
+which `baseFinsOf` sets from the body's diameter. _Corrected 2026-10-28 (the review of
+86bcf73, its item 4):_ 0011 section 3's 0.5% is a typing tolerance for the
+Basic Finner's own inputs, "not for other rockets", so it is no precedent
+here. The 0.5% stands on TN 2360's own resolution in position: a chord
+0.5% off 1.5 diameters is off by 0.0075 diameters, and it moves a position
+given in chords by at most 0.005 chords (at x/c 1.0), a fortieth of the 0.2
+chords between TN 2360's stations, across which the bracket already
+runs. Below about M 1.2 the
 at-base upper bound would rest on its margin, not on TN 2360's mechanism
 (the linear superposition loses meaning near M 1): moot now, recorded so
 the record stays true.
@@ -483,6 +492,24 @@ L52J21a's fins cover it, 0.9 to 1 root chord ahead of the base (the far
 end of their position's uncertainty, `W1_SWEPT_TRAILING_EDGE_AHEAD`; at M
 1.5 to 2.0, where positions ahead of the base are measured, 3.3); in both, bracketed
 between the zero member and the unswept member that bounds the section.
+
+_Note, 2026-10-28 (the review of 86bcf73, its items 1 and 2; 0014 section
+10.7 (ad), its entry of that date):_ the code served more than this
+paragraph names. A sharp section with the leading edge swept 45 to 60 deg
+and the trailing edge unswept was served at every measured position ahead
+of the base (for example 50 deg, x/c 0.5, M 1.8), and W1b's moderate
+sweeps (the leading edge up to 45 deg, the trailing edge unswept), argued
+at the base only on NSWCDD/TR-92/509's fins there, were served ahead of
+it at exactly M 2.0, where W1b's Mach range meets that of the measured
+positions. No measurement covers swept fins of a sharp section between
+the base and RM L52J21a's 0.85 +-0.05 root chords, and no registered
+argument carries the RM-10 or RM L52J21a there, so both are now refused
+under 0014 section 10.2 (`fin-sweep`, its message naming the position):
+a sharp section swept at the leading edge with the trailing edge unswept
+is served ahead of the base only from 0.9 root chords (a trailing edge
+"swept no more than the leading edge", unswept included, as RM L52J21a's
+position covers it), and W1b's sweeps only at the base. Flat-faced fins
+are not touched by this: their sweeps rest on section 4 and section 12.
 
 **A swept trailing edge at the base** (the review of 2026-10-21). This
 record said before that swept fins were served at the base with the
@@ -914,6 +941,20 @@ trailing edge is rounded, which the rebuilt factor does not take, is
 refused for its trailing edge with both reasons
 (`flat-plates.test.ts`, `fins-on-base-routing.test.ts`).
 
+**Ahead of the base, stated (2026-10-28, the review of 86bcf73, its item
+3).** "The counts and positions of section 3" above includes the measured
+positions ahead of the base (x/c above 0 to 1.0, Mach 1.5 to 2.0, the
+chord rule; x/c exactly 1.0 since 2026-10-27, TN 2360's station there),
+and there flat-faced fins take the same bounds: the upper the unswept
+circular-arc member at least as thick, at their position (TN 2360's), and
+the lower the same 0.838, the relief measured at the base. That lower end
+is taken by reference: no flat-faced fin is measured ahead of the base. It
+rests on this section's argument, the registered one (0014 section 10.7,
+amendment i): the relief arises at the fin-body junctures and the square
+edge, and the relief measured with fins ahead of the base, RM L52J21a's
+at 0.85 +-0.05 root chords, is at most 5% (M 1.62 to 2.41), inside it.
+This record confirms that reading; it adds no case and moves no total.
+
 **What it does not reach.** Rounded trailing edges: no circular arc
 bounds a rounded edge (its half-thickness falls as the square root of the
 distance to the edge), so neither bound is shown and nothing at the base
@@ -1042,7 +1083,11 @@ read later for the zero member (below), and RM L52E06 fig. 8 for W2
 (section 11.3). The band-setting figures 0014 lists that this method does
 not use were not read (TN 2360 figs. 5 and 7, TN 3819 fig. 32, RM L52J21a
 fig. 39 and figs. 31 to 33 outside panel (d), RM L52E06 fig. 6, TN 3372
-figs. 7 to 12); 0014 section 10.7 (h) gives the status of each.
+figs. 7 to 12); 0014 section 10.7 (h) gives the status of each. _Corrected
+2026-10-28 (the review of 86bcf73, its item 7):_ TN 3819 fig. 32 has since
+been read three times blind (round 6, round 14 and round 16) and paired
+three ways (0014 section 10.7 (ad), its note of 2026-10-26); no method
+uses it, so it still sets nothing (section 10).
 
 **Second readings** (round 6, blind, made on another branch from its own
 renders: `docs/research/total-drag/audit/round6/readings/`, method in its
@@ -2017,7 +2062,12 @@ reason after `W1_SWEEP_REFUSED_TOO`), in the factor and in
 served there, so that neither reason's advice leads into the other
 (`status-words.test.ts`: a plate 0.5 and 1.5 root chords ahead, swept 20
 and 70 deg, at Mach 1.2; `fins-on-base-w1.test.ts`: the same at Mach 1.2
-and, with a 2.5-diameter chord, 1.55). A sweep is printed to one
+and, with a 2.5-diameter chord, 1.55). _Merged with A5's follow-ups,
+2026-10-28:_ in `bodyBaseDrag` the sweep is now named as the plate's
+refusal at the base, which A5's chain carries beside the position's
+refusal (0014 10.7 (ad), its bullet on every reason), not also in the
+position's message, so it is named once; the factor called directly
+still names both in one refusal, as above. A sweep is printed to one
 decimal, or to as many as keep it on its own side of 45 and 60 deg
 (44.99 deg is not printed 45.0; `sweepDegrees`), and the narrowed words
 say "at or near the base", the first naming RM L52E06's Mach numbers,

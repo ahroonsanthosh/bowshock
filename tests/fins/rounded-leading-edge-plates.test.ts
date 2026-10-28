@@ -276,9 +276,13 @@ describe('the independence principle on yawed cylinders (RM A55H31 figs. 11, 12)
       expect(c.r).toBeLessThanOrEqual(SWEEP_ALLOWANCE_SERVED.high);
     }
     // TN 3861's one crossflow point at a served sweep (Lord and Ulmann, about 60 deg, M_c 1.98 to
-    // 2.03), its front side estimated from figs. 16 and 17 on both readings of fig. 16
-    // (data/fin_edges_w34.md section 4): 0.995 to 1.079 of the unyawed, inside too.
-    for (const r of [0.995, 1.079]) {
+    // 2.03), its front side estimated from figs. 16 and 17 on both readings of fig. 16. Note,
+    // 2026-10-28 (Fable's review): the 0.995 to 1.079 first given (data/fin_edges_w34.md section
+    // 4) rests on fig. 17's 2026-10-21 reading, which the second (ab) addendum ruled does not
+    // count; on the paired readings (0016 section 21.8), P09, 1.055 to 1.062 of TN 2960's
+    // integrated front side at M 1.98 on the readers' values, 1.055 to 1.067 with their other
+    // readings, inside too.
+    for (const r of [1.055, 1.067]) {
       expect(r).toBeGreaterThanOrEqual(SWEEP_ALLOWANCE_SERVED.low);
       expect(r).toBeLessThanOrEqual(SWEEP_ALLOWANCE_SERVED.high);
     }
@@ -364,7 +368,7 @@ describe('the nose term on flat and swept fins', () => {
     );
     expect(t.label).not.toMatch(/read once/);
     expect(t.label).toMatch(
-      /and TN 3861's crossflow points; no yawed datum below M_n 1\.95 at a served sweep\) \(0016\)$/,
+      /and TN 3861's crossflow point near 60 deg, Lord and Ulmann's, 1\.055 to 1\.062 of the unyawed on fig\. 17 read twice; no yawed datum below M_n 1\.95 at 60 deg of sweep or less\) \(0016\)$/,
     );
     expect(t.label.startsWith('an analogy, not a measurement')).toBe(true);
   });
