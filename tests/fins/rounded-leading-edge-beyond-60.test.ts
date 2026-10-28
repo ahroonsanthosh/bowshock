@@ -121,27 +121,32 @@ describe('the bounds', () => {
     expect(upperPart).toMatch(
       /extrapolated in normal Mach number \(checked at M_n 3\.38 to 6\.65; no yawed datum below M_n 1\.95 at 60 deg of sweep or less\)\. $/,
     );
-    // The ordering names figs. 15 to 17, each read twice; the two points the report flags,
-    // fig. 11's stagnation pressure for the 75.1 deg test, and the 70 deg point's margin
-    // (Fable's review, 2026-10-28).
+    // The ordering names figs. 15 to 17, each read twice; what each point holds it over, the
+    // unflagged 70 deg point to 70 deg only, the two flagged points from 70 to 75.1 deg; the
+    // flags; and fig. 11's stagnation pressure for the 75.1 deg test (Fable's review and its
+    // quick look, 2026-10-28).
     expect(e.label).toMatch(
-      /rests on the principle and on TN 3861's crossflow points at 70, 75 and 75\.1 deg \(figs\. 15 to 17, each read twice\), every one above the principle, /,
+      /rests on the principle and on TN 3861's crossflow points \(figs\. 15 to 17, each read twice\), all above the principle: /,
+    );
+    expect(e.label).toContain(
+      `the unflagged 70 deg point holds it to 70 deg, by ${TN3861_RULE_MARGINS.at70.toFixed(3)}; ` +
+        'from 70 to 75.1 deg it rests on the two flagged points too, by ' +
+        `${TN3861_RULE_MARGINS.at75.toFixed(3)} and ${TN3861_RULE_MARGINS.at751.toFixed(3)} (`,
     );
     expect(e.label).toMatch(
-      /but the report flags the 75 deg one high \(p\. 11\) and the 75\.1 deg one for an end effect \(p\. 10\), /,
+      /the unflagged 70 deg point holds it to 70 deg, by 0\.173; from 70 to 75\.1 deg it rests on the two flagged points too, by 0\.677 and 0\.176 \(/,
     );
     expect(e.label).toMatch(
-      /and RM A55H31 fig\. 11 puts that test's stagnation pressure at 0\.63 to 0\.74 of Rayleigh's: /,
+      /\(the 75 deg one flagged high, p\. 11; the 75\.1 deg one for an end effect, p\. 10, its stagnation pressure 0\.63 to 0\.74 of Rayleigh's on RM A55H31 fig\. 11\) \(0016 section 21\.2\)$/,
     );
-    expect(e.label).toMatch(
-      /the unflagged 70 deg point alone holds it, by 0\.173 \(0016 section 21\.2\)$/,
-    );
+    // Not that the 70 deg point alone holds the ordering to 75.1 deg.
+    expect(e.label).not.toMatch(/alone holds/);
     expect(e.label).not.toMatch(/largest sweep checked on yawed cylinders|principle alone/);
     // Shorter than the about 2,800 characters the re-review found.
     expect(e.label.length).toBeLessThan(1800);
     expect(at(2.2, 60.1).label.length).toBeLessThan(1800);
     // The longest on a grid of Mach 1.2 to 8, sweeps 60.1 to 75.1 deg and four Reynolds numbers
-    // (0016 section 21.10): 1,793 characters.
+    // (0016 section 21.10): 1,790 characters.
     expect(at(2.45, 60.1, 2e4).label.length).toBeLessThan(1800);
   });
 

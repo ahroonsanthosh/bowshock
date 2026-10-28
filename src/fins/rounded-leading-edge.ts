@@ -377,7 +377,10 @@ export const TN3861_FIG17_READINGS = 2 as number;
  * 3861's three crossflow points past 60 deg, the least margin of F/MN, less
  * the estimate's error, over the lower bound's end. The 75 and 75.1 deg
  * points are flagged by the report (p. 11, high; p. 10, an end effect); the
- * 70 deg point is not, and alone holds the ordering.
+ * 70 deg point (69.7 deg, M_n 1.40) is not, and holds the ordering to 70
+ * deg. From 70 to 75.1 deg the ordering rests on the two flagged points
+ * too: serving to 75.1 deg rests on Penland's, which a fall of about 15% in
+ * its F/MN would fail (Fable's review, 2026-10-28).
  */
 export const TN3861_RULE_MARGINS = { at70: 0.1734, at75: 0.6771, at751: 0.1756 } as const;
 /** The coordinator's least interim sweep allowance below M_n 3.37 (review of 2026-10-21; 0016 section 16). */
@@ -866,7 +869,7 @@ function termSummary(t: RoundedLeadingEdge, where: 'lower' | 'upper'): string {
       ? ''
       : t.regime === 'covered by RM A55H31'
         ? ", beyond TN 2960's Mach or Reynolds numbers, covered by RM A55H31's statement"
-        : ', extrapolated in Reynolds number (+-3% of the term, an allowance)';
+        : ', extrapolated in Reynolds number (+-3%, an allowance)';
   const a = sweepAllowanceAt(t.sweepDegrees);
   const allowance = `the sweep allowance ${a.low.toFixed(3)} to ${a.high.toFixed(3)}`;
   const sweep =
@@ -940,6 +943,7 @@ function beyondSweepLimit(
     TN3861_FIG17_READINGS >= 2
       ? 'figs. 15 to 17, each read twice'
       : 'figs. 15 and 16 read twice, fig. 17 its two readings pending, the earlier one not counted';
+  const margins = TN3861_RULE_MARGINS;
   return {
     dragPerSpan,
     band: { low: low / dragPerSpan, high: high / dragPerSpan },
@@ -955,11 +959,12 @@ function beyondSweepLimit(
       `band's high end, ${upper.band.high.toFixed(3)} of it: ${termSummary(upper, 'upper')}. ` +
       'The ordering: the term falls with sweep, as the front side measured on yawed cylinders does ' +
       "on every series of RM A55H31 fig. 12; past 60 deg the lower bound's ordering rests on the " +
-      `principle and on TN 3861's crossflow points at 70, 75 and 75.1 deg (${readTwice}), every ` +
-      'one above the principle, but the report flags the 75 deg one high ' +
-      '(p. 11) and the 75.1 deg one for an end effect (p. 10), and RM A55H31 fig. 11 puts that ' +
-      "test's stagnation pressure at 0.63 to 0.74 of Rayleigh's: the unflagged 70 deg point alone " +
-      `holds it, by ${TN3861_RULE_MARGINS.at70.toFixed(3)} (0016 section 21.2)`,
+      `principle and on TN 3861's crossflow points (${readTwice}), all above the principle: the ` +
+      `unflagged 70 deg point holds it to 70 deg, by ${margins.at70.toFixed(3)}; from 70 to 75.1 ` +
+      `deg it rests on the two flagged points too, by ${margins.at75.toFixed(3)} and ` +
+      `${margins.at751.toFixed(3)} (the 75 deg one flagged high, p. 11; the 75.1 deg one for an ` +
+      "end effect, p. 10, its stagnation pressure 0.63 to 0.74 of Rayleigh's on RM A55H31 fig. " +
+      '11) (0016 section 21.2)',
     reynoldsOnDiameter: lower.reynoldsOnDiameter,
     normalMach: lower.normalMach,
     sweepDegrees,

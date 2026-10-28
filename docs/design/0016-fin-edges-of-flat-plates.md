@@ -2297,11 +2297,20 @@ served changes.
   that the report flags two of them: Lord and Ulmann's 75 deg point high
   (p. 11), and Penland's 75.1 deg point for an end effect (p. 10). It
   adds that RM A55H31 fig. 11 puts that 75.1 deg test's stagnation
-  pressure at 0.63 to 0.74 of Rayleigh's (section 21.2). And it says the
-  unflagged 70 deg point alone holds the ordering, by +0.173 (section
-  21.9). The label was shortened elsewhere to make room: the longest on
-  a grid of Mach 1.2 to 8, sweeps 60.1 to 75.1 deg and four Reynolds
-  numbers is 1,793 characters (1,706 before), under the test's 1,800.
+  pressure at 0.63 to 0.74 of Rayleigh's (section 21.2). And it says
+  what each point holds (section 21.9): the unflagged 70 deg point (69.7
+  deg, M_n 1.40) holds the ordering to 70 deg, by +0.173; from 70 to 75.1
+  deg it rests on the two flagged points too, by +0.677 and +0.176.
+  Serving to 75.1 deg rests on Penland's flagged point, which a fall of
+  about 15% in its F/MN would fail. (As first committed, 4a56f2d, the
+  label said the 70 deg point alone holds the ordering, which overclaims;
+  Fable's quick look of the same day.) The label was shortened elsewhere
+  to make room: the longest on a grid of Mach 1.2 to 8, sweeps 60.1 to
+  75.1 deg and four Reynolds numbers is 1,790 characters (1,706 before),
+  under the test's 1,800. Among the cuts, the Reynolds qualifier is
+  "+-3%, an allowance" in the bounded label. Planted, each fails the
+  label test: the old wording whole; "alone holds it" in the new; the
+  flagged points' margins dropped; "to 70 deg" dropped.
 - **The rule's outcome asserted.**
   - `docs/research/tn3861-fig17/rule/apply.test.ts` asserts that the
     rule holds, and that the committed `out/verdict.txt` matches a fresh
