@@ -188,3 +188,31 @@ passes. Branch `claude/wip/vk-outline`.
   lines away, and fails the change from 1280 intervals on nj = 20 and 40
   (6.7e-5 and 4.1e-5 of the drag) as well as nj = 80's mass balance. Its
   miss of 3.64e-4 and the 3.57e-4 both give an allowance of 8e-4.
+- `fits/saved/`, `fits/log.txt`, `fits/queue-log.txt`: the saved fit
+  heads (the cell states, 0.07 to 5.6 MB each, stay in the lanes' folder)
+  and the lanes' logs; `marches/`: each case's march (`.txt`, `.jsonl`).
+  `analysis/judge.txt` and `judge.json`: the verdicts (from this folder,
+  `node outline/analysis/judge.mjs marches/moc.jsonl outline/fits/saved
+  outline/marches --json outline/analysis/judge.json`).
+
+Results so far, by the registered criteria:
+
+| Case             | nj = 20      | nj = 40      | nj = 80      | Order | Lines passing (x)  | Verdict |
+| ---------------- | ------------ | ------------ | ------------ | ----- | ------------------ | ------- |
+| 6 cal., Mach 1.5 | 0.0247060757 | 0.0245586673 | 0.0245288358 | 2.30  | one, 0.25 (90.8%)  | passes  |
+| 6 cal., Mach 2   | 0.0235075806 | 0.0234152171 | 0.0233932940 | 2.07  | none               | fails   |
+
+- 6 calibers at Mach 1.5 (iterations 5500, 9000, 15000; gates passed,
+  wall cells at 71.6 deg or more): the one passing line misses by +1.11e-4
+  and +1.21e-4, the marched lines next to it (x = 0.10 and 0.63) by up to
+  1.67e-4; the band with the allowance contains the error against the
+  lowest bound 2.40 times. As 5 calibers at Mach 2, it rests on one line.
+- 6 calibers at Mach 2 (iterations 5500, 8000, 14000; gates passed, wall
+  cells at 76.6 deg or more) fails: no line passes the line criterion.
+  The five lines at x = 0.002 to 0.17 fail both the mass balance (4.4e-5
+  to 8.6e-3 on nj = 80) and the change from 1280 intervals, two of them
+  without monotone marches; the line at x = 0.54 (81% of the
+  drag) fails only the change from 1280 intervals on nj = 20 and 40
+  (4.91e-5 and 3.54e-5, against 3.5e-5; 2.26e-5 on nj = 80), and the line
+  at x = 1.78 that change on every grid (8.7e-5 to 1.6e-4). Those two
+  would miss by +3.51e-4 to +4.31e-4. The outline is not extended there.

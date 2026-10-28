@@ -70,3 +70,12 @@ Largest miss 3.57e-4 at C0 L5 M2 cyl2 line 204 (x 0.268); allowance (twice, roun
    line 133 x 0.6292 share 76.0%: fails (change from 1280 8.1e-5, 3.8e-5, 4.0e-5); orders fitted 2.32 march 1.63 upstream 2.17; miss 1.49e-4, 1.67e-4; finest minus lowest bound 6.13e-4
    line 148 x 1.5767 share 42.1%: fails (change from 1280 3.5e-4, 3.3e-4, 3.0e-4); orders fitted 2.36 march 1.96 upstream 2.21; miss 2.89e-4, 2.92e-4; finest minus lowest bound 7.87e-4
    containment (band + allowance over the error against each passing line's lowest bound): 2.40
+== haack C0 L6 M2 cyl2 (new): FAIL (no line passes the line criterion)
+   drags 0.02350758060, 0.02341521712, 0.02339329401, order 2.07, extrapolation -3.12e-4, band (no allowance) 3.90e-4
+   line 69 x 0.0016 share 100.0%: fails (mass balance 1.2e-4, 3.3e-3, 8.6e-3; change from 1280 -1.7e-4, -1.2e-4, 2.9e-3; not monotone (march false, upstream true))
+   line 102 x 0.0051 share 99.9%: fails (mass balance 9.7e-5, 1.1e-4, 1.3e-4; change from 1280 -2.1e-4, -2.2e-4, -2.8e-4); orders fitted 2.08 march 0.14 upstream 1.57; miss -2.72e-4, 6.43e-5; finest minus lowest bound 3.88e-4
+   line 137 x 0.0161 share 99.6%: fails (mass balance 5.7e-5, 7.7e-5, 9.7e-5; change from 1280 -1.2e-4, -1.7e-4, -2.1e-4); orders fitted 2.08 march 0.11 upstream 1.38; miss -3.72e-4, 1.60e-4; finest minus lowest bound 4.87e-4
+   line 173 x 0.0532 share 98.5%: fails (mass balance 1.1e-5, 2.6e-5, 4.4e-5; change from 1280 -1.4e-5, -4.5e-5, -7.6e-5); orders fitted 2.08 march 0.34 upstream 1.06; miss 1.62e-4, 2.90e-4; finest minus lowest bound 6.15e-4
+   line 207 x 0.1709 share 94.5%: fails (mass balance 9.8e-6, 1.9e-5, 6.6e-5; change from 1280 2.1e-4, 2.3e-4, 1.6e-4; not monotone (march false, upstream true))
+   line 239 x 0.5435 share 81.1%: fails (change from 1280 4.9e-5, 3.5e-5, 2.3e-5); orders fitted 2.14 march 1.50 upstream 1.45; miss 3.51e-4, 3.66e-4; finest minus lowest bound 7.00e-4
+   line 270 x 1.7829 share 40.3%: fails (change from 1280 1.6e-4, 8.7e-5, 9.3e-5); orders fitted 2.15 march 1.57 upstream 1.93; miss 3.98e-4, 4.31e-4; finest minus lowest bound 8.06e-4
