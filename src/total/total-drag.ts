@@ -67,6 +67,8 @@ export interface ComponentRefusal {
     readonly message: string;
     readonly after: string;
   }[];
+  /** How that chain of changes ended (src/base/base-drag.ts, followAdvice), where one was followed. */
+  readonly endedBy?: 'served' | 'no-change' | 'repeat' | 'steps';
 }
 
 /** Thrown when any component of a total is refused; lists every refusal. */

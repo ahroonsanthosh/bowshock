@@ -58,11 +58,22 @@ export class BaseRefusal extends RangeError {
    * served or none is a change of the fins.
    */
   readonly further: readonly FurtherRefusal[] | undefined;
+  /**
+   * How that chain ended (src/base/base-drag.ts, followAdvice): the last change served, no mechanical change
+   * advised, a reason met again, or the steps run out. Undefined where no chain was followed.
+   */
+  readonly endedBy: 'served' | 'no-change' | 'repeat' | 'steps' | undefined;
 
-  constructor(reason: BaseRefusalReason, message: string, further?: readonly FurtherRefusal[]) {
+  constructor(
+    reason: BaseRefusalReason,
+    message: string,
+    further?: readonly FurtherRefusal[],
+    endedBy?: 'served' | 'no-change' | 'repeat' | 'steps',
+  ) {
     super(message);
     this.name = 'BaseRefusal';
     this.reason = reason;
     this.further = further;
+    this.endedBy = endedBy;
   }
 }

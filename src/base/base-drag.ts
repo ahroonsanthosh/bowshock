@@ -64,6 +64,8 @@ import { finsOnBaseFactor, type FinsAtBase, type FinsOnBaseFactor } from './fins
 import {
   aheadText,
   finsOnBaseFactorW1,
+  sectionBracket,
+  W1_SECTION_SHAPE_MARK,
   nearBasePositionReasons,
   nearBasePositionRefusal,
   trailingEdgeShape,
@@ -641,10 +643,23 @@ function adviceFor(
     }
     case 'fin-thickness': {
       const t = fins.thicknessRatio;
-      const to = Math.min(Math.max(t, FINS_ON_BASE_THINNEST_DATA), 0.1);
-      if (!(t > 0) || Math.abs(to - t) <= 1e-12) return undefined;
-      const k = to / t;
       const near = fins.nearBase;
+      // A section refused for its shape (its faces near the edges steeper than the 10% arc's): its thickness
+      // scaled by 0.1 / tauEq, which puts it exactly on the 10% arc, so it is served (the review of 55a76d2).
+      // Otherwise a thickness outside 5% to 10% brought to the nearer end.
+      let k: number;
+      if (refusal.message.includes(W1_SECTION_SHAPE_MARK) && near !== undefined) {
+        const tauEq = Math.max(
+          ...[near.section, ...(near.spanSections ?? [])].map((st) => sectionBracket(st).tauEq),
+        );
+        if (!(tauEq > 0.1)) return undefined;
+        k = 0.1 / tauEq;
+      } else {
+        const to = Math.min(Math.max(t, FINS_ON_BASE_THINNEST_DATA), 0.1);
+        if (!(t > 0) || Math.abs(to - t) <= 1e-12) return undefined;
+        k = to / t;
+      }
+      const to = t * k;
       const scaled = (st: FinsNearBase['section']): FinsNearBase['section'] => ({
         ...st,
         halfThickness: st.halfThickness.map((h) => h * k),
@@ -676,40 +691,67 @@ function adviceFor(
   }
 }
 
+/** How a chain of advised changes ended (followAdvice): the last change served, or why not. */
+export type AdviceEnd = 'served' | 'no-change' | 'repeat' | 'steps';
+
 /**
- * Every reason a body base's fins meet (the review of 86bcf73, its item 11): where the refusal's words advise a
- * mechanical change of the fins (adviceFor), the change is made and the body base asked again, and so on, until
- * it is served, a reason comes again, no such change is advised, or EVERY_REASON_STEPS changes are made. Each
- * further refusal is carried on the first (BaseRefusal.further) and in its message, with the change that met
- * it, so that the words name every reason and every change.
+ * The chain of every reason (the reviews of 86bcf73 and 55a76d2), apart from the body base: from the first
+ * refusal, the change its words advise is made (`advise`) and the fins asked again (`ask`, a refusal or
+ * undefined where served), and so on. It ends when the fins are served ('served'), the words advise no
+ * mechanical change ('no-change'), a reason comes again ('repeat': the change fell short, that reason not named
+ * twice), or after `steps` changes ('steps'). Every further refusal is returned with the change that met it.
  */
-function everyReason(input: BodyBaseInput, first: BaseRefusal): BaseRefusal {
-  let fins = input.fins;
-  if (fins === undefined) return first;
+export function followAdvice<F>(
+  first: BaseRefusal,
+  start: F,
+  advise: (
+    refusal: BaseRefusal,
+    fins: F,
+  ) => { readonly fins: F; readonly what: string } | undefined,
+  ask: (fins: F) => BaseRefusal | undefined,
+  steps = EVERY_REASON_STEPS,
+): { readonly further: readonly FurtherRefusal[]; readonly endedBy: AdviceEnd } {
   const met = new Set<string>([first.reason]);
   const further: FurtherRefusal[] = [];
   let current = first;
-  for (let step = 0; step < EVERY_REASON_STEPS; step++) {
-    const advice = adviceFor(current, fins);
-    if (advice === undefined) break;
+  let fins = start;
+  for (let step = 0; step < steps; step++) {
+    const advice = advise(current, fins);
+    if (advice === undefined) return { further, endedBy: 'no-change' };
     fins = advice.fins;
-    let next: BaseRefusal | undefined;
-    try {
-      bodyBaseDragOnce({ ...input, fins });
-    } catch (e) {
-      if (!(e instanceof BaseRefusal)) throw e;
-      next = e;
-    }
-    if (next === undefined || met.has(next.reason)) break;
+    const next = ask(fins);
+    if (next === undefined) return { further, endedBy: 'served' };
+    if (met.has(next.reason)) return { further, endedBy: 'repeat' };
     met.add(next.reason);
     further.push({ reason: next.reason, message: next.message, after: advice.what });
     current = next;
   }
-  if (further.length === 0) return first;
+  return { further, endedBy: 'steps' };
+}
+
+/**
+ * Every reason a body base's fins meet (the review of 86bcf73, its item 11): followAdvice with adviceFor and the
+ * one-step body base, so each further refusal's message is the one-step message, never one carrying a chain of
+ * its own. Each is carried on the first (BaseRefusal.further) and in its message, with the change that met it,
+ * so that the words name every reason and every change; how the chain ended is BaseRefusal.endedBy.
+ */
+function everyReason(input: BodyBaseInput, first: BaseRefusal): BaseRefusal {
+  const fins = input.fins;
+  if (fins === undefined) return first;
+  const { further, endedBy } = followAdvice(first, fins, adviceFor, (f) => {
+    try {
+      bodyBaseDragOnce({ ...input, fins: f });
+      return undefined;
+    } catch (e) {
+      if (!(e instanceof BaseRefusal)) throw e;
+      return e;
+    }
+  });
   return new BaseRefusal(
     first.reason,
     first.message + further.map((f) => `; ${f.after}, they are refused too: ${f.message}`).join(''),
-    further,
+    further.length === 0 ? undefined : further,
+    endedBy,
   );
 }
 

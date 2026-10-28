@@ -10,6 +10,7 @@ import {
   BLUNT_AHEAD_OF_BASE,
   BLUNT_EDGE_NOTE,
   EVERY_REASON_STEPS,
+  followAdvice,
   FINS_ON_BASE_ROUTING_LABEL,
   MORE_THAN_A_CHORD_AHEAD,
   ROUNDED_EDGE_NOTE,
@@ -22,12 +23,20 @@ import { finsOnBaseFactor } from '../../src/base/fins-on-base';
 import {
   aheadText,
   W1_FLAT_RELIEF_LOW,
+  W1_SECTION_SHAPE_LIMIT,
+  W1_SECTION_SHAPE_MARK,
   finsOnBaseFactorW1,
   type FinsOnBaseFactorW1,
 } from '../../src/base/fins-on-base-w1';
 import { BaseRefusal } from '../../src/base/refusal';
 import { trapezoidalPlanform } from '../../src/fins/planform';
-import { doubleWedge, flatPlate, singleWedge, type SymmetricSection } from '../../src/fins/section';
+import {
+  doubleWedge,
+  flatPlate,
+  hexagonal,
+  singleWedge,
+  type SymmetricSection,
+} from '../../src/fins/section';
 import { baseFinsOf, finnedBodyComponents, type FinnedBody } from '../../src/total/finned-body';
 import { exactConeNoseWaveDrag } from '../../src/total/nose';
 import { combineComponents } from '../../src/total/total-drag';
@@ -647,7 +656,7 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     );
     expect(words.reason).not.toMatch(/at the base, with fins at the base/);
     expect(words.change).toBe(
-      "the fins' trailing edges at the base, and flat fins with a square, unswept trailing edge (below " +
+      "the fins' trailing edges at the base; and flat fins with a square, unswept trailing edge (below " +
         'Mach 1.62, unswept or swept 45 to 60 deg), or unswept fins of constant chord',
     );
   });
@@ -685,7 +694,7 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
     expect(b.message.startsWith(BLUNT_AHEAD_OF_BASE)).toBe(true);
     expect(b.further?.[0]?.reason).toBe('fin-count');
     expect(refusalWords(b).change).toBe(
-      'sharp trailing edges, with the fins ending at the base, and four fins',
+      'sharp trailing edges, with the fins ending at the base; and four fins',
     );
   });
 
@@ -717,7 +726,7 @@ describe('a refusal ahead of the base carries the same fins refused at the base 
       '; with the fins at the base and square trailing edges, they are refused too: ',
     );
     expect(refusalWords(r).change).toBe(
-      'square or sharp trailing edges, with the fins ending at the base, and flat fins swept 45 to 60 ' +
+      'square or sharp trailing edges, with the fins ending at the base; and flat fins swept 45 to 60 ' +
         'deg at the leading edge, or unswept ones',
     );
     const sameAtBase = at(withSection(swept, flatPlate(0.03, 'rounded', 'rounded'), 0), 1.55);
@@ -809,11 +818,16 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     expect(r.message).toContain('; with four fins, they are refused too: ');
     expect(r.message).toContain('; with the fins unswept, they are refused too: ');
     const words = refusalWords(r);
+    // Each change one item, between semicolons (the review of 55a76d2); the 12% double wedge is refused for
+    // its shape against the 10% arc, so the last change names the thickness at which it is served.
     expect(words.change).toBe(
-      "the fins' trailing edges at the base, four fins, flat fins with a square, unswept trailing " +
-        'edge (below Mach 1.62, unswept or swept 45 to 60 deg), or unswept fins of constant chord, and ' +
-        'fins of that thickness',
+      "the fins' trailing edges at the base; four fins; flat fins with a square, unswept trailing " +
+        'edge (below Mach 1.62, unswept or swept 45 to 60 deg), or unswept fins of constant chord; and ' +
+        'fins at most 10% thick with this section, or longer bevels',
     );
+    // A further refusal's message is the one-step message, never one carrying a chain of its own (N6).
+    for (const f of r.further ?? []) expect(f.message).not.toContain('they are refused too');
+    expect(r.endedBy).toBe('served');
     expect(words.reason).toContain(
       '; and with the fins at the base, the base drag is measured with four fins only',
     );
@@ -821,12 +835,87 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
       '; and with four fins, the base drag behind wedge or bevelled fins',
     );
     expect(words.reason).toContain(
-      '; and with the fins unswept, the base drag is measured for fins 5% to 10% as thick as their chord',
+      '; and with the fins unswept, the base drag is measured only for sections whose faces near the edges ' +
+        "are no steeper than a 10%-thick circular arc's",
     );
     // And the last change is served: four unswept 10% double wedges at the base.
     expect(parts(rocket(4, doubleWedge(0.1), 0, 2, 0), 1.8).base).toBeDefined();
     // At most EVERY_REASON_STEPS changes are followed.
     expect(EVERY_REASON_STEPS).toBe(6);
+  });
+
+  it('hexagonal fins with bevels over a fifth of the chord: refused for their shape, told the thickness that serves them (the review of 55a76d2)', () => {
+    // Four unswept hexagonal fins 8% thick, bevels over 20% of the chord, at the base, Mach 1.7: their faces
+    // near the edges are steeper than the 10% arc's (they would need an arc of t/c 0.125); this shape is
+    // served up to t/c 0.064. Before, the words said "fins of that thickness", and the fins are 8% thick.
+    const hex = hexagonal(0.08, 0.2, 0.2);
+    const four = rocket(4, hex, 0, 2, 0);
+    const r = baseRefusalAt(four, 1.7);
+    expect(r.reason).toBe('fin-thickness');
+    expect(r.message).toContain(W1_SECTION_SHAPE_MARK);
+    expect(r.message).toContain('it would need an arc of t/c 0.125');
+    expect(r.message).toContain(`${W1_SECTION_SHAPE_LIMIT} 0.064`);
+    const words = refusalWords(r);
+    expect(words.change).not.toBe('fins of that thickness');
+    // The words' change and the chain's: the fins at 6.4% thick are served.
+    expect(r.endedBy).toBe('served');
+    expect(r.further).toBeUndefined();
+    expect(parts(rocket(4, hexagonal(0.064, 0.2, 0.2), 0, 2, 0), 1.7).base).toBeDefined();
+    expect(words.change.startsWith('fins at most 6.4% thick with this section')).toBe(true);
+    // Three such fins half a chord ahead, chord 2, Mach 1.8: the position, then (at the base) the shape;
+    // both changes made, the fins are served.
+    const three = baseRefusalAt(rocket(3, hex, 0, 2, 0.5), 1.8);
+    expect(three.reason).toBe('fins-near-base');
+    expect(three.further?.map((f) => f.reason)).toEqual(['fin-thickness']);
+    expect(three.endedBy).toBe('served');
+    expect(parts(rocket(3, hexagonal(0.064, 0.2, 0.2), 0, 2, 0), 1.8).base).toBeDefined();
+    expect(refusalWords(three).change).toBe(
+      "the fins' trailing edges at the base; and fins at most 6.4% thick with this section, or longer bevels",
+    );
+  });
+
+  it('the chain ends where a reason comes again, or after its steps (followAdvice)', () => {
+    // A stand-in for the body base: the advised change meets the first reason again.
+    const first = new BaseRefusal('fin-count', 'five fins');
+    const again = followAdvice(
+      first,
+      0,
+      (_r, n: number) => ({ fins: n + 1, what: `step ${n + 1}` }),
+      (n) =>
+        n === 1
+          ? new BaseRefusal('fin-sweep', 'swept')
+          : new BaseRefusal('fin-count', 'still five'),
+    );
+    expect(again.endedBy).toBe('repeat');
+    expect(again.further.map((f) => f.reason)).toEqual(['fin-sweep']);
+    // Never served and never repeating: it stops after its steps.
+    const reasons = [
+      'fin-sweep',
+      'fin-thickness',
+      'fin-trailing-edge',
+      'fins-near-base',
+      'flat-plate-fins',
+      'mach-range',
+      'afterbody',
+      'laminar-base',
+    ] as const;
+    const long = followAdvice(
+      first,
+      0,
+      (_r, n: number) => ({ fins: n + 1, what: `step ${n + 1}` }),
+      (n) => new BaseRefusal(reasons[n - 1]!, `reason ${n}`),
+    );
+    expect(long.endedBy).toBe('steps');
+    expect(long.further).toHaveLength(EVERY_REASON_STEPS);
+    // No change advised: it ends at once.
+    expect(
+      followAdvice(
+        first,
+        0,
+        () => undefined,
+        () => undefined,
+      ).endedBy,
+    ).toBe('no-change');
   });
 
   it('a reason that comes again ends the chain; a change the words do not make ends it too', () => {
@@ -863,7 +952,9 @@ describe('the review of 86bcf73: every reason in turn, sweeps ahead of the base,
     expect(
       refusalWords({ component: 'body base', reason: 'fin-sweep', message: (e as Error).message })
         .reason,
-    ).toMatch(/^with fins ahead of the base, the base drag behind swept fins of a sharp section/);
+    ).toMatch(
+      /^with fins ahead of the base, swept fins of a sharp section are measured only as RM L52J21a's/,
+    );
     // Served at the base and from 0.9 root chords ahead.
     expect(at(1.8, 50, 0).finsOnBase).toBeDefined();
     expect(at(1.8, 50, 0.9).finsOnBase).toBeDefined();

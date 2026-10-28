@@ -3020,6 +3020,47 @@ argument is cited for it or it is refused under section 10.2.
   refusals meet no case it serves, and the words and the chain of
   reasons change no count.
 
+**2026-10-28, the review of 55a76d2 (NOT PASS on one finding), fixed.**
+
+- _The blocking finding:_ the rebuilt factor refuses with `fin-thickness`
+  both fins thicker than 10% and a section whose faces near the edges are
+  steeper than the 10% circular arc's, the members' bound (0015 section
+  6: "sections outside the 10% arc"); the page worded both as thickness,
+  "fins of that thickness". For bevelled sections that is false: with
+  bevels over a fifth of the chord any fin thicker than 6.4% is refused
+  (the arc's slope near the edges), so four unswept hexagonal fins 8%
+  thick at the base, Mach 1.7, were told to take a thickness they had;
+  and the chain's thickness change (to 5% to 10%) left them refused.
+  Now the factor's message names the shape and the thickness at which a
+  section of that shape is served (its thickness times 0.1 over the arc it
+  would need, rounded down), the page words it as a shape ("fins at most
+  6.4% thick with this section, or longer bevels"), and the chain's change
+  scales the section by 0.1 over that arc, which puts it on the 10% arc
+  exactly, so it is served. The record's rule is unchanged; only the
+  words and the change were wrong.
+- _The replay, as the review asked_ (`docs/research/refusals/advice-replay.test.ts`,
+  `out/advice-replay.out`; the baseline population's 2000 rockets at four
+  Mach bands, the body base asked as `evaluate.ts` asks it): 8000 cases,
+  2192 served at once, and of the 5808 refused every chain of advised
+  changes ends served (5808), none ending without a mechanical change,
+  none falling short. With the thickness change put back as it was (a
+  plant), 1027 fall short, every one of them bevelled, the shape refused
+  again after the change.
+- _Minor items:_ the sweep's words for sharp fins ahead of the base now
+  say what is measured, RM L52J21a's 45 deg at 0.85 +-0.05 root chords
+  (the RM-10's 60 deg at the base), and what is taken from it; the
+  changes of a chain are listed between semicolons, each one item; a
+  further refusal's message is the one-step message (tested); the end of
+  a chain where a reason comes again, or the steps run out, is tested on
+  `followAdvice` itself, since no case of the replay reaches it now; and
+  the page's filter for a plate's sweep named twice, unreachable since
+  the merge with A1, is removed. The review's optional offer of TN 2360's
+  root chord in the position's words is not taken: that change is not
+  followed by the chain, so it could fall short unseen.
+- _Population:_ `out/impact.out` and `.json` byte for byte as main's at
+  76899f1 (184 of 8000 totals; cross-check 1200 of 1200): the words and
+  the changes move no count.
+
 _Relabelled 2026-10-26:_ this entry was first written as (aa), which the
 coordinator's registry had given to another branch; it is (ad) by that
 registry, its content unchanged by the relabelling.

@@ -22,6 +22,8 @@ import type { BaseRefusalReason } from '../base/refusal';
 import {
   W1_FLAT_BEYOND_60_MARK,
   W1_FLAT_UNDER_45_MARK,
+  W1_SECTION_SHAPE_LIMIT,
+  W1_SECTION_SHAPE_MARK,
   W1_SWEEP_REFUSED_TOO,
 } from '../base/fins-on-base-w1';
 import type { FinRefusalReason } from '../fins/refusal';
@@ -351,10 +353,10 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
           SHARP_SWEPT_AHEAD.test(r.message)
           ? {
               reason:
-                'with fins ahead of the base, the base drag behind swept fins of a sharp section is ' +
-                'measured only with the leading edge swept 45 to 60 deg, the trailing edge swept no more, ' +
-                "and the fins ending 0.9 to 1 root chord ahead (RM L52J21a's), not swept like these at " +
-                'this position',
+                'with fins ahead of the base, swept fins of a sharp section are measured only as RM ' +
+                "L52J21a's, both edges swept 45 deg and ending 0.85 +-0.05 root chords ahead (60 deg is " +
+                'measured only at the base), so they are taken there only swept 45 to 60 deg, the ' +
+                'trailing edge no more, from 0.9 root chords ahead; not swept like these at this position',
               change: 'unswept fins of constant chord',
             }
           : {
@@ -406,12 +408,32 @@ const BASE_WORDS: Readonly<Record<BaseRefusalReason, Worded>> = {
       'be bounded yet',
     change: 'square or bevelled trailing edges',
   }),
-  'fin-thickness': () => ({
-    reason:
-      'with fins at the base, the base drag is measured for fins 5% to 10% as thick as their ' +
-      'chord',
-    change: 'fins of that thickness',
-  }),
+  'fin-thickness': (r) => {
+    // A section refused for its shape, not its thickness (the review of 55a76d2): its faces near the edges are
+    // steeper than the 10% circular arc's. The change: thinner fins, as thin as the message says this shape is
+    // served, or longer bevels.
+    if (r.message.includes(W1_SECTION_SHAPE_MARK)) {
+      const limit = new RegExp(`${W1_SECTION_SHAPE_LIMIT} (\\d+\\.\\d+)`).exec(r.message);
+      const pct =
+        limit === null ? undefined : `${Number((100 * Number(limit[1])).toPrecision(3))}%`;
+      return {
+        reason:
+          'with fins at or near the base, the base drag is measured only for sections whose faces near ' +
+          "the edges are no steeper than a 10%-thick circular arc's, and this section's are steeper " +
+          '(its bevels too short for its thickness)',
+        change:
+          pct === undefined
+            ? 'thinner fins, or longer bevels'
+            : `fins at most ${pct} thick with this section, or longer bevels`,
+      };
+    }
+    return {
+      reason:
+        'with fins at the base, the base drag is measured for fins 5% to 10% as thick as their ' +
+        'chord',
+      change: 'fins of that thickness',
+    };
+  },
   'swept-trailing-edge': () => ({
     reason: "a swept square trailing edge's drag is not measured",
     change: 'unswept trailing edges, or bevelled ones',
@@ -557,11 +579,7 @@ const isKey = <K extends string>(table: Readonly<Record<K, unknown>>, key: strin
  */
 export function refusalWords(r: ComponentRefusal): PlainReason {
   const own = ownWords(r);
-  // The factor called directly names a plate's sweep inside the position's refusal (A1's own form); the
-  // library carries it as a further refusal instead. Never both: named once (merged 2026-10-28).
-  const further = (r.further ?? []).filter(
-    (f) => !(f.reason === 'fin-sweep' && r.message.includes(W1_SWEEP_REFUSED_TOO)),
-  );
+  const further = r.further ?? [];
   if (further.length === 0) return own;
   const words = further.map((f) => ({
     after: f.after,
@@ -570,17 +588,19 @@ export function refusalWords(r: ComponentRefusal): PlainReason {
   // Each further reason's words say "with fins at the base" themselves; said once (the review of e232dca).
   const said = (reason: string) =>
     reason
-      .replace(/^with fins at the base, /, '')
+      .replace(/^with fins at (or near )?the base, /, '')
       .replace('the base drag with fins at the base', 'the base drag');
   const changes = [own.change, ...words.map((w) => w.plain.change)];
   const distinct = changes.filter((c, k) => changes.indexOf(c) === k);
+  // Each change one item, between semicolons: a change may hold a comma or an "or" of its own (the review of
+  // 55a76d2).
   return {
     reason: own.reason + words.map((w) => `; and ${w.after}, ${said(w.plain.reason)}`).join(''),
     change: changes.includes(NOTHING)
       ? NOTHING
       : distinct.length === 1
         ? distinct[0]!
-        : `${distinct.slice(0, -1).join(', ')}, and ${distinct[distinct.length - 1]!}`,
+        : `${distinct.slice(0, -1).join('; ')}; and ${distinct[distinct.length - 1]!}`,
   };
 }
 

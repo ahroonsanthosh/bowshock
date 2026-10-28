@@ -41,6 +41,8 @@ import {
   finsOnBaseFactorW1,
   W1_FLAT_BEYOND_60_MARK,
   W1_FLAT_UNDER_45_MARK,
+  W1_SECTION_SHAPE_LIMIT,
+  W1_SECTION_SHAPE_MARK,
   W1_SWEEP_REFUSED_TOO,
 } from '../../src/base/fins-on-base-w1';
 import { bodyBaseDrag } from '../../src/base/base-drag';
@@ -479,7 +481,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         'trailing edge (a wedge thickening to it, or a rounded one)',
     );
     expect(both.change).toBe(
-      "the fins' trailing edges at the base, and flat fins with a square, unswept trailing edge " +
+      "the fins' trailing edges at the base; and flat fins with a square, unswept trailing edge " +
         '(below Mach 1.62, unswept or swept 45 to 60 deg), or unswept fins of constant chord',
     );
     // Where nothing about the rocket changes the reason at the base, no change is offered.
@@ -509,13 +511,24 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
       refusalWords({ component: 'body base', reason, message }).change;
     for (const [key, reason] of [
       ['`fin-count`', 'fin-count'],
-      ['`fin-thickness`', 'fin-thickness'],
+      ['`fin-thickness` (thicker than 10%)', 'fin-thickness'],
       ['`fin-sweep`', 'fin-sweep'],
       ['`flat-plate-fins` (main since `e42d5d4`)', 'flat-plate-fins'],
     ] as const) {
       expect(change(key), key).toBe(words(reason));
     }
     expect(change('`fins-near-base`').startsWith(words('fins-near-base'))).toBe(true);
+    // A section refused for its shape (the review of 55a76d2): the row's change, with N the message's limit.
+    const shape = words(
+      'fin-thickness',
+      `this section, t/c 0.080, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c 0.125): its faces ` +
+        `there are steeper than the arc's, so ${W1_SECTION_SHAPE_LIMIT} 0.064, thinner in proportion`,
+    );
+    expect(shape).toBe('fins at most 6.4% thick with this section, or longer bevels');
+    expect(change("`fin-thickness` (the section's shape)")).toBe(
+      'fins at most N% thick with this section (N from the message: 6.4% for bevels over a fifth of the ' +
+        'chord), or longer bevels',
+    );
     // A trailing edge refused near the base: square or sharp for a plate's rounded one, sharp for a wedge's
     // blunt one, the fins at the base, as the page words them.
     const te = change('`fin-trailing-edge` (main since W1, `b86c308`)');
@@ -529,7 +542,8 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     for (const key of [
       '`fins-near-base`',
       '`fin-count`',
-      '`fin-thickness`',
+      '`fin-thickness` (thicker than 10%)',
+      "`fin-thickness` (the section's shape)",
       '`fin-sweep`',
       '`flat-plate-fins` (main since `e42d5d4`)',
       '`fin-trailing-edge` (main since W1, `b86c308`)',
@@ -662,7 +676,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
           expect(words.reason, where).toBe(
             `${plain.reason}; and with the fins at the base, ${sweep.reason}`,
           );
-          expect(words.change, where).toBe(`${plain.change}, and ${sweep.change}`);
+          expect(words.change, where).toBe(`${plain.change}; and ${sweep.change}`);
           expect(sweep.change).toBe(
             'flat fins swept 45 to 60 deg at the leading edge, or unswept ones',
           );
@@ -723,7 +737,7 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         'only; and with four fins, the base drag is measured for fins 5% to 10% as thick as their chord',
     );
     expect(w.change).toBe(
-      "the fins' trailing edges at the base, four fins, and fins of that thickness",
+      "the fins' trailing edges at the base; four fins; and fins of that thickness",
     );
     // The sweep of a sharp section ahead of the base, worded for fins ahead of it; 0017's row holds it.
     const ahead = refusalWords({

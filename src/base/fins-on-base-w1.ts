@@ -698,6 +698,25 @@ export function sectionBracket(section: SymmetricSection): { tauLow: number; tau
   return { tauLow: lo, tauEq: hi };
 }
 
+/**
+ * A section refused for its shape, not its thickness (the review of 55a76d2): its faces near the edges are steeper
+ * than the 10%-thick circular arc's, the bound of the members (a bevel over a fifth of the chord, say, refuses any
+ * fin thicker than 6.4%). The refusal's reason is `fin-thickness`; its message carries this phrase.
+ */
+export const W1_SECTION_SHAPE_MARK = 'is not inside the 10%-thick circular arc near its edges';
+
+/** The words before the largest t/c at which a section of the same shape is served, in that refusal. */
+export const W1_SECTION_SHAPE_LIMIT = 'with its shape it is served up to t/c';
+
+/**
+ * The largest t/c at which a section of the same shape lies inside the 10% arc: its thickness scaled by 0.1 /
+ * tauEq (sectionBracket's tauEq is proportional to the thickness), rounded down to three decimals, so that a
+ * section that thick is served.
+ */
+export function shapeLimit(thickness: number, tauEq: number): number {
+  return Math.floor((1000 * thickness * 0.1) / tauEq + 1e-9) / 1000;
+}
+
 export type TrailingEdgeShape = 'sharp' | 'flat' | 'diverging' | 'converging-blunt';
 
 /** The trailing edge of a symmetric section: sharp, or blunt with flat, diverging or converging faces. */
@@ -1123,9 +1142,10 @@ export function finsOnBaseFactorW1(mach: number, fins: FinsNearBase): FinsOnBase
       bounded
         ? `flat-faced fins ${tcText(thickness)}: the circular-arc members that bound them reach ` +
             't/c 0.10 (TN 2360, TN 3819 fig. 33)'
-        : `this section is not inside the 10%-thick circular arc near its edges (it would need an ` +
-            `arc of t/c ${tr.tauEq.toFixed(3)}); thicker fins at the base are not measured (TN 2360, ` +
-            'TN 3819 fig. 33)',
+        : `this section, ${tcText(thickness)}, ${W1_SECTION_SHAPE_MARK} (it would need an arc of t/c ` +
+            `${tr.tauEq.toFixed(3)}): its faces there are steeper than the arc's, so ${W1_SECTION_SHAPE_LIMIT} ` +
+            `${shapeLimit(thickness, tr.tauEq).toFixed(3)}, thinner in proportion, or with longer bevels; ` +
+            'steeper fins at or near the base are not measured (TN 2360, TN 3819 fig. 33)',
     );
   }
   const taus: Thickness[] = [0, 0.05, 0.1];

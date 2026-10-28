@@ -299,10 +299,16 @@ function frictionCds(config: FinnedBody, conditions: FlightConditions, s: Fricti
 }
 
 function refusalOf(component: string, e: unknown): ComponentRefusal {
-  if (e instanceof BaseRefusal && e.further !== undefined) {
-    return { component, reason: e.reason, message: e.message, further: e.further };
+  if (e instanceof BaseRefusal) {
+    return {
+      component,
+      reason: e.reason,
+      message: e.message,
+      ...(e.further === undefined ? {} : { further: e.further }),
+      ...(e.endedBy === undefined ? {} : { endedBy: e.endedBy }),
+    };
   }
-  if (e instanceof BaseRefusal || e instanceof FinRefusal) {
+  if (e instanceof FinRefusal) {
     return { component, reason: e.reason, message: e.message };
   }
   throw e;
