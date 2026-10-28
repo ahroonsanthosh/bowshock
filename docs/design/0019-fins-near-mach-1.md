@@ -1456,7 +1456,13 @@ formed on two of them, and the shape widening's size on two of them.
       (the fins' own-drag refusal still blocks every case), 3.4% at 1.5 to
       1.8, 5.7% at 1.8 to 3.0, 2.3% over all bands (181 of 8000). The
       library cross-check agrees on 1200 of 1200 cases. F4 changes 29 of
-      the 181 served totals, as above.
+      the 181 served totals, as above. On the head merged with main at
+      f88ecbe (A5, fins near the base; `out/impact.out`), against main's
+      own run there: the same changes to the trailing edge's refusals
+      and to W3, and the totals stay main's 155 of 8000 (1.9%); F4 changes
+      23 of them (Mach 1.647 to 1.796), the term's low end falling by up
+      to 0.0463 in C_D, 58% of the term (`out/f4-probe.out`). The library
+      cross-check agrees on 1200 of 1200.
 
 ### 3.5 F5: thin sharp sections near Mach 1
 

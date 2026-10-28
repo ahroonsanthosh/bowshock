@@ -680,7 +680,8 @@ row used.
   so where it applies. In the refusal population it changes 29 of the 181
   served totals (Mach 1.627 to 1.796), lowering the trailing-edge term's
   low end by up to 0.0463 in C_D, 58% of the term
-  (`docs/research/refusals/out/f4-probe.out`); it changes no refusal. It
+  (`docs/research/refusals/out/f4-probe.out`; 23 of 155 on the head
+  merged with A5, f88ecbe); it changes no refusal. It
   reaches the Basic Finner gate's shot at Mach 1.799, whose low end there
   is 0.918: its band and tolerance move
   slightly (section 11.6's note), no verdict changes. **This widening was
