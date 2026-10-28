@@ -353,10 +353,13 @@ describe('the CSV', { timeout: 120_000 }, () => {
     expect(lines[4]).toMatch(/^1\.00,,,,refused,"nose wave drag \(not-verified\): /);
     expect(lines[4]).toMatch(/fin friction \(fins-own-drag-mach\): /);
     expect(lines[4]).toMatch(/fin leading edges \(leading-edge-range\): /);
+    // The fins' trailing edges are served at Mach 1.0 since 0019 section 3.4.1.
     expect(lines[4]).toContain(
       'Known here, though the total has no number: body friction 0.1004 (0.0883 to 0.1196): ' +
         'correlation: van Driest II, momentum integral, adiabatic wall (0007); band: 0007: ' +
-        'measured over modelled 0.88 to 1.19 on TN 3097 and RM L54G14.',
+        'measured over modelled 0.88 to 1.19 on TN 3097 and RM L54G14; fin trailing-edge base ' +
+        '0.3138 (0.1585 to 0.4755): an analogy, not a measurement: the base pressure of square ' +
+        'trailing edges near Mach 1',
     );
     expect(lines[4]).toMatch(/No floor is given: the nose wave drag has no number/);
     // The floor's own column: empty where none is given, never in cd, cd_low or cd_high.

@@ -33,13 +33,26 @@
  * Dutton line from `base_ratios_v2.py`): the twelve tunnel symbols of fig.
  * 18 (each of their two readings) and Herrin and Dutton's range at M 2.46
  * (./tn3819-fig18.ts), as data over curve against both curves, the curve
- * interpolated at each point's Mach number. Its envelope is 0.824 to 1.078,
- * rounded outward to two decimals: 0.82 to 1.08, 0008's stated band. The
- * low end rests on Herrin and Dutton, a single visual reading of a slide
- * whose support is not verified; the high end on the tunnel symbol at M
- * 3.243, above the range served. The free-flight curve of fig. 18 (M 1.06
- * to 1.21, data over curve 1.027 to 1.122) informs the bias only, as in
- * 0008.
+ * interpolated at each point's Mach number. That envelope, 0.824 to 1.078,
+ * gave 0008's stated band, 0.82 to 1.08. The free-flight curve of fig. 18
+ * (M 1.06 to 1.21, data over curve 1.027 to 1.122) informs the bias only,
+ * as in 0008.
+ *
+ * Corrected on 2026-10-27 (0014 section 10.7 (ah)): 0008 section 3.3's rule,
+ * "every base data set opened at these conditions is used to set this band",
+ * now takes every body-alone base pressure read twice inside this domain,
+ * each paired reading, the same way (`BODY_ALONE_IN_DOMAIN`): TN 2360's body
+ * alone and the Langley 9 in tunnel's (TN 3819 figs. 33 and 35), RM
+ * L52J21a's unfinned bodies (figs. 31 to 33 (d), every paired symbol) and TR
+ * 1051 fig. 23(b) at its thinnest measured sting symbols (round 19's blind
+ * pair; the addendum and the third addendum to (ah)), and TN 2360 figs. 5
+ * and 7's body alone at every tripped station (round 20's blind pair; the
+ * fourth addendum and its correction). The sets opened in the domain and
+ * read once are named in that entry and set nothing. The envelope becomes
+ * 0.7731 to 1.1691, rounded outward 0.77 to 1.17: the low end RM L52J21a's
+ * radome nose at M 1.62 over the more negative curve, the high end TN 2360
+ * fig. 5(a)'s body alone at M 1.5 and R 0.765e6 (round 20's reader B, over
+ * the served curve).
  *
  * Refused (0008 sections 3.3, 6.2 B3 and 6.4): Mach numbers outside 1.5
  * to 3.0 (below 1.5 the data opened are not claimable; the band is stated
@@ -50,14 +63,23 @@
  * not an input (0008 section 3.2 found no opened source to quantify it).
  */
 
+import {
+  L52J21A_FIG31_33D,
+  L52J21A_FIG31_33D_OTHER_R,
+  TN3819_FIG33,
+  TN3819_FIG35_TUNNEL_W1,
+} from './fins-on-base-w1-data';
 import { BaseRefusal } from './refusal';
 import {
   HERRIN_DUTTON,
   TN3819_FIG18_CHECKS,
   TN3819_FIG18_CURVES,
+  TN2360_FIG5_FIG7_BODY_ALONE,
   TN3819_FIG18_TUNNEL,
+  TR1051_FIG23B_THINNEST,
   type CompiledCurveName,
 } from './tn3819-fig18';
+import { TN3819_FIG35_TUNNEL } from './tn3819-fig35';
 
 /** Mach numbers over which 0008 states the band (section 3.3). */
 export const COMPILED_CURVE_MACH_RANGE = [1.5, 3.0] as const;
@@ -134,12 +156,97 @@ export function interpolationErrorBound(mach: number): number {
   return 0.5 * w * COMPILED_CURVE_CURVATURE_BOUND;
 }
 
+/** The body-alone sets taken into the band by 0014 section 10.7 (ah). */
+export type BodyAloneSet = 'TN 2360' | 'Langley 9 in' | 'RM L52J21a' | 'TR 1051';
+
+/** One reading of a body-alone base pressure inside the curve's domain. */
+export interface BodyAloneReading {
+  readonly set: BodyAloneSet;
+  /** Figure and reading. */
+  readonly source: string;
+  readonly mach: number;
+  readonly pB: number;
+}
+
+const reading = (
+  set: BodyAloneSet,
+  source: string,
+  mach: number,
+  pB: number,
+): BodyAloneReading => ({
+  set,
+  source,
+  mach,
+  pB,
+});
+
+/**
+ * Every body-alone base pressure read twice inside the curve's domain (Mach 1.5 to 3.0, cylindrical
+ * afterbody, turbulent, no fins, power off), each paired reading (0014 section 10.7 (ah)); the sets
+ * opened there and read once (NSWCDD/TR-92/509 among them) are named in that entry and set nothing:
+ *
+ * - TN 2360's body alone (TN 3819's ref. 26; ogive-cylinder, sting d/h 0.4, R 4.5e6) at M 1.5 and 2.0,
+ *   and the Langley 9 in tunnel's at M 2.41: TN 3819 fig. 33 at t/c 0 (W1's first reading and round
+ *   6's) and fig. 35's no-fin tunnel symbols (0008's first reading, round 3's and round 6's);
+ * - RM L52J21a figs. 31 to 33 panel (d): the unfinned bodies with cylindrical bases, sting-supported,
+ *   three noses, every symbol W1's first reading and round 7's both read, at R 7.0e6 to 9.1e6 (W1's
+ *   window about R 8.06e6 and the fourteen pairs outside it, `L52J21A_FIG31_33D_OTHER_R`);
+ * - TR 1051 fig. 23(b) at its thinnest measured sting symbol at each Mach number (d/h 0.347, 0.298
+ *   and 0.296), round 19's two blind readings (./tn3819-fig18.ts); the faired values at d/h 0.35 that
+ *   (ah) first used are superseded and set nothing (the third addendum to (ah));
+ * - TN 2360 figs. 5(a), 5(b) and 7: the body alone at every tripped station, Mach 1.5 and 2.0, R 0.475e6
+ *   to 4.43e6 (fig. 7 gives none), every reading of round 20's two blind readers (./tn3819-fig18.ts);
+ *   round 6's single readings, checked and not used before, are superseded (the fourth addendum to (ah)
+ *   and its correction).
+ */
+export const BODY_ALONE_IN_DOMAIN: readonly BodyAloneReading[] = [
+  ...TN3819_FIG33.filter((p) => p.thicknessRatio === 0).map((p) =>
+    reading(
+      p.mach < 2.2 ? 'TN 2360' : 'Langley 9 in',
+      `TN 3819 fig. 33, ${p.reading}`,
+      p.mach,
+      p.pB,
+    ),
+  ),
+  ...[...TN3819_FIG35_TUNNEL, ...TN3819_FIG35_TUNNEL_W1].map((p) =>
+    reading(
+      p.source === 'ref. 26' ? 'TN 2360' : 'Langley 9 in',
+      `TN 3819 fig. 35, ${p.reading}`,
+      p.mach,
+      p.withoutFins,
+    ),
+  ),
+  ...[...L52J21A_FIG31_33D, ...L52J21A_FIG31_33D_OTHER_R].map((p) =>
+    reading(
+      'RM L52J21a',
+      `RM L52J21a figs. 31 to 33 (d), ${p.nose}, R ${(p.reynolds / 1e6).toFixed(2)}e6, ${p.reading}`,
+      p.mach,
+      p.pB,
+    ),
+  ),
+  ...TR1051_FIG23B_THINNEST.flatMap((p) => [
+    reading('TR 1051', `TR 1051 fig. 23(b), d/h ${p.dOverH[1]}, round 19 A`, p.mach, p.readerA),
+    reading('TR 1051', `TR 1051 fig. 23(b), d/h ${p.dOverH[1]}, round 19 B`, p.mach, p.readerB),
+  ]),
+  ...TN2360_FIG5_FIG7_BODY_ALONE.flatMap((p) => {
+    const at = `TN 2360 fig. ${p.figure}, M ${p.mach}${p.reynolds === undefined ? '' : `, R ${(p.reynolds[0] / 1e6).toFixed(3)}e6`}`;
+    return [
+      ...p.readingsA.map((pB, k) => reading('TN 2360', `${at}, round 20 A${k}`, p.mach, pB)),
+      ...p.readingsB.map((pB, k) => reading('TN 2360', `${at}, round 20 B${k}`, p.mach, pB)),
+    ];
+  }),
+];
+
 /** The evidence of 0008 section 3.3 as data over curve (ratios of base drag). */
 export interface CompiledCurveBandEvidence {
   /** Tunnel symbols, both readings, against both curves. */
   readonly tunnel: { readonly min: number; readonly max: number };
   /** Herrin and Dutton's range against both curves. */
   readonly herrinDutton: { readonly min: number; readonly max: number };
+  /** Each body-alone set of 0014 section 10.7 (ah), every reading, against both curves. */
+  readonly bodyAlone: Readonly<
+    Record<BodyAloneSet, { readonly min: number; readonly max: number }>
+  >;
   readonly min: number;
   readonly max: number;
 }
@@ -159,11 +266,24 @@ export function compiledCurveBandEvidence(gamma = 1.4): CompiledCurveBandEvidenc
   const range = (v: number[]) => ({ min: Math.min(...v), max: Math.max(...v) });
   const t = range(tunnel);
   const h = range(hd);
+  const sets: BodyAloneSet[] = ['TN 2360', 'Langley 9 in', 'RM L52J21a', 'TR 1051'];
+  const bodyAlone = Object.fromEntries(
+    sets.map((set) => [
+      set,
+      range(
+        BODY_ALONE_IN_DOMAIN.filter((r) => r.set === set).flatMap((r) =>
+          both(r.mach).map((c) => r.pB / c),
+        ),
+      ),
+    ]),
+  ) as Record<BodyAloneSet, { min: number; max: number }>;
+  const all = [t, h, ...Object.values(bodyAlone)];
   return {
     tunnel: t,
     herrinDutton: h,
-    min: Math.min(t.min, h.min),
-    max: Math.max(t.max, h.max),
+    bodyAlone,
+    min: Math.min(...all.map((r) => r.min)),
+    max: Math.max(...all.map((r) => r.max)),
   };
 }
 

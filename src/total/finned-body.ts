@@ -14,7 +14,7 @@
  * | fin wave drag | exact 2D section drag times the linear 3D ratio (src/fins, 0009); with a rounded leading edge, the faces of the tangent geometry on their own rise | the same, plus the quadrature error | as above |
  * | fin leading edges | rounded, unswept: modified-Newtonian front side (src/fins/rounded-leading-edge.ts) | 0.99 to 1.06 (TN 2960), +-3% more where extrapolated in Reynolds number | an analogy, not a measurement |
  * | fin leading edges, rounded, swept 60 to 75.1 deg | the midpoint between the term at the sweep and at 60 deg (0016 sections 21.2 and 21.8; beyond 75.1 deg refused) | the whole gap between the bounds | bounded, not measured; the total's claim names it (`bounded`) |
- * | body base | compiled curve times the fins-on-base factor (src/base): the present factor wherever it serves (the Basic Finner's class keeps it), the rebuilt factor of 0015 only where the present one refuses | curve 0.82 to 1.08, interpolation, fins-on-base band | correlation; the present factor measured on circular-arc fins, an analogy for others; the rebuilt factor estimated on component data, bracketed |
+ * | body base | compiled curve times the fins-on-base factor (src/base): the present factor wherever it serves (the Basic Finner's class keeps it), the rebuilt factor of 0015 only where the present one refuses | curve 0.77 to 1.17 (0014 section 10.7 (ah)), interpolation, fins-on-base band | correlation; the present factor measured on circular-arc fins, an analogy for others; the rebuilt factor estimated on component data, bracketed |
  * | fin trailing-edge base | blunt, unswept, turbulent: two-dimensional base pressure at the free-stream Mach number (src/base/fin-trailing-edge.ts) | 0.93 to 1.21 | an analogy, not a measurement, for edges in the base plane |
  *
  * Friction is at free-stream edge conditions, turbulent from the tip and
@@ -77,7 +77,11 @@ import {
 import { trailingEdgeShape } from '../base/fins-on-base-w1';
 import {
   FIN_TRAILING_EDGE_BAND,
+  FIN_TRAILING_EDGE_MACH_RANGE,
   finTrailingEdgeBaseDrag,
+  TrailingEdgeRefusals,
+  widenedAbove,
+  trailingEdgeBasis,
   type FinTrailingEdgeBase,
 } from '../base/fin-trailing-edge';
 import { BaseRefusal } from '../base/refusal';
@@ -480,7 +484,7 @@ export function finnedBodyComponents(
       band:
         (base.curveBand.source === 'w2'
           ? `curve ${base.curveBand.low.toFixed(2)} to ${base.curveBand.high.toFixed(2)} below Mach 1.5 (0015 section 11), interpolation, `
-          : 'curve 0.82 to 1.08 (0008 section 3.3), interpolation, ') +
+          : `curve ${base.curveBand.low.toFixed(2)} to ${base.curveBand.high.toFixed(2)} (0008 section 3.3), interpolation, `) +
         (base.finsOnBaseSource === 'rebuilt'
           ? "the rebuilt fins-on-base factor's band (0015)"
           : 'fins-on-base band (section 3.4)'),
@@ -539,11 +543,20 @@ export function finnedBodyComponents(
         low: te.low,
         high: te.high,
         label: te.label,
-        band: `two-dimensional base pressure, ${FIN_TRAILING_EDGE_BAND.low} to ${FIN_TRAILING_EDGE_BAND.high} (0008 section 3.4, 0010 section 5)`,
+        band:
+          conditions.mach < FIN_TRAILING_EDGE_MACH_RANGE[0]
+            ? `two-dimensional base pressure near Mach 1, ${trailingEdgeBasis(conditions.mach).band.low.toFixed(3)} to ${trailingEdgeBasis(conditions.mach).band.high.toFixed(3)} (0019 section 3.4.1)`
+            : widenedAbove(trailingEdgeBasis(conditions.mach).band)
+              ? `two-dimensional base pressure, ${trailingEdgeBasis(conditions.mach).band.low.toFixed(3)} to ${trailingEdgeBasis(conditions.mach).band.high.toFixed(3)} (0008 section 3.4, 0010 section 5; widened near Mach 1.7 on RM A52E01, 0019 section 3.4.1)`
+              : `two-dimensional base pressure, ${FIN_TRAILING_EDGE_BAND.low} to ${FIN_TRAILING_EDGE_BAND.high} (0008 section 3.4, 0010 section 5)`,
       });
     } catch (e) {
       te = undefined;
-      refusals.push(refusalOf('fin trailing-edge base', e));
+      // Every reason the term gives (below Mach 1.5 an edge may be both beyond the sets' layer
+      // reach and laminar, 0019 section 3.4.1).
+      for (const one of e instanceof TrailingEdgeRefusals ? e.all : [e]) {
+        refusals.push(refusalOf('fin trailing-edge base', one));
+      }
     }
   }
 

@@ -303,9 +303,12 @@ describe('the term', () => {
     expect(finTrailingEdgeBaseDrag({ ...edges, thickness: 0 }).cd).toBe(0);
   });
 
-  it('refuses Mach numbers outside 1.5 to 3.2, swept and laminar edges, thick layers', () => {
-    expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, mach: 1.45 }))).toBe('mach-range');
+  it('refuses Mach numbers outside 1.0 to 3.2, swept and laminar edges, thick layers', () => {
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, mach: 0.99 }))).toBe('mach-range');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, mach: 3.25 }))).toBe('mach-range');
+    // Below Mach 1.5 (0019 section 3.4.1; tests/base/fin-trailing-edge-transonic.test.ts): this
+    // edge's c / [h Re^(1/5)] = 1 / (0.06 x 1.5e6^0.2) = 0.97 lies beyond what the sets reach at 1.3.
+    expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, mach: 1.3 }))).toBe('thick-layer');
     expect(reason(() => finTrailingEdgeBaseDrag({ ...edges, tanSweep: 0.1 }))).toBe(
       'swept-trailing-edge',
     );
@@ -341,13 +344,15 @@ describe("the vacuum bound at the Basic Finner's 11 gated shots (round 5)", () =
   }));
 
   it('the term and its band lie inside the bound: the high end at 0.72 to 0.93 of it', () => {
+    // 0.722 at the Mach 1.799 shot since R1 (0019 section 3.4.1) widened the high end there to
+    // 1.211, a widening made after the gate was used; 0.721 before.
     for (const { mach, t } of shots) {
       expect(t.vacuum).toBeCloseTo((2 / (1.4 * mach * mach)) * (0.32 / (Math.PI / 4)), 12);
       expect(t.cd).toBeLessThan(t.vacuum);
       expect(t.high).toBeLessThan(t.vacuum);
     }
     const r = shots.map(({ t }) => t.high / t.vacuum);
-    expect(Math.round(1000 * Math.min(...r)) / 1000).toBe(0.721);
+    expect(Math.round(1000 * Math.min(...r)) / 1000).toBe(0.722);
     expect(Math.round(1000 * Math.max(...r)) / 1000).toBe(0.931);
   });
 

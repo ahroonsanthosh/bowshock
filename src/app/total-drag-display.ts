@@ -435,7 +435,7 @@ export const SUB_CLASS_PENDING_TEXT =
 export const ESTIMATE_TOLERANCE_TEXT =
   "The Basic Finner's test was wide: with the corrected fins-on-base factor its tolerance is " +
   '-20.0% to -27.0% and +23.3% to +28.6% of the modelled total over the 11 shots (-24.0% to ' +
-  '-24.6% and +23.3% to +23.5% at the three inside the class).';
+  '-24.8% and +23.3% to +23.5% at the three inside the class).';
 
 /** The end of a validated total's headline: what it rests on, in a few words. */
 export const VALIDATED_HEADLINE = "validated, on one test (BRL Report 934's range A)";
@@ -588,7 +588,13 @@ export function gateDisplay(): DisplayBlock[] {
         'section 11): a recorded correction made after the residuals were known, not a new test, ' +
         'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
         'audit (its section 10); residual: measured CX0 over modelled, minus 1; each band rounded ' +
-        'outward, other values to the nearest last digit shown',
+        'outward, other values to the nearest last digit shown; bands and tolerances as the run ' +
+        "formed them, except that the trailing edges' band at the Mach 1.799 shot widened at both " +
+        'ends since (design record 0019 section 3.4.1, F4), also after the gate was used, and that ' +
+        "row shows it; the body base's band was widened after the run too (design record 0014, " +
+        'section 10.7 (ah)), which the table does not show: a total on this page now shows a wider ' +
+        'band and the tolerances would be -21.5% to -28.5% and +26.5% to +31.3%; no residual and ' +
+        'no verdict changes',
       head: [
         'Shot',
         'Mach',
@@ -623,7 +629,10 @@ export function gateDisplay(): DisplayBlock[] {
         "BRL Report 934's range A, run once as registered (design record 0020): the present " +
         'model at its seven rounds, with sharp fin leading edges; residual: zero-yaw CD0 over ' +
         'modelled, minus 1; each band rounded outward, other values to the nearest last digit ' +
-        'shown',
+        "shown; bands and tolerances as the run formed them: the body base's band was widened " +
+        'after it (design record 0014, section 10.7 (ah)), so a total on this page now shows a ' +
+        'wider band and the tolerances would be -26.5% to -29.0% and +30.4% to +31.0%; no ' +
+        'residual and no verdict changes',
       head: ['Round', 'Mach', 'CD0 measured', 'Modelled C_D (band)', 'Residual', 'Tolerance'],
       rows: PUBLISHED_BRL934.map((r) => [
         String(r.round),

@@ -15,6 +15,7 @@ import { trapezoidalPlanform } from '../../src/fins/planform';
 import { roundedLeadingEdgeDrag, TN2960_RANGE } from '../../src/fins/rounded-leading-edge';
 import { doubleWedge, singleWedge } from '../../src/fins/section';
 import { BLUNT_AHEAD_OF_BASE, bodyBaseDrag, type BaseFins } from '../../src/base/base-drag';
+import { COMPILED_CURVE_BAND } from '../../src/base/compiled-curve';
 import {
   finnedBodyComponents,
   SWEPT_EDGE_BOUNDED_REASON,
@@ -28,7 +29,7 @@ import {
   BASIC_FINNER_SHOTS,
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
-import { displayText, totalDragDisplay } from '../../src/app/total-drag-display';
+import { displayText, gateDisplay, totalDragDisplay } from '../../src/app/total-drag-display';
 import {
   claimWords,
   SEVERAL_BOUNDED_WORDS,
@@ -405,15 +406,21 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
       ];
     });
     // With the corrected fins-on-base factor (0010 section 11); before it, at the same Mach
-    // numbers: 0.6121, 0.5501, 0.5188, 0.4768, 0.4320, 0.4072, 0.4040.
+    // numbers: 0.6121, 0.5501, 0.5188, 0.4768, 0.4320, 0.4072, 0.4040. The bands with the compiled
+    // curve's band 0.77 to 1.17 (0014 10.7 (ah) and its addenda; with 0.77 to 1.18 before round 19 the
+    // high ends were +22.6%, +21.6%, +21.9%, +21.9%, +21.7%, +21.3%, +21.2%, with 0.77 to 1.13 before round
+    // 20 +20.8%, +19.9%, +20.3%, +20.4%, +20.2%, +19.9%, +19.8%); with 0.82 to 1.08 before (ah): -13.7% to
+    // +19.0%,
+    // -12.5% to +18.2%, -12.9% to +18.7%, -12.9% to +18.8%, -12.7% to +18.7%, -12.5% to +18.4%,
+    // -12.4% to +18.3%.
     expect(shown).toEqual([
-      ['0.6131', '0.5294 to 0.7293', '-13.7% to +19.0%'],
-      ['0.5493', '0.4808 to 0.6493', '-12.5% to +18.2%'],
-      ['0.5176', '0.4512 to 0.6141', '-12.9% to +18.7%'],
-      ['0.4725', '0.4115 to 0.5612', '-12.9% to +18.8%'],
-      ['0.4203', '0.3669 to 0.4987', '-12.7% to +18.7%'],
-      ['0.3951', '0.3459 to 0.4678', '-12.5% to +18.4%'],
-      ['0.3919', '0.3434 to 0.4636', '-12.4% to +18.3%'],
+      ['0.6131', '0.5184 to 0.7490', '-15.5% to +22.2%'],
+      ['0.5493', '0.4717 to 0.6656', '-14.2% to +21.2%'],
+      ['0.5176', '0.4428 to 0.6292', '-14.5% to +21.6%'],
+      ['0.4725', '0.4041 to 0.5745', '-14.5% to +21.6%'],
+      ['0.4203', '0.3606 to 0.5100', '-14.2% to +21.4%'],
+      ['0.3951', '0.3401 to 0.4781', '-14.0% to +21.1%'],
+      ['0.3919', '0.3377 to 0.4738', '-13.9% to +21.0%'],
     ]);
   });
 
@@ -463,13 +470,14 @@ describe('the Basic Finner default as the page shows it', { timeout: 60_000 }, (
         outwardPercent(t.low / t.cd - 1, t.high / t.cd - 1),
       ];
     });
+    // The compiled curve's band 0.77 to 1.17 (0014 10.7 (ah) and its addenda).
     expect(shown).toEqual([
-      ['0.6131', '0.5294 to 0.7293', '-13.7% to +19.0%'],
-      ['0.5493', '0.4808 to 0.6493', '-12.5% to +18.2%'],
-      ['0.5176', '0.4512 to 0.6141', '-12.9% to +18.7%'],
-      ['0.4896', '0.4260 to 0.5818', '-13.0% to +18.9%'],
-      ['0.4564', '0.3996 to 0.5401', '-12.5% to +18.4%'],
-      ['0.4028', '0.3521 to 0.4775', '-12.6% to +18.6%'],
+      ['0.6131', '0.5184 to 0.7490', '-15.5% to +22.2%'],
+      ['0.5493', '0.4717 to 0.6656', '-14.2% to +21.2%'],
+      ['0.5176', '0.4428 to 0.6292', '-14.5% to +21.6%'],
+      ['0.4896', '0.4182 to 0.5958', '-14.6% to +21.7%'],
+      ['0.4564', '0.3926 to 0.5528', '-14.0% to +21.2%'],
+      ['0.4028', '0.3462 to 0.4881', '-14.1% to +21.2%'],
     ]);
   });
 
@@ -582,16 +590,29 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       return { lo: Math.min(...v) / mean - 1, hi: Math.max(...v) / mean - 1 };
     });
     expect(PUBLISHED_GATE.map((p) => p.shot)).toEqual(gated.map((s) => s.shot));
-    // The band rounded outward, as every band on the page is (src/app/band.ts), so that the
-    // table and a total's headline show the same interval for the same shot.
+    // The table is the corrected run's: its bands and tolerances were formed with the compiled
+    // curve's band at the run, 0.82 to 1.08. The library's carry 0.77 to 1.17 since 0014 10.7 (ah) and its
+    // addenda,
+    // so the table is held to the library less that widening of the body base's band ends (the
+    // change in the band's end times the body base term); the totals and residuals are the same.
+    const atTheRun = (t: TotalDrag) => {
+      const base = t.components.find((c) => c.name === 'body base')!.cd;
+      return {
+        low: t.low - (COMPILED_CURVE_BAND.low - 0.82) * base,
+        high: t.high - (COMPILED_CURVE_BAND.high - 1.08) * base,
+      };
+    };
+    // The band rounded outward, as every band on the page is (src/app/band.ts).
     expect(PUBLISHED_GATE.map((p) => [p.cd, p.low, p.high])).toEqual(
       views.map((v) => {
         const t = totalOf(v);
-        return [Math.round(1e4 * t.cd) / 1e4, ...outward(t.low, t.high, 4).map(Number)];
+        const r = atTheRun(t);
+        return [Math.round(1e4 * t.cd) / 1e4, ...outward(r.low, r.high, 4).map(Number)];
       }),
     );
     PUBLISHED_GATE.forEach((p, k) => {
       const t = totalOf(views[k]!);
+      const r = atTheRun(t);
       expect(p.mach).toBe(gated[k]!.mach);
       expect(p.cx0).toBe(cx0(p.mach));
       expect(p.residual).toBe(Math.round(1000 * (p.cx0 / t.cd - 1)) / 10);
@@ -599,11 +620,42 @@ describe('the page against the gate: the 11 shots', { timeout: 120_000 }, () => 
       const inHigh = t.inputs.reduce((a, i) => a + i.high, 0);
       const s = spread[BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => p.mach >= a && p.mach <= b)]!;
       expect(p.tolerance).toEqual(
-        [(t.low + inLow) / t.cd - 1 + s.lo, (t.high + inHigh) / t.cd - 1 + s.hi].map(
+        [(r.low + inLow) / t.cd - 1 + s.lo, (r.high + inHigh) / t.cd - 1 + s.hi].map(
           (x) => Math.round(1000 * x) / 10,
         ),
       );
     });
+    // The tolerances with the band the library carries now (0014 10.7 (ah) and its third addendum), as the
+    // table's caption states them.
+    const now = PUBLISHED_GATE.map((p, k) => {
+      const t = totalOf(views[k]!);
+      const inLow = t.inputs.reduce((a, i) => a + i.low, 0);
+      const inHigh = t.inputs.reduce((a, i) => a + i.high, 0);
+      const s = spread[BASIC_FINNER_CLUSTERS.findIndex(([a, b]) => p.mach >= a && p.mach <= b)]!;
+      return [(t.low + inLow) / t.cd - 1 + s.lo, (t.high + inHigh) / t.cd - 1 + s.hi] as const;
+    });
+    const pc = (x: number) => `${x > 0 ? '+' : ''}${(Math.round(1000 * x) / 10).toFixed(1)}%`;
+    const lo = now.map((x) => x[0]);
+    const hi = now.map((x) => x[1]);
+    const stated = `${pc(Math.max(...lo))} to ${pc(Math.min(...lo))} and ${pc(Math.min(...hi))} to ${pc(Math.max(...hi))}`;
+    expect(stated).toBe('-21.5% to -28.5% and +26.5% to +31.3%');
+    // The caption word for word: what the table shows (the run's values, F4's widening at the Mach
+    // 1.799 row) and what it does not ((ah)'s widening of the body base's band), with the tolerances
+    // the library gives now.
+    const table = gateDisplay().find((b) => b.kind === 'table');
+    if (table?.kind !== 'table') throw new Error('expected the gate table');
+    expect(table.caption).toBe(
+      'The Basic Finner gate re-run with the corrected fins-on-base factor (design record 0010 ' +
+        'section 11): a recorded correction made after the residuals were known, not a new test, ' +
+        'beside the second run (its section 4.2); tolerances as re-derived after an independent ' +
+        'audit (its section 10); residual: measured CX0 over modelled, minus 1; each band rounded ' +
+        'outward, other values to the nearest last digit shown; bands and tolerances as the run ' +
+        "formed them, except that the trailing edges' band at the Mach 1.799 shot widened at both " +
+        'ends since (design record 0019 section 3.4.1, F4), also after the gate was used, and that ' +
+        "row shows it; the body base's band was widened after the run too (design record 0014, " +
+        'section 10.7 (ah)), which the table does not show: a total on this page now shows a wider ' +
+        `band and the tolerances would be ${stated}; no residual and no verdict changes`,
+    );
   });
 
   it('every shot is an estimate: the three at Mach 1.80 to 1.85, inside the class, with the suspension as the reason; the eight above Mach 2.15 outside it', () => {

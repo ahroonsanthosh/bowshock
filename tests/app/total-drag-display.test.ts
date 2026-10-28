@@ -487,12 +487,14 @@ describe('the display', { timeout: 60_000 }, () => {
     const view = totalDragView(form, exactNose(form));
     if (view.kind !== 'total') throw new Error(view.kind);
     const blocks = totalDragDisplay(view);
-    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048), the
-    // band rounded outward as in the gate's table.
+    // The gate's shot DA95021308, corrected (0010 section 11): 0.5940 (0.5155 to 0.7048 in the gate's
+    // table, rounded outward; 0.5052 to 0.7234 with the compiled curve's band widened after it, 0014
+    // 10.7 (ah) and its addenda, 0.77 to 1.17; 0.7255 with 1.18 before round 19, 0.7151 with 1.13 before
+    // round 20).
     expect(blocks[0]).toEqual({
       kind: 'paragraph',
       text:
-        'Total C_D = 0.5940, model-form band 0.5155 to 0.7048 (-13.2% to +18.7%): an estimate, ' +
+        'Total C_D = 0.5940, model-form band 0.5052 to 0.7234 (-15.0% to +21.8%): an estimate, ' +
         'not validated',
       tone: 'warn',
       headline: true,
@@ -522,11 +524,25 @@ describe('the display', { timeout: 60_000 }, () => {
     expect(components!.rows.map((r) => [r[0], r[4], r[5]])).toEqual(
       view.total.components.map((c) => [c.name, c.label, c.band]),
     );
+    // The body base's band with the compiled curve's 0.77 to 1.17 (0014 10.7 (ah) and its addenda; to
+    // 0.2677 with 1.18 before round 19, to 0.2574 with 1.13 before round 20, 0.1468 to 0.2470 with 0.82 to
+    // 1.08 before (ah)).
     expect(components!.rows.find((r) => r[0] === 'body base')!.slice(1, 4)).toEqual([
       '0.2073',
-      '0.1468 to 0.2470',
+      '0.1364 to 0.2657',
       '35%',
     ]);
+    // The body base's band and the curve's label as the page shows them, word for word (0014 10.7 (ah) and
+    // the review of 2026-10-27).
+    const baseRow = components!.rows.find((r) => r[0] === 'body base')!;
+    expect(baseRow[5]).toBe(
+      'curve 0.77 to 1.17 (0008 section 3.3), interpolation, fins-on-base band (section 3.4)',
+    );
+    expect(baseRow[4]!.split('; ')[0]).toBe(
+      'correlation: compiled base-pressure curve of TN 3819 fig. 18 (Love), band 0.77 to 1.17 measured ' +
+        'over curve, set on every body-alone base pressure read twice in its domain (0008 section 3.3, ' +
+        '0014 section 10.7 (ah)), tested only in the total',
+    );
     expect(blocks).toContainEqual({ kind: 'list', items: [FINS_BAND_NOTE, FINS_ON_BASE_NOTE] });
   });
 
@@ -582,15 +598,21 @@ describe('the display', { timeout: 60_000 }, () => {
     expect(displayText(blocks)).toContain(CLASS_DESCRIPTION);
     const [gate] = tables(blocks);
     expect(gate!.caption).toContain('a recorded correction made after the residuals were known');
+    // F4's widening at the Mach 1.799 shot, both ends since R1, disclosed as made after the gate
+    // was used.
+    expect(gate!.caption).toContain(
+      "the trailing edges' band at the Mach 1.799 shot widened at both ends since (design " +
+        'record 0019 section 3.4.1, F4), also after the gate was used',
+    );
     expect(gate!.head.at(-1)).toBe('Second run');
     expect(gate!.rows.length).toBe(11);
     expect(gate!.rows[0]).toEqual([
       'DA95021318',
       '1.799',
       '0.594',
-      '0.6134 (0.5296 to 0.7297)',
+      '0.6134 (0.5283 to 0.7298)',
       '-3.2%',
-      '-24.6% to +23.5%',
+      '-24.8% to +23.5%',
       '-3.0%',
     ]);
     expect(gate!.rows.map((r) => r[0])).toEqual(PUBLISHED_GATE.map((s) => s.shot));

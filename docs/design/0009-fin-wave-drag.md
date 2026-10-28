@@ -514,4 +514,7 @@ cases checked. Later on 2026-10-28, after main's A3 and A4 (3e026a8, the
 leading edges), the run on this branch serves 184 totals of 8,000, 628
 with the nose assumed served, and with the page's section offered too
 633 without this section and 811 with it; the reflected-wave figures
-above still hold.
+above still hold. After main's B1 and the body base band (cdd26e6 and
+0b2def5, also 2026-10-28) the counts are unchanged: 184, 628, 633 and
+811; the reflected-wave figures still hold, and the cross-check agrees
+on all 1,200 cases checked.
