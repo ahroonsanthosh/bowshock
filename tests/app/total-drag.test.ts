@@ -30,7 +30,12 @@ import {
 } from '../../src/validation/basic-finner';
 import { outward, outwardPercent } from '../../src/app/band';
 import { displayText, gateDisplay, totalDragDisplay } from '../../src/app/total-drag-display';
-import { claimWords, SWEPT_EDGE_BOUNDED_WORDS } from '../../src/app/status-words';
+import {
+  claimWords,
+  SEVERAL_BOUNDED_WORDS,
+  SWEPT_EDGE_BOUNDED_WORDS,
+  W1_BOUNDED_SWEPT_WORDS,
+} from '../../src/app/status-words';
 import {
   ABOVE_THE_CLASS,
   BASIC_FINNER_CLASS,
@@ -38,6 +43,7 @@ import {
   BOUNDED_REASON,
   boundedReasons,
   W1_BOUNDED_REASON,
+  W1_BOUNDED_SWEPT_REASON,
   BASIC_FINNER_TEMPERATURE,
   TEMPERATURE_SENSITIVITY,
   basicFinnerClass,
@@ -1064,10 +1070,10 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
   });
 
   it('rounded leading edges swept 66.4 deg at Mach 2.8: the bounded edge served among the parts, the total refused at the base', () => {
-    // Since main's A5 (f88ecbe) no served total holds a rounded edge swept past 60 deg: at the base the
-    // fins-on-base factors measure sweeps of 60 deg or less, more than a chord ahead the body base is
-    // refused, and within a chord it is served only at Mach 1.5 to 2.0, where M cos(sweep) is below
-    // 1.0 past 60 deg. The edge is served among the refused total's parts, bounded, and names it.
+    // On main (A4 with A5) the body base refused this plate for its sweep; with A1 (0015 section 12)
+    // flat plates with an unswept trailing edge are taken at the base at any leading-edge sweep from
+    // Mach 1.62, and this one is refused for its thickness over its short tip chord instead. The edge
+    // is served among the refused total's parts, bounded, and names it.
     const form = {
       ...plate('rounded', 'square'),
       planform: { kind: 'clipped-delta' as const, taperRatio: 0.2 },
@@ -1076,7 +1082,7 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
     };
     const v = totalDragView(form, exactNose(form));
     if (v.kind !== 'refused') throw new Error(`expected a refusal, got ${v.kind}`);
-    expect(reasons(v)).toEqual(['body base: fin-sweep']);
+    expect(reasons(v)).toEqual(['body base: fin-thickness']);
     const le = v.parts!.served.find((c) => c.name === 'fin leading edges')!;
     expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
     expect(le.label.startsWith('bounded, not measured: swept 66.4 deg')).toBe(true);
@@ -1088,6 +1094,82 @@ describe('flat-plate fins on the page (0016)', { timeout: 60_000 }, () => {
         reasons: boundedReasons(undefined, [le]),
       }),
     ).toBe(SWEPT_EDGE_BOUNDED_WORDS);
+  });
+
+  it('rounded leading edges swept 66.4 deg at Mach 2.8 on a longer tip: a total, both bounded parts named (A1 with A4)', () => {
+    // A1 (0015 section 12) takes the plate at the base at this sweep from Mach 1.62; A4 (0016 section
+    // 21.8) bounds the rounded edge to 75.1 deg. The total is served as an estimate whose reasons name
+    // the swept edge's bound; its body base is the flat plates' bounded value with the sweep named.
+    const rootChord = 3;
+    const span = 0.7;
+    const tip = rootChord - span * Math.tan((66.4 * Math.PI) / 180);
+    const form = {
+      ...plate('rounded', 'square'),
+      planform: { kind: 'clipped-delta' as const, taperRatio: tip / rootChord },
+      rootChord,
+      span,
+    };
+    const v = totalDragView(form, exactNose(form));
+    if (v.kind !== 'total') throw new Error(`expected a total, got ${JSON.stringify(reasons(v))}`);
+    expect(v.claim.kind).toBe('estimate');
+    const le = v.total.components.find((c) => c.name === 'fin leading edges')!;
+    expect(le.bounded).toBe(SWEPT_EDGE_BOUNDED_REASON);
+    const base = v.total.components.find((c) => c.name === 'body base')!;
+    expect(base.label).toContain('the leading edge swept 66.4 deg with the trailing edge unswept');
+    expect(base.label).toContain('0015 section 12');
+    // The claim names both bounded parts: the base's, with section 12's sweep argument, and the edge's.
+    const named = reasonsOf(v.claim);
+    expect(named).toContain(W1_BOUNDED_SWEPT_REASON);
+    expect(named).toContain(SWEPT_EDGE_BOUNDED_REASON);
+    expect(named).not.toContain(W1_BOUNDED_REASON);
+    expect(claimWords(v.claim)).toBe(SEVERAL_BOUNDED_WORDS);
+    // At a measured sweep (45 deg, RM L52E06's) the base's reason has no sweep argument in it.
+    const tip45 = rootChord - span * Math.tan((45 * Math.PI) / 180);
+    const at45 = {
+      ...form,
+      planform: { kind: 'clipped-delta' as const, taperRatio: tip45 / rootChord },
+    };
+    const v45 = totalDragView(at45, exactNose(at45));
+    if (v45.kind !== 'total')
+      throw new Error(`expected a total, got ${JSON.stringify(reasons(v45))}`);
+    expect(reasonsOf(v45.claim)).toContain(W1_BOUNDED_REASON);
+    expect(reasonsOf(v45.claim)).not.toContain(W1_BOUNDED_SWEPT_REASON);
+  });
+
+  it('an unswept plate at the base and half a chord ahead, at Mach 2.0 and 2.8: the claim names the sweep argument of 0015 sections 4 and 12', () => {
+    // No flat plate is measured at the base unswept: its bracket is argued (0015 section 4, 0014 10.7 (i)),
+    // so the claim names the argument as it does for the sweeps section 12 takes.
+    const unswept = (mach: number, aheadChords: number) => ({
+      ...basicFinnerForm(mach, (1.6e7 * mach) / 2.8),
+      section: {
+        kind: 'flat-plate' as const,
+        thickness: 0.05,
+        leadingEdge: 'rounded' as const,
+        trailingEdge: 'square' as const,
+      },
+      planform: { kind: 'rectangular' as const },
+      rootChord: 1.5,
+      // In calibres: the root chord is 1.5 body diameters, TN 2360's, so x/c 0.5 is 0.75 calibres.
+      trailingEdgeAheadOfBase: aheadChords * 1.5,
+    });
+    for (const [mach, ahead] of [
+      [2.0, 0],
+      [2.8, 0],
+      [2.0, 0.5],
+    ] as const) {
+      const form = unswept(mach, ahead);
+      const v = totalDragView(form, exactNose(form));
+      const where = `M ${mach}, x/c ${ahead}`;
+      if (v.kind !== 'total')
+        throw new Error(`${where}: expected a total, got ${JSON.stringify(reasons(v))}`);
+      const named = reasonsOf(v.claim);
+      expect(named, where).toContain(W1_BOUNDED_SWEPT_REASON);
+      expect(named, where).not.toContain(W1_BOUNDED_REASON);
+      expect(claimWords(v.claim), where).toBe(W1_BOUNDED_SWEPT_WORDS);
+    }
+    // Half a chord ahead at Mach 2.8: the position is refused (TN 2360 measures it at Mach 1.5 and 2.0 only).
+    const far = unswept(2.8, 0.5);
+    expect(reasons(totalDragView(far, exactNose(far)))).toEqual(['body base: fins-near-base']);
   });
 
   it('square-cut leading edges and rounded trailing edges: refused, with the reasons', () => {

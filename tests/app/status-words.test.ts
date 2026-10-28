@@ -5,6 +5,7 @@
  * their words.
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   BLUNT_AHEAD_OF_BASE,
@@ -19,6 +20,7 @@ import {
   changeText,
   claimWords,
   W1_BOUNDED_WORDS,
+  W1_BOUNDED_SWEPT_WORDS,
   VALIDATED_WORDS,
   CLASS_WORDS,
   ESTIMATE_WORDS,
@@ -36,12 +38,21 @@ import type { FinRefusal } from '../../src/fins/refusal';
 import { roundedLeadingEdgeDrag } from '../../src/fins/rounded-leading-edge';
 import { SQUARE_EDGE_REFUSAL, SWEPT_EDGE_BOUNDED_REASON } from '../../src/total/finned-body';
 import {
+  finsOnBaseFactorW1,
+  W1_FLAT_BEYOND_60_MARK,
+  W1_FLAT_UNDER_45_MARK,
+  W1_SWEEP_REFUSED_TOO,
+} from '../../src/base/fins-on-base-w1';
+import { bodyBaseDrag } from '../../src/base/base-drag';
+import { BaseRefusal } from '../../src/base/refusal';
+import {
   BOUNDED_REASON,
   CLASS_CLAIM,
   ESTIMATE_CLAIM,
   totalDragView,
   VALIDATED_CLAIM,
   W1_BOUNDED_REASON,
+  W1_BOUNDED_SWEPT_REASON,
 } from '../../src/app/total-drag';
 import { designForm } from '../../src/rocket/adapter';
 import { preset } from '../../src/rocket/presets';
@@ -55,6 +66,7 @@ describe('the words', () => {
       CLASS_WORDS,
       BOUNDED_WORDS,
       W1_BOUNDED_WORDS,
+      W1_BOUNDED_SWEPT_WORDS,
       SWEPT_EDGE_BOUNDED_WORDS,
       SEVERAL_BOUNDED_WORDS,
       provisionalWords(2, 4),
@@ -103,6 +115,24 @@ describe('the words', () => {
     expect(claimWords(claim(CLASS_CLAIM, [BOUNDED_REASON]))).toBe(BOUNDED_WORDS);
     // The rebuilt fins-on-base factor's bounded values (main's W1).
     expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_REASON]))).toBe(W1_BOUNDED_WORDS);
+    // The same at a sweep no flat plate at the base is measured at (0015 section 12's argument): the
+    // reason and the words name it, exactly.
+    expect(W1_BOUNDED_SWEPT_REASON).toBe(
+      "the body base's rebuilt fins-on-base factor is bounded, not measured (flat faces at a square " +
+        'trailing edge, or above Mach 2.56, where the free-flight curve of TN 3819 fig. 35 ends; and the ' +
+        'leading edge unswept or swept where no flat plate is measured at the base, short of 45 deg or ' +
+        'beyond 60 deg, bounded by the argument of 0015 sections 4 and 12)',
+    );
+    expect(claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_SWEPT_REASON]))).toBe(
+      W1_BOUNDED_SWEPT_WORDS,
+    );
+    expect(W1_BOUNDED_SWEPT_WORDS.sentence).toBe(
+      "An estimate with one part bounded, not measured: the fins' effect on the base drag, set from " +
+        'bounds for fins unswept or at a sweep not measured at the base.',
+    );
+    expect(
+      claimWords(claim(ESTIMATE_CLAIM, [W1_BOUNDED_SWEPT_REASON, SWEPT_EDGE_BOUNDED_REASON])),
+    ).toBe(SEVERAL_BOUNDED_WORDS);
     // The fins' rounded leading edges swept beyond 60 deg, bounded (0016 section 21.2).
     expect(claimWords(claim(CLASS_CLAIM, ['x', SWEPT_EDGE_BOUNDED_REASON]))).toBe(
       SWEPT_EDGE_BOUNDED_WORDS,
@@ -209,6 +239,74 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
         'is 1.0 to 3.0 and for edge sizes within its data',
       change: 'bevelled leading edges',
     });
+  });
+
+  it("the fin-sweep words are 0017's rows: flat fins with a square, unswept trailing edge at any leading-edge sweep from Mach 1.62 (0015 section 12), and the narrowings below it, under 45 and beyond 60 deg (0014 10.7 (z))", () => {
+    const rows = readFileSync(
+      new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
+      'utf8',
+    )
+      .split('\n')
+      .filter((l) => l.startsWith('| `fin-sweep`'))
+      .map((l) =>
+        l
+          .split('|')
+          .slice(1, -1)
+          .map((c) => c.trim()),
+      );
+    const row = (key: string) => {
+      const found = rows.filter((r) => r[0] === key);
+      expect(found, key).toHaveLength(1);
+      return found[0]!;
+    };
+    // The record's rows are the page's words, with the record's citation after the reason.
+    const words = refusalWords({ component: 'body base', reason: 'fin-sweep', message: '' });
+    const [, reason, change] = row('`fin-sweep`');
+    expect(reason).toBe(`${words.reason} (0015 section 12)`);
+    expect(change).toBe(words.change);
+    expect(words.reason).toContain(
+      'flat fins with a square, unswept trailing edge are taken at any leading-edge sweep, but ' +
+        'below Mach 1.62 only unswept or swept 45 to 60 deg',
+    );
+    // The library's own refusals of flat plates swept 20 and 70 deg at Mach 1.55 take the narrowing's words.
+    const messageAt = (deg: number) => {
+      try {
+        finsOnBaseFactorW1(1.55, {
+          count: 3,
+          section: { x: [0, 0.1, 1], halfThickness: [0, 0.012, 0.012], bluntTrailingEdge: true },
+          sectionFamily: 'other',
+          tanLeadingEdgeSweep: Math.tan((deg * Math.PI) / 180),
+          tanTrailingEdgeSweep: 0,
+          trailingEdgeAheadOfBase: 0,
+        });
+      } catch (e) {
+        return (e as Error).message;
+      }
+      return '';
+    };
+    const under = refusalWords({
+      component: 'body base',
+      reason: 'fin-sweep',
+      message: messageAt(20),
+    });
+    const [, uReason, uChange] = row('`fin-sweep` (flat fins swept under 45 deg, below Mach 1.62)');
+    expect(uReason).toBe(`${under.reason} (0014 10.7 (z), the note of 2026-10-27)`);
+    expect(uChange).toBe(under.change);
+    expect(under.reason).toContain('measured only at Mach 1.06 to 1.10, with fins swept 45 deg');
+    expect(under.reason).toContain('flat fins at or near the base');
+    const beyond = refusalWords({
+      component: 'body base',
+      reason: 'fin-sweep',
+      message: messageAt(70),
+    });
+    const [, bReason, bChange] = row(
+      '`fin-sweep` (flat fins swept beyond 60 deg, below Mach 1.62)',
+    );
+    expect(bReason).toBe(`${beyond.reason} (0014 10.7 (z), the note of 2026-10-27)`);
+    expect(bChange).toBe(beyond.change);
+    expect(beyond.reason).toContain('not measured with fins swept beyond 60 deg');
+    expect(beyond.reason).toContain('flat fins at or near the base');
+    expect(new Set([words.reason, under.reason, beyond.reason]).size).toBe(3);
   });
 
   it('a rounded edge refused past 60 deg: less sweep offered beside a bevelled edge', () => {
@@ -385,6 +483,112 @@ describe('the refusals the logic gives, worded', { timeout: 60_000 }, () => {
     // The Basic Finner at Mach 1.4 and its wedges, refused at the base, as the logic gives them.
     for (const r of refusalsAt('basic-finner', 1.4)) {
       expect(refusalWords(r).change).not.toMatch(/ahead/);
+    }
+  });
+
+  it('a flat plate a half chord ahead, swept 20 or 70 deg, at Mach 1.2: refused for its position and its sweep, the advice leading to neither (the review of 2026-10-27)', () => {
+    for (const deg of [20, 70]) {
+      const fins = {
+        count: 3,
+        section: { x: [0, 0.1, 1], halfThickness: [0, 0.012, 0.012], bluntTrailingEdge: true },
+        sectionFamily: 'other' as const,
+        tanLeadingEdgeSweep: Math.tan((deg * Math.PI) / 180),
+        tanTrailingEdgeSweep: 0,
+      };
+      // Through the library, which names the position first, within a chord and more than a chord ahead, and
+      // through the factor itself.
+      const library = (ahead: number) => () =>
+        bodyBaseDrag({
+          mach: 1.2,
+          afterbody: 'cylinder',
+          boundaryLayerAtBase: 'turbulent',
+          baseAreaRatio: 1,
+          fins: {
+            count: 3,
+            thicknessRatio: 0.024,
+            section: 'other',
+            tanLeadingEdge: fins.tanLeadingEdgeSweep,
+            tanTrailingEdge: 0,
+            trailingEdgeAheadOfBase: ahead,
+            rootChordOverDiameter: 1.5,
+            flatFaced: true,
+            nearBase: fins,
+          },
+        });
+      const messages: string[] = [];
+      for (const call of [
+        library(0.5),
+        library(1.5),
+        () =>
+          finsOnBaseFactorW1(1.2, {
+            ...fins,
+            trailingEdgeAheadOfBase: 0.5,
+            rootChordOverDiameter: 1.5,
+          }),
+      ]) {
+        try {
+          call();
+          messages.push('');
+        } catch (e) {
+          expect((e as BaseRefusal).reason, `${deg} deg`).toBe('fins-near-base');
+          messages.push((e as Error).message);
+        }
+      }
+      expect(messages).toHaveLength(3);
+      for (const [k, message] of messages.entries()) {
+        // Both reasons: the position's, and the sweep's.
+        expect(message, `${deg} deg, call ${k}`).toContain(
+          k === 1
+            ? MORE_THAN_A_CHORD_AHEAD
+            : 'below Mach 1.5 no measurement with fins ahead of the base',
+        );
+        expect(message, `${deg} deg`).toContain(W1_SWEEP_REFUSED_TOO);
+        expect(message, `${deg} deg`).toContain(
+          deg < 45 ? W1_FLAT_UNDER_45_MARK : W1_FLAT_BEYOND_60_MARK,
+        );
+        const words = refusalWords({ component: 'body base', reason: 'fins-near-base', message });
+        expect(words.reason).toContain('flat fins are taken only unswept or swept 45 to 60 deg');
+        // The words are the plain position words with the sweep's clause, and 0017's row holds them.
+        const clause =
+          'below Mach 1.62, at or near the base, flat fins are taken only unswept or swept 45 to 60 deg';
+        const plain = refusalWords({
+          component: 'body base',
+          reason: 'fins-near-base',
+          message: '',
+        });
+        expect(words.reason).toBe(`${plain.reason}; and ${clause}`);
+        const row = readFileSync(
+          new URL('../../docs/design/0017-rocketeer-interface.md', import.meta.url),
+          'utf8',
+        )
+          .split('\n')
+          .filter((l) =>
+            l.startsWith("| `fins-near-base` (a flat plate's sweep refused too, below Mach 1.62)"),
+          )
+          .map((l) =>
+            l
+              .split('|')
+              .slice(1, -1)
+              .map((c) => c.trim()),
+          );
+        expect(row).toHaveLength(1);
+        expect(row[0]![1]).toBe(
+          `the reason of \`fins-near-base\`, and ${clause} (0014 10.7 (z), the note of 2026-10-27)`,
+        );
+        expect(row[0]![2]).toBe(words.change);
+        // The advice: at the base and at a sweep served there, not "unswept ones" alone, nor the base alone.
+        expect(words.change).toBe(
+          "the fins' trailing edges at the base, the fins unswept or swept 45 to 60 deg at the leading edge",
+        );
+        // And the advice is served: the same plate at the base, swept 45 deg, at Mach 1.2.
+        expect(() =>
+          finsOnBaseFactorW1(1.2, {
+            ...fins,
+            tanLeadingEdgeSweep: 1,
+            trailingEdgeAheadOfBase: 0,
+          }),
+        ).not.toThrow();
+      }
     }
   });
 
