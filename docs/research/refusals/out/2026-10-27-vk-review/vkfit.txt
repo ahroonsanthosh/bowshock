@@ -1,0 +1,17 @@
+
+ RUN  v5.0.4 /home/user/bowshock/.claude/worktrees/agent-add283c06777a544a
+
+stdout | tests/zz-review-vkfit.test.ts > Von Karman fits on the page path
+VK 4.21 cal, cylinder 13.739 cal, M 1.8801, refinement 1: refusal undefined; converged true after 6583 (speed 1.0e-12); drag 0.0452193177824722; grid 268x20: min angle 56.7 deg, wall 76.1 deg (>= 50), size ratio 1.178, aspect 9.55 (<= 13); grid gates undefined; case undefined; 861 s
+VK 4.831 cal, cylinder 11.14 cal, M 1.5003, refinement 1: refusal undefined; converged true after 6987 (speed 1.0e-12); drag 0.03686422172522519; grid 176x20: min angle 47.5 deg, wall 71.6 deg (>= 50), size ratio 1.220, aspect 11.08 (<= 13); grid gates undefined; case undefined; 618 s
+VK 4.028 cal, cylinder 6.662 cal, M 2.4396, refinement 1: refusal undefined; converged true after 6747 (speed 1.0e-12); drag 0.04624639248450792; grid 380x20: min angle 64.2 deg, wall 78.5 deg (>= 50), size ratio 1.132, aspect 5.21 (<= 13); grid gates undefined; case undefined; 1091 s
+VK 4.437 cal, cylinder 7.506 cal, M 2.2743, refinement 1: refusal undefined; converged true after 6702 (speed 1.0e-12); drag 0.03958366405931995; grid 357x20: min angle 62.7 deg, wall 77.9 deg (>= 50), size ratio 1.142, aspect 6.20 (<= 13); grid gates undefined; case undefined; 828 s
+VK 4.987 cal, cylinder 11.677 cal, M 1.5758, refinement 1: refusal undefined; converged true after 6872 (speed 1.0e-12); drag 0.0344554589753965; grid 199x20: min angle 49.9 deg, wall 72.6 deg (>= 50), size ratio 1.187, aspect 10.59 (<= 13); grid gates undefined; case undefined; 399 s
+VK 4.876 cal, cylinder 3.199 cal, M 1.533, refinement 1: refusal undefined; converged true after 6921 (speed 1.0e-12); drag 0.03609552006455243; grid 176x20: min angle 48.4 deg, wall 72.6 deg (>= 50), size ratio 1.147, aspect 6.43 (<= 13); grid gates undefined; case undefined; 385 s
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:36:35
+   Duration  4184.42s (tests 100%)
+

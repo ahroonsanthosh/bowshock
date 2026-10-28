@@ -246,7 +246,13 @@ Results, by the registered criteria (2026-10-28):
   order 0.23, misses by -4.48e-4) and 2e-3 with 6 calibers at Mach 3 (x =
   0.032, march order 0.10, -8.85e-4); with 6 calibers at Mach 1.5 alone
   it stays 8e-4. That reading decides the allowance if either Mach 3 case
-  is added, so it is the owner's, with the choices.
+  is added, so it is the owner's, with the choices. The independent
+  review's view (2026-10-28, information for the owner): a line failing
+  the line criterion on every grid gives no reference, so `judge.mjs`'s
+  reading is the physically right one; over every line of the passing
+  cases whose march's change from 1280 intervals is below 3.5e-5 on every
+  grid, the largest miss is 3.57e-4 (checked here), so 8e-4 holds; the
+  evidence supports (a') best.
 - The lanes ran from 2026-10-27 08:47 to 2026-10-28 08:59 UTC, through
   four container restarts, each fit resuming from its last checkpoint
   (`fits/queue-log.txt`, `fits/log.txt`).
@@ -264,12 +270,17 @@ The refusal audit's population (`docs/research/refusals`, 2000 rockets,
 | main cdd26e6, with 6 cal. Mach 1.5, 5 cal. Mach 3 (a) | 213 | 71              | 142             |
 | main cdd26e6, with 5 and 6 cal. Mach 3 (a')    | 204       | 55              | 149             |
 | main cdd26e6, with all three passing cases (b, nothing cut out) | 242 | 73              | 169             |
+| main 76899f1, W5's seven (the branch, held; 2026-10-28) | 184 | 73              | 111             |
+| main 76899f1, with 6 cal. Mach 1.5, 5 cal. Mach 3 (a) | 253 | 99              | 154             |
+| main 76899f1, with 5 and 6 cal. Mach 3 (a')    | 237       | 77              | 160             |
+| main 76899f1, with all three passing cases (b, nothing cut out) | 288 | 103             | 185             |
 
 None below Mach 1.5 in any run. Each run with W5's seven gave main's
 `impact.out` byte for byte, and every run's cross-check with `src/total`
 agreed on 1200 of 1200 cases. The runs with added cases are for the
 owner's decision only (`population/option-a`, `population/option-a-prime`
-and `population/all-three`:
+and `population/all-three` on cdd26e6, the same under `population/76899f1`
+on 76899f1:
 the run of `docs/research/refusals` on the merged head with those points
 added to `VON_KARMAN_REFERENCES` for the run, then taken out); the
 branch's own outputs are the held run, which is main's.

@@ -1358,33 +1358,46 @@ ahead miss by up to 1.59e-4, so the allowance stays 8e-4 there on either
 reading. The reading decides the allowance if either Mach 3 case is
 added, so it goes to the owner with the choices below.
 
+The independent review's view of that reading (recorded 2026-10-28 as
+information for the owner, not a decision): a line that fails the line
+criterion on every grid gives no reference, by the words of the
+criterion the registration adopts unchanged ("a line is used where, on
+every grid, ..."), so the two lines W5's reading would count at Mach 3
+are not references, and `judge.mjs`'s reading, one line on each side, is
+the physically right one; counting every converged marched line, the
+largest miss is 3.57e-4, so 8e-4 holds. Checked here: over every line of the passing cases whose
+march's change from 1280 intervals is below 3.5e-5 on every grid,
+whatever its mass balance, the largest miss is 3.57e-4 (5 calibers at
+Mach 2, x = 0.27). The review found the evidence to support (a') best.
+
 The registration's rule then holds them all: the outline of the passing
 cases would have the corners (1, 1.5), (6, 1.5), (6, 3) and (1, 3), and
 the failed case (6, 2) lies on its edge, which counts as inside
 (`insideOutline` takes a point on the outline, within 1e-9 of the
 points' extent, as inside), so nothing is added until the owner decides,
 and `VON_KARMAN_REFERENCES` keeps W5's seven. Choices for that decision,
-with the refusal audit's served totals (2000 rockets, 8000 cases, on main
-at cdd26e6, 155 as they stand) and the allowance on each count of the
-lines next to a passing line (`judge.mjs`'s, W5's):
+with the refusal audit's served totals (2000 rockets, 8000 cases; on main
+at 76899f1, re-run 2026-10-28, 184 as they stand, Mach 1.5 to 1.8: 73,
+1.8 to 3.0: 111; on cdd26e6 they were 155, 213, 204 and 242) and the
+allowance on each count of the lines next to a passing line
+(`judge.mjs`'s, W5's):
 
 - (a) add 6 calibers at Mach 1.5 and 5 calibers at Mach 3 only: their
   outline (corners (1, 1.5), (6, 1.5), (5, 3), (1, 3)) leaves (6, 2)
-  outside, its edge passing 5.67 calibers at Mach 2. 213 served (Mach 1.5
-  to 1.8: 53 to 71; 1.8 to 3.0: 102 to 142); allowance 8e-4 or 9e-4.
-  Near that edge the allowance is less sure: the lines of 6 calibers at
-  Mach 2 that do not pass would miss by up to 4.31e-4, more than half of
-  8e-4;
+  outside, its edge passing 5.67 calibers at Mach 2. 253 served (Mach 1.5
+  to 1.8: 99; 1.8 to 3.0: 154); allowance 8e-4 or 9e-4. Near that edge
+  the allowance is less sure: the lines of 6 calibers at Mach 2 that do
+  not pass would miss by up to 4.31e-4, more than half of 8e-4;
 - (a') add 5 and 6 calibers at Mach 3 only (the independent reviewer's
   option): their outline (corners (1, 1.5), (5, 1.5), (6, 3), (1, 3))
   leaves (6, 2) outside, its edge passing 5.33 calibers at Mach 2, twice
-  as far from (6, 2) as (a)'s. 204 served (Mach 1.5 to 1.8: 55; 1.8 to
-  3.0: 149); allowance 8e-4 or 2e-3;
+  as far from (6, 2) as (a)'s. 237 served (Mach 1.5 to 1.8: 77; 1.8 to
+  3.0: 160); allowance 8e-4 or 2e-3;
 - (b) add all three passing cases with an outline that leaves out a
   region round (6, 2): a new rule, to be registered before use; with all
-  three and no region left out, 242 served (Mach 1.5 to 1.8: 73; 1.8 to
-  3.0: 169); allowance 8e-4 or 2e-3;
-- (c) add none: 155; allowance 8e-4.
+  three and no region left out, 288 served (Mach 1.5 to 1.8: 103; 1.8 to
+  3.0: 185); allowance 8e-4 or 2e-3;
+- (c) add none: 184; allowance 8e-4.
 
 **Sharp tips whose bow shock detaches** stay refused (the sharp
 problem's message). On the same grids (0004), with 5 calibers of
