@@ -2218,3 +2218,18 @@ main f88ecbe.
     tests it, the face lay below the pitot pressure.
   - A test pins the page's words exactly, so inverting "far larger"
     fails it.
+- **e was taken on the primaries only.** As ambiguous points keep every
+  reading, `docs/research/tn3861-fig17/rule/apply.test.ts` now takes
+  every reading either reader states for a fig. 17 point: the
+  primaries, the alternatives, and the cross-stroke and bounding-box
+  readings. The table of 21.8 is superseded by:
+
+  | Point                         | F over modified Newtonian | Stagnation over Rayleigh's | F over the term | F/MN less e, less the lower bound's end |
+  | ----------------------------- | ------------------------- | -------------------------- | --------------- | --------------------------------------- |
+  | Lord and Ulmann, 70 deg (P03) | 1.0420                    | 1.0656                     | 1.0774          | +0.1734 (end 0.8345)                    |
+  | Lord and Ulmann, 75 deg (P02) | 1.4212                    | 1.4972                     | 1.7896          | +0.6771 (end 0.7100)                    |
+  | Penland, 75.1 deg (P06)       | 1.1497                    | 1.1715                     | 1.1465          | +0.1756 (end 0.9400)                    |
+  - e is 0.0341, at P08 on B's bounding-box reading (1.458); on the
+    primaries it was 0.0233.
+  - The verdict does not change: the rule holds at all three points.
+    0014 carries a dated note after the verdict entry.

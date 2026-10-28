@@ -4,8 +4,12 @@
  * 3861 fig. 17 (d0094f2, pairing 3d7dd16) with figs. 15 and 16 as read
  * twice for 0016 section 16 (figs15-16.json, from export_figs15_16.py).
  * Every quantity is taken on every combination of the readings and each
- * pair's envelope in the direction against the claim. Run from the
- * repository root:
+ * pair's envelope in the direction against the claim. Since the re-review
+ * of ef7fc7d..5159cac (2026-10-28) a fig. 17 point's readings are all that
+ * either reader states for it, as ambiguous points keep every reading: the
+ * two primaries, every numeric alternative, and the readings each gives
+ * under a named convention (the cross-stroke intersection, the bounding
+ * square or box). Run from the repository root:
  *
  *   python3 -I docs/research/tn3861-fig17/rule/export_figs15_16.py
  *   ONLY=../tn3861-fig17/rule/apply.test.ts nice -n 10 npx vitest run --config docs/research/square-edge/vitest.config.ts
@@ -29,7 +33,7 @@ const DEG = Math.PI / 180;
 const PAIRS = join(here, '..', 'readers', 'pairing-2026-10-27', 'tn3861_fig17_pairs.csv');
 
 interface Fig17Reading {
-  readonly who: 'A' | 'B';
+  readonly who: string;
   readonly mc: number;
   readonly cd: number;
 }
@@ -109,13 +113,30 @@ function lowerEndOverMn(mN: number): { value: number; at: string } {
 
 it("21.2's rule on the paired fig. 17", () => {
   const pairs = csvRows(readFileSync(PAIRS, 'utf8'));
+  /** Every reading either reader states for a point: primaries, alternatives, named conventions. */
   const fig17 = (id: string): Fig17Reading[] => {
     const p = pairs.find((r) => r['pair'] === id)!;
-    return [
+    const out: Fig17Reading[] = [
       { who: 'A', mc: Number(p['x_A']), cd: Number(p['value_A']) },
       { who: 'B', mc: Number(p['x_B']), cd: Number(p['value_B']) },
     ];
+    for (const who of ['A', 'B'] as const) {
+      for (const m of (p[`alternatives_${who}`] ?? '').matchAll(/x=([\d.]+) value=([\d.]+)/g)) {
+        out.push({ who: `${who} alternative`, mc: Number(m[1]), cd: Number(m[2]) });
+      }
+    }
+    for (const [col, name] of [
+      ['cross_intersections', 'cross'],
+      ['bounding_box', 'box'],
+    ] as const) {
+      for (const m of (p[col] ?? '').matchAll(/([AB]) \(([\d.]+), ([\d.]+)\)/g)) {
+        out.push({ who: `${m[1]} ${name}`, mc: Number(m[2]), cd: Number(m[3]) });
+      }
+    }
+    return out;
   };
+  /** The two primaries only, as first applied (b463654). */
+  const primaries = (id: string) => fig17(id).slice(0, 2);
   const f1516 = JSON.parse(readFileSync(join(here, 'figs15-16.json'), 'utf8')) as Fig1516Reading[];
   const near = (figure: '15' | '16', set: string, mc: number) =>
     f1516.filter((r) => r.figure === figure && r.set === set && Math.abs(r.mc - mc) < 0.1);
@@ -130,8 +151,19 @@ it("21.2's rule on the paired fig. 17", () => {
   const integrated = [TN2960_FIG5C, TN2960_FIG5C_SECOND].map((r) => tn2960Integrated(r));
   let e = 0;
   let eAt = '';
+  let ePrimary = 0;
   say("THE ESTIMATE'S ERROR e: F/MN against TN 2960's integrated front side over MN (both readings of TN 2960 fig. 5)");
   for (const id of ['P04', 'P08', 'P12']) {
+    for (const r17 of primaries(id)) {
+      for (const r16 of near('16', 'TN 2960', r17.mc)) {
+        const mcm = (r17.mc + r16.mc) / 2;
+        const f = r17.cd + r16.value;
+        for (const integ of integrated) {
+          const ref = integ.reduce((a, b) => (Math.abs(b.mach - mcm) < Math.abs(a.mach - mcm) ? b : a));
+          ePrimary = Math.max(ePrimary, Math.abs(f / mn(mcm) - ref.frontOverModifiedNewtonian));
+        }
+      }
+    }
     for (const r17 of fig17(id)) {
       for (const r16 of near('16', 'TN 2960', r17.mc)) {
         const mcm = (r17.mc + r16.mc) / 2;
@@ -147,9 +179,10 @@ it("21.2's rule on the paired fig. 17", () => {
       }
     }
     const r = fig17(id);
-    say(`  ${id}: M_c ${r[0]!.mc} / ${r[1]!.mc}, C_D ${r[0]!.cd} / ${r[1]!.cd}`);
+    say(`  ${id}: ${r.map((x) => `${x.who} (${x.mc}, ${x.cd})`).join('; ')}`);
   }
-  say(`  e = ${e.toFixed(4)}, the largest, at ${eAt}`);
+  say(`  e = ${e.toFixed(4)}, the largest over every reading, at ${eAt}`);
+  say(`  (on the two primaries only, as first applied in b463654: ${ePrimary.toFixed(4)})`);
   say('  (as first estimated in 0016 section 16 on the fig. 17 reading that does not count: 0.086)');
   say('');
 

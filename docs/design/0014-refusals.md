@@ -2297,6 +2297,21 @@ words and 0017 now say this; the addendum's text stands as written.
   label names fig. 17 as read twice. Beyond 75.1 deg they stay refused,
   at any Mach number.
 
+_Recomputed, 2026-10-28_ (the re-review of ef7fc7d..5159cac). The entry
+above took fig. 17's two primaries only. Ambiguous points keep every
+reading, so the rule is now taken over every reading either reader
+states for a point: the primaries, the alternatives, and the cross-stroke
+and bounding-box readings.
+
+- e becomes 0.0341 (0.0233 on the primaries). Its largest is P08, the
+  Gowen and Perkins cylinder at M_c 1.96, on B's bounding-box reading
+  of 1.458 (A's alternative, 1.456).
+- The margins of (b) become +0.1734 at P03, +0.6771 at P02 and +0.1756
+  at P06.
+- F over the term becomes 1.0774, 1.7896 and 1.1465.
+- The stagnation ratios are unchanged.
+- **The verdict does not change: the rule holds at all three points.**
+
 **2026-10-26 (ad): fins ending within a chord ahead of the base (A5 of
 the refusal plan): bounded, not measured, below Mach 1.5; TN 3819 fig.
 32's Langley symbols to be read a second time for Mach 2.0 to 3.0; and
